@@ -18,8 +18,11 @@ proc importPgnGame {} {
   text $edit.text -height 12 -width 75 -wrap none \
     -background white -selectbackground lightBlue \
     -yscroll "$edit.ybar set" -xscroll "$edit.xbar set"  -setgrid 1
-  scrollbar $edit.ybar -command "$edit.text yview"
-  scrollbar $edit.xbar -orient horizontal -command "$edit.text xview"
+  # Override tab-binding for this widget:
+  bind $edit.text <Key-Tab> "[bind all <Key-Tab>]; break"
+  scrollbar $edit.ybar -command "$edit.text yview" -takefocus 0
+  scrollbar $edit.xbar -orient horizontal -command "$edit.text xview" \
+    -takefocus 0
   grid $edit.text -row 0 -column 0 -sticky nesw
   grid $edit.ybar -row 0 -column 1 -sticky nesw
   grid $edit.xbar -row 1 -column 0 -sticky nesw
@@ -41,7 +44,7 @@ proc importPgnGame {} {
   $pane.err.text insert end "\n"
   $pane.err.text insert end $::tr(ImportHelp2)
   $pane.err.text configure -state disabled
-  scrollbar $pane.err.scroll -command "$pane.err.text yview"
+  scrollbar $pane.err.scroll -command "$pane.err.text yview" -takefocus 0
   pack $pane.err.scroll -side right -fill y
   pack $pane.err.text -side left -expand true -fill both
 
