@@ -48,8 +48,8 @@ menuText W FileMaintNameSite "Stavningskontrollera platser..." 21 \
   {Stavningskontrollera platser utifrån rättstavningsfilen}
 menuText W FileMaintNameRound "Stavningskontrollera ronder..." 21 \
   {Stavningskontrollera ronder utifrån rättstavningsfilen}
-menuText W FileReadOnly "Enbart läs databas..." 8 \
-  {Öppna databasen utan redigeringsmöjligheter}
+menuText W FileReadOnly "Enbart läsbar..." 8 \
+  {Avlägsna temporärt redigeringsmöjligheterna till databasen}
 menuText W FileExit "Avsluta" 0 {Avsluta Scid}
 
 # Edit menu:
@@ -74,7 +74,7 @@ menuText W EditPaste "Klistra in det senaste Clipbasepartiet" 8 \
   {Klistrar in det senaste tillagda i Clipbase i den aktiva databasen}
 menuText W EditSetup "Skapa ställning..." 0 \
   {Skapa en utgångsställning för aktuellt parti}
-menuText W EditPasteBoard "Klista in utgångsställning" 10 \
+menuText W EditPasteBoard "Klistra in utgångsställning" 10 \
   {Klistra in ställningen från aktuellt parti i den temporära databasen}
 
 # Game menu:
@@ -990,6 +990,193 @@ Detta kan ta ett tag men behöver bara göras en gång. Om du tycker det tar alltfö
 Vill du uppdatera denna databas nu?
 }
 
+}
+
+
+#
+##
+### Start Swedish tip set
+##
+#
+set tips(W) {
+  {
+    Scid har över 30 <a Index>hjälpsidor</a>, och i de flesta fönster kan du
+    genom att trycka <b>F1</b> få hjälp om det fönster du för tillfället har
+    aktivt.
+  }
+  {
+    Vissa fönster (t ex partiinformation och <a Switcher>databasväljaren</a>) 
+    har en meny för höger musknapp. Prova att högerklicka i varje fönster så
+    får du vilka som har det och vilka funktioner du kommer åt den vägen.
+  }
+  {
+    Du kan ange drag på mer än ett sätt, så du kan välja vilket som passar dig
+    bäst. Du kan använda musen (med eller utan dragförslag) eller tangentbordet
+    (med eller utan autokomplettering). Läs hjälpsidan för 
+    <a Moves>att ange drag</a> för mer information.
+  }
+  {
+    Om du har databaser du ofta öppnar så kan du lägga till ett 
+    <a Bookmarks>bokmärke</a> för varje databas. Du kommer då att kunna öppna 
+    databaserna snabbare via bokmärkesmenyn.
+  }
+  {
+    Du kan se alla drag i det aktuella partiet (inklusive varianter och kommentarer)
+    genom att öppna <a PGN>PGN-fönstret</a>.
+    Du navigerar igenom partiet i PGN-fönstret genom att klicka på valfritt drag med
+    vänster musknapp. Genom att klicka på draget med mellan- eller högermusknapp så
+    får du en förhandsvisning av just den ställningen.
+  }
+  {
+    Du kan kopiera partier mellan databaserna i <a Switcher>databasväljaren</a> genom
+    att dra-och-släppa dem mellan respektive databas.
+  }
+  {
+    Scid kan öppna PGN filer, även de som är komprimerade med Gzip (dvs har en .gz filändelse). 
+    PGN filer öppnas med enbart läsrättigheter, så om du vill redigera en PGN fil i Scid 
+    måste du kopiera filen till en Scid databas med hjälp av <a Switcher>databasväljaren</a>.
+  }
+  {
+    Om du ofta använder <a Tree>Trädfönstret</a> med stora databaser, är det värt att välja
+    <b>Fyll cache fil</b> från Arkivmenyn i Trädfönstret. Detta innebär att trädstatistik för 
+    många av de vanligare ställningarna sparas, vilket ger en snabbare trädåtkomst för databasen
+    ifråga.
+  }
+  {
+    <a Tree>Trädfönstret</a> kan visa alla drag från den aktuella ställningen. Men om också vill 
+    se alla dragföljder som har lett till denna ställning kan du få fram det genom att skapa en
+   <a OpReport>öppningsrapport</a>.
+  }
+  {
+    Du kan vänster- eller högerklicka i en kolumn i <a GameList>partilistan</a> för att ändra 
+    dess bredd.
+  }
+  {
+    Med <a PInfo>spelarinformationen</a> aktuell (klicka på endera spelarens namn under brädet i 
+    huvudfönstret för att få fram den) är det enkelt att <a Searches Filter>filtrera</a> fram partier
+    av en särskild spelares enskilda resultat. Klicka bara på valfritt värde som har angivits med
+    <red>röd text</red>.
+  }
+  {
+    När du studerar öppningar kan det vara en poäng att markera valen <b>Bönder</b> eller <b>Filer</b> i 
+    <a Searches Board>Sök aktuell position</a>. Genom dessa val kan du hitta andra öppningar som ger
+    liknande bondestrukturer.
+  }
+  {
+    Du kan högerklicka i partiinformationsdelen av huvudfönstret (under brädet) för att få fram en 
+    kontextmeny. Du kan t ex göra så att Scid döljer nästa drag i ett parti, vilket kan vara användbart 
+    om du vill träna genom att "gissa" nästa drag.
+  }
+  {
+    Om du ofta <a Maintenance>underhåller</a> stora databaser kan du utföra flera underhållsuppgifter 
+    vid samma tillfälle via <a Maintenance Cleaner>databasverktyget</a>.
+  }
+  {
+    Om du har en stor databas där de flesta partierna har ett evenmangsdatum och du vill ha partierna i 
+    datumordning bör du överväga att <a Sorting>sortera</a> den på evenemangsdatum i första hand och 
+    evenmang i andra hand, istället för datum och evenemang, då detta kommer att hålla turneringspartierna
+    från olika datum samman. Under förutsättning att alla partier har samma evenemangsdatum naturligtvis).
+    Alternativt kan du se till att fälten evenemang, rond och datum är så enhetliga och korrekta som möjligt.
+    (ms).
+  }
+  {
+    Det kan vara en bra ide att <a Maintenance Spellcheck>stavningskontrollera</a> din databas innan du 
+    <a Maintenance Twins>raderar dubbletter</a> då Scid har större möjlighet att hitta dubbletterna och 
+    markera dessa för borttagning.
+  }
+  {
+    <a Flags>Flaggor</a> är användbara för att markera upp partier med karaktäristika du vill söka på senare,
+    såsom bondeställning, taktiska finesser, osv. Du kan söka på flaggor när du söker på fält i partihuvudet.
+  }
+  {
+    Om du går igenom ett parti, och helt enkelt vill testa en ny variant utan att förändra partiet i sig, kan 
+    du slå på Försöksläget (Trial mode) genom att trycka <b>Ctrl+space</b> eller från verktygsraden. Återgå till
+    ursprungspartiet när du är klar.
+  }
+  {
+    Om du vill hitta det mest betydelsefulla partiet (med högst rankade spelare) i en viss position kan du
+    öppna <a Tree>Trädfönstret</a> och i denna öppna listan med de bästa partierna. I trädfönstret kan du till
+    och med begränsa partierna till endast ett särskilt resultat.
+  }
+  {
+    Ett bra sätt att studera en öppning är att i en stor databas slå på träningsläget i <a Tree>Trädfönstret</a>, 
+    och sedan spela igenom databasen för att se vilka varianter som förekommer oftast.
+  }
+  {
+    Om du har två databaser öppna, och vill ha ett variantträd att studera medan du går igenom ett parti
+    i den andra databasen kan du <b>låsa</b> trädet i den databasen och sedan byta till den andra.
+  }
+  {
+    <a Tmt>Turneringssökaren (tournament finder)</a> är inte bara användbar för att lokalisera en särskild 
+    turnering. Du kan också använda den för att söka efter turneringar en specifik spelare nyligen deltagit 
+    i, eller att bläddra genom turneringar som genomförts i ett visst land.
+  }
+  {
+    Det finns ett antal vanliga ställningstyper definierade i <a Searches Material>Sök material/ställning</a>
+    fönstret som du kan ha nytta av när du studerar öppningar och mittspel.
+  }
+  {
+    När du söker på <a Searches Material>material eller ställning</a> kan det ofta vara fördelaktigt att begränsa
+    sökningen till sådana partier där ställningen eller materialet förekommit i åtminstone några drag. Du slipper
+    du få med träffar där situationen du söker uppkom helt tillfälligt.
+  }
+  {
+    Om du har en viktig databas du inte vill radera av misstag kan du välja  <b>Enbart läsbar</b> från <b>Arkiv</b>
+    menyn efter att du har öppnat den. Alternativt kan du sätta dess filrättigheter till enbart läsrättigheter.
+  }
+  {
+    Om du använder XBoard eller WinBoard (eller något annat program som kan hantera FEN notation via urklippshanteraren)
+    och vill kopiera den aktuella ställningen från ditt program är det snabbaste sättet att göra det så här:
+    Välj <b>Copy Position</b> från <b>File</b> menyn i Xboard/Winboard, välj sedan <b>Klistra in utgångsställning</b>
+    i Redigera menyn i Scid.
+  }
+  {
+    I <a Searches Header>Sök i huvud</a>, är spelare-, evenemang-, plats-, och rondnamn okänsliga för stora eller små
+    bokstäver och ger träffar varhelst de finns i ett namn. Om du vill kan du ange att du istället vill att sökningen <b>ska</b>
+    ta kapitäler/gemener i beaktande. Genom att använda jokertecken inom citationstecken (där "?" = motsvarar obestämt
+    enskilt tecken och "*" = noll eller flera tecken). Om du exempelvis anger "*BEL" (med citationstecken) i det platsfältet
+    hittar du alla partier spelade i Belgien, men exkluderar de som spelats i Belgrad.
+  }
+  {
+    Om du vill redigera ett drag i ett parti utan att förlora alla de drag som spelats efter detta kan du öppna
+    <a Import>Importera ett parti i PGN-format</a> fönstret i Verktygsmenyn. Klicka där på <b>Klistra in aktuellt parti</b> 
+    , redigera partiet och avsluta med <b>Importera</b>.
+  }
+  {
+    Om du har en ECO klassificeringsfil laddad, kan du nå den mest esakt klassificerade ställningen för det aktuella partiet
+    genom att välja <b>Identifiera öppning</b> i <b>Partier</b> menyn (genväg: Ctrl+Shift+D).
+  }
+  {
+    När du vill se hur stor en fil är, eller vill se när den senast redigerades innan du öppnar den kan du använda
+    <a Finder>file finder</a> (Arkiv - Sök filer).
+  }
+  {
+    En <a Repertoire>repertoirefil</a> är ett utmärkt sätt att hålla koll på dina favoritöppningar, eller hitta partier där
+    där de har spelats. När du väl har skapat en repertoirefil kan du genomsöka nya filer utifrån repertoirefilen, och titta 
+    igenom alla partier med just dina öppningar.
+  }
+  {
+    Genom att skapa en <a OpReport>Öppningsrapport</a> har du en utmärk möjlighet att lära dig en ny spelöppning. Du kan få
+    information om resultat, hur remiaktig den är, vilka vanliga positionella teman som dyker upp, och mycket mer.
+  }
+  {
+    Du kan kommentera den aktuella ställningen med de vanligaste symbolerna (!, !?, +=, etc) utan att behöva använda 
+    <a Comment>kommentarseditorn<a>. Där du exempelvis vill ange ett bra drag skriver du "!" och trycker sedan ENTER
+    så läggs "!" symbolen till draget. Se även hjälpsidan <a Moves>ange drag</a> för mer detaljerad information.
+  }
+  {
+    Om du bläddrar igenom öppningarna i en databas i <a Tree>trädfönstret</a>, får du en användbar överblick över hur
+    väl öppningen fungerar i sentida partier mellan högrankade spelare om du öppnar statistikfönstret (genväg: Ctrl+I).
+  }
+  {
+    Du ändrar enkelt huvudfönstrets brädstorlek genom att hålla nere <b>Ctrl</b> och <b>Shift</b> tangenterna, samtidigt
+    som du trycker höger- eller vänster piltangent.
+  }
+  {
+    Efter genomförd <a Searches>sökning</a>, är det enkelt att navigera genom urvalet genom att hålla nere <b>Ctrl</b> 
+    tangenten samtidigt som du trycker upp- eller nerpiltangenterna för att gå till föregående eller nästa parti i 
+    <a Searches Filter>urvalet</a>.
+  }
 }
 # end of swedish.tcl
 
