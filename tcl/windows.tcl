@@ -32,6 +32,12 @@ proc recordWinSize {win} {
   set tempY [winfo rooty $win]
   incr tempX -$winX(offset)
   incr tempY -$winY(offset)
+  # Account for menu height and border if recording the main window
+  # position, since it does not get included in the "winfo rooty" value:
+  if {$win == "."} {
+    incr tempY -[winfo y .button]
+    incr tempY -6
+  }
   set winX($win) $tempX
   set winY($win) $tempY
 }
