@@ -1,0 +1,87 @@
+GAME EDITOR
+* automatically delete empty comments
+* add ~ and ~= to comment editor
+* fix: with comment editor active browsing the game 'modifies' it
+* fix: adding comment before first move of the variation doesn't 
+  scroll PGN window
+* better PGN display (figurine font?)
+* better editor (it would be best to merge Comment Editor and PGN Window)
+* automatically replace conflicting NAGs (f. e. ??/?/?!/? or =/+=/=+)
+
+BOARD
+* when browsing game: show message box with main (game) move and 
+  variations (as in ChessBase)
+* swap board depending on player name (you can define your name and all your
+  games will be shown from your perspective)
+* update board after every move when Right/Left arrow is pressed (possible
+  by adding "update idletasks", but it causes flickers
+* ignore Right arrow at the end of the game/variation
+* (?) make Home/End go to the end of the variation, not the game?
+
+GAME LIST
+* highlight current game in game list by default
+
+CROSSTABLE
+* fix detection of round robin tournaments
+* fix small font
+* support large swiss tournaments
+
+PGN WINDOW
+* fix bug: showing comment before the first move
+* fix parsing commented PGN from ChessBase
+* option to strip spaces after/before brackets for variations in PGN window
+* print game
+
+SEARCH HEADER
+* fix game count in search
+* searching for ECO shouldn't find non-standard positions
+* improve Header Search usability
+
+SEARCH MATERIAL
+* fix font in Material search
+* search: find symmetrical patterns (pawns a,b,c = f,g,h)
+* improve Material Search usability
+
+DATABASE
+* fix Recent Files containing ./
+* fix problems related with cancelling Open Database command
+* improve Maintenance usability
+* datasets (idea: you define current filter to be current database subset
+* reopen last databases/games
+
+TREE
+* fix selecting tree move replaces current game move
+
+INTERNATIONALIZATION
+* fix charset in Tcl 8.4.x
+* convert from current encoding to UT8 on import
+* convert from UTF8 to current encoding on export
+* update GUI when language is changed
+
+PLAYER INFO
+* fix photo positioning (sometimes text is hidden behind photo)
+* make filter games selectable in Player info
+
+ENGINES
+* fix: Phalanx sometimes doesn't see last move
+* chess engine output in main window
+* blunder search
+* option to always start engine in "low cpu usage" mode 
+
+OPENING REPORT
+* some options are ignored 
+* allow configuring Opening Report _before_ starting to create it (unless
+  it becomes faster)
+* optimize opening report (rewrite Tcl code in C++)
+  
+TOURNAMENT BROWSER
+* fix bug: tournament browser ignores EventDate
+* fix bug when cancelling move added by Analysis/Training
+
+SPELLCHECKER
+* spellcheck: use birth/death dates
+* spellcheck: don't match partial name for surname
+
+SCID DATA
+* update ratings
+* more pieces (convert from TTF?)
