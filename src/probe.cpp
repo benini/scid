@@ -120,6 +120,14 @@ scid_TB_Available (matSigT matsig)
     // If two lone Kings, just return true:
     if (bothc == 2) { return true; }
 
+    // If KB-K or KN-K, return true because they are all-drawn tablebases:
+    if (bothc == 3) {
+        if (counts[1] == 1  ||  counts[2] == 1  ||
+            counts[6] == 1  ||  counts[7] == 1) {
+            return true;
+        }
+    }
+
     int iTb = IDescFindFromCounters (counts);
     if (iTb == 0) { return false; }
     if (iTb < 0) { iTb = -iTb; }
