@@ -90,6 +90,7 @@ class PBook
     bool    IsAltered() { return Altered; }
     bool    IsReadOnly() { return ReadOnly; }
     void    UseEnPassent (bool b) { UseEnPassentField = b; }
+    bool    UsesEnPassent (void) { return UseEnPassentField; }
 
     uint    GetLineNumber (void) { return LineCount; }
 
