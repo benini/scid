@@ -1892,7 +1892,7 @@ proc backSquare {} {
   ::board::colorSquare .board $bestSq
   set selectedSq -1
   set bestSq -1
-  updateBoard .board
+  updateBoardAndPgn .board
 }
 
 
