@@ -92,6 +92,7 @@ menuText N GameReload "Partij opnieuw laden" 7 \
 menuText N GameNext "Volgende partij laden" 3 \
   {Laad volgende partij in het filter}
 menuText N GameLast "Laatste partij laden" 6 {Laad de laatste gefilterde partijd}
+menuText N GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText N GameNumber "Laad partij nummer..." 12 \
   {Laad partijnummer:}
 menuText N GameReplace "Partij overschrijven..." 11 \

@@ -88,6 +88,7 @@ menuText O GameReload "Hent dette partiet" 0 \
   {Henter dette partiet på nytt og fjerner alle endringer}
 menuText O GameNext "Hent neste parti" 0 {Henter neste parti fra filteret}
 menuText O GameLast "Hent siste parti" 0 {Henter siste parti fra filteret}
+menuText O GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText O GameNumber "Hent parti nummer..." 0 \
   {Finn et parti ved å angi nummeret}
 menuText O GameReplace "Lagre: Erstatt parti..." 0 \

@@ -89,6 +89,7 @@ menuText S GameReload "Recargar partida actual" 0 \
   {Vuelve a cargar esta partida, descartando cualquier cambio hecho}
 menuText S GameNext "Cargar siguiente partida" 7 {Carga la siguiente partida filtrada}
 menuText S GameLast "Cargar última partida" 9 {Carga la última partida filtrada}
+menuText S GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText S GameNumber "Cargar partida número..." 3 \
   {Carga una partida poniendo su número}
 menuText S GameReplace "Guardar: Reemplazar partida..." 10 \

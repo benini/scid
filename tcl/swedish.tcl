@@ -87,6 +87,7 @@ menuText W GameReload "Börja om partiet" 0 \
   {Återställ partiet (raderar alla ändringar)}
 menuText W GameNext "Ladda nästa parti" 6 {Ladda nästa parti i filtret}
 menuText W GameLast "Ladda det sista partiet" 10 {Ladda det sista partiet i filtret}
+menuText W GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText W GameNumber "Ladda parti nummer..." 6 \
   {Ladda ett parti genom att ange dess nummer}
 menuText W GameReplace "Spara: Ersätt parti..." 7 \

@@ -86,6 +86,7 @@ menuText F GameReload "Recharger la partie" 2 \
   {Recharger la partie (les modifications ne seront pas sauvegardées)}
 menuText F GameNext "Partie suivante" 7 {Charger la partie suivante du filtre}
 menuText F GameLast "Charger la dernière partie" 5 {Charge la dernière partie du filtre}
+menuText F GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText F GameNumber "Partie numéro..." 9 \
   {Charger une partie en donnant son numéro}
 menuText F GameReplace "Enregistrer: Remplacer la partie..." 13 \

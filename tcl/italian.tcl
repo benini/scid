@@ -88,6 +88,7 @@ menuText I GameReload "Ricarica la Partita attuale" 0 \
   {Ricarica questa partita, eliminando ogni cambiamento eseguito}
 menuText I GameNext "Carica la successiva Partita" 10 {Carica il successivo filtro di partite}
 menuText I GameLast "Carica l'ultima partita" 9 {Carica l'ultima partita filtrata}
+menuText I GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText I GameNumber "Carica la partita numero..." 18 \
   {Carica una partita digitando il suo numero}
 menuText I GameReplace "Salva: Sostituisce la partita..." 8 \

@@ -86,6 +86,7 @@ menuText C GameReload "Znovunatáhnout aktuální partii" 3 \
   {Znovunata¾ení aktuální partie, v¹echny doposud provedené zmìny budou ztraceny}
 menuText C GameNext "Natáhnout následující partii" 13 {Natáhnout následující partii z filtrovaných partií}
 menuText C GameLast "Natáhnout poslední partii" 14 {Natáhnout poslední partii z filtrovaných partií}
+menuText C GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText C GameNumber "Natáhnout partii èíslo..." 12 \
   {Natáhnout partii èíslo...}
 menuText C GameReplace "Ulo¾it: pøepsání partie..." 0 \

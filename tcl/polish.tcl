@@ -87,6 +87,7 @@ menuText P GameReload "Prze³aduj aktualn± partiê"  10 \
 menuText P GameNext "Za³aduj nastêpn± partiê" 0 \
   {Za³aduj nastêpn± wyszukan± partiê}
 menuText P GameLast "Ostatnia partia" 2 {Za³aduj ostatni± partiê z filtra}
+menuText P GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText P GameNumber "Za³aduj partiê numer..." 17 \
   {Za³aduj partiê wprowadzaj±c jej numer}
 menuText P GameReplace "Zapisz: zast±p partiê..." 3 \

@@ -86,6 +86,7 @@ menuText Y GameReload "Osve¾i trenutnu partiju" 3 \
   {Osve¾i ovu partiju, sa gubljenjem svih izmena}
 menuText Y GameNext "Uèitaj sledeæu partiju" 5 {Uèitaj sledeæu filtriranu partiju}
 menuText Y GameLast "Uèitaj poslednju partiju" 8 {Uèitaj poslednju filtriranu partiju}
+menuText Y GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText Y GameNumber "Uèitaj partiju broj..." 5 \
   {Uèitaj partiju, unoseæi njen broj}
 menuText Y GameReplace "Saèuvaj: Zameni partiju..." 6 \

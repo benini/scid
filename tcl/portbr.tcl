@@ -88,6 +88,7 @@ menuText B GameReload "Recarrega o Jogo atual" 3 \
   {Recarrega o jogo, descartando qualquer alteracao}
 menuText B GameNext "Proximo Jogo" 5 {Carrega o proximo jogo}
 menuText B GameLast "Ultimo Jogo" 8 {Carrega o ultimo jogo}
+menuText B GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText B GameNumber "Carrega Jogo Numero..." 5 \
   {Carrega um jogo pelo seu numero}
 menuText B GameReplace "Salvar: Substituir Jogo..." 8 \

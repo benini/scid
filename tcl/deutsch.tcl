@@ -92,6 +92,7 @@ menuText D GameReload "Partie wiederladen" 7 \
   {Diese Partie erneut laden, alle Änderungen werden verworfen}
 menuText D GameNext "Nächste Partie laden" 0 {Lädt die nächste Partie aus dem Filter}
 menuText D GameLast "Letzte Partie laden" 0 {Lädt die letzte Partie aus dem Filter}
+menuText D GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
 menuText D GameNumber "Lade Partie Nummer..." 13 \
   {Lädt eine Partie durch Angabe der Nummer}
 menuText D GameReplace "Partie ersetzen..." 8 \
