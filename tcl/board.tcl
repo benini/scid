@@ -177,7 +177,7 @@ set epFile {}          ;# legal values are empty, or "a"-"h".
 set moveNum 1          ;# legal values are 1-999.
 set setupStatus {}     ;# stores the FEN string.
 set castling KQkq      ;# will be empty or some combination of KQkq letters.
-set toMove white       ;# side to move, "white" or "black".
+set toMove White       ;# side to move, "White" or "Black".
 set pastePiece K       ;# Piece being pasted, "K", "k", "Q", "q", etc.
 
 # Traces to keep entry values sensible:
@@ -456,9 +456,8 @@ proc setupBoard {} {
 
   frame $sr.b2
   button $sr.b2.setup -text "OK" -command {
-    if {[catch {sc_game startBoard $setupFen}]} {
-      tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" \
-        -message "The FEN string is invalid."
+    if {[catch {sc_game startBoard $setupFen} err]} {
+      tk_messageBox -icon info -type ok -title "Scid" -message $err
     } else {
       destroy .setup
       updateBoardAndPgn
