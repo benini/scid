@@ -44,8 +44,8 @@ typedef unsigned short versionT;
 const versionT SCID_VERSION = 300;     // Current file format version = 3.0
 const versionT SCID_OLDEST_VERSION = 300; // Oldest compatible format: 3.0
 
-const char SCID_VERSION_STRING[] = "3.3.beta5";     // Current Scid version
-const char SCID_VERSION_DATE[] = "April 2002";
+const char SCID_VERSION_STRING[] = "3.3";     // Current Scid version
+const char SCID_VERSION_DATE[] = "May 2002";
 
 const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";
