@@ -6072,7 +6072,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     // Probe tablebases:
 
     if (!hideNextMove  &&  probe_tablebase (ti, showTB, temp)) {
-        Tcl_AppendResult (ti, "<br>TB: <blue><run makeTBWin>",
+        Tcl_AppendResult (ti, "<br>TB: <blue><run ::tb::open>",
                           temp, "</run></blue>", NULL);
     }
 
@@ -7853,7 +7853,7 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (belo1 == 0  &&  belo2 != 0) {
         // Copy Black rating from game 2 to game 1:
         if (updateMode) {
-            ie1.SetBlackElo (welo2);
+            ie1.SetBlackElo (belo2);
             updated1 = true;
         } else {
             appendUintElement (ti, gn1);
@@ -7865,7 +7865,7 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (belo2 == 0  &&  belo1 != 0) {
         // Copy Black rating from game 1 to game 2:
         if (updateMode) {
-            ie2.SetBlackElo (welo1);
+            ie2.SetBlackElo (belo1);
             updated1 = true;
         } else {
             appendUintElement (ti, gn2);
