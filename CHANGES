@@ -8,6 +8,45 @@ THANKS file.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SUMMARY OF SCID CHANGES BY VERSION:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 3.4 beta: (August 2002)
+
+ -   New window: Player Finder, which lists information about players
+     in the current database.
+
+ -   Edit menu: Added "Copy position" (to complement the existing
+     "Paste start board" command) which copies the current position
+     to the clipboard/X-selection in FEN notation.
+
+ -   Maintenance window: added Description field, for storing a
+     short (up to around 100 characters) database description.
+
+ -   Added MouseWheel support. In main window, Wheel moves backwards
+     and forwards in the current game. Wheel scrolls vertically in
+     most windows: Game List, Crosstable, PGN, Opening Report, etc.
+
+ -   Fixed bookmarks so they should now load the correct game
+     even if game numbers are changed by compacting or sorting
+     a database.
+
+ -   Added support for null moves, with the option of preserving
+     them in PGN export (which is non-standard since there is no
+     PGN standard for null moves) or converting them to comments
+     for compliance with other software.
+
+ -   When importing PGN, if a game has a castling move that is not
+     strictly legal because the rook or king had already moved, Scid
+     now accepts the move but logs a warning message. Previously, it
+     would report an error and not import any more moves from the
+     game. This was changed because such castling is fairly common
+     and is the most common cause of illegal moves in master games.
+
+ -   Now supports reading of multiple player photo (.spf) files.
+
+ -   Improved handling of en passant fields in EPD records.
+
+ -   More translatable messages for multi-language support.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Version 3.3: (May 2002)
 
  a.  New "Piece Tracker" tool, for finding which squares a
