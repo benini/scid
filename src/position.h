@@ -6,7 +6,7 @@
 //  Part of:    Scid (Shane's Chess Information Database)
 //  Version:    3.3
 //
-//  Notice:     Copyright (c) 1999-2001 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
 //
@@ -258,11 +258,18 @@ public:
     errorT      MatchPawnMove (fyleT fromFyle, squareT to, pieceT promote);
     errorT      MatchKingMove (squareT target);
 
-    uint        CalcNumChecks (squareT kingSq, /*uint maxChecks,*/
-                               squareT * checkSqs);
-    bool        IsKingInCheck () {
-                    return (CalcNumChecks(GetKingPos(ToMove),0) > 0);
+    uint        CalcNumChecks (colorT toMove, squareT kingSq,
+                               squareT * checkSquares);
+    uint        CalcNumChecks () {
+                    return CalcNumChecks (ToMove, GetKingPos(ToMove), NULL);
                 }
+    uint        CalcNumChecks (squareT kingSq) {
+                    return CalcNumChecks (ToMove, kingSq, NULL);
+                }
+    uint        CalcNumChecks (squareT kingSq, squareT * checkSquares) {
+                    return CalcNumChecks (ToMove, kingSq, checkSquares);
+                }
+    bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
 
     bool        IsKingInMate ();
 
@@ -308,6 +315,9 @@ public:
     // Methods to assist in evaluation and move completion
     uint        GetSquares (squareT sq, squareT *sqList);
     squareT     BestSquare (squareT startSq);
+
+    // Set up a random position:
+    errorT      Random (const char * material);
 };
 
 

@@ -4,9 +4,9 @@
 //              Position class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.7
+//  Version:    3.3
 //
-//  Notice:     Copyright (c) 1999-2001 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
 //
@@ -362,8 +362,8 @@ Position::GenCastling (void)
         if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
                 &&  Board[rookSq] == rookPiece
                 &&  Board[target - 1] == EMPTY // B1 or B8 must be empty too!
-                &&  CalcNumChecks (target, NULL) == 0
-                &&  CalcNumChecks (skip, NULL) == 0
+                &&  CalcNumChecks (target) == 0
+                &&  CalcNumChecks (skip) == 0
                 &&  ! square_Adjacent (target, enemyKingSq)) {
             AddLegalMove (0, target, EMPTY);
         }
@@ -378,8 +378,8 @@ Position::GenCastling (void)
         }
         if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
                 &&  Board[rookSq] == rookPiece
-                &&  CalcNumChecks (target, NULL) == 0
-                &&  CalcNumChecks (skip, NULL) == 0
+                &&  CalcNumChecks (target) == 0
+                &&  CalcNumChecks (skip) == 0
                 &&  ! square_Adjacent (target, enemyKingSq)) {
             AddLegalMove (0, target, EMPTY);
         }
@@ -412,7 +412,7 @@ Position::GenKingMoves (void)
             Board[*dest] = king;
             Board[kingSq] = EMPTY;
 
-            if (CalcNumChecks (*dest, NULL) == 0) {
+            if (CalcNumChecks (*dest) == 0) {
                 // The king wont be in check. Are the two Kings adjacent?
                 if (! square_Adjacent (*dest, enemyKingSq)) {
                     legalMove = 1;
@@ -1023,7 +1023,7 @@ Position::MatchLegalMove (pieceT mask, squareT target)
                 captured = Board[target];
                 Board[target] = p;
                 Board[*sqPtr] = EMPTY;
-                if (CalcNumChecks (kingSq, NULL) > 0)  { tryMove = 0; }
+                if (CalcNumChecks (kingSq) > 0)  { tryMove = 0; }
                 Board[*sqPtr] = p;
                 Board[target] = captured;
                 if (tryMove == 1)  { AddLegalMove (x, target, EMPTY); }
@@ -1096,7 +1096,7 @@ Position::MatchPawnMove (fyleT fromFyle, squareT to, pieceT promote)
 
         if (Board[to] != EMPTY) { return ERROR_InvalidMove; }
         Board[to] = pawn;  Board[from] = EMPTY;
-        if (CalcNumChecks (GetKingPos(ToMove), NULL) == 0) {
+        if (CalcNumChecks (GetKingPos(ToMove)) == 0) {
             legal = 1;
         }
        Board[to] = EMPTY; Board[from] = pawn;
@@ -1116,7 +1116,7 @@ Position::MatchPawnMove (fyleT fromFyle, squareT to, pieceT promote)
             Board[to] = pawn; Board[from] = EMPTY;
             Board[epSquare] = EMPTY;
             Material[piece_Make(1 - ToMove, PAWN)] --;
-            if (CalcNumChecks (GetKingPos(ToMove), NULL) == 0) { legal = 1; }
+            if (CalcNumChecks (GetKingPos(ToMove)) == 0) { legal = 1; }
             Board[epSquare] = piece_Make(1 - ToMove, PAWN);
             Board[to] = EMPTY;
             Board[from] = pawn;
@@ -1130,7 +1130,7 @@ Position::MatchPawnMove (fyleT fromFyle, squareT to, pieceT promote)
                 // A regular capture. See if it leaves King in check:
                 Board[to] = pawn;  Board[from] = EMPTY;
                 Material[captured]--;
-                if (CalcNumChecks (GetKingPos(ToMove), NULL) == 0) {
+                if (CalcNumChecks (GetKingPos(ToMove)) == 0) {
                     legal = 1;
                 }
                 Material[captured]++;
@@ -1179,9 +1179,9 @@ Position::MatchKingMove (squareT target)
         //     lie adjacent to the location of the enemy king!
 
         if (Board[kingSq + 1] != EMPTY  ||  Board[kingSq + 2] != EMPTY
-            ||  CalcNumChecks(kingSq, NULL) > 0
-            ||  CalcNumChecks(kingSq + 1, NULL) > 0
-            ||  CalcNumChecks(kingSq + 2, NULL) > 0) {
+            ||  CalcNumChecks(kingSq) > 0
+            ||  CalcNumChecks(kingSq + 1) > 0
+            ||  CalcNumChecks(kingSq + 2) > 0) {
             return ERROR_InvalidMove;
         }
         AddLegalMove (0, target, EMPTY);
@@ -1197,9 +1197,9 @@ Position::MatchKingMove (squareT target)
         }
         if (Board[kingSq - 1] != EMPTY  ||  Board[kingSq - 2] != EMPTY
             ||  Board[kingSq - 3] != EMPTY
-            ||  CalcNumChecks(kingSq, NULL) > 0
-            ||  CalcNumChecks(kingSq - 1, NULL) > 0
-            ||  CalcNumChecks(kingSq - 2, NULL) > 0) {
+            ||  CalcNumChecks(kingSq) > 0
+            ||  CalcNumChecks(kingSq - 1) > 0
+            ||  CalcNumChecks(kingSq - 2) > 0) {
             return ERROR_InvalidMove;
         }
         AddLegalMove (0, target, EMPTY);
@@ -1219,7 +1219,7 @@ Position::MatchKingMove (squareT target)
     Board[kingSq] = EMPTY;
     //if (captured != EMPTY) { Material[captured]--; }
     uint legal = 0;
-    if (CalcNumChecks(target, NULL) == 0) { legal = 1; }
+    if (CalcNumChecks(target) == 0) { legal = 1; }
     //if (captured != EMPTY) { Material[captured]++; }
     Board[target] = captured;
     Board[kingSq] = piece_Make(ToMove, KING);
@@ -1330,13 +1330,8 @@ Position::CalcCheckEvasions (pieceT mask)
 //      information.
 //
 uint
-Position::CalcNumChecks (squareT   kingSq,
-                          //uint     maxChecks,
-                            squareT * checkSqs)
+Position::CalcNumChecks (colorT toMove, squareT kingSq, squareT * checkSqs)
 {
-    // For quickest test, maxChecks should be 1, this stops when 1st
-    // check is found.
-
     // If checkSqs is NULL, caller doesn't want a list of the squares of
     // checking pieces. To avoid comparing checkSqs with NULL every time
     // we find a check, we set up a local array to use instead if checkSqs
@@ -1349,7 +1344,7 @@ Position::CalcNumChecks (squareT   kingSq,
 
     // Bishop/Queen/Rook checks: look at each of the 8 directions
     uint enemyQueensRooks, enemyQueensBishops;
-    if (ToMove == WHITE) {
+    if (toMove == WHITE) {
         enemyQueensRooks = Material[BQ] + Material[BR];
         enemyQueensBishops = Material[BQ] + Material[BB];
     } else {
@@ -1367,12 +1362,11 @@ Position::CalcNumChecks (squareT   kingSq,
             while (dest != NULL_SQUARE) {
                 p = Board[dest];
                 if (p == EMPTY) {           // empty square: keep searching
-                } else if (piece_Color(p) == ToMove) {
+                } else if (piece_Color(p) == toMove) {
                     break;           // friendly piece found
                 } else if ((piece_Type(p) == QUEEN)  ||
                            (piece_Type(p) == ROOK)) {
                     checkSqs[nChecks++] = dest;
-                    //if (nChecks >= maxChecks) return nChecks;
                     break;
                 } else { // enemy, but not a checking piece
                     break;
@@ -1394,12 +1388,11 @@ Position::CalcNumChecks (squareT   kingSq,
             while (dest != NULL_SQUARE) {
                 p = Board[dest];
                 if (p == EMPTY) {           // empty square: keep searching
-                } else if (piece_Color(p) == ToMove) {
+                } else if (piece_Color(p) == toMove) {
                     break;           // friendly piece found
                 } else if ((piece_Type(p) == QUEEN)  ||
                            (piece_Type(p) == BISHOP)) {
                     checkSqs[nChecks++] = dest;
-                    //if (nChecks >= maxChecks) return nChecks;
                     break;
                 } else {
                     break;
@@ -1411,40 +1404,37 @@ Position::CalcNumChecks (squareT   kingSq,
     }
 
     // Now pawn checks:
-    if (ToMove == BLACK) {
+    if (toMove == BLACK) {
         if (Material[WP] > 0) {
             sq = sqMove [kingSq][DOWN_LEFT];
             if (Board[sq] == WP)  {
                 checkSqs[nChecks++] = sq;
-                //if (nChecks >= maxChecks) return nChecks;
             }
             sq = sqMove [kingSq][DOWN_RIGHT];
             if (Board[sq] == WP)  {
                 checkSqs[nChecks++] = sq;
-                //if (nChecks >= maxChecks) return nChecks;
             }
         }
     } else {
         if (Material[BP] > 0) {
             sq = sqMove [kingSq][UP_LEFT];
             if (Board[sq] == BP)  {
-                checkSqs[nChecks++] = sq;  //if (nChecks > 1) return nChecks;
+                checkSqs[nChecks++] = sq;
             }
             sq = sqMove [kingSq][UP_RIGHT];
             if (Board[sq] == BP)  {
-                checkSqs[nChecks++] = sq;  //if (nChecks > 1) return nChecks;
+                checkSqs[nChecks++] = sq;
             }
         }
     }
 
     // Now knight checks: we use the knightAttacks[] array for moves.
-    if (Material[piece_Make(1-ToMove, KNIGHT)] > 0) {
-        register pieceT    enemyKnight = piece_Make(1-ToMove, KNIGHT);
+    if (Material[piece_Make(1-toMove, KNIGHT)] > 0) {
+        register pieceT enemyKnight = piece_Make(1-toMove, KNIGHT);
         register const squareT * dest = knightAttacks[kingSq];
         while (*dest != NS) {
             if (Board[*dest] == enemyKnight) {
                 checkSqs[nChecks++] = *dest;
-                //if (nChecks > maxChecks) { return nChecks; }
             }
             dest++;
         }
@@ -1460,7 +1450,7 @@ Position::CalcNumChecks (squareT   kingSq,
 bool
 Position::IsKingInMate (void)
 {
-    NumChecks = CalcNumChecks (GetKingPos(ToMove), NULL);
+    NumChecks = CalcNumChecks (GetKingPos(ToMove));
     if (NumChecks == 0) { return false; }
     CalcPins ();
     CalcCheckEvasions (EMPTY);
@@ -1842,7 +1832,7 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
     if (flag != SAN_NO_CHECKTEST) {
         // Now we make the move to test for check:
         DoSimpleMove (m);
-        if (CalcNumChecks (GetKingPos(ToMove), NULL) > 0) {
+        if (CalcNumChecks (GetKingPos(ToMove)) > 0) {
             char ch = '+';
             if (flag == SAN_MATETEST) {
                 Position tempPos;
@@ -2955,6 +2945,92 @@ Position::RankCount (pieceT p, rankT r)
     return count;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Position::Random
+//    Given a string such as "KRPKR" or "KRP-kr", sets up a
+//    random position with that material configuration.
+
+inline squareT
+randomSquare (void) { return random32() % 64; }
+
+inline squareT
+randomPawnSquare (void) { return (random32() % 48) + A2; }
+
+errorT
+Position::Random (const char * material)
+{
+    pieceT pieces [32];         // List of pieces excluding kings
+    uint nPieces[2] = {0, 0};   // Number of pieces per side excluding kings.
+    uint total = 0;             // Total number of pieces excluding kings.
+
+    colorT side = WHITE;
+
+    // The material string must start with a king:
+    if (toupper(*material) != 'K') { return ERROR_Corrupt; }
+    material++;
+
+    // Read the material string:
+    while (1) {
+        char ch = toupper(*material);
+        if (ch == 0) { break; }
+        switch (ch) {
+        case 'K':
+            if (side == BLACK) { return ERROR_Corrupt; } // Seen third king!
+            side = BLACK;
+            break;
+        case 'Q':  case 'R':  case 'B':  case 'N':  case 'P':
+            if (nPieces[side] >= 15) { return ERROR_Corrupt; }
+            nPieces[side]++;
+            if (ch == 'P') {
+                pieces[total] = piece_Make (side, PAWN);
+            } else {
+                pieces[total] = piece_Make (side, piece_FromChar(ch));
+            }
+            total++;
+            break;
+        case ' ':  case '-':  case '.':  case ',':  case ':':
+            // Ignore spaces, commas, etc:
+            break;
+        default:
+            return ERROR_Corrupt;
+        }
+        material++;
+    }
+    if (side != BLACK) { return ERROR_Corrupt; }  // Never saw Black king!
+
+    // Generate two non-adjacent king squares:
+    squareT wk = randomSquare();
+    squareT bk = randomSquare();
+    while (wk == bk  ||  square_Adjacent (wk, bk)) { bk = randomSquare(); }
+
+    // Now add all other pieces to empty squares, looping until a legal
+    // position is found:
+    while (1) {
+        Clear();
+        ToMove = (random32() % 2) ? WHITE : BLACK;
+        AddPiece (WK, wk);
+        AddPiece (BK, bk);
+
+        for (uint i=0; i < total; i++) {
+            squareT sq;
+            pieceT p = pieces[i];
+            bool isPawn = (piece_Type(p) == PAWN);
+            while (1) {
+                sq = isPawn ? randomPawnSquare() : randomSquare();
+                if (Board[sq] == EMPTY) { break; }
+            }
+            // Add this piece on the random empty square:
+            AddPiece (p, sq);
+        }
+        // Generated a random position with kings not adjacent and
+        // every piece on its own square. We can stop at this
+        // attempt if the enemy king is not in check:
+        colorT enemy = 1-ToMove;
+        squareT enemyKing = (ToMove == WHITE) ? bk : wk;
+        if (CalcNumChecks (enemy, enemyKing, NULL) == 0) { break; }
+    }
+    return OK;
+}
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: position.cpp
