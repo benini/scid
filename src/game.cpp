@@ -546,7 +546,7 @@ Game::SetMoveData (moveT * m, simpleMoveT * sm)
 //      is stored as a comment of FirstMove.
 //
 void
-Game::SetMoveComment (char * comment)
+Game::SetMoveComment (const char * comment)
 {
     ASSERT (CurrentMove != NULL  &&  CurrentMove->prev != NULL);
     moveT * m = CurrentMove->prev;

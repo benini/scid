@@ -343,7 +343,7 @@ class IndexEntry
 
     void PrintGameInfo (char * outStr,
                         gameNumberT gnFiltered, gameNumberT gnReal,
-                        NameBase * nb, char * format);
+                        NameBase * nb, const char * format);
 
     int Compare (IndexEntry * ie, int * fields, NameBase * nb);
 };

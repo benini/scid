@@ -720,7 +720,7 @@ foreach i {new open save close finder bkm cut copy paste gprev gnext \
   .tb.$i configure -relief flat -border 1 -highlightthickness 0 -anchor n \
     -takefocus 0
   bind .tb.$i <Any-Enter> "+.tb.$i configure -relief raised"
-  bind .tb.$i <Any-Leave> "+.tb.$i configure -relief flat"
+  bind .tb.$i <Any-Leave> "+.tb.$i configure -relief flat; statusBarRestore %W; break"
 }
 
 #pack .tb -side top -fill x -before .button
@@ -1329,7 +1329,7 @@ foreach i {start back forward end intoVar exitVar addVar autoplay \
   .button.$i configure -relief flat -border 1 -highlightthickness 0 \
     -anchor n -takefocus 0
   bind .button.$i <Any-Enter> "+.button.$i configure -relief raised"
-  bind .button.$i <Any-Leave> "+.button.$i configure -relief flat"
+  bind .button.$i <Any-Leave> "+.button.$i configure -relief flat; statusBarRestore %W; break"
 }
 
 pack .button.start .button.back .button.forward .button.end \

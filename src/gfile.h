@@ -67,13 +67,13 @@ class GFile
     uint      GetNumReads ()   { return Reads; }
     uint      GetNumWrites ()  { return Writes; }
 
-    errorT    Create (char * filename, fileModeT fmode);
+    errorT    Create (const char * filename, fileModeT fmode);
     errorT    CreateMemoryOnly ();
-    errorT    Open (char * filename, fileModeT fmode, const char * suffix);
-    errorT    Open (char * filename, fileModeT fmode) {
+    errorT    Open (const char * filename, fileModeT fmode, const char * suffix);
+    errorT    Open (const char * filename, fileModeT fmode) {
         return Open (filename, fmode, GFILE_SUFFIX);
     }
-    errorT    OpenOld (char * filename, fileModeT fmode) {
+    errorT    OpenOld (const char * filename, fileModeT fmode) {
         return Open (filename, fmode, OLD_GFILE_SUFFIX);
     }
     errorT    Close ();

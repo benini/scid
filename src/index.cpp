@@ -452,11 +452,11 @@ IndexEntry::GetFlagStr (char * str, const char * flags)
 void
 IndexEntry::PrintGameInfo (char * outStr,
                            gameNumberT gnFiltered, gameNumberT gnReal,
-                           NameBase * nb, char * format)
+                           NameBase * nb, const char * format)
 {
     ASSERT (outStr != NULL  &&  nb != NULL  &&  format != NULL);
 
-    char * s = format;
+    const char * s = format;
     char * out = outStr;
     *out = 0;
     char temp [256];

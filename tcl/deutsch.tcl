@@ -1069,7 +1069,9 @@ translate D RecentFilesExtra {Anzahl der aktuellen Dateien im zusätzlichen Unter
 
 translateECO D {
   Accelerated {, Beschleunigt}
+  {: Accelerated} Beschleunigt
   Accepted {, Angenommen}
+  {: Accepted} Angenommen
   Advance Vorstoß
   {as Black} {mit Schwarz}
   Attack Angriff
@@ -1087,7 +1089,6 @@ translateECO D {
   Early Frühe
   Exchange Abtausch
   Game Partie
-  Indian Indisch
   Improved verbessert
   King's Königs
   Knight Springer
@@ -1119,6 +1120,7 @@ translateECO D {
   English Englisch
   French Französisch
   Hungarian Ungarisch
+  Indian Indisch
   Italian Italienisch
   Latvian Lettisch
   Meran Meraner
@@ -1138,6 +1140,7 @@ translateECO D {
   Yugoslav Jugoslawisch
 
   {Accelerated Fianchetto} {Beschleunigtes Fianchetto}
+  {Accelerated Pterodactyl} {Beschleunigter Pterodactylus}
   {Alekhine Defence} Aljechin-Verteidigung
   {Alekhine Variation} Aljechin-Variante
   {Anderssen Opening} Anderssen-Eröffnung
@@ -1172,6 +1175,7 @@ translateECO D {
   {Four Knights Game} Vierspringerspiel
   {Four Pawns} Vierbauern
   {Four Pawns Attack} Vierbauernangriff
+  {French Variation} {Französische Variante}
   {Goring Gambit} {Göring-Gambit}
   {Grob Gambit} {Grobs Gambit}
   {Hungarian Defence} {Ungarische Verteidigung}
@@ -1199,6 +1203,7 @@ translateECO D {
   Nimzo-Indian Nimzoindisch
   {Old Benoni} {Klassisches Benoni}
   {Old Indian} Altindisch
+  {Old Indian Attack} {Altindisch i.A.}
   {Old Steinitz} Steinitz-Verteidigung
   {Open Game} {Offene Partie}
   {Poisoned Pawn} {Vergifteter Bauer}

@@ -88,7 +88,7 @@ GFile::Close ()
 //      both, but it makes no sense for it to be readonly.
 //
 errorT
-GFile::Create (char * filename, fileModeT fmode)
+GFile::Create (const char * filename, fileModeT fmode)
 {
     if (Handle != NULL) { return ERROR_FileInUse; }
     sprintf (FileName, "%s%s", filename, GFILE_SUFFIX);
@@ -125,7 +125,7 @@ GFile::CreateMemoryOnly ()
 //      Open a gfile for reading, writing, or both.
 //
 errorT
-GFile::Open (char * filename, fileModeT fmode, const char * suffix)
+GFile::Open (const char * filename, fileModeT fmode, const char * suffix)
 {
     if (Handle != NULL) { return ERROR_FileInUse; }
     FileMode = fmode;

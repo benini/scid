@@ -145,7 +145,7 @@ class NameBase
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
     
-    void      SetFileName (char *s)   { strcpy (Fname,s); }
+    void      SetFileName (const char *s) { strcpy (Fname,s); }
     char  *   GetFileName ()          { return Fname; }
     
     idNumberT GetNumNames (nameT n)  { return Header.numNames[n]; }

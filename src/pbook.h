@@ -86,7 +86,7 @@ class PBook
     ~PBook()  { Clear(); delete NodeList; }
 
     const char *  GetFileName () { return (FileName == NULL ? "" : FileName); }
-    void    SetFileName (char * filename);
+    void    SetFileName (const char * filename);
     bool    IsAltered() { return Altered; }
     bool    IsReadOnly() { return ReadOnly; }
 

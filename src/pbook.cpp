@@ -126,7 +126,7 @@ PBook::Clear ()
 }
 
 void
-PBook::SetFileName (char * fname)
+PBook::SetFileName (const char * fname)
 {
     if (FileName) { delete[] FileName; }
     if (!fname) { FileName = NULL; return; }

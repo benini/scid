@@ -792,6 +792,7 @@ proc makeAnalysisWin {{n 1}} {
     wm title $w "Scid: Analysis $n: $analysisName"
   }
   bind $w <F1> { helpWindow Analysis }
+  setWinLocation $w
 
   frame $w.b1
   frame $w.b2
@@ -842,6 +843,7 @@ until the board changes. So if you see this message, try changing the board \
 by moving backwards or forwards or making a new move."
   $w.text configure -state disabled
   bind $w <Destroy> "destroyAnalysisWin $n"
+  bind $w <Configure> "recordWinSize $w"
   wm minsize $w 45 0
   bindMouseWheel $w $w.hist.text
 

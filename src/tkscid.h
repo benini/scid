@@ -337,7 +337,7 @@ translate (Tcl_Interp * ti, const char * name)
 // Macro TCL_ARGS expands to the argument-type list that any
 // Tcl command function takes.
 
-#define TCL_ARGS  ClientData cd, Tcl_Interp * ti, int argc, char ** argv
+#define TCL_ARGS  ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
 int str_is_prefix  (TCL_ARGS);
 int str_prefix_len (TCL_ARGS);
@@ -347,8 +347,8 @@ int sc_base_autoload  (TCL_ARGS);
 int sc_base_filename  (TCL_ARGS);
 int sc_base_duplicates (TCL_ARGS);
 int sc_base_open      (TCL_ARGS);
-int sc_createbase     (Tcl_Interp * ti, char * filename, scidBaseT * base,
-                       bool memoryOnly);
+int sc_createbase     (Tcl_Interp * ti, const char * filename,
+                       scidBaseT * base, bool memoryOnly);
 int sc_base_create    (TCL_ARGS);
 int sc_base_close     (TCL_ARGS);
 int sc_base_count     (TCL_ARGS);
@@ -371,7 +371,7 @@ int sc_book           (TCL_ARGS);
 int sc_book_deepest   (Tcl_Interp * ti, int bookID);
 int sc_book_moves     (Tcl_Interp * ti, int bookID);
 int sc_book_next      (Tcl_Interp * ti, int bookID, bool forwards);
-int sc_book_open      (Tcl_Interp * ti, int argc, char ** argv, bool create);
+int sc_book_open      (Tcl_Interp * ti, int argc, const char ** argv, bool create);
 int sc_book_set       (Tcl_Interp * ti, int bookID, const char * text);
 int sc_book_write     (Tcl_Interp * ti, int bookID);
 

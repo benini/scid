@@ -207,8 +207,7 @@ for {set i 1} { $i <= $totalBaseSlots} {incr i} {
 
 proc switchBase {b} {
   sc_base switch $b
-  # Close tree and email windows when a base is switched:
-  #if {[winfo exists .treeWin]} { destroy .treeWin }
+  # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }
   updateBoardAndPgn .board
   updateTitle

@@ -330,7 +330,7 @@ public:
     errorT   FirstVariation (uint varNumber);
     errorT   MainVariation (uint varNumber);
 
-    void     SetMoveComment (char * comment);
+    void     SetMoveComment (const char * comment);
     char *   GetMoveComment () { return CurrentMove->prev->comment; }
 
     inline errorT AddNag (byte nag);
