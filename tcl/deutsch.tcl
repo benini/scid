@@ -217,6 +217,8 @@ menuText D OptionsSpell "Schreibkorrektur-Datei laden..." 7 \
   {Lädt die Datei der Scid-Rechtschreibprüfung}
 menuText D OptionsTable "Endspieltabellen-Verzeichnis..." 17 \
   {Wähle eine Tabellendatei; alle Tabellen in deren Verzeichnis werden genutzt}
+menuText D OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText D OptionsSave "Optionen speichern" 0 \
   "Alle einstellbaren Optionen werden in der Datei $::optionsFile gesichert"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
@@ -1019,6 +1021,10 @@ werden. Sie können jederzeit abbrechen, wenn es Ihnen zu lange dauert.
 
 Soll das Erstellen der Datenbank im neuen Format jetzt durchgeführt werden?
 }
+
+# Recent files options:
+translate D RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate D RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 

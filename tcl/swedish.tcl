@@ -207,6 +207,8 @@ menuText W OptionsSpell "Ladda Rättstavningsfil..." 7 \
   {Ladda rättstavningsfilen vid start}
 menuText W OptionsTable "Katalog för slutspelsdatabaser..." 0 \
   {Välj en fil som innehåller en slutspelsdatabas; alla övriga filer i samma katalog kommer att användas}
+menuText W OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText W OptionsSave "Spara alternativ" 7 \
   "Spara alla alternativ till en inställnignsfil"
 menuText W OptionsAutoSave "Autospara vid avslut" 1 \
@@ -989,6 +991,10 @@ Detta kan ta ett tag men behöver bara göras en gång. Om du tycker det tar alltfö
 
 Vill du uppdatera denna databas nu?
 }
+
+# Recent files options:
+translate W RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate W RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 

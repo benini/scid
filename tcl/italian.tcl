@@ -205,6 +205,8 @@ menuText I OptionsSpell "Carica il file di controllo ortografico..." 28 \
   {Carica il file di controllo di Scid}
 menuText I OptionsTable "Directory di Tablebase..." 13 \
   {Seglie un file tablebase; tutte le tablebases nella directory saranno utilizzate}
+menuText I OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText I OptionsSave "Salva Opzioni" 0 \
   "Salva tutte le opzioni definibili nel file $::optionsFile"
 menuText I OptionsAutoSave "Salva Opzioni all'uscita" 0 \
@@ -988,6 +990,10 @@ Questo richiedera' del tempo, ma necessita di essere fatto una volta sola. Puoi 
 
 Vuoi aggiornare il database ora?
 }
+
+# Recent files options:
+translate I RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate I RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 # end of italian.tcl

@@ -213,6 +213,8 @@ menuText P OptionsSpell "Za³aduj plik sprawdzania pisowni..." 13 \
   {Za³aduj plik do sprawdzania pisowni nazwisk i nazw}
 menuText P OptionsTable "Katalog z baz± koñcówek..." 10 \
   {Wybierz bazê koñcówek; u¿yte zostan± wszystkie bazy z tego katalogu}
+menuText P OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText P OptionsSave "Zapamiêtaj opcje" 0 \
   "Zapamiêtaj wszystkie ustawienia w pliku $::optionsFile"
 menuText P OptionsAutoSave "Automatycznie zapisuj opcje" 0 \
@@ -999,6 +1001,10 @@ Mo¿e to zaj±æ trochê czasu, ale jest to operacja jednorazowa. Mo¿esz j± przerwaæ
 
 Przekonwertowaæ bazê?
 }
+
+# Recent files options:
+translate P RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate P RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 

@@ -207,6 +207,8 @@ menuText Y OptionsSpell "Uèitaj fajl za kontrolu pravopisa..." 13 \
   {Uèitaj fajl za kontrolu pravopisa}
 menuText Y OptionsTable "Direktorijum baza zavr¹nica..." 0 \
   {Izaberi fajl baze zavr¹nica; sve baze u direktorijumu æe biti kori¹æene}
+menuText Y OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText Y OptionsSave "Saèuvaj opcije" 0 \
   "Saèuvaj sve opcije u fajl $::optionsFile"
 menuText Y OptionsAutoSave "Auto-saèuvaj opcije na izlasku" 0 \
@@ -989,6 +991,10 @@ Ovo mo¾e potrajati, ali treba da se uradi samo jednom. Mo¾ete prekinuti ukoliko 
 
 Da li ¾elite da sada unapredite ovu bazu?
 }
+
+# Recent files options:
+translate Y RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate Y RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 # end of serbian.tcl

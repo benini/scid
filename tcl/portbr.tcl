@@ -210,6 +210,8 @@ menuText B OptionsSpell "Carregar arquivo de verificacao ortografica..." 6 \
   {Carrega o arquivo de verificacao ortografica do Scid}
 menuText B OptionsTable "Diretorio de tabelas de base..." 0 \
   {Selecione um arquivo de tabela de base; todas as tabelas nesse diretorio serao usadas}
+menuText B OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
@@ -994,6 +996,10 @@ Este processo pode levar algum tempo, mas so precisa ser feito uma vez e pode se
 
 Voce quer atualizar esta base agora?
 }
+
+# Recent files options:
+translate B RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate B RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 

@@ -8,7 +8,7 @@ THANKS file.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SUMMARY OF SCID CHANGES BY VERSION:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Version 3.3: (April 2002)
+Version 3.3: (May 2002)
 
  a.  New "Piece Tracker" tool, for finding which squares a
      particular piece (or all pieces of a certain type) most
@@ -66,6 +66,8 @@ Version 3.3: (April 2002)
  p.  Improved the Tablebase window; it now shows which tablebases are
      available, provides a way to select a tablebase for examination,
      and has an information summary for most tablebases.
+
+ q.  Added a Recent files list to the main window File menu.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Version 3.2: (February 2002)

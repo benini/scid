@@ -242,6 +242,8 @@ menuText E OptionsSpell "Load Spellcheck file..." 11 \
   {Load the Scid spellcheck file}
 menuText E OptionsTable "Tablebase directory..." 10 \
   {Select a tablebase file; all tablebases in its directory will be used}
+menuText E OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu}
 menuText E OptionsSave "Save Options" 0 \
   "Save all settable options to the file $::optionsFile"
 menuText E OptionsAutoSave "Auto-save Options on Exit" 0 \
@@ -1022,6 +1024,10 @@ This may take a while, but it only needs to be done one time. You can cancel if 
 
 Do you want to upgrade this database now?
 }
+
+# Recent files options:
+translate E RecentFilesMenu {Number of recent files in File menu}
+translate E RecentFilesExtra {Number of recent files in extra submenu}
 
 }
 # end of english.tcl

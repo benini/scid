@@ -201,6 +201,8 @@ menuText C OptionsSpell "Natáhnout soubor pro kontrolu pravopisu..." 6 \
   {Natáhnout soubor pro kontrolu pravopisu}
 menuText C OptionsTable "Adresáø pro databáze koncovek..." 0 \
   {Vybrat soubor s koncovkami; v¹echny databáze z koncovkami v tomto adresáøi budou pou¾ity}
+menuText C OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText C OptionsSave "Ulo¾it volby" 0 {Ulo¾it volby}
 menuText C OptionsAutoSave "Automaticky ukládat volby pøi ukonèení" 0 \
   {Automaticky ukládat v¹echny volby pøi ukonèení programu}
@@ -981,6 +983,10 @@ Tento úkon mù¾e zabrat trochu èasu, ale je tøeba jej provést pouze jednou. Mù¾et
 
 Chcete tuto databázi upgradovat nyní?
 }
+
+# Recent files options:
+translate C RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate C RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 # end of czech.tcl

@@ -209,6 +209,8 @@ menuText O OptionsSpell "Hent stavekontrollfil..." 0 \
   {Henter filen med stavekontrollen til Scid}
 menuText O OptionsTable "Tabellbasekatalog..." 0 \
   {Velg en tabellbase; Alle tabellbaser i katalogen vil bli brukt}
+menuText O OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText O OptionsSave "Lagre innstillinger" 0 \
   "Lagre alle instillinger til $::optionsFile"
 menuText O OptionsAutoSave "Autolagre innstillinger ved avslutning" 0 \
@@ -983,6 +985,10 @@ Dette kan ta en stund, men det trenger kun å gjøres en gang. Du kan avbryte om d
 
 Ønsker du å oppgradere databasen nå?
 }
+
+# Recent files options:
+translate O RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate O RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 

@@ -110,7 +110,7 @@ CFLAGS = -O2 -Wall $(PROFILE)
 #       can reduce the size of the Scid program by only specifying
 #       the languages you want supported.
 #
-LANGUAGES = tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/serbian.tcl
+LANGUAGES = tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/serbian.tcl tcl/russian.tcl
 
 
 ############################################################

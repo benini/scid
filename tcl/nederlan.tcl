@@ -225,6 +225,8 @@ menuText N OptionsSpell "Laad spelling (namen)..." 5 \
   {Laad het Scid spellingbestand}
 menuText N OptionsTable "Eindspel database laden..." 9 \
   {Kies een eindspel database, alle in de directory aanwezige worden gebruikt}
+menuText N OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText N OptionsSave "Opties bewaren" 0 \
   "Bewaar alle instellingen in het bestand $::optionsFile"
 menuText N OptionsAutoSave "Automatisch bewaren opties tijdens afsluiten" 0 \
@@ -1007,6 +1009,10 @@ Dit kan enige tijd duren, maar het hoeft slechts eenmalig plaats te vinden. U ku
 
 Wilt u de database nu bijwerken?
 }
+
+# Recent files options:
+translate N RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate N RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 # End of nederlan.tcl

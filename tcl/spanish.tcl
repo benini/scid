@@ -221,6 +221,8 @@ menuText S OptionsSpell "Cargar archivo de comprobación ortográfica..." 2 \
   {Carga el archivo de comprobación ortográfica Scid}
 menuText S OptionsTable "Directorio de las TB..." 19 \
   {Selecciona el directorio de finales; todas las TB de ese directorio serán usadas}
+menuText S OptionsRecent "Recent files..." 0 \
+  {Change the number of recent files displayed in the File menu} ;# ***
 menuText S OptionsSave "Guardar opciones" 0 \
   "Guarda todas las opciones en el fichero $::optionsFile"
 menuText S OptionsAutoSave "Autoguardar opciones al salir" 0 \
@@ -1006,6 +1008,10 @@ Esto puede tomar un tiempo, pero sólo es necesario hacerlo una vez. Puedes cance
 
 ¿Quieres actualizar esta base de datos ahora?
 }
+
+# Recent files options:
+translate S RecentFilesMenu {Number of recent files in File menu} ;# ***
+translate S RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
 
