@@ -913,7 +913,7 @@ proc ::tree::make {} {
   bind $w.f.tl <Destroy> {
     if {$tree(autoSave)} {
       busyCursor .
-      catch [sc_tree write $tree(base)]
+      catch {sc_tree write $tree(base)}
       unbusyCursor .
     }
   }
@@ -994,8 +994,8 @@ proc ::tree::doTraining {{n 0}} {
     automove 2
     return
   }
-  if {[winfo exists .tbWin]  &&  $::tbTraining} {
-    makeTBMove
+  if {[::tb::isopen]  &&  $::tbTraining} {
+    ::tb::move
     return
   }
   if {! [winfo exists .treeWin]} { return }
@@ -3498,92 +3498,6 @@ proc keyEcoBrowser {key} {
     set ::ecoBrowser(code) "$code$key"
     updateEcoWin
   }
-}
-
-
-####################
-# Tablebase window
-
-set tbWin 0
-set tbTraining 0
-set tbStatus ""
-
-proc makeTBWin {} {
-  set w .tbWin
-  if {[winfo exists $w]} {
-    #focus .
-    destroy $w
-    set tbWin 0
-    return
-  }
-  toplevel $w
-  wm title $w "Scid: [tr WindowsTB]"
-  text $w.t -font font_Fixed -wrap word -width 45 -height 10 \
-    -yscrollcommand "$w.ybar set" -setgrid 1 -fg black -bg white
-  scrollbar $w.ybar -command "$w.t yview"
-  #pack [frame $w.status] -side bottom -fill x -expand yes
-  pack [frame $w.b] -side bottom -fill x
-  label $w.b.status -width 1 -font font_Small -relief flat -anchor w \
-    -textvar tbStatus -height 0
-  checkbutton $w.b.training -textvar ::tr(Training) -variable tbTraining \
-    -command toggleTBTraining -relief raised -pady 5 -padx 4
-  button $w.b.close -textvar ::tr(Close) -command "destroy $w"
-  pack $w.ybar -side right -fill y
-  pack $w.t -side left -fill both -expand 1
-  pack $w.b.training -side left -padx 2 -pady 2
-  pack $w.b.close -side right -padx 2 -pady 2
-  pack $w.b.status -side left -fill x -expand 1
-  $w.t tag configure indent -lmargin2 [font measure font_Fixed  "        "]
-  bind $w <Destroy> { set tbWin 0; set tbTraining 0 }
-  set ::tbTraining 0
-  updateTBWin
-}
-
-proc updateTBWin {} {
-  global tbTraining
-  set w .tbWin
-  if {![winfo exists $w]} { return }
-  $w.t delete 1.0 end
-  if {$tbTraining} {
-    $w.t insert end "\n (Training mode; results are hidden)"
-  } else {
-    $w.t insert end [sc_pos probe report] indent
-  }
-}
-
-proc toggleTBTraining {} {
-  global tbTraining gameInfo
-  set w .tbWin
-  set ::tbStatus ""
-  if {$tbTraining} {
-    set gameInfo(showTB_old) $gameInfo(showTB)
-    set gameInfo(showTB) 0
-    updateBoardAndPgn .board
-    updateTBWin
-  } else {
-    if {$gameInfo(showTB) == 0} { set gameInfo(showTB) $gameInfo(showTB_old) }
-    updateBoardAndPgn .board
-    updateTBWin
-  }
-}
-
-proc makeTBMove {} {
-  global tbTraining tbStatus
-  if {! $tbTraining} { return }
-  set moves [split [sc_pos probe optimal]]
-  set len [llength $moves]
-  if {$len == 0} {
-    set ::tbStatus "No optimal move was found."
-    return
-  }
-  set i [expr int(rand() * $len)]
-  set move [lindex $moves $i]
-  if {[catch {sc_move addSan $move}]} {
-    set tbStatus "Error playing $move."
-  } else {
-    set tbStatus "Played $move."
-  }
-  updateBoardAndPgn .board
 }
 
 
