@@ -1,0 +1,195 @@
+###
+### import.tcl: part of Scid.
+### Copyright (C) 2000  Shane Hudson.
+###
+
+### Import game window
+
+proc importPgnGame {} {
+  if {[winfo exists .importWin]} { return }
+  set w [toplevel .importWin]
+  wm title $w "Scid: Import PGN game"
+  wm minsize $w 50 5
+  frame $w.b
+  pack $w.b -side bottom
+  set pane [::pane::create $w.pane edit err 650 300 0.8]
+  pack $pane -side top -expand true -fill both
+  set edit $w.pane.edit
+  text $edit.text -height 12 -width 75 -wrap none \
+    -background white -selectbackground lightBlue \
+    -yscroll "$edit.ybar set" -xscroll "$edit.xbar set"  -setgrid 1
+  scrollbar $edit.ybar -command "$edit.text yview"
+  scrollbar $edit.xbar -orient horizontal -command "$edit.text xview"
+  grid $edit.text -row 0 -column 0 -sticky nesw
+  grid $edit.ybar -row 0 -column 1 -sticky nesw
+  grid $edit.xbar -row 1 -column 0 -sticky nesw
+  grid rowconfig $edit 0 -weight 1 -minsize 0
+  grid columnconfig $edit 0 -weight 1 -minsize 0
+
+  # Right-mouse button cut/copy/paste menu:
+  menu $edit.text.rmenu -tearoff 0
+  $edit.text.rmenu add command -label "Cut" -command "tk_textCut $edit.text"
+  $edit.text.rmenu add command -label "Copy" -command "tk_textCopy $edit.text"
+  $edit.text.rmenu add command -label "Paste" -command "tk_textPaste $edit.text"
+  $edit.text.rmenu add command -label "Select all" -command \
+    "$edit.text tag add sel 1.0 end"
+  bind $edit.text <ButtonPress-3> "tk_popup $edit.text.rmenu %X %Y"
+
+  text $pane.err.text -height 4 -width 75 -wrap word \
+    -yscroll "$pane.err.scroll set"
+  $pane.err.text insert end $::tr(ImportHelp1)
+  $pane.err.text insert end "\n"
+  $pane.err.text insert end $::tr(ImportHelp2)
+  $pane.err.text configure -state disabled
+  scrollbar $pane.err.scroll -command "$pane.err.text yview"
+  pack $pane.err.scroll -side right -fill y
+  pack $pane.err.text -side left -expand true -fill both
+
+  button $w.b.paste -text "$::tr(PasteCurrentGame) (Alt-P)" -command {
+    .importWin.pane.edit.text delete 1.0 end
+    .importWin.pane.edit.text insert end [sc_game pgn -width 70]
+    .importWin.pane.err.text configure -state normal
+    .importWin.pane.err.text delete 1.0 end
+    .importWin.pane.err.text configure -state disabled
+  }
+  button $w.b.clear -text "$::tr(Clear) (Alt-C)" -command {
+    .importWin.pane.edit.text delete 1.0 end
+    .importWin.pane.err.text configure -state normal
+    .importWin.pane.err.text delete 1.0 end
+    .importWin.pane.err.text configure -state disabled
+  }
+  button $w.b.ok -text "$::tr(Import) (Alt-I)" -command {
+    set err [catch {sc_game import \
+                      [.importWin.pane.edit.text get 1.0 end]} result]
+    .importWin.pane.err.text configure -state normal
+    .importWin.pane.err.text delete 1.0 end
+    .importWin.pane.err.text insert end $result
+    .importWin.pane.err.text configure -state disabled
+    if {! $err} {
+      updateBoardAndPgn .board
+      updateTitle
+    }
+  }
+  button $w.b.cancel -textvar ::tr(Close) -command {
+    destroy .importWin; focus .
+  }
+  frame $w.b.space -width 20
+  pack $w.b.paste $w.b.clear $w.b.space -side left -padx 2 -pady 2
+  pack $w.b.cancel $w.b.ok -side right -padx 10 -pady 5
+  # Paste the current selected text automatically:
+  if {! [catch {$w.pane.edit.text insert end [selection get]}]} {
+    # Select all of the pasted text:
+    $w.pane.edit.text tag add sel 1.0 end
+  }
+  bind $w <F1> { helpWindow Import }
+  bind $w <Alt-i> { .importWin.b.ok invoke }
+  bind $w <Alt-p> { .importWin.b.paste invoke }
+  bind $w <Alt-c> { .importWin.b.clear invoke }
+  bind $w <Escape> { .importWin.b.cancel invoke }
+  focus $w.pane.edit.text
+}
+
+
+proc importPgnLine {line} {
+  importPgnGame
+  set w .importWin.pane.edit.text
+  $w delete 1.0 end
+  $w insert end $line
+  focus $w
+}
+
+proc importMoveList {line} {
+  sc_move start
+  sc_move addSan $line
+  updateBoardAndPgn .board
+}
+
+set importPgnErrors ""
+
+### Import file of Pgn games:
+
+proc importPgnFile {} {
+  global importPgnErrors
+
+  set err ""
+  if {[sc_base isReadOnly]} { set err "This database is read-only." }
+  if {![sc_base inUse]} { set err "This is not an open database." }
+  if {$err != ""} {
+    tk_messageBox -type ok -icon error -title "Scid: Error" -message $err
+    return
+  }
+  if {[sc_info gzip]} {
+    set ftypes {
+      { "Portable Game Notation files" {".pgn" ".PGN" ".pgn.gz"} }
+      { "Text files" {".txt" ".TXT"} }
+      { "All files" {"*"} }
+    }
+  } else {
+    set ftypes {
+      { "Portable Game Notation files" {".pgn" ".PGN"} }
+      { "Text files" {".txt" ".TXT"} }
+      { "All files" {"*"} }
+    }
+  }
+  set fname [tk_getOpenFile -filetypes $ftypes -title "Import from a PGN file"]
+  if {$fname == ""} {return}
+  doPgnFileImport $fname ""
+}
+
+proc doPgnFileImport {fname text} {
+  set w .ipgnWin
+  if {[winfo exists $w]} { destroy $w }
+  toplevel $w
+  wm title $w "Scid: Importing PGN file"
+  canvas $w.progress -width 400 -height 20 -bg white -relief solid -border 1
+  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.progress create text 395 10 -anchor e -font font_Regular -tags time \
+    -fill black -text "0:00 / 0:00"
+
+  pack $w.progress -side bottom
+
+  frame $w.buttons
+  pack $w.buttons -side bottom -fill x
+  button $w.buttons.stop -textvar ::tr(Stop) -command {sc_progressBar}
+  button $w.buttons.close -textvar ::tr(Close) -command "focus .; destroy $w"
+  pack $w.buttons.close $w.buttons.stop -side right -ipadx 5 -padx 5 -pady 2
+
+  pack [frame $w.tf] -side top -expand yes -fill both
+  text $w.text -height 8 -width 60 -background gray90 \
+    -wrap none -cursor watch -setgrid 1 -yscrollcommand "$w.ybar set"
+  scrollbar $w.ybar -command "$w.text yview"
+  pack $w.ybar -in $w.tf -side right -fill y
+  pack $w.text -in $w.tf -side left -fill both -expand yes
+  update
+
+  busyCursor .
+  sc_progressBar $w.progress bar 401 21 time
+  catch {grab $w.buttons.stop}
+  bind $w <Escape> "$w.buttons.stop invoke"
+  $w.buttons.close configure -state disabled
+  $w.text insert end $text
+  $w.text insert end "Importing PGN games from [file tail $fname]...\n\n"
+  $w.text configure -state disabled
+
+  set importPgnErrors ""
+  catch {sc_base import file $fname} result
+  $w.text configure -state normal
+  $w.text configure -cursor top_left_arrow
+  $w.text insert end $result
+  $w.text configure -state disabled
+  $w.buttons.close configure -state normal
+  $w.buttons.stop configure -state disabled
+  catch {grab release $w.buttons.stop}
+  bind $w <Escape> "$w.buttons.close invoke; break"
+  unbusyCursor .
+  updateTitle
+  updateMenuStates
+  updateBaseWin
+  updateMaintWin
+  update
+}
+
+###
+### End of file: import.tcl
+###
+

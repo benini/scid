@@ -1,0 +1,172 @@
+### Windows (Visual C++) Makefile for the Scid chess database package.
+### Copyright (C) 2000, Shane Hudson (shane@cosc.canterbury.ac.nz)
+
+# This make file is designed for use with nmake on 
+# Microsoft Windows systems.
+# Rename this file to "makefile" before running nmake, or specify
+# it to nmake with the command:  "nmake -f makefile.vc"
+
+
+###
+# Project directories: you will need to edit these according to your
+# Visual C++ or Visual Studio installation, and Tcl/Tk installation.
+
+TOOLS32 = C:\Program Files\Microsoft Visual Studio\VC98
+TCL_DIR = C:\Program Files\Tcl
+
+# Tcl/Tk version: it should be "83" for Tcl/Tk 8.3, etc.
+TCL_VERSION = 83
+
+
+### Compiler and linker:
+COMPILE = "$(TOOLS32)\bin\cl.exe"
+LINK = "$(TOOLS32)\bin\link.exe" /libpath:"$(TOOLS32)\lib"
+
+
+TCL_INCLUDE = -I"$(TCL_DIR)\include"
+TCL_LIB = "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
+TK_LIB = "$(TCL_DIR)\lib\tk$(TCL_VERSION).lib" "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
+
+
+########################################
+### Compiler options:
+
+
+### TB: Tablebase support.
+###    Use:   TB = /DSCID_USE_TB     for tablebase capability.
+###    Use:   TB =                   for no tablebase reading capability.
+#  Note: With 4-1 (King + 3 men vs King) tablebases, the MS compiler needs
+#  a "/Zm" option to tell it to use more memory when compiling.
+TB = /DSCID_USE_TB /DT41_INCLUDE /Zm101
+
+###: OPT: Optimization
+OPT = /O2 /Ob2
+
+### CFLAGS: C++ compiler flags
+CFLAGS = /DZLIB /DWIN32 $(OPT) /I"$(TOOLS32)\include"
+
+### EXECS: all the evecutable programs compiled from C++ files.
+EXECS= pgnscid.exe scidt.exe scid.exe tcscid.exe scmerge.exe eco2epd.exe
+
+### SCIDOBJS: not all the .o files that make up Scid, just the standard
+###   files that most of the Scid programs use.
+###
+SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
+      src\position.obj src\game.obj src\gfile.obj src\matsig.obj \
+      src\bytebuf.obj src\textbuf.obj src\myassert.obj src\stralloc.obj \
+      src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj
+
+### ZLIBOBJS: object files in the zlib compression library.
+###
+ZLIBOBJS= src\zlib\adler32.obj src\zlib\compress.obj src\zlib\crc32.obj \
+      src\zlib\gzio.obj src\zlib\uncompr.obj src\zlib\deflate.obj \
+      src\zlib\trees.obj src\zlib\zutil.obj src\zlib\inflate.obj \
+      src\zlib\infblock.obj src\zlib\inftrees.obj src\zlib\infcodes.obj \
+      src\zlib\infutil.obj src\zlib\inffast.obj
+
+### OBJS: all standard object files for Scid.
+###
+OBJS= $(SCIDOBJS) $(ZLIBOBJS)
+
+### LANGUAGES: all the extra language files for Scid.
+LANGUAGES = tcl\deutsch.tcl tcl\francais.tcl tcl\italian.tcl \
+      tcl\nederlan.tcl tcl\spanish.tcl tcl\portbr.tcl tcl\swedish.tcl \
+      tcl\norsk.tcl tcl\polish.tcl tcl\czech.tcl tcl\serbian.tcl
+
+### TCLS: all the .tcl files that make up "scid".
+TCLS= tcl\start.tcl tcl\bitmaps.tcl tcl\menus.tcl tcl\windows.tcl \
+      tcl\htext.tcl tcl\help.tcl tcl\tips.tcl tcl\misc.tcl tcl\search.tcl \
+      tcl\ezsmtp\ezsmtp.tcl \
+      tcl\email.tcl tcl\epd.tcl tcl\fontsel.tcl tcl\basewind.tcl \
+      tcl\import.tcl tcl\spellchk.tcl tcl\graph.tcl tcl\maint.tcl \
+      tcl\optable.tcl tcl\analysis.tcl tcl\wbdetect.tcl tcl\reper.tcl \
+      tcl\lang.tcl tcl\english.tcl $(LANGUAGES) \
+      tcl\bookmark.tcl tcl\board.tcl tcl\end.tcl
+
+########################################
+
+### Type "make" or "make all" to make all executables:
+all: $(EXECS) scid.gui
+
+scid.gui: $(TCLS)
+	-del .\scid.gui
+        copy /b tcl\start.tcl+tcl\bitmaps.tcl+tcl\menus.tcl\
+          + tcl\windows.tcl+tcl\htext.tcl+tcl\help.tcl\
+          + tcl\tips.tcl+tcl\misc.tcl\
+          + tcl\search.tcl+tcl\ezsmtp\ezsmtp.tcl+tcl\email.tcl\
+          + tcl\epd.tcl+tcl\fontsel.tcl+tcl\basewind.tcl\
+          + tcl\import.tcl+tcl\spellchk.tcl+tcl\graph.tcl+tcl\maint.tcl \
+          + tcl\optable.tcl+tcl\analysis.tcl+tcl\wbdetect.tcl+tcl\reper.tcl\
+          + tcl\lang.tcl+tcl\english.tcl+tcl\deutsch.tcl\
+          + tcl\francais.tcl+tcl\italian.tcl+tcl\nederlan.tcl\
+          + tcl\spanish.tcl+tcl\portbr.tcl+tcl\swedish.tcl+tcl\norsk.tcl \
+          + tcl\polish.tcl+tcl\czech.tcl+tcl\serbian.tcl\
+          + tcl\bookmark.tcl+tcl\board.tcl+tcl\end.tcl .\scid.gui
+
+# escid.gui: Scid GUI with English only, no extra language support.
+escid.gui: $(TCLS)
+	-del .\escid.gui
+	copy /b tcl\start.tcl + tcl\bitmaps.tcl + tcl\menus.tcl \
+	  + tcl\windows.tcl + tcl\htext.tcl + tcl\help.tcl \
+	  + tcl\tips.tcl + tcl\misc.tcl \
+	  + tcl\search.tcl + tcl\ezsmtp\ezsmtp.tcl + tcl\email.tcl \
+	  + tcl\epd.tcl + tcl\fontsel.tcl + tcl\basewind.tcl \
+	  + tcl\import.tcl + tcl\spellchk.tcl + tcl\graph.tcl + tcl\maint.tcl \
+	  + tcl\optable.tcl + tcl\analysis.tcl + tcl\wbdetect.tcl \
+	  + tcl\reper.tcl + tcl\lang.tcl + tcl\english.tcl \
+          + tcl\bookmark.tcl + tcl\board.tcl + tcl\end.tcl .\escid.gui
+
+scmerge.exe: src\scmerge.obj $(OBJS)
+	$(LINK) /out:scmerge.exe src\scmerge.obj $(OBJS)
+
+pgnscid.exe: src\pgnscid.obj $(OBJS)
+	$(LINK) /out:pgnscid.exe src\pgnscid.obj $(OBJS)
+
+scidt.exe: src\scidt.obj $(OBJS)
+	$(LINK) /out:scidt.exe src\scidt.obj $(OBJS)
+
+scid.exe: src\scid.obj $(OBJS) src\tree.obj src\filter.obj \
+            src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
+            src\optable.obj
+	$(LINK) /out:scid.exe src\scid.obj $(OBJS) \
+            src\tree.obj src\filter.obj src\pbook.obj \
+            src\crosstab.obj src\spellchk.obj src\probe.obj src\optable.obj \
+            $(TK_LIB) /subsystem:windows /entry:mainCRTStartup
+
+tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj src\filter.obj \
+            src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
+            src\optable.obj
+	$(LINK) /out:tcscid.exe src\tcscid.obj $(OBJS) \
+            src\tree.obj src\filter.obj src\pbook.obj \
+            src\crosstab.obj src\spellchk.obj src\probe.obj src\optable.obj \
+            $(TCL_LIB)
+
+eco2epd.exe: src\eco2epd.obj src\pbook.obj $(OBJS)
+	$(LINK) /out:eco2epd.exe src\eco2epd.obj src\pbook.obj $(OBJS)
+
+
+### To remove object and executable files: type "make clean"
+clean:
+	-del src\*.obj src\zlib\*.obj $(EXECS) scid.gui
+
+
+src\tcscid.obj: src\tkscid.cpp
+	$(COMPILE) $(CFLAGS) $(TCL_INCLUDE) -DTCL_ONLY /c src\tkscid.cpp \
+	  /Fo.\src\tcscid.obj
+
+src\tkscid.obj: src\tkscid.cpp
+	$(COMPILE) $(CFLAGS) $(TCL_INCLUDE) /c src\tkscid.cpp \
+	  /Fo.\src\tkscid.obj
+
+src\scid.obj: src\tkscid.cpp
+	$(COMPILE) $(CFLAGS) $(TCL_INCLUDE) -DSOURCE_TCL_FILE="\"scid.gui\"" \
+	  /c src\tkscid.cpp /Fo.\src\scid.obj
+
+src\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
+	$(COMPILE) $(CFLAGS) $(TB) /c src\probe.cpp /Fo.\src\probe.obj
+
+.cpp.obj:
+	$(COMPILE) $(CFLAGS) /c $< /Fo.\$@
+
+.c.obj:
+	$(COMPILE) $(CFLAGS) /c $< /Fo.\$@
