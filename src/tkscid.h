@@ -439,6 +439,7 @@ int sc_game_tags_share (TCL_ARGS);
 int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);
 int sc_info_limit     (TCL_ARGS);
+int sc_info_tb        (TCL_ARGS);
 
 int sc_move           (TCL_ARGS);
 int sc_move_add       (TCL_ARGS);
