@@ -7178,6 +7178,18 @@ sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         if (scratchPos->ReadFromFEN (str) != OK) {
             return errorResult (ti, "Invalid FEN string.");
         }
+        // ReadFromFEN checks that there is one king of each side, but it
+        // does not check that the position is actually legal:
+        if (! scratchPos->IsLegal()) {
+            // Illegal position! Find out why to return a useful error:
+           squareT wk = scratchPos->GetKingPos(WHITE);
+           squareT bk = scratchPos->GetKingPos(BLACK);
+           if (square_Adjacent (wk, bk)) {
+               return errorResult (ti, "Illegal position: adjacent kings.");
+           }
+           // No adjacent kings, so enemy king must be in check.
+           return errorResult (ti, "Illegal position: enemy king in check.");
+        }
     }
     db->game->SetStartPos (scratchPos);
     db->gameAltered = true;
@@ -7956,13 +7968,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         break;
 
     case INFO_TB:
-        if (argc == 2) {
-            return setBoolResult(ti, scid_TB_compiled());
-        } else if (argc == 3) {
-            return setUintResult (ti, scid_TB_Init (argv[2]));
-        } else {
-            return errorResult (ti, "Usage: sc_info tb [<directory>]");
-        }
+        return sc_info_tb (cd, ti, argc,argv);
 
     case INFO_VALIDDATE:
         if (argc != 3) {
@@ -8161,6 +8167,50 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     return setIntResult (ti, result);
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_info_tb:
+//   Set up a tablebase directory, or check if a certain
+//   tablebase is available.
+int
+sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
+{
+    if (argc == 2) {
+        // Command: sc_info tb
+        // Returns whether tablebase support is complied.
+        return setBoolResult(ti, scid_TB_compiled());
+
+    } else if (argc == 3) {
+        // Command: sc_info_tb <directories>
+        // Clears tablebases and registers all tablebases in the
+        // specified directories string, which can have more than
+        // one directory separated by commas or semicolons.
+        return setUintResult (ti, scid_TB_Init (argv[2]));
+
+    } else if (argc == 4  &&  argv[2][0] == 'a') {
+        // Command: sc_probe available <material>
+        // The material is specified as "KRKN", "kr-kn", etc.
+        // Set up the required material:
+        matSigT ms = MATSIG_Empty;
+        const char * material = argv[3];
+        if (toupper(*material) != 'K') { return setBoolResult (ti, false); }
+        material++;
+        colorT side = WHITE;
+        while (1) {
+            char ch = toupper(*material);
+            material++;
+            if (ch == 0) { break; }
+            if (ch == 'K') { side = BLACK; continue; }
+            pieceT p = piece_Make (side, piece_FromChar (ch));
+            if (ch == 'P') { p = piece_Make (side, PAWN); }
+            if (p == EMPTY) { continue; }
+            ms = matsig_setCount (ms, p, matsig_getCount (ms, p) + 1);
+        }
+        // Check if a tablebase for this material is available:
+        return setBoolResult (ti, scid_TB_Available (ms));
+    } else {
+        return errorResult (ti, "Usage: sc_info tb [<directory>|available <material>]");
+    }
+}
 
 //////////////////////////////////////////////////////////////////////
 //  MOVE functions
@@ -8779,12 +8829,14 @@ int
 sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     if (argc == 3  && argv[2][0] == 'r') {
+        // Command: sc_probe report
         // Tablebase report:
         char temp [1024];
         if (probe_tablebase (ti, PROBE_REPORT, temp)) {
             Tcl_AppendResult (ti, temp, NULL);
         }
     } else if (argc == 3  && argv[2][0] == 'o') {
+        // Command: sc_probe optimal
         // Optimal moves from tablebase:
         char temp [1024];
         if (probe_tablebase (ti, PROBE_OPTIMAL, temp)) {
