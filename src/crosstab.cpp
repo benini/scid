@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ const uint perf_elodiff [51] = {
     /* 70 - 79 */ 149, 158, 166, 175, 184, 193, 202, 211, 220, 230,
     /* 80 - 89 */ 240, 251, 262, 273, 284, 296, 309, 322, 336, 351,
     /* 90 - 99 */ 366, 383, 401, 422, 444, 470, 501, 538, 589, 677,
-    /*   100   */ 750
+    /*   100   */ 999
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -42,6 +42,28 @@ Crosstable::Performance (uint oppAvg, uint percentage)
     return performance;
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Crosstable::RatingChange():
+//    Calculates rating change, given current rating, average rating
+//    and score
+int 
+Crosstable::RatingChange (eloT player, uint oppAvg, uint percentage, uint games)
+{
+   uint diff = (player > oppAvg) ? player - oppAvg : oppAvg - player;
+   int i;
+   for (i=0; i<50 ; i++)
+       if (diff <= perf_elodiff[i])
+           break;
+   uint expected = i;
+   if (player > oppAvg) 
+       expected += 50;
+   else 
+       expected = 50 - expected;
+   int cutoff = (percentage > expected) ? 5 : -5;
+   return (((int)percentage - (int)expected) * (int)games + cutoff) / 10;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Crosstable::FideCategory()
 //    Given an average Elo rating for an all-play-all tournament,
@@ -54,6 +76,24 @@ Crosstable::FideCategory (eloT rating)
     if (rating <= 2250) { return 0; }
     return 1 + ((rating - 2251) / 25);
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Crosstable::OpponentElo():
+//      Strips ELO rating if difference is bigger than 350
+eloT 
+Crosstable::OpponentElo (eloT player, eloT opponent)
+{
+   const eloT Margin = 350;
+   if (!player)
+       return opponent;
+   else if (player - opponent > Margin)
+       return player - Margin;
+   else if (opponent - player > Margin)
+       return player + Margin;
+   else 
+       return opponent;
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // comparePlayerData():
@@ -148,6 +188,7 @@ Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
     pdata->tiebreak = 0;
     pdata->oppEloCount = 0;
     pdata->oppEloTotal = 0;
+    pdata->oppEloScore = 0;
     pdata->title[0] = 0;
     pdata->country[0] = 0;
     pdata->birthdate = ZERO_DATE;
@@ -162,16 +203,20 @@ Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
 
     // Find this players title and country if the SpellChecker is defined:
     if (SpellCheck != NULL  &&  !strIsSurnameOnly (name)) {
-        const char * comment = SpellCheck->GetComment (name);
+        const char * comment = SpellCheck->GetCommentExact (name);
         if (comment != NULL) {
             strCopy (pdata->title, SpellChecker::GetTitle (comment));
             strCopy (pdata->country, SpellChecker::GetLastCountry (comment));
             pdata->birthdate = SpellChecker::GetBirthdate (comment);
+            if (strEqual (pdata->title, "w")) { strCopy (pdata->title, "w  "); }
         }
     }
     PlayerCount++;
     return OK;
 }
+
+
+uint max(int a, int b) {return a<b ? b : a;}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Crosstable::AddResult()
@@ -245,13 +290,13 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
     pblack->gameCount++;
 
     // Update averages of opponents ratings for performance stats:
-    if (pblack->elo > 0) {
+    if (result && pblack->elo > 0) {
         pwhite->oppEloCount++;
-        pwhite->oppEloTotal += pblack->elo;
+        pwhite->oppEloTotal += OpponentElo(pwhite->elo, pblack->elo);
     }
-    if (pwhite->elo > 0) {
+    if (result && pwhite->elo > 0) {
         pblack->oppEloCount++;
-        pblack->oppEloTotal += pwhite->elo;
+        pblack->oppEloTotal += OpponentElo(pblack->elo, pwhite->elo);
     }
 
     if (FirstDate == ZERO_DATE) { FirstDate = date; }
@@ -262,13 +307,21 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
     switch (result) {
     case RESULT_White:
         pwhite->score += 2;
+	if (pblack->elo > 0)
+	   pwhite->oppEloScore += 2;
         break;
     case RESULT_Black:
         pblack->score += 2;
+	if (pwhite->elo > 0)
+	   pblack->oppEloScore += 2;
         break;
     case RESULT_Draw:
         pwhite->score++;
         pblack->score++;
+	if (pblack->elo > 0)
+	   pwhite->oppEloScore ++;
+	if (pwhite->elo > 0)
+	   pblack->oppEloScore ++;
         break;
     default:
         break;  // Nothing.
@@ -477,7 +530,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit)
 
     // LineWidth is used to determine length of line of dashes to print.
     LineWidth = LongestNameLen;
-    if (PrintRatings) { LineWidth += 12; }
+    if (PrintRatings) { LineWidth += 16; }
     if (PrintTitles) { LineWidth += 4; }
     if (PrintCountries) { LineWidth += 4; }
     if (PrintAges) { LineWidth += 3; }
@@ -566,7 +619,10 @@ Crosstable::PrintPlayer (DString * dstr, playerDataT * pdata)
     dstr->Append (StartCol, stemp, EndCol);
 
     if (PrintRatings) {
-        sprintf (stemp, "%4u ", pdata->elo);
+        if (pdata->elo)
+            sprintf (stemp, "%4u ", pdata->elo);
+        else 
+	    strcpy (stemp, "     ");
         dstr->Append (StartRightCol, stemp, EndRightCol);
     }
     if (PrintTitles) {
@@ -592,23 +648,22 @@ void
 Crosstable::PrintPerformance (DString * dstr, playerDataT * pdata)
 {
     if (!PrintRatings) { return; }
-    if (pdata->oppEloCount < 2  ||  pdata->gameCount < 5) { return; }
+    if (!pdata->oppEloCount) { return; }
 
     int oppAvgRating = pdata->oppEloTotal / pdata->oppEloCount;
-    int percentage = pdata->score * 50 + pdata->gameCount/2;
-    percentage = percentage / pdata->gameCount;
-    if (percentage < 0) { percentage = 0; }
-    if (percentage > 100) { percentage = 100; }
-    int performance = oppAvgRating;
-    if (percentage < 50) {
-        performance -= perf_elodiff [50 - percentage];
-    } else {
-        performance += perf_elodiff [percentage - 50];
-    }
+    int percentage = pdata->oppEloScore * 50 + pdata->oppEloCount/2;
+    percentage = percentage / pdata->oppEloCount;
+    int performance = Performance(oppAvgRating, percentage);
     if (performance > 0  &&  performance < 5000) {
-        char stemp [10];
-        sprintf (stemp, "%4d", performance);
-        dstr->Append ("   ", StartRightCol, stemp, EndRightCol);
+        char stemp [20];
+        if (pdata->elo) {
+	    int change = RatingChange(pdata->elo, oppAvgRating, 
+	                              percentage, pdata->oppEloCount);
+            sprintf (stemp, "%4d %+3d", performance, change);
+	    }
+        else 
+	    sprintf (stemp, "%4d", performance);
+	dstr->Append ("   ", StartRightCol, stemp, EndRightCol);
     }
 }
 
@@ -692,7 +747,7 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
         }
     }
     if (PrintRatings) {
-        dstr->Append ("   ", StartBoldCol, "Perf", EndBoldCol);
+        dstr->Append ("   ", StartBoldCol, "Perf Chg", EndBoldCol);
     }
     dstr->Append (EndRow, NewLine);
 
@@ -841,7 +896,7 @@ Crosstable::PrintSwiss (DString * dstr, uint playerLimit)
         }
     }
     if (PrintRatings) {
-        dstr->Append ("   ", StartBoldCol, "Perf", EndBoldCol);
+        dstr->Append ("   ", StartBoldCol, "Perf Chg", EndBoldCol);
     }
     dstr->Append (EndRow, NewLine);
 

@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -36,8 +36,11 @@ static OpTable * opTable = NULL;
 static char decimalPointChar = '.';
 static uint htmlDiagStyle = 0;
 
-// Maximum number of games in the clipbase database:
+// Default maximum number of games in the clipbase database:
 const uint CLIPBASE_MAX_GAMES = 50000;
+
+// Actual current maximum number of games in the clipbase database:
+static uint clipbaseMaxGames = CLIPBASE_MAX_GAMES;
 
 // MAX_BASES is the maximum number of databases that can be open,
 // including the clipbase database.
@@ -83,7 +86,7 @@ InvalidCommand (Tcl_Interp * ti, const char * majorCmd,
 // PreMoveCommand():
 //    Executes the Tcl pre-move command, which can be set by
 //    the Tcl program to automatically store the contents of
-//    the Comment editor window, book windows, etc.
+//    the Comment editor window, EPD windows, etc.
 //
 //    Called by any commands that alter the board state.
 void
@@ -108,7 +111,7 @@ updateProgressBar (Tcl_Interp * ti, uint done, uint total)
         width = (int) w;
     }
     sprintf (tempStr, "%s coords %s 0 0 %u %u", progBar.canvName,
-             progBar.rectName, width, progBar.height);
+             progBar.rectName, width + 1, progBar.height + 1);
     Tcl_Eval (ti, tempStr);
     if (progBar.timeName[0] != 0) {
         int elapsed = progBar.timer.CentiSecs();
@@ -408,8 +411,8 @@ scid_InitTclTk (Tcl_Interp * ti)
     CREATE_CMD (ti, "strIsPrefix", str_is_prefix);
     CREATE_CMD (ti, "strPrefixLen", str_prefix_len);
     CREATE_CMD (ti, "sc_base", sc_base);
-    CREATE_CMD (ti, "sc_book", sc_book);  // sc_epd used to be sc_book
-    CREATE_CMD (ti, "sc_epd", sc_book);
+    CREATE_CMD (ti, "sc_book", sc_epd);  // sc_epd used to be sc_book
+    CREATE_CMD (ti, "sc_epd", sc_epd);
     CREATE_CMD (ti, "sc_clipbase", sc_clipbase);
     CREATE_CMD (ti, "sc_compact", sc_compact);
     CREATE_CMD (ti, "sc_eco", sc_eco);
@@ -425,8 +428,8 @@ scid_InitTclTk (Tcl_Interp * ti)
     CREATE_CMD (ti, "sc_tree", sc_tree);
     CREATE_CMD (ti, "sc_var", sc_var);
 
-    // Initialise array of position books:
-    for (int book=0; book < MAX_EPD; book++) { pbooks[book] = NULL; }
+    // Initialise array of EPD slots:
+    for (int epdID=0; epdID < MAX_EPD; epdID++) { pbooks[epdID] = NULL; }
 
     // Initialise global Scid database variables:
 
@@ -1316,7 +1319,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             while (1) {
                 fgets (line, 1024, exportFile);
                 if (feof (exportFile)) { break; }
-                const char * s = strTrimLeft (line, ' ');
+                const char * s = strTrimLeft (line, " ");
                 if (strIsCasePrefix (endMarker, s)) {
                     // We have seen the line to stop at, so break out
                     break;
@@ -1384,6 +1387,10 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_import:
 //    Imports games from a PGN file to the current base.
+//    Returns an error message if there was any file error.
+//    On success, returns a list of two elements: the number of
+//    games imported, and a string containing an PGN import errors
+//    or warnings.
 int
 sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -1424,12 +1431,11 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (inputLength < 1) { inputLength = 1; }
     parser.IgnorePreGameText();
     uint gamesSeen = 0;
-    int result = TCL_OK;
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
         if (sc_savegame (ti, scratchGame, 0, db) != TCL_OK) {
-            result = TCL_ERROR;
-            break;
+            pgnFile.Close();
+            return errorResult (ti, "Error saving game in database.\n");
         }
         // Update the progress bar:
         gamesSeen++;
@@ -1441,6 +1447,7 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     db->gfile->FlushAll();
     pgnFile.Close();
+
     // Now write the Index file header and the name file:
     if (db->idx->WriteHeader() != OK) {
         return errorResult (ti, "Error writing index file.");
@@ -1451,20 +1458,17 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-    if (showProgress  &&  result == TCL_OK) { updateProgressBar (ti, 1, 1); }
+    if (showProgress) { updateProgressBar (ti, 1, 1); }
     recalcFlagCounts (db);
     if (! db->memoryOnly) { removeFile (db->fileName, TREEFILE_SUFFIX); }
 
-    appendUintResult (ti, gamesSeen);
-    Tcl_AppendResult (ti, gamesSeen == 1 ? " game was" : " games were",
-                      " imported", NULL);
+    appendUintElement (ti, gamesSeen);
     if (parser.ErrorCount() > 0) {
-        Tcl_AppendResult (ti, ".\nErrors/warnings importing games:\n\n",
-                          parser.ErrorMessages(), NULL);
+        Tcl_AppendElement (ti, parser.ErrorMessages());
     } else {
-        Tcl_AppendResult (ti, " with no errors or warnings.\n", NULL);
+        Tcl_AppendElement (ti, "");
     }
-    return result;
+    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3013,13 +3017,13 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 
 //////////////////////////////////////////////////////////////////////
-/// BOOK (Position Book file) functions
+/// EPD functions
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_book:
-//    Scid Positon Book file functions.
+// sc_epd:
+//    Scid EPD (position) file functions.
 int
-sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_epd (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "altered",  "available",  "close",  "create",
@@ -3030,100 +3034,99 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         NULL
     };
     enum {
-        BOOK_ALTERED,  BOOK_AVAILABLE,  BOOK_CLOSE,  BOOK_CREATE,
-        BOOK_DEEPEST,                   BOOK_GET,    BOOK_MOVES,
-        BOOK_NAME,     BOOK_NEXT,       BOOK_OPEN,   BOOK_PREV,
-        BOOK_READONLY, BOOK_SET,        BOOK_SIZE,   BOOK_STRIP,
-        BOOK_WRITE
+        EPD_ALTERED,  EPD_AVAILABLE,  EPD_CLOSE,  EPD_CREATE,
+        EPD_DEEPEST,                  EPD_GET,    EPD_MOVES,
+        EPD_NAME,     EPD_NEXT,       EPD_OPEN,   EPD_PREV,
+        EPD_READONLY, EPD_SET,        EPD_SIZE,   EPD_STRIP,
+        EPD_WRITE
     };
     int index = -1;
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     if (index < 0) {
-        return InvalidCommand (ti, "sc_book", options);
+        return InvalidCommand (ti, "sc_epd", options);
     }
 
-    // Check for book subcommands that do not require a bookID parameter:
+    // Check for epd subcommands that do not require an epdID parameter:
     // these are "available", "open" and "create".
-    if (index == BOOK_AVAILABLE) {
+    if (index == EPD_AVAILABLE) {
         uint avail = 0;
         for (int i=0; i < MAX_EPD; i++) {
             if (pbooks[i] == NULL) { avail++; }
         }
         return setUintResult (ti, avail);
     }
-    if (index == BOOK_OPEN) {
-        return sc_book_open (ti, argc, argv, false);
+    if (index == EPD_OPEN) {
+        return sc_epd_open (ti, argc, argv, false);
     }
-    if (index == BOOK_CREATE) {
-        return sc_book_open (ti, argc, argv, true);
+    if (index == EPD_CREATE) {
+        return sc_epd_open (ti, argc, argv, true);
     }
 
-    // Parse the bookID parameter:
-    int bookID = -1;
-    if (argc >= 3) { bookID = strGetInteger (argv[2]) - 1; }
-    if (bookID < 0  ||  bookID >= MAX_EPD  ||  pbooks[bookID] == NULL) {
-        Tcl_AppendResult (ti, "Error: sc_book ", options[index],
-                          ": invalid bookID number", NULL);
+    // Parse the epdID parameter:
+    int epdID = -1;
+    if (argc >= 3) { epdID = strGetInteger (argv[2]) - 1; }
+    if (epdID < 0  ||  epdID >= MAX_EPD  ||  pbooks[epdID] == NULL) {
+        Tcl_AppendResult (ti, "Error: sc_epd ", options[index],
+                          ": invalid EPD ID number", NULL);
         return TCL_ERROR;
     }
 
     switch (index) {
-    case BOOK_ALTERED:
-        return setBoolResult (ti, pbooks[bookID]->IsAltered());
+    case EPD_ALTERED:
+        return setBoolResult (ti, pbooks[epdID]->IsAltered());
 
-    case BOOK_CLOSE:  // Closes book without saving:
-        delete pbooks[bookID];
-        pbooks[bookID] = NULL;
+    case EPD_CLOSE:  // Closes EPD file without saving:
+        delete pbooks[epdID];
+        pbooks[epdID] = NULL;
         break;
 
-    case BOOK_DEEPEST:
-        return sc_book_deepest (ti, bookID);
+    case EPD_DEEPEST:
+        return sc_epd_deepest (ti, epdID);
 
-    case BOOK_GET:   // Retrieves the text for the current position:
+    case EPD_GET:   // Retrieves the text for the current position:
         {
             const char * text;
-            if (pbooks[bookID]->Find (db->game->GetCurrentPos(),
-                                      &text) == OK) {
+            if (pbooks[epdID]->Find (db->game->GetCurrentPos(), &text) == OK) {
                 Tcl_AppendResult (ti, (char *) text, NULL);
             }
         }
         break;
 
-    case BOOK_MOVES:
-        return sc_book_moves (ti, bookID);
+    case EPD_MOVES:
+        return sc_epd_moves (ti, epdID);
 
-    case BOOK_NAME:
-        Tcl_AppendResult (ti, pbooks[bookID]->GetFileName(), NULL);
+    case EPD_NAME:
+        Tcl_AppendResult (ti, pbooks[epdID]->GetFileName(), NULL);
         break;
 
-    case BOOK_NEXT:
-        return sc_book_next (ti, bookID, true);
+    case EPD_NEXT:
+        return sc_epd_next (ti, epdID, true);
 
-    case BOOK_PREV:
-        return sc_book_next (ti, bookID, false);
+    case EPD_PREV:
+        return sc_epd_next (ti, epdID, false);
 
-    case BOOK_READONLY:
-        return setBoolResult (ti, pbooks[bookID]->IsReadOnly());
+    case EPD_READONLY:
+        return setBoolResult (ti, pbooks[epdID]->IsReadOnly());
 
-    case BOOK_SET:   // Sets the text for the current position:
+    case EPD_SET:   // Sets the text for the current position:
         if (argc != 4) {
-            return errorResult (ti, "Usage: sc_book set <bookID> <text>");
+            return errorResult (ti, "Usage: sc_epd set <epdID> <text>");
         }
-        return sc_book_set (ti, bookID, argv[3]);
+        return sc_epd_set (ti, epdID, argv[3]);
 
-    case BOOK_SIZE:
-        return setUintResult (ti, pbooks[bookID]->Size());
+    case EPD_SIZE:
+        return setUintResult (ti, pbooks[epdID]->Size());
 
-    case BOOK_STRIP:
+    case EPD_STRIP:
         if (argc != 4) {
-            return errorResult (ti, "Usage: sc_book strip <bookID> <epdcode>");
+            return errorResult (ti, "Usage: sc_epd strip <epdID> <epdcode>");
         }
-        return setUintResult (ti, pbooks[bookID]->StripOpcode (argv[3]));
+        return setUintResult (ti, pbooks[epdID]->StripOpcode (argv[3]));
 
-    case BOOK_WRITE:
-        return sc_book_write (ti, bookID);
+    case EPD_WRITE:
+        return sc_epd_write (ti, epdID);
 
     default:
         ASSERT(0);  // Unreachable!
@@ -3133,14 +3136,14 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_book_deepest:
+// sc_epd_deepest:
 //    Returns the deepest ply in the current game (main moves only,
-//    not variations) that matches a position in this book.
+//    not variations) that matches a position in this EPD file.
 int
-sc_book_deepest (Tcl_Interp * ti, int bookID)
+sc_epd_deepest (Tcl_Interp * ti, int epdID)
 {
-    ASSERT (pbooks[bookID] != NULL);
-    PBook * pb = pbooks[bookID];
+    ASSERT (pbooks[epdID] != NULL);
+    PBook * pb = pbooks[epdID];
     uint ply = 0;
     const char * text;
 
@@ -3156,14 +3159,14 @@ sc_book_deepest (Tcl_Interp * ti, int bookID)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_book_moves:
+// sc_epd_moves:
 //    Returns the list of all legal moves (in standard algebraic
-//    notation) from the current position that have text in this book.
+//    notation) from the current position that have text in this EPD file.
 int
-sc_book_moves (Tcl_Interp * ti, int bookID)
+sc_epd_moves (Tcl_Interp * ti, int epdID)
 {
-    ASSERT (pbooks[bookID] != NULL);
-    PBook * pb = pbooks[bookID];
+    ASSERT (pbooks[epdID] != NULL);
+    PBook * pb = pbooks[epdID];
     const char * text;
     Position * gamePos = db->game->GetCurrentPos();
 
@@ -3171,11 +3174,11 @@ sc_book_moves (Tcl_Interp * ti, int bookID)
     gamePos->ClearSANStrings();
     gamePos->CalcSANStrings (SAN_CHECKTEST);
     sanListT * sanList = gamePos->GetSANStrings();
-    gamePos->CalcLegalMoves (EMPTY);
-    legalMoveListT * moveList = gamePos->GetLegalMoves();
+    gamePos->GenerateMoves ();
+    MoveList * moveList = gamePos->GetLegalMoves();
 
-    for (uint i=0; i < moveList->num; i++) {
-        simpleMoveT * smPtr = &(moveList->list[i]);
+    for (uint i=0; i < moveList->Size(); i++) {
+        simpleMoveT * smPtr = moveList->Get(i);
         scratchPos->DoSimpleMove (smPtr);
         if (pb->Find (scratchPos, &text) == OK) {
             Tcl_AppendElement (ti, sanList->list[i]);
@@ -3186,15 +3189,15 @@ sc_book_moves (Tcl_Interp * ti, int bookID)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_book_next:
+// sc_epd_next:
 //    Clears the current game and sets its start position to
-//    be that of the next position found in the book (in the order
-//    they are stored in the book file).
+//    be that of the next position found in the EPD list (in the order
+//    they are stored in the file).
 int
-sc_book_next (Tcl_Interp * ti, int bookID, bool forwards)
+sc_epd_next (Tcl_Interp * ti, int epdID, bool forwards)
 {
-    ASSERT (pbooks[bookID] != NULL);
-    PBook * pb = pbooks[bookID];
+    ASSERT (pbooks[epdID] != NULL);
+    PBook * pb = pbooks[epdID];
     scratchPos->CopyFrom (db->game->GetCurrentPos());
     if (pb->FindNext (scratchPos, forwards) == OK) {
         db->game->Clear();
@@ -3206,61 +3209,61 @@ sc_book_next (Tcl_Interp * ti, int bookID, bool forwards)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_book_open:
-//    Open a Scid position book file for editing.
+// sc_epd_open:
+//    Open an EPD file for editing.
 //    If the last parameter (create) is true, the file is created.
 int
-sc_book_open (Tcl_Interp * ti, int argc, const char ** argv, bool create)
+sc_epd_open (Tcl_Interp * ti, int argc, const char ** argv, bool create)
 {
     if (argc != 3) {
-        return errorResult (ti, "Usage: sc_book create|open <filename>");
+        return errorResult (ti, "Usage: sc_epd create|open <filename>");
     }
 
     const char * filename = argv[2];
 
-    // Check this book file is not already open:
+    // Check that this EPD file is not already open:
     if ((strlen(filename) + strlen(PBOOK_SUFFIX)) >= sizeof(fileNameT)) {
         return errorResult (ti, "Error: file name too long.");
     }
     fileNameT fullname;
     strCopy (fullname, filename);
     strAppend (fullname, PBOOK_SUFFIX);
-    int book;
-    for (book = 0; book < MAX_EPD; book++) {
-        if (pbooks[book] != NULL  &&
-                strEqual (fullname, pbooks[book]->GetFileName())) {
-            return errorResult (ti, "The book file you selected is already open.");
+    int epdID;
+    for (epdID = 0; epdID < MAX_EPD; epdID++) {
+        if (pbooks[epdID] != NULL  &&
+                strEqual (fullname, pbooks[epdID]->GetFileName())) {
+            return errorResult (ti, "The EPD file you selected is already open.");
         }
     }
 
-    // Find a free book file slot:
-    int freeBook = -1;
-    for (book = 0; book < MAX_EPD; book++) {
-        if (pbooks[book] == NULL) { freeBook = book; break; }
+    // Find a free EPD file slot:
+    int freeID = -1;
+    for (epdID = 0; epdID < MAX_EPD; epdID++) {
+        if (pbooks[epdID] == NULL) { freeID = epdID; break; }
     }
-    if (freeBook == -1) {
-        return errorResult (ti, "Too many books are open; close one first.");
+    if (freeID == -1) {
+        return errorResult (ti, "Too many EPD files are open; close one first.");
     }
 
     PBook * pb = new PBook;
-    pbooks[freeBook] = pb;
+    pbooks[freeID] = pb;
     pb->SetFileName (filename);
 
     errorT err = create ? pb->WriteFile() : pb->ReadFile();
     if (err != OK) {
         delete pb;
-        pbooks[freeBook] = NULL;
+        pbooks[freeID] = NULL;
         Tcl_AppendResult (ti, "Unable to ", (create ? "create" : "open"),
-                          " Book file: ", filename, PBOOK_SUFFIX, NULL);
+                          " EPD file: ", filename, PBOOK_SUFFIX, NULL);
         return TCL_ERROR;
     }
-    return setIntResult (ti, freeBook + 1);
+    return setIntResult (ti, freeID + 1);
 }
 
 int
-sc_book_set (Tcl_Interp * ti, int bookID, const char * text)
+sc_epd_set (Tcl_Interp * ti, int epdID, const char * text)
 {
-    PBook * pb = pbooks[bookID];
+    PBook * pb = pbooks[epdID];
     Position * pos = db->game->GetCurrentPos();
     ASSERT (pb != NULL);
     const char * oldText;
@@ -3279,12 +3282,12 @@ sc_book_set (Tcl_Interp * ti, int bookID, const char * text)
 }
 
 int
-sc_book_write (Tcl_Interp * ti, int bookID)
+sc_epd_write (Tcl_Interp * ti, int epdID)
 {
-    ASSERT (pbooks[bookID] != NULL);
-    PBook * pb = pbooks[bookID];
+    ASSERT (pbooks[epdID] != NULL);
+    PBook * pb = pbooks[epdID];
     if (pb->WriteFile() != OK) {
-        return errorResult (ti, "Error writing Book file.");
+        return errorResult (ti, "Error writing EPD file.");
     }
     return TCL_OK;
 }
@@ -3612,6 +3615,7 @@ sc_compact_games (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     newIdx->SetType (db->idx->GetType());
     newIdx->SetDescription (db->idx->GetDescription());
+    newIdx->SetAutoLoad (db->idx->GetAutoLoad());
     if (newIdx->CloseIndexFile() != OK  ||  newGfile->Close() != OK) {
         CLEANUP;
         errMsg = errWrite;
@@ -3751,6 +3755,12 @@ sc_compact_names (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (err != OK) { return TCL_ERROR; }
+
+    // Recompute player frequencies, ratings, etc:
+    recalcNameFrequencies (db->nb, db->idx);
+    recalcFlagCounts (db);
+    recalcEstimatedRatings (db->nb);
+
     return TCL_OK;
 }
 
@@ -4147,7 +4157,8 @@ sc_eco_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 break;
             case ']':
                 dstr->AddChar (ch);
-                dstr->Append ("<blue><run importPgnLine {");
+                //dstr->Append ("<blue><run importPgnLine {");
+                dstr->Append ("<blue><run importMoveList {");
                 inMoveList = true;
                 temp->Clear();
                 break;
@@ -5501,7 +5512,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
 
     Position * gamePos = NULL;
     sanListT * sanList = NULL;
-    legalMoveListT * moveList = NULL;
+    MoveList * moveList = NULL;
     bool moveFound [MAX_LEGAL_MOVES];
     int moveScore [MAX_LEGAL_MOVES];
     bool movePrinted [MAX_LEGAL_MOVES];
@@ -5515,11 +5526,11 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
         gamePos->ClearSANStrings();
         gamePos->CalcSANStrings (SAN_CHECKTEST);
         sanList = gamePos->GetSANStrings();
-        gamePos->CalcLegalMoves (EMPTY);
+        gamePos->GenerateMoves ();
         moveList = gamePos->GetLegalMoves();
 
-        for (uint i=0; i < moveList->num; i++) {
-            simpleMoveT * smPtr = &(moveList->list[i]);
+        for (uint i=0; i < moveList->Size(); i++) {
+            simpleMoveT * smPtr = moveList->Get(i);
             scratchPos->DoSimpleMove (smPtr);
             moveFound[i] = false;
             movePrinted[i] = false;
@@ -5544,7 +5555,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
     // Optimal moves mode: return only the optimal moves, nothing else.
     if (optimalMoves) {
         uint count = 0;
-        for (uint i=0; i < moveList->num; i++) {
+        for (uint i=0; i < moveList->Size(); i++) {
             if ((score >= 0  &&  moveScore[i] == -score)  ||
                 (score < 0  &&  moveScore[i] == -score - 1)) {
                 if (count > 0) { dstr->Append (" "); }
@@ -5568,7 +5579,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
             uint index = 0;
             int bestScore = 0;
             const char * bestMove = "";
-            for (uint i=0; i < moveList->num; i++) {
+            for (uint i=0; i < moveList->Size(); i++) {
                 if (movePrinted[i]) { continue; }
                 if (! moveFound[i]) { continue; }
                 int newScore = - moveScore[i];
@@ -5628,7 +5639,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
                 bool found = false;
                 const char * bestMove = "";
                 uint index = 0;
-                for (uint i=0; i < moveList->num; i++) {
+                for (uint i=0; i < moveList->Size(); i++) {
                     if (!moveFound[i]  && !movePrinted[i]) {
                         if (!found  ||
                             strCompare (bestMove, sanList->list[i]) > 0) {
@@ -5662,7 +5673,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
             const char * drawlist [MAX_LEGAL_MOVES];
             const char * losslist [MAX_LEGAL_MOVES];
 
-            for (uint i=0; i < moveList->num; i++) {
+            for (uint i=0; i < moveList->Size(); i++) {
                 if (moveFound[i]) {
                     if (moveScore[i] == 0) {
                         drawlist[drawcount] = sanList->list[i];
@@ -5673,14 +5684,14 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
                     }
                 }
             }
-            if (moveList->num == 0) {
+            if (moveList->Size() == 0) {
                 dstr->Append (" (", translate (ti, "stalemate"), ")");
-            } else if (drawcount == moveList->num) {
+            } else if (drawcount == moveList->Size()) {
                 dstr->Append (" ", translate (ti, "withAllMoves"));
             } else if (drawcount == 1) {
                 dstr->Append (" ", translate (ti, "with"));
                 dstr->Append (" ", drawlist[0]);
-            } else if (drawcount+1 == moveList->num && losscount==1) {
+            } else if (drawcount+1 == moveList->Size() && losscount==1) {
                 dstr->Append (" ", translate (ti, "withAllButOneMove"));
             } else if (drawcount > 0) {
                 dstr->Append (" ", translate (ti, "with"), " ");
@@ -5703,12 +5714,12 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
             if (losscount > 0) {
                 dstr->Append (" (");
                 if (losscount == 1) {
-                    if (losscount+drawcount == moveList->num) {
+                    if (losscount+drawcount == moveList->Size()) {
                         dstr->Append (translate (ti, "only"), " ");
                     }
                     dstr->Append (losslist[0], " ", translate (ti, "loses"));
                 } else if (drawcount < 4  &&
-                           drawcount+losscount == moveList->num) {
+                           drawcount+losscount == moveList->Size()) {
                     dstr->Append (translate (ti, "allOthersLose"));
                 } else {
                     dstr->Append (losscount);
@@ -5745,7 +5756,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
         if (showSummary) {
             uint count = 0;
 
-            for (uint i=0; i < moveList->num; i++) {
+            for (uint i=0; i < moveList->Size(); i++) {
                 if (moveFound[i]  &&  moveScore[i] == -score) {
                     count++;
                     if (count == 1) {
@@ -5785,7 +5796,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
 
         if (showSummary) {
             uint count = 0;
-            for (uint i=0; i < moveList->num; i++) {
+            for (uint i=0; i < moveList->Size(); i++) {
                 if (moveFound[i]  &&  moveScore[i] == (-score - 1)) {
                     count++;
                     dstr->Append (", ");
@@ -5968,7 +5979,32 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (*flagStr != 0) {
                 Tcl_AppendResult (ti, "   <gray>(",
                                   translate (ti, "flags", "flags"),
-                                  ": ", flagStr, ")</gray>", NULL);
+                                  ": ", flagStr, NULL);
+                int flagCount = 0;
+                while (*flagStr != 0) {
+                    char * flagName = NULL;
+                    switch (*flagStr) {
+                        case 'W': flagName = "WhiteOpFlag"; break;
+                        case 'B': flagName = "BlackOpFlag"; break;
+                        case 'M': flagName = "MiddlegameFlag"; break;
+                        case 'E': flagName = "EndgameFlag"; break;
+                        case 'N': flagName = "NoveltyFlag"; break;
+                        case 'P': flagName = "PawnFlag"; break;
+                        case 'T': flagName = "TacticsFlag"; break;
+                        case 'Q': flagName = "QsideFlag"; break;
+                        case 'K': flagName = "KsideFlag"; break;
+                        case '!': flagName = "BrilliancyFlag"; break;
+                        case '?': flagName = "BlunderFlag"; break;
+                        case 'U': flagName = "UserFlag"; break;
+                    }
+                    if (flagName != NULL) {
+                        Tcl_AppendResult (ti, (flagCount > 0 ? ", " : " - "),
+                                          translate (ti, flagName), NULL);
+                    }
+                    flagCount++;
+                    flagStr++;
+                }
+                Tcl_AppendResult (ti, ")</gray>", NULL);
             }
         }
 
@@ -6001,7 +6037,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         strAppend (temp, ")");
         printNags = false;
     } else {
-        sprintf (temp, "<run sc_move back; updateBoard>%u.%s%s</run>",
+        sprintf (temp, "<run sc_move back; updateBoard -animate>%u.%s%s</run>",
                  prevMoveCount, toMove==WHITE ? ".." : "", san);
         printNags = true;
     }
@@ -6037,7 +6073,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         strAppend (temp, ")");
         printNags = false;
     } else {
-        sprintf (temp, "<run sc_move forward; updateBoard>%u.%s%s</run>",
+        sprintf (temp, "<run sc_move forward; updateBoard -animate>%u.%s%s</run>",
                  moveCount, toMove==WHITE ? "" : "..", san);
         printNags = true;
     }
@@ -6058,7 +6094,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (db->game->GetVarLevel() > 0) {
-        Tcl_AppendResult (ti, "   <green><run sc_var exit; updateBoard>",
+        Tcl_AppendResult (ti, "   <green><run sc_var exit; updateBoard -animate>",
                           "(<lt>-Var)", "</run></green>", NULL);
     }
 
@@ -6086,7 +6122,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             char s[20];
             db->game->MoveIntoVariation (vnum);
             db->game->GetSAN (s);
-            sprintf (temp, "   <run sc_var enter %u; updateBoard>v%u",
+            sprintf (temp, "   <run sc_var enter %u; updateBoard -animate>v%u",
                      vnum, vnum+1);
             Tcl_AppendResult (ti, "<green>", temp, "</green>: ", NULL);
             if (s[0] == 0) {
@@ -6959,10 +6995,10 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, errMsgReadOnly(ti), NULL);
         return TCL_ERROR;
     }
-    if (base == clipbase   &&  base->numGames >= CLIPBASE_MAX_GAMES) {
+    if (base == clipbase   &&  base->numGames >= clipbaseMaxGames) {
         char temp[200];
         sprintf (temp, "Sorry, the clipbase has a limit of %u games.\n",
-                 CLIPBASE_MAX_GAMES);
+                 clipbaseMaxGames);
         Tcl_AppendResult (ti, temp, NULL);
         return TCL_ERROR;
     }
@@ -7267,14 +7303,16 @@ sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
     } else {
         if (scratchPos->ReadFromFEN (str) != OK) {
-            return errorResult (ti, "Invalid FEN string.");
+            if (scratchPos->ReadFromLongStr (str) != OK) {
+                return errorResult (ti, "Invalid FEN string.");
+            }
         }
         // ReadFromFEN checks that there is one king of each side, but it
         // does not check that the position is actually legal:
         if (! scratchPos->IsLegal()) {
             // Illegal position! Find out why to return a useful error:
-           squareT wk = scratchPos->GetKingPos(WHITE);
-           squareT bk = scratchPos->GetKingPos(BLACK);
+           squareT wk = scratchPos->GetKingSquare (WHITE);
+           squareT bk = scratchPos->GetKingSquare (BLACK);
            if (square_Adjacent (wk, bk)) {
                return errorResult (ti, "Illegal position: adjacent kings.");
            }
@@ -7439,7 +7477,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     while (1) {
         if (mode == MODE_BOARDS) {
             char boardStr[100];
-            g->GetCurrentPos()->MakeLine (boardStr);
+            g->GetCurrentPos()->MakeLongStr (boardStr);
             Tcl_AppendElement (ti, boardStr);
         } else {
             colorT toMove = g->GetCurrentPos()->GetToMove();
@@ -7453,7 +7491,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 } else {
                     strCopy (temp, san);
                 }
-                byte * nags = g->GetNags();
+                byte * nags = g->GetNextNags();
                 if (*nags != 0) {
                     for (uint nagCount = 0 ; nags[nagCount] != 0; nagCount++) {
                         char nagstr[20];
@@ -7992,13 +8030,13 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "asserts", "clipbase", "decimal", "fsize", "gzip",
-        "html", "limit", "preMoveCmd", "ratings", "tb",
-        "validDate", "version", NULL
+        "html", "limit", "preMoveCmd", "priority", "ratings",
+        "tb", "validDate", "version", NULL
     };
     enum {
         INFO_ASSERTS, INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
-        INFO_HTML, INFO_LIMIT, INFO_PREMOVECMD, INFO_RATINGS, INFO_TB,
-        INFO_VALIDDATE, INFO_VERSION
+        INFO_HTML, INFO_LIMIT, INFO_PREMOVECMD, INFO_PRIORITY, INFO_RATINGS,
+        INFO_TB, INFO_VALIDDATE, INFO_VERSION
     };
     int index = -1;
 
@@ -8047,6 +8085,9 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         delete[] preMoveCommand;
         preMoveCommand = strDuplicate (argv[2]);
         break;
+
+    case INFO_PRIORITY:
+        return sc_info_priority (cd, ti, argc, argv);
 
     case INFO_RATINGS:   // List of all recognised rating types.
         {
@@ -8192,14 +8233,14 @@ int
 sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "epd", "clipbase", "elo",      "events",
-        "games", "nags",      "players", "rounds",
-        "sites", "treeCache", "year",    NULL
+        "clipbase", "elo",       "epd",    "events",
+        "games",    "nags",      "players", "rounds",
+        "sites",    "treeCache", "year",    NULL
     };
     enum {
-        LIM_EPD,   LIM_CLIPBASE,  LIM_ELO,     LIM_EVENTS,
-        LIM_GAMES, LIM_NAGS,      LIM_PLAYERS, LIM_ROUNDS,
-        LIM_SITES, LIM_TREECACHE, LIM_YEAR
+        LIM_CLIPBASE, LIM_ELO,       LIM_EPD,     LIM_EVENTS,
+        LIM_GAMES,    LIM_NAGS,      LIM_PLAYERS, LIM_ROUNDS,
+        LIM_SITES,    LIM_TREECACHE, LIM_YEAR
     };
     int index = -1;
     int result = 0;
@@ -8207,16 +8248,16 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc == 3) { index = strUniqueMatch (argv[2], options); }
 
     switch (index) {
-    case LIM_EPD:
-        result = MAX_EPD;
-        break;
-
     case LIM_CLIPBASE:
-        result = CLIPBASE_MAX_GAMES;
+        result = clipbaseMaxGames;
         break;
 
     case LIM_ELO:
         result = MAX_ELO;
+        break;
+
+    case LIM_EPD:
+        result = MAX_EPD;
         break;
 
     case LIM_EVENTS:
@@ -8259,12 +8300,87 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_info_priority:
+//   On Windows, this gets or sets the priority class of a process.
+//   On Unix, this command does nothing.
+int
+sc_info_priority (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+#ifdef WIN32
+    const char * usage = "Usage: sc_info priority <pid> [normal|idle]";
+    if (argc < 3  ||  argc > 4) { return errorResult (ti, usage); }
+
+    int pid = strGetInteger(argv[2]);
+
+    if (argc == 4) {
+        // For saftey, only normal and idle classes can be set:
+        bool idlePriority = false;
+        switch (argv[3][0]) {
+            case 'i': idlePriority = true;  break;
+            case 'n': idlePriority = false; break;
+            default: return errorResult (ti, usage);
+        }
+
+        // Try to obtain a process handle for setting the priority class:
+        HANDLE hProcess = OpenProcess (PROCESS_SET_INFORMATION, FALSE, pid);
+        if (hProcess == NULL) {
+            return errorResult (ti, "Unable to set process priority.");
+        }
+
+        // Set the process class to NORMAL or IDLE:
+        SetPriorityClass (hProcess, 
+                idlePriority ? IDLE_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS);
+        CloseHandle (hProcess);
+    }
+    // Now return the process priority:
+    HANDLE hProcess = OpenProcess (PROCESS_QUERY_INFORMATION, FALSE, pid);
+    if (hProcess == NULL) {
+        return errorResult (ti, "Unable to get process priority.");
+    }
+    uint priorityClass = GetPriorityClass (hProcess);
+    CloseHandle (hProcess);
+
+    // Convert the priority class number to a name:
+    const char * priorityName = "";
+    switch (priorityClass) {
+        case NORMAL_PRIORITY_CLASS: priorityName = "normal"; break;
+        case IDLE_PRIORITY_CLASS:   priorityName = "idle";   break;
+        case HIGH_PRIORITY_CLASS:   priorityName = "high";   break;
+        default:  priorityName = "unknown";
+    }
+    Tcl_AppendResult (ti, priorityName, NULL);
+
+#else  // #ifdef WIN32
+
+    const char * usage = "Usage: sc_info priority <pid> [<priority>]";
+    if (argc < 3  ||  argc > 4) { return errorResult (ti, usage); }
+
+    int pid = strGetInteger(argv[2]);
+
+    if (argc == 4) {
+        // Try to assign a new priority:
+        int newpriority = strGetInteger(argv[3]);
+        if (setpriority (PRIO_PROCESS, pid, newpriority) != 0) {
+            return errorResult (ti, "Unable to set process priority.");
+        }
+    }
+    // Now return the process priority:
+    int priority = getpriority (PRIO_PROCESS, pid);
+    appendIntResult (ti, priority);
+#endif  // #ifdef WIN32
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_info_tb:
 //   Set up a tablebase directory, or check if a certain
 //   tablebase is available.
 int
 sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    const char * usage =
+        "Usage: sc_info tb [<directory>|available <material>|cache <size-kb>]";
+
     if (argc == 2) {
         // Command: sc_info tb
         // Returns whether tablebase support is complied.
@@ -8298,8 +8414,14 @@ sc_info_tb (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         // Check if a tablebase for this material is available:
         return setBoolResult (ti, scid_TB_Available (ms));
+    } else if (argc == 4  &&  argv[2][0] == 'c') {
+        // Set the preferred tablebase cache size, to take effect
+        // at the next tablebase initialisation.
+        uint cachesize = strGetUnsigned (argv[3]);
+        scid_TB_SetCacheSize (cachesize * 1024);
+        return TCL_OK;
     } else {
-        return errorResult (ti, "Usage: sc_info tb [<directory>|available <material>]");
+        return errorResult (ti, usage);
     }
 }
 
@@ -8506,15 +8628,15 @@ int
 sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "addNag", "bestSquare", "board", "clearNags", "fen",
-        "getComment", "getNags", "html",
+        "addNag", "analyze", "bestSquare", "board", "clearNags",
+        "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isLegal", "isPromotion",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
         "probe", "setComment", "side", "tex", NULL
     };
     enum {
-        POS_ADDNAG, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS, POS_FEN,
-        POS_GETCOMMENT, POS_GETNAGS, POS_HTML,
+        POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
+        POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISLEGAL, POS_ISPROMO,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX
@@ -8528,11 +8650,14 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case POS_ADDNAG:
         return sc_pos_addNag (cd, ti, argc, argv);
 
+    case POS_ANALYZE:
+        return sc_pos_analyze (cd, ti, argc, argv);
+
     case POS_BESTSQ:
         return sc_pos_bestSquare (cd, ti, argc, argv);
 
     case POS_BOARD:
-        db->game->GetCurrentPos()->MakeLine (boardStr);
+        db->game->GetCurrentPos()->MakeLongStr (boardStr);
         Tcl_AppendResult (ti, boardStr, NULL);
         break;
 
@@ -8557,6 +8682,9 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case POS_GETNAGS:
         return sc_pos_getNags (cd, ti, argc, argv);
+
+    case POS_HASH:
+        return sc_pos_hash (cd, ti, argc, argv);
 
     case POS_HTML:
         return sc_pos_html (cd, ti, argc, argv);
@@ -8642,6 +8770,73 @@ sc_pos_addNag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_pos_analyze:
+//    Analyzes the current position for the specified number of
+//    milliseconds.
+//    Returns a two-element list containing the score in centipawns
+//    (from the perspective of the side to move) and the best move.
+//    If there are no legal moves, the second element is the empty string.
+int
+sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    const char * usage = "Usage: sc_pos analyze [<option> <value> ...]";
+
+    uint searchTime = 1000;   // Default = 1000 milliseconds
+    uint hashTableKB = 1024;  // Default: one-megabyte hash table.
+    uint pawnTableKB = 32;
+    bool postMode = false;
+    bool pruning = false;
+
+    static const char * options [] = {
+        "-time", "-hashkb", "-pawnkb", "-post", "-pruning", NULL
+    };
+    enum {
+        OPT_TIME, OPT_HASH, OPT_PAWN, OPT_POST, OPT_PRUNING
+    };
+    int arg = 2;
+    while (arg+1 < argc) {
+        const char * option = argv[arg];
+        const char * value = argv[arg+1];
+        arg += 2;
+        int index = strUniqueMatch (option, options);
+        switch (index) {
+            case OPT_TIME:     searchTime = strGetUnsigned(value);  break;
+            case OPT_HASH:     hashTableKB = strGetUnsigned(value); break;
+            case OPT_PAWN:     pawnTableKB = strGetUnsigned(value); break;
+            case OPT_POST:     postMode = strGetBoolean(value);     break;
+            case OPT_PRUNING:  pruning = strGetBoolean(value);      break;
+            default:
+                return InvalidCommand (ti, "sc_pos analyze", options);
+        }
+    }
+    if (arg != argc) { return errorResult (ti, usage); }
+ 
+    // Generate all legal moves:
+    Position * pos = db->game->GetCurrentPos();
+    MoveList mlist;
+    pos->GenerateMoves(&mlist);
+
+    // Start the engine:
+    Engine * engine = new Engine();
+    engine->SetSearchTime (searchTime);
+    engine->SetHashTableKilobytes (hashTableKB);
+    engine->SetPawnTableKilobytes (pawnTableKB);
+    engine->SetPosition (pos);
+    engine->SetPostMode (postMode);
+    engine->SetPruning (pruning);
+    int score = engine->Think (&mlist);
+    delete engine;
+    appendIntResult (ti, score);
+    char moveStr[20];
+    moveStr[0] = 0;
+    if (mlist.Size() > 0) {
+        pos->MakeSANString (mlist.Get(0), moveStr, SAN_MATETEST);
+    }
+    Tcl_AppendElement (ti, moveStr);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_bestSquare:
 //    Takes a square and returns the best square that makes a move
 //    with the given square. The square can be the from or to part of
@@ -8655,17 +8850,83 @@ sc_pos_bestSquare (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     Position * pos = db->game->GetCurrentPos();
-    int sq = strGetInteger (argv[2]);
-    if (sq < 0  ||  sq > 63) {
+
+    // Try to read the square parameter as algebraic ("h8") or numeric (63):
+    squareT sq = strGetSquare (argv[2]);
+    if (sq == NULL_SQUARE) {
+      int sqInt = strGetInteger (argv[2]);
+      if (sqInt >= 0  &&  sqInt <= 63) { sq = sqInt; }
+    }
+    if (sq == NULL_SQUARE) {
         return errorResult (ti, "Usage: sc_pos bestSquare <square>");
     }
-    squareT bestSq = pos->BestSquare ((squareT) sq);
 
-    if (bestSq == NULL_SQUARE) {
-        setResult (ti, "-1");
-    } else {
-        setUintResult (ti, bestSq);
+    // Generate all legal moves:
+    MoveList mlist;
+    pos->GenerateMoves(&mlist);
+
+    // Restrict the list of legal moves to contain only those that
+    // move to or from the specified square:
+    mlist.SelectBySquare (sq);
+
+     // If no matching legal moves, return -1:
+    if (mlist.Size() == 0) {
+        return setResult (ti, "-1");
     }
+
+    if (mlist.Size() > 1) {
+        // We have more than one move to choose from, so first check
+        // the ECO openings book (if it is loaded) to see if any move
+        // in the list reaches an ECO position. If so, select the move
+        // reaching the largest ECO code as the best move. If no ECO
+        // position is found, do a small chess engine search to find
+        // the best move.
+
+        ecoT bestEco = ECO_None;
+        ecoT secondBestEco = ECO_None;
+        if (ecoBook != NULL) {
+            DString ecoStr;
+            for (uint i=0; i < mlist.Size(); i++) {
+                ecoT eco = ECO_None;
+                pos->DoSimpleMove (mlist.Get(i));
+                ecoStr.Clear();
+                if (ecoBook->FindOpcode (pos, "eco", &ecoStr) == OK) {
+                    eco = eco_FromString (ecoStr.Data());
+                }
+                pos->UndoSimpleMove (mlist.Get(i));
+                if (eco >= bestEco) {
+                    secondBestEco = bestEco;
+                    bestEco = eco;
+                    mlist.MoveToFront (i);
+                }
+            }
+        }
+
+        if (bestEco == ECO_None  ||  bestEco == secondBestEco) {
+            // No matching ECO position found, or a tie. So do a short
+            // engine search to find the best move; 25 ms (= 1/40 s)
+            // is enough to reach a few ply and select reasonable
+            // moves but fast enough to seem almost instant. The
+            // search promotes the best move to be first in the list.
+            Engine * engine = new Engine();
+            engine->SetSearchTime (25);    // Do a 25 millisecond search
+            engine->SetPosition (pos);
+            engine->Think (&mlist);
+            delete engine;
+        }
+    }
+
+    // Now the best move is the first in the list, either because it
+    // is the only move, or it reaches the largest ECO code, or because
+    // the chess engine search selected it.
+    // Find the other square in the best move and return it:
+
+    simpleMoveT * sm = mlist.Get(0);
+    ASSERT (sq == sm->from  ||  sq == sm->to);
+    squareT bestSq = sm->from;
+    if (sm->from == sq) { bestSq = sm->to; }
+    setUintResult (ti, bestSq);
+
     return TCL_OK;
 }
 
@@ -8687,6 +8948,30 @@ sc_pos_getNags (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_pos_hash:
+//   Returns the 32-bit hash value of the current position.
+int
+sc_pos_hash (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    const char * usage = "Usage: sc_pos hash [full|pawn]";
+    bool pawnHashOnly = false;
+    if (argc > 3) { return errorResult (ti, usage); }
+    if (argc == 3) {
+        switch (argv[2][0]) {
+            case 'f': pawnHashOnly = false; break;
+            case 'p': pawnHashOnly = true;  break;
+            default:  return errorResult (ti, usage);
+        }
+    }
+    Position * pos = db->game->GetCurrentPos();
+    uint hash = pos->HashValue();
+    if (pawnHashOnly) {
+        hash = pos->PawnHashValue();
+    }
+    return setUintResult (ti, hash);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8803,13 +9088,13 @@ sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return setBoolResult (ti, false);
     }
 
-    pos->CalcLegalMoves(EMPTY);
-    squareT sqList[64];
-    uint count = pos->GetSquares ((byte) sq1, sqList);
-    bool found = false;
-    for (uint i=0; i < count; i++) {
-        if (sqList[i] == (byte) sq2) { found = true; break; }
-    }
+    // Compute all legal moves, then restrict the list to only
+    // contain moves that include sq1 and sq2 as to/from squares:
+    MoveList mlist;
+    pos->GenerateMoves(&mlist);
+    mlist.SelectBySquare (sq1);
+    mlist.SelectBySquare (sq2);
+    bool found = (mlist.Size() > 0);
     return setBoolResult (ti, found);
 }
 
@@ -8862,10 +9147,10 @@ sc_pos_matchMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // If the prefix string starts with a file (a-h), also add coordinate
     // moves if coordMoves is true:
     if (coordMoves  &&  prefix[0] >= 'a'  &&  prefix[0] <= 'h') {
-        p->CalcLegalMoves(EMPTY);
-        legalMoveListT * mList = p->GetLegalMoves();
-        for (uint i=0; i < mList->num; i++) {
-            simpleMoveT * sm = &(mList->list[i]);
+        p->GenerateMoves();
+        MoveList * mList = p->GetLegalMoves();
+        for (uint i=0; i < mList->Size(); i++) {
+            simpleMoveT * sm = mList->Get(i);
             str[0] = square_FyleChar (sm->from);
             str[1] = square_RankChar (sm->from);
             str[2] = square_FyleChar (sm->to);
@@ -8913,7 +9198,7 @@ sc_pos_pgnBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     char boardStr [200];
-    g->GetCurrentPos()->MakeLine (boardStr);
+    g->GetCurrentPos()->MakeLongStr (boardStr);
     Tcl_AppendResult (ti, boardStr, NULL);
     return TCL_OK;
 }
@@ -8925,7 +9210,19 @@ sc_pos_pgnBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc == 3  && argv[2][0] == 'r') {
+    const char * usage = "Usage: sc_pos probe [score|report|optimal|board <sq>]";
+    static const char * options[] = {
+        "score", "report", "optimal", "board", NULL
+    };
+    enum { OPT_SCORE, OPT_REPORT, OPT_OPTIMAL, OPT_BOARD };
+
+    int option = OPT_SCORE;  // Default option is to return the score.
+    if (argc >= 3) {
+        option = strUniqueMatch(argv[2], options);
+    }
+
+    if (option == OPT_REPORT) {
+        if (argc != 3) { return errorResult (ti, usage); }
         // Command: sc_probe report
         // Tablebase report:
         DString * tbReport = new DString;
@@ -8933,7 +9230,8 @@ sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             Tcl_AppendResult (ti, tbReport->Data(), NULL);
         }
         delete tbReport;
-    } else if (argc == 3  && argv[2][0] == 'o') {
+    } else if (option == OPT_OPTIMAL) {
+        if (argc != 3) { return errorResult (ti, usage); }
         // Command: sc_probe optimal
         // Optimal moves from tablebase:
         DString * tbOptimal = new DString;
@@ -8941,11 +9239,67 @@ sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             Tcl_AppendResult (ti, tbOptimal->Data(), NULL);
         }
         delete tbOptimal;
-    } else {
+    } else if (option == OPT_SCORE) {
         int score = 0;
         if (scid_TB_Probe (db->game->GetCurrentPos(), &score) == OK) {
             setIntResult (ti, score);
         }
+    } else if (option == OPT_BOARD) {
+        return sc_pos_probe_board (cd, ti, argc, argv);
+    } else {
+        return errorResult (ti, usage);
+    }
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_pos_probe_board:
+//    Probes tablebases for the current position with one piece
+//    (specified by its square) relocated to each empty board square.
+int
+sc_pos_probe_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    const char * usage = "Usage: sc_pos probe board <square>";
+
+    Position * pos = scratchPos;
+    pos->CopyFrom (db->game->GetCurrentPos());
+
+    if (argc != 4) { return errorResult (ti, usage); }
+
+    // Try to read the square parameter as algebraic ("h8") or numeric (63):
+    squareT sq = strGetSquare (argv[3]);
+    if (sq == NULL_SQUARE) {
+      int sqInt = strGetInteger (argv[3]);
+      if (sqInt >= 0  &&  sqInt <= 63) { sq = sqInt; }
+    }
+
+    if (sq == NULL_SQUARE) {
+         return errorResult (ti, usage);
+    }
+
+    const pieceT * board = pos->GetBoard();
+    if (board[sq] == EMPTY) { return TCL_OK; }
+
+    for (squareT toSq = A1; toSq <= H8; toSq++) {
+        const char * result = "";
+        if (pos->RelocatePiece (sq, toSq) != OK) {
+            result = "X";
+        } else {
+            int score = 0;
+            if (scid_TB_Probe (pos, &score) != OK) {
+                result = "?";
+            } else {
+                if (score > 0) {
+                    result = "+";
+                } else if (score < 0) {
+                    result = "-";
+                } else {
+                    result = "=";
+                }
+            }
+            pos->RelocatePiece (toSq, sq);
+        }
+        Tcl_AppendResult (ti, result, NULL);
     }
     return TCL_OK;
 }
@@ -9239,15 +9593,16 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_name_edit: edits a name in the NameBase. This requires
 //    writing the entire index file, since the ID number of
 //    the edited name will change.
+//    A rating, date or eventdate can also be edited.
 //
-//    1st arg: "p" (player) / "e" (event) / "s" (site) / "r" (round)
+//    1st arg: player|event|site| ound|rating|edate
 //    2nd arg: "all" / "filter" / "crosstable" (which games to edit)
 //    3rd arg: name to edit.
 //    4th arg: new name -- it might already exist in the namebase.
 int
 sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    const char * usage = "Usage: sc_name edit (p|e|s|r) <oldName> <newName>";
+    const char * usage = "Usage: sc_name edit <type> <oldName> <newName>";
 
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
@@ -9257,9 +9612,13 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     const char * options[] = {
-        "player", "event", "site", "round", "rating", "date", NULL
+        "player", "event", "site", "round", "rating",
+        "date", "edate", NULL
     };
-    enum { OPT_PLAYER, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_RATING, OPT_DATE };
+    enum {
+        OPT_PLAYER, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_RATING,
+        OPT_DATE, OPT_EVENTDATE
+    };
 
     int option = -1;
     if (argc > 2) { option = strUniqueMatch (argv[2], options); }
@@ -9272,6 +9631,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case OPT_ROUND:   nt = NAME_ROUND;   break;
     case OPT_RATING:  break;
     case OPT_DATE:    break;
+    case OPT_EVENTDATE:   break;
     default:
         return errorResult (ti, usage);
     }
@@ -9302,14 +9662,14 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         newRating = strGetUnsigned (argv[5]);
         newRatingType = strGetRatingType (argv[6]);
     }
-    if (option == OPT_DATE) {
+    if (option == OPT_DATE  ||  option == OPT_EVENTDATE) {
         oldDate = date_EncodeFromString (argv[4]);
         newDate = date_EncodeFromString (argv[5]);
     }
 
     // Find the existing name in the namebase:
     idNumberT oldID = 0;
-    if (option != OPT_DATE) {
+    if (option != OPT_DATE  &&  option != OPT_EVENTDATE) {
         if (db->nb->FindExactName (nt, oldName, &oldID) != OK) {
             Tcl_AppendResult (ti, "Sorry, the ", NAME_TYPE_STRING[nt],
                               " name \"", oldName, "\" does not exist.", NULL);
@@ -9336,7 +9696,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Add the new name to the namebase:
     idNumberT newID = 0;
-    if (option != OPT_RATING) {
+    if (option != OPT_RATING  &&  option != OPT_DATE  &&  option != OPT_EVENTDATE) {
         if (db->nb->AddName (nt, newName, &newID) == ERROR_NameBaseFull) {
             return errorResult (ti, "Name file is full; cannot add name.");
         }
@@ -9408,6 +9768,13 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
             break;
 
+        case OPT_EVENTDATE:
+            if (ie->GetEventDate() == oldDate) {
+                newIE.SetEventDate (newDate);
+                edits++;
+            }
+            break;
+
         case OPT_RATING:
             if (ie->GetWhite() == oldID) {
                 newIE.SetWhiteElo (newRating);
@@ -9430,7 +9797,8 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->idx->WriteEntries (&newIE, i, 1) != OK) {
                 return errorResult (ti, "Error writing index file.");
             }
-            if (option != OPT_RATING  &&  option != OPT_DATE) {
+            if (option != OPT_RATING  &&  option != OPT_DATE
+                    && option != OPT_EVENTDATE) {
                 db->nb->IncFrequency (nt, newID, edits);
                 db->nb->IncFrequency (nt, oldID, -edits);
             }
@@ -10889,6 +11257,7 @@ sc_optable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return errorResult (ti, "Usage: sc_optable format latex|html|text|ctext");
         }
         opTable->SetFormat (argv[2]);
+        break;
 
     case OPT_FREQ:
         if (argc != 3) {
@@ -10937,6 +11306,8 @@ sc_optable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (nrows > 0) { opTable->SetNumRows (nrows); }
             }
             dstr = new DString;
+            // Print the table just to set up notes, but there is
+            // no need to return the result:
             opTable->PrintTable (dstr, "", "");
         }
         break;
@@ -11738,13 +12109,13 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     char temp [200];
     if (! listMode) {
         const char * titleRow = 
-            "    Move   ECO       Frequency    Score  AvElo Perf AvYear";
+            "    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws";
         titleRow = translate (ti, "TreeTitleRow", titleRow);
         output->Append (titleRow);
         if (showEpdData) {
-            for (int bookNum = 0; bookNum < MAX_EPD; bookNum++) {
-                if (pbooks[bookNum] != NULL) {
-                    const char * name = pbooks[bookNum]->GetFileName();
+            for (int epdID = 0; epdID < MAX_EPD; epdID++) {
+                if (pbooks[epdID] != NULL) {
+                    const char * name = pbooks[epdID]->GetFileName();
                     const char * lastSlash = strrchr (name, '/');
                     if (lastSlash != NULL) { name = lastSlash + 1; }
                     strCopy (temp, name);
@@ -11826,10 +12197,13 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             sprintf (temp, "  %4u", avgYear);
         }
         output->Append (temp);
+        uint pctDraws = node->freq[RESULT_Draw] * 1000 / node->total;
+        sprintf (temp, "  %3d%%", (pctDraws + 5) / 10);
+        output->Append (temp);
 
         if (showEpdData && !listMode) {
-            for (int bookNum = 0; bookNum < MAX_EPD; bookNum++) {
-                PBook * pb = pbooks[bookNum];
+            for (int epdID = 0; epdID < MAX_EPD; epdID++) {
+                PBook * pb = pbooks[epdID];
                 if (pb != NULL) {
                     scratchPos->CopyFrom (base->game->GetCurrentPos());
                     if (node->sm.from != NULL_SQUARE) {
@@ -11863,6 +12237,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         uint perfCount = 0;
         uint yearCount = 0;
         uint yearSum = 0;
+        uint nDraws = 0;
         node = tree->node;
         for (uint count=0; count < tree->moveCount; count++, node++) {
             totalScore += node->freq[RESULT_White] * 2;
@@ -11873,6 +12248,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             perfSum += node->perfSum;
             yearCount += node->yearCount;
             yearSum += node->yearSum;
+            nDraws += node->freq[RESULT_Draw];
         }
         totalScore = totalScore * 500 / tree->totalCount;
         uint avgElo = 0;
@@ -11887,8 +12263,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             perf = Crosstable::Performance (perf, score);
         }
 
-        if (! listMode) {
-        }
         if (listMode) {
             sprintf (temp, "%2u %-6s %-5s %7u %3d%c%1d %3d%c%1d",
                      0,
@@ -11899,7 +12273,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                      totalScore / 10, decimalPointChar, totalScore % 10);
             output->Append (temp);
         } else {
-            output->Append ("\n__________________________________________________________\n");
+            output->Append ("\n_______________________________________________________________\n");
             sprintf (temp, "TOTAL:           %7u:100%c0%%  %3d%c%1d%%",
                      tree->totalCount, decimalPointChar,
                      totalScore / 10, decimalPointChar, totalScore % 10);
@@ -11923,6 +12297,9 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             sprintf (temp, "  %4u", (yearSum + (yearCount/2)) / yearCount);
             output->Append (temp);
         }
+        uint pctDraws = nDraws * 1000 / tree->totalCount;
+        sprintf (temp, "  %3d%%", (pctDraws + 5) / 10);
+        output->Append (temp);
         if (listMode) {
             Tcl_AppendElement (ti, (char *) output->Data());
             output->Clear();
@@ -12206,9 +12583,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     sprintf (temp, "%d / %d  (%d%c%02d s)",
              db->filter->Count(), startFilterCount,
              centisecs / 100, decimalPointChar, centisecs % 100);
-    Tcl_AppendResult (ti, temp, NULL);
-#ifdef SHOW_SKIPPED_STATS
-    sprintf(temp, "  Skipped %u games.", skipcount);
     Tcl_AppendResult (ti, temp, NULL);
 #ifdef SHOW_SKIPPED_STATS
     sprintf(temp, "  Skipped %u games.", skipcount);
@@ -12944,7 +13318,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     int  dEloRange [2];   // Rating difference (White minus Black) range
     wEloRange[0] = bEloRange[0] = 0;
     wEloRange[1] = bEloRange[1] = MAX_ELO;
-    dEloRange[0] = -MAX_ELO;
+    dEloRange[0] = - (int)MAX_ELO;
     dEloRange[1] = MAX_ELO;
 
     bool * wTitles = NULL;
@@ -13837,7 +14211,7 @@ sc_var_enter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // the first variation move? Maybe it should depend on
     // whether there is a comment before the first move.
     // Uncomment the following line to auto-play the first move:
-    //db->game->MoveForward();
+    db->game->MoveForward();
 
     return TCL_OK;
 }

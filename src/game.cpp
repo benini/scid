@@ -6,9 +6,9 @@
 //  Part of:    Scid (Shane's Chess Information Database)
 //  Version:    3.4
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 200-2003  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -90,6 +90,12 @@ game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format)
         } else if (nag == NAG_Novelty) {
             str[0] = 'N'; str[1] = 0;
             return;
+        } else if (nag == NAG_Compensation) {
+	    if (format == PGN_FORMAT_LaTeX) 
+	        strcpy(str, "{\\compensation}");
+	    else 
+	        strcpy(str, "~=");  
+            return;
         } else if (nag == NAG_Diagram) {
             if (format == PGN_FORMAT_LaTeX) {
                 strcpy(str, "{\\rm \\it (D)}");
@@ -162,6 +168,9 @@ game_parseNag (const char * str)
         if (*str == '+') { return NAG_BlackDecisive; }
         if (*str == '/'  &&  str[1] == '+') { return NAG_BlackClear; }
         return 0;
+    }
+    if (*str == '~' && *(str+1) == '=') {  // Compensation symbol:
+        return NAG_Compensation;
     }
     if (*str == '~') {  // Unclear symbol:
         return NAG_Unclear;
@@ -438,7 +447,7 @@ Game::SetStartPos (Position * pos)
 //      is with the above method, SetStartPos().
 //
 errorT
-Game::SetStartFen (char * fenStr)
+Game::SetStartFen (const char * fenStr)
 {
     // First try to read the position:
     Position * pos = new Position;
@@ -528,7 +537,7 @@ Game::SetMoveData (moveT * m, simpleMoveT * sm)
 {
     ASSERT (m != NULL && sm != NULL);
 
-    // We only copy the fields set in AddLegalMove in position.cc, since
+    // We only copy the fields set in AddLegalMove in position.cpp, since
     // other fields are meaningless at this stage.
 
     simpleMoveT * newsm = &(m->moveData);
@@ -1331,25 +1340,23 @@ Game::ExactMatch (Position * searchPos, ByteBuffer * buf, simpleMoveT * sm,
 
         // NOW, compare the actual boards piece-by-piece.
         if (searchType == GAME_EXACT_MATCH_Pawns) {
-            for (squareT sq = A1;  sq <= H8;  sq++, b1++, b2++) {
-                if (*b1 != *b2  &&  (*b1 == WP  ||  *b2 == BP)) { 
+            if (searchPos->PawnHashValue() == CurrentPos->PawnHashValue()) {
+                for (squareT sq = A1;  sq <= H8;  sq++, b1++, b2++) {
+                    if (*b1 != *b2  &&  (*b1 == WP  ||  *b2 == BP)) { 
+                        found = false;
+                        break;
+                    }
+                }
+            } else {
+                found = false;
+            }
+        } else if (searchType == GAME_EXACT_MATCH_Fyles) {
+            for (fyleT f = A_FYLE; f <= H_FYLE; f++) {
+                if (searchPos->FyleCount(WP,f) != CurrentPos->FyleCount(WP,f)
+                      || searchPos->FyleCount(BP,f) != CurrentPos->FyleCount(BP,f)) {
                     found = false;
                     break;
                 }
-            }
-        } else if (searchType == GAME_EXACT_MATCH_Fyles) {
-            uint wpf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-            uint bpf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-            uint fyle = 0;
-            for (squareT sq = A1;  sq <= H8;  sq++, b1++) {
-                if (*b1 == WP) {
-                    wpf[fyle]++;
-                    if (wpf[fyle] > wpawnFyle[fyle]) { found = false; break; }
-                } else if (*b1 == BP) {
-                    bpf[fyle]++;
-                    if (bpf[fyle] > bpawnFyle[fyle]) { found = false; break; }
-                }
-                fyle = (fyle + 1) & 7;
             }
         } else if (searchType == GAME_EXACT_MATCH_Exact) {
             if (searchPos->HashValue() == CurrentPos->HashValue()) {
@@ -1620,9 +1627,11 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
         }
         delete[] s;
     } else {
-        tb->PrintString (preStr);
+        if (!IsColorFormat())
+           tb->PrintString (preStr);
         tb->PrintString (comment);
-        tb->PrintString (postStr);
+	if (!IsColorFormat())
+           tb->PrintString (postStr);
     }
     if (IsColorFormat()) { tb->PrintString ("</c>"); }
 }
@@ -1679,12 +1688,13 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         tb->PrintString (startTable);
     }
 
-#ifdef SCID_NULL_MOVES
     if (IsPlainFormat()  &&  inComment) {
         preCommentStr = "";
         postCommentStr = "";
     }
     moveT * m = CurrentMove;
+
+    // Print null moves:
     if ((PgnStyle & PGN_STYLE_NO_NULL_MOVES) && !inComment &&
             IsPlainFormat()  &&  isNullMove(m)) {
         inComment = true;
@@ -1692,7 +1702,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         preCommentStr = "";
         postCommentStr = "";
     }
-#endif
 
     // If this is a variation and it starts with a comment, print it:
     if (VarDepth > 0  &&  CurrentMove->prev->comment != NULL) {
@@ -1724,7 +1733,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         }
 
         bool printThisMove = true;
-#ifdef SCID_NULL_MOVES
         if (isNullMove(m)) {
             // Null moves are not printed in LaTeX or HTML:
             if (IsLatexFormat()  ||  IsHtmlFormat()) {
@@ -1746,7 +1754,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 printMoveNum = true;
             }
         }
-#endif
 
         int colWidth = 12;
         NumMovesPrinted++;
@@ -2074,9 +2081,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             PgnNextMovePos = NumMovesPrinted;
         }
     }
-#ifdef SCID_NULL_MOVES
     if (inComment) { tb->PrintString ("}"); }
-#endif
     if (IsHtmlFormat()  &&  VarDepth == 0) { tb->PrintString ("</b>"); }
     if ((PgnStyle & PGN_STYLE_COLUMN)  &&  VarDepth == 0) {
         tb->PrintString(endTable);
@@ -2500,15 +2505,15 @@ encodeKing (ByteBuffer * buf, simpleMoveT * sm)
     /* -9 -8 -7 -6 -5 -4 -3 -2 -1  0  1   2  3  4  5  6  7  8  9 */
         1, 2, 3, 0, 0, 0, 0, 9, 4, 0, 5, 10, 0, 0, 0, 0, 6, 7, 8
     };
-#ifdef SCID_NULL_MOVES
+
     // If target square is the from square, it is the null move, which
-    // is represented as a king mov to its own square and is encoded
+    // is represented as a king move to its own square and is encoded
     // as the byte value zero.
     if (sm->to == sm->from) {
         buf->PutByte (makeMoveByte (0, 0));
         return;
     }
-#endif
+
     // Verify we have a valid King move:
     ASSERT(diff >= -9  &&  diff <= 9  &&  val[diff+9] != 0);
     buf->PutByte (makeMoveByte (0, val [diff + 9]));
@@ -2523,12 +2528,12 @@ decodeKing (byte val, simpleMoveT * sm)
     static const int sqdiff[] = {
         0, -9, -8, -7, -1, 1, 7, 8, 9, -2, 2
     };
-#ifdef SCID_NULL_MOVES
+
     if (val == 0) {
-        sm->to = sm->from;
+      sm->to = sm->from;  // Null move
         return OK;
     }
-#endif
+
     if (val < 1  ||  val > 10) { return ERROR_Decode; }
     sm->to = sm->from + sqdiff[val];
     return OK;
@@ -2679,7 +2684,7 @@ encodeQueen (ByteBuffer * buf, simpleMoveT * sm)
 
     } else {
         // Diagonal move:
-        ASSERT (sdIsDiagonal [sqDir [sm->from][sm->to]]);
+        ASSERT (dirIsDiagonal [sqDir [sm->from][sm->to]]);
 
         // First, we put a rook-horizontal move to the from square (which
         // is illegal of course) to indicate it is NOT a rooklike move:

@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -62,6 +62,7 @@ struct playerDataT
                           // or Bucholz tiebreak for Swiss.
     uint        oppEloCount;
     uint        oppEloTotal;
+    uint	oppEloScore;	// score against Elo opponents
     clashT *    firstClash [CROSSTABLE_MaxPlayers];
     clashT *    lastClash [CROSSTABLE_MaxPlayers];
     uint        clashCount[CROSSTABLE_MaxPlayers];
@@ -178,6 +179,9 @@ class Crosstable
 
     static uint Performance (uint oppAvg, uint percentage);
     static uint FideCategory (eloT rating);
+    static eloT OpponentElo (eloT player, eloT opponent);
+    static int RatingChange (eloT player, uint oppAvg, uint percentage, 
+                             uint count);
 };
 
 #endif  // #ifndef SCID_CROSSTAB_H

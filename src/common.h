@@ -6,17 +6,14 @@
 //  Part of:    Scid (Shane's Chess Information Database)
 //  Version:    3.4
 //
-//  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2000-2002  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
 #ifndef SCID_COMMON_H
 #define SCID_COMMON_H
-
-// Turn on Null move support, still being tested:
-#define SCID_NULL_MOVES
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // HEADER FILES:
@@ -47,8 +44,9 @@ typedef unsigned short versionT;
 const versionT SCID_VERSION = 300;     // Current file format version = 3.0
 const versionT SCID_OLDEST_VERSION = 300; // Oldest compatible format: 3.0
 
-const char SCID_VERSION_STRING[] = "3.4.beta3";     // Current Scid version
-const char SCID_VERSION_DATE[] = "August 2002";
+const char SCID_VERSION_STRING[] = "3.5a";     // Current Scid version
+const char SCID_VERSION_DATE[] = "August 2003";
+const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
 
 const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";
@@ -117,9 +115,11 @@ const compareT
 typedef byte                    pieceT;      // e.g ROOK or WK
 typedef byte                    colorT;      // WHITE or BLACK
 typedef byte                    squareT;     // e.g. A3
-typedef byte                    squareDirT;  // e.g. UP_LEFT
+typedef byte                    directionT;  // e.g. UP_LEFT
 typedef byte                    rankT;       // Chess board rank
 typedef byte                    fyleT;       // Chess board file
+typedef byte                    leftDiagT;   // Up-left diagonals
+typedef byte                    rightDiagT;  // Up-right diagonals
 
 // boardT: 64 squares plus two extra squares: one for storing the side
 //   to move as a byte and one for the string terminator, so boards can
@@ -152,7 +152,7 @@ enum fileModeT {
     FMODE_Both
 };
 
-//  Date type: see date.h and date.cc
+//  Date type: see date.h and date.cpp
 
 typedef uint    dateT;
 
@@ -178,7 +178,7 @@ const byte RATING_BCF = 6;
 extern const char * ratingTypeNames [17];   // Defined in game.cpp
 
 
-// NameBase types: see namebase.h and namebase.cc
+// NameBase types: see namebase.h and namebase.cpp
 
 typedef uint            idNumberT;
 typedef uint            nameT;
@@ -213,7 +213,10 @@ const colorT
 
 const char COLOR_CHAR [3] = {'W', 'B', '_' };
 
-inline char
+  inline colorT
+color_Flip (colorT c) { return 1 - c; }
+
+  inline char
 color_Char(colorT c)  { return COLOR_CHAR[c]; }
 
 const castleDirT  QSIDE = 0,  KSIDE = 1;
@@ -235,7 +238,7 @@ const pieceT
 //   a board can be used as a regular 0-terminated string, provided
 //   that board[NULL_SQUARE] == END_OF_BOARD, as it always should be.
 
-const pieceT  EMPTY = 15;
+const pieceT  EMPTY = 7;
 const pieceT  END_OF_BOARD = 0;
 const pieceT  WK =  1, WQ =  2, WR =  3, WB =  4, WN =  5, WP =  6;
 const pieceT  BK =  9, BQ = 10, BR = 11, BB = 12, BN = 13, BP = 14;
@@ -248,7 +251,7 @@ const uint MAX_PIECE_TYPES = 18;
 
 // PIECE_CHAR[]: array of piece characters, capitals for White pieces.
 
-const char PIECE_CHAR [] = "xKQRBNPxxkqrbnp.Mm";
+const char PIECE_CHAR [] = "xKQRBNP.xkqrbnpxMm";
 
 // PIECE_FLIP[]: array of pieces, with colors reversed.
 
@@ -260,19 +263,38 @@ const pieceT PIECE_FLIP [MAX_PIECE_TYPES] = {
     EMPTY, BM, WM
 };
 
+const bool PIECE_IS_SLIDER [8] = {
+    false,
+    false, true, true, true, false, false,
+    false,
+};
+
+// PIECE_VALUE: Piece values, K=1000, Q=9, R=5, B=N=3, P=1
+
+const int PIECE_VALUE [MAX_PIECE_TYPES] = {
+    0,
+    100, 9, 5, 3, 3, 1,
+    0, 0,
+    -100, -9, -5, -3, -3, -1,
+    0, 3, -3
+};
+
 //
 // INLINE FUNCTIONS for pieces
 //
 
   inline colorT
-piece_Color(pieceT p)
-{ if (p == EMPTY) return NOCOLOR; else return ((p & 0x8) >> 3); }
+piece_Color(pieceT p)  { return (p == EMPTY) ? NOCOLOR : ((p & 8) >> 3); }
+
+// Slightly faster piece_Color when we are sure the piece is not empty:
+  inline colorT
+piece_Color_NotEmpty(pieceT p)  { return (p & 8) >> 3; }
 
   inline pieceT
-piece_Type(pieceT p)  { return (p & 0x7); }
+piece_Type(pieceT p)  { return (p & 7); }
 
   inline pieceT
-piece_Make(colorT c, pieceT p)  { return ((c << 3) | p); }
+piece_Make(colorT c, pieceT p)  { return ((c << 3) | (p & 7)); }
 
   inline bool
 piece_IsWhite(pieceT p)  { return (p>=WK && p<=WP); }
@@ -281,22 +303,25 @@ piece_IsWhite(pieceT p)  { return (p>=WK && p<=WP); }
 piece_IsBlack(pieceT p)  { return (p>=BK && p<=BP); }
 
   inline bool
-piece_IsKing(pieceT p)  { return (p==WK || p==BK); }
+piece_IsKing(pieceT p)  { return (piece_Type(p) == KING); }
 
   inline bool
-piece_IsQueen(pieceT p)  { return (p==WQ || p==BQ); }
+piece_IsQueen(pieceT p)  { return (piece_Type(p) == QUEEN); }
 
   inline bool
-piece_IsBishop(pieceT p)  { return (p==WB || p==BB); }
+piece_IsRook(pieceT p)  { return (piece_Type(p) == ROOK); }
 
   inline bool
-piece_IsKnight(pieceT p)  { return (p==WN || p==BN); }
+piece_IsBishop(pieceT p)  { return (piece_Type(p) == BISHOP); }
 
   inline bool
-piece_IsRook(pieceT p)  { return (p==WR || p==BR); }
+piece_IsKnight(pieceT p)  { return (piece_Type(p) == KNIGHT); }
 
   inline bool
-piece_IsPawn(pieceT p)  { return (p==WP || p==BP); }
+piece_IsPawn(pieceT p)  { return (piece_Type(p) == PAWN); }
+
+  inline bool
+piece_IsSlider(pieceT p) { return PIECE_IS_SLIDER[piece_Type(p)]; }
 
   inline char
 piece_Char(pieceT p)  { return PIECE_CHAR[piece_Type(p)]; }
@@ -313,6 +338,9 @@ piece_FromChar(char x)
     default:  return EMPTY;
     }
 }
+
+inline int
+piece_Value (pieceT p)  { return PIECE_VALUE[p]; }
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,8 +378,8 @@ fyle_FromChar(char c)
   inline squareT
 square_Make(fyleT f, rankT r)
 {
-    if (f == NO_FYLE  ||  r == NO_RANK) { return NULL_SQUARE; }
-    else { return f + (8 * r); }
+    ASSERT (f <= H_FYLE  &&  r <= RANK_8);
+    return ((r << 3) | f);
 }
 
   inline fyleT
@@ -364,6 +392,130 @@ square_Fyle(squareT sq)
 square_Rank(squareT sq)
 {
     return ((sq >> 3) & 0x7);
+}
+
+  inline leftDiagT
+square_LeftDiag (squareT sq)
+{
+    return square_Rank(sq) + square_Fyle(sq);
+}
+
+  inline rightDiagT
+square_RightDiag (squareT sq)
+{
+    return (7 + square_Rank(sq) - square_Fyle(sq));
+}
+
+// square_Color:
+//   Return WHITE for a light square, BLACK for a dark square.
+  inline colorT
+square_Color (squareT sq)
+{
+    return 1 - (square_LeftDiag(sq) & 1);
+}
+
+// square_FlipFyle:
+//   Return the square with its file flipped: a1 <-> h1, b1 <-> g1, etc.
+  inline squareT
+square_FlipFyle (squareT sq)
+{
+    return square_Make (A_FYLE + H_FYLE - square_Fyle(sq), square_Rank(sq));
+}
+
+// square_FlipRank:
+//   Return the square with its rank flipped: a1 <-> a8, a2 <-> a7, etc.
+  inline squareT
+square_FlipRank (squareT sq)
+{
+    return square_Make (square_Fyle(sq), RANK_1 + RANK_8 - square_Rank(sq));
+}
+
+// square_FlipDiag:
+//   Return the square flipped along the a1-h8 diagonal.
+  inline squareT
+square_FlipDiag (squareT sq)
+{
+    return square_Make (square_Rank(sq), square_Fyle(sq));
+}
+
+const uint
+rankFyleDist[64] = {
+    0, 1, 2, 3, 4, 5, 6, 7,
+    1, 0, 1, 2, 3, 4, 5, 6,
+    2, 1, 0, 1, 2, 3, 4, 5,
+    3, 2, 1, 0, 1, 2, 3, 4,
+    4, 3, 2, 1, 0, 1, 2, 3,
+    5, 4, 3, 2, 1, 0, 1, 2,
+    6, 5, 4, 3, 2, 1, 0, 1,
+    7, 6, 5, 4, 3, 2, 1, 0
+};
+
+// square_Distance:
+//   Return the distance in king moves between two squares.
+  inline uint
+square_Distance (squareT from, squareT to)
+{
+    ASSERT (from <= H8  &&  to <= H8);
+    uint rankd = rankFyleDist[(square_Rank(from) << 3) | square_Rank(to)];
+    uint fyled = rankFyleDist[(square_Fyle(from) << 3) | square_Fyle(to)];
+    return (rankd > fyled) ? rankd : fyled;
+}
+
+// square_NearestCorner:
+//   Return the corner (A1/H1/A8/H8) closest to the specified square.
+  inline squareT
+square_NearestCorner (squareT sq)
+{
+    if (square_Rank(sq) <= RANK_4) {
+        return (square_Fyle(sq) <= D_FYLE)? A1 : H1;
+    } else {
+        return (square_Fyle(sq) <= D_FYLE)? A8 : H8;
+    }
+}
+
+  inline bool
+square_IsCornerSquare (squareT sq)
+{
+    return (sq == A1  ||  sq == H1  ||  sq == A8  ||  sq == H8);
+}
+
+  inline bool
+square_IsEdgeSquare (squareT sq)
+{
+    rankT rank = square_Rank(sq);
+    if (rank == RANK_1  ||  rank == RANK_8) { return true; }
+    fyleT fyle = square_Fyle(sq);
+    if (fyle == A_FYLE  ||  fyle == H_FYLE) { return true; }
+    return false;
+}
+
+const int edgeDist[66] = {
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 0,
+    0, 1, 2, 2, 2, 2, 1, 0,
+    0, 1, 2, 3, 3, 2, 1, 0,
+    0, 1, 2, 3, 3, 2, 1, 0,
+    0, 1, 2, 2, 2, 2, 1, 0,
+    0, 1, 1, 1, 1, 1, 1, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    -1, -1
+};
+
+  inline int
+square_EdgeDistance (squareT sq)
+{
+    return edgeDist[sq];
+}
+
+  inline bool
+square_IsKnightHop (squareT from, squareT to)
+{
+    ASSERT (from <= H8  &&  to <= H8);
+    uint rdist = rankFyleDist [(square_Rank(from) << 3) | square_Rank(to)];
+    uint fdist = rankFyleDist [(square_Fyle(from) << 3) | square_Fyle(to)];
+    // It is a knight hop only if one distance is two squares and the
+    // other is one square -- that is, only if their product equals two.
+    return ((rdist * fdist) == 2);
 }
 
   inline char
@@ -397,18 +549,18 @@ square_Print (squareT sq, char * str)
 // Up = 1, Down = 2, Left = 4, Right = 8, UpLeft = 5, UpRight = 9,
 // DownLeft = 6, DownRight = 10
 
-const squareDirT
+const directionT
     NULL_DIR = 0,
     UP = 1,
     DOWN = 2,
     LEFT = 4,
     RIGHT = 8,
-    UP_LEFT = (UP + LEFT),
-    UP_RIGHT = (UP + RIGHT),
-    DOWN_LEFT = (DOWN + LEFT),
-    DOWN_RIGHT = (DOWN + RIGHT);
+    UP_LEFT = (UP | LEFT),
+    UP_RIGHT = (UP | RIGHT),
+    DOWN_LEFT = (DOWN | LEFT),
+    DOWN_RIGHT = (DOWN | RIGHT);
 
-const squareDirT sdOpposite[] = {
+const directionT dirOpposite[11] = {
     NULL_DIR,
     DOWN,       // opposite of UP (1)
     UP,         // opposite of DOWN (2)
@@ -422,47 +574,89 @@ const squareDirT sdOpposite[] = {
     UP_LEFT     // opposite of DOWN_RIGHT (10)
 };
 
-// squareDir_Opposite(): return the opposite direction to d
-  inline squareDirT
-squareDir_Opposite (squareDirT d)
+// direction_Opposite(): return the opposite direction to d
+  inline directionT
+direction_Opposite (directionT d)
 {
-    return sdOpposite[d];
+    return dirOpposite[d];
 }
 
-// sdIsDiagonal[]: array listing the diagonal directions, for fast
+// dirIsDiagonal[]: array listing the diagonal directions, for fast
 //      lookup of whether a direction is a diagonal.
-  const uint
-sdIsDiagonal [] = {
-    0,   //  0 = NULL_DIR
-    0,   //  1 = UP
-    0,   //  2 = DOWN
-    0,   //  3 = Invalid
-    0,   //  4 = LEFT
-    1,   //  5 = UP_LEFT
-    1,   //  6 = DOWN_LEFT
-    0,   //  7 = Invalid
-    0,   //  8 = RIGHT
-    1,   //  9 = UP_RIGHT
-    1    // 10 = DOWN_RIGHT
+  const bool
+dirIsDiagonal [11] = {
+    false,   //  0 = NULL_DIR
+    false,   //  1 = UP
+    false,   //  2 = DOWN
+    false,   //  3 = Invalid
+    false,   //  4 = LEFT
+    true,    //  5 = UP_LEFT
+    true,    //  6 = DOWN_LEFT
+    false,   //  7 = Invalid
+    false,   //  8 = RIGHT
+    true,    //  9 = UP_RIGHT
+    true     // 10 = DOWN_RIGHT
 };
+
+  inline bool
+direction_IsDiagonal (directionT dir)
+{
+    return dirIsDiagonal[dir];
+}
+
+// dirDelta:
+//   Array giving the board delta of moving to the next square
+//   in that direction.
+  const int
+dirDelta[11] = {
+    0,    // NULL_DIR
+    8,    // UP
+   -8,    // DOWN
+    0,    // Invalid
+   -1,    // LEFT
+    7,    // UP_LEFT
+   -9,    // DOWN_LEFT
+    0,    // Invalid
+    1,    // RIGHT
+    9,    // UP_RIGHT
+   -7     // DOWN_RIGHT
+};
+
+  inline int
+direction_Delta (directionT dir)
+{
+    return dirDelta[dir];
+}
 
 // sqDir[][]: Array listing the direction between any two squares.
 //    For example, sqDir[A1][B2] == UP_RIGHT, and sqDir[A1][C2] == NULL_DIR.
-//    It is initialised with the function scid_Init() in misc.cc
-extern squareDirT  sqDir[66][66];
+//    It is initialised with the function scid_Init() in misc.cpp
+extern directionT  sqDir[66][66];
 
-
-// sqMove[65][11]: a table of the square resulting from a move in a
+// sqMove[66][11]: a table of the square resulting from a move in a
 //    certain direction from a square.
-//    For example, sqMove[A1][UP] == A2.
+//    For example, sqMove[A1][UP] == A2; sqMove[A1][DOWN] == NULL_SQUARE.
 #include "sqmove.h"
 
 // square_Move(): Return the new square resulting from moving in
 //      direction d from x.
   inline squareT
-square_Move(squareT x, squareDirT d)
+square_Move(squareT sq, directionT dir)
 {
-    return sqMove[x][d];
+    return sqMove[sq][dir];
+}
+
+// square_Last():
+//   Return the last square reached by moving as far as possible in
+//   the direction d from the square sq. If sq is a valid on-board
+//   square and d is a valid direction, the result will always be
+//   a valid on-board square; the result will be the same as the
+//   input square if moving in the specified direction would end
+//   up off the board.
+  inline squareT
+square_Last (squareT sq, directionT dir)
+{
+    return sqLast[sq][dir];
 }
 
 
@@ -512,18 +706,42 @@ board_Compare (const pieceT * b1, const pieceT * b2)
 
 // square_Adjacent: returns 1 if the two squares are adjacent. Note that
 //    diagonal adjacency is included: a1 and b2 are adjacent.
+//    Also note that a square is adjacent to itself.
   inline bool
-square_Adjacent (squareT a, squareT b)
+square_Adjacent (squareT from, squareT to)
 {
-    if ((a == NULL_SQUARE) || (b == NULL_SQUARE)) return false;
-    register int x;
-    x = abs(square_Fyle(a) - square_Fyle(b));
-    if (x > 1) { return false; }
-    x = abs(square_Rank(a) - square_Rank(b));
-    if (x > 1) { return false; }
+    ASSERT (from <= H8  &&  to <= H8);
+    rankT fromRank = square_Rank(from);
+    rankT toRank = square_Rank(to);
+    int rdist = (int)fromRank - (int)toRank;
+    if (rdist < -1  ||  rdist > 1) { return false; }
+    fyleT fromFyle = square_Fyle(from);
+    fyleT toFyle = square_Fyle(to);
+    int fdist = (int)fromFyle - (int)toFyle;
+    if (fdist < -1  ||  fdist > 1) { return false; }
     return true;
 }
 
+// Random values:
+//   To ensure good bit distributions, we take three random values
+//   and mix the bits around.
+
+inline void srandom32(uint seed) {
+#ifdef WIN32
+    srand (seed);
+#else
+    srandom (seed);
+#endif
+}
+
+inline uint random32()
+{
+#ifdef WIN32
+    return rand() ^ (rand() << 16) ^ (rand() >> 16);
+#else
+    return random() ^ (random() << 16) ^ (random() >> 16);
+#endif
+}
 
 #endif  // #ifdef SCID_COMMON_H
 

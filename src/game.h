@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -49,6 +49,7 @@ const byte
     NAG_BlackDecisive = 19,
     NAG_WhiteCrushing = 20,
     NAG_BlackCrushing = 21,
+    NAG_Compensation = 44,
     NAG_Novelty = 146,
     NAG_Diagram = 201;  // Scid-specific NAGs start at 201.
 
@@ -301,7 +302,7 @@ public:
     NameBase *  GetNameBase ()              { return NBase; }
 
     void        SetStartPos (Position * pos);
-    errorT      SetStartFen (char * fenStr);
+    errorT      SetStartFen (const char * fenStr);
 
     void        SetScidFlags (const char * s) { strCopy (ScidFlags, s); }
     const char * GetScidFlags ()              { return ScidFlags; }
