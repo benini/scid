@@ -1150,7 +1150,7 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Author>Kontakt-Information</a></li>
 </ul>
 
-<p><footer>(Aktualisiert: Scid 3.3, März 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -2873,7 +2873,7 @@ queenside, or set up a d5 or e5 pawn wedge, for example.
 </p>
 </ENGLISH>
 
-<p><footer>(Aktualisiert: Scid 3.3, März 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -3088,7 +3088,7 @@ der Konstruktion von Turnieren aus den Partien berücksichtigen muß,
 außerordentlich verringert.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.3, März 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -3308,7 +3308,7 @@ aktuellen Position. Weitere Informationen finden Sie auf der
 <a Tree Graph>Zugbaum</a>-Hilfeseite.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.3, März 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -3360,6 +3360,52 @@ Position erhalten, indem Sie das <term>Endspieltabellen-Fenster</term>
 Dieses Fenster zeigt das Ergebnis jedes zulässigen Zuges in der aktuellen
 Stellung bei perfektem Spiel.
 </p>
+<ENGLISH>
+<p>
+The window has two main parts. The summary frame (on the left) shows
+which tablebases Scid found on your computer and a summary for each
+tablebase. The results frame (on the right) shows optimal results for
+all moves from the current position displayed in the main window.
+</p>
+
+<h4>The summary frame</h4>
+<p>
+The top part of the summary frame lets you select a particular
+tablebase. Those you have available are shown in blue and unavailable
+tablebases are shown in gray, but you can select any tablebase.
+The lower part of the summary frame shows summary information for the
+selected tablebase. (Not all tablebases have a summary recorded in
+Scid yet.)
+</p>
+<p>
+The summary includes the frequency (how many games per million
+reach a position with this material, computed from a database of nearly
+600,000 master-level games), a longest mate for either side, and the
+number of mutual (or "reciprocal") zugzwangs. A mutual zugwang is a
+position where white to move draws and black to move loses, or where
+white to move loses and black to move draws, or where whoever moves
+loses.
+</p>
+<p>
+For some tablebases with mutual zugzwangs, the summary also includes
+a list of all of the zugwang positions or a selection of them. A full
+list for every tablebase is not feasible since some tablebases have
+thousands of mutual zugzwangs.
+</p>
+<p>
+You can set up a random position from the selected tablebase by pressing
+the <b>Random</b> button.
+</p>
+
+<h4>The results frame</h4>
+<p>
+The results frame is updated whenever the chessboard in the main window
+changes. The first line shows how many moves win (+), draw (=), lose (=),
+or have an unknown result (?). The rest of the frame gives a more detailed
+list of results, ranking them from shortest to longest mates, then draws,
+then longest to shortest losses. All distances are to checkmate.
+</p>
+</ENGLISH>
 
 <h3>Endspieltabellen-Quellen</h3>
 <p>
