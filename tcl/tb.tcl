@@ -3,6 +3,7 @@
 
 set tbWin 0
 set tbTraining 0
+set tbBoard 0
 set tbStatus ""
 
 namespace eval ::tb {}
@@ -86,7 +87,7 @@ proc ::tb::open {} {
   pack [frame $w.b] -side bottom -fill x
   pack [frame $w.info] -side left -fill y -expand yes
   addVerticalRule $w
-  pack [frame $w.pos] -side right -fill y -expand yes
+  pack [frame $w.pos] -side right -fill both -expand yes
 
   # Left frame: tablebase browser and summary info
 
@@ -128,18 +129,27 @@ proc ::tb::open {} {
   scrollbar $f.ybar -command "$f.text yview" -takefocus 0
   pack $f.ybar -side right -fill y
   pack $f.text -side left -fill both -expand yes
-
   $f.text tag configure indent -lmargin2 [font measure font_Fixed  "        "]
 
-  button $w.b.random -text "Random" -command ::tb::random
+  ::board::new $f.board 30
+  $f.board configure -relief solid -borderwidth 1
+  for {set i 0} {$i < 64} {incr i} {
+    ::board::bind $f.board $i <Button-1> [list ::tb::resultsBoard $i]
+  }
+  if {$::tbBoard} {
+    pack $f.board -side bottom -before $f.ybar
+  }
+
   checkbutton $w.b.training -text $::tr(Training) -variable tbTraining \
     -command ::tb::training -relief raised -padx 4 -pady 5
+  button $w.b.random -text "Random" -command ::tb::random
+  button $w.b.showboard -image tb_coords -command ::tb::showBoard
   button $w.b.help -text $::tr(Help) -command { helpWindow TB }
   button $w.b.close -text $::tr(Close) -command "destroy $w"
   label $w.b.status -width 1 -textvar tbStatus -font font_Small \
     -relief flat -anchor w -height 0
   pack $w.b.close $w.b.help -side right -padx 2 -pady 2
-  pack $w.b.random $w.b.training -side left -padx 2 -pady 2
+  pack $w.b.training $w.b.random $w.b.showboard -side left -padx 2 -pady 2
   pack $w.b.status -side left -fill x -expand yes
   bind $w <Destroy> { set tbWin 0; set tbTraining 0 }
   bind $w <F1> { helpWindow TB }
@@ -148,6 +158,56 @@ proc ::tb::open {} {
   ::tb::section
   ::tb::summary
   ::tb::results
+}
+
+# ::tb::showBoard
+#   Toggles the results board.
+#
+proc ::tb::showBoard {} {
+  global tbBoard
+  set f .tbWin.pos
+  if {$tbBoard} {
+    set tbBoard 0
+    pack forget $f.board
+  } else {
+    set tbBoard 1
+    pack $f.board -side bottom -before $f.ybar
+  }
+}
+
+# ::tb::resultsBoard
+#   Updates theresultsBoard board for a particular square.
+#
+proc ::tb::resultsBoard {sq} {
+  set f .tbWin.pos
+  set board [sc_pos board]
+  # If selected square is empty, take no action:
+  if {[string index $board $sq] == "."} { return }
+  # Clear any previous results:
+  ::board::recolor $f.board
+  ::board::clearText $f.board
+  # Highlight the selected square:
+  ::board::colorSquare $f.board $sq $::highcolor
+  # Retrieve tablebase scores:
+  busyCursor .
+  set scores [sc_pos probe board $sq]
+  set text(X) X; set color(X) red
+  set text(=) =; set color(=) blue
+  set text(?) "?"; set color(?) red
+  set text(+) "#"; set text(-) "#"
+  if {[sc_pos side] == "white"} {
+    set color(+) white; set color(-) black
+  } else {
+    set color(+) black; set color(-) white
+  }
+  for {set i 0} {$i < 64} {incr i} {
+    # Skip squares that have a piece.
+    if {[string index $board $i] != "."} { continue }
+    # Draw the score on this square:
+    set score [string index $scores $i]
+    catch {::board::drawText $f.board $i $text($score) $color($score)}
+  }
+  unbusyCursor .
 }
 
 # ::tb::name
@@ -350,6 +410,13 @@ proc ::tb::results {} {
   global tbTraining
   set w .tbWin
   if {! [winfo exists $w]} { return }
+
+  # Reset results board:
+  ::board::recolor $w.pos.board
+  ::board::clearText $w.pos.board
+  ::board::update $w.pos.board [sc_pos board]
+
+  # Update results panel:
   set t $w.pos.text
   $t delete 1.0 end
   if {$tbTraining} {
@@ -373,7 +440,7 @@ proc ::tb::random {} {
   # random starting position:
   sc_game new
   sc_game startBoard "random:$tbInfo(material)"
-  updateBoardAndPgn
+  updateBoard -pgn
 }
 
 # ::tb::setFEN
@@ -389,7 +456,7 @@ proc ::tb::setFEN {fen} {
   # The FEN is valid, so clear the game and reset the FEN:
   sc_game new
   sc_game startBoard $fen
-  updateBoardAndPgn
+  updateBoard -pgn
 }
 
 # ::tb::training
@@ -405,7 +472,7 @@ proc ::tb::training {} {
   } else {
     if {$gameInfo(showTB) == 0} { set gameInfo(showTB) $gameInfo(showTB_old) }
   }
-  updateBoardAndPgn
+  updateBoard -pgn
   ::tb::results
 }
 
@@ -429,7 +496,7 @@ proc ::tb::move {} {
   } else {
     set tbStatus "Played $move."
   }
-  updateBoardAndPgn
+  updateBoard -pgn
 }
 
 
@@ -459,19 +526,19 @@ proc ::tb::move {} {
 #   These zugzwang FENs board field only; no side to move, etc.
 
 set tbs(kqk) {
-  259 10 {7K/6Q1/8/8/2k5/8/8/8} 0 -
+  257 10 {7K/6Q1/8/8/2k5/8/8/8} 0 -
   100.0 0.0 0.0 0.0 10.3 89.7
   0
 }
 
 set tbs(krk) {
-  543 16 {8/8/2R5/3k4/8/8/8/1K6} 0 -
+  542 16 {8/8/2R5/3k4/8/8/8/1K6} 0 -
   100.0 0.0 0.0 0.0 9.9 90.1
   0
 }
 
 set tbs(kbk) {
-  184 0 - 0 -
+  194 0 - 0 -
   0.0 100.0 0.0 0.0 100.0 0.0
   0
 }
@@ -483,49 +550,49 @@ set tbs(knk) {
 }
 
 set tbs(kpk) {
-  2345 28 {8/8/8/1k6/8/8/K5P1/8} 0 -
+  2352 28 {8/8/8/1k6/8/8/K5P1/8} 0 -
   76.5 23.5 0.0 0.0 41.9 58.1
   80 80 {} 0 {} 0 {}
 }
 
 set tbs(kqkq) {
-  221 13 {8/8/8/8/8/8/8/qk1K2Q1} 13 {8/8/8/8/8/8/8/QK1k2q1}
+  222 13 {8/8/8/8/8/8/8/qk1K2Q1} 13 {8/8/8/8/8/8/8/QK1k2q1}
   41.7 57.8 0.5 41.7 57.8 0.5
   0
 }
 
 set tbs(kqkr) {
-  398 35 {K3r3/8/5k2/Q7/8/8/8/8} 19 {k7/5r2/K7/8/8/8/1Q6/8}
+  400 35 {K3r3/8/5k2/Q7/8/8/8/8} 19 {k7/5r2/K7/8/8/8/1Q6/8}
   99.0 0.8 0.2 28.7 5.8 65.5
   0
 }
 
 set tbs(kqkb) {
-  26 17 {K7/8/8/3k4/4b3/8/8/7Q} 0 -
+  25 17 {K7/8/8/3k4/4b3/8/8/7Q} 0 -
   99.7 0.3 0.0 0.0 23.1 76.9
   0
 }
 
 set tbs(kqkn) {
-  72 21 {8/KQ6/2n5/2k5/8/8/8/8} 0 -
+  74 21 {8/KQ6/2n5/2k5/8/8/8/8} 0 -
   99.3 0.7 0.0 0.0 19.5 80.5
   0
 }
 
 set tbs(kqkp) {
-  931 28 {3KQ3/8/8/8/8/8/3kp3/8} 29 {8/1p4k1/7Q/8/7K/8/8/8}
+  937 28 {3KQ3/8/8/8/8/8/3kp3/8} 29 {8/1p4k1/7Q/8/7K/8/8/8}
   99.4 0.6 0.0 7.7 12.1 80.2
   0
 }
 
 set tbs(krkr) {
-  417 19 {8/3R4/8/8/5k2/6r1/7K/8} 19 {1k6/2R5/3K4/8/8/8/6r1/8}
+  423 19 {8/3R4/8/8/5k2/6r1/7K/8} 19 {1k6/2R5/3K4/8/8/8/6r1/8}
   29.1 70.2 0.7 29.1 70.2 0.7
   0
 }
 
 set tbs(krkb) {
-  321 29 {k7/8/b7/8/K7/R7/8/8} 0 -
+  322 29 {k7/8/b7/8/K7/R7/8/8} 0 -
   35.2 64.8 0.0 0.0 96.8 3.2
   5  5 {
     4R3/8/8/8/8/b1K5/8/3k4 8/5R2/7b/8/8/2K5/8/1k6 8/8/1b6/5R2/8/3K4/8/2k5
@@ -534,7 +601,7 @@ set tbs(krkb) {
 }
 
 set tbs(krkn) {
-  391 40 {8/8/6R1/2K5/n7/8/8/3k4} 1 {8/8/8/8/1n6/k7/8/KR6}
+  397 40 {8/8/6R1/2K5/n7/8/8/3k4} 1 {8/8/8/8/1n6/k7/8/KR6}
   48.4 51.6 0.0 0.0 89.0 11.0
   18 18 {
     8/2n5/8/4R3/3K1k2/8/8/8 8/8/5k2/4R3/3K4/2n5/8/8 8/8/8/1k6/2R5/3K4/4n3/8
@@ -547,7 +614,7 @@ set tbs(krkn) {
 }
 
 set tbs(krkp) {
-  2122 26 {2K5/8/7p/6k1/8/8/R7/8} 43 {8/8/8/8/5R2/2pk4/5K2/8}
+  2146 26 {2K5/8/7p/6k1/8/8/R7/8} 43 {8/8/8/8/5R2/2pk4/5K2/8}
   91.4 8.4 0.2 16.4 17.5 66.1
   12 12 {
     8/8/8/8/8/1k6/p7/R1K5   8/8/8/8/8/2k5/1p6/1R1K4 8/8/8/8/8/4k3/5p2/3K1R2
@@ -558,19 +625,19 @@ set tbs(krkp) {
 }
 
 set tbs(kbkb) {
-  51 1 {8/8/8/8/8/K7/7B/kb6} 1 {6BK/8/6k1/8/8/b7/8/8}
+  49 1 {8/8/8/8/8/K7/7B/kb6} 1 {6BK/8/6k1/8/8/b7/8/8}
   0.0 100.0 0.0 0.0 100.0 0.0
   0
 }
 
 set tbs(kbkn) {
-  82 1 {knB5/8/1K6/8/8/8/8/8} 1 {K1k1n3/B7/8/8/8/8/8/8}
+  87 1 {knB5/8/1K6/8/8/8/8/8} 1 {K1k1n3/B7/8/8/8/8/8/8}
   0.0 100.0 0.0 0.0 100.0 0.0
   0
 }
 
 set tbs(kbkp) {
-  380 1 {7k/7p/5K2/8/8/8/1B6/8} 29 {8/1p4k1/7B/8/8/7K/8/8}
+  387 1 {7k/7p/5K2/8/8/8/1B6/8} 29 {8/1p4k1/7B/8/8/7K/8/8}
   0.0 94.8 5.2 23.6 76.4 0.0
   1 0 {} 1 {8/8/8/8/8/8/1pK5/kB6} 0 {}
 }
@@ -582,13 +649,13 @@ set tbs(knkn) {
 }
 
 set tbs(knkp) {
-  492 7 {8/8/8/8/pN6/8/2K5/k7} 29 {8/1p6/6kN/8/8/7K/8/8}
+  497 7 {8/8/8/8/pN6/8/2K5/k7} 29 {8/1p6/6kN/8/8/7K/8/8}
   0.0 87.1 12.9 32.6 67.4 0.0
   29 22 {} 7 {} 0 {}
 }
 
 set tbs(kpkp) {
-  2804 33 {2K5/k7/7p/8/8/8/6P1/8} 33 {8/2p1K3/8/8/8/4P3/8/3k4}
+  2810 33 {2K5/k7/7p/8/8/8/6P1/8} 33 {8/2p1K3/8/8/8/4P3/8/3k4}
   43.4 33.3 23.2 43.4 33.3 23.2
   121 106 {} 106 {} 15 {
     8/8/8/1Kp5/2Pk4/8/8/8 8/8/8/2Kp4/3Pk3/8/8/8 8/8/8/8/1Kp5/2Pk4/8/8
@@ -600,7 +667,7 @@ set tbs(kpkp) {
 }
 
 set tbs(kqqk) {
-  14 4 {8/8/8/4k3/8/8/1K6/QQ6} 0 -
+  13 4 {8/8/8/4k3/8/8/1K6/QQ6} 0 -
   100.0 0.0 0.0 0.0 2.1 97.9
   0
 }
@@ -612,61 +679,61 @@ set tbs(kqrk) {
 }
 
 set tbs(kqbk) {
-  39 8 {8/Q4B2/5k2/8/8/8/8/K7} 0 -
+  36 8 {8/Q4B2/5k2/8/8/8/8/K7} 0 -
   100.0 0.0 0.0 0.0 9.4 90.6
   0
 }
 
 set tbs(kqnk) {
-  40 9 {K7/N7/8/8/8/5k2/Q7/8} 0 -
+  41 9 {K7/N7/8/8/8/5k2/Q7/8} 0 -
   100.0 0.0 0.0 0.0 9.7 90.3
   0
 }
 
 set tbs(kqpk) {
-  154 10 {8/8/8/2k5/8/8/4P1Q1/7K} 0 -
+  156 10 {8/8/8/2k5/8/8/4P1Q1/7K} 0 -
   100.0 0.0 0.0 0.0 2.8 97.2
   0
 }
 
 set tbs(krrk) {
-  9 7 {4R3/3k4/8/8/5R1K/8/8/8} 0 -
+  8 7 {4R3/3k4/8/8/5R1K/8/8/8} 0 -
   100.0 0.0 0.0 0.0 0.3 99.7
   0
 }
 
 set tbs(krbk) {
-  47 16 {8/8/3R4/4k3/4B3/8/8/K7} 0 -
+  46 16 {8/8/3R4/4k3/4B3/8/8/K7} 0 -
   100.0 0.0 0.0 0.0 8.8 91.2
   0
 }
 
 set tbs(krnk) {
-  12 16 {K7/2R5/3k4/3N4/8/8/8/8} 0 -
+  15 16 {K7/2R5/3k4/3N4/8/8/8/8} 0 -
   100.0 0.0 0.0 0.0 9.2 90.8
   0
 }
 
 set tbs(krpk) {
-  335 16 {K7/8/3R4/4kP2/8/8/8/8} 0 -
+  333 16 {K7/8/3R4/4kP2/8/8/8/8} 0 -
   100.0 0.0 0.0 0.0 2.5 97.5
   0
 }
 
 set tbs(kbbk) {
-  33 19 {K7/8/3B4/3k4/8/8/4B3/8} 0 -
+  31 19 {K7/8/3B4/3k4/8/8/4B3/8} 0 -
   49.3 50.7 0.0 0.0 58.8 41.2
   0
 }
 
 set tbs(kbnk) {
-  203 33 {7K/4B3/4k3/8/8/8/8/2N5} 0 -
+  206 33 {7K/4B3/4k3/8/8/8/8/2N5} 0 -
   99.5 0.5 0.0 0.0 18.1 81.9
   0
 }
 
 set tbs(kbpk) {
-  449 31 {8/3P4/KBk5/8/8/8/8/8} 0 -
+  453 31 {8/3P4/KBk5/8/8/8/8/8} 0 -
   96.0 4.0 0.0 0.0 16.8 83.2
   6 6 {
     1B1K4/8/8/k7/8/P7/8/8 1B6/3K4/8/1k6/8/P7/8/8 1BK5/8/1k6/8/8/P7/8/8
@@ -675,7 +742,7 @@ set tbs(kbpk) {
 }
 
 set tbs(knnk) {
-  19 1 {k7/3N4/K1N5/8/8/8/8/8} 0 -
+  20 1 {k7/3N4/K1N5/8/8/8/8/8} 0 -
   0.0 100.0 0.0 0.0 100.0 0.0
   0
 }
@@ -687,13 +754,13 @@ set tbs(knpk) {
 }
 
 set tbs(kppk) {
-  571 32 {8/8/8/8/2k5/6P1/K5P1/8} 0 -
+  563 32 {8/8/8/8/2k5/6P1/K5P1/8} 0 -
   98.4 1.6 0.0 0.0 7.9 92.1
   43 43 {} 0 {} 0 {}
 }
 
 set tbs(kqqkq) {
-  49 30 {2K5/8/1k6/5q2/8/8/6Q1/7Q} 13 {7Q/7K/8/6Qk/8/8/7q/8}
+  51 30 {2K5/8/1k6/5q2/8/8/6Q1/7Q} 13 {7Q/7K/8/6Qk/8/8/7q/8}
   99.1 0.8 0.1 0.6 32.8 66.6
   0
 }
@@ -723,19 +790,19 @@ set tbs(kqqkp) {
 }
 
 set tbs(kqrkq) {
-  33 67 ? 38 ?
+  36 67 {8/8/8/8/q7/6k1/8/KR5Q} 38 {8/8/q7/8/8/6R1/2K4Q/k7}
   97.0 2.8 0.2 24.4 21.2 54.4
   1 1 {8/8/8/8/1R6/k4q2/8/1K2Q3} 0 {} 0 {}
 }
 
 set tbs(kqrkr) {
-  123 34 {1K2Q3/8/3k4/1r2R3/8/8/8/8} 20 {6rQ/8/8/8/8/7K/5R2/6k1}
+  132 34 {1K2Q3/8/3k4/1r2R3/8/8/8/8} 20 {6rQ/8/8/8/8/7K/5R2/6k1}
   99.8 0.1 0.0 0.3 17.1 82.1
   0
 }
 
 set tbs(kqrkb) {
-  11 29 {2k5/5b2/8/8/2K5/8/Q7/6R1} 0 -
+  12 29 {2k5/5b2/8/8/2K5/8/Q7/6R1} 0 -
   100.0 0.0 0.0 0.0 11.6 88.4
   0
 }
@@ -747,13 +814,13 @@ set tbs(kqrkn) {
 }
 
 set tbs(kqrkp) {
-  23 40 ? 43 ?
+  25 40 ? 43 ?
   100.0 0.0 0.0 0.3 1.4 98.3
   0
 }
 
 set tbs(kqbkq) {
-  30 33 {5q2/8/8/5B2/k1K4Q/8/8/8} 24 {6KQ/8/1B6/6k1/8/6q1/8/8}
+  28 33 {5q2/8/8/5B2/k1K4Q/8/8/8} 24 {6KQ/8/1B6/6k1/8/6q1/8/8}
   55.7 44.0 0.3 30.5 62.3 7.2
   25 25 {} 0 {} 0 {}
 }
@@ -777,19 +844,19 @@ set tbs(kqbkn) {
 }
 
 set tbs(kqbkp) {
-  23 32 ? 24 ?
+  25 32 ? 24 ?
   100.0 0.0 0.0 1.0 14.1 84.9
   0
 }
 
 set tbs(kqnkq) {
-  75 41 {8/7q/8/k7/2K5/2N5/8/4Q3} 24 {7K/8/1N6/Q5k1/8/8/6q1/8}
+  74 41 {8/7q/8/k7/2K5/2N5/8/4Q3} 24 {7K/8/1N6/Q5k1/8/8/6q1/8}
   50.1 49.6 0.3 33.5 62.2 4.3
   38 38 {} 0 {} 0 {}
 }
 
 set tbs(kqnkr) {
-  11 38 ? 41 ?
+  12 38 ? 41 ?
   99.2 0.7 0.0 3.0 27.2 69.8
   0
 }
@@ -801,49 +868,49 @@ set tbs(kqnkb) {
 }
 
 set tbs(kqnkn) {
-  14 21 ? 1 ?
+  13 21 ? 1 ?
   99.4 0.6 0.0 0.0 17.8 82.2
   0
 }
 
 set tbs(kqnkp) {
-  42 30 ? 29 ?
+  46 30 ? 29 ?
   99.9 0.1 0.0 1.9 15.0 83.1
   0
 }
 
 set tbs(kqpkq) {
-  1165 124 {4q3/K7/8/8/8/4P3/6Q1/k7} 29 {8/7q/3PK3/8/8/8/Q7/3k4}
+  1179 124 {4q3/K7/8/8/8/4P3/6Q1/k7} 29 {8/7q/3PK3/8/8/8/Q7/3k4}
   68.4 31.2 0.4 35.2 51.2 13.6
   640 640 {} 0 {} 0 {}
 }
 
 set tbs(kqpkr) {
-  214 38 ? 33 ?
+  216 38 ? 33 ?
   99.6 0.3 0.1 19.7 6.1 74.1
   1 1 {k7/8/KQ1r4/P7/8/8/8/8} 0 {} 0 {}
 }
 
 set tbs(kqpkb) {
-  18 28 ? 2 ?
+  16 28 ? 2 ?
   99.9 0.1 0.0 0.0 16.7 83.3
   0
 }
 
 set tbs(kqpkn) {
-  44 30 ? 8 ?
+  41 30 ? 8 ?
   99.7 0.3 0.0 0.0 12.5 87.5
   0
 }
 
 set tbs(kqpkp) {
-  601 105 ? 34 ?
+  622 105 {8/8/8/8/3P2Q1/8/1p6/K1k5} 34 ?
   100.0 0.0 0.0 3.3 7.3 89.4
   0
 }
 
 set tbs(krrkq) {
-  9 29 ? 49 ?
+  8 29 {3R4/1R6/8/8/q7/7K/8/k7} 49 {7R/1q6/3K4/8/k7/8/2R5/8}
   58.2 36.8 5.1 52.0 37.0 11.0
   10 10 {
     6R1/8/8/8/6R1/7q/1K5k/8 6R1/8/8/8/8/6R1/7q/K6k  8/6R1/8/8/8/3K2R1/7q/7k
@@ -854,37 +921,37 @@ set tbs(krrkq) {
 }
 
 set tbs(krrkr) {
-  37 31 {8/1R6/8/8/8/5r1K/4R3/k7} 20 {1k6/2R5/7r/3K3R/8/8/8/8}
+  38 31 {8/1R6/8/8/8/5r1K/4R3/k7} 20 {1k6/2R5/7r/3K3R/8/8/8/8}
   99.2 0.7 0.0 0.4 33.4 66.2
   0
 }
 
 set tbs(krrkb) {
-  9 29 ? 0 -
+  8 29 {8/8/8/2b5/8/4KR2/1k6/6R1} 0 -
   99.3 0.7 0.0 0.0 22.4 77.6
   1 1 {8/8/8/8/8/b1k5/1R6/1RK5} 0 {} 0 {}
 }
 
 set tbs(krrkn) {
-  9 40 ? 1 {8/8/8/8/1n6/k7/8/KR1R4}
+  8 40 {4k3/6R1/8/7n/5K2/1R6/8/8} 1 {8/8/8/8/1n6/k7/8/KR1R4}
   99.7 0.3 0.0 0.0 15.0 85.0
   0
 }
 
 set tbs(krrkp) {
-  2 33 ? 50 ?
+  3 33 ? 50 ?
   100.0 0.0 0.0 1.0 5.7 93.3
   0
 }
 
 set tbs(krbkq) {
-  21 21 ? 70 ?
+  23 21 ? 70 ?
   38.7 48.0 13.4 71.2 25.6 3.2
   372 0 {} 372 {3Kn3/8/8/8/8/4r3/7Q/3k4} 0 {}
 }
 
 set tbs(krbkr) {
-  668 65 {k7/7r/3K4/8/6B1/8/4R3/8} 30 {8/4R2K/8/5k2/8/8/7B/4r3}
+  649 65 {k7/7r/3K4/8/6B1/8/4R3/8} 30 {8/4R2K/8/5k2/8/8/7B/4r3}
   41.3 58.7 0.0 0.8 94.1 5.1
   17 17 {
     8/8/8/8/8/1R1K4/2B5/r1k5 8/8/8/8/8/2KB4/2R5/kr6   8/8/8/8/7B/4r3/5R2/2K1k3
@@ -897,31 +964,31 @@ set tbs(krbkr) {
 }
 
 set tbs(krbkb) {
-  18 30 ? 2 ?
+  20 30 ? 2 ?
   98.2 1.8 0.0 0.0 31.1 68.9
   0
 }
 
 set tbs(krbkn) {
-  4 40 ? 1 ?
+  5 40 ? 1 ?
   98.9 1.1 0.0 0.0 24.0 76.0
   0
 }
 
 set tbs(krbkp) {
-  32 28 ? 70 ?
+  33 28 ? 70 ?
   99.1 0.9 0.0 2.4 17.1 80.5
   1 1 {1k1K4/7R/8/8/8/8/6p1/7B} 0 {} 0 {}
 }
 
 set tbs(krnkq) {
-  16 20 ? 69 ?
+  15 20 ? 69 ?
   35.4 41.1 23.4 78.2 19.7 2.1
   455 0 {} 455 {} 0 {}
 }
 
 set tbs(krnkr) {
-  435 37 {2k1r3/8/R7/N2K4/8/8/8/8} 41 {4K3/8/1r6/8/5k2/1R4N1/8/8}
+  430 37 {2k1r3/8/R7/N2K4/8/8/8/8} 41 {4K3/8/1r6/8/5k2/1R4N1/8/8}
   36.7 63.3 0.1 3.2 93.6 3.2
   10 10 {
     2R5/8/8/8/8/k2K4/8/r1N5  8/8/8/8/3N4/1R1K4/8/r1k5 8/8/8/8/3N4/2KR4/8/2k1r3
@@ -938,7 +1005,7 @@ set tbs(krnkb) {
 }
 
 set tbs(krnkn) {
-  11 37 ? 1 ?
+  12 37 ? 1 ?
   99.0 1.0 0.0 0.0 24.6 75.4
   3 3 {
     8/8/8/8/4n3/1k6/N7/R1K5 8/8/8/8/8/3n4/N2k4/RK6 8/8/8/8/8/n7/1k6/N1RK4
@@ -952,31 +1019,31 @@ set tbs(krnkp) {
 }
 
 set tbs(krpkq) {
-  366 68 ? 104 ?
+  367 68 ? 104 ?
   37.7 11.8 50.5 91.0 7.1 1.8
   243 2 {} 241 {} 0 {}
 }
 
 set tbs(krpkr) {
-  9138 74 {8/1k6/4R3/8/8/8/6Pr/4K3} 33 {8/1P6/2k5/8/K7/8/8/1r5R}
+  9184 74 {8/1k6/4R3/8/8/8/6Pr/4K3} 33 {8/1P6/2k5/8/K7/8/8/1r5R}
   66.6 33.0 0.4 20.1 54.4 25.5
   209 209 {} 0 {} 0 {}
 }
 
 set tbs(krpkb) {
-  615 73 ? 2 ?
+  626 73 ? 2 ?
   96.4 3.6 0.0 0.0 32.6 67.4
   225 225 {} 0 {} 0 {}
 }
 
 set tbs(krpkn) {
-  398 54 ? 8 ?
+  397 54 ? 8 ?
   97.5 2.5 0.0 0.0 24.7 75.3
   413 413 {} 0 {} 0 {} 0 {}
 }
 
 set tbs(krpkp) {
-  1069 56 ? 103 ?
+  1092 56 ? 103 ?
   99.4 0.4 0.3 10.0 6.6 83.5
   3 0 {} 2 {
     8/8/8/8/8/1p6/kP6/1RK5 8/8/8/8/8/k7/Pp6/RK6
@@ -984,13 +1051,13 @@ set tbs(krpkp) {
 }
 
 set tbs(kbbkq) {
-  4 21 ? 81 ?
+  3 21 ? 81 ?
   15.3 20.2 64.5 96.5 2.9 0.6
   1 0 {} 1 {8/8/8/8/q7/2BB4/1K6/3k4} 0 {}
 }
 
 set tbs(kbbkr) {
-  14 23 {4r3/8/8/8/8/4B3/8/k1K4B} 31 {1K4B1/8/3k4/8/B5r1/8/8/8}
+  13 23 {4r3/8/8/8/8/4B3/8/k1K4B} 31 {1K4B1/8/3k4/8/B5r1/8/8/8}
   16.5 83.4 0.1 1.3 97.2 1.5
   3 3 {
     8/8/8/8/8/3K1k2/6r1/4B2B 8/8/8/8/8/5k2/6r1/3KB2B 8/8/8/B7/8/3k4/2r5/KB6
@@ -998,31 +1065,31 @@ set tbs(kbbkr) {
 }
 
 set tbs(kbbkb) {
-  37 22 {6B1/8/7B/8/b7/2K5/8/k7} 2 {1B5K/5k1B/8/8/8/4b3/8/8}
+  35 22 {6B1/8/7B/8/b7/2K5/8/k7} 2 {1B5K/5k1B/8/8/8/4b3/8/8}
   15.6 84.3 0.0 0.0 98.6 1.4
   0
 }
 
 set tbs(kbbkn) {
-  30 78 {8/K7/8/8/8/5k2/6n1/2B4B} 1 ?
+  28 78 {8/K7/8/8/8/5k2/6n1/2B4B} 1 ?
   48.2 51.8 0.0 0.0 66.1 33.9
   1 1 {8/8/8/8/8/6n1/2K4B/kB6} 0 {} 0 {}
 }
 
 set tbs(kbbkp) {
-  25 74 ? 83 ?
+  23 74 ? 83 ?
   48.0 50.2 1.8 11.4 54.1 34.5
   1 1 {B1k5/1pB5/3K4/8/8/8/8/8} 0 {} 0 {}
 }
 
 set tbs(kbnkq) {
-  12 36 ? 53 ?
+  13 36 ? 53 ?
   25.0 6.4 68.6 97.6 1.7 0.7
   1 0 {} 1 {8/8/q7/8/3K4/2N5/8/k1B5} 0 {}
 }
 
 set tbs(kbnkr) {
-  65 36 {8/8/8/2N5/8/8/B6K/5kr1} 41 {8/8/1B4N1/5k2/8/1r6/8/4K3}
+  64 36 {8/8/8/2N5/8/8/B6K/5kr1} 41 {8/8/1B4N1/5k2/8/1r6/8/4K3}
   26.0 73.8 0.2 3.8 94.6 1.6
   8 6 {
     3r4/8/2B5/8/1N6/8/8/k1K5 8/8/8/8/8/2k5/1r6/B1NK4  8/8/8/8/8/2k5/3r4/1KN1B3
@@ -1031,25 +1098,25 @@ set tbs(kbnkr) {
 }
 
 set tbs(kbnkb) {
-  53 39 {8/7B/8/8/6N1/8/3k4/1Kb5} 2 {KB6/8/k4N2/8/6b1/8/8/8}
+  54 39 {8/7B/8/8/6N1/8/3k4/1Kb5} 2 {KB6/8/k4N2/8/6b1/8/8/8}
   25.5 74.5 0.0 0.0 98.8 1.2
   45 45 {} 0 {} 0 {}
 }
 
 set tbs(kbnkn) {
-  32 107 {6Bk/8/8/7N/8/7K/6n1/8} 1 {8/8/3N4/8/3n4/8/B7/K1k5}
+  36 107 {6Bk/8/8/7N/8/7K/6n1/8} 1 {8/8/3N4/8/3n4/8/B7/K1k5}
   32.2 67.8 0.0 0.0 96.1 3.9
   922 922 {} 0 {} 0 {}
 }
 
 set tbs(kbnkp) {
-  166 104 ? 55 ?
+  165 104 ? 55 ?
   91.4 5.5 3.2 14.7 23.0 62.4
   62 61 {} 1 {8/8/8/1N6/3K4/B7/5p2/k7} 0 {}
 }
 
 set tbs(kbpkq) {
-  119 35 ? 50 ?
+  117 35 ? 50 ?
   21.3 11.5 67.2 96.8 2.8 0.4
   16 0 {} 16 {
     3K4/2P5/B3qk2/8/8/8/8/8   8/1KP1q3/1B1k4/8/8/8/8/8 8/qPK5/8/3k4/1B6/8/8/8
@@ -1062,37 +1129,37 @@ set tbs(kbpkq) {
 }
 
 set tbs(kbpkr) {
-  440 45 ? 39 ?
+  451 45 ? 39 ?
   30.9 67.3 1.8 23.4 73.1 3.5
   306 4 {} 302 {} 0 {}
 }
 
 set tbs(kbpkb) {
-  564 51 ? 3 ?
+  570 51 ? 3 ?
   41.3 58.7 0.0 0.0 86.9 13.1
   160 160 {} 0 {} 0 {}
 }
 
 set tbs(kbpkn) {
-  449 105 ? 8 ?
+  497 105 ? 8 ?
   53.7 46.3 0.0 0.0 76.4 23.6
   2125 2112 {} 13 {} 0 {}
 }
 
 set tbs(kbpkp) {
-  1437 67 ? 51 ?
+  1443 67 ? 51 ?
   86.4 9.5 4.1 16.7 24.1 59.2
   406 403 {} 2 {} 1 {8/8/8/8/8/k1p5/2P5/1BK5}
 }
 
 set tbs(knnkq) {
-  4 1 {k1N5/2K5/8/3N4/8/5q2/8/8} 72 ?
+  5 1 {k1N5/2K5/8/3N4/8/5q2/8/8} 72 ?
   0.0 42.8 57.1 94.0 6.0 0.0
   229 0 {} 229 {} 0 {}
 }
 
 set tbs(knnkr) {
-  16 3 {5r1k/8/7K/4N3/5N2/8/8/8} 41 {8/8/1r4N1/4kN2/8/8/8/4K3}
+  15 3 {5r1k/8/7K/4N3/5N2/8/8/8} 41 {8/8/1r4N1/4kN2/8/8/8/4K3}
   0.0 99.6 0.4 6.3 93.7 0.0
   25 0 {} 25 {} 0 {}
 }
@@ -1104,43 +1171,43 @@ set tbs(knnkb) {
 }
 
 set tbs(knnkn) {
-  9 7 {7n/8/8/8/1N1KN3/8/8/k7} 1 {K7/N1k5/8/3n4/3N4/8/8/8}
+  8 7 {7n/8/8/8/1N1KN3/8/8/k7} 1 {K7/N1k5/8/3n4/3N4/8/8/8}
   0.1 99.9 0.0 0.0 100.0 0.0
   362 362 {} 0 {} 0 {}
 }
 
 set tbs(knnkp) {
-  70 115 ? 74 ?
+  71 115 ? 74 ?
   31.3 66.4 2.3 12.8 73.6 13.6
   3143 3124 {} 19 {} 0 {}
 }
 
 set tbs(knpkq) {
-  131 41 ? 55 ?
+  130 41 ? 55 ?
   17.9 11.9 70.2 97.2 2.3 0.5
   52 0 {} 52 {} 0 {}
 }
 
 set tbs(knpkr) {
-  424 44 ? 67 ?
+  433 44 ? 67 ?
   26.7 69.3 4.0 29.3 68.5 2.2
   1181 23 {} 1158 {} 0 {}
 }
 
 set tbs(knpkb) {
-  740 43 ? 9 ?
+  728 43 ? 9 ?
   38.8 61.2 0.0 0.0 88.1 11.9
   642 640 {} 2 {} 0 {}
 }
 
 set tbs(knpkn) {
-  773 97 ? 7 ?
+  781 97 ? 7 ?
   49.2 50.8 0.0 0.0 77.2 22.8
   4191 4128 {} 63 {} 0 {}
 }
 
 set tbs(knpkp) {
-  1399 57 ? 58 ?
+  1410 57 ? 58 ?
   78.3 13.6 8.1 21.8 27.6 50.6
   2303 2281 {} 14 {} 8 {
     8/8/8/8/3K4/NkpP4/8/8   8/8/8/8/3K4/3PpkN1/8/8 8/8/8/8/8/1k2p3/4P3/KN6
@@ -1150,31 +1217,31 @@ set tbs(knpkp) {
 }
 
 set tbs(kppkq) {
-  713 124 {8/5P2/8/8/3K4/3P3q/7k/8} 41 {8/2KP2q1/8/2P5/5k2/8/8/8}
+  726 124 {8/5P2/8/8/3K4/3P3q/7k/8} 41 {8/2KP2q1/8/2P5/5k2/8/8/8}
   16.0 12.6 71.4 98.4 1.5 0.1
   2 0 {} 2 {8/2KP3q/2P2k2/8/8/8/8/8 8/2KP3q/8/2P3k1/8/8/8/8} 0 {}
 }
 
 set tbs(kppkr) {
-  1675 54 {3K4/8/8/4P3/8/2r5/5P2/2k5} 40 {8/8/8/7K/5P2/3Pr3/8/2k5}
+  1652 54 {3K4/8/8/4P3/8/2r5/5P2/2k5} 40 {8/8/8/7K/5P2/3Pr3/8/2k5}
   35.4 20.1 44.5 75.2 18.2 6.6
   119 18 {} 99 {} 2 {1r1k4/1P6/1PK5/8/8/8/8/8 8/8/8/8/k7/r1P5/1KP5/8}
 }
 
 set tbs(kppkb) {
-  522 43 {8/6P1/7k/8/6P1/1K6/8/1b6} 4 {K5b1/P7/1k6/8/8/8/2P5/8}
+  519 43 {8/6P1/7k/8/6P1/1K6/8/1b6} 4 {K5b1/P7/1k6/8/8/8/2P5/8}
   54.4 45.6 0.0 0.0 75.4 24.6
   212 211 {} 1 {8/8/8/8/8/b2k4/P2P4/1K6} 0 {}
 }
 
 set tbs(kppkn) {
-  703 50 {3n4/5P2/8/8/3K2P1/8/k7/8} 17 {7K/8/4k2P/8/8/8/5P2/5n2}
+  705 50 {3n4/5P2/8/8/3K2P1/8/k7/8} 17 {7K/8/4k2P/8/8/8/5P2/5n2}
   64.7 35.3 0.0 0.0 62.4 37.6
   1077 920 {} 157 {} 0 {}
 }
 
 set tbs(kppkp) {
-  5096 127 {8/8/8/8/1p2P3/1k1KP3/8/8} 43 {7K/8/4P3/5P2/3k4/7p/8/8}
+  5080 127 {8/8/8/8/1p2P3/1k1KP3/8/8} 43 {7K/8/4P3/5P2/3k4/7p/8/8}
   77.1 10.3 12.6 27.7 19.1 53.2
   4237 4179 {} 52 {} 6 {
     8/8/8/8/2k5/K1p5/P3P3/8   8/8/8/8/3k4/1K1p4/1P3P2/8
@@ -1183,9 +1250,147 @@ set tbs(kppkp) {
   }
 }
 
+set tbs(kqqqk) {
+  0 3 ? 0 -
+  100.0 0.0 0.0 0.0 4.0 96.0
+  0
+}
+
+set tbs(kqqrk) {
+  0 4 ? 0 -
+  100.0 0.0 0.0 0.0 3.1 96.9
+  0
+}
+
+set tbs(kqqbk) {
+  3 4 ? 0 -
+  100.0 0.0 0.0 0.0 2.7 97.3
+  0
+}
+
+set tbs(kqqnk) {
+  2 4 ? 0 -
+  100.0 0.0 0.0 0.0 2.4 97.6
+  0
+}
+
+set tbs(kqqpk) {
+  12 4 ? 0 -
+  100.0 0.0 0.0 0.0 2.1 97.9
+  0
+}
+
+set tbs(kqrrk) {
+  0 4 ? 0 -
+  100.0 0.0 0.0 0.0 2.0 98.0
+  0
+}
+
+set tbs(kqrbk) {
+  3 5 ? 0 -
+  100.0 0.0 0.0 0.0 1.7 98.3
+  0
+}
+
+set tbs(kqrnk) {
+  3 5 ? 0 -
+  100.0 0.0 0.0 0.0 1.4 98.6
+  0
+}
+
+set tbs(kqrpk) {
+  26 7 ? 0 -
+  100.0 0.0 0.0 0.0 1.1 98.9
+  0
+}
+
+set tbs(kqbbk) {
+  3 6 ? 0 -
+  100.0 0.0 0.0 0.0 5.0 95.0
+  0
+}
+
+set tbs(kqbnk) {
+  5 7 ? 0 -
+  100.0 0.0 0.0 0.0 1.1 98.9
+  0
+}
+
+set tbs(kqbpk) {
+  31 9 ? 0 -
+  100.0 0.0 0.0 0.0 1.2 98.8
+  0
+}
+
+set tbs(kqnnk) {
+  0 8 ? 0 -
+  100.0 0.0 0.0 0.0 9.1 90.9
+  0
+}
+
+set tbs(kqnpk) {
+  10 9 ? 0 -
+  100.0 0.0 0.0 0.0 1.0 99.0
+  0
+}
+
 set tbs(kqppk) {
-  68 9 ? 0 -
+  64 9 ? 0 -
   100.0 0.0 0.0 0.0 0.7 99.3
+}
+
+set tbs(krrrk) {
+  2 5 ? 0 -
+  100.0 0.0 0.0 0.0 0.9 99.1
+  0
+}
+
+set tbs(krrbk) {
+  0 10 ? 0 -
+  100.0 0.0 0.0 0.0 0.8 99.2
+  0
+}
+
+set tbs(krrnk) {
+  0 10 ? 0 -
+  100.0 0.0 0.0 0.0 0.6 99.4
+  0
+}
+
+set tbs(krrpk) {
+  7 14 ? 0 -
+  100.0 0.0 0.0 0.0 0.3 99.7
+  0
+}
+
+set tbs(krbbk) {
+  0 12 ? 0 -
+  100.0 0.0 0.0 0.0 4.3 95.7
+  0
+}
+
+set tbs(krbnk) {
+  3 29 ? 0 -
+  100.0 0.0 0.0 0.0 0.5 99.5
+  0
+}
+
+set tbs(krbpk) {
+  23 16 ? 0 -
+  100.0 0.0 0.0 0.0 0.6 99.4
+  0
+}
+
+set tbs(krnnk) {
+  0 15 ? 0 -
+  100.0 0.0 0.0 0.0 8.5 91.5
+  0
+}
+
+set tbs(krnpk) {
+  16 17 ? 0 -
+  100.0 0.0 0.0 0.0 0.5 99.5
+  0
 }
 
 set tbs(krppk) {
@@ -1194,13 +1399,55 @@ set tbs(krppk) {
   0
 }
 
+set tbs(kbbbk) {
+  0 16 ? 0 -
+  74.0 26.0 0.0 0.0 31.6 68.4
+  0
+}
+
+set tbs(kbbnk) {
+  3 33 ? 0 -
+  100.0 0.0 0.0 0.0 4.1 95.9
+  0
+}
+
+set tbs(kbbpk) {
+  5 30 ? 0 -
+  98.3 1.7 0.0 0.0 6.8 93.2
+  0
+}
+
+set tbs(kbnnk) {
+  0 34 ? 0 -
+  100.0 0.0 0.0 0.0 8.4 91.6
+  0
+}
+
+set tbs(kbnpk) {
+  26 33 ? 0 -
+  100.0 0.0 0.0 0.0 0.8 99.2
+  0
+}
+
 set tbs(kbppk) {
-  91 25 ? 0 -
+  100 25 ? 0 -
   99.8 0.2 0.0 0.0 1.3 98.7
   6 6 {
     8/B1k5/K7/P7/P7/8/8/8 K7/8/1k6/1P6/BP6/8/8/8 K7/8/Bk6/1P6/1P6/8/8/8
     KBk5/P1P5/8/8/8/8/8/8 kB6/8/1PK5/1P6/8/8/8/8 kB6/8/KP6/1P6/8/8/8/8
   } 0 {} 0 {}
+}
+
+set tbs(knnnk) {
+  0 21 ? 0 -
+  98.7 1.3 0.0 0.0 25.0 75.0
+  0
+}
+
+set tbs(knnpk) {
+  7 28 ? 0 -
+  98.4 1.6 0.0 0.0 12.0 88.0
+  0
 }
 
 set tbs(knppk) {
@@ -1210,7 +1457,7 @@ set tbs(knppk) {
 }
 
 set tbs(kpppk) {
-  98 33 {7K/5k2/8/8/1P6/1P6/1P6/8} 0 -
+  97 33 {7K/5k2/8/8/1P6/1P6/1P6/8} 0 -
   99.9 0.1 0.0 0.0 0.6 99.4
   11 11 {
     1k6/1P6/K7/P7/P7/8/8/8  1k6/1P6/K7/PP6/8/8/8/8  2k5/2P5/3K4/P7/P7/8/8/8

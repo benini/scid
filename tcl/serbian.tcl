@@ -67,6 +67,10 @@ menuText Y EditStrip "Ukloni" 2 {Ukloni komentare ili varijante iz ove partije}
 menuText Y EditStripComments "Komentare" 0 \
   {Ukloni sve komentare i napomene iz ove partije}
 menuText Y EditStripVars "Varijante" 0 {Ukloni sve varijante iz ove partije}
+menuText Y EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText Y EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText Y EditReset "Isprazni Clipbase" 0 \
   {Resetuje clipbase da bude potpuno prazan}
 menuText Y EditCopy "Kopiraj ovu partiju na Clipbase" 0 \
@@ -191,6 +195,8 @@ menuText Y OptionsLanguage "Jezik" 0 {Izaberi jezik}
 menuText Y OptionsMoves "Potezi" 0 {Opcije uno¹enja poteza}
 menuText Y OptionsMovesAsk "Pitaj pre zamene poteza" 0 \
   {Pitaj, da li se mo¾e postojeæi zameniti novim potezom}
+menuText Y OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves} ;# ***
 menuText Y OptionsMovesDelay "Odlaganje izmeðu poteza..." 1 \
   {Podesi vreme odlaganja pri automatskom pregledanju poteza}
 menuText Y OptionsMovesCoord "Uno¹enje koordinata poteza" 0 \
@@ -253,6 +259,7 @@ helpMsg Y .button.intoVar {Preði na varijantu  (taster preèica: v)}
 helpMsg Y .button.exitVar {Ostavi tekuæu varijantu  (taster preèica: z)}
 helpMsg Y .button.flip {Rotiraj tablu  (taster preèica: .)}
 helpMsg Y .button.coords {Ukljuèi/iskljuèi koordinate table  (taster preèica: 0)}
+helpMsg Y .button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg Y .button.autoplay {Automatski menjaj poteze  (taster: Ctrl+Z)}
 
 # General buttons:
@@ -359,6 +366,7 @@ translate Y PInfoMostWhite {Najèe¹æe igrana otvaranja sa belim figurama}
 translate Y PInfoMostBlack {Najèe¹æe igrana otvaranja sa crnim figurama}
 translate Y PInfoRating {Istorija rejtinga}
 translate Y PInfoBio {Biography} ;# ***
+translate Y PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate Y Draw {Remi}
@@ -414,7 +422,10 @@ translate Y TreeBestGames {Najbolje partije stabla}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate Y TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
+translate Y TreeElapsedTime {Time} ;# ***
+translate Y TreeFoundInCache {  (Found in cache)} ;# ***
+translate Y TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText Y FinderFile "Fajl" 0
@@ -492,6 +503,7 @@ translate Y AnnotateAll {For moves by both sides} ;# ***
 translate Y AnnotateWhite {For White moves only} ;# ***
 translate Y AnnotateBlack {For Black moves only} ;# ***
 translate Y AnnotateNotBest {When game move is not best move} ;# ***
+translate Y LowPriority {Low CPU priority} ;# ***
 
 # Analysis Engine open dialog:
 translate Y EngineList {Analysis Engine List} ;# ***
@@ -533,6 +545,7 @@ menuText Y PgnColorBackground "Pozadina..." 0
 menuText Y PgnHelp "Pomoæ" 1
 menuText Y PgnHelpPgn "PGN pomoæ" 0
 menuText Y PgnHelpIndex "Sadr¾aj" 0
+translate Y PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText Y CrosstabFile "Fajl" 0

@@ -1,1034 +1,1274 @@
 # hungary.tcl:
 # Hungarian text for menu names and status bar help messages for SCID
-# Translated by: Gßbor Szts
-
+# Translated by: Gábor Szõts
 
 addLanguage H Hungarian 0 ;# iso8859-2
 
 proc setLanguage_H {} {
 
 # File menu:
-menuText H File "Fßjl" 0
-menuText H FileNew "õj..." 0 {õj SCID-adatbßzis l‰trehozßsa}
-menuText H FileOpen "Megnyit..." 3 {Megl‰v SCID-adatbßzis megnyitßsa}
-menuText H FileClose "Bezßr" 2 {Az aktv SCID-adatbßzis bezßrßsa}
-menuText H FileFinder "Fßjlkeres" 0 {Kinyitja a Fßjlkeres ablakot.}
-menuText H FileBookmarks "K÷nyvjelzk" 0 {K÷nyvjelzmen’ (gyorsbillenty“: Ctrl+B)}
-menuText H FileBookmarksAdd "õj k÷nyvjelz" 0 \
-  {Megjel÷li az aktußlis jßtszmßt ‰s ßllßst.}
-menuText H FileBookmarksFile "K÷nyvjelz ment‰se" 11 \
-  {Az ßllßshoz tartoz k÷nyvjelzt k’l÷n mappßba teszi.}
-menuText H FileBookmarksEdit "K÷nyvjelzk szerkeszt‰se..." 13 \
-  {K÷nyvjelzk szerkeszt‰se}
-menuText H FileBookmarksList "Megjelent‰s listak‰nt" 13 \
-  {A k÷nyvjelzmappßk nem almen’k‰nt, hanem listak‰nt jelennek meg.}
-menuText H FileBookmarksSub "Megjelent‰s almen’k‰nt" 13 \
-  {A k÷nyvjelzmappßk nem listak‰nt, hanem almen’k‰nt jelennek meg.}
-menuText H FileMaint "Gondozßs" 0 {SCID adatbßzisgondoz eszk÷z÷k}
-menuText H FileMaintWin "Adatbßzisgondoz ablak" 0 \
-  {Kinyitja/becsukja az SCID adatbßzisgondoz ablakot.}
-menuText H FileMaintCompact "Adatbßzis t÷m÷rt‰se..." 10 \
-  {Eltßvoltja az adatbßzisbl a t÷r÷lt jßtszmßkat ‰s a hasznßlaton kv’l ßll neveket.}
-menuText H FileMaintClass "Osztßlyba sorolßs..." 0 \
-  {õjra kiszßmtja az ÷sszes jßtszma ECO-kdjßt.}
-menuText H FileMaintSort "Rendez‰s..." 0 \
-  {Rendezi az adatbßzis ÷sszes jßtszmßjßt.}
-menuText H FileMaintDelete "Ikerjßtszmßk t÷rl‰se..." 0 \
-  {Megkeresi az ikerjßtszmßkat, ‰s megjel÷li ket t÷rl‰sre.}
-menuText H FileMaintTwin "Ikerkeres ablak" 4 \
-  {Kinyitja/becsukja az ikerkeres ablakot.}
-menuText H FileMaintName "Nevek helyesrßsa" 0 {N‰vszerkeszt ‰s helyesrßsi eszk÷z÷k}
-menuText H FileMaintNameEditor "N‰vszerkeszt" 0 \
-  {Kinyitja/becsukja a n‰vszerkeszt ablakot.}
-menuText H FileMaintNamePlayer "Jßt‰kosnevek ellenrz‰se..." 0 \
-  {A helyesrßs-ellenrz fßjl segts‰g‰vel ellenrzi a jßt‰kosok nev‰t.}
-menuText H FileMaintNameEvent "Esem‰nynevek ellenrz‰se..." 0 \
-  {A helyesrßs-ellenrz fßjl segts‰g‰vel ellenrzi esem‰nyek nev‰t.}
-menuText H FileMaintNameSite "Helynevek ellenrz‰se..." 0 \
-  {A helyesrßs-ellenrz fßjl segts‰g‰vel ellenrzi a helysznek nev‰t.}
-menuText H FileMaintNameRound "Fordulnevek ellenrz‰se..." 0 \
-  {A helyesrßs-ellenrz fßjl segts‰g‰vel ellenrzi a fordulk nev‰t.}
-menuText H FileReadOnly "Írßsv‰delem..." 0 \
-  {Az aktußlis adatbßzist csak olvasni lehet, nehogy meg lehessen vßltoztatni.}
-menuText H FileSwitch "Adatbßzisvßltßs" 0 \
-  {Âtvßlt egy mßsik megnyitott adatbßzisra.}
-menuText H FileExit "Kil‰p" 1 {Kil‰p SCID-bl.}
+menuText H File "Fájl" 0
+menuText H FileNew "Új..." 0 {Új SCID-adatbázis létrehozása}
+menuText H FileOpen "Megnyit..." 3 {Meglévõ SCID-adatbázis megnyitása}
+menuText H FileClose "Bezár" 2 {Az aktív SCID-adatbázis bezárása}
+menuText H FileFinder "Fájlkeresõ" 0 {Kinyitja a Fájlkeresõ ablakot.}
+menuText H FileBookmarks "Könyvjelzõk" 0 {Könyvjelzõmenü (gyorsbillentyû: Ctrl+B)}
+menuText H FileBookmarksAdd "Új könyvjelzõ" 0 \
+  {Megjelöli az aktuális játszmát és állást.}
+menuText H FileBookmarksFile "Könyvjelzõ mentése" 11 \
+  {Az álláshoz tartozó könyvjelzõt külön könyvtárba teszi.}
+menuText H FileBookmarksEdit "Könyvjelzõk szerkesztése..." 13 \
+  {Könyvjelzõk szerkesztése}
+menuText H FileBookmarksList "Megjelenítés listaként" 13 \
+  {A könyvjelzõk könyvtárai nem almenüként, hanem listaként jelennek meg.}
+menuText H FileBookmarksSub "Megjelenítés almenüként" 13 \
+  {A könyvjelzõk könyvtárai nem listaként, hanem almenüként jelennek meg.}
+menuText H FileMaint "Gondozás" 0 {SCID adatbázisgondozó eszközök}
+menuText H FileMaintWin "Adatbázisgondozó ablak" 0 \
+  {Kinyitja/becsukja az SCID adatbázisgondozó ablakot.}
+menuText H FileMaintCompact "Adatbázis tömörítése..." 10 \
+  {Eltávolítja az adatbázisból a törölt játszmákat és a használaton kívül álló neveket.}
+menuText H FileMaintClass "Osztályba sorolás..." 0 \
+  {Újra kiszámítja az összes játszma ECO-kódját.}
+menuText H FileMaintSort "Rendezés..." 0 \
+  {Rendezi az adatbázis összes játszmáját.}
+menuText H FileMaintDelete "Ikerjátszmák törlése..." 0 \
+  {Megkeresi az ikerjátszmákat, és megjelöli õket törlésre.}
+menuText H FileMaintTwin "Ikerkeresõ ablak" 4 \
+  {Kinyitja/becsukja az ikerkeresõ ablakot.}
+menuText H FileMaintName "Nevek helyesírása" 0 {Névszerkesztõ és helyesírási eszközök}
+menuText H FileMaintNameEditor "Névszerkesztõ" 0 \
+  {Kinyitja/becsukja a névszerkesztõ ablakot.}
+menuText H FileMaintNamePlayer "Játékosnevek ellenõrzése..." 0 \
+  {A helyesírás-ellenõrzõ fájl segítségével ellenõrzi a játékosok nevét.}
+menuText H FileMaintNameEvent "Eseménynevek ellenõrzése..." 0 \
+  {A helyesírás-ellenõrzõ fájl segítségével ellenõrzi események nevét.}
+menuText H FileMaintNameSite "Helynevek ellenõrzése..." 0 \
+  {A helyesírás-ellenõrzõ fájl segítségével ellenõrzi a helyszínek nevét.}
+menuText H FileMaintNameRound "Fordulónevek ellenõrzése..." 0 \
+  {A helyesírás-ellenõrzõ fájl segítségével ellenõrzi a fordulók nevét.}
+menuText H FileReadOnly "Írásvédelem..." 0 \
+  {Az aktuális adatbázist csak olvashatóvá teszi, nehogy meg lehessen változtatni.}
+menuText H FileSwitch "Adatbázisváltás" 0 \
+  {Átvált egy másik megnyitott adatbázisra.}
+menuText H FileExit "Kilép" 2 {Kilép SCID-bõl.}
 
 # Edit menu:
-menuText H Edit "Szerkeszt‰s" 1
-menuText H EditAdd "õj vßltozat" 0 {Enn‰l a l‰p‰sn‰l ”j vßltozatot sz”r be a jßtszmßba.}
-menuText H EditDelete "Vßltozat t÷rl‰se" 9 {T÷r÷l egy vßltozatot enn‰l a l‰p‰sn‰l.}
-menuText H EditFirst "Els vßltozattß tesz" 0 \
-  {Els helyre teszi a vßltozatot a listßn.}
-menuText H EditMain "Fvßltozattß tesz" 0 \
-  {A vßltozatot fvßltozattß l‰pteti el.}
-menuText H EditTrial "Vßltozat kiprbßlßsa" 11 \
-  {Elindtja/megßlltja a prba’zemmdot, amellyel egy elgondolßst lehet a tßblßn kiprbßlni.}
-menuText H EditStrip "Lecsupaszt" 2 {Eltßvoltja a megjegyz‰seket vagy a vßltozatokat ebbl a jßtszmßbl.}
-menuText H EditStripComments "Megjegyz‰sek" 0 \
-  {Eltßvoltja az ÷sszes megjegyz‰st ‰s elemz‰st ebbl a jßtszmßbl.}
-menuText H EditStripVars "Vßltozatok" 0 {Eltßvoltja az ÷sszes vßltozatot ebbl a jßtszmßbl.}
-menuText H EditReset "Ki’rti a Vßgasztalt" 2 \
-  {Alaphelyzetbe hozza a Vßgasztalt, hogy az teljesen ’res legyen.}
-menuText H EditCopy "A Vßgasztalra mßsolja ezt a jßtszmßt." 15 \
-  {Ezt a jßtszmßt ßtmßsolja a Vßgasztal adatbßzisba.}
-menuText H EditPaste "Beilleszti az utols jßtszmßt a Vßgasztalrl." 0 \
-  {A Vßgasztal aktv jßtszmßjßt beilleszti ide.}
-menuText H EditSetup "Kezdßllßs felßlltßsa..." 14 \
-  {Felßlltja a kezdßllßst ehhez a jßtszmßhoz.}
-menuText H EditCopyBoard "Âllßs mßsolßsa FEN-k‰nt" 17 \
-  {Az aktußlis ßllßst FEN-jel÷l‰ssel a vßglapra mßsolja.}
-menuText H EditPasteBoard "Kezdßllßs beilleszt‰se" 13 \
-  {Felßlltja a kezdßllßst kijel÷lt sz÷veg (vßglap) alapjßn.}
+menuText H Edit "Szerkesztés" 1
+menuText H EditAdd "Új változat" 0 {Ennél a lépésnél új változatot szúr be a játszmába.}
+menuText H EditDelete "Változat törlése" 9 {Töröl egy változatot ennél a lépésnél.}
+menuText H EditFirst "Elsõ változattá tesz" 0 \
+  {Elsõ helyre teszi a változatot a listán.}
+menuText H EditMain "Fõváltozattá tesz" 0 \
+  {A változatot fõváltozattá lépteti elõ.}
+menuText H EditTrial "Változat kipróbálása" 11 \
+  {Elindítja/megállítja a próbaüzemmódot, amellyel egy elgondolást lehet a táblán kipróbálni.}
+menuText H EditStrip "Lecsupaszít" 2 {Eltávolítja a megjegyzéseket vagy a változatokat ebbõl a játszmából.}
+menuText H EditStripComments "Megjegyzések" 0 \
+  {Eltávolítja az összes megjegyzést és elemzést ebbõl a játszmából.}
+menuText H EditStripVars "Változatok" 0 {Eltávolítja az összes változatot ebbõl a játszmából.}
+menuText H EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText H EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
+menuText H EditReset "Kiüríti a Vágóasztalt" 2 \
+  {Alaphelyzetbe hozza a Vágóasztalt, hogy az teljesen üres legyen.}
+menuText H EditCopy "A Vágóasztalra másolja ezt a játszmát." 15 \
+  {Ezt a játszmát átmásolja a Vágóasztal adatbázisba.}
+menuText H EditPaste "Beilleszti az utolsó játszmát a Vágóasztalról." 0 \
+  {A Vágóasztal aktív játszmáját beilleszti ide.}
+menuText H EditSetup "Kezdõállás felállítása..." 14 \
+  {Felállítja a kezdõállást ehhez a játszmához.}
+menuText H EditCopyBoard "Állás másolása FEN-ként" 17 \
+  {Az aktuális állást FEN-jelöléssel a vágólapra másolja.}
+menuText H EditPasteBoard "Kezdõállás beillesztése" 13 \
+  {Felállítja a kezdõállást kijelölt szöveg (vágólap) alapján.}
 
 # Game menu:
-menuText H Game "Jßtszma" 0
-menuText H GameNew "õj jßtszma" 0 \
-  {õj jßtszmßt kezd; a vßltoztatßsokat elveti.}
-menuText H GameFirst "Bet÷lti az els jßtszmßt." 11 {Bet÷lti az els sz“rt jßtszmßt.}
-menuText H GamePrev "Bet÷lti az elz jßtszmßt." 12 {Bet÷lti az elz sz“rt jßtszmßt.}
-menuText H GameReload "Ism‰t bet÷lti az aktußlis jßtszmßt." 0 \
-  {õjra bet÷lti ezt a jßtszmßt; elvet minden vßltoztatßst.}
-menuText H GameNext "Bet÷lti a k÷vetkez jßtszmßt." 10 {Bet÷lti a k÷vetkez sz“rt jßtszmßt.}
-menuText H GameLast "Bet÷lti az utols jßtszmßt." 11 {Bet÷lti az utols sz“rt jßtszmßt.}
-menuText H GameRandom "V‰letlenszer“en bet÷lt egy jßtszmßt." 0 {V‰letlenszer“en bet÷lt egy sz“rt jßtszmßt.}
-menuText H GameNumber "Megadott sorszßm” jßtszma bet÷lt‰se..." 9 \
-  {Bet÷lti a sorszßmmal megadott jßtszmßt.}
-menuText H GameReplace "Ment‰s cser‰vel..." 7 \
-  {Elmenti ezt a jßtszmßt; fel’lrja a r‰gi vßltozatot.}
-menuText H GameAdd "Ment‰s ”j jßtszmak‰nt..." 0 \
-  {Elmenti ezt a jßtszmßt; ”j jßtszmßt hoz l‰tre az adatbßzisban.}
-menuText H GameDeepest "Megnyitßs azonostßsa" 10 \
-  {Az ECO-k÷nyvben szerepl legnagyobb m‰lys‰gig megy bele a jßtszmßba.}
-menuText H GameGotoMove "Ugrßs megadott sorszßm” l‰p‰shez..." 1 \
-  {Megadott sorszßm” l‰p‰shez ugrik az aktußlis jßtszmßban.}
-menuText H GameNovelty "õjtßs keres‰se..." 2 \
-  {Megkeresi ebben a jßtszmßban az els olyan l‰p‰st, amely korßbban nem fordult el.}
+menuText H Game "Játszma" 0
+menuText H GameNew "Új játszma" 0 \
+  {Új játszmát kezd; a változtatásokat elveti.}
+menuText H GameFirst "Betölti az elsõ játszmát." 11 {Betölti az elsõ szûrt játszmát.}
+menuText H GamePrev "Betölti az elõzõ játszmát." 12 {Betölti az elõzõ szûrt játszmát.}
+menuText H GameReload "Ismét betölti az aktuális játszmát." 0 \
+  {Újra betölti ezt a játszmát; elvet minden változtatást.}
+menuText H GameNext "Betölti a következõ játszmát." 10 {Betölti a következõ szûrt játszmát.}
+menuText H GameLast "Betölti az utolsó játszmát." 11 {Betölti az utolsó szûrt játszmát.}
+menuText H GameRandom "Véletlenszerûen betölt egy játszmát." 0 {Véletlenszerûen betölt egy szûrt játszmát.}
+menuText H GameNumber "Megadott sorszámú játszma betöltése..." 9 \
+  {Betölti a sorszámmal megadott játszmát.}
+menuText H GameReplace "Mentés cserével..." 7 \
+  {Elmenti ezt a játszmát; felülírja a régi változatot.}
+menuText H GameAdd "Mentés új játszmaként..." 0 \
+  {Elmenti ezt a játszmát; új játszmát hoz létre az adatbázisban.}
+menuText H GameDeepest "Megnyitás azonosítása" 10 \
+  {Az ECO-könyvben szereplõ legnagyobb mélységig megy bele a játszmába.}
+menuText H GameGotoMove "Ugrás megadott sorszámú lépéshez..." 1 \
+  {Megadott sorszámú lépéshez ugrik az aktuális játszmában.}
+menuText H GameNovelty "Újítás keresése..." 2 \
+  {Megkeresi ebben a játszmában az elsõ olyan lépést, amely korábban nem fordult elõ.}
 
 # Search Menu:
-menuText H Search "Keres‰s" 0
-menuText H SearchReset "Sz“r t÷rl‰se" 6 {Alaphelyzetbe hozza a sz“rt, hogy az ÷sszes jßtszma benne legyen.}
-menuText H SearchNegate "Sz“r negßlßsa" 6 {Negßlja a sz“rt, hogy csak a kizßrt jßtszmßk legyenek benne.}
-menuText H SearchCurrent "Aktußlis ßllßs..." 0 {A tßblßn l‰v ßllßst keresi.}
-menuText H SearchHeader "Fejl‰c..." 0 {Keres‰s fejl‰c (jßt‰kos, esem‰ny, stb.) alapjßn}
-menuText H SearchMaterial "Anyag/motvum..." 6 {Keres‰s anyag vagy ßllßsszerkezet alapjßn}
-menuText H SearchUsing "Keresfßjl hasznßlata..." 0 {Keres‰s SearchOptions fßjl hasznßlatßval}
+menuText H Search "Keresés" 0
+menuText H SearchReset "Szûrõ törlése" 6 {Alaphelyzetbe hozza a szûrõt, hogy az összes játszma benne legyen.}
+menuText H SearchNegate "Szûrõ negálása" 6 {Negálja a szûrõt, hogy csak a kizárt játszmák legyenek benne.}
+menuText H SearchCurrent "Aktuális állás..." 0 {A táblán lévõ állást keresi.}
+menuText H SearchHeader "Fejléc..." 0 {Keresés fejléc (játékos, esemény, stb.) alapján}
+menuText H SearchMaterial "Anyag/szerkezet..." 6 {Keresés anyag vagy állásszerkezet alapján}
+menuText H SearchUsing "Keresõfájl használata..." 0 {Keresés SearchOptions fájl használatával}
 
 # Windows menu:
 menuText H Windows "Ablakok" 0
-menuText H WindowsComment "Megjegyz‰sszerkeszt" 0 {Megnyitja/bezßrja a megjegyz‰sszerkesztt.}
-menuText H WindowsGList "Jßtszmßk listßja" 9 {Kinyitja/becsukja a jßtszmßk listßjßt mutat ablakot.}
-menuText H WindowsPGN "PGN-ablak" 0 \
-  {Kinyitja/becsukja a PGN-(jßtszmajegyz‰s)-ablakot.}
-menuText H WindowsPList "Jßt‰koskeres" 0 {Kinyitja/becsukja a jßt‰koskerest.}
-menuText H WindowsTmt "Versenykeres" 0 {Kinyitja/becsukja a versenykerest.}
-menuText H WindowsSwitcher "Adatbßzisvßlt" 0 \
-  {Kinyitja/becsukja az adatbßzisvßlt ablakot.}
-menuText H WindowsMaint "Adatbßzisgondoz ablak" 9 \
-  {Kinyitja/becsukja az adatbßzisgondoz ablakot.}
-menuText H WindowsECO "ECO-b÷ng‰sz" 0 {Kinyitja/becsukja az ECO-b÷ng‰sz ablakot.}
-menuText H WindowsRepertoire "Repertoßrszerkeszt" 0 \
-  {Megnyitja/bezßrja a megnyitßsi repertoßrszerkesztt.}
+menuText H WindowsComment "Megjegyzésszerkesztõ" 0 {Megnyitja/bezárja a megjegyzésszerkesztõt.}
+menuText H WindowsGList "Játszmák listája" 9 {Kinyitja/becsukja a játszmák listáját mutató ablakot.}
+menuText H WindowsPGN "PGN" 0 \
+  {Kinyitja/becsukja a PGN-(játszmajegyzés)-ablakot.}
+menuText H WindowsPList "Játékoskeresõ" 0 {Kinyitja/becsukja a játékoskeresõt.}
+menuText H WindowsTmt "Versenykeresõ" 0 {Kinyitja/becsukja a versenykeresõt.}
+menuText H WindowsSwitcher "Adatbázisváltó" 0 \
+  {Kinyitja/becsukja az adatbázisváltó ablakot.}
+menuText H WindowsMaint "Adatbázisgondozó" 9 \
+  {Kinyitja/becsukja az adatbázisgondozó ablakot.}
+menuText H WindowsECO "ECO-böngészõ" 0 {Kinyitja/becsukja az ECO-böngészõ ablakot.}
+menuText H WindowsRepertoire "Repertoárszerkesztõ" 0 \
+  {Megnyitja/bezárja a megnyitási repertoárszerkesztõt.}
 menuText H WindowsStats "Statisztika" 0 \
-  {Kinyitja/becsukja a sz“r‰si statisztika ablakßt.}
-menuText H WindowsTree "Fastrukt”ra-ablak" 0 {Kinyitja/becsukja a fastrukt”ra-ablakot.}
-menuText H WindowsTB "V‰gjßt‰ktßblßzatok ablaka" 8 \
-  {Kinyitja/becsukja a v‰gjßt‰ktßblßzatok ablakßt.}
+  {Kinyitja/becsukja a szûrési statisztika ablakát.}
+menuText H WindowsTree "Faszerkezet" 0 {Kinyitja/becsukja a faszerkezet-ablakot.}
+menuText H WindowsTB "Végjátéktáblázatok" 8 \
+  {Kinyitja/becsukja a végjátéktáblázatok ablakát.}
 
 # Tools menu:
-menuText H Tools "Eszk÷z÷k" 0
-menuText H ToolsAnalysis "Elemz motor..." 0 \
-  {Elindt/leßllt egy sakkelemz programot.}
-menuText H ToolsAnalysis2 "2. elemz motor..." 0 \
-  {Elindtja/leßlltja a 2. sakkelemz programot.}
-menuText H ToolsCross "Versenytßblßzat" 0 {Megmutatja az ehhez a jßtszmßhoz tartoz verseny tßblßzatßt.}
-menuText H ToolsEmail "Levelez‰si sakk" 0 \
-  {Kinyitja/becsukja az elektronikus sakklevelez‰s lebonyoltßsßra szolgßl ablakot.}
-menuText H ToolsFilterGraph "Sz“rgrafikon" 5 \
-  {Kinyitja/becsukja a sz“rgrafikont mutat ablakot.}
-menuText H ToolsOpReport "Ùsszefoglal a megnyitßsrl" 0 \
-  {Ismertett k‰szt az aktußlis ßllßshoz tartoz megnyitßsrl.}
-menuText H ToolsTracker "Figurak÷vet"  0 {Kinyitja/becsukja a figurak÷vet ablakot.}
-menuText H ToolsPInfo "Jßt‰kosinformßci"  0 \
-  {Kinyitja/frissti a jßt‰kos adatait tartalmaz ablakot.}
-menuText H ToolsRating "Ğrt‰kszßm alakulßsa" 0\
-  {Grafikusan ßbrßzolja, hogyan alakult az aktußlis jßtszma r‰sztvevinek ‰rt‰kszßma.}
-menuText H ToolsScore "Eredm‰ny alakulßsa" 1 {Megmutatja az eredm‰nygrafikont.}
-menuText H ToolsExpCurrent "Az aktußlis jßtszma exportßlßsa" 21 \
-  {Sz÷vegfßjlba rja az aktußlis jßtszmßt.}
-menuText H ToolsExpCurrentPGN "Exportßlßs PGN-fßjlba..." 11 \
-  {PGN-fßjlba rja az aktußlis jßtszmßt.}
-menuText H ToolsExpCurrentHTML "Exportßlßs HTML-fßjlba..." 11 \
-  {HTML-fßjlba rja az aktußlis jßtszmßt.}
-menuText H ToolsExpCurrentLaTeX "Exportßlßs LaTeX-fßjlba..." 11 \
-  {LaTeX-fßjlba rja az aktußlis jßtszmßt.}
-menuText H ToolsExpFilter "Az ÷sszes sz“rt jßtszma exportßlßsa" 10 \
-  {Sz÷vegfßjlba rja az ÷sszes sz“rt jßtszmßt.}
-menuText H ToolsExpFilterPGN "Sz“r exportßlßsa PGN-fßjlba..." 18 \
-  {PGN-fßjlba rja az ÷sszes sz“rt jßtszmßt.}
-menuText H ToolsExpFilterHTML "Sz“r exportßlßsa HTML-fßjlba..." 18 \
-  {HTML-fßjlba rja az ÷sszes sz“rt jßtszmßt.}
-menuText H ToolsExpFilterLaTeX "Sz“r exportßlßsa LaTeX-fßjlba..." 18 \
-  {LaTeX-fßjlba rja az ÷sszes sz“rt jßtszmßt.}
-menuText H ToolsImportOne "PGN-jßtszma importßlßsa..." 0 \
-  {PGN-formßtum” jßtszma importßlßsa}
-menuText H ToolsImportFile "PGN-fßjl importßlßsa..." 2 \
-  {PGN-fßjl ÷sszes jßtszmßjßnak importßlßsa}
+menuText H Tools "Eszközök" 0
+menuText H ToolsAnalysis "Elemzõ motor..." 0 \
+  {Elindít/leállít egy sakkelemzõ programot.}
+menuText H ToolsAnalysis2 "2. elemzõ motor..." 0 \
+  {Elindítja/leállítja a 2. sakkelemzõ programot.}
+menuText H ToolsCross "Versenytáblázat" 0 {Megmutatja az ehhez a játszmához tartozó verseny táblázatát.}
+menuText H ToolsEmail "Levelezési sakk" 0 \
+  {Kinyitja/becsukja az elektronikus sakklevelezés lebonyolítására szolgáló ablakot.}
+menuText H ToolsFilterGraph "Szûrõgrafikon" 0 \
+  {Kinyitja/becsukja a szûrõgrafikont mutató ablakot.}
+menuText H ToolsOpReport "Megnyitási összefoglaló" 0 \
+  {Ismertetõt készít az aktuális álláshoz tartozó megnyitásról.}
+menuText H ToolsTracker "Figurakövetõ"  0 {Kinyitja/becsukja a figurakövetõ ablakot.}
+menuText H ToolsPInfo "Játékosinformáció"  0 \
+  {Kinyitja/frissíti a játékos adatait tartalmazó ablakot.}
+menuText H ToolsRating "Értékszám alakulása" 0\
+  {Grafikusan ábrázolja, hogyan alakult az aktuális játszma résztvevõinek értékszáma.}
+menuText H ToolsScore "Eredmény alakulása" 1 {Megmutatja az eredménygrafikont.}
+menuText H ToolsExpCurrent "Az aktuális játszma exportálása" 21 \
+  {Szövegfájlba írja az aktuális játszmát.}
+menuText H ToolsExpCurrentPGN "Exportálás PGN-fájlba..." 11 \
+  {PGN-fájlba írja az aktuális játszmát.}
+menuText H ToolsExpCurrentHTML "Exportálás HTML-fájlba..." 11 \
+  {HTML-fájlba írja az aktuális játszmát.}
+menuText H ToolsExpCurrentLaTeX "Exportálás LaTeX-fájlba..." 11 \
+  {LaTeX-fájlba írja az aktuális játszmát.}
+menuText H ToolsExpFilter "Az összes szûrt játszma exportálása" 10 \
+  {Szövegfájlba írja az összes szûrt játszmát.}
+menuText H ToolsExpFilterPGN "Szûrõ exportálása PGN-fájlba..." 18 \
+  {PGN-fájlba írja az összes szûrt játszmát.}
+menuText H ToolsExpFilterHTML "Szûrõ exportálása HTML-fájlba..." 18 \
+  {HTML-fájlba írja az összes szûrt játszmát.}
+menuText H ToolsExpFilterLaTeX "Szûrõ exportálása LaTeX-fájlba..." 18 \
+  {LaTeX-fájlba írja az összes szûrt játszmát.}
+menuText H ToolsImportOne "PGN-játszma importálása..." 0 \
+  {PGN-formátumú játszma importálása}
+menuText H ToolsImportFile "PGN-fájl importálása..." 2 \
+  {PGN-fájl összes játszmájának importálása}
 
 # Options menu:
-menuText H Options "Beßlltßsok" 0
-menuText H OptionsSize "Tßblam‰ret" 0 {A tßbla m‰ret‰nek vßltoztatßsa}
-menuText H OptionsPieces "Figurßk stlusa" 0 {A figurßk megjelen‰si formßjßnak vßltoztatßsa}
-menuText H OptionsColors "Sznek..." 0 {A tßbla szneinek vßltoztatßsa}
-menuText H OptionsExport "Exportßlßs" 1 {Exportßlßsi beßlltßsok vßltoztatßsa}
-menuText H OptionsFonts "Karakterk‰szlet" 0 {Karakterk‰szlet vßltoztatßsa}
-menuText H OptionsFontsRegular "Szokßsos" 0 {A szokßsos karakterk‰szlet vßltoztatßsa}
-menuText H OptionsFontsMenu "Men’" 0 {A men’k karakterk‰szlet‰nek a vßltoztatßsa}
-menuText H OptionsFontsSmall "Kisbet“s" 0 {A kisbet“s karakterk‰szlet vßltoztatßsa}
-menuText H OptionsFontsFixed "R÷gztett" 0 {A r÷gztett sz‰less‰g“ karakterk‰szlet vßltoztatßsa}
-menuText H OptionsGInfo "Jßtszmainformßci" 0 {Jßtszmainformßci vßltoztatßsa}
-menuText H OptionsLanguage "Nyelv" 0 {A men’ nyelv‰nek kivßlasztßsa}
-menuText H OptionsMoves "L‰p‰sek" 0 {L‰p‰sek bevitel‰nek beßlltßsai}
-menuText H OptionsMovesAsk "L‰p‰s cser‰je eltt rßk‰rdez." 6 \
-  {Mieltt ßtrna egy meglev l‰p‰st, rßk‰rdez.}
-menuText H OptionsMovesDelay "Automatikus visszajßtszßs k‰sleltet‰se..." 0 \
-  {Beßlltja a k‰sleltet‰st automatikus visszajßtszßshoz.}
-menuText H OptionsMovesCoord "L‰p‰s megadßsa koordinßtßkkal" 15 \
-  {Koordinßtßkkal megadott l‰p‰st ("g1f3") is elfogad.}
+menuText H Options "Beállítások" 0
+menuText H OptionsSize "Táblaméret" 0 {A tábla méretének változtatása}
+menuText H OptionsPieces "Figurák stílusa" 0 {A figurák megjelenési formájának változtatása}
+menuText H OptionsColors "Színek..." 0 {A tábla színeinek változtatása}
+menuText H OptionsExport "Exportálás" 1 {Exportálási beállítások változtatása}
+menuText H OptionsFonts "Karakterkészlet" 0 {Karakterkészlet változtatása}
+menuText H OptionsFontsRegular "Szokásos" 0 {A szokásos karakterkészlet változtatása}
+menuText H OptionsFontsMenu "Menü" 0 {A menük karakterkészletének a változtatása}
+menuText H OptionsFontsSmall "Kisbetûs" 0 {A kisbetûs karakterkészlet változtatása}
+menuText H OptionsFontsFixed "Rögzített" 0 {A rögzített szélességû karakterkészlet változtatása}
+menuText H OptionsGInfo "Játszmainformáció" 0 {Játszmainformáció változtatása}
+menuText H OptionsLanguage "Nyelv" 0 {A menü nyelvének kiválasztása}
+menuText H OptionsMoves "Lépések" 0 {Lépések bevitelének beállításai}
+menuText H OptionsMovesAsk "Lépés cseréje elõtt rákérdez." 6 \
+  {Mielõtt átírna egy meglevõ lépést, rákérdez.}
+menuText H OptionsMovesAnimate "Megelevenítés ideje" 0 \
+  {Beállítja az idõt lépések megelevenítéséhez.}
+menuText H OptionsMovesDelay "Automatikus visszajátszás késleltetése..." 0 \
+  {Beállítja a késleltetést automatikus visszajátszáshoz.}
+menuText H OptionsMovesCoord "Lépés megadása koordinátákkal" 15 \
+  {Koordinátákkal megadott lépést ("g1f3") is elfogad.}
 menuText H OptionsMovesSuggest "Javaslat" 0 \
-  {Be/kikapcsolja a l‰p‰sjavaslatot.}
-menuText H OptionsMovesKey "Billenty“-kieg‰szt‰s" 0 \
-  {Be/kikapcsolja a billenty“zettel r‰szlegesen bevitt l‰p‰sek automatikus kieg‰szt‰s‰t.}
-menuText H OptionsNumbers "Szßmformßtum" 1 {Szßmformßtum kivßlasztßsa}
-menuText H OptionsStartup "Indtßs" 0 {Az indtßskor kinyitand ablakok kivßlasztßsa}
-menuText H OptionsWindows "Ablakok" 0 {Ablakbeßlltßsok}
-menuText H OptionsWindowsIconify "Automatikus ikonizßlßs" 12 \
-  {A f ablak ikonizßlßsakor az ÷sszes t÷bbit is ikonizßlja.}
-menuText H OptionsWindowsRaise "Automatikus elhozßs" 12 \
-  {Elhoz bizonyos ablakokat (pl. elrehaladßs-sßvokat), amikor el vannak takarva.}
-menuText H OptionsToolbar "Eszk÷ztßr" 0 {A f ablak eszk÷ztßrßnak ÷sszeßlltßsa}
-menuText H OptionsECO "ECO-fßjl bet÷lt‰se..." 2 {Bet÷lti az ECO-osztßlyoz fßjlt.}
-menuText H OptionsSpell "Helyesrßs-ellenrz fßjl bet÷lt‰se..." 0 \
-  {Bet÷lti a helyesrßs-ellenrz fßjlt.}
-menuText H OptionsTable "V‰gjßt‰ktßblßzatok k÷nyvtßra..." 0 \
-  {V‰gjßt‰ktßblßzat-fßjl kivßlasztßsa; a k÷nyvtßrban lev ÷sszes v‰gjßt‰ktßblßzatot hasznßlatba veszi.}
-menuText H OptionsRecent "Aktußlis fßjlok..." 3 \
-  {A Fßjl-men’ben megjelentett aktußlis fßjlok szßmßnak megvßltoztatßsa}
-menuText H OptionsSave "Beßlltßsok ment‰se" 12 \
-  "Minden beßllthat ‰rt‰ket elment a $::optionsFile fßjlba."
-menuText H OptionsAutoSave "Beßlltßsok automatikus ment‰se kil‰p‰skor." 0 \
-  {Automatikusan elment minden beßlltßst, amikor kil‰psz SCID-bl.}
+  {Be/kikapcsolja a lépésjavaslatot.}
+menuText H OptionsMovesKey "Billentyû-kiegészítés" 0 \
+  {Be/kikapcsolja a billentyûzettel részlegesen bevitt lépések automatikus kiegészítését.}
+menuText H OptionsNumbers "Számformátum" 1 {Számformátum kiválasztása}
+menuText H OptionsStartup "Indítás" 0 {Az indításkor kinyitandó ablakok kiválasztása}
+menuText H OptionsWindows "Ablakok" 0 {Ablakbeállítások}
+menuText H OptionsWindowsIconify "Automatikus ikonizálás" 12 \
+  {A fõ ablak ikonizálásakor az összes többit is ikonizálja.}
+menuText H OptionsWindowsRaise "Automatikus elõhozás" 12 \
+  {Elõhoz bizonyos ablakokat (pl. elõrehaladás-sávokat), amikor el vannak takarva.}
+menuText H OptionsToolbar "Eszköztár" 0 {A fõ ablak eszköztárának összeállítása}
+menuText H OptionsECO "ECO-fájl betöltése..." 2 {Betölti az ECO-osztályozó fájlt.}
+menuText H OptionsSpell "Helyesírás-ellenõrzõ fájl betöltése..." 0 \
+  {Betölti a helyesírás-ellenõrzõ fájlt.}
+menuText H OptionsTable "Végjátéktáblázatok könyvtára..." 0 \
+  {Végjátéktáblázat-fájl kiválasztása; a könyvtárban levõ összes végjátéktáblázatot használatba veszi.}
+menuText H OptionsRecent "Aktuális fájlok..." 3 \
+  {A Fájl menüben megjelenített aktuális fájlok számának megváltoztatása}
+menuText H OptionsSave "Beállítások mentése" 12 \
+  "Minden beállítható értéket elment a $::optionsFile fájlba."
+menuText H OptionsAutoSave "Beállítások automatikus mentése kilépéskor." 0 \
+  {Automatikusan elment minden beállítást, amikor kilépsz SCID-bõl.}
 
 # Help menu:
-menuText H Help "Segts‰g" 0
-menuText H HelpIndex "Tartalom" 0 {Megjelenti a tartalomjegyz‰ket.}
-menuText H HelpGuide "R÷vid ismertet" 0 {R÷vid ismertett ny”jt a program hasznßlatßrl.}
-menuText H HelpHints "K‰rd‰s-felelet" 0 {N‰hßny hasznos tanßcs}
-menuText H HelpContact "Cmek" 0 {Fontosabb internetcmek}
-menuText H HelpTip "A nap tippje" 2 {Hasznos tipp SCID hasznßlatßhoz}
-menuText H HelpStartup "Indul ablak" 0 {A program indtßsakor megjelen ablak}
-menuText H HelpAbout "SCID-rl" 0 {Tßj‰koztatßs SCID-rl}
+menuText H Help "Segítség" 0
+menuText H HelpIndex "Tartalom" 0 {Megjeleníti a tartalomjegyzéket.}
+menuText H HelpGuide "Rövid ismertetõ" 0 {Rövid ismertetõt nyújt a program használatáról.}
+menuText H HelpHints "Kérdés-felelet" 0 {Néhány hasznos tanács}
+menuText H HelpContact "Címek" 0 {Fontosabb internetcímek}
+menuText H HelpTip "A nap tippje" 2 {Hasznos tipp SCID használatához}
+menuText H HelpStartup "Induló ablak" 0 {A program indításakor megjelenõ ablak}
+menuText H HelpAbout "SCID-rõl" 0 {Tájékoztatás SCID-rõl}
 
 # Game info box popup menu:
-menuText H GInfoHideNext "Elrejti a k÷vetkez l‰p‰st." 2
+menuText H GInfoHideNext "Elrejti a következõ lépést." 0
 menuText H GInfoMaterial "Mutatja az anyagi helyzetet" 11
-menuText H GInfoFEN "FEN-formßtum megmutatßsa" 0
-menuText H GInfoMarks "Mutatja a sznes mezket ‰s nyilakat." 10
-menuText H GInfoWrap "Hossz” sorok t÷rdel‰se" 0
-menuText H GInfoFullComment "A teljes kommentßrt megmutatja." 9
-menuText H GInfoPhotos "Show Photos" 5 ;# ***
-menuText H GInfoTBNothing "V‰gjßt‰ktßblßzatok: nincs informßci" 20
-menuText H GInfoTBResult "V‰gjßt‰ktßblßzatok: csak eredm‰ny" 25
-menuText H GInfoTBAll "V‰gjßt‰ktßblßzatok: eredm‰ny ‰s a legjobb l‰p‰sek" 42
-menuText H GInfoDelete "T÷rli/helyreßlltja ezt a jßtszmßt." 0
-menuText H GInfoMark "Megjel÷li ezt a jßtszmßt/megsz’nteti a jel÷l‰st." 0
+menuText H GInfoFEN "FEN-formátum megmutatása" 0
+menuText H GInfoMarks "Mutatja a színes mezõket és nyilakat." 10
+menuText H GInfoWrap "Hosszú sorok tördelése" 0
+menuText H GInfoFullComment "A teljes kommentárt megmutatja." 9
+menuText H GInfoPhotos "Mutatja a fényképeket" 1
+menuText H GInfoTBNothing "Végjátéktáblázatok: nincs információ" 20
+menuText H GInfoTBResult "Végjátéktáblázatok: csak eredmény" 25
+menuText H GInfoTBAll "Végjátéktáblázatok: eredmény és a legjobb lépések" 42
+menuText H GInfoDelete "Törli/helyreállítja ezt a játszmát." 0
+menuText H GInfoMark "Megjelöli ezt a játszmát/megszünteti a jelölést." 0
 
 # Main window buttons:
-helpMsg H .button.start {Ugrßs a jßtszma elej‰re  (billenty“: Home)}
-helpMsg H .button.end {Ugrßs a jßtszma v‰g‰re  (billenty“: End)}
-helpMsg H .button.back {Vissza egy l‰p‰ssel  (billenty“: balra mutat nyl)}
-helpMsg H .button.forward {Elre egy l‰p‰ssel  (billenty“: jobbra mutat nyl)}
-helpMsg H .button.intoVar {Bel‰p egy vßltozatba  (gyorsbillenty“: v).}
-helpMsg H .button.exitVar {Kil‰p az aktußlis vßltozatbl  (gyorsbillenty“: z).}
-helpMsg H .button.flip {Tßbla elforgatßsa  (gyorsbillenty“: .)}
-helpMsg H .button.coords {Koordinßtßk be- vagy kikapcsolßsa  (gyorsbillenty“: 0)}
-helpMsg H .button.autoplay {Automatikus visszajßtszßs  (billenty“: Ctrl+Z)}
+helpMsg H .button.start {Ugrás a játszma elejére  (billentyû: Home)}
+helpMsg H .button.end {Ugrás a játszma végére  (billentyû: End)}
+helpMsg H .button.back {Vissza egy lépéssel  (billentyû: balra mutató nyíl)}
+helpMsg H .button.forward {Elõre egy lépéssel  (billentyû: jobbra mutató nyíl)}
+helpMsg H .button.intoVar {Belép egy változatba  (gyorsbillentyû: v).}
+helpMsg H .button.exitVar {Kilép az aktuális változatból  (gyorsbillentyû: z).}
+helpMsg H .button.flip {Tábla elforgatása  (gyorsbillentyû: .)}
+helpMsg H .button.coords {Koordináták be- vagy kikapcsolása  (gyorsbillentyû: 0)}
+helpMsg H .button.autoplay {Automatikus visszajátszás  (billentyû: Ctrl+Z)}
 
 # General buttons:
 translate H Back {Vissza}
-translate H Cancel {M‰gse}
-translate H Clear {Ki’rt}
-translate H Close {Bezßr}
-translate H Defaults {Alap‰rt‰kek}
-translate H Delete {T÷r÷l}
+translate H Cancel {Mégse}
+translate H Clear {Töröl}
+translate H Close {Bezár}
+translate H Defaults {Alapértékek}
+translate H Delete {Töröl}
 translate H Graph {Grafikon}
-translate H Help {Segts‰g}
+translate H Help {Segítség}
 translate H Import {Import}
 translate H Index {Tartalom}
-translate H LoadGame {Jßtszma bet÷lt‰se}
-translate H BrowseGame {Jßtszma n‰zeget‰se}
-translate H MergeGame {Jßtszma beolvasztßsa}
-translate H Preview {Eln‰zet}
-translate H Revert {Visszat‰r}
+translate H LoadGame {Játszma betöltése}
+translate H BrowseGame {Játszma nézegetése}
+translate H MergeGame {Játszma beolvasztása}
+translate H Preview {Elõnézet}
+translate H Revert {Elvet}
 translate H Save {Ment}
 translate H Search {Keres}
-translate H Stop {Âllj}
-translate H Store {Tßrol}
-translate H Update {Frisst}
-translate H ChangeOrient {Ablak elhelyezked‰s‰nek vßltoztatßsa}
-translate H None {Egyik sem}
-translate H First {Els}
-translate H Current {Aktußlis}
-translate H Last {Utols}
+translate H Stop {Állj}
+translate H Store {Tárol}
+translate H Update {Frissít}
+translate H ChangeOrient {Ablak elhelyezkedésének változtatása}
+translate H None {Nincs}
+translate H First {Elsõ}
+translate H Current {Aktuális}
+translate H Last {Utolsó}
 
 # General messages:
-translate H game {jßtszma}
-translate H games {jßtszma}
-translate H move {l‰p‰s}
-translate H moves {l‰p‰s}
+translate H game {játszma}
+translate H games {játszma}
+translate H move {lépés}
+translate H moves {lépés}
 translate H all {mind}
 translate H Yes {Igen}
 translate H No {Nem}
-translate H Both {Mindkett}
-translate H King {Kirßly}
-translate H Queen {Vez‰r}
-translate H Rook {Bßstya}
-translate H Bishop {Fut}
-translate H Knight {Huszßr}
+translate H Both {Mindkettõ}
+translate H King {Király}
+translate H Queen {Vezér}
+translate H Rook {Bástya}
+translate H Bishop {Futó}
+translate H Knight {Huszár}
 translate H Pawn {Gyalog}
-translate H White {Vilßgos}
-translate H Black {S÷t‰t}
-translate H Player {Jßt‰kos}
-translate H Rating {Ğrt‰kszßm}
-translate H RatingDiff {Ğrt‰kszßmk’l÷nbs‰g (Vilßgos - S÷t‰t)}
-translate H AverageRating {Âtlagos ‰rt‰kszßm}
-translate H Event {Esem‰ny}
-translate H Site {Helyszn}
-translate H Country {Orszßg}
-translate H IgnoreColors {A szn k÷z÷mb÷s.}
-translate H Date {Dßtum}
-translate H EventDate {Az esem‰ny dßtuma}
-translate H Decade {Ğvtized}
-translate H Year {Ğv}
-translate H Month {Hnap}
-translate H Months {janußr februßr mßrcius ßprilis mßjus j”nius
-  j”lius augusztus szeptember oktber november december}
-translate H Days {vasßrnap h‰tf kedd szerda cs’t÷rt÷k p‰ntek szombat}
-translate H YearToToday {Az utols egy ‰vben}
-translate H Result {Eredm‰ny}
-translate H Round {Fordul}
+translate H White {Világos}
+translate H Black {Sötét}
+translate H Player {Játékos}
+translate H Rating {Értékszám}
+translate H RatingDiff {Értékszámkülönbség (világos - sötét)}
+translate H AverageRating {Átlagos értékszám}
+translate H Event {Esemény}
+translate H Site {Helyszín}
+translate H Country {Ország}
+translate H IgnoreColors {A szín közömbös}
+translate H Date {Dátum}
+translate H EventDate {Az esemény dátuma}
+translate H Decade {Évtized}
+translate H Year {Év}
+translate H Month {Hónap}
+translate H Months {január február március április május június
+  július augusztus szeptember október november december}
+translate H Days {vasárnap hétfõ kedd szerda csütörtök péntek szombat}
+translate H YearToToday {Az utolsó egy évben}
+translate H Result {Eredmény}
+translate H Round {Forduló}
 translate H Length {Hossz}
-translate H ECOCode {ECO-kd}
+translate H ECOCode {ECO-kód}
 translate H ECO {ECO}
-translate H Deleted {t÷r÷lt}
-translate H SearchResults {A keres‰s eredm‰nye}
-translate H OpeningTheDatabase {Adatbßzis megnyitßsa}
-translate H Database {Adatbßzis}
-translate H Filter {Sz“r}
-translate H noGames {nincs jßtszma}
-translate H allGames {az ÷sszes jßtszma}
-translate H empty {’res}
-translate H clipbase {vßgasztal}
-translate H score {pontszßm}
-translate H StartPos {Kezdßllßs}
-translate H Total {Ùsszesen}
+translate H Deleted {törölt}
+translate H SearchResults {A keresés eredménye}
+translate H OpeningTheDatabase {Adatbázis megnyitása}
+translate H Database {Adatbázis}
+translate H Filter {Szûrõ}
+translate H noGames {Nincs találat}
+translate H allGames {Összes játszma}
+translate H empty {üres}
+translate H clipbase {vágóasztal}
+translate H score {Eredmény}
+translate H StartPos {Kezdõállás}
+translate H Total {Összesen}
 
 # Standard error messages:
-translate H ErrNotOpen {Ez az adatbßzis nincs megnyitva.}
-translate H ErrReadOnly {Ez az adatbßzis csak olvashat; nem lehet megvßltoztatni.}
-translate H ErrSearchInterrupted {Keres‰s megszaktva; az eredm‰nyek hißnyosak.}
+translate H ErrNotOpen {Ez az adatbázis nincs megnyitva.}
+translate H ErrReadOnly {Ez az adatbázis csak olvasható; nem lehet megváltoztatni.}
+translate H ErrSearchInterrupted {Keresés megszakítva; az eredmények hiányosak.}
 
 # Game information:
 translate H twin {iker}
-translate H deleted {t÷r÷lt}
-translate H comment {megjegyz‰s}
+translate H deleted {törölt}
+translate H comment {megjegyzés}
 translate H hidden {rejtett}
-translate H LastMove {Utols l‰p‰s}
-translate H NextMove {K÷vetkez}
-translate H GameStart {Jßtszma eleje}
-translate H LineStart {Elßgazßs eleje}
-translate H GameEnd {Jßtszma v‰ge}
-translate H LineEnd {Elßgazßs v‰ge}
+translate H LastMove {Utolsó lépés}
+translate H NextMove {Következõ}
+translate H GameStart {Játszma eleje}
+translate H LineStart {Elágazás eleje}
+translate H GameEnd {Játszma vége}
+translate H LineEnd {Elágazás vége}
 
 # Player information:
-translate H PInfoAll {Eredm‰nyek az <b>÷sszes</b> jßtszma alapjßn}
-translate H PInfoFilter {Eredm‰nyek a <b>sz“rt</b> jßtszmßk alapjßn}
-translate H PInfoAgainst {Eredm‰nyek, ha az ellenf‰l}
-translate H PInfoMostWhite {Leggyakoribb megnyitßsok vilßgosk‰nt}
-translate H PInfoMostBlack {Leggyakoribb megnyitßsok s÷t‰tk‰nt}
-translate H PInfoRating {Ğrt‰kszßm alakulßsa}
-translate H PInfoBio {Ğletrajz}
+translate H PInfoAll {Eredmények az <b>összes</b> játszma alapján}
+translate H PInfoFilter {Eredmények a <b>szûrt</b> játszmák alapján}
+translate H PInfoAgainst {Eredmények, ha az ellenfél}
+translate H PInfoMostWhite {Leggyakoribb megnyitások világosként}
+translate H PInfoMostBlack {Leggyakoribb megnyitások sötétként}
+translate H PInfoRating {Értékszám alakulása}
+translate H PInfoBio {Életrajz}
+translate H PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
-translate H Draw {D÷ntetlen}
+translate H Draw {Döntetlen}
 translate H stalemate {patt}
-translate H withAllMoves {az ÷sszes l‰p‰ssel}
-translate H withAllButOneMove {egy hjßn az ÷sszes l‰p‰ssel}
+translate H withAllMoves {az összes lépéssel}
+translate H withAllButOneMove {egy híján az összes lépéssel}
 translate H with {with}
 translate H only {csak}
-translate H lose {vesztenek}
-translate H loses {veszt}
-translate H allOthersLose {minden mßs veszt}
+translate H lose {veszítenek}
+translate H loses {veszít}
+translate H allOthersLose {minden más veszít}
 translate H matesIn {mates in}
 translate H hasCheckmated {mattot adott}
 translate H longest {leghosszabb}
-translate H WinningMoves {Nyer l‰p‰s}
-translate H DrawingMoves {D÷ntetlenre vezet l‰p‰s}
-translate H LosingMoves {Veszt l‰p‰s}
-translate H UnknownMoves {Bizonytalan kimenetel“ l‰p‰s}
+translate H WinningMoves {Nyerõ lépés}
+translate H DrawingMoves {Döntetlenre vezetõ lépés}
+translate H LosingMoves {Vesztõ lépés}
+translate H UnknownMoves {Bizonytalan kimenetelû lépés}
 
 # Tip of the day:
 translate H Tip {Tipp}
-translate H TipAtStartup {Tipp indulßskor}
+translate H TipAtStartup {Tipp induláskor}
 
 # Tree window menus:
-menuText H TreeFile "Fßjl" 0
-menuText H TreeFileSave "Cache-fßjl ment‰se" 11 {Elmenti a fastrukt”ra-cache-fßjlt (.stc)}
-menuText H TreeFileFill "Cache-fßjl felt÷lt‰se" 14 \
-  {Felt÷lti a cache-fßjlt gyakori megnyitßsokkal.}
-menuText H TreeFileBest "Legjobb jßtszmßk listßja" 3 {Megmutatja a legjobb jßtszmßkat a fßrl.}
-menuText H TreeFileGraph "Grafikon" 0 {Megmutatja ennek a faßgnak a grafikonjßt.}
-menuText H TreeFileCopy "Sz÷veg mßsolßsa a vßglapra" 0 \
-  {A kirt statisztikai adatokat a vßglapra mßsolja.}
-menuText H TreeFileClose "Faablak bezßrßsa" 10 {Bezßrja a fastrukt”ra-ablakot.}
-menuText H TreeSort "Rendez‰s" 0
+menuText H TreeFile "Fájl" 0
+menuText H TreeFileSave "Cache-fájl mentése" 11 {Elmenti a faszerkezet-cache-fájlt (.stc)}
+menuText H TreeFileFill "Cache-fájl feltöltése" 14 \
+  {Feltölti a cache-fájlt gyakori megnyitásokkal.}
+menuText H TreeFileBest "Legjobb játszmák listája" 0 {Megmutatja a legjobb játszmákat a fáról.}
+menuText H TreeFileGraph "Grafikon" 0 {Megmutatja ennek a faágnak a grafikonját.}
+menuText H TreeFileCopy "Szöveg másolása a vágólapra" 0 \
+  {A kiírt statisztikai adatokat a vágólapra másolja.}
+menuText H TreeFileClose "Faablak bezárása" 10 {Bezárja a faszerkezet-ablakot.}
+menuText H TreeSort "Rendezés" 0
 menuText H TreeSortAlpha "ABC" 0
-menuText H TreeSortECO "ECO-kd" 0
-menuText H TreeSortFreq "Gyakorisßg" 0
-menuText H TreeSortScore "Pontszßm" 0
-menuText H TreeOpt "Beßlltßsok" 0
-menuText H TreeOptLock "R÷gzt‰s" 0 {A fßt az aktußlis adatbßzishoz k÷ti ill. a k÷t‰st feloldja.}
-menuText H TreeOptTraining "Edz‰s" 0 {Edz‰s’zemmd be- vagy kikapcsolßsa}
-menuText H TreeOptAutosave "Cache-fßjl automatikus ment‰se" 11 \
-  {A faablak bezßrßsakor automatikusan elmenti a cache-fßjlt.}
-menuText H TreeHelp "Segts‰g" 0
-menuText H TreeHelpTree "Segts‰g a fßhoz" 0
+menuText H TreeSortECO "ECO-kód" 0
+menuText H TreeSortFreq "Gyakoriság" 0
+menuText H TreeSortScore "Pontszám" 0
+menuText H TreeOpt "Beállítások" 0
+menuText H TreeOptLock "Rögzítés" 0 {A fát az aktuális adatbázishoz köti ill. a kötést feloldja.}
+menuText H TreeOptTraining "Edzés" 0 {Edzésüzemmód be- vagy kikapcsolása}
+menuText H TreeOptAutosave "Cache-fájl automatikus mentése" 11 \
+  {A faablak bezárásakor automatikusan elmenti a cache-fájlt.}
+menuText H TreeHelp "Segítség" 0
+menuText H TreeHelpTree "Segítség a fához" 0
 menuText H TreeHelpIndex "Tartalom" 0
-translate H SaveCache {Cache ment‰se}
-translate H Training {Edz‰s}
-translate H LockTree {R÷gzt‰s}
-translate H TreeLocked {r÷gztve}
+translate H SaveCache {Cache mentése}
+translate H Training {Edzés}
+translate H LockTree {Rögzítés}
+translate H TreeLocked {rögzítve}
 translate H TreeBest {Legjobb}
-translate H TreeBestGames {Legjobb jßtszmßk a fßrl}
+translate H TreeBestGames {Legjobb játszmák a fáról}
 translate H TreeTitleRow \
-  {    L‰p‰s  ECO       Gyakorisßg  Eredm. ÂtlĞl Telj. Âtl.‰v}
+  {    Lépés  ECO       Gyakoriság  Eredm. ÁtlÉlõ Telj. Átl.év}
+translate H TreeElapsedTime {Time} ;# ***
+translate H TreeFoundInCache {  (Found in cache)} ;# ***
+translate H TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
-menuText H FinderFile "Fßjl" 0
-menuText H FinderFileSubdirs "Keres‰s az alk÷nyvtßrakban" 0
-menuText H FinderFileClose "A fßjlkeres bezßrßsa" 15
-menuText H FinderSort "Rendez‰s" 0
-menuText H FinderSortType "Tpus" 0
-menuText H FinderSortSize "M‰ret" 0
-menuText H FinderSortMod "Id" 0
-menuText H FinderSortName "N‰v" 0
-menuText H FinderSortPath "õtvonal" 0
-menuText H FinderTypes "Tpusok" 0
-menuText H FinderTypesScid "SCID-adatbßzisok" 0
-menuText H FinderTypesOld "R‰gi formßtum” SCID-adatbßzisok" 0
-menuText H FinderTypesPGN "PGN-fßjlok" 0
-menuText H FinderTypesEPD "EPD-fßjlok" 0
-menuText H FinderTypesRep "Repertoßrfßjlok" 0
-menuText H FinderHelp "Segts‰g" 0
-menuText H FinderHelpFinder "Segts‰g a fßjlkeresh÷z" 0
+menuText H FinderFile "Fájl" 0
+menuText H FinderFileSubdirs "Keresés az alkönyvtárakban" 0
+menuText H FinderFileClose "A fájlkeresõ bezárása" 15
+menuText H FinderSort "Rendezés" 0
+menuText H FinderSortType "Típus" 0
+menuText H FinderSortSize "Méret" 0
+menuText H FinderSortMod "Idõ" 0
+menuText H FinderSortName "Név" 0
+menuText H FinderSortPath "Útvonal" 0
+menuText H FinderTypes "Típusok" 0
+menuText H FinderTypesScid "SCID-adatbázisok" 0
+menuText H FinderTypesOld "Régi formátumú SCID-adatbázisok" 5
+menuText H FinderTypesPGN "PGN-fájlok" 0
+menuText H FinderTypesEPD "EPD-fájlok" 0
+menuText H FinderTypesRep "Repertoárfájlok" 0
+menuText H FinderHelp "Segítség" 0
+menuText H FinderHelpFinder "Segítség a fájlkeresõhöz" 0
 menuText H FinderHelpIndex "Tartalom" 0
-translate H FileFinder {Fßjlkeres}
-translate H FinderDir {K÷nyvtßr}
-translate H FinderDirs {K÷nyvtßrak}
-translate H FinderFiles {Fßjlok}
+translate H FileFinder {Fájlkeresõ}
+translate H FinderDir {Könyvtár}
+translate H FinderDirs {Könyvtárak}
+translate H FinderFiles {Fájlok}
 translate H FinderUpDir {fel}
 
 # Player finder:
-menuText H PListFile "Fßjl" 0
-menuText H PListFileUpdate "Frisst" 0
-menuText H PListFileClose "Jßt‰koskeres bezßrßsa" 16
-menuText H PListSort "Rendez‰s" 0
-menuText H PListSortName "N‰v" 0
-menuText H PListSortElo "Ğl" 0
-menuText H PListSortGames "Jßtszmßk" 0
-menuText H PListSortOldest "Legr‰gibb" 0
-menuText H PListSortNewest "Leg”jabb" 3
+menuText H PListFile "Fájl" 0
+menuText H PListFileUpdate "Frissít" 0
+menuText H PListFileClose "Játékoskeresõ bezárása" 16
+menuText H PListSort "Rendezés" 0
+menuText H PListSortName "Név" 0
+menuText H PListSortElo "Élõ" 0
+menuText H PListSortGames "Játszmák" 0
+menuText H PListSortOldest "Legrégibb" 0
+menuText H PListSortNewest "Legújabb" 3
 
 # Tournament finder:
-menuText H TmtFile "Fßjl" 0
-menuText H TmtFileUpdate "Frisst" 0
-menuText H TmtFileClose "A versenykeres bezßrßsa" 18
-menuText H TmtSort "Rendez‰s" 0
-menuText H TmtSortDate "Dßtum" 0
-menuText H TmtSortPlayers "Jßt‰kosok" 0
-menuText H TmtSortGames "Jßtszmßk" 1
-menuText H TmtSortElo "Ğl" 0
-menuText H TmtSortSite "Helyszn" 0
-menuText H TmtSortEvent "Esem‰ny" 1
-menuText H TmtSortWinner "Gyztes" 0
+menuText H TmtFile "Fájl" 0
+menuText H TmtFileUpdate "Frissít" 0
+menuText H TmtFileClose "A versenykeresõ bezárása" 18
+menuText H TmtSort "Rendezés" 0
+menuText H TmtSortDate "Dátum" 0
+menuText H TmtSortPlayers "Játékosok" 0
+menuText H TmtSortGames "Játszmák" 1
+menuText H TmtSortElo "Élõ" 0
+menuText H TmtSortSite "Helyszín" 0
+menuText H TmtSortEvent "Esemény" 0
+menuText H TmtSortWinner "Gyõztes" 0
 translate H TmtLimit "Lista hossza"
-translate H TmtMeanElo "Legkisebb ßtlagos Ğl"
-translate H TmtNone "Nem talßltam hozzß versenyt."
+translate H TmtMeanElo "Legkisebb átlagos Élõ"
+translate H TmtNone "Nem találtam hozzá versenyt."
 
 # Graph windows:
-menuText H GraphFile "Fßjl" 0
-menuText H GraphFileColor "Ment‰s Color PostScript-k‰nt..." 7
-menuText H GraphFileGrey "Ment‰s Greyscale PostScript-k‰nt..." 7
-menuText H GraphFileClose "Ablak bezßrßsa" 8
-menuText H GraphOptions "Beßlltßsok" 0
-menuText H GraphOptionsWhite "Vilßgos" 0
-menuText H GraphOptionsBlack "S÷t‰t" 0
-menuText H GraphOptionsBoth "Mindkett" 1
-menuText H GraphOptionsPInfo "A jßt‰kosinformßci jßt‰kosa" 0
-translate H GraphFilterTitle "Sz“rgrafikon: gyakorisßg 1000 jßtszmßnk‰nt"
+menuText H GraphFile "Fájl" 0
+menuText H GraphFileColor "Mentés Color PostScript-ként..." 7
+menuText H GraphFileGrey "Mentés Greyscale PostScript-ként..." 7
+menuText H GraphFileClose "Ablak bezárása" 8
+menuText H GraphOptions "Beállítások" 0
+menuText H GraphOptionsWhite "Világos" 0
+menuText H GraphOptionsBlack "Sötét" 0
+menuText H GraphOptionsBoth "Mindkettõ" 1
+menuText H GraphOptionsPInfo "A játékosinformáció játékosa" 0
+translate H GraphFilterTitle "Szûrõgrafikon: gyakoriság 1000 játszmánként"
 
 # Analysis window:
-translate H AddVariation {Vßltozat besz”rßsa}
-translate H AddMove {L‰p‰s besz”rßsa}
-translate H Annotate {Jegyzetekkel lßt el}
-translate H AnalysisCommand {Elemz‰sparancs}
-translate H PreviousChoices {Korßbbi vßlasztßsok}
-translate H AnnotateTime {K‰t l‰p‰s k÷z÷tti id mßsodpercben}
-translate H AnnotateWhich {Vßltozatok hozzßadßsa}
-translate H AnnotateAll {Mindk‰t f‰l l‰p‰seihez}
-translate H AnnotateWhite {Csak vilßgos l‰p‰seihez}
-translate H AnnotateBlack {Csak s÷t‰t l‰p‰seihez}
-translate H AnnotateNotBest {Ha a jßtszmßban nem a legjobbat l‰pt‰k}
+translate H AddVariation {Változat beszúrása}
+translate H AddMove {Lépés beszúrása}
+translate H Annotate {Értékelõ jelekkel lát el}
+translate H AnalysisCommand {Elemzésparancs}
+translate H PreviousChoices {Korábbi választások}
+translate H AnnotateTime {Két lépés közötti idõ másodpercben}
+translate H AnnotateWhich {Változatok hozzáadása}
+translate H AnnotateAll {Mindkét fél lépéseihez}
+translate H AnnotateWhite {Csak világos lépéseihez}
+translate H AnnotateBlack {Csak sötét lépéseihez}
+translate H AnnotateNotBest {Ha a játszmában nem a legjobbat lépték}
 
 # Analysis Engine open dialog:
-translate H EngineList {Elemz motorok listßja}
-translate H EngineName {N‰v}
-translate H EngineCmd {Parancs}
-translate H EngineArgs {Param‰terek}
-translate H EngineDir {K÷nyvtßr}
-translate H EngineElo {Ğl}
-translate H EngineTime {Dßtum}
-translate H EngineNew {õj}
-translate H EngineEdit {Szerkeszt‰s}
-translate H EngineRequired {A vastagbet“s mezk sz’ks‰gesek, a t÷bbiek kihagyhatk.}
+translate H EngineList {Elemzõ motorok listája}
+translate H EngineName {Név}
+translate H EngineCmd {Parancssor}
+translate H EngineArgs {Paraméterek}
+translate H EngineDir {Könyvtár}
+translate H EngineElo {Élõ}
+translate H EngineTime {Dátum}
+translate H EngineNew {Új}
+translate H EngineEdit {Szerkesztés}
+translate H EngineRequired {A vastagbetûs mezõk szükségesek, a többiek kihagyhatók.}
 
 # Stats window menus:
-menuText H StatsFile "Fßjl" 0
-menuText H StatsFilePrint "Nyomtatßs fßjlba..." 0
-menuText H StatsFileClose "Ablak bezßrßsa" 0
-menuText H StatsOpt "Beßlltßsok" 0
+menuText H StatsFile "Fájl" 0
+menuText H StatsFilePrint "Nyomtatás fájlba..." 0
+menuText H StatsFileClose "Ablak bezárása" 8
+menuText H StatsOpt "Beállítások" 0
 
 # PGN window menus:
-menuText H PgnFile "Fßjl" 0
-menuText H PgnFilePrint "Nyomtatßs fßjlba..." 0
-menuText H PgnFileClose "PGN-ablak bezßrßsa" 0
-menuText H PgnOpt "Megjelent‰s" 0
-menuText H PgnOptColor "Sznes sz÷veg" 0
-menuText H PgnOptShort "R÷vid (3-soros) fejl‰c" 0
-menuText H PgnOptSymbols "Szimblumok hasznßlata" 1
-menuText H PgnOptIndentC "Megjegyz‰sek beh”zßsa" 0
-menuText H PgnOptIndentV "Vßltozatok beh”zßsa" 0
-menuText H PgnOptColumn "Oszlopok stlusa (soronk‰nt egy l‰p‰s)" 0
-menuText H PgnOptSpace "Szk÷z a l‰p‰s sorszßma utßn" 3
-menuText H PgnOptStripMarks "Sznes mezk ‰s nyilak kifejt‰se" 2
-menuText H PgnColor "Sznek" 0
-menuText H PgnColorHeader "Fejl‰c..." 0
-menuText H PgnColorAnno "Jegyzetek..." 0
-menuText H PgnColorComments "Megjegyz‰sek..." 0
-menuText H PgnColorVars "Vßltozatok..." 0
-menuText H PgnColorBackground "Hßtt‰r..." 0
-menuText H PgnHelp "Segts‰g" 0
-menuText H PgnHelpPgn "Segts‰g PGN-hez" 9
+menuText H PgnFile "Fájl" 0
+menuText H PgnFilePrint "Nyomtatás fájlba..." 0
+menuText H PgnFileClose "PGN-ablak bezárása" 12
+menuText H PgnOpt "Megjelenítés" 0
+menuText H PgnOptColor "Színes szöveg" 0
+menuText H PgnOptShort "Rövid (3-soros) fejléc" 0
+menuText H PgnOptSymbols "Szimbólumok használata" 1
+menuText H PgnOptIndentC "Megjegyzések behúzása" 0
+menuText H PgnOptIndentV "Változatok behúzása" 0
+menuText H PgnOptColumn "Oszlopok stílusa (soronként egy lépés)" 0
+menuText H PgnOptSpace "Szóköz a lépés sorszáma után" 3
+menuText H PgnOptStripMarks "Színes mezõk és nyilak kifejtése" 2
+menuText H PgnColor "Színek" 1
+menuText H PgnColorHeader "Fejléc..." 0
+menuText H PgnColorAnno "Értékelõ jelek..." 0
+menuText H PgnColorComments "Megjegyzések..." 0
+menuText H PgnColorVars "Változatok..." 0
+menuText H PgnColorBackground "Háttér..." 0
+menuText H PgnHelp "Segítség" 0
+menuText H PgnHelpPgn "Segítség PGN-hez" 9
 menuText H PgnHelpIndex "Tartalom" 0
+translate H PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
-menuText H CrosstabFile "Fßjl" 0
-menuText H CrosstabFileText "Nyomtatßs sz÷vegfßjlba..." 10
-menuText H CrosstabFileHtml "Nyomtatßs HTML-fßjlba..." 10
-menuText H CrosstabFileLaTeX "Nyomtatßs LaTeX-fßjlba..." 10
-menuText H CrosstabFileClose "Ablak bezßrßsa" 0
-menuText H CrosstabEdit "Szerkeszt‰s" 0
-menuText H CrosstabEditEvent "Esem‰ny" 0
-menuText H CrosstabEditSite "Helyszn" 0
-menuText H CrosstabEditDate "Dßtum" 0
-menuText H CrosstabOpt "Megjelent‰s" 0
-menuText H CrosstabOptAll "K÷rm‰rkz‰s" 0
-menuText H CrosstabOptSwiss "Svßjci" 0
-menuText H CrosstabOptKnockout "Kies‰ses" 1
-menuText H CrosstabOptAuto "Ø maga j÷n rß." 0
-menuText H CrosstabOptAges "Ğletkor ‰vben" 0
-menuText H CrosstabOptNats "Nemzetis‰g" 0
-menuText H CrosstabOptRatings "Ğrt‰kszßmok" 1
-menuText H CrosstabOptTitles "Cmek" 0
-menuText H CrosstabOptBreaks "Pontszßm holtverseny eld÷nt‰s‰hez" 0
-menuText H CrosstabOptDeleted "T÷r÷lt jßtszmßkkal egy’tt" 0
-menuText H CrosstabOptColors "Sznek (csak svßjci rendszer eset‰n)" 2
-menuText H CrosstabOptColumnNumbers "Szßmozott oszlopok (csak k÷rm‰rkz‰shez)" 2
+menuText H CrosstabFile "Fájl" 0
+menuText H CrosstabFileText "Nyomtatás szövegfájlba..." 10
+menuText H CrosstabFileHtml "Nyomtatás HTML-fájlba..." 10
+menuText H CrosstabFileLaTeX "Nyomtatás LaTeX-fájlba..." 10
+menuText H CrosstabFileClose "Ablak bezárása" 8
+menuText H CrosstabEdit "Szerkesztés" 1
+menuText H CrosstabEditEvent "Esemény" 0
+menuText H CrosstabEditSite "Helyszín" 0
+menuText H CrosstabEditDate "Dátum" 0
+menuText H CrosstabOpt "Megjelenítés" 0
+menuText H CrosstabOptAll "Körmérkõzés" 0
+menuText H CrosstabOptSwiss "Svájci" 0
+menuText H CrosstabOptKnockout "Kieséses" 1
+menuText H CrosstabOptAuto "Találd ki!" 0
+menuText H CrosstabOptAges "Életkor évben" 0
+menuText H CrosstabOptNats "Nemzetiség" 0
+menuText H CrosstabOptRatings "Értékszámok" 1
+menuText H CrosstabOptTitles "Címek" 0
+menuText H CrosstabOptBreaks "Pontszám holtverseny eldöntéséhez" 0
+menuText H CrosstabOptDeleted "Törölt játszmákkal együtt" 0
+menuText H CrosstabOptColors "Színek (csak svájci rendszer esetén)" 2
+menuText H CrosstabOptColumnNumbers "Számozott oszlopok (csak körmérkõzéshez)" 2
 menuText H CrosstabOptGroup "Pontcsoportok" 1
-menuText H CrosstabSort "Rendez" 0
-menuText H CrosstabSortName "N‰v" 0
-menuText H CrosstabSortRating "Ğrt‰kszßm" 0
-menuText H CrosstabSortScore "Pontszßm" 0
-menuText H CrosstabColor "Szn" 0
-menuText H CrosstabColorPlain "K÷z÷ns‰ges sz÷veg" 0
+menuText H CrosstabSort "Rendezés" 0
+menuText H CrosstabSortName "Név" 0
+menuText H CrosstabSortRating "Értékszám" 0
+menuText H CrosstabSortScore "Pontszám" 0
+menuText H CrosstabColor "Szín" 2
+menuText H CrosstabColorPlain "Közönséges szöveg" 0
 menuText H CrosstabColorHyper "Hypertext" 0
-menuText H CrosstabHelp "Segts‰g" 0
-menuText H CrosstabHelpCross "Segts‰g kereszttßblßzathoz" 0
+menuText H CrosstabHelp "Segítség" 0
+menuText H CrosstabHelpCross "Segítség versenytáblázathoz" 0
 menuText H CrosstabHelpIndex "Tartalom" 0
-translate H SetFilter {Sz“r beßlltßsa}
-translate H AddToFilter {Hozzßadja a sz“rh÷z}
-translate H Swiss {Svßjci}
-translate H Category {Kategria}
+translate H SetFilter {Szûrõ beállítása}
+translate H AddToFilter {Hozzáadja a szûrõhöz}
+translate H Swiss {Svájci}
+translate H Category {Kategória}
 
 # Opening report window menus:
-menuText H OprepFile "Fßjl" 0
-menuText H OprepFileText "Nyomtatßs sz÷vegfßjlba..." 10
-menuText H OprepFileHtml "Nyomtatßs HTML-fßjlba..." 10
-menuText H OprepFileLaTeX "Nyomtatßs LaTeX-fßjlba..." 10
-menuText H OprepFileOptions "Beßlltßsok..." 0
-menuText H OprepFileClose "Ablak bezßrßsa" 0
-menuText H OprepHelp "Segts‰g" 0
-menuText H OprepHelpReport "Segts‰g a megnyitßsi ÷sszefoglalhoz" 0
+menuText H OprepFile "Fájl" 0
+menuText H OprepFileText "Nyomtatás szövegfájlba..." 10
+menuText H OprepFileHtml "Nyomtatás HTML-fájlba..." 10
+menuText H OprepFileLaTeX "Nyomtatás LaTeX-fájlba..." 10
+menuText H OprepFileOptions "Beállítások..." 0
+menuText H OprepFileClose "Ablak bezárása" 8
+menuText H OprepHelp "Segítség" 0
+menuText H OprepHelpReport "Segítség a megnyitási összefoglalóhoz" 0
 menuText H OprepHelpIndex "Tartalom" 0
 
 # Repertoire editor:
-menuText H RepFile "Fßjl" 0
-menuText H RepFileNew "õj" 0
-menuText H RepFileOpen "Megnyitßs..." 3
-menuText H RepFileSave "Ment‰s..." 0
-menuText H RepFileSaveAs "Ment‰s mßsk‰nt..." 5
-menuText H RepFileClose "Ablak bezßrßsa" 0
-menuText H RepEdit "Szerkeszt‰s" 0
-menuText H RepEditGroup "Csoport hozzßadßsa" 0
-menuText H RepEditInclude "Beleveend elßgazßs" 0
-menuText H RepEditExclude "Kizßrand elßgazßs" 0
-menuText H RepView "N‰zet" 0
-menuText H RepViewExpand "Az ÷sszes csoportot kibontja" 20
-menuText H RepViewCollapse "Az ÷sszes csoportot ÷sszeh”zza" 20
-menuText H RepSearch "Keres‰s" 0
-menuText H RepSearchAll "Az eg‰sz repertoßrban..." 3
-menuText H RepSearchDisplayed "Csak a megjelentett elßgazßsokban..." 0
-#Ez igen gyan”s!
-menuText H RepHelp "Segts‰g" 0
-menuText H RepHelpRep "Segts‰g a repertoßrhoz" 0
+menuText H RepFile "Fájl" 0
+menuText H RepFileNew "Új" 0
+menuText H RepFileOpen "Megnyitás..." 3
+menuText H RepFileSave "Mentés..." 0
+menuText H RepFileSaveAs "Mentés másként..." 5
+menuText H RepFileClose "Ablak bezárása" 8
+menuText H RepEdit "Szerkesztés" 1
+menuText H RepEditGroup "Csoport hozzáadása" 0
+menuText H RepEditInclude "Beveendõ elágazás" 0
+menuText H RepEditExclude "Kizárandó elágazás" 0
+menuText H RepView "Nézet" 0
+menuText H RepViewExpand "Az összes csoportot kibontja" 20
+menuText H RepViewCollapse "Az összes csoportot összehúzza" 20
+menuText H RepSearch "Keresés" 0
+menuText H RepSearchAll "Az egész repertoárban..." 3
+menuText H RepSearchDisplayed "Csak a megjelenített elágazásokban..." 0
+#Ez igen gyanús!
+menuText H RepHelp "Segítség" 0
+menuText H RepHelpRep "Segítség a repertoárhoz" 0
 menuText H RepHelpIndex "Tartalom" 0
-translate H RepSearch "Keres‰s a repertoßrban"
-translate H RepIncludedLines "beleveend elßgazßsok"
-translate H RepExcludedLines "kizßrand elßgazßsok"
-translate H RepCloseDialog {Ebben a repertoßrban elmentetlen vßltoztatßsok vannak.
+translate H RepSearch "Keresés a repertoárban"
+translate H RepIncludedLines "beveendõ elágazások"
+translate H RepExcludedLines "kizárandó elágazások"
+translate H RepCloseDialog {Ebben a repertoárban elmentetlen változtatások vannak.
 
-T‰nyleg folytatni akarod, ‰s elvetni a l‰trehozott vßltoztatßsokat?
+Tényleg folytatni akarod, és elvetni a létrehozott változtatásokat?
 }
 
 # Header search:
-translate H HeaderSearch {Keres‰s fejl‰c alapjßn}
-translate H GamesWithNoECO {Jßtszmßk ECO n‰lk’l?}
-translate H GameLength {Jßtszmahossz}
-translate H FindGamesWith {Megjel÷lt jßtszmßk}
-translate H StdStart {K’l÷nleges indtßs}
-translate H Promotions {Âtvßltozßsok}
-translate H Comments {Megjegyz‰sek}
-translate H Variations {Vßltozatok}
-translate H Annotations {Jegyzetek}
-translate H DeleteFlag {Megjel÷l‰s t÷rl‰se}
-translate H WhiteOpFlag {Megnyitßs vilßgossal}
-translate H BlackOpFlag {Megnyitßs s÷t‰ttel}
-translate H MiddlegameFlag {K÷z‰pjßt‰k}
-translate H EndgameFlag {V‰gjßt‰k}
-translate H NoveltyFlag {õjtßs}
+translate H HeaderSearch {Keresés fejléc alapján}
+translate H GamesWithNoECO {Játszmák ECO nélkül?}
+translate H GameLength {Játszmahossz}
+translate H FindGamesWith {Megjelölt játszmák}
+translate H StdStart {Különleges kezdés}
+translate H Promotions {Gyalogátváltozások}
+translate H Comments {Megjegyzések}
+translate H Variations {Változatok}
+translate H Annotations {Értékelõ jelek}
+translate H DeleteFlag {Megjelölés törlése}
+translate H WhiteOpFlag {Megnyitás világossal}
+translate H BlackOpFlag {Megnyitás sötéttel}
+translate H MiddlegameFlag {Középjáték}
+translate H EndgameFlag {Végjáték}
+translate H NoveltyFlag {Újítás}
 translate H PawnFlag {Gyalogszerkezet}
 translate H TacticsFlag {Taktika}
-translate H QsideFlag {Vez‰rszßrnyi jßt‰k}
-translate H KsideFlag {Kirßlyszßrnyi jßt‰k}
-translate H BrilliancyFlag {Csillogßs}
-translate H BlunderFlag {Eln‰z‰s}
-translate H UserFlag {Felhasznßl}
-translate H PgnContains {A PGN-ben sz÷veg van.}
+translate H QsideFlag {Vezérszárnyi játék}
+translate H KsideFlag {Királyszárnyi játék}
+translate H BrilliancyFlag {Csillogás}
+translate H BlunderFlag {Elnézés}
+translate H UserFlag {Felhasználó}
+translate H PgnContains {Szöveg a PGN-ben}
 
 # Game list window:
-translate H GlistNumber {Szßm}
-translate H GlistWhite {Vilßgos}
-translate H GlistBlack {S÷t‰t}
-translate H GlistWElo {Vilßgos Ğlje}
-translate H GlistBElo {S÷t‰t Ğlje}
-translate H GlistEvent {Esem‰ny}
-translate H GlistSite {Helyszn}
-translate H GlistRound {Fordul}
-translate H GlistDate {Dßtum}
-translate H GlistYear {Ğv}
-translate H GlistEDate {Az esem‰ny dßtuma}
-translate H GlistResult {Eredm‰ny}
+translate H GlistNumber {Szám}
+translate H GlistWhite {Világos}
+translate H GlistBlack {Sötét}
+translate H GlistWElo {Világos Élõje}
+translate H GlistBElo {Sötét Élõje}
+translate H GlistEvent {Esemény}
+translate H GlistSite {Helyszín}
+translate H GlistRound {Forduló}
+translate H GlistDate {Dátum}
+translate H GlistYear {Év}
+translate H GlistEDate {Az esemény dátuma}
+translate H GlistResult {Eredmény}
 translate H GlistLength {Hossz}
-translate H GlistCountry {Orszßg}
+translate H GlistCountry {Ország}
 translate H GlistECO {ECO}
-translate H GlistOpening {Megnyitßs}
-translate H GlistEndMaterial {V‰gs anyagi helyzet}
-translate H GlistDeleted {T÷r÷lt}
-translate H GlistFlags {Megjel÷l‰sek}
+translate H GlistOpening {Megnyitás}
+translate H GlistEndMaterial {Végsõ anyagi helyzet}
+translate H GlistDeleted {Törölt}
+translate H GlistFlags {Megjelölések}
 translate H GlistVars {Variations}
-translate H GlistComments {Megjegyz‰sek}
-translate H GlistAnnos {Jegyzetek}
+translate H GlistComments {Megjegyzések}
+translate H GlistAnnos {Értékelõ jelek}
 translate H GlistStart {Kezdet}
-translate H GlistGameNumber {A jßtszma sorszßma}
-translate H GlistFindText {Sz÷veg keres‰se}
-translate H GlistMoveField {L‰p‰s}
-translate H GlistEditField {Konfigurßlßs}
-translate H GlistAddField {Hozzßad}
-translate H GlistDeleteField {Eltßvolt}
-translate H GlistWidth {Sz‰less‰g}
-translate H GlistAlign {Igazt}
-translate H GlistColor {Szn}
-translate H GlistSep {Elvßlaszt}
+translate H GlistGameNumber {A játszma sorszáma}
+translate H GlistFindText {Szöveg keresése}
+translate H GlistMoveField {Lépés}
+translate H GlistEditField {Konfigurálás}
+translate H GlistAddField {Hozzáad}
+translate H GlistDeleteField {Eltávolít}
+translate H GlistWidth {Szélesség}
+translate H GlistAlign {Igazít}
+translate H GlistColor {Szín}
+translate H GlistSep {Elválasztó}
 
 # Maintenance window:
-translate H DatabaseName {Az adatbßzis neve:}
-translate H TypeIcon {Tpusikon:}
-translate H NumOfGames {Jßtszmßk:}
-translate H NumDeletedGames {T÷r÷lt jßtszmßk:}
-translate H NumFilterGames {Sz“rt jßtszmßk:}
-translate H YearRange {Ğvtartomßny:}
-translate H RatingRange {Ğrt‰kszßmtartomßny:}
-translate H Description {Lerßs}
-translate H Flag {Megjel÷l‰s}
-translate H DeleteCurrent {T÷rli az aktußlis jßtszmßt.}
-translate H DeleteFilter {T÷rli a sz“rt jßtszmßkat.}
-translate H DeleteAll {Minden jßtszmßt t÷r÷l.}
-translate H UndeleteCurrent {Helyreßlltja az aktußlis jßtszmßt.}
-translate H UndeleteFilter {Helyreßlltja a sz“rt jßtszmßkat.}
-translate H UndeleteAll {Minden jßtszmßt helyreßllt.}
-translate H DeleteTwins {T÷rli az ikerjßtszmßkat.}
-translate H MarkCurrent {Kijel÷li az aktußlis jßtszmßt.}
-translate H MarkFilter {Kijel÷li a sz“rt jßtszmßkat.}
-translate H MarkAll {Minden jßtszmßt kijel÷l.}
-translate H UnmarkCurrent {Megsz’nteti az aktußlis jßtszma kijel÷l‰s‰t.}
-translate H UnmarkFilter {Megsz’nteti a sz“rt jßtszmßk kijel÷l‰s‰t.}
-translate H UnmarkAll {Minden jßtszma kijel÷l‰s‰t megsz’nteti.}
-translate H Spellchecking {Helyesrßs-ellenrz‰s}
-translate H Players {Jßt‰kosok}
-translate H Events {Esem‰nyek}
-translate H Sites {Helysznek}
-translate H Rounds {Fordulk}
-translate H DatabaseOps {Adatbßzism“veletek}
-translate H ReclassifyGames {ECO alapjßn osztßlyozza a jßtszmßkat.}
-translate H CompactDatabase {Adatbßzis t÷m÷rt‰se}
-translate H SortDatabase {Adatbßzis rendez‰se}
-translate H AddEloRatings {Ğl-‰rt‰kszßmok hozzßadßsa}
-translate H AutoloadGame {Jßtszmasorszßm automatikus bet÷lt‰se}
+translate H DatabaseName {Az adatbázis neve:}
+translate H TypeIcon {Típusikon:}
+translate H NumOfGames {Játszmák:}
+translate H NumDeletedGames {Törölt játszmák:}
+translate H NumFilterGames {Szûrt játszmák:}
+translate H YearRange {Évtartomány:}
+translate H RatingRange {Értékszámtartomány:}
+translate H Description {Leírás}
+translate H Flag {Megjelölés}
+translate H DeleteCurrent {Törli az aktuális játszmát.}
+translate H DeleteFilter {Törli a szûrt játszmákat.}
+translate H DeleteAll {Minden játszmát töröl.}
+translate H UndeleteCurrent {Helyreállítja az aktuális játszmát.}
+translate H UndeleteFilter {Helyreállítja a szûrt játszmákat.}
+translate H UndeleteAll {Minden játszmát helyreállít.}
+translate H DeleteTwins {Törli az ikerjátszmákat.}
+translate H MarkCurrent {Megjelöli az aktuális játszmát.}
+translate H MarkFilter {Megjelöli a szûrt játszmákat.}
+translate H MarkAll {Minden játszmát megjelöl.}
+translate H UnmarkCurrent {Eltávolítja az aktuális játszma megjelölését.}
+translate H UnmarkFilter {Eltávolítja a szûrt játszmák megjelölését.}
+translate H UnmarkAll {Minden játszma megjelölését eltávolítja.}
+translate H Spellchecking {Helyesírás-ellenõrzés}
+translate H Players {Játékosok}
+translate H Events {Események}
+translate H Sites {Helyszínek}
+translate H Rounds {Fordulók}
+translate H DatabaseOps {Adatbázismûveletek}
+translate H ReclassifyGames {ECO alapján osztályozza a játszmákat.}
+translate H CompactDatabase {Adatbázis tömörítése}
+translate H SortDatabase {Adatbázis rendezése}
+translate H AddEloRatings {Élõ-értékszámok hozzáadása}
+translate H AutoloadGame {Játszmasorszám automatikus betöltése}
 #Igaz ez?
-translate H StripTags {PGN-cmk‰k elt’ntet‰se}
-translate H StripTag {Cmke elt’ntet‰se}
-translate H Cleaner {Takart}
+translate H StripTags {PGN-címkék eltüntetése}
+translate H StripTag {Címke eltüntetése}
+translate H Cleaner {Takarító}
 translate H CleanerHelp {
-SCID Takartja el fogja v‰gezni az aktußlis adatbßzison az ÷sszes olyan gondozßsi feladatot, amelyet az alßbbi listßrl kijel÷lsz.
+SCID Takarítója el fogja végezni az aktuális adatbázison az összes olyan gondozási feladatot, amelyet az alábbi listáról kijelölsz.
 
-Az ECO-osztßlyozßsra ‰s az ikert÷rl‰sre vonatkoz jelenlegi beßlltßsok akkor jutnak ‰rv‰nyre, ha ezeket a feladatokat is kijel÷l÷d.
+Az ECO-osztályozásra és az ikertörlésre vonatkozó jelenlegi beállítások akkor jutnak érvényre, ha ezeket a feladatokat is kijelölöd.
 }
 translate H CleanerConfirm {
-Ha a Takart mßr elindult, t÷bb‰ nem lehet megßlltani!
+Ha a Takarító már elindult, többé nem lehet megállítani!
 
-Nagy adatbßzison a kivßlasztott feladatoktl ‰s aktußlis beßlltßsaiktl f’ggen a m“velet sokßig eltarthat.
+Nagy adatbázison a kiválasztott feladatoktól és aktuális beállításaiktól függõen a mûvelet sokáig eltarthat.
 
-Biztos, hogy neki akarsz lßtni a kijel÷lt gondozßsi feladatoknak?
+Biztos, hogy neki akarsz látni a kijelölt gondozási feladatoknak?
 }
 
 # Comment editor:
-translate H AnnotationSymbols  {Jegyzetszimblumok:}
-translate H Comment {Megjegyz‰s:}
-translate H InsertMark {Jel÷l‰s besz”rßsa}
+translate H AnnotationSymbols  {Értékelõ szimbólumok:}
+translate H Comment {Megjegyzés:}
+translate H InsertMark {Megjelölés beszúrása}
 
 # Board search:
-translate H BoardSearch {Âllßs keres‰se}
-translate H FilterOperation {Elv‰gzend m“velet az aktußlis sz“rn:}
-translate H FilterAnd {ĞS (Sz“r sz“kt‰se)}
-translate H FilterOr {VAGY (Sz“r bvt‰se)}
-translate H FilterIgnore {SEMMI (Sz“r t÷rl‰se)}
-translate H SearchType {A keres‰s fajtßja:}
-translate H SearchBoardExact {Pontos ßllßs (minden figura azonos mezn)}
-translate H SearchBoardPawns {Gyalogok (azonos anyag, minden gyalog azonos mezn)}
+translate H BoardSearch {Állás keresése}
+translate H FilterOperation {Elvégzendõ mûvelet az aktuális szûrõn:}
+translate H FilterAnd {ÉS (Szûrõ szûkítése)}
+translate H FilterOr {VAGY (Szûrõ bõvítése)}
+translate H FilterIgnore {SEMMI (Szûrõ törlése)}
+translate H SearchType {A keresés fajtája:}
+translate H SearchBoardExact {Pontos állás (minden figura azonos mezõn)}
+translate H SearchBoardPawns {Gyalogok (azonos anyag, minden gyalog azonos mezõn)}
 translate H SearchBoardFiles {Vonalak (azonos anyag, minden gyalog azonos vonalon)}
-translate H SearchBoardAny {Bßrmi (azonos anyag, gyalogok ‰s figurßk bßrhol)}
-translate H LookInVars {Vßltozatokban is keres.}
+translate H SearchBoardAny {Bármi (azonos anyag, gyalogok és figurák bárhol)}
+translate H LookInVars {Változatokban is keres.}
 
 # Material search:
-translate H MaterialSearch {Keres‰s anyagra}
+translate H MaterialSearch {Keresés anyagra}
 translate H Material {Anyag}
 translate H Patterns {Alakzatok}
-translate H Zero {Nulla}
-translate H Any {Bßrmi}
-translate H CurrentBoard {Aktußlis ßllßs}
-translate H CommonEndings {Gyakori v‰gjßt‰kok}
+translate H Zero {Nullázás}
+translate H Any {Bármi}
+translate H CurrentBoard {Aktuális állás}
+translate H CommonEndings {Gyakori végjátékok}
 translate H CommonPatterns {Gyakori alakzatok}
-translate H MaterialDiff {Anyagk’l÷nbs‰g}
-translate H squares {mezk}
-translate H SameColor {Azonos szn}
-translate H OppColor {Ellenkez szn}
-translate H Either {Bßrmelyik}
-translate H MoveNumberRange {L‰p‰startomßny}
-translate H MatchForAtLeast {Egyezzen legalßbb}
-translate H HalfMoves {f‰l l‰p‰sig.}
+translate H MaterialDiff {Anyagkülönbség}
+translate H squares {mezõk}
+translate H SameColor {Azonos szín}
+translate H OppColor {Ellenkezõ szín}
+translate H Either {Bármelyik}
+translate H MoveNumberRange {Lépéstartomány}
+translate H MatchForAtLeast {Egyezzen legalább}
+translate H HalfMoves {fél lépésig.}
 #Így kell?
 # Game saving:
 translate H Today {Ma}
-translate H ClassifyGame {Jßtszma osztßlyozßsa}
+translate H ClassifyGame {Játszma osztályozása}
 
 # Setup position:
-translate H EmptyBoard {Tßbla letakartßsa}
-translate H InitialBoard {Alapßllßs}
-translate H SideToMove {Ki l‰p?}
-translate H MoveNumber {L‰p‰s szßma}
-translate H Castling {Sßncolßs}
-translate H EnPassantFile {"En passant" fßjl}
-translate H ClearFen {FEN t÷rl‰se}
-translate H PasteFen {FEN beilleszt‰se}
+translate H EmptyBoard {Tábla letakarítása}
+translate H InitialBoard {Alapállás}
+translate H SideToMove {Ki lép?}
+translate H MoveNumber {Lépés száma}
+translate H Castling {Sáncolás}
+translate H EnPassantFile {"en passant"-vonal}
+translate H ClearFen {FEN törlése}
+translate H PasteFen {FEN beillesztése}
 
 # Replace move dialog:
-translate H ReplaceMove {L‰p‰s cser‰je}
-translate H AddNewVar {õj vßltozat besz”rßsa}
-translate H ReplaceMoveMessage {Itt mßr van l‰p‰s.
+translate H ReplaceMove {Lépés cseréje}
+translate H AddNewVar {Új változat beszúrása}
+translate H ReplaceMoveMessage {Itt már van lépés.
 
-Kicser‰lheted, mißltal az ÷sszes t k÷vet l‰p‰s elv‰sz, vagy l‰p‰sedet besz”rhatod ”j vßltozatk‰nt.
+Kicserélheted, miáltal az összes õt követõ lépés elvész, vagy lépésedet beszúrhatod új változatként.
 
-(Ha a j÷vben nem akarod lßtni ezt az ’zenetet, kapcsold ki a Beßlltßsok:L‰p‰sek men’ben a "L‰p‰s cser‰je eltt rßk‰rdez." beßlltßst.)}
+(Ha a jövõben nem akarod látni ezt az üzenetet, kapcsold ki a Beállítások:Lépések menüben a "Lépés cseréje elõtt rákérdez." beállítást.)}
 
 # Make database read-only dialog:
-translate H ReadOnlyDialog {Ha ezt az adatbßzist kizßrlag olvashatvß teszed, nem lehet vßltoztatßsokat v‰gezni rajta. Nem lehet jßtszmßkat elmenteni vagy kicser‰lni, sem a t÷rl‰skijel÷l‰seket megvßltoztatni. Minden rendez‰s vagy ECO-osztßlyozßs csak ßtmeneti lesz.
+translate H ReadOnlyDialog {Ha ezt az adatbázist kizárólag olvashatóvá teszed, nem lehet változtatásokat végezni rajta. Nem lehet játszmákat elmenteni vagy kicserélni, sem a törléskijelöléseket megváltoztatni. Minden rendezés vagy ECO-osztályozás csak átmeneti lesz.
 
-K÷nnyen ”jra rhatvß teheted az adatbßzist, ha bezßrod, majd ”jbl megnyitod.
+Könnyen újra írhatóvá teheted az adatbázist, ha bezárod, majd újból megnyitod.
 
-T‰nyleg kizßrlag olvashatvß akarod tenni ezt az adatbßzist?}
+Tényleg kizárólag olvashatóvá akarod tenni ezt az adatbázist?}
 
 # Clear game dialog:
-translate H ClearGameDialog {Ez a jßtszma megvßltozott.
+translate H ClearGameDialog {Ez a játszma megváltozott.
 
-T‰nyleg folytatni akarod, ‰s elvetni a l‰trehozott vßltoztatßsokat?
+Tényleg folytatni akarod, és elvetni a létrehozott változtatásokat?
 }
 
 # Exit dialog:
-translate H ExitDialog {T‰nyleg ki akarsz l‰pni SCID-bl?}
-translate H ExitUnsaved {A k÷vetkez adatbßzisokban elmentetlen jßtszmavßltoztatßsok vannak. Ha most kil‰psz, ezek a vßltoztatßsok elvesznek.}
+translate H ExitDialog {Tényleg ki akarsz lépni SCID-bõl?}
+translate H ExitUnsaved {A következõ adatbázisokban elmentetlen játszmaváltoztatások vannak. Ha most kilépsz, ezek a változtatások elvesznek.}
 
 # Import window:
-translate H PasteCurrentGame {Beilleszti az aktußlis jßtszmßt.}
-translate H ImportHelp1 {Bevisz vagy beilleszt egy PGN-formßtum” jßtszmßt a fenti keretbe.}
-translate H ImportHelp2 {Itt jelennek meg az importßlßs k÷zben fell‰p hibßk.}
+translate H PasteCurrentGame {Beilleszti az aktuális játszmát.}
+translate H ImportHelp1 {Bevisz vagy beilleszt egy PGN-formátumú játszmát a fenti keretbe.}
+translate H ImportHelp2 {Itt jelennek meg az importálás közben fellépõ hibák.}
 
 # ECO Browser:
-translate H ECOAllSections {az ÷sszes ECO-szakasz}
-translate H ECOSection {ECO-szakasz}
-#Ez bizonyßra valami ’l‰sszak, szval amg foglalkozik vel’k.
-translate H ECOSummary {Ùsszefoglalßs:}
-translate H ECOFrequency {Alkdok gyakorisßga:}
+translate H ECOAllSections {összes ECO-osztály}
+translate H ECOSection {ECO-osztály}
+translate H ECOSummary {Összefoglalás:}
+translate H ECOFrequency {Alkódok gyakorisága:}
 
 # Opening Report:
-translate H OprepTitle {Megnyitßsi ÷sszefoglal}
-translate H OprepReport {Ùsszefoglal}
-translate H OprepGenerated {K‰sztette:}
-#Lehet, hogy ez "k‰sz’lt"?
-translate H OprepStatsHist {Statisztika ‰s t÷rt‰net}
+translate H OprepTitle {Megnyitási összefoglaló}
+translate H OprepReport {Összefoglaló}
+translate H OprepGenerated {Készítette:}
+#Lehet, hogy ez "készült"?
+translate H OprepStatsHist {Statisztika és történet}
 translate H OprepStats {Statisztika}
-translate H OprepStatAll {Az ÷sszefoglal ÷sszes jßtszmßja}
-translate H OprepStatBoth {Mindkett:}
-translate H OprepStatSince {Idszak kezdete:}
-translate H OprepOldest {A legr‰gibb jßtszmßk}
-translate H OprepNewest {A leg”jabb jßtszmßk}
-translate H OprepPopular {Jelenlegi n‰pszer“s‰g}
-translate H OprepFreqAll {Gyakorisßg a teljes idszakban:   }
-translate H OprepFreq1   {Az utbbi 1 ‰vben: }
-translate H OprepFreq5   {Az utbbi 5 ‰vben: }
-translate H OprepFreq10  {Az utbbi 10 ‰vben: }
-translate H OprepEvery {minden %u jßtszmßban egyszer}
-translate H OprepUp {%u%s n÷veked‰s az ‰vek sorßn}
-translate H OprepDown {%u%s cs÷kken‰s az ‰vek sorßn}
-translate H OprepSame {nincs vßltozßs az ‰vek sorßn}
-translate H OprepMostFrequent {Leggyakoribb jßt‰kosok}
-translate H OprepRatingsPerf {Ğrt‰kszßm ‰s teljestm‰ny}
-translate H OprepAvgPerf {Âtlagos ‰rt‰kszßm ‰s teljestm‰ny}
-translate H OprepWRating {Vilßgos ‰rt‰kszßma}
-translate H OprepBRating {S÷t‰t ‰rt‰kszßma}
-translate H OprepWPerf {Vilßgos teljestm‰nye}
-translate H OprepBPerf {S÷t‰t teljestm‰nye}
-translate H OprepHighRating {A legnagyobb ßtlag‰rt‰kszßm” jßtszmßk}
-translate H OprepTrends {Tendencißk}
-translate H OprepResults {Eredm‰ny hossz”sßg ‰s gyakorisßg szerint}
-translate H OprepLength {Jßtszmahossz}
-translate H OprepFrequency {Gyakorisßg}
-translate H OprepWWins {Vilßgos nyer: }
-translate H OprepBWins {S÷t‰t nyer: }
-translate H OprepDraws {D÷ntetlen:      }
-translate H OprepWholeDB {teljes adatbßzis}
-translate H OprepShortest {A legr÷videbb gyzelmek}
-translate H OprepMovesThemes {L‰p‰sek ‰s t‰mßk}
-translate H OprepMoveOrders {A vizsgßlt ßllßshoz vezet l‰p‰ssorrendek}
+translate H OprepStatAll {Az összefoglaló összes játszmája}
+translate H OprepStatBoth {Mindkettõ}
+translate H OprepStatSince {Idõszak kezdete:}
+translate H OprepOldest {A legrégibb játszmák}
+translate H OprepNewest {A legújabb játszmák}
+translate H OprepPopular {Jelenlegi népszerûség}
+translate H OprepFreqAll {Gyakoriság a teljes idõszakban:   }
+translate H OprepFreq1   {Az utóbbi 1 évben: }
+translate H OprepFreq5   {Az utóbbi 5 évben: }
+translate H OprepFreq10  {Az utóbbi 10 évben: }
+translate H OprepEvery {minden %u játszmában egyszer}
+translate H OprepUp {%u%s növekedés az évek során}
+translate H OprepDown {%u%s csökkenés az évek során}
+translate H OprepSame {nincs változás az évek során}
+translate H OprepMostFrequent {Leggyakoribb játékosok}
+translate H OprepRatingsPerf {Értékszám és teljesítmény}
+translate H OprepAvgPerf {Átlagos értékszám és teljesítmény}
+translate H OprepWRating {Világos értékszáma}
+translate H OprepBRating {Sötét értékszáma}
+translate H OprepWPerf {Világos teljesítménye}
+translate H OprepBPerf {Sötét teljesítménye}
+translate H OprepHighRating {A legnagyobb átlagértékszámú játszmák}
+translate H OprepTrends {Tendenciák}
+translate H OprepResults {Eredmény hosszúság és gyakoriság szerint}
+translate H OprepLength {Játszmahossz}
+translate H OprepFrequency {Gyakoriság}
+translate H OprepWWins {Világos nyer: }
+translate H OprepBWins {Sötét nyer: }
+translate H OprepDraws {Döntetlen:      }
+translate H OprepWholeDB {teljes adatbázis}
+translate H OprepShortest {A legrövidebb gyõzelmek}
+translate H OprepMovesThemes {Lépések és témák}
+translate H OprepMoveOrders {A vizsgált álláshoz vezetõ lépéssorrendek}
 translate H OprepMoveOrdersOne \
-  {Csak egy l‰p‰ssorrend vezetett ehhez az ßllßshoz:}
+  {Csak egy lépéssorrend vezetett ehhez az álláshoz:}
 translate H OprepMoveOrdersAll \
-  {%u l‰p‰ssorrend vezetett ehhez az ßllßshoz:}
+  {%u lépéssorrend vezetett ehhez az álláshoz:}
 translate H OprepMoveOrdersMany \
-  {%u l‰p‰ssorrend vezetett ehhez az ßllßshoz. Az els %u:}
-translate H OprepMovesFrom {A vizsgßlt ßllßsban tett l‰p‰sek}
-translate H OprepThemes {Pozcis t‰mßk}
-translate H OprepThemeDescription {T‰mßk gyakorisßga a %u-ik l‰p‰sben}
-translate H OprepThemeSameCastling {Sßncolßs azonos oldalra}
-translate H OprepThemeOppCastling {Sßncolßs ellenkez oldalra}
-translate H OprepThemeNoCastling {Egyik kirßly sem sßncolt.}
-translate H OprepThemeKPawnStorm {Kirßlyszßrnyi gyalogroham}
-translate H OprepThemeQueenswap {Vez‰rcsere}
-translate H OprepThemeIQP {Elszigetelt vez‰rgyalog}
-translate H OprepThemeWP567 {Vilßgos gyalog az 5./6./7. soron}
-translate H OprepThemeBP234 {S÷t‰t gyalog a 4./3./2. soron}
-translate H OprepThemeOpenCDE {Nylt c/d/e-vonal}
-translate H OprepTheme1BishopPair {Csak az egyik f‰lnek van futpßrja.}
-translate H OprepEndgames {V‰gjßt‰kok}
-translate H OprepReportGames {Az ÷sszefoglal jßtszmßi}
-translate H OprepAllGames    {Az ÷sszes jßtszma}
-translate H OprepEndClass {Anyagi viszonyok az egyes jßtszmßk v‰g‰n}
-translate H OprepTheoryTable {Elm‰lettßblßzat}
-translate H OprepTableComment {a legnagyobb ‰rt‰kszßm” %u jßtszma alapjßn}
-translate H OprepExtraMoves {A k’l÷n megjegyz‰ssel ellßtott l‰p‰sek szßma az elm‰lettßblßzatban}
-translate H OprepMaxGames {Az elm‰lettßblßzat l‰trehozßsßhoz felhasznßlhat jßtszmßk maximßlis szßma}
+  {%u lépéssorrend vezetett ehhez az álláshoz. Az elsõ %u:}
+translate H OprepMovesFrom {A vizsgált állásban tett lépések}
+translate H OprepThemes {Pozíciós témák}
+translate H OprepThemeDescription {Témák gyakorisága a %u-ik lépésben}
+translate H OprepThemeSameCastling {Sáncolás azonos oldalra}
+translate H OprepThemeOppCastling {Sáncolás ellenkezõ oldalra}
+translate H OprepThemeNoCastling {Egyik király sem sáncolt.}
+translate H OprepThemeKPawnStorm {Királyszárnyi gyalogroham}
+translate H OprepThemeQueenswap {Vezércsere}
+translate H OprepThemeIQP {Elszigetelt vezérgyalog}
+translate H OprepThemeWP567 {Világos gyalog az 5./6./7. soron}
+translate H OprepThemeBP234 {Sötét gyalog a 4./3./2. soron}
+translate H OprepThemeOpenCDE {Nyílt c/d/e-vonal}
+translate H OprepTheme1BishopPair {Csak az egyik félnek van futópárja.}
+translate H OprepEndgames {Végjátékok}
+translate H OprepReportGames {Az összefoglaló játszmái}
+translate H OprepAllGames    {Összes játszma}
+translate H OprepEndClass {Anyagi viszonyok az egyes játszmák végén}
+translate H OprepTheoryTable {Elmélettáblázat}
+translate H OprepTableComment {a legnagyobb értékszámú %u játszma alapján}
+translate H OprepExtraMoves {A külön megjegyzéssel ellátott lépések száma az elmélettáblázatban}
+translate H OprepMaxGames {Az elmélettáblázat létrehozásához felhasználható játszmák maximális száma}
 
 # Piece Tracker window:
-translate H TrackerSelectSingle {A bal eg‰rgomb kivßlasztja ezt a figurßt.}
-translate H TrackerSelectPair {A bal eg‰rgomb kivßlasztja ezt a figurßt; a jobb eg‰rgomb a pßrjßt is kivßlasztja.}
-translate H TrackerSelectPawn {A bal eg‰rgomb kivßlasztja ezt a gyalogot; a jobb eg‰rgomb az ÷sszes gyalogot kivßlasztja.}
+translate H TrackerSelectSingle {A bal egérgomb kiválasztja ezt a figurát.}
+translate H TrackerSelectPair {A bal egérgomb kiválasztja ezt a figurát; a jobb egérgomb a párját is kiválasztja.}
+translate H TrackerSelectPawn {A bal egérgomb kiválasztja ezt a gyalogot; a jobb egérgomb az összes gyalogot kiválasztja.}
 translate H TrackerStat {Statisztika}
-translate H TrackerGames {Jßtszmßk %-a, amelyekben erre a mezre l‰pett}
-translate H TrackerTime {Id %-a, amelyet az egyes mezk÷n t÷lt÷tt}
-translate H TrackerMoves {L‰p‰sek}
-translate H TrackerMovesStart {Add meg a l‰p‰s szßmßt, amelyn‰l a nyomk÷vet‰snek el kell kezddnie.}
-translate H TrackerMovesStop {Add meg a l‰p‰s szßmßt, amelyn‰l a nyomk÷vet‰snek be kell fejezdnie.}
+translate H TrackerGames {Játszmák %-a, amelyekben erre a mezõre lépett}
+translate H TrackerTime {Idõ %-a, amelyet az egyes mezõkön töltött}
+translate H TrackerMoves {Lépések}
+translate H TrackerMovesStart {Add meg a lépés számát, amelynél a nyomkövetésnek el kell kezdõdnie.}
+translate H TrackerMovesStop {Add meg a lépés számát, amelynél a nyomkövetésnek be kell fejezõdnie.}
 
 # Game selection dialogs:
-translate H SelectAllGames {Az adatbßzis ÷sszes jßtszmßja}
-translate H SelectFilterGames {Csak a sz“rt jßtszmßk}
-translate H SelectTournamentGames {Csak az aktußlis verseny jßtszmßi}
-translate H SelectOlderGames {Csak r‰gebbi jßtszmßk}
+translate H SelectAllGames {Az adatbázis összes játszmája}
+translate H SelectFilterGames {Csak a szûrt játszmák}
+translate H SelectTournamentGames {Csak az aktuális verseny játszmái}
+translate H SelectOlderGames {Csak régebbi játszmák}
 
 # Delete Twins window:
-translate H TwinsNote {K‰t jßtszma akkor iker, ha ugyanazok jßtsszßk ket, ‰s megfelelnek az alant meghatßrozhat krit‰riumoknak. Az ikerpßrbl a r÷videbb jßtszma t÷rldik.
-Javaslat: ikrek t÷rl‰se eltt ‰rdemes helyesrßs-ellenrz‰st v‰gezni az adatbßzison, mert az javtja az ikerfeldert‰st.}
-translate H TwinsCriteria {Krit‰riumok: Az ikerjßtszmßk k÷z÷s tulajdonsßgai...}
-translate H TwinsWhich {Megvizsgßlja, melyik jßtszma}
-translate H TwinsColors {Azonos szn?}
-translate H TwinsEvent {Ugyanaz az esem‰ny?}
-translate H TwinsSite {Azonos helyszn?}
-translate H TwinsRound {Ugyanaz a fordul?}
-translate H TwinsYear {Azonos ‰v?}
-translate H TwinsMonth {Azonos hnap?}
+translate H TwinsNote {Két játszma akkor iker, ha ugyanazok játsszák õket, és megfelelnek az alant meghatározható kritériumoknak. Az ikerpárból a rövidebb játszma törlõdik.
+Javaslat: ikrek törlése elõtt érdemes helyesírás-ellenõrzést végezni az adatbázison, mert az javítja az ikerfelderítést.}
+translate H TwinsCriteria {Kritériumok: Az ikerjátszmák közös tulajdonságai...}
+translate H TwinsWhich {A megvizsgálandó játszmák}
+translate H TwinsColors {Azonos szín?}
+translate H TwinsEvent {Ugyanaz az esemény?}
+translate H TwinsSite {Azonos helyszín?}
+translate H TwinsRound {Ugyanaz a forduló?}
+translate H TwinsYear {Azonos év?}
+translate H TwinsMonth {Azonos hónap?}
 translate H TwinsDay {Ugyanaz a nap?}
-translate H TwinsResult {Azonos eredm‰ny?}
-translate H TwinsECO {Azonos ECO-kd?}
-translate H TwinsMoves {Azonos l‰p‰sek?}
-translate H TwinsPlayers {A jßt‰kosok nev‰nek ÷sszehasonltßsakor:}
-translate H TwinsPlayersExact {Teljes egyez‰s kell.}
-translate H TwinsPlayersPrefix {El‰g az els 4 bet“nek egyeznie.}
-translate H TwinsWhen {Ikerjßtszmßk t÷rl‰sekor:}
-translate H TwinsSkipShort {Hagyjuk figyelmen kv’l az 5 l‰p‰sn‰l r÷videbb jßtszmßkat?}
-translate H TwinsUndelete {Elsz÷r ßlltsuk helyre az ÷sszes jßtszmßt?}
-translate H TwinsSetFilter {A sz“rt ßlltsuk az ÷sszes t÷r÷lt ikerjßtszmßra?}
-translate H TwinsComments {A megjegyz‰sekkel ellßtott jßtszmßkat mindig tartsuk meg?}
-translate H TwinsVars {A vßltozatokat tartalmaz jßtszmßkat mindig tartsuk meg?}
-translate H TwinsDeleteWhich {Melyik jßtszmßt t÷r÷ljem?}
-translate H TwinsDeleteShorter {A r÷videbbet}
-translate H TwinsDeleteOlder {A kisebb sorszßm”t}
-translate H TwinsDeleteNewer {A nagyobb sorszßm”t}
-translate H TwinsDelete {Jßtszmßk t÷rl‰se}
+translate H TwinsResult {Azonos eredmény?}
+translate H TwinsECO {Azonos ECO-kód?}
+translate H TwinsMoves {Azonos lépések?}
+translate H TwinsPlayers {A játékosok nevének összehasonlításakor:}
+translate H TwinsPlayersExact {Teljes egyezés kell.}
+translate H TwinsPlayersPrefix {Elég az elsõ 4 betûnek egyeznie.}
+translate H TwinsWhen {Ikerjátszmák törlésekor}
+translate H TwinsSkipShort {Hagyjuk figyelmen kívül az 5 lépésnél rövidebb játszmákat?}
+translate H TwinsUndelete {Elõször állítsuk helyre az összes játszmát?}
+translate H TwinsSetFilter {A szûrõt állítsuk az összes törölt ikerjátszmára?}
+translate H TwinsComments {A megjegyzésekkel ellátott játszmákat mindig tartsuk meg?}
+translate H TwinsVars {A változatokat tartalmazó játszmákat mindig tartsuk meg?}
+translate H TwinsDeleteWhich {Melyik játszmát töröljem?}
+translate H TwinsDeleteShorter {A rövidebbet}
+translate H TwinsDeleteOlder {A kisebb sorszámút}
+translate H TwinsDeleteNewer {A nagyobb sorszámút}
+translate H TwinsDelete {Játszmák törlése}
 
 # Name editor window:
-translate H NameEditType {Szerkesztend n‰vtpus}
-translate H NameEditSelect {Szerkesztend jßtszmßk}
-translate H NameEditReplace {Amit cser‰l}
-translate H NameEditWith {Amire cser‰li}
-translate H NameEditMatches {Egyez‰sek: Ctrl+1...Ctrl+9 vßlaszt.}
+translate H NameEditType {Szerkesztendõ névtípus}
+translate H NameEditSelect {Szerkesztendõ játszmák}
+translate H NameEditReplace {Cserél}
+translate H NameEditWith {Erre}
+translate H NameEditMatches {Egyezések: Ctrl+1...Ctrl+9 választ.}
 
 # Classify window:
-translate H Classify {Osztßlyoz}
-translate H ClassifyWhich {Mely jßtszmßk ECO-osztßlyozßsßt v‰gezze el?}
-translate H ClassifyAll {Az ÷sszes‰t (rja fel’l a r‰gi ECO-kdokat)}
-translate H ClassifyYear {Az utbbi ‰vben jßtszott jßtszmßk‰t}
-translate H ClassifyMonth {Az utbbi hnapban jßtszott jßtszmßk‰t}
-translate H ClassifyNew {Csak az eddig m‰g nem osztßlyozott jßtszmßk‰t}
-translate H ClassifyCodes {Hasznßland ECO-kdok:}
-translate H ClassifyBasic {Csak az alapkdok ("B12", ...)}
-translate H ClassifyExtended {Kiterjesztett SCID-kdok ("B12j", ...)}
+translate H Classify {Osztályoz}
+translate H ClassifyWhich {Mely játszmák essenek át ECO-osztályozáson?}
+translate H ClassifyAll {Az összes (írja felül a régi ECO-kódokat)}
+translate H ClassifyYear {Az utóbbi évben játszott játszmák}
+translate H ClassifyMonth {Az utóbbi hónapban játszott játszmák}
+translate H ClassifyNew {Csak az eddig még nem osztályozott játszmák}
+translate H ClassifyCodes {Használandó ECO-kódok}
+translate H ClassifyBasic {Csak az alapkódok ("B12", ...)}
+translate H ClassifyExtended {Kiterjesztett SCID-kódok ("B12j", ...)}
 
 # Compaction:
-translate H NameFile {N‰vfßjl}
-translate H GameFile {Jßtszmafßjl}
+translate H NameFile {Névfájl}
+translate H GameFile {Játszmafájl}
 translate H Names {Nevek}
-translate H Unused {Hasznßlaton kv’l}
-translate H SizeKb {M‰ret (kB)}
-translate H CurrentState {Jelenlegi ßllapot}
-translate H AfterCompaction {T÷m÷rt‰s utßn}
-translate H CompactNames {N‰vfßjl t÷m÷rt‰se}
-translate H CompactGames {Jßtszmafßjl t÷m÷rt‰se}
+translate H Unused {Használaton kívül}
+translate H SizeKb {Méret (kB)}
+translate H CurrentState {Jelenlegi állapot}
+translate H AfterCompaction {Tömörítés után}
+translate H CompactNames {Névfájl tömörítése}
+translate H CompactGames {Játszmafájl tömörítése}
 
 # Sorting:
-translate H SortCriteria {Krit‰riumok}
-translate H AddCriteria {Krit‰riumok hozzßadßsa}
-translate H CommonSorts {Szokßsos rendez‰sek}
-translate H Sort {Rendez‰s}
+translate H SortCriteria {Kritériumok}
+translate H AddCriteria {Kritériumok hozzáadása}
+translate H CommonSorts {Szokásos rendezések}
+translate H Sort {Rendezés}
 
 # Exporting:
-translate H AddToExistingFile {Jßtszmßk hozzßadßsa l‰tez fßjlhoz?}
-translate H ExportComments {Megjegyz‰sek exportßlßsa?}
-translate H ExportVariations {Vßltozatok exportßlßsa?}
-translate H IndentComments {Megjegyz‰sek igaztßsa?}
-translate H IndentVariations {Vßltozatok igaztßsa?}
-translate H ExportColumnStyle {Oszlop stlusa (soronk‰nt egy l‰p‰s)?}
-translate H ExportSymbolStyle {Szimblumok stlusa:}
-translate H ExportStripMarks {Kivegye a megjegyz‰sekbl a mez- ‰s nylmegjel÷l‰seket?}
+translate H AddToExistingFile {Játszmák hozzáadása létezõ fájlhoz?}
+translate H ExportComments {Megjegyzések exportálása?}
+translate H ExportVariations {Változatok exportálása?}
+translate H IndentComments {Megjegyzések igazítása?}
+translate H IndentVariations {Változatok igazítása?}
+translate H ExportColumnStyle {Oszlop stílusa (soronként egy lépés)?}
+translate H ExportSymbolStyle {Szimbólumok stílusa:}
+translate H ExportStripMarks {Kivegye a megjegyzésekbõl a mezõ- és nyílmegjelöléseket?}
 
 # Goto game/move dialogs:
-translate H LoadGameNumber {A bet÷ltend jßtszma sorszßma:}
-translate H GotoMoveNumber {Ugrßs a k÷vetkez l‰p‰shez:}
+translate H LoadGameNumber {A betöltendõ játszma sorszáma:}
+translate H GotoMoveNumber {Ugrás a következõ lépéshez:}
 
 # Copy games dialog:
-translate H CopyGames {Jßtszmßk mßsolßsa}
+translate H CopyGames {Játszmák másolása}
 translate H CopyConfirm {
- T‰nyleg ßt akarod mßsolni
- a [thousands $nGamesToCopy] sz“rt jßtszmßt
- a "$fromName" adatbßzisbl
- a "$targetName" adatbßzisba?
+ Tényleg át akarod másolni
+ a [thousands $nGamesToCopy] szûrt játszmát
+ a "$fromName" adatbázisból
+ a "$targetName" adatbázisba?
 }
-translate H CopyErr {Nem tudom ßtmßsolni a jßtszmßkat.}
-translate H CopyErrSource {forrßs}
-translate H CopyErrTarget {c‰l}
-translate H CopyErrNoGames {sz“rj‰ben nincsenek jßtszmßk.}
-translate H CopyErrReadOnly {kizßrlag olvashat.}
+translate H CopyErr {Nem tudom átmásolni a játszmákat.}
+translate H CopyErrSource {forrás}
+translate H CopyErrTarget {cél}
+translate H CopyErrNoGames {szûrõjében nincsenek játszmák.}
+translate H CopyErrReadOnly {kizárólag olvasható.}
 translate H CopyErrNotOpen {nincs megnyitva.}
 
 # Colors:
-translate H LightSquares {Vilßgos mezk}
-translate H DarkSquares {S÷t‰t mezk}
-translate H SelectedSquares {Kivßlasztott mezk}
-translate H SuggestedSquares {Javasolt l‰p‰sek mezi}
-translate H WhitePieces {Vilßgos figurßk}
-translate H BlackPieces {S÷t‰t figurßk}
-translate H WhiteBorder {Vilßgos k÷rvonal}
-translate H BlackBorder {S÷t‰t k÷rvonal}
+translate H LightSquares {Világos mezõk}
+translate H DarkSquares {Sötét mezõk}
+translate H SelectedSquares {Kiválasztott mezõk}
+translate H SuggestedSquares {Javasolt lépések mezõi}
+translate H WhitePieces {Világos figurák}
+translate H BlackPieces {Sötét figurák}
+translate H WhiteBorder {Világos körvonal}
+translate H BlackBorder {Sötét körvonal}
 
 # Novelty window:
-translate H FindNovelty {õjtßs keres‰se}
-translate H Novelty {õjtßs}
-translate H NoveltyInterrupt {õjtßskeres‰s leßlltva}
-translate H NoveltyNone {Ebben a jßtszmßban nem talßltam ”jtßst.}
+translate H FindNovelty {Újítás keresése}
+translate H Novelty {Újítás}
+translate H NoveltyInterrupt {Újításkeresés leállítva}
+translate H NoveltyNone {Ebben a játszmában nem találtam újítást.}
 translate H NoveltyHelp {
-SCID megkeresi az aktußlis jßtszma els olyan l‰p‰s‰t, amely nem szerepel sem a kivßlasztott adatbßzisban, sem az ECO megnyitßstßrban.
+SCID megkeresi az aktuális játszma elsõ olyan lépését, amely nem szerepel sem a kiválasztott adatbázisban, sem az ECO megnyitástárban.
 }
 
 # Upgrading databases:
-translate H Upgrading {Fel”jtßs}
+translate H Upgrading {Felújítás}
 translate H ConfirmOpenNew {
-Ez r‰gi formßtum” (SCID 2) adatbßzis, amelyet SCID 3 nem tud megnyitni, de mßr l‰trehozott egy ”j formßtum” (SCID 3) verzit.
+Ez régi formátumú (SCID 2) adatbázis, amelyet SCID 3 nem tud megnyitni, de már létrehozott egy új formátumú (SCID 3) verziót.
 
-Szeretn‰d megnyitni az adatbßzis ”j formßtum” verzijßt?
+Szeretnéd megnyitni az adatbázis új formátumú verzióját?
 }
 translate H ConfirmUpgrade {
-Ez r‰gi formßtum” (SCID 2) adatbßzis. õj formßtum” verzit kell l‰trehozni belle, hogy SCID 3 hasznßlni tudja.
+Ez régi formátumú (SCID 2) adatbázis. Új formátumú verziót kell létrehozni belõle, hogy SCID 3 használni tudja.
 
-A fel”jtßs ”j verzit hoz l‰tre az adatbßzisbl. Az eredeti fßjlok s‰rtetlen’l megmaradnak.
+A felújítás új verziót hoz létre az adatbázisból. Az eredeti fájlok sértetlenül megmaradnak.
 
-Az eljßrßs eltarthat egy darabig, de csak egyszer kell elv‰gezni. Megszakthatod, ha t”l sokßig tart.
+Az eljárás eltarthat egy darabig, de csak egyszer kell elvégezni. Megszakíthatod, ha túl sokáig tart.
 
-Szeretn‰d most fel”jtani ezt az adatbßzist?
+Szeretnéd most felújítani ezt az adatbázist?
 }
 
 # Recent files options:
-translate H RecentFilesMenu {Az aktußlis fßjlok szßma a Fßjl-men’ben}
-translate H RecentFilesExtra {Az aktußlis fßjlok szßma a kieg‰szt almen’ben}
+translate H RecentFilesMenu {Az aktuális fájlok száma a Fájl menüben}
+translate H RecentFilesExtra {Az aktuális fájlok száma a kiegészítõ almenüben}
 
 }
+
+# Tips of the day in Hungarian
+
+set tips(H) {
+  {
+    Scid-ben több mint 30 oldalnyi <a Index>segítség</a> van, és a legtöbb Scid-ablakban
+    az <b>F1</b> billentyû megnyomására elõbukkan egy arra az ablakra vonatkozó
+    segítõ szöveg.
+  }
+  {
+    Egyes Scid-ablakoknak (pl. a játszmainformációs terület, az
+    <a Switcher>adatbázisváltó</a>) jobbegérgombos menüjük van.
+    Nyomd meg a jobb egérgombot az egyes ablakokban, és meglátod,
+    hogy ott is van-e, és milyen lehetõségeket kínál.
+  }
+  {
+    Scid több lehetõséget is kínál lépések bevitelére, amelyek
+    közül kedved szerint választhatsz. Használhatod az egeret
+    (lépésjavaslattal vagy anélkül) vagy a billentyûzetet
+    (lépéskiegészítéssel vagy anélkül). Olvasd el a részleteket a
+    <a Moves>Lépések bevitele</a> címû segédoldalon.
+  }
+  {
+    Ha bizonyos adatbázisokat gyakran használsz, jelöld meg õket egy-egy
+    <a Bookmarks>könyvjelzõ</a> segítségével, s ezután a könyvjelzõmenü
+    útján gyorsabban tudod megnyitni õket.
+  }
+  {
+    A <a PGN>PGN-ablak</a> révén az aktuális játszma összes
+    lépését láthatod (elágazásokkal és megjegyzésekkel).
+    A PGN-ablakban bármelyik lépéshez elugorhatsz, ha rákattintasz a bal
+    egérgombbal; a középsõ vagy a jobb egérgomb használatával pedig
+    a lépéshez tartozó állást tekintheted meg.
+  }
+  {
+    A bal egérgomb révén áthúzással egyik adatbázisból a másikba
+    másolhatsz játszmákat az <a Switcher>adatbázisváltó</a> ablakban.
+  }
+  {
+    Scid meg tud nyitni PGN-fájlokat, még akkor is, ha Gzip útján
+    tömörítve vannak (.gz fájlnév-kiterjesztéssel). A megnyitott PGN-fájlok
+    csak olvashatóak, ezért ha egy PGN-fájlt Scidben akarsz átszerkeszteni,
+    hozz létre új Scid-adatbázist, és az <a Switcher>adatbázisváltó</a>
+    segítségével másold bele a PGN-fájl játszmáit.
+  }
+  {
+    Ha egy nagy adatbázist gyakran használsz a <a Tree>faszerkezet</a>-ablakkal,
+    érdemes a <b>Cache-fájl feltöltése</b> pontot választani a faszerkezet-ablak
+    Fájl menüjébõl. Ez megjegyzi sok gyakori megnyitás faszerkezet-adatait,
+    miáltal gyorsabb lesz a hozzáférés az adatbázishoz.
+  }
+  {
+    A <a Tree>faszerkezet</a>-ablak megmutatja az összes lépést, amelyet
+    az adott állásban tettek, de ha az összes lépéssorrendet látni akarod,
+    amely ehhez az álláshoz vezetett, <a OpReport>megnyitási összefoglaló</a>
+    létrehozásával megkaphatod.
+  }
+  {
+    A <a GameList>játszmák listája</a> ablakban egy oszlop fejlécére
+    kattintva módosíthatod az oszlop szélességét.
+  }
+  {
+    A <a PInfo>játékosinformáció</a>-ablak segítségével (kinyitásához
+    egyszerûen kattints valamelyik játékos nevére a fõablak sakktáblája alatt
+    található játszmainformációs területen) könnyedén beállítható úgy
+    a <a Searches Filter>szûrõ</a>, hogy bizonyos játékos bizonyos eredménnyel
+    végzõdött összes játszmáját tartalmazza. Ehhez csak a <red>piros színû</red>
+    értékek valamelyikére kell kattintani.
+  }
+  {
+    Megnyitás tanulmányozásakor egy fontos állásban nagyon hasznos lehet a
+    <a Searches Board>pozíciókeresés</a> <b>Gyalogok</b> vagy
+    <b>Oszlopok</b> beállítással, mert ez megmutathatja,
+    hogy még mely megnyitások vezetnek ugyanehhez a gyalogszerkezethez.
+  }
+  {
+    Ha a játszmainformációs területen (a sakktábla alatt) megnyomod
+    a jobb egérgombot, elõbukkan egy menü, amellyel testre szabható. 
+    Például megkérheted Scidet, hogy rejtse el a következõ lépést, ami
+    edzésnél hasznos, ha egy játszma lépéseit ki akarod találni.
+  }
+  {
+    Ha gyakran végzel <a Maintenance>gondozás</a>t nagy adatbázison,
+    egyszerre hajthatsz végre több gondozási feladatot a
+    <a Maintenance Cleaner>takarító</a> segítségével.
+  }
+  {
+    Ha nagy adatbázisod van, amelyben a legtöbb játszmánál az esemény ideje
+    is fel van tüntetve, és a játszmákat idõ szerint szeretnéd rendezni, végezd
+    a <a Sorting>rendezés</a>t az esemény ideje majd esemény szerint,
+    s ne fordítva. Így ugyanannak a versenynek a különbözõ keltezésû játszmái
+    együtt fognak maradni (természetesen csak akkor, ha mindegyiknél azonos
+    az esemény keltezése).
+  }
+  {
+    <a Maintenance Twins>Ikerjátszmák törlése</a> elõtt célszerû
+    <a Maintenance Spellcheck>helyesírásellenõrzés</a> alá vetni
+    az adatbázist, mert így Scid több ikret tud megtalálni és törlésre kijelölni.
+  }
+  {
+    <a Flags>Megjelölések</a> révén az adatbázis játszmáinak olyan
+    jellegzetességeit lehet kiemelni, amelyek alapján késõbb keresést
+    akarsz végezni (gyalogszerkezet, taktikai motívum stb.).
+    Megjelölésekre <a Searches Header>keresés fejléc alapján</a> lehet
+    keresni.
+  }
+  {
+    Ha egy játszmát tanulmányozva szeretnél kipróbálni lépéseket
+    a játszma megváltoztatása nélkül, egyszerûen kapcsold be a
+    Változat kipróbálása üzemmódot (a <b>Ctrl+space</b>
+    billentyûkombinációval vagy az eszköztár ikonjával), majd kapcsold ki,
+    ha végeztél, és vissza akarsz térni az eredeti játszmához.
+  }
+  {
+    Ha meg akarod keresni egy adott álláshoz vezetõ legkiemelkedõbb
+    játszmákat (nagy értékszámú ellenfelek között), nyisd ki a
+    <a Tree>faszerkezet</a>-ablakot, majd onnan nyisd ki a legjobb
+    játszmák listáját. Még ezt a listát is szûkítheted, hogy csak
+    meghatározott ereménnyel végzõdõ játszmákat mutasson.
+  }
+  {
+    Remekül lehet megnyitást tanulmányozni nagy adatbázisra
+    támaszkodva oly módon, hogy a <a Tree>faszerkezet</a>-ablakban
+    bekapcsolod az edzést, majd az adatbázis ellen játszva megnézheted,
+    mely elágazások fordulnak elõ gyakran.
+  }
+  {
+    Ha két adatbázisod van nyitva, és látni szeretnéd az elsõ adatbázis
+    <a Tree>faszerkezet</a>-adatait, miközben a másiknak egyik
+    játszmáját tanulmányozod, a <b>Lock</b> gomb megnyomásával
+    rögzítsd a fát az elsõ adatbázishoz, majd válts át a másikra.
+  }
+  {
+    A <a Tmt>versenykeresõ</a> nemcsak arra való, hogy megkeress
+    vele egy versenyt. Arra is használható, hogy megnézd, hogy egy játékos
+    mely versenyeken indult mostanában, vagy végignézd egy adott országban
+    rendezett legkiemelkedõbb versenyeket.
+  }
+  {
+    Az <a Searches Material>Anyag/szerkezet</a> keresõablakban
+    megtalálható néhány gyakran elõforduló állásszerkezet, amely
+    hasznos lehet megnyitás vagy középjáték tanulmányozásakor.
+  }
+  {
+    Ha meghatározott anyagi helyzetre keresel az
+    <a Searches Material>Anyag/szerkezet</a> keresõablakban, sokszor célszerû
+    a keresést olyan játszmákra korlátozni, amelyek több lépésen keresztül
+    megfelelnek a feltételeknek. Ily módon ki lehet zárni azokat a játszmákat,
+    amelyekben a keresett helyzet csak rövid ideig állt fenn.
+  }
+  {
+    Ha egy fontos adatbázist nem szeretnél véletlenül megváltoztatni,
+    megnyitása után válaszd az <b>Írásvédelem...</b> pontot a
+    <b>Fájl</b> menübõl, vagy állítsd át attribútumát csak olvashatóra.
+  }
+  {
+    Ha XBoardot vagy WinBoardot használod (vagy más olyan sakkprogramot,
+    amely egy sakkállást szabványos FEN-jelöléssel a vágólapra tud másolni),
+    és át akarod másolni a rajta lévõ állást Scidbe, ennek leggyorsabb és
+    legegyszerûbb módja az, hogy XBoard/WinBoard File menüjébõl
+    <b>Copy Position</b> révén, majd Scid Szerkesztés menüjébõl
+    <b>Kezdõállás beillesztése</b> útján átemeled az állást.
+  }
+  {
+    <a Searches Header>Keresés fejléc alapján</a> esetében a
+    játékos-, esemény-, helyszín- és fordulónevek nem érzékenyek
+    kis- vagy nagybetû szempontjából, és az egyezés név belsejében is lehet.
+    Ehelyett végeztethetsz kis- vagy nagybetû szempontjából érzékeny
+    dzsókerkeresést is (ahol "?" = bármilyen karakter, "*" = esetleges
+    további karakterek), ha a keresendõ szöveget "idézõjelben" adod meg.
+    Például írj "*BEL"-t (idézõjelekkel) a helyszínmezõbe, ha meg akarod találni
+    a Belgiumban játszott játszmákat, de a Belgrádban játszottakat nem.
+  }
+  {
+    Ha egy játszmában helyesbíteni akarsz egy lépést, de nem szeretnéd,
+    ha az õt követõ lépések elvesznének, nyisd ki az <a Import>Import</a>
+    ablakot, nyomd meg a <b>Beilleszti az aktuális játszmát.</b> gombot,
+    javítsd ki a téves lépést, majd nyomd meg az <b>Import</b> gombot.
+  }
+  {
+    Ha van betöltve ECO-osztályozó fájlod, a <b>Játszma</b> menübõl
+    <b>Megnyitás azonosítása</b> útján (gyorsbillentyû: Ctrl+Shift+D)
+    elugorhatsz az aktuális játszmában elõforduló legmélyebb osztályozott álláshoz.
+    .
+  }
+  {
+    Ha meg akarod nézni egy fájl méretét vagy utolsó módosításának
+    idõpontját, mielõtt megnyitnád, használd megnyitására a
+    <a Finder>fájlkeresõ</a>t.
+  }
+  {
+    A <a Repertoire>repertoár</a>fájl remek mód kedvelt megnyitásaid
+    nyilvántartására, emellett meg lehet vele keresni azokat a játszmákat,
+    amelyekben e megnyitások elõfordultak. Ha megnyitásaidat repertoárfájlban
+    tartod, minden új játszmagyûjteményt átszûrhetsz vele,
+    és végignézheted azokat a játszmákat, amelyekben kedvelt megnyitásaid
+    elõfordulnak.
+  }
+  {
+    A <a OpReport>megnyitási összefoglaló</a> nagyszerû lehetõséget nyújt
+    egy állás megismerésére. Megnézheted, mennyire eredményes,
+    gyakran vezet-e rövid döntetlenre, megmutatja a gyakran elõforduló
+    pozíciós témákat.
+  }
+  {
+    A leghasználatosabb értékelõ jeleket (!, !?, += stb.) a
+    <a Comment>megjegyzésszerkesztõ<a> használata nélkül,
+    billentyûzéssel is hozzá lehet fûzni az aktuális lépéshez vagy álláshoz.
+    Például "!", majd Enter leütésével be tudod szúrni a "!" jelet.
+    Bõvebb ismertetést a <a Moves>Lépések bevitele</a> címû segédoldal
+    nyújt.
+  }
+  {
+    Ha egy adatbázis megnyitásai között <a Tree>faszerkezet</a> segítségével
+    böngészel, hasznos összefoglalót kaphatsz arról, hogy a vizsgált megnyitás
+    milyen eredményes volt az utóbbi idõben erõs játékosok között. Ehhez nyisd ki
+    a Statisztika ablakot (gyorsbillentyû: Ctrl+I).
+  }
+  {
+    Megváltoztathatod a fõablak sakktáblájának méretét, ha a <b>Ctrl</b>
+    és a <b>Shift</b> billentyûk nyomva tartása mellett megnyomod a
+    <b>bal</b> vagy a <b>jobb</b> nyilat.
+  }
+  {
+    <a Searches>Keresés</a> után könnyûszerrel végignézheted a talált
+    játszmákat. Tartsd nyomva a <b>Ctrl</b> billentyût, és nyomd meg a
+    <b>fel</b> vagy a <b>le</b> nyilat az elõzõ vagy a következõ
+    <a Searches Filter>szûrõ</a>játszma betöltéséhez.
+  }
+}
+
 # end of hungary.tcl
 
 

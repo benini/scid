@@ -25,7 +25,7 @@ menuText F FileBookmarksList "Afficher les dossiers comme une simple liste" 0 \
   {Afficher les dossiers comme une simple liste et non comme des sous-menus}
 menuText F FileBookmarksSub "Afficher les dossiers comme des sous-menus" 0 \
   {Afficher les dossiers comme des sous-menus et non comme une simple liste}
-menuText F FileMaint "Maintenance" 0
+menuText F FileMaint "Maintenance" 0 {Maintenance de la base}
 menuText F FileMaintWin "Fenêtre de maintenance" 0 \
   {Ouvrir/Fermer la fenêtre de maintenance}
 menuText F FileMaintCompact "Compacter la base..." 0 \
@@ -49,8 +49,8 @@ menuText F FileMaintNameRound "Corriger les noms des rondes..." 22 \
   {Vérifier l'orthographe des noms de rondes}
 menuText F FileReadOnly "Lecture seule..." 0 \
   {Traiter la base courante en lecture seule, en empêchant les changements}
-menuText F FileSwitch "Switch to database" 0 \
-  {Switch to a different opened database} ;# ***
+menuText F FileSwitch "Changer de base" 0 \
+  {Changer vers une base ouverte différente}
 menuText F FileExit "Quitter" 0 {Quitter Scid}
 
 # Edit menu:
@@ -67,6 +67,10 @@ menuText F EditStrip "Épurer" 2 {Épure les commentaires ou les variantes de cett
 menuText F EditStripComments "Commentaires" 0 \
   {Épurer cette partie de tous les commentaires et annotations}
 menuText F EditStripVars "Variantes" 0 {Épurer cette partie des variantes}
+menuText F EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText F EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText F EditReset "Vider le presse-papier" 0 {Vider le presse-papier}
 menuText F EditCopy "Copier dans le presse-papier" 0 \
   {Copier la partie en cours dans le presse-papier}
@@ -74,8 +78,8 @@ menuText F EditPaste "Coller depuis le presse-papier" 1 \
   {Copier la partie contenue dans le presse-papier à cet emplacement}
 menuText F EditSetup "Position de départ" 0 \
   {Choisir une position de départ pour cette partie}
-menuText F EditCopyBoard "Copy position" 6 \
-  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
+menuText F EditCopyBoard "Copier la position" 6 \
+  {Copier la position en cours en notation FEN vers la sélection de texte (presse-papier)}
 menuText F EditPasteBoard "Coller la position de départ" 12 \
   {Initialiser la position de départ à partir de la sélection de texte courante(presse-papier)}
 
@@ -99,7 +103,7 @@ menuText F GameAdd "Enregistrer: Ajouter nouvelle partie..." 13 \
   {Enregistrer cette partie en tant que nouvelle partie dans la base}
 menuText F GameDeepest "Identifier ouverture" 11 \
   {Trouver la partie la plus proche dans la nomenclature ECO}
-menuText F GameGotoMove "Coup numero..." 6 \
+menuText F GameGotoMove "Coup numéro..." 6 \
   {Aller au coup spécifié dans la partie en cours}
 menuText F GameNovelty "Trouver la nouveauté..." 7 \
   {Trouver le premier coup de la partie qui n'a pas été joué auparavant}
@@ -126,7 +130,7 @@ menuText F WindowsComment "Éditeur de commentaires" 0 \
 menuText F WindowsGList "Liste des parties" 0 \
   {Ouvrir/fermer la liste des parties}
 menuText F WindowsPGN "Fenêtre PGN" 8 {Ouvrir/fermer la fenêtre PGN}
-menuText F WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
+menuText F WindowsPList "Chercher un joueur" 2 {Ouvrir/fermer la recherche de joueur}
 menuText F WindowsTmt "Recherche de tournois" 0 {Ouvrir/fermer la recherche de tournois}
 menuText F WindowsSwitcher "Changer de base" 0 \
   {Ouvrir/Fermer l'outil de changement de base}
@@ -135,7 +139,7 @@ menuText F WindowsMaint "Fenêtre de Maintenance" 0 \
 menuText F WindowsECO "Navigateur ECO" 0 {Ouvrir/fermer le navigateur ECO}
 menuText F WindowsRepertoire "Éditeur de répertoire" 0 {Ouvrir/Fermer l'éditeur de répertoire}
 menuText F WindowsStats "Fenêtre de statistique" 11 \
-  {Ouvir/Fermer le filtre de statistiques}
+  {Ouvrir/Fermer le filtre de statistiques}
 menuText F WindowsTree "Fenêtre d'arbre" 10 \
   {Ouvrir/Fermer la fenêtre d'arbre}
 menuText F WindowsTB "Fenêtre de tables de finales" 8 \
@@ -190,7 +194,7 @@ menuText F OptionsColors "Couleurs..." 0 {Changer les couleurs}
 menuText F OptionsExport "Exportation" 0 {Changer les options d'exportation}
 menuText F OptionsFonts "Polices" 0 {Changer les polices}
 menuText F OptionsFontsRegular "Normales" 0 {Changer les polices normales}
-menuText F OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText F OptionsFontsMenu "Menu" 0 {Changer la police des menus}
 menuText F OptionsFontsSmall "Petites" 0 {Changer les petites polices}
 menuText F OptionsFontsFixed "Fixe" 0 {Changer les polices de chasse fixe}
 menuText F OptionsGInfo "Informations de la partie" 7 {Options d'information de la partie}
@@ -198,6 +202,8 @@ menuText F OptionsLanguage "Langue" 0 {Sélectionner le menu de choix des langues
 menuText F OptionsMoves "Coups" 2 {Gestion des coups}
 menuText F OptionsMovesAsk "Demander avant d'écraser les coups" 0 \
   {Demander avant d'écraser un coup existant}
+menuText F OptionsMovesAnimate "Temps d'animation" 1 \
+  {Fixe le temps utilisé pour l'animation des coups}
 menuText F OptionsMovesDelay "Délai entre les coups" 3 \
   {Positionner le délai entre deux coups en mode automatique}
 menuText F OptionsMovesCoord "Coordonnées entre les coups" 0 \
@@ -206,23 +212,23 @@ menuText F OptionsMovesSuggest "Montrer les coups suggérés" 0 \
   {Activer/Désactiver le mode de suggestion de coup}
 menuText F OptionsMovesKey "Complétion clavier" 0 \
   {Activer/Désactiver le mode de complétion du clavier}
-menuText F OptionsNumbers "Format numérique" 7 {Selectionner le format des nombres}
-menuText F OptionsStartup "Démarrage" 3 {Selectionner les fenêtres à ouvrir au démarrage}
+menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
+menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
 menuText F OptionsWindows "Fenêtres" 0 {Options des fenêtres}
 menuText F OptionsWindowsIconify "Mise en icone automatique" 5 \
   {Mettre toutes les fenêtres en icones quand la fenêtre principale est mise en icone}
 menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsToolbar "Barre d'outils de la fenêtre principale" 12 \
-  {Montrer/Cacher la barre d'outils de la fenêtre principale}
+  {Montrer/Cacher dans la barre d'outils de la fenêtre principale}
 menuText F OptionsECO "Charger le fichier ECO..." 20 \
   {Charger un fichier au format ECO}
 menuText F OptionsSpell "Charger le fichier d'orthographe..." 25 \
   {Charger un fichier de correction orthographique scid}
 menuText F OptionsTable "Répertoire des tables de finales TB..." 0 \
   {Sélectionner un répertoire de fichiers TB, tous les fichiers de ce répertoire seront utilisés}
-menuText F OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText F OptionsRecent "Fichiers récents..." 0 \
+  {Changer le nombre de fichiers récents affichés dans le menu Fichier}
 menuText F OptionsSave "Sauver les options" 0 \
   "Sauver les options dans le fichier $::optionsFile"
 menuText F OptionsAutoSave "Sauvegarde automatique des options en quittant" 0 \
@@ -245,7 +251,7 @@ menuText F GInfoFEN "Montrer la notation FEN" 5
 menuText F GInfoMarks "Montrer les cases colorées et les flèches" 5
 menuText F GInfoWrap "Découper les longues lignes" 0
 menuText F GInfoFullComment "Montrer tous les commentaires" 10
-menuText F GInfoPhotos "Show Photos" 5 ;# ***
+menuText F GInfoPhotos "Montrer les Photos" 5
 menuText F GInfoTBNothing "Tables de finales: Rien" 12
 menuText F GInfoTBResult "Tables de finales: Seulement le résultat" 12
 menuText F GInfoTBAll "Tables de finales: résultat et meilleurs coups" 19
@@ -261,6 +267,7 @@ helpMsg F .button.intoVar {Entrer dans une variante  (Raccourci clavier: v)}
 helpMsg F .button.exitVar {Quitter la variante en cours  (Raccourci clavier: z)}
 helpMsg F .button.flip {Retourner l'échiquier  (Raccourci clavier: .)}
 helpMsg F .button.coords {Afficher/Enlever les coordonnées  (Raccourci clavier: 0)}
+helpMsg F .button.stm {Afficher/Enlever l'icone du joueur ayant le trait}
 helpMsg F .button.autoplay {Jeu automatique  (Raccourci clavier: Ctrl+Z)}
 
 # General buttons:
@@ -281,7 +288,7 @@ translate F Preview {Prévisualiser}
 translate F Revert {Revenir}
 translate F Save {Enregistrer}
 translate F Search {Rechercher}
-translate F Stop {Arréter}
+translate F Stop {Arrêter}
 translate F Store {Enregistrer}
 translate F Update {Mettre à jour}
 translate F ChangeOrient {Changer l'orientation de la fenêtre}
@@ -309,8 +316,8 @@ translate F White {Blancs}
 translate F Black {Noirs}
 translate F Player {Joueur}
 translate F Rating {Classement ELO}
-translate F RatingDiff {Difference de classement ELO (Blancs - Noirs)}
-translate F AverageRating {Average Rating} ;# ***
+translate F RatingDiff {Différence de classement ELO (Blancs - Noirs)}
+translate F AverageRating {Classement moyen}
 translate F Event {Événement}
 translate F Site {Lieux}
 translate F Country {Pays}
@@ -343,9 +350,9 @@ translate F StartPos {Position de départ}
 translate F Total {Total}
 
 # Standard error messages:
-translate F ErrNotOpen {This is not an open database.} ;# ***
-translate F ErrReadOnly {This database is read-only; it cannot be altered.}
-translate F ErrSearchInterrupted {Search was interrupted; results are incomplete.}
+translate F ErrNotOpen {Ceci n'est pas une base ouverte.}
+translate F ErrReadOnly {Cette base est en lecture seule; elle ne peut être modifiée.}
+translate F ErrSearchInterrupted {La recherche a été interrompue; les résultats sont incomplets.}
 
 # Game information:
 translate F twin {doublon}
@@ -367,6 +374,7 @@ translate F PInfoMostWhite {Ouvertures les plus fréquentes avec les blancs}
 translate F PInfoMostBlack {Ouvertures les plus fréquentes avec les noirs}
 translate F PInfoRating {Historique du classement}
 translate F PInfoBio {Biographie}
+translate F PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate F Draw {Nulle}
@@ -381,10 +389,10 @@ translate F allOthersLose {toutes les autres pertes}
 translate F matesIn {mat en}
 translate F hasCheckmated {a maté}
 translate F longest {le plus long}
-translate F WinningMoves {Winning moves} ;# ***
-translate F DrawingMoves {Drawing moves} ;# ***
-translate F LosingMoves {Losing moves} ;# ***
-translate F UnknownMoves {Unknown-result moves} ;# ***
+translate F WinningMoves {Coups gagnants}
+translate F DrawingMoves {Coups faisant nulle}
+translate F LosingMoves {Coups perdants}
+translate F UnknownMoves {Coups dont le résultat est inconnu}
 
 # Tip of the day:
 translate F Tip {Conseil}
@@ -395,23 +403,23 @@ menuText F TreeFile "Fichier" 0
 menuText F TreeFileSave "Sauver le cache" 0
 menuText F TreeFileFill "Remplir le cache" 0
 menuText F TreeFileBest "Liste des meilleures parties" 0 {Montrer la liste des meilleures parties}
-menuText F TreeFileGraph "Graphique" 0
+menuText F TreeFileGraph "Graphique" 0 {Graphique de l'arbre}
 menuText F TreeFileCopy "Copier l'arbre dans le presse-papiers" 0
 menuText F TreeFileClose "Fermer la fenêtre d'arbre" 0
 menuText F TreeSort "Trier" 0
-menuText F TreeSortAlpha "Alphabetique" 0
+menuText F TreeSortAlpha "Alphabétique" 0
 menuText F TreeSortECO "code ECO" 0
 menuText F TreeSortFreq "Fréquence" 0
 menuText F TreeSortScore "Score" 0
 menuText F TreeOpt "Options" 0
 menuText F TreeOptLock "Verrouille" 0 {Dé/verrouiller l'arbre à la base en cours}
-menuText F TreeOptTraining "Entrainement" 0 {Démarrer/Arrêter l'arbre du mode d'entrainement}
+menuText F TreeOptTraining "Entraînement" 0 {Démarrer/Arrêter l'arbre du mode d'entraînement}
 menuText F TreeOptAutosave "Sauver le cache automatiquement" 0
 menuText F TreeHelp "Aide" 0
 menuText F TreeHelpTree "Aide Arbre" 0
 menuText F TreeHelpIndex "Index" 0
 translate F SaveCache {Sauver le cache}
-translate F Training {Entrainement}
+translate F Training {Entraînement}
 translate F LockTree {Verrouiller}
 translate F TreeLocked {verrouillé}
 translate F TreeBest {Meilleur}
@@ -419,7 +427,10 @@ translate F TreeBestGames {Arbre des meilleures parties}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate F TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Coup   ECO        Fréquence   Score EloMoy Perf AnnéeMoy %Nulle}
+translate F TreeElapsedTime {Time} ;# ***
+translate F TreeFoundInCache {  (Found in cache)} ;# ***
+translate F TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText F FinderFile "Fichier" 0
@@ -449,13 +460,13 @@ translate F FinderUpDir {répertoire précédent}
 # Player finder:
 menuText F PListFile "Fichier" 0
 menuText F PListFileUpdate "Mettre à jour" 0
-menuText F PListFileClose "Close Player Finder" 0 ;# ***
+menuText F PListFileClose "Fermer la recherche de joueur" 0
 menuText F PListSort "Trier" 0
-menuText F PListSortName "Name" 0 ;# ***
+menuText F PListSortName "Nom" 0
 menuText F PListSortElo "Elo" 0
 menuText F PListSortGames "Parties" 0
-menuText F PListSortOldest "Oldest" 0 ;# ***
-menuText F PListSortNewest "Newest" 0 ;# ***
+menuText F PListSortOldest "Les plus vieux" 0
+menuText F PListSortNewest "Les plus récents" 0
 
 # Tournament finder:
 menuText F TmtFile "Fichier" 0
@@ -497,6 +508,7 @@ translate F AnnotateAll {Pour les coups des deux cotés}
 translate F AnnotateWhite {Pour les coups des blancs seulement}
 translate F AnnotateBlack {Pour les coups des noirs seulement}
 translate F AnnotateNotBest {Quand le coup de la partie n'est pas le meilleur}
+translate F LowPriority {Priorité au microprocesseur lent}
 
 # Analysis Engine open dialog:
 translate F EngineList {Liste des moteurs d'analyse}
@@ -538,6 +550,7 @@ menuText F PgnColorBackground "Couleur du fond..." 11
 menuText F PgnHelp "Aide" 0
 menuText F PgnHelpPgn "Aide PGN" 0
 menuText F PgnHelpIndex "Index" 0
+translate F PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText F CrosstabFile "Fichier" 0
@@ -552,7 +565,7 @@ menuText F CrosstabEditDate "Date" 0
 menuText F CrosstabOpt "Affichage" 0
 menuText F CrosstabOptAll "Toutes rondes" 0
 menuText F CrosstabOptSwiss "Suisse" 0
-menuText F CrosstabOptKnockout "Knockout" 0
+menuText F CrosstabOptKnockout "KO" 0
 menuText F CrosstabOptAuto "Auto" 0
 menuText F CrosstabOptAges "Ages en années" 8
 menuText F CrosstabOptNats "Nationalités" 0
@@ -576,7 +589,7 @@ menuText F CrosstabHelpIndex "Index" 0
 translate F SetFilter {Activer le filtre}
 translate F AddToFilter {Ajouter au filtre}
 translate F Swiss {Suisse}
-translate F Category {Category} ;# ***
+translate F Category {Catégorie}
 
 # Opening report window menus:
 menuText F OprepFile "Fichier" 0
@@ -685,7 +698,7 @@ translate F NumDeletedGames {Parties supprimées:}
 translate F NumFilterGames {Parties dans le filtre:}
 translate F YearRange {Années:}
 translate F RatingRange {Classements:}
-translate F Description {Description} ;# ***
+translate F Description {Description}
 translate F Flag {Drapeau}
 translate F DeleteCurrent {Effacer la partie courante}
 translate F DeleteFilter {Effacer le filtre de parties}
@@ -730,7 +743,7 @@ Etes vous sûr que vous voulez commencer les fonctions de maintenance que vous av
 # Comment editor:
 translate F AnnotationSymbols {Symboles d'annotation:}
 translate F Comment {Commentaire:}
-translate F InsertMark {Insert mark} ;# ***
+translate F InsertMark {Insère une marque}
 
 # Board search:
 translate F BoardSearch {Rechercher Position}
@@ -769,9 +782,9 @@ translate F ClassifyGame {Classer la partie}
 
 # Setup position:
 translate F EmptyBoard {Vider l'échiquier}
-translate F InitialBoard {Ré-initiliser l'échiquier}
+translate F InitialBoard {Ré-initialiser l'échiquier}
 translate F SideToMove {Coté qui a le trait}
-translate F MoveNumber {Coup numero}
+translate F MoveNumber {Coup numéro}
 translate F Castling {Roque}
 translate F EnPassantFile {Prise en passant}
 translate F ClearFen {Effacer FEN}
@@ -791,7 +804,7 @@ translate F ReadOnlyDialog {Si vous mettez cette base en lecture seule, aucun ch
 Aucune partie ne peut être sauvée ou remplacée, et aucun drapeau d'effacement ne peut être altéré.
 Tout les tris ou les résultats de classification ECO seront temporaires.
 
-Vous pouvez facilement rendre la base à nouveau accesible en éccriture, en la fermant et en l'ouvrant à nouveau.
+Vous pouvez facilement rendre la base à nouveau accessible en écriture, en la fermant et en l'ouvrant à nouveau.
 
 Voulez vous vraiment passer cette base en lecture seule?}
 
@@ -808,7 +821,7 @@ translate F ExitUnsaved {Les bases de données suivantes ont des parties modifiée
 # Import window:
 translate F PasteCurrentGame {Coller la partie courante}
 translate F ImportHelp1 {Entrer ou coller une partie au format PGN dans le cadre ci-dessus.}
-translate F ImportHelp2 {Toutes les erreurs durant l'import de la partie seront affichées içi.}
+translate F ImportHelp2 {Toutes les erreurs durant l'import de la partie seront affichées ici.}
 
 # ECO Browser:
 translate F ECOAllSections {toutes les sections ECO}
@@ -819,7 +832,7 @@ translate F ECOFrequency {Fréquence des sous-codes pour}
 # Opening Report:
 translate F OprepTitle {Rapport sur l'ouverture}
 translate F OprepReport {Rapport}
-translate F OprepGenerated {Generé par}
+translate F OprepGenerated {Généré par}
 translate F OprepStatsHist {Statistiques et Historique}
 translate F OprepStats {Statistiques}
 translate F OprepStatAll {Toutes les parties du rapport}
@@ -885,7 +898,7 @@ translate F OprepMaxGames {Nombre maximum de parties dans la table de théorie}
 
 # Piece Tracker window:
 translate F TrackerSelectSingle {Le bouton gauche de la souris sélectionne cette pièce.}
-translate F TrackerSelectPair {Le bouton gauche de la souris sélectionne cette piece; le bouton droit sélectionne aussi son pendant.}
+translate F TrackerSelectPair {Le bouton gauche de la souris sélectionne cette pièce; le bouton droit sélectionne aussi son pendant.}
 translate F TrackerSelectPawn {Le bouton gauche de la souris sélectionne ce pion ; le bouton droit sélectionne les 8 pions.}
 translate F TrackerStat {Statistiques}
 translate F TrackerGames {% parties avec déplacement sur la case}
@@ -901,7 +914,7 @@ translate F SelectTournamentGames {Seulement les parties du tournoi courant}
 translate F SelectOlderGames {Seulement les parties plus anciennes}
 
 # Delete Twins window:
-translate F TwinsNote {Pour être considérées comme doublons, deux parties doivent au moins avoir les deux mêmes joueurs, et avoir les critères que vous pouvez fixer ci-dessous satisfaits. Quand une paire de doublons est trouvée, la partie la plus courte est éffacée.
+translate F TwinsNote {Pour être considérées comme doublons, deux parties doivent au moins avoir les deux mêmes joueurs, et avoir les critères que vous pouvez fixer ci-dessous satisfaits. Quand une paire de doublons est trouvée, la partie la plus courte est effacée.
 Conseil: il est préférable de vérifier l'orthographe dans la base avant d'effacer les doublons, car cela améliore la détection des doublons. }
 translate F TwinsCriteria {Critère: Les doublons doivent avoir...}
 translate F TwinsWhich {Parties à examiner}
@@ -918,7 +931,7 @@ translate F TwinsMoves {Mêmes coups?}
 translate F TwinsPlayers {Comparaison des noms des joueurs:}
 translate F TwinsPlayersExact {Correspondance exacte}
 translate F TwinsPlayersPrefix {Les 4 premières lettres seules}
-translate F TwinsWhen {En effaçant les doublons}
+translate F TwinsWhen {En effacant les doublons}
 translate F TwinsSkipShort {Ignorer toutes les parties de moins de cinq coups?}
 translate F TwinsUndelete {Récupérer toutes les parties d'abord?}
 translate F TwinsSetFilter {Appliquer le filtre à tous les doublons éliminés?}
@@ -940,7 +953,7 @@ translate F NameEditMatches {Correspondances: Presser Alt+1 à Alt+9 pour sélecti
 # Classify window:
 translate F Classify {Classer}
 translate F ClassifyWhich {Choix des parties à classer suivant ECO}
-translate F ClassifyAll {Toutes les parties (écrase les ancients codes ECO)}
+translate F ClassifyAll {Toutes les parties (écrase les anciens codes ECO)}
 translate F ClassifyYear {Toutes les parties jouées la dernière année}
 translate F ClassifyMonth {Toutes les parties jouées le dernier mois}
 translate F ClassifyNew {Seulement les parties qui ne possèdent pas encore de code ECO}
@@ -983,7 +996,7 @@ translate F GotoMoveNumber {Aller au coup numéro:}
 translate F CopyGames {Copier les parties}
 translate F CopyConfirm {
  Voulez vous vraiment copier
- les [thousands $nGamesToCopy] parties filtrées
+ les [milliers $nGamesToCopy] parties filtrées
  depuis la base "$fromName"
  vers la base "$targetName"?
 }
@@ -999,8 +1012,8 @@ translate F LightSquares {Cases blanches}
 translate F DarkSquares {Cases noires}
 translate F SelectedSquares {Cases sélectionnées}
 translate F SuggestedSquares {Cases des coups suggérés}
-translate F WhitePieces {Pieces blanches}
-translate F BlackPieces {Pieces noires}
+translate F WhitePieces {Pièces blanches}
+translate F BlackPieces {Pièces noires}
 translate F WhiteBorder {Bordure des pièces blanches}
 translate F BlackBorder {Bordure des pièces noires}
 
@@ -1031,8 +1044,8 @@ Voulez vous mettre à jour cette base de données maintenant?
 }
 
 # Recent files options:
-translate F RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate F RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate F RecentFilesMenu {Nombre de fichiers récents dans le menu Fichier}
+translate F RecentFilesExtra {Nombre de fichiers récents dans le sous-menu complémentaire}
 
 }
 # end of francais.tcl

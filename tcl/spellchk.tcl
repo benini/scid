@@ -114,7 +114,7 @@ proc openSpellCheckWin {type {parent .}} {
     focus .
     destroy .spellcheckWin
     sc_game tags reload
-    updateBoardAndPgn
+    updateBoard -pgn
     updateGList
   }
   bind $w <Alt-m> "$f.ok invoke; break"

@@ -1482,6 +1482,7 @@ proc ::tree::graph {} {
   set mean 50.0
   set totalGames 0
   set treeData [.treeWin.f.tl get 0 end]
+  set transTotal [string range $::tr(TreeTotal) 0 1]
 
   for {set i 0} {$i < [llength $treeData]} {incr i} {
     # Extract info from each line of the tree window:
@@ -1496,7 +1497,7 @@ proc ::tree::graph {} {
     regsub -all {,} $score . score
     if {$score > 99.9} { set score 99.9 }
     # Check if this line is "TOTAL:" line:
-    if {![string compare "TO" $mNum]} {
+    if {![string compare $transTotal $mNum]} {
       set mean $score
       set totalGames $freq
     }
@@ -1968,7 +1969,7 @@ proc configPgnMenus {{lang ""}} {
   foreach menu {file opt color help} tag {File Opt Color Help} {
     configMenuName $m.$menu Pgn$tag $lang
   }
-  foreach idx {0 2} tag {Print Close} {
+  foreach idx {1 3} tag {Print Close} {
     configMenuText $m.file.m $idx PgnFile$tag $lang
   }
   foreach idx {0 1 2 3 4 5 6 7} tag {Color Short Symbols IndentC IndentV Space Column StripMarks} {
@@ -2006,6 +2007,18 @@ proc makePgnWin {} {
     pack $w.menu.$i -side left
   }
 
+  $w.menu.file.m add command -label "Copy game to clipboard" -command {
+     set pgnStr [sc_game pgn -width 75 -indentComments $pgnIndentComments \
+        -indentVariations $pgnIndentVars -space $pgnMoveNumSpace]
+     set wt .tempFEN
+     if {! [winfo exists $wt]} { text $wt }
+     $wt delete 1.0 end
+     $wt insert end $pgnStr sel
+     clipboard clear
+     clipboard append $pgnStr
+     selection own $wt
+     selection get
+  }
   $w.menu.file.m add command -label PgnFilePrint -command {
     set ftype {
       { "PGN files"  {".pgn"} }
@@ -2186,7 +2199,7 @@ proc updatePgnWin {{pgnNeedsUpdate 0}} {
                 -short $pgnShortHeader -markCodes $pgnStripMarks]
   if {$pgnNeedsUpdate} {
     busyCursor .
-    wm title .pgnWin "Scid: PGN of Game [sc_game number]"
+    wm title .pgnWin "Scid: $::tr(PgnWindowTitle) [sc_game number]"
     .pgnWin.text configure -state normal
     .pgnWin.text delete 1.0 end
     if {$doColorPgn} {
@@ -2386,8 +2399,8 @@ proc openCommentWin {} {
   pack $w.b.close $w.b.space $w.b.store $w.b.revert $w.b.clear -side right
   pack $w.b.mark -side left
 
-  wm title $w "Scid: Comment editor"
-  wm iconname $w "Scid: Comment editor"
+  wm title $w "Scid: [tr WindowsComment]"
+  wm iconname $w "Scid: [tr WindowsComment]"
   updateCommentWin
   focus $w.cf.text
 }
@@ -3101,13 +3114,13 @@ proc playerInfo {{player ""}} {
   if {! [winfo exists $w]} {
     toplevel $w
     setWinLocation $w
-    wm title $w "Scid: Player Info"
+    wm title $w "Scid: [tr ToolsPInfo]"
     wm minsize $w 40 5
     pack [frame $w.b2] -side bottom -fill x
     pack [frame $w.b] -side bottom -fill x
-    button $w.b.graph -text "Rating graph" \
+    button $w.b.graph -text [tr ToolsRating] \
       -command {updateRatingGraph player $playerInfoName}
-    button $w.b.edit -text "Edit ratings" -command {
+    button $w.b.edit -text "$::tr(PInfoEditRatings)" -command {
       makeNameEditor
       setNameEditorType rating
       set editName $playerInfoName

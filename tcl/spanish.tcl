@@ -70,6 +70,10 @@ menuText S EditStrip "Eliminar" 2 \
 menuText S EditStripComments "Comentarios" 0 \
   {Quita todos los comentarios y variaciones de esta partida}
 menuText S EditStripVars "Variaciones" 0 {Quita todas las variaciones de esta partida}
+menuText S EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText S EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText S EditReset "Poner a cero la base de trabajo" 0 \
   {Pone a cero la base de trabajo (clipbase) para que esté completamente vacía}
 menuText S EditCopy "Copiar esta partida a la base de trabajo" 1 \
@@ -203,6 +207,8 @@ menuText S OptionsLanguage "Lenguaje" 0 {Selecciona el lenguaje del menú}
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAsk "Preguntar antes de reemplazar movimientos" 0 \
   {Pregunta antes de sobreescribir cualquier movimiento existente}
+menuText S OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves} ;# ***
 menuText S OptionsMovesDelay "Demora del automovimiento..." 0 \
   {Pone el tiempo de demora para el modo de automovimiento}
 menuText S OptionsMovesCoord "Entrada de movimientos coordinada" 0 \
@@ -268,6 +274,7 @@ helpMsg S .button.intoVar {Moverse dentro de una variación  (Tecla rápida: v)}
 helpMsg S .button.exitVar {Dejar la variación actual  (Tecla rápida: z)}
 helpMsg S .button.flip {Girar tablero  (Tecla rápida: .)}
 helpMsg S .button.coords {Poner/quitar las coordenadas del tablero  (Tecla rápida: 0)}
+helpMsg S .button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg S .button.autoplay {Automovimiento de los movimientos  (Tecla: Ctrl+Z)}
 
 # General buttons:
@@ -374,6 +381,7 @@ translate S PInfoMostWhite {Aperturas más comunes con Blancas}
 translate S PInfoMostBlack {Aperturas más comunes con Negras}
 translate S PInfoRating {Historial de clasificación}
 translate S PInfoBio {Biografía}
+translate S PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate S Draw {Tablas}
@@ -432,7 +440,10 @@ translate S TreeBestGames {Mejores partidas del árbol}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate S TreeTitleRow \
-  {    Movim. ECO       Frecuencia   Puntu. AvElo Perf AvAño}
+  {    Movim. ECO       Frecuencia   Puntu. AvElo Perf AvAño %Tablas}
+translate S TreeElapsedTime {Time} ;# ***
+translate S TreeFoundInCache {  (Found in cache)} ;# ***
+translate S TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText S FinderFile "Archivo" 0
@@ -510,6 +521,7 @@ translate S AnnotateAll {Para movimientos de ambos lados}
 translate S AnnotateWhite {Sólo para movimientos de las Blancas}
 translate S AnnotateBlack {Sólo para movimientos de las Negras}
 translate S AnnotateNotBest {Cuando el movimiento de la partida no es el mejor}
+translate S LowPriority {Low CPU priority} ;# ***
 
 # Analysis Engine open dialog:
 translate S EngineList {Lista de Motores de Análisis}
@@ -551,6 +563,7 @@ menuText S PgnColorBackground "Fondo..." 0
 menuText S PgnHelp "Ayuda" 1
 menuText S PgnHelpPgn "Ayuda de PGN" 9
 menuText S PgnHelpIndex "Indice de la ayuda" 0
+translate S PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText S CrosstabFile "Archivo" 0
@@ -3154,7 +3167,7 @@ Esta tiene la última versión de Scid para bajarse y cualquier otro archivo extra
 </p>
 <p>
 Por favor envía cualquier comentario, pregunta, sugerencia o informe de errores al autor de Scid, Shane Hudson, al E-mail:<br>
-<li><b>shane@cosc.canterbury.ac.nz</b>
+<li><b>sgh@users.sourceforge.net</b>
 </p>
 
 <h3><name Related>Links relacionados</name></h3>

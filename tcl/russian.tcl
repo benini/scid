@@ -1,1033 +1,1046 @@
-# russian.tcl:
-# Russian language translations for Scid.
+### russian.tcl:
+#  Russian language support for Scid.
+#  Contributed by Alex Sedykh.
+#  Untranslated messages are marked with a "***" comment.
+#  Untranslated help page sections are in <NEW>...</NEW> tags.
 
-addLanguage R Russian 0 iso8859-5
+addLanguage R Russian 1
 
 proc setLanguage_R {} {
 
 # File menu:
-menuText R File "д–ўџ" 0
-menuText R FileNew "Ѕё„‘–вм..." 0 {Ѕё„‘–’в Ёё“го —–„г ‘–ЁЁле Scid}
-menuText R FileOpen "ЊвЏалвм..." 0 {ЊвЏал“–’в бгй’бв“гойго —–„г ‘–ЁЁле Scid}
-menuText R FileClose "Ј–Џалвм" 0 {Ј–Џал“–’в –ЏвЎ“Ёго —–„г ‘–ЁЁле}
-menuText R FileFinder "њёЎбЏ д–ўџё“" 0 {ЊЏЁё яёЎбЏ– д–ўџё“}
-menuText R FileBookmarks "Ј–Џџ–‘ЏЎ" 0 {Љ’Ёо Ј–Џџ–‘ёЏ (Џџ–“ЎиЎ: Ctrl+B)}
-menuText R FileBookmarksAdd "іё—–“Ўвм „–Џџ–‘Џг" 0 \
-  {Ј‘’џ–вм „–Џџ–‘Џг “ нвёў я–авЎЎ “ ‘–ЁЁёў яё„ЎжЎЎ}
-menuText R FileBookmarksFile "ј’”Ўбва–жЎп „–Џџ–‘ЏЎ" 0 \
-  {Ј–а’”ЎбваЎаё“–вм „–Џџ–‘Џг ‘џп нвёў я–авЎЎ “ ‘–ЁЁёў яё„ЎжЎЎ}
-menuText R FileBookmarksEdit "ј’‘–ЏвЎаё“–вм „–Џџ–‘ЏЎ..." 0 \
-  {ј’‘–ЏвЎаё“–вм №’Ёо „–Џџ–‘ёЏ}
-menuText R FileBookmarksList "њёЏ–„л“–вм Џ–в–џё”Ў Џ–Џ ’‘ЎЁлў џЎбв" 0 \
-  {њёЏ–„л“–вм Џ–в–џё”Ў „–Џџ–‘ёЏ Џ–Џ ’‘ЎЁлў џЎбв —’„ №’Ёо}
-menuText R FileBookmarksSub "њёЏ–„л“–вм Џ–в–џё”Ў Џ–Џ №’Ёо" 0 \
-  {њёЏ–„л“–вм Џ–в–џё”Ў „–Џџ–‘ёЏ б яё‘№’Ёо, – Ё’ Џ–Џ ’‘ЎЁлў џЎбв}
-menuText R FileMaint "Ѕ’а“Ўб" 0 {ЄЁбваг№’Ёвл ‘џп ё—бџг÷Ў“–ЁЎп —–„ ‘–ЁЁле}
-menuText R FileMaintWin "Ѕ’а“ЎбЁё’ ёЏЁё" 0 \
-  {ЊвЏалвм/„–Џалвм б’а“ЎбЁё’ ёЏЁё ±і}
-menuText R FileMaintCompact "Ѕ÷–вм ±і..." 0 \
-  {Ѕ÷–вм д–ўџл ±і г‘–џЎ“ яё№’з’ЁЁл’ ‘џп г‘–џ’ЁЎп Ў”ал Ў Ё’Ўбяёџм„г’№л’ Ў№’Ё–}
-menuText R FileMaintClass "њ’а’ёяа’‘’џЎвм ECO..." 2 \
-  {њ’а’ёяа’‘’џЎвм ЎЁ‘’Џб ECO ‘џп “б’е я–авЎў}
-menuText R FileMaintSort "ЅёавЎаё“–вм ±і..." 0 \
-  {ЅёавЎаё“–вм “б’ Ў”ал “ ±і}
-menuText R FileMaintDelete "√‘–џЎвм я–авЎЎ-ЏёяЎЎ..." 0 \
-  {љ–ўвЎ я–авЎЎ-ЏёяЎЎ Ў яё№’вЎвм Ўе ‘џп г‘–џ’ЁЎп}
-menuText R FileMaintTwin "ЊЏЁё яаё“’аЏЎ я–авЎў-ЏёяЎў" 0 \
-  {ЊвЏалвм/ё—Ёё“Ўвм ёЏЁё яаё“’аЏЎ я–авЎў-ЏёяЎў}
-menuText R FileMaintName "ња–“ёяЎб–ЁЎ’ Ў№’Ё" 0 {ЄЁбваг№’Ёвл ‘џп а’‘–ЏвЎаё“–ЁЎп Ё–„“–ЁЎў Ў Ў№’Ё}
-menuText R FileMaintNameEditor "ј’‘–Џвёа Ё–„“–ЁЎў" 0 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё а’‘–Џвёа– Ё–„“–ЁЎў}
-menuText R FileMaintNamePlayer "њаё“’аЏ– Ў№’Ё..." 11 \
-  {њаё“’аЏ– Ў№’Ё Ў”аёЏё“ б яё№ёймо яаё“’аёзЁё”ё д–ўџ–}
-menuText R FileMaintNameEvent "њаё“’аЏ– Ё–„“–ЁЎў бёа’“Ёё“–ЁЎў..." 11 \
-  {њаё“’аЏ– Ё–„“–ЁЎў бёа’“Ёё“–ЁЎў б яё№ёймо яаё“’аёзЁё”ё д–ўџ–}
-menuText R FileMaintNameSite "њаё“’аЏ– №’бв яаё“’‘’ЁЎп..." 11 \
-  {њаё“’аЏ– №’бв яаё“’‘’ЁЎп бёа’“Ёё“–ЁЎў б яё№ёймо яаё“’аёзЁё”ё д–ўџ–}
-menuText R FileMaintNameRound "њаё“’аЎвм Ё–„“–ЁЎ’ вгаё“..." 11 \
-  {њаё“’аЏ– вгаё“ бёа’“Ёё“–ЁЎў б яё№ёймо яаё“’аёзЁё”ё д–ўџ–}
-menuText R FileReadOnly "¬ёџмЏё ‘џп зв’ЁЎп..." 0 \
-  {Ј–яа’вЎвм а’‘–ЏвЎаё“–ЁЎ’ в’Џгй’ў ±і}
-menuText R FileSwitch "Switch to database" 0 \
-  {Switch to a different opened database} ;# ***
-menuText R FileExit "≤леё‘" 1 {≤леё‘ Ў„ яаё”а–№№л}
+menuText R File "‘айл" 0
+menuText R FileNew "Ќовый..." 0 {—оздать новую базу данных Scid}
+menuText R FileOpen "ќткрыть..." 0 {ќткрыть базу данных Scid}
+menuText R FileClose "«акрыть" 0 {«акрыть активную базу данных Scid}
+menuText R FileFinder "ѕоиск" 0 {ќткрыть окно поиска файла}
+menuText R FileBookmarks "«акладки" 2 {ћеню закладок (комбинаци€: Ctrl+B)}
+menuText R FileBookmarksAdd "ƒобавить закладку" 0 \
+  {ќтметить партию или позицию в текущей базе данных}
+menuText R FileBookmarksFile "јрхивировать закладка" 0 \
+  {јрхивировать закладку дл€ текущей партии или позиции}
+menuText R FileBookmarksEdit "–едактировать закладки..." 0 \
+  {–едактировать меню закладок}
+menuText R FileBookmarksList "ѕоказать папки как простой список" 0 \
+  {ѕоказать папки закладок, как обычный список, а не подменю}
+menuText R FileBookmarksSub "ѕоказать папки как подменю" 1 \
+  {ѕоказать папки закладок как подменю, а не простой список}
+menuText R FileMaint "ѕоддержка" 2 {»нструменты поддержки базы данных Scid}
+menuText R FileMaintWin "ќкно поддержки" 0 \
+  {ќткрыть/закрыть окно поддержки базы данных Scid}
+menuText R FileMaintCompact "—жать базу данных..." 0 \
+  {—жать файлы базы данных, выкинуть удаленные партии и неиспользуемые имена}
+menuText R FileMaintClass "ECO- лассификаци€ партии..." 0 \
+  {ѕерерасчитать коды ECO дл€ всех партий}
+menuText R FileMaintSort "—ортировать базу данных..." 2 \
+  {—ортировать все партии в базе данных}
+menuText R FileMaintDelete "”далить партии-двойники..." 0 \
+  {Ќайти партии-двойники и пометить их дл€ удалени€}
+menuText R FileMaintTwin "ќкно проверки двойников" 14 \
+  {ќткрыть/обновить окно проверки двойников}
+menuText R FileMaintName "ѕравописание имен" 0 {–едактирование имен и инструменты правописани€}
+menuText R FileMaintNameEditor "–едактор имен" 0 \
+  {ќткрыть/закрыть окно редактора имен}
+menuText R FileMaintNamePlayer "ѕроверка имен игроков..." 9 \
+  {ѕроверка имен игроков с помощью файла правописани€}
+menuText R FileMaintNameEvent "ѕроверка названий турниров..." 18 \
+  {ѕроверка названий турниров с помощью файла правописани€}
+menuText R FileMaintNameSite "ѕроверка названий мест..." 18 \
+  {ѕроверка названий мест с помощью файла правописани€}
+menuText R FileMaintNameRound "ѕроверка названий раундов..." 20 \
+  {ѕроверка названий раундов с помощью файла правописани€}
+menuText R FileReadOnly "“олько дл€ чтени€..." 0 \
+  {“рактовать текущую базу данных как только дл€ чтени€, предотвращать изменени€}
+menuText R FileSwitch "ѕереключить базу данных" 6 \
+  {ѕереключить на другую открытую базу данных}
+menuText R FileExit "¬ыход" 0 {¬ыход из Scid}
 
 # Edit menu:
-menuText R Edit "ј’‘–ЏвЎаё“–вм" 0
-menuText R EditAdd "іё—–“Ўвм “–аЎ–Ёв" 0 {іё—–“Ўвм “–аЎ–Ёв яаЎ ‘–ЁЁё№ её‘’}
-menuText R EditDelete "√‘–џЎвм “–аЎ–Ёв" 0 {√‘–џЎвм “–аЎ–Ёв Џ ‘–ЁЁё№г её‘–}
-menuText R EditFirst "Ѕ‘’џ–вм “–аЎ–Ёв я’а“л№" 5 \
-  {Ѕ‘’џ–вм “–аЎ–Ёв я’а“л№ яё бяЎбЏг}
-menuText R EditMain "Ѕ‘’џ–вм ёбЁё“Ёл№ “–аЎ–Ёвё№" 21 \
-  {Ѕ‘’џ–вм ёбЁё“Ёл№ “–аЎ–Ёвё№}
-menuText R EditTrial "њаё—Ёлў “–аЎ–Ёв" 0 \
-  {њёяаё—ё“–вм “–аЎ–Ёв Ё– ‘ёбЏ’}
-menuText R EditStrip "√‘–џЎвм" 2 {√‘–џЎвм Џё№№’Ёв–аЎў ЎџЎ “–аЎ–Ёвл Ў„ ‘–ЁЁёў я–авЎЎ}
-menuText R EditStripComments "Їё№№’Ёв–аЎў" 0 \
-  {√‘–џп’в “б’ яаЎ№’з–ЁЎп Ў Џё№№’Ёв–аЎЎ Ў„ ‘–ЁЁёў Ў”ал}
-menuText R EditStripVars "≤–аЎ–Ёвл" 0 {√‘–џЎвм “б’ “–аЎ–Ёвл Ў„ я–авЎЎ}
-menuText R EditReset "ЊзЎбвЎвм “а’№’ЁЁго ±і" 0 \
-  {√‘–џЎвм “б’ Ў”ал Ў„ “а’№’ЁЁёў ±і}
-menuText R EditCopy "ЅЏёяЎаё“–вм я–авЎо “ё “а’№’ЁЁго ±і" 0 \
-  {ЅЏёяЎаё“–вм я–авЎо “ё “а’№’ЁЁго ±і}
-menuText R EditPaste "≤бв–“Ўвм яёбџ’‘Ёоо я–авЎо Ў„ “а’№’ЁЁёў ±і" 0 \
-  {≤бв–“Ўвм бо‘– яёбџ’‘Ёоо я–авЎо Ў„ “а’№’ЁЁёў ±і}
-menuText R EditSetup "Ј–‘–вм Ё–з–џмЁго яё„ЎжЎо..." 0 \
-  {Ј–‘–вм Ё–з–џмЁго яё„ЎжЎо ‘џп я–авЎЎ}
-menuText R EditCopyBoard "Copy position" 6 \
-  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
-menuText R EditPasteBoard "≤бв–“Ўвм Ё–з–џмЁго яё„ЎжЎо" 12 \
-  {Ј–‘–вм Ё–з–џмЁго яё„ЎжЎо яё “л—а–ЁЁё№г №’бвг “ё “а’№’ЁЁёў ±і}
+menuText R Edit "–едактирование" 0
+menuText R EditAdd "ƒобавить вариант" 0 {ƒобавить вариант к этому ходу партии}
+menuText R EditDelete "”далить вариант" 0 {”далить вариант дл€ этого хода}
+menuText R EditFirst "—делать вариант первым" 0 \
+  {ѕродвинуть вариант на первое место в списке}
+menuText R EditMain "«аменить основную линию вариантом" 0 \
+  {—делать вариант основной линией партии}
+menuText R EditTrial "ѕопробовать вариант" 0 \
+  {«апустить/закончить пробный режим, дл€ проверки идеи на доске}
+menuText R EditStrip "”брать" 1 {”брать комментарии или варианты из партии}
+menuText R EditStripComments " омментарии" 0 \
+  {”брать все комментарии и аннотации из этой партии}
+menuText R EditStripVars "¬арианты" 0 {”брать все варианты из этой партии}
+menuText R EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText R EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
+menuText R EditReset "ќчистить " 0 \
+  {ѕолностью очистить буферную базу}
+menuText R EditCopy "—копировать эту партию в буферную базу" 1 \
+  {—копировать эту партию в буферную базу}
+menuText R EditPaste "¬ставить последнюю партию из буферной базы" 0 \
+  {¬ставить активную партию из буферной базы здесь}
+menuText R EditSetup "”становить позицию..." 2 \
+  {”становить стартовую позицию дл€ этой партии}
+menuText R EditCopyBoard " опировать позицию" 4 \
+  { опировать текущую позицию в нотации FEN в выбранный текст (буфер)}
+menuText R EditPasteBoard "¬ставить стартовую позицию" 3 \
+  {¬ставить стартовую позицию из текущего выбранного текста (буфера)}
 
 # Game menu:
-menuText R Game "њ–авЎп" 0
-menuText R GameNew "љё“–п я–авЎп" 0 \
-  {њёбв–“Ўвм Ёё“го я–авЎо, ёв№’ЁЎ“ “б’ б‘’џ–ЁЁл’ Ў„№’Ё’ЁЎп}
-menuText R GameFirst "Ј–”аг„Ўвм я’а“го я–авЎо" 5 {Ј–”аг„Ўвм я’а“го я–авЎо Ў„ дЎџмва–}
-menuText R GamePrev "Ј–”аг„Ўвм яа’‘л‘гйго я–авЎо" 5 {Ј–”аг„Ўвм яа’‘л‘гйго я–авЎо Ў„ дЎџмва–}
-menuText R GameReload "Ј–”аг„Ўвм в’Џгойго я–авЎо яё“вёаЁё" 3 \
-  {Ј–”аг„Ўвм я–авЎо яё“вёаЁё, ёв№’ЁЎ“ “б’ б‘’џ–ЁЁл’ Ў„№’Ё’ЁЎп}
-menuText R GameNext "Ј–”аг„Ўвм бџ’‘гойго я–авЎо" 7 {Ј–”аг„Ўвм бџ’‘гойго я–авЎо Ў„ дЎџмва–}
-menuText R GameLast "Ј–”аг„Ўвм яёбџ’‘Ёоо я–авЎо" 8 {Ј–”аг„Ўвм яёбџ’‘Ёоо я–авЎо Ў„ дЎџмва–}
-menuText R GameRandom "Ј–”аг„Ўвм яаёЎ„“ёџмЁго я–авЎо" 8 {Ј–”аг„Ўвм яаёЎ„“ёџмЁго я–авЎо Ў„ дЎџмва–}
-menuText R GameNumber "Ј–”аг„Ўвм я–авЎо #..." 5 \
-  {Ј–”аг„Ўвм я–авЎо яё ““’‘’ЁЁё№г Ёё№’аг}
-menuText R GameReplace "Ѕёеа–ЁЎвм: б „–№’Ёёў..." 6 \
-  {Ѕёеа–ЁЎвм я–авЎо, „–№’ЁЎ“ яа’÷Ёоо}
-menuText R GameAdd "Ѕёеа–ЁЎвм: ‘ё—–“Ўвм Ёё“го..." 6 \
-  {Ѕёеа–ЁЎвм я–авЎо, ““’‘п ’’ Џ–Џ Ёё“го “ ±і}
-menuText R GameDeepest "њ’а’ўвЎ яё ECO" 0 \
-  {њ’а’ўвЎ Џ б–№ёў яаё‘“ЎЁгвёў яё„ЎжЎЎ, Џёвёа–п ’бвм “ —Ў—џЎёв’Џ’ ECO}
-menuText R GameGotoMove "њ’а’ўвЎ Џ её‘г #..." 5 \
-  {њ’а’ўвЎ Џ ёяа’‘’џ’ЁЁё№г её‘г “ я–авЎЎ}
-menuText R GameNovelty "љ–ўвЎ её‘-Ёё“ЎЁЏг..." 7 \
-  {љ–ўвЎ я’а“лў её‘, Џёвёалў п“џп’вбп Ёё“л№ Ў Ё’ Ў”а–џбп ‘ё бЎе яёа}
+menuText R Game "ѕарти€" 0
+menuText R GameNew "Ќова€ парти€" 0 \
+  {”становить партию в начальное положение, отбросив все изменени€}
+menuText R GameFirst "«агрузить первую партию" 0 {«агрузить первую отфильтрованную партию}
+menuText R GamePrev "«агрузить предыдущую партию" 1 {«агрузить предыдущую отфильтрованную партию}
+menuText R GameReload "ѕерезагрузить текущую партию" 1 \
+  {ѕерезагрузить эту партию, сбросив все сделанные изменени€}
+menuText R GameNext "«агрузить следующую партию" 2 {«агрузить следующую отфильтрованную партию}
+menuText R GameLast "«агрузить последнюю партию" 3 {«агрузить последнюю отфильтрованную партию}
+menuText R GameRandom "«агрузить случайную партию" 4 {«агрузить случайную отфильтрованную партию}
+menuText R GameNumber "«агрузить партию номер..." 6 \
+  {«агрузить партию, набрав ее номер}
+menuText R GameReplace "—охранить: «аменить партию..." 0 \
+  {—охранить эту партию, заменив старую версию}
+menuText R GameAdd "—охранить: ƒобавить новую партию..." 2 \
+  {—охранить эту партию, как новую в базу данных}
+menuText R GameDeepest "ќпределить дебют" 0 \
+  {Ќайти самую позднюю позицию партии, имеющуюс€ в книге ECO}
+menuText R GameGotoMove "ѕерейти к ходу номер..." 5 \
+  {ѕерейти к определенному ходу текущей партии}
+menuText R GameNovelty "Ќайти новинку..." 2 \
+  {Ќайти первый ход в этой партии, который раньше не примен€лс€}
 
 # Search Menu:
-menuText R Search "њёЎбЏ" 0
-menuText R SearchReset "≤ёббв–Ёё“Ўвм дЎџмва" 0 {≤ёббв–Ёё“Ўвм Ё–з–џмЁё’ бёбвёпЁЎ’ дЎџмва–, Џё”‘– “ Ё’”ё “её‘пв “б’ я–авЎЎ}
-menuText R SearchNegate "ЄЁ“’авЎаё“–вм дЎџмва" 0 {≤ЏџозЎвм “ дЎџмва вёџмЏё в’ я–авЎЎ, Џёвёал’ —лџЎ Ў„ Ё’”ё ЎбЏџоз’Ёл}
-menuText R SearchCurrent "њё„ЎжЎп Ё– ‘ёбЏ’..." 0 {њёЎбЏ яё яё„ЎжЎЎ Ё– ‘ёбЏ’}
-menuText R SearchHeader "њё „–”ёџё“Џ–№..." 0 {њёЎбЏ яё ЎЁдёа№–жЎЎ “ „–”ёџё“Џ–е (Ў”аёЏ, вгаЁЎа Ў в. ‘.)}
-menuText R SearchMaterial "Љ–в’аЎ–џ/ёбё—’ЁЁёбвЎ яё„ЎжЎЎ..." 0 {њёЎбЏ яё №–в’аЎ–џг ЎџЎ ёбё—’ЁЁёбвп№ яё„ЎжЎЎ}
-menuText R SearchUsing "Ѕ яё№ёймо гбв–Ёё“ёзЁё”ё д–ўџ–..." 0 {њёЎбЏ б яё№ёймо гбв–Ёё“ёзЁё”ё д–ўџ–}
+menuText R Search "ѕоиск" 0
+menuText R SearchReset "—бросить фильтр" 0 {—бросить фильтр, теперь все партии включены}
+menuText R SearchNegate "ќбратить фильтр" 0 {ќбратить фильтр,  включить только исключенные партии}
+menuText R SearchCurrent "“екуща€ позици€..." 0 {ѕоиск текущей позиции}
+menuText R SearchHeader "«аголовок..." 0 {ѕоиск по заголовку (игрок, турнир, и т.д.)}
+menuText R SearchMaterial "ћатериал/ќбраз..." 0 {ѕоиск по материалу или образцам позиции}
+menuText R SearchUsing "»спользу€ файл поиска..." 0 {ѕоиск с использованием файла с установками поиска}
 
 # Windows menu:
-menuText R Windows "ЊЏЁ–" 0
-menuText R WindowsComment "ј’‘–Џвёа яаЎ№’з–ЁЎў" 0 {ЊвЏалвм/„–Џалвм ёЏЁё а’‘–ЏвЎаё“–ЁЎп яаЎ№’з–ЁЎў}
-menuText R WindowsGList "ЅяЎбёЏ я–авЎў" 0 {ЊвЏалвм/„–Џалвм ёЏЁё бё бяЎбЏё№ я–авЎў}
-menuText R WindowsPGN "ЊЏЁё б PGN" 0 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё б „–яЎбмо её‘ё“ “ дёа№–в’ PGN}
-menuText R WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
-menuText R WindowsTmt "њёЎбЏ вгаЁЎаё“" 2 {ЊвЏалвм/„–Џалвм Open/close the tournament finder}
-menuText R WindowsSwitcher "њ’а’Џџоз–в’џм ±і" 0 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё бё бяЎбЏё№ —–„ ‘–ЁЁле}
-menuText R WindowsMaint "Ѕ’а“ЎбЁё’ ёЏЁё" 0 \
-  {ЊвЏалвм/„–Џалвм б’а“ЎбЁё’ ёЏЁё}
-menuText R WindowsECO "ЊЏЁё яаёб№ёва– ECO" 0 {ЊвЏалвм/„–Џалвм ёЏЁё яаёб№ёва– ЎЁ‘’Џбё“ ECO}
-menuText R WindowsRepertoire "ј’‘–Џвёа ‘’—овЁё”ё а’я’авг–а–" 0 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё а’‘–Џвёа– ‘’—овЁё”ё а’я’авг–а–}
-menuText R WindowsStats "ЊЏЁё бв–вЎбвЎЏЎ" 0 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё бв–вЎбвЎз’бЏЎе ‘–ЁЁле}
-menuText R WindowsTree "ЊЏЁё б ‘’а’“ё№" 0 {ЊвЏалвм/„–Џалвм ёЏЁё б ‘’а’“ё№ её‘ё“}
-menuText R WindowsTB "ЊЏЁё нЁ‘ияЎџмЁле —–„" 1 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё нЁ‘ияЎџмЁле —–„ ‘–ЁЁле}
+menuText R Windows "ќкна" 0
+menuText R WindowsComment "–едактор комментариев" 0 {ќткрыть/закрыть редактор комментариев}
+menuText R WindowsGList "—писок партий" 0 {ќткрыть/закрыть окно списка партий}
+menuText R WindowsPGN "ќкно PGN" 0 \
+  {ќткрыть/закрыть окно PGN (нотаци€ партии)}
+menuText R WindowsPList "ѕоиск игрока" 2 {ќткрыть/закрыть окно поиска игрока}
+menuText R WindowsTmt "ѕоиск турниров" 0 {ќткрыть/закрыть окно поиска турниров}
+menuText R WindowsSwitcher "ѕереключатель баз данных" 1 \
+  {ќткрыть/закрыть окно переключател€ баз данных}
+menuText R WindowsMaint "ќкно поддержки" 1 \
+  {ќткрыть/закрыть окно поддержки}
+menuText R WindowsECO "ѕросмотр ECO" 4 {ќткрыть/закрыть окно просмотра ECO}
+menuText R WindowsRepertoire "–едактор репертуара" 2 \
+  {ќткрыть/закрыть окно редактора репертуара дебютов}
+menuText R WindowsStats "ќкно статистики" 2 \
+  {ќткрыть/закрыть окно фильтрованной статистики}
+menuText R WindowsTree "ќкно дерева" 10 {ќткрыть/закрыть окно дерева}
+menuText R WindowsTB "ќкно таблиц эндшпил€" 10\
+  {ќткрыть/закрыть окно таблиц эндшпил€}
 
 # Tools menu:
-menuText R Tools "ЄЁбваг№’Ёвл" 0
-menuText R ToolsAnalysis "і“Ў÷ёЏ –Ё–џЎ„–..." 0 \
-  {Ј–ягбвЎвм/ёбв–Ёё“Ўвм ‘“Ў÷ёЏ –Ё–џЎ„–}
-menuText R ToolsAnalysis2 "і“Ў÷ёЏ –Ё–џЎ„– #2..." 17 \
-  {Ј–ягбвЎвм/ёбв–Ёё“Ўвм “вёаёў ‘“Ў÷ёЏ –Ё–џЎ„–}
-menuText R ToolsCross "¬–—џЎж– а’„гџмв–вё“" 0 {њёЏ–„–вм вгаЁЎаЁго в–—џЎжг ‘џп ‘–ЁЁёў я–авЎЎ}
-menuText R ToolsEmail "∞‘№ЎЁЎбва–вёа нџ’ЏваёЁЁёў яёзвл" 0 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё –‘№ЎЁЎбва–вёа– и–е№–вЁёў яёзвл}
-menuText R ToolsFilterGraph "≥а–дЎЏ дЎџмва–" 7 \
-  {ЊвЏалвм/„–Џалвм ёЏЁё ”а–дЎЏ– дЎџмва–}
-menuText R ToolsOpReport "Њвз’в яё ‘’—овг" 0 \
-  {Ѕё„‘–вм ‘’—овЁлў ёвз’в яё ‘–ЁЁёў яё„ЎжЎЎ}
-menuText R ToolsTracker "¬а–’ЏвёаЎп дЎ”га"  0 {ЊвЏалвм ёЏЁё бџ’÷’ЁЎп „– ва–’ЏвёаЎ’ў дЎ”га}
-menuText R ToolsPInfo "ЄЁдёа№–жЎо ё— Ў”аёЏ’"  0 \
-  {ЊвЏалвм/ё—Ёё“Ўвм ёЏЁё б ЎЁдёа№–жЎ’ў ё— Ў”аёЏ’}
-menuText R ToolsRating "≥а–дЎЏ а’ўвЎЁ”–" 0 \
-  {њёбваёЎвм ”а–дЎЏ Ў„№’Ё’ЁЎп а’ўвЎЁ”– гз–бвЁЎЏё“ ‘–ЁЁёў я–авЎЎ}
-menuText R ToolsScore "≥а–дЎЏ ёзЏё“" 0 {њёЏ–„–вм ёЏЁё б ”а–дЎЏё№ Ё–—а–ЁЁле ёзЏё“}
-menuText R ToolsExpCurrent "ЌЏбяёав в’Џгй’ў я–авЎЎ" 8 \
-  {Ј–яЎб–вм в’Џгйго я–авЎо “ в’Џбвё“лў д–ўџ}
-menuText R ToolsExpCurrentPGN "ЌЏбяёав я–авЎЎ “ д–ўџ PGN..." 15 \
-  {Ј–яЎб–вм в’Џгйго я–авЎо “ д–ўџ PGN}
-menuText R ToolsExpCurrentHTML "ЌЏбяёав я–авЎЎ “ д–ўџ HTML..." 15 \
-  {Ј–яЎб–вм в’Џгйго я–авЎо “ д–ўџ HTML}
-menuText R ToolsExpCurrentLaTeX "ЌЏбяёав я–авЎЎ “ д–ўџ LaTeX..." 15 \
-  {Ј–яЎб–вм в’Џгйго я–авЎо “ д–ўџ LaTeX}
-menuText R ToolsExpFilter "ЌЏбяёав “б’е ёвдЎџмваё“–ЁЁле я–авЎў" 1 \
-  {Ј–яЎб–вм “б’ я–авЎЎ дЎџмва– “ в’Џбвё“лў д–ўџ}
-menuText R ToolsExpFilterPGN "ЌЏбяёав “б’е ёвдЎџмваё“–ЁЁле я–авЎў “ PGN..." 17 \
-  {Ј–яЎб–вм “б’ я–авЎЎ дЎџмва– “ д–ўџ PGN}
-menuText R ToolsExpFilterHTML "ЌЏбяёав “б’е ёвдЎџмваё“–ЁЁле я–авЎў “ HTML..." 17 \
-  {Ј–яЎб–вм “б’ я–авЎЎ дЎџмва– “ д–ўџ HTML}
-menuText R ToolsExpFilterLaTeX "ЌЏбяёав “б’е ёвдЎџмваё“–ЁЁле я–авЎў “ LaTeX..." 17 \
-  {Ј–яЎб–вм “б’ я–авЎЎ дЎџмва– “ д–ўџ LaTeX}
-menuText R ToolsImportOne "Є№яёавЎаё“–вм ё‘Ёг я–авЎо Ў„ PGN..." 0 \
-  {Є№яёавЎаё“–вм ё‘Ёг я–авЎо Ў„ „–яЎбЎ PGN}
-menuText R ToolsImportFile "Є№яёавЎаё“–вм д–ўџ PGN..." 7 \
-  {Є№яёавЎаё“–вм я–авЎЎ Ў„ д–ўџ– PGN}
+menuText R Tools "»нструменты" 0
+menuText R ToolsAnalysis "јнализирующий движок..." 0 \
+  {«апустить/остановить шахматный анализирующий движок}
+menuText R ToolsAnalysis2 "јнализирующий движок є2..." 22 \
+  {«апустить/остановить второй шахматный анализирующий движок}
+menuText R ToolsCross "“урнирна€ таблица" 0 {ѕоказать турнирную таблицу дл€ этой партии}
+menuText R ToolsEmail "ћенеджер писем" 0 \
+  {ќткрыть/закрыть окно шахматного менеджера писем}
+menuText R ToolsFilterGraph "‘ильтрованна€ диаграмма" 0 \
+  {ќткрыть/закрыть окно фильтрованной диаграммы}
+menuText R ToolsOpReport "ƒебютный отчет" 0 \
+  {—генерировать дебютный отчет дл€ текущей позиции}
+menuText R ToolsTracker "ѕоложение фигуры"  4 {ќткрыть окно положени€ фигуры}
+menuText R ToolsPInfo "»нформаци€ об игроке"  1 \
+  {ќткрыть/обновить окно информации об игроке}
+menuText R ToolsRating "ƒиаграмма рейтинга" 1 \
+  {ƒиаграмма истории рейтинга дл€ игроков текущей партии}
+menuText R ToolsScore "ƒиаграмма счета" 2 {ѕоказать окно диаграммы счета}
+menuText R ToolsExpCurrent "Ёкспорт текущей партии" 0 \
+  {«аписать текущую партию в текстовый файл}
+menuText R ToolsExpCurrentPGN "Ёкспорт партии в файл PGN..." 0 \
+  {«аписать текущую партию в файл PGN}
+menuText R ToolsExpCurrentHTML "Ёкспорт партии в файл HTML..." 1 \
+  {«аписать текущую партию в файл HTML}
+menuText R ToolsExpCurrentLaTeX "Ёкспорт партии в файл LaTeX..." 2 \
+  {«аписать текущую партию в файл LaTeX}
+menuText R ToolsExpFilter "Ёкспорт всех отфильтрованных партий" 11 \
+  {«аписать все отфильтрованные партии в текстовый файл}
+menuText R ToolsExpFilterPGN "Ёкспорт отфильтрованных партий в файл PGN..." 1 \
+  {«аписать все отфильтрованные партии в файл PGN}
+menuText R ToolsExpFilterHTML "Ёкспорт отфильтрованных партий в файл HTML..." 2 \
+  {«аписать все отфильтрованные партии в файл HTML}
+menuText R ToolsExpFilterLaTeX "Ёкспорт отфильтрованных партий в файл LaTeX..." 3 \
+  {«аписать все отфильтрованные партии в файл LaTeX}
+menuText R ToolsImportOne "»мпорт одной партии PGN..." 0 \
+  {»мпорт партии из текстового файла PGN}
+menuText R ToolsImportFile "»мпорт файла партий PGN..." 9 \
+  {»мпорт партий из файла PGN}
 
 # Options menu:
-menuText R Options "√бв–Ёё“ЏЎ" 0
-menuText R OptionsSize "ј–„№’а ‘ёбЏЎ" 0 {Є„№’ЁЎвм а–„№’а ‘ёбЏЎ}
-menuText R OptionsPieces "¬Ўя дЎ”га" 6 {Є„№’ЁЎвм вЎя дЎ”га}
-menuText R OptionsColors "∆“’в–..." 0 {Є„№’ЁЎвм ж“’в– ‘ёбЏЎ Ў дЎ”га}
-menuText R OptionsExport "ЌЏбяёав" 0 {Є„№’ЁЎвм гбв–Ёё“ЏЎ нЏбяёав– в’Џбвё“}
-menuText R OptionsFonts "»аЎдвл" 0 {Є„№’ЁЎвм иаЎдвл}
-menuText R OptionsFontsRegular "Њ—лзЁлў" 0 {Є„№’ЁЎвм ё—лзЁлў иаЎдв}
-menuText R OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
-menuText R OptionsFontsSmall "Љ’џЏЎў" 0 {Є„№’ЁЎвм №’џЏЎў иаЎдв}
-menuText R OptionsFontsFixed "ƒЎЏбЎаё“–ЁЁлў" 0 {Є„№’ЁЎвм дЎЏбЎаё“–ЁЁлў иаЎдв}
-menuText R OptionsGInfo "ЄЁдёа№–жЎп ё я–авЎЎ" 0 {√бв–Ёё“ЏЎ ЎЁдёа№–жЎЎ ё я–авЎЎ}
-menuText R OptionsLanguage "ѕ„лЏ" 0 {≤л—а–вм п„лЏ ‘џп яаё”а–№№л}
-menuText R OptionsMoves "≈ё‘л" 0 {√бв–Ёё“ЏЎ ““ё‘– её‘ё“}
-menuText R OptionsMovesAsk "ња’‘гяа’÷‘–вм ё „–№’Ё’ её‘–" 0 \
-  {ња’‘гяа’÷‘–вм ё „–№’Ё’Ё г÷’ бгй’бв“гойЎе её‘ё“}
-menuText R OptionsMovesDelay "ЄЁв’а“–џ “ёбяаёЎ„“’‘’ЁЎп..." 1 \
-  {√бв–Ёё“Ўвм ЎЁв’а“–џ –“вё№–вЎз’бЏё”ё “ёбяаёЎ„“’‘’ЁЎп её‘ё“}
-menuText R OptionsMovesCoord "≈ё‘ б гЏ–„–ЁЎ’№ яёџ’ў" 0 \
-  {њаЎЁпвм ““ё‘ её‘– яё яёџп№ ("g1f3")}
-menuText R OptionsMovesSuggest "њёЏ–„л“–вм яа’‘яёџ–”–’№л’ её‘л" 0 \
-  {ња’‘џ–”–вм/Ё’ яа’‘џ–”–вм “ё„№ё÷Ёл’ её‘л}
-menuText R OptionsMovesKey "∞“вё„–“’аи’ЁЎ’ её‘–" 0 \
-  {≤ЏџозЎвм/“лЏџозЎвм –“вё№–вЎз’бЏё’ „–“’аи’ЁЎ’ её‘–}
-menuText R OptionsNumbers "ƒёа№–в зЎб’џ" 0 {≤л—а–вм дёа№–в зЎб’џ}
-menuText R OptionsStartup "Ј–ягбЏ" 3 {≤л—а–вм ёЏЁ– ‘џп Ўе ёвЏалвЎп яаЎ „–ягбЏ’ яаё”а–№№л}
-menuText R OptionsWindows "ЊЏЁ–" 0 {Window options}
-menuText R OptionsWindowsIconify "∞“вёб“ёа–зЎ“–ЁЎ’" 5 \
-  {∞“вё№–вЎз’бЏЎ б“ёа–зЎ“–вм “б’ ёЏЁ–, ’бџЎ б“’аЁгвё ”џ–“Ёё’ ёЏЁё}
-menuText R OptionsWindowsRaise "∞“вёа–„“ёа–зЎ“–ЁЎ’" 5 \
-  {њёЏ–„–вм ёяа’‘’џ’ЁЁл’ ёЏЁ– (Ё–яаЎ№’а, б яёџёбёў яаёж’бб–), ’бџЎ ёЁЎ „–”ёаё÷’Ёл}
-menuText R OptionsToolbar "њ–Ё’џм ЎЁбваг№’Ёвё“" 12 \
-  {≤л“ё‘Ўвм/г—Ўа–вм я–Ё’џм ЎЁбваг№’Ёвё“ ”џ–“Ёё”ё ёЏЁ–}
-menuText R OptionsECO "Ј–”аг„Ўвм д–ўџ б ECO..." 7 {Ј–”аг„Ўвм д–ўџ б ЎЁ‘’Џб–№Ў ECO}
-menuText R OptionsSpell "Ј–”аг„Ўвм яаё“’аёзЁлў д–ўџ..." 6 \
-  {Ј–”аг„Ўвм яаё“’аёзЁлў д–ўџ}
-menuText R OptionsTable "Ї–в–џё” нЁияЎџмЁле —–„..." 10 \
-  {іџп “л—ёа– д–ўџ– нЁ‘ияЎџмЁёў —–„л; —г‘гв Ўбяёџм„ё“–Ёл “б’ нЁ‘ияЎџмЁл’ —–„л “ ’”ё Џ–в–џё”’}
-menuText R OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
-menuText R OptionsSave "Ѕёеа–ЁЎвм гбв–Ёё“ЏЎ" 0 \
-  "Ѕёеа–ЁЎвм “б’ гбв–Ёё“ЏЎ “ д–ўџ $::optionsFile"
-menuText R OptionsAutoSave "∞“вёбёеа–Ё’ЁЎ’ гбв–Ёё“ёЏ яаЎ “леё‘’" 0 \
-  {∞“–вё№–вЎз’бЏЎ бёеа–Ёпвм “б’ гбв–Ёё“ЏЎ яаЎ “леё‘’ Ў„ яаё”а–№№л}
+menuText R Options "”становки" 0
+menuText R OptionsSize "–азмер доски" 0 {»зменить размер доски}
+menuText R OptionsPieces "—тиль фигур" 0 {»зменить стиль фигур}
+menuText R OptionsColors "÷вета..." 0 {»зменить цвета доски}
+menuText R OptionsExport "Ёкспорт" 0 {»зменить установки экспорта}
+menuText R OptionsFonts "Ўрифты" 0 {»зменить шрифты}
+menuText R OptionsFontsRegular "Ќормальный" 0 {»зменить нормальные шрифты}
+menuText R OptionsFontsMenu "ћеню" 0 {»зменить шрифты меню}
+menuText R OptionsFontsSmall "ћалые" 1 {»зменить малые шрифты}
+menuText R OptionsFontsFixed "‘иксированный" 0 {»зменить фиксированные шрифты}
+menuText R OptionsGInfo "»нформаци€ о партии" 0 {”становки информации о партии}
+menuText R OptionsLanguage "язык" 0 {ћеню выбора €зыка}
+menuText R OptionsMoves "’оды" 0 {”становки дл€ ходов}
+menuText R OptionsMovesAsk "—просить перед заменой ходов" 0 \
+  {—просить перед перезаписью любых ходов}
+menuText R OptionsMovesAnimate "¬рем€ анимации" 1 \
+  {”становить количество времени, используемое дл€ анимации ходов}
+menuText R OptionsMovesDelay "¬ременна€ задержка автоигры..." 0 \
+  {”становить врем€ задержки дл€ режима автоигры}
+menuText R OptionsMovesCoord " оординаты ходов" 1 \
+  {ѕрин€ть стиль записи ходов с координатами ("g1f3")}
+menuText R OptionsMovesSuggest "ѕоказать советуемые ходы" 0 \
+  {¬ключить/выключить советы о ходе}
+menuText R OptionsMovesKey " лавиатурное завершение" 0 \
+  {¬ключить/выключить автозавершение клавиатурных ходов}
+menuText R OptionsNumbers "„исловой формат" 0 {¬ыбрать числовой формат}
+menuText R OptionsStartup "«апуск" 0 {¬ыбрать окна, открывающиес€ при запуске}
+menuText R OptionsWindows "ќкна" 0 {”становки окон}
+menuText R OptionsWindowsIconify "јвто-иконизаци€" 0 \
+  {»конизировать все окна, когда иконизируетс€ основное окно}
+menuText R OptionsWindowsRaise "јвто-выдвижение" 1 \
+  {¬ыдвигатьть определенные окна (например, полосу прогресса) вс€кий раз, когда они скрыты}
+menuText R OptionsToolbar "»нструментальна€ панель" 0 { онфигураци€ инструментальной панели основного окна}
+menuText R OptionsECO "«агрузить файл ECO..." 2 { «агрузить файл классификации ECO}
+menuText R OptionsSpell "«агрузить файл проверки правописани€..." 4 \
+  {«агрузить Scid файл проверки правописани€}
+menuText R OptionsTable "ƒиректори€ таблиц..." 15 \
+  {¬ыбрать файл таблицы; все таблицы в этой директории будут использованы}
+menuText R OptionsRecent "Ќедавно используемые файлы..." 2 \
+  {»зменить количество недавно используемых файлов в меню ‘айл}
+menuText R OptionsSave "—охранить установки" 0 \
+  "—охранить все установки в файл $::optionsFile"
+menuText R OptionsAutoSave "јвтосохранение установок при выходе" 0 \
+  {јвтосохранение всех установок при выходе из программы}
 
 # Help menu:
-menuText R Help "Ѕяа–“Џ–" 0
-menuText R HelpIndex "√Џ–„–в’џм" 0 {њёЏ–„–вм гЏ–„–в’џм бяа–“ЏЎ}
-menuText R HelpGuide "≤“ё‘Ёлў Џгаб" 0 {њёЏ–„–вм ““ё‘Ёлў Џгаб}
-menuText R HelpHints "Ѕё“’вл" 0 {њёЏ–„–вм бё“’вл}
-menuText R HelpContact "ЇёЁв–ЏвЁ–п ЎЁдёа№–жЎп" 0 {њёЏ–„–вм ЏёЁв–ЏвЁго ЎЁдёа№–жЎо}
-menuText R HelpTip "Ѕё“’в ‘Ёп" 0 {њёЏ–„–вм яёџ’„Ёлў бё“’в}
-menuText R HelpStartup "њгбЏё“ё’ ёЏЁё" 0 {њёЏ–„–вм ягбЏё“ё’ ёЏЁё}
-menuText R HelpAbout "Њ яаё”а–№№’" 0 {Њ яаё”а–№№’ Scid}
+menuText R Help "ѕомощь" 0
+menuText R HelpIndex "»ндекс" 0 {ѕоказать индесную страницу помощи}
+menuText R HelpGuide "Ѕыстрый тур" 0 {ѕоказать страницу быстрого тура помощи}
+menuText R HelpHints "—оветы" 0 {ѕоказать страницу советов}
+menuText R HelpContact " онтактна€ информаци€" 0 {ѕоказать контактную информацию}
+menuText R HelpTip "ѕодсказка дн€" 2 {ѕоказать полезную подсказку}
+menuText R HelpStartup "ќкно запуска" 1 {ѕоказать окно запуска}
+menuText R HelpAbout "ќ Scid" 0 {»нформаци€ о Scid}
 
 # Game info box popup menu:
-menuText R GInfoHideNext "љ’ яёЏ–„л“–вм бџ’‘гойЎў её‘" 0
-menuText R GInfoMaterial "њёЏ–„л“–вм ЏёџЎз’бв“ё дЎ”га" 0
-menuText R GInfoFEN "њёЏ–„л“–вм FEN" 5
-menuText R GInfoMarks "њёЏ–„л“–вм ж“’вЁл’ Џ“–‘а–вл Ў бва’џЏЎ" 5
-menuText R GInfoWrap "њ’а’Ёёб ‘џЎЁЁле бваёЏ" 0
-menuText R GInfoFullComment "њёЏ–„л“–вм “б’ яаЎ№’з–ЁЎ’" 10
-menuText R GInfoPhotos "Show Photos" 5 ;# ***
-menuText R GInfoTBNothing "ЌЁ‘ияЎџмЁл’ —–„л: ЁЎз’”ё" 12
-menuText R GInfoTBResult "ЌЁ‘ияЎџмЁл’ —–„л: вёџмЏё а’„гџмв–в" 12
-menuText R GInfoTBAll "ЌЁ‘ияЎџмЁл’ —–„л: а’„гџмв–в Ў џгзиЎ’ её‘л" 19
-menuText R GInfoDelete "√‘–џЎвм я–авЎо (ЎџЎ “ёббв–Ёё“Ўвм)" 4
-menuText R GInfoMark "њё№’вЎвм я–авЎо (ЎџЎ бЁпвм №’вЏг)" 4
+menuText R GInfoHideNext "—пр€тать следующий ход" 0
+menuText R GInfoMaterial "ѕоказать материальную оценку" 0
+menuText R GInfoFEN "ѕоказать FEN" 1
+menuText R GInfoMarks "ѕоказать цветом пол€ и стрелки" 3
+menuText R GInfoWrap "«авернуть длинные строки" 0
+menuText R GInfoFullComment "ѕоказать полные комментарии" 7
+menuText R GInfoPhotos "ѕоказать фото" 9
+menuText R GInfoTBNothing "“абличные базы: ничего" 0
+menuText R GInfoTBResult "“абличные базы: только результат" 5
+menuText R GInfoTBAll "“абличные базы: результат и лучшие ходы" 7
+menuText R GInfoDelete "(¬осстановить)”далить эту партию" 1
+menuText R GInfoMark "(—н€ть отметку)ќтметить эту партию" 2
 
 # Main window buttons:
-helpMsg R .button.start {Ї Ё–з–џг я–авЎЎ (Џџ–“Ўи–: Home)}
-helpMsg R .button.end {Ї ЏёЁжг я–авЎЎ (Џџ–“Ўи–: End)}
-helpMsg R .button.back {≈ё‘ Ё–„–‘ (Џџ–“Ўи–: LeftArrow)}
-helpMsg R .button.forward {≈ё‘ “я’а’‘ (Џџ–“Ўи–: RightArrow)}
-helpMsg R .button.intoVar {њ’а’ўвЎ Ё– “–аЎ–Ёв (Џџ–“Ўи–: v)}
-helpMsg R .button.exitVar {≤лўвЎ Ў„ “–аЎ–Ёв– (Џџ–“Ўи–: z)}
-helpMsg R .button.flip {≤а–й–вм ‘ёбЏг (Џџ–“Ўи–: .)}
-helpMsg R .button.coords {њёЏ–„–вм/г—а–вм Џёёа‘ЎЁ–вл (Џџ–“Ўи–: 0)}
-helpMsg R .button.autoplay {≤ёбяаёЎ„“’‘’ЁЎ’ я–авЎЎ (Џџ–“ЎиЎ: Ctrl+Z)}
+helpMsg R .button.start {ѕерейти к началу партии  (клавиша: Home)}
+helpMsg R .button.end {ѕерейти к концу партии  (клавиша: End)}
+helpMsg R .button.back {ќдин ход назад  (клавиша: LeftArrow)}
+helpMsg R .button.forward {ќдин ход вперед (клавиша: RightArrow)}
+helpMsg R .button.intoVar {ѕерейти к варианту  (клавиша: v)}
+helpMsg R .button.exitVar {¬ыйти из текущего варианта (клавиша: z)}
+helpMsg R .button.flip {ѕеревернуть доску (клавиша: .)}
+helpMsg R .button.coords {¬ключить/выключить координаты  (клавиша: 0)}
+helpMsg R .button.stm {¬ключить/выключить иконку очередности хода}
+helpMsg R .button.autoplay {јвтоматическое выполнение ходов  (клавиши: Ctrl+Z)}
 
 # General buttons:
-translate R Back {љ–„–‘}
-translate R Cancel {Њв№’Ё–}
-translate R Clear {ЊзЎбвЎвм}
-translate R Close {Ј–Џалвм}
-translate R Defaults {њё г№ёџз–ЁЎо}
-translate R Delete {√‘–џЎвм}
-translate R Graph {≥а–дЎЏ}
-translate R Help {Ѕяа–“Џ–}
-translate R Import {Є№яёав}
-translate R Index {√Џ–„–в’џм}
-translate R LoadGame {Ј–”аг„Ўвм я–авЎо}
-translate R BrowseGame {њаёб№ёва я–авЎЎ}
-translate R MergeGame {Њ—к’‘ЎЁЎвм я–авЎо}
-translate R Preview {ња’‘“–аЎв’џмЁлў яаёб№ёва}
-translate R Revert {≤ё„“а–в}
-translate R Save {Ѕёеа–ЁЎвм}
-translate R Search {њёЎбЏ}
-translate R Stop {Ѕвёя}
-translate R Store {Ѕёеа–ЁЎвм}
-translate R Update {Њ—Ёё“Ўвм}
-translate R ChangeOrient {Є„№’ЁЎвм яёџё÷’ЁЎ’ ёЏЁ–}
-translate R None {љЎ ё‘Ёё”ё}
-translate R First {њ’а“лў}
-translate R Current {¬’ЏгйЎў}
-translate R Last {њёбџ’‘ЁЎў}
+translate R Back {Ќазад}
+translate R Cancel {ќтменить}
+translate R Clear {ќчистить}
+translate R Close {«акрыть}
+translate R Defaults {ѕо умолчанию}
+translate R Delete {”далить}
+translate R Graph {√рафик}
+translate R Help {ѕомощь}
+translate R Import {»мпорт}
+translate R Index {»ндекс}
+translate R LoadGame {«агрузить партию}
+translate R BrowseGame {ѕросмотреть партию}
+translate R MergeGame {—оединить партию}
+translate R Preview {ѕредварительный просмотр}
+translate R Revert {¬озвратитьс€}
+translate R Save {—охранить}
+translate R Search {»скать}
+translate R Stop {ќстановить}
+translate R Store {ќтложить}
+translate R Update {ќбновить}
+translate R ChangeOrient {»зменить ориентацию окна}
+translate R None {Ќет}
+translate R First {ѕервый}
+translate R Current {“екущий}
+translate R Last {ѕоследний}
 
 # General messages:
-translate R game {я–авЎп}
-translate R games {я–авЎЎ}
-translate R move {её‘}
-translate R moves {её‘л}
-translate R all {“б’}
-translate R Yes {і–}
-translate R No {љ’в}
-translate R Both {Њ—–}
-translate R King {Їёаёџм}
-translate R Queen {ƒ’а„м}
-translate R Rook {ї–‘мп}
-translate R Bishop {ЅџёЁ}
-translate R Knight {ЇёЁм}
-translate R Pawn {њ’иЏ–}
-translate R White {±’џл’}
-translate R Black {«’аЁл’}
-translate R Player {Є”аёЏ}
-translate R Rating {ј’ўвЎЁ”}
-translate R RatingDiff {ј–„ЁЎж– “ а’ўвЎЁ”’ (±’џл’ - «’аЁл’)}
-translate R AverageRating {Average Rating} ;# ***
-translate R Event {Ѕёа’“Ёё“–ЁЎ’}
-translate R Site {Љ’бвё яаё“’‘’ЁЎп}
-translate R Country {Ѕва–Ё–}
-translate R IgnoreColors {Є”ЁёаЎаё“–вм ж“’в дЎ”га}
-translate R Date {і–в–}
-translate R EventDate {і–в– яаё“’‘’ЁЎп}
-translate R Decade {і’бпвЎџ’вЎ’}
-translate R Year {≥ё‘}
-translate R Month {Љ’бпж}
-translate R Months {ѕЁ“–ам ƒ’“а–џм Љ–ав ∞яа’џм Љ–ў ЄоЁм
-  Єоџм ∞“”гбв Ѕ’Ёвп—ам ЊЏвп—ам љёп—ам і’Џ–—ам}
-translate R Days {≤б њЁ ≤в Ѕа «в њв Ѕ—}
-translate R YearToToday {Ј– ”ё‘}
-translate R Result {ј’„гџмв–в}
-translate R Round {¬га}
-translate R Length {іџЎЁ–}
-translate R ECOCode {ЄЁ‘’Џб ECO}
+translate R game {парти€}
+translate R games {партий}
+translate R move {ход}
+translate R moves {ходов}
+translate R all {все}
+translate R Yes {ƒа}
+translate R No {Ќет}
+translate R Both {ќба}
+translate R King { ороль}
+translate R Queen {‘ерзь}
+translate R Rook {Ћадь€}
+translate R Bishop {—лон}
+translate R Knight { онь}
+translate R Pawn {ѕешка}
+translate R White {Ѕелые}
+translate R Black {„ерные}
+translate R Player {»грок}
+translate R Rating {–ейтинг}
+translate R RatingDiff {–азница рейтингов (Ѕелые - „ерные)}
+translate R AverageRating {—редний рейтинг}
+translate R Event {“урнир}
+translate R Site {ћесто}
+translate R Country {—трана}
+translate R IgnoreColors {»гнорировать цвета}
+translate R Date {ƒата}
+translate R EventDate {ƒата турнира}
+translate R Decade {ƒекада}
+translate R Year {√од}
+translate R Month {ћес€ц}
+translate R Months {январь ‘евраль ћарт јпрель ћай »юнь
+  »юль јвгуст —ент€брь ќкт€брь Ќо€брь ƒекабрь}
+translate R Days {¬ск ѕон ¬тр —рд „тв ѕтн —уб}
+translate R YearToToday {“екущий год}
+translate R Result {–езультат}
+translate R Round {–аунд}
+translate R Length {ƒлина}
+translate R ECOCode {код ECO}
 translate R ECO {ECO}
-translate R Deleted {√‘–џ’Ё}
-translate R SearchResults {ј’„гџмв–вл яёЎбЏ–}
-translate R OpeningTheDatabase {і’—овЁ–п —–„–}
-translate R Database {±–„– ‘–ЁЁле}
-translate R Filter {ƒЎџмва}
-translate R noGames {Ё’в я–авЎў}
-translate R allGames {“б’ я–авЎЎ}
-translate R empty {ягбвёў}
-translate R clipbase {“а’№’ЁЁ–п ±і}
-translate R score {ёзЏЎ}
-translate R StartPos {љ–з–џмЁ–п яё„ЎжЎп}
-translate R Total {≤б’”ё}
+translate R Deleted {”далена}
+translate R SearchResults {ѕоиск результатов}
+translate R OpeningTheDatabase {ќткрытие базы данных}
+translate R Database {Ѕаза данных}
+translate R Filter {‘ильтр}
+translate R noGames {нет партий}
+translate R allGames {все партии}
+translate R empty {пусто}
+translate R clipbase {буфербаза}
+translate R score {счет}
+translate R StartPos {—тартова€ позици€}
+translate R Total {¬сего}
 
 # Standard error messages:
-translate R ErrNotOpen {This is not an open database.} ;# ***
-translate R ErrReadOnly {This database is read-only; it cannot be altered.}
-translate R ErrSearchInterrupted {Search was interrupted; results are incomplete.}
+translate R ErrNotOpen {Ёта база данных не открыта.}
+translate R ErrReadOnly {Ёта база данных только дл€ чтени€; она не может быть изменена.}
+translate R ErrSearchInterrupted {ѕоиск был прерван; результаты не полные.}
 
 # Game information:
-translate R twin {ЏёяЎп}
-translate R deleted {г‘–џ’Ё}
-translate R comment {Џё№№’Ёв–аЎў}
-translate R hidden {бЏалвлў}
-translate R LastMove {њёбџ’‘ЁЎў её‘}
-translate R NextMove {Ѕџ’‘гойЎў}
-translate R GameStart {љ–з–џё я–авЎЎ}
-translate R LineStart {љ–з–џё “–аЎ–Ёв–}
-translate R GameEnd {ЇёЁ’ж я–авЎЎ}
-translate R LineEnd {ЇёЁ’ж “–аЎ–Ёв–}
+translate R twin {двойник}
+translate R deleted {удалена}
+translate R comment {комментарий}
+translate R hidden {скрытый}
+translate R LastMove {ѕоследный ход}
+translate R NextMove {—ледующий}
+translate R GameStart {Ќачало партии}
+translate R LineStart {Ќачало строки}
+translate R GameEnd { онец партии}
+translate R LineEnd { онец строки}
 
 # Player information:
-translate R PInfoAll {ј’„гџмв–вл ‘џп <b>“б’е</b> Ў”а}
-translate R PInfoFilter {ј’„гџмв–вл ‘џп <b>Ў”а</b> дЎџмва–}
-translate R PInfoAgainst {ј’„гџмв–вл яаёвЎ“}
-translate R PInfoMostWhite {љ–Ў—ёџ’’ а–бяаёбва–Ё’ЁЁл’ ‘’—овл „– —’џле}
-translate R PInfoMostBlack {љ–Ў—ёџ’’ а–бяаёбва–Ё’ЁЁл’ ‘’—овл „– з’аЁле}
-translate R PInfoRating {ЄбвёаЎп а’ўвЎЁ”–}
-translate R PInfoBio {±Ўё”а–дЎп}
+translate R PInfoAll {–езультаты <b>всех</b> партий}
+translate R PInfoFilter {–езультаты <b>отфильтрованных</b> партий}
+translate R PInfoAgainst {–езультаты против}
+translate R PInfoMostWhite {Ќаиболее частые дебюты за Ѕелых}
+translate R PInfoMostBlack {Ќаиболее частые дебюты за „ерных}
+translate R PInfoRating {»стори€ рейтинга}
+translate R PInfoBio {Ѕиографи€}
+translate R PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
-translate R Draw {љЎзмп}
-translate R stalemate {я–в}
-translate R withAllMoves {“б’№Ў её‘–№Ў}
-translate R withAllButOneMove {“б’№Ў её‘–№Ў Џаё№’ ё‘Ёё”ё}
-translate R with {б}
-translate R only {вёџмЏё}
-translate R lose {яаёЎ”ал“–ов}
-translate R loses {яаёЎ”ал“–’в}
-translate R allOthersLose {“б’ ‘аг”Ў’ яаёЎ”ал“–ов}
-translate R matesIn {№–в “}
-translate R hasCheckmated {„–№–вё“–Ёл}
-translate R longest {б–№ё’ —ёџми’’}
-translate R WinningMoves {Winning moves} ;# ***
-translate R DrawingMoves {Drawing moves} ;# ***
-translate R LosingMoves {Losing moves} ;# ***
-translate R UnknownMoves {Unknown-result moves} ;# ***
+translate R Draw {Ќичь€}
+translate R stalemate {ѕат}
+translate R withAllMoves {со всеми ходами}
+translate R withAllButOneMove {со всеми кроме одного хода}
+translate R with {с}
+translate R only {только}
+translate R lose {проиграно}
+translate R loses {проиграли}
+translate R allOthersLose {все остальные проиграны}
+translate R matesIn {мат за}
+translate R hasCheckmated {заматован}
+translate R longest {самый длинный}
+translate R WinningMoves {¬ыгрышные ходы}
+translate R DrawingMoves {Ќичейные ходы}
+translate R LosingMoves {ѕроигрышные ходы}
+translate R UnknownMoves {’оды, привод€щие к неизвестному результату}
 
 # Tip of the day:
-translate R Tip {Ѕё“’в}
-translate R TipAtStartup {Ѕё“’в яаЎ „–ягбЏ’}
+translate R Tip {—овет}
+translate R TipAtStartup {—овет при загрузке}
 
 # Tree window menus:
-menuText R TreeFile "ƒ–ўџ" 0
-menuText R TreeFileSave "Ѕёеа–ЁЎвм Џни-д–ўџ" 0 {Ѕёеа–ЁЎвм Џни-д–ўџ (.stc) б ‘’а’“ё№ её‘ё“}
-menuText R TreeFileFill "Ј–яёџЁЎвм Џни-д–ўџ" 0 \
-  {Ј–яёџЁЎвм Џни-д–ўџ а–бяаёбва–Ё’ЁЁл№Ў ‘’—овЁл№Ў яё„ЎжЎп№Ў}
-menuText R TreeFileBest "ЅяЎбёЏ џгзиЎе Ў”а" 0 {њёЏ–„–вм бяЎбёЏ џгзиЎе Ў”а– яё яёџё÷’ЁЎо “ ‘’а’“’ её‘ё“}
-menuText R TreeFileGraph "ЊЏЁё ”а–дЎЏ–" 0 {њёЏ–„–вм ”а–дЎЏ ‘џп ‘–ЁЁёў “’в“Ў ‘’а’“– её‘ё“}
-menuText R TreeFileCopy "ЅЏёяЎаё“–вм бв–вЎбвЎЏг ‘’а’“– её‘ё“ “ —гд’а ё—№’Ё–" 1 \
-  {ЅЏёяЎаё“–вм бв–вЎбвЎЏг ‘’а’“– её‘ё“ “ —гд’а ё—№’Ё–}
-menuText R TreeFileClose "Ј–Џалвм ‘’а’“ё" 0 {Ј–Џалвм ёЏЁё б ‘’а’“ё№ её‘ё“}
-menuText R TreeSort "ЅёавЎаё“–вм" 0
-menuText R TreeSortAlpha "њё –џд–“Ўвг" 0
-menuText R TreeSortECO "њё ECO" 0
-menuText R TreeSortFreq "њё з–бвёв’" 0
-menuText R TreeSortScore "њё ёзЏ–№" 0
-menuText R TreeOpt "√бв–Ёё“ЏЎ" 0
-menuText R TreeOptLock "њаЎЏа’яЎвм" 0 {њаЎЏа’яЎвм/ёвЏа’яЎвм ‘’а’“ё её‘ё“ Џ/ёв в’Џгй’ў —–„’ ‘–ЁЁле}
-menuText R TreeOptTraining "¬а’ЁЎаё“Џ–" 0 {≤ЏџозЎвм/“лЏџозЎвм ва’ЁЎаё“ёзЁлў а’÷Ў№ яё ‘’а’“г её‘ё“}
-menuText R TreeOptAutosave "∞“вёбёеа–Ё’ЁЎ’ Џни-д–ўџ–" 0 \
-  {∞“вё№–вЎз’бЏЎ бёеа–Ёпвм Џни-д–ўџ яаЎ „–ЏалвЎЎ ёЏЁ– б ‘’а’“ё№ её‘ё“}
-menuText R TreeHelp "Ѕяа–“Џ–" 0
-menuText R TreeHelpTree "Ѕяа–“Џ– яё ‘’а’“г" 0
-menuText R TreeHelpIndex "√Џ–„–в’џм" 0
-translate R SaveCache {Ѕёеа–ЁЎвм Џни}
-translate R Training {¬а’ЁЎаё“Џ–}
-translate R LockTree {њаЎЏа’яЎвм}
-translate R TreeLocked {яаЎЏа’яџ’Ёё}
-translate R TreeBest {їгзиЎ’}
-translate R TreeBestGames {ї’зиЎ’ Ў”ал “ ‘’а’“’}
+menuText R TreeFile "‘айл" 0
+menuText R TreeFileSave "—охранить кэш файл" 0 {—охранить кэш файл дерева (.stc)}
+menuText R TreeFileFill "«аполнить кэш файл" 0 \
+  {«апольнить кэш файл с общими дебютными позици€ми}
+menuText R TreeFileBest "—писок лучших партий" 1 {ѕоказать дерево списка лучших партий}
+menuText R TreeFileGraph "ќкно графика" 0 {ѕоказать график дл€ ветви этого дерева}
+menuText R TreeFileCopy "—копировать текст дерева в буфер" 1 \
+  {—копировать статистику дерева в буфер}
+menuText R TreeFileClose "«акрыть окно дерева" 4 {«акрыть окно дерева}
+menuText R TreeSort "—ортировка" 0
+menuText R TreeSortAlpha "јлфавитна€" 0
+menuText R TreeSortECO "ѕо коду ECO" 3
+menuText R TreeSortFreq "ѕо частоте" 3
+menuText R TreeSortScore "ѕо результату" 3
+menuText R TreeOpt "”становки" 0
+menuText R TreeOptLock "Ѕлокировать" 0 {(–аз)блокировать дерево дл€ текущей базы}
+menuText R TreeOptTraining "“ренировка" 0 {¬ключить/выключить режим тренировки}
+menuText R TreeOptAutosave "јвтосохранение файла кеша" 0 \
+  {јвтосохранение файла кеша, когда закрываетс€ окно дерева}
+menuText R TreeHelp "ѕомощь" 0
+menuText R TreeHelpTree "ѕомощь по дереву" 0
+menuText R TreeHelpIndex "»ндекс помощи" 0
+translate R SaveCache {—охранить кэш}
+translate R Training {“ренировка}
+translate R LockTree {Ѕлокировка}
+translate R TreeLocked {заблокировано}
+translate R TreeBest {Ћучший}
+translate R TreeBestGames {ƒерево лучших партий}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate R TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    ’од    ECO       „астота     —чет   —рElo ѕрзв —р√од  %Ќичьих}
+translate R TreeElapsedTime {Time} ;# ***
+translate R TreeFoundInCache {  (Found in cache)} ;# ***
+translate R TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
-menuText R FinderFile "ƒ–ўџ" 0
-menuText R FinderFileSubdirs "ЄбЏ–вм “ яё‘Џ–в–џё”–е" 0
-menuText R FinderFileClose "Ј–Џалвм яёЎбЏ д–ўџё“" 0
-menuText R FinderSort "ЅёавЎаё“Џ–" 0
-menuText R FinderSortType "¬Ўя" 0
-menuText R FinderSortSize "ј–„№’а" 0
-menuText R FinderSortMod "≤а’№п" 0
-menuText R FinderSortName "Є№п" 0
-menuText R FinderSortPath "њгвм" 0
-menuText R FinderTypes "¬Ўял" 0
-menuText R FinderTypesScid "±–„л ‘–ЁЁле Scid" 0
-menuText R FinderTypesOld "±і бв–аё”ё дёа№–в– Scid" 0
-menuText R FinderTypesPGN "д–ўџл PGN" 0
-menuText R FinderTypesEPD "д–ўџл EPD" 0
-menuText R FinderTypesRep "ƒ–ўџл а’я’авг–а–" 0
-menuText R FinderHelp "Ѕяа–“Џ–" 0
-menuText R FinderHelpFinder "Ѕяа–“Џ– яё яёЎбЏг д–ўџё“" 0
-menuText R FinderHelpIndex "√Џ–„–в’џм" 0
-translate R FileFinder {њёЎбЏ д–ўџё“}
-translate R FinderDir {Ї–в–џё”}
-translate R FinderDirs {Ї–в–џё”Ў}
-translate R FinderFiles {ƒ–ўџл}
-translate R FinderUpDir {““’ае}
+menuText R FinderFile "‘айл" 0
+menuText R FinderFileSubdirs "—мотреть в поддиректори€х" 0
+menuText R FinderFileClose "«акрыть поиск файлов" 0
+menuText R FinderSort "—ортировка" 0
+menuText R FinderSortType "“ип" 0
+menuText R FinderSortSize "–азмер" 0
+menuText R FinderSortMod "ћодифицированно" 0
+menuText R FinderSortName "»м€" 0
+menuText R FinderSortPath "ѕуть" 0
+menuText R FinderTypes "“ипы" 0
+menuText R FinderTypesScid "Ѕаза данных Scid" 0
+menuText R FinderTypesOld "—тарый формат базы данных Scid" 0
+menuText R FinderTypesPGN "‘айлы PGN" 0
+menuText R FinderTypesEPD "‘айлы EPD" 1
+menuText R FinderTypesRep "‘айлы репертуара" 6
+menuText R FinderHelp "ѕомощь" 0
+menuText R FinderHelpFinder "ѕомощь по поиску файлов" 0
+menuText R FinderHelpIndex "»ндекс помощи" 0
+translate R FileFinder {ѕоиск файлов}
+translate R FinderDir {ƒиректори€}
+translate R FinderDirs {ƒиректории}
+translate R FinderFiles {‘айлы}
+translate R FinderUpDir {вверх}
 
 # Player finder:
-menuText R PListFile "ƒ–ўџ" 0
-menuText R PListFileUpdate "Њ—Ёё“Ўвм" 0
-menuText R PListFileClose "Close Player Finder" 0 ;# ***
-menuText R PListSort "ЅёавЎаё“Џ–" 0
-menuText R PListSortName "Name" 0 ;# ***
+menuText R PListFile "‘айл" 0
+menuText R PListFileUpdate "ќбновить" 0
+menuText R PListFileClose "«акрыть поиск игрока" 0
+menuText R PListSort "—ортировка" 0
+menuText R PListSortName "»м€" 0
 menuText R PListSortElo "Elo" 0
-menuText R PListSortGames "Є”ал" 0
-menuText R PListSortOldest "Oldest" 0 ;# ***
-menuText R PListSortNewest "Newest" 0 ;# ***
+menuText R PListSortGames "ѕартии" 0
+menuText R PListSortOldest "—тарейша€" 1
+menuText R PListSortNewest "Ќовейша€" 0
 
 # Tournament finder:
-menuText R TmtFile "ƒ–ўџ" 0
-menuText R TmtFileUpdate "Њ—Ёё“Ўвм" 0
-menuText R TmtFileClose "Ј–Џалвм яёЎбЏ вгаЁЎаё“" 0
-menuText R TmtSort "ЅёавЎаё“Џ–" 0
-menuText R TmtSortDate "і–в–" 0
-menuText R TmtSortPlayers "Є”аёЏЎ" 0
-menuText R TmtSortGames "Є”ал" 0
+menuText R TmtFile "‘айл" 0
+menuText R TmtFileUpdate "ќбновить" 0
+menuText R TmtFileClose "«акрыть поиск турнира" 0
+menuText R TmtSort "—ортировка" 0
+menuText R TmtSortDate "ƒата" 0
+menuText R TmtSortPlayers "»гроки" 0
+menuText R TmtSortGames "ѕартии" 0
 menuText R TmtSortElo "Elo" 0
-menuText R TmtSortSite "Љ’бвё" 0
-menuText R TmtSortEvent "Ѕёа’“Ёё“–ЁЎ’" 1
-menuText R TmtSortWinner "њё—’‘Ўв’џм" 0
-translate R TmtLimit "Њ”а–ЁЎз’ЁЎ’ бяЎбЏ–"
-translate R TmtMeanElo "љ–Ў№’Ёми’’ ба’‘Ё’’ „Ё–з’ЁЎ’ Elo"
-translate R TmtNone "¬–ЏЎе вгаЁЎаё“ Ё’ ё—Ё–аг÷’Ёё."
+menuText R TmtSortSite "ћесто" 0
+menuText R TmtSortEvent "“урнир" 0
+menuText R TmtSortWinner "ѕобедитель" 2
+translate R TmtLimit "ќграниченный список"
+translate R TmtMeanElo "Ќаименьшее значение Elo"
+translate R TmtNone "Ќи одного турнира не найдено."
 
 # Graph windows:
-menuText R GraphFile "ƒ–ўџ" 0
-menuText R GraphFileColor "Ѕёеа–ЁЎвм Џ–Џ ж“’вЁёў PostScript..." 8
-menuText R GraphFileGrey "Ѕёеа–ЁЎвм Џ–Џ PostScript б ”а–‘–жЎп№Ў б’аё”ё..." 8
-menuText R GraphFileClose "Ј–Џалвм ёЏЁё" 6
-menuText R GraphOptions "√бв–Ёё“ЏЎ" 0
-menuText R GraphOptionsWhite "±’џл’" 0
-menuText R GraphOptionsBlack "«’аЁл’" 0
-menuText R GraphOptionsBoth "Њ—–" 1
-menuText R GraphOptionsPInfo "Є”аёЏ ЄЁдё Ў”аёЏ" 0
-translate R GraphFilterTitle "≥а–дЎЏ дЎџмва–: я’аЎё‘ЎзЁёбвм Ё– 1000 я–авЎў"
+menuText R GraphFile "‘айл" 0
+menuText R GraphFileColor "—охранить как цветной PostScript..." 14
+menuText R GraphFileGrey "—охранить как черно-белый PostScript..." 14
+menuText R GraphFileClose "«акрыть окно" 6
+menuText R GraphOptions "”становки" 0
+menuText R GraphOptionsWhite "Ѕелые" 0
+menuText R GraphOptionsBlack "„ерные" 0
+menuText R GraphOptionsBoth "ќба" 0
+menuText R GraphOptionsPInfo "»грок - информаци€ об игроке" 0
+translate R GraphFilterTitle "‘ильтр графики: частота на 1000 партий"
 
 # Analysis window:
-translate R AddVariation {іё—–“Ўвм “–аЎ–Ёв}
-translate R AddMove {іё—–“Ўвм её‘}
-translate R Annotate {Їё№№’Ёв–аЎў}
-translate R AnalysisCommand {Џё№–Ё‘– ∞Ё–џЎ„}
-translate R PreviousChoices {ња’‘л‘гйЎў “л—ёа}
-translate R AnnotateTime {√бв–Ёё“Ўвм “а’№п №’÷‘г её‘–№Ў “ б’Џ.}
-translate R AnnotateWhich {іё—–“Ўвм “–аЎ–Ёвл}
-translate R AnnotateAll {іџп её‘ё“ ё—’Ўе бвёаёЁ}
-translate R AnnotateWhite {іџп её‘ё“ —’џле вёџмЏё}
-translate R AnnotateBlack {іџп её‘ё“ з’аЁле вёџмЏё}
-translate R AnnotateNotBest {Їё”‘– её‘ Ё’ б–№лў џгзиЎў}
+translate R AddVariation {ƒобавить вариант}
+translate R AddMove {ƒобавить ход}
+translate R Annotate {јннотаци€}
+translate R AnalysisCommand { оманда анализа}
+translate R PreviousChoices {ѕредыдущие выборы}
+translate R AnnotateTime {”становить врем€ между ходами в секундах}
+translate R AnnotateWhich {ƒобавить варианты}
+translate R AnnotateAll {ƒл€ ходов обоих сторон}
+translate R AnnotateWhite {“олько дл€ ходов Ѕелых}
+translate R AnnotateBlack {“олько дл€ ходов „ерных}
+translate R AnnotateNotBest { огда ход в партии не самый лучший ход}
+translate R LowPriority {Ќизкий приоритет CPU}
 
 # Analysis Engine open dialog:
-translate R EngineList {їЎбв –Ё–џЎвЎз’бЏЎе ‘“Ў÷Џё“}
-translate R EngineName {Є№п}
-translate R EngineCmd {Їё№–Ё‘–}
-translate R EngineArgs {њ–а–№’вал}
-translate R EngineDir {Ї–в–џё”}
+translate R EngineList {—писок анализирующих движков}
+translate R EngineName {Ќазвание}
+translate R EngineCmd { оманда}
+translate R EngineArgs {ѕараметры}
+translate R EngineDir {ƒиректори€}
 translate R EngineElo {Elo}
-translate R EngineTime {і–в–}
-translate R EngineNew {љё“лў}
-translate R EngineEdit {Є„№’ЁЎвм}
-translate R EngineRequired {ј–„‘’џл, “л‘’џ’ЁЁл’ ÷ЎаЁл№, - Ё’ё—её‘Ў№л; ёбв–џмЁл’ №ё÷Ёё яаёягбвЎвм}
+translate R EngineTime {ƒата}
+translate R EngineNew {Ќовый}
+translate R EngineEdit {–едактор}
+translate R EngineRequired {ѕол€, отмеченные жирным шрифтом, заполн€ть об€зательно, остальные по желанию}
 
 # Stats window menus:
-menuText R StatsFile "ƒ–ўџ" 0
-menuText R StatsFilePrint "Ѕёеа–ЁЎвм Џ–Џ д–ўџ..." 0
-menuText R StatsFileClose "Ј–Џалвм ёЏЁё" 0
-menuText R StatsOpt "√бв–Ёё“ЏЎ" 0
+menuText R StatsFile "‘айл" 0
+menuText R StatsFilePrint "ѕечатать в файл..." 0
+menuText R StatsFileClose "«акрыть окно" 0
+menuText R StatsOpt "”становки" 0
 
 # PGN window menus:
-menuText R PgnFile "ƒ–ўџ" 0
-menuText R PgnFilePrint "Ѕёеа–ЁЎвм Џ–Џ д–ўџ..." 0
-menuText R PgnFileClose "Ј–Џалвм ёЏЁё PGN" 0
-menuText R PgnOpt "≤Ў‘" 0
-menuText R PgnOptColor "≤ ж“’в’" 0
-menuText R PgnOptShort "√Џёаёз’ЁЁлў (3 бваёЏЎ) „–”ёџё“ёЏ" 0
-menuText R PgnOptSymbols "њаЎ№’з–ЁЎп б бЎ№“ёџ–№Ў" 1
-menuText R PgnOptIndentC "Њвбвгя ‘џп Џё№№’Ёв–аЎў" 0
-menuText R PgnOptIndentV "Њвбвгя ‘џп “–аЎ–Ёвё“" 7
-menuText R PgnOptColumn "≤ ЏёџёЁЏг (яё ё‘Ёё№г её‘г Ё– бваёЏг)" 1
-menuText R PgnOptSpace "њаё—’џ яёбџ’ Ёё№’а– её‘–" 1
-menuText R PgnOptStripMarks "√—а–вм ё—ё„Ё–з’ЁЎп Џ“–‘а–вё“/бва’џёЏ" 1
-menuText R PgnColor "∆“’в–" 0
-menuText R PgnColorHeader "Ј–”ёџё“ёЏ..." 0
-menuText R PgnColorAnno "њаЎ№’з–ЁЎп..." 0
-menuText R PgnColorComments "Їё№№’Ёв–аЎЎ..." 0
-menuText R PgnColorVars "≤–аЎ–Ёвл..." 0
-menuText R PgnColorBackground "ƒёЁ..." 0
-menuText R PgnHelp "Ѕяа–“Џ–" 0
-menuText R PgnHelpPgn "Ѕяа–“Џ– ё PGN" 0
-menuText R PgnHelpIndex "√Џ–„–в’џм" 0
+menuText R PgnFile "‘айл" 0
+menuText R PgnFilePrint "ѕечатать в файл..." 0
+menuText R PgnFileClose "«акрыть окно PGN" 0
+menuText R PgnOpt "ќтображение" 0
+menuText R PgnOptColor "÷ветное отображение" 0
+menuText R PgnOptShort " ороткий (трехстрочный) заголовок" 0
+menuText R PgnOptSymbols "—имволическа€ аннотаци€" 0
+menuText R PgnOptIndentC " омментарии с отступом" 2
+menuText R PgnOptIndentV "¬арианты с отступом" 0
+menuText R PgnOptColumn "¬ колонку (один ход на строчку)" 4
+menuText R PgnOptSpace "ѕробел после номера хода" 0
+menuText R PgnOptStripMarks "”далить коды цветных полей/стрелок" 0
+menuText R PgnColor "÷вета" 0
+menuText R PgnColorHeader "«аголовок..." 0
+menuText R PgnColorAnno "јннотаци€..." 0
+menuText R PgnColorComments " омментарии..." 0
+menuText R PgnColorVars "¬арианты..." 0
+menuText R PgnColorBackground "‘он..." 0
+menuText R PgnHelp "ѕомощь" 0
+menuText R PgnHelpPgn "ѕомощь по PGN" 0
+menuText R PgnHelpIndex "»ндекс" 0
+translate R PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
-menuText R CrosstabFile "ƒ–ўџ" 0
-menuText R CrosstabFileText "Ѕёеа–ЁЎвм Џ–Џ в’Џбвё“лў д–ўџ..." 9
-menuText R CrosstabFileHtml "Ѕёеа–ЁЎвм Џ–Џ д–ўџ HTML..." 9
-menuText R CrosstabFileLaTeX "Ѕёеа–ЁЎвм Џ–Џ д–ўџ LaTeX..." 9
-menuText R CrosstabFileClose "Ј–Џалвм ёЏЁё б а’„гџмв–в–№Ў" 0
-menuText R CrosstabEdit "ј’‘–ЏвЎаё“–вм" 0
-menuText R CrosstabEditEvent "Ѕёа’“Ёё“–ЁЎ’" 0
-menuText R CrosstabEditSite "Љ’бвё" 0
-menuText R CrosstabEditDate "і–в–" 0
-menuText R CrosstabOpt "≤Ў‘" 0
-menuText R CrosstabOptAll "Їаг”ё“ёў" 0
-menuText R CrosstabOptSwiss "»“’ўж–аЏ–" 0
-menuText R CrosstabOptKnockout "Ѕ “л—л“–ЁЎ’№" 0
-menuText R CrosstabOptAuto "∞“вё" 1
-menuText R CrosstabOptAges "≤ё„а–бв (џ’в)" 8
-menuText R CrosstabOptNats "љ–жЎёЁ–џмЁёбвм" 0
-menuText R CrosstabOptRatings "ј’ўвЎЁ”" 0
-menuText R CrosstabOptTitles "Ј“–ЁЎ’" 0
-menuText R CrosstabOptBreaks "ЊзЏЎ Ё– в–ў-—а’ўЏ’" 4
-menuText R CrosstabOptDeleted "≤ЏџозЎвм г‘–џ’ЁЁл’ Ў”ал" 8
-menuText R CrosstabOptColors "∆“’в– (¬ёџмЏё ‘џп и“’ўж–аЏЎ)" 0
-menuText R CrosstabOptColumnNumbers "љг№’а–жЎп ЏёџёЁёЏ (¬ёџмЏё ‘џп Џаг”ё“ле вгаЁЎаё“)" 2
-menuText R CrosstabOptGroup "ЊзЏЎ “ ”агяя’" 0
-menuText R CrosstabSort "ЅёавЎаё“–вм" 0
-menuText R CrosstabSortName "Є№п" 0
-menuText R CrosstabSortRating "ј’ўвЎЁ”" 0
-menuText R CrosstabSortScore "ЊзЏЎ" 0
-menuText R CrosstabColor "∆“’в" 0
-menuText R CrosstabColorPlain "¬ёџмЏё в’Џбв" 0
-menuText R CrosstabColorHyper "≥Ўя’ав’Џбв" 0
-menuText R CrosstabHelp "Ѕяа–“Џ–" 0
-menuText R CrosstabHelpCross "Ѕяа–“Џ– яё в–—џЎж’" 0
-menuText R CrosstabHelpIndex "√Џ–„–в’џм бяа–“ЏЎ" 0
-translate R SetFilter {√бв–Ёё“Ўвм дЎџмва}
-translate R AddToFilter {іё—–“Ўвм “ дЎџмва}
-translate R Swiss {»“’ўж–аЏ–}
-translate R Category {Category} ;# ***
+menuText R CrosstabFile "‘айл" 0
+menuText R CrosstabFileText "ѕечатать в текстовый файл..." 11
+menuText R CrosstabFileHtml "ѕечатать в HTML файл..." 11
+menuText R CrosstabFileLaTeX "ѕечатать в LaTeX файл..." 11
+menuText R CrosstabFileClose "«акрыть окно турнирной таблицы" 0
+menuText R CrosstabEdit "–едактор" 0
+menuText R CrosstabEditEvent "“урнир" 0
+menuText R CrosstabEditSite "ћесто" 0
+menuText R CrosstabEditDate "ƒата" 0
+menuText R CrosstabOpt "ќтображение" 0
+menuText R CrosstabOptAll "¬се против всех" 0
+menuText R CrosstabOptSwiss "Ўвейцарска€ система" 0
+menuText R CrosstabOptKnockout "Ќа вылет" 0
+menuText R CrosstabOptAuto "јвто" 0
+menuText R CrosstabOptAges "¬озвраст в годах" 2
+menuText R CrosstabOptNats "Ќациональность" 2
+menuText R CrosstabOptRatings "–ейтинг" 0
+menuText R CrosstabOptTitles "“итул" 0
+menuText R CrosstabOptBreaks "—чет тай-бреков" 0
+menuText R CrosstabOptDeleted "¬ключить удаленные партии" 1
+menuText R CrosstabOptColors "÷вета (только дл€ швейцарской системы)" 0
+menuText R CrosstabOptColumnNumbers "÷ифровые колонки (“олько дл€ всех против всех)" 2
+menuText R CrosstabOptGroup "√рупповой счет" 0
+menuText R CrosstabSort "—ортировка" 0
+menuText R CrosstabSortName "»м€" 0
+menuText R CrosstabSortRating "–ейтинг" 0
+menuText R CrosstabSortScore "—чет" 0
+menuText R CrosstabColor "÷вет" 0
+menuText R CrosstabColorPlain "ќбычный текст" 0
+menuText R CrosstabColorHyper "√ипертекст" 0
+menuText R CrosstabHelp "ѕомощь" 0
+menuText R CrosstabHelpCross "ѕомощь по турнирной таблице" 0
+menuText R CrosstabHelpIndex "»ндекс помощи" 0
+translate R SetFilter {”становить фильтр}
+translate R AddToFilter {ƒобавить к фильтру}
+translate R Swiss {Ўвейцарска€ система}
+translate R Category { атегори€}
 
 # Opening report window menus:
-menuText R OprepFile "ƒ–ўџ" 0
-menuText R OprepFileText "Ѕёеа–ЁЎвм Џ–Џ в’Џбвё“лў д–ўџ..." 9
-menuText R OprepFileHtml "Ѕёеа–ЁЎвм Џ–Џ HTML..." 9
-menuText R OprepFileLaTeX "Ѕёеа–ЁЎвм Џ–Џ LaTeX..." 9
-menuText R OprepFileOptions "√бв–Ёё“ЏЎ..." 0
-menuText R OprepFileClose "Ј–Џалвм ёЏЁё ёвз’в–" 0
-menuText R OprepHelp "Ѕяа–“Џ–" 0
-menuText R OprepHelpReport "Ѕяа–“Џ– яё ‘’—овЁё№г ёвз’вг" 0
-menuText R OprepHelpIndex "√Џ–„–в’џм бяа–“ЏЎ" 0
+menuText R OprepFile "‘айл" 0
+menuText R OprepFileText "ѕечатать в текстовый файл..." 11
+menuText R OprepFileHtml "ѕечатать в HTML файл..." 11
+menuText R OprepFileLaTeX "ѕечатать в LaTeX файл..." 11
+menuText R OprepFileOptions "”становки..." 0
+menuText R OprepFileClose "«акрыть окно дебытов" 0
+menuText R OprepHelp "ѕомощь" 0
+menuText R OprepHelpReport "ѕомощь по дебютным отчетам" 0
+menuText R OprepHelpIndex "»ндекс помощи" 0
 
 # Repertoire editor:
-menuText R RepFile "ƒ–ўџ" 0
-menuText R RepFileNew "Ѕё„‘–вм" 0
-menuText R RepFileOpen "ЊвЏалвм..." 0
-menuText R RepFileSave "Ѕёеа–ЁЎвм..." 0
-menuText R RepFileSaveAs "Ѕёеа–ЁЎвм Џ–Џ..." 5
-menuText R RepFileClose "Ј–Џалвм ёЏЁё" 0
-menuText R RepEdit "ј’‘–ЏвЎаё“–вм" 0
-menuText R RepEditGroup "іё—–“Ўвм ”агяяг" 4
-menuText R RepEditInclude "іё—–“Ўвм “Џџоз’ЁЁлў “–аЎ–Ёв" 4
-menuText R RepEditExclude "іё—–“Ўвм ЎбЏџоз’ЁЁлў “–аЎ–Ёв" 4
-menuText R RepView "≤Ў‘" 0
-menuText R RepViewExpand "ј–бЏалвм “б’ ”агяял" 0
-menuText R RepViewCollapse "Ѕ“’аЁгвм “б’ ”агяял" 0
-menuText R RepSearch "њёЎбЏ" 0
-menuText R RepSearchAll "≤’бм а’я’авг–а..." 0
-menuText R RepSearchDisplayed "¬ёџмЏё “л—а–ЁЁл’ “–аЎ–Ёвл..." 0
-menuText R RepHelp "Ѕяа–“Џ–" 0
-menuText R RepHelpRep "Ѕяа–“Џ– яё а’я’авг–аг" 0
-menuText R RepHelpIndex "ЄЁ‘’Џб бяа–“ЏЎ" 0
-translate R RepSearch "њёЎбЏ “ а’я’авг–а’"
-translate R RepIncludedLines "“Џџоз’ЁЁл’ “–аЎ–Ёвл"
-translate R RepExcludedLines "ЎбЏџоз’ЁЁл’ “–аЎ–Ёвл"
-translate R RepCloseDialog {Є„№’Ё’ЁЎп “ а’я’авг–а’ Ё’ —лџЎ бёеа–Ё’Ёл.
+menuText R RepFile "‘айл" 0
+menuText R RepFileNew "Ќовый" 0
+menuText R RepFileOpen "ќткрыть..." 0
+menuText R RepFileSave "—охранить.." 0
+menuText R RepFileSaveAs "—охранить как..." 2
+menuText R RepFileClose "«акрыть окно" 0
+menuText R RepEdit "–едактор" 0
+menuText R RepEditGroup "ƒобавить группу" 9
+menuText R RepEditInclude "ƒобавить включенные строки" 9
+menuText R RepEditExclude "ƒобавить исключенные строки" 9
+menuText R RepView "¬ид" 0
+menuText R RepViewExpand "–азвернуть все группы" 0
+menuText R RepViewCollapse "—жать все группы" 0
+menuText R RepSearch "ѕоиск" 0
+menuText R RepSearchAll "¬се репертуары..." 0
+menuText R RepSearchDisplayed "ѕоказанные строки только..." 0
+menuText R RepHelp "ѕомощь" 4
+menuText R RepHelpRep "ѕомощь по репертуару" 0
+menuText R RepHelpIndex "»ндекс помощи" 0
+translate R RepSearch "ѕоиск репертуара"
+translate R RepIncludedLines "включенные строки"
+translate R RepExcludedLines "исключенный строки"
+translate R RepCloseDialog {¬ этом репертуаре не сохранены изменени€.
 
-≤л ‘’ўбв“Ўв’џмЁё еёвЎв’ яаё‘ёџ÷Ўвм б яёв’а’ў “б’е б‘’џ–ЁЁле Ў„№’Ё’ЁЎў?
+¬ы действительно хотите продолжить не сохранив все изменени€, которые вы сделали?
 }
 
 # Header search:
-translate R HeaderSearch {њёЎбЏ яё „–”ёџё“Џг}
-translate R GamesWithNoECO {Є”ал —’„ ЎЁ‘’Џб– ECO?}
-translate R GameLength {іџЎЁ– Ў”ал}
-translate R FindGamesWith {љ–ўвЎ Ў”ал б яаЎ„Ё–Џ–№Ў}
-translate R StdStart {љ’бв–Ё‘–авЁё’ Ё–з–џё}
-translate R Promotions {њ’иЏ– ‘ёиџ– ‘ё 8 ”ёаЎ„ёЁв–џЎ}
-translate R Comments {Їё№№’Ёв–аЎЎ}
-translate R Variations {≤–аЎ–Ёвл}
-translate R Annotations {њаЎ№’з–ЁЎп}
-translate R DeleteFlag {√‘–џЎвм яаЎ„Ё–Џ}
-translate R WhiteOpFlag {і’—ов „– —’џле}
-translate R BlackOpFlag {і’—ов „– з’аЁле}
-translate R MiddlegameFlag {ЉЎвв’џмияЎџм}
-translate R EndgameFlag {ЌЁ‘ияЎџм}
-translate R NoveltyFlag {љё“ЎЁЏ–}
-translate R PawnFlag {њ’и’зЁ–п бвагЏвга–}
-translate R TacticsFlag {¬–ЏвЎЏ–}
-translate R QsideFlag {Є”а– Ё– д’а„’“ё№ дџ–Ё”’}
-translate R KsideFlag {Є”а– Ё– Џёаёџ’“бЏё№ дџ–Ё”’}
-translate R BrilliancyFlag {±џ’бвпйЎў её‘}
-translate R BlunderFlag {њаёб№ёва}
-translate R UserFlag {њёџм„ё“–в’џм}
-translate R PgnContains {“ PGN Ў№’’вбп в’Џбв}
+translate R HeaderSearch {ѕоиск по заголовку}
+translate R GamesWithNoECO {ѕартии без ECO?}
+translate R GameLength {ƒлина партии}
+translate R FindGamesWith {Ќайти партии с флагами}
+translate R StdStart {Ќестандартное начало}
+translate R Promotions {ѕродвижени€}
+translate R Comments { омментарии}
+translate R Variations {¬ариации}
+translate R Annotations {јннотации}
+translate R DeleteFlag {”далить флаг}
+translate R WhiteOpFlag {ƒебют белых}
+translate R BlackOpFlag {ƒебют черных}
+translate R MiddlegameFlag {ћительшпиль}
+translate R EndgameFlag {Ёндшпиль}
+translate R NoveltyFlag {Ќовинка}
+translate R PawnFlag {ѕешечна€ структура}
+translate R TacticsFlag {“актика}
+translate R QsideFlag {»гра на ферзевом фланге}
+translate R KsideFlag {»гра на королевском фланге}
+translate R BrilliancyFlag {¬еликолепно}
+translate R BlunderFlag {ќшибка}
+translate R UserFlag {ѕользователь}
+translate R PgnContains {“екст PGN}
 
 # Game list window:
-translate R GlistNumber {љё№’а}
-translate R GlistWhite {±’џл’}
-translate R GlistBlack {«’аЁл’}
-translate R GlistWElo {± Elo}
-translate R GlistBElo {« Elo}
-translate R GlistEvent {Ѕёа’“Ёё“–ЁЎ’}
-translate R GlistSite {Љ’бвё}
-translate R GlistRound {¬га}
-translate R GlistDate {і–в–}
-translate R GlistYear {≥ё‘}
-translate R GlistEDate {і–в– яаё“’‘’ЁЎп}
-translate R GlistResult {ј’„гџмв–в}
-translate R GlistLength {іџЎЁ–}
-translate R GlistCountry {Ѕва–Ё–}
+translate R GlistNumber {Ќомер}
+translate R GlistWhite {Ѕелые}
+translate R GlistBlack {„ерные}
+translate R GlistWElo {Ѕ-Elo}
+translate R GlistBElo {„-Elo}
+translate R GlistEvent {“урнир}
+translate R GlistSite {ћесто}
+translate R GlistRound {–аунд}
+translate R GlistDate {ƒата}
+translate R GlistYear {√од}
+translate R GlistEDate {ƒата турнира}
+translate R GlistResult {–езультат}
+translate R GlistLength {ƒлина}
+translate R GlistCountry {—трана}
 translate R GlistECO {ECO}
-translate R GlistOpening {і’—ов}
-translate R GlistEndMaterial {Њбв–“иЎўбп №–в’аЎ–џ}
-translate R GlistDeleted {√‘–џЎвм}
-translate R GlistFlags {њаЎ„Ё–ЏЎ}
-translate R GlistVars {≤–аЎ–Ёвл}
-translate R GlistComments {Їё№№’Ёв–аЎЎ}
-translate R GlistAnnos {њаЎ№’з–ЁЎп}
-translate R GlistStart {љ–з–џё}
-translate R GlistGameNumber {љё№’а Ў”ал}
-translate R GlistFindText {љ–ўвЎ в’Џбв}
-translate R GlistMoveField {≈ё‘}
-translate R GlistEditField {ЅЏёЁдЎ”гаЎаё“–вм}
-translate R GlistAddField {іё—–“Ўвм}
-translate R GlistDeleteField {√‘–џЎвм}
-translate R GlistWidth {»ЎаЎЁ–}
-translate R GlistAlign {≤ла–“ЁЎ“–ЁЎ’}
-translate R GlistColor {∆“’в}
-translate R GlistSep {ј–„‘’џЎв’џм}
+translate R GlistOpening {ƒебют}
+translate R GlistEndMaterial { онечный материал}
+translate R GlistDeleted {”даленные}
+translate R GlistFlags {‘лаги}
+translate R GlistVars {¬арианты}
+translate R GlistComments { омментарии}
+translate R GlistAnnos {јннотации}
+translate R GlistStart {—тарт}
+translate R GlistGameNumber {Ќомер партии}
+translate R GlistFindText {Ќайти текст}
+translate R GlistMoveField {ѕереместить}
+translate R GlistEditField { онфигураци€}
+translate R GlistAddField {ƒобавить}
+translate R GlistDeleteField {”далить}
+translate R GlistWidth {Ўирина}
+translate R GlistAlign {¬ыравнивание}
+translate R GlistColor {÷вет}
+translate R GlistSep {–азделитель}
 
 # Maintenance window:
-translate R DatabaseName {љ–„“–ЁЎ’ ±і:}
-translate R TypeIcon {¬Ўя яЎЏв.:}
-translate R NumOfGames {њ–авЎў:}
-translate R NumDeletedGames {√‘–џ’ЁЁле я–авЎў:}
-translate R NumFilterGames {Є”а “ дЎџмва’:}
-translate R YearRange {њ’аЎё‘ “а’№’ЁЎ:}
-translate R RatingRange {ј’ўвЎЁ”ё“лў ‘Ў–я–„ёЁ:}
-translate R Description {Description} ;# ***
-translate R Flag {њаЎ„Ё–Џ}
-translate R DeleteCurrent {√‘–џЎвм в’Џгйго я–авЎо}
-translate R DeleteFilter {√‘–џЎвм я–авЎЎ “ дЎџмва’}
-translate R DeleteAll {√‘–џЎвм “б’ я–авЎЎ}
-translate R UndeleteCurrent {≤ёббв–Ёё“Ўвм в’Џгйго я–авЎо}
-translate R UndeleteFilter {≤ёббв–Ёё“Ўвм я–авЎЎ “ дЎџмва’}
-translate R UndeleteAll {≤ёббв–Ёё“Ўвм “б’ я–авЎЎ}
-translate R DeleteTwins {√‘–џЎвм ЏёяЎЎ}
-translate R MarkCurrent {њё№’вЎвм в’Џгйго я–авЎо}
-translate R MarkFilter {њё№’вЎвм “б’ я–авЎЎ “ дЎџмва’}
-translate R MarkAll {њё№’вЎвм “б’ я–авЎЎ}
-translate R UnmarkCurrent {√—а–вм яё№’вЏг б в’Џгй’ў я–авЎЎ}
-translate R UnmarkFilter {√—а–вм яё№’вЏг б я–авЎў “ дЎџмва’}
-translate R UnmarkAll {√—а–вм яё№’вЏг бё “б’е я–авЎў}
-translate R Spellchecking {њаё“’аЏ– Ё–„“–ЁЎў}
-translate R Players {Є”аёЏЎ}
-translate R Events {Ѕёа’“Ёё“–ЁЎ’}
-translate R Sites {Љ’бвё}
-translate R Rounds {¬га}
-translate R DatabaseOps {Њя’а–жЎЎ б ±і}
-translate R ReclassifyGames {√бв–Ёё“Ўвм ЎЁ‘’Џб ECO}
-translate R CompactDatabase {Ѕ÷–вм ±і}
-translate R SortDatabase {ЅёавЎаё“–вм ±і}
-translate R AddEloRatings {іё—–“Ўвм а’ўвЎЁ” Elo}
-translate R AutoloadGame {∞“вё„–”аг„Џ– я–авЎЎ #}
-translate R StripTags {√—а–вм „–”ёџё“ЏЎ PGN}
-translate R StripTag {√—а–вм „–”ёџё“ЏЎ}
-translate R Cleaner {ЊзЎбвЏ–}
+translate R DatabaseName {Ќазвание базы данных:}
+translate R TypeIcon {“ип иконки:}
+translate R NumOfGames {ѕартии:}
+translate R NumDeletedGames {”даленные партии:}
+translate R NumFilterGames {ѕартии в фильтре:}
+translate R YearRange {ƒиапазон годов:}
+translate R RatingRange {ƒиапазон рейтинга:}
+translate R Description {ќписание}
+translate R Flag {‘лаг}
+translate R DeleteCurrent {”далить текущую партию}
+translate R DeleteFilter {”далить отфильтрованные партии}
+translate R DeleteAll {”далить все партии}
+translate R UndeleteCurrent {¬осстановить текущую партию}
+translate R UndeleteFilter {¬осстановить отфильтрованные партии}
+translate R UndeleteAll {¬осстановить все партии}
+translate R DeleteTwins {”далить двойные партии}
+translate R MarkCurrent {ќтметить текущую партию}
+translate R MarkFilter {ќтметить отфильтрованные партии}
+translate R MarkAll {ќтметить все партии}
+translate R UnmarkCurrent {—н€ть отметку с текущей партии}
+translate R UnmarkFilter {—н€ть отметку с отфильтрованных партий}
+translate R UnmarkAll {—н€ть отметку со всех партий}
+translate R Spellchecking {ѕроверка правописани€}
+translate R Players {»гроки}
+translate R Events {“урниры}
+translate R Sites {ћесто}
+translate R Rounds {–аунды}
+translate R DatabaseOps {ќперации с базой данных}
+translate R ReclassifyGames {ѕартии с класифицированным ECO}
+translate R CompactDatabase {—жата€ база данных}
+translate R SortDatabase {—ортированна€ база данных}
+translate R AddEloRatings {ƒобавить рейтинги Elo}
+translate R AutoloadGame {јвтозагрузка номера партии}
+translate R StripTags {”далить теги PGN}
+translate R StripTag {”далить теги}
+translate R Cleaner {„истильщик}
 translate R CleanerHelp {
-±г‘гв яаёЎ„“’‘’Ёл “б’ ёя’а–жЎЎ яё ёзЎбвЏ’ в’Џгй’ў ±і, Џёвёал’ “л “л—а–џЎ “ бяЎбЏ’.
+„истильщик Scid произведен все поддерживаемые действи€, которые вы выбрали в списке ниже, над текущей базой данных.
 
-іџп гбв–Ёё“ЏЎ ЎЁ‘’Џб– ECO Ў г‘–џ’ЁЎп ЏёяЎў —г‘гв Ўбяёџм„ё“–Ёл г÷’ “л—а–ЁЁл’ “–№Ў гбв–Ёё“ЏЎ.
+“екущие установки классификации ECO и двойные диалоги удалени€ будут применены, если вы выберите эти функции.
 }
 translate R CleanerConfirm {
-њёбџ’ „–ягбЏ– ёзЎбвЏЎ ёЁ– Ё’ №ё÷’в —лвм яа’а“–Ё–!
+≈сли поддержка чистильщика стартовала, она не может быть прервана!
 
-Ќвё №ё÷’в „–Ёпвм №Ёё”ё “а’№’ЁЎ, ’бџЎ ±і —ёџми–п “ „–“ЎбЎ№ёбвЎ ёв ёя’а–жЎў, Џёвёал’ “л “л—а–џЎ Ў б‘’џ–ЁЁле “–№Ў гбв–Ёё“ёЏ.
+Ёто может зан€ть много времени на большой базе данных, в зависимости от функций, которые вы выбрали и их текущих установок.
 
-≤л г“’а’Ёл, звё еёвЎв’ „–ягбвЎвм “л—а–ЁЁл’ “–№Ў ёя’а–жЎЎ?
+¬ы уверены, что хотите начать поддержку функций, которые вы выбрали?
 }
 
 # Comment editor:
-translate R AnnotationSymbols  {ЅЎ№“ёџл –ЁЁёв–жЎЎ:}
-translate R Comment {Їё№№’Ёв–аЎў:}
-translate R InsertMark {Insert mark} ;# ***
+translate R AnnotationSymbols  {—имволы аннотации:}
+translate R Comment { омментарии:}
+translate R InsertMark {¬ставить закладку}
 
 # Board search:
-translate R BoardSearch {њёЎбЏ яё„ЎжЎЎ}
-translate R FilterOperation {Њя’а–жЎЎ ‘џп ‘–ЁЁё”ё дЎџмва–:}
-translate R FilterAnd {Є (Њ”а–ЁЎзЎвм дЎџмва)}
-translate R FilterOr {ЄїЄ (іё—–“Ўвм “ дЎџмва)}
-translate R FilterIgnore {Є≥љЊјЄјЊ≤∞¬ћ (√бв–Ёё“Ўвм дЎџмва „–Ёё“ё)}
-translate R SearchType {¬Ўя яёЎбЏ–:}
-translate R SearchBoardExact {¬ёзЁё’ бёёв“’вбв“Ў’ (яёџё÷’ЁЎ’ вё ÷’ б–№ё’)}
-translate R SearchBoardPawns {њ’иЏЎ (вёв ÷’ №–в’аЎ–џ, “б’ я’иЏЎ Ё– в’е ÷’ яёџпе)}
-translate R SearchBoardFiles {≤’авЎЏ–џЎ (вёв ÷’ №–в’аЎ–џ, “б’ я’иЏЎ Ё– в’е ÷’ “’авЎЏ–џпе)}
-translate R SearchBoardAny {њаёЎ„“ёџмЁё’ (вёв ÷’ №–в’аЎ–џ, а–бяёџё÷’ЁЎ’ я’и’Џ Ў дЎ”га яаёЎ„“ёџмЁё’)}
-translate R LookInVars {ЄбЏ–вм “ “–аЎ–Ёв–е}
+translate R BoardSearch {ѕоиск позиции}
+translate R FilterOperation {ƒействи€ над текущем фильтром:}
+translate R FilterAnd {AND (ќграничивающий фильтр)}
+translate R FilterOr {OR (ƒобавить к фильтру)}
+translate R FilterIgnore {IGNORE (—бросить фильтр)}
+translate R SearchType {“ип поиска:}
+translate R SearchBoardExact {“очна€ позици€ (все фигуры на тех же пол€х)}
+translate R SearchBoardPawns {ѕешки (тот же материал, все пешки на тех же пол€х)}
+translate R SearchBoardFiles {–€ды (тот же материал, все пешки на тех же р€дах)}
+translate R SearchBoardAny {Ћюба€ (тот же материал, пешки и фигуры в любом месте)}
+translate R LookInVars {ѕосмотреть в вариантах}
 
 # Material search:
-translate R MaterialSearch {њёЎбЏ яё №–в’аЎ–џг}
-translate R Material {Љ–в’аЎ–џ}
-translate R Patterns {Њ—а–„жл}
-translate R Zero {љгџ’“ёў}
-translate R Any {їо—ёў}
-translate R CurrentBoard {¬’Џгй–п яё„ЎжЎп}
-translate R CommonEndings {ј–бяаёбва–Ё’ЁЁл’ ёЏёЁз–ЁЎп}
-translate R CommonPatterns {Є„“’бвЁл’ ё—а–„жл}
-translate R MaterialDiff {ј–„џЎзЎп “ №–в’аЎ–џ’}
-translate R squares {яёџп}
-translate R SameColor {¬ё”ё ÷’ ж“’в–}
-translate R OppColor {іаг”ё”ё ж“’в–}
-translate R Either {їо—ё”ё}
-translate R MoveNumberRange {ЇёџЎз’бв“ё её‘ё“}
-translate R MatchForAtLeast {Ѕёёв“’вбв“Ў’ яё №’Ёми’ў №’а’}
-translate R HalfMoves {яёџгеё‘л}
+translate R MaterialSearch {ѕоиск материала}
+translate R Material {ћатериал}
+translate R Patterns {ќбразцы}
+translate R Zero {Ќоль}
+translate R Any {Ћюбой}
+translate R CurrentBoard {“екуща€ позици€}
+translate R CommonEndings {ќбщие эндшпили}
+translate R CommonPatterns {ќбщие образцы}
+translate R MaterialDiff {материальна€ разница}
+translate R squares {пол€}
+translate R SameColor {“от же цвет}
+translate R OppColor {ѕротивоположный цвет}
+translate R Either {»ли}
+translate R MoveNumberRange {ƒиапазон номеров ходов}
+translate R MatchForAtLeast {—овпадает по крайней мере}
+translate R HalfMoves {полуходов}
 
 # Game saving:
-translate R Today {Ѕ’”ё‘Ёп}
-translate R ClassifyGame {Їџ–ббЎдЎЏ–жЎп я–авЎЎ}
+translate R Today {—егодн€}
+translate R ClassifyGame { лассифицированна€ парти€}
 
 # Setup position:
-translate R EmptyBoard {ЊзЎбвЎвм ‘ёбЏг}
-translate R InitialBoard {љ–з–џмЁ–п яё„ЎжЎп}
-translate R SideToMove {«’ў её‘}
-translate R MoveNumber {≈ё‘ Ёё№’а}
-translate R Castling {јёЏЎаё“Џ–}
-translate R EnPassantFile {љ– яаёеё‘’ - “’авЎЏ–џм}
-translate R ClearFen {ЊзЎбвЎвм FEN}
-translate R PasteFen {≤бв–“Ўвм FEN}
+translate R EmptyBoard {ѕуста€ доска}
+translate R InitialBoard {Ќачальна€ позици€}
+translate R SideToMove {ќчередь хода}
+translate R MoveNumber {Ќомер хода}
+translate R Castling {–окировка}
+translate R EnPassentFile {ћимоходный файл}
+translate R ClearFen {ќчистить FEN}
+translate R PasteFen {¬ставить FEN}
 
 # Replace move dialog:
-translate R ReplaceMove {Ј–№’ЁЎвм её‘}
-translate R AddNewVar {іё—–“Ўвм Ёё“лў “–аЎ–Ёв}
-translate R ReplaceMoveMessage {≈ё‘ г÷’ бгй’бв“г’в.
+translate R ReplaceMove {«аменить ход}
+translate R AddNewVar {ƒобавить новый вариант}
+translate R ReplaceMoveMessage {«десь уже есть ход.
 
-≤л №ё÷’в’ „–№’ЁЎвм ’”ё, в’№ б–№л№ ёв№’ЁЎ“ Ў№’ойЎ’бп яёбџ’ Ё’”ё её‘л, ЎџЎ ‘ё—–“Ўвм её‘ Џ–Џ Ёё“лў “–аЎ–Ёв.
+¬ы можете заменить его, уничтожив все ходы после него, или добавить ваш ход, как новый вариант.
 
-(≤л №ё÷’в’ ёв№’ЁЎвм яёп“џ’ЁЎ’ нвё”ё яа’‘гяа’÷‘’ЁЎп г—а–“ дџ–” "Ј–яаёб я’а’‘ „–№’Ёёў её‘ё“" “ №’Ёо "√бв–Ёё“ЏЎ:≈ё‘л".)}
+(¬ы можете избежать по€влени€ этого сообщени€ в будущем, выключив установку "—просить перед заменной ходов" в меню ”становки:ћеню ходов.)}
 
 # Make database read-only dialog:
-translate R ReadOnlyDialog {µбџЎ “л ёяа’‘’џЎв’ ±і Џ–Џ "вёџмЏё ‘џп зв’ЁЎп", ’’ Ё’“ё„№ё÷Ёё —г‘’в Ў„№’ЁЎвм.
-њ–авЎЎ Ё’“ё„№ё÷Ёё —г‘’в бёеа–Ёпвм ЎџЎ „–№’й–вм, Ў Ё’џм„п —г‘’в Ў„№’Ёпвм дџ–” "√‘–џЎвм" ‘џп я–авЎЎ.
-ЅёавЎаё“Џ– ЎџЎ ЎЁ‘’ЏбЎаё“–ЁЎ’ ECO —г‘гв “а’№’ЁЁл№Ў.
+translate R ReadOnlyDialog {≈сли вы сделаете эту базу данных только дл€ чтени€, не будет позволено никаких изменений.
+ѕартии не могут быть изменены или заменены, и удаленные флаги не могут быть изменены.
+–езультаты любой сортировки и классификации ECO будут временными.
 
-≤л №ё÷’в’ џ’”Џё б‘’џ–вм ±і ёяпвм а’‘–ЏвЎаг’№ёў, „–Џал“ ’’ Ў ёвЏал“ яё“вёаЁё.
+¬ы можете легко сделать базу данных модифицируемой с помощью закрыти€ и перезагрузки.
 
-≤л ‘’ўбв“Ўв’џмЁё еёвЎв’ ёяа’‘’џЎвм нвг ±і Џ–Џ "вёџмЏё ‘џп зв’ЁЎп"?}
+¬ы действительно желаете сделать эту базу данных только дл€ чтени€?}
 
 # Clear game dialog:
-translate R ClearGameDialog {Ќв– я–авЎп —лџ– Ў„№’Ё’Ё–.
+translate R ClearGameDialog {Ёта парти€ была изменена.
 
-≤л ‘’ўбв“Ўв’џмЁё еёвЎв’ яаё‘ёџ÷Ўвм Ў ёв№’ЁЎвм Ў„№’Ё’ЁЎп?
+¬ы действительно желаете продолжить, отменив все сделанные изменени€?
 }
 
 # Exit dialog:
-translate R ExitDialog {≤л ‘’ўбв“Ўв’џмЁё еёвЎв’ „–Џалвм яаё”а–№№г Scid?}
-translate R ExitUnsaved {≤ бџ’‘гойЎе —–„–е ‘–ЁЁле ’бвм я–авЎЎ, Џёвёал’ —лџЎ Ў„№’Ё’Ёл.
-њаЎ „–ЏалвЎЎ нвЎ Ў„№’Ё’ЁЎп —г‘гв яёв’апЁл.}
+translate R ExitDialog {¬ы действительно хотите выйти из Scid?}
+translate R ExitUnsaved {—ледующа€ база данных имеет не сохраненные измененные партии. ≈сли вы выйдите сейчас, изменени€ будут утер€ны.}
 
 # Import window:
-translate R PasteCurrentGame {≤бв–“Ўвм в’Џгйго я–авЎо}
-translate R ImportHelp1 {≤“’бвЎ ЎџЎ “бв–“Ўвм я–авЎо “ дёа№–в’ PGN “ а–№Џг Ё–“’аег.}
-translate R ImportHelp2 {≤б’ ёиЎ—ЏЎ яаЎ Ў№яёав’ я–авЎЎ —г‘гв яёЏ–„–Ёл „‘’бм.}
+translate R PasteCurrentGame {¬ставить текущую партию}
+translate R ImportHelp1 {¬вести или вставить партию в формате PGN в область выше.}
+translate R ImportHelp2 {¬се ошибки импортировани€ партии будут показаны здесь.}
 
 # ECO Browser:
-translate R ECOAllSections {“б’ а–„‘’џл ECO}
-translate R ECOSection {а–„‘’џ ECO}
-translate R ECOSummary {Ѕ“ё‘Џ– ‘џп}
-translate R ECOFrequency {«–бвёв– ЎЁ‘’Џбё“ ‘џп}
+translate R ECOAllSections {все секции ECO}
+translate R ECOSection {секци€ ECO}
+translate R ECOSummary {¬сего дл€}
+translate R ECOFrequency {„астота подкодов дл€}
 
 # Opening Report:
-translate R OprepTitle {Њвз’в яё ‘’—овг}
-translate R OprepReport {Њвз’в}
-translate R OprepGenerated {Ѕ‘’џ–Ё б яё№ёймо}
-translate R OprepStatsHist {Ѕв–вЎбвЎЏ– Ў ЎбвёаЎп}
-translate R OprepStats {Ѕв–вЎбвЎЏ–}
-translate R OprepStatAll {≤б’”ё я–авЎў}
-translate R OprepStatBoth {ј’ўвЎЁ” ё—ёЎе}
-translate R OprepStatSince {Ѕ}
-translate R OprepOldest {Ѕ–№л’ бв–ал’}
-translate R OprepNewest {Ѕ–№л’ Ёё“л’}
-translate R OprepPopular {¬’Џгй–п з–бвёвЁёбвм}
-translate R OprepFreqAll {«–бвёвЁёбвм „– “б’ ”ё‘л:   }
-translate R OprepFreq1   {Ј– яёбџ’‘ЁЎў ”ё‘: }
-translate R OprepFreq5   {Ј– 5 яёбџ’‘ЁЎе џ’в: }
-translate R OprepFreq10  {Ј– 10 яёбџ’‘ЁЎе џ’в: }
-translate R OprepEvery {ё‘Ё– Ё– Џ–÷‘л’ %u я–авЎў}
-translate R OprepUp {г“’џЎз’ЁЎ’ %u%s „– “б’ ”ё‘л}
-translate R OprepDown {г№’Ёми’ЁЎ’ %u%s „– “б’ ”ё‘л}
-translate R OprepSame {—’„ Ў„№’Ё’ЁЎў „– “б’ ”ё‘л}
-translate R OprepMostFrequent {љ–Ў—ёџ’’ з–бвёвЁл’ Ў”аёЏЎ}
-translate R OprepRatingsPerf {ј’ўвЎЁ”Ў Ў я’адё№–Ёб}
-translate R OprepAvgPerf {Ѕа’‘ЁЎ’ а’ўвЎЁ”Ў Ў я’адё№–Ёб}
-translate R OprepWRating {ј’ўвЎЁ” —’џле}
-translate R OprepBRating {ј’ўвЎЁ” з’аЁле}
-translate R OprepWPerf {њ’адё№–Ёб —’џле}
-translate R OprepBPerf {њ’адё№–Ёб з’аЁле}
-translate R OprepHighRating {њ–авЎЎ б б–№л№ “лбёЏЎ№ ба’‘ЁЎ№ а’ўвЎЁ”ё№}
-translate R OprepTrends {¬а’Ё‘л а’„гџмв–вё“}
-translate R OprepResults {іџЎЁ– Ў з–бвёв– а’„гџмв–вё“}
-translate R OprepLength {іџЎЁ– я–авЎў}
-translate R OprepFrequency {«–бвёв–}
-translate R OprepWWins {±’џл’ “лЎ”а–џЎ: }
-translate R OprepBWins {«’аЁл’ “лЎ”а–џЎ: }
-translate R OprepDraws {љЎзмЎ:      }
-translate R OprepWholeDB {“бп —–„– ‘–ЁЁле}
-translate R OprepShortest {Ѕ–№лў —лбвалў “лЎ”али}
-translate R OprepMovesThemes {≈ё‘л Ў в’№л}
-translate R OprepMoveOrders {њёбџ’‘ё“–в’џмЁёбвЎ её‘ё“ ‘ёбвЎ÷’ЁЎп ‘–ЁЁёў яё„ЎжЎЎ}
+translate R OprepTitle {ƒебютный отчет}
+translate R OprepReport {ќтчет}
+translate R OprepGenerated {—генерированный}
+translate R OprepStatsHist {—татистика и истори€}
+translate R OprepStats {—татистика}
+translate R OprepStatAll {¬се отчетные партии}
+translate R OprepStatBoth {ќба с рейтингом}
+translate R OprepStatSince {—}
+translate R OprepOldest {—тарейшие партии}
+translate R OprepNewest {Ќовейшие партии}
+translate R OprepPopular {“екущие попул€рные}
+translate R OprepFreqAll {„астота во все года:   }
+translate R OprepFreq1   {¬ последний год: }
+translate R OprepFreq5   {¬ последнии п€ть лет: }
+translate R OprepFreq10  {¬ последнии дес€ть лет: }
+translate R OprepEvery {один раз каждые %u партий}
+translate R OprepUp {выше - %u%s из всех лет}
+translate R OprepDown {ниже - %u%s из всех лет}
+translate R OprepSame {нет изменений против всех годов}
+translate R OprepMostFrequent {Ќаиболее часто у игроков}
+translate R OprepRatingsPerf {–ейтинги и производительность}
+translate R OprepAvgPerf {—редние рейтинги и производительность}
+translate R OprepWRating {–ейтинг белых}
+translate R OprepBRating {–ейтинг черных}
+translate R OprepWPerf {ѕроизводительность белых}
+translate R OprepBPerf {ѕроизводительность черных}
+translate R OprepHighRating {ѕартии с наибольшим среднем рейтингом}
+translate R OprepTrends {–езультирующие тенденции}
+translate R OprepResults {–езультирующие длины и частоты}
+translate R OprepLength {ƒлина партии}
+translate R OprepFrequency {„астота}
+translate R OprepWWins {Ѕелые выиграли: }
+translate R OprepBWins {„ерные выиграли: }
+translate R OprepDraws {Ќичьи:      }
+translate R OprepWholeDB {вс€ база данных}
+translate R OprepShortest {—амые короткие победы}
+translate R OprepMovesThemes {’оды и темы}
+translate R OprepMoveOrders {ѕор€док ходов  дл€ достижени€ отчетной позиции}
 translate R OprepMoveOrdersOne \
-  {¬ёџмЏё ё‘Ё– яёбџ’‘ё“–в’џмЁёбвм её‘ё“ ‘џп ‘–ЁЁёў яё„ЎжЎЎ:}
+  {Ќайден только один пор€док ходов дл€ достижени€ отчетной позиции:}
 translate R OprepMoveOrdersAll \
-  {%u яёбџ’‘ё“–в’џмЁёбвЎ(-в’ў) её‘ё“ ‘џп ‘–ЁЁёў яё„ЎжЎЎ:}
+  {Ќайдено %u пор€дков ходов  дл€ достижени€ отчетной позиции:}
 translate R OprepMoveOrdersMany \
-  {±лџё %u яёбџ’‘ё“–в’џмЁёбв’ў её‘ё“ ‘џп ‘–ЁЁёў яё„ЎжЎЎ. ≥џ–“Ёл’ %u нвё:}
-translate R OprepMovesFrom {≈ё‘л “ ‘–ЁЁёў яё„ЎжЎЎ}
-translate R OprepThemes {њё„ЎжЎёЁЁл’ в’№л}
-translate R OprepThemeDescription {«–бвёв– в’№ яаЎ её‘’ %u}
-translate R OprepThemeSameCastling {Њ‘ЁёбвёаёЁЁпп аёЏЎаё“Џ–}
-translate R OprepThemeOppCastling {ј–„ЁёбвёаёЁЁпп аёЏЎаё“Џ–}
-translate R OprepThemeNoCastling {Њ—– Џёаёџп Ё’ аёЏЎаё“–Ёл}
-translate R OprepThemeKPawnStorm {њ’и’зЁ–п –в–Џ– Ё– Џёаёџ’“бЏё№ дџ–Ё”’}
-translate R OprepThemeQueenswap {ј–„№’Ё д’а„’ў}
-translate R OprepThemeIQP {Є„ёџЎаё“–ЁЁ–п я’иЏ– d}
-translate R OprepThemeWP567 {±’џ–п я’иЏ– Ё– 5/6/7 ап‘г}
-translate R OprepThemeBP234 {«’аЁ–п я’иЏ– Ё– 2/3/4 ап‘г}
-translate R OprepThemeOpenCDE {ЊвЏалв–п џЎЁЎп c/d/e}
-translate R OprepTheme1BishopPair {ња’Ў№гй’бв“ё ‘“ге бџёЁё“}
-translate R OprepEndgames {ЌЁ‘ияЎџЎ}
-translate R OprepReportGames {њ–авЎЎ ёвз’в–}
-translate R OprepAllGames    {≤б’ я–авЎЎ}
-translate R OprepEndClass {Љ–в’аЎ–џ Џ ЏёЁжг Џ–÷‘ёў я–авЎЎ}
-translate R OprepTheoryTable {¬–—џЎж– её‘ё“}
-translate R OprepTableComment {њёџгз’Ё– Ё– ёбЁё“’ %u я–авЎў б “лбиЎ№ а’ўвЎЁ”ё№.}
-translate R OprepExtraMoves {іёяёџЁЎв’џмЁл’ её‘л “ в–—џЎж’ её‘ё“}
-translate R OprepMaxGames {Љ–ЏбЎ№–џмЁё’ ЏёџЎз’бв“ё я–авЎў “ в–—џЎж’ её‘ё“}
+  {Ќайдено %u пор€дков ходов  дл€ достижени€ отчетной позиции. ¬ерхнии %u:}
+translate R OprepMovesFrom {’оды из отчетной позиции}
+translate R OprepThemes {ѕозиционные темы}
+translate R OprepThemeDescription {„астота тем на ходе %u}
+translate R OprepThemeSameCastling {ќдносторонн€€ рокировка}
+translate R OprepThemeOppCastling {ѕротивосторонн€€ рокировка}
+translate R OprepThemeNoCastling {ќба корол€ не рокированы}
+translate R OprepThemeKPawnStorm {Ўтурм королевскими пешками}
+translate R OprepThemeQueenswap {‘ерзевой размен}
+translate R OprepThemeIQP {»золированные ферзевые пешки}
+translate R OprepThemeWP567 {Ѕелые пешки на 5/6/7 горизонтали}
+translate R OprepThemeBP234 {„ерные пешки на 2/3/4 горизонтали}
+translate R OprepThemeOpenCDE {ќткрыты c/d/e вертикали}
+translate R OprepTheme1BishopPair {“олько одна сторона имеет слоновую пару}
+translate R OprepEndgames {Ёндшпили}
+translate R OprepReportGames {ќтчетные партии}
+translate R OprepAllGames    {¬се партии}
+translate R OprepEndClass {ћатериал в конце каждой партии}
+translate R OprepTheoryTable {“еоретическа€ таблица}
+translate R OprepTableComment {—генерировано из %u высокорейтинговых партий.}
+translate R OprepExtraMoves {¬нешние заметки к ходам в теоретической таблице}
+translate R OprepMaxGames {ћаксимум партий в теоретической таблице}
 
 # Piece Tracker window:
-translate R TrackerSelectSingle {ї’“–п Џџ–“Ўи– №лиЎ ‘џп “л—ёа– нвёў дЎ”гал.}
-translate R TrackerSelectPair {ї’“–п Џџ–“Ўи– №лиЎ ‘џп “л—ёа– нвёў дЎ”гал; яа–“–п Џџ–“Ўи– - ‘џп “л—ёа– в–Џ÷’ я–аЁёў ’ў.}
-translate R TrackerSelectPawn {ї’“–п Џџ–“Ўи– №лиЎ ‘џп “л—ёа– нвёў я’иЏЎ; яа–“–п Џџ–“Ўи– №лиЎ - ‘џп “л—ёа– “б’е 8 я’и’Џ.}
-translate R TrackerStat {Ѕв–вЎбвЎЏ–}
-translate R TrackerGames {% Ў”а б её‘ё№ Ё– яёџ’}
-translate R TrackerTime {% а–„ Ё– Џ–÷‘ё№ яёџ’}
-translate R TrackerMoves {≈ё‘л}
-translate R TrackerMovesStart {≤“’‘Ўв’ Ёё№’а её‘–, б Џёвёаё”ё Ё–зЁ’вбп ва–’ЏвёаЎп.}
-translate R TrackerMovesStop {≤“’‘Ўв’ Ёё№’а её‘–, Ё– Џёвёаё№ „–ЏёЁзЎвбп ва–’ЏвёаЎп.}
+translate R TrackerSelectSingle {Ћева€ кнопка мышки выбирает эту фигуру.}
+translate R TrackerSelectPair {Ћева€ кнопка мышки выбирает эту фигуру; права€ выбирает все одинаковые фигуры.}
+translate R TrackerSelectPawn {Ћева€ кнопка мышки выбирает эту фигуру; права€ выбирает все 8 пешек.}
+translate R TrackerStat {—татистика}
+translate R TrackerGames {% партий с ходами на это поле}
+translate R TrackerTime {% времени на каждом поле}
+translate R TrackerMoves {’оды}
+translate R TrackerMovesStart {¬ведите номер хода, с которого трассировка начинаетс€.}
+translate R TrackerMovesStop {¬ведите номер хода, которым трассировка заканчиваетс€.}
 
 # Game selection dialogs:
-translate R SelectAllGames {≤б’ я–авЎЎ “ ±і}
-translate R SelectFilterGames {¬ёџмЏё я–авЎЎ “ дЎџмва’}
-translate R SelectTournamentGames {¬ёџмЏё я–авЎЎ ‘–ЁЁё”ё бёа’“Ёё“–ЁЎп}
-translate R SelectOlderGames {¬ёџмЏё яа’÷ЁЎ’ я–авЎЎ}
+translate R SelectAllGames {¬се партии в базе данных}
+translate R SelectFilterGames {“олько отфильтрованные партии}
+translate R SelectTournamentGames {“олько партии текущего турнира}
+translate R SelectOlderGames {“олько партии старше}
 
 # Delete Twins window:
-translate R TwinsNote {њ–авЎЎ —г‘гв яаЎ„Ё–Ёл ЏёяЎп№Ў, ’бџЎ бл”а–Ёл в’№Ў ÷’ гз–бвЁЎЏ–№Ў Ў бёёв“’вбв“гов в’№ ЏаЎв’аЎп№, Џёвёал’ “л “л—’а’в’ ЁЎ÷’. њаЎ ё—Ё–аг÷’ЁЎЎ ЏёяЎў —г‘’в г‘–џ’Ё– в–, “ Џёвёаёў №’Ёми’ её‘ё“.
-њё‘бЏ–„Џ–: џгзи’ “б’”ё яаё“’бвЎ яаё“’аЏг —–„л ‘лЁЁле я’а’‘ г‘–џ’ЁЎ’№ я–авЎў-ЏёяЎў, нвё яё№ё÷’в џгзи’№г Ўе ёяа’‘’џ’ЁЎп. }
-translate R TwinsCriteria {ЇаЎв’аЎЎ: ЇёяЎЎ ‘ёџ÷Ёл Ў№’вм...}
-translate R TwinsWhich {њаё“’апвм Ў”ал, ”‘’}
-translate R TwinsColors {¬ёв ÷’ ж“’в дЎ”га г я–авЁ’аё“?}
-translate R TwinsEvent {¬ёв ÷’ вгаЁЎа?}
-translate R TwinsSite {¬ё ÷’ №’бвё?}
-translate R TwinsRound {¬ёв ÷’ а–гЁ‘?}
-translate R TwinsYear {¬ёв ÷’ ”ё‘?}
-translate R TwinsMonth {¬ёв ÷’ №’бпж?}
-translate R TwinsDay {¬ёв ÷’ ‘’Ём?}
-translate R TwinsResult {¬ёв ÷’ а’„гџмв–в?}
-translate R TwinsECO {¬ёв ÷’ ЎЁ‘’Џб ECO?}
-translate R TwinsMoves {¬’ ÷’ её‘л?}
-translate R TwinsPlayers {њаЎ ба–“Ё’ЁЎЎ Ў№’Ё Ў”аёЏё“:}
-translate R TwinsPlayersExact {¬ёзЁё’ бёёв“’вбв“Ў’}
-translate R TwinsPlayersPrefix {њ’а“л’ 4 —гЏ“л вёџмЏё}
-translate R TwinsWhen {њаЎ г‘–џ’ЁЎЎ ЏёяЎў}
-translate R TwinsSkipShort {Є”ЁёаЎаё“–вм “б’ я–авЎЎ ‘џЎЁёў №’Ё’’ 5 её‘ё“?}
-translate R TwinsUndelete {≤Ё–з–џ’ “ёббв–Ёё“Ўвм “б’ г‘–џ’ЁЁл’ я–авЎЎ?}
-translate R TwinsSetFilter {≤б’ я–авЎЎ-ЏёяЎЎ яё№’бвЎвм “ дЎџмва?}
-translate R TwinsComments {≤б’”‘– бёеа–Ёпвм я–авЎЎ Џё№№’Ёв–аЎ’№?}
-translate R TwinsVars {≤б’”‘– бёеа–Ёпвм я–авЎЎ б “–аЎ–Ёв–№Ў?}
-translate R TwinsDeleteWhich {√‘–џЎвм Џ–Џго Ў”аг:}
-translate R TwinsDeleteShorter {±ёџ’’ ЏёаёвЏго я–авЎо}
-translate R TwinsDeleteOlder {њ–авЎо б №’ЁмиЎ№ Ёё№’аё№}
-translate R TwinsDeleteNewer {њ–авЎо б —ёџмиЎ№ Ёё№’аё№}
-translate R TwinsDelete {√‘–џЎвм я–авЎЎ}
+translate R TwinsNote {„тобы быть двойником, две партии должны как минимум иметь тех же игроков, и критерии, которые вы установите ниже.  огда пара двойников найдена, более коротка€ парти€ удал€етс€.
+ѕодсказка: перед поиском двойников лучше проверить правописание, это облегчит поиск двойников. }
+translate R TwinsCriteria { ритерий: ƒвойники должны иметь...}
+translate R TwinsWhich {ѕроверка какие партии}
+translate R TwinsColors {»грок играет тем же цветом?}
+translate R TwinsEvent {“от же турнир?}
+translate R TwinsSite {“о же место?}
+translate R TwinsRound {“от же раунд?}
+translate R TwinsYear {“от же год?}
+translate R TwinsMonth {“от же мес€ц?}
+translate R TwinsDay {“от же день?}
+translate R TwinsResult {“от же результат?}
+translate R TwinsECO {“от же код ECO?}
+translate R TwinsMoves {“е же ходы?}
+translate R TwinsPlayers {—равнить имена игроков:}
+translate R TwinsPlayersExact {ѕолное совпадение}
+translate R TwinsPlayersPrefix {“олько первые 4 буквы}
+translate R TwinsWhen { огда удалены двойные партии}
+translate R TwinsSkipShort {»гнорировать все партии, где меньше 5 ходов?}
+translate R TwinsUndelete {¬осстановить все партии сначала?}
+translate R TwinsSetFilter {”становить фильтр дл€ всех удаленых двойников?}
+translate R TwinsComments {¬сегда держать партии с комментари€ми?}
+translate R TwinsVars {¬сегда держать партии с вариантами?}
+translate R TwinsDeleteWhich {”далить какую партию:}
+translate R TwinsDeleteShorter {Ѕолее коротка€ парти€}
+translate R TwinsDeleteOlder {ћеньший номер партии}
+translate R TwinsDeleteNewer {Ѕольший номер партии}
+translate R TwinsDelete {”далить партии}
 
 # Name editor window:
-translate R NameEditType {¬Ўя а’‘–ЏвЎаг’№ё”ё Ў№’ЁЎ}
-translate R NameEditSelect {ј’‘–ЏвЎаг’№л’ Ў”ал}
-translate R NameEditReplace {Ј–№’ЁЎвм}
-translate R NameEditWith {Ё–}
-translate R NameEditMatches {Ѕёёв“’вбв“Ўп: љ–÷№Ўв’ Џџ–“ЎиЎ б Ctrl+1 ‘ё Ctrl+9 ‘џп “л—ёа–}
+translate R NameEditType {“ип имени дл€ редактировани€}
+translate R NameEditSelect {ѕартии дл€ редактировани€}
+translate R NameEditReplace {«аменить}
+translate R NameEditWith {с}
+translate R NameEditMatches {—овпадени€: Ќажмите Ctrl+1 - Ctrl+9 дл€ выбора}
 
 # Classify window:
-translate R Classify {ЄЁ‘’Џб–жЎп}
-translate R ClassifyWhich {Њяа’‘’џпвм ЎЁ‘’Џб ECO ‘џп я–авЎЎ}
-translate R ClassifyAll {≤б’е я–авЎў (б „–№’Ёёў яа’÷ЁЎе ЎЁ‘’Џбё“)}
-translate R ClassifyYear {≤б’е я–авЎў яёбџ’‘Ё’”ё ”ё‘–}
-translate R ClassifyMonth {≤б’е я–авЎў яёбџ’‘Ё’”ё №’бпж–}
-translate R ClassifyNew {¬ёџмЏё я–авЎў —’„ ЎЁ‘’Џб–}
-translate R ClassifyCodes {Єбяёџм„ё“–вм ЎЁ‘’Џбл ECO}
-translate R ClassifyBasic {¬ёџмЏё ёбЁё“Ёёў ЎЁ‘’Џб ("B12", ...)}
-translate R ClassifyExtended {іёяёџЁЎв’џмЁлў, ‘џп Scid ("B12j", ...)}
+translate R Classify { лассифицировать}
+translate R ClassifyWhich {ѕартии с классифицироваными ECO}
+translate R ClassifyAll {¬се партии (переписать старые ECO)}
+translate R ClassifyYear {¬се партии, сыгранные за последний год}
+translate R ClassifyMonth {¬се партии, сыгранные за последний мес€ц}
+translate R ClassifyNew {“олько партии без кода ECO}
+translate R ClassifyCodes { оды ECO дл€ использовани€}
+translate R ClassifyBasic {“олько основные коды ("B12", ...)}
+translate R ClassifyExtended {Scid расширени€ ("B12j", ...)}
 
 # Compaction:
-translate R NameFile {ƒ–ўџ Ў№’Ё}
-translate R GameFile {ƒ–ўџ я–авЎў}
-translate R Names {Є№’Ё–}
-translate R Unused {љ’ Ўбяёџм„г’вбп}
-translate R SizeKb {ј–„№’а (kb)}
-translate R CurrentState {≤ Ё–бвёпйЎў №ё№’Ёв}
-translate R AfterCompaction {њёбџ’ б÷–вЎп}
-translate R CompactNames {Ѕ÷–вм д–ўџ Ў№’Ё}
-translate R CompactGames {Ѕ÷–вм д–ўџ я–авЎў}
+translate R NameFile {‘айл имен}
+translate R GameFile {‘айл партий}
+translate R Names {»мена}
+translate R Unused {Ќе использовано}
+translate R SizeKb {–азмер (kb)}
+translate R CurrentState {“екущее состо€ние}
+translate R AfterCompaction {ѕосле сжати€}
+translate R CompactNames {—жатый файл имен}
+translate R CompactGames {—жатый файл партий}
 
 # Sorting:
-translate R SortCriteria {њаЎ„Ё–Џ}
-translate R AddCriteria {іё—–“Ўвм яаЎ„Ё–Џ}
-translate R CommonSorts {Ѕ–№–п а–бяаёбва–Ё’ЁЁ–п бёавЎаё“Џ–}
-translate R Sort {ЅёавЎаё“–вм}
+translate R SortCriteria { ритерий}
+translate R AddCriteria {ƒобавить критерий}
+translate R CommonSorts {ќбщие сортировки}
+translate R Sort {—ортировка}
 
 # Exporting:
-translate R AddToExistingFile {іё—–“Ўвм я–авЎЎ “ бгй’бв“гойЎў д–ўџ?}
-translate R ExportComments {ЌЏбяёавЎаё“–вм Џё№№’Ёв–аЎЎ?}
-translate R ExportVariations {ЌЏбяёавЎаё“–вм “–аЎ–Ёвл?}
-translate R IndentComments {Њвбвгя ‘џп Џё№№’Ёв–аЎ’“?}
-translate R IndentVariations {Њвбвгя ‘џп “–аЎ–Ёвё“?}
-translate R ExportColumnStyle {≤ ЏёџёЁЏг (яё её‘г Ё– Џ–÷‘ёў бваёзЏ’)?}
-translate R ExportSymbolStyle {ЅвЎџм бЎ№“ёџмЁле яаЎ№’з–ЁЎў:}
-translate R ExportStripMarks {√—а–вм ё—ё„Ё–з’ЁЎп Џ“–‘а–вё“/бва’џёЏ Ў„ Џё№№’Ёв–аЎп?}
+translate R AddToExistingFile {ƒобавить партии в существующий файл?}
+translate R ExportComments {Ёкспортировать комментарии?}
+translate R ExportVariations {Ёкспортировать варианты?}
+translate R IndentComments { омментарии с отступом?}
+translate R IndentVariations {¬арианты с отступом?}
+translate R ExportColumnStyle {¬ колонку (один ход на строку)?}
+translate R ExportSymbolStyle {—тиль символической аннатации:}
+translate R ExportStripMarks {”далить маркированные коды полей/стрелок из комментариев?}
 
 # Goto game/move dialogs:
-translate R LoadGameNumber {≤“’‘Ўв’ Ёё№’а я–авЎЎ ‘џп ’’ „–”аг„ЏЎ:}
-translate R GotoMoveNumber {њ’а’ўвЎ Џ её‘г Ёё№’а:}
+translate R LoadGameNumber {¬ведите номер партии дл€ загрузки:}
+translate R GotoMoveNumber {ѕерейти к ходу номер:}
 
 # Copy games dialog:
-translate R CopyGames {ЇЊяЎаё“–вм Ў”ал}
+translate R CopyGames {—копировать партии}
 translate R CopyConfirm {
- ≤л ‘’ўбв“Ўв’џмЁё еёвЎв’ бЏёяЎаё“–вм
- [thousands $nGamesToCopy] ёвдЎџмваё“–ЁЁл’ я–авЎЎ
- Ў„ —–„л ‘–ЁЁле "$fromName"
- “ —–„г "$targetName"?
+ ¬ы действительно желаете скопировать
+ [thousands $nGamesToCopy] отфильтрованных партий
+ из базы данных "$fromName"
+ в базу данных "$targetName"?
 }
-translate R CopyErr {љ’ №ё”г бЏёяЎаё“–вм я–авЎЎ}
-translate R CopyErrSource {Ўбеё‘Ё–п —–„– ‘–ЁЁле}
-translate R CopyErrTarget {“леё‘Ё–п —–„– ‘–ЁЁле}
-translate R CopyErrNoGames {Ё’ Ў№’’в я–авЎў “ дЎџмва’}
-translate R CopyErrReadOnly {вёџмЏё ‘џп зв’ЁЎп}
-translate R CopyErrNotOpen {Ё’ ёвЏалв–}
+translate R CopyErr {Ќе могу скопировать партии}
+translate R CopyErrSource {исходна€ база данных}
+translate R CopyErrTarget {целева€ база данных}
+translate R CopyErrNoGames {has no games in its filter}
+translate R CopyErrReadOnly {только дл€ чтени€}
+translate R CopyErrNotOpen {не открыта}
 
 # Colors:
-translate R LightSquares {Ѕ“’вџл’ яёџп}
-translate R DarkSquares {¬’№Ёл’ яёџп}
-translate R SelectedSquares {≤л—а–ЁЁл’ яёџп}
-translate R SuggestedSquares {ња’‘џ–”–’№л’ ‘џп её‘– яёџп}
-translate R WhitePieces {±’џл’ дЎ”гал}
-translate R BlackPieces {«’аЁл’ дЎ”гал}
-translate R WhiteBorder {±’џ–п Џ–ў№–}
-translate R BlackBorder {«’аЁ–п Џ–ў№–}
+translate R LightSquares {—ветлые пол€}
+translate R DarkSquares {“емные пол€}
+translate R SelectedSquares {¬ыбранные пол€}
+translate R SuggestedSquares {ѕол€ подсказанных ходов}
+translate R WhitePieces {Ѕелые фигуры}
+translate R BlackPieces {„ерные фигуры}
+translate R WhiteBorder {Ѕелые границы}
+translate R BlackBorder {„ерные границы}
 
 # Novelty window:
-translate R FindNovelty {љ–ўвЎ Ёё“лў её‘}
-translate R Novelty {љё“лў её‘}
-translate R NoveltyInterrupt {њёЎбЏ Ёё“ё”ё её‘– яа’а“–Ё}
-translate R NoveltyNone {≤ ‘–ЁЁёў Ў”а’ Ё’ ё—Ё–аг÷’Ёё Ёё“ё”ё её‘–}
+translate R FindNovelty {Ќайти новинку}
+translate R Novelty {Ќовинка}
+translate R NoveltyInterrupt {ѕоиск новинки прерван}
+translate R NoveltyNone {¬ этой партии новинок не найдено}
 translate R NoveltyHelp {
-Scid Ё–ў‘’в я’а“лў её‘ “ ‘–ЁЁёў я–авЎЎ, яаЎ Џёвёаё№ яёџгз–’вбп яё„ЎжЎп, Џёвёаёў Ё’в “ “л—а–ЁЁёў —–„’ ‘–ЁЁле ЎџЎ “ ‘’—овЁёў —Ў—џЎёв’Џ’ ECO.
+Scid найдет первый ход в текущей партии, который приведет к позиции, отсутствующей в текущей базе данных и дебютной книге.
 }
 
 # Upgrading databases:
-translate R Upgrading {ЇёЁ“’авЎаё“–ЁЎ’}
+translate R Upgrading {ќбновленный}
 translate R ConfirmOpenNew {
-Ќвё —–„– ‘–ЁЁле бв–аё”ё дёа№–в– (Scid 2), Џёвёа–п Ё’ №ё÷’в —лвм ёвЏалв– “ Scid 3, ё‘Ё–Џё —–„– ‘–ЁЁле Ёё“ё”ё дёа№–в– (Scid 3) г÷’ —лџ– бё„‘–Ё–.
+Ёто старый формат (Scid 2) базы данных, который не может быть открыт в Scid 3, но формат новой версии (Scid 3) уже может быть создан.
 
-≤л еёвЎв’ ёвЏалвм —–„г ‘–ЁЁле Ёё“ё”ё дёа№–в–?
+¬ы желаете открыть версию нового формата базы данных?
 }
 translate R ConfirmUpgrade {
-Ќвё —–„– ‘–ЁЁле бв–аё”ё дёа№–в– (Scid 2). A new-format version of the database must be created before it can be used in Scid 3.
-Scid 3 №ё÷’в ёвЏалвм вёџмЏё —–„г ‘–ЁЁле Ёё“ё”ё дёа№–в–, Џёвёаго Ё’ё—её‘Ў№ё бё„‘–вм. 
+Ёто старый формат (Scid 2) базы данных. Ќовый формат базы данных должен быть создан перед тем как использовать его в Scid 3.
 
-њёбџ’ ЏёЁ“’авЎаё“–ЁЎп —г‘’в бё„‘–Ё– —–„– ‘–ЁЁле Ёё“ё”ё дёа№–в–, яаЎ нвё№ бв–а–п —–„– ‘–ЁЁле в–Џ÷’ бёеа–ЁЎвбп.
+ќбновление создаст новый формат базы данных; это не изменит и не удалит оригинальные файлы.
 
-Ќвё №ё÷’в „–Ёпвм Ё’Џёвёаё’ “а’№п, ё‘Ё–Џё ва’—г’вбп б‘’џ–вм вёџмЏё а–„. ≤л №ё÷’в’ яа’а“–вм ёя’а–жЎо, ’бџЎ ёЁ– „–ў№’в бџЎиЏё№ №Ёё”ё “а’№’ЁЎ.
+Ёто может зан€ть врем€, но это делаетс€ только один раз. ¬ы можете отзатьс€, если это занимает слишком много времени.
 
-≤л еёвЎв’ бЏёЁ“’авЎаё“–вм нвг —–„г ‘–ЁЁле яап№ё б’ўз–б?
+¬ы желаете обновить базу данных сейчас?
 }
 
 # Recent files options:
-translate R RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate R RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate R RecentFilesMenu {„исло недавно загруженных файлов в файловом меню}
+translate R RecentFilesExtra {„исло недавно загруженных файлов во внешнем подменю}
 
 }
 # end of russian.tcl

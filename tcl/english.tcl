@@ -36,7 +36,7 @@
 #     If in doubt, just make them all "0" and I'll assign sensible underlined
 #     letters when your translations are incorporated into Scid.
 #
-# Additions, corrections? Email: shane@cosc.canterbury.ac.nz
+# Additions, corrections? Email: sgh@users.sourceforge.net
 
 
 addLanguage E English 0
@@ -104,6 +104,10 @@ menuText E EditStrip "Strip" 2 {Strip comments or variations from this game}
 menuText E EditStripComments "Comments" 0 \
   {Strip all comments and annotations from this game}
 menuText E EditStripVars "Variations" 0 {Strip all variations from this game}
+menuText E EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game}
+menuText E EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game}
 menuText E EditReset "Empty Clipbase" 0 \
   {Reset the clipbase to be completely empty}
 menuText E EditCopy "Copy this game to Clipbase" 0 \
@@ -227,6 +231,8 @@ menuText E OptionsLanguage "Language" 0 {Select menu language}
 menuText E OptionsMoves "Moves" 0 {Move entry options}
 menuText E OptionsMovesAsk "Ask before replacing moves" 0 \
   {Ask before overwriting any existing moves}
+menuText E OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves}
 menuText E OptionsMovesDelay "Autoplay time delay..." 1 \
   {Set the time delay for autoplay mode}
 menuText E OptionsMovesCoord "Coordinate move entry" 0 \
@@ -288,6 +294,7 @@ helpMsg E .button.intoVar {Move into a variation  (shortcut key: v)}
 helpMsg E .button.exitVar {Leave the current variation  (shortcut key: z)}
 helpMsg E .button.flip {Rotate board  (shortcut key: .)}
 helpMsg E .button.coords {Turn board coordinates on or off  (shortcut key: 0)}
+helpMsg E .button.stm {Turn the side-to-move icon on or off}
 helpMsg E .button.autoplay {Autoplay moves  (key: Ctrl+Z)}
 
 # General buttons:
@@ -394,6 +401,7 @@ translate E PInfoMostWhite {Most common openings as White}
 translate E PInfoMostBlack {Most common openings as Black}
 translate E PInfoRating {Rating history}
 translate E PInfoBio {Biography}
+translate E PInfoEditRatings {Edit ratings}
 
 # Tablebase information:
 translate E Draw {Draw}
@@ -449,7 +457,10 @@ translate E TreeBestGames {Best tree games}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate E TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear}
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws}
+translate E TreeElapsedTime {Time}
+translate E TreeFoundInCache {  (Found in cache)}
+translate E TreeTotal {TOTAL:     }
 
 # Finder window:
 menuText E FinderFile "File" 0
@@ -527,6 +538,7 @@ translate E AnnotateAll {For moves by both sides}
 translate E AnnotateWhite {For White moves only}
 translate E AnnotateBlack {For Black moves only}
 translate E AnnotateNotBest {When game move is not best move}
+translate E LowPriority {Low CPU priority}
 
 # Analysis Engine open dialog:
 translate E EngineList {Analysis Engine List}
@@ -568,6 +580,7 @@ menuText E PgnColorBackground "Background..." 0
 menuText E PgnHelp "Help" 0
 menuText E PgnHelpPgn "PGN help" 0
 menuText E PgnHelpIndex "Index" 0
+translate E PgnWindowTitle {PGN of game}
 
 # Crosstable window menus:
 menuText E CrosstabFile "File" 0

@@ -256,6 +256,10 @@ $m.strip add command -label EditStripComments -command {gameStrip comments}
 set helpMessage($m.strip,0) EditStripComments
 $m.strip add command -label EditStripVars -command {gameStrip variations}
 set helpMessage($m.strip,1) EditStripVars
+$m.strip add command -label EditStripBegin -command {gameTruncateBegin}
+set helpMessage($m.strip,2) EditStripBegin
+$m.strip add command -label EditStripEnd -command {gameTruncate}
+set helpMessage($m.strip,3) EditStripEnd
 
 $m add separator
 
@@ -1201,7 +1205,7 @@ proc setLanguageMenus {{lang ""}} {
                CopyBoard PasteBoard} {
     configMenuText .menu.edit [tr Edit$tag $oldLang] Edit$tag $lang
   }
-  foreach tag {Comments Vars} {
+  foreach tag {Comments Vars Begin End} {
     configMenuText .menu.edit.strip [tr EditStrip$tag $oldLang] \
       EditStrip$tag $lang
   }

@@ -3,7 +3,7 @@
 #  Contributors: Bernhard Bialas, Jürgen Clos et al.
 #  Untranslated messages are marked with a "***" comment.
 
-addLanguage D Deutsch 0
+addLanguage D Deutsch 0 iso8859-1
 
 proc setLanguage_D {} {
 
@@ -73,6 +73,10 @@ menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \
   {Alle Varianten aus der Partie entfernen}
+menuText D EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText D EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText D EditReset "Ablage leeren" 0 \
    {Inhalt der Ablage-Datenbank löschen}
 menuText D EditCopy "Partie in Ablage kopieren" 17 \
@@ -200,11 +204,13 @@ menuText D OptionsLanguage "Sprache" 0 {Sprache wählen}
 menuText D OptionsMoves "Züge" 0 {Zugeingabe-Optionen}
 menuText D OptionsMovesAsk "Fragen vor Ersetzen" 0 \
   {Vor Überschreiben existierender Züge nachfragen}
-menuText D OptionsMovesDelay "Autom. Vorspielen..." 0 \
+menuText D OptionsMovesAnimate "Animation" 0 \
+  {Zeit für Zuganimation einstellen}
+menuText D OptionsMovesDelay "Autom. Vorspielen..." 7 \
   {Zeit für automatisches Vorspielen einstellen}
 menuText D OptionsMovesCoord "Tastatureingabe" 0 \
   {Zugeingabe über Koordinaten ("g1f3") akzeptieren}
-menuText D OptionsMovesSuggest "Zeige Zugvorschlag" 9 \
+menuText D OptionsMovesSuggest "Zugvorschlag zeigen" 0 \
   {Zugvorschlag ein-/ausschalten}
 menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
@@ -245,7 +251,7 @@ menuText D GInfoFEN "FEN zeigen" 0
 menuText D GInfoMarks "Gefärbte Felder und Pfeile zeigen" 0
 menuText D GInfoWrap "Umbruch bei langen Zeilen" 0
 menuText D GInfoFullComment "Vollständigen Kommentar zeigen" 14
-menuText D GInfoPhotos "Show Photos" 5 ;# ***
+menuText D GInfoPhotos "Fotos zeigen" 1
 menuText D GInfoTBNothing "Endspieltabellen: nichts" 18
 menuText D GInfoTBResult "Endspieltabellen: nur Ergebnis" 22
 menuText D GInfoTBAll "Endspieltabellen: Ergebnis und bester Zug" 31
@@ -261,6 +267,7 @@ helpMsg D .button.intoVar {Gehe in Variante  (Taste: v)}
 helpMsg D .button.exitVar {Verlasse Variante  (Taste: z)}
 helpMsg D .button.flip {Brett drehen  (Taste: .)}
 helpMsg D .button.coords {Brettkoordinaten AN oder AUS  (Taste: 0)}
+helpMsg D .button.stm {Anzeige "Wer ist am Zug" an oder aus}
 helpMsg D .button.autoplay {Automatisches Vorspielen  (Taste: Strg+Z)}
 
 # General buttons:
@@ -276,7 +283,7 @@ translate D Import {Importieren}
 translate D Index {Inhalt}
 translate D LoadGame {Partie laden}
 translate D BrowseGame {Partie betrachten}
-translate D MergeGame {Partie mischen} ;# einfügen!?
+translate D MergeGame {Partien kombinieren} ;# mischen?! einfügen!?
 translate D Preview {Vorschau} ;# Voransicht!? (KDE)
 translate D Revert {Umkehren}
 translate D Save {Speichern}
@@ -369,6 +376,7 @@ translate D PInfoMostWhite {Häufigste Eröffnungen als Weißer}
 translate D PInfoMostBlack {Häufigste Eröffnungen als Schwarzer}
 translate D PInfoRating {ELO-Historie}
 translate D PInfoBio {Biografie}
+translate D PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate D Draw {Remis}
@@ -428,7 +436,10 @@ translate D TreeBestGames {Beste Zugbaum-Partien}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate D TreeTitleRow \
-  {    Zug    ECO       Häufigkeit    Pkte   Elo  Erflg Jahr }
+  {    Zug    ECO       Häufigkeit    Pkte   Elo  Erflg Jahr %Remis}
+translate D TreeElapsedTime {Time} ;# ***
+translate D TreeFoundInCache {  (Found in cache)} ;# ***
+translate D TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText D FinderFile "Datei" 0
@@ -506,6 +517,7 @@ translate D AnnotateAll {Für Züge beider Seiten}
 translate D AnnotateWhite {Nur für Züge von Weiß}
 translate D AnnotateBlack {Nur für Züge von Schwarz}
 translate D AnnotateNotBest {Wenn der Partiezug nicht der beste Zug ist}
+translate D LowPriority {Niedrige CPU-Priorität}
 
 # Analysis Engine open dialog:
 translate D EngineList {Analyse-Engines}
@@ -532,7 +544,7 @@ menuText D PgnFilePrint "Drucken in Datei..." 0
 menuText D PgnFileClose "PGN-Fenster schließen" 0
 menuText D PgnOpt "Ausgabe" 0
 menuText D PgnOptColor "Farbige Darstellung" 0
-menuText D PgnOptShort "Kurzer (3-Zeilen) Kopf" 8
+menuText D PgnOptShort "Kurzer (3-Zeilen) Vorspann (Header)" 8
 menuText D PgnOptSymbols "Symbolische Darstellung" 0
 menuText D PgnOptIndentC "Kommentare einrücken" 0
 menuText D PgnOptIndentV "Varianten einrücken" 0
@@ -540,7 +552,7 @@ menuText D PgnOptColumn "Tabellarisch (ein Zug pro Zeile)" 0
 menuText D PgnOptSpace "Leerzeichen nach Zugnummer" 0
 menuText D PgnOptStripMarks "Farbfelder-/Pfeile-Zeichen entfernen" 27
 menuText D PgnColor "Farben" 0
-menuText D PgnColorHeader "Kopf..." 0
+menuText D PgnColorHeader "Vorspann..." 0
 menuText D PgnColorAnno "Anmerkungen..." 0
 menuText D PgnColorComments "Kommentare..." 0
 menuText D PgnColorVars "Varianten..." 0
@@ -548,6 +560,7 @@ menuText D PgnColorBackground "Hintergrund..." 0
 menuText D PgnHelp "Hilfe" 0
 menuText D PgnHelpPgn "PGN-Hilfe" 0
 menuText D PgnHelpIndex "Index" 0
+translate D PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText D CrosstabFile "Datei" 0
@@ -1110,6 +1123,7 @@ translateECO D {
   Chigorin Tschigorin
   Polugaevsky Polugajewski
   Rauzer Rauser
+  Sveshnikov Sweschnikow
 
   Austrian Österreichisch
   Berlin Berliner
@@ -1143,12 +1157,17 @@ translateECO D {
   {Accelerated Pterodactyl} {Beschleunigter Pterodactylus}
   {Alekhine Defence} Aljechin-Verteidigung
   {Alekhine Variation} Aljechin-Variante
+  {Alekhine: Sämisch Attack} {Aljechin: Wiener System (Sämisch-Angriff)}
   {Anderssen Opening} Anderssen-Eröffnung
   {Anti-King's Indian} Anti-Königsindisch
+  {Austrian Attack} {Österreichischer Angriff}
   {Benko Gambit} Wolga-Gambit
   {Benko Opening} Benkö-Eröffnung
   {Berlin Defence} {Berliner Verteidigung}
+  Chameleon Chamäleon
+  Chelyabinsk Tscheljabinsk
   {Classical Defence} {Klassische Verteidigung}
+  {Spanish: Classical Defence} {Spanisch: Klassische (Cordel-) Verteidigung}
   {Classical Exchange} {Klassischer Abtausch}
   {Classical Variation} {Klassische Variante}
   {Closed Berlin} {Geschlossene Berliner}
@@ -1170,15 +1189,18 @@ translateECO D {
   {English Variation} {Englische Variante}
   {Englund Gambit} Englund-Gambit
   {Exchange Variation} Abtauschvariante
+  {Fianchetto Variation} Fianchettovariante
   {Flohr Variation} Flohr-Variante
   {Four Knights} Vierspringer
   {Four Knights Game} Vierspringerspiel
   {Four Pawns} Vierbauern
   {Four Pawns Attack} Vierbauernangriff
   {French Variation} {Französische Variante}
+  {From Gambit} {Froms Gambit}
   {Goring Gambit} {Göring-Gambit}
   {Grob Gambit} {Grobs Gambit}
   {Hungarian Defence} {Ungarische Verteidigung}
+  {Indian Variation} {Indische Variante}
   {Italian Game} {Italienische Partie}
   KGD {Abgel. Königsgambit}
   {Classical KGD} {Klassisches abgelehntes Königsgambit}
@@ -1195,10 +1217,11 @@ translateECO D {
   {King's Pawn} Königsbauer
   {Lasker Variation} {Lasker-Variante}
   {Latvian Gambit} {Lettisches Gambit}
+  {Maroczy Bind} {Maroczy-Aufbau}
   {Marshall Variation} Marshall-Variante
-  {Maroczy Bind} Maroczy
   {Modern Attack} {Moderner Angriff}
   {Modern Steinitz} {Moderne Steinitz}
+  {Modern Variation} {Moderne Variante}
   {Moscow Variation} {Moskauer Variante}
   Nimzo-Indian Nimzoindisch
   {Old Benoni} {Klassisches Benoni}
@@ -1226,6 +1249,8 @@ translateECO D {
   {Russian Game (Petroff Defence)} {Russische Partie}
   {Russian-Three Knights Game} {Russisches Dreispringerspiel}
   {Scandinavian (Centre Counter)} Skandinavisch
+  Schliemann Jänisch
+  {Schliemann (Jänisch)} {Jänisch-Gambit (Schliemann)}
   {Scotch Opening} {Schottische Eröffnung}
   {Sicilian Defence} {Sizilianische Verteidigung}
   {Sicilian Variation} {Sizilianische Variante}
@@ -1246,6 +1271,8 @@ translateECO D {
   {Two Knights} Zweispringer
   {Two Knights Defence} Zweispringer-Verteidigung
   {Two Knights Variation} Zweispringer-Variante
+  {Two Pawns} Zweibauern
+  {Two Pawns Attack} Zweibauernangriff
   {Wing Gambit} Flügel-Gambit
   {Yugoslav Attack} {Jugoslawischer Angriff}
 }
@@ -1280,7 +1307,7 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 
 <h4>Andere Scid-Fenster</h4>
 <ul>
-<li><a Analysis><b>Analyse</b>-Fenster</a></li>
+<li><a Analysis><b>Analyse</b>-Fenster</a> <red>(Aktualisiert!)</red></li>
 <li><a Finder><b>Dateifinder</b>-Fenster</a></li>
 <li><a Switcher><b>Datenbank-Umschalter</b></a></li>
 <li><a OpReport><b>Eröffnungsberichts</b>-Fenster</a></li>
@@ -1297,7 +1324,7 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Tmt><b>Turnier-Finder</b></a></li>
 <li><a Tree><b>Zugbaum</b>-Fenster</a></red></li>
 <li><a Graphs><b>Graphik</b>-Fenster</a></li>
-<li><a TB><b>Endspieltabellen</b> in Scid verwenden</a></li>
+<li><a TB><b>Endspieltabellen</b> in Scid verwenden</a> <red>(Aktualisiert!)</red></li>
 </ul>
 
 <h4>Weitere Hilfsprogramme und Informationen</h4>
@@ -2053,7 +2080,7 @@ von Zügen auf 20 setzen, werden alle Partien, die vor dem 20. Zug enden,
 
 <h3><name Header>Suchen: Partiedaten</name></h3>
 <p>
-Mit dieser Suche können Sie Partiedaten finden, die im "Kopfteil"
+Mit dieser Suche können Sie Partiedaten finden, die im Vorspann ("Header")
 gespeichert sind (wie z.B. Datum, Ergebnis, Namen und Wertungszahlen),
 es müssen daher keine Partiezüge dekodiert werden.
 </p>
@@ -2325,7 +2352,6 @@ eingeschaltet ist.
 
 <h3>Partie kommentieren</h3>
 <p>
-
 Der Schalter <b>Variante hinzufügen</b> im Analysefenster fügt die
 laufende Bewertung und beste Variante als neue Variante der Partie hinzu.
 </p>
@@ -2351,6 +2377,23 @@ Zur Vereinfachung steht der <b>Kommentar</b>-Schalter nur in dem Fenster
 zur Verfügung, das als erste Analyse-Engine geöffnet wurde. Wenn Sie
 eine Engine als Analyse-Engine Nr.2 öffnen, können Sie sie nicht zur
 Partiekommentierung nutzen.
+</p>
+
+<h3>Das Analysebrett</h3>
+<p>
+Anklicken des Schachbrett-Icons in einem Analysefenster zeigt oder
+versteckt das Analysebrett, welches die Position nach der aktuell
+besten Variante der Engine zeigt. Das funktioniert für die meisten
+Scid-kompatiblen Engines, aber nicht unbedingt für alle; es hängt
+ganz davon ab, welche Zugnotation eine Engine verwendet.
+</p>
+
+<h3>Engine-Priorität</h3>
+<p>
+Falls eine Engine zu viel CPU-Zeit verbraucht und die Benutzung von
+Scid oder anderen Applikationen beeinträchtigt, kann das Einschalten
+der Checkbox <b>Niedrige CPU-Priorität</b> helfen; es weist der
+Engine eine geringe Priorität fürs Prozeß-Scheduling zu.
 </p>
 
 <h3>Schnittstellen-Details</h3>
@@ -2405,7 +2448,7 @@ The Crazy Bishop:
 <url http://remi.coulom.free.fr/>http://remi.coulom.free.fr/</url>
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.2, Februar 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.4, September 2002)</footer></p>
 }
 
 
@@ -2990,7 +3033,7 @@ Standard-PGN-Darstellung aus. Im Partietext erscheinen Kommentare in
 PGN (Portable Game Notation) ist ein verbreiteter Standard zum Transfer
 von Schachpartien zwischen Computerprogrammen. Eine PGN-Partie besteht
 aus zwei Abschnitten.
-Der erste Teil ist der Header ("Kopf"), der Eintragungen ("tags") wie
+Der erste Teil ist der Vorspann ("Header"), der Eintragungen ("tags") wie
 z.B.
 <b>[White "Kasparov, Gary"]</b>
 und
@@ -3684,10 +3727,41 @@ der ausgewählten Endspieltabelle aufbauen.
 Der Ergebnisbereich wird immer dann aktualisiert, wenn sich die
 Brettstellung im Hauptfenster ändert. Die erste Zeile zeigt an, wie viele
 Züge gewinnen (+), zum Remis führen (=), verlieren (-) oder ein nicht
-bekanntes Ergebnis (? )haben. Der übrige Teil liefert Ihnen eine
+bekanntes Ergebnis (?) haben. Der übrige Teil liefert Ihnen eine
 detailliertere Ergebnisliste, mit der Reihenfolge kürzeste bis längste
 Matts, danach Remis, dann längste bis kürzeste Verluste. Länge jeweils
 bis zum Matt.
+</p>
+
+<h4>Das Ergebnisbrett</h4>
+<p>
+In einer Endspieltabellenstellung ist es oft nützlich zu wissen,
+wie die Ergebnisse aussähen, wenn alle Steine in ihrer gegenwärtigen
+blieben, aber ein bestimmter Stein woanders stünde. Zum Beispiel
+wenn Sie feststellen möchten, wie nah ein König einem Freibauern sein
+muß, um eine bestimmte Stellung zu gewinnen oder Remis zu machen.
+In Endspielbüchern wird diese Information oft die <i>Gewinnzone</i>
+bzw. <i>Remiszone</i> eines Steins in einer bestimmten Stellung
+genannt.
+</p>
+<p>
+Mit Hilfe von Scid können Sie diese Information erhalten, wenn Sie
+den Schalter mit dem Schachbrett anklicken, um das
+<term>Ergebnisbrett</term> im Endspieltabellenfenster zu zeigen.
+Wenn Sie mit der linken Maustaste irgendeinen Stein auf dem Brett
+anklicken, erscheint auf jedem freien Feld ein Symbol mit dem Resultat
+der Endspieltabelle, wenn der Stein auf diesem Feld stünde (mit derselben
+Seite am Zug wie in der aktuellen Position des Hauptfensters).
+</p>
+<p>
+Ein Feld kann fünf mögliche Symbole haben:
+ein weißes "<b>#</b>" bedeutet, Weiß gewinnt;
+ein schwarzes "<b>#</b>" bedeutet, Schwarz gewinnt;
+ein blaues "<b>=</b>" bedeutet, die Stellung ist remis;
+ein rotes "<b>X</b>" bedeutet, die Position ist illegal (weil die Könige
+nebeneinander stehen oder die Seite am Zug Schach bietet); und
+ein rotes "<b>?</b>" heißt, das Result ist unbekannt, weil die nötige
+Endspieltabellen-Datei nicht zur Verfügung steht.
 </p>
 
 <h3>Endspieltabellen-Quellen</h3>
@@ -3696,7 +3770,7 @@ Zur Hilfe beim Auffinden von Endspieltabellen-Dateien im Internet
 siehe die entsprechenden <a Author Related>Links</a>.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.4, September 2002)</footer></p>
 }
 
 
@@ -4273,7 +4347,7 @@ oder die Partien einer existierenden Partiendatei hinzuzufügen.
 <p>
 Wenn Sie im HTML- oder LaTeX-Format exportieren, fügt Scid automatisch
 überall dort ein Diagramm ein, wo ein Diagramm-<a NAGs>NAG</a> ("D")
-oder ein mit dem Buchstaben "#" beginnender <a Comment>Kommentar</a>
+oder ein mit dem Zeichen "#" beginnender <a Comment>Kommentar</a>
 in der Partie vorkommt.
 </p>
 
@@ -4899,7 +4973,7 @@ zusätzlichen und nützlichen Dateien.
 <p>
 Bitte senden Sie Ihre Kommentare, Fragen, Vorschläge oder Fehlerberichte
 an den Autor von Scid, Shane Hudson, an folgende E-Mail-Adresse: <br>
-<b>shane@cosc.canterbury.ac.nz</b>
+<b>sgh@users.sourceforge.net</b>
 </p>
 
 <h3><name Related>Links</name></h3>

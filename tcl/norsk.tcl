@@ -69,6 +69,10 @@ menuText O EditStrip "Fjern" 0 {Fjern kommentarer eller variasjoner fra partiet}
 menuText O EditStripComments "Kommentarer" 0 \
   {Fjern alle kommentarer og annotasjoner fra dette partiet}
 menuText O EditStripVars "Variasjoner" 0 {Fjern alle variasjoner fra dette partiet}
+menuText O EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText O EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText O EditReset "Rensk utklippsbase" 0 \
   {Tømmer utklippsbasen fullstendig}
 menuText O EditCopy "Kopier partiet til utklippsbasen" 0 \
@@ -193,6 +197,8 @@ menuText O OptionsLanguage "Språk" 0 {Velg menyspråk}
 menuText O OptionsMoves "Trekk" 0 {Innstillinger for hvordan trekk angis}
 menuText O OptionsMovesAsk "Spør før trekk erstattes" 0 \
   {Spør før eksisterende trekk erstattes av et nytt}
+menuText O OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves} ;# ***
 menuText O OptionsMovesDelay "Autospillforsinkelse..." 0 \
   {Sett forsinkelsen ved automatisk gjennomgang av partiet}
 menuText O OptionsMovesCoord "Koordinater" 0 \
@@ -255,6 +261,7 @@ helpMsg O .button.intoVar {Gå inn i en variasjon (snarvei: v)}
 helpMsg O .button.exitVar {Forlat variasjon (snarvei: z)}
 helpMsg O .button.flip {Roter brett (snarvei: .)}
 helpMsg O .button.coords {Slå av/på brettkoordinater (snarvei: 0)}
+helpMsg O .button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg O .button.autoplay {Automatisk spill (tast: Ctrl+Z)}
 
 # General buttons:
@@ -360,6 +367,7 @@ translate O PInfoMostWhite {Hyppigste åpning som hvit}
 translate O PInfoMostBlack {Hyppigste åpning som sort}
 translate O PInfoRating {Historisk rating}
 translate O PInfoBio {Biografi}
+translate O PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate O Draw {Uavgjort}
@@ -415,7 +423,10 @@ translate O TreeBestGames {Idealtrepartier}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate O TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
+translate O TreeElapsedTime {Time} ;# ***
+translate O TreeFoundInCache {  (Found in cache)} ;# ***
+translate O TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText O FinderFile "Fil" 0
@@ -493,6 +504,7 @@ translate O AnnotateAll {For trekk av begge sider}
 translate O AnnotateWhite {Kun for hvite trekk}
 translate O AnnotateBlack {Kun for sorte trekk}
 translate O AnnotateNotBest {Når trekket avviker fra beste linje}
+translate O LowPriority {Low CPU priority} ;# ***
 
 # Analysis Engine open dialog:
 translate O EngineList {Liste over analysemotorer}
@@ -534,6 +546,7 @@ menuText O PgnColorBackground "Bakgrunn..." 0
 menuText O PgnHelp "Hjelp" 0
 menuText O PgnHelpPgn "PGN-hjelp" 0
 menuText O PgnHelpIndex "Innholdsfortegnelse" 0
+translate O PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText O CrosstabFile "Fil" 0

@@ -174,7 +174,7 @@ proc email_LoadButton {} {
       tk_messageBox -type ok -icon warning -title "Scid" -message $result
     } else {
       sc_move end
-      updateBoardAndPgn .board
+      updateBoard -pgn
       updateTitle
     }
   }

@@ -73,6 +73,10 @@ menuText N EditStrip "Strip" 2 {Verwijder commentaar of varianten uit deze parti
 menuText N EditStripComments "Commentaar" 0 \
   {Verwijder alle commentaar en annotaties uit deze partij}
 menuText N EditStripVars "Varianten" 0 {Verwijder alle varianten uit deze partij}
+menuText N EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText N EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText N EditReset "Klembord leegmaken" 0 \
   {Maak het klembord helemaal leeg}
 menuText N EditCopy "Partij naar klembord" 7 \
@@ -207,6 +211,8 @@ menuText N OptionsLanguage "Kies taal" 5 {Kies taal}
 menuText N OptionsMoves "Zetten" 0 {Wijzig optie voor zet-invoer}
 menuText N OptionsMovesAsk "Bevestiging voor overschrijven" 0 \
   {Bevestig het overschrijven van bestaande zetten}
+menuText N OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves} ;# ***
 menuText N OptionsMovesDelay "Tijdinstelling voor auto-spelen" 10 \
   {Stel de tijd in voor het automatisch spelen van de zetten}
 menuText N OptionsMovesCoord "Zet-ingave" 0 \
@@ -271,6 +277,7 @@ helpMsg N .button.intoVar {Naar variant  (toets: v)}
 helpMsg N .button.exitVar {Verlaat variant  (toets: z)}
 helpMsg N .button.flip {Draai bord  (toets: .)}
 helpMsg N .button.coords {Coordinaten aan/uit  (toets: 0)}
+helpMsg N .button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg N .button.autoplay {Speel zetten automatisch  (toets: Ctrl+Z)}
 
 # General buttons:
@@ -377,6 +384,7 @@ translate N PInfoMostWhite {Meest gespeelde opening als Wit}
 translate N PInfoMostBlack {Meest gespeelde opening als Zwart}
 translate N PInfoRating {Geschiedenis Elo Klassering}
 translate N PInfoBio {Biografie}
+translate N PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate N Draw {Remise}
@@ -433,7 +441,10 @@ translate N TreeBestGames {Boom Beste partijen}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate N TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
+translate N TreeElapsedTime {Time} ;# ***
+translate N TreeFoundInCache {  (Found in cache)} ;# ***
+translate N TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText N FinderFile "Bestand" 0
@@ -511,6 +522,7 @@ translate N AnnotateAll {Voor zetten van beide zijden}
 translate N AnnotateWhite {Alleen voor zetten door Wit}
 translate N AnnotateBlack { Alleen voor zetten door Zwart}
 translate N AnnotateNotBest {Als de partijzet niet de beste is.}
+translate N LowPriority {Low CPU priority} ;# ***
 
 # Analysis Engine open dialog:
 translate N EngineList {Analyse Engine Lijst}
@@ -552,6 +564,7 @@ menuText N PgnColorBackground "Achtergrond kleur..." 0
 menuText N PgnHelp "Help" 0
 menuText N PgnHelpPgn "PGN help" 0
 menuText N PgnHelpIndex "Inhoud" 0
+translate N PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText N CrosstabFile "Bestand" 0

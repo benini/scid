@@ -69,7 +69,7 @@ proc importPgnGame {} {
     .importWin.pane.err.text insert end $result
     .importWin.pane.err.text configure -state disabled
     if {! $err} {
-      updateBoardAndPgn .board
+      updateBoard -pgn
       updateTitle
     }
   }
@@ -106,7 +106,7 @@ proc importPgnLine {line} {
 proc importMoveList {line} {
   sc_move start
   sc_move addSan $line
-  updateBoardAndPgn .board
+  updateBoard -pgn
 }
 
 set importPgnErrors ""
@@ -177,16 +177,32 @@ proc doPgnFileImport {fname text} {
   $w.text configure -state disabled
 
   set importPgnErrors ""
-  catch {sc_base import file $fname} result
+  set err [catch {sc_base import file $fname} result]
+  set warnings ""
   $w.text configure -state normal
   $w.text configure -cursor top_left_arrow
-  $w.text insert end $result
+  if {$err} {
+    $w.text insert end $result
+  } else {
+    set nImported [lindex $result 0]
+    set warnings [lindex $result 1]
+    set str "Imported $nImported "
+    if {$nImported == 1} { append str "game" } else { append str "games" }
+    if {$warnings == ""} {
+      append str " with no PGN errors or warnings."
+    } else {
+      append str ".\nPGN errors/warnings:\n$warnings"
+    }
+    $w.text insert end $str
+  }
   $w.text configure -state disabled
   $w.buttons.close configure -state normal
   $w.buttons.stop configure -state disabled
   catch {grab release $w.buttons.stop}
   bind $w <Escape> "$w.buttons.close invoke; break"
   unbusyCursor .
+  # Auto-close import progress window if there were no errors/warnings?
+  if {!$err  &&  $warnings == ""} { destroy $w }
   updateTitle
   updateMenuStates
   updateBaseWin

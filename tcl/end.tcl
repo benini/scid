@@ -364,6 +364,26 @@ proc gameStrip {type} {
   updateTitle
 }
 
+# gameTruncate
+proc gameTruncateBegin {} {
+  if {[catch {sc_game truncbegin} result]} {
+    tk_messageBox -parent . -type ok -icon info -title "Scid" -message $result
+    return
+  }
+  updateBoard -pgn
+  updateTitle
+}
+
+# gameTruncate
+proc gameTruncate {} {
+  if {[catch {sc_game truncate} result]} {
+    tk_messageBox -parent . -type ok -icon info -title "Scid" -message $result
+    return
+  }
+  updateBoard -pgn
+  updateTitle
+}
+
 # gameLoadNextPrev:
 #   Loads the next or previous filtered game in the database.
 #   The parameter <action> should be "previous" or "next".

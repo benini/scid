@@ -3,6 +3,7 @@
 # Added by Giancarlo Bassi.
 # Updated by Paolo Montrasi.
 # Updated by Michele Rinesi on 01/08/2002.
+# Updated by Michele Rinesi on 14/04/2003.
 # Untranslated messages are marked with a "***" comment.
 
 addLanguage I Italian 0
@@ -70,6 +71,10 @@ menuText I EditStrip "Pulisci" 2 {Elimina commenti o varianti dalla partita corr
 menuText I EditStripComments "Commenti" 0 \
   {Elimina tutti i commenti e le annotazioni dalla parita corrente}
 menuText I EditStripVars "Varianti" 0 {Elimina tutte le varianti dalla partita corrente}
+menuText I EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText I EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText I EditReset "Vuota la Clipbase" 0 \
   {Svuota completamente la clipbase}
 menuText I EditCopy "Copia questa partita nella Clipbase" 1 \
@@ -78,8 +83,8 @@ menuText I EditPaste "Incolla l'ultima partita nella Clipbase" 0 \
   {Incolla qui la partita della clipbase}
 menuText I EditSetup "Posizione definita..." 10 \
   {Definisce una posizione per la partita corrente}
-menuText I EditCopyBoard "Copy position" 6 \
-  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
+menuText I EditCopyBoard "Copia posizione" 6 \
+  {Copia la posizione della scacchiera corrente in notazione FEN come testo (clipboard)} ;# *** DONE
 menuText I EditPasteBoard "Incolla come posizione di partenza" 12 \
   {Imposta la posizione di partenza dalla selezione del testo corrente (clipboard)}
 
@@ -190,6 +195,8 @@ menuText I OptionsLanguage "Lingua" 0 {Sceglie una nuova lingua di menu}
 menuText I OptionsMoves "Mosse" 0 {Opzioni di immissione di mosse}
 menuText I OptionsMovesAsk "Conferma prima di sostituire le mosse" 0 \
   {Chiede prima di sovrascrivere ogni mossa esistente}
+menuText I OptionsMovesAnimate "Intervallo di tempo per le mosse animate" 1 \
+  {Definisce l'intervallo di tempo per le mosse animate} ;# *** DONE
 menuText I OptionsMovesDelay "Intervallo di tempo per il gioco automatico..." 1 \
   {Definisce l'intervallo di tempo per il gioco automatico}
 menuText I OptionsMovesCoord "Immissione mossa per coordinate" 0 \
@@ -236,7 +243,7 @@ menuText I GInfoFEN "Mostra FEN" 5
 menuText I GInfoMarks "Mostra caselle e frecce colorate" 5
 menuText I GInfoWrap "A capo automatico" 0
 menuText I GInfoFullComment "Mostra commenti completi" 10
-menuText I GInfoPhotos "Show Photos" 5 ;# ***
+menuText I GInfoPhotos "Visualizza foto" 5 ;# *** DONE
 menuText I GInfoTBNothing "Tablebases: nulla" 12
 menuText I GInfoTBResult "Tablebases: solo risultato" 12
 menuText I GInfoTBAll "Tablebases: risultato e mosse migliori" 19
@@ -252,6 +259,7 @@ helpMsg I .button.intoVar {Entra in una variante  (chiave abbreviata: v)}
 helpMsg I .button.exitVar {Lascia la variante attuale  (chiave abbreviata: z)}
 helpMsg I .button.flip {Ruota la scacchiera (chiave abbreviata: .)}
 helpMsg I .button.coords {Coordinate on/off  (chiave abbreviata: 0)}
+helpMsg I .button.stm {Visualizza l'icona di chi ha la mossa (si/no)} ;# ***
 helpMsg I .button.autoplay {Mosse automatiche  (chiave: Ctrl+Z)}
 
 # General buttons:
@@ -358,6 +366,7 @@ translate I PInfoMostWhite {Le piu' frequenti aperture con il Bianco}
 translate I PInfoMostBlack {Le piu' frequenti aperture con il Nero}
 translate I PInfoRating {Variazioni dell'Elo}
 translate I PInfoBio {Biografia}
+translate I PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate I Draw {Patta}
@@ -416,7 +425,10 @@ translate I TreeBestGames {Migliori partite}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate I TreeTitleRow \
-  {    Mossa  ECO       Frequenza    Punt.  AvElo Perf AvAnno}
+  {    Mossa  ECO       Frequenza    Punt.  AvElo Perf AvAnno %Patta}
+translate I TreeElapsedTime {Time} ;# ***
+translate I TreeFoundInCache {  (Found in cache)} ;# ***
+translate I TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText I FinderFile "File" 0
@@ -437,10 +449,10 @@ menuText I FinderTypesRep "File di Repertorio" 0
 menuText I FinderHelp "Aiuto" 0
 menuText I FinderHelpFinder "Aiuto su File Finder" 0
 menuText I FinderHelpIndex "Indice di aiuto" 0
-translate I FileFinder {File Finder}
-translate I FinderDir {Directory} ;# ***
-translate I FinderDirs {Directories} ;# ***
-translate I FinderFiles {Files}
+translate I FileFinder {Trova File}
+translate I FinderDir {Trova Directory} ;# *** DONE
+translate I FinderDirs {Trova Directories} ;# *** DONE
+translate I FinderFiles {Trova Files}
 translate I FinderUpDir {Su}
 
 # Player finder:
@@ -451,8 +463,8 @@ menuText I PListSort "Ordina" 0
 menuText I PListSortName "Nome" 0
 menuText I PListSortElo "Elo" 0
 menuText I PListSortGames "Partite" 0
-menuText I PListSortOldest "Più vecchie" 4
-menuText I PListSortNewest "Più recenti" 4
+menuText I PListSortOldest "Più vecchie" 0
+menuText I PListSortNewest "Più recenti" 0
 
 # Tournament finder:
 menuText I TmtFile "File" 0
@@ -494,6 +506,7 @@ translate I AnnotateAll {Per mosse di entrambi i colori}
 translate I AnnotateWhite {Per solo le mosse del Bianco}
 translate I AnnotateBlack {Per solo le mosse del Nero}
 translate I AnnotateNotBest {Quando la mossa della partita non e' la migliore}
+translate I LowPriority {Imposta la priorità della CPU a bassa} ;# *** DONE
 
 # Analysis Engine open dialog:
 translate I EngineList {Lista dei motori di analisi}
@@ -535,6 +548,7 @@ menuText I PgnColorBackground "Sfondo..." 0
 menuText I PgnHelp "Aiuto" 0
 menuText I PgnHelpPgn "Aiuto PGN" 0
 menuText I PgnHelpIndex "Indice" 0
+translate I PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText I CrosstabFile "File" 0
@@ -977,7 +991,7 @@ translate I CopyConfirm {
  Vuoi veramente copiare
  le [thousands $nGamesToCopy] partite dal filtro
  del database "$fromName"
- nel database "$targetName"?
+ nel database "$toName"?
 }
 translate I CopyErr {Impossibile copiare le partite}
 translate I CopyErrSource {il database origine}
@@ -1027,4 +1041,238 @@ translate I RecentFilesMenu {Numero di file recentemente utilizzati nel Menu Fil
 translate I RecentFilesExtra {Numero di file recentemente utilizzati nel submenu extra}
 
 }
+
+############################################################
+#
+# Italian tips section:
+
+set tips(I) {
+  {
+    SCID ha oltre 30 <a Index>pagine di help</a>, e in molte finestre 
+    premendo il tasto funzionale <b>F1</b> apparira' una pagina di help
+    relativa alla finestra.
+  }
+  {
+    Molte finestre di SCID (p.e. il database <a Switcher>database switcher</a>,
+    ecc.) hanno un menu' collegato al pulsante destro del mouse. Prova a
+    premerlo in ogni finestra per vedere se c'e' e quali funzionalita' permette.
+  }
+  {
+    SCID ti consente piu' di una modalità per inserire le mosse, scegli
+    quale preferisci. Puoi utilizzare il mouse (con o senza il suggerimento
+    della mossa) o la tastiera (con o senza il completamento della mossa).
+    Leggi la pagina di help <a Moves>inserire le mosse</a> per maggiori dettagli. 
+  }
+  {
+    Se utilizzi pochi database che apri spesso, aggiungi un
+    <a Bookmarks>segnalibro</a> a ognuno di essi e poi puoi aprirlo piu'
+    velocemente con il Menu Segnalibri.
+  }
+  {
+    Puoi visualizzare tutte le mosse della partita caricata (con ogni
+    variante e/o commento) utilizzando la <a PGN>Finestra PGN</a>.
+    Nella Finestra PGN puoi andare a ogni mossa premendo il tasto sinistro
+    del mouse quando sei sulla mossa oppure visualizzare la posizione
+    premendo il tasto centrale/destro del mouse.
+  }
+  {
+    Puoi copiare partite da un database ad un'altro usando la tecnica del
+    drag and drop utilizzando il tasto sinistro del mouse nella finestra 
+    <a Switcher>database switcher</a>.
+  }
+  {
+    SCID puo' aprire file PGN, anche se sono compressi con Gzip (con il
+    suffisso .gz). I file PGN aperti sono a sola lettura cosi' puoi
+    modificare un file PGN in SCID, creando un nuovo database SCID e copiando
+    il file PGN in esso utilizzando il <a Switcher>database switcher</a>.
+  }
+  {
+    Se hai un grosso database e usi spesso la finestra <a Tree>albero</a>,
+    e' il caso di utilizzare <b>riempi il file cache</b> dalla Finestra
+    Albero (menu file). Cio' memorizza le statistiche dell'albero delle
+    piu' comuni posizioni di apertura rendendo piu' veloci gli accessi
+    all'albero per quel database.
+  }
+  {
+    La finestra <a Tree>albero</a> visualizza tutte le mosse giocate dalla
+    posizione caricata, ma se vuoi vedere tutti gli ordini di mosse che
+    raggiungono la posizione devi generare un <a OpReport>report di apertura</a>.
+  }
+  {
+    Nella finestra <a GameList>elenco partite</a> premendo il tasto sinistro
+    o desto del mouse sulla testata di ogni colonna puoi modificarne la
+    larghezza.
+  }
+  {
+    Con la finestra <a PInfo>informazioni sul giocatore</a> (che ottieni
+    cliccando sui nomi dei giocatori nella info area sotto la finestra
+    con la scacchiera) tu puoi facilmente, utilizzando il
+    <a Searches Filter>filtro</a>, ottenere tutte le partite di un certo
+    giocatore con i suoi risultati cliccando su ogni campo che appare
+    <red>in rosso</red>.
+  }
+  {
+    Quando studi un'apertura puo' essere utile effettuare una
+    <a Searches Board>ricerca su scacchiera</a> con le opzioni
+    <b>Pedoni</b> oppure <b>Colonne</b> sulla posizione che ti
+    interessa, in maniera da evidenziarti se altre aperture 
+    raggiungono la stessa struttura di pedoni.
+  }
+  {
+    Nell'Area di informazioni sulla partita (sotto la scacchiera) tu puoi
+    premere il tasto destro del mouse per ottenere un menu' per 
+    personalizzarla. Per esempio puoi nascondere la prossima mossa e cio'
+    e' utile quando visualizzi una partita per allenamento e vuoi pensare
+    le mosse successive. 
+  }
+  {
+    Se tu effettui spesso <a Maintenance>manutenzione</a> di un database
+    di grosse dimensioni puoi effettuare tutte le attivita' in un colpo
+    solo utilizzando il <a Maintenance Cleaner>pulitore</a>.
+  }
+  {
+    Se tu hai un grosso database dove molte partite hanno il campo EventDate
+    valorizzato e tu vuoi le partite in ordine di data utilizza
+    <a Sorting>ordinamento</a> per EventDate/Event invece di Date/Event
+    cosicche' otterrai insieme le partite dello stesso torneo anche se hanno
+    date diverse (partendo dal presupposto che abbiano la stessa EventDate).
+  }
+  {
+    Prima di <a Maintenance Twins>cancellare le partite doppie</a> e' meglio
+    utilizzare il <a Maintenance Spellcheck>controllo ortografico</a> sul tuo
+    database permettendo a SCID di identificare un numero maggiore di
+    partite doppie e contrassegnarle per la cancellazione.
+  }
+  {
+    <a Flags>Gli identificatori</a>  sono utili per evidenziare partite con
+    caratteristiche particolari da ricercare successivamente (p.e. struttura
+    di pedoni, tattica, ecc.). Puoi ricercare le partite contrassegnate
+    utilizzando <a Searches Header>ricerca per intestazione</a>.
+  }
+  {
+    Se stai visualizzando una partita e vuoi provare qualche altra mossa
+    senza modificare la partita puoi entrare nel Modo Prova (con lo
+    shortcut <b>Ctrl+space</b> oppure cliccando l'apposita icona).
+    Quando hai finito puoi deselezionare il Modo Prova ritornando
+    alla partita originale.
+  }
+  {
+    Per cercare le partite maggiormente rilevanti (quelle con i giocatori
+    con l'Elo piu' alto) in una posizione, apri la finestra <a Tree>albero</a>
+    e da quella apri la Lista Migliori Partite.
+    Puoi personalizzare la lista ottenendo solo le partite con un
+    certo risultato che ti interessa.
+  }
+  {
+    Un buon modo per studiare le aperture utilizzando un grosso database
+    e' attivare il Modo Esercizio nella finestra <a Tree>albero</a> e
+    giocare contro il database per vedere quali linee appaiono spesso.
+  }
+  {
+    Se hai due database aperti e vuoi visualizzare le statistiche
+    dell'<a Tree>albero</a> del primo database mentre esamini una
+    partita del secondo database premi il pulsante <b>Blocca</b> nella
+    finestra albero per bloccare il primo database ed allora selezionare
+    il secondo database.
+  }
+  {
+    Il <a Tmt>tournament finder</a> non e' solo utile per trovare un
+    certo torneo, ma puo' essere usato anche per vedere quali tornei
+    ha giocato recentemente un certo giocatore oppure vedere i tornei
+    piu' importanti giocati in una certa nazione.
+  }
+  {
+    La finestra <a Searches Material>Materiale/Schema</a> ti propone
+    alcune possibilita', fra le piu' comuni, facilitandoti ricerche
+    per aperture o centri partita a fine di studio.
+  }
+  {
+    Quando effettui una ricerca per una particolare posizione
+    nella finestra <a Searches Material>Materiale/Schema</a> e'
+    spesso utile restringere la ricerca a partite che permangono
+    nella posizione voluta almeno qualche mezza mossa eliminando
+    partite che raggiungono la posizione voluta solo una volta. 
+  }
+  {
+    Se tu hai un importante database e non vuoi correre il rischio
+    di effettuare modifiche inopportune, seleziona <b>solo lettura...</b>
+    dal <b>File</b> menu dopo averlo aperto, oppure cambia gli
+    attributi a solo lettura.
+  }
+  {
+    Se usi XBoard oppure WinBoard (oppure altri programmi scacchistici
+    che possono copiare sulla clipboard la posizione attuale in notazione
+    standard FEN) e vuoi copiare la tua posizione su SCID, il modo piu'
+    facile e veloce e' selezionare <b>Copia Positione</b> dal menu File
+    in XBoard/WinBoard e poi <b>Copia come posizione di partenza</b> dal
+    menu Edita in SCID.  
+  }
+  {
+    In una <a Searches Header>ricerca per intestazione</a>,
+    giocatore/evento/luogo/turno non sono sensibili alle maiuscole e
+    vengono cercate anche all'interno dei nomi. Puoi scegliere di
+    fare una ricerca sensibile alle maiuscole (dove "?" = ogni singolo
+    carattere e "*" = zero o piu' caratteri) digitando la stringa che
+    vuoi trovare fra "virgolette". Per esempio digitando "*BEL" (con
+    le virgolette) nel campo luogo otterrai tutte le partite giocate
+    in Belgio ma non a Belgrado.
+  }
+  {
+    Se vuoi correggere una mossa in una partita senza perdere le mosse
+    giocate successivamente, apri la finestra <a Import>Importa</a>
+    premi l'icona b>Incolla la partica corrente</b>, edita la mossa
+    sbagliata e poi premi l'icona <b>Importa</b>.
+  }
+  {
+    Se hai caricato un file di classificazione ECO, puoi andare alla
+    posizione classificata piu' profonda della partita correntemente
+    caricata con <b>Identifica apertura</b> nel menu <b>Partita</b>
+    (shortcut: Ctrl+Shift+D).
+  }
+  {
+    Se vuoi verificare le dimensioni di un file o la sua data di ultima
+    modifica prima di aprirlo, utilizza <a Finder>file finder</a> per
+    aprirlo.
+  }
+  {
+    Un file di <a Repertoire>repertorio</a> e' un grande strumento per
+    monitorare le tue aperture preferite e per trovare le partite nelle
+    quali queste linee sono state giocate. Dopo aver memorizzato le tue
+    aperture in un file di repertorio puoi effettuare ricerche tutte le
+    volte che acquisisci nuovi file di partite e visualizzare le partite
+    che ti interessano.
+  }
+  {
+    Un <a OpReport>rapporto di apertura</a> e' molto utile per apprendere
+    ulteriori informazioni su una particolare posizione. Puoi vedere il
+    punteggio percentuale che raggiunge, se porta a rapide patte, i temi
+    posizionali piu' comuni e molto altro.
+  }
+  {
+    Puoi aggiungere i piu' comuni simboli di annotazione (!, !?, +=, ecc)
+    alla posizione attualmente caricata con scorciatoie da tastiera senza
+    necessita' di utilizzare <a Comment>l'editor di commenti<a>.
+    Per esempio digitando "!" seguito dal tasto Conferma/Enter/Return
+    aggiungerete il simbolo "!". Guarda la pagina di help
+    <a Moves>Inserire le mosse</a> per maggiori informazioni.
+  }
+  {
+    Se stai visualizzando un'apertura in un database con <a Tree>l'albero</a>
+    puoi facilmente vedere i risultati percentuali dell'apertura che stai
+    guardando (recenti e fra giocatori di Elo alto) aprendo la finestra
+    Statistiche (shortcut: Ctrl+I).
+  }
+  {
+    Puoi cambiare le dimensioni della scacchiera premendo i tasti
+    <b>Ctrl</b> e <b>Shift</b>, e regolare le dimensioni premendo i tasti
+    freccia <b>Left</b> o <b>Right</b> .
+  }
+  {
+    Dopo una <a Searches>ricerca</a> puoi facilmente visualizzare tutte le
+    partite trovate premendo <b>Ctrl</b> e con i tasti <b>Su</b> o <b>Giu'</b>
+    caricare la precedente o successiva partita del <a Searches Filter>filtro</a>.
+  }
+}
+
+
 # end of italian.tcl

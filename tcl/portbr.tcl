@@ -69,6 +69,10 @@ menuText B EditStripComments "Limpar Comentarios" 0 \
   {Limpa comentarios e anotacoes no jogo atual}
 menuText B EditStripVars "Limpar Variantes" 0 \
   {Limpa todas as variantes no jogo atual}
+menuText B EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText B EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText B EditReset "Limpar a base de trabalho" 0 \
   {Limpa completamente a base de trabalho}
 menuText B EditCopy "Copiar jogo para a base de trabalho" 0 \
@@ -193,6 +197,8 @@ menuText B OptionsLanguage "Linguagem" 0 {Menu de selecao de linguagem}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
 menuText B OptionsMovesAsk "Perguntar antes de substituir movimentos" 0 \
   {Pergunta antes de substituir movimentos existentes}
+menuText B OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves} ;# ***
 menuText B OptionsMovesDelay "Tempo de atraso p/ Jogo automatico..." 1 \
   {Define o tempo de espera antes de entrar no modo de jogo automatico}
 menuText B OptionsMovesCoord "Entrada de movimentos por coordenadas" 0 \
@@ -256,6 +262,7 @@ helpMsg B .button.intoVar {Entrar na variante  (tecla de atalho: v)}
 helpMsg B .button.exitVar {Sair da variante  (tecla de atalho: z)}
 helpMsg B .button.flip {Girar tabuleiro  (tecla de atalho: .)}
 helpMsg B .button.coords {Liga/desliga coordenadas  (tecla de atalho: 0)}
+helpMsg B .button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg B .button.autoplay {Jogo automatico  (tecla: Ctrl+Z)}
 
 # General buttons:
@@ -362,6 +369,7 @@ translate B PInfoMostWhite {Aberturas mais comuns com as Brancas}
 translate B PInfoMostBlack {Aberturas mais comuns com as Pretas}
 translate B PInfoRating {Historico de Rating}
 translate B PInfoBio {Biografia}
+translate B PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate B Draw {Empate}
@@ -421,7 +429,10 @@ translate B TreeBestGames {Melhores jogos da arvore}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate B TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
+translate B TreeElapsedTime {Time} ;# ***
+translate B TreeFoundInCache {  (Found in cache)} ;# ***
+translate B TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText B FinderFile "Arquivo" 0
@@ -499,6 +510,7 @@ translate B AnnotateAll {Para movimentos de ambos os lados}
 translate B AnnotateWhite {Apenas para movimentos das Brancas}
 translate B AnnotateBlack {Apenas para movimentos das Pretas}
 translate B AnnotateNotBest {Quando o movimento do jogo nao for o melhor movimento}
+translate B LowPriority {Low CPU priority} ;# ***
 
 # Analysis Engine open dialog:
 translate B EngineList {Lista de Programas de Analise}
@@ -540,6 +552,7 @@ menuText B PgnColorBackground "Cor de fundo..." 0
 menuText B PgnHelp "Ajuda" 0
 menuText B PgnHelpPgn "Ajuda PGN" 0
 menuText B PgnHelpIndex "Indice" 0
+translate B PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText B CrosstabFile "Arquivo" 0

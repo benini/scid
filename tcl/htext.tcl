@@ -427,10 +427,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       if {$tagName == "p"} {$w insert end "\n"}
       #if {$tagName == "h1"} {$w insert end "\n"}
       if {$tagName == "menu"} {$w insert end "\]"}
-      if {$tagName == "ul"} {
-        incr helpWin(Indent) -4
-        $w insert end "\n"
-      }
+      if {$tagName == "ul"} {incr helpWin(Indent) -4}
       if {[info exists startIndex($tagName)]} {
         switch -- $tagName {
           a {$w tag add $linkTag $startIndex($tagName) [$w index insert]}

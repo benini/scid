@@ -8,7 +8,7 @@ proc setLanguage_P {} {
 menuText P File "Plik" 0
 menuText P FileNew "Nowy..." 0 {Twórz nowa bazê Scid}
 menuText P FileOpen "Otwórz..." 0 {Otwórz istniej±c± bazê Scid}
-menuText P FileClose "Zamknij" 0 {Zamknij aktywna bazê Scid}
+menuText P FileClose "Zamknij" 0 {Zamknij aktywn± bazê Scid}
 menuText P FileFinder "Poszukiwacz plików" 0 {Otwórz okno poszukiwacza plików}
 menuText P FileBookmarks "Zak³adki" 2 {Menu zak³adek (klawisz: Ctrl+B)}
 menuText P FileBookmarksAdd "Dodaj zak³adkê" 0 \
@@ -52,7 +52,7 @@ menuText P FileSwitch "Prze³±cz bazê" 1 \
   {Prze³±cz na inn± otwart± bazê} 
 menuText P FileExit "Koniec" 0 {Zamknij Scida}
 
-menuText P Edit "Edytuj" 0
+menuText P Edit "Edycja" 0
 menuText P EditAdd "Dodaj wariant" 0 {Dodaj wariant do ruchu w partii}
 menuText P EditDelete "Usuñ wariant" 0 {Usuñ wariant dla tego posuniêcia}
 menuText P EditFirst "Twórz pierwszy wariant" 0 \
@@ -67,6 +67,10 @@ menuText P EditStripComments "Komentarze" 0 \
   {Usuñ wszystkie komentarze z aktualnej partii}
 menuText P EditStripVars "Warianty" 0 \
   {Usuñ wszystkie warianty z aktualnej partii}
+menuText P EditStripBegin "Poprzednie posuniêcia" 0 \
+  {Usuñ wszystkie posuniêcia do bie¿±cej pozycji}
+menuText P EditStripEnd "Nastêpne posuniêcia" 0 \
+  {Usuñ wszystkie posuniêcia od bie¿±cej pozycji do koñca partii}
 menuText P EditReset "Opró¿nij schowek" 0 \
   {Opró¿nij schowek bazy}
 menuText P EditCopy "Kopiuj partiê do schowka" 0 \
@@ -75,25 +79,25 @@ menuText P EditPaste "Wklej aktywn± partiê ze schowka" 0 \
   {Wklej aktywn± partiê ze schowka}
 menuText P EditSetup "Ustaw pozycjê pocz±tkow±..." 6 \
   {Ustaw pozycjê pocz±tkow± partii}
-menuText P EditCopyBoard "Copy position" 6 \
-  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
+menuText P EditCopyBoard "Kopiuj pozycjê" 7 \
+  {Kopiuj aktualn± pozycjê w notacji FEN do schowka}
 menuText P EditPasteBoard "Ustaw pozycjê ze schowka" 3 \
   {Ustaw pozycjê ze schowka}
 
 menuText P Game "Partia" 1
 menuText P GameNew "Opu¶æ partiê" 0 \
   {Opu¶æ partiê, rezygnuj±c z wszelkich zmian}
-menuText P GameFirst "Pierwsza partia" 2 {Za³aduj pierwsz± partiê z filtra}
+menuText P GameFirst "Pierwsza partia" 2 {Wczytaj pierwsz± partiê z filtra}
 menuText P GamePrev "Poka¿ poprzedni± partiê" 0 \
-  {Poka¿ poprzedni± wyszukan± partiê}
+  {Wczytaj poprzedni± wyszukan± partiê}
 menuText P GameReload "Prze³aduj aktualn± partiê"  10 \
-  {Prze³aduj partiê, rezygnuj±c z wszelkich zmian}
-menuText P GameNext "Za³aduj nastêpn± partiê" 0 \
-  {Za³aduj nastêpn± wyszukan± partiê}
-menuText P GameLast "Ostatnia partia" 2 {Za³aduj ostatni± partiê z filtra}
+  {Wczytaj partiê ponownie, rezygnuj±c z wszelkich zmian}
+menuText P GameNext "Nastêpna partia" 0 \
+  {Wczytaj nastêpn± wyszukan± partiê}
+menuText P GameLast "Ostatnia partia" 5 {Wczytaj ostatni± partiê z filtra}
 menuText P GameRandom "Losowa partia z filtra" 8 {Wczytaj losow± partiê z filtra}
-menuText P GameNumber "Za³aduj partiê numer..." 17 \
-  {Za³aduj partiê wprowadzaj±c jej numer}
+menuText P GameNumber "Wczytaj partiê numer..." 17 \
+  {Wczytaj partiê wprowadzaj±c jej numer}
 menuText P GameReplace "Zapisz: zast±p partiê..." 3 \
   {Zapisz partiê, zast±p poprzedni± wersjê}
 menuText P GameAdd "Zapisz: dodaj now± partiê..." 8 \
@@ -124,7 +128,7 @@ menuText P WindowsComment "Edytor komentarzy" 0 \
   {Otwórz/zamknij edytor komentarzy}
 menuText P WindowsGList "Lista partii" 0 {Otwórz/zamknij listê partii}
 menuText P WindowsPGN "Okno PGN" 0 {Otwórz/zamknij (zapis partii) PGN }
-menuText P WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
+menuText P WindowsPList "Zawodnicy" 2 {Otwórz/zamknij przegl±darkê graczy}
 menuText P WindowsTmt "Turnieje" 0 {Otwórz/zamknij przegl±darkê turniejów}
 menuText P WindowsSwitcher "Prze³±cznik baz" 12 \
   {Otwórz/zamknij prze³±cznik baz}
@@ -143,7 +147,7 @@ menuText P WindowsTB "Tablica koñcówek" 8 \
 menuText P Tools "Narzêdzia" 0
 menuText P ToolsAnalysis "Program analizuj±cy..." 8 \
   {Uruchom/zatrzymaj program analizuj±cy}
-menuText P ToolsAnalysis2 "Program analizuj±cy #2..." 21 \
+menuText P ToolsAnalysis2 "Program analizuj±cy 2..." 21 \
   {Uruchom/zatrzymaj program analizuj±cy}
 menuText P ToolsCross "Tabela turniejowa" 0 \
   {Poka¿ tabelê turniejow± dla aktualnej partii}
@@ -154,8 +158,8 @@ menuText P ToolsFilterGraph "Wykres filtra" 7 \
 menuText P ToolsOpReport "Raport debiutowy" 0 \
   {Utwórz raport debiutowy dla aktualnej pozycji}
 menuText P ToolsTracker "¦ledzenie figur"  10 {Otwórz/zamknij okno ¶ledzenia figur} 
-menuText P ToolsPInfo "Informacje o zawodniku"  0 \
-  {Otwórz/od¶wie¿ okno informacji o zawodniku}
+menuText P ToolsPInfo "Informacje o graczu"  0 \
+  {Otwórz/od¶wie¿ okno informacji o graczu}
 menuText P ToolsRating "Wykres rankingu" 0 \
   {Wykres historii rankingu graj±cych partiê}
 menuText P ToolsScore "Wykres wyników" 1 {Poka¿ wykres wyników}
@@ -196,6 +200,8 @@ menuText P OptionsLanguage "Jêzyk" 0 {Wybierz jêzyk}
 menuText P OptionsMoves "Posuniêcia" 0 {Wprowadzanie posuniêæ}
 menuText P OptionsMovesAsk "Zapytaj przed zast±pieniem posuniêæ" 0 \
   {Zapytaj przed zast±pieniem aktualnych posuniêæ}
+menuText P OptionsMovesAnimate "Szybko¶æ animacji" 1 \
+  {Ustaw czas przeznaczony na animacjê jednego posuniêcia} 
 menuText P OptionsMovesDelay "Automatyczne przegl±danie..." 0 \
   {Ustaw opó¼nienie przy automatycznym przegl±daniu partii}
 menuText P OptionsMovesCoord "Posuniêcia w formacie \"g1f3\"" 0 \
@@ -213,10 +219,10 @@ menuText P OptionsWindowsRaise "Automatyczne uaktywnianie" 0 \
   {Automatycznie uaktywniaj niektóre okna (np. pasek postêpu), gdy s± zas³oniête}
 menuText P OptionsToolbar "Pasek narzêdziowy" 6 \
   {Schowaj/poka¿ pasek narzêdziowy}
-menuText P OptionsECO "Za³aduj ksi±¿kê debiutow±..." 16 \
-  {Za³aduj plik z klasyfikacja debiutów}
-menuText P OptionsSpell "Za³aduj plik sprawdzania pisowni..." 13 \
-  {Za³aduj plik do sprawdzania pisowni nazwisk i nazw}
+menuText P OptionsECO "Wczytaj ksi±¿kê debiutow±..." 16 \
+  {Wczytaj plik z klasyfikacja debiutów}
+menuText P OptionsSpell "Wczytaj plik sprawdzania pisowni..." 13 \
+  {Wczytaj plik do sprawdzania pisowni nazwisk i nazw}
 menuText P OptionsTable "Katalog z baz± koñcówek..." 10 \
   {Wybierz bazê koñcówek; u¿yte zostan± wszystkie bazy z tego katalogu}
 menuText P OptionsRecent "Ostatnie pliki..." 0 \
@@ -243,7 +249,7 @@ menuText P GInfoFEN "Poka¿ pozycjê w formacie FEN" 16
 menuText P GInfoMarks "Pokazuj kolorowe pola i strza³ki" 5 
 menuText P GInfoWrap "Zawijaj d³ugie linie" 0
 menuText P GInfoFullComment "Poka¿ ca³y komentarz" 6
-menuText P GInfoPhotos "Show Photos" 5 ;# ***
+menuText P GInfoPhotos "Poka¿ zdjêcia" 5
 menuText P GInfoTBNothing "Tablica koñcówek: nic" 0
 menuText P GInfoTBResult "Tablica koñcówek: tylko wynik" 18
 menuText P GInfoTBAll "Tablica koñcówek: wszystko" 18
@@ -258,7 +264,8 @@ helpMsg P .button.forward {Jedno posuniêcie do przodu (klawisz: strza³ka w prawo
 helpMsg P .button.intoVar {Wejd¼ w wariant (klawisz skrótu: v)}
 helpMsg P .button.exitVar {Opu¶æ wariant (klawisz skrótu: z)}
 helpMsg P .button.flip {Obróæ szachownicê  (klawisz skrótu: .)}
-helpMsg P .button.coords {W³±cz lub wy³±cz opis szachownicy  (klawisz skrótu: 0)}
+helpMsg P .button.coords {Prze³±cz wy¶wietlanie opisu szachownicy  (klawisz skrótu: 0)}
+helpMsg P .button.stm {Prze³±cz wy¶wietlanie ikony strony na posuniêciu} 
 helpMsg P .button.autoplay \
   {Automatyczne przestawianie bierek (klawisz skrótu: Ctrl+Z)}
 
@@ -315,7 +322,7 @@ translate P Site {Miejsce}
 translate P Country {Kraj}
 translate P IgnoreColors {Ignoruj kolory}
 translate P Date {Data}
-translate P EventDate {Turniej data}
+translate P EventDate {Data turnieju}
 translate P Decade {Dekada} 
 translate P Year {Rok}
 translate P Month {Miesi±c}
@@ -366,6 +373,7 @@ translate P PInfoMostWhite {Najczêstsze debiuty bia³ymi}
 translate P PInfoMostBlack {Najczêstsze debiuty czarnymi}
 translate P PInfoRating {Historia rankingu}
 translate P PInfoBio {Biografia}
+translate P PInfoEditRatings {Zmieñ rankingi}
 
 # Tablebase information:
 translate P Draw {remis}
@@ -420,7 +428,10 @@ translate P TreeBestGames {Najlepsze partie}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate P TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Pos.   ECO       Czêsto¶æ     Wynik  Rav   Rperf Rok   %Remis}
+translate P TreeElapsedTime {Czas}
+translate P TreeFoundInCache {  (W buforze)}
+translate P TreeTotal {RAZEM:     }
 
 # Finder window:
 menuText P FinderFile "Plik" 0
@@ -450,13 +461,13 @@ translate P FinderUpDir {wy¿ej}
 # Player finder:
 menuText P PListFile "Plik" 0
 menuText P PListFileUpdate "Uaktualnij" 0
-menuText P PListFileClose "Close Player Finder" 0 ;# ***
+menuText P PListFileClose "Zamknij przegl±darkê graczy" 0
 menuText P PListSort "Sortowanie" 0
-menuText P PListSortName "Name" 0 ;# ***
+menuText P PListSortName "Nazwisko" 0
 menuText P PListSortElo "Elo" 0
 menuText P PListSortGames "Partie" 0
-menuText P PListSortOldest "Oldest" 0 ;# ***
-menuText P PListSortNewest "Newest" 0 ;# ***
+menuText P PListSortOldest "Najstarsza" 0
+menuText P PListSortNewest "Najnowsza" 0
 
 # Tournament finder:
 menuText P TmtFile "Plik" 0
@@ -470,7 +481,7 @@ menuText P TmtSortElo "Elo" 0
 menuText P TmtSortSite "Miejsce" 0
 menuText P TmtSortEvent "Turniej" 0
 menuText P TmtSortWinner "Zwyciêzca" 0
-translate P TmtLimit "Max. turniejów"
+translate P TmtLimit "Wielko¶æ listy"
 translate P TmtMeanElo "Min. ¶rednie ELO"
 translate P TmtNone "Nie znaleziono turniejów."
 
@@ -498,6 +509,7 @@ translate P AnnotateAll {Dla obu stron}
 translate P AnnotateWhite {Dla bia³ych}
 translate P AnnotateBlack {Dla czarnych}
 translate P AnnotateNotBest {Tylko dla posuniêæ lepszych ni¿ w partii}
+translate P LowPriority {Niski priorytet CPU} 
 
 # Analysis Engine open dialog:
 translate P EngineList {Programy szachowe}
@@ -539,6 +551,7 @@ menuText P PgnColorBackground "T³o..." 0
 menuText P PgnHelp "Pomoc" 2
 menuText P PgnHelpPgn "PGN" 0
 menuText P PgnHelpIndex "Spis tre¶ci" 0
+translate P PgnWindowTitle {PGN partii}
 
 # Crosstable window menus:
 menuText P CrosstabFile "Plik" 0
@@ -654,7 +667,7 @@ translate P GlistSite {Miejsce}
 translate P GlistRound {Runda}
 translate P GlistDate {Data}
 translate P GlistYear {Rok}
-translate P GlistEDate {Turniej-Data}
+translate P GlistEDate {Data turnieju}
 translate P GlistResult {Wynik}
 translate P GlistLength {D³ugo¶æ}
 translate P GlistCountry {Kraj}
@@ -733,7 +746,7 @@ Na pewno wykonaæ wybrane zadania?
 # Comment editor:
 translate P AnnotationSymbols  {Symbole:}
 translate P Comment {Komentarz:}
-translate P InsertMark {Insert mark} ;# ***
+translate P InsertMark {Wstaw znak}
 
 # Board search:
 translate P BoardSearch {Wyszukiwanie wg pozycji}
@@ -1172,7 +1185,7 @@ set tips(P) {
   {
     Okno <a Tmt>Turnieje</a> jest przydatne nie tylko do znajdowania
     turniejów, ale pozwala tak¿e sprawdziæ, w jakich turniejach gra³
-    ostatnio dany zawodnik i jakie turnieje s± rozgrywane w wybranym
+    ostatnio dany gracz i jakie turnieje s± rozgrywane w wybranym
     kraju.
   }
   {
@@ -1232,7 +1245,7 @@ set tips(P) {
   {
     <a OpReport>Raport debiutowy</a> pozwala dowiedzieæ siê wiêcej
     o konkretnej pozycji. Mo¿esz zobaczyæ wyniki, nazwiska najczê¶ciej
-    graj±cych j± zawodników, typowe motywy pozycyjne itd.
+    stosuj±cych j± graczy, typowe motywy pozycyjne itd.
   }
   {
     Mo¿esz dodaæ wiêkszo¶æ typowych symboli (!, !?, += itd.) do

@@ -67,6 +67,10 @@ menuText C EditStrip "Odstranit" 2 {Odstranit komentáøe nebo varianty z této par
 menuText C EditStripComments "Komentáøe" 0 \
   {Odstranit v¹echny poznámky a anotace z této partie}
 menuText C EditStripVars "Varianty" 0 {Odstranit v¹echny varianty z této partie}
+menuText C EditStripBegin "Moves from the beginning" 1 \
+  {Strip moves from the beginning of the game} ;# ***
+menuText C EditStripEnd "Moves to the end" 0 \
+  {Strip moves to the end of the game} ;# ***
 menuText C EditReset "Vyprázdnit schránku" 0 \
   {Kompletní vyprázdnìní schránky}
 menuText C EditCopy "Zkopírovat tuto partii do schránky" 1 \
@@ -185,6 +189,8 @@ menuText C OptionsLanguage "Jazyk" 0 {Vybrat jazyk}
 menuText C OptionsMoves "Tahy" 0 {Volby pro vkládání tahù}
 menuText C OptionsMovesAsk "Ptát se pøed nahrazením tahù" 15 \
   {Ptát se, zda se mají pøepsat existující tahy novì vkládanými}
+menuText C OptionsMovesAnimate "Animation time" 1 \
+  {Set the amount of time used to animate moves} ;# ***
 menuText C OptionsMovesDelay "Prodleva pøi pøehrávání partie..." 3 \
   {Nastavit èasovou prodlevu mezi tahy pøi automatickém pøehrávání}
 menuText C OptionsMovesCoord "Vkládání tahù zadáváním souøadnic" 1 \
@@ -246,6 +252,7 @@ helpMsg C .button.intoVar {Skoè do varianty  (klávesová zkratka: v)}
 helpMsg C .button.exitVar {Opus» aktuální variantu  (klávesová zkratka: z)}
 helpMsg C .button.flip {Otoè ¹achovnici  (klávesová zkratka: .)}
 helpMsg C .button.coords {Zapnout/Vypnout zobrazování souøadnic ¹achovnice  (klávesová zkratka: 0)}
+helpMsg C .button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg C .button.autoplay {Automatické pøehrávání tahù  (klávesa: Ctrl+Z)}
 
 # General buttons:
@@ -352,6 +359,7 @@ translate C PInfoMostWhite {Nejèastìj¹í zahájení bílých}
 translate C PInfoMostBlack {Nejèastìj¹í zahájení èerných}
 translate C PInfoRating {Historie ratingu}
 translate C PInfoBio {Biografie}
+translate C PInfoEditRatings {Edit ratings} ;# ***
 
 # Tablebase information:
 translate C Draw {Remíza}
@@ -408,7 +416,10 @@ translate C TreeBestGames {Nejlep¹í partie stromu}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate C TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
+translate C TreeElapsedTime {Time} ;# ***
+translate C TreeFoundInCache {  (Found in cache)} ;# ***
+translate C TreeTotal {TOTAL:     } ;# ***
 
 # Finder window:
 menuText C FinderFile "Soubor" 0
@@ -486,6 +497,7 @@ translate C AnnotateAll {Pro tahy obou stran}
 translate C AnnotateWhite {Pouze pro tahy bílého}
 translate C AnnotateBlack {Pouze pro tahy èerného}
 translate C AnnotateNotBest {Pokud tah v partii není nejlep¹ím tahem}
+translate C LowPriority {Low CPU priority} ;# ***
 
 # Analysis Engine open dialog:
 translate C EngineList {Seznam programù pro analýzu}
@@ -527,6 +539,7 @@ menuText C PgnColorBackground "Pozadí..." 0
 menuText C PgnHelp "Nápovìda" 0
 menuText C PgnHelpPgn "PGN nápovìda" 0
 menuText C PgnHelpIndex "Index" 0
+translate C PgnWindowTitle {PGN of game} ;# ***
 
 # Crosstable window menus:
 menuText C CrosstabFile "Soubor" 0

@@ -21,7 +21,7 @@ exec tkscid "$0" "$@"
 
 ############################################################
 
-set scidVersion "3.5a"
+set scidVersion "3.5beta1"
 
 # Determine operating system platform: unix or windows
 set windowsOS 0
