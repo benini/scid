@@ -4,7 +4,7 @@
 //              Tokens used for scanning PGN.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.7
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 1999-2001  Shane Hudson.  All rights reserved.
 //
@@ -22,7 +22,7 @@
 
 typedef uint tokenT;
 
-#define MAX_TOKEN 56;
+#define MAX_TOKEN 58;
 
 const tokenT
     TOKEN_EndOfInput = 0,  // No more characters to read from input source
@@ -35,15 +35,26 @@ const tokenT
     TOKEN_Move_Promote      = 6,  // Promotions
     TOKEN_Move_Piece        = 7,  // Includes ambiguous moves and captures
     TOKEN_Move_Castle_King  = 8,
-    TOKEN_Move_Castle_Queen = 9;
-#define TOKEN_isMove(x) (((x) >= 5)  &&  ((x) <= 9))
-#define TOKEN_isPawnMove(x) (((x) >= 5)  &&  ((x) <= 6))
+    TOKEN_Move_Castle_Queen = 9,
+    TOKEN_Move_Null         = 10;
+
+inline bool
+TOKEN_isMove (tokenT token)
+{
+   return (token >= TOKEN_Move_Pawn  &&  token <= TOKEN_Move_Null);
+}
+
+inline bool
+TOKEN_isPawnMove (tokenT token)
+{
+  return (token == TOKEN_Move_Pawn  ||  token == TOKEN_Move_Promote);
+}
 
 // Tags: currently only TOKEN_Tag. Maybe eventually have TOKEN_Tag_Event, etc.
 const tokenT
-    TOKEN_Tag = 10,
-    TOKEN_TagEnd = 11;
-#define TOKEN_isTag(x)  ((x) == 10)
+    TOKEN_Tag = 20,
+    TOKEN_TagEnd = 21;
+#define TOKEN_isTag(x)  ((x) == TOKEN_Tag)
 
 // Results
 const tokenT
@@ -62,7 +73,8 @@ const tokenT
     TOKEN_Comment =     55,  // { .... }
     TOKEN_LineComment = 56,  // "%" or ";" until end of line
     TOKEN_VarStart =    57,  // "(" ....
-    TOKEN_VarEnd =      58;  //  .... ")"
+    TOKEN_VarEnd =      58,  //  .... ")"
+    TOKEN_CommentEnd =  59;  // "}" outside of comment, should not happen
 
 #endif  // SCID_TOKENS_H
 

@@ -241,42 +241,42 @@ scid_TB_Probe (Position * pos, int * score)
         }
     }
 
-    // Set En Passent square it should only be a value other than XX if
+    // Set En Passant square it should only be a value other than XX if
     // there is an EP target square, AND there is a possible EP capture.
     // Specifying a target EP square (since a pawn has just moved two
     // squares) when there is no enemy pawn actually able to capture
-    // en passent was able to cause the tablebase to give incorrect
+    // en passant was able to cause the tablebase to give incorrect
     // results in testing, so that is why we must check here whether an
     // EP capture is possible.
 
-    squareT enPassent = pos->GetEPTarget();
-    if (enPassent != NULL_SQUARE) {
+    squareT enPassant = pos->GetEPTarget();
+    if (enPassant != NULL_SQUARE) {
         bool possibleEP = false;
         if (pos->GetToMove() == BLACK) {
             // White just made a 2-square pawn move:
-            squareT left = square_Move (enPassent, UP_LEFT);
+            squareT left = square_Move (enPassant, UP_LEFT);
             if (left != NULL_SQUARE  &&  board[left] == BP) {
                 possibleEP = true;
             }
-            squareT right = square_Move (enPassent, UP_RIGHT);
+            squareT right = square_Move (enPassant, UP_RIGHT);
             if (right != NULL_SQUARE  &&  board[right] == BP) {
                 possibleEP = true;
             }
         } else {
             // BLACK just made a 2-square pawn move:
-            squareT left = square_Move (enPassent, DOWN_LEFT);
+            squareT left = square_Move (enPassant, DOWN_LEFT);
             if (left != NULL_SQUARE  &&  board[left] == WP) {
                 possibleEP = true;
             }
-            squareT right = square_Move (enPassent, DOWN_RIGHT);
+            squareT right = square_Move (enPassant, DOWN_RIGHT);
             if (right != NULL_SQUARE  &&  board[right] == WP) {
                 possibleEP = true;
             }
         }
-        if (! possibleEP) { enPassent = NULL_SQUARE; }
+        if (! possibleEP) { enPassant = NULL_SQUARE; }
     }
-    int epTarget = (int) enPassent;
-    if (enPassent == NULL_SQUARE) { epTarget = XX; }
+    int epTarget = (int) enPassant;
+    if (enPassant == NULL_SQUARE) { epTarget = XX; }
 
     // Now probe the tablebase:
 

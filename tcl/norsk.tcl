@@ -51,6 +51,8 @@ menuText O FileMaintNameRound "Kontroller runde-navn..." 11 \
   {Sammenlign rundenavn med stavekontroll-filen}
 menuText O FileReadOnly "Skrivebeskytt..." 6 \
   {Hindrer endringer på databasen}
+menuText O FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText O FileExit "Avslutt" 0 {Avslutt Scid}
 
 # Edit menu:
@@ -75,6 +77,8 @@ menuText O EditPaste "Lim inn siste parti fra utklippsbasen" 0 \
   {Limer inn gjeldende parti fra utklippsbasen her}
 menuText O EditSetup "Still opp stilling..." 0 \
   {Lag en startstilling for dette partiet}
+menuText O EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText O EditPasteBoard "Lim inn stilling" 0 \
   {Lag en startstilling fra gjeldende utvalg (utklippstavle)}
 
@@ -88,7 +92,7 @@ menuText O GameReload "Hent dette partiet" 0 \
   {Henter dette partiet på nytt og fjerner alle endringer}
 menuText O GameNext "Hent neste parti" 0 {Henter neste parti fra filteret}
 menuText O GameLast "Hent siste parti" 0 {Henter siste parti fra filteret}
-menuText O GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText O GameRandom "Hent tilfeldig parti" 8 {Hent tilfeldig parti fra filteret}
 menuText O GameNumber "Hent parti nummer..." 0 \
   {Finn et parti ved å angi nummeret}
 menuText O GameReplace "Lagre: Erstatt parti..." 0 \
@@ -117,6 +121,7 @@ menuText O WindowsComment "Kommentarer" 0 {Åpne/lukk kommentarvinduet}
 menuText O WindowsGList "Partioversikt" 0 {Åpne/lukk partioversikten}
 menuText O WindowsPGN "PGN-vindu" 0 \
   {Åpne/lukk PGN-vinduet}
+menuText O WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText O WindowsTmt "Turneringsøker" 0 {Åpne/lukk turneringssøkeren}
 menuText O WindowsSwitcher "Databasebytter" 0 \
   {Åpne/lukk databasebytteren}
@@ -135,16 +140,16 @@ menuText O WindowsTB "Sluttspilltabellvindu" 0 \
 menuText O Tools "Verktøy" 0
 menuText O ToolsAnalysis "Analysemotor..." 0 \
   {Start/stopp en sjakkanalysemotor}
-menuText O ToolsAnalysis2 "Analysismotor #2..." 0 \
+menuText O ToolsAnalysis2 "Analysemotor #2..." 0 \
   {Start/stopp enda en sjakkanalysemotor}
 menuText O ToolsCross "Krysstabell" 0 {Vis turnerigskrystabellen for dette partiet}
 menuText O ToolsEmail "Epostbehandler" 0 \
   {Åpne/lukk epostbehandlingsvinduet}
-menuText O ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+menuText O ToolsFilterGraph "Filtergraf" 7 \
+  {Åpne/lukk filtergrafvinduet}
 menuText O ToolsOpReport "Åpningsrapport" 0 \
   {Lager en åpningsrapport for denne stillingen}
-menuText O ToolsTracker "Piece Tracker"  0 {Open the Piece Tracker window} ;# ***
+menuText O ToolsTracker "Brikkesporing"  0 {Åpne brikkesporingsvinduet}
 menuText O ToolsPInfo "Spillerinformasjon"  0 \
   {Åpne/oppdater informasjonsvinduet for denne spilleren}
 menuText O ToolsRating "Ratinggraf" 0 \
@@ -234,6 +239,7 @@ menuText O GInfoFEN "Vis FEN" 0
 menuText O GInfoMarks "Vis fargede ruter og piler" 0
 menuText O GInfoWrap "Tekstbryting" 0
 menuText O GInfoFullComment "Vis full kommentar" 0
+menuText O GInfoPhotos "Show Photos" 5 ;# ***
 menuText O GInfoTBNothing "Tabellbaser: ingenting" 0
 menuText O GInfoTBResult "Tabellbaser: kun resultater" 0
 menuText O GInfoTBAll "Tabellbaser: resultater og beste trekk" 0
@@ -298,6 +304,7 @@ translate O Black {Sort}
 translate O Player {Spiller}
 translate O Rating {Rating}
 translate O RatingDiff {Ratingforskjell (Hvit - Sort)}
+translate O AverageRating {Average Rating} ;# ***
 translate O Event {Anledning}
 translate O Site {Sted}
 translate O Country {Land}
@@ -327,6 +334,11 @@ translate O clipbase {utklippsbase}
 translate O score {poeng}
 translate O StartPos {Utgangsstilling}
 translate O Total {Sammenlagt}
+
+# Standard error messages:
+translate O ErrNotOpen {This is not an open database.} ;# ***
+translate O ErrReadOnly {This database is read-only; it cannot be altered.}
+translate O ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate O twin {duplikat}
@@ -362,6 +374,10 @@ translate O allOthersLose {alle andre taper}
 translate O matesIn {setter matt i}
 translate O hasCheckmated {har satt matt}
 translate O longest {lengste}
+translate O WinningMoves {Winning moves} ;# ***
+translate O DrawingMoves {Drawing moves} ;# ***
+translate O LosingMoves {Losing moves} ;# ***
+translate O UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate O Tip {Tips}
@@ -396,6 +412,10 @@ translate O LockTree {Lås}
 translate O TreeLocked {låst}
 translate O TreeBest {Beste}
 translate O TreeBestGames {Idealtrepartier}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate O TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText O FinderFile "Fil" 0
@@ -421,6 +441,17 @@ translate O FinderDir {Katalog}
 translate O FinderDirs {Kataloger}
 translate O FinderFiles {Filer}
 translate O FinderUpDir {opp}
+
+# Player finder:
+menuText O PListFile "Fil" 0
+menuText O PListFileUpdate "Oppdater" 0
+menuText O PListFileClose "Close Player Finder" 0 ;# ***
+menuText O PListSort "Sorter" 0
+menuText O PListSortName "Name" 0 ;# ***
+menuText O PListSortElo "Elo" 0
+menuText O PListSortGames "Partier" 0
+menuText O PListSortOldest "Oldest" 0 ;# ***
+menuText O PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText O TmtFile "Fil" 0
@@ -448,7 +479,7 @@ menuText O GraphOptionsWhite "Hvit" 0
 menuText O GraphOptionsBlack "Sort" 0
 menuText O GraphOptionsBoth "Begge" 0
 menuText O GraphOptionsPInfo "Spiller Info spiller" 0
-translate O GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+translate O GraphFilterTitle "Filtergraf: hyppighet per 1000 partier"
 
 # Analysis window:
 translate O AddVariation {Legg til variasjon}
@@ -493,7 +524,7 @@ menuText O PgnOptIndentC "Rykk inn kommentarer" 0
 menuText O PgnOptIndentV "Rykk inn variasjoner" 0
 menuText O PgnOptColumn "Bruk kolonner (ett trekk per linje)" 0
 menuText O PgnOptSpace "Mellomrom etter trekknummer" 0
-menuText O PgnOptStripMarks "Strip out colored square/arrow codes" 1 ;# ***
+menuText O PgnOptStripMarks "Fjern fargekoder" 0
 menuText O PgnColor "Farger" 0
 menuText O PgnColorHeader "Header..." 0
 menuText O PgnColorAnno "Annotasjoner..." 0
@@ -526,7 +557,7 @@ menuText O CrosstabOptTitles "Titler" 0
 menuText O CrosstabOptBreaks "Poengfordel" 0
 menuText O CrosstabOptDeleted "Include deleted games" 8 ;# ***
 menuText O CrosstabOptColors "Farger (kun sveitsisk)" 0
-menuText O CrosstabOptColumnNumbers "Numbered columns (All-play-all table only)" 2 ;# ***
+menuText O CrosstabOptColumnNumbers "Nummererte kolonner (kun alle-mot-alle-tabeller)" 0
 menuText O CrosstabOptGroup "Gruppepoeng" 0
 menuText O CrosstabSort "Sorter" 0
 menuText O CrosstabSortName "Navn" 0
@@ -541,6 +572,7 @@ menuText O CrosstabHelpIndex "Innholdsfortegnelse" 0
 translate O SetFilter {Sett filter}
 translate O AddToFilter {Legg til i filter}
 translate O Swiss {Sveitsisk}
+translate O Category {Category} ;# ***
 
 # Opening report window menus:
 menuText O OprepFile "Fil" 0
@@ -649,6 +681,7 @@ translate O NumDeletedGames {Slettede partier:}
 translate O NumFilterGames {Partier i filter:}
 translate O YearRange {Til/fra år:}
 translate O RatingRange {Til/fra rating:}
+translate O Description {Description} ;# ***
 translate O Flag {Flagg}
 translate O DeleteCurrent {Slett gjeldende parti}
 translate O DeleteFilter {Slett filtrerte partier}
@@ -674,8 +707,8 @@ translate O CompactDatabase {Komprimer database}
 translate O SortDatabase {Sorter database}
 translate O AddEloRatings {Legg til ELO-ratinger}
 translate O AutoloadGame {Start med parti nummer}
-translate O StripTags {Strip PGN tags} ;# ***
-translate O StripTag {Strip tag} ;# ***
+translate O StripTags {Fjern PGN-merker}
+translate O StripTag {Fjern merke}
 translate O Cleaner {Opprydding}
 translate O CleanerHelp {
 Scid-opprydding vil utføre alle handlinger du velger fra listen under på gjeldende database.
@@ -693,6 +726,7 @@ Er du sikker på at du vil starte vedlikeholdsfunksjonene du har valgt?
 # Comment editor:
 translate O AnnotationSymbols  {Notasjonssymboler:}
 translate O Comment {Kommentar:}
+translate O InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate O BoardSearch {Stillingsøk}
@@ -735,7 +769,7 @@ translate O InitialBoard {Utgangsstilling}
 translate O SideToMove {Side i trekk}
 translate O MoveNumber {Trekk nummer}
 translate O Castling {Rokkade}
-translate O EnPassentFile {En Passent-kolonne}
+translate O EnPassantFile {En Passant-kolonne}
 translate O ClearFen {Slett FEN}
 translate O PasteFen {Lim inn FEN}
 
@@ -763,7 +797,7 @@ Vil du virkelig forkaste endringene som er gjort?
 
 # Exit dialog:
 translate O ExitDialog {Vil du virkelig avslutte Scid?}
-translate O ExitUnsaved {The following databases have unsaved game changes. If you exit now, these changes will be lost.} ;# ***
+translate O ExitUnsaved {Følgende baser har ulagrede endringer i partier. Hvis du avslutter nå vil disse endringene gå tapt.}
 
 # Import window:
 translate O PasteCurrentGame {Lim inn gjeldende parti}
@@ -844,15 +878,15 @@ translate O OprepExtraMoves {Ytterligere trekk notert i teoritabellen}
 translate O OprepMaxGames {Maksimalt antall partier i teoritabellen}
 
 # Piece Tracker window:
-translate O TrackerSelectSingle {Left mouse button selects this piece.} ;# ***
-translate O TrackerSelectPair {Left mouse button selects this piece; right button also selects its sibling.}
-translate O TrackerSelectPawn {Left mouse button selects this pawn; right button selects all 8 pawns.}
-translate O TrackerStat {Statistic}
-translate O TrackerGames {% games with move to square}
-translate O TrackerTime {% time on each square}
-translate O TrackerMoves {Moves}
-translate O TrackerMovesStart {Enter the move number where tracking should begin.}
-translate O TrackerMovesStop {Enter the move number where tracking should stop.}
+translate O TrackerSelectSingle {Venstre museknapp merker denne brikken}
+translate O TrackerSelectPair {Venstre museknapp merker denne brikken; høyre merker alle brikker av denne typen.}
+translate O TrackerSelectPawn {Venstre museknapp merker denne brikken; høyre merker alle brikker av denne typen.}
+translate O TrackerStat {Statistikk}
+translate O TrackerGames {% partier med trekk til felt}
+translate O TrackerTime {% tid på hvert felt}
+translate O TrackerMoves {Trekk}
+translate O TrackerMovesStart {Oppgi trekket hvor sporingen skal begynne.}
+translate O TrackerMovesStop {Oppgi trekket hvor sporingen skal stoppe.}
 
 # Game selection dialogs:
 translate O SelectAllGames {Alle partier i databasen}
@@ -883,10 +917,10 @@ translate O TwinsUndelete {Gjenopprett alle partier først?}
 translate O TwinsSetFilter {Sett filter til alle slettede duplikatpartier?}
 translate O TwinsComments {Behold alltid partier med kommentarer?}
 translate O TwinsVars {Behold alltid partier med variasjoner?}
-translate O TwinsDeleteWhich {Delete which game:} ;# ***
-translate O TwinsDeleteShorter {Shorter game} ;# ***
-translate O TwinsDeleteOlder {Smaller game number} ;# ***
-translate O TwinsDeleteNewer {Larger game number} ;# ***
+translate O TwinsDeleteWhich {Slett hvilket parti:}
+translate O TwinsDeleteShorter {Korteste parti}
+translate O TwinsDeleteOlder {Laveste partinummer}
+translate O TwinsDeleteNewer {Høyeste partinummer}
 translate O TwinsDelete {Slett partier}
 
 # Name editor window:
@@ -933,7 +967,7 @@ translate O IndentComments {Rykk inn kommentarer}
 translate O IndentVariations {Rykk inn variasjoner}
 translate O ExportColumnStyle {Bruk kolonner (ett trekk per linje)}
 translate O ExportSymbolStyle {Symbolnotasjoner}
-translate O ExportStripMarks {Strip square/arrow mark codes from comments?} ;# ***
+translate O ExportStripMarks {Fjern alle fargekoder og piler fra kommentarer?}
 
 # Goto game/move dialogs:
 translate O LoadGameNumber {Angi partinummer som skal lastes inn:}
@@ -992,7 +1026,6 @@ translate O RecentFilesMenu {Number of recent files in File menu} ;# ***
 translate O RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 
 }
-
 
 # norsk.tcl
 

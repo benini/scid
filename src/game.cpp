@@ -4,7 +4,7 @@
 //              Game class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
 //
@@ -1598,6 +1598,35 @@ Game::GetPrevSAN (char * str)
 }
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// writeComment:
+//    Called by WriteMoveList to write a single comment.
+void
+Game::WriteComment (TextBuffer * tb, const char * preStr,
+              const char * comment, const char * postStr)
+{
+    if (IsColorFormat()) {
+        tb->PrintString ("<c_");
+        tb->PrintInt (NumMovesPrinted);
+        tb->PrintChar ('>');
+    }
+    if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
+        char * s = strDuplicate (comment);
+        strTrimMarkCodes (s);
+        if (s[0] != 0) {
+            tb->PrintString (preStr);
+            tb->PrintString (s);
+            tb->PrintString (postStr);
+        }
+        delete[] s;
+    } else {
+        tb->PrintString (preStr);
+        tb->PrintString (comment);
+        tb->PrintString (postStr);
+    }
+    if (IsColorFormat()) { tb->PrintString ("</c>"); }
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::WriteMoveList():
 //      Write the moves, variations and comments in PGN notation.
@@ -1605,7 +1634,7 @@ Game::GetPrevSAN (char * str)
 //
 errorT
 Game::WriteMoveList (TextBuffer *tb, uint plyCount,
-                     moveT * oldCurrentMove, bool printMoveNum)
+                     moveT * oldCurrentMove, bool printMoveNum, bool inComment)
 {
     const char * preCommentStr = "{";
     const char * postCommentStr = "}";
@@ -1650,6 +1679,30 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         tb->PrintString (startTable);
     }
 
+#ifdef SCID_NULL_MOVES
+    if (IsPlainFormat()  &&  inComment) {
+        preCommentStr = "";
+        postCommentStr = "";
+    }
+    moveT * m = CurrentMove;
+    if ((PgnStyle & PGN_STYLE_NO_NULL_MOVES) && !inComment &&
+            IsPlainFormat()  &&  isNullMove(m)) {
+        inComment = true;
+        tb->PrintString(preCommentStr);
+        preCommentStr = "";
+        postCommentStr = "";
+    }
+#endif
+
+    // If this is a variation and it starts with a comment, print it:
+    if (VarDepth > 0  &&  CurrentMove->prev->comment != NULL) {
+        if (PgnStyle & PGN_STYLE_COMMENTS) {
+            WriteComment (tb, preCommentStr, CurrentMove->prev->comment,
+                          postCommentStr);
+            tb->PrintSpace();
+        }
+    }
+
     while (CurrentMove->marker != END_MARKER) {
         moveT *m = CurrentMove;
 
@@ -1666,10 +1719,40 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             return OK;
         }
 
-        // Print the move number and following dots if necessary:
+        if (m->san[0] == 0) {
+            CurrentPos->MakeSANString (&(m->moveData), m->san, SAN_MATETEST);
+        }
+
+        bool printThisMove = true;
+#ifdef SCID_NULL_MOVES
+        if (isNullMove(m)) {
+            // Null moves are not printed in LaTeX or HTML:
+            if (IsLatexFormat()  ||  IsHtmlFormat()) {
+                printThisMove = false;
+                printMoveNum = true;
+            }
+            // If Plain PGN format, check whether to convert the
+            // null move and remainder of the line to a comment:
+            if ((PgnStyle & PGN_STYLE_NO_NULL_MOVES)  &&  IsPlainFormat()) {
+                if (!inComment) {
+                    // Enter inComment mode to convert rest of line
+                    // to a comment:
+                    inComment = true;
+                    tb->PrintString(preCommentStr);
+                    preCommentStr = "";
+                    postCommentStr = "";
+                }
+                printThisMove = false;
+                printMoveNum = true;
+            }
+        }
+#endif
 
         int colWidth = 12;
         NumMovesPrinted++;
+
+        if (printThisMove) {
+        // Print the move number and following dots if necessary:
         if (IsColorFormat()) {
             tb->PrintString ("<m_");
             tb->PrintInt (NumMovesPrinted);
@@ -1714,13 +1797,11 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             tb->PrintString (nextColumn);
             tb->ResumeTranslations();
         }
-        if (m->san[0] == 0) {
-            CurrentPos->MakeSANString (&(m->moveData), m->san, SAN_MATETEST);
-        }
         tb->PrintWord (m->san);
         colWidth -= strLength (m->san);
         if (IsColorFormat()) {
             tb->PrintString ("</m>");
+        }
         }
 
         bool endedColumn = false;
@@ -1809,6 +1890,20 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             }
 
             if (m->comment != NULL) {
+                if (!inComment && IsPlainFormat()  &&
+                    (PgnStyle & PGN_STYLE_NO_NULL_MOVES)) {
+                    // If this move has no variations, but the next move
+                    // is a null move, enter inComment mode:
+                    if (isNullMove(m->next)  &&
+                          ((!(PgnStyle & PGN_STYLE_VARS))  ||
+                            (CurrentMove->next->numVariations == 0))) {
+                        inComment = true;
+                        tb->PrintString(preCommentStr);
+                        preCommentStr = "";
+                        postCommentStr = "";
+                    }
+                }
+
                 if ((PgnStyle & PGN_STYLE_COLUMN)  &&  VarDepth == 0) {
                     if (! endedColumn) {
                         if (CurrentPos->GetToMove() == WHITE) {
@@ -1831,22 +1926,9 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                         tb->SetIndent (tb->GetIndent() + 4); tb->Indent();
                     }
                 }
-                if (IsColorFormat()) {
-                    tb->PrintString ("<c_");
-                    tb->PrintInt (NumMovesPrinted);
-                    tb->PrintChar ('>');
-                }
-                tb->PrintString (preCommentStr);
-                if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-                    char * s = strDuplicate (m->comment);
-                    strTrimMarkCodes (s);
-                    tb->PrintString (s);
-                    delete[] s;
-                } else {
-                    tb->PrintString (m->comment);
-                }
-                tb->PrintString (postCommentStr);
-                if (IsColorFormat()) { tb->PrintString ("</c>"); }
+
+                WriteComment (tb, preCommentStr, m->comment, postCommentStr);
+
                 if ((PgnStyle & PGN_STYLE_INDENT_COMMENTS) && VarDepth == 0) {
                     if (IsColorFormat()) {
                         tb->PrintString ("</ip1><br>");
@@ -1935,36 +2017,11 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 }
                 MoveIntoVariation (i);
                 NumMovesPrinted++;
-
-                // If the variation starts with a comment, print the comment:
-
-                if (CurrentMove->prev->comment != NULL) {
-                    if (PgnStyle & PGN_STYLE_COMMENTS) {
-                        tb->PrintChar (' ');
-                        if (IsColorFormat()) {
-                            tb->PrintString ("<c_");
-                            tb->PrintInt (NumMovesPrinted);
-                            tb->PrintChar ('>');
-                        }
-                        tb->PrintString (preCommentStr);
-                        if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-                            char * s = 
-                                strDuplicate (CurrentMove->prev->comment);
-                            strTrimMarkCodes (s);
-                            tb->PrintString (s);
-                            delete[] s;
-                        } else {
-                            tb->PrintString (CurrentMove->prev->comment);
-                        }
-                        tb->PrintString (postCommentStr);
-                        if (IsColorFormat()) { tb->PrintString ("</c>"); }
-                    }
-                }
                 tb->PrintSpace();
 
                 // Recursively print the variation:
 
-                WriteMoveList (tb, plyCount, oldCurrentMove, true);
+                WriteMoveList (tb, plyCount, oldCurrentMove, true, inComment);
                 if (StopLocation > 0  &&  NumMovesPrinted >= StopLocation) {
                     return OK;
                 }
@@ -2017,6 +2074,9 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             PgnNextMovePos = NumMovesPrinted;
         }
     }
+#ifdef SCID_NULL_MOVES
+    if (inComment) { tb->PrintString ("}"); }
+#endif
     if (IsHtmlFormat()  &&  VarDepth == 0) { tb->PrintString ("</b>"); }
     if ((PgnStyle & PGN_STYLE_COLUMN)  &&  VarDepth == 0) {
         tb->PrintString(endTable);
@@ -2255,7 +2315,7 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
     if (IsHtmlFormat()) { tb->PrintString ("<p>"); }
     NumMovesPrinted = 1;
     StopLocation = stopLocation;
-    WriteMoveList (tb, StartPlyCount, oldCurrentMove, true);
+    WriteMoveList (tb, StartPlyCount, oldCurrentMove, true, false);
     if (IsHtmlFormat()) { tb->PrintString ("<b>"); }
     if (IsLatexFormat()) { tb->PrintString ("\n}\\end{chess}\n{\\bf "); }
     if (IsColorFormat()) { tb->PrintString ("<tag>"); }
@@ -2440,6 +2500,15 @@ encodeKing (ByteBuffer * buf, simpleMoveT * sm)
     /* -9 -8 -7 -6 -5 -4 -3 -2 -1  0  1   2  3  4  5  6  7  8  9 */
         1, 2, 3, 0, 0, 0, 0, 9, 4, 0, 5, 10, 0, 0, 0, 0, 6, 7, 8
     };
+#ifdef SCID_NULL_MOVES
+    // If target square is the from square, it is the null move, which
+    // is represented as a king mov to its own square and is encoded
+    // as the byte value zero.
+    if (sm->to == sm->from) {
+        buf->PutByte (makeMoveByte (0, 0));
+        return;
+    }
+#endif
     // Verify we have a valid King move:
     ASSERT(diff >= -9  &&  diff <= 9  &&  val[diff+9] != 0);
     buf->PutByte (makeMoveByte (0, val [diff + 9]));
@@ -2454,6 +2523,12 @@ decodeKing (byte val, simpleMoveT * sm)
     static const int sqdiff[] = {
         0, -9, -8, -7, -1, 1, 7, 8, 9, -2, 2
     };
+#ifdef SCID_NULL_MOVES
+    if (val == 0) {
+        sm->to = sm->from;
+        return OK;
+    }
+#endif
     if (val < 1  ||  val > 10) { return ERROR_Decode; }
     sm->to = sm->from + sqdiff[val];
     return OK;

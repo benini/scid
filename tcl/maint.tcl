@@ -87,6 +87,14 @@ proc makeMaintWin {} {
   label $w.title.dates -textvar ::tr(YearRange) -font $font
   label $w.title.ratings -textvar ::tr(RatingRange) -font $font
   button $w.title.vicon -command {changeBaseType [sc_base current]}
+  frame $w.title.desc
+  label $w.title.desc.lab -text $::tr(Description:) -font font_SmallBold
+  label $w.title.desc.text -width 1 -font $font -relief sunken -anchor w
+  button $w.title.desc.edit -text "[tr Edit]..." -font $font \
+    -command changeBaseDescription
+  pack $w.title.desc.lab -side left
+  pack $w.title.desc.edit -side right -padx 2
+  pack $w.title.desc.text -side left -fill x -expand yes
 
   foreach name {name games delete mark filter dates ratings} {
     label $w.title.v$name -text "0" -font $font
@@ -105,6 +113,7 @@ proc makeMaintWin {} {
   grid [label $w.title.space -text "   "] -row 0 -column 2
   $w.title.vname configure -font font_Bold
   $w.title.vgames configure -font font_SmallBold
+  grid $w.title.desc -row $row -column 0 -columnspan 5 -sticky we
 
   foreach grid {title delete mark spell db} cols {5 3 3 4 3} {
     for {set i 0} {$i < $cols} {incr i} {
@@ -192,6 +201,29 @@ proc makeMaintWin {} {
   updateMaintWin
 }
 
+proc changeBaseDescription {} {
+  set w .bdesc
+  if {[winfo exists $w]} { return }
+  toplevel $w
+  wm title $w "Scid: $::tr(Description): [file tail [sc_base filename]]"
+  set font font_Small
+  entry $w.entry -width 50 -relief sunken -background white
+  $w.entry insert end [sc_base description]
+  pack $w.entry -side top -pady 4
+  frame $w.b
+  button $w.b.ok -text OK -command {
+    catch {sc_base description [.bdesc.entry get]}
+    grab release .bdesc
+    destroy .bdesc
+    updateMaintWin
+  }
+  button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+  pack $w.b -side bottom -fill x
+  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
+  wm resizable $w 0 0
+  catch {grab $w}
+}
+
 proc updateMaintWin {} {
   global maintFlag maintFlags
   updateSortWin
@@ -219,6 +251,7 @@ proc updateMaintWin {} {
   set flagname "$::tr(Flag): $::tr($maintFlags($maintFlag)) ($maintFlag)"
   $w.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
+  $w.title.desc.text configure -text [sc_base description]
 
   # Disable buttons if current base is closed or read-only:
   set state disabled
@@ -234,6 +267,7 @@ proc updateMaintWin {} {
   }
   $w.db.dups configure -state $state
   $w.title.vicon configure -state $state
+  $w.title.desc.edit configure -state $state
   $w.db.elo configure -state $state
   $w.db.autoload configure -state $state
 
@@ -382,11 +416,14 @@ proc markTwins {{parent .}} {
   set row 0
   foreach n {skipshort undelete setfilter comments variations} {
     label $w.g3.l$n -text "" -font $small
-    checkbutton $w.g3.v$n -width 6 -variable twinSettings($n) -font $small \
-      -textvariable twinSettings($n) -onvalue Yes -offvalue No -anchor w
-      grid $w.g3.l$n -row $row -column 0 -sticky w
-      grid $w.g3.v$n -row $row -column 1 -sticky w
-      incr row
+    radiobutton $w.g3.yes$n -variable twinSettings($n) -value Yes \
+      -text $::tr(Yes) -font $small
+    radiobutton $w.g3.no$n -variable twinSettings($n) -value No \
+        -text $::tr(No) -font $small
+    grid $w.g3.l$n -row $row -column 0 -sticky w
+    grid $w.g3.yes$n -row $row -column 1 -sticky w
+    grid $w.g3.no$n -row $row -column 2 -sticky w
+    incr row
   }
   $w.g3.lskipshort configure -text $::tr(TwinsSkipShort)
   $w.g3.lundelete configure -text $::tr(TwinsUndelete)
@@ -394,7 +431,7 @@ proc markTwins {{parent .}} {
   $w.g3.lcomments configure -text $::tr(TwinsComments)
   $w.g3.lvariations configure -text $::tr(TwinsVars)
   label $w.g3.ldelete -text $::tr(TwinsDeleteWhich)  -font $small
-  grid $w.g3.ldelete -row $row -column 0 -sticky we -columnspan 2
+  grid $w.g3.ldelete -row $row -column 0 -sticky we -columnspan 3
   incr row
   frame $w.g3.vdelete
   foreach v {Shorter Older Newer} {
@@ -402,7 +439,7 @@ proc markTwins {{parent .}} {
       -variable twinSettings(delete) -value $v -font $small
     pack $w.g3.vdelete.v$v -side left -padx 5
   }
-  grid $w.g3.vdelete -row $row -column 0 -columnspan 2
+  grid $w.g3.vdelete -row $row -column 0 -columnspan 3
 
   foreach g {g g2 g3} {
     grid columnconfigure $w.$g 0 -weight 1
@@ -413,9 +450,9 @@ proc markTwins {{parent .}} {
   button $w.b.defaults -textvar ::tr(Defaults) -command {
     array set twinSettings [array get twinSettingsDefaults]
   }
-  button $w.b.help -text $::tr(Help) \
+  button $w.b.help -text $::tr(Help) -font $small \
     -command "helpWindow Maintenance Twins; focus $w"
-  button $w.b.go -text $::tr(TwinsDelete) -command {
+  button $w.b.go -text $::tr(TwinsDelete) -font $small -command {
     if {[twinCriteriaOK .twinSettings]} {
       grab release .twinSettings
       sc_progressBar .twinSettings.progress bar 301 21 time
@@ -426,7 +463,7 @@ proc markTwins {{parent .}} {
     }
   }
 
-  button $w.b.cancel -text $::tr(Cancel) \
+  button $w.b.cancel -text $::tr(Cancel) -font $small \
     -command "grab release $w; focus .; destroy $w"
   canvas $w.progress -width 300 -height 20 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
@@ -1205,7 +1242,10 @@ array set stripTagCount {}
 proc stripTags {} {
   global stripTagChoice stripTagCount
   set w .striptags
-  if {[winfo exists $w]} { return }
+  if {[winfo exists $w]} {
+    raise $w
+    return
+  }
   set stripTagList {}
 
   # Find extra PGN tags:

@@ -196,9 +196,9 @@ proc ::bookmarks::go {entry} {
   # Find and load the best database game matching the bookmark:
   set white [lindex $entry 5]
   set black [lindex $entry 6]
-  set site [lindex $entry 7]
-  set round [lindex $entry 8]
-  set year [lindex $entry 9]
+  set year  [lindex $entry 7]
+  set site  [lindex $entry 8]
+  set round [lindex $entry 9]
   set result [lindex $entry 10]
 
   set best [sc_game find $gnum $white $black $site $round $year $result]
@@ -616,7 +616,11 @@ proc ::recentFiles::show {menu} {
     set fname [lindex $rlist $i]
     set mname [::recentFiles::menuname $fname]
     set text [file tail $fname]
-    $menu add command -label " $mname" \
+    set num [expr $i + 1]
+    set underline -1
+    if {$num <= 9} { set underline 0 }
+    if {$num == 10} { set underline 1 }
+    $menu add command -label "$num: $mname" -underline $underline \
       -command [list ::recentFiles::load $fname]
     set ::helpMessage($menu,$idx) "  $fname"
     incr idx
@@ -635,9 +639,13 @@ proc ::recentFiles::show {menu} {
     incr i
     set mname [::recentFiles::menuname $fname]
     set text [file tail $fname]
-    $menu.recentFiles add command -label " $mname" \
+    set num [expr $extra + 1]
+    set underline -1
+    if {$num <= 9} { set underline 0 }
+    if {$num == 10} { set underline 1 }
+    $menu.recentFiles add command -label "$num: $mname" -underline $underline \
       -command [list ::recentFiles::load $fname]
-    set ::helpMessage($menu.recentFiles,extra) "  $fname"
+    set ::helpMessage($menu.recentFiles,$extra) "  $fname"
   }
   return [expr $nfiles + 1]
 }

@@ -30,6 +30,7 @@
 struct bookDataT {
     uint    id;
     char *  comment;
+    squareT enpassant;   // Original en passant square.
 };
 
 typedef nodeT<bookDataT>  bookNodeT;
@@ -54,7 +55,6 @@ class PBook
     uint    NodeListCount;
     uint    NextIndex;   // For jumping to next pbook position.
     StrAllocator * StrAlloc;
-    bool    UseEnPassentField;
     uint SkipCount;      // Number of searches saved by LeastMaterial
                          // comparison.
     uint LeastMaterial;  // The smallest amount of material in any
@@ -89,8 +89,6 @@ class PBook
     void    SetFileName (char * filename);
     bool    IsAltered() { return Altered; }
     bool    IsReadOnly() { return ReadOnly; }
-    void    UseEnPassent (bool b) { UseEnPassentField = b; }
-    bool    UsesEnPassent (void) { return UseEnPassentField; }
 
     uint    GetLineNumber (void) { return LineCount; }
 

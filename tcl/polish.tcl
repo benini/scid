@@ -48,6 +48,8 @@ menuText P FileMaintNameRound "Sprawd¼ numery rund..." 15 \
   {Sprawd¼ numery rund przy pomocy pliku}
 menuText P FileReadOnly "Tylko do odczytu..." 0 \
   {Zabezpiecz bazê przed zapisem}
+menuText P FileSwitch "Prze³±cz bazê" 1 \
+  {Prze³±cz na inn± otwart± bazê} 
 menuText P FileExit "Koniec" 0 {Zamknij Scida}
 
 menuText P Edit "Edytuj" 0
@@ -73,6 +75,8 @@ menuText P EditPaste "Wklej aktywn± partiê ze schowka" 0 \
   {Wklej aktywn± partiê ze schowka}
 menuText P EditSetup "Ustaw pozycjê pocz±tkow±..." 6 \
   {Ustaw pozycjê pocz±tkow± partii}
+menuText P EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText P EditPasteBoard "Ustaw pozycjê ze schowka" 3 \
   {Ustaw pozycjê ze schowka}
 
@@ -87,7 +91,7 @@ menuText P GameReload "Prze³aduj aktualn± partiê"  10 \
 menuText P GameNext "Za³aduj nastêpn± partiê" 0 \
   {Za³aduj nastêpn± wyszukan± partiê}
 menuText P GameLast "Ostatnia partia" 2 {Za³aduj ostatni± partiê z filtra}
-menuText P GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText P GameRandom "Losowa partia z filtra" 8 {Wczytaj losow± partiê z filtra}
 menuText P GameNumber "Za³aduj partiê numer..." 17 \
   {Za³aduj partiê wprowadzaj±c jej numer}
 menuText P GameReplace "Zapisz: zast±p partiê..." 3 \
@@ -120,6 +124,7 @@ menuText P WindowsComment "Edytor komentarzy" 0 \
   {Otwórz/zamknij edytor komentarzy}
 menuText P WindowsGList "Lista partii" 0 {Otwórz/zamknij listê partii}
 menuText P WindowsPGN "Okno PGN" 0 {Otwórz/zamknij (zapis partii) PGN }
+menuText P WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText P WindowsTmt "Turnieje" 0 {Otwórz/zamknij przegl±darkê turniejów}
 menuText P WindowsSwitcher "Prze³±cznik baz" 12 \
   {Otwórz/zamknij prze³±cznik baz}
@@ -144,8 +149,8 @@ menuText P ToolsCross "Tabela turniejowa" 0 \
   {Poka¿ tabelê turniejow± dla aktualnej partii}
 menuText P ToolsEmail "Zarz±dzanie poczt± e-mail" 0 \
   {Otwórz/zamknij zarz±dzanie adresami e-mail}
-menuText P ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+menuText P ToolsFilterGraph "Wykres filtra" 7 \
+  {Otwórz/zamknij wykres filtra}
 menuText P ToolsOpReport "Raport debiutowy" 0 \
   {Utwórz raport debiutowy dla aktualnej pozycji}
 menuText P ToolsTracker "¦ledzenie figur"  10 {Otwórz/zamknij okno ¶ledzenia figur} 
@@ -170,9 +175,9 @@ menuText P ToolsExpFilterHTML "Do pliku HTML..." 9 \
   {Zapisz wyszukane partie do pliku HTML}
 menuText P ToolsExpFilterLaTeX "Do pliku LaTeX..." 9 \
   {Zapisz wyszukane partie do pliku LaTeX}
-menuText P ToolsImportOne "Pobierz partiê z pliku PGN..." 0 \
+menuText P ToolsImportOne "Wklej partiê w formacie PGN..." 0 \
   {Pobierz partiê z pliku PGN}
-menuText P ToolsImportFile "Pobierz plik PGN..." 2 \
+menuText P ToolsImportFile "Importuj plik PGN..." 2 \
   {Pobierz partie z pliku PGN}
 
 menuText P Options "Opcje" 0
@@ -183,7 +188,7 @@ menuText P OptionsColors "Kolory..." 0 {Zmieñ kolory szachownicy}
 menuText P OptionsExport "Eksport" 0 {Zmieñ opcje eksportu tekstu}
 menuText P OptionsFonts "Czcionka" 0 {Zmieñ font}
 menuText P OptionsFontsRegular "Podstawowa" 0 {Zmieñ podstawow± czcionkê}
-menuText P OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText P OptionsFontsMenu "Menu" 0 {Zmieñ czcionkê menu} 
 menuText P OptionsFontsSmall "Ma³a" 0 {Zmieñ ma³± czcionkê}
 menuText P OptionsFontsFixed "Sta³a" 0 {Zmieñ czcionkê sta³ej szeroko¶ci}
 menuText P OptionsGInfo "Informacje o partii" 0 {Sposób wy¶wietlania informacji o partii}
@@ -214,8 +219,8 @@ menuText P OptionsSpell "Za³aduj plik sprawdzania pisowni..." 13 \
   {Za³aduj plik do sprawdzania pisowni nazwisk i nazw}
 menuText P OptionsTable "Katalog z baz± koñcówek..." 10 \
   {Wybierz bazê koñcówek; u¿yte zostan± wszystkie bazy z tego katalogu}
-menuText P OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText P OptionsRecent "Ostatnie pliki..." 0 \
+  {Zmieñ liczbê ostatnio otwartych plików, wy¶wietlanych w menu Plik} 
 menuText P OptionsSave "Zapamiêtaj opcje" 0 \
   "Zapamiêtaj wszystkie ustawienia w pliku $::optionsFile"
 menuText P OptionsAutoSave "Automatycznie zapisuj opcje" 0 \
@@ -238,6 +243,7 @@ menuText P GInfoFEN "Poka¿ pozycjê w formacie FEN" 16
 menuText P GInfoMarks "Pokazuj kolorowe pola i strza³ki" 5 
 menuText P GInfoWrap "Zawijaj d³ugie linie" 0
 menuText P GInfoFullComment "Poka¿ ca³y komentarz" 6
+menuText P GInfoPhotos "Show Photos" 5 ;# ***
 menuText P GInfoTBNothing "Tablica koñcówek: nic" 0
 menuText P GInfoTBResult "Tablica koñcówek: tylko wynik" 18
 menuText P GInfoTBAll "Tablica koñcówek: wszystko" 18
@@ -303,13 +309,14 @@ translate P Black {Czarne}
 translate P Player {Gracz}
 translate P Rating {Ranking}
 translate P RatingDiff {Ró¿nica rankingów}
+translate P AverageRating {¦redni ranking}
 translate P Event {Turniej}
 translate P Site {Miejsce}
 translate P Country {Kraj}
 translate P IgnoreColors {Ignoruj kolory}
 translate P Date {Data}
 translate P EventDate {Turniej data}
-translate P Decade {Decade} ;# ***
+translate P Decade {Dekada} 
 translate P Year {Rok}
 translate P Month {Miesi±c}
 translate P Months {Styczeñ Luty Marzec Kwiecieñ Maj Czerwiec
@@ -333,6 +340,11 @@ translate P clipbase {schowek}
 translate P score {punkty}
 translate P StartPos {Pozycja pocz±tkowa}
 translate P Total {Razem}
+
+# Standard error messages:
+translate P ErrNotOpen {To nie jest otwarta baza.} 
+translate P ErrReadOnly {Ta baza jest tylko do odczytu; nie mo¿na jej zmieniæ.}
+translate P ErrSearchInterrupted {Wyszukiwanie zosta³o przerwane. Wyniki bêd± niepe³ne.}
 
 # Game information:
 translate P twin {powtórzona}
@@ -368,6 +380,10 @@ translate P allOthersLose {inne posuniêcia przegrywaj±}
 translate P matesIn {matuj± w}
 translate P hasCheckmated {matuj±}
 translate P longest {najlepsze}
+translate P WinningMoves {Wygrywaj±ce posuniêcia}
+translate P DrawingMoves {Remisuj±ce posuniêcia} 
+translate P LosingMoves {Przegrywaj±ce posuniêcia} 
+translate P UnknownMoves {Posuniêcia o nieznanej ocenie} 
 
 # Tip of the day:
 translate P Tip {Porada}
@@ -401,6 +417,10 @@ translate P LockTree {Blokada}
 translate P TreeLocked {zablokowane}
 translate P TreeBest {Najlepsze}
 translate P TreeBestGames {Najlepsze partie}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate P TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText P FinderFile "Plik" 0
@@ -426,6 +446,17 @@ translate P FinderDir {Katalog}
 translate P FinderDirs {Katalogi}
 translate P FinderFiles {Pliki}
 translate P FinderUpDir {wy¿ej}
+
+# Player finder:
+menuText P PListFile "Plik" 0
+menuText P PListFileUpdate "Uaktualnij" 0
+menuText P PListFileClose "Close Player Finder" 0 ;# ***
+menuText P PListSort "Sortowanie" 0
+menuText P PListSortName "Name" 0 ;# ***
+menuText P PListSortElo "Elo" 0
+menuText P PListSortGames "Partie" 0
+menuText P PListSortOldest "Oldest" 0 ;# ***
+menuText P PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText P TmtFile "Plik" 0
@@ -453,7 +484,7 @@ menuText P GraphOptionsWhite "Bia³e" 0
 menuText P GraphOptionsBlack "Czarne" 0
 menuText P GraphOptionsBoth "Oba kolory" 1
 menuText P GraphOptionsPInfo "Gracz z Informacji o graczu" 0
-translate P GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+translate P GraphFilterTitle "Filtr: czêsto¶æ na 1000 partii" 
 
 # Analysis window:
 translate P AddVariation {Dodaj wariant}
@@ -546,6 +577,7 @@ menuText P CrosstabHelpIndex "Spis tre¶ci" 0
 translate P SetFilter {Ustaw filtr}
 translate P AddToFilter {Dodaj do filtra}
 translate P Swiss {Szwajcar}
+translate P Category {Kategoria} 
 
 # Opening report window menus:
 menuText P OprepFile "Plik" 0
@@ -654,6 +686,7 @@ translate P NumDeletedGames {Liczba usuniêtych partii:}
 translate P NumFilterGames {Liczba partii w filtrze:}
 translate P YearRange {Data:}
 translate P RatingRange {Ranking:}
+translate P Description {Opis} 
 translate P Flag {Oznaczenie:}
 translate P DeleteCurrent {Usuñ aktualn± partiê}
 translate P DeleteFilter {Usuñ partie z filtra}
@@ -679,8 +712,8 @@ translate P CompactDatabase {Uporz±dkuj bazê}
 translate P SortDatabase {Sortuj bazê}
 translate P AddEloRatings {Dodaj rankingi ELO}
 translate P AutoloadGame {Domy¶lna partia}
-translate P StripTags {Strip PGN tags} ;# ***
-translate P StripTag {Strip tag} ;# ***
+translate P StripTags {Usuñ znaczniki PGN} 
+translate P StripTag {Usuñ znacznik}
 translate P Cleaner {Zestaw zadañ}
 translate P CleanerHelp {
 Zestaw zadañ pozwala wykonaæ od razu kilka operacji porz±dkowania bazy. Operacje wybrane z listy
@@ -700,6 +733,7 @@ Na pewno wykonaæ wybrane zadania?
 # Comment editor:
 translate P AnnotationSymbols  {Symbole:}
 translate P Comment {Komentarz:}
+translate P InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate P BoardSearch {Wyszukiwanie wg pozycji}
@@ -742,7 +776,7 @@ translate P InitialBoard {Pozycja pocz±tkowa}
 translate P SideToMove {Na posuniêciu}
 translate P MoveNumber {Posuniêcie nr}
 translate P Castling {Roszada}
-translate P EnPassentFile {Bicie w przelocie}
+translate P EnPassantFile {Bicie w przelocie}
 translate P ClearFen {Kopiuj FEN}
 translate P PasteFen {Wklej pozycjê FEN}
 
@@ -855,7 +889,7 @@ translate P OprepExtraMoves {Dodatkowe posuniêcia w przypisach}
 translate P OprepMaxGames {Maksymalna liczba partii w teorii}
 
 # Piece Tracker window:
-translate P TrackerSelectSingle {Lewy przycisk wybiera tê figurê.} ;# ***
+translate P TrackerSelectSingle {Lewy przycisk wybiera tê figurê.}
 translate P TrackerSelectPair {Lewy przycisk wybiera tê figurê; prawy obie takie figury.}
 translate P TrackerSelectPawn {Lewy przycisk wybiera tego piona; prawy wszystkie 8 pionów.}
 translate P TrackerStat {Statystyka}
@@ -1004,8 +1038,8 @@ Przekonwertowaæ bazê?
 }
 
 # Recent files options:
-translate P RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate P RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate P RecentFilesMenu {Liczba ostatnich plików w menu Plik} 
+translate P RecentFilesExtra {Liczba ostatnich plików w dodatkowym podmenu} 
 
 }
 

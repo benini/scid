@@ -13,6 +13,23 @@ array set images [list "R" wr "r" br "N" wn "n" bn "B" wb "b" bb \
 set setupBd {}
 set setupFen {}
 
+# copyFEN:
+#   Copies the FEN of the current position to the text clipboard.
+#
+proc copyFEN {} {
+  set fen [sc_pos fen]
+  # Create a text widget to hold the fen so it can be the owner
+  # of the current text selection:
+  set w .tempFEN
+  if {! [winfo exists $w]} { text $w }
+  $w delete 1.0 end
+  $w insert end $fen sel
+  clipboard clear
+  clipboard append $fen
+  selection own $w
+  selection get
+}
+
 # pasteFEN:
 #   Bypasses the board setup window and tries to paste the current
 #   text selection as the setup position, producing a message box
@@ -424,7 +441,7 @@ proc setupBoard {} {
     -command {set setupFen [makeSetupFen]}
   pack $sr.tomove.label $sr.tomove.w $sr.tomove.b -side left
 
-  ### Entry boxes: Move number, Castling and En Passent file.
+  ### Entry boxes: Move number, Castling and En Passant file.
 
   frame $sr.movenum
   label $sr.movenum.label -textvar ::tr(MoveNumber:)
@@ -437,7 +454,7 @@ proc setupBoard {} {
   pack $sr.castle.label $sr.castle.e -side left
 
   frame $sr.ep
-  label $sr.ep.label -textvar ::tr(EnPassentFile:)
+  label $sr.ep.label -textvar ::tr(EnPassantFile:)
   entry $sr.ep.e -width 2 -background white -textvariable epFile
   set epFile {}
   pack $sr.ep.label $sr.ep.e -side left
@@ -1361,9 +1378,9 @@ menu .gameInfo.menu -tearoff 0
 .gameInfo.menu add checkbutton -label GInfoFullComment \
   -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
 
-#.gameInfo.menu add checkbutton -label Photos \
-#  -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-#  -command {updatePlayerPhotos -force}
+.gameInfo.menu add checkbutton -label GInfoPhotos \
+  -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+  -command {updatePlayerPhotos -force}
 
 .gameInfo.menu add separator
 
@@ -1585,13 +1602,36 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
   if {[winfo exists .noveltyWin]} { updateNoveltyWin }
 }
 
+# Set up player photos:
+
 image create photo photoW
 image create photo photoB
 label .photoW -background white -image photoW -anchor ne
 label .photoB -background white -image photoB -anchor ne
 
+proc readPhotoFile {fname} {
+  set oldcount [array size ::photo]
+  catch {source $fname}
+  set newcount [expr [array size ::photo] - $oldcount]
+  if {$newcount > 0} {
+    addSplash "Found $newcount player photos in [file tail $fname]"
+  }
+}
+
+proc photo {player data} {
+  set ::photo($player) $data
+}
+
 array set photo {}
-catch {source [file join $scidUserDir players.img]}
+
+# Read all Scid photo (*.spf) files in the Scid user directory:
+foreach photofile [glob -nocomplain [file join $scidUserDir "*.spf"]] {
+  readPhotoFile $photofile
+}
+
+#Read players.img for compatibility with older versions:
+readPhotoFile [file join $scidUserDir players.img]
+
 set photo(oldWhite) {}
 set photo(oldBlack) {}
 
@@ -1691,6 +1731,10 @@ proc confirmReplaceMove {} {
   return "cancel"
 }
 
+proc addNullMove {} {
+    addMove null null
+}
+
 # addMove:
 #   Adds the move indicated by sq1 and sq2 if it is legal. If the move
 #   is a promotion, getPromoPiece will be called to get the promotion
@@ -1698,7 +1742,16 @@ proc confirmReplaceMove {} {
 #
 proc addMove { sq1 sq2 } {
   global EMPTY
-  if {[sc_pos isLegal $sq1 $sq2] == 0} { return }
+  set nullmove 0
+  if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
+  if {!$nullmove  &&  [sc_pos isLegal $sq1 $sq2] == 0} {
+    # Illegal move, but if it is King takes king then treat it as
+    # entering a null move:
+    set board [sc_pos board]
+    set k1 [string tolower [string index $board $sq1]]
+    set k2 [string tolower [string index $board $sq2]]
+    if {$k1 == "k"  &&  $k2 == "k"} { set nullmove 1 } else { return }
+  }
   set promo $EMPTY
   if {[sc_pos isPromotion $sq1 $sq2] == 1} { set promo [getPromoPiece] }
   set action "replace"
@@ -1706,12 +1759,17 @@ proc addMove { sq1 sq2 } {
     set action [confirmReplaceMove]
   }
   if {$action == "replace"} {
-    sc_move add $sq1 $sq2 $promo
+    # nothing
   } elseif {$action == "var"} {
     sc_var create
-    sc_move add $sq1 $sq2 $promo
   } else {
+    # Do not add the move at all:
     return
+  }
+  if {$nullmove} {
+    sc_move addSan null
+  } else {
+    sc_move add $sq1 $sq2 $promo
   }
   moveEntry_Clear
   updateBoardAndPgn

@@ -4,7 +4,7 @@
 //              Game class for Scid.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
 //
@@ -101,6 +101,12 @@ struct moveT
     byte         nags[MAX_NAGS];
 };
 
+inline bool
+isNullMove (moveT * m)
+{
+    return isNullMove(&(m->moveData));
+}
+
 
 // Since we want allocation and freeing of moves to be FAST, we allocate
 // in chunks, and keep a linked list of the chunks allocated.
@@ -153,7 +159,7 @@ enum gameFormatT {
 #define PGN_STYLE_COLUMN         256   // Column style: one move per line.
 #define PGN_STYLE_SCIDFLAGS      512
 #define PGN_STYLE_STRIP_MARKS   1024   // Strip [%mark] and [%arrow] codes.
-
+#define PGN_STYLE_NO_NULL_MOVES 2048   // Convert null moves to comments.
 
 
 void  game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format);
@@ -409,9 +415,11 @@ public:
     // PGN conversion
     void      GetSAN (char * str);
     void      GetPrevSAN (char * str);
+    void      WriteComment (TextBuffer * tb, const char * preStr,
+                            const char * comment, const char * postStr);
     errorT    WriteMoveList (TextBuffer * tb, uint plyCount,
                              moveT * oldCurrentMove,
-                             bool printMoveNum);
+                             bool printMoveNum, bool inComment);
     errorT    WritePGN (TextBuffer * tb, uint stopLocation);
     errorT    WriteToPGN (TextBuffer * tb);
     errorT    MoveToLocationInPGN (TextBuffer * tb, uint stopLocation);

@@ -10,39 +10,39 @@ proc setLanguage_D {} {
 # File menu:
 menuText D File "Datei" 0
 menuText D FileNew "Neu..." 0 {Neue Scid-Datenbank anlegen}
-menuText D FileOpen "Öffnen..." 0 {Öffnen einer existierenden Scid-Datenbank}
-menuText D FileClose "Schließen" 0 {Schließen der aktiven Scid-Datenbank}
-menuText D FileFinder "Finder" 0 {Öffnen des Dateifinder-Fensters}
+menuText D FileOpen "Öffnen..." 0 {Existierende Scid-Datenbank öffnen}
+menuText D FileClose "Schließen" 0 {Aktive Scid-Datenbank schließen}
+menuText D FileFinder "Finder" 0 {Dateifinder-Fenster öffnen}
 menuText D FileBookmarks "Lesezeichen" 0 {Lesezeichen-Menü (Tasten: Strg+B)}
 menuText D FileBookmarksAdd "Lesezeichen zur Liste hinzufügen" 0 \
   {Lesezeichen für die aktuelle Partie und Datenbank}
 menuText D FileBookmarksFile "Lesezeichen hinzufügen in Verzeichnis" 26 \
   {Lesezeichen für die aktuelle Stellung und Partie zum Verzeichnis hinzufügen}
 menuText D FileBookmarksEdit "Lesezeichen editieren..." 12 \
-  {Editieren der Lesezeichen}
+  {Lesezeichen bearbeiten}
 menuText D FileBookmarksList "Listenansicht" 1 \
-  {Zeigt die Lesezeichen als Liste, ohne Unterverzeichnisse}
+  {Lesezeichen als Liste zeigen, ohne Unterverzeichnisse}
 menuText D FileBookmarksSub "Verzeichnisansicht" 3 \
-  {Zeigt Lesezeichen, eingeordnet in Verzeichnisse, nicht als Gesamtliste}
+  {Lesezeichen in Verzeichnissen zeigen, nicht als Gesamtliste}
 menuText D FileMaint "Wartung" 0 {Das Scid-Datenbank-Wartungsfenster}
 menuText D FileMaintWin "Wartungfenster" 0 \
-  {Öffnet/schließt das Scid-Datenbank-Wartungsfenster}
+  {Datenbank-Wartungsfenster öffnen/schließen}
 menuText D FileMaintCompact "Datenbank komprimieren..." 10 \
-  {Datenbank komprimieren, entfernt gelöschte Spiele, unbenutzte Namen..}
+  {Datenbank komprimieren, gelöschte Spiele und unbenutzte Namen entfernen}
 menuText D FileMaintClass "Partien ECO-klassifizieren..." 8 \
 {Neuklassifizierung aller Partien nach dem ECO-Code}
 menuText D FileMaintSort "Sortieren..." 0 \
-  {Sortieren von allen Partien in der aktuellen Datenbank}
+  {Alle Partien in der aktuellen Datenbank sortieren}
 menuText D FileMaintDelete "Dubletten löschen..." 0 \
-  {Findet Dubletten und setzt das Löschkennzeichen}
+  {Dubletten finden und Löschkennzeichen setzen}
 menuText D FileMaintTwin "Dubletten prüfen" 10 \
-  {Öffnet/erneuert das Dublettenfenster}
+  {Dublettenfenster öffnen/erneuern}
 menuText D FileMaintName "Namen" 0 \
   {Namenseditor und Rechtschreibprüfung}
 menuText D FileMaintNameEditor "Namenseditor" 0 \
-  {Öffnet/schließt das Namenseditor-Fenster}
+  {Namenseditor-Fenster öffnen/schließen}
 menuText D FileMaintNamePlayer "Schreibkorrektur Spieler..." 17 \
-  {Schreibkorrektur der Spielernamen mit Hilfe der .ssp-datei}
+  {Schreibkorrektur der Spielernamen mit Hilfe der .ssp-Datei}
 menuText D FileMaintNameEvent "Schreibkorrektur Ereignis..." 17 \
   {Schreibkorrektur der Ereignisse mit Hilfe der .ssp-Datei}
 menuText D FileMaintNameSite "Schreibkorrektur Ort..." 17 \
@@ -50,95 +50,98 @@ menuText D FileMaintNameSite "Schreibkorrektur Ort..." 17 \
 menuText D FileMaintNameRound "Schreibkorrektur Runde..." 17 \
   {Schreibkorrektur der Runden mit Hilfe der .ssp-Datei}
 menuText D FileReadOnly "Schreibschutz..." 3 \
-  {Behandelt die Datenbank als schreibgeschützt, verhindert Änderungen}
-menuText D FileExit "Ende" 0 {Beendet Scid}
+  {Datenbank als schreibgeschützt behandeln, Änderungen verhindern}
+menuText D FileSwitch "Datenbank wechseln" 0 \
+  {Zu einer anderen geöffneten Datenbank umschalten}
+menuText D FileExit "Ende" 0 {Scid beenden}
 
 # Edit menu:
 menuText D Edit "Bearbeiten" 0
 menuText D EditAdd "Variante hinzufügen" 0 \
-  {Hinzufügen einer Variante zu diesem Zug in dieser Partie}
+  {Füge zu diesem Zug eine Variante hinzu}
 menuText D EditDelete "Variante löschen" 9 \
-  {Löschen einer Variante für diesen Zug}
+  {Lösche eine Variante zu diesen Zug}
 menuText D EditFirst "Als erste Variante setzen" 4 \
   {Variante an erste Stelle in der Liste setzten}
-menuText D EditMain "Variante als Hauptvariante setzen" 13 \
-  {Variante zur Partiefortsetzung machen}
+menuText D EditMain "Variante als Partiefortsetzung" 13 \
+  {Variante zur Partiefolge machen (und umgekehrt)}
 menuText D EditTrial "Variante testen" 9 \
-  {Starten/Stoppen des Testmodus, zum Ausprobieren von Ideen am Brett}
+  {Testmodus starten/stoppen, um eine Idee am Brett auszuprobieren}
 menuText D EditStrip "Entfernen" 1 \
-   {Kommentare oder Varianten aus der Partie entfernen} ;# Gibt's Besseres?
+   {Kommentare oder Varianten aus der Partie entfernen}
 menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \
   {Alle Varianten aus der Partie entfernen}
 menuText D EditReset "Ablage leeren" 0 \
-   {Löschen des Inhalts der Ablage-Datenbank}
+   {Inhalt der Ablage-Datenbank löschen}
 menuText D EditCopy "Partie in Ablage kopieren" 17 \
-  {Kopiert die Partie in die Ablage-Datenbank}
+  {Diese Partie in die Ablage-Datenbank kopieren}
 menuText D EditPaste "Partie aus Ablage einfügen" 19 \
-  {Fügt die aktive Partie aus der Ablage in die aktuelle Datenbank ein}
-menuText D EditSetup "Stellungseingabe..." 0 {Eingabe einer neuen Stellung}
+  {Aktive Partie aus der Ablage hier einfügen}
+menuText D EditSetup "Stellungseingabe..." 0 \
+  {Neue Stellung eingeben (FEN oder manuell)}
+menuText D EditCopyBoard "Stellung kopieren" 10 \
+  {Aktuelle Brettposition in die Zwischenablage kopieren (im FEN-Format)}
 menuText D EditPasteBoard "Stellung einfügen" 12 \
   {Stellung aus der Zwischenablage (im FEN-Format) einfügen}
 
 # Game menu:
 menuText D Game "Partie" 0
 menuText D GameNew "Neue Partie" 5 \
-  {Neue Partie beginnen, Änderungen werden verworfen}
-menuText D GameFirst "Erste Partie laden" 0 {Lädt die erste Partie aus dem Filter}
+  {Neue Partie beginnen, dabei alle Änderungen verwerfen}
+menuText D GameFirst "Erste Partie laden" 0 {Erste Partie im Filter laden}
 menuText D GamePrev "Vorherige Partie laden" 0 \
-  {Lädt die vorherige Partie aus dem Filter}
+  {Vorherige Partie im Filter laden}
 menuText D GameReload "Partie wiederladen" 7 \
-  {Diese Partie erneut laden, alle Änderungen werden verworfen}
-menuText D GameNext "Nächste Partie laden" 0 {Lädt die nächste Partie aus dem Filter}
-menuText D GameLast "Letzte Partie laden" 0 {Lädt die letzte Partie aus dem Filter}
+  {Diese Partie erneut laden, dabei alle Änderungen verwerfen}
+menuText D GameNext "Nächste Partie laden" 0 {Nächste Partie im Filter laden}
+menuText D GameLast "Letzte Partie laden" 0 {Letzte Partie im Filter laden}
 menuText D GameRandom "Zufällige Partie laden" 1 \
-  {Lädt eine zufällig ausgewählte Partie aus dem Filter} ;# ***
+  {Zufällig ausgewählte Partie im Filter laden}
 menuText D GameNumber "Lade Partie Nummer..." 14 \
-  {Lädt eine Partie durch Angabe der Nummer}
+  {Partie durch Angabe der Nummer laden}
 menuText D GameReplace "Partie ersetzen..." 8 \
-  {Sichert diese Partie, alte Version wird überschrieben}
+  {Diese Partie sichern, dabei alte Version überschreiben}
 menuText D GameAdd "Partie speichern..." 7 \
-  {Sichert diese Partie als neue Partie in der Datenbank}
+  {Diese Partie als neue Partie in der Datenbank sichern}
 menuText D GameDeepest "Eröffnung identifizieren" 10 \
-  {Gehe zur spätestmöglichen Eröffnungsposition in der ECO-Klassifikation}
+  {Zur Position der längstmöglichen Zugfolge nach ECO-Klassifikation gehen}
 menuText D GameGotoMove "Zugnummer..." 0 \
-  {Gehe zur angegebenen Zugnummer in der aktuellen Partie}
+  {Zur angegebenen Zugnummer in der aktuellen Partie gehen}
 menuText D GameNovelty "Finde Neuerung..." 0 \
-  {Finde den ersten Zug dieser Partie, der vorher noch nie gespielt wurde}
+  {Ersten Zug dieser Partie finden, der vorher noch nie gespielt wurde}
 
 # Search menu:
 menuText D Search "Suchen" 0
 menuText D SearchReset "Filter zurücksetzen" 0 \
-  {Den Filter zurücksetzen, so daß alle Partien eingeschlossen sind}
-menuText D SearchNegate "Filter negieren" 7 \
-  {Den Filter invertieren, so daß er alle ausgeschlossenen Partien enthält}
+  {Alle Partien in den Filter einschließen}
+menuText D SearchNegate "Filter invertieren" 7 \
+  {Alle ausgeschlossenen Partien in den Filter nehmen}
 menuText D SearchCurrent "Brett..." 0 \
-  {Suche die aktuelle Brettposition}
+  {Aktuelle Brettposition suchen}
 menuText D SearchHeader "Partiedaten..." 0 \
-  {Suche nach Partiedaten (Spieler, Turnier etc.)}
+  {Partiedaten (Spieler, Turnier etc.) suchen}
 menuText D SearchMaterial "Material/Muster..." 0 \
-  {Suche nach Material oder Stellungs-Mustern}
+  {Nach Material- oder Stellungs-Mustern suchen}
 menuText D SearchUsing "Mit Suchoptions-Datei..." 4 \
-  {Suche mit Hilfe einer Suchoptions-Datei}
+  {Mit Suchoptions-Datei suchen}
 
 # Windows menu:
 menuText D Windows "Fenster" 0
-menuText D WindowsComment "Kommentareditor" 0 {Öffne/schließe den Kommentar-Editor}
-menuText D WindowsGList "Partieliste" 6 {Öffne/schließe das Partieliste-Fenster}
-menuText D WindowsPGN "PGN-Fenster" 0 {Öffne/schließe das PGN-Fenster (Partie-Notation)}
-menuText D WindowsTmt "Turnier-Finder" 0 {Öffne/schließe den Turnier-Finder}
+menuText D WindowsComment "Kommentareditor" 0 {Kommentareditor öffnen/schließen}
+menuText D WindowsGList "Partieliste" 6 {Partieliste öffnen/schließen}
+menuText D WindowsPGN "PGN-Fenster" 0 {PGN-Fenster (Partie-Notation) öffnen/schließen}
+menuText D WindowsPList "Spielersuche" 0 {Spieler-Finder öffnen/schließen}
+menuText D WindowsTmt "Turniersuche" 0 {Turnier-Finder öffnen/schließen}
 menuText D WindowsSwitcher "Datenbank-Umschalter" 0 \
-  {Öffne/schließe das Fenster Datenbank-Umschalter}
-menuText D WindowsMaint "Wartungsfenster" 0 \
-  {Öffne/schließe das Wartungsfenster}
-menuText D WindowsECO "ECO-Auswertung" 0 {Öffne/schließe das Fenster ECO-Auswertung}
-menuText D WindowsRepertoire "Repertoire-Editor" 0 {Öffne/schließe den Eröffnungsrepertoire-Editor}
-menuText D WindowsStats "Statistik" 0 \
-  {Öffne/schließe das Filterstatistik-Fenster}
-menuText D WindowsTree "Zugbaum" 0 {Öffne/schließe das Zugbaum-Fenster}
-menuText D WindowsTB "Endspieltabellen..." 1 \
-  {Öffne/schließe das Fenster Endspieltabellen}
+  {Datenbank-Umschalter öffnen/schließen}
+menuText D WindowsMaint "Wartungsfenster" 0 {(Datenbank-)Wartungsfenster öffnen/schließen}
+menuText D WindowsECO "ECO-Auswertung" 0 {ECO-Auswertung öffnen/schließen}
+menuText D WindowsRepertoire "Repertoire-Editor" 0 {Eröffnungsrepertoire-Editor öffnen/schließen}
+menuText D WindowsStats "Statistik" 4 {Filterstatistik öffnen/schließen}
+menuText D WindowsTree "Zugbaum" 0 {Zugbaum öffnen/schließen}
+menuText D WindowsTB "Endspieltabellen..." 1 {Endspieltabellen öffnen/schließen}
 
 # Tools menu:
 menuText D Tools "Werkzeuge" 0
@@ -148,18 +151,18 @@ menuText D ToolsAnalysis2 "Analyse-Engine #2..." 16 \
   {Schachanalyse-Programm Nr.2 starten/beenden}
 menuText D ToolsCross "Kreuztabelle" 0 {Kreuztabelle für diese Partie anzeigen}
 menuText D ToolsEmail "E-Mail-Manager" 7 \
-  {Fenster E-Mail-Manager öffnen/schließen}
+  {E-Mail-Manager öffnen/schließen}
 menuText D ToolsFilterGraph "Filter-Graphik" 7 \
-  {Öffnet/schließt das Fenster Filter-Graphik}
-menuText D ToolsOpReport "Eröffnungsreport" 0 \
-  {Eröffnungsreport für die aktuelle Position erstellen}
+  {Filter-Graphik öffnen/schließen}
+menuText D ToolsOpReport "Eröffnungsbericht" 0 \
+  {Ausführliche Eröffnungsübersicht für die aktuelle Position erstellen}
 menuText D ToolsTracker "Figurenverteilung"  7 \
-  {Öffnet das Figurenverteilungs-Fenster}
+  {Figurenverteilungs-Fenster öffnen}
 menuText D ToolsPInfo "Spieler-Information"  0 \
-  {Fenster Spieler-Information öffnen/schließen}
+  {Spieler-Information öffnen/schließen}
 menuText D ToolsRating "ELO-Zahl-Verlauf" 4 \
-  {Den Wertungsverlauf beider Spieler graphisch darstellen}
-menuText D ToolsScore "Partie-Bewertungsgraph" 0 {Zeige Partie-Bewertungsgraph}
+  {Wertungsverlauf beider Spieler graphisch darstellen}
+menuText D ToolsScore "Partie-Bewertungsgraph" 0 {Partie-Bewertungsgraph zeigen}
 menuText D ToolsExpCurrent "Partie exportieren" 8 \
   {Aktuelle Partie in eine Textdatei schreiben}
 menuText D ToolsExpCurrentPGN "Partie in PGN-Datei exportieren..." 10 \
@@ -184,15 +187,15 @@ menuText D ToolsImportFile "Datei mit PGN-Partien importieren..." 0 \
 # Options menu:
 menuText D Options "Optionen" 0
 menuText D OptionsSize "Brettgröße" 0 {Brettgröße ändern}
-menuText D OptionsPieces "Figurensatz ändern" 2 {Ändert den Figurensatz}
+menuText D OptionsPieces "Figurensatz" 2 {Figurensatz wechseln}
 menuText D OptionsColors "Farben..." 0 {Brettfarben ändern}
 menuText D OptionsExport "Export" 1 {Textausgabe-Optionen ändern}
 menuText D OptionsFonts "Zeichensätze" 3 {Zeichensätze wechseln}
 menuText D OptionsFontsRegular "Normal" 0 {Standard-Zeichensatz}
-menuText D OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText D OptionsFontsMenu "Menü" 0 {Zeichensatz für Menüs}
 menuText D OptionsFontsSmall "Klein" 0 {Kleine Zeichen}
 menuText D OptionsFontsFixed "Fest" 0 {Zeichensatz mit fester Breite (nicht-proportional)}
-menuText D OptionsGInfo "Partie-Information" 0 {Partieinformation-Optionen}
+menuText D OptionsGInfo "Partie-Information" 0 {Optionen für Informationsbereich}
 menuText D OptionsLanguage "Sprache" 0 {Sprache wählen}
 menuText D OptionsMoves "Züge" 0 {Zugeingabe-Optionen}
 menuText D OptionsMovesAsk "Fragen vor Ersetzen" 0 \
@@ -206,24 +209,24 @@ menuText D OptionsMovesSuggest "Zeige Zugvorschlag" 9 \
 menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
-menuText D OptionsStartup "Autostart" 1 {Fenster automatisch öffnen}
+menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
 menuText D OptionsWindows "Fenster" 6 {Fenster-Optionen}
 menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
   {Alle Fenster mit dem Hauptfenster minimieren}
 menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
   {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
-menuText D OptionsECO "ECO-Datei laden..." 0 {Lädt die ECO-Klassifikations-Datei}
+menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikations-Datei laden}
 menuText D OptionsSpell "Schreibkorrektur-Datei laden..." 7 \
-  {Lädt die Datei der Scid-Rechtschreibprüfung}
+  {Datei für Scid-Rechtschreibprüfung laden}
 menuText D OptionsTable "Endspieltabellen-Verzeichnis..." 17 \
-  {Wähle eine Tabellendatei; alle Tabellen in deren Verzeichnis werden genutzt}
-menuText D OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+  {Eine Endspieltabellen-Datei wählen (und damit alle Tabellen in diesem Verzeichnis)}
+menuText D OptionsRecent "Aktuelle Dateien..." 0 \
+  {Anzahl der aktuellen Dateien im Dateimenü ändern}
 menuText D OptionsSave "Optionen speichern" 0 \
-  "Alle einstellbaren Optionen werden in der Datei $::optionsFile gesichert"
+  "Alle einstellbaren Optionen in der Datei $::optionsFile sichern"
 menuText D OptionsAutoSave "Autom. speichern bei Beenden" 0 \
-  {Speichert autom. alle Optionen beim Beenden von Scid}
+  {Alle Optionen beim Beenden von Scid automatisch speichern}
 
 # Help menu:
 menuText D Help "Hilfe" 0
@@ -232,16 +235,17 @@ menuText D HelpGuide "Kurzanleitung" 4 {Ein Scid-Schnelldurchgang}
 menuText D HelpHints "Hinweise" 0 {Die Scid-Kurztips}
 menuText D HelpContact "Kontakt-Information" 0 {Hilfe zur Kontakt-Information}
 menuText D HelpTip "Tagestip" 0 {Zeigt einen nützlichen Tip an}
-menuText D HelpStartup "Start-Fenster" 6 {Zeigt das Start-Fenster}
-menuText D HelpAbout "Info zu Scid" 1 {Über Scid}
+menuText D HelpStartup "Start-Fenster" 0 {Start-Fenster zeigen}
+menuText D HelpAbout "Über Scid" 0 {Informationen zu Scid}
 
 # Game info box popup menu:
-menuText D GInfoHideNext "Verstecke nächsten Zug" 0
-menuText D GInfoMaterial "Zeige Materialwerte" 0
-menuText D GInfoFEN "Zeige FEN" 6
+menuText D GInfoHideNext "Nächsten Zug verstecken" 13
+menuText D GInfoMaterial "Materialwerte zeigen" 0
+menuText D GInfoFEN "FEN zeigen" 0
 menuText D GInfoMarks "Gefärbte Felder und Pfeile zeigen" 0
 menuText D GInfoWrap "Umbruch bei langen Zeilen" 0
 menuText D GInfoFullComment "Vollständigen Kommentar zeigen" 14
+menuText D GInfoPhotos "Show Photos" 5 ;# ***
 menuText D GInfoTBNothing "Endspieltabellen: nichts" 18
 menuText D GInfoTBResult "Endspieltabellen: nur Ergebnis" 22
 menuText D GInfoTBAll "Endspieltabellen: Ergebnis und bester Zug" 31
@@ -251,8 +255,8 @@ menuText D GInfoMark "(Un)Markiere diese Partie" 4
 # Main window buttons:
 helpMsg D .button.start {Gehe zum Partieanfang  (Taste: Pos 1)}
 helpMsg D .button.end {Gehe zum Partieende  (Taste: Ende)}
-helpMsg D .button.back {Gehe ein Zug zurück  (Taste: LinksPfeil)}
-helpMsg D .button.forward {Gehe ein Zug vor  (Taste: RechtsPfeil)}
+helpMsg D .button.back {Gehe einen Zug zurück  (Taste: LinksPfeil)}
+helpMsg D .button.forward {Gehe einen Zug vor  (Taste: RechtsPfeil)}
 helpMsg D .button.intoVar {Gehe in Variante  (Taste: v)}
 helpMsg D .button.exitVar {Verlasse Variante  (Taste: z)}
 helpMsg D .button.flip {Brett drehen  (Taste: .)}
@@ -272,7 +276,7 @@ translate D Import {Importieren}
 translate D Index {Inhalt}
 translate D LoadGame {Partie laden}
 translate D BrowseGame {Partie betrachten}
-translate D MergeGame {Partie mischen}
+translate D MergeGame {Partie mischen} ;# einfügen!?
 translate D Preview {Vorschau} ;# Voransicht!? (KDE)
 translate D Revert {Umkehren}
 translate D Save {Speichern}
@@ -301,11 +305,12 @@ translate D Rook {Turm}
 translate D Bishop {Läufer}
 translate D Knight {Springer}
 translate D Pawn {Bauer}
-translate D White {Weiß} ;### bug fixed ?
+translate D White {Weiß}
 translate D Black {Schwarz}
 translate D Player {Spieler}
 translate D Rating {Elo}
-translate D RatingDiff {Elo Differenz (Weiß - Schwarz)}
+translate D RatingDiff {Elo-Differenz (Weiß - Schwarz)}
+translate D AverageRating {Elo-Durchschnitt}
 translate D Event {Turnier}
 translate D Site {Ort}
 translate D Country {Land}
@@ -336,6 +341,13 @@ translate D clipbase {Ablage}
 translate D score {Punkte}
 translate D StartPos {Stellung}
 translate D Total {Summe}
+
+# Standard error messages:
+translate D ErrNotOpen {Dies ist keine geöffnete Datenbank.}
+translate D ErrReadOnly \
+  {Diese Datenbank ist schreibgeschützt; sie kann nicht geändert werden.}
+translate D ErrSearchInterrupted \
+  {Suche wurde unterbrochen; Ergebnisse sind unvollständig.}
 
 # Game information:
 translate D twin {Dublette}
@@ -371,6 +383,10 @@ translate D allOthersLose {alle anderen verlieren}
 translate D matesIn {setzt Matt in}
 translate D hasCheckmated {hat Matt gesetzt}
 translate D longest {längste}
+translate D WinningMoves {Gewinnzüge}
+translate D DrawingMoves {Remiszüge}
+translate D LosingMoves {Verlustzüge}
+translate D UnknownMoves {Züge mit unbekanntem Resultat}
 
 # Tip of the day:
 translate D Tip {Tip}
@@ -392,7 +408,7 @@ menuText D TreeFileClose "Baum-Fenster schließen" 13 {Schließe Zugbaum}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
 menuText D TreeSortECO "ECO-Code" 0
-menuText D TreeSortFreq "Frequenz" 0
+menuText D TreeSortFreq "Häufigkeit" 0
 menuText D TreeSortScore "Punkte" 0
 menuText D TreeOpt "Optionen" 0
 menuText D TreeOptLock "Anbinden" 0 \
@@ -409,6 +425,10 @@ translate D LockTree {Anbinden}
 translate D TreeLocked {angebunden}
 translate D TreeBest {Beste}
 translate D TreeBestGames {Beste Zugbaum-Partien}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate D TreeTitleRow \
+  {    Zug    ECO       Häufigkeit    Pkte   Elo  Erflg Jahr }
 
 # Finder window:
 menuText D FinderFile "Datei" 0
@@ -421,19 +441,30 @@ menuText D FinderSortMod "Modifiziert" 0
 menuText D FinderSortName "Namen" 0
 menuText D FinderSortPath "Pfad" 0
 menuText D FinderTypes "Typen" 0
-menuText D FinderTypesScid "Scid Datenbanken" 0
-menuText D FinderTypesOld "Databanken im alten Format" 0
+menuText D FinderTypesScid "Scid-Datenbanken" 0
+menuText D FinderTypesOld "Datenbanken im alten Format" 0
 menuText D FinderTypesPGN "PGN-Dateien" 0
 menuText D FinderTypesEPD "EPD-Dateien" 0
-menuText D FinderTypesRep "Repertoire Dateien" 0
+menuText D FinderTypesRep "Repertoire-Dateien" 0
 menuText D FinderHelp "Hilfe" 0
-menuText D FinderHelpFinder "Datei-Finder Hilfe" 0
+menuText D FinderHelpFinder "Dateifinder-Hilfe" 0
 menuText D FinderHelpIndex "Index" 0
 translate D FileFinder {Datei-Finder}
 translate D FinderDir {Verzeichnis}
 translate D FinderDirs {Verzeichnisse}
 translate D FinderFiles {Dateien}
 translate D FinderUpDir {hoch}
+
+# Player finder:
+menuText D PListFile "Datei" 0
+menuText D PListFileUpdate "Aktualisieren" 0
+menuText D PListFileClose "Spieler-Finder schließen" 8
+menuText D PListSort "Sortieren" 0
+menuText D PListSortName "Name" 0
+menuText D PListSortElo "Elo" 0
+menuText D PListSortGames "Partien" 0
+menuText D PListSortOldest "Älteste" 0
+menuText D PListSortNewest "Neueste" 0
 
 # Tournament finder:
 menuText D TmtFile "Datei" 0
@@ -464,10 +495,10 @@ menuText D GraphOptionsPInfo "Spieler-Info Spieler" 1
 translate D GraphFilterTitle "Filter-Graphik: Häufigkeit pro 1000 Partien"
 
 # Analysis window:
-translate D AddVariation {Addiere Variante}
-translate D AddMove {Addiere Zug}
+translate D AddVariation {Variante hinzufügen}
+translate D AddMove {Zug hinzufügen}
 translate D Annotate {Autom. Kommentieren}
-translate D AnalysisCommand {Analyse Befehl}
+translate D AnalysisCommand {Analyse-Befehl}
 translate D PreviousChoices {Vorherige Wahl}
 translate D AnnotateTime {Zeit zwischen den Zügen (in Sek.) einstellen}
 translate D AnnotateWhich {Varianten hinzufügen}
@@ -501,13 +532,13 @@ menuText D PgnFilePrint "Drucken in Datei..." 0
 menuText D PgnFileClose "PGN-Fenster schließen" 0
 menuText D PgnOpt "Ausgabe" 0
 menuText D PgnOptColor "Farbige Darstellung" 0
-menuText D PgnOptShort "Kurzer (3-Zeilen) Kopf" 0
+menuText D PgnOptShort "Kurzer (3-Zeilen) Kopf" 8
 menuText D PgnOptSymbols "Symbolische Darstellung" 0
 menuText D PgnOptIndentC "Kommentare einrücken" 0
 menuText D PgnOptIndentV "Varianten einrücken" 0
 menuText D PgnOptColumn "Tabellarisch (ein Zug pro Zeile)" 0
 menuText D PgnOptSpace "Leerzeichen nach Zugnummer" 0
-menuText D PgnOptStripMarks "Entfernen von Farbfelder/Pfeile - Zeichen" 0
+menuText D PgnOptStripMarks "Farbfelder-/Pfeile-Zeichen entfernen" 27
 menuText D PgnColor "Farben" 0
 menuText D PgnColorHeader "Kopf..." 0
 menuText D PgnColorAnno "Anmerkungen..." 0
@@ -538,7 +569,7 @@ menuText D CrosstabOptNats "Nationalität" 0
 menuText D CrosstabOptRatings "Elo" 0
 menuText D CrosstabOptTitles "Titel" 0
 menuText D CrosstabOptBreaks "Stichkampf-Punkte" 11
-menuText D CrosstabOptDeleted "Inklusive gelöschte Partien" 10
+menuText D CrosstabOptDeleted "Inklusive gelöschter Partien" 10
 menuText D CrosstabOptColors "Farben (nur Schweizer System)" 0
 menuText D CrosstabOptColumnNumbers "Numerierte Spalten (Nur jeder-gegen-jeden-Tabelle)" 2
 menuText D CrosstabOptGroup "Punktgruppen" 5
@@ -555,6 +586,7 @@ menuText D CrosstabHelpIndex "Index" 0
 translate D SetFilter {Filter setzen}
 translate D AddToFilter {Zum Filter hinzufügen}
 translate D Swiss {Schweizer}
+translate D Category {Kategorie}
 
 # Opening report window menus:
 menuText D OprepFile "Datei" 0
@@ -564,8 +596,8 @@ menuText D OprepFileLaTeX "Ausgabe in LaTeX-Datei..." 11
 menuText D OprepFileOptions "Optionen..." 0
 menuText D OprepFileClose "Berichtsfenster schließen" 0
 menuText D OprepHelp "Hilfe" 0
-menuText D OprepHelpReport "Eröffnungsreport Hilfe" 0
-menuText D OprepHelpIndex "Index" 0
+menuText D OprepHelpReport "Eröffnungsbericht-Hilfe" 0
+menuText D OprepHelpIndex "Inhalt" 0
 
 # Repertoire editor:
 menuText D RepFile "Datei" 0
@@ -586,7 +618,7 @@ menuText D RepSearchAll "Im gesamten Repertoire..." 0
 menuText D RepSearchDisplayed "Nur in der aktuellen Variante..." 0
 menuText D RepHelp "Hilfe" 0
 menuText D RepHelpRep "Repertoire Hilfe" 0
-menuText D RepHelpIndex "Hilfe-Index" 0
+menuText D RepHelpIndex "Inhaltsverzeichnis" 0
 translate D RepSearch "Repertoire Suche"
 translate D RepIncludedLines "Eingeschlossene Varianten"
 translate D RepExcludedLines "Ausgeschlossene Varianten"
@@ -600,7 +632,7 @@ translate D HeaderSearch {Partiedaten-Suche}
 translate D GamesWithNoECO {Partien ohne ECO?}
 translate D GameLength {Partielänge}
 translate D FindGamesWith {Finde Partien mit den Markierungen (Flags)}
-translate D StdStart {Standard Anfang}
+translate D StdStart {Standard-Ausgangsposition}
 translate D Promotions {Umwandlung}
 translate D Comments {Kommentare}
 translate D Variations {Varianten}
@@ -632,7 +664,7 @@ translate D GlistRound {Runde}
 translate D GlistDate {Datum}
 translate D GlistYear {Jahr}
 translate D GlistEDate {Turnier-Datum}
-translate D GlistResult {Result}
+translate D GlistResult {Ergebnis}
 translate D GlistLength {Länge}
 translate D GlistCountry {Land}
 translate D GlistECO {ECO}
@@ -656,20 +688,21 @@ translate D GlistColor {Farbe}
 translate D GlistSep {Trennlinie}
 
 # Maintenance window:
-translate D DatabaseName {Datenbank Name:}
+translate D DatabaseName {Datenbank-Name:}
 translate D TypeIcon {Symbol:}
 translate D NumOfGames {Partien:}
 translate D NumDeletedGames {Gelöschte Partien:}
 translate D NumFilterGames {Partien im Filter:}
 translate D YearRange {Jahr-Spanne:}
 translate D RatingRange {Elo-Spanne:}
-translate D Flag {Flag}
+translate D Description {Beschreibung}
+translate D Flag {Markierung}
 translate D DeleteCurrent {Lösche aktuelle Partie}
 translate D DeleteFilter {Lösche Partien im Filter}
-translate D DeleteAll {Alle Partien löschen}
-translate D UndeleteCurrent {Wiederherstellen aktuelle Partie}
-translate D UndeleteFilter {Wiederherstellen Partien im Filter}
-translate D UndeleteAll {Wiederherstellen aller Partien}
+translate D DeleteAll {Lösche alle Partien}
+translate D UndeleteCurrent {Aktuelle Partie wiederherstellen}
+translate D UndeleteFilter {Partien im Filter wiederherstellen}
+translate D UndeleteAll {Alle Partien wiederherstellen}
 translate D DeleteTwins {Lösche Dubletten}
 translate D MarkCurrent {Markiere aktuelle Partie}
 translate D MarkFilter {Markiere Partien im Filter}
@@ -688,15 +721,15 @@ translate D CompactDatabase {Datenbank komprimieren}
 translate D SortDatabase {Datenbank sortieren}
 translate D AddEloRatings {ELO-Zahlen hinzufügen}
 translate D AutoloadGame {Automatisch Partie Nr. laden}
-translate D StripTags {PGN-Markierungen entfernen} ;# ***
-translate D StripTag {Markierung entfernen} ;# ***
+translate D StripTags {PGN-Markierungen entfernen}
+translate D StripTag {Markierung entfernen}
 translate D Cleaner {Bereiniger}
 translate D CleanerHelp {
 Der Scid-Bereiniger wird für die aktuelle Datenbank alle
 Wartungsarbeiten ausführen, welche aus der unten stehenden
 Liste ausgewählt werden.
 
-Aktuelle Einstellungen in den Menüs ECO-Klassifikation und Dubletten löschen
+Aktuelle Einstellungen in den Menüs "ECO-Klassifikation" und "Dubletten löschen"
 werden angewendet, falls diese Funktionen selektiert sind.}
 translate D CleanerConfirm {
 Ist der Bereiniger einmal gestartet, kann er nicht mehr unterbrochen werden!
@@ -710,13 +743,14 @@ Sind Sie sicher, daß Sie die ausgewählten Wartungsarbeiten starten möchten?
 # Comment editor:
 translate D AnnotationSymbols  {Kommentarzeichen:}
 translate D Comment {Kommentar:}
+translate D InsertMark {Markierung einfügen}
 
 # Board search:
 translate D BoardSearch {Brettsuchen}
 translate D FilterOperation {Durchführung am aktuellen Filter:}
 translate D FilterAnd {UND (Beschränke Filter)}
-translate D FilterOr {ODER (Addiere zum Filter)}
-translate D FilterIgnore {IGNORIERE (Reset Filter)}
+translate D FilterOr {ODER (Zum Filter hinzufügen)}
+translate D FilterIgnore {IGNORIERE (Filter zurücksetzen)}
 translate D SearchType {Suche nach Typ:}
 translate D SearchBoardExact {Exakte Position (alle Steine auf gleichen Feldern)}
 translate D SearchBoardPawns {Bauern (gleiche Figuren, alle Bauern auf gleichen Feldern)}
@@ -747,12 +781,12 @@ translate D Today {Heute}
 translate D ClassifyGame {Partie klassifizieren}
 
 # Setup position:
-translate D EmptyBoard {Brett Leeren}
+translate D EmptyBoard {Brett leeren}
 translate D InitialBoard {Initialisiere Brett}
 translate D SideToMove {Zugrecht}
 translate D MoveNumber {Zugnummer}
 translate D Castling {Rochade}
-translate D EnPassentFile {EnPassant-Linie}
+translate D EnPassantFile {EnPassant-Linie}
 translate D ClearFen {FEN löschen}
 translate D PasteFen {FEN einfügen}
 
@@ -765,7 +799,7 @@ Sie können diesen Zug ersetzen - unter Verlust aller nachfolgender Züge - oder
 mit dem Zug eine neue Variante hinzufügen.
 
 (Sie können diese Anzeige vermeiden indem Sie die "Fragen vor Ersetzen" Option
-im Menü Optionen/Züge deaktivieren)}
+im Menü Optionen:Züge deaktivieren)}
 
 # Make database read-only dialog:
 translate D ReadOnlyDialog {Wenn Sie diese Datenbank mit Schreibschutz
@@ -800,12 +834,12 @@ translate D ECOSummary {Zusammenfassung für}
 translate D ECOFrequency {Häufigkeit der Untercodes für}
 
 # Opening Report:
-translate D OprepTitle {Eröffnungsreport}
-translate D OprepReport {Report}
+translate D OprepTitle {Eröffnungsbericht}
+translate D OprepReport {Bericht}
 translate D OprepGenerated {Erzeugt durch}
 translate D OprepStatsHist {Statistiken und Geschichte}
 translate D OprepStats {Statistiken}
-translate D OprepStatAll {Alle Report Partien}
+translate D OprepStatAll {Alle Berichtspartien}
 translate D OprepStatBoth {Beide Spieler}
 translate D OprepStatSince {Nach}
 translate D OprepOldest {Älteste Partien}
@@ -815,7 +849,7 @@ translate D OprepFreqAll {Häufigkeit in allen Jahren: }
 translate D OprepFreq1   {im letzten Jahr:            }
 translate D OprepFreq5   {der letzten  5 Jahre:       }
 translate D OprepFreq10  {der letzten 10 Jahre:       }
-translate D OprepEvery {Eins pro %u Partien}
+translate D OprepEvery {Eine pro %u Partien}
 translate D OprepUp {mehr als %u%s von allen Jahren}
 translate D OprepDown {weniger als %u%s von allen Jahren}
 translate D OprepSame {keine Änderung in allen Jahren}
@@ -837,14 +871,14 @@ translate D OprepDraws {Remis:        }
 translate D OprepWholeDB {ganze Datenbank}
 translate D OprepShortest {Kürzester Sieg}
 translate D OprepMovesThemes {Züge und Themen}
-translate D OprepMoveOrders {Zugfolgen zum Erreichen der Report-Position}
+translate D OprepMoveOrders {Zugfolgen zum Erreichen der Berichts-Position}
 translate D OprepMoveOrdersOne \
   {Es gab nur eine Zugfolge zur erreichten Position:}
 translate D OprepMoveOrdersAll \
   {Es gab %u Zugfolgen zur erreichten Position:}
 translate D OprepMoveOrdersMany \
   {Es gab  %u Zugfolgen zur erreichten Position. Die ersten %u sind:}
-translate D OprepMovesFrom {Züge ab der Report-Position}
+translate D OprepMovesFrom {Züge ab der Berichts-Position}
 translate D OprepThemes {Themen}
 translate D OprepThemeDescription {Häufigkeit der Themen zum Zug %u}
 translate D OprepThemeSameCastling {Gleichseitige Rochaden}
@@ -858,12 +892,12 @@ translate D OprepThemeBP234 {Schwarzer Bauer auf Reihe 2/3/4}
 translate D OprepThemeOpenCDE {Offene c/d/e-Linie}
 translate D OprepTheme1BishopPair {Eine Seite hat Läuferpaar}
 translate D OprepEndgames {Endspiele}
-translate D OprepReportGames {Report-Partien}
+translate D OprepReportGames {Berichts-Partien}
 translate D OprepAllGames {Alle Partien}
 translate D OprepEndClass {Materialklassifikation von Endspielstellungen}
 translate D OprepTheoryTable {Theorie-Tabelle}
 translate D OprepTableComment {Erzeugt aus %u Partien mit höchster ELO-Zahl.}
-translate D OprepExtraMoves {Extra Anmerkung Züge in Theorie-Tabelle}
+translate D OprepExtraMoves {Zusätzliche Züge in Anmerkungen zur Theorie-Tabelle}
 translate D OprepMaxGames {Maximum an Partien in Theorie-Tabelle}
 
 # Piece Tracker window:
@@ -888,9 +922,9 @@ translate D SelectTournamentGames {Nur Spiele des aktuellen Turniers}
 translate D SelectOlderGames {Nur ältere Spiele}
 
 # Delete Twins window:
-translate D TwinsNote {Damit zwei Spiele Dubletten sind, müssen diese mindestens die beiden selben Spieler haben und die folgenden Kriterien, die sie auswählen können, erfüllen.
+translate D TwinsNote {Damit zwei Spiele Dubletten sind, müssen diese mindestens die beiden selben Spieler haben und die folgenden Kriterien, die Sie auswählen können, erfüllen.
 Wenn zwei Dubletten gefunden werden, so wird die kürzere der beiden Spiele gelöscht.
-Tip: Am besten führt man erst eine Schreibkorrektur durch, da dadurch die Detektion von Dubletten verbessert wird.}
+Tip: Am besten führt man erst eine Schreibkorrektur durch, da dadurch das Finden von Dubletten verbessert wird.}
 translate D TwinsCriteria {Kriterium: Dubletten müssen haben ...}
 translate D TwinsWhich {Überprüfe, welche Spiele}
 translate D TwinsColors {die gleichen Spielerfarben?}
@@ -1024,8 +1058,8 @@ Soll das Erstellen der Datenbank im neuen Format jetzt durchgeführt werden?
 }
 
 # Recent files options:
-translate D RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate D RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate D RecentFilesMenu {Anzahl der aktuellen Dateien im Dateimenü}
+translate D RecentFilesExtra {Anzahl der aktuellen Dateien im zusätzlichen Untermenü}
 
 }
 
@@ -1034,63 +1068,181 @@ translate D RecentFilesExtra {Number of recent files in extra submenu} ;# ***
 # ECO Opening name translations:
 
 translateECO D {
-  Accelerated Beschleunigte
-  Accepted Angenommen
+  Accelerated {, Beschleunigt}
+  Accepted {, Angenommen}
+  Advance Vorstoß
+  {as Black} {mit Schwarz}
   Attack Angriff
+  Bishop Läufer
+  Bishop's Läufer
   Classical Klassisch
+  Closed Geschlossen
+  {Closed System} {Geschlossenes System}
   Counterattack Gegenangriff
   Countergambit Gegengambit
+  Declined {, Abgelehnt}
   Defence Verteidigung
+  deferred verzögert
+  Deferred {, verzögert}
+  Early Frühe
   Exchange Abtausch
   Game Partie
   Indian Indisch
+  Improved verbessert
   King's Königs
   Knight Springer
-  Bishop Läufer
-  Bishop's Läufer
+  Line Variante
+  {Main Line} Hauptvariante
   Open Offen
   Opening Eröffnung
   Queen's Damen
+  Queenswap Damentausch
   Symmetrical Symmetrisch
   Variation Variante
+  Wing Flügel
   with mit
   without ohne
 
   Alekhine Aljechin
+  Averbakh Awerbach
+  Botvinnik Botwinnik
+  Chigorin Tschigorin
+  Polugaevsky Polugajewski
+  Rauzer Rauser
+
   Austrian Österreichisch
-  {Bishop's Opening} Läuferspiel
+  Berlin Berliner
+  Bremen Bremer
   Catalan Katalanisch
-  Dragon Drachen
+  Czech Tschechisch
   Dutch Holländisch
   English Englisch
-  {Four Knights} Vierspringer
-  {Four Knights Game} Vierspringerspiel
-  {Four Pawns} Vierbauern
   French Französisch
   Hungarian Ungarisch
   Italian Italienisch
-  {King's Gambit Accepted} {Angen. Königsgambit}
-  {King's Gambit} Königsgambit
-  {King's Indian} Königsindisch
-  {King's Pawn} Königsbauern
-  Nimzo-Indian Nimzoindisch
-  {Old Indian} Alt-Indisch
-  {Queen's Gambit} Damengambit
-  {Queen's Gambit Accepted} {Angen. Damengambit}
-  {Queen's Indian} Damenindisch
-  {Queen's Pawn} Damenbauern
-  {Queen's Pawn Game} Damenbauernspiel
+  Latvian Lettisch
+  Meran Meraner
+  Moscow Moskau
+  Polish Polnisch
+  Prague Prager
   Russian Russisch
-  {Russian Game} Russisch
   Scandinavian Skandinavisch
+  Scheveningen Scheveninger
   Scotch Schottisch
   Sicilian Sizilianisch
   Slav Slawisch
   Spanish Spanisch
-  {Three Knights} {Dreispringer}
-  {Three Knights Game} {Dreispringerspiel}
-  {Two Knights} Zweispringer
+  Swedish Schwedisch
+  Swiss Schweizer
   Vienna Wiener
+  Yugoslav Jugoslawisch
+
+  {Accelerated Fianchetto} {Beschleunigtes Fianchetto}
+  {Alekhine Defence} Aljechin-Verteidigung
+  {Alekhine Variation} Aljechin-Variante
+  {Anderssen Opening} Anderssen-Eröffnung
+  {Anti-King's Indian} Anti-Königsindisch
+  {Benko Gambit} Wolga-Gambit
+  {Benko Opening} Benkö-Eröffnung
+  {Berlin Defence} {Berliner Verteidigung}
+  {Classical Defence} {Klassische Verteidigung}
+  {Classical Exchange} {Klassischer Abtausch}
+  {Classical Variation} {Klassische Variante}
+  {Closed Berlin} {Geschlossene Berliner}
+  {Open Berlin} {Offene Berliner}
+  {Bird's,} {Bird,}
+  {Bird's Defence} Bird-Verteidigung
+  {Bird's Deferred} {Verzögerte Bird}
+  {Bishop's Opening} Läuferspiel
+  {Botvinnik System} Botwinnik-System
+  {Central Variation} Zentralvariante
+  {Centre Attack} Zentrumsangriff
+  {Centre Game} Mittelgambit
+  {Danish Gambit} {Nordisches Gambit}
+  Dragon Drachen
+  {Dutch Variation} {Holländische Variante}
+  {Early Exchange} {Früher Abtausch}
+  {Early Queenswap} {Früher Damentausch}
+  {English: King's} {Englisch: Königsbauer}
+  {English Variation} {Englische Variante}
+  {Englund Gambit} Englund-Gambit
+  {Exchange Variation} Abtauschvariante
+  {Flohr Variation} Flohr-Variante
+  {Four Knights} Vierspringer
+  {Four Knights Game} Vierspringerspiel
+  {Four Pawns} Vierbauern
+  {Four Pawns Attack} Vierbauernangriff
+  {Goring Gambit} {Göring-Gambit}
+  {Grob Gambit} {Grobs Gambit}
+  {Hungarian Defence} {Ungarische Verteidigung}
+  {Italian Game} {Italienische Partie}
+  KGD {Abgel. Königsgambit}
+  {Classical KGD} {Klassisches abgelehntes Königsgambit}
+  {Keres Variation} Keres-Variante
+  KGA {Angen. Königsgambit}
+  {KGA: Bishop's Gambit} Königsläufergambit
+  {KGA: King's Knight Gambit} Königsspringergambit
+  {King's Gambit} Königsgambit
+  {King's Gambit Accepted} {Angen. Königsgambit}
+  {King's Gambit Accepted (KGA)} {Angen. Königsgambit}
+  {King's Indian} Königsindisch
+  KIA {Königsindischer Angriff}
+  {King's Knight Gambit} Königsspringergambit
+  {King's Pawn} Königsbauer
+  {Lasker Variation} {Lasker-Variante}
+  {Latvian Gambit} {Lettisches Gambit}
+  {Marshall Variation} Marshall-Variante
+  {Maroczy Bind} Maroczy
+  {Modern Attack} {Moderner Angriff}
+  {Modern Steinitz} {Moderne Steinitz}
+  {Moscow Variation} {Moskauer Variante}
+  Nimzo-Indian Nimzoindisch
+  {Old Benoni} {Klassisches Benoni}
+  {Old Indian} Altindisch
+  {Old Steinitz} Steinitz-Verteidigung
+  {Open Game} {Offene Partie}
+  {Poisoned Pawn} {Vergifteter Bauer}
+  {Polish Variation} {Polnische Variante}
+  {Polugaevsky Variation} {Polugajewski-Variante}
+  {Queen's Gambit} Damengambit
+  {Queen's Gambit Accepted} {Angen. Damengambit}
+  QGA {Angen. Damengambit}
+  {Queen's Gambit Accepted (QGA)} {Angenommenes Damengambit}
+  {Reversed QGA} {Angen. Damengambit i.A.}
+  QGD {Abgel. Damengambit}
+  {Queen's Gambit Declined (QGD)} {Abgelehntes Damengambit}
+  {Reversed QGD} {Abgel. Damengambit i.A.}
+  {Queen's Indian} Damenindisch
+  {Queen's Pawn} Damenbauer
+  {Queen's Pawn Game} Damenbauerspiel
+  {Reversed Slav} {Slawisch i.A.}
+  {Rubinstein Variation} Rubinstein-Variante
+  {Russian Game} {Russische Partie}
+  {Russian Game (Petroff Defence)} {Russische Partie}
+  {Russian-Three Knights Game} {Russisches Dreispringerspiel}
+  {Scandinavian (Centre Counter)} Skandinavisch
+  {Scotch Opening} {Schottische Eröffnung}
+  {Sicilian Defence} {Sizilianische Verteidigung}
+  {Sicilian Variation} {Sizilianische Variante}
+  {Slav Defence} {Slawische Verteidigung}
+  Smith-Morra Morra
+  {Smith-Morra Accepted} {Angenommenes Morra-Gambit}
+  {Smith-Morra Gambit} Morra-Gambit
+  {Spanish (Ruy Lopez)} {Spanische Partie}
+  {Start position} Ausgangsstellung
+  {Steinitz Deferred} Rubinstein-Aufbau
+  {Swedish Variation} {Schwedische Variante}
+  {Swiss Variation} {Schweizer Variante}
+  {Tarrasch's Gambit} {Tarrasch-Gambit}
+  {Three Knights} Dreispringer
+  {3 Knights} Dreispringer
+  {Three Knights Game} Dreispringerspiel
+  {Three Pawns Attack} Dreibauernangriff
+  {Two Knights} Zweispringer
+  {Two Knights Defence} Zweispringer-Verteidigung
+  {Two Knights Variation} Zweispringer-Variante
+  {Wing Gambit} Flügel-Gambit
+  {Yugoslav Attack} {Jugoslawischer Angriff}
 }
 
 
@@ -1114,33 +1266,33 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Guide><b>Kurzanleitung</b> Benutzung von Scid</a> <red>(Zuerst lesen!)</red></li>
 <li><a Hints><b>Hinweise</b> zum effizienteren Arbeiten mit Scid</a></li>
 <li><a MainWindow>Das Scid-<b>Hauptfenster</b></a></li>
-<li><a Menus>Die Scid-<b>Menüs</b></a> <red>(Aktualisiert!)</red></li>
-<li><a Moves><b>Züge</b> eingeben</a></li>
-<li><a Searches><b>Suchen</b> in Scid</a> </li>
+<li><a Menus>Die Scid-<b>Menüs</b></a></li>
+<li><a Moves><b>Züge</b> eingeben</a> <red>(Aktualisiert!)</red></li>
+<li><a Searches><b>Suchen</b> in Scid</a></li>
 <li><a Clipbase>Die <b>Ablage</b>-Datenbank</a></li>
+<li><a Annotating>Partien <b>kommentieren</b></a> <red>(Neu!)</red></li>
 </ul>
 
 <h4>Andere Scid-Fenster</h4>
 <ul>
-<li><a Analysis><b>Analyse</b>-Fenster</a> <red>(Aktualisiert!)</red></li>
+<li><a Analysis><b>Analyse</b>-Fenster</a></li>
 <li><a Finder><b>Dateifinder</b>-Fenster</a></li>
 <li><a Switcher><b>Datenbank-Umschalter</b></a></li>
-<li><a OpReport><b>Eröffnungsreport</b>-Fenster</a></li>
+<li><a OpReport><b>Eröffnungsberichts</b>-Fenster</a></li>
 <li><a Email><b>E-Mail</b>-Schach-Manager</a></li>
-<ENGLISH>
-<li><a PTracker><b>Figurenverteilung</b></a> <red>(Neu!)</red></li>
-</ENGLISH>
-<li><a Comment><b>Kommentareditor</b></a> <red>(Aktualisiert!)</red></li>
+<li><a PTracker><b>Figurenverteilung</b></a></li>
+<li><a Comment><b>Kommentareditor</b></a></li>
 <li><a Crosstable><b>Kreuztabellen</b>-Fenster</a></li>
-<li><a GameList><b>Partieliste</b>-Fenster</a> <red>(Aktualisiert!)</red></li>
+<li><a GameList><b>Partieliste</b>-Fenster</a></li>
 <li><a Import><b>Partie-Import</b>-Fenster</a></li>
 <li><a PGN><b>PGN</b> (Partietext)-Fenster</a></li>
 <li><a Repertoire><b>Repertoire-Editor</b></a></li>
+<li><a PList><b>Spieler-Finder</b></a> <red>(Neu!)</red></li>
 <li><a PInfo><b>Spieler-Information</b></a></li>
-<li><a Tmt><b>Turnier-Finder</b></a> <red>(Aktualisiert!)</red></li>
+<li><a Tmt><b>Turnier-Finder</b></a></li>
 <li><a Tree><b>Zugbaum</b>-Fenster</a></red></li>
 <li><a Graphs><b>Graphik</b>-Fenster</a></li>
-<li><a TB><b>Endspieltabellen</b> in Scid verwenden</a> <red>(Aktualisiert!)</red></li>
+<li><a TB><b>Endspieltabellen</b> in Scid verwenden</a></li>
 </ul>
 
 <h4>Weitere Hilfsprogramme und Informationen</h4>
@@ -1150,7 +1302,7 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Compact>Datenbank<b> komprimieren</b></a></li>
 <li><a ECO><b>ECO</b>-Eröffnungsklassifikation</a></li>
 <li><a EPD><b>EPD</b>-Dateien</a></li>
-<li><a Export>Partien in Textdateien <b>exportieren</b></a></li>
+<li><a Export>Partien in Textdateien <b>exportieren</b></a> <red>(Aktualisiert!)</red></li>
 <li><a Cmdline><b>Kommandozeilen</b>-Optionen</a></li>
 <li><a LaTeX>Scid und <b>LaTeX</b></a> </li>
 <li><a Bookmarks><b>Lesezeichen</b></a></li>
@@ -1162,7 +1314,7 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Author>Kontakt-Information</a></li>
 </ul>
 
-<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.4, August 2002)</footer></p>
 }
 
 
@@ -1260,7 +1412,7 @@ und <b>Control+Shift+RightArrow</b> das Brett verkleinern bzw. vergrößern.
 
 <h4>Wenn ich trainiere, indem ich eine Partie nachspiele, möchte ich
 nicht, daß Scid den nächsten Zug im Informationsbereich anzeigt.
-Kann ich ihn "verstecken"?</h4>
+Kann ich ihn verstecken?</h4>
 <p>
 Sie können den nächsten Zug verstecken, indem Sie die <b>rechte</b>
 Maustaste im Informationsbereich drücken und im darauf erscheinenden
@@ -1610,12 +1762,10 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <li><menu>E-Mail-Manager</menu>: Öffnet/schließt den <a Email>E-Mail-Manager</a>
     für Fernschachpartien.</li>
 <br>
-<li><menu>Eröffnungsreport</menu>: Erstellt einen <a OpReport>Eröffnungsreport</a>
+<li><menu>Eröffnungsbericht</menu>: Erstellt einen <a OpReport>Eröffnungsbericht</a>
     zur aktuellen Position.</li>
-<ENGLISH>
 <li><menu>Figurenverteilung</menu>: Öffnet das Fenster <a PTracker>Figurenverteilung</a>.
     </li>
-</ENGLISH>
 <li><menu>Spieler-Information</menu>: Gibt <a PInfo>Spieler-Informationen</a>
     für einen Spieler der aktuellen Partie aus.</li>
 <li><menu>ELO-Zahl-Verlauf</menu>: gibt den
@@ -1759,7 +1909,16 @@ müßten Sie mit automatischer Zugergänzung in der Ausgangsstellung nur
 [n][f] statt <b>Nf3</b> eintippen.
 </p>
 
-<h4>Standard-Kommentarzeichen eingeben</h4>
+<h3><name Null>Nullzüge eingeben</name></h3>
+<p>
+<a Annotating Null>Null</a>- (leere) Züge können in Varianten nützlich
+sein, wenn Sie den Zug einer Seite auslassen wollen. Sie können einen
+Nullzug mit der Maus eingeben, indem Sie einen König mit dem anderen
+schlagen, oder mit der Tastatur, indem Sie "<b>--</b>" eingeben (d.h.
+die Minustaste zweimal drücken).
+</p>
+
+<h3>Standard-Kommentarzeichen eingeben</h3>
 <p>
 Sie können die üblichen <a NAGs>Kommentarzeichen</a> im Hauptfenster auch
 über die Tastatur ohne den <a Comment>Kommentar-Editor</a> hinzufügen.
@@ -1782,7 +1941,7 @@ eingeben können:
 <li> =+	: [=][+] </li>
 </ul>
 
-<p><footer>(Aktualisiert: Scid 2.6, August 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.4, Juli 2002)</footer></p>
 }
 
 
@@ -1887,7 +2046,7 @@ von Zügen auf 20 setzen, werden alle Partien, die vor dem 20. Zug enden,
 übersprungen.
 </p>
 
-<h3><name Header>Suche: Partiedaten</name></h3>
+<h3><name Header>Suchen: Partiedaten</name></h3>
 <p>
 Mit dieser Suche können Sie Partiedaten finden, die im "Kopfteil"
 gespeichert sind (wie z.B. Datum, Ergebnis, Namen und Wertungszahlen),
@@ -2017,6 +2176,77 @@ da sie nur im Speicher existiert.
 }
 
 
+#################################
+### Variations and comments help:
+
+set helpTitle(D,Annotating) "Partien kommentieren"
+set helpText(D,Annotating) {<h1>Partien kommentieren</h1>
+<p>
+Mit Scid können Sie den Partien Anmerkungen hinzufügen. Es gibt
+drei Arten von Anmerkungen, die Sie nach einem Zug eingeben können:
+Symbole, ein Kommentar und Varianten.
+</p>
+
+<h3>Symbole und Kommentare</h3>
+<p>
+Symbole verwendet man, um eine Stellungsbeurteilung anzuzeigen
+(etwa "+-" or "=") oder um auf gute ("!") und schlechte ("?")
+Züge hinzuweisen, während ein Kommentar ein beliebiger Text sein
+kann. Zur Eingabe von Symbolen und Kommentaren benutzen Sie den
+<a Comment>Kommentar-Editor</a>. Es gibt auch eine Hilfeseite, in
+der die <a NAGs>Standard-Symbolwerte</a> aufgelistet sind.
+</p>
+<p>
+Beachten Sie, daß jeder Zug mehr als ein Anmerkungssymbol haben kann,
+aber nur einen Kommentar. Ein Kommentar vor dem ersten Partiezug wird
+als Text vor dem Beginn der Partie ausgegeben.
+</p>
+
+<h3><name Vars>Varianten</name></h3>
+<p>
+Eine <term>Variante</term> eines Zuges ist eine alternative Zugfolge
+an einem bestimmten Punkt der Partie. Varianten können Kommentare
+enthalten und sogar rekursiv Untervarianten. Mit den Schaltern oberhalb
+des Schachbretts mit einem "<b>V</b>"-Symbol sowie den Kommandos im
+Menü <menu>Bearbeiten</menu> kann man Varianten erstellen, editieren
+und sich darin bewegen.
+</p>
+
+<h4>Tastatureingaben</h4>
+<p>
+Wenn es zu einem Zug Varianten gibt, werden sie im Informationsbereich
+angezeigt. Die erste wird mit <b>v1</b> bezeichnet, die zweite mit
+<b>v2</b> etc. Um in eine Variante zu gehen, können Sie sie anklicken
+oder "<b>v</b>" gefolgt von der Variantennummer eingeben. (Falls es
+nur eine Variante gibt, genügt die Eingabe von <b>v</b>.)
+Mit der Taste "<b>z</b>" verlassen Sie die Variante wieder.
+</p>
+
+<h3><name Null>Nullzüge</name></h3>
+<p>
+Gelegentlich kann es in einer Variante nützlich sein, den Zug einer
+Seite auszulassen. Beispiel: Sie wollen den Zug 14.Ld3 als Variante
+hinzufügen und möchten darauf hinweisen, daß er 15.Lxh7+ Kxh7 16.Sg5+
+mit Angriff droht. Das können Sie erreichen, indem Sie im obigen
+Beispiel einen <term>Nullzug</term> zwischen 14.Ld3 und 15.Bxh7+
+ausführen. Ein Nullzug wird als "<b>--</b>" dargestellt und kann
+eingefügt werden, indem Sie mit der Maus den illegalen Zug "König
+schlägt König" ausführen oder mit der Tastatur "<b>--</b>" (zwei
+Minuszeichen) eingeben.
+</p>
+<p>
+Beachten Sie, daß Nullzüge nicht zum PGN-Standard gehören, wenn Sie
+also Partien mit Nullzügen in eine PGN-Datei exportieren, wird Scid
+(neben einigen anderen Exportoptionen) eine Option anbieten,
+Nullzüge zu erhalten oder sie in Kommentare umzuwandeln, damit
+Kompatibilität zu anderen Programmen gewahrt bleibt.
+Siehe auch die <a Export>Export</a>-Hilfeseite.
+</p>
+
+<p><footer>(Aktualisiert: Scid 3.4, Juli 2002)</footer></p>
+}
+
+
 ####################
 ### Analysis window:
 
@@ -2029,7 +2259,7 @@ Immer, wenn sich die Brettstellung ändert, übermittelt Scid die neue
 Position an die Engine, und die zeigt ihre Einschätzung dieser Stellung.
 </p>
 <p>
-Die Bewertung in dem Analysefenster erfolt immer aus der Perspektive
+Die Bewertung in dem Analysefenster erfolgt immer aus der Perspektive
 von Weiß, eine negative Bewertung heißt also, daß Schwarz besser steht.
 Der untere Fensterbereich (mit dem Rollbalken) zeigt den Verlauf der
 Auswertungen der aktuellen Stellung durch die Engine, Sie können also
@@ -2058,7 +2288,7 @@ Für jede Engine müssen Sie die aufzurufende Programmdatei angeben
 und das Verzeichnis, in dem Scid sie starten soll.
 </p>
 <p>
-Die häufigste Ursache von Problem beim Start einer Engine ist die Wahl
+Die häufigste Ursache von Problemen beim Start einer Engine ist die Wahl
 des Verzeichnisses, in dem die Engine laufen soll. Einige Engines
 benötigen eine Initialisierung oder eine Eröffnungsbuch-Datei in ihrem
 Startverzeichnis, um ordnungsgemäß zu laufen.
@@ -2125,7 +2355,7 @@ welches das <term>WinBoard/Xboard</term>-Protokoll unterstützt.
 </p>
 <p>
 Scid sendet beim Programmstart die Befehle <b>xboard</b>, <b>post</b> und
-<b>protover 2</b> to einer Engine, und nutzt die Befehle <b>setboard</b>
+<b>protover 2</b> zur Engine, und nutzt die Befehle <b>setboard</b>
 und <b>analyze</b> zur effizienteren Kommunikation, wenn die Engine in
 ihrer Antwort anzeigt, daß sie diese unterstützt.
 Wenn die Engine den Befehl <b>setboard</b> nicht unterstützt, wird sie
@@ -2582,7 +2812,7 @@ dann <b>Optionen speichern</b> im <menu>Optionen</menu>-Menü.
 <h3><name Browsing>Partien betrachten und mischen</name></h3>
 <p>
 Das Kontextmenü der Partieliste (und einiger andere Fenster, wie etwa
-des <a OpReport>Eröffnungs-Report</a>-Fensters und der Liste der
+des <a OpReport>Eröffnungsbericht</a>-Fensters und der Liste der
 <a Tree Best>beste(n) Partien</a> des <a Tree>Zugbaum</a>-Fensters)
 erlauben die Auswahl, eine Partie zu laden, zu betrachten oder zu
 mischen.
@@ -2668,19 +2898,19 @@ relativ kleine PGN-Dateien zu empfehlen.
 ########################
 ### Opening Report help:
 
-set helpTitle(D,OpReport) "Eröffnungsreport"
-set helpText(D,OpReport) {<h1>Eröffnungsreport</h1>
+set helpTitle(D,OpReport) "Eröffnungsbericht"
+set helpText(D,OpReport) {<h1>Eröffnungsbericht</h1>
 <p>
-Scid kann einen <term>Eröffnungsreport</term> erstellen, der interessante
+Scid kann einen <term>Eröffnungsbericht</term> erstellen, der interessante
 Informationen über die aktuelle Eröffnungsposition ausgibt. Um den
-Eröffnungsreport zu generieren, vergewissern Sie sich als erstes, daß die
+Eröffnungsbericht zu generieren, vergewissern Sie sich als erstes, daß die
 dargestellte Position auch die ist, für den Sie den Bericht haben wollen,
-dann wählen Sie <b>Eröffnungsreport</b> im Menü <menu>Werkzeuge</menu>.
+dann wählen Sie <b>Eröffnungsbericht</b> im Menü <menu>Werkzeuge</menu>.
 </p>
 <p>
-Das <term>Eröffnungsreport</term>-Fenster gibt die Ergebnisse des von
+Das <term>Eröffnungsberichts</term>-Fenster gibt die Ergebnisse des von
 Scid erstellten Berichts aus. Das <b>Datei</b>-Menü enthält Optionen,
-um den Report in einer Datei zu speichern, im Text-, HTML- oder
+um den Bericht in einer Datei zu speichern, im Text-, HTML- oder
 <a LaTeX>LaTeX</a>-Format.
 </p>
 <p>
@@ -2697,7 +2927,7 @@ Theorie-Tabelle, einen kompakten Bericht ohne die Theorie-Tabelle oder
 den gesamten Bericht sichern wollen.
 </p>
 <p>
-Fast alle Abschnitte des Berichts können mit den Eröffnungsreport-Optionen
+Fast alle Abschnitte des Berichts können mit den Eröffnungsberichts-Optionen
 eingestellt oder ein- und ausgeschaltet werden, Sie können also den
 Bericht so anpassen, daß er nur die für Sie interesanten Informationen
 enthält.
@@ -2807,7 +3037,6 @@ in der Konfigurationsdatei gesichert.
 
 set helpTitle(D,PTracker) "Figurenverteilung"
 set helpText(D,PTracker) {<h1>Das Figurenverteilungs-Fenster</h1>
-<ENGLISH>
 <p>
 Die <term>Figurenverteilung </term> bzw. das Figurenverteilungs-Fenster
 ist ein Werkzeug, um die Bewegungen bestimmter Figuren in allen Partien
@@ -2892,11 +3121,38 @@ bestimmten Spielers zu finden. Die Figurenverteilung kann dann genutzt
 werden um z.B. festzustellen, wie gern der Spieler Läufer fianchettiert,
 lang rochiert oder einen Bauernkeil bis d5 oder e5 treibt.
 </p>
-</ENGLISH>
 
 <p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
 }
 
+#####################
+### Player List help:
+
+set helpTitle(D,PList) "Spielersuche"
+set helpText(D,PList) {<h1>Der Spieler-Finder</h1>
+<p>
+Der <term>Spieler-Finder</term> gibt eine Namensliste von Spielern
+aus der aktuellen Datenbank aus. Die Auswahl eines Spielers öffnet
+das <a PInfo>Spieler-Informations</a>-Fenster mit detaillierteren
+Informationen über diesen Spieler.
+</p>
+<p>
+Es werden 5 Spalten ausgegeben, die jeweils den Namen, die höchste
+Elo-Zahl, Anzahl der gespielten Partien sowie das Jahr der
+ältesten und neueste Partie anzeigen.
+Ein Klick auf eine Spalten-Überschrift sortiert die Liste nach
+dieser Spalte.
+</p>
+<p>
+Die Kontrollschalter unterhalb der Liste ermöglichen Ihnen, den
+Inhalt der Liste zu filtern. Sie können die maximale Listengröße
+ändern, einen Spielernamen-Anfang eingeben (Groß-/Kleinschreibung
+wird ignoriert, z.B. sucht "ada" nach "Adams") sowie den
+Elozahlen-Bereich oder die Anzahl der gespielten Partien eingrenzen.
+</p>
+
+<p><footer>(Aktualisiert: Scid 3.4, August 2002)</footer></p>
+}
 
 #####################
 ### Player Info help:
@@ -3021,8 +3277,8 @@ Maustaste an und wählen im erschienenen Menü das entsprechende Kommando.
 Das Menü <menu>Suchen</menu> des Repertoire-Editors ermöglicht es Ihnen,
 mit dem Repertoire in der aktuellen Datenbank zu suchen. Jede Partie
 wird mit den Positionen im Repertoire verglichen und nur dann erkannt,
-wenn die <i>tiefste</i> Repertoireposition für eine <i>eingeschlossene</i>
-Variante gefunden wurde.
+wenn die <i>weitestverzweigte</i> Repertoireposition für eine
+<i>eingeschlossene</i> Variante gefunden wurde.
 </p>
 <p>
 Sie können wählen, ob Sie nach dem gesamten Repertoire oder nur nach den
@@ -3095,11 +3351,9 @@ Sie einfach mit der linken Maustaste, wenn die entsprechende Zeile
 hervorgehoben ist. Damit wird auch das
 <a Crosstable>Kreuztabellen</a>-Fenster aktualisiert, falls es geöffnet
 ist.
-<ENGLISH>
 Wenn Sie statt dessen die rechte Maustaste drücken, wird die Partie
 geladen und das Kreuztabellen-Fenster geöffnet, auch wenn es vorher
 geschlossen war.
-</ENGLISH>
 </p>
 <p>
 Es ist eine gute Idee, zur Beschleunigung des Suchprozesses den
@@ -3267,7 +3521,6 @@ Scid hat einige Fenster, die Informationen graphisch darstellen.
 Diese werden im nachfolgenden erklärt.
 </p>
 
-<ENGLISH>
 <h3><name Filter>Filter-Graphik</name></h3>
 <p>
 Das Fenster <term>Filter-Graphik</term> zeigt Entwicklungen nach Datum
@@ -3290,7 +3543,6 @@ einer Höchstgrenze von 2200. Wenn also beispielsweise ein Spieler eine
 Elo-Zahl von 2500 hat und sein Gegner keine Elo-Zahl, ist die mittlere
 Wertungszahl (2500+2200)/2 = 2350.
 </p>
-</ENGLISH>
 
 <h3><name Rating>ELO-Zahl-Verlauf</name></h3>
 <p>
@@ -3384,7 +3636,6 @@ Position erhalten, indem Sie das <term>Endspieltabellen-Fenster</term>
 Dieses Fenster zeigt das Ergebnis jedes zulässigen Zuges in der aktuellen
 Stellung bei perfektem Spiel.
 </p>
-<ENGLISH>
 <p>
 Das Fenster enthält zwei Bereiche. Der Übersichtsbereich (links) zeigt
 die Endspieltabellen, die Scid auf Ihrem Rechner gefunden hat, mit einer
@@ -3433,7 +3684,6 @@ detailliertere Ergebnisliste, mit der Reihenfolge kürzeste bis längste
 Matts, danach Remis, dann längste bis kürzeste Verluste. Länge jeweils
 bis zum Matt.
 </p>
-</ENGLISH>
 
 <h3>Endspieltabellen-Quellen</h3>
 <p>
@@ -4022,6 +4272,26 @@ oder ein mit dem Buchstaben "#" beginnender <a Comment>Kommentar</a>
 in der Partie vorkommt.
 </p>
 
+<h3><name Null>Nullzüge beim PGN-Export</name></h3>
+<p>
+Scid erlaubt es, in einer Partie <a Annotating Null>Null- (leere)
+Züge</a> zu speichern, da diese beim Kommentieren mit Varianten
+hilfreich sein können. Allerdings gibt es im PGN-Standard keine
+Nullzüge. Wenn Sie also Scid-Partien mit Nullzügen in eine PGN-Datei
+exportieren, werden andere Programme zum PGN-Lesen nicht in der Lage
+sein, die Nullzüge zu lesen.
+</p>
+<p>
+Um dieses Problem zu lösen, stellt Scid eine weitere Option bereit,
+<b>Nullzüge in Kommentare umwandeln</b>, wenn Partien in PGN-Format
+exportiert werden. Wenn Sie eine PGN-Datei erstellen wollen, die von
+anderer Software verwendet werden kann, schalten Sie diese Option ein,
+und Varianten, die Nullzüge enthalten, werden in Kommentare umgewandelt.
+Wenn Sie jedoch eine PGN-Dateie erstellen wollen, die später wieder
+unter Beibehaltung der Nullzüge von Scid importiert werden kann,
+lassen Sie diese Option aus.
+</p>
+
 <h3>HTML-Export</h3>
 <p>
 Scid kann Partien in eine HTML-Datei exportieren. Um Diagramme einzufügen,
@@ -4040,7 +4310,7 @@ Notation.
 Für weitere Informationen siehe die Hilfeseite <a LaTeX>Scid und LaTeX</a>.
 </p>
 
-<p><footer>(Aktualisiert: Scid 2.5, Juni 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.4, Juli 2002)</footer></p>
 }
 
 
@@ -4719,7 +4989,7 @@ set tips(D) {
     Das <a Tree>Zugbaum</a>-Fenster kann Ihnen alle Züge zeigen, die
     in der aktuellen Position gespielt wurden, aber wenn Sie auch alle
     Zugfolgen sehen wollen, mit denen diese Stellung erreicht wurde,
-    finden Sie diese, wenn Sie einen <a OpReport>Eröffnungsreport</a>
+    finden Sie diese, wenn Sie einen <a OpReport>Eröffnungsbericht</a>
     erstellen.
   }
   {
@@ -4858,8 +5128,8 @@ set tips(D) {
   }
   {
     Wenn Sie eine ECO-Klassifikationsdatei geladen haben, können Sie
-    zur am tiefsten klassifizierten Position der aktuellen Partie mit
-    <b>Eröffnung identifzieren</b> im <b>Partie</b>-Menü gehen
+    zur am weitest klassifizierten Position der aktuellen Partie mit
+    <b>Eröffnung identifizieren</b> im <b>Partie</b>-Menü gehen
     (Tastenkombination: Strg+Umsch+D).
   }
   {
@@ -4877,7 +5147,7 @@ set tips(D) {
     mit Ihren favorisierten Eröffnungen betrachten.
   }
   {
-    Mit einem <a OpReport>Eröffnungsreport</a> kann man sehr gut
+    Mit einem <a OpReport>Eröffnungsbericht</a> kann man sehr gut
     mehr über eine bestimmte Position lernen. Sie können die Erfolgsrate
     sehen, ob sie zu vielen Kurzremis führt und die typischen
     positionellen Themen.

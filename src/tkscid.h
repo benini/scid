@@ -259,7 +259,7 @@ appendUintResult (Tcl_Interp * ti, uint i)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// appendUintResult:
+// appendUintElement:
 //    Inline function to append the specified unsigned value to the
 //    Tcl interpreter list result.
 inline uint
@@ -352,6 +352,7 @@ int sc_createbase     (Tcl_Interp * ti, char * filename, scidBaseT * base,
 int sc_base_create    (TCL_ARGS);
 int sc_base_close     (TCL_ARGS);
 int sc_base_count     (TCL_ARGS);
+int sc_base_description (TCL_ARGS);
 int sc_base_export    (TCL_ARGS);
 int sc_base_import    (TCL_ARGS);
 int sc_base_numGames  (TCL_ARGS);
@@ -453,6 +454,7 @@ int sc_name_correct   (TCL_ARGS);
 int sc_name_edit      (TCL_ARGS);
 int sc_name_info      (TCL_ARGS);
 int sc_name_match     (TCL_ARGS);
+int sc_name_plist     (TCL_ARGS);
 int sc_name_ratings   (TCL_ARGS);
 int sc_name_read      (TCL_ARGS);
 int sc_name_spellcheck (TCL_ARGS);

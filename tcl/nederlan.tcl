@@ -53,6 +53,8 @@ menuText N FileMaintNameRound "Corrigeer ronde..." 10 \
   {Controleer rondenamen via spelling spellingchecker bestand}
 menuText N FileReadOnly "Alleen lezen..." 7 \
   {Zet huidige database op alleen-lezen en voorkom veranderingen}
+menuText N FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText N FileExit "Einde programma" 0 {Einde Scid}
 
 # Edit menu:
@@ -79,6 +81,8 @@ menuText N EditPaste "Partij vanuit klembord" 7 \
   {Plak actieve klembord-partij hier}
 menuText N EditSetup "Stelling opzetten..." 0 \
   {Kies een start-stelling voor de partij}
+menuText N EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText N EditPasteBoard "Invoegen start stelling" 12 \
   {Maak de start stelling van de huidige tekst selectie (klembord)}
 
@@ -94,7 +98,7 @@ menuText N GameReload "Partij opnieuw laden" 7 \
 menuText N GameNext "Volgende partij laden" 3 \
   {Laad volgende partij in het filter}
 menuText N GameLast "Laatste partij laden" 6 {Laad de laatste gefilterde partijd}
-menuText N GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText N GameRandom "Laad willekeurige partij" 8 {Laad een willekeurige partij}
 menuText N GameNumber "Laad partij nummer..." 12 \
   {Laad partijnummer:}
 menuText N GameReplace "Partij overschrijven..." 11 \
@@ -131,6 +135,7 @@ menuText N WindowsGList "Toon alle partijen" 0 \
   {Open/sluit lijst met partijen}
 menuText N WindowsPGN "PGN-venster" 0 \
  {Open/sluit het PGN-notatie venster}
+menuText N WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText N WindowsTmt "Toernooi Zoeker" 2 {Open/sluit het toernooi zoekvenster}
 menuText N WindowsSwitcher  "Database wisselen" 0 \
   {Open/sluit het database-wisselen venster}
@@ -154,7 +159,7 @@ menuText N ToolsCross "Kruistabel" 0 \
   {Toon toernooi-kruistabel voor huidige partij}
 menuText N ToolsEmail "Email-Manager" 0 {Open/sluit het email venster}
 menuText N ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+  {Openen/sluiten grafisch filter venster}
 menuText N ToolsOpReport "Openingen rapportage" 0 \
   {Genereer een openingsrapport voor de huidige positie}
 menuText N ToolsTracker "Stuk Spoorvolger "  0 {Open het Stuk Spoorvolger venster}
@@ -194,7 +199,7 @@ menuText N OptionsColors "Kleuren..." 0 {Wijzig bord kleuren}
 menuText N OptionsExport "Export" 1 {Wijzig tekst export opties}
 menuText N OptionsFonts "Lettertypen" 0 {Wijzig lettertype}
 menuText N OptionsFontsRegular "Standaard" 0 {Wijzig het standaard lettertype}
-menuText N OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText N OptionsFontsMenu "Menu" 0 {Wijzig het menu lettertype}
 menuText N OptionsFontsSmall "Klein" 0 {Wijzig het kleine lettertype}
 menuText N OptionsFontsFixed "Vaste grootte" 0 {Wijzig dit lettertype}
 menuText N OptionsGInfo "Partij Informatie" 0 {Parij-informatie opties}
@@ -226,8 +231,8 @@ menuText N OptionsSpell "Laad spelling (namen)..." 5 \
   {Laad het Scid spellingbestand}
 menuText N OptionsTable "Eindspel database laden..." 9 \
   {Kies een eindspel database, alle in de directory aanwezige worden gebruikt}
-menuText N OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText N OptionsRecent "Recente bestanden..." 0 \
+  {Wijzig het aantal recent gebruikte bestanden in het Bestand menu}
 menuText N OptionsSave "Opties bewaren" 0 \
   "Bewaar alle instellingen in het bestand $::optionsFile"
 menuText N OptionsAutoSave "Automatisch bewaren opties tijdens afsluiten" 0 \
@@ -250,6 +255,7 @@ menuText N GInfoFEN "FEN" 0
 menuText N GInfoMarks "Toon gekleurde velden en pijlen. " 5
 menuText N GInfoWrap "Lange regels op schermbreedte splitsen." 0
 menuText N GInfoFullComment "Volledig commentaar weergeven" 10
+menuText N GInfoPhotos "Show Photos" 5 ;# ***
 menuText N GInfoTBNothing "Tablebases: niets" 12
 menuText N GInfoTBResult "Tablebases: alleen resultaat" 12
 menuText N GInfoTBAll "Tablebases: resultaat en beste zetten" 19
@@ -313,14 +319,15 @@ translate N White {Wit}
 translate N Black {Zwart}
 translate N Player {Speler}
 translate N Rating {Eloklassering}
-translate N RatingDiff { EloklasseringsVerschil (Wit - Zwart)}
+translate N RatingDiff {EloklasseringsVerschil (Wit - Zwart)}
+translate N AverageRating {Average Rating} ;# ***
 translate N Event {Evenement}
 translate N Site {Plaats}
 translate N Country {Land}
 translate N IgnoreColors {Kleuren negeren}
 translate N Date {Datum}
 translate N EventDate {Datum evenement}
-translate N Decade {Decade} ;# ***
+translate N Decade {Decennium}
 translate N Year {Jaar}
 translate N Month {Maand}
 translate N Months {Januari Februari Maart April Mei Juni
@@ -344,6 +351,11 @@ translate N clipbase {Klembord}
 translate N score {Score}
 translate N StartPos {Start positie}
 translate N Total {Totaal}
+
+# Standard error messages:
+translate N ErrNotOpen {This is not an open database.} ;# ***
+translate N ErrReadOnly {This database is read-only; it cannot be altered.}
+translate N ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate N twin {Dubbele partijen}
@@ -379,6 +391,10 @@ translate N allOthersLose {alle overigen verliezen}
 translate N matesIn {Mat in}
 translate N hasCheckmated {geeft mat}
 translate N longest {langste}
+translate N WinningMoves {Winning moves} ;# ***
+translate N DrawingMoves {Drawing moves} ;# ***
+translate N LosingMoves {Losing moves} ;# ***
+translate N UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate N Tip {Tip}
@@ -414,6 +430,10 @@ translate N LockTree {Boom Vergrendelen}
 translate N TreeLocked {Vergrendeld}
 translate N TreeBest {Beste}
 translate N TreeBestGames {Boom Beste partijen}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate N TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText N FinderFile "Bestand" 0
@@ -439,6 +459,17 @@ translate N FinderDir {Folder}
 translate N FinderDirs {Folders}
 translate N FinderFiles {Bestanden}
 translate N FinderUpDir {Hogere Folder}
+
+# Player finder:
+menuText N PListFile "Bestand" 0
+menuText N PListFileUpdate "Nijwerken" 0
+menuText N PListFileClose "Close Player Finder" 0 ;# ***
+menuText N PListSort "Sorteren" 0
+menuText N PListSortName "Name" 0 ;# ***
+menuText N PListSortElo "Elo" 0
+menuText N PListSortGames "Partijen" 0 ;# ***
+menuText N PListSortOldest "Oldest" 0 ;# ***
+menuText N PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText N TmtFile "Bestand" 0
@@ -466,7 +497,7 @@ menuText N GraphOptionsWhite "Wit" 0
 menuText N GraphOptionsBlack "Zwart" 0
 menuText N GraphOptionsBoth "Beide" 1
 menuText N GraphOptionsPInfo "Speler informatie" 0
-translate N GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+translate N GraphFilterTitle "Filtergrafiek: frequentie per 1000 partijen"
 
 # Analysis window:
 translate N AddVariation {Toevoegen variant}
@@ -559,6 +590,7 @@ menuText N CrosstabHelpIndex "Inhoud" 0
 translate N SetFilter {Zet Filter}
 translate N AddToFilter {Toevoegen aan selectie}
 translate N Swiss {Zwitsers}
+translate N Category {Category} ;# ***
 
 # Opening report window menus:
 menuText N OprepFile "Bestand" 0
@@ -667,6 +699,7 @@ translate N NumDeletedGames {Gewiste partijen:}
 translate N NumFilterGames {Partijen in selectie:}
 translate N YearRange {JaarBereik:}
 translate N RatingRange {EloBereik (laag/hoog):}
+translate N Description {Description} ;# ***
 translate N Flag {Markering}
 translate N DeleteCurrent {Wis huidige partij}
 translate N DeleteFilter {Wis geselecteerde partijen}
@@ -692,8 +725,8 @@ translate N CompactDatabase {Database compact maken = optimaliseren}
 translate N SortDatabase {Database sorteren}
 translate N AddEloRatings {Toevoegen Elo classificatie}
 translate N AutoloadGame {Auto-laden partij nummer}
-translate N StripTags {Strip PGN tags} ;# ***
-translate N StripTag {Strip tag} ;# ***
+translate N StripTags {Verwijder PGN labels}
+translate N StripTag {Verwijder label}
 translate N Cleaner {Reiniger}
 translate N CleanerHelp {
 De Scid Reiniger zal alle onderhoudsactiviteiten die u selecteert uit onderstaande lijst, uitvoeren op de huidige database. 
@@ -710,6 +743,7 @@ Weet u zeker dat u de geselecteerde onderhoudsfuncties wilt uitvoeren?
 # Comment editor:
 translate N AnnotationSymbols  {Symbolen voor annotatie:}
 translate N Comment {Commentaar:}
+translate N InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate N BoardSearch {Zoeken Bord}
@@ -752,7 +786,7 @@ translate N InitialBoard {Beginstelling}
 translate N SideToMove {Aan zet:}
 translate N MoveNumber {Zetnummer}
 translate N Castling {Rokade}
-translate N EnPassentFile {En Passant lijn}
+translate N EnPassantFile {En Passant lijn}
 translate N ClearFen {FEN leegmaken}
 translate N PasteFen {FEN plakken}
 
@@ -1012,8 +1046,8 @@ Wilt u de database nu bijwerken?
 }
 
 # Recent files options:
-translate N RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate N RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate N RecentFilesMenu {Aantal recente bestanden in Bestand menu}
+translate N RecentFilesExtra {Aantal recente bestand in extra submenu}
 
 }
 # End of nederlan.tcl

@@ -49,6 +49,8 @@ menuText F FileMaintNameRound "Corriger les noms des rondes..." 22 \
   {Vérifier l'orthographe des noms de rondes}
 menuText F FileReadOnly "Lecture seule..." 0 \
   {Traiter la base courante en lecture seule, en empêchant les changements}
+menuText F FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText F FileExit "Quitter" 0 {Quitter Scid}
 
 # Edit menu:
@@ -72,6 +74,8 @@ menuText F EditPaste "Coller depuis le presse-papier" 1 \
   {Copier la partie contenue dans le presse-papier à cet emplacement}
 menuText F EditSetup "Position de départ" 0 \
   {Choisir une position de départ pour cette partie}
+menuText F EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText F EditPasteBoard "Coller la position de départ" 12 \
   {Initialiser la position de départ à partir de la sélection de texte courante(presse-papier)}
 
@@ -122,6 +126,7 @@ menuText F WindowsComment "Éditeur de commentaires" 0 \
 menuText F WindowsGList "Liste des parties" 0 \
   {Ouvrir/fermer la liste des parties}
 menuText F WindowsPGN "Fenêtre PGN" 8 {Ouvrir/fermer la fenêtre PGN}
+menuText F WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText F WindowsTmt "Recherche de tournois" 0 {Ouvrir/fermer la recherche de tournois}
 menuText F WindowsSwitcher "Changer de base" 0 \
   {Ouvrir/Fermer l'outil de changement de base}
@@ -240,6 +245,7 @@ menuText F GInfoFEN "Montrer la notation FEN" 5
 menuText F GInfoMarks "Montrer les cases colorées et les flèches" 5
 menuText F GInfoWrap "Découper les longues lignes" 0
 menuText F GInfoFullComment "Montrer tous les commentaires" 10
+menuText F GInfoPhotos "Show Photos" 5 ;# ***
 menuText F GInfoTBNothing "Tables de finales: Rien" 12
 menuText F GInfoTBResult "Tables de finales: Seulement le résultat" 12
 menuText F GInfoTBAll "Tables de finales: résultat et meilleurs coups" 19
@@ -304,6 +310,7 @@ translate F Black {Noirs}
 translate F Player {Joueur}
 translate F Rating {Classement ELO}
 translate F RatingDiff {Difference de classement ELO (Blancs - Noirs)}
+translate F AverageRating {Average Rating} ;# ***
 translate F Event {Événement}
 translate F Site {Lieux}
 translate F Country {Pays}
@@ -334,6 +341,11 @@ translate F clipbase {presse-papier}
 translate F score {score}
 translate F StartPos {Position de départ}
 translate F Total {Total}
+
+# Standard error messages:
+translate F ErrNotOpen {This is not an open database.} ;# ***
+translate F ErrReadOnly {This database is read-only; it cannot be altered.}
+translate F ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate F twin {doublon}
@@ -369,6 +381,10 @@ translate F allOthersLose {toutes les autres pertes}
 translate F matesIn {mat en}
 translate F hasCheckmated {a maté}
 translate F longest {le plus long}
+translate F WinningMoves {Winning moves} ;# ***
+translate F DrawingMoves {Drawing moves} ;# ***
+translate F LosingMoves {Losing moves} ;# ***
+translate F UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate F Tip {Conseil}
@@ -400,6 +416,10 @@ translate F LockTree {Verrouiller}
 translate F TreeLocked {verrouillé}
 translate F TreeBest {Meilleur}
 translate F TreeBestGames {Arbre des meilleures parties}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate F TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText F FinderFile "Fichier" 0
@@ -425,6 +445,17 @@ translate F FinderDir {Répertoire}
 translate F FinderDirs {Répertoires}
 translate F FinderFiles {Fichiers}
 translate F FinderUpDir {répertoire précédent}
+
+# Player finder:
+menuText F PListFile "Fichier" 0
+menuText F PListFileUpdate "Mettre à jour" 0
+menuText F PListFileClose "Close Player Finder" 0 ;# ***
+menuText F PListSort "Trier" 0
+menuText F PListSortName "Name" 0 ;# ***
+menuText F PListSortElo "Elo" 0
+menuText F PListSortGames "Parties" 0
+menuText F PListSortOldest "Oldest" 0 ;# ***
+menuText F PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText F TmtFile "Fichier" 0
@@ -545,6 +576,7 @@ menuText F CrosstabHelpIndex "Index" 0
 translate F SetFilter {Activer le filtre}
 translate F AddToFilter {Ajouter au filtre}
 translate F Swiss {Suisse}
+translate F Category {Category} ;# ***
 
 # Opening report window menus:
 menuText F OprepFile "Fichier" 0
@@ -653,6 +685,7 @@ translate F NumDeletedGames {Parties supprimées:}
 translate F NumFilterGames {Parties dans le filtre:}
 translate F YearRange {Années:}
 translate F RatingRange {Classements:}
+translate F Description {Description} ;# ***
 translate F Flag {Drapeau}
 translate F DeleteCurrent {Effacer la partie courante}
 translate F DeleteFilter {Effacer le filtre de parties}
@@ -697,6 +730,7 @@ Etes vous sûr que vous voulez commencer les fonctions de maintenance que vous av
 # Comment editor:
 translate F AnnotationSymbols {Symboles d'annotation:}
 translate F Comment {Commentaire:}
+translate F InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate F BoardSearch {Rechercher Position}
@@ -739,7 +773,7 @@ translate F InitialBoard {Ré-initiliser l'échiquier}
 translate F SideToMove {Coté qui a le trait}
 translate F MoveNumber {Coup numero}
 translate F Castling {Roque}
-translate F EnPassentFile {Prise en passent}
+translate F EnPassantFile {Prise en passant}
 translate F ClearFen {Effacer FEN}
 translate F PasteFen {Coller FEN}
 

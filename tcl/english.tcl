@@ -86,6 +86,8 @@ menuText E FileMaintNameRound "Spellcheck Round names..." 11 \
   {Spellcheck round names using the spellcheck file}
 menuText E FileReadOnly "Read-only..." 0 \
   {Treat the current database as read-only, preventing changes}
+menuText E FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database}
 menuText E FileExit "Exit" 1 {Exit Scid}
 
 # Edit menu:
@@ -110,6 +112,8 @@ menuText E EditPaste "Paste last Clipbase game" 0 \
   {Paste the active Clipbase game here}
 menuText E EditSetup "Setup start board..." 0 \
   {Set the start position for this game}
+menuText E EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)}
 menuText E EditPasteBoard "Paste start board" 12 \
   {Set the start board from the current text selection (clipboard)}
 
@@ -152,6 +156,7 @@ menuText E WindowsComment "Comment editor" 0 {Open/close the comment editor}
 menuText E WindowsGList "Game List" 0 {Open/close the game list window}
 menuText E WindowsPGN "PGN window" 0 \
   {Open/close the PGN (game notation) window}
+menuText E WindowsPList "Player Finder" 2 {Open/close the player finder}
 menuText E WindowsTmt "Tournament Finder" 2 {Open/close the tournament finder}
 menuText E WindowsSwitcher "Database switcher" 0 \
   {Open/close the Database Switcher window}
@@ -267,6 +272,7 @@ menuText E GInfoFEN "Show FEN" 5
 menuText E GInfoMarks "Show colored squares and arrows" 5
 menuText E GInfoWrap "Wrap long lines" 0
 menuText E GInfoFullComment "Show Full Comment" 10
+menuText E GInfoPhotos "Show Photos" 5
 menuText E GInfoTBNothing "Tablebases: nothing" 12
 menuText E GInfoTBResult "Tablebases: result only" 12
 menuText E GInfoTBAll "Tablebases: result and best moves" 19
@@ -331,6 +337,7 @@ translate E Black {Black}
 translate E Player {Player}
 translate E Rating {Rating}
 translate E RatingDiff {Rating difference (White - Black)}
+translate E AverageRating {Average Rating}
 translate E Event {Event}
 translate E Site {Site}
 translate E Country {Country}
@@ -361,6 +368,11 @@ translate E clipbase {clipbase}
 translate E score {score}
 translate E StartPos {Start position}
 translate E Total {Total}
+
+# Standard error messages:
+translate E ErrNotOpen {This is not an open database.}
+translate E ErrReadOnly {This database is read-only; it cannot be altered.}
+translate E ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate E twin {twin}
@@ -396,6 +408,10 @@ translate E allOthersLose {all others lose}
 translate E matesIn {mates in}
 translate E hasCheckmated {has checkmated}
 translate E longest {longest}
+translate E WinningMoves {Winning moves}
+translate E DrawingMoves {Drawing moves}
+translate E LosingMoves {Losing moves}
+translate E UnknownMoves {Unknown-result moves}
 
 # Tip of the day:
 translate E Tip {Tip}
@@ -430,6 +446,10 @@ translate E LockTree {Lock}
 translate E TreeLocked {locked}
 translate E TreeBest {Best}
 translate E TreeBestGames {Best tree games}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate E TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear}
 
 # Finder window:
 menuText E FinderFile "File" 0
@@ -455,6 +475,17 @@ translate E FinderDir {Directory}
 translate E FinderDirs {Directories}
 translate E FinderFiles {Files}
 translate E FinderUpDir {up}
+
+# Player finder:
+menuText E PListFile "File" 0
+menuText E PListFileUpdate "Update" 0
+menuText E PListFileClose "Close Player Finder" 0
+menuText E PListSort "Sort" 0
+menuText E PListSortName "Name" 0
+menuText E PListSortElo "Elo" 0
+menuText E PListSortGames "Games" 0
+menuText E PListSortOldest "Oldest" 0
+menuText E PListSortNewest "Newest" 2
 
 # Tournament finder:
 menuText E TmtFile "File" 0
@@ -575,6 +606,7 @@ menuText E CrosstabHelpIndex "Help index" 0
 translate E SetFilter {Set Filter}
 translate E AddToFilter {Add to Filter}
 translate E Swiss {Swiss}
+translate E Category {Category}
 
 # Opening report window menus:
 menuText E OprepFile "File" 0
@@ -683,6 +715,7 @@ translate E NumDeletedGames {Deleted games:}
 translate E NumFilterGames {Games in filter:}
 translate E YearRange {Year range:}
 translate E RatingRange {Rating range:}
+translate E Description {Description}
 translate E Flag {Flag}
 translate E DeleteCurrent {Delete current game}
 translate E DeleteFilter {Delete filter games}
@@ -727,6 +760,7 @@ Are you sure you want to commence the maintenance functions you selected?
 # Comment editor:
 translate E AnnotationSymbols  {Annotation Symbols:}
 translate E Comment {Comment:}
+translate E InsertMark {Insert mark}
 
 # Board search:
 translate E BoardSearch {Board Search}
@@ -769,7 +803,7 @@ translate E InitialBoard {Initial board}
 translate E SideToMove {Side to move}
 translate E MoveNumber {Move number}
 translate E Castling {Castling}
-translate E EnPassentFile {En Passent file}
+translate E EnPassantFile {En Passant file}
 translate E ClearFen {Clear FEN}
 translate E PasteFen {Paste FEN}
 

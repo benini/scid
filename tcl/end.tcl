@@ -883,6 +883,7 @@ proc exportOptions {exportType} {
   wm protocol $w WM_DELETE_WINDOW { }
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.ok invoke"
+  bind $w <F1> {helpWindow Export}
 
   pack [frame $w.o] -side top -fill x -pady 5 -padx 5
   label $w.o.append -text $::tr(AddToExistingFile)
@@ -948,6 +949,21 @@ proc exportOptions {exportType} {
   grid $w.o.symbolsOn -row 7 -column 1 -sticky w
   grid $w.o.symbolsOff -row 7 -column 2 -sticky w
 
+  # Extra option for PGN format: handling of null moves
+  if {$exportType == "PGN"} {
+    label $w.o.space -text ""
+    grid $w.o.space -row 8 -column 0 -sticky w
+    label $w.o.nullMoves -text "Convert null moves to comments"
+    radiobutton $w.o.convertNullMoves -text $::tr(Yes) \
+      -variable exportFlags(convertNullMoves) -value 1
+    radiobutton $w.o.keepNullMoves -text $::tr(No) \
+      -variable exportFlags(convertNullMoves) -value 0    
+    grid $w.o.nullMoves -row 9 -column 0 -sticky w
+    grid $w.o.convertNullMoves -row 9 -column 1 -sticky w
+    grid $w.o.keepNullMoves -row 9 -column 2 -sticky w
+  }
+
+  # Extra option for HTML format: diagram image set
   if {$exportType == "HTML"} {
     label $w.o.space -text ""
     label $w.o.hdiag -text "Diagram"
@@ -1067,7 +1083,8 @@ proc exportGames {selection exportType} {
     -comments $exportFlags(comments) -variations $exportFlags(vars) \
     -space $pgnMoveNumSpace -symbols $exportFlags(symbols) \
     -indentC $exportFlags(indentc) -indentV $exportFlags(indentv) \
-    -column $exportFlags(column)
+    -column $exportFlags(column) -noMarkCodes $exportFlags(stripMarks) \
+    -convertNullMoves $exportFlags(convertNullMoves)
   unbusyCursor .
   if {$exportFilter} {
     closeProgressWindow
@@ -1894,6 +1911,8 @@ bind . <minus><plus> "sc_pos addNag -+; updateBoardAndPgn .board"
 bind . <minus><slash> "sc_pos addNag -/+; updateBoardAndPgn .board"
 bind . <equal><plus> "sc_pos addNag =+; updateBoardAndPgn .board"
 # bind . <asciitilde><Return> "sc_pos addNag ~; updateBoardAndPgn .board"
+# Null move entry:
+bind . <minus><minus> "addMove null null"
 
 # Arrow keys, Home and End:
 bind . <Home> {if {!$tree(refresh)} {sc_move start; updateBoard .board}}
@@ -1904,6 +1923,22 @@ bind . <Right> {if {!$tree(refresh)} {sc_move forward; updateBoard .board}}
 bind . <End> {if {!$tree(refresh)} {sc_move end; updateBoard .board}}
 
 bind . <period> {if {!$tree(refresh)} {toggleRotateBoard}}
+
+# MouseWheel in main window:
+bind . <MouseWheel> {
+  if {! $tree(refresh)} {
+    if {[expr -%D] < 0} { sc_move back; updateBoard .board }
+    if {[expr -%D] > 0} { sc_move forward; updateBoard .board }
+  }
+}
+if {! $windowsOS} {
+  bind . <Button-4> {
+    if {! $tree(refresh)} { sc_move back; updateBoard .board }
+  }
+  bind . <Button-5> {
+    if {! $tree(refresh)} { sc_move forward; updateBoard .board }
+  }
+}
 
 
 ############################################################
@@ -2035,7 +2070,7 @@ if {$loadAtStart(tb)} {
     foreach i {1 2 3 4} {
       if {$initialDir(tablebase$i) != ""} {
         if {$tbDirs != ""} { append tbDirs ";" }
-        append tbDirs $initialDir(tablebase$i)
+        append tbDirs [file nativename $initialDir(tablebase$i)]
       }
     }
     set result 0

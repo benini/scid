@@ -2,6 +2,7 @@
 # Italian language support for Scid.
 # Added by Giancarlo Bassi.
 # Updated by Paolo Montrasi.
+# Updated by Michele Rinesi on 01/08/2002.
 # Untranslated messages are marked with a "***" comment.
 
 addLanguage I Italian 0
@@ -16,7 +17,7 @@ menuText I FileClose "Chiudi" 0 {Chiude un database Scid attivo}
 menuText I FileFinder "Finder" 0 {Apre la finestra per cercare i file}
 menuText I FileBookmarks "Bookmarks" 0 {Menu' Bookmarks (chiave: Ctrl+B)}
 menuText I FileBookmarksAdd "Aggiungi bookmark" 0 \
-  {memorizza la partita e la posizione del database attivo}
+  {Memorizza la partita e la posizione del database attivo}
 menuText I FileBookmarksFile "Memorizza bookmark" 0 \
   {Memorizza un bookmark per la partita e posizione corrente}
 menuText I FileBookmarksEdit "Modifica bookmarks..." 0 \
@@ -51,6 +52,8 @@ menuText I FileMaintNameRound "Controllo di nomi di turni..." 21 \
   {Controllo di nomi di turni mediante il file di verifica}
 menuText I FileReadOnly "Sola-lettura..." 0 \
   {Tratta il database attuale in sola lettura, prevenendo variazioni}
+menuText I FileSwitch "Attiva un database" 0 \
+  {Attiva uno fra i database aperti}
 menuText I FileExit "Esci" 0 {Esce da Scid}
 
 # Edit menu:
@@ -75,6 +78,8 @@ menuText I EditPaste "Incolla l'ultima partita nella Clipbase" 0 \
   {Incolla qui la partita della clipbase}
 menuText I EditSetup "Posizione definita..." 10 \
   {Definisce una posizione per la partita corrente}
+menuText I EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText I EditPasteBoard "Incolla come posizione di partenza" 12 \
   {Imposta la posizione di partenza dalla selezione del testo corrente (clipboard)}
 
@@ -82,13 +87,13 @@ menuText I EditPasteBoard "Incolla come posizione di partenza" 12 \
 menuText I Game "Partita" 0
 menuText I GameNew "Annulla partita" 0 \
   {Torna alla posizione iniziale, rinunciando ai cambiamenti}
-menuText I GameFirst "Carica la prima Partita" 13 {Carica la prima partita filtrata}
-menuText I GamePrev "Carica la precedente Partita" 10 {Carica la precedente partita filtrata}
+menuText I GameFirst "Carica la prima Partita" 13 {Carica la prima partita del filtro}
+menuText I GamePrev "Carica la precedente Partita" 10 {Carica la precedente partita del filtro}
 menuText I GameReload "Ricarica la Partita attuale" 0 \
   {Ricarica questa partita, eliminando ogni cambiamento eseguito}
 menuText I GameNext "Carica la successiva Partita" 10 {Carica il successivo filtro di partite}
-menuText I GameLast "Carica l'ultima partita" 9 {Carica l'ultima partita filtrata}
-menuText I GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText I GameLast "Carica l'ultima partita" 9 {Carica l'ultima partita del filtro}
+menuText I GameRandom "Carica una partica casuale" 8 {Carica una partita casuale del filtro}
 menuText I GameNumber "Carica la partita numero..." 18 \
   {Carica una partita digitando il suo numero}
 menuText I GameReplace "Salva: Sostituisce la partita..." 8 \
@@ -116,7 +121,8 @@ menuText I Windows "Finestre" 2
 menuText I WindowsComment "Editor di commenti" 10 {Apre/chiude l'editor di commenti}
 menuText I WindowsGList "Lista di Partite" 0 {Apre/chiude la finestra di lista di partite}
 menuText I WindowsPGN "Finestra PGN" 9 {Apre/chiude la finestra PGN (notazione di partita)}
-menuText I WindowsTmt "Tournament Finder" 2 {Open/close the tournament finder} ;# ***
+menuText I WindowsPList "Player Finder" 2 {Apre/chiude la finestra Player Finder}
+menuText I WindowsTmt "Tournament Finder" 2 {Apre/chiude la finestra Tournament Finder}
 menuText I WindowsSwitcher "Scambio di Database" 11 {Apre/chiude la finestra di scambio di Database}
 menuText I WindowsMaint "Finestra di gestione" 12 {Apre/chiude la finestra di gestione}
 menuText I WindowsECO "Navigazione ECO" 12 {Apre/chiude la finestra di navigazione ECO}
@@ -137,10 +143,10 @@ menuText I ToolsCross "Tabella" 0 {Mostra la tabella di torneo per questa partit
 menuText I ToolsEmail "Gestione Email" 10 \
   {Apre/chiude la finestra di gestione di partite per posta elettronica}
 menuText I ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+  {Apre/chiude la finestra Filter Graph}
 menuText I ToolsOpReport "Rapporto di Apertura" 0 \
   {Genera un rapporto di apertura per l'attuale posizione}
-menuText I ToolsTracker "Piece Tracker"  0 {Open the Piece Tracker window} ;# ***
+menuText I ToolsTracker "Piece Tracker"  0 {Apre la finestra Piece Tracker}
 menuText I ToolsPInfo "Informazioni sul giocatore"  17 \
   {Apre/agiorna la finestra di Informazione del giocatore}
 menuText I ToolsRating "Grafico del punteggio Elo" 24 \
@@ -176,7 +182,7 @@ menuText I OptionsColors "Colori..." 0 {Cambia i colori della scacchiera}
 menuText I OptionsExport "Esportazione" 2 {Cambia le opzioni di importazione testo}
 menuText I OptionsFonts "Fonts" 0 {Cambia fonts}
 menuText I OptionsFontsRegular "Regolare" 0 {Cambia il font in 'regular'}
-menuText I OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText I OptionsFontsMenu "Menu" 0 {Cambia il font dei menu}
 menuText I OptionsFontsSmall "Piccolo" 0 {Cambia il font 'small'}
 menuText I OptionsFontsFixed "Fisso" 0 {Cambia il font di larghezza fissa}
 menuText I OptionsGInfo "Informazioni sulla partita" 0 {Opzioni sulle informazioni della partita}
@@ -206,8 +212,8 @@ menuText I OptionsSpell "Carica il file di controllo ortografico..." 28 \
   {Carica il file di controllo di Scid}
 menuText I OptionsTable "Directory di Tablebase..." 13 \
   {Seglie un file tablebase; tutte le tablebases nella directory saranno utilizzate}
-menuText I OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText I OptionsRecent "File utilizzati di recente..." 0 \
+  {Cambia il numero di file recentemente utilizzati visualizzato nel menu file}
 menuText I OptionsSave "Salva Opzioni" 0 \
   "Salva tutte le opzioni definibili nel file $::optionsFile"
 menuText I OptionsAutoSave "Salva Opzioni all'uscita" 0 \
@@ -230,9 +236,10 @@ menuText I GInfoFEN "Mostra FEN" 5
 menuText I GInfoMarks "Mostra caselle e frecce colorate" 5
 menuText I GInfoWrap "A capo automatico" 0
 menuText I GInfoFullComment "Mostra commenti completi" 10
+menuText I GInfoPhotos "Show Photos" 5 ;# ***
 menuText I GInfoTBNothing "Tablebases: nulla" 12
 menuText I GInfoTBResult "Tablebases: solo risultato" 12
-menuText I GInfoTBAll "Tablebases: resultato e mosse migliori" 19
+menuText I GInfoTBAll "Tablebases: risultato e mosse migliori" 19
 menuText I GInfoDelete "Recupera/Cancella questa partita" 9
 menuText I GInfoMark "Smarca/Marca questa partita" 7
 
@@ -259,8 +266,8 @@ translate I Help {Aiuto}
 translate I Import {Importa}
 translate I Index {Indice}
 translate I LoadGame {Carica partita}
-translate I BrowseGame {Browse partita} ;# ***
-translate I MergeGame {Merge partita} ;# ***
+translate I BrowseGame {Visualizza partita}
+translate I MergeGame {Fondi partita}
 translate I Preview {Anteprima}
 translate I Revert {Rovescia}
 translate I Save {Salva}
@@ -294,13 +301,14 @@ translate I Black {Nero}
 translate I Player {Giocatori}
 translate I Rating {Punteggio}
 translate I RatingDiff {Differenza punteggio (Bianco - Nero)}
+translate I AverageRating {Punteggio medio}
 translate I Event {Evento}
 translate I Site {Sito}
 translate I Country {Paese}
 translate I IgnoreColors {Ignora i colori}
 translate I Date {Data}
 translate I EventDate {Evento data}
-translate I Decade {Decade} ;# ***
+translate I Decade {Decennio}
 translate I Year {Anno}
 translate I Month {Mese}
 translate I Months {Gennaio Febbraio Marzo Aprile Maggio Giugno
@@ -324,6 +332,11 @@ translate I clipbase {clipbase}
 translate I score {score}
 translate I StartPos {Posizione iniziale}
 translate I Total {Totale}
+
+# Standard error messages:
+translate I ErrNotOpen {Questo database non è aperto.}
+translate I ErrReadOnly {Questo database è a sola lettura; non puo' essere modificato.}
+translate I ErrSearchInterrupted {Ricerca interrotta; il risultato e' incompleto.}
 
 # Game information:
 translate I twin {doppio}
@@ -359,6 +372,10 @@ translate I allOthersLose {tutte le altre perse}
 translate I matesIn {matto in}
 translate I hasCheckmated {e' mattato}
 translate I longest {la piu' lunga}
+translate I WinningMoves {Mosse vincenti}
+translate I DrawingMoves {Mosse pattanti}
+translate I LosingMoves {Mosse perdenti}
+translate I UnknownMoves {Mosse senza risultato}
 
 # Tip of the day:
 translate I Tip {Suggerimento}
@@ -386,24 +403,28 @@ menuText I TreeOpt "Opzioni" 0
 menuText I TreeOptLock "Blocca" 0 {Blocca/sblocca l'albero al database corrente}
 menuText I TreeOptTraining "Training" 0 {Attiva/disattiva la modalita' di esercizio dell'albero}
 menuText I TreeOptAutosave "File di cache per Auto-salvare" 0 \
-  {Salva automaticamente il file di cahce quando si chiude la finestra dell'albero}
+  {Salva automaticamente il file di cache quando si chiude la finestra dell'albero}
 menuText I TreeHelp "Aiuto" 0
 menuText I TreeHelpTree "Aiuto per l'albero" 0
 menuText I TreeHelpIndex "Indice di aiuto" 0
 translate I SaveCache {Salva cache}
 translate I Training {Esercizio}
 translate I LockTree {Blocca}
-translate I TreeLocked {bloccato}
+translate I TreeLocked {Bloccato}
 translate I TreeBest {Migliore}
 translate I TreeBestGames {Migliori partite}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate I TreeTitleRow \
+  {    Mossa  ECO       Frequenza    Punt.  AvElo Perf AvAnno}
 
-# Finder window: ***
+# Finder window:
 menuText I FinderFile "File" 0
 menuText I FinderFileSubdirs "Cerca nelle sottodirectory" 0
 menuText I FinderFileClose "Chiudi File Finder" 0
 menuText I FinderSort "Ordina" 0
 menuText I FinderSortType "Tipo" 0
-menuText I FinderSortSize "Size" 0
+menuText I FinderSortSize "Dimensione" 0
 menuText I FinderSortMod "Modifica" 0
 menuText I FinderSortName "Nome" 0
 menuText I FinderSortPath "Percorso" 0
@@ -417,10 +438,21 @@ menuText I FinderHelp "Aiuto" 0
 menuText I FinderHelpFinder "Aiuto su File Finder" 0
 menuText I FinderHelpIndex "Indice di aiuto" 0
 translate I FileFinder {File Finder}
-translate I FinderDir {Directory}
-translate I FinderDirs {Directories}
+translate I FinderDir {Directory} ;# ***
+translate I FinderDirs {Directories} ;# ***
 translate I FinderFiles {Files}
-translate I FinderUpDir {up}
+translate I FinderUpDir {Su}
+
+# Player finder:
+menuText I PListFile "File" 0
+menuText I PListFileUpdate "Aggiorna" 0
+menuText I PListFileClose "Chiudi Player Finder" 0
+menuText I PListSort "Ordina" 0
+menuText I PListSortName "Nome" 0
+menuText I PListSortElo "Elo" 0
+menuText I PListSortGames "Partite" 0
+menuText I PListSortOldest "Più vecchie" 4
+menuText I PListSortNewest "Più recenti" 4
 
 # Tournament finder:
 menuText I TmtFile "File" 0
@@ -447,8 +479,8 @@ menuText I GraphOptions "Opzioni" 0
 menuText I GraphOptionsWhite "Bianco" 0
 menuText I GraphOptionsBlack "Nero" 0
 menuText I GraphOptionsBoth "Entrambi" 1
-menuText I GraphOptionsPInfo "Player Info player" 0 ;# ***
-translate I GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+menuText I GraphOptionsPInfo "Info sul giocatore" 0
+translate I GraphFilterTitle "Filter Graph: frequenza ogni 1000 partite"
 
 # Analysis window:
 translate I AddVariation {Aggiungi variante}
@@ -490,10 +522,10 @@ menuText I PgnOptColor "Visualizza il Colore" 0
 menuText I PgnOptShort "Intestazione compatta (3-righe)" 0
 menuText I PgnOptSymbols "Annotazioni simboliche" 0
 menuText I PgnOptIndentC "Indenta i commenti" 0
-menuText I PgnOptIndentV "Indenta le varianti" 7
+menuText I PgnOptIndentV "Indenta le varianti" 1
 menuText I PgnOptColumn "Stile della colonna (una mossa per riga)" 0
 menuText I PgnOptSpace "Spazio dopo i numeri delle mosse" 0
-menuText I PgnOptStripMarks "Strip out colored square/arrow codes" 1 ;# ***
+menuText I PgnOptStripMarks "Elimina i codici colorati delle caselle/frecce" 0
 menuText I PgnColor "Colori" 0
 menuText I PgnColorHeader "Intestazione..." 0
 menuText I PgnColorAnno "Annotazioni..." 0
@@ -509,7 +541,7 @@ menuText I CrosstabFile "File" 0
 menuText I CrosstabFileText "Stampa in un file di Testo..." 21
 menuText I CrosstabFileHtml "Stampa in un file HTML..." 18
 menuText I CrosstabFileLaTeX "Stampa in un file LaTeX..." 18
-menuText I CrosstabFileClose "Chiudi la finestra del tabella" 0
+menuText I CrosstabFileClose "Chiudi la finestra della tabella" 0
 menuText I CrosstabEdit "Edita" 0
 menuText I CrosstabEditEvent "Evento" 0
 menuText I CrosstabEditSite "Sito" 0
@@ -524,9 +556,9 @@ menuText I CrosstabOptNats "Nazionalita'" 0
 menuText I CrosstabOptRatings "Punteggi" 0
 menuText I CrosstabOptTitles "Titoli" 0
 menuText I CrosstabOptBreaks "Punteggi al Tie-break" 4
-menuText I CrosstabOptDeleted "Include deleted games" 8 ;# ***
+menuText I CrosstabOptDeleted "Inserisce le partite cancellate" 8
 menuText I CrosstabOptColors "Colori (solo girone Svizzero)" 0
-menuText I CrosstabOptColumnNumbers "Numbered columns (All-play-all table only)" 2 ;# ***
+menuText I CrosstabOptColumnNumbers "A colonne (Solo la tabella dei tornei all'italiana)" 3
 menuText I CrosstabOptGroup "Punti del gruppo" 0
 menuText I CrosstabSort "Ordina" 0
 menuText I CrosstabSortName "Nome" 0
@@ -541,6 +573,7 @@ menuText I CrosstabHelpIndex "Indice di aiuto" 0
 translate I SetFilter {Imposta filtro}
 translate I AddToFilter {Aggiungi al filtro}
 translate I Swiss {Svizzero}
+translate I Category {Categoria}
 
 # Opening report window menus:
 menuText I OprepFile "File" 0
@@ -599,8 +632,8 @@ translate I EndgameFlag {Finale}
 translate I NoveltyFlag {Novita'}
 translate I PawnFlag {Struttura pedonale}
 translate I TacticsFlag {Tatticismi}
-translate I QsideFlag {Gioco su lato di donna}
-translate I KsideFlag {Gioco su lato di re}
+translate I QsideFlag {Gioco su lato di Donna}
+translate I KsideFlag {Gioco su lato di Re}
 translate I BrilliancyFlag {Brillantezza}
 translate I BlunderFlag {Svista}
 translate I UserFlag {User}
@@ -625,11 +658,11 @@ translate I GlistECO {ECO}
 translate I GlistOpening {Apertura}
 translate I GlistEndMaterial {Materiale a fine partita}
 translate I GlistDeleted {Cancellato}
-translate I GlistFlags {Flags}
+translate I GlistFlags {Identificatore}
 translate I GlistVars {Varianti}
 translate I GlistComments {Commenti}
 translate I GlistAnnos {Annotazioni}
-translate I GlistStart {Start} ;# ***
+translate I GlistStart {Inizio}
 translate I GlistGameNumber {numero di Partita}
 translate I GlistFindText {Cerca testo}
 translate I GlistMoveField {Mossa}
@@ -649,7 +682,8 @@ translate I NumDeletedGames {partite cancellate:}
 translate I NumFilterGames {Partite nel filtro:}
 translate I YearRange {Intervallo di anni:}
 translate I RatingRange {Intervallo di Punteggio:}
-translate I Flag {Flag} ;# ***
+translate I Description {Descrizione}
+translate I Flag {Identificatore}
 translate I DeleteCurrent {Cancella la partita attuale}
 translate I DeleteFilter {Cancella le partite del filtro}
 translate I DeleteAll {Cancella tutte le partite}
@@ -673,26 +707,23 @@ translate I ReclassifyGames {Partite classificate ECO}
 translate I CompactDatabase {Compatta database}
 translate I SortDatabase {Ordina database}
 translate I AddEloRatings {Aggiungi punteggio Elo}
-translate I AutoloadGame {Autoload game number} ;# ***
-translate I StripTags {Strip PGN tags} ;# ***
-translate I StripTag {Strip tag} ;# ***
-translate I Cleaner {Cleaner} ;# ***
-translate I CleanerHelp {
-La fiestra Cleaner effettura' tutte le operazioni che verranno selezionate dalla lista sottostante, sul database corrente.
+translate I AutoloadGame {Numero della partita che si caricherà automaticamente}
+translate I StripTags {Toglie i PGN tags}
+translate I StripTag {Toglie i tag}
+translate I Cleaner {Manutentore Globale}
+translate I CleanerHelp {La finestra Manutentore Globale effettura' tutte le operazioni che verranno selezionate dalla lista sottostante, sul database corrente.
 
-Le impostazioni correnti nelle finestre della calssificazione ECO e della cancellazione delle partite doppie verranno applicate se selezionate.
-}
-translate I CleanerConfirm {
-Una volta attivata l'operazione di pulizia questa non puo' piu' essere interrotta!
+Le impostazioni correnti nelle finestre della classificazione ECO e della cancellazione delle partite doppie verranno applicate se selezionate.}
+translate I CleanerConfirm {Una volta attivata l'operazione di pulizia questa non puo' piu' essere interrotta!
 
-Questo puo' richiedere diverso tempo su un database grosso, a seconda delle funzioni selezionate e delle impostazioni correnti.
+Questo puo' richiedere diverso tempo su un grosso database, a seconda delle funzioni selezionate e delle impostazioni correnti.
 
-Sei sicuro di voler procedere con le funzioni selezionate?
-}
+Sei sicuro di voler procedere con le funzioni selezionate?}
 
 # Comment editor:
 translate I AnnotationSymbols  {Simboli di annotazione:}
 translate I Comment {Commento:}
+translate I InsertMark {Inserisci marcatore}
 
 # Board search:
 translate I BoardSearch {Ricerca Posizione}
@@ -735,7 +766,7 @@ translate I InitialBoard {Posizione iniziale}
 translate I SideToMove {Parte che muove}
 translate I MoveNumber {Numero della mossa}
 translate I Castling {Arrocco}
-translate I EnPassentFile {Fila En Passent}
+translate I EnPassantFile {Fila En Passant}
 translate I ClearFen {Annulla FEN}
 translate I PasteFen {Incolla FEN}
 
@@ -749,9 +780,9 @@ Puoi sostituirla, rinunciando a tutte le mosse dopo di essa, o aggiungere la tua
 (Puoi impedire di vedere questo messaggio in futuro ponendo ad off l'opzione "Domanda prima di sostiture le mosse" nel menu Opzioni:Mosse.)}
 
 # Make database read-only dialog:
-translate I ReadOnlyDialog {Se rendi questo database di sola lettura, nessuna variazione sara'permessa .
-Nessuna partita puo' essere salvata o sostituita, e nessuna 'cancella bandiere' puo' essere alterato.
-Ognui ordinamento o classificazione ECO resultera' essere temporaneo.
+translate I ReadOnlyDialog {Se rendi questo database di sola lettura, nessuna variazione sara'permessa.
+Nessuna partita puo' essere salvata o sostituita, e nessuna 'cancella identificatore' puo' essere alterato.
+Ogni ordinamento o classificazione ECO resultera' essere temporaneo.
 
 Puoi facilmente rendere ancora scrivibile il database, chiudendolo e riaprendolo.
 
@@ -760,12 +791,11 @@ Desideri veramente rendere questo database di sola lettura?}
 # Clear game dialog:
 translate I ClearGameDialog {Questa partita e' stata modificata.
 
-Sei sicuro di voler continuare ed eliminare le modifiche effettuate?
-}
+Sei sicuro di voler continuare ed eliminare le modifiche effettuate?}
 
 # Exit dialog:
 translate I ExitDialog {Vuoi veramente uscire da Scid?}
-translate I ExitUnsaved {The following databases have unsaved game changes. If you exit now, these changes will be lost.} ;# ***
+translate I ExitUnsaved {Il database ha partite modificate e non salvate. Se esci adesso queste modifiche saranno perse.}
 
 # Import window:
 translate I PasteCurrentGame {Incolla la partita attuale}
@@ -803,11 +833,11 @@ translate I OprepRatingsPerf {Punteggi e Performance}
 translate I OprepAvgPerf {Punteggi medi e performance}
 translate I OprepWRating {Punteggio del Bianco}
 translate I OprepBRating {Punteggio del Nero}
-translate I OprepWPerf {Performance del bianco}
-translate I OprepBPerf {Performance del nero}
+translate I OprepWPerf {Performance del Bianco}
+translate I OprepBPerf {Performance del Nero}
 translate I OprepHighRating {Partite con il piu' alto punteggio medio}
 translate I OprepTrends {Tendenze dei risultati}
-translate I OprepResults {Result lengths and frequencies} ;# ***
+translate I OprepResults {Risultato lunghezza e frequenza}
 translate I OprepLength {Lunghezza della partita}
 translate I OprepFrequency {Frequenza}
 translate I OprepWWins {Vittorie del Bianco: }
@@ -846,15 +876,15 @@ translate I OprepExtraMoves {Mosse Extra note nella tabella della teoria}
 translate I OprepMaxGames {Numero massimo di partite nella tabella della teoria}
 
 # Piece Tracker window:
-translate I TrackerSelectSingle {Left mouse button selects this piece.} ;# ***
-translate I TrackerSelectPair {Left mouse button selects this piece; right button also selects its sibling.}
-translate I TrackerSelectPawn {Left mouse button selects this pawn; right button selects all 8 pawns.}
-translate I TrackerStat {Statistic}
-translate I TrackerGames {% games with move to square}
-translate I TrackerTime {% time on each square}
-translate I TrackerMoves {Moves}
-translate I TrackerMovesStart {Enter the move number where tracking should begin.}
-translate I TrackerMovesStop {Enter the move number where tracking should stop.}
+translate I TrackerSelectSingle {Il tasto sinistro del mouse seleziona questo pezzo.}
+translate I TrackerSelectPair {Il tasto sinistro del mouse seleziona questo pezzo; il tasto destro seleziona il suo sibling.}
+translate I TrackerSelectPawn {Il tasto sinistro del mouse seleziona questo pedone; il tasto destro seleziona tutti gli 8 pedoni.}
+translate I TrackerStat {Statistiche}
+translate I TrackerGames {% di partite con mosse in questa casella}
+translate I TrackerTime {% di tempo su ogni casella}
+translate I TrackerMoves {Mosse}
+translate I TrackerMovesStart {Inserisci il numero di mossa da dove iniziare il tracciamento.}
+translate I TrackerMovesStop {Inserisci il numero di mossa dove finire il tracciamento.}
 
 # Game selection dialogs:
 translate I SelectAllGames {Tutte le partite nel database}
@@ -874,7 +904,7 @@ translate I TwinsRound {Stesso turno?}
 translate I TwinsYear {Stesso anno?}
 translate I TwinsMonth {Stesso mese?}
 translate I TwinsDay {Stesso giorno?}
-translate I TwinsResult {Same result?}
+translate I TwinsResult {Stesso result?}
 translate I TwinsECO {Stesso codice ECO?}
 translate I TwinsMoves {Stesse mosse?}
 translate I TwinsPlayers {Confronta i nomi dei giocatori:}
@@ -886,10 +916,10 @@ translate I TwinsUndelete {Recupera prima tutte le partite?}
 translate I TwinsSetFilter {Definisci il filtro a tutte le partite doppie cancellate?}
 translate I TwinsComments {Mantieni sempre le partite con commenti?}
 translate I TwinsVars {Mantieni sempre le partite con varianti?}
-translate I TwinsDeleteWhich {Delete which game:} ;# ***
-translate I TwinsDeleteShorter {Shorter game} ;# ***
-translate I TwinsDeleteOlder {Smaller game number} ;# ***
-translate I TwinsDeleteNewer {Larger game number} ;# ***
+translate I TwinsDeleteWhich {Quale partita cancellare:}
+translate I TwinsDeleteShorter {La partita più corta}
+translate I TwinsDeleteOlder {La partita inserita prima nel database}
+translate I TwinsDeleteNewer {La partita inserita dopo nel database}
 translate I TwinsDelete {Cancella partite}
 
 # Name editor window:
@@ -915,7 +945,7 @@ translate I NameFile {File di Nomi}
 translate I GameFile {File Partite}
 translate I Names {Nomi}
 translate I Unused {Non usati}
-translate I SizeKb {Ampiezza (kb)}
+translate I SizeKb {Dimensioni (kb)}
 translate I CurrentState {Stato Attuale}
 translate I AfterCompaction {Dopo la compattazione}
 translate I CompactNames {Compatta il file di nomi}
@@ -935,7 +965,7 @@ translate I IndentComments {Indenta commenti?}
 translate I IndentVariations {Indenta varianti?}
 translate I ExportColumnStyle {Stile colonna (una mossa per riga)?}
 translate I ExportSymbolStyle {Stile annotazione simbolica:}
-translate I ExportStripMarks {Strip square/arrow mark codes from comments?} ;# ***
+translate I ExportStripMarks {Togliere i codici di casella/freccia dai commenti?}
 
 # Goto game/move dialogs:
 translate I LoadGameNumber {Inserire il numero della partita da caricare:}
@@ -947,7 +977,7 @@ translate I CopyConfirm {
  Vuoi veramente copiare
  le [thousands $nGamesToCopy] partite dal filtro
  del database "$fromName"
- nel database "$fromName"?
+ nel database "$targetName"?
 }
 translate I CopyErr {Impossibile copiare le partite}
 translate I CopyErrSource {il database origine}
@@ -961,10 +991,10 @@ translate I LightSquares {Case chiare}
 translate I DarkSquares {Case scure}
 translate I SelectedSquares {Case selezionate}
 translate I SuggestedSquares {Case delle mosse suggerite}
-translate I WhitePieces {Pezzi bianchi}
-translate I BlackPieces {Pezzi neri}
-translate I WhiteBorder {Bordi del bianco}
-translate I BlackBorder {Bordi del nero}
+translate I WhitePieces {Pezzi Bianchi}
+translate I BlackPieces {Pezzi Neri}
+translate I WhiteBorder {Bordi del Bianco}
+translate I BlackBorder {Bordi del Nero}
 
 # Novelty window:
 translate I FindNovelty {Trova Novita'}
@@ -993,8 +1023,8 @@ Vuoi aggiornare il database ora?
 }
 
 # Recent files options:
-translate I RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate I RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate I RecentFilesMenu {Numero di file recentemente utilizzati nel Menu File}
+translate I RecentFilesExtra {Numero di file recentemente utilizzati nel submenu extra}
 
 }
 # end of italian.tcl

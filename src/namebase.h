@@ -4,7 +4,7 @@
 //              Namebase class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  all rights reserved.
 //
@@ -16,6 +16,7 @@
 #define SCID_NAMEBASE_H
 
 #include "common.h"
+#include "date.h"
 #include "misc.h"
 #include "stralloc.h"
 #include "strtree.h"
@@ -87,7 +88,15 @@ struct nameDataT
 {
     idNumberT      id;         // a unique ID for this node.
     uint           frequency;  // How many times this string is used.
+
+    // The following fields are not stored in the name file; they are
+    // generated as needed and are currently only used for player names.
+
     eloT           maxElo;     // For estimating a player rating.
+    dateT          firstDate;  // Date of oldest occurrence.
+    dateT          lastDate;   // Date of most recent occurrence.
+    char           country [4]; // Three-letter country code.
+    bool           hasPhoto;   // True if this player has a photo.
 };
 
 typedef nodeT<nameDataT>  nameNodeT;
@@ -157,6 +166,11 @@ class NameBase
     eloT      GetElo (idNumberT id);
     void      AddElo (idNumberT id, eloT elo);
     void      SetElo (idNumberT id, eloT elo);
+    dateT     GetFirstDate (idNumberT id);
+    dateT     GetLastDate (idNumberT id);
+    void      AddDate (idNumberT id, dateT date);
+    bool      HasPhoto (idNumberT id);
+    void      SetHasPhoto (idNumberT id, bool hasPhoto);
 
     void      IterateStart (nameT nt) { Tree[nt]->IterateStart(); }
     errorT    Iterate (nameT nt, idNumberT * idPtr)
@@ -287,6 +301,48 @@ NameBase::SetElo (idNumberT id, eloT elo)
     if (id >= GetNumNames(NAME_PLAYER)) { return; }    
     nameNodePtrT node = NameByID[NAME_PLAYER][id];
     node->data.maxElo = elo;
+}
+
+inline dateT
+NameBase::GetFirstDate (idNumberT id)
+{
+    if (id >= GetNumNames(NAME_PLAYER)) { return 0; }
+    return NameByID[NAME_PLAYER][id]->data.firstDate;
+}
+
+inline dateT
+NameBase::GetLastDate (idNumberT id)
+{
+    if (id >= GetNumNames(NAME_PLAYER)) { return 0; }
+    return NameByID[NAME_PLAYER][id]->data.lastDate;
+}
+
+inline void
+NameBase::AddDate (idNumberT id, dateT date)
+{
+    if (id >= GetNumNames(NAME_PLAYER)) { return; }
+    nameNodePtrT node = NameByID[NAME_PLAYER][id];
+    if (date == ZERO_DATE) { return; }
+    if (node->data.firstDate == ZERO_DATE  ||  date < node->data.firstDate) {
+        node->data.firstDate = date;
+    }
+    if (date > node->data.lastDate) {
+        node->data.lastDate = date;
+    }
+}
+
+inline bool
+NameBase::HasPhoto (idNumberT id)
+{
+    if (id >= GetNumNames(NAME_PLAYER)) { return false; }
+    return NameByID[NAME_PLAYER][id]->data.hasPhoto;
+}
+
+inline void
+NameBase::SetHasPhoto (idNumberT id, bool hasPhoto)
+{
+    if (id >= GetNumNames(NAME_PLAYER)) { return; }
+    NameByID[NAME_PLAYER][id]->data.hasPhoto = hasPhoto;
 }
 
 #endif  // #ifdef SCID_NAMEBASE_H

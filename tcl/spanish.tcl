@@ -50,6 +50,8 @@ menuText S FileMaintNameRound "Comprobación ortográfica de rondas..." 28 \
   {Comprobación ortográfica de rondas usando el archivo de comprobación ortográfica}
 menuText S FileReadOnly "Sólo lectura..." 5 \
   {Trata la actual base de datos como de sólo lectura, previniendo cambios}
+menuText S FileSwitch "Cambiar de base de datos" 0 \
+  {Cambia a una base de dator abierta diferente}
 menuText S FileExit "Salir" 0 {Salir de Scid}
 
 # Edit menu:
@@ -66,8 +68,8 @@ menuText S EditTrial "Probar variación" 1 \
 menuText S EditStrip "Eliminar" 2 \
   {Eliminar comentarios o variaciones de esta partida}
 menuText S EditStripComments "Comentarios" 0 \
-  {Strip all comments and annotations from this game}
-menuText S EditStripVars "Variaciones" 0 {Strip all variations from this game}
+  {Quita todos los comentarios y variaciones de esta partida}
+menuText S EditStripVars "Variaciones" 0 {Quita todas las variaciones de esta partida}
 menuText S EditReset "Poner a cero la base de trabajo" 0 \
   {Pone a cero la base de trabajo (clipbase) para que esté completamente vacía}
 menuText S EditCopy "Copiar esta partida a la base de trabajo" 1 \
@@ -76,6 +78,8 @@ menuText S EditPaste "Pegar la última partida de la base de trabajo" 2 \
   {Pega la partida activa en la base de trabajo (clipbase) aquí}
 menuText S EditSetup "Iniciar tablero de posición..." 26 \
   {Inicia el tablero de posición con la posición de la partida}
+menuText S EditCopyBoard "Copiar posición" 8 \
+  {Copia el tablero actual en notación FEN a la selección de texto (clipboard)}
 menuText S EditPasteBoard "Pegar tablero inicial" 6 \
   {Coloca el tablero inicial de la selección de texto actual (clipboard)}
 
@@ -89,7 +93,7 @@ menuText S GameReload "Recargar partida actual" 0 \
   {Vuelve a cargar esta partida, descartando cualquier cambio hecho}
 menuText S GameNext "Cargar siguiente partida" 7 {Carga la siguiente partida filtrada}
 menuText S GameLast "Cargar última partida" 9 {Carga la última partida filtrada}
-menuText S GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText S GameRandom "Cargar partida aleatoria" 16 {Carga aleatoriamente una partida filtrada}
 menuText S GameNumber "Cargar partida número..." 3 \
   {Carga una partida poniendo su número}
 menuText S GameReplace "Guardar: Reemplazar partida..." 10 \
@@ -126,6 +130,7 @@ menuText S WindowsGList "Listado de partidas" 0 \
   {Abre/cierra la  ventana de listado de partidas}
 menuText S WindowsPGN "Ventana PGN" 8 \
   {Abre/cierra la ventana de PGN (notación de partida)}
+menuText S WindowsPList "Buscador de jugadores" 2 {Abre/cierra el buscador de jugadores}
 menuText S WindowsTmt "Visor de Torneos" 9 {Abre/cierra el visor de torneos}
 menuText S WindowsSwitcher "Intercambiador de bases de datos" 0 \
   {Abre/cierra la ventana del intercambiador de bases de datos}
@@ -149,11 +154,11 @@ menuText S ToolsAnalysis2 "Motor de análisis #2..." 18 \
 menuText S ToolsCross "Tabla cruzada" 0 {Muestra la tabla cruzada para esta partida}
 menuText S ToolsEmail "Administrador de Email" 0 \
   {Abre/cierra la ventana del administrador de Email}
-menuText S ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+menuText S ToolsFilterGraph "Filtro gráfico" 7 \
+  {Abre/cierra la ventana del filtro gráfico}
 menuText S ToolsOpReport "Informe de la apertura" 1 \
   {Crea un informe de la apertura para la posición actual}
-menuText S ToolsTracker "Piece Tracker"  0 {Open the Piece Tracker window} ;# ***
+menuText S ToolsTracker "Rastreador de piezas"  14 {Abre la ventana del rastreador de piezas}
 menuText S ToolsPInfo "Información del Jugador" 16 \
   {Abrir/actualizar la ventana de Información del Jugador}
 menuText S ToolsRating "Gráfico del Elo" 0 \
@@ -184,13 +189,13 @@ menuText S ToolsImportFile "Importar un archivo de partidas PGN..." 2 \
 # Options menu:
 menuText S Options "Opciones" 0
 menuText S OptionsSize "Tamaño del tablero" 0 {Cambia el tamaño del tablero}
-menuText S OptionsPieces "Board Piece Style" 6 \
-  {Change the board piece style} ;# ***
+menuText S OptionsPieces "Estilo de piezas" 10 \
+  {Cambia el estilo de piezas del tablero}
 menuText S OptionsColors "Colores..." 0 {Cambia los colores del tablero}
 menuText S OptionsExport "Exportación" 0 {Cambia las opciones de exportación de texto}
 menuText S OptionsFonts "Fuentes" 0 {Cambia las fuentes}
 menuText S OptionsFontsRegular "Habitual" 0 {Cambia la fuente habitual}
-menuText S OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText S OptionsFontsMenu "Menú" 0 {Cambia la fuente del menú}
 menuText S OptionsFontsSmall "Pequeña" 0 {Cambia la fuente pequeña}
 menuText S OptionsFontsFixed "Fijada" 0 {Cambia la anchura fijada de la fuente}
 menuText S OptionsGInfo "Información de la partida" 0 {Información de la partida}
@@ -210,8 +215,8 @@ con teclado}
 menuText S OptionsNumbers "Formato de números" 11 {Selecciona el formato de números}
 menuText S OptionsStartup "Inicio" 3 {Seleccionar ventanas a abrir al inicio}
 menuText S OptionsWindows "Ventanas" 0 {Opciones de ventana}
-menuText S OptionsWindowsIconify "Auto-iconify" 5 \
-  {Iconify all windows when the main window is iconified} ;# ***
+menuText S OptionsWindowsIconify "Autominimizar" 4 \
+  {Minimiza todas las ventanas cuando la ventana principal es minimizada}
 menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
   {Hace visibles ciertas ventanas (ej. barras de progreso) siempre que sean tapadas}
 menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
@@ -222,8 +227,8 @@ menuText S OptionsSpell "Cargar archivo de comprobación ortográfica..." 2 \
   {Carga el archivo de comprobación ortográfica Scid}
 menuText S OptionsTable "Directorio de las TB..." 19 \
   {Selecciona el directorio de finales; todas las TB de ese directorio serán usadas}
-menuText S OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText S OptionsRecent "Archivos recientes..." 9 \
+  {Cambia el número de archivos recientes mostrados en el menú Archivo}
 menuText S OptionsSave "Guardar opciones" 0 \
   "Guarda todas las opciones en el fichero $::optionsFile"
 menuText S OptionsAutoSave "Autoguardar opciones al salir" 0 \
@@ -244,9 +249,10 @@ menuText S HelpAbout "Acerca de Scid" 10 {Información acerca de Scid}
 menuText S GInfoHideNext "Ocultar siguiente movimiento" 0
 menuText S GInfoMaterial "Mostrar valor del material" 0
 menuText S GInfoFEN "Mostrar FEN" 8
-menuText S GInfoMarks "Show colored squares and arrows" 5 ;# ***
+menuText S GInfoMarks "Mostrar casillas y flechas coloreadas" 29
 menuText S GInfoWrap "Dividir líneas largas" 0
 menuText S GInfoFullComment "Mostrar comentarios completos" 8
+menuText S GInfoPhotos "Show Photos" 5 ;# ***
 menuText S GInfoTBNothing "TBs: nada" 5
 menuText S GInfoTBResult  "TBs: sólo resultado" 10
 menuText S GInfoTBAll "TBs: resultado y mejor movimiento" 23
@@ -276,9 +282,9 @@ translate S Help {Ayuda}
 translate S Import {Importar}
 translate S Index {Índice}
 translate S LoadGame {Cargar partida}
-translate S BrowseGame {Browse game} ;# ***
-translate S MergeGame {Merge game} ;# ***
-translate S Preview {Preview} ;# ***
+translate S BrowseGame {Buscar partida}
+translate S MergeGame {Incorporar partida}
+translate S Preview {Vista previa}
 translate S Revert {Retroceder}
 translate S Save {Guardar}
 translate S Search {Buscar}
@@ -311,13 +317,14 @@ translate S Black {Negro}
 translate S Player {Jugador}
 translate S Rating {Elo}
 translate S RatingDiff {Diferencia de Elo (Blanco - Negro)}
+translate S AverageRating {Clasificación promedio}
 translate S Event {Evento}
 translate S Site {Lugar}
 translate S Country {País}
 translate S IgnoreColors {Ignorar colores}
 translate S Date {Fecha}
 translate S EventDate {Evento fecha}
-translate S Decade {Decade} ;# ***
+translate S Decade {Década}
 translate S Year {Año}
 translate S Month {Mes}
 translate S Months {enero febrero marzo abril mayo junio
@@ -342,6 +349,11 @@ translate S score {puntuación}
 translate S StartPos {Posición inicial}
 translate S Total {Total}
 
+# Standard error messages:
+translate S ErrNotOpen {Esta base de datos no está abierta.}
+translate S ErrReadOnly {Esta base de datos es de sólo lectura; no puede ser cambiada.}
+translate S ErrSearchInterrupted {La busqueda se interrumpio; los resultados son incompletos.}
+
 # Game information:
 translate S twin {doble}
 translate S deleted {borradas}
@@ -357,7 +369,7 @@ translate S LineEnd {Fin de línea}
 # Player information:
 translate S PInfoAll {Resultados para <b>todas</b> las partidas}
 translate S PInfoFilter {Resultados para las partidas <b>filtradas</b>}
-translate S PInfoAgainst {Results against} ;# ***
+translate S PInfoAgainst {Resultados contra}
 translate S PInfoMostWhite {Aperturas más comunes con Blancas}
 translate S PInfoMostBlack {Aperturas más comunes con Negras}
 translate S PInfoRating {Historial de clasificación}
@@ -376,20 +388,24 @@ translate S allOthersLose {todos los demás hacen perder}
 translate S matesIn {mate en}
 translate S hasCheckmated {jaque mate}
 translate S longest {el mate más largo}
+translate S WinningMoves {Movimientos ganadores}
+translate S DrawingMoves {Movimientos para tablas}
+translate S LosingMoves {Movimientos perdedores}
+translate S UnknownMoves {Movimientos de resultado desconocido}
 
 # Tip of the day:
 translate S Tip {Sugerencia}
 translate S TipAtStartup {Sugerencia al iniciar}
 
-# Tree window menus: ***
+# Tree window menus:
 menuText S TreeFile "Archivo" 0
 menuText S TreeFileSave "Guardar archivo caché" 0 \
   {Guarda el archivo caché del árbol (.stc)}
 menuText S TreeFileFill "Construir archivo caché" 2 \
-  {Fill the cache file with common opening positions}
-menuText S TreeFileBest "Best games list" 0 {Show the best tree games list}
+  {Construir archivo caché con posiciones de apertura comunes}
+menuText S TreeFileBest "Lista de mejores partidas" 9 {Muestra la lista del árbol de mejores partidas}
 menuText S TreeFileGraph "Ventana del gráfico" 0 \
-  {Show the graph for this tree branch}
+  {Muestra el gráfico para esta rama del árbol}
 menuText S TreeFileCopy "Copiar texto del árbol al clipboard" 1 \
   {Copiar texto del árbol al clipboard}
 menuText S TreeFileClose "Cerrar ventana del árbol" 0 \
@@ -400,19 +416,23 @@ menuText S TreeSortECO "Por código ECO" 11
 menuText S TreeSortFreq "Por frecuencia" 4
 menuText S TreeSortScore "Por puntuación" 4
 menuText S TreeOpt "Opciones" 1
-menuText S TreeOptLock "Lock" 0 {Lock/unlock the tree to the current database}
-menuText S TreeOptTraining "Training" 0 {Turn on/off tree training mode}
+menuText S TreeOptLock "Bloquear" 1 {Bloquea/desbloquea el árbol de la base de datos actual}
+menuText S TreeOptTraining "Entrenamiento" 2 {Activa/desactiva el modo de entrenamiento de árbol}
 menuText S TreeOptAutosave "Autoguardar archivo caché" 0 \
-  {Auto-save the cache file when closing the tree window}
+  {Guarda automáticamente el archivo caché cuuando se cierra la ventana de árbol}
 menuText S TreeHelp "Ayuda" 1
 menuText S TreeHelpTree "Ayuda del árbol" 4
 menuText S TreeHelpIndex "Indice de la ayuda" 0
 translate S SaveCache {Guardar caché}
 translate S Training {Entrenamiento}
 translate S LockTree {Bloquear}
-translate S TreeLocked {locked}
-translate S TreeBest {Best}
-translate S TreeBestGames {Best tree games}
+translate S TreeLocked {Bloqueado}
+translate S TreeBest {Mejor}
+translate S TreeBestGames {Mejores partidas del árbol}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate S TreeTitleRow \
+  {    Movim. ECO       Frecuencia   Puntu. AvElo Perf AvAño}
 
 # Finder window:
 menuText S FinderFile "Archivo" 0
@@ -438,6 +458,17 @@ translate S FinderDir {Directorio}
 translate S FinderDirs {Directorios}
 translate S FinderFiles {Archivos}
 translate S FinderUpDir {arriba}
+
+# Player finder:
+menuText S PListFile "Archivo" 0
+menuText S PListFileUpdate "Actualizar" 0
+menuText S PListFileClose "Cierra el Buscador de Jugadores" 0
+menuText S PListSort "Ordenar" 0
+menuText S PListSortName "Nombre" 0
+menuText S PListSortElo "Elo" 0
+menuText S PListSortGames "Partidas" 0
+menuText S PListSortOldest "Más antiguo" 10
+menuText S PListSortNewest "Más nuevo" 4
 
 # Tournament finder:
 menuText S TmtFile "Archivo" 0
@@ -465,7 +496,7 @@ menuText S GraphOptionsWhite "Blanco" 0
 menuText S GraphOptionsBlack "Negro" 0
 menuText S GraphOptionsBoth "Ambos" 0
 menuText S GraphOptionsPInfo "Jugador Información jugador" 0
-translate S GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+translate S GraphFilterTitle "Filtro gráfico: frecuencia por 1000 partidas"
 
 # Analysis window:
 translate S AddVariation {Añadir variación}
@@ -481,16 +512,16 @@ translate S AnnotateBlack {Sólo para movimientos de las Negras}
 translate S AnnotateNotBest {Cuando el movimiento de la partida no es el mejor}
 
 # Analysis Engine open dialog:
-translate S EngineList {Analysis Engine List} ;# ***
-translate S EngineName {Name} ;# ***
-translate S EngineCmd {Command} ;# ***
-translate S EngineArgs {Parameters} ;# ***
-translate S EngineDir {Directory} ;# ***
+translate S EngineList {Lista de Motores de Análisis}
+translate S EngineName {Nombre}
+translate S EngineCmd {Orden}
+translate S EngineArgs {Parámetros}
+translate S EngineDir {Directorio}
 translate S EngineElo {Elo}
 translate S EngineTime {Fecha}
-translate S EngineNew {New} ;# ***
-translate S EngineEdit {Edit} ;# ***
-translate S EngineRequired {Fields in bold are required; others are optional}
+translate S EngineNew {Neevo}
+translate S EngineEdit {Editar}
+translate S EngineRequired {Los campos en negrita son obligatorios; los demás opcionales}
 
 # Stats window menus:
 menuText S StatsFile "Archivo" 0
@@ -510,7 +541,7 @@ menuText S PgnOptIndentC "Sangría en comentarios" 0
 menuText S PgnOptIndentV "Sangría en variaciones" 11
 menuText S PgnOptColumn "Estilo de columna (un movimiento por línea)" 1
 menuText S PgnOptSpace "Espacio después del número del movimiento" 0
-menuText S PgnOptStripMarks "Strip out colored square/arrow codes" 1 ;# ***
+menuText S PgnOptStripMarks "Quitar códigos de color en casilla/flecha" 3
 menuText S PgnColor "Colores" 1
 menuText S PgnColorHeader "Encabezamiento..." 0
 menuText S PgnColorAnno "Anotaciones..." 0
@@ -540,10 +571,10 @@ menuText S CrosstabOptAges "Edad en años" 1
 menuText S CrosstabOptNats "Nacionalidades" 0
 menuText S CrosstabOptRatings "Elo" 0
 menuText S CrosstabOptTitles "Títulos" 0
-menuText S CrosstabOptBreaks "Tie-break scores" 4 ;# ***
-menuText S CrosstabOptDeleted "Include deleted games" 8 ;# ***
+menuText S CrosstabOptBreaks "Puntuaciones de desempate" 0
+menuText S CrosstabOptDeleted "Incluir partidas borradas" 17
 menuText S CrosstabOptColors "Colores (sólo en tabla de Suizos)" 0
-menuText S CrosstabOptColumnNumbers "Numbered columns (All-play-all table only)" 2 ;# ***
+menuText S CrosstabOptColumnNumbers "Columnas numeradas (Sólo en tabla todos contra todos)" 11
 menuText S CrosstabOptGroup "Grupos de clasificación" 0
 menuText S CrosstabSort "Ordenar" 0
 menuText S CrosstabSortName "Por nombre" 4
@@ -551,13 +582,14 @@ menuText S CrosstabSortRating "Por Elo" 4
 menuText S CrosstabSortScore "Por puntuación" 4
 menuText S CrosstabColor "Color" 2
 menuText S CrosstabColorPlain "Texto simple" 0
-menuText S CrosstabColorHyper "Hypertexto" 0
+menuText S CrosstabColorHyper "Hipertexto" 0
 menuText S CrosstabHelp "Ayuda" 1
 menuText S CrosstabHelpCross "Ayuda de tabla cruzada" 9
 menuText S CrosstabHelpIndex "Indice de la ayuda" 0
 translate S SetFilter {Poner filtro}
 translate S AddToFilter {Añadir al filtro}
 translate S Swiss {Suizo}
+translate S Category {Categoría}
 
 # Opening report window menus:
 menuText S OprepFile "Archivo" 0
@@ -666,6 +698,7 @@ translate S NumDeletedGames {Partidas borradas:}
 translate S NumFilterGames {Partidas en el filtro:}
 translate S YearRange {Rango de años:}
 translate S RatingRange {Rango de Elo:}
+translate S Description {Descripción}
 translate S Flag {Señal}
 translate S DeleteCurrent {Borrar partida actual}
 translate S DeleteFilter {Borrar partidas filtradas}
@@ -691,8 +724,8 @@ translate S CompactDatabase {Compactar base de datos}
 translate S SortDatabase {Ordenar base de datos}
 translate S AddEloRatings {Añadir clasificación Elo}
 translate S AutoloadGame {Autocargar número de partida}
-translate S StripTags {Strip PGN tags} ;# ***
-translate S StripTag {Strip tag} ;# ***
+translate S StripTags {Quitar etiquetas PGN}
+translate S StripTag {Quitar etiquetas}
 translate S Cleaner {MultiHerramienta}
 translate S CleanerHelp {
 Scid ejecutará, en la actual base de datos, todas las acciones de mantenimiento
@@ -712,6 +745,7 @@ Esto puede tomar mucho tiempo en una base de datos grande, dependiendo de las fu
 # Comment editor:
 translate S AnnotationSymbols  {Símbolos de anotación:}
 translate S Comment {Comentario:}
+translate S InsertMark {Insertar marca}
 
 # Board search:
 translate S BoardSearch {Tablero de búsqueda}
@@ -754,7 +788,7 @@ translate S InitialBoard {Tablero inicial}
 translate S SideToMove {Lado que mueve}
 translate S MoveNumber {Movimiento número}
 translate S Castling {Enroque}
-translate S EnPassentFile {Columna al paso}
+translate S EnPassantFile {Columna al paso}
 translate S ClearFen {Quitar FEN}
 translate S PasteFen {Pegar FEN}
 
@@ -782,7 +816,7 @@ translate S ClearGameDialog {Esta partida a sido cambiada.
 
 # Exit dialog:
 translate S ExitDialog {¿Realmente quieres salir de Scid?}
-translate S ExitUnsaved {The following databases have unsaved game changes. If you exit now, these changes will be lost.} ;# ***
+translate S ExitUnsaved {La siguiente base de datos tiene cambios en partidas no guardados. Si sales ahora se perderán estos cambios.}
 
 # Import window:
 translate S PasteCurrentGame {Pegar partida actual}
@@ -865,15 +899,15 @@ translate S OprepExtraMoves {Anotación extra de movimientos en la tabla teórica}
 translate S OprepMaxGames {Máximas partidas en la tabla teórica}
 
 # Piece Tracker window:
-translate S TrackerSelectSingle {Left mouse button selects this piece.} ;# ***
-translate S TrackerSelectPair {Left mouse button selects this piece; right button also selects its sibling.}
-translate S TrackerSelectPawn {Left mouse button selects this pawn; right button selects all 8 pawns.}
-translate S TrackerStat {Statistic}
-translate S TrackerGames {% games with move to square}
-translate S TrackerTime {% time on each square}
-translate S TrackerMoves {Moves}
-translate S TrackerMovesStart {Enter the move number where tracking should begin.}
-translate S TrackerMovesStop {Enter the move number where tracking should stop.}
+translate S TrackerSelectSingle {El botón izquierdo selecciona esta pieza.}
+translate S TrackerSelectPair {El botón izquierdo selecciona esta pieza; el botón derecho también selecciona su hermana.}
+translate S TrackerSelectPawn {El botón izquierdo selecciona este peón; el botón derecho selecciona los 8 peones.}
+translate S TrackerStat {Estadística}
+translate S TrackerGames {% de partidas con movimiento a esta casilla}
+translate S TrackerTime {% de tiempo en esta casilla}
+translate S TrackerMoves {Movimientos}
+translate S TrackerMovesStart {Escribe el número del movimiento desde donde debe empezar el rastreo.}
+translate S TrackerMovesStop {Escribe el número del movimiento donde debe parar el rastreo.}
 
 # Game selection dialogs:
 translate S SelectAllGames {Todas las partidas de la base de datos}
@@ -905,10 +939,10 @@ translate S TwinsUndelete {¿Quitar marcas de borrado primero?}
 translate S TwinsSetFilter {¿Poner filtro a todas las partidas borradas?}
 translate S TwinsComments {¿Saltar siempre partidas con comentarios?}
 translate S TwinsVars {¿Saltar siempre partidas con variaciones?}
-translate S TwinsDeleteWhich {Delete which game:} ;# ***
-translate S TwinsDeleteShorter {Shorter game} ;# ***
-translate S TwinsDeleteOlder {Smaller game number} ;# ***
-translate S TwinsDeleteNewer {Larger game number} ;# ***
+translate S TwinsDeleteWhich {Qué partida borrar:}
+translate S TwinsDeleteShorter {Partida más corta}
+translate S TwinsDeleteOlder {Número de partida menor}
+translate S TwinsDeleteNewer {Número de partida mayor}
 translate S TwinsDelete {Borrar partidas}
 
 # Name editor window:
@@ -954,7 +988,7 @@ translate S IndentComments {¿Sangrar comentarios?}
 translate S IndentVariations {¿Sangrar variaciones?}
 translate S ExportColumnStyle {¿Estilo de columna (un movimiento por línea)?}
 translate S ExportSymbolStyle {Estilo de anotación simbólico:}
-translate S ExportStripMarks {Strip square/arrow mark codes from comments?} ;# ***
+translate S ExportStripMarks {¿Quitar marca de códigos de casilla/flecha de los comentarios?}
 
 # Goto game/move dialogs:
 translate S LoadGameNumber {Entra el número de la partida a cargar:}
@@ -1011,8 +1045,8 @@ Esto puede tomar un tiempo, pero sólo es necesario hacerlo una vez. Puedes cance
 }
 
 # Recent files options:
-translate S RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate S RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate S RecentFilesMenu {Número de archivos recientes en el menú Archivo}
+translate S RecentFilesExtra {Número de archivos recientes en submenú extra} 
 
 }
 

@@ -48,6 +48,8 @@ menuText R FileMaintNameRound "Проверить название туров..." 11 \
   {Проверка туров соревнований с помощью проверочного файла}
 menuText R FileReadOnly "Только для чтения..." 0 \
   {Запретить редактирование текущей БД}
+menuText R FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText R FileExit "Выход" 1 {Выход из программы}
 
 # Edit menu:
@@ -72,6 +74,8 @@ menuText R EditPaste "Вставить последнюю партию из временной БД" 0 \
   {Вставить сюда последнюю партию из временной БД}
 menuText R EditSetup "Задать начальную позицию..." 0 \
   {Задать начальную позицию для партии}
+menuText R EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText R EditPasteBoard "Вставить начальную позицию" 12 \
   {Задать начальную позицию по выбранному месту во временной БД}
 
@@ -114,6 +118,7 @@ menuText R WindowsComment "Редактор примечаний" 0 {Открыть/закрыть окно редактир
 menuText R WindowsGList "Список партий" 0 {Открыть/закрыть окно со списком партий}
 menuText R WindowsPGN "Окно с PGN" 0 \
   {Открыть/закрыть окно с записью ходов в формате PGN}
+menuText R WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText R WindowsTmt "Поиск турниров" 2 {Открыть/закрыть Open/close the tournament finder}
 menuText R WindowsSwitcher "Переключатель БД" 0 \
   {Открыть/закрыть окно со списком баз данных}
@@ -230,6 +235,7 @@ menuText R GInfoFEN "Показывать FEN" 5
 menuText R GInfoMarks "Показывать цветные квадраты и стрелки" 5
 menuText R GInfoWrap "Перенос длинных строк" 0
 menuText R GInfoFullComment "Показывать все примечание" 10
+menuText R GInfoPhotos "Show Photos" 5 ;# ***
 menuText R GInfoTBNothing "Эндшпильные базы: ничего" 12
 menuText R GInfoTBResult "Эндшпильные базы: только результат" 12
 menuText R GInfoTBAll "Эндшпильные базы: результат и лучшие ходы" 19
@@ -294,6 +300,7 @@ translate R Black {Черные}
 translate R Player {Игрок}
 translate R Rating {Рейтинг}
 translate R RatingDiff {Разница в рейтинге (Белые - Черные)}
+translate R AverageRating {Average Rating} ;# ***
 translate R Event {Соревнование}
 translate R Site {Место проведения}
 translate R Country {Страна}
@@ -324,6 +331,11 @@ translate R clipbase {временная БД}
 translate R score {очки}
 translate R StartPos {Начальная позиция}
 translate R Total {Всего}
+
+# Standard error messages:
+translate R ErrNotOpen {This is not an open database.} ;# ***
+translate R ErrReadOnly {This database is read-only; it cannot be altered.}
+translate R ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate R twin {копия}
@@ -359,6 +371,10 @@ translate R allOthersLose {все другие проигрывают}
 translate R matesIn {мат в}
 translate R hasCheckmated {заматованы}
 translate R longest {самое большее}
+translate R WinningMoves {Winning moves} ;# ***
+translate R DrawingMoves {Drawing moves} ;# ***
+translate R LosingMoves {Losing moves} ;# ***
+translate R UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate R Tip {Совет}
@@ -393,6 +409,10 @@ translate R LockTree {Прикрепить}
 translate R TreeLocked {прикреплено}
 translate R TreeBest {Лучшие}
 translate R TreeBestGames {Лечшие игры в дереве}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate R TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText R FinderFile "Файл" 0
@@ -418,6 +438,17 @@ translate R FinderDir {Каталог}
 translate R FinderDirs {Каталоги}
 translate R FinderFiles {Файлы}
 translate R FinderUpDir {вверх}
+
+# Player finder:
+menuText R PListFile "Файл" 0
+menuText R PListFileUpdate "Обновить" 0
+menuText R PListFileClose "Close Player Finder" 0 ;# ***
+menuText R PListSort "Сортировка" 0
+menuText R PListSortName "Name" 0 ;# ***
+menuText R PListSortElo "Elo" 0
+menuText R PListSortGames "Игры" 0
+menuText R PListSortOldest "Oldest" 0 ;# ***
+menuText R PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText R TmtFile "Файл" 0
@@ -538,6 +569,7 @@ menuText R CrosstabHelpIndex "Указатель справки" 0
 translate R SetFilter {Установить фильтр}
 translate R AddToFilter {Добавить в фильтр}
 translate R Swiss {Швейцарка}
+translate R Category {Category} ;# ***
 
 # Opening report window menus:
 menuText R OprepFile "Файл" 0
@@ -646,6 +678,7 @@ translate R NumDeletedGames {Удаленных партий:}
 translate R NumFilterGames {Игр в фильтре:}
 translate R YearRange {Период времени:}
 translate R RatingRange {Рейтинговый диапазон:}
+translate R Description {Description} ;# ***
 translate R Flag {Признак}
 translate R DeleteCurrent {Удалить текущую партию}
 translate R DeleteFilter {Удалить партии в фильтре}
@@ -690,6 +723,7 @@ translate R CleanerConfirm {
 # Comment editor:
 translate R AnnotationSymbols  {Символы аннотации:}
 translate R Comment {Комментарий:}
+translate R InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate R BoardSearch {Поиск позиции}
@@ -732,7 +766,7 @@ translate R InitialBoard {Начальная позиция}
 translate R SideToMove {Чей ход}
 translate R MoveNumber {Ход номер}
 translate R Castling {Рокировка}
-translate R EnPassentFile {На проходе - вертикаль}
+translate R EnPassantFile {На проходе - вертикаль}
 translate R ClearFen {Очистить FEN}
 translate R PasteFen {Вставить FEN}
 

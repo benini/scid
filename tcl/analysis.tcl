@@ -843,6 +843,7 @@ by moving backwards or forwards or making a new move."
   $w.text configure -state disabled
   bind $w <Destroy> "destroyAnalysisWin $n"
   wm minsize $w 45 0
+  bindMouseWheel $w $w.hist.text
 
   fileevent $analysis(pipe$n) readable "processAnalysisInput $n"
 

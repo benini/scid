@@ -11,30 +11,32 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Hints><b>Hints</b> for getting more out of Scid</a></li>
 <li><a MainWindow>The Scid <b>main window</b></a></li>
 <li><a Menus>Scid <b>menus</b></a> <red>(updated!)</red></li>
-<li><a Moves>Entering <b>chess moves</b></a></li>
+<li><a Moves>Entering <b>chess moves</b></a> <red>(updated!)</red></li>
 <li><a Searches><b>Searches</b> in Scid</a></li>
 <li><a Clipbase>Using the <b>Clipbase</b> database</a></li>
+<li><a Annotating><b>Annotating games</b></a> <red>(New!)</red></li>
 </ul>
 
 <h4>Other Scid windows</h4>
 <ul>
-<li><a Analysis><b>Analysis</b> window</a> <red>(updated!)</red></li>
-<li><a Comment><b>Comment editor</b> window</a> <red>(updated!)</red></li>
+<li><a Analysis><b>Analysis</b> window</a></li>
+<li><a Comment><b>Comment editor</b> window</a></li>
 <li><a Crosstable><b>Crosstable</b> window</a></li>
 <li><a Switcher><b>Database Switcher</b> window</a></li>
 <li><a Email><b>Email</b> chess manager window</a></li>
 <li><a Finder><b>File Finder</b> window</a></li>
-<li><a GameList><b>Game List</b> window</a> <red>(updated!)</red></li>
+<li><a GameList><b>Game List</b> window</a></li>
 <li><a Import><b>Import game</b> window</a></li>
-<li><a OpReport><b>Opening Report</b> window</a> <red>(updated!)</red></li>
+<li><a OpReport><b>Opening Report</b> window</a></li>
 <li><a PGN><b>PGN</b> (game text) window</a></li>
-<li><a PTracker><b>Piece Tracker</b></a> <red>(New!)</red></li>
+<li><a PTracker><b>Piece Tracker</b></a></li>
+<li><a PList><b>Player Finder</b> window</a> <red>(New!)</red></li>
 <li><a PInfo><b>Player Info</b> window</a></li>
 <li><a Repertoire><b>Repertoire editor</b> window</a></li>
-<li><a Tmt><b>Tournament Finder</b> window</a> <red>(updated!)</red></li>
+<li><a Tmt><b>Tournament Finder</b> window</a></li>
 <li><a Tree><b>Tree</b> window</a></li>
-<li><a Graphs><b>Graph</b> windows</a> <red>(updated!)</red></li>
-<li><a TB>Using <b>Tablebases</b> in Scid</a> <red>(updated!)</red></li>
+<li><a Graphs><b>Graph</b> windows</a></li>
+<li><a TB>Using <b>Tablebases</b> in Scid</a></li>
 </ul>
 
 <h4>Other utilities and information</h4>
@@ -45,7 +47,7 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Maintenance><b>Database maintenance</b> tools</a></li>
 <li><a ECO><b>ECO</b> openings classification</a></li>
 <li><a EPD><b>EPD</b> files</a></li>
-<li><a Export><b>Exporting</b> games to text files</a></li>
+<li><a Export><b>Exporting</b> games to text files</a> <red>(updated!)</red></li>
 <li><a Flags>Game <b>Flags</b></a></li>
 <li><a LaTeX>Using <b>LaTeX</b> with Scid</a></li>
 <li><a Options><b>Options</b> and preferences</a></li>
@@ -56,7 +58,7 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Author>Contact information</a></li>
 </ul>
 
-<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
+<p><footer>(Updated: Scid 3.4, July 2002)</footer></p>
 }
 
 
@@ -625,7 +627,15 @@ auto-completion, you would only need to type [n][f] instead
 of [n][f][3] for <b>Nf3</b> in the starting position.
 </p>
 
-<h4>Entering common annotation symbols</h4>
+<h3><name Null>Entering null moves</name></h3>
+<p>
+<a Annotating Null>Null</a> (empty) moves can be useful in variations, where
+you want to skip a move for one side. You can enter a null move with the
+mouse by capturing one king with the other king, or with the keyboard by
+typing "<b>--</b>" (that is, pressing the minus key twice).
+</p>
+
+<h3>Entering common annotation symbols</h3>
 <p>
 You can also add common <a NAGs>annotation symbols</a> using the keyboard
 in the main window, without needing to use the <a Comment>comment editor</a>
@@ -648,7 +658,7 @@ keyboard shortcuts:
 <li> =+	: [=][+] </li>
 </ul>
 
-<p><footer>(Updated: Scid 2.6, August 2001)</footer></p>
+<p><footer>(Updated: Scid 3.4, July 2002)</footer></p>
 }
 
 
@@ -864,6 +874,72 @@ memory only.
 <p><footer>(Updated: Scid 2.5, June 2001)</footer></p>
 }
 
+#################################
+### Variations and comments help:
+
+set helpTitle(Annotating) "Annotating games"
+set helpText(Annotating) {<h1>Annotating games</h1>
+<p>
+Scid lets you add notes to games. There are three types of
+annotation you can add after a move: symbols, a comment,
+and variations.
+</p>
+
+<h3>Symbols and comments</h3>
+<p>
+Symbols are used to indicate an evaluation of the position (such as
+"+-" or "=") or point out good ("!") and bad ("?") moves, while
+comments can be any text. To add symbols and comments to a game, use
+the <a Comment>Comment editor</a> window.
+There is also a help page listing <a NAGs>standard symbol values</a>.
+</p>
+<p>
+Note that each move can have more than one annotation symbol, but only
+one comment. A comment before the first move of the game is printed as text
+before the start of the game.
+</p>
+
+<h3><name Vars>Variations</name></h3>
+<p>
+A <term>variation</term> of a move is an alternative sequence of
+moves at a particular point in a game. Variations can contain
+comments and even recursively have sub-variations. The buttons
+above the board with a "<b>V</b>" symbol, and commands in the
+<menu>Edit</menu> menu, can be used to create, navigate and edit
+variations.
+</p>
+
+<h4>Keyboard shortcuts</h4>
+<p>
+When a move has variations, they are shown in the game information
+area. The first will be named <b>v1</b>, the second <b>v2</b>, etc.
+You can click on a variation to enter it, or press "<b>v</b>" followed
+by the variation number. (If there is only one variation, simply
+pressing <b>v</b> will enter it.)
+To leave a variation, you can use the "<b>z</b>" shortcut key.
+</p>
+
+<h3><name Null>Null moves</name></h3>
+<p>
+Sometimes, you may find it useful in a variation to skip over a move
+for one side. For example, you may want to add the move 14.Bd3 to
+a variation and point out that it threatens 15.Bxh7+ Kxh7 16.Ng5+
+with an attack. You can do this by making a <term>null move</term>
+between 14.Bd3 and 15.Bxh7+, in the above example. A null move is
+displayed as "<b>--</b>" and can be inserted using the mouse by making
+an illegal move of capturing one king with the other, or from the
+keyboard by typing "<b>--</b>" (two minus signs).
+</p>
+<p>
+Note that null moves are not a part of the PGN standard, so if you
+export games with null moves to a PGN file, Scid will provide (among
+other export options) an option to preserve null moves or convert them
+to comments for compatibility with other software.
+See the <a Export>Exporting</a> help page for more details.
+</p>
+
+<p><footer>(Updated: Scid 3.4, July 2002)</footer></p>
+}
 
 ###############################
 ### Comment editor window help:
@@ -1335,6 +1411,23 @@ diagram wherever a diagram <a NAGs>nag</a> ("D") or a <a Comment>comment</a>
 that starts with the character "#" appears in the game.
 </p>
 
+<h3><name Null>Null moves in PGN Export</name></h3>
+<p>
+Scid allows <a Annotating Null>null (empty) moves</a> to be stored in
+games, as they can be helpful when annotating games using variations.
+However, the PGN standard has no null move concept. So if you export
+Scid games with null moves to a PGN file, other PGN-reading software
+will not be able to read the null moves.
+</p>
+<p>
+To solve this problem, Scid provides an extra option,
+<b>Convert null moves to comments</b>, when exporting games in PGN format.
+If you want to create a PGN file that other software can use, turn this
+option on and variations containing null moves will be converted to
+comments. However, if you want to create a PGN file that can be imported
+back into Scid later with null moves preserved, leave the option off.
+</p>
+
 <h3>HTML Export</h3>
 <p>
 Scid can export games to an HTML file. For diagrams to appear, you will
@@ -1353,7 +1446,7 @@ figurine algebraic notation.
 See the <a LaTeX>Using LaTeX with Scid</a> help page for more information.
 </p>
 
-<p><footer>(Updated: Scid 2.5, June 2001)</footer></p>
+<p><footer>(Updated: Scid 3.4, July 2002)</footer></p>
 }
 
 ####################
@@ -2448,12 +2541,42 @@ your computer; see the <a LaTeX>Using LaTeX with Scid</a> help page.
 <p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
+
+####################
+### Player List help:
+
+set helpTitle(PList) "Player Finder window"
+set helpText(PList) {<h1>The Player Finder window</h1>
+<p>
+The <term>Player Finder</term> window displays a list of names of
+players in the current database. Selecting a player will open the
+<a PInfo>Player Info</a> window to display more detailed information
+about that player.
+</p>
+<p>
+Five columns are displayed showing each player's name, peak Elo
+rating, number of games played and the year of their oldest and
+newest game.
+Click on any column title at the top of the list to sort the
+list by that column.
+</p>
+<p>
+The controls below the list allow you to filter the list contents.
+You can alter the maximum list size, enter a case-insensitive player
+name prefix (such as "ada" to search for "Adams"), and restrict the
+ranges of Elo rating and number of games played.
+</p>
+
+<p><footer>(Updated: Scid 3.4, July 2002)</footer></p>
+}
+
 ####################
 ### Player Info help:
 
 set helpTitle(PInfo) "Player Info window"
 set helpText(PInfo) {<h1>The Player Info window</h1>
 <p>
+
 The <term>Player Information</term> window is produced or updated whenever
 you click the left mouse button on a player name in the game information
 area (below the chessboard) or in the <a Crosstable>crosstable</a> window.

@@ -70,7 +70,7 @@ proc translate {lang tag label} {
 
 # translateECO:
 #    Given a pair list of ECO opening name phrase translations,
-#    assigns the translations for furute reference.
+#    assigns the translations for future reference.
 #
 proc translateECO {lang pairList} {
   global hasEncoding langEncoding

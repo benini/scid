@@ -141,9 +141,8 @@ set helpMessage($m.utils,0) FileMaintWin
 $m.utils add command -label FileMaintCompact -command makeCompactWin
 set helpMessage($m.utils,1) FileMaintCompact
 
-$m.utils add command -label FileMaintClass -command classifyAllGames \
-  -accelerator "Ctrl+Shift+C"
-bind . <Control-C> classifyAllGames
+$m.utils add command -label FileMaintClass -command classifyAllGames
+# bind . <Control-C> classifyAllGames  ;# Ctrl+C now bound to Copy-Position
 set helpMessage($m.utils,2) FileMaintClass
 
 $m.utils add command -label FileMaintSort -command makeSortWin
@@ -185,18 +184,23 @@ bind . <Control-d> makeBaseWin
 $m add command -label FileReadOnly -command makeBaseReadOnly
 set helpMessage($m,7) FileReadOnly
 
-$m add separator
+#$m add separator
+
+$m add cascade -label FileSwitch -menu $m.switch
+set helpMessage($m,8) FileSwitch
+menu $m.switch
 
 set totalBaseSlots [sc_base count total]
 set clipbaseSlot [sc_info clipbase]
 set currentSlot [sc_base current]
 
 for {set i 1} { $i <= $totalBaseSlots} {incr i} {
-  $m add radiobutton -variable currentSlot -value $i -label "Base $i: <none>" \
+  $m.switch add radiobutton -variable currentSlot -value $i \
+    -label "Base $i: <none>" \
     -underline 5 -accelerator "Ctrl+$i" -command "switchBase $i"
-  set helpMessage($m,[expr $i + 8]) "Switch to base slot $i"
+  set helpMessage($m.switch,[expr $i - 1]) "Switch to base slot $i"
   if {$i == $clipbaseSlot} {
-    set helpMessage($m,[expr $i + 8]) "Switch to the clipbase database"
+    set helpMessage($m.switch,[expr $i - 1]) "Switch to the clipbase database"
   }
   bind . "<Control-Key-$i>" "switchBase $i"
 }
@@ -217,7 +221,7 @@ $m add separator
 
 $m add command -label FileExit -accelerator "Ctrl+Q" -command fileExit
 bind . <Control-q> fileExit
-set helpMessage($m,[expr $totalBaseSlots + 10]) FileExit
+set helpMessage($m,10) FileExit
 
 
 ### Edit menu:
@@ -283,10 +287,15 @@ $m add command -label EditSetup -accelerator "Ctrl+Shift+S" -command setupBoard
 bind . <Control-S> setupBoard
 set helpMessage($m,11) EditSetup
 
+$m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" \
+  -command copyFEN
+bind . <Control-C> copyFEN
+set helpMessage($m,12) EditCopyBoard
+
 $m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" \
-  -underline 12 -command pasteFEN
+  -command pasteFEN
 bind . <Control-V> pasteFEN
-set helpMessage($m,12) EditPasteBoard
+set helpMessage($m,13) EditPasteBoard
 
 
 ### Game menu:
@@ -431,48 +440,53 @@ $m  add checkbutton -label WindowsPGN \
 bind . <Control-p> makePgnWin
 set helpMessage($m,2) WindowsPGN
 
+$m add checkbutton -label WindowsPList \
+  -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
+bind . <Control-P> ::plist::toggle
+set helpMessage($m,3) WindowsPList
+
 $m add checkbutton -label WindowsTmt \
   -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
 bind . <Control-T> ::tourney::toggle
-set helpMessage($m,3) WindowsTmt
+set helpMessage($m,4) WindowsTmt
 
 $m add separator
 
 $m add checkbutton -label WindowsSwitcher \
   -variable baseWin -accelerator "Ctrl+D" -command makeBaseWin
-set helpMessage($m,5) WindowsSwitcher
+set helpMessage($m,6) WindowsSwitcher
 
 $m add checkbutton -label WindowsMaint \
   -accelerator "Ctrl+M" -variable maintWin -command makeMaintWin 
 bind . <Control-m> makeMaintWin
-set helpMessage($m,6) WindowsMaint
+set helpMessage($m,7) WindowsMaint
 
 $m add separator
 
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" \
   -variable ecoBrowserWin -command {openCloseEcoBrowser}
 bind . <Control-y> openCloseEcoBrowser
-set helpMessage($m,8) WindowsECO
+set helpMessage($m,9) WindowsECO
 
 $m add checkbutton -label WindowsRepertoire -variable ::rep::Win \
-  -accelerator "Ctrl+Shift+P" -command ::rep::openCloseWindow
-bind . <Control-P> ::rep::openCloseWindow
-set helpMessage($m,9) WindowsRepertoire
+  -accelerator "Ctrl+Shift+R" -command ::rep::openCloseWindow
+bind . <Control-R> ::rep::openCloseWindow
+set helpMessage($m,10) WindowsRepertoire
 
 $m add checkbutton -label WindowsStats -variable statsWin \
   -accelerator "Ctrl+I" -command makeStatsWin
 bind . <Control-i> makeStatsWin
-set helpMessage($m,10) WindowsStats
+set helpMessage($m,11) WindowsStats
 
 $m add checkbutton -label WindowsTree \
   -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
 bind . <Control-t> { .menu.windows invoke [tr WindowsTree] }
-set helpMessage($m,11) WindowsTree
+set helpMessage($m,12) WindowsTree
 
 $m add checkbutton -label WindowsTB -variable tbWin -command ::tb::open \
   -accelerator "Ctrl+="
 bind . <Control-equal> ::tb::open
-set helpMessage($m,12) WindowsTB
+set helpMessage($m,13) WindowsTB
 
 
 ### Tools menu:
@@ -526,9 +540,8 @@ $m.pinfo add command -label Black -underline 0 -command {
 }
 set helpMessage($m,8) ToolsPInfo
 
-$m add command -label ToolsRating \
-  -accelerator "Ctrl+Shift+R" -command {updateRatingGraph both}
-bind . <Control-R> {updateRatingGraph both}
+$m add command -label ToolsRating -command {updateRatingGraph both}
+# bind . <Control-R> {updateRatingGraph both}
 set helpMessage($m,9) ToolsRating
 
 $m add command -label ToolsScore \
@@ -675,7 +688,7 @@ proc openTableBaseDirs {} {
     set tbDir [string trim $tempDir(tablebase$i)]
     if {$tbDir != ""} {
       if {$tableBaseDirs != ""} { append tableBaseDirs ";" }
-      append tableBaseDirs $tbDir
+      append tableBaseDirs [file nativename $tbDir]
     }
   }
 
@@ -737,7 +750,7 @@ $m add command -label OptionsSave -command {
                  exportFlags(comments) exportFlags(vars) \
                  exportFlags(indentc) exportFlags(indentv) \
                  exportFlags(column) exportFlags(symbols) \
-                 exportFlags(htmldiag) \
+                 exportFlags(htmldiag) exportFlags(convertNullMoves) \
                  email(smtp) email(smproc) email(server) \
                  email(from) email(bcc) \
                  gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
@@ -818,9 +831,9 @@ $m.ginfo add checkbutton -label GInfoWrap \
 $m.ginfo add checkbutton -label GInfoFullComment \
   -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 \
   -command {updateBoard .board}
-#$m.ginfo add checkbutton -label Photos \
-#  -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-#  -command {updatePlayerPhotos -force}
+$m.ginfo add checkbutton -label GInfoPhotos \
+  -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+  -command {updatePlayerPhotos -force}
 $m.ginfo add separator
 $m.ginfo add radiobutton -label GInfoTBNothing \
   -variable gameInfo(showTB) -value 0 -command {updateBoard .board}
@@ -913,7 +926,7 @@ $m add command -label OptionsFontsSmall -underline 0 -command {
   font configure font_SmallBold -family $font -size $fontsize
   font configure font_SmallItalic -family $font -size $fontsize
 }
-set helpMessage($m,2) OptionsFontsFixed
+set helpMessage($m,2) OptionsFontsSmall
 $m add command -label OptionsFontsFixed -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Fixed $fontOptions(Fixed) 1]
   if {$fontOptions(temp) != ""} { set fontOptions(Fixed) $fontOptions(temp) }
@@ -1001,7 +1014,7 @@ proc updateMenuStates {} {
   set m .menu
   for {set i 1} { $i <= $totalBaseSlots } { incr i } {
     set fname [file tail [sc_base filename $i]]
-    $m.file entryconfig [expr $i + 8] -label "Base $i: $fname"
+    $m.file.switch entryconfig [expr $i - 1] -label "Base $i: $fname"
   }
   foreach i {Compact Delete} {
     $m.file.utils entryconfig [tr FileMaint$i] -state disabled
@@ -1012,18 +1025,19 @@ proc updateMenuStates {} {
   $m.file entryconfig [tr FileReadOnly] -state disabled
 
   # Remove and reinsert the Recent files list and Exit command:
-  set idx [expr $::totalBaseSlots + 10]
+  set idx 10
   $m.file delete $idx end
   set nrecent [::recentFiles::show $m.file]
-  incr idx $nrecent
   if {$nrecent > 0} {
     $m.file add separator
-    incr idx
   }
+  set idx [$m.file index end]
+  incr idx
   $m.file add command -label [tr FileExit] -accelerator "Ctrl+Q" \
     -command fileExit
   set helpMessage($m.file,$idx) FileExit
 
+  # Configure File menu entry states::
   if {[sc_base inUse]} {
     set isReadOnly [sc_base isReadOnly]
     $m.file entryconfig [tr FileClose] -state normal
@@ -1161,7 +1175,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu [tr $tag $oldLang] $tag $lang
   }
 
-  foreach tag {New Open Close Finder Bookmarks Maint ReadOnly Exit} {
+  foreach tag {New Open Close Finder Bookmarks Maint ReadOnly Switch Exit} {
     configMenuText .menu.file [tr File$tag $oldLang] File$tag $lang
   }
   foreach tag {Win Compact Delete Twin Class Sort Name} {
@@ -1172,7 +1186,8 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.file.utils.name [tr FileMaintName$tag $oldLang] \
       FileMaintName$tag $lang
   }
-  foreach tag {Add Delete First Main Trial Strip Reset Copy Paste Setup PasteBoard} {
+  foreach tag {Add Delete First Main Trial Strip Reset Copy Paste Setup
+               CopyBoard PasteBoard} {
     configMenuText .menu.edit [tr Edit$tag $oldLang] Edit$tag $lang
   }
   foreach tag {Comments Vars} {
@@ -1186,7 +1201,8 @@ proc setLanguageMenus {{lang ""}} {
   foreach tag {Reset Negate Material Current Header Using} {
     configMenuText .menu.search [tr Search$tag $oldLang] Search$tag $lang
   }
-  foreach tag {Comment GList PGN Tmt Switcher Maint ECO Repertoire Stats Tree TB} {
+  foreach tag {Comment GList PGN PList Tmt Switcher Maint ECO Repertoire
+               Stats Tree TB} {
     configMenuText .menu.windows [tr Windows$tag $oldLang] Windows$tag $lang
   }
   foreach tag {Analysis Analysis2 Cross Email FilterGraph OpReport Tracker
@@ -1209,7 +1225,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.options.fonts [tr OptionsFonts$tag $oldLang] \
       OptionsFonts$tag $lang
   }
-  foreach tag {HideNext Material FEN Marks Wrap FullComment \
+  foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
                  TBNothing TBResult TBAll} {
     configMenuText .menu.options.ginfo [tr GInfo$tag $oldLang] \
       GInfo$tag $lang
@@ -1230,7 +1246,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang
   }
 
-  foreach tag {HideNext Material FEN Marks Wrap FullComment \
+  foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
                  TBNothing TBResult TBAll Delete Mark} {
     configMenuText .gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
   }
@@ -1320,7 +1336,8 @@ proc standardShortcuts {w} {
   bind $w <Control-X> crosstabWin
   bind $w <Control-E> makeEmailWin
   bind $w <Control-O> ::optable::makeReportWin
-  bind $w <Control-R> {updateRatingGraph both}
+  # bind $w <Control-R> {updateRatingGraph both}
+  bind $w <Control-R> ::rep::openCloseWindow
   bind $w <Control-Z> updateScoreGraph
   bind $w <Control-I> importPgnGame
   for {set i 1} { $i <= $::totalBaseSlots} {incr i} {

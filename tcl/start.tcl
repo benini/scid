@@ -21,11 +21,14 @@ exec tkscid "$0" "$@"
 
 ############################################################
 
-set scidVersion "3.3"
+set scidVersion "3.4.beta3"
 
 # Determine operating system platform: unix or windows
 set windowsOS 0
 if {$tcl_platform(platform) == "windows"} { set windowsOS 1 }
+set unixOS 0
+if {$tcl_platform(platform) == "unix"} { set unixOS 1 }
+
 
 # Check that the version of tkscid matches the version of this script:
 
@@ -406,6 +409,7 @@ set exportFlags(append) 0
 set exportFlags(symbols) 1
 set exportFlags(htmldiag) 0
 set exportFlags(stripMarks) 0
+set exportFlags(convertNullMoves) 1
 set default_exportStartFile(PGN) {}
 set default_exportEndFile(PGN) {}
 
@@ -713,7 +717,9 @@ if {[info exists initialDir(tablebase)]} {
 option add *Font font_Regular
 option add *Menu*Font font_Menu
 option add *Menubutton*Font font_Menu
-option add Scrollbar*borderWidth 1
+if {! $windowsOS} {
+  option add Scrollbar*borderWidth 1
+}
 
 # Set the radiobutton and checkbutton background color if desired.
 # I find the maroon color on Unix ugly!

@@ -1,7 +1,7 @@
 # swedish.tcl:
 # Text for menu names and status bar help messages in Swedish.
 # Part of Scid (Shane's Chess Information Database).
-# Contributed by Martin Skjöldebrand, martin@hauntedhousesw.com
+# Contributed by Martin Skjöldebrand, martin@skjoldebrand.org
 
 addLanguage W Swedish 1
 
@@ -13,7 +13,7 @@ menuText W FileNew "Ny..." 0 {Skapa en ny Scid databas}
 menuText W FileOpen "Öppna..." 0 {Öpnna en befintlig Scid databas}
 menuText W FileClose "Stäng" 0 {Stäng den aktiva Scid databasen}
 menuText W FileFinder "Sök filer" 4 {Öppna sökdialogen}
-menuText W FileBookmarks "Bokmärken" 0 {Hantera bokmärken (genväg: Ctrl+B)}
+menuText W FileBookmarks "Bokmärken" 0 {Hantera bokmärken (kortkommando: Ctrl+B)}
 menuText W FileBookmarksAdd "Nytt bokmärke" 0 \
   {Markera den aktiva ställningen i partiet}
 menuText W FileBookmarksFile "Spara bokmärke" 0 \
@@ -36,20 +36,22 @@ menuText W FileMaintSort "Sortera databasen..." 0 \
 menuText W FileMaintDelete "Radera dubbletter..." 0 \
   {Sök dubbletter och markera de som raderingsbara}
 menuText W FileMaintTwin "Sök dubbletter" 0 \
-  {Öppna/ stäng dubblettfönstret}
+  {Öppna/ stäng dubblettfönstret för att söka dubblettpartier}
 menuText W FileMaintName "Stavningskontroll" 0 {Namnredigering och stavningskontroll}
 menuText W FileMaintNameEditor "Redigera namn" 0 \
-  {Öppna/stäng namnredigeringsfönstret}
+  {Redigera spelarnamn utifrån rättstavningsfilen}
 menuText W FileMaintNamePlayer "Stavningskontrollera namn..." 22 \
   {Stavningskontrollera namn utifrån rättstavningsfilen}
 menuText W FileMaintNameEvent "Stavningskontrollera evenemang..." 21 \
-  {Stavningskontrollera evenmang utifrån rättstavningsfilen}
+  {Stavningskontrollera evenemang utifrån rättstavningsfilen}
 menuText W FileMaintNameSite "Stavningskontrollera platser..." 21 \
   {Stavningskontrollera platser utifrån rättstavningsfilen}
 menuText W FileMaintNameRound "Stavningskontrollera ronder..." 21 \
   {Stavningskontrollera ronder utifrån rättstavningsfilen}
 menuText W FileReadOnly "Enbart läsbar..." 8 \
   {Avlägsna temporärt redigeringsmöjligheterna till databasen}
+menuText W FileSwitch "Byt databas" 0 \
+  {Byt till en annan öppnad databas} 
 menuText W FileExit "Avsluta" 0 {Avsluta Scid}
 
 # Edit menu:
@@ -74,6 +76,8 @@ menuText W EditPaste "Klistra in det senaste Clipbasepartiet" 8 \
   {Klistrar in det senaste tillagda i Clipbase i den aktiva databasen}
 menuText W EditSetup "Skapa ställning..." 0 \
   {Skapa en utgångsställning för aktuellt parti}
+menuText W EditCopyBoard "Kopiera ställning" 0 \
+  {Kopiera den aktuella ställningen i FEN kod till urklippshanteraren} 
 menuText W EditPasteBoard "Klistra in utgångsställning" 10 \
   {Klistra in ställningen från aktuellt parti i den temporära databasen}
 
@@ -87,7 +91,8 @@ menuText W GameReload "Börja om partiet" 0 \
   {Återställ partiet (raderar alla ändringar)}
 menuText W GameNext "Ladda nästa parti" 6 {Ladda nästa parti i filtret}
 menuText W GameLast "Ladda det sista partiet" 10 {Ladda det sista partiet i filtret}
-menuText W GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText W GameRandom "Ladda parti slumpmässigt" 14 \
+  {Ladda ett av datorn slumpmässigt valt parti} 
 menuText W GameNumber "Ladda parti nummer..." 6 \
   {Ladda ett parti genom att ange dess nummer}
 menuText W GameReplace "Spara: Ersätt parti..." 7 \
@@ -116,6 +121,7 @@ menuText W WindowsComment "Kommentarseditor" 0 {Öppna/ stäng kommentarseditorn}
 menuText W WindowsGList "Partilista" 5 {Öppna/ stäng partilistan}
 menuText W WindowsPGN "PGN fönster" 0 \
   {Öppna/ stäng PGN fönstret}
+menuText W WindowsPList "Spelarförteckning" 7 {Öppna/ stäng en förteckning över spelarna i den aktiva databasen} 
 menuText W WindowsTmt "Turneringar" 0 {Lista turneringar}
 menuText W WindowsSwitcher "Databasväxlaren" 0 \
   {Öppna/ stäng databasväxlaren}
@@ -139,8 +145,8 @@ menuText W ToolsAnalysis2 "Analysmotor 2..." 12 \
 menuText W ToolsCross "Resultattabell" 0 {Visa en resultattabell för den aktuella turneringen}
 menuText W ToolsEmail "Eposthanterare" 0 \
   {Öppna/ stäng eposthanteraren}
-menuText W ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+menuText W ToolsFilterGraph "Filterdiagram" 7 \
+  {Öppna/ stäng filterdiagramfönstret} 
 menuText W ToolsOpReport "Öppningsrapport" 0 \
   {Skapa en öppningsrapport utifrån den aktuella ställningen}
 menuText W ToolsTracker "Sök material"  0 {Öppnar dialog för att söka efter en viss materiell balans} 
@@ -178,7 +184,7 @@ menuText W OptionsColors "Färger..." 0 {Ändra brädets färger}
 menuText W OptionsExport "Export" 0 {Ändra exportalternativ}
 menuText W OptionsFonts "Typsnitt" 0 {Ändra typsnitt}
 menuText W OptionsFontsRegular "Normal" 0 {Ändra det normala typsnittet}
-menuText W OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText W OptionsFontsMenu "Menu" 0 {Ändra menytypsnittet}
 menuText W OptionsFontsSmall "Liten" 0 {Ändra det lilla typsnittet}
 menuText W OptionsFontsFixed "Fixerad" 0 {Ändra det fixerade typsnittet}
 menuText W OptionsGInfo "Partiinformation" 0 {Alternativ för partiinformation}
@@ -208,8 +214,8 @@ menuText W OptionsSpell "Ladda Rättstavningsfil..." 7 \
   {Ladda rättstavningsfilen vid start}
 menuText W OptionsTable "Katalog för slutspelsdatabaser..." 0 \
   {Välj en fil som innehåller en slutspelsdatabas; alla övriga filer i samma katalog kommer att användas}
-menuText W OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText W OptionsRecent "Senast använda filer..." 16 \
+  {Ändra antalet senast använda filer som visas i Arkivmenyn} 
 menuText W OptionsSave "Spara alternativ" 7 \
   "Spara alla alternativ till en inställnignsfil"
 menuText W OptionsAutoSave "Autospara vid avslut" 1 \
@@ -232,6 +238,7 @@ menuText W GInfoFEN "Visa FEN" 5
 menuText W GInfoMarks "Visa färgade fält och pilar" 22 
 menuText W GInfoWrap "Radbrytning" 0
 menuText W GInfoFullComment "Visa fullständiga kommentarer" 18
+menuText W GInfoPhotos "Show Photos" 5 ;# ***
 menuText W GInfoTBNothing "Slutspelsdatabaser: inget" 20
 menuText W GInfoTBResult "Slutspelsdatabaser: endast resultat" 28
 menuText W GInfoTBAll "Slutspelsdatabaser: resultat och bästa drag" 33
@@ -239,15 +246,15 @@ menuText W GInfoDelete "Återta/Radera detta parti" 0
 menuText W GInfoMark "(Av-)Markera detta parti" 5
 
 # Main window buttons:
-helpMsg W .button.start {Gå till början av partiet  (tangent: Home)}
-helpMsg W .button.end {Gå till slutet av partiet  (tangent: End)}
-helpMsg W .button.back {Back ett drag (tangent: Vänsterpil)}
-helpMsg W .button.forward {Gå fram ett drag  (tangent: Högerpil)}
-helpMsg W .button.intoVar {Gå in i variant (genväg: v)}
-helpMsg W .button.exitVar {Gå ur variant  (genväg: z)}
-helpMsg W .button.flip {Rotera brädet  (genväg: .)}
-helpMsg W .button.coords {Slå av eller på koordinater  (genväg: 0)}
-helpMsg W .button.autoplay {Autospel  (tangent: Ctrl+Z)}
+helpMsg W .button.start {Gå till början av partiet  (kortkommando: Home)}
+helpMsg W .button.end {Gå till slutet av partiet  (kortkommando: End)}
+helpMsg W .button.back {Back ett drag (kortkommando: Vänsterpil)}
+helpMsg W .button.forward {Gå fram ett drag  (kortkommando: Högerpil)}
+helpMsg W .button.intoVar {Gå in i variant (kortkommando: v)}
+helpMsg W .button.exitVar {Gå ur variant  (kortkommando: z)}
+helpMsg W .button.flip {Rotera brädet  (kortkommando: .)}
+helpMsg W .button.coords {Slå av eller på koordinater  (kortkommando: 0)}
+helpMsg W .button.autoplay {Autospel  (kortkommando: Ctrl+Z)}
 
 # General buttons:
 translate W Back {Tillbaka}
@@ -296,13 +303,14 @@ translate W Black {Svart}
 translate W Player {Spelare}
 translate W Rating {Ranking}
 translate W RatingDiff {Rankingskillnad (Vit - Svart)}
+translate W AverageRating {Medelranking} 
 translate W Event {Evenemang}
 translate W Site {Plats}
 translate W Country {Land}
 translate W IgnoreColors {Ignorera färger}
 translate W Date {Datum}
-translate W EventDate {Evenmangsdatum}
-translate W Decade {Decade} ;# ***
+translate W EventDate {Evenemangsdatum}
+translate W Decade {Decenium}
 translate W Year {År}
 translate W Month {Månad}
 translate W Months {Januari Februari Mars April Maj Juni
@@ -326,6 +334,11 @@ translate W clipbase {temporär databas}
 translate W score {resultat}
 translate W StartPos {Utgångsställning}
 translate W Total {Totalt}
+
+# Standard error messages:
+translate W ErrNotOpen {Databasen är inte öppen.}
+translate W ErrReadOnly {Databasen är skrivskyddad. Du kan inte ändra den.}
+translate W ErrSearchInterrupted {Söknigen avbröts; resultatet är inte fullständigt.}
 
 # Game information:
 translate W twin {dubblett}
@@ -361,6 +374,10 @@ translate W allOthersLose {alla andra förlorar}
 translate W matesIn {med matt i}
 translate W hasCheckmated {har satt matt}
 translate W longest {längst}
+translate W WinningMoves {Vinstdrag} 
+translate W DrawingMoves {Remidrag} 
+translate W LosingMoves {Förlustdrag} 
+translate W UnknownMoves {Okänt resultat} 
 
 # Tip of the day:
 translate W Tip {Tips}
@@ -395,6 +412,10 @@ translate W LockTree {Lås}
 translate W TreeLocked {Låst}
 translate W TreeBest {Bäst}
 translate W TreeBestGames {Bästa partier i trädet}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate W TreeTitleRow \
+  { Drag      ECO     Frekvens      Res.    Elo~  Nivå  År~} 
 
 # Finder window:
 menuText W FinderFile "Fil" 0
@@ -420,6 +441,17 @@ translate W FinderDir {Katalog}
 translate W FinderDirs {Kataloger}
 translate W FinderFiles {Filer}
 translate W FinderUpDir {upp}
+
+# Player finder:
+menuText W PListFile "Fil" 0
+menuText W PListFileUpdate "Uppdatera" 0
+menuText W PListFileClose "Stäng spelarförteckningen" 1 
+menuText W PListSort "Sortera" 0
+menuText W PListSortName "Namn" 0
+menuText W PListSortElo "Elo" 0
+menuText W PListSortGames "Partier" 0
+menuText W PListSortOldest "Äldst" 0 
+menuText W PListSortNewest "Yngst" 0
 
 # Tournament finder:
 menuText W TmtFile "Fil" 0
@@ -447,7 +479,7 @@ menuText W GraphOptionsWhite "Vit" 0
 menuText W GraphOptionsBlack "Svart" 0
 menuText W GraphOptionsBoth "Båda" 1
 menuText W GraphOptionsPInfo "Spelarinformation" 0
-translate W GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+translate W GraphFilterTitle "Filterdiagram: antal per 1000 partier"
 
 # Analysis window:
 translate W AddVariation {Lägg till variant}
@@ -540,6 +572,7 @@ menuText W CrosstabHelpIndex "Hjälpindex" 0
 translate W SetFilter {Bestäm filter}
 translate W AddToFilter {Utöka filter}
 translate W Swiss {Schweizer}
+translate W Category {Kategori} 
 
 # Opening report window menus:
 menuText W OprepFile "Fil" 0
@@ -648,6 +681,7 @@ translate W NumDeletedGames {Raderade partier:}
 translate W NumFilterGames {Partier i filter:}
 translate W YearRange {Tidsperiod:}
 translate W RatingRange {Rankingintervall:}
+translate W Description {Beskrivning} 
 translate W Flag {Flagga}
 translate W DeleteCurrent {Radera aktuellt parti}
 translate W DeleteFilter {Radera partierna i filteret}
@@ -664,7 +698,7 @@ translate W UnmarkFilter {Avmarkera partierna i filtret}
 translate W UnmarkAll {Avmarkera alla partier}
 translate W Spellchecking {Rättstava}
 translate W Players {Spelare}
-translate W Events {Evenmang}
+translate W Events {Evenemang}
 translate W Sites {Platser}
 translate W Rounds {Ronder}
 translate W DatabaseOps {Databashantering}
@@ -673,8 +707,8 @@ translate W CompactDatabase {Komprimera databasen}
 translate W SortDatabase {Sortera databasen}
 translate W AddEloRatings {Lägg till Elo ranking}
 translate W AutoloadGame {Ladda partinummer automatiskt}
-translate W StripTags {Strip PGN tags} ;# ***
-translate W StripTag {Strip tag} ;# ***
+translate W StripTags {Avlägsna PGN taggar}
+translate W StripTag {Avlägsna taggar}
 translate W Cleaner {Snygga till databasen}
 translate W CleanerHelp {
 Databasstädaren i Scid genomför allt det underhåll av databasen du kan välja nedan på den aktiva databasen.
@@ -692,6 +726,7 @@ På en stor databas kan detta ta ett bra tag. Tidsåtgången beror på valda åtgärde
 # Comment editor:
 translate W AnnotationSymbols  {Symboler:}
 translate W Comment {Kommentar:}
+translate W InsertMark {Infoga symbol} 
 
 # Board search:
 translate W BoardSearch {Positionssökningar}
@@ -734,7 +769,7 @@ translate W InitialBoard {Utgångsställning}
 translate W SideToMove {Färg vid draget}
 translate W MoveNumber {Antal drag}
 translate W Castling {Rockad}
-translate W EnPassentFile {En Passent fil}
+translate W EnPassantFile {En Passant fil}
 translate W ClearFen {Rensa FEN}
 translate W PasteFen {Klistra in FEN}
 
@@ -994,17 +1029,16 @@ Vill du uppdatera denna databas nu?
 }
 
 # Recent files options:
-translate W RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate W RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate W RecentFilesMenu {Antal senast öppnade filer i Arkivmenyn}
+translate W RecentFilesExtra {Antal senast öppnade filer i extra undermeny}
 
 }
 
 
+############################################################
 #
-##
-### Start Swedish tip set
-##
-#
+# Swedish tips section:
+
 set tips(W) {
   {
     Scid har över 30 <a Index>hjälpsidor</a>, och i de flesta fönster kan du
@@ -1079,9 +1113,9 @@ set tips(W) {
     vid samma tillfälle via <a Maintenance Cleaner>databasverktyget</a>.
   }
   {
-    Om du har en stor databas där de flesta partierna har ett evenmangsdatum och du vill ha partierna i 
+    Om du har en stor databas där de flesta partierna har ett evenemangsdatum och du vill ha partierna i 
     datumordning bör du överväga att <a Sorting>sortera</a> den på evenemangsdatum i första hand och 
-    evenmang i andra hand, istället för datum och evenemang, då detta kommer att hålla turneringspartierna
+    evenemang i andra hand, istället för datum och evenemang, då detta kommer att hålla turneringspartierna
     från olika datum samman. Under förutsättning att alla partier har samma evenemangsdatum naturligtvis).
     Alternativt kan du se till att fälten evenemang, rond och datum är så enhetliga och korrekta som möjligt.
     (ms).
@@ -1151,7 +1185,7 @@ set tips(W) {
   }
   {
     Om du har en ECO klassificeringsfil laddad, kan du nå den mest esakt klassificerade ställningen för det aktuella partiet
-    genom att välja <b>Identifiera öppning</b> i <b>Partier</b> menyn (genväg: Ctrl+Shift+D).
+    genom att välja <b>Identifiera öppning</b> i <b>Partier</b> menyn (kortkommando: Ctrl+Shift+D).
   }
   {
     När du vill se hur stor en fil är, eller vill se när den senast redigerades innan du öppnar den kan du använda
@@ -1173,7 +1207,7 @@ set tips(W) {
   }
   {
     Om du bläddrar igenom öppningarna i en databas i <a Tree>trädfönstret</a>, får du en användbar överblick över hur
-    väl öppningen fungerar i sentida partier mellan högrankade spelare om du öppnar statistikfönstret (genväg: Ctrl+I).
+    väl öppningen fungerar i sentida partier mellan högrankade spelare om du öppnar statistikfönstret (kortkommando: Ctrl+I).
   }
   {
     Du ändrar enkelt huvudfönstrets brädstorlek genom att hålla nere <b>Ctrl</b> och <b>Shift</b> tangenterna, samtidigt
@@ -1185,5 +1219,834 @@ set tips(W) {
     <a Searches Filter>urvalet</a>.
   }
 }
+
+
+
+############################################################
+#
+# Swedish help pages:
+
+# Basic help pages completed, no links no other sections.
+
+##########
+# Index
+#
+set helpTitle(W,Index) "Innehållsförteckning"
+set helpText(W,Index) {<h1>Hjälp med Scid: Innehållsförteckning</h1>
+
+<h3>Komma igång och allmänt om Scid</h3>
+<h5>Under översättning</h5>
+<p>Följande texter och dess länkar är under översättning. Detta påbörjades i Scid 3.4 beta 1. 
+Detta betyder att menyerna är översatta. Rubriktexterna bör kunna vara översatta till Scid 3.4 men alla länkar
+från rubriktexterna är förmodligen inte det. /Martin S.</p>
+
+<ul>
+<li><a Guide><b>Komma igång</b> med Scid</a> <red>(Läs detta först)</red></li>
+<li><a Hints><b>Tips</b> om hur du får ut mer av Scid</a></li>
+<li><a MainWindow><b>Huvudfönstret</b></a></li>
+<li><a Menus><b>Menyerna</b></a> <red>(uppdaterad!)</red></li>
+<li><a Moves>Ange <b>drag</b></a> <red>(uppdaterad!)</red></li>
+<li><a Searches><b>Söka</b> i Scid</a></li>
+<li><a Clipbase>Att använda <b>Clipbase (urklippsdatabasen)</b></a></li>
+<li><a Annotating><b>Kommentera partier</b></a> <red>(Ny!)</red></li>
+</ul>
+
+
+<h3>Other Scid windows</h3>
+<h5>Ej översatta</h5>
+<p>Översättningen av följande hjälpavsnitt har ännu (2002 07 27) inte påbörjats. Detta betyder att menyerna är på engelska, likaså samtliga 
+rubriktexter. Däremot <b>kan det hända</b> att vissa länktexter har översatts i samband med översättningen av föregående hjälpavsnitt. 
+/Martin S.</p>
+
+<ul>
+<li><a Analysis><b>Analysis</b> window</a></li>
+<li><a Comment><b>Comment editor</b> window</a></li>
+<li><a Crosstable><b>Crosstable</b> window</a></li>
+<li><a Switcher><b>Database Switcher</b> window</a></li>
+<li><a Email><b>Email</b> chess manager window</a></li>
+<li><a Finder><b>File Finder</b> window</a></li>
+<li><a GameList><b>Game List</b> window</a></li>
+<li><a Import><b>Import game</b> window</a></li>
+<li><a OpReport><b>Opening Report</b> window</a></li>
+<li><a PGN><b>PGN</b> (game text) window</a></li>
+<li><a PTracker><b>Piece Tracker</b></a></li>
+<li><a PInfo><b>Player Info</b> window</a></li>
+<li><a Repertoire><b>Repertoire editor</b> window</a></li>
+<li><a Tmt><b>Tournament Finder</b> window</a></li>
+<li><a Tree><b>Tree</b> window</a></li>
+<li><a Graphs><b>Graph</b> windows</a></li>
+<li><a TB>Using <b>Tablebases</b> in Scid</a></li>
+</ul>
+
+<h3>Other utilities and information</h3>
+<ul>
+<li><a Bookmarks><b>Bookmarks</b></a></li>
+<li><a Cmdline>Command-line options</a></li>
+<li><a Compact><b>Compacting</b> a database</a></li>
+<li><a Maintenance><b>Database maintenance</b> tools</a></li>
+<li><a ECO><b>ECO</b> openings classification</a></li>
+<li><a EPD><b>EPD</b> files</a></li>
+<li><a Export><b>Exporting</b> games to text files</a> <red>(updated!)</red></li>
+<li><a Flags>Game <b>Flags</b></a></li>
+<li><a LaTeX>Using <b>LaTeX</b> with Scid</a></li>
+<li><a Options><b>Options</b> and preferences</a></li>
+<li><a Sorting><b>Sorting</b> a database</a></li>
+<li><a Pgnscid><b>Pgnscid</b>: converting PGN files</a></li>
+<li><a NAGs>Standard <b>NAG</b> annotation values</a></li>
+<li><a Formats>Scid database <b>file formats</b></a></li>
+<li><a Author>Contact information</a></li>
+</ul>
+
+<p><footer>(Uppdaterad: Scid 3.4, Juli 2002)</footer></p>
+}
+### Slut index
+
+
+####################
+### Quick Guide help:
+
+set helpTitle(W,Guide) "Komma igång med Scid"
+set helpText(W,Guide) {<h1>Komma igång med Scid</h1>
+<p>
+Scid är en schackdatabashanterare som du kan använda till att bläddra och <a Searches>söka</a> (enligt kriterier du ställer upp) igenom 
+databaser med schackpartier. Du kan också redigera de partier du vill.
+</p>
+<p>
+Scid använder sitt eget <a Formats>database format</a> baserat på tre filer. Det är mycket kompakt och snabbt, men kan konvertera såväl 
+till som från PGN (Portable Game Notation) standarden om man så önskar. Scids <a PGN>PGN fönster</a> visar texten till det aktuella
+partiet i PGN format.
+</p>
+<p>
+Du kan använda Scid till att lägga till och radera partier i en databas genom att använda såväl mus som tangentbordet för att skriva in
+drag. Se vidare <a Moves>att skriva in drag</a> för en nogrannare beskrivning.
+</p>
+<p>
+Du kan också använda Scid för att hantera <a PGN>PGN</a> filer genom att klistra in PGN-text i Scids <a Import>Importfönster</a> 
+eller genom att öppna en PGN-fil i Scid. PGN-filer kan dock inte redigera i Scid (de öppnas skrivskyddade). Eftersom PGN-filer
+använder mer minne och laddas långsammare rekommenderas du att konvertera stora PGN-filer till en Scid databas med verktyget
+<a Pgnscid>pgnscid</a>.
+</p>
+<p>
+Scids <a MainWindow>huvudfönster</a> (den med schackbrädet) visar det aktuella partiet och databasen i detalj. Du kan när som helst öppna 
+upp till fyra databaser (fem om du räknar med urklippsdatabasen <a Clipbase>clipbase</a>). Var och ett av dessa kommer att ha sitt eget akutella
+parti. (Partier med ID-numret 0 visar att detta är ett parti som ännu inte ingår i den aktuella databasen). Du bläddrar mellan de öppnade databaserna
+via <a Menus File>Filmenyn</a>.
+</p>
+<p>
+Läs gärna övriga hjälpsidor i <a Index>Innehållsförteckningen</a> för mer information.
+</p>
+<p>
+Läs <a Author>kontaktinformationssidan</a> om du vill komma i kontakt med skaparen av Scid. För frågor om den svenska översättning ska du
+<b>inte</b> kontakta upphovsmannen utan istället <a Translator>översättaren</a>.
+</p>
+
+<p><footer>(Updated: Scid 3.1, December 2001)</footer></p>
+}
+
+
+set helpTitle(W,Author) "Kontaktinformation"
+set helpText(W,Author) {<h1>Kontaktinformation</h1>
+<p>
+Scids webbsajt finns på: <br>
+<b><url http://scid.sourceforge.net/>http://scid.sourceforge.net/</url></b>
+</p>
+<p>
+Där kan du hämta den senaste versionen av Scid och andra de filerna till Scid som du kan ha behov av.
+</p>
+<p>
+Skicka gärna kommentarer, frågor, förslag eller buggrapporter till Scids skapare, Shane Hudson, på adressen:<br>
+<b>shane@cosc.canterbury.ac.nz</b>
+</p>
+
+<p>Den svenska översättningen av Scid har gjorts av Martin Skjöldebrand. Synpunkter på översättningen ska <b>inte</b>
+skickas till Shane. Däremot får du gärna skicka kommentarer, frågor och förslag till rättningar till översättaren på adressen:<br>
+<b>martin@skjoldebrand.org</b>
+</p>
+}
+
+####################
+### Hints page:
+set helpTitle(W,Hints) "Scid Tips"
+set helpText(W,Hints) {<h1>Scid Tips</h1>
+<p>
+Denna sida innehåller användbara tips i form av frågor och svar. Genom att läsa igenom denna sida, kan du senare komma att
+använda Scid bättre. Om du nyligen börjat använda Scid, så läs till en början <a Guide>Kom igån</a>.
+Det mesta av informationen på denna sida finns refererad mer utförligt på andra sidor i hjälpen. Du finner dem i <a Index>innehållsförteckningen</a>.
+Om har något du tips du tycker passar bra för denna sida, så skicka den till <a Author>upphovsmannen</a>.
+</p>
+
+<h4>Kan Scid ladda en databas när den startas?</h4>
+<p>
+Ja, du kan ange databaser, PGN filer eller <a EPD>EPD filer</a>
+på kommandoraden som t ex;
+<ul>
+<li> <b>scid  mybase  games.pgn.gz</b> </li>
+</ul>
+som laddar Scid databasen <b>mybase</b> och dessutom laddar den Gzip-komprimerade PGN filen <b>games.pgn.gz</b>.
+</p>
+
+<h4>Finns det enklare sätt att ändra storleken på brädet än via Alternativmenyn?</h4>
+<p>
+Ja, du kan använda kortkommandoen <b>Control+Shift+VänsterPil</b> och <b>Control+Shift+HögerPil</b> för att förminska eller 
+förtora brädets storlek.
+</p>
+
+<h4>Jag brukar träna genom att spela igenom partier, så jag vill inte att Scid visar nästa drag i partiinformationen
+nedanför brädet. Kan jag dölja detta på något sätt?</h4>
+<p>
+Du kan dölja nästa drag genom att högerklicka partiinformationen och välja  <b>Dölj nästa drag</b> i menyn som öppnas.
+</p>
+
+<h4>Var finner jag ECO-koden för öppningen på brädet?</h4>
+<p>
+ECO-koden visas på sista raden i partiinformationen nedanför brädet i  <a MainWindow>huvudfönstret</a>,
+om du har laddat ECO klassificaeringsfilen (<b>scid.eco</b>). <br>
+Hjälpsidan för<a ECO>ECO koder</a> förklarar hur man laddar ECO klassificeringsfilen och ställer in programmet så att
+den laddas varje gång man startar Scid.
+</p>
+
+<h4>Jag håller på och matar in ett parti och befinner mig nu vid drag 30. Nu ser jag att drag 10 blev fel. Hur kan jag ändra
+detta utan att göra om alltihop?</h4>
+<p>
+Du kan använda <a Import>Importfönstret</a>; se vidare <a Moves Mistakes>mata in drag</a> för mer information.
+</p>
+
+<h4>Hur kopierar jag partier från en databas till en annan?</h4>
+<p>
+Använd <a Switcher>databasväxlaren</a>. Drag från källdatabasen till måldatabasen så kopierar du allt i källdatabasen till
+måldatabasen. Genom att använda <a Searches Filter>filter</a> kan du begränsa det du kopierar från den ena databasen till den andra.
+</p>
+
+<h4>Varje gång jag anger ett drag som redan finns får jag frågan "Ersätt drag?". Hur undviker jag detta?</h4>
+<p>
+Du kan antingen stänga av <b>Fråga före ersätt drag</b> valmöjligheten i menyn <menu>Altervativ: Drag</menu</menu>; eller
+tänk på att göra ändringarna genom att ta tillbaka dragen genom att högerklicka. Det senare alternativet raderar drag helt ur
+partiet.
+</p>
+
+<h4>Hur ändrar kolumnbredden i partilistan?</h4>
+<p>
+Höger- eller vänsterklicka på kolumntiteln för den kolumn du vill ändra.
+</p>
+
+<h4>Hur använder jag trädfönstret för ett filtrerade partier - till skillnad mot att använda den för hela databasen?</h4>
+<p>
+Använd <a Clipbase>urklippsdatabasen (Clipbase)</a>. Filtera databasen att visa endast de partier du vill använda i trädet, 
+kopiera sedan partierna till urklippsdatabasen (Clipbase) via <a Switcher>databasväxlaren</a>. Öppna därefter trädfönstret
+med den senare databasen som aktiv.
+</p>
+
+<h4>Trädet är långsamt när jag jobbar med stora databaser. Går det att snabba upp den?</h4>
+<p>
+Spara trädcachen ofta så sparar du resultaten för framtida användning. Se vidare cache-sektionen i hjälpen för 
+<a Tree>trädet</a> för mer detaljerad information.
+</p>
+
+<h4>Kan jag redigera PGN texten för ett parti direkt?</h4>
+<p>
+Du kan inte använda <a PGN>PGN</a> fönstret till att redigera det aktuella partiet, däremot kan du använda 
+<a Import>Importfönstret</a>. Öppna fönstret (kortkommando: <b>Control+Shift+I</b>) och klicka på klistra in aktuellt parti
+<b>Paste current game</b>, redigera partiet och klicka sedan på <b>Importera</b>.
+</p>
+
+<h4>I min databas finns många spelarnamn som är felstavade. Hur rättar jag allt detta?</h4>
+<p>
+Du kan rätta enstaka namn, eller göra en stavningskontroll för hela databasen via menyvalen i <menu>Arkiv: Databasverktyg</menu>.
+Se vidare hjälpen för <a Maintenance Editing>databasunderhåll</a>.
+</p>
+
+<h4>Jag har två databaser öppna: den ena innehåller mina egna partier, den andra är en massor med stormästarpartier.
+Hur jämför jag ett av mina egna partier mot partierna i databasen med stormästarpartier?</h4>
+<p>
+Öppna <a Tree>trädfönstret</a> i databasen med stormästarpartier och välj <term>Lås</term> för att låsa trädet i den databasen. 
+När du sedan byter till den andra databasen kommer trädet att fortsätta visa informationen från databasen med stormästarpartier.
+</p>
+
+<p><footer>(Uppdaterad: Scid 2.6,  augusti 2001)</footer></p>
+}
+
+
+#################
+# Authors, translators
+#
+
+set helpTitle(W,Translator) "Den svenska översättningen"
+set helpText(W,Translator) {<h1>Den svenska översättningen</h1>
+<p>
+Scids webbsajt finns på: <br>
+<b><url http://scid.sourceforge.net/>http://scid.sourceforge.net/</url></b>. Där kan du hämta den senaste versionen av Scid och 
+andra de filerna till programmet som du kan ha behov av. Där finns också den senaste versionen av den svenska språkfilen.
+</p>
+<p>Den svenska översättningen av Scid har gjorts av Martin Skjöldebrand. Skicka gärna kommentarer, frågor och förslag till rättningar
+till översättaren på adressen:<br>
+<b>martin@skjoldebrand.org</b>
+</p>
+}
+
+####################
+### Main window help:
+
+set helpTitle(W,MainWindow) "Huvudfönstret"
+set helpText(W,MainWindow) {<h1>Scid: huvudfönstret</h1>
+<p>
+På brädet i huvudfönstret visas den aktuella ställningen i det aktiva partiet. Du får också information om partiet och den
+aktiva databasen. För ytterligare information om <a Menus>menyerna</a> och olika sätt att <a Moves>ange drag</a> hänvisas till
+andra hjälpsidor.
+</p>
+
+<h3>Att navigera i partier</h3>
+<p>
+Navigationsknapparna vid brädet har följande funktioner (från vänster till höger):
+<ul>
+<li> <button tb_start> Gå till utgångsställningen. </li>
+<li> <button tb_prev> Tillbaka ett drag. </li>
+<li> <button tb_next> Framåt ett drag. </li>
+<li> <button tb_end> Gå till slutställningen. </li>
+<li> <button tb_invar> Gå in i varianten. </li>
+<li> <button tb_outvar> Gå ur varianten. </li>
+<li> <button tb_addvar> Lägg till ny variant. </li>
+<li> <button autoplay_off> Start/stopp för autospelsläge (se nedan). </li>
+<li> <button tb_trial> Start/stopp för <a Moves Trial>försöksläge</a>. </li>
+<li> <button tb_flip> Rotera brädet 180 grader. </li>
+<li> <button tb_coords> Visa/dölj koordinater. </li>
+</ul>
+
+<h4><name Autoplay>Autospelsläge</name></h4>
+<p>
+I autospelsläge gör Scid automatiskt båda spelarnas drag i det aktuella partiet. Fördröjningen mellan varje drag kan anges i
+menyn <menu>Alternativ: Drag</menu> och sparas när du sparar ändringarna av inställningsmöjligheterna.
+</p>
+<p>
+Kortkommandot <b>Control+Z</b> startar eller avbryter autospelsläget. Du kan också gå ur autospelsläge genom att trycka
+ <b>Escape</b> tangenten.
+</p>
+<p>
+Om du startar autospelsläge när <a Analysis>analysfönstret</a> är öppet <term>kommenteras</term> partiet: ställningsbedömningen 
+och analysen av varje ställning läggs till som en ny variant vid varje drag.
+Se hjälpen för <a Analysis>analysfönstret</a> för mer information.
+</p>
+
+<h3>Partiinformation</h3>
+<p>
+Nedanför brädet visas information om det aktuella partiet. Denna del av huvudskärmen kallas <term>partiinformationsområdet</term>.
+På de tre första raderna ges grundinformation såsom spelarnas namn, resultat, datum och spelplats. Den fjärde raden aktuell
+ställning och nästa drag.
+</p>
+<p>
+Rad fem visar <a ECO>ECO</a> (Encyclopedia of Chess
+Openings) koden för den aktuella ställningen, om ställningen ingår i den ECO-fil som används.
+</p>
+<p>
+När man högerklickar på partiinformationsområdet visas en meny med inställningsmöjligheter som är relevanta just för denna del av
+programmet. Du kan t ex välja att dölja nästa drag (användbart om du tränar genom att "gissa" nästa drag i  partiet) eller radera
+/återta det aktuella partiet. Kortkommandot för denna funktion är funktionsknappen F9.
+</p>
+
+<h4>Slutspelsdatabaser</h4>
+<p>
+Partiinformationsområdet visar och resultaten från slutspelsdatabaserna om du har några installerade och om ställningen återfinns 
+i dessa. Se hjälpsidan för <a TB>slutspelsdatabaser</a> för mer information.
+</p>
+
+<h3>Statusraden</h3>
+<p>
+Statusraden (längst ner i huvudfönstret) visar information om den aktuella databasen.
+Det första fältet visar partiets status: <b>XX</b> betyder att det har förändrats men ännu inte sparats, medan <b>--</b> 
+betyder att partiet inte har ändrats, <b>%%</b>, slutligen, betyder att databasen är skrivskyddad (det går inte att ändra i partiet.).
+</p>
+<p>
+Om du vill, kan du öppna databasen skrivskyddad. Ändra rättigheterna till scid-filerna (eller enbart indexfilen) genom att i UNIX(-lika)
+system ge kommandot:
+<b>chmod a-w myfile.si3</b>
+vid kommandoraden.
+</p>
+<p>
+Statusraden visar också hur många partiet som ingår i det aktiva <a Searches Filter>filtret</a>.
+</p>
+
+<p><footer>(Uppdaterad: Scid 3.1, december 2001)</footer></p>
+}
+
+####################
+### Menus help screen:
+
+set helpTitle(W,Menus) "Menyerna"
+set helpText(W,Menus) {<h1>Menyerna</h1>
+
+<h3><name File>Arkiv</name></h3>
+<ul>
+<li><menu>Ny</menu>: Skapar en ny, tom, Scid databas.</li>
+<li><menu>Öppna</menu>: Öpnnar en befintlig Scid databas.</li>
+<li><menu>Stäng</menu>: Stänger den aktiva Scid databasen.</li>
+<li><menu>Sök filer</menu>: Öppna <a Finder>sökdialogen</a> för filer.</li>
+<li><menu>Bokmärken</menu>: Hantera <a Bookmarks>bokmärken</a>.</li>
+	<ul>
+	<li><menu>Nytt bokmärke</menu>: Markera den aktiva ställningen i partiet som ett bokmärke.</li>
+	<li><menu>Spara bokmärke</menu>: Spara bokmärket för den aktiva ställningen i partiet.</li>
+	<li><menu>Redigera bokmärken</menu>: Redigera dina bokmärken.</li>
+	<li><menu>Visa bokmärken som lista</menu>: Visar bokmärkena som lista, inte undermenyer.</li>
+	<li><menu>Visa bokmärken i undermenyer</menu>: Visar bokmärkena som undermenyer, inte lista.</li>
+	</ul>
+<li><menu>Databasverktyg</menu>: <a Maintenance>Underhåll</a> databasen.</li>
+	<ul>
+	<li><menu>Verktygsfönster</menu>: Öppna/ stäng verktygsfönstret.</li>
+	<li><menu>Komprimera databasen</menu>: Komprimera databasen, avlägsna raderade partier och oanvända namn.</li>
+	<li><menu>Klassificera partier enligt ECO</menu>: Klassificera alla partier enligt ECO-systemet.</li>
+	<li><menu>Sortera databasen</menu>: Sortera partierna i den aktiva databasen.</li>
+  	<li><menu>Radera dubbletter</menu>: Raderar <a Maintenance Twins>dubblettpartier</a> i databasen.</li>
+	<li><menu>Sök dubbletter"</menu>: Öppna/ stäng dubblettfönstret för att söka dubblettpartier.</li>
+	<li><menu>Stavningskontroll</menu>: Namnredigering och stavningskontroll.</li>
+		<ul>
+		<li><menu>Redigera namn</menu>: Redigera spelarnamn utifrån rättstavningsfilen.</li>
+		<li><menu>Stavningskontrollera namn</menu>: Stavningskontrollera namn utifrån rättstavningsfilen.</li>
+		<li><menu>Stavningskontrollera evenemang</menu>: Stavningskontrollera evenemang utifrån rättstavningsfilen.</li>
+		<li><menu>Stavningskontrollera platser</menu>: Stavningskontrollera platser utifrån rättstavningsfilen.</li>
+		<li><menu>Stavningskontrollera ronder</menu>: Stavningskontrollera ronder utifrån rättstavningsfilen.</li>
+  		</ul>
+	</ul>	
+<li><menu>Skrivskyddad</menu>: Avlägsna temporärt redigeringsmöjligheterna till databasen.</li>
+<li><menu>Byt databas</menu>: Byt till en annan öppnad databas.</li>
+	<ul>
+		<li><menu>Base 1/2/3/4/5</menu>: Här byter du mellan de olika databaserna i databasväxlarna, inklusive <a Clipbase>urklippsdatabasen</a>.</li>
+	</ul>
+<li><menu>Avsluta</menu>: Avslutar Scid. </li>
+</ul>
+
+<h3>Redigera</h3>
+<ul>
+<li><menu>Lägg till variant</menu>: Skapar en variant vid denna ställning. Antingen för nästa drag, eller för föregående drag om det är det första draget.</li>
+<li><menu>Radera variant</menu>: Visar en undermeny med de raderbara varianterna.</li>
+<li><menu>Skapa huvudvariant</menu>: Upphöjer en av varianterna till huvudvariant.</li>
+<li><menu>Skapa nytt textdrag</menu>: Gör en av varianterna till nytt partidrag.</li>
+<li><menu>Testa en idé</menu>: Slår på <a Moves Trial>testläge</a> för att tillfälligt testa en idé. Förändrar inte partiet.</li>
+<li><menu>Ta bort</menu>: Avlägsna kommentarer eller varianter ur partiet.</li>
+<br>
+<li><menu>Töm Clipbase</menu>: Tömmer den urklippsdatabasen <a Clipbase>clipbase</a> på partier.</li>
+<li><menu>Kopiera partiet till Clipbase</menu>: Kopierar det aktuella partiet till urklippsdatabasen <a Clipbase>clipbase</a> database.</li>
+<li><menu>Klistra in det senaste Clipbasepartiet</menu>: Klistrar in det aktiva partiet i <a Clipbase>Clipbase</a> i den aktiva databasen och gör det aktivt.</li>
+<br>
+<li><menu>Skapa ställning</menu>: Skapa en utgångsställning för aktuellt parti.</li>
+<li><menu>Kopiera ställning</menu>: Kopiera den aktuella ställningen i FEN kod till urklippshanteraren.</li>
+<li><menu>Klistra in utgångsställning</menu>: Klistra in ställningen från aktuellt parti i den temporära databasen.</li>
+</ul>
+
+<h3>Partier</h3>
+<ul>
+<li><menu>Nytt parti</menu>: Återställ brädet inför ett nytt parti (raderar alla ändringar).</li>
+<li><menu>Ladda första/föregående/nästa/sista partiet</menu>: Dessa laddar respektive parti i <a Searches Filter>sökfiltret</a>.</li>
+<li><menu>Ladda om partiet</menu>: Laddar om aktuellt parti och slänger alla gjorda ändringar..</li>
+<li><menu>Ladda parti slumpmässigt</menu>:  Ladda ett av datorn slumpmässigt valt parti.</li> 
+<li><menu>Ladda parti nummer...</menu>: Ladda ett parti genom att ange dess nummer.</li>
+<br>
+<li><menu>Spara: Ersätt parti...</menu>: Spara partiet och ersätt tidigare version.</li>
+<li><menu>Spara: Nytt parti...</menu>: Spara det aktuella partiet, lägg till det till databasen.</li>
+<br>
+<li><menu>Identifiera öppningen</menu>: Gå till den mest detaljerade ställningen i ECO boken.</li>
+<li><menu>Gå till drag nummer...</menu>: Gå till ett specifikt drag i partiet.</li>
+<li><menu>Hitta nyhet...</menu>: Hitta det första draget i partiet som inte spelats tidigare.</li>
+</ul>
+
+<h3>Sök</h3>
+<ul>
+<li><menu>Återställ sökfilter</menu>: Återställer <a Searches Filter>sökfiltret</a> så att alla partiet ingår i urvalet.</li>
+<li><menu>Omvänt filter</menu>: Ta med de partier som utesluts av filtret.</li>
+<br>
+<li><menu>Aktuell ställning...</menu>: Sök partier med <a Searches Board>den aktuella ställningen</a> på brädet.</li>
+<li><menu>I huvud...</menu>: Använd <a Searches Header>fast information</a> (spelare, evenemang, plats, mm).</li>
+<li><menu>Material/ställning...</menu>: Sökning baserad på <a Searches Material>material</a> eller <a Searches Pattern>ställning</a>.</li>
+<br>
+<li><menu>Använd sökfil...</menu>: Använd en fil med <a Searches Settings>lagrade</a>.</li>
+</ul>
+
+<h3>Fönster</h3>
+<ul>
+<li><menu>Kommentarseditor</menu>: Öppna/ stäng <a Comment>kommentarseditorn</a>.</li>
+<li><menu>Partilista</menu>: Öppna/ stäng <a GameList>partilistan</a>.</li>
+<li><menu>PGN fönster</menu>: Öppna/ stäng <a PGN>PGN fönstret</a>.</li>
+<li><menu>Spelarförteckning</menu>: Öppna/ stäng en förteckning över spelarna i den aktiva databasen.</li> 
+<li><menu>Turneringar</menu>: Lista <a Tmt>turneringar</a>.</li>
+<br>
+<li><menu>Databasväxlaren</menu>: Öppna/ stäng <a Switcher>databasväxlaren</a>. Databasväxlaren underlättar byte mellan olika databaser
+och kopiering av partier från den ena databasen till den andra.</li>
+<li><menu>Databasverktyg</menu>: Öppna/ stäng <a Maintenance>verktygsfönstret</a>.</li>
+<br>
+<li><menu>ECO fönster</menu>: Öppna/ stäng <a ECO browser>ECO bläddraren</a>.</li>
+<li><menu>Repertoireditor</menu>: Öppna/ stäng verktyget för <a Repertoire>spelöppningshantering</a>.</li>
+<li><menu>Statistikfönster</menu>: Öppna/ stäng <term>statistikfönstret</term>. Här hittar en statistisk sammanfattning av partierna i  
+ <a Searches Filter>sökfiltret</a>.</li>
+<li><menu>Trädfönster</menu>: Öppna/ stäng <a Tree>variantträdets</a>.</li>
+<li><menu>Slutspelsdatabas</menu>: Öppna/ stäng slutspelsdatabasfönstret som ger dig viss information of <a TB>slutspeldatabaserna</a>.</li>
+</ul>
+
+<h3>Verktyg</h3>
+<ul>
+<li><menu>Analysmotor...</menu>: Starta/ stoppa en analysmotor, t ex Crafty, som kontinuerligt bedömmer den aktuella ställningen
+på brädet i ett <a Analysis>analysfönster</a>.</li>
+<li><menu>Analysmotor 2...</menu>: Starta/ stoppa en andra analysmotor, t ex Crafty.</li>
+<li><menu>Resultattabell</menu>: Skapa en <a Crosstable>resultattabell</a> för den aktuella turneringen/matchen som det aktuella partiet ingår i</li>
+<li><menu>Eposthanteraren</menu>: Öppna/ stäng <a Email>eposthanteraren</a> för hantering av korrespondensschack.</li>
+<br>
+<li><menu>Öppningsrapport</menu>: Skapa en <a OpReport>öppningsrapport</a> utifrån den aktuella ställningen.</li>
+<li><menu>Sök material</menu>: Öppnar dialog för att <a PTracker>söka efter en viss materiell balans</a>.</li>
+<br>
+<li><menu>Spelarinformation</menu>: Visa/ uppdatera <a PInfo>spelarinformation</a>för den ene av två spelare i det aktuella partiet.</li>
+<li><menu>Rankingdiagram</menu>: Skapa ett <a Graphs Rating>ranking diagram</a> för spelarna i partiet.</li>
+<li><menu>Resultatdiagram</menu>: Visa <a Graphs Score>resultatdiagrammet</a>.</li>
+<br>
+<li><menu>Exportera aktuellt parti ...</menu>: Spara aktuellt parti till olika format; text HTML eller LaTeX. Se vidare
+   hjälpsidan för  att <a Export>exportera</a> partier.</li>
+<li><menu>Exportera alla filtrerade partier</menu>: Spara alla <a Searches Filter>filterade</a> partier till olika format; text HTML eller LaTeX. Se vidare
+   hjälpsidan för  att <a Export>exportera</a> partier.</li>
+<br>
+<li><menu>Importera ett parti i PGN-format...</menu>: Öppnar <a Import>Importfönstret</a>för att ange eller klistra in ett parti i 
+ <a PGN>PGN format</a> för import till en Scid databas.</li>
+<li><menu>Importera flera partier i PGN-format...</menu>: Importera flera partier i PGN-format från en fil.</li>
+</ul>
+
+<h3>Alternativ</h3>
+<p>
+Denna meny ger tillgång till de flesta av de parametrar som styr hur Scid fungerar.
+Menyvalet <menu>Spara alternativ</menu> sparar de aktuella inställningarna till filen
+ "<b>~/.scid/scidrc</b>" (eller <b>scid.opt</b> i katalogen som innehåller den exekverbara
+scid-filen vad gäller Windows); denna fil laddas varje gång du startar Scid.
+</p>
+
+<h3>Hjälp</h3>
+<p>
+Denna meny innehåller hjälpfunktion och ger tillgång till fönstret "Dagens tips"
+eller startfönstret som informerar om vilka filer Scid laddat vid uppstart. 
+</p>
+
+<p><footer>(Uppdaterad: Scid 3.3, april 2002)</footer></p>
+}
+
+####################
+### Entering moves help:
+
+set helpTitle(W,Moves) "Ange drag"
+set helpText(W,Moves) {<h1>Ange drag</h1>
+<p>
+I Scid, kan du ange partidrag såväl med med musen som med tangentbordet. När du rör musmarkören över en ruta på
+brädet kommer du att märka att säväl rutan som ytterligare en ruta får en annan färg. Såvida det finns ett legalt
+drag till eller från den ruta du för musmarkören över. Detta är det <term>föreslagna draget</term>.
+Du utför detta drag genom att <term>vänsterklicka</term> med musen. Om detta stör dig kan du stänga av funktionen
+i Alternativmenyn.
+
+</p>
+<p>
+För att utföra ett annat drag kan du <term>klicka och hålla nere vänster</term> musknapp: flytta sedan musen till önskad
+ ruta och släpp musknappen.
+</p>
+<p>
+Om du vill kan du utföra drag genom att klicka två gånger istället för att använda klicka-och-drag tekniken. Klicka då 
+först på utgångsrutan med den <term>mittersta musknappen</term> och klicka sedan med samma musknapp på destinationsrutan.
+(Tipset gäller kanske ffa användare av UNIX(-lika) system som ofta har stor nytta av 3-knappsmöss).
+</p>
+
+<h4>Ta tillbaka ett drag</h4>
+<p>
+Man kan ta tillbaka ett drag genom att högerklicka musen. Detta backar ett drag och raderar det senast utförda draget i partiet
+eller varianten.
+</p>
+
+<h4>Ersätt tidigare drag</h4>
+<p>
+Om du anger ett drag i en ställning där ett drag redan angivits kommer Scid att fråga om du verkligen vill ersätta den tidigare
+draget (draget och alla varianter längre fram som är beroende av draget tas bort), eller om du vill skapa en ny variant istället.
+En del använder tycker att frågan är störande och vill alltid ersätta det tidigare draget, så man kan konfigurera Scid till att inte
+ställa denna fråga. Du hittar möjligheten i  menyn <menu>Alternativ: Drag</menu> "<i>Fråga före ersätt drag</i>".
+</p>
+
+<h4><name Trial>Testläge</name></h4>
+<p>
+Om du går igenom ett parti och kommer till en ställning där du vill testa en idé utan att påverka det registrerade partiet så väljer du
+<b>Testa en idé</b> från menyn <menu>Redigera</menu> för att sätta på testläge. I testläge kan du göra drag och förändringar av partiet som
+är temporära, dvs de sparas inte när du återgår från testläge.
+</p>
+
+<h3><name Mistakes>Rätta fel</name></h3>
+<p>
+Om du skriver in ett parti och plötsligt upptäcker ett fel flera drag tidigare är det möjligt att rätta till detta utan att 
+behöva göra om alla drag efter feldraget. Det ända sättet är att redigera PGN-versionen av partiet: Öppna <a Import>Importfönstret</a>, 
+välj Klistra in aktivt parti, korrigera felet och välj därefter "Importera".
+</p>
+
+<h3>Ange drag via tangentbordet</h3>
+<p>
+Du kan ange drag via tangentbordet genom att helt enkelt skriva in dem med bokstäver och siffror. Lägg märke till att dragen
+ska anges i <term>SAN notation</term>, <i>utan</i> (x) tecknet för slag eller (=) tecknet för promovering. Dragnotationen är 
+inte versal/gemenkänslig så t ex:
+[n][f][3] är samma drag som Nf3 -- men kontrollera med noten nedan för drag som står i konflikt med varandra.
+</p>
+<p>
+För att säkerställa att inga drag är prefix för ett annat drag så används en särskild metod att ange rockad. Kort och lång rockad
+representeras med hjälp av bokstäver som följer:
+kort rockad anges med  [O][K]
+lång rockad anges med [O][Q] istället för det vanliga O-O and O-O-O.
+</p>
+<p>
+När du anger drag kommer du i statusraden att se en lista över giltiga drag. Du kan, genom att trycka [mellanslag] välja det första i listan och föra in det
+i partiet. För att radera tecken använder du de vanliga raderingstangenterna.
+</p>
+<p>
+<b>OBS</b> gemena tecken kopplas i första hand till bönder, vilket betyder att [b]kan betyda b-bonden istället för löparen (Bishop). Om du hamnar
+i situationer när konflikter uppstår måste du istället ange pjäserna med versaler (B) i detta fallet.
+</p>
+<b>Översättarens kommentar</b> Scid förstår inte svenska. Detta betyder att du inte kan använda de svenska förkortningarna till att ange drag. [s][f][6] 
+förstås inte av Scid (däremot funkar [n][f][6] utmärkt). Om du vill använda tangentbordet att skriva in drag får du istället använda notationen [g][8][f][6] för
+samma drag.
+</p>
+<h4>Autokomplettering</h4>
+<p>
+I Alternativmenyn kan du slå på eller av <term>Autokomplettering</term>
+av drag.
+Med denna påslagen görs draget så fort du skrivit in tillräckligt mycket för att särskilja det från andra möjliga drag. Exempelvis räcker det att skriva [n][f] istället
+för [n][f][3] för draget <b>Nf3</b>i utgångsställningen.
+</p>
+<p><b>Översättarens kommentar</b> Scid förstår som sagt inte svenska. Däremot fungerar det med rutangivelsen om t ex pjäsen på g1 bara har ett fält 
+att gå till.</p>
+
+<h3><name Null>Ange null-drag</name></h3>
+<p>
+<a Annotating Null>Null</a> (tomma, planerade) drag kan vara användbara i  kommentarer för att hoppa över den ena spelarens drag. Du anger null-drag
+genom att slå den ena kungen med den andra, eller via tangentbordet genom att skriva  "<b>--</b>" (minustecknet två gånger).
+</p>
+<p><b>Översättarens kommentar</b> "null" är en dataterm för att beskriva ingenting (till skillnad mot noll som har ett värde om dock noll, null har inget värde).
+Shane använder termen null här, någon som har förslag på bättre i den svenska översättningen? Kolla intro sidan för att föreslå något.</p>
+
+<h3>Ange de vanligaste kommentarsymbolerna</h3>
+<p>
+Du kan även ange <a NAGs>kommentarsymboler</a> via tangentbordet utan att behöva använda <a Comment>kommentarseditorn</a>. 
+Följande lista kan anges via tangentbordet:
+<ul>
+<li> !	: [!][ENTER] </li>
+<li> ?	: [?][ENTER] </li>
+<li> !?	: [!][?][ENTER] </li>
+<li> ?!	: [?][!][ENTER] </li>
+<li> !!	: [!][!][ENTER] </li>
+<li> ??	: [?][?][ENTER] </li>
+<li> </li>
+<li> +-	: [+][-] </li>
+<li> +/-	: [+][/] </li>
+<li> +=	: [+][=] </li>
+<li> =	: [=][ENTER] </li>
+<li> -+	: [-][+] </li>
+<li> -/+	: [-][/] </li>
+<li> =+	: [=][+] </li>
+</ul>
+
+<p><footer>(Uppdaterad: Scid 3.4,  juli 2002)</footer></p>
+}
+
+
+########################################
+### Searches help screen:
+
+set helpTitle(W,Searches) "Söka i Scid"
+set helpText(W,Searches) {<h1>Söka i Scid</h1>
+<p>
+I Scid kan man söka information på flera olika sätt. 
+Det finns tre huvudmetoder att använda sig av beroende på vilken typ av information man
+är ute efter:
+<ul>
+<li><b>1)</b> utifrån den aktuella ställningen på brädet, </li>
+<li><b>2)</b> utifrån specifikt material eller en specifik ställningstyp; och </li>
+<li><b>3)</b> utifrån fast information, t ex spelare, ort, resultat eller datum. </li>
+</ul>
+<p>
+Utöver dessa metoder kan man använda sig av en automatisk sökfunktion, <a Tree>trädfönstret</a>, som förklaras
+separat.
+</p>
+
+<h3><name Filter>Sökfiltret</name></h3>
+<p>
+Sökningar baseras i  Scid på <term>filter</term>.
+Ett filter representerar en delmängd av den aktiva databasen. Vid varje specifikt tillfälle kommer ett parti att antingen vara
+del av denna delmängd (filtret) eller uteslutas av detta. I varje typ av sökning (se ovan) kan du välja att begränsa, utöka eller
+ignorera det aktiva filtret och istället söka i hela databasen. Detta gär att man stegvis kan bygga komplicerade sökningar. 
+Du kan också kopiera alla filtrerade partier från den ena databasen till den andra genom att använda <a Switcher>databasväxlaren</a>.
+</p>
+
+<p>
+När du söker på exakt ställning, <a Tree>träd</a> eller material/ställningstyp, sparas dragnumret i den första ställningen och varje
+parti med identisk ställning lagras i minnet så att man, när man senare laddar de framsökta partierna, automatiskt kommer till den ställning
+som var av intresse (som sökningen grundades på).
+</p>
+<p>
+<b>OBS</b> sökningen gäller endast textdragen, inte varianterna.
+</p>
+
+<h3><name Board>Sök: Aktuell ställning</name></h3>
+<p>
+Med denna metod hittas partier med samma ställning som det på brädet i huvudfönstret. Rockadmöjligheter och 
+rättigheter att göra <i>en passant</i> ignoreras. Det finns fyra undertyper att välja på, samtliga kräver att ställningen har exakt samma material och spelare vid draget för att en träff ska
+anses ha inträffat:
+<ul>
+<li> [1] exakt (de båda ställningarna måste vara exakt lika), </li>
+<li> [2] bönder (bondestrukturen måste vara identisk, men de övriga pjäsernas placering kan variera), </li>
+<li> [3] linjer (antalet vita och svarta bönder på varje linje måste vara identisk - i övrigt kan pjäsplaceringen variera), och slutligen; </li>
+<li> [4] material (bönder och pjäser kan stå var som helst på brädet.). </li>
+</ul>
+<p>
+Att söka på bondeställning är användbart när man studerar spelöppningar med likartad bondstruktur, medan att söka på linjer och material är lämpliga metoder
+att finna liknande ställningar i slutspel. När man söker på specifika ställningar kan man skapa den först (från menyvalet <menu>Redigera: Skapa ställning</menu> menu) och starta sökningen därifrån.
+(Man kan naturligtvis också spela upp ställningen på brädet, <i>övers anm</i>).
+</p>
+<p>
+Du kan ange att sökningen även ska leta i varianter (istället för att bara inkludera de egentliga partidragen) genom att markera kryssrutan <b>Sök i varianter</b>, 
+men detta kan göra sökningen långsammare om databasen är stor och har många partier med varianter.
+</p>
+
+<h3><name Material>Sök: Material/ställningstyp</name></h3>
+<p>
+Denna sökning är användbar när man vill finna slut- eller mittspelsteman. Du kan specificera minimalt och maximalt antal av varje pjästyp, och hitta ställningar
+av typen "Löpare på f7" eller "Bonde på f-linjen". Det finns ett antal vanliga ställningstyper fördefinierade, t ex "Torn och Bondeslutspel" eller "Isolerade d-bönder".
+</p>
+<p>
+<b>Tips:</b><br>
+Tidsåtgången för denna typ av sökning kan variera kraftigt. Man kan minska tiden som behövs genom att använda sig av förnuftiga begränsningar.
+Om man, som exempel,  vill undersöka slutspel. kan man sätta det minimala antalet drag partiet ska innehålla till 20. Då kommer alla partier 
+med färre än 20 drag att ignoreras.
+</p>
+
+<h3><name Header>Sök: fasta uppgifter ("header search")</name></h3>
+<p>
+Denna sökning används för att finna aspekter på partier som lagras i partiets huvud (jmf eposthuvud) såsom datum, resultat, plats och rankingtal. Den
+kräver ingen avkodning av dragen i partiet. För att en träff ska registreras krävs att alla fält du specificerar stämmer överens. Namnfälten  (Vit, Svart, 
+Evenemang, Plats och Rond) är versal/gementoleranta. Träffar registrerars på all text i dessa fält och mellanslag ignoreras .
+</p>
+<p>
+Du kan generera exakta sökning ar och använda jokertecken i huvudfälten som nämnts ovan. Jokertecknet  <b>?</b> betyder "ett
+valfritt tecken" medan <b>*</b> betyder "inget eller flera valfria tecken". Man genererar exakta sökningar genom att innesluta den text man
+önskar hitta i citattecken ("). Exempel:
+</p>
+
+<p>
+En sökning på platsen <b>USA</b> kommer att generera amerikanska städer, men även <b>Lausanne SUI</b>, vilket du förmodligen inte var ute efter! 
+Detta löser man genom att istället söka efter platsen <b>"*USA"</b> (notera citattecknen) som endast kommer att presentera städer i USA.</p>
+<p>
+Om du söker efter en särskild spelare (eller två särskilda spelare) som vit eller svart och det inte spelar någon roll vet som har vilken färg väljer du med 
+fördelas <b>Ignorera färg</b> i stället för svart/vit i färgangivelsen.
+</p>
+<p>
+Avslutningsvis kan fasta sökningar göra för att hitta valfri text (versal/gemen intollerant och utan jokertecken) i PGN versionen av partierna. Du kan
+ange upp till tre textsträngar, och alla måste finnas i ett parti för att de ska räknas som en träff. Denna sökning är mycket användbar när det gäller
+kommentarsfältet eller extra märkord i partierna (exempelvis  <b>förlorar på tid</b> eller <b>Kommentator</b>), eller för en dragföljd som 
+<b>Bxh7+</b> och <b>Kxh7</b> när en löpare har offrats (och accepterats) på h7.
+
+Tänk dock på att denna typ av sökningar kan vara <i>mycket</i> tidskrävande eftersom alla partier som möter vissa kriterier måste avkodas och
+genomsökas efter textsträngen/-arna. Det är därför en bra ide att begränsa denna typ av sökning så mycket som möjligt. Exempel:
+</p>
+
+<p>
+För att hitta partier med underpromovering till torn säker man på <b>=R</b> och sätter <b>Förvandlingar</b> flaggan till Ja.
+För att hitta text i kommentarer sätter du flaggan <b>Kommentarer</b> till Ja.
+Om du söker på dragen <b>Bxh7+</b> och <b>Kxh7</b>, kan det vara en ide att begränsa partierna till de som har resultatet  1-0 result och innehåller
+minst 20 halvdrag. Eller gör en Material/Ställningstypssökning för att hitta partier där löparen flyttas till h7.
+</p>
+
+<h3><name Settings>Spara sökkriterierna</name></h3>
+<p>
+I Material/Ställningstyp and Huvudsökningsfönstrena finns valet att  
+<term>Spara inställningarna</term>. Detta ger dig möjligheten att spara de aktuella sökkriterierna för senare användning.
+Kriterierna sparas till en <term>sökningsfil</term> med filändelsen  .sso. För att återanvända en tidigare sparad sökningfil
+väljer du <menu>Öppna ...</menu> från menyn <menu>Sök</menu>.
+</p>
+
+<h3>Söktider och ignorerade partier</h3>
+<p>
+De flesta sökingar meddelar en hur lång tid sökningar tog och hur många partier som <term>ignorerades</term>. Ignorerade partier
+är de som exkluderats från en sökning utan att något av dess drag har avkodats (från Scids databasformat). Detta baseras på information
+som lagrats i index. Se vidare hjälpfilen om <a Formats>filformat</a> för ytterligare information. 
+</p>
+
+<p><footer>(Uppdaterad: Scid 3.0, november 2001)</footer></p>
+}
+
+#################
+### Clipbase help:
+
+set helpTitle(W,Clipbase) "Urklippsdatabasen"
+set helpText(W,Clipbase) {<h1>Urklippsdatabasen</h1>
+<p>
+Förutom de databaser du öppnar själv, öppnar Scid ytterligare en - <term>urklippsdatabasen</term>. Urklippsdatabasen,
+fungerar precis som alla andra databaser database, med ett undantag. Den existerar bara i datorns arbetsminne och sparar inte data
+någon stans permanent. Urklippsdatabasen töms således när du stänger av datorn.
+</p>
+<p>
+Urklippsdatabasen är användbar som en tillfällig lagringsplats, för att slå samman sökresultat från olika databaser, eller för att man där
+kan behandla resultat från en sökning som en egen databas. 
+</p>
+<p>
+Antag, exempelvis, att du vill förbereda dig för en särskild motståndare. Du har sökt igenom databasen efter partier av denne där motståndare
+spelar vit. Kopiera alla partier i <a Searches Filter>sökfiltret</a> till urklippsdatabasen. Du kan göra det genom att i <a Switcher>databasväxlaren</a>
+ dra dem från deras ordinarie databas till urklippsdatabasen. Därefter kan du öppna urklippsdatabasen och undersöka partierna i  <a Tree>trädfönstret</a>, 
+till exempel för att kartlägga motståndarens öppningrepertoir.
+</p>
+<p>
+Observera att du kan kopiera partier från en databas till en annan utan att använda urklippsdatabasen som mellanlagringsplats. Notera också att
+urklippsdatabasen <i>inte</i> kan stängas via menyvalet <menu>Arkiv: Stäng</menu>medan du är i urklippsdatabasen. Det som händer då är
+motsvarigheten till  <menu>Redigera: Återställ urklippsdatabasen</menu>, dvs databasen töms.
+</p>
+<p>
+Du kan maximalt ha 20,000 partier i minnet samtidigt.
+</p>
+
+<p><footer>(Uppdaterad: Scid 2.5,  juni 2001)</footer></p>
+}
+
+#################################
+### Variations and comments help:
+
+set helpTitle(W,Annotating) "Kommentera partier"
+set helpText(W,Annotating) {<h1>Kommentera partier</h1>
+<p>
+I Scid kan lägga till noter till partierna. Det finns tre typer av anteckningar du kan lägga till till varje drag,
+symboler, kommentarer och varianter.
+</p>
+
+<h3>Symboler och kommentarer</h3>
+<p>
+Symboler används förs ställningsbedömningar om vem som står bäst (t ex "+-" or "=") , om draget som just gjordes var bra eller dåligt
+(t ex "!" eller "?") medan kommentarer kan bestå av valfri text. För att lägga till symboler och kommentarer använder man
+<a Comment>kommentarseditorn</a>. Det finns också en särskild hjälpsida för <a NAGs>standardsymbolerna</a>.
+</p>
+<p>
+Tänk på att även om varje drag kan ha fler symboler, kan det bara ha en kommentar. En kommentar för första draget skrivs ut som 
+text före partidragen. 
+</p>
+
+<h3><name Vars>Varianter</name></h3>
+<p>
+En <term>variant</term> är en alternativ fortsättning av partiet som skulle ha kunnat utföras vid något
+tillfälle i partiet. Varianter kan innehålla kommentarer, symboler och varianter. Knappen märkt "<b>V</b>" 
+ovanför brädet i huvudfönstret, samt valmöjligheter från menyn <menu>Redigera</menu> kan användas till att skapa
+naviera och redigera varianter.
+</p>
+
+<h4>Kortkommandon</h4>
+<p>
+När det finns varianter till ett drag visas dem i partiinformationsområdet. Den första varianten är <b>v1</b>, den andra
+är <b>v2</b>, osv. För att följa en variant kan man klicka på den, eller tryck  "<b>v</b>" följt av variantens nummer 
+(Om det bara finns en variant räcker det med att trycka <b>v</b>.). Kortkommandot för att gå ur en variant är "<b>z</b>".
+</p>
+
+<h3><name Null>Null-drag</name></h3>
+<p>
+Det kan ibland vara användbart att hoppa över drag i varianter. Du kan exempelvis till draget 14.Bd3 lägga till en variant och
+nämna att det hotar 15.Bxh7+ Kxh7 16.Ng5+ med angrepp. Du kan också göra detta genom att använda <term>null-drag</term>
+mellan 14.Bd3 och 15.Bxh7+, i exemplet ovan. Ett null-drag visas som "<b>--</b>" och infogas genom att med musen utföra det
+ogiltiga draget att med kungen slå den andra kungen, eller att helt enkelt skriva in "<b>--</b>" (två minustecken).
+</p>
+<p>
+Observera att null-drag inte ingår i PGN standarden, så om du vill exporta partier som innehåller null-drag till en PGN-fil måste du 
+välja mellan att bevara null-dragen(-t) eller konvertera dem till kommentarer för att bibehålla kompatibiliteten till andra
+program. Se hjälpsidan för att <a Export>exportera</a> partier för mer information.
+</p>
+
+<p><footer>(Uppdaterad: Scid 3.4, juli 2002)</footer></p>
+}
+
+
 # end of swedish.tcl
 

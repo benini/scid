@@ -49,6 +49,8 @@ menuText B FileMaintNameRound "Verificacao Ortografica de Rodadas..." 11 \
   {Verificacao dos nomes de rodadas usando o arquivo de correcao ortografica}
 menuText B FileReadOnly "Apenas Leitura..." 7 \
   {Trata a base de dados corrente como arquivo de leitura, impedindo mudancas}
+menuText B FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText B FileExit "Sair" 0 {Encerrar o Scid}
 
 # Edit menu:
@@ -75,6 +77,8 @@ menuText B EditPaste "Colar jogo da base de trabalho" 1 \
   {Cola o jogo ativo da base de trabalho}
 menuText B EditSetup "Configura posicao inicial..." 12 \
   {Configura a posicao inicial para o jogo}
+menuText B EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText B EditPasteBoard "Colar Posicao" 12 \
   {Configura a posicao inicial a partir da area de transferencia}
 
@@ -117,6 +121,7 @@ menuText B WindowsComment "Editor de Comentarios" 0 {Abre/fecha o editor de come
 menuText B WindowsGList "Lista de Jogos" 0 {Abre/fecha a janela com a lista de jogos}
 menuText B WindowsPGN "Notacao PGN" 0 \
   {Abre/fecha a janela com a notacao PGN do jogo}
+menuText B WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText B WindowsTmt "Buscador de Torneio" 2 {Abre/Fecha o buscador de torneio}
 menuText B WindowsSwitcher "Intercambio de bases de dados" 0 \
   {Abre/fecha a janela de intercambio de bases de dados}
@@ -235,6 +240,7 @@ menuText B GInfoFEN "Mostra Diagrama FEN" 16
 menuText B GInfoMarks "Mostra setas e casas coloridas" 7
 menuText B GInfoWrap "Quebra de linhas longas" 0
 menuText B GInfoFullComment "Mostrar comentario completo" 8
+menuText B GInfoPhotos "Show Photos" 5 ;# ***
 menuText B GInfoTBNothing "Tabelas de Base: nada" 12
 menuText B GInfoTBResult "Tabelas de Base: apenas resultado" 12
 menuText B GInfoTBAll "Tabelas de Base: resultado e melhores movimentos" 19
@@ -299,6 +305,7 @@ translate B Black {Preto}
 translate B Player {Jogador}
 translate B Rating {Rating}
 translate B RatingDiff {Diferenca de Rating (Brancas - Pretas)}
+translate B AverageRating {Average Rating} ;# ***
 translate B Event {Evento}
 translate B Site {Lugar}
 translate B Country {Pais}
@@ -329,6 +336,11 @@ translate B clipbase {base de trabalho}
 translate B score {Pontuacao}
 translate B StartPos {Posicao Inicial}
 translate B Total {Total}
+
+# Standard error messages:
+translate B ErrNotOpen {This is not an open database.} ;# ***
+translate B ErrReadOnly {This database is read-only; it cannot be altered.}
+translate B ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate B twin {duplicata}
@@ -364,6 +376,10 @@ translate B allOthersLose {qualquer outro perde}
 translate B matesIn {mate em}
 translate B hasCheckmated {recebeu xeque-mate}
 translate B longest {mais longo}
+translate B WinningMoves {Winning moves} ;# ***
+translate B DrawingMoves {Drawing moves} ;# ***
+translate B LosingMoves {Losing moves} ;# ***
+translate B UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate B Tip {Dica}
@@ -402,6 +418,10 @@ translate B LockTree {Travamento}
 translate B TreeLocked {Travada} ;# ***
 translate B TreeBest {Melhor}
 translate B TreeBestGames {Melhores jogos da arvore}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate B TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText B FinderFile "Arquivo" 0
@@ -427,6 +447,17 @@ translate B FinderDir {Diretorio}
 translate B FinderDirs {Diretorios}
 translate B FinderFiles {Arquivos}
 translate B FinderUpDir {Acima}
+
+# Player finder:
+menuText B PListFile "Arquivo" 0
+menuText B PListFileUpdate "Atualizar" 0
+menuText B PListFileClose "Close Player Finder" 0 ;# ***
+menuText B PListSort "Ordenar" 0
+menuText B PListSortName "Name" 0 ;# ***
+menuText B PListSortElo "Elo" 0
+menuText B PListSortGames "Jogos" 0
+menuText B PListSortOldest "Oldest" 0 ;# ***
+menuText B PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText B TmtFile "Arquivo" 0
@@ -547,6 +578,7 @@ menuText B CrosstabHelpIndex "Indice da Ajuda" 0
 translate B SetFilter {Setar filtro}
 translate B AddToFilter {Adicionar ao filtro}
 translate B Swiss {Swiss}
+translate B Category {Category} ;# ***
 
 # Opening report window menus:
 menuText B OprepFile "Arquivo" 0
@@ -655,6 +687,7 @@ translate B NumDeletedGames {Jogos deletados:}
 translate B NumFilterGames {Jogos no filtro:}
 translate B YearRange {Faixa de Anos:}
 translate B RatingRange {Faixa de Rating:}
+translate B Description {Description} ;# ***
 translate B Flag {Sinalizador}
 translate B DeleteCurrent {Deletar jogo corrente}
 translate B DeleteFilter {Deletar jogos filtrados}
@@ -699,6 +732,7 @@ Voce esta certo de que quer iniciar as acoes de manutencao selecionadas?
 # Comment editor:
 translate B AnnotationSymbols  {Simbolos de Anotacao:}
 translate B Comment {Comentario:}
+translate B InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate B BoardSearch {Pesquisa Tabuleiro}
@@ -741,7 +775,7 @@ translate B InitialBoard {Tabuleiro Inicial}
 translate B SideToMove {Lado que move}
 translate B MoveNumber {No. do Movimento}
 translate B Castling {Roque}
-translate B EnPassentFile {coluna En Passant}
+translate B EnPassantFile {coluna En Passant}
 translate B ClearFen {Limpar FEN}
 translate B PasteFen {Colar FEN}
 

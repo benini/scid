@@ -307,6 +307,13 @@ proc makeGList {} {
   bind $w <Escape> "$w.b.close invoke"
   standardShortcuts $w
 
+  # MouseWheel bindings:
+  bind $w <MouseWheel> {scrollGList [expr {- (%D / 120)}]}
+  if {! $::windowsOS} {
+    bind $w <Button-4> {scrollGList -1}
+    bind $w <Button-5> {scrollGList 1}
+  }
+
   # Binding to reset glistSize when the window is resized:
   # The way this is done is very ugly, but the only way I could
   # find that actually works.
@@ -333,6 +340,16 @@ proc makeGList {} {
   wm iconname $w "Scid: [tr WindowsGList]"
   updateGList
   focus $w.b.goto
+}
+
+proc scrollGList {nlines} {
+  global glstart
+  set glstart [expr $glstart + $nlines]
+  if {$glstart > [sc_filter count] } {
+    set glstart [sc_filter count]
+  }
+  if {$glstart < 1} { set glstart 1 }
+  updateGList
 }
 
 proc setGLselection {code xcoord ycoord} {
@@ -909,6 +926,7 @@ proc ::tree::make {} {
   canvas $w.progress -width 250 -height 15 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   selection handle $w.f.tl ::tree::copyToSelection
+  bindMouseWheel $w $w.f.tl
 
   bind $w.f.tl <Destroy> {
     if {$tree(autoSave)} {
@@ -2085,6 +2103,7 @@ proc makePgnWin {} {
   bind $w <End>   {sc_move end; updateBoard .board}
   bind $w <Escape> {focus .; destroy .pgnWin}
   standardShortcuts $w
+  bindMouseWheel $w $w.text
 
   # Add variation navigation bindings:
   bind $w <KeyPress-v> [bind . <KeyPress-v>]
@@ -2338,7 +2357,7 @@ proc openCommentWin {} {
 
   # Buttons:
 
-  button $w.b.mark -text "Insert mark..." -command {
+  button $w.b.mark -text $::tr(InsertMark...) -command {
     .commentWin.cf.text insert insert [insertMarkComment]
     storeComment
   }
@@ -2778,6 +2797,13 @@ proc crosstabWin {} {
       .crosstabWin.f.text xview moveto 0.99
     }
     standardShortcuts $w
+
+    # MouseWheel Bindings:
+    bind $w <MouseWheel> { .crosstabWin.f.text yview scroll [expr {- (%D / 120)}] units}
+    if {! $::windowsOS} {
+      bind $w <Button-4> { .crosstabWin.f.text yview scroll -1 units }
+      bind $w <Button-5> { .crosstabWin.f.text yview scroll  1 units }
+    }
   }
 
   switch $crosstab(type) {
@@ -3116,6 +3142,240 @@ proc playerInfo {{player ""}} {
 
 
 ####################
+# Player List window
+
+namespace eval ::plist {}
+
+set plistWin 0
+
+set ::plist::sort Name
+
+proc ::plist::defaults {} {
+  set ::plist::name ""
+  set ::plist::minGames 0
+  set ::plist::maxGames 9999
+  set ::plist::minElo 0
+  set ::plist::maxElo 4000
+}
+
+::plist::defaults
+
+trace variable ::plist::minElo w [list forceInt 4000 0]
+trace variable ::plist::maxElo w [list forceInt 4000 0]
+trace variable ::plist::minGames w [list forceInt 9999 0]
+trace variable ::plist::maxGames w [list forceInt 9999 0]
+
+proc ::plist::toggle {} {
+  set w .plist
+  if {[winfo exists $w]} {
+    destroy $w
+  } else {
+    ::plist::open
+  }
+}
+
+proc ::plist::open {} {
+  global plistWin
+  set w .plist
+  if {[winfo exists .plist]} { return }
+  set plistWin 1
+
+  toplevel $w
+  wm title $w "Scid: [tr WindowsPList]"
+  #setWinLocation $w
+  #bind $w <Configure> "recordWinSize $w"
+
+  bind $w <F1> {helpWindow PList}
+  bind $w <Escape> "$w.b.close invoke"
+  bind $w <Return> ::plist::refresh
+  bind $w <Destroy> { set plistWin 0 }
+  standardShortcuts $w
+  bind $w <Up> "$w.t.text yview scroll -1 units"
+  bind $w <Down> "$w.t.text yview scroll 1 units"
+  bind $w <Prior> "$w.t.text yview scroll -1 pages"
+  bind $w <Next> "$w.t.text yview scroll 1 pages"
+  bind $w <Key-Home> "$w.t.text yview moveto 0"
+  bind $w <Key-End> "$w.t.text yview moveto 0.99"
+  #bindMouseWheel $w $w.t.text
+
+  frame $w.menu -relief raised -borderwidth 2
+  pack $w.menu -side top -fill x
+  $w configure -menu $w.menu
+  menubutton $w.menu.file -text File -menu $w.menu.file.m
+  menu $w.menu.file.m
+  $w.menu.file.m add command -label Update -command ::plist::refresh
+  $w.menu.file.m add command -label Close -command "destroy $w"
+  menubutton $w.menu.sort -text Sort -menu $w.menu.sort.m
+  menu $w.menu.sort.m
+  foreach name {Name Elo Games Oldest Newest} {
+    $w.menu.sort.m add radiobutton -label $name -variable ::plist::sort \
+      -value $name -command ::plist::refresh
+  }
+  pack $w.menu.file $w.menu.sort -side left
+
+  foreach i {t o1 o2 o3 b} {frame $w.$i}
+  text $w.t.text -width 55 -height 25 -font font_Small -wrap none \
+    -fg black -bg white -yscrollcommand "$w.t.ybar set" -setgrid 1 \
+    -cursor top_left_arrow -xscrollcommand "$w.t.xbar set"
+  scrollbar $w.t.ybar -command "$w.t.text yview" -takefocus 0
+  scrollbar $w.t.xbar -orient horiz -command "$w.t.text xview" -takefocus 0
+  set xwidth [font measure [$w.t.text cget -font] "0"]
+  set tablist {}
+  foreach {tab justify} {4 r 10 r 18 r 24 r 32 r 35 l} {
+    set tabwidth [expr $xwidth * $tab]
+    lappend tablist $tabwidth $justify
+  }
+  $w.t.text configure -tabs $tablist
+  $w.t.text tag configure ng -foreground darkBlue
+  $w.t.text tag configure date -foreground darkRed
+  $w.t.text tag configure elo -foreground darkGreen
+  $w.t.text tag configure name -foreground black
+  $w.t.text tag configure title -background lightSteelBlue; #-font font_SmallBold
+
+  set font font_Small
+  set fbold font_SmallBold
+
+  set f $w.o1
+  label $f.nlabel -text $::tr(Player:) -font $fbold
+  entry $f.name -textvariable ::plist::name -width 20 -font $font
+  bindFocusColors $f.name
+  label $f.size -text $::tr(TmtLimit:) -font $fbold
+  set m [tk_optionMenu $f.msize ::plist::size 50 100 200 500 1000]
+  $f.msize configure -width 4 -anchor e -font $font
+  $m configure -font $font
+  pack $f.msize $f.size -side right
+  pack $f.nlabel $f.name -side left
+
+  set f $w.o2
+  label $f.elo -text "[tr PListSortElo]:" -font $fbold
+  entry $f.emin -textvariable ::plist::minElo
+  label $f.eto -text "-"
+  entry $f.emax -textvariable ::plist::maxElo
+  label $f.games -text "[tr PListSortGames]:" -font $fbold
+  entry $f.gmin -textvariable ::plist::minGames
+  label $f.gto -text "-"
+  entry $f.gmax -textvariable ::plist::maxGames
+
+  foreach entry {emin emax gmin gmax} {
+    $f.$entry configure -width 4 -justify right -font $font
+    bindFocusColors $f.$entry
+    bind $f.$entry <FocusOut> +::plist::check
+  }
+  pack $f.elo $f.emin $f.eto $f.emax -side left
+  pack $f.gmax $f.gto $f.gmin $f.games -side right
+
+  button $w.b.defaults -text $::tr(Defaults) -command ::plist::defaults
+  button $w.b.update -text $::tr(Update) -command ::plist::refresh
+  button $w.b.close -text $::tr(Close) -command "destroy $w"
+  pack $w.b.defaults -side left -padx 2 -pady 2
+  pack $w.b.close $w.b.update -side right -padx 2 -pady 2
+
+  pack $w.b -side bottom -fill x
+  pack $w.o3 -side bottom -fill x -padx 2
+  pack $w.o2 -side bottom -fill x -padx 2
+  pack $w.o1 -side bottom -fill x -padx 2
+
+  pack $w.t -side top -fill both -expand yes
+  grid $w.t.text -row 0 -column 0 -sticky news
+  grid $w.t.ybar -row 0 -column 1 -sticky news
+  grid $w.t.xbar -row 1 -column 0 -sticky news
+  grid rowconfig $w.t 0 -weight 1 -minsize 0
+  grid columnconfig $w.t 0 -weight 1 -minsize 0
+
+  ::plist::configMenus
+  ::plist::refresh
+}
+
+proc ::plist::configMenus {{lang ""}} {
+  set w .plist
+  if {! [winfo exists $w]} { return }
+  if {$lang == ""} { set lang $::language }
+  set m $w.menu
+  foreach menu {file sort} tag {File Sort} {
+    configMenuName $m.$menu PList$tag $lang
+  }
+  foreach idx {0 2} tag {Update Close} {
+    configMenuText $m.file.m $idx PListFile$tag $lang
+  }
+  foreach idx {0 1 2 3 4 5} tag {Name Elo Games Oldest Newest} {
+    configMenuText $m.sort.m $idx PListSort$tag $lang
+  }
+}
+
+proc ::plist::refresh {} {
+  set w .plist
+  if {! [winfo exists $w]} { return }
+  busyCursor .
+  set t $w.t.text
+  $t configure -state normal
+  $t delete 1.0 end
+
+  $t insert end "\t" title
+  foreach i {Games Oldest Newest Elo Name} {
+    #$t tag configure s$i -font font_SmallBold
+    $t tag bind s$i <1> "set ::plist::sort $i; ::plist::refresh"
+    $t tag bind s$i <Any-Enter> "$t tag config s$i -foreground red"
+    $t tag bind s$i <Any-Leave> "$t tag config s$i -foreground {}"
+    $t insert end "\t" title
+    $t insert end $i [list title s$i]
+  }
+  $t insert end "\n" title
+
+  update
+  set err [catch {sc_name plist -name $::plist::name -size $::plist::size \
+		    -minGames $::plist::minGames -maxGames $::plist::maxGames \
+		    -minElo $::plist::minElo -maxElo $::plist::maxElo \
+	            -sort [string tolower $::plist::sort]} pdata]
+  if {$err} {
+    $t insert end "\n$pdata\n"
+    unbusyCursor .
+    return
+  }
+
+  set hc yellow
+  set count 0
+  foreach player $pdata {
+    incr count
+    set ng [lindex $player 0]
+    set oldest [lindex $player 1]
+    set newest [lindex $player 2]
+    set elo [lindex $player 3]
+    set name [lindex $player 4]
+
+    $t tag bind p$count <ButtonPress-1> [list playerInfo $name]
+    #$t tag bind p$count <ButtonPress-3> [list playerInfo $name]
+    $t tag bind p$count <Any-Enter> \
+      "$t tag configure p$count -background $hc"
+    $t tag bind p$count <Any-Leave> \
+      "$t tag configure p$count -background {}"
+    $t insert end "\n"
+    $t insert end "\t$count\t" p$count
+    $t insert end $ng [list ng p$count]
+    $t insert end "\t" p$count
+    $t insert end $oldest [list date p$count]
+    $t insert end "\t" p$count
+    $t insert end "- $newest" [list date p$count]
+    $t insert end "\t" p$count
+    $t insert end $elo [list elo p$count]
+    $t insert end "\t" p$count
+    $t insert end $name [list name p$count]
+  }
+  $t insert end "\n"
+  $t configure -state disabled
+  unbusyCursor .
+}
+
+proc ::plist::check {} {
+  if {$::plist::minGames > $::plist::maxGames} {
+    set ::plist::maxGames $::plist::minGames
+  }
+  if {$::plist::minElo > $::plist::maxElo} {
+    set ::plist::maxElo $::plist::minElo
+  }
+}
+
+
+####################
 # Game Browser window
 
 namespace eval ::gbrowser {}
@@ -3327,6 +3587,7 @@ proc updateEcoWin {{code "x"}} {
     bind $w <Prior> {.ecograph.pane.text.text yview scroll -1 pages}
     bind $w <Next>  {.ecograph.pane.text.text yview scroll 1 pages}
     standardShortcuts $w
+    bindMouseWheel $w $w.pane.text.text
 
     bind $graph.c <1> { selectEcoBrowser %x }
     bind $graph.c <3> { keyEcoBrowser "<" }
@@ -3599,6 +3860,7 @@ proc fileFinder {} {
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
+  bindMouseWheel $w $w.t.text
 
   checkbutton $w.b.sub -text [tr FinderFileSubdirs] \
     -relief raised -pady 5 -padx 10 \
@@ -3931,6 +4193,7 @@ proc ::tourney::open {} {
   bind $w <Next> "$w.t.text yview scroll 1 pages"
   bind $w <Key-Home> "$w.t.text yview moveto 0"
   bind $w <Key-End> "$w.t.text yview moveto 0.99"
+  bindMouseWheel $w $w.t.text
 
   frame $w.menu -relief raised -borderwidth 2
   pack $w.menu -side top -fill x
@@ -4380,7 +4643,8 @@ proc ::ptrack::make {} {
   bind $w <Escape> "destroy $w"
   bind $w <F1> {helpWindow PTracker}
   image create photo ptrack -width $::ptrack::psize -height $::ptrack::psize
-  pack [label $w.status -width 1 -anchor w -relief sunken] -side bottom -fill x
+  label $w.status -width 1 -anchor w -relief sunken -font font_Small
+  pack $w.status -side bottom -fill x
 
   canvas $w.progress -height 20 -width 400 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar

@@ -333,6 +333,19 @@ proc bindFocusColors {w {inColor lightYellow} {outColor white}} {
 }
 
 
+# bindMouseWheel:
+#   Given a window and a text frame within that window, binds
+#   the mouse wheel to scroll the text frame vertically.
+#
+proc bindMouseWheel {win text} {
+  bind $win <MouseWheel> \
+    [list $text yview scroll {[expr -(%D / 120)]} units]
+  if {! $::windowsOS} {
+    bind $win <Button-4> [list $text yview scroll -1 units]
+    bind $win <Button-5> [list $text yview scroll  1 units]
+  }
+}
+
 # busyCursor, unbusyCursor:
 #   Sets all cursors to watch (indicating busy) or back to their normal
 #   setting again.

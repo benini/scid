@@ -83,7 +83,6 @@ PBook::Init ()
     LeastMaterial = PBOOK_MAX_MATERIAL;
     SkipCount = 0;
     FileName = NULL;
-    UseEnPassentField = true;
     for (uint t=0; t <= PBOOK_MAX_MATERIAL; t++) {
         Tree[t] = new StrTree<bookDataT>;
     }
@@ -187,7 +186,7 @@ PBook::Find (Position * pos, const char ** ptrComment)
 
     // Generate the compact board string for this position, and lookup:
     compactBoardStr cboard;
-    pos->PrintCompactStr (cboard, UseEnPassentField);
+    pos->PrintCompactStr (cboard);
     bookNodeT * node = Tree[material]->Lookup (cboard);
     if (!node) { return ERROR_NotFound; }
     if (ptrComment) { *ptrComment = node->data.comment; }
@@ -279,6 +278,7 @@ PBook::FindNext (Position * pos, bool forwards)
     ASSERT (node != NULL);
     errorT err = pos->ReadFromCompactStr ((const byte *) node->name);
     if (err != OK) { return err; }
+    pos->SetEPTarget (node->data.enpassant);
 
     // Now print to FEN and re-read, to ensure the piece lists are in
     // the order produced by a FEN specification -- this is necessary
@@ -305,7 +305,7 @@ PBook::Insert (Position * pos, const char * comment)
     
     uint material = pos->GetCount(WHITE) + pos->GetCount(BLACK);
     compactBoardStr cboard;
-    pos->PrintCompactStr (cboard, UseEnPassentField);
+    pos->PrintCompactStr (cboard);
     err = Tree[material]->Insert (cboard, &node);
     if (err != OK) {  // Already exists; we overwrite the old data.
         delete[] node->data.comment;
@@ -314,6 +314,7 @@ PBook::Insert (Position * pos, const char * comment)
         AddNodeToList (node);
     }
     node->data.comment = strDuplicate (comment);
+    node->data.enpassant = pos->GetEPTarget();
     Altered = true;
 
     if (material < LeastMaterial) {
@@ -332,7 +333,7 @@ PBook::Delete (Position * pos)
 {
     uint material = pos->GetCount(WHITE) + pos->GetCount(BLACK);
     compactBoardStr cboard;
-    pos->PrintCompactStr (cboard, UseEnPassentField);
+    pos->PrintCompactStr (cboard);
     bookNodeT * node = Tree[material]->Delete (cboard);
     if (!node) { return ERROR_NotFound; }
 
@@ -636,6 +637,7 @@ PBook::WriteFile ()
             delete pos;
             return ERROR_Corrupt;
         }
+        pos->SetEPTarget (node->data.enpassant);
         pos->PrintFEN (tempStr, FEN_CASTLING_EP);
         fprintf (fp, "%s", tempStr);
         Stats_PositionBytes += strLength (tempStr);

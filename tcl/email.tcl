@@ -123,7 +123,7 @@ proc email_Config {} {
   addHorizontalRule $w
   pack [frame $w.b] -side top -fill x
   button $w.b.ok -text [tr OptionsSave] -command {
-    .menu.options.m invoke [tr OptionsSave]
+    .menu.options invoke [tr OptionsSave]
     catch {grab release .emailConf}
     destroy .emailConf
   }

@@ -83,12 +83,14 @@ proc importPgnGame {} {
   if {! [catch {$w.pane.edit.text insert end [selection get]}]} {
     # Select all of the pasted text:
     $w.pane.edit.text tag add sel 1.0 end
+    #.importWin.b.ok invoke
   }
   bind $w <F1> { helpWindow Import }
   bind $w <Alt-i> { .importWin.b.ok invoke }
   bind $w <Alt-p> { .importWin.b.paste invoke }
   bind $w <Alt-c> { .importWin.b.clear invoke }
   bind $w <Escape> { .importWin.b.cancel invoke }
+  # bind $w.pane.edit.text <Any-KeyRelease> { .importWin.b.ok invoke }
   focus $w.pane.edit.text
 }
 

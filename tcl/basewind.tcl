@@ -308,7 +308,7 @@ proc changeBaseType {baseNum} {
     "catch {sc_base type $baseNum \$temp_dbtype}; updateBaseWin;
      focus .; destroy $w"
 
-  button $w.b.cancel -text "Cancel" -command "focus .; destroy $w; focus ."
+  button $w.b.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
   pack $w.b.set $w.b.cancel -side left -padx 5
 
   set numtypes [llength $base_types]

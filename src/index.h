@@ -272,6 +272,7 @@ class IndexEntry
         Dates = u32_set_low_20 (Dates, date);
     }
     void   SetEventDate (dateT date);
+    bool   ValidEventDate (dateT date);
 
     inline void SetResult (resultT res) {
         VarCounts = (VarCounts & 0x0FFF) | (((ushort)res) << 12);
@@ -558,8 +559,8 @@ class Index
     versionT    GetVersion ()             { return Header.version; }
     void        SetVersion (versionT v)   { Header.version = v; }
 
-    void        SetDescription (char *s);
-    char *      GetDescription ()  { return Header.description; }
+    void        SetDescription (const char *s);
+    const char * GetDescription ()  { return Header.description; }
 
     void        SetAutoLoad (gameNumberT gnum) { Header.autoLoad = gnum + 1; }
     gameNumberT GetAutoLoad () {

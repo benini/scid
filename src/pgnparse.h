@@ -49,6 +49,7 @@ class PgnParser
     bool   StorePreGameText;
     bool   EndOfInputWarnings;
     bool   ResultWarnings;
+    bool   NewlinesToSpaces;   // Whether to convert newlines in comments
 
     uint   UnGetCount;
     int    UnGetCh[MAX_UNGETCHARS];
@@ -64,6 +65,7 @@ class PgnParser
     void   GetRestOfSuffix (char * buffer, char firstChar);
     void   GetRestOfWord_NoDots (char * buffer);
     void   GetRestOfWord_WithDots (char * buffer);
+    void   GetRestOfWord_Letters (char * buffer);
     errorT ExtractPgnTag (const char * buffer, Game * game);
 
     bool   EndOfInput();
@@ -98,6 +100,7 @@ class PgnParser
     void   SetPreGameText (bool b) { StorePreGameText = b; }
     void   SetEndOfInputWarnings (bool b) { EndOfInputWarnings = b; }
     void   SetResultWarnings (bool b) { ResultWarnings = b; }
+    void   SetNewlinesToSpaces (bool b) { NewlinesToSpaces = b; }
 
     tokenT GetNextToken (char * buffer, uint bufSize);
 

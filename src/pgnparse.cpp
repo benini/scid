@@ -4,9 +4,9 @@
 //              PgnParser class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.1
+//  Version:    3.4
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
 //
@@ -41,6 +41,7 @@ PgnParser::Reset()
     StorePreGameText = true;
     EndOfInputWarnings = true;
     ResultWarnings = true;
+    NewlinesToSpaces = true;
 }
 
 void
@@ -265,7 +266,7 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
         standardPlayerName (value);
 #endif
         // Check for a rating in parentheses at the end of the player name:
-        eloT elo = 0;
+        uint elo = 0;
         uint len = strLength (value);
         if (len > 7  &&  value[len-1] == ')'
             &&  isdigit(value[len-2])  &&  isdigit(value[len-3])
@@ -273,6 +274,10 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
             &&  value[len-6] == '('  &&  value[len-7] == ' ') {
             value[len-7] = 0;
             elo = strGetUnsigned (&(value[len-5]));
+            if (elo > MAX_ELO) {
+                LogError ("Warning: rating too large: ", value);
+                elo = MAX_ELO;
+            }
             game->SetWhiteElo (elo);
             game->SetWhiteRatingType (RATING_Elo);
         }
@@ -283,7 +288,7 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
         standardPlayerName (value);
 #endif
         // Check for a rating in parentheses at the end of the player name:
-        eloT elo = 0;
+        uint elo = 0;
         uint len = strLength (value);
         if (len > 7  &&  value[len-1] == ')'
             &&  isdigit(value[len-2])  &&  isdigit(value[len-3])
@@ -291,6 +296,10 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
             &&  value[len-6] == '('  &&  value[len-7] == ' ') {
             value[len-7] = 0;
             elo = strGetUnsigned (&(value[len-5]));
+            if (elo > MAX_ELO) {
+                LogError ("Warning: rating too large: ", value);
+                elo = MAX_ELO;
+            }
             game->SetBlackElo (elo);
             game->SetBlackRatingType (RATING_Elo);
         }
@@ -347,6 +356,10 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
             while (ratingTypeNames[i] != NULL) {
                 if (strEqual (tagSuffix, ratingTypeNames[i])) {
                     uint elo = strGetUnsigned (value);
+                    if (elo > MAX_ELO) {
+                        LogError ("Warning: rating too large: ", value);
+                        elo = MAX_ELO;
+                    }
                     game->SetWhiteElo (elo);
                     game->SetWhiteRatingType (i);
                     isRatingType = true;
@@ -361,6 +374,10 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
             while (ratingTypeNames[i] != NULL) {
                 if (strEqual (tagSuffix, ratingTypeNames[i])) {
                     uint elo = strGetUnsigned (value);
+                    if (elo > MAX_ELO) {
+                        LogError ("Warning: rating too large: ", value);
+                        elo = MAX_ELO;
+                    }
                     game->SetBlackElo (elo);
                     game->SetBlackRatingType (i);
                     isRatingType = true;
@@ -395,7 +412,7 @@ PgnParser::GetComment (char * buffer, uint bufSize)
     int startLine = LineCounter;
     ch = GetChar();
     while (ch != EndChar  &&  ch != '}') {
-        if (ch == '\n') { ch = ' '; }
+        if (NewlinesToSpaces  &&  ch == '\n') { ch = ' '; }
         if (bufSize > 0) { *outPtr++ = (char) ch; bufSize--; }
         ch = GetChar();
     }
@@ -444,6 +461,18 @@ PgnParser::GetRestOfWord_WithDots (char * buffer)
 {
     int ch = GetChar();
     while (!charIsSpace (ch)  &&  ch != ')'  &&  ch != EndChar) {
+        *buffer++ = ch;
+        ch = GetChar();
+    }
+    UnGetChar (ch);
+    *buffer = 0;
+}
+
+void
+PgnParser::GetRestOfWord_Letters (char * buffer)
+{
+    int ch = GetChar();
+    while (isalpha(ch)) {
         *buffer++ = ch;
         ch = GetChar();
     }
@@ -701,6 +730,17 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
         return GetRestOfCastling (buf);
     }
 
+#ifdef SCID_NULL_MOVES
+    // Check for null move:
+    if (ch == 'n') {
+        GetRestOfWord_Letters (buf);
+        if (strEqual (buffer, "null")) {
+            return TOKEN_Move_Null;
+        }
+        return TOKEN_Invalid;
+    }
+#endif
+
     // Now we check for other tokens.......
     if (ch == ';'  ||  ch == '%') {
         // LineComment.  "%" should only mark a comment if at the start of
@@ -712,6 +752,10 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
         return TOKEN_Comment;
     }
 
+    if (ch == '}') {   // Close-brace outside a comment. Should not happen.
+        return TOKEN_CommentEnd;
+    }
+
     if (ch == '(') {   // variation. We let caller parse it out.
         return TOKEN_VarStart;
     }
@@ -719,6 +763,12 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
 
     if (ch == '!'  ||  ch == '?'  ||  ch == '='  ||  ch == '-') {   // Suffix
         GetRestOfSuffix (buf, ch);
+#ifdef SCID_NULL_MOVES
+        // Treat the sequence "--" as a null move:
+        if (strEqual (buffer, "--")) {
+            return TOKEN_Move_Null;
+        }
+#endif
         return TOKEN_Suffix;
     }
     if (ch == '$') {   // NAG
@@ -771,6 +821,9 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
     // Probably a letter like C or z, or punctuation or nonprintable.
 
     GetRestOfWord_WithDots (buf);
+#ifdef SCID_NULL_MOVES
+    // Any other null-move notations to be checked for here?
+#endif
     return TOKEN_Invalid;
 }
 
@@ -853,6 +906,8 @@ PgnParser::ParseMoves (Game * game, char * buffer, int bufSize)
     errorT err = OK;
     uint moveErrorCount  = 0;
     const uint maxMoveErrorsPerGame = 1;
+    uint commentErrorCount = 0;
+    const uint maxCommentErrorsPerGame = 1;
     simpleMoveT sm;
     byte nag;
 
@@ -867,10 +922,38 @@ PgnParser::ParseMoves (Game * game, char * buffer, int bufSize)
         case TOKEN_Move_Piece:
         case TOKEN_Move_Castle_King:
         case TOKEN_Move_Castle_Queen:
+        case TOKEN_Move_Null:
             err = game->GetCurrentPos()->ReadMove (&sm, buffer, token);
+
+            // The most common type of "illegal" move in standard
+            // chess is castling when the king or rook have already
+            // moved. So if a castling move failed, turn off
+            // strict checking of castling rights and try again,
+            // but still print a warning if that succeeded:
+
+            if (err != OK  &&  (token == TOKEN_Move_Castle_King  ||
+                                token == TOKEN_Move_Castle_Queen)) {
+                bool prevFlag = game->GetCurrentPos()->GetStrictCastling();
+                game->GetCurrentPos()->SetStrictCastling (false);
+                err = game->GetCurrentPos()->ReadMove (&sm, buffer, token);
+                game->GetCurrentPos()->SetStrictCastling (prevFlag);
+
+                // If no longer an error, castling without strict checking
+                // worked, but still print a warning about it:
+                if (err == OK) {
+                    char tempStr[500];
+                    sprintf (tempStr, "(%s) in game %s - %s, %u",
+                             buffer, game->GetWhiteStr(), game->GetBlackStr(),
+                             date_GetYear (game->GetDate()));
+                    LogError ("Warning: illegal castling ", tempStr);
+                }
+            }
+
             if (err == OK  &&  moveErrorCount == 0) {
                 err = game->AddMove (&sm, NULL);
             }
+
+             // Report an error if the move could not be added:
             if (err != OK) {
                 moveErrorCount++;
                 if (moveErrorCount <= maxMoveErrorsPerGame) {
@@ -928,6 +1011,14 @@ PgnParser::ParseMoves (Game * game, char * buffer, int bufSize)
 
         case TOKEN_LineComment:
             break;  // Line comments inside a game are just ignored.
+
+        case TOKEN_CommentEnd:
+            if (commentErrorCount < maxCommentErrorsPerGame) {
+                LogError ("Warning: close-brace character \"}\" seen ",
+                          "outside a comment.");
+                commentErrorCount++;
+            }
+            break;
 
         case TOKEN_Tag:
             LogError ("Error: PGN Header tag seen inside a game", "");

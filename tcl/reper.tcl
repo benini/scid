@@ -86,7 +86,7 @@ proc ::rep::addCurrentBoard {w type} {
     return
   }
   ::rep::regroup $w
-  singleClick $w $res
+  ::rep::singleClick $w $res
 }
 
 # ::rep::newGroup
@@ -713,8 +713,10 @@ proc ::rep::makeWindow {} {
   $w.f.w.rep xview moveto 0.0
   $w.f.w.rep yview moveto 0.0
 
-  $w.f.w.rep bind x <1> "singleClick $w.f.w.rep \[::rep::labelAtXY %W %x %y\]"
-  #$w.f.w.rep bind x <3> "singleClick $w.f.w.rep \[::rep::labelAtXY %W %x %y\]"
+  $w.f.w.rep bind x <1> \
+    "::rep::singleClick $w.f.w.rep \[::rep::labelAtXY %W %x %y\]"
+  $w.f.w.rep bind x <Double-Button-1> \
+    "::rep::doubleClick $w.f.w.rep \[::rep::labelAtXY %W %x %y\]"
 
   bind $w.f.text.moves <1> "if {\[string length \[$w.f.text.moves get 1.0 end\]\] > 1} { importPgnLine \[$w.f.text.moves get 1.0 end\] }"
 
@@ -750,7 +752,7 @@ proc ::rep::makeWindow {} {
 #   Called whenever the left mouse button is clicked on a group or
 #   line in the repertoire.
 #
-proc singleClick {w label} {
+proc ::rep::singleClick {w label} {
   ::rep::setSelection $w $label
   if {$label == ""} { return }
   set moves [::rep::_decode $label]
@@ -768,6 +770,18 @@ proc singleClick {w label} {
   set temptext [string trim $temptext]
   $win.f.text.note delete 1.0 end
   $win.f.text.note insert end $temptext
+}
+
+# ::rep::doubleClick
+#   Called whenever the left mouse button is double-clicked on a group or
+#   line in the repertoire.
+#
+proc ::rep::doubleClick {w label} {
+  ::rep::setSelection $w $label
+  if {$label == ""} { return }
+  set moves [::rep::_decode $label]
+  catch {sc_game import $moves}
+  updateBoardAndPgn .board
 }
 
 # ::rep::_extract

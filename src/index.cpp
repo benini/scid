@@ -145,6 +145,21 @@ IndexEntry::SetEventDate (dateT edate)
     Dates = u32_set_high_12 (Dates, codedDate);
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::ValidEventDate():
+//    Given an event date, checks if it is close enough to the
+//    date to be encoded. Due to a compact encoding format,
+//    the EventDate must be within a few years of the Date.
+//    Returns true if the event date is encodable.
+bool
+IndexEntry::ValidEventDate (dateT edate)
+{
+    uint eyear = date_GetYear (edate);
+    uint dyear = date_GetYear (GetDate());
+    if (eyear < (dyear - 3)  ||  eyear > (dyear + 3)) { return false; }
+    return true;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // IndexEntry::Read():
 //      Reads a single entrys values from an open index file.
@@ -1235,11 +1250,11 @@ Index::WriteEntries (IndexEntry * ie, uint start, uint count)
 //      Sets the database description string.
 //
 void
-Index::SetDescription (char * str)
+Index::SetDescription (const char * str)
 {
     ASSERT (str != NULL);
     uint i;
-    char *s = str;
+    const char *s = str;
 
     // First erase the old description:
 

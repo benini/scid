@@ -49,6 +49,8 @@ menuText Y FileMaintNameRound "Provera pravopisa kola..." 11 \
   {Provera pravopisa kola pomoæu spellcheck fajla}
 menuText Y FileReadOnly "Read-only..." 0 \
   {Spreèi izmene u tekuæoj bazi}
+menuText Y FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText Y FileExit "Izaði" 1 {Izlazak iz Scid-a}
 
 # Edit menu:
@@ -73,6 +75,8 @@ menuText Y EditPaste "Prenesi poslednju clipbase partiju" 0 \
   {Prenesi aktivnu clipbase partiju ovde}
 menuText Y EditSetup "Namesti poèetnu poziciju..." 0 \
   {Namesti poèetnu poziciju za ovu partiju}
+menuText Y EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (klipbord)} ;# ***
 menuText Y EditPasteBoard "Prenesi poèetnu poziciju" 9 \
   {Postavi poèetnu poziciju na osnovu trenutno izabranog teksta (klipbord)}
 
@@ -115,6 +119,7 @@ menuText Y WindowsComment "Editor komentara" 0 {Otvori/zatvori editor komentara}
 menuText Y WindowsGList "Lista partija" 0 {Otvori/zatvori listu partija}
 menuText Y WindowsPGN "PGN prozor" 0 \
   {Otvori/zatvori PGN prozor (sa podacima o partiji)}
+menuText Y WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText Y WindowsTmt "Turnir tragaè" 2 {Otvori/zatvori turnir tragaè}
 menuText Y WindowsSwitcher "Biraè baza" 0 \
   {Otvori/zatvori biraè baza}
@@ -232,6 +237,7 @@ menuText Y GInfoFEN "Prika¾i FEN" 8
 menuText Y GInfoMarks "Show colored squares and arrows" 5 ;# ***
 menuText Y GInfoWrap "Prelomi dugaèke linije" 0
 menuText Y GInfoFullComment "Show Full Comment" 10 ;# ***
+menuText Y GInfoPhotos "Show Photos" 5 ;# ***
 menuText Y GInfoTBNothing "Baza zavr¹nica: ni¹ta" 16
 menuText Y GInfoTBResult "Baza zavr¹nica: samo rezultati" 16
 menuText Y GInfoTBAll "Baza zavr¹nica: rezultat i najbolji potezi" 16
@@ -296,6 +302,7 @@ translate Y Black {Crni}
 translate Y Player {Igraè}
 translate Y Rating {Rejting}
 translate Y RatingDiff {Razlika u rejtingu (Beli - Crni)}
+translate Y AverageRating {Average Rating} ;# ***
 translate Y Event {Turnir}
 translate Y Site {Mesto}
 translate Y Country {Zemlja}
@@ -326,6 +333,11 @@ translate Y clipbase {clipbase}
 translate Y score {skor}
 translate Y StartPos {Poèetna pozicija}
 translate Y Total {Ukupno}
+
+# Standard error messages:
+translate Y ErrNotOpen {This is not an open database.} ;# ***
+translate Y ErrReadOnly {This database is read-only; it cannot be altered.}
+translate Y ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate Y twin {udvojena}
@@ -361,6 +373,10 @@ translate Y allOthersLose {svi ostali gube}
 translate Y matesIn {matira u}
 translate Y hasCheckmated {je matirao}
 translate Y longest {najdu¾i}
+translate Y WinningMoves {Winning moves} ;# ***
+translate Y DrawingMoves {Drawing moves} ;# ***
+translate Y LosingMoves {Losing moves} ;# ***
+translate Y UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate Y Tip {Tip} ;# ***
@@ -395,6 +411,10 @@ translate Y LockTree {Zakljuèaj}
 translate Y TreeLocked {zakljuèano}
 translate Y TreeBest {Najbolje}
 translate Y TreeBestGames {Najbolje partije stabla}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate Y TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText Y FinderFile "Fajl" 0
@@ -420,6 +440,17 @@ translate Y FinderDir {Direktorijum}
 translate Y FinderDirs {Direktorijumi}
 translate Y FinderFiles {Fajlovi}
 translate Y FinderUpDir {gore}
+
+# Player finder:
+menuText Y PListFile "Fajl" 0
+menuText Y PListFileUpdate "Osve¾i" 0
+menuText Y PListFileClose "Close Player Finder" 0 ;# ***
+menuText Y PListSort "Sortiraj" 0
+menuText Y PListSortName "Name" 0 ;# ***
+menuText Y PListSortElo "Elo" 0
+menuText Y PListSortGames "Partije" 0
+menuText Y PListSortOldest "Oldest" 0 ;# ***
+menuText Y PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText Y TmtFile "Fajl" 0
@@ -540,6 +571,7 @@ menuText Y CrosstabHelpIndex "Sadr¾aj pomoæi" 0
 translate Y SetFilter {Postavi filter}
 translate Y AddToFilter {Dodaj u filter}
 translate Y Swiss {©vajcarski sistem}
+translate Y Category {Category} ;# ***
 
 # Opening report window menus:
 menuText Y OprepFile "Fajl" 0
@@ -648,6 +680,7 @@ translate Y NumDeletedGames {Obrisanih partija:}
 translate Y NumFilterGames {Partija u filteru:}
 translate Y YearRange {Raspon godina:}
 translate Y RatingRange {Raspon rejtinga:}
+translate Y Description {Description} ;# ***
 translate Y Flag {Oznaka}
 translate Y DeleteCurrent {Obri¹i tekuæu partiju}
 translate Y DeleteFilter {Obri¹i filtrirane partije}
@@ -692,6 +725,7 @@ Da li ste sigurni da ¾elite da poènete funkcije odr¾avanja koje ste izabrali?
 # Comment editor:
 translate Y AnnotationSymbols  {Simboli napomena:}
 translate Y Comment {Komentari:}
+translate Y InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate Y BoardSearch {Pretraga po poziciji}
@@ -734,7 +768,7 @@ translate Y InitialBoard {Poèetna pozicija}
 translate Y SideToMove {Na potezu je}
 translate Y MoveNumber {Broj poteza}
 translate Y Castling {Rokada}
-translate Y EnPassentFile {En Passent linija}
+translate Y EnPassantFile {En Passant linija}
 translate Y ClearFen {Oèisti FEN}
 translate Y PasteFen {Prenesi FEN}
 

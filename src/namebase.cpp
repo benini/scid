@@ -231,6 +231,10 @@ NameBase::ReadNameFile (const char * suffix)
             node->data.id = id;
             node->data.frequency = frequency;
             node->data.maxElo = 0;
+            node->data.firstDate = ZERO_DATE;
+            node->data.lastDate = ZERO_DATE;
+            node->data.country[0] = 0;
+            node->data.hasPhoto = false;
             if (frequency == Header.maxFrequency[nt]) {
                 MostFrequent[nt] = node;
             }
@@ -376,6 +380,10 @@ NameBase::AddName (nameT nt, const char * str, idNumberT * idPtr)
         node->data.id = Header.numNames[nt];
         node->data.frequency = 0;
         node->data.maxElo = 0;
+        node->data.firstDate = ZERO_DATE;
+        node->data.lastDate = ZERO_DATE;
+        node->data.country[0] = 0;
+        node->data.hasPhoto = false;
         NameByID[nt][node->data.id] = node;
         Header.numNames[nt]++;
     }

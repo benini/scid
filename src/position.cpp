@@ -4,7 +4,7 @@
 //              Position class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
@@ -1106,7 +1106,7 @@ Position::MatchPawnMove (fyleT fromFyle, squareT to, pieceT promote)
 
         pieceT captured = Board[to];
         if (captured == EMPTY) {
-            // Must be an en passent or illegal move.
+            // Must be an en passant or illegal move.
             if (to != EPTarget) { return ERROR_InvalidMove; }
             squareT epSquare = square_Make(toFyle, square_Rank(from));
 
@@ -1250,7 +1250,7 @@ Position::CalcCheckEvasions (pieceT mask)
     // if it's double check, we can ONLY move the king
     if (NumChecks == 1) {
         // OK, it is NOT a double check
-        // Try to block piece/capture piece. Remember en passent!
+        // Try to block piece/capture piece. Remember en passant!
         // First, generate a list of targets: squares between the king
         // and attacker to block, and the attacker's square.
 
@@ -1442,6 +1442,51 @@ Position::CalcNumChecks (colorT toMove, squareT kingSq, squareT * checkSqs)
     return nChecks;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Position::SmallestDefender()
+//    Returns the type of the lowest-valued piece of the specified
+//    color that could capture to the specified square. Pins to the
+//    king are ignored. Checks pieces in the order Pawn, Knight, 
+//    Bishop, Rook, Queen then King. If the specified square is
+//    undefended, EMPTY is returned.
+//
+pieceT
+Position::SmallestDefender (colorT color, squareT target)
+{
+    squareT defenderSquares [16];
+    pieceT defenders [16];
+    uint numDefenders = CalcNumChecks (1 - color, target, defenderSquares);
+
+    // If the square is undefended, just return EMPTY:
+    if (numDefenders == 0) { return EMPTY; }
+
+    uint i;
+    for (i=0; i < numDefenders; i++) {
+       defenders[i] = Board[defenderSquares[i]];
+    }
+    // Look for pawns first:
+    for (i=0; i < numDefenders; i++) {
+        if (piece_Type (defenders[i]) == PAWN) { return PAWN; }
+    }
+    // Look for knights then bishops:
+    for (i=0; i < numDefenders; i++) {
+        if (piece_Type (defenders[i]) == KNIGHT) { return KNIGHT; }
+    }
+    for (i=0; i < numDefenders; i++) {
+        if (piece_Type (defenders[i]) == BISHOP) { return BISHOP; }
+    }
+    // Look for rooks then queens:
+    for (i=0; i < numDefenders; i++) {
+        if (piece_Type (defenders[i]) == ROOK) { return ROOK; }
+    }
+    for (i=0; i < numDefenders; i++) {
+        if (piece_Type (defenders[i]) == QUEEN) { return QUEEN; }
+    }
+
+    // If we get here, it must be defended only by the king:
+    ASSERT (numDefenders == 1  &&  piece_Type(defenders[i]) == KING);
+    return KING;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::IsKingInMate():
@@ -1526,7 +1571,16 @@ Position::DoSimpleMove (simpleMoveT * sm)
     HalfMoveClock++;
     PlyCounter++;
 
-    // Handle en passent capture:
+#ifdef SCID_NULL_MOVES
+    // Check for a null (empty) move:
+    if (isNullMove(sm)) {
+        ToMove = 1 - ToMove;
+        EPTarget = NULL_SQUARE;
+        return;
+    }
+#endif
+
+    // Handle en passant capture:
 
     if (ptype == PAWN  &&  sm->capturedPiece == EMPTY
             && square_Fyle(sm->from) != square_Fyle(sm->to)) {
@@ -1660,11 +1714,18 @@ Position::UndoSimpleMove (simpleMoveT * m)
     PlyCounter--;
     ToMove = 1-ToMove;
 
+#ifdef SCID_NULL_MOVES
+    // Check for a null move:
+    if (isNullMove(m)) {
+        return;
+    }
+#endif
+
     // Handle a capture: insert piece back into piecelist.
     // This works for EP captures too, since the square of the captured
     // piece is in the "capturedSquare" field rather than assuming the
     // value of the "to" field. The only time these two fields are
-    // different is for an en passent move.
+    // different is for an en passant move.
 
     if (m->capturedPiece != EMPTY) {
         ListPos[List[1-ToMove][m->capturedNum]] = Count[1-ToMove];
@@ -1786,6 +1847,12 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
         }
 
     } else if (p == KING) {
+#ifdef SCID_NULL_MOVES
+        if (isNullMove(m)) {
+            //*c++ = 'n'; *c++ = 'u'; *c++ = 'l'; *c++ = 'l';
+            *c++ = '-'; *c++ = '-';
+        } else
+#endif
         if ((square_Fyle(from)==E_FYLE) && (square_Fyle(to)==G_FYLE)) {
             *c++ = 'O'; *c++ = '-'; *c++ = 'O';
         } else
@@ -1920,7 +1987,7 @@ Position::ReadCoordMove (simpleMoveT * m, const char * str, bool reverse)
 //      Returns: OK or ERROR_InvalidMove.
 //
 errorT
-Position::ReadMove (simpleMoveT * m, const char * str, tokenT t)
+Position::ReadMove (simpleMoveT * m, const char * str, tokenT token)
 {
     ASSERT (m != NULL  &&  str != NULL);
     const char * s = str;
@@ -1934,6 +2001,18 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT t)
     if (LegalMoves == NULL) { AllocLegalMoves(); }
     LegalMoves->num = 0;
 
+#ifdef SCID_NULL_MOVES
+    // Check for a null move:
+    if (token == TOKEN_Move_Null) {
+        m->pieceNum = 0;
+        m->from = GetKingPos (ToMove);
+        m->to = m->from;
+        m->movingPiece = Board[m->from];
+        m->promote = EMPTY;
+        return OK;
+    }
+#endif
+
     // Strip out 'x', '-', etc leaving just pieces, files and ranks:
     char * s2 = mStr;
     uint slen = 0;
@@ -1946,9 +2025,10 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT t)
     *s2 = '\0';
     s = mStr;
 
-    if (t == TOKEN_Move_Pawn  ||  t == TOKEN_Move_Promote) {  // Pawn moves
+    // Pawn moves:
+    if (token == TOKEN_Move_Pawn  ||  token == TOKEN_Move_Promote) {
         pieceT promo = EMPTY;
-        if (t == TOKEN_Move_Promote) {
+        if (token == TOKEN_Move_Promote) {
             // Last char must be Q/R/B/N.
             // Accept the move even if it is of the form "a8Q" not "a8=Q":
             // if (s[slen-2] != '=') { return ERROR_InvalidMove; }
@@ -2002,11 +2082,11 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT t)
     }
 
     // Here we handle piece moves, including castling
-    if (t != TOKEN_Move_Piece) {  // Must be castling move
-        ASSERT(t == TOKEN_Move_Castle_King  ||  t == TOKEN_Move_Castle_Queen);
+    if (token != TOKEN_Move_Piece) {  // Must be castling move
+        ASSERT (token == TOKEN_Move_Castle_King  ||  token == TOKEN_Move_Castle_Queen);
         from = (ToMove == WHITE ? E1 : E8);
         if (GetKingPos(ToMove) != from) { return ERROR_InvalidMove; }
-        to = (t == TOKEN_Move_Castle_King ? (from + 2) : (from - 2));
+        to = (token == TOKEN_Move_Castle_King ? (from + 2) : (from - 2));
         if (MatchKingMove (to) != OK) {
             return ERROR_InvalidMove;
         } else {
@@ -2017,6 +2097,7 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT t)
 
     // If we reach here, it is a (non-castling, non-pawn) piece move.
 
+    ASSERT (token == TOKEN_Move_Piece);
     p = piece_FromChar(*s);
     if (p == EMPTY) { return ERROR_InvalidMove; }
     if (slen < 3  ||  slen > 5) { return ERROR_InvalidMove; }
@@ -2027,7 +2108,7 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT t)
     frRank = NO_RANK;
     frFyle = NO_FYLE;
     if (slen > 3) {
-        // There is some ambiguity info in input string.
+        // There is some ambiguity information in the input string.
 
         for (uint i=1; i < slen-2; i++) {  // For each extra char:
             if (isdigit(s[i])) {
@@ -2272,6 +2353,10 @@ Position::DumpLists (FILE * fp)
 //    The first 32 bytes contain the square valued, 4 bits per value,
 //    for the square order A1, B1, ...., G8, H8.
 //    The next byte contains the side to move, "W" or "B".
+//    The final two bytes contain castling and en passant rights.
+//    To ensure no bytes within the staring are zero-valued (so it
+//    can be used as a regular null-terminated string), the value 1
+//    is added to the color, castling and en passant fields.
 errorT
 Position::ReadFromCompactStr (const byte * str)
 {
@@ -2296,13 +2381,12 @@ Position::ReadFromCompactStr (const byte * str)
     }
     ToMove = toMove;
     Castling = str[33] - 1;
-    EPTarget = NULL_SQUARE;
-    if (str[34] != 0) { EPTarget = str[34] - 1; }
+    EPTarget = str[34] - 1;
     return OK;
 }
 
 void
-Position::PrintCompactStr (char * cboard, bool epField)
+Position::PrintCompactStr (char * cboard)
 {
     for (uint i=0; i < 32; i++) {
         uint i2 = i << 1;
@@ -2310,16 +2394,28 @@ Position::PrintCompactStr (char * cboard, bool epField)
     }
     cboard[32] = 1 + ToMove;
     cboard[33] = 1 + Castling;
-    if (epField) {
-        cboard[34] = 1 + EPTarget;
-        cboard[35] = 0;
+
+    // Check that there really is an enemy pawn that might
+    // be able to capture to the en passant square. For example,
+    // if the EP square is c6 but there is no white pawn on
+    // b5 or d5, then en passant should be ignored.
+
+    squareT ep = EPTarget;
+    if (ToMove == WHITE) {
+        if (Board[square_Move (ep, DOWN_LEFT)] != WP  &&
+            Board[square_Move (ep, DOWN_RIGHT)] != WP) { ep = NULL_SQUARE; }
+
     } else {
-        cboard[34] = 0;
+        if (Board[square_Move (ep, UP_LEFT)] != BP  &&
+            Board[square_Move (ep, UP_RIGHT)] != BP) { ep = NULL_SQUARE; }
+
     }
+    cboard[34] = 1 + ep;
+    cboard[35] = 0;
 }
 
 void
-Position::PrintCompactStrFlipped (char * cboard, bool epField)
+Position::PrintCompactStrFlipped (char * cboard)
 {
     for (uint i=0; i < 32; i++) {
         uint i2 = i << 1;
@@ -2330,12 +2426,8 @@ Position::PrintCompactStrFlipped (char * cboard, bool epField)
     }
     cboard[32] = 1 + (1 - ToMove);
     cboard[33] = 1 + Castling;
-    if (epField) {
-        cboard[34] = 1 + EPTarget;
-        cboard[35] = 0;
-    } else {
-        cboard[34] = 0;
-    }
+    cboard[34] = 1 + EPTarget;
+    cboard[35] = 0;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2434,6 +2526,18 @@ Position::ReadFromFEN (const char * str)
     while (isspace(*s)) { s++; }
     if (*s == '-') {
         s++;  // do nothing
+    } else if (*s == 0) {
+        // The FEN has no castling field, so just guess that
+        // castling is possible whenever a king and rook are
+        // still on their starting squares:
+        if (Board[E1] == WK) {
+            if (Board[A1] == WR) { SetCastling (WHITE, QSIDE, true); }
+            if (Board[H1] == WR) { SetCastling (WHITE, KSIDE, true); }
+        }
+        if (Board[E8] == BK) {
+            if (Board[A8] == BR) { SetCastling (BLACK, QSIDE, true); }
+            if (Board[H8] == BR) { SetCastling (BLACK, KSIDE, true); }
+        }
     } else {
         while (!isspace(*s)  &&  *s != 0) {
             switch (*s) {
@@ -2502,7 +2606,7 @@ Position::ReadFromFEN (const char * str)
 //              are printed, in compact form (no slashes between rows).
 //      If flags == FEN_BOARD, only the board and side-to-move fields
 //              are printed.
-//      If flags == FEN_CASTLING_EP, the castling and en passent fields
+//      If flags == FEN_CASTLING_EP, the castling and en passant fields
 //              are also printed.
 //      If flags == FEN_ALL_FIELDS, all fields are printed including
 //              the halfmove clock and ply counter.
@@ -2855,16 +2959,26 @@ Position::BestSquare (squareT startSq)
                 }
             } // end: for
 
-        } else {
-            // NOT a King move:
-            for (uint i=1; i < count; i++) {
-                int value = PIECE_VALUE [Board[sqList[i]]];
-                if (value >= pieceVal  &&  value > bestVal) {
-                    bestVal = value;
-                    best = i;
-                }
+            return sqList[best];
+        }
+
+        // Selected square is friendly piece, but NOT the King.
+        // Find the largest-valued piece to capture that is either
+        // of equal or higher value, or is undefended:
+        for (uint i=1; i < count; i++) {
+            int value = PIECE_VALUE [Board[sqList[i]]];
+            // First, check if it is a more valuable piece:
+            if (value >= pieceVal  &&  value > bestVal) {
+                bestVal = value;
+                best = i;
             }
-        } // end: else (not king move)
+            // Next, check if it is an undefended piece:
+            if (value > 0  &&  value >= bestVal
+                  &&  SmallestDefender (1-ToMove, sqList[i]) == EMPTY) {
+                bestVal = value;
+                best = i;
+            }
+        }
 
         return sqList[best];
     }

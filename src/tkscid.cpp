@@ -4,7 +4,7 @@
 //              Scid extensions to Tcl/Tk interpreter
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
@@ -243,6 +243,8 @@ recalcFlagCounts (scidBaseT * basePtr)
             if (date > stats->maxDate) { stats->maxDate = date; }
             stats->nYears++;
             stats->sumYears += date_GetYear (date);
+            basePtr->nb->AddDate (ie->GetWhite(), date);
+            basePtr->nb->AddDate (ie->GetBlack(), date);
         }
 
         for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
@@ -314,6 +316,30 @@ recalcNameFrequencies (NameBase * nb, Index * idx)
         nb->IncFrequency (NAME_ROUND, iE.GetRound(), 1);
     }
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Standard error messages:
+//
+const char *
+errMsgNotOpen (Tcl_Interp * ti)
+{
+    return translate (ti, "ErrNotOpen", "This is not an open database.");
+}
+
+const char *
+errMsgReadOnly (Tcl_Interp * ti)
+{
+    return translate (ti, "ErrReadOnly",
+                      "This database is read-only; it cannot be altered.");
+}
+
+const char *
+errMsgSearchInterrupted (Tcl_Interp * ti)
+{
+    return translate (ti, "ErrSearchInterrupted",
+                      "[Interrupted search; results are incomplete]");
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Main procedure
@@ -416,7 +442,7 @@ scid_InitTclTk (Tcl_Interp * ti)
         db->bbuf = new ByteBuffer;
         db->bbuf->SetBufferSize (40000);
         db->tbuf = new TextBuffer;
-        db->tbuf->SetBufferSize (80000);
+        db->tbuf->SetBufferSize (160000);
         strCopy (db->fileName, "");
         strCopy (db->realFileName, "");
         db->fileMode = FMODE_Both;
@@ -425,6 +451,7 @@ scid_InitTclTk (Tcl_Interp * ti)
         db->numGames = 0;
         db->memoryOnly = false;
         db->duplicates = NULL;
+        db->idx->SetDescription (errMsgNotOpen(ti));
 
         recalcFlagCounts (db);
 
@@ -444,6 +471,7 @@ scid_InitTclTk (Tcl_Interp * ti)
     clipbase->gfile->CreateMemoryOnly();
     clipbase->idx->CreateMemoryOnly();
     clipbase->idx->SetType (2);
+    clipbase->idx->SetDescription ("Temporary database, not kept on disk.");
     clipbase->inUse = true;
     clipbase->memoryOnly = true;
     clipbase->treeCache = new TreeCache;
@@ -620,8 +648,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return setIntResult (ti, currentBase + 1);
 
     case BASE_DESCRIPTION:
-        Tcl_AppendResult (ti, db->idx->GetDescription(), NULL);
-        break;
+        return sc_base_description (cd, ti, argc, argv);
 
     case BASE_DUPLICATES:
         return sc_base_duplicates (cd, ti, argc, argv);
@@ -644,7 +671,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     case BASE_ISREADONLY:
         if (argc == 3  &&  strEqual (argv[2], "set")) {
             if (! db->inUse) {
-                return errorResult (ti, "This is not an open database.");
+                return errorResult (ti, errMsgNotOpen(ti));
             }
             if (db->fileMode == FMODE_ReadOnly) {
                 return errorResult (ti, "This database is already read-only.");
@@ -709,10 +736,10 @@ sc_base_autoload (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     uint gnum = strGetUnsigned (argv[2]);
@@ -934,6 +961,7 @@ sc_createbase (Tcl_Interp * ti, char * filename, scidBaseT * base,
     if (base->inUse) { return TCL_ERROR; }
 
     base->idx->SetFileName (filename);
+    base->idx->SetDescription ("");
     base->nb->Clear();
     base->nb->SetFileName (filename);
     base->fileMode = FMODE_Both;
@@ -943,6 +971,7 @@ sc_createbase (Tcl_Interp * ti, char * filename, scidBaseT * base,
         base->memoryOnly = true;
         base->gfile->CreateMemoryOnly();
         base->idx->CreateMemoryOnly();
+        base->idx->SetDescription (errMsgReadOnly(ti));
         base->fileMode = FMODE_ReadOnly;
 
     } else {
@@ -1039,7 +1068,7 @@ sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (!basePtr->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     // If the database is the clipbase, do not close it, just clear it:
@@ -1049,7 +1078,7 @@ sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     basePtr->idx->Clear();
     basePtr->nb->Clear();
     basePtr->gfile->Close();
-
+    basePtr->idx->SetDescription (errMsgNotOpen(ti));
     if (basePtr->filter) { delete basePtr->filter; }
     basePtr->filter = new Filter(0);
 
@@ -1096,6 +1125,34 @@ sc_base_count (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         if (dbList[i].inUse) { numUsed++; } else { numFree++; }
     }
     return setIntResult (ti, optionMode == OPT_USED ? numUsed : numFree);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_base_description:
+//   Sets or gets the description for the database.
+//   If the database is not in use of is read-only, 
+int
+sc_base_description (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
+{
+    if (argc < 2  ||  argc > 3) {
+        return errorResult (ti, "Usage: sc_base description [<text>]");
+    }
+    if (argc == 2) {
+        // Get description:
+        Tcl_AppendResult (ti, db->idx->GetDescription(), NULL);
+        return TCL_OK;
+    }
+    if (! db->inUse) {
+        return setResult (ti, errMsgNotOpen(ti));
+    }
+    if (db->fileMode == FMODE_ReadOnly) {
+        return setResult (ti, errMsgReadOnly(ti));
+    }
+    // Edit the description and return it:
+    db->idx->SetDescription (argv[2]);
+    db->idx->WriteHeader ();
+    Tcl_AppendResult (ti, db->idx->GetDescription(), NULL);
+    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1146,12 +1203,12 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     const char * options[] = {
         "-append", "-starttext", "-endtext", "-comments", "-variations",
         "-spaces", "-symbols", "-indentComments", "-indentVariations",
-        "-column", "-noMarkCodes", NULL
+        "-column", "-noMarkCodes", "-convertNullMoves", NULL
     };
     enum {
         OPT_APPEND, OPT_STARTTEXT, OPT_ENDTEXT, OPT_COMMENTS, OPT_VARIATIONS,
         OPT_SPACES, OPT_SYMBOLS, OPT_INDENTC, OPT_INDENTV,
-        OPT_COLUMN, OPT_NOMARKS
+        OPT_COLUMN, OPT_NOMARKS, OPT_CONVERTNULL
     };
 
     if (argc < 5) { return errorResult (ti, usage); }
@@ -1169,7 +1226,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (exportFilter  &&  !db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     const char * exportFileName = argv[4];
@@ -1226,6 +1283,10 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
         case OPT_NOMARKS:
             if (flag) { pgnStyle |= PGN_STYLE_STRIP_MARKS; }
+            break;
+
+        case OPT_CONVERTNULL:
+            if (flag) { pgnStyle |= PGN_STYLE_NO_NULL_MOVES; }
             break;
 
         default:
@@ -1334,11 +1395,11 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     if (argc != 4) { return errorResult (ti, usage); }
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     // Cannot import into a read-only database unless it is memory-only:
     if (db->fileMode == FMODE_ReadOnly  &&  !(db->memoryOnly)) {
-        return errorResult (ti, "This database is read-only.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     MFile pgnFile;
@@ -1593,7 +1654,7 @@ sc_base_sort (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return errorResult (ti, "Invalid sorting criteria.");
     }
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->numGames < 2) {
         return errorResult (ti, "This database has less than two games.");
@@ -1818,7 +1879,7 @@ sc_base_type (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (! basePtr->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     uint basetype = strGetUnsigned (argv[3]);
@@ -2031,10 +2092,10 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return errorResult (ti, "Usage: sc_base duplicates [-option value ...]");
     }
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     uint deletedCount = 0;
@@ -2304,7 +2365,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
                               // as if they were player names.
 
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     int cmd = -1;
@@ -2326,7 +2387,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     // If stripping a tag, make sure we have a writable database:
     if (cmd == TAG_STRIP  &&  db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     // If setting filter, clear it now:
@@ -2647,7 +2708,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     dateT maxDate = date_EncodeFromString ("2047.12.31");
 
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->numGames == 0) {
         return errorResult (ti, "The current database has no games.");
@@ -2844,7 +2905,7 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     ByteBuffer * bbuf = new ByteBuffer;
     bbuf->SetBufferSize (40000);
     TextBuffer * tbuf = new TextBuffer;
-    tbuf->SetBufferSize (80000);
+    tbuf->SetBufferSize (160000);
     errorT err = OK;
     Game * g = scratchGame;
     uint updateStart = 250;
@@ -2962,7 +3023,7 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     static const char * options [] = {
         "altered",  "available",  "close",  "create",
-        "deepest",  "ep",         "get",    "moves",
+        "deepest",                "get",    "moves",
         "name",     "next",       "open",   "prev",
         "readonly", "set",        "size",   "strip",
         "write",
@@ -2970,7 +3031,7 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     };
     enum {
         BOOK_ALTERED,  BOOK_AVAILABLE,  BOOK_CLOSE,  BOOK_CREATE,
-        BOOK_DEEPEST,  BOOK_EP,         BOOK_GET,    BOOK_MOVES,
+        BOOK_DEEPEST,                   BOOK_GET,    BOOK_MOVES,
         BOOK_NAME,     BOOK_NEXT,       BOOK_OPEN,   BOOK_PREV,
         BOOK_READONLY, BOOK_SET,        BOOK_SIZE,   BOOK_STRIP,
         BOOK_WRITE
@@ -3019,14 +3080,6 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     case BOOK_DEEPEST:
         return sc_book_deepest (ti, bookID);
-
-    case BOOK_EP:
-            // Set/get whether this book should use the en passent
-            // field when comparing positions:
-        if (argc >= 4) {
-            pbooks[bookID]->UseEnPassent (strGetBoolean (argv[3]));
-        }
-        return setBoolResult (ti, pbooks[bookID]->UsesEnPassent ());
 
     case BOOK_GET:   // Retrieves the text for the current position:
         {
@@ -3409,7 +3462,7 @@ sc_compact (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     int index = -1;
 
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->memoryOnly) {
         return errorResult (ti, "This is a memory-only database, it cannot be compacted.");
@@ -3445,7 +3498,7 @@ sc_compact_games (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     bool showProgress = startProgressBar();
 
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only; it cannot be compacted.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     // First, create new temporary index and game file:
@@ -3558,6 +3611,7 @@ sc_compact_games (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (showProgress) { updateProgressBar (ti, 1, 1); }
 
     newIdx->SetType (db->idx->GetType());
+    newIdx->SetDescription (db->idx->GetDescription());
     if (newIdx->CloseIndexFile() != OK  ||  newGfile->Close() != OK) {
         CLEANUP;
         errMsg = errWrite;
@@ -3607,7 +3661,7 @@ sc_compact_names (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     bool showProgress = startProgressBar();
 
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only; it cannot be compacted.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     NameBase * nbNew = new NameBase;
@@ -3845,7 +3899,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
     if (!ecoBook) { return errorResult (ti, "No ECO Book is loaded."); }
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     int option = -1;
@@ -4043,7 +4097,6 @@ sc_eco_read (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (ecoBook) { delete ecoBook; }
     ecoBook = new PBook;
     ecoBook->SetFileName (argv[2]);
-    ecoBook->UseEnPassent (false);
     errorT err = ecoBook->ReadEcoFile();
     if (err != OK) {
         if (err == ERROR_FileOpen) {
@@ -5145,11 +5198,13 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     eloT avgElo = ctable->AvgRating();
     if (avgElo > 0  &&  showRatings) {
-        Tcl_AppendResult (ti, "Average Rating: ", NULL);
+        Tcl_AppendResult (ti, translate (ti, "AverageRating", "Average Rating"),
+                          ": ", NULL);
         appendUintResult (ti, avgElo);
         uint category = ctable->FideCategory (avgElo);
         if (category > 0  &&  mode == CROSSTABLE_AllPlayAll) {
-            sprintf (stemp, "  (Category %u)", category);
+            sprintf (stemp, "  (%s %u)",
+                     translate (ti, "Category", "Category"), category);
             Tcl_AppendResult (ti, stemp, NULL);
         }
         Tcl_AppendResult (ti, newlineStr, NULL);
@@ -5221,14 +5276,13 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     for (uint i=0; i < db->numGames; i++) {
         uint score = 0;
-        IndexEntry * ie = db->idx->FetchEntry (gnum);
+        IndexEntry * ie = db->idx->FetchEntry (i);
         if (ie->GetWhite() == white) { score++; }
         if (ie->GetBlack() == black) { score++; }
         if (ie->GetSite() == site) { score++; }
         if (ie->GetRound() == round) { score++; }
         if (ie->GetYear() == year) { score++; }
         if (ie->GetResult() == result) { score++; }
-
         // Update if the best score, favouring the specified game number
         // in the case of a tie:
         if (score > bestScore  ||  (score == bestScore  &&  gnum == i)) {
@@ -5253,7 +5307,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return errorResult (ti, "Usage: sc_game firstMoves <gameNum> <numMoves>");
     }
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     uint gNum = strGetUnsigned (argv[2]);
@@ -5310,7 +5364,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return errorResult (ti, usage);
     }
     if (!db->inUse) {
-        return setResult (ti, "(This is not an open database)");
+        return setResult (ti, errMsgNotOpen(ti));
     }
 
     uint startGnum = 0;
@@ -5351,7 +5405,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     for (uint gNum = startGnum; gNum < endGnum; gNum++) {
@@ -5414,7 +5468,7 @@ sc_game_import (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 //    the score, a descriptive score with optimal moves, or just a
 //    (random) optimal move.
 bool
-probe_tablebase (Tcl_Interp * ti, int mode, char * str)
+probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
 {
     int score = 0;
     bool showResult = false;
@@ -5486,7 +5540,6 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
             scratchPos->UndoSimpleMove (smPtr);
         }
     }
-    str[0] = 0;
 
     // Optimal moves mode: return only the optimal moves, nothing else.
     if (optimalMoves) {
@@ -5494,8 +5547,8 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
         for (uint i=0; i < moveList->num; i++) {
             if ((score >= 0  &&  moveScore[i] == -score)  ||
                 (score < 0  &&  moveScore[i] == -score - 1)) {
-                if (count > 0) { strAppend (str, " "); }
-                strAppend (str, sanList->list[i]);
+                if (count > 0) { dstr->Append (" "); }
+                dstr->Append (sanList->list[i]);
                 count++;
             }
         }
@@ -5506,8 +5559,8 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
         char tempStr [80];
         sprintf (tempStr, "+:%u  =:%u  -:%u  ?:%u",
                  winCount, drawCount, lossCount, unknownCount);
-        strAppend (str, tempStr);
-        int prevScore = -9999999;
+        dstr->Append (tempStr);
+        int prevScore = -9999999;   // Lower than any possible TB score
         bool first = true;
 
         while (1) {
@@ -5538,8 +5591,18 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
                 (bestScore > 0  && prevScore < 0)  ||
                 (bestScore == 0 && prevScore != 0)  ||
                 (bestScore < 0  && prevScore >= 0)) {
-                strAppend (str, "\n");
+                dstr->Append ("\n");
                 first = false;
+                const char * tag = NULL;
+                const char * msg = NULL;
+                if (bestScore > 0) {
+                    tag = "WinningMoves"; msg = "Winning moves";
+                } else if (bestScore < 0) {
+                    tag = "LosingMoves"; msg = "Losing moves";
+                } else {
+                    tag = "DrawingMoves"; msg = "Drawing moves";
+                }
+                dstr->Append ("\n", translate(ti, tag, msg), ":");
             }
             if (bestScore != prevScore) {
                 if (bestScore > 0) {
@@ -5549,15 +5612,17 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
                 } else {
                     sprintf (tempStr, " -%3d   ", -bestScore);
                 }
-                strAppend (str, "\n", tempStr);
+                dstr->Append ("\n", tempStr);
             } else {
-                strAppend (str, ", ");
+                dstr->Append (", ");
             }
             prevScore = bestScore;
-            strAppend (str, bestMove);
+            dstr->Append (bestMove);
         }
         if (unknownCount > 0) {
-            strAppend (str, "\n\n ?      ");
+            dstr->Append ("\n\n");
+            dstr->Append (translate (ti, "UnknownMoves", "Unknown-result moves"));
+            dstr->Append (":\n ?      ");
             bool firstUnknown = true;
             while (1) {
                 bool found = false;
@@ -5576,21 +5641,20 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
                 if (!found) { break; }
                 movePrinted[index] = true;
                 if (!firstUnknown) {
-                    strAppend (str, ", ");
+                    dstr->Append (", ");
                 }
                 firstUnknown = false;
-                strAppend (str, bestMove);
+                dstr->Append (bestMove);
             }
         }
-        strAppend (str, "\n");
+        dstr->Append ("\n");
         return true;
     }
 
     if (score == 0) {
         // Print drawn tablebase position info:
         if (showResult) {
-            strCopy (str, "= [");
-            strAppend (str, translate (ti, "Draw"));
+            dstr->Append ("= [", translate (ti, "Draw"));
         }
         if (showSummary) {
             uint drawcount = 0;
@@ -5610,67 +5674,67 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
                 }
             }
             if (moveList->num == 0) {
-                strAppend (str, " (", translate (ti, "stalemate"), ")");
+                dstr->Append (" (", translate (ti, "stalemate"), ")");
             } else if (drawcount == moveList->num) {
-                strAppend (str, " ", translate (ti, "withAllMoves"));
+                dstr->Append (" ", translate (ti, "withAllMoves"));
             } else if (drawcount == 1) {
-                strAppend (str, " ", translate (ti, "with"));
-                strAppend (str, " ", drawlist[0]);
+                dstr->Append (" ", translate (ti, "with"));
+                dstr->Append (" ", drawlist[0]);
             } else if (drawcount+1 == moveList->num && losscount==1) {
-                strAppend (str, " ", translate (ti, "withAllButOneMove"));
+                dstr->Append (" ", translate (ti, "withAllButOneMove"));
             } else if (drawcount > 0) {
-                strAppend (str, " ", translate (ti, "with"), " ");
-                strAppend (str, drawcount);
-                strAppend (str, " ");
+                dstr->Append (" ", translate (ti, "with"), " ");
+                dstr->Append (drawcount);
+                dstr->Append (" ");
                 if (drawcount == 1) {
-                    strAppend (str, translate (ti, "move"));
+                    dstr->Append (translate (ti, "move"));
                 } else {
-                    strAppend (str, translate (ti, "moves"));
+                    dstr->Append (translate (ti, "moves"));
                 }
-                strAppend (str, ": ");
+                dstr->Append (": ");
                 for (uint m=0; m < drawcount; m++) {
                     if (m < 3) {
-                        if (m > 0) { strAppend (str, ", "); }
-                        strAppend (str, drawlist[m]);
+                        if (m > 0) { dstr->Append (", "); }
+                        dstr->Append (drawlist[m]);
                     }
                 }
-                if (drawcount > 3) { strAppend (str, ", ..."); }
+                if (drawcount > 3) { dstr->Append (", ..."); }
             }
             if (losscount > 0) {
-                strAppend (str, " (");
+                dstr->Append (" (");
                 if (losscount == 1) {
                     if (losscount+drawcount == moveList->num) {
-                        strAppend (str, translate (ti, "only"), " ");
+                        dstr->Append (translate (ti, "only"), " ");
                     }
-                    strAppend (str, losslist[0], " ",
-                               translate (ti, "loses"));
+                    dstr->Append (losslist[0], " ", translate (ti, "loses"));
                 } else if (drawcount < 4  &&
                            drawcount+losscount == moveList->num) {
-                    strAppend (str, translate (ti, "allOthersLose"));
+                    dstr->Append (translate (ti, "allOthersLose"));
                 } else {
-                    strAppend (str, losscount);
-                    strAppend (str, " ",
-                               translate (ti, "lose"), ": ");
+                    dstr->Append (losscount);
+                    dstr->Append (" ", translate (ti, "lose"), ": ");
                     for (uint m=0; m < losscount; m++) {
                         if (m < 3) {
-                            if (m > 0) { strAppend (str, ", "); }
-                            strAppend (str, losslist[m]);
+                            if (m > 0) { dstr->Append (", "); }
+                            dstr->Append (losslist[m]);
                         }
                     }
-                    if (losscount > 3) { strAppend (str, ", ..."); }
+                    if (losscount > 3) { dstr->Append (", ..."); }
                 }
-                strAppend (str, ")");
+                dstr->Append (")");
             }
         }
-        if (showResult) { strAppend (str, "]"); }
+        if (showResult) { dstr->Append ("]"); }
 
     } else if (score > 0) {
         // Print side-to-move-mates tablebase info:
         if (showResult) {
-            sprintf (str, "%s:%d [%s %s %d",
+            char temp[200];
+            sprintf (temp, "%s:%d [%s %s %d",
                      toMove == WHITE ? "+-" : "-+", score,
                      translate (ti, toMove == WHITE ? "White" : "Black"),
                      translate (ti, "matesIn"), score);
+            dstr->Append (temp);
         }
 
         // Now show all moves that mate optimally.
@@ -5685,31 +5749,33 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
                 if (moveFound[i]  &&  moveScore[i] == -score) {
                     count++;
                     if (count == 1) {
-                        strAppend (str, " ", translate (ti, "with"), ": ");
+                        dstr->Append (" ", translate (ti, "with"), ": ");
                     } else {
-                        strAppend (str, ", ");
+                        dstr->Append (", ");
                     }
-                    strAppend (str, sanList->list[i]);
+                    dstr->Append (sanList->list[i]);
                 }
             }
         }
-        if (showResult) { strAppend (str, "]"); }
+        if (showResult) { dstr->Append ("]"); }
 
     } else {
         // Score is negative so side to move is LOST:
         if (showResult) {
+            char tempStr [80];
             if (score == -1) {
-                sprintf (str, "# [%s %s %s",
+                sprintf (tempStr, "# [%s %s %s",
                          translate (ti, toMove == WHITE ? "Black" : "White"),
                          translate (ti, "hasCheckmated"),
                          translate (ti, toMove == WHITE ? "White" : "Black"));
             } else {
-                sprintf (str, "%s:%d [%s %s %d",
+                sprintf (tempStr, "%s:%d [%s %s %d",
                          toMove == WHITE ? "-+" : "+-", -1 - score,
                          translate (ti, toMove == WHITE ? "Black" : "White"),
                          translate (ti, "matesIn"),
                          -1 - score);
             }
+            dstr->Append (tempStr);
         }
 
         // Now show all moves that last optimally.
@@ -5722,16 +5788,15 @@ probe_tablebase (Tcl_Interp * ti, int mode, char * str)
             for (uint i=0; i < moveList->num; i++) {
                 if (moveFound[i]  &&  moveScore[i] == (-score - 1)) {
                     count++;
-                    strAppend (str, ", ");
+                    dstr->Append (", ");
                     if (count == 1) {
-                        strAppend (str, translate (ti, "longest"));
-                        strAppend (str, ": ");
+                        dstr->Append (translate (ti, "longest"), ": ");
                     }
-                    strAppend (str, sanList->list[i]);
+                    dstr->Append (sanList->list[i]);
                 }
             }
         }
-        if (showResult) { strAppend (str, "]"); }
+        if (showResult) { dstr->Append ("]"); }
     }
 
     return true;
@@ -6086,9 +6151,13 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     // Probe tablebases:
 
-    if (!hideNextMove  &&  probe_tablebase (ti, showTB, temp)) {
-        Tcl_AppendResult (ti, "<br>TB: <blue><run ::tb::open>",
-                          temp, "</run></blue>", NULL);
+    if (!hideNextMove) {
+        DString * tbStr = new DString;
+        if (probe_tablebase (ti, showTB, tbStr)) {
+            Tcl_AppendResult (ti, "<br>TB: <blue><run ::tb::open>",
+                              tbStr->Data(), "</run></blue>", NULL);
+        }
+        delete tbStr;
     }
 
     // Now check ECO book for the current position:
@@ -6204,7 +6273,7 @@ int
 sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_game load <gameNumber>");
@@ -6315,7 +6384,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     compactBoardStr * mergeBoards = new compactBoardStr [nMergePos];
     merge->MoveToPly (0);
     for (uint i=0; i < nMergePos; i++) {
-        merge->GetCurrentPos()->PrintCompactStr (mergeBoards[i], false);
+        merge->GetCurrentPos()->PrintCompactStr (mergeBoards[i]);
         merge->MoveForward();
     }
 
@@ -6330,7 +6399,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         if (db->game->MoveForward() != OK) { done = true; }
         ply++;
         compactBoardStr currentBoard;
-        db->game->GetCurrentPos()->PrintCompactStr (currentBoard, false);
+        db->game->GetCurrentPos()->PrintCompactStr (currentBoard);
         for (uint n=0; n < nMergePos; n++) {
             if (strEqual (currentBoard, mergeBoards[n])) {
                 matchPly = ply;
@@ -6883,11 +6952,11 @@ int
 sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
 {
     if (! base->inUse) {
-        Tcl_AppendResult (ti, "This is not an open database.", NULL);
+        Tcl_AppendResult (ti, errMsgNotOpen(ti), NULL);
         return TCL_ERROR;
     }
     if (base->fileMode == FMODE_ReadOnly  &&  !(base->memoryOnly)) {
-        Tcl_AppendResult (ti, "This database is read only.", NULL);
+        Tcl_AppendResult (ti, errMsgReadOnly(ti), NULL);
         return TCL_ERROR;
     }
     if (base == clipbase   &&  base->numGames >= CLIPBASE_MAX_GAMES) {
@@ -7037,10 +7106,10 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return errorResult (ti, "Usage: sc_game save <gameNumber>");
     }
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, "This database is read-only.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
     db->bbuf->Empty();
 
@@ -8505,7 +8574,12 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return sc_pos_matchMoves (cd, ti, argc, argv);
 
     case POS_MOVENUM:
-        return setUintResult (ti, (db->game->GetCurrentPly() + 2) / 2);
+        // This used to return:
+        //     (db->game->GetCurrentPly() + 2) / 2
+        // but that value is wrong for games with non-standard
+        // start positions. The correct value to return is:
+        //     db->game->GetCurrentPos()->GetFullMoveCount()
+        return setUintResult (ti, db->game->GetCurrentPos()->GetFullMoveCount());
 
     case POS_PGNBOARD:
         return sc_pos_pgnBoard (cd, ti, argc, argv);
@@ -8769,6 +8843,7 @@ sc_pos_matchMoves (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
             Tcl_AppendElement (ti, str);
         }
     }
+
     // If the prefix string is for b-pawn moves, also look for any
     // Bishop moves that could match, and add them provided they do not
     // clash with a pawn move.
@@ -8853,17 +8928,19 @@ sc_pos_probe (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (argc == 3  && argv[2][0] == 'r') {
         // Command: sc_probe report
         // Tablebase report:
-        char temp [1024];
-        if (probe_tablebase (ti, PROBE_REPORT, temp)) {
-            Tcl_AppendResult (ti, temp, NULL);
+        DString * tbReport = new DString;
+        if (probe_tablebase (ti, PROBE_REPORT, tbReport)) {
+            Tcl_AppendResult (ti, tbReport->Data(), NULL);
         }
+        delete tbReport;
     } else if (argc == 3  && argv[2][0] == 'o') {
         // Command: sc_probe optimal
         // Optimal moves from tablebase:
-        char temp [1024];
-        if (probe_tablebase (ti, PROBE_OPTIMAL, temp)) {
-            Tcl_AppendResult (ti, temp, NULL);
+        DString * tbOptimal = new DString;
+        if (probe_tablebase (ti, PROBE_OPTIMAL, tbOptimal)) {
+            Tcl_AppendResult (ti, tbOptimal->Data(), NULL);
         }
+        delete tbOptimal;
     } else {
         int score = 0;
         if (scid_TB_Probe (db->game->GetCurrentPos(), &score) == OK) {
@@ -8947,17 +9024,16 @@ sc_progressBar (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
 //////////////////////////////////////////////////////////////////////
 //   NAME commands
-
 int
 sc_name (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     static const char * options [] = {
-        "correct", "edit", "info", "match",
+        "correct", "edit", "info", "match", "plist",
         "ratings", "read", "spellcheck",
         "taglist", NULL
     };
     enum {
-        OPT_CORRECT, OPT_EDIT, OPT_INFO, OPT_MATCH,
+        OPT_CORRECT, OPT_EDIT, OPT_INFO, OPT_MATCH, OPT_PLIST,
         OPT_RATINGS, OPT_READ, OPT_SPELLCHECK
     };
 
@@ -8976,6 +9052,9 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     case OPT_MATCH:
         return sc_name_match (cd, ti, argc, argv);
+
+    case OPT_PLIST:
+        return sc_name_plist (cd, ti, argc, argv);
 
     case OPT_RATINGS:
         return sc_name_ratings (cd, ti, argc, argv);
@@ -9007,11 +9086,10 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
                 "Usage: sc_name correct p|e|s|r <corrections>");
     }
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti,
-                "This database is read-only; it cannot be altered.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     NameBase * nb = db->nb;
@@ -9172,11 +9250,10 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     const char * usage = "Usage: sc_name edit (p|e|s|r) <oldName> <newName>";
 
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti,
-                "This database is read-only; it cannot be altered.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
 
     const char * options[] = {
@@ -9391,7 +9468,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     if (argc != 3  &&  argc != 4) { return errorResult (ti, usageStr); }
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     bool ratingsOnly = false;
@@ -10059,7 +10136,7 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     const char * prefix = argv[arg++];
@@ -10079,6 +10156,186 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
     delete[] array;
 
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// comparePlayers:
+//   Called by sc_name_plist to compare two players in the
+//   current database.
+enum playerCompareT {
+    PLAYER_SORT_ELO, PLAYER_SORT_GAMES, PLAYER_SORT_NAME,
+    PLAYER_SORT_OLDEST, PLAYER_SORT_NEWEST, PLAYER_SORT_PHOTO
+};
+int
+comparePlayers (NameBase * nb, idNumberT p1, idNumberT p2, playerCompareT pc)
+{
+    const char * name1 = nb->GetName (NAME_PLAYER, p1);
+    const char * name2 = nb->GetName (NAME_PLAYER, p2);
+    int compare = 0;
+    switch (pc) {
+    case PLAYER_SORT_ELO:
+        compare = nb->GetElo(p2) - nb->GetElo(p1);
+        break;
+    case PLAYER_SORT_GAMES:
+        compare = nb->GetFrequency(NAME_PLAYER, p2)
+            - nb->GetFrequency(NAME_PLAYER, p1);
+        break;
+    case PLAYER_SORT_OLDEST:
+         // Sort by oldest game year in ascending order:
+        compare = date_GetYear(nb->GetFirstDate(p1))
+            - date_GetYear(nb->GetFirstDate(p2));
+        break;
+    case PLAYER_SORT_NEWEST:
+         // Sort by newest game date in descending order:
+        compare = date_GetYear(nb->GetLastDate(p2))
+            - date_GetYear(nb->GetLastDate(p1));
+        break;
+    case PLAYER_SORT_PHOTO:
+        compare = (int)nb->HasPhoto(p2) - (int)nb->HasPhoto(p1);
+        break;
+    default:
+        break;
+    }
+
+    // If equal, resolve by comparing names, first case-insensitive and
+    // then case-sensitively if still tied:
+    if (compare == 0) {
+        compare = strCaseCompare (name1, name2);
+        if (compare == 0) { compare = strCompare (name1, name2); }
+    }
+    return compare;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_name_plist:
+//   Returns a list of play data matching selected criteria.
+int
+sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
+{
+    const char * usage = "Usage: sc_name plist [-<option> <value> ...]";
+
+    const char * namePrefix = "";
+    uint minGames = 0;
+    uint maxGames = db->numGames;
+    uint minElo = 0;
+    uint maxElo = MAX_ELO;
+    uint maxListSize = db->nb->GetNumNames(NAME_PLAYER);
+    uint listSize = 0;
+
+    if (! db->inUse) { return errorResult (ti, errMsgNotOpen(ti)); }
+    if (db->numGames == 0) { return TCL_OK; }
+
+    static const char * options [] = {
+        "-name", "-minElo", "-maxElo", "-minGames", "-maxGames",
+        "-size", "-sort", NULL
+    };
+    enum {
+        OPT_NAME, OPT_MINELO, OPT_MAXELO, OPT_MINGAMES, OPT_MAXGAMES,
+        OPT_SIZE, OPT_SORT
+    };
+
+    // Valid sort types:
+    static const char * sortModes [] = {
+        "elo", "games", "oldest", "newest", "name", "photo", NULL
+    };
+    enum {
+        SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME, SORT_PHOTO
+    };
+
+    int sortMode = SORT_NAME;
+
+    // Read parameters in pairs:
+    int arg = 2;
+    while (arg+1 < argc) {
+        const char * option = argv[arg];
+        const char * value = argv[arg+1];
+        arg += 2;
+        int index = strUniqueMatch (option, options);
+        switch (index) {
+            case OPT_NAME:     namePrefix = value;                   break;
+            case OPT_MINELO:   minElo = strGetUnsigned (value);      break;
+            case OPT_MAXELO:   maxElo = strGetUnsigned (value);      break;
+            case OPT_MINGAMES: minGames = strGetUnsigned (value);    break;
+            case OPT_MAXGAMES: maxGames = strGetUnsigned (value);    break;
+            case OPT_SIZE:     maxListSize = strGetUnsigned (value); break;
+            case OPT_SORT:
+               sortMode = strUniqueMatch (value, sortModes);
+               break;
+            default:
+                return InvalidCommand (ti, "sc_name plist", options);
+        }
+    }
+
+    if (arg != argc) { return errorResult (ti, usage); }
+    playerCompareT pc = PLAYER_SORT_NAME;
+    switch (sortMode) {
+        case SORT_ELO:    pc = PLAYER_SORT_ELO;    break;
+        case SORT_GAMES:  pc = PLAYER_SORT_GAMES;  break;
+        case SORT_OLDEST: pc = PLAYER_SORT_OLDEST; break;
+        case SORT_NEWEST: pc = PLAYER_SORT_NEWEST; break;
+        case SORT_NAME:   pc = PLAYER_SORT_NAME;   break;
+        case SORT_PHOTO:  pc = PLAYER_SORT_PHOTO;  break;
+        default:
+            return InvalidCommand (ti, "sc_name plist -sort", sortModes);
+    }
+
+    idNumberT * plist = new idNumberT [maxListSize + 1];
+
+    NameBase * nb = db->nb;
+    uint nPlayers = nb->GetNumNames(NAME_PLAYER);
+    for (uint id = 0; id < nPlayers; id++) {
+        const char * name = nb->GetName (NAME_PLAYER, id);
+        uint nGames = nb->GetFrequency (NAME_PLAYER, id);
+        eloT elo = nb->GetElo (id);
+        if (nGames < minGames  ||  nGames > maxGames) { continue; }
+        if (elo < minElo  ||  elo > maxElo) { continue; }
+        if (! strIsCasePrefix (namePrefix, name)) { continue; }
+
+        // Check if this player has a photo:
+        //if (Tcl_GetVar2 (ti, "photo", (char *)name, TCL_GLOBAL_ONLY) != NULL) {
+        //    nb->SetHasPhoto (id, true);
+        //}
+
+        // Insert this player into the ordered array if necessary:
+
+        uint insert = listSize;
+        for (; insert > 0; insert--) {
+            if (comparePlayers (nb, plist[insert-1], id, pc) < 0) { break; }
+        }
+        if (insert >= maxListSize) { continue; }
+        // Move all later IDs in list along one place:
+        for (uint j = listSize; j > insert; j--) {
+            plist[j] = plist[j-1];
+        }
+        plist[insert] = id;
+        if (listSize < maxListSize) { listSize++; }
+    }
+
+    // Generate the list of player data:
+    Tcl_DString * ds = new Tcl_DString;
+    Tcl_DStringInit (ds);
+    
+    for (uint p=0; p < listSize; p++) {
+        Tcl_DStringStartSublist (ds);
+        char tmp[16];
+        sprintf (tmp, "%u", nb->GetFrequency (NAME_PLAYER,plist[p]));
+        Tcl_DStringAppendElement(ds, tmp);
+        sprintf (tmp, "%u", date_GetYear(nb->GetFirstDate (plist[p])));
+        Tcl_DStringAppendElement(ds, tmp);
+        sprintf (tmp, "%u", date_GetYear(nb->GetLastDate (plist[p])));
+        Tcl_DStringAppendElement(ds, tmp);
+        sprintf (tmp, "%u", nb->GetElo (plist[p]));
+        Tcl_DStringAppendElement(ds, tmp);
+        //strCopy (tmp, nb->HasPhoto(plist[p]) ? "1" : "0");
+        //Tcl_DStringAppendElement(ds, tmp);
+        Tcl_DStringAppendElement(ds, nb->GetName (NAME_PLAYER,plist[p]));
+        Tcl_DStringEndSublist (ds);
+    }
+    Tcl_DStringResult (ti, ds);
+    Tcl_DStringFree (ds);
+    delete ds;
+    delete[] plist;
     return TCL_OK;
 }
 
@@ -10142,11 +10399,10 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     SpellChecker * sp = spellChecker[NAME_PLAYER];
 
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti,
-                "This database is read-only; it cannot be altered.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
     if (sp == NULL) {
         Tcl_AppendResult (ti, "A spellcheck file has not been loaded.\n\n",
@@ -10356,11 +10612,10 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti,
-                "This database is read-only; it cannot be altered.");
+        return errorResult (ti, errMsgReadOnly(ti));
     }
     if (spellChecker[nt] == NULL) {
         Tcl_AppendResult (ti, "A spellcheck file has not been loaded.\n\n",
@@ -10566,7 +10821,7 @@ sc_optable (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (index >= 0  &&  index != OPT_CREATE  &&  opTable == NULL) {
         return errorResult (ti, "There is no current opening table.");
@@ -10908,7 +11163,7 @@ sc_tree_best (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         base = &(dbList[baseNum - 1]);
     }
     if (!base->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     bool results [NUM_RESULT_TYPES] = { false };
@@ -11037,7 +11292,7 @@ sc_tree_click (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         base = &(dbList[baseNum - 1]);
     }
     if (!base->inUse) {
-        return setResult (ti, "This is not an open database.");
+        return setResult (ti, errMsgNotOpen(ti));
     }
 
     int selection = strGetInteger (argv[3]);
@@ -11104,7 +11359,7 @@ sc_tree_write (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     if (!base->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (base->memoryOnly) {
         // Memory-only file, so ignore.
@@ -11226,7 +11481,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (sortMethod < 0) { return errorResult (ti, usageStr); }
 
     if (!base->inUse) {
-        return setResult (ti, "(This is not an open database)");
+        return setResult (ti, errMsgNotOpen(ti));
     }
 
     IndexEntry * ie;
@@ -11482,7 +11737,10 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     DString * output = new DString;
     char temp [200];
     if (! listMode) {
-        output->Append ("    Move   ECO       Frequency    Score  AvElo Perf AvYear");
+        const char * titleRow = 
+            "    Move   ECO       Frequency    Score  AvElo Perf AvYear";
+        titleRow = translate (ti, "TreeTitleRow", titleRow);
+        output->Append (titleRow);
         if (showEpdData) {
             for (int bookNum = 0; bookNum < MAX_EPD; bookNum++) {
                 if (pbooks[bookNum] != NULL) {
@@ -11676,17 +11934,17 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     // Print timing and other information:
     if (showTimeStats  &&  !listMode) {
         int csecs = timer.CentiSecs();
-        sprintf (temp, "\n  Time: %d%c%02d sec.",
+        sprintf (temp, "\n  Time: %d%c%02d s",
                  csecs / 100, decimalPointChar, csecs % 100);
         output->Append (temp);
 
         if (foundInCache) {
-            strCopy (temp, "  Found in cache.");
+            output->Append ("  (Found in cache)");
         } else {
-            sprintf (temp, "  Skipped: %d game%s.", skipcount,
-                     strPlural (skipcount));
+#ifdef SHOW_SKIPPED_STATS
+            output->Append ("  Skipped: ", skipcount, " games.");
+#endif
         }
-        output->Append (temp);
     }
     if (! listMode) {
         Tcl_AppendResult (ti, output->Data(), NULL);
@@ -11741,7 +11999,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         "Usage: sc_search board <filterOp> <searchType> <searchInVars> [<flip>]";
     bool showProgress = startProgressBar();
     if (!db->inUse) {
-        return errorResult (ti, "This is not an open database");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
     if (argc < 5  ||  argc > 6) { return errorResult (ti, usageStr); }
     filterOpT filterOp = strGetFilterOp (argv[2]);
@@ -11783,7 +12041,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (flip) {
         posFlip = new Position;
         char cboard [40];
-        pos->PrintCompactStrFlipped (cboard, false);
+        pos->PrintCompactStrFlipped (cboard);
         posFlip->ReadFromCompactStr ((byte *) cboard);
         hpSigFlip = posFlip->GetHPSig();
         msigFlip = matsig_Make (posFlip->GetMaterial());
@@ -11943,13 +12201,16 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     char temp[200];
     int centisecs = timer.CentiSecs();
     if (gameNum != db->numGames) {
-        Tcl_AppendResult (ti, "Warning: Search terminated early.  ", NULL);
+        Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
-    sprintf(temp, "%d / %d in %d%c%02ds, skipped %d.",
-            db->filter->Count(), startFilterCount,
-            centisecs / 100, decimalPointChar, centisecs % 100,
-            skipcount);
+    sprintf (temp, "%d / %d  (%d%c%02d s)",
+             db->filter->Count(), startFilterCount,
+             centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
+#ifdef SHOW_SKIPPED_STATS
+    sprintf(temp, "  Skipped %u games.", skipcount);
+    Tcl_AppendResult (ti, temp, NULL);
+#endif
     return TCL_OK;
 }
 
@@ -12405,13 +12666,17 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     int centisecs = timer.CentiSecs();
 
     if (gameNum != db->numGames) {
-        Tcl_AppendResult (ti, "Warning: Search terminated early.  ", NULL);
+        Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
-    sprintf (temp, "%d / %d in %d%c%02ds, skipped %d.",
+    sprintf (temp, "%d / %d  (%d%c%02d s)",
              db->filter->Count(), startFilterCount,
-             centisecs / 100, decimalPointChar, centisecs % 100,
-             skipcount);
+             centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
+#ifdef SHOW_SKIPPED_STATS
+    sprintf(temp, "  Skipped %u games.", skipcount);
+    Tcl_AppendResult (ti, temp, NULL);
+#endif
+
     return TCL_OK;
 }
 
@@ -12647,7 +12912,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     bool showProgress = startProgressBar();
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     char * sWhite = NULL;
@@ -13233,15 +13498,18 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     if (showProgress) { updateProgressBar (ti, 1, 1); }
     if (interruptedProgress()) {
-        Tcl_AppendResult (ti, "Warning: Search terminated early.  ", NULL);
+        Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
     int centisecs = timer.CentiSecs();
-    sprintf (temp, "%d match%s out of %d in %d%c%02ds, skipped %d game%s",
-             db->filter->Count(), db->filter->Count() == 1 ? "" : "es",
-             startFilterCount,
-             centisecs / 100, decimalPointChar, centisecs % 100,
-             skipcount, strPlural (skipcount));
+    sprintf (temp, "%d / %d  (%d%c%02d s)",
+             db->filter->Count(), startFilterCount,
+             centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
+#ifdef SHOW_SKIPPED_STATS
+    sprintf(temp, "  Skipped %u games.", skipcount);
+    Tcl_AppendResult (ti, temp, NULL);
+#endif
+
     return TCL_OK;
 }
 
@@ -13300,7 +13568,7 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         return errorResult (ti, "The repertoire has no lines.");
     }
     if (! db->inUse) {
-        return errorResult (ti, "This is not an open database.");
+        return errorResult (ti, errMsgNotOpen(ti));
     }
 
     filterOpT filterOp = strGetFilterOp (argv[3]);
@@ -13562,6 +13830,12 @@ sc_var_enter (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     PreMoveCommand (ti);
     db->game->MoveIntoVariation (varNumber);
+    // Should moving into a variation also automatically play
+    // the first variation move? Maybe it should depend on
+    // whether there is a comment before the first move.
+    // Uncomment the following line to auto-play the first move:
+    //db->game->MoveForward();
+
     return TCL_OK;
 }
 

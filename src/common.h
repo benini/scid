@@ -4,9 +4,9 @@
 //              Common macros, structures and constants.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
 //
@@ -14,6 +14,9 @@
 
 #ifndef SCID_COMMON_H
 #define SCID_COMMON_H
+
+// Turn on Null move support, still being tested:
+#define SCID_NULL_MOVES
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // HEADER FILES:
@@ -44,8 +47,8 @@ typedef unsigned short versionT;
 const versionT SCID_VERSION = 300;     // Current file format version = 3.0
 const versionT SCID_OLDEST_VERSION = 300; // Oldest compatible format: 3.0
 
-const char SCID_VERSION_STRING[] = "3.3";     // Current Scid version
-const char SCID_VERSION_DATE[] = "May 2002";
+const char SCID_VERSION_STRING[] = "3.4.beta3";     // Current Scid version
+const char SCID_VERSION_DATE[] = "August 2002";
 
 const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";

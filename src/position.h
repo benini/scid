@@ -4,7 +4,7 @@
 //              Position class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
@@ -64,11 +64,17 @@ struct simpleMoveT
     pieceT   promote;
     byte     epMove;         // 1 if this is an epMove  -- NOT YET USED
     squareT  capturedSquare; // ONLY different to "to" field if this capture
-                            //    is an en passent capture.
+                            //    is an en passant capture.
     byte     castleFlags;    // pre-move information
     squareT  epSquare;       // pre-move information
     ushort   oldHalfMoveClock;
 };
+
+inline bool isNullMove (simpleMoveT * sm)
+{
+    return (sm->from != NULL_SQUARE  &&  sm->from == sm->to
+              &&  piece_Type(sm->movingPiece) == KING);
+}
 
 errorT writeSimpleMove (FILE * fp, simpleMoveT * sm);
 errorT readSimpleMove (FILE * fp, simpleMoveT * sm);
@@ -95,7 +101,7 @@ struct sanListT
 
 
 // *** PseudoLegalList: for a piece on the side to move, store
-//      the squares it can move to. Does not include en passent
+//      the squares it can move to. Does not include en passant
 //      or castling or pawn moves, or moves for the king.
 //      (Queens, Rooks, Bishops, Knights only)
 //      The moves are legal except for the fact that they may leave
@@ -270,6 +276,7 @@ public:
                     return CalcNumChecks (ToMove, kingSq, checkSquares);
                 }
 
+    pieceT      SmallestDefender (colorT color, squareT target);
     bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
     bool        IsKingInMate ();
     bool        IsLegal ();
@@ -293,8 +300,8 @@ public:
     void        DumpLists (FILE * fp);
     errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);
-    void        PrintCompactStr (char * cboard, bool epField);
-    void        PrintCompactStrFlipped (char * cboard, bool epField);
+    void        PrintCompactStr (char * cboard);
+    void        PrintCompactStrFlipped (char * cboard);
     byte        CompactStrFirstByte () {
         return (Board[0] << 4) | Board[1];
     }

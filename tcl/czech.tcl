@@ -1,5 +1,5 @@
 # czech.tcl: Czech menus for Scid.
-# By Pavel Hanak.
+# Contributed by Pavel Hanak.
 # Untranslated messages are marked with a "***" comment.
 
 addLanguage C Czech 0 iso8859-2
@@ -49,6 +49,8 @@ menuText C FileMaintNameRound "Kontrola pravopisu kol..." 11 \
   {Kontrola pravopisu kol s vyu¾itím souboru spellcheck}
 menuText C FileReadOnly "Pouze pro ètení..." 0 \
   {Nastavit u databáze ochranu proti zápisu}
+menuText C FileSwitch "Switch to database" 0 \
+  {Switch to a different opened database} ;# ***
 menuText C FileExit "Ukonèit" 0 {Ukonèit Scid}
 
 # Edit menu:
@@ -73,6 +75,8 @@ menuText C EditPaste "Vlo¾it poslední partii ze schránky" 1 \
   {Vlo¾it aktivní partii ze schránky}
 menuText C EditSetup "Nastavit výchozí pozici..." 1 \
   {Nastavit výchozí pozici pro tuto partii}
+menuText C EditCopyBoard "Copy position" 6 \
+  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
 menuText C EditPasteBoard "Vlo¾it poèáteèní pozici" 12 \
   {Nastavit poèáteèní pozici z aktuálního textového výbìru (ze schránky)}
 
@@ -86,7 +90,7 @@ menuText C GameReload "Znovunatáhnout aktuální partii" 3 \
   {Znovunata¾ení aktuální partie, v¹echny doposud provedené zmìny budou ztraceny}
 menuText C GameNext "Natáhnout následující partii" 13 {Natáhnout následující partii z filtrovaných partií}
 menuText C GameLast "Natáhnout poslední partii" 14 {Natáhnout poslední partii z filtrovaných partií}
-menuText C GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText C GameRandom "Natáhnout partii náhodnì" 8 {Natáhnout náhodnì vybranou partii z filtru}
 menuText C GameNumber "Natáhnout partii èíslo..." 12 \
   {Natáhnout partii èíslo...}
 menuText C GameReplace "Ulo¾it: pøepsání partie..." 0 \
@@ -114,6 +118,7 @@ menuText C Windows "Okna" 0
 menuText C WindowsComment "Editor komentáøù" 0 {Otevøít/zavøít editor komentáøù}
 menuText C WindowsGList "Seznam partií" 0 {Otevøít/zavøít okno se seznamem partií}
 menuText C WindowsPGN "Okno PGN" 0 {Otevøít/zavøít okno PGN (okno se zápisem partie)}
+menuText C WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
 menuText C WindowsTmt "Vyhledávaè turnajù" 0 {Otevøít/zavøít okno vyhledávaèe turnajù}
 menuText C WindowsSwitcher "Výbìr databáze" 0 {Otevøít/zavøít okno pro výbìr databází}
 menuText C WindowsMaint "Okno údr¾by" 1 {Otevøít/zavøít okno údr¾by}
@@ -132,11 +137,11 @@ menuText C ToolsAnalysis2 "Program pro analýzu #2..." 20 \
 menuText C ToolsCross "Turnajová tabulka" 0 {Ukázat turnajovou tabulku pro tuto partii}
 menuText C ToolsEmail "Email mana¾er" 0 \
   {Otevøít/zavøít okno pro správu korespondeèních partií hraných pøes email}
-menuText C ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
+menuText C ToolsFilterGraph "Graf filtru" 7 \
+  {Otevøít/zavøít okno grafem èetnosti pro filtr}
 menuText C ToolsOpReport "Pøehled zahájení" 3 \
   {Generovat pøehled zajímavých faktù o zahájení dané aktuální pozicí}
-menuText C ToolsTracker "Piece Tracker"  0 {Open the Piece Tracker window} ;# ***
+menuText C ToolsTracker "Stopaø figur"  0 {Otevøít okno pro stopování výskytu figur na polích}
 menuText C ToolsPInfo "Informace o hráèích"  0 \
   {Otevøít/aktualizovat okno s informacemi o hráèích}
 menuText C ToolsRating "Graf ELO klasifikace" 0 \
@@ -172,7 +177,7 @@ menuText C OptionsColors "Barvy..." 0 {Zmìnit barvy ¹achovnice}
 menuText C OptionsExport "Volby exportu" 6 {Zmìnit volby pro textový export}
 menuText C OptionsFonts "Písma" 0 {Zmìnit písma}
 menuText C OptionsFontsRegular "Základní písmo" 0 {Zmìnit základní písmo}
-menuText C OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
+menuText C OptionsFontsMenu "Menu" 0 {Zmìnit font pro menu}
 menuText C OptionsFontsSmall "Malé" 0 {Zmìnit malé písmo}
 menuText C OptionsFontsFixed "Neproporcionální" 0 {Zmìnit neproporcionální písmo}
 menuText C OptionsGInfo "Informace o partii" 0 {Volby pro informace o partii}
@@ -202,8 +207,8 @@ menuText C OptionsSpell "Natáhnout soubor pro kontrolu pravopisu..." 6 \
   {Natáhnout soubor pro kontrolu pravopisu}
 menuText C OptionsTable "Adresáø pro databáze koncovek..." 0 \
   {Vybrat soubor s koncovkami; v¹echny databáze z koncovkami v tomto adresáøi budou pou¾ity}
-menuText C OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
+menuText C OptionsRecent "Aktuální soubory..." 0 \
+  {Zmìnit poèet aktuálních souborù zobrazovaných v nabídce Soubor}
 menuText C OptionsSave "Ulo¾it volby" 0 {Ulo¾it volby}
 menuText C OptionsAutoSave "Automaticky ukládat volby pøi ukonèení" 0 \
   {Automaticky ukládat v¹echny volby pøi ukonèení programu}
@@ -225,6 +230,7 @@ menuText C GInfoFEN "Ukázat FEN" 7
 menuText C GInfoMarks "Zobrazovat barevná pole a ¹ipky" 11
 menuText C GInfoWrap "Zalamovat dlouhé øádky" 0
 menuText C GInfoFullComment "Zobrazit úplný komentáø" 10
+menuText C GInfoPhotos "Show Photos" 5 ;# ***
 menuText C GInfoTBNothing "Databáze koncovek: nic" 0
 menuText C GInfoTBResult "Databáze koncovek: jen výsledek" 2
 menuText C GInfoTBAll "Databáze koncovek: výsledek a nejlep¹í tahy" 4
@@ -289,13 +295,14 @@ translate C Black {Èerný}
 translate C Player {Hráè}
 translate C Rating {Rating}
 translate C RatingDiff {Rozdíl v ratingu (Bílý - Èerný)}
+translate C AverageRating {Average Rating} ;# ***
 translate C Event {Turnaj}
 translate C Site {Místo}
 translate C Country {Zemì}
 translate C IgnoreColors {Ignorovat barvy}
 translate C Date {Datum}
 translate C EventDate {Turnaj datum}
-translate C Decade {Decade} ;# ***
+translate C Decade {Dekáda}
 translate C Year {Rok}
 translate C Month {Mìsíc}
 translate C Months {Leden Únor Bøezen Duben Kvìten Èerven
@@ -319,6 +326,11 @@ translate C clipbase {schránka}
 translate C score {skóre}
 translate C StartPos {Poèáteèní pozice}
 translate C Total {Celkem}
+
+# Standard error messages:
+translate C ErrNotOpen {This is not an open database.} ;# ***
+translate C ErrReadOnly {This database is read-only; it cannot be altered.}
+translate C ErrSearchInterrupted {Search was interrupted; results are incomplete.}
 
 # Game information:
 translate C twin {zdvojená}
@@ -354,6 +366,10 @@ translate C allOthersLose {v¹echny ostatní prohrávají}
 translate C matesIn {matuje bìhem}
 translate C hasCheckmated {zmatoval}
 translate C longest {nejdel¹í}
+translate C WinningMoves {Winning moves} ;# ***
+translate C DrawingMoves {Drawing moves} ;# ***
+translate C LosingMoves {Losing moves} ;# ***
+translate C UnknownMoves {Unknown-result moves} ;# ***
 
 # Tip of the day:
 translate C Tip {Tip}
@@ -389,6 +405,10 @@ translate C LockTree {Zamknout}
 translate C TreeLocked {Zamknuto}
 translate C TreeBest {Nejlep¹í}
 translate C TreeBestGames {Nejlep¹í partie stromu}
+# Note: the next message is the tree window title row. After editing it,
+# check the tree window to make sure it lines up with the actual columns.
+translate C TreeTitleRow \
+  {    Move   ECO       Frequency    Score  AvElo Perf AvYear} ;# ***
 
 # Finder window:
 menuText C FinderFile "Soubor" 0
@@ -414,6 +434,17 @@ translate C FinderDir {Adresáø}
 translate C FinderDirs {Adresáøe}
 translate C FinderFiles {Soubory}
 translate C FinderUpDir {nahoru}
+
+# Player finder:
+menuText C PListFile "Soubor" 0
+menuText C PListFileUpdate "Aktualizovat" 0
+menuText C PListFileClose "Close Player Finder" 0 ;# ***
+menuText C PListSort "Øadit" 0
+menuText C PListSortName "Name" 0 ;# ***
+menuText C PListSortElo "Elo" 0
+menuText C PListSortGames "Partie" 0
+menuText C PListSortOldest "Oldest" 0 ;# ***
+menuText C PListSortNewest "Newest" 0 ;# ***
 
 # Tournament finder:
 menuText C TmtFile "Soubor" 0
@@ -441,7 +472,7 @@ menuText C GraphOptionsWhite "Bílý" 0
 menuText C GraphOptionsBlack "Èerný" 1
 menuText C GraphOptionsBoth "Oba" 1
 menuText C GraphOptionsPInfo "Informace o hráèi" 0
-translate C GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
+translate C GraphFilterTitle "Graf filtru: èetnost na 1000 partií"
 
 # Analysis window:
 translate C AddVariation {Pøidat variantu}
@@ -486,7 +517,7 @@ menuText C PgnOptIndentC "Odsazovat komentáøe" 0
 menuText C PgnOptIndentV "Odsazovat varianty" 1
 menuText C PgnOptColumn "Sloupcový styl (jeden tah na øádek)" 1
 menuText C PgnOptSpace "Mezera za èíslem tahu" 0
-menuText C PgnOptStripMarks "Strip out colored square/arrow codes" 1 ;# ***
+menuText C PgnOptStripMarks "Odstranit kódy barevných polí a ¹ipek" 1
 menuText C PgnColor "Barvy" 2
 menuText C PgnColorHeader "Hlavièka..." 0
 menuText C PgnColorAnno "Anotace..." 0
@@ -517,9 +548,9 @@ menuText C CrosstabOptNats "Národnost" 0
 menuText C CrosstabOptRatings "Elo" 0
 menuText C CrosstabOptTitles "Titul" 0
 menuText C CrosstabOptBreaks "Výsledky tie-breaku" 4
-menuText C CrosstabOptDeleted "Include deleted games" 8 ;# ***
+menuText C CrosstabOptDeleted "Vèetnì vymazaných partií" 8
 menuText C CrosstabOptColors "Barvy (jen pro ¹výcarský systém)" 0
-menuText C CrosstabOptColumnNumbers "Numbered columns (All-play-all table only)" 2 ;# ***
+menuText C CrosstabOptColumnNumbers "Èíslované sloupce (jen v tabulkách 'ka¾dý s ka¾dým')" 2
 menuText C CrosstabOptGroup "Skupiny podle skóre" 0
 menuText C CrosstabSort "Øadit" 0
 menuText C CrosstabSortName "Jméno" 0
@@ -534,6 +565,7 @@ menuText C CrosstabHelpIndex "Nápovìda - index" 11
 translate C SetFilter {Nastavit filtr}
 translate C AddToFilter {Pøidat do filtru}
 translate C Swiss {©výcarský systém}
+translate C Category {Category} ;# ***
 
 # Opening report window menus:
 menuText C OprepFile "Soubor" 0
@@ -642,6 +674,7 @@ translate C NumDeletedGames {Vymazané partie:}
 translate C NumFilterGames {Partie ve filtru:}
 translate C YearRange {Rozsah rokù:}
 translate C RatingRange {Rozsah ELO:}
+translate C Description {Description} ;# ***
 translate C Flag {Pøíznak}
 translate C DeleteCurrent {Vymazat aktuální partii}
 translate C DeleteFilter {Vymazat filtrované partie}
@@ -667,8 +700,8 @@ translate C CompactDatabase {Komprivovat databázi}
 translate C SortDatabase {Øadit databázi}
 translate C AddEloRatings {Pøidat Elo rating}
 translate C AutoloadGame {Automaticky otevírat partii è.}
-translate C StripTags {Strip PGN tags} ;# ***
-translate C StripTag {Strip tag} ;# ***
+translate C StripTags {Odstranit PGN znaèky}
+translate C StripTag {Odstranit znaèku}
 translate C Cleaner {Èi¹tìní databáze}
 translate C CleanerHelp {
     Èi¹tìní databáze Scid provede u aktuální databáze v¹echny údr¾báøské akce, které zvolíte v seznamu.
@@ -686,6 +719,7 @@ Jste si jisti, ¾e chcete zaèít s udr¾báøskými funkcemi, které jste zvolili?
 # Comment editor:
 translate C AnnotationSymbols  {Anotaèní symboly:}
 translate C Comment {Komentáø:}
+translate C InsertMark {Insert mark} ;# ***
 
 # Board search:
 translate C BoardSearch {Hledat pozici}
@@ -728,7 +762,7 @@ translate C InitialBoard {Výchozí pozice}
 translate C SideToMove {Na tahu je}
 translate C MoveNumber {Èíslo tahu}
 translate C Castling {Ro¹áda}
-translate C EnPassentFile {En Passent øada}
+translate C EnPassantFile {En Passant øada}
 translate C ClearFen {Vyèistit FEN}
 translate C PasteFen {Vlo¾it FEN}
 
@@ -758,7 +792,7 @@ Skuteènì chcete pokraèovat a zru¹it zmìny, které jste v ní uèinili?
 
 # Exit dialog:
 translate C ExitDialog {Opravdu si pøejete ukonèit Scid?}
-translate C ExitUnsaved {The following databases have unsaved game changes. If you exit now, these changes will be lost.} ;# ***
+translate C ExitUnsaved {Následující databáze obsahují partie s neulo¾enými zmìnami. Pokud nyní skonèíte, budou tyto zmìny ztraceny.}
 
 # Import window:
 translate C PasteCurrentGame {Vlo¾it aktuální partii}
@@ -839,15 +873,15 @@ translate C OprepExtraMoves {Extra poznámkové tahy v tabulce teorie}
 translate C OprepMaxGames {Maximum tahù v tabulce teorie}
 
 # Piece Tracker window:
-translate C TrackerSelectSingle {Left mouse button selects this piece.} ;# ***
-translate C TrackerSelectPair {Left mouse button selects this piece; right button also selects its sibling.}
-translate C TrackerSelectPawn {Left mouse button selects this pawn; right button selects all 8 pawns.}
-translate C TrackerStat {Statistic}
-translate C TrackerGames {% games with move to square}
-translate C TrackerTime {% time on each square}
-translate C TrackerMoves {Moves}
-translate C TrackerMovesStart {Enter the move number where tracking should begin.}
-translate C TrackerMovesStop {Enter the move number where tracking should stop.}
+translate C TrackerSelectSingle {Levým tlaèítkem my¹i se tato figura vybere.} 
+translate C TrackerSelectPair {Levým tlaèítkem se tato figura vybere; pravým se vyberou obì stejné figury.}
+translate C TrackerSelectPawn {Levým tlaèítkem se vybere tento pì¹ec; pravým se vybere v¹ech 8 pì¹cù.}
+translate C TrackerStat {Statistika}
+translate C TrackerGames {% partií s tahem na pole}
+translate C TrackerTime {% èasu na ka¾dém poli}
+translate C TrackerMoves {Tahy}
+translate C TrackerMovesStart {Vlo¾te èíslo tahu, kterým má stopování zaèít.}
+translate C TrackerMovesStop {Vlo¾te èíslo tahu, kterým má stopování skonèit.}
 
 # Game selection dialogs:
 translate C SelectAllGames {V¹echny partie v databázi}
@@ -879,10 +913,10 @@ translate C TwinsUndelete {obnovit nejprve v¹echny partie?}
 translate C TwinsSetFilter {Nastavit filtr na v¹echny vymazané zdvojené partie?}
 translate C TwinsComments {V¾dy zachovat partie s komentáøi?}
 translate C TwinsVars {V¾dy zachovat partie s variantami?}
-translate C TwinsDeleteWhich {Delete which game:} ;# ***
-translate C TwinsDeleteShorter {Shorter game} ;# ***
-translate C TwinsDeleteOlder {Smaller game number} ;# ***
-translate C TwinsDeleteNewer {Larger game number} ;# ***
+translate C TwinsDeleteWhich {Kterou partii vymazat:}
+translate C TwinsDeleteShorter {Krat¹í partii}
+translate C TwinsDeleteOlder {Partii s ni¾¹ím èíslem}
+translate C TwinsDeleteNewer {Partii s vy¹¹ím èíslem}
 translate C TwinsDelete {Vymazat partie}
 
 # Name editor window:
@@ -928,7 +962,7 @@ translate C IndentComments {Odsazovat komentáøe?}
 translate C IndentVariations {Odsazovat varianty?}
 translate C ExportColumnStyle {Sloupcový styl (jeden tah na øádek)?}
 translate C ExportSymbolStyle {Styl pro zápis komentáøù:}
-translate C ExportStripMarks {Strip square/arrow mark codes from comments?} ;# ***
+translate C ExportStripMarks {Odstranit kódové znaèky polí/¹ipek z komentáøù?}
 
 # Goto game/move dialogs:
 translate C LoadGameNumber {Vlo¾te èíslo partie:}
@@ -986,8 +1020,8 @@ Chcete tuto databázi upgradovat nyní?
 }
 
 # Recent files options:
-translate C RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate C RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate C RecentFilesMenu {Poèet aktuálních souborù v menu Soubor}
+translate C RecentFilesExtra {Poèet aktuálních souborù v extra podnabídce}
 
 }
 # end of czech.tcl
