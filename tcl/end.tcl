@@ -2184,7 +2184,6 @@ while {$argc > 0} {
 
 addSplash "\nStartup completed."
 addSplash "Scid has over 35 online help pages; just press F1 for help!"
-bind . <Configure> "recordWinSize ."
 setWinLocation .
 wm deiconify .
 wm protocol . WM_DELETE_WINDOW { fileExit }
@@ -2203,6 +2202,7 @@ updateStatusBar
 updateTitle
 updateLocale
 update
+bind . <Configure> "recordWinSize ."
 
 # Bindings to map/unmap all windows when main window is mapped:
 bind .statusbar <Map> {showHideAllWindows deiconify}

@@ -758,16 +758,20 @@ $m add command -label OptionsSave -command {
                  gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB)} {
       puts $optionF "set $i [list [set $i]]"
     }
+    puts $optionF ""
     foreach i [lsort [array names winWidth]] {
       puts $optionF "set winWidth($i)  [expr $winWidth($i)]"
       puts $optionF "set winHeight($i) [expr $winHeight($i)]"
     }
+    puts $optionF ""
     foreach i [lsort [array names winX]] {
       puts $optionF "set winX($i)  [expr $winX($i)]"
       puts $optionF "set winY($i)  [expr $winY($i)]"
     }
+    puts $optionF ""
     puts $optionF "set analysisCommand [list $analysisCommand]"
     puts $optionF "set analysisChoices [list $analysisChoices]"
+    puts $optionF ""
     foreach i {lite dark whitecolor blackcolor highcolor bestcolor \
                whiteborder blackborder \
                pgnColor(Header) pgnColor(Main) pgnColor(Var) \
@@ -775,6 +779,7 @@ $m add command -label OptionsSave -command {
                pgnColor(Current) pgnColor(NextMove) } {
       puts $optionF "set $i [list [set $i]]"
     }
+    puts $optionF ""
     foreach i [lsort [array names optable]] {
       puts $optionF "set optable($i) [list $optable($i)]"
     }
@@ -790,21 +795,22 @@ $m add command -label OptionsSave -command {
     foreach i [lsort [array names twinSettings]] {
       puts $optionF "set twinSettings($i) [list $twinSettings($i)]"
     }
+    puts $optionF ""
     foreach i {Regular Menu Small Fixed} {
       puts $optionF "set fontOptions($i) [list $fontOptions($i)]"
     }
+    puts $optionF ""
     puts $optionF "set glistFields [list $glistFields]"
     foreach type {base book html tex tablebase1 tablebase2 tablebase3 tablebase4} {
       puts $optionF "set initialDir($type) [list $initialDir($type)]"
     }
+    puts $optionF ""
     foreach type {PGN HTML LaTeX} {
       puts $optionF "set exportStartFile($type) [list $exportStartFile($type)]"
       puts $optionF "set exportEndFile($type) [list $exportEndFile($type)]"
     }
     close $optionF
     set ::statusBar "Options were saved to: $optionsFile"
-    #tk_messageBox -title "Saved options" -type ok -icon info \
-      -message "Options were saved to: $optionsFile"
   }
 }
 set helpMessage($m,18) OptionsSave

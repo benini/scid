@@ -81,6 +81,7 @@ proc ::tb::open {} {
   set w .tbWin
   if {[winfo exists $w]} { return }
   toplevel $w
+  setWinLocation $w
   wm title $w "Scid: [tr WindowsTB]"
   pack [frame $w.b] -side bottom -fill x
   pack [frame $w.info] -side left -fill y -expand yes
@@ -142,6 +143,7 @@ proc ::tb::open {} {
   pack $w.b.status -side left -fill x -expand yes
   bind $w <Destroy> { set tbWin 0; set tbTraining 0 }
   bind $w <F1> { helpWindow TB }
+  bind $w <Configure> "recordWinSize $w"
   set ::tbTraining 0
   ::tb::section
   ::tb::summary

@@ -20,26 +20,17 @@ set nagValue 0
 #   Records window width and height, for saving in options file.
 #
 proc recordWinSize {win} {
-  global winWidth winHeight tempWidth tempHeight winX winY
+  global winWidth winHeight winX winY
   if {![winfo exists $win]} { return }
   set temp [wm geometry $win]
-  set n [scan $temp "%dx%d" tempWidth tempHeight]
-  if {$n == 2} {
-    set winWidth($win) $tempWidth
-    set winHeight($win) $tempHeight
+
+  set n [scan $temp "%dx%d+%d+%d" width height x y]
+  if {$n == 4} {
+    set winWidth($win) $width
+    set winHeight($win) $height
+    set winX($win) $x
+    set winY($win) $y
   }
-  set tempX [winfo rootx $win]
-  set tempY [winfo rooty $win]
-  incr tempX -$winX(offset)
-  incr tempY -$winY(offset)
-  # Account for menu height and border if recording the main window
-  # position, since it does not get included in the "winfo rooty" value:
-  if {$win == "."} {
-    incr tempY -[winfo y .button]
-    incr tempY -6
-  }
-  set winX($win) $tempX
-  set winY($win) $tempY
 }
 
 proc setWinLocation {win} {
@@ -1310,7 +1301,6 @@ proc ::tree::best {args} {
   if {! [winfo exists $w]} {
     toplevel $w
     wm title $w "Scid: $::tr(TreeBestGames)"
-    bind $w <Configure> "recordWinSize $w"
     setWinLocation $w
     bind $w <Escape> "destroy $w"
     bind $w <F1> {helpWindow Tree Best}
@@ -1360,6 +1350,7 @@ proc ::tree::best {args} {
       -side right -padx 1 -pady 2
     pack $w.opt.lmax $w.opt.max -side left -padx 0 -pady 2
     pack $w.opt.lres $w.opt.res -side left -padx 0 -pady 2
+    bind $w <Configure> "recordWinSize $w"
     focus $w.pane.blist.list
   }
   $w.pane.blist.list delete 0 end
@@ -2266,6 +2257,7 @@ proc openCommentWin {} {
   setWinLocation $w
   bind $w <F1> {helpWindow Comment}
   bind $w <Destroy> {set commentWin 0}
+  bind $w <Configure> "recordWinSize $w"
 
   # Comment frame:
   frame $w.cf
@@ -2277,7 +2269,6 @@ proc openCommentWin {} {
   bindFocusColors $w.cf.text
   bind $w.cf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
   bind $w.cf.text <Alt-KeyRelease-s> { .commentWin.b.store invoke }
-  bind $w <Configure> "recordWinSize $w"
 
   # NAG frame:
   frame $w.nf -width 100
@@ -3182,8 +3173,8 @@ proc ::plist::open {} {
 
   toplevel $w
   wm title $w "Scid: [tr WindowsPList]"
-  #setWinLocation $w
-  #bind $w <Configure> "recordWinSize $w"
+  setWinLocation $w
+  bind $w <Configure> "recordWinSize $w"
 
   bind $w <F1> {helpWindow PList}
   bind $w <Escape> "$w.b.close invoke"
@@ -4640,6 +4631,7 @@ proc ::ptrack::make {} {
 
   toplevel $w
   wm title $w "Scid: [tr ToolsTracker]"
+  setWinLocation $w
   bind $w <Escape> "destroy $w"
   bind $w <F1> {helpWindow PTracker}
   image create photo ptrack -width $::ptrack::psize -height $::ptrack::psize
@@ -4819,6 +4811,7 @@ proc ::ptrack::make {} {
   button $f.close -text $::tr(Close) -command "destroy $w"
   pack $f.close $f.update $f.stop -side right -padx 3 -pady 5
   ::ptrack::status
+  bind $w <Configure> "recordWinSize $w"
   wm resizable $w 0 0
   focus $w.t.buttons.update
 }

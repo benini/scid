@@ -110,12 +110,12 @@ if {$windowsOS} {
   set fontOptions(Regular) [list arial   11 normal roman]
   set fontOptions(Menu)    [list arial   10 normal roman]
   set fontOptions(Small)   [list arial   10 normal roman]
-  set fontOptions(Fixed)   [list courier 11 normal roman]
+  set fontOptions(Fixed)   [list courier 10 normal roman]
 } else {
   set fontOptions(Regular) [list helvetica 11 normal roman]
   set fontOptions(Menu)    [list helvetica 10 normal roman]
   set fontOptions(Small)   [list helvetica 10 normal roman]
-  set fontOptions(Fixed)   [list fixed     11 normal roman]
+  set fontOptions(Fixed)   [list fixed     10 normal roman]
 }
 
 createFont Regular
@@ -192,7 +192,7 @@ set glistSelectPly 80
 # Default window locations:
 foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist \
              .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder \
-             .ecograph .statsWin .glistWin .maintWin .nedit offset} {
+             .ecograph .statsWin .glistWin .maintWin .nedit} {
   set winX($i) -1
   set winY($i) -1
 }
@@ -266,7 +266,7 @@ set tree(order) frequency
 set tree(autoSave) 0
 
 # Auto-save options when exiting:
-set optionsAutoSave 0
+set optionsAutoSave 1
 
 #  Numeric locale: first char is decimal, second is thousands.
 #  Example: ".," for "1,234.5" format; ",." for "1.234,5" format.
@@ -753,14 +753,15 @@ font create font_SmallItalic -family $font -size $fontsize -slant italic
 # If the values are already set from the options file, this
 # does not need to be done.
 
-if {$winX(offset) == -1  ||  $winY(offset) == -1} {
-  toplevel .testWin
-  wm geometry .testWin +0+0
-  update idletasks
-  set winX(offset) [winfo rootx .testWin]
-  set winY(offset) [winfo rooty .testWin]
-  destroy .testWin
-}
+#if {$winX(offset) == -1  ||  $winY(offset) == -1} {
+#  toplevel .testWin
+#  wm geometry .testWin +0+0
+#  update idletasks
+#  set winX(offset) [winfo rootx .testWin]
+#  set winY(offset) [winfo rooty .testWin]
+#  destroy .testWin
+#}
+
 
 ###
 ### End of file: start.tcl
