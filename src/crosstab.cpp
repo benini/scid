@@ -493,7 +493,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit)
         } else {
             LineWidth += (playerLimit * (MaxClashes + 1));
         }
-        if (PrintTiebreaks) { LineWidth += 6; }
+        if (PrintTiebreaks) { LineWidth += 7; }
     } else { // Knockout
         LineWidth = (LongestNameLen * 2) + 17 + MaxClashes;
         if (PrintRatings) { LineWidth += 10; }
@@ -661,7 +661,7 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
         dstr->Append ("   ", StartBoldCol, " Score ", EndBoldCol, "   ");
     }
     if (PrintTiebreaks) {
-        dstr->Append (StartBoldCol, "  SB  ", EndBoldCol);
+        dstr->Append (StartBoldCol, "   SB  ", EndBoldCol);
     }
 
     for (player = 0; player < playerLimit; player++) {
@@ -730,7 +730,7 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
             dstr->Append (StartRightCol, stemp, EndRightCol);
         }
         if (PrintTiebreaks) {
-            sprintf (stemp, "%2u%c%02u ", pdata->tiebreak / 4,
+            sprintf (stemp, "%3u%c%02u ", pdata->tiebreak / 4,
                      DecimalPointChar, (pdata->tiebreak % 4) * 25);
             dstr->Append (StartRightCol, stemp, EndRightCol);
         }
