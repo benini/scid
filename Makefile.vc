@@ -81,7 +81,7 @@ TCLS= tcl\start.tcl tcl\bitmaps.tcl tcl\menus.tcl tcl\windows.tcl \
       tcl\import.tcl tcl\spellchk.tcl tcl\graph.tcl tcl\maint.tcl \
       tcl\optable.tcl tcl\analysis.tcl tcl\wbdetect.tcl tcl\reper.tcl \
       tcl\lang.tcl tcl\english.tcl $(LANGUAGES) \
-      tcl\bookmark.tcl tcl\board.tcl tcl\end.tcl
+      tcl\bookmark.tcl tcl\board.tcl tcl\tb.tcl tcl\end.tcl
 
 ########################################
 
@@ -101,7 +101,7 @@ scid.gui: $(TCLS)
           + tcl\francais.tcl+tcl\italian.tcl+tcl\nederlan.tcl\
           + tcl\spanish.tcl+tcl\portbr.tcl+tcl\swedish.tcl+tcl\norsk.tcl \
           + tcl\polish.tcl+tcl\czech.tcl+tcl\serbian.tcl\
-          + tcl\bookmark.tcl+tcl\board.tcl+tcl\end.tcl .\scid.gui
+          + tcl\bookmark.tcl+tcl\board.tcl+tcl\tb.tcl+tcl\end.tcl .\scid.gui
 
 # escid.gui: Scid GUI with English only, no extra language support.
 escid.gui: $(TCLS)
@@ -114,7 +114,7 @@ escid.gui: $(TCLS)
 	  + tcl\import.tcl + tcl\spellchk.tcl + tcl\graph.tcl + tcl\maint.tcl \
 	  + tcl\optable.tcl + tcl\analysis.tcl + tcl\wbdetect.tcl \
 	  + tcl\reper.tcl + tcl\lang.tcl + tcl\english.tcl \
-          + tcl\bookmark.tcl + tcl\board.tcl + tcl\end.tcl .\escid.gui
+          + tcl\bookmark.tcl + tcl\board.tcl + tcl\tb.tcl + tcl\end.tcl .\escid.gui
 
 scmerge.exe: src\scmerge.obj $(OBJS)
 	$(LINK) /out:scmerge.exe src\scmerge.obj $(OBJS)
