@@ -7165,8 +7165,19 @@ sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     } else if (argc != 3) {
         return errorResult (ti, "Usage: sc_game startBoard <fenString>");
     }
-    if (scratchPos->ReadFromFEN (argv[2]) != OK) {
-        return errorResult (ti, "Invalid FEN string.");
+    const char * str = argv[2];
+    if (strIsPrefix ("random:", str)) {
+        // A "FEN" string that starts with "random:" is interpreted as a
+        // material configuration, and a random position with this
+        // set of material is generated. For example, "random:krpkr"
+        // generates a random legal Rook+Pawn-vs-Rook position.
+        if (scratchPos->Random (str+7) != OK) {
+            return errorResult (ti, "Invalid material string.");
+        }
+    } else {
+        if (scratchPos->ReadFromFEN (str) != OK) {
+            return errorResult (ti, "Invalid FEN string.");
+        }
     }
     db->game->SetStartPos (scratchPos);
     db->gameAltered = true;
