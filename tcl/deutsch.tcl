@@ -66,7 +66,7 @@ menuText D EditMain "Variante als Hauptvariante setzen" 13 \
 menuText D EditTrial "Variante testen" 9 \
   {Starten/Stoppen des Testmodus, zum Ausprobieren von Ideen am Brett}
 menuText D EditStrip "Entfernen" 1 \
-   {Kommentare oder Varianten aus der Partie entfernen} ;#*** Gibt's Besseres?
+   {Kommentare oder Varianten aus der Partie entfernen} ;# Gibt's Besseres?
 menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \
@@ -92,8 +92,9 @@ menuText D GameReload "Partie wiederladen" 7 \
   {Diese Partie erneut laden, alle Änderungen werden verworfen}
 menuText D GameNext "Nächste Partie laden" 0 {Lädt die nächste Partie aus dem Filter}
 menuText D GameLast "Letzte Partie laden" 0 {Lädt die letzte Partie aus dem Filter}
-menuText D GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
-menuText D GameNumber "Lade Partie Nummer..." 13 \
+menuText D GameRandom "Zufällige Partie laden" 1 \
+  {Lädt eine zufällig ausgewählte Partie aus dem Filter} ;# ***
+menuText D GameNumber "Lade Partie Nummer..." 14 \
   {Lädt eine Partie durch Angabe der Nummer}
 menuText D GameReplace "Partie ersetzen..." 8 \
   {Sichert diese Partie, alte Version wird überschrieben}
@@ -148,8 +149,8 @@ menuText D ToolsAnalysis2 "Analyse-Engine #2..." 16 \
 menuText D ToolsCross "Kreuztabelle" 0 {Kreuztabelle für diese Partie anzeigen}
 menuText D ToolsEmail "E-Mail-Manager" 7 \
   {Fenster E-Mail-Manager öffnen/schließen}
-menuText D ToolsFilterGraph "Filter graph" 7 \
-  {Öffnet/schließt das Filter Graph Fenster}
+menuText D ToolsFilterGraph "Filter-Graphik" 7 \
+  {Öffnet/schließt das Fenster Filter-Graphik}
 menuText D ToolsOpReport "Eröffnungsreport" 0 \
   {Eröffnungsreport für die aktuelle Position erstellen}
 menuText D ToolsTracker "Figurenverteilung"  7 \
@@ -235,7 +236,7 @@ menuText D HelpAbout "Info zu Scid" 1 {Über Scid}
 menuText D GInfoHideNext "Verstecke nächsten Zug" 0
 menuText D GInfoMaterial "Zeige Materialwerte" 0
 menuText D GInfoFEN "Zeige FEN" 6
-menuText D GInfoMarks "Zeige farbige Felder und Pfeile" 0
+menuText D GInfoMarks "Gefärbte Felder und Pfeile zeigen" 0
 menuText D GInfoWrap "Umbruch bei langen Zeilen" 0
 menuText D GInfoFullComment "Vollständigen Kommentar zeigen" 14
 menuText D GInfoTBNothing "Endspieltabellen: nichts" 18
@@ -269,7 +270,7 @@ translate D Index {Inhalt}
 translate D LoadGame {Partie laden}
 translate D BrowseGame {Partie betrachten}
 translate D MergeGame {Partie mischen}
-translate D Preview {Vorschau} ;# *** Voransicht!? (KDE)
+translate D Preview {Vorschau} ;# Voransicht!? (KDE)
 translate D Revert {Umkehren}
 translate D Save {Speichern}
 translate D Search {Suchen}
@@ -297,7 +298,7 @@ translate D Rook {Turm}
 translate D Bishop {Läufer}
 translate D Knight {Springer}
 translate D Pawn {Bauer}
-translate D White {Weiss} ;# "Weiß" when Player information bug fixed
+translate D White {Weiß} ;### bug fixed ?
 translate D Black {Schwarz}
 translate D Player {Spieler}
 translate D Rating {Elo}
@@ -419,8 +420,8 @@ menuText D FinderSortPath "Pfad" 0
 menuText D FinderTypes "Typen" 0
 menuText D FinderTypesScid "Scid Datenbanken" 0
 menuText D FinderTypesOld "Databanken im alten Format" 0
-menuText D FinderTypesPGN "PGN Dateien" 0
-menuText D FinderTypesEPD "EPD Dateien" 0
+menuText D FinderTypesPGN "PGN-Dateien" 0
+menuText D FinderTypesEPD "EPD-Dateien" 0
 menuText D FinderTypesRep "Repertoire Dateien" 0
 menuText D FinderHelp "Hilfe" 0
 menuText D FinderHelpFinder "Datei-Finder Hilfe" 0
@@ -443,7 +444,7 @@ menuText D TmtSortElo "Elo" 0
 menuText D TmtSortSite "Ort" 0
 menuText D TmtSortEvent "Turnier" 1
 menuText D TmtSortWinner "Gewinner" 0
-translate D TmtLimit "Listen limit"
+translate D TmtLimit "Anzahl Turniere"
 translate D TmtMeanElo "Unterster Elo-Durchschnitt"
 translate D TmtNone "Keine zutreffenden Turniere gefunden."
 
@@ -457,7 +458,7 @@ menuText D GraphOptionsWhite "Weiß" 0
 menuText D GraphOptionsBlack "Schwarz" 0
 menuText D GraphOptionsBoth "Beide" 0
 menuText D GraphOptionsPInfo "Spieler-Info Spieler" 1
-translate D GraphFilterTitle "Filter Graph: Häufigkeit pro 1000 Partien"
+translate D GraphFilterTitle "Filter-Graphik: Häufigkeit pro 1000 Partien"
 
 # Analysis window:
 translate D AddVariation {Addiere Variante}
@@ -482,7 +483,7 @@ translate D EngineElo {Elo}
 translate D EngineTime {Datum}
 translate D EngineNew {Neu}
 translate D EngineEdit {Bearbeiten}
-translate D EngineRequired {Fettgedruckte Parameter notwendig; andere sind optional}
+translate D EngineRequired {Fettgedruckte Parameter obligatorisch, andere optional}
 
 
 # Stats window menus:
@@ -536,7 +537,7 @@ menuText D CrosstabOptTitles "Titel" 0
 menuText D CrosstabOptBreaks "Stichkampf-Punkte" 11
 menuText D CrosstabOptDeleted "Inklusive gelöschte Partien" 10
 menuText D CrosstabOptColors "Farben (nur Schweizer System)" 0
-menuText D CrosstabOptColumnNumbers "Nummerierte Spalten (Nur jeder-gegen-jeden-Tabelle)" 2
+menuText D CrosstabOptColumnNumbers "Numerierte Spalten (Nur jeder-gegen-jeden-Tabelle)" 2
 menuText D CrosstabOptGroup "Punktgruppen" 5
 menuText D CrosstabSort "Sortieren" 0
 menuText D CrosstabSortName "Name" 0
@@ -549,7 +550,7 @@ menuText D CrosstabHelp "Hilfe" 0
 menuText D CrosstabHelpCross "Kreuztabelle-Hilfe" 0
 menuText D CrosstabHelpIndex "Index" 0
 translate D SetFilter {Filter setzen}
-translate D AddToFilter {Zum Filter addieren}
+translate D AddToFilter {Zum Filter hinzufügen}
 translate D Swiss {Schweizer}
 
 # Opening report window menus:
@@ -684,8 +685,8 @@ translate D CompactDatabase {Datenbank komprimieren}
 translate D SortDatabase {Datenbank sortieren}
 translate D AddEloRatings {ELO-Zahlen hinzufügen}
 translate D AutoloadGame {Automatisch Partie Nr. laden}
-translate D StripTags {Strip PGN tags} ;# ***
-translate D StripTag {Strip tag} ;# ***
+translate D StripTags {PGN-Markierungen entfernen} ;# ***
+translate D StripTag {Markierung entfernen} ;# ***
 translate D Cleaner {Bereiniger}
 translate D CleanerHelp {
 Der Scid-Bereiniger wird für die aktuelle Datenbank alle
@@ -909,7 +910,7 @@ translate D TwinsSetFilter {Filter auf Dubletten setzten?}
 translate D TwinsComments {Spiele mit Kommentar immer behalten?}
 translate D TwinsVars {Spiele mit Varianten immer behalten?}
 translate D TwinsDeleteWhich {Welche Partie löschen:}
-translate D TwinsDeleteShorter {Kürzeres Partie}
+translate D TwinsDeleteShorter {Kürzere Partie}
 translate D TwinsDeleteOlder {Kleinere Partienummer}
 translate D TwinsDeleteNewer {Größere Partienummer}
 translate D TwinsDelete {Lösche Spiele}
@@ -919,7 +920,7 @@ translate D NameEditType {Namen ändern von}
 translate D NameEditSelect {Welche Spiele sollen geändert werden?}
 translate D NameEditReplace {Ersetze}
 translate D NameEditWith {durch}
-translate D NameEditMatches {Entsprechungen: Drücke Alt+1 bis Alt+9 zum Auswählen}
+translate D NameEditMatches {Entsprechungen: Drücke Strg+1 bis Strg+9 zum Auswählen}
 
 # Classify window:
 translate D Classify {Klassifiziere}
@@ -956,9 +957,9 @@ translate D ExportVariations {Varianten exportieren?}
 translate D IndentComments {Kommentare einrücken?}
 translate D IndentVariations {Varianten einrücken?}
 translate D ExportColumnStyle {Tabellarisch (ein Zug pro Zeile)?}
-translate D ExportSymbolStyle {Symboliche Notation:}
+translate D ExportSymbolStyle {Symbolische Notation:}
 translate D ExportStripMarks \
-  {Entferne Felder/Pfeile Markierzeichen aus den Kommentaren?}
+  {Felder-/Pfeile-Markierzeichen aus den Kommentaren entfernen?}
 
 # Goto game/move dialogs:
 translate D LoadGameNumber {Geben Sie die zu ladende Spiel-Nr. ein:}
@@ -1097,6 +1098,10 @@ translateECO D {
 set helpTitle(D,Index) "Inhaltsverzeichnis"
 set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 
+<p>
+[E] = Englisch.
+</p>
+
 <h4>Start und allgemeine Hilfe</h4>
 <ul>
 <li><a Guide><b>Kurzanleitung</b> Benutzung von Scid</a> <red>(Zuerst lesen!)</red></li>
@@ -1113,16 +1118,16 @@ set helpText(D,Index) {<h1>Inhaltsverzeichnis Scid-Hilfe</h1>
 <li><a Analysis><b>Analyse</b>-Fenster</a> <red>(Aktualisiert!)</red></li>
 <li><a Finder><b>Dateifinder</b>-Fenster</a></li>
 <li><a Switcher><b>Datenbank-Umschalter</b></a></li>
-<li><a OpReport><b>Eröffnungsreport</b>-Fenster</a> <red>(Aktualisiert!)</red></li>
+<li><a OpReport><b>Eröffnungsreport</b>-Fenster</a></li>
 <li><a Email><b>E-Mail</b>-Schach-Manager</a></li>
+<ENGLISH>
+<li><a PTracker><b>Figurenverteilung</b></a> <red>(Neu!)</red></li>
+</ENGLISH>
 <li><a Comment><b>Kommentareditor</b></a> <red>(Aktualisiert!)</red></li>
 <li><a Crosstable><b>Kreuztabellen</b>-Fenster</a></li>
 <li><a GameList><b>Partieliste</b>-Fenster</a> <red>(Aktualisiert!)</red></li>
 <li><a Import><b>Partie-Import</b>-Fenster</a></li>
 <li><a PGN><b>PGN</b> (Partietext)-Fenster</a></li>
-<ENGLISH>
-<li><a PTracker><b>Piece Tracker</b></a> <red>(Neu!)</red> [E]</li>
-</ENGLISH>
 <li><a Repertoire><b>Repertoire-Editor</b></a></li>
 <li><a PInfo><b>Spieler-Information</b></a></li>
 <li><a Tmt><b>Turnier-Finder</b></a> <red>(Aktualisiert!)</red></li>
@@ -1601,8 +1606,8 @@ set helpText(D,Menus) {<h1>Die Scid-Menüs</h1>
 <li><menu>Eröffnungsreport</menu>: Erstellt einen <a OpReport>Eröffnungsreport</a>
     zur aktuellen Position.</li>
 <ENGLISH>
-<li><menu>Piece Tracker</menu>: Opens the <a PTracker>piece tracker</a>
-    window.</li>
+<li><menu>Figurenverteilung</menu>: Öffnet das Fenster <a PTracker>Figurenverteilung</a>.
+    </li>
 </ENGLISH>
 <li><menu>Spieler-Information</menu>: Gibt <a PInfo>Spieler-Informationen</a>
     für einen Spieler der aktuellen Partie aus.</li>
@@ -2790,86 +2795,95 @@ in der Konfigurationsdatei gesichert.
 }
 
 
-####################
+#######################
 ### Piece Tracker help:
 
-set helpTitle(D,PTracker) "Piece Tracker"
-set helpText(D,PTracker) {<h1>The Piece Tracker window</h1>
+set helpTitle(D,PTracker) "Figurenverteilung"
+set helpText(D,PTracker) {<h1>Das Figurenverteilungs-Fenster</h1>
 <ENGLISH>
 <p>
-The <term>Piece Tracker</term> is a tool that tracks the movements
-of a particular piece in all games in the current filter, and
-generates a "footprint" showing how often each square has been
-visited by the piece.
+Die <term>Figurenverteilung </term> bzw. das Figurenverteilungs-Fenster
+ist ein Werkzeug, um die Bewegungen bestimmter Figuren in allen Partien
+des aktuellen Filters nachzuvollziehen und ein Bewegungsmuster (eine
+"Fußspur") zu generieren, das aufzeigt, wie oft jedes Feld von dieser
+Figur besetzt wurde.
 </p>
 <p>
-To use the Piece Tracker, first make sure the filter contains the
-games you are interested in, such as games reaching a particular
-opening position or all games where a certain player had the white pieces.
-Then, select the piece to track and set other tracking options; these are
-explained below. Then press the <b>Update</b> button.
+Um die Figurenverteilung zu benutzen, vergewissern Sie sich zuerst, daß
+der Filter die Partien enthält, die Sie interessieren, z.B. Partien mit
+einer bestimmten Eröffnungsposition oder alle Weißpartien eines
+bestimmten Spielers. Dann wählen Sie die Figur, deren Bewegung Sie
+nachvollziehen wollen, und wählen die unten im Text erläuterten Optionen.
+Danach klicken Sie auf den Schalter <b>Aktualisieren</b>.
 </p>
 <p>
-The tracked piece movement information is displayed in two ways: a
-graphical "footprint", and a text list with one line of data per square.
-</p>
-
-<h3>Selecting the tracked piece</h3>
-<p>
-The chess pieces are displayed as in the standard chess starting position
-below the footprint chart. A single piece (such as the White b1 knight or
-the Black d7 pawn) can be selected with the left mouse button, and all
-pieces of the same type and color (such as all White pawns or both Black
-rooks) can be selected using the right mouse button.
+Die Information über die Figurenbewegungen wird auf zwei Arten dargestellt:
+eine graphische "Fußspur" und eine Liste mit einer Textzeile pro Feld.
 </p>
 
-<h3>Other piece tracker settings</h3>
+<h3>Auswahl der Figur</h3>
 <p>
-The move number range controls when tracking should start and stop in
-each game. The default range of 1-20 (meaning tracking should stop after
-Black's 20th move) is appropriate for examining opening themes, but (for
-example) a range like 15-35 would be better when looking for middlegame
-trends.
+Die Schachfiguren sind unterhalb der "Karte" für die "Fußspur" gemäß der
+Ausgangsstellung angeordnet. Eine einzelne Figur (wie etwa der weiße
+Springer b1 oder der schwarze Bauer d7) kann mit der linken Maustaste
+ausgewählt werden, alle Figuren von gleichem Typ und gleicher Farbe
+(wie z.B. alle weißen Bauern oder beide schwarzen Türme) mit der
+rechten Maustaste.
+</p>
+
+<h3>Weitere Einstellungen</h3>
+<p>
+Der Zugnummer-Bereich kontrolliert, wann die Figurenverfolgung anfangen
+und enden soll. Die Standardeinstellung 1-20 (d.h. die Verfolgung endet
+nach dem 20. Zug von Schwarz) ist gut geeignet zur Untersuchung von
+Eröffnungsthemen, aber (z.B.) ein Bereich von 15-35 wäre besser, wenn
+man Entwicklungen im Mittelspiel betrachten will.
 </p>
 <p>
-There are two types of statistic the tracker can generate:
+Es können zwei Arten von Statistiken generiert werden:
 <ul>
-<li> <b>% games with move to square</b>: shows what proportion of filter
-     games contain a move by the tracked piece to each square. This is
-     the default setting and usually the most suitable choice.
-<li> <b>% time in each square</b>: shows the proportion of time the
-     tracked piece has spent on each square.
+<li> <b>% der Partien mit Zug auf das Feld</b>: zeigt, welcher Anteil
+     an Filterpartien einen Zug der zu beobachtenden Figur auf jedes
+     Feld enthält. Das ist die Standardeinstellung und normalerweise
+     die beste Wahl.
+<li> <b>% der Zeit auf jedem Feld</b>: zeigt den Anteil der
+     Verweildauer der zu beobachtenden Figur auf jedem Feld.
 </ul>
 </p>
 
-<h3>Hints</h3>
+<h3>Hinweise</h3>
 <p>
-There are (at least) three good uses for the Piece Tracker: opening
-preparation, middlegame themes, and player preparation.
+Es gibt (mindestens) drei gute Verwendungsmöglichkeiten für die
+Figurenverteilung: Eröffnungsvorbereitung, Mittelspielthemen und
+Spielervorbereitung.
 </p>
 <p>
-For opening preparation, use the piece tracker with the <a Tree>Tree</a>
-opened. By tracking pieces you can see trends in the current opening
-such as common pawn pushes, knight outposts, and where the bishops are
-most often placed. You may find it useful to set the move number range
-to start after the current move in the game, so the moves made to reach
-the current position are not included in the statistics.
+Für die Eröffnungsvorbereitung verwenden Sie die Figurenverteilung
+zusammen mit dem <a Tree>Zugbaum</a>. Indem Sie die Bewegungen von
+Figuren nachvollziehen, können Sie Entwicklungen in der aktuellen
+Eröffnung erkennen, beispielsweise übliche Bauernvorstöße,
+Springervorposten und die häufigsten Läuferplazierungen. Dabei ist es
+hilfreich, den Zugbereich nach dem aktuellen Partiezug beginnen zu
+lassen, so daß die Züge, die zur aktuellen Stellung führten, nicht in
+die Statistik einfließen.
 </p>
 <p>
-For middlegame themes, the piece tracker can be useful when the filter
-has been set to contain a certain ECO range (using a
-<a Searches Header>Header search</a>) or perhaps a pattern such as a
-White IQP (using a <a Searches Material>Material/pattern search</a>).
-Set the move range to something suitable (such as 20-40), and track
-pieces to see pawn pushes in the late middlegame or early endgame,
-for example.
+Für Mittelspielthemen kann die Figurenverteilung nützlich sein, wenn
+der Filter einen bestimmten Elo-Bereich enthält (mit der
+<a Searches Header>Partiedaten-Suche</a>) oder vielleicht ein Muster
+wie "Isolierter Damenbauer von Weiß"
+(mit der <a Searches Material>Material/Muster-Suche</a>).
+Stellen Sie den Zugbereich auf einen sinnvollen Wert ein (z.B. 20-40)
+und verfolgen Sie Figuren, um beispielsweise Bauernvorstöße im späten
+Mittelspiel oder frühen Endspiel zu erkennen
 </p>
 <p>
-For player preparation, use a <a Searches Header>Header search</a> or
-the <a PInfo>Player information</a> window to find all games by a
-certain player with one color. The Piece Tracker can then be used to
-discover how likely the player is to fianchetto bishops, castle
-queenside, or set up a d5 or e5 pawn wedge, for example.
+Zur Spielervorbereitung verwenden Sie die
+<a Searches Header>Partiedaten-Suche</a> oder die
+<a PInfo>Spieler-Information</a>, um alle Partien einer Farbe eines
+bestimmten Spielers zu finden. Die Figurenverteilung kann dann genutzt
+werden um z.B. festzustellen, wie gern der Spieler Läufer fianchettiert,
+lang rochiert oder einen Bauernkeil bis d5 oder e5 treibt.
 </p>
 </ENGLISH>
 
@@ -3075,8 +3089,9 @@ hervorgehoben ist. Damit wird auch das
 <a Crosstable>Kreuztabellen</a>-Fenster aktualisiert, falls es geöffnet
 ist.
 <ENGLISH>
-If you press the right mouse button instead, the game will be loaded
-and the Crosstable window will be opened even if it is closed.
+Wenn Sie statt dessen die rechte Maustaste drücken, wird die Partie
+geladen und das Kreuztabellen-Fenster geöffnet, auch wenn es vorher
+geschlossen war.
 </ENGLISH>
 </p>
 <p>
@@ -3246,25 +3261,27 @@ Diese werden im nachfolgenden erklärt.
 </p>
 
 <ENGLISH>
-<h3><name Filter>Filter Graph window</name></h3>
+<h3><name Filter>Filter-Graphik</name></h3>
 <p>
-The <term>Filter Graph</term> window shows trends by date or by
-Elo rating for the games in the current filter, compared to the
-entire database. For example, it is useful when the <a Tree>tree</a>
-is open as a tool showing how the current opening position has changed
-in popularity in recent years or decades, or whether it is especially
-popular among higher-rated players such as grandmasters.
-Each point on the graph represents the number of games in the filter
-per 1000 games in the entire database, for a particular date or Elo
-rating range.
+Das Fenster <term>Filter-Graphik</term> zeigt Entwicklungen nach Datum
+oder Elo-Zahl für die aktuellen Filterpartien im Vergleich zur gesamten
+Datenbank. Das ist beispielsweise im <a Tree>Zugbaum</a>-Fenster eine
+nützliche Hilfe um zu zeigen, wie sich die Popularität der aktuellen
+Eröffnungsposition in den letzten Jahren oder Jahrzehnten geändert hat
+oder ob sie bei hochrangigen Spielern, etwa bei Großmeistern, besonders
+beliebt ist. Jeder Punkt in der Graphik repräsentiert für ein bestimmtes
+Datum oder einen bestimmten Elo-Bereich die Anzahl der Partien im Filter
+pro 1000 Partien der gesamten Datenbank.
 </p>
 <p>
-When plotting the Filter graph by rating, Scid uses the average (mean)
-rating for each game. Estimate ratings (such as those in the spelling file)
-are not used. If one player in a game has a rating but the opponent
-does not, the opponent is presumed to have the same up to a limit of 2200.
-For example, if one player is rated 2500 and the opponent has no rating,
-the mean rating is (2500+2200)/2=2350.
+Wenn die Filter-Graphik nach Elo-Zahl ausgegeben wird, verwendet Scid
+für jede Partie die durchschnittliche (mittlere) Wertung. Geschätzte
+Elo-Zahlen (wie z.B. aus der Schreibkorrektur-Datei) werden nicht verwendet.
+Falls in einer Partie nur einer der beiden Spieler eine Elo-Zahl hat,
+wird angenommen, daß der Gegner die gleiche Elo-Zahl besitzt bis zu
+einer Höchstgrenze von 2200. Wenn also beispielsweise ein Spieler eine
+Elo-Zahl von 2500 hat und sein Gegner keine Elo-Zahl, ist die mittlere
+Wertungszahl (2500+2200)/2 = 2350.
 </p>
 </ENGLISH>
 
@@ -3362,48 +3379,52 @@ Stellung bei perfektem Spiel.
 </p>
 <ENGLISH>
 <p>
-The window has two main parts. The summary frame (on the left) shows
-which tablebases Scid found on your computer and a summary for each
-tablebase. The results frame (on the right) shows optimal results for
-all moves from the current position displayed in the main window.
+Das Fenster enthält zwei Bereiche. Der Übersichtsbereich (links) zeigt
+die Endspieltabellen, die Scid auf Ihrem Rechner gefunden hat, mit einer
+Inhaltsangabe jeder Tabelle. Der Ergebnisbereich (rechts) zeigt die
+optimalen Ergebnisse aller Züge in der aktuellen, im Haupfenster
+dargestellten Position.
 </p>
 
-<h4>The summary frame</h4>
+<h4>Der Übersichtsbereich</h4>
 <p>
-The top part of the summary frame lets you select a particular
-tablebase. Those you have available are shown in blue and unavailable
-tablebases are shown in gray, but you can select any tablebase.
-The lower part of the summary frame shows summary information for the
-selected tablebase. (Not all tablebases have a summary recorded in
-Scid yet.)
+Im oberen Teil des Übersichtsbereichs können Sie eine bestimmte
+Endspieltabelle auswählen. Die verfügbaren Tabellen werden blau
+angezeigt, die übrigen grau, aber Sie können jede Tabelle auswählen.
+Der untere Teil des Übersichtsbereichs zeigt eine Inhaltsangabe
+der Informationen der ausgewählten Endspieltabelle. (Noch haben nicht
+alle Endspieltabellen einen entsprechenden Datensatz in Scid.)
 </p>
 <p>
-The summary includes the frequency (how many games per million
-reach a position with this material, computed from a database of nearly
-600,000 master-level games), a longest mate for either side, and the
-number of mutual (or "reciprocal") zugzwangs. A mutual zugwang is a
-position where white to move draws and black to move loses, or where
-white to move loses and black to move draws, or where whoever moves
-loses.
+Diese Inhaltsangabe enthält die Häufigkeit (wie viele Partien von
+einer Million haben eine Stellung mit diesem Material erreicht,
+errechnet anhand einer Datenbank mit über 600.000 Meisterpartien),
+das späteste Matt einer Seite sowie Anzahl wechselseitiger ("umgekehrter")
+Zugzwangpositionen. Eine wechselseitige Zugzwangposition liegt dann vor,
+wenn Weiß am Zug zum Remis führt und Schwarz am Zug verliert, wenn
+Weiß am Zug verliert und Schwarz am Zug Remis ergibt oder wenn derjenige
+am Zug verliert.
 </p>
 <p>
-For some tablebases with mutual zugzwangs, the summary also includes
-a list of all of the zugwang positions or a selection of them. A full
-list for every tablebase is not feasible since some tablebases have
-thousands of mutual zugzwangs.
+Bei einigen Tabellen mit wechselseitigem Zugzwang enthält die Übersicht
+eine Liste aller Zugzwangpositionen oder eine Auswahl davon. Eine
+vollständige Liste für jede Endspieltabelle ist nicht machbar, da einige
+Tabellen tausende von Zugzwangstellungen enthalten.
 </p>
 <p>
-You can set up a random position from the selected tablebase by pressing
-the <b>Random</b> button.
+Mit dem Schalter <b>Random</b> können Sie eine zufällige Position aus
+der ausgewählten Endspieltabelle aufbauen.
 </p>
 
-<h4>The results frame</h4>
+<h4>Der Ergebnisbereich</h4>
 <p>
-The results frame is updated whenever the chessboard in the main window
-changes. The first line shows how many moves win (+), draw (=), lose (=),
-or have an unknown result (?). The rest of the frame gives a more detailed
-list of results, ranking them from shortest to longest mates, then draws,
-then longest to shortest losses. All distances are to checkmate.
+Der Ergebnisbereich wird immer dann aktualisiert, wenn sich die
+Brettstellung im Hauptfenster ändert. Die erste Zeile zeigt an, wie viele
+Züge gewinnen (+), zum Remis führen (=), verlieren (-) oder ein nicht
+bekanntes Ergebnis (? )haben. Der übrige Teil liefert Ihnen eine
+detailliertere Ergebnisliste, mit der Reihenfolge kürzeste bis längste
+Matts, danach Remis, dann längste bis kürzeste Verluste. Länge jeweils
+bis zum Matt.
 </p>
 </ENGLISH>
 
@@ -3413,7 +3434,7 @@ Zur Hilfe beim Auffinden von Endspieltabellen-Dateien im Internet
 siehe die entsprechenden <a Author Related>Links</a>.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.2, Februar 2002)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.3, April 2002)</footer></p>
 }
 
 
