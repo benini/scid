@@ -105,15 +105,18 @@ proc configureFont {name} {
 
 if {$windowsOS} {
   set fontOptions(Regular) [list arial   11 normal roman]
+  set fontOptions(Menu)    [list arial   10 normal roman]
   set fontOptions(Small)   [list arial   10 normal roman]
   set fontOptions(Fixed)   [list courier 11 normal roman]
 } else {
   set fontOptions(Regular) [list helvetica 11 normal roman]
+  set fontOptions(Menu)    [list helvetica 10 normal roman]
   set fontOptions(Small)   [list helvetica 10 normal roman]
   set fontOptions(Fixed)   [list fixed     11 normal roman]
 }
 
 createFont Regular
+createFont Menu
 createFont Small
 createFont Fixed
 
@@ -707,6 +710,8 @@ if {[info exists initialDir(tablebase)]} {
 
 # font_Regular is the default font for widgets:
 option add *Font font_Regular
+option add *Menu*Font font_Menu
+option add *Menubutton*Font font_Menu
 option add Scrollbar*borderWidth 1
 
 # Set the radiobutton and checkbutton background color if desired.

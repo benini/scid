@@ -183,6 +183,7 @@ menuText P OptionsColors "Kolory..." 0 {Zmieñ kolory szachownicy}
 menuText P OptionsExport "Eksport" 0 {Zmieñ opcje eksportu tekstu}
 menuText P OptionsFonts "Czcionka" 0 {Zmieñ font}
 menuText P OptionsFontsRegular "Podstawowa" 0 {Zmieñ podstawow± czcionkê}
+menuText P OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText P OptionsFontsSmall "Ma³a" 0 {Zmieñ ma³± czcionkê}
 menuText P OptionsFontsFixed "Sta³a" 0 {Zmieñ czcionkê sta³ej szeroko¶ci}
 menuText P OptionsGInfo "Informacje o partii" 0 {Sposób wy¶wietlania informacji o partii}

@@ -194,6 +194,7 @@ menuText N OptionsColors "Kleuren..." 0 {Wijzig bord kleuren}
 menuText N OptionsExport "Export" 1 {Wijzig tekst export opties}
 menuText N OptionsFonts "Lettertypen" 0 {Wijzig lettertype}
 menuText N OptionsFontsRegular "Standaard" 0 {Wijzig het standaard lettertype}
+menuText N OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText N OptionsFontsSmall "Klein" 0 {Wijzig het kleine lettertype}
 menuText N OptionsFontsFixed "Vaste grootte" 0 {Wijzig dit lettertype}
 menuText N OptionsGInfo "Partij Informatie" 0 {Parij-informatie opties}

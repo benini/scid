@@ -503,8 +503,8 @@ proc searchMaterial {} {
   frame $f
   button $f.clearPat -textvar ::tr(Clear) -command clearPatterns
   menubutton $f.common -textvar ::tr(CommonPatterns) \
-    -menu $f.common.m -relief raised
-  menu $f.common.m
+    -menu $f.common.m -relief raised -font $small
+  menu $f.common.m -font $small
   $f.common.m add command -label "White IQP" -command {
     if {$pMin(wp) < 1} { set pMin(wp) 1 }
     setPatterns {{wp d ? Yes} {wp c ? No} {wp e ? No}}

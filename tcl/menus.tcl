@@ -777,7 +777,7 @@ $m add command -label OptionsSave -command {
     foreach i [lsort [array names twinSettings]] {
       puts $optionF "set twinSettings($i) [list $twinSettings($i)]"
     }
-    foreach i {Regular Small Fixed} {
+    foreach i {Regular Menu Small Fixed} {
       puts $optionF "set fontOptions($i) [list $fontOptions($i)]"
     }
     puts $optionF "set glistFields [list $glistFields]"
@@ -900,6 +900,11 @@ $m add command -label OptionsFontsRegular -underline 0 -command {
   font configure font_H5 -family $font -size [expr $fontsize + 0]
 }
 set helpMessage($m,0) OptionsFontsRegular
+$m add command -label OptionsFontsMenu -underline 0 -command {
+  set fontOptions(temp) [FontDialog font_Menu $fontOptions(Menu)]
+  if {$fontOptions(temp) != ""} { set fontOptions(Menu) $fontOptions(temp) }
+}
+set helpMessage($m,1) OptionsFontsMenu
 $m add command -label OptionsFontsSmall -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Small $fontOptions(Small)]
   if {$fontOptions(temp) != ""} { set fontOptions(Small) $fontOptions(temp) }
@@ -908,12 +913,12 @@ $m add command -label OptionsFontsSmall -underline 0 -command {
   font configure font_SmallBold -family $font -size $fontsize
   font configure font_SmallItalic -family $font -size $fontsize
 }
-set helpMessage($m,0) OptionsFontsFixed
+set helpMessage($m,2) OptionsFontsFixed
 $m add command -label OptionsFontsFixed -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Fixed $fontOptions(Fixed) 1]
   if {$fontOptions(temp) != ""} { set fontOptions(Fixed) $fontOptions(temp) }
 }
-set helpMessage($m,0) OptionsFontsFixed
+set helpMessage($m,3) OptionsFontsFixed
 
 set m .menu.options.startup
 menu $m
@@ -1200,8 +1205,9 @@ proc setLanguageMenus {{lang ""}} {
                Startup Toolbar Windows ECO Spell Table Recent Save AutoSave} {
     configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
   }
-  foreach tag {OptionsFontsRegular OptionsFontsSmall OptionsFontsFixed} {
-    configMenuText .menu.options.fonts [tr $tag $oldLang] $tag $lang
+  foreach tag {Regular Menu Small Fixed} {
+    configMenuText .menu.options.fonts [tr OptionsFonts$tag $oldLang] \
+      OptionsFonts$tag $lang
   }
   foreach tag {HideNext Material FEN Marks Wrap FullComment \
                  TBNothing TBResult TBAll} {

@@ -180,6 +180,7 @@ menuText O OptionsColors "Farger..." 0 {Endre farger på brettet}
 menuText O OptionsExport "Eksport" 0 {Endre innstillinger for eksport av tekst}
 menuText O OptionsFonts "Skrifttyper" 0 {Endre skrifttyper}
 menuText O OptionsFontsRegular "Vanlig" 0 {Endre den vanlige skrifttypen}
+menuText O OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText O OptionsFontsSmall "Liten" 0 {Endre den lille skrifttypen}
 menuText O OptionsFontsFixed "Fastbredde" 0 {Endre fastbreddeskrifttypen}
 menuText O OptionsGInfo "Partiinformasjon" 0 {Informasjonsinnstillinger}

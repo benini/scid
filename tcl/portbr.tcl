@@ -180,6 +180,7 @@ menuText B OptionsColors "Cores..." 0 {Muda as cores do tabuleiro}
 menuText B OptionsExport "Exportacao" 0 {Muda as opcoes de exportacao de texto}
 menuText B OptionsFonts "Fontes" 0 {Muda os fontes}
 menuText B OptionsFontsRegular "Normal" 0 {Fonte Normal}
+menuText B OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText B OptionsFontsSmall "Pequeno" 0 {Fonte pequeno}
 menuText B OptionsFontsFixed "Fixo" 0 {Fonte de largura fixa}
 menuText B OptionsGInfo "Informacoes do Jogo" 0 {Opcoes de informacao do jogo}

@@ -172,6 +172,7 @@ menuText C OptionsColors "Barvy..." 0 {Zmìnit barvy ¹achovnice}
 menuText C OptionsExport "Volby exportu" 6 {Zmìnit volby pro textový export}
 menuText C OptionsFonts "Písma" 0 {Zmìnit písma}
 menuText C OptionsFontsRegular "Základní písmo" 0 {Zmìnit základní písmo}
+menuText C OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText C OptionsFontsSmall "Malé" 0 {Zmìnit malé písmo}
 menuText C OptionsFontsFixed "Neproporcionální" 0 {Zmìnit neproporcionální písmo}
 menuText C OptionsGInfo "Informace o partii" 0 {Volby pro informace o partii}

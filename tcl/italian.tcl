@@ -176,6 +176,7 @@ menuText I OptionsColors "Colori..." 0 {Cambia i colori della scacchiera}
 menuText I OptionsExport "Esportazione" 2 {Cambia le opzioni di importazione testo}
 menuText I OptionsFonts "Fonts" 0 {Cambia fonts}
 menuText I OptionsFontsRegular "Regolare" 0 {Cambia il font in 'regular'}
+menuText I OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText I OptionsFontsSmall "Piccolo" 0 {Cambia il font 'small'}
 menuText I OptionsFontsFixed "Fisso" 0 {Cambia il font di larghezza fissa}
 menuText I OptionsGInfo "Informazioni sulla partita" 0 {Opzioni sulle informazioni della partita}

@@ -176,6 +176,7 @@ menuText R OptionsColors "Цвета..." 0 {Изменить цвета доски и фигур}
 menuText R OptionsExport "Экспорт" 0 {Изменить установки экспорта текстов}
 menuText R OptionsFonts "Шрифты" 0 {Изменить шрифты}
 menuText R OptionsFontsRegular "Обычный" 0 {Изменить обычный шрифт}
+menuText R OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText R OptionsFontsSmall "Мелкий" 0 {Изменить мелкий шрифт}
 menuText R OptionsFontsFixed "Фиксированный" 0 {Изменить фиксированный шрифт}
 menuText R OptionsGInfo "Информация о партии" 0 {Установки информации о партии}

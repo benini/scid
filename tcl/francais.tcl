@@ -185,6 +185,7 @@ menuText F OptionsColors "Couleurs..." 0 {Changer les couleurs}
 menuText F OptionsExport "Exportation" 0 {Changer les options d'exportation}
 menuText F OptionsFonts "Polices" 0 {Changer les polices}
 menuText F OptionsFontsRegular "Normales" 0 {Changer les polices normales}
+menuText F OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText F OptionsFontsSmall "Petites" 0 {Changer les petites polices}
 menuText F OptionsFontsFixed "Fixe" 0 {Changer les polices de chasse fixe}
 menuText F OptionsGInfo "Informations de la partie" 7 {Options d'information de la partie}

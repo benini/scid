@@ -190,6 +190,7 @@ menuText S OptionsColors "Colores..." 0 {Cambia los colores del tablero}
 menuText S OptionsExport "Exportación" 0 {Cambia las opciones de exportación de texto}
 menuText S OptionsFonts "Fuentes" 0 {Cambia las fuentes}
 menuText S OptionsFontsRegular "Habitual" 0 {Cambia la fuente habitual}
+menuText S OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText S OptionsFontsSmall "Pequeña" 0 {Cambia la fuente pequeña}
 menuText S OptionsFontsFixed "Fijada" 0 {Cambia la anchura fijada de la fuente}
 menuText S OptionsGInfo "Información de la partida" 0 {Información de la partida}

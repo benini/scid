@@ -178,6 +178,7 @@ menuText Y OptionsColors "Boje" 0 {Promeni boje table}
 menuText Y OptionsExport "Izvoz" 0 {Promeni opcije tekstualnog izvoza}
 menuText Y OptionsFonts "Fontovi" 0 {Promeni fontove}
 menuText Y OptionsFontsRegular "Obièan" 0 {Promeni obièan font}
+menuText Y OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText Y OptionsFontsSmall "Mali" 0 {Promeni mali font}
 menuText Y OptionsFontsFixed "Neproporcionalni" 0 {Promeni neproporcionalni font}
 menuText Y OptionsGInfo "Informacije o Partiji" 0 {Opcije informacija o partiji}

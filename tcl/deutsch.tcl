@@ -189,6 +189,7 @@ menuText D OptionsColors "Farben..." 0 {Brettfarben ändern}
 menuText D OptionsExport "Export" 1 {Textausgabe-Optionen ändern}
 menuText D OptionsFonts "Zeichensätze" 3 {Zeichensätze wechseln}
 menuText D OptionsFontsRegular "Normal" 0 {Standard-Zeichensatz}
+menuText D OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText D OptionsFontsSmall "Klein" 0 {Kleine Zeichen}
 menuText D OptionsFontsFixed "Fest" 0 {Zeichensatz mit fester Breite (nicht-proportional)}
 menuText D OptionsGInfo "Partie-Information" 0 {Partieinformation-Optionen}

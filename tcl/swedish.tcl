@@ -178,6 +178,7 @@ menuText W OptionsColors "Färger..." 0 {Ändra brädets färger}
 menuText W OptionsExport "Export" 0 {Ändra exportalternativ}
 menuText W OptionsFonts "Typsnitt" 0 {Ändra typsnitt}
 menuText W OptionsFontsRegular "Normal" 0 {Ändra det normala typsnittet}
+menuText W OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText W OptionsFontsSmall "Liten" 0 {Ändra det lilla typsnittet}
 menuText W OptionsFontsFixed "Fixerad" 0 {Ändra det fixerade typsnittet}
 menuText W OptionsGInfo "Partiinformation" 0 {Alternativ för partiinformation}
