@@ -173,10 +173,12 @@ proc switchPastePiece { switchType } {
 }
 
 # Global variables for entry of the start position:
-set epFile {}          ;# legal values are empty, or a-h.
+set epFile {}          ;# legal values are empty, or "a"-"h".
 set moveNum 1          ;# legal values are 1-999.
 set setupStatus {}     ;# stores the FEN string.
 set castling KQkq      ;# will be empty or some combination of KQkq letters.
+set toMove white       ;# side to move, "white" or "black".
+set pastePiece K       ;# Piece being pasted, "K", "k", "Q", "q", etc.
 
 # Traces to keep entry values sensible:
 
@@ -382,8 +384,8 @@ proc setupBoard {} {
   frame .setup.r
   set sr .setup.r
   frame $sr.sw; frame $sr.sb
-  set pastePiece P
-  set toMove White
+  #set pastePiece P
+  #set toMove White
   foreach i {k q r b n p} {
     set i2 [string toupper $i]
     radiobutton $sr.sw.$i -image w${i}$boardSize -indicatoron 0 \
@@ -1570,7 +1572,7 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
   if {[winfo exists .analysisWin2]} { updateAnalysis 2 }
   if {[winfo exists .treeWin]} { ::tree::refresh }
   if {[winfo exists .commentWin]} { updateCommentWin }
-  if {[winfo exists .tbWin]} { updateTBWin }
+  if {[::tb::isopen]} { ::tb::results }
   updateMenuStates
   moveEntry_Clear
   updateStatusBar
