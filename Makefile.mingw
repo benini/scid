@@ -1,5 +1,5 @@
 ### Windows (MinGW) Makefile for the Scid chess database package.
-### Copyright (C) 2002, Shane Hudson (shane@cosc.canterbury.ac.nz)
+### Copyright (C) 2002, Shane Hudson (sgh@users.sourceforge.net)
 
 # This make file is designed for use with make from the MinGW package.
 # MinGW is a minimal GNU for Windows package.
@@ -14,7 +14,7 @@ MINGW_BIN = C:\MinGW\bin
 TCL_DIR = C:\Tcl
 
 # Tcl/Tk version: it should be "83" for Tcl/Tk 8.3, etc.
-TCL_VERSION = 83
+TCL_VERSION = 84
 
 
 ### Compiler and linker:
@@ -43,7 +43,7 @@ OPT = -O3 -fno-rtti -fno-exceptions
 CFLAGS = -DZLIB -DWIN32 $(OPT)
 
 ### EXECS: all the evecutable programs compiled from C++ files.
-EXECS= pgnscid.exe scidt.exe scid.exe tcscid.exe scmerge.exe eco2epd.exe
+EXECS= pgnscid.exe scidt.exe scid.exe tcscid.exe scmerge.exe eco2epd.exe scidlet.exe
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard
 ###   files that most of the Scid programs use.
@@ -51,7 +51,8 @@ EXECS= pgnscid.exe scidt.exe scid.exe tcscid.exe scmerge.exe eco2epd.exe
 SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
       src\position.obj src\game.obj src\gfile.obj src\matsig.obj \
       src\bytebuf.obj src\textbuf.obj src\myassert.obj src\stralloc.obj \
-      src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj
+      src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj \
+      src\movelist.obj
 
 ### ZLIBOBJS: object files in the zlib compression library.
 ###
@@ -122,20 +123,35 @@ pgnscid.exe: src\pgnscid.obj $(OBJS)
 scidt.exe: src\scidt.obj $(OBJS)
 	$(LINK) -o scidt.exe src\scidt.obj $(OBJS)
 
+scidlet.exe: src\scidlet.obj src\engine.obj src\recog.obj $(OBJS)
+	$(LINK) -o scidlet.exe src\scidlet.obj src\engine.obj src\recog.obj \
+          src/misc.obj src/position.obj src/movelist.obj src/dstring.obj
+
 scid.exe: src\scid.obj $(OBJS) src\tree.obj src\filter.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj
+            src\optable.obj src\engine.obj src\recog.obj
 	$(LINK) -o scid.exe src\scid.obj $(OBJS) \
             src\tree.obj src\filter.obj src\pbook.obj \
-            src\crosstab.obj src\spellchk.obj src\probe.obj src\optable.obj \
+            src\crosstab.obj src\spellchk.obj src\probe.obj \
+            src\optable.obj src\engine.obj src\recog.obj \
+            $(TK_LIB) -mwindows
+
+tkscid.exe: src\tkscid.obj $(OBJS) src\tree.obj src\filter.obj \
+            src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
+            src\optable.obj src\engine.obj src\recog.obj
+	$(LINK) -o tkscid.exe src\tkscid.obj $(OBJS) \
+            src\tree.obj src\filter.obj src\pbook.obj \
+            src\crosstab.obj src\spellchk.obj src\probe.obj \
+            src\optable.obj src\engine.obj src\recog.obj \
             $(TK_LIB)
 
 tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj src\filter.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj
+            src\optable.obj src\engine.obj src\recog.obj
 	$(LINK) -o tcscid.exe src\tcscid.obj $(OBJS) \
             src\tree.obj src\filter.obj src\pbook.obj \
-            src\crosstab.obj src\spellchk.obj src\probe.obj src\optable.obj \
+            src\crosstab.obj src\spellchk.obj src\probe.obj \
+            src\optable.obj src\engine.obj src\recog.obj \
             $(TCL_LIB)
 
 eco2epd.exe: src\eco2epd.obj src\pbook.obj $(OBJS)

@@ -105,7 +105,7 @@ LANGUAGES = tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tc
 ### EXECS: executable programs compiled from C++ files.
 #     Note: scidt and eco2epd are obsolete and not compiled by default.
 #
-EXECS= pgnscid.exe tkscid.exe tcscid.exe scmerge.exe
+EXECS= pgnscid.exe tkscid.exe tcscid.exe scmerge.exe scidlet.exe
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -113,7 +113,7 @@ EXECS= pgnscid.exe tkscid.exe tcscid.exe scmerge.exe
 SCIDOBJS= src/misc.o src/index.o src/date.o src/namebase.o src/position.o \
       src/game.o src/gfile.o src/matsig.o src/bytebuf.o src/textbuf.o \
       src/myassert.o src/stralloc.o src/mfile.o src/dstring.o src/pgnparse.o \
-      src/stored.o
+      src/stored.o src/movelist.o
 
 ### ZLIBOBJS: object files in the zlib compression library.
 #
@@ -260,16 +260,21 @@ scmerge.exe: src/scmerge.o src/misc.o src/index.o src/date.o src/namebase.o \
 pgnscid.exe: src/pgnscid.o $(OBJS)
 	$(LINK) $(PROFILE) -o $@ src/pgnscid.o $(OBJS) $(ZLIB)
 
+scidlet.exe: src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o \
+          src/dstring.o src/movelist.o
+	$(LINK) -o $@ src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o src/movelist.o src/dstring.o
+
+
 scidt.exe: src/scidt.o $(OBJS)
 	$(LINK) -o $@ src/scidt.o $(OBJS) $(ZLIB)
 
 tkscid.exe: src/tkscid.o $(OBJS) src/tree.o src/filter.o \
 	 src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o
-	$(LINK) -o $@ src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o $(ZLIB) $(TK_LIBRARY)
+	$(LINK) -o $@ src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB) $(TK_LIBRARY)
 
 tcscid.exe: src/tcscid.o $(OBJS) src/tree.o src/filter.o \
 	  src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o
-	$(LINK) -o tcscid src/tcscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o $(ZLIB) $(TCL_LIBRARY)
+	$(LINK) -o tcscid src/tcscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB) $(TCL_LIBRARY)
 
 # eco2epd is now optional extra program NOT compiled by default, since
 # scid now reads the .eco file format directly.

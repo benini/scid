@@ -5,6 +5,7 @@
 COMPILE = g++
 CC = gcc
 LINK = g++
+DESTDIR =
 
 # BINDIR: where the Scid programs are copied for "make install".
 #
@@ -110,7 +111,7 @@ CFLAGS = -O2 -Wall $(PROFILE)
 #       can reduce the size of the Scid program by only specifying
 #       the languages you want supported.
 #
-LANGUAGES = tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/serbian.tcl tcl/russian.tcl
+LANGUAGES = tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/hungary.tcl tcl/serbian.tcl tcl/russian.tcl
 
 
 ############################################################
@@ -122,7 +123,7 @@ LANGUAGES = tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tc
 ### EXECS: executable programs compiled from C++ files.
 #     Note: scidt and eco2epd are obsolete and not compiled by default.
 #
-EXECS= pgnscid tkscid tcscid scmerge
+EXECS= pgnscid tkscid tcscid scmerge scidlet
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -130,7 +131,7 @@ EXECS= pgnscid tkscid tcscid scmerge
 SCIDOBJS= src/misc.o src/index.o src/date.o src/namebase.o src/position.o \
       src/game.o src/gfile.o src/matsig.o src/bytebuf.o src/textbuf.o \
       src/myassert.o src/stralloc.o src/mfile.o src/dstring.o src/pgnparse.o \
-      src/stored.o
+      src/stored.o src/movelist.o
 
 ### ZLIBOBJS: object files in the zlib compression library.
 #
@@ -163,7 +164,7 @@ TCLS= tcl/start.tcl tcl/bitmaps.tcl tcl/menus.tcl tcl/windows.tcl \
 # Small extra programs. Most are written in Tcl using tcscid, but
 # a few contributed ones may be in Python or other languages.
 #
-SCRIPTS= sc_addmove sc_epgn sc_spell sc_eco sc_import sc_remote sc_tree scidpgn pgnfix
+SCRIPTS= sc_addmove sc_epgn sc_spell sc_eco sc_import sc_remote sc_tree scidpgn pgnfix spliteco
 
 ####################
 
@@ -175,10 +176,10 @@ all: scid $(SCRIPTS) $(EXECS)
 #   for all users, and put extra files in $SHAREDIR, type "make install".
 #
 install: all
-	install -m 755 -d $(BINDIR)
-	install -m 755 scid $(SCRIPTS) $(EXECS) $(BINDIR)
-	-install -m 755 -d $(SHAREDIR)
-	-install -m 644 -p scid.eco spelling.ssp $(SHAREDIR)
+	install -m 755 -d $(DESTDIR)$(BINDIR)
+	install -m 755 scid $(SCRIPTS) $(EXECS) $(DESTDIR)$(BINDIR)
+	-install -m 755 -d $(DESTDIR)$(SHAREDIR)
+	-install -m 644 -p scid.eco spelling.ssp $(DESTDIR)$(SHAREDIR)
 
 old-install: all
 	chmod 755 scid $(SCRIPTS) $(EXECS)
@@ -254,6 +255,10 @@ scidpgn: scripts/scidpgn.tcl
 	cp scripts/scidpgn.tcl ./scidpgn
 	chmod +x scidpgn
 
+spliteco: scripts/spliteco.tcl
+	cp scripts/spliteco.tcl ./spliteco
+	chmod +x spliteco
+
 tbstats: scripts/tbstats.tcl
 	cp scripts/tbstats.tcl ./tbstats
 	chmod +x tbstats
@@ -282,16 +287,20 @@ scmerge: src/scmerge.o src/misc.o src/index.o src/date.o src/namebase.o \
 pgnscid: src/pgnscid.o $(OBJS)
 	$(LINK) $(PROFILE) -o pgnscid src/pgnscid.o $(OBJS) $(ZLIB)
 
+scidlet: src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o \
+          src/dstring.o src/movelist.o
+	$(LINK) -o scidlet src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o src/movelist.o src/dstring.o
+
 scidt: src/scidt.o $(OBJS)
 	$(LINK) -o scidt src/scidt.o $(OBJS) $(ZLIB)
 
-tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o \
-         src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o
-	$(LINK) -o tkscid src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o $(ZLIB) $(TK_LIBRARY)
+tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o \
+          src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o
+	$(LINK) -o tkscid src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB) $(TK_LIBRARY)
 
-tcscid: src/tcscid.o $(OBJS) src/tree.o src/filter.o \
-          src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o
-	$(LINK) -o tcscid src/tcscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o $(ZLIB) $(TCL_LIBRARY)
+tcscid: src/tcscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o \
+          src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o
+	$(LINK) -o tcscid src/tcscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB) $(TCL_LIBRARY)
 
 # eco2epd is now optional extra program NOT compiled by default, since
 # scid now reads the .eco file format directly.
