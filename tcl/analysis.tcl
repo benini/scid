@@ -1131,10 +1131,19 @@ proc updateAnalysis {{n 1}} {
 
   if {$analysis(has_analyze$n)} {
 
+    #
     # This section is for engines that support "analyze":
+    #
 
-    sendToEngine $n "exit"
-    sendToEngine $n "force"
+    sendToEngine $n "exit"   ;# Get out of analyze mode, to send moves.
+
+    # On Crafty, "force" command has different meaning when not in
+    # XBoard mode, and some users have noticed Crafty not being in
+    # that mode at this point -- although I cannot reproduce this.
+    # So just re-send "xboard" to Crafty to make sure:
+    if {$analysis(isCrafty$n)} { sendToEngine $n "xboard" }
+
+    sendToEngine $n "force"  ;# Stop engine replying to moves.
 
     # Check if the setboard command must be used -- that is, if the
     # previous or current position arose from a non-standard start.
