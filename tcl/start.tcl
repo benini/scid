@@ -644,6 +644,7 @@ addSplash "Website: scid.sourceforge.net\n"
 
 # Remember old font settings before loading options file:
 set fontOptions(oldRegular) $fontOptions(Regular)
+set fontOptions(oldMenu) $fontOptions(Menu)
 set fontOptions(oldSmall) $fontOptions(Small)
 set fontOptions(oldFixed) $fontOptions(Fixed)
 
@@ -682,7 +683,7 @@ if {[catch {source $optionsFile} ]} {
 }
 
 # Reconfigure fonts if necessary:
-foreach i {Regular Small Fixed} {
+foreach i {Regular Menu Small Fixed} {
   if {$fontOptions($i) == $fontOptions(old$i)} {
     # Old font format in options file, or no file. Extract new options:
     set fontOptions($i) {}
