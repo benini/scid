@@ -4,7 +4,7 @@
 //              Index File Class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.2
+//  Version:    3.3
 //
 //  Notice:     Copyright (c) 2000-2002  Shane Hudson.  All rights reserved.
 //
@@ -36,7 +36,7 @@
 static const char * sortCriteriaNames[] = {
     "Date", "Year", "Event", "Site", "Round",
     "White", "Black", "Eco", "Result", "Length",
-    "Rating", "Country", "Month", "Deleted", "EventDate", NULL
+    "Rating", "Country", "Month", "Deleted", "Eventdate", NULL
 };
 
 enum {
@@ -800,7 +800,7 @@ IndexEntry::Compare (IndexEntry * ie, int * fields, NameBase * nb)
                 dateT d2 = ie->GetEventDate();
                 if (d == ZERO_DATE) { d = GetDate(); }
                 if (d2 == ZERO_DATE) { d2 = ie->GetDate(); }
-                res = (int)d - (int)d;
+                res = (int)d - (int)d2;
             }
             break;
 
