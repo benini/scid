@@ -79,9 +79,13 @@ proc indent {} {
 }
 
 proc tbstats {str} {
-  global mode
+  global mode perMillion
   set str [string toupper $str]
   set count [search $str]
+  if {$perMillion} {
+    set count [expr double($count) * 1000000.0 / double([sc_base numGames])]
+    set count [expr round($count)]
+  }
   puts -nonewline [format " %8s %5d" $str $count]
   if {$mode == "raw"} { puts "" }
 }
@@ -381,6 +385,12 @@ if {[string range [lindex $argv $arg] 0 1] == "-t"} {
   set mode text
 }
 
+set perMillion 0
+if {[lindex $argv $arg] == "-m"} {
+  incr arg
+  set perMillion 1
+}
+
 set db [lindex $argv $arg]
 if {[catch { sc_base open $db }]} {
     puts stderr "Error: could not open the Scid database: $db"
@@ -399,10 +409,18 @@ if {$mode == "html"} {
   puts {}
   puts "<p>Tablebase endgame frequency statistics by Scid [sc_info version]"
   puts {(<a href="http://scid.sourceforge.net/">scid.sourceforge.net</a>)<br>}
-  puts "Generated from the database \"$db\" ([sc_base numGames] games) on $date</p>"
+  puts "Generated from the database \"$db\" ([sc_base numGames] games) on $date"
+  if {$perMillion} {
+    puts "<br>"
+    puts "Values are occurrences per million games."
+  }
+  puts "</p>"
 } else {
   puts "# Tablebase endgame frequency statistics by Scid [sc_info version] (scid.sourceforge.net)"
   puts "# Generated from the database \"$db\" ([sc_base numGames] games) on $date"
+  if {$perMillion} {
+    puts "# Values are occurrences per million games."
+  }
 }
 
 if {[llength $argv] == 0} {
