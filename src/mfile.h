@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -24,6 +24,7 @@
 #define SCID_MFILE_H
 
 #include "common.h"
+#include "dstring.h"
 #include "error.h"
 
 enum mfileT {
@@ -88,6 +89,7 @@ class MFile
     errorT        WriteNBytes (const char * str, uint length);
     errorT        ReadNBytes (char * str, uint length);
     errorT        ReadLine (char * str, uint maxLength);
+    errorT        ReadLine (DString * dstr);
     inline errorT WriteOneByte (byte value);
     errorT        WriteTwoBytes (uint value);
     errorT        WriteThreeBytes (uint value);

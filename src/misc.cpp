@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,7 @@
 
 // Table of direction between any two chessboard squares, initialised
 // in scid_Init():
-squareDirT sqDir[66][66];
+directionT sqDir[66][66];
 
 
 //////////////////////////////////////////////////////////////////////
@@ -45,8 +45,8 @@ scid_Init ()
 
     // Initialise the sqDir[][] array of directions between every pair
     // of squares.
-    register squareT i, j;
-    squareDirT dirArray[] = { UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT,
+    squareT i, j;
+    directionT dirArray[] = { UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT,
                               DOWN_LEFT, DOWN_RIGHT, NULL_DIR };
     // First, set everything to NULL_DIR:
     for (i=A1; i <= NS; i++) {
@@ -56,12 +56,12 @@ scid_Init ()
     }
     // Now fill in the valid directions:
     for (i=A1; i <= H8; i++) {
-        squareDirT * dirptr = dirArray;
+        directionT * dirptr = dirArray;
         while (*dirptr != NULL_DIR) {
-            j = sqMove[i][*dirptr];
+            j = square_Move (i, *dirptr);
             while (j != NS) {
                 sqDir[i][j] = *dirptr;
-                j = sqMove[j][*dirptr];
+                j = square_Move (j, *dirptr);
             }
             dirptr++;
         }
@@ -473,12 +473,15 @@ strStrip (char * str, char ch)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strTrimLeft():
 //      Returns the pointer into the provided string where the first
-//      character that does NOT equal trimChar occurs.
+//      character that does NOT equal a trimChar occurs.
 const char *
-strTrimLeft (const char * target, char trimChar)
+strTrimLeft (const char * target, const char * trimChars)
 {
     const char * s = target;
-    while (*s != 0  &&  *s == trimChar) { s++; }
+    while (*s != 0) {
+        if (! strContainsChar (trimChars, *s)) { break; }
+        s++;
+    }
     return s;
 }
 
@@ -872,26 +875,38 @@ strAlphaContains (const char * longStr, const char * keyStr)
 //      Extracts a boolean value from a string.
 //      True strings start with one of "TtYy1", false strings with
 //      one of "FfNn0".
-//      Now also accepts strings starting with "J" (Ja), "O" (Oui) and
-//      "S" (Si) as true.
 //      Returns false if the string does not contain a boolean value.
 bool
 strGetBoolean (const char * str)
 {
-    char c = *str;
-    switch (c) {
-    case 'T':  case 't':
-    case 'Y':  case 'y':
-    case 'J':  case 'j':
-    case 'O':  case 'o':
-    case 'S':  case 's':
-    case '1':
-        return true;
-    case 'F':  case 'f':
-    case 'N':  case 'n':
-    case '0':
-        return false;
+    static const char * sTrue[] = {
+        "true", "yes", "on", "1", "ja", "si", "oui", NULL
+    };
+    static const char * sFalse[] = {
+        "false", "no", "off", "0", NULL
+    };
+    if (str[0] == 0) { return false; }
+
+    bool matchedTrue = false;
+    bool matchedFalse = false;
+
+    const char ** next = sTrue;
+    while (*next != NULL) {
+        if (strIsCasePrefix (str, *next)  ||  strIsCasePrefix (*next, str)) {
+           matchedTrue = true;
+        }
+        next++;
     }
+    next = sFalse;
+    while (*next != NULL) {
+        if (strIsCasePrefix (str, *next)  ||  strIsCasePrefix (*next, str)) {
+           matchedFalse = true;
+        }
+        next++;
+    }
+    if (matchedTrue  &&  !matchedFalse) { return true; }
+    if (matchedFalse  &&  !matchedTrue) { return false; }
+
     // default: return false.
     return false;
 }

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 //
-//  FILE:       date.cc
+//  FILE:       date.cpp
 //              Date functions.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -157,6 +157,6 @@ date_AddMonths (dateT date, int numMonths)
 }
 
 //////////////////////////////////////////////////////////////////////
-//  EOF: date.cc
+//  EOF: date.cpp
 //////////////////////////////////////////////////////////////////////
 

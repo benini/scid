@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -19,8 +19,8 @@
 
 // Stored line codes: used to speed up tree searches.
 
-// The basic idea is: a fixed dictionary of popular opening lines where
-// move order is significant, so 1.d4 e6 2.e4 is NOT == 1.e4 e6 2.d4.
+// The basic idea is: keep a fixed dictionary of popular opening lines where
+// move order is significant (e.g. 1.d4 e6 2.e4 is NOT equal to 1.e4 e6 2.d4).
 // For each game, the longest sequence of initial moves found in the
 // dictionary is stored in the index file, as an integer value.
 

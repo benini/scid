@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -90,8 +90,16 @@ uint   strPad (char * target, const char * orig, int length, char pad);
 const char * strFirstChar (const char * target, char matchChar);
 const char * strLastChar (const char * target, char matchChar);
 void   strStrip (char * str, char ch);
-const char * strTrimLeft (const char * target, char trimChar);
+
+static const char WHITESPACE[6] = " \t\r\n";
+const char * strTrimLeft (const char * target, const char * trimChars);
+inline const char * strTrimLeft (const char * target) {
+    return strTrimLeft (target, WHITESPACE);
+}
 uint   strTrimRight (char * target, const char * trimChars);
+inline uint strTrimRight (char * target) {
+    return strTrimRight (target, WHITESPACE);
+}
 uint   strTrimSuffix (char * target, char suffixChar);
 void   strTrimDate (char * str);
 void   strTrimMarkCodes (char * str);
@@ -340,6 +348,42 @@ readFourBytes (FILE * fp)
     v = v << 8;    v += (uint) getc(fp);
     v = v << 8;    v += (uint) getc(fp);
     v = v << 8;    v += (uint) getc(fp);
+    return v;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// readCompactUint, writeCompactUint:
+//   Read/write an unsigned int using a variable number
+//   of bytes: 1 for 0-127, 2 for 128-16383, etc.
+
+inline errorT
+writeCompactUint (FILE * fp, uint value)
+{
+    ASSERT (fp != NULL);
+    int result;
+    while (true) {
+        if (value < 128) {
+            result = putc (value, fp);
+            break;
+	}
+        putc ((value & 127) | 128, fp);
+        value = value >> 7;
+    }
+    return (result == EOF ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readCompactUint (FILE * fp)
+{
+    ASSERT (fp != NULL);
+    uint v = 0;
+    uint bitIndex = 0;
+    while (true) {
+        uint b = (uint) getc(fp);
+        v = v | ((b & 127) << bitIndex);
+        if (! (b & 128)) { break; }
+        bitIndex += 7;
+    }
     return v;
 }
 

@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999-2000  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz) 
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,7 @@
 #include "error.h"
 #include "pbook.h"
 #include "misc.h"
+#include "mfile.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -525,7 +526,7 @@ PBook::ReadEcoFile ()
         pos.StdStart();
         err = pos.ReadLine (moves.Data());
         if (err != OK) { goto corrupt; }
-        text.Append ("moves ", strTrimLeft (moves.Data(), ' '), "\n");
+        text.Append ("moves ", strTrimLeft (moves.Data()), "\n");
         if (Insert (&pos, text.Data()) != OK) {
             // Position already exists: just ignore it.
         }
@@ -556,7 +557,7 @@ PBook::ReadFile ()
     LineCount = 1;
     Position * pos = new Position;
     DString * line = new DString;
-    line->ReadLine (&fp);
+    fp.ReadLine (line);
     DString dstr;
     
     while (! fp.EndOfFile()) {
@@ -565,7 +566,7 @@ PBook::ReadFile ()
             fprintf (stderr, "Error reading line: %u\n", LineCount);
             LineCount++;
             line->Clear();
-            line->ReadLine (&fp);
+            fp.ReadLine (line);
             continue;
             //exit (1);
         }
@@ -605,12 +606,13 @@ PBook::ReadFile ()
         }
         LineCount++;
         line->Clear();
-        line->ReadLine (&fp);
+        fp.ReadLine (line);
     }
     delete pos;
     delete line;
     fp.Close();
     Altered = false;
+    NextIndex = NodeListCount - 1;
     return OK;
 }
 
@@ -696,4 +698,3 @@ PBook::DumpStats (FILE * fp)
 //////////////////////////////////////////////////////////////////////
 //  EOF: pbook.cpp
 //////////////////////////////////////////////////////////////////////
-

@@ -17,6 +17,7 @@
 #include "error.h"
 #include "game.h"
 #include "position.h"
+#include "pgnparse.h"
 
 #include "bytebuf.h"
 #include "textbuf.h"
@@ -88,7 +89,10 @@ game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format)
             strcpy (str, evalNags[(nag - NAG_Equal)]);
             return;
         } else if (nag == NAG_Novelty) {
-            str[0] = 'N'; str[1] = 0;
+	    if (format == PGN_FORMAT_LaTeX) 
+	        strcpy(str, "{\\novelty}");
+	    else 
+	        strcpy(str, "N");  
             return;
         } else if (nag == NAG_Compensation) {
 	    if (format == PGN_FORMAT_LaTeX) 
@@ -918,6 +922,36 @@ Game::Truncate (void)
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Game::TruncateBegin():
+//      Truncate all moves leading to current position.
+//      It uses PGN export to do the trick, as internal game structure
+//	is too complicated to behave well (at least in my code - M. Rudolf)
+void
+Game::TruncateBegin (void)
+{
+    ASSERT (CurrentMove != NULL);
+    while (MoveExitVariation() == OK);	// exit variations
+    if (!StartPos) { StartPos = new Position; }
+    StartPos->CopyFrom (CurrentPos);
+    NonStandardStart = true;
+    CurrentMove->prev->marker = END_MARKER;
+    FirstMove->next = CurrentMove;
+    CurrentMove->prev = FirstMove;
+    TextBuffer tb;
+    tb.SetBufferSize(20000);
+    tb.SetWrapColumn (20000);
+    gameFormatT gfmt = PgnFormat;
+    SetPgnFormat(PGN_FORMAT_Plain);
+    WriteToPGN(&tb);
+    Init();
+    PgnParser parser (tb.GetBuffer());
+    parser.ParseGame (this);
+    SetPgnFormat(gfmt);
+    MoveToPly(0);
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::MakeHomePawnList():
 //    Is passed an array of 9 bytes and fills it with the game's
 //    home pawn delta information.
@@ -1616,6 +1650,8 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
         tb->PrintString ("<c_");
         tb->PrintInt (NumMovesPrinted);
         tb->PrintChar ('>');
+		tb->AddTranslation ('<', "<lt>");
+		tb->AddTranslation ('>', "<gt>");
     }
     if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
         char * s = strDuplicate (comment);
@@ -1633,6 +1669,8 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
 	if (!IsColorFormat())
            tb->PrintString (postStr);
     }
+	tb->ClearTranslation ('<');
+	tb->ClearTranslation ('>');
     if (IsColorFormat()) { tb->PrintString ("</c>"); }
 }
 
@@ -1645,8 +1683,8 @@ errorT
 Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                      moveT * oldCurrentMove, bool printMoveNum, bool inComment)
 {
-    const char * preCommentStr = "{";
-    const char * postCommentStr = "}";
+    const char * preCommentStr = "{ ";
+    const char * postCommentStr = " }";
     const char * startTable = "\n";
     const char * startColumn = "\t";
     const char * nextColumn = "\t";
@@ -1654,6 +1692,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
     const char * endTable = "\n";
     const char * newline = "\n";
     bool printDiagrams = false;
+	bool hasVarComment = false;
 
     if (IsHtmlFormat()) {
         preCommentStr = "";
@@ -1704,11 +1743,18 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
     }
 
     // If this is a variation and it starts with a comment, print it:
-    if (VarDepth > 0  &&  CurrentMove->prev->comment != NULL) {
+    if ((VarDepth > 0 || CurrentMove->prev == FirstMove) && 
+        CurrentMove->prev->comment != NULL) {
         if (PgnStyle & PGN_STYLE_COMMENTS) {
             WriteComment (tb, preCommentStr, CurrentMove->prev->comment,
                           postCommentStr);
             tb->PrintSpace();
+	    if (!VarDepth) {
+        	tb->ClearTranslation ('\n');
+		tb->NewLine();
+		if (IsColorFormat() || IsLatexFormat())
+		   tb->NewLine();
+	    }
         }
     }
 
@@ -1838,7 +1884,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 }
                 tb->PrintWord (temp);
                 colWidth -= strLength(temp);
-
             }
             if (IsColorFormat()  &&  m->nagCount > 0) {
                 tb->PrintString ("</nag>");
@@ -1928,9 +1973,11 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 }
                 if ((PgnStyle & PGN_STYLE_INDENT_COMMENTS) && VarDepth == 0) {
                     if (IsColorFormat()) {
-                        tb->PrintString ("<br><ip1>");
+                        tb->PrintString ("<ul><li>");
+						hasVarComment = true;
                     } else {
-                        tb->SetIndent (tb->GetIndent() + 4); tb->Indent();
+                        tb->SetIndent (tb->GetIndent() + 4);
+						tb->Indent();
                     }
                 }
 
@@ -1938,9 +1985,10 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
 
                 if ((PgnStyle & PGN_STYLE_INDENT_COMMENTS) && VarDepth == 0) {
                     if (IsColorFormat()) {
-                        tb->PrintString ("</ip1><br>");
+                        tb->PrintString ("</ul>");
                     } else {
-                        tb->SetIndent (tb->GetIndent() - 4); tb->Indent();
+                        tb->SetIndent (tb->GetIndent() - 4);
+						tb->Indent();
                     }
                 } else {
                     tb->PrintSpace();
@@ -1992,20 +2040,14 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 }
             }
             if (IsColorFormat()  &&  VarDepth == 0) { tb->PrintString ("<var>"); }
-            if ((PgnStyle & PGN_STYLE_INDENT_VARS) && IsColorFormat()) {
-                tb->PrintString ("<br>");
-            }
             for (uint i=0; i < m->numVariations; i++) {
                 if (PgnStyle & PGN_STYLE_INDENT_VARS) {
                     if (IsColorFormat()) {
-                        switch (VarDepth) {
-                            case 0: tb->PrintString ("<ip1>"); break;
-                            case 1: tb->PrintString ("<ip2>"); break;
-                            case 2: tb->PrintString ("<ip3>"); break;
-                            case 3: tb->PrintString ("<ip4>"); break;
-                        }
+                        tb->PrintString ("<ul><li>");
+						hasVarComment = true;
                     } else {
-                        tb->SetIndent (tb->GetIndent() + 4); tb->Indent();
+                        tb->SetIndent (tb->GetIndent() + 4);
+						tb->Indent();
                     }
                 }
                 if (IsHtmlFormat()) {
@@ -2049,16 +2091,14 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 }
                 if (PgnStyle & PGN_STYLE_INDENT_VARS) {
                     if (IsColorFormat()) {
-                        switch (VarDepth) {
-                            case 0: tb->PrintString ("</ip1><br>"); break;
-                            case 1: tb->PrintString ("</ip2><br>"); break;
-                            case 2: tb->PrintString ("</ip3><br>"); break;
-                            case 3: tb->PrintString ("</ip4><br>"); break;
+                        tb->PrintString ("</ul>");
+                    } else {
+                        tb->SetIndent (tb->GetIndent() - 4);
+						tb->Indent();
                         }
                     } else {
-                        tb->SetIndent (tb->GetIndent() - 4); tb->Indent();
+					tb->PrintSpace();
                     }
-                } else { tb->PrintSpace(); }
                 printMoveNum = true;
             }
             if (IsColorFormat()  &&  VarDepth == 0) {
@@ -2072,6 +2112,11 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 endedColumn = true;
             }
         }
+		if (hasVarComment) {
+			hasVarComment = 0;
+			tb->PrintString ("<li>");
+		}
+
         MoveForward();
         plyCount++;
         if (CurrentMove == oldCurrentMove->prev) {
@@ -2124,28 +2169,6 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
     if (PgnStyle & PGN_STYLE_COLUMN) {
         PgnStyle |= PGN_STYLE_INDENT_COMMENTS;
         PgnStyle |= PGN_STYLE_INDENT_VARS;
-    }
-
-    // First: is there a pre-game comment? If so, print it:
-    if (FirstMove->comment != NULL && (PgnStyle & PGN_STYLE_COMMENTS)
-        &&  ! strIsAllWhitespace (FirstMove->comment)) {
-        tb->AddTranslation ('\n', newline);
-        char * s = FirstMove->comment;
-        if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-            s = strDuplicate (FirstMove->comment);
-            strTrimMarkCodes (s);
-        }
-        if (IsColorFormat()) {
-            sprintf (temp, "<c_%u>", NumMovesPrinted);
-            tb->PrintString (temp);
-            tb->PrintString (s);
-            tb->PrintLine ("</c>");
-        } else {
-            tb->PrintLine (s);
-        }
-        if (PgnStyle & PGN_STYLE_STRIP_MARKS) { delete[] s; }
-        tb->ClearTranslation ('\n');
-        tb->NewLine();
     }
 
     date_DecodeToString (Date, dateStr);

@@ -1,14 +1,14 @@
 //////////////////////////////////////////////////////////////////////
 //
-//  FILE:       eco2book.cpp
-//              eco2book: Converts Scid Eco file from Text to Book format.
+//  FILE:       eco2epd.cpp
+//              eco2epd: Converts Scid Eco file from Text to EPD format.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
 //  Version:    2.0
 //
 //  Notice:     Copyright (c) 1999  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz) 
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -264,6 +264,6 @@ main (int argc, char * argv[])
 }
 
 //////////////////////////////////////////////////////////////////////
-//  EOF: eco2book.cpp
+//  EOF: eco2epd.cpp
 //////////////////////////////////////////////////////////////////////
 

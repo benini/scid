@@ -4,11 +4,11 @@
 //              Header file for Scid interface to Tablebase decoder
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.1
+//  Version:    3.4
 //
-//  Notice:     Copyright (c) 2000 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -20,6 +20,10 @@
 bool scid_TB_compiled (void);
 
 uint scid_TB_MaxPieces (void);
+
+uint scid_TB_CacheSize (void);
+
+void scid_TB_SetCacheSize (uint cachesize);
 
 uint scid_TB_Init (const char * dir);
 

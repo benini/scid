@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999-2001  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -147,9 +147,9 @@ printDebugInfo () {
 
     printf ("\nPosition class: %u\n", sizeof(Position));
     printf ("   simpleMoveT struct: %u\n", sizeof(simpleMoveT));
-    printf ("   legalMoveListT struct: %u\n", sizeof(legalMoveListT));
+    printf ("   LegalMoveList class: %u\n", sizeof(MoveList));
     printf ("   sanListT struct: %u\n", sizeof(sanListT));
-    printf ("   pseudoLegalListT struct: %u\n", sizeof(pseudoLegalListT));
+//    printf ("   pseudoLegalListT struct: %u\n", sizeof(pseudoLegalListT));
 
     printf ("\nTextBuffer class: %u\n", sizeof(TextBuffer));
     
@@ -763,5 +763,5 @@ main (int argc, char *argv[])
 }
 
 //////////////////////////////////////////////////////////////////////
-//  EOF: scidt.cc
+//  EOF: scidt.cpp
 //////////////////////////////////////////////////////////////////////

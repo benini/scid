@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -154,8 +154,8 @@ OpLine::Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
     // Now check for themes:
     Position * p = g->GetCurrentPos();
     Theme[OPTHEME_QueenSwap] = (p->PieceCount(WQ)==0 && p->PieceCount(BQ)==0);
-    squareT wk = p->GetKingPos (WHITE);
-    squareT bk = p->GetKingPos (BLACK);
+    squareT wk = p->GetKingSquare (WHITE);
+    squareT bk = p->GetKingSquare (BLACK);
     fyleT wkf = square_Fyle (wk);
     fyleT bkf = square_Fyle (bk);
     Theme[OPTHEME_CastSame] =
@@ -1188,11 +1188,12 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
             if (HasNotes (Row[row], j)) {
                 if (ctext) {
                     dtemp->Append ("<red><go n", NumNotes, ">");
+                    dtemp->Append ("<N", NumNotes, ">");
                 }
                 uint oldwidth = dtemp->Length();
                 dtemp->Append ("[", NumNotes, "]");
                 width += dtemp->Length() - oldwidth;
-                if (ctext) { dtemp->Append ("</go></red>"); }
+                if (ctext) { dtemp->Append ("</N", NumNotes, "></go></red>"); }
             }
             // Pad width to full cell width:
             while (width < cellBytes) {
@@ -1331,10 +1332,14 @@ OpTable::PrintNotes (DString * dstr, uint format)
             //dstr->Append ("<li><b>", note, "</b> ");
             dstr->Append ("<li> ");
         } else if (format == OPTABLE_CText) {
-            dstr->Append ("<tab><red><run sc_optable select note ", note);
-            dstr->Append ("; updateStatsWin><n", note);
-            dstr->Append (">[", note, "]");
-            dstr->Append ("</n", note, "></run></red>  ");
+            //dstr->Append ("<tab><red><run sc_optable select note ", note);
+            //dstr->Append ("; updateStatsWin><n", note);
+            //dstr->Append (">[", note, "]");
+            //dstr->Append ("</n", note, "></run></red>  ");
+            dstr->Append ("<tab><red><go N", note, ">");
+            dstr->Append ("<n", note, ">");
+            dstr->Append ("[", note, "]");
+            dstr->Append ("</n", note, "></go></red>  ");
         } else {
             dstr->Append ("[*", note, "*]  ");
         }

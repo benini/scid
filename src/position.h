@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -17,14 +17,15 @@
 #define SCID_POSITION_H
 
 #include "common.h"
-#include "tokens.h"
-#include "misc.h"
 #include "dstring.h"
+#include "misc.h"
+#include "movelist.h"
+#include "sqlist.h"
+#include "sqset.h"
+#include "tokens.h"
 
 //////////////////////////////////////////////////////////////////////
 //  Position:  Constants
-
-const uint  MAX_LEGAL_MOVES = 256;  // max. length of the legal moves list
 
 const byte  WQ_CASTLE = 1,    WK_CASTLE = 2,
             BQ_CASTLE = 4,    BK_CASTLE = 8;
@@ -47,50 +48,16 @@ const uint
     FEN_ALL_FIELDS = 3;
 
 
-///////////////////////////////////////////////////////////////////////////
-//  Position:  Data Structures
-
-// *** SimpleMove: less expensive to store than a full move as defined
-//      in game.h, but still fully undoable.
+// Flags that Position::GenerateMoves() recognises:
 //
-struct simpleMoveT
-{
-    byte     pieceNum;
-    pieceT   movingPiece;
-    squareT  from;
-    squareT  to;
-    byte     capturedNum;
-    pieceT   capturedPiece;
-    pieceT   promote;
-    byte     epMove;         // 1 if this is an epMove  -- NOT YET USED
-    squareT  capturedSquare; // ONLY different to "to" field if this capture
-                            //    is an en passant capture.
-    byte     castleFlags;    // pre-move information
-    squareT  epSquare;       // pre-move information
-    ushort   oldHalfMoveClock;
-};
-
-inline bool isNullMove (simpleMoveT * sm)
-{
-    return (sm->from != NULL_SQUARE  &&  sm->from == sm->to
-              &&  piece_Type(sm->movingPiece) == KING);
-}
-
-errorT writeSimpleMove (FILE * fp, simpleMoveT * sm);
-errorT readSimpleMove (FILE * fp, simpleMoveT * sm);
+typedef uint genMovesT;
+const genMovesT
+    GEN_CAPTURES = 1,
+    GEN_NON_CAPS = 2,
+    GEN_ALL_MOVES = (GEN_CAPTURES | GEN_NON_CAPS);
 
 
-// *** LegalMoveList: list of legal moves.
-//
-struct legalMoveListT
-{
-    bool         current;                // list up to date?
-    ushort       num;                    // size of list
-    simpleMoveT  list [MAX_LEGAL_MOVES];
-};
-
-
-// *** SANList: list of legal move strings in SAN.
+// SANList: list of legal move strings in SAN.
 //
 struct sanListT
 {
@@ -98,24 +65,6 @@ struct sanListT
     ushort      num;
     sanStringT  list [MAX_LEGAL_MOVES];
 };
-
-
-// *** PseudoLegalList: for a piece on the side to move, store
-//      the squares it can move to. Does not include en passant
-//      or castling or pawn moves, or moves for the king.
-//      (Queens, Rooks, Bishops, Knights only)
-//      The moves are legal except for the fact that they may leave
-//      the king in check.
-//
-struct pseudoLegalListT
-{
-    byte        num;
-    squareT     list[27];   // Queens can have up to 27 moves.
-};
-
-
-// Random function used for hash tables:
-uint random32 (void);
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -131,20 +80,20 @@ private:
     pieceT          Board[66];      // the actual board + a color square
                                     // and a NULL square.
     uint            Count[2];       // count of pieces & pawns each
-    byte            Material[15];   // count of each type of piece
-                                        // currently (basically) unused.
-    //uint            materialSig;    // Material signature
+    byte            Material[16];   // count of each type of piece
     byte            ListPos[64];    // ListPos stores the position in
                                         // List[][] for the piece on
                                         // square x.
-    squareT         List[2][16];    // list of pieces on each side in
-                                        // no particular order.
-                                        // actually list of squares.
-    squareDirT      Pinned[16];     // For each List[ToMove][x], stores
+    squareT         List[2][16];    // list of piece squares for each side
+    byte            NumOnRank[16][8];
+    byte            NumOnFyle[16][8];
+    byte            NumOnLeftDiag[16][16];  // Num Queens/Bishops
+    byte            NumOnRightDiag[16][16];
+    byte            NumOnSquareColor[16][2];
+
+    directionT      Pinned[16];     // For each List[ToMove][x], stores
                                         // whether piece is pinned to its
                                         // own king and dir from king.
-
-    pseudoLegalListT PseudoLegals[16];   // Squares a piece can move to
 
     squareT         EPTarget;       // square pawns can EP capture to
     colorT          ToMove;
@@ -156,33 +105,41 @@ private:
                                         // the King or Rook.
 
     uint            Hash;           // Hash value.
+    uint            PawnHash;       // Pawn structure hash value.
 
-    uint            NumChecks;
+    uint            NumChecks;      // Number of checks.
     squareT         CheckSquares[16]; // Stores pieces checking the king.
 
-    legalMoveListT * LegalMoves;     // list of legal moves
-    sanListT       * SANStrings;     // SAN list of legal move strs
+    MoveList      * LegalMoves;     // list of legal moves
+    sanListT      * SANStrings;     // SAN list of legal move strs
 
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Private Functions
 
+    inline void AddHash (pieceT p, squareT sq);
+    inline void UnHash (pieceT p, squareT sq);
 
-    void        CalcPinsDir (squareDirT dir, pieceT attacker);
+    inline void AddToBoard (pieceT p, squareT sq);
+    inline void RemoveFromBoard (pieceT p, squareT sq);
 
-    void        AddPseudoLegal (byte pnum, squareT sq);
-    void        GenLinePseudos (colorT c, byte pnum, squareT sq,
-                                squareDirT dir);
-    void        GenKnightPseudos (colorT c, byte pnum, squareT sq);
+    void        CalcPinsDir (directionT dir, pieceT attacker);
 
-    void        AddLegalMove (byte pnum, squareT to, pieceT promo);
-    void        GenCastling ();
-    void        GenKingMoves ();
-    void        AddPromotions (byte pnum, squareT dest, colorT c);
-    void        GenPawnMoves (byte pnum, squareDirT dir, squareT sq);
-    squareT     CalcCheckDir (squareT king, squareDirT dir, pieceT attacker);
+    void        GenSliderMoves (MoveList * mlist, colorT c, squareT sq,
+                                directionT dir, SquareSet * sqset,
+                                bool capturesOnly);
+    void        GenKnightMoves (MoveList * mlist, colorT c, squareT sq,
+                                SquareSet * sqset, bool capturesOnly);
 
-    void        AssertPos ();   //  Checks for errors in board etc.
+    void        AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
+    void        GenCastling (MoveList * mlist);
+    void        GenKingMoves (MoveList * mlist, genMovesT genType);
+    void        AddPromotions (MoveList * mlist, squareT from, squareT dest);
+    bool        IsValidEnPassant (squareT from, squareT to);
+    void        GenPawnMoves (MoveList * mlist, squareT from,
+                              directionT dir, SquareSet * sqset,
+                              genMovesT genType);
+    errorT      AssertPos ();   //  Checks for errors in board etc.
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
@@ -197,6 +154,7 @@ public:
     void        Init();
     void        Clear();        // No pieces on board
     void        StdStart();     // Standard chess starting position
+    bool        IsStdStart();
     errorT      AddPiece (pieceT p, squareT sq);
 
     // Set and Get attributes -- one-liners
@@ -211,16 +169,36 @@ public:
     ushort      GetPlyCounter ()         { return PlyCounter; }
     ushort      GetFullMoveCount ()      { return PlyCounter / 2 + 1; }
     sanListT *  GetSANStrings ()         { return SANStrings; }
-    legalMoveListT * GetLegalMoves ()    { return LegalMoves; }
+    MoveList *  GetLegalMoves ()         { return LegalMoves; }
 
-    // Methods to get the Board or piece lists -- used in game.cc to
+    // Methods to get the Board or piece lists -- used in game.cpp to
     // decode moves:
     squareT *   GetList (colorT c)    { return List[c]; }
     uint        GetCount (colorT c)   { return Count[c]; }
     uint        TotalMaterial ()      { return Count[WHITE] + Count[BLACK]; }
+    uint        NumNonPawns (colorT c) { 
+        return Count[c] - Material[piece_Make(c,PAWN)];
+    }
+    bool        InPawnEnding () {
+        return (NumNonPawns(WHITE) == 1  &&  NumNonPawns(BLACK) == 1);
+    }
     uint        MaterialValue (colorT c);
-    uint        FyleCount (pieceT p, fyleT f);
-    uint        RankCount (pieceT p, rankT r);
+    inline uint FyleCount (pieceT p, fyleT f) {
+        return NumOnFyle[p][f];
+    }
+    inline uint RankCount (pieceT p, rankT r) {
+        return NumOnRank[p][r];
+    }
+    inline uint LeftDiagCount (pieceT p, leftDiagT diag) {
+        return NumOnLeftDiag[p][diag];
+    }
+    inline uint RightDiagCount (pieceT p, rightDiagT diag) {
+        return NumOnRightDiag[p][diag];
+    }
+    inline uint SquareColorCount (pieceT p, colorT sqColor) {
+        return NumOnSquareColor[p][sqColor];
+    }
+    uint        GetSquares (pieceT p, SquareList * sqlist);
 
     pieceT *    GetBoard () {
         Board[COLOR_SQUARE] = COLOR_CHAR[ToMove];
@@ -228,7 +206,9 @@ public:
     }
 
     // Other one-line methods
-    squareT     GetKingPos (colorT c)   { return List[c][0]; }
+    squareT     GetKingSquare (colorT c)  { return List[c][0]; }
+    squareT     GetKingSquare ()          { return List[ToMove][0]; }
+    squareT     GetEnemyKingSquare ()     { return List[1-ToMove][0]; }
 
     // Castling flags
     inline void SetCastling (colorT c, castleDirT dir, bool flag);
@@ -250,34 +230,44 @@ public:
 
     // Hashing
     inline uint HashValue (void) { return Hash; }
+    inline uint PawnHashValue (void) { return PawnHash; }
     uint        GetHPSig ();
 
     // Move generation and execution
-    void        CalcPins();                // pieces pinned to own king
+    void        CalcPins();
+    void        GenPieceMoves (MoveList * mlist, squareT sq,
+                               SquareSet * sqset, bool capturesOnly);
 
-    void        GeneratePseudos (uint x);
-    bool        IsPseudoLegal (uint pnum, squareT target);
+    // Generate all legal moves:
+    void  GenerateMoves (MoveList * mlist, pieceT mask, genMovesT genType, bool maybeInCheck);
+    void  GenerateMoves () { GenerateMoves (NULL, EMPTY, GEN_ALL_MOVES, true); }
+    void  GenerateMoves (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_ALL_MOVES, true); }
+    void  GenerateMoves (MoveList * mlist, pieceT mask) { GenerateMoves (mlist, mask, GEN_ALL_MOVES, true); }
+    void  GenerateMoves (MoveList * mlist, genMovesT genType) { GenerateMoves (mlist, EMPTY, genType, true); }
+    void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
+    bool  IsLegalMove (simpleMoveT * sm);
 
-    void        CalcLegalMoves (pieceT mask); // generate all legal moves
-    void        CalcCheckEvasions (pieceT mask); // when king is in check
-    void        MatchLegalMove (pieceT mask, squareT target);
-    errorT      MatchPawnMove (fyleT fromFyle, squareT to, pieceT promote);
-    errorT      MatchKingMove (squareT target);
+    void        GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType);
+    void        MatchLegalMove (MoveList * mlist, pieceT mask, squareT target);
+    errorT      MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote);
+    errorT      MatchKingMove (MoveList * mlist, squareT target);
 
-    uint        CalcNumChecks (colorT toMove, squareT kingSq,
-                               squareT * checkSquares);
+    uint        CalcAttacks (colorT toMove, squareT kingSq, squareT * squares);
     uint        CalcNumChecks () {
-                    return CalcNumChecks (ToMove, GetKingPos(ToMove), NULL);
+                    return CalcAttacks (1-ToMove, GetKingSquare(), NULL);
                 }
     uint        CalcNumChecks (squareT kingSq) {
-                    return CalcNumChecks (ToMove, kingSq, NULL);
+                    return CalcAttacks (1-ToMove, kingSq, NULL);
                 }
     uint        CalcNumChecks (squareT kingSq, squareT * checkSquares) {
-                    return CalcNumChecks (ToMove, kingSq, checkSquares);
+                    return CalcAttacks (1-ToMove, kingSq, checkSquares);
                 }
 
+    uint        Mobility (pieceT p, colorT color, squareT from);
     pieceT      SmallestDefender (colorT color, squareT target);
     bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
+    bool        IsKingInCheckDir (directionT dir);
+    bool        IsKingInCheck (simpleMoveT * sm);
     bool        IsKingInMate ();
     bool        IsLegal ();
 
@@ -285,6 +275,8 @@ public:
 
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
     void        UndoSimpleMove (simpleMoveT * sm);  // ... and taking back
+
+    errorT      RelocatePiece (squareT fromSq, squareT toSq);
 
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
     void        CalcSANStrings (sanFlagT flag);
@@ -295,9 +287,10 @@ public:
     errorT      ReadLine (const char * s);
 
     // Board I/O
-    void        MakeLine (char * str);
+    void        MakeLongStr (char * str);
     void        DumpBoard (FILE * fp);
     void        DumpLists (FILE * fp);
+    errorT      ReadFromLongStr (const char * str);
     errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);
     void        PrintCompactStr (char * cboard);
@@ -319,10 +312,6 @@ public:
     // Copy, compare positions
     int         Compare (Position * p);
     void        CopyFrom (Position * src);
-
-    // Methods to assist in evaluation and move completion
-    uint        GetSquares (squareT sq, squareT *sqList);
-    squareT     BestSquare (squareT startSq);
 
     // Set up a random position:
     errorT      Random (const char * material);
@@ -369,8 +358,7 @@ inline void
 Position::AllocLegalMoves ()
 {
     ASSERT (LegalMoves == NULL);
-    LegalMoves = new legalMoveListT;
-    LegalMoves->current = false;
+    LegalMoves = new MoveList();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -392,8 +380,8 @@ Position::AllocSANStrings ()
 inline void
 Position::ClearLegalMoves ()
 {
-    if (LegalMoves) { LegalMoves->current = false; }
-    else            { AllocLegalMoves(); }
+    if (LegalMoves == NULL) { AllocLegalMoves(); }
+    LegalMoves->Clear();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -363,6 +363,7 @@ public:
                  { return (uint) CurrentMove->numVariations; }
 
     void     Truncate ();
+    void     TruncateBegin ();
 
     void     SetEventStr (const char * str);
     void     SetSiteStr (const char * str);

@@ -4821,7 +4821,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "save",       "scores",
         "startBoard", "strip",      "summary",    "tags",
-        "truncate",   NULL
+        "truncate",   "truncbegin",  NULL
     };
     enum {
         GAME_ALTERED,    GAME_CROSSTABLE, GAME_ECO,        GAME_FIND,
@@ -4830,7 +4830,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SAVE,       GAME_SCORES,
         GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,    GAME_TAGS,
-        GAME_TRUNCATE
+        GAME_TRUNCATE,   GAME_TRUNCBEGIN
     };
     int index = -1;
 
@@ -4911,6 +4911,10 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_TRUNCATE:
         db->game->Truncate();
+        break;
+
+    case GAME_TRUNCBEGIN:
+        db->game->TruncateBegin();
         break;
 
     default:
@@ -12266,7 +12270,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (listMode) {
             sprintf (temp, "%2u %-6s %-5s %7u %3d%c%1d %3d%c%1d",
                      0,
-                     "TOTAL",
+		     "TOTAL",
                      "{}",
                      tree->totalCount,
                      100, decimalPointChar, 0,
@@ -12274,7 +12278,8 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             output->Append (temp);
         } else {
             output->Append ("\n_______________________________________________________________\n");
-            sprintf (temp, "TOTAL:           %7u:100%c0%%  %3d%c%1d%%",
+            sprintf (temp, "%s      %7u:100%c0%%  %3d%c%1d%%",
+		     translate(ti, "TreeTotal"),
                      tree->totalCount, decimalPointChar,
                      totalScore / 10, decimalPointChar, totalScore % 10);
             output->Append (temp);
@@ -12311,12 +12316,12 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Print timing and other information:
     if (showTimeStats  &&  !listMode) {
         int csecs = timer.CentiSecs();
-        sprintf (temp, "\n  Time: %d%c%02d s",
+        sprintf (temp, "\n  %s: %d%c%02d s", translate(ti, "TreeElapsedTime"),
                  csecs / 100, decimalPointChar, csecs % 100);
         output->Append (temp);
 
         if (foundInCache) {
-            output->Append ("  (Found in cache)");
+            output->Append (translate(ti, "TreeFoundInCache"));
         } else {
 #ifdef SHOW_SKIPPED_STATS
             output->Append ("  Skipped: ", skipcount, " games.");

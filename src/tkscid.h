@@ -4,11 +4,11 @@
 //              Scid extensions to Tcl/Tk interpreter
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.4
 //
 //  Notice:     Copyright (c) 1999-2001 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -16,6 +16,7 @@
 #include "common.h"
 #include "index.h"
 #include "position.h"
+#include "engine.h"
 #include "game.h"
 #include "gfile.h"
 #include "tree.h"
@@ -34,12 +35,12 @@
 // including windows.h does, but lots of other source code I have seen
 // does it -- although "lean Windows" sure is an oxymoron!
 #ifdef WIN32
-#  ifdef SOURCE_TCL_FILE
-#    define WIN32_LEAN_AND_MEAN
-#    include <windows.h>
-#    undef WIN32_LEAN_AND_MEAN
-#    include <winbase.h>
-#  endif
+#  define WIN32_LEAN_AND_MEAN 1
+#  include <windows.h>
+#  undef WIN32_LEAN_AND_MEAN
+#  include <winbase.h>
+#else
+#  include <sys/resource.h>   // For getpriority() and setpriority().
 #endif
 
 #include <stdio.h>
@@ -367,13 +368,13 @@ int sc_base_tournaments (TCL_ARGS);
 int sc_base_type      (TCL_ARGS);
 int sc_base_upgrade   (TCL_ARGS);
 
-int sc_book           (TCL_ARGS);
-int sc_book_deepest   (Tcl_Interp * ti, int bookID);
-int sc_book_moves     (Tcl_Interp * ti, int bookID);
-int sc_book_next      (Tcl_Interp * ti, int bookID, bool forwards);
-int sc_book_open      (Tcl_Interp * ti, int argc, const char ** argv, bool create);
-int sc_book_set       (Tcl_Interp * ti, int bookID, const char * text);
-int sc_book_write     (Tcl_Interp * ti, int bookID);
+int sc_epd            (TCL_ARGS);
+int sc_epd_deepest    (Tcl_Interp * ti, int epdID);
+int sc_epd_moves      (Tcl_Interp * ti, int epdID);
+int sc_epd_next       (Tcl_Interp * ti, int epdID, bool forwards);
+int sc_epd_open       (Tcl_Interp * ti, int argc, const char ** argv, bool create);
+int sc_epd_set        (Tcl_Interp * ti, int epdID, const char * text);
+int sc_epd_write      (Tcl_Interp * ti, int epdID);
 
 int sc_clipbase       (TCL_ARGS);
 int sc_clipbase_clear (Tcl_Interp * ti);
@@ -440,6 +441,7 @@ int sc_game_tags_share (TCL_ARGS);
 int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);
 int sc_info_limit     (TCL_ARGS);
+int sc_info_priority  (TCL_ARGS);
 int sc_info_tb        (TCL_ARGS);
 
 int sc_move           (TCL_ARGS);
@@ -465,8 +467,10 @@ int sc_optable_select (TCL_ARGS);
 
 int sc_pos            (TCL_ARGS);
 int sc_pos_addNag     (TCL_ARGS);
+int sc_pos_analyze    (TCL_ARGS);
 int sc_pos_bestSquare (TCL_ARGS);
 int sc_pos_getNags    (TCL_ARGS);
+int sc_pos_hash       (TCL_ARGS);
 int sc_pos_html       (TCL_ARGS);
 int sc_pos_isAt       (TCL_ARGS);
 int sc_pos_isLegal    (TCL_ARGS);
@@ -474,6 +478,7 @@ int sc_pos_isPromo    (TCL_ARGS);
 int sc_pos_matchMoves (TCL_ARGS);
 int sc_pos_pgnBoard   (TCL_ARGS);
 int sc_pos_probe      (TCL_ARGS);
+int sc_pos_probe_board (TCL_ARGS);
 int sc_pos_setComment (TCL_ARGS);
 
 int sc_progressBar    (TCL_ARGS);

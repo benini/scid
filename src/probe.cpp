@@ -4,11 +4,11 @@
 //              Scid interface to Nalimov Tablebase decoder
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.1
+//  Version:    3.4
 //
-//  Notice:     Copyright (c) 2000 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -47,12 +47,14 @@ typedef unsigned int square;
 #include "egtb/tbindex.cpp"
 
 
-// Tablebase cache size: 512 Kb. Make it smaller?
-static const uint EGTB_CACHE_SIZE = 512 * 1024;
+// Default, minimum and maximum Tablebase cache size:
+static const uint EGTB_CACHE_SIZE_MIN     =        512 * 1024;    // 0.5 MB
+static const uint EGTB_CACHE_SIZE_DEFAULT =        512 * 1024;    // 0.5 MB
+static const uint EGTB_CACHE_SIZE_MAX     = 128 * 1024 * 1024;    // 128 MB
 
 static void * EGTB_cache = NULL;
 static uint EGTB_maxpieces = 0;
-
+static uint EGTB_cachesize = EGTB_CACHE_SIZE_DEFAULT;
 
 // scid_TB_compiled:
 //    Returns true if Tablebase support has been compiled, false otherwise.
@@ -69,6 +71,24 @@ scid_TB_MaxPieces (void) {
     return EGTB_maxpieces;
 }
 
+uint
+scid_TB_CacheSize (void)
+{
+    return EGTB_cachesize;
+}
+
+void
+scid_TB_SetCacheSize (uint cachesize)
+{
+    EGTB_cachesize = cachesize;
+    if (cachesize < EGTB_CACHE_SIZE_MIN) {
+        EGTB_cachesize = EGTB_CACHE_SIZE_MIN;
+    }
+    if (cachesize > EGTB_CACHE_SIZE_MAX) {
+        EGTB_cachesize = EGTB_CACHE_SIZE_MAX;
+    }
+}
+
 // scid_TB_init:
 //    Initialises the tablebases given a directory string. All the tables
 //    to be used must be in the directory; subdirectories are not
@@ -79,8 +99,9 @@ uint
 scid_TB_Init (const char * egtb_path)
 {
     EGTB_maxpieces = (uint) IInitializeTb ((char *) egtb_path);
-    if (EGTB_cache == NULL) { EGTB_cache = new byte [EGTB_CACHE_SIZE]; }
-    FTbSetCacheSize (EGTB_cache, EGTB_CACHE_SIZE);
+    if (EGTB_cache != NULL) { delete[] (byte *) EGTB_cache; }
+    EGTB_cache = new byte [EGTB_cachesize];
+    FTbSetCacheSize (EGTB_cache, EGTB_cachesize);
     return EGTB_maxpieces;
 }
 
@@ -313,6 +334,13 @@ uint
 scid_TB_MaxPieces (void)
 { return 0; }
 
+uint
+scid_TB_CacheSize (void)
+{ return 0; }
+
+void
+scid_TB_SetCacheSize (uint cachesize)
+{ return; }
 
 uint
 scid_TB_Init (const char * egtb_path)

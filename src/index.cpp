@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000-2002  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -199,6 +199,8 @@ IndexEntry::Read (MFile * fp, versionT version)
     // The two ELO ratings and rating types take 2 bytes each.
     WhiteElo = fp->ReadTwoBytes ();
     BlackElo = fp->ReadTwoBytes ();
+    if (GetWhiteElo() > MAX_ELO) { SetWhiteElo(MAX_ELO); }
+    if (GetBlackElo() > MAX_ELO) { SetBlackElo(MAX_ELO); }
 
     FinalMatSig = fp->ReadFourBytes ();
     NumHalfMoves = fp->ReadOneByte ();
@@ -424,8 +426,8 @@ IndexEntry::GetFlagStr (char * str, const char * flags)
 // IndexEntry::PrintGameInfo():
 //
 //      Prints the info for a single game to a string, according to the
-//      format string provided. Called by by sc_game_list() in tkscid.cc
-//      and from scidt.cc for its game listing (-l) option.
+//      format string provided. Called by by sc_game_list() in tkscid.cpp
+//      and from scidt.cpp for its game listing (-l) option.
 //
 //      The format string indicates what information to print. Non-letters
 //      in the string are printed as-is, while a letter (which should be
@@ -1137,7 +1139,7 @@ Index::ReadEntireFile (int reportFrequency,
         //printf ("Chunk %u: %u games\n", chunkCount, gamesToRead);
     }
     if (progressFn != NULL) {
-        (*progressFn) (progressData, GetNumGames(), GetNumGames());
+        (*progressFn) (progressData, 1, 1);
     }
     InMemory = true;
     return OK;
@@ -1465,6 +1467,9 @@ Index::Sort (NameBase * nb, int reportFrequency,
             reportAfter = reportFrequency;
         }
     }
+    if (progressFn != NULL) {
+        (*progressFn) (progressData, 1, 1);
+    }
 
     // Now EntriesHeap[] contains the index for the sorted order.
     // Entries[] is not actually changed, so the results of the
@@ -1568,21 +1573,22 @@ Index::WriteSorted (int reportFrequency,
 
         IndexEntry * ie;
         int reportAfter = reportFrequency;
-        uint progressCounter = 0;
         for (uint count=1; count <= Header.numGames; count++) {
             ie = FetchEntry(EntriesHeap[count]);
             ie->Write (FilePtr, Header.version);
             FilePos += IndexEntrySize;
-            progressCounter++;
             reportAfter--;
             if (reportAfter <= 0) {
                 if (progressFn != NULL) {
-                    (*progressFn) (progressData, progressCounter, GetNumGames());
+                    (*progressFn) (progressData, count, GetNumGames());
                 }
                 reportAfter = reportFrequency;
             }
         }
         if (FileMode == FMODE_Both) { FilePtr->Flush(); }
+    }
+    if (progressFn != NULL) {
+        (*progressFn) (progressData, 1, 1);
     }
     Dirty = 1;
     delete[] EntriesHeap;

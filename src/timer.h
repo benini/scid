@@ -8,10 +8,12 @@
 //
 //  Notice:     Copyright (c) 1999  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
+#ifndef SCID_TIMER_H
+#define SCID_TIMER_H
 
 //////////////////////////////////////////////////////////////////////
 // Timer::MilliSecs() returns the number of milliseconds since the
@@ -86,6 +88,8 @@ class Timer {
     }
 
 };
+
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: timer.h

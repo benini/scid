@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 //
-//  FILE:       myassert.cc
+//  FILE:       myassert.cpp
 //              Function to handle failed ASSERTs
 //
 //  Part of:    Scid (Shane's Chess Information Database)
@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -28,6 +28,6 @@ void _MyAssert(char *filename, unsigned linenum)
 }
 
 //////////////////////////////////////////////////////////////////////
-//  EOF: myassert.cc
+//  EOF: myassert.cpp
 //////////////////////////////////////////////////////////////////////
 

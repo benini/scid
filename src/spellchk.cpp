@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -280,9 +280,9 @@ getNameAndComment (char * line, char ** name, char ** comment)
     
     // Strip leading spaces and trailling newline, tab and space chars:
     s = line;
-    while (*s == ' '  ||  *s == '\t') { s++; }
-    strTrimRight (s, " \t\n");
-    strTrimRight (*comment, " \t\n");
+    s = (char *) strTrimLeft(s);
+    strTrimRight (s);
+    strTrimRight (*comment);
     *name = s;
 }
 
@@ -499,7 +499,7 @@ SpellChecker::AddEloData (spellCheckNodeT * node, const char * str)
     }
     if (strIsPrefix ("%Elo ", str)) { str += 4; }
     while (1) {
-        str = strTrimLeft (str, ' ');
+        str = strTrimLeft (str);
         if (! isdigit (*str)) { break; }
         uint year = strGetUnsigned (str);
         str += 4;

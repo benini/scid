@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001  Shane Hudson.  all rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 

@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -127,6 +127,7 @@ void DString::Append (const char * s1, const char * s2, const char * s3,
 { Append (s1);  Append (s2);  Append (s3);  Append (s4);  Append (s5); }
 
 
+#if 0
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DString::ReadLine():
 //    Reads a line from an open file into the DString.
@@ -145,6 +146,7 @@ DString::ReadLine (MFile * fp)
         ch = fp->ReadOneByte();
     }
 }
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -23,9 +23,7 @@
 #ifndef SCID_DSTRING_H
 #define SCID_DSTRING_H
 
-
 #include "common.h"
-#include "mfile.h"
 
 const uint DSTRING_MinCapacity = 64;
 
@@ -49,7 +47,6 @@ public:
     const char * Data (void) { return (const char *) Start; }
     uint Length (void)       { return Len; }
 
-    void ReadLine (MFile * fp);
     void AddChar (char ch);
     void AppendUint (uint i);
     void AppendInt (int i);

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
 //
-//  FILE:       stralloc.cc
+//  FILE:       stralloc.cpp
 //              String Allocator class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -106,6 +106,6 @@ StrAllocator::DeleteAll ()
 }
 
 //////////////////////////////////////////////////////////////////////
-// EOF: stralloc.cc
+// EOF: stralloc.cpp
 //////////////////////////////////////////////////////////////////////
 

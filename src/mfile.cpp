@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2000  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -235,6 +235,19 @@ MFile::ReadLine (char * str, uint maxLength)
     } else {
         fgets (str, (int) maxLength, Handle);
         Location = ftell (Handle);
+    }
+    return OK;
+}
+
+errorT
+MFile::ReadLine (DString * dstr)
+{
+    int ch = ReadOneByte();
+    while (ch != '\n'  &&  ch != EOF) {
+        if (ch != '\r') {
+            dstr->AddChar (ch);
+        }
+        ch = ReadOneByte();
     }
     return OK;
 }

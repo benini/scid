@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -723,6 +723,12 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
     if (ch >= 'a'  &&  ch <= 'h') {   // Pawn move.
         return GetRestOfPawnMove (buf);
     }
+    if (ch == 'P') {
+        // Treat "P..." as a pawn move, ignoring the initial "P":
+        buf = buffer;
+        ADDCHAR (buf, GetChar());
+        return GetRestOfPawnMove (buf);
+    }
     if (ch == 'N'  ||  ch == 'B'  ||  ch == 'R'  ||  ch == 'Q'  ||  ch == 'K') {
         return GetRestOfMove (buf);
     }
@@ -730,7 +736,6 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
         return GetRestOfCastling (buf);
     }
 
-#ifdef SCID_NULL_MOVES
     // Check for null move:
     if (ch == 'n') {
         GetRestOfWord_Letters (buf);
@@ -739,7 +744,6 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
         }
         return TOKEN_Invalid;
     }
-#endif
 
     // Now we check for other tokens.......
     if (ch == ';'  ||  ch == '%') {
@@ -763,12 +767,10 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
 
     if (ch == '!'  ||  ch == '?'  ||  ch == '='  ||  ch == '-') {   // Suffix
         GetRestOfSuffix (buf, ch);
-#ifdef SCID_NULL_MOVES
         // Treat the sequence "--" as a null move:
         if (strEqual (buffer, "--")) {
             return TOKEN_Move_Null;
         }
-#endif
         return TOKEN_Suffix;
     }
     if (ch == '$') {   // NAG
@@ -821,9 +823,7 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
     // Probably a letter like C or z, or punctuation or nonprintable.
 
     GetRestOfWord_WithDots (buf);
-#ifdef SCID_NULL_MOVES
     // Any other null-move notations to be checked for here?
-#endif
     return TOKEN_Invalid;
 }
 

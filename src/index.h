@@ -8,7 +8,7 @@
 //
 //  Notice:     Copyright (c) 1999-2002  Shane Hudson.  all rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,7 @@ const char         INDEX_MAGIC[8]    = "Scid.si";
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
 
-const uint  MAX_ELO = 4095;   // Since we store Elo Ratings in 12 bits
+const uint  MAX_ELO = 4000;   // Since we store Elo Ratings in 12 bits
                               // each in the index file.
 
 // Struct indexHeader: one at the start of the index file.

@@ -8,14 +8,13 @@
 //
 //  Notice:     Copyright (c) 2000  Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (shane@cosc.canterbury.ac.nz)
+//  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "filter.h"
 
 // Include header file for memcpy():
-
 #ifdef WIN32
 #  include <memory.h>
 #else
