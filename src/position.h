@@ -269,9 +269,10 @@ public:
     uint        CalcNumChecks (squareT kingSq, squareT * checkSquares) {
                     return CalcNumChecks (ToMove, kingSq, checkSquares);
                 }
-    bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
 
+    bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
     bool        IsKingInMate ();
+    bool        IsLegal ();
 
     int         IsPromoMove (squareT from, squareT to);
 

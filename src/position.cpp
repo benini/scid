@@ -1458,6 +1458,21 @@ Position::IsKingInMate (void)
     return false;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Position::IsLegal()
+//   Verifies the position as being legal.
+//   Returns false if the two kings are adjacent or the
+//   side to move is checking the enemy king.
+bool
+Position::IsLegal (void)
+{
+    squareT stmKing = GetKingPos(ToMove);
+    squareT stmOpponent = GetKingPos(1-ToMove);
+    if (square_Adjacent (stmKing, stmOpponent)) { return false; }
+    if (CalcNumChecks (1-ToMove, stmOpponent, NULL) > 0) { return false; }
+    return true;
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::IsPromoMove():
@@ -2331,13 +2346,18 @@ Position::PrintCompactStrFlipped (char * cboard, bool epField)
 //      appear at the actual start of a new row or the string will be
 //      considered corrupt.
 //
+//      For efficiency, ReadFromFEN() does not check complete legality.
+//      It returns OK even if the position is illegal because the kings
+//      are adcajent or the side to move is already giving check. To
+//      verify a legal position, call IsLegal() after ReadFromFEN().
+//
 //      IMPORTANT: the shortcut of having a two-digit number to represent
 //      a number of empty rows (e.g. "/24/" instead of "/8/8/8/") is NOT
 //      accepted by this function.
 //
 //      It is not considered an error for the halfmove clock or fullmove
 //      counter to be invalid, so this routine can also read positions
-//      from EPD lines, which only share the first four fields with FEN.
+//      from EPD lines (which only share the first four fields with FEN).
 errorT
 Position::ReadFromFEN (const char * str)
 {
