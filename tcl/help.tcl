@@ -2637,7 +2637,7 @@ the <b>Random</b> button.
 <h4>The results frame</h4>
 <p>
 The results frame is updated whenever the chessboard in the main window
-changes. The first line shows how many moves win (+), draw (=), lose (=),
+changes. The first line shows how many moves win (+), draw (=), lose (-),
 or have an unknown result (?). The rest of the frame gives a more detailed
 list of results, ranking them from shortest to longest mates, then draws,
 then longest to shortest losses. All distances are to checkmate.
