@@ -56,7 +56,7 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Author>Contact information</a></li>
 </ul>
 
-<p><footer>(Updated: Scid 3.3, March 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -526,7 +526,7 @@ window or the startup window which provides information about the
 files Scid loaded when it started.
 </p>
 
-<p><footer>(Updated: Scid 3.3, March 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -1164,7 +1164,7 @@ these will greatly reduce the number of games Scid has to consider
 when trying to form tournaments out of the games in the database.
 </p>
 
-<p><footer>(Updated: Scid 3.3, March 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 ####################
@@ -1522,7 +1522,7 @@ discover how likely the player is to fianchetto bishops, castle
 queenside, or set up a d5 or e5 pawn wedge, for example.
 </p>
 
-<p><footer>(Updated: Scid 3.3, March 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 
@@ -2445,7 +2445,7 @@ necessary latex packages installed on
 your computer; see the <a LaTeX>Using LaTeX with Scid</a> help page.
 </p>
 
-<p><footer>(Updated: Scid 3.3, March 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 ####################
@@ -2550,7 +2550,7 @@ current position. More information is available from the
 <a Tree Graph>Tree</a> help page.
 </p>
 
-<p><footer>(Updated: Scid 3.3, March 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 ####################
@@ -2569,7 +2569,8 @@ generated, and some simple 6-men tablebases are also available.
 <p>
 Scid can use Nalimov-format tablebases that are used by many modern
 chess engines. These often end with the file suffix <b>.nbw.emd</b>
-or <b>.nbb.emd</b>.
+or <b>.nbb.emd</b>. All 3-, 4- and 5-men Nalimov tablebases can be
+used in Scid.
 </p>
 
 <h3>Using tablebases in Scid</h3>
@@ -2597,6 +2598,50 @@ by opening the <term>Tablebase window</term> (<menu>Windows</menu> menu,
 shortcut: Ctrl+Shift+=). This window shows the result with perfect play
 of all legal moves from the current position.
 </p>
+<p>
+The window has two main parts. The summary frame (on the left) shows
+which tablebases Scid found on your computer and a summary for each
+tablebase. The results frame (on the right) shows optimal results for
+all moves from the current position displayed in the main window.
+</p>
+
+<h4>The summary frame</h4>
+<p>
+The top part of the summary frame lets you select a particular
+tablebase. Those you have available are shown in blue and unavailable
+tablebases are shown in gray, but you can select any tablebase.
+The lower part of the summary frame shows summary information for the
+selected tablebase. (Not all tablebases have a summary recorded in
+Scid yet.)
+</p>
+<p>
+The summary includes the frequency (how many games per million
+reach a position with this material, computed from a database of nearly
+600,000 master-level games), a longest mate for either side, and the
+number of mutual (or "reciprocal") zugzwangs. A mutual zugwang is a
+position where white to move draws and black to move loses, or where
+white to move loses and black to move draws, or where whoever moves
+loses.
+</p>
+<p>
+For some tablebases with mutual zugzwangs, the summary also includes
+a list of all of the zugwang positions or a selection of them. A full
+list for every tablebase is not feasible since some tablebases have
+thousands of mutual zugzwangs.
+</p>
+<p>
+You can set up a random position from the selected tablebase by pressing
+the <b>Random</b> button.
+</p>
+
+<h4>The results frame</h4>
+<p>
+The results frame is updated whenever the chessboard in the main window
+changes. The first line shows how many moves win (+), draw (=), lose (=),
+or have an unknown result (?). The rest of the frame gives a more detailed
+list of results, ranking them from shortest to longest mates, then draws,
+then longest to shortest losses. All distances are to checkmate.
+</p>
 
 <h3>Obtaining Tablebase files</h3>
 <p>
@@ -2604,7 +2649,7 @@ See the <a Author Related>related links</a> section for help on finding
 tablebase files on the Internet.
 </p>
 
-<p><footer>(Updated: Scid 3.2, February 2002)</footer></p>
+<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
 }
 
 ####################
