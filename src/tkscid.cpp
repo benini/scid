@@ -7842,7 +7842,7 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         // Copy White rating from game 1 to game 2:
         if (updateMode) {
             ie2.SetWhiteElo (welo1);
-            updated1 = true;
+            updated2 = true;
         } else {
             appendUintElement (ti, gn2);
             Tcl_AppendElement (ti, "WhiteElo");
@@ -7866,7 +7866,7 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         // Copy Black rating from game 1 to game 2:
         if (updateMode) {
             ie2.SetBlackElo (belo1);
-            updated1 = true;
+            updated2 = true;
         } else {
             appendUintElement (ti, gn2);
             Tcl_AppendElement (ti, "BlackElo");
