@@ -469,9 +469,9 @@ $m add checkbutton -label WindowsTree \
 bind . <Control-t> { .menu.windows invoke [tr WindowsTree] }
 set helpMessage($m,11) WindowsTree
 
-$m add checkbutton -label WindowsTB -variable tbWin -command makeTBWin \
+$m add checkbutton -label WindowsTB -variable tbWin -command ::tb::open \
   -accelerator "Ctrl+="
-bind . <Control-equal> makeTBWin
+bind . <Control-equal> ::tb::open
 set helpMessage($m,12) WindowsTB
 
 
