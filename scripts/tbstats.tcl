@@ -89,7 +89,7 @@ proc tbstats {str} {
 
 proc tb11 {} {
   global p pieces
-  section 2 1
+  section 1 1
   startrow
   tbstats "k-k"
   endrow
@@ -98,7 +98,7 @@ proc tb11 {} {
 
 proc tb21 {} {
   global p pieces
-  section 1 1
+  section 2 1
   startrow
   foreach w $pieces {
     tbstats "k$p($w)-k"
