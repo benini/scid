@@ -37,7 +37,7 @@ set var(BINDIR) /usr/local/bin
 set var(COMPILE) g++
 set var(CC) gcc
 set var(DEBUG) #-DASSERTIONS
-set var(LANGUAGES) {tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/serbian.tcl tcl/russian.tcl}
+set var(LANGUAGES) {tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/hungary.tcl tcl/serbian.tcl tcl/russian.tcl}
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
 set var(OPTIMIZE) {-O4 -fno-rtti -fno-exceptions}

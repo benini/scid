@@ -71,7 +71,7 @@ OBJS= $(SCIDOBJS) $(ZLIBOBJS)
 ### LANGUAGES: all the extra language files for Scid.
 LANGUAGES = tcl\deutsch.tcl tcl\francais.tcl tcl\italian.tcl \
       tcl\nederlan.tcl tcl\spanish.tcl tcl\portbr.tcl tcl\swedish.tcl \
-      tcl\norsk.tcl tcl\polish.tcl tcl\czech.tcl tcl\serbian.tcl
+      tcl\norsk.tcl tcl\polish.tcl tcl\czech.tcl tcl\hungary.tcl tcl\serbian.tcl
 
 ### TCLS: all the .tcl files that make up "scid".
 TCLS= tcl\start.tcl tcl\bitmaps.tcl tcl\menus.tcl tcl\windows.tcl \
@@ -100,7 +100,7 @@ scid.gui: $(TCLS)
           + tcl\lang.tcl+tcl\english.tcl+tcl\deutsch.tcl\
           + tcl\francais.tcl+tcl\italian.tcl+tcl\nederlan.tcl\
           + tcl\spanish.tcl+tcl\portbr.tcl+tcl\swedish.tcl+tcl\norsk.tcl \
-          + tcl\polish.tcl+tcl\czech.tcl+tcl\serbian.tcl\
+          + tcl\polish.tcl+tcl\czech.tcl+tcl\hungary.tcl+tcl\serbian.tcl\
           + tcl\bookmark.tcl+tcl\board.tcl+tcl\tb.tcl+tcl\end.tcl .\scid.gui
 
 # escid.gui: Scid GUI with English only, no extra language support.
