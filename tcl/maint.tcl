@@ -25,7 +25,7 @@ proc setGameFlags {flag type value} {
     }
     default { return }
   }
-  updateBoard .board
+  updateBoard
   updateGList
   updateMaintWin
   updateStatsWin
@@ -861,7 +861,7 @@ proc shareTwinTags {g1 g2 {parent .}} {
   if {$answer != "ok"} { return }
   sc_game tags share update $g1 $g2
   sc_game tags reload
-  updateBoardAndPgn
+  updateBoard -pgn
   updateGList
 }
 
@@ -936,7 +936,7 @@ proc makeCompactWin {} {
     label $w.games.t$g -text "$::tr($name)  "
     label $w.games.g$g -text "  [thousands [lindex $ndata $idx]]"
     incr idx
-    set kbytes [expr int(([lindex $ndata $idx] + 512) / 1024)]
+    set kbytes [expr {int(([lindex $ndata $idx] + 512) / 1024)} ]
     label $w.games.s$g -text "  [thousands $kbytes]"
     incr idx
     grid $w.games.t$g -row $row -column 0 -sticky w
@@ -980,7 +980,7 @@ proc compactNames {} {
   }
   grab release $w
   destroy $w
-  updateBoard .board
+  updateBoard
   updateGList
   updateMaintWin
 }
@@ -1010,7 +1010,7 @@ proc compactGames {} {
   }
   grab release $w
   destroy $w
-  updateBoard .board
+  updateBoard
   updateGList
   updateMaintWin
 }
@@ -1151,7 +1151,7 @@ proc sortDatabase {} {
       -title "Scid: Sort results" \
       -message "The database was successfully sorted."
   }
-  updateBoard .board
+  updateBoard
   updateGList
   updateMaintWin
 }
@@ -1298,7 +1298,7 @@ proc stripTags {} {
   button $w.b.strip -text $::tr(StripTag...) -command {
     set removed [doStripTags .striptags]
     set stripTagCount($stripTagChoice) \
-      [expr $stripTagCount($stripTagChoice) - $removed]
+      [expr {$stripTagCount($stripTagChoice) - $removed} ]
     .striptags.f.c$stripTagChoice configure -text \
       [thousands $stripTagCount($stripTagChoice)]
   }
@@ -1570,7 +1570,7 @@ proc doCleaner {} {
   }
 
   mtoolAdd $t "Done."
-  updateBoard .board
+  updateBoard
   updateGList
   updateMaintWin
   $w.b.close configure -state normal

@@ -97,7 +97,7 @@ proc ::date::_day {win delta} {
 }
 
 proc ::date::_month {win delta} {
-  set dir [expr ($delta > 0) ? 1 : -1]
+  set dir [expr {($delta > 0) ? 1 : -1} ]
   set day [string trimleft [clock format $::date::_time -format "%d"] 0]
   set month [string trimleft [clock format $::date::_time -format "%m"] 0]
   set year [clock format $::date::_time -format "%Y"]
@@ -125,13 +125,13 @@ proc ::date::_redraw {win} {
 
   $win.cal create window 3 3 -anchor nw -window $win.cal.prevY
   $win.cal create window 40 3 -anchor nw -window $win.cal.prev
-  $win.cal create window [expr $wmax-43] 3 -anchor ne -window $win.cal.next
-  $win.cal create window [expr $wmax-3] 3 -anchor ne -window $win.cal.nextY
+  $win.cal create window [expr {$wmax-43} ] 3 -anchor ne -window $win.cal.next
+  $win.cal create window [expr {$wmax-3} ] 3 -anchor ne -window $win.cal.nextY
   set bottom [lindex [$win.cal bbox all] 3]
 
   set month [string trimleft [clock format $time -format "%m"] 0]
   set year [clock format $time -format "%Y"]
-  $win.cal create text [expr $wmax/2] $bottom -anchor s -font font_Bold \
+  $win.cal create text [expr {$wmax/2} ] $bottom -anchor s -font font_Bold \
     -text "[lindex $::tr(Months) [expr $month - 1]] $year"
 
   incr bottom 3
@@ -141,27 +141,27 @@ proc ::date::_redraw {win} {
   set current ""
 
   set layout [::date::_layout $time]
-  set weeks [expr [lindex $layout end]+1]
+  set weeks [expr {[lindex $layout end]+1} ]
 
   for {set day 0} {$day < 7} {incr day} {
-    set x0 [expr $day*($wmax-7)/7+3]
-    set x1 [expr ($day+1)*($wmax-7)/7+3]
-    $win.cal create text [expr ($x1+$x0)/2] $bottom -anchor s \
+    set x0 [expr {$day*($wmax-7)/7+3} ]
+    set x1 [expr {($day+1)*($wmax-7)/7+3} ]
+    $win.cal create text [expr {($x1+$x0)/2} ] $bottom -anchor s \
       -text [lindex $::tr(Days) $day] -font font_Small
   }
   incr bottom 3
 
   foreach {day date dcol wrow} $layout {
-    set x0 [expr $dcol*($wmax-7)/7+3]
-    set y0 [expr $wrow*($hmax-$bottom-4)/$weeks+$bottom]
-    set x1 [expr ($dcol+1)*($wmax-7)/7+3]
-    set y1 [expr ($wrow+1)*($hmax-$bottom-4)/$weeks+$bottom]
+    set x0 [expr {$dcol*($wmax-7)/7+3} ]
+    set y0 [expr {$wrow*($hmax-$bottom-4)/$weeks+$bottom} ]
+    set x1 [expr {($dcol+1)*($wmax-7)/7+3} ]
+    set y1 [expr {($wrow+1)*($hmax-$bottom-4)/$weeks+$bottom} ]
 
     if {$date == $::date::_selected} {set current $date}
 
     $win.cal create rectangle $x0 $y0 $x1 $y1 -outline black -fill white
 
-    $win.cal create text [expr $x0+4] [expr $y0+2] -anchor nw -text "$day" \
+    $win.cal create text [expr {$x0+4} ] [expr {$y0+2} ] -anchor nw -text "$day" \
       -fill black -font font_Small -tags [list $date-text all-text]
 
     $win.cal create rectangle $x0 $y0 $x1 $y1 \
@@ -188,14 +188,14 @@ proc ::date::_layout {time} {
   }
   set seconds [clock scan "$year-$month-1"]
   set firstday [clock format $seconds -format %w]
-  set weeks [expr ceil(double($lastday+$firstday)/7)]
+  set weeks [expr {ceil(double($lastday+$firstday)/7)} ]
 
   set rlist ""
   for {set day 1} {$day <= $lastday} {incr day} {
     set seconds [clock scan "$year-$month-$day"]
     set date [clock format $seconds -format "%Y-%m-%d"]
     set daycol [clock format $seconds -format %w]
-    set weekrow [expr ($firstday+$day-1)/7]
+    set weekrow [expr {($firstday+$day-1)/7} ]
     lappend rlist $day $date $daycol $weekrow
   }
   return $rlist
@@ -258,7 +258,7 @@ proc thousands {n {kilo 0}} {
   set unit ""
   if {$kilo > 0  &&  $n >= $kilo} {
     set unit "K"
-    set n [expr int($n / 1000)]
+    set n [expr {int($n / 1000)} ]
   }
   if {$commaChar == ""} { return "$n$unit" }
   while {[regsub {^([-+]?[0-9]+)([0-9][0-9][0-9])} $n "\\1$commaChar\\2" n]} {}
@@ -339,7 +339,7 @@ proc bindFocusColors {w {inColor lightYellow} {outColor white}} {
 #
 proc bindMouseWheel {win text} {
   bind $win <MouseWheel> \
-    [list $text yview scroll {[expr -(%D / 120)]} units]
+    "$text yview scroll \[expr -(%D / 120)\] units"
   if {! $::windowsOS} {
     bind $win <Button-4> [list $text yview scroll -1 units]
     bind $win <Button-5> [list $text yview scroll  1 units]
@@ -434,7 +434,7 @@ proc forceInt {maxValue allowQuestionMarks name el op} {
   set allowNegatives 0
   if {$maxValue < 0} {
     set allowNegatives 1
-    set maxValue [expr 0 - $maxValue]
+    set maxValue [expr {0 - $maxValue} ]
   }
 
   if {$allowNegatives} {
@@ -513,7 +513,7 @@ proc forceAlpha {name el op} {
 proc forceRegexp {expression name el op} {
   global $name ${name}_old
   set old ${name}_old
-  if ![regexp $expression [set $name]] {
+  if {![regexp $expression [set $name]]} {
     set $name [set $old]
     bell
     return
@@ -558,11 +558,11 @@ proc progressWindow {args} {
   }
   # Set up geometry for middle of screen:
   set x [winfo screenwidth $w]
-  set x [expr $x - 400]
-  set x [expr $x / 2]
+  set x [expr {$x - 400} ]
+  set x [expr {$x / 2} ]
   set y [winfo screenheight $w]
-  set y [expr $y - 20]
-  set y [expr $y / 2]
+  set y [expr {$y - 20} ]
+  set y [expr {$y / 2} ]
   wm geometry $w +$x+$y
   sc_progressBar $w.c bar 401 21 time
   update idletasks
@@ -605,19 +605,19 @@ proc resetProgressWindow {} {
 proc updateProgressWindow {done total} {
   set w .progressWin
   if {! [winfo exists $w]} { return }
-  set elapsed [expr [clock seconds] - $::progressWin_time]
+  set elapsed [expr {[clock seconds] - $::progressWin_time} ]
   set width 401
   if {$total > 0} { 
-    set width [expr int(double($width) * double($done) / double($total))]
+    set width [expr {int(double($width) * double($done) / double($total))} ]
   }
   $w.c coords bar 0 0 $width 21
   set estimated $elapsed
   if {$done != 0} {
-    set estimated [expr int(double($elapsed) * double($total) / double($done))]
+    set estimated [expr {int(double($elapsed) * double($total) / double($done))} ]
   }
   set t [format "%d:%02d / %d:%02d" \
-           [expr $elapsed / 60] [expr $elapsed % 60] \
-           [expr $estimated / 60] [expr $estimated % 60]]
+           [expr {$elapsed / 60} ] [expr {$elapsed % 60} ] \
+           [expr {$estimated / 60} ] [expr {$estimated % 60} ]]
   $w.c itemconfigure time -text $t
   update
 }
@@ -731,13 +731,13 @@ proc ::pane::grab {win} {
 proc ::pane::drag {win y} {
   set vertical $::pane::_data($win,vertical)
   if {$vertical} {
-    set realY [expr $y-[winfo rooty $win]]
+    set realY [expr {$y-[winfo rooty $win]} ]
     set Ymax  [winfo height $win]
   } else {
-    set realY [expr $y-[winfo rootx $win]]
+    set realY [expr {$y-[winfo rootx $win]} ]
     set Ymax  [winfo width $win]
   }
-  set frac [expr double($realY)/$Ymax]
+  set frac [expr {double($realY)/$Ymax} ]
   if {$frac < $::pane::_data($win,min)} {set frac $::pane::_data($win,min)}
   if {$frac > $::pane::_data($win,max)} {set frac $::pane::_data($win,max)}
 
@@ -767,12 +767,12 @@ proc ::pane::divide {win frac} {
     place $win.pane_sash -rely $frac
     place $win.pane_grip -rely $frac
     place $win.$::pane::_data($win,1) -relheight $frac
-    place $win.$::pane::_data($win,2) -relheight [expr 1-$frac]
+    place $win.$::pane::_data($win,2) -relheight [expr {1-$frac} ]
   } else {
     place $win.pane_sash -relx $frac
     place $win.pane_grip -relx $frac
     place $win.$::pane::_data($win,1) -relwidth $frac
-    place $win.$::pane::_data($win,2) -relwidth [expr 1-$frac]
+    place $win.$::pane::_data($win,2) -relwidth [expr {1-$frac} ]
   }
 }
 

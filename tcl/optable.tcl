@@ -96,8 +96,8 @@ proc ::optable::makeReportWin {} {
   }
   wm resizable $w 0 0
   # Set up geometry for middle of screen:
-  set x [winfo screenwidth $w]; set x [expr $x - 400]; set x [expr $x / 2]
-  set y [winfo screenheight $w]; set y [expr $y - 20]; set y [expr $y / 2]
+  set x [winfo screenwidth $w]; set x [expr {$x - 400} ]; set x [expr {$x / 2} ]
+  set y [winfo screenheight $w]; set y [expr {$y - 20} ]; set y [expr {$y / 2} ]
   wm geometry $w +$x+$y
   wm deiconify $w
   grab $w.b.cancel
@@ -421,9 +421,9 @@ proc ::optable::latexifyTree {} {
   set ::optable::_data(moves) {}
   if {! [info exists ::optable::_data(tree)]} { return }
   set tree [split $::optable::_data(tree) "\n"]
-  set ltree "\\begin{tabular}{rllr@{:}rrrrr}\n\\hline\n"
+  set ltree "\\begin{tabular}{rllr@{:}rrrrrr}\n\\hline\n"
   append ltree " & Move & ECO & \\multicolumn{2}{c}{Frequency}"
-  append ltree " & Score & \$\\mu\$Elo & Perf & \$\\mu\$Year \\\\ \n"
+  append ltree " & Score & \$\\mu\$Elo & Perf & \$\\mu\$Year & \\% Draws \\\\ \n"
   append ltree "\\hline\n"
   set len [llength $tree]
   set done 0
@@ -443,6 +443,7 @@ proc ::optable::latexifyTree {} {
     set avElo  [string range $line 41 44]
     set perf   [string range $line 47 50]
     set avYear [string range $line 53 56]
+    set pctDraw [string range $line 59 61]
     set mv [string trim $move]
     regsub K $move {{\\K}} move
     regsub Q $move {{\\Q}} move
@@ -456,7 +457,7 @@ proc ::optable::latexifyTree {} {
       lappend ::optable::_data(moves) $mv
     }
     append ltree " & $eco & $freq & $fpct\\% & $score\\%"
-    append ltree " & $avElo & $perf & $avYear \\\\ \n"
+    append ltree " & $avElo & $perf & $avYear & $pctDraw\\% \\\\ \n"
   }
   append ltree "\\hline\n"
   append ltree "\\end{tabular}\n"
@@ -469,7 +470,7 @@ proc ::optable::setupRatios {} {
     set ::optable::_data(ratioAll) 0
   } else {
     set ::optable::_data(ratioAll) \
-      [expr int(double([lindex $r 1]) / double([lindex $r 0]))]
+      [expr {int(double([lindex $r 1]) / double([lindex $r 0]))} ]
   }
   foreach {start end} {1800 1899  1900 1949  1950 1969  1970 1979
     1980 1989 1990 1999 2000 2009} {
@@ -480,7 +481,7 @@ proc ::optable::setupRatios {} {
       set ::optable::_data(range$start) "---"
     } else {
       set ::optable::_data(range$start) \
-        [expr int(double($all) / double($filter))]
+        [expr {int(double($all) / double($filter))} ]
     }
   }
   foreach y {1 5 10} {
@@ -493,15 +494,15 @@ proc ::optable::setupRatios {} {
       set ::optable::_data(ratio$y) 0
     } else {
       set ::optable::_data(ratio$y) \
-        [expr int(double($all) / double($filter))]
+        [expr {int(double($all) / double($filter))} ]
     }
     if {$::optable::_data(ratio$y) == 0} {
       set r 1.0
     } else {
-      set r [expr double($::optable::_data(ratioAll))]
-      set r [expr $r / double($::optable::_data(ratio$y))]
+      set r [expr {double($::optable::_data(ratioAll))} ]
+      set r [expr {$r / double($::optable::_data(ratio$y))} ]
     }
-    set ::optable::_data(delta$y) [expr int(($r - 1.0) * 100.0 + 0.5)]
+    set ::optable::_data(delta$y) [expr {int(($r - 1.0) * 100.0 + 0.5)} ]
   }
 }
 
@@ -531,7 +532,7 @@ proc ::optable::results {} {
 
   set lenReport [string length $::tr(OprepReportGames)]
   set lenAll [string length $::tr(OprepAllGames)]
-  set len [expr ($lenReport > $lenAll) ? $lenReport : $lenAll]
+  set len [expr {($lenReport > $lenAll) ? $lenReport : $lenAll} ]
   set score [capital $::tr(score)]
   set slen [string length $score]
   if {$slen < 7} { set slen 7 }
@@ -598,8 +599,8 @@ proc ::optable::stats {} {
   set score [capital $::tr(score)]
 
   set alen [string length $all]
-  set blen [expr [string length $both] + 6]
-  set slen [expr [string length $since] + 11]
+  set blen [expr {[string length $both] + 6} ]
+  set slen [expr {[string length $since] + 11} ]
   set len $alen
   if {$len < $blen} { set len $blen }
   if {$len < $slen} { set len $slen }

@@ -190,15 +190,21 @@ proc ::htext::init {w} {
   $w tag configure menu -font font_Bold -foreground $cyan
 
   # PGN-window-specific tags:
-  $w tag configure tag -foreground $::pgnColor(Header)
-  $w tag configure nag -foreground $::pgnColor(Nag)
-  $w tag configure var -foreground $::pgnColor(Var)
+  $w tag configure tag -foreground $::pgnColor(Header) 
+  if { $::pgnMoveFont } {
+     $w tag configure nag -foreground $::pgnColor(Nag) -font font_Regular
+     $w tag configure var -foreground $::pgnColor(Var) -font font_Regular
+  } else {
+     $w tag configure nag -foreground $::pgnColor(Nag) 
+     $w tag configure var -foreground $::pgnColor(Var) 
+  }
+  
   $w tag configure ip1 -lmargin1 25 -lmargin2 25
   $w tag configure ip2 -lmargin1 50 -lmargin2 50
 }
 
 proc ::htext::isStartTag {tagName} {
-  return [expr ![strIsPrefix "/" $tagName]]
+  return [expr {![strIsPrefix "/" $tagName]} ]
 }
 
 proc ::htext::isEndTag {tagName} {
@@ -258,7 +264,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     set endPos [string first ">" $str]
     if {$endPos < 1} { break }
 
-    set tagName [string range $str [expr $startPos + 1] [expr $endPos - 1]]
+    set tagName [string range $str [expr {$startPos + 1} ] [expr {$endPos - 1} ]]
 
     # Check if it is a starting tag (no "/" at the start):
 
@@ -383,7 +389,12 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       if {[strIsPrefix "c_" $tagName]} {
         set commentTag $tagName
         set tagName "c"
-        $w tag configure $commentTag -foreground $::pgnColor(Comment)
+	if { $::pgnMoveFont } {
+           $w tag configure $commentTag -foreground $::pgnColor(Comment) \
+	      -font font_Regular
+	} else {
+           $w tag configure $commentTag -foreground $::pgnColor(Comment) 
+	   }
         $w tag bind $commentTag <ButtonRelease-1> \
           "sc_move pgn [string range $commentTag 2 end]; updateBoard; openCommentWin"
         $w tag bind $commentTag <Any-Enter> \
@@ -399,7 +410,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     }
 
     # Now insert the text up to the formatting tag:
-    $w insert end [string range $str 0 [expr $startPos - 1]]
+    $w insert end [string range $str 0 [expr {$startPos - 1} ]]
 
     # Check if it is a name tag matching the section we want:
     if {$section != ""  &&  [strIsPrefix "name " $tagName]} {
@@ -476,7 +487,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
     }
 
     # Now eliminate the processed text from the string:
-    set str [string range $str [expr $endPos + 1] end]
+    set str [string range $str [expr {$endPos + 1} ] end]
     incr count
     if {$count == $::htext::updates($w)} { update idletasks; set count 1 }
     if {$::htext::interrupt} {

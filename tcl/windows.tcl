@@ -1,6 +1,6 @@
 ###
 ### windows.tcl: part of Scid.
-### Copyright (C) 1999-2001  Shane Hudson.
+### Copyright (C) 1999-2002  Shane Hudson.
 ###
 
 
@@ -105,7 +105,7 @@ proc findGListText {} {
 proc makeGList {} {
   global glist glstart glistSize highcolor glSelection helpMessage
   global glistFields glNumber glGoto glFindText buttoncolor glName
-  if [winfo exists .glistWin] {
+  if {[winfo exists .glistWin]} {
     focus .
     destroy .glistWin
     set glist 0
@@ -216,14 +216,14 @@ proc makeGList {} {
   set helpMessage(E,$w.b.start) {Go to the first page of games}
 
   button $w.b.pgup -image tb_prev -command {
-    set glstart [expr $glstart - $glistSize];
+    set glstart [expr {$glstart - $glistSize}];
     if {$glstart < 1} { set glstart 1 };
     updateGList
   }
   set helpMessage(E,$w.b.pgup) {Previous page of games}
 
   button $w.b.pgdn -image tb_next  -command {
-    set glstart [expr $glstart + $glistSize];
+    set glstart [expr {$glstart + $glistSize}];
     if {$glstart > [sc_filter count] } {
       set glstart [sc_filter count]
     }
@@ -233,7 +233,7 @@ proc makeGList {} {
   set helpMessage(E,$w.b.pgdn) {Next page of games}
 
   button $w.b.end -image tb_end -command {
-    set glstart [expr [sc_filter count] - $glistSize + 1]
+    set glstart [expr {[sc_filter count] - $glistSize + 1}]
     if {$glstart < 1} { set glstart 1}
     updateGList
   }
@@ -246,12 +246,12 @@ proc makeGList {} {
   }
 
   bind $w <Up> {
-    set glstart [expr $glstart - 1]
+    set glstart [expr {$glstart - 1}]
     if {$glstart < 1} { set glstart 1 }
     updateGList
   }
   bind $w <Down> {
-    set glstart [expr $glstart + 1]
+    set glstart [expr {$glstart + 1}]
     if {$glstart > [sc_filter count] } {
       set glstart [sc_filter count]
     }
@@ -313,14 +313,14 @@ proc makeGList {} {
   bind $w <Configure> {
     recordWinSize .glistWin
     set temp [wm geometry .glistWin]
-    set temp [string range $temp [expr [string first "x" $temp] + 1] end]
+    set temp [string range $temp [expr {[string first "x" $temp] + 1}] end]
     set idx [string first "+" $temp]
     if {$idx != -1} {
-      set temp [string range $temp 0 [expr $idx - 1]]
+      set temp [string range $temp 0 [expr {$idx - 1}]]
     }
     set idx [string first "-" $temp]
     if {$idx != -1} {
-      set temp [string range $temp 0 [expr $idx - 1]]
+      set temp [string range $temp 0 [expr {$idx - 1}]]
     }
     if {$temp != $glistSize && $temp > 0} {
       set glistSize $temp
@@ -335,7 +335,7 @@ proc makeGList {} {
 
 proc scrollGList {nlines} {
   global glstart
-  set glstart [expr $glstart + $nlines]
+  set glstart [expr {$glstart + $nlines}]
   if {$glstart > [sc_filter count] } {
     set glstart [sc_filter count]
   }
@@ -345,7 +345,7 @@ proc scrollGList {nlines} {
 
 proc setGLselection {code xcoord ycoord} {
   global glSelection glNumber
-  set glSelection [expr int([.glistWin.c$code.text index @$xcoord,$ycoord])]
+  set glSelection [expr {int([.glistWin.c$code.text index @$xcoord,$ycoord])}]
   set glNumber [.glistWin.cg.text get $glSelection.0 $glSelection.end]
 }
 
@@ -370,7 +370,7 @@ proc decrGLwidth {code} {
   $w.text configure -width $width
   updateGLwidths $code $width
 }
-
+ 
 proc updateGLwidths {code width} {
   global glistFields
   set len [llength $glistFields]
@@ -399,7 +399,7 @@ proc highlightGLline {linenum} {
   foreach column $glistFields {
     set code [lindex $column 0]
     .glistWin.c$code.text tag remove highlight 1.0 end
-    .glistWin.c$code.text tag add highlight $linenum.0 [expr $linenum+1].0
+    .glistWin.c$code.text tag add highlight $linenum.0 [expr {$linenum+1}].0
   }
 }
 
@@ -444,7 +444,7 @@ proc popupGLconfig {code xcoord ycoord xscreen yscreen} {
     $menu entryconfig 3 -state normal -command "deleteGLfield $code"
   }
   # event generate .glistWin <ButtonRelease-3>
-  $menu post $xscreen [expr $yscreen + 2]
+  $menu post $xscreen [expr {$yscreen + 2}]
   event generate $menu <ButtonPress-1>
 }
 
@@ -540,7 +540,7 @@ proc moveGLfield {code delta} {
     set tcode [lindex $column 0]
     if {$tcode == $code} {
       set glistFields [lreplace $glistFields $i $i]
-      set insert [expr $i + $delta]
+      set insert [expr {$i + $delta}]
       set glistFields [linsert $glistFields $insert $column]
       break
     }
@@ -599,7 +599,7 @@ proc popupGLmenu {code xcoord ycoord xscreen yscreen} {
     .glistWin.popup entryconfig "Delete all*" -state normal
     .glistWin.popup entryconfig "Undelete all*" -state normal
   }
-  .glistWin.popup post $xscreen [expr $yscreen + 2]
+  .glistWin.popup post $xscreen [expr {$yscreen + 2}]
   event generate .glistWin.popup <ButtonPress-1>
 }
 
@@ -652,7 +652,7 @@ proc updateGList {} {
   global glistSize glstart
   global glistFields
   updateStatusBar
-  if ![winfo exists .glistWin] { return }
+  if {![winfo exists .glistWin]} { return }
   set totalSize [sc_filter count]
   set linenum [sc_game list $glstart $glistSize -current]
   foreach column $glistFields {
@@ -664,7 +664,7 @@ proc updateGList {} {
     .glistWin.c$code.text insert end \
       [sc_game list $glstart $glistSize $cformat] align
     if {$linenum > 0} {
-      .glistWin.c$code.text tag add current $linenum.0 [expr $linenum+1].0
+      .glistWin.c$code.text tag add current $linenum.0 [expr {$linenum+1}].0
     }
     .glistWin.c$code.text config -state disabled
   }
@@ -672,10 +672,10 @@ proc updateGList {} {
   # Now update the window title:
   set str "Scid [tr WindowsGList]: "
   if {$totalSize > 0} {
-    set right [expr $totalSize + 1 - $glistSize]
+    set right [expr {$totalSize + 1 - $glistSize}]
     if {$right < 1} { set right 1 }
     .glistWin.scale configure -to $right
-    set glend [expr $glstart + $glistSize - 1]
+    set glend [expr {$glstart + $glistSize - 1}]
     if {$glend > $totalSize} { set glend $totalSize}
     append str [thousands $glstart] " .. " \
       [thousands $glend] " / " [thousands $totalSize] " " $::tr(games)
@@ -1010,7 +1010,7 @@ proc ::tree::doTraining {{n 0}} {
   if {! [winfo exists .treeWin]} { return }
   if {$tree(training) == 0} { return }
   sc_tree click $tree(base) random
-  updateBoardAndPgn .board
+  updateBoard -pgn
 }
 
 proc ::tree::toggleLock {} {
@@ -1028,7 +1028,7 @@ proc ::tree::select { selection } {
   if {! [winfo exists .treeWin]} { return }
   sc_tree click $tree(base) $selection
   .treeWin.f.tl selection clear 0 end
-  updateBoardAndPgn .board
+  updateBoard -pgn
 }
 
 set tree(refresh) 0
@@ -1452,10 +1452,10 @@ proc ::tree::graph {} {
     $w.c create text 25 10 -tag text -justify center -width 1 \
       -font font_Regular -anchor n
     bind $w <Configure> {
-      .treeGraph.c itemconfigure text -width [expr [winfo width .treeGraph.c] - 50]
-      .treeGraph.c coords text [expr [winfo width .treeGraph.c] / 2] 10
-      ::graph::configure tree -height [expr [winfo height .treeGraph.c] - 100]
-      ::graph::configure tree -width [expr [winfo width .treeGraph.c] - 50]
+      .treeGraph.c itemconfigure text -width [expr {[winfo width .treeGraph.c] - 50}]
+      .treeGraph.c coords text [expr {[winfo width .treeGraph.c] / 2}] 10
+      ::graph::configure tree -height [expr {[winfo height .treeGraph.c] - 100}]
+      ::graph::configure tree -width [expr {[winfo width .treeGraph.c] - 50}]
       ::graph::redraw tree
     }
     bind $w.c <Button-1> ::tree::graph
@@ -1465,10 +1465,10 @@ proc ::tree::graph {} {
     ::tree::configGraphMenus
   }
 
-  $w.c itemconfigure text -width [expr [winfo width $w.c] - 50]
-  $w.c coords text [expr [winfo width $w.c] / 2] 10
-  set height [expr [winfo height $w.c] - 100]
-  set width [expr [winfo width $w.c] - 50]
+  $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50}]
+  $w.c coords text [expr {[winfo width $w.c] / 2}] 10
+  set height [expr {[winfo height $w.c] - 100}]
+  set width [expr {[winfo width $w.c] - 50}]
   ::graph::create tree -width $width -height $height -xtop 25 -ytop 60 \
     -xmin 0.5 -xtick 1 -ytick 5 -font font_Small -canvas $w.c
 
@@ -1505,7 +1505,7 @@ proc ::tree::graph {} {
       if {$fpct < 1.0  ||  $freq < 5  ||  $i > 5} {
         incr othersCount $freq
         incr numOthers
-        set othersScore [expr $othersScore + (double($freq) * $score)]
+        set othersScore [expr {$othersScore + (double($freq) * $score)}]
         set m $move
         if {$numOthers > 1} { set m "..." }
       } else {
@@ -1520,11 +1520,11 @@ proc ::tree::graph {} {
   # Add extra bar for other moves if necessary:
   if {$numOthers > 0} {
     incr count
-    set fpct [expr double($othersCount) * 100.0 / double($totalGames)]
-    set sc [expr round($othersScore / double($othersCount))]
+    set fpct [expr {double($othersCount) * 100.0 / double($totalGames)}]
+    set sc [expr {round($othersScore / double($othersCount))}]
     set othersName "$m ($sc%)\n$othersCount: [expr round($fpct)]%"
     lappend data $count
-    lappend data [expr $othersScore / double($othersCount)]
+    lappend data [expr {$othersScore / double($othersCount)}]
     lappend xlabels [list $count $othersName]
   }
 
@@ -1534,10 +1534,10 @@ proc ::tree::graph {} {
   # Replot the graph:
   ::graph::data tree data -color red -points 0 -lines 0 -bars 1 \
     -barwidth 0.75 -outline black -coords $data
-  ::graph::configure tree -xlabels $xlabels -xmax [expr $count + 0.5] \
+  ::graph::configure tree -xlabels $xlabels -xmax [expr {$count + 0.5}] \
     -hline [list {gray80 1 each 5} {gray50 1 each 10} {black 2 at 50} \
               {black 1 at 55} [list red 2 at $mean]] \
-    -brect [list [list 0.5 55 [expr $count + 0.5] 50 LightSkyBlue1]]
+    -brect [list [list 0.5 55 [expr {$count + 0.5}] 50 LightSkyBlue1]]
 
   ::graph::redraw tree
   set moves ""
@@ -1581,7 +1581,7 @@ proc saveGraph {mode w} {
 proc makeStatsWin {} {
   global statsWin stats
   set w .statsWin
-  if [winfo exists $w] {
+  if {[winfo exists $w]} {
     focus .
     destroy $w
     set statsWin 0
@@ -1675,9 +1675,9 @@ proc updateStatsWin {} {
   set score [capital $::tr(score)]
 
   # Find length of longest left-hand column:
-  set alen [expr [string length $all] + 1]
-  set blen [expr [string length $both] + 7]
-  set slen [expr [string length $since] + 12]
+  set alen [expr {[string length $all] + 1}]
+  set blen [expr {[string length $both] + 7}]
+  set slen [expr {[string length $since] + 12}]
   set len $alen
   if {$len < $blen} { set len $blen }
   if {$len < $slen} { set len $slen }
@@ -1789,13 +1789,13 @@ proc makeFilterGraph {} {
 
   bind $w <F1> {helpWindow Graphs Filter}
   bind $w <Configure> {
-    .fgraph.c itemconfigure title -width [expr [winfo width .fgraph.c] - 50]
-    .fgraph.c coords title [expr [winfo width .fgraph.c] / 2] 10
-    .fgraph.c itemconfigure type -width [expr [winfo width .fgraph.c] - 50]
-    .fgraph.c coords type [expr [winfo width .fgraph.c] / 2] \
-      [expr [winfo height .fgraph.c] - 10]
-    ::graph::configure filter -height [expr [winfo height .fgraph.c] - 80]
-    ::graph::configure filter -width [expr [winfo width .fgraph.c] - 60]
+    .fgraph.c itemconfigure title -width [expr {[winfo width .fgraph.c] - 50}]
+    .fgraph.c coords title [expr {[winfo width .fgraph.c] / 2}] 10
+    .fgraph.c itemconfigure type -width [expr {[winfo width .fgraph.c] - 50}]
+    .fgraph.c coords type [expr {[winfo width .fgraph.c] / 2}] \
+      [expr {[winfo height .fgraph.c] - 10}]
+    ::graph::configure filter -height [expr {[winfo height .fgraph.c] - 80}]
+    ::graph::configure filter -width [expr {[winfo width .fgraph.c] - 60}]
     ::graph::redraw filter
   }
   bind $w.c <1> switchFilterGraph
@@ -1829,13 +1829,13 @@ proc updateFilterGraph {} {
   set w .fgraph
   if {! [winfo exists $w]} { return }
 
-  $w.c itemconfigure title -width [expr [winfo width $w.c] - 50]
-  $w.c coords title [expr [winfo width $w.c] / 2] 10
-  $w.c itemconfigure type -width [expr [winfo width $w.c] - 50]
-  $w.c coords type [expr [winfo width $w.c] / 2] \
-    [expr [winfo height $w.c] - 10]
-  set height [expr [winfo height $w.c] - 80]
-  set width [expr [winfo width $w.c] - 60]
+  $w.c itemconfigure title -width [expr {[winfo width $w.c] - 50}]
+  $w.c coords title [expr {[winfo width $w.c] / 2}] 10
+  $w.c itemconfigure type -width [expr {[winfo width $w.c] - 50}]
+  $w.c coords type [expr {[winfo width $w.c] / 2}] \
+    [expr {[winfo height $w.c] - 10}]
+  set height [expr {[winfo height $w.c] - 80}]
+  set width [expr {[winfo width $w.c] - 60}]
   set vlines {}
   if {$fgraphType == "elo"} {
     # Vertical lines for Elo-range graph:
@@ -1880,7 +1880,7 @@ proc updateFilterGraph {} {
     set ftype date
     set typeName $::tr(Year)
     set endYear [::date::today year]
-    set startYear [expr $endYear - 10]
+    set startYear [expr {$endYear - 10}]
     set rlist {}
     for {set i $startYear} {$i <= $endYear} {incr i} {
       lappend rlist $i
@@ -1903,7 +1903,7 @@ proc updateFilterGraph {} {
     if {$all == 0} {
       set freq 0.0
     } else {
-      set freq [expr double($filter) * 1000.0 / double($all)]
+      set freq [expr {double($filter) * 1000.0 / double($all)}]
     }
     if {$freq >= 1000.0} { set freq 999.99 }
     incr count
@@ -1929,7 +1929,7 @@ proc updateFilterGraph {} {
   set filter [sc_filter count]
   set all [sc_base numGames]
   if {$all > 0} {
-    set mean [expr double($filter) * 1000.0 / double($all)]
+    set mean [expr {double($filter) * 1000.0 / double($all)}]
     if {$mean >= 1000.0} { set mean 999.9 }
     lappend hlines [list red 1 at $mean]
   }
@@ -1940,7 +1940,7 @@ proc updateFilterGraph {} {
   ::graph::data filter data -color darkBlue -points 1 -lines 1 -bars 0 \
     -linewidth 2 -radius 4 -outline darkBlue -coords $dlist
   ::graph::configure filter -xlabels $xlabels -ytick $ytick \
-    -hline $hlines -ymin 0 -xmin 0.5 -xmax [expr $count + 0.5]
+    -hline $hlines -ymin 0 -xmin 0.5 -xmax [expr {$count + 0.5}]
   ::graph::redraw filter
   $w.c itemconfigure title -text $::tr(GraphFilterTitle)
   $w.c itemconfigure type -text $typeName
@@ -1983,8 +1983,8 @@ proc configPgnMenus {{lang ""}} {
 }
 
 proc makePgnWin {} {
-  global pgnWin pgnHeight pgnWidth pgnColor pgnColumn pgnStripMarks
-  if [winfo exists .pgnWin] {
+  global pgnWin pgnHeight pgnWidth pgnColor pgnColumn pgnStripMarks pgnMoveFont
+  if {[winfo exists .pgnWin]} {
     focus .
     destroy .pgnWin
     set pgnWin 0
@@ -2032,21 +2032,23 @@ proc makePgnWin {} {
       -command "focus .; destroy $w"
 
   $w.menu.opt.m add checkbutton -label PgnOptColor \
-    -variable doColorPgn -command {updateBoardAndPgn .board}
+    -variable doColorPgn -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptShort \
-    -variable pgnShortHeader -command {updateBoardAndPgn .board}
+    -variable pgnShortHeader -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptSymbols \
-    -variable pgnSymbolicNags -command {updateBoardAndPgn .board}
+    -variable pgnSymbolicNags -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptIndentC \
-    -variable pgnIndentComments -command {updateBoardAndPgn .board}
+    -variable pgnIndentComments -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptIndentV \
-    -variable pgnIndentVars -command {updateBoardAndPgn .board}
+    -variable pgnIndentVars -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptSpace \
-    -variable pgnMoveNumSpace -command {updateBoardAndPgn .board}
+    -variable pgnMoveNumSpace -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptColumn \
-    -variable pgnColumn -command {updateBoardAndPgn .board}
+    -variable pgnColumn -command {updateBoard -pgn}
   $w.menu.opt.m add checkbutton -label PgnOptStripMarks \
-    -variable pgnStripMarks -command {updateBoardAndPgn .board}
+    -variable pgnStripMarks -command {updateBoard -pgn}
+  $w.menu.opt.m add checkbutton -label "Use bold font for main line" \
+    -variable pgnMoveFont -command {updateBoard -pgn}
 
   $w.menu.color.m add command -label PgnColorHeader \
     -command {choosePgnColor Header "header text"}
@@ -2067,7 +2069,11 @@ proc makePgnWin {} {
 
   text $w.text -width $::winWidth($w) -height $::winHeight($w) -wrap word \
     -background $pgnColor(Background) -cursor crosshair \
-    -yscrollcommand "$w.scroll set" -setgrid 1 -tabs {1c right 2c 4c}
+    -yscrollcommand "$w.scroll set" -setgrid 1 -tabs {1c right 2c 4c} 
+  if { $pgnMoveFont } {
+    $w.text configure -font font_Bold
+  }
+  
   scrollbar $w.scroll -command "$w.text yview" -takefocus 0
   pack [frame $w.buttons] -side bottom -fill x
   pack $w.scroll -side right -fill y
@@ -2086,12 +2092,12 @@ proc makePgnWin {} {
 
   # set the same arrow key, etc bindings that the main window has:
   bind $w <F1> { helpWindow PGN }
-  bind $w <Home>  {sc_move start; updateBoard .board}
-  bind $w <Up>    {sc_move back 10; updateBoard .board}
-  bind $w <Left>  {sc_move back; updateBoard .board}
-  bind $w <Down>  {sc_move forward 10; updateBoard .board}
-  bind $w <Right> {sc_move forward; updateBoard .board}
-  bind $w <End>   {sc_move end; updateBoard .board}
+  bind $w <Home>  {sc_move start; updateBoard -animate}
+  bind $w <Up>    {sc_move back 10; updateBoard -animate}
+  bind $w <Left>  {sc_move back; updateBoard -animate}
+  bind $w <Down>  {sc_move forward 10; updateBoard -animate}
+  bind $w <Right> {sc_move forward; updateBoard -animate}
+  bind $w <End>   {sc_move end; updateBoard -animate}
   bind $w <Escape> {focus .; destroy .pgnWin}
   standardShortcuts $w
   bindMouseWheel $w $w.text
@@ -2133,10 +2139,10 @@ proc showPgnBoard {win startLine x y xc yc} {
   set dx [winfo width $w]
   set dy [winfo height $w]
   if {($xc+$dx) > [winfo screenwidth $w]} {
-    set xc [expr [winfo screenwidth $w] - $dx]
+    set xc [expr {[winfo screenwidth $w] - $dx}]
   }
   if {($yc+$dy) > [winfo screenheight $w]} {
-    set yc [expr [winfo screenheight $w] - $dy]
+    set yc [expr {[winfo screenheight $w] - $dy}]
   }
   wm geometry $w "+$xc+$yc"
   wm deiconify $w
@@ -2170,7 +2176,7 @@ proc resetPgnColors {} {
 #
 proc updatePgnWin {{pgnNeedsUpdate 0}} {
   global doColorPgn pgnIndentVars pgnIndentComments pgnSymbolicNags
-  global pgnMoveNumSpace pgnShortHeader pgnColumn pgnStripMarks
+  global pgnMoveNumSpace pgnShortHeader pgnColumn pgnStripMarks pgnMoveFont
   if {![winfo exists .pgnWin]} { return }
   set format plain
   if {$doColorPgn} {set format color}
@@ -2195,6 +2201,11 @@ proc updatePgnWin {{pgnNeedsUpdate 0}} {
   }
 
   if {$doColorPgn} {
+     if { $pgnMoveFont } {
+        .pgnWin.text configure -font font_Bold
+     } else {
+        .pgnWin.text configure -font font_Regular
+     }
     # Now update Current and NextMove tags:
     .pgnWin.text tag remove Current 1.0 end
     set offset [sc_pos pgnOffset]
@@ -2225,6 +2236,7 @@ proc addNag {nag} {
   .commentWin.nf.tf.text insert end "$nag  "
   storeComment
   updatePgnWin 1
+  updateBoard
 }
 
 proc makeCommentWin {} {
@@ -2318,8 +2330,12 @@ proc openCommentWin {} {
   pack $w.nf -side top
   addHorizontalRule $w
 
-  button $w.nf.tf.clear -textvar ::tr(Clear) \
-    -command {.commentWin.nf.tf.text delete 0 end}
+  button $w.nf.tf.clear -textvar ::tr(Clear)  -command {
+     .commentWin.nf.tf.text delete 0 end
+     storeComment
+     updatePgnWin 1
+     updateBoard
+     }
   set helpMessage(E,$w.nf.tf.clear) {Clear all symbols for this move}
   pack $w.nf.label -side top -expand 0
   pack $w.nf.tf -side top
@@ -2360,7 +2376,7 @@ proc openCommentWin {} {
     -command updateCommentWin
   set helpMessage(E,$w.b.revert) {Revert to the stored comment}
   button $w.b.store -textvar ::tr(Store) \
-    -command {storeComment; updatePgnWin 1}
+    -command {storeComment; updatePgnWin 1; updateBoard}
   set helpMessage(E,$w.b.store) {Store this comment in the game}
   frame $w.b.space -width 10
   button $w.b.close -textvar ::tr(Close) \
@@ -2437,8 +2453,10 @@ proc insertMarkComment {} {
 proc insertMarkSelect {{sq -1}} {
   global insertMark
   set w .markDlg
+
+  ::board::clearMarks $w.bd
+  ::board::clearArrows $w.bd
   ::board::update $w.bd
-  ::board::recolor $w.bd
 
   if {$sq >= 0} {
     if {$insertMark(from) < 0  ||  $insertMark(from) != $insertMark(to)} {
@@ -2450,17 +2468,17 @@ proc insertMarkSelect {{sq -1}} {
   }
 
   set files [list a b c d e f g h]
-  set from [lindex $files [expr $insertMark(from) % 8]]
-  append from [expr int($insertMark(from)/8) + 1]
-  set to [lindex $files [expr $insertMark(to) % 8]]
-  append to [expr int($insertMark(to)/8) + 1]
+  set from [lindex $files [expr {$insertMark(from) % 8}]]
+  append from [expr {int($insertMark(from)/8) + 1}]
+  set to [lindex $files [expr {$insertMark(to) % 8}]]
+  append to [expr {int($insertMark(to)/8) + 1}]
 
   if {$insertMark(from) < 0} { return }
   if {$insertMark(from) == $insertMark(to)} {
-    ::board::colorSquare $w.bd $insertMark(from) $insertMark(color)
+    ::board::addMark $w.bd $insertMark(from) $insertMark(color)
     set insertMark(Text) "\[%mark $from $insertMark(color)\]"
   } else {
-    ::board::arrow $w.bd $insertMark(from) $insertMark(to) $insertMark(color)
+    ::board::addArrow $w.bd $insertMark(from) $insertMark(to) $insertMark(color)
     set insertMark(Text) "\[%arrow $from $to $insertMark(color)\]"
   }
 }
@@ -2479,7 +2497,7 @@ proc storeComment {} {
     sc_pos setComment $newComment
     updateStatusBar
     updatePgnWin 1
-    updateBoard .board
+    updateBoard
   }
 }
 
@@ -2826,7 +2844,7 @@ proc crosstabWin {} {
     ::htext::display $w.f.text $result
   }
   # Shade every second line to help readability:
-  set lastLineNum [expr int([$w.f.text index end])]
+  set lastLineNum [expr {int([$w.f.text index end])}]
   for {set i 2} {$i <= $lastLineNum} {incr i 2} {
     $w.f.text tag add bgGray $i.0 "$i.0 lineend +1c"
   }
@@ -2873,10 +2891,10 @@ proc updateScoreGraph {} {
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Score}
     bind $w <Configure> {
-      .sgraph.c itemconfigure text -width [expr [winfo width .sgraph.c] - 50]
-      .sgraph.c coords text [expr [winfo width .sgraph.c] / 2] 10
-      ::graph::configure score -height [expr [winfo height .sgraph.c] - 90]
-      ::graph::configure score -width [expr [winfo width .sgraph.c] - 100]
+      .sgraph.c itemconfigure text -width [expr {[winfo width .sgraph.c] - 50}]
+      .sgraph.c coords text [expr {[winfo width .sgraph.c] / 2}] 10
+      ::graph::configure score -height [expr {[winfo height .sgraph.c] - 90}]
+      ::graph::configure score -width [expr {[winfo width .sgraph.c] - 100}]
       ::graph::redraw score
     }
     bind $w.c <3> updateScoreGraph
@@ -2885,10 +2903,10 @@ proc updateScoreGraph {} {
     configScoreGraphMenus
   }
 
-  $w.c itemconfigure text -width [expr [winfo width $w.c] - 50]
-  $w.c coords text [expr [winfo width $w.c] / 2] 10
-  set height [expr [winfo height $w.c] - 90]
-  set width [expr [winfo width $w.c] - 100]
+  $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50}]
+  $w.c coords text [expr {[winfo width $w.c] / 2}] 10
+  set height [expr {[winfo height $w.c] - 90} ]
+  set width [expr {[winfo width $w.c] - 100} ]
   ::graph::create score -width $width -height $height -xtop 50 -ytop 45 \
     -ytick 1 -xtick 5 -font font_Small -canvas $w.c -textcolor black \
     -hline {{gray80 1 each 1} {black 1 at 0}} \
@@ -2922,7 +2940,7 @@ proc configScoreGraphMenus {{lang ""}} {
 }
 
 proc moveInScoreGraph {xc} {
-  set x [expr round([::graph::xunmap score $xc] * 2)]
+  set x [expr {round([::graph::xunmap score $xc] * 2)} ]
   sc_move start
   sc_move forward $x
   updateBoard
@@ -2984,10 +3002,10 @@ proc updateRatingGraph {{type ""} {player ""}} {
     pack $w.c -side top -expand yes -fill both
     bind $w <F1> {helpWindow Graphs Rating}
     bind $w <Configure> {
-      .rgraph.c itemconfigure text -width [expr [winfo width .rgraph.c] - 50]
-      .rgraph.c coords text [expr [winfo width .rgraph.c] / 2] 10
-      ::graph::configure ratings -height [expr [winfo height .rgraph.c] - 70]
-      ::graph::configure ratings -width [expr [winfo width .rgraph.c] - 100]
+      .rgraph.c itemconfigure text -width [expr {[winfo width .rgraph.c] - 50} ]
+      .rgraph.c coords text [expr {[winfo width .rgraph.c] / 2} ] 10
+      ::graph::configure ratings -height [expr {[winfo height .rgraph.c] - 70} ]
+      ::graph::configure ratings -width [expr {[winfo width .rgraph.c] - 100} ]
       ::graph::configure ratings -logy 10
       ::graph::redraw ratings
     }
@@ -2997,10 +3015,10 @@ proc updateRatingGraph {{type ""} {player ""}} {
     configRatingGraphMenus
   }
 
-  $w.c itemconfigure text -width [expr [winfo width $w.c] - 50]
-  $w.c coords text [expr [winfo width $w.c] / 2] 10
-  set height [expr [winfo height $w.c] - 70]
-  set width [expr [winfo width $w.c] - 100]
+  $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50} ]
+  $w.c coords text [expr {[winfo width $w.c] / 2} ] 10
+  set height [expr {[winfo height $w.c] - 70} ]
+  set width [expr {[winfo width $w.c] - 100} ]
   ::graph::create ratings -width $width -height $height -xtop 50 -ytop 35 \
     -ytick 50 -xtick 1 -font font_Small -canvas $w.c -textcolor black \
     -hline {{gray80 1 each 25} {steelBlue 1 each 100}} \
@@ -3033,10 +3051,10 @@ proc updateRatingGraph {{type ""} {player ""}} {
              -linewidth $lwidth -radius $psize -outline $blackColor \
              -key $key -coords [sc_name info -ratings:$rgraph(year) $black]}
   }
-  set minYear [expr int([::graph::cget ratings axmin])]
-  set maxYear [expr int([::graph::cget ratings axmax])]
+  set minYear [expr {int([::graph::cget ratings axmin])} ]
+  set maxYear [expr {int([::graph::cget ratings axmax])} ]
   ::graph::configure ratings -xtick 1
-  if {[expr $maxYear - $minYear] > 10} {::graph::configure ratings -xtick 5}
+  if {[expr {$maxYear - $minYear} ] > 10} {::graph::configure ratings -xtick 5}
   ::graph::redraw ratings
   $w.c itemconfigure text -text $title
   unbusyCursor $w
@@ -3063,7 +3081,7 @@ proc configRatingGraphMenus {{lang ""}} {
 #
 proc surname {name} {
   set idx [string first "," $name]
-  if {$idx > 0} { set name [string range $name 0 [expr $idx - 1]] }
+  if {$idx > 0} { set name [string range $name 0 [expr {$idx - 1} ]] }
   return $name
 }
 
@@ -3146,13 +3164,13 @@ proc ::plist::defaults {} {
   set ::plist::minGames 0
   set ::plist::maxGames 9999
   set ::plist::minElo 0
-  set ::plist::maxElo 4000
+  set ::plist::maxElo [sc_info limit elo]
 }
 
 ::plist::defaults
 
-trace variable ::plist::minElo w [list forceInt 4000 0]
-trace variable ::plist::maxElo w [list forceInt 4000 0]
+trace variable ::plist::minElo w [list forceInt [sc_info limit elo] 0]
+trace variable ::plist::maxElo w [list forceInt [sc_info limit elo] 0]
 trace variable ::plist::minGames w [list forceInt 9999 0]
 trace variable ::plist::maxGames w [list forceInt 9999 0]
 
@@ -3213,7 +3231,7 @@ proc ::plist::open {} {
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {4 r 10 r 18 r 24 r 32 r 35 l} {
-    set tabwidth [expr $xwidth * $tab]
+    set tabwidth [expr {$xwidth * $tab} ]
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
@@ -3236,6 +3254,7 @@ proc ::plist::open {} {
   $m configure -font $font
   pack $f.msize $f.size -side right
   pack $f.nlabel $f.name -side left
+  focus $f.name
 
   set f $w.o2
   label $f.elo -text "[tr PListSortElo]:" -font $fbold
@@ -3272,6 +3291,7 @@ proc ::plist::open {} {
   grid $w.t.xbar -row 1 -column 0 -sticky news
   grid rowconfig $w.t 0 -weight 1 -minsize 0
   grid columnconfig $w.t 0 -weight 1 -minsize 0
+
 
   ::plist::configMenus
   ::plist::refresh
@@ -3432,11 +3452,16 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
   button $w.b.forward -image tb_next -command "::gbrowser::update $n +1"
   button $w.b.end -image tb_end -command "::gbrowser::update $n end"
-  pack $w.b.start $w.b.back $w.b.forward $w.b.end -side left -padx 1 -pady 1
-
+  frame $w.b.gap -width 3
+  button $w.b.autoplay -image autoplay_off -command "::gbrowser::autoplay $n"
+  frame $w.b.gap2 -width 3
   set ::gbrowser::flip($n) [::board::isFlipped .board]
   button $w.b.flip -image tb_flip -command "::gbrowser::flip $n"
-  pack $w.b.flip -side left -padx 3 -pady 1
+
+  pack $w.b.start $w.b.back $w.b.forward $w.b.end $w.b.gap \
+    $w.b.autoplay $w.b.gap2 $w.b.flip -side left -padx 3 -pady 1
+
+  set ::gbrowser::autoplay($n) 0
 
   if {$gnum > 0} {
     button $w.b.load -textvar ::tr(LoadGame) \
@@ -3470,18 +3495,18 @@ proc ::gbrowser::update {n ply} {
   if {! [winfo exists $w]} { return }
   set oldply 0
   if {[info exists ::gbrowser::ply($n)]} { set oldply $::gbrowser::ply($n) }
-  if {$ply == "forward"} { set ply [expr $oldply + 1] }
-  if {$ply == "back"} { set ply [expr $oldply - 1] }
+  if {$ply == "forward"} { set ply [expr {$oldply + 1} ] }
+  if {$ply == "back"} { set ply [expr {$oldply - 1} ] }
   if {$ply == "start"} { set ply 0 }
   if {$ply == "end"} { set ply 9999 }
   if {[string index $ply 0] == "-"  ||  [string index $ply 0] == "+"} {
-    set ply [expr $oldply + $ply]
+    set ply [expr {$oldply + $ply} ]
   }
   if {$ply < 0} { set ply 0 }
-  set max [expr [llength $::gbrowser::boards($n)] - 1]
+  set max [expr {[llength $::gbrowser::boards($n)] - 1} ]
   if {$ply > $max} { set ply $max }
   set ::gbrowser::ply($n) $ply
-  ::board::update $w.bd [lindex $::gbrowser::boards($n) $ply]
+  ::board::update $w.bd [lindex $::gbrowser::boards($n) $ply] 1
 
   set t $w.t.text
   $t configure -state normal
@@ -3493,6 +3518,27 @@ proc ::gbrowser::update {n ply} {
     $t see [lindex $moveRange 0]
   }
   $t configure -state disabled
+
+  if {$::gbrowser::autoplay($n)} {
+    if {$ply >= $max} {
+      ::gbrowser::autoplay $n
+    } else {
+      after cancel "::gbrowser::update $n +1"
+      after $::autoplayDelay "::gbrowser::update $n +1"
+    }
+  }
+}
+
+proc ::gbrowser::autoplay {n} {
+  if {$::gbrowser::autoplay($n)} {
+    set ::gbrowser::autoplay($n) 0
+    .gb$n.b.autoplay configure -image autoplay_off
+    return
+  } else {
+    set ::gbrowser::autoplay($n) 1
+    .gb$n.b.autoplay configure -image autoplay_on
+    ::gbrowser::update $n +1
+  }
 }
 
 
@@ -3584,13 +3630,13 @@ proc updateEcoWin {{code "x"}} {
     bind $graph.c <3> { keyEcoBrowser "<" }
 
     bind $graph <Configure> {
-      ::graph::configure eco -height [expr [winfo height .ecograph.pane.graph.c] - 50]
-      ::graph::configure eco -width [expr [winfo width .ecograph.pane.graph.c] - 60]
+      ::graph::configure eco -height [expr {[winfo height .ecograph.pane.graph.c] - 50} ]
+      ::graph::configure eco -width [expr {[winfo width .ecograph.pane.graph.c] - 60} ]
       ::graph::redraw eco
     }
     bind $w <Configure> {
-      ::graph::configure eco -height [expr [winfo height .ecograph.pane.graph.c] - 50]
-      ::graph::configure eco -width [expr [winfo width .ecograph.pane.graph.c] - 60]
+      ::graph::configure eco -height [expr {[winfo height .ecograph.pane.graph.c] - 50} ]
+      ::graph::configure eco -width [expr {[winfo width .ecograph.pane.graph.c] - 60} ]
       ::graph::redraw eco
     }
     wm title $w "Scid: [tr WindowsECO]"
@@ -3599,8 +3645,8 @@ proc updateEcoWin {{code "x"}} {
     update
   }
 
-  set height [expr [winfo height $graph.c] - 50]
-  set width [expr [winfo width $graph.c] - 60]
+  set height [expr {[winfo height $graph.c] - 50} ]
+  set width [expr {[winfo width $graph.c] - 60} ]
 
   set code $::ecoBrowser(code)
   # Collect data:
@@ -3631,7 +3677,7 @@ proc updateEcoWin {{code "x"}} {
     lappend wins $count
     lappend wins [lindex $stats 1]
     lappend draws $count
-    lappend draws [expr [lindex $stats 1] + [lindex $stats 2] + [lindex $stats 4]]
+    lappend draws [expr {[lindex $stats 1] + [lindex $stats 2] + [lindex $stats 4]} ]
     if {$freq > $maxfreq} {set maxfreq $freq}
     if {$len == 3} {
       set subcode $i
@@ -3661,7 +3707,7 @@ proc updateEcoWin {{code "x"}} {
   ::graph::data eco wins -color SteelBlue1 -points 0 -lines 0 -bars 1 \
     -barwidth 0.8 -outline black -coords $wins
   ::graph::data eco bounds -points 0 -lines 0 -bars 0 -coords {1 0 1 1}
-  ::graph::configure eco -ymin 0 -xmin 0.4 -xmax [expr $count + 0.6] \
+  ::graph::configure eco -ymin 0 -xmin 0.4 -xmax [expr {$count + 0.6} ] \
     -xlabels $xlabels -hline [list [list gray80 1 each $hline]]
   ::graph::redraw eco
   $text.text configure -state normal
@@ -3691,7 +3737,7 @@ proc selectEcoBrowser {xc} {
   set x [::graph::xunmap eco $xc]
   set selection 0
   for {set i 1} {$i <= $count} {incr i} {
-    if {$x >= [expr $i - 0.4]  &&  $x <= [expr $i + 0.4]} {
+    if {$x >= [expr {$i - 0.4} ]  &&  $x <= [expr {$i + 0.4} ]} {
       set selection $i
     }
   }
@@ -3718,7 +3764,7 @@ proc keyEcoBrowser {key} {
   set code $::ecoBrowser(code)
   set len [string length $code]
   if {$key == "<"} {
-    set ::ecoBrowser(code) [string range $code 0 [expr $len - 2]]
+    set ::ecoBrowser(code) [string range $code 0 [expr {$len - 2} ]]
     updateEcoWin
     return
   }
@@ -3847,7 +3893,7 @@ proc fileFinder {} {
   set xwidth [font measure [$w.t.text cget -font] "x"]
   set tablist {}
   foreach {tab justify} {15 r 30 r 32 l 50 l} {
-    set tabwidth [expr $xwidth * $tab]
+    set tabwidth [expr {$xwidth * $tab} ]
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
@@ -4067,7 +4113,7 @@ proc finder_getFiles {dir {len -1}} {
   set dlist {}
   set flist {}
   if {$len < 0} {
-    set len [expr [string length $dir] + 1]
+    set len [expr {[string length $dir] + 1} ]
   }
 
   foreach f [glob -nocomplain [file join $dir *]] {
@@ -4109,7 +4155,7 @@ proc finder_getFiles {dir {len -1}} {
         }
         if {$size < 0} {
           set est 1
-          set size [expr 0 - $size]
+          set size [expr {0 - $size}]
         }
         if {[file dirname $path] == "."} { set path "./$path" }
         lappend flist [list $size $type [file tail $rootname] $path $mtime $est]
@@ -4145,7 +4191,7 @@ foreach {n v} {start 0000.00.00 end 2047.12.31 minPlayers 2 maxPlayers 999 \
 trace variable ::tourney::start w forceDate
 trace variable ::tourney::end w forceDate
 foreach {n v} {minPlayers 999 maxPlayers 999 minGames 9999 maxGames 9999 \
-                 minElo 4000} {
+                 minElo [sc_info limit elo]} {
   trace variable ::tourney::$n w [list forceInt $v 0]
 }
 
@@ -4211,7 +4257,7 @@ proc ::tourney::open {} {
   set xwidth [font measure [$w.t.text cget -font] "0"]
   set tablist {}
   foreach {tab justify} {3 r 4 l 18 r 23 r 30 r 32 l 55 l} {
-    set tabwidth [expr $xwidth * $tab]
+    set tabwidth [expr {$xwidth * $tab} ]
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
@@ -4314,6 +4360,7 @@ proc ::tourney::open {} {
   grid $w.t.xbar -row 1 -column 0 -sticky news
   grid rowconfig $w.t 0 -weight 1 -minsize 0
   grid columnconfig $w.t 0 -weight 1 -minsize 0
+  focus $f.site
 
   ::tourney::configMenus
   ::tourney::refresh
@@ -4505,7 +4552,7 @@ proc ::tourney::select {gnum {openCrosstable 0}} {
     tk_messageBox -type ok -icon info -title "Scid" -message $result
     return
   }
-  updateBoardAndPgn .board
+  updateBoard -pgn
   updateTitle
   if {$openCrosstable} {
     crosstabWin
@@ -4535,8 +4582,8 @@ trace variable ::ptrack::moves(end) w {forceInt 999 0}
 #   Given a square number (0=a1 to 63=h8), returns the square name.
 #
 proc ::ptrack::sq {n} {
-  set sq [lindex [list a b c d e f g h] [expr $n % 8]]
-  append sq [expr int($n/8) + 1]
+  set sq [lindex [list a b c d e f g h] [expr {$n % 8} ]]
+  append sq [expr {int($n/8) + 1} ]
   return $sq
 }
 
@@ -4597,16 +4644,16 @@ proc ::ptrack::color {pct {col ""}} {
   set x $pct
   if {$x > 100.0} { set x 100.0}
   if {$x < 0.01} { set x 0.01 }
-  set y [expr 255 - round($x * 0.5 + 10 * log($x))]
-  set yb [expr 255 - round($x * 2.0 + 10 * log($x))]
+  set y [expr {255 - round($x * 0.5 + 10 * log($x))} ]
+  set yb [expr {255 - round($x * 2.0 + 10 * log($x))} ]
   if {$y > 255} { set y 255}
   if {$yb > 255} { set yb 255}
   if {$yb < 0} { set yb 0}
   if {$y < 0} { set y 0}
   if {$pct > 0.0  &&  $y == 0} { set y 1 }
   if {$pct > 0.0  &&  $yb == 0} { set yb 1 }
-  set xy [expr 255 - $y]
-  set xyb [expr 255 - $yb]
+  set xy [expr {255 - $y} ]
+  set xyb [expr {255 - $yb} ]
   switch $col {
     black   { set color [format "\#%02X%02X%02X" $yb $yb $yb] }
     red     { set color [format "\#%02X%02X%02X" $y $yb $yb] }
@@ -4663,15 +4710,15 @@ proc ::ptrack::make {} {
   set ::ptrack::shade {}
   for {set i 0} {$i < 64} {incr i} {
     label $w.bd.sq$i -image ptrack -background white -border 1 -relief raised
-    set rank [expr $i / 8]
-    set file [expr $i % 8]
-    grid $w.bd.sq$i -row [expr 7 - $rank] -column [expr $file + 1]
+    set rank [expr {$i / 8}]
+    set file [expr {$i % 8} ]
+    grid $w.bd.sq$i -row [expr {7 - $rank} ] -column [expr {$file + 1} ]
     lappend ::ptrack::shade 0.0
   }
 
   foreach rank {1 2 3 4 5 6 7 8} {
     label $w.bd.r$rank -text $rank -width 2
-    grid $w.bd.r$rank -column 0 -row [expr 8 - $rank]
+    grid $w.bd.r$rank -column 0 -row [expr {8 - $rank} ]
   }
 
   foreach column {1 2 3 4 5 6 7 8} file {a b c d e f g h} {
@@ -4757,7 +4804,7 @@ proc ::ptrack::make {} {
     -wrap none -font font_Small
   set xwidth [font measure [$f.text cget -font] "x"]
   foreach {tab justify} {3 r 5 l 19 r 29 r} {
-    set tabwidth [expr $xwidth * $tab]
+    set tabwidth [expr {$xwidth * $tab} ]
     lappend tablist $tabwidth $justify
   }
   $f.text configure -tabs $tablist
@@ -4773,7 +4820,7 @@ proc ::ptrack::make {} {
     image create photo ptrack_$col -width 101 -height 20
     for {set i 0} {$i <= 100} {incr i} {
       set color [::ptrack::color $i $col]
-      ptrack_$col put $color -to $i 0 [expr $i+1] 19
+      ptrack_$col put $color -to $i 0 [expr {$i+1} ] 19
     }
     $f.b.menu add command -image ptrack_$col \
       -command "::ptrack::recolor $col"
@@ -4859,8 +4906,8 @@ proc ::ptrack::refresh {{type "all"}} {
 
   set dfilter [sc_filter count]
   if {$timeMode} {
-    set nmoves [expr $::ptrack::moves(end) + 1 - $::ptrack::moves(start)]
-    set dfilter [expr $dfilter * $nmoves]
+    set nmoves [expr {$::ptrack::moves(end) + 1 - $::ptrack::moves(start)} ]
+    set dfilter [expr {$dfilter * $nmoves} ]
   }
   if {$dfilter == 0} { set dfilter 1 } ;# to avoid divide-by-zero
 
@@ -4873,7 +4920,7 @@ proc ::ptrack::refresh {{type "all"}} {
   set ::ptrack::shade {}
   for {set i 0} {$i < 64} {incr i} {
     set freq [lindex $data $i]
-    set x [expr $freq * 100.0 / $max]
+    set x [expr {$freq * 100.0 / $max} ]
     set color [::ptrack::color $x]
     lappend ::ptrack::shade $x
     $w.bd.sq$i configure -background $color
@@ -4895,7 +4942,7 @@ proc ::ptrack::refresh {{type "all"}} {
     }
 
     set printed($idx) 1
-    set pct [expr round(double($best) * 10000.0 / double($dfilter)) / 100.0]
+    set pct [expr {round(double($best) * 10000.0 / double($dfilter)) / 100.0} ]
     set line [format "\t%2d.\t%s\t%7s\t%6.2f %%" $top \
                 [::ptrack::sq $idx] [thousands $best] $pct]
     $text insert end "$line\n"

@@ -1,5 +1,5 @@
 # end.tcl: part of Scid.
-# Copyright (C) 2001 Shane Hudson.
+# Copyright (C) 2000-2002 Shane Hudson.
 
 ############################################################
 ### Main window title, etc:
@@ -110,13 +110,15 @@ proc fileExit {}  {
   }
   append msg $::tr(ExitDialog)
 
-  set answer [tk_dialog .exitDialog "Scid: [tr FileExit]" \
-                $msg "" 0 $::tr(Yes) $::tr(No)]
-  if {$answer == 0} { 
-    if {$::optionsAutoSave} { .menu.options invoke [tr OptionsSave] }
-    ::recentFiles::save
-    destroy . 
+  # Only ask before exiting if there are unsaved changes:
+  if {$unsavedCount > 0} {
+    set answer [tk_dialog .exitDialog "Scid: [tr FileExit]" \
+                  $msg "" 0 $::tr(Yes) $::tr(No)]
+    if {$answer != 0} { return }
   }
+  if {$::optionsAutoSave} { .menu.options invoke [tr OptionsSave] }
+  ::recentFiles::save
+  destroy .
 }
 
 proc fastExit {} {
@@ -223,7 +225,7 @@ proc fileOpen {{fName ""}} {
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add "$fName.si3"
     }
-  } elseif {[regexp {\.epd} [string tolower $fName]]} {
+  } elseif {[string match "*.epd" [string tolower $fName]]} {
     # EPD file:
     newEpdWin open $fName
   } else {
@@ -248,7 +250,7 @@ proc fileOpen {{fName ""}} {
   ::tree::refresh
   updateStatsWin
   updateMenuStates
-  updateBoardAndPgn
+  updateBoard -pgn
   updateTitle
   updateStatusBar
 }
@@ -308,7 +310,7 @@ proc openBase {name} {
 #
 proc fileClose {} {
   if {[sc_base inUse]} {
-    if ![confirmDiscardGame] { return }
+    if {![confirmDiscardGame]} { return }
     sc_base close
     updateGList
     # Close Tree and Email windows whenever a base is closed/switched:
@@ -345,7 +347,7 @@ proc gameClear {} {
   if {![confirmDiscardGame]} { return }
   setTrialMode 0
   sc_game new
-  updateBoardAndPgn
+  updateBoard -pgn
   updateTitle
   updateMenuStates
 }
@@ -358,7 +360,7 @@ proc gameStrip {type} {
     tk_messageBox -parent . -type ok -icon info -title "Scid" -message $result
     return
   }
-  updateBoardAndPgn
+  updateBoard -pgn
   updateTitle
 }
 
@@ -380,7 +382,7 @@ proc gameLoadNextPrev {action} {
   if {![confirmDiscardGame]} { return }
   setTrialMode 0
   sc_game load $number
-  updateBoardAndPgn
+  updateBoard -pgn
   updateGList
   updateTitle
 }
@@ -389,12 +391,12 @@ proc gameLoadNextPrev {action} {
 #   Reloads the current game.
 #
 proc gameReload {} {
-  if ![sc_base inUse] { return }
+  if {![sc_base inUse]} { return }
   if {[sc_game number] < 1} { return }
   if {![confirmDiscardGame]} { return }
   setTrialMode 0
   sc_game load [sc_game number]
-  updateBoardAndPgn
+  updateBoard -pgn
   updateGList
   updateTitle
 }
@@ -405,12 +407,12 @@ proc gameReload {} {
 proc gameLoadRandom {} {
   set ngames [sc_filter size]
   if {$ngames == 0} { return }
-  set r [expr (int (rand() * $ngames)) + 1 ]
+  set r [expr {(int (rand() * $ngames)) + 1} ]
   set gnum [sc_filter index $r]
   if {[catch {sc_game load $gnum} result]} {
     tk_messageBox -type ok -icon info -title "Scid" -message $result
   }
-  updateBoardAndPgn
+  updateBoard -pgn
   updateGList
   updateTitle
 }
@@ -453,14 +455,14 @@ proc gameLoadNumber {} {
     }
     focus .
     destroy .glnumDialog
-    updateBoardAndPgn
+    updateBoard -pgn
     updateGList
     updateTitle
   }
   pack $b.cancel $b.load -side right -padx 5 -pady 5
 
-  set x [ expr [winfo width .] / 4 + [winfo rootx .] ]
-  set y [ expr [winfo height .] / 4 + [winfo rooty .] ]
+  set x [ expr {[winfo width .] / 4 + [winfo rootx .] }]
+  set y [ expr {[winfo height .] / 4 + [winfo rooty .] }]
   wm geometry $w "+$x+$y"
 
   focus $w.entry
@@ -475,7 +477,7 @@ proc gameLoad { selection } {
   if {$selection > [sc_base numGames]} { return }
   setTrialMode 0
   sc_game load $selection
-  updateBoardAndPgn
+  updateBoard -pgn
   updateGList
   updateTitle
 }
@@ -531,16 +533,16 @@ proc gotoMoveNumber {} {
   button $b.load -text "OK" -command {
     grab release .mnumDialog
     if {$moveEntryNumber > 0} {
-      catch {sc_move ply [expr ($moveEntryNumber - 1) * 2]}
+      catch {sc_move ply [expr {($moveEntryNumber - 1) * 2}]}
     }
     focus .
     destroy .mnumDialog
-    updateBoardAndPgn
+    updateBoard -pgn
   }
   pack $b.cancel $b.load -side right -padx 5 -pady 5
 
-  set x [ expr [winfo width .] / 4 + [winfo rootx .] ]
-  set y [ expr [winfo height .] / 4 + [winfo rooty .] ]
+  set x [ expr {[winfo width .] / 4 + [winfo rootx .] } ]
+  set y [ expr {[winfo height .] / 4 + [winfo rooty .] } ]
   wm geometry $w "+$x+$y"
 
   focus $w.entry
@@ -690,7 +692,7 @@ proc mergeGame {{base 0} {gnum 0}} {
   label $w.b.label -text "Up to move:" -font $small
   pack $w.b.label -side left
   foreach i {5 10 15 20 25 30 35 40} {
-    radiobutton $w.b.m$i -text $i -variable merge(ply) -value [expr $i * 2] \
+    radiobutton $w.b.m$i -text $i -variable merge(ply) -value [expr {$i * 2}] \
       -indicatoron 0 -padx 2 -pady 1 -font $small -command updateMergeGame
     pack $w.b.m$i -side left
   }
@@ -702,7 +704,7 @@ proc mergeGame {{base 0} {gnum 0}} {
     sc_game merge $merge(base) $merge(gnum) $merge(ply)
     catch {grab release .mergeDialog}
     destroy .mergeDialog
-    updateBoardAndPgn
+    updateBoard -pgn
   }
   button $w.b.cancel -text $::tr(Cancel) \
     -command "catch {grab release $w}; destroy $w"
@@ -1216,10 +1218,10 @@ proc updateMatchList { tw nametype maxMatches name el op } {
   set matches {}
   catch {set matches [sc_name match $nametype $val $maxMatches]}
   set count [llength $matches]
-  set nameMatchCount [expr $count / 2]
+  set nameMatchCount [expr {$count / 2}]
   for {set i 0} { $i < $count } {incr i 2} {
-    set nameMatchCount [expr ($i / 2) + 1]
-    set nameMatches($nameMatchCount) [lindex $matches [expr $i + 1]]
+    set nameMatchCount [expr {($i / 2) + 1}]
+    set nameMatches($nameMatchCount) [lindex $matches [expr {$i + 1}]]
     set str "$nameMatchCount:\t[lindex $matches $i]\t$nameMatches($nameMatchCount)\n"
     $tw insert end $str
   }
@@ -1333,7 +1335,19 @@ proc nameEditor {} {
       grid .nedit.g.toL -row 1 -column 1 -sticky e
       grid .nedit.g.toD -row 1 -column 2 -sticky w
     }
-  pack $w.typeButtons.rating $w.typeButtons.date -side left -padx 5
+  radiobutton $w.typeButtons.edate -textvar ::tr(EventDate) \
+    -variable editNameType -value edate -indicatoron false -pady 5 -padx 5 \
+    -command {
+      grid remove .nedit.g.toE
+      grid remove .nedit.g.fromE
+      grid remove .nedit.g.ratingE
+      grid remove .nedit.g.rtype
+      grid .nedit.g.fromD -row 0 -column 2 -sticky w
+      grid .nedit.g.toL -row 1 -column 1 -sticky e
+      grid .nedit.g.toD -row 1 -column 2 -sticky w
+    }
+  pack $w.typeButtons.rating $w.typeButtons.date $w.typeButtons.edate \
+    -side left -padx 5
 
   addHorizontalRule .nedit
 
@@ -1407,7 +1421,7 @@ proc nameEditor {} {
   button $w.buttons.replace -textvar ::tr(NameEditReplace) -command {
     if {$editNameType == "rating"} {
       set err [catch {sc_name edit $editNameType $editNameSelect $editName $editNameRating $editNameRType} result]
-    } elseif {$editNameType == "date"} {
+    } elseif {$editNameType == "date"  ||  $editNameType == "edate"} {
       set err [catch {sc_name edit $editNameType $editNameSelect $editDate $editDateNew} result]
     } else {
       set err [catch {sc_name edit $editNameType $editNameSelect $editName $editNameNew} result]
@@ -1419,7 +1433,7 @@ proc nameEditor {} {
       .nedit.status configure -text $result
     }
     sc_game tags reload
-    updateBoardAndPgn
+    updateBoard -pgn
     updateGList
   }
 
@@ -1722,7 +1736,7 @@ proc gsave { gnum } {
     tk_messageBox -type ok -icon info -parent .save \
       -title "Scid" -message $res
   }
-  updateBoardAndPgn
+  updateBoard -pgn
   updateGList
   updateTitle
 }
@@ -1747,9 +1761,9 @@ proc helpAbout {} {
   append str "Version [sc_info version], [sc_info version date]\n"
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
   append str "Author: Shane Hudson\n"
-  append str "Email: shane@cosc.canterbury.ac.nz\n"
+  append str "Email: sgh@users.sourceforge.net\n"
   append str "Website: scid.sourceforge.net\n\n"
-  append str "Copyright (C) Shane Hudson 1999-2001.\n"
+  append str "Copyright (C) Shane Hudson 1999-2002.\n"
   append str "Scid is freeware, but you are welcome to make "
   append str "a small donation for it -- just email the author for details."
   set asserts [sc_info asserts]
@@ -1805,7 +1819,7 @@ proc moveEntry_Complete {} {
       sc_move addSan $move
     }
     moveEntry_Clear
-    updateBoardAndPgn
+    updateBoard -pgn -animate
     if {$action == "replace"} { ::tree::doTraining }
   }
 }
@@ -1813,7 +1827,7 @@ proc moveEntry_Complete {} {
 proc moveEntry_Backspace {} {
   global moveEntry
   set moveEntry(Text) [string range $moveEntry(Text) 0 \
-                         [expr [string length $moveEntry(Text)] - 2]]
+                         [expr {[string length $moveEntry(Text)] - 2}]]
   set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
   updateStatusBar
 }
@@ -1896,47 +1910,55 @@ bind . <space> moveEntry_Complete
 
 # Bindings for quick move annotation entry in the main window:
 
-bind . <exclam><Return> "sc_pos addNag !; updateBoardAndPgn .board"
-bind . <exclam><exclam><Return> "sc_pos addNag !!; updateBoardAndPgn .board"
-bind . <exclam><question><Return> "sc_pos addNag !?; updateBoardAndPgn .board"
-bind . <question><Return> "sc_pos addNag ?; updateBoardAndPgn .board"
-bind . <question><question><Return> "sc_pos addNag ??; updateBoardAndPgn .board"
-bind . <question><exclam><Return> "sc_pos addNag ?!; updateBoardAndPgn .board"
+bind . <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
+bind . <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
+bind . <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
+bind . <question><Return> "sc_pos addNag ?; updateBoard -pgn"
+bind . <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
+bind . <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
 
-bind . <plus><minus> "sc_pos addNag +-; updateBoardAndPgn .board"
-bind . <plus><slash> "sc_pos addNag +/-; updateBoardAndPgn .board"
-bind . <plus><equal> "sc_pos addNag +=; updateBoardAndPgn .board"
-bind . <equal><Return> "sc_pos addNag =; updateBoardAndPgn .board"
-bind . <minus><plus> "sc_pos addNag -+; updateBoardAndPgn .board"
-bind . <minus><slash> "sc_pos addNag -/+; updateBoardAndPgn .board"
-bind . <equal><plus> "sc_pos addNag =+; updateBoardAndPgn .board"
-# bind . <asciitilde><Return> "sc_pos addNag ~; updateBoardAndPgn .board"
+bind . <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
+bind . <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
+bind . <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
+bind . <equal><Return> "sc_pos addNag =; updateBoard -pgn"
+bind . <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
+bind . <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
+bind . <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
+bind . <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
+bind . <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
+
 # Null move entry:
 bind . <minus><minus> "addMove null null"
 
 # Arrow keys, Home and End:
-bind . <Home> {if {!$tree(refresh)} {sc_move start; updateBoard .board}}
-bind . <Up> {if {!$tree(refresh)} {sc_move back 10; updateBoard .board}}
-bind . <Left> {if {!$tree(refresh)} {sc_move back; updateBoard .board}}
-bind . <Down> {if {!$tree(refresh)} {sc_move forward 10; updateBoard .board}}
-bind . <Right> {if {!$tree(refresh)} {sc_move forward; updateBoard .board}}
-bind . <End> {if {!$tree(refresh)} {sc_move end; updateBoard .board}}
+bind . <Home> {if {!$tree(refresh)} {sc_move start; updateBoard -animate}}
+bind . <Up> {if {!$tree(refresh)} {sc_move back 10; updateBoard -animate}}
+bind . <Left> {if {!$tree(refresh)} {sc_move back; updateBoard -animate}}
+bind . <Down> {if {!$tree(refresh)} {sc_move forward 10; updateBoard -animate}}
+bind . <Right> {if {!$tree(refresh)} {sc_move forward; updateBoard -animate}}
+bind . <End> {if {!$tree(refresh)} {sc_move end; updateBoard -animate}}
 
 bind . <period> {if {!$tree(refresh)} {toggleRotateBoard}}
 
 # MouseWheel in main window:
 bind . <MouseWheel> {
   if {! $tree(refresh)} {
-    if {[expr -%D] < 0} { sc_move back; updateBoard .board }
-    if {[expr -%D] > 0} { sc_move forward; updateBoard .board }
+    if {[expr -%D] < 0} { sc_move back; updateBoard -animate }
+    if {[expr -%D] > 0} { sc_move forward; updateBoard -animate }
   }
 }
 if {! $windowsOS} {
   bind . <Button-4> {
-    if {! $tree(refresh)} { sc_move back; updateBoard .board }
+    if {! $tree(refresh)} { sc_move back; updateBoard -animate }
   }
   bind . <Button-5> {
-    if {! $tree(refresh)} { sc_move forward; updateBoard .board }
+    if {! $tree(refresh)} { sc_move forward; updateBoard -animate }
+  }
+  bind . <Shift-Button-4> {
+    if {! $tree(refresh)} { sc_move back 5; updateBoard -animate }
+  }
+  bind . <Shift-Button-5> {
+    if {! $tree(refresh)} { sc_move forward 5; updateBoard -animate }
   }
 }
 
@@ -1959,7 +1981,7 @@ proc gotoNextBase {} {
     sc_base switch $n
     if {[sc_base inUse]} { break }
   }
-  updateBoardAndPgn .board
+  updateBoard -pgn
   updateTitle
   updateMenuStates
   updateStatusBar
@@ -2058,7 +2080,7 @@ getCommandLineOptions
 setLanguage $language
 
 updateTitle
-updateBoard .board
+updateBoard
 updateStatusBar
 update idle
 
@@ -2093,7 +2115,7 @@ if {$loadAtStart(eco)} {
   addSplash "Trying to load the ECO openings file..."
   if {[catch { sc_eco read $ecoFile_fullname } result]} {
     # Could not load, so try "scid.eco" in the current directory:
-    if [catch {sc_eco read "scid.eco"} result] {
+    if {[catch {sc_eco read "scid.eco"} result]} {
       # Neither attempt worked, so do not use ECO classification
       addSplash "    Unable to open the ECO file: $ecoFile"
     } else {
@@ -2197,7 +2219,7 @@ if {$startup(crosstable)} { crosstabWin }
 if {$startup(finder)} { fileFinder }
 
 
-updateBoard .board
+updateBoard
 updateStatusBar
 updateTitle
 updateLocale
@@ -2225,11 +2247,26 @@ proc showHideAllWindows {type} {
   foreach w {.baseWin .glistWin .pgnWin .tourney .maintWin \
                .ecograph .crosstabWin .treeWin .analysisWin1 .anslysisWin2 \
                .playerInfoWin .commentWin .repWin .statsWin .tbWin \
-               .sb .sh .sm .noveltyWin .emailWin .oprepWin \
+               .sb .sh .sm .noveltyWin .emailWin .oprepWin .plist \
                .rgraph .sgraph .importWin .helpWin .tipsWin} {
     if {[winfo exists $w]} { catch {wm $type $w} }
   }
 }
+
+proc raiseAllWindows {} {
+  # Don't do this if auto-raise option is turned off:
+  if {! $::autoRaise} { return }
+  foreach w {.baseWin .glistWin .pgnWin .tourney .maintWin \
+               .ecograph .crosstabWin .treeWin .analysisWin1 .anslysisWin2 \
+               .playerInfoWin .commentWin .repWin .statsWin .tbWin \
+               .sb .sh .sm .noveltyWin .emailWin .oprepWin .plist \
+               .rgraph .sgraph .importWin .helpWin .tipsWin} {
+    if {[winfo exists $w]} { catch {raise $w} }
+  }
+}
+
+# Bind double-click in main Scid window to raise all Scid windows:
+bind . <Double-Button-1> raiseAllWindows
 
 if {$startup(tip)} { ::tip::show }
 

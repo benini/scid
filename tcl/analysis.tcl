@@ -49,6 +49,7 @@ proc resetEngine {n} {
   set analysis(log$n) ""              ;# Log file channel
   set analysis(logCount$n) 0          ;# Number of lines sent to log file
   set analysis(wbEngineDetected$n) 0  ;# Is this a special Winboard engine?
+  set analysis(priority$n) normal     ;# CPU priority: idle/normal
 }
 
 resetEngine 1
@@ -149,7 +150,14 @@ proc ::enginelist::write {} {
 #
 catch { ::enginelist::read }
 if {[llength $engines(list)] == 0} {
-  # No engines, so set up a default engine list:
+  # No engines, so set up a default engine list with Scidlet and Crafty:
+  set cmd scidlet
+  if {$::windowsOS} { set cmd scidlet.exe }
+  engine [list \
+    Name Scidlet \
+    Cmd  $cmd \
+    Dir  . \
+  ]
   set cmd crafty
   if {$::windowsOS} { set cmd wcrafty.exe }
   engine [list \
@@ -326,7 +334,7 @@ proc ::enginelist::setTime {index {time -1}} {
   set engines(list) [lreplace $engines(list) $index $index $e]
 }
 
-trace variable engines(newElo) w {forceInt 4000 0}
+trace variable engines(newElo) w [list forceInt [sc_info limit elo] 0]
 
 # ::enginelist::delete
 #   Removes an engine from the list.
@@ -539,7 +547,7 @@ proc addAnalysisVariation {{n 1}} {
   sc_var exit
   # Remove the variation if necessary:
   if {$annotateMode  &&  $annotateMoves == "notbest"} {
-    set lastvar [expr [sc_var count] - 1]
+    set lastvar [expr {[sc_var count] - 1} ]
     set firstMove [lindex [sc_var list] $lastvar]
     if {$firstMove == [sc_game info next]} {
       sc_var delete $lastvar
@@ -547,7 +555,9 @@ proc addAnalysisVariation {{n 1}} {
   }
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
-  updateBoardAndPgn
+  updateBoard -pgn
+  # Update score graph if it is open:
+  if {[winfo exists .sgraph]} { updateScoreGraph }
 }
 
 proc addAnalysisToComment {line {n 1}} {
@@ -563,7 +573,7 @@ proc addAnalysisToComment {line {n 1}} {
   }
   set score $analysis(score$n)
   if {$analysis(invertScore$n)  && (! [string compare [sc_pos side] "black"])} {
-    set score [expr 0.0 - $score]
+    set score [expr {0.0 - $score} ]
   }
 
   # If line is true, add the whole line, else just add the score:
@@ -607,7 +617,7 @@ proc makeAnalysisMove {{n 1}} {
   set ::analysis(automoveThinking$n) 0
   if {$action == "var"} { sc_var create }
   if {[catch {sc_move addSan $move}]} { return 0 }
-  updateBoardAndPgn .board
+  updateBoard -pgn
   return 1
 }
 
@@ -634,7 +644,7 @@ proc destroyAnalysisWin {{n 1}} {
   sendToEngine $n "quit"
   flush $analysis(pipe$n)
 
-  # Uncomment following line to turn on blocking mode before
+  # Uncomment the following line to turn on blocking mode before
   # closing the engine (but probably not a good idea!)
   #   fconfigure $analysis(pipe$n) -blocking 1
 
@@ -794,6 +804,10 @@ proc makeAnalysisWin {{n 1}} {
   bind $w <F1> { helpWindow Analysis }
   setWinLocation $w
 
+  ::board::new $w.bd 25
+  $w.bd configure -relief solid -borderwidth 1
+  set analysis(showBoard$n) 0
+
   frame $w.b1
   frame $w.b2
   pack $w.b2 -side bottom -fill x
@@ -805,21 +819,27 @@ proc makeAnalysisWin {{n 1}} {
     -command "addAnalysisVariation $n"
   button $w.b1.move -textvar ::tr(AddMove) \
     -command "makeAnalysisMove $n"
+  button $w.b1.showboard -image tb_coords -command "toggleAnalysisBoard $n"
   if {$n == 1} {
     checkbutton $w.b2.annotate -textvar ::tr(Annotate...) \
       -variable annotateMode -relief raised -pady 5 -padx 4 \
       -command {toggleAutoplay 1}
   }
+  checkbutton $w.b2.priority -text $::tr(LowPriority) \
+      -variable analysis(priority$n) -onvalue idle -offvalue normal \
+      -command "setAnalysisPriority $n"
   button $w.b2.update -textvar ::tr(Update) \
     -command "sendToEngine $n ."
   button $w.b2.help -textvar ::tr(Help) -command { helpWindow Analysis }
   button $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
 
   pack $w.b1.automove $w.b1.line $w.b1.move -side left -padx 2 -pady 2
+  pack $w.b1.showboard -side right -padx 2 -pady 2
   pack $w.b2.close $w.b2.help $w.b2.update -side right -padx 2 -pady 2
   if {$n == 1} {
     pack $w.b2.annotate -side left -padx 2 -pady 2
   }
+  pack $w.b2.priority -side left -padx 2 -pady 2
 
   text $w.text -width 50 -height 5 -fg black -bg white -font font_Fixed \
     -wrap word
@@ -850,6 +870,41 @@ by moving backwards or forwards or making a new move."
   fileevent $analysis(pipe$n) readable "processAnalysisInput $n"
 
   after 1000 "checkAnalysisStarted $n"
+}
+
+# setAnalysisPriority
+#   Sets the priority class (in Windows) or nice level (in Unix)
+#   of a running analysis engine.
+#
+proc setAnalysisPriority {n} {
+  global analysis
+
+  # Get the process ID of the analysis engine:
+  if {$analysis(pipe$n) == ""} { return }
+  set pidlist [pid $analysis(pipe$n)]
+  if {[llength $pidlist] < 1} { return }
+  set pid [lindex $pidlist 0]
+
+  # Set the priority class (idle or normal):
+  if {$::windowsOS} {
+    catch {sc_info priority $pid $analysis(priority$n)}
+  } else {
+    set priority 0
+    if {$analysis(priority$n) == "idle"} { set priority 15 }
+    catch {sc_info priority $pid $priority}
+  }
+
+  # Re-read the priority class for confirmation:
+  if {[catch {sc_info priority $pid} newpriority]} { return }
+  if {$::windowsOS} {
+    if {$newpriority == "idle"  ||  $newpriority == "normal"} {
+      set analysis(priority$n) $newpriority
+    }
+  } else {
+    set priority normal
+    if {$newpriority > 0} { set priority idle }
+    set analysis(priority$n) $priority
+  }
 }
 
 # checkAnalysisStarted
@@ -914,11 +969,12 @@ proc processAnalysisInput {{n 1}} {
   # has the setboard and analyze commands:
   #
   if {! [string compare [string range $line 0 6] "feature"]} {
-    if {[regexp "analyze=1" $line]} { set analysis(has_analyze$n) 1 }
-    if {[regexp "setboard=1" $line]} { set analysis(has_setboard$n) 1 }
-    if {[regexp "usermove=1" $line]} { set analysis(wants_usermove$n) 1 }
-    if {[regexp "sigint=1" $line]} { set analysis(send_sigint$n) 1 }
-    if {[regexp "myname=\"(\[^\"\]*)\"" $line dummy name]} {
+    if {[string match "*analyze=1*" $line]} { set analysis(has_analyze$n) 1 }
+    if {[string match "*setboard=1*" $line]} { set analysis(has_setboard$n) 1 }
+    if {[string match "*usermove=1*" $line]} { set analysis(wants_usermove$n) 1 }
+    if {[string match "*sigint=1*" $line]} { set analysis(send_sigint$n) 1 }
+    if {[string match "*myname=*" $line] && \
+        [regexp "myname=\"(\[^\"\]*)\"" $line dummy name]} {
       if {$n == 1} {
         catch {wm title .analysisWin$n "Scid: Analysis: $name"}
       } else {
@@ -932,7 +988,7 @@ proc processAnalysisInput {{n 1}} {
   # Check for a line starting with "Crafty", so Scid can work well
   # with older Crafty versions that do not recognize "protover":
   #
-  if {[regexp "^Crafty" $line]} {
+  if {! [string compare [string range $line 0 5] "Crafty"]} {
     logEngineNote $n {Seen "Crafty"; assuming analyze and setboard commands.}
     set major 0
     if {[scan $line "Crafty v%d.%d" major minor] == 2  &&  $major >= 18} {
@@ -963,10 +1019,10 @@ proc processAnalysisInput {{n 1}} {
     set analysis(nodes$n) $temp_nodes
     set analysis(moves$n) [formatAnalysisMoves $temp_moves]
     # Convert score to pawns from centipawns:
-    set analysis(score$n) [expr double($analysis(score$n)) / 100.0]
+    set analysis(score$n) [expr {double($analysis(score$n)) / 100.0} ]
     # Convert time to seconds from centiseconds:
     if {! $analysis(wholeSeconds$n)} {
-      set analysis(time$n) [expr double($analysis(time$n)) / 100.0]
+      set analysis(time$n) [expr {double($analysis(time$n)) / 100.0} ]
     }
     updateAnalysisText $n
     if {! $analysis(seenEval$n)} {
@@ -988,7 +1044,7 @@ proc processAnalysisInput {{n 1}} {
       set analysis(nodes$n) $temp_nodes
       # Convert time to seconds from centiseconds:
       if {! $analysis(wholeSeconds$n)} {
-        set analysis(time$n) [expr double($analysis(time$n)) / 100.0]
+        set analysis(time$n) [expr {double($analysis(time$n)) / 100.0} ]
       }
       updateAnalysisText $n
     }
@@ -1053,13 +1109,13 @@ proc updateAnalysisText {{n 1}} {
   global analysis
   set nps 0
   if {$analysis(time$n) > 0.0} {
-    set nps [expr round($analysis(nodes$n) / $analysis(time$n))]
+    set nps [expr {round($analysis(nodes$n) / $analysis(time$n))} ]
   }
   set newStr [format "Depth:   %6u      Nodes: %8u (%u n/s)\n" \
                 $analysis(depth$n) $analysis(nodes$n) $nps]
   set score $analysis(score$n)
   if {$analysis(invertScore$n)  && (![string compare [sc_pos side] "black"])} {
-    set score [expr 0.0 - $score]
+    set score [expr {0.0 - $score} ]
   }
   append newStr [format "Score: %+8.2f      Time: %9.2f seconds\n" \
                    $score $analysis(time$n)]
@@ -1073,29 +1129,73 @@ proc updateAnalysisText {{n 1}} {
     } else {
       set moves "   Your move..... "
     }
-  } else {
-    set moves $analysis(moves$n)
+    $t insert end $moves blue
+    $t configure -state disabled
+    updateAnalysisBoard $n ""
+    return
   }
 
-  if {! $analysis(automove$n)} {
-    set h .analysisWin$n.hist.text
-    $h configure -state normal
-    set cleared 0
-    if {$analysis(depth$n) < $analysis(prev_depth$n)  || \
-        $analysis(prev_depth$n) == 0} {
-      $h delete 1.0 end
-      set cleared 1
-    }
-    if {! $cleared} { $h insert end "\n" }
-    $h insert end [format "%2d %+5.2f  %s (%.2f)" $analysis(depth$n) \
-                     $score $moves $analysis(time$n)] indent
-    $h see end-1c
-    $h configure -state disabled
-    set analysis(prev_depth$n) $analysis(depth$n)
+  set moves $analysis(moves$n)
+  set h .analysisWin$n.hist.text
+  $h configure -state normal
+  set cleared 0
+  if {$analysis(depth$n) < $analysis(prev_depth$n)  || \
+      $analysis(prev_depth$n) == 0} {
+    $h delete 1.0 end
+    set cleared 1
   }
+  if {! $cleared} { $h insert end "\n" }
+  $h insert end [format "%2d %+5.2f  %s (%.2f)" $analysis(depth$n) \
+                   $score $moves $analysis(time$n)] indent
+  $h see end-1c
+  $h configure -state disabled
+  set analysis(prev_depth$n) $analysis(depth$n)
+
   $t insert end $moves blue
   $t tag add score 2.0 2.13
   $t configure -state disabled
+
+  updateAnalysisBoard $n $moves
+}
+
+# toggleAnalysisBoard
+#   Toggle whether the small analysis board is shown.
+#
+proc toggleAnalysisBoard {n} {
+  global analysis
+  if {$analysis(showBoard$n)} {
+    set analysis(showBoard$n) 0
+    pack forget .analysisWin$n.bd
+  } else {
+    set analysis(showBoard$n) 1
+    pack .analysisWin$n.bd -side right -before .analysisWin$n.b2 \
+      -padx 4 -pady 4 -anchor n
+  }
+}
+
+# updateAnalysisBoard
+#   Update the small analysis board in the analysis window,
+#   showing the position after making the specified moves
+#   from the current main board position.
+#
+proc updateAnalysisBoard {n moves} {
+  global analysis
+  # if {! $analysis(showBoard$n)} { return }
+
+  set bd .analysisWin$n.bd
+  # Temporarily wipe the premove command:
+  sc_info preMoveCmd {}
+  # Push a temporary copy of the current game:
+  sc_game push copy
+
+  # Make the engine moves and update the board:
+  catch {sc_move addSan $moves}
+  ::board::update $bd [sc_pos board]
+
+  # Pop the temporary game:
+  sc_game pop
+  # Restore pre-move command:
+  sc_info preMoveCmd preMoveCommand
 }
 
 # updateAnalysis
@@ -1114,7 +1214,7 @@ proc updateAnalysis {{n 1}} {
   if {[catch {set clicks [clock clicks -milliseconds]}]} {
     set clicks [clock clicks]
   }
-  set diff [expr $clicks - $analysis(lastClicks$n)]
+  set diff [expr {$clicks - $analysis(lastClicks$n)} ]
   if {$diff < 300  &&  $diff >= 0} {
     if {$analysis(after$n) == ""} {
       set analysis(after$n) [after 300 updateAnalysis $n]
@@ -1186,11 +1286,11 @@ proc updateAnalysis {{n 1}} {
     # the same as the previous move list, with one extra move):
 
     if {($newlen == $oldlen + 1) \
-          && ($old_movelist == [lrange $movelist 0 [expr $oldlen - 1]])} {
+          && ($old_movelist == [lrange $movelist 0 [expr {$oldlen - 1} ]])} {
       sendMoveToEngine $n [lindex $movelist $oldlen]
 
     } elseif {($newlen + 1 == $oldlen) && \
-                ($movelist == [lrange $old_movelist 0 [expr $newlen - 1]])} {
+                ($movelist == [lrange $old_movelist 0 [expr {$newlen - 1} ]])} {
 
       # Here the new move list is the same as the old list but with one
       # less move, just send one "undo":
@@ -1252,7 +1352,7 @@ trace variable temptime w {forceRegexp {^[0-9]*\.?[0-9]*$}}
 proc setAutomoveTime {{n 1}} {
   global analysis temptime dialogResult
   set ::tempn $n
-  set temptime [expr $analysis(automoveTime$n) / 1000.0]
+  set temptime [expr {$analysis(automoveTime$n) / 1000.0} ]
   set w .apdialog
   toplevel $w
   #wm transient $w .analysisWin
@@ -1280,7 +1380,7 @@ proc setAutomoveTime {{n 1}} {
   button $b.ok -text "OK" -command {
     grab release .apdialog
     if {$temptime < 0.1} { set temptime 0.1 }
-    set analysis(automoveTime$tempn) [expr int($temptime * 1000)]
+    set analysis(automoveTime$tempn) [expr {int($temptime * 1000)} ]
     focus .
     grab release .apdialog
     destroy .apdialog
@@ -1290,7 +1390,7 @@ proc setAutomoveTime {{n 1}} {
   pack $b.cancel $b.ok -side right -padx 5 -pady 5
   focus $w.entry
   update
-  grab .apdialog
+#  grab $w
   tkwait window .apdialog
   if {$dialogResult != "OK"} {
     return 0
@@ -1332,7 +1432,7 @@ proc automove_go {{n 1}} {
   if {$analysis(automove$n)} {
     if {[makeAnalysisMove $n]} {
       set analysis(autoMoveThinking$n) 0
-      updateBoardAndPgn .board
+      updateBoard -pgn
       after cancel "automove $n"
       ::tree::doTraining $n
     } else {

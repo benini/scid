@@ -2,19 +2,19 @@
 
 #################################################
 
-set helpTitle(Index) "Index"
-set helpText(Index) {<h1>Scid Help Index</h1>
+set helpTitle(Index) "Contents"
+set helpText(Index) {<h1>Scid Help Contents</h1>
 
 <h4>Starting out and general help</h4>
 <ul>
 <li><a Guide><b>Quick Guide</b> to using Scid</a> <red>(Read this first)</red></li>
 <li><a Hints><b>Hints</b> for getting more out of Scid</a></li>
 <li><a MainWindow>The Scid <b>main window</b></a></li>
-<li><a Menus>Scid <b>menus</b></a> <red>(updated!)</red></li>
-<li><a Moves>Entering <b>chess moves</b></a> <red>(updated!)</red></li>
+<li><a Menus>Scid <b>menus</b></a></li>
+<li><a Moves>Entering <b>chess moves</b></a></li>
 <li><a Searches><b>Searches</b> in Scid</a></li>
 <li><a Clipbase>Using the <b>Clipbase</b> database</a></li>
-<li><a Annotating><b>Annotating games</b></a> <red>(New!)</red></li>
+<li><a Annotating><b>Annotating games</b></a></li>
 </ul>
 
 <h4>Other Scid windows</h4>
@@ -22,15 +22,15 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Analysis><b>Analysis</b> window</a></li>
 <li><a Comment><b>Comment editor</b> window</a></li>
 <li><a Crosstable><b>Crosstable</b> window</a></li>
-<li><a Switcher><b>Database Switcher</b> window</a></li>
+<li><a Switcher><b>Database Switcher</b> window</a> <red>Updated!</red></li>
 <li><a Email><b>Email</b> chess manager window</a></li>
 <li><a Finder><b>File Finder</b> window</a></li>
 <li><a GameList><b>Game List</b> window</a></li>
 <li><a Import><b>Import game</b> window</a></li>
 <li><a OpReport><b>Opening Report</b> window</a></li>
-<li><a PGN><b>PGN</b> (game text) window</a></li>
+<li><a PGN><b>PGN</b> (game text) window</a> <red>Updated!</red></li>
 <li><a PTracker><b>Piece Tracker</b></a></li>
-<li><a PList><b>Player Finder</b> window</a> <red>(New!)</red></li>
+<li><a PList><b>Player Finder</b> window</a></li>
 <li><a PInfo><b>Player Info</b> window</a></li>
 <li><a Repertoire><b>Repertoire editor</b> window</a></li>
 <li><a Tmt><b>Tournament Finder</b> window</a></li>
@@ -47,7 +47,7 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Maintenance><b>Database maintenance</b> tools</a></li>
 <li><a ECO><b>ECO</b> openings classification</a></li>
 <li><a EPD><b>EPD</b> files</a></li>
-<li><a Export><b>Exporting</b> games to text files</a> <red>(updated!)</red></li>
+<li><a Export><b>Exporting</b> games to text files</a></li>
 <li><a Flags>Game <b>Flags</b></a></li>
 <li><a LaTeX>Using <b>LaTeX</b> with Scid</a></li>
 <li><a Options><b>Options</b> and preferences</a></li>
@@ -55,10 +55,10 @@ set helpText(Index) {<h1>Scid Help Index</h1>
 <li><a Pgnscid><b>Pgnscid</b>: converting PGN files</a></li>
 <li><a NAGs>Standard <b>NAG</b> annotation values</a></li>
 <li><a Formats>Scid database <b>file formats</b></a></li>
-<li><a Author>Contact information</a></li>
+<li><a Author>Contact information</a> <red>Updated!</red></li>
 </ul>
 
-<p><footer>(Updated: Scid 3.4, July 2002)</footer></p>
+<p><footer>(Updated: Scid 3.5a, September 2003)</footer></p>
 }
 
 
@@ -1147,14 +1147,12 @@ if the games cannot be copied (for example, if a selected database is not
 open).
 </p>
 <p>
-Pressing right mouse button over a database produces a popup menu applying
-to that database, from which you can change the database type icon or
-reset its <a Searches Filter>filter</a>. You can also use this menu to
+Pressing the right mouse button over a database or an empty database section produces a popup menu applying to that database or section. You can close the database (or open a new one) and you may also change the database type icon or reset its <a Searches Filter>filter</a>. You can also use this menu to
 change the orientation of the window (to arrange the database slots
 vertically or horizontally) which is useful for smaller screens.
 </p>
 
-<p><footer>(Updated: Scid 3.1, December 2001)</footer></p>
+<p><footer>(Updated: Scid 3.5a, September 2003)</footer></p>
 }
 
 
@@ -1521,8 +1519,7 @@ comments using the mouse, but it is much slower to update. For very long
 games, you may want to select plain text display.
 </p>
 <p>
-You can also alter the format of comments and variations, choosing
-to display them indented on a separate line for greater visibility.
+You can also alter the format of the mainline as well as comments and variations, e.g. choosing to display variations indented on a separate line for greater visibility.
 </p>
 <p>
 The PGN display options, and the size of the PGN window, are saved to the
@@ -1530,7 +1527,7 @@ options file whenever you <b>Save Options</b> from the <menu>Options</menu>
 menu of the main window.
 </p>
 
-<p><footer>(Updated: Scid 3.1, December 2001)</footer></p>
+<p><footer>(Updated: Scid 3.5a, September 2003)</footer></p>
 }
 
 
@@ -2258,6 +2255,22 @@ in the window opened as analysis engine 1. If you open an engine as
 analysis engine 2, you cannot use it to annotate the game.
 </p>
 
+<h3>Analysis board</h3>
+<p>
+Pressing the chessboard-icon button in an analysis window will show
+or hide the analysis board, which shows the position at the end of
+the current best line of play found by the engine. This works for
+most Scid-compatible engines but may not work for all; it depends on
+the move notation an engine uses.
+</p>
+
+<h3>Engine priority</h3>
+<p>
+If an engine is using too much CPU time and affecting the use of Scid
+or other applications, turning on the <b>Low CPU priority</b> checkbox
+may help; it gives the engine a low priority for CPU scheduling.
+</p>
+
 <h3>Interface details</h3>
 <p>
 To use the analysis window, you will need a chess program that supports
@@ -2309,7 +2322,7 @@ The Crazy Bishop:
 <url http://remi.coulom.free.fr/>http://remi.coulom.free.fr/</url>
 </p>
 
-<p><footer>(Updated: Scid 3.2, February 2002)</footer></p>
+<p><footer>(Updated: Scid 3.4, September 2002)</footer></p>
 }
 
 ####################
@@ -2738,8 +2751,8 @@ selected tablebase. (Not all tablebases have a summary recorded in
 Scid yet.)
 </p>
 <p>
-The summary includes the frequency (how many games per million
-reach a position with this material, computed from a database of nearly
+The summary includes the frequency (how many games per million reach a
+position with this material, computed from a database of more than
 600,000 master-level games), a longest mate for either side, and the
 number of mutual (or "reciprocal") zugzwangs. A mutual zugwang is a
 position where white to move draws and black to move loses, or where
@@ -2766,13 +2779,43 @@ list of results, ranking them from shortest to longest mates, then draws,
 then longest to shortest losses. All distances are to checkmate.
 </p>
 
+<h4>The results board</h4>
+<p>
+In a tablebase position, it is often useful what the tablebase results
+would be if all the pieces in the current position were on their
+current squares but one particular piece was moved somewhere else.
+For example, you may want to determine how close a king has to be to
+a passed pawn to win or draw a particular position. In endgame books
+this information is often called the <i>winning zone</i> or
+<i>drawing zone</i> of a piece in a position.
+</p>
+<p>
+You can find this information in Scid by pressing the button with an
+image of a chessboard, to show the <term>results board</term> in the
+tablebase window.
+When you press the left mouse button on any piece in this board, a
+symbol is drawn in each empty square showing what the tablebase result
+would be (with the same side to move as the current main window position)
+if the selected piece was on that square.
+</p>
+<p>
+There are five different symbols a square can have:
+a white <b>#</b> means White wins;
+a black <b>#</b> means Black wins;
+a blue <b>=</b> means the position is drawn;
+a red <b>X</b> means the position is illegal (because the kings are
+adjacent or the side to move is giving check); and
+a red <b>?</b> means the result is unknown because the necessary
+tablebase file is not available.
+</p>
+
 <h3>Obtaining Tablebase files</h3>
 <p>
 See the <a Author Related>related links</a> section for help on finding
 tablebase files on the Internet.
 </p>
 
-<p><footer>(Updated: Scid 3.3, April 2002)</footer></p>
+<p><footer>(Updated: Scid 3.4, September 2002)</footer></p>
 }
 
 ####################
@@ -3419,7 +3462,9 @@ files that are available.
 <p>
 Please send any comments, questions, suggestions or bug reports to the
 author of Scid, Shane Hudson, at the email address:<br>
-<b>shane@cosc.canterbury.ac.nz</b>
+<b>sgh@users.sourceforge.net</b><br>
+<b>Note: </b>If the version number of your copy of Scid is 3.5a please read the 
+additional documentation kept in the README35a document in the Scid source directory before contacting Shane with any enquiries.
 </p>
 
 <h3><name Related>Related Links</name></h3>
@@ -3446,6 +3491,6 @@ the <b>PGN Standard</b>, created by Steven J. Edwards in 1994.
 This text file explains the PGN and EPD formats in detail.</li>
 </ul>
 
-<p><footer>(Updated: Scid 2.6, August 2001)</footer></p>
+<p><footer>(Updated: Scid 3.5a, September 2003)</footer></p>
 }
 

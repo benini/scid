@@ -5,7 +5,7 @@
 # Copyright (C) 1999--2002  Shane Hudson. All rights reserved.
 # This is freely redistributable software; see the file named COPYING
 # that came with this program.
-# To contact the author: email me at:  shane@cosc.canterbury.ac.nz
+# To contact the author, email Shane at: sgh@users.sourceforge.net
 
 # The following comments are only for Unix versions of Scid:
 
@@ -21,7 +21,7 @@ exec tkscid "$0" "$@"
 
 ############################################################
 
-set scidVersion "3.4.beta3"
+set scidVersion "3.5a"
 
 # Determine operating system platform: unix or windows
 set windowsOS 0
@@ -73,7 +73,7 @@ set boardSizesOLD [list 21 25 29 33 37 40 45 49 54 58 64 72]
 set boardSize 45
 
 # boardStyle: Default board piece set. See bitmaps.tcl for styles.
-set boardStyle Merida
+set boardStyle Alpha
 
 # language for help pages and messages:
 set language E
@@ -90,6 +90,9 @@ foreach i {
 
 # boardCoords: 1 to show board Coordinates, 0 to hide them.
 set boardCoords 0
+
+# boardSTM: 1 to show side-to-move icon, 0 to hide it.
+set boardSTM 1
 
 # Default values for fonts:
 proc createFont {name} {
@@ -135,8 +138,8 @@ if {$windowsOS} {
 #     whitecolor/blackcolor are piece colors
 #     highcolor is the color when something is selected.
 #     bestcolor is used to indicate a suggested move square.
-set dark        "\#a08050"
-set lite        "\#d0c0a0"
+set dark        "\#70a070"
+set lite        "\#e0d070"
 set whitecolor  "\#ffffff"
 set blackcolor  "\#000000"
 set whiteborder "\#000000"
@@ -144,7 +147,7 @@ set blackborder "\#ffffff"
 set highcolor   "\#b0d0e0"
 set bestcolor   "\#bebebe"
 set buttoncolor "\#b0c0d0"
-
+set borderwidth 1
 
 # Defaults for the PGN window:
 # if doColorPgn is 1, the PGN text will be colorized.
@@ -154,6 +157,7 @@ set pgnIndentComments 1
 set pgnSymbolicNags 1
 set pgnMoveNumSpace 0
 set pgnShortHeader 0
+set pgnMoveFont 1
 set pgnColumn 0
 set pgnStripMarks 0
 set pgnColor(Header) "\#00008b"
@@ -283,7 +287,9 @@ set moveEntry(On) 1
 set moveEntry(AutoExpand) 0
 set moveEntry(Coord) 1
 
+# Autoplay and animation delays in milliseconds:
 set autoplayDelay 5000
+set animateDelay 200
 
 # Geometry of windows:
 array set geometry {}
@@ -504,13 +510,18 @@ set engines(list) {}
 set engines(sort) Time
 
 
+# Add empty updateStatusBar proc to avoid errors cused by early
+# closing of the splash window:
+#
+proc updateStatusBar {} {}
+
 # Start up splash screen:
 
-set autoCloseSplash 0
+set autoCloseSplash 1
 wm withdraw .
 toplevel .splash
 wm protocol .splash WM_DELETE_WINDOW { wm withdraw .splash }
-wm title .splash "Welcome to Scid [sc_info version]"
+wm title .splash "Welcome to Scid+ [sc_info version]"
 frame .splash.f
 frame .splash.b
 text .splash.t -height 14 -width 50 -cursor top_left_arrow \
@@ -642,8 +653,8 @@ eoGp4WkYkYCVQ6MQF/MBwZAr3xkQADs=
 
 .splash.t image create end -image splash
 .splash.t insert end "Shane's Chess Information Database"
-addSplash "Copyright (C) 1999-2001 Shane Hudson  (shane@cosc.canterbury.ac.nz)"
-addSplash "This is Scid [sc_info version], released [sc_info version date]."
+addSplash "Copyright (C) 1999-2001 Shane Hudson  (sgh@users.sourceforge.net)"
+addSplash "This is Scid+ [sc_info version], released [sc_info version date]."
 addSplash "Website: scid.sourceforge.net\n"
 
 # Remember old font settings before loading options file:
@@ -736,11 +747,11 @@ font create font_Bold -family $font -size $fontsize -weight bold
 font create font_BoldItalic -family $font -size $fontsize -weight bold \
   -slant italic
 font create font_Italic -family $font -size $fontsize -slant italic
-font create font_H1 -family $font -size [expr $fontsize + 8] -weight bold
-font create font_H2 -family $font -size [expr $fontsize + 6] -weight bold
-font create font_H3 -family $font -size [expr $fontsize + 4] -weight bold
-font create font_H4 -family $font -size [expr $fontsize + 2] -weight bold
-font create font_H5 -family $font -size [expr $fontsize + 0] -weight bold
+font create font_H1 -family $font -size [expr {$fontsize + 8} ] -weight bold
+font create font_H2 -family $font -size [expr {$fontsize + 6} ] -weight bold
+font create font_H3 -family $font -size [expr {$fontsize + 4} ] -weight bold
+font create font_H4 -family $font -size [expr {$fontsize + 2} ] -weight bold
+font create font_H5 -family $font -size [expr {$fontsize + 0} ] -weight bold
 
 set fontsize [font configure font_Small -size]
 set font [font configure font_Small -family]

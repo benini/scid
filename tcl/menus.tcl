@@ -1,5 +1,5 @@
 ### Menus.tcl: part of Scid.
-### Copyright (C) 2001 Shane Hudson.
+### Copyright (C) 2001-2002 Shane Hudson.
 
 ############################################################
 ###  Status bar help for menu items, buttons, etc:
@@ -27,7 +27,7 @@ proc statusBarHelp {window {item {}}} {
 
   if {[string range $window 0 1] == ".\#"} {
     set idx [string last . $window]
-    set window [string range $window [expr $idx+1] end]
+    set window [string range $window [expr {$idx+1} ] end]
     regsub -all "\#" $window . window
   }
 
@@ -116,7 +116,8 @@ $m add command -label FileOpen -acc "Ctrl+O" -command fileOpen
 bind . <Control-o> fileOpen
 set helpMessage($m,1) FileOpen
 
-$m add command -label FileClose -command fileClose
+$m add command -label FileClose -acc "Ctrl+W" -command fileClose
+bind . <Control-w> fileClose
 set helpMessage($m,2) FileClose
 
 $m add command -label FileFinder -acc "Ctrl+/" -command fileFinder
@@ -198,9 +199,9 @@ for {set i 1} { $i <= $totalBaseSlots} {incr i} {
   $m.switch add radiobutton -variable currentSlot -value $i \
     -label "Base $i: <none>" \
     -underline 5 -accelerator "Ctrl+$i" -command "switchBase $i"
-  set helpMessage($m.switch,[expr $i - 1]) "Switch to base slot $i"
+  set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to base slot $i"
   if {$i == $clipbaseSlot} {
-    set helpMessage($m.switch,[expr $i - 1]) "Switch to the clipbase database"
+    set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to the clipbase database"
   }
   bind . "<Control-Key-$i>" "switchBase $i"
 }
@@ -209,7 +210,7 @@ proc switchBase {b} {
   sc_base switch $b
   # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }
-  updateBoardAndPgn .board
+  updateBoard -pgn
   updateTitle
   updateMenuStates
   updateStatusBar
@@ -227,7 +228,7 @@ set helpMessage($m,10) FileExit
 
 set m .menu.edit
 $m add command -label EditAdd \
-  -accel "Ctrl+A" -command {sc_var create; updateBoardAndPgn .board}
+  -accel "Ctrl+A" -command {sc_var create; updateBoard -pgn}
 set helpMessage($m,0) EditAdd
 
 menu $m.del
@@ -260,7 +261,7 @@ $m add separator
 
 $m add command -label EditReset -command {
   sc_clipbase clear
-  updateBoardAndPgn .board
+  updateBoard -pgn
   updateGList
   updateTitle
 }
@@ -268,16 +269,16 @@ set helpMessage($m,7) EditReset
 
 $m add command -label EditCopy -accelerator "Ctrl+C" -command {
   catch {sc_clipbase copy}
-  updateBoard .board
+  updateBoard
 }
-bind . <Control-c> {catch {sc_clipbase copy}; updateBoard .board}
+bind . <Control-c> {catch {sc_clipbase copy}; updateBoard}
 set helpMessage($m,8) EditCopy
 
 $m add command -label EditPaste -accelerator "Ctrl+V" -command {
   sc_clipbase paste
-  updateBoardAndPgn .board
+  updateBoard -pgn
 }
-bind . <Control-v> {catch {sc_clipbase paste}; updateBoardAndPgn .board}
+bind . <Control-v> {catch {sc_clipbase paste}; updateBoard -pgn}
 set helpMessage($m,9) EditPaste
 
 $m add separator
@@ -351,9 +352,9 @@ $m add separator
 
 $m add command -label GameDeepest -accelerator "Ctrl+Shift+D" -command {
   sc_move ply [sc_eco game ply]
-  updateBoard .board
+  updateBoard
 }
-bind . <Control-D> {sc_move ply [sc_eco game ply]; updateBoard .board}
+bind . <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
 set helpMessage($m,12) GameDeepest
 
 $m add command -label GameGotoMove -accelerator "Ctrl+U" \
@@ -606,9 +607,11 @@ set helpMessage($m,1) OptionsPieces
 $m add command -label OptionsColors -command chooseBoardColors
 set helpMessage($m,2) OptionsColors
 
+$m add separator
+
 set optMenus {export fonts ginfo language entry numbers startup windows}
 set optLabels {Export Fonts GInfo Language Moves Numbers Startup Windows}
-set i 3
+set i 4
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
   set helpMessage($m,$i) Options$label
@@ -616,7 +619,7 @@ foreach menu $optMenus label $optLabels {
 }
 
 $m add command -label OptionsToolbar -command configToolbar
-set helpMessage($m,11) OptionsToolbar
+set helpMessage($m,12) OptionsToolbar
 
 $m add separator
 
@@ -637,13 +640,13 @@ $m add command -label OptionsECO -command {
     }
   }
 }
-set helpMessage($m,13) OptionsECO
+set helpMessage($m,14) OptionsECO
 
 $m add command -label OptionsSpell -command readSpellCheckFile
-set helpMessage($m,14) OptionsSpell
+set helpMessage($m,15) OptionsSpell
 
 $m add command -label OptionsTable -command setTableBaseDir
-set helpMessage($m,15) OptionsTable
+set helpMessage($m,16) OptionsTable
 if {![sc_info tb]} { $m entryconfigure 15 -state disabled }
 
 # setTableBaseDir:
@@ -722,7 +725,7 @@ proc chooseTableBaseDir {i} {
 }
 
 $m add command -label OptionsRecent -command ::recentFiles::configure
-set helpMessage($m,16) OptionsRecent
+set helpMessage($m,17) OptionsRecent
 
 $m add separator
 
@@ -739,11 +742,12 @@ $m add command -label OptionsSave -command {
     puts $optionF "# format or it will not set your Scid options properly."
     puts $optionF ""
     foreach i {boardSize boardStyle language doColorPgn \
-                 pgnIndentVars pgnIndentComments \
+                 pgnIndentVars pgnIndentComments pgnShortHeader pgnMoveFont \
                  pgnSymbolicNags pgnMoveNumSpace pgnColumn \
                  tree(order) tree(autoSave) optionsAutoSave \
-                 ecoFile suggestMoves glistSize glexport autoplayDelay \
-                 boardCoords moveEntry(AutoExpand) moveEntry(Coord) \
+                 ecoFile suggestMoves glistSize glexport \
+                 autoplayDelay animateDelay boardCoords boardSTM \
+                 moveEntry(AutoExpand) moveEntry(Coord) \
                  askToReplaceMoves switcherVertical locale(numeric) \
                  spellCheckFile autoCloseSplash autoRaise autoIconify \
                  exportFlags(comments) exportFlags(vars) \
@@ -772,7 +776,7 @@ $m add command -label OptionsSave -command {
     puts $optionF "set analysisChoices [list $analysisChoices]"
     puts $optionF ""
     foreach i {lite dark whitecolor blackcolor highcolor bestcolor \
-               whiteborder blackborder \
+               whiteborder blackborder borderwidth \
                pgnColor(Header) pgnColor(Main) pgnColor(Var) \
                pgnColor(Nag) pgnColor(Comment) pgnColor(Background) \
                pgnColor(Current) pgnColor(NextMove) } {
@@ -812,60 +816,62 @@ $m add command -label OptionsSave -command {
     set ::statusBar "Options were saved to: $optionsFile"
   }
 }
-set helpMessage($m,18) OptionsSave
+set helpMessage($m,19) OptionsSave
 
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave
-set helpMessage($m,19) OptionsAutoSave
+set helpMessage($m,20) OptionsAutoSave
 
 menu $m.ginfo
 $m.ginfo add checkbutton -label GInfoHideNext \
-  -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 \
-  -command {updateBoard .board}
+  -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoMaterial \
-  -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
-  -command {updateBoard .board}
+  -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoFEN \
-  -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 \
-  -command {updateBoard .board}
+  -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoMarks \
-  -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 \
-  -command {updateBoard .board}
+  -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoWrap \
-  -variable gameInfo(wrap) -offvalue 0 -onvalue 1 \
-  -command {updateBoard .board}
+  -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoFullComment \
-  -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 \
-  -command {updateBoard .board}
+  -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoPhotos \
   -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
   -command {updatePlayerPhotos -force}
 $m.ginfo add separator
 $m.ginfo add radiobutton -label GInfoTBNothing \
-  -variable gameInfo(showTB) -value 0 -command {updateBoard .board}
+  -variable gameInfo(showTB) -value 0 -command updateBoard
 $m.ginfo add radiobutton -label GInfoTBResult \
-  -variable gameInfo(showTB) -value 1 -command {updateBoard .board}
+  -variable gameInfo(showTB) -value 1 -command updateBoard
 $m.ginfo add radiobutton -label GInfoTBAll \
-  -variable gameInfo(showTB) -value 2 -command {updateBoard .board}
+  -variable gameInfo(showTB) -value 2 -command updateBoard
 
 menu $m.entry
 $m.entry add checkbutton -label OptionsMovesAsk \
   -variable askToReplaceMoves -offvalue 0 -onvalue 1
 set helpMessage($m.entry,0) OptionsMovesAsk \
 
+$m.entry add cascade -label OptionsMovesAnimate -menu $m.entry.animate
+menu $m.entry.animate
+foreach i {0 100 150 200 250 300 400 500 600 800 1000} {
+  $m.entry.animate add radiobutton -label "$i ms" \
+    -variable animateDelay -value $i
+}
+set helpMessage($m.entry,1) OptionsMovesAnimate
+
 $m.entry add command -label OptionsMovesDelay -command setAutoplayDelay
-set helpMessage($m.entry,1) OptionsMovesDelay
+set helpMessage($m.entry,2) OptionsMovesDelay
 
 $m.entry add checkbutton -label OptionsMovesCoord \
  -variable moveEntry(Coord) -offvalue 0 -onvalue 1
-set helpMessage($m.entry,2) OptionsMovesCoord
+set helpMessage($m.entry,3) OptionsMovesCoord
 
 $m.entry add checkbutton -label OptionsMovesKey \
   -variable moveEntry(AutoExpand) -offvalue 0 -onvalue 1
-set helpMessage($m.entry,3) OptionsMovesKey
+set helpMessage($m.entry,4) OptionsMovesKey
 
 $m.entry add checkbutton -label OptionsMovesSuggest \
   -variable suggestMoves -offvalue 0 -onvalue 1
-set helpMessage($m.entry,4) OptionsMovesSuggest
+set helpMessage($m.entry,5) OptionsMovesSuggest
 
 proc updateLocale {} {
   global locale
@@ -911,11 +917,11 @@ $m add command -label OptionsFontsRegular -underline 0 -command {
   font configure font_Bold -family $font -size $fontsize
   font configure font_Italic -family $font -size $fontsize
   font configure font_BoldItalic -family $font -size $fontsize
-  font configure font_H1 -family $font -size [expr $fontsize + 8]
-  font configure font_H2 -family $font -size [expr $fontsize + 6]
-  font configure font_H3 -family $font -size [expr $fontsize + 4]
-  font configure font_H4 -family $font -size [expr $fontsize + 2]
-  font configure font_H5 -family $font -size [expr $fontsize + 0]
+  font configure font_H1 -family $font -size [expr {$fontsize + 8} ]
+  font configure font_H2 -family $font -size [expr {$fontsize + 6} ]
+  font configure font_H3 -family $font -size [expr {$fontsize + 4} ]
+  font configure font_H4 -family $font -size [expr {$fontsize + 2} ]
+  font configure font_H5 -family $font -size [expr {$fontsize + 0} ]
 }
 set helpMessage($m,0) OptionsFontsRegular
 $m add command -label OptionsFontsMenu -underline 0 -command {
@@ -1019,7 +1025,7 @@ proc updateMenuStates {} {
   set m .menu
   for {set i 1} { $i <= $totalBaseSlots } { incr i } {
     set fname [file tail [sc_base filename $i]]
-    $m.file.switch entryconfig [expr $i - 1] -label "Base $i: $fname"
+    $m.file.switch entryconfig [expr {$i - 1} ] -label "Base $i: $fname"
   }
   foreach i {Compact Delete} {
     $m.file.utils entryconfig [tr FileMaint$i] -state disabled
@@ -1235,7 +1241,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.options.ginfo [tr GInfo$tag $oldLang] \
       GInfo$tag $lang
   }
-  foreach tag {Ask Delay Suggest Key Coord} {
+  foreach tag {Ask Animate Delay Suggest Key Coord} {
     configMenuText .menu.options.entry [tr OptionsMoves$tag $oldLang] \
       OptionsMoves$tag $lang
   }
@@ -1315,6 +1321,7 @@ proc checkMenuUnderline {menu} {
 proc standardShortcuts {w} {
   if {! [winfo exists $w]} { return }
   bind $w <Control-o> fileOpen
+  bind $w <Control-w> fileClose
   bind $w <Control-slash> fileFinder
   bind $w <Control-m> makeMaintWin
   bind $w <Control-d> makeBaseWin

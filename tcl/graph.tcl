@@ -190,7 +190,7 @@ proc ::graph::_configure args {
     if {[string index $option 0] != "-"} { return [lrange $args $i end] }
     set option [string range $option 1 end]
     if {[lsearch $optionList $option] >= 0} {
-      set ::graph::_data($dataset,$option) [lindex $args [expr $i+1]]
+      set ::graph::_data($dataset,$option) [lindex $args [expr {$i+1} ]]
     }
   }
 }
@@ -273,14 +273,14 @@ proc ::graph::plot_axes {graph} {
       }
     } elseif {$inc > 0} {
       # Plot a line at each multiple of "inc" units:
-      set x [expr int($xmin/$inc) * $inc + $inc]
+      set x [expr {int($xmin/$inc) * $inc + $inc} ]
       while {$x < $xmax} {
         set xvalue [::graph::xmap $graph $x]
         if {$xvalue != $xminvalue  &&  $xvalue != $xmaxvalue} {
           $canvas create line $xvalue $yminc $xvalue $ymaxc -width $width \
             -fill $color -tag $tag
         }
-        set x [expr $x + $inc]
+        set x [expr {$x + $inc} ]
       }
     }
   }
@@ -300,14 +300,14 @@ proc ::graph::plot_axes {graph} {
           -fill $color -tag $tag
       }
     } elseif {$inc > 0} {
-      set y [expr int($ymin/$inc) * $inc + $inc]
+      set y [expr {int($ymin/$inc) * $inc + $inc} ]
       while {$y < $ymax} {
         set yvalue [::graph::ymap $graph $y]
         if {$yvalue != $yminvalue  &&  $yvalue != $ymaxvalue} {
           $canvas create line $xminc $yvalue $xmaxc $yvalue -width $width \
             -fill $color -tag $tag
         }
-        set y [expr $y + $inc]
+        set y [expr {$y + $inc} ]
       }
     }
   }
@@ -317,19 +317,19 @@ proc ::graph::plot_axes {graph} {
   set nylabels [llength $ylabels]
 
   if {$xtick > 0} {
-    set x [expr int($xmin/$xtick) * $xtick]
-    while {$x < $xmin} { set x [expr $x + $xtick] }
+    set x [expr {int($xmin/$xtick) * $xtick} ]
+    while {$x < $xmin} { set x [expr {$x + $xtick} ] }
     while {$x <= $xmax} {
       set xc [::graph::xmap $graph $x]
-      $canvas create line $xc $yminc $xc [expr $yminc - $ticksize] -tag $tag \
+      $canvas create line $xc $yminc $xc [expr {$yminc - $ticksize} ] -tag $tag \
         -fill $tickcolor
-      $canvas create line $xc $ymaxc $xc [expr $ymaxc + $ticksize] -tag $tag \
+      $canvas create line $xc $ymaxc $xc [expr {$ymaxc + $ticksize} ] -tag $tag \
         -fill $tickcolor
       if {$nxlabels == 0} {
-        $canvas create text $xc [expr $yminc + $textgap] -font $font \
+        $canvas create text $xc [expr {$yminc + $textgap} ] -font $font \
           -text [::graph::round $x] -anchor n -tag $tag -fill $textcolor
       }
-      set x [expr $x + $xtick]
+      set x [expr {$x + $xtick} ]
     }
   }
   for {set i 0} {$i < $nxlabels} {incr i} {
@@ -337,24 +337,24 @@ proc ::graph::plot_axes {graph} {
     set x [lindex $label 0]
     set text [lindex $label 1]
     set xc [::graph::xmap $graph $x]
-    $canvas create text $xc [expr $yminc + $textgap] -font $font \
+    $canvas create text $xc [expr {$yminc + $textgap} ] -font $font \
       -text $text -anchor n -tag $tag -fill $textcolor -justify center
   }
 
   if {$ytick > 0} {
-    set y [expr int($ymin/$ytick) * $ytick]
-    while {$y < $ymin} { set y [expr $y + $ytick] }
+    set y [expr {int($ymin/$ytick) * $ytick} ]
+    while {$y < $ymin} { set y [expr {$y + $ytick} ] }
     while {$y <= $ymax} {
       set yc [::graph::ymap $graph $y]
-      $canvas create line $xminc $yc [expr $xminc + $ticksize] $yc -tag $tag \
+      $canvas create line $xminc $yc [expr {$xminc + $ticksize} ] $yc -tag $tag \
         -fill $tickcolor
-      $canvas create line [expr $xmaxc - $ticksize] $yc $xmaxc $yc -tag $tag \
+      $canvas create line [expr {$xmaxc - $ticksize} ] $yc $xmaxc $yc -tag $tag \
         -fill $tickcolor
       if {$nylabels == 0} {
-        $canvas create text [expr $xminc - $textgap] $yc -font $font \
+        $canvas create text [expr {$xminc - $textgap} ] $yc -font $font \
           -text [::graph::round $y] -anchor e -tag $tag -fill $textcolor
       }
-      set y [expr $y + $ytick]
+      set y [expr {$y + $ytick} ]
     }
   }
   for {set i 0} {$i < $nylabels} {incr i} {
@@ -362,7 +362,7 @@ proc ::graph::plot_axes {graph} {
     set y [lindex $label 0]
     set text [lindex $label 1]
     set yc [::graph::ymap $graph $y]
-    $canvas create text [expr $xminc - $textgap] $yc -font $font \
+    $canvas create text [expr {$xminc - $textgap} ] $yc -font $font \
       -text $text -anchor e -tag $tag -fill $textcolor
   }
 }
@@ -378,7 +378,7 @@ proc ::graph::plot_data {graph} {
     set outline $::graph::_data($graph,$dataset,outline)
     set tag g$graph
     set coords [::graph::scale_data $graph $::graph::_data($graph,$dataset,coords)]
-    set ncoords [expr [llength $coords] - 1]
+    set ncoords [expr {[llength $coords] - 1} ]
 
     # Draw key:
     if {$::graph::_data($graph,$dataset,key) != ""} {
@@ -386,7 +386,7 @@ proc ::graph::plot_data {graph} {
       if {$ncoords >= 1} {
         set dy 3
         set anchor nw
-        set x [expr [lindex $coords 0] + 3]
+        set x [expr {[lindex $coords 0] + 3} ]
         set y [lindex $coords 1]
         if {$ncoords >= 3} {
           set nexty [lindex $coords 3]
@@ -410,9 +410,9 @@ proc ::graph::plot_data {graph} {
     if {$::graph::_data($graph,$dataset,points)} {
       for {set i 0} {$i < $ncoords} {incr i 2} {
         set x [lindex $coords $i]
-        set y [lindex $coords [expr $i + 1]]
+        set y [lindex $coords [expr {$i + 1} ]]
         set p $::graph::_data($graph,$dataset,radius)
-        $canvas create oval [expr $x-$p] [expr $y-$p] [expr $x+$p] [expr $y+$p] \
+        $canvas create oval [expr {$x-$p} ] [expr {$y-$p} ] [expr {$x+$p} ] [expr {$y+$p}] \
           -fill $color -outline $outline -width 1 -tag $tag
       }
     }
@@ -421,14 +421,14 @@ proc ::graph::plot_data {graph} {
     if {$::graph::_data($graph,$dataset,bars)} {
       set base [::graph::ymap $graph $::graph::_data($graph,aymin)]
       set hwidth [::graph::xmap $graph $::graph::_data($graph,$dataset,barwidth)]
-      set hwidth [expr $hwidth - [::graph::xmap $graph 0]]
-      set hwidth [expr $hwidth / 2]
+      set hwidth [expr {$hwidth - [::graph::xmap $graph 0]} ]
+      set hwidth [expr {$hwidth / 2} ]
       if {$hwidth < 1} { set hwidth 1 }
 
       for {set i 0} {$i < $ncoords} {incr i 2} {
         set x [lindex $coords $i]
-        set y [lindex $coords [expr $i + 1]]
-        $canvas create rectangle [expr $x-$hwidth] $y [expr $x+$hwidth] $base \
+        set y [lindex $coords [expr {$i + 1} ]]
+        $canvas create rectangle [expr {$x-$hwidth} ] $y [expr {$x+$hwidth} ] $base \
           -fill $color -outline $outline -tag $tag
       }
     }
@@ -442,11 +442,11 @@ proc ::graph::plot_data {graph} {
 #    Used to print axis values to a sensible precision.
 #
 proc ::graph::round {n} {
-  set intn [expr int($n)]
-  if {[expr $n - $intn] < 0.1  &&  [expr $intn - $n] < 0.1} {
-    return [expr round($n)]
+  set intn [expr {int($n)} ]
+  if {[expr {$n - $intn} ] < 0.1  &&  [expr {$intn - $n} ] < 0.1} {
+    return [expr {round($n)} ]
   }
-  return [expr double(round($n * 10.0)) / 10.0]
+  return [expr {double(round($n * 10.0)) / 10.0} ]
 }
 
 
@@ -457,10 +457,10 @@ proc ::graph::round {n} {
 proc ::graph::point_visible {graph x y} {
   set xmin $::graph::_data($graph,xtop)
   set ymin $::graph::_data($graph,ytop)
-  set xmax [expr $xmin + $::graph::_data($graph,width)]
-  set ymax [expr $ymin + $::graph::_data($graph,height)]
+  set xmax [expr {$xmin + $::graph::_data($graph,width)} ]
+  set ymax [expr {$ymin + $::graph::_data($graph,height)} ]
 
-  if {$x >= xmin && $x <= $xmax && $y >= $ymin && $y <= $ymax} { return 1 }
+  if {$x >= $xmin && $x <= $xmax && $y >= $ymin && $y <= $ymax} { return 1 }
   return 0
 }
 
@@ -471,16 +471,16 @@ proc ::graph::point_visible {graph x y} {
 proc ::graph::rescale {graph} {
   set width $::graph::_data($graph,width)
   set height $::graph::_data($graph,height)
-  set xdelta [expr double($::graph::_data($graph,axmax) - \
-                          $::graph::_data($graph,axmin))]
-  set ydelta [expr double($::graph::_data($graph,aymax) - \
-                          $::graph::_data($graph,aymin))]
+  set xdelta [expr {double($::graph::_data($graph,axmax) - \
+                          $::graph::_data($graph,axmin))} ]
+  set ydelta [expr {double($::graph::_data($graph,aymax) - \
+                          $::graph::_data($graph,aymin))} ]
   # Ensure deltas are not zero or too close to it:
   if {$xdelta < 0.0001} { set xdelta 0.0001 }
   if {$ydelta < 0.0001} { set ydelta 0.0001 }
 
-  set ::graph::_data($graph,xfac) [expr double($width)/$xdelta]
-  set ::graph::_data($graph,yfac) [expr double($height)/$ydelta]
+  set ::graph::_data($graph,xfac) [expr {double($width)/$xdelta} ]
+  set ::graph::_data($graph,yfac) [expr {double($height)/$ydelta} ]
 }
 
 
@@ -488,34 +488,34 @@ proc ::graph::rescale {graph} {
 #    Map a graph X coordinate to its canvas unit equivalent.
 #
 proc ::graph::xmap {graph x} {
-  return [expr int(($x - $::graph::_data($graph,axmin)) * \
-            $::graph::_data($graph,xfac) + $::graph::_data($graph,xtop))]
+  return [expr {int(($x - $::graph::_data($graph,axmin)) * \
+            $::graph::_data($graph,xfac) + $::graph::_data($graph,xtop))} ]
 }
 
 # ymap:
 #    Map a graph Y coordinate to its canvas unit equivalent.
 #
 proc ::graph::ymap {graph y} {
-  return [expr int(($::graph::_data($graph,aymax) - $y) * \
-            $::graph::_data($graph,yfac) + $::graph::_data($graph,ytop))]
+  return [expr {int(($::graph::_data($graph,aymax) - $y) * \
+            $::graph::_data($graph,yfac) + $::graph::_data($graph,ytop))} ]
 }
 
 #xunmap:
 #    Transform a canvas unit to its graph X coordinate equivalent.
 #
 proc ::graph::xunmap {graph cx} {
-  return [expr $::graph::_data($graph,axmin) + \
+  return [expr {$::graph::_data($graph,axmin) + \
             double($cx - $::graph::_data($graph,xtop)) / \
-            double($::graph::_data($graph,xfac))]
+            double($::graph::_data($graph,xfac))} ]
 }
 
 #yunmap:
 #    Transform a canvas unit to its graph Y coordinate equivalent.
 #
 proc ::graph::yunmap {graph cy} {
-  return [expr $::graph::_data($graph,aymax) - \
+  return [expr {$::graph::_data($graph,aymax) - \
             double($cy - $::graph::_data($graph,ytop)) / \
-            double($::graph::_data($graph,yfac))]
+            double($::graph::_data($graph,yfac))} ]
 }
 
 # scale_data:
@@ -525,7 +525,7 @@ proc ::graph::scale_data {graph coords} {
   set result {}
   for {set i 0} {$i < [llength $coords] - 1} {incr i 2} {
     lappend result [::graph::xmap $graph [lindex $coords $i]]
-    lappend result [::graph::ymap $graph [lindex $coords [expr $i+1]]]
+    lappend result [::graph::ymap $graph [lindex $coords [expr {$i+1} ]]]
   }
   return $result
 }
@@ -541,7 +541,7 @@ proc ::graph::set_range {graph} {
     set coords $::graph::_data($graph,$dataset,coords)
     for {set i 0} {$i < [llength $coords] - 1} {incr i 2} {
       set x [lindex $coords $i]
-      set y [lindex $coords [expr $i+1]]
+      set y [lindex $coords [expr {$i+1} ]]
 
       if {$x < $xmin} { set xmin $x }
       if {$x > $xmax} { set xmax $x }
@@ -556,10 +556,10 @@ proc ::graph::set_range {graph} {
 
   set xtick $::graph::_data($graph,xtick)
   set ytick $::graph::_data($graph,ytick)
-  set ::graph::_data($graph,axmin) [expr floor($xmin/$xtick) * $xtick]
-  set ::graph::_data($graph,axmax) [expr floor($xmax/$xtick) * $xtick + $xtick]
-  set ::graph::_data($graph,aymin) [expr floor($ymin/$ytick) * $ytick]
-  set ::graph::_data($graph,aymax) [expr floor($ymax/$ytick) * $ytick + $ytick]
+  set ::graph::_data($graph,axmin) [expr {floor($xmin/$xtick) * $xtick} ]
+  set ::graph::_data($graph,axmax) [expr {floor($xmax/$xtick) * $xtick + $xtick} ]
+  set ::graph::_data($graph,aymin) [expr {floor($ymin/$ytick) * $ytick} ]
+  set ::graph::_data($graph,aymax) [expr {floor($ymax/$ytick) * $ytick + $ytick} ]
 
   # Explicitly set boundaries override the detected ranges:
   foreach coord {xmin xmax ymin ymax} {

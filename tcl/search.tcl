@@ -159,10 +159,10 @@ proc checkPieceCounts {name el op} {
   global pMin pMax
   forceInt 9 0 $name $el $op
   # Now make sure minor piece counts fit with bishop/knight counts:
-  set wmMin [expr $pMin(wn) + $pMin(wb)]
-  set wmMax [expr $pMax(wn) + $pMax(wb)]
-  set bmMin [expr $pMin(bn) + $pMin(bb)]
-  set bmMax [expr $pMax(bn) + $pMax(bb)]
+  set wmMin [expr {$pMin(wn) + $pMin(wb)} ]
+  set wmMax [expr {$pMax(wn) + $pMax(wb)} ]
+  set bmMin [expr {$pMin(bn) + $pMin(bb)} ]
+  set bmMax [expr {$pMax(bn) + $pMax(bb)} ]
   if {$pMin(wm) < $wmMin} { set pMin(wm) $wmMin }
   if {$pMax(wm) > $wmMax} { set pMax(wm) $wmMax }
   if {$pMin(bm) < $bmMin} { set pMin(bm) $bmMin }
@@ -484,8 +484,8 @@ proc searchMaterial {} {
     $f.b$i configure -indicatoron 0 -width 4
     $f.f$i configure -indicatoron 0 -width 2
     $f.r$i configure -indicatoron 0 -width 2
-    set column [expr 5 * (($i - 1) / 3)]
-    set row [expr ($i - 1) % 3]
+    set column [expr {5 * (($i - 1) / 3)} ]
+    set row [expr {($i - 1) % 3} ]
     grid $f.b$i -row $row -column $column; incr column
     grid $f.p$i -row $row -column $column; incr column
     grid $f.f$i -row $row -column $column; incr column
@@ -722,9 +722,9 @@ proc saveMaterialSearch {} {
 ### HEADER Searching (Name, etc).
 
 set sWhite "";  set sBlack "";  set sEvent ""; set sSite "";  set sRound ""
-set sWhiteEloMin 0; set sWhiteEloMax 4000
-set sBlackEloMin 0; set sBlackEloMax 4000
-set sEloDiffMin -4000; set sEloDiffMax +4000
+set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
+set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
+set sEloDiffMin "-[sc_info limit elo]"; set sEloDiffMax "+[sc_info limit elo]"
 set sTitleList [list gm im fm none wgm wim wfm w]
 foreach i $sTitleList {
   set sTitles(w:$i) 1
@@ -752,10 +752,10 @@ trace variable sDateMin w forceDate
 trace variable sDateMax w forceDate
 
 foreach i {sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax} {
-  trace variable $i w {forceInt 4000 0}
+  trace variable $i w [list forceInt [sc_info limit elo] 0]
 }
-trace variable sEloDiffMin w {forceInt -4000 0}
-trace variable sEloDiffMax w {forceInt -4000 0}
+trace variable sEloDiffMin w [list forceInt "-[sc_info limit elo]" 0]
+trace variable sEloDiffMax w [list forceInt "-[sc_info limit elo]" 0]
 
 trace variable sGlMin w {forceInt 9999 0}
 trace variable sGlMax w {forceInt 9999 0}
@@ -806,9 +806,10 @@ proc searchHeaderDefaults {} {
 
   set sWhite "";  set sBlack ""
   set sEvent ""; set sSite "";  set sRound ""
-  set sWhiteEloMin 0; set sWhiteEloMax 4000
-  set sBlackEloMin 0; set sBlackEloMax 4000
-  set sEloDiffMin  -4000; set sEloDiffMax +4000
+  set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
+  set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
+  set sEloDiffMin "-[sc_info limit elo]"
+  set sEloDiffMax "+[sc_info limit elo]"
   set sGlMin 0; set sGlMax 999
   set sEcoMin "A00";  set sEcoMax "E99"; set sEco Yes
   set sGnumMin 1; set sGnumMax -1
@@ -1196,7 +1197,7 @@ proc searchHeader {} {
 proc saveHeaderSearch {} {
   global sWhite sBlack sEvent sSite sRound sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
-  global sEloDiffMin sEloDiffMax
+  global sEloDiffMin sEloDiffMax sGlMin sGlMax
   global sEco sEcoMin sEcoMax sHeaderFlags
   global sResWin sResLoss sResDraw sResOther glstart filterOp sPgntext
 
@@ -1220,7 +1221,7 @@ proc saveHeaderSearch {} {
   foreach i {sWhite sBlack sEvent sSite sRound sDateMin sDateMax sResWin
      sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
      sBlackEloMax sEcoMin sEcoMax filterOp sEloDiffMin sEloDiffMax
-     sIgnoreCol} {
+     sIgnoreCol sGlMin sGlMax} {
     puts $searchF "set $i [list [set $i]]"
   }
 

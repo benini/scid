@@ -411,6 +411,7 @@ proc makeBaseWin {} {
       -command "sc_filter reset $i; updateStatsWin"
     $f.menu add command -label "Change icon..." -command "changeBaseType $i"
     $f.menu add separator
+    $f.menu add command -label [tr FileOpen] -command fileOpen
     set closeLabel [tr FileClose]
     if {$i == [sc_info clipbase]} { set closeLabel [tr EditReset] }
     $f.menu add command -label $closeLabel \

@@ -1,6 +1,6 @@
 ### reper.tcl:
 ### Repertoire editor functions for Scid.
-### Copyright (C) 2001 Shane Hudson.
+### Copyright (C) 2001-2002 Shane Hudson.
 
 # The heirarchical view used to display a repertoire in Scid was
 # originally based on the  public domain Tcl/Tk tree widget written by
@@ -50,7 +50,7 @@ proc ::rep::_findGroup {w v parent} {
   if {$parent == ""} { set p "/" }
   foreach g $::rep::_data($w:$p:children) {
     set len [string length $g]
-    set v2 [string range $v 0 [expr $len - 1]]
+    set v2 [string range $v 0 [expr {$len - 1} ]]
     regsub -all " " $v2 "," v2
     if {! [string compare $v2 $g]} {
       set v [string trim [string range $v $len end]]
@@ -156,9 +156,15 @@ proc ::rep::_newItem {w v args} {
   }
   set i [lsearch -exact $::rep::_data($w:$dir:children) $n]
   if {$i >= 0} {
-    set  type "line"
-    if {$group} { set type "group" }
-    return -code error "The $type \"[::rep::_decode $v]\" already exists in this repertoire."
+    # Group or line already exists.
+    if {! $group} {
+      set ::rep::_data($w:$v:include) $include
+      ::rep::updateStatus $w
+    }
+    return $v
+    #set  type "line"
+    #if {$group} { set type "group" }
+    #return -code error "The $type \"[::rep::_decode $v]\" already exists in this repertoire."
   }
   if {$group} {
     incr ::rep::_data($w:ngroups)
@@ -392,12 +398,12 @@ proc ::rep::_draw {w} {
 proc ::rep::_drawLevel {w v in} {
   set p $v
   if {$v == "/"} { set p "" }
-  set start [expr $::rep::_data($w:y)-10]
+  set start [expr {$::rep::_data($w:y)-10} ]
   set y 0
   if {[llength $::rep::_data($w:$v:children)] == 0} {
     set y $::rep::_data($w:y)
     incr ::rep::_data($w:y) 17
-    $w create line $in $y [expr $in+10] $y -fill gray50 
+    $w create line $in $y [expr {$in+10} ] $y -fill gray50 
     incr in 12
     $w create text $in $y -font font_Small -anchor w -text "(empty)"
     return
@@ -406,7 +412,7 @@ proc ::rep::_drawLevel {w v in} {
   foreach c $::rep::_data($w:$v:children) {
     set y $::rep::_data($w:y)
     incr ::rep::_data($w:y) 17
-    $w create line $in $y [expr $in + 10] $y -fill gray50 
+    $w create line $in $y [expr {$in + 10} ] $y -fill gray50 
     set group $::rep::_data($w:$p/$c:group)
     set icon $::rep::_data($w:$p/$c:image)
     set taglist x
@@ -418,14 +424,14 @@ proc ::rep::_drawLevel {w v in} {
       set icon ::rep::_cross
       if {$::rep::_data($w:$p/$c:include)} { set icon ::rep::_tick }
     }
-    set x [expr $in + 12]
+    set x [expr {$in + 12} ]
 
     if {$icon != ""} {
       set tag [$w create image $x $y -image $icon -anchor w -tags $taglist]
       incr x 20
       set ::rep::_data($w:tag:$tag) $p/$c
       if {$group} {
-        set s [expr 1 - $::rep::_data($w:$p/$c:shown)]
+        set s [expr {1 - $::rep::_data($w:$p/$c:shown)} ]
         $w bind $tag <1> "set ::rep::_data($w:$p/$c:shown) $s; ::rep::_draw $w"
       }
       $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
@@ -448,7 +454,7 @@ proc ::rep::_drawLevel {w v in} {
       append comment "$::rep::_data($w:$p/$c:comment)"
     }
     if {$comment != ""} {
-      incr x [expr 3 + [lindex [$w bbox $tag] 2] - [lindex [$w bbox $tag] 0]]
+      incr x [expr {3 + [lindex [$w bbox $tag] 2] - [lindex [$w bbox $tag] 0]} ]
       set tag [$w create text $x $y -text $comment -font font_Small \
                                   -fill red3 -anchor w -tags $taglist]
       $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
@@ -459,7 +465,7 @@ proc ::rep::_drawLevel {w v in} {
       if {$::rep::_data($w:$p/$c:shown)} {
         set tag [$w create image $in $y -image ::rep::_shown]
         $w bind $tag <1> "set ::rep::_data($w:$p/$c:shown) 0; ::rep::_draw $w"
-        ::rep::_drawLevel $w $p/$c [expr $in + 18]
+        ::rep::_drawLevel $w $p/$c [expr {$in + 18} ]
       } else {
         set tag [$w create image $in $y -image ::rep::_hidden]
         $w bind $tag <1> "set ::rep::_data($w:$p/$c:shown) 1; ::rep::_draw $w"
@@ -467,7 +473,7 @@ proc ::rep::_drawLevel {w v in} {
       $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
     }
   }
-  set tag [$w create line $in $start $in [expr $y+1] -fill gray50 ]
+  set tag [$w create line $in $start $in [expr {$y+1} ] -fill gray50 ]
   $w lower $tag
 }
 
@@ -502,7 +508,7 @@ proc ::rep::toggleLineState {w v} {
   if {[info exists ::rep::_data($w:$v:group)]
       &&  $::rep::_data($w:$v:group) == 0} {
     set state $::rep::_data($w:$v:include)
-    set state [expr 1 - $state]
+    set state [expr {1 - $state} ]
     set ::rep::_data($w:$v:include) $state
     set ::rep::_data($w:altered) 1
     ::rep::_draw $w
@@ -682,6 +688,37 @@ proc ::rep::makeWindow {} {
 
   pack $w.m.file $w.m.edit $w.m.view $w.m.search $w.m.help -side left -padx 5
 
+  # Toolbar:
+  set f [frame $w.toolbar -relief raised -border 1]
+  pack $f -side top -fill x
+  button $f.new -image tb_new -command "::rep::newFile $w.f.w.rep"
+  button $f.open -image tb_open -command "::rep::openFile $w.f.w.rep"
+  button $f.save -image tb_save -command "::rep::saveFile $w.f.w.rep"
+  button $f.close -image tb_close -command "destroy $w"
+  frame $f.space1 -width 12
+  button $f.group -image ::rep::_tb_group \
+    -command "::rep::addCurrentBoard $w.f.w.rep group"
+  button $f.include -image ::rep::_tb_include \
+    -command "::rep::addCurrentBoard $w.f.w.rep include"
+  button $f.exclude -image ::rep::_tb_exclude \
+    -command "::rep::addCurrentBoard $w.f.w.rep exclude"
+
+  foreach i {new open save close group include exclude} {
+    $f.$i configure -relief flat -border 1 -highlightthickness 0 -anchor n \
+      -takefocus 0
+    bind $f.$i <Any-Enter> "+$f.$i configure -relief groove"
+    bind $f.$i <Any-Leave> "+$f.$i configure -relief flat"
+  }
+  foreach {b m} {
+    new RepFileNew open RepFileOpen save RepFileSave
+    group RepEditGroup include RepEditInclude exclude RepEditExclude
+  } {
+    set ::helpMessage($f.$b) [tr $m]
+  }
+  pack $f.new $f.open $f.save $f.close $f.space1 \
+    $f.group $f.include $f.exclude \
+    -side left -padx 0 -ipadx 0 -pady 0 -ipady 0
+
   label $w.status -relief sunken -width 1 -anchor w -font font_Small
   pack $w.status -side bottom -anchor w -fill x -expand yes
 
@@ -718,7 +755,7 @@ proc ::rep::makeWindow {} {
   $w.f.w.rep bind x <Double-Button-1> \
     "::rep::doubleClick $w.f.w.rep \[::rep::labelAtXY %W %x %y\]"
 
-  bind $w.f.text.moves <1> "if {\[string length \[$w.f.text.moves get 1.0 end\]\] > 1} { importPgnLine \[$w.f.text.moves get 1.0 end\] }"
+  bind $w.f.text.moves <1> "if {\[string length \[$w.f.text.moves get 1.0 end\]\] > 1} { importMoveList \[$w.f.text.moves get 1.0 end\] }"
 
   bind $w.f.text.entry <KeyPress> {
     after idle {
@@ -781,7 +818,7 @@ proc ::rep::doubleClick {w label} {
   if {$label == ""} { return }
   set moves [::rep::_decode $label]
   catch {sc_game import $moves}
-  updateBoardAndPgn .board
+  updateBoard -pgn
 }
 
 # ::rep::_extract
@@ -881,8 +918,8 @@ proc ::rep::readFile {w fname} {
       set moves $line
       set comment ""
     } else {
-      set moves [string trim [string range $line 0 [expr $sep - 1]]]
-      set comment [string trim [string range $line [expr $sep + 1] end]]
+      set moves [string trim [string range $line 0 [expr {$sep - 1} ]]]
+      set comment [string trim [string range $line [expr {$sep + 1} ] end]]
     }
     set c [string index $line 0]
 
@@ -908,7 +945,7 @@ proc ::rep::readFile {w fname} {
         } elseif {$len == 1} {
           set groups {}
         } else {
-          set groups [lrange $groups 0 [expr $len - 2]]
+          set groups [lrange $groups 0 [expr {$len - 2} ]]
         }
       }
       "-" {
@@ -999,7 +1036,7 @@ proc ::rep::_writeFileLevel {w f v in} {
     }
     puts $f $moves
     if {[llength $::rep::_data($w:$p/$c:children)] > 0} {
-      ::rep::_writeFileLevel $w $f $p/$c [expr $in + 4]
+      ::rep::_writeFileLevel $w $f $p/$c [expr {$in + 4} ]
     }
     if {$::rep::_data($w:$p/$c:group)} {
       for {set i 0} {$i < $in} {incr i} { puts -nonewline $f " " }
@@ -1045,7 +1082,7 @@ proc ::rep::_popupMenu {w v x y} {
   menu $w.popup
   $w.popup add command -label "Paste moves as current game" \
     -command "catch {sc_game import \"[::rep::_decode $v]\"};
-              updateBoardAndPgn .board"
+              updateBoard -pgn"
   $w.popup add separator
   if {$group} {
     $w.popup add command -label "Expand group and all subgroups" \
@@ -1189,6 +1226,24 @@ mIaEFWmYJ8Cl7TGynQpH4XtV9/ThuWepZR5ERtBSAAA7
 image create photo ::rep::_cross -data {
 R0lGODdhEAAQAKEAAP///wAAAPoTQAAAACwAAAAAEAAQAAACL4SPacHtvpQKUSIKsFA7V9EZ
 YIUBoxliJXqSSeseIKzKXVujyJlbse/JPIYMoKQAADs=
+}
+
+image create photo ::rep::_tb_group -data {
+R0lGODlhEQARAIQAANnZ2QICBMa6la6ehJaJda6ihPbu6ubcwNbGtN7V2c7Dp97Opc66m8a1
+lLaniqmpqe7q2Xp0cHJuW+7m1LaulKaYfL6zl25mWJ6ObYJ5a1pVTScznicznicznicznicz
+niwAAAAAEQARAAAFdiAgjmRpnigQrEE6BsIQt2kwEHdBsCwZGAeg0IBIHBQ01UGwYDQXgoZD
+sHuIAhDoMzp1RAJWpdMpEHQLEvB18myYBQVKJR0OHJyWt8NRqVzUKmxuUwV8GAR/dQcRBBkV
+GY0SFxcagCo8mCsPYSKbnp+eLqKjIyEAOw==
+}
+
+image create photo ::rep::_tb_include -data {
+R0lGODlhEQARAKEAAP///9nZ2QAAAFFR+ywAAAAAEQARAAACOYyPecLtvoCcVIpY8zUizzEA
+W9B5YDiW1WlhFNtyACjBMTmH9t2ddJWq7XifkMbl4T2WDIXzCVUUAAA7
+}
+
+image create photo ::rep::_tb_exclude -data {
+R0lGODlhEQARAKEAANnZ2QAAAP////oTQCwAAAAAEQARAAACOoSPecHtvoScVIZY8zVBjvwJ
+G9AJQ+iFY2mG57RS5wtjE11z8kzF6W/B4FpBXabiO+ZIjyZDAY1KFQUAOw==
 }
 
 set maskdata "#define solid_width 9\n#define solid_height 9"

@@ -1,11 +1,29 @@
 # board.tcl: part of Scid
-# Copyright (C) 2001 Shane Hudson. All rights reserved.
+# Copyright (C) 2001-2002 Shane Hudson. All rights reserved.
 
 # images:
 #    Array that maps piece letters to their two-character value.
 #
 array set images [list "R" wr "r" br "N" wn "n" bn "B" wb "b" bb \
                        "Q" wq "q" bq "K" wk "k" bk "P" wp "p" bp "." e]
+
+# squareIndex:
+#    List of square names in order.
+#
+set squareIndex [list a1 b1 c1 d1 e1 f1 g1 h1 a2 b2 c2 d2 e2 f2 g2 h2 \
+                      a3 b3 c3 d3 e3 f3 g3 h3 a4 b4 c4 d4 e4 f4 g4 h4 \
+                      a5 b5 c5 d5 e5 f5 g5 h5 a6 b6 c6 d6 e6 f6 g6 h6 \
+                      a7 b7 c7 d7 e7 f7 g7 h7 a8 b8 c8 d8 e8 f8 g8 h8]
+
+# sq:
+#    Given a square name, returns its index as used in board
+#    representations, or -1 if the square name is invalid.
+#    Examples: [sq h8] == 63; [sq a1] = 0; [sq notASquare] = -1.
+#
+proc sq {sqname} {
+  return [lsearch -exact $::squareIndex $sqname]
+}
+
 
 ############################################################
 ### Board setup window:
@@ -53,7 +71,7 @@ proc pasteFEN {} {
       -message "The current text selection is not a valid chess position in FEN notation.\nThe selected text is:\n\n$fenStr"
     return
   }
-  updateBoardAndPgn
+  updateBoard -pgn
 }
 
 # makeSetupFen:
@@ -75,7 +93,7 @@ proc makeSetupFen {} {
     if {$bRow < 56} { append fenStr "/" }
     set emptyRun 0
     for {set bCol 0} {$bCol < 8} {incr bCol} {
-      set sq [expr $bRow + $bCol]
+      set sq [expr {$bRow + $bCol} ]
       set piece [string index $setupBd $sq]
       if {$piece == "."} {
         incr emptyRun
@@ -147,8 +165,6 @@ proc validateSetup {} {
 #    Sets that square to containing the active piece (stored in pastePiece)
 #    unless it already contains that piece, in which case the square is
 #    cleared to be empty.
-#    XXX I need to add checking for a pawn, so pawns cannot be added to
-#    the first or eighth rank.
 #
 proc setupBoardPiece { square } {
   global setupBd pastePiece boardSize setupFen
@@ -166,9 +182,9 @@ proc setupBoardPiece { square } {
     }
   }
   append setupBd \
-    [string range $oldState 0 [expr $square - 1]] \
+    [string range $oldState 0 [expr {$square - 1} ]] \
     $piece \
-    [string range $oldState [expr $square + 1] 63]
+    [string range $oldState [expr {$square + 1} ] 63]
   unset oldState
   setBoard .setup.bd $setupBd $boardSize
   set setupFen [makeSetupFen]
@@ -208,8 +224,8 @@ trace variable castling w { forceRegexp {^(-|[KQkq]*)$}}
 # then lite, dark, highcolor, bestcolor, white, black, w border, b border.
 #
 set colorSchemes {
-  { "Brown" "#d0c0a0" "#a08050" "#b0d0e0" "#bebebe" }
   { "Green-Yellow" "#e0d070" "#70a070" "#b0d0e0" "#bebebe" }
+  { "Brown" "#d0c0a0" "#a08050" "#b0d0e0" "#bebebe" }
   { "Blue-ish" "#d0e0d0" "#80a0a0" "#b0d0e0" "#f0f0a0" }
   { "M. Thomas" "#e0d8b8" "#047c24" "#1c80e0" "#fe0000" }
   { "KM. Skontorp" "#ffdb86" "#ffa200" "#b0d0e0" "#bebebe" }
@@ -245,9 +261,18 @@ proc chooseBoardColors {{choice -1}} {
     foreach i {br wn bb wq bk wp} {
       $w.bd.$i configure -background $nlite
     }
+    $w.bd.bb configure -background $newColors(highcolor)
+    $w.bd.wk configure -background $newColors(bestcolor)
     foreach i $colors {
       $w.select.b$i configure -background $newColors($i)
     }
+
+    foreach i {0 1 2 3} {
+      set c $w.border.c$i
+      $c itemconfigure dark -fill $dark -outline $dark
+      $c itemconfigure lite -fill $lite -outline $lite
+    }
+
     return
   }
 
@@ -261,6 +286,8 @@ proc chooseBoardColors {{choice -1}} {
   pack [frame $w.select] -side top -fill x
   addHorizontalRule $w
   pack [frame $w.preset] -side top -fill x
+  addHorizontalRule $w
+  pack [frame $w.border] -side top
   addHorizontalRule $w
   pack [frame $w.buttons] -side top -fill x
 
@@ -285,8 +312,27 @@ proc chooseBoardColors {{choice -1}} {
     "
     label $f.l$c -text "$::tr($n)  "
     grid $f.b$c -row $row -column $column
-    grid $f.l$c -row $row -column [expr $column + 1] -sticky w
+    grid $f.l$c -row $row -column [expr {$column + 1} ] -sticky w
   }
+
+  # Border width option:
+  set f $w.border
+  #label $f.label -text "Border width"
+  #pack $f.label -side left -padx 5
+  foreach i {0 1 2 3} {
+    if {$i != 0} { pack [frame $f.gap$i -width 20] -side left -padx 1 }
+    set b $f.b$i
+    radiobutton $b -text "$i:" -variable newborderwidth -value $i
+    set c $f.c$i
+    canvas $c -height 40 -width 40 -background black
+    $c create rectangle 0 0 [expr {20 - $i}] [expr {20 - $i}] -tag dark
+    $c create rectangle [expr {20 + $i}] [expr {20 + $i}] 40 40 -tag dark
+    $c create rectangle 0 [expr {20 + $i}] [expr 20 - $i] 40 -tag lite
+    $c create rectangle [expr {20 + $i}] 0 40 [expr {20 - $i}] -tag lite
+    pack $b $c -side left -padx 1
+    bind $c <Button-1> "set newborderwidth $i"
+  }
+  set ::newborderwidth $::borderwidth
 
   set count 0
   set psize 40
@@ -297,7 +343,7 @@ proc chooseBoardColors {{choice -1}} {
     label $f.bdark -image bp40 -background [lindex $list 2]
     label $f.wlite -image wp40 -background [lindex $list 1]
     label $f.wdark -image wp40 -background [lindex $list 2]
-    button $f.select -text [expr $count + 1] -pady 2 \
+    button $f.select -text [expr {$count + 1}] -pady 2 \
       -command "chooseBoardColors $count"
     foreach i {blite bdark wlite wdark} {
       bind $f.$i <1> "chooseBoardColors $count"
@@ -314,6 +360,8 @@ proc chooseBoardColors {{choice -1}} {
     foreach i {lite dark highcolor bestcolor} {
       set \$i \$newColors(\$i)
     }
+    set borderwidth \$newborderwidth
+    ::board::border .board \$borderwidth
     ::board::recolor .board
     recolorPieces
     grab release $w
@@ -381,10 +429,10 @@ proc setupBoard {} {
   set sbd .setup.bd
   for {set i 0} {$i < 64} {incr i} {
     label $sbd.$i -image e$boardSize
-    set rank [expr 7 - int ($i / 8)]
-    set fyle [expr $i % 8 ]
+    set rank [expr {7 - int ($i / 8)} ]
+    set fyle [expr {$i % 8} ]
     grid $sbd.$i -row $rank -column $fyle -sticky nesw
-    if [expr ($fyle % 2) == ($rank % 2)] {
+    if {[expr {($fyle % 2) == ($rank % 2)} ]} {
       $sbd.$i configure -background $lite
     } else {
       $sbd.$i configure -background $dark
@@ -477,7 +525,7 @@ proc setupBoard {} {
       tk_messageBox -icon info -type ok -title "Scid" -message $err
     } else {
       destroy .setup
-      updateBoardAndPgn
+      updateBoard -pgn
     }
   }
   button $sr.b2.cancel -textvar ::tr(Cancel) -command {
@@ -693,7 +741,7 @@ button .tb.cut -image tb_cut -command gameClear
 button .tb.copy -image tb_copy \
   -command {catch {sc_clipbase copy}; updateBoard}
 button .tb.paste -image tb_paste \
-  -command {catch {sc_clipbase paste}; updateBoardAndPgn}
+  -command {catch {sc_clipbase paste}; updateBoard -pgn}
 frame .tb.space2 -width 12
 button .tb.gprev -image tb_gprev -command {gameLoadNextPrev previous}
 button .tb.gnext -image tb_gnext -command {gameLoadNextPrev next}
@@ -719,7 +767,7 @@ foreach i {new open save close finder bkm cut copy paste gprev gnext \
              switcher glist pgn tmt maint eco tree crosst engine help} {
   .tb.$i configure -relief flat -border 1 -highlightthickness 0 -anchor n \
     -takefocus 0
-  bind .tb.$i <Any-Enter> "+.tb.$i configure -relief raised"
+  bind .tb.$i <Any-Enter> "+.tb.$i configure -relief groove"
   bind .tb.$i <Any-Leave> "+.tb.$i configure -relief flat; statusBarRestore %W; break"
 }
 
@@ -896,10 +944,10 @@ HZKFJAhk27qmqMq2rlGaJ43a46xslJR7AIMWIORzRCaXzKahAAA7
 }
 
 frame .button -relief raised -border 1
-button .button.start -image tb_start -command "sc_move start; updateBoard"
-button .button.back -image tb_prev -command "sc_move back; updateBoard"
-button .button.forward -image tb_next -command "sc_move forward; updateBoard"
-button .button.end -image tb_end -command "sc_move end; updateBoard"
+button .button.start -image tb_start -command "sc_move start; updateBoard -animate"
+button .button.back -image tb_prev -command "sc_move back; updateBoard -animate"
+button .button.forward -image tb_next -command "sc_move forward; updateBoard -animate"
+button .button.end -image tb_end -command "sc_move end; updateBoard -animate"
 frame .button.space -width 15
 
 # The go-into-variation button is a menubutton:
@@ -908,9 +956,9 @@ menubutton .button.intoVar -image tb_invar -menu .button.intoVar.menu \
 menu .button.intoVar.menu -tearoff 0 -font font_Regular
 
 button .button.exitVar -image tb_outvar \
-  -command {sc_var exit; updateBoard}
+  -command {sc_var exit; updateBoard -animate}
 button .button.addVar -image tb_addvar \
-  -command {sc_var create; updateBoardAndPgn}
+  -command {sc_var create; updateBoard -pgn -animate}
 frame .button.space2 -width 15
 
 image create photo tb_flip -data {
@@ -923,6 +971,12 @@ image create photo tb_coords -data {
 R0lGODdhFAAUAKEAANnZ2QAAANDAoKCAUCwAAAAAFAAUAAACR4QRFsItA+FJyrUoUdjIMjwc
 4uKB4gRC1oSmq9aCLxJjM4Wkw11H70YJ6GYjoPF4SiqXTEVTwWE9nZPoEjh6BrPaBA47VRYA
 ADs=
+}
+
+image create photo tb_stm -data {
+R0lGODlhFAAUAMIAANDAoKCAUAAAAP///////////////////yH5BAEKAAQALAAAAAAUABQA
+AANHSLHMQjDKRp+8tNkbs+OTF2ygOIKdSHJA67qPIM/Wa8dDntc2TAi6HaTnAwZ5RNxxSAQo
+dchejCZjJlFWKfZHpW2/4LAYmwAAOw==
 }
 
 image create photo tb_trial -data {
@@ -948,34 +1002,40 @@ proc ::board::new {w {psize 40}} {
   if {[winfo exists $w]} { return }
 
   set ::board::_size($w) $psize
+  set ::board::_border($w) $::borderwidth
   set ::board::_coords($w) 1
   set ::board::_flip($w) 0
   set ::board::_data($w) [sc_pos board]
-  set ::board::_marks($w) 0
+  set ::board::_stm($w) 1
+  set ::board::_showMarks($w) 0
+  set ::board::_mark($w) {}
+  set ::board::_arrows($w) {}
   set ::board::_drag($w) -1
-  set bsize [expr {8 * ($psize+2) - 1}]
+  set bsize [expr {8 * ($psize+2)} + $::board::_border($w)]
   frame $w
-  canvas $w.bd -width $bsize -height $bsize -cursor crosshair
+  canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background black
   grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
   set bd $w.bd
+  set border $::board::_border($w)
 
   # Create empty board:
   for {set i 0} {$i < 64} {incr i} {
-    set xi [expr $i % 8]
-    set yi [expr int($i/8)]
-    set x1 [expr $xi * ($psize+2)]
-    set y1 [expr (7 - $yi) * ($psize+2)]
-    set x2 [expr $x1 + $psize+1]
-    set y2 [expr $y1 + $psize+1]
+    set xi [expr {$i % 8} ]
+    set yi [expr {int($i/8)} ]
+    set x1 [expr {$xi * ($psize+2) + $border + 1} ]
+    set y1 [expr {(7 - $yi) * ($psize+2) + $border + 1} ]
+    set x2 [expr {$x1 + $psize+1 - $border} ]
+    set y2 [expr {$y1 + $psize+1 - $border} ]
     $bd create rectangle $x1 $y1 $x2 $y2 -tag sq$i
+    set ::board::_mark($w,$i) {}
     ::board::colorSquare $w $i
   }
 
   # Set up coordinate labels:
   for {set i 1} {$i <= 8} {incr i} {
-    label $w.lrank$i -text [expr 9 - $i]
+    label $w.lrank$i -text [expr {9 - $i}]
     grid $w.lrank$i -row $i -column 0 -sticky e
-    label $w.rrank$i -text [expr 9 - $i]
+    label $w.rrank$i -text [expr {9 - $i}]
     grid $w.rrank$i -row $i -column 9 -sticky w
   }
   foreach i {1 2 3 4 5 6 7 8} file {a b c d e f g h} {
@@ -984,7 +1044,20 @@ proc ::board::new {w {psize 40}} {
     label $w.bfile$file -text $file
     grid $w.bfile$file -row 9 -column $i -sticky n
   }
+
+  # Set up side-to-move icons:
+  frame $w.stmgap -width 3
+  frame $w.stm
+  frame $w.wtm -background white -relief solid -borderwidth 1
+  frame $w.btm -background black -relief solid -borderwidth 1
+  grid $w.stmgap -row 1 -column 10
+  grid $w.stm -row 4 -column 11 -padx 2
+  grid $w.wtm -row 8 -column 11
+  grid $w.btm -row 1 -column 11
+
+  ::board::stm $w
   ::board::coords $w
+  ::board::resize $w redraw
   ::board::update $w
 }
 
@@ -995,8 +1068,8 @@ proc ::board::new {w {psize 40}} {
 #   a light or dark square.
 #
 proc ::board::defaultColor {sq} {
-  set x [expr $sq % 8]
-  set y [expr int($sq/8)]
+  set x [expr {$sq % 8}]
+  set y [expr {int($sq/8)}]
   if {($x%2) == ($y%2)} { return $::dark }
   return $::lite
 }
@@ -1011,12 +1084,14 @@ proc ::board::size {w} {
 # ::board::resize
 #   Resizes the board. Takes a numeric piece size (which should
 #   be in the global boardSizes list variable), or "-1" or "+1".
+#   If the size argument is "redraw", the board is redrawn.
 #   Returns the new size of the board.
 #
 proc ::board::resize {w psize} {
   global boardSizes
   set oldsize $::board::_size($w)
   if {$psize == $oldsize} { return $oldsize }
+  if {$psize == "redraw"} { set psize $oldsize }
   if {$psize == "-1"} {
     set index [lsearch -exact $boardSizes $oldsize]
     if {$index == 0} { return $oldsize }
@@ -1032,21 +1107,49 @@ proc ::board::resize {w psize} {
   # Verify that we have a valid size:
   if {[lsearch -exact $boardSizes $psize] < 0} { return $oldsize }
 
-  set bsize [expr ($psize+2) * 8 - 1]
+  set border $::board::_border($w)
+  set bsize [expr {($psize+2) * 8 + $border} ]
   $w.bd configure -width $bsize -height $bsize
   set ::board::_size($w) $psize
 
   # Resize each square:
   for {set i 0} {$i < 64} {incr i} {
-    set c [$w.bd coords sq$i]
-    set x1 [expr int([lindex $c 0] * ($psize+2) / ($oldsize+2))]
-    set y1 [expr int([lindex $c 1] * ($psize+2) / ($oldsize+2))]
-    set x2 [expr $x1 + $psize +1]
-    set y2 [expr $y1 + $psize +1]
+    set xi [expr {$i % 8}]
+    set yi [expr {int($i/8)}]
+    set x1 [expr {$xi * ($psize+2) + $border + 1}]
+    set y1 [expr {(7 - $yi) * ($psize+2) + $border + 1}]
+    set x2 [expr {$x1 + $psize +1 - $border}]
+    set y2 [expr {$y1 + $psize +1 - $border}]
+    # Windows seems to draw the squares off by one:
+    if {$::windowsOS} {
+      incr x1; incr y1; incr x2; incr y2
+    }
     $w.bd coords sq$i $x1 $y1 $x2 $y2
   }
+
+  # Resize the side-to-move icons:
+  set stmsize [expr {round($psize / 4) + 5}]
+  $w.stm configure -width $stmsize
+  $w.wtm configure -height $stmsize -width $stmsize
+  $w.btm configure -height $stmsize -width $stmsize
+
   ::board::update $w
   return $psize
+}
+
+# ::board::border
+#   Get or set the border width.
+#   If the optional argument is missing or the empty string, returns
+#   the width of the board.
+#   Otherwise, the board sqyare borders are set to the specified width.
+#
+proc ::board::border {w {border ""}} {
+  if {$border == ""} {
+    return $::board::_border($w)
+  } else {
+    set ::board::_border($w) $border
+    ::board::resize $w redraw
+  }
 }
 
 # ::board::getSquare
@@ -1058,16 +1161,16 @@ proc ::board::getSquare {w x y} {
   if {[winfo containing $x $y] != "$w.bd"} {
     return -1
   }
-  set x [expr $x - [winfo rootx $w.bd]]
-  set y [expr $y - [winfo rooty $w.bd]]
+  set x [expr {$x - [winfo rootx $w.bd]}]
+  set y [expr {$y - [winfo rooty $w.bd]}]
   set psize $::board::_size($w)
-  set x [expr int($x / ($psize+2))]
-  set y [expr int($y / ($psize+2))]
+  set x [expr {int($x / ($psize+2))}]
+  set y [expr {int($y / ($psize+2))}]
   if {$x < 0  ||  $y < 0  ||  $x > 7  ||  $y > 7} {
     set sq -1
   } else {
-    set sq [expr (7-$y)*8 + $x]
-    if {$::board::_flip($w)} { set sq [expr 63 - $sq] }
+    set sq [expr {(7-$y)*8 + $x}]
+    if {$::board::_flip($w)} { set sq [expr {63 - $sq}] }
   }
   return $sq
 }
@@ -1076,7 +1179,65 @@ proc ::board::getSquare {w x y} {
 #   Turns on/off the showing of marks (colored squares).
 #
 proc ::board::showMarks {w value} {
-  set ::board::_marks($w) $value
+  set ::board::_showMarks($w) $value
+}
+
+# ::board::clearMarks
+#   Clears all marked square information for the board.
+#
+proc ::board::clearMarks {w} {
+  for {set i 0} {$i < 64} {incr i} {
+    set ::board::_mark($w,$i) {}
+    ::board::colorSquare $w $i
+  }
+}
+
+# ::board::addMark
+#   Marks the specified square with the specified color.
+#
+proc ::board::addMark {w sq color} {
+  set ::board::_mark($w,$sq) $color
+  ::board::colorSquare $w $sq $color
+}
+
+# ::board::clearArrows
+#   Removes all arrow information for the board.
+#
+proc ::board::clearArrows {w} {
+  set ::board::_arrows($w) {}
+}
+
+# ::board::drawArrows
+#   Draws all arrows for the board.
+#
+proc ::board::drawArrows {w} {
+  foreach arrow $::board::_arrows($w) {
+    set from [lindex $arrow 0]
+    set to [lindex $arrow 1]
+    set color [lindex $arrow 2]
+    set fromXY [::board::midSquare $w $from]
+    set toXY [::board::midSquare $w $to]
+    catch {$w.bd create line [lindex $fromXY 0] [lindex $fromXY 1] \
+             [lindex $toXY 0] [lindex $toXY 1] -fill $color \
+             -arrow last -width 2 -tag arrows}
+    }
+  $w.bd raise arrows
+}
+
+# ::board::addArrow
+#   Draws an arrow on the board, from one square to another,
+#   in the specified color.
+#
+proc ::board::addArrow {w from to color} {
+  if {$from < 0  ||  $from > 63} { return }
+  if {$to < 0  ||  $to > 63} { return }
+  lappend ::board::_arrows($w) [list $from $to $color]
+  set fromXY [::board::midSquare $w $from]
+  set toXY [::board::midSquare $w $to]
+  catch {$w.bd create line [lindex $fromXY 0] [lindex $fromXY 1] \
+           [lindex $toXY 0] [lindex $toXY 1] -fill $color \
+           -arrow last -width 2 -tag arrows}
+  $w.bd raise arrows
 }
 
 # ::board::recolor
@@ -1094,15 +1255,19 @@ proc ::board::recolor {w} {
 #   color for the square (light or dark) is used.
 #
 proc ::board::colorSquare {w i {color ""}} {
+  if {$i < 0  ||  $i > 63} { return }
   if {$color != ""} {
     $w.bd itemconfigure sq$i -outline $color -fill $color
     return
   }
   set color [::board::defaultColor $i]
   $w.bd itemconfigure sq$i -outline $color -fill $color
-  if {$::board::_marks($w)  &&  [info exists ::markSquares($i)]} {
-    set color $::markSquares($i)
-    catch {$w.bd itemconfigure sq$i -outline $color -fill $color}
+
+  if {$::board::_showMarks($w)} {
+    set color $::board::_mark($w,$i)
+    if {$color != ""} {
+      catch {$w.bd itemconfigure sq$i -outline $color -fill $color}
+    }
   }
 }
 
@@ -1112,8 +1277,8 @@ proc ::board::colorSquare {w i {color ""}} {
 #
 proc ::board::midSquare {w sq} {
   set c [$w.bd coords sq$sq]
-  set x [expr ([lindex $c 0] + [lindex $c 2]) / 2]
-  set y [expr ([lindex $c 1] + [lindex $c 3]) / 2]
+  set x [expr {([lindex $c 0] + [lindex $c 2]) / 2} ]
+  set y [expr {([lindex $c 1] + [lindex $c 3]) / 2} ]
   return [list $x $y]
 }
 
@@ -1147,25 +1312,10 @@ proc ::board::setDragSquare {w sq} {
 proc ::board::dragPiece {w x y} {
   set sq $::board::_drag($w)
   if {$sq < 0} { return }
-  set x [expr $x - [winfo rootx $w.bd]]
-  set y [expr $y - [winfo rooty $w.bd]]
+  set x [expr {$x - [winfo rootx $w.bd]} ]
+  set y [expr {$y - [winfo rooty $w.bd]} ]
   $w.bd coords p$sq $x $y
   $w.bd raise p$sq
-}
-
-# ::board::arrow
-#   Draws an arrow on the board, from one square to another,
-#   in the specified color.
-#
-proc ::board::arrow {w from to color} {
-  if {$from < 0  ||  $from > 63} { return }
-  if {$to < 0  ||  $to > 63} { return }
-  set fromXY [::board::midSquare $w $from]
-  set toXY [::board::midSquare $w $to]
-  catch {$w.bd create line [lindex $fromXY 0] [lindex $fromXY 1] \
-           [lindex $toXY 0] [lindex $toXY 1] -fill $color \
-           -arrow last -width 2 -tag arrows}
-  $w.bd raise arrows
 }
 
 # ::board::bind
@@ -1198,13 +1348,40 @@ proc ::board::drawPiece {w sq piece} {
   $w.bd create image $xc $yc -image $images($piece)$psize -tag p$sq
 }
 
+# ::board::clearText
+#   Remove all text annotations from the board.
+#
+proc ::board::clearText {w} {
+  $w.bd delete texts
+}
+
+# ::board::drawText
+#   Draws the specified text on the specified square.
+#   Additional arguments are treated as canvas text parameters.
+#
+proc ::board::drawText {w sq text color args} {
+    set midpoint [::board::midSquare $w $sq]
+    set xc [lindex $midpoint 0]
+    set yc [lindex $midpoint 1]
+    $w.bd delete text$sq
+    $w.bd create text $xc $yc -font font_Bold -fill $color \
+        -text $text -tag [list texts text$sq]
+    if {[llength $args] > 0} {
+      catch {eval $w.bd itemconfigure text$sq $args}
+    }
+}
+
 # ::board::update
 #   Update the board given a 64-character board string as returned
 #   by the "sc_pos board" command. If the board string is empty, it
 #   defaults to the previous value for this board.
+#   If the optional paramater "animate" is 1 and the changes from
+#   the previous board state appear to be a valid chess move, the
+#   move is animated.
 #
-proc ::board::update {w {board ""}} {
+proc ::board::update {w {board ""} {animate 0}} {
   global images
+  set oldboard $::board::_data($w)
   if {$board == ""} {
     set board $::board::_data($w)
   } else {
@@ -1213,9 +1390,13 @@ proc ::board::update {w {board ""}} {
   set psize $::board::_size($w)
   set flip $::board::_flip($w)
 
+  # Cancel any current animation:
+  after cancel "::board::_animate $w"
+
   # Remove all arrows from the board:
   $w.bd delete arrows
 
+  # Draw each square:
   for {set sq 0} { $sq < 64 } { incr sq } {
     set piece [string index $board $sq]
     # Compute the XY coordinates for the centre of the square:
@@ -1226,19 +1407,40 @@ proc ::board::update {w {board ""}} {
     $w.bd delete p$sq
     $w.bd create image $xc $yc -image $images($piece)$psize -tag p$sq
   }
+
+  # Update side-to-move icon:
+  grid remove $w.wtm $w.btm
+  if {$::board::_stm($w)} {
+    set side [string index $::board::_data($w) 65]
+    if {$side == "w"} { grid configure $w.wtm }
+    if {$side == "b"} { grid configure $w.btm }
+  }
+
+  # Redraw arrows if required:
+  if {$::board::_showMarks($w)} {
+    ::board::drawArrows $w
+  }
+
+  # Animate board changes if requested:
+  if {$animate  &&  $board != $oldboard} {
+    ::board::animate $w $oldboard $board
+  }
 }
 
 proc ::board::isFlipped {w} {
   return $::board::_flip($w)
 }
 
+# ::board::flip
+#   Rotate the board 180 degrees.
+#
 proc ::board::flip {w} {
   if {! [info exists ::board::_flip($w)]} { return }
-  set flip [expr 1 - $::board::_flip($w)]
+  set flip [expr {1 - $::board::_flip($w)} ]
   set ::board::_flip($w) $flip
 
   for {set i 0} {$i < 64} {incr i} {
-    set swap [expr 63 - $i]
+    set swap [expr {63 - $i} ]
     set coords [$w.bd coords sq$swap]
     set x1($i) [lindex $coords 0]
     set y1($i) [lindex $coords 1]
@@ -1251,7 +1453,7 @@ proc ::board::flip {w} {
 
   # Change coordinate labels:
   for {set i 1} {$i <= 8} {incr i} {
-    set value [expr 9 - [$w.lrank$i cget -text]]
+    set value [expr {9 - [$w.lrank$i cget -text]} ]
     $w.lrank$i configure -text $value
     $w.rrank$i configure -text $value
   }
@@ -1259,18 +1461,40 @@ proc ::board::flip {w} {
     foreach file {a b c d e f g h} newvalue {h g f e d c b a} {
       $w.tfile$file configure -text $newvalue
       $w.bfile$file configure -text $newvalue
+      grid configure $w.wtm -row 1
+      grid configure $w.btm -row 8
     }
   } else {
     foreach file {a b c d e f g h} {
       $w.tfile$file configure -text $file
       $w.bfile$file configure -text $file
+      grid configure $w.wtm -row 8
+      grid configure $w.btm -row 1
     }
   }
   ::board::update $w
 }
 
+# ::board::stm
+#   Add or remove the side-to-move icon.
+#
+proc ::board::stm {w} {
+  set stm [expr {1 - $::board::_stm($w)} ]
+  set ::board::_stm($w) $stm
+  if {$stm} {
+    grid configure $w.stmgap
+    grid configure $w.stm
+  } else {
+    grid remove $w.stmgap $w.stm $w.wtm $w.btm
+  }
+  ::board::update $w
+}
+
+# ::board::coords
+#   Add or remove coordinates around the edge of the board.
+#
 proc ::board::coords {w} {
-  set coords [expr 1 - $::board::_coords($w)]
+  set coords [expr {1 - $::board::_coords($w)} ]
   set ::board::_coords($w) $coords
   if {$coords} {
     for {set i 1} {$i <= 8} {incr i} {
@@ -1293,13 +1517,205 @@ proc ::board::coords {w} {
   }
 }
 
+# ::board::animate
+#   Check for board changes that appear to be a valid chess move,
+#   and start animating the move if applicable.
+#
+proc ::board::animate {w oldboard newboard} {
+  global animateDelay
+  if {$animateDelay <= 0} { return }
+
+  # Find which squares differ between the old and new boards:
+  set diffcount 0
+  set difflist [list]
+  for {set i 0} {$i < 64} {incr i} {
+    if {[string index $oldboard $i] != [string index $newboard $i]} {
+      incr diffcount
+      lappend difflist $i
+    }
+  }
+
+  # Check the number of differences could mean a valid move:
+  if {$diffcount < 2  ||  $diffcount > 4} { return }
+
+  for {set i 0} {$i < $diffcount} {incr i} {
+    set sq($i) [lindex $difflist $i]
+    set old($i) [string index $oldboard $sq($i)]
+    set new($i) [string index $newboard $sq($i)]
+  }
+
+  set from -1
+  set to -1
+  set captured -1
+  set capturedPiece "."
+
+  if {$diffcount == 4} {
+    # Check for making/unmaking a castling move:
+    set castlingList [list [sq e1] [sq g1] [sq h1] [sq f1] \
+                           [sq e8] [sq g8] [sq h8] [sq f8] \
+                           [sq e1] [sq c1] [sq a1] [sq d1] \
+                           [sq e8] [sq c8] [sq a8] [sq d8]]
+
+    foreach {kfrom kto rfrom rto} $castlingList {
+      if {[lsort $difflist] == [lsort [list $kfrom $kto $rfrom $rto]]} {
+        if {[string tolower [string index $oldboard $kfrom]] == "k"  &&
+            [string tolower [string index $oldboard $rfrom]] == "r"  &&
+            [string tolower [string index $newboard $kto]] == "k"  &&
+            [string tolower [string index $newboard $rto]] == "r"} {
+          # A castling move animation.
+          # Move the rook back to initial square until animation is complete:
+          # TODO: It may look nicer if the rook was animated as well...
+          eval $w.bd coords p$rto [::board::midSquare $w $rfrom]
+          set from $kfrom
+          set to $kto
+        } elseif {[string tolower [string index $newboard $kfrom]] == "k"  &&
+                  [string tolower [string index $newboard $rfrom]] == "r"  &&
+                  [string tolower [string index $oldboard $kto]] == "k"  &&
+                  [string tolower [string index $oldboard $rto]] == "r"} {
+          # An undo-castling animation. No need to move the rook.
+          set from $kto
+          set to $kfrom
+        }
+      }
+    }
+  }
+
+  if {$diffcount == 3} {
+    # Three squares are different, so check for an En Passant capture:
+    foreach i {0 1 2} {
+      foreach j {0 1 2} {
+        foreach k {0 1 2} {
+          if {$i == $j  ||  $i == $k  ||  $j == $k} { continue }
+          # Check for an en passant capture from i to j with the enemy
+          # pawn on k:
+          if {$old($i) == $new($j) && $old($j) == "." && $new($k) == "."  &&
+                (($old($i) == "p" && $old($k) == "P") ||
+                 ($old($i) == "P" && $old($k) == "p"))} {
+            set from $sq($i)
+            set to $sq($j)
+          }
+          # Check for undoing an en-passant capture from j to i with
+          # the enemy pawn on k:
+          if {$old($i) == $new($j) && $old($k) == "." && $new($i) == "."  &&
+                (($old($i) == "p" && $new($k) == "P") ||
+                 ($old($i) == "P" && $new($k) == "p"))} {
+            set from $sq($i)
+            set to $sq($j)
+            set captured $sq($k)
+            set capturedPiece $new($k)
+          }
+        }
+      }
+    }
+  }
+
+  if {$diffcount == 2} {
+    # Check for a regular move or capture: one old square should have the
+    # same (non-empty) piece as the other new square, and at least one
+    # of the old or new squares should be empty.
+
+    if {$old(0) != "." && $old(1) != "." && $new(0) != "." && $new(1) != "."} {
+      return
+    }
+
+    foreach i {0 1} {
+      foreach j {0 1} {
+        if {$i == $j} { continue }
+        if {$old($i) == $new($j)  &&  $old($i) != "."} {
+          set from $sq($i)
+          set to $sq($j)
+          set captured $sq($j)
+          set capturedPiece $old($j)
+        }
+
+        # Check for a (white or black) pawn promotion from i to j:
+        if {($old($i) == "P"  &&  [string is upper $new($j)]  &&
+             $sq($j) >= [sq a8]  &&  $sq($j) <= [sq h8])  ||
+            ($old($i) == "p"  &&  [string is lower $new($j)]  &&
+             $sq($j) >= [sq a1]  &&  $sq($j) <= [sq h1])} {
+          set from $sq($i)
+          set to $sq($j)
+        }
+
+        # Check for undoing a pawn promotion from j to i:
+        if {($new($j) == "P"  &&  [string is upper $old($i)]  &&
+             $sq($i) >= [sq a8]  &&  $sq($i) <= [sq h8])  ||
+            ($new($j) == "p"  &&  [string is lower $old($i)]  &&
+             $sq($i) >= [sq a1]  &&  $sq($i) <= [sq h1])} {
+          set from $sq($i)
+          set to $sq($j)
+          set captured $sq($j)
+          set capturedPiece $old($j)
+        }
+      }
+    }
+  }
+
+  # Check that we found a valid-looking move to animate:
+  if {$from < 0  ||  $to < 0} { return }
+
+  # Redraw the captured piece during the animation if necessary:
+  if {$capturedPiece != "."  &&  $captured >= 0} {
+    ::board::drawPiece $w $from $capturedPiece
+    eval $w.bd coords p$from [::board::midSquare $w $captured]
+  }
+
+  # Move the animated piece back to its starting point:
+  eval $w.bd coords p$to [::board::midSquare $w $from]
+  $w.bd raise p$to
+
+  # Remove side-to-move icon while animating:
+  grid remove $w.wtm $w.btm
+
+  # Start the animation:
+  set start [clock clicks -milli]
+  set ::board::_animate($w,start) $start
+  set ::board::_animate($w,end) [expr {$start + $::animateDelay} ]
+  set ::board::_animate($w,from) $from
+  set ::board::_animate($w,to) $to
+  ::board::_animate $w
+}
+
+# ::board::_animate
+#   Internal procedure for updating a board move animation.
+#
+proc ::board::_animate {w} {
+  if {! [winfo exists $w]} { return }
+  set from $::board::_animate($w,from)
+  set to $::board::_animate($w,to)
+  set start $::board::_animate($w,start)
+  set end $::board::_animate($w,end)
+  set now [clock clicks -milli]
+  if {$now > $end} {
+    ::board::update $w
+    return
+  }
+
+  # Compute where the moving piece should be displayed and move it:
+  set ratio [expr {double($now - $start) / double($end - $start)} ]
+  set fromMid [::board::midSquare $w $from]
+  set toMid [::board::midSquare $w $to]
+  set fromX [lindex $fromMid 0]
+  set fromY [lindex $fromMid 1]
+  set toX [lindex $toMid 0]
+  set toY [lindex $toMid 1]
+  set x [expr {$fromX + round(($toX - $fromX) * $ratio)} ]
+  set y [expr {$fromY + round(($toY - $fromY) * $ratio)} ]
+  $w.bd coords p$to $x $y
+  $w.bd raise p$to
+
+  # Schedule another animation update in a few milliseconds:
+  after 5 "::board::_animate $w"
+}
+
+
 proc toggleRotateBoard {} {
   ::board::flip .board
 }
 
 proc toggleCoords {} {
   global boardCoords
-  set boardCoords [expr 1 - $boardCoords]
+  set boardCoords [expr {1 - $boardCoords} ]
   ::board::coords .board
 }
 
@@ -1307,9 +1723,16 @@ frame .button.space3 -width 15
 button .button.flip -image tb_flip -takefocus 0 \
   -command "::board::flip .board"
 
-button .button.coords -image tb_coords -takefocus 0 \
-  -command toggleCoords
+button .button.coords -image tb_coords -takefocus 0 -command toggleCoords
 bind . <KeyPress-0> toggleCoords
+
+button .button.stm -image tb_stm -takefocus 0 -command toggleSTM
+
+proc toggleSTM {} {
+  global boardSTM
+  set boardSTM [expr {1 - $boardSTM} ]
+  ::board::stm .board
+}
 
 image create photo autoplay_off -data {
 R0lGODdhFAAUAKEAANnZ2QAAAFFR+wAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
@@ -1325,27 +1748,30 @@ button .button.autoplay -image autoplay_off -command toggleAutoplay
 button .button.trial -image tb_trial -command {setTrialMode toggle}
 
 foreach i {start back forward end intoVar exitVar addVar autoplay \
-             flip coords trial} {
+             flip coords stm trial} {
   .button.$i configure -relief flat -border 1 -highlightthickness 0 \
     -anchor n -takefocus 0
-  bind .button.$i <Any-Enter> "+.button.$i configure -relief raised"
+  bind .button.$i <Any-Enter> "+.button.$i configure -relief groove"
   bind .button.$i <Any-Leave> "+.button.$i configure -relief flat; statusBarRestore %W; break"
 }
 
 pack .button.start .button.back .button.forward .button.end \
   .button.space .button.intoVar .button.exitVar .button.addVar .button.space2 \
   .button.autoplay .button.trial .button.space3 .button.flip .button.coords \
-  -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+  .button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
 
 ############################################################
 ### The board:
 
 ::board::new .board $boardSize
-#.board configure -relief solid -border 1
+#.board.bd configure -relief solid -border 2
 ::board::showMarks .board 1
 if {$boardCoords} {
   ::board::coords .board
+}
+if {$boardSTM} {
+  ::board::stm .board
 }
 
 # .gameInfo is the game information widget:
@@ -1423,7 +1849,7 @@ proc setBoard {board boardStr psize {rotated 0}} {
   global images
   for {set i 0} { $i < 64 } { incr i } {
     if {$rotated > 0} {
-      set piece [string index $boardStr [expr 63 - $i]]
+      set piece [string index $boardStr [expr {63 - $i}]]
     } else {
       set piece [ string index $boardStr $i ]
     }
@@ -1457,11 +1883,11 @@ proc updateVarMenus {} {
     } else {
       .button.intoVar.menu add command -label $str -command $commandStr
     }
-    set commandStr "sc_var delete $i; updateBoardAndPgn"
+    set commandStr "sc_var delete $i; updateBoard -pgn"
     .menu.edit.del add command -label $str -command $commandStr
-    set commandStr "sc_var first $i; updateBoardAndPgn"
+    set commandStr "sc_var first $i; updateBoard -pgn"
     .menu.edit.first add command -label $str -command $commandStr
-    set commandStr "sc_var promote $i; updateBoardAndPgn"
+    set commandStr "sc_var promote $i; updateBoard -pgn"
     .menu.edit.main add command -label $str -command $commandStr \
       -state $state
   }
@@ -1482,22 +1908,33 @@ bind . <KeyPress-z> {.button.exitVar invoke}
 # updateBoardAndPgn:
 #    Calls updateBoard() with the parameter pgnNeedsUpdate set to true
 #    so the PGN representation is regenerated.
-proc updateBoardAndPgn {{bd .board}} { updateBoard $bd 1 }
+proc updateBoardAndPgn {} { updateBoard -pgn }
 
 # updateBoard:
 #    Updates the main board. Also updates the navigation buttons, disabling
 #    those that have no effect at this point in the game.
 #    Also ensure all menu settings are up to date.
-#    If the optional parameter pgnNeedsUpdate is true, the PGN text
-#    is also regenerated.
+#    If a parameter "-pgn" is specified, the PGN text is also regenerated.
+#    If a parameter "-animate" is specified, board changes are animated.
 #
-proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
+proc updateBoard {args} {
   global boardSize gameInfo
+  set pgnNeedsUpdate 0
+  set animate 0
+  foreach arg $args {
+   if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
+   if {! [string compare $arg "-animate"]} { set animate 1 }
+  }
+
   ::board::resize .board $boardSize
-  ::board::update .board [sc_pos board]
+  ::board::update .board [sc_pos board] $animate
+
   set cmt [sc_pos getComment]
   set cmtOrig $cmt
-  resetMarkSquares
+
+  ::board::clearMarks .board
+  ::board::clearArrows .board
+
   if {$gameInfo(showMarks)} {
     while {1} {
       set idx [string first "\[%mark " $cmt]
@@ -1507,7 +1944,7 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
       set sq [string range $cmt 0 1]
       set cmt [string trim [string range $cmt 2 end]]
       set end [string first "\]" $cmt]
-      set color [string trim [string range $cmt 0 [expr $end - 1]]]
+      set color [string trim [string range $cmt 0 [expr {$end - 1}]]]
       if {$color == ""} { set color red }
       markSquare $sq $color
     }
@@ -1522,11 +1959,12 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
       set toSq [string range $cmt 0 1]
       set cmt [string trim [string range $cmt 2 end]]
       set end [string first "\]" $cmt]
-      set color [string trim [string range $cmt 0 [expr $end - 1]]]
+      set color [string trim [string range $cmt 0 [expr {$end - 1}]]]
       if {$color == ""} { set color red }
       arrowSquare $fromSq $toSq $color
     }
   }
+
   # Update the status of each navigation button:
   if {[sc_pos isAt start]} {
     .button.start configure -state disabled
@@ -1548,7 +1986,7 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
   } else {
     .menu.edit entryconfig [tr EditAdd] -state normal
     .button.addVar configure -state normal
-    bind . <Control-a> {sc_var create; updateBoardAndPgn}
+    bind . <Control-a> {sc_var create; updateBoard -pgn}
   }
   if {[sc_var count] == 0} {
     .button.intoVar configure -state disabled
@@ -1612,7 +2050,7 @@ label .photoB -background white -image photoB -anchor ne
 proc readPhotoFile {fname} {
   set oldcount [array size ::photo]
   catch {source $fname}
-  set newcount [expr [array size ::photo] - $oldcount]
+  set newcount [expr {[array size ::photo] - $oldcount}]
   if {$newcount > 0} {
     addSplash "Found $newcount player photos in [file tail $fname]"
   }
@@ -1629,7 +2067,7 @@ foreach photofile [glob -nocomplain [file join $scidUserDir "*.spf"]] {
   readPhotoFile $photofile
 }
 
-#Read players.img for compatibility with older versions:
+# Read players.img for compatibility with older versions:
 readPhotoFile [file join $scidUserDir players.img]
 
 set photo(oldWhite) {}
@@ -1703,7 +2141,7 @@ proc getPromoPiece {} {
                 "" 0 "Queen" "Rook" "Bishop" "Knight"} answer]} {
     return 2
   }
-  return [expr $answer + 2]
+  return [expr {$answer + 2}]
 }
 
 # confirmReplaceMove:
@@ -1739,8 +2177,9 @@ proc addNullMove {} {
 #   Adds the move indicated by sq1 and sq2 if it is legal. If the move
 #   is a promotion, getPromoPiece will be called to get the promotion
 #   piece from the user.
+#   If the optional parameter is "-animate", the move will be animated.
 #
-proc addMove { sq1 sq2 } {
+proc addMove { sq1 sq2 {animate ""}} {
   global EMPTY
   set nullmove 0
   if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
@@ -1769,10 +2208,11 @@ proc addMove { sq1 sq2 } {
   if {$nullmove} {
     sc_move addSan null
   } else {
+    if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
     sc_move add $sq1 $sq2 $promo
   }
   moveEntry_Clear
-  updateBoardAndPgn
+  updateBoard -pgn $animate
   ::tree::doTraining
 }
 
@@ -1787,7 +2227,7 @@ proc highlightSquare {square} {
   if {$suggestMoves} {
     set bestSq [sc_pos bestSquare $square]
   }
-  if {[expr $bestSq != -1]} {
+  if {[expr {$bestSq != -1}]} {
     ::board::colorSquare .board $square $highcolor
     ::board::colorSquare .board $bestSq $bestcolor
   }
@@ -1797,14 +2237,8 @@ proc highlightSquare {square} {
 #    Removes all marked square colors.
 #
 proc resetMarkSquares {} {
-  global markSquares
-  foreach i [array names markSquares] {
-    unset markSquares($i)
-  }
-  ::board::recolor .board
+  ::board::clearMarks .board
 }
-
-array set markSquares {}
 
 # markSquare:
 #    Given a square in a1,h8, etc notation and a color, makes
@@ -1816,10 +2250,9 @@ proc markSquare {square color} {
   set rank [string index $square 1]
   if {! [info exists files($file)]} { return }
   if {$rank < 1  || $rank > 8} { return }
-  set rank [expr $rank - 1]
-  set sq [expr $files($file) + ($rank * 8)]
-  set ::markSquares($sq) $color
-  ::board::colorSquare .board $sq $color
+  set rank [expr {$rank - 1}]
+  set sq [expr {$files($file) + ($rank * 8)}]
+  ::board::addMark .board $sq $color
 }
 
 # arrowSquare:
@@ -1831,16 +2264,16 @@ proc arrowSquare {from to color} {
   set rank [string index $from 1]
   if {! [info exists files($file)]} { return }
   if {$rank < 1  || $rank > 8} { return }
-  set rank [expr $rank - 1]
-  set from [expr $files($file) + ($rank * 8)]
+  set rank [expr {$rank - 1}]
+  set from [expr {$files($file) + ($rank * 8)}]
 
   set file [string index $to 0]
   set rank [string index $to 1]
   if {! [info exists files($file)]} { return }
   if {$rank < 1  || $rank > 8} { return }
-  set rank [expr $rank - 1]
-  set to [expr $files($file) + ($rank * 8)]
-  ::board::arrow .board $from $to $color
+  set rank [expr {$rank - 1}]
+  set to [expr {$files($file) + ($rank * 8)}]
+  ::board::addArrow .board $from $to $color
 }
 
 # enterSquare:
@@ -1858,7 +2291,7 @@ proc enterSquare { square } {
     if {$suggestMoves} {
       set bestSq [sc_pos bestSquare $square]
     }
-    if [expr $bestSq != -1] {
+    if {[expr {$bestSq != -1}]} {
       ::board::colorSquare .board $square $bestcolor
       ::board::colorSquare .board $bestSq $bestcolor
     }
@@ -1900,7 +2333,7 @@ proc pressSquare { square } {
     ::board::setDragSquare .board -1
     ::board::colorSquare .board $selectedSq
     ::board::colorSquare .board $square
-    addMove $square $selectedSq
+    addMove $square $selectedSq -animate
     set selectedSq -1
     enterSquare $square
   }
@@ -1914,7 +2347,7 @@ proc pressSquare2 { square } {
   global selectedSq bestSq
   ::board::colorSquare .board $bestSq
   ::board::colorSquare .board $square
-  addMove $square $bestSq
+  addMove $square $bestSq -animate
   enterSquare $square
 }
 
@@ -1942,7 +2375,7 @@ proc releaseSquare { w x y } {
       set selectedSq -1
       ::board::colorSquare $w $bestSq
       ::board::colorSquare $w $square
-      addMove $square $bestSq
+      addMove $square $bestSq -animate
       enterSquare $square
     } else {
       # Current square is the square user pressed the button on,
@@ -2004,7 +2437,7 @@ proc backSquare {} {
   ::board::colorSquare .board $bestSq
   set selectedSq -1
   set bestSq -1
-  updateBoardAndPgn .board
+  updateBoard -pgn -animate
 }
 
 
@@ -2020,7 +2453,7 @@ trace variable tempdelay w {forceRegexp {^[0-9]*\.?[0-9]*$}}
 proc setAutoplayDelay {{askAnnotate 0}} {
   global autoplayDelay tempdelay autoplayResult
   set autoplayResult -1
-  set tempdelay [expr $autoplayDelay / 1000.0]
+  set tempdelay [expr {$autoplayDelay / 1000.0}]
   set w .apdialog
   toplevel $w
   wm title $w "Scid"
@@ -2061,7 +2494,7 @@ proc setAutoplayDelay {{askAnnotate 0}} {
   button $b.ok -text "OK" -command {
     grab release .apdialog
     if {$tempdelay < 0.1} { set tempdelay 0.1 }
-    set autoplayDelay [expr int($tempdelay * 1000)]
+    set autoplayDelay [expr {int($tempdelay * 1000)}]
     focus .
     grab release .apdialog
     destroy .apdialog
@@ -2106,7 +2539,7 @@ proc autoplay {} {
     if {![sc_pos isAt start]} { addAnalysisVariation }
   }
   sc_move forward
-  updateBoard .board
+  updateBoard -animate
   after $autoplayDelay autoplay
 }
 
@@ -2126,7 +2559,7 @@ set trialMode 0
 proc setTrialMode {mode} {
   global trialMode
   if {$mode == "toggle"} {
-    set mode [expr 1 - $trialMode]
+    set mode [expr {1 - $trialMode}]
   }
   if {$mode == $trialMode} { return }
   if {$mode == "update"} { set mode $trialMode }
@@ -2140,7 +2573,7 @@ proc setTrialMode {mode} {
     sc_game pop
     .button.trial configure -image tb_trial
   }
-  updateBoardAndPgn .board
+  updateBoard -pgn
 }
 
 ###

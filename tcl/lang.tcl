@@ -99,11 +99,15 @@ proc tr {tag {lang ""}} {
 }
 
 proc setLanguage {{lang ""}} {
-  global menuLabel menuUnder oldLang
+  global menuLabel menuUnder oldLang hasEncoding langEncoding
 
   if {$lang == ""} {set lang $::language}
 
   if {[catch {setLanguage_$lang} err]} { puts "Error: $err" }
+  if {$hasEncoding  &&  $langEncoding($lang) != ""} {
+      encoding system $langEncoding($lang)
+  }
+
 
   # If using Tk, translate all menus:
   if {! [catch {winfo exists .}]} { setLanguageMenus $lang }

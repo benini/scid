@@ -81,7 +81,7 @@ proc saveEpdWin {id} {
 proc epd_MoveToDeepestMatch {id} {
   if {! [winfo exists .epd$id]} { return }
   sc_move ply [sc_epd deepest $id]
-  updateBoard .board
+  updateBoard
   return
 }
 
@@ -191,12 +191,12 @@ proc newEpdWin {cmd {fname ""}} {
   $m add separator
   $m add command -label "Next position in file" \
     -accelerator "Ctrl+DownArrow" -underline 0 \
-    -command "sc_epd next $id; updateBoardAndPgn .board"
-  bind $w <Control-Down> "sc_epd next $id; updateBoardAndPgn .board; break"
+    -command "sc_epd next $id; updateBoard -pgn"
+  bind $w <Control-Down> "sc_epd next $id; updateBoard -pgn; break"
   $m add command -label "Previous position in file" \
     -accelerator "Ctrl+UpArrow" -underline 0 \
-    -command "sc_epd prev $id; updateBoardAndPgn .board"
-  bind $w <Control-Up> "sc_epd prev $id; updateBoardAndPgn .board; break"
+    -command "sc_epd prev $id; updateBoard -pgn"
+  bind $w <Control-Up> "sc_epd prev $id; updateBoard -pgn; break"
   $m add separator
   $m add command -label "Paste analysis" -accelerator "Ctrl+Shift+A" \
     -underline 6 -command "epd_pasteAnalysis $w.text"
@@ -254,8 +254,8 @@ proc epd_pasteAnalysis {textwidget} {
   if {! [winfo exists .analysisWin1]} { return }
   $textwidget insert insert "acd $analysis(depth1)\n"
   $textwidget insert insert "acn $analysis(nodes1)\n"
-  set ce [expr int($analysis(score1) * 100)]
-  if {[sc_pos side] == "black"} { set ce [expr 0 - $ce] }
+  set ce [expr {int($analysis(score1) * 100)} ]
+  if {[sc_pos side] == "black"} { set ce [expr {0 - $ce} ] }
   $textwidget insert insert "ce $ce\n"
   $textwidget insert insert "pv $analysis(moves1)\n"
 }

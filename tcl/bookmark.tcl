@@ -212,7 +212,7 @@ proc ::bookmarks::go {entry} {
   ::tree::refresh
   updateStatsWin
   updateMenuStates
-  updateBoardAndPgn .board
+  updateBoard -pgn
   updateTitle
   updateStatusBar
 }
@@ -348,7 +348,7 @@ proc ::bookmarks::edit_refresh {args} {
   set text [::bookmarks::itext $e]
   set bookmarks(data) [lreplace $bookmarks(data) $sel $sel $e]
   $list insert $sel $text
-  $list delete [expr $sel + 1]
+  $list delete [expr {$sel + 1} ]
   $list selection clear 0 end
   $list selection set $sel
 }
@@ -560,7 +560,7 @@ proc ::recentFiles::add {fname} {
 
   # Trim the list if necessary:
   if {[llength $rlist] < $recentFiles(limit)} {
-    set rlist [lrange $rlist 0 [expr $recentFiles(limit) - 1]]
+    set rlist [lrange $rlist 0 [expr {$recentFiles(limit) - 1} ]]
   }
 
   set recentFiles(data) $rlist
@@ -584,7 +584,7 @@ proc ::recentFiles::load {fname} {
       ::tree::refresh
       updateStatsWin
       updateMenuStates
-      updateBoardAndPgn .board
+      updateBoard -pgn
       updateTitle
       updateStatusBar
       return
@@ -603,7 +603,7 @@ proc ::recentFiles::show {menu} {
   incr idx
   set rlist $recentFiles(data)
   set nfiles [llength $rlist]
-  set nExtraFiles [expr $nfiles - $recentFiles(menu)]
+  set nExtraFiles [expr {$nfiles - $recentFiles(menu)} ]
   if {$nfiles > $recentFiles(menu)} { set nfiles $recentFiles(menu) }
   if {$nExtraFiles > $recentFiles(extra)} {
     set nExtraFiles $recentFiles(extra)
@@ -616,7 +616,7 @@ proc ::recentFiles::show {menu} {
     set fname [lindex $rlist $i]
     set mname [::recentFiles::menuname $fname]
     set text [file tail $fname]
-    set num [expr $i + 1]
+    set num [expr {$i + 1} ]
     set underline -1
     if {$num <= 9} { set underline 0 }
     if {$num == 10} { set underline 1 }
@@ -639,7 +639,7 @@ proc ::recentFiles::show {menu} {
     incr i
     set mname [::recentFiles::menuname $fname]
     set text [file tail $fname]
-    set num [expr $extra + 1]
+    set num [expr {$extra + 1} ]
     set underline -1
     if {$num <= 9} { set underline 0 }
     if {$num == 10} { set underline 1 }
@@ -647,7 +647,7 @@ proc ::recentFiles::show {menu} {
       -command [list ::recentFiles::load $fname]
     set ::helpMessage($menu.recentFiles,$extra) "  $fname"
   }
-  return [expr $nfiles + 1]
+  return [expr {$nfiles + 1} ]
 }
 
 # ::recentFiles::menuname
