@@ -1,5 +1,6 @@
 GAME EDITOR
 * automatically delete empty comments
+* adding move at the end of variation deletes previous comment
 * add ~ and ~= to comment editor
 * fix: with comment editor active browsing the game 'modifies' it
 * fix: adding comment before first move of the variation doesn't 
@@ -7,6 +8,17 @@ GAME EDITOR
 * better PGN display (figurine font?)
 * better editor (it would be best to merge Comment Editor and PGN Window)
 * automatically replace conflicting NAGs (f. e. ??/?/?!/? or =/+=/=+)
+* warn user when replacing large portions of game comments
+* when merging game, merge into variations too
+* when merging game, try to ignore move sequences (merge at last 
+matching position)
+* allow merging two commentaries of the same games (f. e. we got
+  (Annotator: Fritz    15. Bg5 ( {better } 15. Ng3) )
+   Annotator: Crafty   15. Bg5 ( {with equality} )
+   =>
+   15. Bg5 ( {Fritz: better } 15. Bg3 )
+           ( {Crafty: with equality} )
+* add "Save/Replace" option for "Current game has changed" dialog
 
 BOARD
 * when browsing game: show message box with main (game) move and 
@@ -15,6 +27,7 @@ BOARD
   games will be shown from your perspective)
 * update board after every move when Right/Left arrow is pressed (possible
   by adding "update idletasks", but it causes flickers
+* GoTo game ignores changes to cuurent game
 * ignore Right arrow at the end of the game/variation
 * (?) make Home/End go to the end of the variation, not the game?
 
@@ -50,6 +63,7 @@ DATABASE
 * reopen last databases/games
 
 TREE
+* best game: configurable number of moves
 * fix selecting tree move replaces current game move
 
 INTERNATIONALIZATION
@@ -85,3 +99,9 @@ SPELLCHECKER
 SCID DATA
 * update ratings
 * more pieces (convert from TTF?)
+
+INTERNAL GAME HANDING 
+* bug: in PGN export, comment before first move written before header
+* command 'truncate the begining of the game
+* command 'truncate the end of the game'
+* remove verbal comments (leaving NAGs)
