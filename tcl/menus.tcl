@@ -709,6 +709,9 @@ proc chooseTableBaseDir {i} {
   set tempDir(tablebase$i) [file dirname $fullname]
 }
 
+$m add command -label OptionsRecent -command ::recentFiles::configure
+set helpMessage($m,16) OptionsRecent
+
 $m add separator
 
 $m add command -label OptionsSave -command {
@@ -737,7 +740,7 @@ $m add command -label OptionsSave -command {
                  exportFlags(htmldiag) \
                  email(smtp) email(smproc) email(server) \
                  email(from) email(bcc) \
-                 gameInfo(hideNextMove) gameInfo(wrap) \
+                 gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
                  gameInfo(fullComment) gameInfo(showMarks) \
                  gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB)} {
       puts $optionF "set $i [list [set $i]]"
@@ -791,10 +794,10 @@ $m add command -label OptionsSave -command {
       -message "Options were saved to: $optionsFile"
   }
 }
-set helpMessage($m,17) OptionsSave
+set helpMessage($m,18) OptionsSave
 
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave
-set helpMessage($m,18) OptionsAutoSave
+set helpMessage($m,19) OptionsAutoSave
 
 menu $m.ginfo
 $m.ginfo add checkbutton -label GInfoHideNext \
@@ -815,6 +818,9 @@ $m.ginfo add checkbutton -label GInfoWrap \
 $m.ginfo add checkbutton -label GInfoFullComment \
   -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 \
   -command {updateBoard .board}
+#$m.ginfo add checkbutton -label Photos \
+#  -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+#  -command {updatePlayerPhotos -force}
 $m.ginfo add separator
 $m.ginfo add radiobutton -label GInfoTBNothing \
   -variable gameInfo(showTB) -value 0 -command {updateBoard .board}
@@ -1000,6 +1006,19 @@ proc updateMenuStates {} {
   }
   $m.file entryconfig [tr FileReadOnly] -state disabled
 
+  # Remove and reinsert the Recent files list and Exit command:
+  set idx [expr $::totalBaseSlots + 10]
+  $m.file delete $idx end
+  set nrecent [::recentFiles::show $m.file]
+  incr idx $nrecent
+  if {$nrecent > 0} {
+    $m.file add separator
+    incr idx
+  }
+  $m.file add command -label [tr FileExit] -accelerator "Ctrl+Q" \
+    -command fileExit
+  set helpMessage($m.file,$idx) FileExit
+
   if {[sc_base inUse]} {
     set isReadOnly [sc_base isReadOnly]
     $m.file entryconfig [tr FileClose] -state normal
@@ -1178,7 +1197,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.tools.exportfilter [tr $tag $oldLang] $tag $lang
   }
   foreach tag {Size Pieces Colors Export Fonts GInfo Language Moves Numbers
-               Startup Toolbar Windows ECO Spell Table Save AutoSave} {
+               Startup Toolbar Windows ECO Spell Table Recent Save AutoSave} {
     configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
   }
   foreach tag {OptionsFontsRegular OptionsFontsSmall OptionsFontsFixed} {

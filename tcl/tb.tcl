@@ -434,26 +434,27 @@ proc ::tb::move {} {
 # tbs:
 #   Summary data about tablebases.
 #   Each list has the following elements:
-#     Frequency (per million games),
-#     Longest-wtm-mate length, Longest-wtm-mate FEN,
-#     Longest-btm-mate length, Longest-btm-mate FEN,
-#     wtm-win-%, wtm-draw-%, wtm-loss-%,
-#     btm-win-%, btm-draw-%, btm-loss-%,
-#     number of mutual zugzwangs (-1 if unknown).
+#     (0) Frequency (per million games),
+#     (1) Longest-wtm-mate length, (2) Longest-wtm-mate FEN,
+#     (3) Longest-btm-mate length, (4) Longest-btm-mate FEN,
+#     (5) wtm-win-%, (6) wtm-draw-%, (7) wtm-loss-%,
+#     (8) btm-win-%, (9) btm-draw-%, (10) btm-loss-%,
+#     (11) number of mutual zugzwangs (-1 if unknown).
+#  The longest-mate FENs have a board field only; no side to move, etc.
 #
 #   There are three types of mutual zugzwang:
 #     wtm draws / btm loses, wtm loses / btm draws, wtm loses / btm loses.
 #   The first two are "half-point" zugzwangs, the last is "full-point".
 #
 #   If the number of mutual zugzwangs is known and nonzero,
-#   six more items follow in the list:
-#     number of wtm-draws-btm-loses zugzwangs,
-#     list of selected wtm-draws-btm-loses zugzwang FENs,
-#     number of wtm-loses-btm-draws zugzwangs,
-#     list of selected wtm-loses-btm-draws zugzwang FENs,
-#     number of whoever-moves-loses (full-point) zugzwangs,
-#     list of selected whoever-moves-loses zugzwang FENs.
-#   These zugzwang FENs do not have a side to move.
+#   six more items should follow in the list:
+#     (12) number of wtm-draws-btm-loses zugzwangs,
+#     (13) list of selected wtm-draws-btm-loses zugzwang FENs,
+#     (14) number of wtm-loses-btm-draws zugzwangs,
+#     (15) list of selected wtm-loses-btm-draws zugzwang FENs,
+#     (16) number of whoever-moves-loses (full-point) zugzwangs,
+#     (17) list of selected whoever-moves-loses zugzwang FENs.
+#   These zugzwang FENs board field only; no side to move, etc.
 
 set tbs(kqk) {
   259 10 {7K/6Q1/8/8/2k5/8/8/8} 0 -
@@ -695,6 +696,30 @@ set tbs(kqqkq) {
   0
 }
 
+set tbs(kqqkr) {
+  0 35 ? 19 ?
+  100.0 0.0 0.0 0.1 0.2 99.7
+  0
+}
+
+set tbs(kqqkb) {
+  0 15 ? 0 -
+  100.0 0.0 0.0 0.0 0.1 99.9
+  0
+}
+
+set tbs(kqqkn) {
+  0 19 ? 0 -
+  100.0 0.0 0.0 0.0 0.1 99.9
+  0
+}
+
+set tbs(kqqkp) {
+  7 22 ? 13 ?
+  100.0 0.0 0.0 0.0 0.7 99.3
+  0
+}
+
 set tbs(kqrkq) {
   33 67 ? 38 ?
   97.0 2.8 0.2 24.4 21.2 54.4
@@ -707,16 +732,82 @@ set tbs(kqrkr) {
   0
 }
 
+set tbs(kqrkb) {
+  11 29 ? 0 -
+  100.0 0.0 0.0 0.0 11.6 88.4
+  0
+}
+
+set tbs(kqrkn) {
+  2 40 ? 1 ?
+  99.9 0.1 0.0 0.0 7.7 92.3
+  0
+}
+
+set tbs(kqrkp) {
+  23 40 ? 43 ?
+  100.0 0.0 0.0 0.3 1.4 98.3
+  0
+}
+
 set tbs(kqbkq) {
   30 33 ? 24 ?
   55.7 44.0 0.3 30.5 62.3 7.2
   25 25 {} 0 {} 0 {}
 }
 
+set tbs(kqbkr) {
+  21 40 ? 30 ?
+  99.3 0.6 0.0 0.7 27.5 71.8
+  0
+}
+
+set tbs(kqbkb) {
+  2 17 ? 2 ?
+  99.7 0.3 0.0 0.0 19.8 80.2
+  0
+}
+
+set tbs(kqbkn) {
+  2 21 ? 1 ?
+  99.5 0.5 0.0 0.0 16.7 83.3
+  0
+}
+
+set tbs(kqbkp) {
+  23 32 ? 24 ?
+  100.0 0.0 0.0 1.0 14.1 84.9
+  0
+}
+
 set tbs(kqnkq) {
   75 41 ? 24 ?
   50.1 49.6 0.3 33.5 62.2 4.3
   38 38 {} 0 {} 0 {}
+}
+
+set tbs(kqnkr) {
+  11 38 ? 41 ?
+  99.2 0.7 0.0 3.0 27.2 69.8
+  0
+}
+
+set tbs(kqnkb) {
+  7 17 ? 1 ?
+  99.8 0.2 0.0 0.0 20.9 79.1
+  0
+}
+
+set tbs(kqnkn) {
+  14 21 ? 1 ?
+  99.4 0.6 0.0 0.0 17.8 82.2
+  0
+}
+
+set tbs(kqnkp) {
+  42 30 ? 29 ?
+  99.9 0.1 0.0 1.9 15.0 83.1
+  0
 }
 
 set tbs(kqpkq) {
@@ -828,7 +919,7 @@ set tbs(krnkq) {
 }
 
 set tbs(krnkr) {
-  435 37 {2k1r3/8/R7/N2K4/8/8/8/8} 41 ?
+  435 37 {2k1r3/8/R7/N2K4/8/8/8/8} 41 {4K3/8/1r6/8/5k2/1R4N1/8/8}
   36.7 63.3 0.1 3.2 93.6 3.2
   10 10 {
     2R5/8/8/8/8/k2K4/8/r1N5  8/8/8/8/3N4/1R1K4/8/r1k5 8/8/8/8/3N4/2KR4/8/2k1r3
@@ -865,7 +956,7 @@ set tbs(krpkq) {
 }
 
 set tbs(krpkr) {
-  9138 74 {8/1k6/4R3/8/8/8/6Pr/4K3} 33 ?
+  9138 74 {8/1k6/4R3/8/8/8/6Pr/4K3} 33 {8/1P6/2k5/8/K7/8/8/1r5R}
   66.6 33.0 0.4 20.1 54.4 25.5
   209 209 {} 0 {} 0 {}
 }
@@ -885,8 +976,9 @@ set tbs(krpkn) {
 set tbs(krpkp) {
   1069 56 ? 103 ?
   99.4 0.4 0.3 10.0 6.6 83.5
-  3 0 {} 2 {8/8/8/8/8/1p6/kP6/1RK5 8/8/8/8/8/k7/Pp6/RK6}
-  1 {8/8/8/8/8/2p5/1kP5/2RK4}
+  3 0 {} 2 {
+    8/8/8/8/8/1p6/kP6/1RK5 8/8/8/8/8/k7/Pp6/RK6
+  } 1 {8/8/8/8/8/2p5/1kP5/2RK4}
 }
 
 set tbs(kbbkq) {
@@ -896,7 +988,7 @@ set tbs(kbbkq) {
 }
 
 set tbs(kbbkr) {
-  14 23 {4r3/8/8/8/8/4B3/8/k1K4B} 31 ?
+  14 23 {4r3/8/8/8/8/4B3/8/k1K4B} 31 {1K4B1/8/3k4/8/B5r1/8/8/8}
   16.5 83.4 0.1 1.3 97.2 1.5
   3 3 {
     8/8/8/8/8/3K1k2/6r1/4B2B 8/8/8/8/8/5k2/6r1/3KB2B 8/8/8/B7/8/3k4/2r5/KB6
@@ -928,7 +1020,7 @@ set tbs(kbnkq) {
 }
 
 set tbs(kbnkr) {
-  65 36 ? 41 ?
+  65 36 {8/8/8/2N5/8/8/B6K/5kr1} 41 {8/8/1B4N1/5k2/8/1r6/8/4K3}
   26.0 73.8 0.2 3.8 94.6 1.6
   8 6 {
     3r4/8/2B5/8/1N6/8/8/k1K5 8/8/8/8/8/2k5/1r6/B1NK4  8/8/8/8/8/2k5/3r4/1KN1B3
@@ -943,7 +1035,7 @@ set tbs(kbnkb) {
 }
 
 set tbs(kbnkn) {
-  32 107 ? 1 ?
+  32 107 {6Bk/8/8/7N/8/7K/6n1/8} 1 {8/8/3N4/8/3n4/8/B7/K1k5}
   32.2 67.8 0.0 0.0 96.1 3.9
   922 922 {} 0 {} 0 {}
 }
@@ -951,7 +1043,7 @@ set tbs(kbnkn) {
 set tbs(kbnkp) {
   166 104 ? 55 ?
   91.4 5.5 3.2 14.7 23.0 62.4
-  62 61 {} 1 {} 0 {}
+  62 61 {} 1 {8/8/8/1N6/3K4/B7/5p2/k7} 0 {}
 }
 
 set tbs(kbpkq) {
@@ -998,7 +1090,7 @@ set tbs(knnkq) {
 }
 
 set tbs(knnkr) {
-  16 3 ? 41 ?
+  16 3 {5r1k/8/7K/4N3/5N2/8/8/8} 41 {8/8/1r4N1/4kN2/8/8/8/4K3}
   0.0 99.6 0.4 6.3 93.7 0.0
   25 0 {} 25 {} 0 {}
 }
@@ -1010,7 +1102,7 @@ set tbs(knnkb) {
 }
 
 set tbs(knnkn) {
-  9 7 ? 1 {K7/N1k5/8/3n4/3N4/8/8/8}
+  9 7 {7n/8/8/8/1N1KN3/8/8/k7} 1 {K7/N1k5/8/3n4/3N4/8/8/8}
   0.1 99.9 0.0 0.0 100.0 0.0
   362 362 {} 0 {} 0 {}
 }
@@ -1056,31 +1148,31 @@ set tbs(knpkp) {
 }
 
 set tbs(kppkq) {
-  713 124 ? 41 ?
+  713 124 {8/5P2/8/8/3K4/3P3q/7k/8} 41 {8/2KP2q1/8/2P5/5k2/8/8/8}
   16.0 12.6 71.4 98.4 1.5 0.1
   2 0 {} 2 {8/2KP3q/2P2k2/8/8/8/8/8 8/2KP3q/8/2P3k1/8/8/8/8} 0 {}
 }
 
 set tbs(kppkr) {
-  1675 54 ? 40 ?
+  1675 54 {3K4/8/8/4P3/8/2r5/5P2/2k5} 40 {8/8/8/7K/5P2/3Pr3/8/2k5}
   35.4 20.1 44.5 75.2 18.2 6.6
   119 18 {} 99 {} 2 {1r1k4/1P6/1PK5/8/8/8/8/8 8/8/8/8/k7/r1P5/1KP5/8}
 }
 
 set tbs(kppkb) {
-  522 43 ? 4 ?
+  522 43 {8/6P1/7k/8/6P1/1K6/8/1b6} 4 {K5b1/P7/1k6/8/8/8/2P5/8}
   54.4 45.6 0.0 0.0 75.4 24.6
-  212 211 {} 11 {} 0 {}
+  212 211 {} 1 {8/8/8/8/8/b2k4/P2P4/1K6} 0 {}
 }
 
 set tbs(kppkn) {
-  703 50 ? 17 ?
+  703 50 {3n4/5P2/8/8/3K2P1/8/k7/8} 17 {7K/8/4k2P/8/8/8/5P2/5n2}
   64.7 35.3 0.0 0.0 62.4 37.6
   1077 920 {} 157 {} 0 {}
 }
 
 set tbs(kppkp) {
-  5096 127 ? 43 ?
+  5096 127 {8/8/8/8/1p2P3/1k1KP3/8/8} 43 {7K/8/4P3/5P2/3k4/7p/8/8}
   77.1 10.3 12.6 27.7 19.1 53.2
   4237 4179 {} 52 {} 6 {
     8/8/8/8/2k5/K1p5/P3P3/8   8/8/8/8/3k4/1K1p4/1P3P2/8
@@ -1089,8 +1181,34 @@ set tbs(kppkp) {
   }
 }
 
+set tbs(kqppk) {
+  68 9 ? 0 -
+  100.0 0.0 0.0 0.0 0.7 99.3
+}
+
+set tbs(krppk) {
+  119 15 ? 0 -
+  100.0 0.0 0.0 0.0 0.2 98.8
+  0
+}
+
+set tbs(kbppk) {
+  91 25 ? 0 -
+  99.8 0.2 0.0 0.0 1.3 98.7
+  6 6 {
+    8/B1k5/K7/P7/P7/8/8/8 K7/8/1k6/1P6/BP6/8/8/8 K7/8/Bk6/1P6/1P6/8/8/8
+    KBk5/P1P5/8/8/8/8/8/8 kB6/8/1PK5/1P6/8/8/8/8 kB6/8/KP6/1P6/8/8/8/8
+  } 0 {} 0 {}
+}
+
+set tbs(knppk) {
+  96 32 ? 0 -
+  100.0 0.0 0.0 0.0 1.0 99.0
+  93 93 {} 0 {} 0 {}
+}
+
 set tbs(kpppk) {
-  98 33 ? 0 -
+  98 33 {7K/5k2/8/8/1P6/1P6/1P6/8} 0 -
   99.9 0.1 0.0 0.0 0.6 99.4
   11 11 {
     1k6/1P6/K7/P7/P7/8/8/8  1k6/1P6/K7/PP6/8/8/8/8  2k5/2P5/3K4/P7/P7/8/8/8

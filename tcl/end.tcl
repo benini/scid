@@ -114,12 +114,14 @@ proc fileExit {}  {
                 $msg "" 0 $::tr(Yes) $::tr(No)]
   if {$answer == 0} { 
     if {$::optionsAutoSave} { .menu.options invoke [tr OptionsSave] }
+    ::recentFiles::save
     destroy . 
   }
 }
 
 proc fastExit {} {
   if {$::optionsAutoSave} { .menu.options invoke [tr OptionsSave] }
+  ::recentFiles::save
   destroy . 
 }
 
@@ -192,6 +194,10 @@ proc fileOpen {{fName ""}} {
     if {$fName == ""} { return }
   }
 
+  if {[file extension $fName] == ""} {
+    set fName "$fName.si3"
+  }
+
   if {[file extension $fName] == ".sor"} {
     if {[catch {::rep::openWithFile $fName} err]} {
       tk_messageBox -parent . -type ok -icon info -title "Scid" \
@@ -215,6 +221,7 @@ proc fileOpen {{fName ""}} {
         -title "Scid: Error opening file" -message $result
     } else {
       set ::initialDir(base) [file dirname $fName]
+      ::recentFiles::add "$fName.si3"
     }
   } elseif {[regexp {\.epd} [string tolower $fName]]} {
     # EPD file:
@@ -230,6 +237,7 @@ proc fileOpen {{fName ""}} {
     } else {
       doPgnFileImport $fName "Opening [file tail $fName] read-only...\n"
       sc_base type [sc_base current] 3
+      ::recentFiles::add $fName
     }
   }
 
@@ -1603,7 +1611,10 @@ proc gameSave { gnum } {
   frame .save.extra
   text .save.extra.text -height 4 -width 40 -bg white -wrap none \
     -yscrollcommand ".save.extra.scroll set"
-  scrollbar .save.extra.scroll -command ".save.extra.text yview"
+  # Override tab-binding for this text widget:
+  bind .save.extra.text <Key-Tab> "[bind all <Key-Tab>]; break"
+  scrollbar .save.extra.scroll -command ".save.extra.text yview" \
+    -takefocus 0
   button .save.extra.last -text "Use\nlast\ngame's\ntags" -command {
     set extraTags [sc_game tag get -last Extra]
     .save.extra.text delete 1.0 end
@@ -2117,9 +2128,11 @@ while {$argc > 0} {
       if {$err == 0} {
         doPgnFileImport $startbase "\nOpening [file tail $startbase] read-only...\n"
         sc_base type [sc_base current] 3
+        ::recentFiles::add $startbase
       }
     } else {
       set err [catch {openBase [file rootname $startbase]} errMessage]
+      if {! $err} { ::recentFiles::add "[file rootname $startbase].si3" }
     }
     if {$err} {
       addSplash "   Error: could not open database \"$startbase\":\n  $errMessage"

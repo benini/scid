@@ -532,7 +532,7 @@ proc doMarkDups {{parent .}} {
 }
 
 
-set classifyOption(AllGames) 1
+set classifyOption(AllGames) all
 set classifyOption(ExtendedCodes) 1
 
 # ClassifyAllGames:
@@ -555,7 +555,9 @@ proc makeClassifyWin {} {
   wm title $w "Scid: [tr FileMaintClass]"
   label $w.label -font font_Bold -textvar ::tr(ClassifyWhich)
   radiobutton $w.all -textvar ::tr(ClassifyAll) \
-    -variable classifyOption(AllGames) -value 1
+    -variable classifyOption(AllGames) -value all
+  radiobutton $w.filter -textvar ::tr(SelectFilterGames) \
+    -variable classifyOption(AllGames) -value filter
   set year [::date::today year]
   set month [::date::today month]
   set day [::date::today day]
@@ -574,7 +576,7 @@ proc makeClassifyWin {} {
     -variable classifyOption(AllGames) \
     -value "date:$year.$month.$day"
   radiobutton $w.new -textvar ::tr(ClassifyNew) \
-    -variable classifyOption(AllGames) -value 0
+    -variable classifyOption(AllGames) -value nocode
   label $w.codes -font font_Bold -textvar ::tr(ClassifyCodes:)
   radiobutton $w.extended -textvar ::tr(ClassifyBasic) \
     -variable classifyOption(ExtendedCodes) -value 0
@@ -606,7 +608,7 @@ proc makeClassifyWin {} {
   $w.progress create text 295 10 -anchor e -font font_Regular -tags time \
     -fill black -text "0:00 / 0:00"
 
-  pack $w.label $w.all $w.year $w.month $w.new -side top -pady 5
+  pack $w.label $w.all $w.filter $w.year $w.month $w.new -side top -pady 5
   addHorizontalRule $w
   pack $w.codes $w.extended $w.basic -side top -pady 5
   addHorizontalRule $w

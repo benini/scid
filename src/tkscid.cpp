@@ -1416,7 +1416,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     bool showProgress = startProgressBar();
 
-    const char * usage = 
+    const char * usage =
         "Usage: sc_base piecetrack [-g|-t] <minMoves> <maxMoves> <startSquare ...>";
 
     if (argc < 5) {
@@ -2962,16 +2962,18 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 {
     static const char * options [] = {
         "altered",  "available",  "close",  "create",
-        "deepest",  "get",        "moves",  "name",
-        "next",     "open",       "prev",   "readonly",
-        "set",      "size",       "strip",  "write",
+        "deepest",  "ep",         "get",    "moves",
+        "name",     "next",       "open",   "prev",
+        "readonly", "set",        "size",   "strip",
+        "write",
         NULL
     };
     enum {
         BOOK_ALTERED,  BOOK_AVAILABLE,  BOOK_CLOSE,  BOOK_CREATE,
-        BOOK_DEEPEST,  BOOK_GET,        BOOK_MOVES,  BOOK_NAME,
-        BOOK_NEXT,     BOOK_OPEN,       BOOK_PREV,   BOOK_READONLY,
-        BOOK_SET,      BOOK_SIZE,       BOOK_STRIP,  BOOK_WRITE
+        BOOK_DEEPEST,  BOOK_EP,         BOOK_GET,    BOOK_MOVES,
+        BOOK_NAME,     BOOK_NEXT,       BOOK_OPEN,   BOOK_PREV,
+        BOOK_READONLY, BOOK_SET,        BOOK_SIZE,   BOOK_STRIP,
+        BOOK_WRITE
     };
     int index = -1;
 
@@ -3017,6 +3019,14 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 
     case BOOK_DEEPEST:
         return sc_book_deepest (ti, bookID);
+
+    case BOOK_EP:
+            // Set/get whether this book should use the en passent
+            // field when comparing positions:
+        if (argc >= 4) {
+            pbooks[bookID]->UseEnPassent (strGetBoolean (argv[3]));
+        }
+        return setBoolResult (ti, pbooks[bookID]->UsesEnPassent ());
 
     case BOOK_GET:   // Retrieves the text for the current position:
         {
@@ -3839,7 +3849,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     }
 
     int option = -1;
-    enum {ECO_NOCODE, ECO_ALL, ECO_DATE};
+    enum {ECO_NOCODE, ECO_ALL, ECO_DATE, ECO_FILTER};
 
     switch (argv[2][0]) {
     case '0':
@@ -3847,6 +3857,8 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         option = ECO_NOCODE; break;
     case 'd':
         option = ECO_DATE; break;
+    case 'f':
+        option = ECO_FILTER; break;
     default:
         option = ECO_ALL; break;
     }
@@ -3880,6 +3892,9 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
         if (ie->GetLength() == 0) { continue; }
 
         ecoT oldEcoCode = ie->GetEcoCode();
+
+        // Ignore games not in current filter if directed:
+        if (option == ECO_FILTER  &&  db->filter->Get(i) == 0) { continue; }
 
         // Ignore games with existing ECO code if directed:
         if (option == ECO_NOCODE  &&  oldEcoCode != 0) { continue; }
@@ -6893,9 +6908,16 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     // Grab a new idx entry, if needed:
     IndexEntry * oldIE = NULL;
     IndexEntry iE;
+    iE.Init();
+
     if (replaceMode) {
         oldIE = base->idx->FetchEntry (gNumber);
-        base->idx->InitEntries (&iE, 1);
+        // Remember previous user-settable flags:
+        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
+            char flags [32];
+            oldIE->GetFlagStr (flags, NULL);
+            iE.SetFlagStr (flags);
+        }
     } else {
         if (base->idx->AddGame (&gNumber, &iE) != OK) {
             Tcl_AppendResult (ti, "Too many games in this database.", NULL);
@@ -7631,7 +7653,7 @@ sc_game_tags_set (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
                     db->game->ClearExtraTags ();
                     int largc;
                     const char ** largv;
-                    if (Tcl_SplitList (ti, value, &largc, 
+                    if (Tcl_SplitList (ti, value, &largc,
                                        (CONST84 char ***) &largv) != TCL_OK) {
                         // Error from Tcl_SplitList!
                         return errorResult (ti, "Error parsing extra tags.");
@@ -7682,7 +7704,7 @@ sc_game_tags_reload (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
 //    of a pair of twins before deleting one of them. For example,
 //    one may have a less complete date while the other may have
 //    no ratings or an unknown ("?") round value.
-//    
+//
 //    If the subcommand parameter is "check", a list is returned
 //    with a multiple of four elements, each set of four indicating
 //    a game number, the tag that will be changed, the old value,
@@ -9630,7 +9652,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
     if (bWidth > wbtWidth) { wbtWidth = bWidth; }
     if (tWidth > wbtWidth) { wbtWidth = tWidth; }
     const char * fmt = \
-     "%s  %-*s %3u%c%02u%%   +%s%3u%s  =%s%3u%s  -%s%3u%s   %3u%c%c / %s%3u%s";
+     "%s  %-*s %3u%c%02u%%   +%s%3u%s  =%s%3u%s  -%s%3u%s  %4u%c%c /%s%4u%s";
 
     if (ratingsOnly) { goto doRatings; }
     Tcl_AppendResult (ti, startBold, playerName, endBold, newline, NULL);
@@ -13142,9 +13164,9 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, char ** argv)
                 matchGameHeader (ie, db->nb, mBlack, mWhite,
                                  mEvent, mSite, mRound,
                                  dateRange[0], dateRange[1], resultsF,
-                                 wEloRange[0], wEloRange[1],
                                  bEloRange[0], bEloRange[1],
-                                 dEloRange[0], dEloRange[1],
+                                 wEloRange[0], wEloRange[1],
+                                 -dEloRange[1], -dEloRange[0],
                                  ecoRange[0], ecoRange[1], ecoNone,
                                  halfMoveRange[0], halfMoveRange[1])) {
                 match = true;

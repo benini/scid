@@ -1361,6 +1361,10 @@ menu .gameInfo.menu -tearoff 0
 .gameInfo.menu add checkbutton -label GInfoFullComment \
   -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
 
+#.gameInfo.menu add checkbutton -label Photos \
+#  -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+#  -command {updatePlayerPhotos -force}
+
 .gameInfo.menu add separator
 
 .gameInfo.menu add radiobutton -label GInfoTBNothing \
@@ -1566,6 +1570,7 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
     .gameInfo configure -wrap none
   }
   .gameInfo configure -state disabled
+  updatePlayerPhotos
   updateEpdWins
   if {[winfo exists .analysisWin1]} { updateAnalysis 1 }
   if {[winfo exists .analysisWin2]} { updateAnalysis 2 }
@@ -1580,6 +1585,54 @@ proc updateBoard { {bd .board} {pgnNeedsUpdate 0} } {
   if {[winfo exists .noveltyWin]} { updateNoveltyWin }
 }
 
+image create photo photoW
+image create photo photoB
+label .photoW -background white -image photoW -anchor ne
+label .photoB -background white -image photoB -anchor ne
+
+array set photo {}
+catch {source [file join $scidUserDir players.img]}
+set photo(oldWhite) {}
+set photo(oldBlack) {}
+
+# updatePlayerPhotos
+#   Updates the player photos in the game information area
+#   for the two players of the current game.
+#
+proc updatePlayerPhotos {{force ""}} {
+  global photo
+  if {$force == "-force"} {
+    # Force update even if it seems unnecessary. This is done
+    # when the user selects to show or hide the photos.
+    set photo(oldWhite) {}
+    set photo(oldBlack) {}
+    place forget .photoW
+    place forget .photoB
+  }
+  if {! $::gameInfo(photos)} { return }
+  set white [sc_game info white]
+  set black [sc_game info black]
+  if {$black != $photo(oldBlack)} {
+    set photo(oldBlack) $black
+    place forget .photoB
+    if {[info exists ::photo($black)]} {
+      image create photo photoB -data $::photo($black)
+      .photoB configure -image photoB -anchor ne
+      place .photoB -in .gameInfo -x -1 -relx 1.0 \
+        -rely 0.12 -relheight 0.88 -anchor ne
+    }
+  }
+  if {$white != $photo(oldWhite)} {
+    set photo(oldWhite) $white
+    place forget .photoW
+    if {[info exists ::photo($white)]} {
+      image create photo photoW -data $::photo($white)
+      .photoW configure -image photoW -anchor ne
+      place .photoW -in .gameInfo -x -82 -relx 1.0 \
+        -rely 0.12 -relheight 0.88 -anchor ne
+    }
+  }
+}
 
 #########################################################
 ### Chess move input

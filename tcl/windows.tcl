@@ -3088,6 +3088,7 @@ proc playerInfo {{player ""}} {
     text $w.text -font font_Regular -background white \
       -width $::winWidth($w) -height $::winHeight($w) \
       -setgrid 1 -wrap none -yscrollcommand "$w.ybar set"
+    label $w.photo -background white
     pack $w.text -side top -fill both -expand yes
     bind $w <Escape> "focus .; destroy $w"
     ::htext::init $w.text
@@ -3096,6 +3097,13 @@ proc playerInfo {{player ""}} {
     bind $w <F1> {helpWindow PInfo}
     bind $w <Configure> "recordWinSize $w"
     standardShortcuts $w
+  }
+  if {[info exists ::photo($player)]} {
+    image create photo photoPInfo -data $::photo($player)
+    $w.photo configure -image photoPInfo -anchor ne
+    place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
+  } else {
+    place forget $w.photo
   }
   $w.text configure -state normal
   $w.text delete 1.0 end

@@ -21,7 +21,7 @@ exec tkscid "$0" "$@"
 
 ############################################################
 
-set scidVersion "3.3.beta5"
+set scidVersion "3.3"
 
 # Determine operating system platform: unix or windows
 set windowsOS 0
@@ -335,6 +335,7 @@ lappend glistAllFields { F  7 left  darkBlue   0 }
 
 
 # Game information area options:
+set gameInfo(photos) 1
 set gameInfo(hideNextMove) 0
 set gameInfo(showMaterial) 0
 set gameInfo(showFEN) 0
