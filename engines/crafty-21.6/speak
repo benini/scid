@@ -1,0 +1,62 @@
+#!/usr/bin/perl -w
+#
+# Announce a move from Crafty using some soundfiles
+#
+
+# The program used for Sound Output
+my $playprg   = "/usr/bin/esdplay";
+
+# Where the sound files are located
+#my $soundpath = "/opt/chess/sound";
+my $soundpath = "/home/hyatt/crafty/sound";
+# Which language to use (each supported language is in a separate
+# subdir of $soundpath)
+my $language  = "english";
+
+# The move sent by crafty
+my $move      = $ARGV[0];
+
+# Set soundpath to the correct language
+$soundpath = $soundpath . "/" . $language;
+
+# First check some specials
+if (($move =~ /O-O/) || ($move eq "Stalemate") ||
+    ($move eq "Drawaccept") || ($move eq "Drawoffer") ||
+    ($move eq "Resign") || ($move eq "Checkmate")) {
+  system("$playprg $soundpath/$move.wav");
+}
+# Handle all normal moves. All that needs to be done is announce
+# each character sent by crafty alone. Set some pause beteween each
+# char for clearer understanding.
+#
+# NOTE 1: Crafty uses short notation, so short notation is
+# announced. For long notation announcements the crafty engine has
+# to be hacked and pgn output as well as logging would get broken.
+#
+# NOTE 2: There has to exist a sound file named for each row,
+# column and piece. That is there has to be sound files like a.wav,
+# 1.wav, R.wav and so on. One can easily rename the files
+# distributed for free eg. at the "Arena" Website
+# (http://www.playwitharena.com). Soundfiles from Fritz are not
+# suitable, at the moment, but the script can easily be rewritten
+# to handle them as well.
+else {
+  for (my $i=0; $i<length($move); $i++) {
+    my $char = substr $move, $i, 1;
+    if ($char =~ /[^=]/) {
+      if ($char =~ /x/) {
+        system("$playprg $soundpath/x.wav");
+        system("usleep 400000");
+      }
+      elsif ($char =~ /#/) {
+        system("$playprg $soundpath/Checkmate.wav");
+      }
+      elsif ($char =~ /\+/) {
+        system("$playprg $soundpath/Check.wav");
+      }
+      else {
+        system("$playprg $soundpath/$char".".wav");
+      }
+    }
+  }
+}

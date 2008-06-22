@@ -1,0 +1,90 @@
+# Makefile version 3 for Crafty 16.15
+# Crafty v16.x makefile for Windows NT Intel
+# Written by Jason Deines (jdeines@mindspring.com) April 1998
+# Version modified by Gregor Overney (gregor_overney@hp.com) Nov 1998
+# Version modified by Peter Karrer (pkarrer@active.ch) Dec 1998
+# Version modified by Gregor Overney (gregor_overney@hp.com) Sep 1999
+#
+# This makefile is designed to be used from the command line with 
+# Microsoft's nmake.  Either rename this # file to "Makefile" or name it 
+# explicitly when invoking nmake:
+#     nmake -f Makefile.xp
+#
+# The makefile is set up for Microsoft Visual C++ 6.0 Intel.
+#
+# The default target produces a file called "crafty.exe".  
+
+# Build target is defined here.
+TARGET   = NT_i386
+
+# Command-line compiler and linker invocation commands:
+CC       = cl
+LD       = link
+
+# Base compiler flags needed for build:
+BFLAGS = /D_CONSOLE /DWIN32 /D_CRT_SECURE_NO_DEPRECATE
+
+# Compiler flags:
+# /O2    optimize for speed
+# /Oa    assume no aliasing (no good for VC 6 without SP3)
+# /Gr    fastcall calling convention
+# /G5    target Pentium (but will run on all x86 architectures)
+# /G6    target Pentium Pro (but will run on all x86 architectures)
+# /Ob2   inline function calls if suitable
+#
+# For debugging use these flags instead:
+# CFLAGS  = /Od /Zi
+# LDFLAGS  = /DEBUG /DEBUGTYPE:CV
+#
+
+#CFLAGS   = /O2 /G6 /Gr /Ob2
+#CFLAGS   = /Od /Zi
+CFLAGS   = /Ox /Gr /GL
+
+# Linker flags, normally not needed except for debug builds:
+LDFLAGS  = /LTCG
+#LDFLAGS  = /DEBUG /DEBUGTYPE:CV
+ 
+# See the default crafty makefile for a description of the options below.
+# With VC++, defines like COMPACT_ATTACKS, etc, makes the code slower, so 
+# those # options are disabled by default.  FAST is normally not defined 
+# so that hash statistics are reported -- for the fastest possible 
+# executable, define FAST below.  for 6 piece EGTB support, add /DEGTB6.
+
+#COPTS    = 
+
+# For an SMP build use/add the following build options.
+# NT_INTEREX is defined if you want to use the built-in InterlockedExchange()
+# function for thread resource locking, instead of the inline asm routine.
+# (This shouldn't be needed, at least on Intel.)
+# /MT is a compiler flag needed for multithreaded builds.
+
+#COPTS    = /MT /DSMP /DCPUS=4 /DNT_INTEREX
+COPTS    = /MT /DSMP /DCPUS=4
+
+# To enable assembly optimizations in vcinline.h, use /DVC_INLINE_ASM.
+
+#AOPTS    = /DVC_INLINE_ASM
+
+ALLOPTS  = $(COPTS) $(AOPTS) /D$(TARGET)
+
+objects  = crafty.obj egtb.obj
+
+includes = chess.h data.h epd.h epddefs.h epdglue.h vcinline.h
+
+crafty   : $(objects)
+           $(LD) $(LDFLAGS) $(objects) /out:crafty.exe
+
+$(objects) : $(includes)
+
+.c.obj   :
+           $(CC) $(BFLAGS) $(CFLAGS) $(ALLOPTS) /c $*.c
+
+.cpp.obj :
+           $(CC) $(BFLAGS) $(CFLAGS) $(ALLOPTS) /Zm500 /c $*.cpp
+
+clean:
+	   del /q $(objects)
+	   del /q log.*
+	   del /q game.*
+	   del /q *.bak

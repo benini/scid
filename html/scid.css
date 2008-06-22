@@ -1,0 +1,113 @@
+A:link {text-decoration: none}
+A:visited {text-decoration: none}
+A:active {text-decoration: none}
+
+/* Current move */
+.currentMove
+{
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#e9aa5d;
+}
+
+/* Header: Event, Site, Date */
+.hEvent
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#000080;
+}
+
+/* Header: Players */
+.hPlayers
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:bold;
+	font-size:12pt;
+	color:#000080;
+}
+
+/* Header: Annotator, Eco */
+.hAnnot
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#800000;
+}
+
+/* Result */
+.VH
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#800000;
+}
+
+/* move comments */
+.VC
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#800000;
+}
+
+/* moves */
+.V0
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:bold;
+	font-size:12pt;
+	color:#000000;
+}
+
+/* 1. variation */
+.V1
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#000000;
+}
+
+/* 2.-x. variation */
+.V2
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:normal;
+	font-size:12pt;
+	color:#000000;
+}
+
+/* board coordinates */
+.coordinates
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:bold;
+	font-size:10pt;
+	color:#2e2ebf;
+}
