@@ -16,7 +16,7 @@ namespace eval ::ezsmtp {
 
     # Make CVS version ID accessible.
     set mail(cvsid) \
-            {$Id: ezsmtp.tcl,v 1.1 2002/04/04 22:44:15 sgh Exp $}
+            {$Id: ezsmtp.tcl,v 1.1 2008/06/22 22:19:45 pgeorges Exp $}
 
     # Global variables that may be altered through ezsmtp::config.
     set mail(vars) [list verbose mailhost port from batchsize \

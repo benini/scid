@@ -1,5 +1,5 @@
 # postinst.tcl --
-# $Id: postinst.tcl,v 1.1 2002/04/04 22:44:15 sgh Exp $
+# $Id: postinst.tcl,v 1.1 2008/06/22 22:19:45 pgeorges Exp $
 #
 #	post-installation script to prompt user whether to email the
 #	author upon successful installation.
