@@ -4,9 +4,9 @@
 //              OpTable class (for opening reports and theory tables)
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.1
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -28,7 +28,7 @@ const uint OPTABLE_DEFAULT_ROWS = 10;
 const uint OPTABLE_MAX_EXTRA_MOVES = 10;
 const uint OPLINE_MOVES = (OPTABLE_COLUMNS + OPTABLE_MAX_EXTRA_MOVES) * 2;
 const uint OPTABLE_MAX_LINES = 2000;
-const uint OPTABLE_MAX_TABLE_LINES = 500;
+const uint OPTABLE_MAX_TABLE_LINES = 5000;//500;
 const uint OPTABLE_MAX_STARTLINE = 100;
 
 const uint OPTABLE_Text  = 0;
@@ -37,17 +37,19 @@ const uint OPTABLE_LaTeX = 2;
 const uint OPTABLE_CText = 3;    // Color hypertext.
 const uint OPTABLE_Compact = 4;  // For more compact moves in table.
 
-const uint NUM_OPTHEMES = 10;
-const uint OPTHEME_CastSame = 0;
-const uint OPTHEME_CastOpp = 1;
-const uint OPTHEME_CastNone = 2;
-const uint OPTHEME_Kstorm = 3;
-const uint OPTHEME_QueenSwap = 4;
-const uint OPTHEME_IQP = 5;
-const uint OPTHEME_WAdvPawn = 6;
-const uint OPTHEME_BAdvPawn = 7;
-const uint OPTHEME_OpenFyle = 8;
-const uint OPTHEME_BPair = 9;
+// Positional themes
+const uint NUM_POSTHEMES = 10;
+const uint POSTHEME_CastSame  = 0;
+const uint POSTHEME_CastOpp   = 1;
+const uint POSTHEME_QueenSwap = 2;
+const uint POSTHEME_OneBPair  = 3;
+const uint POSTHEME_Kstorm    = 4;
+const uint POSTHEME_WIQP      = 5;
+const uint POSTHEME_BIQP      = 6;
+const uint POSTHEME_WAdvPawn  = 7;
+const uint POSTHEME_BAdvPawn  = 8;
+const uint POSTHEME_OpenFyle  = 9;
+const uint POSTHEME_THRESHOLD = 4;  // Theme must occur this many times.
 
 const uint NUM_EGTHEMES = 8;
 const uint EGTHEME_P = 0;
@@ -88,6 +90,7 @@ class OpLine
     uint        NumMoves;
     bool        ShortGame;     // True if all game ends early enough that
                                // this line contains all its moves.
+    ecoT        EcoCode;
     uint        MoveOrderID;
     sanStringT  Move [OPLINE_MOVES];
     uint        NoteMoveNum;  // If a note, at what move does it start?
@@ -96,21 +99,39 @@ class OpLine
     bool        Selected;     // For selecting lines by some criteria.
     uint        StartPly;
 
-    bool        Theme [NUM_OPTHEMES];
+    uint        Theme [NUM_POSTHEMES];
     uint        EgTheme;
 
     void Init (void);
     void Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
-               uint maxExtraMoves);
+               uint maxExtraMoves, uint maxThemeMoveNumber);
     void Destroy (void);
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif 
     OpLine () { Init(); }
-    OpLine (Game * g, IndexEntry * ie, gameNumberT gnum, uint max) {
-        Init (g, ie, gnum, max);
+    OpLine (Game * g, IndexEntry * ie, gameNumberT gnum, uint max, uint tm) {
+        Init (g, ie, gnum, max, tm);
     }
     ~OpLine() { }
+    void SetPositionalThemes (Position * pos);
     void Insert (OpLine * subline);
     void SetMoveOrderID (uint id) { MoveOrderID = id; }
     uint CommonLength (OpLine * line);
@@ -132,8 +153,10 @@ class OpTable
     uint        NumTableLines;
     uint        MaxTableLines;
     uint        MaxNoteLength;
+    uint        MaxThemeMoveNumber;
     uint        NumNotes;
     uint        Format;
+    char *      Type;   // "opening" or "player" report
     bool        WTM;    // whether White is to move in the start position.
     sanStringT  StartLine [OPTABLE_MAX_STARTLINE];
     uint        StartLength;
@@ -153,7 +176,7 @@ class OpTable
     moveOrderT  MoveOrder [OPTABLE_MAX_LINES];
 
     // Statistics on themes:
-    uint        ThemeCount [NUM_OPTHEMES];
+    uint        ThemeCount [NUM_POSTHEMES];
 
     // Arrays for making rows out of the lines:
     OpLine *    Row [OPTABLE_MAX_TABLE_LINES];
@@ -168,13 +191,36 @@ class OpTable
     uint NoteCount (uint note);
     uint NoteScore (uint note);
     void PrintNotes (DString * dstr, uint format);
-    
-  public:
 
-    OpTable (Game * g, PBook * ecoBook) { Init (g, ecoBook); }
-    OpTable (Game * g) { Init (g, NULL); }
-    ~OpTable() { Clear(); }
-    void Init (Game * g, PBook * ecoBook);
+  public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif 
+    OpTable (const char * type, Game * g, PBook * ecoBook) {
+        Init (type, g, ecoBook);
+    }
+    OpTable (const char * type, Game * g) { Init (type, g, NULL); }
+#ifdef WINCE
+    ~OpTable() { Clear();  my_Tcl_Free((char*) Type); }
+#else
+    ~OpTable() { Clear();  delete[] Type; }
+#endif
+    void Init (const char * type, Game * g, PBook * ecoBook);
     void Clear ();
     void ClearNotes ();
     void SetFormat (const char * str);
@@ -204,6 +250,7 @@ class OpTable
         return (MaxNoteLength / 2) - OPTABLE_COLUMNS;
     }
     uint   GetNumLines (void) { return NumLines; }
+    void   SetMaxThemeMoveNumber (uint x) { MaxThemeMoveNumber = x; }
     bool   Add (OpLine * line);
     uint   PercentScore (void);
     uint   TheoryPercent (void);
@@ -213,10 +260,15 @@ class OpTable
     uint   AvgElo (colorT color, uint *count, uint *oppScore, uint *oppPerf);
     void   BestGames (DString * dstr, uint count, const char * rtype);
     void   TopPlayers (DString * dstr, colorT c, uint count);
+    void   TopEcoCodes (DString * dstr, uint count);
     void   PrintStemLine (DString * dstr, uint format, bool exclude);
     void   PrintStemLine (DString * dstr) { PrintStemLine (dstr, Format, false); }
     void   MakeRows (void);
+#ifdef WINCE
+    void   DumpLines (/*FILE **/Tcl_Channel fp);
+#else
     void   DumpLines (FILE * fp);
+#endif
     void   PrintTable (DString * dstr, const char *title, const char *comment);
     void   PrintLaTeX (DString * dstr,const char *title, const char *comment);
     void   PrintHTML (DString * str, const char *title, const char *comment);

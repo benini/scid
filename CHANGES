@@ -8,7 +8,70 @@ THANKS file.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SUMMARY OF SCID CHANGES BY VERSION:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Version 3.4 beta: (August 2002)
+Version 3.6: (February 2003)
+
+ -   Major cleanup of the user interface code.
+
+ -   Improved layout of some dialog windows which were too tall
+     for 800x600 screens.
+
+ -   Revamped the Comment Editor window, to make adding marks and annotation
+     symbols easier.
+
+ -   Improved the database switcher window; it is now fully resizable
+     and only displays open databases.
+
+ -   Increased the maximum number of open databases to 9, including the
+     clipbase.
+
+ -   Added comboboxes to recall history of past values in some entry boxes,
+     e.g. White/Black/Event/Site in the Header Search field. The past value
+     histories are saved between sessions.
+
+ -   Minor interface improvements, e.g. more consistent button sizes.
+
+ -   Fixed pasting of a position in FEN (with Ctrl+Shift+V) which worked
+     in Linux but was broken in Windows.
+
+ -   Improved sorting of round names. If two rounds are equal up to a decimal
+     point, Scid first tries to interpret the text after the dot as a number;
+     for example "4.10" used to be sorted between "4.1" and "4.2" but now
+     it comes after "4.9".
+
+ -   Added move announcement sounds. This was surprisingly easy, using the
+     Tcl/Tk "Snack" sound package.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 3.5: (December 2003)
+
+ -   New "Player Report" window, similar to an opening report but
+     for a particular player instead of an opening.
+
+ -   Opening Report window: New "Favorites" menu.
+
+ -   New option: "My Player Names" under "Options/Chesboard" menu.
+
+ -   Windows version: Scid now has its own icon, and the installer now
+     creates file associations for Scid database (.si3/.sg3/.sn3) files.
+
+ -   Help pages: Renamed Index to Contents; added an Index help page.
+
+ -   Added new search boxes (for Event and Maximum mean Elo) to the
+     Tournament Finder.
+
+ -   Many minor user interface improvements.
+
+ -   Cleaned up config/data/log file names and locations.
+
+ -   Lots of bug fixes and other small improvements, many contributed by
+     Michal Rudolf and others.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 3.4: (January 2003)
+
+ -   Scid now comes with its own built-in chess engine called Scidlet
+     which is used in Scid to suggest moves (for fast mouse move entry)
+     and is also available as a WinBoard engine outside of Scid.
 
  -   New window: Player Finder, which lists information about players
      in the current database.
@@ -16,6 +79,15 @@ Version 3.4 beta: (August 2002)
  -   Edit menu: Added "Copy position" (to complement the existing
      "Paste start board" command) which copies the current position
      to the clipboard/X-selection in FEN notation.
+
+ -   Moves on the main window chessboard are now animated. Use the
+     "Options / Moves / Animate time" menu to configure the
+     animation speed.
+
+ -   Added a board toolbar icon to optionally show or hide a small
+     box beside the board showing the side to move.
+
+ -   Tree window has a new column showing the percentage of draws.
 
  -   Maintenance window: added Description field, for storing a
      short (up to around 100 characters) database description.
@@ -27,6 +99,21 @@ Version 3.4 beta: (August 2002)
  -   Fixed bookmarks so they should now load the correct game
      even if game numbers are changed by compacting or sorting
      a database.
+
+ -   Added optional small analysis board to the Analysis window
+     showing the position at the end of the best line of play.
+     Also added "Low CPU priority" checkbox to Analysis window.
+
+ -   Tablebase window: added option of displaying a "results board";
+     select a piece on the board to show tablebase results for that
+     piece relocated to any empty square on the board.
+
+ -   Game browser windows now have an autoplay button.
+
+ -   Added a black border around chessboard squares, with a user
+     settable width in the Options/Colors... dialog box.
+
+ -   Added a toolbar to the repertoire editor window.
 
  -   Added support for null moves, with the option of preserving
      them in PGN export (which is non-standard since there is no

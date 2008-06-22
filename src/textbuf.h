@@ -46,6 +46,24 @@ private:
     //----------------------------------
     //  TextBuffer:  Public Functions
 public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif  
     
     TextBuffer()    { Init(); }
     ~TextBuffer()   { Free(); }
@@ -67,7 +85,9 @@ public:
     void     NewlinesToSpaces (bool b) { ConvertNewlines = b; }
 
     void     AddTranslation (char ch, const char * str);
-    void     ClearTranslation (char ch) { Translation[ch] = NULL; }
+    // void     ClearTranslation (char ch) { Translation[ch] = NULL; }
+    // Changed ch to int, to avoid compiler warnings. 
+    void     ClearTranslation (int ch) { Translation[ch] = NULL; }
     void     ClearTranslations () { HasTranslations = false; }
     void     PauseTranslations () { PausedTranslations = true; }
     void     ResumeTranslations () { PausedTranslations = false; }
@@ -79,10 +99,15 @@ public:
     errorT   PrintString (const char * str);
     errorT   PrintSpace ();
     errorT   PrintChar (char b);
+#ifdef WINCE
+    errorT   DumpToFile (/* FILE * */ Tcl_Channel fp);
+#else
+    errorT   DumpToFile (FILE * fp);
+#endif
+
     errorT   PrintInt (uint i, const char * str);
     inline errorT PrintInt (uint i) { return PrintInt (i, ""); }
 
-    errorT   DumpToFile (FILE * fp);
 };
 
 inline void

@@ -38,16 +38,38 @@ class Filter
     uint    FilterCount;    // Number of nonzero values in filter.
     uint    Capacity;       // Number of bytes allocated for Data[].
     byte *  Data;           // The actual filter data.
-
+#ifndef WINCE
+    byte * oldDataTree; // keeps filter data to speed Tree searches (fastMode) 
+#endif
     uint    CachedFilteredCount;  // These members cache the most recent
     uint    CachedIndex;          // filteteredCount to index translation.
     
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     Filter ()           { Init (0); }
     Filter (uint size)  { Init (size); }
-    ~Filter ()          { if (Data != NULL) { delete[] Data; } }
-
+#ifdef WINCE
+    ~Filter ()          { if (Data != NULL) { my_Tcl_Free((char*) Data); } }
+#else
+    ~Filter ()          { if (Data != NULL) { delete[] Data; delete[] oldDataTree; } }
+#endif
     void    Init (uint size);
     uint    Size (void)     { return FilterSize; }
     uint    Count (void)    { return FilterCount; }
@@ -60,6 +82,13 @@ class Filter
     uint    FilteredCountToIndex (uint filteredCount);
     const byte *  GetData () {
         return (const byte *) Data; }    // Used by CompressedFilter class.
+#ifndef WINCE
+    // declarations for "fastmode" tree search (should be made private with getters/setters ?)
+    const byte *  GetOldDataTree () {  return (const byte *) oldDataTree; }    // Used by Tree in fast mode
+    bool isValidOldDataTree; // true if the filter was saved from cache or calculated from all games
+    ushort oldDataTreePly;
+    void saveFilterForFastMode(uint ply);
+#endif
 };
 
 
@@ -102,7 +131,24 @@ class CompressedFilter
     byte *  CompressedData;
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     CompressedFilter (void)     { Init(); }
     ~CompressedFilter (void)    { Clear(); }
 
@@ -116,9 +162,13 @@ class CompressedFilter
 
     void CompressFrom (Filter * filter);
     errorT UncompressTo (Filter * filter);
-
+#ifdef WINCE
+    errorT WriteToFile (/*FILE **/Tcl_Channel  fp);
+    errorT ReadFromFile (/*FILE **/Tcl_Channel  fp);
+#else
     errorT WriteToFile (FILE * fp);
     errorT ReadFromFile (FILE * fp);
+#endif
 };
 
 inline void
@@ -133,7 +183,11 @@ CompressedFilter::Init ()
 inline void
 CompressedFilter::Clear ()
 {
+#ifdef WINCE
+    if (CompressedData != NULL) { my_Tcl_Free((char*) CompressedData); }
+#else
     if (CompressedData != NULL) { delete[] CompressedData; }
+#endif
     Init();
 }
 

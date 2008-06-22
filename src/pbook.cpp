@@ -41,7 +41,11 @@ PBook::SetHashFlag (Position * pos) {
     uint index = hash >> 3;
     uint mask = 1 << (hash & 7);
     if (HashFlags == NULL) {
+#ifdef WINCE
+        HashFlags = (byte *)my_Tcl_Alloc(sizeof( byte [PBOOK_HASH_BYTES]));
+#else
         HashFlags = new byte [PBOOK_HASH_BYTES];
+#endif
         for (uint i=0; i < PBOOK_HASH_BYTES >> 3; i++) { HashFlags[i] = 0; }
     }
     HashFlags[index] |= mask;
@@ -64,11 +68,19 @@ PBook::AddNodeToList (bookNodeT * node)
     ASSERT (NodeListCount <= NodeListCapacity);
     if (NodeListCount >= NodeListCapacity) {
         NodeListCapacity += NodeListCapacity;
+#ifdef WINCE
+        bookNodePtrT * newlist = (bookNodePtrT *)my_Tcl_Alloc(sizeof( bookNodePtrT [NodeListCapacity]));
+#else
         bookNodePtrT * newlist = new bookNodePtrT [NodeListCapacity];
+#endif
         for (uint i=0; i < NodeListCount; i++) {
             newlist[i] = NodeList[i];
         }
+#ifdef WINCE
+        my_Tcl_Free((char*) NodeList);
+#else
         delete[] NodeList;
+#endif
         NodeList = newlist;
     }
     NodeList[NodeListCount] = node;
@@ -96,7 +108,11 @@ PBook::Init ()
     Stats_TotalLookups = 0;
     Stats_TotalInserts = 0;
     NodeListCapacity = 1000;
+#ifdef WINCE
+    NodeList = (bookNodeT**)my_Tcl_Alloc(sizeof(bookNodePtrT [NodeListCapacity]));
+#else
     NodeList = new bookNodePtrT [NodeListCapacity];
+#endif
     NodeListCount = 0;
     HashFlags = NULL;
 }
@@ -110,26 +126,43 @@ PBook::Clear ()
     for (uint i=0; i <= PBOOK_MAX_MATERIAL; i++) {
         Tree[i]->IterateStart();
         while ((node = Tree[i]->Iterate()) != NULL) {
+#ifdef WINCE
+            my_Tcl_Free((char*) node->data.comment);
+#else
             delete[] node->data.comment;
+#endif
         }
         delete Tree[i];
         Tree[i] = new StrTree<bookDataT>;
     }
     NodeListCount = 0;
+#ifdef WINCE
+    if (FileName) { my_Tcl_Free( FileName ); }
+#else
     if (FileName) { delete[] FileName; }
+#endif
     FileName = NULL;
     NextIndex = 0;
     LeastMaterial = PBOOK_MAX_MATERIAL;
     Stats_PositionBytes = 0;
     Stats_CommentBytes = 0;
+#ifdef WINCE
+    my_Tcl_Free((char*) HashFlags);
+#else
     delete[] HashFlags;
+#endif
+
     HashFlags = NULL;
 }
 
 void
 PBook::SetFileName (const char * fname)
 {
+#ifdef WINCE
+    if (FileName) { my_Tcl_Free( FileName ); }
+#else
     if (FileName) { delete[] FileName; }
+#endif
     if (!fname) { FileName = NULL; return; }
 
     // Allocate space for the filename string:
@@ -309,7 +342,12 @@ PBook::Insert (Position * pos, const char * comment)
     pos->PrintCompactStr (cboard);
     err = Tree[material]->Insert (cboard, &node);
     if (err != OK) {  // Already exists; we overwrite the old data.
+#ifdef WINCE
+        my_Tcl_Free((char*) node->data.comment);
+#else
         delete[] node->data.comment;
+#endif
+
     } else {
         SetHashFlag (pos);
         AddNodeToList (node);
@@ -340,8 +378,14 @@ PBook::Delete (Position * pos)
 
     NodeList[node->data.id] = NULL;
     // Delete the comment string:
-    delete[] node->data.comment;
-    delete node;
+#ifdef WINCE
+        my_Tcl_Free((char*) node->data.comment);
+        my_Tcl_Free((char*) node);
+#else
+        delete[] node->data.comment;
+        delete node;
+#endif
+
     Altered = true;
     return OK;
 }
@@ -388,7 +432,11 @@ PBook::EcoSummary (const char * ecoPrefix, DString * dstr)
 uint
 PBook::StripOpcode (const char * opcode)
 {
+#ifdef WINCE
+    char * searchCode = my_Tcl_Alloc(sizeof( char [strLength(opcode) + 2]));
+#else
     char * searchCode = new char [strLength(opcode) + 2];
+#endif
     strCopy (searchCode, opcode);
     strAppend (searchCode, " ");
     DString dstr;
@@ -424,11 +472,19 @@ PBook::StripOpcode (const char * opcode)
             while (*s != 0  &&  *s != '\n') { s++; }
             if (*s == '\n') { s++; }
             while (*s != 0) { dstr.AddChar (*s);  s++; }
-            delete[] node->data.comment;
+#ifdef WINCE
+        my_Tcl_Free((char*) node->data.comment);
+#else
+        delete[] node->data.comment;
+#endif
             node->data.comment = strDuplicate (dstr.Data());
         }
     }
+#ifdef WINCE
+        my_Tcl_Free((char*)searchCode);
+#else
     delete[] searchCode;
+#endif
     return countFound;
 }
 
@@ -615,7 +671,112 @@ PBook::ReadFile ()
     NextIndex = NodeListCount - 1;
     return OK;
 }
+#ifdef WINCE
+errorT
+PBook::WriteFile ()
+{
+    ASSERT (FileName != NULL);
+    bookNodeT * node;
+    //FILE * fp = fopen (FileName, "w");
+    Tcl_Channel fp = my_Tcl_OpenFileChannel(NULL, FileName, "w", 0666);
 
+    if (!fp) { return ERROR_FileOpen; }
+
+      my_Tcl_SetChannelOption(NULL, fp, "-encoding", "binary");
+      my_Tcl_SetChannelOption(NULL, fp, "-translation", "binary");
+
+    Stats_PositionBytes = 0;
+    Stats_CommentBytes = 0;
+
+    Position * pos = new Position;
+    char tempStr [200];
+    for (uint i=0; i < NodeListCount; i++) {
+        node = NodeList[i];
+        if (node == NULL) { continue; }
+        if (pos->ReadFromCompactStr ((const byte *) node->name) != OK) {
+            //fclose (fp);
+            my_Tcl_Close(NULL, fp);
+            delete pos;
+            return ERROR_Corrupt;
+        }
+        pos->SetEPTarget (node->data.enpassant);
+        pos->PrintFEN (tempStr, FEN_CASTLING_EP);
+        //fprintf (fp, "%s", tempStr);
+        my_Tcl_Write(fp, tempStr, strlen(tempStr));
+        Stats_PositionBytes += strLength (tempStr);
+        bool atCodeStart = true;
+        char * s = node->data.comment;
+        char c;
+        while (*s != 0) {
+            if (*s == '\n') {
+                if (! atCodeStart) { /*fputc (';', fp);*/c =';'; my_Tcl_Write(fp, &c, 1); Stats_CommentBytes++; }
+                atCodeStart = true;
+                s++;
+                while (*s == ' ') { s++; }
+            } else {
+                if (atCodeStart) { /*fputc (' ', fp);*/ c =' '; my_Tcl_Write(fp, &c, 1);Stats_CommentBytes++; }
+                atCodeStart = false;
+                // Encode "\" as "\\" and ";" as "\s":
+                char ch = *s;
+                switch (ch) {
+                case '\\':
+                    //fputc ('\\', fp);
+                    //fputc ('\\', fp);
+                    my_Tcl_Write(fp, &ch, 1);
+                    my_Tcl_Write(fp, &ch, 1);
+                    Stats_CommentBytes += 2;
+                    break;
+                case ';':
+                    //fputc ('\\', fp);
+                    //fputc ('s', fp);
+                    c = '\\';
+                    my_Tcl_Write(fp, &c, 1);
+                    c = 's';
+                    my_Tcl_Write(fp, &c, 1);
+                    Stats_CommentBytes += 2;
+                    break;
+                default:
+                    //fputc (ch, fp);
+                    my_Tcl_Write(fp, &ch, 1);
+                    Stats_CommentBytes++;
+                }
+                s++;
+            }
+        }
+        //fputc ('\n', fp);
+        c = '\n';
+        my_Tcl_Write(fp, &c, 1);
+        Stats_CommentBytes++;
+    }
+    //fclose(fp);
+    my_Tcl_Close(NULL, fp);
+    delete pos;
+    Altered = false;
+    return OK;
+}
+
+void
+PBook::DumpStats (/*FILE **/Tcl_Channel fp)
+{
+    char buf[1024];
+    //fprintf (fp, "%d\n", LeastMaterial);
+    sprintf (buf, "%d\n", LeastMaterial);
+    my_Tcl_Write(fp, buf, strlen(buf));
+    for (uint i=LeastMaterial; i <= PBOOK_MAX_MATERIAL; i++) {
+//        fprintf (fp, "%4d %8d (%5.2f%%)   ", i, Stats_Lookups[i],
+//                 (float)Stats_Lookups[i] * 100.0 / Stats_TotalLookups);
+        sprintf (buf, "%4d %8d (%5.2f%%)   ", i, Stats_Lookups[i],
+                 (float)Stats_Lookups[i] * 100.0 / Stats_TotalLookups);
+        my_Tcl_Write(fp, buf, strlen(buf));
+//        fprintf (fp, "%8d (%5.2f%%)\n", Stats_Inserts[i],
+//                 (float)Stats_Inserts[i] * 100.0 / Stats_TotalInserts);
+        sprintf (buf, "%8d (%5.2f%%)\n", Stats_Inserts[i],
+                 (float)Stats_Inserts[i] * 100.0 / Stats_TotalInserts);
+        my_Tcl_Write(fp, buf, strlen(buf));
+    }
+}
+
+#else
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PBook::WriteFile(): writes the entire PBook to a file.
 errorT
@@ -694,6 +855,7 @@ PBook::DumpStats (FILE * fp)
                  (float)Stats_Inserts[i] * 100.0 / Stats_TotalInserts);
     }
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: pbook.cpp

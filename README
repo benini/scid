@@ -1,12 +1,12 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Scid Introduction file.
 
-Scid version: 3.2 (Released: February 2002).
+Scid version: 3.4 (Released: January 2003).
 
 Website for updated releases:
         http://scid.sourceforge.net/
 
-Email address of author:  shane@cosc.canterbury.ac.nz
+Email address of author:  sgh@users.sourceforge.net
 
 IMPORTANT NOTE:
   I don't update this file as often as I should. The website
@@ -23,9 +23,9 @@ CONTENTS
         1.5: Installing Scid (Windows).
         1.6: Customising Scid.
         1.7: What language is Scid written in?
-    2: pgnscid: the PGN->Scid converter program.
-    3: scid: the Tcl/Tk graphical application for Scid databases.
-        3.1: Using chess analysis programs with scid.
+    2: scid: the main application.
+        2.1: Using chess analysis programs with scid.
+    3: pgnscid: the PGN->Scid converter program.
     4: Contacting the author.
     5: Acknowledgements and references.
         5.1: Where to find PGN game files.
@@ -52,11 +52,15 @@ CONTENTS
 
       - scid is the main application, with a graphical user interface.
 
-      - pgnscid is a text-based program that does one task: to convert
-          PGN files into scid format. Since you can open PGN files in
-          scid, this program is not really required.
+      - scidlet is a WinBoard-compatible chess engine which can be used
+          in Scid to analyze chess positions.
 
-    Other executable programs for Unix users are:
+      - pgnscid is a command-line (console) program that does one task: it
+          converts PGN files into scid format. Since you can open PGN files
+          in scid, this program is not really required.
+
+    Other executable programs for Unix users include:
+
       - tkscid is the Tcl/Tk interpreter that the program "scid" executes.
         tcscid is a Tcl-only (non-graphical) version of tkscid.
         You will usually invoke tkscid or tcscid as part of a Tcl/Tk script
@@ -76,22 +80,6 @@ CONTENTS
           possible name corrections, then marks all duplicate games deleted.
           Example usage: sc_spell mybase spelling.ssp
 
-      - sc_epgn and sc_addmove are Tcl scripts that use tcscid to perform
-          small tasks on Scid databases.  sc_addmove adds a move (or
-          sequence of moves) to a game in a database. For example:
-                sc_addmove mygames 3 exd5 cxd5
-          adds the move exd5 followed by cxd5 to game 3.
-
-          sc_epgn prints games from a Scid database in PGN format, with
-          NO comments, variations or non-standard tags. For example:
-                sc_epgn mygames 4 5
-          prints games 4 and 5 to standard output.
-
-          I find these two commands very useful for managing my email
-          correspondence games. The reason I made sc_epgn print games
-          without comments and variations is that I don't want to send my
-          analysis to my opponents, only the game moves. :)
-
  1.3: Copyright.
  
     Scid is copyrighted software. It is freely distributable under the
@@ -99,7 +87,7 @@ CONTENTS
     See the COPYING file for details.
     If you use Scid often and find it useful, please consider making a
     donation to the author, of any amount you feel appropriate.
-    Email me <shane@cosc.canterbury.ac.nz> for my postal address if you
+    Email me <sgh@users.sourceforge.net> for my postal address if you
     want to pay a small token fee for Scid.
 
  1.4: Installing Scid (Unix).
@@ -131,42 +119,18 @@ CONTENTS
         ./configure BINDIR=/usr/local/bin
         make install
 
-    After making the programs, you may want to type "make strip" to strip
-    the program files of unnecessary data, to make them smaller.
-
     I have only tried compiling with "g++", the GNU C++ compiler. Others
     should work fine, I imagine.
 
  1.5: Installing Scid (Windows).
 
-    The Scid package for Windows contains executable files so no compiling
-    is required. However, since Scid uses the scripting language Tcl/Tk
-    (pronounced "tickle-tee-kay") for its user interface, you must install
-    Tcl/Tk before you can run Scid.
-    You can download the Tcl/Tk dynamic link library (DLL) files for Windows
-    from the website:
+    The Scid download for Windows is an executable installer program.
+    Run the installer to install Scid. It will let you select the
+    Scid installation folder, a start menu for Scid, etc.
 
-         http://tcl.activestate.com/software/tcltk/download83.html
-
-    At the time of writing this, Tcl/Tk 8.3.2 is the most recent version,
-    follow the download link from there and download "tcl832.exe".
-
-    The Scid package for Windows contains two executable files:
-      - scid.exe (the main application, with a graphical user interface)
-      - pgnscid.exe (creates Scid databases from PGN files)
-
-    Only scid.exe is a graphical application which requires Tcl/Tk; the
-    other is a text-only program that you should run from the command line.
-
-    Note that for scid.exe to run properly, the file scid.gui (which contains
-    user interface data) must be in the same directory as scid.exe.
-
-    One final note: a user of Japanese Windows found that Scid would not
-    start, because of encoding conflicts with the foreign language messages
-    in Scid. To solve this, the Scid windows package comes with a file
-    named "escid.gui" which is identical to "scid.gui" except that it has
-    only English messages. If you have this problem, simply rename escid.gui
-    to scid.gui and Scid should start successfully.
+    After installing Scid for Windows, the executable files (including
+    the main application program, scid.exe) can be found in the "bin"
+    folder under the Scid installation folder.
 
  1.6: Customising Scid.
 
@@ -175,7 +139,7 @@ CONTENTS
     are saved to the file ".scid" in your home directory for Unix users, or
     the file "scid.opt" in the same directory as scid.exe for Windows users.
     BE VERY CAREFUL if you edit your Scid options file by hand, because it
-    will not work if you do not preserve its Tcl language format.
+    will not work if you do not preserve its format.
 
  1.7: What language is Scid written in? Why was it written?
 
@@ -190,22 +154,7 @@ CONTENTS
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2: Pgnscid: the PGN->scid converter.
-
-    Pgnscid is the utility that converts PGN files into Scid format.
-    Its usage is simple: it takes one parameter, the name of the PGN file.
-    Given a file "games.pgn", for example, it creates games.si, games.sn
-    and games.sg, the three essential Scid files for the database. It also
-    creates games.log which will contain any errors or warnings.
-
-    Pgnscid can accept two optional parameters, before the PGN filename:
-        -f   Force overwriting of an existing Scid database. By default,
-             pgnscid will not overwrite an existing database.
-
-        -x   Ignore text between games, do not store it as pre-game comments.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-3: Scid: the graphical scid application.
+2: Scid: the main application.
 
     The program "scid" is the main Scid program. It is a Tcl/Tk program
     that uses "tkscid", a Tcl/Tk interpreter extended to support Scid
@@ -222,14 +171,33 @@ CONTENTS
     Scid provides an online help index; read the help pages for
     more information on using the program.
 
- 3.1: Using chess analysis programs with scid
+ 2.1: Using chess analysis programs with scid
 
     The Scid analysis window provides a way to have a chess program 
     such as Robert Hyatt's "Crafty" analyse the current position, 
     automatically restarting the analysis whenever the position changes.
 
-    Most xboard-compatible chess programs should work in the Scid analysis
+    Most WinBoard-compatible chess programs should work in the Scid analysis
     window, even those that do not have an "analyze" command.
+
+    Scid comes with a small chess engine called Scidlet as the default
+    analysis engine.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3: Pgnscid: the PGN->scid converter.
+
+    Pgnscid is the utility that converts PGN files into Scid format.
+    Its usage is simple: it takes one parameter, the name of the PGN file.
+    Given a file "games.pgn", for example, it creates games.si, games.sn
+    and games.sg, the three essential Scid files for the database. It also
+    creates games.log which will contain any errors or warnings.
+
+    Pgnscid can accept two optional parameters, before the PGN filename:
+        -f   Force overwriting of an existing Scid database. By default,
+             pgnscid will not overwrite an existing database.
+
+        -x   Ignore text between games, do not store it as pre-game comments.
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,7 +205,7 @@ CONTENTS
 
     Feedback about Scid is most welcome. My email address is:
 
-        shane@cosc.canterbury.ac.nz
+        sgh@users.sourceforge.net
 
     You can also contribute improvements or bug fixes to the program,
     or just let me know what you'd like to see added to Scid.
@@ -311,7 +279,7 @@ PGN game collections, etc I have mentioned above, for what they have
 given to the chess community. I hope you enjoy using Scid!
 
 Shane Hudson
-shane@cosc.canterbury.ac.nz
-November 2001
+sgh@users.sourceforge.net
+January 2003
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -99,8 +99,13 @@ uint
 scid_TB_Init (const char * egtb_path)
 {
     EGTB_maxpieces = (uint) IInitializeTb ((char *) egtb_path);
+#ifdef WINCE
+    if (EGTB_cache != NULL) { my_Tcl_Free( (char *) EGTB_cache); }
+    EGTB_cache = (byte *)my_Tcl_Alloc(sizeof(byte [EGTB_cachesize]));
+#else
     if (EGTB_cache != NULL) { delete[] (byte *) EGTB_cache; }
     EGTB_cache = new byte [EGTB_cachesize];
+#endif
     FTbSetCacheSize (EGTB_cache, EGTB_cachesize);
     return EGTB_maxpieces;
 }

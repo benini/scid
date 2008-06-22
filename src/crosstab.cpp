@@ -12,6 +12,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#ifndef WINCE
+
 #include "crosstab.h"
 
 // Expected differences in rating according to performance
@@ -148,16 +150,29 @@ Crosstable::Destroy ()
     for (uint player=0; player < PlayerCount; player++) {
         playerDataT * pdata = PlayerData[player];
         ASSERT (pdata != NULL);
+#ifdef WINCE
+        my_Tcl_Free((char*)pdata->name);
+#else
         delete[] pdata->name;
+#endif
         for (uint opp = 0; opp < PlayerCount; opp++) {
             clashT * clash = pdata->firstClash[opp];
             while (clash != NULL) {
                 clashT * temp = clash->next;
+#ifdef WINCE
+        my_Tcl_Free((char*)clash);
+#else
                 delete clash;
+#endif
                 clash = temp;
             }
         }
+
+#ifdef WINCE
+        my_Tcl_Free((char*)pdata);
+#else
         delete pdata;
+#endif
     }
 }
 
@@ -177,8 +192,12 @@ Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
         }
     }
     if (PlayerCount == CROSSTABLE_MaxPlayers) { return ERROR_Full; }
-
+#ifdef WINCE
+    playerDataT * pdata = (playerDataT *) my_Tcl_Alloc(sizeof( playerDataT));
+#else
     playerDataT * pdata = new playerDataT;
+#endif
+
     PlayerData[PlayerCount] = pdata;
     pdata->id = id;
     pdata->name = strDuplicate (name);
@@ -247,8 +266,12 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
 
     // The number of prior encounters must be consistent:
     ASSERT (pwhite->clashCount[blackIdx] == pblack->clashCount[whiteIdx]);
-
+#ifdef WINCE
+    clashT * whiteClash = (clashT *) my_Tcl_Alloc(sizeof( clashT));
+#else
     clashT * whiteClash = new clashT;
+#endif
+
     if (pwhite->firstClash[blackIdx] == NULL) {  // New head of list:
         pwhite->firstClash[blackIdx] = whiteClash;
     } else {
@@ -257,7 +280,11 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
     whiteClash->next = NULL;
     pwhite->lastClash[blackIdx] = whiteClash;
 
+#ifdef WINCE
+    clashT * blackClash = (clashT *) my_Tcl_Alloc(sizeof( clashT));
+#else
     clashT * blackClash = new clashT;
+#endif
     if (pblack->firstClash[whiteIdx] == NULL) { // New head of list:
         pblack->firstClash[whiteIdx] = blackClash;
     } else {
@@ -307,21 +334,25 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
     switch (result) {
     case RESULT_White:
         pwhite->score += 2;
-	if (pblack->elo > 0)
-	   pwhite->oppEloScore += 2;
+        if (pblack->elo > 0) {
+            pwhite->oppEloScore += 2;
+        }
         break;
     case RESULT_Black:
         pblack->score += 2;
-	if (pwhite->elo > 0)
-	   pblack->oppEloScore += 2;
+        if (pwhite->elo > 0) {
+            pblack->oppEloScore += 2;
+        }
         break;
     case RESULT_Draw:
         pwhite->score++;
         pblack->score++;
-	if (pblack->elo > 0)
-	   pwhite->oppEloScore ++;
-	if (pwhite->elo > 0)
-	   pblack->oppEloScore ++;
+        if (pblack->elo > 0) {
+            pwhite->oppEloScore ++;
+        }
+        if (pwhite->elo > 0) {
+            pblack->oppEloScore ++;
+        }
         break;
     default:
         break;  // Nothing.
@@ -376,8 +407,8 @@ Crosstable::Tiebreaks (crosstableModeT mode)
 crosstableModeT
 Crosstable::BestMode (void)
 {
-    // If 10 players of less, use all-play-all:
-    if (PlayerCount <= 10) { return CROSSTABLE_AllPlayAll; }
+    // If 12 players of less, use all-play-all:
+    if (PlayerCount <= 12) { return CROSSTABLE_AllPlayAll; }
     // If more than 30 players, use Swiss:
     if (PlayerCount > 30) { return CROSSTABLE_Swiss; }
     // If less than 5 games per player on average, use Swiss:
@@ -619,10 +650,11 @@ Crosstable::PrintPlayer (DString * dstr, playerDataT * pdata)
     dstr->Append (StartCol, stemp, EndCol);
 
     if (PrintRatings) {
-        if (pdata->elo)
+        if (pdata->elo) {
             sprintf (stemp, "%4u ", pdata->elo);
-        else 
-	    strcpy (stemp, "     ");
+        } else {
+            strcpy (stemp, "     ");
+        }
         dstr->Append (StartRightCol, stemp, EndRightCol);
     }
     if (PrintTitles) {
@@ -657,13 +689,13 @@ Crosstable::PrintPerformance (DString * dstr, playerDataT * pdata)
     if (performance > 0  &&  performance < 5000) {
         char stemp [20];
         if (pdata->elo) {
-	    int change = RatingChange(pdata->elo, oppAvgRating, 
-	                              percentage, pdata->oppEloCount);
+            int change = RatingChange (pdata->elo, oppAvgRating, 
+                                       percentage, pdata->oppEloCount);
             sprintf (stemp, "%4d %+3d", performance, change);
-	    }
-        else 
-	    sprintf (stemp, "%4d", performance);
-	dstr->Append ("   ", StartRightCol, stemp, EndRightCol);
+        } else {
+            sprintf (stemp, "%4d", performance);
+        }
+        dstr->Append ("   ", StartRightCol, stemp, EndRightCol);
     }
 }
 
@@ -1076,7 +1108,7 @@ Crosstable::PrintKnockout (DString * dstr, uint playerLimit)
     }
 }
 
-
+#endif // WINCE
 //////////////////////////////////////////////////////////////////////
 //  EOF: crosstab.cpp
 //////////////////////////////////////////////////////////////////////

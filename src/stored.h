@@ -26,11 +26,30 @@ class StoredLine {
     static void Init (void);
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif  
+
+    static void FreeStoredLine ();
     static uint Count (void);
     static const char * GetText (uint code);
     static Game * GetGame (uint code);
-
+    static bool isInitialized(void);
 };
 
 #endif  // #ifndef SCID_STORED_H

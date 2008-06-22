@@ -4,9 +4,9 @@
 //              Game class for Scid.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.4
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2000-2003 Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -25,11 +25,16 @@
 #include "bytebuf.h"
 #include "matsig.h"
 
+void transPieces(char *s);
+char transPiecesChar(char c);
+
+// Piece letters translation
+extern int language; // default to english
+//  0 = en, 1 = fr, 2 = es, 3 = de
+extern char * langPieces[];
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  Game: Constants
-
-
 
 // Common NAG Annotation symbol values:
 const byte
@@ -39,6 +44,7 @@ const byte
     NAG_Blunder = 4,
     NAG_InterestingMove = 5,
     NAG_DubiousMove = 6,
+    NAG_OnlyMove = 8, // new
     NAG_Equal = 10,
     NAG_Unclear = 13,
     NAG_WhiteSlight = 14,
@@ -49,11 +55,44 @@ const byte
     NAG_BlackDecisive = 19,
     NAG_WhiteCrushing = 20,
     NAG_BlackCrushing = 21,
+    NAG_ZugZwang = 22, // new
+    NAG_MoreRoom = 26, // new
+    NAG_DevelopmentAdvantage = 35,  // new
+    NAG_WithInitiative = 36, //new
+    NAG_WithAttack = 40, // new
     NAG_Compensation = 44,
+    NAG_Centre = 50, // new
+    NAG_KingSide = 58, // new
+    NAG_QueenSide = 62, // new
+    NAG_CounterPlay = 132, // new
+    NAG_TimeLimit = 136, // new
+    NAG_WithIdea = 140, // new
+    NAG_BetterIs = 142, // new
+    NAG_VariousMoves = 144, // new
+    NAG_Comment = 145, // new
     NAG_Novelty = 146,
-    NAG_Diagram = 201;  // Scid-specific NAGs start at 201.
+    NAG_WeakPoint = 147, // new
+    NAG_Ending = 148, // new
+    NAG_File = 149, // new
+    NAG_Diagonal = 150, // new
+    NAG_BishopPair = 151, // new
+    NAG_OppositeBishops = 153, // new
+    NAG_SameBishops = 154, // new
+    NAG_Etc = 190, // new
+    NAG_DoublePawns = 191, // new
+    NAG_SeparatedPawns = 192, // new
+    NAG_UnitedPawns = 193, // new
+    NAG_Diagram = 201,  // Scid-specific NAGs start at 201.
+    NAG_See = 210,  // new
+    NAG_Mate = 211, // new 
+    NAG_PassedPawn = 212, // new
+    NAG_MorePawns = 213, //new
+    NAG_With = 214, // new
+    NAG_Without = 215;
 
-
+// MAX_NAGS: Maximum id of NAG codes
+const byte MAX_NAGS_ARRAY = 215;
+    
 // MAX_TAGS: Maximum number of additional non-standard tags.
 const uint MAX_TAGS =  40;
 
@@ -114,7 +153,11 @@ isNullMove (moveT * m)
 // Freed moves can be added to the FreeList, but it is not essential to
 // do so, since all space for moves is deleted when the game is cleared.
 
-#define MOVE_CHUNKSIZE 100    // Allocate space for 100 moves at a time.
+#ifdef WINCE
+  #define MOVE_CHUNKSIZE 60    // Save memory (especially for Tree). What is the impact on memory fragmentation ?
+#else
+  #define MOVE_CHUNKSIZE 100    // Allocate space for 100 moves at a time.
+#endif
 
 struct moveChunkT {
     moveT moves [MOVE_CHUNKSIZE];
@@ -122,6 +165,14 @@ struct moveChunkT {
     moveChunkT * next;
 };
 
+#ifdef WINCE
+#define MOVE_CHUNKSIZE_LOWMEM 25
+struct moveChunkLowMemT {
+    moveT moves [MOVE_CHUNKSIZE_LOWMEM];
+    uint numFree;
+    moveChunkLowMemT * next;
+};
+#endif
 
 struct tagT
 {
@@ -171,6 +222,8 @@ uint strGetRatingType (const char * name);
 
 //////////////////////////////////////////////////////////////////////
 //  Game:  Class Definition
+
+static Position staticPosition;
 
 class Game
 {
@@ -233,7 +286,7 @@ private:
 
     NameBase *  NBase;      // needed for referencing id numbers.
 
-    tagT        TagList [MAX_TAGS];
+    tagT        TagList [	MAX_TAGS];
     uint        NumTags;
 
     uint        NumMovesPrinted; // Used in recursive WriteMoveList method.
@@ -247,7 +300,10 @@ private:
                                  // PGN output, as a byte offset.
     uint        PgnNextMovePos;  // The place of the next move in the
                                  // PGN output, as a byte offset.
-
+#ifdef WINCE
+    bool        LowMem; // set to true if the game should use a low memory chuncksize
+    moveChunkLowMemT * MoveChunkLowMem;
+#endif
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Private Functions
 
@@ -261,18 +317,35 @@ private:
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Public Functions
 public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
+
+#ifdef WINCE
+    Game()      { LowMem = false; Init(); }
+// Position costs 1028 bytes : use a global one as this will only be called by sc_tree
+// when LowMem is set
+    Game(bool b)      { LowMem = true; CurrentPos = &staticPosition; Init(); }
+#else
     Game()      { Init(); }
-    ~Game() {
-        // Delete the comment string allocator object:
-        delete StrAlloc;
-        // Delete the Current position:
-        delete CurrentPos;
-        // Delete the saved position:
-        if (SavedPos) { delete SavedPos; }
-        // Delete the start position:
-        if (StartPos) { delete StartPos; }
-    };
+#endif
+
+    ~Game();
 
     void        Clear();
     void        ClearMoves();
@@ -328,8 +401,10 @@ public:
     errorT   AddVariation ();
     errorT   DeleteSubVariation (moveT * m);
     errorT   DeleteVariation (uint varNumber);
+    errorT   DeleteVariationAndFree (uint varNumber);
     errorT   FirstVariation (uint varNumber);
     errorT   MainVariation (uint varNumber);
+		uint 		 GetVarNumber();
 
     void     SetMoveComment (const char * comment);
     char *   GetMoveComment () { return CurrentMove->prev->comment; }
@@ -348,22 +423,24 @@ public:
     errorT   MoveIntoVariation (uint varNumber);
     errorT   MoveExitVariation ();
 
-    int      AtStart ()
+    bool     AtStart ()
                  { return (CurrentMove->prev->marker == START_MARKER  &&
                            VarDepth == 0); }
-    int      AtEnd ()
+    bool     AtEnd ()
                  { return (CurrentMove->marker == END_MARKER  &&
                            VarDepth == 0); }
-    int      AtVarStart ()
+    bool     AtVarStart ()
                  { return (CurrentMove->prev->marker == START_MARKER); }
-    int      AtVarEnd ()
+    bool     AtVarEnd ()
                  { return (CurrentMove->marker == END_MARKER); }
     uint     GetVarLevel () { return VarDepth; }
     uint      GetNumVariations ()
                  { return (uint) CurrentMove->numVariations; }
 
     void     Truncate ();
-    void     TruncateBegin ();
+    void     TruncateAndFree ();
+
+    void     TruncateStart ();
 
     void     SetEventStr (const char * str);
     void     SetSiteStr (const char * str);
@@ -417,6 +494,8 @@ public:
     // PGN conversion
     void      GetSAN (char * str);
     void      GetPrevSAN (char * str);
+    void      GetPrevMoveUCI (char * str);
+
     void      WriteComment (TextBuffer * tb, const char * preStr,
                             const char * comment, const char * postStr);
     errorT    WriteMoveList (TextBuffer * tb, uint plyCount,
@@ -425,8 +504,11 @@ public:
     errorT    WritePGN (TextBuffer * tb, uint stopLocation);
     errorT    WriteToPGN (TextBuffer * tb);
     errorT    MoveToLocationInPGN (TextBuffer * tb, uint stopLocation);
+#ifdef WINCE
+    errorT    WriteExtraTags (/*FILE **/Tcl_Channel fp);
+#else
     errorT    WriteExtraTags (FILE * fp);
-
+#endif
     uint      GetPgnOffset (byte nextMoveFlag) {
         return (nextMoveFlag ? PgnNextMovePos : PgnLastMovePos);
     }

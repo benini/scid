@@ -4,9 +4,9 @@
 //              PgnParser class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.0
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -28,6 +28,7 @@
 #include "dstring.h"
 
 #define MAX_UNGETCHARS 16
+static const uint MAX_IGNORED_TAGS = 16;
 
 class PgnParser
 {
@@ -39,8 +40,9 @@ class PgnParser
     uint   LineCounter;
     int    EndChar;
     uint   BytesSeen;
-
+#ifndef WINCE
     FILE * ErrorFile;
+#endif
     DString * ErrorBuffer;
     uint   NumErrors;
 
@@ -51,8 +53,11 @@ class PgnParser
     bool   ResultWarnings;
     bool   NewlinesToSpaces;   // Whether to convert newlines in comments
 
+    uint   NumIgnoredTags;
+    char * IgnoredTags [MAX_IGNORED_TAGS];
+
     uint   UnGetCount;
-    int    UnGetCh[MAX_UNGETCHARS];
+    int    UnGetCh [MAX_UNGETCHARS];
 
     inline int    GetChar();
     inline void   UnGetChar (int ch);
@@ -75,14 +80,30 @@ class PgnParser
     tokenT GetGameToken (char * buffer, uint bufSize);
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     // Constructors: PgnParser is initialised with a file pointer or
     //    a pointer to a buffer, or it defaults to an empty buffer.
     PgnParser (void) { Init ((const char *) ""); }
     PgnParser (MFile * infile) { Init (infile); }
     PgnParser (const char * inbuffer) { Init (inbuffer); }
-    ~PgnParser() { delete ErrorBuffer; }
-
+    ~PgnParser() { delete ErrorBuffer; ClearIgnoredTags(); }
     void   Init (MFile * infile);
     void   Init (const char * inbuffer);
 
@@ -93,8 +114,9 @@ class PgnParser
     uint   ErrorCount() { return NumErrors; }
     const char * ErrorMessages() { return ErrorBuffer->Data(); }
     void   ClearErrors();
+#ifndef WINCE
     void   SetErrorFile (FILE * fp) { ErrorFile = fp; }
-
+#endif
     void   KeepPreGameText() { StorePreGameText = true; }
     void   IgnorePreGameText() { StorePreGameText = false; }
     void   SetPreGameText (bool b) { StorePreGameText = b; }
@@ -102,10 +124,15 @@ class PgnParser
     void   SetResultWarnings (bool b) { ResultWarnings = b; }
     void   SetNewlinesToSpaces (bool b) { NewlinesToSpaces = b; }
 
+    void   AddIgnoredTag (const char * tag);
+    void   ClearIgnoredTags ();
+    bool   IsIgnoredTag (const char * tag);
+
     tokenT GetNextToken (char * buffer, uint bufSize);
 
     errorT ParseGame (Game * game);
-    errorT ParseMoves (Game * game, char * buffer, int bufSize);
+    errorT ParseMoves (Game * game);
+    errorT ParseMoves (Game * game, char * buffer, uint bufSize);
 
 };
 

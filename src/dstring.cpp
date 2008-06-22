@@ -21,7 +21,11 @@ void
 DString::Init (uint capacity)
 {
     if (capacity < DSTRING_MinCapacity) { capacity = DSTRING_MinCapacity; }
+#ifdef WINCE
+    Start = my_Tcl_Alloc(sizeof(char [capacity]));
+#else
     Start = new char [capacity];
+#endif
     Start[0] = 0;
     Len = 0;
     Capacity = capacity;
@@ -38,10 +42,17 @@ DString::Extend (uint neededLength)
     // Double the capacity of the string until it is long enough:
     uint newCapacity = Capacity;
     while (newCapacity <= neededLength) { newCapacity += newCapacity; }
-
+#ifdef WINCE
+    char * newStart = (char*) my_Tcl_Alloc(sizeof (char [newCapacity]));
+#else
     char * newStart = new char [newCapacity];
+#endif
     for (uint i=0; i <= Len; i++) { newStart[i] = Start[i]; }
+#ifdef WINCE
+    my_Tcl_Free( Start);
+#else
     delete[] Start;
+#endif
     Start = newStart;
     Capacity = newCapacity;
     return;

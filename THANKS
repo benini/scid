@@ -2,6 +2,14 @@
 Scid: Thanks and Acknowledgements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Updated April 2007 :
+------------------
+- I would like to thank all people who encouraged me and helped in continuing Scid development, especially (in no particular order) :
+Marc Lacrosse (for many useful orientations and hints, and for proving Anand is beatable :-) )
+Michal Rudolf
+Hans Ericson
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 There are a lot of people who have, in some way, helped Scid become
 what it is today.
 
@@ -12,14 +20,15 @@ reports at some time, with apologies to the many people I have missed:
   Dann Corbit, Garth Corral, Scott Franklin, Jens Guballa, Udo Held,
   Peter Herttrich, Kent Hunt, Gerard Jungman, Allen Lake, Ingo Lohmar,
   Mark Oakden, Joel Rivat, Michal Rudolf, Alberto Santini, Julien Scharl,
-  Bradley Small, Kayvan A. Sylvan, Ignacio Urbelz, John Wiegley.
+  Bradley Small, Daniel South, Kayvan A. Sylvan, Ignacio Urbelz,
+  John Wiegley.
 
 Thank you to the following people who have helped with translation:
 
   Gilles Maire, Vincent Serisier, Joel Rivat, Pascal Heisel (French);
   Bernhard Bialas, Jürgen Clos, et al (German);
   Giancarlo Bassi, Paolo Montrasi, Michele Rinesi (Italian);
-  Jordi González Boada (Spanish -- including help pages, great work!);
+  Jordi González Boada (Spanish);
   Gilberto de Almeida Peres (Portuguese-Brazilian);
   J.Kees Hofkamp, Jan Krabbenbos, Leander Laruelle (Netherlands);
   Martin Skjöldebrand (Swedish);
@@ -28,6 +37,9 @@ Thank you to the following people who have helped with translation:
   Pavel Hanak (Czech);
   Gábor Szõts (Hungarian);
   Milos Pejovic (Serbian/Yugoslav).
+
+A HUGE THANKS to Michal Rudolf who did most of the code maintenance of
+Scid during 2003 when I was offline.
 
 Thanks to Manuel Hoelss for programming the "Promote variation to
 main line" function (which was added to Scid 2.4); to John Wiegley
@@ -60,4 +72,4 @@ rather remain anonymous, just send me an email.
 
 -- 
 Shane Hudson
-shane@cosc.canterbury.ac.nz
+sgh@users.sourceforge.net

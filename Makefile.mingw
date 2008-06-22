@@ -1,16 +1,17 @@
-### Windows (MinGW) Makefile for the Scid chess database package.
-### Copyright (C) 2002, Shane Hudson (sgh@users.sourceforge.net)
+### Windows (MinGW) Makefile for the scid chess database package.
+### Copyright (C) 2002-2003, Shane Hudson (sgh@users.sourceforge.net)
 
 # This make file is designed for use with make from the MinGW package.
 # MinGW is a minimal GNU for Windows package.
 # If the MinGW bin folder is in your path, run this makefile
 # with the command:     make -f Makefile.mingw
+# or you may need:      mingw32-make -f Makefile.mingw
 
 ###
 # Project directories: you will need to edit these according to your
 # Visual C++ or Visual Studio installation, and Tcl/Tk installation.
 
-MINGW_BIN = C:\MinGW\bin
+MINGW_BIN = C:\Dev-Cpp\bin
 TCL_DIR = C:\Tcl
 
 # Tcl/Tk version: it should be "83" for Tcl/Tk 8.3, etc.
@@ -21,6 +22,7 @@ TCL_VERSION = 84
 COMPILE = "$(MINGW_BIN)\g++.exe"
 CC = "$(MINGW_BIN)\gcc.exe"
 LINK = "$(MINGW_BIN)\g++.exe"
+RC = "$(MINGW_BIN)\windres.exe"
 
 TCL_INCLUDE = -I"$(TCL_DIR)\include"
 TCL_LIB = "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
@@ -36,23 +38,51 @@ TK_LIB = "$(TCL_DIR)\lib\tk$(TCL_VERSION).lib" "$(TCL_DIR)\lib\tcl$(TCL_VERSION)
 ###    Use:   TB =                   for no tablebase reading capability.
 TB = -DSCID_USE_TB -DT41_INCLUDE
 
-###: OPT: Optimization
-OPT = -O3 -fno-rtti -fno-exceptions
+### OPT: C/C++ Optimization
+OPT = -O3
 
-### CFLAGS: C++ compiler flags
-CFLAGS = -DZLIB -DWIN32 $(OPT)
+### CPPOPT: Optimization for C++ only (not C)
+CPPOPT = -fno-rtti -fno-exceptions
+
+### WARNINGS: Compiler warnings
+WARNINGS = -Wall
+
+### PROFILE: Use "-pg" for profiling in g++
+#PROFILE = -fprofile-arcs -ftest-coverage
+PROFILE=
+
+# LFLAGS: Linker flags
+LFLAGS = $(PROFILE)
+
+### CPPFLAGS: C++ compiler flags
+CPPFLAGS = -DZLIB -DWIN32 $(OPT) $(CPPOPT) $(PROFILE) $(WARNINGS)
+
+### CPPFLAGSNOWARN: C++ compiler flags without warnings
+CPPFLAGSNOWARN = -DZLIB -DWIN32 $(OPT) $(CPPOPT) $(PROFILE)
+
+### CFLAGS: C (not C++) compiler flags
+CFLAGS = -DZLIB -DWIN32 $(OPT) $(PROFILE)
+
 
 ### EXECS: all the evecutable programs compiled from C++ files.
 EXECS= pgnscid.exe scidt.exe scid.exe tcscid.exe scmerge.exe eco2epd.exe scidlet.exe
 
-### SCIDOBJS: not all the .o files that make up Scid, just the standard
-###   files that most of the Scid programs use.
+### SCIDOBJS: not all the .o files that make up scid, just the standard
+###   files that most of the scid programs use.
 ###
 SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
       src\position.obj src\game.obj src\gfile.obj src\matsig.obj \
       src\bytebuf.obj src\textbuf.obj src\myassert.obj src\stralloc.obj \
       src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj \
-      src\movelist.obj
+      src\movelist.obj \
+      src\polyglot\attack.o src\polyglot\board.o src\polyglot\book.o \
+			src\polyglot\book_make.o src\polyglot\book_merge.o src\polyglot\colour.o \
+      src\polyglot\fen.o src\polyglot\game.o src\polyglot\hash.o \
+      src\polyglot\io.o src\polyglot\line.o src\polyglot\list.o src\polyglot\main.o src\polyglot\move.o \
+      src\polyglot\move_do.o src\polyglot\move_gen.o src\polyglot\move_legal.o src\polyglot\option.o \
+      src\polyglot\parse.o src\polyglot\pgn.o src\polyglot\piece.o src\polyglot\random.o \
+      src\polyglot\san.o src\polyglot\search.o src\polyglot\square.o src\polyglot\util.o
+
 
 ### ZLIBOBJS: object files in the zlib compression library.
 ###
@@ -62,24 +92,51 @@ ZLIBOBJS= src\zlib\adler32.obj src\zlib\compress.obj src\zlib\crc32.obj \
       src\zlib\infblock.obj src\zlib\inftrees.obj src\zlib\infcodes.obj \
       src\zlib\infutil.obj src\zlib\inffast.obj
 
-### OBJS: all standard object files for Scid.
+### OBJS: all standard object files for scid.
 ###
 OBJS= $(SCIDOBJS) $(ZLIBOBJS)
 
-### LANGUAGES: all the extra language files for Scid.
-LANGUAGES = tcl\deutsch.tcl tcl\francais.tcl tcl\italian.tcl \
-      tcl\nederlan.tcl tcl\spanish.tcl tcl\portbr.tcl tcl\swedish.tcl \
-      tcl\norsk.tcl tcl\polish.tcl tcl\czech.tcl tcl\hungary.tcl tcl\serbian.tcl
+### LANGUAGES: all the extra language files for scid.
+LANGUAGES = tcl\lang\deutsch.tcl tcl\lang\francais.tcl tcl\lang\italian.tcl tcl\lang\russian.tcl \
+      tcl\lang\nederlan.tcl tcl\lang\spanish.tcl tcl\lang\portbr.tcl tcl\lang\swedish.tcl \
+      tcl\lang\norsk.tcl tcl\lang\polish.tcl tcl\lang\czech.tcl tcl\lang\hungary.tcl tcl\lang\serbian.tcl
 
 ### TCLS: all the .tcl files that make up "scid".
-TCLS= tcl\start.tcl tcl\bitmaps.tcl tcl\menus.tcl tcl\windows.tcl \
-      tcl\htext.tcl tcl\help.tcl tcl\tips.tcl tcl\misc.tcl tcl\search.tcl \
-      tcl\ezsmtp\ezsmtp.tcl \
-      tcl\email.tcl tcl\epd.tcl tcl\fontsel.tcl tcl\basewind.tcl \
-      tcl\import.tcl tcl\spellchk.tcl tcl\graph.tcl tcl\maint.tcl \
-      tcl\optable.tcl tcl\analysis.tcl tcl\wbdetect.tcl tcl\reper.tcl \
-      tcl\lang.tcl tcl\english.tcl $(LANGUAGES) \
-      tcl\bookmark.tcl tcl\board.tcl tcl\tb.tcl tcl\end.tcl
+TCLS= \
+  tcl\start.tcl \
+  tcl\config.tcl \
+  tcl\bitmaps.tcl \
+  tcl\language.tcl \
+  tcl\utils.tcl \
+    tcl\utils\date.tcl tcl\utils\font.tcl tcl\utils\graph.tcl tcl\utils\history.tcl \
+    tcl\utils\pane.tcl tcl\utils\sound.tcl tcl\utils\string.tcl tcl\utils\tooltip.tcl \
+    tcl\utils\validate.tcl tcl\utils\win.tcl \
+  tcl\misc\misc.tcl tcl\htext.tcl \
+  tcl\contrib\combobox.tcl \
+  tcl\file.tcl \
+    tcl\file\finder.tcl tcl\file\bookmark.tcl tcl\file\recent.tcl tcl\file\epd.tcl \
+    tcl\file\spellchk.tcl tcl\file\maint.tcl \
+  tcl\edit.tcl \
+  tcl\game.tcl \
+    tcl\game\browser.tcl \
+  tcl\windows.tcl \
+    tcl\windows\gamelist.tcl tcl\windows\pgn.tcl tcl\windows\book.tcl \
+    tcl\windows\comment.tcl tcl\windows\eco.tcl \
+    tcl\windows\stats.tcl tcl\windows\tree.tcl tcl\windows\crosstab.tcl \
+    tcl\windows\pfinder.tcl tcl\windows\tourney.tcl tcl\windows\switcher.tcl \
+  tcl\search\search.tcl \
+    tcl\search\board.tcl tcl\search\header.tcl tcl\search\material.tcl \
+  tcl\contrib\ezsmtp\ezsmtp.tcl \
+    tcl\tools\email.tcl \
+    tcl\tools\import.tcl \
+    tcl\tools\optable.tcl tcl\tools\preport.tcl tcl\tools\pinfo.tcl \
+    tcl\tools\analysis.tcl tcl\tools\wbdetect.tcl \
+    tcl\tools\reper.tcl tcl\tools\graphs.tcl tcl\tools\tablebase.tcl tcl\tools\ptracker.tcl \
+  tcl\help\help.tcl tcl\help\tips.tcl \
+  tcl\menus.tcl tcl\board.tcl tcl\move.tcl tcl\main.tcl \
+    tcl\lang\english.tcl $(LANGUAGES) \
+  tcl\end.tcl tcl\tools\tacgame.tcl tcl\tools\sergame.tcl tcl\tools\fics.tcl tcl\tools\calvar.tcl tcl\tools\opening.tcl tcl\tools\tactics.tcl tcl\tools\uci.tcl tcl\tools\novag.tcl tcl\misc\flags.tcl tcl\tools\correspondence.tcl tcl\tools\inputengine.tcl
+
 
 ########################################
 
@@ -88,31 +145,12 @@ all: $(EXECS) scid.gui
 
 scid.gui: $(TCLS)
 	-del .\scid.gui
-	copy /b tcl\start.tcl+tcl\bitmaps.tcl+tcl\menus.tcl\
-          + tcl\windows.tcl+tcl\htext.tcl+tcl\help.tcl\
-          + tcl\tips.tcl+tcl\misc.tcl\
-          + tcl\search.tcl+tcl\ezsmtp\ezsmtp.tcl+tcl\email.tcl\
-          + tcl\epd.tcl+tcl\fontsel.tcl+tcl\basewind.tcl\
-          + tcl\import.tcl+tcl\spellchk.tcl+tcl\graph.tcl+tcl\maint.tcl \
-          + tcl\optable.tcl+tcl\analysis.tcl+tcl\wbdetect.tcl+tcl\reper.tcl\
-          + tcl\lang.tcl+tcl\english.tcl+tcl\deutsch.tcl\
-          + tcl\francais.tcl+tcl\italian.tcl+tcl\nederlan.tcl\
-          + tcl\spanish.tcl+tcl\portbr.tcl+tcl\swedish.tcl+tcl\norsk.tcl \
-          + tcl\polish.tcl+tcl\czech.tcl+tcl\hungary.tcl+tcl\serbian.tcl\
-          + tcl\bookmark.tcl+tcl\board.tcl+tcl\tb.tcl+tcl\end.tcl .\scid.gui
+	type $(TCLS) > .\scid.gui
 
-# escid.gui: Scid GUI with English only, no extra language support.
+# escid.gui: scid GUI with English only, no extra language support.
 escid.gui: $(TCLS)
 	-del .\escid.gui
-	copy /b tcl\start.tcl + tcl\bitmaps.tcl + tcl\menus.tcl \
-	  + tcl\windows.tcl + tcl\htext.tcl + tcl\help.tcl \
-	  + tcl\tips.tcl + tcl\misc.tcl \
-	  + tcl\search.tcl + tcl\ezsmtp\ezsmtp.tcl + tcl\email.tcl \
-	  + tcl\epd.tcl + tcl\fontsel.tcl + tcl\basewind.tcl \
-	  + tcl\import.tcl + tcl\spellchk.tcl + tcl\graph.tcl + tcl\maint.tcl \
-	  + tcl\optable.tcl + tcl\analysis.tcl + tcl\wbdetect.tcl \
-	  + tcl\reper.tcl + tcl\lang.tcl + tcl\english.tcl \
-          + tcl\bookmark.tcl + tcl\board.tcl + tcl\tb.tcl + tcl\end.tcl .\escid.gui
+	type $(TCLS_ENGLISH_ONLY) > .\escid.gui
 
 scmerge.exe: src\scmerge.obj $(OBJS)
 	$(LINK) -o scmerge.exe src\scmerge.obj $(OBJS)
@@ -124,22 +162,22 @@ scidt.exe: src\scidt.obj $(OBJS)
 	$(LINK) -o scidt.exe src\scidt.obj $(OBJS)
 
 scidlet.exe: src\scidlet.obj src\engine.obj src\recog.obj $(OBJS)
-	$(LINK) -o scidlet.exe src\scidlet.obj src\engine.obj src\recog.obj \
+	$(LINK) $(LFLAGS) -o scidlet.exe src\scidlet.obj src\engine.obj src\recog.obj \
           src/misc.obj src/position.obj src/movelist.obj src/dstring.obj
 
 scid.exe: src\scid.obj $(OBJS) src\tree.obj src\filter.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj src\engine.obj src\recog.obj
+            src\optable.obj src\engine.obj src\recog.obj scid.coff
 	$(LINK) -o scid.exe src\scid.obj $(OBJS) \
             src\tree.obj src\filter.obj src\pbook.obj \
             src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj src\engine.obj src\recog.obj \
+            src\optable.obj src\engine.obj src\recog.obj scid.coff \
             $(TK_LIB) -mwindows
 
 tkscid.exe: src\tkscid.obj $(OBJS) src\tree.obj src\filter.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj
-	$(LINK) -o tkscid.exe src\tkscid.obj $(OBJS) \
+	$(LINK) $(LFLAGS)  -o tkscid.exe src\tkscid.obj $(OBJS) \
             src\tree.obj src\filter.obj src\pbook.obj \
             src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj \
@@ -148,7 +186,7 @@ tkscid.exe: src\tkscid.obj $(OBJS) src\tree.obj src\filter.obj \
 tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj src\filter.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj
-	$(LINK) -o tcscid.exe src\tcscid.obj $(OBJS) \
+	$(LINK) $(LFLAGS) -o tcscid.exe src\tcscid.obj $(OBJS) \
             src\tree.obj src\filter.obj src\pbook.obj \
             src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj \
@@ -157,6 +195,8 @@ tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj src\filter.obj \
 eco2epd.exe: src\eco2epd.obj src\pbook.obj $(OBJS)
 	$(LINK) -o eco2epd.exe src\eco2epd.obj src\pbook.obj $(OBJS)
 
+scid.coff: scid.rc
+	$(RC) -O coff scid.rc scid.coff
 
 ### To remove object and executable files: type "make clean"
 clean:
@@ -164,22 +204,22 @@ clean:
 
 
 src\tcscid.obj: src\tkscid.cpp
-	$(COMPILE) $(CFLAGS) $(TCL_INCLUDE) -DTCL_ONLY -c src\tkscid.cpp \
+	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -DTCL_ONLY -c src\tkscid.cpp \
 	  -o .\src\tcscid.obj
 
 src\tkscid.obj: src\tkscid.cpp
-	$(COMPILE) $(CFLAGS) $(TCL_INCLUDE) -c src\tkscid.cpp \
+	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -c src\tkscid.cpp \
 	  -o .\src\tkscid.obj
 
 src\scid.obj: src\tkscid.cpp
-	$(COMPILE) $(CFLAGS) $(TCL_INCLUDE) -DSOURCE_TCL_FILE="\"scid.gui\"" \
+	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -DSOURCE_TCL_FILE="\"scid.gui\"" \
 	  -c src\tkscid.cpp -o .\src\scid.obj
 
 src\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
-	$(COMPILE) $(CFLAGS) $(TB) -c src\probe.cpp -o .\src\probe.obj
+	$(COMPILE) $(CPPFLAGSNOWARN) $(TB) -c src\probe.cpp -o .\src\probe.obj
 
 %.obj: %.cpp
-	$(COMPILE) $(CFLAGS) -c $< -o .\$@
+	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -c $< -o .\$@
 
 %.obj: %.c
 	$(CC) $(CFLAGS) -c $< -o .\$@

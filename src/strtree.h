@@ -110,7 +110,24 @@ class StrTree
     nodeT<C> * MakeSubTree (int size, uint depth);
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     StrTree();
     ~StrTree();
 
@@ -204,8 +221,13 @@ StrTree<C>::DestroyTree (nodeT<C> * node)
     if (node == NULL) { return; }
     DestroyTree (node->left);
     DestroyTree (node->right);
+#ifdef WINCE
+    if (AllocateStrings) { my_Tcl_Free((char*) node->name); }
+    my_Tcl_Free((char*) node);
+#else
     if (AllocateStrings) { delete[] node->name; }
     delete node;
+#endif
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,8 +242,13 @@ StrTree<C>::DestroyList ()
     nodeT<C> * temp;
     while (node != NULL) {
         temp = node->right;
-        if (AllocateStrings) { delete[] node->name; }
-        delete node;
+#ifdef WINCE
+    if (AllocateStrings) { my_Tcl_Free((char*) node->name); }
+    my_Tcl_Free((char*) node);
+#else
+    if (AllocateStrings) { delete[] node->name; }
+    delete node;
+#endif
         node = temp;
     }
 }
@@ -435,8 +462,11 @@ StrTree<C>::Insert (const char * str, nodeT<C> ** returnNode)
     // If we reach here, we must add a new node:
 
     Stat_InsertsNew++;
-
+#ifdef WINCE
+    node = (nodeT<C> *) my_Tcl_Alloc(sizeof( nodeT<C>));
+#else
     node = new nodeT<C>;
+#endif
      if (AllocateStrings) {  // Allocate memory for the name string:
         node->name = strDuplicate (str);
     } else { // Leave it to the caller to set the name string:
@@ -496,8 +526,11 @@ StrTree<C>::AddLast (const char * str, nodeT<C> ** returnNode)
             return ERROR_Corrupt;
         }
     }
-
+#ifdef WINCE
+    nodeT<C> * node = (nodeT<C> *) my_Tcl_Alloc(sizeof(nodeT<C>));
+#else
     nodeT<C> * node = new nodeT<C>;
+#endif
     if (AllocateStrings) {  // Allocate memory for the name string:
         node->name = strDuplicate (str);
     } else { // Leave it to the caller to set the name string:
@@ -734,7 +767,11 @@ StrTree<C>::Delete (const char * key)
     // We only delete toDelete->name if we allocated it, otherwise it
     // was set explicitly by the caller when it was inserted.
     if (AllocateStrings) {
+#ifdef WINCE
+        my_Tcl_Free(toDelete->name);
+#else
         delete[] toDelete->name;
+#endif
         toDelete->name = NULL;
     }
 

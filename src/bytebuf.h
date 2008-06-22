@@ -45,9 +45,32 @@ class ByteBuffer
     //  TextBuffer:  Public Functions
     //----------------------------------
  public:
-    
+    #ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     ByteBuffer()    { Init(); }
-    ~ByteBuffer()   { if (AllocatedBuffer) { delete[] AllocatedBuffer; } }
+    ~ByteBuffer()   {
+#ifdef WINCE
+if (AllocatedBuffer) { my_Tcl_Free((char*) AllocatedBuffer); }
+#else
+if (AllocatedBuffer) { delete[] AllocatedBuffer; }
+#endif
+}
     
     void        Init ();
     void        Free ();
@@ -97,9 +120,14 @@ class ByteBuffer
 
     void        CopyTo (byte * target);
     void        CopyFrom (byte * source, uint length);
-
+    void        CopyFrom (byte * source, uint length, uint offset);
+#ifdef WINCE
+    void        DumpToFile (/*FILE * */Tcl_Channel fp);
+    void        ReadFromFile (/*FILE * */Tcl_Channel fp, uint length);
+#else
     void        DumpToFile (FILE * fp);
     void        ReadFromFile (FILE * fp, uint length);
+#endif
 };
 
 #endif  // #ifndef SCID_BYTEBUF_H

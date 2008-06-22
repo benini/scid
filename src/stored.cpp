@@ -36,6 +36,24 @@
 static const uint nStoredLines = 254;
 static Game ** storedLineGames = NULL;
 
+void StoredLine::FreeStoredLine() {
+  if (storedLineGames == NULL) return;
+  for (uint i = 1; i <= nStoredLines; i++) {
+      delete storedLineGames[i];
+  }
+#ifdef WINCE
+    my_Tcl_Free( (char*) storedLineGames );
+#else
+    delete[] storedLineGames;
+#endif
+
+  storedLineGames = NULL;
+}
+
+bool StoredLine::isInitialized() {
+  return (storedLineGames != NULL);
+}
+
 static const char * storedLineText [nStoredLines + 1] = {
     "",  // index zero is unused
     "1.b3",
@@ -307,13 +325,17 @@ StoredLine::GetText (uint code)
     return storedLineText [code];
 }
 
-
+#include "tkscid.h"
 void
 StoredLine::Init (void)
 {
     ASSERT (storedLineGames == NULL);
     Timer t;
+#ifdef WINCE
+    storedLineGames = (Game **)my_Tcl_Alloc (sizeof( Game * [nStoredLines + 1]));
+#else
     storedLineGames = new Game * [nStoredLines + 1];
+#endif
     PgnParser parser;
     char buf [256];
 
@@ -328,12 +350,16 @@ StoredLine::Init (void)
             }
         }
 #endif
+#ifdef WINCE
+        storedLineGames[i] = new Game(true); // allocate low memory games
+#else
         storedLineGames[i] = new Game;
+#endif
         parser.Reset (storedLineText[i]);
         parser.SetEndOfInputWarnings (false);
         parser.SetResultWarnings (false);
         if (parser.ParseMoves (storedLineGames[i], buf, 256) != OK) {
-            // This should never happen:
+//             This should never happen:
             fprintf (stderr, "Fatal error reading stored line %u: %s\n",
                      i, storedLineText[i]);
             exit (1);
@@ -348,7 +374,7 @@ StoredLine::Init (void)
 Game *
 StoredLine::GetGame (uint code)
 {
-    if (storedLineGames == NULL) { Init(); }
+    if (storedLineGames == NULL) {      Init();    }
     if (code < 1  ||  code > nStoredLines) { return NULL; }
 
     return storedLineGames [code];

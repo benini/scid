@@ -4,9 +4,9 @@
 //              PgnParser class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.4
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -36,12 +36,15 @@ PgnParser::Reset()
     UnGetCount = 0;
     NumErrors = 0;
     BytesSeen = 0;
+#ifndef WINCE
     ErrorFile = NULL;
+#endif
     LineCounter = 0;
     StorePreGameText = true;
     EndOfInputWarnings = true;
     ResultWarnings = true;
     NewlinesToSpaces = true;
+    NumIgnoredTags = 0;
 }
 
 void
@@ -81,9 +84,50 @@ PgnParser::Reset (const char * inbuffer)
 }
 
 void
+PgnParser::AddIgnoredTag (const char * tag)
+{
+    if (NumIgnoredTags >= MAX_IGNORED_TAGS) { return; }
+    if (tag == NULL  ||  tag[0] == 0) { return; }
+    IgnoredTags [NumIgnoredTags] = strDuplicate (tag);
+    NumIgnoredTags++;
+}
+
+void
+PgnParser::ClearIgnoredTags ()
+{
+    for (uint i = 0; i < NumIgnoredTags; i++) {
+#ifdef WINCE
+        my_Tcl_Free( IgnoredTags[i] );
+#else
+        delete[] IgnoredTags[i];
+#endif
+    }
+    NumIgnoredTags = 0;
+}
+
+bool
+PgnParser::IsIgnoredTag (const char * tag)
+{
+    for (uint i = 0; i < NumIgnoredTags; i++) {
+        if (strEqual (tag, IgnoredTags[i])) { return true; }
+    }
+    return false;
+}
+
+void
 PgnParser::LogError (const char * errMessage, const char * text)
 {
     NumErrors++;
+#ifdef WINCE
+//     if (ErrorFile != NULL) {
+        //fprintf (ErrorFile, "%s%s [line %u]\n", errMessage, text, LineCounter);
+        if (InFile != NULL) {
+            printf ("%s:", InFile->GetFileName());
+        }
+        printf ("%u: %s%s\n", LineCounter, errMessage, text);
+        return;
+//     }
+#else
     if (ErrorFile != NULL) {
         //fprintf (ErrorFile, "%s%s [line %u]\n", errMessage, text, LineCounter);
         if (InFile != NULL) {
@@ -92,7 +136,7 @@ PgnParser::LogError (const char * errMessage, const char * text)
         fprintf (ErrorFile, "%u: %s%s\n", LineCounter, errMessage, text);
         return;
     }
-
+#endif
     if (InFile != NULL) {
         ErrorBuffer->Append (InFile->GetFileName(), ":");
     }
@@ -387,7 +431,7 @@ PgnParser::ExtractPgnTag (const char * buffer, Game * game)
             }
         }
 
-        if (! isRatingType) {
+        if (! isRatingType  &&  ! IsIgnoredTag (tag)) {
             game->AddPgnTag (tag, value);
         }
     }
@@ -819,6 +863,14 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
         return TOKEN_Suffix;
     }
 
+    // Convert Z0 to Null Move (thanks to Marcin Kasperski)
+    if (ch == 'Z') {   // Z0 - nullmove in CA notation
+        int nextCh = GetChar();
+        if (nextCh == '0')
+            return TOKEN_Move_Null;
+        UnGetChar(nextCh);
+    }
+
     // If we get down this far, the first character of our token is invalid.
     // Probably a letter like C or z, or punctuation or nonprintable.
 
@@ -901,7 +953,23 @@ PgnParser::GetNextToken (char * buffer, uint bufSize)
 
 
 errorT
-PgnParser::ParseMoves (Game * game, char * buffer, int bufSize)
+PgnParser::ParseMoves (Game * game)
+{
+#ifdef WINCE
+    char * buffer = my_Tcl_Alloc(sizeof( char [MAX_COMMENT_SIZE]));
+    errorT err = ParseMoves (game, buffer, MAX_COMMENT_SIZE);
+    my_Tcl_Free( buffer );
+#else
+    char * buffer = new char [MAX_COMMENT_SIZE];
+    errorT err = ParseMoves (game, buffer, MAX_COMMENT_SIZE);
+    delete[] buffer;
+#endif
+    return err;
+}
+   
+
+errorT
+PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
 {
     errorT err = OK;
     uint moveErrorCount  = 0;
@@ -915,7 +983,7 @@ PgnParser::ParseMoves (Game * game, char * buffer, int bufSize)
     // game->GetCurrentPos()->SetStrictCastling (false);
     ParseMode = PARSE_Game;
     tokenT token = GetNextToken (buffer, bufSize);
-    while (! TOKEN_isResult(token)) {
+    while (! TOKEN_isResult(token)) {   
         switch (token) {
         case TOKEN_Move_Pawn:
         case TOKEN_Move_Promote:
@@ -1071,9 +1139,17 @@ PgnParser::ParseMoves (Game * game, char * buffer, int bufSize)
 errorT
 PgnParser::ParseGame (Game * game)
 {
+#ifdef WINCE
+    char * buffer = my_Tcl_Alloc(sizeof( char [MAX_COMMENT_SIZE]));
+    uint preGameTextLength = 0;
+
+    char * preGameTextBuffer = my_Tcl_Alloc(sizeof(char [MAX_COMMENT_SIZE]));
+#else
     char * buffer = new char [MAX_COMMENT_SIZE];
     uint preGameTextLength = 0;
+
     char * preGameTextBuffer = new char [MAX_COMMENT_SIZE];
+#endif
 
     errorT err = ERROR_NotFound;
     ParseMode = PARSE_Searching;
@@ -1124,9 +1200,13 @@ PgnParser::ParseGame (Game * game)
 
         token = GetNextToken (buffer, MAX_COMMENT_SIZE);
     }
-
+#ifdef WINCE
+    my_Tcl_Free( buffer );
+    my_Tcl_Free( preGameTextBuffer );
+#else
     delete[] buffer;
     delete[] preGameTextBuffer;
+#endif
     if (ParseMode == PARSE_Header) {
         if (EndOfInputWarnings) {
             LogError ("Warning: End of input in PGN header tags section", "");

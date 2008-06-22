@@ -31,7 +31,15 @@ for {set i 1} {$i < $args} {incr i} {
         puts stderr "Error importing \"$pgnfile\": $result"
         exit 1
     }
-    puts "Imported $pgnfile: $result"
+    set numImported [lindex $result 0]
+    set warnings [lindex $result 1]
+        puts "Imported $numImported games from $pgnfile"
+    if {$warnings == ""} {
+        puts "There were no PGN errors or warnings."
+    } else {
+        puts "PGN errors/warnings:"
+        puts $warnings
+    }
 }
 
 sc_base close

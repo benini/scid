@@ -4,13 +4,15 @@
 //              Crosstable class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.3
+//  Version:    3.6
 //
-//  Notice:     Copyright (c) 2000-2002 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2000-2004 Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
+
+#ifndef WINCE
 
 #ifndef SCID_CROSSTAB_H
 #define SCID_CROSSTAB_H
@@ -22,8 +24,8 @@
 #include "namebase.h"
 #include "spellchk.h"
 
-const uint CROSSTABLE_MaxPlayers = 300;  // Max. number of players.
-const uint CROSSTABLE_MaxRounds =   20;  // Max. number of Swiss event rounds.
+const uint CROSSTABLE_MaxPlayers = 500;  // Max. number of players.
+const uint CROSSTABLE_MaxRounds =   60;  // Max. number of Swiss event rounds.
 
 struct clashT
 {
@@ -62,7 +64,7 @@ struct playerDataT
                           // or Bucholz tiebreak for Swiss.
     uint        oppEloCount;
     uint        oppEloTotal;
-    uint	oppEloScore;	// score against Elo opponents
+    uint        oppEloScore;  // score against Elo opponents
     clashT *    firstClash [CROSSTABLE_MaxPlayers];
     clashT *    lastClash [CROSSTABLE_MaxPlayers];
     uint        clashCount[CROSSTABLE_MaxPlayers];
@@ -141,7 +143,24 @@ class Crosstable
     void   Destroy();
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     Crosstable() { Init(); }
     ~Crosstable() { Destroy(); }
 
@@ -185,3 +204,5 @@ class Crosstable
 };
 
 #endif  // #ifndef SCID_CROSSTAB_H
+
+#endif // WINCE

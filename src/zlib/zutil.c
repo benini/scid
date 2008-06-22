@@ -3,9 +3,8 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: zutil.c,v 1.1 2002/04/04 22:44:34 sgh Exp $ */
-
 #include "zutil.h"
+#include "../tclmy.h"
 
 struct internal_state      {int dummy;}; /* for buggy compilers */
 
@@ -211,7 +210,13 @@ voidpf zcalloc (opaque, items, size)
     unsigned size;
 {
     if (opaque) items += size - size; /* make compiler happy */
+#ifdef WINCE
+    char * ptr = my_Tcl_Alloc(sizeof(unsigned[size]));
+    bzero(ptr, sizeof(unsigned[size]));
+    return (voidpf)ptr;    
+#else
     return (voidpf)calloc(items, size);
+#endif
 }
 
 void  zcfree (opaque, ptr)

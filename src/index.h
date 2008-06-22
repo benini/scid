@@ -28,8 +28,8 @@
 
 const char         INDEX_SUFFIX[]     = ".si3";
 const char         OLD_INDEX_SUFFIX[] = ".si";
-const gameNumberT  MAX_GAMES         = 4000000;  // max. no. of games in file
-const char         INDEX_MAGIC[8]    = "Scid.si";
+const char         INDEX_MAGIC[8]     = "Scid.si";
+const gameNumberT  MAX_GAMES          = 16000000;  // max. # of games in file
 
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
@@ -173,7 +173,26 @@ class IndexEntry
     byte         Padding;     // Padding out to 48 bytes.
 
   public:
+#ifdef WINCE
+  void* operator new (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     IndexEntry() {}
     ~IndexEntry() {}
     void Init();
@@ -531,7 +550,24 @@ class Index
     //  Index:  Public Functions
     //----------------------------------
  public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     Index()     { Init(); }
     ~Index()    { Clear(); }
 

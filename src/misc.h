@@ -4,9 +4,9 @@
 //              Miscellaneous routines (File I/O, etc)
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.7
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -139,7 +139,9 @@ bool   strIsSurnameOnly (const char * name);
 //    case-insensitive and ignoring spaces. strContains is similar but
 //    is case-sensitive and does not ignore spaces.
 bool   strAlphaContains (const char * longStr, const char * keyStr);
+
 bool   strContains (const char * longStr, const char * keyStr);
+int    strContainsIndex (const char * longStr, const char * keyStr);
 
 bool   strGetBoolean (const char * str);
 int    strGetInteger (const char * str);
@@ -254,7 +256,168 @@ errorT  renameFile (const char * oldName, const char * newName,
 errorT  removeFile (const char * fname, const char * suffix);
 errorT  createFile (const char * fname, const char * suffix);
 
+#ifdef WINCE
+errorT  writeString (/*FILE * */Tcl_Channel fp, char * str, uint length);
+errorT  readString  (/*FILE * */Tcl_Channel fp, char * str, uint length);
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// writeOneByte(), readOneByte()
+
+inline errorT
+writeOneByte (/*FILE * */Tcl_Channel fp, byte value)
+{
+    ASSERT(fp != NULL);
+    return (/*putc(value, fp)*/my_Tcl_Write(fp, (char *)&value, 1) == -1) ? ERROR_FileWrite : OK;
+}
+
+inline byte
+readOneByte (/*FILE * */Tcl_Channel fp)
+{
+    ASSERT(fp != NULL);
+    byte b;
+    my_Tcl_Read(fp, (char *)&b,1);
+    //byte b = getc(fp);
+    return b;//getc(fp);
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// writeTwoBytes(), readTwoBytes()
+
+inline errorT
+writeTwoBytes (/*FILE * */Tcl_Channel fp, uint value)
+{
+    ASSERT(fp != NULL);
+    int result;
+    //int v = (value >> 8)  & 255; putc(v, fp);
+    char v = (value >> 8)  & 255; my_Tcl_Write(fp, &v, 1);
+    //v = value & 255; putc(v, fp);
+    v = value & 255; result = my_Tcl_Write(fp, &v, 1);
+    return (result == -1 ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readTwoBytes (/*FILE * */Tcl_Channel fp)
+{
+    ASSERT(fp != NULL);
+    byte b;
+    my_Tcl_Read(fp, (char *)&b,1);
+    uint v = b;//getc(fp);
+    v = v << 8;
+    my_Tcl_Read(fp, (char *)&b,1);
+    v += b;
+    //v += getc(fp);
+    return v;
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~!!
+// writeThreeBytes(), readThreeBytes()
+
+inline errorT
+writeThreeBytes (/*FILE * */Tcl_Channel fp, uint value)
+{
+    ASSERT(fp != NULL);
+    int result;
+//     int v = (value >> 16)  & 255;   putc(v, fp);
+//     v = (value >> 8) & 255;         putc(v, fp);
+//     v = value & 255;                putc(v, fp);
+    char v = (value >> 16)  & 255;   my_Tcl_Write(fp, &v, 1);
+    v = (value >> 8) & 255;         my_Tcl_Write(fp, &v, 1);
+    v = value & 255;                result = my_Tcl_Write(fp, &v, 1);
+    return (result == -1 ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readThreeBytes (/*FILE * */Tcl_Channel fp)
+{
+
+    ASSERT(fp != NULL);
+    byte b;
+    //uint v = getc(fp);
+    my_Tcl_Read(fp, (char *)&b,1);
+    uint v = (uint)b;
+    v = v << 8;    my_Tcl_Read(fp, (char *)&b,1); v += (uint)b;//v += (uint) getc(fp);
+    v = v << 8;    my_Tcl_Read(fp, (char *)&b,1); v += (uint)b; //v += (uint) getc(fp);
+    return v;
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// writeFourBytes(), readFourBytes()
+
+inline errorT
+writeFourBytes (/*FILE * */Tcl_Channel fp, uint value)
+{
+    ASSERT(fp != NULL);
+    int result;
+//     uint v = (value >> 24) & 255;   my_Tcl_Write(fp, (char*)&v, 1);//putc(v, fp);
+//     v = (value >> 16) & 255;        my_Tcl_Write(fp, (char*)&v, 1);//putc(v, fp);
+//     v = (value >>  8) & 255;        my_Tcl_Write(fp, (char*)&v, 1);//putc(v, fp);
+//     v = value & 255;                result = my_Tcl_Write(fp, (char*)&v, 1);//result = putc(v, fp);
+    char v = (value >> 24) & 255;   my_Tcl_Write(fp, &v, 1);
+    v = (value >> 16) & 255;        my_Tcl_Write(fp, &v, 1);
+    v = (value >>  8) & 255;        my_Tcl_Write(fp, &v, 1);
+    v = value & 255;                result = my_Tcl_Write(fp, &v, 1);
+    return (result == -1 ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readFourBytes (/*FILE * */Tcl_Channel fp)
+{
+    ASSERT(fp != NULL);
+    byte b;
+    my_Tcl_Read(fp, (char *)&b,1); uint v = b; //getc(fp);
+    v = v << 8;    my_Tcl_Read(fp, (char *)&b,1); v += (uint)b;//v += (uint) getc(fp);
+    v = v << 8;    my_Tcl_Read(fp, (char *)&b,1); v += (uint)b;//v += (uint) getc(fp);
+    v = v << 8;    my_Tcl_Read(fp, (char *)&b,1); v += (uint)b;//v += (uint) getc(fp);
+    return v;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// readCompactUint, writeCompactUint:
+//   Read/write an unsigned int using a variable number
+//   of bytes: 1 for 0-127, 2 for 128-16383, etc.
+
+inline errorT
+writeCompactUint (/*FILE * */Tcl_Channel fp, uint value)
+{
+    ASSERT (fp != NULL);
+    int result;
+    char c;
+    while (true) {
+        if (value < 128) {
+            result = my_Tcl_Write(fp, (char*)&value, 1);//putc (value, fp);
+            break;
+        }
+        c = (value & 127) | 128;
+        my_Tcl_Write(fp, &c, 1);
+        //putc ((value & 127) | 128, fp);
+        value = value >> 7;
+    }
+    return (result == -1 ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readCompactUint (/*FILE * */Tcl_Channel fp)
+{
+    ASSERT (fp != NULL);
+    uint v = 0;
+    uint bitIndex = 0;
+    byte c;
+    while (true) {
+        //uint b = (uint) getc(fp);
+        my_Tcl_Read(fp, (char *)&c,1);
+        uint b = (uint) c;
+        v = v | ((b & 127) << bitIndex);
+        if (! (b & 128)) { break; }
+        bitIndex += 7;
+    }
+    return v;
+}
+
+#else
 errorT  writeString (FILE * fp, char * str, uint length);
 errorT  readString  (FILE * fp, char * str, uint length);
 
@@ -295,7 +458,8 @@ readTwoBytes (FILE *fp)
 {
     ASSERT(fp != NULL);
     uint v = getc(fp);
-    v = v << 8;    v += getc(fp);
+    v = v << 8;    
+    v += getc(fp);
     return v;
 }
 
@@ -365,7 +529,7 @@ writeCompactUint (FILE * fp, uint value)
         if (value < 128) {
             result = putc (value, fp);
             break;
-	}
+        }
         putc ((value & 127) | 128, fp);
         value = value >> 7;
     }
@@ -386,7 +550,7 @@ readCompactUint (FILE * fp)
     }
     return v;
 }
-
+#endif // WINCE
 
 #endif  // #ifdef SCID_MISC_H
 

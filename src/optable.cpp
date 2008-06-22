@@ -4,9 +4,9 @@
 //              OpTable and OpLine class methods
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.1
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -99,13 +99,13 @@ OpLine::Init (void)
     for (uint i=0; i < OPLINE_MOVES; i++) {
         Move[i][0] = 0;
     }
-    for (uint t=0; t < NUM_OPTHEMES; t++) { Theme[t] = false; }
+    for (uint t=0; t < NUM_POSTHEMES; t++) { Theme[t] = 0; }
     EgTheme = NUM_EGTHEMES;
 }
 
 void
 OpLine::Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
-              uint maxExtraMoves)
+              uint maxExtraMoves, uint maxThemeMoveNumber)
 {
     White = strDuplicate (g->GetWhiteStr());
     Black = strDuplicate (g->GetBlackStr());
@@ -118,6 +118,7 @@ OpLine::Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
     Date = g->GetDate();
     Result = g->GetResult();
     NumMoves = (g->GetNumHalfMoves() + 1) / 2;
+    EcoCode = g->GetEco();
     WhiteElo = g->GetWhiteElo();
     BlackElo = g->GetBlackElo();
     AvgElo = g->GetAverageElo();
@@ -151,31 +152,6 @@ OpLine::Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
         i++;
     }
 
-    // Now check for themes:
-    Position * p = g->GetCurrentPos();
-    Theme[OPTHEME_QueenSwap] = (p->PieceCount(WQ)==0 && p->PieceCount(BQ)==0);
-    squareT wk = p->GetKingSquare (WHITE);
-    squareT bk = p->GetKingSquare (BLACK);
-    fyleT wkf = square_Fyle (wk);
-    fyleT bkf = square_Fyle (bk);
-    Theme[OPTHEME_CastSame] =
-        ((wkf <= C_FYLE && bkf <= C_FYLE) || (wkf >= G_FYLE && bkf >= G_FYLE));
-    Theme[OPTHEME_CastOpp] =
-        ((wkf <= C_FYLE && bkf >= G_FYLE) || (wkf >= G_FYLE && bkf <= C_FYLE));
-    Theme[OPTHEME_CastNone] =
-        (wkf >= D_FYLE && wkf <= F_FYLE && bkf >= D_FYLE && bkf <= F_FYLE);
-    Theme[OPTHEME_IQP] = (posHasIQP (p, WHITE)  ||  posHasIQP (p, BLACK));
-    Theme[OPTHEME_WAdvPawn] = (posHasAdvancedPawn (p, WHITE));
-    Theme[OPTHEME_BAdvPawn] = (posHasAdvancedPawn (p, BLACK));
-    Theme[OPTHEME_Kstorm] = (posHasKPawnStorm (p, WHITE) ||
-                             posHasKPawnStorm (p, BLACK));
-    Theme [OPTHEME_OpenFyle] = (posHasOpenFyle (p, C_FYLE) ||
-                                posHasOpenFyle (p, D_FYLE)  ||
-                                posHasOpenFyle (p, E_FYLE));
-    bool wBPair = (p->PieceCount (WB) >= 2);
-    bool bBPair = (p->PieceCount (BB) >= 2);
-    Theme [OPTHEME_BPair] = ((wBPair && !bBPair)  ||  (!wBPair && bBPair));
-
     // Now read in all the extra note moves:
     while (i < maxLineMoves) {
         simpleMoveT * sm = g->GetCurrentMove();
@@ -193,6 +169,15 @@ OpLine::Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
     }
     if (g->GetCurrentMove() == NULL) { ShortGame = true; }
 
+    // Now set positional themes:
+    uint maxThemePly = maxThemeMoveNumber * 2;
+    for (i=0; i < NUM_POSTHEMES; i++) { Theme[i] = 0; }
+    g->MoveToPly (0);
+    for (i=0; i < maxThemePly; i++) {
+        if (g->MoveForward() != OK) { break; }
+        SetPositionalThemes (g->GetCurrentPos());
+    }
+
     g->RestoreState();
 }
 
@@ -200,10 +185,61 @@ OpLine::Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
 void
 OpLine::Destroy (void)
 {
+#ifdef WINCE
+    my_Tcl_Free((char*) White);
+    my_Tcl_Free((char*) Black);
+    my_Tcl_Free((char*)  Site);
+#else
     delete[] White;
     delete[] Black;
     delete[] Site;
+#endif
 }
+
+
+void
+OpLine::SetPositionalThemes (Position * pos)
+{
+    squareT wk = pos->GetKingSquare (WHITE);
+    squareT bk = pos->GetKingSquare (BLACK);
+    fyleT wkf = square_Fyle (wk);
+    fyleT bkf = square_Fyle (bk);
+
+    if ((wkf <= C_FYLE && bkf <= C_FYLE) || (wkf >= G_FYLE && bkf >= G_FYLE)) {
+        Theme[POSTHEME_CastSame]++;
+    }
+    if ((wkf <= C_FYLE && bkf >= G_FYLE) || (wkf >= G_FYLE && bkf <= C_FYLE)) {
+        Theme[POSTHEME_CastOpp]++;
+    }
+    if (pos->PieceCount(WQ) == 0  &&  pos->PieceCount(BQ) == 0) {
+        Theme[POSTHEME_QueenSwap]++;
+    }
+    bool wBPair = (pos->PieceCount (WB) >= 2);
+    bool bBPair = (pos->PieceCount (BB) >= 2);
+    if ((wBPair && !bBPair)  ||  (!wBPair && bBPair)) {
+        Theme[POSTHEME_OneBPair]++;
+    }
+    if (posHasKPawnStorm (pos, WHITE)  ||  posHasKPawnStorm (pos, BLACK)) {
+        Theme[POSTHEME_Kstorm]++;
+    }
+    if (posHasIQP (pos, WHITE)) {
+        Theme[POSTHEME_WIQP]++;
+    }
+    if (posHasIQP (pos, BLACK)) {
+        Theme[POSTHEME_BIQP]++;
+    }
+    if (posHasAdvancedPawn (pos, WHITE)) {
+        Theme[POSTHEME_WAdvPawn]++;
+    }
+    if (posHasAdvancedPawn (pos, BLACK)) {
+        Theme[POSTHEME_BAdvPawn]++;
+    }
+    if (posHasOpenFyle (pos, C_FYLE)  ||  posHasOpenFyle (pos, D_FYLE)
+          ||  posHasOpenFyle (pos, E_FYLE)) {
+        Theme[POSTHEME_OpenFyle]++;
+    }
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // OpLine::Insert:
@@ -241,20 +277,26 @@ OpLine::CommonLength (OpLine * line)
 void
 OpLine::PrintMove (DString * dstr, const char * move, uint format)
 {
+    char tempTrans[500];
     if (format == OPTABLE_Compact) {
-        char ch = *move;
+        strcpy(tempTrans, move);
+        transPieces(tempTrans);
+        char *ptr = tempTrans;
+        char ch = *ptr; //*move;
         while (ch != 0) {
             if (ch != '+'  &&  ch != 'x') {
                 dstr->AddChar (ch);
             }
-            move++;
-            ch = *move;
+            ptr++;//move++;
+            ch = *ptr;//*move;
         }
         return;
     }
 
     if (format != OPTABLE_LaTeX) {
-        dstr->Append (move);
+        strcpy(tempTrans, move);
+        transPieces(tempTrans);
+        dstr->Append(tempTrans);//(move);
         return;
     }
 
@@ -347,6 +389,9 @@ OpLine::PrintSummary (DString * dstr, uint format, bool fullDate, bool nmoves)
     if (format == OPTABLE_CText) {
         preName = "<darkblue>";
         postName = "</darkblue>";
+    } else if (format == OPTABLE_HTML) {
+        preName = "<span class=\"player\">";
+        postName = "</span>";
     }
 
     dstr->Append (" ", preName);
@@ -368,7 +413,8 @@ OpLine::PrintSummary (DString * dstr, uint format, bool fullDate, bool nmoves)
     if (format == OPTABLE_LaTeX) {
         preElo = " \\emph{";  postElo = "}"; sep = " -- ";
     } else if (format == OPTABLE_HTML) {
-        preElo = " <i>";  postElo = "</i>"; sep = " -- ";
+        preElo = " <span class=\"elo\">";  postElo = "</span>";
+        sep = " -- ";
     } else if (format == OPTABLE_CText) {
         preElo = " <green>"; postElo = "</green>";
     }
@@ -416,8 +462,9 @@ OpLine::PrintSummary (DString * dstr, uint format, bool fullDate, bool nmoves)
 
 
 void
-OpTable::Init (Game * g, PBook * ebook)
+OpTable::Init (const char * type, Game * g, PBook * ebook)
 {
+    Type = strDuplicate (type);
     TargetRows = OPTABLE_DEFAULT_ROWS;
     MaxTableLines = OPTABLE_MAX_TABLE_LINES;
     NumRows = 0;
@@ -438,7 +485,7 @@ OpTable::Init (Game * g, PBook * ebook)
     ExcludeMove[0] = 0;
 
     uint i;
-    for (i=0; i < NUM_OPTHEMES; i++) { ThemeCount[i] = 0; }
+    for (i=0; i < NUM_POSTHEMES; i++) { ThemeCount[i] = 0; }
 
     for (i=0; i < NUM_EGTHEMES; i++) {
         EndgameCount[OPTABLE_Line][i] = EndgameCount[OPTABLE_All][i] = 0;
@@ -478,7 +525,11 @@ OpTable::Clear (void)
         delete Line[i];
     }
     for (i=0; i < NumMoveOrders; i++) {
+#ifdef WINCE
+        my_Tcl_Free((char*) MoveOrder[i].moves);
+#else
         delete MoveOrder[i].moves;
+#endif
     }
     NumLines = NumTableLines = 0;
     NumMoveOrders = 0;
@@ -488,7 +539,11 @@ OpTable::Clear (void)
     TheoryResults[RESULT_White] = TheoryResults[RESULT_Black] = 0;
     TheoryResults[RESULT_Draw] = TheoryResults[RESULT_None] = 0;
     if (EcoStr != NULL) {
+#ifdef WINCE
+        my_Tcl_Free((char*) EcoStr);
+#else
         delete[] EcoStr;
+#endif
         EcoStr =  NULL;
     }
     ExcludeMove[0] = 0;
@@ -608,8 +663,8 @@ OpTable::Add (OpLine * line)
         strStrip (line->Move[0], '-');
         strStrip (line->Move[0], '=');
     }
-    for (uint theme=0; theme < NUM_OPTHEMES; theme++) {
-        if (line->Theme[theme]) { ThemeCount[theme]++; }
+    for (uint theme=0; theme < NUM_POSTHEMES; theme++) {
+        if (line->Theme[theme] >= POSTHEME_THRESHOLD) { ThemeCount[theme]++; }
     }
     Results[line->Result]++;
     FilterCount++;
@@ -677,6 +732,43 @@ OpTable::GuessNumRows (void)
     SetNumRows (int_sqrt((NumTableLines * 3) / 4) + 3);
 }
 
+#ifdef WINCE
+void
+OpTable::DumpLines (/*FILE * */ Tcl_Channel fp)
+{
+    MakeRows();
+    DString * dstr = new DString;
+    char buf[1024];
+    for (uint i=0; i < NumRows; i++) {
+        bool first = true;
+        OpLine * line = Row[i];
+        OpLine * prevLine = NULL;
+        while (line != NULL) {
+            dstr->Clear();
+            if (first) {
+                first = false;
+                line->PrintNote (dstr, (StartLength + 2) / 2, 0, OPTABLE_Text);
+                //fprintf (fp, "ROW %u[%u]: ", i+1, NLines[i]);
+                sprintf (buf, "ROW %u[%u]: ", i+1, NLines[i]);
+                my_Tcl_Write(fp,buf,strlen(buf));
+            } else {
+                //fprintf (fp, "   %u-NOTE: ", i+1);
+                sprintf (buf, "   %u-NOTE: ", i+1);
+                my_Tcl_Write(fp,buf,strlen(buf));
+                line->PrintNote (dstr, (StartLength + 2) / 2,
+                            line->CommonLength(prevLine), OPTABLE_Text);
+            }
+            //fprintf (fp, "%s\n", dstr->Data());
+            sprintf (buf, "%s\n", dstr->Data());
+            my_Tcl_Write(fp,buf,strlen(buf));
+            prevLine = line;
+            line = line->Next;
+        }
+    }
+    delete dstr;
+}
+
+#else
 void
 OpTable::DumpLines (FILE * fp)
 {
@@ -704,7 +796,7 @@ OpTable::DumpLines (FILE * fp)
     }
     delete dstr;
 }
-
+#endif
 
 bool
 OpTable::IsRowMergable (uint rownum)
@@ -846,7 +938,12 @@ OpTable::SortTableLines (OpLine ** lines, uint nlines, uint depth)
     uint i, j, nUnique = 0;
     if (nlines < 2) { return; }
     if (depth >= OPLINE_MOVES) { return; }
+
+#ifdef WINCE
+    opSortT * moves = (opSortT *) my_Tcl_Alloc(sizeof( opSortT [nlines]));
+#else
     opSortT * moves = new opSortT [nlines];
+#endif
 
     for (i=0; i < nlines; i++) {
         bool newMove = true;
@@ -911,7 +1008,11 @@ OpTable::SortTableLines (OpLine ** lines, uint nlines, uint depth)
     }
 
     // Delete the moves array:
+#ifdef WINCE
+    my_Tcl_Free((char*)moves);
+#else
     delete[] moves;
+#endif
 }
 
 void
@@ -1016,7 +1117,7 @@ OpTable::PrintLaTeX (DString * dstr, const char * title, const char * comment)
                     case 100: dstr->Append ("+"); break;
                     case  50: dstr->Append ("="); break;
                     case   0: dstr->Append ("--"); break;
-                    } 
+                    }
                 } else {
                     dstr->Append (nscore, "\\%");
                 }
@@ -1067,7 +1168,7 @@ OpTable::PrintHTML (DString * dstr, const char * title, const char * comment)
     dstr->Append ("<table border=0 cellspacing=0 cellpadding=4>\n");
     dstr->Append ("<tr><th></th>");
     for (i=0; i < OPTABLE_COLUMNS; i++) {
-        dstr->Append ("<th align=left>", i + ((StartLength + 2) / 2), "</th>");
+        dstr->Append ("<th align=\"left\">", i + ((StartLength + 2) / 2), "</th>");
     }
     dstr->Append ("</tr>\n");
 
@@ -1086,7 +1187,8 @@ OpTable::PrintHTML (DString * dstr, const char * title, const char * comment)
 
             // Check for a footnote:
             if (HasNotes (Row[row], j)) {
-                dstr->Append ("<sup>", NumNotes, "</sup>");
+                dstr->Append ("<sup><a href=\"#note", NumNotes);
+                dstr->Append ("\">", NumNotes, "</a></sup>");
             }
             if (j % 2 != 0) { dstr->Append (" </td>\n"); }
         }
@@ -1120,14 +1222,16 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
     dstr->Append (title, "\n");
     if (ctext) { dstr->Append ("<tt>"); }
     dstr->Append (hrule, " ");
-    if (ctext) {
-        dstr->Append ("<darkblue><run importMoveList {");
-        PrintStemLine (dstr, OPTABLE_Text, false);
-        dstr->Append ("}>");
+    if (StartLength > 0) {
+        if (ctext) {
+            dstr->Append ("<darkblue><run importMoveListTrans {");
+            PrintStemLine (dstr, OPTABLE_Text, false);
+            dstr->Append ("}>");
+        }
+        PrintStemLine (dstr, OPTABLE_Text, true);
+        if (ctext) { dstr->Append ("</run></darkblue>"); }
+        dstr->Append (":");
     }
-    PrintStemLine (dstr, OPTABLE_Text, true);
-    if (ctext) { dstr->Append ("</run></darkblue>"); }
-    dstr->Append (":");
     dstr->Append (" +", TheoryResults[RESULT_White]);
     dstr->Append (" =", TheoryResults[RESULT_Draw]);
     dstr->Append (" -", TheoryResults[RESULT_Black]);
@@ -1165,7 +1269,7 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
                 width += 3;
             } else {
                 if (ctext  &&  j >= nSameMoves) {
-                    dtemp->Append ("<darkblue><run importMoveList {");
+                    dtemp->Append ("<darkblue><run importMoveListTrans {");
                     PrintStemLine (dtemp, OPTABLE_Text, false);
                     uint x = 0;
                     if (! WTM) { x = 1; }
@@ -1289,7 +1393,7 @@ OpTable::NoteScore (uint note)
     uint score = 0;
     for (uint n = 0; n < NumTableLines; n++) {
         if (Line[n]->NoteNumber == note) {
-            count++; 
+            count++;
             score += RESULT_SCORE[Line[n]->Result];
         }
     }
@@ -1317,7 +1421,7 @@ OpTable::PrintNotes (DString * dstr, uint format)
         preNotesList = "\n\n<ol>\n";
         postNotesList = "</ol>\n";
         para = "<br>\n";  nextGame = ";\n";
-        endNote = "<p>\n";
+        endNote = "</a><p>\n";
     } else if (format == OPTABLE_CText) {
         nextGame = ";  ";
         endNote = "</tab>\n\n";
@@ -1330,12 +1434,8 @@ OpTable::PrintNotes (DString * dstr, uint format)
             dstr->Append ("\\notenum{", note, "}\n");
         } else if (format == OPTABLE_HTML) {
             //dstr->Append ("<li><b>", note, "</b> ");
-            dstr->Append ("<li> ");
+            dstr->Append ("<li><a name=\"note", note, "\"></a> ");
         } else if (format == OPTABLE_CText) {
-            //dstr->Append ("<tab><red><run sc_optable select note ", note);
-            //dstr->Append ("; updateStatsWin><n", note);
-            //dstr->Append (">[", note, "]");
-            //dstr->Append ("</n", note, "></run></red>  ");
             dstr->Append ("<tab><red><go N", note, ">");
             dstr->Append ("<n", note, ">");
             dstr->Append ("[", note, "]");
@@ -1460,6 +1560,9 @@ OpTable::BestGames (DString * dstr, uint count, const char * rtype)
         if (Line[bestIndex]->NoteNumber != 0) {
             if (Format == OPTABLE_LaTeX) {
                 dstr->Append (" $^{", Line[bestIndex]->NoteNumber, "}$");
+            } else if (Format == OPTABLE_HTML) {
+                dstr->Append (" [<a href=\"#note", Line[bestIndex]->NoteNumber);
+                dstr->Append ("\">", Line[bestIndex]->NoteNumber, "</a>]");
             } else if (Format == OPTABLE_CText) {
                 dstr->Append (" <red><go n", Line[bestIndex]->NoteNumber);
                 dstr->Append (">[", Line[bestIndex]->NoteNumber,
@@ -1509,7 +1612,11 @@ OpTable::TopPlayers (DString * dstr, colorT c, uint count)
         uint id = (c == WHITE ? Line[i]->WhiteID : Line[i]->BlackID);
         if (id > largestPlayerID) { largestPlayerID = id; }
     }
+#ifdef WINCE
+    playerFreqT * pf = (playerFreqT *) my_Tcl_Alloc(sizeof(playerFreqT [largestPlayerID + 1]));
+#else
     playerFreqT * pf = new playerFreqT [largestPlayerID + 1];
+#endif
     for (i=0; i <= largestPlayerID; i++) {
         pf[i].name = NULL;
         pf[i].frequency = 0;
@@ -1591,7 +1698,11 @@ OpTable::TopPlayers (DString * dstr, colorT c, uint count)
     const char * endNotes = "]";
 
     if (Format == OPTABLE_HTML) {
-        startTable = "<pre>\n"; endTable = "</pre>\n";
+        startTable = "<table border=0 cellspacing=0 cellpadding=4>\n";
+        endTable = "</table>\n";
+        startRow = "<tr><td align=\"right\">";  endRow = "</td></tr>\n";
+        nextCell = "</td><td>";
+        // startTable = "<pre>\n"; endTable = "</pre>\n";
     }
     if (Format == OPTABLE_CText) {
         startRow = "<tt>"; startName = "</tt>";
@@ -1697,7 +1808,120 @@ OpTable::TopPlayers (DString * dstr, colorT c, uint count)
     dstr->Append (endTable);
 
     // Delete temporary player frequency data:
+#ifdef WINCE
+    my_Tcl_Free((char*)pf);
+#else
     delete[] pf;
+#endif
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// OpTable::TopEcoCodes:
+//    Returns (through dstr) a list of the most frequent ECO code
+//    sections of the report games.
+//    This is generally only useful for a Player report.
+void
+OpTable::TopEcoCodes (DString * dstr, uint count)
+{
+    uint ecoCount [50];
+    uint ecoScore [50];
+    uint ecoSubCount[50][10];
+
+    for (uint ecoGroup=0; ecoGroup < 50; ecoGroup++) {
+        ecoCount[ecoGroup] = 0;
+        ecoScore[ecoGroup] = 0;
+        for (uint subCode = 0; subCode < 10; subCode++) {
+            ecoSubCount[ecoGroup][subCode] = 0;
+        }
+    }
+
+    // Fill in the ECO frequencies array:
+    for (uint i=0; i < NumLines; i++) {
+        int ecoClass = -1;
+        int ecoSubCode = -1;
+        ecoT ecoCode = Line[i]->EcoCode;
+        if (ecoCode != ECO_None) {
+            ecoStringT ecoStr;
+            eco_ToBasicString (ecoCode, ecoStr);
+            if (ecoStr[0] != 0) {
+                ecoClass = ((ecoStr[0] - 'A') * 10) + (ecoStr[1] - '0');
+                if (ecoClass < 0  ||  ecoClass >= 50) { ecoClass = -1; }
+                ecoSubCode = (ecoStr[2] - '0');
+            }
+        }
+        if (ecoClass >= 0) {
+            ecoCount[ecoClass]++;
+            ecoScore[ecoClass] += RESULT_SCORE[Line[i]->Result];
+            ecoSubCount[ecoClass][ecoSubCode]++;
+        }
+    }
+
+    const char * preNum = " ";
+    const char * postNum = ":";
+    const char * inRange = "-";
+    const char * percentStr = "%";
+    const char * startTable = "";
+    const char * endTable = "";
+    const char * startRow = "";
+    const char * endRow = "\n";
+    const char * nextCell = " ";
+
+    if (Format == OPTABLE_HTML) {
+        startTable = "<table border=0 cellspacing=0 cellpadding=4>\n";
+        endTable = "</table>\n";
+        startRow = "<tr><td align=\"right\">";  endRow = "</td></tr>\n";
+        nextCell = "</td><td align=\"right\">";
+        // startTable = "<pre>\n"; endTable = "</pre>\n";
+    }
+    if (Format == OPTABLE_CText) {
+        startTable = "<tt>"; endTable = "</tt>";
+    }
+    if (Format == OPTABLE_LaTeX) {
+        startTable = "\n\\begin{tabular}{rlrr}\n";
+        endTable = "\\end{tabular}\n";
+        startRow = "  ";      endRow = " \\\\ \n";
+        nextCell = " & ";     percentStr = "\\%";
+        preNum = "\\textbf{"; postNum = ":}";
+        inRange = "--";
+    }
+
+    dstr->Append (startTable);
+
+    // Now find the "count" most frequent ECO groups:
+    for (uint n=1; n <= count; n++) {
+        uint maxFreq = 0;
+        uint ecoClass = 0;
+        for (uint i=0; i < 50; i++) {
+            if (ecoCount[i] > maxFreq) {
+                ecoClass = i;
+                maxFreq = ecoCount[i];
+            }
+        }
+        if (maxFreq > 0) {
+            char ecoStr[4];
+            strCopy (ecoStr, "A00-E99");
+            ecoStr[0] = (ecoClass / 10) + 'A';
+            ecoStr[1] = (ecoClass % 10) + '0';
+            ecoStr[2] = '0';
+            ecoStr[3] = 0;
+
+            char tempStr [100];
+            sprintf (tempStr, "%2u", n);
+            dstr->Append (startRow, preNum, tempStr, postNum);
+            dstr->Append (nextCell, ecoStr);
+            ecoStr[2] = '9';
+            dstr->Append (inRange, ecoStr);
+            sprintf (tempStr, "%3u", maxFreq);
+            dstr->Append (nextCell, tempStr);
+
+            uint score = (50 * ecoScore[ecoClass] + (maxFreq / 2)) / maxFreq;
+            sprintf (tempStr, "%3u%s", score, percentStr);
+            dstr->Append (nextCell, tempStr);
+            dstr->Append (endRow);
+            ecoCount[ecoClass] = 0;
+        }
+    }
+    dstr->Append (endTable);
 }
 
 uint
@@ -1748,7 +1972,9 @@ OpTable::AvgElo (colorT color, uint * count, uint * oppScore, uint * oppPerf)
     if (percent > 100) { percent = 100; }
     if (oppScore != NULL) { *oppScore = percent; }
     if (oppPerf != NULL) {
+#ifndef WINCE
         *oppPerf = Crosstable::Performance (avgElo, percent);
+#endif
     }
     return (avgElo);
 }
@@ -1851,8 +2077,9 @@ OpTable::PopularMoveOrders (DString * dstr, uint count)
         sprintf (tempStr, "%2u", i+1);
         dstr->Append (preNum, tempStr, postNum);
         if (Format == OPTABLE_CText) {
-            dstr->Append ("<tab><darkblue><run sc_optable select mo ",
-                          MoveOrder[i].id, "; updateStatsWin>");
+            dstr->Append ("<tab><darkblue>");
+            dstr->Append ("<run sc_report ", Type, " select mo ");
+            dstr->Append (MoveOrder[i].id, "; ::windows::stats::Refresh>");
         }
         OpLine::PrintMove (dstr, MoveOrder[i].moves, Format);
         dstr->Append (preCount, MoveOrder[i].count, postCount);
@@ -1874,16 +2101,17 @@ OpTable::ThemeReport (DString * dstr, uint argc, const char ** argv)
     const char * startRow = "  ";
     const char * endRow = "\n";
     const char * nextCell = " ";
+    const char * nextCellRight = " ";
 
-    if (argc != NUM_OPTHEMES+1) { return; }
+    if (argc != (NUM_POSTHEMES + 1)) { return; }
 
     if (Format == OPTABLE_HTML) {
-        //endLine = "<br>\n";
-        //startTable = "<table border=0 cellspacing=0 cellpadding=4>\n";
-        //endTable = "</table>";
-        //startRow = "<tr><td>";  endRow = "</td></tr>\n";
-        //nextCell = "</td><td>";
-        startTable = "<pre>\n"; endTable = "</pre>\n";
+        endLine = "<br>\n";
+        startTable = "<table border=0 cellspacing=0 cellpadding=4>\n";
+        endTable = "</table>\n";
+        startRow = "<tr><td>";  endRow = "</td></tr>\n";
+        nextCell = "</td><td>";  nextCellRight = "</td><td align=\"right\">";
+        //startTable = "<pre>\n"; endTable = "</pre>\n";
     }
     if (Format == OPTABLE_CText) {
         startTable = "<tt>"; endTable = "</tt>";
@@ -1893,30 +2121,32 @@ OpTable::ThemeReport (DString * dstr, uint argc, const char ** argv)
         startTable = "\n\\begin{tabular}{lrlr}\n";
         endTable = "\\end{tabular}\n";
         startRow = "";  endRow = " \\\\ \n";
-        nextCell = " & ";
+        nextCell = " & ";  nextCellRight = nextCell;
     }
 
-    const char * themeName [NUM_OPTHEMES] = {NULL};
-    themeName [OPTHEME_QueenSwap] = "Queens exchanged:           ";
-    themeName [OPTHEME_CastSame]  = "Same-side castling:         ";
-    themeName [OPTHEME_CastOpp]   = "Opposite castling:          ";
-    themeName [OPTHEME_CastNone]  = "Both Kings uncastled:       ";
-    themeName [OPTHEME_IQP]       = "Isolated Queen Pawn:        ";
-    themeName [OPTHEME_WAdvPawn]  = "White Pawn on 5/6/7th rank: ";
-    themeName [OPTHEME_BAdvPawn]  = "Black Pawn on 2/3/4th rank: ";
-    themeName [OPTHEME_Kstorm]    = "Kingside pawn storm:        ";
-    themeName [OPTHEME_OpenFyle]  = "Open c/d/e file:            ";
-    themeName [OPTHEME_BPair]     = "Only 1 side has Bishop pair:";
+    const char * themeName [NUM_POSTHEMES] = {NULL};
+    themeName [POSTHEME_CastSame]  = "Same-side castling:         ";
+    themeName [POSTHEME_CastOpp]   = "Opposite castling:          ";
+    themeName [POSTHEME_QueenSwap] = "Queens exchanged:           ";
+    themeName [POSTHEME_OneBPair]  = "Only 1 side has Bishop pair:";
+    themeName [POSTHEME_Kstorm]    = "Kingside pawn storm:        ";
+    themeName [POSTHEME_WIQP]      = "White Isolated Queen Pawn:  ";
+    themeName [POSTHEME_BIQP]      = "Black Isolated Queen Pawn:  ";
+    themeName [POSTHEME_WAdvPawn]  = "White Pawn on 5/6/7th rank: ";
+    themeName [POSTHEME_BAdvPawn]  = "Black Pawn on 2/3/4th rank: ";
+    themeName [POSTHEME_OpenFyle]  = "Open c/d/e file:            ";
 
     char tempStr [250];
-    sprintf (tempStr, argv[0], (StartLength + (OPTABLE_COLUMNS * 2)) / 2);
+    //sprintf (tempStr, argv[0], (StartLength + (OPTABLE_COLUMNS * 2)) / 2);
+    sprintf (tempStr, argv[0], MaxThemeMoveNumber);
     dstr->Append (tempStr, endLine);
-    argc--; argv++;
+    argc--;
+    argv++;
 
     dstr->Append (startTable);
-    uint leftcol = (NUM_OPTHEMES + 1) / 2;
+    uint leftcol = (NUM_POSTHEMES + 1) / 2;
     uint longestLength = 0;
-    for (uint i=0; i < NUM_OPTHEMES; i++) {
+    for (uint i=0; i < NUM_POSTHEMES; i++) {
         uint len = strLength (argv[i]);
         if (len > longestLength) { longestLength = len; }
     }
@@ -1926,23 +2156,25 @@ OpTable::ThemeReport (DString * dstr, uint argc, const char ** argv)
         dstr->Append (theme < leftcol ? startRow : nextCell);
         strPad (tempStr, argv[theme], longestLength, ' ');
         if (Format == OPTABLE_CText) {
-            dstr->Append ("<darkblue><run sc_optable select op ", theme,
-                          "; updateStatsWin>");
+            dstr->Append ("<darkblue><run sc_report ", Type, " select theme ");
+            dstr->Append (theme, "; ::windows::stats::Refresh>");
         }
         dstr->Append (" ", tempStr);
         if (Format == OPTABLE_CText) { dstr->Append ("</run></darkblue>"); }
-        dstr->Append (nextCell);
-        uint r = ((100 * ThemeCount[theme]) + (FilterCount/2)) / FilterCount;
+        dstr->Append (nextCellRight);
+        uint percent = 0;
+        if (FilterCount > 0) {
+            percent = ((100 * ThemeCount[theme]) + (FilterCount/2)) / FilterCount;
+        }
         char rstr [16];
-        sprintf (rstr, "%3u", r);
+        sprintf (rstr, "%3u", percent);
         dstr->Append (rstr, percentStr);
-        if (Format == OPTABLE_HTML) { dstr->Append ("</td>"); }
         if (theme < leftcol) {
             dstr->Append ("  ");
         } else {
             dstr->Append (endRow);
         }
-        if (theme == NUM_OPTHEMES - 1) { break; }
+        if (theme == NUM_POSTHEMES - 1) { break; }
         if (theme < leftcol) {
             theme += leftcol;
         } else {
@@ -1950,7 +2182,7 @@ OpTable::ThemeReport (DString * dstr, uint argc, const char ** argv)
             theme++;
         }
     }
-    if (NUM_OPTHEMES % 2 == 1) { dstr->Append (endRow); }
+    if (NUM_POSTHEMES % 2 == 1) { dstr->Append (endRow); }
     dstr->Append (endTable);
 }
 
@@ -1978,7 +2210,11 @@ OpTable::EndMaterialReport (DString * dstr, const char * repGames,
     const char * postNum = "";
 
     if (Format == OPTABLE_HTML) {
-        startTable = "<pre>\n"; endTable = "</pre>\n";
+        startTable = "<table border=0 cellspacing=0 cellpadding=4>\n";
+        endTable = "</table>\n";
+        startRow = "<tr><td>";  endRow = "</td></tr>\n";
+        nextCell = "</td><td align=\"right\">";
+        // startTable = "<pre>\n"; endTable = "</pre>\n";
     }
     if (Format == OPTABLE_CText) {
         startTable = "<tt>"; endTable = "</tt>";
@@ -2010,14 +2246,28 @@ OpTable::EndMaterialReport (DString * dstr, const char * repGames,
         dstr->Append (p, bn, r, bn); dstr->Append (q, bn, qr, bn);
         dstr->Append (endRow, "\\hline\n");
     } else {
+        dstr->Append(startRow);
         uint len = length[OPTABLE_Line];
         if (length[OPTABLE_All] > len) { len = length[OPTABLE_All]; }
         len++;
         for (uint space=0; space < len; space++) { dstr->AddChar (' '); }
-        dstr->Append (nextCell, "     P", nextCell, "    BN");
-        dstr->Append (nextCell, "     R", nextCell, "  R,BN");
-        dstr->Append (nextCell, "     Q", nextCell, "  Q,BN");
-        dstr->Append (nextCell, "   Q,R", nextCell, "Q,R,BN");
+        char t1[10]; char t2[10];
+        strcpy(t1, "     P"); strcpy(t2, "    BN");
+        transPieces(t1); transPieces(t2);
+        dstr->Append (nextCell, t1, nextCell, t2);
+        strcpy(t1, "     R"); strcpy(t2, "  R,BN");
+        transPieces(t1); transPieces(t2);
+        dstr->Append (nextCell, t1, nextCell, t2);
+        strcpy(t1, "     Q"); strcpy(t2, "  Q,BN");
+        transPieces(t1); transPieces(t2);
+        dstr->Append (nextCell, t1, nextCell, t2);
+        strcpy(t1, "   Q,R"); strcpy(t2, "Q,R,BN");
+        transPieces(t1); transPieces(t2);
+        dstr->Append (nextCell, t1, nextCell, t2);
+//         dstr->Append (nextCell, "     P", nextCell, "    BN");
+//         dstr->Append (nextCell, "     R", nextCell, "  R,BN");
+//         dstr->Append (nextCell, "     Q", nextCell, "  Q,BN");
+//         dstr->Append (nextCell, "   Q,R", nextCell, "Q,R,BN");
         dstr->Append (endRow);
     }
     const char * rowName [2] = { repGames, allGames };
@@ -2035,8 +2285,8 @@ OpTable::EndMaterialReport (DString * dstr, const char * repGames,
             sprintf (numStr, "%5u", pc);
             dstr->Append (nextCell);
             if (Format == OPTABLE_CText  &&  t == OPTABLE_Line) {
-                dstr->Append ("<darkblue><run sc_optable select end ", i,
-                              "; updateStatsWin>");
+                dstr->Append ("<darkblue><run sc_report ", Type);
+                dstr->Append (" select end ", i, "; ::windows::stats::Refresh>");
             }
             dstr->Append (preNum, numStr, percentStr, postNum);
             if (Format == OPTABLE_CText  &&  t == OPTABLE_Line) {
@@ -2062,7 +2312,11 @@ OpTable::EndMaterialReport (DString * dstr, const char * repGames,
 uint *
 OpTable::SelectGames (char type, uint number)
 {
+#ifdef WINCE
+    uint * matches = (uint *) my_Tcl_Alloc(sizeof( uint [NumLines * 2 + 2]));
+#else
     uint * matches = new uint [NumLines * 2 + 2];
+#endif
     uint * match = matches;
 
     for (uint i=0; i < NumLines; i++) {
@@ -2073,9 +2327,10 @@ OpTable::SelectGames (char type, uint number)
         if (type == 'e') {
             // Only games from one endgame classification:
             if (line->EgTheme == number) { selected = true; }
-        } else if (type == 'o') {
-            // Only games from one opening theme:
-            if (number < NUM_OPTHEMES  &&  line->Theme[number]) {
+        } else if (type == 't') {
+            // Only games from one positional theme:
+            if (number < NUM_POSTHEMES
+                  &&  line->Theme[number] >= POSTHEME_THRESHOLD) {
                 selected = true;
             }
         } else if (type == 'n') {

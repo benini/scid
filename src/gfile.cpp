@@ -40,11 +40,21 @@ void
 GFile::Init ()
 {
     Handle = NULL;
+#ifdef WINCE
+    Cache = (gfBlockPtrT*) my_Tcl_Alloc(sizeof( gfBlockPtrT[1] ));
+#else
     Cache = new gfBlockPtrT [1];
+#endif
     CacheSize = 1;
     Offset = 0;
     NumBlocks = 0;
+
+#ifdef WINCE
+    Cache[0] = (gfBlockPtrT) my_Tcl_Alloc(sizeof( gfBlockT ));
+#else
     Cache[0] = new gfBlockT;
+#endif
+
     Cache[0]->blockNum = -1;
     Cache[0]->dirty = 0;
     Cache[0]->length = 0;
@@ -70,14 +80,22 @@ GFile::Close ()
     if (CurrentBlock->dirty  &&  FileMode != FMODE_ReadOnly) {
         if (Flush (CurrentBlock) != OK) { return ERROR_FileWrite; }
     }
+
     errorT result = Handle->Close ();
     delete Handle;
     Handle = NULL;
     FileMode = FMODE_None;
     for (uint i=0; i < CacheSize; i++) {
+#ifdef WINCE
+        my_Tcl_Free( (char*)Cache[i]);
+    }
+    my_Tcl_Free( (char*) Cache);
+#else
         delete Cache[i];
     }
     delete[] Cache;
+#endif
+
     Init();
     return result;
 }
@@ -238,16 +256,47 @@ GFile::ReadGame (ByteBuffer * bb, uint offset, uint length)
     if (Handle == NULL) { return ERROR_FileNotOpen; }
     int blockNum = (offset / GF_BLOCKSIZE);
     int endBlockNum = (offset + length - 1) / GF_BLOCKSIZE;
-    if (endBlockNum != blockNum  ||  (uint)blockNum >= NumBlocks) {
+
+// Scid 3.6.23 : the increase of GF_BLOCKSIZE was an error, so now use Pocket PC code to handle
+// the case of games overlapping blocks
+// #ifdef WINCE
+    if ( (endBlockNum != blockNum && endBlockNum != (blockNum+1) )  ||  (uint)blockNum >= NumBlocks) {
         return ERROR_CorruptData;
     }
-    if (CurrentBlock->blockNum != blockNum) {
-        if (Fetch (CurrentBlock, blockNum) != OK) {
-            return ERROR_FileRead;
-        }
+    if (endBlockNum == blockNum+1) { // block overlap
+      bb->RemoveExternal();
+      if (CurrentBlock->blockNum != blockNum) {
+          if (Fetch (CurrentBlock, blockNum) != OK) {
+              return ERROR_FileRead;
+          }
+      }
+      uint end = (blockNum+1)*GF_BLOCKSIZE-offset;
+      bb->CopyFrom(&(CurrentBlock->data[offset % GF_BLOCKSIZE]), end);
+
+      if (Fetch (CurrentBlock, blockNum+1) != OK) {
+           return ERROR_FileRead;
+      }
+      bb->CopyFrom(&(CurrentBlock->data[0]), length - end , end);
+
+    } else { // no block overlap
+      if (CurrentBlock->blockNum != blockNum) {
+          if (Fetch (CurrentBlock, blockNum) != OK) {
+              return ERROR_FileRead;
+          }
+      }
+      bb->ProvideExternal (&(CurrentBlock->data[offset % GF_BLOCKSIZE]), length);
     }
-    bb->ProvideExternal (&(CurrentBlock->data[offset % GF_BLOCKSIZE]),
-                         length);
+// #else
+//     if (endBlockNum != blockNum  ||  (uint)blockNum >= NumBlocks) {
+//         return ERROR_CorruptData;
+//     }
+//     if (CurrentBlock->blockNum != blockNum) {
+//         if (Fetch (CurrentBlock, blockNum) != OK) {
+//             return ERROR_FileRead;
+//         }
+//     }
+//     bb->ProvideExternal (&(CurrentBlock->data[offset % GF_BLOCKSIZE]), length);
+// #endif
     return OK;
 }
 

@@ -4,9 +4,9 @@
 //              Miscellaneous routines (File I/O, etc)
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.0
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -21,6 +21,10 @@
 #include <ctype.h>     // For isspace() function.
 #include <sys/stat.h>  // Needed for fileSize() function.
 
+#ifdef WINCE
+#include <tcl.h>
+extern "C" int my_stat(const char *path, struct stat *buf);
+#endif
 
 // Table of direction between any two chessboard squares, initialised
 // in scid_Init():
@@ -342,6 +346,36 @@ strCompareRound (const char * sleft, const char * sright)
     int iright = strGetInteger (sright);
     int diff = ileft - iright;
     if (diff != 0) { return diff; }
+
+    // Now check if both strings are equal up to the first dot.
+    // If so, do an integer comparison after the ".":
+
+    bool equalUpToDot = false;
+    const char * templeft = sleft;
+    const char * tempright = sright;
+
+    while (true) {
+        char leftc = *templeft;
+        char rightc = *tempright;
+        if (leftc == 0  ||  rightc == 0) { break; }
+        if (leftc != rightc) { break; }
+        if (leftc == '.'  &&  rightc == '.') { equalUpToDot = true; break; }
+        templeft++;
+        tempright++;
+    }
+
+    if (equalUpToDot) {
+        templeft++;
+        tempright++;
+        // Now templeft and tempright point to the first character
+        // after each dot.
+        ileft = strGetInteger (templeft);
+        iright = strGetInteger(tempright);
+        diff = ileft - iright;
+        if (diff != 0) { return diff; }
+    }
+    
+    // Give up on integer comparisons and do a regular string comparison:
     return strCompare (sleft, sright);
 }
 
@@ -352,7 +386,11 @@ char *
 strDuplicate (const char * original)
 {
     ASSERT (original != NULL);
+#ifdef WINCE
+    char * newStr = my_Tcl_Alloc(sizeof( char [strLength(original) + 1]));
+#else
     char * newStr = new char [strLength(original) + 1];
+#endif
     if (newStr == NULL)  return NULL;
     char *s = newStr;
     while (*original != 0) {
@@ -855,6 +893,23 @@ strContains (const char * longStr, const char * keyStr)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// strContainsIndex():
+//      Returns the first index if longStr contains an occurence of keyStr,
+//      case-sensitive and NOT ignoring any characters such as spaces.
+//      Returns -1 if longStr does not contain keyStr
+int
+strContainsIndex (const char * longStr, const char * keyStr)
+{
+    int index = 0;
+    while (*longStr) {
+        if (strIsPrefix (keyStr, longStr)) { return index; }
+        longStr++;
+        index++;
+    }
+    return -1;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strAlphaContains():
 //      Returns true if longStr contains an occurence of keyStr,
 //      case-insensitive and ignoring spaces.
@@ -1133,6 +1188,36 @@ rawFileSize (const char * name)
 uint
 gzipFileSize (const char * name)
 {
+#ifdef WINCE
+    /*FILE * */
+    Tcl_Channel fp;
+    //fp = fopen (name, "rb");
+    fp = my_Tcl_OpenFileChannel(NULL, name, "r", 0666);//fopen (name, modeStr);
+
+    if (fp == NULL) { return 0; }
+ my_Tcl_SetChannelOption(NULL, fp, "-encoding", "binary");
+ my_Tcl_SetChannelOption(NULL, fp, "-translation", "binary");
+
+    // Seek to 4 bytes from the end:
+    if (my_Tcl_Seek(fp, -4L, SEEK_END) == -1) {
+    
+    //if (fseek (fp, -4L, SEEK_END) != 0) {
+        //fclose (fp);
+        my_Tcl_Close(NULL, fp);
+        return 0;
+    }
+    // Read the 4-byte number in little-endian format:
+    uint size = 0;
+    char b = 0;
+    my_Tcl_Read(fp, &b, 1); uint b0 = (uint) b; //(uint) getc(fp);
+    my_Tcl_Read(fp, &b, 1); uint b1 = (uint) b; //(uint) getc(fp);
+    my_Tcl_Read(fp, &b, 1); uint b2 = (uint) b; //(uint) getc(fp);
+    my_Tcl_Read(fp, &b, 1); uint b3 = (uint) b; //(uint) getc(fp);
+    size = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+    //fclose (fp);
+    my_Tcl_Close(NULL, fp);
+    return size;
+#else
     FILE * fp;
     fp = fopen (name, "rb");
     if (fp == NULL) { return 0; }
@@ -1150,6 +1235,7 @@ gzipFileSize (const char * name)
     size = b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
     fclose (fp);
     return size;
+#endif
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1199,18 +1285,44 @@ createFile (const char * name, const char * suffix)
     fileNameT fname;
     strCopy (fname, name);
     strAppend (fname, suffix);
+#ifdef WINCE
+    //FILE * fp = fopen (fname, "w");
+    Tcl_Channel fp = my_Tcl_OpenFileChannel(NULL, name, "w", 0666);
+    if (!fp) { return ERROR_FileOpen; }
+    my_Tcl_SetChannelOption(NULL, fp, "-encoding", "binary");
+    my_Tcl_SetChannelOption(NULL, fp, "-translation", "binary");
+    my_Tcl_Close (NULL,fp);
+#else
     FILE * fp = fopen (fname, "w");
     if (!fp) { return ERROR_FileOpen; }
     fclose (fp);
+#endif
     return OK;
 }
 
+#ifdef WINCE
+  #include <string.h>
+#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // fileExists():
 //      Returns true if the file exists, false otherwise.
 bool
 fileExists (const char * name, const char * suffix)
 {
+#ifdef WINCE
+    Tcl_StatBuf statBuf;
+    fileNameT fname;
+    int res;
+    strCopy (fname, name);
+    strAppend (fname, suffix);
+//    if (my_stat (fname, &statBuf) != 0) {
+    Tcl_Obj * obj = Tcl_NewStringObj(fname, strlen(fname));
+    res = Tcl_FSLstat(obj, &statBuf );
+    Tcl_DecrRefCount(obj); 
+    if ( res != 0) {
+        return false;
+    }
+#else
     struct stat statBuf;    // Defined in <sys/stat.h>
     fileNameT fname;
     strCopy (fname, name);
@@ -1218,6 +1330,7 @@ fileExists (const char * name, const char * suffix)
     if (stat (fname, &statBuf) != 0) {
         return false;
     }
+#endif
     return true;
 }
 
@@ -1226,6 +1339,35 @@ fileExists (const char * name, const char * suffix)
 // writeString(), readString():
 //      Read/write fixed-length strings.
 //      Lengths of zero bytes ARE allowed.
+#ifdef WINCE
+errorT
+writeString (/*FILE * */Tcl_Channel fp, char * str, uint length)
+{
+    ASSERT (fp != NULL  &&  str != NULL);
+    int result = 0;
+    while (length > 0) {
+        result = my_Tcl_Write(fp, str, 1);//putc(*str, fp);
+        str++;
+        length--;
+    }
+    return (result == -1 ? ERROR_FileWrite : OK);
+}
+
+errorT
+readString (/*FILE * */ Tcl_Channel fp, char * str, uint length)
+{
+    ASSERT (fp != NULL  &&  str != NULL);
+    char c;
+    while (length > 0) {
+        my_Tcl_Read(fp, &c, 1);
+        *str = c;//getc(fp);
+        str++;
+        length--;
+    }
+    return OK;
+}
+
+#else
 
 errorT
 writeString (FILE * fp, char * str, uint length)
@@ -1251,7 +1393,7 @@ readString (FILE * fp, char * str, uint length)
     }
     return OK;
 }
-
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: misc.cpp

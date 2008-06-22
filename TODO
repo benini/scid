@@ -1,107 +1,206 @@
+ ===========================================================
+|                                                           |
+|               PENDING - WORK IN PROGRESS                  |
+|                                                           |
+ ===========================================================
+
+Traiter les ouvertures comme une suite de positions
+
+ ===========================================================
+|                                                           |
+|                          BUGS                             |
+|                                                           |
+ ===========================================================
+
+- Go to any move. Go one move back. Add a comment, let's say "Good move". 
+Make a move, choose "Add New Variation". The comment will be repeated. -> KNOWN BUG, let's say it is a feature
+
+- Open any game via Finder. In Recent files, paths contain /./ making it 
+possible to have the same file listed twice. -> SEEMS OK
+
+Possible improvements (perhaps not bugs, but awkward)
+- Empty variations are not deleted when last move is deleted)
+
+- It is possible to add NAG before the first move of the game/variation. For variations, it is not even visible.
+
+- PGN window with short header ON. If strip first moves -> the game is empty (bug exists in Scid 3.6.1)
+
+- Right click in PGN window does not always display the right position. Happens because of some comments parsing. Bug exists in original Scid 3.6.1
+
+- when clicking quickly on engine's "add move" it will try to add several moves for the same color, hence an error comment in PGN.  Bug exists in original Scid 3.6.1
+
+- sc_game push generates a new game that sc_game pop does not delete. This is used by trial mode and lead to memory leak.
+
+INTERNATIONALIZATION
+* bug: correct charset support in Tcl 8.3.x and Tcl 8.4.x -> TO BE FIXED BY USERS OF CHARSETS
+* bug: convert from current encoding to UT8 on import -> NO, NEED TO SWITCH TO MSGCAT
+* bug: convert from UTF8 to current encoding on export
+
 GAME EDITOR
-* automatically delete empty comments
-* adding move at the end of variation deletes previous comment
-* add ~ and ~= to comment editor
-* fix: with comment editor active browsing the game 'modifies' it
-* fix: adding comment before first move of the variation doesn't 
-  scroll PGN window
-* better PGN display (figurine font?)
-* better editor (it would be best to merge Comment Editor and PGN Window)
-* automatically replace conflicting NAGs (f. e. ??/?/?!/? or =/+=/=+)
-* warn user when replacing large portions of game comments
-* when merging game, merge into variations too
-* when merging game, try to ignore move sequences (merge at last 
-matching position)
-* allow merging two commentaries of the same games (f. e. we got
+* bug: with comment editor active browsing the game 'modifies' it -> try to detect that comment editor did not change, so no need to flag game as dirty.
+
+ ===========================================================
+|                                                           |
+|                     FEATURE REQUESTS                      |
+|                                                           |
+ ===========================================================
+
+- Add endgame tables support to PPC
+
+- use tablelist package to revamp Game List window
+
+- port FICS canvas to PPC
+
+- FICS : user commands at login
+
+- FICS : 
+	* implement timeseal (post a message to MAd -> full box, tried Hawk) Hi, I would like to use timesealing with the port of Scid I made on Pocket PC (I added FICS and Novag Citrine support). Could you give me pointers or a binary that could act as a proxy (ARM processor)?
+
+- Separate remove comments / remove NAGs (often I would like to remove
+only comments, leaving NAGs)
+
+- Single command to remove comments+NAGs+variations+nonstandard tags (useful
+when exporting/copying a game with copyrighted annotations)
+
+- Remove game(s) from clipboard
+You can remove game(s) from filter, but Clipboard can only be emptied, you
+cannot remove some games. Such a feature is useful when you choose some games
+for exporting. -> workaround open game list and RMB for removing games from filter before export
+
+- Allow setting 'Low CPU priority' for engines by default
+This is the case under Windows. Under Linux, a solution is to start engines with prio=5 by default. 
+Another solution is to make an option or remember latest setting -> DONE
+
+- Keyboard shortcuts for 'Discard'  / 'Go Back' in 'Leave game' dialog
+
+- Remove icons for adding coordindates/move indicator from standard toolbar.
+These are hardly used (user prefers one version or another, he doesn't change
+it). Some commonly used functions will be better.
+
+---------------------------------------------------
+                   PRIORITY 1
+---------------------------------------------------
+- Use the connection icon set for DGT also when Citrine is connected
+---------------------------------------------------
+                   PRIORITY 2
+---------------------------------------------------
+- Start game analysis at the end of the game to fill hash tables
+- Display several score graphs if there are multiple evaluations (sc_game_scores l.7339 of tkscid.cpp)
+- remove Ctrl-R and if gn = 0 -> add game , otherwise replace
+- vars add at the end of a game
+- Engines tournament (with specific opening line ?)
+- 6 men EGTB support (http://kd.lab.nig.ac.jp/chess/tablebases-online/)
+- export opening report in PGN (and check HTML conversion) : see proc mergeGame l.119 of end.tcl [sc_report opening best a 50]
+---------------------------------------------------
+                   PRIORITY 3
+---------------------------------------------------
+- The ability to delete a whole tree from "tree window". To be able to trim undesired moves and games from the database easily.
+- book generation from Scid (re-use of Polyglot code)
+- The idea of markers on the board to show opening stats is good, but there are still questions that arise :
+	- how to show both frequency and score ?
+	- is is relevant to show arrows when the number of games played is low (for example under 5) ?
+	An idea could be to use colors for scores :
+	- green : score > 55%
+	- light green : score between 50 and 55 %
+	- light red : score between 45 and 50 %
+	- red : score < 45%
+---------------------------------------------------
+                   PRIORITY 9
+---------------------------------------------------
+- mini board false (seems due to comments in PGN window)
+- The ability to save a (layout). So SCID can access often used windows with a menu choice. For example: One (layout) might be "board window" + "tree window" + "engine analysis", and a second (layout) might be any other combination of windows I might choose.
+
+
+======================================================================================================================
+From: Michal Rudolf <mrudolf@kdewebdev.org>
+Subject: Re: Scid bugs
+
+Categories:
+bug: bug to be fixed
+cmd: command to be added
+opt: option to be added
+fea: internal feature to be added
+ide: larger feature, idea or new concept
+usa: improve usability, clean interface
+
+GAME EDITOR
+* cmd: [~] and [~=] buttons in Comment editor
+* cmd: "Save/Replace" option for "Current game has changed" dialog
+* fea: automatically delete empty comments
+* fea: automatically replace conflicting NAGs (f. e. ??/?/?!/? or =/+=/=+)
+* fea: merge game ignoring move sequences (use last matching position)
+* fea: merge game into variations too
+* fea: properly detect that game was modified
+* fea: warn user when replacing large portions of game comments
+* ide: any NAG in Comment editor (combo box?)
+* ide: better editor (best: merge Comment Editor and PGN Window?)
+* ide: allow merging two commentaries of the same games (f. e. we got
   (Annotator: Fritz    15. Bg5 ( {better } 15. Ng3) )
    Annotator: Crafty   15. Bg5 ( {with equality} )
    =>
    15. Bg5 ( {Fritz: better } 15. Bg3 )
            ( {Crafty: with equality} )
-* add "Save/Replace" option for "Current game has changed" dialog
 
 BOARD
-* when browsing game: show message box with main (game) move and 
-  variations (as in ChessBase)
-* swap board depending on player name (you can define your name and all your
-  games will be shown from your perspective)
-* update board after every move when Right/Left arrow is pressed (possible
+* fea: ignore Right arrow at the end of the game/variation
+* fea: update board after every move when Right/Left arrow is pressed 
+(possible
   by adding "update idletasks", but it causes flickers
-* GoTo game ignores changes to cuurent game
-* ignore Right arrow at the end of the game/variation
-* (?) make Home/End go to the end of the variation, not the game?
+* ide: when brownsing, show box with main move and variations (as in CB)
+* ide: swap board depending on player (your) name 
+* ide: make Home/End go to the end of the variation, not the game?
+* ide: use fancy graphics for pieces and background
 
 GAME LIST
-* highlight current game in game list by default
+* fea: highlight current game in game list by default
+* fea: mark that there are no matches instead of showing 1st game
 
 CROSSTABLE
-* fix detection of round robin tournaments
-* fix small font
-* support large swiss tournaments
+* fea: support larger swiss tournaments (such as Olympiad)
 
 PGN WINDOW
-* fix bug: showing comment before the first move
-* fix parsing commented PGN from ChessBase
-* option to strip spaces after/before brackets for variations in PGN window
-* print game
+* cmd: print game
+* ide: better PGN display (figurine font?)
+* opt: display 'strict' PGN
+* opt: strip spaces after/before brackets for variations in PGN window
 
 SEARCH HEADER
-* fix game count in search
-* searching for ECO shouldn't find non-standard positions
-* improve Header Search usability
+* usa: improve Header Search window (use tabs?)
 
 SEARCH MATERIAL
-* fix font in Material search
-* search: find symmetrical patterns (pawns a,b,c = f,g,h)
-* improve Material Search usability
+* fea: find symmetrical patterns (pawns a,b,c = f,g,h)
+* fea: search by white/black/all piece count
+* fea: find certain moves, specially captures (f. e. BxPe6 or RxNc3)
+* fea: 'any white(black) piece' in patterns
+* usa: Material Search window (use tabs)
 
 DATABASE
-* fix Recent Files containing ./
-* fix problems related with cancelling Open Database command
-* improve Maintenance usability
-* datasets (idea: you define current filter to be current database subset
-* reopen last databases/games
+* fea: reopen last databases/games
+* ide: datasets (you define current filter to be current database subset)
+* usa: improve Maintenance usability
 
 TREE
-* best game: configurable number of moves
-* fix selecting tree move replaces current game move
-
-INTERNATIONALIZATION
-* fix charset in Tcl 8.4.x
-* convert from current encoding to UT8 on import
-* convert from UTF8 to current encoding on export
-* update GUI when language is changed
-
+* opt: configurable number of moves for best game
 PLAYER INFO
-* fix photo positioning (sometimes text is hidden behind photo)
-* make filter games selectable in Player info
+* fea: filter games selectable in Player info
 
-ENGINES
-* fix: Phalanx sometimes doesn't see last move
-* chess engine output in main window
-* blunder search
-* option to always start engine in "low cpu usage" mode 
+PLAYER BROWSER
+* cmd: popup menu to load All/White/Black games of a player
+* opt: incrementally match player name
 
-OPENING REPORT
-* some options are ignored 
-* allow configuring Opening Report _before_ starting to create it (unless
-  it becomes faster)
-* optimize opening report (rewrite Tcl code in C++)
+ANALYSIS WINDOW & ENGINES
+* cmd: blunder search
+* cmd: restart engine (specially if above-mentioned bugs are not fixed)
+* fea: chess engine output in main window
+* opt: option to always start engine in "low cpu usage" mode 
   
-TOURNAMENT BROWSER
-* fix bug: tournament browser ignores EventDate
-* fix bug when cancelling move added by Analysis/Training
-
 SPELLCHECKER
-* spellcheck: use birth/death dates
-* spellcheck: don't match partial name for surname
+* fea: don't match partial name for surname
 
-SCID DATA
-* update ratings
-* more pieces (convert from TTF?)
+INTERNAL GAME HANDLING 
+* cmd: remove verbal comments (leaving NAGs)
+* fea: in non-strict PGN view, convert all $ NAGs to symbols/words
+* ide: datasets (allowing to work on current filter as on the whole database)
 
-INTERNAL GAME HANDING 
-* bug: in PGN export, comment before first move written before header
-* command 'truncate the begining of the game
-* command 'truncate the end of the game'
-* remove verbal comments (leaving NAGs)
+CLIPBOARD
+* cmd: remove game(s) from clipboard -> WORKAROUND : USE GAME LIST AND REMOVE FROM FILTER

@@ -38,10 +38,33 @@ class DString
     void   Extend (uint neededLength);
 
 public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     DString() { Init (DSTRING_MinCapacity); }
     DString (uint size) { Init (size); }
-    ~DString() { delete[] Start; }
+    ~DString() {
+#ifdef WINCE
+my_Tcl_Free( Start);
+#else
+delete[] Start;
+#endif
+}
 
     void Clear (void)        { Start[0] = 0; Len = 0; }
     const char * Data (void) { return (const char *) Start; }

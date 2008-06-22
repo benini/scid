@@ -1,11 +1,25 @@
-This copyright notice applies to all the files contained in this
-distribution of Scid. To contact the author and copyright holder,
-email: shane@cosc.canterbury.ac.nz
+Files that are copyrighted by respective authors :
+Book files (performance.bin and varied.bin): Marc Lacrosse
+Book files (Elo2400.bin and gm2600.bin): Pascal Georges
+Database files : Pascal Georges
+Crafty engine : Robert Hyatt (thanks to him for authorizing the bundling of Crafty with Scid)
 
-Scid website: http://scid.sourceforge.net/
+Before re-using the files above for *any* purpose please contact respective authors first.
+
+The base64 encoded data of the piece set "eboard" was generated using files taken from chessx, modified for use in Scid with Gimp, and seems to have its origins in the eboard project(probable authors : Pulga --> Felipe Bergo <bergo@seul.org>,Gorgonian --> Phillip Watts <pwatts14@yahoo.com>). Please refer to this last project for more details (both are GPL projects).
+
+This copyright notice applies to all the files contained in this
+distribution of Scid except for the files listed above. 
+To contact the author and copyright holder,
+email: sgh@users.sourceforge.net
+email: pascal.georges1@free.fr
+
+Scid websites: 
+http://scid.sourceforge.net/
+http://prolinux.free.fr/scid/
 
 All the files that comprise Scid (except a few contributed files, see
-below) are copyright (C) 1999-2002 Shane Hudson and are distributed under
+below) are copyright (C) 1999-2003 Shane Hudson and are distributed under
 the terms of the Gnu General Public License (GPL), a popular license
 used for free software. A copy of the GPL is provided below. As I
 understand the GPL, it basically means you can distribute Scid freely,
@@ -30,7 +44,8 @@ Please note that all the Scid programs and source code are provided
 with absolutely no warranty of any kind.
 
 Shane Hudson
-February 2002
+sgh@users.sourceforge.net
+January 2003
 
 ---------------------------------------------------------------------------
 

@@ -1,3 +1,5 @@
+#ifndef WINCE
+
 #ifndef TBDECODE
 #define	TBDECODE
 
@@ -692,28 +694,47 @@ static int comp_open_file (decode_info **res, FILE *fd, int check_crc)
   n_blk = R4 (72);
   if (R4 (76) != (ALPHABET_SIZE << 12) + (LONG_BITS << 8) + (LONG_LENGTH << 4) + MAX_LENGTH_BITS)
     return RET (COMP_ERR_BROKEN);
-
+#ifdef WINCE
+  if ((ptr = (uchar*) my_Tcl_Alloc (header_size)) == 0)
+#else
   if ((ptr = (uchar*) malloc (header_size)) == 0)
+#endif
     return RET (COMP_ERR_NOMEM);
 
   if (fread (ptr + HEADER_SIZE, 1, header_size - HEADER_SIZE, fd) != (size_t) (header_size - HEADER_SIZE))
   {
+#ifdef WINCE
+    my_Tcl_Free ((char*)ptr);
+#else
     free (ptr);
+#endif
     return RET (COMP_ERR_NOMEM);
   }
   memcpy (ptr, temp, HEADER_SIZE);
   header_size -= 4;
   if (CRC32 (ptr, header_size, 0) != (unsigned) R4 (header_size))
   {
+#ifdef WINCE
+    my_Tcl_Free ((char*)ptr);
+#else
     free (ptr);
+#endif
     return RET (COMP_ERR_BROKEN);
   }
   header_size += 4;
 
   n = sizeof (info->crc[0]) * (1 + (check_crc ? (3 * n_blk) : n_blk));
+#ifdef WINCE
+  if ((info = (decode_info *) my_Tcl_Alloc (sizeof (*info) + n)) == 0)
+#else
   if ((info = (decode_info *) malloc (sizeof (*info) + n)) == 0)
+#endif
   {
+#ifdef WINCE
+    my_Tcl_Free ((char*)ptr);
+#else
     free (ptr);
+#endif
     return RET (COMP_ERR_NOMEM);
   }
   cbEGTBCompBytes += sizeof (*info) + n;
@@ -761,15 +782,25 @@ static int comp_open_file (decode_info **res, FILE *fd, int check_crc)
   BITIO_LEAVE (Bitio);
   if (huffman_read_length (&Bitio, temp, ALPHABET_SIZE) != 0)
   {
+#ifdef WINCE
+    my_Tcl_Free ((char*)info);
+    my_Tcl_Free ((char*)ptr);
+#else
     free (info);
     free (ptr);
+#endif
     return RET (COMP_ERR_BROKEN);
   }
 
   if (huffman_decode_create (info->table, temp, ALPHABET_SIZE, START_BITS) != 0)
   {
+#ifdef WINCE
+    my_Tcl_Free ((char*)info);
+    my_Tcl_Free ((char*)ptr);
+#else
     free (info);
     free (ptr);
+#endif
     return RET (COMP_ERR_BROKEN);
   }
 
@@ -782,7 +813,11 @@ static int comp_open_file (decode_info **res, FILE *fd, int check_crc)
     header_size += i;
   }
 
-  free (ptr);
+#ifdef WINCE
+    my_Tcl_Free ((char*)ptr);
+#else
+    free (ptr);
+#endif
   info->comp  = 0;
   info->magic = DECODE_MAGIC;
   *res = info;
@@ -819,7 +854,11 @@ static int comp_alloc_block (decode_block **ret_block, int block_size)
   if (ret_block == 0)
     return RET (COMP_ERR_PARAM);
   *ret_block = 0;
+#ifdef WINCE
+  if ((block = (decode_block *) my_Tcl_Alloc (sizeof (*block) + block_size)) == 0)
+#else
   if ((block = (decode_block *) malloc (sizeof (*block) + block_size)) == 0)
+#endif
     return RET (COMP_ERR_NOMEM);
   cbEGTBCompBytes += sizeof (*block) + block_size;
   if (0 != comp_init_block (block, block_size, NULL))
@@ -977,3 +1016,5 @@ int main (int argc, char *argv[])
 
 #endif
 #endif
+
+#endif // WINCE

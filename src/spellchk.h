@@ -4,14 +4,15 @@
 //              SpellChecker class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.2
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 2001-2002  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
 //////////////////////////////////////////////////////////////////////
 
+#ifndef WINCE
 
 #ifndef SCID_SPELLCHK_H
 #define SCID_SPELLCHK_H
@@ -63,13 +64,33 @@ class SpellChecker
     spellCheckNodeT * Names [256];
     spellCheckNodeT * HashNames [SPELL_HASH_SIZE];
            // HashNames[] gives fast access to correct names only.
-    presuffixNodeT * Prefixes;
-    presuffixNodeT * Suffixes;
+    presuffixNodeT * Prefixes;  // Prefix substitutions
+    presuffixNodeT * Suffixes;  // Suffix substitutions
+    presuffixNodeT * Infixes;   // Infix substitutions
 
     void Init (void);
     void Destroy (void);
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif  
+
     SpellChecker ()  { Init(); }
     ~SpellChecker () { Destroy(); }
     void Clear (void);
@@ -85,6 +106,7 @@ class SpellChecker
 
     const char * CorrectPrefix (const char * name, int * offset);
     const char * CorrectSuffix (const char * name, int * offset);
+    const char * CorrectInfix (const char * name, int * offset, int * replacedLength);
     const char * Correct (const char * name);
     uint Corrections (const char * name, const char ** corrections,
                       uint maxCorrections);
@@ -92,7 +114,7 @@ class SpellChecker
     const char * RenderName (const char * name);
     const char * GetComment (const char * name);
     const char * GetCommentExact (const char * name);
-    errorT ReadSpellCheckFile (const char * filename);
+    errorT ReadSpellCheckFile (const char * filename, bool checkPlayerOrder);
     errorT AddPrefixSuffix (char * str);
     void AddBioData (spellCheckNodeT * node, const char * str);
     const bioNoteT * GetBioData (const char * name);
@@ -104,12 +126,14 @@ class SpellChecker
     static const char * GetLastCountry (const char * comment);
     static eloT GetPeakRating (const char * comment);
     static dateT GetBirthdate (const char * comment);
+    static dateT GetDeathdate (const char * comment);
 
     void Dump (FILE * fp);
 };
 
 #endif  // SCID_SPELLCHK_H
 
+#endif // WINCE
 //////////////////////////////////////////////////////////////////////
 //  EOF: spellchk.h
 //////////////////////////////////////////////////////////////////////

@@ -58,7 +58,11 @@ NameBase::Clear ()
     // Delete all dynamically allocated space for this namebase:
     delete StrAlloc;
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
+#ifdef WINCE
+        my_Tcl_Free((char*) NameByID[n]);
+#else
         delete[] NameByID[n];
+#endif
         delete Tree[n];
     }
     Init();
@@ -75,8 +79,11 @@ NameBase::WriteHeader ()
     ASSERT (FilePtr != NULL);
 
     // Ensure we are at the start of the file:
+#ifdef WINCE
+    my_Tcl_Seek(FilePtr, 0, SEEK_SET);
+#else
     fseek (FilePtr, 0, SEEK_SET);
-
+#endif
     writeString (FilePtr, Header.magic, 8);
     writeFourBytes (FilePtr, Header.timeStamp);
     writeThreeBytes (FilePtr, Header.numNames[NAME_PLAYER]);
@@ -103,6 +110,24 @@ NameBase::OpenNameFile (const char * suffix)
     fileNameT fname;
     strcpy (fname, Fname);
     strcat (fname, suffix);
+#ifdef WINCE
+    //if ((FilePtr = fopen (fname, "rb")) == NULL) {
+    if ((FilePtr = my_Tcl_OpenFileChannel(NULL, fname, "r", 0666)) == 0) {
+        //Handle = Tcl_OpenFileChannel(NULL, name, modeStr, 0666);//fopen (name, modeStr);
+        return ERROR_FileOpen;
+    }
+ my_Tcl_SetChannelOption(NULL, FilePtr, "-encoding", "binary");
+ my_Tcl_SetChannelOption(NULL, FilePtr, "-translation", "binary");
+
+    readString(FilePtr, Header.magic, 8);
+    if (strcmp (Header.magic, NAMEBASE_MAGIC) != 0) {
+        my_Tcl_Close(NULL, FilePtr);//fclose (FilePtr);
+        FilePtr = NULL;
+        return ERROR_BadMagic;
+    }
+
+#else
+
     if ((FilePtr = fopen (fname, "rb")) == NULL) {
         return ERROR_FileOpen;
     }
@@ -113,7 +138,7 @@ NameBase::OpenNameFile (const char * suffix)
         FilePtr = NULL;
         return ERROR_BadMagic;
     }
-
+#endif
     Header.timeStamp = readFourBytes (FilePtr);
     Header.numNames[NAME_PLAYER] = readThreeBytes (FilePtr);
     Header.numNames[NAME_EVENT] = readThreeBytes (FilePtr);
@@ -135,7 +160,11 @@ errorT
 NameBase::CloseNameFile ()
 {
     ASSERT (FilePtr != NULL);   // check FilePtr points to an open file
+#ifdef WINCE
+    my_Tcl_Close(NULL, FilePtr);
+#else
     fclose (FilePtr);
+#endif
     FilePtr = NULL;
     return OK;
 }
@@ -153,7 +182,6 @@ NameBase::ReadNameFile (const char * suffix)
         &&  ArraySize[NAME_SITE] == 0    &&  ArraySize[NAME_ROUND] == 0);
 
     const idNumberT incr = 10;  // extra entries at end of each array
-
     errorT err = OpenNameFile (suffix);
     if (err != OK) {
         return err;
@@ -201,7 +229,6 @@ NameBase::ReadNameFile (const char * suffix)
 
             // Read the name string. All strings EXCEPT the first are
             // front-coded.
-
             uint length = (uint) readOneByte(FilePtr);
             Header.numBytes[nt]++;
             uint prefix = 0;
@@ -220,14 +247,16 @@ NameBase::ReadNameFile (const char * suffix)
             nameStr += length - prefix;
             Header.numBytes[nt] += length - prefix;
             *nameStr = 0;  // Add trailing '\0'.
-
             // Now add to the StrTree:
             if (Tree[nt]->AddLast (name, &node) != OK) {
                 //fprintf (stderr, "CORRUPT name: %s\n", name);
+#ifdef WINCE
+                my_Tcl_Close(NULL, FilePtr);
+#else
                 fclose (FilePtr);
+#endif
                 return ERROR_Corrupt;
             }
-
             node->data.id = id;
             node->data.frequency = frequency;
             node->data.maxElo = 0;
@@ -245,7 +274,12 @@ NameBase::ReadNameFile (const char * suffix)
         ASSERT (Header.numNames[nt] == Tree[nt]->Size());
         Tree[nt]->Rebalance();
     }
+
+#ifdef WINCE
+    my_Tcl_Close(NULL, FilePtr);
+#else
     fclose (FilePtr);
+#endif
     FilePtr = NULL;
     return OK;
 }
@@ -264,9 +298,19 @@ NameBase::WriteNameFile ()
     fileNameT fname;
     strcpy (fname, Fname);
     strcat (fname, NAMEBASE_SUFFIX);
+#ifdef WINCE
+//    if ((FilePtr = fopen (fname, "wb")) == NULL) {
+    if ((FilePtr = my_Tcl_OpenFileChannel(NULL, fname, "w", 0666)) == 0) {
+        return ERROR_FileOpen;
+    }
+ my_Tcl_SetChannelOption(NULL, FilePtr, "-encoding", "binary");
+ my_Tcl_SetChannelOption(NULL, FilePtr, "-translation", "binary");
+
+#else
     if ((FilePtr = fopen (fname, "wb")) == NULL) {
         return ERROR_FileOpen;
     }
+#endif
     WriteHeader ();
 
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
@@ -304,7 +348,11 @@ NameBase::WriteNameFile ()
             writeString (FilePtr, &(node->name[prefix]), (length - prefix));
         }
     }
+#ifdef WINCE
+    my_Tcl_Close(NULL, FilePtr);
+#else
     fclose (FilePtr);
+#endif
     FilePtr = NULL;
     return OK;
 }
@@ -318,20 +366,26 @@ errorT
 NameBase::IncArraySize (nameT nt, idNumberT increment)
 {
     ASSERT (IsValidNameType(nt));
-
     idNumberT newSize = ArraySize[nt] + increment;
+#ifdef WINCE
+    nameNodeT ** newID = (nameNodeT **)my_Tcl_Alloc( sizeof(nameNodePtrT [newSize]));
+#else
     nameNodeT ** newID = new nameNodePtrT [newSize];
+#endif
     if (ArraySize[nt] > 0) {  // copy old arrays into new then delete old
         for (uint i = 0; i < ArraySize[nt]; i++) {
             newID[i] = NameByID[nt][i];
         }
+#ifdef WINCE
+        my_Tcl_Free((char *)NameByID[nt]);
+#else
         delete[] NameByID[nt];
+#endif
     }
     NameByID[nt] = newID;
     ArraySize[nt] = newSize;
     return OK;
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // NameBase::FindExactName():
@@ -410,12 +464,20 @@ NameBase::GetFirstMatches (nameT nt, const char * str, uint maxMatches,
     ASSERT (IsValidNameType(nt)  &&  str != NULL);
     uint matches = 0;
     if (maxMatches > 0) {
+#ifdef WINCE
+        nameNodePtrT * nodeArray = (nameNodePtrT *)my_Tcl_Alloc(sizeof( nameNodePtrT [maxMatches]));
+#else
         nameNodePtrT * nodeArray = new nameNodePtrT [maxMatches];
+#endif
         matches = Tree[nt]->GetFirstMatches (str, maxMatches, nodeArray);
         for (uint i=0; i < matches; i++) {
             array[i] = nodeArray[i]->data.id;
         }
+#ifdef WINCE
+        my_Tcl_Free((char*) nodeArray);
+#else
         delete[] nodeArray;
+#endif
     }
     return matches;
 }
@@ -425,7 +487,11 @@ NameBase::GetFirstMatches (nameT nt, const char * str, uint maxMatches,
 // NameBase::DumpAllNames(): dump all names to open file
 //
 uint
+#ifdef WINCE
+NameBase::DumpAllNames (nameT nt, const char * prefixStr, /*FILE **/Tcl_Channel f)
+#else
 NameBase::DumpAllNames (nameT nt, const char * prefixStr, FILE * f)
+#endif
 {
     ASSERT (IsValidNameType(nt)  &&  f != NULL  &&  prefixStr != NULL);
 
@@ -433,9 +499,17 @@ NameBase::DumpAllNames (nameT nt, const char * prefixStr, FILE * f)
     int prefixLen = strlen (prefixStr);
     nameNodeT * node;
     Tree[nt]->IterateStart();
+#ifdef WINCE
+    char buf[1024];
+    while ((node = Tree[nt]->Iterate()) != NULL) {
+        if (!strncmp (prefixStr, node->name, prefixLen)) {
+            sprintf (buf, "%6d\t%s\n", node->data.frequency, node->name);
+            my_Tcl_Write(f, buf, strlen(buf));
+#else
     while ((node = Tree[nt]->Iterate()) != NULL) {
         if (!strncmp (prefixStr, node->name, prefixLen)) {
             fprintf (f, "%6d\t%s\n", node->data.frequency, node->name);
+#endif
             numMatches++;
         }
     }

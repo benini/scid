@@ -166,11 +166,16 @@ main (int argc, char * argv[])
     progBar.Start();
 
     ByteBuffer *bbuf = new ByteBuffer;
-    bbuf->SetBufferSize (32768);
+// PG: bbuf->SetBufferSize (327680);
+    bbuf->SetBufferSize (327680);
 
     PgnParser pgnParser (pgnFile);
     pgnParser.SetErrorFile (logFile);
     pgnParser.SetPreGameText (option_PreGameComments);
+    
+    // TODO: Add command line option for ignored tags, rather than
+    //       just hardcoding PlyCount as the only ignored tag.
+    pgnParser.AddIgnoredTag ("PlyCount");
 
     // Add each game found to the database:
     while (pgnParser.ParseGame(game) != ERROR_NotFound) {
@@ -249,7 +254,6 @@ main (int argc, char * argv[])
     printf ("\nDatabase `%s': %d games, %d players, %d events, %d sites.\n",
             baseName, idx->GetNumGames(), nb->GetNumNames (NAME_PLAYER),
             nb->GetNumNames (NAME_EVENT), nb->GetNumNames (NAME_SITE));
-
     fclose (logFile);
     if (pgnParser.ErrorCount() > 0) {
         printf ("There were %u errors or warnings; ", pgnParser.ErrorCount());
@@ -263,12 +267,10 @@ main (int argc, char * argv[])
 
     // If there is a tree cache file for this database, it is out of date:
     removeFile (baseName, TREEFILE_SUFFIX);
-
 #ifdef ASSERTIONS
     printf("%d asserts were tested\n", numAsserts);
 #endif
     pgnFile->Close();
-
     return 0;
 }
 

@@ -34,8 +34,11 @@ enum mfileT {
 class MFile
 {
   private:
-
+#ifdef WINCE
+    Tcl_Channel/* FILE * */      Handle;         // For regular files.
+#else
     FILE *      Handle;         // For regular files.
+#endif
     gzFile      GzHandle;       // For Gzip files.
     fileModeT   FileMode;
     mfileT      Type;
@@ -60,13 +63,36 @@ class MFile
     int   FillGzBuffer();
 
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     MFile() { Init(); }
     ~MFile() {
         if (Handle != NULL) { Close(); }
+#ifdef WINCE
+        if (Data != NULL) { my_Tcl_Free( (char*)Data); }
+        if (FileBuffer != NULL) { my_Tcl_Free( (char*)FileBuffer); }
+        if (FileName != NULL) { my_Tcl_Free( (char*)FileName); }
+#else
         if (Data != NULL) { delete[] Data; }
         if (FileBuffer != NULL) { delete[] FileBuffer; }
         if (FileName != NULL) { delete[] FileName; }
+#endif
     }
 
     void Init();
@@ -84,7 +110,7 @@ class MFile
     uint   Tell () { return Location; }
     errorT Seek (uint position);
     errorT Flush ();
-    inline int EndOfFile();
+    inline bool EndOfFile();
 
     errorT        WriteNBytes (const char * str, uint length);
     errorT        ReadNBytes (char * str, uint length);
@@ -113,19 +139,23 @@ MFile::GetFileName ()
     }
 }
 
-inline int
+inline bool
 MFile::EndOfFile ()
 {
     switch (Type) {
     case MFILE_MEMORY:
         return (Location >= Capacity);
     case MFILE_REGULAR:
+#ifdef WINCE
+        return my_Tcl_Eof(Handle);//feof(Handle);
+#else
         return feof(Handle);
+#endif
     case MFILE_GZIP:
         if (GzBuffer_Avail > 0) { return 0; }
         return gzeof(GzHandle);
     default:
-        return 0;
+        return false;
     }
 }
 
@@ -143,7 +173,11 @@ MFile::WriteOneByte (byte value)
     if (Type == MFILE_GZIP) {
         return (gzputc(GzHandle, value) == EOF) ? ERROR_FileWrite : OK;
     }
+#ifdef WINCE
+    return (my_Tcl_Write(Handle, (const char *)&value, 1) == -1 ) ? ERROR_FileWrite : OK;
+#else
     return (putc(value, Handle) == EOF) ? ERROR_FileWrite : OK;
+#endif
 }
 
 inline int
@@ -167,7 +201,13 @@ MFile::ReadOneByte ()
         GzBuffer_Current++;
         return retval;
     }
+#ifdef WINCE
+    byte b;
+    if (my_Tcl_Read(Handle, (char *)&b, 1) == 0) return EOF;
+    return (int) b;
+#else
     return  getc(Handle);
+#endif
 }
 
 #endif  // SCID_MFILE_H

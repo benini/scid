@@ -29,7 +29,12 @@
 //    The number of played legal moves in a position rarely is over
 //    20, so 60 is a sane limit.
 //
+
+#ifdef WINCE
+#define MAX_TREE_NODES 20
+#else
 #define MAX_TREE_NODES 60
+#endif
 
 // treeNodeT:
 //    Stores the move data, frequency, score, results by result type,
@@ -110,13 +115,31 @@ class TreeCache {
 
     void   AddTree (uint index, Position * pos, treeT * tree, Filter * filter);
   public:
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
 
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif  
     TreeCache() { Init(); }
     ~TreeCache() { Delete(); }
 
     void Init();
     void Delete();
     void SetCacheSize (uint size);
+    void CacheResize (uint size);
     uint Size() { return CacheSize; }
     uint UsedSize() { return NumInUse; }
     void Clear();

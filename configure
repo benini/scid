@@ -1,5 +1,4 @@
 #!/bin/sh
-#
 # configure:
 #    Makefile configuration script for Scid.
 #
@@ -19,7 +18,7 @@ tclsh=tclsh;
 # This shell script code did not work for me in Linux so it is
 # commented out for now; the configure script will just run in
 # tclsh even if there is a more recent version.
-## for tclver in 80 8.0 81 8.1 82 8.2 83 8.3 84 8.4; do \
+## for tclver in 80 8.0 81 8.1 82 8.2 83 8.3 84 8.4 85 8.5; do \
 ##   IFS=:; \
 ##  for dir in $PATH; do \
 ##    if [ -x $dir/tclsh$tclver ]; then tclsh=$dir/tclsh$tclver; fi; \
@@ -37,7 +36,20 @@ set var(BINDIR) /usr/local/bin
 set var(COMPILE) g++
 set var(CC) gcc
 set var(DEBUG) #-DASSERTIONS
-set var(LANGUAGES) {tcl/deutsch.tcl tcl/francais.tcl tcl/italian.tcl tcl/nederlan.tcl tcl/spanish.tcl tcl/portbr.tcl tcl/swedish.tcl tcl/norsk.tcl tcl/polish.tcl tcl/czech.tcl tcl/hungary.tcl tcl/serbian.tcl tcl/russian.tcl}
+set var(LANGUAGES) [list \
+  tcl/lang/deutsch.tcl \
+  tcl/lang/francais.tcl \
+  tcl/lang/italian.tcl \
+  tcl/lang/nederlan.tcl \
+  tcl/lang/spanish.tcl \
+  tcl/lang/portbr.tcl \
+  tcl/lang/swedish.tcl \
+  tcl/lang/norsk.tcl \
+  tcl/lang/polish.tcl \
+  tcl/lang/czech.tcl \
+  tcl/lang/hungary.tcl \
+  tcl/lang/serbian.tcl \
+  tcl/lang/russian.tcl]
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
 set var(OPTIMIZE) {-O4 -fno-rtti -fno-exceptions}
@@ -318,6 +330,7 @@ proc checkZlib {} {
 # writeMakefile:
 #    Creates the Makefile using Makefile.conf and the configured
 #    settings.
+#    Also creates tcl/config.tcl
 #
 proc writeMakefile {{type ""}} {
     global var defaultVar
@@ -374,6 +387,9 @@ proc writeMakefile {{type ""}} {
 
     close $from
     close $to
+
+    # Summary info
+
     if {$default} {
         puts {The default Makefile was written.}
     } elseif {$success} {

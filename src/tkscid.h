@@ -4,9 +4,10 @@
 //              Scid extensions to Tcl/Tk interpreter
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.4
+//  Version:    3.6.4
 //
-//  Notice:     Copyright (c) 1999-2001 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 1999-2004 Shane Hudson.  All rights reserved.
+//              Copyright (c) 2006-2007 Pascal Georges
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -28,6 +29,11 @@
 #include "probe.h"
 #include "optable.h"
 #include "stored.h"
+#include "polyglot.h"
+
+#include "tclmy.h"
+
+#include <unistd.h>
 
 // Include header files for finding directory of executable program
 // in Windows if necessary.
@@ -60,6 +66,9 @@
 #  define CONST84
 #endif
 
+#ifdef WINCE
+#include "tclmy.h"
+#endif
 
 // Filter operations:
 
@@ -77,13 +86,25 @@ const filterOpT FILTEROP_RESET = 2;
 #define PROBE_REPORT 3
 #define PROBE_OPTIMAL 4
 
+#ifdef WINCE
+const uint SCID_TreeCacheSize = 50;
+const uint SCID_BackupCacheSize = 20;
+#else
 // TreeCache size for each open database:
-const uint SCID_TreeCacheSize = 250;
+const uint SCID_TreeCacheSize = 1000; //250
 
 // Secondary (memory only) TreeCache size:
 const uint SCID_BackupCacheSize = 100;
+#endif
 
-
+// Buffer sizes
+#ifdef WINCE
+#define BBUF_SIZE 30000
+#define TBUF_SIZE 100000
+#else
+#define BBUF_SIZE 120000 //40000
+#define TBUF_SIZE 160000 //160000
+#endif
 //////////////////////////////////////////////////////////////////////
 //
 // Data structures for Scid Tcl/Tk extensions:
@@ -126,11 +147,13 @@ struct scidStatsT {
     uint  sumRatings;
     uint  minRating;
     uint  maxRating;
+#ifndef WINCE
     ecoStatsT ecoCount0 [1];
     ecoStatsT ecoCount1 [5];
     ecoStatsT ecoCount2 [50];
     ecoStatsT ecoCount3 [500];
     ecoStatsT ecoCount4 [500*26];
+#endif
 };
 
 
@@ -152,6 +175,7 @@ struct scidBaseT {
     treeT        tree;
     TreeCache *  treeCache;
     TreeCache *  backupCache;
+    uint         treeSearchTime;
 
     fileNameT    fileName;      // File name without ".si" suffix
     fileNameT    realFileName;  // File name including ".si" suffix
@@ -312,6 +336,8 @@ appendCharResult (Tcl_Interp * ti, char ch)
     return TCL_OK;
 }
 
+void transPieces(char *s);
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // translate:
 //    Return the translation for a phrase.
@@ -319,15 +345,23 @@ appendCharResult (Tcl_Interp * ti, char ch)
 inline const char *
 translate (Tcl_Interp * ti, const char * name, const char * defaultText)
 {
+#ifdef WINCE
+    return name;
+#else
     const char * str = Tcl_GetVar2 (ti, "tr", (char *) name, TCL_GLOBAL_ONLY);
     if (str == NULL) { str = defaultText; }
     return str;
+#endif
 }
 
 inline const char *
 translate (Tcl_Interp * ti, const char * name)
 {
+#ifdef WINCE
+    return name;
+#else
     return translate (ti, name, name);
+#endif
 }
 
 
@@ -342,10 +376,18 @@ translate (Tcl_Interp * ti, const char * name)
 
 int str_is_prefix  (TCL_ARGS);
 int str_prefix_len (TCL_ARGS);
-
+#ifdef POCKET
+int sc_msg            (TCL_ARGS);
+int sc_msg_init       (TCL_ARGS);
+int sc_msg_close      (TCL_ARGS);
+int sc_msg_send       (TCL_ARGS);
+int sc_msg_recv       (TCL_ARGS);
+int sc_msg_info       (TCL_ARGS);
+#endif
 int sc_base           (TCL_ARGS);
 int sc_base_autoload  (TCL_ARGS);
 int sc_base_filename  (TCL_ARGS);
+int sc_base_inUse     (TCL_ARGS);
 int sc_base_duplicates (TCL_ARGS);
 int sc_base_open      (TCL_ARGS);
 int sc_createbase     (Tcl_Interp * ti, const char * filename,
@@ -375,6 +417,7 @@ int sc_epd_next       (Tcl_Interp * ti, int epdID, bool forwards);
 int sc_epd_open       (Tcl_Interp * ti, int argc, const char ** argv, bool create);
 int sc_epd_set        (Tcl_Interp * ti, int epdID, const char * text);
 int sc_epd_write      (Tcl_Interp * ti, int epdID);
+// int sc_epd_load      	(Tcl_Interp * ti, int epdID, int from, int to);
 
 int sc_clipbase       (TCL_ARGS);
 int sc_clipbase_clear (Tcl_Interp * ti);
@@ -442,11 +485,13 @@ int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);
 int sc_info_limit     (TCL_ARGS);
 int sc_info_priority  (TCL_ARGS);
+int sc_info_suffix    (TCL_ARGS);
 int sc_info_tb        (TCL_ARGS);
 
 int sc_move           (TCL_ARGS);
 int sc_move_add       (TCL_ARGS);
 int sc_move_addSan    (TCL_ARGS);
+int sc_move_addUCI    (TCL_ARGS);
 int sc_move_back      (TCL_ARGS);
 int sc_move_forward   (TCL_ARGS);
 int sc_move_pgn       (TCL_ARGS);
@@ -460,10 +505,11 @@ int sc_name_plist     (TCL_ARGS);
 int sc_name_ratings   (TCL_ARGS);
 int sc_name_read      (TCL_ARGS);
 int sc_name_spellcheck (TCL_ARGS);
+int sc_name_retrievename   (TCL_ARGS);
 
-int sc_optable        (TCL_ARGS);
-int sc_optable_create (TCL_ARGS);
-int sc_optable_select (TCL_ARGS);
+int sc_report         (TCL_ARGS);
+int sc_report_create  (TCL_ARGS);
+int sc_report_select  (TCL_ARGS);
 
 int sc_pos            (TCL_ARGS);
 int sc_pos_addNag     (TCL_ARGS);
@@ -485,12 +531,17 @@ int sc_progressBar    (TCL_ARGS);
 
 int sc_tree           (TCL_ARGS);
 int sc_tree_best      (TCL_ARGS);
-int sc_tree_click     (TCL_ARGS);
+int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
+int sc_tree_time      (TCL_ARGS);
 int sc_tree_write     (TCL_ARGS);
+int sc_tree_free      (TCL_ARGS);
+int sc_tree_cachesize (TCL_ARGS);
+int sc_tree_cacheinfo (TCL_ARGS);
 
 int sc_var            (TCL_ARGS);
 int sc_var_delete     (TCL_ARGS);
+int sc_var_delete_free(TCL_ARGS);
 int sc_var_enter      (TCL_ARGS);
 int sc_var_first      (TCL_ARGS);
 int sc_var_list       (TCL_ARGS);
@@ -504,7 +555,11 @@ int sc_search_repertoire (TCL_ARGS);
 int sc_search_rep_add (TCL_ARGS);
 int sc_search_rep_go  (TCL_ARGS);
 
-
+int sc_book  					(TCL_ARGS);
+int sc_book_load  		(TCL_ARGS);
+int sc_book_close  		(TCL_ARGS);
+int sc_book_moves  		(TCL_ARGS);
+int sc_book_update		(TCL_ARGS);
 //////////////////////////////////////////////////////////////////////
 /// END of tkscid.h
 //////////////////////////////////////////////////////////////////////

@@ -4,11 +4,12 @@
 //              Common macros, structures and constants.
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.4
+//  Version:    3.6.6
 //
-//  Notice:     Copyright (c) 2000-2002  Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 2000-2004  Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
+//              Copyright (c) 2006-2007 Pascal Georges
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -20,7 +21,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#ifdef WINCE
+#include <tcl.h>
+#endif
+#include "tclmy.h"
 #include "myassert.h"
 #include "error.h"
 
@@ -44,9 +48,10 @@ typedef unsigned short versionT;
 const versionT SCID_VERSION = 300;     // Current file format version = 3.0
 const versionT SCID_OLDEST_VERSION = 300; // Oldest compatible format: 3.0
 
-const char SCID_VERSION_STRING[] = "3.5beta1";     // Current Scid version
-const char SCID_VERSION_DATE[] = "August 2003";
-const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
+const char SCID_VERSION_STRING[] = "3.6.25";     // Current Scid version
+const char SCID_VERSION_DATE[] = "DEV 2008";
+//const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
+const char SCID_WEBSITE[] = "http://prolinux.free.fr/scid/";
 
 const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";
@@ -727,19 +732,27 @@ square_Adjacent (squareT from, squareT to)
 //   and mix the bits around.
 
 inline void srandom32(uint seed) {
+#ifdef WINCE
+    srand (seed);
+#else
 #ifdef WIN32
     srand (seed);
 #else
     srandom (seed);
 #endif
+#endif
 }
 
 inline uint random32()
 {
+#ifdef WINCE
+    return rand() ^ (rand() << 16) ^ (rand() >> 16);
+#else
 #ifdef WIN32
     return rand() ^ (rand() << 16) ^ (rand() >> 16);
 #else
     return random() ^ (random() << 16) ^ (random() >> 16);
+#endif
 #endif
 }
 

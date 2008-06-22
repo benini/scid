@@ -4,9 +4,9 @@
 //              Position class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.4
+//  Version:    3.5
 //
-//  Notice:     Copyright (c) 1999-2002 Shane Hudson.  All rights reserved.
+//  Notice:     Copyright (c) 1999-2003 Shane Hudson.  All rights reserved.
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -107,8 +107,8 @@ private:
     uint            Hash;           // Hash value.
     uint            PawnHash;       // Pawn structure hash value.
 
-    uint            NumChecks;      // Number of checks.
-    squareT         CheckSquares[16]; // Stores pieces checking the king.
+//    uint            NumChecks;      // Number of checks.
+//    SquareList      CheckSquares;   // Stores list of pieces checking the king.
 
     MoveList      * LegalMoves;     // list of legal moves
     sanListT      * SANStrings;     // SAN list of legal move strs
@@ -123,32 +123,53 @@ private:
     inline void AddToBoard (pieceT p, squareT sq);
     inline void RemoveFromBoard (pieceT p, squareT sq);
 
-    void        CalcPinsDir (directionT dir, pieceT attacker);
+    void  CalcPinsDir (directionT dir, pieceT attacker);
 
-    void        GenSliderMoves (MoveList * mlist, colorT c, squareT sq,
-                                directionT dir, SquareSet * sqset,
-                                bool capturesOnly);
-    void        GenKnightMoves (MoveList * mlist, colorT c, squareT sq,
-                                SquareSet * sqset, bool capturesOnly);
+    void  GenSliderMoves (MoveList * mlist, colorT c, squareT sq,
+                          directionT dir, SquareSet * sqset,
+                          bool capturesOnly);
+    void  GenKnightMoves (MoveList * mlist, colorT c, squareT sq,
+                          SquareSet * sqset, bool capturesOnly);
 
-    void        AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
-    void        GenCastling (MoveList * mlist);
-    void        GenKingMoves (MoveList * mlist, genMovesT genType);
-    void        AddPromotions (MoveList * mlist, squareT from, squareT dest);
-    bool        IsValidEnPassant (squareT from, squareT to);
-    void        GenPawnMoves (MoveList * mlist, squareT from,
-                              directionT dir, SquareSet * sqset,
-                              genMovesT genType);
+    void  AddLegalMove (MoveList * mlist, squareT from, squareT to, pieceT promo);
+    void  GenCastling (MoveList * mlist);
+    void  GenKingMoves (MoveList * mlist, genMovesT genType, bool castling);
+    void  AddPromotions (MoveList * mlist, squareT from, squareT dest);
+    bool  IsValidEnPassant (squareT from, squareT to);
+    void  GenPawnMoves (MoveList * mlist, squareT from, directionT dir,
+                        SquareSet * sqset, genMovesT genType);
     errorT      AssertPos ();   //  Checks for errors in board etc.
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Public Functions
 public:
 
+#ifdef WINCE
+  void* operator new(size_t sz) {
+    void* m = my_Tcl_Alloc(sz);
+    return m;
+  }
+  void operator delete(void* m) {
+    my_Tcl_Free((char*)m);
+  }
+  void* operator new [] (size_t sz) {
+    void* m = my_Tcl_AttemptAlloc(sz);
+    return m;
+  }
+
+  void operator delete [] (void* m) {
+    my_Tcl_Free((char*)m);
+  }
+
+#endif
     Position()   { Init(); }
     ~Position()  {
                      if (LegalMoves != NULL) { delete LegalMoves; }
+#ifdef WINCE
+                     if (SANStrings != NULL) { my_Tcl_Free((char*) SANStrings); }
+#else
                      if (SANStrings != NULL) { delete SANStrings; }
+#endif
                   }
 
     void        Init();
@@ -247,19 +268,19 @@ public:
     void  GenerateCaptures (MoveList * mlist) { GenerateMoves (mlist, EMPTY, GEN_CAPTURES, true); }
     bool  IsLegalMove (simpleMoveT * sm);
 
-    void        GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType);
+    void        GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType, SquareList * checkSquares);
     void        MatchLegalMove (MoveList * mlist, pieceT mask, squareT target);
     errorT      MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote);
     errorT      MatchKingMove (MoveList * mlist, squareT target);
 
-    uint        CalcAttacks (colorT toMove, squareT kingSq, squareT * squares);
+    uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares);
     uint        CalcNumChecks () {
                     return CalcAttacks (1-ToMove, GetKingSquare(), NULL);
                 }
     uint        CalcNumChecks (squareT kingSq) {
                     return CalcAttacks (1-ToMove, kingSq, NULL);
                 }
-    uint        CalcNumChecks (squareT kingSq, squareT * checkSquares) {
+    uint        CalcNumChecks (squareT kingSq, SquareList * checkSquares) {
                     return CalcAttacks (1-ToMove, kingSq, checkSquares);
                 }
 
@@ -271,7 +292,7 @@ public:
     bool        IsKingInMate ();
     bool        IsLegal ();
 
-    int         IsPromoMove (squareT from, squareT to);
+    bool        IsPromoMove (squareT from, squareT to);
 
     void        DoSimpleMove (simpleMoveT * sm);    // move execution ...
     void        UndoSimpleMove (simpleMoveT * sm);  // ... and taking back
@@ -279,6 +300,7 @@ public:
     errorT      RelocatePiece (squareT fromSq, squareT toSq);
 
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
+    void        MakeUCIString (simpleMoveT * sm, char * s);
     void        CalcSANStrings (sanFlagT flag);
 
     errorT      ReadCoordMove (simpleMoveT * m, const char * s, bool reverse);
@@ -288,8 +310,13 @@ public:
 
     // Board I/O
     void        MakeLongStr (char * str);
+#ifdef WINCE
+    void        DumpBoard (/*FILE * */Tcl_Channel fp);
+    void        DumpLists (/*FILE * */Tcl_Channel fp);
+#else
     void        DumpBoard (FILE * fp);
     void        DumpLists (FILE * fp);
+#endif
     errorT      ReadFromLongStr (const char * str);
     errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);
@@ -369,7 +396,11 @@ inline void
 Position::AllocSANStrings ()
 {
     ASSERT (SANStrings == NULL);
+#ifdef WINCE
+    SANStrings = (sanListT*)my_Tcl_Alloc( sizeof(sanListT) );
+#else
     SANStrings = new sanListT;
+#endif
     SANStrings->current = false;
 }
 

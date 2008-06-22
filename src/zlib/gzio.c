@@ -5,11 +5,10 @@
  * Compile this file with -DNO_DEFLATE to avoid the compression code.
  */
 
-/* @(#) $Id: gzio.c,v 1.1 2002/04/04 22:44:32 sgh Exp $ */
-
 #include <stdio.h>
 
 #include "zutil.h"
+#include "../tclmy.h"
 
 struct internal_state {int dummy;}; /* for buggy compilers */
 
@@ -24,8 +23,13 @@ struct internal_state {int dummy;}; /* for buggy compilers */
 #  define Z_PRINTF_BUFSIZE 4096
 #endif
 
+#ifdef WINCE
+#define ALLOC(size) my_Tcl_Alloc(size)
+#define TRYFREE(p) {if (p) my_Tcl_Free((char*)p);}
+#else
 #define ALLOC(size) malloc(size)
 #define TRYFREE(p) {if (p) free(p);}
+#endif
 
 static int gz_magic[2] = {0x1f, 0x8b}; /* gzip magic header */
 
@@ -41,7 +45,11 @@ typedef struct gz_stream {
     z_stream stream;
     int      z_err;   /* error code for last stream operation */
     int      z_eof;   /* set if end of input file */
+#ifdef WINCE
+    /*FILE     **/ Tcl_Channel file;   /* .gz file */
+#else
     FILE     *file;   /* .gz file */
+#endif
     Byte     *inbuf;  /* input buffer */
     Byte     *outbuf; /* output buffer */
     uLong    crc;     /* crc32 of uncompressed data */
@@ -58,7 +66,11 @@ local int do_flush        OF((gzFile file, int flush));
 local int    get_byte     OF((gz_stream *s));
 local void   check_header OF((gz_stream *s));
 local int    destroy      OF((gz_stream *s));
+#ifdef WINCE
+local void   putLong      OF((/*FILE **/Tcl_Channel file, uLong x));
+#else
 local void   putLong      OF((FILE *file, uLong x));
+#endif
 local uLong  getLong      OF((gz_stream *s));
 
 /* ===========================================================================
@@ -151,18 +163,32 @@ local gzFile gz_open (path, mode, fd)
         }
     }
     s->stream.avail_out = Z_BUFSIZE;
-
+#ifdef WINCE
+    //errno = 0;
+//    s->file = fd < 0 ? F_OPEN(path, fmode) : (FILE*)fdopen(fd, fmode);
+    s->file =  my_Tcl_OpenFileChannel(NULL, path, fmode, 0666);
+ my_Tcl_SetChannelOption(NULL, s->file, "-encoding", "binary");
+ my_Tcl_SetChannelOption(NULL, s->file, "-translation", "binary");
+#else
     errno = 0;
     s->file = fd < 0 ? F_OPEN(path, fmode) : (FILE*)fdopen(fd, fmode);
-
+#endif
     if (s->file == NULL) {
         return destroy(s), (gzFile)Z_NULL;
     }
     if (s->mode == 'w') {
         /* Write a very simple .gz header:
          */
+#ifdef WINCE
+        char buf[12];
+        sprintf(buf, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1],
+             Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE);
+        my_Tcl_Write(s->file, buf, 10);
+        //fprintf(s->file, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1], Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE);
+#else
         fprintf(s->file, "%c%c%c%c%c%c%c%c%c%c", gz_magic[0], gz_magic[1],
              Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE);
+#endif
 	s->startpos = 10L;
 	/* We use 10L instead of ftell(s->file) to because ftell causes an
          * fflush on some systems. This version of the library doesn't use
@@ -171,7 +197,11 @@ local gzFile gz_open (path, mode, fd)
          */
     } else {
 	check_header(s); /* skip the .gz header */
+#ifdef WINCE
+  s->startpos = (/*ftell*/my_Tcl_Tell(s->file) - s->stream.avail_in);
+#else
 	s->startpos = (ftell(s->file) - s->stream.avail_in);
+#endif
     }
     
     return (gzFile)s;
@@ -219,7 +249,11 @@ int ZEXPORT gzsetparams (file, level, strategy)
     if (s->stream.avail_out == 0) {
 
 	s->stream.next_out = s->outbuf;
+#ifdef WINCE
+  if (my_Tcl_Write(s->file, (char *) s->outbuf, Z_BUFSIZE) != Z_BUFSIZE) {
+#else
 	if (fwrite(s->outbuf, 1, Z_BUFSIZE, s->file) != Z_BUFSIZE) {
+#endif
 	    s->z_err = Z_ERRNO;
 	}
 	s->stream.avail_out = Z_BUFSIZE;
@@ -238,11 +272,20 @@ local int get_byte(s)
 {
     if (s->z_eof) return EOF;
     if (s->stream.avail_in == 0) {
+#ifdef WINCE
+  //errno = 0;
+  //s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
+  s->stream.avail_in = my_Tcl_Read( s->file, (char *) s->inbuf, Z_BUFSIZE);
+  if (s->stream.avail_in == 0) {
+      s->z_eof = 1;
+      //if (ferror(s->file)) s->z_err = Z_ERRNO;
+#else
 	errno = 0;
 	s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
 	if (s->stream.avail_in == 0) {
 	    s->z_eof = 1;
 	    if (ferror(s->file)) s->z_err = Z_ERRNO;
+#endif
 	    return EOF;
 	}
 	s->stream.next_in = s->inbuf;
@@ -333,9 +376,15 @@ local int destroy (s)
 	    err = inflateEnd(&(s->stream));
 	}
     }
+#ifdef WINCE
+    if (s->file != NULL && my_Tcl_Close(NULL,/*fclose(*/s->file) != TCL_OK ) {
+#else
     if (s->file != NULL && fclose(s->file)) {
+#endif
 #ifdef ESPIPE
+#ifndef WINCE
 	if (errno != ESPIPE) /* fclose is broken for pipes in HP/UX */
+#endif
 #endif
 	    err = Z_ERRNO;
     }
@@ -385,8 +434,12 @@ int ZEXPORT gzread (file, buf, len)
 		s->stream.avail_in  -= n;
 	    }
 	    if (s->stream.avail_out > 0) {
+#ifdef WINCE
+    s->stream.avail_out -= my_Tcl_Read(s->file, (char *)next_out, s->stream.avail_out);
+#else
 		s->stream.avail_out -= fread(next_out, 1, s->stream.avail_out,
 					     s->file);
+#endif
 	    }
 	    len -= s->stream.avail_out;
 	    s->stream.total_in  += (uLong)len;
@@ -395,7 +448,18 @@ int ZEXPORT gzread (file, buf, len)
 	    return (int)len;
 	}
         if (s->stream.avail_in == 0 && !s->z_eof) {
+#ifdef WINCE
+            //errno = 0;
+            s->stream.avail_in = my_Tcl_Read(s->file, (char *)s->inbuf, Z_BUFSIZE);
+//fread(s->inbuf, 1, Z_BUFSIZE, s->file);
+            if (s->stream.avail_in == 0) {
+                s->z_eof = 1;
+/*    if (ferror(s->file)) {
+        s->z_err = Z_ERRNO;
+        break;
+    }*/
 
+#else
             errno = 0;
             s->stream.avail_in = fread(s->inbuf, 1, Z_BUFSIZE, s->file);
             if (s->stream.avail_in == 0) {
@@ -404,6 +468,7 @@ int ZEXPORT gzread (file, buf, len)
 		    s->z_err = Z_ERRNO;
 		    break;
 		}
+#endif
             }
             s->stream.next_in = s->inbuf;
         }
@@ -500,7 +565,11 @@ int ZEXPORT gzwrite (file, buf, len)
         if (s->stream.avail_out == 0) {
 
             s->stream.next_out = s->outbuf;
+#ifdef WINCE
+            if (my_Tcl_Write(s->file, (char*)s->outbuf, Z_BUFSIZE) != Z_BUFSIZE) {
+#else
             if (fwrite(s->outbuf, 1, Z_BUFSIZE, s->file) != Z_BUFSIZE) {
+#endif
                 s->z_err = Z_ERRNO;
                 break;
             }
@@ -613,7 +682,11 @@ local int do_flush (file, flush)
         len = Z_BUFSIZE - s->stream.avail_out;
 
         if (len != 0) {
+#ifdef WINCE
+            if ((uInt)my_Tcl_Write(s->file, (char*)s->outbuf, len ) != len) {
+#else
             if ((uInt)fwrite(s->outbuf, 1, len, s->file) != len) {
+#endif
                 s->z_err = Z_ERRNO;
                 return Z_ERRNO;
             }
@@ -644,7 +717,11 @@ int ZEXPORT gzflush (file, flush)
     int err = do_flush (file, flush);
 
     if (err) return err;
+#ifdef WINCE
+    /*fflush*/my_Tcl_Flush(s->file);
+#else
     fflush(s->file);
+#endif
     return  s->z_err == Z_STREAM_END ? Z_OK : s->z_err;
 }
 #endif /* NO_DEFLATE */
@@ -707,8 +784,11 @@ z_off_t ZEXPORT gzseek (file, offset, whence)
 	/* map to fseek */
 	s->stream.avail_in = 0;
 	s->stream.next_in = s->inbuf;
+#ifdef WINCE
+        if (/*fseek*/my_Tcl_Seek(s->file, offset, SEEK_SET) < 0) return -1L;
+#else
         if (fseek(s->file, offset, SEEK_SET) < 0) return -1L;
-
+#endif
 	s->stream.total_in = s->stream.total_out = (uLong)offset;
 	return offset;
     }
@@ -752,12 +832,20 @@ int ZEXPORT gzrewind (file)
     s->crc = crc32(0L, Z_NULL, 0);
 	
     if (s->startpos == 0) { /* not a compressed file */
+#ifdef WINCE
+       my_Tcl_Seek(s->file, 0L, SEEK_SET);
+#else
 	rewind(s->file);
+#endif
 	return 0;
     }
 
     (void) inflateReset(&s->stream);
+#ifdef WINCE
+    return /*fseek*/my_Tcl_Seek(s->file, s->startpos, SEEK_SET);
+#else
     return fseek(s->file, s->startpos, SEEK_SET);
+#endif
 }
 
 /* ===========================================================================
@@ -787,12 +875,24 @@ int ZEXPORT gzeof (file)
    Outputs a long in LSB order to the given file
 */
 local void putLong (file, x)
+#ifdef WINCE
+    /*FILE **/ Tcl_Channel file;
+    uLong x;
+{
+    int n;
+    char c;
+    for (n = 0; n < 4; n++) {
+        //fputc((int)(x & 0xff), file);
+        c = (char)(x & 0xff);
+        my_Tcl_Write(file, &c , 1); 
+#else
     FILE *file;
     uLong x;
 {
     int n;
     for (n = 0; n < 4; n++) {
         fputc((int)(x & 0xff), file);
+#endif
         x >>= 8;
     }
 }
@@ -861,9 +961,11 @@ const char*  ZEXPORT gzerror (file, errnum)
     }
     *errnum = s->z_err;
     if (*errnum == Z_OK) return (const char*)"";
-
+#ifdef WINCE
+    m =  (char*)(*errnum == Z_ERRNO ? zstrerror(0) : s->stream.msg);
+#else
     m =  (char*)(*errnum == Z_ERRNO ? zstrerror(errno) : s->stream.msg);
-
+#endif
     if (m == NULL || *m == '\0') m = (char*)ERR_MSG(s->z_err);
 
     TRYFREE(s->msg);

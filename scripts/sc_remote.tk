@@ -5,7 +5,6 @@
 #
 ###############################################################################
 #
-# $Id: sc_remote.tk,v 1.1 2002/04/04 22:44:34 sgh Exp $
 #
 # Copyright (C) 2002 Mark Norman Oakden.
 #
@@ -44,7 +43,7 @@ set debugging 0
 #
 # showStatus determines whether a status window is displayed or not
 #
-set showStatus 1
+set showStatus 0
 #
 # msgWidth is the width of status messages in the status window
 #
@@ -79,7 +78,7 @@ set maxRetries 10
 #
 proc usage {} {
     set me [file tail [info script]]
-    puts stdout "Usage: $me \[-nostatus\] \[<Scid flags>\] \[DB \[DB ...\]\]"
+    puts stdout "Usage: $me \[-nostatus|-status\] \[<Scid flags>\] \[DB \[DB ...\]\]"
     exit
 }
 
@@ -362,6 +361,8 @@ foreach arg $argv {
     if { [string match "-*" $arg] } {
 	if { "-nostatus" == $arg } {
 	    set showStatus 0
+	} elseif { "-status" == $arg } {
+	    set showStatus 1
 	} else {
 	    lappend scidArgs $arg
 	}
@@ -420,11 +421,15 @@ foreach db $toOpen {
 	    dputs " ... interp $interp is busy - deferring switch to end"
 	    set deferredSwitch($interp) $slot
 	} else {
-	    updateStatus $db "Done (Displayed)" green
-	    send $interp switchBase $slot
+	    #send $interp sc_base switch $slot
+	    send $interp ::file::SwitchToBase $slot
+	    send $interp ::tree::refresh
+	    send $interp ::windows::stats::Refresh
+	    send $interp ::windows::switcher::Refresh
 	    send $interp wm deiconify .
 	    send $interp update
 	    send $interp raise .
+	    updateStatus $db "Done (Displayed)" green
 	}
 	ldelete toOpen $db
     }
@@ -481,7 +486,7 @@ while { [llength $toOpen] > 0 } {
 	    dputs "$interp is not busy - opening new db $next in it"
 	    updateStatus $next "Done (Open existing Scid)" green
 	    send $interp wm deiconify .
-	    send $interp fileOpen $next
+	    send $interp ::file::Open $next
 	    send $interp raise .
 	}
     } else {
@@ -525,8 +530,11 @@ while { [llength [set l [array names deferredSwitch]]] > 0 } {
     # in the interp.
     if { ! [isBusy $interp] } {
 	dputs "inter $interp is now not busy - switching it to slot $slot"
-	updateStatus $slots($interp,$slot)  "Done (Open existing Scid)" green
-	send $interp switchBase $slot
+	updateStatus $slots($interp,$slot)  "Done (Deferred Display)" green
+	send $interp ::file::SwitchToBase $slot
+	send $interp ::tree::refresh
+	send $interp ::windows::stats::Refresh
+	send $interp ::windows::switcher::Refresh
 	send $interp wm deiconify .
 	send $interp update
 	send $interp raise .
@@ -541,6 +549,7 @@ while { [llength [set l [array names deferredSwitch]]] > 0 } {
 # dismissed, and if not, wait until it is
 if { ! [info exists statusWinDismissed] && $showStatus } {
     # don't exit until statusWin is dismissed
+    raise .
     vwait statusWinDismissed
 }
 after 500 exit

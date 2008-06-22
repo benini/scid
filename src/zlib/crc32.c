@@ -3,8 +3,6 @@
  * For conditions of distribution and use, see copyright notice in zlib.h 
  */
 
-/* @(#) $Id: crc32.c,v 1.1 2002/04/04 22:44:30 sgh Exp $ */
-
 #include "zlib.h"
 
 #define local static

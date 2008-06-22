@@ -47,8 +47,6 @@
  *
  */
 
-/* @(#) $Id: deflate.c,v 1.1 2002/04/04 22:44:31 sgh Exp $ */
-
 #include "deflate.h"
 
 const char deflate_copyright[] =
