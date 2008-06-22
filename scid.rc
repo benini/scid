@@ -1,0 +1,9 @@
+#include <windows.h>
+
+#define RESOURCE_INCLUDED
+
+//
+// Icon
+//
+
+scid                      ICON    DISCARDABLE     "scid.ico"

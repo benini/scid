@@ -1,0 +1,735 @@
+###
+### opening.tcl: part of Scid.
+### Copyright (C) 2007  Pascal Georges
+###
+namespace eval opening {
+  set repBase -1
+  # list of elements of type fenMovesEvalList (fen move1 nag1 .... movei nagi)
+  set allLinesFenList {}
+  set fenMovesEvalList {}
+  # list of hash lists, one list per game (a game = a line)
+  set allLinesHashList {}
+  set hashList {}
+  # options for repertoire training
+  set playerBestMove 1
+  set opBestMove 1
+  set onlyFlaggedLines 0
+  set repColor "w"
+  set resetStats 0
+  
+  set movesLoaded 0
+  set fenLastUpdate 0
+  set fenLastStatsUpdate 0
+  set cancelLoadRepertoire 0
+  set lastMainLoopFen 0
+  set lastMainLoopFlipped [sc_pos side]
+  
+  # parameters for opening trainer window
+  set displayCM 0
+  set DisplayCMValue 0
+  set tCM ""
+  set lastCMFen ""
+  set lastCM "-1"
+  
+  set displayOpeningStats 1
+  set listStats {} ;# list of {fen x y z t} where x:good move played, y:dubious move, z:move out of rep, t:position played
+  
+  ################################################################################
+  # Configuration
+  ################################################################################
+  proc config {} {
+    global ::opening::playerBestMove ::opening::opBestMove ::opening::repColor
+    
+    set w .openingConfig
+    if { [winfo exists $w] } { focus $w ; return  }
+    if { [winfo exists ".openingWin"] } { focus ".openingWin" ; return }
+    
+    toplevel $w
+    wm title $w $::tr(Repertoiretrainingconfiguration)
+    setWinLocation $w
+    frame $w.f0 -relief groove
+    
+    radiobutton $w.f0.rbRepColorW -value "w" -variable ::opening::repColor -text $::tr(white)
+    radiobutton $w.f0.rbRepColorB -value "b" -variable ::opening::repColor -text $::tr(black)
+    radiobutton $w.f0.rbRepColorWB -value "wb" -variable ::opening::repColor -text $::tr(both)
+    pack $w.f0.rbRepColorW $w.f0.rbRepColorB $w.f0.rbRepColorWB -side left  -expand yes -fill both
+    
+    frame $w.f1
+    checkbutton $w.f1.cbPlayerBestMove -text $::tr(PlayerBestMove) -variable ::opening::playerBestMove
+    checkbutton $w.f1.cbOpBestMove -text $::tr(OpponentBestMove) -variable ::opening::opBestMove
+    checkbutton $w.f1.cbOnlyFlaggedLines -text $::tr(OnlyFlaggedLines) -variable ::opening::onlyFlaggedLines
+    checkbutton $w.f1.cbResetStats -text $::tr(resetStats) -variable ::opening::resetStats
+    pack $w.f1.cbPlayerBestMove $w.f1.cbOpBestMove $w.f1.cbOnlyFlaggedLines $w.f1.cbResetStats -anchor w -side top
+    
+    frame $w.f2
+    button $w.f2.ok -text $::tr(Continue) -command " destroy $w ; ::opening::openRep"
+    button $w.f2.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
+    pack $w.f2.ok $w.f2.cancel -expand yes -side left -padx 20 -pady 2
+    
+    pack $w.f0 $w.f1 $w.f2 -side top -fill both
+    
+    bind $w <Escape> "destroy $w"
+    bind $w <Destroy> ""
+    bind $w <Configure> "recordWinSize $w"
+  }
+  ################################################################################
+  # Open a repertoire
+  ################################################################################
+  proc openRep {} {
+    global ::windows::switcher::base_types ::opening::repColor ::opening::repBase
+    
+    if {$::opening::resetStats} {
+      set ::opening::listStats {}
+    } else  {
+      loadStats
+    }
+    
+    set repBase -1
+    set typeW [lsearch $base_types {Openings for White} ]
+    set typeB [lsearch $base_types {Openings for Black} ]
+    set typeWB [lsearch $base_types {Openings for either color} ]
+    
+    for {set x 1} {$x <= [ expr [sc_base count]-1 ]} {incr x} {
+      set type [sc_base type $x]
+      if {$type == $typeW && $repColor == "w" || $type == $typeB && $repColor == "b" || $type == $typeWB && $repColor == "wb"} {
+        set repBase  $x
+        break
+      }
+    }
+    
+    if {$repBase == -1} {
+      tk_messageBox -title $::tr(Repertoirenotfound) -type ok -icon warning \
+          -message $::tr(Openfirstrepertoirewithtype)
+      return
+    }
+    
+    set prevBase [sc_base current]
+    if {$prevBase != $repBase} { sc_base switch $repBase }
+    loadRep "$repBase - [sc_base filename $repBase]" "[sc_base description]"
+    if {$prevBase != $repBase} {sc_base switch $prevBase}
+    
+    # add a blank game for training in current base (it may be repertoire's one), if the current base is opened
+    if {[sc_base inUse $prevBase]} {
+      sc_game new
+      sc_game tags set -event $::tr(Openingtrainer)
+      sc_game save 0
+      updateBoard -pgn
+      ::windows::gamelist::Refresh
+      updateTitle
+    } else  {
+      # switch to clipboard base if the current base is empty
+      sc_base switch clipbase
+      sc_game new
+      sc_game tags set -event $::tr(Openingtrainer)
+      sc_game save 0
+      updateBoard -pgn
+      ::windows::gamelist::Refresh
+      updateTitle
+    }
+    
+    ::opening::openingWin
+    ::opening::mainLoop
+  }
+  ################################################################################
+  # Loads a repertoire
+  # Go through all games and variations and build a tree of positions encountered
+  #
+  ################################################################################
+  proc loadRep { name desc } {
+    global ::opening::repBase ::opening::fenMovesEvalList ::opening::allLinesFenList \
+        ::opening::allLinesHashList ::opening::hashList ::opening::onlyFlaggedLines \
+        ::opening::movesLoaded ::opening::cancelLoadRepertoire
+    
+    set movesLoaded 0
+    set cancelLoadRepertoire 0
+    set allLinesFenList {}
+    set allLinesHashList {}
+    progressWindow "Scid" "$::tr(Loadingrepertoire)..." $::tr(Cancel) "::opening::sc_progressBar"
+    for {set g 1} { $g <= [sc_base numGames]} { incr g} {
+      if {$cancelLoadRepertoire} { break  }
+      if {$onlyFlaggedLines && ![sc_game flag "WhiteOpFlag" $g] && ![sc_game flag "BlackOpFlag" $g]} {
+        continue
+      }
+      set fenMovesEvalList {}
+      set hashList  {}
+      sc_game load $g
+      changeProgressWindow "$::tr(Loadingrepertoire)...\n$name\n$desc\n$::tr(Movesloaded) $movesLoaded"
+      updateProgressWindow $g [sc_base numGames]
+      parseGame
+      lappend allLinesFenList $fenMovesEvalList
+      set hashList [lsort -unique $hashList]
+      lappend allLinesHashList $hashList
+    }
+    # puts "$allLinesFenList"
+    
+    closeProgressWindow
+  }
+  ################################################################################
+  # cancel repertoire loading
+  ################################################################################
+  proc sc_progressBar {} {
+    set ::opening::cancelLoadRepertoire 1
+  }
+  ################################################################################
+  # parse one game and fill the list
+  ################################################################################
+  proc parseGame {} {
+    while {![sc_pos isAt vend]} {
+      fillFen
+      # Go through all variants
+      for {set v 0} {$v<[sc_var count]} {incr v} {
+        # enter each var (beware the first move is played)
+        sc_var enter $v
+        parseVar
+      }
+      # now treat the main line
+      sc_move forward
+    }
+  }
+  ################################################################################
+  # parse recursively variants.
+  ################################################################################
+  proc parseVar {} {
+    while {![sc_pos isAt vend]} {
+      fillFen
+      # Go through all variants
+      for {set v 0} {$v<[sc_var count]} {incr v} {
+        sc_var enter $v
+        fillFen
+        # we are at the start of a var, before the first move : start recursive calls
+        parseVar
+      }
+      sc_move forward
+    }
+    # at the end of a var : exit it
+    sc_var exit
+  }
+  ################################################################################
+  # fill the tree with repertoire information
+  # we are at a given position :
+  # - fill hash list in order to speed up searches
+  # - fill fenMovesEvalList with {fen {move eval} {move eval} .... }
+  ################################################################################
+  proc fillFen {} {
+    global ::opening::fenMovesEvalList ::opening::hashList ::opening::movesLoaded
+    
+    if {[sc_pos isAt vend] && [sc_var count] == 0 } {
+      return
+    }
+    
+    set s [split [sc_pos fen]]
+    set fen "[lindex $s 0] [lindex $s 1] [lindex $s 2] [lindex $s 3]"
+    
+    set newFen {}
+    set moves {}
+    set newIndex -1
+    incr movesLoaded
+    
+    lappend hashList [sc_pos hash]
+    
+    # check if the fen already exists in the list
+    for {set i 0} { $i < [llength $fenMovesEvalList]} {incr i} {
+      set f [lindex $fenMovesEvalList $i]
+      if {[lindex $f 0] == $fen} { set newFen $fen ; set moves [lindex $f 1] ; set newIndex $i ; break }
+    }
+    set newFen $fen
+    
+    # the main move
+    if {! [sc_pos isAt vend] } {
+      set m [sc_game info nextMove]
+      sc_move forward
+      set nag [sc_pos getNags]
+      sc_move back
+      if {[lsearch $moves $m] == -1 } {
+        lappend moves $m $nag
+      } else  {
+        # the move already exists : check if NAG values are coherent
+        set lmoves [lsearch -all $moves $m]
+        foreach i $lmoves {
+          if {[lindex $moves [expr $i +1]] != $nag} {
+            puts "redundancy and incoherence $m $nag for $newFen"
+          }
+        }
+      }
+    }
+    # Go through all variants
+    for {set v 0} {$v<[sc_var count]} {incr v} {
+      sc_var enter $v
+      set nag [sc_pos getNags]
+      set m [sc_game info previousMove]
+      if {[lsearch $moves $m] == -1 } {
+        lappend moves $m $nag
+      } else  {
+        # the move already exists : check if NAG values are coherent
+        set lmoves [lsearch -all $moves $m]
+        foreach i $lmoves {
+          if {[lindex $moves [expr $i +1]] != $nag} {
+            puts "var redundancy and incoherence $m $nag for $newFen"
+          }
+        }
+      }
+      sc_var exit
+    }
+    
+    # put the newFen in the list
+    if {$newIndex == -1} {
+      lappend fenMovesEvalList [list $fen $moves ]
+    } else  {
+      lset fenMovesEvalList $newIndex [list $fen $moves ]
+    }
+  }
+  ################################################################################
+  # main loop called every second to trigger playing
+  ################################################################################
+  proc mainLoop {} {
+    global ::opening::allLinesHashList ::opening::allLinesFenList tCM
+    
+    after cancel ::opening::mainLoop
+    
+    # Handle case of player's turn (which always plays from bottom of the board)
+    if { [sc_pos side] == "white" &&  ![::board::isFlipped .board] || [sc_pos side] == "black" &&  [::board::isFlipped .board] } {
+      # it is player's turn : update UI
+      ::opening::update_tCM
+      ::opening::updateStats
+      after 1000  ::opening::mainLoop
+      return
+    }
+    
+    # check the position has not been treated already
+    if {[sc_pos fen] == $::opening::lastMainLoopFen && [::board::isFlipped .board] == $::opening::lastMainLoopFlipped} {
+      after 1000 ::opening::mainLoop
+      return
+    }
+    
+    # the player moved : check if his move was in the repertoire and as good as expected
+    set move_done [sc_game info previousMove]
+    if { $move_done != "" } {
+      sc_move back
+      set cm [ getCm ]
+      sc_move forward
+      # No move available : reached the end of a line
+      if { [llength $cm] == 0 } {
+        ::opening::update_tCM
+        ::opening::updateStats
+        after 1000 ::opening::mainLoop
+        return
+      }
+      
+      # we know there are some CM
+      set l [lsearch -all $cm $move_done]
+      # move not in repertoire
+      if {[llength $l] == 0} {
+        tk_messageBox -type ok -message $::tr(Movenotinrepertoire) -parent .board -icon info
+        sc_move back
+        addStats 0 0 1 0
+        ::opening::update_tCM
+        ::opening::updateStats
+        updateBoard -pgn
+        after 1000  ::opening::mainLoop
+        return
+      }
+      
+      # The move played is in repertoire !
+      set moveOK 1
+      
+      if {$::opening::playerBestMove} {
+        foreach i $l {
+          if {! [ ::opening::isGoodMove [ lindex $cm [expr $i+1] ] ] } {
+            addStatsPrev 0 0 1 0
+            set moveOK 0
+            set nag [ lindex $cm [expr $i+1] ]
+            break
+          }
+        }
+        
+        # The move is not good : offer to take back
+        if { ! $moveOK } {
+          addStatsPrev 0 0 1 0
+          set answer [tk_messageBox -icon question -parent .board -title $::tr(OutOfOpening) -type yesno \
+              -message "$::tr(yourmoveisnotgood) ($nag) \n $::tr(DoYouWantContinue)" ]
+          if {$answer == no} {
+            sc_move back
+            updateBoard -pgn
+            after 1000  ::opening::mainLoop
+            return
+          }
+        } else  { ;# the move is a good one
+          addStatsPrev 1 0 0 0
+        }
+      } else  { ;# player is allowed to play bad moves
+        foreach i $l {
+          set goodMove 1
+          if {! [ ::opening::isGoodMove [ lindex $cm [expr $i+1] ] ] } {
+            set goodMove 0
+            break
+          }
+        }
+        if {$goodMove} {
+          addStatsPrev 1 0 0 0
+        } else  {
+          addStatsPrev 0 1 0 0
+        }
+      }
+      
+    }
+    # end of player's move check
+    # now it is computer's turn
+    set cm [ getCm ]
+       
+    if {[llength $cm] != 0} {
+      ::opening::play $cm
+    }
+    set ::opening::lastMainLoopFen [sc_pos fen]
+    set ::opening::lastMainLoopFlipped [::board::isFlipped .board]
+    
+    ::opening::update_tCM
+    ::opening::updateStats
+    after 1000  ::opening::mainLoop
+  }
+  ################################################################################
+  # isGoodMove : returns true if the nag list in parameter is empty or contains !? ! !!
+  ################################################################################
+  proc isGoodMove { n } {
+    if { [lsearch -exact $n "?"] != -1 || [lsearch -exact $n "?!"] != -1 || [lsearch -exact $n "??"] != -1} {
+      return 0
+    }
+    return 1
+  }
+  ################################################################################
+  # get all candidate moves in the repertoire from current position
+  # the list returned is of the form {move1 nag1 move2 nag2 ....}
+  # the moves are not unique
+  ################################################################################
+  proc getCm {  } {
+    global ::opening::allLinesHashList ::opening::allLinesFenList ::opening::lastCMFen
+    
+    set fen [ sc_pos fen ]
+    # avoids calculation
+    if {$fen == $lastCMFen } { return $lastCM }
+    
+    set cm {}
+    # First find the position in hash lists to spare time
+    set linesFound {}
+    for {set i 0} {$i<[llength $allLinesHashList]} {incr i} {
+      set res [lsearch -sorted [lindex $allLinesHashList $i] [sc_pos hash]]
+      if {$res != -1} { lappend linesFound $i }
+    }
+    
+    set s [split $fen]
+    set fen "[lindex $s 0] [lindex $s 1] [lindex $s 2] [lindex $s 3]"
+    foreach i $linesFound {
+      set line [lindex $allLinesFenList $i]
+      foreach f $line {
+        if {[lindex $f 0] == $fen} { set cm [concat $cm [lindex $f 1]] }
+      }
+    }
+    
+    set lastCM $cm
+    set lastCMFen $fen
+    
+    return $cm
+  }
+  ################################################################################
+  # play one of the candidate moves
+  ################################################################################
+  proc play { cm } {
+    addStatsPrev 0 0 0 1
+    set r [expr int(rand()*[llength $cm]/2) ]
+    set m [ lindex $cm [ expr $r * 2 ] ]
+    
+    if {[sc_pos moveNumber] == 1 && [sc_pos side] == "white"} {
+      ::game::Clear
+    }
+    
+    if {![catch {sc_move addSan [::untrans $m] }]} {
+      addStats 0 0 0 1
+    }
+    updateBoard -pgn
+  }
+  ################################################################################
+  # The window displayed when in opening trainer mode
+  ################################################################################
+  proc openingWin {} {
+    global ::opening::displayCM ::opening::displayCMValue ::opening::tCM ::opening::fenLastUpdate
+    
+    set w ".openingWin"
+    if {[winfo exists $w]} { focus $w ; return }
+    
+    toplevel $w
+    wm title $w $::tr(Openingtrainer)
+    setWinLocation $w
+    frame $w.f1
+    frame $w.f2
+    frame $w.f3
+    
+    checkbutton $w.f1.cbDisplayCM  -text $::tr(DisplayCM) -variable ::opening::displayCM -relief flat \
+        -command "set fenLastUpdate 0 ; ::opening::update_tCM 1"
+    checkbutton $w.f1.cbDisplayCMValue  -text $::tr(DisplayCMValue) -variable ::opening::displayCMValue -relief flat \
+        -command "set fenLastUpdate 0 ; ::opening::update_tCM 1"
+    label $w.f1.lCM -textvariable ::opening::tCM
+    pack $w.f1.cbDisplayCM $w.f1.cbDisplayCMValue -anchor w -side top
+    pack $w.f1.lCM -side top -anchor center
+    
+    checkbutton $w.f1.cbDisplayStats  -text $::tr(DisplayOpeningStats) -variable ::opening::displayOpeningStats -relief flat \
+        -command "::opening::updateStats 1"
+    label $w.f2.lStats1 -textvariable ::opening::lStats1 -background green
+    label $w.f2.lStats2 -textvariable ::opening::lStats2 -background yellow
+    label $w.f2.lStats3 -textvariable ::opening::lStats3 -background red
+    label $w.f2.lStats4 -textvariable ::opening::lStats4 -background white
+    
+    pack $w.f1.cbDisplayStats -side top
+    grid $w.f2.lStats1 -row 1 -column 0 -sticky w -padx 5
+    grid $w.f2.lStats2 -row 1 -column 1 -sticky w -padx 5
+    grid $w.f2.lStats3 -row 1 -column 2 -sticky w -padx 5
+    grid $w.f2.lStats4 -row 1 -column 3 -sticky w -padx 5
+    
+    button $w.f3.report -textvar ::tr(ShowReport) -command ::opening::report
+    button $w.f3.close -textvar ::tr(Abort) -command ::opening::endTraining
+    
+    pack $w.f3.report $w.f3.close -side top -anchor center
+    pack $w.f1 $w.f2 $w.f3
+    
+    bind $w <F1> { helpWindow OpeningTrainer }
+    bind $w <Escape> "destroy $w"
+    bind $w <Destroy> ""
+    bind $w <Configure> "recordWinSize $w"
+    wm minsize $w 45 0
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc endTraining {} {
+    after cancel ::opening::mainLoop
+    saveStats
+    focus .
+    destroy ".openingWin"
+  }
+  ################################################################################
+  # display the candidate moves list (with NAG values)
+  ################################################################################
+  proc  update_tCM { { forceUpdate 0 } } {
+    global ::opening::displayCM ::opening::displayCMValue ::opening::tCM ::opening::fenLastUpdate
+    
+    # If current fen is the same as the one used during latest update call, do nothing
+    if {$fenLastUpdate == [sc_pos fen] && ! $forceUpdate} { return }
+    
+    set cm [ getCm ]
+    
+    if { [llength $cm] == 0 } {
+      .openingWin.f1.lCM configure -bg LightCoral
+      set tCM $::tr(EndOfVar)
+      set fenLastUpdate [sc_pos fen]
+      return
+    }
+    
+    if { !$displayCM } { set tCM "" ; set fenLastUpdate 0 ; return }
+    
+    .openingWin.f1.lCM configure -bg linen
+    
+    set tmp ""
+    
+    for {set x 0} {$x<[llength $cm]} { set x [expr $x+2]} {
+      set m [lindex $cm $x]
+      # if the move already found, skip it, even if it has other nags : to be corrected ?
+      if {[string first $m $tmp] != -1} { continue }
+      append tmp  $m " "
+      set nlist [lindex $cm [expr $x+1] ]
+      if {$nlist == 0} { continue }
+      if {$displayCMValue} {
+        foreach n $nlist {
+          append tmp $n " "
+        }
+      }
+      # go to new line every 3 (moves,nags)
+      if {[expr $x % 3] == 2} { append tmp "\n" }
+    }
+    
+    set fenLastUpdate [sc_pos fen]
+    set tCM $tmp
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc loadStats {} {
+    set optionsFile [scidConfigFile optrainer]
+    if {[catch {source $optionsFile} ]} {
+      ::splash::add "Unable to find the options file: [file tail $optionsFile]"
+    } else {
+      ::splash::add "Your options file \"[file tail $optionsFile]\" was found and loaded."
+    }
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc saveStats {} {
+    set optrainerFile [scidConfigFile optrainer]
+    if {[catch {open $optrainerFile w} f]} {
+      return 0
+    }
+    puts $f "set ::opening::listStats { $::opening::listStats }"
+    close $f
+    return 1
+  }
+  ################################################################################
+  # getStats
+  # returns a list containing the 4 stats values for current pos
+  # or an empty list if the stats are not available for current position
+  ################################################################################
+  proc getStats {} {
+    set s [split [sc_pos fen]]
+    set fen "[lindex $s 0] [lindex $s 1] [lindex $s 2] [lindex $s 3]"
+    set found 0
+    set idx 0
+    foreach l $::opening::listStats {
+      if {[lindex $l 0] == $fen} {
+        set found 1
+        break
+      }
+      incr idx
+    }
+    if {$found} {
+      return [lindex $l 1]
+    }
+    return {}
+  }
+  
+  ################################################################################
+  # addStats
+  # x = success best moves only, y = success all moves z = failures t = coverage by computer
+  ################################################################################
+  proc addStats { dx dy dz dt } {
+    set s [split [sc_pos fen]]
+    set fen "[lindex $s 0] [lindex $s 1] [lindex $s 2] [lindex $s 3]"
+    set found 0
+    set idx 0
+    foreach l $::opening::listStats {
+      if {[lindex $l 0] == $fen} {
+        set found 1
+        break
+      }
+      incr idx
+    }
+    
+    if {$found} {
+      set lval [lindex $l 1]
+      set ::opening::listStats [ lreplace $::opening::listStats $idx $idx [list $fen [list \
+          [expr [lindex $lval 0]+$dx] \
+          [expr [lindex $lval 1]+$dy] \
+          [expr [lindex $lval 2]+$dz] \
+          [expr [lindex $lval 3]+$dt] \
+          ] ] ]
+    } else  {
+      lappend ::opening::listStats [list $fen [list $dx $dy $dz $dt] ]
+    }
+    updateStats 1
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc addStatsPrev {a b c d} {
+    if {[sc_pos isAt vstart] } { return }
+    if { ![catch {sc_move back} ]} {
+      addStats $a $b $c $d
+      sc_move forward
+    }
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc updateStats { {force 0} } {
+    global ::opening::fenLastStatsUpdate
+    
+    # If current fen is the same as the one used during latest update call, do nothing
+    if {$fenLastStatsUpdate == [sc_pos fen] && !$force} { return }
+    
+    set fenLastStatsUpdate [sc_pos fen]
+    
+    if { $::opening::displayOpeningStats } {
+      set gs [getStats]
+      set ::opening::lStats1 [lindex $gs 0]
+      set ::opening::lStats2 [lindex $gs 1]
+      set ::opening::lStats3 [lindex $gs 2]
+      set ::opening::lStats4 [lindex $gs 3]
+    } else  {
+      set ::opening::lStats1 " "
+      set ::opening::lStats2 " "
+      set ::opening::lStats3 " "
+      set ::opening::lStats4 " "
+    }
+  }
+  ################################################################################
+  # shows a repertoire report (how much of the rep was trained)
+  ################################################################################
+  proc report {} {
+    global ::opening::listStats ::opening::allLinesFenList
+    set w ".openingWin.optrainerreport"
+    if {[winfo exists $w]} { focus $w ; return }
+    
+    toplevel $w
+    wm title $w $::tr(Openingtrainer)
+    setWinLocation $w
+    
+    frame $w.ft
+    text $w.ft.text -height 10 -width 20 -wrap word -background white
+    pack $w.ft.text
+    pack $w.ft
+    
+    frame $w.fclose
+    button $w.fclose.close -textvar ::tr(Close) -command "destroy $w"
+    pack $w.fclose.close
+    
+    # builds stats report
+    set posNotPlayed 0
+    set posTotalPlayed 0
+    set success 0
+    set dubMoves 0
+    set outOfRep 0
+    set totalPos 0
+    foreach line $allLinesFenList {
+      incr totalPos [llength $line]
+      foreach pos $line {
+        set fenLine [lindex $pos 0]
+        set idx 0
+        set found 0
+        foreach l $listStats {
+          if {$fenLine == [lindex $l 0]} {
+            set found 1
+            break
+          }
+          incr idx
+        }
+        if { $found } {
+          set stats [lindex [ lindex $listStats $idx ] 1]
+          if { $stats != "" } {
+            incr success [lindex $stats 0]
+            incr dubMoves [lindex $stats 1]
+            incr outOfRep [lindex $stats 2]
+            incr posTotalPlayed [lindex $stats 3]
+          }
+        } else {
+          incr posNotPlayed
+        }
+      }
+    }
+    $w.ft.text insert 1.0 "$::tr(PositionsInRepertoire) $totalPos\n"
+    $w.ft.text insert 2.0 "$::tr(PositionsNotPlayed) $posNotPlayed\n"
+    $w.ft.text insert 3.0 "$::tr(PositionsPlayed) $posTotalPlayed\n"
+    $w.ft.text insert 4.0 "$::tr(Success) $success\n"
+    $w.ft.text insert 5.0 "$::tr(DubiousMoves) $dubMoves\n"
+    $w.ft.text insert 6.0 "$::tr(OutOfRepertoire) $outOfRep\n"
+    
+    $w.ft.text configure -state disabled
+    
+    bind $w <F1> { helpWindow OpeningTrainer }
+    bind $w <Escape> "destroy $w"
+    bind $w <Destroy> ""
+    bind $w <Configure> "recordWinSize $w"
+    # wm minsize $w 45 0
+  }
+  ################################################################################
+  #
+  ################################################################################
+}
+###
+### End of file: opening.tcl
+###
