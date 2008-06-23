@@ -1,0 +1,163 @@
+
+*** WARNING ***
+
+This file described the older Fruit 1.0
+The evaluation function has been mostly rewritten since.
+The rest is still mostly accurate.
+
+Fabien, a very lazy man.
+
+---
+
+Fruit overview
+--------------
+
+Fruit was designed to help with the study of game-tree search
+algorithms, when applied to chess.  It is now released as a chess
+engine, which is a somewhat different category of programs.  Therefore
+the source code contains entire files and also functions that are
+either not used by the engine, or could be replaced with a much
+simpler (although somewhat less efficient) equivalent.
+
+As a chess engine, Fruit combines a "robust" search algorithm with a
+"minimalist" evaluation function.  The latter is not a design choice,
+and will hopefully change in the future.
+
+The following description is only a very incomplete description.
+Please consult the source code for an absolute definition.
+
+The search algorithm was designed to accommodate with heavy
+forward-pruning eccentricities (such as search inconsistencies).  Note
+that in Fruit 1.0 only null-move pruning is used as a forward-pruning
+mechanism.
+
+
+Board data structure
+--------------------
+
+Fruit uses the 16x12 board.  Although this structure is not very
+popular, it can be seen as simply combining 10x12 (mailbox) with 16x8
+(0x88).
+
+0x88 was picked in Fruit because of the small memory requirements of
+vector calculations (much smaller tables).  It is possible that Fruit
+uses bitboards for pawns in the future.
+
+
+Search algorithm
+----------------
+
+The main search algorithm is a classical PVS with iterative deepening.
+Search enhancements such as a transposition table and null-move
+pruning are also used (see below).
+
+A few details in the PVS implementation are not-so-standard and are
+there to supposedly enhance the stability of the search (like reducing
+the consequences of search inconsistencies).  For example the
+re-search window after a scout fail high of score "value" (with value
+> alpha) is [alpha,beta], not [value,beta].  As another example, I
+only allow null move when the static evaluation fails high
+(i.e. eval() >= beta).  Whether these features improve the strength of
+the engine is an open question.
+
+
+Transposition table
+-------------------
+
+Fruit uses 4 probes and replaces the shallowest entry.  Time stamping
+is used so that entries from previous searches are considered
+available for overwriting.
+
+Enhanced Transposition Cutoff (ETC) is also used 4 plies (and more)
+away from the horizon.
+
+
+Null move
+---------
+
+Fruit uses R=3 recursive null move, even in the endgame.
+
+In Fruit, a precondition to using null move is that the static eval
+fails high.  One of the consequences of this is that no two null moves
+can be played in a row (this is because the evaluation is
+symmetrical).  This is a usual condition but notice that in Fruit the
+null-move condition is "pure" (independent of move paths).  The
+fail-high condition was selected for other reasons however.
+
+Also, a verification search is launched in the endgame.
+
+
+Move ordering
+-------------
+
+The move ordering is rather basic:
+
+- transposition-table move
+- captures sorted by MVV/LVA
+- promotions
+- killer moves (two per level, no counters)
+- history moves (piece-type/to-square table, with "aging").
+
+
+Evaluation function
+-------------------
+
+The evaluation function is pretty minimal and only includes:
+
+- material (only sum of the usual 1/3/3/5/9 values)
+
+- piece-on-square table (that can probably be improved a lot)
+
+- static pawn-structure evaluation (independent of pieces), stored in a
+  hash table
+
+- a few boolean features supposed to represent some sort of piece
+  activity, such as a penalty for bishops and rooks "blocked" by a
+  pawn of the same colour in the "forward" direction.
+
+Note that some vital features such as king safety are completely
+missing.  I cannot recommend such an approach in a serious program.
+
+There are two (bad) reasons why the evaluation is so "simple":
+
+1) Fruit was designed to experiment with search algorithms (not just
+   for chess)
+
+2) I just can't be bothered with trying to design a "good" evaluation
+   function, as this would be an extremely boring occupation for me.
+
+
+Speed
+-----
+
+Fruit is not fast (in nodes per second) given the little it is
+calculating.  I actually plan on undoing more "optimisations" in order
+to make the code shorter and more flexible.  I will care about raw
+speed when (if at all) Fruit's design is more or less "fixed".
+
+
+Notes for programmers
+---------------------
+
+Some people find that Fruit is surprisingly "strong" given the above
+(dull) description.  The same persons are probably going to scrutinise
+the source code looking for "magic tricks"; I wish them good luck.  If
+they find any, those are likely to be "bugs" that I have overlooked or
+"features" I have forgotten to remove (please let me know).  The main
+search function is full_search() in search_full.cpp
+
+I suggest instead that one ponders on what other "average amateur"
+engines might be doing wrong ...  Maybe trying too many heuristics
+(they might be conflicting or choosing weights for them is too
+difficult) or code that is too complex, maybe features that look
+important but are actually performing no useful function ...  Sorry I
+do not know, and I don't think we will find the answer in Fruit ...
+
+
+Disclaimer
+----------
+
+Lastly, please take what I am saying with a grain of salt.  I hope
+that the reader is not completely lacking any sense of humour and I
+certainly did not intend to be insulting to anyone.
+

@@ -1,0 +1,983 @@
+### ScidPocket.
+### Copyright (C) 2007  Pascal Georges
+
+################################################################################
+#                     F O N T S
+################################################################################
+set fontsize 6 ;# [font configure font_Regular -size]
+set family1 "Tahoma"
+set family2 "Courier New"
+font create font_Bold -family $family2 -size $fontsize -weight bold
+font create font_BoldItalic -family $family2 -size $fontsize -weight bold -slant italic
+font create font_Italic -family $family2 -size $fontsize -slant italic
+font create font_H1 -family $family2 -size [expr {$fontsize + 4} ] -weight bold
+font create font_H2 -family $family2 -size [expr {$fontsize + 3} ] -weight bold
+font create font_H3 -family $family2 -size [expr {$fontsize + 2} ] -weight bold
+font create font_H4 -family $family2 -size [expr {$fontsize + 1} ] -weight bold
+font create font_H5 -family $family2 -size [expr {$fontsize + 0} ] -weight bold
+
+font create font_SmallBold -family $family2 -size $fontsize -weight bold
+font create font_SmallItalic -family $family2 -size $fontsize -slant italic
+font create font_Regular -family "Courier New" -size 8 -weight normal -slant roman
+font create font_Menu -family "Courier New" -size 8 -weight normal -slant roman
+font create font_Small -family "Courier New" -size 8 -weight normal -slant roman
+font create font_Tiny -family "Courier New" -size 7 -weight normal -slant roman
+font create font_Fixed -family "Courier New" -size 8 -weight normal -slant roman
+
+################################################################################
+# vwait but will timeout after a delay. Var must be fully qualified (::)
+################################################################################
+proc vwaitTimed { var {delay 0} {warn "warnuser"} } {
+  
+  proc trigger {var warn} {
+    if {$warn == "warnuser"} {
+      tk_messageBox -type ok -icon error -parent . -title "Protocol error" -message "vwait timeout for $var"
+    }
+    set $var 1
+  }
+  
+  if { $delay != 0 } {
+    set timerId [after $delay "trigger $var $warn"]
+  }
+  
+  vwait $var
+  
+  if [info exists timerId] { after cancel $timerId }
+  
+}
+################################################################################
+#  Translation
+################################################################################
+array set transPieces {}
+
+set transPieces(french) { P P K R Q D R T B F N C }
+set untransPieces(french) { P P R K D Q T R F B C N }
+set transPieces(spanish) { P P K R Q D R T B A N C }
+set untransPieces(spanish) { P P R K D Q T R A B C N }
+
+################################################################################
+proc trans { msg } {
+  if { $::options(language) == "english" } {
+    return $msg
+  }
+  set t [string map $::transPieces($::options(language)) $msg ]
+  return $t
+}
+################################################################################
+proc untrans { msg } {
+  if { $::options(language) == "english" } {
+    return $msg
+  }
+  set t [string map $::untransPieces($::options(language)) $msg ]
+  return $t
+}
+
+################################################################################
+#
+################################################################################
+
+# dialogbuttonframe:
+#   Creates a frame that will be shown at the bottom of a
+#   dialog window. It takes two parameters: the frame widget
+#   name to create, and a list of button args. Each element
+#   should contain a widget name, and button arguments.
+#
+proc dialogbuttonframe {frame buttonlist} {
+  frame $frame
+  set bnames {}
+  set maxlength 0
+  foreach buttonargs $buttonlist {
+    set bname $frame.[lindex $buttonargs 0]
+    set bargs [lrange $buttonargs 1 end]
+    eval button $bname $bargs
+    set bnames [linsert $bnames 0 $bname]
+    set length [string length [$bname cget -text]]
+    if {$length > $maxlength} { set length $maxlength}
+  }
+  if {$maxlength < 7} { set maxlength 7 }
+  foreach b $bnames {
+    $b configure -width $maxlength -padx 4
+    pack $b -side right -padx 4 -pady 4
+  }
+}
+
+# packbuttons
+#   Packs a row of dialog buttons to the left/right of their frame
+#   with a standard amount of padding.
+#
+proc packbuttons {side args} {
+  eval pack $args -side $side -padx 5 -pady 3
+}
+
+# dialogbutton:
+#   Creates a button that will be shown in a dialog box, so it
+#   is given a minumin width.
+#
+proc dialogbutton {w args} {
+  set retval [eval button $w $args]
+  set length [string length [$w cget -text]]
+  if {$length < 7} { set length 7 }
+  $w configure -width $length -pady 1
+  return retval
+}
+
+# autoscrollframe
+#   Creates and returns a frame containing a widget which is gridded
+#   with scrollbars that automatically hide themselves when they are
+#   not needed.
+#   The frame and widget may already exist; they are created if needed.
+#   Usage:
+#      autoscrolltext [-bars none|x|y|both] frame type w args
+#
+proc autoscrollframe {args} {
+  global _autoscroll
+  set bars both
+  if {[lindex $args 0] == "-bars"} {
+    set bars [lindex $args 1]
+    if {$bars != "x" && $bars != "y" && $bars != "none" && $bars != "both"} {
+      return -code error "Invalid parameter: -bars $bars"
+    }
+    set args [lrange $args 2 end]
+  }
+  if {[llength $args] < 3} {
+    return -code error "Insufficient number of parameters"
+  }
+  set frame [lindex $args 0]
+  set type [lindex $args 1]
+  set w [lindex $args 2]
+  set args [lrange $args 3 end]
+  
+  set retval $frame
+  if {! [winfo exists $frame]} { frame $frame }
+  $frame configure -relief sunken -borderwidth 2
+  if {! [winfo exists $w]} {
+    $type $w
+  }
+  if {[llength $args] > 0} {
+    eval $w configure $args
+  }
+  $w configure -relief flat -borderwidth 0
+  grid $w -in $frame -row 0 -column 0 -sticky news
+  set setgrid 0
+  catch {set setgrid [$w cget -setgrid]}
+  
+  if {$bars == "y"  ||  $bars == "both"} {
+    ttk::scrollbar $frame.ybar -command [list $w yview] -takefocus 0 -borderwidth 1
+    $w configure -yscrollcommand [list _autoscroll $frame.ybar]
+    grid $frame.ybar -row 0 -column 1 -sticky ns
+    set _autoscroll($frame.ybar) 1
+    set _autoscroll(time:$frame.ybar) [clock clicks -milli]
+    if {! $setgrid} {
+      # bind $frame.ybar <Map> [list _autoscrollMap $frame]
+    }
+  }
+  if {$bars == "x"  ||  $bars == "both"} {
+    ttk::scrollbar $frame.xbar -command [list $w xview] -takefocus 0 \
+        -borderwidth 1 -orient horizontal
+    $w configure -xscrollcommand [list _autoscroll $frame.xbar]
+    grid $frame.xbar -row 1 -column 0 -sticky we
+    set _autoscroll($frame.xbar) 1
+    set _autoscroll(time:$frame.xbar) [clock clicks -milli]
+    if {! $setgrid} {
+      # bind $frame.xbar <Map> [list _autoscrollMap $frame]
+    }
+  }
+  grid rowconfigure $frame 0 -weight 1
+  grid columnconfigure $frame 0 -weight 1
+  grid rowconfigure $frame 1 -weight 0
+  grid columnconfigure $frame 1 -weight 0
+  return $retval
+}
+
+array set _autoscroll {}
+
+# _autoscroll
+#   This is the "set" command called for auto-scrollbars.
+#   If the bar is shown but should not be, it is hidden.
+#   If the bar is hidden but should be shown, it is redrawn.
+#   Note that once a bar is shown, it will not be removed again for
+#   at least a few milliseconds; this is to overcome problematic
+#   interactions between the x and y scrollbars where hiding one
+#   causes the other to be shown etc. This usually happens because
+#   the stupid Tcl/Tk text widget doesn't handle scrollbars well.
+#
+proc _autoscroll {bar args} {
+  global _autoscroll
+  if {[llength $args] == 2} {
+    set min [lindex $args 0]
+    set max [lindex $args 1]
+    if {$min > 0.0  ||  $max < 1.0} {
+      if {! $_autoscroll($bar)} {
+        grid configure $bar
+        set _autoscroll($bar) 1
+        set _autoscroll(time:$bar) [clock clicks -milli]
+      }
+    } else {
+      if {[clock clicks -milli] > [expr {$_autoscroll(time:$bar) + 100}]} {
+        grid remove $bar
+        set _autoscroll($bar) 0
+      }
+    }
+    # update idletasks
+  }
+  eval $bar set $args
+}
+
+proc _autoscrollMap {frame} {
+  # wm geometry [winfo toplevel $frame] [wm geometry [winfo toplevel $frame]]
+}
+
+
+# busyCursor, unbusyCursor:
+#   Sets all cursors to watch (indicating busy) or back to their normal
+#   setting again.
+
+array set scid_busycursor {}
+set scid_busycursorState 0
+
+proc doBusyCursor {w flag} {
+  global scid_busycursor
+  if {! [winfo exists $w]} { return }
+  
+  if {$flag} {
+    set scid_busycursor($w) [$w cget -cursor]
+    catch {$w configure -cursor watch}
+  } else {
+    catch {$w configure -cursor $scid_busycursor($w)} err
+  }
+  foreach i [winfo children $w] { doBusyCursor $i $flag }
+}
+
+proc busyCursor {w {flag 1}} {
+  global scid_busycursor scid_busycursorState
+  if {$scid_busycursorState == $flag} { return }
+  set scid_busycursorState $flag
+  doBusyCursor $w $flag
+}
+
+proc unbusyCursor {w} {busyCursor $w 0}
+
+
+# addHorizontalRule, addVerticalRule
+#   Add a horizontal/vertical rule frame to a window.
+#   The optional parameters [x/y]padding and sunken allow the spacing and
+#   appearance of the rule to be specified.
+#
+set horizRuleCounter 0
+set vertRuleCounter 0
+
+proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
+  global horizRuleCounter
+  set f [ frame $w.line$horizRuleCounter -height $height -borderwidth 2 \
+      -relief $relief -background white ]
+  pack $f -fill x -pady $ypadding
+  incr horizRuleCounter
+  return $f
+}
+
+proc addVerticalRule {w {xpadding 5} {relief sunken}} {
+  global vertRuleCounter
+  set f [ frame $w.line$vertRuleCounter -width 2 -borderwidth 2 \
+      -relief $relief -background white ]
+  pack $f -fill y -padx $xpadding -side left
+  incr vertRuleCounter
+  return $f
+}
+
+
+# progressWindow:
+#   Creates a window with a label, progress bar, and (if specified),
+#   a cancel button and cancellation command.
+#
+proc progressWindow {args} {
+  set w .progressWin
+  if {[winfo exists $w]} { return }
+  toplevel $w
+  wm withdraw $w
+  wm resizable $w 0 0
+  if {[llength $args] == 2} {
+    set title [lindex $args 0]
+    set text [lindex $args 1]
+    set b 0
+  } elseif {[llength $args] == 4} {
+    set title [lindex $args 0]
+    set text [lindex $args 1]
+    set button [lindex $args 2]
+    set command [lindex $args 3]
+    set b 1
+  } else { return }
+  wm title $w $title
+  label $w.t -text $text
+  pack $w.t -side top
+  canvas $w.c -width 300 -height 20 -bg white -relief solid -border 1
+  $w.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.c create text 295 10 -anchor e -font font_Regular -tags time \
+      -fill black -text "0:00 / 0:00"
+  pack $w.c -side top -pady 10
+  if {$b} {
+    pack [frame $w.b] -side bottom -fill x
+    button $w.b.cancel -text $button -command $command
+    pack $w.b.cancel -side right -padx 5 -pady 2
+  }
+  # Set up geometry for middle of screen:
+  set x [winfo screenwidth $w]
+  set x [expr {$x - 300} ]
+  set x [expr {$x / 2} ]
+  set y [winfo screenheight $w]
+  set y [expr {$y - 20} ]
+  set y [expr {$y / 2} ]
+  wm geometry $w +$x+$y
+  sc_progressBar $w.c bar 301 21 time
+  update idletasks
+  wm deiconify $w
+  raise $w
+  if {$b} {
+    grab $w.b.cancel
+  } else {
+    grab $w
+  }
+  bind $w <Visibility> "raise $w"
+  set ::progressWin_time [clock seconds]
+}
+
+proc leftJustifyProgressWindow {} {
+  set w .progressWin
+  if {! [winfo exists $w]} { return }
+  pack configure $w.t -fill x
+  $w.t configure -width 1 -anchor w
+}
+
+proc changeProgressWindow {newtext} {
+  set w .progressWin
+  if {[winfo exists $w]} {
+    $w.t configure -text $newtext
+    update idletasks
+  }
+}
+
+proc resetProgressWindow {} {
+  set w .progressWin
+  set ::progressWin_time [clock seconds]
+  if {[winfo exists $w]} {
+    $w.c coords bar 0 0 0 0
+    $w.c itemconfigure time -text "0:00 / 0:00"
+    update idletasks
+  }
+}
+
+proc updateProgressWindow {done total} {
+  set w .progressWin
+  if {! [winfo exists $w]} { return }
+  set elapsed [expr {[clock seconds] - $::progressWin_time}]
+  set width 401
+  if {$total > 0} {
+    set width [expr {int(double($width) * double($done) / double($total))}]
+  }
+  $w.c coords bar 0 0 $width 21
+  set estimated $elapsed
+  if {$done != 0} {
+    set estimated [expr {int(double($elapsed) * double($total) / double($done))}]
+  }
+  set t [format "%d:%02d / %d:%02d" \
+      [expr {$elapsed / 60}] [expr {$elapsed % 60}] \
+      [expr {$estimated / 60}] [expr {$estimated % 60}]]
+  $w.c itemconfigure time -text $t
+  update
+}
+
+proc closeProgressWindow {} {
+  set w .progressWin
+  if {! [winfo exists $w]} {
+    # puts stderr "Hmm, no progress window -- bug?"
+    return
+  }
+  grab release $w
+  destroy $w
+}
+################################################################################
+# clock widget (0.1 sec precision) dsec = deci-second
+################################################################################
+namespace eval gameclock {
+  array set data {}
+  
+  ################################################################################
+  proc new { parent n {showfall 0} } {
+    global ::gameclock::data
+    set data(showfallen$n) $showfall
+    set data(id$n) $parent.clock$n
+    if {![winfo exists $data(id$n)]} {
+      label $data(id$n) -background white -foreground black -font font_Small
+      pack $data(id$n) -side top -anchor w
+    }
+    set data(running$n) 0
+    set data(fg$n) "black"
+    # egt = elapsed game time (in chunck of 200 ms)
+    set data(egt$n) 0
+    ::gameclock::reset $n
+    ::gameclock::draw $n
+    bind $data(id$n) <Button-1> "::gameclock::toggleClock $n"
+  }
+  ################################################################################
+  proc delete { n } {
+    global ::gameclock::data
+    stop $n
+    destroy $data(id$n)
+    set w .fEngine.text
+    set del [$w tag nextrange clock$n 1.0]
+    catch {$w delete [lindex $del 0] [lindex $del 1]}
+  }
+  ################################################################################
+  proc draw { n } {
+    global ::gameclock::data
+    if {! [winfo exists $data(id$n)]} { return }
+    
+    set sec [ expr int($data(counter$n) /10)]
+    if { $sec < 0 && $data(showfallen$n) } {
+      set color "red"
+    } else  {
+      set color $::gameclock::data(fg$n)
+    }
+    set m [expr int($sec/60.0)]
+    set s [expr abs($sec) % 60 ]
+    $data(id$n) configure -text [format "%02d:%02d" $m $s] -foreground $color
+    
+    # display clocks even in full screen mode
+    if { $::options(fullBoard) } {
+      set w .fEngine.text
+      set del [$w tag nextrange clock$n 1.0]
+      catch {$w delete [lindex $del 0] [lindex $del 1]}
+      if {$n == 1} {
+        $w insert 1.0 [format " %02d:%02d " $m $s] clock1
+      } else {
+        set loc [lindex [$w tag nextrange clock1 1.0] 1]
+        if {$loc == "" } { set loc 1.0 }
+        $w insert $loc [format " %02d:%02d " $m $s] clock2
+      }
+    }
+  }
+  ################################################################################
+  proc every {ms body n} {
+    
+    set delta 2
+    
+    if { $::tournamentMode && $::options(engine_timeMode) == "timebonus" } {
+      set delta -2
+    }
+    if { ! $::tournamentMode && $::options(game_timeMode) == "timebonus" } {
+      set delta -2
+    }
+    incr ::gameclock::data(egt$n)
+    incr ::gameclock::data(counter$n) $delta
+    
+    if {[expr { $::gameclock::data(counter$n) % 10 } ] == 0} {
+      eval $body
+    }
+    if {[winfo exists $::gameclock::data(id$n)]} {
+      after $ms [info level 0]
+    }
+  }
+  ################################################################################
+  proc getdSec { n } {
+    return $::gameclock::data(counter$n)
+  }
+  ################################################################################
+  proc setdSec { n value } {
+    set ::gameclock::data(counter$n) $value
+    ::gameclock::draw $n
+  }
+  ################################################################################
+  # returns EGT in format h:mm:ss
+  proc getEgt { n } {
+    set egt [ expr $::gameclock::data(egt$n) / 5 ]
+    set h [ expr $egt / 3600 ]
+    set egt [ expr $egt - $h * 3600 ]
+    set m [ expr $egt / 60 ]
+    set s [ expr $egt - $m * 60 ]
+    set m [ format "%02i" $m ]
+    set s [ format "%02i" $s ]    
+    return "$h:$m:$s"
+  }
+  ################################################################################
+  # add seconds
+  proc add { n value } {
+    set ::gameclock::data(counter$n) [ expr $::gameclock::data(counter$n) + $value * 10 ]
+    ::gameclock::draw $n
+  }
+  
+  ################################################################################
+  proc reset { n } {
+    ::gameclock::stop $n
+    set ::gameclock::data(counter$n) 0
+  }
+  ################################################################################
+  proc start { n } {
+    if {$::gameclock::data(running$n)} { return }
+    set ::gameclock::data(running$n) 1
+    ::gameclock::every 200 "draw $n" $n
+  }
+  ################################################################################
+  proc stop { n } {
+    if {! $::gameclock::data(running$n)} { return }
+    set ::gameclock::data(running$n) 0
+    after cancel "::gameclock::every 200 \{draw $n\} $n"
+  }
+  ################################################################################
+  proc toggleClock { n } {
+    if { $::gameclock::data(running$n) } {
+      stop $n
+    } else  {
+      start $n
+    }
+  }
+  ################################################################################
+  proc setColor { n color } {
+    if {$color == "white"} {
+      set fg "black"
+      set bg "white"
+    } else {
+      set fg "white"
+      set bg "black"
+    }
+    set ::gameclock::data(fg$n) $fg
+    $::gameclock::data(id$n) configure -background $bg -foreground $fg
+  }
+}
+################################################################################
+# html generation
+################################################################################
+namespace eval html {
+  set data {}
+  set idx 0
+  set black_square "#7389b6"
+  set white_square "#f3f3f3"
+  
+  ################################################################################
+  proc exportCurrentFilter {} {
+    # Check that we have some games to export:
+    if {![sc_base inUse]} {
+      tk_messageBox -title "Scid: Empty database" -type ok -icon info \
+          -message "This is an empty database, there are no games to export."
+      return
+    }
+    if {[sc_filter count] == 0} {
+      tk_messageBox -title "Scid: Filter empty" -type ok -icon info \
+          -message "The filter contains no games."
+      return
+    }
+    set ftype {
+      { "HTML files" {".html" ".htm"} }
+      { "All files" {"*"} }
+    }
+    set idir $::initialDir(html)
+    set fName [tk_getSaveFile -initialdir $idir -filetypes $ftype -defaultextension ".html" -title "Create an HTML file"]
+    if {$fName == ""} { return }
+    set prefix [file rootname [file tail $fName] ]
+    set dirtarget [file dirname $fName]
+    set sourcedir [file join $::scidExeDir html]
+    catch {file copy -force [file join $sourcedir bitmaps] $dirtarget}
+    catch {file copy -force [file join $sourcedir scid.js] $dirtarget}
+    catch {file copy -force [file join $sourcedir scid.css] $dirtarget}
+    writeIndex "[file join $dirtarget $prefix].html" $prefix
+    progressWindow "Scid" "Exporting games..." "Cancel" "sc_progressBar"
+    busyCursor .
+    set savedGameNum [sc_game number]
+    set gn [sc_filter first]
+    set players {}
+    set ::html::cancelHTML 0
+    set idx 1
+    set total [sc_filter count]
+    
+    while {$gn != 0 && ! $::html::cancelHTML} {
+      updateProgressWindow $idx $total
+      sc_game load $gn
+      fillData
+      set pl "[sc_game tags get White] - [sc_game tags get Black]"
+      lappend players $pl
+      toHtml $::html::data $idx $dirtarget $prefix $pl [sc_game tags get "Event"] [sc_game tags get "ECO"] [sc_game info result] [sc_game tags get "Date"]
+      set gn [sc_filter next]
+      incr idx
+    }
+    
+    navhtml $dirtarget $players $prefix
+    closeProgressWindow
+    unbusyCursor .
+    exportPGN "[file join $dirtarget $prefix].pgn" "filter"
+    sc_game load $savedGameNum
+  }
+  ################################################################################
+  proc sc_progressBar {} {
+    set ::html::cancelHTML 1
+  }
+  ################################################################################
+  proc exportCurrentGame {} {
+    
+    set ftype {
+      { "HTML files" {".html" ".htm"} }
+      { "All files" {"*"} }
+    }
+    set idir $::initialDir(html)
+    set fName [tk_getSaveFile -initialdir $idir -filetypes $ftype -defaultextension ".html" -title "Create an HTML file"]
+    if {$fName == ""} { return }
+    set prefix [file rootname [file tail $fName] ]
+    set dirtarget [file dirname $fName]
+    set sourcedir [file join $::scidExeDir html]
+    catch { file copy -force [file join $sourcedir bitmaps] $dirtarget }
+    catch { file copy -force [file join $sourcedir scid.js] $dirtarget }
+    catch { file copy -force [file join $sourcedir scid.css] $dirtarget }
+    writeIndex "[file join $dirtarget $prefix].html" $prefix
+    
+    fillData
+    set players [list "[sc_game tags get White] - [sc_game tags get Black]"]
+    navhtml $dirtarget $players $prefix
+    toHtml $::html::data 1 $dirtarget $prefix $players \
+        [sc_game tags get "Event"] [sc_game tags get "ECO"] \
+        [sc_game info result] [sc_game tags get "Date"]
+    exportPGN "[file join $dirtarget $prefix].pgn" "current"
+  }
+  
+  ################################################################################
+  proc toHtml { dt game dirtarget prefix {players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
+    set f [open "[file join $dirtarget $prefix]_${game}.html" w]
+    # header
+    puts $f "<html>"
+    puts $f "<head>"
+    puts $f "<meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">"
+    puts $f "<title>Scid</title>"
+    puts $f "<meta content=\"Scid\" name=\"author\">"
+    puts $f "<link rel=\"stylesheet\" type=\"text/css\" href=\"scid.css\">"
+    puts $f "<script SRC=\"scid.js\" LANGUAGE=\"JavaScript1.1\"></script>"
+    puts $f "</head>"
+    puts $f "<body ONLOAD=\"doinit()\" TEXT=\"#000000\" LINK=\"#000000\" VLINK=\"#000000\" ALINK=\"#000000\" BGCOLOR=\"#ECECEC\" onKeyDown=\"handlekey(event)\">"
+    puts $f "<p>"
+    puts $f "<font COLOR=\"#000000\">"
+    puts $f "<script LANGUAGE=\"JavaScript1.1\">"
+    puts $f "<!--"
+    puts $f "movesArray = new Array("
+    for {set i 0} {$i<[llength $dt]} {incr i} {
+      array set elt [lindex $dt $i]
+      puts -nonewline $f "\"$elt(fen) $elt(prev) $elt(next)\""
+      if {$i < [expr [llength $dt] -1]} { puts $f "," }
+    }
+    puts $f ");"
+    puts $f "var current = 0;"
+    puts $f "var prefix = \"$prefix\";"
+    puts $f "//-->"
+    puts $f "</script>"
+    puts $f "<NOSCRIPT>You need to have Javascript enabled in your browser to see this page.</NOSCRIPT>"
+    # game header
+    puts $f "<span class=\"hPlayers\">$players</span>"
+    puts $f "<span class=\"hEvent\"><br>$event</span>"
+    puts $f "<span class=\"hAnnot\"><br>\[$eco\]</span>"
+    puts $f "<span class=\"hEvent\"><br>\[$date\]</span>"
+    puts $f "<br>"
+    
+    # link moves
+    set prevdepth 0
+    set prevvarnumber 0
+    for {set i 1} {$i<[llength $dt]} {incr i} {
+      array set elt [lindex $dt $i]
+      if {$elt(depth) == 0} {
+        set class "V0"
+      } elseif {$elt(depth) == 1} {
+        set class "V1"
+      } else  {
+        set class "V2"
+      }
+      if {$prevdepth != $elt(depth) || $prevvarnumber != $elt(var)} {
+        if {$prevdepth != 0} { puts $f "\]" }
+        puts $f "<br>"
+        for {set j 0} {$j<$elt(depth)} {incr j} {puts $f "&nbsp; &nbsp; "}
+        if {$elt(depth) != 0} { puts $f "\[" }
+      }
+      set prevdepth $elt(depth)
+      set prevvarnumber $elt(var)
+      puts $f "<a href=\"javascript:gotoMove($elt(idx))\" ID=\"$elt(idx)\" class=\"$class\">$elt(move)</a>$elt(nag) $elt(comment)"
+      if {$elt(diag)} {
+        insertMiniDiag $elt(fen) $f
+      }
+    }
+    if {$prevdepth != 0} {puts $f "\]"}
+    
+    # <a href="javascript:gotoMove(1)" ID="1" class="V0">1.Rd8</a>
+    puts $f "<br><class=\"VH\">$result"
+    puts $f "</font>"
+    puts $f "</p>"
+    puts $f "<font size=-2><a href=\"http://prolinux.free.fr/scid/\" target=_blank>Created with Scid</a></font>"
+    puts $f "</body>"
+    puts $f "</html>"
+    close $f
+  }
+  ################################################################################
+  proc colorSq {sq} {
+    if { [expr $sq % 2] == 1 && [expr int($sq / 8) %2 ] == 0 || [expr $sq % 2] == 0 && [expr int($sq / 8) %2 ] == 1 } {
+      return $::html::black_square
+    } else {
+      return $::html::white_square
+    }
+  }
+  ################################################################################
+  proc piece2gif {piece} {
+    if {$piece == "K"} { return "wk" }
+    if {$piece == "k"} { return "bk" }
+    if {$piece == "Q"} { return "wq" }
+    if {$piece == "q"} { return "bq" }
+    if {$piece == "R"} { return "wr" }
+    if {$piece == "r"} { return "br" }
+    if {$piece == "B"} { return "wb" }
+    if {$piece == "b"} { return "bb" }
+    if {$piece == "N"} { return "wn" }
+    if {$piece == "n"} { return "bn" }
+    if {$piece == "P"} { return "wp" }
+    if {$piece == "p"} { return "bp" }
+    if {$piece == " "} { return "sq" }
+  }
+  ################################################################################
+  proc insertMiniDiag {fen f} {
+    
+    set square 0
+    set space " "
+    puts $f "<table Border=0 CellSpacing=0 CellPadding=0><tr>"
+    
+    for {set i 0} {$i < [string length $fen]} {incr i} {
+      set l [string range $fen $i $i ]
+      set res [scan $l "%d" c]
+      if {$res == 1} {
+        if  { $c >= 1 && $c <= 8 } {
+          for { set j 0} {$j < $c} {incr j} {
+            puts $f "<td bgcolor= [colorSq $square ] ><img border=0 src=bitmaps/mini/[piece2gif $space].gif </td>"
+            incr square
+          }
+        }
+      } elseif {$l == "/"}  {
+        puts $f "</tr><tr>"
+      } else  {
+        puts $f "<td bgcolor= [colorSq $square ] ><img border=0 src=bitmaps/mini/[piece2gif $l].gif </td>"
+        incr square
+      }
+    }
+    
+    puts $f "</tr></table>"
+    puts $f "</body></html>"
+  }
+  
+  ################################################################################
+  # generate nav.html
+  proc navhtml { dirtarget players prefix } {
+    set f [open "[file join $dirtarget ${prefix}_nav.html]" w]
+    puts $f "<body BGCOLOR=\"#d7d7d7\">"
+    puts $f "<table ALIGN='CENTER'>"
+    puts $f "<td VALIGN='TOP'>"
+    puts $f "<center>"
+    puts $f "<form NAME='formgames'>"
+    puts $f "<input TYPE='button' VALUE=' o ' ONCLICK='parent.moves.rotate()'>"
+    puts $f "<input TYPE='button' VALUE=' |&lt; ' ONCLICK='parent.moves.jump(0)'>"
+    puts $f "<input TYPE='button' VALUE=' &lt; '  ONCLICK='parent.moves.moveForward(0)'>"
+    puts $f "<input TYPE='button' VALUE=' &gt; '  ONCLICK='parent.moves.moveForward(1)'>"
+    puts $f "<input TYPE='button' VALUE=' &gt;| ' ONCLICK='parent.moves.jump(1)'>"
+    puts $f "</center>"
+    puts $f "</td>"
+    puts $f "</table>"
+    
+    puts $f "<center>"
+    puts $f "<select NAME=\"gameselect\" ID=\"gameselect\" SIZE=1 WIDTH=244 ONCHANGE='parent.moves.gotogame()'>"
+    set i 1
+    foreach l $players {
+      puts $f "<option>$i. $l"
+      incr i
+    }
+    puts $f "</select>"
+    puts $f "<nobr>"
+    puts $f "<input TYPE=\"button\" VALUE=\"&lt;--\" ONCLICK=\"parent.moves.gotoprevgame()\">"
+    puts $f "<input TYPE=\"button\" VALUE=\"--&gt;\" ONCLICK=\"parent.moves.gotonextgame()\">"
+    puts $f "</nobr>"
+    puts $f "</center>"
+    puts $f "</form>"
+    puts $f "<br><CENTER><a href=\"${prefix}.pgn\">${prefix}.pgn</a></CENTER>"
+    puts $f "</body>"
+    
+    close $f
+  }
+  ################################################################################
+  # fill data with { idx FEN prev next move nag comment depth }
+  proc fillData {} {
+    sc_info preMoveCmd {}
+    set ::html::data {}
+    set ::html::idx -1
+    sc_move start
+    parseGame
+    sc_info preMoveCmd preMoveCommand
+  }
+  
+  ################################################################################
+  proc parseGame { {prev -2} {dots 0} } {
+    global ::html::data ::html::idx
+    
+    while {1} {
+      recordElt $prev $dots
+      set prev -2
+      set dots 0
+      
+      # handle variants
+      if {[sc_var count]>0} {
+        if { ![sc_pos isAt vend]} {
+          sc_move forward
+          recordElt
+          set lastIdx $idx
+          sc_move back
+        }
+        set dots 1
+        for {set v 0} {$v<[sc_var count]} {incr v} {
+          sc_var enter $v
+          parseGame $idx $dots
+          sc_var exit
+        }
+        if { ![sc_pos isAt vend] } { sc_move forward }
+        #update the "next" token
+        array set elt [lindex $data $lastIdx]
+        set elt(next) [expr $idx + 1]
+        lset data $lastIdx [array get elt]
+        #update the "previous" token
+        set prev $lastIdx
+      }
+      
+      if {[sc_pos isAt vend]} { break }
+      sc_move forward
+    }
+  }
+  ################################################################################
+  proc recordElt { {prev -2} {dots 0} } {
+    global ::html::data ::html::idx
+    
+    array set elt {}
+    
+    incr idx
+    set elt(idx) $idx
+    set elt(fen) [lindex [split [sc_pos fen]] 0]
+    if {$prev != -2} {
+      set elt(prev) $prev
+    } else  {
+      set elt(prev) [expr $idx-1]
+    }
+    
+    set nag [sc_pos getNags]
+    if {$nag == "0"} { set nag "" }
+    if {[string match "*D *" $nag] || [string match "*# *" $nag]} {
+      set elt(diag) 1
+    } else  {
+      set elt(diag) 0
+    }
+    set nag [regsub -all "D " $nag "" ]
+    set nag [regsub -all "# " $nag "" ]
+    set elt(nag) $nag
+    set comment [sc_pos getComment]
+    set comment [regsub -all "\[\x5B\]%draw (.)+\[\x5D\]" $comment ""]
+    set elt(comment) $comment
+    set elt(depth) [sc_var level]
+    set elt(var) [sc_var number]
+    if {![sc_pos isAt vend]} {
+      set elt(next) [expr $idx +1 ]
+    } else  {
+      set elt(next) -1
+    }
+    
+    set m [sc_game info previousMove]
+    set mn [sc_pos moveNumber]
+    
+    if {[sc_pos side] == "black"} {
+      set elt(move) "$mn.$m"
+    } else {
+      if {$dots} {
+        set elt(move) "[expr $mn -1]. ... $m"
+      } else  {
+        set elt(move) $m
+      }
+    }
+    
+    lappend ::html::data [array get elt]
+    
+  }
+  
+  ################################################################################
+  proc writeIndex {fn prefix} {
+    set f [open $fn w]
+    puts $f "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
+    puts $f "<html>"
+    puts $f "<head>"
+    puts $f "<meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">"
+    puts $f "<title>Scid</title>"
+    puts $f "<meta content=\"Scid\" name=\"author\">"
+    puts $f "</head>"
+    puts $f "<frameset BORDER=\"0\" FRAMEBORDER=\"0\" FRAMESPACING=\"0\" COLS=\"380,*\">"
+    puts $f "<frameset BORDER=\"0\" FRAMEBORDER=\"0\" FRAMESPACING=\"0\" ROWS=\"380,*\">"
+    puts $f "<frame NAME=\"diagram\" SCROLLING=\"Auto\">"
+    puts $f "<frame NAME=\"nav\" SRC=\"${prefix}_nav.html\" SCROLLING=\"Auto\">"
+    puts $f "</frameset>"
+    puts $f "<frame NAME=\"moves\" SRC=\"${prefix}_1.html\" SCROLLING=\"Auto\">"
+    puts $f "</frameset>"
+    puts $f "</html>"
+    close $f
+  }
+  ################################################################################
+  proc exportPGN { fName selection } {
+    if {$selection == "filter"} {
+      progressWindow "Scid" "Exporting games..." "Cancel" "sc_progressBar"
+    }
+    busyCursor .
+    sc_base export $selection "PGN" $fName -append 0 -starttext "" -endtext "" -comments 1 -variations 1 \
+        -space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 1 -convertNullMoves 1
+    unbusyCursor .
+    if {$selection == "filter"} {
+      closeProgressWindow
+    }
+  }
+  
+}
+################################################################################
+proc saveOptions { } {
+  if { [catch { set f [open $::scidConfigFile "w"] } ] } {
+    tk_messageBox -title "Error" -type ok -icon warning -message "Scid: Unable to write file $::scidConfigFile"
+    return
+  }
+  foreach i [ array names ::options ] {
+    puts $f "set ::options($i) [list [set ::options($i)]]"
+  }
+  close $f
+}
+
+################################################################################
+proc addRecentFile { fName } {
+  set idx [lsearch $::options(recentBases) $fName]
+  if { $idx == -1 } {
+    set ::options(recentBases) [linsert $::options(recentBases) 0 $fName]
+    if { [llength $::options(recentBases)] > $::options(maxRecentBases) } {
+      set ::options(recentBases) [lreplace $::options(recentBases) $::options(maxRecentBases) end ]
+    }
+  }
+}
+
+################################################################################
+#              S O U N D S
+################################################################################
+if {$WindowsCE} {
+  namespace eval sound {
+    ################################################################################
+    proc playwav { f } {
+      if { ! $::hasSound || ! $::options(sound) } { return }
+      set f [file join $::instalDir "sounds" $f]
+      wce play $f
+      # evodio play -file $f
+    }
+    ################################################################################
+    proc play {s} {
+      playwav "$s.wav"
+    }
+  }
+} else {
+  namespace eval sound {
+    proc play {s} {}
+  }
+}
+################################################################################
+#
+################################################################################
+# end of misc.tcl
