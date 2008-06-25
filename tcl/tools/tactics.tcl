@@ -130,7 +130,7 @@ namespace eval tactics {
     
     set ::tactics::lastGameLoaded 0
     
-    ::tactics::launchengine
+    if { ! [::tactics::launchengine] } { return }
     
     set askToReplaceMoves_old $askToReplaceMoves
     set askToReplaceMoves 0
@@ -552,6 +552,7 @@ namespace eval tactics {
   
   ################################################################################
   #  Will start engine
+  # in case of an error, return 0, or 1 if the engine is ok
   ################################################################################
   proc launchengine {} {
     global ::tactics::analysisEngine
@@ -571,11 +572,12 @@ namespace eval tactics {
       incr index
     }
     if { ! $engineFound } {
-      tk_messageBox -type ok -icon warning -parent . -title "Scid" -message "Unable to find engine"
-      return
+      tk_messageBox -type ok -icon warning -parent . -title "Scid" -message "Unable to find engine.\nPlease configure engine with Toga as name"
+      return 0
     }
     
     ::uci::startEngine $index $::tactics::engineSlot ;# start engine in analysis mode
+    return 1
   }
   
   # ======================================================================
