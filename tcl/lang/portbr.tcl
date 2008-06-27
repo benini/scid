@@ -1412,7 +1412,8 @@ translate B blunder {blunder}
 # ====== TODO To be translated ======
 translate B Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate B PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate B PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate B moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1471,6 +1472,8 @@ translate B Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate B Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
+translate B ZeroMovesLoaded {No move loaded.}
+# ====== TODO To be translated ======
 translate B Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate B Movenotinrepertoire {Move not in repertoire}
@@ -1480,6 +1483,14 @@ translate B PositionsInRepertoire {Positions in repertoire}
 translate B PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate B PositionsPlayed {Positions played}
+# ====== TODO To be translated ======
+translate B NumberOfGoodMovesPlayed {Good moves played}
+# ====== TODO To be translated ======
+translate B NumberOfDubiousMovesPlayed {Dubious moves played}
+# ====== TODO To be translated ======
+translate B NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
+# ====== TODO To be translated ======
+translate B NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate B Success {Success}
 # ====== TODO To be translated ======
@@ -1776,6 +1787,10 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
+
+
+
 
 
 

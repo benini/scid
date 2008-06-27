@@ -1400,7 +1400,8 @@ translate C blunder {blunder}
 # ====== TODO To be translated ======
 translate C Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate C PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate C PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate C moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1459,6 +1460,8 @@ translate C Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate C Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
+translate C ZeroMovesLoaded {No move loaded.}
+# ====== TODO To be translated ======
 translate C Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate C Movenotinrepertoire {Move not in repertoire}
@@ -1468,6 +1471,14 @@ translate C PositionsInRepertoire {Positions in repertoire}
 translate C PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate C PositionsPlayed {Positions played}
+# ====== TODO To be translated ======
+translate C NumberOfGoodMovesPlayed {Good moves played}
+# ====== TODO To be translated ======
+translate C NumberOfDubiousMovesPlayed {Dubious moves played}
+# ====== TODO To be translated ======
+translate C NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
+# ====== TODO To be translated ======
+translate C NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate C Success {Success}
 # ====== TODO To be translated ======
@@ -5401,6 +5412,10 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
+
+
 
 
 

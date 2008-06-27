@@ -1279,7 +1279,7 @@ translate F Play {Jouer}
 translate F Noblunder {Pas d'erreur}
 translate F blunder {erreur}
 translate F Noinfo {-- Pas d'info --}
-translate F PhalanxOrCraftyMissing {Phalanx ou Crafty non trouvé}
+translate F PhalanxOrTogaMissing {Phalanx ou Toga non configuré}
 translate F moveblunderthreshold {le coup est une erreur si les pertes sont supérieures à }
 translate F limitanalysis {limiter le temps d'analyse}
 translate F seconds {secondes}
@@ -1308,11 +1308,16 @@ translate F Repertoiretrainingconfiguration {Configuration entrainement répertoi
 translate F Loadingrepertoire {Chargement du répertoire}
 translate F Movesloaded {Coups lus}
 translate F Repertoirenotfound {Répertoire introuvable}
+translate F ZeroMovesLoaded {Aucun coup chargé.}
 translate F Openfirstrepertoirewithtype {Ouvrez d'abord une base avec le bon type/icône sur le côté droit}
 translate F Movenotinrepertoire {Coup absent du répertoire}
 translate F PositionsInRepertoire {Positions dans le répertoire}
 translate F PositionsNotPlayed {Positions non jouées}
 translate F PositionsPlayed {Positions jouées}
+translate F NumberOfGoodMovesPlayed {Bons coups joués}
+translate F NumberOfDubiousMovesPlayed {Coups douteux joués}
+translate F NumberOfMovesPlayedNotInRepertoire {Coups joués absents du répertoire}
+translate F NumberOfTimesPositionEncountered {Nombre de fois position rencontrée}
 translate F Success {Succès}
 translate F DubiousMoves {Coups douteux}
 translate F OutOfRepertoire {Hors du répertoire}
@@ -1675,6 +1680,10 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
+
+
+
 
 
 

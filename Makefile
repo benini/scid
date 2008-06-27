@@ -208,10 +208,7 @@ all: all_scid all_engines
 
 all_scid: scid $(SCRIPTS) $(EXECS)
 
-all_engines: crafty phalanx toga
-
-crafty: 
-	cd engines/crafty-21.6/ && $(MAKE) linux && cd ../../
+all_engines: phalanx toga
 
 phalanx:
 	cd engines/Phalanx-XXII/ && $(MAKE) && cd ../../
@@ -241,9 +238,6 @@ install_scid: all_scid
 
 install_engines: all_engines
 	install -m 755 -d $(SHAREDIR)/engines
-	install -m 755 -d $(SHAREDIR)/engines/crafty-21.6
-	install ./engines/crafty-21.6/crafty $(SHAREDIR)/engines/crafty-21.6/
-#	install ./engines/crafty-21.6/book*.bin $(SHAREDIR)/engines/crafty-21.6/
 	install -m 755 -d $(SHAREDIR)/engines/Phalanx-XXII
 	install ./engines/Phalanx-XXII/phalanx $(SHAREDIR)/engines/Phalanx-XXII
 	install -m 755 -d $(SHAREDIR)/engines/togaII1.2.1a
@@ -275,8 +269,6 @@ distclean:
 clean:
 	rm -f game.* tkscid.so tkscid.dll position.* src/*.o src/zlib/*.o src/zlib/*.a src/polyglot/*.o $(EXECS) scid $(SCRIPTS)
 	cd engines/Phalanx-XXII/ && make clean && cd ../../
-	cd engines/crafty-21.6/ && make clean && cd ../../
-	rm -f engines/crafty-21.6/*.gcno engines/crafty-21.6/log.* engines/crafty-21.6/game.*
 	cd engines/togaII1.2.1a/src/ && make clean && cd ../../../
 	cd pocket/toga/src/ && make clean && cd ../../../
 	cd pocket/toga134/src/ && make clean && cd ../../../

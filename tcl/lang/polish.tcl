@@ -1416,7 +1416,8 @@ translate P blunder {blunder}
 # ====== TODO To be translated ======
 translate P Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate P PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate P PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate P moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1475,6 +1476,8 @@ translate P Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate P Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
+translate P ZeroMovesLoaded {No move loaded.}
+# ====== TODO To be translated ======
 translate P Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate P Movenotinrepertoire {Move not in repertoire}
@@ -1484,6 +1487,14 @@ translate P PositionsInRepertoire {Positions in repertoire}
 translate P PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate P PositionsPlayed {Positions played}
+# ====== TODO To be translated ======
+translate P NumberOfGoodMovesPlayed {Good moves played}
+# ====== TODO To be translated ======
+translate P NumberOfDubiousMovesPlayed {Dubious moves played}
+# ====== TODO To be translated ======
+translate P NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
+# ====== TODO To be translated ======
+translate P NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate P Success {Success}
 # ====== TODO To be translated ======
@@ -1997,6 +2008,10 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
+
+
 
 
 

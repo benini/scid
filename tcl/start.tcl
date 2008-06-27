@@ -842,7 +842,6 @@ proc ::splash::add {text} {
 ::splash::add "Copyright (C) 2006-2008 Pascal Georges  (pascal.georges1@free.fr)"
 ::splash::add "This is Scid $::scidVersion, released $::scidVersionDate."
 ::splash::add "Website: scid.sourceforge.net\n"
-::splash::add "Website: prolinux.free.fr/scid\n"
 
 # Remember old font settings before loading options file:
 set fontOptions(oldRegular) $fontOptions(Regular)

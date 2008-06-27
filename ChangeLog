@@ -472,3 +472,11 @@ scid-3.6.24
 - updated swedish translation (thanks to Hans Eriksson)
 - updated spanish translation (thanks to Benigno Hernández)
 
+[December 2008 ?]
+
+scid-3.6.25
+-----------
+- Opening trainer : 
+   * automatic switch to clipbase
+   * trainer window easier to understand
+- Removed Crafty engine, as tacgame.tcl does not need it any longer. So the two mandatory engines for Scid's features are Toga and Phalanx. Note that any Toga version should work, but only the patched version of Phalanx works.

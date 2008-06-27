@@ -1402,7 +1402,8 @@ translate H blunder {blunder}
 # ====== TODO To be translated ======
 translate H Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate H PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate H PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate H moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1461,6 +1462,8 @@ translate H Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate H Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
+translate H ZeroMovesLoaded {No move loaded.}
+# ====== TODO To be translated ======
 translate H Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate H Movenotinrepertoire {Move not in repertoire}
@@ -1470,6 +1473,14 @@ translate H PositionsInRepertoire {Positions in repertoire}
 translate H PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate H PositionsPlayed {Positions played}
+# ====== TODO To be translated ======
+translate H NumberOfGoodMovesPlayed {Good moves played}
+# ====== TODO To be translated ======
+translate H NumberOfDubiousMovesPlayed {Dubious moves played}
+# ====== TODO To be translated ======
+translate H NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
+# ====== TODO To be translated ======
+translate H NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate H Success {Success}
 # ====== TODO To be translated ======
@@ -1996,6 +2007,10 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
+
+
 
 
 

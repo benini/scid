@@ -3735,10 +3735,6 @@ set helpTitle(Author) "Contact information"
 set helpText(Author) {<h1>Contact Information</h1>
   <p>
   The Scid web page is located at: <br>
-  <b><url http://prolinux.free.fr/scid/>http://prolinux.free.fr/scid/</url></b>
-  </p>
-  <p>
-  The original Scid web page is located at: <br>
   <b><url http://scid.sourceforge.net/>http://scid.sourceforge.net/</url></b>
   </p>
   <p>

@@ -54,7 +54,7 @@ namespace eval uci {
   ################################################################################
   proc  processAnalysisInput { { n 1 } { analyze 1 } } {
     global analysis ::uci::uciInfo ::uci::infoToken ::uci::optionToken
-    
+       
     if {$analyze} {
       set pipe $analysis(pipe$n)
       if { ! [ ::checkEngineIsAlive $n ] } { return }
@@ -62,7 +62,7 @@ namespace eval uci {
       set pipe $uciInfo(pipe$n)
       if { ! [ ::uci::checkEngineIsAlive $n ] } { return }
     }
-    
+      
     if {$analyze} {
       if {! $analysis(seen$n)} {
         set analysis(seen$n) 1
@@ -195,7 +195,7 @@ namespace eval uci {
       if { $uciInfo(multipv$n) == "" } { set uciInfo(multipv$n) 1 }
       
       if { $uciInfo(multipv$n) == 1 } {
-        set uciInfo(score$n) $uciInfo(tmp_score$n)
+        set uciInfo(score$n) $uciInfo(tmp_score$n)        
       }
       
       if { $uciInfo(multipv$n) == 1 && $analyze} {
@@ -595,9 +595,9 @@ namespace eval uci {
     }
   }
   ################################################################################
-  # will start an engine for playing (not analysis)
+  # will start an engine for playing (not analysis), except if analyseMode = 1
   ################################################################################
-  proc startEngine {index n} {
+  proc startEngine {index n {analyseMode 0}} {
     global ::uci::uciInfo
     resetUciInfo $n
     set uciInfo(pipe$n) ""
@@ -627,6 +627,7 @@ namespace eval uci {
     
     set ::analysis(index$n) $index
     set ::analysis(pipe$n) $uciInfo(pipe$n)
+    set ::analysis(uci$n) 1
     
     # Return to original dir if necessary:
     if {$oldpwd != ""} { catch {cd $oldpwd} }

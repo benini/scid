@@ -657,7 +657,7 @@ namespace eval html {
     puts $f "<br><class=\"VH\">$result"
     puts $f "</font>"
     puts $f "</p>"
-    puts $f "<font size=-2><a href=\"http://prolinux.free.fr/scid/\" target=_blank>Created with Scid</a></font>"
+    puts $f "<font size=-2><a href=\"http://scid.sourceforge.net/\" target=_blank>Created with Scid</a></font>"
     puts $f "</body>"
     puts $f "</html>"
     close $f

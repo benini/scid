@@ -1292,7 +1292,8 @@ translate S Play {Jugar}
 translate S Noblunder {Sin errores}
 translate S blunder {Meteduras de pata}
 translate S Noinfo {-- Sin información --}
-translate S PhalanxOrCraftyMissing {Phalanx or Crafty no encontrado}
+# ====== TODO To be translated ======
+translate S PhalanxOrTogaMissing {Phalanx or Toga not found}
 translate S moveblunderthreshold {El movimiento es una metedura de pata si la pérdida de puntuación es mayor que }
 translate S limitanalysis {Tiempo límite para análisis del motor}
 translate S seconds {segundos}
@@ -1321,11 +1322,21 @@ translate S Repertoiretrainingconfiguration {Configuración del repertorio de ent
 translate S Loadingrepertoire {Cargando repertorio}
 translate S Movesloaded {Movimientos cargados}
 translate S Repertoirenotfound {Repertorio no encontrado}
+# ====== TODO To be translated ======
+translate S ZeroMovesLoaded {No move loaded.}
 translate S Openfirstrepertoirewithtype {Abrir primero una base con icono/tipo de repertorio colocado en el lado derecho}
 translate S Movenotinrepertoire {Movimiento no está en el repertorio}
 translate S PositionsInRepertoire {Posiciones en repertorio}
 translate S PositionsNotPlayed {Posiciones no jugadas}
 translate S PositionsPlayed {Posiciones jugadas}
+# ====== TODO To be translated ======
+translate S NumberOfGoodMovesPlayed {Good moves played}
+# ====== TODO To be translated ======
+translate S NumberOfDubiousMovesPlayed {Dubious moves played}
+# ====== TODO To be translated ======
+translate S NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
+# ====== TODO To be translated ======
+translate S NumberOfTimesPositionEncountered {Position was encountered}
 translate S Success {Éxitos}
 translate S DubiousMoves {Movimientos dudosos}
 translate S OutOfRepertoire {Fuera de repertorio}
@@ -1478,6 +1489,10 @@ translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, a
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
+
+
+
 
 
 

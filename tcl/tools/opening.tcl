@@ -106,26 +106,28 @@ namespace eval opening {
     set prevBase [sc_base current]
     if {$prevBase != $repBase} { sc_base switch $repBase }
     loadRep "$repBase - [sc_base filename $repBase]" "[sc_base description]"
-    if {$prevBase != $repBase} {sc_base switch $prevBase}
-    
-    # add a blank game for training in current base (it may be repertoire's one), if the current base is opened
-    if {[sc_base inUse $prevBase]} {
-      sc_game new
-      sc_game tags set -event $::tr(Openingtrainer)
-      sc_game save 0
-      updateBoard -pgn
-      ::windows::gamelist::Refresh
-      updateTitle
+    if {$prevBase != $repBase} {
+      sc_base switch $prevBase
     } else  {
+      sc_base switch clipbase
+    }
+    
+    if { $::opening::movesLoaded == 0 } {
+      tk_messageBox -title $::tr(Repertoirenotfound) -type ok -icon error -message $::tr(ZeroMovesLoaded)
+    }
+    
+    if { ! [sc_base inUse $prevBase] } {
       # switch to clipboard base if the current base is empty
       sc_base switch clipbase
-      sc_game new
-      sc_game tags set -event $::tr(Openingtrainer)
-      sc_game save 0
-      updateBoard -pgn
-      ::windows::gamelist::Refresh
-      updateTitle
     }
+    
+    # add a blank game for training in current base, if the current base is opened
+    sc_game new
+    sc_game tags set -event $::tr(Openingtrainer)
+    sc_game save 0
+    updateBoard -pgn
+    ::windows::gamelist::Refresh
+    updateTitle
     
     ::opening::openingWin
     ::opening::mainLoop
@@ -144,6 +146,7 @@ namespace eval opening {
     set cancelLoadRepertoire 0
     set allLinesFenList {}
     set allLinesHashList {}
+    
     progressWindow "Scid" "$::tr(Loadingrepertoire)..." $::tr(Cancel) "::opening::sc_progressBar"
     for {set g 1} { $g <= [sc_base numGames]} { incr g} {
       if {$cancelLoadRepertoire} { break  }
@@ -321,7 +324,7 @@ namespace eval opening {
       if {[llength $l] == 0} {
         tk_messageBox -type ok -message $::tr(Movenotinrepertoire) -parent .board -icon info
         sc_move back
-        addStats 0 0 1 0
+        addStats -good 0 -dubious 0 -absent 1 -total 1
         ::opening::update_tCM
         ::opening::updateStats
         updateBoard -pgn
@@ -335,7 +338,7 @@ namespace eval opening {
       if {$::opening::playerBestMove} {
         foreach i $l {
           if {! [ ::opening::isGoodMove [ lindex $cm [expr $i+1] ] ] } {
-            addStatsPrev 0 0 1 0
+            addStatsPrev -good 0 -dubious 1 -absent 0 -total 1
             set moveOK 0
             set nag [ lindex $cm [expr $i+1] ]
             break
@@ -344,7 +347,7 @@ namespace eval opening {
         
         # The move is not good : offer to take back
         if { ! $moveOK } {
-          addStatsPrev 0 0 1 0
+          # addStatsPrev -good 0 -dubious 0 -absent 1 -total 0
           set answer [tk_messageBox -icon question -parent .board -title $::tr(OutOfOpening) -type yesno \
               -message "$::tr(yourmoveisnotgood) ($nag) \n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
@@ -354,7 +357,7 @@ namespace eval opening {
             return
           }
         } else  { ;# the move is a good one
-          addStatsPrev 1 0 0 0
+          addStatsPrev -good 1 -dubious 0 -absent 0 -total 1
         }
       } else  { ;# player is allowed to play bad moves
         foreach i $l {
@@ -365,9 +368,9 @@ namespace eval opening {
           }
         }
         if {$goodMove} {
-          addStatsPrev 1 0 0 0
+          addStatsPrev -good 1 -dubious 0 -absent 0 -total 1
         } else  {
-          addStatsPrev 0 1 0 0
+          addStatsPrev -good 1 -dubious 1 -absent 0 -total 1
         }
       }
       
@@ -375,7 +378,7 @@ namespace eval opening {
     # end of player's move check
     # now it is computer's turn
     set cm [ getCm ]
-       
+    
     if {[llength $cm] != 0} {
       ::opening::play $cm
     }
@@ -433,7 +436,7 @@ namespace eval opening {
   # play one of the candidate moves
   ################################################################################
   proc play { cm } {
-    addStatsPrev 0 0 0 1
+    # addStatsPrev -good 0 -dubious 0 -absent 0 -total 1
     set r [expr int(rand()*[llength $cm]/2) ]
     set m [ lindex $cm [ expr $r * 2 ] ]
     
@@ -442,7 +445,6 @@ namespace eval opening {
     }
     
     if {![catch {sc_move addSan [::untrans $m] }]} {
-      addStats 0 0 0 1
     }
     updateBoard -pgn
   }
@@ -459,7 +461,7 @@ namespace eval opening {
     wm title $w $::tr(Openingtrainer)
     setWinLocation $w
     frame $w.f1
-    frame $w.f2
+    frame $w.f2 -relief raised -bd 2
     frame $w.f3
     
     checkbutton $w.f1.cbDisplayCM  -text $::tr(DisplayCM) -variable ::opening::displayCM -relief flat \
@@ -470,24 +472,35 @@ namespace eval opening {
     pack $w.f1.cbDisplayCM $w.f1.cbDisplayCMValue -anchor w -side top
     pack $w.f1.lCM -side top -anchor center
     
-    checkbutton $w.f1.cbDisplayStats  -text $::tr(DisplayOpeningStats) -variable ::opening::displayOpeningStats -relief flat \
+    checkbutton $w.f2.cbDisplayStats  -text $::tr(DisplayOpeningStats) -variable ::opening::displayOpeningStats -relief flat \
         -command "::opening::updateStats 1"
-    label $w.f2.lStats1 -textvariable ::opening::lStats1 -background green
-    label $w.f2.lStats2 -textvariable ::opening::lStats2 -background yellow
-    label $w.f2.lStats3 -textvariable ::opening::lStats3 -background red
-    label $w.f2.lStats4 -textvariable ::opening::lStats4 -background white
+    label $w.f2.lStats1 -textvariable ::opening::lStats1 -width 4 -anchor center -background green
+    label $w.f2.lStats2 -textvariable ::opening::lStats2 -width 4 -anchor center -background yellow
+    label $w.f2.lStats3 -textvariable ::opening::lStats3 -width 4 -anchor center -background red
+    label $w.f2.lStats4 -textvariable ::opening::lStats4 -width 4 -anchor center -background white
     
-    pack $w.f1.cbDisplayStats -side top
-    grid $w.f2.lStats1 -row 1 -column 0 -sticky w -padx 5
-    grid $w.f2.lStats2 -row 1 -column 1 -sticky w -padx 5
-    grid $w.f2.lStats3 -row 1 -column 2 -sticky w -padx 5
-    grid $w.f2.lStats4 -row 1 -column 3 -sticky w -padx 5
+    label $w.f2.lStats1exp -text $::tr(NumberOfGoodMovesPlayed)
+    label $w.f2.lStats2exp -text $::tr(NumberOfDubiousMovesPlayed)
+    label $w.f2.lStats3exp -text $::tr(NumberOfMovesPlayedNotInRepertoire)
+    label $w.f2.lStats4exp -text $::tr(NumberOfTimesPositionEncountered)
+    
+    grid $w.f2.cbDisplayStats -row 0 -column 0 -columnspan 2
+    grid $w.f2.lStats4 -row 1 -column 0 -sticky w -padx 5
+    grid $w.f2.lStats1 -row 2 -column 0 -sticky w -padx 5
+    grid $w.f2.lStats2 -row 3 -column 0 -sticky w -padx 5
+    grid $w.f2.lStats3 -row 4 -column 0 -sticky w -padx 5
+    
+    
+    grid $w.f2.lStats4exp -row 1 -column 1 -sticky w -padx 5
+    grid $w.f2.lStats1exp -row 2 -column 1 -sticky w -padx 5
+    grid $w.f2.lStats2exp -row 3 -column 1 -sticky w -padx 5
+    grid $w.f2.lStats3exp -row 4 -column 1 -sticky w -padx 5
     
     button $w.f3.report -textvar ::tr(ShowReport) -command ::opening::report
     button $w.f3.close -textvar ::tr(Abort) -command ::opening::endTraining
     
-    pack $w.f3.report $w.f3.close -side top -anchor center
-    pack $w.f1 $w.f2 $w.f3
+    pack $w.f3.report $w.f3.close -side top -anchor center -fill x
+    pack $w.f1 $w.f2 $w.f3 -fill x
     
     bind $w <F1> { helpWindow OpeningTrainer }
     bind $w <Escape> "destroy $w"
@@ -597,7 +610,19 @@ namespace eval opening {
   # addStats
   # x = success best moves only, y = success all moves z = failures t = coverage by computer
   ################################################################################
-  proc addStats { dx dy dz dt } {
+  proc addStats { args } {
+    set dx 0
+    set dy 0
+    set dz 0
+    set dt 0
+    
+    for {set i 0 } {$i < [llength $args]} {incr i 2} {
+      if {[lindex $args $i] == "-good"} { set dx [lindex $args [expr $i + 1] ] ; continue }
+      if {[lindex $args $i] == "-dubious"} { set dy [lindex $args [expr $i + 1] ] ; continue }
+      if {[lindex $args $i] == "-absent"} { set dz [lindex $args [expr $i + 1] ] ; continue }
+      if {[lindex $args $i] == "-total"} { set dt [lindex $args [expr $i + 1] ] ; continue }
+    }
+    
     set s [split [sc_pos fen]]
     set fen "[lindex $s 0] [lindex $s 1] [lindex $s 2] [lindex $s 3]"
     set found 0
@@ -626,10 +651,10 @@ namespace eval opening {
   ################################################################################
   #
   ################################################################################
-  proc addStatsPrev {a b c d} {
+  proc addStatsPrev { args } {
     if {[sc_pos isAt vstart] } { return }
     if { ![catch {sc_move back} ]} {
-      addStats $a $b $c $d
+      eval addStats $args
       sc_move forward
     }
   }
