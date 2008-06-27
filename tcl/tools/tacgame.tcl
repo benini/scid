@@ -7,7 +7,7 @@ namespace eval tacgame {
   ######################################################################
   ### Tacgame window: uses a chess engine (Phalanx) in easy mode and
   ### another engine (for example Toga) to track blunders
-     
+  
   set startFromCurrent 0
   
   set level 1500
@@ -563,6 +563,8 @@ namespace eval tacgame {
   proc stopAnalyze { } {
     global ::tacgame::analysisCoach ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime
     
+    after cancel ::tacgame::stopAnalyze
+    
     ::stopAnalyzeMode 2
   }
   ################################################################################
@@ -588,13 +590,13 @@ namespace eval tacgame {
     
     if { [::tacgame::endOfGame] } { return }
     
-    updateAnalysisText
-    
     # check if Phalanx is already thinking
     if { $analysisCoach(automoveThinking1) == 1 } {
       after 1000 ::tacgame::phalanxGo
       return
     }
+    
+    updateAnalysisText
     
     if { [sc_pos side] != [::tacgame::getPhalanxColor] } {
       after 1000 ::tacgame::phalanxGo
@@ -697,9 +699,11 @@ namespace eval tacgame {
     # The input move is of the form "my move is MOVE"
     if {[scan $input "my move is %s" move] != 1} { return 0 }
     
+    ::tacgame::stopAnalyze
+    
     # Phalanx will move : update the score list to detect any blunder
-    if {[info exists ::uci::uciInfo(score2)]} {
-      lappend lscore $::uci::uciInfo(score2)
+    if {[info exists ::tacgame::sc1]} {
+      lappend lscore $::tacgame::sc1
     }
     
     # if the resign value has been reached more than 3 times in a raw, resign
@@ -757,8 +761,6 @@ namespace eval tacgame {
     set analysisCoach(automoveThinking1) 0
     set currentPosHash [sc_pos hash]
     
-    # Phalanx has moved : stop/start coach analysis (score has been moved before)
-    ::tacgame::stopAnalyze    
     ::tacgame::startAnalyze
     ::utils::sound::AnnounceNewMove $move
     updateBoard -pgn -animate
@@ -776,15 +778,37 @@ namespace eval tacgame {
   }
   
   # ======================================================================
+  # updateScore
+  # ======================================================================
+  proc updateScore { } {
+    if { ! $::tacgame::showevaluation } { return }
+    if {![info exists ::uci::uciInfo(score2)]} {
+      set ::tacgame::scoreLabel ""
+      return
+    } else {
+      set ::tacgame::scoreLabel "Score : $::uci::uciInfo(score2)"
+    }
+  }
+  
+  # ======================================================================
   # updateAnalysisText
   #   Update the text in an analysis window.
+  #   Human blunders are not checked, only Phalanx'one
   # ======================================================================
   proc updateAnalysisText { } {
     global ::tacgame::analysisCoach ::tacgame::showblunder ::tacgame::blunderWarningLabel \
         ::tacgame::showblunder ::tacgame::showblundervalue ::tacgame::showblunderfound ::tacgame::showmovevalue \
         ::tacgame::showevaluation ::tacgame::lscore ::tacgame::threshold \
         ::tacgame::lastblundervalue ::tacgame::prev_lastblundervalue ::tacgame::scoreLabel \
-        ::tacgame::blunderpending ::tacgame::prev_blunderpending
+        ::tacgame::blunderpending ::tacgame::prev_blunderpending ::tacgame::sc1
+    
+    # only update when it is human turn
+    if { [getPhalanxColor] == [sc_pos side] } { return }
+    
+    catch {
+      set sc1 $::uci::uciInfo(score2)
+      set sc2 [lindex $lscore end]
+    }
     
     # There are less than 2 scores in the list
     if {[llength $lscore] < 2} {
@@ -796,8 +820,8 @@ namespace eval tacgame {
       return
     }
     
-    set sc1 [lindex $lscore end]
-    set sc2 [lindex $lscore end-1]
+    # set sc1 [lindex $lscore end]
+    # set sc2 [lindex $lscore end-1]
     
     if { $analysisCoach(automoveThinking1) } {
       set blunderWarningLabel $::tr(Noinfo)
