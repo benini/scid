@@ -611,16 +611,22 @@ translate C TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate C AddVariation {Pøidat variantu}
+# ====== TODO To be translated ======
+translate C AddAllVariations {Add All Variations}
 translate C AddMove {Pøidat tah}
 translate C Annotate {Anotace}
 # ====== TODO To be translated ======
 translate C ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate C ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate C FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate C StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate C StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate C LockEngine {Lock engine to current position}
 translate C AnalysisCommand {Program pro analýzu}
 translate C PreviousChoices {Pøedchozí vybrané programy}
 translate C AnnotateTime {Nastavit èas mezi tahy v sekundách}
@@ -1400,8 +1406,7 @@ translate C blunder {blunder}
 # ====== TODO To be translated ======
 translate C Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate C PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate C PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate C moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1460,8 +1465,6 @@ translate C Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate C Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
-translate C ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate C Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate C Movenotinrepertoire {Move not in repertoire}
@@ -1471,14 +1474,6 @@ translate C PositionsInRepertoire {Positions in repertoire}
 translate C PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate C PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate C NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate C NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate C NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate C NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate C Success {Success}
 # ====== TODO To be translated ======
@@ -5412,8 +5407,6 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
-
-
 
 
 

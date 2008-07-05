@@ -618,16 +618,22 @@ translate W TitleFilterGraph "Scid: Filtergraf"
 
 # Analysis window:
 translate W AddVariation {Lägg till variant}
+# ====== TODO To be translated ======
+translate W AddAllVariations {Add All Variations}
 translate W AddMove {Lägg till drag}
 translate W Annotate {Kommentera}
 # ====== TODO To be translated ======
 translate W ShowAnalysisBoard {Visa Analysbräde}
+# ====== TODO To be translated ======
+translate W ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate W FinishGame {Avsluta parti}
 # ====== TODO To be translated ======
 translate W StopEngine {Stoppa schackmotor}
 # ====== TODO To be translated ======
 translate W StartEngine {Starta schackmotor}
+# ====== TODO To be translated ======
+translate W LockEngine {Lock engine to current position}
 translate W AnalysisCommand {Analysera}
 translate W PreviousChoices {Föregående val}
 translate W AnnotateTime {Ange tid mellan drag i sekunder}
@@ -1410,8 +1416,7 @@ translate W blunder {blunder}
 # ====== TODO To be translated ======
 translate W Noinfo {-- Ingen information --}
 # ====== TODO To be translated ======
-translate W PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate W PhalanxOrCraftyMissing {Phalanx eller Crafty hittades inte}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate W moveblunderthreshold {drag är en blunder om förlust är större än}
@@ -1470,8 +1475,6 @@ translate W Movesloaded {Öppnat drag}
 # ====== TODO To be translated ======
 translate W Repertoirenotfound {Repetoar hittades inte}
 # ====== TODO To be translated ======
-translate W ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate W Openfirstrepertoirewithtype {Öppna först en repetoardatabas med ikon/typ angivet på höger sida}
 # ====== TODO To be translated ======
 translate W Movenotinrepertoire {Drag finns inte i repetoar}
@@ -1481,14 +1484,6 @@ translate W PositionsInRepertoire {Positioner i repetoar}
 translate W PositionsNotPlayed {Positioner inte spelade}
 # ====== TODO To be translated ======
 translate W PositionsPlayed {Positioner spelade}
-# ====== TODO To be translated ======
-translate W NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate W NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate W NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate W NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate W Success {Framgång}
 # ====== TODO To be translated ======
@@ -6798,8 +6793,6 @@ set tips(W) {
   }
 }
 #}
-
-
 
 
 

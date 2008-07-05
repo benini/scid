@@ -616,16 +616,22 @@ translate Y TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate Y AddVariation {Dodaj varijantu}
+# ====== TODO To be translated ======
+translate Y AddAllVariations {Add All Variations}
 translate Y AddMove {Dodaj potez}
 translate Y Annotate {Dodaj napomenu}
 # ====== TODO To be translated ======
 translate Y ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate Y ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate Y FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate Y StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate Y StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate Y LockEngine {Lock engine to current position}
 translate Y AnalysisCommand {Komanda analize}
 translate Y PreviousChoices {Prethodni izbori}
 translate Y AnnotateTime {Set the time between moves in seconds} ;# ***
@@ -1407,8 +1413,7 @@ translate Y blunder {blunder}
 # ====== TODO To be translated ======
 translate Y Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate Y PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate Y PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate Y moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1467,8 +1472,6 @@ translate Y Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate Y Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
-translate Y ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate Y Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate Y Movenotinrepertoire {Move not in repertoire}
@@ -1478,14 +1481,6 @@ translate Y PositionsInRepertoire {Positions in repertoire}
 translate Y PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate Y PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate Y NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate Y NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate Y NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate Y NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate Y Success {Success}
 # ====== TODO To be translated ======
@@ -1781,8 +1776,6 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
-
-
 
 
 

@@ -612,16 +612,22 @@ translate H TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate H AddVariation {Változat beszúrása}
+# ====== TODO To be translated ======
+translate H AddAllVariations {Add All Variations}
 translate H AddMove {Lépés beszúrása}
 translate H Annotate {Értékelõ jelekkel lát el}
 # ====== TODO To be translated ======
 translate H ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate H ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate H FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate H StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate H StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate H LockEngine {Lock engine to current position}
 translate H AnalysisCommand {Elemzésparancs}
 translate H PreviousChoices {Korábbi választások}
 translate H AnnotateTime {Két lépés közötti idõ másodpercben}
@@ -1402,8 +1408,7 @@ translate H blunder {blunder}
 # ====== TODO To be translated ======
 translate H Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate H PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate H PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate H moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1462,8 +1467,6 @@ translate H Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate H Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
-translate H ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate H Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate H Movenotinrepertoire {Move not in repertoire}
@@ -1473,14 +1476,6 @@ translate H PositionsInRepertoire {Positions in repertoire}
 translate H PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate H PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate H NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate H NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate H NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate H NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate H Success {Success}
 # ====== TODO To be translated ======
@@ -2007,8 +2002,6 @@ set tips(H) {
 }
 
 # end of hungary.tcl
-
-
 
 
 

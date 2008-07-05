@@ -618,16 +618,22 @@ translate O TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate O AddVariation {Legg til variasjon}
+# ====== TODO To be translated ======
+translate O AddAllVariations {Add All Variations}
 translate O AddMove {Legg til trekk}
 translate O Annotate {Annoter}
 # ====== TODO To be translated ======
 translate O ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate O ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate O FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate O StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate O StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate O LockEngine {Lock engine to current position}
 translate O AnalysisCommand {Analysekommando}
 translate O PreviousChoices {Tidligere valg}
 translate O AnnotateTime {Tid mellom trekk i sekunder}
@@ -1403,8 +1409,7 @@ translate O blunder {blunder}
 # ====== TODO To be translated ======
 translate O Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate O PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate O PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1463,8 +1468,6 @@ translate O Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate O Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
-translate O ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate O Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate O Movenotinrepertoire {Move not in repertoire}
@@ -1474,14 +1477,6 @@ translate O PositionsInRepertoire {Positions in repertoire}
 translate O PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate O PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate O NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate O NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate O NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate O NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate O Success {Success}
 # ====== TODO To be translated ======
@@ -1781,8 +1776,6 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
-
-
 
 
 

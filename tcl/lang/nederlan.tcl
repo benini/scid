@@ -630,16 +630,22 @@ translate N TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate N AddVariation {Toevoegen variant}
+# ====== TODO To be translated ======
+translate N AddAllVariations {Add All Variations}
 translate N AddMove {Toevoegen zet}
 translate N Annotate {Annotatie}
 # ====== TODO To be translated ======
 translate N ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate N ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate N FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate N StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate N StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate N LockEngine {Lock engine to current position}
 translate N AnalysisCommand {Analyse commando}
 translate N PreviousChoices {Voorgaande keuzes}
 translate N AnnotateTime {Geef de analysetijd in seconden per zet}
@@ -1403,9 +1409,8 @@ translate N Noblunder {Geen blunder}
 translate N blunder {Blunder}
  
 translate N Noinfo {-- Geen info --}
-# ====== TODO To be translated ======
-translate N PhalanxOrTogaMissing {Phalanx or Toga not found}
  
+translate N PhalanxOrCraftyMissing {Phalanx of Crafty niet gevonden}
  
  
 translate N moveblunderthreshold {zet is blunder als het verlies groter is dan}
@@ -1463,8 +1468,6 @@ translate N Loadingrepertoire {Repertorium Laden}
 translate N Movesloaded {Zetten geladen}
  
 translate N Repertoirenotfound {Repertorium niet gevonden}
-# ====== TODO To be translated ======
-translate N ZeroMovesLoaded {No move loaded.}
  
 translate N Openfirstrepertoirewithtype {Open eerste repertorium database met ikoon/type aanr rechterzijde gezet}
  
@@ -1475,14 +1478,6 @@ translate N PositionsInRepertoire {Positions in repertoire}
 translate N PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate N PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate N NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate N NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate N NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate N NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate N Success {Success}
 # ====== TODO To be translated ======
@@ -1775,8 +1770,6 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
-
-
 
 
 

@@ -27,7 +27,7 @@ TCL_VERSION = 8.4
 #
 # The settings determined by "./configure" are:
 #
-TCL_INCLUDE = -I/usr/include
+TCL_INCLUDE = -I/usr/include/tcl8.4
 TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
 TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
 

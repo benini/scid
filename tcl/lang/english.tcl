@@ -600,12 +600,15 @@ translate E TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate E AddVariation {Add Variation}
+translate E AddAllVariations {Add All Variations}
 translate E AddMove {Add Move}
 translate E Annotate {Annotate}
 translate E ShowAnalysisBoard {Show analysis board}
+translate E ShowInfo {Show engine info}
 translate E FinishGame {Finish game}
 translate E StopEngine {Stop engine}
 translate E StartEngine {Start engine}
+translate E LockEngine {Lock engine to current position}
 translate E AnalysisCommand {Analysis Command}
 translate E PreviousChoices {Previous Choices}
 translate E AnnotateTime {Set the time between moves in seconds}
@@ -1321,7 +1324,7 @@ translate E Play {Play}
 translate E Noblunder {No blunder}
 translate E blunder {blunder}
 translate E Noinfo {-- No info --}
-translate E PhalanxOrTogaMissing {Phalanx or Toga not found}
+translate E PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 translate E moveblunderthreshold {move is a blunder if loss is greater than}
 translate E limitanalysis {limit engine analysis time}
 translate E seconds {seconds}
@@ -1350,16 +1353,11 @@ translate E Repertoiretrainingconfiguration {Repertoire training configuration}
 translate E Loadingrepertoire {Loading repertoire}
 translate E Movesloaded {Moves loaded}
 translate E Repertoirenotfound {Repertoire not found}
-translate E ZeroMovesLoaded {No move loaded.}
 translate E Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 translate E Movenotinrepertoire {Move not in repertoire}
 translate E PositionsInRepertoire {Positions in repertoire}
 translate E PositionsNotPlayed {Positions not played}
 translate E PositionsPlayed {Positions played}
-translate E NumberOfGoodMovesPlayed {Good moves played}
-translate E NumberOfDubiousMovesPlayed {Dubious moves played}
-translate E NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-translate E NumberOfTimesPositionEncountered {Number of times position seen}
 translate E Success {Success}
 translate E DubiousMoves {Dubious moves}
 translate E OutOfRepertoire {OutOfRepertoire}

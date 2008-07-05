@@ -623,16 +623,22 @@ translate P TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate P AddVariation {Dodaj wariant}
+# ====== TODO To be translated ======
+translate P AddAllVariations {Add All Variations}
 translate P AddMove {Dodaj posuniêcie}
 translate P Annotate {Komentuj}
 # ====== TODO To be translated ======
 translate P ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate P ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate P FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate P StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate P StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate P LockEngine {Lock engine to current position}
 translate P AnalysisCommand {Program do analizy}
 translate P PreviousChoices {Poprzednie programy}
 translate P AnnotateTime {Czas miêdzy ruchami (w sekundach)}
@@ -1416,8 +1422,7 @@ translate P blunder {blunder}
 # ====== TODO To be translated ======
 translate P Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate P PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate P PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate P moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1476,8 +1481,6 @@ translate P Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate P Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
-translate P ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate P Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate P Movenotinrepertoire {Move not in repertoire}
@@ -1487,14 +1490,6 @@ translate P PositionsInRepertoire {Positions in repertoire}
 translate P PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate P PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate P NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate P NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate P NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate P NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate P Success {Success}
 # ====== TODO To be translated ======
@@ -2008,8 +2003,6 @@ set tips(P) {
 }
 
 # end of polish.tcl
-
-
 
 
 

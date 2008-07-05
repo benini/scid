@@ -620,16 +620,22 @@ translate R TitleFilterGraph "Scid: Filter Graph"
 
 # Analysis window:
 translate R AddVariation {Добавить вариант}
+# ====== TODO To be translated ======
+translate R AddAllVariations {Add All Variations}
 translate R AddMove {Добавить ход}
 translate R Annotate {Аннотация}
 # ====== TODO To be translated ======
 translate R ShowAnalysisBoard {Show analysis board}
+# ====== TODO To be translated ======
+translate R ShowInfo {Show engine info}
 # ====== TODO To be translated ======
 translate R FinishGame {Finish game}
 # ====== TODO To be translated ======
 translate R StopEngine {Stop engine}
 # ====== TODO To be translated ======
 translate R StartEngine {Start engine}
+# ====== TODO To be translated ======
+translate R LockEngine {Lock engine to current position}
 translate R AnalysisCommand {Команда анализа}
 translate R PreviousChoices {Предыдущие выборы}
 translate R AnnotateTime {Установить время между ходами в секундах}
@@ -1436,8 +1442,7 @@ translate R blunder {blunder}
 # ====== TODO To be translated ======
 translate R Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate R PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
+translate R PhalanxOrCraftyMissing {Phalanx or Crafty not found}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate R moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1496,8 +1501,6 @@ translate R Movesloaded {Moves loaded}
 # ====== TODO To be translated ======
 translate R Repertoirenotfound {Repertoire not found}
 # ====== TODO To be translated ======
-translate R ZeroMovesLoaded {No move loaded.}
-# ====== TODO To be translated ======
 translate R Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
 # ====== TODO To be translated ======
 translate R Movenotinrepertoire {Move not in repertoire}
@@ -1507,14 +1510,6 @@ translate R PositionsInRepertoire {Positions in repertoire}
 translate R PositionsNotPlayed {Positions not played}
 # ====== TODO To be translated ======
 translate R PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate R NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate R NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate R NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate R NumberOfTimesPositionEncountered {Position was encountered}
 # ====== TODO To be translated ======
 translate R Success {Success}
 # ====== TODO To be translated ======
@@ -1810,8 +1805,6 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
-
-
 
 
 

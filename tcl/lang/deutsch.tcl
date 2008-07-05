@@ -591,12 +591,16 @@ translate D TitleFilterGraph "Scid: Filtergrafik"
 
 # Analysis window:
 translate D AddVariation {Variante hinzufügen}
+translate D AddAllVariations {Alle Varianten hinzufügen}
 translate D AddMove {Zug hinzufügen}
 translate D Annotate {Autom. kommentieren}
 translate D ShowAnalysisBoard {Analysebrett anzeigen}
+translate D ShowInfo {Engine-Information anzeigen}
 translate D FinishGame {Partie beenden}
 translate D StopEngine {Engine anhalten}
 translate D StartEngine {Engine starten}
+# ====== TODO To be translated ======
+translate D LockEngine {Anbinden an aktuelle Position}
 translate D AnalysisCommand {Analysebefehl}
 translate D PreviousChoices {Vorherige Wahl}
 translate D AnnotateTime {Zeit zwischen den Zügen (in Sek.) einstellen}
@@ -1043,8 +1047,7 @@ translate D ExitUnsaved {Die folgenden Datenbanken haben ungesicherte Partieände
 translate D PasteCurrentGame {Aktuelle Partie einfügen}
 translate D ImportHelp1 {Eingeben oder Einfügen einer Partie im PGN-Format in den oberen Rahmen.}
 translate D ImportHelp2 {Hier werden Fehler beim Importieren angezeigt.}
-# ====== TODO To be translated ======
-translate D OverwriteExistingMoves {Overwrite existing moves ?}
+translate D OverwriteExistingMoves {Bestehende Züge überschreiben?}
 
 # ECO Browser:
 translate D ECOAllSections {alle ECO-Gruppen}
@@ -1329,8 +1332,7 @@ translate D Play {Spielen}
 translate D Noblunder {Kein Fehler}
 translate D blunder {Fehler}
 translate D Noinfo {-- Keine Info --}
-# ====== TODO To be translated ======
-translate D PhalanxOrTogaMissing {Phalanx or Toga not found}
+translate D PhalanxOrCraftyMissing {Phalanx oder Crafty nicht gefunden}
 translate D moveblunderthreshold {fehlerhafter Zug, wenn Verlust größer als}
 translate D limitanalysis {Analysezeit der Engine begrenzen}
 translate D seconds {Sekunden}
@@ -1339,8 +1341,7 @@ translate D OutOfOpening {Ende der Eröffnung}
 translate D NotFollowedLine {You did not follow the line}
 translate D DoYouWantContinue {Möchten sie fortfahren?}
 translate D CoachIsWatching {Coach schaut zu}
-# ====== TODO To be translated ======
-translate D Ponder {Permanent thinking}
+translate D Ponder {Berechnen im Hintergrund}
 translate D DubiousMovePlayedTakeBack {Zweifelhafter Zug gespielt, wollen Sie ihn zurücknehmen?}
 translate D WeakMovePlayedTakeBack {Schacher Zug gespielt, wollen Sie ihn zurücknehmen?}
 translate D BadMovePlayedTakeBack {Schlechter Zug gespielt, wollen Sie ihn zurücknehmen?}
@@ -1360,21 +1361,11 @@ translate D Repertoiretrainingconfiguration {Konfiguration Trainingsrepertoire}
 translate D Loadingrepertoire {Lade Repertoire}
 translate D Movesloaded {Züge geladen}
 translate D Repertoirenotfound {Repertoire nicht gefunden}
-# ====== TODO To be translated ======
-translate D ZeroMovesLoaded {No move loaded.}
 translate D Openfirstrepertoirewithtype {Zuerst eine Eröffnungsdatenbank mit entsprechendem Type/Icon öffnen.}
 translate D Movenotinrepertoire {Zug nicht im Repertoire}
 translate D PositionsInRepertoire {Positionen im Repertoire}
 translate D PositionsNotPlayed {nicht gespielte Positionen}
 translate D PositionsPlayed {gespielte Positionen}
-# ====== TODO To be translated ======
-translate D NumberOfGoodMovesPlayed {Good moves played}
-# ====== TODO To be translated ======
-translate D NumberOfDubiousMovesPlayed {Dubious moves played}
-# ====== TODO To be translated ======
-translate D NumberOfMovesPlayedNotInRepertoire {Moves played not in repertoire}
-# ====== TODO To be translated ======
-translate D NumberOfTimesPositionEncountered {Position was encountered}
 translate D Success {Erfolgreich}
 translate D DubiousMoves {Zweifelhafte Züge}
 translate D OutOfRepertoire {Nicht im Repertoire}
@@ -6944,8 +6935,6 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
-
-
 
 
 

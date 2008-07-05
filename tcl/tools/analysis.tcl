@@ -58,6 +58,14 @@ proc resetEngine {n} {
   set analysis(prev_depth$n) 0        ;# Previous depth
   set analysis(time$n) 0              ;# Time in centisec (or sec; see below)
   set analysis(moves$n) ""            ;# PV (best line) output from engine
+  set analysis(seldepth$n) 0
+  set analysis(currmove$n) ""         ;# current move output from engine
+  set analysis(currmovenumber$n) 0    ;# current move number output from engine
+  set analysis(hashfull$n) 0
+  set analysis(nps$n) 0
+  set analysis(tbhits$n) 0
+  set analysis(sbhits$n) 0
+  set analysis(cpuload$n) 0
   set analysis(movelist$n) {}         ;# Moves to reach current position
   set analysis(nonStdStart$n) 0       ;# Game has non-standard start
   set analysis(has_analyze$n) 0       ;# Engine has analyze command
@@ -76,28 +84,30 @@ proc resetEngine {n} {
   set analysis(log$n) ""              ;# Log file channel
   set analysis(logCount$n) 0          ;# Number of lines sent to log file
   set analysis(wbEngineDetected$n) 0  ;# Is this a special Winboard engine?
-  # set analysis(priority$n) normal     ;# CPU priority: idle/normal
-  set analysis(multiPV$n) {}  ;# multiPV list sorted : depth score moves
-  set ::uci::uciInfo(pvlist$n) {} ;# same thing but with raw UCI moves
-  set analysis(uci$n) 0 ;# UCI engine
+  set analysis(priority$n) normal     ;# CPU priority: idle/normal
+  set analysis(multiPV$n) {}          ;# multiPV list sorted : depth score moves
+  set analysis(multiPVraw$n) {}       ;# same thing but with raw UCI moves
+  set analysis(uci$n) 0               ;# UCI engine
   # UCI engine options in format ( name min max ). This is not engine config but its capabilities
   set analysis(uciOptions$n) {}
   # the number of lines in multiPV. If =1 then act the traditional way
-  set analysis(multiPVCount$n) 4 ;# number of N-best lines
-  set analysis(index$n) 0 ; # the index of engine in engine list
-  set analysis(uciok$n) 0 ; # uciok sent by engine in response to uci command
-  set analysis(name$n) "" ; # engine name
-  set analysis(processInput$n) 0 ; # the time of the last processed event
+  set analysis(multiPVCount$n) 4      ;# number of N-best lines
+  set analysis(index$n) 0             ;# the index of engine in engine list
+  set analysis(uciok$n) 0             ;# uciok sent by engine in response to uci command
+  set analysis(name$n) ""             ;# engine name
+  set analysis(processInput$n) 0      ;# the time of the last processed event
   set analysis(waitForBestMove$n) 0
   set analysis(waitForReadyOk$n) 0
   set analysis(waitForUciOk$n) 0
-  set analysis(movesDisplay$n) 1 ;# if false, hide engine lines, only display scores
+  set analysis(movesDisplay$n) 1      ;# if false, hide engine lines, only display scores
+  set analysis(lastHistory$n) {}      ;# last best line
+  set analysis(maxmovenumber$n) 0     ;# the number of moves in this position
+  set analysis(lockEngine$n) 0        ;# the engine is locked to current position
+  set analysis(fen$n) {}              ;# the position that engine is analyzing
 }
 
 resetEngine 1
 resetEngine 2
-set analysis(priority1) normal     ;# CPU priority: idle/normal
-set analysis(priority2) normal     ;# CPU priority: idle/normal
 
 set annotateMode 0
 set annotateModeButtonValue 0 ; # feedback of annotate mode
@@ -134,6 +144,9 @@ proc resetAnalysis {{n 1}} {
   set analysis(time$n) 0
   set analysis(moves$n) ""
   set analysis(multiPV$n) {}
+  set analysis(multiPVraw$n) {}
+  set analysis(lastHistory$n) {}
+  set analysis(maxmovenumber$n) 0
 }
 
 namespace eval enginelist {}
@@ -1037,9 +1050,27 @@ proc addAnalysisVariation {{n 1}} {
   # Cannot add a variation to an empty variation:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
   # Cannot (yet) add a variation at the end of the game or a variation:
-  if {[sc_pos isAt vend]} { return }
-  
-  set text [format "%d:%+.2f" $analysis(depth$n) $analysis(score$n)]
+  #if {[sc_pos isAt vend]} { return }
+  if {[sc_pos isAt vend]} {
+    sc_info preMoveCmd {}
+    set s $analysis(moves$n)
+    while {1} {
+      if {[string length $s] == 0} { return }
+      set c [string index $s 0]
+      switch -- $c {
+        a - b - c - d - e - f - g - h -
+        K - Q - R - B - N - O {
+          break
+        }
+      }
+      set s [string range $s 1 end]
+    }
+    scan $s "%s" move
+    sc_move_add $move $n
+    sc_info preMoveCmd preMoveCommand
+  }
+
+  set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
   set moves $analysis(moves$n)
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
@@ -1052,7 +1083,62 @@ proc addAnalysisVariation {{n 1}} {
   # Add as many moves as possible from the engine analysis:
   sc_move_add $moves $n
   sc_var exit
-  
+
+  # Restore the pre-move command:
+  sc_info preMoveCmd preMoveCommand
+
+  updateBoard -pgn
+  # Update score graph if it is open:
+  if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
+}
+################################################################################
+#
+################################################################################
+proc addAllVariations {{n 1}} {
+  global analysis
+
+  if {! [winfo exists .analysisWin$n]} { return }
+
+  # Cannot add a variation to an empty variation:
+  if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
+  # Cannot (yet) add a variation at the end of the game or a variation:
+  #if {[sc_pos isAt vend]} { return }
+  if {[sc_pos isAt vend]} {
+    sc_info preMoveCmd {}
+    set s $analysis(moves$n)
+    while {1} {
+      if {[string length $s] == 0} { return }
+      set c [string index $s 0]
+      switch -- $c {
+        a - b - c - d - e - f - g - h -
+        K - Q - R - B - N - O {
+          break
+        }
+      }
+      set s [string range $s 1 end]
+    }
+    scan $s "%s" move
+    sc_move_add $move $n
+    sc_info preMoveCmd preMoveCommand
+  }
+
+  # Temporarily clear the pre-move command since we want to add a
+  # whole line without Scid updating stuff:
+  sc_info preMoveCmd {}
+
+  foreach i $analysis(multiPVraw$n) {
+    set text [format "\[%s\] %d:%+.2f" $analysis(name$n) [lindex $i 0] [lindex $i 1]]
+    set moves [lindex $i 2]
+
+    # Add the variation:
+    sc_var create
+    # Add the comment at the start of the variation:
+    sc_pos setComment "[sc_pos getComment] $text"
+    # Add as many moves as possible from the engine analysis:
+    sc_move_add $moves $n
+    sc_var exit
+  }
+
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
   updateBoard -pgn
@@ -1348,15 +1434,22 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   ::board::new $w.bd 25
   $w.bd configure -relief solid -borderwidth 1
   set analysis(showBoard$n) 0
-  
+  set analysis(showEngineInfo$n) 0
+
   frame $w.b1
   pack $w.b1 -side bottom -fill x
   
   checkbutton $w.b1.automove -image tb_training  -indicatoron false -height 24 -relief raised -command "toggleAutomove $n" -variable analysis(automove$n)
   ::utils::tooltip::Set $w.b1.automove $::tr(Training)
-  
+
+  checkbutton $w.b1.lockengine -image tb_lockengine -indicatoron false -height 24 -width 24 -variable analysis(lockEngine$n) -command "toggleLockEngine $n"
+  ::utils::tooltip::Set $w.b1.lockengine $::tr(LockEngine)
+
   button $w.b1.line -image tb_addvar -height 24 -width 24 -command "addAnalysisVariation $n"
   ::utils::tooltip::Set $w.b1.line $::tr(AddVariation)
+  
+  button $w.b1.alllines -image tb_addallvars -height 24 -width 24 -command "addAllVariations $n"
+  ::utils::tooltip::Set $w.b1.alllines $::tr(AddAllVariations)
   
   button $w.b1.move -image tb_addmove -command "makeAnalysisMove $n"
   ::utils::tooltip::Set $w.b1.move $::tr(AddMove)
@@ -1382,6 +1475,10 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   }
   button $w.b1.showboard -image tb_coords -height 24 -width 24 -command "toggleAnalysisBoard $n"
   ::utils::tooltip::Set $w.b1.showboard $::tr(ShowAnalysisBoard)
+
+  checkbutton $w.b1.showinfo -image tb_engineinfo -indicatoron false -height 24 -width 24 -variable analysis(showEngineInfo$n) -command "toggleEngineInfo $n"
+  ::utils::tooltip::Set $w.b1.showinfo $::tr(ShowInfo)
+
   if {$n == 1} {
     checkbutton $w.b1.annotate -image tb_annotate -indicatoron false -height 24 -variable annotateModeButtonValue -relief raised -command { configAnnotation }
     ::utils::tooltip::Set $w.b1.annotate $::tr(Annotate...)
@@ -1403,13 +1500,13 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   ::utils::tooltip::Set $w.b1.help $::tr(Help)
   
   if {$n ==1} {
-    pack $w.b1.bStartStop $w.b1.move $w.b1.line $w.b1.multipv $w.b1.annotate $w.b1.automove $w.b1.bFinishGame -side left
+    pack $w.b1.bStartStop $w.b1.lockengine $w.b1.move $w.b1.line $w.b1.alllines $w.b1.multipv $w.b1.annotate $w.b1.automove $w.b1.bFinishGame -side left
   } else  {
-    pack $w.b1.bStartStop $w.b1.move $w.b1.line $w.b1.multipv $w.b1.automove -side left
+    pack $w.b1.bStartStop $w.b1.lockengine $w.b1.move $w.b1.line $w.b1.alllines $w.b1.multipv $w.b1.automove -side left
   }
-  pack $w.b1.showboard $w.b1.help $w.b1.update $w.b1.priority -side right
+  pack $w.b1.help $w.b1.priority $w.b1.update $w.b1.showboard $w.b1.showinfo -side right
   if {$analysis(uci$n)} {
-    text $w.text -width 60 -height 1 -fg black -bg white -font font_Small -wrap word -setgrid 1
+    text $w.text -width 60 -height 1 -fg black -bg white -font font_Bold -wrap word -setgrid 1 ;# -spacing3 2
   } else {
     text $w.text -width 60 -height 4 -fg black -bg white -font font_Fixed -wrap word -setgrid 1
   }
@@ -1426,11 +1523,12 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   bind $w.hist.text <ButtonPress-3> "toggleMovesDisplay $n"
   $w.text tag configure blue -foreground blue
   $w.text tag configure bold -font font_Bold
+  $w.text tag configure small -font font_Small
   $w.hist.text tag configure blue -foreground blue -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
   $w.hist.text tag configure gray -foreground gray
   $w.text insert end "Please wait a few seconds for engine initialisation (with some engines, you will not see any analysis \
       until the board changes. So if you see this message, try changing the board \
-      by moving backward or forward or making a new move.)"
+      by moving backward or forward or making a new move.)" small
   $w.text configure -state disabled
   bind $w <Destroy> "destroyAnalysisWin $n"
   bind $w <Configure> "recordWinSize $w"
@@ -1510,7 +1608,14 @@ proc changePVSize { n } {
   global analysis
   if { $analysis(multiPVCount$n) < [llength $analysis(multiPV$n)] } {
     set analysis(multiPV$n) {}
-    set ::uci::uciInfo(pvlist$n) {}
+    set analysis(multiPVraw$n) {}
+  }
+  if {$analysis(multiPVCount$n) == 1} {
+    set h .analysisWin$n.hist.text
+    $h configure -state normal
+    $h delete 0.0 end
+    $h configure -state disabled
+    set analysis(lastHistory$n) {}
   }
   if { $analysis(uci$n) } {
     # if the UCI engine was analysing, we have to stop/restart it to take into acount the new multiPV option
@@ -1855,10 +1960,9 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
 ################################################################################
 proc startAnalyzeMode {{n 1} {force 0}} {
   global analysis
-   
+  
   # Check that the engine has not already had analyze mode started:
   if {$analysis(analyzeMode$n) && ! $force } { return }
-  
   set analysis(analyzeMode$n) 1
   if { $analysis(uci$n) } {
     set analysis(waitForReadyOk$n) 1
@@ -1866,6 +1970,8 @@ proc startAnalyzeMode {{n 1} {force 0}} {
     vwait analysis(waitForReadyOk$n)
     sendToEngine $n "position fen [sc_pos fen]"
     sendToEngine $n "go infinite ponder"
+    set analysis(fen$n) [sc_pos fen]
+    set analysis(maxmovenumber$n) 0
   } else  {
     if {$analysis(has_setboard$n)} {
       sendToEngine $n "setboard [sc_pos fen]"
@@ -1892,6 +1998,31 @@ proc stopAnalyzeMode { {n 1} } {
   }
 }
 ################################################################################
+# toggleLockEngine
+#   Toggle whether engine is locked to current position.
+################################################################################
+proc toggleLockEngine {n} {
+  global analysis
+  if { $analysis(lockEngine$n) } {
+    set state disabled
+  } else {
+    stopAnalyzeMode $n
+    startAnalyzeMode $n
+    set state normal
+  }
+  set w ".analysisWin$n"
+  $w.b1.bStartStop configure -state $state
+  $w.b1.move configure -state $state
+  $w.b1.line configure -state $state
+  $w.b1.alllines configure -state $state
+  $w.b1.multipv configure -state $state
+  $w.b1.automove configure -state $state
+  if { $n == 1 } {
+    $w.b1.annotate configure -state $state
+    $w.b1.bFinishGame configure -state $state
+  }
+}
+################################################################################
 # updateAnalysisText
 #   Update the text in an analysis window.
 ################################################################################
@@ -1899,7 +2030,9 @@ proc updateAnalysisText {{n 1}} {
   global analysis
   
   set nps 0
-  
+  if {$analysis(currmovenumber$n) > $analysis(maxmovenumber$n) } {
+    set analysis(maxmovenumber$n) $analysis(currmovenumber$n)
+  }
   if {$analysis(time$n) > 0.0} {
     set nps [expr {round($analysis(nodes$n) / $analysis(time$n))} ]
   }
@@ -1912,16 +2045,37 @@ proc updateAnalysisText {{n 1}} {
   $t delete 0.0 end
   
   if { $analysis(uci$n) } {
-    $t insert end "[tr Depth]: " bold
-    $t insert end [ format "%2u " $analysis(depth$n) ]
-    $t insert end "[tr Nodes]: " bold
-    $t insert end [ format "%6uK (%u kn/s) " $analysis(nodes$n) $nps ]
-    $t insert end "[tr Time]: " bold
-    $t insert end [ format "%6.2f s" $analysis(time$n) ]
+    $t insert end "[tr Depth]: "
+    if {$analysis(showEngineInfo$n) && $analysis(seldepth$n) != 0} {
+      $t insert end [ format "%2u/%u " $analysis(depth$n) $analysis(seldepth$n)] small
+    } else {
+      $t insert end [ format "%2u " $analysis(depth$n) ] small
+    }
+    $t insert end "[tr Nodes]: "
+    $t insert end [ format "%6uK (%u kn/s) " $analysis(nodes$n) $nps ] small
+    $t insert end "[tr Time]: "
+    $t insert end [ format "%6.2f s" $analysis(time$n) ] small
+    if {$analysis(showEngineInfo$n)} {
+      $t insert end "\n" small
+      $t insert end "Current: "
+      $t insert end [ format "%s (%s/%s) " [::trans $analysis(currmove$n)] $analysis(currmovenumber$n) $analysis(maxmovenumber$n)] small
+      $t insert end "TB Hits: "
+      $t insert end [ format "%u " $analysis(tbhits$n)] small
+      $t insert end "Nps: "
+      $t insert end [ format "%u n/s " $analysis(nps$n)] small
+      $t insert end "Hash Full: "
+      set hashfull [expr {round($analysis(hashfull$n) / 10)}]
+      $t insert end [ format "%u%% " $hashfull ] small
+      $t insert end "CPU Load: "
+      set cpuload [expr {round($analysis(cpuload$n) / 10)}]
+      $t insert end [ format "%u%% " $cpuload ] small
+
+      #$t insert end [ format "\nCurrent: %s (%s) - Hashfull: %u - nps: %u - TBhits: %u - CPUload: %u" $analysis(currmove$n) $analysis(currmovenumber$n) $analysis(hashfull$n) $analysis(nps$n) $analysis(tbhits$n) $analysis(cpuload$n) ]
+    }
   } else {
     set newStr [format "Depth:   %6u      Nodes: %6uK (%u kn/s)\n" $analysis(depth$n) $analysis(nodes$n) $nps]
     append newStr [format "Score: %+8.2f      Time: %9.2f seconds\n" $score $analysis(time$n)]
-    $t insert 1.0 $newStr
+    $t insert 1.0 $newStr small
   }
   
   
@@ -1964,27 +2118,36 @@ proc updateAnalysisText {{n 1}} {
   
   ################################################################################
   if { $analysis(uci$n) } {
-    if {$cleared} { set analysis(multiPV$n) {} }
-    $h delete 1.0 end
-    # First line
-    set pv [lindex $analysis(multiPV$n) 0]
-    if { [expr abs($score)] == 327.0 } {
-      if { [catch { set newStr [format "M %d " $analysis(scoremate$n)]} ] } {
-        set newStr [format "%2d %+5.2f  " [lindex $pv 0] $score ]
+    if {$cleared} { set analysis(multiPV$n) {} ; set analysis(multiPVraw$n) {} }
+    if {$analysis(multiPVCount$n) == 1} {
+      set newhst [format "%2d %+5.2f  %s" $analysis(depth$n) $score [::trans $moves]]
+      if {$newhst != $analysis(lastHistory$n) && $moves != ""} {
+        $h insert end [format "%s (%.2f)\n" $newhst $analysis(time$n)] indent
+        $h see end-1c
+        set analysis(lastHistory$n) $newhst
       }
     } else {
-      catch { set newStr [format "%2d %+5.2f  " [lindex $pv 0] $score ] }
-    }
-    $h insert end "1 " gray
-    append newStr "[::trans [lindex $pv 2]]\n"
-    $h insert end $newStr blue
+      $h delete 1.0 end
+      # First line
+      set pv [lindex $analysis(multiPV$n) 0]
+      if { [expr abs($score)] == 327.0 } {
+        if { [catch { set newStr [format "M %d " $analysis(scoremate$n)]} ] } {
+          set newStr [format "%2d %+5.2f  " [lindex $pv 0] $score ]
+        }
+      } else {
+        catch { set newStr [format "%2d %+5.2f  " [lindex $pv 0] $score ] }
+      }
+      $h insert end "1 " gray
+      append newStr "[::trans [lindex $pv 2]]\n"
+      $h insert end $newStr blue
     
-    set lineNumber 1
-    foreach pv $analysis(multiPV$n) {
-      if {$lineNumber == 1} { incr lineNumber ; continue }
-      $h insert end "$lineNumber " gray
-      $h insert end [format "%2d %+5.2f  %s\n" [lindex $pv 0] [lindex $pv 1] [::trans [lindex $pv 2]] ] indent
-      incr lineNumber
+      set lineNumber 1
+      foreach pv $analysis(multiPV$n) {
+        if {$lineNumber == 1} { incr lineNumber ; continue }
+        $h insert end "$lineNumber " gray
+        $h insert end [format "%2d %+5.2f  %s\n" [lindex $pv 0] [lindex $pv 1] [::trans [lindex $pv 2]] ] indent
+        incr lineNumber
+      }
     }
     ################################################################################
   } else  {
@@ -2027,6 +2190,19 @@ proc toggleAnalysisBoard {n} {
     .analysisWin$n.hist.text configure -setgrid 1
     .analysisWin$n.text configure -setgrid 1    
   }
+}
+################################################################################
+# toggleEngineInfo
+#   Toggle whether engine info are shown.
+################################################################################
+proc toggleEngineInfo {n} {
+  global analysis
+  if { $analysis(showEngineInfo$n) } {
+    .analysisWin$n.text configure -height 2
+  } else {
+    .analysisWin$n.text configure -height 1
+  }
+  updateAnalysisText $n
 }
 ################################################################################
 #
@@ -2095,12 +2271,17 @@ proc updateAnalysis {{n 1}} {
   set old_nonStdStart $analysis(nonStdStart$n)
   set analysis(nonStdStart$n) $nonStdStart
   
+  # No need to send current board if engine is locked
+  if { $analysis(lockEngine$n) } { return }
+  
   if { $analysis(uci$n) } {
     sendToEngine $n "stop"
     set analysis(waitForBestMove$n) 1
     vwait analysis(waitForBestMove$n)
     sendToEngine $n "position fen [sc_pos fen]"
     sendToEngine $n "go ponder infinite"
+    set analysis(fen$n) [sc_pos fen]
+    set analysis(maxmovenumber$n) 0
   } else {
     # This section is for engines that support "analyze":
     if {$analysis(has_analyze$n)} {
@@ -2475,6 +2656,47 @@ image create photo tb_pause -data {
   vJYuEZGLES5PnwD0edy9ZUgwRn6AdjEOFBlGhoiEJQAPFhpGj5GMJDZGNpUjHJycG52dMKKj
   pKUsIQA7
 }
+
+image create photo tb_addallvars -data {
+R0lGODdhFAAUAKEDAAAngc4PNNnZ2f///ywAAAAAFAAUAAACN5SPqcvtjwBQ
+0tV0WT43BOQJWxYe4Th56qpOXMrG11Ya5ezan7nj0LuBSIKPYe4nOiKJyKbz
+VwAAOw==
+}
+
+image create photo tb_engineinfo -data {
+R0lGODdhFAAUAMIFAAAAAAAA/7i4uMDAwO7v8v///////////ywAAAAAFAAU
+AAADUEgarP6QsNkipIXaR/t2mPeF2jhl5UY2AtG+rXRqQl27sSx+XMVHgKBw
+SAQ8ikihQ2irDZtGRXK6nCKXUEDWNngIgltbsFsFf5nnIERdPRoTADs=
+}
+
+image create photo tb_lockengine -data {
+R0lGODlhGAAYAOfHAAAAAAwFABUJAg8PDxUQDBMTExQUFB0XEBwcHCUdFSEhISkhGjIhEC4kGS8l
+GycnJykpKTkrHTU1NTw8PEo5K0VFRW1CFUxMTFZTUl5aVl9fX2FhYGVjYZdcGpddGpheGppeG2pq
+aptgHqNrL6ZxN7B1MKl3PKt4P7J3M7N4NLR4NLN5NLJ6PLJ7O7Z8NrZ9OLZ9Ord9ObR/Q7SBRbmA
+PbSCQLSBRraCQbmBP7qBPrSDSbeDQrqDP7WETLqEQriFRLmFSLaGTLWITbyGRbeHTrqHSryHRryH
+SLqISbmITruJSayMZbyKS76KTLqLUrqMVLqMVZSUlLuNVbuOVryOVsCNUb2OVryPWL2QWMCRVcCS
+Vr+SWsCTWMSSVsGVXMKVXMKWXMOWX56ensaYVsOYYMaYWMeYWMSZYMSZYcaYYaCgoKGhocabZMac
+ZMibZ8ecZcmdYcidZcidZsqdYcieZsifaMqfY8mfaMqebcqfaMuja8yka8ykbMykbc2kbc6ka8yl
+bc6kbsymbc6mb9ClcM+mcM+ncM+ncs+nfNKndtCpcdGodNOqetOqe7KystKtdtOse9Sud9auf9Kv
+hdSwfNavgLa2tre2ttewgNizf9m0hNW2jtq2hde7ldm+mdq+mcPDw+G9lNzAnd/AluDAmeDBmeLC
+m+PCnMjIyOPDnOTEneTGoM/Pz9DQ0OXQs9XV1efSudbW1tjY2OnVvu7Vt+3WuO7Yuu7Yu+7YvO/Y
+u+3ZwN3d3e/avvDav+/bv97e3uHh4eLi4ubm5ufn5+np6e3t7e/v7///////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////yH+uihjKSAyMDAwIEpha3Vi
+ICdKaW1tYWMnIFN0ZWluZXIKClRoaXMgaW1hZ2Ugd2FzIGNyZWF0ZWQgdXNpbmcgR2ltcC4gR2lt
+cCBpcyBmcmVlIHNvZnR3YXJlIAphcyBkZWZpbmVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5k
+YXRpb24gYW5kIGlzIGF2YWlsYWJsZQpmb3IgZG93bmxvYWQgYXQgaHR0cDovL3d3dy5naW1wLm9y
+ZwAh+QQBCgD/ACwAAAAAGAAYAAAI/gD/CRxIsKDBgwgTKhwIoGHDhQYBKBAjbBgqNQUgMtRQTFis
+V7tkrZkAQKMEY6wuNDQQopWjChABBJMFoaTAASFQRbGZsAAxUDwFIgAmJujBB78sGQUw7JJRggIa
+JNiQYQEBBwkOJKDAAUMEBgEOAvClaxYsV6I8efrkqdOmSYhAPP0HoNeqSpAI3WHTRs4bMlqGuPgw
+FwCuVJUaFcrThk4dOmi4GIkhV+wtU5LwpNkyxQqWK0lm+FDRoTAvVZg4UVL0x4+gPXbM4EjhoXCu
+UozchKHi5IkUKEFk8FghojCuU5I0RTK0Rw8fPXPG5EAxonCtUIvSYCGio4eQIDZYSsAoQaKwLVKN
+Mj0atKcPID5wytB4caIwrVGJAsU54+ULGDBZMOFDEyYUtsQhXVSBxA413PCDEkcUAUQLFsxFl0MY
+ZviQRhx2mFBAADs=
+}
+
+
 ###
 ### End of file: analysis.tcl
 ###

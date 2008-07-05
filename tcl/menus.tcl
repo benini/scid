@@ -120,43 +120,46 @@ foreach menuname { file edit game search windows play tools options helpmenu } {
 
 ### File menu:
 
+set menuindex -1
 set m .menu.file
 $m add command -label FileNew -acc "Ctrl+N" -command ::file::New
 bind . <Control-n> ::file::New
-set helpMessage($m,0) FileNew
+set helpMessage($m,[incr menuindex]) FileNew
 
 $m add command -label FileOpen -acc "Ctrl+O" -command ::file::Open
 bind . <Control-o> ::file::Open
-set helpMessage($m,1) FileOpen
+set helpMessage($m,[incr menuindex]) FileOpen
 
 $m add command -label FileClose -acc "Ctrl+W" -command ::file::Close
 bind . <Control-w> ::file::Close
-set helpMessage($m,2) FileClose
+set helpMessage($m,[incr menuindex]) FileClose
 
 $m add command -label FileFinder -acc "Ctrl+/" -command ::file::finder::Open
 bind . <Control-slash> ::file::finder::Open
-set helpMessage($m,3) FileFinder
+set helpMessage($m,[incr menuindex]) FileFinder
 
 $m add cascade -label FileBookmarks -accelerator "Ctrl+B" -menu $m.bookmarks
-set helpMessage($m,4) FileBookmarks
+set helpMessage($m,[incr menuindex]) FileBookmarks
 menu $m.bookmarks
 
 $m add separator
+incr menuindex
 
 # naming is weird because the menus are moved from Tools to File menus
 
 $m add command -label ToolsOpenBaseAsTree -command ::file::openBaseAsTree
-set helpMessage($m,6) ToolsOpenBaseAsTree
+set helpMessage($m,[incr menuindex]) ToolsOpenBaseAsTree
 
 menu $m.recenttrees
 $m add cascade -label ToolsOpenRecentBaseAsTree -menu $m.recenttrees
-set helpMessage($m,7) ToolsOpenRecentBaseAsTree
+set helpMessage($m,[incr menuindex]) ToolsOpenRecentBaseAsTree
 
 $m add separator
+incr menuindex
 
 menu $m.utils
 $m add cascade -label FileMaint -menu .menu.file.utils
-set helpMessage($m,9) FileMaint
+set helpMessage($m,[incr menuindex]) FileMaint
 
 $m.utils add checkbutton -label FileMaintWin \
     -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
@@ -206,10 +209,10 @@ set helpMessage($m.utils.name,4) FileMaintNameRound
 bind . <Control-d> ::windows::switcher::Open
 
 $m add command -label FileReadOnly -command makeBaseReadOnly
-set helpMessage($m,10) FileReadOnly
+set helpMessage($m,[incr menuindex]) FileReadOnly
 
 $m add cascade -label FileSwitch -menu $m.switch
-set helpMessage($m,11) FileSwitch
+set helpMessage($m,[incr menuindex]) FileSwitch
 menu $m.switch
 
 set totalBaseSlots [sc_base count total]
@@ -228,38 +231,39 @@ for {set i 1} { $i <= $totalBaseSlots} {incr i} {
 }
 
 $m add separator
+incr menuindex
 
 $m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
 bind . <Control-q> ::file::Exit
-set helpMessage($m,13) FileExit
+set helpMessage($m,[incr menuindex]) FileExit
 
 
 ### Edit menu:
-
+set menuindex -1
 set m .menu.edit
 $m add command -label EditAdd \
     -accel "Ctrl+A" -command {sc_var create; updateBoard -pgn}
-set helpMessage($m,0) EditAdd
+set helpMessage($m,[incr menuindex]) EditAdd
 
 menu $m.del
 $m add cascade -label EditDelete -menu $m.del
-set helpMessage($m,1) EditDelete
+set helpMessage($m,[incr menuindex]) EditDelete
 
 menu $m.first
 $m add cascade -label EditFirst -menu $m.first
-set helpMessage($m,2) EditFirst
+set helpMessage($m,[incr menuindex]) EditFirst
 
 menu $m.main
 $m add cascade -label EditMain -menu $m.main
-set helpMessage($m,3) EditMain
+set helpMessage($m,[incr menuindex]) EditMain
 
 $m add checkbutton -label EditTrial -variable trialMode \
     -accelerator "Ctrl+space" -command {setTrialMode update}
 bind . <Control-space> { setTrialMode toggle }
-set helpMessage($m,4) EditTrial
+set helpMessage($m,[incr menuindex]) EditTrial
 
 $m add cascade -label EditStrip -menu $m.strip
-set helpMessage($m,5) EditStrip
+set helpMessage($m,[incr menuindex]) EditStrip
 
 menu $m.strip
 $m.strip add command -label EditStripComments -command {::game::Strip comments}
@@ -272,6 +276,7 @@ $m.strip add command -label EditStripEnd -command {::game::Truncate}
 set helpMessage($m.strip,3) EditStripEnd
 
 $m add separator
+incr menuindex
 
 $m add command -label EditReset -command {
   sc_clipbase clear
@@ -279,176 +284,183 @@ $m add command -label EditReset -command {
   ::windows::gamelist::Refresh
   updateTitle
 }
-set helpMessage($m,7) EditReset
+set helpMessage($m,[incr menuindex]) EditReset
 
 $m add command -label EditCopy -accelerator "Ctrl+C" -command {
   catch {sc_clipbase copy}
   updateBoard
 }
 bind . <Control-c> {catch {sc_clipbase copy}; updateBoard}
-set helpMessage($m,8) EditCopy
+set helpMessage($m,[incr menuindex]) EditCopy
 
 $m add command -label EditPaste -accelerator "Ctrl+V" -command {
   sc_clipbase paste
   updateBoard -pgn
 }
 bind . <Control-v> {catch {sc_clipbase paste}; updateBoard -pgn}
-set helpMessage($m,9) EditPaste
+set helpMessage($m,[incr menuindex]) EditPaste
 
 $m add command -label EditPastePGN -command importClipboardGame
-set helpMessage($m,10) EditPastePGN
+set helpMessage($m,[incr menuindex]) EditPastePGN
 
 $m add separator
+incr menuindex
 
 $m add command -label EditSetup -accelerator "Ctrl+Shift+S" -command setupBoard
 bind . <Control-S> setupBoard
-set helpMessage($m,12) EditSetup
+set helpMessage($m,[incr menuindex]) EditSetup
 
 $m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" \
     -command copyFEN
 bind . <Control-C> copyFEN
-set helpMessage($m,13) EditCopyBoard
+set helpMessage($m,[incr menuindex]) EditCopyBoard
 
 $m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" \
     -command pasteFEN
 bind . <Control-V> pasteFEN
-set helpMessage($m,14) EditPasteBoard
+set helpMessage($m,[incr menuindex]) EditPasteBoard
 
 
 ### Game menu:
-
+set menuindex -1
 set m .menu.game
 $m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
 bind . <Control-x> ::game::Clear
-set helpMessage($m,0) GameNew
+set helpMessage($m,[incr menuindex]) GameNew
 
 $m add command -label GameFirst -accelerator "Ctrl+Shift+Up" \
     -command {::game::LoadNextPrev first}
 bind . <Control-Shift-Up> {::game::LoadNextPrev first}
-set helpMessage($m,1) GameFirst
+set helpMessage($m,[incr menuindex]) GameFirst
 
 $m add command -label GamePrev -accelerator "Ctrl+Up" \
     -command {::game::LoadNextPrev previous}
 bind . <Control-Up> {::game::LoadNextPrev previous}
-set helpMessage($m,2) GamePrev
+set helpMessage($m,[incr menuindex]) GamePrev
 
 $m add command -label GameReload -command ::game::Reload \
     -accelerator "Ctrl+Shift+L"
 bind . <Control-L> ::game::Reload
-set helpMessage($m,3) GameReload
+set helpMessage($m,[incr menuindex]) GameReload
 
 $m add command -label GameNext -accelerator "Ctrl+Down" \
     -command {::game::LoadNextPrev next}
 bind . <Control-Down> {::game::LoadNextPrev next}
-set helpMessage($m,4) GameNext
+set helpMessage($m,[incr menuindex]) GameNext
 
 $m add command -label GameLast -accelerator "Ctrl+Shift+Down" \
     -command {::game::LoadNextPrev last}
 bind . <Control-Shift-Down> {::game::LoadNextPrev last}
-set helpMessage($m,5) GameLast
+set helpMessage($m,[incr menuindex]) GameLast
 
 $m add command -label GameRandom -command ::game::LoadRandom -accelerator "Ctrl+?"
 bind . <Control-question> ::game::LoadRandom
-set helpMessage($m,6) GameRandom
+set helpMessage($m,[incr menuindex]) GameRandom
 
 $m add command -label GameNumber -command ::game::LoadNumber -accelerator "Ctrl+G"
 bind . <Control-g> ::game::LoadNumber
-set helpMessage($m,7) GameNumber
+set helpMessage($m,[incr menuindex]) GameNumber
 
 $m add separator
+incr menuindex
 
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+R"
 bind . <Control-r> { .menu.game invoke [tr GameReplace] }
-set helpMessage($m,9) GameReplace
+set helpMessage($m,[incr menuindex]) GameReplace
 
 $m  add command -label GameAdd -command gameAdd  -accelerator "Ctrl+S"
 bind . <Control-s> gameAdd
-set helpMessage($m,10) GameAdd
+set helpMessage($m,[incr menuindex]) GameAdd
 
 $m add separator
+incr menuindex
 
 $m add command -label GameDeepest -accelerator "Ctrl+Shift+D" -command {
   sc_move ply [sc_eco game ply]
   updateBoard
 }
 bind . <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
-set helpMessage($m,12) GameDeepest
+set helpMessage($m,[incr menuindex]) GameDeepest
 
 $m add command -label GameGotoMove -accelerator "Ctrl+U" \
     -command ::game::GotoMoveNumber
-set helpMessage($m,13) GameGotoMove
+set helpMessage($m,[incr menuindex]) GameGotoMove
 bind . <Control-u> ::game::GotoMoveNumber
 
 $m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" \
     -command findNovelty
 bind . <Control-Y> findNovelty
-set helpMessage($m,14) GameNovelty
+set helpMessage($m,[incr menuindex]) GameNovelty
 
 
 ### Search menu:
-
+set menuindex -1
 set m .menu.search
 $m  add command -label SearchReset -acc "Ctrl+F" \
     -command ::search::filter::reset
 bind . <Control-f> search::filter::reset
-set helpMessage($m,0) SearchReset
+set helpMessage($m,[incr menuindex]) SearchReset
 
 $m  add command -label SearchNegate -acc "Ctrl+Shift+F" \
     -command ::search::filter::negate
 bind . <Control-F> ::search::filter::negate
-set helpMessage($m,1) SearchNegate
+set helpMessage($m,[incr menuindex]) SearchNegate
 
 $m  add separator
+incr menuindex
 
 $m  add command -label SearchCurrent \
     -command ::search::board -accelerator "Ctrl+Shift+B"
 bind . <Control-B> ::search::board
-set helpMessage($m,3) SearchCurrent
+set helpMessage($m,[incr menuindex]) SearchCurrent
 
 $m  add command -label SearchHeader \
     -command ::search::header -accelerator "Ctrl+Shift+H"
 bind . <Control-H> ::search::header
-set helpMessage($m,4) SearchHeader
+set helpMessage($m,[incr menuindex]) SearchHeader
 
 $m  add command -label SearchMaterial \
     -command ::search::material -accelerator "Ctrl+Shift+M"
 bind . <Control-M> ::search::material
-set helpMessage($m,5) SearchMaterial
+set helpMessage($m,[incr menuindex]) SearchMaterial
 
 $m  add separator
+incr menuindex
 
 $m add command -label SearchUsing -accel "Ctrl+Shift+U" \
     -command ::search::usefile
 bind . <Control-KeyPress-U> ::search::usefile
-set helpMessage($m,7) SearchUsing
+set helpMessage($m,[incr menuindex]) SearchUsing
 
 ### Play menu:
-#-----AW-----
+set menuindex -1
 set m .menu.play
 
 $m add command -label ToolsSeriousGame -command ::sergame::config
+incr menuindex
 $m add command -label ToolsTacticalGame -command ::tacgame::config
+incr menuindex
 $m add command -label ToolsTrainFics -command ::fics::config
+incr menuindex
+
+$m add separator
+incr menuindex
 
 # sub-menu for training
-$m add separator
 menu $m.training
 $m add cascade -label ToolsTraining -menu $m.training
+set helpMessage($m,[incr menuindex]) ToolsTraining
 $m.training add command -label ToolsTrainOpenings -command ::opening::config
 $m.training add command -label ToolsTrainTactics -command ::tactics::config
 $m.training add command -label ToolsTrainCalvar -command ::calvar::config
 
-set helpMessage($m,11) ToolsTraining
-
-#----------------------------------------------------------------------
-# Add support for Correspondence Chess by means of Xfcc and cmail
-
 $m add separator
+incr menuindex
 
+# Add support for Correspondence Chess by means of Xfcc and cmail
 menu $m.correspondence
-
 $m add cascade -label CorrespondenceChess -menu $m.correspondence
-set helpMessage($m,16) CorrespondenceChess
+set helpMessage($m,[incr menuindex]) CorrespondenceChess
 
 $m.correspondence add command -label CCConfigure   -command {::CorrespondenceChess::config}
 set helpMessage($m.correspondence,0) CCConfigure
@@ -487,78 +499,80 @@ $m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChe
 set helpMessage($m.correspondence,16) CCNewMailGame
 $m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
 set helpMessage($m.correspondence,17) CCMailMove
-#-----AW-----
+
 
 ### Windows menu:
-
+set menuindex -1
 set m .menu.windows
 $m  add checkbutton -label WindowsComment \
     -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
 
 bind . <Control-e> makeCommentWin
-set helpMessage($m,0) WindowsComment
+set helpMessage($m,[incr menuindex]) WindowsComment
 
 $m  add checkbutton -label WindowsGList \
     -variable ::windows::gamelist::isOpen -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
 bind . <Control-l> ::windows::gamelist::Open
-set helpMessage($m,1) WindowsGList
+set helpMessage($m,[incr menuindex]) WindowsGList
 
 $m  add checkbutton -label WindowsPGN \
     -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
 bind . <Control-p> ::pgn::OpenClose
-set helpMessage($m,2) WindowsPGN
+set helpMessage($m,[incr menuindex]) WindowsPGN
 
 $m add checkbutton -label WindowsPList \
     -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
 bind . <Control-P> ::plist::toggle
-set helpMessage($m,3) WindowsPList
+set helpMessage($m,[incr menuindex]) WindowsPList
 
 $m add checkbutton -label WindowsTmt \
     -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
 bind . <Control-T> ::tourney::toggle
-set helpMessage($m,4) WindowsTmt
+set helpMessage($m,[incr menuindex]) WindowsTmt
 
 $m add separator
+incr menuindex
 
 $m add checkbutton -label WindowsSwitcher \
     -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
-set helpMessage($m,6) WindowsSwitcher
+set helpMessage($m,[incr menuindex]) WindowsSwitcher
 
 $m add checkbutton -label WindowsMaint \
     -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
 bind . <Control-m> ::maint::OpenClose
-set helpMessage($m,7) WindowsMaint
+set helpMessage($m,[incr menuindex]) WindowsMaint
 
 $m add separator
+incr menuindex
 
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" \
     -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
 bind . <Control-y> ::windows::eco::OpenClose
-set helpMessage($m,9) WindowsECO
+set helpMessage($m,[incr menuindex]) WindowsECO
 
 $m add checkbutton -label WindowsRepertoire -variable ::rep::Win \
     -accelerator "Ctrl+Shift+R" -command ::rep::OpenCloseWindow
 bind . <Control-R> ::rep::OpenCloseWindow
-set helpMessage($m,10) WindowsRepertoire
+set helpMessage($m,[incr menuindex]) WindowsRepertoire
 
 $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen \
     -accelerator "Ctrl+I" -command ::windows::stats::Open
 bind . <Control-i> ::windows::stats::Open
-set helpMessage($m,11) WindowsStats
+set helpMessage($m,[incr menuindex]) WindowsStats
 
 $m add checkbutton -label WindowsTree \
     -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
 bind . <Control-t> { .menu.windows invoke [tr WindowsTree] }
-set helpMessage($m,12) WindowsTree
+set helpMessage($m,[incr menuindex]) WindowsTree
 
 $m add checkbutton -label WindowsTB -variable ::tb::isOpen -command ::tb::Open \
     -accelerator "Ctrl+="
 bind . <Control-equal> ::tb::Open
-set helpMessage($m,13) WindowsTB
+set helpMessage($m,[incr menuindex]) WindowsTB
 
 $m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open \
     -accelerator "F11"
-set helpMessage($m,14) WindowsBook
+set helpMessage($m,[incr menuindex]) WindowsBook
 bind . <F11>  ::book::open
 
 $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
@@ -567,68 +581,70 @@ bind . <F12> ::CorrespondenceChess::CCWindow
 
 ### Tools menu:
 
+set menuindex -1
 set m .menu.tools
-
 $m  add checkbutton -label ToolsAnalysis -variable analysisWin1 \
     -command makeAnalysisWin -accelerator "Ctrl+Shift+A"
 bind . <Control-A> makeAnalysisWin
-set helpMessage($m,0) ToolsAnalysis
+set helpMessage($m,[incr menuindex]) ToolsAnalysis
 
 $m  add checkbutton -label ToolsAnalysis2 -variable analysisWin2 \
     -command "makeAnalysisWin 2" -accelerator "Ctrl+Shift+2"
 bind . <Control-at> "makeAnalysisWin 2"
-set helpMessage($m,1) ToolsAnalysis2
+set helpMessage($m,[incr menuindex]) ToolsAnalysis2
 
 #Add Menu for Start Engine 1 and Engine 2
 $m  add checkbutton -label ToolsStartEngine1 -variable analysisWin1 \
     -command "makeAnalysisWin 1 0" -accelerator "F2"
 bind . <F2> "makeAnalysisWin 1 0"
-set helpMessage($m,2) ToolsStartEngine1
+set helpMessage($m,[incr menuindex]) ToolsStartEngine1
 
 $m  add checkbutton -label ToolsStartEngine2 -variable analysisWin2 \
     -command "makeAnalysisWin 2 0" -accelerator "F3"
 bind . <F3> "makeAnalysisWin 2 0"
-set helpMessage($m,3) ToolsStartEngine2
+set helpMessage($m,[incr menuindex]) ToolsStartEngine2
 
 $m add separator
+incr menuindex
 
 $m add command -label ToolsCross \
     -accelerator "Ctrl+Shift+X" -command crosstabWin
 bind . <Control-X> crosstabWin
-set helpMessage($m,5) ToolsCross
+set helpMessage($m,[incr menuindex]) ToolsCross
 
 $m add checkbutton -label ToolsEmail \
     -accelerator "Ctrl+Shift+E" -variable emailWin -command ::tools::email
 bind . <Control-E> ::tools::email
-set helpMessage($m,6) ToolsEmail
+set helpMessage($m,[incr menuindex]) ToolsEmail
 
 $m add checkbutton -label ToolsFilterGraph \
     -accelerator "Ctrl+Shift+G" -variable filterGraph -command tools::graphs::filter::Open
 bind . <Control-G> tools::graphs::filter::Open
-set helpMessage($m,7) ToolsFilterGraph
+set helpMessage($m,[incr menuindex]) ToolsFilterGraph
 
 $m add checkbutton -label ToolsAbsFilterGraph \
     -accelerator "Ctrl+Shift+J" -variable absfilterGraph -command tools::graphs::absfilter::Open
 bind . <Control-J> tools::graphs::absfilter::Open
-set helpMessage($m,8) ToolsAbsFilterGraph
+set helpMessage($m,[incr menuindex]) ToolsAbsFilterGraph
 
 $m add command -label ToolsOpReport \
     -accelerator "Ctrl+Shift+O" -command ::optable::makeReportWin
 bind . <Control-O> ::optable::makeReportWin
-set helpMessage($m,9) ToolsOpReport
+set helpMessage($m,[incr menuindex]) ToolsOpReport
 
 $m add command -label ToolsTracker \
     -accelerator "Ctrl+Shift+K" -command ::ptrack::make
 bind . <Control-K> ::ptrack::make
-set helpMessage($m,10) ToolsTracker
+set helpMessage($m,[incr menuindex]) ToolsTracker
 
 # book tuning
 $m add command -label ToolsBookTuning -command ::book::tuning
-set helpMessage($m,11) ToolsBookTuning
+set helpMessage($m,[incr menuindex]) ToolsBookTuning
 
 # Novag support
 menu $m.novag
 $m add cascade -label ToolsNovagCitrine -menu $m.novag
+incr menuindex
 $m.novag add command -label ToolsNovagCitrineConfig -command ::novag::config
 $m.novag add command -label ToolsNovagCitrineConnect -command ::novag::connect
 
@@ -636,6 +652,7 @@ $m.novag add command -label ToolsNovagCitrineConnect -command ::novag::connect
 if { $NOT_FOR_RELEASE } {
   menu $m.inputengine
   $m add cascade -label ConnectHardware         -menu $m.inputengine
+  incr menuindex
   $m.inputengine add command -label Config      -command ::inputengine::config
   $m.inputengine add separator
   $m.inputengine add command -label ToggleConnect -command ::inputengine::connectdisconnect
@@ -646,35 +663,37 @@ if { $NOT_FOR_RELEASE } {
 }
 
 $m add separator
+incr menuindex
 
 menu $m.pinfo
 $m add cascade -label ToolsPInfo -menu $m.pinfo
+set helpMessage($m,[incr menuindex]) ToolsPInfo
 $m.pinfo add command -label White -underline 0 -command {
   playerInfo [sc_game info white]
 }
 $m.pinfo add command -label Black -underline 0 -command {
   playerInfo [sc_game info black]
 }
-set helpMessage($m,15) ToolsPInfo
 
 $m add command -label ToolsPlayerReport -command ::preport::preportDlg
-set helpMessage($m,16) ToolsPlayerReport
+set helpMessage($m,[incr menuindex]) ToolsPlayerReport
 
 $m add command -label ToolsRating -command {::tools::graphs::rating::Refresh both}
 # bind . <Control-R> {::tools::graphs::rating::Refresh both}
-set helpMessage($m,17) ToolsRating
+set helpMessage($m,[incr menuindex]) ToolsRating
 
 $m add command -label ToolsScore \
     -accelerator "Ctrl+Shift+Z" -command ::tools::graphs::score::Refresh
 bind . <Control-Z> ::tools::graphs::score::Refresh
-set helpMessage($m,18) ToolsScore
+set helpMessage($m,[incr menuindex]) ToolsScore
 
 $m add separator
+incr menuindex
 
 menu $m.exportcurrent
 
 $m add cascade -label ToolsExpCurrent -menu $m.exportcurrent
-set helpMessage($m,20) ToolsExpCurrent
+set helpMessage($m,[incr menuindex]) ToolsExpCurrent
 
 $m.exportcurrent add command -label ToolsExpCurrentPGN \
     -command {exportGames current PGN}
@@ -695,7 +714,7 @@ set helpMessage($m.exportcurrent,3) ToolsExpCurrentLaTeX
 menu $m.exportfilter
 
 $m add cascade -label ToolsExpFilter -menu $m.exportfilter
-set helpMessage($m,21) ToolsExpFilter
+set helpMessage($m,[incr menuindex]) ToolsExpFilter
 
 $m.exportfilter add command -label ToolsExpFilterPGN \
     -command {exportGames filter PGN}
@@ -714,34 +733,35 @@ $m.exportfilter add command -label ToolsExpFilterLaTeX \
 set helpMessage($m.exportfilter,3) ToolsExpFilterLaTeX
 
 $m add separator
+incr menuindex
 
 $m add command -label ToolsImportOne \
     -accelerator "Ctrl+Shift+I" -command importPgnGame
 bind . <Control-I> importPgnGame
-set helpMessage($m,23) ToolsImportOne
+set helpMessage($m,[incr menuindex]) ToolsImportOne
 
 $m add command -label ToolsImportFile -command importPgnFile
-set helpMessage($m,24) ToolsImportFile
+set helpMessage($m,[incr menuindex]) ToolsImportFile
 
 ### Options menu:
 
 set m .menu.options
 set optMenus {board export fonts ginfo language entry numbers startup windows}
 set optLabels {Board Export Fonts GInfo Language Moves Numbers Startup Windows}
-set i 0
+set menuindex -1
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
-  set helpMessage($m,$i) Options$label
-  incr i
+  set helpMessage($m,[incr menuindex]) Options$label
 }
 
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
-set helpMessage($m,9) OptionsSounds
+set helpMessage($m,[incr menuindex]) OptionsSounds
 
 $m add command -label OptionsToolbar -command configToolbar
-set helpMessage($m,10) OptionsToolbar
+set helpMessage($m,[incr menuindex]) OptionsToolbar
 
 $m add separator
+incr menuindex
 
 $m add command -label OptionsECO -command {
   set ftype { { "Scid ECO files" {".eco"} } }
@@ -760,13 +780,13 @@ $m add command -label OptionsECO -command {
     }
   }
 }
-set helpMessage($m,12) OptionsECO
+set helpMessage($m,[incr menuindex]) OptionsECO
 
 $m add command -label OptionsSpell -command readSpellCheckFile
-set helpMessage($m,13) OptionsSpell
+set helpMessage($m,[incr menuindex]) OptionsSpell
 
 $m add command -label OptionsTable -command setTableBaseDir
-set helpMessage($m,14) OptionsTable
+set helpMessage($m,[incr menuindex]) OptionsTable
 if {![sc_info tb]} { $m entryconfigure 13 -state disabled }
 
 # setTableBaseDir:
@@ -845,13 +865,13 @@ proc chooseTableBaseDir {i} {
 }
 
 $m add command -label OptionsRecent -command ::recentFiles::configure
-set helpMessage($m,15) OptionsRecent
+set helpMessage($m,[incr menuindex]) OptionsRecent
 
 $m add command -label OptionsBooksDir -command setBooksDir
-set helpMessage($m,16) OptionsBooksDir
+set helpMessage($m,[incr menuindex]) OptionsBooksDir
 
 $m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
-set helpMessage($m,17) OptionsTacticsBasesDir
+set helpMessage($m,[incr menuindex]) OptionsTacticsBasesDir
 
 proc setBooksDir {} {
   global scidBooksDir
@@ -874,6 +894,7 @@ proc setTacticsBasesDir {} {
 }
 
 $m add separator
+incr menuindex
 
 $m add command -label OptionsSave -command {
   set optionF ""
@@ -984,10 +1005,10 @@ $m add command -label OptionsSave -command {
     set ::statusBar "Options were saved to: [scidConfigFile options]"
   }
 }
-set helpMessage($m,19) OptionsSave
+set helpMessage($m,[incr menuindex]) OptionsSave
 
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave
-set helpMessage($m,20) OptionsAutoSave
+set helpMessage($m,[incr menuindex]) OptionsAutoSave
 
 menu $m.ginfo
 $m.ginfo add checkbutton -label GInfoHideNext \
@@ -1202,30 +1223,33 @@ foreach i $boardStyles {
 }
 
 ### Help menu:
+set menuindex -1
 set m .menu.helpmenu
 $m add command -label HelpContents -command {helpWindow Contents} -accelerator "F1"
-set helpMessage($m,0) HelpContents
+set helpMessage($m,[incr menuindex]) HelpContents
 $m add command -label HelpIndex -command {helpWindow Index}
-set helpMessage($m,1) HelpIndex
+set helpMessage($m,[incr menuindex]) HelpIndex
 $m add command -label HelpGuide -command {helpWindow Guide}
-set helpMessage($m,2) HelpGuide
+set helpMessage($m,[incr menuindex]) HelpGuide
 $m add command -label HelpHints -command {helpWindow Hints}
-set helpMessage($m,3) HelpHints
+set helpMessage($m,[incr menuindex]) HelpHints
 $m add command -label HelpContact -command {helpWindow Author}
-set helpMessage($m,4) HelpContact
+set helpMessage($m,[incr menuindex]) HelpContact
 $m add separator
+incr menuindex
 $m add command -label HelpTip -command ::tip::show
-set helpMessage($m,5) HelpTip
+set helpMessage($m,[incr menuindex]) HelpTip
 $m add command -label HelpStartup -command {
   wm deiconify .splash
   raiseWin .splash
 }
-set helpMessage($m,7) HelpStartup
+set helpMessage($m,[incr menuindex]) HelpStartup
 
 $m add separator
+incr menuindex
 
 $m  add command -label HelpAbout -command helpAbout
-set helpMessage($m,9) HelpAbout
+set helpMessage($m,[incr menuindex]) HelpAbout
 
 bind . <F1> {helpWindow Contents}
 

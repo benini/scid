@@ -54,7 +54,7 @@ namespace eval uci {
   ################################################################################
   proc  processAnalysisInput { { n 1 } { analyze 1 } } {
     global analysis ::uci::uciInfo ::uci::infoToken ::uci::optionToken
-       
+    
     if {$analyze} {
       set pipe $analysis(pipe$n)
       if { ! [ ::checkEngineIsAlive $n ] } { return }
@@ -62,7 +62,7 @@ namespace eval uci {
       set pipe $uciInfo(pipe$n)
       if { ! [ ::uci::checkEngineIsAlive $n ] } { return }
     }
-      
+    
     if {$analyze} {
       if {! $analysis(seen$n)} {
         set analysis(seen$n) 1
@@ -83,7 +83,7 @@ namespace eval uci {
     if {$line == ""} { return }
     
     # To speed up parsing of engine's output. Should be removed if currmove info is used
-    if {[string first "info currmove" $line ] == 0} { return }
+    # if {[string first "info currmove" $line ] == 0} { return }
     
     logEngine $n "Engine: $line"
     
@@ -127,7 +127,7 @@ namespace eval uci {
         set t [lindex $data $i]
         if { $t == "info" } { continue }
         if { $t == "depth" } { incr i ; set uciInfo(depth$n) [ lindex $data $i ] ; continue }
-        if { $t == "seldepth" } { incr i ; set uciInfo(seldepth$n) [ lindex $data $i ] ; continue }
+        if { $t == "seldepth" } { incr i ; set uciInfo(seldepth$n) [ lindex $data $i ] ; set analysis(seldepth$n) $uciInfo(seldepth$n) ; continue }
         if { $t == "time" } { incr i ; set uciInfo(time$n) [ lindex $data $i ] ; continue }
         if { $t == "nodes" } { incr i ; set uciInfo(nodes$n) [ lindex $data $i ] ; continue }
         if { $t == "pv" } {
@@ -168,13 +168,13 @@ namespace eval uci {
           # don't consider lowerbound & upperbound score info
           continue
         }
-        if { $t == "currmove" } { incr i ; set uciInfo(currmove$n) [ lindex $data $i ] ; continue }
-        if { $t == "currmovenumber" } { incr i ; set uciInfo(currmovenumber$n) [ lindex $data $i ] ; continue }
-        if { $t == "hashfull" } { incr i ; set uciInfo(hashfull$n) [ lindex $data $i ] ; continue }
-        if { $t == "nps" } { incr i ; set uciInfo(nps$n) [ lindex $data $i ] ; continue }
-        if { $t == "tbhits" } { incr i ; set uciInfo(tbhits$n) [ lindex $data $i ] ; continue }
-        if { $t == "sbhits" } { incr i ; set uciInfo(sbhits$n) [ lindex $data $i ] ; continue }
-        if { $t == "cpuload" } { incr i ; set uciInfo(cpuload$n) [ lindex $data $i ] ; continue }
+        if { $t == "currmove" } { incr i ; set uciInfo(currmove$n) [ lindex $data $i ] ; set analysis(currmove$n) [formatPv $uciInfo(currmove$n) $analysis(fen$n)] ; continue}
+        if { $t == "currmovenumber" } { incr i ; set uciInfo(currmovenumber$n) [ lindex $data $i ] ; set analysis(currmovenumber$n) $uciInfo(currmovenumber$n) ; continue}
+        if { $t == "hashfull" } { incr i ; set uciInfo(hashfull$n) [ lindex $data $i ] ; set analysis(hashfull$n) $uciInfo(hashfull$n) ; continue}
+        if { $t == "nps" } { incr i ; set uciInfo(nps$n) [ lindex $data $i ] ; set analysis(nps$n) $uciInfo(nps$n) ; continue}
+        if { $t == "tbhits" } { incr i ; set uciInfo(tbhits$n) [ lindex $data $i ] ; set analysis(tbhits$n) $uciInfo(tbhits$n) ; continue}
+        if { $t == "sbhits" } { incr i ; set uciInfo(sbhits$n) [ lindex $data $i ] ; set analysis(sbhits$n) $uciInfo(sbhits$n) ; continue}
+        if { $t == "cpuload" } { incr i ; set uciInfo(cpuload$n) [ lindex $data $i ] ; set analysis(cpuload$n) $uciInfo(cpuload$n) ; continue}
         if { $t == "string" } {
           incr i
           while { $i < $length } {
@@ -189,13 +189,18 @@ namespace eval uci {
       };# end for data loop
       
       # return if no interesting info
-      if { $uciInfo(tmp_score$n) == "" || $uciInfo(pv$n) == "" } { return }
-      
+      if { $uciInfo(tmp_score$n) == "" || $uciInfo(pv$n) == "" } {
+        if {$analyze} {
+          updateAnalysisText $n
+        }
+        return
+      }
+
       # handle the case an UCI engine does not send multiPV
       if { $uciInfo(multipv$n) == "" } { set uciInfo(multipv$n) 1 }
       
       if { $uciInfo(multipv$n) == 1 } {
-        set uciInfo(score$n) $uciInfo(tmp_score$n)        
+        set uciInfo(score$n) $uciInfo(tmp_score$n)
       }
       
       if { $uciInfo(multipv$n) == 1 && $analyze} {
@@ -213,7 +218,7 @@ namespace eval uci {
       
       # convert to something more readable
       if ($toBeFormatted) {
-        set uciInfo(pv$n) [formatPv $uciInfo(pv$n)]
+        set uciInfo(pv$n) [formatPv $uciInfo(pv$n) $analysis(fen$n)]
         set toBeFormatted 0
       }
       
@@ -223,10 +228,10 @@ namespace eval uci {
       if { $idx < $analysis(multiPVCount$n) } {
         if {$idx < [llength $analysis(multiPV$n)]} {
           lset analysis(multiPV$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $uciInfo(pv$n)] $uciInfo(scoremate$n)"
-          lset ::uci::uciInfo(pvlist$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n)"
+          lset analysis(multiPVraw$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n)"
         } else  {
           lappend analysis(multiPV$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $uciInfo(pv$n)] $uciInfo(scoremate$n)"
-          lappend ::uci::uciInfo(pvlist$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n)"
+          lappend analysis(multiPVraw$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n)"
         }
       }
       
@@ -361,9 +366,8 @@ namespace eval uci {
     if { [winfo exists $w]} { return }
     toplevel $w
     wm title $w $::tr(ConfigureUCIengine)
-    
     ::scrolledframe::scrolledframe .uciConfigWin.sf -xscrollcommand {.uciConfigWin.hs set} -yscrollcommand {.uciConfigWin.vs set} \
-        -fill both -width 400 -height 400
+        -fill both -width 1000 -height 600
     scrollbar .uciConfigWin.vs -command {.uciConfigWin.sf yview}
     scrollbar .uciConfigWin.hs -command {.uciConfigWin.sf xview} -orient horizontal
     grid .uciConfigWin.sf -row 0 -column 0 -sticky nsew
@@ -595,9 +599,9 @@ namespace eval uci {
     }
   }
   ################################################################################
-  # will start an engine for playing (not analysis), except if analyseMode = 1
+  # will start an engine for playing (not analysis)
   ################################################################################
-  proc startEngine {index n {analyseMode 0}} {
+  proc startEngine {index n} {
     global ::uci::uciInfo
     resetUciInfo $n
     set uciInfo(pipe$n) ""
@@ -627,7 +631,6 @@ namespace eval uci {
     
     set ::analysis(index$n) $index
     set ::analysis(pipe$n) $uciInfo(pipe$n)
-    set ::analysis(uci$n) 1
     
     # Return to original dir if necessary:
     if {$oldpwd != ""} { catch {cd $oldpwd} }
@@ -733,48 +736,32 @@ namespace eval uci {
     return 0
   }
   ################################################################################
-  #make UCI output more readable (b1c3 -> Nb1c3)
+  #make UCI output more readable (b1c3 -> Nc3)
   ################################################################################
-  proc formatPv { moves } {
-    set tmp ""
+  proc formatPv { moves fen } {
+
     sc_info preMoveCmd {}
-    set altered [sc_game altered]
-    if {![sc_pos isAt vend]} {
-      sc_var create
-      
-      foreach m $moves {
-        if { [sc_move_add $m] == 1 } { break }
-        set prev [sc_game info previousMoveNT]
-        append tmp " $prev"
-      }
-      set var [sc_var number]
-      sc_var exit
-      sc_var delete $var
-    } else {
-      set count 0
-      foreach m $moves {
-        if { [sc_move_add $m] == 1 } { break }
-        set prev [sc_game info previousMoveNT]
-        append tmp " $prev"
-        incr count
-      }
-      if { $count !=0 } {
-        sc_move back $count
-        sc_game truncate
-      }
+    # Push a temporary copy of the current game:
+    sc_game push
+
+    sc_game startBoard $fen
+
+    set tmp ""
+    foreach m $moves {
+      if { [sc_move_add $m] == 1 } { break }
+      set prev [sc_game info previousMoveNT]
+      append tmp " $prev"
     }
-    
-    sc_info preMoveCmd preMoveCommand
     set tmp [string trim $tmp]
-    sc_game setaltered $altered
+
+    # Pop the temporary game:
+    sc_game pop
+    # Restore pre-move command:
+    sc_info preMoveCmd preMoveCommand
+
     return $tmp
   }
-  ################################################################################
-  #
-  ################################################################################
-  
 }
-
 ###
 ### End of file: uci.tcl
 ###
