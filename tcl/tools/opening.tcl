@@ -125,7 +125,7 @@ namespace eval opening {
     sc_game new
     sc_game tags set -event $::tr(Openingtrainer)
     sc_game save 0
-    updateBoard -pgn
+    updateBoard -pgn -animate
     ::windows::gamelist::Refresh
     updateTitle
     
@@ -327,7 +327,7 @@ namespace eval opening {
         addStats -good 0 -dubious 0 -absent 1 -total 1
         ::opening::update_tCM
         ::opening::updateStats
-        updateBoard -pgn
+        updateBoard -pgn -animate
         after 1000  ::opening::mainLoop
         return
       }
@@ -446,7 +446,7 @@ namespace eval opening {
     
     if {![catch {sc_move addSan [::untrans $m] }]} {
     }
-    updateBoard -pgn
+    updateBoard -pgn -animate
   }
   ################################################################################
   # The window displayed when in opening trainer mode
