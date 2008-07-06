@@ -133,6 +133,14 @@ namespace eval fics {
       return
     }
     
+    # check timeseal configuration
+    if {$::fics::use_timeseal} {
+      if {![ file executable $::fics::timeseal_exec ]} {
+        tk_messageBox -title "Error" -icon error -type ok -message "Timeseal exec error : $::fics::timeseal_exec"
+        return
+      }
+    }
+    
     set w .fics
     toplevel $w
     wm title $w "Free Internet Chess Server $::fics::reallogin"
