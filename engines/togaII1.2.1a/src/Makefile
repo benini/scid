@@ -14,7 +14,7 @@ OBJS = attack.o board.o book.o eval.o fen.o hash.o list.o main.o material.o \
 all: $(EXE) .depend
 
 clean:
-	$(RM) *.o .depend gmon.out
+	$(RM) *.o .depend gmon.out fruit
 
 # general
 

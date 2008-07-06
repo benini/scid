@@ -14,6 +14,8 @@ OPTrainer : pack forget CM - % de connaissance d'une position et rapport-> indiq
 |                                                           |
  ===========================================================
 
+- FICS : close connection after a period without inactivity -> UI freezes
+
 - Go to any move. Go one move back. Add a comment, let's say "Good move". 
 Make a move, choose "Add New Variation". The comment will be repeated. -> KNOWN BUG, let's say it is a feature
 
