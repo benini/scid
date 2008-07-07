@@ -7672,13 +7672,18 @@ sc_game_pop (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Saves the current game and pushes a new empty game onto
 //    the game state stack.
 //    If the optional argument "copy" is present, the new game will be
-//    a copy of the current game.
+//    a copy of the current game. If the argument is "copyfast" tags, comments are not decoded
 int
 sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool copy = false;
+    bool copyfast = false;
     if (argc > 2  &&  strIsPrefix (argv[2], "copy")) {
         copy = true;
+    }
+    if (argc > 2  &&  strIsPrefix (argv[2], "copyfast")) {
+        copy = true;
+        copyfast = true;
     }
 
     Game * g = new Game;
@@ -7690,7 +7695,10 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->game->Encode (db->bbuf, NULL);
         db->game->RestoreState();
         db->bbuf->BackToStart();
-        g->Decode (db->bbuf, GAME_DECODE_ALL);
+        if (copyfast) 
+          g->Decode (db->bbuf, GAME_DECODE_NONE);
+        else
+          g->Decode (db->bbuf, GAME_DECODE_ALL);
         g->CopyStandardTags (db->game);
         db->game->ResetPgnStyle (PGN_STYLE_VARS);
         db->game->SetPgnFormat (PGN_FORMAT_Plain);
@@ -7703,6 +7711,7 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     db->game = g;
     db->gameAltered = false;
+
     return TCL_OK;
 }
 

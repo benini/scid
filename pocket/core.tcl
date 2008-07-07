@@ -1946,11 +1946,12 @@ proc ::ui::About {} {
   # update
   # }
   # }
-  set t [ time { set res [sc_info logmem 5120000] } ]
-  tk_messageBox -type ok -icon info -parent .fTop -title "About" -message "$t res = $res"
-      
-  # tk_messageBox -type ok -icon info -parent .fTop -title "About" -message \
-      # "Engine #1 : [::engine::getName 1]\nEngine #2 : [::engine::getName 2]\n$::scidppc_version\nScid Pocket is based on Scid\nhttp://prolinux.free.fr/scid\nReleased under GPL (free)\n[sc_info pocket]"
+  for {set i 0 } {$i < 5} { incr i} {
+    sc_game push copyfast
+    sc_game pop
+  }
+  tk_messageBox -type ok -icon info -parent .fTop -title "About" -message \
+      "Engine #1 : [::engine::getName 1]\nEngine #2 : [::engine::getName 2]\n$::scidppc_version\nScid Pocket is based on Scid\nhttp://prolinux.free.fr/scid\nReleased under GPL (free)\n[sc_info pocket]"
 }
 
 ################################################################################

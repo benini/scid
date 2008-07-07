@@ -304,7 +304,7 @@ menuText F GInfoTBNothing "Tables de finales: Rien" 12
 menuText F GInfoTBResult "Tables de finales: Seulement le résultat" 12
 menuText F GInfoTBAll "Tables de finales: résultat et meilleurs coups" 19
 menuText F GInfoDelete "(Récupérer)Effacer cette partie" 4
-menuText F GInfoMark "(Dé)Sélectionner cette partie" 4
+menuText F GInfoMark "(Dé)Marquer cette partie" 4
 menuText F GInfoInformant "Configurer les valeurs de notation" 0
 
 # Main window buttons:
