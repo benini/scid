@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.2 2008/07/05 08:53:53 arwagner Exp $
+### $Id: correspondence.tcl,v 1.3 2008/07/07 17:38:47 arwagner Exp $
 ###
-### Last change: <Fri, 2008/07/04 23:05:00 arwagner ingata>
+### Last change: <Mon, 2008/07/07 19:34:17 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -634,11 +634,16 @@ namespace eval Xfcc {
 					# OpenChess on PalmOS.
 					puts $pgnF "{$name-$id}"
 
-					puts $pgnF $moves
-					if {$mess != ""} {
-						puts -nonewline $pgnF "\{"
-						puts -nonewline $pgnF $mess
-						puts $pgnF "\}"
+					# If the PGN already ends with a comment, do not place
+					# the message string afterwards as scid will then
+					# discard the comment in the movelist.
+					puts stderr [string range $moves end end]
+					if {[string range $moves end end] != "\}"} {
+						if {$mess != ""} {
+							puts -nonewline $pgnF "\{"
+							puts -nonewline $pgnF $mess
+							puts $pgnF "\}"
+						}
 					}
 
 					# add result at the end
@@ -705,6 +710,7 @@ namespace eval Xfcc {
 			set noTablebases    [$game selectNodes {string(noTablebases)}]
 			set noEngines       [$game selectNodes {string(noEngines)}]
 			set Result          [$game selectNodes {string(result)}]
+			set mess            [::Xfcc::xmldecrypt [$game selectNodes {string(message)}]]
 
 			if {[$game selectNodes {string(hasWhite)}] == "true"} {
 				set clockW [format "%2ud %2u:%2u" $daysPlayer $hoursPlayer $minutesPlayer]
@@ -725,7 +731,8 @@ namespace eval Xfcc {
 				[list "noTablebases" $noTablebases] \
 				[list "noDatabases" $noDatabases] \
 				[list "noEngines" $noEngines] \
-				[list "result" $Result] ]
+				[list "result" $Result] \
+				[list "message" $mess] ]
 		}
 	}
 }
@@ -983,6 +990,16 @@ image create photo tb_CC_outoftime -data {
 	JC8WHRIGAIcUPUM/BSImIBGVhAxCQ0VDAx0dKhkHhAAlQ0ZIRwSoHYmgADlESElIArUASSm4PQ9H
 	SEYBDajBw4IAMkGkQxgGFzPNuCM7PkA+OiEINNmDCig2NzUxLTArACnOzxMnLjwQOCwct60JGh4f
 	Gyo4IFfoVqV38RYxSqSwYSAAOw==
+}
+
+image create photo tb_CC_message -data {
+	R0lGODlhDAAQAKUxAAAAACAgIG5mWHJsWn50ZH94ZIB4ZoF5ZoZ9aIh+aoh/a4uBbJCFb5WJc56d
+	lbmtk8Kyk8Szk8S0lcW1lsm5lsm6mMK/uM+/nNPCntTEoMnIxN7Ko+DOqOzYrfDbs/Xesvbfs/ni
+	svrjs/zmtf/ot//ouP/puv/qvf/rwv/tx/3uzfXu7vXx8frz7Pj07fX19fz16v//////////////
+	/////////////////////////////////////////////yH+FUNyZWF0ZWQgd2l0aCBUaGUgR0lN
+	UAAh+QQBCgA/ACwAAAAADAAQAAAGbsCfcEgkAo7I4xDgwFQqFMrlARACXgKRp8NpZKq/62iQGiE2
+	E/A1JRokSiCJ+tVKkQakktz6SrlSLwUhEHN+gIKEfC8qMGQmEYUsBAwpH5B8KwcpJwoplz8BLwYp
+	pCgLiWEWL6usGmBhSUhFs0NBADs=
 }
 
 
@@ -1365,7 +1382,7 @@ namespace eval CorrespondenceChess {
 	# the list has to be emptied if all games are resynced in.
 	#--------------------------------------------------------------------------
 	proc updateGamelist {id toMove event site white black clockW \
-								clockB var db books tb engines wc bc} {
+								clockB var db books tb engines wc bc mess} {
 		set num $::CorrespondenceChess::num
 		set w .ccWindow
 
@@ -1393,6 +1410,12 @@ namespace eval CorrespondenceChess {
 		if { (($clockW == " 0d  0: 0") || ($clockB == " 0d  0: 0")) && (($toMove == "yes") || ($toMove == "no")) } {
 				$w.bottom.toMove image create end -align center -image tb_CC_outoftime
 		}
+
+		if {$mess != ""} {
+			$w.bottom.toMove image create end -align center -image tb_CC_message
+			##::utils::tooltip::Set $w.bottom.toMove $mess
+		}
+
 		switch -regexp -- $toMove \
 		"1-0" {
 			$w.bottom.toMove image create end -align center -image $::board::letterToPiece(K)25
@@ -2290,14 +2313,15 @@ namespace eval CorrespondenceChess {
 
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
-								$Event $Site $White $Black "" "" "" "" "" "" "" $wc $bc
+								$Event $Site $White $Black "" "" "" "" "" "" "" $wc $bc ""
 
 					} else {
 						# search for extra information from Xfcc server
 						set YM " ? ";  
 						set clockW "no update"; set clockB "no update";
-						set var ""; set noDB ""; set noBK ""; set noTB ""; 
-						set noENG "";
+						set var "";             set noDB "";
+						set noBK "";            set noTB ""; 
+						set noENG "";           set mess ""
 
 						# actually check the $xfccstate list for the current
 						# values. If it is not set (e.g. only inbox processed
@@ -2340,9 +2364,13 @@ namespace eval CorrespondenceChess {
 									if { [string equal -nocase [lindex $i 0] "noEngines" ] } {
 										set noENG [string range $i 10 end]
 									}
+									if { [string equal -nocase [lindex $i 0] "message" ] } {
+										set mess [string range $i 9 end-1]
+									}
 								}
 							}
 						}
+						## set mess "$CmailGameName This is a testmessage for the tooltip display"
 						if {$Result == "1"} {
 							set YM "1-0"
 						} elseif {$Result == "0"} {
@@ -2353,7 +2381,7 @@ namespace eval CorrespondenceChess {
 						## -- > fill gaps from the state list
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
 								$Event $Site $White $Black $clockW $clockB $var \
-								$noDB $noBK $noTB $noENG $wc $bc
+								$noDB $noBK $noTB $noENG $wc $bc $mess
 					}
 				}
 				.ccWindow.top.nextCC configure -state normal
