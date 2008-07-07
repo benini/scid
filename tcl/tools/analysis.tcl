@@ -2221,7 +2221,7 @@ proc updateAnalysisBoard {n moves} {
   # Temporarily wipe the premove command:
   sc_info preMoveCmd {}
   # Push a temporary copy of the current game:
-  sc_game push copy
+  sc_game push copyfast
   
   # Make the engine moves and update the board:
   sc_move_add $moves $n

@@ -481,3 +481,4 @@ scid-3.6.25
    * trainer window easier to understand
 - Removed Crafty engine, as tacgame.tcl does not need it any longer. So the two mandatory engines for Scid's features are Toga and Phalanx. Note that any Toga version should work, but only the patched version of Phalanx works.
 - Correspondence Chess: do not drop a comment from the move list if one is sent via message. Add a visual indicator to the game list if a comment was sent by the opponent.
+- Added "sc_game push copyfast" call that behaves like "sc_game push copy" except there is no memory leak and tags and comments are not copied in the new pushed game. 

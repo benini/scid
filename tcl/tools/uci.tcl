@@ -34,7 +34,7 @@ namespace eval uci {
     set uciInfo(multipv$n) ""
     # set uciInfo(pvlist$n) {}
     # set uciInfo(score$n) ""
-    set uciInfo(tmp_score$n) ""    
+    set uciInfo(tmp_score$n) ""
     set uciInfo(scoremate$n) ""
     set uciInfo(currmove$n) ""
     set uciInfo(currmovenumber$n) 0
@@ -46,7 +46,7 @@ namespace eval uci {
     set uciInfo(string$n) ""
     set uciInfo(refutation$n) ""
     set uciInfo(currline$n) ""
-    # set uciInfo(bestmove$n) ""   
+    # set uciInfo(bestmove$n) ""
   }
   ################################################################################
   # if analyze = 0 -> engine mode
@@ -59,6 +59,7 @@ namespace eval uci {
       set pipe $analysis(pipe$n)
       if { ! [ ::checkEngineIsAlive $n ] } { return }
     } else  {
+      set analysis(fen$n) ""
       set pipe $uciInfo(pipe$n)
       if { ! [ ::uci::checkEngineIsAlive $n ] } { return }
     }
@@ -195,7 +196,7 @@ namespace eval uci {
         }
         return
       }
-
+      
       # handle the case an UCI engine does not send multiPV
       if { $uciInfo(multipv$n) == "" } { set uciInfo(multipv$n) 1 }
       
@@ -236,7 +237,7 @@ namespace eval uci {
       }
       
     } ;# end of info line
-             
+    
     # the UCI engine answers to <uci> command
     if { $line == "uciok"} {
       if {$analysis(waitForUciOk$n)} {
@@ -739,13 +740,15 @@ namespace eval uci {
   #make UCI output more readable (b1c3 -> Nc3)
   ################################################################################
   proc formatPv { moves fen } {
-
+    
     sc_info preMoveCmd {}
     # Push a temporary copy of the current game:
-    sc_game push
-
-    sc_game startBoard $fen
-
+    if {$fen != ""} {
+      sc_game push
+      sc_game startBoard $fen
+    } else  {
+      sc_game push copyfast
+    }
     set tmp ""
     foreach m $moves {
       if { [sc_move_add $m] == 1 } { break }
@@ -753,12 +756,12 @@ namespace eval uci {
       append tmp " $prev"
     }
     set tmp [string trim $tmp]
-
+    
     # Pop the temporary game:
     sc_game pop
     # Restore pre-move command:
     sc_info preMoveCmd preMoveCommand
-
+    
     return $tmp
   }
 }
