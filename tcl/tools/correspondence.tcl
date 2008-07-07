@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.3 2008/07/07 17:38:47 arwagner Exp $
+### $Id: correspondence.tcl,v 1.4 2008/07/07 18:29:59 arwagner Exp $
 ###
-### Last change: <Mon, 2008/07/07 19:34:17 arwagner ingata>
+### Last change: <Mon, 2008/07/07 20:28:23 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -633,6 +633,7 @@ namespace eval Xfcc {
 					# can not deal with extensive header information, e.g.
 					# OpenChess on PalmOS.
 					puts $pgnF "{$name-$id}"
+					puts $pgnF $moves
 
 					# If the PGN already ends with a comment, do not place
 					# the message string afterwards as scid will then
