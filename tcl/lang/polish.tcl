@@ -1465,6 +1465,14 @@ translate P DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate P ShowReport {Show report}
 # ====== TODO To be translated ======
+translate P NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate P NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate P NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate P NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate P PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate P OpponentBestMove {Opponent plays best moves}
@@ -2003,6 +2011,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

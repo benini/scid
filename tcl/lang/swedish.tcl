@@ -1459,6 +1459,14 @@ translate W DisplayOpeningStats {Visa statistik}
 # ====== TODO To be translated ======
 translate W ShowReport {Visa rapport}
 # ====== TODO To be translated ======
+translate W NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate W NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate W NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate W NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate W PlayerBestMove  {Tillåt bara bästa dragen}
 # ====== TODO To be translated ======
 translate W OpponentBestMove {Motståndare spelar bästa dragen}
@@ -6793,6 +6801,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

@@ -4,11 +4,8 @@
 |                                                           |
  ===========================================================
 
-SC_GAME PUSH free / alloc  -> voir traces pour checkmem
-
 Traiter les ouvertures comme une suite de positions
 Mettre des tags PGN sur les parties (motifs)
-OPTrainer : pack forget CM - % de connaissance d'une position et rapport-> indiquer les positions vues / jamais vues
 
  ===========================================================
 |                                                           |

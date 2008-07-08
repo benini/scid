@@ -1485,6 +1485,14 @@ translate R DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate R ShowReport {Show report}
 # ====== TODO To be translated ======
+translate R NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate R NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate R NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate R NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate R PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate R OpponentBestMove {Opponent plays best moves}
@@ -1805,6 +1813,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

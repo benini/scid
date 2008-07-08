@@ -1449,6 +1449,14 @@ translate C DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate C ShowReport {Show report}
 # ====== TODO To be translated ======
+translate C NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate C NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate C NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate C NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate C PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate C OpponentBestMove {Opponent plays best moves}
@@ -5407,6 +5415,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

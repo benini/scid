@@ -1451,6 +1451,14 @@ translate H DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate H ShowReport {Show report}
 # ====== TODO To be translated ======
+translate H NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate H NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate H NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate H NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate H PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate H OpponentBestMove {Opponent plays best moves}
@@ -2002,6 +2010,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

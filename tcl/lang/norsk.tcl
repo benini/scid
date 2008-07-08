@@ -1452,6 +1452,14 @@ translate O DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate O ShowReport {Show report}
 # ====== TODO To be translated ======
+translate O NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate O NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate O NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate O NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate O PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate O OpponentBestMove {Opponent plays best moves}
@@ -1776,6 +1784,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

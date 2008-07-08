@@ -1353,6 +1353,14 @@ translate D DisplayCM {Kandidatenzüge anzeigen}
 translate D DisplayCMValue {Wert der Kandidatenzüge anzeigen}
 translate D DisplayOpeningStats {Statistik anzeigen}
 translate D ShowReport {Bericht anzeigen}
+# ====== TODO To be translated ======
+translate D NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate D NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate D NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate D NumberOfTimesPositionEncountered {times position encountered}
 translate D PlayerBestMove  {Nur beste Züge erlauben}
 translate D OpponentBestMove {Gegner spielt besten Zug}
 translate D OnlyFlaggedLines {Nur markierte Linien}
@@ -6935,6 +6943,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

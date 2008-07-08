@@ -1452,6 +1452,14 @@ translate N DisplayCMValue {Toon waarde kandidaat zetten}
 translate N DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate N ShowReport {Show report}
+# ====== TODO To be translated ======
+translate N NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate N NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate N NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate N NumberOfTimesPositionEncountered {times position encountered}
  
 translate N PlayerBestMove  {Laat alleen beste zetten toe}
  
@@ -1770,6 +1778,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

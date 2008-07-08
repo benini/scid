@@ -1456,6 +1456,14 @@ translate Y DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate Y ShowReport {Show report}
 # ====== TODO To be translated ======
+translate Y NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate Y NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate Y NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate Y NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate Y PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate Y OpponentBestMove {Opponent plays best moves}
@@ -1776,6 +1784,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

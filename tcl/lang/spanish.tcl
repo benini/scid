@@ -1319,6 +1319,14 @@ translate S DisplayCM {Muestra posibles movimientos}
 translate S DisplayCMValue {Muestra valor de posibles movimientos}
 translate S DisplayOpeningStats {Muestra estadísticas}
 translate S ShowReport {Muestra informe}
+# ====== TODO To be translated ======
+translate S NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate S NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate S NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate S NumberOfTimesPositionEncountered {times position encountered}
 translate S PlayerBestMove  {Permite únicamente movimientos mejores}
 translate S OpponentBestMove {Oponente juega mejores movimientos}
 translate S OnlyFlaggedLines {Sólo lineas marcadas}
@@ -1484,6 +1492,7 @@ translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, a
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

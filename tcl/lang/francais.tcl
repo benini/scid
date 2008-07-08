@@ -561,18 +561,15 @@ translate F TitleFilterGraph "Scid: Graphe de filtre"
 
 # Analysis window:
 translate F AddVariation {Ajouter une variante}
-# ====== TODO To be translated ======
-translate F AddAllVariations {Add All Variations}
+translate F AddAllVariations {Ajouter toutes les variantes}
 translate F AddMove {Ajouter le coup}
 translate F Annotate {Annotation}
 translate F ShowAnalysisBoard {Montrer échiquier d'analyse}
-# ====== TODO To be translated ======
-translate F ShowInfo {Show engine info}
+translate F ShowInfo {Montrer infos moteur}
 translate F FinishGame {Continuer la partie}
 translate F StopEngine {Arrêter le moteur}
 translate F StartEngine {Démarrer le moteur}
-# ====== TODO To be translated ======
-translate F LockEngine {Lock engine to current position}
+translate F LockEngine {Verrouiller moteur à la position actuelle}
 translate F AnalysisCommand {Commande d'analyse}
 translate F PreviousChoices {Choix précédents}
 translate F AnnotateTime {Fixer le temps en secondes entre deux coups}
@@ -1306,6 +1303,10 @@ translate F DisplayCM {Afficher les coups candidats}
 translate F DisplayCMValue {Afficher la valeur des coups candidats}
 translate F DisplayOpeningStats {Montrer statistiques}
 translate F ShowReport {Montrer rapport}
+translate F NumberOfGoodMovesPlayed {bons coups joués}
+translate F NumberOfDubiousMovesPlayed {coups douteux joués}
+translate F NumberOfMovesPlayedNotInRepertoire {coups joués absents du répertoire}
+translate F NumberOfTimesPositionEncountered {nombre de fois position rencontrée}
 translate F PlayerBestMove  {N'autoriser que les meilleurs coups}
 translate F OpponentBestMove {Ne jouer que les meilleurs coups}
 translate F OnlyFlaggedLines {Seulement les lignes marquées}
@@ -1681,6 +1682,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

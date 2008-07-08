@@ -1461,6 +1461,14 @@ translate B DisplayOpeningStats {Show statistics}
 # ====== TODO To be translated ======
 translate B ShowReport {Show report}
 # ====== TODO To be translated ======
+translate B NumberOfGoodMovesPlayed {good moves played}
+# ====== TODO To be translated ======
+translate B NumberOfDubiousMovesPlayed {dubious moves played}
+# ====== TODO To be translated ======
+translate B NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+# ====== TODO To be translated ======
+translate B NumberOfTimesPositionEncountered {times position encountered}
+# ====== TODO To be translated ======
 translate B PlayerBestMove  {Allow only best moves}
 # ====== TODO To be translated ======
 translate B OpponentBestMove {Opponent plays best moves}
@@ -1782,6 +1790,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

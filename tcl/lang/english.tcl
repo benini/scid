@@ -1345,6 +1345,10 @@ translate E DisplayCM {Display candidate moves}
 translate E DisplayCMValue {Display candidate moves value}
 translate E DisplayOpeningStats {Show statistics}
 translate E ShowReport {Show report}
+translate E NumberOfGoodMovesPlayed {good moves played}
+translate E NumberOfDubiousMovesPlayed {dubious moves played}
+translate E NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+translate E NumberOfTimesPositionEncountered {times position encountered}
 translate E PlayerBestMove  {Allow only best moves}
 translate E OpponentBestMove {Opponent plays best moves}
 translate E OnlyFlaggedLines {Only flagged lines}

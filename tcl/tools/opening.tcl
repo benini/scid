@@ -695,7 +695,7 @@ namespace eval opening {
     setWinLocation $w
     
     frame $w.ft
-    text $w.ft.text -height 10 -width 20 -wrap word -background white
+    text $w.ft.text -height 10 -width 40 -wrap word -background white
     pack $w.ft.text
     pack $w.ft
     
@@ -736,12 +736,12 @@ namespace eval opening {
         }
       }
     }
-    $w.ft.text insert 1.0 "$::tr(PositionsInRepertoire) $totalPos\n"
-    $w.ft.text insert 2.0 "$::tr(PositionsNotPlayed) $posNotPlayed\n"
-    $w.ft.text insert 3.0 "$::tr(PositionsPlayed) $posTotalPlayed\n"
-    $w.ft.text insert 4.0 "$::tr(Success) $success\n"
-    $w.ft.text insert 5.0 "$::tr(DubiousMoves) $dubMoves\n"
-    $w.ft.text insert 6.0 "$::tr(OutOfRepertoire) $outOfRep\n"
+    $w.ft.text insert end "$::tr(PositionsInRepertoire) $totalPos\n"
+    $w.ft.text insert end "$::tr(PositionsNotPlayed) $posNotPlayed\n"
+    $w.ft.text insert end "$::tr(PositionsPlayed) [expr $totalPos - $posTotalPlayed]\n"
+    $w.ft.text insert end "$::tr(Success) $success\n"
+    $w.ft.text insert end "$::tr(DubiousMoves) $dubMoves\n"
+    $w.ft.text insert end "$::tr(OutOfRepertoire) $outOfRep\n"
     
     $w.ft.text configure -state disabled
     
