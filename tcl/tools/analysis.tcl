@@ -1960,7 +1960,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
 ################################################################################
 proc startAnalyzeMode {{n 1} {force 0}} {
   global analysis
-  
+
   # Check that the engine has not already had analyze mode started:
   if {$analysis(analyzeMode$n) && ! $force } { return }
   set analysis(analyzeMode$n) 1

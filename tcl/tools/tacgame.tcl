@@ -548,8 +548,12 @@ namespace eval tacgame {
   # ======================================================================
   proc startAnalyze { } {
     global ::tacgame::analysisCoach ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime
-    
-    ::startAnalyzeMode 2
+    set n 2
+    set ::analysis(waitForReadyOk$n) 1
+    ::uci::sendToEngine $n "isready"
+    vwait ::analysis(waitForReadyOk$n)
+    ::uci::sendToEngine $n "position fen [sc_pos fen]"
+    ::uci::sendToEngine $n "go infinite ponder"
     
     if { $isLimitedAnalysisTime == 1 }  {
       after [expr 1000 * $analysisTime] ::tacgame::stopAnalyze
@@ -564,8 +568,7 @@ namespace eval tacgame {
     global ::tacgame::analysisCoach ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime
     
     after cancel ::tacgame::stopAnalyze
-    
-    ::stopAnalyzeMode 2
+    ::uci::sendToEngine 2 "stop"
   }
   ################################################################################
   # returns true if last move is a mate and stops clocks
@@ -805,11 +808,12 @@ namespace eval tacgame {
     # only update when it is human turn
     if { [getPhalanxColor] == [sc_pos side] } { return }
     
+    # puts "::uci::uciInfo(score2) $::uci::uciInfo(score2) "
     catch {
       set sc1 $::uci::uciInfo(score2)
       set sc2 [lindex $lscore end]
     }
-    
+        
     # There are less than 2 scores in the list
     if {[llength $lscore] < 2} {
       set blunderWarningLabel $::tr(Noinfo)
