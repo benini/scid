@@ -1693,7 +1693,7 @@ bind .statusbar <Unmap> { showHideAllWindows iconify}
 proc getTopLevel {} {
   
   set topl {}
-  set exclude { ".splash" ".tooltip" ".glistExtra" ".menu" "." }
+  set exclude { ".splash" ".tooltip" ".glistExtra" ".menu" "." ".pgnPopup" }
   foreach c [winfo children .] {
     if { $c != [winfo toplevel $c] } { continue }
     # Tk report .__tk_filedialog as toplevel window even if the window has been closed
