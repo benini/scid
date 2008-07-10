@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.4 2008/07/07 18:29:59 arwagner Exp $
+### $Id: correspondence.tcl,v 1.5 2008/07/10 20:18:14 arwagner Exp $
 ###
-### Last change: <Mon, 2008/07/07 20:28:23 arwagner ingata>
+### Last change: <Thu, 2008/07/10 22:17:39 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -532,6 +532,8 @@ namespace eval Xfcc {
 			set WhiteNA     [::Xfcc::xmldecrypt [$game selectNodes {string(whiteNA)}]]
 			set BlackNA     [::Xfcc::xmldecrypt [$game selectNodes {string(blackNA)}]]
 
+			set myTurn          [$game selectNodes {string(myTurn)}]
+
 			if {$WhiteNA == ""} {
 				set WhiteNA "white@unknown.org"
 			}
@@ -638,8 +640,7 @@ namespace eval Xfcc {
 					# If the PGN already ends with a comment, do not place
 					# the message string afterwards as scid will then
 					# discard the comment in the movelist.
-					puts stderr [string range $moves end end]
-					if {[string range $moves end end] != "\}"} {
+					if {([string range $moves end end] != "\}") && ($myTurn == "no")} {
 						if {$mess != ""} {
 							puts -nonewline $pgnF "\{"
 							puts -nonewline $pgnF $mess
