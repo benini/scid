@@ -1566,6 +1566,8 @@ translate H AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate H FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate H MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate H UseBook {Use book}
 # ====== TODO To be translated ======
 translate H MultiPV {Multiple variations}
@@ -2010,6 +2012,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

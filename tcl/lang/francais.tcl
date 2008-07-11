@@ -1359,6 +1359,7 @@ translate F MoveOutOfBook {Coup hors bibliothèque d'ouverture}
 translate F LastBookMove {Dernier coup de la bibliothèque d'ouverture}
 translate F AnnotateSeveralGames {Annotater plusieurs parties\ndepuis l'actuelle jusqu'à :}
 translate F FindOpeningErrors {Chercher les erreurs d'ouverture}
+translate F MarkTacticalExercises {Marquer exercices tactiques}
 translate F UseBook {Utiliser bibliothèque}
 translate F MultiPV {Nombre de variantes}
 translate F Hash {Mémoire}
@@ -1682,6 +1683,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

@@ -1574,6 +1574,8 @@ translate W AnnotateSeveralGames {Kommentera flera partier\nfrån aktuellt till :
 # ====== TODO To be translated ======
 translate W FindOpeningErrors {Hitta öppningsfel}
 # ====== TODO To be translated ======
+translate W MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate W UseBook {Använd bok}
 # ====== TODO To be translated ======
 translate W MultiPV {Flera variationer}
@@ -6801,6 +6803,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

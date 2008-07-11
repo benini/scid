@@ -1379,6 +1379,8 @@ translate S MoveOutOfBook {Movimiento fuera del libro}
 translate S LastBookMove {Último movimiento del libro}
 translate S AnnotateSeveralGames {Anotar las partidas\ndesde la actual hasta la partida: }
 translate S FindOpeningErrors {Encontrar errores en los primeros }
+# ====== TODO To be translated ======
+translate S MarkTacticalExercises {Mark tactical exercises}
 translate S UseBook {Usar libro de aperturas (Book)}
 translate S MultiPV {Variantes múltiples}
 translate S Hash {Memoria Hash}
@@ -1492,6 +1494,7 @@ translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, a
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

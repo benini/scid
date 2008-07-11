@@ -702,9 +702,21 @@ proc configAnnotation {} {
   spinbox $w.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
       -from 10 -to 20 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
   label $w.batch.lBatchOpening -text $::tr(moves)
-  pack $w.batch.cbBatch $w.batch.spBatchEnd -side top -fill x
-  pack $w.batch.cbBatchOpening $w.batch.spBatchOpening $w.batch.lBatchOpening  -side left -fill x
+  # pack $w.batch.cbBatch $w.batch.spBatchEnd -side top -fill x
+  # pack $w.batch.cbBatchOpening $w.batch.spBatchOpening $w.batch.lBatchOpening  -side left -fill x
+  grid $w.batch.cbBatch -column 0 -row 0 -sticky w
+  grid $w.batch.spBatchEnd -column 1 -row 0 -sticky w
+  grid $w.batch.cbBatchOpening -column 0 -row 1 -sticky w
+  grid $w.batch.spBatchOpening -column 1 -row 1 -sticky e
+  grid $w.batch.lBatchOpening -column 2 -row 1 -sticky w
   set ::batchEnd $to
+  
+  checkbutton $w.batch.cbMarkTactics -text $::tr(MarkTacticalExercises) -variable ::markTacticalExercises
+  grid $w.batch.cbMarkTactics -column 0 -row 2 -sticky w
+  if {! $::analysis(uci1)} {
+    set ::markTacticalExercises 0
+    $w.batch.cbMarkTactics configure -state disabled
+  }
   
   addHorizontalRule $w
   frame $w.buttons
@@ -728,7 +740,7 @@ proc configAnnotation {} {
     if {$::addAnnotatorTag} {
       appendAnnotator "$analysis(name1)"
     }
-    if {$autoplayMode == 0} {  toggleAutoplay }
+    if {$autoplayMode == 0} { toggleAutoplay }
   }
   pack $w.buttons.cancel $w.buttons.ok -side right -padx 5 -pady 5
   focus $w.spDelay
@@ -779,6 +791,55 @@ proc bookAnnotation { {n 1} } {
       updateBoard -pgn
     }
   }
+}
+################################################################################
+# Will add **** to any position considered as a tactical shot
+#
+################################################################################
+proc markExercise { prevscore score } {
+  if {!$::markTacticalExercises} { return }
+  
+  # check at which depth the tactical shot is found
+  # this assumes analysis by an UCI engine
+  if {! $::analysis(uci1)} { return }
+  
+  set deltamove [expr {$score - $prevscore}]
+  # filter tactics so only those with high gains are kept
+  if { [expr abs($deltamove)] < $::informant("+/-") } { return }
+  # dismiss games where the result is already clear (high score,and we continue in the same way)
+  if { [expr $prevscore * $score] >= 0} {
+    if { [expr abs($prevscore) ] > $::informant("++-") } { return }
+    if { [expr abs($prevscore)] > $::informant("+-") && [expr abs($score) ] < [expr 2 * abs($prevscore)]} { return }
+  }
+
+  stopAnalyzeMode 1
+  set found 0
+  
+  for {set depth 1} {$depth < 10} {incr depth} {
+    set ::analysis(waitForReadyOk1) 1
+    sendToEngine 1 "isready"
+    vwait ::analysis(waitForReadyOk1)
+    set ::analysis(waitForBestMove1) 1
+    sendToEngine 1 "go depth $depth"
+    vwait ::analysis(waitForBestMove1)
+    puts "<$depth> uciInfo(bestmove1) $::uci::uciInfo(bestmove1) score $::uci::uciInfo(score1)"
+    # Mark the lowest depth where the move is found (that is close enough to the expected result
+    if {[expr ($::uci::uciInfo(score1) - $prevscore) / $deltamove ] > 0.7} {
+      # don't take it if hanging piece (too simple)
+      if {$depth > 1} {
+        set found 1
+      }
+      break
+    }
+  }
+  
+  if { $found } {
+    puts "flag T pour [sc_game number]"
+    sc_game flag T [sc_game number] 1
+    sc_pos setComment "****d${depth}sc${score}psc$prevscore [sc_pos getComment]"
+    updateBoard
+  }
+  startAnalyzeMode 1
 }
 ################################################################################
 #
@@ -846,8 +907,10 @@ proc addAnnotation { {n 1} } {
         sc_pos addNag "?!"
       } elseif {$absdeltamove > $::informant("?") && $absdeltamove <= $::informant("??")} {
         sc_pos addNag "?"
+        markExercise $prevscore $score
       } elseif {$absdeltamove > $::informant("??") } {
         sc_pos addNag "??"
+        markExercise $prevscore $score
       }
     }
     
@@ -903,8 +966,10 @@ proc addAnnotation { {n 1} } {
         sc_pos addNag "?!"
       } elseif {$absdeltamove > $::informant("?") && $absdeltamove <= $::informant("??")} {
         sc_pos addNag "?"
+        markExercise $prevscore $score
       } elseif {$absdeltamove > $::informant("??") } {
         sc_pos addNag "??"
+        markExercise $prevscore $score
       }
       
       set text [format "%s %+.2f / %+.2f" $::tr(AnnotateBlundersOnlyScoreChange) $prevscore $score]
@@ -1069,7 +1134,7 @@ proc addAnalysisVariation {{n 1}} {
     sc_move_add $move $n
     sc_info preMoveCmd preMoveCommand
   }
-
+  
   set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
   set moves $analysis(moves$n)
   # Temporarily clear the pre-move command since we want to add a
@@ -1083,10 +1148,10 @@ proc addAnalysisVariation {{n 1}} {
   # Add as many moves as possible from the engine analysis:
   sc_move_add $moves $n
   sc_var exit
-
+  
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
-
+  
   updateBoard -pgn
   # Update score graph if it is open:
   if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
@@ -1096,9 +1161,9 @@ proc addAnalysisVariation {{n 1}} {
 ################################################################################
 proc addAllVariations {{n 1}} {
   global analysis
-
+  
   if {! [winfo exists .analysisWin$n]} { return }
-
+  
   # Cannot add a variation to an empty variation:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
   # Cannot (yet) add a variation at the end of the game or a variation:
@@ -1121,15 +1186,15 @@ proc addAllVariations {{n 1}} {
     sc_move_add $move $n
     sc_info preMoveCmd preMoveCommand
   }
-
+  
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
-
+  
   foreach i $analysis(multiPVraw$n) {
     set text [format "\[%s\] %d:%+.2f" $analysis(name$n) [lindex $i 0] [lindex $i 1]]
     set moves [lindex $i 2]
-
+    
     # Add the variation:
     sc_var create
     # Add the comment at the start of the variation:
@@ -1138,7 +1203,7 @@ proc addAllVariations {{n 1}} {
     sc_move_add $moves $n
     sc_var exit
   }
-
+  
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
   updateBoard -pgn
@@ -1435,16 +1500,16 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   $w.bd configure -relief solid -borderwidth 1
   set analysis(showBoard$n) 0
   set analysis(showEngineInfo$n) 0
-
+  
   frame $w.b1
   pack $w.b1 -side bottom -fill x
   
   checkbutton $w.b1.automove -image tb_training  -indicatoron false -height 24 -relief raised -command "toggleAutomove $n" -variable analysis(automove$n)
   ::utils::tooltip::Set $w.b1.automove $::tr(Training)
-
+  
   checkbutton $w.b1.lockengine -image tb_lockengine -indicatoron false -height 24 -width 24 -variable analysis(lockEngine$n) -command "toggleLockEngine $n"
   ::utils::tooltip::Set $w.b1.lockengine $::tr(LockEngine)
-
+  
   button $w.b1.line -image tb_addvar -height 24 -width 24 -command "addAnalysisVariation $n"
   ::utils::tooltip::Set $w.b1.line $::tr(AddVariation)
   
@@ -1475,10 +1540,10 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   }
   button $w.b1.showboard -image tb_coords -height 24 -width 24 -command "toggleAnalysisBoard $n"
   ::utils::tooltip::Set $w.b1.showboard $::tr(ShowAnalysisBoard)
-
+  
   checkbutton $w.b1.showinfo -image tb_engineinfo -indicatoron false -height 24 -width 24 -variable analysis(showEngineInfo$n) -command "toggleEngineInfo $n"
   ::utils::tooltip::Set $w.b1.showinfo $::tr(ShowInfo)
-
+  
   if {$n == 1} {
     checkbutton $w.b1.annotate -image tb_annotate -indicatoron false -height 24 -variable annotateModeButtonValue -relief raised -command { configAnnotation }
     ::utils::tooltip::Set $w.b1.annotate $::tr(Annotate...)
@@ -1587,7 +1652,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     set analysis(priority$n) idle
     setAnalysisPriority $n
   }
- 
+  
 }
 ################################################################################
 #
@@ -1960,7 +2025,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
 ################################################################################
 proc startAnalyzeMode {{n 1} {force 0}} {
   global analysis
-
+  
   # Check that the engine has not already had analyze mode started:
   if {$analysis(analyzeMode$n) && ! $force } { return }
   set analysis(analyzeMode$n) 1
@@ -2069,7 +2134,7 @@ proc updateAnalysisText {{n 1}} {
       $t insert end "CPU Load: "
       set cpuload [expr {round($analysis(cpuload$n) / 10)}]
       $t insert end [ format "%u%% " $cpuload ] small
-
+      
       #$t insert end [ format "\nCurrent: %s (%s) - Hashfull: %u - nps: %u - TBhits: %u - CPUload: %u" $analysis(currmove$n) $analysis(currmovenumber$n) $analysis(hashfull$n) $analysis(nps$n) $analysis(tbhits$n) $analysis(cpuload$n) ]
     }
   } else {
@@ -2140,7 +2205,7 @@ proc updateAnalysisText {{n 1}} {
       $h insert end "1 " gray
       append newStr "[::trans [lindex $pv 2]]\n"
       $h insert end $newStr blue
-    
+      
       set lineNumber 1
       foreach pv $analysis(multiPV$n) {
         if {$lineNumber == 1} { incr lineNumber ; continue }
@@ -2183,12 +2248,12 @@ proc toggleAnalysisBoard {n} {
     pack .analysisWin$n.bd -side right -before .analysisWin$n.b1 -padx 4 -pady 4 -anchor n
     update
     .analysisWin$n.hist.text configure -setgrid 0
-    .analysisWin$n.text configure -setgrid 0    
+    .analysisWin$n.text configure -setgrid 0
     set x [winfo reqwidth .analysisWin$n]
     set y [winfo reqheight .analysisWin$n]
     wm geometry .analysisWin$n ${x}x${y}
     .analysisWin$n.hist.text configure -setgrid 1
-    .analysisWin$n.text configure -setgrid 1    
+    .analysisWin$n.text configure -setgrid 1
   }
 }
 ################################################################################
@@ -2658,42 +2723,42 @@ image create photo tb_pause -data {
 }
 
 image create photo tb_addallvars -data {
-R0lGODdhFAAUAKEDAAAngc4PNNnZ2f///ywAAAAAFAAUAAACN5SPqcvtjwBQ
-0tV0WT43BOQJWxYe4Th56qpOXMrG11Ya5ezan7nj0LuBSIKPYe4nOiKJyKbz
-VwAAOw==
+  R0lGODdhFAAUAKEDAAAngc4PNNnZ2f///ywAAAAAFAAUAAACN5SPqcvtjwBQ
+  0tV0WT43BOQJWxYe4Th56qpOXMrG11Ya5ezan7nj0LuBSIKPYe4nOiKJyKbz
+  VwAAOw==
 }
 
 image create photo tb_engineinfo -data {
-R0lGODdhFAAUAMIFAAAAAAAA/7i4uMDAwO7v8v///////////ywAAAAAFAAU
-AAADUEgarP6QsNkipIXaR/t2mPeF2jhl5UY2AtG+rXRqQl27sSx+XMVHgKBw
-SAQ8ikihQ2irDZtGRXK6nCKXUEDWNngIgltbsFsFf5nnIERdPRoTADs=
+  R0lGODdhFAAUAMIFAAAAAAAA/7i4uMDAwO7v8v///////////ywAAAAAFAAU
+  AAADUEgarP6QsNkipIXaR/t2mPeF2jhl5UY2AtG+rXRqQl27sSx+XMVHgKBw
+  SAQ8ikihQ2irDZtGRXK6nCKXUEDWNngIgltbsFsFf5nnIERdPRoTADs=
 }
 
 image create photo tb_lockengine -data {
-R0lGODlhGAAYAOfHAAAAAAwFABUJAg8PDxUQDBMTExQUFB0XEBwcHCUdFSEhISkhGjIhEC4kGS8l
-GycnJykpKTkrHTU1NTw8PEo5K0VFRW1CFUxMTFZTUl5aVl9fX2FhYGVjYZdcGpddGpheGppeG2pq
-aptgHqNrL6ZxN7B1MKl3PKt4P7J3M7N4NLR4NLN5NLJ6PLJ7O7Z8NrZ9OLZ9Ord9ObR/Q7SBRbmA
-PbSCQLSBRraCQbmBP7qBPrSDSbeDQrqDP7WETLqEQriFRLmFSLaGTLWITbyGRbeHTrqHSryHRryH
-SLqISbmITruJSayMZbyKS76KTLqLUrqMVLqMVZSUlLuNVbuOVryOVsCNUb2OVryPWL2QWMCRVcCS
-Vr+SWsCTWMSSVsGVXMKVXMKWXMOWX56ensaYVsOYYMaYWMeYWMSZYMSZYcaYYaCgoKGhocabZMac
-ZMibZ8ecZcmdYcidZcidZsqdYcieZsifaMqfY8mfaMqebcqfaMuja8yka8ykbMykbc2kbc6ka8yl
-bc6kbsymbc6mb9ClcM+mcM+ncM+ncs+nfNKndtCpcdGodNOqetOqe7KystKtdtOse9Sud9auf9Kv
-hdSwfNavgLa2tre2ttewgNizf9m0hNW2jtq2hde7ldm+mdq+mcPDw+G9lNzAnd/AluDAmeDBmeLC
-m+PCnMjIyOPDnOTEneTGoM/Pz9DQ0OXQs9XV1efSudbW1tjY2OnVvu7Vt+3WuO7Yuu7Yu+7YvO/Y
-u+3ZwN3d3e/avvDav+/bv97e3uHh4eLi4ubm5ufn5+np6e3t7e/v7///////////////////////
-////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////yH+uihjKSAyMDAwIEpha3Vi
-ICdKaW1tYWMnIFN0ZWluZXIKClRoaXMgaW1hZ2Ugd2FzIGNyZWF0ZWQgdXNpbmcgR2ltcC4gR2lt
-cCBpcyBmcmVlIHNvZnR3YXJlIAphcyBkZWZpbmVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5k
-YXRpb24gYW5kIGlzIGF2YWlsYWJsZQpmb3IgZG93bmxvYWQgYXQgaHR0cDovL3d3dy5naW1wLm9y
-ZwAh+QQBCgD/ACwAAAAAGAAYAAAI/gD/CRxIsKDBgwgTKhwIoGHDhQYBKBAjbBgqNQUgMtRQTFis
-V7tkrZkAQKMEY6wuNDQQopWjChABBJMFoaTAASFQRbGZsAAxUDwFIgAmJujBB78sGQUw7JJRggIa
-JNiQYQEBBwkOJKDAAUMEBgEOAvClaxYsV6I8efrkqdOmSYhAPP0HoNeqSpAI3WHTRs4bMlqGuPgw
-FwCuVJUaFcrThk4dOmi4GIkhV+wtU5LwpNkyxQqWK0lm+FDRoTAvVZg4UVL0x4+gPXbM4EjhoXCu
-UozchKHi5IkUKEFk8FghojCuU5I0RTK0Rw8fPXPG5EAxonCtUIvSYCGio4eQIDZYSsAoQaKwLVKN
-Mj0atKcPID5wytB4caIwrVGJAsU54+ULGDBZMOFDEyYUtsQhXVSBxA413PCDEkcUAUQLFsxFl0MY
-ZviQRhx2mFBAADs=
+  R0lGODlhGAAYAOfHAAAAAAwFABUJAg8PDxUQDBMTExQUFB0XEBwcHCUdFSEhISkhGjIhEC4kGS8l
+  GycnJykpKTkrHTU1NTw8PEo5K0VFRW1CFUxMTFZTUl5aVl9fX2FhYGVjYZdcGpddGpheGppeG2pq
+  aptgHqNrL6ZxN7B1MKl3PKt4P7J3M7N4NLR4NLN5NLJ6PLJ7O7Z8NrZ9OLZ9Ord9ObR/Q7SBRbmA
+  PbSCQLSBRraCQbmBP7qBPrSDSbeDQrqDP7WETLqEQriFRLmFSLaGTLWITbyGRbeHTrqHSryHRryH
+  SLqISbmITruJSayMZbyKS76KTLqLUrqMVLqMVZSUlLuNVbuOVryOVsCNUb2OVryPWL2QWMCRVcCS
+  Vr+SWsCTWMSSVsGVXMKVXMKWXMOWX56ensaYVsOYYMaYWMeYWMSZYMSZYcaYYaCgoKGhocabZMac
+  ZMibZ8ecZcmdYcidZcidZsqdYcieZsifaMqfY8mfaMqebcqfaMuja8yka8ykbMykbc2kbc6ka8yl
+  bc6kbsymbc6mb9ClcM+mcM+ncM+ncs+nfNKndtCpcdGodNOqetOqe7KystKtdtOse9Sud9auf9Kv
+  hdSwfNavgLa2tre2ttewgNizf9m0hNW2jtq2hde7ldm+mdq+mcPDw+G9lNzAnd/AluDAmeDBmeLC
+  m+PCnMjIyOPDnOTEneTGoM/Pz9DQ0OXQs9XV1efSudbW1tjY2OnVvu7Vt+3WuO7Yuu7Yu+7YvO/Y
+  u+3ZwN3d3e/avvDav+/bv97e3uHh4eLi4ubm5ufn5+np6e3t7e/v7///////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////yH+uihjKSAyMDAwIEpha3Vi
+  ICdKaW1tYWMnIFN0ZWluZXIKClRoaXMgaW1hZ2Ugd2FzIGNyZWF0ZWQgdXNpbmcgR2ltcC4gR2lt
+  cCBpcyBmcmVlIHNvZnR3YXJlIAphcyBkZWZpbmVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5k
+  YXRpb24gYW5kIGlzIGF2YWlsYWJsZQpmb3IgZG93bmxvYWQgYXQgaHR0cDovL3d3dy5naW1wLm9y
+  ZwAh+QQBCgD/ACwAAAAAGAAYAAAI/gD/CRxIsKDBgwgTKhwIoGHDhQYBKBAjbBgqNQUgMtRQTFis
+  V7tkrZkAQKMEY6wuNDQQopWjChABBJMFoaTAASFQRbGZsAAxUDwFIgAmJujBB78sGQUw7JJRggIa
+  JNiQYQEBBwkOJKDAAUMEBgEOAvClaxYsV6I8efrkqdOmSYhAPP0HoNeqSpAI3WHTRs4bMlqGuPgw
+  FwCuVJUaFcrThk4dOmi4GIkhV+wtU5LwpNkyxQqWK0lm+FDRoTAvVZg4UVL0x4+gPXbM4EjhoXCu
+  UozchKHi5IkUKEFk8FghojCuU5I0RTK0Rw8fPXPG5EAxonCtUIvSYCGio4eQIDZYSsAoQaKwLVKN
+  Mj0atKcPID5wytB4caIwrVGJAsU54+ULGDBZMOFDEyYUtsQhXVSBxA413PCDEkcUAUQLFsxFl0MY
+  ZviQRhx2mFBAADs=
 }
 
 

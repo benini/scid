@@ -1564,6 +1564,8 @@ translate C AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate C FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate C MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate C UseBook {Use book}
 # ====== TODO To be translated ======
 translate C MultiPV {Multiple variations}
@@ -5415,6 +5417,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

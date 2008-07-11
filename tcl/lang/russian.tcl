@@ -1600,6 +1600,8 @@ translate R AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate R FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate R MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate R UseBook {Use book}
 # ====== TODO To be translated ======
 translate R MultiPV {Multiple variations}
@@ -1813,6 +1815,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -1567,6 +1567,8 @@ translate O AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate O FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate O MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate O UseBook {Use book}
 # ====== TODO To be translated ======
 translate O MultiPV {Multiple variations}
@@ -1784,6 +1786,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

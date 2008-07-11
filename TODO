@@ -4,9 +4,9 @@
 |                                                           |
  ===========================================================
 
+TERMINER DETECTION D'EXOS TAC l 819 logique à vérifier
 Traiter les ouvertures comme une suite de positions
 Mettre des tags PGN sur les parties (motifs)
-Tacgame buggé
 
  ===========================================================
 |                                                           |
@@ -48,6 +48,8 @@ GAME EDITOR
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- Automatic tactics exercise generation
 
 - Add endgame tables support to PPC
 

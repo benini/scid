@@ -1576,6 +1576,8 @@ translate B AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate B FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate B MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate B UseBook {Use book}
 # ====== TODO To be translated ======
 translate B MultiPV {Multiple variations}
@@ -1790,6 +1792,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

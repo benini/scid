@@ -1580,6 +1580,8 @@ translate P AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate P FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate P MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate P UseBook {Use book}
 # ====== TODO To be translated ======
 translate P MultiPV {Multiple variations}
@@ -2011,6 +2013,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

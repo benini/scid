@@ -82,7 +82,7 @@ namespace eval uci {
     # Get one line from the engine:
     set line [gets $pipe]
     if {$line == ""} { return }
-    
+
     # To speed up parsing of engine's output. Should be removed if currmove info is used
     # if {[string first "info currmove" $line ] == 0} { return }
     

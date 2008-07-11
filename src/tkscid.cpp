@@ -6089,6 +6089,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
     recalcFlagCounts (db);
+
     return TCL_OK;
 }
 
@@ -7763,7 +7764,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         return TCL_ERROR;
     }
 */
-    if (replaceMode) {
+/*    if (replaceMode) {
         oldIE = base->idx->FetchEntry (gNumber);
         // Remember previous user-settable flags:
         for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
@@ -7771,7 +7772,8 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
             oldIE->GetFlagStr (flags, NULL);
             iE.SetFlagStr (flags);
         }
-    } else {
+    } else {*/
+    if (!replaceMode) {
         if (base->idx->AddGame (&gNumber, &iE) != OK) {
             Tcl_AppendResult (ti, "Too many games in this database.", NULL);
             return TCL_ERROR;
@@ -7783,6 +7785,17 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, "Error encoding game.", NULL);
         return TCL_ERROR;
     }
+
+    // game->Encode computes flags, so we have to re-set flags if replace mode
+    if (replaceMode) {
+        oldIE = base->idx->FetchEntry (gNumber);
+        // Remember previous user-settable flags:
+        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
+            char flags [32];
+            oldIE->GetFlagStr (flags, NULL);
+            iE.SetFlagStr (flags);
+        }
+    } 
 
     // as each game entry is coded on 16 bits, return an error if there is an overflow
     if (base->bbuf->GetByteCount() > 65535) {
@@ -7897,6 +7910,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
 int
 sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_game save <gameNumber>");
     }

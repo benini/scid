@@ -1240,7 +1240,7 @@ proc helpAbout {} {
   # ::game::LoadNextPrev next
   # }
   # return
-
+    
   set str {}
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"

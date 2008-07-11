@@ -1571,6 +1571,8 @@ translate Y AnnotateSeveralGames {Annotate several games\nfrom current to :}
 # ====== TODO To be translated ======
 translate Y FindOpeningErrors {Find opening errors}
 # ====== TODO To be translated ======
+translate Y MarkTacticalExercises {Mark tactical exercises}
+# ====== TODO To be translated ======
 translate Y UseBook {Use book}
 # ====== TODO To be translated ======
 translate Y MultiPV {Multiple variations}
@@ -1784,6 +1786,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

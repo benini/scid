@@ -1564,6 +1564,8 @@ translate N LastBookMove {Laatste zet boek}
 translate N AnnotateSeveralGames {Becommentarieer verschillende partijen \n van huidig tot :}
  
 translate N FindOpeningErrors {Vind openingsfouten}
+# ====== TODO To be translated ======
+translate N MarkTacticalExercises {Mark tactical exercises}
  
 translate N UseBook {Gebruik boek}
  
@@ -1778,6 +1780,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

@@ -417,6 +417,136 @@ menuText I ToolsFilterGraph "Grafici relativi" 7 \
 menuText I ToolsAbsFilterGraph "Grafici assoluti" 7 {Apre/chiude la finestra dei grafici sul filtro con valori assoluti}
 menuText I ToolsOpReport "Rapporto di Apertura" 0 \
   {Genera un rapporto di apertura per l'attuale posizione}
+menuText I ToolsOpenRecentBaseAsTree "Apri recente come albero" 0   {Apre un database recente nella finestra per l'albero}
+menuText I FileMaint "Gestione" 0 {Strumenti di gestione di un database Scid}
+menuText I FileMaintWin "Finestra di Gestione" 0 \
+  {Apre/chiude la finestra di gestione di un database Scid}
+menuText I FileMaintCompact "Compatta database..." 0 \
+  {Compatta i file di database, rimuovendo le partite cancellate e i nomi non usati}
+menuText I FileMaintClass "Classificazione ECO di partite..." 2 \
+  {Ricalcola il codice ECO di tutte le partite}
+menuText I FileMaintSort "Ordina database..." 0 \
+  {Ordina tutte le partite nel database}
+menuText I FileMaintDelete "Cancella le partite doppie..." 20 \
+  {Cerca le partite duplicate e le seleziona per cancellarle}
+menuText I FileMaintTwin "Finestra di controllo delle doppie" 0 \
+  {Apre/aggiorna la finestra del controllo dei duplicati}
+menuText I FileMaintName "Controllo di nomi" 13 {Editor di nomi e controllo ortografico}
+menuText I FileMaintNameEditor "Finestra di editor dei nomi" 0 \
+  {Apre/chiude la finestra di editor dei nomi}
+menuText I FileMaintNamePlayer "Controllo di nomi dei giocatori..." 22 \
+  {Controllo di nomi dei giocatori mediante il file di verifica di nomi}
+menuText I FileMaintNameEvent "Controllo di nomi di Eventi..." 21 \
+  {Controllo di nomi dei eventi mediante il file di verifica di eventi}
+menuText I FileMaintNameSite "Controllo di nomi di siti..." 21 \
+  {Controllo di nomi di siti mediante il file di verifica}
+menuText I FileMaintNameRound "Controllo di nomi di turni..." 21 \
+  {Controllo di nomi di turni mediante il file di verifica}
+menuText I FileReadOnly "Sola-lettura..." 0 \
+  {Tratta il database attuale in sola lettura, prevenendo variazioni}
+menuText I FileSwitch "Attiva un database" 0 \
+  {Attiva uno fra i database aperti}
+menuText I FileExit "Esci" 0 {Esce da Scid}
+
+# Edit menu:
+menuText I Edit "Edita" 0
+menuText I EditAdd "Aggiunge una variante" 0 {Aggiunge una variante a questa mossa nella partita}
+menuText I EditDelete "Cancella Variante" 0 {Cancella una variante per questa mossa}
+menuText I EditFirst "Variante principale" 5 \
+  {Promuove a variante principale nella lista}
+menuText I EditMain "Promuove una Variante a Linea Principale" 0 \
+  {Promuove una variante a linea principale}
+menuText I EditTrial "Prova una variante" 0 \
+  {Attiva/disattiva la modalita' di prova di una variante, per provare idee direttamente sulla scacchiera}
+menuText I EditStrip "Pulisci" 2 {Elimina commenti o varianti dalla partita corrente}
+menuText I EditStripComments "Commenti" 0 \
+  {Elimina tutti i commenti e le annotazioni dalla parita corrente}
+menuText I EditStripVars "Varianti" 0 {Elimina tutte le varianti dalla partita corrente}
+menuText I EditStripBegin "Mosse dall'inizio" 1 \
+  {Elimina le mosse dall'inizio della partita}
+menuText I EditStripEnd "Mosse rimanenti" 0 \
+  {Elimina le mosse rimanenti}
+menuText I EditReset "Vuota la Clipbase" 0 \
+  {Svuota completamente la clipbase}
+menuText I EditCopy "Copia questa partita nella Clipbase" 1 \
+  {Copia questa partita nella clipbase}
+menuText I EditPaste "Incolla l'ultima partita nella Clipbase" 0 \
+  {Incolla qui la partita della clipbase}
+menuText I EditPastePGN "Paste Clipboard text as PGN game..." 10 \
+  {Interpret the clipboard text as a game in PGN notation and paste it here} ;# ***
+menuText I EditSetup "Posizione definita..." 10 \
+  {Definisce una posizione per la partita corrente}
+menuText I EditCopyBoard "Copia posizione" 6 \
+  {Copia la posizione della scacchiera corrente in notazione FEN come testo (clipboard)}
+menuText I EditPasteBoard "Incolla come posizione di partenza" 12 \
+  {Imposta la posizione di partenza dalla selezione del testo corrente (clipboard)}
+
+# Game menu:
+menuText I Game "Partita" 0
+menuText I GameNew "Annulla partita" 0 \
+  {Torna alla posizione iniziale, rinunciando ai cambiamenti}
+menuText I GameFirst "Carica la prima Partita" 13 {Carica la prima partita del filtro}
+menuText I GamePrev "Carica la precedente Partita" 10 {Carica la precedente partita del filtro}
+menuText I GameReload "Ricarica la Partita attuale" 0 \
+  {Ricarica questa partita, eliminando ogni cambiamento eseguito}
+menuText I GameNext "Carica la successiva Partita" 10 {Carica il successivo filtro di partite}
+menuText I GameLast "Carica l'ultima partita" 9 {Carica l'ultima partita del filtro}
+menuText I GameRandom "Carica una partica casuale" 8 {Carica una partita casuale del filtro}
+menuText I GameNumber "Carica la partita numero..." 18 \
+  {Carica una partita digitando il suo numero}
+menuText I GameReplace "Salva: Sostituisce la partita..." 8 \
+  {Salva questa partita, sostituendo la vecchia versione}
+menuText I GameAdd "Save: Aggiunge la nuova partita..." 7 \
+  {Salva questa partita come nuova partita nel database}
+menuText I GameDeepest "Identifica apertura" 0 \
+  {Va' alla posizione di partita piu' profonda listata nel libro ECO}
+menuText I GameGotoMove "Vai alla mossa numero..." 0 \
+  {Va' al numero di mossa specificato nella partita attuale}
+menuText I GameNovelty "Trova Novita'..." 7 \
+  {Cerca la prima mossa mai giocata della partita corrente}
+
+# Search Menu:
+menuText I Search "Cerca" 0
+menuText I SearchReset "Annulla il filtro" 0 {Annulla il filtro per includere tutte le partite}
+menuText I SearchNegate "Filtro Negato" 0 {Nega il filtro per comprendere solo partite escluse}
+menuText I SearchCurrent "Posizione attuale..." 0 {Cerca la attuale posizione}
+menuText I SearchHeader "Intestazione..." 0 {Ricerca per intestazione (giocatore, evento, etc)}
+menuText I SearchMaterial "Materiale/Schema..." 0 {Ricerca per materiale o schema posizionale}
+menuText I SearchUsing "Uso del file di ricerca..." 0 {Ricerca mediante un file di Opzioni}
+
+# Windows menu:
+menuText I Windows "Finestre" 2
+menuText I WindowsComment "Editor di commenti" 10 {Apre/chiude l'editor di commenti}
+menuText I WindowsGList "Lista di Partite" 0 {Apre/chiude la finestra di lista di partite}
+menuText I WindowsPGN "Finestra PGN" 9 {Apre/chiude la finestra PGN (notazione di partita)}
+menuText I WindowsPList "Trova giocatore" 2 {Apre/chiude la finestra per la ricerca di un giocatore}
+menuText I WindowsTmt "Trova torneo" 2 {Apre/chiude la finestra per la ricerca di un torneo}
+menuText I WindowsSwitcher "Selezione di Database" 11 {Apre/chiude la finestra per la selezione di un Database}
+menuText I WindowsMaint "Finestra di gestione" 12 {Apre/chiude la finestra per la gestione di un Database}
+menuText I WindowsECO "Navigazione ECO" 12 {Apre/chiude la finestra di navigazione ECO}
+menuText I WindowsRepertoire "Editor di repertorio" 10 \
+  {Apre/chiude l'editor di repertorio di apertura}
+menuText I WindowsStats "Finestra di statistica" 12 {Apre/chiude la finestra di filtro statistico}
+menuText I WindowsTree "Finestra di albero" 12 {Apre/chiude la finestra di albero}
+menuText I WindowsTB "Finestra di Tablebase di finale" 12 \
+  {Apre/chiude la finestra Tablebase}
+menuText I WindowsBook "Libro delle aperture" 0 {Apre/chiude la finestra del libro delle aperture}
+menuText I WindowsCorrChess "Gioco per corrispondenza" 0 {Apre/chiude la finestra per il gioco per corrispondenza}
+
+# Tools menu:
+menuText I Tools "Strumenti" 0
+menuText I ToolsAnalysis "Motore di analisi..." 10 \
+  {Inizia/termina il motore di analisi scacchistica}
+menuText I ToolsAnalysis2 "Motore di analisi #2..." 19 \
+  {Inizia/termina il motore di analisi scacchistica}
+menuText I ToolsCross "Tabella" 0 {Mostra la tabella di torneo per questa partita}
+menuText I ToolsEmail "Gestione Email" 10 \
+  {Apre/chiude la finestra di gestione di partite per posta elettronica}
+menuText I ToolsFilterGraph "Grafici relativi" 7 \
+  {Apre/chiude la finestra dei grafici sul filtro con valori relativi}
+menuText I ToolsAbsFilterGraph "Grafici assoluti" 7 {Apre/chiude la finestra dei grafici sul filtro con valori assoluti}
+menuText I ToolsOpReport "Rapporto di Apertura" 0 \
+  {Genera un rapporto di apertura per l'attuale posizione}
 menuText I ToolsTracker "Dislocazione dei Pezzi"  0 {Apre/chiude la finestra con la traccia sulla dislocazione dei pezzi}
 menuText I ToolsTraining "Allenamento"  0 {Strumenti per l'allenamento (tattica, aperture,...) }
 menuText I ToolsTacticalGame "Partita tattica"  0 {Gioca una partita con le tattiche}
@@ -1614,6 +1744,8 @@ translate I MoveOutOfBook {Mossa fuori dal libro}
 translate I LastBookMove {Ultima mossa del libro}
 translate I AnnotateSeveralGames {Annota più partite\ndall'attuale a:}
 translate I FindOpeningErrors {Trova errori dell'apertura}
+# ====== TODO To be translated ======
+translate I MarkTacticalExercises {Mark tactical exercises}
 translate I UseBook {Usa il libro}
 translate I MultiPV {Varianti multiple}
 translate I Hash {Memoria Hash}
@@ -1955,6 +2087,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

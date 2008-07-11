@@ -1413,6 +1413,8 @@ translate D MoveOutOfBook {Zug nicht mehr im Buch}
 translate D LastBookMove {Letzter Buchzug}
 translate D AnnotateSeveralGames {Kommentiere mehrere Partien\nvon aktueller bis:}
 translate D FindOpeningErrors {Eröffnungsfehler finden}
+# ====== TODO To be translated ======
+translate D MarkTacticalExercises {Mark tactical exercises}
 translate D UseBook {Buch benutzen}
 translate D MultiPV {Multivariantenmodus}
 translate D Hash {Hash Speicher}
@@ -6943,6 +6945,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

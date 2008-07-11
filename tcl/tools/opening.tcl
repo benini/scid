@@ -738,7 +738,7 @@ namespace eval opening {
     }
     $w.ft.text insert end "$::tr(PositionsInRepertoire) $totalPos\n"
     $w.ft.text insert end "$::tr(PositionsNotPlayed) $posNotPlayed\n"
-    $w.ft.text insert end "$::tr(PositionsPlayed) [expr $totalPos - $posTotalPlayed]\n"
+    $w.ft.text insert end "$::tr(PositionsPlayed) [expr $totalPos - $posNotPlayed]\n"
     $w.ft.text insert end "$::tr(Success) $success\n"
     $w.ft.text insert end "$::tr(DubiousMoves) $dubMoves\n"
     $w.ft.text insert end "$::tr(OutOfRepertoire) $outOfRep\n"

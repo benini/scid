@@ -1401,6 +1401,7 @@ translate E MoveOutOfBook {Move out of book}
 translate E LastBookMove {Last book move}
 translate E AnnotateSeveralGames {Annotate several games\nfrom current to :}
 translate E FindOpeningErrors {Find opening errors}
+translate E MarkTacticalExercises {Mark tactical exercises}
 translate E UseBook {Use book}
 translate E MultiPV {Multiple variations}
 translate E Hash {Hash memory}

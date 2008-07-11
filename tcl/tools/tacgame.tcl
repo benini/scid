@@ -808,7 +808,6 @@ namespace eval tacgame {
     # only update when it is human turn
     if { [getPhalanxColor] == [sc_pos side] } { return }
     
-    # puts "::uci::uciInfo(score2) $::uci::uciInfo(score2) "
     catch {
       set sc1 $::uci::uciInfo(score2)
       set sc2 [lindex $lscore end]
