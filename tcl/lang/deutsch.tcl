@@ -190,6 +190,8 @@ menuText D ToolsSeriousGame "Ernste Partie"  0 {Ernste Partie spielen}
 menuText D ToolsTrainOpenings "Eröffnungen"  0 {Eröffnungsrepertoire trainieren}
 menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
+# ====== TODO To be translated ======
+menuText D ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 menuText D ToolsTrainFics "Internetpartie"  0 {Internetpartie auf freechess.org}
 menuText D ToolsBookTuning "Buch abstimmen" 0 {Buch abstimmen}
 menuText D ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
@@ -6945,6 +6947,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

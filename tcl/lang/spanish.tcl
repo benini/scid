@@ -179,6 +179,8 @@ menuText S ToolsSeriousGame "Partida seria"  0 {Jugar una partida seria}
 menuText S ToolsTrainOpenings "Entrenamiento de aperturas"  0 {Entrenamiento con un repertorio}
 menuText S ToolsTrainTactics "Táctica (problemas)"  0 {Resover problemas de táctica}
 menuText S ToolsTrainCalvar "Cálculo of variaciones"  0 {Calculo de variantes}
+# ====== TODO To be translated ======
+menuText S ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 menuText S ToolsTrainFics "Jugar en internet"  0 {Jugar en freechess.org}
 menuText S ToolsBookTuning "Sintonizar Libro de aperturas" 0 {Sintonizar Libro (Book)}
 menuText S ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
@@ -1494,6 +1496,7 @@ translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, a
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

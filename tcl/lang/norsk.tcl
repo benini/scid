@@ -179,6 +179,8 @@ menuText O ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText O ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 # ====== TODO To be translated ======
+menuText O ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText O ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText O ToolsBookTuning "Book tuning" 0 {Book tuning}
@@ -1786,6 +1788,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

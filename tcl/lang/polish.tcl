@@ -183,6 +183,8 @@ menuText P ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText P ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 # ====== TODO To be translated ======
+menuText P ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText P ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText P ToolsBookTuning "Book tuning" 0 {Book tuning}
@@ -2013,6 +2015,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -730,6 +730,14 @@ proc configAnnotation {} {
     set ::useAnalysisBookName [.configAnnotation.comboBooks get]
     set  ::wentOutOfBook 0
     
+    # tactical positions is selected, must be in multipv mode
+    if {$::markTacticalExercises} {
+      if { $::analysis(multiPVCount1) < 2} {
+        set ::analysis(multiPVCount1) 4
+        changePVSize $::analysis(multiPVCount1)
+      }
+    }
+    
     if {$tempdelay < 0.1} { set tempdelay 0.1 }
     set autoplayDelay [expr {int($tempdelay * 1000)}]
     destroy .configAnnotation
@@ -811,7 +819,50 @@ proc markExercise { prevscore score } {
     if { [expr abs($prevscore) ] > $::informant("++-") } { return }
     if { [expr abs($prevscore)] > $::informant("+-") && [expr abs($score) ] < [expr 2 * abs($prevscore)]} { return }
   }
-
+  
+  # The best move is much better than others.
+  if { [llength $::analysis(multiPV1)] < 2 } {
+    puts "error, not enough PV"
+    return
+  }
+  set sc2 [lindex [ lindex $::analysis(multiPV1) 1 ] 1]
+  if { [expr abs( $score - $sc2 )] < 1.5 } { return }
+  
+  # There is no other winning moves (the best move may not win, of course, but
+  # I reject exercises when there are e.g. moves leading to +9, +7 and +5 scores)
+  if { [expr $score * $sc2] > 0.0 && [expr abs($score)] > $::informant("+-") && [expr abs($sc2)] > $::informant("+-") } {
+    return
+  }
+  
+  # The best move does not lose position.
+  if {[sc_pos side] == "white" && $score < [expr 0.0 - $::informant("+/-")] } { return }
+  if {[sc_pos side] == "black" && $score > $::informant("+/-") } { return }
+  
+  # Move is not obvious: either it wasn't found at some very low depth or it
+  # was evaluated incorrectly.
+  set res [ sc_pos analyze -time 1000 -hashkb 32 -pawnkb 1 -searchdepth 2 ]
+  puts "::analysis(multiPV1) $::analysis(multiPV1)"
+  set pv [ lindex [ lindex $::analysis(multiPV1) 0 ] 2 ]
+  set bm1 [lindex $pv 0]
+  set bm2 [lindex $res 1]
+  puts "pv = $pv res = $res bm1 = $bm1 bm2 = $bm2"
+  set sc2 [expr [lindex $res 0] / 100.0]
+  if {[sc_pos side] == "black"} { set sc2 [expr 0.0 - $sc2] }
+  # a quick search found the move and it was a good score estimation
+  if {$bm1 == $bm2 && [expr ($sc2 - $prevscore) / $deltamove ] > 0.7} {
+    puts "move guessed at low depth"
+    # If match is found, the search is repeated at higher depth to avoid horizon effect:
+    # confirm that the internal engine did not get it right by luck
+    set res [ sc_pos analyze -time 20 -hashkb 32 -pawnkb 1 -mindepth 0 ]
+    set bm2 [lindex $res 1]
+    puts "sanity check pv = $pv res = $res bm1 = $bm1 bm2 = $bm2"
+    set sc2 [expr [lindex $res 0] / 100.0]
+    if {[sc_pos side] == "black"} { set sc2 [expr 0.0 - $sc2] }
+    if {$bm1 == $bm2 && [expr ($sc2 - $prevscore) / $deltamove ] > 0.7} {
+      return
+    }
+  }
+  
   stopAnalyzeMode 1
   set found 0
   

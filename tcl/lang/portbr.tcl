@@ -179,6 +179,8 @@ menuText B ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText B ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 # ====== TODO To be translated ======
+menuText B ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText B ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText B ToolsBookTuning "Book tuning" 0 {Book tuning}
@@ -1792,6 +1794,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

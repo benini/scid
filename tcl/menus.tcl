@@ -453,6 +453,7 @@ set helpMessage($m,[incr menuindex]) ToolsTraining
 $m.training add command -label ToolsTrainOpenings -command ::opening::config
 $m.training add command -label ToolsTrainTactics -command ::tactics::config
 $m.training add command -label ToolsTrainCalvar -command ::calvar::config
+$m.training add command -label ToolsTrainFindBestMove -command ::tactics::findBestMove
 
 $m add separator
 incr menuindex
@@ -1414,12 +1415,11 @@ proc setLanguageMenus {{lang ""}} {
   
   if {$lang == ""} {set lang $::language}
   
-  #-----AW-----
   foreach tag {CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsSeriousGame ToolsTrainFics} {
     configMenuText .menu.play [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {TrainOpenings TrainTactics TrainCalvar} {
+  foreach tag {TrainOpenings TrainTactics TrainCalvar TrainFindBestMove} {
     configMenuText .menu.play.training [tr Tools$tag $oldLang] Tools$tag $lang
   }
   
@@ -1428,7 +1428,6 @@ proc setLanguageMenus {{lang ""}} {
         CCNewMailGame CCMailMove } {
     configMenuText .menu.play.correspondence [tr $tag $oldLang] $tag $lang
   }
-  #-----AW-----
   
   foreach tag {File Edit Game Search Play Windows Tools Options Help} {
     configMenuText .menu [tr $tag $oldLang] $tag $lang

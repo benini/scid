@@ -180,6 +180,8 @@ menuText W ToolsTrainTactics "Taktik"  0 {Lösa taktik}
 # ====== TODO To be translated ======
 menuText W ToolsTrainCalvar "Variantberäkning"  0 {Variantberäkningsträning}
 # ====== TODO To be translated ======
+menuText W ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText W ToolsTrainFics "Spela på Internet"  0 {Spela på freechess.org}
 # ====== TODO To be translated ======
 menuText W ToolsBookTuning "Bokfininställning" 0 {Bokfininställning}
@@ -6803,6 +6805,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

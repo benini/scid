@@ -171,6 +171,8 @@ menuText C ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText C ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 # ====== TODO To be translated ======
+menuText C ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText C ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText C ToolsBookTuning "Book tuning" 0 {Book tuning}
@@ -5417,6 +5419,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

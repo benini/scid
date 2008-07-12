@@ -171,6 +171,7 @@ menuText F ToolsSeriousGame "Partie sérieuse"  0 {Jouer une partie sans handicap
 menuText F ToolsTrainOpenings "Ouvertures"  0 {Entrainement sur un répertoire}
 menuText F ToolsTrainTactics "Tactique"  0 {Résoudre des problèmes tactiques}
 menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entrainement au calcul de variantes}
+menuText F ToolsTrainFindBestMove "Find best move"  0 {Trouver le meilleur coup}
 menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
 menuText F ToolsBookTuning "Config. bibliothèque" 0 {Configuration fine d'une bibliothèque}
 menuText F ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
@@ -1683,6 +1684,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

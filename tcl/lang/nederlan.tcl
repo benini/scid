@@ -188,6 +188,8 @@ menuText N ToolsTrainTactics "Tactiek "  0 {Los taktische stellingen op }
 # ====== TODO To be translated ======
 menuText N ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 # ====== TODO To be translated ======
+menuText N ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText N ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 menuText N ToolsBookTuning "Openingenboek afstemming " 0 {Openingenboek afstemming}
 # ====== TODO To be translated ======
@@ -1780,6 +1782,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

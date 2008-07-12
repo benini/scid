@@ -177,6 +177,8 @@ menuText H ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText H ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 # ====== TODO To be translated ======
+menuText H ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+# ====== TODO To be translated ======
 menuText H ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText H ToolsBookTuning "Book tuning" 0 {Book tuning}
@@ -2012,6 +2014,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -30,6 +30,63 @@ namespace eval tactics {
   set winWonGame 0
   
   ################################################################################
+  # Current base must contain games with Tactics flag and **** markers
+  # for certain moves. The first var should contain the best move (the next best move
+  # is at least 1.0 point away.
+  # TODO preset the filter on flag == Tactics to speed up searching
+  ################################################################################
+  proc findBestMove {} {
+    set old_game [sc_game number]
+    
+    set found 0
+    
+    if {![sc_base inUse] || [sc_base numGames] == 0} { return }
+    
+    # Try to find in current game, from current pos (exit vars first)
+    if {[sc_game flag T [sc_game number]]} {
+      while {[sc_var level] != 0} { sc_var exit }
+      if {[llength [gotoNextTacticMarker] ] != 0} {
+        set found 1
+      }
+    }
+    
+    if {!$found} {
+      for {set g [expr [sc_game number] +1] } { $g <= [sc_base numGames]} { incr g} {
+        sc_game load $g
+        if {![sc_game flag T $g]} { continue }
+        # go through all moves and look for tactical markers ****
+        if {[llength [gotoNextTacticMarker] ] != 0} {
+          set found 1
+          break
+        }
+      }
+    }
+    
+    if { ! $found } {
+      sc_game load $old_game
+      tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"      
+    } else  {
+      sideToMoveAtBottom
+    }
+    updateBoard -pgn
+    ::windows::gamelist::Refresh
+    updateTitle
+  }
+  ################################################################################
+  # returns a list with depth score prevscore
+  # or an empty list if marker not found
+  proc gotoNextTacticMarker {} {
+    while {![sc_pos isAt end]} {
+      sc_move forward
+      set cmt [sc_pos getComment]
+      set res [scan $cmt "\*\*\*\*d%dsc%fpsc%f" depth score prevscore]
+      if {$res == 3} {
+        return [list $depth $score $prevscore]
+      }
+    }
+    return {}
+  }
+  ################################################################################
   # Configuration dialog
   ################################################################################
   proc config {} {
@@ -191,7 +248,7 @@ namespace eval tactics {
     set ::askToReplaceMoves $::tactics::askToReplaceMoves_old
     focus .
     destroy $w
-
+    
     catch { ::uci::closeUCIengine $::tactics::engineSlot }
   }
   ################################################################################
@@ -288,9 +345,7 @@ namespace eval tactics {
     }
     set ::tactics::lastGameLoaded $g
     
-    if { [sc_pos side] == "white" && [::board::isFlipped .board] || [sc_pos side] == "black" &&  ![::board::isFlipped .board] } {
-      ::board::flip .board
-    }
+    sideToMoveAtBottom
     
     ::gameclock::reset 1
     ::gameclock::start 1
@@ -305,6 +360,14 @@ namespace eval tactics {
     updateStatusBar
     ::tactics::startAnalyze
     ::tactics::mainLoop
+  }
+  ################################################################################
+  # flips the board if necessary so the side to move is at the bottom
+  ################################################################################
+  proc sideToMoveAtBottom {} {
+    if { [sc_pos side] == "white" && [::board::isFlipped .board] || [sc_pos side] == "black" &&  ![::board::isFlipped .board] } {
+      ::board::flip .board
+    }
   }
   ################################################################################
   #

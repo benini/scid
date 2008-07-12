@@ -1417,13 +1417,14 @@ Engine::Think (MoveList * mlist)
     // Do iterative deepening starting at depth 1, until out of
     // time or the maximum depth is reached:
     for (uint depth = 1; depth <= MaxDepth; depth++) {
+
         HardMove = false;
 
         // If we have searched at least a few ply, and there is less
         // than 30% of the recommended search time remaining, then
         // continuing the search is unlikely to be useful since it
         // will probably spend all remaining time on the first move:
-        if (depth > 4) {
+        if (depth > MinDepthCheckTime) { // was 4. or will think too long when trying to check if a move is obvious
               double used = (double)Elapsed.MilliSecs() / (double)SearchTime;
               if (used > 0.7) { break; }
         }

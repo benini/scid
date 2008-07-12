@@ -110,6 +110,7 @@ private:
     int      SearchTime;    // Search time limit in milliseconds.
     int      MinSearchTime; // Minimum search time in milliseconds.
     int      MaxSearchTime; // Maximum search time in milliseconds.
+    uint     MinDepthCheckTime; // will not check time before this depth is reached
     bool     Debug;         // If true, print debug info to stdout.
     bool     PostInfo;      // If true, print post info to stdout.
     bool     XBoardMode;    // If true, print info in xboard format.
@@ -204,6 +205,7 @@ public:
         MaxDepth = ENGINE_MAX_PLY;      // A large default search depth
         SearchTime = 1000;  // Default search time: 1000 ms = one second.
         MinSearchTime = MaxSearchTime = SearchTime;
+        MinDepthCheckTime = 4;
 #ifndef WINCE
         LogFile = NULL;
 #endif
@@ -242,6 +244,9 @@ public:
         MinSearchTime = min;
         SearchTime = ms;
         MaxSearchTime = max;
+    }
+    void SetMinDepthCheckTime(uint depth) {
+      MinDepthCheckTime = depth;
     }
     void SetDebug (bool b) { Debug = b; }
     void SetPostMode (bool b) { PostInfo = b; }

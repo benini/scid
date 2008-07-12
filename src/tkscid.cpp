@@ -9734,12 +9734,14 @@ sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint pawnTableKB = 32;
     bool postMode = false;
     bool pruning = false;
+    uint mindepth = 4; // will not check time until this depth is reached
+    uint searchdepth = 0;
 
     static const char * options [] = {
-        "-time", "-hashkb", "-pawnkb", "-post", "-pruning", NULL
+        "-time", "-hashkb", "-pawnkb", "-post", "-pruning", "-mindepth", "-searchdepth", NULL
     };
     enum {
-        OPT_TIME, OPT_HASH, OPT_PAWN, OPT_POST, OPT_PRUNING
+        OPT_TIME, OPT_HASH, OPT_PAWN, OPT_POST, OPT_PRUNING, OPT_MINDEPTH, OPT_SEARCHDEPTH
     };
     int arg = 2;
     while (arg+1 < argc) {
@@ -9753,6 +9755,8 @@ sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             case OPT_PAWN:     pawnTableKB = strGetUnsigned(value); break;
             case OPT_POST:     postMode = strGetBoolean(value);     break;
             case OPT_PRUNING:  pruning = strGetBoolean(value);      break;
+            case OPT_MINDEPTH: mindepth = strGetUnsigned(value);    break;
+            case OPT_SEARCHDEPTH: searchdepth = strGetUnsigned(value);    break;
             default:
                 return InvalidCommand (ti, "sc_pos analyze", options);
         }
@@ -9769,6 +9773,9 @@ sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     engine->SetSearchTime (searchTime);
     engine->SetHashTableKilobytes (hashTableKB);
     engine->SetPawnTableKilobytes (pawnTableKB);
+    engine->SetMinDepthCheckTime(mindepth);
+    if (searchdepth > 0)
+      engine->SetSearchDepth(searchdepth);
     engine->SetPosition (pos);
     engine->SetPostMode (postMode);
     engine->SetPruning (pruning);
