@@ -887,7 +887,7 @@ proc markExercise { prevscore score } {
   if { $found } {
     puts "flag T pour [sc_game number]"
     sc_game flag T [sc_game number] 1
-    sc_pos setComment "****d${depth}sc${score}psc$prevscore [sc_pos getComment]"
+    sc_pos setComment "****d${depth}from${prevscore}to${score} [sc_pos getComment]"
     updateBoard
   }
   startAnalyzeMode 1

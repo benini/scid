@@ -79,7 +79,7 @@ namespace eval tactics {
     while {![sc_pos isAt end]} {
       sc_move forward
       set cmt [sc_pos getComment]
-      set res [scan $cmt "\*\*\*\*d%dsc%fpsc%f" depth score prevscore]
+      set res [scan $cmt "\*\*\*\*d%dfrom%fto%f" depth score prevscore]
       if {$res == 3} {
         return [list $depth $score $prevscore]
       }
