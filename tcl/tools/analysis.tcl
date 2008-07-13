@@ -922,9 +922,9 @@ proc addAnnotation { {n 1} } {
     sc_game pop
     sc_info preMoveCmd preMoveCommand
     
-    puts "test moteur prevmove $move1 == $move2 [sc_pos moveNumber] [sc_pos side]"
-    puts "    prevmoves $analysis(prevmoves$n)"
-    puts "        moves $analysis(moves$n)"
+    # puts "test moteur prevmove $move1 == $move2 [sc_pos moveNumber] [sc_pos side]"
+    # puts "    prevmoves $analysis(prevmoves$n)"
+    # puts "        moves $analysis(moves$n)"
     
     if {$move1 == $move2} {
       set analysis(prevscore$n) $analysis(score$n)
