@@ -912,15 +912,20 @@ proc addAnnotation { {n 1} } {
   # if next move is what engine guessed, do nothing
   if { $analysis(prevmoves$n) != ""} {
     set move2 [sc_game info previousMoveNT]
+    
     sc_info preMoveCmd {}
     sc_game push copyfast
-    
     set move1 [lindex $analysis(prevmoves$n) 0]
-    sc_move back 2
+    sc_move back 1
     sc_move_add $move1 $n
     set move1 [sc_game info previousMoveNT]
     sc_game pop
     sc_info preMoveCmd preMoveCommand
+    
+    puts "test moteur prevmove $move1 == $move2 [sc_pos moveNumber] [sc_pos side]"
+    puts "    prevmoves $analysis(prevmoves$n)"
+    puts "        moves $analysis(moves$n)"
+    
     if {$move1 == $move2} {
       set analysis(prevscore$n) $analysis(score$n)
       set analysis(prevmoves$n) $analysis(moves$n)
