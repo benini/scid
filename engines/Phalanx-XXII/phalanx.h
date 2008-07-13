@@ -36,6 +36,7 @@
 # define inline __inline
   typedef __int64 int64;
 #else
+# define inline __inline__
   typedef long long int64;
 #endif
 

@@ -838,29 +838,17 @@ proc markExercise { prevscore score } {
   if {[sc_pos side] == "white" && $score < [expr 0.0 - $::informant("+/-")] } { return }
   if {[sc_pos side] == "black" && $score > $::informant("+/-") } { return }
   
-  # Move is not obvious: either it wasn't found at some very low depth or it
-  # was evaluated incorrectly.
-  set res [ sc_pos analyze -time 1000 -hashkb 32 -pawnkb 1 -searchdepth 2 ]
+  # Move is not obvious: check that it is not the first move guessed at low depths
   puts "::analysis(multiPV1) $::analysis(multiPV1)"
   set pv [ lindex [ lindex $::analysis(multiPV1) 0 ] 2 ]
-  set bm1 [lindex $pv 0]
-  set bm2 [lindex $res 1]
-  puts "pv = $pv res = $res bm1 = $bm1 bm2 = $bm2"
-  set sc2 [expr [lindex $res 0] / 100.0]
-  if {[sc_pos side] == "black"} { set sc2 [expr 0.0 - $sc2] }
-  # a quick search found the move and it was a good score estimation
-  if {$bm1 == $bm2 && [expr ($sc2 - $prevscore) / $deltamove ] > 0.7} {
-    puts "move guessed at low depth"
-    # If match is found, the search is repeated at higher depth to avoid horizon effect:
-    # confirm that the internal engine did not get it right by luck
-    set res [ sc_pos analyze -time 20 -hashkb 32 -pawnkb 1 -mindepth 0 ]
-    set bm2 [lindex $res 1]
-    puts "sanity check pv = $pv res = $res bm1 = $bm1 bm2 = $bm2"
-    set sc2 [expr [lindex $res 0] / 100.0]
-    if {[sc_pos side] == "black"} { set sc2 [expr 0.0 - $sc2] }
-    if {$bm1 == $bm2 && [expr ($sc2 - $prevscore) / $deltamove ] > 0.7} {
-      return
-    }
+  set bm0 [lindex $pv 0]
+  foreach depth {1 2 3} {
+    set res [ sc_pos analyze -time 1000 -hashkb 32 -pawnkb 1 -searchdepth $depth ]
+    set bm$depth [lindex $res 1]
+  }
+  if { $bm0 == $bm1 && $bm0 == $bm2 && $bm0 == $bm3 } {
+    puts "obvious move"
+    return
   }
   
   stopAnalyzeMode 1
@@ -874,12 +862,9 @@ proc markExercise { prevscore score } {
     sendToEngine 1 "go depth $depth"
     vwait ::analysis(waitForBestMove1)
     puts "<$depth> uciInfo(bestmove1) $::uci::uciInfo(bestmove1) score $::uci::uciInfo(score1)"
-    # Mark the lowest depth where the move is found (that is close enough to the expected result
+    # Mark the lowest depth where the move is found (that is close enough to the expected result)
     if {[expr ($::uci::uciInfo(score1) - $prevscore) / $deltamove ] > 0.7} {
-      # don't take it if hanging piece (too simple)
-      if {$depth > 1} {
-        set found 1
-      }
+      set found 1
       break
     }
   }
@@ -923,6 +908,26 @@ proc addAnnotation { {n 1} } {
   
   set text [format "%d:%+.2f" $analysis(depth$n) $analysis(score$n)]
   set moves $analysis(moves$n)
+  
+  # if next move is what engine guessed, do nothing
+  if { $analysis(prevmoves$n) != ""} {
+    set move2 [sc_game info previousMoveNT]
+    sc_info preMoveCmd {}
+    sc_game push copyfast
+    
+    set move1 [lindex $analysis(prevmoves$n) 0]
+    sc_move back 2
+    sc_move_add $move1 $n
+    set move1 [sc_game info previousMoveNT]
+    sc_game pop
+    sc_info preMoveCmd preMoveCommand
+    if {$move1 == $move2} {
+      set analysis(prevscore$n) $analysis(score$n)
+      set analysis(prevmoves$n) $analysis(moves$n)
+      return
+    }
+  }
+  
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
