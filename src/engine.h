@@ -205,7 +205,7 @@ public:
         MaxDepth = ENGINE_MAX_PLY;      // A large default search depth
         SearchTime = 1000;  // Default search time: 1000 ms = one second.
         MinSearchTime = MaxSearchTime = SearchTime;
-        MinDepthCheckTime = 4;
+        MinDepthCheckTime = 4; // will not check time until depth is at least of this value
 #ifndef WINCE
         LogFile = NULL;
 #endif

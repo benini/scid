@@ -550,7 +550,7 @@ proc showVars {} {
       sc_move forward; updateBoard -animate
     } else  {
       sc_var moveInto [expr $cur - 1]; updateBoard -animate
-    }    
+    }
   }
   bind .variations <Up> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
     set sel [expr $cur - 1]
@@ -907,7 +907,7 @@ proc togglePhotosSize {} {
   set distance [expr {[image width photoB] + 2}]
   if { $distance < 10 } { set distance 82 }
   
-  if {$::photosMinimized} { 
+  if {$::photosMinimized} {
     set ::photosMinimized 0
     if { [winfo ismapped .photoW] } {
       place .photoW -in .gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
@@ -1373,45 +1373,44 @@ proc autoplay {} {
   }
   
   if { [sc_pos isAt end] } {
-    if {$::isBatch && $annotateMode && [sc_game number] != 0} {
-      sc_game save [sc_game number]
-      if {[sc_game number] < $::batchEnd} {
-        sc_game load [expr [sc_game number] + 1]
-        if {$::addAnnotatorTag} {
-          appendAnnotator " $analysis(name1)"
-        }
-        set ::wentOutOfBook 0
-        updateMenuStates
-        updateStatusBar
-        updateTitle
+    if {$annotateMode} { ; # end of game if not mate, add the thinking line
+      set move_done [sc_game info previousMoveNT]
+      if { [string index $move_done end] != "#"} {
+        set text [format "%d:%+.2f" $analysis(depth1) $analysis(score1)]
+        set moves $analysis(moves1)
+        sc_move back
+        sc_info preMoveCmd {}
+        sc_var create
+        sc_move addSan $move_done
+        sc_pos setComment "[sc_pos getComment] $text"
+        sc_move_add $moves 1
+        sc_var exit
+        sc_info preMoveCmd preMoveCommand
         updateBoard -pgn
-        addAnnotation
-        after $autoplayDelay autoplay
-        return
-      } else  {
-        cancelAutoplay
-        return
       }
-    } else  {
-      if {$annotateMode} { ;# end of game if not mate, add the thinking line
-        set move_done [sc_game info previousMoveNT]
-        if { [string index $move_done end] != "#"} {
-          set text [format "%d:%+.2f" $analysis(depth1) $analysis(score1)]
-          set moves $analysis(moves1)
-          sc_move back
-          sc_info preMoveCmd {}
-          sc_var create
-          sc_move addSan $move_done
-          sc_pos setComment "[sc_pos getComment] $text"
-          sc_move_add $moves 1
-          sc_var exit
-          sc_info preMoveCmd preMoveCommand
+      if {$::isBatch && [sc_game number] != 0} {
+        sc_game save [sc_game number]
+        if {[sc_game number] < $::batchEnd} {
+          sc_game load [expr [sc_game number] + 1]
+          if {$::addAnnotatorTag} {
+            appendAnnotator " $analysis(name1)"
+          }
+          set ::wentOutOfBook 0
+          updateMenuStates
+          updateStatusBar
+          updateTitle
           updateBoard -pgn
+          addAnnotation
+          after $autoplayDelay autoplay
+          return
+        } else  {
+          cancelAutoplay
+          return
         }
       }
-      cancelAutoplay
-      return
     }
+    cancelAutoplay
+    return
   }
   
   # annotate all sub variations

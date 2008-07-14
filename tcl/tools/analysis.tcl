@@ -839,7 +839,6 @@ proc markExercise { prevscore score } {
   if {[sc_pos side] == "black" && $score > $::informant("+/-") } { return }
   
   # Move is not obvious: check that it is not the first move guessed at low depths
-  puts "::analysis(multiPV1) $::analysis(multiPV1)"
   set pv [ lindex [ lindex $::analysis(multiPV1) 0 ] 2 ]
   set bm0 [lindex $pv 0]
   foreach depth {1 2 3} {
@@ -851,31 +850,34 @@ proc markExercise { prevscore score } {
     return
   }
   
-  stopAnalyzeMode 1
-  set found 0
+  # find what time is needed to get the solution (use internal analyze function)
+  set timer {1 2 5 10 50 100 200 1000}
+  # set scorelist {}
+  set movelist {}
+  for {set t 0} {$t < [llength $timer]} { incr t} {
+    set res [sc_pos analyze -time [lindex $timer $t] -hashkb 1 -pawnkb 1 -mindepth 0]
+    puts "[lindex $timer $t] ms $res"
+    # set score_analyze [lindex $res 0]
+    set move_analyze [lindex $res 1]
+    # if {[sc_pos side] == "black"} { set score_analyze [expr 0.0 - $score_analyze] }
+    # lappend scorelist $score_analyze
+    lappend movelist $move_analyze
+  }
   
-  for {set depth 1} {$depth < 10} {incr depth} {
-    set ::analysis(waitForReadyOk1) 1
-    sendToEngine 1 "isready"
-    vwait ::analysis(waitForReadyOk1)
-    set ::analysis(waitForBestMove1) 1
-    sendToEngine 1 "go depth $depth"
-    vwait ::analysis(waitForBestMove1)
-    puts "<$depth> uciInfo(bestmove1) $::uci::uciInfo(bestmove1) score $::uci::uciInfo(score1)"
-    # Mark the lowest depth where the move is found (that is close enough to the expected result)
-    if {[expr ($::uci::uciInfo(score1) - $prevscore) / $deltamove ] > 0.7} {
-      set found 1
+  # find at what timing the right move was reliably found
+  # only the move is checked, not if the score is close to the expected one
+  for {set t [expr [llength $timer] -1]} {$t >= 0} { incr t -1} {
+    if { [lindex $movelist $t] != $bm0 } {
       break
     }
   }
   
-  if { $found } {
-    puts "flag T pour [sc_game number]"
-    sc_game flag T [sc_game number] 1
-    sc_pos setComment "****d${depth}from${prevscore}to${score} [sc_pos getComment]"
-    updateBoard
-  }
-  startAnalyzeMode 1
+  set difficulty [expr $t +2]
+  
+  puts "flag T pour [sc_game number] difficulty $difficulty"
+  sc_game flag T [sc_game number] 1
+  sc_pos setComment "****d${difficulty}from${prevscore}to${score} [sc_pos getComment]"
+  updateBoard
 }
 ################################################################################
 #
@@ -910,7 +912,7 @@ proc addAnnotation { {n 1} } {
   set moves $analysis(moves$n)
   
   # if next move is what engine guessed, do nothing
-  if { $analysis(prevmoves$n) != ""} {
+  if { $analysis(prevmoves$n) != "" && ![sc_pos isAt vend]} {
     set move2 [sc_game info previousMoveNT]
     
     sc_info preMoveCmd {}
