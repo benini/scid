@@ -490,4 +490,15 @@ scid-3.6.25
 - added extra options to "sc_pos analyze" :
 	* -mindepth. So if the thinking time is short, engine will not analyze for at least depth 4 (previous behavior), but to mindepth value.
 	* -searchdepth : maximum depth of thinking
- 
+- Analysis Window new features:
+	* new button "Show Engine Info" to add an extra line with the info returned by the engine (there is a button to hide/show it, works only with uci engines)
+	* new "Add all variations" button to add to the current game all the multiPV variations of the engine (works only for uci engines)
+	* now the "Add variation(s)" buttons work even at the end of a game (workaround, the first move of the best line is added and then the variation(s) are added too)
+	* when a variation is added from analysis window, also the engine name is added
+	* the analysis window switches automatically to history mode when multipv = 1 (like in the 3.6.23 version)
+	* added the max move number indicator to the current move number (works badly with some engines that don't send the "info currmovenumber" string back to gui regularly, we have to wait some time to see the right value)
+	* new "Lock Engine" button (the engine keeps analysing the current position even if the user changes the position on the board)
+	* reordered the buttons on the right side of the window
+- The uci option window is now more large when it opens, in order to contain all the option of an engine.
+- Completed translations of every pending label in italian language file.
+- Fixed the help messages for some tools menus, probably wrong due to a new menu item added in 3.6.24 version (changed the code so that now it's not needed to change all menu indexes for help messages whenever a new menu is added).
