@@ -1606,6 +1606,10 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   
   checkbutton $w.b1.showinfo -image tb_engineinfo -indicatoron false -height 24 -width 24 -variable analysis(showEngineInfo$n) -command "toggleEngineInfo $n"
   ::utils::tooltip::Set $w.b1.showinfo $::tr(ShowInfo)
+  if {!$analysis(uci$n)} {
+    $w.b1.showinfo configure -state disabled
+    $w.b1.alllines configure -state disabled
+  }
   
   if {$n == 1} {
     checkbutton $w.b1.annotate -image tb_annotate -indicatoron false -height 24 -variable annotateModeButtonValue -relief raised -command { configAnnotation }
