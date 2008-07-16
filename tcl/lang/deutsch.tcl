@@ -190,8 +190,7 @@ menuText D ToolsSeriousGame "Ernste Partie"  0 {Ernste Partie spielen}
 menuText D ToolsTrainOpenings "Eröffnungen"  0 {Eröffnungsrepertoire trainieren}
 menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
-# ====== TODO To be translated ======
-menuText D ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
 menuText D ToolsTrainFics "Internetpartie"  0 {Internetpartie auf freechess.org}
 menuText D ToolsBookTuning "Buch abstimmen" 0 {Buch abstimmen}
 menuText D ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
@@ -601,7 +600,6 @@ translate D ShowInfo {Engine-Information anzeigen}
 translate D FinishGame {Partie beenden}
 translate D StopEngine {Engine anhalten}
 translate D StartEngine {Engine starten}
-# ====== TODO To be translated ======
 translate D LockEngine {Anbinden an aktuelle Position}
 translate D AnalysisCommand {Analysebefehl}
 translate D PreviousChoices {Vorherige Wahl}
@@ -1355,12 +1353,9 @@ translate D DisplayCM {Kandidatenzüge anzeigen}
 translate D DisplayCMValue {Wert der Kandidatenzüge anzeigen}
 translate D DisplayOpeningStats {Statistik anzeigen}
 translate D ShowReport {Bericht anzeigen}
-# ====== TODO To be translated ======
-translate D NumberOfGoodMovesPlayed {good moves played}
-# ====== TODO To be translated ======
-translate D NumberOfDubiousMovesPlayed {dubious moves played}
-# ====== TODO To be translated ======
-translate D NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+translate D NumberOfGoodMovesPlayed {gute Züge gespielt}
+translate D NumberOfDubiousMovesPlayed {zweischneidige Züge gespielt}
+translate D NumberOfMovesPlayedNotInRepertoire {Züge außerhalb des Repertoirs gespielt}
 # ====== TODO To be translated ======
 translate D NumberOfTimesPositionEncountered {times position encountered}
 translate D PlayerBestMove  {Nur beste Züge erlauben}
@@ -1415,8 +1410,7 @@ translate D MoveOutOfBook {Zug nicht mehr im Buch}
 translate D LastBookMove {Letzter Buchzug}
 translate D AnnotateSeveralGames {Kommentiere mehrere Partien\nvon aktueller bis:}
 translate D FindOpeningErrors {Eröffnungsfehler finden}
-# ====== TODO To be translated ======
-translate D MarkTacticalExercises {Mark tactical exercises}
+translate D MarkTacticalExercises {Taktische Übungen markieren}
 translate D UseBook {Buch benutzen}
 translate D MultiPV {Multivariantenmodus}
 translate D Hash {Hash Speicher}

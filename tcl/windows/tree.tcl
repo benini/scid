@@ -579,6 +579,10 @@ set tree(standardLines) {
   {1.Nf3}
   {1.Nf3 Nf6}
 }
+# if there is a treecache file source it, otherwise use hard coded
+# values above
+set scidConfigFiles(treecache) "treecache.dat"
+catch {source [scidConfigFile treecache]}
 
 ################################################################################
 # ::tree::prime
