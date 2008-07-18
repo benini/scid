@@ -4,9 +4,6 @@
 |                                                           |
  ===========================================================
 
-TERMINER DETECTION D'EXOS TAC l 819 logique à vérifier
-Traiter les ouvertures comme une suite de positions
-Mettre des tags PGN sur les parties (motifs)
 
  ===========================================================
 |                                                           |
@@ -14,31 +11,16 @@ Mettre des tags PGN sur les parties (motifs)
 |                                                           |
  ===========================================================
 
-- FICS : close connection after a period without inactivity -> UI freezes
-
 - Go to any move. Go one move back. Add a comment, let's say "Good move". 
 Make a move, choose "Add New Variation". The comment will be repeated. -> KNOWN BUG, let's say it is a feature
 
-- Open any game via Finder. In Recent files, paths contain /./ making it 
-possible to have the same file listed twice. -> SEEMS OK
-
 Possible improvements (perhaps not bugs, but awkward)
-- Empty variations are not deleted when last move is deleted)
 
 - It is possible to add NAG before the first move of the game/variation. For variations, it is not even visible.
 
 - PGN window with short header ON. If strip first moves -> the game is empty (bug exists in Scid 3.6.1)
 
 - Right click in PGN window does not always display the right position. Happens because of some comments parsing. Bug exists in original Scid 3.6.1
-
-- when clicking quickly on engine's "add move" it will try to add several moves for the same color, hence an error comment in PGN.  Bug exists in original Scid 3.6.1
-
-- sc_game push generates a new game that sc_game pop does not delete. This is used by trial mode and lead to memory leak.
-
-INTERNATIONALIZATION
-* bug: correct charset support in Tcl 8.3.x and Tcl 8.4.x -> TO BE FIXED BY USERS OF CHARSETS
-* bug: convert from current encoding to UT8 on import -> NO, NEED TO SWITCH TO MSGCAT
-* bug: convert from UTF8 to current encoding on export
 
 GAME EDITOR
 * bug: with comment editor active browsing the game 'modifies' it -> try to detect that comment editor did not change, so no need to flag game as dirty.
@@ -49,7 +31,7 @@ GAME EDITOR
 |                                                           |
  ===========================================================
 
-- Automatic tactics exercise generation
+- compile openseal for PocketPC
 
 - Add endgame tables support to PPC
 
@@ -57,7 +39,7 @@ GAME EDITOR
 
 - port FICS canvas to PPC
 
-- FICS : user commands at login
+- FICS : user defined commands at login
 
 - FICS : 
 	* implement timeseal (post a message to MAd -> full box, tried Hawk) Hi, I would like to use timesealing with the port of Scid I made on Pocket PC (I added FICS and Novag Citrine support). Could you give me pointers or a binary that could act as a proxy (ARM processor)?
@@ -195,10 +177,7 @@ PLAYER BROWSER
 * opt: incrementally match player name
 
 ANALYSIS WINDOW & ENGINES
-* cmd: blunder search
-* cmd: restart engine (specially if above-mentioned bugs are not fixed)
 * fea: chess engine output in main window
-* opt: option to always start engine in "low cpu usage" mode 
   
 SPELLCHECKER
 * fea: don't match partial name for surname

@@ -27,6 +27,8 @@ set isBatchOpening 0
 set isBatchOpeningMoves 12
 set stack ""
 
+set markTacticalExercises 1
+
 ################################################################################
 # The different threshold values for !? ?? += etc
 array set informant {}
@@ -779,14 +781,21 @@ proc bookAnnotation { {n 1} } {
     sc_book close $::analysisBookSlot
     set ::wentOutOfBook 1
     
+    set verboseMoveOutOfBook ""
+    set verboseLastBookMove ""
+    if {! $::isShortAnnotation } {
+      set verboseMoveOutOfBook " $::tr(MoveOutOfBook)"
+      set verboseLastBookMove " $::tr(LastBookMove)"
+    }
+    
     if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
       if {$prevbookmoves != ""} {
-        sc_pos setComment "[sc_pos getComment] $::tr(MoveOutOfBook) ($prevbookmoves)"
+        sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook ($prevbookmoves)"
       } else  {
-        sc_pos setComment "[sc_pos getComment] $::tr(MoveOutOfBook)"
+        sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook"
       }
     } else  {
-      sc_pos setComment "[sc_pos getComment] $::tr(LastBookMove)"
+      sc_pos setComment "[sc_pos getComment]$verboseLastBookMove"
     }
     
     # last move was out of book or the last move in book : it needs to be analyzed, so take back
@@ -856,7 +865,6 @@ proc markExercise { prevscore score } {
   set movelist {}
   for {set t 0} {$t < [llength $timer]} { incr t} {
     set res [sc_pos analyze -time [lindex $timer $t] -hashkb 1 -pawnkb 1 -mindepth 0]
-    puts "[lindex $timer $t] ms $res"
     # set score_analyze [lindex $res 0]
     set move_analyze [lindex $res 1]
     # if {[sc_pos side] == "black"} { set score_analyze [expr 0.0 - $score_analyze] }
@@ -876,7 +884,7 @@ proc markExercise { prevscore score } {
   
   puts "flag T pour [sc_game number] difficulty $difficulty"
   sc_game flag T [sc_game number] 1
-  sc_pos setComment "****d${difficulty}from${prevscore}to${score} [sc_pos getComment]"
+  sc_pos setComment "****D${difficulty} ${prevscore}->${score} [sc_pos getComment]"
   updateBoard
 }
 ################################################################################
@@ -923,10 +931,6 @@ proc addAnnotation { {n 1} } {
     set move1 [sc_game info previousMoveNT]
     sc_game pop
     sc_info preMoveCmd preMoveCommand
-    
-    # puts "test moteur prevmove $move1 == $move2 [sc_pos moveNumber] [sc_pos side]"
-    # puts "    prevmoves $analysis(prevmoves$n)"
-    # puts "        moves $analysis(moves$n)"
     
     if {$move1 == $move2} {
       set analysis(prevscore$n) $analysis(score$n)

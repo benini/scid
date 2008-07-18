@@ -1270,9 +1270,13 @@ proc backSquare {} {
     set lastMoveInLine 1
   }
   sc_move back
-  if {$lastMoveInLine} {
+  
+  if {[sc_pos isAt vstart] && [sc_var level] != 0} {
+    ::pgn::deleteVar [sc_var number]
+  } elseif {$lastMoveInLine} {
     sc_game truncate
   }
+  
   #Klimmek: not needed anymore, in updateBoard included
   #  ::board::colorSquare .board $selectedSq
   #  ::board::colorSquare .board $bestSq

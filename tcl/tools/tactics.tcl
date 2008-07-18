@@ -22,7 +22,7 @@ namespace eval tactics {
   set cancelScoreReset 0
   set askToReplaceMoves_old 0
   set showSolution 0
-  set  labelSolution ". . . . . . "
+  set labelSolution ". . . . . . "
   set lastGameLoaded 0
   set prevFen ""
   set engineSlot 5
@@ -79,9 +79,13 @@ namespace eval tactics {
     while {![sc_pos isAt end]} {
       sc_move forward
       set cmt [sc_pos getComment]
-      set res [scan $cmt "\*\*\*\*d%dfrom%fto%f" depth score prevscore]
+      # TODO old format to be removed
+      set res [scan $cmt "\*\*\*\*d%dfrom%fto%f" dif prevscore score ]
+      if {$res != 3} { ; # try new format if the old format failed
+      set res [scan $cmt "\*\*\*\*D%d %f->%f" dif prevscore score ]
+      }
       if {$res == 3} {
-        return [list $depth $score $prevscore]
+        return [list $dif $score $prevscore]
       }
     }
     return {}

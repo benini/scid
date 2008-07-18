@@ -364,6 +364,10 @@ namespace eval fics {
   #
   ################################################################################
   proc readchan {} {
+    if {[eof $::fics::sockchan]} {
+      tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
+      return
+    }
     set line [read $::fics::sockchan]
     set line [string map {"\a" ""} $line]
     foreach l [split $line "\n"] {
@@ -978,12 +982,25 @@ namespace eval fics {
   #
   ################################################################################
   proc writechan {line {echo "noecho"}} {
+    after cancel ::fics::stayConnected
+    if {[eof $::fics::sockchan]} {
+      tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
+      return
+    }
     puts $::fics::sockchan $line
     if {$echo != "noecho"} {
       updateConsole "->>$line"
     }
+    after 2700000 ::fics::stayConnected
   }
-  
+  ################################################################################
+  # FICS seems to close connexion after 1 hr idle. So send a dummy command
+  # every 45 minutes
+  ################################################################################
+  proc stayConnected {} {
+    writechan "date" "noecho"
+    after 2700000 ::fics::stayConnected
+  }
   ################################################################################
   #
   ################################################################################

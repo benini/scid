@@ -485,8 +485,10 @@ scid-3.6.25
 - Minor bug fixes :
 	* tactical game against Phalanx (some info was missing)
 	* replacing a game with flags : all flags were not copied (for example tactical flag)
+	* error recovery code if the network drops when playing on FICS
+	* when deleting the last move of a variation by right clicking on board, the empty variation is removed 
 - Annotation : added an option "mark tactical exercises". The tactical flag will be set to the game and a comment with ****d<depth>sc<score>. This option is only available when annotating with an UCI engine.
-- Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature.
+- Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature. Pressing the middle mouse button on "goto last move" button will go to next tactical exercises.
 - added extra options to "sc_pos analyze" :
 	* -mindepth. So if the thinking time is short, engine will not analyze for at least depth 4 (previous behavior), but to mindepth value.
 	* -searchdepth : maximum depth of thinking
