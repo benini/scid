@@ -884,7 +884,7 @@ proc markExercise { prevscore score } {
   
   puts "flag T pour [sc_game number] difficulty $difficulty"
   sc_game flag T [sc_game number] 1
-  sc_pos setComment "****D${difficulty} ${prevscore}->${score} [sc_pos getComment]"
+  sc_pos setComment "****D${difficulty} [format %.1f $prevscore]->[format %.1f $score] [sc_pos getComment]"
   updateBoard
 }
 ################################################################################
@@ -2181,6 +2181,7 @@ proc updateAnalysisText {{n 1}} {
   $t delete 0.0 end
   
   if { $analysis(uci$n) } {
+    $t insert end [format "%+.1f " $score]
     $t insert end "[tr Depth]: "
     if {$analysis(showEngineInfo$n) && $analysis(seldepth$n) != 0} {
       $t insert end [ format "%2u/%u " $analysis(depth$n) $analysis(seldepth$n)] small
