@@ -504,3 +504,4 @@ scid-3.6.25
 - The uci option window is now more large when it opens, in order to contain all the option of an engine.
 - Completed translations of every pending label in italian language file.
 - Fixed the help messages for some tools menus, probably wrong due to a new menu item added in 3.6.24 version (changed the code so that now it's not needed to change all menu indexes for help messages whenever a new menu is added).
+- Finder : added a contextual menu (right mouse button to copy, move, delete and backup bases).

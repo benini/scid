@@ -30,6 +30,8 @@ GAME EDITOR
 |                                                           |
  ===========================================================
 
+- delete a DB form Scid interface
+
 - compile openseal for PocketPC
 
 - Add endgame tables support to PPC

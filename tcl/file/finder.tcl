@@ -101,8 +101,21 @@ proc ::file::finder::Open {} {
   dialogbutton $w.b.stop -textvar ::tr(Stop) -command {set finder(stop) 1 }
   dialogbutton $w.b.help -textvar ::tr(Help) -command {helpWindow Finder}
   dialogbutton $w.b.close -textvar ::tr(Close) -command "destroy $w"
-  bind $w <Escape> "$w.b.stop invoke"
-  
+  bind $w <Escape> {
+    if {[winfo exists .finder.t.text.ctxtMenu]} {
+      destroy .finder.t.text.ctxtMenu
+      focus .finder
+    } else {
+      .finder.b.stop invoke
+    }
+  }
+  # Bind left button to close ctxt menu:
+  bind $w <ButtonPress-1> {
+    if {[winfo exists .finder.t.text.ctxtMenu]} {
+      destroy .finder.t.text.ctxtMenu
+      focus .finder
+    }
+  }
   pack $w.b -side bottom -fill x
   packbuttons right $w.b.close $w.b.help $w.b.stop
   packbuttons left $w.b.sub
@@ -251,7 +264,11 @@ proc ::file::finder::Refresh {{newdir ""}} {
     } else  {
       set fullpath $data(dir)/$dir/$tail
     }
+    
     $t tag bind f$path <ButtonPress-1> "::file::Open [list $fullpath]"
+    # Bind right button to popup a contextual menu:
+    $t tag bind f$path <ButtonPress-3> "::file::finder::contextMenu .finder.t.text [list $fullpath] %x %y %X %Y"
+    
     $t tag bind f$path <Any-Enter> \
         "$t tag configure [list f$path] -background $hc"
     $t tag bind f$path <Any-Leave> \
@@ -285,8 +302,101 @@ proc ::file::finder::Refresh {{newdir ""}} {
   $w.b.close configure -state normal
   $w.b.sub configure -state normal
   unbusyCursor .
+  
 }
-
+################################################################################
+#
+################################################################################
+proc ::file::finder::contextMenu {win fullPath x y xc yc} {
+  
+  update idletasks
+  
+  set mctxt $win.ctxtMenu
+  
+  if { [winfo exists $mctxt] } { destroy $mctxt }
+  
+  menu $mctxt
+  $mctxt add command -label Open -command "::file::Open [list $fullPath]"
+  $mctxt add command -label Backup -command "::file::finder::backup [list $fullPath]"
+  $mctxt add command -label Copy -command "::file::finder::copy [list $fullPath]"
+  $mctxt add command -label Move -command "::file::finder::move [list $fullPath]"
+  $mctxt add separator
+  $mctxt add command -label Delete -command "::file::finder::delete $fullPath"
+  
+  $mctxt post [winfo pointerx .] [winfo pointery .]
+  
+}
+################################################################################
+# will backup a base in the form name-date.ext
+################################################################################
+proc ::file::finder::backup { f } {
+  set r [file rootname $f]
+  set d [clock format [clock seconds] -format "-%Y.%m.%d-%H%M" ]
+  set ext [string tolower [file extension $f]]
+  if { $ext == ".si3" } {
+    file copy "$r.sg3" "$r$d.sg3"
+    file copy "$r.sn3" "$r$d.sn3"
+    catch { file copy "$r.stc" "$r$d.stc" }
+  }
+  
+  file copy "$r$ext" "$r$d$ext"
+  ::file::finder::Refresh
+}
+################################################################################
+#
+################################################################################
+proc ::file::finder::copy { f } {
+  if {[sc_base slot $f] != 0} {
+    tk_messageBox -title Scid -icon error -type ok -message "Close base first"
+    return
+  }
+  set dir [tk_chooseDirectory -initialdir [file dirname $f] ]
+  if {$dir != ""} {
+    if { [string tolower [file extension $f]] == ".si3" } {
+      file copy "[file rootname $f].sg3" "[file rootname $f].sn3" $dir
+      catch { file copy "[file rootname $f].stc" $dir }
+    }
+    file copy $f $dir
+  }
+}
+################################################################################
+#
+################################################################################
+proc ::file::finder::move { f } {
+  if {[sc_base slot $f] != 0} {
+    tk_messageBox -title Scid -icon error -type ok -message "Close base first"
+    return
+  }
+  set dir [tk_chooseDirectory -initialdir [file dirname $f] ]
+  if {$dir != ""} {
+    if { [string tolower [file extension $f]] == ".si3" } {
+      file rename "[file rootname $f].sg3" "[file rootname $f].sn3" $dir
+      catch { file rename "[file rootname $f].stc" $dir }
+    }
+    file rename $f $dir
+  }
+  ::file::finder::Refresh
+}
+################################################################################
+#
+################################################################################
+proc ::file::finder::delete { f } {
+  if {[sc_base slot $f] != 0} {
+    tk_messageBox -title Scid -icon error -type ok -message "Close base first"
+    return
+  }
+  set answer [tk_messageBox -title Scid -icon warning -type yesno -message "Are you sure you want to permanently delete $f ?"]
+  if {$answer == "yes"} {
+    if { [string tolower [file extension $f]] == ".si3" } {
+      file delete "[file rootname $f].sg3" "[file rootname $f].sn3" "[file rootname $f].stc"
+    }
+    file delete $f
+  }
+  ::file::finder::Refresh
+}
+################################################################################
+#
+################################################################################
 proc ::file::finder::ConfigMenus {{lang ""}} {
   if {! [winfo exists .finder]} { return }
   if {$lang == ""} { set lang $::language }
