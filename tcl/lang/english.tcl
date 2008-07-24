@@ -555,7 +555,12 @@ translate E FinderDir {Directory}
 translate E FinderDirs {Directories}
 translate E FinderFiles {Files}
 translate E FinderUpDir {up}
-
+translate E FinderCtxOpen {Open}
+translate E FinderCtxBackup {Backup}
+translate E FinderCtxCopy {Copy}
+translate E FinderCtxMove {Move}
+translate E FinderCtxDelete {Delete}
+ 
 # Player finder:
 menuText E PListFile "File" 0
 menuText E PListFileUpdate "Update" 0

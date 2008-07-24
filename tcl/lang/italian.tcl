@@ -520,6 +520,16 @@ translate I FinderDir {Trova Directory}
 translate I FinderDirs {Trova Directories}
 translate I FinderFiles {Trova Files}
 translate I FinderUpDir {Su}
+# ====== TODO To be translated ======
+translate I FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate I FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate I FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate I FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate I FinderCtxDelete {Delete}
 
 # Player finder:
 menuText I PListFile "File" 0
@@ -1702,6 +1712,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

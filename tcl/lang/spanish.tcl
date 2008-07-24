@@ -5,7 +5,7 @@
 # Updated by Benigno Hernández Bacallado
 # Untranslated messages are marked with a "***" comment.
 
-addLanguage S Espanol 1 ;#iso8859-1
+addLanguage S Español 1 ;#iso8859-1
 
 proc setLanguage_S {} {
 
@@ -179,8 +179,7 @@ menuText S ToolsSeriousGame "Partida seria"  0 {Jugar una partida seria}
 menuText S ToolsTrainOpenings "Entrenamiento de aperturas"  0 {Entrenamiento con un repertorio}
 menuText S ToolsTrainTactics "Táctica (problemas)"  0 {Resover problemas de táctica}
 menuText S ToolsTrainCalvar "Cálculo of variaciones"  0 {Calculo de variantes}
-# ====== TODO To be translated ======
-menuText S ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+menuText S ToolsTrainFindBestMove "Encontrar la mejor jugada"  0 {Busca el movimiento mejor}
 menuText S ToolsTrainFics "Jugar en internet"  0 {Jugar en freechess.org}
 menuText S ToolsBookTuning "Sintonizar Libro de aperturas" 0 {Sintonizar Libro (Book)}
 menuText S ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
@@ -381,12 +380,12 @@ translate S Rook {Torre}
 translate S Bishop {Alfil}
 translate S Knight {Caballo}
 translate S Pawn {Peón}
-translate S White {Blanco}
-translate S Black {Negro}
+translate S White {Blancas}
+translate S Black {Negras}
 translate S Player {Jugador}
 translate S Rating {Elo}
-translate S RatingDiff {Diferencia de Elo (Blanco - Negro)}
-translate S AverageRating {Clasificación promedio}
+translate S RatingDiff {Diferencia de Elo (Blancas - Negras)}
+translate S AverageRating {Elo promedio}
 translate S Event {Evento}
 translate S Site {Lugar}
 translate S Country {País}
@@ -536,6 +535,16 @@ translate S FinderDir {Directorio}
 translate S FinderDirs {Directorios}
 translate S FinderFiles {Archivos}
 translate S FinderUpDir {arriba}
+# ====== TODO To be translated ======
+translate S FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate S FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate S FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate S FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate S FinderCtxDelete {Delete}
 
 # Player finder:
 menuText S PListFile "Archivo" 0
@@ -570,8 +579,8 @@ menuText S GraphFileColor "Guardar como Postscript Color..." 24
 menuText S GraphFileGrey "Guardar como Postscript escala de grises..." 34
 menuText S GraphFileClose "Cerrar ventana" 7
 menuText S GraphOptions "Opciones" 0
-menuText S GraphOptionsWhite "Blanco" 0
-menuText S GraphOptionsBlack "Negro" 0
+menuText S GraphOptionsWhite "Blancas" 0
+menuText S GraphOptionsBlack "Negras" 0
 menuText S GraphOptionsBoth "Ambos" 0
 menuText S GraphOptionsPInfo "Jugador Información jugador" 0
 translate S GraphFilterTitle "Filtro gráfico: frecuencia por 1000 partidas"
@@ -582,18 +591,15 @@ translate S TitleFilterGraph "Scid: Filtro Gráfico"
 
 # Analysis window:
 translate S AddVariation {Añadir variación}
-# ====== TODO To be translated ======
-translate S AddAllVariations {Add All Variations}
+translate S AddAllVariations {Añadir todas las variaciones}
 translate S AddMove {Añadir movimiento}
 translate S Annotate {Anotar}
 translate S ShowAnalysisBoard {Mostrar tablero de análisis}
-# ====== TODO To be translated ======
-translate S ShowInfo {Show engine info}
+translate S ShowInfo {Muestra info del motor}
 translate S FinishGame {Finalizar partida}
 translate S StopEngine {Parar motor}
 translate S StartEngine {Empezar motor}
-# ====== TODO To be translated ======
-translate S LockEngine {Lock engine to current position}
+translate S LockEngine {Bloquea motor en posición actual}
 translate S AnalysisCommand {Dirección de análisis}
 translate S PreviousChoices {Elección previa}
 translate S AnnotateTime {Poner el tiempo entre movimientos en segundos}
@@ -776,8 +782,8 @@ translate S PgnContains {PGN contiene texto}
 
 # Game list window:
 translate S GlistNumber {Número}
-translate S GlistWhite {Blanco}
-translate S GlistBlack {Negro}
+translate S GlistWhite {Blancas}
+translate S GlistBlack {Negras}
 translate S GlistWElo {B-Elo}
 translate S GlistBElo {N-Elo}
 translate S GlistEvent {Evento}
@@ -809,11 +815,11 @@ translate S GlistAlign {Alinear}
 translate S GlistColor {Color}
 translate S GlistSep {Separador}
 translate S GlistRemoveThisGameFromFilter  {Elimina esta partida del Filtro}
-translate S GlistRemoveGameAndAboveFromFilter  {Elimina la partida (y todas las de arriba) del Filtro}
-translate S GlistRemoveGameAndBelowFromFilter  {Elimina la partida (y todas las de abajo) del Filtro}
-translate S GlistDeleteGame { Recupera esta partida borrada} 
-translate S GlistDeleteAllGames {Borra todas las partidas del Filtro} 
-translate S GlistUndeleteAllGames {Recupera todas las partidas borradas del filtro} 
+translate S GlistRemoveGameAndAboveFromFilter  {Elimina esta partida y todas las de arriba del Filtro}
+translate S GlistRemoveGameAndBelowFromFilter  {Elimina esta partida y todas las de abajo del Filtro}
+translate S GlistDeleteGame {Elimina/Recupera esta partida} 
+translate S GlistDeleteAllGames {Elimina todas las partidas en el Filtro} 
+translate S GlistUndeleteAllGames {Recupera todas las partidas borradas en el filtro} 
 
 # Maintenance window:
 translate S DatabaseName {Nombre de la base:}
@@ -1161,7 +1167,7 @@ translate S TwinsDeleteNewer {Número de partida mayor}
 translate S TwinsDelete {Borrar partidas}
 
 # Name editor window:
-translate S NameEditType {Tipo de nombre a editar}
+translate S NameEditType {Tipo de dato a editar}
 translate S NameEditSelect {Partidas a editar}
 translate S NameEditReplace {Reemplazar}
 translate S NameEditWith {con}
@@ -1321,14 +1327,10 @@ translate S DisplayCM {Muestra posibles movimientos}
 translate S DisplayCMValue {Muestra valor de posibles movimientos}
 translate S DisplayOpeningStats {Muestra estadísticas}
 translate S ShowReport {Muestra informe}
-# ====== TODO To be translated ======
-translate S NumberOfGoodMovesPlayed {good moves played}
-# ====== TODO To be translated ======
-translate S NumberOfDubiousMovesPlayed {dubious moves played}
-# ====== TODO To be translated ======
-translate S NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
-# ====== TODO To be translated ======
-translate S NumberOfTimesPositionEncountered {times position encountered}
+translate S NumberOfGoodMovesPlayed {buenos movimientos jugados}
+translate S NumberOfDubiousMovesPlayed {dudosos momientos jugados}
+translate S NumberOfMovesPlayedNotInRepertoire {movimientos jugados fuera de repertorio}
+translate S NumberOfTimesPositionEncountered {veces encontrada la posición}
 translate S PlayerBestMove  {Permite únicamente movimientos mejores}
 translate S OpponentBestMove {Oponente juega mejores movimientos}
 translate S OnlyFlaggedLines {Sólo lineas marcadas}
@@ -1381,8 +1383,7 @@ translate S MoveOutOfBook {Movimiento fuera del libro}
 translate S LastBookMove {Último movimiento del libro}
 translate S AnnotateSeveralGames {Anotar las partidas\ndesde la actual hasta la partida: }
 translate S FindOpeningErrors {Encontrar errores en los primeros }
-# ====== TODO To be translated ======
-translate S MarkTacticalExercises {Mark tactical exercises}
+translate S MarkTacticalExercises {Marca ejercicios tácticos}
 translate S UseBook {Usar libro de aperturas (Book)}
 translate S MultiPV {Variantes múltiples}
 translate S Hash {Memoria Hash}
@@ -1496,10 +1497,6 @@ translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, a
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
-
-
-
-
 
 
 

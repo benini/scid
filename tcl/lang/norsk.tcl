@@ -570,6 +570,16 @@ translate O FinderDir {Katalog}
 translate O FinderDirs {Kataloger}
 translate O FinderFiles {Filer}
 translate O FinderUpDir {opp}
+# ====== TODO To be translated ======
+translate O FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate O FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate O FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate O FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate O FinderCtxDelete {Delete}
 
 # Player finder:
 menuText O PListFile "Fil" 0
@@ -1788,6 +1798,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

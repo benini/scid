@@ -582,6 +582,16 @@ translate N FinderDir {Folder}
 translate N FinderDirs {Folders}
 translate N FinderFiles {Bestanden}
 translate N FinderUpDir {Hogere Folder}
+# ====== TODO To be translated ======
+translate N FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate N FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate N FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate N FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate N FinderCtxDelete {Delete}
 
 # Player finder:
 menuText N PListFile "Bestand" 0
@@ -1782,6 +1792,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

@@ -572,6 +572,16 @@ translate R FinderDir {Директория}
 translate R FinderDirs {Директории}
 translate R FinderFiles {Файлы}
 translate R FinderUpDir {вверх}
+# ====== TODO To be translated ======
+translate R FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate R FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate R FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate R FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate R FinderCtxDelete {Delete}
 
 # Player finder:
 menuText R PListFile "Файл" 0
@@ -1817,6 +1827,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

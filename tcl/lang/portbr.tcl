@@ -575,6 +575,16 @@ translate B FinderDir {Diretorio}
 translate B FinderDirs {Diretorios}
 translate B FinderFiles {Arquivos}
 translate B FinderUpDir {Acima}
+# ====== TODO To be translated ======
+translate B FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate B FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate B FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate B FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate B FinderCtxDelete {Delete}
 
 # Player finder:
 menuText B PListFile "Arquivo" 0
@@ -1794,6 +1804,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

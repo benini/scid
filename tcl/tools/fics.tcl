@@ -937,7 +937,7 @@ namespace eval fics {
   ################################################################################
   proc getOffersGame { idx } {
     array set ga [lindex $::fics::soughtlist $idx]
-    writechan "play $ga(game)"
+    catch { writechan "play $ga(game)" }
   }
   ################################################################################
   #

@@ -564,6 +564,16 @@ translate H FinderDir {Könyvtár}
 translate H FinderDirs {Könyvtárak}
 translate H FinderFiles {Fájlok}
 translate H FinderUpDir {fel}
+# ====== TODO To be translated ======
+translate H FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate H FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate H FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate H FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate H FinderCtxDelete {Delete}
 
 # Player finder:
 menuText H PListFile "Fájl" 0
@@ -2014,6 +2024,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

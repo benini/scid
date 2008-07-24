@@ -570,6 +570,16 @@ translate W FinderDir {Katalog}
 translate W FinderDirs {Kataloger}
 translate W FinderFiles {Filer}
 translate W FinderUpDir {upp}
+# ====== TODO To be translated ======
+translate W FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate W FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate W FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate W FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate W FinderCtxDelete {Delete}
 
 # Player finder:
 menuText W PListFile "Fil" 0
@@ -6805,6 +6815,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

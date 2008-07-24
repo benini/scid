@@ -316,12 +316,12 @@ proc ::file::finder::contextMenu {win fullPath x y xc yc} {
   if { [winfo exists $mctxt] } { destroy $mctxt }
   
   menu $mctxt
-  $mctxt add command -label Open -command "::file::Open [list $fullPath]"
-  $mctxt add command -label Backup -command "::file::finder::backup [list $fullPath]"
-  $mctxt add command -label Copy -command "::file::finder::copy [list $fullPath]"
-  $mctxt add command -label Move -command "::file::finder::move [list $fullPath]"
+  $mctxt add command -label [tr FinderCtxOpen ] -command "::file::Open [list $fullPath]"
+  $mctxt add command -label [tr FinderCtxBackup ] -command "::file::finder::backup [list $fullPath]"
+  $mctxt add command -label [tr FinderCtxCopy ] -command "::file::finder::copy [list $fullPath]"
+  $mctxt add command -label [tr FinderCtxMove ] -command "::file::finder::move [list $fullPath]"
   $mctxt add separator
-  $mctxt add command -label Delete -command "::file::finder::delete $fullPath"
+  $mctxt add command -label [tr FinderCtxDelete ] -command "::file::finder::delete $fullPath"
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
   
@@ -334,12 +334,18 @@ proc ::file::finder::backup { f } {
   set d [clock format [clock seconds] -format "-%Y.%m.%d-%H%M" ]
   set ext [string tolower [file extension $f]]
   if { $ext == ".si3" } {
-    file copy "$r.sg3" "$r$d.sg3"
-    file copy "$r.sn3" "$r$d.sn3"
+    if { [catch { file copy "$r.sg3" "$r$d.sg3" ; file copy "$r.sn3" "$r$d.sn3" } err ] } {
+      tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
+      return
+    }
     catch { file copy "$r.stc" "$r$d.stc" }
   }
   
-  file copy "$r$ext" "$r$d$ext"
+  if { [catch { file copy "$r$ext" "$r$d$ext" } err ] } {
+    tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
+    return
+  }
+  
   ::file::finder::Refresh
 }
 ################################################################################
@@ -353,10 +359,19 @@ proc ::file::finder::copy { f } {
   set dir [tk_chooseDirectory -initialdir [file dirname $f] ]
   if {$dir != ""} {
     if { [string tolower [file extension $f]] == ".si3" } {
-      file copy "[file rootname $f].sg3" "[file rootname $f].sn3" $dir
+      if { [catch { file copy "[file rootname $f].sg3" "[file rootname $f].sn3" $dir } err ] } {
+        tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
+        return
+      }
+      
       catch { file copy "[file rootname $f].stc" $dir }
     }
-    file copy $f $dir
+    
+    if { [catch { file copy $f $dir } err ] } {
+      tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
+      return
+    }
+    
   }
 }
 ################################################################################
@@ -370,10 +385,18 @@ proc ::file::finder::move { f } {
   set dir [tk_chooseDirectory -initialdir [file dirname $f] ]
   if {$dir != ""} {
     if { [string tolower [file extension $f]] == ".si3" } {
-      file rename "[file rootname $f].sg3" "[file rootname $f].sn3" $dir
+      
+      if { [catch { file rename "[file rootname $f].sg3" "[file rootname $f].sn3" $dir } err ] } {
+        tk_messageBox -title Scid -icon error -type ok -message "File rename error $err"
+        return
+      }
       catch { file rename "[file rootname $f].stc" $dir }
     }
-    file rename $f $dir
+    
+    if { [catch { file rename $f $dir } err ] } {
+      tk_messageBox -title Scid -icon error -type ok -message "File rename error $err"
+      return
+    }
   }
   ::file::finder::Refresh
 }

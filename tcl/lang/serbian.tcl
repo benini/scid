@@ -568,6 +568,16 @@ translate Y FinderDir {Direktorijum}
 translate Y FinderDirs {Direktorijumi}
 translate Y FinderFiles {Fajlovi}
 translate Y FinderUpDir {gore}
+# ====== TODO To be translated ======
+translate Y FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate Y FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate Y FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate Y FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate Y FinderCtxDelete {Delete}
 
 # Player finder:
 menuText Y PListFile "Fajl" 0
@@ -1788,6 +1798,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

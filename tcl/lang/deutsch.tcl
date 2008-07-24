@@ -546,6 +546,16 @@ translate D FinderDir {Verzeichnis}
 translate D FinderDirs {Verzeichnisse}
 translate D FinderFiles {Dateien}
 translate D FinderUpDir {hoch}
+# ====== TODO To be translated ======
+translate D FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate D FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate D FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate D FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate D FinderCtxDelete {Delete}
 
 # Player finder:
 menuText D PListFile "Datei" 0
@@ -6941,6 +6951,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

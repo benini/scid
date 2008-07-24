@@ -575,6 +575,16 @@ translate P FinderDir {Katalog}
 translate P FinderDirs {Katalogi}
 translate P FinderFiles {Pliki}
 translate P FinderUpDir {wy¿ej}
+# ====== TODO To be translated ======
+translate P FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate P FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate P FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate P FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate P FinderCtxDelete {Delete}
 
 # Player finder:
 menuText P PListFile "Plik" 0
@@ -2015,6 +2025,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -563,6 +563,16 @@ translate C FinderDir {Adresáø}
 translate C FinderDirs {Adresáøe}
 translate C FinderFiles {Soubory}
 translate C FinderUpDir {nahoru}
+# ====== TODO To be translated ======
+translate C FinderCtxOpen {Open}
+# ====== TODO To be translated ======
+translate C FinderCtxBackup {Backup}
+# ====== TODO To be translated ======
+translate C FinderCtxCopy {Copy}
+# ====== TODO To be translated ======
+translate C FinderCtxMove {Move}
+# ====== TODO To be translated ======
+translate C FinderCtxDelete {Delete}
 
 # Player finder:
 menuText C PListFile "Soubor" 0
@@ -5419,6 +5429,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

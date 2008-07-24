@@ -516,6 +516,11 @@ translate F FinderDir {Répertoire}
 translate F FinderDirs {Répertoires}
 translate F FinderFiles {Fichiers}
 translate F FinderUpDir {répertoire précédent}
+translate F FinderCtxOpen {Ouvrir}
+translate F FinderCtxBackup {Sauvegarder}
+translate F FinderCtxCopy {Copier}
+translate F FinderCtxMove {Déplacer}
+translate F FinderCtxDelete {Supprimer}
 
 # Player finder:
 menuText F PListFile "Fichier" 0
@@ -1684,6 +1689,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

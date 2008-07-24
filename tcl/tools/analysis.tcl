@@ -736,7 +736,7 @@ proc configAnnotation {} {
     if {$::markTacticalExercises} {
       if { $::analysis(multiPVCount1) < 2} {
         set ::analysis(multiPVCount1) 4
-        changePVSize $::analysis(multiPVCount1)
+        changePVSize 1
       }
     }
     
@@ -2194,7 +2194,7 @@ proc updateAnalysisText {{n 1}} {
     $t insert end [ format "%6.2f s" $analysis(time$n) ] small
     if {$analysis(showEngineInfo$n)} {
       $t insert end "\n" small
-      $t insert end "Current: "
+      $t insert end "[tr Current]: "
       $t insert end [ format "%s (%s/%s) " [::trans $analysis(currmove$n)] $analysis(currmovenumber$n) $analysis(maxmovenumber$n)] small
       $t insert end "TB Hits: "
       $t insert end [ format "%u " $analysis(tbhits$n)] small
