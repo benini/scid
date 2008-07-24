@@ -1706,10 +1706,12 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     if {$current == -1} { set current 1 }
     set analysis(multiPVCount$n) $current
     changePVSize $n
-    if { $hasMultiPV } {
-      $w.b1.multipv configure -from $min -to $max -state readonly
-    } else  {
-      $w.b1.multipv configure -from 1 -to 1 -state disabled
+    catch {
+      if { $hasMultiPV } {
+        $w.b1.multipv configure -from $min -to $max -state readonly
+      } else  {
+        $w.b1.multipv configure -from 1 -to 1 -state disabled
+      }
     }
   } ;# end of MultiPV spinbox configuration
   
