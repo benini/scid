@@ -1640,6 +1640,8 @@ proc standardShortcuts {w} {
   bind $w <KeyPress-z> {.button.exitVar invoke}
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
+  bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }
+  bind $w <F5> { catch { .analysisWin2.b1.bStartStop invoke } }  
   bind $w <F11>  ::book::open
   bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}
   bind $w <Control-v> {catch {sc_clipbase paste}; ::updateBoard -pgn}

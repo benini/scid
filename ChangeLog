@@ -501,6 +501,7 @@ scid-3.6.25
 	* added the max move number indicator to the current move number (works badly with some engines that don't send the "info currmovenumber" string back to gui regularly, we have to wait some time to see the right value)
 	* new "Lock Engine" button (the engine keeps analysing the current position even if the user changes the position on the board)
 	* reordered the buttons on the right side of the window
+	* F4 and F5 starts/stops analysis of engines 1 and 2, respectively.
 - The uci option window is now more large when it opens, in order to contain all the option of an engine.
 - Completed translations of every pending label in italian language file.
 - Fixed the help messages for some tools menus, probably wrong due to a new menu item added in 3.6.24 version (changed the code so that now it's not needed to change all menu indexes for help messages whenever a new menu is added).

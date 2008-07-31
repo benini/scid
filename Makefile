@@ -27,7 +27,7 @@ TCL_VERSION = 8.4
 #
 # The settings determined by "./configure" are:
 #
-TCL_INCLUDE = -I/usr/include/tcl8.4
+TCL_INCLUDE = -I/usr/include
 TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
 TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
 
@@ -122,8 +122,9 @@ LANGUAGES = tcl/lang/deutsch.tcl tcl/lang/francais.tcl tcl/lang/italian.tcl tcl/
 
 ### EXECS: executable programs compiled from C++ files.
 #     Note: scidt and eco2epd are obsolete and not compiled by default.
+#			PG : put back scidt has it appears to be useful in certain cases
 #
-EXECS= pgnscid tkscid tcscid scmerge scidlet
+EXECS= pgnscid tkscid tcscid scmerge scidlet scidt
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
