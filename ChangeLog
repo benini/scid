@@ -495,7 +495,7 @@ scid-3.6.25
 - Analysis Window new features:
 	* new button "Show Engine Info" to add an extra line with the info returned by the engine (there is a button to hide/show it, works only with uci engines)
 	* new "Add all variations" button to add to the current game all the multiPV variations of the engine (works only for uci engines)
-	* now the "Add variation(s)" buttons work even at the end of a game (workaround, the first move of the best line is added and then the variation(s) are added too)
+	* now the "Add variation(s)" buttons work even at the end of a game (workaround, the variations are added one move before and the last game move is appended at the beginning of every variation)
 	* when a variation is added from analysis window, also the engine name is added
 	* the analysis window switches automatically to history mode when multipv = 1 (like in the 3.6.23 version)
 	* added the max move number indicator to the current move number (works badly with some engines that don't send the "info currmovenumber" string back to gui regularly, we have to wait some time to see the right value)
@@ -506,3 +506,5 @@ scid-3.6.25
 - Completed translations of every pending label in italian language file.
 - Fixed the help messages for some tools menus, probably wrong due to a new menu item added in 3.6.24 version (changed the code so that now it's not needed to change all menu indexes for help messages whenever a new menu is added).
 - Finder : added a contextual menu (right mouse button to copy, move, delete and backup bases).
+- Added the scanning of filter files (.sso) from the command line (i.e. scid mydb myfilter, scid opens immediatly with mydb filtered by myfilter file)
+- Tuned the startup communication between scid and engines
