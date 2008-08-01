@@ -1623,6 +1623,86 @@ while {$argc > 0} {
       ::splash::add "   Error opening EPD file: $startbase"
     }
     set initialDir(epd) [file dirname $startbase]
+  } elseif {[string match "*.sso" $startbase]} {
+    ::splash::add "Opening filter file: $startbase..."
+    if {[catch {uplevel "#0" source $startbase} err]} {
+      ::splash::add "   Error opening $startbase: $err"
+    } else {
+      switch -- $::searchType {
+        "Material" {
+          sc_search material \
+            -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
+            -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \
+            -wb [list $pMin(wb) $pMax(wb)] -bb [list $pMin(bb) $pMax(bb)] \
+            -wn [list $pMin(wn) $pMax(wn)] -bn [list $pMin(bn) $pMax(bn)] \
+            -wm [list $pMin(wm) $pMax(wm)] -bm [list $pMin(bm) $pMax(bm)] \
+            -wp [list $pMin(wp) $pMax(wp)] -bp [list $pMin(bp) $pMax(bp)] \
+            -flip $ignoreColors -filter $::search::filter::operation \
+            -range [list $minMoveNum $maxMoveNum] \
+            -length $minHalfMoves -bishops $oppBishops \
+            -diff [list $minMatDiff $maxMatDiff] \
+            -patt "$pattBool(1) $pattPiece(1) $pattFyle(1) $pattRank(1)" \
+            -patt "$pattBool(2) $pattPiece(2) $pattFyle(2) $pattRank(2)" \
+            -patt "$pattBool(3) $pattPiece(3) $pattFyle(3) $pattRank(3)" \
+            -patt "$pattBool(4) $pattPiece(4) $pattFyle(4) $pattRank(4)" \
+            -patt "$pattBool(5) $pattPiece(5) $pattFyle(5) $pattRank(5)" \
+            -patt "$pattBool(6) $pattPiece(6) $pattFyle(6) $pattRank(6)" \
+            -patt "$pattBool(7) $pattPiece(7) $pattFyle(7) $pattRank(7)" \
+            -patt "$pattBool(8) $pattPiece(8) $pattFyle(8) $pattRank(8)" \
+            -patt "$pattBool(9) $pattPiece(9) $pattFyle(9) $pattRank(9)" \
+            -patt "$pattBool(10) $pattPiece(10) $pattFyle(10) $pattRank(10)"
+            ::splash::add "   Material/Pattern filter file $startbase correctly applied"
+        }
+        "Header"   {
+          set sPgnlist {}
+          foreach i {1 2 3} {
+            set temp [string trim $sPgntext($i)]
+            if {$temp != ""} { lappend sPgnlist $temp }
+          }
+          set wtitles {}
+          set btitles {}
+          foreach i $sTitleList {
+            if $sTitles(w:$i) { lappend wtitles $i }
+            if $sTitles(b:$i) { lappend btitles $i }
+          }
+          sc_search header -white $sWhite -black $sBlack \
+            -event $sEvent -site $sSite -round $sRound \
+            -date [list $sDateMin $sDateMax] \
+            -results [list $sResWin $sResDraw $sResLoss $sResOther] \
+            -welo [list $sWhiteEloMin $sWhiteEloMax] \
+            -belo [list $sBlackEloMin $sBlackEloMax] \
+            -delo [list $sEloDiffMin $sEloDiffMax] \
+            -eco [list $sEcoMin $sEcoMax $sEco] \
+            -length [list $sGlMin $sGlMax] \
+            -toMove $sSideToMove \
+            -gameNumber [list $sGnumMin $sGnumMax] \
+            -flip $sIgnoreCol -filter $::search::filter::operation \
+            -fStdStart $sHeaderFlags(StdStart) \
+            -fPromotions $sHeaderFlags(Promotions) \
+            -fComments $sHeaderFlags(Comments) \
+            -fVariations $sHeaderFlags(Variations) \
+            -fAnnotations $sHeaderFlags(Annotations) \
+            -fDelete $sHeaderFlags(DeleteFlag) \
+            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
+            -fBlackOp $sHeaderFlags(BlackOpFlag) \
+            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
+            -fEndgame $sHeaderFlags(EndgameFlag) \
+            -fNovelty $sHeaderFlags(NoveltyFlag) \
+            -fPawnStruct $sHeaderFlags(PawnFlag) \
+            -fTactics $sHeaderFlags(TacticsFlag) \
+            -fKingside $sHeaderFlags(KsideFlag) \
+            -fQueenside $sHeaderFlags(QsideFlag) \
+            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
+            -fBlunder $sHeaderFlags(BlunderFlag) \
+            -fUser $sHeaderFlags(UserFlag) \
+            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles
+            ::splash::add "   Header filter file $startbase correctly applied"
+        }
+      }
+      set glstart 1
+      ::windows::gamelist::Refresh
+      ::windows::stats::Refresh
+    }
   } elseif {[string match "*.sor" $startbase]} {
     ::splash::add "Opening repertoire file: $startbase..."
     if {[catch {::rep::OpenWithFile $startbase} err]} {
