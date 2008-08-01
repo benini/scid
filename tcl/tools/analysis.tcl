@@ -2088,10 +2088,17 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
     stopAnalyzeMode $n
     $b configure -image tb_play -relief flat
     ::utils::tooltip::Set $b "$::tr(StartEngine)(a)"
+    # reset lock mode and disable lock button
+    set analysis(lockEngine$n) 0
+    toggleLockEngine $n
+    .analysisWin$n.b1.lockengine configure -relief raised
+    .analysisWin$n.b1.lockengine configure -state disabled
   } else  {
     startAnalyzeMode $n
     $b configure -image tb_pause -relief flat
     ::utils::tooltip::Set $b "$::tr(StopEngine)(a)"
+    # enable lock button
+    .analysisWin$n.b1.lockengine configure -state normal
   }
 }
 ################################################################################
@@ -2146,12 +2153,16 @@ proc toggleLockEngine {n} {
   if { $analysis(lockEngine$n) } {
     set state disabled
   } else {
-    stopAnalyzeMode $n
-    startAnalyzeMode $n
+    # when i unlock the engine, i must restart the analysis if the engine is running
+    # (it's possible to be here with the engine stopped, if i press the stop button
+    #  with the engine locked)
+    if {$analysis(analyzeMode$n)} {
+      stopAnalyzeMode $n
+      startAnalyzeMode $n
+    }
     set state normal
   }
   set w ".analysisWin$n"
-  $w.b1.bStartStop configure -state $state
   $w.b1.move configure -state $state
   $w.b1.line configure -state $state
   $w.b1.alllines configure -state $state
