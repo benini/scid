@@ -1361,8 +1361,7 @@ translate D ShowReport {Bericht anzeigen}
 translate D NumberOfGoodMovesPlayed {gute Züge gespielt}
 translate D NumberOfDubiousMovesPlayed {zweischneidige Züge gespielt}
 translate D NumberOfMovesPlayedNotInRepertoire {Züge außerhalb des Repertoirs gespielt}
-# ====== TODO To be translated ======
-translate D NumberOfTimesPositionEncountered {times position encountered}
+translate D NumberOfTimesPositionEncountered {Wiederholungen der Position}
 translate D PlayerBestMove  {Nur beste Züge erlauben}
 translate D OpponentBestMove {Gegner spielt besten Zug}
 translate D OnlyFlaggedLines {Nur markierte Linien}

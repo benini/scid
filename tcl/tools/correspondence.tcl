@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.5 2008/07/10 20:18:14 arwagner Exp $
+### $Id: correspondence.tcl,v 1.6 2008/08/01 15:14:30 arwagner Exp $
 ###
-### Last change: <Thu, 2008/07/10 22:17:39 arwagner ingata>
+### Last change: <Sat, 2008/07/26 20:11:32 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -560,7 +560,7 @@ namespace eval Xfcc {
 
 				# Drop games that are not "normal" chess as scid can not
 				# handle variants. Note that the ICCF does not set the
-				# variatn flag. Additionally, it is enough to drop variant
+				# variant flag. Additionally, it is enough to drop variant
 				# games from the inbox to get proper playlists.
 				if {($variant == "chess") || ($variant == "")} {
 					::CorrespondenceChess::updateConsole "info $name-$id..."
