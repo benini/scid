@@ -8,7 +8,7 @@
 
 # analysis(logMax):
 #   The maximum number of log message lines to be saved in a log file.
-set analysis(logMax) 500
+set analysis(logMax) 5000
 
 # analysis(log_stdout):
 #   Set this to 1 if you want Scid-Engine communication log messages
@@ -1176,49 +1176,50 @@ proc popAnalysisData { { n 1 } } {
 ################################################################################
 proc addAnalysisVariation {{n 1}} {
   global analysis
-  
+
   if {! [winfo exists .analysisWin$n]} { return }
-  
+
   # Cannot add a variation to an empty variation:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
-  # Cannot (yet) add a variation at the end of the game or a variation:
-  #if {[sc_pos isAt vend]} { return }
-  if {[sc_pos isAt vend]} {
-    sc_info preMoveCmd {}
-    set s $analysis(moves$n)
-    while {1} {
-      if {[string length $s] == 0} { return }
-      set c [string index $s 0]
-      switch -- $c {
-        a - b - c - d - e - f - g - h -
-        K - Q - R - B - N - O {
-          break
-        }
-      }
-      set s [string range $s 1 end]
-    }
-    scan $s "%s" move
-    sc_move_add $move $n
-    sc_info preMoveCmd preMoveCommand
-  }
-  
-  set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
-  set moves $analysis(moves$n)
+
+  # if we are at the end of the game, we cannot add variation
+  # so we add the analysis one move before and append the last game move at the beginning of the analysis
+  set addAtEnd [sc_pos isAt vend]
+
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
-  
+
+  if {$addAtEnd} {
+    # get the last move of the game
+    set lastMove [sc_game info previousMoveUCI]
+    #back one move
+    sc_move back
+  }
+
+  set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
+  set moves $analysis(moves$n)
+
   # Add the variation:
   sc_var create
   # Add the comment at the start of the variation:
   sc_pos setComment "[sc_pos getComment] $text"
+  if {$addAtEnd} {
+    # Add the last move of the game at the beginning of the analysis
+    sc_move_add $lastMove $n
+  }
   # Add as many moves as possible from the engine analysis:
   sc_move_add $moves $n
   sc_var exit
-  
+
+  if {$addAtEnd} {
+    #forward to the last move
+    sc_move forward
+  }
+
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
-  
+
   updateBoard -pgn
   # Update score graph if it is open:
   if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
@@ -1228,51 +1229,52 @@ proc addAnalysisVariation {{n 1}} {
 ################################################################################
 proc addAllVariations {{n 1}} {
   global analysis
-  
+
   if {! [winfo exists .analysisWin$n]} { return }
-  
+
   # Cannot add a variation to an empty variation:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
-  # Cannot (yet) add a variation at the end of the game or a variation:
-  #if {[sc_pos isAt vend]} { return }
-  if {[sc_pos isAt vend]} {
-    sc_info preMoveCmd {}
-    set s $analysis(moves$n)
-    while {1} {
-      if {[string length $s] == 0} { return }
-      set c [string index $s 0]
-      switch -- $c {
-        a - b - c - d - e - f - g - h -
-        K - Q - R - B - N - O {
-          break
-        }
-      }
-      set s [string range $s 1 end]
-    }
-    scan $s "%s" move
-    sc_move_add $move $n
-    sc_info preMoveCmd preMoveCommand
-  }
-  
+
+  # if we are at the end of the game, we cannot add variation
+  # so we add the analysis one move before and append the last game move at the beginning of the analysis
+  set addAtEnd [sc_pos isAt vend]
+
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
-  
+
+  if {$addAtEnd} {
+    # get the last move of the game
+    set lastMove [sc_game info previousMoveUCI]
+    #back one move
+    sc_move back
+  }
+
   foreach i $analysis(multiPVraw$n) {
     set text [format "\[%s\] %d:%+.2f" $analysis(name$n) [lindex $i 0] [lindex $i 1]]
     set moves [lindex $i 2]
-    
+
     # Add the variation:
     sc_var create
     # Add the comment at the start of the variation:
     sc_pos setComment "[sc_pos getComment] $text"
+    if {$addAtEnd} {
+      # Add the last move of the game at the beginning of the analysis
+      sc_move_add $lastMove $n
+    }
     # Add as many moves as possible from the engine analysis:
     sc_move_add $moves $n
     sc_var exit
   }
-  
+
+  if {$addAtEnd} {
+    #forward to the last move
+    sc_move forward
+  }
+
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
+
   updateBoard -pgn
   # Update score graph if it is open:
   if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
@@ -1705,7 +1707,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     }
     if {$current == -1} { set current 1 }
     set analysis(multiPVCount$n) $current
-    changePVSize $n
+#    changePVSize $n
     catch {
       if { $hasMultiPV } {
         $w.b1.multipv configure -from $min -to $max -state readonly
@@ -1822,13 +1824,13 @@ proc checkAnalysisStarted {n} {
   # for a triggering fileevent to occur.
   
   logEngineNote $n {Quiet engine (still no output); sending it initial commands.}
-  # set analysis(seen$n) 1
   
   if {$analysis(uci$n)} {
     # in order to get options
     sendToEngine $n "uci"
     # egine should respond uciok
     sendToEngine $n "isready"
+    set analysis(seen$n) 1
   } else  {
     sendToEngine $n "xboard"
     sendToEngine $n "protover 2"
