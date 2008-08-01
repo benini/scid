@@ -506,5 +506,6 @@ scid-3.6.25
 - Completed translations of every pending label in italian language file.
 - Fixed the help messages for some tools menus, probably wrong due to a new menu item added in 3.6.24 version (changed the code so that now it's not needed to change all menu indexes for help messages whenever a new menu is added).
 - Finder : added a contextual menu (right mouse button to copy, move, delete and backup bases).
+- updated swedish translation (thanks to Hans Eriksson)
 - Added the scanning of filter files (.sso) from the command line (i.e. scid mydb myfilter, scid opens immediatly with mydb filtered by myfilter file)
 - Tuned the startup communication between scid and engines
