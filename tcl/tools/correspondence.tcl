@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.6 2008/08/01 15:14:30 arwagner Exp $
+### $Id: correspondence.tcl,v 1.7 2008/08/02 20:50:43 arwagner Exp $
 ###
-### Last change: <Sat, 2008/07/26 20:11:32 arwagner ingata>
+### Last change: <Sat, 2008/08/02 22:46:53 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -646,6 +646,13 @@ namespace eval Xfcc {
 							puts -nonewline $pgnF $mess
 							puts $pgnF "\}"
 						}
+					}
+					# If a game has finished and a message is sent allways
+					# add it here.
+					if {($Result != "Ongoing") && ($mess != "")} {
+						puts -nonewline $pgnF "\{"
+						puts -nonewline $pgnF $mess
+						puts $pgnF "\}"
 					}
 
 					# add result at the end
@@ -1404,6 +1411,11 @@ namespace eval CorrespondenceChess {
 			$w.bottom.$tag      image create end -align center -image tb_CC_spacer
 		}
 
+		if {$mess != ""} {
+			$w.bottom.id image create end -align center -image tb_CC_message
+			##::utils::tooltip::Set $w.bottom.toMove $mess
+		}
+
 		# add the game id. Note the \n at the end is necessary!
 		$w.bottom.id      insert end "$id\n"
 
@@ -1413,10 +1425,6 @@ namespace eval CorrespondenceChess {
 				$w.bottom.toMove image create end -align center -image tb_CC_outoftime
 		}
 
-		if {$mess != ""} {
-			$w.bottom.toMove image create end -align center -image tb_CC_message
-			##::utils::tooltip::Set $w.bottom.toMove $mess
-		}
 
 		switch -regexp -- $toMove \
 		"1-0" {
