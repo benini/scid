@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-shiftF2 pour arréter/lancer moteur
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -20,9 +20,6 @@ Possible improvements (perhaps not bugs, but awkward)
 - PGN window with short header ON. If strip first moves -> the game is empty (bug exists in Scid 3.6.1)
 
 - Right click in PGN window does not always display the right position. Happens because of some comments parsing. Bug exists in original Scid 3.6.1
-
-GAME EDITOR
-* bug: with comment editor active browsing the game 'modifies' it -> try to detect that comment editor did not change, so no need to flag game as dirty.
 
  ===========================================================
 |                                                           |
@@ -41,9 +38,6 @@ GAME EDITOR
 
 - FICS : user defined commands at login
 
-- FICS : 
-	* implement timeseal (post a message to MAd -> full box, tried Hawk) Hi, I would like to use timesealing with the port of Scid I made on Pocket PC (I added FICS and Novag Citrine support). Could you give me pointers or a binary that could act as a proxy (ARM processor)?
-
 - Separate remove comments / remove NAGs (often I would like to remove
 only comments, leaving NAGs)
 
@@ -60,10 +54,6 @@ This is the case under Windows. Under Linux, a solution is to start engines with
 Another solution is to make an option or remember latest setting -> DONE
 
 - Keyboard shortcuts for 'Discard'  / 'Go Back' in 'Leave game' dialog
-
-- Remove icons for adding coordindates/move indicator from standard toolbar.
-These are hardly used (user prefers one version or another, he doesn't change
-it). Some commonly used functions will be better.
 
 ---------------------------------------------------
                    PRIORITY 1

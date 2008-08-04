@@ -180,7 +180,7 @@ menuText W ToolsTrainTactics "Taktik"  0 {Lösa taktik}
 # ====== TODO To be translated ======
 menuText W ToolsTrainCalvar "Variantberäkning"  0 {Variantberäkningsträning}
 # ====== TODO To be translated ======
-menuText W ToolsTrainFindBestMove "Find best move"  0 {Find best move}
+menuText W ToolsTrainFindBestMove "Hitta bäst drag"  0 {Hitta bästa draget}
 # ====== TODO To be translated ======
 menuText W ToolsTrainFics "Spela på Internet"  0 {Spela på freechess.org}
 # ====== TODO To be translated ======
@@ -571,15 +571,15 @@ translate W FinderDirs {Kataloger}
 translate W FinderFiles {Filer}
 translate W FinderUpDir {upp}
 # ====== TODO To be translated ======
-translate W FinderCtxOpen {Open}
+translate W FinderCtxOpen {Öppna}
 # ====== TODO To be translated ======
-translate W FinderCtxBackup {Backup}
+translate W FinderCtxBackup {Spara}
 # ====== TODO To be translated ======
-translate W FinderCtxCopy {Copy}
+translate W FinderCtxCopy {Kopiera}
 # ====== TODO To be translated ======
-translate W FinderCtxMove {Move}
+translate W FinderCtxMove {Flytta}
 # ====== TODO To be translated ======
-translate W FinderCtxDelete {Delete}
+translate W FinderCtxDelete {Ta bort}
 
 # Player finder:
 menuText W PListFile "Fil" 0
@@ -629,15 +629,15 @@ translate W FilterEstimate "Uppskatta"
 translate W TitleFilterGraph "Scid: Filtergraf"
 
 # Analysis window:
-translate W AddVariation {Lägg till variant}
+translate W AddVariation {Lägg till variation}
 # ====== TODO To be translated ======
-translate W AddAllVariations {Add All Variations}
+translate W AddAllVariations {Lägg till alla variationer}
 translate W AddMove {Lägg till drag}
 translate W Annotate {Kommentera}
 # ====== TODO To be translated ======
 translate W ShowAnalysisBoard {Visa Analysbräde}
 # ====== TODO To be translated ======
-translate W ShowInfo {Show engine info}
+translate W ShowInfo {Visa schackmotorinformation}
 # ====== TODO To be translated ======
 translate W FinishGame {Avsluta parti}
 # ====== TODO To be translated ======
@@ -645,11 +645,11 @@ translate W StopEngine {Stoppa schackmotor}
 # ====== TODO To be translated ======
 translate W StartEngine {Starta schackmotor}
 # ====== TODO To be translated ======
-translate W LockEngine {Lock engine to current position}
+translate W LockEngine {Lås schackmotor vid nuvarande position}
 translate W AnalysisCommand {Analysera}
 translate W PreviousChoices {Föregående val}
 translate W AnnotateTime {Ange tid mellan drag i sekunder}
-translate W AnnotateWhich {Lägg till varianter}
+translate W AnnotateWhich {Lägg till variationer}
 translate W AnnotateAll {För båda sidors drag}
 # ====== TODO To be translated ======
 translate W AnnotateAllMoves {Kommentera alla drag}
@@ -714,19 +714,19 @@ menuText W PgnOptColor "Färg" 0
 menuText W PgnOptShort "Kort (3-raders) huvud" 0
 menuText W PgnOptSymbols "Symbolbaserad kommentar" 1
 menuText W PgnOptIndentC "Indragna kommentarer" 0
-menuText W PgnOptIndentV "Indragna varianter" 7
+menuText W PgnOptIndentV "Indragna variationer" 7
 menuText W PgnOptColumn "Spaltstil (ett drag per rad)" 1
 menuText W PgnOptSpace "Utrymme efter dragnummer" 1
 menuText W PgnOptStripMarks "Avlägsna koder för färgade fält och pilar" 1 
-menuText W PgnOptBoldMainLine "Använd Fet Text för Huvudvariantdrag" 4
+menuText W PgnOptBoldMainLine "Använd Fet Text för Huvudvariationsdrag" 4
 menuText W PgnColor "Färger" 0
 menuText W PgnColorHeader "Huvud..." 0
 menuText W PgnColorAnno "Noteringar..." 0
 menuText W PgnColorComments "Kommentarer..." 0
-menuText W PgnColorVars "Varianter..." 0
+menuText W PgnColorVars "Variationer..." 0
 menuText W PgnColorBackground "Bakgrund..." 0
 # ====== TODO To be translated ======
-menuText W PgnColorMain "Huvudvariant..." 0
+menuText W PgnColorMain "Huvudvariation..." 0
 # ====== TODO To be translated ======
 menuText W PgnColorCurrent "Aktuellt drag bakgrund..." 1
 # ====== TODO To be translated ======
@@ -799,20 +799,20 @@ menuText W RepFileSaveAs "Spara som..." 5
 menuText W RepFileClose "Stäng fönster" 0
 menuText W RepEdit "Redigera" 0
 menuText W RepEditGroup "Lägg till grupp" 4
-menuText W RepEditInclude "Lägg till inkluderad variant" 4
-menuText W RepEditExclude "Lägg till exkluderad variant" 4
+menuText W RepEditInclude "Lägg till inkluderad variation" 4
+menuText W RepEditExclude "Lägg till exkluderad variation" 4
 menuText W RepView "Visa" 0
 menuText W RepViewExpand "Expandera alla grupper" 0
 menuText W RepViewCollapse "Implodera alla grupper" 0
 menuText W RepSearch "Sök" 0
 menuText W RepSearchAll "Hela öppningsrepetoaren..." 0
-menuText W RepSearchDisplayed "Endast visade varianter..." 0
+menuText W RepSearchDisplayed "Endast visade variationer..." 0
 menuText W RepHelp "Hjälp" 0
 menuText W RepHelpRep "Hjälp för spelöppningsrepetoar" 0
 menuText W RepHelpIndex "Hjälpindex" 0
 translate W RepSearch "Sök i spelöppningsrepetoar"
-translate W RepIncludedLines "inkluderade varianter"
-translate W RepExcludedLines "exkluderade varianter"
+translate W RepIncludedLines "inkluderade variationer"
+translate W RepExcludedLines "exkluderade variationer"
 translate W RepCloseDialog {Du har osparade ändringar i repetoaren.
 
 Vill du verkligen fortsätta och förlora dina förändringar?
@@ -827,7 +827,7 @@ translate W FindGamesWith {Hitta flaggade partier}
 translate W StdStart {Normal utgångsställning}
 translate W Promotions {Förvandlingar}
 translate W Comments {Kommentarer}
-translate W Variations {Varianter}
+translate W Variations {Variationer}
 translate W Annotations {Noteringar}
 translate W DeleteFlag {Raderingsflagga}
 translate W WhiteOpFlag {Vits öppning}
@@ -864,7 +864,7 @@ translate W GlistOpening {Öppning}
 translate W GlistEndMaterial {Slutmaterial}
 translate W GlistDeleted {Raderad}
 translate W GlistFlags {Flaggor}
-translate W GlistVars {Varianter}
+translate W GlistVars {Variationer}
 translate W GlistComments {Kommentarer}
 translate W GlistAnnos {Noteringar}
 translate W GlistStart {Start}
@@ -1020,7 +1020,7 @@ translate W SearchBoardExact {Exakt position (alla pjäser på samma rutor)}
 translate W SearchBoardPawns {Bönder (samma material, alla bönder på samma rutor)}
 translate W SearchBoardFiles {Filer (samma material, alla bönder på samma filer)}
 translate W SearchBoardAny {Obestämt (samma material, bönder och pjäser på valfria rutor)}
-translate W LookInVars {Sök i varianter}
+translate W LookInVars {Sök i variationer}
 
 # Material search:
 translate W MaterialSearch {Materialsökning}
@@ -1093,12 +1093,12 @@ translate W GoBack {Gå tillbaka}
 
 # Replace move dialog:
 translate W ReplaceMove {Ersätt drag}
-translate W AddNewVar {Lägg till ny variant}
+translate W AddNewVar {Lägg till ny variation}
 # ====== TODO To be translated ======
-translate W NewMainLine {Ny huvudvariant}
+translate W NewMainLine {Ny huvudvariation}
 translate W ReplaceMoveMessage {Det finns redan ett drag i denna ställning.
 
-Du kan ersätta detta drag, och förlora samtliga följande, eller lägga till ditt drag som en ny variant.
+Du kan ersätta detta drag, och förlora samtliga följande, eller lägga till ditt drag som en ny variation.
 
 (Om du stänger av "Fråga före ersätt drag" i Alternativ:Drag menyn slipper du denna fråga i framtiden.)}
 
@@ -1257,7 +1257,7 @@ translate W TwinsSkipShort {Ignorera alla partier som är kortare än 5 drag?}
 translate W TwinsUndelete {Återta alla partier först?}
 translate W TwinsSetFilter {Filtrera alla borttagna dubbletter?}
 translate W TwinsComments {Spara alltid partier med kommentarer?}
-translate W TwinsVars {Spara alltid partier med varianter?}
+translate W TwinsVars {Spara alltid partier med variationer?}
 translate W TwinsDeleteWhich {Ange vilket parti som ska tas bort:} 
 translate W TwinsDeleteShorter {Det kortare partiet} 
 translate W TwinsDeleteOlder {Partiet med lägst nummer} 
@@ -1310,9 +1310,9 @@ translate W Sort {Sortering}
 # Exporting:
 translate W AddToExistingFile {Lägg till partier till en existerande fil?}
 translate W ExportComments {Exportera kommentarer?}
-translate W ExportVariations {Exportera varianter?}
+translate W ExportVariations {Exportera variationer?}
 translate W IndentComments {Dra in kommentarer?}
-translate W IndentVariations {Dra in varianter?}
+translate W IndentVariations {Dra in variationer?}
 translate W ExportColumnStyle {Kolumnstil (ett drag per rad)?}
 translate W ExportSymbolStyle {Symbolbaserade kommentarer:}
 translate W ExportStripMarks {Avlägsna koder för fält och pilar från kommentarerna?} 
@@ -1471,13 +1471,13 @@ translate W DisplayOpeningStats {Visa statistik}
 # ====== TODO To be translated ======
 translate W ShowReport {Visa rapport}
 # ====== TODO To be translated ======
-translate W NumberOfGoodMovesPlayed {good moves played}
+translate W NumberOfGoodMovesPlayed {bra drag spelade}
 # ====== TODO To be translated ======
-translate W NumberOfDubiousMovesPlayed {dubious moves played}
+translate W NumberOfDubiousMovesPlayed {tveksamma drag spelade}
 # ====== TODO To be translated ======
-translate W NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
+translate W NumberOfMovesPlayedNotInRepertoire {drag spelade som inte finns i repetoar}
 # ====== TODO To be translated ======
-translate W NumberOfTimesPositionEncountered {times position encountered}
+translate W NumberOfTimesPositionEncountered {gånger positionen påträffats}
 # ====== TODO To be translated ======
 translate W PlayerBestMove  {Tillåt bara bästa dragen}
 # ====== TODO To be translated ======
@@ -1586,7 +1586,7 @@ translate W AnnotateSeveralGames {Kommentera flera partier\nfrån aktuellt till :
 # ====== TODO To be translated ======
 translate W FindOpeningErrors {Hitta öppningsfel}
 # ====== TODO To be translated ======
-translate W MarkTacticalExercises {Mark tactical exercises}
+translate W MarkTacticalExercises {Markera taktiska övningar}
 # ====== TODO To be translated ======
 translate W UseBook {Använd bok}
 # ====== TODO To be translated ======
@@ -1828,7 +1828,7 @@ set tips(W) {
     databaserna snabbare via bokmärkesmenyn.
   }
   {
-    Du kan se alla drag i det aktuella partiet (inklusive varianter och kommentarer)
+    Du kan se alla drag i det aktuella partiet (inklusive variationer och kommentarer)
     genom att öppna <a PGN>PGN-fönstret</a>.
     Du navigerar igenom partiet i PGN-fönstret genom att klicka på valfritt drag med
     vänster musknapp. Genom att klicka på draget med mellan- eller högermusknapp så
@@ -1896,7 +1896,7 @@ set tips(W) {
     såsom bondeställning, taktiska finesser, osv. Du kan söka på flaggor när du söker på fält i partihuvudet.
   }
   {
-    Om du går igenom ett parti, och helt enkelt vill testa en ny variant utan att förändra partiet i sig, kan 
+    Om du går igenom ett parti, och helt enkelt vill testa en ny variation utan att förändra partiet i sig, kan 
     du slå på Försöksläget (Trial mode) genom att trycka <b>Ctrl+Mellanslag</b> eller från verktygsraden. Återgå till
     ursprungspartiet när du är klar.
   }
@@ -2025,7 +2025,7 @@ translateECO W {
   Queen's Dam
   Queenswap Damavbyte
   Symmetrical Symmetrisk
-  Variation Variant
+  Variation Variation
   Wing Flygel
   with med
   without utan

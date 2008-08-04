@@ -51,7 +51,7 @@ proc makeCommentWin {} {
 # Results:
 #	TODO: detailed description
 #
-proc ::commenteditor::Open {} { 
+proc ::commenteditor::Open {} {
   global commentWin nagValue highcolor helpMessage
   variable colorList
   variable markTypeList
@@ -417,9 +417,13 @@ proc ::commenteditor::ButtonReleased {board button x_root y_root} {
 #
 proc ::commenteditor::storeComment {} {
   if {![winfo exists .commentWin]} { return }
-  sc_pos clearNags
-  foreach i [split [.commentWin.nf.tf.text get] " "] {
-    sc_pos addNag $i
+  set nag [sc_pos getNags]
+  if {$nag == "0"} { set nag "" }
+  if { $nag != [.commentWin.nf.tf.text get] } {
+    sc_pos clearNags
+    foreach i [split [.commentWin.nf.tf.text get] " "] {
+      sc_pos addNag $i
+    }
   }
   
   # The "end-1c" below is because Tk adds a newline to text contents:

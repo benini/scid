@@ -326,12 +326,12 @@ proc ::enginelist::sort {{type ""}} {
   $w.title tag configure $engines(sort) -foreground red
   $w.title configure -state disabled
 }
-
+################################################################################
 # ::enginelist::choose
 #   Select an engine from the Engine List.
 #   Returns an integer index into the engines(list) list variable.
 #   If no engine is selected, returns the empty string.
-#
+################################################################################
 proc ::enginelist::choose {} {
   global engines
   set w .enginelist

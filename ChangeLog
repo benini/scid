@@ -486,7 +486,9 @@ scid-3.6.25
 	* tactical game against Phalanx (some info was missing)
 	* replacing a game with flags : all flags were not copied (for example tactical flag)
 	* error recovery code if the network drops when playing on FICS
-	* when deleting the last move of a variation by right clicking on board, the empty variation is removed 
+	* when deleting the last move of a variation by right clicking on board, the empty variation is removed
+	* fixed pgnscid so importing a game over 32 kB does not lead to a segfault (but will output : Fatal error encoding game!)
+	* GAME EDITOR : with comment editor opened, browsing a game would flagged it as "to be saved", even if there was no change in NAGS and comment values
 - Annotation : added an option "mark tactical exercises". The tactical flag will be set to the game and a comment with ****d<depth>sc<score>. This option is only available when annotating with an UCI engine.
 - Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature. Pressing the right mouse button on "goto last move" button will go to next tactical exercises.
 - added extra options to "sc_pos analyze" :

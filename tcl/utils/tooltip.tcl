@@ -75,7 +75,7 @@ proc ::utils::tooltip::Check {button} {
   catch {wm transient .tooltip [winfo toplevel $button]}
   catch {wm geometry .tooltip +$x+$y}
   wm deiconify .tooltip
-  raiseWin .tooltip
+  raise .tooltip
 }
 
 

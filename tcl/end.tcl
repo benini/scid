@@ -1395,6 +1395,8 @@ if {! $windowsOS} {
   bind . <Shift-Button-5> {::move::Forward 10}
 }
 
+# Apply standard shortcuts to main window
+standardShortcuts .
 
 ############################################################
 ### Packing the main window:

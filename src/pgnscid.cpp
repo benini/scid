@@ -166,8 +166,7 @@ main (int argc, char * argv[])
     progBar.Start();
 
     ByteBuffer *bbuf = new ByteBuffer;
-// PG: bbuf->SetBufferSize (327680);
-    bbuf->SetBufferSize (327680);
+    bbuf->SetBufferSize (32768);
 
     PgnParser pgnParser (pgnFile);
     pgnParser.SetErrorFile (logFile);
