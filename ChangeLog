@@ -511,3 +511,4 @@ scid-3.6.25
 - updated swedish translation (thanks to Hans Eriksson)
 - Added the scanning of filter files (.sso) from the command line (i.e. scid mydb myfilter, scid opens immediatly with mydb filtered by myfilter file)
 - Tuned the startup communication between scid and engines
+- Scid-engine log files: maxsize to 5000 lines (was 500) and flush on every put (to aid problem detection when an engine crashes)
