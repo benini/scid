@@ -1442,6 +1442,7 @@ proc logEngine {n text} {
   
   if { [ info exists ::analysis(log$n)] && $::analysis(log$n) != ""} {
     puts $::analysis(log$n) $text
+    catch { flush $::analysis(log$n) }
     
     # Close the log file if the limit is reached:
     incr analysis(logCount$n)
