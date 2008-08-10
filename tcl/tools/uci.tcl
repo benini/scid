@@ -82,7 +82,7 @@ namespace eval uci {
     # Get one line from the engine:
     set line [gets $pipe]
     if {$line == ""} { return }
-
+    
     # To speed up parsing of engine's output. Should be removed if currmove info is used
     # if {[string first "info currmove" $line ] == 0} { return }
     
@@ -249,7 +249,7 @@ namespace eval uci {
         set analysis(uciok$n) 1
         # sendUCIoptions $n
         # configure initial multipv value
-#        changePVSize $n
+        #        changePVSize $n
         startAnalyzeMode $n
       } else  {
         set uciInfo(uciok$n) 1
@@ -511,7 +511,11 @@ namespace eval uci {
       }
       if { $elt(type) == "spin"} {
         label $w.fopt.label$optnbr -text "$name$default"
-        spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -state readonly -width 5
+        if { $elt(name) == "UCI_Elo" } {
+          spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -state normal -width 5 -increment 50
+        } else  {
+          spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -state readonly -width 5
+        }
         $w.fopt.opt$optnbr set $value
         grid $w.fopt.label$optnbr -row $row -column $col -sticky e
         incr col
