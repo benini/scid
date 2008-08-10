@@ -157,38 +157,6 @@ namespace eval sergame {
     checkbutton $w.ftime.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::startFromCurrent
     grid $w.ftime.cbPosition  -row $row -column 0 -sticky w
     incr row
-    #
-    #
-    #If an engine is able to ponder it must tell it the GUI at startup (option name Ponder).
-    # When pondering is swithed on the GUI sends:
-    #
-    # > setoption name Ponder value true
-    #
-    # After that the engine tells the pondermove with every move, but don?t start pondering itself.
-    # Some engines send the pondermove also if pondering is switched off.
-    # Most GUI?s accept the pondermove also if the engine don?t send the ponderoption at startup.
-    #
-    # < bestmove e2e4 ponder g8f6
-    #
-    # The GUI answers imediatelly with the ponder command:
-    #
-    # > position startpos moves h2h4 e7e5 d2d4 e5d4 d1d4 d7d5 e2e4 g8f6
-    # > go ponder wtime 7188043 btime 7166483
-    #
-    # Some earlier versions of Fritz send this line also if an engine don?t support pondering. The pondermove is taken from the PV!
-    #
-    # Now the engine ponders, the GUI sends now:
-    #
-    # > ponderhit
-    #
-    # if the pondermove is played, or:
-    #
-    # > stop
-    # > position startpos moves h2h4 e7e5 d2d4 e5d4 d1d4 d7d5 e2e4 h4h5
-    #
-    # if another move is played.
-    #
-    # In the UCI 2 protocol the engine is allowed to ponder on a different move than
     
     # ponder
     checkbutton $w.ftime.cbPonder -text $::tr(Ponder) -variable ::sergame::ponder
@@ -253,6 +221,8 @@ namespace eval sergame {
     set ::sergame::lFen {}
     
     ::uci::startEngine $::sergame::engineListBox($engine) $n
+    ::uci::sendUCIoptions $n
+    
     set ::uci::uciInfo(prevscore$n) 0.0
     set ::uci::uciInfo(ponder$n) ""
     
