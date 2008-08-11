@@ -63,7 +63,7 @@ namespace eval uci {
       set pipe $uciInfo(pipe$n)
       if { ! [ ::uci::checkEngineIsAlive $n ] } { return }
     }
-    
+
     if {$analyze} {
       if {! $analysis(seen$n)} {
         set analysis(seen$n) 1
@@ -158,7 +158,12 @@ namespace eval uci {
             if { $next < 0} { set uciInfo(tmp_score$n) -32700 } else  { set uciInfo(tmp_score$n) 32700 }
           }
           # convert the score to white's perspective (not engine's one)
-          if { [sc_pos side] == "black"} {
+          if { $analysis(fen$n) == "" } {
+            set side [string index [sc_pos side] 0]
+          } else {
+            set side [lindex [split $analysis(fen$n)] 1]
+          }
+          if { $side == "b"} {
             set uciInfo(tmp_score$n) [ expr 0.0 - $uciInfo(tmp_score$n) ]
             if { $uciInfo(scoremate$n) != ""} {
               set uciInfo(scoremate$n) [ expr 0 - $uciInfo(scoremate$n) ]
@@ -600,7 +605,7 @@ namespace eval uci {
       set analysis(waitForReadyOk$n) 1
       ::sendToEngine $n "isready"
       vwait analysis(waitForReadyOk$n)
-      ::sendToEngine $n "setoption name $name value $value"
+     ::sendToEngine $n "setoption name $name value $value"
     }
   }
   ################################################################################
