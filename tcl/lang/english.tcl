@@ -1340,6 +1340,7 @@ translate E NotFollowedLine {You did not follow the line}
 translate E DoYouWantContinue {Do you want yo continue ?}
 translate E CoachIsWatching {Coach is watching}
 translate E Ponder {Permanent thinking}
+translate E LimitELO {Limit ELO strength}
 translate E DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 translate E WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
 translate E BadMovePlayedTakeBack {Bad move played, do you want to take back ?}

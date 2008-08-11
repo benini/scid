@@ -1475,6 +1475,8 @@ translate R CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate R Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate R LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate R DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate R WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -1827,6 +1829,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

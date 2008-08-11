@@ -1449,6 +1449,8 @@ translate W CoachIsWatching {Tränaren observerar}
 # ====== TODO To be translated ======
 translate W Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate W LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate W DubiousMovePlayedTakeBack {Ett tveksamt drag spelades, vill du ta tillbaka det ?}
 # ====== TODO To be translated ======
 translate W WeakMovePlayedTakeBack {Ett svagt drag spelades, vill du ta tillbaka det ?}
@@ -6815,6 +6817,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

@@ -1446,6 +1446,8 @@ translate Y CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate Y Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate Y LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate Y DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate Y WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -1798,6 +1800,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

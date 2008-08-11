@@ -1316,6 +1316,8 @@ translate S NotFollowedLine {Tú no sigues la linea}
 translate S DoYouWantContinue {¿Quieres continuar?}
 translate S CoachIsWatching {Entrenador}
 translate S Ponder {Pensar siempre (el motor)}
+# ====== TODO To be translated ======
+translate S LimitELO {Limit ELO strength}
 translate S DubiousMovePlayedTakeBack {Movimiento dudoso, ¿quieres rectificar?}
 translate S WeakMovePlayedTakeBack {Movimiento flojo, ¿quieres rectificar ?}
 translate S BadMovePlayedTakeBack {Movimiento malo, ¿quieres rectificar ?}
@@ -1497,6 +1499,7 @@ translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, a
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

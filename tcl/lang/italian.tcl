@@ -1298,6 +1298,8 @@ translate I NotFollowedLine {Non hai seguito la linea}
 translate I DoYouWantContinue {Vuoi continuare?}
 translate I CoachIsWatching {Il maestro stà osservando}
 translate I Ponder {Analisi permanente}
+# ====== TODO To be translated ======
+translate I LimitELO {Limit ELO strength}
 translate I DubiousMovePlayedTakeBack {Mossa dubbia, vuoi rifare?}
 translate I WeakMovePlayedTakeBack {Mossa debole, vuoi rifare?}
 translate I BadMovePlayedTakeBack {Mossa cattiva, vuoi rifare?}
@@ -1712,6 +1714,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

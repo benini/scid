@@ -1439,6 +1439,8 @@ translate C CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate C Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate C LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate C DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate C WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -5429,6 +5431,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

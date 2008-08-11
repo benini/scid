@@ -1443,6 +1443,8 @@ translate N CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate N Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate N LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate N DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate N WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -1792,6 +1794,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

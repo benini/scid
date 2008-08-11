@@ -510,4 +510,7 @@ scid-3.6.25
 - Tuned the startup communication between scid and engines
 - Rybka 3 supported despite a small bug in its command line parser
 - Scid-engine log files: maxsize to 5000 lines (was 500) and flush on every put (to aid problem detection when an engine crashes)
-- Training - Serious game : UCI options of engines are now sent, so if an engine has for example an UCI_Elo present and set up, playing a serious game will be done in fact with a weakened engine (then similar to Tactical game that is designed solely for Phalanx usage).
+- Training - Serious game : 
+	* UCI options of engines are now sent, so if an engine has for example an UCI_Elo present and set up, playing a serious game will be done in fact with a weakened engine (then similar to Tactical game that is designed solely for Phalanx usage).
+	* added a "Configure engine" button to tweak an engine before playing (style, strength for example)
+- UCI engine configuration : spinbox entries are now user writable (a check is done to ensure input is correct)

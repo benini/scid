@@ -1455,6 +1455,8 @@ translate P CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate P Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate P LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate P DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate P WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -2025,6 +2027,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

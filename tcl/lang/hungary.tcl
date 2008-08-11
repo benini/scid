@@ -1441,6 +1441,8 @@ translate H CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate H Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate H LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate H DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate H WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -2024,6 +2026,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

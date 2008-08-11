@@ -1298,6 +1298,7 @@ translate F NotFollowedLine {Vous n'avez pas suivi la ligne}
 translate F DoYouWantContinue {Voulez-vous continuer ?}
 translate F CoachIsWatching {L'entraineur regarde}
 translate F Ponder {Réflexion permanente}
+translate F LimitELO {Limiter force ELO}
 translate F DubiousMovePlayedTakeBack {Coup douteux joué, voulez-vous reprendre le coup ?}
 translate F WeakMovePlayedTakeBack {Coup faible joué, voulez-vous reprendre le coup ?}
 translate F BadMovePlayedTakeBack {Mauvais coup joué, voulez-vous reprendre le coup ?}
@@ -1689,6 +1690,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

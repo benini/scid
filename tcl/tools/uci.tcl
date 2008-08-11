@@ -14,11 +14,15 @@ namespace eval uci {
   set optList {}
   set oldOptions ""
   array set check ""
+  
+  set autoSaveOptions 0 ; # UCI options are saved as soon as the options dialog is closed
+  set autoSaveOptionsIndex -1
+  
   # The list of token that comes with info
   set infoToken { depth seldepth time nodes pv multipv score cp mate lowerbound upperbound \
         currmove currmovenumber hashfull nps tbhits sbhits cpuload string refutation currline }
   set optionToken {name type default min max var }
-  set optionImportant { MultiPV Hash OwnBook BookFile }
+  set optionImportant { MultiPV Hash OwnBook BookFile UCI_LimitStrength UCI_Elo }
   set optionToKeep { UCI_LimitStrength UCI_Elo UCI_shredderbases }
   array set uciInfo {}
   ################################################################################
@@ -493,6 +497,7 @@ namespace eval uci {
       if {$elt(name) == "Hash"} { set name $::tr(Hash) }
       if {$elt(name) == "OwnBook"} { set name $::tr(OwnBook) }
       if {$elt(name) == "BookFile"} { set name $::tr(BookFile) }
+      if {$elt(name) == "UCI_LimitStrength"} { set name $::tr(LimitELO) }
       
       if { $col > 3 } { set col 0 ; incr row}
       if {$elt(default) != ""} {
@@ -517,9 +522,9 @@ namespace eval uci {
       if { $elt(type) == "spin"} {
         label $w.fopt.label$optnbr -text "$name$default"
         if { $elt(name) == "UCI_Elo" } {
-          spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -state normal -width 5 -increment 50
+          spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
         } else  {
-          spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -state readonly -width 5
+          spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
         }
         $w.fopt.opt$optnbr set $value
         grid $w.fopt.label$optnbr -row $row -column $col -sticky e
@@ -557,7 +562,10 @@ namespace eval uci {
       incr optnbr
     }
     
-    button $w.fbuttons.save -text $::tr(Save) -command " ::uci::saveConfig ; destroy .uciConfigWin "
+    button $w.fbuttons.save -text $::tr(Save) -command {
+      ::uci::saveConfig
+      destroy .uciConfigWin
+    }
     button $w.fbuttons.cancel -text $::tr(Cancel) -command "destroy .uciConfigWin"
     pack $w.fbuttons.save $w.fbuttons.cancel -side left -expand yes -fill both -padx 20 -pady 2
     pack $w.fopt
@@ -590,6 +598,21 @@ namespace eval uci {
       lappend newOptions [ list $elt(name)  $value ]
       incr optnbr
     }
+    if { $::uci::autoSaveOptions } {
+      writeOptions
+      set ::uci::autoSaveOptions 0
+    }
+  }
+  ################################################################################
+  # If the config window is called outside the engine dialog, save UCI options
+  # (only the UCI options dialog box is called
+  ################################################################################
+  proc writeOptions {} {
+    set elt [lindex $::engines(list) $::uci::autoSaveOptionsIndex]
+    set elt [ lreplace $elt 8 8 $::uci::newOptions]
+    set ::engines(list) [lreplace $::engines(list) $::uci::autoSaveOptionsIndex $::uci::autoSaveOptionsIndex $elt]
+    
+    ::enginelist::write
   }
   ################################################################################
   # The engine replied readyok, so it's time to configure it (sends the options to the engine)

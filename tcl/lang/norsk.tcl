@@ -1442,6 +1442,8 @@ translate O CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate O Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate O LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate O DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate O WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -1798,6 +1800,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

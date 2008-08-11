@@ -1451,6 +1451,8 @@ translate B CoachIsWatching {Coach is watching}
 # ====== TODO To be translated ======
 translate B Ponder {Permanent thinking}
 # ====== TODO To be translated ======
+translate B LimitELO {Limit ELO strength}
+# ====== TODO To be translated ======
 translate B DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
 # ====== TODO To be translated ======
 translate B WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
@@ -1804,6 +1806,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

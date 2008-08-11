@@ -30,6 +30,7 @@ namespace eval sergame {
   set movetime 0
   set nodes 0
   set ponder 0
+  
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
   set lastPlayerMoveUci ""
@@ -163,6 +164,23 @@ namespace eval sergame {
     grid $w.ftime.cbPonder  -row $row -column 0 -sticky w
     incr row
     
+    # Engine configuration (limit strength for example)
+    button $w.ftime.bEngineConfig -text $::tr(ConfigureUCIengine) -command {
+      set sel [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
+      set index $::sergame::engineListBox($sel)
+      set engineData [lindex $::engines(list) $index]
+      set name [lindex $engineData 0]
+      set cmd [ toAbsPath [lindex $engineData 1] ]
+      set args [lindex $engineData 2]
+      set dir [ toAbsPath [lindex $engineData 3] ]
+      set options [lindex $engineData 8]
+      set ::uci::autoSaveOptionsIndex $index
+      set ::uci::autoSaveOptions 1
+      ::uci::uciConfig 3 [ toAbsPath $cmd ] $args [ toAbsPath $dir ] $options      
+    }
+    grid $w.ftime.bEngineConfig  -row $row -column 0 -sticky w
+    incr row
+    
     # Warn if the user makes weak/bad moves
     checkbutton $w.ftime.cbCoach -text $::tr(CoachIsWatching) -variable ::sergame::coachIsWatching
     grid $w.ftime.cbCoach  -row $row -column 0 -sticky w
@@ -236,7 +254,7 @@ namespace eval sergame {
     } else {
       ::sergame::sendToEngine $n "setoption name Ponder value false"
     }
-    
+       
     # if will follow a specific opening line
     if {$isOpening} {
       set fields [split [lindex $openingList $chosenOpening] ":"]
@@ -506,7 +524,7 @@ namespace eval sergame {
     
     set ::uci::uciInfo(bestmove$n) ""
     vwait ::uci::uciInfo(bestmove$n)
-
+    
     # -------------------------------------------------------------
     # if weak move detected, propose the user to tack back
     if { $::sergame::coachIsWatching && $::uci::uciInfo(prevscore$n) != "" } {
@@ -548,7 +566,7 @@ namespace eval sergame {
       }
     }
     
-    # ------------------------------------------------------------- 
+    # -------------------------------------------------------------
     if { $::uci::uciInfo(bestmove$n) == "abort" } {
       return
     }
