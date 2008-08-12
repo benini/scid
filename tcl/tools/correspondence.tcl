@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.7 2008/08/02 20:50:43 arwagner Exp $
+### $Id: correspondence.tcl,v 1.8 2008/08/12 18:21:33 arwagner Exp $
 ###
-### Last change: <Sat, 2008/08/02 22:46:53 arwagner ingata>
+### Last change: <Tue, 2008/08/12 19:07:21 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1425,7 +1425,6 @@ namespace eval CorrespondenceChess {
 				$w.bottom.toMove image create end -align center -image tb_CC_outoftime
 		}
 
-
 		switch -regexp -- $toMove \
 		"1-0" {
 			$w.bottom.toMove image create end -align center -image $::board::letterToPiece(K)25
@@ -2258,6 +2257,16 @@ namespace eval CorrespondenceChess {
 			set glgames $games
 
 			sc_base switch "clipbase"
+
+			# Sort the clipbase to get a sorted list of games in CC
+			# window and process them in sorted order by prev/next
+			set sortCriteria "Site, Event, Round, Result, White, Black"
+			progressWindow "Scid" "Sorting the database..."
+			set err [catch {sc_base sort $sortCriteria \
+									{changeProgressWindow "Sorting..."} \
+								 } result]
+			closeProgressWindow
+
 
 			if {$glgames > 0} {
 				# work through all games processed and fill in the gamelist 
