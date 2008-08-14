@@ -29,8 +29,6 @@ Possible improvements (perhaps not bugs, but awkward)
 
 - Option to set engines as 1st and 2nd default engines
 
-- Display moves number in analysis window
-
 - Set a Tree mask to filter displayed moces, color for moves / positions, flags, etc
 
 - Add a Game training ala Fritz' "Friend mode"

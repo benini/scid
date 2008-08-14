@@ -1190,15 +1190,20 @@ proc addAnalysisVariation {{n 1}} {
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
   
+  set moves $analysis(moves$n)
+  if {$analysis(uci$n)} {
+    set tmp_moves [ lindex [ lindex $analysis(multiPV$n) 0 ] 2 ]
+    set text [format "\[%s\] %d:%s" $analysis(name$n) $analysis(depth$n) [scoreToMate $analysis(score$n) $tmp_moves ]]
+  } else  {
+    set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
+  }
+  
   if {$addAtEnd} {
     # get the last move of the game
     set lastMove [sc_game info previousMoveUCI]
     #back one move
     sc_move back
   }
-  
-  set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
-  set moves $analysis(moves$n)
   
   # Add the variation:
   sc_var create
@@ -1242,18 +1247,21 @@ proc addAllVariations {{n 1}} {
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
-  
+   
+  foreach i $analysis(multiPVraw$n) j $analysis(multiPV$n) {
+
+    # set text [format "\[%s\] %d:%+.2f" $analysis(name$n) [lindex $i 0] [lindex $i 1]]
+    set moves [lindex $i 2]
+
+    set tmp_moves [ lindex $j 2 ]
+    set text [format "\[%s\] %d:%s" $analysis(name$n) [lindex $i 0] [scoreToMate [lindex $i 1] $tmp_moves ]]
+
   if {$addAtEnd} {
     # get the last move of the game
     set lastMove [sc_game info previousMoveUCI]
-    #back one move
     sc_move back
   }
-  
-  foreach i $analysis(multiPVraw$n) {
-    set text [format "\[%s\] %d:%+.2f" $analysis(name$n) [lindex $i 0] [lindex $i 1]]
-    set moves [lindex $i 2]
-    
+        
     # Add the variation:
     sc_var create
     # Add the comment at the start of the variation:
@@ -1265,12 +1273,14 @@ proc addAllVariations {{n 1}} {
     # Add as many moves as possible from the engine analysis:
     sc_move_add $moves $n
     sc_var exit
-  }
-  
+    
   if {$addAtEnd} {
     #forward to the last move
     sc_move forward
   }
+  
+}
+  
   
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
@@ -2355,7 +2365,7 @@ proc scoreToMate { score pv } {
   } else  {
     set ret [format "%+5.2f" $score]
   }
-
+  
   return $ret
 }
 ################################################################################
