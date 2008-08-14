@@ -26,6 +26,8 @@ Possible improvements (perhaps not bugs, but awkward)
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+- Add a Game training ala Fritz' "Friend mode"
+
 - scidt from maintenance menu
 
 - compile openseal for PocketPC
