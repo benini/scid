@@ -1176,30 +1176,30 @@ proc popAnalysisData { { n 1 } } {
 ################################################################################
 proc addAnalysisVariation {{n 1}} {
   global analysis
-
+  
   if {! [winfo exists .analysisWin$n]} { return }
-
+  
   # Cannot add a variation to an empty variation:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
-
+  
   # if we are at the end of the game, we cannot add variation
   # so we add the analysis one move before and append the last game move at the beginning of the analysis
   set addAtEnd [sc_pos isAt vend]
-
+  
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
-
+  
   if {$addAtEnd} {
     # get the last move of the game
     set lastMove [sc_game info previousMoveUCI]
     #back one move
     sc_move back
   }
-
+  
   set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
   set moves $analysis(moves$n)
-
+  
   # Add the variation:
   sc_var create
   # Add the comment at the start of the variation:
@@ -1211,15 +1211,15 @@ proc addAnalysisVariation {{n 1}} {
   # Add as many moves as possible from the engine analysis:
   sc_move_add $moves $n
   sc_var exit
-
+  
   if {$addAtEnd} {
     #forward to the last move
     sc_move forward
   }
-
+  
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
-
+  
   updateBoard -pgn
   # Update score graph if it is open:
   if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
@@ -1229,31 +1229,31 @@ proc addAnalysisVariation {{n 1}} {
 ################################################################################
 proc addAllVariations {{n 1}} {
   global analysis
-
+  
   if {! [winfo exists .analysisWin$n]} { return }
-
+  
   # Cannot add a variation to an empty variation:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
-
+  
   # if we are at the end of the game, we cannot add variation
   # so we add the analysis one move before and append the last game move at the beginning of the analysis
   set addAtEnd [sc_pos isAt vend]
-
+  
   # Temporarily clear the pre-move command since we want to add a
   # whole line without Scid updating stuff:
   sc_info preMoveCmd {}
-
+  
   if {$addAtEnd} {
     # get the last move of the game
     set lastMove [sc_game info previousMoveUCI]
     #back one move
     sc_move back
   }
-
+  
   foreach i $analysis(multiPVraw$n) {
     set text [format "\[%s\] %d:%+.2f" $analysis(name$n) [lindex $i 0] [lindex $i 1]]
     set moves [lindex $i 2]
-
+    
     # Add the variation:
     sc_var create
     # Add the comment at the start of the variation:
@@ -1266,15 +1266,15 @@ proc addAllVariations {{n 1}} {
     sc_move_add $moves $n
     sc_var exit
   }
-
+  
   if {$addAtEnd} {
     #forward to the last move
     sc_move forward
   }
-
+  
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
-
+  
   updateBoard -pgn
   # Update score graph if it is open:
   if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
@@ -1708,7 +1708,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     }
     if {$current == -1} { set current 1 }
     set analysis(multiPVCount$n) $current
-#    changePVSize $n
+    #    changePVSize $n
     catch {
       if { $hasMultiPV } {
         $w.b1.multipv configure -from $min -to $max -state readonly
@@ -2197,7 +2197,15 @@ proc updateAnalysisText {{n 1}} {
   $t delete 0.0 end
   
   if { $analysis(uci$n) } {
-    $t insert end [format "%+.1f " $score]
+    if { [expr abs($score)] == 327.0 } {
+      if { [catch { set tmp [format "M%d " $analysis(scoremate$n)]} ] } {
+        set tmp [format "%+.1f " $score]
+      }
+    } else {
+      set tmp [format "%+.1f " $score]
+    }
+    $t insert end $tmp
+    
     $t insert end "[tr Depth]: "
     if {$analysis(showEngineInfo$n) && $analysis(seldepth$n) != 0} {
       $t insert end [ format "%2u/%u " $analysis(depth$n) $analysis(seldepth$n)] small
@@ -2273,7 +2281,7 @@ proc updateAnalysisText {{n 1}} {
   if { $analysis(uci$n) } {
     if {$cleared} { set analysis(multiPV$n) {} ; set analysis(multiPVraw$n) {} }
     if {$analysis(multiPVCount$n) == 1} {
-      set newhst [format "%2d %+5.2f  %s" $analysis(depth$n) $score [::trans $moves]]
+      set newhst [format "%2d %s %s" $analysis(depth$n) [scoreToMate $score $moves] [addMoveNumbers [::trans $moves]]]
       if {$newhst != $analysis(lastHistory$n) && $moves != ""} {
         $h insert end [format "%s (%.2f)\n" $newhst $analysis(time$n)] indent
         $h see end-1c
@@ -2283,29 +2291,25 @@ proc updateAnalysisText {{n 1}} {
       $h delete 1.0 end
       # First line
       set pv [lindex $analysis(multiPV$n) 0]
-      if { [expr abs($score)] == 327.0 } {
-        if { [catch { set newStr [format "M %d " $analysis(scoremate$n)]} ] } {
-          set newStr [format "%2d %+5.2f  " [lindex $pv 0] $score ]
-        }
-      } else {
-        catch { set newStr [format "%2d %+5.2f  " [lindex $pv 0] $score ] }
-      }
+      catch { set newStr [format "%2d %s " [lindex $pv 0] [scoreToMate $score [lindex $pv 2]] ] }
+      
       $h insert end "1 " gray
-      append newStr "[::trans [lindex $pv 2]]\n"
+      append newStr "[addMoveNumbers [::trans [lindex $pv 2]]]\n"
       $h insert end $newStr blue
       
       set lineNumber 1
       foreach pv $analysis(multiPV$n) {
         if {$lineNumber == 1} { incr lineNumber ; continue }
         $h insert end "$lineNumber " gray
-        $h insert end [format "%2d %+5.2f  %s\n" [lindex $pv 0] [lindex $pv 1] [::trans [lindex $pv 2]] ] indent
+        set score [scoreToMate [lindex $pv 1] [lindex $pv 2]]
+        $h insert end [format "%2d %s %s\n" [lindex $pv 0] $score [addMoveNumbers [::trans [lindex $pv 2]]] ] indent
         incr lineNumber
       }
     }
     ################################################################################
   } else  {
     # original Scid analysis display
-    $h insert end [format "%2d %+5.2f  %s (%.2f)\n" $analysis(depth$n) $score [::trans $moves] $analysis(time$n)] indent
+    $h insert end [format "%2d %+5.2f %s (%.2f)\n" $analysis(depth$n) $score [::trans $moves] $analysis(time$n)] indent
     $h see end-1c
   }
   
@@ -2318,6 +2322,64 @@ proc updateAnalysisText {{n 1}} {
   $t configure -state disabled
   
   updateAnalysisBoard $n $analysis(moves$n)
+}
+################################################################################
+# args = score, pv
+# returns M X if mate detected (# or ++) or original score
+################################################################################
+proc scoreToMate { score pv } {
+  if { [string index $pv end] == "#" || [string index $pv end] == "+" && [string index $pv end-1] == "+"} {
+    set plies [llength $pv]
+    
+    set mate [expr $plies / 2 + 1 ]
+    
+    set sign ""
+    if {[expr $plies % 2] == 0 && [sc_pos side] == "white" || [expr $plies % 2] == 1 && [sc_pos side] == "black"} {
+      set sign "-"
+    }
+    if {[sc_pos side] == "white" } {
+      if { $sign == "" } {
+        set mate [expr $plies / 2 + 1 ]
+      } else  {
+        set mate [expr $plies / 2 ]
+      }
+    } else  {
+      if { $sign == "" } {
+        set mate [expr $plies / 2 ]
+      } else  {
+        set mate [expr $plies / 2 + 1 ]
+      }
+    }
+    
+    set ret "M$sign$mate"
+  } else  {
+    set ret [format "%+5.2f" $score]
+  }
+
+  return $ret
+}
+################################################################################
+# returns the pv with move numbers added
+################################################################################
+proc addMoveNumbers { pv } {
+  set n [sc_pos moveNumber]
+  set ret ""
+  set start 0
+  if {[sc_pos side] == "black"} {
+    set ret "$n. ... [lindex $pv 0] "
+    set start 1
+    incr n
+  }
+  for {set i $start} {$i < [llength $pv]} {incr i} {
+    set m [lindex $pv $i]
+    if { [expr $i % 2] == 0 && $start == 0 || [expr $i % 2] == 1 && $start == 1 } {
+      append ret "$n. $m "
+    } else  {
+      append ret "$m "
+      incr n
+    }
+  }
+  return $ret
 }
 ################################################################################
 # toggleAnalysisBoard
