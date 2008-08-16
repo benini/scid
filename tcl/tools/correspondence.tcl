@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.8 2008/08/12 18:21:33 arwagner Exp $
+### $Id: correspondence.tcl,v 1.9 2008/08/16 10:44:07 arwagner Exp $
 ###
-### Last change: <Tue, 2008/08/12 19:07:21 arwagner ingata>
+### Last change: <Sat, 2008/08/16 12:32:39 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1317,6 +1317,14 @@ namespace eval CorrespondenceChess {
 		button    $w.top.offerDraw  -text  [::tr "CCOfferDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 0 1 0}
 		button    $w.top.acceptDraw -text  [::tr "CCAcceptDraw"] -state disabled -command {::CorrespondenceChess::SendMove 0 0 0 1}
 
+
+		# ====== ToDo: Add translated text ======
+		::utils::tooltip::Set $w.top.retrieveCC "Fetch games and process inbox"
+		::utils::tooltip::Set $w.top.prevCC "Goto previous game"
+		::utils::tooltip::Set $w.top.nextCC "Goto next game"
+		::utils::tooltip::Set $w.top.sendCC "Send move"
+		::utils::tooltip::Set $w.top.delinbox "Empty in- and outbox"
+
 		grid $w.top.console    -stick w -column  4 -row 0 -columnspan 8
 		grid $w.top.ysc        -stick e -column  8 -row 0
 
@@ -1412,12 +1420,17 @@ namespace eval CorrespondenceChess {
 		}
 
 		if {$mess != ""} {
+			set curpos [$w.bottom.id index insert]
 			$w.bottom.id image create end -align center -image tb_CC_message
-			##::utils::tooltip::Set $w.bottom.toMove $mess
-		}
+			set endpos [$w.bottom.id index insert]
 
+			$w.bottom.id tag add id$id $curpos $endpos
+			### $w.bottom.id tag configure id$id -background blue -font font_Bold
+			### ::utils::tooltip::Set id$id "Here comes the text"
+		}
 		# add the game id. Note the \n at the end is necessary!
 		$w.bottom.id      insert end "$id\n"
+
 
 		# ToMove may contain a mixture of text for game results plus
 		# several icons displayin the current game status.
@@ -1517,7 +1530,18 @@ namespace eval CorrespondenceChess {
 	proc SetSelection {xcoord ycoord} {
 		global num
 
+		# remove old highlighting
+		foreach col {id toMove event site white black clockW clockB var feature} {
+			.ccWindow.bottom.$col tag remove highlight 1.0 end
+		}
+
 		set num [expr {int([.ccWindow.bottom.id index @$xcoord,$ycoord]) + $::CorrespondenceChess::glccstart - 1 }]
+
+		# highlight current games line
+		foreach col {id toMove event site white black clockW clockB var feature} {
+			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
+		}
 		updateConsole "Switch to game $num"
 	}
 
@@ -2068,6 +2092,14 @@ namespace eval CorrespondenceChess {
 			}
 			# Jump to the end of the game and update the display
 			::move::End
+
+			# Set some basic info also to the button tooltips
+			::utils::tooltip::Set .ccWindow.top.resign     "$CmailGameName: $Event\n$Site\n\n$White - $Black"
+			::utils::tooltip::Set .ccWindow.top.claimDraw  "$CmailGameName: $Event\n$Site\n\n$White - $Black"
+			::utils::tooltip::Set .ccWindow.top.acceptDraw "$CmailGameName: $Event\n$Site\n\n$White - $Black"
+			::utils::tooltip::Set .ccWindow.top.offerDraw  "$CmailGameName: $Event\n$Site\n\n$White - $Black"
+
+
 		}
 	}
 

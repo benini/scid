@@ -1470,21 +1470,17 @@ translate D QGA {Angenommenes Damengambit}
 translate D QGD {Abgelehntes Damengambit}
 # ====== TODO To be translated ======
 translate D QGDExchange {QGD Exchange}
-# ====== TODO To be translated ======
-translate D SemiSlav {Semi-Slav}
+translate D SemiSlav {Semi-Slawisch}
 # ====== TODO To be translated ======
 translate D QGDwithBg5 {QGD with Bg5}
 # ====== TODO To be translated ======
 translate D QGDOrthodox {QGD Orthodox}
 translate D Grunfeld {Grünfeld-Verteidigung}
 translate D GrunfeldExchange {Grünfeld, Abtauschvariante}
-# ====== TODO To be translated ======
-translate D GrunfeldRussian {Grünfeld Russian}
+translate D GrunfeldRussian {Grünfeld-Verteidigung, Russische Variante}
 translate D Catalan {Katalanische Verteidigung}
-# ====== TODO To be translated ======
-translate D CatalanOpen {Catalan Open}
-# ====== TODO To be translated ======
-translate D CatalanClosed {Catalan Closed}
+translate D CatalanOpen {Katalanisch, offen}
+translate D CatalanClosed {Katalanisch, geschlossen}
 translate D QueensIndian {Dameninsche Verteidigung}
 translate D NimzoIndian {Nimzoindische Verteidigung}
 translate D NimzoIndianClassical {Nimzoindisch, Klassische Variante}
