@@ -1805,6 +1805,18 @@ translate P CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
 translate P CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
+translate P CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate P CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate P CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate P CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate P CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate P CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate P DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
@@ -2027,6 +2039,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

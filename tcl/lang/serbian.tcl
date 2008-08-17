@@ -1796,10 +1796,23 @@ translate Y CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
 translate Y CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
+translate Y CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate Y CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate Y CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate Y CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate Y CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate Y CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

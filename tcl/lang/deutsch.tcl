@@ -1526,6 +1526,12 @@ translate D CCErrNoGames {Enthält keine Partien!\nBitte sychronisieren Sie zunäc
 
 translate D CCDlgTitNoCCDB {Scid: Keine Fernschach-Datenbank}
 translate D CCErrNoCCDB {Es wurde keine Datenbank vom Typ 'Fernschach' geöffnet. Bitte öffen Sie eine solche bevor Sie Funktionen des Fernschachmoduls benutzen.}
+translate D CCFetchBtn {Partien vom Server abholen\nund Inbox bearbeiten}
+translate D CCPrevBtn {Vorhergehende Partie}
+translate D CCNextBtn {Nächste Partie}
+translate D CCSendBtn {Zug versenden}
+translate D CCEmptyBtn {Postein- und ausgang leeren}
+translate D CCHelpBtn {Hilfe zu den Icons und Statusindikatoren\nFür allgemeine Hilfe bitte F1!}
 translate D DoneWithPosition {Positionsbearbeitung beendet}
 }
 
@@ -1863,6 +1869,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <ul>
 <li><a Menus Windows>Fenster-Menü</a></li>
 <li><a Correspondence><b>Fernschach</b></a></li>
+<li><a CCIcons><b>Fernschach Statusanzeigen</b></a></li>
 <li><a PTracker>Figurenverteilungs-Fenster</a></li>
 <li><a Searches Filter>Filter</a></li>
 <li><a Export>Filter, exportieren</a></li>
@@ -1949,6 +1956,7 @@ set helpText(D,Index) {<h1>Scid: Hilfe-Index</h1>
 <li><a Reports Player>Spielerbericht</a></li>
 <li><a PInfo>Spielerinformation</a></li>
 <li><a PList>Spielersuche</a></li>
+<li><a CCIcons><b>Statusanzeigen im Fernschachfenster</b></a></li>
 <li><a Searches>Suchen</a></li>
 <li><a Menus Search>Suchen-Menü</a></li>
 <li><a Searches Filter>Such-Filter</a></li>
@@ -6151,6 +6159,10 @@ Fernschachfunktionen ganz einfach über die folgenden Buttons erreichen
 </ul>
 </p>
 
+<p>
+Bitte beachten Sie auch die Liste der <a CCIcons>Icons und Statusindikatoren</a>.
+</p>
+
 <h3>Konfiguration</h3>
 
 <p>
@@ -6265,9 +6277,76 @@ wird aber wohl keinen Adressaten enthalten, da Fernschachserver diese
 Information gewöhnlich nicht übertragen.
 </p>
 
-<p><footer>(Updated: Scid 3.6.23, February 2008)</footer></p>
+<p><footer>(Updated: Scid 3.6.25, August 2008)</footer></p>
 }
 
+set helpTitle(CCIcons) "Fernschach: Icons und Statusindikatoren"
+set helpText(CCIcons) {
+<h1>Icons und Statusindikatoren</h1>
+<p>
+Um die Anzeige in der Partienliste abzukürzen werden einige Symbole
+verwendet. Manche von ihnen sind nur unter bestimmten Umständen
+sichtbar, andere nur für Xfcc- bzw. eMail-basierte Partien.
+</p>
+<ul>
+   <li><button tb_CC_envelope> zeigt eine eMail-basierte Partie an.
+   Durch die Limitationen dieses Mediums sind kaum zusätzliche
+   Statusangaben verfügbar.
+   </li>
+   <li><button tb_CC_yourmove>
+   Sie sind am Zug! Hinweis: Dieser Status wird nur aktualisiert, wenn
+   mit dem Fernschachserver synchronisiert wird, d. h. er gibt immer
+   den Zustand des Servers bei der letzten Synchronisation wieder.
+   </li>
+   <li><button tb_CC_oppmove>
+   Der Gegner ist am Zug. Hinweis: Dieser Status wird nur aktualisiert, wenn
+   mit dem Fernschachserver synchronisiert wird, d. h. er gibt immer
+   den Zustand des Servers bei der letzten Synchronisation wieder.
+   </li>
+   <li><button tb_CC_draw>
+   Es wurde ein Remis vereinbart.
+   </li>
+   <li><button tb_CC_book>
+   Eröffnungsbücher sind für diese Partie erlaubt.
+   </li>
+   <li><button tb_CC_database>
+   Datenbanken sind für diese Partie erlaubt.
+   </li>
+   <li><button tb_CC_tablebase>
+   Endspieltabellen (z. B. Nalimov-Tabellen) sind für diese Partie
+   erlaubt.
+   </li>
+   <li><button tb_CC_engine>
+   Schachengines sind für diese Partie erlaubt. Solche Partien werden
+   bisweilen als "Advanced Chess" bezeichnet.
+   </li>
+   <li><button tb_CC_outoftime>
+   Der Gegner hat seine Bedenkzeit überschritten. Es kann ein Gewinn
+   wegen Zeitüberschreitung beantragt werden.
+   </li>
+   <li><button tb_CC_message>
+   Der Gegner übermittelte mit dem Letzten Zug enie Nachricht. Diese
+   wurde zur Partienotation als Kommentar hinzugefügt.
+   </li>
+</ul>
+
+<p>
+Für Xfcc-basierte Partien wird für jeden Gegner die jeweilige
+Landesflagge angezeigt, wenn der Server die nötigen
+Länderinformationen übermittelt. Für eMail basierte Partien kann dies
+erreicht werden, wenn im PGN-Kopf zwei zustätzliche Zeilen
+<i>whiteCountry</i> bzw. <i>blackCountry</i> eingefügt werden, die den
+internationalen, dreistelligen Ländercode nach ISO 3166-1 enthalten
+(z. B. "EUR" <button flag_eur>, "USA" <button flag_usa>, "GBR" <button
+flag_gbr>, "FRA" <button flag_fra>, "RUS" <button flag_rus>, "CHN"
+<button flag_chn>...).
+</p>
+
+<p>
+Beachten Sie auch das Kapitel <a Correspondence>Fernschach</a> für
+allgemeine Informationen.
+</p>
+}
 
 set helpTitle(D,CCXfcc) "Fernschach-Server"
 set helpText(D,CCXfcc) {<h1>Fernschach-Server</h1>
@@ -6942,6 +7021,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

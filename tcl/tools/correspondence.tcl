@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.9 2008/08/16 10:44:07 arwagner Exp $
+### $Id: correspondence.tcl,v 1.10 2008/08/17 08:11:19 arwagner Exp $
 ###
-### Last change: <Sat, 2008/08/16 12:32:39 arwagner ingata>
+### Last change: <Sun, 2008/08/17 09:35:00 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1265,6 +1265,31 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
+	# yset / yview: enable synchronous scrolling of the CC game list, ie.
+	# all text widgets involved scroll simultaneously by the same ammount
+	# in the vertial direction.
+	#----------------------------------------------------------------------
+	proc yset {args} {
+		set w .ccWindow
+		eval [linsert $args 0 $w.bottom.ysc set]
+		yview moveto [lindex [$w.bottom.ysc get] 0]
+	}
+
+	proc yview {args} {
+		set w .ccWindow
+		eval [linsert $args 0 $w.bottom.id      yview]
+		eval [linsert $args 0 $w.bottom.toMove  yview]
+		eval [linsert $args 0 $w.bottom.event   yview]
+		eval [linsert $args 0 $w.bottom.site    yview]
+		eval [linsert $args 0 $w.bottom.white   yview]
+		eval [linsert $args 0 $w.bottom.black   yview]
+		eval [linsert $args 0 $w.bottom.clockW  yview]
+		eval [linsert $args 0 $w.bottom.clockB  yview]
+		eval [linsert $args 0 $w.bottom.var     yview]
+		eval [linsert $args 0 $w.bottom.feature yview]
+	}
+
+	#----------------------------------------------------------------------
 	# Generate the Correspondence Chess Window. This Window offers a
 	# console displaying whats going on and which game is displayed
 	# plus a gmae list containing current games synced in and their
@@ -1317,43 +1342,49 @@ namespace eval CorrespondenceChess {
 		button    $w.top.offerDraw  -text  [::tr "CCOfferDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 0 1 0}
 		button    $w.top.acceptDraw -text  [::tr "CCAcceptDraw"] -state disabled -command {::CorrespondenceChess::SendMove 0 0 0 1}
 
+		button    $w.top.help       -image tb_help -height 24 -width 24 -command { helpWindow CCIcons }
+
 
 		# ====== ToDo: Add translated text ======
-		::utils::tooltip::Set $w.top.retrieveCC "Fetch games and process inbox"
-		::utils::tooltip::Set $w.top.prevCC "Goto previous game"
-		::utils::tooltip::Set $w.top.nextCC "Goto next game"
-		::utils::tooltip::Set $w.top.sendCC "Send move"
-		::utils::tooltip::Set $w.top.delinbox "Empty in- and outbox"
+		::utils::tooltip::Set $w.top.retrieveCC [::tr "CCFetchBtn"]
+		::utils::tooltip::Set $w.top.prevCC     [::tr "CCPrevBtn"]
+		::utils::tooltip::Set $w.top.nextCC     [::tr "CCNextBtn"]
+		::utils::tooltip::Set $w.top.sendCC     [::tr "CCSendBtn"]
+		::utils::tooltip::Set $w.top.delinbox   [::tr "CCEmptyBtn"]
+		::utils::tooltip::Set $w.top.help       [::tr "CCHelpBtn"]
 
-		grid $w.top.console    -stick w -column  4 -row 0 -columnspan 8
-		grid $w.top.ysc        -stick e -column  8 -row 0
+		grid $w.top.console                -column  4 -row 0 -columnspan 8
+		grid $w.top.ysc        -stick ns   -column 13 -row 0 
+		grid $w.top.help       -stick nsew -column 14 -row 0 -columnspan 2
 
-		grid $w.top.retrieveCC          -column  0 -row 0
-		grid $w.top.prevCC     -stick e -column  1 -row 0
-		grid $w.top.nextCC     -stick w -column  2 -row 0
-		grid $w.top.sendCC              -column  3 -row 0
+		grid $w.top.retrieveCC           -column  0 -row 0
+		grid $w.top.prevCC     -stick e  -column  1 -row 0
+		grid $w.top.nextCC     -stick w  -column  2 -row 0
+		grid $w.top.sendCC               -column  3 -row 0
 
-		grid $w.top.openDB              -column  0 -row 1 -columnspan 4
-		grid $w.top.inbox               -column  0 -row 2 -columnspan 3
-		grid $w.top.delinbox            -column  3 -row 2
+		grid $w.top.openDB               -column  0 -row 1 -columnspan 4
+		grid $w.top.inbox                -column  0 -row 2 -columnspan 3
+		grid $w.top.delinbox             -column  3 -row 2
 
-		grid $w.top.resign              -column  6 -row 1
-		grid $w.top.claimDraw           -column  5 -row 2
-		grid $w.top.offerDraw           -column  6 -row 2
-		grid $w.top.acceptDraw          -column  7 -row 2
+		grid $w.top.resign               -column  6 -row 1
+		grid $w.top.claimDraw            -column  5 -row 2
+		grid $w.top.offerDraw            -column  6 -row 2
+		grid $w.top.acceptDraw           -column  7 -row 2
 
-		# build the table in the bottom frame.
-		text $w.bottom.id       -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.toMove   -cursor top_left_arrow -font font_Small -height 25 -width 4  -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.event    -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.site     -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.white    -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.black    -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.clockW   -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.clockB   -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.var      -cursor top_left_arrow -font font_Small -height 25 -width 3  -setgrid 1 -relief flat -wrap none 
-		text $w.bottom.feature  -cursor top_left_arrow -font font_Small -height 25 -width 16 -setgrid 1 -relief flat -wrap none 
+		# build the table in the bottom frame. This table of text widgets has to
+		# scroll syncronously!
+		scrollbar $w.bottom.ysc      -command ::CorrespondenceChess::yview
 
+		text $w.bottom.id       -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.toMove   -cursor top_left_arrow -font font_Small -height 25 -width 4  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.event    -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.site     -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.white    -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.black    -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.clockW   -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.clockB   -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.var      -cursor top_left_arrow -font font_Small -height 25 -width 3  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.feature  -cursor top_left_arrow -font font_Small -height 25 -width 16 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
 
 		grid $w.bottom.id       -column  0 -row 1
 		grid $w.bottom.toMove   -column  1 -row 1
@@ -1365,32 +1396,9 @@ namespace eval CorrespondenceChess {
 		grid $w.bottom.clockB   -column 16 -row 1
 		grid $w.bottom.var      -column 17 -row 1
 		grid $w.bottom.feature  -column 18 -row 1
+		grid $w.bottom.ysc      -column 19 -row 1 -stick ns
 
 		bind $w <F1>   { helpWindow Correspondence}
-		bind $w <Prior> {
-			if { $::CorrespondenceChess::glccstart > 5 } {
-				set ::CorrespondenceChess::glccstart [expr $::CorrespondenceChess::glccstart - 5]
-				::CorrespondenceChess::ReadInbox
-			} 
-		}
-		bind $w <Next> { 
-			if { $::CorrespondenceChess::glccstart < $::CorrespondenceChess::glgames} {
-				set ::CorrespondenceChess::glccstart [expr $::CorrespondenceChess::glccstart + 5]
-				::CorrespondenceChess::ReadInbox
-			}
-		}
-		bind $w <Up> {
-			if { $::CorrespondenceChess::glccstart > 1 } {
-				set ::CorrespondenceChess::glccstart [expr $::CorrespondenceChess::glccstart - 1]
-				::CorrespondenceChess::ReadInbox
-			} 
-		}
-		bind $w <Down> { 
-			if { $::CorrespondenceChess::glccstart < $::CorrespondenceChess::glgames} {
-				set ::CorrespondenceChess::glccstart [expr $::CorrespondenceChess::glccstart + 1]
-				::CorrespondenceChess::ReadInbox
-			}
-		}
 	}
 
 	#--------------------------------------------------------------------------
@@ -1425,8 +1433,7 @@ namespace eval CorrespondenceChess {
 			set endpos [$w.bottom.id index insert]
 
 			$w.bottom.id tag add id$id $curpos $endpos
-			### $w.bottom.id tag configure id$id -background blue -font font_Bold
-			### ::utils::tooltip::Set id$id "Here comes the text"
+#			::utils::tooltip::Set $w.bottom.id $mess $w.bottom.id id$id
 		}
 		# add the game id. Note the \n at the end is necessary!
 		$w.bottom.id      insert end "$id\n"
@@ -1449,6 +1456,7 @@ namespace eval CorrespondenceChess {
 		} \
 		" = " {
 			$w.bottom.toMove image create end -align center -image tb_CC_draw
+			$w.bottom.toMove  insert end " = "
 		} \
 		"yes" {
 			$w.bottom.toMove image create end -align center -image tb_CC_yourmove

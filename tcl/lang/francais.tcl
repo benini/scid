@@ -1481,6 +1481,18 @@ translate F CCErrDirNotUsable {does not exist or is not accessible!\nPlease chec
 translate F CCErrNoGames {does not contain any games!\nPlease fetch them first.}
 translate F CCDlgTitNoCCDB {Scid: pas de base par correspondance}
 translate F CCErrNoCCDB {Aucune base du type 'Correspondance' n'est ouverte. Ouvrez-en une avant d'utiliser les fonctions par correspondance.}
+# ====== TODO To be translated ======
+translate F CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate F CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate F CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate F CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate F CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate F CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 
 translate F DoneWithPosition {Position terminée}
 
@@ -1690,6 +1702,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

@@ -1799,6 +1799,18 @@ translate W CCDlgTitNoCCDB {Scid: Ingen Korrespondensdatabas}
 # ====== TODO To be translated ======
 translate W CCErrNoCCDB {Ingen Databas av typ 'Korrespondens' är öppnad. Var god och öppna en innan du använder Korrespondensschackfunktioner.}
 # ====== TODO To be translated ======
+translate W CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate W CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate W CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate W CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate W CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate W CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate W DoneWithPosition {Klar med position}
 # ====== TODO To be translated ======
 }
@@ -6817,6 +6829,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

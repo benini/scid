@@ -1790,10 +1790,23 @@ translate N CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
 translate N CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
+translate N CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate N CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate N CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate N CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate N CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate N CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

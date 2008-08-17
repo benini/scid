@@ -29,14 +29,19 @@ wm withdraw .tooltip
 #
 #   Set the tooltip message for <button> to be <msg>
 #
-proc ::utils::tooltip::Set {button msg} {
+proc ::utils::tooltip::Set {button msg {text_image ""} {tag ""} } {
   variable message
   set msg [string trim $msg]
   if {$msg == ""} { return }
   regsub {\\n} $msg "\n" msg
   set message($button) $msg
-  bind $button <Any-Enter> +[list ::utils::tooltip::Enter $button]
-  bind $button <Any-Leave> +[list ::utils::tooltip::Leave $button]
+  if { $text_image == ""} {
+    bind $button <Any-Enter> +[list ::utils::tooltip::Enter $button]
+    bind $button <Any-Leave> +[list ::utils::tooltip::Leave $button]
+  } else  {
+    $text_image tag bind $tag <Any-Enter> +[list ::utils::tooltip::Enter $button]
+    $text_image tag bind $tag <Any-Leave> +[list ::utils::tooltip::Leave $button]
+  }
 }
 
 # ::utils::tooltip::Enter

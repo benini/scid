@@ -1801,11 +1801,24 @@ translate B CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
 translate B CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
+translate B CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate B CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate B CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate B CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate B CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate B CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate B DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 
 # end of portbr.tcl
+
 
 
 

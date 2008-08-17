@@ -1477,6 +1477,18 @@ translate I CCErrDirNotUsable {non esiste o non è accessibile\nControlla e corr
 translate I CCErrNoGames {non contiene partite!\nEffettua prima una scansione.}
 translate I CCDlgTitNoCCDB {Scid: Nessun database per il gioco per corrispondenza}
 translate I CCErrNoCCDB {Non è aperto nessun database di tipo "gioco per corrispondenza". Aprine uno usando le funzioni per il gioco per corrispondenza.}
+# ====== TODO To be translated ======
+translate I CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate I CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate I CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate I CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate I CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate I CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 translate I DoneWithPosition {Posizione conclusa}
 }
 
@@ -1714,6 +1726,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

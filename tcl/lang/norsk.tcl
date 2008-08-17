@@ -1792,6 +1792,18 @@ translate O CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
 translate O CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
+translate O CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate O CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate O CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate O CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate O CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate O CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate O DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
@@ -1800,6 +1812,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

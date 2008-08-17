@@ -1520,6 +1520,13 @@ translate E CCErrNoGames {does not contain any games!\nPlease fetch them first.}
 translate E CCDlgTitNoCCDB {Scid: No Correspondence Database}
 translate E CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 
+translate E CCFetchBtn {Fetch games from the server and process the Inbox}
+translate E CCPrevBtn {Goto previous game}
+translate E CCNextBtn {Goto next game}
+translate E CCSendBtn {Send move}
+translate E CCEmptyBtn {Empty In- and Outbox}
+translate E CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+
 # Calculation of Variations
 translate E DoneWithPosition {Done with position}
 

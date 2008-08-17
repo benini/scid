@@ -1791,6 +1791,18 @@ translate H CCDlgTitNoCCDB {Scid: No Correspondence Database}
 # ====== TODO To be translated ======
 translate H CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
 # ====== TODO To be translated ======
+translate H CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate H CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate H CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate H CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate H CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate H CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
 translate H DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
@@ -2026,6 +2038,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

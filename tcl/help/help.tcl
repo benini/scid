@@ -98,6 +98,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Comment>Comment editor</a></li>
   <li><a Compact>Compacting a database</a></li>
   <li><a Correspondence>Correspondence Chess</a></li>
+  <li><a CCGameListIcons>Correspondence Chess Icons</a></li>
   <li><a Author>Contact information</a></li>
   <li><a Contents>Contents</a></li>
   <li><a Crosstable>Crosstable</a> window</li>
@@ -157,6 +158,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>I</h3>
   <ul>
   <li><a Import>Import</a> window</li>
+  <li><a CCGameListIcons>Icons for Correspondence Chess</a></li>
   </ul>
   
   <h3>L</h3>
@@ -3925,6 +3927,9 @@ chess functions can easily accessed by the follwoing buttons:
    </li>
 </ul>
 </p>
+<p>
+See also the list of <a CCIcons>Icons and Status Indicators</a>.
+</p>
 
 <h3>Configuration</h3>
 
@@ -4033,8 +4038,76 @@ not necessarily contain a proper recipient as eMail addresses are not
 exchanged in server based correspondence chess.
 </p>
 
-<p><footer>(Updated: Scid 3.6.23, March 2008)</footer></p>
+
+<p><footer>(Updated: Scid 3.6.25, August 2008)</footer></p>
 }
+
+set helpTitle(CCIcons) "Correspondence Chess Icons and Status Indicators"
+set helpText(CCIcons) {
+<h1>Icons and Status Indicators</h1>
+<p>
+To shorten the display, a set of icons is used in the game list. Some
+of them are only present in certain circumstances, some are only valid
+for Xfcc based games, some for eMail based games.
+</p>
+<ul>
+   <li><button tb_CC_envelope> This is an eMail based game. In those
+   games many of the status flags used in Xfcc-based games are not
+   available due to the limitation of the medium.
+   </li>
+   <li><button tb_CC_yourmove>
+   Its your move. Note: this status is only updated if you
+   synchronise your games with the server, that is, it always refers
+   to the servers status at last syncronisation.
+   </li>
+   <li><button tb_CC_oppmove>
+   Its the opponents move. Note: this status is only updated if you
+   synchronise your games with the server, that is, it always refers
+   to the servers status at last syncronisation.
+   </li>
+   <li><button tb_CC_draw>
+   Peace was agreed by a draw.
+   </li>
+   <li><button tb_CC_book>
+   The use of opening books is allowed for this game.
+   </li>
+   <li><button tb_CC_database>
+   The use of databases is allowed for this game.
+   </li>
+   <li><button tb_CC_tablebase>
+   The use of endgame tablebases (e.g. Nalimov tablebases etc.) is
+   allowed for this game.
+   </li>
+   <li><button tb_CC_engine>
+   Chess Engines are allowed for this game. Sometimes these games are
+   also refered to as "Advanced Chess".
+   </li>
+   <li><button tb_CC_outoftime>
+   Your opponent ran out of time. You may claim a win on time.
+   </li>
+   <li><button tb_CC_message>
+   Your oppenent sent a message along with his last move. Check the
+   game notation.
+   </li>
+</ul>
+
+<p>
+In Xfcc games, each opponents country may be displayed by the
+associated flag, if the server provides that information. For eMail
+based games this can be achieved by adding additional PGN tags for
+<i>whiteCountry</i> and <i>blackCountry</i>, each followed by the
+international three letter country code according to ISO 3166-1
+(e.g. "EUR" <button flag_eur>, "USA" <button flag_usa>, "GBR" <button
+flag_gbr>, "FRA" <button flag_fra>, "RUS" <button flag_rus>, "CHN"
+<button flag_chn>...).
+</p>
+
+<p>
+See also the chapter <a Correspondence>Correspondence Chess</a> for
+general information.
+</p>
+}
+
 
 
 set helpTitle(CCXfcc) "Correspondence Chess Servers"

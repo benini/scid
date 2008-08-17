@@ -1496,9 +1496,22 @@ translate S CCErrDirNotUsable {¡No existe o no está accesible!\nPor favor, chequ
 translate S CCErrNoGames {¡No contiene ninguna partida!\nPor favor, traigala primero.}
 translate S CCDlgTitNoCCDB {Scid: No es una Base de Ajedrez por Correo}
 translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, abra una antes de usar funciones de ajedrez por Correo.}
+# ====== TODO To be translated ======
+translate S CCFetchBtn {Fetch games from the server and process the Inbox}
+# ====== TODO To be translated ======
+translate S CCPrevBtn {Goto previous game}
+# ====== TODO To be translated ======
+translate S CCNextBtn {Goto next game}
+# ====== TODO To be translated ======
+translate S CCSendBtn {Send move}
+# ====== TODO To be translated ======
+translate S CCEmptyBtn {Empty In- and Outbox}
+# ====== TODO To be translated ======
+translate S CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 
