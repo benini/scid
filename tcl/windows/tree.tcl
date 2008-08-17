@@ -504,16 +504,17 @@ proc ::tree::displayLines { baseNumber moves } {
     set line [lindex $moves $i]
     if {$line == ""} { continue }
     set move [lindex $line 1]
+    
     set move [::untrans $move]
     set tagfg ""
     
-    if { $maskFile != "" && $i > 0 && $i < [expr $len - 3] } {
+    if { $maskFile != "" && $move != "\[end\]" && $i > 0 && $i < [expr $len - 3] } {
       if { [::tree::mask::moveExists $move] } {
         set tagfg "bluefg"
       }
     }
     if { $maskFile != "" } {
-      if { $i > 0 && $i < [expr $len - 3] } {
+      if { $i > 0 && $i < [expr $len - 3] && $move != "\[end\]" } {
         # color tag
         $w.f.tl tag configure color$i -background [::tree::mask::getColor $move]
         $w.f.tl insert end "  " color$i
@@ -535,7 +536,7 @@ proc ::tree::displayLines { baseNumber moves } {
       $w.f.tl insert end "$line\n" [list whitebg $tagfg tagclick$i]
     }
     
-    if {$move != "" && $move != "---" && $i != [expr $len -2] && $i != 0} {
+    if {$move != "" && $move != "---" && $move != "\[end\]" && $i != [expr $len -2] && $i != 0} {
       $w.f.tl tag bind tagclick$i <Button-1> "[list ::tree::selectCallback $baseNumber $move ] ; break"
       if { $maskFile != "" } {
         # Bind right button to popup a contextual menu:
@@ -1217,9 +1218,9 @@ namespace eval ::tree::mask {
 ################################################################################
 proc ::tree::mask::open {} {
   set types {
-    {{Tree Mask Files}       {.msk}        }
+    {{Tree Mask Files}       {.stm}        }
   }
-  set filename [tk_getOpenFile -filetypes $types -defaultextension ".msk"]
+  set filename [tk_getOpenFile -filetypes $types -defaultextension ".stm"]
   
   if {$filename != ""} {
     source $filename
@@ -1232,9 +1233,9 @@ proc ::tree::mask::open {} {
 ################################################################################
 proc ::tree::mask::new {} {
   set types {
-    {{Tree Mask Files}       {.msk}        }
+    {{Tree Mask Files}       {.stm}        }
   }
-  set filename [tk_getSaveFile -filetypes $types -defaultextension ".msk"]
+  set filename [tk_getSaveFile -filetypes $types -defaultextension ".stm"]
   
   if {$filename != ""} {
     set ::tree::mask::maskFile $filename

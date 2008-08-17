@@ -35,7 +35,7 @@ set untransPieces(W) { B P K K D Q T R L B S N }
 
 ################################################################################
 proc trans { msg } {
-  if { $::language == "E" || ! $::translatePieces } {
+  if { $::language == "E" || ! $::translatePieces || $msg == "\[end\]"} {
     return $msg
   }
   if { [ catch { set t [string map $::transPieces($::language) $msg ]} ] } {
@@ -45,7 +45,7 @@ proc trans { msg } {
 }
 ################################################################################
 proc untrans { msg } {
-  if { $::language == "E"  || ! $::translatePieces } {
+  if { $::language == "E"  || ! $::translatePieces || $msg == "\[end\]"} {
     return $msg
   }
   if { [ catch { set t [string map $::untransPieces($::language) $msg ]} ] } {

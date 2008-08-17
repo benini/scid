@@ -2030,6 +2030,11 @@ set helpText(Tree) {<h1>The Tree window</h1>
   centipawns from the perspective of the side to move, which is its stored
   format in the EPD file) for improved readability.
   </p>
+
+  <h3>Using a Mask file to configure display</h3>
+  <p>
+  
+  </p>
   
   <h3>Caching for faster results</h3>
   <p>

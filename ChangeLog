@@ -527,7 +527,7 @@ scid-3.6.25
 	* added a "Configure engine" button to tweak an engine before playing (style, strength for example)
 - UCI engine configuration : spinbox entries are now user writable (a check is done to ensure input is correct)
 - UCI engine output :
-  * display mate indicator in multi variations (M5 instead of +327.00)
+  * display mate indicator in multi variations (M5 instead of +327.00) (thanks to Benigno Hernández)
   * added move numbers in multi variation lines
 - Tree window : added the ability to view a tree through a mask (or layer) that contains user defined data (NAG codes, color markers, comments)
   * visible only if a Mask file (*.msk) is opened
