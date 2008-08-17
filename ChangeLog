@@ -529,3 +529,7 @@ scid-3.6.25
 - UCI engine output :
   * display mate indicator in multi variations (M5 instead of +327.00)
   * added move numbers in multi variation lines
+- Tree window : added the ability to view a tree through a mask (or layer) that contains user defined data (NAG codes, color markers, comments)
+  * visible only if a Mask file (*.msk) is opened
+  * the mask can be automatically with a game (as much data as possible will be imported, like variations, NAG codes, comments)
+  

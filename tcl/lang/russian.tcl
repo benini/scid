@@ -517,6 +517,18 @@ menuText R TreeFileGraph "Окно графика" 0 {Показать график для ветви этого дерев
 menuText R TreeFileCopy "Скопировать текст дерева в буфер" 1 \
   {Скопировать статистику дерева в буфер}
 menuText R TreeFileClose "Закрыть окно дерева" 4 {Закрыть окно дерева}
+# ====== TODO To be translated ======
+menuText R TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText R TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText R TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText R TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText R TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText R TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText R TreeSort "Сортировка" 0
 menuText R TreeSortAlpha "Алфавитная" 0
 menuText R TreeSortECO "По коду ECO" 3
@@ -1841,16 +1853,4 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

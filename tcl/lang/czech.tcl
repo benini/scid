@@ -508,6 +508,18 @@ menuText C TreeFileGraph "Okno grafu" 0 {Zobrazit graf pro tuto vìtev stromu}
 menuText C TreeFileCopy "Kopírovat text stromu do clipboardu" 0 \
   {Kopírovat stromové statistiky do textového výbìru}
 menuText C TreeFileClose "Zavøít stromové okno" 0 {Zavøít stromové okno}
+# ====== TODO To be translated ======
+menuText C TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText C TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText C TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText C TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText C TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText C TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText C TreeSort "Øadit" 2
 menuText C TreeSortAlpha "Abecednì" 0
 menuText C TreeSortECO "ECO kód" 0
@@ -5443,17 +5455,4 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
-
-
-
-
-
-
-
-
-
-
-
-
-
 

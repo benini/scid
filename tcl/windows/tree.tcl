@@ -3,23 +3,24 @@
 ### TREE window
 ### (C) 2007 Pascal Georges : multiple Tree windows support
 
-namespace eval ::tree {}
-
-set ::tree::trainingBase 0
-array set ::tree::cachesize {}
-
+namespace eval ::tree {
+  set trainingBase 0
+  array set cachesize {}
+}
 # ################################################################################
 proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   if {! [winfo exists .treeWin$baseNumber]} { return }
   if {$lang == ""} { set lang $::language }
   set m .treeWin$baseNumber.menu
-  foreach idx {0 1 2 3} tag {File Sort Opt Help} {
+  foreach idx {0 1 2 3 4} tag {File Mask Sort Opt Help} {
     configMenuText $m $idx Tree$tag $lang
   }
   foreach idx {0 1 2 3 4 5 7 8 10 12} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Best Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
-  
+  foreach idx {0 1 2 3 4} tag {New Open Save Close FillWithGame} {
+    configMenuText $m.mask $idx TreeMask$tag $lang
+  }
   foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
     configMenuText $m.sort $idx TreeSort$tag $lang
   }
@@ -40,15 +41,7 @@ proc ::tree::ConfigMenus { { lang "" } } {
 ################################################################################
 proc ::tree::menuCopyToSelection { baseNumber } {
   clipboard clear
-  clipboard append [::tree::copyToSelection $baseNumber]
-  # selection own .treeWin$baseNumber.f.tl
-  # selection get
-}
-################################################################################
-proc ::tree::copyToSelection { baseNumber } {
-  set sel [join [.treeWin$baseNumber.f.tl get 0 end] "\n"]
-  append sel "\n"
-  return $sel
+  clipboard append [ .treeWin$baseNumber.f.tl get 1.0 end ]
 }
 ################################################################################
 proc ::tree::treeFileSave {base} {
@@ -98,10 +91,11 @@ proc ::tree::make { { baseNumber -1 } } {
   menu $w.menu
   $w configure -menu $w.menu
   $w.menu add cascade -label TreeFile -menu $w.menu.file
+  $w.menu add cascade -label TreeMask -menu $w.menu.mask
   $w.menu add cascade -label TreeSort -menu $w.menu.sort
   $w.menu add cascade -label TreeOpt  -menu $w.menu.opt
   $w.menu add cascade -label TreeHelp -menu $w.menu.helpmenu
-  foreach i {file sort opt helpmenu} {
+  foreach i {file mask sort opt helpmenu} {
     menu $w.menu.$i -tearoff 0
   }
   
@@ -138,6 +132,17 @@ proc ::tree::make { { baseNumber -1 } } {
   $w.menu.file add command -label TreeFileClose -command ".treeWin$baseNumber.buttons.close invoke"
   set helpMessage($w.menu.file,12) TreeFileClose
   
+  $w.menu.mask add command -label TreeMaskNew -command "::tree::mask::new"
+  set helpMessage($w.menu.mask,0) TreeMaskNew
+  $w.menu.mask add command -label TreeMaskOpen -command "::tree::mask::open"
+  set helpMessage($w.menu.mask,1) TreeMaskOpen
+  $w.menu.mask add command -label TreeMaskSave -command "::tree::mask::save"
+  set helpMessage($w.menu.mask,2) TreeMaskSave
+  $w.menu.mask add command -label TreeMaskClose -command "::tree::mask::close"
+  set helpMessage($w.menu.mask,3) TreeMaskClose
+  $w.menu.mask add command -label TreeMaskFillWithGame -command "::tree::mask::fillWithGame"
+  set helpMessage($w.menu.mask,4) TreeMaskFillWithGame
+  
   foreach label {Alpha ECO Freq Score} value {alpha eco frequency score} {
     $w.menu.sort add radiobutton -label TreeSort$label \
         -variable tree(order$baseNumber) -value $value -command " ::tree::refresh $baseNumber "
@@ -170,10 +175,14 @@ proc ::tree::make { { baseNumber -1 } } {
   
   ::tree::doConfigMenus $baseNumber
   
-  autoscrollframe $w.f listbox $w.f.tl \
-      -width $::winWidth(.treeWin) -height $::winHeight(.treeWin) \
-      -font font_Fixed -foreground black -background white \
-      -selectmode browse -setgrid 1
+  autoscrollframe $w.f text $w.f.tl \
+      -width $::winWidth(.treeWin) -height $::winHeight(.treeWin) -wrap none \
+      -font font_Fixed -foreground black -background white -setgrid 1 -exportselection 1
+  #define default tags
+  $w.f.tl tag configure greybg -background #fa1cfa1cfa1c
+  $w.f.tl tag configure whitebg -background white
+  $w.f.tl tag configure bluefg -foreground blue
+  
   canvas $w.progress -width 250 -height 15 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   selection handle $w.f.tl "::tree::copyToSelection $baseNumber"
@@ -184,6 +193,10 @@ proc ::tree::make { { baseNumber -1 } } {
     set bn ""
     scan $win ".treeWin%%d.f.tl" bn
     ::tree::closeTree $tree(base$bn)
+    set mctxt $win.ctxtMenu
+    if { [winfo exists $mctxt] } {
+      destroy $mctxt
+    }
   }
   
   bind $w <Configure> "recordWinSize $w"
@@ -222,24 +235,48 @@ proc ::tree::make { { baseNumber -1 } } {
   
   wm minsize $w 40 5
   
-  bind $w.f.tl <Return> " tree::select [lindex [ .treeWin$baseNumber.f.tl curselection] 0] $baseNumber "
-  bind $w.f.tl <ButtonRelease-1> "[list selectCallback $baseNumber %y ] ; break"
+  # TODO
+  # bind $w.f.tl <Return> " tree::select [lindex [ .treeWin$baseNumber.f.tl curselection] 0] $baseNumber "
+  # bind $w.f.tl <ButtonRelease-1> "[list ::tree::selectCallback $baseNumber %y ] ; break"
   wm protocol $w WM_DELETE_WINDOW " .treeWin$baseNumber.buttons.close invoke "
   ::tree::refresh $baseNumber
   set ::tree::cachesize($baseNumber) [lindex [sc_tree cacheinfo $baseNumber] 1]
 }
 
 ################################################################################
-proc selectCallback { baseNumber line } {
+proc ::tree::selectCallback { baseNumber move } {
   
   if { $::tree(refresh) } {
     return
   }
   
   if {$::tree(autorefresh$baseNumber)} {
-    .treeWin$baseNumber.f.tl selection clear 0 end
-    tree::select [ .treeWin$baseNumber.f.tl nearest $line ] $baseNumber
-    .treeWin$baseNumber.f.tl selection clear 0 end
+    # TODO
+    # .treeWin$baseNumber.f.tl selection clear 0 end
+    # find the line clicked
+    # scan [.treeWin$baseNumber.f.tl index end] "%d.%d" lastl lastc
+    # puts "lastl lastc $lastl $lastc"
+    # set nearest -1
+    # for {set l 2} {$l < $lastl} {incr l} {
+    # set box [ .treeWin$baseNumber.f.tl bbox $l.0]
+    # set y [lindex $box 1]
+    # set w [lindex $box 3]
+    # if { $line >= $y && $line <= [expr $y + $w]} {
+    # set nearest $l
+    # break
+    # }
+    # }
+    #
+    # if {$nearest == -1} {
+    # return
+    # }
+    #
+    # incr nearest -1
+    # puts "nearest $nearest"
+    # tree::select [ .treeWin$baseNumber.f.tl nearest $line ] $baseNumber
+    tree::select $move $baseNumber
+    # TODO
+    # .treeWin$baseNumber.f.tl selection clear 0 end
   }
 }
 
@@ -333,19 +370,20 @@ proc ::tree::toggleLock { baseNumber } {
 }
 
 ################################################################################
-proc ::tree::select { selection baseNumber } {
+proc ::tree::select { move baseNumber } {
   global tree
   
   if {! [winfo exists .treeWin$baseNumber]} { return }
-  .treeWin$baseNumber.f.tl selection clear 0 end
-  if {$selection == 0} {
-    sc_move back
-    updateBoard -pgn
-    return
-  }
+  # TODO
+  # .treeWin$baseNumber.f.tl selection clear 0 end
+  # if {$selection == 0} {
+  # sc_move back
+  # updateBoard -pgn
+  # return
+  # }
   
-  set move [sc_tree move $baseNumber $selection]
-  if {$move == ""} { return }
+  # set move [sc_tree move $baseNumber $selection]
+  # if {$move == ""} { return }
   addSanMove $move -animate
 }
 
@@ -399,15 +437,7 @@ proc ::tree::dorefresh { baseNumber } {
   }
   
   set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode]
-  set moves [split $moves "\n"]
-  set len [llength $moves]
-  $w.f.tl delete 0 end
-  for { set i 0 } { $i < $len } { incr i } {
-    $w.f.tl insert end [lindex $moves $i]
-    if {[expr $i % 2] && $i < [expr $len -3] } {
-      $w.f.tl itemconfigure $i -background #fa1cfa1cfa1c
-    }
-  }
+  displayLines $baseNumber $moves
   
   if {[winfo exists .treeBest$baseNumber]} { ::tree::best $baseNumber}
   
@@ -416,13 +446,7 @@ proc ::tree::dorefresh { baseNumber } {
     ::tree::status "" $baseNumber
     sc_progressBar $w.progress bar 251 16
     set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode 0]
-    set moves [split $moves "\n"]
-    set len [llength $moves]
-    $w.f.tl delete 0 end
-    for { set i 0 } { $i < $len } { incr i } {
-      $w.f.tl insert end [lindex $moves $i]
-    }
-    
+    displayLines $baseNumber $moves
   }
   # ========================================
   
@@ -437,7 +461,8 @@ proc ::tree::dorefresh { baseNumber } {
   set tree(refresh) 0
   
   $w.f.tl configure -cursor {}
-  $w.f.tl selection clear 0 end
+  # TODO
+  # $w.f.tl selection clear 0 end
   
   ::tree::status "" $baseNumber
   set glstart 1
@@ -447,6 +472,79 @@ proc ::tree::dorefresh { baseNumber } {
   updateTitle
 }
 
+################################################################################
+#
+################################################################################
+proc ::tree::displayLines { baseNumber moves } {
+  global ::tree::mask::maskFile
+  set w .treeWin$baseNumber
+  
+  set moves [split $moves "\n"]
+  
+  # for the graph display
+  set ::tree::treeData$baseNumber $moves
+  
+  set len [llength $moves]
+  $w.f.tl delete 1.0 end
+  
+  foreach t [$w.f.tl tag names] {
+    if { [ string match "tagclick*" $t ] } {
+      $w.f.tl tag delete $t
+    }
+  }
+  
+  # Position comment
+  if { $maskFile != "" } {
+    set posComment [::tree::mask::getPositionComment]
+    if {$posComment != ""} {
+      $w.f.tl insert end "$posComment\n" bluefg
+    }
+  }
+  for { set i 0 } { $i < [expr $len - 1 ] } { incr i } {
+    set line [lindex $moves $i]
+    if {$line == ""} { continue }
+    set move [lindex $line 1]
+    set move [::untrans $move]
+    set tagfg ""
+    
+    if { $maskFile != "" && $i > 0 && $i < [expr $len - 3] } {
+      if { [::tree::mask::moveExists $move] } {
+        set tagfg "bluefg"
+      }
+    }
+    if { $maskFile != "" } {
+      if { $i > 0 && $i < [expr $len - 3] } {
+        # color tag
+        $w.f.tl tag configure color$i -background [::tree::mask::getColor $move]
+        $w.f.tl insert end "  " color$i
+        # NAG tag
+        $w.f.tl insert end [::tree::mask::getNag $move]
+        # Move comment
+        set comment [::tree::mask::getComment $move]
+        if {$comment != ""} {
+          append line " $comment"
+        }
+      } else  {
+        $w.f.tl insert end "    "
+      }
+      
+    }
+    if {[expr $i % 2] && $i < [expr $len -3] } {
+      $w.f.tl insert end "$line\n" [list greybg $tagfg tagclick$i]
+    } else  {
+      $w.f.tl insert end "$line\n" [list whitebg $tagfg tagclick$i]
+    }
+    
+    if {$move != "" && $move != "---" && $i != [expr $len -2] && $i != 0} {
+      $w.f.tl tag bind tagclick$i <Button-1> "[list ::tree::selectCallback $baseNumber $move ] ; break"
+      if { $maskFile != "" } {
+        # Bind right button to popup a contextual menu:
+        $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
+      }
+    }
+  }
+  
+}
 ################################################################################
 proc ::tree::status { msg baseNumber } {
   
@@ -668,8 +766,7 @@ proc ::tree::best { baseNumber } {
     ::utils::pane::SetRange $w.pane 0.3 0.8
     pack $pane -side top -expand true -fill both
     scrollbar $pane.blist.ybar -command "$pane.blist.list yview" -takefocus 0
-    listbox $pane.blist.list -background white \
-        -yscrollcommand "$pane.blist.ybar set" -font font_Small
+    listbox $pane.blist.list -background white -yscrollcommand "$pane.blist.ybar set" -font font_Small
     pack $pane.blist.ybar -side right -fill y
     pack $pane.blist.list -side left -fill both -expand yes
     bind $pane.blist.list <<ListboxSelect>> "::tree::bestPgn $baseNumber"
@@ -783,8 +880,7 @@ proc ::tree::bestPgn { baseNumber } {
     }
     $t insert end " "
   }
-  #catch {$t insert end [sc_game pgn -base $base -game $g \
-  #                        -short 1 -indentC 1 -indentV 1 -symbol 1 -tags 0]}
+  
   $t configure -state disabled
 }
 
@@ -843,7 +939,8 @@ proc ::tree::graph { baseNumber } {
   set othersScore 0.0
   set mean 50.0
   set totalGames 0
-  set treeData [.treeWin$baseNumber.f.tl get 0 end]
+  set treeData [subst $[subst {::tree::treeData$baseNumber} ] ]
+  # [.treeWin$baseNumber.f.tl get 0 end]
   
   set numTreeLines [llength $treeData]
   set totalLineIndex [expr $numTreeLines - 2]
@@ -970,10 +1067,12 @@ proc ::tree::primeWithBase {} {
 ################################################################################
 #
 ################################################################################
-proc ::tree::primeWithGame {} {
+proc ::tree::primeWithGame { { fillMask 0 } } {
   set ::tree::totalMoves [countBaseMoves "singleGame" ]
   sc_move start
   updateBoard -pgn
+  if {$fillMask} { ::tree::mask::feedMask [ sc_pos fen ] }
+  
   set ::tree::parsedMoves 0
   set ::tree::cancelPrime 0
   progressWindow "Scid: [tr TreeFileFill]" "$::tree::totalMoves moves" $::tr(Cancel) {
@@ -984,7 +1083,7 @@ proc ::tree::primeWithGame {} {
   }
   resetProgressWindow
   leftJustifyProgressWindow
-  ::tree::parseGame
+  ::tree::parseGame $fillMask
   closeProgressWindow
   updateBoard -pgn
 }
@@ -992,7 +1091,7 @@ proc ::tree::primeWithGame {} {
 ################################################################################
 # parse one game and fill the list
 ################################################################################
-proc ::tree::parseGame {} {
+proc ::tree::parseGame {{ fillMask 0 }} {
   if {$::tree::cancelPrime } { return  }
   ::tree::refresh
   if {$::tree::cancelPrime } { return }
@@ -1002,17 +1101,21 @@ proc ::tree::parseGame {} {
     # Go through all variants
     for {set v 0} {$v<[sc_var count]} {incr v} {
       # enter each var (beware the first move is played)
+      set fen [ sc_pos fen ]
       sc_var enter $v
       updateBoard -pgn
+      if {$fillMask} { ::tree::mask::feedMask $fen }
       if {$::tree::cancelPrime } { return }
       ::tree::refresh
       if {$::tree::cancelPrime } { return }
-      ::tree::parseVar
+      ::tree::parseVar $fillMask
       if {$::tree::cancelPrime } { return }
     }
     # now treat the main line
+    set fen [ sc_pos fen ]
     sc_move forward
     updateBoard -pgn
+    if {$fillMask} { ::tree::mask::feedMask $fen }
     incr ::tree::parsedMoves
     if {$::tree::cancelPrime } { return }
     ::tree::refresh
@@ -1022,21 +1125,26 @@ proc ::tree::parseGame {} {
 ################################################################################
 # parse recursively variants.
 ################################################################################
-proc ::tree::parseVar {} {
+proc ::tree::parseVar {{ fillMask 0 }} {
   while {![sc_pos isAt vend]} {
     # Go through all variants
     for {set v 0} {$v<[sc_var count]} {incr v} {
+      set fen [ sc_pos fen ]
       sc_var enter $v
       updateBoard -pgn
+      if {$fillMask} { ::tree::mask::feedMask $fen }
       if {$::tree::cancelPrime } { return }
       ::tree::refresh
       if {$::tree::cancelPrime } { return }
       # we are at the start of a var, before the first move : start recursive calls
-      parseVar
+      parseVar $fillMask
       if {$::tree::cancelPrime } { return }
     }
+    
+    set fen [ sc_pos fen ]
     sc_move forward
     updateBoard -pgn
+    if {$fillMask} { ::tree::mask::feedMask $fen }
     incr ::tree::parsedMoves
     updateProgressWindow $::tree::parsedMoves $::tree::totalMoves
     if {$::tree::cancelPrime } { return }
@@ -1092,5 +1200,465 @@ proc ::tree::countBaseMoves { {args ""} } {
 
 ################################################################################
 #
+#                                 Mask namespace
+#
+#  All function calls with move in english
 ################################################################################
+namespace eval ::tree::mask {
+  # list of (fen (moves) position_annotation )
+  # where moves is ( move nag color move_anno )
+  set mask {}
+  set maskFile ""
+  set defaultColor white
+  set emptyNag "  "
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::open {} {
+  set types {
+    {{Tree Mask Files}       {.msk}        }
+  }
+  set filename [tk_getOpenFile -filetypes $types -defaultextension ".msk"]
+  
+  if {$filename != ""} {
+    source $filename
+    set ::tree::mask::maskFile $filename
+    ::tree::refresh
+  }
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::new {} {
+  set types {
+    {{Tree Mask Files}       {.msk}        }
+  }
+  set filename [tk_getSaveFile -filetypes $types -defaultextension ".msk"]
+  
+  if {$filename != ""} {
+    set ::tree::mask::maskFile $filename
+    set ::tree::mask::mask {}
+    ::tree::refresh
+  }
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::close {} {
+  set ::tree::mask::mask {}
+  set ::tree::mask::maskFile ""
+  ::tree::refresh
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::save {} {
+  set f [ ::open $::tree::mask::maskFile w ]
+  puts $f "set ::tree::mask::mask [list $::tree::mask::mask]"
+  ::close $f
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::contextMenu {win move x y xc yc} {
+  
+  update idletasks
+  
+  set mctxt $win.ctxtMenu
+  if { [winfo exists $mctxt] } {
+    destroy $mctxt
+  }
+  
+  menu $mctxt
+  $mctxt add command -label "Add to Mask" -command "::tree::mask::addToMask $move"
+  $mctxt add command -label "Remove from Mask" -command "::tree::mask::removeFromMask $move"
+  $mctxt add separator
+  $mctxt add command -label "White" -background white -command "::tree::mask::setColor $move white"
+  $mctxt add command -label "Green" -background green -command "::tree::mask::setColor $move green"
+  $mctxt add command -label "Yellow" -background yellow -command "::tree::mask::setColor $move yellow"
+  $mctxt add command -label "Blue" -background blue -command "::tree::mask::setColor $move blue"
+  $mctxt add command -label "Red" -background red -command "::tree::mask::setColor $move red"
+  $mctxt add separator
+  foreach nag { "!!" " !" "!?" "?!" "??" " ~"} {
+    $mctxt add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
+  }
+  $mctxt add separator
+  $mctxt add command -label "Comment move" -command "::tree::mask::addComment $move"
+  $mctxt add command -label "Comment position" -command "::tree::mask::addComment"
+  # $mctxt add separator
+  # $mctxt add command -label "Move at top" -command "::tree::mask::move $move top"
+  
+  $mctxt post [winfo pointerx .] [winfo pointery .]
+  grab $mctxt
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::addToMask { move {fen ""} } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    lappend mask [ list $fen {} {} ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  if {[lsearch $moves $move] == -1} {
+    lappend moves [list $move {} $::tree::mask::defaultColor {}]
+    set newpos [lreplace $pos 1 1 $moves]
+    set mask [ lreplace $mask $idx $idx $newpos ]
+    ::tree::refresh
+  }
+  set mask [ lsort -index 0 $mask ]
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::removeFromMask { move {fen ""} } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return
+  }
+  
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm != -1} {
+    set moves [lreplace $moves $idxm $idxm]
+    lset pos 1 $moves
+    lset mask $idx $pos
+    ::tree::refresh
+  }
+  
+}
+################################################################################
+# returns 1 if the move is already in mask
+################################################################################
+proc ::tree::mask::moveExists { move {fen ""} } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return 0
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  if {[lsearch -regexp $moves "^$move *"] == -1} {
+    return 0
+  }
+  return 1
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::getColor { move {fen ""}} {
+  global ::tree::mask::mask
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return $::tree::mask::defaultColor
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    return $::tree::mask::defaultColor
+  }
+  set col [ lindex $moves $idxm 2 ]
+  
+  return $col
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::setColor { move color {fen ""}} {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set newmove [lreplace [lindex $moves $idxm] 2 2 $color ]
+  set moves [lreplace $moves $idxm $idxm $newmove ]
+  set newpos [ lreplace $pos 1 1 $moves ]
+  set mask [ lreplace $mask $idx $idx $newpos ]
+  ::tree::refresh
+}
+################################################################################
+# defaults to "  " (2 spaces)
+################################################################################
+proc ::tree::mask::getNag { move { fen "" }} {
+  global ::tree::mask::mask ::tree::mask::emptyNag
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return $emptyNag
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    return $emptyNag
+  }
+  set nag [ lindex $moves $idxm 1 ]
+  if {$nag == ""} {
+    set nag $emptyNag
+  }
+  return $nag
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::setNag { move nag {fen ""} } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set newmove [lreplace [lindex $moves $idxm] 1 1 $nag ]
+  set moves [lreplace $moves $idxm $idxm $newmove ]
+  set newpos [ lreplace $pos 1 1 $moves ]
+  set mask [ lreplace $mask $idx $idx $newpos ]
+  ::tree::refresh
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::getComment { move { fen "" } } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return ""
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    return ""
+  }
+  set nag [ lindex $moves $idxm 3 ]
+  if {$nag == ""} {
+    set nag "  "
+  }
+  return $nag
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::setComment { move comment { fen "" } } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set newmove [lreplace [lindex $moves $idxm] 3 3 $comment ]
+  set moves [lreplace $moves $idxm $idxm $newmove ]
+  set newpos [ lreplace $pos 1 1 $moves ]
+  set mask [ lreplace $mask $idx $idx $newpos ]
+  ::tree::refresh
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::getPositionComment {{fen ""}} {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return ""
+  }
+  set pos [ lindex $mask $idx ]
+  set comment [ lindex $pos 2 ]
+  return $comment
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::setPositionComment { comment {fen ""} } {
+  global ::tree::mask::mask
+  
+  if {$fen == ""} {
+    set fen [ toShortFen [sc_pos fen] ]
+  }
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  
+  set pos [ lindex $mask $idx ]
+  set newpos [ lreplace $pos 2 2 $comment ]
+  set mask [ lreplace $mask $idx $idx $newpos ]
+  ::tree::refresh
+}
+################################################################################
+# if move is null, this is a position comment
+################################################################################
+proc ::tree::mask::addComment { { move "" } } {
+  set w .treeMaskAddComment
+  toplevel .treeMaskAddComment
+  if {$move == ""} {
+    set oldComment [::tree::mask::getPositionComment]
+  } else  {
+    set oldComment [::tree::mask::getComment $move ]
+  }
+  set oldComment [ string trim $oldComment ]
+  entry $w.e -width 40
+  $w.e insert end $oldComment
+  button $w.ok -text OK -command "::tree::mask::updateComment $move ; destroy $w ; ::tree::refresh"
+  pack $w.e $w.ok
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::updateComment { { move "" } } {
+  set e .treeMaskAddComment.e
+  set newComment [$e get]
+  if {$move == ""} {
+    ::tree::mask::setPositionComment $newComment
+  } else  {
+    ::tree::mask::setComment $move $newComment
+  }
+}
 
+################################################################################
+#
+################################################################################
+proc ::tree::mask::fillWithGame {} {
+  if {$::tree::mask::maskFile == ""} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Open a mask file first"
+    return
+  }
+  ::tree::primeWithGame 1
+}
+################################################################################
+# Take current position information and fill the mask (move, nag, comments, etc)
+################################################################################
+proc ::tree::mask::feedMask { fen } {
+  set stdNags { "!!" "!" "!?" "?!" "??" "~"}
+  set fen [toShortFen $fen]
+  set move [sc_game info previousMoveNT]
+  set comment [sc_pos getComment $fen ]
+  
+  if {$move == ""} {
+    set move "null"
+  }
+  
+  # add move if not in mask
+  if { ![moveExists $move $fen]} {
+    addToMask $move $fen
+  }
+  
+  if {$move == "null"} {
+    set comment "$comment [getPositionComment]"
+    setPositionComment $comment $fen
+    return
+  }
+  
+  # NAG
+  set nag [string trim [sc_pos getNags]]
+  if {$nag == 0} { set nag "" }
+  if {$nag != ""} {
+    # append the NAGs to comment if not standard
+    if {[lsearch $stdNags $nag ] == -1 } {
+      set comment "$nag $comment"
+      set nag ""
+    } else  {
+      set oldNag [getNag $move]
+      if {$oldNag != $::tree::mask::emptyNag && $oldNag != $nag} {
+        set comment "<$oldNag>(?!?) $comment"
+      }
+      setNag $move $nag $fen
+    }
+  }
+  
+  # append comment
+  set oldComment [getComment $move $fen]
+  if { $oldComment != "" && $oldComment != $comment } {
+    set comment "$comment $oldComment"
+  }
+  setComment $move $comment $fen
+  
+}
+################################################################################
+#  trim the fen to keep position data only
+################################################################################
+proc ::tree::mask::toShortFen {fen} {
+  set ret [lreplace $fen end-1 end]
+  return $ret
+}
+################################################################################
+#
+################################################################################

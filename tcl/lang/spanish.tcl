@@ -483,6 +483,18 @@ menuText S TreeFileCopy "Copiar texto del árbol al clipboard" 1 \
   {Copiar texto del árbol al clipboard}
 menuText S TreeFileClose "Cerrar ventana del árbol" 0 \
   {Cerrar ventana del árbol}
+# ====== TODO To be translated ======
+menuText S TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText S TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText S TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText S TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText S TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText S TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText S TreeSort "Ordenar" 0
 menuText S TreeSortAlpha "Alfabéticamente" 0
 menuText S TreeSortECO "Por código ECO" 11
@@ -1511,11 +1523,4 @@ translate S CCHelpBtn {Help on icons and status indicators.\nFor general Help pr
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
-
-
-
-
-
-
-
 

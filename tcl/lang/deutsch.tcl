@@ -493,6 +493,18 @@ menuText D TreeFileGraph "Grafikfenster" 0 \
 menuText D TreeFileCopy "Kopiere Baumfenster in Zwischenablage" 0 \
   {Kopiere die Zugbaum-Statistik in die Zwischenablage}
 menuText D TreeFileClose "Baumfenster schließen" 12 {Schließe Zugbaum}
+# ====== TODO To be translated ======
+menuText D TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText D TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText D TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText D TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText D TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText D TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
 menuText D TreeSortECO "ECO-Code" 0
@@ -7021,16 +7033,4 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -511,6 +511,18 @@ menuText H TreeFileGraph "Grafikon" 0 {Megmutatja ennek a faágnak a grafikonját.
 menuText H TreeFileCopy "Szöveg másolása a vágólapra" 0 \
   {A kiírt statisztikai adatokat a vágólapra másolja.}
 menuText H TreeFileClose "Faablak bezárása" 10 {Bezárja a faszerkezet-ablakot.}
+# ====== TODO To be translated ======
+menuText H TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText H TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText H TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText H TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText H TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText H TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText H TreeSort "Rendezés" 0
 menuText H TreeSortAlpha "ABC" 0
 menuText H TreeSortECO "ECO-kód" 0
@@ -2038,16 +2050,4 @@ set tips(H) {
 }
 
 # end of hungary.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

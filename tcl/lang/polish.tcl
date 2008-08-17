@@ -519,6 +519,18 @@ menuText P TreeFileGraph "Poka¿ wykres" 0 {Poka¿ wykres dla tej ga³êzi drzewa}
 menuText P TreeFileCopy "Kopiuj drzewo do schowka" 0 \
   {Skopiuj drzewo ze statystykami do schowka}
 menuText P TreeFileClose "Zamknij" 0 {Zamknij okno drzewa}
+# ====== TODO To be translated ======
+menuText P TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText P TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText P TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText P TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText P TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText P TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText P TreeSort "Sortowanie" 0
 menuText P TreeSortAlpha "Alfabetycznie" 0
 menuText P TreeSortECO "Kod ECO" 0
@@ -2039,16 +2051,4 @@ set tips(P) {
 }
 
 # end of polish.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

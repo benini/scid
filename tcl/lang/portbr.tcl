@@ -519,6 +519,18 @@ menuText B TreeFileGraph "Janela de Grafico" 0 \
 menuText B TreeFileCopy "Copiar texto da arvore para a area de transferencia" \
   1 {Copiar texto da arvore para a area de transferencia}
 menuText B TreeFileClose "Fechar janela de arvore" 0 {Fechar janela de arvore}
+# ====== TODO To be translated ======
+menuText B TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText B TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText B TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText B TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText B TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText B TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText B TreeSort "Ordenar" 0
 menuText B TreeSortAlpha "Alfabetica" 0
 menuText B TreeSortECO "ECO" 0
@@ -1818,16 +1830,4 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

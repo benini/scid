@@ -515,6 +515,18 @@ menuText O TreeFileGraph "Grafikk" 0 {Vis grafen for denne grenen av treet}
 menuText O TreeFileCopy "Kopier treet til utklippstavlen" 0 \
   {Kopier statistikken for treet til utklippstavlen}
 menuText O TreeFileClose "Lukk trevindu" 0 {Lukker trevinduet}
+# ====== TODO To be translated ======
+menuText O TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText O TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText O TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText O TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText O TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText O TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText O TreeSort "Sorter" 0
 menuText O TreeSortAlpha "Alfabetisk" 0
 menuText O TreeSortECO "ECO-kode" 0
@@ -1812,16 +1824,4 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
-
-
-
-
-
-
-
-
-
-
-
-
 

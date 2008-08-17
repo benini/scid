@@ -527,6 +527,18 @@ menuText N TreeFileGraph "Grafiek-venster" 0 \
 menuText N TreeFileCopy "Kopieer boom tekst naar klembord" 0 \
   {Kopieren van de boomstatistieken naar het klembord}
 menuText N TreeFileClose "Zoekboom venster sluiten" 0 {Sluiten van het zoekboom venster}
+# ====== TODO To be translated ======
+menuText N TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText N TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText N TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText N TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText N TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText N TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText N TreeSort "Sorteren" 0
 menuText N TreeSortAlpha "Alfabetisch" 0
 menuText N TreeSortECO "ECO code" 0
@@ -1806,16 +1818,4 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

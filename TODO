@@ -3,6 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+Afficher les coups qui ne sont pas dans l'arbre mais dans mask
 
  ===========================================================
 |                                                           |
@@ -29,7 +30,7 @@ Possible improvements (perhaps not bugs, but awkward)
 
 - Option to set engines as 1st and 2nd default engines
 
-- Set a Tree mask to filter displayed moces, color for moves / positions, flags, etc
+- Set a Tree mask to filter displayed moves, color for moves / positions, flags, etc
 
 - Add a Game training ala Fritz' "Friend mode"
 

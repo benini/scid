@@ -515,6 +515,18 @@ menuText W TreeFileGraph "Diagramfönster" 0 {Visa diagrammet för denna gren i tr
 menuText W TreeFileCopy "Kopiera träd till urklipp" 1 \
   {Kopierar trädrelaterad statistik till urklipp}
 menuText W TreeFileClose "Stäng trädfönstret" 0 {Stäng trädfönstret}
+# ====== TODO To be translated ======
+menuText W TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText W TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText W TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText W TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText W TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText W TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText W TreeSort "Sortera" 0
 menuText W TreeSortAlpha "Alfabetiskt" 0
 menuText W TreeSortECO "ECO kod" 0
@@ -6829,16 +6841,4 @@ set tips(W) {
   }
 }
 #}
-
-
-
-
-
-
-
-
-
-
-
-
 

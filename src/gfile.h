@@ -22,9 +22,7 @@
 #include "bytebuf.h"
 #include "mfile.h"
 
-// The GFile block size is 32 kilobytes: (now *16)
-//PG : GF_BLOCKSIZE increased of would lead to a segfault importing games with a lot of comments/garbage
-// Had to go back to original values due to bad performance
+// The GFile block size is 32 kilobytes:
 #ifdef WINCE
 #define GF_BLOCKSIZE  65536
 #else

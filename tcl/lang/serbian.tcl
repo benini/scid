@@ -513,6 +513,18 @@ menuText Y TreeFileGraph "Prozor grafika" 0 {Prika¾i grafik za ovu granu stabla}
 menuText Y TreeFileCopy "Kopiraj tekst stabla u clipboard" 0 \
   {Kopiraj statistike stabla u clipboard}
 menuText Y TreeFileClose "Zatvori stablo varijanata" 0 {Zatvori prozor stabla}
+# ====== TODO To be translated ======
+menuText Y TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText Y TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText Y TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText Y TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText Y TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText Y TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText Y TreeSort "Sortiraj" 0
 menuText Y TreeSortAlpha "Abecedno" 0
 menuText Y TreeSortECO "E©O kôd" 0
@@ -1812,16 +1824,4 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

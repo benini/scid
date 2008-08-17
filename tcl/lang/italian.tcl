@@ -468,6 +468,18 @@ menuText I TreeFileCopy "Copia il testo dell'albero nella clipboard" 1 \
   {Copia le statistiche dell'albero nella clipboard}
 menuText I TreeFileClose "Chiudi la finestra dell'albero" 0 \
   {Chiudi la finestra dell'albero}
+# ====== TODO To be translated ======
+menuText I TreeMask "Mask" 0
+# ====== TODO To be translated ======
+menuText I TreeMaskNew "New" 0 {New mask}
+# ====== TODO To be translated ======
+menuText I TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText I TreeMaskSave "Save" 0 {Save mask}
+# ====== TODO To be translated ======
+menuText I TreeMaskClose "Close" 0 {Close mask}
+# ====== TODO To be translated ======
+menuText I TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText I TreeSort "Ordina" 0
 menuText I TreeSortAlpha "Alfabetico" 0
 menuText I TreeSortECO "codice ECO" 0
@@ -1726,16 +1738,4 @@ set tips(I) {
 
 
 # end of italian.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 

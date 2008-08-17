@@ -465,6 +465,12 @@ menuText F TreeFileBest "Liste des meilleures parties" 0 {Montrer la liste des m
 menuText F TreeFileGraph "Graphique" 0 {Graphique de l'arbre}
 menuText F TreeFileCopy "Copier l'arbre dans le presse-papiers" 0
 menuText F TreeFileClose "Fermer la fenêtre d'arbre" 0
+menuText F TreeMask "Masque" 0
+menuText F TreeMaskNew "Nouveau" 0 {Nouveau masque}
+menuText F TreeMaskOpen "Ouvrir" 0 {Ouvrir masque}
+menuText F TreeMaskSave "Sauver" 0 {Sauver masque}
+menuText F TreeMaskClose "Fermer" 0 {Fermer masque}
+menuText F TreeMaskFillWithGame "Remplir avec partie" 0 {Remplir le masque avec partie}
 menuText F TreeSort "Trier" 0
 menuText F TreeSortAlpha "Alphabétique" 0
 menuText F TreeSortECO "code ECO" 0
@@ -1702,16 +1708,4 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
-
-
-
-
-
-
-
-
-
-
-
-
 
