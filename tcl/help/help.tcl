@@ -2033,7 +2033,10 @@ set helpText(Tree) {<h1>The Tree window</h1>
 
   <h3>Using a Mask file to configure display</h3>
   <p>
-  
+  An user defined Mask file (.stm) can be defined to change the way statistics are displayed
+  in the Tree window. When a Mask file is opened, Tree window changes. For each line in the 
+  Mask are displayed a color marker, a NAG code and a comment. A comment can also be entered 
+  for the position.
   </p>
   
   <h3>Caching for faster results</h3>
@@ -2071,7 +2074,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   adding or replacing a game, or sorting the database.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.24, May 2008)</footer></p>
+  <p><footer>(Updated: Scid 3.6.25, August 2008)</footer></p>
 }
 
 

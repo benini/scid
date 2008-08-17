@@ -88,6 +88,14 @@ namespace eval sergame {
       incr i
       incr idx
     }
+    
+    # if no engines defined, bail out
+    if {$i == 0} {
+      tk_messageBox -type ok -message "No UCI engine defined" -icon error      
+      destroy $w
+      return
+    }
+    
     $w.fengines.fEnginesList.lbEngines selection set 0
     
     # load book names

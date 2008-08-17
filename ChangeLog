@@ -498,6 +498,7 @@ scid-3.6.25
 	* GAME EDITOR : with comment editor opened, browsing a game would flagged it as "to be saved", even if there was no change in NAGS and comment values
 	* fixed tooltip display bug on MacOs (thanks to Israel Chauca)
 	* when info is available, the first line of engine window displays mate distance
+	* in case of engines not configured for some training stuff, added relevant error messages
 - Annotation : added an option "mark tactical exercises". The tactical flag will be set to the game and a comment with ****d<depth>sc<score>. This option is only available when annotating with an UCI engine.
 - Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature. Pressing the right mouse button on "goto last move" (">>") button will go to next tactical exercises. A training base of over 1500 games has been released (not included in Scid package).
 - added extra options to "sc_pos analyze" :

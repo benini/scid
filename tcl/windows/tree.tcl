@@ -477,7 +477,11 @@ proc ::tree::dorefresh { baseNumber } {
 ################################################################################
 proc ::tree::displayLines { baseNumber moves } {
   global ::tree::mask::maskFile
+  
+  set lMoves {}
   set w .treeWin$baseNumber
+
+$w.f.tl configure -state normal
   
   set moves [split $moves "\n"]
   
@@ -506,6 +510,8 @@ proc ::tree::displayLines { baseNumber moves } {
     set move [lindex $line 1]
     
     set move [::untrans $move]
+    lappend lMoves $move
+    
     set tagfg ""
     
     if { $maskFile != "" && $move != "\[end\]" && $i > 0 && $i < [expr $len - 3] } {
@@ -544,6 +550,35 @@ proc ::tree::displayLines { baseNumber moves } {
       }
     }
   }
+  
+  # Add moves present in Mask and not in Tree
+  set idx $len
+  if { $maskFile != "" } {
+    set movesMask [::tree::mask::getAllMoves]
+    foreach m $movesMask {
+      # move nag color move_anno
+      if {[lsearch $lMoves [lindex $m 0]] != -1 || [lindex $m 0] == "null"} {
+        continue
+      }
+      
+      $w.f.tl tag bind tagclick$idx <Button-1> "[list ::tree::selectCallback $baseNumber [lindex $m 0] ] ; break"
+      # Bind right button to popup a contextual menu:
+      $w.f.tl tag bind tagclick$idx <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl [lindex $m 0] %x %y %X %Y"
+      
+      # color tag
+      $w.f.tl tag configure color$idx -background [lindex $m 2]
+      $w.f.tl insert end "  " [ list color$idx tagclick$idx ]
+      # NAG tag
+      $w.f.tl insert end [::tree::mask::getNag [lindex $m 0]] tagclick$idx
+      # move
+      $w.f.tl insert end "[lindex $m 0] " [ list bluefg tagclick$idx ]
+      # comment
+      $w.f.tl insert end "[lindex $m 3]\n"
+      incr idx
+    }
+  }
+  
+  $w.f.tl configure -state disabled
   
 }
 ################################################################################
@@ -1367,6 +1402,22 @@ proc ::tree::mask::moveExists { move {fen ""} } {
   return 1
 }
 ################################################################################
+# return the list of moves with their data
+################################################################################
+proc ::tree::mask::getAllMoves {} {
+  global ::tree::mask::mask
+  
+  set fen [ toShortFen [sc_pos fen] ]
+  
+  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
+  if {$idx == -1} {
+    return ""
+  }
+  set pos [ lindex $mask $idx ]
+  set moves [ lindex $pos 1 ]
+  return $moves
+}
+################################################################################
 #
 ################################################################################
 proc ::tree::mask::getColor { move {fen ""}} {
@@ -1441,6 +1492,7 @@ proc ::tree::mask::getNag { move { fen "" }} {
   if {$nag == ""} {
     set nag $emptyNag
   }
+  if { [string length $nag] == 1} { set nag " $nag" }
   return $nag
 }
 ################################################################################
@@ -1491,11 +1543,11 @@ proc ::tree::mask::getComment { move { fen "" } } {
   if { $idxm == -1} {
     return ""
   }
-  set nag [ lindex $moves $idxm 3 ]
-  if {$nag == ""} {
-    set nag "  "
+  set comment [ lindex $moves $idxm 3 ]
+  if {$comment == ""} {
+    set comment "  "
   }
-  return $nag
+  return $comment
 }
 ################################################################################
 #

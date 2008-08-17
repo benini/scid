@@ -27,7 +27,7 @@ namespace eval calvar {
   set midmove ""
   
   set afterIdPosition 0
-  set afterIdLine 0  
+  set afterIdLine 0
   
   trace add variable ::calvar::working write { ::calvar::traceWorking }
   ################################################################################
@@ -97,6 +97,13 @@ namespace eval calvar {
     }
     $w.fengines.lbEngines selection set 0
     
+    # if no engines defined, bail out
+    if {$i == 0} {
+      tk_messageBox -type ok -message "No UCI engine defined" -icon error
+      destroy $w
+      return
+    }
+    
     # parameters setting
     set f $w.parameters
     frame $w.parameters
@@ -110,7 +117,7 @@ namespace eval calvar {
     label $f.lTime2 -text "Position thinking time"
     spinbox $f.sbTime2 -background white -width 3 -textvariable ::calvar::thinkingTimePosition -from 5 -to 300 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
     pack $f.lTime2 $f.sbTime2 -side left
-
+    
     frame $w.fbuttons
     pack $w.fbuttons
     button $w.fbuttons.start -text Start -command {
@@ -213,7 +220,7 @@ namespace eval calvar {
   ################################################################################
   proc stop { {n  4 } } {
     after cancel $::calvar::afterIdPosition
-    after cancel $::calvar::afterIdLine 
+    after cancel $::calvar::afterIdLine
     ::uci::closeUCIengine $n
     focus .
     destroy .calvarWin
@@ -295,9 +302,9 @@ namespace eval calvar {
   ################################################################################
   # we suppose FEN has not changed !
   ################################################################################
-  proc handleResult {moves nag fen {n 4} } {       
-        set comment ""
-        
+  proc handleResult {moves nag fen {n 4} } {
+    set comment ""
+    
     # append first move to the variations
     set firstmove [lindex $moves 0]
     for {set i 0 } {$i < [llength $::uci::uciInfo(pvlist$n)]} {incr i} {
@@ -307,10 +314,10 @@ namespace eval calvar {
       set elt [list [lindex $elt 0] [lindex $elt 1] $m ]
       lset ::uci::uciInfo(pvlist$n) $i $elt
     }
-        puts "==================================="
-        puts "handleResult $::uci::uciInfo(pvlist$n)"
-        puts "==================================="
-        
+    puts "==================================="
+    puts "handleResult $::uci::uciInfo(pvlist$n)"
+    puts "==================================="
+    
     set usermoves [::uci::formatPv $moves]
     puts "usermoves $usermoves moves (avant format) $moves"
     
@@ -442,7 +449,7 @@ namespace eval calvar {
         break
       }
     }
-    ::calvar::reset   
+    ::calvar::reset
   }
   ################################################################################
   # startAnalyze:
