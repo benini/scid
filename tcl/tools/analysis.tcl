@@ -1193,7 +1193,7 @@ proc addAnalysisVariation {{n 1}} {
   set moves $analysis(moves$n)
   if {$analysis(uci$n)} {
     set tmp_moves [ lindex [ lindex $analysis(multiPV$n) 0 ] 2 ]
-    set text [format "\[%s\] %d:%s" $analysis(name$n) $analysis(depth$n) [scoreToMate $analysis(score$n) $tmp_moves ]]
+    set text [format "\[%s\] %d:%s" $analysis(name$n) $analysis(depth$n) [scoreToMate $analysis(score$n) $tmp_moves $n]]
   } else  {
     set text [format "\[%s\] %d:%+.2f" $analysis(name$n) $analysis(depth$n) $analysis(score$n)]
   }
@@ -1252,7 +1252,7 @@ proc addAllVariations {{n 1}} {
     set moves [lindex $i 2]
     
     set tmp_moves [ lindex $j 2 ]
-    set text [format "\[%s\] %d:%s" $analysis(name$n) [lindex $i 0] [scoreToMate [lindex $i 1] $tmp_moves ]]
+    set text [format "\[%s\] %d:%s" $analysis(name$n) [lindex $i 0] [scoreToMate [lindex $i 1] $tmp_moves ] $n]
     
     if {$addAtEnd} {
       # get the last move of the game
@@ -2289,7 +2289,7 @@ proc updateAnalysisText {{n 1}} {
   if { $analysis(uci$n) } {
     if {$cleared} { set analysis(multiPV$n) {} ; set analysis(multiPVraw$n) {} }
     if {$analysis(multiPVCount$n) == 1} {
-      set newhst [format "%2d %s %s" $analysis(depth$n) [scoreToMate $score $moves] [addMoveNumbers [::trans $moves]]]
+      set newhst [format "%2d %s %s" $analysis(depth$n) [scoreToMate $score $moves $n] [addMoveNumbers [::trans $moves]]]
       if {$newhst != $analysis(lastHistory$n) && $moves != ""} {
         $h insert end [format "%s (%.2f)\n" $newhst $analysis(time$n)] indent
         $h see end-1c
@@ -2299,7 +2299,7 @@ proc updateAnalysisText {{n 1}} {
       $h delete 1.0 end
       # First line
       set pv [lindex $analysis(multiPV$n) 0]
-      catch { set newStr [format "%2d %s " [lindex $pv 0] [scoreToMate $score [lindex $pv 2]] ] }
+      catch { set newStr [format "%2d %s " [lindex $pv 0] [scoreToMate $score [lindex $pv 2] $n] ] }
       
       $h insert end "1 " gray
       append newStr "[addMoveNumbers [::trans [lindex $pv 2]]]\n"
@@ -2309,7 +2309,7 @@ proc updateAnalysisText {{n 1}} {
       foreach pv $analysis(multiPV$n) {
         if {$lineNumber == 1} { incr lineNumber ; continue }
         $h insert end "$lineNumber " gray
-        set score [scoreToMate [lindex $pv 1] [lindex $pv 2]]
+        set score [scoreToMate [lindex $pv 1] [lindex $pv 2] $n]
         $h insert end [format "%2d %s %s\n" [lindex $pv 0] $score [addMoveNumbers [::trans [lindex $pv 2]]] ] indent
         incr lineNumber
       }
@@ -2335,7 +2335,12 @@ proc updateAnalysisText {{n 1}} {
 # args = score, pv
 # returns M X if mate detected (# or ++) or original score
 ################################################################################
-proc scoreToMate { score pv } {
+proc scoreToMate { score pv n } {
+  
+  if {$::analysis(lockEngine$n)} {
+    return [format "%+5.2f" $score]
+  }
+  
   if { [string index $pv end] == "#" || [string index $pv end] == "+" && [string index $pv end-1] == "+"} {
     set plies [llength $pv]
     
@@ -2368,20 +2373,23 @@ proc scoreToMate { score pv } {
 }
 ################################################################################
 # returns the pv with move numbers added
+# ::pgn::moveNumberSpaces controls space between number and move
 ################################################################################
 proc addMoveNumbers { pv } {
+  set spc ""
+  if {$::pgn::moveNumberSpaces} { set spc " " }
   set n [sc_pos moveNumber]
   set ret ""
   set start 0
   if {[sc_pos side] == "black"} {
-    set ret "$n. ... [lindex $pv 0] "
+    set ret "$n.$spc... [lindex $pv 0] "
     set start 1
     incr n
   }
   for {set i $start} {$i < [llength $pv]} {incr i} {
     set m [lindex $pv $i]
     if { [expr $i % 2] == 0 && $start == 0 || [expr $i % 2] == 1 && $start == 1 } {
-      append ret "$n. $m "
+      append ret "$n.$spc$m "
     } else  {
       append ret "$m "
       incr n
