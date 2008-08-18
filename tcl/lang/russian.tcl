@@ -529,6 +529,8 @@ menuText R TreeMaskSave "Save" 0 {Save mask}
 menuText R TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText R TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText R TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText R TreeSort "Сортировка" 0
 menuText R TreeSortAlpha "Алфавитная" 0
 menuText R TreeSortECO "По коду ECO" 3
@@ -1853,4 +1855,5 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 

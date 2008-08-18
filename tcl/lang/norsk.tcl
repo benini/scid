@@ -527,6 +527,8 @@ menuText O TreeMaskSave "Save" 0 {Save mask}
 menuText O TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText O TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText O TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText O TreeSort "Sorter" 0
 menuText O TreeSortAlpha "Alfabetisk" 0
 menuText O TreeSortECO "ECO-kode" 0
@@ -1824,4 +1826,5 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 

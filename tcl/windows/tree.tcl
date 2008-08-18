@@ -18,7 +18,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3 4 5 7 8 10 12} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Best Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
-  foreach idx {0 1 2 3 4} tag {New Open Save Close FillWithGame} {
+  foreach idx {0 1 2 3 4 5} tag {New Open Save Close FillWithGame FillWithBase} {
     configMenuText $m.mask $idx TreeMask$tag $lang
   }
   foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
@@ -142,6 +142,8 @@ proc ::tree::make { { baseNumber -1 } } {
   set helpMessage($w.menu.mask,3) TreeMaskClose
   $w.menu.mask add command -label TreeMaskFillWithGame -command "::tree::mask::fillWithGame"
   set helpMessage($w.menu.mask,4) TreeMaskFillWithGame
+  $w.menu.mask add command -label TreeMaskFillWithBase -command "::tree::mask::fillWithBase"
+  set helpMessage($w.menu.mask,4) TreeMaskFillWithBase
   
   foreach label {Alpha ECO Freq Score} value {alpha eco frequency score} {
     $w.menu.sort add radiobutton -label TreeSort$label \
@@ -480,8 +482,8 @@ proc ::tree::displayLines { baseNumber moves } {
   
   set lMoves {}
   set w .treeWin$baseNumber
-
-$w.f.tl configure -state normal
+  
+  $w.f.tl configure -state normal
   
   set moves [split $moves "\n"]
   
@@ -492,7 +494,7 @@ $w.f.tl configure -state normal
   $w.f.tl delete 1.0 end
   
   foreach t [$w.f.tl tag names] {
-    if { [ string match "tagclick*" $t ] } {
+    if { [ string match "tagclick*" $t ] || [ string match "tagtooltip*" $t ] } {
       $w.f.tl tag delete $t
     }
   }
@@ -501,9 +503,12 @@ $w.f.tl configure -state normal
   if { $maskFile != "" } {
     set posComment [::tree::mask::getPositionComment]
     if {$posComment != ""} {
-      $w.f.tl insert end "$posComment\n" bluefg
+      set firstLine [ lindex [split $posComment "\n"] 0 ]
+      $w.f.tl insert end "$firstLine\n" [ list bluefg tagtooltip_poscomment ]
+      ::utils::tooltip::SetTag $w.f.tl $posComment tagtooltip_poscomment
     }
   }
+  
   for { set i 0 } { $i < [expr $len - 1 ] } { incr i } {
     set line [lindex $moves $i]
     if {$line == ""} { continue }
@@ -526,20 +531,16 @@ $w.f.tl configure -state normal
         $w.f.tl insert end "  " color$i
         # NAG tag
         $w.f.tl insert end [::tree::mask::getNag $move]
-        # Move comment
-        set comment [::tree::mask::getComment $move]
-        if {$comment != ""} {
-          append line " $comment"
-        }
       } else  {
         $w.f.tl insert end "    "
       }
-      
     }
+    
+    # Move
     if {[expr $i % 2] && $i < [expr $len -3] } {
-      $w.f.tl insert end "$line\n" [list greybg $tagfg tagclick$i]
+      $w.f.tl insert end "$line" [list greybg $tagfg tagclick$i]
     } else  {
-      $w.f.tl insert end "$line\n" [list whitebg $tagfg tagclick$i]
+      $w.f.tl insert end "$line" [list whitebg $tagfg tagclick$i]
     }
     
     if {$move != "" && $move != "---" && $move != "\[end\]" && $i != [expr $len -2] && $i != 0} {
@@ -548,6 +549,19 @@ $w.f.tl configure -state normal
         # Bind right button to popup a contextual menu:
         $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
       }
+    }
+    
+    if { $maskFile != "" } {
+      # Move comment
+      set comment [::tree::mask::getComment $move]
+      if {$comment != ""} {
+        set firstLine [ lindex [split $comment "\n"] 0 ]
+        $w.f.tl insert end " $firstLine" tagtooltip$i
+        ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$i
+      }
+      $w.f.tl insert end "\n"
+    } else  {
+      $w.f.tl insert end "\n"
     }
   }
   
@@ -573,7 +587,10 @@ $w.f.tl configure -state normal
       # move
       $w.f.tl insert end "[lindex $m 0] " [ list bluefg tagclick$idx ]
       # comment
-      $w.f.tl insert end "[lindex $m 3]\n"
+      set comment [lindex $m 3]
+      set firstLine [ lindex [split $comment "\n"] 0 ]
+      $w.f.tl insert end "$firstLine\n" tagtooltip$idx
+      ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$idx
       incr idx
     }
   }
@@ -1092,11 +1109,11 @@ proc ::tree::getCacheInfo { base } {
 ################################################################################
 set ::tree::cancelPrime 0
 
-proc ::tree::primeWithBase {} {
+proc ::tree::primeWithBase {{ fillMask 0 }} {
   set ::tree::cancelPrime 0
   for {set g 1} { $g <= [sc_base numGames]} { incr g} {
     sc_game load $g
-    ::tree::primeWithGame
+    ::tree::primeWithGame $fillMask
     if {$::tree::cancelPrime } { return }
   }
 }
@@ -1247,6 +1264,7 @@ namespace eval ::tree::mask {
   set maskFile ""
   set defaultColor white
   set emptyNag "  "
+  set textComment ""
 }
 ################################################################################
 #
@@ -1628,17 +1646,18 @@ proc ::tree::mask::addComment { { move "" } } {
     set oldComment [::tree::mask::getComment $move ]
   }
   set oldComment [ string trim $oldComment ]
-  entry $w.e -width 40
-  $w.e insert end $oldComment
+  # entry $w.e -width 40
+  autoscrollframe $w.f text $w.f.e -width 40 -height 5 -wrap none -setgrid 1
+  $w.f.e insert end $oldComment
   button $w.ok -text OK -command "::tree::mask::updateComment $move ; destroy $w ; ::tree::refresh"
-  pack $w.e $w.ok
+  pack $w.f $w.ok
 }
 ################################################################################
 #
 ################################################################################
 proc ::tree::mask::updateComment { { move "" } } {
-  set e .treeMaskAddComment.e
-  set newComment [$e get]
+  set e .treeMaskAddComment.f.e
+  set newComment [$e get 1.0 end]
   if {$move == ""} {
     ::tree::mask::setPositionComment $newComment
   } else  {
@@ -1655,6 +1674,16 @@ proc ::tree::mask::fillWithGame {} {
     return
   }
   ::tree::primeWithGame 1
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::fillWithBase {} {
+  if {$::tree::mask::maskFile == ""} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Open a mask file first"
+    return
+  }
+  ::tree::primeWithBase 1
 }
 ################################################################################
 # Take current position information and fill the mask (move, nag, comments, etc)

@@ -2036,7 +2036,10 @@ set helpText(Tree) {<h1>The Tree window</h1>
   An user defined Mask file (.stm) can be defined to change the way statistics are displayed
   in the Tree window. When a Mask file is opened, Tree window changes. For each line in the 
   Mask are displayed a color marker, a NAG code and a comment. A comment can also be entered 
-  for the position.
+  for the position, for example to point out a critical position.
+  </p>
+  <p>
+  A mask can be automatically filled with a game containing comments and variations (menu "Fill with game").
   </p>
   
   <h3>Caching for faster results</h3>

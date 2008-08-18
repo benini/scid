@@ -9,6 +9,7 @@ set ::utils::tooltip::showToolTips 1
 set ::utils::tooltip::time 0
 set ::utils::tooltip::enteredWidget {}
 set ::utils::tooltip::tooltipDelay 400
+set ::utils::tooltip::tooltipWidth 30
 
 array set ::utils::tooltip::message {}
 
@@ -16,7 +17,7 @@ array set ::utils::tooltip::message {}
 #
 toplevel .tooltip
 label .tooltip.text -relief solid -borderwidth 1 -justify left \
-  -background lightYellow -padx 3 -pady 1
+    -background lightYellow -padx 3 -pady 1
 pack .tooltip.text -side left
 wm overrideredirect .tooltip 1
 if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"}  {
@@ -29,11 +30,12 @@ wm withdraw .tooltip
 #
 #   Set the tooltip message for <button> to be <msg>
 #
-proc ::utils::tooltip::Set {button msg {text_image ""} {tag ""} } {
+proc ::utils::tooltip::Set { button msg } {
   variable message
   set msg [string trim $msg]
   if {$msg == ""} { return }
   regsub {\\n} $msg "\n" msg
+  set msg [::utils::tooltip::trimWidth $msg]
   set message($button) $msg
   if { $text_image == ""} {
     bind $button <Any-Enter> +[list ::utils::tooltip::Enter $button]
@@ -44,6 +46,21 @@ proc ::utils::tooltip::Set {button msg {text_image ""} {tag ""} } {
   }
 }
 
+# ::utils::tooltip::SetTag
+#
+#   Set the tooltip message for a text with tag <tag> to be <msg>
+#
+proc ::utils::tooltip::SetTag { text_widget msg tag } {
+  variable message
+  set msg [string trim $msg]
+  if {$msg == ""} { return }
+  regsub {\\n} $msg "\n" msg
+  set msg [::utils::tooltip::trimWidth $msg]
+  set message(${tag}_$text_widget) $msg
+  $text_widget tag bind $tag <Any-Enter> +[list ::utils::tooltip::Enter ${tag}_$text_widget]
+  $text_widget tag bind $tag <Any-Leave> +[list ::utils::tooltip::Leave ${tag}_$text_widget]
+}
+
 # ::utils::tooltip::Enter
 #
 #   Handles the mouse entering a button which has a tooltip.
@@ -52,7 +69,7 @@ proc ::utils::tooltip::Enter {button} {
   variable showToolTips
   variable enteredWidget
   variable tooltipDelay
-
+  
   if {! $showToolTips} { return }
   set enteredWidget $button
   after $tooltipDelay [list ::utils::tooltip::Check $button]
@@ -67,20 +84,33 @@ proc ::utils::tooltip::Enter {button} {
 #
 proc ::utils::tooltip::Check {button} {
   variable enteredWidget
-
+  
   if {$enteredWidget != $button} {
     # The mouse cursor has moved somewhere else; display no tooltip
     return
   }
-
+  
   if {! [info exists ::utils::tooltip::message($button)]} { return }
-
+  
   .tooltip.text configure -text [tr $::utils::tooltip::message($button)]
   set x [winfo pointerx .]
   set y [winfo pointery .]
   incr x 10
   incr y 4
   catch {wm transient .tooltip [winfo toplevel $button]}
+  
+  # make the tooltip visible
+  set maxw [ winfo vrootwidth .]
+  set maxh [ winfo vrootheight .]
+  set w [winfo reqwidth .tooltip]
+  set h [winfo reqheight .tooltip]
+  if { [expr $x + $w] > $maxw } {
+    set x [expr $maxw - $w]
+  }
+  if { [expr $y + $h] > $maxh } {
+    set y [expr $maxh - $h]
+  }
+  
   catch {wm geometry .tooltip +$x+$y}
   wm deiconify .tooltip
   raise .tooltip
@@ -98,3 +128,32 @@ proc ::utils::tooltip::Leave {button} {
   after cancel [list ::utils::tooltip::Check $button]
 }
 
+# ::utils::tooltip::ToWidth
+#
+#   Returns the arg with CR every tooltipWidth chars at most
+#
+proc ::utils::tooltip::trimWidth { msg } {
+  set ret ""
+  foreach line [split $msg "\n"] {
+    
+    if {[string length $line] < $::utils::tooltip::tooltipWidth} {
+      append ret "$line\n"
+      continue
+    } else  {
+      # must split the line
+      set words [split $line " "]
+      
+      while {[llength $words] > 0} {
+        set tmp [lindex $words 0]
+        set words [lreplace $words 0 0]
+        while {[string length "$tmp [lindex $words 0]"] < $::utils::tooltip::tooltipWidth && [llength $words] > 0} {
+          append tmp " " [lindex $words 0]
+          set words [lreplace $words 0 0]
+        }
+        append ret $tmp "\n"
+      }
+      
+    }
+  }
+  return [string trim $ret]
+}

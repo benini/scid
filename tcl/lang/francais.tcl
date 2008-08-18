@@ -471,6 +471,7 @@ menuText F TreeMaskOpen "Ouvrir" 0 {Ouvrir masque}
 menuText F TreeMaskSave "Sauver" 0 {Sauver masque}
 menuText F TreeMaskClose "Fermer" 0 {Fermer masque}
 menuText F TreeMaskFillWithGame "Remplir avec partie" 0 {Remplir le masque avec partie}
+menuText F TreeMaskFillWithBase "Remplir avec base" 0 {Remplir le masque avec les parties de la base}
 menuText F TreeSort "Trier" 0
 menuText F TreeSortAlpha "Alphabétique" 0
 menuText F TreeSortECO "code ECO" 0
@@ -1708,4 +1709,5 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 

@@ -531,6 +531,8 @@ menuText P TreeMaskSave "Save" 0 {Save mask}
 menuText P TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText P TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText P TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText P TreeSort "Sortowanie" 0
 menuText P TreeSortAlpha "Alfabetycznie" 0
 menuText P TreeSortECO "Kod ECO" 0
@@ -2051,4 +2053,5 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 

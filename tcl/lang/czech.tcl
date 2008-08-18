@@ -520,6 +520,8 @@ menuText C TreeMaskSave "Save" 0 {Save mask}
 menuText C TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText C TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText C TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText C TreeSort "Øadit" 2
 menuText C TreeSortAlpha "Abecednì" 0
 menuText C TreeSortECO "ECO kód" 0
@@ -5455,4 +5457,5 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 

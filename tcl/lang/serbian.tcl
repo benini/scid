@@ -525,6 +525,8 @@ menuText Y TreeMaskSave "Save" 0 {Save mask}
 menuText Y TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText Y TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText Y TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText Y TreeSort "Sortiraj" 0
 menuText Y TreeSortAlpha "Abecedno" 0
 menuText Y TreeSortECO "E©O kôd" 0
@@ -1824,4 +1826,5 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 

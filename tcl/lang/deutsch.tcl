@@ -505,6 +505,8 @@ menuText D TreeMaskSave "Save" 0 {Save mask}
 menuText D TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText D TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText D TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
 menuText D TreeSortECO "ECO-Code" 0
@@ -7033,4 +7035,5 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 

@@ -480,6 +480,8 @@ menuText I TreeMaskSave "Save" 0 {Save mask}
 menuText I TreeMaskClose "Close" 0 {Close mask}
 # ====== TODO To be translated ======
 menuText I TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+# ====== TODO To be translated ======
+menuText I TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText I TreeSort "Ordina" 0
 menuText I TreeSortAlpha "Alfabetico" 0
 menuText I TreeSortECO "codice ECO" 0
@@ -1738,4 +1740,5 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
