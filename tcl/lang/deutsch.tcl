@@ -493,20 +493,13 @@ menuText D TreeFileGraph "Grafikfenster" 0 \
 menuText D TreeFileCopy "Kopiere Baumfenster in Zwischenablage" 0 \
   {Kopiere die Zugbaum-Statistik in die Zwischenablage}
 menuText D TreeFileClose "Baumfenster schließen" 12 {Schließe Zugbaum}
-# ====== TODO To be translated ======
-menuText D TreeMask "Mask" 0
-# ====== TODO To be translated ======
-menuText D TreeMaskNew "New" 0 {New mask}
-# ====== TODO To be translated ======
-menuText D TreeMaskOpen "Open" 0 {Open mask}
-# ====== TODO To be translated ======
-menuText D TreeMaskSave "Save" 0 {Save mask}
-# ====== TODO To be translated ======
-menuText D TreeMaskClose "Close" 0 {Close mask}
-# ====== TODO To be translated ======
-menuText D TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
-# ====== TODO To be translated ======
-menuText D TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+menuText D TreeMask "Maskieren" 0
+menuText D TreeMaskNew "Neu" 0 {Neue Maske anlegen}
+menuText D TreeMaskOpen "Öffnen" 0 {Maske öffnen}
+menuText D TreeMaskSave "Speichern" 0 {Maske speichern}
+menuText D TreeMaskClose "Schließen" 0 {Maske schließen}
+menuText D TreeMaskFillWithGame "Mit aktueller Partie füllen" 0 {Maske mit der aktuellen Partie füllen}
+menuText D TreeMaskFillWithBase "Mit Datenbank füllen" 0 {Maske mit Datenbankpartien füllen}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
 menuText D TreeSortECO "ECO-Code" 0
