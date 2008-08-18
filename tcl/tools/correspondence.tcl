@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.10 2008/08/17 08:11:19 arwagner Exp $
+### $Id: correspondence.tcl,v 1.11 2008/08/18 17:37:22 arwagner Exp $
 ###
-### Last change: <Sun, 2008/08/17 09:35:00 arwagner ingata>
+### Last change: <Mon, 2008/08/18 19:35:17 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1358,9 +1358,11 @@ namespace eval CorrespondenceChess {
 		grid $w.top.help       -stick nsew -column 14 -row 0 -columnspan 2
 
 		grid $w.top.retrieveCC           -column  0 -row 0
-		grid $w.top.prevCC     -stick e  -column  1 -row 0
-		grid $w.top.nextCC     -stick w  -column  2 -row 0
-		grid $w.top.sendCC               -column  3 -row 0
+# Disable the buttons as they do not act as they should. Probably
+# reenable them?
+###		grid $w.top.prevCC     -stick e  -column  1 -row 0
+###		grid $w.top.nextCC     -stick w  -column  2 -row 0
+		grid $w.top.sendCC               -column  2 -row 0
 
 		grid $w.top.openDB               -column  0 -row 1 -columnspan 4
 		grid $w.top.inbox                -column  0 -row 2 -columnspan 3
@@ -1525,7 +1527,7 @@ namespace eval CorrespondenceChess {
 		# to be passed to the ProcessServerResult mascaraded to prevent
 		# from interpretation. See also Scids gamelist.
 		foreach tag {id toMove event site white black clockW clockB var feature} {
-			bind $w.bottom.$tag <Double-Button-1> \
+			bind $w.bottom.$tag <Button-1> \
 				"::CorrespondenceChess::SetSelection %x %y; ::CorrespondenceChess::ProcessServerResult \$num; break"
 			# lock the area from changes
 			$w.bottom.$tag configure -state disable
@@ -2157,6 +2159,7 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::LastProcessed
 
 		busyCursor .
+
 		# Regardless how the user opend this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
