@@ -500,8 +500,7 @@ menuText D TreeMaskSave "Speichern" 0 {Maske speichern}
 menuText D TreeMaskClose "Schließen" 0 {Maske schließen}
 menuText D TreeMaskFillWithGame "Mit aktueller Partie füllen" 0 {Maske mit der aktuellen Partie füllen}
 menuText D TreeMaskFillWithBase "Mit Datenbank füllen" 0 {Maske mit Datenbankpartien füllen}
-# ====== TODO To be translated ======
-menuText D TreeMaskInfo "Info" 0 {Show statistics for current mask}
+menuText D TreeMaskInfo "Info" 0 {Statistik für die aktuelle Maske anzeigen}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
 menuText D TreeSortECO "ECO-Code" 0
