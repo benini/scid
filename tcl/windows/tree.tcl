@@ -1286,6 +1286,8 @@ proc ::tree::mask::open {} {
   set filename [tk_getOpenFile -filetypes $types -defaultextension ".stm"]
   
   if {$filename != ""} {
+    array unset ::tree::mask::mask
+    array set ::tree::mask::mask {}    
     source $filename
     array set mask $maskSerialized
     set maskSerialized {}
@@ -1305,10 +1307,8 @@ proc ::tree::mask::new {} {
   
   if {$filename != ""} {
     set ::tree::mask::maskFile $filename
+    array unset ::tree::mask::mask
     array set ::tree::mask::mask {}
-    
-    info exists ::tree::mask::mask("toto")
-    
     ::tree::refresh
   }
 }
@@ -1316,6 +1316,7 @@ proc ::tree::mask::new {} {
 #
 ################################################################################
 proc ::tree::mask::close {} {
+  array unset ::tree::mask::mask
   array set ::tree::mask::mask {}
   set ::tree::mask::maskFile ""
   ::tree::refresh
@@ -1427,12 +1428,10 @@ proc ::tree::mask::moveExists { move {fen ""} } {
 ################################################################################
 proc ::tree::mask::getAllMoves {} {
   global ::tree::mask::mask
-  
   if {![info exists mask($::tree::mask::cacheFenIndex)]} {
     return ""
   }
-  
-  set moves [ lindex $mask($::tree::mask::cacheFenIndex) 1 ]
+  set moves [ lindex $mask($::tree::mask::cacheFenIndex) 0 ]
   return $moves
 }
 ################################################################################
@@ -1546,7 +1545,6 @@ proc ::tree::mask::getComment { move { fen "" } } {
   if {$comment == ""} {
     set comment "  "
   }
-  
   return $comment
 }
 ################################################################################
@@ -1556,6 +1554,8 @@ proc ::tree::mask::setComment { move comment { fen "" } } {
   global ::tree::mask::mask
   
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
+  
+  set comment [string trim $comment]
   
   if {![info exists mask($fen)]} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
