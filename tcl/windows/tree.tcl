@@ -1403,8 +1403,6 @@ proc ::tree::mask::removeFromMask { move {fen ""} } {
     ::tree::refresh
   }
   
-  unset mask($fen)
-  
 }
 ################################################################################
 # returns 1 if the move is already in mask
