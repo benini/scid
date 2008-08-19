@@ -525,6 +525,8 @@ menuText H TreeMaskClose "Close" 0 {Close mask}
 menuText H TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 # ====== TODO To be translated ======
 menuText H TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+# ====== TODO To be translated ======
+menuText H TreeMaskInfo "Info" 0 {Show statistics for current mask}
 menuText H TreeSort "Rendezés" 0
 menuText H TreeSortAlpha "ABC" 0
 menuText H TreeSortECO "ECO-kód" 0
@@ -2052,5 +2054,6 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 

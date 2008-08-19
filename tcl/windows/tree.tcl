@@ -18,7 +18,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3 4 5 7 8 10 12} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Best Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
-  foreach idx {0 1 2 3 4 5} tag {New Open Save Close FillWithGame FillWithBase} {
+  foreach idx {0 1 2 3 4 5 6} tag {New Open Save Close FillWithGame FillWithBase Info} {
     configMenuText $m.mask $idx TreeMask$tag $lang
   }
   foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
@@ -144,6 +144,9 @@ proc ::tree::make { { baseNumber -1 } } {
   set helpMessage($w.menu.mask,4) TreeMaskFillWithGame
   $w.menu.mask add command -label TreeMaskFillWithBase -command "::tree::mask::fillWithBase"
   set helpMessage($w.menu.mask,4) TreeMaskFillWithBase
+  $w.menu.mask add command -label TreeMaskInfo -command "::tree::mask::infoMask"
+  set helpMessage($w.menu.mask,4) TreeMaskInfo
+  
   
   foreach label {Alpha ECO Freq Score} value {alpha eco frequency score} {
     $w.menu.sort add radiobutton -label TreeSort$label \
@@ -479,6 +482,8 @@ proc ::tree::dorefresh { baseNumber } {
 ################################################################################
 proc ::tree::displayLines { baseNumber moves } {
   global ::tree::mask::maskFile
+  
+  ::tree::mask::setCacheFenIndex
   
   set lMoves {}
   set w .treeWin$baseNumber
@@ -1260,16 +1265,21 @@ proc ::tree::countBaseMoves { {args ""} } {
 namespace eval ::tree::mask {
   # list of (fen (moves) position_annotation )
   # where moves is ( move nag color move_anno )
-  set mask {}
+  
+  # mask(fen) contains data for a position
+  array set mask {}
+  set maskSerialized {}
   set maskFile ""
   set defaultColor white
   set emptyNag "  "
   set textComment ""
+  set cacheFenIndex -1
 }
 ################################################################################
 #
 ################################################################################
 proc ::tree::mask::open {} {
+  global ::tree::mask::maskSerialized ::tree::mask::mask
   set types {
     {{Tree Mask Files}       {.stm}        }
   }
@@ -1277,6 +1287,8 @@ proc ::tree::mask::open {} {
   
   if {$filename != ""} {
     source $filename
+    array set mask $maskSerialized
+    set maskSerialized {}
     set ::tree::mask::maskFile $filename
     ::tree::refresh
   }
@@ -1285,6 +1297,7 @@ proc ::tree::mask::open {} {
 #
 ################################################################################
 proc ::tree::mask::new {} {
+  
   set types {
     {{Tree Mask Files}       {.stm}        }
   }
@@ -1292,7 +1305,10 @@ proc ::tree::mask::new {} {
   
   if {$filename != ""} {
     set ::tree::mask::maskFile $filename
-    set ::tree::mask::mask {}
+    array set ::tree::mask::mask {}
+    
+    info exists ::tree::mask::mask("toto")
+    
     ::tree::refresh
   }
 }
@@ -1300,7 +1316,7 @@ proc ::tree::mask::new {} {
 #
 ################################################################################
 proc ::tree::mask::close {} {
-  set ::tree::mask::mask {}
+  array set ::tree::mask::mask {}
   set ::tree::mask::maskFile ""
   ::tree::refresh
 }
@@ -1309,7 +1325,7 @@ proc ::tree::mask::close {} {
 ################################################################################
 proc ::tree::mask::save {} {
   set f [ ::open $::tree::mask::maskFile w ]
-  puts $f "set ::tree::mask::mask [list $::tree::mask::mask]"
+  puts $f "set ::tree::mask::maskSerialized [list [array get ::tree::mask::mask]]"
   ::close $f
 }
 ################################################################################
@@ -1352,25 +1368,19 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
 proc ::tree::mask::addToMask { move {fen ""} } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
-    lappend mask [ list $fen {} {} ]
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
+  
+  if {![info exists mask($fen)]} {
+    set mask($fen) { {} {} }
   }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  set moves [ lindex $mask($fen) 0 ]
   if {[lsearch $moves $move] == -1} {
     lappend moves [list $move {} $::tree::mask::defaultColor {}]
-    set newpos [lreplace $pos 1 1 $moves]
-    set mask [ lreplace $mask $idx $idx $newpos ]
+    set newpos [lreplace $mask($fen) 0 0 $moves]
+    set mask($fen) $newpos
     ::tree::refresh
   }
-  set mask [ lsort -index 0 $mask ]
 }
 ################################################################################
 #
@@ -1378,24 +1388,21 @@ proc ::tree::mask::addToMask { move {fen ""} } {
 proc ::tree::mask::removeFromMask { move {fen ""} } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     return
   }
   
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm != -1} {
     set moves [lreplace $moves $idxm $idxm]
-    lset pos 1 $moves
-    lset mask $idx $pos
+    lset mask($fen) 0 $moves
     ::tree::refresh
   }
+  
+  unset mask($fen)
   
 }
 ################################################################################
@@ -1404,16 +1411,12 @@ proc ::tree::mask::removeFromMask { move {fen ""} } {
 proc ::tree::mask::moveExists { move {fen ""} } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     return 0
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  set moves [ lindex $mask($fen) 0 ]
   if {[lsearch -regexp $moves "^$move *"] == -1} {
     return 0
   }
@@ -1425,14 +1428,11 @@ proc ::tree::mask::moveExists { move {fen ""} } {
 proc ::tree::mask::getAllMoves {} {
   global ::tree::mask::mask
   
-  set fen [ toShortFen [sc_pos fen] ]
-  
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($::tree::mask::cacheFenIndex)]} {
     return ""
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  
+  set moves [ lindex $mask($::tree::mask::cacheFenIndex) 1 ]
   return $moves
 }
 ################################################################################
@@ -1440,16 +1440,14 @@ proc ::tree::mask::getAllMoves {} {
 ################################################################################
 proc ::tree::mask::getColor { move {fen ""}} {
   global ::tree::mask::mask
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
+  
+  if {![info exists mask($fen)]} {
     return $::tree::mask::defaultColor
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
     return $::tree::mask::defaultColor
@@ -1464,17 +1462,13 @@ proc ::tree::mask::getColor { move {fen ""}} {
 proc ::tree::mask::setColor { move color {fen ""}} {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
@@ -1482,8 +1476,7 @@ proc ::tree::mask::setColor { move color {fen ""}} {
   }
   set newmove [lreplace [lindex $moves $idxm] 2 2 $color ]
   set moves [lreplace $moves $idxm $idxm $newmove ]
-  set newpos [ lreplace $pos 1 1 $moves ]
-  set mask [ lreplace $mask $idx $idx $newpos ]
+  set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
   ::tree::refresh
 }
 ################################################################################
@@ -1492,16 +1485,12 @@ proc ::tree::mask::setColor { move color {fen ""}} {
 proc ::tree::mask::getNag { move { fen "" }} {
   global ::tree::mask::mask ::tree::mask::emptyNag
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     return $emptyNag
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
     return $emptyNag
@@ -1519,17 +1508,13 @@ proc ::tree::mask::getNag { move { fen "" }} {
 proc ::tree::mask::setNag { move nag {fen ""} } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
@@ -1537,8 +1522,7 @@ proc ::tree::mask::setNag { move nag {fen ""} } {
   }
   set newmove [lreplace [lindex $moves $idxm] 1 1 $nag ]
   set moves [lreplace $moves $idxm $idxm $newmove ]
-  set newpos [ lreplace $pos 1 1 $moves ]
-  set mask [ lreplace $mask $idx $idx $newpos ]
+  set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
   ::tree::refresh
 }
 ################################################################################
@@ -1547,16 +1531,13 @@ proc ::tree::mask::setNag { move nag {fen ""} } {
 proc ::tree::mask::getComment { move { fen "" } } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)] || $move == "" || $move == "\[end\]" } {
     return ""
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
     return ""
@@ -1565,6 +1546,7 @@ proc ::tree::mask::getComment { move { fen "" } } {
   if {$comment == ""} {
     set comment "  "
   }
+  
   return $comment
 }
 ################################################################################
@@ -1573,17 +1555,14 @@ proc ::tree::mask::getComment { move { fen "" } } {
 proc ::tree::mask::setComment { move comment { fen "" } } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
-  set pos [ lindex $mask $idx ]
-  set moves [ lindex $pos 1 ]
+  
+  set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
@@ -1591,8 +1570,7 @@ proc ::tree::mask::setComment { move comment { fen "" } } {
   }
   set newmove [lreplace [lindex $moves $idxm] 3 3 $comment ]
   set moves [lreplace $moves $idxm $idxm $newmove ]
-  set newpos [ lreplace $pos 1 1 $moves ]
-  set mask [ lreplace $mask $idx $idx $newpos ]
+  set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
   ::tree::refresh
 }
 ################################################################################
@@ -1601,16 +1579,13 @@ proc ::tree::mask::setComment { move comment { fen "" } } {
 proc ::tree::mask::getPositionComment {{fen ""}} {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if { ! [ info exists mask($fen) ] } {
     return ""
   }
-  set pos [ lindex $mask $idx ]
-  set comment [ lindex $pos 2 ]
+  
+  set comment [ lindex $mask($fen) 1 ]
   return $comment
 }
 ################################################################################
@@ -1619,19 +1594,15 @@ proc ::tree::mask::getPositionComment {{fen ""}} {
 proc ::tree::mask::setPositionComment { comment {fen ""} } {
   global ::tree::mask::mask
   
-  if {$fen == ""} {
-    set fen [ toShortFen [sc_pos fen] ]
-  }
+  if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  set idx [ lsearch -sorted -regexp $mask "$fen *" ]
-  if {$idx == -1} {
+  if {![info exists mask($fen)]} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
   
-  set pos [ lindex $mask $idx ]
-  set newpos [ lreplace $pos 2 2 $comment ]
-  set mask [ lreplace $mask $idx $idx $newpos ]
+  set newpos [ lreplace $mask($fen) 1 1 $comment ]
+  set mask($fen) $newpos
   ::tree::refresh
 }
 ################################################################################
@@ -1646,7 +1617,6 @@ proc ::tree::mask::addComment { { move "" } } {
     set oldComment [::tree::mask::getComment $move ]
   }
   set oldComment [ string trim $oldComment ]
-  # entry $w.e -width 40
   autoscrollframe $w.f text $w.f.e -width 40 -height 5 -wrap none -setgrid 1
   $w.f.e insert end $oldComment
   button $w.ok -text OK -command "::tree::mask::updateComment $move ; destroy $w ; ::tree::refresh"
@@ -1740,6 +1710,26 @@ proc ::tree::mask::feedMask { fen } {
 proc ::tree::mask::toShortFen {fen} {
   set ret [lreplace $fen end-1 end]
   return $ret
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::setCacheFenIndex {} {
+  set ::tree::mask::cacheFenIndex [ toShortFen [sc_pos fen] ]
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::infoMask {} {
+  global ::tree::mask::mask
+  
+  set npos [array size mask]
+  # set nmoves 0
+  set nmoves [array statistics mask]
+  # foreach pos $mask {
+  # incr nmoves [llength [lindex $pos 1]]
+  # }
+  tk_messageBox -title "Mask info" -type ok -icon info -message "Mask : $::tree::mask::maskFile\nPositions : $npos\nMoves : $nmoves"
 }
 ################################################################################
 #

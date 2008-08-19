@@ -533,6 +533,8 @@ menuText B TreeMaskClose "Close" 0 {Close mask}
 menuText B TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 # ====== TODO To be translated ======
 menuText B TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+# ====== TODO To be translated ======
+menuText B TreeMaskInfo "Info" 0 {Show statistics for current mask}
 menuText B TreeSort "Ordenar" 0
 menuText B TreeSortAlpha "Alfabetica" 0
 menuText B TreeSortECO "ECO" 0
@@ -1832,5 +1834,6 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 

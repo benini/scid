@@ -472,6 +472,7 @@ menuText F TreeMaskSave "Sauver" 0 {Sauver masque}
 menuText F TreeMaskClose "Fermer" 0 {Fermer masque}
 menuText F TreeMaskFillWithGame "Remplir avec partie" 0 {Remplir le masque avec partie}
 menuText F TreeMaskFillWithBase "Remplir avec base" 0 {Remplir le masque avec les parties de la base}
+menuText F TreeMaskInfo "Info" 0 {Statistiques du masque}
 menuText F TreeSort "Trier" 0
 menuText F TreeSortAlpha "Alphabétique" 0
 menuText F TreeSortECO "code ECO" 0
@@ -1449,8 +1450,7 @@ translate F CCDlgCGeneraloptions {Options générales}
 translate F CCDlgDefaultDB {Base par défaut:}
 translate F CCDlgInbox {Réception (chemin):}
 translate F CCDlgOutbox {Envoi (chemin):}
-# ====== TODO To be translated ======
-translate F CCDlgXfcc {Xfcc Configuration:}
+translate F CCDlgXfcc {Configuration Xfcc:}
 translate F CCDlgExternalProtocol {Protocole externe (p.e. Xfcc)}
 translate F CCDlgFetchTool {Outil de réception:}
 translate F CCDlgSendTool {Outil d'envoi:}
@@ -1463,8 +1463,7 @@ translate F CCDlgMailUrlEg {p.e. Evolution}
 translate F CCDlgClawsEg {p.e Sylpheed Claws}
 translate F CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate F CCDlgAttachementPar {Attachement:}
-# ====== TODO To be translated ======
-translate F CCDlgInternalXfcc {Use internal Xfcc support}
+translate F CCDlgInternalXfcc {Utiliser Xfcc interne}
 translate F CCDlgSubjectPar {Objet:}
 translate F CCDlgStartEmail {Commencer nouvelle partie par eMail}
 translate F CCDlgYourName {Votre nom:}
@@ -1472,35 +1471,21 @@ translate F CCDlgYourMail {Votre adresse mail:}
 translate F CCDlgOpponentName {Nom adversaire:}
 translate F CCDlgOpponentMail {Adresse eMail adversaire:}
 translate F CCDlgGameID {Identifiant Partie (unique):}
-# ====== TODO To be translated ======
-translate F CCDlgTitNoOutbox {Scid: Correspondence Chess Outbox}
-# ====== TODO To be translated ======
-translate F CCDlgTitNoInbox {Scid: Correspondence Chess Inbox}
-# ====== TODO To be translated ======
-translate F CCDlgTitNoGames {Scid: No Correspondence Chess Games}
-# ====== TODO To be translated ======
-translate F CCErrInboxDir {Correspondence Chess inbox directory:}
-# ====== TODO To be translated ======
-translate F CCErrOutboxDir {Correspondence Chess outbox directory:}
-# ====== TODO To be translated ======
-translate F CCErrDirNotUsable {does not exist or is not accessible!\nPlease check and correct the settings.}
-# ====== TODO To be translated ======
-translate F CCErrNoGames {does not contain any games!\nPlease fetch them first.}
+translate F CCDlgTitNoOutbox {Scid: Boîte d'envoi}
+translate F CCDlgTitNoInbox {Scid: Boîte de réception}
+translate F CCDlgTitNoGames {Scid: Pas de parties par correspondence}
+translate F CCErrInboxDir {Répertoire de la boîte de réception:}
+translate F CCErrOutboxDir {Répertoire de la boîte d'envoi:}
+translate F CCErrDirNotUsable {n'existe pas ou inaccessible!\nVeuillez vérifier les paramètres.}
+translate F CCErrNoGames {ne contient pas de parties!\nVeuillez d'abord les récupérer.}
 translate F CCDlgTitNoCCDB {Scid: pas de base par correspondance}
 translate F CCErrNoCCDB {Aucune base du type 'Correspondance' n'est ouverte. Ouvrez-en une avant d'utiliser les fonctions par correspondance.}
-# ====== TODO To be translated ======
-translate F CCFetchBtn {Fetch games from the server and process the Inbox}
-# ====== TODO To be translated ======
-translate F CCPrevBtn {Goto previous game}
-# ====== TODO To be translated ======
-translate F CCNextBtn {Goto next game}
-# ====== TODO To be translated ======
-translate F CCSendBtn {Send move}
-# ====== TODO To be translated ======
-translate F CCEmptyBtn {Empty In- and Outbox}
-# ====== TODO To be translated ======
-translate F CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
-
+translate F CCFetchBtn {Récupérer les parties sur le serveur et les analyser dans la boîte de réception}
+translate F CCPrevBtn {Aller à la partie précédente}
+translate F CCNextBtn {Aller à la partie suivante}
+translate F CCSendBtn {Envoyer coup}
+translate F CCEmptyBtn {Vider les boîtes d'envoi et de réception}
+translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide appuyer sur F1!}
 translate F DoneWithPosition {Position terminée}
 
 ##########
@@ -1709,5 +1694,6 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 

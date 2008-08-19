@@ -315,7 +315,7 @@ proc progressWindow {args} {
   wm deiconify $w
   raiseWin $w
   if {$b} {
-    grab $w.b.cancel
+    catch { grab $w.b.cancel }
   } else {
     grab $w
   }

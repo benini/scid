@@ -497,6 +497,8 @@ menuText S TreeMaskClose "Close" 0 {Close mask}
 menuText S TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 # ====== TODO To be translated ======
 menuText S TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+# ====== TODO To be translated ======
+menuText S TreeMaskInfo "Info" 0 {Show statistics for current mask}
 menuText S TreeSort "Ordenar" 0
 menuText S TreeSortAlpha "Alfabéticamente" 0
 menuText S TreeSortECO "Por código ECO" 11
@@ -1525,5 +1527,6 @@ translate S CCHelpBtn {Help on icons and status indicators.\nFor general Help pr
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 

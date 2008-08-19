@@ -510,6 +510,7 @@ menuText E TreeMaskSave "Save" 0 {Save mask}
 menuText E TreeMaskClose "Close" 0 {Close mask}
 menuText E TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText E TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+menuText E TreeMaskInfo "Info" 0 {Show statistics for current mask}
 menuText E TreeSort "Sort" 0
 menuText E TreeSortAlpha "Alphabetical" 0
 menuText E TreeSortECO "ECO Code" 0

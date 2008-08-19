@@ -37,8 +37,13 @@ proc ::utils::tooltip::Set { button msg } {
   regsub {\\n} $msg "\n" msg
   set msg [::utils::tooltip::trimWidth $msg]
   set message($button) $msg
-  bind $button <Any-Enter> +[list ::utils::tooltip::Enter $button]
-  bind $button <Any-Leave> +[list ::utils::tooltip::Leave $button]
+  if { $text_image == ""} {
+    bind $button <Any-Enter> +[list ::utils::tooltip::Enter $button]
+    bind $button <Any-Leave> +[list ::utils::tooltip::Leave $button]
+  } else  {
+    $text_image tag bind $tag <Any-Enter> +[list ::utils::tooltip::Enter $button]
+    $text_image tag bind $tag <Any-Leave> +[list ::utils::tooltip::Leave $button]
+  }
 }
 
 # ::utils::tooltip::SetTag

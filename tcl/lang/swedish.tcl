@@ -529,6 +529,8 @@ menuText W TreeMaskClose "Close" 0 {Close mask}
 menuText W TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 # ====== TODO To be translated ======
 menuText W TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+# ====== TODO To be translated ======
+menuText W TreeMaskInfo "Info" 0 {Show statistics for current mask}
 menuText W TreeSort "Sortera" 0
 menuText W TreeSortAlpha "Alfabetiskt" 0
 menuText W TreeSortECO "ECO kod" 0
@@ -6843,5 +6845,6 @@ set tips(W) {
   }
 }
 #}
+
 
 
