@@ -525,7 +525,7 @@ proc ::tree::displayLines { baseNumber moves } {
     
     set tagfg ""
     
-    if { $maskFile != "" && $move != "\[end\]" && $i > 0 && $i < [expr $len - 3] } {
+    if { $maskFile != "" && $i > 0 && $i < [expr $len - 3] } {
       if { [::tree::mask::moveExists $move] } {
         set tagfg "bluefg"
       }
@@ -541,6 +541,7 @@ proc ::tree::displayLines { baseNumber moves } {
         # NAG tag
         $w.f.tl insert end [::tree::mask::getNag $move]
       } else  {
+        $w.f.tl image create end -image ::tree::mask::emptyImage -align center
         $w.f.tl insert end "    "
       }
     }
