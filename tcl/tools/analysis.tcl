@@ -460,7 +460,7 @@ proc ::enginelist::edit {index} {
   if {$index >= 0  ||  $index >= [llength $engines(list)]} {
     set e [lindex $engines(list) $index]
   } else {
-    set e [list "" "" "" . 0 0 "" 0]
+    set e [list "" "" "" . 0 0 "" 1]
   }
   
   set engines(newIndex) $index

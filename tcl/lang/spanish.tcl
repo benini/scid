@@ -483,18 +483,12 @@ menuText S TreeFileCopy "Copiar texto del árbol al clipboard" 1 \
   {Copiar texto del árbol al clipboard}
 menuText S TreeFileClose "Cerrar ventana del árbol" 0 \
   {Cerrar ventana del árbol}
-# ====== TODO To be translated ======
-menuText S TreeMask "Mask" 0
-# ====== TODO To be translated ======
-menuText S TreeMaskNew "New" 0 {New mask}
-# ====== TODO To be translated ======
-menuText S TreeMaskOpen "Open" 0 {Open mask}
-# ====== TODO To be translated ======
-menuText S TreeMaskSave "Save" 0 {Save mask}
-# ====== TODO To be translated ======
-menuText S TreeMaskClose "Close" 0 {Close mask}
-# ====== TODO To be translated ======
-menuText S TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+menuText S TreeMask "Máscara" 0
+menuText S TreeMaskNew "Nuevo" 0 {Nueva máscara}
+menuText S TreeMaskOpen "Abrir" 0 {Abrir máscara}
+menuText S TreeMaskSave "Salvar" 0 {Salvar máscara}
+menuText S TreeMaskClose "Cerrar" 0 {Cerrar máscara}
+menuText S TreeMaskFillWithGame "Llenar con partida" 0 {Llenar máscara con partida}
 # ====== TODO To be translated ======
 menuText S TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 # ====== TODO To be translated ======
@@ -830,12 +824,12 @@ translate S GlistWidth {Anchura}
 translate S GlistAlign {Alinear}
 translate S GlistColor {Color}
 translate S GlistSep {Separador}
-translate S GlistRemoveThisGameFromFilter  {Elimina esta partida del Filtro}
-translate S GlistRemoveGameAndAboveFromFilter  {Elimina esta partida y todas las de arriba del Filtro}
-translate S GlistRemoveGameAndBelowFromFilter  {Elimina esta partida y todas las de abajo del Filtro}
-translate S GlistDeleteGame {Elimina/Recupera esta partida} 
-translate S GlistDeleteAllGames {Elimina todas las partidas en el Filtro} 
-translate S GlistUndeleteAllGames {Recupera todas las partidas borradas en el filtro} 
+translate S GlistRemoveThisGameFromFilter  {Quita esta partida del Filtro}
+translate S GlistRemoveGameAndAboveFromFilter  {Quita esta partida y todas las de arriba del Filtro}
+translate S GlistRemoveGameAndBelowFromFilter  {Quita esta partida y todas las de abajo del Filtro}
+translate S GlistDeleteGame {Elimina/Recupera esta partida de la base} 
+translate S GlistDeleteAllGames {Elimina todas las partidas de la base que aparecen en el Filtro} 
+translate S GlistUndeleteAllGames {Recupera todas las partidas borradas de la base que aparecen en el filtro} 
 
 # Maintenance window:
 translate S DatabaseName {Nombre de la base:}
@@ -1332,8 +1326,7 @@ translate S NotFollowedLine {Tú no sigues la linea}
 translate S DoYouWantContinue {¿Quieres continuar?}
 translate S CoachIsWatching {Entrenador}
 translate S Ponder {Pensar siempre (el motor)}
-# ====== TODO To be translated ======
-translate S LimitELO {Limit ELO strength}
+translate S LimitELO {Limitar fuerza ELO}
 translate S DubiousMovePlayedTakeBack {Movimiento dudoso, ¿quieres rectificar?}
 translate S WeakMovePlayedTakeBack {Movimiento flojo, ¿quieres rectificar ?}
 translate S BadMovePlayedTakeBack {Movimiento malo, ¿quieres rectificar ?}
@@ -1512,21 +1505,14 @@ translate S CCErrDirNotUsable {¡No existe o no está accesible!\nPor favor, chequ
 translate S CCErrNoGames {¡No contiene ninguna partida!\nPor favor, traigala primero.}
 translate S CCDlgTitNoCCDB {Scid: No es una Base de Ajedrez por Correo}
 translate S CCErrNoCCDB {No hay una Base del tipo 'Correo' abierta. Por favor, abra una antes de usar funciones de ajedrez por Correo.}
-# ====== TODO To be translated ======
-translate S CCFetchBtn {Fetch games from the server and process the Inbox}
-# ====== TODO To be translated ======
-translate S CCPrevBtn {Goto previous game}
-# ====== TODO To be translated ======
-translate S CCNextBtn {Goto next game}
-# ====== TODO To be translated ======
-translate S CCSendBtn {Send move}
-# ====== TODO To be translated ======
-translate S CCEmptyBtn {Empty In- and Outbox}
-# ====== TODO To be translated ======
-translate S CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+translate S CCFetchBtn {Traer partidas desde el servidor y procesar correo entrante}
+translate S CCPrevBtn {Ir a partida anterior}
+translate S CCNextBtn {Ir a partida siguiente}
+translate S CCSendBtn {Enviar movimiento}
+translate S CCEmptyBtn {Correos entrante y saliente vacios}
+translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda general pulse F1!}
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
-
 
 

@@ -511,6 +511,7 @@ proc ::tree::displayLines { baseNumber moves } {
       set firstLine [ lindex [split $posComment "\n"] 0 ]
       $w.f.tl insert end "$firstLine\n" [ list bluefg tagtooltip_poscomment ]
       ::utils::tooltip::SetTag $w.f.tl $posComment tagtooltip_poscomment
+      $w.f.tl tag bind tagtooltip_poscomment <Double-Button-1> "::tree::mask::addComment"
     }
   }
   
@@ -531,6 +532,9 @@ proc ::tree::displayLines { baseNumber moves } {
     }
     if { $maskFile != "" } {
       if { $i > 0 && $i < [expr $len - 3] && $move != "\[end\]" } {
+        # image
+        set img [::tree::mask::getImage $move]
+        $w.f.tl image create end -image $img -align center
         # color tag
         $w.f.tl tag configure color$i -background [::tree::mask::getColor $move]
         $w.f.tl insert end "  " color$i
@@ -541,11 +545,11 @@ proc ::tree::displayLines { baseNumber moves } {
       }
     }
     
-    # Move
+    # Move and stats
     if {[expr $i % 2] && $i < [expr $len -3] } {
-      $w.f.tl insert end "$line" [list greybg $tagfg tagclick$i]
+      $w.f.tl insert end "$line" [list greybg $tagfg tagclick$i tagtooltip$i]
     } else  {
-      $w.f.tl insert end "$line" [list whitebg $tagfg tagclick$i]
+      $w.f.tl insert end "$line" [list whitebg $tagfg tagclick$i tagtooltip$i]
     }
     
     if {$move != "" && $move != "---" && $move != "\[end\]" && $i != [expr $len -2] && $i != 0} {
@@ -563,6 +567,7 @@ proc ::tree::displayLines { baseNumber moves } {
         set firstLine [ lindex [split $comment "\n"] 0 ]
         $w.f.tl insert end " $firstLine" tagtooltip$i
         ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$i
+        $w.f.tl tag bind tagtooltip$i <Double-Button-1> "::tree::mask::addComment $move"
       }
       $w.f.tl insert end "\n"
     } else  {
@@ -1261,10 +1266,11 @@ proc ::tree::countBaseMoves { {args ""} } {
 #                                 Mask namespace
 #
 #  All function calls with move in english
+#  Images are 17x17
 ################################################################################
 namespace eval ::tree::mask {
   # list of (fen (moves) position_annotation )
-  # where moves is ( move nag color move_anno )
+  # where moves is ( move nag color move_anno img )
   
   # mask(fen) contains data for a position
   array set mask {}
@@ -1287,7 +1293,7 @@ proc ::tree::mask::open {} {
   
   if {$filename != ""} {
     array unset ::tree::mask::mask
-    array set ::tree::mask::mask {}    
+    array set ::tree::mask::mask {}
     source $filename
     array set mask $maskSerialized
     set maskSerialized {}
@@ -1345,20 +1351,27 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   $mctxt add command -label "Add to Mask" -command "::tree::mask::addToMask $move"
   $mctxt add command -label "Remove from Mask" -command "::tree::mask::removeFromMask $move"
   $mctxt add separator
-  $mctxt add command -label "White" -background white -command "::tree::mask::setColor $move white"
-  $mctxt add command -label "Green" -background green -command "::tree::mask::setColor $move green"
-  $mctxt add command -label "Yellow" -background yellow -command "::tree::mask::setColor $move yellow"
-  $mctxt add command -label "Blue" -background blue -command "::tree::mask::setColor $move blue"
-  $mctxt add command -label "Red" -background red -command "::tree::mask::setColor $move red"
-  $mctxt add separator
+  menu $mctxt.color
+  $mctxt add cascade -label "Color" -menu $mctxt.color
+  foreach c { "White" "Green" "Yellow" "Blue" "Red"} {
+    $mctxt.color add command -label $c -background $c -command "::tree::mask::setColor $move $c"
+  }
+  
+  menu $mctxt.nag
+  $mctxt add cascade -label "Nag" -menu $mctxt.nag
   foreach nag { "!!" " !" "!?" "?!" "??" " ~"} {
-    $mctxt add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
+    $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
   }
   $mctxt add separator
   $mctxt add command -label "Comment move" -command "::tree::mask::addComment $move"
   $mctxt add command -label "Comment position" -command "::tree::mask::addComment"
-  # $mctxt add separator
-  # $mctxt add command -label "Move at top" -command "::tree::mask::move $move top"
+  menu $mctxt.image
+  $mctxt add cascade -label "Image" -menu $mctxt.image
+  foreach e { "Include" "Exclude" "Main line" "Bookmark" "White" "Black" "New" "To be checked" "To be played" "Dubious" "To remove"} \
+      i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
+        tb_new tb_rfilter tb_msearch tb_help tb_cut} {
+        $mctxt.image add command -label $e -image $i -compound left -command "::tree::mask::setImage $move $i"
+      }
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
   grab $mctxt
@@ -1377,7 +1390,7 @@ proc ::tree::mask::addToMask { move {fen ""} } {
   
   set moves [ lindex $mask($fen) 0 ]
   if {[lsearch $moves $move] == -1} {
-    lappend moves [list $move {} $::tree::mask::defaultColor {}]
+    lappend moves [list $move {} $::tree::mask::defaultColor {} {}]
     set newpos [lreplace $mask($fen) 0 0 $moves]
     set mask($fen) $newpos
     ::tree::refresh
@@ -1403,6 +1416,10 @@ proc ::tree::mask::removeFromMask { move {fen ""} } {
     ::tree::refresh
   }
   
+  # if the position has no move left and no comment, unset it
+  if { [llength [lindex $mask($fen) 0] ] == 0 && [lindex $mask($fen) 1] == "" } {
+    array unset mask $fen
+  }
 }
 ################################################################################
 # returns 1 if the move is already in mask
@@ -1584,6 +1601,8 @@ proc ::tree::mask::getPositionComment {{fen ""}} {
   }
   
   set comment [ lindex $mask($fen) 1 ]
+  set comment [ string trim $comment ]
+  
   return $comment
 }
 ################################################################################
@@ -1593,16 +1612,62 @@ proc ::tree::mask::setPositionComment { comment {fen ""} } {
   global ::tree::mask::mask
   
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
+  set comment [ string trim $comment ]
   
+  # add position automatically
   if {![info exists mask($fen)]} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
-    return
+    set mask($fen) { {} {} }
   }
   
   set newpos [ lreplace $mask($fen) 1 1 $comment ]
   set mask($fen) $newpos
   ::tree::refresh
 }
+
+################################################################################
+#
+################################################################################
+proc ::tree::mask::setImage { move img } {
+  global ::tree::mask::mask
+  set fen $::tree::mask::cacheFenIndex
+  
+  if {![info exists mask($fen)]} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  
+  set moves [ lindex $mask($fen) 0 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    return
+  }
+  set newmove [lreplace [lindex $moves $idxm] 4 4 $img ]
+  set moves [lreplace $moves $idxm $idxm $newmove ]
+  set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
+  
+  ::tree::refresh
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::getImage { move } {
+  global ::tree::mask::mask
+  
+  set fen $::tree::mask::cacheFenIndex
+  if {![info exists mask($fen)]} {
+    return ::tree::mask::emptyImage
+  }
+  set moves [ lindex $mask($fen) 0 ]
+  set idxm [lsearch -regexp $moves "^$move *"]
+  if { $idxm == -1} {
+    return ::tree::mask::emptyImage
+  }
+  set img [lindex $moves $idxm 4]
+  if {$img == ""} { set img ::tree::mask::emptyImage }
+  return $img
+}
+
 ################################################################################
 # if move is null, this is a position comment
 ################################################################################
@@ -1626,6 +1691,8 @@ proc ::tree::mask::addComment { { move "" } } {
 proc ::tree::mask::updateComment { { move "" } } {
   set e .treeMaskAddComment.f.e
   set newComment [$e get 1.0 end]
+  set newComment [ string trim $newComment ]
+  
   if {$move == ""} {
     ::tree::mask::setPositionComment $newComment
   } else  {
@@ -1732,3 +1799,38 @@ proc ::tree::mask::infoMask {} {
 ################################################################################
 #
 ################################################################################
+image create photo ::tree::mask::emptyImage -data {
+  R0lGODdhEQARAIAAAP///////ywAAAAAEQARAAACD4SPqcvtD6OctNqLs96xAAA7
+}
+image create photo ::tree::mask::imageWhite -data {
+  R0lGODlhEQARAMIEAAAAAD8/P39/f7+/v////////////////yH5BAEKAAcALAAAAAARABEA
+  AANBeLrcrkOI8RwYA9QGCNHbAkhgGAieEISq551b60rhmJaV0BHwFgQu3uohC6oeu6AHB0Ep
+  U4KG5AmVAq7YbDS0SQAAOw==
+}
+image create photo ::tree::mask::imageBlack -data {
+  R0lGODlhEQARAMIEAAAAAD8/P39/f7+/v////////////////yH5BAEKAAQALAAAAAARABEA
+  AAM0SLrcrkOI8Ry4oDac9eKeEnCBJ3CXoJ2oqqHdyrnViJYPC+MbjDkDH4bC0PloCiMMGWok
+  AAA7
+}
+image create photo ::tree::mask::imageMainLine -data {
+  R0lGODlhEQARAOfzAAAAAAIAAAMAAAYAAAUFBRIMCw4ODisLBBQUFCUSDiIXFR8fHygoKDg4
+  OE9BFVpQLlxQK2FWL2JWN2FXOGVZMGZaMrs3GWxfNGFhYWdjWcBGK8FGKm9rY8NMMd9CHsRU
+  O3R0cnV0cs9SNcdXPtxQMN9PLnx4b3p6d9xWOHx7echhSslkS4CAf4GAf4KBfuNdP4OCgN9f
+  QYODgYSDgYaFgt9jRsxtWIiIhZCKgeVpTuJrUN9yWNB4ZZOTkJSUkd94X916Y5qVipuVit96
+  YpuWipiXlJeXl5iXl52Xi5mYkeh5YJ2XjJmYl56Yjed7Y5uZl5+ZjZ+Zjpqal5qamZual5+a
+  jqCajpubmaGbj6GbkJycnKGckOeBa6OdkaOdkp6enp+enKOekueDbaSek5+fnqGfnKGgnaGh
+  oKGhodeQfaWjoKSko+qMd+KPfamppqqppquqp6urqqyrqKurq6yrqa2rqa2sqe2kPq+vrrCv
+  rbCvrrGwrrOyr+eejbOysfCpP7Ozs7SzsbSzsrS0steudLW0srW0s7W1s7W1tLW1tba1tLe2
+  tbi3tPOvQrm3tri4trm4uLm5ubq5t/SyRO+0Tbu7ufe1RPK2Tfe1Rb29vO6rm8C/vMDAwMPC
+  vsXEwcnJx8rKyM3LyPbSNs3My83Nzc/OytDOyvjYN9DQz9LRzdHR0dPSzvncONTTz9PT0tPT
+  09XTztbU0PnfOdfV0dfW0dbW1tjW0djW0tnX09nX1PrkOtrZ1dvZ1fvnO9za1tza2Nzb2Nzb
+  2fzpO9zc2t3c2N3c2t7d2fzrPd/e2uDe2t/f3eDf2+Hf2+Hf3OHg3ODg3+Hg3eLh3ePi4OTj
+  4OXj4OXk4eTk5Obl4ufm4+jn5Ofn5+np6evq6Ozr6e3s6u3t6+3t7e/v7vDw7vDw8PHw7vLy
+  8vPy8fTz8vT09Pb19Pb29vj39vj49/n5+Pn5+fr6+fv7+/z8+/7+/v//////////////////
+  /////////////////////////////////yH5BAEKAP8ALAAAAAARABEAAAj7AP8J/JdAwIAD
+  AxMOBPBKnaY+QFbUctdOm7UFCQGomyfmx44Rtea1w7MNUIOF8+ZxqVGjAxpOmdaMQzeHgEAA
+  KZV48GCBTKZMZxzNAADg5jx5OnmiWtfu2S8AvS4ZfccmRw4Vo86dMwcA04Wi/3CyY8ODh40p
+  jxAB0DWBqNFzAFgwAXBkEABKFZ6YAIvznLJP5IoFA3CKAgA7OPjOE4fokCBBAETdAQDCUxDF
+  3PboyUPHAVEXPXZlUYzt2jVqwAAUodJpFS4ofMFBc7bMWCo+m0LxwjULCV9VzJAZI5bLVCxe
+  vm7BEsI3SRgvXbZgsWIlC5QlRDKAVchdYUAAOw==
+}

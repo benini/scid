@@ -4,8 +4,8 @@
 |                                                           |
  ===========================================================
 
- coups hors arbre ne s'affichent plus
- 
+Coloration des scores si succès important et elo moyen fort et nbre de parties élevé
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -28,6 +28,8 @@ Possible improvements (perhaps not bugs, but awkward)
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- UCI on by default when configuring an engine
 
 - Option to set engines as 1st and 2nd default engines
 

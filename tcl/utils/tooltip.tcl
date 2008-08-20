@@ -109,6 +109,9 @@ proc ::utils::tooltip::Check {button} {
   catch {wm geometry .tooltip +$x+$y}
   wm deiconify .tooltip
   raise .tooltip
+  
+  # Automatically erase tooltip after a short delay
+  after 5000 [ list ::utils::tooltip::Leave $button ]
 }
 
 
@@ -117,6 +120,7 @@ proc ::utils::tooltip::Check {button} {
 #   Handles the mouse leaving a button which has a tooltip.
 #
 proc ::utils::tooltip::Leave {button} {
+  after cancel [ list ::utils::tooltip::Leave $button ]
   variable showToolTips
   if {! $showToolTips} { return }
   wm withdraw .tooltip
