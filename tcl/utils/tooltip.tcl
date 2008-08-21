@@ -23,6 +23,7 @@ wm overrideredirect .tooltip 1
 if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"}  {
   ::tk::unsupported::MacWindowStyle style .tooltip help none
 }
+bind .tooltip <Button-1> { wm withdraw .tooltip }
 wm withdraw .tooltip
 
 
@@ -111,7 +112,7 @@ proc ::utils::tooltip::Check {button} {
   raise .tooltip
   
   # Automatically erase tooltip after a short delay
-  after 5000 [ list ::utils::tooltip::Leave $button ]
+  after 15000 [ list ::utils::tooltip::Leave $button ]
 }
 
 

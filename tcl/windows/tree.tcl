@@ -532,15 +532,18 @@ proc ::tree::displayLines { baseNumber moves } {
     }
     if { $maskFile != "" } {
       if { $i > 0 && $i < [expr $len - 3] && $move != "\[end\]" } {
-        # image
-        set img [::tree::mask::getImage $move]
-        $w.f.tl image create end -image $img -align center
+        # images
+        foreach j { 0 1 } {
+          set img [::tree::mask::getImage $move $j]
+          $w.f.tl image create end -image $img -align center
+        }
         # color tag
         $w.f.tl tag configure color$i -background [::tree::mask::getColor $move]
         $w.f.tl insert end "  " color$i
         # NAG tag
         $w.f.tl insert end [::tree::mask::getNag $move]
       } else  {
+        $w.f.tl image create end -image ::tree::mask::emptyImage -align center
         $w.f.tl image create end -image ::tree::mask::emptyImage -align center
         $w.f.tl insert end "    "
       }
@@ -589,7 +592,9 @@ proc ::tree::displayLines { baseNumber moves } {
       $w.f.tl tag bind tagclick$idx <Button-1> "[list ::tree::selectCallback $baseNumber [lindex $m 0] ] ; break"
       # Bind right button to popup a contextual menu:
       $w.f.tl tag bind tagclick$idx <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl [lindex $m 0] %x %y %X %Y"
-      
+      # images
+      $w.f.tl image create end -image [lindex $m 4] -align center
+      $w.f.tl image create end -image [lindex $m 5] -align center
       # color tag
       $w.f.tl tag configure color$idx -background [lindex $m 2]
       $w.f.tl insert end "  " [ list color$idx tagclick$idx ]
@@ -1270,10 +1275,9 @@ proc ::tree::countBaseMoves { {args ""} } {
 #  Images are 17x17
 ################################################################################
 namespace eval ::tree::mask {
-  # list of (fen (moves) position_annotation )
-  # where moves is ( move nag color move_anno img )
   
-  # mask(fen) contains data for a position
+  # mask(fen) contains data for a position <fen> : ( moves, comment )
+  # where moves is ( move nag color move_anno img1 img2 )
   array set mask {}
   set maskSerialized {}
   set maskFile ""
@@ -1352,27 +1356,32 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   $mctxt add command -label "Add to Mask" -command "::tree::mask::addToMask $move"
   $mctxt add command -label "Remove from Mask" -command "::tree::mask::removeFromMask $move"
   $mctxt add separator
-  menu $mctxt.color
-  $mctxt add cascade -label "Color" -menu $mctxt.color
-  foreach c { "White" "Green" "Yellow" "Blue" "Red"} {
-    $mctxt.color add command -label $c -background $c -command "::tree::mask::setColor $move $c"
-  }
   
   menu $mctxt.nag
   $mctxt add cascade -label "Nag" -menu $mctxt.nag
   foreach nag { "!!" " !" "!?" "?!" "??" " ~"} {
     $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
   }
+  
+  foreach j { 0 1 } {
+    menu $mctxt.image$j
+    $mctxt add cascade -label "Marker $j" -menu $mctxt.image$j
+    foreach e { "Include" "Exclude" "Main line" "Bookmark" "White" "Black" "New" "To be verified" "To train" "Dubious" "To remove"} \
+        i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
+          tb_new tb_rfilter tb_msearch tb_help tb_cut} {
+          $mctxt.image$j add command -label $e -image $i -compound left -command "::tree::mask::setImage $move $i $j"
+        }
+    $mctxt.image$j add command -label "No marker" -command "::tree::mask::setImage $move {} $j"
+  }
+  menu $mctxt.color
+  $mctxt add cascade -label "Color" -menu $mctxt.color
+  foreach c { "White" "Green" "Yellow" "Blue" "Red"} {
+    $mctxt.color add command -label $c -background $c -command "::tree::mask::setColor $move $c"
+  }
+  
   $mctxt add separator
   $mctxt add command -label "Comment move" -command "::tree::mask::addComment $move"
   $mctxt add command -label "Comment position" -command "::tree::mask::addComment"
-  menu $mctxt.image
-  $mctxt add cascade -label "Image" -menu $mctxt.image
-  foreach e { "Include" "Exclude" "Main line" "Bookmark" "White" "Black" "New" "To be checked" "To be played" "Dubious" "To remove"} \
-      i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
-        tb_new tb_rfilter tb_msearch tb_help tb_cut} {
-        $mctxt.image add command -label $e -image $i -compound left -command "::tree::mask::setImage $move $i"
-      }
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
   grab $mctxt
@@ -1391,7 +1400,7 @@ proc ::tree::mask::addToMask { move {fen ""} } {
   
   set moves [ lindex $mask($fen) 0 ]
   if {[lsearch $moves $move] == -1} {
-    lappend moves [list $move {} $::tree::mask::defaultColor {} {}]
+    lappend moves [list $move {} $::tree::mask::defaultColor {} {} {}]
     set newpos [lreplace $mask($fen) 0 0 $moves]
     set mask($fen) $newpos
     ::tree::refresh
@@ -1430,7 +1439,7 @@ proc ::tree::mask::moveExists { move {fen ""} } {
   
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
-  if {![info exists mask($fen)]} {
+  if {![info exists mask($fen)] || $move == "\[end\]" } {
     return 0
   }
   set moves [ lindex $mask($fen) 0 ]
@@ -1624,14 +1633,12 @@ proc ::tree::mask::setPositionComment { comment {fen ""} } {
   set mask($fen) $newpos
   ::tree::refresh
 }
-
 ################################################################################
 #
 ################################################################################
-proc ::tree::mask::setImage { move img } {
+proc ::tree::mask::setImage { move img nmr } {
   global ::tree::mask::mask
   set fen $::tree::mask::cacheFenIndex
-  
   if {![info exists mask($fen)]} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
@@ -1643,7 +1650,8 @@ proc ::tree::mask::setImage { move img } {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
-  set newmove [lreplace [lindex $moves $idxm] 4 4 $img ]
+  set loc [expr 4 + $nmr]
+  set newmove [lreplace [lindex $moves $idxm] $loc $loc $img ]
   set moves [lreplace $moves $idxm $idxm $newmove ]
   set mask($fen) [ lreplace $mask($fen) 0 0 $moves ]
   
@@ -1652,7 +1660,7 @@ proc ::tree::mask::setImage { move img } {
 ################################################################################
 #
 ################################################################################
-proc ::tree::mask::getImage { move } {
+proc ::tree::mask::getImage { move nmr } {
   global ::tree::mask::mask
   
   set fen $::tree::mask::cacheFenIndex
@@ -1664,7 +1672,8 @@ proc ::tree::mask::getImage { move } {
   if { $idxm == -1} {
     return ::tree::mask::emptyImage
   }
-  set img [lindex $moves $idxm 4]
+  set loc [expr 4 + $nmr]
+  set img [lindex $moves $idxm $loc]
   if {$img == ""} { set img ::tree::mask::emptyImage }
   return $img
 }

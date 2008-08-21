@@ -5,7 +5,8 @@
  ===========================================================
 
 Coloration des scores si succès important et elo moyen fort et nbre de parties élevé
-Résoudre le cas du [end]
+Migrer optrainer
+Affichage des lignes permettant d'accéder à une position
 
  ===========================================================
 |                                                           |
@@ -30,7 +31,7 @@ Possible improvements (perhaps not bugs, but awkward)
 |                                                           |
  ===========================================================
 
-- UCI on by default when configuring an engine
+- EGTB 6 men (see sample code in tablebase.tcl for shredder queries)
 
 - Option to set engines as 1st and 2nd default engines
 

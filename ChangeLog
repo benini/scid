@@ -499,7 +499,7 @@ scid-3.6.25
 	* fixed tooltip display bug on MacOs (thanks to Israel Chauca)
 	* when info is available, the first line of engine window displays mate distance
 	* in case of engines not configured for some training stuff, added relevant error messages
-	* fixes on Tooltips display (max width, better placement, auto hide of the tooltip after 5 seconds)
+	* fixes on Tooltips display (max width, better placement, auto hide of the tooltip after few seconds, clicking on a tooltip hides it)
 - Annotation : added an option "mark tactical exercises". The tactical flag will be set to the game and a comment with ****d<depth>sc<score>. This option is only available when annotating with an UCI engine.
 - Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature. Pressing the right mouse button on "goto last move" (">>") button will go to next tactical exercises. A training base of over 1500 games has been released (not included in Scid package).
 - added extra options to "sc_pos analyze" :
