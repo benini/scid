@@ -4,10 +4,6 @@
 |                                                           |
  ===========================================================
 
-Coloration des scores si succès important et elo moyen fort et nbre de parties élevé
-Migrer optrainer
-Affichage des lignes permettant d'accéder à une position
-
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -31,11 +27,11 @@ Possible improvements (perhaps not bugs, but awkward)
 |                                                           |
  ===========================================================
 
-- EGTB 6 men (see sample code in tablebase.tcl for shredder queries)
+- Migrate optrainer to Mask
+
+- EGTB 6 men (online connection to Shredder's site is verboten, find another site)
 
 - Option to set engines as 1st and 2nd default engines
-
-- Set a Tree mask to filter displayed moves, color for moves / positions, flags, etc
 
 - Add a Game training ala Fritz' "Friend mode"
 

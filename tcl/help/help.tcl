@@ -1956,6 +1956,8 @@ set helpText(Tree) {<h1>The Tree window</h1>
   number of games, and a percentage) and score of each move.
   The <term>score</term> is always computed from the <b>White</b>
   perspective, so 100% means all White wins and 0% means all Black wins.
+  The <term>AvElo</term> (average Elo) corresponds to the player's on move and 
+  <term>Perf</term> (performance) represents the opponent's strength.
   </p>
   <p>
   The moves in the tree window can be sorted by move (alphabetically),

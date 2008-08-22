@@ -534,5 +534,6 @@ scid-3.6.25
 - Tree window : added the ability to view a tree through a mask (or layer) that contains user defined data (NAG codes, color markers, comments)
   * visible only if a Mask file (*.msk) is opened
   * the mask can be automatically with a game (as much data as possible will be imported, like variations, NAG codes, comments)
+- Tree window : scores are highlighted when the moves have good or bad results
 - updated spanish translation (thanks to Benigno Hernández)
 

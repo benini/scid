@@ -1,13 +1,6 @@
 ### tools/tablebase.tcl:
 ###   Tablebase display routines for Scid.
 
-# package require http
-# 
-# set fen "1k6/8/8/8/8/1K6/2R5/8 w - - 0 1"
-# set url "http://www.shredderchess.com/online/playshredder/fetch.php"
-# set query [ ::http::formatQuery action egtb hook [ lindex $fen 1 ] fen $fen ]
-# ::http::geturl $url -channel stdout -blocksize 4096 -query $query
-
 set ::tb::isOpen 0
 set tbTraining 0
 set tbBoard 0

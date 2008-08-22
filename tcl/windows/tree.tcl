@@ -6,6 +6,9 @@
 namespace eval ::tree {
   set trainingBase 0
   array set cachesize {}
+  set scoreHighlight_MinGames 15
+  set scoreHighlight_WhiteExpectedScoreBonus 3.8 ; # on average white achieves a score of 53.8
+  set scoreHighlight_Margin 3.0 ; # if +/- this value, something special happened
 }
 # ################################################################################
 proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
@@ -187,6 +190,8 @@ proc ::tree::make { { baseNumber -1 } } {
   $w.f.tl tag configure greybg -background #fa1cfa1cfa1c
   $w.f.tl tag configure whitebg -background white
   $w.f.tl tag configure bluefg -foreground blue
+  $w.f.tl tag configure greenfg -foreground SeaGreen
+  $w.f.tl tag configure redfg -foreground red
   
   canvas $w.progress -width 250 -height 15 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
@@ -522,6 +527,8 @@ proc ::tree::displayLines { baseNumber moves } {
     
     set move [::untrans $move]
     lappend lMoves $move
+    set colorScore [::tree::getColorScore $line]
+    if { $move == "\[end\]" } { set colorScore "" }
     
     set tagfg ""
     
@@ -555,7 +562,9 @@ proc ::tree::displayLines { baseNumber moves } {
     } else  {
       $w.f.tl insert end "$line" [list whitebg $tagfg tagclick$i tagtooltip$i]
     }
-    
+    if {$colorScore != ""} {
+      $w.f.tl tag add $colorScore end-30c end-26c
+    }
     if {$move != "" && $move != "---" && $move != "\[end\]" && $i != [expr $len -2] && $i != 0} {
       $w.f.tl tag bind tagclick$i <Button-1> "[list ::tree::selectCallback $baseNumber $move ] ; break"
       if { $maskFile != "" } {
@@ -593,8 +602,14 @@ proc ::tree::displayLines { baseNumber moves } {
       # Bind right button to popup a contextual menu:
       $w.f.tl tag bind tagclick$idx <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl [lindex $m 0] %x %y %X %Y"
       # images
-      $w.f.tl image create end -image [lindex $m 4] -align center
-      $w.f.tl image create end -image [lindex $m 5] -align center
+      foreach j {4 5} {
+        if {[lindex $m $j] == ""} {
+          $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+        } else  {
+          $w.f.tl image create end -image [lindex $m $j] -align center
+        }
+      }
+      
       # color tag
       $w.f.tl tag configure color$idx -background [lindex $m 2]
       $w.f.tl insert end "  " [ list color$idx tagclick$idx ]
@@ -613,6 +628,71 @@ proc ::tree::displayLines { baseNumber moves } {
   
   $w.f.tl configure -state disabled
   
+}
+################################################################################
+# returns a list with (ngames freq success eloavg perf) or
+# {} if there was a problem during parsing
+# 1: e4     B00     37752: 47.1%   54.7%  2474  2513  2002   37%
+################################################################################
+proc ::tree::getLineValues { l } {
+  set ret {}
+  if {[scan [string range $l 14 24] "%d:" ngames] != 1} {
+    return {}
+  } else  {
+    lappend ret $ngames
+  }
+  
+  if {[scan [string range $l 25 29] "%f%%" freq] != 1} {
+    return {}
+  } else  {
+    lappend ret $freq
+  }
+  
+  if {[scan [string range $l 33 37] "%f%%" success] != 1} {
+    return {}
+  } else  {
+    lappend ret $success
+  }
+  
+  if {[scan [string range $l 40 44] "%d" eloavg] != 1} {
+    return {}
+  } else  {
+    lappend ret $eloavg
+  }
+  
+  if {[scan [string range $l 46 50] "%d" perf] != 1} {
+    return {}
+  } else  {
+    lappend ret $perf
+  }
+  
+  return $ret
+}
+################################################################################
+# returns the color to use for score (red, green) or ""
+################################################################################
+proc ::tree::getColorScore { line } {
+  set data [::tree::getLineValues $line]
+  if { $data == {} } { return "" }
+  set ngames [lindex $data 0]
+  set freq [lindex $data 1]
+  set success [lindex $data 2]
+  set eloavg [lindex $data 3]
+  set perf [lindex $data 4]
+  if { $ngames < $::tree::scoreHighlight_MinGames } {
+    return ""
+  }
+  set wavg [ expr 50 + $::tree::scoreHighlight_WhiteExpectedScoreBonus ]
+  set bavg [ expr 50 - $::tree::scoreHighlight_WhiteExpectedScoreBonus ]
+  if { [sc_pos side] == "white" && $success > [ expr $wavg + $::tree::scoreHighlight_Margin ] || \
+        [sc_pos side] == "black" && $success < [ expr $wavg - $::tree::scoreHighlight_Margin ] } {
+    return greenfg
+  }
+  if { [sc_pos side] == "white" && $success < [ expr $wavg - $::tree::scoreHighlight_Margin ] || \
+        [sc_pos side] == "black" && $success > [ expr $wavg + $::tree::scoreHighlight_Margin ] } {
+    return redfg
+  }
+  return ""
 }
 ################################################################################
 proc ::tree::status { msg baseNumber } {
@@ -1285,6 +1365,7 @@ namespace eval ::tree::mask {
   set emptyNag "  "
   set textComment ""
   set cacheFenIndex -1
+  set dirty 0 ; # if Mask data has changed
 }
 ################################################################################
 #
@@ -1297,13 +1378,26 @@ proc ::tree::mask::open {} {
   set filename [tk_getOpenFile -filetypes $types -defaultextension ".stm"]
   
   if {$filename != ""} {
+    ::tree::mask::askForSave
     array unset ::tree::mask::mask
     array set ::tree::mask::mask {}
     source $filename
     array set mask $maskSerialized
     set maskSerialized {}
     set ::tree::mask::maskFile $filename
+    set ::tree::mask::dirty 0
     ::tree::refresh
+  }
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::askForSave {} {
+  if {$::tree::mask::dirty} {
+    set answer [tk_messageBox -title Scid -icon warning -type yesno -message "Do you want to save first\n$::tree::mask::maskFile ?"]
+    if {$answer == "yes"} {
+      ::tree::mask::save
+    }
   }
 }
 ################################################################################
@@ -1317,6 +1411,10 @@ proc ::tree::mask::new {} {
   set filename [tk_getSaveFile -filetypes $types -defaultextension ".stm"]
   
   if {$filename != ""} {
+    if {$::tree::mask::dirty} {
+      ::tree::mask::askForSave
+    }
+    set ::tree::mask::dirty 0
     set ::tree::mask::maskFile $filename
     array unset ::tree::mask::mask
     array set ::tree::mask::mask {}
@@ -1327,6 +1425,10 @@ proc ::tree::mask::new {} {
 #
 ################################################################################
 proc ::tree::mask::close {} {
+  if {$::tree::mask::dirty} {
+    ::tree::mask::askForSave
+  }
+  set ::tree::mask::dirty 0
   array unset ::tree::mask::mask
   array set ::tree::mask::mask {}
   set ::tree::mask::maskFile ""
@@ -1339,6 +1441,7 @@ proc ::tree::mask::save {} {
   set f [ ::open $::tree::mask::maskFile w ]
   puts $f "set ::tree::mask::maskSerialized [list [array get ::tree::mask::mask]]"
   ::close $f
+  set ::tree::mask::dirty 0
 }
 ################################################################################
 #
@@ -1365,7 +1468,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   
   foreach j { 0 1 } {
     menu $mctxt.image$j
-    $mctxt add cascade -label "Marker $j" -menu $mctxt.image$j
+    $mctxt add cascade -label "Marker [expr $j +1]" -menu $mctxt.image$j
     foreach e { "Include" "Exclude" "Main line" "Bookmark" "White" "Black" "New" "To be verified" "To train" "Dubious" "To remove"} \
         i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
           tb_new tb_rfilter tb_msearch tb_help tb_cut} {
@@ -1397,7 +1500,7 @@ proc ::tree::mask::addToMask { move {fen ""} } {
   if {![info exists mask($fen)]} {
     set mask($fen) { {} {} }
   }
-  
+  set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   if {[lsearch $moves $move] == -1} {
     lappend moves [list $move {} $::tree::mask::defaultColor {} {} {}]
@@ -1417,6 +1520,7 @@ proc ::tree::mask::removeFromMask { move {fen ""} } {
   if {![info exists mask($fen)]} {
     return
   }
+  set ::tree::mask::dirty 1
   
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
@@ -1492,6 +1596,7 @@ proc ::tree::mask::setColor { move color {fen ""}} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
+  set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
@@ -1538,6 +1643,7 @@ proc ::tree::mask::setNag { move nag {fen ""} } {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
+  set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
@@ -1586,7 +1692,7 @@ proc ::tree::mask::setComment { move comment { fen "" } } {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
-  
+  set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
@@ -1623,7 +1729,7 @@ proc ::tree::mask::setPositionComment { comment {fen ""} } {
   
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   set comment [ string trim $comment ]
-  
+  set ::tree::mask::dirty 1
   # add position automatically
   if {![info exists mask($fen)]} {
     set mask($fen) { {} {} }
@@ -1643,7 +1749,7 @@ proc ::tree::mask::setImage { move img nmr } {
     tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
     return
   }
-  
+  set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
@@ -1702,7 +1808,7 @@ proc ::tree::mask::updateComment { { move "" } } {
   set e .treeMaskAddComment.f.e
   set newComment [$e get 1.0 end]
   set newComment [ string trim $newComment ]
-  
+  set ::tree::mask::dirty 1
   if {$move == ""} {
     ::tree::mask::setPositionComment $newComment
   } else  {
@@ -1719,6 +1825,7 @@ proc ::tree::mask::fillWithGame {} {
     return
   }
   ::tree::primeWithGame 1
+  set ::tree::mask::dirty 1
 }
 ################################################################################
 #
@@ -1729,6 +1836,7 @@ proc ::tree::mask::fillWithBase {} {
     return
   }
   ::tree::primeWithBase 1
+  set ::tree::mask::dirty 1
 }
 ################################################################################
 # Take current position information and fill the mask (move, nag, comments, etc)
