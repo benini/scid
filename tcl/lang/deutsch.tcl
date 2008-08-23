@@ -6288,8 +6288,8 @@ Information gewöhnlich nicht übertragen.
 <p><footer>(Updated: Scid 3.6.25, August 2008)</footer></p>
 }
 
-set helpTitle(CCIcons) "Fernschach: Icons und Statusindikatoren"
-set helpText(CCIcons) {
+set helpTitle(D,CCIcons) "Fernschach: Icons und Statusindikatoren"
+set helpText(D,CCIcons) {
 <h1>Icons und Statusindikatoren</h1>
 <p>
 Um die Anzeige in der Partienliste abzukürzen werden einige Symbole
