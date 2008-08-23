@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.11 2008/08/18 17:37:22 arwagner Exp $
+### $Id: correspondence.tcl,v 1.12 2008/08/23 08:32:27 arwagner Exp $
 ###
-### Last change: <Mon, 2008/08/18 19:35:17 arwagner ingata>
+### Last change: <Sat, 2008/08/23 10:27:48 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1401,6 +1401,7 @@ namespace eval CorrespondenceChess {
 		grid $w.bottom.ysc      -column 19 -row 1 -stick ns
 
 		bind $w <F1>   { helpWindow Correspondence}
+		bind $w "?"    { helpWindow CCIcons}
 	}
 
 	#--------------------------------------------------------------------------
@@ -1434,11 +1435,15 @@ namespace eval CorrespondenceChess {
 			$w.bottom.id image create end -align center -image tb_CC_message
 			set endpos [$w.bottom.id index insert]
 
-			$w.bottom.id tag add id$id $curpos $endpos
-#			::utils::tooltip::Set $w.bottom.id $mess $w.bottom.id id$id
+			$w.bottom.id tag add idmsg$id $curpos $endpos
+			::utils::tooltip::SetTag $w.bottom.id "$mess" idmsg$id
 		}
 		# add the game id. Note the \n at the end is necessary!
+		set curpos [$w.bottom.id index insert]
 		$w.bottom.id      insert end "$id\n"
+		set endpos [$w.bottom.id index insert]
+		$w.bottom.id tag add id$id $curpos $endpos
+		::utils::tooltip::SetTag $w.bottom.id "$id" id$id
 
 
 		# ToMove may contain a mixture of text for game results plus
@@ -1449,16 +1454,28 @@ namespace eval CorrespondenceChess {
 
 		switch -regexp -- $toMove \
 		"1-0" {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image $::board::letterToPiece(K)25
 			$w.bottom.toMove  insert end " $toMove"
+			set endpos [$w.bottom.toMove index insert]
+			$w.bottom.toMove tag add toMove$id $curpos $endpos
+			::utils::tooltip::SetTag $w.bottom.toMove "$toMove" toMove$id
 		} \
 		"0-1" {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image $::board::letterToPiece(k)25
 			$w.bottom.toMove  insert end " $toMove"
+			set endpos [$w.bottom.toMove index insert]
+			$w.bottom.toMove tag add toMove$id $curpos $endpos
+			::utils::tooltip::SetTag $w.bottom.toMove "$toMove" toMove$id
 		} \
 		" = " {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image tb_CC_draw
-			$w.bottom.toMove  insert end " = "
+			$w.bottom.toMove  insert end "$toMove"
+			set endpos [$w.bottom.toMove index insert]
+			$w.bottom.toMove tag add toMove$id $curpos $endpos
+			::utils::tooltip::SetTag $w.bottom.toMove "$toMove" toMove$id
 		} \
 		"yes" {
 			$w.bottom.toMove image create end -align center -image tb_CC_yourmove
@@ -1475,10 +1492,17 @@ namespace eval CorrespondenceChess {
 		$w.bottom.toMove insert end "\n"
 
 		# Add textual information to the edit fields
+		set curpos [$w.bottom.event index insert]
 		$w.bottom.event   insert end "$event\n"
+		set endpos [$w.bottom.event index insert]
+		$w.bottom.event tag add event$id $curpos $endpos
+		::utils::tooltip::SetTag $w.bottom.event "$event" event$id
 
-		$w.bottom.site    insert end " "
+		set curpos [$w.bottom.site index insert]
 		$w.bottom.site    insert end "$site\n"
+		set endpos [$w.bottom.site index insert]
+		$w.bottom.site tag add site$id $curpos $endpos
+		::utils::tooltip::SetTag $w.bottom.site "$site" site$id
 
 		if {$wc != ""} {
 			if {[lsearch [image names] $wc] > -1} {
