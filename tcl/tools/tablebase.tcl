@@ -6,6 +6,13 @@ set tbTraining 0
 set tbBoard 0
 set tbStatus ""
 
+if { [catch {package require http} ] } {
+  set ::tb::online_available 0
+} else  {
+  set ::tb::online_available 1
+}
+set ::tb::url "http://k4it.de/egtb/fetch.php"
+
 namespace eval ::tb {}
 
 set tbInfo(section) 21
@@ -16,92 +23,92 @@ foreach i $tbInfo(sections) { set tbInfo($i) [list] }
 set tbInfo(21) [list kqk krk kbk knk kpk]
 
 set tbInfo(22) [list \
-  kqkq kqkr kqkb kqkn kqkp \
-  -    krkr krkb krkn krkp \
-  -    -    kbkb kbkn kbkp \
-  -    -    -    knkn knkp \
-  -    -    -    -    kpkp ]
+    kqkq kqkr kqkb kqkn kqkp \
+    -    krkr krkb krkn krkp \
+    -    -    kbkb kbkn kbkp \
+    -    -    -    knkn knkp \
+    -    -    -    -    kpkp ]
 
 set tbInfo(31) [list \
-  kqqk kqrk kqbk kqnk kqpk \
-  -    krrk krbk krnk krpk \
-  -    -    kbbk kbnk kbpk \
-  -    -    -    knnk knpk \
-  -    -    -    -    kppk ]
+    kqqk kqrk kqbk kqnk kqpk \
+    -    krrk krbk krnk krpk \
+    -    -    kbbk kbnk kbpk \
+    -    -    -    knnk knpk \
+    -    -    -    -    kppk ]
 
 set tbInfo(32) [list \
-  kqqkq kqqkr kqqkb kqqkn kqqkp \
-  kqrkq kqrkr kqrkb kqrkn kqrkp \
-  kqbkq kqbkr kqbkb kqbkn kqbkp \
-  kqnkq kqnkr kqnkb kqnkn kqnkp \
-  kqpkq kqpkr kqpkb kqpkn kqpkp \
-  -     -     -     -     -     \
-  krrkq krrkr krrkb krrkn krrkp \
-  krbkq krbkr krbkb krbkn krbkp \
-  krnkq krnkr krnkb krnkn krnkp \
-  krpkq krpkr krpkb krpkn krpkp \
-  -     -     -     -     -     \
-  kbbkq kbbkr kbbkb kbbkn kbbkp \
-  kbnkq kbnkr kbnkb kbnkn kbnkp \
-  kbpkq kbpkr kbpkb kbpkn kbpkp \
-  -     -     -     -     -     \
-  knnkq knnkr knnkb knnkn knnkp \
-  knpkq knpkr knpkb knpkn knpkp \
-  kppkq kppkr kppkb kppkn kppkp ]
+    kqqkq kqqkr kqqkb kqqkn kqqkp \
+    kqrkq kqrkr kqrkb kqrkn kqrkp \
+    kqbkq kqbkr kqbkb kqbkn kqbkp \
+    kqnkq kqnkr kqnkb kqnkn kqnkp \
+    kqpkq kqpkr kqpkb kqpkn kqpkp \
+    -     -     -     -     -     \
+    krrkq krrkr krrkb krrkn krrkp \
+    krbkq krbkr krbkb krbkn krbkp \
+    krnkq krnkr krnkb krnkn krnkp \
+    krpkq krpkr krpkb krpkn krpkp \
+    -     -     -     -     -     \
+    kbbkq kbbkr kbbkb kbbkn kbbkp \
+    kbnkq kbnkr kbnkb kbnkn kbnkp \
+    kbpkq kbpkr kbpkb kbpkn kbpkp \
+    -     -     -     -     -     \
+    knnkq knnkr knnkb knnkn knnkp \
+    knpkq knpkr knpkb knpkn knpkp \
+    kppkq kppkr kppkb kppkn kppkp ]
 
 set tbInfo(41) [list \
-  kqqqk kqqrk kqqbk kqqnk kqqpk \
-  -     kqrrk kqrbk kqrnk kqrpk \
-  -     -     kqbbk kqbnk kqbpk \
-  -     -     -     kqnnk kqnpk \
-  -     -     -     -     kqppk \
-  -     krrrk krrbk krrnk krrpk \
-  -     -     krbbk krbnk krbpk \
-  -     -     -     krnnk krnpk \
-  -     -     -     -     krppk \
-  -     -     kbbbk kbbnk kbbpk \
-  -     -     -     kbnnk kbnpk \
-  -     -     -     -     kbppk \
-  -     -     -     knnnk knnpk \
-  -     -     -     -     knppk \
-  -     -     -     -     kpppk ]
+    kqqqk kqqrk kqqbk kqqnk kqqpk \
+    -     kqrrk kqrbk kqrnk kqrpk \
+    -     -     kqbbk kqbnk kqbpk \
+    -     -     -     kqnnk kqnpk \
+    -     -     -     -     kqppk \
+    -     krrrk krrbk krrnk krrpk \
+    -     -     krbbk krbnk krbpk \
+    -     -     -     krnnk krnpk \
+    -     -     -     -     krppk \
+    -     -     kbbbk kbbnk kbbpk \
+    -     -     -     kbnnk kbnpk \
+    -     -     -     -     kbppk \
+    -     -     -     knnnk knnpk \
+    -     -     -     -     knppk \
+    -     -     -     -     kpppk ]
 
 set tbInfo(42) [list \
-  kqqqkq kqqqkr kqqqkb kqqqkn kqqqkp \
-  kqqrkq kqqrkr kqqrkb kqqrkn kqqrkp \
-  kqqbkq kqqbkr kqqbkb kqqbkn kqqbkp \
-  kqqnkq kqqnkr kqqnkb kqqnkn kqqnkp \
-  kqqpkq kqqpkr kqqpkb kqqpkn kqqpkp \
-  kqrrkq kqrrkr kqrrkb kqrrkn kqrrkp \
-  kqrbkq kqrbkr kqrbkb kqrbkn kqrbkp \
-  kqrnkq kqrnkr kqrnkb kqrnkn kqrnkp \
-  kqrpkq kqrpkr kqrpkb kqrpkn kqrpkp \
-  kqbbkq kqbbkr kqbbkb kqbbkn kqbbkp \
-  kqbnkq kqbnkr kqbnkb kqbnkn kqbnkp \
-  kqbpkq kqbpkr kqbpkb kqbpkn kqbpkp \
-  kqnnkq kqnnkr kqnnkb kqnnkn kqnnkp \
-  kqnpkq kqnpkr kqnpkb kqnpkn kqnpkp \
-  kqppkq kqppkr kqppkb kqppkn kqppkp \
-  krrrkq krrrkr krrrkb krrrkn krrrkp \
-  krrbkq krrbkr krrbkb krrbkn krrbkp \
-  krrnkq krrnkr krrnkb krrnkn krrnkp \
-  krrpkq krrpkr krrpkb krrpkn krrpkp \
-  krbbkq krbbkr krbbkb krbbkn krbbkp \
-  krbnkq krbnkr krbnkb krbnkn krbnkp \
-  krbpkq krbpkr krbpkb krbpkn krbpkp \
-  krnnkq krnnkr krnnkb krnnkn krnnkp \
-  krnpkq krnpkr krnpkb krnpkn krnpkp \
-  krppkq krppkr krppkb krppkn krppkp \
-  kbbbkq kbbbkr kbbbkb kbbbkn kbbbkp \
-  kbbnkq kbbnkr kbbnkb kbbnkn kbbnkp \
-  kbbpkq kbbpkr kbbpkb kbbpkn kbbpkp \
-  kbnnkq kbnnkr kbnnkb kbnnkn kbnnkp \
-  kbnpkq kbnpkr kbnpkb kbnpkn kbnpkp \
-  kbppkq kbppkr kbppkb kbppkn kbppkp \
-  knnnkq knnnkr knnnkb knnnkn knnnkp \
-  knnpkq knnpkr knnpkb knnpkn knnpkp \
-  knppkq knppkr knppkb knppkn knppkp \
-  kpppkq kpppkr kpppkb kpppkn kpppkp ]
+    kqqqkq kqqqkr kqqqkb kqqqkn kqqqkp \
+    kqqrkq kqqrkr kqqrkb kqqrkn kqqrkp \
+    kqqbkq kqqbkr kqqbkb kqqbkn kqqbkp \
+    kqqnkq kqqnkr kqqnkb kqqnkn kqqnkp \
+    kqqpkq kqqpkr kqqpkb kqqpkn kqqpkp \
+    kqrrkq kqrrkr kqrrkb kqrrkn kqrrkp \
+    kqrbkq kqrbkr kqrbkb kqrbkn kqrbkp \
+    kqrnkq kqrnkr kqrnkb kqrnkn kqrnkp \
+    kqrpkq kqrpkr kqrpkb kqrpkn kqrpkp \
+    kqbbkq kqbbkr kqbbkb kqbbkn kqbbkp \
+    kqbnkq kqbnkr kqbnkb kqbnkn kqbnkp \
+    kqbpkq kqbpkr kqbpkb kqbpkn kqbpkp \
+    kqnnkq kqnnkr kqnnkb kqnnkn kqnnkp \
+    kqnpkq kqnpkr kqnpkb kqnpkn kqnpkp \
+    kqppkq kqppkr kqppkb kqppkn kqppkp \
+    krrrkq krrrkr krrrkb krrrkn krrrkp \
+    krrbkq krrbkr krrbkb krrbkn krrbkp \
+    krrnkq krrnkr krrnkb krrnkn krrnkp \
+    krrpkq krrpkr krrpkb krrpkn krrpkp \
+    krbbkq krbbkr krbbkb krbbkn krbbkp \
+    krbnkq krbnkr krbnkb krbnkn krbnkp \
+    krbpkq krbpkr krbpkb krbpkn krbpkp \
+    krnnkq krnnkr krnnkb krnnkn krnnkp \
+    krnpkq krnpkr krnpkb krnpkn krnpkp \
+    krppkq krppkr krppkb krppkn krppkp \
+    kbbbkq kbbbkr kbbbkb kbbbkn kbbbkp \
+    kbbnkq kbbnkr kbbnkb kbbnkn kbbnkp \
+    kbbpkq kbbpkr kbbpkb kbbpkn kbbpkp \
+    kbnnkq kbnnkr kbnnkb kbnnkn kbnnkp \
+    kbnpkq kbnpkr kbnpkb kbnpkn kbnpkp \
+    kbppkq kbppkr kbppkb kbppkn kbppkp \
+    knnnkq knnnkr knnnkb knnnkn knnnkp \
+    knnpkq knnpkr knnpkb knnpkn knnpkp \
+    knppkq knppkr knppkb knppkn knppkp \
+    kpppkq kpppkr kpppkb kpppkn kpppkp ]
 
 # ::tb::isopen
 #   Returns boolean value of whether the tablebase window is open.
@@ -124,41 +131,41 @@ proc ::tb::Open {} {
   pack [frame $w.info] -side left -fill y
   addVerticalRule $w
   pack [frame $w.pos] -side right -fill both -expand yes
-
+  
   # Left frame: tablebase browser and summary info
-
+  
   set f $w.info
   pack [frame $f.sec] -side top -fill x
   foreach i $tbInfo(sections) {
     set name "[string index $i 0]-[string index $i 1]"
     radiobutton $f.sec.b$i -text " $name " \
-      -variable tbInfo(section) -value $i \
-      -indicatoron 0 -command "::tb::section $i"
+        -variable tbInfo(section) -value $i \
+        -indicatoron 0 -command "::tb::section $i"
     pack $f.sec.b$i -side left -pady 1 -padx 1
   }
   autoscrollframe $f.list text $f.list.text \
-    -width 35 -height 7 -font font_Fixed -wrap none \
-    -foreground black -background white -cursor top_left_arrow
+      -width 35 -height 7 -font font_Fixed -wrap none \
+      -foreground black -background white -cursor top_left_arrow
   pack $f.list -side top
   pack [frame $f.separator -height 2]
   # addHorizontalRule $f
-
+  
   autoscrollframe $f.data text $f.data.text \
-    -width 35 -height 0 -font font_Fixed -wrap none \
-    -foreground black -background white -cursor top_left_arrow
+      -width 35 -height 0 -font font_Fixed -wrap none \
+      -foreground black -background white -cursor top_left_arrow
   pack $f.data -side top -fill y -expand yes
-
+  
   $f.list.text tag configure avail -foreground blue
   $f.list.text tag configure unavail -foreground gray40
   $f.data.text tag configure fen -foreground blue
-
+  
   # Right frame: tablebase results for current position
-
+  
   set f $w.pos
   autoscrollframe $f text $f.text -width 30 -height 20 -font font_Small \
-    -wrap word -foreground black -background white -setgrid 1
+      -wrap word -foreground black -background white -setgrid 1
   $f.text tag configure indent -lmargin2 [font measure font_Fixed  "        "]
-
+  
   ::board::new $f.board 25
   $f.board configure -relief solid -borderwidth 1
   for {set i 0} {$i < 64} {incr i} {
@@ -167,17 +174,20 @@ proc ::tb::Open {} {
   if {$::tbBoard} {
     grid $f.board -row 0 -column 2 -rowspan 2
   }
-
-  checkbutton $w.b.training -text $::tr(Training) -variable tbTraining \
-    -command ::tb::training -relief raised -padx 4 -pady 5
+  
+  checkbutton $w.b.training -text $::tr(Training) -variable tbTraining -command ::tb::training -relief raised -padx 4 -pady 5
+  button $w.b.online -text Online -command ::tb::updateOnline -relief raised -padx 4 -pady 5
+  if { !$::tb::online_available } {
+    $w.b.online configure -state disabled
+  }
   button $w.b.random -text "Random" -command ::tb::random
   button $w.b.showboard -image tb_coords -command ::tb::showBoard
   dialogbutton $w.b.help -text $::tr(Help) -command { helpWindow TB }
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   label $w.b.status -width 1 -textvar tbStatus -font font_Small \
-    -relief flat -anchor w -height 0
+      -relief flat -anchor w -height 0
   packbuttons right $w.b.close $w.b.help
-  pack $w.b.training $w.b.random $w.b.showboard -side left -padx 2 -pady 2
+  pack $w.b.training $w.b.online $w.b.random $w.b.showboard -side left -padx 2 -pady 2
   pack $w.b.status -side left -fill x -expand yes
   bind $w <Destroy> { set ::tb::isOpen 0; set tbTraining 0 }
   bind $w <F1> { helpWindow TB }
@@ -283,9 +293,9 @@ proc ::tb::section {{sec 0}} {
       $t insert end " "
       # Bind tags for enter/leave/buttonpress on this tb:
       $t tag bind $tb <Any-Enter> \
-        [list $t tag configure $tb -foreground yellow -background darkBlue]
+          [list $t tag configure $tb -foreground yellow -background darkBlue]
       $t tag bind $tb <Any-Leave> \
-        [list $t tag configure $tb -foreground {} -background {}]
+          [list $t tag configure $tb -foreground {} -background {}]
       $t tag bind $tb <ButtonPress-1> [list ::tb::summary $tb]
     }
     incr count
@@ -303,7 +313,7 @@ proc ::tb::summary {{material ""}} {
   global tbInfo tbs
   set w .tbWin
   if {! [winfo exists $w]} { return }
-
+  
   if {$material == ""} { set material $tbInfo(material) }
   set tbInfo(material) $material
   set t $w.info.data.text
@@ -316,15 +326,15 @@ proc ::tb::summary {{material ""}} {
     return
   }
   set data $tbs($material)
-
+  
   $t insert end [format "    %5u games per million\n\n" [lindex $data 0]]
-
+  
   # Longest-mate and result-percentage stats:
-
+  
   $t insert end "Side    Longest    %     %     %\n"
   $t insert end "to move   mate    Win  Draw  Loss\n"
   $t insert end "---------------------------------\n"
-
+  
   # Stats for White:
   $t insert end "White     "
   set len [lindex $data 1]
@@ -334,9 +344,9 @@ proc ::tb::summary {{material ""}} {
     append fen " w"
     $t insert end [format "%3s" $len] [list fen $fen]
     $t tag bind $fen <Any-Enter> \
-      [list $t tag configure $fen -foreground yellow -background darkBlue]
+        [list $t tag configure $fen -foreground yellow -background darkBlue]
     $t tag bind $fen <Any-Leave> \
-      [list $t tag configure $fen -foreground {} -background {}]
+        [list $t tag configure $fen -foreground {} -background {}]
     $t tag bind $fen <ButtonPress-1> [list ::tb::setFEN $fen]
   } else {
     $t insert end [format "%3s" $len]
@@ -346,7 +356,7 @@ proc ::tb::summary {{material ""}} {
   $t insert end [format " %5s" [lindex $data 6]]
   $t insert end [format " %5s" [lindex $data 7]]
   $t insert end "\n"
-
+  
   # Stats for Black:
   $t insert end "Black     "
   set len [lindex $data 3]
@@ -356,9 +366,9 @@ proc ::tb::summary {{material ""}} {
     append fen " b"
     $t insert end [format "%3s" $len] [list fen $fen]
     $t tag bind $fen <Any-Enter> \
-      [list $t tag configure $fen -foreground yellow -background darkBlue]
+        [list $t tag configure $fen -foreground yellow -background darkBlue]
     $t tag bind $fen <Any-Leave> \
-      [list $t tag configure $fen -foreground {} -background {}]
+        [list $t tag configure $fen -foreground {} -background {}]
     $t tag bind $fen <ButtonPress-1> [list ::tb::setFEN $fen]
   } else {
     $t insert end [format "%3s" $len]
@@ -368,7 +378,7 @@ proc ::tb::summary {{material ""}} {
   $t insert end [format " %5s" [lindex $data 9]]
   $t insert end [format " %5s" [lindex $data 10]]
   $t insert end "\n\n"
-
+  
   set mzugs [lindex $data 11]
   $t insert end "Mutual zugzwangs: "
   if {$mzugs >= 0} { $t insert end "$mzugs\n" } else { $t insert end "?\n" }
@@ -376,14 +386,14 @@ proc ::tb::summary {{material ""}} {
     $t configure -state disabled
     return
   }
-
+  
   # Extra Zugzwang info:
   set nBtmLoses [lindex $data 12]
   set nWtmLoses [lindex $data 14]
   set nBothLose [lindex $data 16]
   set zugnames [list " White draws, Black loses: " \
-                  " Black draws, White loses: " \
-                  " Whoever moves loses:      "]
+      " Black draws, White loses: " \
+      " Whoever moves loses:      "]
   if {$nBtmLoses > 0} {
     $t insert end [lindex $zugnames 0]
     $t insert end [format "%5d\n" $nBtmLoses]
@@ -396,7 +406,7 @@ proc ::tb::summary {{material ""}} {
     $t insert end [lindex $zugnames 2]
     $t insert end [format "%5d\n" $nBothLose]
   }
-
+  
   # Selected zugzwang positions:
   set btmFens [lindex $data 13]
   set wtmFens [lindex $data 15]
@@ -409,31 +419,31 @@ proc ::tb::summary {{material ""}} {
     $t configure -state disabled
     return
   }
-
+  
   # Print the lists of selected zugzwang positions:
   $t insert end "\nSelected zugzwang positions:"
   foreach n [list $nBtmFens $nWtmFens $nBothFens] \
-    fenlist [list $btmFens $wtmFens $bothFens] \
-    name $zugnames tomove [list b w w] {
-      if {$n == 0} { continue }
-      $t insert end "\n [string trim $name]"
-      set count 0
-      for {set count 0} {$count < $n} {incr count} {
-        set fen [lindex $fenlist $count]
-        if {[expr $count % 10] == 0} {
-          $t insert end "\n  "
-        }
-        $t insert end " "
-        append fen " $tomove"
-        $t insert end [format "%2d" [expr $count + 1]] [list fen $fen]
-        $t tag bind $fen <Any-Enter> \
+      fenlist [list $btmFens $wtmFens $bothFens] \
+      name $zugnames tomove [list b w w] {
+        if {$n == 0} { continue }
+        $t insert end "\n [string trim $name]"
+        set count 0
+        for {set count 0} {$count < $n} {incr count} {
+          set fen [lindex $fenlist $count]
+          if {[expr $count % 10] == 0} {
+            $t insert end "\n  "
+          }
+          $t insert end " "
+          append fen " $tomove"
+          $t insert end [format "%2d" [expr $count + 1]] [list fen $fen]
+          $t tag bind $fen <Any-Enter> \
           [list $t tag configure $fen -foreground yellow -background darkBlue]
-        $t tag bind $fen <Any-Leave> \
+          $t tag bind $fen <Any-Leave> \
           [list $t tag configure $fen -foreground {} -background {}]
-        $t tag bind $fen <ButtonPress-1> [list ::tb::setFEN $fen]
+          $t tag bind $fen <ButtonPress-1> [list ::tb::setFEN $fen]
+        }
       }
-    }
-
+  
   $t configure -state disabled
 }
 
@@ -445,12 +455,12 @@ proc ::tb::results {} {
   global tbTraining
   set w .tbWin
   if {! [winfo exists $w]} { return }
-
+  
   # Reset results board:
   ::board::recolor $w.pos.board
   ::board::clearText $w.pos.board
   ::board::update $w.pos.board [sc_pos board]
-
+  
   # Update results panel:
   set t $w.pos.text
   $t delete 1.0 end
@@ -460,6 +470,75 @@ proc ::tb::results {} {
     $t insert end [sc_pos probe report] indent
   }
 }
+
+################################################################################
+#
+################################################################################
+proc ::tb::updateOnline {} {
+  global tbTraining
+  set w .tbWin
+  if {! [winfo exists $w]} { return }
+  set t $w.pos.text
+  if { ! $tbTraining } {
+    set query [ ::http::formatQuery hook null action egtb fen [sc_pos fen] ]
+    ::http::geturl $::tb::url -query $query -command { ::tb::httpCallback }
+  }
+}
+################################################################################
+#
+################################################################################
+proc ::tb::httpCallback { token } {
+  
+  upvar #0 $token state
+  
+  set w .tbWin
+  if {! [winfo exists $w]} { return }
+  set t $w.pos.text
+  set b $state(body)
+  set result ""
+  
+  if {[sc_pos side] == "black"} {
+    set tmp ""
+    set found 0
+    foreach line [split $b "\n" ] {
+      if {$line == "NEXTCOLOR"} {
+        set found 1
+        continue
+      }
+      if {$found} {
+        append tmp "$line\n"
+      }
+    }
+    set b $tmp
+  }
+  
+  foreach line [split $b "\n" ] {
+    if {$line == "NEXTCOLOR"} {
+      break
+    }
+    if { $line == "No information available" } {
+      append result "$line\n"
+    }
+    if {[string match "hook|null|value|*" $line]} {
+      append result "Online : [string range $line 16 end ]\n"
+      continue
+    }
+    if {[scan $line "%d-%d:%s" sq1 sq2 tmp] == 3} {
+      set p1 [ string toupper [string index [sc_pos board] $sq1 ] ]
+      set p2 [string index [sc_pos board] $sq2 ]
+      set take ""
+      if {$p2 != "."} {
+        set take "x"
+      }
+      append result "$p1[::board::san $sq1]$take[::board::san $sq2] [string range $line [string first : $line] end]\n"
+    }
+  }
+  ::http::cleanup state
+  $t insert end $result
+}
+################################################################################
+#
+################################################################################
 
 # ::tb::random
 #   Sets up a random position with the material of the tablebase

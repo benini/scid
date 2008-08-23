@@ -540,4 +540,4 @@ scid-3.6.25
   * the mask can be automatically with a game (as much data as possible will be imported, like variations, NAG codes, comments)
 - Tree window : scores are highlighted when the moves have good or bad results
 - updated spanish translation (thanks to Benigno Hernández)
-
+- support for online endgame tablebases (up to 6 men tablebases)
