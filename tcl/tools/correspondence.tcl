@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.12 2008/08/23 08:32:27 arwagner Exp $
+### $Id: correspondence.tcl,v 1.13 2008/08/23 17:53:13 arwagner Exp $
 ###
-### Last change: <Sat, 2008/08/23 10:27:48 arwagner ingata>
+### Last change: <Sat, 2008/08/23 16:59:26 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1345,7 +1345,6 @@ namespace eval CorrespondenceChess {
 		button    $w.top.help       -image tb_help -height 24 -width 24 -command { helpWindow CCIcons }
 
 
-		# ====== ToDo: Add translated text ======
 		::utils::tooltip::Set $w.top.retrieveCC [::tr "CCFetchBtn"]
 		::utils::tooltip::Set $w.top.prevCC     [::tr "CCPrevBtn"]
 		::utils::tooltip::Set $w.top.nextCC     [::tr "CCNextBtn"]
@@ -1444,7 +1443,6 @@ namespace eval CorrespondenceChess {
 		set endpos [$w.bottom.id index insert]
 		$w.bottom.id tag add id$id $curpos $endpos
 		::utils::tooltip::SetTag $w.bottom.id "$id" id$id
-
 
 		# ToMove may contain a mixture of text for game results plus
 		# several icons displayin the current game status.
@@ -2375,28 +2373,6 @@ namespace eval CorrespondenceChess {
 						}
 					}
 
-					### #--- Insert new moves and extract locally stored country information
-					### #    in case none is delivered with the game as such
-					### if { ($wc == "") || ($bc == "")} {
-					### 	ProcessServerResult $game
-					### 	set Extra  [sc_game tags get Extra]
-					### 	set extraTagsList [split $Extra "\n"]
-					### 	# ... extract it as it contains the unique ID
-					### 	foreach i $extraTagsList {
-					### 		if { [string equal -nocase [lindex $i 0] "whiteCountry" ] } {
-					### 			set wc [string range $i 14 end-1]
-					### 			set wc [string tolower $wc]
-					### 			set wc "flag_$wc"
-					### 		}
-					### 		if { [string equal -nocase [lindex $i 0] "blackCountry" ] } {
-					### 			set bc [string range $i 14 end-1]
-					### 			set bc [string tolower $bc]
-					### 			set bc "flag_$bc"
-					### 		}
-					### 	}
-					### }
-					### #----------
-
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
 								$Event $Site $White $Black "" "" "" "" "" "" "" $wc $bc ""
@@ -2456,7 +2432,6 @@ namespace eval CorrespondenceChess {
 								}
 							}
 						}
-						## set mess "$CmailGameName This is a testmessage for the tooltip display"
 						if {$Result == "1"} {
 							set YM "1-0"
 						} elseif {$Result == "0"} {
@@ -2464,7 +2439,6 @@ namespace eval CorrespondenceChess {
 						} elseif {$Result == "="} {
 							set YM " = "
 						}
-						## -- > fill gaps from the state list
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
 								$Event $Site $White $Black $clockW $clockB $var \
 								$noDB $noBK $noTB $noENG $wc $bc $mess
@@ -2626,8 +2600,8 @@ namespace eval CorrespondenceChess {
 	# Send the move to the opponent via XFCC or eMail
 	#----------------------------------------------------------------------
 	proc SendMove {resign claimDraw offerDraw acceptDraw } {
-		global ::CorrespondenceChess::Outbox ::CorrespondenceChess::XfccSendcmd \
-				 ::CorrespondenceChess::CorrSlot
+		global ::CorrespondenceChess::Outbox   ::CorrespondenceChess::XfccSendcmd \
+				 ::CorrespondenceChess::CorrSlot num
 
 		busyCursor .
 
@@ -2660,6 +2634,13 @@ namespace eval CorrespondenceChess {
 					set movecount [expr {$movecount-1}]
 			}
 
+			# Mark the ID background:
+			# yellow while sending in progress,
+			# green if the move was sent in the
+			# current session (ie. without update)
+			.ccWindow.bottom.id tag add hlsent $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.id tag configure hlsent -background yellow -font font_Bold
+
 			# If Event = "Email correspondence game"
 			# treat it as cmail game that is send by mail, otherwise it is
 			# Xfcc and sent accordingly
@@ -2683,8 +2664,7 @@ namespace eval CorrespondenceChess {
 			}
 
 			# Save the game once the move is sent
-			set num [sc_game number]
-			sc_game save $num
+			sc_game save [sc_game number]
 
 			# setting "noMarkCodes" to 1 would drop the timing comments
 			# inserted e.g. by SchemingMind. Do not overwrite eMail based
@@ -2694,6 +2674,11 @@ namespace eval CorrespondenceChess {
 				sc_base export "current" "PGN" $pgnfile -append 0 -comments 1 -variations 1 \
 							-space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 0 -convertNullMoves 1
 			}
+
+##			# Mark the ID background in green if the move was sent in the
+##			# current session (ie. without update)
+			.ccWindow.bottom.id tag add hlsent $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.id tag configure hlsent -background green -font font_Bold
 
 		}
 		unbusyCursor .

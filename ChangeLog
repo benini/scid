@@ -491,6 +491,7 @@ scid-3.6.25
    * Add icon/indicators help button
    * Add binding for ? to access icons/statusindicators help
    * Update help files
+   * Mark games with moves sent recently in green till the next update
 - Added "sc_game push copyfast" call that behaves like "sc_game push copy" except there is no memory leak and tags and comments are not copied in the new pushed game.
 - Minor bug fixes :
    * tactical game against Phalanx (some info was missing)
