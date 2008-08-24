@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.13 2008/08/23 17:53:13 arwagner Exp $
+### $Id: correspondence.tcl,v 1.14 2008/08/24 11:27:29 arwagner Exp $
 ###
-### Last change: <Sat, 2008/08/23 16:59:26 arwagner ingata>
+### Last change: <Sat, 2008/08/23 22:20:36 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2638,8 +2638,8 @@ namespace eval CorrespondenceChess {
 			# yellow while sending in progress,
 			# green if the move was sent in the
 			# current session (ie. without update)
-			.ccWindow.bottom.id tag add hlsent $num.0 [expr {$num+1}].0 
-			.ccWindow.bottom.id tag configure hlsent -background yellow -font font_Bold
+			.ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background yellow -font font_Bold
 
 			# If Event = "Email correspondence game"
 			# treat it as cmail game that is send by mail, otherwise it is
@@ -2675,10 +2675,8 @@ namespace eval CorrespondenceChess {
 							-space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 0 -convertNullMoves 1
 			}
 
-##			# Mark the ID background in green if the move was sent in the
-##			# current session (ie. without update)
-			.ccWindow.bottom.id tag add hlsent $num.0 [expr {$num+1}].0 
-			.ccWindow.bottom.id tag configure hlsent -background green -font font_Bold
+			# Everything done, set background to green
+			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background green -font font_Bold
 
 		}
 		unbusyCursor .

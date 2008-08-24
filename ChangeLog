@@ -539,5 +539,11 @@ scid-3.6.25
   * visible only if a Mask file (*.msk) is opened
   * the mask can be automatically with a game (as much data as possible will be imported, like variations, NAG codes, comments)
 - Tree window : scores are highlighted when the moves have good or bad results
+   * On average white should score 53.8%
+   Parameter : set scoreHighlight_WhiteExpectedScoreBonus 3.8 ; # on average white achieves a score of 53.8
+   * Check only if at least 15 games played
+   Parameter set scoreHighlight_MinGames 15
+   * Highlight score if score is -3 % (red) or +3% (green) from expected score
+   Parameter set scoreHighlight_Margin 3.0 ; # if +/- this value, something special happened
 - updated spanish translation (thanks to Benigno Hernández)
 - support for online endgame tablebases (up to 6 men tablebases)
