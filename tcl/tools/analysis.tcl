@@ -1252,7 +1252,7 @@ proc addAllVariations {{n 1}} {
     set moves [lindex $i 2]
     
     set tmp_moves [ lindex $j 2 ]
-    set text [format "\[%s\] %d:%s" $analysis(name$n) [lindex $i 0] [scoreToMate [lindex $i 1] $tmp_moves ] $n]
+    set text [format "\[%s\] %d:%s" $analysis(name$n) [lindex $i 0] [scoreToMate [lindex $i 1] $tmp_moves $n]]
     
     if {$addAtEnd} {
       # get the last move of the game
