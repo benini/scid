@@ -559,6 +559,60 @@ translate Y TreeBestGames {Najbolje partije stabla}
 translate Y TreeTitleRow \
   {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
 translate Y TreeTotal {UKUPNO}
+# ====== TODO To be translated ======
+translate Y DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate Y AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate Y RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate Y Nag {Nag code}
+# ====== TODO To be translated ======
+translate Y Marker {Marker}
+# ====== TODO To be translated ======
+translate Y Include {Include}
+# ====== TODO To be translated ======
+translate Y Exclude {Exclude}
+# ====== TODO To be translated ======
+translate Y MainLine {Main line}
+# ====== TODO To be translated ======
+translate Y Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate Y NewLine {New line}
+# ====== TODO To be translated ======
+translate Y ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate Y ToTrain {To train}
+# ====== TODO To be translated ======
+translate Y Dubious {Dubious}
+# ====== TODO To be translated ======
+translate Y ToRemove {To remove}
+# ====== TODO To be translated ======
+translate Y NoMarker {No marker}
+# ====== TODO To be translated ======
+translate Y ColorMarker {Color}
+# ====== TODO To be translated ======
+translate Y WhiteMark {White}
+# ====== TODO To be translated ======
+translate Y GreenMark {Green}
+# ====== TODO To be translated ======
+translate Y YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate Y BlueMark {Blue}
+# ====== TODO To be translated ======
+translate Y RedMark {Red}
+# ====== TODO To be translated ======
+translate Y CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate Y CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate Y AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate Y OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate Y Positions {Positions}
+# ====== TODO To be translated ======
+translate Y Moves {Moves}
 
 # Finder window:
 menuText Y FinderFile "Fajl" 0
@@ -1828,6 +1882,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

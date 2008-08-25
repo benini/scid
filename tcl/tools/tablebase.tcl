@@ -176,9 +176,9 @@ proc ::tb::Open {} {
   }
   
   checkbutton $w.b.training -text $::tr(Training) -variable tbTraining -command ::tb::training -relief raised -padx 4 -pady 5
-  button $w.b.online -text Online -command ::tb::updateOnline -relief raised -padx 4 -pady 5
+  # button $w.b.online -text Online -command ::tb::updateOnline -relief raised -padx 4 -pady 5
   if { !$::tb::online_available } {
-    $w.b.online configure -state disabled
+    catch { $w.b.online configure -state disabled }
   }
   button $w.b.random -text "Random" -command ::tb::random
   button $w.b.showboard -image tb_coords -command ::tb::showBoard
@@ -187,7 +187,9 @@ proc ::tb::Open {} {
   label $w.b.status -width 1 -textvar tbStatus -font font_Small \
       -relief flat -anchor w -height 0
   packbuttons right $w.b.close $w.b.help
-  pack $w.b.training $w.b.online $w.b.random $w.b.showboard -side left -padx 2 -pady 2
+  pack $w.b.training -side left -padx 2 -pady 2
+  catch { pack $w.b.online -side left -padx 2 -pady 2 }
+  pack $w.b.random $w.b.showboard -side left -padx 2 -pady 2
   pack $w.b.status -side left -fill x -expand yes
   bind $w <Destroy> { set ::tb::isOpen 0; set tbTraining 0 }
   bind $w <F1> { helpWindow TB }
@@ -481,7 +483,7 @@ proc ::tb::updateOnline {} {
   set t $w.pos.text
   if { ! $tbTraining } {
     set query [ ::http::formatQuery hook null action egtb fen [sc_pos fen] ]
-    ::http::geturl $::tb::url -query $query -command { ::tb::httpCallback }
+    ::http::geturl $::tb::url -timeout 5000 -query $query -command { ::tb::httpCallback }
   }
 }
 ################################################################################
@@ -494,6 +496,21 @@ proc ::tb::httpCallback { token } {
   set w .tbWin
   if {! [winfo exists $w]} { return }
   set t $w.pos.text
+  
+  # delete previous online output
+  foreach tag {tagonline} {
+    while {1} {
+      set del [$t tag nextrange $tag 1.0]
+      if {$del == ""} {break}
+      catch {$t delete [lindex $del 0] [lindex $del 1]}
+    }
+  }
+
+  if {$state(status) != "ok"} {
+    $t insert end $state(status) tagonline
+    return
+  }
+
   set b $state(body)
   set result ""
   
@@ -534,7 +551,7 @@ proc ::tb::httpCallback { token } {
     }
   }
   ::http::cleanup state
-  $t insert end $result
+  $t insert end $result tagonline
 }
 ################################################################################
 #

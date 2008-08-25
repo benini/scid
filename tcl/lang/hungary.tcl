@@ -555,6 +555,60 @@ translate H TreeBestGames {A fa legjobb játszmái}
 translate H TreeTitleRow \
   {    Lépés  ECO       Gyakoriság  Eredm. ÁtlÉlõ Telj. Átl.év}
 translate H TreeTotal {ÖSSZESEN}
+# ====== TODO To be translated ======
+translate H DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate H AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate H RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate H Nag {Nag code}
+# ====== TODO To be translated ======
+translate H Marker {Marker}
+# ====== TODO To be translated ======
+translate H Include {Include}
+# ====== TODO To be translated ======
+translate H Exclude {Exclude}
+# ====== TODO To be translated ======
+translate H MainLine {Main line}
+# ====== TODO To be translated ======
+translate H Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate H NewLine {New line}
+# ====== TODO To be translated ======
+translate H ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate H ToTrain {To train}
+# ====== TODO To be translated ======
+translate H Dubious {Dubious}
+# ====== TODO To be translated ======
+translate H ToRemove {To remove}
+# ====== TODO To be translated ======
+translate H NoMarker {No marker}
+# ====== TODO To be translated ======
+translate H ColorMarker {Color}
+# ====== TODO To be translated ======
+translate H WhiteMark {White}
+# ====== TODO To be translated ======
+translate H GreenMark {Green}
+# ====== TODO To be translated ======
+translate H YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate H BlueMark {Blue}
+# ====== TODO To be translated ======
+translate H RedMark {Red}
+# ====== TODO To be translated ======
+translate H CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate H CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate H AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate H OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate H Positions {Positions}
+# ====== TODO To be translated ======
+translate H Moves {Moves}
 
 # Finder window:
 menuText H FinderFile "Fájl" 0
@@ -2054,6 +2108,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

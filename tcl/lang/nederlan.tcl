@@ -573,6 +573,60 @@ translate N TreeBestGames {Boom Beste partijen}
 translate N TreeTitleRow \
   {    Zet   ECO       Frekwentie    Score  GemElo Prest GemJaar %Remises} ;
 translate N TreeTotal {TOTAAL}
+# ====== TODO To be translated ======
+translate N DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate N AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate N RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate N Nag {Nag code}
+# ====== TODO To be translated ======
+translate N Marker {Marker}
+# ====== TODO To be translated ======
+translate N Include {Include}
+# ====== TODO To be translated ======
+translate N Exclude {Exclude}
+# ====== TODO To be translated ======
+translate N MainLine {Main line}
+# ====== TODO To be translated ======
+translate N Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate N NewLine {New line}
+# ====== TODO To be translated ======
+translate N ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate N ToTrain {To train}
+# ====== TODO To be translated ======
+translate N Dubious {Dubious}
+# ====== TODO To be translated ======
+translate N ToRemove {To remove}
+# ====== TODO To be translated ======
+translate N NoMarker {No marker}
+# ====== TODO To be translated ======
+translate N ColorMarker {Color}
+# ====== TODO To be translated ======
+translate N WhiteMark {White}
+# ====== TODO To be translated ======
+translate N GreenMark {Green}
+# ====== TODO To be translated ======
+translate N YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate N BlueMark {Blue}
+# ====== TODO To be translated ======
+translate N RedMark {Red}
+# ====== TODO To be translated ======
+translate N CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate N CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate N AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate N OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate N Positions {Positions}
+# ====== TODO To be translated ======
+translate N Moves {Moves}
 
 # Finder window:
 menuText N FinderFile "Bestand" 0
@@ -1822,6 +1876,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

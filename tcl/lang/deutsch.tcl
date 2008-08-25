@@ -529,6 +529,60 @@ translate D TreeBestGames {Beste Zugbaumpartien}
 translate D TreeTitleRow \
   {    Zug    ECO       Häufigkeit    Pkte   Elo  Erflg Jahr %Remis}
 translate D TreeTotal {SUMME}
+# ====== TODO To be translated ======
+translate D DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate D AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate D RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate D Nag {Nag code}
+# ====== TODO To be translated ======
+translate D Marker {Marker}
+# ====== TODO To be translated ======
+translate D Include {Include}
+# ====== TODO To be translated ======
+translate D Exclude {Exclude}
+# ====== TODO To be translated ======
+translate D MainLine {Main line}
+# ====== TODO To be translated ======
+translate D Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate D NewLine {New line}
+# ====== TODO To be translated ======
+translate D ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate D ToTrain {To train}
+# ====== TODO To be translated ======
+translate D Dubious {Dubious}
+# ====== TODO To be translated ======
+translate D ToRemove {To remove}
+# ====== TODO To be translated ======
+translate D NoMarker {No marker}
+# ====== TODO To be translated ======
+translate D ColorMarker {Color}
+# ====== TODO To be translated ======
+translate D WhiteMark {White}
+# ====== TODO To be translated ======
+translate D GreenMark {Green}
+# ====== TODO To be translated ======
+translate D YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate D BlueMark {Blue}
+# ====== TODO To be translated ======
+translate D RedMark {Red}
+# ====== TODO To be translated ======
+translate D CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate D CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate D AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate D OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate D Positions {Positions}
+# ====== TODO To be translated ======
+translate D Moves {Moves}
 
 # Finder window:
 menuText D FinderFile "Datei" 0
@@ -7029,6 +7083,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

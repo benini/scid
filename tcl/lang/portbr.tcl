@@ -566,6 +566,60 @@ translate B TreeBestGames {Melhores jogos da arvore}
 translate B TreeTitleRow \
   {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
 translate B TreeTotal {TOTAL}
+# ====== TODO To be translated ======
+translate B DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate B AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate B RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate B Nag {Nag code}
+# ====== TODO To be translated ======
+translate B Marker {Marker}
+# ====== TODO To be translated ======
+translate B Include {Include}
+# ====== TODO To be translated ======
+translate B Exclude {Exclude}
+# ====== TODO To be translated ======
+translate B MainLine {Main line}
+# ====== TODO To be translated ======
+translate B Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate B NewLine {New line}
+# ====== TODO To be translated ======
+translate B ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate B ToTrain {To train}
+# ====== TODO To be translated ======
+translate B Dubious {Dubious}
+# ====== TODO To be translated ======
+translate B ToRemove {To remove}
+# ====== TODO To be translated ======
+translate B NoMarker {No marker}
+# ====== TODO To be translated ======
+translate B ColorMarker {Color}
+# ====== TODO To be translated ======
+translate B WhiteMark {White}
+# ====== TODO To be translated ======
+translate B GreenMark {Green}
+# ====== TODO To be translated ======
+translate B YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate B BlueMark {Blue}
+# ====== TODO To be translated ======
+translate B RedMark {Red}
+# ====== TODO To be translated ======
+translate B CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate B CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate B AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate B OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate B Positions {Positions}
+# ====== TODO To be translated ======
+translate B Moves {Moves}
 
 # Finder window:
 menuText B FinderFile "Arquivo" 0
@@ -1834,6 +1888,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

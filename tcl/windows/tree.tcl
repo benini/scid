@@ -184,7 +184,7 @@ proc ::tree::make { { baseNumber -1 } } {
   ::tree::doConfigMenus $baseNumber
   
   autoscrollframe $w.f text $w.f.tl \
-      -width $::winWidth(.treeWin) -height $::winHeight(.treeWin) -wrap none \
+      -width $::winWidth(.treeWin) -height $::winHeight(.treeWin) -wrap none -selectbackground lightgrey -selectforeground black \
       -font font_Fixed -foreground black -background white -setgrid 1 -exportselection 1
   #define default tags
   $w.f.tl tag configure greybg -background #fa1cfa1cfa1c
@@ -245,9 +245,6 @@ proc ::tree::make { { baseNumber -1 } } {
   
   wm minsize $w 40 5
   
-  # TODO
-  # bind $w.f.tl <Return> " tree::select [lindex [ .treeWin$baseNumber.f.tl curselection] 0] $baseNumber "
-  # bind $w.f.tl <ButtonRelease-1> "[list ::tree::selectCallback $baseNumber %y ] ; break"
   wm protocol $w WM_DELETE_WINDOW " .treeWin$baseNumber.buttons.close invoke "
   ::tree::refresh $baseNumber
   set ::tree::cachesize($baseNumber) [lindex [sc_tree cacheinfo $baseNumber] 1]
@@ -261,32 +258,7 @@ proc ::tree::selectCallback { baseNumber move } {
   }
   
   if {$::tree(autorefresh$baseNumber)} {
-    # TODO
-    # .treeWin$baseNumber.f.tl selection clear 0 end
-    # find the line clicked
-    # scan [.treeWin$baseNumber.f.tl index end] "%d.%d" lastl lastc
-    # puts "lastl lastc $lastl $lastc"
-    # set nearest -1
-    # for {set l 2} {$l < $lastl} {incr l} {
-    # set box [ .treeWin$baseNumber.f.tl bbox $l.0]
-    # set y [lindex $box 1]
-    # set w [lindex $box 3]
-    # if { $line >= $y && $line <= [expr $y + $w]} {
-    # set nearest $l
-    # break
-    # }
-    # }
-    #
-    # if {$nearest == -1} {
-    # return
-    # }
-    #
-    # incr nearest -1
-    # puts "nearest $nearest"
-    # tree::select [ .treeWin$baseNumber.f.tl nearest $line ] $baseNumber
     tree::select $move $baseNumber
-    # TODO
-    # .treeWin$baseNumber.f.tl selection clear 0 end
   }
 }
 
@@ -370,12 +342,6 @@ proc ::tree::doTraining { { n 0 } } {
 
 ################################################################################
 proc ::tree::toggleLock { baseNumber } {
-  global tree
-  if {$tree(locked$baseNumber)} {
-    # set tree(base$baseNumber) [sc_base current]
-  } else {
-    # set tree(base$baseNumber) 0
-  }
   ::tree::refresh $baseNumber
 }
 
@@ -384,16 +350,7 @@ proc ::tree::select { move baseNumber } {
   global tree
   
   if {! [winfo exists .treeWin$baseNumber]} { return }
-  # TODO
-  # .treeWin$baseNumber.f.tl selection clear 0 end
-  # if {$selection == 0} {
-  # sc_move back
-  # updateBoard -pgn
-  # return
-  # }
   
-  # set move [sc_tree move $baseNumber $selection]
-  # if {$move == ""} { return }
   addSanMove $move -animate
 }
 
@@ -471,8 +428,6 @@ proc ::tree::dorefresh { baseNumber } {
   set tree(refresh) 0
   
   $w.f.tl configure -cursor {}
-  # TODO
-  # $w.f.tl selection clear 0 end
   
   ::tree::status "" $baseNumber
   set glstart 1
@@ -1394,7 +1349,8 @@ proc ::tree::mask::open {} {
 ################################################################################
 proc ::tree::mask::askForSave {} {
   if {$::tree::mask::dirty} {
-    set answer [tk_messageBox -title Scid -icon warning -type yesno -message "Do you want to save first\n$::tree::mask::maskFile ?"]
+    set answer [tk_messageBox -title Scid -icon warning -type yesno \
+        -message "[ tr DoYouWantToSaveFirst ]\n$::tree::mask::maskFile ?"]
     if {$answer == "yes"} {
       ::tree::mask::save
     }
@@ -1456,35 +1412,35 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   }
   
   menu $mctxt
-  $mctxt add command -label "Add to Mask" -command "::tree::mask::addToMask $move"
-  $mctxt add command -label "Remove from Mask" -command "::tree::mask::removeFromMask $move"
+  $mctxt add command -label [tr AddToMask] -command "::tree::mask::addToMask $move"
+  $mctxt add command -label [tr RemoveFromMask] -command "::tree::mask::removeFromMask $move"
   $mctxt add separator
   
   menu $mctxt.nag
-  $mctxt add cascade -label "Nag" -menu $mctxt.nag
+  $mctxt add cascade -label [tr Nag] -menu $mctxt.nag
   foreach nag { "!!" " !" "!?" "?!" "??" " ~"} {
     $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
   }
   
   foreach j { 0 1 } {
     menu $mctxt.image$j
-    $mctxt add cascade -label "Marker [expr $j +1]" -menu $mctxt.image$j
-    foreach e { "Include" "Exclude" "Main line" "Bookmark" "White" "Black" "New" "To be verified" "To train" "Dubious" "To remove"} \
+    $mctxt add cascade -label "[tr Marker] [expr $j +1]" -menu $mctxt.image$j
+    foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } \
         i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
           tb_new tb_rfilter tb_msearch tb_help tb_cut} {
-          $mctxt.image$j add command -label $e -image $i -compound left -command "::tree::mask::setImage $move $i $j"
+          $mctxt.image$j add command -label [ tr $e ] -image $i -compound left -command "::tree::mask::setImage $move $i $j"
         }
-    $mctxt.image$j add command -label "No marker" -command "::tree::mask::setImage $move {} $j"
+    $mctxt.image$j add command -label [tr NoMarker] -command "::tree::mask::setImage $move {} $j"
   }
   menu $mctxt.color
-  $mctxt add cascade -label "Color" -menu $mctxt.color
+  $mctxt add cascade -label [tr ColorMarker] -menu $mctxt.color
   foreach c { "White" "Green" "Yellow" "Blue" "Red"} {
-    $mctxt.color add command -label $c -background $c -command "::tree::mask::setColor $move $c"
+    $mctxt.color add command -label [ tr "${c}Mark" ] -background $c -command "::tree::mask::setColor $move $c"
   }
   
   $mctxt add separator
-  $mctxt add command -label "Comment move" -command "::tree::mask::addComment $move"
-  $mctxt add command -label "Comment position" -command "::tree::mask::addComment"
+  $mctxt add command -label [ tr CommentMove] -command "::tree::mask::addComment $move"
+  $mctxt add command -label [ tr CommentPosition] -command "::tree::mask::addComment"
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
   grab $mctxt
@@ -1593,14 +1549,14 @@ proc ::tree::mask::setColor { move color {fen ""}} {
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
   if {![info exists mask($fen)]} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set newmove [lreplace [lindex $moves $idxm] 2 2 $color ]
@@ -1640,14 +1596,14 @@ proc ::tree::mask::setNag { move nag {fen ""} } {
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   
   if {![info exists mask($fen)]} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set newmove [lreplace [lindex $moves $idxm] 1 1 $nag ]
@@ -1689,14 +1645,14 @@ proc ::tree::mask::setComment { move comment { fen "" } } {
   set comment [string trim $comment]
   
   if {![info exists mask($fen)]} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set newmove [lreplace [lindex $moves $idxm] 3 3 $comment ]
@@ -1746,14 +1702,14 @@ proc ::tree::mask::setImage { move img nmr } {
   global ::tree::mask::mask
   set fen $::tree::mask::cacheFenIndex
   if {![info exists mask($fen)]} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set ::tree::mask::dirty 1
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Add move to mask first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
     return
   }
   set loc [expr 4 + $nmr]
@@ -1821,7 +1777,7 @@ proc ::tree::mask::updateComment { { move "" } } {
 ################################################################################
 proc ::tree::mask::fillWithGame {} {
   if {$::tree::mask::maskFile == ""} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Open a mask file first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr OpenAMaskFileFirst]
     return
   }
   ::tree::primeWithGame 1
@@ -1832,7 +1788,7 @@ proc ::tree::mask::fillWithGame {} {
 ################################################################################
 proc ::tree::mask::fillWithBase {} {
   if {$::tree::mask::maskFile == ""} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message "Open a mask file first"
+    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr OpenAMaskFileFirst]
     return
   }
   ::tree::primeWithBase 1
@@ -1912,7 +1868,7 @@ proc ::tree::mask::infoMask {} {
   # foreach pos $mask {
   # incr nmoves [llength [lindex $pos 1]]
   # }
-  tk_messageBox -title "Mask info" -type ok -icon info -message "Mask : $::tree::mask::maskFile\nPositions : $npos\nMoves : $nmoves"
+  tk_messageBox -title "Mask info" -type ok -icon info -message "Mask : $::tree::mask::maskFile\n[tr Positions] : $npos\n[tr Moves] : $nmoves"
 }
 ################################################################################
 #

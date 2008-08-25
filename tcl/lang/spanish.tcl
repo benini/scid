@@ -520,6 +520,60 @@ translate S TreeBestGames {Mejores partidas del árbol}
 translate S TreeTitleRow \
   {    Movim. ECO       Frecuencia   Puntu. AvElo Perf AvAño %Tablas}
 translate S TreeTotal {TOTAL}
+# ====== TODO To be translated ======
+translate S DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate S AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate S RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate S Nag {Nag code}
+# ====== TODO To be translated ======
+translate S Marker {Marker}
+# ====== TODO To be translated ======
+translate S Include {Include}
+# ====== TODO To be translated ======
+translate S Exclude {Exclude}
+# ====== TODO To be translated ======
+translate S MainLine {Main line}
+# ====== TODO To be translated ======
+translate S Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate S NewLine {New line}
+# ====== TODO To be translated ======
+translate S ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate S ToTrain {To train}
+# ====== TODO To be translated ======
+translate S Dubious {Dubious}
+# ====== TODO To be translated ======
+translate S ToRemove {To remove}
+# ====== TODO To be translated ======
+translate S NoMarker {No marker}
+# ====== TODO To be translated ======
+translate S ColorMarker {Color}
+# ====== TODO To be translated ======
+translate S WhiteMark {White}
+# ====== TODO To be translated ======
+translate S GreenMark {Green}
+# ====== TODO To be translated ======
+translate S YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate S BlueMark {Blue}
+# ====== TODO To be translated ======
+translate S RedMark {Red}
+# ====== TODO To be translated ======
+translate S CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate S CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate S AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate S OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate S Positions {Positions}
+# ====== TODO To be translated ======
+translate S Moves {Moves}
 
 # Finder window:
 menuText S FinderFile "Archivo" 0
@@ -1514,5 +1568,6 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 

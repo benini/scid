@@ -566,6 +566,60 @@ translate P TreeTitleRow \
   {    Pos.   ECO       Czêsto¶æ     Wynik  Rav   Rperf Rok   %Remis}
 # {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws}
 translate P TreeTotal {RAZEM}
+# ====== TODO To be translated ======
+translate P DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate P AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate P RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate P Nag {Nag code}
+# ====== TODO To be translated ======
+translate P Marker {Marker}
+# ====== TODO To be translated ======
+translate P Include {Include}
+# ====== TODO To be translated ======
+translate P Exclude {Exclude}
+# ====== TODO To be translated ======
+translate P MainLine {Main line}
+# ====== TODO To be translated ======
+translate P Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate P NewLine {New line}
+# ====== TODO To be translated ======
+translate P ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate P ToTrain {To train}
+# ====== TODO To be translated ======
+translate P Dubious {Dubious}
+# ====== TODO To be translated ======
+translate P ToRemove {To remove}
+# ====== TODO To be translated ======
+translate P NoMarker {No marker}
+# ====== TODO To be translated ======
+translate P ColorMarker {Color}
+# ====== TODO To be translated ======
+translate P WhiteMark {White}
+# ====== TODO To be translated ======
+translate P GreenMark {Green}
+# ====== TODO To be translated ======
+translate P YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate P BlueMark {Blue}
+# ====== TODO To be translated ======
+translate P RedMark {Red}
+# ====== TODO To be translated ======
+translate P CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate P CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate P AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate P OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate P Positions {Positions}
+# ====== TODO To be translated ======
+translate P Moves {Moves}
 
 # Finder window:
 menuText P FinderFile "Plik" 0
@@ -2055,6 +2109,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

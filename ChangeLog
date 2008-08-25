@@ -547,4 +547,5 @@ scid-3.6.25
    * Highlight score if score is -3 % (red) or +3% (green) from expected score
    Parameter set scoreHighlight_Margin 3.0 ; # if +/- this value, something special happened
 - updated spanish translation (thanks to Benigno Hernández)
-- support for online endgame tablebases (up to 6 men tablebases)
+- [inhibited] support for online endgame tablebases (up to 6 men tablebases) : sites like http://k4it.de and Schredder does not allow queries on their site from other chess applications (even if there is no particular mechanism preventing this). So the code is commented out until a free site offering this service is found.
+

@@ -538,6 +538,33 @@ translate E TreeBestGames {Best Tree Games}
 translate E TreeTitleRow \
   {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws}
 translate E TreeTotal {TOTAL}
+translate E DoYouWantToSaveFirst {Do you want to save first}
+translate E AddToMask {Add to Mask}
+translate E RemoveFromMask {Remove from Mask}
+translate E Nag {Nag code}
+translate E Marker {Marker}
+translate E Include {Include}
+translate E Exclude {Exclude}
+translate E MainLine {Main line}
+translate E Bookmark {Bookmark}
+translate E NewLine {New line}
+translate E ToBeVerified {To be verified}
+translate E ToTrain {To train}
+translate E Dubious {Dubious}
+translate E ToRemove {To remove}
+translate E NoMarker {No marker}
+translate E ColorMarker {Color}
+translate E WhiteMark {White}
+translate E GreenMark {Green}
+translate E YellowMark {Yellow}
+translate E BlueMark {Blue}
+translate E RedMark {Red}
+translate E CommentMove {Comment move}
+translate E CommentPosition {Comment position}
+translate E AddMoveToMaskFirst {Add move to mask first}
+translate E OpenAMaskFileFirst {Open a mask file first}
+translate E Positions {Positions}
+translate E Moves {Moves}
 
 # Finder window:
 menuText E FinderFile "File" 0

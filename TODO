@@ -10,9 +10,6 @@
 |                                                           |
  ===========================================================
 
-- Go to any move. Go one move back. Add a comment, let's say "Good move". 
-Make a move, choose "Add New Variation". The comment will be repeated. -> KNOWN BUG, let's say it is a feature
-
 Possible improvements (perhaps not bugs, but awkward)
 
 - It is possible to add NAG before the first move of the game/variation. For variations, it is not even visible.
@@ -28,8 +25,6 @@ Possible improvements (perhaps not bugs, but awkward)
  ===========================================================
 
 - Migrate optrainer to Mask
-
-- EGTB 6 men (online connection to Shredder's site is verboten, find another site)
 
 - Option to set engines as 1st and 2nd default engines
 
@@ -58,45 +53,17 @@ You can remove game(s) from filter, but Clipboard can only be emptied, you
 cannot remove some games. Such a feature is useful when you choose some games
 for exporting. -> workaround open game list and RMB for removing games from filter before export
 
-- Allow setting 'Low CPU priority' for engines by default
-This is the case under Windows. Under Linux, a solution is to start engines with prio=5 by default. 
-Another solution is to make an option or remember latest setting -> DONE
-
 - Keyboard shortcuts for 'Discard'  / 'Go Back' in 'Leave game' dialog
 
----------------------------------------------------
-                   PRIORITY 1
----------------------------------------------------
-- Use the connection icon set for DGT also when Citrine is connected
----------------------------------------------------
-                   PRIORITY 2
----------------------------------------------------
 - Start game analysis at the end of the game to fill hash tables
-- Display several score graphs if there are multiple evaluations (sc_game_scores l.7339 of tkscid.cpp)
-- remove Ctrl-R and if gn = 0 -> add game , otherwise replace
-- vars add at the end of a game
-- Engines tournament (with specific opening line ?)
-- 6 men EGTB support (http://kd.lab.nig.ac.jp/chess/tablebases-online/)
-- export opening report in PGN (and check HTML conversion) : see proc mergeGame l.119 of end.tcl [sc_report opening best a 50]
----------------------------------------------------
-                   PRIORITY 3
----------------------------------------------------
-- The ability to delete a whole tree from "tree window". To be able to trim undesired moves and games from the database easily.
-- book generation from Scid (re-use of Polyglot code)
-- The idea of markers on the board to show opening stats is good, but there are still questions that arise :
-	- how to show both frequency and score ?
-	- is is relevant to show arrows when the number of games played is low (for example under 5) ?
-	An idea could be to use colors for scores :
-	- green : score > 55%
-	- light green : score between 50 and 55 %
-	- light red : score between 45 and 50 %
-	- red : score < 45%
----------------------------------------------------
-                   PRIORITY 9
----------------------------------------------------
-- mini board false (seems due to comments in PGN window)
-- The ability to save a (layout). So SCID can access often used windows with a menu choice. For example: One (layout) might be "board window" + "tree window" + "engine analysis", and a second (layout) might be any other combination of windows I might choose.
 
+- vars add at the end of a game
+
+- Engines tournament (with specific opening line ?)
+
+- export opening report in PGN (and check HTML conversion) : see proc mergeGame l.119 of end.tcl [sc_report opening best a 50]
+
+- book generation from Scid (re-use of Polyglot code)
 
 ======================================================================================================================
 From: Michal Rudolf <mrudolf@kdewebdev.org>

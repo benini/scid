@@ -563,6 +563,60 @@ translate R TreeBestGames {Дерево лучших партий}
 translate R TreeTitleRow \
   {    Ход    ECO       Частота     Счет   СрElo Прзв СрГод  %Ничьих}
 translate R TreeTotal {TOTAL}
+# ====== TODO To be translated ======
+translate R DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate R AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate R RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate R Nag {Nag code}
+# ====== TODO To be translated ======
+translate R Marker {Marker}
+# ====== TODO To be translated ======
+translate R Include {Include}
+# ====== TODO To be translated ======
+translate R Exclude {Exclude}
+# ====== TODO To be translated ======
+translate R MainLine {Main line}
+# ====== TODO To be translated ======
+translate R Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate R NewLine {New line}
+# ====== TODO To be translated ======
+translate R ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate R ToTrain {To train}
+# ====== TODO To be translated ======
+translate R Dubious {Dubious}
+# ====== TODO To be translated ======
+translate R ToRemove {To remove}
+# ====== TODO To be translated ======
+translate R NoMarker {No marker}
+# ====== TODO To be translated ======
+translate R ColorMarker {Color}
+# ====== TODO To be translated ======
+translate R WhiteMark {White}
+# ====== TODO To be translated ======
+translate R GreenMark {Green}
+# ====== TODO To be translated ======
+translate R YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate R BlueMark {Blue}
+# ====== TODO To be translated ======
+translate R RedMark {Red}
+# ====== TODO To be translated ======
+translate R CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate R CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate R AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate R OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate R Positions {Positions}
+# ====== TODO To be translated ======
+translate R Moves {Moves}
 
 # Finder window:
 menuText R FinderFile "Файл" 0
@@ -1857,6 +1911,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

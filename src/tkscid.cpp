@@ -12856,7 +12856,7 @@ sc_tree_best (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Returns the move for a tree line.
 //    Arg can be in the range [1.. numTreeLines].
 //    It can also be "random" to request a random move selected
-//    accodring to the frequency of each move in the tree.
+//    according to the frequency of each move in the tree.
 int
 sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {

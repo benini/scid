@@ -561,6 +561,60 @@ translate O TreeBestGames {Idealtrepartier}
 translate O TreeTitleRow \
   {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
 translate O TreeTotal {SAMMENLAGT}
+# ====== TODO To be translated ======
+translate O DoYouWantToSaveFirst {Do you want to save first}
+# ====== TODO To be translated ======
+translate O AddToMask {Add to Mask}
+# ====== TODO To be translated ======
+translate O RemoveFromMask {Remove from Mask}
+# ====== TODO To be translated ======
+translate O Nag {Nag code}
+# ====== TODO To be translated ======
+translate O Marker {Marker}
+# ====== TODO To be translated ======
+translate O Include {Include}
+# ====== TODO To be translated ======
+translate O Exclude {Exclude}
+# ====== TODO To be translated ======
+translate O MainLine {Main line}
+# ====== TODO To be translated ======
+translate O Bookmark {Bookmark}
+# ====== TODO To be translated ======
+translate O NewLine {New line}
+# ====== TODO To be translated ======
+translate O ToBeVerified {To be verified}
+# ====== TODO To be translated ======
+translate O ToTrain {To train}
+# ====== TODO To be translated ======
+translate O Dubious {Dubious}
+# ====== TODO To be translated ======
+translate O ToRemove {To remove}
+# ====== TODO To be translated ======
+translate O NoMarker {No marker}
+# ====== TODO To be translated ======
+translate O ColorMarker {Color}
+# ====== TODO To be translated ======
+translate O WhiteMark {White}
+# ====== TODO To be translated ======
+translate O GreenMark {Green}
+# ====== TODO To be translated ======
+translate O YellowMark {Yellow}
+# ====== TODO To be translated ======
+translate O BlueMark {Blue}
+# ====== TODO To be translated ======
+translate O RedMark {Red}
+# ====== TODO To be translated ======
+translate O CommentMove {Comment move}
+# ====== TODO To be translated ======
+translate O CommentPosition {Comment position}
+# ====== TODO To be translated ======
+translate O AddMoveToMaskFirst {Add move to mask first}
+# ====== TODO To be translated ======
+translate O OpenAMaskFileFirst {Open a mask file first}
+# ====== TODO To be translated ======
+translate O Positions {Positions}
+# ====== TODO To be translated ======
+translate O Moves {Moves}
 
 # Finder window:
 menuText O FinderFile "Fil" 0
@@ -1828,6 +1882,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

@@ -499,6 +499,33 @@ translate F TreeBestGames {Arbre des meilleures parties}
 translate F TreeTitleRow \
   {    Coup   ECO        Fréquence   Score EloMoy Perf AnnéeMoy %Nulle}
 translate F TreeTotal {TOTAL}
+translate F DoYouWantToSaveFirst {voulez-vous d'abord sauvegarder}
+translate F AddToMask {Ajouter au masque}
+translate F RemoveFromMask {Enlever du masque}
+translate F Nag {Code Nag}
+translate F Marker {Marqueur}
+translate F Include {Inclure}
+translate F Exclude {Exclure}
+translate F MainLine {Ligne principale}
+translate F Bookmark {Signet}
+translate F NewLine {Nouvelle ligne}
+translate F ToBeVerified {A vérifier}
+translate F ToTrain {S'entrainer}
+translate F Dubious {Douteux}
+translate F ToRemove {A supprimer}
+translate F NoMarker {Aucun marqueur}
+translate F ColorMarker {Couleur}
+translate F WhiteMark {Blanc}
+translate F GreenMark {Vert}
+translate F YellowMark {Jaune}
+translate F BlueMark {Bleu}
+translate F RedMark {Rouge}
+translate F CommentMove {Annoter coup}
+translate F CommentPosition {Annoter position}
+translate F AddMoveToMaskFirst {Ajoutez d'abord le coup au masque}
+translate F OpenAMaskFileFirst {Ouvrez d'abord un masque}
+translate F Positions {Positions}
+translate F Moves {Coups}
 
 # Finder window:
 menuText F FinderFile "Fichier" 0
@@ -1694,6 +1721,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 
