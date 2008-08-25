@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.14 2008/08/24 11:27:29 arwagner Exp $
+### $Id: correspondence.tcl,v 1.15 2008/08/25 14:54:57 arwagner Exp $
 ###
-### Last change: <Sat, 2008/08/23 22:20:36 arwagner ingata>
+### Last change: <Sun, 2008/08/24 16:54:06 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2155,18 +2155,34 @@ namespace eval CorrespondenceChess {
 			}
 		}
 
+		set m .menu.play.correspondence
+
 		if {$Mode == "EM"} {
 			::CorrespondenceChess::updateConsole "info Event: $Event (eMail-based)"
+
+			# eMail games: manual handling for resign and draw is needed,
+			# no standard way/protocol exists => disable the buttons and
+			# menue entries accordingly
 			.ccWindow.top.resign     configure -state disabled
 			.ccWindow.top.claimDraw  configure -state disabled
 			.ccWindow.top.offerDraw  configure -state disabled
 			.ccWindow.top.acceptDraw configure -state disabled
+
+			$m entryconfigure 11 -state disabled
+			$m entryconfigure 12 -state disabled
+			$m entryconfigure 13 -state disabled
+			$m entryconfigure 14 -state disabled
 		} else {
 			.ccWindow.top.resign     configure -state normal
 			.ccWindow.top.claimDraw  configure -state normal
 			.ccWindow.top.offerDraw  configure -state normal
 			.ccWindow.top.acceptDraw configure -state normal
 			::CorrespondenceChess::updateConsole "info Event: $Event (Xfcc-based)"
+
+			$m entryconfigure 11 -state normal
+			$m entryconfigure 12 -state normal
+			$m entryconfigure 13 -state normal
+			$m entryconfigure 14 -state normal
 		}
 		::CorrespondenceChess::updateConsole "info Site: $Site"
 
