@@ -5551,6 +5551,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             // Truncate from the current position to the end of the game
             db->game->Truncate();
         }
+        db->gameAltered = true;
         language = old_language;
         break;
     case GAME_TRUNCATEANDFREE:
@@ -10142,10 +10143,12 @@ sc_pos_pgnBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     Game * g = scratchGame;
+
     g->Clear();
 
     PgnParser parser (argv[2]);
-    if (parser.ParseGame(g) == ERROR_NotFound) {
+
+    if ( parser.ParseGame(g) == ERROR_NotFound) {
         // No PGN header tags were found, so try just parsing moves:
         g->Clear();
 #ifdef WINCE
@@ -10166,7 +10169,9 @@ sc_pos_pgnBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     char boardStr [200];
     g->GetCurrentPos()->MakeLongStr (boardStr);
+
     Tcl_AppendResult (ti, boardStr, NULL);
+
     return TCL_OK;
 }
 

@@ -1201,12 +1201,18 @@ Game::TruncateStart (void)
     tb.SetWrapColumn (20000);
     gameFormatT gfmt = PgnFormat;
     SetPgnFormat (PGN_FORMAT_Plain);
+    // we need to switch off short header style or PGN parsing will not work
+    uint  old_style = GetPgnStyle ();
+    if (PgnStyle & PGN_STYLE_SHORT_HEADER) 
+      SetPgnStyle (PGN_STYLE_SHORT_HEADER, false);
     WriteToPGN (&tb);
     Init();
     PgnParser parser (tb.GetBuffer());
     parser.ParseGame (this);
     SetPgnFormat (gfmt);
     MoveToPly(0);
+    if (old_style & PGN_STYLE_SHORT_HEADER) 
+      SetPgnStyle (PGN_STYLE_SHORT_HEADER, true);
 }
 
 
@@ -2572,6 +2578,7 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
         tb->PrintString (newline);
 
         // Print FEN if non-standard start:
+
         if (NonStandardStart) {
             if (IsLatexFormat()) {
                 tb->PrintString ("\n\\begin{diagram}\n");
@@ -2590,7 +2597,6 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
                 tb->PrintString (temp);
             }
         }
-
     } else {
         // Print tags in standard PGN format, one per line:
         // Note: we want no line-wrapping when printing PGN tags

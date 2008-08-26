@@ -253,6 +253,9 @@ namespace eval pgn {
   ################################################################################
   proc ShowBoard {win startLine x y xc yc} {
     global lite dark
+    
+    # puts "dump = [$win dump $startLine.0 @$x,$y]"
+    
     set bd [sc_pos pgnBoard [::untrans [$win get $startLine.0 @$x,$y]] ]
     set w .pgnPopup
     set psize 30

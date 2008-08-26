@@ -78,8 +78,6 @@ proc ::commenteditor::Open {} {
   text $w.cf.text -width $::winWidth($w) -height $::winHeight($w) \
       -background white -wrap word -font font_Regular \
       -yscrollcommand ".commentWin.cf.scroll set" -setgrid 1
-  # DEBUG
-  # bind $w.cf.text <Key> {puts "reçu %A (%K) depuis %W"}
   scrollbar $w.cf.scroll -command ".commentWin.cf.text yview"
   label $w.cf.label -font font_Bold -textvar ::tr(Comment)
   bindFocusColors $w.cf.text
@@ -443,12 +441,27 @@ proc ::commenteditor::storeComment {} {
 #
 proc ::commenteditor::Refresh {} {
   if {![winfo exists .commentWin]} { return }
+  
   set nag [sc_pos getNags]
   .commentWin.nf.tf.text configure -state normal
   .commentWin.nf.tf.text delete 0 end
   if {$nag != "0"} {
     .commentWin.nf.tf.text insert end $nag
   }
+  
+  # if at vstart, disable NAG codes
+  if {[sc_pos isAt vstart]} {
+    set state "disabled"
+  } else  {
+    set state "normal"
+  }
+  foreach c [winfo children .commentWin.nf.tf] {
+    $c configure -state $state 
+  }
+  foreach c [winfo children .commentWin.nf.b] {
+    $c configure -state $state
+  }
+  
   # Rewrite text window, tag embedded commands,
   # and draw marks according to text window commands.
   set text  .commentWin.cf.text

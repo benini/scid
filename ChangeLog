@@ -505,6 +505,9 @@ scid-3.6.25
    * when info is available, the first line of engine window displays mate distance
    * in case of engines not configured for some training stuff, added relevant error messages
    * fixes on Tooltips display (max width, better placement, auto hide of the tooltip after few seconds, clicking on a tooltip hides it)
+   * it is no longer possible to add NAG codes before the first move of a game or of a variation
+   * when truncating a game, it is flagged as altered so the user will be prompted to save it
+   * PGN window with short header ON. If strip first moves -> the game was displayed incorrectly as empty
 - Annotation : added an option "mark tactical exercises". The tactical flag will be set to the game and a comment with ****d<depth>sc<score>. This option is only available when annotating with an UCI engine.
 - Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature. Pressing the right mouse button on "goto last move" (">>") button will go to next tactical exercises. A training base of over 1500 games has been released (not included in Scid package).
 - added extra options to "sc_pos analyze" :

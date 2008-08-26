@@ -4,25 +4,24 @@
 |                                                           |
  ===========================================================
 
+A essayer  :pgn.tcl, l256: n'envoyer que les coups (pas les commentaires en vert -> showboard : ne prendre que les caractères non verts)
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
 |                                                           |
  ===========================================================
 
-Possible improvements (perhaps not bugs, but awkward)
-
-- It is possible to add NAG before the first move of the game/variation. For variations, it is not even visible.
-
-- PGN window with short header ON. If strip first moves -> the game is empty (bug exists in Scid 3.6.1)
-
 - Right click in PGN window does not always display the right position. Happens because of some comments parsing. Bug exists in original Scid 3.6.1
-
+  -> see sc_pos_pgnBoard in tkscid.cpp (remove comments with sc_game_strip)
+  
  ===========================================================
 |                                                           |
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- add vars from analysis engine when the engine is locked
 
 - Migrate optrainer to Mask
 

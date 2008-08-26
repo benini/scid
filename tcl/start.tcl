@@ -35,6 +35,9 @@ set scidVersionDate "DEV 2008"
 # Set to 1 to have access to all code
 set NOT_FOR_RELEASE 0
 
+package require Tcl 8.4
+package require Tk  8.4
+
 # Determine operating system platform: unix or windows
 #
 set windowsOS 0
