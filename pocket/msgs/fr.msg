@@ -289,3 +289,4 @@
 ::msgcat::mcset fr "Word wrap" "Retour ligne"
 ::msgcat::mcset fr "Add elapsed game time" "Ajouter temps écoulé"
 ::msgcat::mcset fr "Human" "Humain"
+::msgcat::mcset fr "Online TB" "Finales en ligne"

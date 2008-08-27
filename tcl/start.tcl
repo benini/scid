@@ -681,6 +681,111 @@ if {$::windowsOS} {
   }
 }
 
+# Opening files by drag & drop on Scid icon on Mac
+if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+  # Drag & Drop
+  set dndisbusy 0
+  set isopenBaseready 0
+  set dndargs 0
+  
+  proc dragndrop {args} {
+    global dndisbusy
+    global isopenBaseready
+    global dndargs
+        
+    # Un-nest arguments:
+    set args [join $args]
+    
+    # Wait for openBase to be ready, if needed.
+    if {$isopenBaseready == 0} {
+      if {$dndargs != 0} {
+        tk_messageBox -type ok -icon info -title "Scid" -message \
+        "Please, wait until Scid finish starting up."
+        return
+      } else {
+        # Save file names for later use:
+        set dndargs $args
+      }
+      return
+    }
+
+    # Are we busy opening files? if so, display message and do nothing
+    if {$dndisbusy != 0} {
+        tk_messageBox -type ok -icon info -title "Scid" -message \
+        "Please, wait until the previou(s) database(s) are opened and try again."
+        return
+    }
+    
+    # Un-nest argumens again if Scid opened on drag & drop
+    if {$isopenBaseready == 2} {
+      # Un-nest arguments:
+      set args [join $args]
+      set isopenBaseready 1
+    }
+    
+    set dndisbusy 1
+    set errmsg ""
+    foreach file $args {
+      # Check for available slots:
+      if {[sc_base count free] == 0} {
+        tk_messageBox -type ok -icon info -title "Scid" \
+          -message "Too many databases are open; close at least one \n\
+          before opening more databases"
+          #::splash::add "No slot available."
+        return
+      }
+      # Email File: 
+      if {[file extension $file] == ".sem"} {
+        #::tools::email
+      continue
+      }
+      # SearchOptions file:
+      if {[file extension $file] == ".sso"} {
+        set ::fName $file
+        if {[catch {uplevel "#0" {source $::fName}} errmsg]} {
+          tk_messageBox -title "Scid: Error reading file" -type ok -icon warning \
+                      -message "Unable to open or read SearchOptions file: $file"
+        } else {
+          switch -- $::searchType {
+            "Material" { ::search::material }
+            "Header"   { ::search::header }
+            default    { continue }
+          }
+        }
+        continue
+      }
+      # Scid doesn't handle well .sg3 and .sn3 files.
+      if {([file extension $file] == ".sg3") || \
+        ([file extension $file] == ".sn3")} {
+        set eName ".si3"
+        set fName [file rootname $file]
+        set file "$fName$eName"
+      }
+      # Scid doesn't handle well .sg and .sn files either.
+      if {([file extension $file] == ".sg") || \
+        ([file extension $file] == ".sn")} {
+        set eName ".si"
+        set fName [file rootname $file]
+        set file "$fName$eName"
+      }
+      # Check if base is already opened
+      if {[sc_base slot $file] != 0} {
+        tk_messageBox -type ok -icon info -title "Scid" -message \
+        "$file is already opened."
+      } else  {
+        # All seems good, let's open those files:
+        catch {::file::Open $file} errmsg
+      }
+    }
+    set dndisbusy 0
+    set dndargs 0
+  }
+  proc tkOpenDocument {args} {
+    after idle [list dragndrop $args]
+  }
+  rename tkOpenDocument ::tk::mac::OpenDocument
+}
+
 # Add empty updateStatusBar proc to avoid errors caused by early
 # closing of the splash window:
 #

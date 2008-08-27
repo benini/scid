@@ -3,18 +3,13 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-
-A essayer  :pgn.tcl, l256: n'envoyer que les coups (pas les commentaires en vert -> showboard : ne prendre que les caractères non verts)
-
+essayer TB en ligne sur PPC
  ===========================================================
 |                                                           |
 |                          BUGS                             |
 |                                                           |
  ===========================================================
 
-- Right click in PGN window does not always display the right position. Happens because of some comments parsing. Bug exists in original Scid 3.6.1
-  -> see sc_pos_pgnBoard in tkscid.cpp (remove comments with sc_game_strip)
-  
  ===========================================================
 |                                                           |
 |                     FEATURE REQUESTS                      |
@@ -29,23 +24,15 @@ A essayer  :pgn.tcl, l256: n'envoyer que les coups (pas les commentaires en vert
 
 - Add a Game training ala Fritz' "Friend mode"
 
-- scidt from maintenance menu
+- scidt from maintenance menu (add extra menu in finder ?)
 
 - compile openseal for PocketPC
-
-- Add endgame tables support to PPC
 
 - use tablelist package to revamp Game List window
 
 - port FICS canvas to PPC
 
 - FICS : user defined commands at login
-
-- Separate remove comments / remove NAGs (often I would like to remove
-only comments, leaving NAGs)
-
-- Single command to remove comments+NAGs+variations+nonstandard tags (useful
-when exporting/copying a game with copyrighted annotations)
 
 - Remove game(s) from clipboard
 You can remove game(s) from filter, but Clipboard can only be emptied, you
@@ -59,8 +46,6 @@ for exporting. -> workaround open game list and RMB for removing games from filt
 - vars add at the end of a game
 
 - Engines tournament (with specific opening line ?)
-
-- export opening report in PGN (and check HTML conversion) : see proc mergeGame l.119 of end.tcl [sc_report opening best a 50]
 
 - book generation from Scid (re-use of Polyglot code)
 
@@ -93,16 +78,6 @@ GAME EDITOR
    =>
    15. Bg5 ( {Fritz: better } 15. Bg3 )
            ( {Crafty: with equality} )
-
-BOARD
-* fea: ignore Right arrow at the end of the game/variation
-* fea: update board after every move when Right/Left arrow is pressed 
-(possible
-  by adding "update idletasks", but it causes flickers
-* ide: when brownsing, show box with main move and variations (as in CB)
-* ide: swap board depending on player (your) name 
-* ide: make Home/End go to the end of the variation, not the game?
-* ide: use fancy graphics for pieces and background
 
 GAME LIST
 * fea: highlight current game in game list by default

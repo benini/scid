@@ -153,7 +153,7 @@ proc ::ui::About {} {
   # update
   # }
   # }
-
+  
   tk_messageBox -type ok -icon info -parent .fTop -title "About" -message \
       "Engine #1 : [::engine::getName 1]\nEngine #2 : [::engine::getName 2]\n$::scidppc_version\nScid Pocket is based on Scid\nhttp://prolinux.free.fr/scid\nReleased under GPL (free)\n[sc_info pocket]"
 }
@@ -244,7 +244,7 @@ proc ::infopanel::updateAnalysis {{n 1}} {
 ################################################################################
 proc ::infopanel::clearAnalysisText {} {
   set txt .fEngine.text
-  foreach tag {enginescore enginedepth enginepv enginemultipv engineinfo} {
+  foreach tag {enginescore enginedepth enginepv enginemultipv engineinfo tagonline} {
     while {1} {
       set del [$txt tag nextrange $tag 1.0]
       if {$del == ""} {break}
@@ -252,7 +252,88 @@ proc ::infopanel::clearAnalysisText {} {
     }
   }
 }
-
+################################################################################
+if { [catch {package require http} ] } {
+  set ::infopanel::online_available 0
+} else  {
+  set ::infopanel::online_available 1
+}
+set ::infopanel::url "http://k4it.de/egtb/fetch.php"
+################################################################################
+proc ::infopanel::onlineTB {} {
+  set query [ ::http::formatQuery hook null action egtb fen [sc_pos fen] ]
+  if {[catch {::http::geturl $::infopanel::url -timeout 5000 -query $query -command { ::infopanel::httpCallback }}] } {
+    tk_messageBox -type ok -icon error -parent . -title "Network error" -message "Network failure"
+  }
+}
+################################################################################
+proc ::infopanel::updateOnlineTB {} {
+  set txt .fEngine.text
+  foreach tag {tagonline} {
+    while {1} {
+      set del [$txt tag nextrange $tag 1.0]
+      if {$del == ""} {break}
+      catch {$txt delete [lindex $del 0] [lindex $del 1]}
+    }
+  }
+}
+################################################################################
+proc ::infopanel::httpCallback { token } {
+  upvar #0 $token state
+  
+  set t .fEngine.text
+  
+  # delete previous online output
+  ::infopanel::updateOnlineTB
+  
+  if {$state(status) != "ok"} {
+    $t insert end $state(status) tagonline
+    return
+  }
+  
+  set b $state(body)
+  set result ""
+  
+  if {[sc_pos side] == "black"} {
+    set tmp ""
+    set found 0
+    foreach line [split $b "\n" ] {
+      if {$line == "NEXTCOLOR"} {
+        set found 1
+        continue
+      }
+      if {$found} {
+        append tmp "$line\n"
+      }
+    }
+    set b $tmp
+  }
+  
+  foreach line [split $b "\n" ] {
+    if {$line == "NEXTCOLOR"} {
+      break
+    }
+    if { $line == "No information available" } {
+      append result "$line\n"
+    }
+    if {[string match "hook|null|value|*" $line]} {
+      append result "Online : [string range $line 16 end ]\n"
+      continue
+    }
+    if {[scan $line "%d-%d:%s" sq1 sq2 tmp] == 3} {
+      set p1 [ string toupper [string index [sc_pos board] $sq1 ] ]
+      set p2 [string index [sc_pos board] $sq2 ]
+      set take ""
+      if {$p2 != "."} {
+        set take "x"
+      }
+      append result "$p1[::board::san $sq1]$take[::board::san $sq2] [string range $line [string first : $line] end]\n"
+    }
+  }
+  
+  ::http::cleanup state
+  $t insert end $result tagonline
+}
 ################################################################################
 proc ::infopanel::updateComments {} {
   set txt .fEngine.text
@@ -675,6 +756,8 @@ proc ::board::menuInit {} {
   .menu.game add command -label [::msgcat::mc "Board setup"] -command ::game::BoardSetup
   .menu.game add checkbutton -label [::msgcat::mc "Annotate"] -variable ::analyzeMode -command ::game::Annotate
   .menu.game add checkbutton -label [::msgcat::mc "Play"] -variable ::playMode -command ::game::Play
+  .menu.game add command -label [::msgcat::mc "Online TB"] -command ::infopanel::onlineTB
+  
   
   # ------- tactics --------
   menu .menu.game.tactics
@@ -1328,6 +1411,8 @@ proc ::board::updateBoard {args} {
   if {$::options(showTree)} {
     ::infopanel::updateTreeText
   }
+  
+  ::infopanel::updateOnlineTB
   
   set nag [sc_pos getNags]
   if {$nag == "0"} {set nag ""}

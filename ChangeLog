@@ -508,6 +508,7 @@ scid-3.6.25
    * it is no longer possible to add NAG codes before the first move of a game or of a variation
    * when truncating a game, it is flagged as altered so the user will be prompted to save it
    * PGN window with short header ON. If strip first moves -> the game was displayed incorrectly as empty
+   * The middle mouse button pops up a mini board in PGN window. The position was wrong when the game contains comments : fixed by stripping comments before calling "sc_pos pgnBoard" (a small bug that was many years old !)
 - Annotation : added an option "mark tactical exercises". The tactical flag will be set to the game and a comment with ****d<depth>sc<score>. This option is only available when annotating with an UCI engine.
 - Training : find best move. Will go to the next tactical position marked with 4 stars (****). See "mark tactical exercises" in Annotation feature. Pressing the right mouse button on "goto last move" (">>") button will go to next tactical exercises. A training base of over 1500 games has been released (not included in Scid package).
 - added extra options to "sc_pos analyze" :
@@ -550,5 +551,5 @@ scid-3.6.25
    * Highlight score if score is -3 % (red) or +3% (green) from expected score
    Parameter set scoreHighlight_Margin 3.0 ; # if +/- this value, something special happened
 - updated spanish translation (thanks to Benigno Hernández)
-- [inhibited] support for online endgame tablebases (up to 6 men tablebases) : sites like http://k4it.de and Schredder does not allow queries on their site from other chess applications (even if there is no particular mechanism preventing this). So the code is commented out until a free site offering this service is found.
-
+- [inhibited] support for online endgame tablebases (up to 6 men tablebases) for Scid PC and Scid Pocket : sites like http://k4it.de and Schredder does not allow queries on their site from other chess applications (even if there is no particular mechanism preventing this). So the code is commented out until a free site offering this service is found.
+- MacOS : support for drag and drop of files (thanks to Israel Chauca)

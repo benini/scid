@@ -244,7 +244,36 @@ namespace eval pgn {
     sc_var promote $var
     updateBoard -pgn
   }
-  
+  ################################################################################
+  # removes the comments in text widget (or parsing in sc_pos pgnBoard will fail
+  # and return a wrong position
+  ################################################################################
+  proc removeCommentTag { win startline lastpos } {
+    set ret ""
+    if {[scan $lastpos "%d.%d" lastline lastcol] != 2} {
+      return $ret
+    }
+    for {set line $startline} {$line < $lastline} {incr line} {
+      if { [ scan [$win index $line.end ] "%d.%d" dummy colend ] != 2 } {
+        return $ret
+      }
+      for {set col 0} {$col <= $colend} {incr col} {
+        set t [$win tag names $line.$col]
+        if {[lsearch -glob $t "c_*"] == -1} {
+          append ret [$win get $line.$col]
+        }
+      }
+    }
+    
+    for {set col 0} {$col <= $lastcol} {incr col} {
+      set t [$win tag names $lastline.$col]
+      if {[lsearch -glob $t "c_*"] == -1} {
+        append ret [$win get $lastline.$col]
+      }
+    }
+    
+    return $ret
+  }
   ################################################################################
   # ::pgn::ShowBoard:
   #    Produces a popup window showing the board position in the
@@ -254,9 +283,9 @@ namespace eval pgn {
   proc ShowBoard {win startLine x y xc yc} {
     global lite dark
     
-    # puts "dump = [$win dump $startLine.0 @$x,$y]"
-    
-    set bd [sc_pos pgnBoard [::untrans [$win get $startLine.0 @$x,$y]] ]
+    set txt [removeCommentTag $win $startLine [ $win index @$x,$y]]
+    # set bd [sc_pos pgnBoard [::untrans [$win get $startLine.0 @$x,$y]] ]
+    set bd [ sc_pos pgnBoard [::untrans $txt ] ]
     set w .pgnPopup
     set psize 30
     if {$psize > $::boardSize} { set psize $::boardSize }

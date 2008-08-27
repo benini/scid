@@ -1862,5 +1862,15 @@ after 500 {
   if {$::splash::autoclose} {wm withdraw .splash}
 }
 
+# Opening files by drag & drop on Scid icon on Mac
+if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+  # We opened for a drag & drop request, process it now:
+  set isopenBaseready 1
+  if {$dndargs != 0} {
+    set isopenBaseready 2
+    catch {::tk::mac::OpenDocument $dndargs} errmsg
+    #::splash::add "Opening file(s)...\$dndargs"    
+  }
+}
 
 ### End of file: end.tcl
