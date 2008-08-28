@@ -68,8 +68,7 @@ menuText D FileReadOnly "Schreibschutz..." 3 \
 menuText D FileSwitch "Datenbank wechseln" 0 \
   {Zu einer anderen geöffneten Datenbank umschalten}
 menuText D FileExit "Ende" 0 {Scid beenden}
-# ====== TODO To be translated ======
-menuText D FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
+menuText D FileMaintFixBase "Inkonsistenzen beseitigen" 0 {Versuche eine inkonsistente Datenbank zu reparieren}
 
 # Edit menu:
 menuText D Edit "Bearbeiten" 0
@@ -531,60 +530,33 @@ translate D TreeBestGames {Beste Zugbaumpartien}
 translate D TreeTitleRow \
   {    Zug    ECO       Häufigkeit    Pkte   Elo  Erflg Jahr %Remis}
 translate D TreeTotal {SUMME}
-# ====== TODO To be translated ======
-translate D DoYouWantToSaveFirst {Do you want to save first}
-# ====== TODO To be translated ======
-translate D AddToMask {Add to Mask}
-# ====== TODO To be translated ======
-translate D RemoveFromMask {Remove from Mask}
-# ====== TODO To be translated ======
-translate D Nag {Nag code}
-# ====== TODO To be translated ======
+translate D DoYouWantToSaveFirst {Soll zuerst gespeichert werden}
+translate D AddToMask {Addiere zu Maske}
+translate D RemoveFromMask {Entferne von Maske}
+translate D Nag {NAG Code}
 translate D Marker {Marker}
-# ====== TODO To be translated ======
-translate D Include {Include}
-# ====== TODO To be translated ======
-translate D Exclude {Exclude}
-# ====== TODO To be translated ======
-translate D MainLine {Main line}
-# ====== TODO To be translated ======
-translate D Bookmark {Bookmark}
-# ====== TODO To be translated ======
-translate D NewLine {New line}
-# ====== TODO To be translated ======
-translate D ToBeVerified {To be verified}
-# ====== TODO To be translated ======
-translate D ToTrain {To train}
-# ====== TODO To be translated ======
-translate D Dubious {Dubious}
-# ====== TODO To be translated ======
-translate D ToRemove {To remove}
-# ====== TODO To be translated ======
-translate D NoMarker {No marker}
-# ====== TODO To be translated ======
-translate D ColorMarker {Color}
-# ====== TODO To be translated ======
-translate D WhiteMark {White}
-# ====== TODO To be translated ======
-translate D GreenMark {Green}
-# ====== TODO To be translated ======
-translate D YellowMark {Yellow}
-# ====== TODO To be translated ======
-translate D BlueMark {Blue}
-# ====== TODO To be translated ======
-translate D RedMark {Red}
-# ====== TODO To be translated ======
-translate D CommentMove {Comment move}
-# ====== TODO To be translated ======
-translate D CommentPosition {Comment position}
-# ====== TODO To be translated ======
-translate D AddMoveToMaskFirst {Add move to mask first}
-# ====== TODO To be translated ======
-translate D OpenAMaskFileFirst {Open a mask file first}
-# ====== TODO To be translated ======
-translate D Positions {Positions}
-# ====== TODO To be translated ======
-translate D Moves {Moves}
+translate D Include {Einbezogene Variante}
+translate D Exclude {Ausgeschlossene Variante}
+translate D MainLine {Hauptvariante}
+translate D Bookmark {Lesezeichen}
+translate D NewLine {Neue Variante}
+translate D ToBeVerified {Überprüfen}
+translate D ToTrain {Trainieren}
+translate D Dubious {Zweifelhaft}
+translate D ToRemove {Entfernen}
+translate D NoMarker {Keine Markierung}
+translate D ColorMarker {Farbe}
+translate D WhiteMark {Weiß}
+translate D GreenMark {Grün}
+translate D YellowMark {Gelb}
+translate D BlueMark {Blau}
+translate D RedMark {Rot}
+translate D CommentMove {Zug kommentieren}
+translate D CommentPosition {Position kommentieren}
+translate D AddMoveToMaskFirst {Zug zuerst zur Maske hinzufüngen}
+translate D OpenAMaskFileFirst {Zunächst Maske öffnen}
+translate D Positions {Positionen}
+translate D Moves {Züge}
 
 # Finder window:
 menuText D FinderFile "Datei" 0
