@@ -52,6 +52,8 @@ menuText Y FileReadOnly "Read-only..." 0 \
 menuText Y FileSwitch "Switch to database" 0 \
   {Switch to a different opened database} ;# ***
 menuText Y FileExit "Izaði" 1 {Izlazak iz Scid-a}
+# ====== TODO To be translated ======
+menuText Y FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText Y Edit "Izmene" 0
@@ -1882,6 +1884,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

@@ -54,6 +54,8 @@ menuText O FileReadOnly "Skrivebeskytt..." 6 \
 menuText O FileSwitch "Switch to database" 0 \
   {Switch to a different opened database} ;# ***
 menuText O FileExit "Avslutt" 0 {Avslutt Scid}
+# ====== TODO To be translated ======
+menuText O FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText O Edit "Rediger" 0
@@ -1882,6 +1884,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

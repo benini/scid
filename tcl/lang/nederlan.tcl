@@ -57,6 +57,8 @@ menuText N FileReadOnly "Alleen lezen..." 7 \
 menuText N FileSwitch "Schakel naar andere  database" 0 \
   {Schakel naar een andere geopende database} 
 menuText N FileExit "Einde programma" 0 {Einde Scid}
+# ====== TODO To be translated ======
+menuText N FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText N Edit "Bewerken" 0
@@ -1876,6 +1878,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

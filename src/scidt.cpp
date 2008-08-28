@@ -199,6 +199,7 @@ compactNameBase (NameBase * nb)
     }
     Index * idxTemp = new Index;
     idxTemp->SetFileName (filename);
+
     err = idxTemp->OpenIndexFile (FMODE_ReadOnly);
     if (err != OK) {
         fileErr (filename, INDEX_SUFFIX, err);

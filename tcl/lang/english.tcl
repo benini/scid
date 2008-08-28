@@ -90,7 +90,8 @@ menuText E FileReadOnly "Read-only..." 0 \
 menuText E FileSwitch "Switch to Database" 0 \
   {Switch to a different opened database}
 menuText E FileExit "Exit" 1 {Exit Scid}
-
+menuText E FileMaintFixBase "Repair base" 0 {Try to repair a corrupted base}
+  
 # Edit menu:
 menuText E Edit "Edit" 0
 menuText E EditAdd "Add Variation" 0 {Add a variation at this move in the game}

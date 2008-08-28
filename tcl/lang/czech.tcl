@@ -52,6 +52,8 @@ menuText C FileReadOnly "Pouze pro ètení..." 0 \
 menuText C FileSwitch "Pøepnout se do databáze" 15 \
   {Pøepnout se do jiné otevøené databáze}
 menuText C FileExit "Ukonèit" 0 {Ukonèit Scid}
+# ====== TODO To be translated ======
+menuText C FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText C Edit "Editace" 0
@@ -5513,6 +5515,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

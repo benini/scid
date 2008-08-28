@@ -56,6 +56,8 @@ menuText S FileReadOnly "Sólo lectura..." 5 \
 menuText S FileSwitch "Cambiar de base de datos" 0 \
   {Cambia a una base de dator abierta diferente}
 menuText S FileExit "Salir" 0 {Salir de Scid}
+# ====== TODO To be translated ======
+menuText S FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText S Edit "Editar" 0
@@ -1568,6 +1570,7 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

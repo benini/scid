@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-essayer TB en ligne sur PPC
+voir twincheck 
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -16,15 +16,13 @@ essayer TB en ligne sur PPC
 |                                                           |
  ===========================================================
 
-- add vars from analysis engine when the engine is locked
+- add variations from analysis engine when the engine is locked
 
 - Migrate optrainer to Mask
 
 - Option to set engines as 1st and 2nd default engines
 
 - Add a Game training ala Fritz' "Friend mode"
-
-- scidt from maintenance menu (add extra menu in finder ?)
 
 - compile openseal for PocketPC
 
@@ -33,11 +31,6 @@ essayer TB en ligne sur PPC
 - port FICS canvas to PPC
 
 - FICS : user defined commands at login
-
-- Remove game(s) from clipboard
-You can remove game(s) from filter, but Clipboard can only be emptied, you
-cannot remove some games. Such a feature is useful when you choose some games
-for exporting. -> workaround open game list and RMB for removing games from filter before export
 
 - Keyboard shortcuts for 'Discard'  / 'Go Back' in 'Leave game' dialog
 
@@ -123,7 +116,6 @@ SPELLCHECKER
 * fea: don't match partial name for surname
 
 INTERNAL GAME HANDLING 
-* cmd: remove verbal comments (leaving NAGs)
 * fea: in non-strict PGN view, convert all $ NAGs to symbols/words
 * ide: datasets (allowing to work on current filter as on the whole database)
 

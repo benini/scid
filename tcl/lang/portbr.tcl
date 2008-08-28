@@ -52,6 +52,8 @@ menuText B FileReadOnly "Apenas Leitura..." 7 \
 menuText B FileSwitch "Switch to database" 0 \
   {Switch to a different opened database} ;# ***
 menuText B FileExit "Sair" 0 {Encerrar o Scid}
+# ====== TODO To be translated ======
+menuText B FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText B Edit "Editar" 0
@@ -1888,6 +1890,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

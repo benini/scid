@@ -55,6 +55,8 @@ menuText I FileReadOnly "Sola-lettura..." 0 \
 menuText I FileSwitch "Attiva un database" 0 \
   {Attiva uno fra i database aperti}
 menuText I FileExit "Esci" 0 {Esce da Scid}
+# ====== TODO To be translated ======
+menuText I FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText I Edit "Edita" 0
@@ -1796,6 +1798,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

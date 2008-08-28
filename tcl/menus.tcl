@@ -206,6 +206,10 @@ set helpMessage($m.utils.name.3) FileMaintNameSite
 $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
 set helpMessage($m.utils.name,4) FileMaintNameRound
 
+$m.utils add separator
+$m.utils add command -label FileMaintFixBase -command ::maint::fixCorruptedBase
+set helpMessage($m.utils,10) FileMaintFixBase
+
 bind . <Control-d> ::windows::switcher::Open
 
 $m add command -label FileReadOnly -command makeBaseReadOnly
@@ -1276,6 +1280,7 @@ proc updateMenuStates {} {
   foreach i {Player Event Site Round} {
     $m.file.utils.name entryconfig [tr FileMaintName$i] -state disabled
   }
+  
   $m.file entryconfig [tr FileReadOnly] -state disabled
   
   # update recent Tree list (open base as Tree)
@@ -1442,7 +1447,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.file [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {Win Compact Delete Twin Class Sort Name} {
+  foreach tag {Win Compact Delete Twin Class Sort Name FixBase} {
     configMenuText .menu.file.utils [tr FileMaint$tag $oldLang] \
         FileMaint$tag $lang
   }

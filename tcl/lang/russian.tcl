@@ -54,6 +54,8 @@ menuText R FileReadOnly "Только для чтения..." 0 \
 menuText R FileSwitch "Переключить базу данных" 6 \
   {Переключить на другую открытую базу данных}
 menuText R FileExit "Выход" 0 {Выход из Scid}
+# ====== TODO To be translated ======
+menuText R FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText R Edit "Редактирование" 0
@@ -1911,6 +1913,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

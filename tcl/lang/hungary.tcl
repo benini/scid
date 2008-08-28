@@ -52,6 +52,8 @@ menuText H FileReadOnly "Írásvédelem..." 0 \
 menuText H FileSwitch "Adatbázisváltás" 0 \
   {Átvált egy másik megnyitott adatbázisra.}
 menuText H FileExit "Kilép" 2 {Kilép SCID-bõl.}
+# ====== TODO To be translated ======
+menuText H FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText H Edit "Szerkesztés" 1
@@ -2108,6 +2110,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

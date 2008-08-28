@@ -68,6 +68,8 @@ menuText D FileReadOnly "Schreibschutz..." 3 \
 menuText D FileSwitch "Datenbank wechseln" 0 \
   {Zu einer anderen geöffneten Datenbank umschalten}
 menuText D FileExit "Ende" 0 {Scid beenden}
+# ====== TODO To be translated ======
+menuText D FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText D Edit "Bearbeiten" 0
@@ -7083,6 +7085,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

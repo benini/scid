@@ -52,6 +52,7 @@ menuText F FileReadOnly "Lecture seule..." 0 \
 menuText F FileSwitch "Changer de base" 0 \
   {Changer vers une base ouverte différente}
 menuText F FileExit "Quitter" 0 {Quitter Scid}
+menuText F FileMaintFixBase "Réparer base" 0 {Essaie de réparer une base corrompue}
 
 # Edit menu:
 menuText F Edit "Éditer" 0
@@ -1721,6 +1722,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

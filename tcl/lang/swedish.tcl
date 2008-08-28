@@ -54,6 +54,8 @@ menuText W FileReadOnly "Enbart läsbar..." 8 \
 menuText W FileSwitch "Byt databas" 0 \
   {Byt till en annan öppnad databas} 
 menuText W FileExit "Avsluta" 0 {Avsluta Scid}
+# ====== TODO To be translated ======
+menuText W FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 # Edit menu:
 menuText W Edit "Redigera" 0
@@ -6899,6 +6901,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

@@ -51,6 +51,8 @@ menuText P FileReadOnly "Tylko do odczytu..." 0 \
 menuText P FileSwitch "Prze³±cz bazê" 1 \
   {Prze³±cz na inn± otwart± bazê} 
 menuText P FileExit "Koniec" 0 {Zamknij Scida}
+# ====== TODO To be translated ======
+menuText P FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
 
 menuText P Edit "Edytuj" 0
 menuText P EditAdd "Dodaj wariant" 0 {Dodaj wariant do ruchu w partii}
@@ -2109,6 +2111,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 
