@@ -88,7 +88,11 @@ proc ::tree::make { { baseNumber -1 } } {
   
   bind $w <Destroy> " set ::treeWin$baseNumber 0; set tree(locked$baseNumber) 0 "
   bind $w <F1> { helpWindow Tree }
-  bind $w <Escape> " .treeWin$baseNumber.buttons.stop invoke "
+  bind $w <Escape> "::tree::hideCtxtMenu $baseNumber ; .treeWin$baseNumber.buttons.stop invoke "
+  
+  # Bind left button to close ctxt menu:
+  bind $w <ButtonPress-1> "::tree::hideCtxtMenu $baseNumber"
+  
   standardShortcuts $w
   
   menu $w.menu
@@ -249,7 +253,14 @@ proc ::tree::make { { baseNumber -1 } } {
   ::tree::refresh $baseNumber
   set ::tree::cachesize($baseNumber) [lindex [sc_tree cacheinfo $baseNumber] 1]
 }
-
+################################################################################
+proc ::tree::hideCtxtMenu { baseNumber } {
+  set w .treeWin$baseNumber.f.tl.ctxtMenu
+  if {[winfo exists $w]} {
+    destroy $w
+    focus .treeWin$baseNumber
+  }
+}
 ################################################################################
 proc ::tree::selectCallback { baseNumber move } {
   
@@ -1443,7 +1454,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   $mctxt add command -label [ tr CommentPosition] -command "::tree::mask::addComment"
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
-  grab $mctxt
+  # grab $mctxt
 }
 ################################################################################
 #
@@ -1744,6 +1755,14 @@ proc ::tree::mask::getImage { move nmr } {
 # if move is null, this is a position comment
 ################################################################################
 proc ::tree::mask::addComment { { move "" } } {
+  
+  # first check the move is present in Mask
+  if { $move != "" } {
+    if { ![::tree::mask::moveExists $move] } {
+      tk_messageBox -title "Scid" -type ok -icon warning -message [ tr AddMoveToMaskFirst ]
+      return
+    }
+  }
   set w .treeMaskAddComment
   toplevel .treeMaskAddComment
   if {$move == ""} {
@@ -1756,6 +1775,7 @@ proc ::tree::mask::addComment { { move "" } } {
   $w.f.e insert end $oldComment
   button $w.ok -text OK -command "::tree::mask::updateComment $move ; destroy $w ; ::tree::refresh"
   pack $w.f $w.ok
+  focus $w.f.e
 }
 ################################################################################
 #
