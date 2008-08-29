@@ -1504,13 +1504,10 @@ translate D QueensPawn {Damenbauernspiel}
 translate D Slav {Slavisch}
 translate D QGA {Angenommenes Damengambit}
 translate D QGD {Abgelehntes Damengambit}
-# ====== TODO To be translated ======
-translate D QGDExchange {QGD Exchange}
+translate D QGDExchange {Abgelehntes Damengambit, Abtauschvariante}
 translate D SemiSlav {Semi-Slawisch}
-# ====== TODO To be translated ======
-translate D QGDwithBg5 {QGD with Bg5}
-# ====== TODO To be translated ======
-translate D QGDOrthodox {QGD Orthodox}
+translate D QGDwithBg5 {Abgelehntes Damengambit mit Lg5}
+translate D QGDOrthodox {Abgelehntes Damengambit, Orthodoxe Variante}
 translate D Grunfeld {Grünfeld-Verteidigung}
 translate D GrunfeldExchange {Grünfeld, Abtauschvariante}
 translate D GrunfeldRussian {Grünfeld-Verteidigung, Russische Variante}
