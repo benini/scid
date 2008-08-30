@@ -3938,6 +3938,15 @@ chess functions can easily accessed by the follwoing buttons:
    </li>
    <li><button tb_CC_delete> empties your In- and Outbox directories.
    </li>
+   <li><button tb_CC_online> is shown if the game list was refreshed
+   from the server within the current Scid session. The tool tip for
+   this icon shows date and time of the last refresh.
+   </li>
+   <li><button tb_CC_offline> indicates, that Xfcc status icons are
+   restored from saved results. No update has taken place in the
+   current Scid session. The tool tip for this icon shows date and
+   time of the last refresh.
+   </li>
 </ul>
 </p>
 <p>
@@ -4061,9 +4070,20 @@ set helpText(CCIcons) {
 <p>
 To shorten the display, a set of icons is used in the game list. Some
 of them are only present in certain circumstances, some are only valid
-for Xfcc based games, some for eMail based games.
+for Xfcc based games, some for eMail based games. These indicators are
+stored internally and are restored to the last update from the server
+if no interet connection is available.
 </p>
 <ul>
+   <li><button tb_CC_online> is shown if the game list was refreshed
+   from the server within the current Scid session. The tool tip for
+   this icon shows date and time of the last refresh.
+   </li>
+   <li><button tb_CC_offline> indicates, that Xfcc status icons are
+   restored from saved results. No update has taken place in the
+   current Scid session. The tool tip for this icon shows date and
+   time of the last refresh.
+   </li>
    <li><button tb_CC_envelope> This is an eMail based game. In those
    games many of the status flags used in Xfcc-based games are not
    available due to the limitation of the medium.

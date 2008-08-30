@@ -490,6 +490,10 @@ scid-3.6.25
    * Add extensive icons/indicators help
    * Add icon/indicators help button
    * Add binding for ? to access icons/statusindicators help
+   * Save and Restore Xfcc game parameters (who has the move, messages etc.)
+   * Add visual indicator if Xfcc parameters were recently retrieved
+     or are restored from previous fetches
+   * Show time of last Xfcc update from server
    * Update help files
    * Mark games with moves sent recently in green till the next update
    * Disable invalid menue entries in eMail chess (Draw/Resign handling)

@@ -6189,6 +6189,15 @@ Fernschachfunktionen ganz einfach über die folgenden Buttons erreichen
    <li><button tb_CC_delete> leert das Posteingangs- und das
    Postausgangsverzeichnis.
    </li>
+   <li><button tb_CC_online> zeigt an, dass die Partienliste in der
+   aktuellen Scid-Sitzung online aktualisiert wurde. Der zugehörige
+   Infotip zeit das Datum und die Uhrzeit der letzten Aktualisierung.
+   </li>
+   <li><button tb_CC_offline> zeigt an, dass der Xfcc-Status ohne
+   Aktualisierung aus den gespeicherten Werten hergestellt wurde und
+   somit nicht aktuell sein muß. Der zugehörige Infotip zeit das Datum
+   und die Uhrzeit der letzten Aktualisierung.
+   </li>
 </ul>
 </p>
 
@@ -6319,9 +6328,21 @@ set helpText(D,CCIcons) {
 <p>
 Um die Anzeige in der Partienliste abzukürzen werden einige Symbole
 verwendet. Manche von ihnen sind nur unter bestimmten Umständen
-sichtbar, andere nur für Xfcc- bzw. eMail-basierte Partien.
+sichtbar, andere nur für Xfcc- bzw. eMail-basierte Partien. Diese
+Indikatoren werden intern gespeichert und können so auch ohne
+Internetverbindung mit dem Status der letzten Aktualisierung angezeigt
+werden.
 </p>
 <ul>
+   <li><button tb_CC_online> zeigt an, dass die Partienliste in der
+   aktuellen Scid-Sitzung online aktualisiert wurde. Der zugehörige
+   Infotip zeit das Datum und die Uhrzeit der letzten Aktualisierung.
+   </li>
+   <li><button tb_CC_offline> zeigt an, dass der Xfcc-Status ohne
+   Aktualisierung aus den gespeicherten Werten hergestellt wurde und
+   somit nicht aktuell sein muß. Der zugehörige Infotip zeit das Datum
+   und die Uhrzeit der letzten Aktualisierung.
+   </li>
    <li><button tb_CC_envelope> zeigt eine eMail-basierte Partie an.
    Durch die Limitationen dieses Mediums sind kaum zusätzliche
    Statusangaben verfügbar.

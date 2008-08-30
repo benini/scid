@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.15 2008/08/25 14:54:57 arwagner Exp $
+### $Id: correspondence.tcl,v 1.16 2008/08/30 09:20:57 arwagner Exp $
 ###
-### Last change: <Sun, 2008/08/24 16:54:06 arwagner ingata>
+### Last change: <Sat, 2008/08/30 11:03:12 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -37,6 +37,10 @@ namespace eval Xfcc {
 
 	# list of server names for config dialog
 	set lsrvname   {}
+
+	# when was the last update was retrieved online?
+	set lastupdate 0
+	set update     0
 
 	array unset xfccsrv
 	# entry values for config dialog
@@ -383,7 +387,7 @@ namespace eval Xfcc {
 			set xml [::Xfcc::Receive $uri $username $password]
 			::Xfcc::SOAPError $name $xml
 			::Xfcc::WritePGN $path $name $xml
-			::Xfcc::PrintStatus $name $xml
+			::Xfcc::PrintStatus $path $name $xml
 		}
 	}
 
@@ -694,7 +698,7 @@ namespace eval Xfcc {
 	#----------------------------------------------------------------------
 	# Prints all status flags of the games in xml for server name.
 	#----------------------------------------------------------------------
-	proc PrintStatus {name xml} {
+	proc PrintStatus {path name xml} {
 		regsub -all {.*<GetMyGamesResult>} $xml {<GetMyGamesResult>} xml
 		regsub -all {</GetMyGamesResult>.*} $xml {</GetMyGamesResult>} xml
 
@@ -743,7 +747,41 @@ namespace eval Xfcc {
 				[list "result" $Result] \
 				[list "message" $mess] ]
 		}
+
+		set filename [scidConfigFile xfccstate]
+		file delete $filename
+
+		if {[catch {open $filename w} stateF]} {
+			::CorrespondenceChess::updateConsole "info ERROR: Unable to open state file $filename";
+		} else {
+			puts $stateF "# Scid options file"
+			puts $stateF "# State file for correspondence chess"
+			puts $stateF "# Version: $::scidVersion, $::scidVersionDate"
+			puts $stateF "# This file is generated automatically. Do NOT edit."
+
+			set ::Xfcc::update 1
+			set ::Xfcc::lastupdate [clock seconds]
+			set curtime [clock format $::Xfcc::lastupdate]
+			puts $stateF "#"
+			puts $stateF "# Last Update: $curtime"
+			puts $stateF "#"
+			foreach i { ::Xfcc::lastupdate     \
+							::Xfcc::xfccstate } {
+				puts $stateF "set $i [list [set $i]]"
+			}
+		}
+		close $stateF
+
 	}
+
+	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	# source the options file to overwrite the above setup
+	set scidConfigFiles(xfccstate) "xfccstate.dat"
+	if {[catch {source [scidConfigFile xfccstate]} ]} {
+	} else {
+	  ::splash::add "Xfcc state found and restored."
+	}
+
 }
 
 #======================================================================
@@ -1011,6 +1049,26 @@ image create photo tb_CC_message -data {
 	pCgLiWEWL6usGmBhSUhFs0NBADs=
 }
 
+image create photo tb_CC_online -data {
+	R0lGODlhIAAQAKU3AAAAAA8PDV1ZT2JeVGRgVmVgVmplW2xoXnBsYnJtY3h1a314bn56cIB9dIF9
+	c4qFe4uHfYuHfoyJgY2JgZOOhJeTipiTiZyXjZ+ck6CdlKeimKaim6eknqqnoLGtpLKwq7Oxqrez
+	qry5sr67tcTCvcbCusXDvcjFv87Kw9HQzOHf2+Lh3ePh3ejn5Oro4+vq5uzr6O7s6vDu6/Dv7PLw
+	7fPy8Pn5+P///////////////////////////////////yH+FUNyZWF0ZWQgd2l0aCBUaGUgR0lN
+	UAAh+QQBCgA/ACwAAAAAIAAQAAAGj8CfcEgsGo/IpHLJbDqLAMAv+kxGAZYGoKSlVocAR4jk0pYv
+	oonUem0DGqtZpwyQNT42U9e9Brj+gIA0Lw8wWjENGDUtLIGAfQ2Rkg0KCiMgCyoKACkNFCcak5N9
+	fFEKEhsJKJscDQwZDgela0kBBREIHrIVDQMGArRfAAEBFgQAEHtfR8Q/AcHL0dLT1EVBADs=
+}
+
+image create photo tb_CC_offline -data {
+	R0lGODlhIAAQAKU4AAAAAA8PDV1ZT2JeVGRgVmVgVmplW2xoXnBsYt9CHnJtY3h1a314bn56cIB9
+	dIF9c4qFe4uHfYuHfoyJgY2JgZOOhJeTipiTiZyXjZ+ck6CdlKeimKaim6eknqqnoLGtpLKwq7Ox
+	qrezqry5sr67tcTCvcbCusXDvcjFv87Kw9HQzOHf2+Lh3ePh3ejn5Oro4+vq5uzr6O7s6vDu6/Dv
+	7PLw7fPy8Pn5+P///////////////////////////////yH+FUNyZWF0ZWQgd2l0aCBUaGUgR0lN
+	UAAh+QQBCgA/ACwAAAAAIAAQAAAGosCfcEgsGo/IpHLJbDoBAGEiIaX+oM4r9OKITqtXUxerBDxE
+	pVe3+r2qMSNKtAiFOlg0j3o+bQNmDiA3J2NkAC+ILzUwEDFrYEIAMg4ZNi4tiXMADg4LCyQhDCsL
+	cz9tVyoOFSgbnJyadQsTHAoppGxWAB0ODRoPB3WlQwEFEggfwLiRFg4DBgLCRwABARcEXlZfABGF
+	WdSQbQHRWeTl5udZQQA7
+}
 
 image create photo tb_CC_spacer -data {
 	R0lGODlhAQAYAIAAAP///////yH5BAEKAAEALAAAAAABABgAAAIEjI+pVwA7
@@ -1344,6 +1402,8 @@ namespace eval CorrespondenceChess {
 
 		button    $w.top.help       -image tb_help -height 24 -width 24 -command { helpWindow CCIcons }
 
+		button    $w.top.onoffline  -image tb_CC_offline -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
+
 
 		::utils::tooltip::Set $w.top.retrieveCC [::tr "CCFetchBtn"]
 		::utils::tooltip::Set $w.top.prevCC     [::tr "CCPrevBtn"]
@@ -1351,6 +1411,7 @@ namespace eval CorrespondenceChess {
 		::utils::tooltip::Set $w.top.sendCC     [::tr "CCSendBtn"]
 		::utils::tooltip::Set $w.top.delinbox   [::tr "CCEmptyBtn"]
 		::utils::tooltip::Set $w.top.help       [::tr "CCHelpBtn"]
+		::utils::tooltip::Set $w.top.onoffline  [clock format $::Xfcc::lastupdate]
 
 		grid $w.top.console                -column  4 -row 0 -columnspan 8
 		grid $w.top.ysc        -stick ns   -column 13 -row 0 
@@ -1366,6 +1427,7 @@ namespace eval CorrespondenceChess {
 		grid $w.top.openDB               -column  0 -row 1 -columnspan 4
 		grid $w.top.inbox                -column  0 -row 2 -columnspan 3
 		grid $w.top.delinbox             -column  3 -row 2
+		grid $w.top.onoffline            -column  4 -row 2
 
 		grid $w.top.resign               -column  6 -row 1
 		grid $w.top.claimDraw            -column  5 -row 2
@@ -1427,6 +1489,11 @@ namespace eval CorrespondenceChess {
 			$w.bottom.$tag      configure -state normal
 			# make each line high enough for the icons to be placed
 			$w.bottom.$tag      image create end -align center -image tb_CC_spacer
+		}
+
+		if { $::Xfcc::update > 0 } {
+			$w.top.onoffline  configure -image tb_CC_online
+			::utils::tooltip::Set $w.top.onoffline  [clock format $::Xfcc::lastupdate]
 		}
 
 		if {$mess != ""} {
@@ -2310,6 +2377,7 @@ namespace eval CorrespondenceChess {
 	proc ReadInbox {} {
 		global ::CorrespondenceChess::Inbox ::CorrespondenceChess::CorrSlot
 		global ::CorrespondenceChess::glccstart ::CorrespondenceChess::glgames windowsOS
+		global ::Xfcc::lastupdate ::Xfcc::xfccstate
 
 		busyCursor .
 
@@ -2324,6 +2392,7 @@ namespace eval CorrespondenceChess {
 
 		set games 0
 		if {$CorrSlot > -1} {
+
 			::CorrespondenceChess::emptyGamelist
 			sc_clipbase clear
 			sc_base switch "clipbase"
@@ -2723,6 +2792,7 @@ namespace eval CorrespondenceChess {
 	::CorrespondenceChess::checkCorrBase
 	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 }
+
 
 ###
 ### End of file: Correspondence.tcl
