@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.16 2008/08/30 09:20:57 arwagner Exp $
+### $Id: correspondence.tcl,v 1.17 2008/08/31 18:22:50 arwagner Exp $
 ###
-### Last change: <Sat, 2008/08/30 11:03:12 arwagner ingata>
+### Last change: <Sun, 2008/08/31 20:19:31 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2692,6 +2692,12 @@ namespace eval CorrespondenceChess {
 
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
+
+			# Go to the last move is important to send the comment for
+			# the last move only not the comment for the current game
+			# position!
+			sc_move end
+
 			set Extra [sc_game tags get Extra]
 			set extraTagsList [split $Extra "\n"]
 
@@ -2710,7 +2716,7 @@ namespace eval CorrespondenceChess {
 			set movecount [sc_pos moveNumber]
 			set move      [sc_game info previousMoveNT]
 			set comment   [sc_pos getComment]
-			set Event [sc_game tags get Event]
+			set Event     [sc_game tags get Event]
 
 			# moveNumber gives the number of the next full move. This is
 			# one to high in case of playing black. Note that for this
