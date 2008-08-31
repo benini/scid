@@ -1225,7 +1225,6 @@ proc addAnalysisVariation {{n 1}} {
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
   
-  # updateBoard -pgn
   if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
   
   # Update score graph if it is open:
@@ -1284,7 +1283,6 @@ proc addAllVariations {{n 1}} {
   # Restore the pre-move command:
   sc_info preMoveCmd preMoveCommand
   
-  # updateBoard -pgn
   if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
   # Update score graph if it is open:
   if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
