@@ -55,7 +55,7 @@ menuText W FileSwitch "Byt databas" 0 \
   {Byt till en annan öppnad databas} 
 menuText W FileExit "Avsluta" 0 {Avsluta Scid}
 # ====== TODO To be translated ======
-menuText W FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
+menuText W FileMaintFixBase "Fixa trasig databas" 0 {Försök att fixa en trasig databas}
 
 # Edit menu:
 menuText W Edit "Redigera" 0
@@ -518,21 +518,21 @@ menuText W TreeFileCopy "Kopiera träd till urklipp" 1 \
   {Kopierar trädrelaterad statistik till urklipp}
 menuText W TreeFileClose "Stäng trädfönstret" 0 {Stäng trädfönstret}
 # ====== TODO To be translated ======
-menuText W TreeMask "Mask" 0
+menuText W TreeMask "Sökmask" 0
 # ====== TODO To be translated ======
-menuText W TreeMaskNew "New" 0 {New mask}
+menuText W TreeMaskNew "Ny" 0 {Ny sökmask}
 # ====== TODO To be translated ======
-menuText W TreeMaskOpen "Open" 0 {Open mask}
+menuText W TreeMaskOpen "Öppna" 0 {Öppna sökmask}
 # ====== TODO To be translated ======
-menuText W TreeMaskSave "Save" 0 {Save mask}
+menuText W TreeMaskSave "Spara" 0 {Spara sökmask}
 # ====== TODO To be translated ======
-menuText W TreeMaskClose "Close" 0 {Close mask}
+menuText W TreeMaskClose "Stäng" 0 {Stäng sökmask}
 # ====== TODO To be translated ======
-menuText W TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
+menuText W TreeMaskFillWithGame "Fyll med parti" 0 {Fyll sökmask med parti}
 # ====== TODO To be translated ======
-menuText W TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
+menuText W TreeMaskFillWithBase "Fyll med databas" 0 {Fyll sökmask med alla partier i databasen}
 # ====== TODO To be translated ======
-menuText W TreeMaskInfo "Info" 0 {Show statistics for current mask}
+menuText W TreeMaskInfo "Info" 0 {Visa statistik för aktuell sökmask}
 menuText W TreeSort "Sortera" 0
 menuText W TreeSortAlpha "Alfabetiskt" 0
 menuText W TreeSortECO "ECO kod" 0
@@ -564,59 +564,59 @@ translate W TreeTitleRow \
   { Drag      ECO     Frekvens      Res.    Elo~  Nivå  År~   %Remi} 
 translate W TreeTotal {TOTALT} 
 # ====== TODO To be translated ======
-translate W DoYouWantToSaveFirst {Do you want to save first}
+translate W DoYouWantToSaveFirst {Vill du spara först}
 # ====== TODO To be translated ======
-translate W AddToMask {Add to Mask}
+translate W AddToMask {Lägg till i Sökmask}
 # ====== TODO To be translated ======
-translate W RemoveFromMask {Remove from Mask}
+translate W RemoveFromMask {Ta bort från Sökmask}
 # ====== TODO To be translated ======
-translate W Nag {Nag code}
+translate W Nag {NAG-kod}
 # ====== TODO To be translated ======
-translate W Marker {Marker}
+translate W Marker {Markera}
 # ====== TODO To be translated ======
-translate W Include {Include}
+translate W Include {Inkludera}
 # ====== TODO To be translated ======
-translate W Exclude {Exclude}
+translate W Exclude {Exkludera}
 # ====== TODO To be translated ======
-translate W MainLine {Main line}
+translate W MainLine {Huvudvariant}
 # ====== TODO To be translated ======
-translate W Bookmark {Bookmark}
+translate W Bookmark {Bokmärke}
 # ====== TODO To be translated ======
-translate W NewLine {New line}
+translate W NewLine {Ny variant}
 # ====== TODO To be translated ======
-translate W ToBeVerified {To be verified}
+translate W ToBeVerified {Att bli verifierad}
 # ====== TODO To be translated ======
-translate W ToTrain {To train}
+translate W ToTrain {Att träna}
 # ====== TODO To be translated ======
-translate W Dubious {Dubious}
+translate W Dubious {Tveksam}
 # ====== TODO To be translated ======
-translate W ToRemove {To remove}
+translate W ToRemove {Att ta bort}
 # ====== TODO To be translated ======
-translate W NoMarker {No marker}
+translate W NoMarker {Ingen markering}
 # ====== TODO To be translated ======
-translate W ColorMarker {Color}
+translate W ColorMarker {Färg}
 # ====== TODO To be translated ======
-translate W WhiteMark {White}
+translate W WhiteMark {Vit}
 # ====== TODO To be translated ======
-translate W GreenMark {Green}
+translate W GreenMark {Grön}
 # ====== TODO To be translated ======
-translate W YellowMark {Yellow}
+translate W YellowMark {Gul}
 # ====== TODO To be translated ======
-translate W BlueMark {Blue}
+translate W BlueMark {Blå}
 # ====== TODO To be translated ======
-translate W RedMark {Red}
+translate W RedMark {Röd}
 # ====== TODO To be translated ======
-translate W CommentMove {Comment move}
+translate W CommentMove {Kommentera drag}
 # ====== TODO To be translated ======
-translate W CommentPosition {Comment position}
+translate W CommentPosition {Kommentera position}
 # ====== TODO To be translated ======
-translate W AddMoveToMaskFirst {Add move to mask first}
+translate W AddMoveToMaskFirst {Lägg till drag till sökmask först}
 # ====== TODO To be translated ======
-translate W OpenAMaskFileFirst {Open a mask file first}
+translate W OpenAMaskFileFirst {Öppna en sökmaskmaskfil först}
 # ====== TODO To be translated ======
-translate W Positions {Positions}
+translate W Positions {Positioner}
 # ====== TODO To be translated ======
-translate W Moves {Moves}
+translate W Moves {Drag}
 
 # Finder window:
 menuText W FinderFile "Fil" 0
@@ -1519,9 +1519,9 @@ translate W DoYouWantContinue {Vill du fortsätta ?}
 # ====== TODO To be translated ======
 translate W CoachIsWatching {Tränaren observerar}
 # ====== TODO To be translated ======
-translate W Ponder {Permanent thinking}
+translate W Ponder {Permanent tänkande}
 # ====== TODO To be translated ======
-translate W LimitELO {Limit ELO strength}
+translate W LimitELO {Begränsa ELO-styrka}
 # ====== TODO To be translated ======
 translate W DubiousMovePlayedTakeBack {Ett tveksamt drag spelades, vill du ta tillbaka det ?}
 # ====== TODO To be translated ======
@@ -1871,17 +1871,17 @@ translate W CCDlgTitNoCCDB {Scid: Ingen Korrespondensdatabas}
 # ====== TODO To be translated ======
 translate W CCErrNoCCDB {Ingen Databas av typ 'Korrespondens' är öppnad. Var god och öppna en innan du använder Korrespondensschackfunktioner.}
 # ====== TODO To be translated ======
-translate W CCFetchBtn {Fetch games from the server and process the Inbox}
+translate W CCFetchBtn {Hämta partier från servern och bearbeta Inkorgen}
 # ====== TODO To be translated ======
-translate W CCPrevBtn {Goto previous game}
+translate W CCPrevBtn {Gå till tidigare parti}
 # ====== TODO To be translated ======
-translate W CCNextBtn {Goto next game}
+translate W CCNextBtn {Gå till nästa parti}
 # ====== TODO To be translated ======
-translate W CCSendBtn {Send move}
+translate W CCSendBtn {Skicka drag}
 # ====== TODO To be translated ======
-translate W CCEmptyBtn {Empty In- and Outbox}
+translate W CCEmptyBtn {Töm Inkorgen och Utkorgen}
 # ====== TODO To be translated ======
-translate W CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+translate W CCHelpBtn {Hjälp med ikoner och statusindikatorer.\nFör generell Hjälp tryck på F1!}
 # ====== TODO To be translated ======
 translate W DoneWithPosition {Klar med position}
 # ====== TODO To be translated ======
@@ -3221,7 +3221,7 @@ Urklippsdatabasen <i>inte</i> kan stängas via menyvalet <menu>Arkiv: Stäng</menu
 motsvarigheten till  <menu>Redigera: Återställ Urklippsdatabasen</menu>, dvs databasen töms.
 </p>
 <p>
-Du kan maximalt ha 20,000 partier i minnet samtidigt.
+Du kan maximalt ha 100000 partier i minnet samtidigt.
 </p>
 
 <p><footer>(Uppdaterad: Scid 2.5,  juni 2001)</footer></p>
