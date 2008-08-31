@@ -4669,7 +4669,7 @@ specific server. It is a wise custom to use only characters, numbers
 and "-" as well as "_" in this name.
 </li>
 <li><term>Password</term>: defines the password used for login. The
-same rules apply as for te Login name. <b>Note</b> Scid currently
+same rules apply as for the Login name. <b>Note</b> Scid currently
 stores your passwords on the hardisc in unencrypted form. For this
 reason keep the directory safe.
 </li>
