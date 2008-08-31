@@ -56,8 +56,7 @@ menuText S FileReadOnly "Sólo lectura..." 5 \
 menuText S FileSwitch "Cambiar de base de datos" 0 \
   {Cambia a una base de dator abierta diferente}
 menuText S FileExit "Salir" 0 {Salir de Scid}
-# ====== TODO To be translated ======
-menuText S FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
+menuText S FileMaintFixBase "Fijar base corrupta" 0 {Prueba a fijar una base corrupta}
 
 # Edit menu:
 menuText S Edit "Editar" 0
@@ -491,10 +490,8 @@ menuText S TreeMaskOpen "Abrir" 0 {Abrir máscara}
 menuText S TreeMaskSave "Salvar" 0 {Salvar máscara}
 menuText S TreeMaskClose "Cerrar" 0 {Cerrar máscara}
 menuText S TreeMaskFillWithGame "Llenar con partida" 0 {Llenar máscara con partida}
-# ====== TODO To be translated ======
-menuText S TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
-# ====== TODO To be translated ======
-menuText S TreeMaskInfo "Info" 0 {Show statistics for current mask}
+menuText S TreeMaskFillWithBase "LLenar con base" 0 {Llenar máscar con todas las partidas de la base}
+menuText S TreeMaskInfo "Info" 0 {Muestra estadísticas para la máscara actual}
 menuText S TreeSort "Ordenar" 0
 menuText S TreeSortAlpha "Alfabéticamente" 0
 menuText S TreeSortECO "Por código ECO" 11
@@ -522,60 +519,33 @@ translate S TreeBestGames {Mejores partidas del árbol}
 translate S TreeTitleRow \
   {    Movim. ECO       Frecuencia   Puntu. AvElo Perf AvAño %Tablas}
 translate S TreeTotal {TOTAL}
-# ====== TODO To be translated ======
-translate S DoYouWantToSaveFirst {Do you want to save first}
-# ====== TODO To be translated ======
-translate S AddToMask {Add to Mask}
-# ====== TODO To be translated ======
-translate S RemoveFromMask {Remove from Mask}
-# ====== TODO To be translated ======
-translate S Nag {Nag code}
-# ====== TODO To be translated ======
-translate S Marker {Marker}
-# ====== TODO To be translated ======
-translate S Include {Include}
-# ====== TODO To be translated ======
-translate S Exclude {Exclude}
-# ====== TODO To be translated ======
-translate S MainLine {Main line}
-# ====== TODO To be translated ======
-translate S Bookmark {Bookmark}
-# ====== TODO To be translated ======
-translate S NewLine {New line}
-# ====== TODO To be translated ======
-translate S ToBeVerified {To be verified}
-# ====== TODO To be translated ======
-translate S ToTrain {To train}
-# ====== TODO To be translated ======
-translate S Dubious {Dubious}
-# ====== TODO To be translated ======
-translate S ToRemove {To remove}
-# ====== TODO To be translated ======
-translate S NoMarker {No marker}
-# ====== TODO To be translated ======
+translate S DoYouWantToSaveFirst {Quieres salvar primero}
+translate S AddToMask {Añadir a máscara}
+translate S RemoveFromMask {Elimina desde la máscara}
+translate S Nag {Código de regaño}
+translate S Marker {Marcador}
+translate S Include {Incluir}
+translate S Exclude {Excluir}
+translate S MainLine {Línea principal}
+translate S Bookmark {Favorito}
+translate S NewLine {Línea nueva}
+translate S ToBeVerified {Para ser verificado}
+translate S ToTrain {Para entrenar}
+translate S Dubious {Dudoso}
+translate S ToRemove {Para quitar}
+translate S NoMarker {Sin marcador}
 translate S ColorMarker {Color}
-# ====== TODO To be translated ======
-translate S WhiteMark {White}
-# ====== TODO To be translated ======
-translate S GreenMark {Green}
-# ====== TODO To be translated ======
-translate S YellowMark {Yellow}
-# ====== TODO To be translated ======
-translate S BlueMark {Blue}
-# ====== TODO To be translated ======
-translate S RedMark {Red}
-# ====== TODO To be translated ======
-translate S CommentMove {Comment move}
-# ====== TODO To be translated ======
-translate S CommentPosition {Comment position}
-# ====== TODO To be translated ======
-translate S AddMoveToMaskFirst {Add move to mask first}
-# ====== TODO To be translated ======
-translate S OpenAMaskFileFirst {Open a mask file first}
-# ====== TODO To be translated ======
-translate S Positions {Positions}
-# ====== TODO To be translated ======
-translate S Moves {Moves}
+translate S WhiteMark {Blanco}
+translate S GreenMark {Verde}
+translate S YellowMark {Amarillo}
+translate S BlueMark {Azul}
+translate S RedMark {Rojo}
+translate S CommentMove {Comentar movimiento}
+translate S CommentPosition {Comentar posición}
+translate S AddMoveToMaskFirst {Añadir primero el movimiento a la máscara}
+translate S OpenAMaskFileFirst {Abrir primero un fichero de máscara}
+translate S Positions {Posiciones}
+translate S Moves {Jugadas}
 
 # Finder window:
 menuText S FinderFile "Archivo" 0
@@ -601,16 +571,11 @@ translate S FinderDir {Directorio}
 translate S FinderDirs {Directorios}
 translate S FinderFiles {Archivos}
 translate S FinderUpDir {arriba}
-# ====== TODO To be translated ======
-translate S FinderCtxOpen {Open}
-# ====== TODO To be translated ======
-translate S FinderCtxBackup {Backup}
-# ====== TODO To be translated ======
-translate S FinderCtxCopy {Copy}
-# ====== TODO To be translated ======
-translate S FinderCtxMove {Move}
-# ====== TODO To be translated ======
-translate S FinderCtxDelete {Delete}
+translate S FinderCtxOpen {Abrir}
+translate S FinderCtxBackup {Copia de seguridad (Backup)}
+translate S FinderCtxCopy {Copia}
+translate S FinderCtxMove {Jugada}
+translate S FinderCtxDelete {Borrar}
 
 # Player finder:
 menuText S PListFile "Archivo" 0
@@ -1533,19 +1498,13 @@ translate S CCDlgEmailCommunication {Comunicación eMail}
 translate S CCDlgMailPrg {Programa de correo:}
 translate S CCDlgBCCAddr {(B)CC Dirección:}
 translate S CCDlgMailerMode {Modo:}
-# ====== TODO To be translated ======
-translate S CCDlgThunderbirdEg {e.g. Thunderbird, Mozilla Mail, Icedove...}
-# ====== TODO To be translated ======
-translate S CCDlgMailUrlEg {e.g. Evolution}
-# ====== TODO To be translated ======
-translate S CCDlgClawsEg {e.g Sylpheed Claws}
-# ====== TODO To be translated ======
-translate S CCDlgmailxEg {e.g. mailx, mutt, nail...}
-# ====== TODO To be translated ======
-translate S CCDlgAttachementPar {Parámetro Attachment:}
+translate S CCDlgThunderbirdEg {e.d. Thunderbird, Mozilla Mail, Icedove...}
+translate S CCDlgMailUrlEg {e.d. Evolution}
+translate S CCDlgClawsEg {e.d. Sylpheed Claws}
+translate S CCDlgmailxEg {e.d. mailx, mutt, nail...}
+translate S CCDlgAttachementPar {Parámetro Adhesión (Attachment):}
 translate S CCDlgInternalXfcc {Usar soporte interno Xfcc}
-# ====== TODO To be translated ======
-translate S CCDlgSubjectPar {Parámetro Subject:}
+translate S CCDlgSubjectPar {Parámetro Sujeto (Subject):}
 translate S CCDlgStartEmail {Empezar nueva partida eMail}
 translate S CCDlgYourName {Tu nombre:}
 translate S CCDlgYourMail {Tu dirección eMail:}
