@@ -560,3 +560,8 @@ scid-3.6.25
 - [inhibited] support for online endgame tablebases (up to 6 men tablebases) for Scid PC and Scid Pocket : sites like http://k4it.de and Schredder does not allow queries on their site from other chess applications (even if there is no particular mechanism preventing this). So the code is commented out until a free site offering this service is found.
 - MacOS : support for drag and drop of files (thanks to Israel Chauca)
 - New menu entry in Maintenance menu to repair corrupted bases (equivalent to "scidt -N" in command line)
+
+[January 2009 ??]
+
+scid-3.6.26
+-----------
