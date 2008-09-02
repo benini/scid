@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.17 2008/08/31 18:22:50 arwagner Exp $
+### $Id: correspondence.tcl,v 1.18 2008/09/02 17:27:27 arwagner Exp $
 ###
-### Last change: <Sun, 2008/08/31 20:19:31 arwagner ingata>
+### Last change: <Tue, 2008/09/02 18:00:41 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -554,8 +554,7 @@ namespace eval Xfcc {
 			# http://wiki.schemingmind.com/Variants
 			set variant         [$game selectNodes {string(variant)}]
 
-			set filename "$path/$name-$id.pgn"
-
+			set filename [file nativename [file join $path "$name-$id.pgn"]]
 			file delete $filename
 
 			if {[catch {open $filename w} pgnF]} {
