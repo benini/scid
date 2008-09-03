@@ -988,7 +988,9 @@ namespace eval engine {
     
     # To speed up parsing of engine's output. Should be removed if currmove info is used
     if {[string first "info currmove" $line ] == 0} { return }
-    # puts "readSock $line"
+    
+    # if {![string match "info *" $line ]} { puts "readSock $line" }
+    
     if {[string match "error*" $line]} {
       tk_messageBox -type ok -icon warning -parent . -title "Engine sends error" -message $line
     }

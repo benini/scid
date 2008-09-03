@@ -1942,33 +1942,38 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
         tb->PrintInt (NumMovesPrinted);
         tb->PrintChar ('>');
     }
+
+    char * s = NULL;
+
     if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-        char * s = strDuplicate (comment);
+        s = strDuplicate (comment);
         strTrimMarkCodes (s);
-        if (s[0] != 0) {
-            tb->PrintString (preStr);
-            tb->PrintString (s);
-            tb->PrintString (postStr);
-        }
+    } else {
+      s = (char *) comment;
+    }
+
+    if (IsColorFormat()) {
+        // Translate "<", ">" in comments:
+        tb->AddTranslation ('<', "<lt>");
+        tb->AddTranslation ('>', "<gt>");
+        tb->PrintString (s);
+        tb->ClearTranslation ('<');
+        tb->ClearTranslation ('>');
+    } else {
+        tb->PrintString (preStr);
+        tb->PrintString (s);
+        tb->PrintString (postStr);
+    }
+
+    if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
 #ifdef WINCE
         my_Tcl_Free((char*) s);
 #else
         delete[] s;
 #endif
-    } else {
-        if (IsColorFormat()) {
-            // Translate "<", ">" in comments:
-            tb->AddTranslation ('<', "<lt>");
-            tb->AddTranslation ('>', "<gt>");
-            tb->PrintString (comment);
-            tb->ClearTranslation ('<');
-            tb->ClearTranslation ('>');
-        } else {
-            tb->PrintString (preStr);
-            tb->PrintString (comment);
-            tb->PrintString (postStr);
-        }
     }
+
+
     if (IsColorFormat()) { tb->PrintString ("</c>"); }
 }
 

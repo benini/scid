@@ -520,7 +520,7 @@ proc ::game::setPlayHeaders {} {
   
   if {$::options(game_timeMode) == "timebonus"} {
     set tw "[expr $::engine::data(wtime1) / (1000 * 60)]/[expr $::engine::data(winc1) / 1000]"
-    set tb "[expr $::engine::data(btime1) / (1000 * 60)]/[expr $::engine::data(binc1) / 1000]"    
+    set tb "[expr $::engine::data(btime1) / (1000 * 60)]/[expr $::engine::data(binc1) / 1000]"
   } elseif {$::options(game_timeMode) == "depth"} {
     set t$engine_color "depth $::engine::data(fixeddepth1)"
   } elseif {$::options(game_timeMode) == "movetime"} {
@@ -1611,8 +1611,10 @@ proc ::game::engineGo { n } {
     ::engine::sendToEngine "ponderhit" $n
   } else {
     
-    if { $::game::ponder } {
+    if { $::game::ponder && [sc_pos moveNumber] != 1} {
+      set ::engine::data(waitForBestMove$n) 1
       ::engine::sendToEngine "stop" $n
+      vwaitTimed ::engine::data(waitForBestMove$n) 3000 nowarn
     }
     
     set ::engine::data(waitForReadyOk$n) 1

@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-
+régler pb de donations -> mettre à jour le site (URGENT !)
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -31,8 +31,6 @@
 - port FICS canvas to PPC
 
 - FICS : user defined commands at login
-
-- Keyboard shortcuts for 'Discard'  / 'Go Back' in 'Leave game' dialog
 
 - Start game analysis at the end of the game to fill hash tables
 

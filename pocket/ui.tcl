@@ -756,7 +756,7 @@ proc ::board::menuInit {} {
   .menu.game add command -label [::msgcat::mc "Board setup"] -command ::game::BoardSetup
   .menu.game add checkbutton -label [::msgcat::mc "Annotate"] -variable ::analyzeMode -command ::game::Annotate
   .menu.game add checkbutton -label [::msgcat::mc "Play"] -variable ::playMode -command ::game::Play
-  .menu.game add command -label [::msgcat::mc "Online TB"] -command ::infopanel::onlineTB
+  # .menu.game add command -label [::msgcat::mc "Online TB"] -command ::infopanel::onlineTB
   
   
   # ------- tactics --------

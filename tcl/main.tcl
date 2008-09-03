@@ -818,6 +818,9 @@ foreach photofile [glob -nocomplain -directory $scidUserDir "*.spf"] {
 foreach photofile [glob -nocomplain -directory $scidConfigDir "*.spf"] {
   readPhotoFile $photofile
 }
+foreach photofile [glob -nocomplain -directory [file join $scidShareDir "photos"] "*.spf"] {
+  readPhotoFile $photofile
+}
 
 # Read players.img for compatibility with older versions:
 readPhotoFile [file join $scidUserDir players.img]

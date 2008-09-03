@@ -10,6 +10,8 @@
 #    wish8.3 wmtest
 #  etc...
 
+package require Tk
+
 set start [clock seconds]
 set count 0
 set speed 0

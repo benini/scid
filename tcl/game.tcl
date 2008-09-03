@@ -26,9 +26,30 @@ proc ::game::ConfirmDiscard2 {} {
   if {$::trialMode} { return 1 }
   if {[sc_base isReadOnly]} { return 1 }
   if {! [sc_game altered]} { return 1 }
-  set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" $::tr(ClearGameDialog) "" 2 \
-      $::tr(SaveAndContinue) $::tr(DiscardChangesAndContinue) $::tr(GoBack) ]
-  return $answer
+  # set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" $::tr(ClearGameDialog) "" 2 \
+  # $::tr(SaveAndContinue) $::tr(DiscardChangesAndContinue) $::tr(GoBack) ]
+  
+  set w .confirmDiscard
+  toplevel $w
+  wm title $w "Scid: [tr GameNew]"
+  set ::game::answer 2
+  frame $w.top
+  frame $w.bottom
+  label $w.top.txt -text $::tr(ClearGameDialog)
+  pack $w.top.txt -expand 1 -fill both
+  
+  button $w.bottom.b1 -text $::tr(SaveAndContinue) -command {destroy .confirmDiscard ; set ::game::answer 0}
+  button $w.bottom.b2 -text $::tr(DiscardChangesAndContinue) -command {destroy .confirmDiscard ; set ::game::answer 1}
+  button $w.bottom.b3 -text $::tr(GoBack) -command {destroy .confirmDiscard ; set ::game::answer 2}
+  pack $w.bottom.b1 $w.bottom.b2 $w.bottom.b3 -side left -expand 1 -fill both
+  
+  pack $w.top $w.bottom -expand 1 -fill both
+  
+  bind $w <Destroy> {set ::game::answer 2}
+  grab $w
+  focus $w.bottom.b3
+  vwait ::game::answer
+  return $::game::answer
 }
 
 # ::game::Clear
