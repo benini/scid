@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.18 2008/09/02 17:27:27 arwagner Exp $
+### $Id: correspondence.tcl,v 1.19 2008/09/04 18:08:28 arwagner Exp $
 ###
-### Last change: <Tue, 2008/09/02 18:00:41 arwagner ingata>
+### Last change: <Wed, 2008/09/03 21:42:48 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -557,15 +557,14 @@ namespace eval Xfcc {
 			set filename [file nativename [file join $path "$name-$id.pgn"]]
 			file delete $filename
 
-			if {[catch {open $filename w} pgnF]} {
-				::CorrespondenceChess::updateConsole "info ERROR: Unable ot open config file $filename";
-			} else {
-
-				# Drop games that are not "normal" chess as scid can not
-				# handle variants. Note that the ICCF does not set the
-				# variant flag. Additionally, it is enough to drop variant
-				# games from the inbox to get proper playlists.
-				if {($variant == "chess") || ($variant == "")} {
+			# Drop games that are not "normal" chess as scid can not
+			# handle variants. Note that the ICCF does not set the
+			# variant flag. Additionally, it is enough to drop variant
+			# games from the inbox to get proper playlists.
+			if {($variant == "chess") || ($variant == "")} {
+				if {[catch {open $filename w} pgnF]} {
+					::CorrespondenceChess::updateConsole "info ERROR: Unable ot open config file $filename";
+				} else {
 					::CorrespondenceChess::updateConsole "info $name-$id..."
 					puts $pgnF "\[Event \"$Event\"\]";
 					puts $pgnF "\[Site \"$Site\"\]";
@@ -676,19 +675,15 @@ namespace eval Xfcc {
 						puts $pgnF "1/2-1/2\n";
 					} \
 					"WhiteDefaulted" {
-						puts $pgnF "0-1\n";
+						puts $pgnF "\{White Defaultet\} 0-1\n";
 					}\
 					"BlackDefaulted" {
-						puts $pgnF "1-0\n";
+						puts $pgnF "\{Black Defaultet\} 1-0\n";
 					}\
 					"BothDefaulted" {
-						puts $pgnF "1/2-1/2\n";
+						puts $pgnF "\{Both Defaultet\} 1/2-1/2\n";
 					}
-
 					close $pgnF
-				} else {
-					puts stderr "chess"
-					file delete $filename
 				}
 			}
 		}
