@@ -496,6 +496,7 @@ public:
     void      GetPrevSAN (char * str);
     void      GetPrevMoveUCI (char * str);
 
+    bool      CommentEmpty ( const char * comment);
     void      WriteComment (TextBuffer * tb, const char * preStr,
                             const char * comment, const char * postStr);
     errorT    WriteMoveList (TextBuffer * tb, uint plyCount,

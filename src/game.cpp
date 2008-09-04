@@ -1930,6 +1930,47 @@ Game::GetPrevMoveUCI (char * str)
         MoveForward();
 //     }
 }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// commentEmpty:
+//    Called by WriteMoveList to check there is really
+//    something to print given display options.
+//    comment is supposed to be non null
+bool
+Game::CommentEmpty ( const char * comment)
+{
+    char * s = NULL;
+    bool ret = false;
+
+    if (comment == NULL)
+      return true;
+
+    if (comment[0] == '\0')
+      return true;
+
+    if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
+      s = strDuplicate (comment);
+      strTrimMarkCodes (s);
+      char * tmp = s;
+      bool empty = true;
+      while (tmp[0] != 0) {
+        if (tmp[0] != ' ') {
+          empty = false;
+          break;
+        }
+        tmp++;
+      }
+      ret = empty;
+
+  #ifdef WINCE
+      my_Tcl_Free((char*) s);
+  #else
+      delete[] s;
+  #endif
+    }
+
+    return ret;
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // writeComment:
 //    Called by WriteMoveList to write a single comment.
@@ -1937,11 +1978,6 @@ void
 Game::WriteComment (TextBuffer * tb, const char * preStr,
               const char * comment, const char * postStr)
 {
-    if (IsColorFormat()) {
-        tb->PrintString ("<c_");
-        tb->PrintInt (NumMovesPrinted);
-        tb->PrintChar ('>');
-    }
 
     char * s = NULL;
 
@@ -1950,6 +1986,15 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
         strTrimMarkCodes (s);
     } else {
       s = (char *) comment;
+    }
+
+    if (s[0] == '\0')
+      return;
+
+    if (IsColorFormat()) {
+        tb->PrintString ("<c_");
+        tb->PrintInt (NumMovesPrinted);
+        tb->PrintChar ('>');
     }
 
     if (IsColorFormat()) {
@@ -1972,7 +2017,6 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
         delete[] s;
 #endif
     }
-
 
     if (IsColorFormat()) { tb->PrintString ("</c>"); }
 }
@@ -2256,7 +2300,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 printMoveNum = true;
             }
 
-            if (m->comment != NULL) {
+            if (m->comment != NULL && ! CommentEmpty(m->comment) ) {
                 if (!inComment && IsPlainFormat()  &&
                     (PgnStyle & PGN_STYLE_NO_NULL_MOVES)) {
                     // If this move has no variations, but the next move
@@ -2272,16 +2316,17 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 }
 
                 if ((PgnStyle & PGN_STYLE_COLUMN)  &&  VarDepth == 0) {
-                    if (! endedColumn) {
-                        if (CurrentPos->GetToMove() == WHITE) {
-                            tb->PauseTranslations ();
-                            tb->PrintString (nextColumn);
-                            tb->ResumeTranslations ();
-                        }
-                        tb->PrintString (endColumn);
-                        tb->PrintString (endTable);
-                        endedColumn = true;
-                    }
+// Code commented to remove extra lines
+//                     if (! endedColumn) {
+//                         if (CurrentPos->GetToMove() == WHITE) {
+//                             tb->PauseTranslations ();
+//                             tb->PrintString (nextColumn);
+//                             tb->ResumeTranslations ();
+//                         }
+//                         tb->PrintString (endColumn);
+//                         tb->PrintString (endTable);
+//                         endedColumn = true;
+//                     }
                 }
                 if (IsHtmlFormat()  &&  VarDepth == 0) {
                     tb->PrintString ("</b><dl><dd>");
@@ -2298,7 +2343,10 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
 
                 if ((PgnStyle & PGN_STYLE_INDENT_COMMENTS) && VarDepth == 0) {
                     if (IsColorFormat()) {
-                        tb->PrintString ("</ip1><br>");
+                        tb->PrintString ("</ip1>");
+                        // Modification to remove extra lines
+                        if (CurrentPos->GetToMove() == WHITE)
+                          tb->PrintString ("<br>");
                     } else {
                         tb->SetIndent (tb->GetIndent() - 4); tb->Indent();
                     }
