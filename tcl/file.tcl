@@ -276,7 +276,7 @@ proc ::file::Close {{base -1}} {
     if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
     if {[winfo exists .emailWin]} { destroy .emailWin }
     ::pgn::Refresh
-    updateBoard
+    updateBoard -pgn
   }
   updateMenuStates
   updateStatusBar

@@ -2174,8 +2174,10 @@ proc toggleLockEngine {n} {
   set w ".analysisWin$n"
   $w.b1.move configure -state $state
   $w.b1.line configure -state $state
+  if {$analysis(uci$n)} {
+    $w.b1.multipv configure -state $state
+  }
   $w.b1.alllines configure -state $state
-  $w.b1.multipv configure -state $state
   $w.b1.automove configure -state $state
   if { $n == 1 } {
     $w.b1.annotate configure -state $state

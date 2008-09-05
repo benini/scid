@@ -574,4 +574,4 @@ scid-3.6.26
 - PGN window : removed extra lines between moves and comments
 - After closing a base, the current game is reseted
 - After game searches (header, material or board), the first game of the filter is automatically loaded
-
+- Fix : trying to repair a base already opened is now prohibited

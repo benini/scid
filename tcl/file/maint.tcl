@@ -18,6 +18,11 @@ proc ::maint::fixCorruptedBase {} {
   if {$fName == ""} { return }
   set fName [file rootname $fName]
   
+  if {[sc_base slot $fName] != 0} {
+    tk_messageBox -type ok -icon info -title "Scid" -message "$fName is already opened.\nClose it first"
+    return
+  }
+  
   progressWindow "Scid" [concat $::tr(CompactNames) "..."]
   busyCursor .
   set err [catch {sc_base fixCorrupted $fName} result]
@@ -28,7 +33,7 @@ proc ::maint::fixCorruptedBase {} {
   } else {
     tk_messageBox -type ok -icon info -title "Scid" -message "Base $fName was repaired"
   }
-
+  
 }
 
 ################################################################################
