@@ -40,6 +40,8 @@
 
 - book generation from Scid (re-use of Polyglot code)
 
+- Highlight exact position of errors in PGN import window
+
 ======================================================================================================================
 From: Michal Rudolf <mrudolf@kdewebdev.org>
 Subject: Re: Scid bugs

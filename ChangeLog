@@ -565,6 +565,9 @@ scid-3.6.25
 
 scid-3.6.26
 -----------
+- CC:
+  * Fix: Variant games were not removed correctly from the inbox on
+  Windows, recode more forwared procedure
 - Confirm / discard dialog box : rewritten to look a little bit better
 - photos of players are now also searched in Scid shared directory (under photos directory) (Thanks to Mikhail Kalenkov)
 - if "Strip out coloured square/arrow codes" is checked and PGN display is in color, comments are no longer surrounded with {} 
