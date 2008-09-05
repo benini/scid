@@ -252,8 +252,7 @@ proc openBase {name} {
 proc ::file::Close {{base -1}} {
   # Remember the current base:
   set current [sc_base current]
-  if {$base < 0} { set base $current] }
-  
+  if {$base < 0} { set base $current }
   # Switch to the base which will be closed, and check for changes:
   sc_base switch $base
   if {[sc_base inUse]} {
@@ -262,6 +261,13 @@ proc ::file::Close {{base -1}} {
       return
     }
     sc_base close
+    
+    # If base to close was the current one, reset current game
+    if { $current == $base } {
+      setTrialMode 0
+      sc_game new
+    }
+    
     # Now switch back to the original base
     sc_base switch $current
     

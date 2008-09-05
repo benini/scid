@@ -5591,7 +5591,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "save",       "scores",
         "startBoard", "strip",      "summary",    "tags",
-        "truncate", "truncatefree", NULL
+        "truncate",   "truncatefree", NULL
     };
     enum {
         GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,        GAME_FIND,

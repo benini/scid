@@ -572,4 +572,6 @@ scid-3.6.26
 - photos of players are now also searched in Scid shared directory (under photos directory) (Thanks to Mikhail Kalenkov)
 - if "Strip out coloured square/arrow codes" is checked and PGN display is in color, comments are no longer surrounded with {} 
 - PGN window : removed extra lines between moves and comments
+- After closing a base, the current game is reseted
+- After game searches (header, material or board), the first game of the filter is automatically loaded
 

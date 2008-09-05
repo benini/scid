@@ -454,8 +454,12 @@ proc search::header {} {
     unbusyCursor .
     
     .sh.status configure -text $str
-    set glstart 1
-    ::windows::gamelist::Refresh
+    # set glstart 1
+    # ::windows::gamelist::Refresh
+    
+    # Go to the first game in the filter
+    ::game::Load [sc_filter first]
+    
     ::windows::stats::Refresh
   }
   
