@@ -1360,7 +1360,8 @@ translate I Play {Gioca}
 translate I Noblunder {Nessun errore}
 translate I blunder {errore}
 translate I Noinfo {-- Nessuna info --}
-translate I PhalanxOrCraftyMissing {Phalanx o Crafty non sono stati trovati}
+# ====== TODO To be translated ======
+translate I PhalanxOrTogaMissing {Phalanx or Toga not found}
 translate I moveblunderthreshold {la mossa è un errore se la perdita è maggiore di}
 translate I limitanalysis {limita il tempo di analisi del motore}
 translate I seconds {secondi}
@@ -1798,6 +1799,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 

@@ -1502,7 +1502,8 @@ translate B blunder {blunder}
 # ====== TODO To be translated ======
 translate B Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate B PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate B PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate B moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1890,6 +1891,8 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
+
 
 
 

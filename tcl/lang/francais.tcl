@@ -1324,7 +1324,7 @@ translate F Play {Jouer}
 translate F Noblunder {Pas d'erreur}
 translate F blunder {erreur}
 translate F Noinfo {-- Pas d'info --}
-translate F PhalanxOrCraftyMissing {Phalanx ou Crafty non trouvé}
+translate F PhalanxOrTogaMissing {Phalanx ou Toga non trouvé}
 translate F moveblunderthreshold {le coup est une erreur si les pertes sont supérieures à }
 translate F limitanalysis {limiter le temps d'analyse}
 translate F seconds {secondes}
@@ -1722,6 +1722,8 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
+
 
 
 

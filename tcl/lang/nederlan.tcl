@@ -1493,8 +1493,9 @@ translate N Noblunder {Geen blunder}
 translate N blunder {Blunder}
  
 translate N Noinfo {-- Geen info --}
+# ====== TODO To be translated ======
+translate N PhalanxOrTogaMissing {Phalanx or Toga not found}
  
-translate N PhalanxOrCraftyMissing {Phalanx of Crafty niet gevonden}
  
  
 translate N moveblunderthreshold {zet is blunder als het verlies groter is dan}
@@ -1878,6 +1879,8 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
+
 
 
 

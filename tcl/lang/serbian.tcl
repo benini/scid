@@ -1497,7 +1497,8 @@ translate Y blunder {blunder}
 # ====== TODO To be translated ======
 translate Y Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate Y PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate Y PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate Y moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1884,6 +1885,8 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 

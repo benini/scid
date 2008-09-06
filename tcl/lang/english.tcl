@@ -1366,7 +1366,7 @@ translate E Play {Play}
 translate E Noblunder {No blunder}
 translate E blunder {blunder}
 translate E Noinfo {-- No info --}
-translate E PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate E PhalanxOrTogaMissing {Phalanx or Toga not found}
 translate E moveblunderthreshold {move is a blunder if loss is greater than}
 translate E limitanalysis {limit engine analysis time}
 translate E seconds {seconds}

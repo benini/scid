@@ -1526,7 +1526,8 @@ translate R blunder {blunder}
 # ====== TODO To be translated ======
 translate R Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate R PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate R PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate R moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1913,6 +1914,8 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

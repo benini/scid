@@ -575,3 +575,4 @@ scid-3.6.26
 - After closing a base, the current game is reseted
 - After game searches (header, material or board), the first game of the filter is automatically loaded
 - Fix : trying to repair a base already opened is now prohibited
+- Fix : trying to play a tactical game with Phalanx absent would pop an uncaught exception (translation missing)

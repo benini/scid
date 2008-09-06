@@ -1493,7 +1493,8 @@ translate O blunder {blunder}
 # ====== TODO To be translated ======
 translate O Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate O PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate O PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O moveblunderthreshold {move is a blunder if loss is greater than}
@@ -1884,6 +1885,8 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

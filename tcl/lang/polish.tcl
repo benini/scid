@@ -1506,7 +1506,8 @@ translate P blunder {blunder}
 # ====== TODO To be translated ======
 translate P Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate P PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate P PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate P moveblunderthreshold {move is a blunder if loss is greater than}
@@ -2111,6 +2112,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

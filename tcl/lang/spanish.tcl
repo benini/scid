@@ -1337,7 +1337,8 @@ translate S Play {Jugar}
 translate S Noblunder {Sin errores}
 translate S blunder {Meteduras de pata}
 translate S Noinfo {-- Sin información --}
-translate S PhalanxOrCraftyMissing {Phalanx or Crafty no encontrado}
+# ====== TODO To be translated ======
+translate S PhalanxOrTogaMissing {Phalanx or Toga not found}
 translate S moveblunderthreshold {El movimiento es una metedura de pata si la pérdida de puntuación es mayor que }
 translate S limitanalysis {Tiempo límite para análisis del motor}
 translate S seconds {segundos}
@@ -1529,6 +1530,8 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
+
 
 
 

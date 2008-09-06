@@ -1500,7 +1500,8 @@ translate W blunder {blunder}
 # ====== TODO To be translated ======
 translate W Noinfo {-- Ingen information --}
 # ====== TODO To be translated ======
-translate W PhalanxOrCraftyMissing {Phalanx eller Crafty hittades inte}
+translate W PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate W moveblunderthreshold {drag är en blunder om förlust är större än}
@@ -6901,6 +6902,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 

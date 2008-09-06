@@ -1492,7 +1492,8 @@ translate H blunder {blunder}
 # ====== TODO To be translated ======
 translate H Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate H PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate H PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate H moveblunderthreshold {move is a blunder if loss is greater than}
@@ -2110,6 +2111,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

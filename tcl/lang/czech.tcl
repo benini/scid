@@ -1490,7 +1490,8 @@ translate C blunder {blunder}
 # ====== TODO To be translated ======
 translate C Noinfo {-- No info --}
 # ====== TODO To be translated ======
-translate C PhalanxOrCraftyMissing {Phalanx or Crafty not found}
+translate C PhalanxOrTogaMissing {Phalanx or Toga not found}
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate C moveblunderthreshold {move is a blunder if loss is greater than}
@@ -5515,6 +5516,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 
