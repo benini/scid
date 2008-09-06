@@ -10,7 +10,7 @@
 #   Leipzig, Merida: Armando H. Marroquin.
 
 set png_image_support 1
-if { [catch { package require Img } ] } {
+if { [catch { package require img::png } ] } {
   set png_image_support 0
   ::splash::add "Img package not found (tkimg). Some piece sets are disabled."
 }

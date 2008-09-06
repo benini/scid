@@ -397,6 +397,7 @@ namespace eval gameclock {
     }
     set data(fg$n) "black"
     set data(running$n) 0
+    set data(digital$n) 1
     ::gameclock::reset $n
     ::gameclock::draw $n
     bind $data(id$n) <Button-1> "::gameclock::toggleClock $n"
@@ -433,6 +434,12 @@ namespace eval gameclock {
           set y [expr {$cy - $length * cos($angle)}]
           $data(id$n) create line $cx $cy $x $y -width $width -tags aig$n -fill $color
         }
+    # draw a digital clock
+    if {$data(digital$n)} {
+      set m [format "%02d" [expr abs($sec) / 60] ]
+      set s [format "%02d" [expr abs($sec) % 60] ]
+      $data(id$n) create text $cx [expr $cy + $size/4 ] -text "$m:$s" -anchor center -fill $color -tag aig$n
+    }
   }
   ################################################################################
   proc every {ms body n} {
@@ -494,7 +501,7 @@ namespace eval gameclock {
     set ::gameclock::data(fg$n) $fg
     $::gameclock::data(id$n) configure -background $bg
     $::gameclock::data(id$n) itemconfigure clock$n -fill $fg
-    $::gameclock::data(id$n) itemconfigure aig$n -fill $fg    
+    $::gameclock::data(id$n) itemconfigure aig$n -fill $fg
   }
 }
 ################################################################################

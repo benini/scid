@@ -18,7 +18,7 @@ SHAREDIR = /usr/local/share/scid
 ### TCL_VERSION: Set this according to the version of Tcl/Tk you have
 #   installed that you want Scid to use: 8.0, 8.1, 8.2, 8.3, etc.
 #
-TCL_VERSION = 8.4
+TCL_VERSION = 8.5
 
 # TCL_INCLUDE, TCL_LIBRARY, TK_LIBRARY: these are the compiler options
 #    needed for linking Scid with Tcl/Tk.  The program "./configure"
@@ -28,14 +28,14 @@ TCL_VERSION = 8.4
 # The settings determined by "./configure" are:
 #
 
-TCL_INCLUDE = -I/usr/include
-TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
-TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
-
-#TCLTK_PATH = /usr/local/ActiveTcl8.5/
-#TCL_INCLUDE = -I$(TCLTK_PATH)/include
-#TCL_LIBRARY = -L$(TCLTK_PATH)/lib -ltcl$(TCL_VERSION) -ldl
+#TCL_INCLUDE = -I/usr/include
+#TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
 #TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
+
+TCLTK_PATH = /usr/local/ActiveTcl8.5/
+TCL_INCLUDE = -I$(TCLTK_PATH)/include
+TCL_LIBRARY = -L$(TCLTK_PATH)/lib -ltcl$(TCL_VERSION) -ldl
+TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
 
 ### Here are other commonly used settings for the Tcl/Tk compiler options:
 

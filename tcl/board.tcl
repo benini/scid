@@ -766,9 +766,14 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
   
-  frame $w -class Board
+
+frame $w -class Board
   canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background black -borderwidth 0 -highlightthickness 0
-  grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
+  if {[info tclversion] == 8.5} {
+    grid anchor $w center
+  }
+  
+grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
   set bd $w.bd
   
   
@@ -867,7 +872,7 @@ proc ::board::resize2 {w psize} {
 #
 proc ::board::resize {w psize} {
   global boardSizes
-
+  
   set oldsize $::board::_size($w)
   if {$psize == $oldsize} { return $oldsize }
   if {$psize == "redraw"} { set psize $oldsize }
