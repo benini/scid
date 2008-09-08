@@ -277,7 +277,8 @@ OpLine::CommonLength (OpLine * line)
 void
 OpLine::PrintMove (DString * dstr, const char * move, uint format)
 {
-    char tempTrans[500];
+    char tempTrans[5000];
+
     if (format == OPTABLE_Compact) {
         strcpy(tempTrans, move);
         transPieces(tempTrans);

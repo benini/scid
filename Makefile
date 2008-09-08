@@ -28,9 +28,9 @@ TCL_VERSION = 8.5
 # The settings determined by "./configure" are:
 #
 
-#TCL_INCLUDE = -I/usr/include
-#TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
-#TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
+# TCL_INCLUDE = -I/usr/include
+# TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
+# TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) -lX11
 
 TCLTK_PATH = /usr/local/ActiveTcl8.5/
 TCL_INCLUDE = -I$(TCLTK_PATH)/include

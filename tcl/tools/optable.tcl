@@ -111,8 +111,7 @@ proc ::optable::makeReportWin {args} {
     }
     pack $w.b.cancel -side right -pady 5 -padx 2
     
-    foreach i {1 2} name {"Searching database for report games"
-      "Generating report information"} {
+    foreach i {1 2} name { "Searching database for report games" "Generating report information" } {
       label $w.text$i -text "$i. $name"
       pack $w.text$i -side top
       canvas $w.c$i -width 400 -height 20 -bg white -relief solid -border 1
@@ -141,8 +140,7 @@ proc ::optable::makeReportWin {args} {
     }
     sc_progressBar $w.c2 bar 401 21 time
   }
-  sc_report opening create $::optable(ExtraMoves) $::optable(MaxGames)\
-      $::optable::_data(exclude)
+  sc_report opening create $::optable(ExtraMoves) $::optable(MaxGames) $::optable::_data(exclude)
   if {$showProgress} {
     unbusyCursor .
     grab release $w.b.cancel

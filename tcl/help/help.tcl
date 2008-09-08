@@ -2041,6 +2041,10 @@ set helpText(Tree) {<h1>The Tree window</h1>
   for the position, for example to point out a critical position.
   </p>
   <p>
+  To add markers to moves or to the current position, right click on a line. Don't forget to save the Mask 
+  (even if you will be prompted to do it if you close a Mask that has been modified).
+  </p>
+  <p>
   A mask can be automatically filled with a game containing comments and variations (menu "Fill with game").
   </p>
   

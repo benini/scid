@@ -561,13 +561,12 @@ scid-3.6.25
 - MacOS : support for drag and drop of files (thanks to Israel Chauca)
 - New menu entry in Maintenance menu to repair corrupted bases (equivalent to "scidt -N" in command line)
 
-[January 2009 ??]
+[October 2009 ]
 
 scid-3.6.26
 -----------
-- CC:
-  * Fix: Variant games were not removed correctly from the inbox on
-  Windows, recode more forwared procedure
+- Correspondence chess :
+  * Fix: Variant games were not removed correctly from the inbox on Windows
 - Confirm / discard dialog box : rewritten to look a little bit better
 - photos of players are now also searched in Scid shared directory (under photos directory) (Thanks to Mikhail Kalenkov)
 - if "Strip out coloured square/arrow codes" is checked and PGN display is in color, comments are no longer surrounded with {} 
@@ -578,3 +577,5 @@ scid-3.6.26
 - Fix : trying to play a tactical game with Phalanx absent would pop an uncaught exception (translation missing)
 - Partial support for Tk 8.5 added
 - Play on internet : a digital clock is displayed inside the analog clock (seems required for blitz games)
+- Windows release : Tcl/Tk is upgraded to version 8.5, so latest piece sets (with transparency effects) are correctly displayed
+- Fix : Scid could crash when generating an opening report from a huge base from particular positions. Bug introduced with Scid 3.6.21 and fixed now (buffer overflow due to moves translation in OpLine::PrintMove)

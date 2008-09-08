@@ -34,8 +34,6 @@
 
 - Start game analysis at the end of the game to fill hash tables
 
-- vars add at the end of a game
-
 - Engines tournament (with specific opening line ?)
 
 - book generation from Scid (re-use of Polyglot code)
@@ -58,7 +56,6 @@ GAME EDITOR
 * cmd: [~] and [~=] buttons in Comment editor
 * cmd: "Save/Replace" option for "Current game has changed" dialog
 * fea: automatically delete empty comments
-* fea: automatically replace conflicting NAGs (f. e. ??/?/?!/? or =/+=/=+)
 * fea: merge game ignoring move sequences (use last matching position)
 * fea: merge game into variations too
 * fea: properly detect that game was modified

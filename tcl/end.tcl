@@ -1235,12 +1235,7 @@ proc gameReplace {} { gameSave [sc_game number] }
 #    Displays information about Scid.
 #
 proc helpAbout {} {
-  # DEBUG (loads all games of a DB in order to check it)
-  # for {set i 0 } {$i < [sc_base numGames]} { incr i} {
-  # ::game::LoadNextPrev next
-  # }
-  # return
-    
+ 
   set str {}
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"

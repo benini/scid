@@ -72,6 +72,8 @@ const int MAX_EPD = 4;
 #endif
 static PBook * pbooks [MAX_EPD];
 
+Tcl_Obj * tclObj_String = Tcl_NewStringObj( "", -1 );
+
 // Declare scid_InitTclTk, to initialise the Tcl interpreter:
 #ifdef WINCE
 
@@ -12687,6 +12689,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc < 2) {
         return errorResult (ti, usage);
     }
+
     switch (argv[1][0]) {
         case 'O': case 'o':  reportType = REPORT_OPENING; break;
         case 'P': case 'p':  reportType = REPORT_PLAYER; break;
@@ -12758,6 +12761,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         report->AddEndMaterial (ie->GetFinalMatSig(), (ply != 0));
     }
     if (showProgress) { updateProgressBar (ti, 1, 1); }
+
     return TCL_OK;
 }
 
