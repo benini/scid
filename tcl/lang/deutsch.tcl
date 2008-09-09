@@ -1373,8 +1373,7 @@ translate D Play {Spielen}
 translate D Noblunder {Kein Fehler}
 translate D blunder {Fehler}
 translate D Noinfo {-- Keine Info --}
-# ====== TODO To be translated ======
-translate D PhalanxOrTogaMissing {Phalanx or Toga not found}
+translate D PhalanxOrTogaMissing {Phalanx oder Toga nicht gefunden!}
 translate D moveblunderthreshold {fehlerhafter Zug, wenn Verlust größer als}
 translate D limitanalysis {Analysezeit der Engine begrenzen}
 translate D seconds {Sekunden}
