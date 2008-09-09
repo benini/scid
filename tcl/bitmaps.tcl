@@ -17,7 +17,6 @@ if { [catch { package require img::png } ] } {
 
 set boardStyles {}
 
-
 ##########
 # Size 20 is only used in Material search window, not for boards.
 # It has two special extra images, wm20 and bm20, which contain a

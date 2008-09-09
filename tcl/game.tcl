@@ -46,7 +46,11 @@ proc ::game::ConfirmDiscard2 {} {
   pack $w.top $w.bottom -expand 1 -fill both
   
   bind $w <Destroy> {set ::game::answer 2}
-  grab $w
+  
+  # ceinture et bretelle pour le grab !
+  update
+  catch { grab $w }
+  
   focus $w.bottom.b3
   vwait ::game::answer
   return $::game::answer

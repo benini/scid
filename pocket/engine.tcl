@@ -1062,8 +1062,13 @@ namespace eval engine {
           if { $next == "mate" } {
             incr i
             set next [ lindex $d $i ]
-            set data(scoremate$n) $next
-            if {$next < 0} { set data(score$n) -32700 } else  { set data(score$n) 32700 }
+            # some engines (like Greko) don't output a correct number. In that case set scoremate to 0.
+            if { [ scan $next "%d" data(scoremate$n) ] != 1} {
+              set data(scoremate$n) 0
+            }
+            if { $data(scoremate$n) != 0 } {
+              if { $next < 0 } { set data(score$n) -32700 } else  { set data(score$n) 32700 }
+            }
           }
           # convert the score to white's perspective (not engine's one)
           if { [sc_pos side] == "black"} {
