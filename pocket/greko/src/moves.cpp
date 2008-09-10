@@ -1,563 +1,721 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4996)
+#endif
 
 #include <string.h>
+
+#include "eval.h"
 #include "moves.h"
 #include "position.h"
+#include "search.h"
 #include "utils.h"
 
-SMove* g_moves[MAX_PLY + 2];
-int g_moves_cnt[MAX_PLY + 2];
+extern int g_history[14][64];
 
-inline void insert_move(FLD from, FLD to, PIECE piece, PIECE captured, PIECE promotion, int ply)
+U64 GetPinMask(const Position& pos, FLD from, FLD K, const U64& occupied, 
+		COLOR opp)
 {
-	g_moves[ply][g_moves_cnt[ply]++].mv = mv_compose(from, to, piece, captured, promotion);
+	U64 mask = LL(0xffffffffffffffff);
+
+	if (DIRS[from][K] == DIR_NO)
+		return mask;
+	
+	if (BB_BETWEEN[K][from] & occupied)
+		return mask;
+
+	U64 x = BB_BISHOP_ATTACKS[K] & 
+		(pos.Bits(BISHOPW | opp) | pos.Bits(QUEENW | opp));
+
+	while (x)
+	{
+		FLD f = PopLSB(x);
+		if ((BB_BETWEEN[from][f] & occupied) == 0)
+		{
+			if (BB_BETWEEN[K][f] & BB_SINGLE[from])
+				mask &= (BB_BETWEEN[K][f] | BB_SINGLE[f]);
+		}
+	}
+
+	x = BB_ROOK_ATTACKS[K] & 
+		(pos.Bits(ROOKW | opp) | pos.Bits(QUEENW | opp));
+
+	while (x)
+	{
+		FLD f = PopLSB(x);
+		if ((BB_BETWEEN[from][f] & occupied) == 0)
+		{
+			if (BB_BETWEEN[K][f] & BB_SINGLE[from])
+				mask &= (BB_BETWEEN[K][f] | BB_SINGLE[f]);
+		}
+	}
+
+	return mask;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void gen_captures_and_promotions(const Position* pos, int ply)
+
+void MoveList::AddSimpleChecks(const Position& pos)
 {
-	int from = NF, to = NF;
-	PIECE piece = NOPIECE, captured = NOPIECE;
-	U64 x = 0, y = 0;
-	U64 free = pos->bits[NOPIECE];
+	COLOR side = pos.Side();
+	COLOR opp = Opp(side);
 
-	U64 blockers = ~pos->bits[NOPIECE];
-	U64 targets = pos->bits_all[pos->opp];
+	U64 x, y, pin;
+	FLD from, to;
+	PIECE piece;
+	FLD K = pos.King(side);
+	FLD Kopp = pos.King(opp);
+	U64 occupied = pos.BitsAll();
+	U64 free = ~occupied;
 
-	g_moves_cnt[ply] = 0;
+	U64 knightZone = BB_KNIGHT_ATTACKS[Kopp] & free;
+	U64 bishopZone = BishopAttacks(Kopp, occupied) & free;
+	U64 rookZone = RookAttacks(Kopp, occupied) & free;
 
-	if (pos->side == WHITE)
+	piece = KNIGHTW | side;
+	x = pos.Bits(piece);
+	while (x)
 	{
-		piece = PAWNW;
-		U64 pawns = pos->bits[PAWNW];
-		
-		//
-		//   non-promotions
-		//
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = BB_KNIGHT_ATTACKS[from] & pin & knightZone;
 
-		x = pawns & bb_down(bb_left(targets)) & ~BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
+		while (y)
 		{
-			to = from - 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		x = pawns & bb_down(bb_right(targets)) & ~BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		//
-		//   promotions
-		//
-
-		x = pawns & bb_down(free) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 8;
-			insert_move(from, to, piece, NOPIECE, QUEENW, ply);
-			insert_move(from, to, piece, NOPIECE, ROOKW, ply);
-			insert_move(from, to, piece, NOPIECE, BISHOPW, ply);
-			insert_move(from, to, piece, NOPIECE, KNIGHTW, ply);
-		}
-
-		x = pawns & bb_down(bb_left(targets)) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENW, ply);
-			insert_move(from, to, piece, captured, ROOKW, ply);
-			insert_move(from, to, piece, captured, BISHOPW, ply);
-			insert_move(from, to, piece, captured, KNIGHTW, ply);
-		}
-
-		x = pawns & bb_down(bb_right(targets)) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENW, ply);
-			insert_move(from, to, piece, captured, ROOKW, ply);
-			insert_move(from, to, piece, captured, BISHOPW, ply);
-			insert_move(from, to, piece, captured, KNIGHTW, ply);
-		}
-
-		//
-		//   en-passant
-		//
-
-		to = pos->ep;
-		if (to != NF)
-		{
-			from = steps[5][to];
-			if (from != NF && pos->board[from] == PAWNW)
-				insert_move(from, to, PAWNW, PAWNB, NOPIECE, ply);
-
-			from = steps[7][to];
-			if (from != NF && pos->board[from] == PAWNW)
-				insert_move(from, to, PAWNW, PAWNB, NOPIECE, ply);
-		}
-	}
-	else
-	{
-		piece = PAWNB;
-		U64 pawns = pos->bits[PAWNB];
-		
-		//
-		//   non-promotions
-		//
-
-		x = pawns & bb_up(bb_left(targets)) & ~BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		x = pawns & bb_up(bb_right(targets)) & ~BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		//
-		//   promotions
-		//
-
-		x = pawns & bb_up(free) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 8;
-			insert_move(from, to, piece, NOPIECE, QUEENB, ply);
-			insert_move(from, to, piece, NOPIECE, ROOKB, ply);
-			insert_move(from, to, piece, NOPIECE, BISHOPB, ply);
-			insert_move(from, to, piece, NOPIECE, KNIGHTB, ply);
-		}
-
-		x = pawns & bb_up(bb_left(targets)) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENB, ply);
-			insert_move(from, to, piece, captured, ROOKB, ply);
-			insert_move(from, to, piece, captured, BISHOPB, ply);
-			insert_move(from, to, piece, captured, KNIGHTB, ply);
-		}
-
-		x = pawns & bb_up(bb_right(targets)) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENB, ply);
-			insert_move(from, to, piece, captured, ROOKB, ply);
-			insert_move(from, to, piece, captured, BISHOPB, ply);
-			insert_move(from, to, piece, captured, KNIGHTB, ply);
-		}
-
-		//
-		//   en-passant
-		//
-
-		to = pos->ep;
-		if (to != NF)
-		{
-			from = steps[1][to];
-			if (from != NF && pos->board[from] == PAWNB)
-				insert_move(from, to, PAWNB, PAWNW, NOPIECE, ply);
-
-			from = steps[3][to];
-			if (from != NF && pos->board[from] == PAWNB)
-				insert_move(from, to, PAWNB, PAWNW, NOPIECE, ply);
+			to = PopLSB(y);
+			Add(from, to, piece);
 		}
 	}
 
-	piece = KNIGHTW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
+	piece = BISHOPW | side;
+	x = pos.Bits(piece);
+	while (x)
 	{
-		y = BB_KNIGHT_ATTACKS[from] & targets;
-		while ((to = pop_lsb(y)) != NF)
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = BishopAttacks(from, occupied) & pin & bishopZone;
+
+		while (y)
 		{
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
+			to = PopLSB(y);
+			Add(from, to, piece);
 		}
 	}
 
-	piece = BISHOPW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
+	piece = ROOKW | side;
+	x = pos.Bits(piece);
+	while (x)
 	{
-		y = BB_BISHOP_ATTACKS[from] & targets;
-		while ((to = pop_lsb(y)) != NF)
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = RookAttacks(from, occupied) & pin & rookZone;
+
+		while (y)
 		{
-			if ((blockers & BB_BETWEEN[from][to]) == 0)
-			{
-				captured = pos->board[to];
-				insert_move(from, to, piece, captured, NOPIECE, ply);
-			}
+			to = PopLSB(y);
+			Add(from, to, piece);
 		}
 	}
 
-	piece = ROOKW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
+	piece = QUEENW | side;
+	x = pos.Bits(piece);
+	while (x)
 	{
-		y = BB_ROOK_ATTACKS[from] & targets;
-		while ((to = pop_lsb(y)) != NF)
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = QueenAttacks(from, occupied) & pin & (rookZone | bishopZone);
+
+		while (y)
 		{
-			if ((blockers & BB_BETWEEN[from][to]) == 0)
-			{
-				captured = pos->board[to];
-				insert_move(from, to, piece, captured, NOPIECE, ply);
-			}
-		}
-	}
-
-	piece = QUEENW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
-	{
-		y = BB_QUEEN_ATTACKS[from] & targets;
-		while ((to = pop_lsb(y)) != NF)
-		{
-			if ((blockers & BB_BETWEEN[from][to]) == 0)
-			{
-				captured = pos->board[to];
-				insert_move(from, to, piece, captured, NOPIECE, ply);
-			}
-		}
-	}
-
-	piece = KINGW | pos->side;
-	from = pos->King[pos->side];
-	y = BB_KING_ATTACKS[from] & targets;
-	while ((to = pop_lsb(y)) != NF)
-	{
-		captured = pos->board[to];
-		insert_move(from, to, piece, captured, NOPIECE, ply);
-	}
-}
-////////////////////////////////////////////////////////////////////////////////
-
-void gen_moves(const Position* pos, int ply)
-{
-	FLD from = NF, to = NF;
-	PIECE piece = NOPIECE, captured = NOPIECE;
-	U64 x = 0, y = 0;
-	U64 free = pos->bits[NOPIECE];
-
-	g_moves_cnt[ply] = 0;
-
-	if (pos->side == WHITE)
-	{
-		piece = PAWNW;
-		U64 pawns = pos->bits[PAWNW];
-		U64 targets = pos->bits_all[BLACK];
-
-		x = pawns & bb_down(free) & bb_down(bb_down(free)) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 16;
-			insert_move(from, to, PAWNW, NOPIECE, NOPIECE, ply);
-		}
-
-		//
-		//   non-promotions
-		//
-
-		x = pawns & bb_down(free) & ~BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 8;
-			insert_move(from, to, piece, NOPIECE, NOPIECE, ply);
-		}
-
-		x = pawns & bb_down(bb_left(targets)) & ~BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		x = pawns & bb_down(bb_right(targets)) & ~BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		//
-		//   promotions
-		//
-
-		x = pawns & bb_down(free) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 8;
-			insert_move(from, to, piece, NOPIECE, QUEENW, ply);
-			insert_move(from, to, piece, NOPIECE, ROOKW, ply);
-			insert_move(from, to, piece, NOPIECE, BISHOPW, ply);
-			insert_move(from, to, piece, NOPIECE, KNIGHTW, ply);
-		}
-
-		x = pawns & bb_down(bb_left(targets)) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENW, ply);
-			insert_move(from, to, piece, captured, ROOKW, ply);
-			insert_move(from, to, piece, captured, BISHOPW, ply);
-			insert_move(from, to, piece, captured, KNIGHTW, ply);
-		}
-
-		x = pawns & bb_down(bb_right(targets)) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from - 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENW, ply);
-			insert_move(from, to, piece, captured, ROOKW, ply);
-			insert_move(from, to, piece, captured, BISHOPW, ply);
-			insert_move(from, to, piece, captured, KNIGHTW, ply);
-		}
-
-		//
-		//   en-passant
-		//
-
-		to = pos->ep;
-		if (to != NF)
-		{
-			from = steps[5][to];
-			if (from != NF && pos->board[from] == PAWNW)
-				insert_move(from, to, PAWNW, PAWNB, NOPIECE, ply);
-
-			from = steps[7][to];
-			if (from != NF && pos->board[from] == PAWNW)
-				insert_move(from, to, PAWNW, PAWNB, NOPIECE, ply);
-		}
-	}
-	else
-	{
-		piece = PAWNB;
-		U64 pawns = pos->bits[PAWNB];
-		U64 targets = pos->bits_all[WHITE];
-		
-		x = pawns & bb_up(free) & bb_up(bb_up(free)) & BB_A7H7;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 16;
-			insert_move(from, to, piece, NOPIECE, NOPIECE, ply);
-		}
-
-		//
-		//   non-promotions
-		//
-
-		x = pawns & bb_up(free) & ~BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 8;
-			insert_move(from, to, piece, NOPIECE, NOPIECE, ply);
-		}
-
-		x = pawns & bb_up(bb_left(targets)) & ~BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		x = pawns & bb_up(bb_right(targets)) & ~BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-
-		//
-		//   promotions
-		//
-
-		x = pawns & bb_up(free) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 8;
-			insert_move(from, to, piece, NOPIECE, QUEENB, ply);
-			insert_move(from, to, piece, NOPIECE, ROOKB, ply);
-			insert_move(from, to, piece, NOPIECE, BISHOPB, ply);
-			insert_move(from, to, piece, NOPIECE, KNIGHTB, ply);
-		}
-
-		x = pawns & bb_up(bb_left(targets)) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 9;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENB, ply);
-			insert_move(from, to, piece, captured, ROOKB, ply);
-			insert_move(from, to, piece, captured, BISHOPB, ply);
-			insert_move(from, to, piece, captured, KNIGHTB, ply);
-		}
-
-		x = pawns & bb_up(bb_right(targets)) & BB_A2H2;
-		while ((from = pop_lsb(x)) != NF)
-		{
-			to = from + 7;
-			captured = pos->board[to];
-			insert_move(from, to, piece, captured, QUEENB, ply);
-			insert_move(from, to, piece, captured, ROOKB, ply);
-			insert_move(from, to, piece, captured, BISHOPB, ply);
-			insert_move(from, to, piece, captured, KNIGHTB, ply);
-		}
-
-		//
-		//   en-passant
-		//
-
-		to = pos->ep;
-		if (to != NF)
-		{
-			from = steps[1][to];
-			if (from != NF && pos->board[from] == PAWNB)
-				insert_move(from, to, PAWNB, PAWNW, NOPIECE, ply);
-
-			from = steps[3][to];
-			if (from != NF && pos->board[from] == PAWNB)
-				insert_move(from, to, PAWNB, PAWNW, NOPIECE, ply);
-		}
-	}
-
-	piece = KNIGHTW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
-	{
-		y = BB_KNIGHT_ATTACKS[from] & ~pos->bits_all[pos->side];
-		while ((to = pop_lsb(y)) != NF)
-		{
-			captured = pos->board[to];
-			if (!captured || getcolor(captured) == pos->opp)
-				insert_move(from, to, piece, captured, NOPIECE, ply);
-		}
-	}
-
-#define TRACE_RAY(step_array)                               \
-   to = step_array[from];                                   \
-   while (to != NF)                                         \
-   {                                                        \
-      captured = pos->board[to];                            \
-      if (captured && getcolor(captured) == pos->side)      \
-         break;                                             \
-      insert_move(from, to, piece, captured, NOPIECE, ply); \
-      if (captured)                                         \
-         break;                                             \
-      to = step_array[to];                                  \
-   }
-
-	piece = BISHOPW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
-	{
-		TRACE_RAY(steps[1]);
-		TRACE_RAY(steps[3]);
-		TRACE_RAY(steps[5]);
-		TRACE_RAY(steps[7]);
-	}
-
-	piece = ROOKW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
-	{
-		TRACE_RAY(steps[0]);
-		TRACE_RAY(steps[2]);
-		TRACE_RAY(steps[4]);
-		TRACE_RAY(steps[6]);
-	}
-
-	piece = QUEENW | pos->side;
-	x = pos->bits[piece];
-	while ((from = pop_lsb(x)) != NF)
-	{
-		TRACE_RAY(steps[0]);
-		TRACE_RAY(steps[2]);
-		TRACE_RAY(steps[4]);
-		TRACE_RAY(steps[6]);
-
-		TRACE_RAY(steps[1]);
-		TRACE_RAY(steps[3]);
-		TRACE_RAY(steps[5]);
-		TRACE_RAY(steps[7]);
-	}
-
-	piece = KINGW | pos->side;
-	from = pos->King[pos->side];
-	y = BB_KING_ATTACKS[from] & ~pos->bits_all[pos->side];
-	while ((to = pop_lsb(y)) != NF)
-	{
-		captured = pos->board[to];
-		if (!captured || getcolor(captured) == pos->opp)
-			insert_move(from, to, piece, captured, NOPIECE, ply);
-	}
-
-	//
-	//   castlings
-	//
-
-	if (pos->side == WHITE)
-	{
-		if ((pos->castlings & WHITE_CAN_O_O) &&
-		    !pos->board[F1] && !pos->board[G1])
-		{
-			insert_move(E1, G1, KINGW, NOPIECE, NOPIECE, ply);
-		}
-
-		if ((pos->castlings & WHITE_CAN_O_O_O) &&
-		    !pos->board[D1] && !pos->board[C1] && !pos->board[B1])
-		{
-			insert_move(E1, C1, KINGW, NOPIECE, NOPIECE, ply);
-		}
-	}
-	else
-	{
-		if ((pos->castlings & BLACK_CAN_O_O) &&
-		    !pos->board[F8] && !pos->board[G8])
-		{
-			insert_move(E8, G8, KINGB, NOPIECE, NOPIECE, ply);
-		}
-
-		if ((pos->castlings & BLACK_CAN_O_O_O) &&
-		    !pos->board[D8] && !pos->board[C8] && !pos->board[B8])
-		{
-			insert_move(E8, C8, KINGB, NOPIECE, NOPIECE, ply);
+			to = PopLSB(y);
+			Add(from, to, piece);
 		}
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void init_mg()
+Move MoveList::GetNthBest(int n)
 {
-	//
-	//   Initialize move generator pool
-	//
-
-	for (int i = 0; i < MAX_PLY + 2; i++)
+	for (int i = n + 1; i < m_size; ++i)
 	{
-		g_moves[i] = (SMove*) safe_malloc(MAX_BRANCH * sizeof(SMove));
-		g_moves_cnt[i] = 0;
+		if (m_data[i].m_value > m_data[n].m_value)
+		{
+	   	MoveEntry tmp = m_data[n];
+			m_data[n] = m_data[i];
+			m_data[i] = tmp;
+		}  	
+	}
+
+	return m_data[n].m_mv;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+void MoveList::GenAllMovesInCheck(const Position& pos)
+{
+	Clear();
+
+	COLOR side = pos.Side();
+	COLOR opp = side ^ 1;
+	U64 freeOrOpp = ~pos.BitsAll(side);
+	U64 occupied = pos.BitsAll();
+
+	U64 x, y, pin;
+	FLD from, to, f;
+	PIECE piece, captured, p;
+	FLD K = pos.King(side);
+
+	U64 mask1 = LL(0xffffffffffffffff);
+	U64 mask2 = LL(0xffffffffffffffff);
+	y = pos.CheckInfo();
+	while (y)
+	{
+		f = PopLSB(y);
+		p = pos[f] & 0x0e;
+		if (p == PAWNW || p == KNIGHTW || p == KINGW)
+			mask1 &= BB_SINGLE[f];
+		else
+		{
+			mask1 &= (BB_SINGLE[f] | BB_BETWEEN[f][K]);
+			mask2 &= ~BB_BETWEEN[f][K];
+			U8 dir = DIRS[f][K];
+			mask2 &= ~BB_DIR[K][dir];
+		}
+	}
+
+	int fwd = -8 + 16 * side;
+	int second = 6 - 5 * side;
+	int seventh = 1 + 5 * side;
+
+	piece = PAWNW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp) & mask1;
+		int row = Row(from);
+
+		to = from + fwd;
+		if (!pos[to])
+		{
+			if (row == second)
+			{
+				if (BB_SINGLE[to] & pin)
+					Add(from, to, piece);
+
+				to += fwd;
+				if (!pos[to] && (BB_SINGLE[to] & pin))
+					Add(from, to, piece);
+			}
+			else if (row == seventh)
+			{
+				if (BB_SINGLE[to] & pin)
+				{
+					Add(from, to, piece, NOPIECE, QUEENW | side);
+					Add(from, to, piece, NOPIECE, ROOKW | side);
+					Add(from, to, piece, NOPIECE, BISHOPW | side);
+					Add(from, to, piece, NOPIECE, KNIGHTW | side);
+				}
+			}
+			else if (BB_SINGLE[to] & pin)
+				Add(from, to, piece);
+		}
+
+		y = BB_PAWN_ATTACKS[from][side] & pos.BitsAll(opp) & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+
+			if (row == seventh)
+			{
+				Add(from, to, piece, captured, QUEENW | side);
+				Add(from, to, piece, captured, ROOKW | side);
+				Add(from, to, piece, captured, BISHOPW | side);
+				Add(from, to, piece, captured, KNIGHTW | side);				
+			}
+			else
+				Add(from, to, piece, captured);
+		}
+	}
+
+	to = pos.EP();
+	if (to != NF)
+	{
+		FLD f1 = to + 8 - 16 * side;
+		y = BB_PAWN_ATTACKS[to][opp] & pos.Bits(PAWNW | side);
+		while (y)
+		{
+			from = PopLSB(y);
+			pin = GetPinMask(pos, from, K, occupied ^ BB_SINGLE[f1], opp);
+			if (BB_SINGLE[to] & pin)
+				Add(from, to, piece, PAWNW | opp);
+		}
+	}
+
+	piece = KNIGHTW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp) & mask1;
+		y = BB_KNIGHT_ATTACKS[from] & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = BISHOPW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp) & mask1;
+		y = BishopAttacks(from, occupied) & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = ROOKW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp) & mask1;
+		y = RookAttacks(from, occupied) & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = QUEENW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp) & mask1;
+		y = QueenAttacks(from, occupied) & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = KINGW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		y = BB_KING_ATTACKS[from] & freeOrOpp & mask2;
+		while (y)
+		{
+			to = PopLSB(y);
+			if (!pos.IsAttacked(to, opp))
+			{
+				captured = pos[to];
+				Add(from, to, piece, captured);
+			}
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////
+
+void MoveList::GenAllMoves(const Position& pos)
+{
+	if (pos.InCheck())
+	{
+		GenAllMovesInCheck(pos);
+		return;
+	}
+
+	Clear();
+
+	COLOR side = pos.Side();
+	COLOR opp = side ^ 1;
+	U64 freeOrOpp = ~pos.BitsAll(side);
+	U64 occupied = pos.BitsAll();
+
+	U64 x, y, pin;
+	FLD from, to;
+	PIECE piece, captured;
+	FLD K = pos.King(side);
+
+	int fwd = -8 + 16 * side;
+	int second = 6 - 5 * side;
+	int seventh = 1 + 5 * side;
+
+	piece = PAWNW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		int row = Row(from);
+
+		to = from + fwd;
+		if (!pos[to])
+		{
+			if (row == second)
+			{
+				if (BB_SINGLE[to] & pin)
+					Add(from, to, piece);
+
+				to += fwd;
+				if (!pos[to] && (BB_SINGLE[to] & pin))
+					Add(from, to, piece);
+			}
+			else if (row == seventh)
+			{
+				if (BB_SINGLE[to] & pin)
+				{
+					Add(from, to, piece, NOPIECE, QUEENW | side);
+					Add(from, to, piece, NOPIECE, ROOKW | side);
+					Add(from, to, piece, NOPIECE, BISHOPW | side);
+					Add(from, to, piece, NOPIECE, KNIGHTW | side);
+				}
+			}
+			else if (BB_SINGLE[to] & pin)
+				Add(from, to, piece);
+		}
+
+		y = BB_PAWN_ATTACKS[from][side] & pos.BitsAll(opp) & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+
+			if (row == seventh)
+			{
+				Add(from, to, piece, captured, QUEENW | side);
+				Add(from, to, piece, captured, ROOKW | side);
+				Add(from, to, piece, captured, BISHOPW | side);
+				Add(from, to, piece, captured, KNIGHTW | side);				
+			}
+			else
+				Add(from, to, piece, captured);
+		}
+	}
+
+	to = pos.EP();
+	if (to != NF)
+	{
+		FLD f1 = to + 8 - 16 * side;
+		y = BB_PAWN_ATTACKS[to][opp] & pos.Bits(PAWNW | side);
+		while (y)
+		{
+			from = PopLSB(y);
+			pin = GetPinMask(pos, from, K, occupied ^ BB_SINGLE[f1], opp);
+			if (BB_SINGLE[to] & pin)
+				Add(from, to, piece, PAWNW | opp);
+		}
+	}
+
+	piece = KNIGHTW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = BB_KNIGHT_ATTACKS[from] & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = BISHOPW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = BishopAttacks(from, occupied) & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = ROOKW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = RookAttacks(from, occupied) & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = QUEENW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = QueenAttacks(from, occupied) & freeOrOpp & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = KINGW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		y = BB_KING_ATTACKS[from] & freeOrOpp;
+		while (y)
+		{
+			to = PopLSB(y);
+			if (!pos.IsAttacked(to, opp))
+			{
+				captured = pos[to];
+				Add(from, to, piece, captured);
+			}
+		}
+
+		if (from == E1 && side == WHITE)
+		{
+			if (!pos[F1] && !pos[G1] && (pos.Castlings() & WHITE_CAN_O_O))
+				if (/* !pos.IsAttacked(E1, BLACK) && */ !pos.IsAttacked(F1, BLACK) && 
+					!pos.IsAttacked(G1, BLACK))
+					Add(E1, G1, KINGW);
+
+			if (!pos[D1] && !pos[C1] && !pos[B1] 
+					&& (pos.Castlings() & WHITE_CAN_O_O_O))
+				if (/* !pos.IsAttacked(E1, BLACK) && */ !pos.IsAttacked(D1, BLACK) && 
+					!pos.IsAttacked(C1, BLACK))
+					Add(E1, C1, KINGW);
+		}
+		else if (from == E8 && side == BLACK)
+		{
+			if (!pos[F8] && !pos[G8] && (pos.Castlings() & BLACK_CAN_O_O))
+				if (/* !pos.IsAttacked(E8, WHITE) && */ !pos.IsAttacked(F8, WHITE) && 
+					!pos.IsAttacked(G8, WHITE))
+					Add(E8, G8, KINGB);
+
+			if (!pos[D8] && !pos[C8] && !pos[B8] 
+					&& (pos.Castlings() & BLACK_CAN_O_O_O))
+				if (/* !pos.IsAttacked(E8, WHITE) && */ !pos.IsAttacked(D8, WHITE) && 
+					!pos.IsAttacked(C8, WHITE))
+					Add(E8, C8, KINGB);
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////
+
+void MoveList::GenCapturesAndPromotions(const Position& pos)
+{
+	if (pos.InCheck())
+	{
+		GenAllMovesInCheck(pos);
+		return;
+	}
+
+	Clear();
+
+	COLOR side = pos.Side();
+	COLOR opp = side ^ 1;
+	U64 targets = pos.BitsAll(opp);
+	U64 occupied = pos.BitsAll();
+
+	U64 x, y, pin;
+	FLD from, to;
+	PIECE piece, captured;
+	FLD K = pos.King(side);
+
+	int fwd = -8 + 16 * side;
+	int seventh = 1 + 5 * side;
+
+	piece = PAWNW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		int row = Row(from);
+
+		to = from + fwd;
+		if (!pos[to])
+		{
+			if (row == seventh)
+			{
+				if (BB_SINGLE[to] & pin)
+				{
+					Add(from, to, piece, NOPIECE, QUEENW | side);
+					Add(from, to, piece, NOPIECE, ROOKW | side);
+					Add(from, to, piece, NOPIECE, BISHOPW | side);
+					Add(from, to, piece, NOPIECE, KNIGHTW | side);
+				}
+			}
+		}
+
+		y = BB_PAWN_ATTACKS[from][side] & pos.BitsAll(opp) & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+
+			if (row == seventh)
+			{
+				Add(from, to, piece, captured, QUEENW | side);
+				Add(from, to, piece, captured, ROOKW | side);
+				Add(from, to, piece, captured, BISHOPW | side);
+				Add(from, to, piece, captured, KNIGHTW | side);				
+			}
+			else
+				Add(from, to, piece, captured);
+		}
+	}
+
+	to = pos.EP();
+	if (to != NF)
+	{
+		FLD f1 = to + 8 - 16 * side;
+		y = BB_PAWN_ATTACKS[to][opp] & pos.Bits(PAWNW | side);
+		while (y)
+		{
+			from = PopLSB(y);
+			pin = GetPinMask(pos, from, K, occupied ^ BB_SINGLE[f1], opp);
+			if (BB_SINGLE[to] & pin)
+				Add(from, to, piece, PAWNW | opp);
+		}
+	}
+
+	piece = KNIGHTW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = BB_KNIGHT_ATTACKS[from] & targets & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = BISHOPW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = BishopAttacks(from, occupied) & targets & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = ROOKW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = RookAttacks(from, occupied) & targets & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = QUEENW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		pin = GetPinMask(pos, from, K, occupied, opp);
+		y = QueenAttacks(from, occupied) & targets & pin;
+		while (y)
+		{
+			to = PopLSB(y);
+			captured = pos[to];
+			Add(from, to, piece, captured);
+		}
+	}
+
+	piece = KINGW | side;
+	x = pos.Bits(piece);
+	while (x)
+	{
+		from = PopLSB(x);
+		y = BB_KING_ATTACKS[from] & targets;
+		while (y)
+		{
+			to = PopLSB(y);
+			if (!pos.IsAttacked(to, opp))
+			{
+				captured = pos[to];
+				Add(from, to, piece, captured);
+			}
+		}
+	}
+}
+////////////////////////////////////////////////////////////////////////////////
+
+void MoveList::UpdateScores(const Position& pos, Move hashmv, Move killermv)
+{
+	for (int i = 0; i < m_size; ++i)
+	{
+		Move mv = m_data[i].m_mv;
+		if (mv == hashmv)
+		{
+			m_data[i].m_value = 50000;
+			continue;
+		}
+
+		PIECE piece = mv.Piece();
+		PIECE captured = mv.Captured();
+		PIECE promotion = mv.Promotion();
+		FLD to = mv.To();
+
+		m_data[i].m_value = 0;
+
+		if (captured || promotion)
+		{
+			m_data[i].m_value = 40000 + SEE(pos, mv);
+
+//			m_data[i].m_value = 40000 + 20 * VALUE[captured] - VALUE[piece];
+//			if (promotion)
+//				m_data[i].m_value += VALUE[promotion];
+		}
+		else
+		{
+			if (mv == killermv)
+				m_data[i].m_value = 20000;
+			else
+				m_data[i].m_value += g_history[piece][to];
+		}
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -568,10 +726,10 @@ char* move_to_str(Move mv, char* buf)
 	//   Convert move data to algebraic notation
 	//
 
-	strcpy(buf, fld_to_str(mv_from(mv)));
-	strcat(buf, fld_to_str(mv_to(mv)));
+	strcpy(buf, fld_to_str(mv.From()));
+	strcat(buf, fld_to_str(mv.To()));
 
-	switch (mv_promotion(mv))
+	switch (mv.Promotion())
 	{
 	case QUEENW:
 	case QUEENB:
@@ -601,13 +759,13 @@ char* move_to_str(Move mv, char* buf)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-char* move_to_str_san(const Position* pos, Move mv, char* buf)
+char* move_to_str_san(const Position& pos, Move mv, char* buf)
 {
-	PIECE piece = mv_piece(mv);
-	FLD from = mv_from(mv);
-	FLD to = mv_to(mv);
-	PIECE captured = mv_captured(mv);
-	PIECE promotion = mv_promotion(mv);
+	PIECE piece = mv.Piece();
+	FLD from = mv.From();
+	FLD to = mv.To();
+	PIECE captured = mv.Captured();
+	PIECE promotion = mv.Promotion();
 
 	strcpy(buf, "");
 
@@ -693,45 +851,44 @@ char* move_to_str_san(const Position* pos, Move mv, char* buf)
 		return move_to_str(mv, buf);
 	}
 
-	U64 x = get_attacks(pos, to, getcolor(piece)) & ~BB_SINGLE[from];
+	U64 x = pos.GetAttacks(to, ColorOf(piece), pos.BitsAll()) & ~BB_SINGLE[from];
 	if (x)
 	{
 		// resolve ambiguity
 
-		Position* tmp = new_pos();
-		copy_pos(tmp, pos);
-
-		gen_moves(tmp, MAX_PLY + 1);
+		Position tmp = pos;
+		MoveList mvlist;
+		mvlist.GenAllMoves(tmp);
 		
 		int uniq_col = 1;
 		int uniq_row = 1;
 		int ambiguity = 0;
 
-		int row0 = getrow(from);
-		int col0 = getcol(from);
+		int row0 = Row(from);
+		int col0 = Col(from);
 
-		for (int i = 0; i < g_moves_cnt[MAX_PLY + 1]; i++)
+		for (int i = 0; i < mvlist.Size(); ++i)
 		{
-			Move mvi = g_moves[MAX_PLY + 1][i].mv;
+			Move mvi = mvlist[i];
 
-			if (!make_move(tmp, (mvi)))
+			if (!tmp.MakeMove(mvi))
 				continue;
 
-			unmake_move(tmp);
+			tmp.UnmakeMove();
 
-			if (mv_to(mvi) != to)
+			if (mvi.To() != to)
 				continue;
 
-			if (pos->board[mv_from(mvi)] != piece)
+			if (pos[mvi.From()] != piece)
 				continue;
 
-			if (mv_from(mvi) == from)
+			if (mvi.From() == from)
 				continue;
 
 			ambiguity = 1; // two or more pieces of the same type can move to field
 
-			int row1 = getrow(mv_from(mvi));
-			int col1 = getcol(mv_from(mvi));
+			int row1 = Row(mvi.From());
+			int col1 = Col(mvi.From());
 
 			if (row0 == row1)
 				uniq_row = 0;
@@ -755,8 +912,6 @@ char* move_to_str_san(const Position* pos, Move mv, char* buf)
 
 			strcat(buf, from_info);
 		}
-
-		free_pos(tmp);
 	}
 
 	if (captured)

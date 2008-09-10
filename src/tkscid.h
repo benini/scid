@@ -340,11 +340,11 @@ appendCharResult (Tcl_Interp * ti, char ch)
 // setStringResult:
 //    Inline function to set the result as a String, suitable to return a list
 //    (of lists) if necessary. {} are not escaped so Tcl interpretes it as lists
-extern Tcl_Obj * tclObj_String;
-inline void setStringResult (Tcl_Interp * ti, char * s) {
-  Tcl_SetStringObj( tclObj_String, s, -1 );
-  Tcl_SetObjResult( ti, tclObj_String );
-}
+// extern Tcl_Obj * tclObj_String;
+// inline void setStringResult (Tcl_Interp * ti, char * s) {
+//   Tcl_SetStringObj( tclObj_String, s, -1 );
+//   Tcl_SetObjResult( ti, tclObj_String );
+// }
 
 void transPieces(char *s);
 

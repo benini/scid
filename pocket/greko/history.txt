@@ -1,6 +1,83 @@
 GREKO CHESS ENGINE
 (c) 2002-2008 Vladimir Medvedev <vrm@bk.ru>
 
+Version 5.9
+-----------
+02-Aug-2008
+
+(fix) Fix in reporting NPS under UCI
+(fix) Check extensions fixed
+(chg) Make the move instantly when checkmate is found
+(chg) Draw recognizer modified
+(chg) Bishop and bishop pair values tuned
+(chg) Small changes in search
+
+Version 5.8.5
+-------------
+16-July-2008
+
+Changes in move generator and in search:
+
+(new) * Magic bitboards (can be turned off when MAGIC is not #defined in bitboards.h).
+(new) * Legal-only move generation on all stages. At last GreKo can cheat in perft
+        by not actually making moves at depth = 1 :)
+(new) * Simple checks generation on first levels in qsearch.
+(new) * Static exchange evaluation for captures (with batteries, without pins 
+        and promotions on ply > 0).
+(chg) * Pruning decisions do not rely on pv/non-pv node type, again. 
+(chg) * Futility pruning turned off, again.
+(chg) * Use SEE score for delta pruning in qsearch instead of VALUE[captured].
+(fix) * Fixed incorrect PGN disambiguation code (introduced in 5.8, but does not affect
+        playing games, just in epdtest mode) -- thanks to Dann Corbit for bug report.
+
+Tactical abilities seem to increase:
+
+        WACNew   WACNew   NewIQ
+        1 sec.   5 sec.   10 sec.
+
+5.7.1   271      287      243
+5.8     270      286      239  (-1...-4 solved positions - due to PGN bug)
+5.8.5   290      297      276
+
+This version could be named 5.9 since it has so many changes, but I prefer to save 
+numbering space for some possible improvements.
+
+Version 5.8
+-----------
+10-July-2008
+
+The main goal of this version is source code refactoring. Core datastructures
+are now more "C++ style". Position and Move data encapsulated in classes.
+Got rid of pointers, some #defines etc. Small optimization for all bitscan loops.
+
+As a result the source code is 5% more compact than 5.7.1. Perft and search run
+20-30% faster (at least in the initial position).
+
+Small changes in the move generator (castlings). Search and evaluation algorithms 
+are almost unchanged except for a little fix in the hashing scheme. En-passant 
+and castling rights were not taken into account in the hash code, now they are.
+
+Time management scheme changed a little, to prevent possible losses on time 
+in 3+3 games. Thanks to Volker Pittlik for mentioning the bug. Multi-PV UCI mode
+modified, however it is still slow and non-optimized.
+
+Version 5.7.1
+-------------
+25-May-2008
+
+(fix) Fixed bug in PVS code.
+
+Version 5.7
+-----------
+19-May-2008
+
+(fix) Mate scores in hash now handled correctly
+(fix) Do not skip draw scores in hash
+(fix) PV update code: replaced "for" statement with "memcpy" call
+(chg) Time management tuned a little
+(chg) Source code reformatted
+(new) MSVC8 project file added
+
 Version 5.6
 -----------
 12-Apr-2008

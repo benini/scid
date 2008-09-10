@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4996)
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -10,29 +13,26 @@
 #include "version.h"
 #include "ipc.h"
 
-// FILE     *g_log = NULL;
-Position *g_pos = NULL;
+//FILE *g_log = NULL;
+Position g_pos;
 
 int main(int argc, char *argv[])
 {
 	int hash_sz = 0;
-// 	for (int a = 1; a < argc; a++)
-// 	{
-// 		if (!strcmp(argv[a], "-log") && !g_log)
-// 		   g_log = fopen("greko.log", "at");
-// 
-// 		if (!strcmp(argv[a-1], "-hash"))
-// 		{
-// 			hash_sz = atoi(argv[a]);
-// 		}
-// 	}
+//	for (int a = 1; a < argc; a++)
+//	{
+//		if (!strcmp(argv[a], "-log") && !g_log)
+//			g_log = fopen("greko.log", "at");
 
-//    set_highlight(1);
-
+//		if (!strcmp(argv[a-1], "-hash"))
+//		{
+//			hash_sz = atoi(argv[a]);
+//		}
    if (init_socket()) {
       exit(1);
 	}
 
+//	set_highlight(1);
 	out("\n");
 	out(PROGRAM_NAME);
 	out(" (");
@@ -42,7 +42,6 @@ int main(int argc, char *argv[])
 
 //    init_input();
 	init_bitboards();
-	init_mg();
 	init_hash_coeffs();
 
 	init_hash();
@@ -54,9 +53,7 @@ int main(int argc, char *argv[])
 
 	out("\n");
 
-	g_pos = new_pos();
-	set_fen(g_pos, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
+	g_pos.SetInitial();
 	run_command_loop();
 
 //    if (g_log)

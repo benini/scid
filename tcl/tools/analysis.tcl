@@ -1608,7 +1608,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   ::utils::tooltip::Set $w.b1.multipv $::tr(Lines)
   
   # add a button to start/stop engine analysis
-  button $w.b1.bStartStop -image tb_pause -command "toggleEngineAnalysis $n" -relief flat
+  button $w.b1.bStartStop -image tb_pause -command "toggleEngineAnalysis $n"
   ::utils::tooltip::Set $w.b1.bStartStop "$::tr(StopEngine)(a)"
   
   if {$n == 1} {
@@ -2095,7 +2095,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
   
   if {$analysis(analyzeMode$n)} {
     stopAnalyzeMode $n
-    $b configure -image tb_play -relief flat
+    $b configure -image tb_play
     ::utils::tooltip::Set $b "$::tr(StartEngine)(a)"
     # reset lock mode and disable lock button
     set analysis(lockEngine$n) 0
@@ -2104,7 +2104,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
     .analysisWin$n.b1.lockengine configure -state disabled
   } else  {
     startAnalyzeMode $n
-    $b configure -image tb_pause -relief flat
+    $b configure -image tb_pause
     ::utils::tooltip::Set $b "$::tr(StopEngine)(a)"
     # enable lock button
     .analysisWin$n.b1.lockengine configure -state normal

@@ -1,10 +1,29 @@
 #ifndef POSITION_H
 #define POSITION_H
 
+#include <vector>
+using namespace std;
+
+#include <assert.h>
 #include "bitboards.h"
 
-static inline int getcol(FLD f) { return (f % 8); }
-static inline int getrow(FLD f) { return (f / 8); }
+extern U64 s_Zobrist0;
+extern U64 s_Zobrist[64][14];
+
+static inline int Col(FLD f) { return (f % 8); }
+static inline int Row(FLD f) { return (f / 8); }
+
+const int IS_LIGHT[64] =
+{
+	1, 0, 1, 0, 1, 0, 1, 0,
+	0, 1, 0, 1, 0, 1, 0, 1,
+	1, 0, 1, 0, 1, 0, 1, 0,
+	0, 1, 0, 1, 0, 1, 0, 1,
+	1, 0, 1, 0, 1, 0, 1, 0,
+	0, 1, 0, 1, 0, 1, 0, 1,
+	1, 0, 1, 0, 1, 0, 1, 0,
+	0,	1, 0, 1, 0, 1, 0, 1
+};
 
 typedef U8 COLOR;
 enum COLOR_TAG 
@@ -12,8 +31,6 @@ enum COLOR_TAG
 	WHITE = 0,
 	BLACK = 1
 };
-
-static inline COLOR getopp(COLOR side) { return (COLOR) (side ^ 1); }
 
 typedef U8 PIECE;
 enum PIECE_TAG
@@ -33,43 +50,56 @@ enum PIECE_TAG
 	KINGB   = 13
 };
 
-static inline COLOR getcolor(PIECE piece) { return (COLOR) (piece & 1); }
+inline COLOR ColorOf(PIECE p) { return (p & 1); }
+inline COLOR Opp(COLOR side) { return (side ^ 1); }
 
-typedef U32 Move;
 typedef int EVAL;
 
-// Fields in Move:
-//
-// from      6  18-23
-// to        6  12-17
-// piece     4   8-11
-// captured  4   4-7
-// promotion 4   0-4
+class Move
+{
+public:
 
-#define mv_compose(from, to, piece, captured, promotion) \
-(                                                        \
-(((Move)(from)) << 18) |                                 \
-(((Move)(to)) << 12) |                                   \
-(((Move)(piece)) << 8) |                                 \
-(((Move)(captured)) << 4) |                              \
-(((Move)(promotion)) << 0)                               \
-)
+	Move() : m_data(0) {}
+	Move(U32 x) : m_data(x) {}
+	Move(FLD from, FLD to, PIECE piece) : 
+		m_data(U32(from) | 
+		(U32(to) << 6) | 
+		(U32(piece) << 12)) {}
+	Move(FLD from, FLD to, PIECE piece, PIECE captured) : 
+		m_data(U32(from) | 
+		(U32(to) << 6) | 
+		(U32(piece) << 12) |
+		(U32(captured) << 16)) {}
+	Move(FLD from, FLD to, PIECE piece, PIECE captured, PIECE promotion) : 
+		m_data(U32(from) | 
+		(U32(to) << 6) | 
+		(U32(piece) << 12) |
+		(U32(captured) << 16) |
+		(U32(promotion) << 20)) {}
 
-#define mv_from(mv)      (((mv) >> 18) & 0x3F) 
-#define mv_to(mv)        (((mv) >> 12) & 0x3F)
-#define mv_piece(mv)     (((mv) >> 8) & 0x0F)
-#define mv_captured(mv)  (((mv) >> 4) & 0x0F)
-#define mv_promotion(mv) (((mv) >> 0) & 0x0F)
+	FLD From() const { return m_data & 0x3f; }
+	FLD To() const { return (m_data >> 6) & 0x3f; }
+	FLD Piece() const { return (m_data >> 12) & 0x0f; }
+	FLD Captured() const { return (m_data >> 16) & 0x0f; }
+	FLD Promotion() const { return (m_data >> 20) & 0x0f; }
+
+	operator U32() const { return m_data; }
+
+private:
+
+	U32 m_data;
+};
+////////////////////////////////////////////////////////////////////////////////
 
 struct Undo
 {
-	U8 castlings;
-	FLD ep;
-	int fifty;
-	U64 hash;
-	Move mv;
+	U8   m_castlings;
+	U64  m_check;
+	FLD  m_ep;
+	int  m_fifty;
+	U64  m_hash;
+	Move m_mv;
 };
-typedef struct Undo Undo;
 
 #define WHITE_CAN_O_O   (0x01)
 #define WHITE_CAN_O_O_O (0x02)
@@ -83,56 +113,144 @@ typedef struct Undo Undo;
 
 #define UNDO_SIZE        (600)
 
-struct Position
+class Position
 {
-	U64   bits[14];
-	U64   bits_all[2];
-	PIECE board[64];
-	U8    castlings;
-	int   count[14];
-	FLD   ep;
-	int   fifty;
-	U64   hash;
-	FLD   King[2];
-	Move  last_move;
-	EVAL  material[2];
-	COLOR opp;
-	int   ply;
-	COLOR side;
-	Undo  undos[UNDO_SIZE + 2];
-	int   undo_cnt;
-};
-typedef struct Position Position;
+public:
 
-void        clear_pos(Position* pos);
-void        copy_pos(Position* dest, const Position* src);
+	PIECE operator[] (FLD f) const { return m_board[f]; }
+
+	U64   Bits(PIECE p) const { return m_bits[p]; }
+	U64   BitsAll(COLOR side) const { return m_bitsAll[side]; }
+	U64   BitsAll() const { return m_bitsAll[WHITE] | m_bitsAll[BLACK]; }
+	U8    Castlings() const { return m_castlings; }
+	U64   CheckInfo() const { return m_check; }
+	int   Count(PIECE p) const { return m_count[p]; }
+	FLD   EP() const { return m_ep; }
+	int   Fifty() const { return m_fifty; }
+	U64   GetAttacks(FLD to, COLOR side, U64 occupied) const;
+	U64   GetBishopAttacks(FLD to, COLOR side, const U64& occupied) const;
+	U64   GetRookAttacks(FLD to, COLOR side, const U64& occupied) const;
+	int   GetRepetitions() const;
+	U64   Hash() const { return m_hash ^ m_castlings ^ m_ep; }
+	bool  InCheck() const { return (m_check != 0); }
+//	bool  InCheck() const { return IsAttacked(m_Kings[m_side], m_side ^ 1); }
+	bool  IsAttacked(FLD to, COLOR side) const;
+	bool  IsDraw() const;
+	FLD   King(COLOR side) const { return m_Kings[side]; }
+	EVAL  Material(COLOR side) const { return m_material[side]; }
+	U32   PawnHash() const { return U32(m_hash >> 32); }
+	int   Ply() const { return m_ply; }
+	void  Print() const;
+	void  PrintAttacks() const;
+	bool  SetFEN(const char* fen);
+	void  SetInitial() { SetFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); }
+	COLOR Side() const { return m_side; }
+
+	bool MakeMove(Move mv);
+	void MakeNullMove();
+	void Mirror();
+	void UnmakeMove();
+	void UnmakeNullMove();
+
+private:
+
+	void Clear();
+	void PutPiece(FLD f, PIECE p);
+	void RemovePiece(FLD f);
+
+	U64   m_bits[14];
+	U64   m_bitsAll[2];
+	PIECE m_board[64];
+	U8    m_castlings;
+	U64   m_check;
+	int   m_count[14];
+	FLD   m_ep;
+	int   m_fifty;
+	U64   m_hash;
+	FLD   m_Kings[2];
+	EVAL  m_material[2];
+	int   m_ply;
+	COLOR m_side;
+
+	enum { MAX_UNDO = 500 };
+	Undo m_undos[MAX_UNDO];
+	int  m_undoCnt;	
+};
+////////////////////////////////////////////////////////////////////////////////
+
 const char* fld_to_str(FLD f);
-void        free_pos(Position* pos);
-U64         get_attacks(const Position* pos, FLD f0, COLOR side);
 char*       get_fen(const Position* pos, char* buf);
-int         get_repetitions(const Position* pos);
 void        init_hash_coeffs();
-int         is_attacked(const Position* pos, FLD f, COLOR side);
-int         is_draw(const Position* pos);
-int         is_in_check(const Position* pos);
-void        mirror(Position* pos);
-U32         pawn_hash(const Position* pos);
-void        print_attacks(const Position* pos);
-void        print_pos(const Position* pos);
-void        put_piece(Position* pos, FLD f, PIECE p);
-int         make_move(Position* pos, Move mv);
-void        make_null_move(Position* pos);
-Position*   new_pos();
-void        remove_piece(Position* pos, FLD f);
-void        set_initial(Position* pos);
-int         set_fen(Position* pos, const char* fen);
 FLD         str_to_fld(const char* s);
 Move        str_to_move(const Position* pos, const char* s);
-void        unmake_move(Position* pos);
-void        unmake_null_move(Position* pos);
+
+inline void Position::PutPiece(FLD f, PIECE p)
+{
+	assert(f <= H1);
+	assert(p != NOPIECE);
+	assert(m_board[f] == NOPIECE);
+
+	m_board[f] = p;
+
+	m_bits[p] ^= BB_SINGLE[f];
+	m_bitsAll[ColorOf(p)] ^= BB_SINGLE[f];
+
+	m_hash ^= s_Zobrist[f][p];
+}
+////////////////////////////////////////////////////////////////////////////////
+
+extern Position g_pos;
+
+inline void Position::RemovePiece(FLD f)
+{
+	assert(f <= H1);
+	PIECE p = m_board[f];
+	assert(p != NOPIECE);
+
+	m_board[f] = NOPIECE;
+
+	m_bits[p] ^= BB_SINGLE[f];
+	m_bitsAll[ColorOf(p)] ^= BB_SINGLE[f];
+
+	m_hash ^= s_Zobrist[f][p];
+}
+////////////////////////////////////////////////////////////////////////////////
+
+inline U64 Position::GetBishopAttacks(FLD to, COLOR side, const U64& occupied) const
+{
+	U64 att = 0;
+
+	// att |= BishopAttacks(to, occupied) & (Bits(BISHOPW | side) | Bits(QUEENW | side));
+	
+	U64 y = BB_BISHOP_ATTACKS[to] & (Bits(BISHOPW | side) | Bits(QUEENW | side));
+	while (y)
+	{
+		FLD from = PopLSB(y);
+		if ((BB_BETWEEN[from][to] & occupied) == 0)
+			att |= BB_SINGLE[from];
+	}
+	return att;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+inline U64 Position::GetRookAttacks(FLD to, COLOR side, const U64& occupied) const
+{
+	U64 att = 0;
+
+	// att |= RookAttacks(to, occupied) & (Bits(ROOKW | side) | Bits(QUEENW | side));
+	
+	U64 y = BB_ROOK_ATTACKS[to] & (Bits(ROOKW | side) | Bits(QUEENW | side));
+	while (y)
+	{
+		FLD from = PopLSB(y);
+		if ((BB_BETWEEN[from][to] & occupied) == 0)
+			att |= BB_SINGLE[from];
+	}
+	return att;
+}
+////////////////////////////////////////////////////////////////////////////////
 
 extern FLD steps[8][64];
 extern FLD knight_steps[8][64];
 
 #endif
-

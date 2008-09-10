@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4996)
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -12,7 +15,7 @@
 #include "version.h"
 #include "ipc.h"
 
-extern Position *g_pos;
+// extern FILE* g_log;
 extern Limits g_limits;
 
 int g_force = 0;
@@ -23,12 +26,9 @@ int CalcTimePerMove(int rest, int inc)
 {
 	// all values in milliseconds
 
-	int t;
-
-	if (rest <= 5000)
-		t = int(rest / 40.);
-	else
-		t = int(rest / 40. + 0.6 * inc);
+	int t = rest / 40;
+	if (rest > 5 * inc)
+		t += inc;
 
 // 	if (g_log)
 // 	{
@@ -106,7 +106,7 @@ void load_pos(Position* pos, const char* s)
 			buf[strlen(buf) - 1] = 0;
 
 		OUT1("%s\n", buf);
-		set_fen(g_pos, buf);
+		g_pos.SetFEN(buf);
 	}
 	else
 	{
@@ -126,13 +126,13 @@ void prompt()
 	if (g_xboard || g_uci)
 		return;
 
-	if (g_pos->side == WHITE)
+	if (g_pos.Side() == WHITE)
 		out("White(");
 	else
 		out("Black(");
 
 	char buf[256];
-	sprintf(buf, "%d): ", g_pos->ply / 2 + 1);
+	sprintf(buf, "%d): ", g_pos.Ply() / 2 + 1);
 	out(buf);
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -159,14 +159,16 @@ void run_command_loop()
          continue;
       }
 
-		Move mv0 = str_to_move(g_pos, s);
+		Move mv0 = str_to_move(&g_pos, s);
 		if (mv0)
 		{
-			gen_moves(g_pos, 0);
+			MoveList mvlist;
+			mvlist.GenAllMoves(g_pos);
+
 			int move_found = 0;
-			for (int i = 0; i < g_moves_cnt[0]; i++)
+			for (int i = 0; i < mvlist.Size(); ++i)
 			{
-				Move mv = g_moves[0][i].mv;
+				Move mv = mvlist[i];
 				if (mv == mv0)
 				{
 					move_found = 1;
@@ -174,11 +176,8 @@ void run_command_loop()
 				}
 			}
 
-			if (move_found && make_move(g_pos, mv0))
+			if (move_found && g_pos.MakeMove(mv0))
 			{
-				if (g_pos->undo_cnt >= UNDO_SIZE - MAX_PLY - 2)
-					g_pos->undo_cnt = 0;
-
 				if (!g_force)
 					start_thinking_on_move(g_pos);
 
@@ -201,9 +200,9 @@ void run_command_loop()
 		else if (is_command(s, "analyze", 2))
 			start_analyze(g_pos);
 		else if (is_command(s, "attacks", 1))
-			print_attacks(g_pos);
+			g_pos.PrintAttacks();
 		else if (is_command(s, "board", 1))
-			print_pos(g_pos);
+			g_pos.Print();
 		else if (is_command(s, "computer", 4))
 		{
 
@@ -254,7 +253,7 @@ void run_command_loop()
 		else if (is_command(s, "fen", 3))
 		{
 			char buf[BUFSIZE];
-			out(get_fen(g_pos, buf));
+			out(get_fen(&g_pos, buf));
 			out("\n");
 		}
 		else if (is_command(s, "force", 5))
@@ -272,7 +271,7 @@ void run_command_loop()
 					g_limits.sd = MAX_PLY;
 					break;
 				}
-				else if(!strcmp(token, "wtime") && g_pos->side == WHITE)
+				else if(!strcmp(token, "wtime") && g_pos.Side() == WHITE)
 				{
 					token = strtok(NULL, " ");
 					if (token)
@@ -284,7 +283,7 @@ void run_command_loop()
 						g_limits.sd = MAX_PLY;
 					}
 				}
-				else if(!strcmp(token, "btime") && g_pos->side == BLACK)
+				else if(!strcmp(token, "btime") && g_pos.Side() == BLACK)
 				{
 					token = strtok(NULL, " ");
 					if (token)
@@ -296,14 +295,14 @@ void run_command_loop()
 						g_limits.sd = MAX_PLY;
 					}
 				}
-				else if(!strcmp(token, "winc") && g_pos->side == WHITE)
+				else if(!strcmp(token, "winc") && g_pos.Side() == WHITE)
 				{
 					// in UCI time comes in milliseconds
 					token = strtok(NULL, " ");
 					if (token)
 						g_limits.inc = atoi(token);
 				}
-				else if(!strcmp(token, "binc") && g_pos->side == BLACK)
+				else if(!strcmp(token, "binc") && g_pos.Side() == BLACK)
 				{
 					// in UCI time comes in milliseconds
 					token = strtok(NULL, " ");
@@ -338,16 +337,18 @@ void run_command_loop()
 		}
 		else if (is_command(s, "list", 1))
 		{
-			gen_moves(g_pos, 0);
+			MoveList mvlist;
+			mvlist.GenAllMoves(g_pos);
+
 			int legal = 0;
-			for (int i = 0; i < g_moves_cnt[0]; i++)
+			for (int i = 0; i < mvlist.Size(); ++i)
 			{
 				char buf[16];
-				Move mv = g_moves[0][i].mv;
-				if (make_move(g_pos, mv))
+				Move mv = mvlist[i];
+				if (g_pos.MakeMove(mv))
 				{
 					legal++;
-					unmake_move(g_pos);
+					g_pos.UnmakeMove();
 					OUT1("%s ", move_to_str(mv, buf));
 				}
 			}
@@ -366,9 +367,9 @@ void run_command_loop()
 			}
 		}
 		else if (is_command(s, "load", 2))
-			load_pos(g_pos, s);
+			load_pos(&g_pos, s);
 		else if (is_command(s, "mirror", 2))
-			mirror(g_pos);
+			g_pos.Mirror();
 		else if (is_command(s, "mt", 2))
 		{
 			char* token = strtok(s, " ");
@@ -390,10 +391,10 @@ void run_command_loop()
 					buf[strlen(buf) - 1] = 0;
 
 				OUT1("%s\n", buf);
-				set_fen(g_pos, buf);
+				g_pos.SetFEN(buf);
 
 				EVAL e1 = evaluate(g_pos, - INFINITY_SCORE, INFINITY_SCORE);
-				mirror(g_pos);
+				g_pos.Mirror();
 				EVAL e2 = evaluate(g_pos, - INFINITY_SCORE, INFINITY_SCORE);
 
 				if (e1 != e2)
@@ -414,21 +415,21 @@ void run_command_loop()
 		else if (is_command(s, "new", 3))
 		{
 			g_force = 0;
-			set_initial(g_pos);
+			g_pos.SetInitial();
 		}
-//       else if (is_command(s, "perft", 2))
-//       {
-//          int depth = 1;
-//          char *token = strtok(s, " ");
-//          token = strtok(NULL, " ");
-//          if (token)
-//          {
-//             depth = atoi(token);
-//             if (depth <= 0)
-//                depth = 1;
-//          }
-//          start_perft(g_pos, depth);
-//       }
+// 		else if (is_command(s, "perft", 2))
+// 		{
+// 			int depth = 1;
+// 			char *token = strtok(s, " ");
+// 			token = strtok(NULL, " ");
+// 			if (token)
+// 			{
+// 				depth = atoi(token);
+// 				if (depth <= 0)
+// 					depth = 1;
+// 			}
+// 			start_perft(g_pos, depth);
+// 		}
 		else if (is_command(s, "ping", 4))
 		{
 			s[1] = 'o';
@@ -444,7 +445,7 @@ void run_command_loop()
 			token = strtok(NULL, " ");
 			if (!strcmp(token, "startpos"))
 			{
-				set_initial(g_pos);
+				g_pos.SetInitial();
 
 				token = strtok(uci_buf, " "); // "position"
 				token = strtok(NULL, " ");    // "startpos"
@@ -453,17 +454,14 @@ void run_command_loop()
 
 				while (token)
 				{
-					Move mv = str_to_move(g_pos, token);
-					make_move(g_pos, mv);
+					Move mv = str_to_move(&g_pos, token);
+					g_pos.MakeMove(mv);
 					token = strtok(NULL, " ");
-
-					if (g_pos->undo_cnt >= UNDO_SIZE - MAX_PLY - 2)
-						g_pos->undo_cnt = 0;
 				}
 			}
 			else if (!strcmp(token, "fen"))
 			{
-				set_fen(g_pos, s + 13);
+				g_pos.SetFEN(s + 13);
 
 				char *p = strstr(uci_buf, "moves");
 				if (p)
@@ -473,12 +471,9 @@ void run_command_loop()
 
 					while (token)
 					{
-						Move mv = str_to_move(g_pos, token);
-						make_move(g_pos, mv);
+						Move mv = str_to_move(&g_pos, token);
+						g_pos.MakeMove(mv);
 						token = strtok(NULL, " ");
-
-						if (g_pos->undo_cnt >= UNDO_SIZE - MAX_PLY - 2)
-							g_pos->undo_cnt = 0;
 					}
 				}
 			}
@@ -499,22 +494,22 @@ void run_command_loop()
 		}
 		else if (is_command(s, "remove", 3))
 		{
-			unmake_move(g_pos);
-			unmake_move(g_pos);
+			g_pos.UnmakeMove();
+			g_pos.UnmakeMove();
 		}
 		else if (is_command(s, "rep", 3))
 		{
-			int total = get_repetitions(g_pos);
+			int total = g_pos.GetRepetitions();
 			OUT1("total = %d\n", total);
 		}
 		else if (is_command(s, "result", 6))
 		{
 			g_force = 0;
-			set_initial(g_pos);
+			g_pos.SetInitial();
 		}
 		else if (is_command(s, "setboard", 8))
-		{
-			set_fen(g_pos, s + 9);
+		{      
+			g_pos.SetFEN(s + 9);
 		}
 
       else if (is_command(s, "setpriority", 11 ))
@@ -526,7 +521,7 @@ void run_command_loop()
             int prio = 252;
             prio = atoi (token);
             lowPrio(prio);
-         }
+		}
       }
 
 		else if (is_command(s, "setoption", 8))
@@ -590,7 +585,7 @@ void run_command_loop()
 			out("uciok\n");
 		}
 		else if (is_command(s, "undo", 1))
-			unmake_move(g_pos);
+			g_pos.UnmakeMove();
 
 		else if (is_command(s, "xboard", 6))
 		{
@@ -605,4 +600,3 @@ void run_command_loop()
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
-

@@ -3,23 +3,31 @@
 #include "utils.h"
 
 int g_dist[64][64];
+
 U64 BB_SINGLE[64];
 U64 BB_SINGLE_ZERO[64];
-
-U64 BB_PAWNW_ATTACKS[64];
-U64 BB_PAWNB_ATTACKS[64];
+U64 BB_DIR[64][8];
+U64 BB_PAWN_ATTACKS[64][2];
 U64 BB_KNIGHT_ATTACKS[64];
 U64 BB_BISHOP_ATTACKS[64];
 U64 BB_ROOK_ATTACKS[64];
 U64 BB_QUEEN_ATTACKS[64];
 U64 BB_KING_ATTACKS[64];
-
 U64 BB_BETWEEN[64][64];
 U64 BB_UPPER[64];
 U64 BB_LOWER[64];
-
 U64 BB_PAWNW_SQUARE[64];
 U64 BB_PAWNB_SQUARE[64];
+U8  DIRS[64][64];
+
+#ifdef MAGIC
+
+U64 BB_ROOK_DB[64][1 << ROOK_BITS];
+U64 BB_BISHOP_DB[64][1 << BISHOP_BITS];
+
+#endif
+
+U8 FIRST_IN_16[65536];
 
 U64 BB_VERTICAL[8] =
 {
@@ -33,9 +41,79 @@ U64 BB_VERTICAL[8] =
 	LL(0x0101010101010101)
 };
 
+U64 Enumerate(U64 mask, U64 n)
+{
+	U64 y = 0;
+	while (mask != 0 && n != 0)
+	{
+		int f = PopLSB(mask);
+		int digit = n & 1;
+		y |= digit * BB_SINGLE[f];
+		n >>= 1;
+	}
+	return y;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+#define TRACE(Shift)        \
+   x = Shift(BB_SINGLE[f]); \
+   while (x)                \
+   {                        \
+      att |= x;             \
+      if (x & occupied)     \
+         break;             \
+                            \
+      x = Shift(x);         \
+   }
+
+U64 BishopAttacksTrace(int f, const U64& occupied)
+{
+	U64 att = 0;
+	U64 x = 0;
+
+	TRACE(UpRight);
+	TRACE(UpLeft);
+	TRACE(DownLeft);
+	TRACE(DownRight);
+
+	return att;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+U64 RookAttacksTrace(int f, const U64& occupied)
+{
+	U64 att = 0;
+	U64 x = 0;
+
+	TRACE(Right);
+	TRACE(Up);
+	TRACE(Left);
+	TRACE(Down);
+
+	return att;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+#undef TRACE
+
 void init_bitboards()
 {
 	int i = 0, j = 0;
+
+	// Bitscan
+	for (i = 1; i < 65536; ++i)
+	{
+		int x = 0x8000;
+		for (j = 0; j < 16; ++j)
+		{
+			if (i & x)
+			{
+				FIRST_IN_16[i] = j;
+				break;
+			}
+			x >>= 1;
+		}
+	}
 
 	U64 x = ((U64) 1) << 63;
 	for (i = 0; i < 64; i++)
@@ -71,8 +149,8 @@ void init_bitboards()
 
 	for (from = 0; from < 64; from++)
 	{
-		BB_PAWNW_ATTACKS[from] = 0;
-		BB_PAWNB_ATTACKS[from] = 0;
+		BB_PAWN_ATTACKS[from][WHITE] = 0;
+		BB_PAWN_ATTACKS[from][BLACK] = 0;
 		BB_KNIGHT_ATTACKS[from] = 0;
 		BB_BISHOP_ATTACKS[from] = 0;
 		BB_ROOK_ATTACKS[from] = 0;
@@ -81,19 +159,19 @@ void init_bitboards()
 
 		to = steps[1][from];
 		if (to != NF)
-			set_bit(BB_PAWNW_ATTACKS[from], to);
+			set_bit(BB_PAWN_ATTACKS[from][WHITE], to);
 
 		to = steps[3][from];
 		if (to != NF)
-			set_bit(BB_PAWNW_ATTACKS[from], to);
+			set_bit(BB_PAWN_ATTACKS[from][WHITE], to);
 
 		to = steps[5][from];
 		if (to != NF)
-			set_bit(BB_PAWNB_ATTACKS[from], to);
+			set_bit(BB_PAWN_ATTACKS[from][BLACK], to);
 
 		to = steps[7][from];
 		if (to != NF)
-			set_bit(BB_PAWNB_ATTACKS[from], to);
+			set_bit(BB_PAWN_ATTACKS[from][BLACK], to);
 
 		for (dir = 0; dir < 8; dir++)
 		{
@@ -139,14 +217,49 @@ void init_bitboards()
 		BB_QUEEN_ATTACKS[from] = BB_ROOK_ATTACKS[from] | BB_BISHOP_ATTACKS[from];
 	}
 
+	// Directions
+	
+#define TRACE_DIR(dir, Funk, delta) \
+   x = Funk(BB_SINGLE[from]);       \
+   y = 0;                           \
+   to = from + (delta);             \
+   while (x)                        \
+   {                                \
+      BB_BETWEEN[from][to] = y;     \
+      DIRS[from][to] = dir;         \
+      y |= x;                       \
+      x = Funk(x);                  \
+      to += (delta);                \
+   }                                \
+   BB_DIR[from][dir] = y;
+
+	U64 y = 0;
+	for (from = 0; from < 64; ++from)
+	{
+		for (to = 0; to < 64; ++to)
+	  	{
+			BB_BETWEEN[from][to] = 0;
+			DIRS[from][to] = DIR_NO;
+	  	}
+	
+		TRACE_DIR (0, Right, 1)
+		TRACE_DIR (1, UpRight, -7)
+		TRACE_DIR (2, Up, -8)
+		TRACE_DIR (3, UpLeft, -9)
+		TRACE_DIR (4, Left, -1)
+		TRACE_DIR (5, DownLeft, 7)
+		TRACE_DIR (6, Down, 8)
+		TRACE_DIR (7, DownRight, 9)
+	}
+
 	// table of distances
 
 	for (int f1 = 0; f1 < 64; f1++)
 	{
 		for (int f2 = 0; f2 < 64; f2++)
 		{
-			int drow = getrow(f1) - getrow(f2);
-			int dcol = getcol(f1) - getcol(f2);
+			int drow = Row(f1) - Row(f2);
+			int dcol = Col(f1) - Col(f2);
 
 			if (drow < 0)
 				drow *= -1;
@@ -162,7 +275,7 @@ void init_bitboards()
 	for (int f = 0; f < 64; f++)
 	{
 		x = BB_UPPER[f] | BB_SINGLE[f];
-		for (j = 0; j < getrow(f); j++)
+		for (j = 0; j < Row(f); j++)
 		{
 			x |= bb_right(x);
 			x |= bb_left(x);
@@ -171,7 +284,7 @@ void init_bitboards()
 		BB_PAWNW_SQUARE[f] = x;
 
 		x = BB_LOWER[f] | BB_SINGLE[f];
-		for (j = 0; j < 7 - getrow(f); j++)
+		for (j = 0; j < 7 - Row(f); j++)
 		{
 			x |= bb_right(x);
 			x |= bb_left(x);
@@ -179,6 +292,31 @@ void init_bitboards()
 
 		BB_PAWNB_SQUARE[f] = x;
 	}
+
+#ifdef MAGIC
+
+	// Magic
+	for (int f = 0; f < 64; ++f)
+	{
+		for (int n = 0; n < (1 << BISHOP_BITS); ++n)
+		{
+			U64 occupied = Enumerate(BB_BISHOP_MASK[f], n);
+			U64 attacks = BishopAttacksTrace(f, occupied);
+			int index = (occupied * BB_BISHOP_MAGIC[f]) >> (64 - BISHOP_BITS);
+			BB_BISHOP_DB[f][index] = attacks;
+		}
+
+		for (int n = 0; n < (1 << ROOK_BITS); ++n)
+		{
+			U64 occupied = Enumerate(BB_ROOK_MASK[f], n);
+			U64 attacks = RookAttacksTrace(f, occupied);
+			int index = (occupied * BB_ROOK_MAGIC[f]) >> (64 - ROOK_BITS);
+			BB_ROOK_DB[f][index] = attacks;
+		}
+	}
+
+#endif
+
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -192,7 +330,7 @@ void print_bitboard(U64 b)
 		else
 			out(" -");
 
-		if (getcol(f) == 7)
+		if (Col(f) == 7)
 			out("\n");
 	}
 	out("\n");

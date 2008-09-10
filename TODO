@@ -3,8 +3,8 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-
-enlever Makefile de CVS
+// Tcl_Obj * tclObj_String = Tcl_NewStringObj( "", -1 );
+fait planter PPC
 
  ===========================================================
 |                                                           |
@@ -17,6 +17,8 @@ enlever Makefile de CVS
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- Port Scidlet to PPC
 
 - add variations from analysis engine when the engine is locked
 

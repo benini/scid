@@ -49,19 +49,6 @@ get_msg(buf, sz);
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void *safe_malloc(size_t sz)
-{
-	//
-	//   Memory allocator with check for not NULL. 
-	//
-
-	void *ret = malloc(sz);  
-	assert (ret != NULL);
-
-	return ret;
-}
-////////////////////////////////////////////////////////////////////////////////
-
 char* tail(char* buf)
 {
 	char* p = buf;

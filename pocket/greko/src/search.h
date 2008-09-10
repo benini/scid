@@ -10,10 +10,9 @@ typedef U32 NODES;
 
 struct MultiPVEntry
 {
-	Move pv[MAX_PLY + 2];
-	int pv_length; 
-	EVAL score;
-	int seen;
+	vector<Move> m_pv;
+	EVAL m_score;
+	bool m_seen;
 };
 typedef struct MultiPVEntry MultiPVEntry;
 
@@ -50,15 +49,16 @@ struct Limits
 };
 typedef struct Limits Limits;
 
-void        epdtest(FILE* psrc, double time_in_seconds, int reps);
+// void        epdtest(FILE* psrc, double time_in_seconds, int reps);
 void        init_hash();
 HashEntry*  probe_hash(const Position* pos);
 void        record_hash(const Position* pos, Move best_mv, U16 depth, EVAL eval, U8 type, U8 flags, int ply);
 void        resize_hash(int size_in_mb);
-void        start_analyze(const Position* pos0);
-int         start_epd(const Position* pos, const char* fen, int reps, int* ptotal, int* psolved, double* psec);
-void        start_thinking_on_move(Position* pos0);
-void        start_perft(const Position* pos0, int depth);
+EVAL        SEE(const Position& pos, Move mv);
+void        start_analyze(const Position& pos0);
+// int         start_epd(const Position& pos, const char* fen, int reps, int* ptotal, int* psolved, double* psec);
+void        start_thinking_on_move(Position& pos0);
+void        start_perft(const Position& pos0, int depth);
 
 #endif
 

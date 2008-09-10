@@ -1,23 +1,64 @@
 #ifndef MOVES_H
 #define MOVES_H
 
+#include <vector>
+using namespace std;
+
 #include "consts.h"
 #include "position.h"
 
-struct SMove
+struct MoveEntry
 {
-	Move mv;
-	EVAL value;
+	MoveEntry() {}
+	MoveEntry(Move mv) : m_mv(mv) {}
+	~MoveEntry() {}
+
+	Move m_mv;
+	EVAL m_value;
 };
-typedef struct SMove SMove;
 
-extern SMove* g_moves[MAX_PLY + 2];
-extern int g_moves_cnt[MAX_PLY + 2];
+class MoveList
+{
+public:
 
-void  init_mg();
-void  gen_captures_and_promotions(const Position* pos, int ply);
-void  gen_moves(const Position* pos, int ply);
+	MoveList() {}
+	~MoveList() {}
+
+	Move operator[] (int n) const { return m_data[n].m_mv; }
+
+	void Clear() { m_size = 0; }
+	void AddSimpleChecks(const Position& pos);
+	void GenAllMoves(const Position& pos);
+	void GenAllMovesInCheck(const Position& pos);
+	void GenCapturesAndPromotions(const Position& pos);
+	Move GetNthBest(int n);
+	int  Size() const { return m_size; }
+	void UpdateScores(const Position& pos, Move hashmv, Move killermv);
+
+private:
+
+	inline void Add(FLD from, FLD to, PIECE piece)
+	{
+		m_data[m_size++].m_mv = Move(from, to, piece);
+	}
+
+	inline void Add(FLD from, FLD to, PIECE piece, PIECE captured)
+	{
+		m_data[m_size++].m_mv = Move(from, to, piece, captured);
+	}
+
+	inline void Add(FLD from, FLD to, PIECE piece, PIECE captured, PIECE promotion)
+	{
+		m_data[m_size++].m_mv = Move(from, to, piece, captured, promotion);
+	}
+
+	enum { MAX_SIZE = 256 };
+	MoveEntry m_data[MAX_SIZE];
+	int m_size;
+};
+////////////////////////////////////////////////////////////////////////////////
+
 char* move_to_str(Move mv, char* buf);
-char* move_to_str_san(const Position* pos, Move mv, char* buf);
+char* move_to_str_san(const Position& pos, Move mv, char* buf);
 
 #endif

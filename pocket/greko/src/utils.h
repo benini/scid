@@ -15,7 +15,6 @@ char* read_input(char* buf, int sz);
 void  rnd32_seed(U32 seed);
 U32   rnd32();
 U64   rnd64();
-void* safe_malloc(size_t sz);
 void  set_highlight(int on);
 char* tail(char* buf);
 int      get_time() ;

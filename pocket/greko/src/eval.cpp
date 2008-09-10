@@ -29,8 +29,8 @@
 #define ROOK_V_MOBILITY             (2)
 #define ROOK_TRAPPED                (25)
 
+#define BISHOP_PAIR                 (20)
 #define BISHOP_MOBILITY             (3)
-
 #define BISHOP_ON_STRONG            (4)
 #define BISHOP_BLOCKING_WEAK_PAWN   (8)
 #define BISHOP_TRAPPED              (75)
@@ -160,18 +160,21 @@ EVAL PAWN_PASSED_ENDGAME[64] =
 
 EVAL eval_pawn_shield_w(const PawnHashEntry* pentry, FLD  K);
 EVAL eval_pawn_shield_b(const PawnHashEntry* pentry, FLD  K);
-void read_pawn_structure(const Position* pos, PawnHashEntry* pentry);
-void scan_attacks(const Position* pos, Attacks* patt);
+EVAL PossibleDraw(EVAL score, const Position& pos, int mat_coeff[]);
+void read_pawn_structure(const Position& pos, PawnHashEntry* pentry);
 
-EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
+EVAL evaluate(const Position& pos, EVAL alpha, EVAL beta)
 {
 	U64 x = 0, y = 0;
 	FLD f = NF, to = NF;
 
-	if (is_draw(pos))
+	if (pos.IsDraw())
 		return DRAW_SCORE;
 
-	EVAL mat_score = pos->material[WHITE] - pos->material[BLACK];
+	EVAL mat_score = pos.Material(WHITE) - pos.Material(BLACK);
+	mat_score += (pos.Count(BISHOPW) == 2) ? BISHOP_PAIR : 0;
+	mat_score -= (pos.Count(BISHOPB) == 2) ? BISHOP_PAIR : 0;
+
 	EVAL ksf_score = 0;
 	EVAL pas_score = 0;
 	EVAL psq_score = 0;
@@ -183,7 +186,7 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 	//
 
 	EVAL e = mat_score * MAT_WEIGHT / 256;
-	if (pos->side == BLACK)
+	if (pos.Side() == BLACK)
 		e = - e;
 
 	if (e > beta + LAZY_MARGIN)
@@ -198,13 +201,13 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 	int mat_coeff[2] = 
 	{
-		10 * pos->count[QUEENW] + 
-		 5 * pos->count[ROOKW] + 
-		 3 * (pos->count[BISHOPW] + pos->count[KNIGHTW]),
+		10 * pos.Count(QUEENW) + 
+		 5 * pos.Count(ROOKW) + 
+		 3 * (pos.Count(BISHOPW) + pos.Count(KNIGHTW)),
 
-		10 * pos->count[QUEENB] + 
-		 5 * pos->count[ROOKB] + 
-		 3 * (pos->count[BISHOPB] + pos->count[KNIGHTB])
+		10 * pos.Count(QUEENB) + 
+		 5 * pos.Count(ROOKB) + 
+		 3 * (pos.Count(BISHOPB) + pos.Count(KNIGHTB))
 	};
 
 	if (mat_coeff[WHITE] > 32)
@@ -215,7 +218,7 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 	EVAL king_safety[2] = {0, 0};
 
-	U32 ph = pawn_hash(pos);
+	U32 ph = pos.PawnHash();
 	long index = ph % g_pawn_hash_size;
 	PawnHashEntry* pentry = & (g_pawn_hash[index]);
 
@@ -228,35 +231,35 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 	if (mat_coeff[BLACK] >= 10)
 	{
-		king_safety[WHITE] += PSQ_KING[pos->King[WHITE]];
-		king_safety[WHITE] += eval_pawn_shield_w(pentry, pos->King[WHITE]);
+		king_safety[WHITE] += PSQ_KING[pos.King(WHITE)];
+		king_safety[WHITE] += eval_pawn_shield_w(pentry, pos.King(WHITE));
 
-		if ((pos->castlings & (WHITE_DID_O_O | WHITE_DID_O_O_O)) == 0)
+		if ((pos.Castlings() & (WHITE_DID_O_O | WHITE_DID_O_O_O)) == 0)
 		{
-			if ((pos->castlings & WHITE_CAN_O_O) == 0)
+			if ((pos.Castlings() & WHITE_CAN_O_O) == 0)
 				king_safety[WHITE] -= KING_LOST_O_O;
-			if ((pos->castlings & WHITE_CAN_O_O_O) == 0)
+			if ((pos.Castlings() & WHITE_CAN_O_O_O) == 0)
 				king_safety[WHITE] -= KING_LOST_O_O_O;
 		}
 	}
 	else
-		psq_score += PSQ_KING_ENDGAME[pos->King[WHITE]];
+		psq_score += PSQ_KING_ENDGAME[pos.King(WHITE)];
 
 	if (mat_coeff[WHITE] >= 10)
 	{
-		king_safety[BLACK] += PSQ_KING[FLIP[pos->King[BLACK]]];
-		king_safety[BLACK] += eval_pawn_shield_b(pentry, pos->King[BLACK]);
+		king_safety[BLACK] += PSQ_KING[FLIP[pos.King(BLACK)]];
+		king_safety[BLACK] += eval_pawn_shield_b(pentry, pos.King(BLACK));
 
-		if ((pos->castlings & (BLACK_DID_O_O | BLACK_DID_O_O_O)) == 0)
+		if ((pos.Castlings() & (BLACK_DID_O_O | BLACK_DID_O_O_O)) == 0)
 		{
-			if ((pos->castlings & BLACK_CAN_O_O) == 0)
+			if ((pos.Castlings() & BLACK_CAN_O_O) == 0)
 				king_safety[BLACK] -= KING_LOST_O_O;
-			if ((pos->castlings & BLACK_CAN_O_O_O) == 0)
+			if ((pos.Castlings() & BLACK_CAN_O_O_O) == 0)
 				king_safety[BLACK] -= KING_LOST_O_O_O;
 		}
 	}
 	else
-		psq_score -= PSQ_KING_ENDGAME[FLIP[pos->King[BLACK]]];
+		psq_score -= PSQ_KING_ENDGAME[FLIP[pos.King(BLACK)]];
 
 	//
 	//   PAWNS
@@ -266,35 +269,38 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 	// blocked
 
-	y = bb_up(pos->bits[PAWNW]) & (pos->bits[KNIGHTW] | pos->bits[BISHOPW] | pos->bits[ROOKW] | pos->bits[QUEENW]);
-	pwn_score -= PAWN_BLOCKED_BY_OWN_PIECE * count_bits(y);
+	y = bb_up(pos.Bits(PAWNW)) & (pos.Bits(KNIGHTW) | pos.Bits(BISHOPW) | pos.Bits(ROOKW) | pos.Bits(QUEENW));
+	pwn_score -= PAWN_BLOCKED_BY_OWN_PIECE * CountBits(y);
 
-	y = bb_down(pos->bits[PAWNB]) & (pos->bits[KNIGHTB] | pos->bits[BISHOPB] | pos->bits[ROOKB] | pos->bits[QUEENB]);
-	pwn_score += PAWN_BLOCKED_BY_OWN_PIECE * count_bits(y);
+	y = bb_down(pos.Bits(PAWNB)) & (pos.Bits(KNIGHTB) | pos.Bits(BISHOPB) | pos.Bits(ROOKB) | pos.Bits(QUEENB));
+	pwn_score += PAWN_BLOCKED_BY_OWN_PIECE * CountBits(y);
 
 	// free
 
-	y = BB_CENTER_W & pos->bits[PAWNW] & bb_down(pos->bits[NOPIECE]);
-	pwn_score += PAWN_FREE_IN_CENTER * count_bits(y);
+	U64 free = ~pos.BitsAll();
 
-	y = BB_CENTER_B & pos->bits[PAWNB] & bb_up(pos->bits[NOPIECE]);
-	pwn_score -= PAWN_FREE_IN_CENTER * count_bits(y);
+	y = BB_CENTER_W & pos.Bits(PAWNW) & bb_down(free);
+	pwn_score += PAWN_FREE_IN_CENTER * CountBits(y);
+
+	y = BB_CENTER_B & pos.Bits(PAWNB) & bb_up(free);
+	pwn_score -= PAWN_FREE_IN_CENTER * CountBits(y);
 
 	// duo
 
-	y = BB_CENTER_W & pos->bits[PAWNW];
+	y = BB_CENTER_W & pos.Bits(PAWNW);
 	y &= bb_right(y);
-	pwn_score += PAWN_DUO_IN_CENTER * count_bits(y);
+	pwn_score += PAWN_DUO_IN_CENTER * CountBits(y);
 
-	y = BB_CENTER_B & pos->bits[PAWNB];
+	y = BB_CENTER_B & pos.Bits(PAWNB);
 	y &= bb_right(y);
-	pwn_score -= PAWN_DUO_IN_CENTER * count_bits(y);
+	pwn_score -= PAWN_DUO_IN_CENTER * CountBits(y);
 
 	// passed pawns
 
-	x = pentry->passed & pos->bits[PAWNW];
-	while ((f = pop_lsb(x)) != NF)
+	x = pentry->passed & pos.Bits(PAWNW);
+	while (x)
 	{
+		f = PopLSB(x);
 		EVAL bonus = PAWN_PASSED_MIDGAME[f] * mat_coeff[BLACK] +
 						 PAWN_PASSED_ENDGAME[f] * (32 - mat_coeff[BLACK]);
 		bonus /= 32;
@@ -302,16 +308,16 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 		if (mat_coeff[BLACK] == 0)
 		{
-			if (pos->side == BLACK)
+			if (pos.Side() == BLACK)
 				f = FLD(f + 8);
 
-			if ((BB_PAWNW_SQUARE[f] & pos->bits[KINGB]) == 0)
-				pas_score += PAWN_PASSED_UNCATCHABLE * (7 - getrow(f));
+			if ((BB_PAWNW_SQUARE[f] & pos.Bits(KINGB)) == 0)
+				pas_score += PAWN_PASSED_UNCATCHABLE * (7 - Row(f));
 		}
 		else if (mat_coeff[BLACK] < 10)
 		{
-			FLD K = pos->King[BLACK];
-			if (getcol(K) == getcol(f) && K < f)
+			FLD K = pos.King(BLACK);
+			if (Col(K) == Col(f) && K < f)
 				pas_score -= PAWN_PASSED_STOPPED_BY_KING;
 			else
 			{
@@ -319,23 +325,24 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 				pas_score += PAWN_PASSED_KING_DISTANCE * dist;
 			}
 
-			FLD frK = pos->King[WHITE];
-			if (getcol(frK) == getcol(f) - 1 || getcol(frK) == getcol(f) + 1)
+			FLD frK = pos.King(WHITE);
+			if (Col(frK) == Col(f) - 1 || Col(frK) == Col(f) + 1)
 			{
-				if (getrow(frK) == getrow(f) || getrow(frK) == getrow(f) - 1)
+				if (Row(frK) == Row(f) || Row(frK) == Row(f) - 1)
 					pas_score += PAWN_PASSED_SUPPORTED_KING;
 			}
 		}
 	}
 
-	x = (pentry->passed & pos->bits[PAWNW]) & (BB_A7H7 | BB_A6H6);
+	x = (pentry->passed & pos.Bits(PAWNW)) & (BB_A7H7 | BB_A6H6);
 	x = (x | bb_up(x)) & BB_A7H7;
 	x = x & bb_right(x);
-	pas_score += PAWN_PASSED_FAR_PAIR * count_bits(x);
+	pas_score += PAWN_PASSED_FAR_PAIR * CountBits(x);
 
-	x = pentry->passed & pos->bits[PAWNB];
-	while ((f = pop_lsb(x)) != NF)
+	x = pentry->passed & pos.Bits(PAWNB);
+	while (x)
 	{
+		f = PopLSB(x);
 		EVAL bonus = PAWN_PASSED_MIDGAME[FLIP[f]] * mat_coeff[WHITE] +
 						 PAWN_PASSED_ENDGAME[FLIP[f]] * (32 - mat_coeff[WHITE]);
 		bonus /= 32;
@@ -343,16 +350,16 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 		if (mat_coeff[WHITE] == 0)
 		{
-			if (pos->side == WHITE)
+			if (pos.Side() == WHITE)
 				f = FLD(f - 8);
 
-			if ((BB_PAWNB_SQUARE[f] & pos->bits[KINGW]) == 0)
-				pas_score -= PAWN_PASSED_UNCATCHABLE * getrow(f);
+			if ((BB_PAWNB_SQUARE[f] & pos.Bits(KINGW)) == 0)
+				pas_score -= PAWN_PASSED_UNCATCHABLE * Row(f);
 		}
 		else if (mat_coeff[WHITE] < 10)
 		{
-			FLD K = pos->King[WHITE];
-			if (getcol(K) == getcol(f) && K > f)
+			FLD K = pos.King(WHITE);
+			if (Col(K) == Col(f) && K > f)
 				pas_score += PAWN_PASSED_STOPPED_BY_KING;
 			else
 			{
@@ -360,19 +367,19 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 				pas_score -= PAWN_PASSED_KING_DISTANCE * dist;
 			}
 
-			FLD frK = pos->King[BLACK];
-			if (getcol(frK) == getcol(f) - 1 || getcol(frK) == getcol(f) + 1)
+			FLD frK = pos.King(BLACK);
+			if (Col(frK) == Col(f) - 1 || Col(frK) == Col(f) + 1)
 			{
-				if (getrow(frK) == getrow(f) || getrow(frK) == getrow(f) + 1)
+				if (Row(frK) == Row(f) || Row(frK) == Row(f) + 1)
 					pas_score -= PAWN_PASSED_SUPPORTED_KING;
 			}
 		}
 	}
 
-	x = (pentry->passed & pos->bits[PAWNB]) & (BB_A2H2 | BB_A3H3);
+	x = (pentry->passed & pos.Bits(PAWNB)) & (BB_A2H2 | BB_A3H3);
 	x = (x | bb_down(x)) & BB_A2H2;
 	x = x & bb_right(x);
-	pas_score -= PAWN_PASSED_FAR_PAIR * count_bits(x);
+	pas_score -= PAWN_PASSED_FAR_PAIR * CountBits(x);
 
 	U64 strong_fields[2] =
 	{
@@ -384,33 +391,35 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 	//   KNIGHTS
 	//
 
-	x = pos->bits[KNIGHTW];
-	while ((f = pop_lsb(x)) != NF)
+	x = pos.Bits(KNIGHTW);
+	while (x)
 	{
+		f = PopLSB(x);
 		psq_score += PSQ_KNIGHT[f];
-		int dist = g_dist[f][pos->King[BLACK]];
+		int dist = g_dist[f][pos.King(BLACK)];
 		king_safety[BLACK] -= KNIGHT_K_TROPISM * (7 - dist);
 	}
 
-	x = pos->bits[KNIGHTW] & strong_fields[WHITE];
-	psq_score += KNIGHT_ON_STRONG * count_bits(x);
+	x = pos.Bits(KNIGHTW) & strong_fields[WHITE];
+	psq_score += KNIGHT_ON_STRONG * CountBits(x);
 	
-	x = pos->bits[KNIGHTW] & bb_down(pentry->weak[BLACK]) & BB_WEDGE_W;
-	psq_score += KNIGHT_BLOCKING_WEAK_PAWN * count_bits(x);
+	x = pos.Bits(KNIGHTW) & bb_down(pentry->weak[BLACK]) & BB_WEDGE_W;
+	psq_score += KNIGHT_BLOCKING_WEAK_PAWN * CountBits(x);
 
-	x = pos->bits[KNIGHTB];
-	while ((f = pop_lsb(x)) != NF)
+	x = pos.Bits(KNIGHTB);
+	while (x)
 	{
+		f = PopLSB(x);
 		psq_score -= PSQ_KNIGHT[FLIP[f]];
-		int dist = g_dist[f][pos->King[WHITE]];
+		int dist = g_dist[f][pos.King(WHITE)];
 		king_safety[WHITE] -= KNIGHT_K_TROPISM * (7 - dist);
 	}
 
-	x = pos->bits[KNIGHTB] & strong_fields[BLACK];
-	psq_score -= KNIGHT_ON_STRONG * count_bits(x);
+	x = pos.Bits(KNIGHTB) & strong_fields[BLACK];
+	psq_score -= KNIGHT_ON_STRONG * CountBits(x);
 
-	x = pos->bits[KNIGHTB] & bb_up(pentry->weak[WHITE]) & BB_WEDGE_B;
-	psq_score -= KNIGHT_BLOCKING_WEAK_PAWN * count_bits(x);
+	x = pos.Bits(KNIGHTB) & bb_up(pentry->weak[WHITE]) & BB_WEDGE_B;
+	psq_score -= KNIGHT_BLOCKING_WEAK_PAWN * CountBits(x);
 
 	//
 	//   BISHOPS
@@ -421,14 +430,15 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
    while (to != NF)             \
    {                            \
       mob++;                    \
-      if (pos->board[to])       \
+      if (pos[to])              \
          break;                 \
       to = array[to];           \
    }
 
-	x = pos->bits[BISHOPW];
-	while ((f = pop_lsb(x)) != NF)
+	x = pos.Bits(BISHOPW);
+	while (x)
 	{
+		f = PopLSB(x);
 		psq_score += PSQ_BISHOP[f];
 
 		int mob = 0;
@@ -439,25 +449,26 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 		mob_score += BISHOP_MOBILITY * mob;
 
-		int dist = g_dist[f][pos->King[BLACK]];
+		int dist = g_dist[f][pos.King(BLACK)];
 		king_safety[BLACK] -= BISHOP_K_TROPISM * (7 - dist);
 
-		if (f == A7 && pos->board[B6] == PAWNB)
+		if (f == A7 && pos[B6] == PAWNB)
 			mob_score -= BISHOP_TRAPPED;
 
-		if (f == H7 && pos->board[G6] == PAWNB)
+		if (f == H7 && pos[G6] == PAWNB)
 			mob_score -= BISHOP_TRAPPED;
 	}
 
-	x = pos->bits[BISHOPW] & strong_fields[WHITE];
-	psq_score += BISHOP_ON_STRONG * count_bits(x);
+	x = pos.Bits(BISHOPW) & strong_fields[WHITE];
+	psq_score += BISHOP_ON_STRONG * CountBits(x);
 
-	x = pos->bits[BISHOPW] & bb_down(pentry->weak[BLACK]) & BB_WEDGE_W;
-	psq_score += BISHOP_BLOCKING_WEAK_PAWN * count_bits(x);
+	x = pos.Bits(BISHOPW) & bb_down(pentry->weak[BLACK]) & BB_WEDGE_W;
+	psq_score += BISHOP_BLOCKING_WEAK_PAWN * CountBits(x);
 
-	x = pos->bits[BISHOPB];
-	while ((f = pop_lsb(x)) != NF)
+	x = pos.Bits(BISHOPB);
+	while (x)
 	{
+		f = PopLSB(x);
 		psq_score -= PSQ_BISHOP[FLIP[f]];
 
 		int mob = 0;
@@ -468,21 +479,21 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 
 		mob_score -= BISHOP_MOBILITY * mob;
 
-		int dist = g_dist[f][pos->King[WHITE]];
+		int dist = g_dist[f][pos.King(WHITE)];
 		king_safety[WHITE] -= BISHOP_K_TROPISM * (7 - dist);
 
-		if (f == A2 && pos->board[B3] == PAWNW)
+		if (f == A2 && pos[B3] == PAWNW)
 			psq_score += BISHOP_TRAPPED;
 
-		if (f == H2 && pos->board[G3] == PAWNW)
+		if (f == H2 && pos[G3] == PAWNW)
 			psq_score += BISHOP_TRAPPED;
 	}
 
-	x = pos->bits[BISHOPB] & strong_fields[BLACK];
-	psq_score -= BISHOP_ON_STRONG * count_bits(x);
+	x = pos.Bits(BISHOPB) & strong_fields[BLACK];
+	psq_score -= BISHOP_ON_STRONG * CountBits(x);
 
-	x = pos->bits[BISHOPB] & bb_up(pentry->weak[WHITE]) & BB_WEDGE_B;
-	psq_score -= BISHOP_BLOCKING_WEAK_PAWN * count_bits(x);
+	x = pos.Bits(BISHOPB) & bb_up(pentry->weak[WHITE]) & BB_WEDGE_B;
+	psq_score -= BISHOP_BLOCKING_WEAK_PAWN * CountBits(x);
 
 	//
 	//   ROOKS
@@ -493,17 +504,18 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
    while (to != NF)                               \
    {                                              \
       mob++;                                      \
-      if (pos->board[to] && pos->board[to] != fr) \
+      if (pos[to] && pos[to] != fr)               \
          break;                                   \
       to = array[to];                             \
    }
 
-	x = pos->bits[ROOKW];
-	while ((f = pop_lsb(x)) != NF)
+	x = pos.Bits(ROOKW);
+	while (x)
 	{
-		int file = getcol(f) + 1;
+		f = PopLSB(x);
+		int file = Col(f) + 1;
 
-		if (getrow(f) == 1 && getrow(pos->King[BLACK]) <= 1)
+		if (Row(f) == 1 && Row(pos.King(BLACK)) <= 1)
 			psq_score += ROOK_ON_7TH;
 		
 		if (pentry->rank[WHITE][file] == 0)
@@ -513,7 +525,7 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 			else
 				psq_score += ROOK_ON_SEMIOPEN;
 
-			int dist = getcol(f) - getcol(pos->King[BLACK]);
+			int dist = Col(f) - Col(pos.King(BLACK));
 			if (dist < 0)
 				dist = - dist;
 			king_safety[BLACK] -= ROOK_K_TROPISM * (7 - dist);
@@ -531,12 +543,13 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 		mob_score += mob * ROOK_V_MOBILITY;
 	}
 
-	x = pos->bits[ROOKB];
-	while ((f = pop_lsb(x)) != NF)
+	x = pos.Bits(ROOKB);
+	while (x)
 	{
-		int file = getcol(f) + 1;
+		f = PopLSB(x);
+		int file = Col(f) + 1;
 
-		if (getrow(f) == 6 && getrow(pos->King[WHITE]) >= 6)
+		if (Row(f) == 6 && Row(pos.King(WHITE)) >= 6)
 			psq_score -= ROOK_ON_7TH;
 
 		if (pentry->rank[BLACK][file] == 7)
@@ -546,7 +559,7 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 			else
 				psq_score -= ROOK_ON_SEMIOPEN;
 
-			int dist = getcol(f) - getcol(pos->King[WHITE]);
+			int dist = Col(f) - Col(pos.King(WHITE));
 			if (dist < 0)
 				dist = - dist;
 			king_safety[WHITE] -= ROOK_K_TROPISM * (7 - dist);
@@ -568,39 +581,41 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 	//   QUEENS
 	//
 
-	if (pos->ply >= 16 || (pos->castlings & (WHITE_DID_O_O | WHITE_DID_O_O_O)))
+	if (pos.Ply() >= 16 || (pos.Castlings() & (WHITE_DID_O_O | WHITE_DID_O_O_O)))
 	{
-		x = pos->bits[QUEENW];
-		while ((f = pop_lsb(x)) != NF)
+		x = pos.Bits(QUEENW);
+		while (x)
 		{
-			if (getrow(f) == 1 && getrow(pos->King[BLACK]) <= 1)
+			f = PopLSB(x);
+			if (Row(f) == 1 && Row(pos.King(BLACK)) <= 1)
 				psq_score += QUEEN_ON_7TH;
 
-			int dist = g_dist[f][pos->King[BLACK]];
+			int dist = g_dist[f][pos.King(BLACK)];
 			king_safety[BLACK] -= QUEEN_K_TROPISM * (7 - dist);
 		}
 	}
 	else
 	{
-		if (pos->board[D1] != QUEENW && pos->count[QUEENW])
+		if (pos[D1] != QUEENW && pos.Count(QUEENW))
 			psq_score -= QUEEN_EARLY_MOVE;
 	}
 
-	if (pos->ply >= 16 || (pos->castlings & (BLACK_DID_O_O | BLACK_DID_O_O_O)))
+	if (pos.Ply() >= 16 || (pos.Castlings() & (BLACK_DID_O_O | BLACK_DID_O_O_O)))
 	{
-		x = pos->bits[QUEENB];
-		while ((f = pop_lsb(x)) != NF)
+		x = pos.Bits(QUEENB);
+		while (x)
 		{
-			if (getrow(f) == 6 && getrow(pos->King[WHITE]) >= 6)
+			f = PopLSB(x);
+			if (Row(f) == 6 && Row(pos.King(WHITE)) >= 6)
 				psq_score -= QUEEN_ON_7TH;
 
-			int dist = g_dist[f][pos->King[WHITE]];
+			int dist = g_dist[f][pos.King(WHITE)];
 			king_safety[WHITE] -= QUEEN_K_TROPISM * (7 - dist);
 		}
 	}
 	else
 	{
-		if (pos->board[D8] != QUEENB && pos->count[QUEENB])
+		if (pos[D8] != QUEENB && pos.Count(QUEENB))
 			psq_score += QUEEN_EARLY_MOVE;
 	}
 
@@ -628,31 +643,70 @@ EVAL evaluate(const Position* pos, EVAL alpha, EVAL beta)
 	             mob_score +
 	             pwn_score;
 
-	//
-	//   NO-WIN MATERIAL
-	//
+	score = PossibleDraw(score, pos, mat_coeff);
 
-	if (pos->count[PAWNW] == 0 && 
-	   (pos->material[WHITE] == VAL_KNIGHT || pos->material[WHITE] == VAL_BISHOP))
-	{
-		if (score > DRAW_SCORE)
-			score = DRAW_SCORE;
-	}
-
-	if (pos->count[PAWNB] == 0 &&
-	   (pos->material[BLACK] == VAL_KNIGHT || pos->material[BLACK] == VAL_BISHOP))
-	{
-		if (score < DRAW_SCORE)
-			score = DRAW_SCORE;
-	}
-
-	return (pos->side == WHITE)? score : - score;	
+	return (pos.Side() == WHITE)? score : - score;	
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void read_pawn_structure(const Position* pos, PawnHashEntry* pentry)
+EVAL PossibleDraw(EVAL score, const Position& pos, int mat_coeff[])
 {
-	pentry->pawn_hash = pawn_hash(pos);
+	if (pos.IsDraw())
+		return DRAW_SCORE;
+
+	//
+	//   INSUFFICIENT MATERIAL
+	//
+
+	if (pos.Count(PAWNW) == 0 && mat_coeff[WHITE] <= 3)
+	{
+		if (score > DRAW_SCORE)
+			return DRAW_SCORE;
+	}
+
+	if (pos.Count(PAWNB) == 0 && mat_coeff[BLACK] <= 3)
+	{
+		if (score < DRAW_SCORE)
+			return DRAW_SCORE;
+	}
+
+	//
+	//   OPPOSITE COLORS BISHOPS - probably draw, but no guarantee
+	//
+
+	if (mat_coeff[WHITE] == 3 && mat_coeff[BLACK] == 3 &&
+		pos.Count(BISHOPW) == 1 && pos.Count(BISHOPB) == 1)
+	{
+		FLD f1 = LSB(pos.Bits(BISHOPW));
+		FLD f2 = LSB(pos.Bits(BISHOPB));
+		if (IS_LIGHT[f1] != IS_LIGHT[f2])
+			return score / 2;
+	}
+
+	//
+	//   ROOK VS. ROOK + B/N - probably draw, but no guarantee
+	//
+
+	if (!pos.Count(PAWNW) && !pos.Count(PAWNB))
+	{
+		if (mat_coeff[WHITE] < 10 && mat_coeff[BLACK] < 10) // no Queens
+		{
+			int delta = mat_coeff[WHITE] - mat_coeff[BLACK];
+			if (delta < 0)
+				delta = - delta;
+
+			if (delta < 5)
+				return score / 2;
+		}
+	}
+
+	return score;
+}
+////////////////////////////////////////////////////////////////////////////////
+
+void read_pawn_structure(const Position& pos, PawnHashEntry* pentry)
+{
+	pentry->pawn_hash = pos.PawnHash();
 	pentry->passed = 0;
 	pentry->weak[WHITE] = pentry->weak[BLACK] = 0;
 	pentry->weak_fields[WHITE] = pentry->weak_fields[BLACK] = BB_ALL;
@@ -667,16 +721,17 @@ void read_pawn_structure(const Position* pos, PawnHashEntry* pentry)
 		pentry->rank[BLACK][file] = 7;
 	}
 
-	x = pos->bits[PAWNW];
+	x = pos.Bits(PAWNW);
 	y = bb_up(x);
 	pentry->attacked_by[WHITE] = bb_left(y) | bb_right(y);
 
-	while ((f = pop_lsb(x)) != NF)
+	while (x)
 	{
+		f = PopLSB(x);
 		pentry->score += PSQ_PAWN[f];
 
-		int file = getcol(f) + 1;
-		int rank = getrow(f);
+		int file = Col(f) + 1;
+		int rank = Row(f);
 
 		if (rank > pentry->rank[WHITE][file])
 			pentry->rank[WHITE][file] = rank;
@@ -685,15 +740,15 @@ void read_pawn_structure(const Position* pos, PawnHashEntry* pentry)
 		y |= bb_left(y);
 		y |= bb_right(y);
 
-		if ((y & pos->bits[PAWNB]) == 0)
+		if ((y & pos.Bits(PAWNB)) == 0)
 			set_bit(pentry->passed, f);
 
-		if (BB_UPPER[f] & pos->bits[PAWNW])
+		if (BB_UPPER[f] & pos.Bits(PAWNW))
 			pentry->score -= PAWN_DOUBLED;
 
 		y = bb_left(BB_SINGLE[f]) | bb_right(BB_SINGLE[f]);
 		y = y | bb_down(y);
-		if ((y & pos->bits[PAWNW]) == 0)
+		if ((y & pos.Bits(PAWNW)) == 0)
 		{
 			pentry->score -= PAWN_WEAK;
 			set_bit(pentry->weak[WHITE], f);
@@ -704,16 +759,17 @@ void read_pawn_structure(const Position* pos, PawnHashEntry* pentry)
 		pentry->weak_fields[WHITE] &= ~y;
 	}
 
-	x = pos->bits[PAWNB];
+	x = pos.Bits(PAWNB);
 	y = bb_down(x);
 	pentry->attacked_by[BLACK] = bb_left(y) | bb_right(y);
 
-	while ((f = pop_lsb(x)) != NF)
+	while (x)
 	{
+		f = PopLSB(x);
 		pentry->score -= PSQ_PAWN[FLIP[f]];
 
-		int file = getcol(f) + 1;
-		int rank = getrow(f);
+		int file = Col(f) + 1;
+		int rank = Row(f);
 
 		if (rank < pentry->rank[BLACK][file])
 			pentry->rank[BLACK][file] = rank;
@@ -722,15 +778,15 @@ void read_pawn_structure(const Position* pos, PawnHashEntry* pentry)
 		y |= bb_left(y);
 		y |= bb_right(y);
 
-		if ((y & pos->bits[PAWNW]) == 0)
+		if ((y & pos.Bits(PAWNW)) == 0)
 			set_bit(pentry->passed, f);
 
-		if (BB_LOWER[f] & pos->bits[PAWNB])
+		if (BB_LOWER[f] & pos.Bits(PAWNB))
 			pentry->score += PAWN_DOUBLED;
 
 		y = bb_left(BB_SINGLE[f]) | bb_right(BB_SINGLE[f]);
 		y = y | bb_up(y);
-		if ((y & pos->bits[PAWNB]) == 0)
+		if ((y & pos.Bits(PAWNB)) == 0)
 		{
 			pentry->score += PAWN_WEAK;
 			set_bit(pentry->weak[BLACK], f);
@@ -797,7 +853,7 @@ EVAL eval_bkp(const PawnHashEntry* pentry, int file)
 
 EVAL eval_pawn_shield_w(const PawnHashEntry* pentry, FLD  K)
 {
-	int file = getcol(K) + 1;
+	int file = Col(K) + 1;
 	EVAL ret = 0;
 
 	if (file < 4)
@@ -832,7 +888,7 @@ EVAL eval_pawn_shield_w(const PawnHashEntry* pentry, FLD  K)
 
 EVAL eval_pawn_shield_b(const PawnHashEntry* pentry, FLD  K)
 {
-	int file = getcol(K) + 1;
+	int file = Col(K) + 1;
 	EVAL ret = 0;
 
 	if (file < 4)

@@ -1,3 +1,6 @@
+#ifdef _MSC_VER
+#pragma warning(disable: 4996)
+#endif
 
 #include <assert.h>
 #include <stdlib.h>
@@ -6,6 +9,9 @@
 #include "moves.h"
 #include "position.h"
 #include "utils.h"
+
+U64 s_Zobrist0 = 0;
+U64 s_Zobrist[64][14];
 
 const char* FIELD_NAMES[65] =
 {
@@ -32,44 +38,30 @@ static const FLD FLIP[64] =
 	A8, B8, C8, D8, E8, F8, G8, H8
 };
 
-U64 s_Zobrist0 = 0;
-U64 s_Zobrist[64][14];
-
-void clear_pos(Position *pos)
+void Position::Clear()
 {
-	assert (pos != NULL);
-
-	pos->castlings = 0;
-	pos->ep = NF;
-	pos->fifty = 0;
-	pos->hash = 0;
-	pos->King[WHITE] = pos->King[BLACK] = 0;
-	pos->last_move = 0;
-	pos->material[WHITE] = pos->material[BLACK] = 0;
-	pos->opp = BLACK;
-	pos->ply = 0;
-	pos->side = WHITE;
-	pos->undo_cnt = 0;
+	m_castlings = 0;
+	m_ep = NF;
+	m_fifty = 0;
+	m_hash = 0;
+	m_Kings[WHITE] = m_Kings[BLACK] = 0;
+	m_material[WHITE] = m_material[BLACK] = 0;
+	m_ply = 0;
+	m_side = WHITE;
+	m_undoCnt = 0;
 
 	for (int f = 0; f < 64; f++)
 	{
-		pos->board[f] = NOPIECE;
+		m_board[f] = NOPIECE;
 	}
 
 	for (int p = 0; p < 14; p++)
 	{
-		pos->bits[p] = 0;
-		pos->count[p] = 0;
+		m_bits[p] = 0;
+		m_count[p] = 0;
 	}
 
-	pos->bits[NOPIECE] = BB_ALL;
-	pos->bits_all[WHITE] = pos->bits_all[BLACK] = 0;
-}
-////////////////////////////////////////////////////////////////////////////////
-
-void copy_pos(Position* dest, const Position* src)
-{
-	*dest = *src;
+	m_bitsAll[WHITE] = m_bitsAll[BLACK] = 0;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -79,42 +71,32 @@ const char* fld_to_str(FLD f)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void free_pos(Position* pos)
-{
-	free(pos);
-}
-////////////////////////////////////////////////////////////////////////////////
-
-U64 get_attacks(const Position* pos, FLD f0, COLOR side)
+U64 Position::GetAttacks(FLD to, COLOR side, U64 occupied) const
 {
 	U64 x = 0, att = 0;
 	FLD from = 0;
 
-	if (side == WHITE)
-		att |= BB_PAWNB_ATTACKS[f0] & pos->bits[PAWNW];
-	else
-		att |= BB_PAWNW_ATTACKS[f0] & pos->bits[PAWNB];
+	att |= BB_PAWN_ATTACKS[to][side ^ 1] & Bits(PAWNW | side);
+	att |= BB_KNIGHT_ATTACKS[to] & Bits(KNIGHTW | side);
+	att |= BB_KING_ATTACKS[to] & Bits(KINGW | side);
 
-	att |= BB_KNIGHT_ATTACKS[f0] & pos->bits[KNIGHTW | side];
-	att |= BB_KING_ATTACKS[f0] & pos->bits[KINGW | side];
+	x = BB_BISHOP_ATTACKS[to] & 
+	    (Bits(QUEENW | side) | Bits(BISHOPW | side));
 
-	U64 blockers = ~pos->bits[NOPIECE];
-
-	x = BB_BISHOP_ATTACKS[f0] & 
-	    (pos->bits[QUEENW | side] | pos->bits[BISHOPW | side]);
-
-	while ((from = pop_lsb(x)) != NF)
+	while (x)
 	{
-		if ((BB_BETWEEN[from][f0] & blockers) == 0)
+		from = PopLSB(x);
+		if ((BB_BETWEEN[from][to] & occupied) == 0)
 			set_bit(att, from);
 	}
 
-	x = BB_ROOK_ATTACKS[f0] & 
-	    (pos->bits[QUEENW | side] | pos->bits[ROOKW | side]);
+	x = BB_ROOK_ATTACKS[to] & 
+	    (Bits(QUEENW | side) | Bits(ROOKW | side));
 
-	while ((from = pop_lsb(x)) != NF)
+	while (x)
 	{
-		if ((BB_BETWEEN[from][f0] & blockers) == 0)
+		from = PopLSB(x);
+		if ((BB_BETWEEN[from][to] & occupied) == 0)
 			set_bit(att, from);
 	}
 
@@ -130,7 +112,7 @@ char* get_fen(const Position* pos, char* buf)
 	strcpy(buf, "");
 	for (int f = 0; f < 64; f++)
 	{
-		PIECE piece = pos->board[f];
+		PIECE piece = (*pos)[f];
 
 		if (piece != NOPIECE && cnt_empty != 0)
 		{
@@ -157,7 +139,7 @@ char* get_fen(const Position* pos, char* buf)
 			break;
 		}
 
-		if (getcol(f) == 7)
+		if (Col(f) == 7)
 		{
 			if (cnt_empty)
 				strcat(buf, empty[cnt_empty]);
@@ -170,7 +152,7 @@ char* get_fen(const Position* pos, char* buf)
 
 	}
 
-	if (pos->side == WHITE)
+	if (pos->Side() == WHITE)
 		strcat(buf, " w");
 	else
 		strcat(buf, " b");
@@ -178,25 +160,25 @@ char* get_fen(const Position* pos, char* buf)
 	strcat(buf, " ");
 	int no_castlings = 1;
 
-	if (pos->castlings & WHITE_CAN_O_O)
+	if (pos->Castlings() & WHITE_CAN_O_O)
 	{
 		strcat(buf, "K");
 		no_castlings = 0;
 	}
 
-	if (pos->castlings & WHITE_CAN_O_O_O)
+	if (pos->Castlings() & WHITE_CAN_O_O_O)
 	{
 		strcat(buf, "Q");
 		no_castlings = 0;
 	}
 
-	if (pos->castlings & BLACK_CAN_O_O)
+	if (pos->Castlings() & BLACK_CAN_O_O)
 	{
 		strcat(buf, "k");
 		no_castlings = 0;
 	}
 
-	if (pos->castlings & BLACK_CAN_O_O_O)
+	if (pos->Castlings() & BLACK_CAN_O_O_O)
 	{
 		strcat(buf, "q");
 		no_castlings = 0;
@@ -206,40 +188,40 @@ char* get_fen(const Position* pos, char* buf)
 		strcat(buf, "-");
 
 	strcat(buf, " ");
-	if (pos->ep != NF)
-		strcat(buf, fld_to_str(pos->ep));
+	if (pos->EP() != NF)
+		strcat(buf, fld_to_str(pos->EP()));
 	else
 		strcat(buf, "-");
 
 	char cnt[16];
-	sprintf(cnt, " %d %d", pos->fifty, pos->ply / 2 + 1);
+	sprintf(cnt, " %d %d", pos->Fifty(), pos->Ply() / 2 + 1);
 	strcat(buf, cnt);
 
 	return buf;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-int get_repetitions(const Position* pos)
+int Position::GetRepetitions() const
 { 
 	int total = 1;
 
-	for (int i = pos->undo_cnt - 1; i >= 0; i--) 
+	for (int i = m_undoCnt - 1; i >= 0; --i)
 	{
-		if (pos->undos[i].hash == pos->hash) 
+		if (m_undos[i].m_hash == m_hash) 
 		{
-			total++;
+			++total;
 		}
 
-		if (pos->undos[i].mv == 0)
+		if (m_undos[i].m_mv == 0)
 			return 0;
 
-		if (mv_captured(pos->undos[i].mv) != NOPIECE)
+		if (m_undos[i].m_mv.Captured())
 			break;
 
-		if (mv_piece(pos->undos[i].mv) == PAWNW)
+		if (m_undos[i].m_mv.Piece() == PAWNW)
 			break;
 
-		if (mv_piece(pos->undos[i].mv) == PAWNB)
+		if (m_undos[i].m_mv.Piece() == PAWNB)
 			break;
 	 }
 
@@ -268,92 +250,67 @@ void init_hash_coeffs()
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-int is_attacked(const Position* pos, FLD f0, COLOR side)
+bool Position::IsAttacked(FLD to, COLOR side) const
 {
-	U64 x = 0;
-	FLD from = 0;
+	U64 x;
+	FLD from;
 
-	if (side == WHITE)
+	if (BB_PAWN_ATTACKS[to][side ^ 1] & Bits(PAWNW | side))
+		return true;
+
+	if (BB_KNIGHT_ATTACKS[to] & Bits(KNIGHTW | side))
+		return true;
+
+	if (BB_KING_ATTACKS[to] & Bits(KINGW | side))
+		return true;
+
+	U64 occupied = m_bitsAll[WHITE] | m_bitsAll[BLACK];
+
+	x = BB_BISHOP_ATTACKS[to] & 
+	    (Bits(QUEENW | side) | Bits(BISHOPW | side));
+
+	while (x)
 	{
-		x = BB_PAWNB_ATTACKS[f0] & pos->bits[PAWNW];
-		if (x)
-			return 1;
-	}
-	else
-	{
-		x = BB_PAWNW_ATTACKS[f0] & pos->bits[PAWNB];
-		if (x)
-			return 1;
-	}
-
-	if (pos->count[KNIGHTW | side])
-	{
-		x = BB_KNIGHT_ATTACKS[f0] & pos->bits[KNIGHTW | side];
-		if (x)
-			return 1;
-	}
-
-	x = BB_KING_ATTACKS[f0] & pos->bits[KINGW | side];
-	if (x)
-		return 1;
-
-//	U64 blockers = ~pos->bits[NOPIECE];
-
-	if (pos->count[BISHOPW | side] + pos->count[QUEENW | side])
-	{
-		x = BB_BISHOP_ATTACKS[f0] & 
-		    (pos->bits[QUEENW | side] | pos->bits[BISHOPW | side]);
-
-		while ((from = pop_lsb(x)) != NF)
-		{
-			if ((BB_BETWEEN[from][f0] & ~pos->bits[NOPIECE]) == 0)
-				return 1;
-		}
+		from = PopLSB(x);
+		if ((BB_BETWEEN[from][to] & occupied) == 0)
+			return true;
 	}
 
-	if (pos->count[ROOKW | side] + pos->count[QUEENW | side])
-	{
-		x = BB_ROOK_ATTACKS[f0] & 
-		    (pos->bits[QUEENW | side] | pos->bits[ROOKW | side]);
+	x = BB_ROOK_ATTACKS[to] & 
+	    (Bits(QUEENW | side) | Bits(ROOKW | side));
 
-		while ((from = pop_lsb(x)) != NF)
-		{
-			if ((BB_BETWEEN[from][f0] & ~pos->bits[NOPIECE]) == 0)
-				return 1;
-		}
+	while (x)
+	{
+		from = PopLSB(x);
+		if ((BB_BETWEEN[from][to] & occupied) == 0)
+			return true;
 	}
 
-	return 0;
+	return false;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-int is_draw(const Position* pos)
+bool Position::IsDraw() const
 {
-	if (pos->material[WHITE] == 0 && pos->material[BLACK] == 0)
+	if (Material(WHITE) == 0 && Material(BLACK) == 0)
 		return 1;
 
-	if (pos->count[PAWNW] || pos->count[PAWNB])
+	if (Count(PAWNW) || Count(PAWNB))
 		return 0;
 
-	if (pos->material[WHITE] == 0)
+	if (Material(WHITE) == 0)                            
 	{
-		if (pos->material[BLACK] < VAL_ROOK)
+		if (Material(BLACK) < VAL_ROOK)
 			return 1;
 	}
 
-	if (pos->material[BLACK] == 0)
+	if (Material(BLACK) == 0)
 	{
-		if (pos->material[WHITE] < VAL_ROOK)
+		if (Material(WHITE) < VAL_ROOK)
 			return 1;
 	}
 
 	return 0;
-}
-////////////////////////////////////////////////////////////////////////////////
-
-int is_in_check(const Position* pos)
-{
-	return is_attacked(pos, pos->King[pos->side], pos->opp);
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -369,316 +326,319 @@ static unsigned char castling_effect[64] =
 	0xfd, 0xff, 0xff, 0xff, 0xfc, 0xff, 0xff, 0xfe
 };
 
-int make_move(Position* pos, Move mv)
+bool Position::MakeMove(Move mv)
 {
-	Undo* pundo = &(pos->undos[pos->undo_cnt]);
-	pundo->castlings = pos->castlings;
-	pundo->ep = pos->ep;
-	pundo->fifty = pos->fifty;
-	pundo->hash = pos->hash;
-	pundo->mv = mv;
-	pos->undo_cnt++;
+	Undo& undo = m_undos[m_undoCnt++];
+	undo.m_castlings = m_castlings;
+	undo.m_check = m_check;
+	undo.m_ep = m_ep;
+	undo.m_fifty = m_fifty;
+	undo.m_hash = m_hash;
+	undo.m_mv = mv;
 
-	pos->last_move = mv;
-
-	FLD from = mv_from(mv);
-	FLD to = mv_to(mv);
-	PIECE piece = mv_piece(mv);
-	PIECE captured = mv_captured(mv);
-	PIECE promotion = mv_promotion(mv);
-
-	int incorrect_castling = 0;
+	FLD from = mv.From();
+	FLD to = mv.To();
+	PIECE piece = mv.Piece();
+	PIECE captured = mv.Captured();
+	PIECE promotion = mv.Promotion();
 
 	assert(piece != NOPIECE);
 
-	COLOR side = getcolor(piece);
+	COLOR side = ColorOf(piece);
 	COLOR opp = 1 - side;
-	assert(side == pos->side);
+	assert(side == m_side);
 
 	if (captured)
 	{
-		pos->material[opp] -= VALUE[captured];
-		pos->count[captured]--;
+		m_material[opp] -= VALUE[captured];
+		--m_count[captured];
 	}
 
 	switch (piece)
 	{
 	case PAWNW:
 
-		pos->fifty = 0;
-		remove_piece(pos, from);
+		m_fifty = 0;
+		RemovePiece(from);
 
-		if (to == pos->ep)
+		if (to == m_ep)
 		{
-			remove_piece(pos, to + 8);
-			put_piece(pos, to, PAWNW);
+			RemovePiece(to + 8);
+			PutPiece(to, PAWNW);
 		}
 		else
 		{
 			if (captured)
-				remove_piece(pos, to);
+				RemovePiece(to);
 
 			if (promotion == NOPIECE)
-				put_piece(pos, to, PAWNW);
+				PutPiece(to, PAWNW);
 			else
 			{
-				put_piece(pos, to, promotion);
-				pos->material[side] += VALUE[promotion] - VALUE[piece];
-				pos->count[promotion]++;
-				pos->count[piece]--;
+				PutPiece(to, promotion);
+				m_material[side] += VALUE[promotion] - VALUE[piece];
+				m_count[promotion]++;
+				m_count[piece]--;
 			}
 		}
 
 		// Set enpassant field:
 		if (to - from == - 16)			 // long pawn move
-			pos->ep = (FLD) (from - 8);
+			m_ep = (FLD) (from - 8);
 		else
-			pos->ep = NF;
+			m_ep = NF;
 
 		break;
 
 	case PAWNB:
 
-		pos->fifty = 0;
-		remove_piece(pos, from);
+		m_fifty = 0;
+		RemovePiece(from);
 
-		if (to == pos->ep)
+		if (to == m_ep)
 		{
-			remove_piece(pos, to - 8);
-			put_piece(pos, to, PAWNB);
+			RemovePiece(to - 8);
+			PutPiece(to, PAWNB);
 		}
 		else
 		{
 			if (captured)
-				remove_piece(pos, to);
+				RemovePiece(to);
 
 			if (promotion == NOPIECE)
-				put_piece(pos, to, PAWNB);
+				PutPiece(to, PAWNB);
 			else
 			{
-				put_piece(pos, to, promotion);
-				pos->material[side] += VALUE[promotion] - VALUE[piece];
-				pos->count[promotion]++;
-				pos->count[piece]--;
+				PutPiece(to, promotion);
+				m_material[side] += VALUE[promotion] - VALUE[piece];
+				++m_count[promotion];
+				--m_count[piece];
 			}
 		}
 
 		// Set enpassant field:
 		if (to - from == 16)			 // long pawn move
-			pos->ep = (FLD) (from + 8);
+			m_ep = (FLD) (from + 8);
 		else
-			pos->ep = NF;
+			m_ep = NF;
 
 		break;
 
 	case KNIGHTW:
 	case KNIGHTB:
 	case BISHOPW:
-	case BISHOPB:
+	case BISHOPB:                               
 	case ROOKW:
 	case ROOKB:
 	case QUEENW:
 	case QUEENB:
 
-		pos->fifty++;
-		pos->ep = NF;
+		++m_fifty;
+		m_ep = NF;
 
-		remove_piece(pos, from);
+		RemovePiece(from);
 
 		if (captured)
 		{
-			pos->fifty = 0;
-			remove_piece(pos, to);
+			m_fifty = 0;
+			RemovePiece(to);
 		}
 
-		put_piece(pos, to, piece);
+		PutPiece(to, piece);
 
 		break;
 
 	case KINGW:
 
-		pos->fifty++;
-		pos->ep = NF;
+		++m_fifty;
+		m_ep = NF;
 
-		remove_piece(pos, from);
+		RemovePiece(from);
 
 		if (captured)
 		{
-			pos->fifty = 0;
-			remove_piece(pos, to);
+			m_fifty = 0;
+			RemovePiece(to);
 		}
 		else if (from == E1)
 		{
 			if (to == G1)
 			{
-				remove_piece(pos, H1);
-				put_piece(pos, F1, ROOKW);
-				pos->castlings |= WHITE_DID_O_O; // 0001 0000
-
-				if (is_attacked(pos, E1, BLACK) ||
-					 is_attacked(pos, F1, BLACK) ||
-					 is_attacked(pos, G1, BLACK))
-					incorrect_castling = 1;
+				RemovePiece(H1);
+				PutPiece(F1, ROOKW);
+				m_castlings |= WHITE_DID_O_O; // 0001 0000
 			}
 			else if (to == C1)
 			{
-				remove_piece(pos, A1);
-				put_piece(pos, D1, ROOKW);
-				pos->castlings |= WHITE_DID_O_O_O; // 0010 0000
-
-				if (is_attacked(pos, E1, BLACK) ||
-					 is_attacked(pos, D1, BLACK) ||
-					 is_attacked(pos, C1, BLACK))
-					incorrect_castling = 1;
+				RemovePiece(A1);
+				PutPiece(D1, ROOKW);
+				m_castlings |= WHITE_DID_O_O_O; // 0010 0000
 			}
 		}
 
-		put_piece(pos, to, piece);
-		pos->King[WHITE] = to;
-
+		PutPiece(to, piece);
+		m_Kings[WHITE] = to;
 		break;
 
 	case KINGB:
 
-		pos->fifty++;
-		pos->ep = NF;
+		++m_fifty;
+		m_ep = NF;
 
-		remove_piece(pos, from);
+		RemovePiece(from);
 
 		if (captured)
 		{
-			pos->fifty = 0;
-			remove_piece(pos, to);
+			m_fifty = 0;
+			RemovePiece(to);
 		}
 		else if (from == E8)
 		{
 			if (to == G8)
 			{
-				remove_piece(pos, H8);
-				put_piece(pos, F8, ROOKB);
-				pos->castlings |= BLACK_DID_O_O; // 0100 0000
-
-				if (is_attacked(pos, E8, WHITE) ||
-					 is_attacked(pos, F8, WHITE) ||
-					 is_attacked(pos, G8, WHITE))
-					incorrect_castling = 1;
+				RemovePiece(H8);
+				PutPiece(F8, ROOKB);
+				m_castlings |= BLACK_DID_O_O; // 0100 0000
 			}
 			else if (to == C8)
 			{
-				remove_piece(pos, A8);
-				put_piece(pos, D8, ROOKB);
-				pos->castlings |= BLACK_DID_O_O_O; // 1000 0000
-
-				if (is_attacked(pos, E8, WHITE) ||
-					 is_attacked(pos, D8, WHITE) ||
-					 is_attacked(pos, C8, WHITE))
-					incorrect_castling = 1;
+				RemovePiece(A8);
+				PutPiece(D8, ROOKB);
+				m_castlings |= BLACK_DID_O_O_O; // 1000 0000
 			}
 		}
 
-		put_piece(pos, to, piece);
-		pos->King[BLACK] = to;
+		PutPiece(to, piece);
+		m_Kings[BLACK] = to;
 
 		break;
 	default:
 		assert(0);
 	}
 
-	pos->castlings &= castling_effect[from];
-	pos->castlings &= castling_effect[to];
+	m_castlings &= castling_effect[from];
+	m_castlings &= castling_effect[to];
 
-	pos->ply++;
-	pos->side = 1 - pos->side;
-	pos->opp = 1 - pos->opp;
+	FLD K = King(opp);
+	U8 dirTo = DIRS[K][to];
+	U8 dirFrom = DIRS[K][from];
 
-	pos->hash ^= s_Zobrist0;
+	m_check = 0;
+	switch (m_board[to])
+	{
+	case PAWNW: case PAWNB:
+		m_check |= BB_PAWN_ATTACKS[K][opp] & BB_SINGLE[to];
+		break;
+	case KNIGHTW: case KNIGHTB:
+		m_check |= BB_KNIGHT_ATTACKS[K] & BB_SINGLE[to];
+		break;
+	case BISHOPW: case BISHOPB:
+		if (dirTo != DIR_NO && (dirTo % 2 == 1))
+			m_check |= BishopAttacks(K, BitsAll()) & BB_SINGLE[to];
+		break;
+	case ROOKW: case ROOKB:
+		if (dirTo != DIR_NO && (dirTo % 2 == 0))
+			m_check |= RookAttacks(K, BitsAll()) & BB_SINGLE[to];
+		break;
+	case QUEENW: case QUEENB:
+		if (dirTo != DIR_NO)
+			m_check |= QueenAttacks(K, BitsAll()) & BB_SINGLE[to];
+		break;
+//	case KINGW: case KINGB:
+//		m_check |= BB_KING_ATTACKS[K] & BB_SINGLE[to];
+//		break;
+	default:
+		break;
+	}
+
+	if (dirFrom != DIR_NO)
+	{
+		if (dirFrom % 2 == 1)
+			m_check |= GetBishopAttacks(K, side, BitsAll());
+		else
+			m_check |= GetRookAttacks(K, side, BitsAll());
+	}
+
+	++m_ply;
+	m_side ^= 1;
+	m_hash ^= s_Zobrist0;
 	
-	if (is_attacked(pos, pos->King[side], opp))
-	{
-		unmake_move(pos);
-		return 0;
-	}
+//	if (IsAttacked(m_Kings[side], opp))
+//	{
+//		Print();
+//		getchar();
+//		UnmakeMove();
+//		return false;
+//	}
 
-	if (incorrect_castling)
-	{
-		unmake_move(pos);
-		return 0;
-	}
-
-	return 1;
+	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void make_null_move(Position* pos)
+void Position::MakeNullMove()
 {
-	Undo* pundo = &(pos->undos[pos->undo_cnt]);
-	pundo->castlings = pos->castlings;
-	pundo->ep = pos->ep;
-	pundo->fifty = pos->fifty;
-	pundo->hash = pos->hash;
-	pundo->mv = 0;
-	pos->undo_cnt++;
+	Undo& undo = m_undos[m_undoCnt++];
+	undo.m_castlings = m_castlings;
+	undo.m_check = m_check;
+	undo.m_ep = m_ep;
+	undo.m_fifty = m_fifty;
+//	undo.m_hash = m_hash;
+	undo.m_mv = 0;
 
-	pos->last_move = 0;
-
-	pos->ep = NF;
-	pos->side = 1 - pos->side;
-	pos->opp = 1 - pos->opp;
-
-	pos->hash ^= s_Zobrist0;
-	pos->ply++;
+	m_ep = NF;
+	m_side ^= 1;
+	m_hash ^= s_Zobrist0;
+	++m_ply;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void mirror(Position* pos)
+void Position::Mirror()
 {
-	Position* old = new_pos();
-	copy_pos(old, pos);
+	Position old = *this;
 
-	clear_pos(pos);
+	Clear();
 	for (int f = 0; f < 64; f++)
 	{
-		PIECE p = old->board[f];
+		PIECE p = old[f];
 		if (p == NOPIECE)
 			continue;
 
-		put_piece(pos, FLIP[f], p ^ 1);
+		PutPiece(FLIP[f], p ^ 1);
 
 		if (p == KINGW)
-			pos->King[BLACK] = FLIP[f];
+			m_Kings[BLACK] = FLIP[f];
 		else if (p == KINGB)
-			pos->King[WHITE] = FLIP[f];
+			m_Kings[WHITE] = FLIP[f];
 	}
 
-	pos->side = old->opp;
-	pos->opp = old->side;
-	pos->fifty = old->fifty;
-	if (old->ep != NF)
-		pos->ep = FLIP[old->ep];
+	m_side = old.Side() ^ 1;
+	m_fifty = old.Fifty();
+	if (old.EP() != NF)
+		m_ep = FLIP[old.EP()];
 
-	pos->ply = old->ply;
+	m_ply = old.Ply();
 
 	for (int f1 = 0; f1 < 64; f1++)
 	{
-		PIECE p1 = pos->board[f1];
-		COLOR c1 = getcolor(p1);
+		PIECE p1 = m_board[f1];
+		COLOR c1 = ColorOf(p1);
 		if (p1)
 		{
-			pos->material[c1] += VALUE[p1];
-			pos->count[p1]++;
+			m_material[c1] += VALUE[p1];
+			m_count[p1]++;
 		}
 	}
 
-	int bit0 = old->castlings & 0x01;
-	int bit1 = (old->castlings & 0x02) >> 1;
-	int bit2 = (old->castlings & 0x04) >> 2;
-	int bit3 = (old->castlings & 0x08) >> 3;
-	int bit4 = (old->castlings & 0x10) >> 4;
-	int bit5 = (old->castlings & 0x20) >> 5;
-	int bit6 = (old->castlings & 0x40) >> 6;
-	int bit7 = (old->castlings & 0x80) >> 7;
+	int bit0 = old.m_castlings & 0x01;
+	int bit1 = (old.m_castlings & 0x02) >> 1;
+	int bit2 = (old.m_castlings & 0x04) >> 2;
+	int bit3 = (old.m_castlings & 0x08) >> 3;
+	int bit4 = (old.m_castlings & 0x10) >> 4;
+	int bit5 = (old.m_castlings & 0x20) >> 5;
+	int bit6 = (old.m_castlings & 0x40) >> 6;
+	int bit7 = (old.m_castlings & 0x80) >> 7;
 
-	pos->castlings = (bit5 << 7) |
+	m_castlings = (bit5 << 7) |
 	                 (bit4 << 6) |
 	                 (bit7 << 5) |
 	                 (bit6 << 4) |
@@ -686,18 +646,10 @@ void mirror(Position* pos)
 	                 (bit0 << 2) |
 	                 (bit3 << 1) |
 	                 (bit2 << 0);
-
-	free(old);
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-U32 pawn_hash(const Position* pos)
-{
-	return (U32) (pos->hash >> 32);
-}
-////////////////////////////////////////////////////////////////////////////////
-
-void print_attacks(const Position* pos)
+void Position::PrintAttacks() const
 {
 	int row = 0, col = 0;
 
@@ -706,8 +658,8 @@ void print_attacks(const Position* pos)
 	{
 		for (col = 0; col < 8; col++)
 		{
-			U64 att = get_attacks(pos, 8 * row + col, WHITE);
-			int n = count_bits(att);
+			U64 att = GetAttacks(8 * row + col, WHITE, BitsAll());
+			int n = CountBits(att);
 
 			if (n > 0)
 			{
@@ -722,8 +674,8 @@ void print_attacks(const Position* pos)
 		out("	");
 		for (col = 0; col < 8; col++)
 		{
-			U64 att = get_attacks(pos, 8 * row + col, BLACK);
-			int n = count_bits(att);
+			U64 att = GetAttacks(8 * row + col, BLACK, BitsAll());
+			int n = CountBits(att);
 
 			if (n > 0)
 			{
@@ -741,13 +693,13 @@ void print_attacks(const Position* pos)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void print_pos(const Position* pos)
+void Position::Print() const
 {
 	out("\n");
 	for (int f = 0; f < 64; f++)
 	{
 		char sym = '-';
-		PIECE piece = pos->board[f];
+		PIECE piece = m_board[f];
 		switch (piece)
 		{
 		case PAWNW:   sym = 'P'; break;
@@ -771,17 +723,17 @@ void print_pos(const Position* pos)
 		OUT1(" %c", sym);
 //       set_highlight(0);
 
-		if (getcol(f) == 7)
+		if (Col(f) == 7)
 			out("\n");
 	}
 
-	if (pos->undo_cnt)
+	if (m_undoCnt)
 	{
 		out("\n ");
-		for (int m = 0; m < pos->undo_cnt; m++)
+		for (int m = 0; m < m_undoCnt; m++)
 		{
 			char buf1[16];
-			OUT1("%s ", move_to_str(pos->undos[m].mv, buf1));
+			OUT1("%s ", move_to_str(m_undos[m].m_mv, buf1));
 		}
 		out("\n ");
 	}
@@ -789,55 +741,12 @@ void print_pos(const Position* pos)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-Position *new_pos()
-{
-	//
-	//   Constructor
-	//
-
-	Position *pos = new Position();
-	clear_pos(pos);
-
-	return pos;
-}
-////////////////////////////////////////////////////////////////////////////////
-
-void put_piece(Position* pos, FLD f, PIECE p)
-{
-	assert(f <= H1);
-	assert(p != NOPIECE);
-	assert(pos->board[f] == NOPIECE);
-
-	pos->board[f] = p;
-	set_bit(pos->bits[p], f);
-	clear_bit(pos->bits[NOPIECE], f);
-	set_bit(pos->bits_all[getcolor(p)], f);
-
-	pos->hash ^= s_Zobrist[f][p];
-}
-////////////////////////////////////////////////////////////////////////////////
-
-void remove_piece(Position* pos, FLD f)
-{
-	assert(f <= H1);
-	PIECE p = pos->board[f];
-	assert(p != NOPIECE);
-
-	pos->board[f] = NOPIECE;
-	clear_bit(pos->bits[p], f);
-	set_bit(pos->bits[NOPIECE], f);
-	clear_bit(pos->bits_all[getcolor(p)], f);
-
-	pos->hash ^= s_Zobrist[f][p];
-}
-////////////////////////////////////////////////////////////////////////////////
-
-int set_fen(Position* pos, const char* fen)
+bool Position::SetFEN(const char* fen)
 {
 	if (strlen(fen) < 5)
 		return 0;
 
-	clear_pos(pos);
+	Clear();
 
 	char buf[BUFSIZE];
 	strncpy(buf, fen, BUFSIZE);
@@ -871,8 +780,8 @@ int set_fen(Position* pos, const char* fen)
 		case 'r': piece = ROOKB;   break;
 		case 'Q': piece = QUEENW;  break;
 		case 'q': piece = QUEENB;  break;
-		case 'K': piece = KINGW; pos->King[WHITE] = f; break;
-		case 'k': piece = KINGB; pos->King[BLACK] = f; break;
+		case 'K': piece = KINGW; m_Kings[WHITE] = f; break;
+		case 'k': piece = KINGB; m_Kings[BLACK] = f; break;
 
 		case '1': f += 1; break;
 		case '2': f += 2; break;
@@ -884,8 +793,8 @@ int set_fen(Position* pos, const char* fen)
 		case '8': f += 8; break;
 
 		case '/':
-			if (getcol(f) != 0)
-				f = 8 * (getrow(f) + 1);
+			if (Col(f) != 0)
+				f = 8 * (Row(f) + 1);
 			break;
 
 		default:
@@ -894,7 +803,7 @@ int set_fen(Position* pos, const char* fen)
 
 		if (piece)
 		{
-			put_piece(pos, f, piece);
+			PutPiece(f, piece);
 			f++;
 		}
 
@@ -910,15 +819,9 @@ int set_fen(Position* pos, const char* fen)
 		goto FINALIZE_SETFEN;
 
 	if (token[0] == 'w')
-	{
-		pos->side = WHITE;
-		pos->opp = BLACK;
-	}
+		m_side = WHITE;
 	else if (token[0] == 'b')
-	{
-		pos->side = BLACK;
-		pos->opp = WHITE;
-	}
+		m_side = BLACK;
 	else
 	{
 		incorrect_fen = 1;
@@ -933,19 +836,19 @@ int set_fen(Position* pos, const char* fen)
 	if (token == NULL)
 		goto FINALIZE_SETFEN;
 
-	pos->castlings = 0;
+	m_castlings = 0;
 
 	if (strstr(token, "K") != NULL)	
-		pos->castlings |= WHITE_CAN_O_O;
+		m_castlings |= WHITE_CAN_O_O;
 
 	if (strstr(token, "Q") != NULL)	
-		pos->castlings |= WHITE_CAN_O_O_O;
+		m_castlings |= WHITE_CAN_O_O_O;
 		
 	if (strstr(token, "k") != NULL)	
-		pos->castlings |= BLACK_CAN_O_O;
+		m_castlings |= BLACK_CAN_O_O;
 		
 	if (strstr(token, "q") != NULL)	
-		pos->castlings |= BLACK_CAN_O_O_O;
+		m_castlings |= BLACK_CAN_O_O_O;
 
 	//
 	//   4. En-passant
@@ -955,7 +858,7 @@ int set_fen(Position* pos, const char* fen)
 	if (token == NULL)
 		goto FINALIZE_SETFEN;
 
-	pos->ep = str_to_fld(token);
+	m_ep = str_to_fld(token);
 
 	//
 	//   5. Counters
@@ -965,41 +868,37 @@ int set_fen(Position* pos, const char* fen)
 	if (token == NULL)
 		goto FINALIZE_SETFEN;
 
-	pos->fifty = atoi(token);
-	if (pos->fifty < 0)
-		pos->fifty = 0;
+	m_fifty = atoi(token);
+	if (m_fifty < 0)
+		m_fifty = 0;
 
 	token = strtok(NULL, " ");
 	if (token == NULL)
 		goto FINALIZE_SETFEN;
 
-	pos->ply = (atoi(token) - 1) * 2;
-	if (pos->side == BLACK)
-		pos->ply++;
+	m_ply = (atoi(token) - 1) * 2;
+	if (m_side == BLACK)
+		++m_ply;
 
-	if (pos->ply < 0)
-		pos->ply = 0;
+	if (m_ply < 0)
+		m_ply = 0;
 
 FINALIZE_SETFEN:
 
 	for (int f1 = 0; f1 < 64; f1++)
 	{
-		PIECE p1 = pos->board[f1];
-		COLOR c1 = getcolor(p1);
+		PIECE p1 = m_board[f1];
+		COLOR c1 = ColorOf(p1);
 		if (p1)
 		{
-			pos->material[c1] += VALUE[p1];
-			pos->count[p1]++;
+			m_material[c1] += VALUE[p1];
+			++m_count[p1];
 		}
 	}
 
-	return 1;
-}
-////////////////////////////////////////////////////////////////////////////////
+	m_check = GetAttacks(King(Side()), Opp(m_side), BitsAll());
 
-void set_initial(Position* pos)
-{
-	set_fen(pos, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1038,12 +937,12 @@ Move str_to_move(const Position* pos, const char* s)
 	if (to == NF)
 		return 0;
 
-	PIECE piece = pos->board[from];
+	PIECE piece = (*pos)[from];
 	if (!piece)
 		return 0;
 
-	PIECE captured = pos->board[to];
-	if (to == pos->ep)
+	PIECE captured = (*pos)[to];
+	if (to == pos->EP())
 	{
 		if (piece == PAWNW)
 			captured = PAWNB;
@@ -1057,162 +956,155 @@ Move str_to_move(const Position* pos, const char* s)
 		switch(s[4])
 		{
 		case 'q' :
-			promotion = QUEENW | getcolor(piece);
+			promotion = QUEENW | ColorOf(piece);
 			break;
 		case 'r' :
-			promotion = ROOKW | getcolor(piece);
+			promotion = ROOKW | ColorOf(piece);
 			break;
 		case 'b' :
-			promotion = BISHOPW | getcolor(piece);
+			promotion = BISHOPW | ColorOf(piece);
 			break;
 		case 'n' :
-			promotion = KNIGHTW | getcolor(piece);
+			promotion = KNIGHTW | ColorOf(piece);
 			break;
 		default:
 			return 0;
 		}
 	}
 
-	return mv_compose(from, to, piece, captured, promotion);
+	return Move(from, to, piece, captured, promotion);
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void unmake_move(Position* pos)
+void Position::UnmakeMove()
 {
-	if (pos->undo_cnt <= 0)
+	if (m_undoCnt <= 0)
 		return;
 
-	pos->undo_cnt--;
-	Undo* pundo = &(pos->undos[pos->undo_cnt]);
-	Move mv = pundo->mv;
+	Undo& undo = m_undos[--m_undoCnt];
+	Move mv = undo.m_mv;
+	m_check = undo.m_check;
+	m_ep = undo.m_ep;
+	m_castlings = undo.m_castlings;
+	m_fifty = undo.m_fifty;
 
-	pos->ep = pundo->ep;
-	pos->castlings = pundo->castlings;
-	pos->fifty = pundo->fifty;
-// pos->hash = pundo->hash; -- will be restored automatically with put_piece(pos, ) and RemovePiece()
-
-	FLD from = mv_from(mv);
-	FLD to = mv_to(mv);
-	PIECE piece = mv_piece(mv);
-	PIECE captured = mv_captured(mv);
-	PIECE promotion = mv_promotion(mv);
+	FLD from = mv.From();
+	FLD to = mv.To();
+	PIECE piece = mv.Piece();
+	PIECE captured = mv.Captured();
+	PIECE promotion = mv.Promotion();
 	
-	pos->ply--;
-	pos->side = 1 - pos->side;
-	pos->opp = 1 - pos->opp;
+	--m_ply;
+	m_side ^= 1;
+	m_hash ^= s_Zobrist0;
 
-	pos->hash ^= s_Zobrist0;
-
-	COLOR who_moved = pos->side;
-	COLOR who_not_moved = pos->opp;
+	COLOR side = m_side;
+	COLOR opp = side ^ 1;
 
 	if (captured)
 	{
-		pos->material[who_not_moved] += VALUE[captured];
-		pos->count[captured]++;
+		m_material[opp] += VALUE[captured];
+		++m_count[captured];
 	}
 
 	if (promotion)
 	{
-		pos->material[who_moved] -= (VALUE[promotion] - VALUE[piece]);
-		pos->count[promotion]--;
-		pos->count[piece]++;
+		m_material[side] -= (VALUE[promotion] - VALUE[piece]);
+		--m_count[promotion];
+		++m_count[piece];
 	}
 	
 	if (piece == KINGW)
 	{
-		pos->King[WHITE] = from;
+		m_Kings[WHITE] = from;
 
 		if (from == E1 && to == G1)
 		{
-			remove_piece(pos, G1);
-			remove_piece(pos, F1);
-			put_piece(pos, E1, KINGW);
-			put_piece(pos, H1, ROOKW);
+			RemovePiece(G1);
+			RemovePiece(F1);
+			PutPiece(E1, KINGW);
+			PutPiece(H1, ROOKW);
 		}
 		else if (from == E1 && to == C1)
 		{
-			remove_piece(pos, C1);
-			remove_piece(pos, D1);
-			put_piece(pos, E1, KINGW);
-			put_piece(pos, A1, ROOKW);
+			RemovePiece(C1);
+			RemovePiece(D1);
+			PutPiece(E1, KINGW);
+			PutPiece(A1, ROOKW);
 		}
 		else
 		{
-			remove_piece(pos, to);
-			put_piece(pos, from, piece);
+			RemovePiece(to);
+			PutPiece(from, piece);
 
 			if (captured)
-				put_piece(pos, to, captured);
+				PutPiece(to, captured);
 		}
 	}
 	else if (piece == KINGB)
 	{
-		pos->King[BLACK] = from;
+		m_Kings[BLACK] = from;
 
 		if (from == E8 && to == G8)
 		{
-			remove_piece(pos, G8);
-			remove_piece(pos, F8);
-			put_piece(pos, E8, KINGB);
-			put_piece(pos, H8, ROOKB);
+			RemovePiece(G8);
+			RemovePiece(F8);
+			PutPiece(E8, KINGB);
+			PutPiece(H8, ROOKB);
 		}
 		else if (from == E8 && to == C8)
 		{
-			remove_piece(pos, C8);
-			remove_piece(pos, D8);
-			put_piece(pos, E8, KINGB);
-			put_piece(pos, A8, ROOKB);
+			RemovePiece(C8);
+			RemovePiece(D8);
+			PutPiece(E8, KINGB);
+			PutPiece(A8, ROOKB);
 		}
 		else
 		{
-			remove_piece(pos, to);
-			put_piece(pos, from, piece);
+			RemovePiece(to);
+			PutPiece(from, piece);
 
 			if (captured)
-				put_piece(pos, to, captured);
+				PutPiece(to, captured);
 		}
 	}
-	else if (piece == PAWNW && to == pos->ep)
+	else if (piece == PAWNW && to == m_ep)
 	{
-		remove_piece(pos, to);
-		put_piece(pos, from, PAWNW);
-		put_piece(pos, (FLD) (to + 8), PAWNB);
+		RemovePiece(to);
+		PutPiece(from, PAWNW);
+		PutPiece((FLD) (to + 8), PAWNB);
 	}
-	else if (piece == PAWNB && to == pos->ep)
+	else if (piece == PAWNB && to == m_ep)
 	{
-		remove_piece(pos, to);
-		put_piece(pos, from, PAWNB);
-		put_piece(pos, (FLD) (to - 8), PAWNW);
+		RemovePiece(to);
+		PutPiece(from, PAWNB);
+		PutPiece((FLD) (to - 8), PAWNW);
 	}
 	else
 	{
-		remove_piece(pos, to);
-		put_piece(pos, from, piece);
+		RemovePiece(to);
+		PutPiece(from, piece);
 
 		if (captured)
-			put_piece(pos, to, captured);
+			PutPiece(to, captured);
 	}
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void unmake_null_move(Position* pos)
+void Position::UnmakeNullMove()
 {
-	if (pos->undo_cnt <= 0)
+	if (m_undoCnt <= 0)
 		return;
 
-	pos->undo_cnt--;
-	Undo* pundo = &(pos->undos[pos->undo_cnt]);
+	Undo& undo = m_undos[--m_undoCnt];
+	m_check = undo.m_check;
+	m_ep = undo.m_ep;
+	m_castlings = undo.m_castlings;
+	m_fifty = undo.m_fifty;
 
-	pos->ep = pundo->ep;
-	pos->castlings = pundo->castlings;
-	pos->fifty = pundo->fifty;
-
-	pos->side = 1 - pos->side;
-	pos->opp = 1 - pos->opp;
-	pos->hash ^= s_Zobrist0;
-
-	pos->ply--;
+	m_side ^= 1;
+	m_hash ^= s_Zobrist0;
+	--m_ply;
 }
 ////////////////////////////////////////////////////////////////////////////////
 

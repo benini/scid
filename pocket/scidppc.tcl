@@ -185,7 +185,7 @@ set engineconfig(viper01)       { Viper       0.1         12938  MultiPV_OK uci 
 set engineconfig(phalanx)       { Phalanx     XXII        12939  MultiPV_NO xboard }
 set engineconfig(fruit_231)     { Fruit       2.3.1       12940  MultiPV_OK uci }
 set engineconfig(scorpio)       { Scorpio     2.0         12941  MultiPV_NO xboard }
-set engineconfig(greko)         { Greko       5.7.1       12942  MultiPV_OK uci }
+set engineconfig(greko)         { Greko       5.9         12942  MultiPV_OK uci }
 # set engineconfig(glaurung2)     { Glaurung    2.0         12943  MultiPV_OK uci }
 
 set playMode 0
