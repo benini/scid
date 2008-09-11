@@ -50,8 +50,7 @@ const versionT SCID_OLDEST_VERSION = 300; // Oldest compatible format: 3.0
 
 const char SCID_VERSION_STRING[] = "3.6.26";     // Current Scid version
 const char SCID_VERSION_DATE[] = "Sept 2008";
-//const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
-const char SCID_WEBSITE[] = "http://prolinux.free.fr/scid/";
+const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
 
 const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";

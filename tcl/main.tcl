@@ -33,6 +33,12 @@ proc moveEntry_Clear {} {
 
 proc moveEntry_Complete {} {
   global moveEntry
+  
+  if { [winfo exists .fics] && $::fics::playing == -1} { ;# not player's turn
+    moveEntry_Clear
+    return
+  }
+  
   set len [llength $moveEntry(List)]
   if {$len > 0} {
     if {$moveEntry(AutoExpand)} {
@@ -57,6 +63,26 @@ proc moveEntry_Complete {} {
       sc_var promote [expr {[sc_var count] - 1}]
       sc_move forward 1
     }
+    
+    # Now send the move done to FICS and NOVAG Citrine
+    set promoletter ""
+    set moveuci [sc_game info previousMoveUCI]
+    if { [ string length $moveuci ] == 5 } {
+      set promoletter [ string tolower [ string index $moveuci end ] ]
+    }
+    if { [winfo exists .fics] } {
+      if { $::fics::playing == 1} {
+        if { $promoletter != "" } {
+          ::fics::writechan "promote $promoLetter"
+        }
+        ::fics::writechan [ string range $moveuci 0 3 ]
+      }
+    }
+    
+    if {$::novag::connected} {
+      ::novag::addMove "[ string range $moveuci 0 3 ]$promoLetter"
+    }
+    
     moveEntry_Clear
     updateBoard -pgn -animate
     ::utils::sound::AnnounceNewMove $move
@@ -1082,8 +1108,6 @@ proc addMove { sq1 sq2 {animate ""}} {
       }
       ::fics::writechan [ string range [sc_game info previousMoveUCI] 0 3 ]
     }
-    # sc_move back
-    # sc_game truncatefree
   }
   
   if {$::novag::connected} {

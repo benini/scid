@@ -580,3 +580,4 @@ scid-3.6.26
 - Windows release : Tcl/Tk is upgraded to version 8.5, so latest piece sets (with transparency effects) are correctly displayed
 - Fix : Scid could crash when generating an opening report from a huge base from particular positions. Bug introduced with Scid 3.6.21 and fixed now (buffer overflow due to moves translation in OpLine::PrintMove)
 - Pocket PC : Greko upgraded to 5.9 (5.7.1 version was buggy)
+- Fix : when playing on FICS or using a Novag Citrine board, entering moves with the keyboard was not send
