@@ -953,8 +953,10 @@ proc ::board::getSquare {w x y} {
   set x [expr {$x - [winfo rootx $w.bd]}]
   set y [expr {$y - [winfo rooty $w.bd]}]
   set psize $::board::_size($w)
-  set x [expr {int($x / ($psize+2))}]
-  set y [expr {int($y / ($psize+2))}]
+  set border $::board::_border($w)
+  set x [expr {int($x / ($psize+$border))}]
+  set y [expr {int($y / ($psize+$border))}]
+  
   if {$x < 0  ||  $y < 0  ||  $x > 7  ||  $y > 7} {
     set sq -1
   } else {

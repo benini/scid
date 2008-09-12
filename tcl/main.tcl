@@ -1196,7 +1196,9 @@ proc leaveSquare { square } {
 #    that square to be the selected square.
 #
 proc pressSquare { square } {
-  if { $::fics::playing == -1} { return } ;# not player's turn
+  global selectedSq highcolor
+  
+  if { [winfo exists .fics] && $::fics::playing == -1} { return } ;# not player's turn
   
   # if training with calculations of var is on, just log the event
   if { [winfo exists .calvarWin] } {
@@ -1204,7 +1206,6 @@ proc pressSquare { square } {
     return
   }
   
-  global selectedSq highcolor
   if {$selectedSq == -1} {
     set selectedSq $square
     ::board::recolor .board
@@ -1232,7 +1233,7 @@ proc pressSquare { square } {
 #   makes the suggested best move.
 #
 proc pressSquare2 { square } {
-  if { $::fics::playing == -1} { return } ;# not player's turn
+  if { [winfo exists .fics] } { return } ;# don't use this function with FICS
   
   global selectedSq bestSq
   ::board::colorSquare .board $bestSq

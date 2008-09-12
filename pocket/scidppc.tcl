@@ -23,7 +23,7 @@ if {$profile} {
   ::profiler::init
 }
 
-set scidppc_version "Scid Pocket 1.2"
+set scidppc_version "Scid Pocket 1.3"
 
 set chan ""
 set chanid ""
@@ -186,7 +186,7 @@ set engineconfig(phalanx)       { Phalanx     XXII        12939  MultiPV_NO xboa
 set engineconfig(fruit_231)     { Fruit       2.3.1       12940  MultiPV_OK uci }
 set engineconfig(scorpio)       { Scorpio     2.0         12941  MultiPV_NO xboard }
 set engineconfig(greko)         { Greko       5.9         12942  MultiPV_OK uci }
-# set engineconfig(glaurung2)     { Glaurung    2.0         12943  MultiPV_OK uci }
+set engineconfig(scidlet)       { Scidlet     3.4         12943  MultiPV_NO xboard }
 
 set playMode 0
 set tournamentMode 0

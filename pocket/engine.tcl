@@ -158,7 +158,13 @@ namespace eval engine {
     
     if { ! [isUci $n] } {
       sendToEngine "setboard [sc_pos fen]" $n
-      sendToEngine "analyze" $n
+      # Scidlet does not support analyze feature
+      if { $::options(engine$n) != "scidlet" } {
+        sendToEngine "analyze" $n
+      } else  {
+        sendToEngine "level 0 100 100" $n
+        sendToEngine "go" $n
+      }
     } else {
       set ::engine::data(waitForReadyOk$n) 1
       sendToEngine "isready" $n
@@ -1210,7 +1216,6 @@ namespace eval engine {
     
     set data(uciok$n) 1
     # ply score time nodes pv
-    
     set res [scan $line "%d %d %d %s %\[^\n\]\n" \
         temp_depth temp_score temp_time temp_nodes temp_moves]
     if {$res == 5} {
