@@ -96,7 +96,7 @@ namespace eval pgn {
               [sc_game pgn -width 75 -symbols $::pgn::symbolicNags \
               -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
               -space $::pgn::moveNumberSpaces -format plain -column $::pgn::columnFormat \
-              -markCodes $::::pgn::stripMarks]
+              -markCodes $::pgn::stripMarks]
           close $tempfile
         }
       }

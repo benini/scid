@@ -915,7 +915,7 @@ $m add command -label OptionsSave -command {
     puts $optionF ""
     foreach i {boardSize boardStyle language ::pgn::showColor \
           ::pgn::indentVars ::pgn::indentComments \
-          ::pgn::shortHeader ::pgn::boldMainLine \
+          ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks \
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat myPlayerNames \
           tree(order) tree(autoSave) optionsAutoSave \
           ecoFile suggestMoves showVarPopup glistSize glexport \
