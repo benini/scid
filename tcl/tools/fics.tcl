@@ -1005,6 +1005,7 @@ namespace eval fics {
   #
   ################################################################################
   proc close {} {
+    set ::fics::sought 0
     after cancel ::fics::updateOffers
     writechan "exit"
     set ::fics::playing 0

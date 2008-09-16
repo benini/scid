@@ -86,7 +86,7 @@ CFLAGS = $(OPT) -Wall $(PROFILE) $(PPC)
 ############################################################
 
 ### EXECS: executable programs compiled from C++ files.
-EXECS= tkscid toga toga134 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko
+EXECS= tkscid toga toga134 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -164,6 +164,9 @@ scorpio:
 greko:
 	cd pocket/greko/src && $(MAKE) -f Makefile.arm
 
+scidlet:
+	cd pocket/scidlet/src && $(MAKE) -f Makefile.arm
+
 ### To remove object and executable files: type "make clean".
 #
 clean:
@@ -185,6 +188,7 @@ dist: all
 	cp ./pocket/scorpio/src/scorpio.exe ./pocket/scid_pocket/
 	cp -r ./pocket/scorpio/personality ./pocket/scid_pocket/
 	cp ./pocket/greko/src/greko.exe ./pocket/scid_pocket/
+	cp ./pocket/scidlet/src/scidlet.exe ./pocket/scid_pocket/
 	cp -r ./pocket/books ./pocket/scid_pocket
 	cp -r ./pocket/sounds ./pocket/scid_pocket
 	cp -r ./pocket/msgs ./pocket/scid_pocket
@@ -193,7 +197,7 @@ dist: all
 cab: dist
 	cp -r pocket/scid_pocket $(CABWIZTOOLS)
 	cd $(CABWIZTOOLS) && wine Cabwiz.exe scidpocket.inf /cpu Arm
-	cp $(CABWIZTOOLS)/scidpocket.Arm.CAB /media/AXIM/
+	cp $(CABWIZTOOLS)/scidpocket.Arm.CAB /media/disk/
 
 tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o \
           src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o

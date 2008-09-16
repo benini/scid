@@ -158,13 +158,7 @@ namespace eval engine {
     
     if { ! [isUci $n] } {
       sendToEngine "setboard [sc_pos fen]" $n
-      # Scidlet does not support analyze feature
-      if { $::options(engine$n) != "scidlet" } {
-        sendToEngine "analyze" $n
-      } else  {
-        sendToEngine "level 0 100 100" $n
-        sendToEngine "go" $n
-      }
+      sendToEngine "analyze" $n
     } else {
       set ::engine::data(waitForReadyOk$n) 1
       sendToEngine "isready" $n

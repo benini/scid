@@ -7,6 +7,8 @@
 fait planter PPC
 Tester FICS et mode clavier (l 68 de main.tcl) (en plus avec Novag)
 
+Pb de temps pour scidlet et s'arrête tout seul
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -20,8 +22,6 @@ Tester FICS et mode clavier (l 68 de main.tcl) (en plus avec Novag)
  ===========================================================
 
 - when FW on or network down, smoothen FICS connection
-
-- Port Scidlet to PPC
 
 - add variations from analysis engine when the engine is locked
 

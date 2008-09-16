@@ -5,11 +5,9 @@
 # #############################################################################
 # TODO
 # gestion de temps Scorpio et Phalanx
-# bitbases
 # entrainement ouvertures
 #
 # # BUGS
-# coup joué parfois a8a8 !! (uniquement Greko ??)
 # highlight des coups après nouvelle position
 # #############################################################################
 
