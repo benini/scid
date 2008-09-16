@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.19 2008/09/04 18:08:28 arwagner Exp $
+### $Id: correspondence.tcl,v 1.20 2008/09/16 08:59:38 arwagner Exp $
 ###
-### Last change: <Wed, 2008/09/03 21:42:48 arwagner ingata>
+### Last change: <Mon, 2008/09/15 11:21:47 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1635,7 +1635,7 @@ namespace eval CorrespondenceChess {
 			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
 		}
-		updateConsole "Switch to game $num"
+		updateConsole "info: switched to game $num"
 	}
 
 	#----------------------------------------------------------------------
