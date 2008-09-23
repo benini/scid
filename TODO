@@ -7,7 +7,8 @@
 fait planter PPC
 Tester FICS et mode clavier (l 68 de main.tcl) (en plus avec Novag)
 
-Pb de temps pour scidlet et s'arrête tout seul
+Pb de temps pour scidlet et s'arrête tout seul (voir l. 675 de scidlet.cpp) -> valider CAB généré
+Mutualiser fichiers scidlet avec -DPOCKET -> à vaider sur les 3 compils
 
  ===========================================================
 |                                                           |
@@ -20,6 +21,8 @@ Pb de temps pour scidlet et s'arrête tout seul
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- stop engine after last move in annotation (?)
 
 - when FW on or network down, smoothen FICS connection
 

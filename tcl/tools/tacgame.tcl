@@ -365,6 +365,7 @@ namespace eval tacgame {
   ################################################################################
   proc abortGame { { destroyWin 1 } } {
     after cancel ::tacgame::phalanxGo
+    ::tacgame::stopAnalyze
     if { $destroyWin } { destroy ".coachWin" }
     focus .
     ::tacgame::closeEngine 1

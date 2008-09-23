@@ -17,7 +17,9 @@
 #define SCID_POSITION_H
 
 #include "common.h"
+#ifndef POCKETENGINE
 #include "dstring.h"
+#endif
 #include "misc.h"
 #include "movelist.h"
 #include "sqlist.h"
@@ -326,6 +328,7 @@ public:
         return (Board[0] << 4) | Board[1];
     }
     void        PrintFEN (char * str, uint flags);
+#ifndef POCKETENGINE
     void        DumpLatexBoard (DString * dstr, bool flip);
     void        DumpLatexBoard (DString * dstr) {
         DumpLatexBoard (dstr, false);
@@ -335,7 +338,7 @@ public:
     void        DumpHtmlBoard (DString * dstr, uint style, const char * dir) {
         DumpHtmlBoard (dstr, style, dir, false);
     }
-
+#endif
     // Copy, compare positions
     int         Compare (Position * p);
     void        CopyFrom (Position * src);

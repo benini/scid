@@ -72,7 +72,7 @@ scid_Init ()
     }
 }
 
-
+#ifndef POCKETENGINE
 //////////////////////////////////////////////////////////////////////
 //   ECO Code Routines
 
@@ -189,7 +189,7 @@ eco_LastSubCode (ecoT eco)
     if (((eco % 131) % 5) == 1) { eco += 4; }
     return eco + 1;
 }
-
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //   String Routines
@@ -1091,7 +1091,7 @@ strGetSquare (const char * str)
     return square_Make (fyle_FromChar(chFyle), rank_FromChar(chRank));
 }
 
-
+#ifndef POCKETENGINE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strUniqueExactMatch():
 //      Given a string <keyStr> and a null-terminated array of strings
@@ -1393,6 +1393,8 @@ readString (FILE * fp, char * str, uint length)
     }
     return OK;
 }
+#endif
+
 #endif
 
 //////////////////////////////////////////////////////////////////////

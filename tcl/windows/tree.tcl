@@ -362,7 +362,7 @@ proc ::tree::select { move baseNumber } {
   
   if {! [winfo exists .treeWin$baseNumber]} { return }
   
-  addSanMove $move -animate
+  catch { addSanMove $move -animate }
 }
 
 set tree(refresh) 0

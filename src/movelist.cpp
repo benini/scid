@@ -143,7 +143,7 @@ MoveList::IsSorted (void)
     return true;
 }
 
-
+#ifndef POCKETENGINE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // writeSimpleMove, readSimpleMove:
 //    I/O for simpleMoveT structs.
@@ -202,6 +202,8 @@ readSimpleMove (FILE * fp, simpleMoveT * sm)
     sm->oldHalfMoveClock = readTwoBytes (fp);
     return OK;
 }
+
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: movelist.cpp

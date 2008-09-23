@@ -585,3 +585,4 @@ scid-3.6.26
 - Fix : when playing on FICS or using a Novag Citrine board, entering moves with the keyboard was not send
 - Fix : mouse position on squares was inaccurate (if border size was not set to 2), and entering moves sometimes difficult (see ::board::getSquare)
 - Fix : exception handled after closing FICS window, and offers graph opened
+- Fix : tactical game. When aborting a game, the engine used as coach is now correctly stopped. This could lead to an UI freeze in some cases.
