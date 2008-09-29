@@ -1329,6 +1329,7 @@ translate F moveblunderthreshold {le coup est une erreur si les pertes sont supé
 translate F limitanalysis {limiter le temps d'analyse}
 translate F seconds {secondes}
 translate F Abort {Arrêter}
+translate F Resume {Reprendre}
 translate F OutOfOpening {Hors de l'ouverture}
 translate F NotFollowedLine {Vous n'avez pas suivi la ligne}
 translate F DoYouWantContinue {Voulez-vous continuer ?}
@@ -1387,6 +1388,9 @@ translate F WinWonGame {Terminer partie gagnée}
 translate F Lines {Lignes}
 translate F ConfigureUCIengine {Configurer moteur UCI}
 translate F SpecificOpening {Ouverture spécifique}
+translate F StartNewGame {Nouvelle partie}
+translate F FixedLevel {Niveau fixe}
+translate F Opening {Ouverture}
 translate F RandomLevel {Niveau aléatoire}
 translate F StartFromCurrentPosition {Jouer depuis la position actuelle}
 translate F FixedDepth {Profondeur fixe}
@@ -1722,6 +1726,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

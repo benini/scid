@@ -582,7 +582,10 @@ scid-3.6.26
 - Pocket PC : 
 	* Greko upgraded to 5.9 (5.7.1 version was buggy)
 	* Scidlet added as new engine (also added xboard commands "analyze" and "exit" to Scidlet, but only for the PPC version)
+	* Fix : manual draw adjudication when insufficient material (waited for ever for bestmove reply)
+	* added insufficient material detection during engines tournament
 - Fix : when playing on FICS or using a Novag Citrine board, entering moves with the keyboard was not send
 - Fix : mouse position on squares was inaccurate (if border size was not set to 2), and entering moves sometimes difficult (see ::board::getSquare)
 - Fix : exception handled after closing FICS window, and offers graph opened
 - Fix : tactical game. When aborting a game, the engine used as coach is now correctly stopped. This could lead to an UI freeze in some cases.
+- Tactical game : reworked user interface and some enhancements : parameters saving, ability to go back in game (thanks to Steven Atkinson)

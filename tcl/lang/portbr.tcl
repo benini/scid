@@ -1514,6 +1514,8 @@ translate B seconds {seconds}
 # ====== TODO To be translated ======
 translate B Abort {Abort}
 # ====== TODO To be translated ======
+translate B Resume {Resume}
+# ====== TODO To be translated ======
 translate B OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate B NotFollowedLine {You did not follow the line}
@@ -1632,6 +1634,12 @@ translate B Lines {Lines}
 translate B ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate B SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate B StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate B FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate B Opening {Opening}
 # ====== TODO To be translated ======
 translate B RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -1891,6 +1899,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

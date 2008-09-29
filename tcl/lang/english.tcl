@@ -1371,6 +1371,7 @@ translate E moveblunderthreshold {move is a blunder if loss is greater than}
 translate E limitanalysis {limit engine analysis time}
 translate E seconds {seconds}
 translate E Abort {Abort}
+translate E Resume {Resume}
 translate E OutOfOpening {Out of opening}
 translate E NotFollowedLine {You did not follow the line}
 translate E DoYouWantContinue {Do you want yo continue ?}
@@ -1429,6 +1430,9 @@ translate E WinWonGame {Win won game}
 translate E Lines {Lines}
 translate E ConfigureUCIengine {Configure UCI engine}
 translate E SpecificOpening {Specific opening}
+translate E StartNewGame {Start new game}
+translate E FixedLevel {Fixed level}
+translate E Opening {Opening}
 translate E RandomLevel {Random level}
 translate E StartFromCurrentPosition {Start from current position}
 translate E FixedDepth {Fixed depth}

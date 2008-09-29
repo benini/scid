@@ -1343,6 +1343,8 @@ translate S moveblunderthreshold {El movimiento es una metedura de pata si la pé
 translate S limitanalysis {Tiempo límite para análisis del motor}
 translate S seconds {segundos}
 translate S Abort {Abortar}
+# ====== TODO To be translated ======
+translate S Resume {Resume}
 translate S OutOfOpening {Fuera de apertura}
 translate S NotFollowedLine {Tú no sigues la linea}
 translate S DoYouWantContinue {¿Quieres continuar?}
@@ -1401,6 +1403,12 @@ translate S WinWonGame {Gana la partida ganada}
 translate S Lines {Lineas}
 translate S ConfigureUCIengine {Configurar motor UCI}
 translate S SpecificOpening {Apertura específica}
+# ====== TODO To be translated ======
+translate S StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate S FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate S Opening {Opening}
 translate S RandomLevel {Nivel aleatorio}
 translate S StartFromCurrentPosition {Empezar desde la posición actual}
 translate S FixedDepth {Profundidad fija}
@@ -1530,6 +1538,7 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

@@ -1512,6 +1512,8 @@ translate W seconds {sekunder}
 # ====== TODO To be translated ======
 translate W Abort {Avbryt}
 # ====== TODO To be translated ======
+translate W Resume {Resume}
+# ====== TODO To be translated ======
 translate W OutOfOpening {utanför öppning}
 # ====== TODO To be translated ======
 translate W NotFollowedLine {Du följde inte variationen}
@@ -1630,6 +1632,12 @@ translate W Lines {Variationer}
 translate W ConfigureUCIengine {Konfigurera UCI-schackmotor}
 # ====== TODO To be translated ======
 translate W SpecificOpening {Specifik öppning}
+# ====== TODO To be translated ======
+translate W StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate W FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate W Opening {Opening}
 # ====== TODO To be translated ======
 translate W RandomLevel {Slumpmässig nivå}
 # ====== TODO To be translated ======
@@ -6902,6 +6910,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

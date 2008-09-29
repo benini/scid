@@ -934,11 +934,15 @@ $m add command -label OptionsSave -command {
           gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \
           engineCoach1 engineCoach2 scidBooksDir scidBasesDir \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
-          ::utils::sound::announceForward ::utils::sound::announceBack
-      ::tactics::analysisTime boardfile_lite boardfile_dark
-      FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo
-      FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO } {
-      #Klimmek: Save board images see line before!!
+          ::utils::sound::announceForward ::utils::sound::announceBack \
+          ::tacgame::threshold ::tacgame::blunderwarning ::tacgame::blunderwarningvalue \
+          ::tacgame::levelMin  ::tacgame::levelMax  ::tacgame::levelFixed ::tacgame::randomLevel \
+          ::tacgame::isLimitedAnalysisTime ::tacgame::showblunder ::tacgame::showblundervalue \
+          ::tacgame::showblunderfound ::tacgame::showmovevalue ::tacgame::showevaluation \
+          ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::openingType \
+          boardfile_lite boardfile_dark \
+          FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO } {
       puts $optionF "set $i [list [set $i]]"
     }
     puts $optionF ""
@@ -1646,7 +1650,7 @@ proc standardShortcuts {w} {
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
   bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }
-  bind $w <F5> { catch { .analysisWin2.b1.bStartStop invoke } }  
+  bind $w <F5> { catch { .analysisWin2.b1.bStartStop invoke } }
   bind $w <F11>  ::book::open
   bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}
   bind $w <Control-v> {catch {sc_clipbase paste}; ::updateBoard -pgn}

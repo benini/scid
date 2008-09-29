@@ -1505,6 +1505,8 @@ translate N limitanalysis {limiet machiene analyse tijd}
 translate N seconds {seconden}
  
 translate N Abort {Geeft op}
+# ====== TODO To be translated ======
+translate N Resume {Resume}
  
 translate N OutOfOpening {Uit de opening}
  
@@ -1621,6 +1623,12 @@ translate N Lines {Varianten}
 translate N ConfigureUCIengine {Configureer UCI machiene}
  
 translate N SpecificOpening {Specifieke opening}
+# ====== TODO To be translated ======
+translate N StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate N FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate N Opening {Opening}
 # ====== TODO To be translated ======
 translate N RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -1879,6 +1887,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

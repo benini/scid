@@ -1772,11 +1772,45 @@ proc ::game::draw50moves { { showMessage 1 } } {
   }
   return 0
 }
+################################################################################
+# check if the game is a draw by insufficient material
+################################################################################
+proc ::game::drawInsufficientMaterial { { showMessage 1 } } {
+  set fen [ lindex [sc_pos fen] 0]
 
+  set wp 0 ; set wb 0 ; set wr 0 ; set wn 0 ; set wq 0
+  set bp 0 ; set bb 0 ; set br 0 ; set bn 0 ; set bq 0
+  
+  for {set i 0} {$i < [string length $fen]} {incr i} {
+    switch --  [string index $fen $i] {
+      P { incr wp }
+      p { incr bp }
+      B { incr wb }
+      b { incr bb }
+      R { incr wr }
+      r { incr br }
+      N { incr wn }
+      n { incr bn }
+      Q { incr wq }
+      q { incr bq }
+    }
+  }
+  
+  if { $wp == 0 && $bp == 0 && $wr == 0 && $br == 0 && $wq == 0 && $bq == 0} {
+    if { [ expr $wb + $wn ] <= 1 && [ expr $bb + $bn ] <= 1 } {
+      if { $showMessage } {
+        tk_messageBox -type ok -message [::msgcat::mc "Draw"] -parent .fTop -icon info
+      }
+      return 1
+    }
+  }
+  
+  return 0
+}
 ################################################################################
 #   add current position for 3fold repetition detection and returns 1 if
 # the position is a repetion
-# It also calls draw50moves
+# It also calls draw50moves and drawInsufficientMaterial
 ################################################################################
 proc ::game::repetition { { showMessage 1 } } {
   set elt [lrange [split [sc_pos fen]] 0 2]
@@ -1788,7 +1822,15 @@ proc ::game::repetition { { showMessage 1 } } {
     return 1
   }
   
-  return [ draw50moves $showMessage ]
+  if { [ draw50moves $showMessage ] == 1} {
+    return 1
+  }
+  
+  if { [ drawInsufficientMaterial $showMessage ] == 1} {
+    return 1
+  }
+  
+  return 0
 }
 
 proc ::game::repetitionReset {} {

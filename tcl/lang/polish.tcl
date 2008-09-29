@@ -1518,6 +1518,8 @@ translate P seconds {seconds}
 # ====== TODO To be translated ======
 translate P Abort {Abort}
 # ====== TODO To be translated ======
+translate P Resume {Resume}
+# ====== TODO To be translated ======
 translate P OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate P NotFollowedLine {You did not follow the line}
@@ -1636,6 +1638,12 @@ translate P Lines {Lines}
 translate P ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate P SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate P StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate P FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate P Opening {Opening}
 # ====== TODO To be translated ======
 translate P RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -2112,6 +2120,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

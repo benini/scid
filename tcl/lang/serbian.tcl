@@ -1509,6 +1509,8 @@ translate Y seconds {seconds}
 # ====== TODO To be translated ======
 translate Y Abort {Abort}
 # ====== TODO To be translated ======
+translate Y Resume {Resume}
+# ====== TODO To be translated ======
 translate Y OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate Y NotFollowedLine {You did not follow the line}
@@ -1627,6 +1629,12 @@ translate Y Lines {Lines}
 translate Y ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate Y SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate Y StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate Y FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate Y Opening {Opening}
 # ====== TODO To be translated ======
 translate Y RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -1885,6 +1893,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

@@ -8,19 +8,12 @@ namespace eval tacgame {
   ### Tacgame window: uses a chess engine (Phalanx) in easy mode and
   ### another engine (for example Toga) to track blunders
   
-  set startFromCurrent 0
+  ### many variables are now set in start.tcl to allow for
+  ### remembering them in options.dat S.A
   
-  set level 1500
-  set randomLevel 0
-  set levelMin 1200
-  set levelMax 2200
-  
-  # default value for considering the engine (Phalanx) blundering
-  set threshold 0.9
   set resignCount 0
   
   # if true, follow a specific opening
-  set isOpening 0
   set chosenOpening ""
   set openingMovesList {}
   set openingMovesHash {}
@@ -45,28 +38,19 @@ namespace eval tacgame {
   
   set blunderpending 0
   set prev_blunderpending 0
-  set showblunder 1
-  set showblundervalue 1
-  set showblunderfound 1
-  set showmovevalue 1
-  set showevaluation 1
-  set isLimitedAnalysisTime 1
-  set analysisTime 10
   set currentPosHash 0
   set lscore {}
   
   set analysisCoach(automove1) 0
+  set analysisCoach(paused) 0 ; # S.A
   
   # ======================================================================
   # resetValues
   #   Resets all blunders data.
   # ======================================================================
   proc resetValues {} {
-    set ::tacgame::level 1500
-    set ::tacgame::threshold 0.9
+    # see tcl/start.tcl
     set ::tacgame::blundermissed false
-    set ::tacgame::blunderwarning false
-    set ::tacgame::blunderwarningvalue 0.0
     set ::tacgame::lastblundervalue 0.0
     set ::tacgame::prev_lastblundervalue 0.0
     set ::tacgame::prev_blunderpending 0
@@ -116,14 +100,16 @@ namespace eval tacgame {
   proc config {} {
     
     global ::tacgame::configWin ::tacgame::analysisCoachCommand ::tacgame::analysisCoach \
-        engineCoach1 engineCoach2 ::tacgame::level \
+        engineCoach1 engineCoach2 ::tacgame::level ::tacgame::levelFixed \
         ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::index1 ::tacgame::index2 ::tacgame::chosenOpening
     
     # check if game window is already opened. If yes abort previous game
-    set w ".coachWin"
-    if {[winfo exists $w]} {
+    # better kill phalanx too. (?) S.A.
+    if {[winfo exists .coachWin]} {
       focus .
-      destroy $w
+      destroy .coachWin
+      ::tacgame::closeEngine 1
+      ::tacgame::closeEngine 2
     }
     
     # find Phalanx and Toga engines
@@ -164,52 +150,71 @@ namespace eval tacgame {
     bind $w <F1> { helpWindow TacticalGame }
     setWinLocation $w
     
-    frame $w.fexplanation
-    frame $w.fengines -relief groove -borderwidth 1
-    frame $w.flevel1 -relief groove -borderwidth 1
-    frame $w.flevel2 -relief groove -borderwidth 1
-    frame $w.fcurrent -relief groove -borderwidth 1
-    frame $w.fopening -relief groove -borderwidth 1
-    frame $w.flimit -relief groove -borderwidth 1
+    ### this widget reorganised by S.A.
+
+    frame $w.flevel -relief raised -borderwidth 1
+    frame $w.flevel.diff_fixed
+    frame $w.flevel.diff_random
+    frame $w.fopening -relief raised -borderwidth 1
+    frame $w.flimit -relief raised -borderwidth 1
     frame $w.fbuttons
-    
-    pack $w.flevel1 $w.flevel2 -side top -fill x
-    pack $w.fcurrent -side top -fill x
+
+    label $w.flevel.label -text [string toupper $::tr(difficulty) 0 0 ]
+    label $w.flevel.space -text {}
+
+    pack $w.flevel -side top -fill x
+    pack $w.flevel.label -side top -pady 3
+    pack $w.flevel.diff_fixed -side top
+    pack $w.flevel.diff_random -side top
+    pack $w.flevel.space -side bottom
     pack $w.fopening  -side top -fill both -expand 1
     pack $w.flimit $w.fbuttons -side top -fill x
     
-    checkbutton $w.flevel1.cbLevelRandom -text $::tr(RandomLevel) -variable ::tacgame::randomLevel
-    scale $w.flevel1.lMin -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMin -tickinterval 0 -resolution 50
-    scale $w.flevel1.lMax -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMax -tickinterval 0 -resolution 50
-    pack $w.flevel1.cbLevelRandom -side top
-    pack $w.flevel1.lMin $w.flevel1.lMax -side left -expand 1
+    radiobutton $w.flevel.diff_random.cb -text $::tr(RandomLevel) -variable ::tacgame::randomLevel -value 1 -width 15  -anchor w
+    scale $w.flevel.diff_random.lMin -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMin -tickinterval 0 -resolution 50
+    scale $w.flevel.diff_random.lMax -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMax -tickinterval 0 -resolution 50
+    pack $w.flevel.diff_random.cb -side left
+    pack $w.flevel.diff_random.lMin $w.flevel.diff_random.lMax -side left -expand 1
     
-    scale $w.flevel2.difficulty -orient horizontal -from 1200 -to 2200 -length 200 -label $::tr(difficulty)	\
-        -variable ::tacgame::level -tickinterval 0 -resolution 50
-    label $w.flevel2.easy -font font_Fixed -text $::tr(easy)
-    label $w.flevel2.hard -font font_Fixed -text $::tr(hard)
-    pack $w.flevel2.easy $w.flevel2.difficulty $w.flevel2.hard -side left -expand yes
+    radiobutton $w.flevel.diff_fixed.cb -text $::tr(FixedLevel) -variable ::tacgame::randomLevel -value 0 -width 15  -anchor w
+    scale $w.flevel.diff_fixed.scale -orient horizontal -from 1200 -to 2200 -length 200 \
+      -variable ::tacgame::levelFixed -tickinterval 0 -resolution 50
+    pack $w.flevel.diff_fixed.cb -side left
+    pack $w.flevel.diff_fixed.scale
     
-    # New game or use current position ?
-    checkbutton $w.fcurrent.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::tacgame::startFromCurrent
-    pack $w.fcurrent.cbPosition
-    
-    # choose a specific opening
-    checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::tacgame::isOpening
-    frame $w.fopening.fOpeningList -relief raised -borderwidth 1
+    label $w.fopening.label -text $::tr(Opening)
+    pack $w.fopening.label -side top -pady 3
+
+    # start new game
+    radiobutton $w.fopening.cbNew -text $::tr(StartNewGame) \
+    -variable ::tacgame::openingType -value new
+
+    # start from current position
+    radiobutton $w.fopening.cbPosition -text $::tr(StartFromCurrentPosition) \
+    -variable ::tacgame::openingType -value current
+
+    # or choose a specific opening
+    radiobutton $w.fopening.cbSpecific -text $::tr(SpecificOpening) \
+    -variable ::tacgame::openingType -value specific
+
+    pack $w.fopening.cbNew -anchor w -padx 100
+    pack $w.fopening.cbPosition -anchor w -padx 100
+    pack $w.fopening.cbSpecific -anchor w -padx 100
+    # pack [label $w.fopening.space2 -text {}]
+
+    frame $w.fopening.fOpeningList
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
-        -height 5 -width 50 -list ::tacgame::openingList
+        -height 5 -width 40 -list ::tacgame::openingList
     $w.fopening.fOpeningList.lbOpening selection set 0
     scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
     pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar  -side right -fill y
-    pack $w.fopening.cbOpening -fill x -side top
     pack $w.fopening.fOpeningList -expand yes -fill both -side top -expand 1
     
     # in order to limit CPU usage, limit the time for analysis (this prevents noise on laptops)
     checkbutton $w.flimit.blimit -text $::tr(limitanalysis) -variable ::tacgame::isLimitedAnalysisTime -relief flat
-    scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -label $::tr(seconds) -variable ::tacgame::analysisTime -resolution 5
-    pack $w.flimit.blimit $w.flimit.analysisTime -side left -expand yes
+    scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -label $::tr(seconds) -variable ::tacgame::analysisTime -resolution 5 
+    pack $w.flimit.blimit $w.flimit.analysisTime -side left -expand yes -pady 5
     
     button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
@@ -235,9 +240,9 @@ namespace eval tacgame {
   # ======================================================================
   proc play { } {
     global ::tacgame::analysisCoach ::tacgame::threshold ::tacgame::showblunder ::tacgame::showblundervalue \
-        ::tacgame::blunderfound ::tacgame::showmovevalue ::tacgame::level engineCoach1 \
+        ::tacgame::blunderfound ::tacgame::showmovevalue ::tacgame::level ::tacgame::levelFixed engineCoach1 \
         engineCoach2 ::tacgame::index1 ::tacgame::index2 ::tacgame::chosenOpening \
-        ::tacgame::isOpening ::tacgame::openingList ::tacgame::openingMovesList \
+        ::tacgame::openingType ::tacgame::openingList ::tacgame::openingMovesList \
         ::tacgame::openingMovesHash ::tacgame::openingMoves ::tacgame::outOfOpening
     
     resetEngine 1
@@ -246,10 +251,6 @@ namespace eval tacgame {
     
     set ::tacgame::lFen {}
     
-    if {$::tacgame::startFromCurrent} {
-      set isOpening 0
-    }
-    
     if {$::tacgame::randomLevel} {
       if {$::tacgame::levelMax < $::tacgame::levelMin} {
         set tmp $::tacgame::levelMax
@@ -257,10 +258,12 @@ namespace eval tacgame {
         set ::tacgame::levelMin $tmp
       }
       set level [expr int(rand()*($::tacgame::levelMax - $::tacgame::levelMin)) + $::tacgame::levelMin ]
+    } else {
+      set level $::tacgame::levelFixed; # S.A.
     }
     
     # if will follow a specific opening line
-    if {$isOpening} {
+    if {$openingType == "specific"} {
       set fields [split [lindex $openingList $chosenOpening] ":"]
       set openingName [lindex $fields 0]
       set openingMoves [string trim [lindex $fields 1]]
@@ -286,7 +289,7 @@ namespace eval tacgame {
     }
     
     # create a new game if a DB is opened
-    if {!$::tacgame::startFromCurrent} {
+    if {$::tacgame::openingType != "current"} {
       sc_game new
       sc_game tags set -event "Tactical game"
       if { [::board::isFlipped .board] } {
@@ -303,7 +306,7 @@ namespace eval tacgame {
     updateTitle
     updateMenuStates
     
-    set w ".coachWin"
+    set w .coachWin
     if {[winfo exists $w]} {
       focus .
       destroy $w
@@ -340,6 +343,14 @@ namespace eval tacgame {
     ::gameclock::reset 1
     ::gameclock::start 1
     
+    ### Resume restarts paused computer (while player moves forward/back in history) S.A.
+    button $w.fbuttons.resume -state disabled -textvar ::tr(Resume) -command {
+      set ::tacgame::analysisCoach(paused) 0
+      .coachWin.fbuttons.resume configure -state disabled
+      ::tacgame::phalanxGo
+    }
+    pack $w.fbuttons.resume -expand yes -fill both -padx 20 -pady 2
+
     button $w.fbuttons.close -textvar ::tr(Abort) -command ::tacgame::abortGame
     pack $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     
@@ -365,7 +376,6 @@ namespace eval tacgame {
   ################################################################################
   proc abortGame { { destroyWin 1 } } {
     after cancel ::tacgame::phalanxGo
-    ::tacgame::stopAnalyze
     if { $destroyWin } { destroy ".coachWin" }
     focus .
     ::tacgame::closeEngine 1
@@ -587,11 +597,18 @@ namespace eval tacgame {
   #		it is phalanx's turn to play
   # ======================================================================
   proc phalanxGo {} {
-    global ::tacgame::analysisCoach ::tacgame::isOpening ::tacgame::openingMovesList \
+    global ::tacgame::analysisCoach ::tacgame::openingType ::tacgame::openingMovesList \
         ::tacgame::openingMovesHash ::tacgame::openingMoves ::tacgame::outOfOpening
     
     after cancel ::tacgame::phalanxGo
     
+    ### should show endOfGame
+
+    if {$analysisCoach(paused)} {
+      .coachWin.fbuttons.resume configure -state normal 
+      return
+    }
+
     if { [::tacgame::endOfGame] } { return }
     
     # check if Phalanx is already thinking
@@ -612,7 +629,7 @@ namespace eval tacgame {
     repetition
     
     # make a move corresponding to a specific opening, (it is Phalanx's turn)
-    if {$isOpening && !$outOfOpening} {
+    if {$openingType == "specific" && !$outOfOpening} {
       set index 0
       # Warn if the user went out of the opening line chosen
       if { !$outOfOpening } {

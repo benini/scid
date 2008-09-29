@@ -1366,6 +1366,8 @@ translate I moveblunderthreshold {la mossa è un errore se la perdita è maggior
 translate I limitanalysis {limita il tempo di analisi del motore}
 translate I seconds {secondi}
 translate I Abort {Annulla}
+# ====== TODO To be translated ======
+translate I Resume {Resume}
 translate I OutOfOpening {Fuori dall'apertura}
 translate I NotFollowedLine {Non hai seguito la linea}
 translate I DoYouWantContinue {Vuoi continuare?}
@@ -1429,6 +1431,12 @@ translate I WinWonGame {Vinci le partite vinte}
 translate I Lines {Linee}
 translate I ConfigureUCIengine {Configura il motore UCI}
 translate I SpecificOpening {Apertura Specifica}
+# ====== TODO To be translated ======
+translate I StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate I FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate I Opening {Opening}
 translate I RandomLevel {Livello casuale}
 translate I StartFromCurrentPosition {Parti dalla posizione attuale}
 translate I FixedDepth {Profondità fissa}
@@ -1799,6 +1807,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

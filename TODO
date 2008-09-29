@@ -7,9 +7,6 @@
 fait planter PPC
 Tester FICS et mode clavier (l 68 de main.tcl) (en plus avec Novag)
 
-Pb de temps pour scidlet et s'arrête tout seul (voir l. 675 de scidlet.cpp) -> valider CAB généré
-Mutualiser fichiers scidlet avec -DPOCKET -> à vaider sur les 3 compils
-
  ===========================================================
 |                                                           |
 |                          BUGS                             |

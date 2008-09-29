@@ -11,9 +11,13 @@ if { [catch {package require http} ] } {
 } else  {
   set ::tb::online_available 1
 }
-set ::tb::url "http://k4it.de/egtb/fetch.php"
 
-namespace eval ::tb {}
+namespace eval ::tb {
+  set url "http://k4it.de/egtb/fetch.php"
+  # proxy configuration
+  set proxyhost "127.0.0.1"
+  set proxyport 3128
+}
 
 set tbInfo(section) 21
 set tbInfo(material) "kpk"
@@ -480,6 +484,10 @@ proc ::tb::updateOnline {} {
   global tbTraining
   set w .tbWin
   if {! [winfo exists $w]} { return }
+  
+  # proxy configuration - needs UI
+  # ::http::config -proxyhost $::tb::proxyhost -proxyport $::tb::proxyport
+  
   set t $w.pos.text
   if { ! $tbTraining } {
     set query [ ::http::formatQuery hook null action egtb fen [sc_pos fen] ]
@@ -505,12 +513,12 @@ proc ::tb::httpCallback { token } {
       catch {$t delete [lindex $del 0] [lindex $del 1]}
     }
   }
-
+  
   if {$state(status) != "ok"} {
     $t insert end $state(status) tagonline
     return
   }
-
+  
   set b $state(body)
   set result ""
   

@@ -5,6 +5,13 @@ namespace eval ::move {}
 
 proc ::move::Start {} {
   if {$::tree(refresh)} { return }
+  
+  if {[winfo exists .coachWin]} {
+    set ::tacgame::analysisCoach(paused) 1
+    .coachWin.fbuttons.resume configure -state normal
+    # mess with game clocks ??? S.A
+  }
+  
   sc_move start
   updateBoard
 }
@@ -19,12 +26,20 @@ proc ::move::Back {{count 1}} {
   if {$::tree(refresh)} { return }
   if {[sc_pos isAt start]} { return }
   
+  ### todo: if playing, remove this move from hash array S.A ??
+  
+  if {[winfo exists .coachWin]} {
+    set ::tacgame::analysisCoach(paused) 1
+    .coachWin.fbuttons.resume configure -state normal
+    # mess with game clocks ???
+  }
+  
   sc_move back $count
   # Pascal Georges : make it easier to navigate in a game
   # TODO : if left mouse arrow leaves var, then comments are doubled at Var start and comments can no longer be entered
   # before the first move of a line
   # if {[sc_pos isAt vstart]} {
-    # sc_var exit
+  # sc_var exit
   # }
   
   if {$count == 1} {

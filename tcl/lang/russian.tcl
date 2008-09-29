@@ -1538,6 +1538,8 @@ translate R seconds {seconds}
 # ====== TODO To be translated ======
 translate R Abort {Abort}
 # ====== TODO To be translated ======
+translate R Resume {Resume}
+# ====== TODO To be translated ======
 translate R OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate R NotFollowedLine {You did not follow the line}
@@ -1656,6 +1658,12 @@ translate R Lines {Lines}
 translate R ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate R SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate R StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate R FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate R Opening {Opening}
 # ====== TODO To be translated ======
 translate R RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -1914,6 +1922,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

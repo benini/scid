@@ -578,6 +578,10 @@ namespace eval engine {
     sendToEngine "stop" 1
     sendToEngine "stop" 2
     
+    # Force bestmove to avoid vwaiting for ever
+    set ::engine::data(bestmove1) ""
+    set ::engine::data(bestmove2) ""
+    
     if { $op == "White wins" } {
       if { [getEngineColor 1] == "white" } {
         set ::engine::score(1) [expr $::engine::score(1) + 1.0]

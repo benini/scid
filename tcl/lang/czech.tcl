@@ -1502,6 +1502,8 @@ translate C seconds {seconds}
 # ====== TODO To be translated ======
 translate C Abort {Abort}
 # ====== TODO To be translated ======
+translate C Resume {Resume}
+# ====== TODO To be translated ======
 translate C OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate C NotFollowedLine {You did not follow the line}
@@ -1620,6 +1622,12 @@ translate C Lines {Lines}
 translate C ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate C SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate C StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate C FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate C Opening {Opening}
 # ====== TODO To be translated ======
 translate C RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -5516,6 +5524,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

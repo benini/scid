@@ -1505,6 +1505,8 @@ translate O seconds {seconds}
 # ====== TODO To be translated ======
 translate O Abort {Abort}
 # ====== TODO To be translated ======
+translate O Resume {Resume}
+# ====== TODO To be translated ======
 translate O OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate O NotFollowedLine {You did not follow the line}
@@ -1623,6 +1625,12 @@ translate O Lines {Lines}
 translate O ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate O SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate O StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate O FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate O Opening {Opening}
 # ====== TODO To be translated ======
 translate O RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -1885,6 +1893,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

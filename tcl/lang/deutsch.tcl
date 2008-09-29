@@ -1378,6 +1378,8 @@ translate D moveblunderthreshold {fehlerhafter Zug, wenn Verlust größer als}
 translate D limitanalysis {Analysezeit der Engine begrenzen}
 translate D seconds {Sekunden}
 translate D Abort {Abbrechen}
+# ====== TODO To be translated ======
+translate D Resume {Resume}
 translate D OutOfOpening {Ende der Eröffnung}
 translate D NotFollowedLine {You did not follow the line}
 translate D DoYouWantContinue {Möchten sie fortfahren?}
@@ -1436,6 +1438,12 @@ translate D WinWonGame {Gewinne gewonnene Partie}
 translate D Lines {Variantenzahl}
 translate D ConfigureUCIengine {UCI Engine konfigurieren}
 translate D SpecificOpening {Ausgewählte Eröffnung}
+# ====== TODO To be translated ======
+translate D StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate D FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate D Opening {Opening}
 translate D RandomLevel {Zufallsniveau}
 translate D StartFromCurrentPosition {Von aktueller Position starten}
 translate D FixedDepth {Feste Tiefe}
@@ -7075,6 +7083,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

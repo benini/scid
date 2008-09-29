@@ -1504,6 +1504,8 @@ translate H seconds {seconds}
 # ====== TODO To be translated ======
 translate H Abort {Abort}
 # ====== TODO To be translated ======
+translate H Resume {Resume}
+# ====== TODO To be translated ======
 translate H OutOfOpening {Out of opening}
 # ====== TODO To be translated ======
 translate H NotFollowedLine {You did not follow the line}
@@ -1622,6 +1624,12 @@ translate H Lines {Lines}
 translate H ConfigureUCIengine {Configure UCI engine}
 # ====== TODO To be translated ======
 translate H SpecificOpening {Specific opening}
+# ====== TODO To be translated ======
+translate H StartNewGame {Start new game}
+# ====== TODO To be translated ======
+translate H FixedLevel {Fixed level}
+# ====== TODO To be translated ======
+translate H Opening {Opening}
 # ====== TODO To be translated ======
 translate H RandomLevel {Random level}
 # ====== TODO To be translated ======
@@ -2111,6 +2119,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 
