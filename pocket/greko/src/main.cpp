@@ -4,10 +4,10 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "commands.h"
 #include "moves.h"
-#include "position.h"
 #include "search.h"
 #include "utils.h"
 #include "version.h"
@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 	init_hash_coeffs();
 
 	init_hash();
+  
 	if (hash_sz)
 	{
 		out("resize hash:\n");
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
 	out("\n");
 
 	g_pos.SetInitial();
+
 	run_command_loop();
 
 //    if (g_log)
@@ -62,4 +64,3 @@ int main(int argc, char *argv[])
 	return 0;
 }
 ////////////////////////////////////////////////////////////////////////////////
-

@@ -6,7 +6,7 @@ CFLAGS =  -DNDEBUG -DWIN32 -Wall -Wcast-align -O3 -fomit-frame-pointer
 
 BIN = greko.exe
 
-OBJ = bitboards.o	commands.o eval.o main.o moves.o		\
+OBJ = bitboards.o	commands.o eval.o main.o moves.o notation.o		\
       position.o search.o utils.o unix.o ipc.o
 
 LINKOBJ = $(OBJ)
@@ -37,6 +37,9 @@ main.o:	main.cpp
 moves.o: moves.cpp 
 	$(CPP) $(CPPFLAGS) -c moves.cpp -o moves.o
 
+notation.o: notation.cpp
+	$(CPP) $(CPPFLAGS) -c notation.cpp -o notation.o
+	
 position.o: position.cpp 
 	$(CPP) $(CPPFLAGS) -c position.cpp -o position.o
 

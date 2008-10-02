@@ -3,11 +3,13 @@
 
 #include "position.h"
 
-const EVAL VAL_PAWN   = 100;
-const EVAL VAL_KNIGHT = 400;
-const EVAL VAL_BISHOP = 400;
-const EVAL VAL_ROOK   = 600;
-const EVAL VAL_QUEEN  = 1200;
+#define  VAL_PAWN   (100)
+#define  VAL_KNIGHT (400)
+#define  VAL_BISHOP (405)
+#define  VAL_ROOK   (600)
+#define  VAL_QUEEN  (1200)
+
+#define  BISHOP_PAIR (20)
 
 static const EVAL VALUE[14] =
 {

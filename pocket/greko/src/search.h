@@ -31,12 +31,13 @@ typedef struct HashEntry HashEntry;
 #define DEFAULT_HASH_SIZE (0x7ffff)
 #define DEFAULT_PAWN_HASH_SIZE (0x3fff)
 
-#define MODE_ANALYZE (1)
-#define MODE_THINKING_ON_MOVE (2)
-#define MODE_EPDTEST (3)
-extern int g_mode;
-
+enum MODE_T
+{
+	IDLE = 0, ANALYZE = 1, THINKING = 2, EPDTEST = 3
+};
+extern MODE_T g_mode;
 extern int g_multipv_size;
+extern vector<Move> g_rootPV;
 
 struct Limits
 {
@@ -61,4 +62,3 @@ void        start_thinking_on_move(Position& pos0);
 void        start_perft(const Position& pos0, int depth);
 
 #endif
-

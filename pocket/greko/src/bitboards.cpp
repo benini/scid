@@ -22,8 +22,11 @@ U8  DIRS[64][64];
 
 #ifdef MAGIC
 
-U64 BB_ROOK_DB[64][1 << ROOK_BITS];
-U64 BB_BISHOP_DB[64][1 << BISHOP_BITS];
+int B_OFFSET[64];
+U64* B_DATA = 0;
+
+int R_OFFSET[64];
+U64* R_DATA = 0;
 
 #endif
 
@@ -41,17 +44,17 @@ U64 BB_VERTICAL[8] =
 	LL(0x0101010101010101)
 };
 
-U64 Enumerate(U64 mask, U64 n)
+U64 EnumBits(U64 mask, U64 n)
 {
-	U64 y = 0;
+	U64 x = 0;
 	while (mask != 0 && n != 0)
 	{
 		int f = PopLSB(mask);
 		int digit = n & 1;
-		y |= digit * BB_SINGLE[f];
 		n >>= 1;
+		x |= digit * BB_SINGLE[f];		
 	}
-	return y;
+	return x;	
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -295,23 +298,53 @@ void init_bitboards()
 
 #ifdef MAGIC
 
-	// Magic
+	int offset;
+
+	offset = 0;
 	for (int f = 0; f < 64; ++f)
 	{
-		for (int n = 0; n < (1 << BISHOP_BITS); ++n)
-		{
-			U64 occupied = Enumerate(BB_BISHOP_MASK[f], n);
-			U64 attacks = BishopAttacksTrace(f, occupied);
-			int index = (occupied * BB_BISHOP_MAGIC[f]) >> (64 - BISHOP_BITS);
-			BB_BISHOP_DB[f][index] = attacks;
-		}
+		B_OFFSET[f] = offset;
+		offset += (1 << B_BITS[f]);
+	}
+	B_DATA = new U64[offset];
 
-		for (int n = 0; n < (1 << ROOK_BITS); ++n)
+	for (int f = 0; f < 64; ++f)
+	{
+		U64 mask = B_MASK[f];
+		int bits = B_BITS[f];
+
+		for (int n = 0; n < (1 << bits); ++n)
 		{
-			U64 occupied = Enumerate(BB_ROOK_MASK[f], n);
-			U64 attacks = RookAttacksTrace(f, occupied);
-			int index = (occupied * BB_ROOK_MAGIC[f]) >> (64 - ROOK_BITS);
-			BB_ROOK_DB[f][index] = attacks;
+			U64 occupied = EnumBits(mask, n);
+			U64 att = BishopAttacksTrace(f, occupied);
+			int index = B_OFFSET[f];
+			index += int((occupied * B_MULT[f]) >> (64 - bits));
+
+			B_DATA[index] = att;
+		}
+	}
+
+	offset = 0;
+	for (int f = 0; f < 64; ++f)
+	{
+		R_OFFSET[f] = offset;
+		offset += (1 << R_BITS[f]);
+	}
+	R_DATA = new U64[offset];
+
+	for (int f = 0; f < 64; ++f)
+	{
+		U64 mask = R_MASK[f];
+		int bits = R_BITS[f];
+
+		for (int n = 0; n < (1 << bits); ++n)
+		{
+			U64 occupied = EnumBits(mask, n);
+			U64 att = RookAttacksTrace(f, occupied);
+			int index = R_OFFSET[f];
+			index += int((occupied * R_MULT[f]) >> (64 - bits));
+
+			R_DATA[index] = att;
 		}
 	}
 

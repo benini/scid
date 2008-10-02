@@ -1235,7 +1235,6 @@ proc gameReplace {} { gameSave [sc_game number] }
 #    Displays information about Scid.
 #
 proc helpAbout {} {
- 
   set str {}
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"

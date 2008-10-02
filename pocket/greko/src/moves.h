@@ -58,7 +58,4 @@ private:
 };
 ////////////////////////////////////////////////////////////////////////////////
 
-char* move_to_str(Move mv, char* buf);
-char* move_to_str_san(const Position& pos, Move mv, char* buf);
-
 #endif

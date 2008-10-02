@@ -580,7 +580,7 @@ scid-3.6.26
 - Windows release : Tcl/Tk is upgraded to version 8.5, so latest piece sets (with transparency effects) are correctly displayed
 - Fix : Scid could crash when generating an opening report from a huge base from particular positions. Bug introduced with Scid 3.6.21 and fixed now (buffer overflow due to moves translation in OpLine::PrintMove)
 - Pocket PC : 
-	* Greko upgraded to 5.9 (5.7.1 version was buggy)
+	* Greko upgraded to 5.9 and then to 6.0 ... (5.7.1 and 5.9 versions were buggy)
 	* Scidlet added as new engine (also added xboard commands "analyze" and "exit" to Scidlet, but only for the PPC version)
 	* Fix : manual draw adjudication when insufficient material (waited for ever for bestmove reply)
 	* added insufficient material detection during engines tournament

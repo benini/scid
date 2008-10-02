@@ -3,8 +3,6 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-// Tcl_Obj * tclObj_String = Tcl_NewStringObj( "", -1 );
-fait planter PPC
 Tester FICS et mode clavier (l 68 de main.tcl) (en plus avec Novag)
 
  ===========================================================

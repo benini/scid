@@ -72,8 +72,6 @@ const int MAX_EPD = 4;
 #endif
 static PBook * pbooks [MAX_EPD];
 
-// Tcl_Obj * tclObj_String = Tcl_NewStringObj( "", -1 );
-
 // Declare scid_InitTclTk, to initialise the Tcl interpreter:
 #ifdef WINCE
 

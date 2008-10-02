@@ -29,8 +29,8 @@
 #define ROOK_V_MOBILITY             (2)
 #define ROOK_TRAPPED                (25)
 
-#define BISHOP_PAIR                 (20)
 #define BISHOP_MOBILITY             (3)
+
 #define BISHOP_ON_STRONG            (4)
 #define BISHOP_BLOCKING_WEAK_PAWN   (8)
 #define BISHOP_TRAPPED              (75)
@@ -160,7 +160,6 @@ EVAL PAWN_PASSED_ENDGAME[64] =
 
 EVAL eval_pawn_shield_w(const PawnHashEntry* pentry, FLD  K);
 EVAL eval_pawn_shield_b(const PawnHashEntry* pentry, FLD  K);
-EVAL PossibleDraw(EVAL score, const Position& pos, int mat_coeff[]);
 void read_pawn_structure(const Position& pos, PawnHashEntry* pentry);
 
 EVAL evaluate(const Position& pos, EVAL alpha, EVAL beta)
@@ -172,8 +171,10 @@ EVAL evaluate(const Position& pos, EVAL alpha, EVAL beta)
 		return DRAW_SCORE;
 
 	EVAL mat_score = pos.Material(WHITE) - pos.Material(BLACK);
-	mat_score += (pos.Count(BISHOPW) == 2) ? BISHOP_PAIR : 0;
-	mat_score -= (pos.Count(BISHOPB) == 2) ? BISHOP_PAIR : 0;
+	if (pos.Count(BISHOPW) == 2)
+		mat_score += BISHOP_PAIR;
+	if (pos.Count(BISHOPB) == 2)
+		mat_score -= BISHOP_PAIR;
 
 	EVAL ksf_score = 0;
 	EVAL pas_score = 0;
@@ -643,64 +644,25 @@ EVAL evaluate(const Position& pos, EVAL alpha, EVAL beta)
 	             mob_score +
 	             pwn_score;
 
-	score = PossibleDraw(score, pos, mat_coeff);
-
-	return (pos.Side() == WHITE)? score : - score;	
-}
-////////////////////////////////////////////////////////////////////////////////
-
-EVAL PossibleDraw(EVAL score, const Position& pos, int mat_coeff[])
-{
-	if (pos.IsDraw())
-		return DRAW_SCORE;
-
 	//
-	//   INSUFFICIENT MATERIAL
+	//   NO-WIN MATERIAL
 	//
 
-	if (pos.Count(PAWNW) == 0 && mat_coeff[WHITE] <= 3)
+	if (pos.Count(PAWNW) == 0 && 
+	   (pos.Material(WHITE) == VAL_KNIGHT || pos.Material(WHITE) == VAL_BISHOP))
 	{
 		if (score > DRAW_SCORE)
-			return DRAW_SCORE;
+			score = DRAW_SCORE;
 	}
 
-	if (pos.Count(PAWNB) == 0 && mat_coeff[BLACK] <= 3)
+	if (pos.Count(PAWNB) == 0 &&
+	   (pos.Material(BLACK) == VAL_KNIGHT || pos.Material(BLACK) == VAL_BISHOP))
 	{
 		if (score < DRAW_SCORE)
-			return DRAW_SCORE;
+			score = DRAW_SCORE;
 	}
 
-	//
-	//   OPPOSITE COLORS BISHOPS - probably draw, but no guarantee
-	//
-
-	if (mat_coeff[WHITE] == 3 && mat_coeff[BLACK] == 3 &&
-		pos.Count(BISHOPW) == 1 && pos.Count(BISHOPB) == 1)
-	{
-		FLD f1 = LSB(pos.Bits(BISHOPW));
-		FLD f2 = LSB(pos.Bits(BISHOPB));
-		if (IS_LIGHT[f1] != IS_LIGHT[f2])
-			return score / 2;
-	}
-
-	//
-	//   ROOK VS. ROOK + B/N - probably draw, but no guarantee
-	//
-
-	if (!pos.Count(PAWNW) && !pos.Count(PAWNB))
-	{
-		if (mat_coeff[WHITE] < 10 && mat_coeff[BLACK] < 10) // no Queens
-		{
-			int delta = mat_coeff[WHITE] - mat_coeff[BLACK];
-			if (delta < 0)
-				delta = - delta;
-
-			if (delta < 5)
-				return score / 2;
-		}
-	}
-
-	return score;
+	return (pos.Side() == WHITE)? score : - score;	
 }
 ////////////////////////////////////////////////////////////////////////////////
 

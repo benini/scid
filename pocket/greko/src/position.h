@@ -13,18 +13,6 @@ extern U64 s_Zobrist[64][14];
 static inline int Col(FLD f) { return (f % 8); }
 static inline int Row(FLD f) { return (f / 8); }
 
-const int IS_LIGHT[64] =
-{
-	1, 0, 1, 0, 1, 0, 1, 0,
-	0, 1, 0, 1, 0, 1, 0, 1,
-	1, 0, 1, 0, 1, 0, 1, 0,
-	0, 1, 0, 1, 0, 1, 0, 1,
-	1, 0, 1, 0, 1, 0, 1, 0,
-	0, 1, 0, 1, 0, 1, 0, 1,
-	1, 0, 1, 0, 1, 0, 1, 0,
-	0,	1, 0, 1, 0, 1, 0, 1
-};
-
 typedef U8 COLOR;
 enum COLOR_TAG 
 {
@@ -113,6 +101,15 @@ struct Undo
 
 #define UNDO_SIZE        (600)
 
+enum GAME_RESULT
+{
+	IN_PROGRESS = 0,
+	WHITE_MATES = 1,
+	BLACK_MATES = 2,
+	DRAW_STALEMATE = 3,
+	DRAW_MATERIAL = 4
+};
+
 class Position
 {
 public:
@@ -127,6 +124,7 @@ public:
 	int   Count(PIECE p) const { return m_count[p]; }
 	FLD   EP() const { return m_ep; }
 	int   Fifty() const { return m_fifty; }
+	GAME_RESULT GameResult() const;
 	U64   GetAttacks(FLD to, COLOR side, U64 occupied) const;
 	U64   GetBishopAttacks(FLD to, COLOR side, const U64& occupied) const;
 	U64   GetRookAttacks(FLD to, COLOR side, const U64& occupied) const;
@@ -181,8 +179,6 @@ private:
 const char* fld_to_str(FLD f);
 char*       get_fen(const Position* pos, char* buf);
 void        init_hash_coeffs();
-FLD         str_to_fld(const char* s);
-Move        str_to_move(const Position* pos, const char* s);
 
 inline void Position::PutPiece(FLD f, PIECE p)
 {

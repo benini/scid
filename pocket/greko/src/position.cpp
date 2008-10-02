@@ -5,9 +5,10 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "eval.h"
 #include "moves.h"
-#include "position.h"
+#include "notation.h"
 #include "utils.h"
 
 U64 s_Zobrist0 = 0;
@@ -68,6 +69,28 @@ void Position::Clear()
 const char* fld_to_str(FLD f)
 {
 	return FIELD_NAMES[f];
+}
+////////////////////////////////////////////////////////////////////////////////
+
+GAME_RESULT Position::GameResult() const
+{
+	MoveList mvlist;
+	mvlist.GenAllMoves(*this);
+
+	if (mvlist.Size() == 0)
+	{
+		if (InCheck())
+		{
+			return (m_side == BLACK)? WHITE_MATES : BLACK_MATES;
+		}
+		else
+			return DRAW_STALEMATE;
+	}
+
+	if (IsDraw())
+		return DRAW_MATERIAL;
+
+	return IN_PROGRESS;
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -354,6 +377,9 @@ bool Position::MakeMove(Move mv)
 		--m_count[captured];
 	}
 
+	bool isEP = false;
+	bool isCastling = false;
+
 	switch (piece)
 	{
 	case PAWNW:
@@ -363,6 +389,7 @@ bool Position::MakeMove(Move mv)
 
 		if (to == m_ep)
 		{
+			isEP = true;
 			RemovePiece(to + 8);
 			PutPiece(to, PAWNW);
 		}
@@ -397,6 +424,7 @@ bool Position::MakeMove(Move mv)
 
 		if (to == m_ep)
 		{
+			isEP = true;
 			RemovePiece(to - 8);
 			PutPiece(to, PAWNB);
 		}
@@ -464,12 +492,14 @@ bool Position::MakeMove(Move mv)
 		{
 			if (to == G1)
 			{
+				isCastling = true;
 				RemovePiece(H1);
 				PutPiece(F1, ROOKW);
 				m_castlings |= WHITE_DID_O_O; // 0001 0000
 			}
 			else if (to == C1)
 			{
+				isCastling = true;
 				RemovePiece(A1);
 				PutPiece(D1, ROOKW);
 				m_castlings |= WHITE_DID_O_O_O; // 0010 0000
@@ -496,12 +526,14 @@ bool Position::MakeMove(Move mv)
 		{
 			if (to == G8)
 			{
+				isCastling = true;
 				RemovePiece(H8);
 				PutPiece(F8, ROOKB);
 				m_castlings |= BLACK_DID_O_O; // 0100 0000
 			}
 			else if (to == C8)
 			{
+				isCastling = true;
 				RemovePiece(A8);
 				PutPiece(D8, ROOKB);
 				m_castlings |= BLACK_DID_O_O_O; // 1000 0000
@@ -527,7 +559,10 @@ bool Position::MakeMove(Move mv)
 	switch (m_board[to])
 	{
 	case PAWNW: case PAWNB:
-		m_check |= BB_PAWN_ATTACKS[K][opp] & BB_SINGLE[to];
+		if (isEP)
+			m_check = GetAttacks(K, side, BitsAll());
+		else
+			m_check |= BB_PAWN_ATTACKS[K][opp] & BB_SINGLE[to];
 		break;
 	case KNIGHTW: case KNIGHTB:
 		m_check |= BB_KNIGHT_ATTACKS[K] & BB_SINGLE[to];
@@ -544,9 +579,10 @@ bool Position::MakeMove(Move mv)
 		if (dirTo != DIR_NO)
 			m_check |= QueenAttacks(K, BitsAll()) & BB_SINGLE[to];
 		break;
-//	case KINGW: case KINGB:
-//		m_check |= BB_KING_ATTACKS[K] & BB_SINGLE[to];
-//		break;
+	case KINGW: case KINGB:
+		if (isCastling)
+			m_check = GetAttacks(K, side, BitsAll());
+		break;
 	default:
 		break;
 	}
@@ -733,7 +769,7 @@ void Position::Print() const
 		for (int m = 0; m < m_undoCnt; m++)
 		{
 			char buf1[16];
-			OUT1("%s ", move_to_str(m_undos[m].m_mv, buf1));
+			OUT1("%s ", MoveToStrLong(m_undos[m].m_mv, buf1));
 		}
 		out("\n ");
 	}
@@ -858,7 +894,7 @@ bool Position::SetFEN(const char* fen)
 	if (token == NULL)
 		goto FINALIZE_SETFEN;
 
-	m_ep = str_to_fld(token);
+	m_ep = StrToFld(token);
 
 	//
 	//   5. Counters
@@ -899,80 +935,6 @@ FINALIZE_SETFEN:
 	m_check = GetAttacks(King(Side()), Opp(m_side), BitsAll());
 
 	return true;
-}
-////////////////////////////////////////////////////////////////////////////////
-
-FLD str_to_fld(const char* s)
-{
-	if (strlen(s) != 2)
-		return NF;
-
-	int col = s[0] - 'a';
-	int row = 7 - (s[1] - '1');
-
-	if (col < 0 || col > 7 || row < 0 || row > 7)
-		return NF;
-
-	return (FLD) (8 * row + col);
-}
-////////////////////////////////////////////////////////////////////////////////
-
-Move str_to_move(const Position* pos, const char* s)
-{
-	if (strlen(s) < 4 || strlen(s) > 5)
-		return 0;
-
-	char buf[3];
-	buf[0] = s[0];
-	buf[1] = s[1];
-	buf[2] = 0;
-	FLD from = str_to_fld(buf);
-	if (from == NF)
-		return 0;
-
-	buf[0] = s[2];
-	buf[1] = s[3];
-	buf[2] = 0;
-	FLD to = str_to_fld(buf);
-	if (to == NF)
-		return 0;
-
-	PIECE piece = (*pos)[from];
-	if (!piece)
-		return 0;
-
-	PIECE captured = (*pos)[to];
-	if (to == pos->EP())
-	{
-		if (piece == PAWNW)
-			captured = PAWNB;
-		else if (piece == PAWNB)
-			captured = PAWNW;
-	}
-
-	PIECE promotion = NOPIECE;
-	if (strlen(s) == 5)
-	{
-		switch(s[4])
-		{
-		case 'q' :
-			promotion = QUEENW | ColorOf(piece);
-			break;
-		case 'r' :
-			promotion = ROOKW | ColorOf(piece);
-			break;
-		case 'b' :
-			promotion = BISHOPW | ColorOf(piece);
-			break;
-		case 'n' :
-			promotion = KNIGHTW | ColorOf(piece);
-			break;
-		default:
-			return 0;
-		}
-	}
-
-	return Move(from, to, piece, captured, promotion);
 }
 ////////////////////////////////////////////////////////////////////////////////
 

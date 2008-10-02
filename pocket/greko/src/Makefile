@@ -5,7 +5,7 @@ CPPFLAGS = -DNDEBUG -Wall -pipe -O3 -fno-exceptions -fomit-frame-pointer -fno-rt
 
 BIN = greko
 
-OBJ = bitboards.o	commands.o eval.o main.o moves.o		\
+OBJ = bitboards.o	commands.o eval.o main.o moves.o notation.o	\
       position.o search.o utils.o unix.o ipc.o
 
 LINKOBJ = $(OBJ)
@@ -35,6 +35,9 @@ main.o:	main.cpp
 
 moves.o: moves.cpp 
 	$(CPP) $(CPPFLAGS) -c moves.cpp -o moves.o
+
+notation.o: notation.cpp
+	$(CPP) $(CPPFLAGS) -c notation.cpp -o notation.o
 
 position.o: position.cpp 
 	$(CPP) $(CPPFLAGS) -c position.cpp -o position.o

@@ -1,6 +1,13 @@
+#define PURE_ALPHA_BETA
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4996)
 #endif
+
+#include <list>
+#include <string>
+#include <vector>
+using namespace std;
 
 #include <assert.h>
 #include <malloc.h>
@@ -10,7 +17,7 @@
 #include "commands.h"
 #include "eval.h"
 #include "moves.h"
-#include "position.h"
+#include "notation.h"
 #include "search.h"
 #include "utils.h"
 
@@ -64,12 +71,9 @@ Limits g_limits = {2000, 2000, MAX_PLY, 0};
 #define FINALIZE_SEARCH  (2)
 int g_flag = 0;
 
-#define MODE_ANALYZE (1)
-#define MODE_THINKING_ON_MOVE (2)
-#define MODE_EPDTEST (3)
-int g_mode = 0;
-
+MODE_T g_mode = IDLE;
 extern int g_uci;
+extern list<string> g_commandQueue;
 
 EVAL alpha_beta_root(Position& pos0, EVAL alpha, EVAL beta, const int depth);
 EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search);
@@ -130,7 +134,7 @@ EVAL alpha_beta_root(Position& pos0, EVAL alpha, EVAL beta, const int depth)
 			if (g_uci && tm > 1000)
 			{
 				char mvbuf[16];
-				OUT1("info currmove %s", move_to_str(mv, mvbuf));
+				OUT1("info currmove %s", MoveToStrLong(mv, mvbuf));
 				OUT1(" currmovenumber %d\n", legal_moves);
 			}
 
@@ -148,6 +152,9 @@ EVAL alpha_beta_root(Position& pos0, EVAL alpha, EVAL beta, const int depth)
 				e = - alpha_beta(-beta - VAL_QUEEN, -alpha + VAL_QUEEN, new_depth, ply + 1, 0);
 			else
 			{
+#ifdef PURE_ALPHA_BETA
+				e = - alpha_beta(-beta, -alpha, new_depth, ply + 1, 0);
+#else
 				if (legal_moves == 1)
 					e = - alpha_beta(-beta, -alpha, new_depth, ply + 1, 0);
 				else
@@ -156,6 +163,7 @@ EVAL alpha_beta_root(Position& pos0, EVAL alpha, EVAL beta, const int depth)
 					if (e > alpha && e < beta)
 						e = - alpha_beta(-beta, -alpha, new_depth, ply + 1, 0);
 				}
+#endif
 			}
 
 			pos.UnmakeMove();
@@ -262,7 +270,7 @@ EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search
 		hash_mv = pentry->mv;
 		hash_flags = pentry->flags;
 
-		if (pentry->depth >= depth && pentry->age == g_hash_age)
+		if (pentry->depth >= depth)
 		{
 			EVAL hash_eval = pentry->eval;
 			if (hash_eval > CHECKMATE_SCORE - 50)
@@ -272,9 +280,10 @@ EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search
 
 			if (pentry->type == HASH_EXACT)
 				return hash_eval;
-			else if (pentry->type == HASH_ALPHA && hash_eval <= alpha)
+			
+			if (pentry->type == HASH_ALPHA && hash_eval <= alpha && alpha > -CHECKMATE_SCORE + 50)
 				return alpha;
-			else if (pentry->type == HASH_BETA && hash_eval >= beta)
+			else if (pentry->type == HASH_BETA && hash_eval >= beta && beta < CHECKMATE_SCORE - 50)
 				return beta;
 		}
 	}
@@ -297,14 +306,14 @@ EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search
 	//   NULLMOVE
 	//
 
-	const int R = 4;
+	const int R = 3;
 	do
 	{
 		if (null_search || in_check || depth <= 1) break;
 		if (!pos.Count(ROOKW | pos.Side()) && !pos.Count(QUEENW | pos.Side())) break;
 
 		pos.MakeNullMove();
-		EVAL null_eval = - alpha_beta(- beta, - beta + 1, depth - R, ply + 1, 1);
+		EVAL null_eval = - alpha_beta(- beta, - beta + 1, depth - 1 - R, ply + 1, 1);
 		pos.UnmakeNullMove();
 
 		if (null_eval >= beta)
@@ -345,7 +354,6 @@ EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search
 				++new_depth;
 			else if (mv.Piece() == PAWNB && (mv.To() / 8) == 6)
 				++new_depth;
-
 			do
 			{
 				if (depth <= 2) break;
@@ -358,6 +366,9 @@ EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search
 			}
 			while (0);
 
+#ifdef PURE_ALPHA_BETA
+			e = - alpha_beta(- beta, - alpha, new_depth, ply + 1, 0);
+#else			
 			if (legal_moves == 1)
 				e = - alpha_beta(- beta, - alpha, new_depth, ply + 1, 0);
 			else
@@ -366,7 +377,7 @@ EVAL alpha_beta(EVAL alpha, EVAL beta, const int depth, int ply, int null_search
 				if (e > alpha && e < beta)
 					e = - alpha_beta(- beta, - alpha, new_depth, ply + 1, 0);
 			}
-
+#endif
 			if (new_depth < depth - 1 && e > alpha)
 				e = - alpha_beta(- beta, - alpha, new_depth + 1, ply + 1, 0);
 
@@ -438,7 +449,7 @@ EVAL alpha_beta_q(EVAL alpha, EVAL beta, int ply, int qply)
 			if (alpha >= beta)
 				return beta;
 		}
-	 }
+	}
 
 	MoveList& mvlist = moves[ply];
 
@@ -453,7 +464,6 @@ EVAL alpha_beta_q(EVAL alpha, EVAL beta, int ply, int qply)
 
 	mvlist.UpdateScores(pos, 0, g_killers[ply]);
 
-
 	//
 	//   CYCLE BY ALL MOVES
 	//
@@ -464,7 +474,6 @@ EVAL alpha_beta_q(EVAL alpha, EVAL beta, int ply, int qply)
 	for (int i = 0; i < mvlist.Size(); ++i)
 	{
 		Move mv = mvlist.GetNthBest(i);
-
 		if (!in_check && qply > 0)
 		{
 			EVAL see = SEE(pos, mv);
@@ -505,7 +514,7 @@ void check_user_input_and_time()
 {
    if (/*1000 * (clock() - g_start_time) / CLOCKS_PER_SEC*/ (get_time()-g_start_time) >= g_limits.stHard)
 	{
-		if (g_mode == MODE_THINKING_ON_MOVE || g_mode == MODE_EPDTEST)
+		if (g_mode == THINKING || g_mode == EPDTEST)
 			g_flag = FINALIZE_SEARCH;
 	}
 
@@ -514,9 +523,18 @@ void check_user_input_and_time()
 
    if (s[0] != '\0')//(input_available())
    {
-		if (g_mode == MODE_ANALYZE)
+   		if (g_mode == ANALYZE)
 		{
-			if (is_command(s, "board", 1))
+
+			Move mv = StrToMove(s, g_pos);
+			if (mv)
+			{
+				g_flag = TERMINATE_SEARCH;
+				g_commandQueue.push_back("force");
+				g_commandQueue.push_back(s);
+				g_commandQueue.push_back("analyze");
+			}
+			else if (is_command(s, "board", 1))
 				g_pos.Print();
 			else if (is_command(s, "quit", 1))
 				exit(0);
@@ -540,9 +558,21 @@ void check_user_input_and_time()
 					g_multipv_size = atoi(token);
 				}
 			}
+			else if (is_command(s, "undo", 4))
+			{
+				g_flag = TERMINATE_SEARCH;
+				g_commandQueue.push_back("undo");
+				g_commandQueue.push_back("analyze");
+			}
+			else if (is_command(s, "remove", 6))
+			{
+				g_flag = TERMINATE_SEARCH;
+				g_commandQueue.push_back("undo");
+				g_commandQueue.push_back("analyze");
+			}
 		}
 
-		else if (g_mode == MODE_THINKING_ON_MOVE)
+		else if (g_mode == THINKING)
 		{
 			if (is_command(s, "quit", 1))
 				exit(0);
@@ -570,7 +600,7 @@ void check_user_input_and_time()
 			}
 		}
 
-		else if (g_mode == MODE_EPDTEST)
+		else if (g_mode == EPDTEST)
 		{
 			if (is_command(s, "board", 1))
 				g_pos.Print();
@@ -596,7 +626,16 @@ void clear_history()
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-/*void epdtest(FILE* psrc, double time_in_seconds, int reps)
+void ClearHashAndHistory()
+{
+	for (long i = 0; i < g_hash_size; ++i)
+		g_hash[i].hashLock = 0;
+
+	clear_history();
+}
+////////////////////////////////////////////////////////////////////////////////
+
+/* void epdtest(FILE* psrc, double time_in_seconds, int reps)
 {
 	char fen[256];
 	Position tmp = g_pos;
@@ -740,12 +779,11 @@ void PrintPV(const Position* pos, int iter, EVAL e, const char* comment)
 				else
 					OUT1(" cp %d", mpv->m_score);
 
+				OUT1(" time %ld", tm);
 				OUT1(" nodes %ld", nodes);
 				OUT1(" time %ld", tm);
 				if (tm > 0)
 				{
-					OUT1("info time %ld", tm);
-					OUT1(" nodes %ld", nodes);
 					long knps = nodes / tm;
 					OUT1(" nps %ld", (1000 * knps));
 				}
@@ -753,7 +791,7 @@ void PrintPV(const Position* pos, int iter, EVAL e, const char* comment)
 				for (size_t m = 0; m < mpv->m_pv.size(); ++m)
 				{
 					mv = mpv->m_pv[m];
-					OUT1("%s ", move_to_str(mv, buf));
+					OUT1("%s ", MoveToStrLong(mv, buf));
 				}
 				out("\n");
 			}
@@ -791,7 +829,9 @@ void PrintPV(const Position* pos, int iter, EVAL e, const char* comment)
 			OUT1("%d. ... ", movenum++);
 		}
 
-		OUT1("%s", move_to_str_san(tmp, mv, buf));
+		MoveList mvlist;
+		mvlist.GenAllMoves(tmp);
+		OUT1("%s", MoveToStrShort(mv, mvlist, buf));
 		tmp.MakeMove(mv);
 
 		if (tmp.InCheck())
@@ -886,7 +926,7 @@ void resize_hash(int size_in_mb)
 
 void start_analyze(const Position& pos0)
 {
-	g_mode = MODE_ANALYZE;
+	g_mode = ANALYZE;
 	g_flag = 0;
 
 	g_nodes = 0;
@@ -894,7 +934,7 @@ void start_analyze(const Position& pos0)
    g_start_time = get_time(); //clock();
 
 	Position pos = pos0;
-	clear_history();
+	ClearHashAndHistory();
 
 	if (!g_uci)
 	{
@@ -1064,7 +1104,25 @@ void start_analyze(const Position& pos0)
 
 void start_thinking_on_move(Position& pos0)
 {
-	g_mode = MODE_THINKING_ON_MOVE;
+	GAME_RESULT res = pos0.GameResult();
+	switch (res)
+	{
+	case WHITE_MATES:
+		out("1-0 {White mates}\n");
+		return;
+	case BLACK_MATES:
+		out("0-1 {Black mates}\n");
+		return;
+	case DRAW_STALEMATE:
+		out("1/2-1/2 {Draw: stalemate}\n");
+		return;
+	case DRAW_MATERIAL:
+		out("1/2-1/2 {Draw: material}");
+	default:
+		break;
+	}
+
+	g_mode = THINKING;
 	g_flag = 0;
 
 	g_nodes = 0;
@@ -1072,7 +1130,6 @@ void start_thinking_on_move(Position& pos0)
    g_start_time = get_time();//clock();
 
 	Position pos = pos0;
-
 	clear_history();
 
 	if (!g_uci)
@@ -1086,8 +1143,25 @@ void start_thinking_on_move(Position& pos0)
 
 	EVAL alpha = - INFINITY_SCORE;
 	EVAL beta = INFINITY_SCORE;
-
 	Move best_move = 0;
+
+	// Book
+
+// 	char buf[256];
+// 	Move book_move = g_book.GetMove(pos, buf);
+// 	if (book_move)
+// 	{
+// 		best_move = book_move;
+// 		if (!g_uci)
+// 		{
+// 			out(" 0 0 0 0      (");
+// 			out(buf);
+// 			out(")\n");
+// 		}
+// 		g_flag = FINALIZE_SEARCH;
+// 		goto MAKE_MOVE;
+// 	}
+
 	for (g_iter = 1; g_iter < MAX_PLY; g_iter++)
 	{
 		int print_iter = g_iter;
@@ -1125,27 +1199,29 @@ void start_thinking_on_move(Position& pos0)
 		PrintPV(&pos, print_iter, e, comment);
 		best_move = g_rootPV[0];
 
-		if (e > CHECKMATE_SCORE - 50)
+		if (g_iter > 5 && e > CHECKMATE_SCORE - 50)
 			g_flag = FINALIZE_SEARCH;
 	}
 
 	if (!g_flag && g_iter == MAX_PLY && best_move)
 		g_flag = FINALIZE_SEARCH;
 
+MAKE_MOVE:
+
 	if (g_flag == FINALIZE_SEARCH)
 	{
 		char buf[16];
 		if (g_uci)
 		{
-         out("\n");
-         OUT1("bestmove %s\n", move_to_str(best_move, buf));
+		out("\n");
+			OUT1("bestmove %s\n", MoveToStrLong(best_move, buf));
 		}
 		else
 		{
-//          set_highlight(1);
-         out("\n");
-         OUT1("move %s\n", move_to_str(best_move, buf));
-//          set_highlight(0);
+		//	set_highlight(1);
+		out("\n");
+			OUT1("move %s\n\n", MoveToStrLong(best_move, buf));
+		//	set_highlight(0);
 		}
 
 		pos0.MakeMove(best_move);

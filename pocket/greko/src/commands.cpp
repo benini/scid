@@ -2,14 +2,18 @@
 #pragma warning(disable: 4996)
 #endif
 
+#include <list>
+#include <string>
+#include <vector>
+using namespace std;
+
 #include <stdio.h>
 #include <string.h>
 
 #include "commands.h"
 #include "eval.h"
 #include "moves.h"
-#include "position.h"
-#include "moves.h"
+#include "notation.h"
 #include "search.h"
 #include "utils.h"
 #include "version.h"
@@ -19,24 +23,27 @@
 extern Limits g_limits;
 
 int g_force = 0;
+int g_hard = 0;
 int g_xboard = 0;
 int g_uci = 0;
 
-int CalcTimePerMove(int rest, int inc)
+list<string> g_commandQueue;
+
+void SetTimeLimits(int restMillisec)
 {
 	// all values in milliseconds
 
-	int t = rest / 40;
-	if (rest > 5 * inc)
-		t += inc;
+	g_limits.sd = MAX_PLY;
+	int t = restMillisec / 40;
 
-// 	if (g_log)
-// 	{
-// 		fprintf(g_log, "CalcTimePErMove: rest = %d, inc = %d ==> time = %d\n", rest, inc, t);
-// 		fflush(g_log);
-// 	}
+	g_limits.stHard = 3 * t;
+	g_limits.stSoft = t;
 
-	return t;
+	if (restMillisec > 2 * g_limits.inc)
+	{
+		g_limits.stHard += g_limits.inc;
+		g_limits.stSoft += g_limits.inc;
+	}
 }
 
 int is_command(const char *s, const char *pattern, size_t min_length)
@@ -117,24 +124,24 @@ void load_pos(Position* pos, const char* s)
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-void prompt()
-{
-	//
-	//   Print prompt with side to move and move number in console mode
-	//
-
-	if (g_xboard || g_uci)
-		return;
-
-	if (g_pos.Side() == WHITE)
-		out("White(");
-	else
-		out("Black(");
-
-	char buf[256];
-	sprintf(buf, "%d): ", g_pos.Ply() / 2 + 1);
-	out(buf);
-}
+// void prompt()
+// {
+// 	//
+// 	//   Print prompt with side to move and move number in console mode
+// 	//
+// 
+// 	if (g_xboard || g_uci)
+// 		return;
+// 
+// 	if (g_pos.Side() == WHITE)
+// 		out("White(");
+// 	else
+// 		out("Black(");
+// 
+// 	char buf[256];
+// 	sprintf(buf, "%d): ", g_pos.Ply() / 2 + 1);
+// 	out(buf);
+// }
 ////////////////////////////////////////////////////////////////////////////////
 
 void run_command_loop()
@@ -147,44 +154,33 @@ void run_command_loop()
 
 	while (1)
 	{
-#ifdef WIN32
+	#ifdef WIN32
     uiAlive();
-#endif 
-
-		prompt();
-		read_input(s, sizeof(s));
+  #endif
+		
+  if (g_commandQueue.empty())
+		{
+// 			prompt();
+			read_input(s, sizeof(s));
 
       if (s[0] == '\0') {
          my_usleep(10000);
          continue;
       }
-
-		Move mv0 = str_to_move(&g_pos, s);
-		if (mv0)
+    }
+		else
 		{
-			MoveList mvlist;
-			mvlist.GenAllMoves(g_pos);
+			string cmd = g_commandQueue.front();
+			g_commandQueue.pop_front();
+			strncpy(s, cmd.c_str(), BUFSIZE);
+		}
 
-			int move_found = 0;
-			for (int i = 0; i < mvlist.Size(); ++i)
-			{
-				Move mv = mvlist[i];
-				if (mv == mv0)
-				{
-					move_found = 1;
-					break;
-				}
-			}
-
-			if (move_found && g_pos.MakeMove(mv0))
-			{
-				if (!g_force)
-					start_thinking_on_move(g_pos);
-
-				continue;
-			}
-			else
-				out("Incorrect move\n");
+		Move mv = StrToMove(s, g_pos);
+		if (mv)
+		{
+			g_pos.MakeMove(mv);
+			if (!g_force)
+				start_thinking_on_move(g_pos);
 
 			continue;
 		}
@@ -209,7 +205,7 @@ void run_command_loop()
 		}
 		else if (is_command(s, "easy", 4))
 		{
-
+			g_hard = 0;
 		}
 /*      else if (is_command(s, "epdtest", 3))
 		{
@@ -275,25 +271,13 @@ void run_command_loop()
 				{
 					token = strtok(NULL, " ");
 					if (token)
-					{
-						// in UCI time comes in milliseconds
-						int t = CalcTimePerMove(atoi(token), g_limits.inc);
-						g_limits.stSoft = t;
-						g_limits.stHard = 3 * t;
-						g_limits.sd = MAX_PLY;
-					}
+						SetTimeLimits(atoi(token));
 				}
 				else if(!strcmp(token, "btime") && g_pos.Side() == BLACK)
 				{
 					token = strtok(NULL, " ");
 					if (token)
-					{
-						// in UCI time comes in milliseconds
-						int t = CalcTimePerMove(atoi(token), g_limits.inc);
-						g_limits.stSoft = t;
-						g_limits.stHard = 3 * t;
-						g_limits.sd = MAX_PLY;
-					}
+						SetTimeLimits(atoi(token));
 				}
 				else if(!strcmp(token, "winc") && g_pos.Side() == WHITE)
 				{
@@ -329,7 +313,7 @@ void run_command_loop()
 		}
 		else if (is_command(s, "hard", 4))
 		{
-
+			g_hard = 1;
 		}
 		else if (is_command(s, "isready", 7))
 		{
@@ -349,7 +333,7 @@ void run_command_loop()
 				{
 					legal++;
 					g_pos.UnmakeMove();
-					OUT1("%s ", move_to_str(mv, buf));
+					OUT1("%s ", MoveToStrLong(mv, buf));
 				}
 			}
 			OUT1(" -- total %d moves\n", legal);
@@ -415,6 +399,7 @@ void run_command_loop()
 		else if (is_command(s, "new", 3))
 		{
 			g_force = 0;
+			g_hard = 0;
 			g_pos.SetInitial();
 		}
 // 		else if (is_command(s, "perft", 2))
@@ -454,7 +439,7 @@ void run_command_loop()
 
 				while (token)
 				{
-					Move mv = str_to_move(&g_pos, token);
+					Move mv = StrToMove(token, g_pos);
 					g_pos.MakeMove(mv);
 					token = strtok(NULL, " ");
 				}
@@ -471,7 +456,7 @@ void run_command_loop()
 
 					while (token)
 					{
-						Move mv = str_to_move(&g_pos, token);
+						Move mv = StrToMove(token, g_pos);
 						g_pos.MakeMove(mv);
 						token = strtok(NULL, " ");
 					}
@@ -505,10 +490,11 @@ void run_command_loop()
 		else if (is_command(s, "result", 6))
 		{
 			g_force = 0;
+			g_hard = 0;
 			g_pos.SetInitial();
 		}
 		else if (is_command(s, "setboard", 8))
-		{      
+		{
 			g_pos.SetFEN(s + 9);
 		}
 
@@ -564,13 +550,7 @@ void run_command_loop()
 			char *token = strtok(s, " ");
 			token = strtok(NULL, " ");
 			if (token)
-			{
-				// in WB time comes in centiseconds
-				int t = CalcTimePerMove(10 * atoi(token), g_limits.inc);
-				g_limits.stSoft = t;
-				g_limits.stHard = 3 * t;
-				g_limits.sd = MAX_PLY;
-			}
+				SetTimeLimits(10 * atoi(token)); // in WB time comes in centiseconds
 		}
 		else if (is_command(s, "uci", 3))
 		{
