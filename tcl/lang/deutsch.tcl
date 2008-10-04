@@ -1451,9 +1451,16 @@ translate D Nodes {Knoten}
 translate D Depth {Tiefe}
 translate D Time {Zeit} 
 translate D SecondsPerMove {Sekunden pro Zug}
+# ====== TODO To be translated ======
+translate D Engine {Engine}
+# ====== TODO To be translated ======
+translate D TimeMode {Time mode}
 translate D TimeBonus {Zeit + Bonus}
-translate D WhiteTime {Zeit Weiß (Minuten + Sec/Zug)}
-translate D BlackTime {Zeit Schwarz (Minuten + Sec/Zug}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
+translate D TimeMin {min}
+# ====== TODO To be translated ======
+translate D TimeSec {sec}
 translate D AllExercisesDone {Alle Übungen gemacht}
 translate D MoveOutOfBook {Zug nicht mehr im Buch}
 translate D LastBookMove {Letzter Buchzug}
@@ -7083,6 +7090,10 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
+
+
 
 
 

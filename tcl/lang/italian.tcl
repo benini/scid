@@ -1444,9 +1444,16 @@ translate I Nodes {Nodi}
 translate I Depth {Profondità}
 translate I Time {Tempo}
 translate I SecondsPerMove {Secondi per mossa}
+# ====== TODO To be translated ======
+translate I Engine {Engine}
+# ====== TODO To be translated ======
+translate I TimeMode {Time mode}
 translate I TimeBonus {Tempo + bonus}
-translate I WhiteTime {Tempo del bianco (minuti + sec/mossa)}
-translate I BlackTime {Tempo del nero (minuti + sec/mossa)}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
+translate I TimeMin {min}
+# ====== TODO To be translated ======
+translate I TimeSec {sec}
 translate I AllExercisesDone {Tutti gli esercizi eseguiti}
 translate I MoveOutOfBook {Mossa fuori dal libro}
 translate I LastBookMove {Ultima mossa del libro}
@@ -1807,6 +1814,10 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
+
+
 
 
 

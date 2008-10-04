@@ -1644,11 +1644,18 @@ translate N Time {Time}
 # ====== TODO To be translated ======
 translate N SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate N Engine {Engine}
+# ====== TODO To be translated ======
+translate N TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate N TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate N WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate N BlackTime {Black time (minutes + sec/move)}
+translate N TimeMin {min}
+# ====== TODO To be translated ======
+translate N TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
  
 translate N AllExercisesDone {Alle oefeningen gedaan}
  
@@ -1887,6 +1894,10 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
+
+
+
 
 
 

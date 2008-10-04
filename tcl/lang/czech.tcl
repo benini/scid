@@ -1643,11 +1643,18 @@ translate C Time {Time}
 # ====== TODO To be translated ======
 translate C SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate C Engine {Engine}
+# ====== TODO To be translated ======
+translate C TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate C TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate C WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate C BlackTime {Black time (minutes + sec/move)}
+translate C TimeMin {min}
+# ====== TODO To be translated ======
+translate C TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate C AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -5524,6 +5531,10 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
+
+
 
 
 

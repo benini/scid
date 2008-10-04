@@ -1440,9 +1440,11 @@ translate E Nodes {Nodes}
 translate E Depth {Depth}
 translate E Time {Time} 
 translate E SecondsPerMove {Seconds per move}
+translate E Engine {Engine}
+translate E TimeMode {Time mode}
 translate E TimeBonus {Time + bonus}
-translate E WhiteTime {White time (minutes + sec/move)}
-translate E BlackTime {Black time (minutes + sec/move)}
+translate E TimeMin {min}
+translate E TimeSec {sec}
 translate E AllExercisesDone {All exercises done}
 translate E MoveOutOfBook {Move out of book}
 translate E LastBookMove {Last book move}

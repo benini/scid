@@ -1645,11 +1645,18 @@ translate H Time {Time}
 # ====== TODO To be translated ======
 translate H SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate H Engine {Engine}
+# ====== TODO To be translated ======
+translate H TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate H TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate H WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate H BlackTime {Black time (minutes + sec/move)}
+translate H TimeMin {min}
+# ====== TODO To be translated ======
+translate H TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate H AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -2119,6 +2126,10 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
+
+
 
 
 

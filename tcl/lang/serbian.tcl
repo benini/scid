@@ -1650,11 +1650,18 @@ translate Y Time {Time}
 # ====== TODO To be translated ======
 translate Y SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate Y Engine {Engine}
+# ====== TODO To be translated ======
+translate Y TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate Y TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate Y WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate Y BlackTime {Black time (minutes + sec/move)}
+translate Y TimeMin {min}
+# ====== TODO To be translated ======
+translate Y TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate Y AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1893,6 +1900,10 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
+
+
 
 
 

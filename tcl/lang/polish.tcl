@@ -1659,11 +1659,18 @@ translate P Time {Time}
 # ====== TODO To be translated ======
 translate P SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate P Engine {Engine}
+# ====== TODO To be translated ======
+translate P TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate P TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate P WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate P BlackTime {Black time (minutes + sec/move)}
+translate P TimeMin {min}
+# ====== TODO To be translated ======
+translate P TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate P AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -2120,6 +2127,10 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
+
+
 
 
 

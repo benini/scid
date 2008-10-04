@@ -1646,11 +1646,18 @@ translate O Time {Time}
 # ====== TODO To be translated ======
 translate O SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate O Engine {Engine}
+# ====== TODO To be translated ======
+translate O TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate O TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate O WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate O BlackTime {Black time (minutes + sec/move)}
+translate O TimeMin {min}
+# ====== TODO To be translated ======
+translate O TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate O AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1893,6 +1900,10 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
+
+
+
 
 
 

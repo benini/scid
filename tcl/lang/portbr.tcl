@@ -1655,11 +1655,18 @@ translate B Time {Time}
 # ====== TODO To be translated ======
 translate B SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate B Engine {Engine}
+# ====== TODO To be translated ======
+translate B TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate B TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate B WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate B BlackTime {Black time (minutes + sec/move)}
+translate B TimeMin {min}
+# ====== TODO To be translated ======
+translate B TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate B AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1899,6 +1906,10 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
+
+
+
 
 
 

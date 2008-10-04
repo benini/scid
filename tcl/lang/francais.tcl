@@ -1398,9 +1398,11 @@ translate F Nodes {Noeuds}
 translate F Depth {Profondeur}
 translate F Time {Temps} 
 translate F SecondsPerMove {Secondes par coup}
+translate F Engine {Moteur}
+translate F TimeMode {Mode de réflexion}
 translate F TimeBonus {Temps + bonus}
-translate F WhiteTime {Temps pour les Blancs (minutes + sec/coup)}
-translate F BlackTime {Temps pour les Noirs (minutes + sec/coup)}
+translate F TimeMin {min}
+translate F TimeSec {sec}
 translate F AllExercisesDone {Tous les exercices sont faits}
 translate F MoveOutOfBook {Coup hors bibliothèque d'ouverture}
 translate F LastBookMove {Dernier coup de la bibliothèque d'ouverture}
@@ -1726,6 +1728,10 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
+
+
+
 
 
 

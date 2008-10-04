@@ -1679,11 +1679,18 @@ translate R Time {Time}
 # ====== TODO To be translated ======
 translate R SecondsPerMove {Seconds per move}
 # ====== TODO To be translated ======
+translate R Engine {Engine}
+# ====== TODO To be translated ======
+translate R TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate R TimeBonus {Time + bonus}
 # ====== TODO To be translated ======
-translate R WhiteTime {White time (minutes + sec/move)}
 # ====== TODO To be translated ======
-translate R BlackTime {Black time (minutes + sec/move)}
+translate R TimeMin {min}
+# ====== TODO To be translated ======
+translate R TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate R AllExercisesDone {All exercises done}
 # ====== TODO To be translated ======
@@ -1922,6 +1929,10 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
+
+
 
 
 

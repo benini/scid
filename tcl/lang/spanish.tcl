@@ -1416,9 +1416,16 @@ translate S Nodes {Nodos}
 translate S Depth {Profundidad}
 translate S Time {Tiempo} 
 translate S SecondsPerMove {Segundos por movimiento}
+# ====== TODO To be translated ======
+translate S Engine {Engine}
+# ====== TODO To be translated ======
+translate S TimeMode {Time mode}
 translate S TimeBonus {Tiempo + bonus}
-translate S WhiteTime {Blancas (minutos + seg/movimiento)}
-translate S BlackTime {Negras (minutos + seg/movimiento)}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
+translate S TimeMin {min}
+# ====== TODO To be translated ======
+translate S TimeSec {sec}
 translate S AllExercisesDone {Todos los ejercicio hechos}
 translate S MoveOutOfBook {Movimiento fuera del libro}
 translate S LastBookMove {Último movimiento del libro}
@@ -1538,6 +1545,10 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
+
+
+
 
 
 

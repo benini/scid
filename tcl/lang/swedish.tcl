@@ -1653,11 +1653,18 @@ translate W Time {Tid}
 # ====== TODO To be translated ======
 translate W SecondsPerMove {Sekunder per drag}
 # ====== TODO To be translated ======
+translate W Engine {Engine}
+# ====== TODO To be translated ======
+translate W TimeMode {Time mode}
+# ====== TODO To be translated ======
 translate W TimeBonus {Tid + bonus}
 # ====== TODO To be translated ======
-translate W WhiteTime {Vits tid (minuter + sek/drag)}
 # ====== TODO To be translated ======
-translate W BlackTime {Svarts tid (minuter + sek/drag)}
+translate W TimeMin {min}
+# ====== TODO To be translated ======
+translate W TimeSec {sec}
+# ====== TODO To be translated ======
+# ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate W AllExercisesDone {Alla övningar gjorda}
 # ====== TODO To be translated ======
@@ -6910,6 +6917,10 @@ set tips(W) {
   }
 }
 #}
+
+
+
+
 
 
 
