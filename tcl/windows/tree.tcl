@@ -278,6 +278,9 @@ proc ::tree::selectCallback { baseNumber move } {
 proc ::tree::closeTree {baseNumber} {
   global tree
   
+  ::tree::hideCtxtMenu $baseNumber
+  .treeWin$baseNumber.buttons.stop invoke
+  
   trace remove variable tree(bestMax$baseNumber) write "::tree::doTrace bestMax"
   trace remove variable tree(bestRes$baseNumber) write "::tree::doTrace bestRes"
   
@@ -390,10 +393,12 @@ proc ::tree::refresh { { baseNumber "" }} {
 
 ################################################################################
 proc ::tree::dorefresh { baseNumber } {
+  
   global tree treeWin glstart
   set w .treeWin$baseNumber
   
   if {![winfo exists $w]} { return }
+
   if { ! $tree(autorefresh$baseNumber) } { return }
   
   busyCursor .
