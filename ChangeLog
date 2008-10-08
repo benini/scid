@@ -588,11 +588,11 @@ scid-3.6.26
 - Fix : when playing on FICS or using a Novag Citrine board, entering moves with the keyboard was not send
 - Fix : mouse position on squares was inaccurate (if border size was not set to 2), and entering moves sometimes difficult (see ::board::getSquare)
 - Fix : exception handled after closing FICS window, and offers graph opened
-- Fix : tactical game. When aborting a game, the engine used as coach is now correctly stopped. This could lead to an UI freeze in some cases.
+- Fix : tactical game. When aborting a game, the engine used as coach is now correctly stopped. This previously could lead to an UI freeze in some cases.
 - Tactical game : reworked user interface and some enhancements : parameters saving, ability to go back in game (thanks to Steven Atkinson)
 - Serious game : reworked user interface (thanks to Steven Atkinson)
 - Fix : Tree window 
 	* abort refreshing before closing the window
-	* after a search with Tree window opened for current base, don't load automatically first game in filter, or the Tree will be refreshed, overwriting the filter
+	* after a search with Tree window opened for current base, don't load automatically the first game in filter, or the Tree will be refreshed, overwriting the filter
 	
 	

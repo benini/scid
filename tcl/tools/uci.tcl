@@ -67,7 +67,7 @@ namespace eval uci {
       set pipe $uciInfo(pipe$n)
       if { ! [ ::uci::checkEngineIsAlive $n ] } { return }
     }
-
+    
     if {$analyze} {
       if {! $analysis(seen$n)} {
         set analysis(seen$n) 1
@@ -628,7 +628,7 @@ namespace eval uci {
       set analysis(waitForReadyOk$n) 1
       ::sendToEngine $n "isready"
       vwait analysis(waitForReadyOk$n)
-     ::sendToEngine $n "setoption name $name value $value"
+      ::sendToEngine $n "setoption name $name value $value"
     }
   }
   ################################################################################
@@ -710,16 +710,16 @@ namespace eval uci {
     global windowsOS ::uci::uciInfo
     
     set pipe $uciInfo(pipe$n)
+    # Check the pipe is not already closed:
+    if {$pipe == ""} { return }
     
     after cancel "::uci::closeUCIengine $n 0"
     fileevent $pipe readable {}
     
     if {! $uciok } {
-      tk_messageBox -title "Scid: error starting UCI engine" \
+      tk_messageBox -title "Scid: error closing UCI engine" \
           -icon warning -type ok -message "Not an UCI engine"
     }
-    # Check the pipe is not already closed:
-    if {$pipe == ""} { return }
     
     # Some engines in analyze mode may not react as expected to "quit"
     # so ensure the engine exits analyze mode first:

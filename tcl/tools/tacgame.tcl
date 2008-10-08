@@ -104,7 +104,6 @@ namespace eval tacgame {
         ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::index1 ::tacgame::index2 ::tacgame::chosenOpening
     
     # check if game window is already opened. If yes abort previous game
-    # better kill phalanx too. (?) S.A.
     if {[winfo exists .coachWin]} {
       focus .
       destroy .coachWin
@@ -150,18 +149,16 @@ namespace eval tacgame {
     bind $w <F1> { helpWindow TacticalGame }
     setWinLocation $w
     
-    ### this widget reorganised by S.A.
-
     frame $w.flevel -relief raised -borderwidth 1
     frame $w.flevel.diff_fixed
     frame $w.flevel.diff_random
     frame $w.fopening -relief raised -borderwidth 1
     frame $w.flimit -relief raised -borderwidth 1
     frame $w.fbuttons
-
+    
     label $w.flevel.label -text [string toupper $::tr(difficulty) 0 0 ]
     label $w.flevel.space -text {}
-
+    
     pack $w.flevel -side top -fill x
     pack $w.flevel.label -side top -pady 3
     pack $w.flevel.diff_fixed -side top
@@ -178,30 +175,26 @@ namespace eval tacgame {
     
     radiobutton $w.flevel.diff_fixed.cb -text $::tr(FixedLevel) -variable ::tacgame::randomLevel -value 0 -width 15  -anchor w
     scale $w.flevel.diff_fixed.scale -orient horizontal -from 1200 -to 2200 -length 200 \
-      -variable ::tacgame::levelFixed -tickinterval 0 -resolution 50
+        -variable ::tacgame::levelFixed -tickinterval 0 -resolution 50
     pack $w.flevel.diff_fixed.cb -side left
     pack $w.flevel.diff_fixed.scale
     
     label $w.fopening.label -text $::tr(Opening)
     pack $w.fopening.label -side top -pady 3
-
+    
     # start new game
-    radiobutton $w.fopening.cbNew -text $::tr(StartNewGame) \
-    -variable ::tacgame::openingType -value new
-
+    radiobutton $w.fopening.cbNew -text $::tr(StartNewGame)  -variable ::tacgame::openingType -value new
+    
     # start from current position
-    radiobutton $w.fopening.cbPosition -text $::tr(StartFromCurrentPosition) \
-    -variable ::tacgame::openingType -value current
-
+    radiobutton $w.fopening.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::tacgame::openingType -value current
+    
     # or choose a specific opening
-    radiobutton $w.fopening.cbSpecific -text $::tr(SpecificOpening) \
-    -variable ::tacgame::openingType -value specific
-
+    radiobutton $w.fopening.cbSpecific -text $::tr(SpecificOpening) -variable ::tacgame::openingType -value specific
+    
     pack $w.fopening.cbNew -anchor w -padx 100
     pack $w.fopening.cbPosition -anchor w -padx 100
     pack $w.fopening.cbSpecific -anchor w -padx 100
-    # pack [label $w.fopening.space2 -text {}]
-
+    
     frame $w.fopening.fOpeningList
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
         -height 5 -width 40 -list ::tacgame::openingList
@@ -213,7 +206,7 @@ namespace eval tacgame {
     
     # in order to limit CPU usage, limit the time for analysis (this prevents noise on laptops)
     checkbutton $w.flimit.blimit -text $::tr(limitanalysis) -variable ::tacgame::isLimitedAnalysisTime -relief flat
-    scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -label $::tr(seconds) -variable ::tacgame::analysisTime -resolution 5 
+    scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -label $::tr(seconds) -variable ::tacgame::analysisTime -resolution 5
     pack $w.flimit.blimit $w.flimit.analysisTime -side left -expand yes -pady 5
     
     button $w.fbuttons.close -text $::tr(Play) -command {
@@ -350,7 +343,7 @@ namespace eval tacgame {
       ::tacgame::phalanxGo
     }
     pack $w.fbuttons.resume -expand yes -fill both -padx 20 -pady 2
-
+    
     button $w.fbuttons.close -textvar ::tr(Abort) -command ::tacgame::abortGame
     pack $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     
@@ -447,7 +440,13 @@ namespace eval tacgame {
     global windowsOS ::tacgame::analysisCoach
     
     # Check the pipe is not already closed:
-    if {$analysisCoach(pipe$n) == ""} {
+    if { $n == 1 } {
+      if {$analysisCoach(pipe$n) == "" } {
+        return
+      }
+    }
+    if { $n == 2 } {
+      ::uci::closeUCIengine $n
       return
     }
     
@@ -604,12 +603,12 @@ namespace eval tacgame {
     after cancel ::tacgame::phalanxGo
     
     ### should show endOfGame
-
+    
     if {$analysisCoach(paused)} {
-      .coachWin.fbuttons.resume configure -state normal 
+      .coachWin.fbuttons.resume configure -state normal
       return
     }
-
+    
     if { [::tacgame::endOfGame] } { return }
     
     # check if Phalanx is already thinking
@@ -831,7 +830,7 @@ namespace eval tacgame {
       set sc1 $::uci::uciInfo(score2)
       set sc2 [lindex $lscore end]
     }
-        
+    
     # There are less than 2 scores in the list
     if {[llength $lscore] < 2} {
       set blunderWarningLabel $::tr(Noinfo)
