@@ -421,13 +421,13 @@ set helpText(Hints) {<h1>Scid Hints</h1>
   grandmaster games. How do I compare one of my games to those in the large
   database?</h4>
   <p>
-  In the large database, open the <a Tree>tree window</a> and press the
-  <term>Lock</term> button to lock the tree to that database. Then switch
-  to the other database, and the tree will continue to show data for the
-  large database.
+  Just open the <a Tree>Tree</a> window for the reference database and
+  switch back to the game to compare by means of the database
+  switcher. Alternatively, a base can directly be opened as tree via
+  the <term>File</term> menu.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.28, December 2008)</footer></p>
 }
 
 
@@ -1994,12 +1994,15 @@ set helpText(Tree) {<h1>The Tree window</h1>
   
   <h3><name Lock>Locking the tree window</name></h3>
   <p>
-  The <term>Lock</term> button in the tree window can be used to lock the
-  tree to the current database. This means the tree will continue to use
-  that database even when you switch to another open database. This is
-  useful if you want to use a large database as a reference while
-  playing through a game in another database: simply open the tree on the
-  reference database, lock it, then switch to the other base.
+  Each tree window is associated with a specific base, that is, if
+  several bases are opend simultaneously, several tree windows may
+  exist. If the <term>Lock</term> button in the tree window is
+  enabled, closing the tree window will also close the database
+  associated with this specific tree. Besides it also closes
+  associated graph or best games windows that are also associated with
+  the tree window. If the <term>Lock</term> button is not checked
+  closing the tree will leave all these windows and just close the
+  tree view of the base.
   </p>
   
   <h3><name Training>Training</name></h3>
@@ -2035,17 +2038,17 @@ set helpText(Tree) {<h1>The Tree window</h1>
 
   <h3>Using a Mask file to configure display</h3>
   <p>
-  An user defined Mask file (.stm) can be defined to change the way statistics are displayed
-  in the Tree window. When a Mask file is opened, Tree window changes. For each line in the 
-  Mask are displayed a color marker, a NAG code and a comment. A comment can also be entered 
-  for the position, for example to point out a critical position.
-  </p>
-  <p>
-  To add markers to moves or to the current position, right click on a line. Don't forget to save the Mask 
-  (even if you will be prompted to do it if you close a Mask that has been modified).
-  </p>
-  <p>
-  A mask can be automatically filled with a game containing comments and variations (menu "Fill with game").
+  An user defined Mask file (.stm) can be defined to change the way
+  statistics are displayed in the Tree window. When a Mask file is
+  opened, Tree window changes. For each line in the Mask are displayed
+  a color marker, a NAG code and a comment. A comment can also be
+  entered for the position, for example to point out a critical
+  position.  </p> <p> To add markers to moves or to the current
+  position, right click on a line. Don't forget to save the Mask (even
+  if you will be prompted to do it if you close a Mask that has been
+  modified).  </p> <p> A mask can be automatically filled with a game
+  containing comments and variations (menu <term>Fill with game</term>
+  or <term>Fill with Database</term>).
   </p>
   
   <h3>Caching for faster results</h3>
@@ -2068,13 +2071,17 @@ set helpText(Tree) {<h1>The Tree window</h1>
   then saves the cache file.
   </p>
   <p>
-  Tree refresh can be dramatically enhanced if the database is sorted by ECO code 
-  then compacted (see the <a Maintenance>maintenance</a> window). Once this is achieved
-  (the whole process can last several hours), turn on the option <b>Fast mode</b>. The
-  refresh of the Tree window will be 20 times faster in average at the cost of some inaccuracies 
-  (games not in current filter will not be taken into account). By turning off the <b>Fast mode</b> 
-  option you will see the difference in the number of games when all the transpositions are taken into account.
-  If you want to get a preview of statistics then get a precise Tree, use the option <b>Fast and slow mode</b> 
+  Tree refresh can be dramatically enhanced if the database is sorted
+  by ECO code then compacted (see the <a Maintenance>maintenance</a>
+  window). Once this is achieved (the whole process can last several
+  hours), turn on the option <term>Fast mode</term>. The refresh of
+  the Tree window will be 20 times faster in average at the cost of
+  some inaccuracies (games not in current filter will not be taken
+  into account). By turning off the <term>Fast mode</term> option you
+  will see the difference in the number of games when all the
+  transpositions are taken into account.  If you want to get a preview
+  of statistics then get a precise Tree, use the option <term>Fast and
+  slow mode</term> 
   </p>
   <p>
   Note that a tree cache (.stc) file is completely redundant; you can remove
@@ -2083,7 +2090,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   adding or replacing a game, or sorting the database.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.25, August 2008)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, August 2008)</footer></p>
 }
 
 

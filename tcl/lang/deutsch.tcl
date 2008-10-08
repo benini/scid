@@ -2234,13 +2234,11 @@ und eine große Datenbank mit Großmeisterpartien. Wie kann ich eine
 meiner Partien mit denen in der großen Datenbank vergleichen?</h4>
 <p>
 Öffnen Sie das <a Tree>Zugbaumfenster</a> in der großen Datenbank und
-drücken Sie auf den
-<b>Anbinden</b>-Schalter, um den Zugbaum an diese Datenbank
-anzubinden. Dann wechseln Sie zur anderen Datenbank, und der Zugbaum
-wird weiterhin die Daten der großen Datenbank anzeigen.
+und wechseln Sie mit Hilfe des Datenbankwechslers in die zu
+vergleichende Datenbank.
 </p>
 
-<p><footer>(Aktualisiert: Scid 2.6, August 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.6.28, August 2008)</footer></p>
 }
 
 
@@ -4220,14 +4218,15 @@ Weiß üblicherweise etwa 55%.
 
 <h3><name Lock>Das Zugbaumfenster anbinden</name></h3>
 <p>
-Mit dem Schalter <term>Anbinden</term> im Zugbaumfenster kann man den
-Zugbaum an die aktuelle Datenbank binden. Das heißt, der Zugbaum wird
-weiterhin diese Datenbank benutzen, auch wenn Sie zu einer anderen
-geöffneten Datenbank wechseln. Das ist recht nützlich, wenn Sie eine
-große Datenbank als Referenz verwenden wollen, während Sie eine Partie
-in einer anderen Datenbank nachspielen: Öffnen Sie einfach den Zugbaum
-auf der Referenzdatenbank, binden ihn an und wechseln dann zur anderen
+Jedes Zugbaumfenster ist mit einer geladenen Datenbank verbunden, so
+dass, sollten mehre Datenbanken geöffnet sein, auch mehrere
+Zugbaumfenster parallel existieren können, je eines für jede
 Datenbank.
+Mit dem Schalter <term>Anbinden</term> im Zugbaumfenster kann man nun
+erreichen, dass eine Datenbank automatisch geschlossen wird, sobald
+das zugehörige Zugbaumfenster geschlossen wird. Weiterhin werden dann
+auch alle anderen, mit dem Zugbaumfenster verbundenen Fenster "Beste
+Partien" oder eine Zugbaumgrafik automatisch mit geschlossen.
 </p>
 
 <h3><name Training>Training</name></h3>
@@ -4265,6 +4264,29 @@ aus der Sicht der am Zug befindlichen Seite, wie sie in der EPD-Datei
 gespeichert ist).
 </p>
 
+<h3>Masken zur Konfiguration der Darstellung</h3>
+<p>
+Benutzerdefinierte Maskendateien (.stm) können angelegt werden, um die
+Anzeige der Statistik im Zugabaumfenster zu erweitern. Hiermit können
+einerseits farbige Markierungen, NAG-Codes oder Kommentare für eine
+bestimmte Stellung hinzugefügt werden, um beispielsweise kritische
+Positionen zu markieren.
+</p>
+<p>
+Um Markierungen anzulegen bewegt man sich zunächst in einer
+bestehenden Partie zur entsprechenden Position und klickt dann mit der
+Maus die entsprechene Variante mit der rechten Taste an. Sodann können
+aus dem sich öffnenden Kontextmenue entsprechende Markierungen
+ausgewählt oder Kommentare eingegeben werden. Nach dem Hinzufügen
+entsprechender Annotationen muß die Maske mit dem Punkt
+<term>Speichern</term> gesichert werden.
+</p>
+<p>
+Masken können auch aus bestehenden Partien, welche Kommentare und
+Varianten enthalten gefüllt werden. Hierzu dient der Punkt <term>Mit
+aktueller Partie füllen</term> bzw. <term>Mit Datenbank Füllen</term>
+</p>
+
 <h3>Schnellere Ergebnisse durch Zwischenspeichern</h3>
 <p>
 Scid nutzt für die am häufigsten vorkommenden Positionen einen
@@ -4287,6 +4309,18 @@ Eröffnungspositionen. Es werden etwa 100 der häufigsten
 Eröffnungsstellungen gesucht, dann wird die Cache-Datei geschrieben.
 </p>
 <p>
+Das neue aufbauen des Zugbaumfensters kann erheblich beschleunigt
+werden, wenn eine Datenbank nach ECO-Codes sortiert abgespeichert
+wird. (Zum sortieren von Datenbanken siehe das <a
+Maintenance>Wartungsfenster</a>.) Dieses Sortieren kann allerdings
+viele Stunden in Anspruch nehmen. Danach kann durch einschalten der
+Option <term>Schneller Modus</term> die Suche um bis zu einen Faktor
+20 beschleunigt werden, wobei allerdings kleinere Ungenauigkeiten in
+Kauf genommen werden müssen. Um eine schnelle Voranzeige der Statistik
+zu erreichen aber trotzdem ein genaues ergenbis zu erziehlen dient die
+Option <term>Schneller und Gründlicher Modus</term>
+</p>
+<p>
 Beachten Sie, daß eine Zugbaum-Cache-Datei (.stc) völlig redundant ist;
 Sie können sie ohne Auswirkungen auf die Datenbank löschen, und
 tatsächlich wird sie jedesmal von Scid gelöscht, wenn sie nach
@@ -4294,7 +4328,7 @@ irgendeiner Aktion veraltet sein könnte -- zum Beispiel nach Hinzufügen
 oder Ersetzen einer Partie, oder nach Sortieren der Datenbank.
 </p>
 
-<p><footer>(Aktualisiert: Scid 3.0, November 2001)</footer></p>
+<p><footer>(Aktualisiert: Scid 3.6.26, Oktober 2008)</footer></p>
 }
 
 

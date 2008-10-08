@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.20 2008/09/16 08:59:38 arwagner Exp $
+### $Id: correspondence.tcl,v 1.21 2008/10/08 18:28:33 arwagner Exp $
 ###
-### Last change: <Mon, 2008/09/15 11:21:47 arwagner ingata>
+### Last change: <Wed, 2008/10/08 20:01:52 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -642,8 +642,9 @@ namespace eval Xfcc {
 					# If the PGN already ends with a comment, do not place
 					# the message string afterwards as scid will then
 					# discard the comment in the movelist.
-					if {([string range $moves end end] != "\}") && ($myTurn == "no")} {
-						if {$mess != ""} {
+					if {[string range $moves end end] != "\}"} {
+						if {($myTurn == "true") && ($mess != "")} {
+							puts "writing comment from mess"
 							puts -nonewline $pgnF "\{"
 							puts -nonewline $pgnF $mess
 							puts $pgnF "\}"
@@ -1621,7 +1622,9 @@ namespace eval CorrespondenceChess {
 	# Set the global $num to the row the user clicked upon
 	#----------------------------------------------------------------------
 	proc SetSelection {xcoord ycoord} {
-		global num
+		global num 
+
+		set gamecount $::CorrespondenceChess::glgames
 
 		# remove old highlighting
 		foreach col {id toMove event site white black clockW clockB var feature} {
@@ -1630,12 +1633,17 @@ namespace eval CorrespondenceChess {
 
 		set num [expr {int([.ccWindow.bottom.id index @$xcoord,$ycoord]) + $::CorrespondenceChess::glccstart - 1 }]
 
+		# Prevent clicking beyond the last game
+		if { $num > $gamecount } {
+				set num $gamecount
+		}
+
 		# highlight current games line
 		foreach col {id toMove event site white black clockW clockB var feature} {
 			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
 		}
-		updateConsole "info: switched to game $num"
+		updateConsole "info: switched to game $num/$gamecount"
 	}
 
 	#----------------------------------------------------------------------
