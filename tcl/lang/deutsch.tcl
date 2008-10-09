@@ -1378,8 +1378,7 @@ translate D moveblunderthreshold {fehlerhafter Zug, wenn Verlust größer als}
 translate D limitanalysis {Analysezeit der Engine begrenzen}
 translate D seconds {Sekunden}
 translate D Abort {Abbrechen}
-# ====== TODO To be translated ======
-translate D Resume {Resume}
+translate D Resume {Fortfahren}
 translate D OutOfOpening {Ende der Eröffnung}
 translate D NotFollowedLine {You did not follow the line}
 translate D DoYouWantContinue {Möchten sie fortfahren?}
@@ -1438,12 +1437,9 @@ translate D WinWonGame {Gewinne gewonnene Partie}
 translate D Lines {Variantenzahl}
 translate D ConfigureUCIengine {UCI Engine konfigurieren}
 translate D SpecificOpening {Ausgewählte Eröffnung}
-# ====== TODO To be translated ======
-translate D StartNewGame {Start new game}
-# ====== TODO To be translated ======
-translate D FixedLevel {Fixed level}
-# ====== TODO To be translated ======
-translate D Opening {Opening}
+translate D StartNewGame {Neue Partie}
+translate D FixedLevel {Festgelegte Stärke}
+translate D Opening {Eröffnung}
 translate D RandomLevel {Zufallsniveau}
 translate D StartFromCurrentPosition {Von aktueller Position starten}
 translate D FixedDepth {Feste Tiefe}
@@ -1451,16 +1447,11 @@ translate D Nodes {Knoten}
 translate D Depth {Tiefe}
 translate D Time {Zeit} 
 translate D SecondsPerMove {Sekunden pro Zug}
-# ====== TODO To be translated ======
 translate D Engine {Engine}
-# ====== TODO To be translated ======
-translate D TimeMode {Time mode}
+translate D TimeMode {Zeitmodus}
 translate D TimeBonus {Zeit + Bonus}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate D TimeMin {min}
-# ====== TODO To be translated ======
-translate D TimeSec {sec}
+translate D TimeSec {s}
 translate D AllExercisesDone {Alle Übungen gemacht}
 translate D MoveOutOfBook {Zug nicht mehr im Buch}
 translate D LastBookMove {Letzter Buchzug}

@@ -98,7 +98,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Comment>Comment editor</a></li>
   <li><a Compact>Compacting a database</a></li>
   <li><a Correspondence>Correspondence Chess</a></li>
-  <li><a CCGameListIcons>Correspondence Chess Icons</a></li>
+  <li><a CCIcons>Correspondence Chess Icons</a></li>
   <li><a Author>Contact information</a></li>
   <li><a Contents>Contents</a></li>
   <li><a Crosstable>Crosstable</a> window</li>
