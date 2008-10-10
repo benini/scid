@@ -1500,7 +1500,7 @@ translate W blunder {blunder}
 # ====== TODO To be translated ======
 translate W Noinfo {-- Ingen information --}
 # ====== TODO To be translated ======
-translate W PhalanxOrTogaMissing {Phalanx or Toga not found}
+translate W PhalanxOrTogaMissing {Phalanx eller Toga hittades inte}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
@@ -1512,7 +1512,7 @@ translate W seconds {sekunder}
 # ====== TODO To be translated ======
 translate W Abort {Avbryt}
 # ====== TODO To be translated ======
-translate W Resume {Resume}
+translate W Resume {Fortsätt}
 # ====== TODO To be translated ======
 translate W OutOfOpening {utanför öppning}
 # ====== TODO To be translated ======
@@ -1633,11 +1633,11 @@ translate W ConfigureUCIengine {Konfigurera UCI-schackmotor}
 # ====== TODO To be translated ======
 translate W SpecificOpening {Specifik öppning}
 # ====== TODO To be translated ======
-translate W StartNewGame {Start new game}
+translate W StartNewGame {Starta nytt parti}
 # ====== TODO To be translated ======
-translate W FixedLevel {Fixed level}
+translate W FixedLevel {Fast nivå}
 # ====== TODO To be translated ======
-translate W Opening {Opening}
+translate W Opening {Öppning}
 # ====== TODO To be translated ======
 translate W RandomLevel {Slumpmässig nivå}
 # ====== TODO To be translated ======
@@ -1653,16 +1653,16 @@ translate W Time {Tid}
 # ====== TODO To be translated ======
 translate W SecondsPerMove {Sekunder per drag}
 # ====== TODO To be translated ======
-translate W Engine {Engine}
+translate W Engine {Schackmotor}
 # ====== TODO To be translated ======
-translate W TimeMode {Time mode}
+translate W TimeMode {Tidsmod}
 # ====== TODO To be translated ======
 translate W TimeBonus {Tid + bonus}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 translate W TimeMin {min}
 # ====== TODO To be translated ======
-translate W TimeSec {sec}
+translate W TimeSec {sek}
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======
 # ====== TODO To be translated ======

@@ -336,7 +336,7 @@ helpMsg S .button.autoplay {Automovimiento de los movimientos  (Tecla: Ctrl+Z)}
 
 # General buttons:
 translate S Back {Atrás}
-translate S Browse {Navegar}
+translate S Browse {Hojear}
 translate S Cancel {Cancelar}
 translate S Continue {Continuar}
 translate S Clear {Limpiar}
@@ -349,7 +349,7 @@ translate S Help {Ayuda}
 translate S Import {Importar}
 translate S Index {Índice}
 translate S LoadGame {Cargar partida}
-translate S BrowseGame {Buscar partida}
+translate S BrowseGame {Hojear partida}
 translate S MergeGame {Incorporar partida}
 translate S MergeGames {Mezclar o fusionar partidas}
 translate S Preview {Vista previa}
@@ -1337,14 +1337,12 @@ translate S Play {Jugar}
 translate S Noblunder {Sin errores}
 translate S blunder {Meteduras de pata}
 translate S Noinfo {-- Sin información --}
-# ====== TODO To be translated ======
-translate S PhalanxOrTogaMissing {Phalanx or Toga not found}
+translate S PhalanxOrTogaMissing {Phalanx o Toga no encontrado}
 translate S moveblunderthreshold {El movimiento es una metedura de pata si la pérdida de puntuación es mayor que }
 translate S limitanalysis {Tiempo límite para análisis del motor}
 translate S seconds {segundos}
 translate S Abort {Abortar}
-# ====== TODO To be translated ======
-translate S Resume {Resume}
+translate S Resume {Reanudar}
 translate S OutOfOpening {Fuera de apertura}
 translate S NotFollowedLine {Tú no sigues la linea}
 translate S DoYouWantContinue {¿Quieres continuar?}
@@ -1403,12 +1401,9 @@ translate S WinWonGame {Gana la partida ganada}
 translate S Lines {Lineas}
 translate S ConfigureUCIengine {Configurar motor UCI}
 translate S SpecificOpening {Apertura específica}
-# ====== TODO To be translated ======
-translate S StartNewGame {Start new game}
-# ====== TODO To be translated ======
-translate S FixedLevel {Fixed level}
-# ====== TODO To be translated ======
-translate S Opening {Opening}
+translate S StartNewGame {Empezar partida nueva}
+translate S FixedLevel {Nivel fijado}
+translate S Opening {Abriendo}
 translate S RandomLevel {Nivel aleatorio}
 translate S StartFromCurrentPosition {Empezar desde la posición actual}
 translate S FixedDepth {Profundidad fija}
@@ -1416,16 +1411,11 @@ translate S Nodes {Nodos}
 translate S Depth {Profundidad}
 translate S Time {Tiempo} 
 translate S SecondsPerMove {Segundos por movimiento}
-# ====== TODO To be translated ======
-translate S Engine {Engine}
-# ====== TODO To be translated ======
-translate S TimeMode {Time mode}
+translate S Engine {Motor}
+translate S TimeMode {Modo de tiempo}
 translate S TimeBonus {Tiempo + bonus}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
 translate S TimeMin {min}
-# ====== TODO To be translated ======
-translate S TimeSec {sec}
+translate S TimeSec {seg}
 translate S AllExercisesDone {Todos los ejercicio hechos}
 translate S MoveOutOfBook {Movimiento fuera del libro}
 translate S LastBookMove {Último movimiento del libro}

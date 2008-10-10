@@ -21,7 +21,7 @@ if {$profile} {
   ::profiler::init
 }
 
-set scidppc_version "Scid Pocket 1.3"
+set scidppc_version "Scid Pocket 1.4"
 
 set chan ""
 set chanid ""

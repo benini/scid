@@ -585,7 +585,7 @@ scid-3.6.26
 	* Scidlet added as new engine (also added xboard commands "analyze" and "exit" to Scidlet, but only for the PPC version)
 	* Fix : manual draw adjudication when insufficient material (waited for ever for bestmove reply)
 	* added insufficient material detection during engines tournament
-- Fix : when playing on FICS or using a Novag Citrine board, entering moves with the keyboard was not send
+- Fix : when playing on FICS or using a Novag Citrine board, entering moves with the keyboard was not sent
 - Fix : mouse position on squares was inaccurate (if border size was not set to 2), and entering moves sometimes difficult (see ::board::getSquare)
 - Fix : exception handled after closing FICS window, and offers graph opened
 - Fix : tactical game. When aborting a game, the engine used as coach is now correctly stopped. This previously could lead to an UI freeze in some cases.
@@ -594,5 +594,5 @@ scid-3.6.26
 - Fix : Tree window 
 	* abort refreshing before closing the window
 	* after a search with Tree window opened for current base, don't load automatically the first game in filter, or the Tree will be refreshed, overwriting the filter
-	
-	
+- updated spanish translation (thanks to Benigno Hernández)
+- updated swedish translation (thanks to Hans Eriksson)
