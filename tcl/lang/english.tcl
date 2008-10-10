@@ -1351,7 +1351,7 @@ translate E showblunderexists {show blunder exists}
 translate E showblundervalue {show blunder value}
 translate E showscore {show score}
 translate E coachgame {coach game}
-translate E configurecoachgame {configure coach game}
+translate E configurecoachgame {Configure tactical game}
 translate E configuregame {Game configuration}
 translate E Phalanxengine {Phalanx engine}
 translate E Coachengine {Coach engine}

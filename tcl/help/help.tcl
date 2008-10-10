@@ -131,6 +131,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>F</h3>
   <ul>
   <li><a Finder>File Finder</a></li>
+  <li><a FindBestMove>Training: Find best move</a></li>
   <li><a Formats>File formats</a></li>
   <li><a Menus File>File menu</a></li>
   <li><a Searches Filter>Filter</a></li>
@@ -158,6 +159,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>I</h3>
   <ul>
   <li><a Import>Import</a> window</li>
+  <li><a Informant>Informant Symbols</a></li>
   <li><a CCGameListIcons>Icons for Correspondence Chess</a></li>
   </ul>
   
@@ -189,6 +191,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a ECO>Opening classification (ECO)</a></li>
   <li><a Repertoire>Opening repertoires</a></li>
   <li><a Reports Opening>Opening report</a> window</li>
+  <li><a OpeningTrainer>Training: Openings</a></li>
   <li><a Options>Options</a></li>
   </ul>
   
@@ -200,6 +203,8 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a PList>Player Finder</a> window</li>
   <li><a PInfo>Player Info</a> window</li>
   <li><a Reports Player>Player report</a> window</li>
+  <li><a TacticalGame>Play tactical game</a></li>
+  <li><a SeriousGame>Play serious game</a></li>
   </ul>
   
   <h3>Q</h3>
@@ -218,6 +223,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Searches Filter>Search filter</a></li>
   <li><a Menus Search>Search menu</a></li>
   <li><a Searches>Searches</a></li>
+  <li><a SeriousGame>Play serious game</a></li>
   <li><a Sorting>Sorting a database</a></li>
   <li><a Maintenance Spellcheck>Spellchecking names</a></li>
   <li><a Switcher>Switcher</a> window</li>
@@ -226,8 +232,12 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>T</h3>
   <ul>
   <li><a TB>Tablebases</a></li>
+  <li><a TacticalGame>Tactical game</a></li>
   <li><a Menus Tools>Tools menu</a></li>
   <li><a Tmt>Tournament finder</a></li>
+  <li><a FindBestMove>Training: Find best move</a></li>
+  <li><a OpeningTrainer>Training: Openings</a></li>
+  <li><a TacticsTrainer>Training: Tactics</a></li>
   <li><a Tree>Tree window</a></li>
   <li><a Moves Trial>Trial mode</a></li>
   <li><a Maintenance Twins>Twin (duplicate) games</a></li>
@@ -458,7 +468,7 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <li> <button autoplay_off> Start/stop autoplay mode (see below). </li>
   <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>. </li>
   <li> <button tb_flip> Rotate the board 180 degrees. </li>
-  <li> <button tb_coords> Show/hide board coordinates. </li>
+  <li> <button tb_coords> Show/hide board coordinates.</li>
   </ul>
   
   <h4><name Autoplay>Autoplay mode</name></h4>
@@ -481,12 +491,11 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   
   <h3>The game information area</h3>
   <p>
-  The area below the chessboard showing information about the game is called
-  the <term>game information area</term>.
-  Its first three lines show information such as the players, result,
-  date, and site.
-  The fourth line indicates the current position in the game, and what the
-  next move is.
+  The area below the chessboard showing information about the game is
+  called the <term>game information area</term>.  Its first three
+  lines show information such as the players, result, date, and site.
+  The fourth line indicates the current position in the game, and what
+  the next move is.
   </p>
   <p>
   The fifth line shows the <a ECO>ECO</a> (Encyclopedia of Chess
@@ -494,11 +503,26 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   the ECO file being used.
   </p>
   <p>
+  If Scid can find a suitable photo file (either in ~/.scid or Scids
+  share directory within the photos folder) and photos for the players
+  exist, also these photos show up in the information area. (Suitable
+  photo files can be downloaded from the Scid website; a documentation
+  of their format is contained within these files.) However, the
+  player photos tend to hide some text in the information area.
+  Therefore, they can be minimised temporarily by clicking on them.
+  </p>
+  <p>
   The game information area has a menu activated with the right mouse button,
   with options to hide the next move (useful if you are training using a game
   and want to guess each move) and to delete or undelete the current game.
   You can also activate this menu without using the mouse, by pressing the
   <b>[F9]</b> function key.
+  </p>
+  <p>
+  On the right hand side of the board the material balance can be
+  displayed by small piece symbols. E.g. if white has captured a
+  bishop while black has captured a knight, a white bishop and a black
+  knight show up.
   </p>
   
   <h4>Tablebases</h4>
@@ -526,7 +550,7 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <a Searches Filter>filter</a>.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 
@@ -698,7 +722,8 @@ set helpText(Menus) {<h1>Scid menus</h1>
   for entering a game by typing or pasting its text in
   <a PGN>PGN format</a>.</li>
   <li><menu>Import file of PGN games</menu>: Imports a whole file containing
-  games in PGN format to the current database.</li>
+  games in PGN format to the current database. Note, that several PGN
+  files can be selected in this dialogue at once.</li>
   </ul>
   
   <h3><name Options>Options</name></h3>
@@ -718,7 +743,7 @@ set helpText(Menus) {<h1>Scid menus</h1>
   files Scid loaded when it started.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 
@@ -741,13 +766,16 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   and release it over the other square.
   </p>
   <p>
-  If you want to enter a variation without being asked for a confirmation, use the middle mouse button of the mouse to enter the move.
+  If you want to enter a variation without being asked for a
+  confirmation, use the middle mouse button of the mouse to enter the
+  move.
   </p>
   
   <h4>Retracting a move</h4>
   <p>
-  To take back a move, press the right mouse button, Control + Delete or Control + Backspace. This goes back one move,
-  and deletes the move if it is the last in the game or variation.
+  To take back a move, press the right mouse button, Control + Delete
+  or Control + Backspace. This goes back one move, and deletes the
+  move if it is the last in the game or variation.
   </p>
   
   <h4>Replacing old moves</h4>
@@ -759,6 +787,18 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   dialog box annoying and always want to replace old moves, so it can be
   turned off with the <menu>Options: Moves</menu> menu option
   "<i>Ask before replacing moves</i>".
+  </p>
+
+  <h4>Marking fields and directions</h4>
+  <p>
+  Coloured squares and arrows can be entered directly on the board
+  without the use of the <a Comment>Comment editor</a> by using the mouse
+  buttons. For coloured squares one can Shift-click on the square in
+  question. Shift-Left button markes the square in green, the middle
+  button in yellow, the right button in red. To draw arrows one can
+  Ctrl-click on the source and target squares. The left mouse button
+  again results in a green, the middle in a yellow and the right mouse
+  button in a red arrow.
   </p>
   
   <h4><name Trial>Trial mode</name></h4>
@@ -846,7 +886,7 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   <li> =+ : [=][+] </li>
   </ul>
   
-  <p><footer>(Updated: Scid 3.6.10, April 2007)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 
@@ -1125,8 +1165,13 @@ set helpText(Annotating) {<h1>Annotating games</h1>
   to comments for compatibility with other software.
   See the <a Export>Exporting</a> help page for more details.
   </p>
+  <p>
+  Also note, that Scid is capable of handling the move <term>Z0</term>
+  as a null move, a notation that is common in some commercial chess
+  applications.
+  </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ###############################
@@ -1224,8 +1269,20 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   <p>
   will draw a red arrow from c3 to d5 and a blue one from c4 to d5.
   </p>
+
+  <p>
+  <b>Note</b>
+  Coloured squares and arrows can be entered directly on the board
+  without the use of the Comment editor by using the mouse
+  buttons. For coloured squares one can Shift-click on the square in
+  question. Shift-Left button markes the square in green, the middle
+  button in yellow, the right button in red. To draw arrows one can
+  Ctrl-click on the source and target squares. The left mouse button
+  again results in a green, the middle in a yellow and the right mouse
+  button in a red arrow.
+  </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -1357,7 +1414,7 @@ set helpText(Finder) {<h1>The File Finder window</h1>
   and <a Repertoire>repertoire</a> files.
   </p>
   <p>
-  The finder shows useful information about each file, such as its size
+  The Finder shows useful information about each file, such as its size
   (see below) and date of last modification. You can open any displayed
   file by selecting it with a single left mouse button click.
   </p>
@@ -1375,7 +1432,7 @@ set helpText(Finder) {<h1>The File Finder window</h1>
   
   <h3>File sizes</h3>
   <p>
-  The meaning of a file size displayed by the finder depends on the file
+  The meaning of a file size displayed by the Finder depends on the file
   type. For Scid databases and PGN files, it is the number of games. For
   EPD files, it is the number of positions. For repertoire files, it is
   the number of (include or exclude) lines.
@@ -1386,8 +1443,25 @@ set helpText(Finder) {<h1>The File Finder window</h1>
   may not be correct for files larger than 64 kb. Estimate sizes are shown
   with a tilde (~) to show they are not exact.
   </p>
+
+  <p>
+  For easy manipulation of Scid databases, the Finder offers a context
+  menu. From this menu, accessible by a right mouse click as usual,
+  the following functions can be performed
+  <ul>
+      <li>Open will open the file in question, this is the same as
+      just clicking on the file with the left mouse button.</li>
+      <li>Backup: copies the file to its original name appended by teh
+      current date and time.</li>
+      <li>Copy: copies the selected database to a new location.</li>
+      <li>Move: moves the selected database to a new location.</li>
+      <li>Delete: deletes the selected database.</li>
+   </ul>
+   These functions are especially helpful for Scid databases as these
+   consist of several files.
+  </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -1580,32 +1654,34 @@ set helpText(Import) {<h1>The Import window</h1>
 set helpTitle(Export) "Exporting games"
 set helpText(Export) {<h1>Exporting games</h1>
   <p>
-  You can use commands under the <menu>Tools</menu> menu to export the current
-  game or all games in the current filter to a text file.
+  You can use commands under the <menu>Tools</menu> menu to export the
+  current game or all games in the current filter to a text file.
   </p>
   <p>
-  Three text file formats are available: <a PGN>PGN</a> (portable game
-  notation), HTML (for web pages) and LaTeX (a popular typesetting system).
+  Four text file formats are available: <a PGN>PGN</a> (portable game
+  notation), HTML (for web pages), HTML and JavaScript (for
+  interactive web pages) and LaTeX (a popular typesetting system).
   </p>
   <p>
-  When exporting, you can choose to create a new file, or add the games to
-  an existing file of games exported by Scid.
+  When exporting, you can choose to create a new file, or add the
+  games to an existing file of games exported by Scid.
   </p>
   
   <h3>Diagrams</h3>
   <p>
-  When exporting in HTML or LaTeX format, Scid will automatically add a
-  diagram wherever a diagram <a NAGs>nag</a> ("D") or a <a Comment>comment</a>
-  that starts with the character "#" appears in the game.
+  When exporting in HTML or LaTeX format, Scid will automatically add
+  a diagram wherever a diagram <a NAGs>nag</a> ("D") or a <a
+  Comment>comment</a> that starts with the character "#" appears in
+  the game.
   </p>
   
   <h3><name Null>Null moves in PGN Export</name></h3>
   <p>
-  Scid allows <a Annotating Null>null (empty) moves</a> to be stored in
-  games, as they can be helpful when annotating games using variations.
-  However, the PGN standard has no null move concept. So if you export
-  Scid games with null moves to a PGN file, other PGN-reading software
-  will not be able to read the null moves.
+  Scid allows <a Annotating Null>null (empty) moves</a> to be stored
+  in games, as they can be helpful when annotating games using
+  variations.  However, the PGN standard has no null move concept. So
+  if you export Scid games with null moves to a PGN file, other
+  PGN-reading software will not be able to read the null moves.
   </p>
   <p>
   To solve this problem, Scid provides an extra option,
@@ -1618,23 +1694,41 @@ set helpText(Export) {<h1>Exporting games</h1>
   
   <h3>HTML Export</h3>
   <p>
-  Scid can export games to an HTML file. For diagrams to appear, you will
-  need the diagram images (distributed with Scid in the directory
+  Scid can export games to an HTML file. For diagrams to appear, you
+  will need the diagram images (distributed with Scid in the directory
   "<b>bitmaps/</b>") to be in a subdirectory <b>bitmaps/</b> under the
   directory the HTML file is in.
+  </p>
+
+  <h3>HTML with JavaScript Export</h3>
+  <p>
+  While the HTML export generates a static file that may contain
+  static board diagrams, this format offers dynamic HTML, that allows
+  to move through the game interactively with the mouse.
+  </p>
+  <p>
+  This format consists of several files that need to be stored in a
+  specific structure. Therefore, it is advisable to first generate a
+  empty folder that will contain these files. The name of the main
+  file can be specified and it will get the extension html (e.g.
+  mygame.html). This file should be loaded by the web browser. The
+  other files are required to exist in exactly the position the export
+  filter places them. However, the whole folder can easily be uploaded
+  to some web server.
   </p>
   
   <h3>LaTeX Export</h3>
   <p>
-  Scid can export games to a LaTeX file.
-  Games be printed two columns to a page and moves are in
-  figurine algebraic notation.
+  Scid can export games to a LaTeX file.  Games be printed two columns
+  to a page and moves are in figurine algebraic notation with proper
+  translation of the NAG symbols. Diagrams are added whenever a
+  <term>D</term> comment is found.
   </p>
   <p>
   See the <a LaTeX>Using LaTeX with Scid</a> help page for more information.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -1668,18 +1762,16 @@ set helpText(LaTeX) {<h1>Using LaTeX with Scid</h1>
 set helpTitle(PGN) "PGN window"
 set helpText(PGN) {<h1>The PGN window</h1>
   <p>
-  Scids PGN window displays the contents of the current game
-  in standard PGN representation. In the move text, comments
-  appear {in braces} and variations appear (in parentheses).
+  Scids PGN window displays the contents of the current game in
+  standard PGN representation. In the move text, comments appear {in
+     braces} and variations appear (in parentheses).
   </p>
   
   <h3>PGN format</h3>
   <p>
   PGN (Portable Game Notation) is a common standard for transferring
-  chess games between computer programs.
-  A PGN game consists of two sections. The first is
-  the header, which contains tags
-  such as
+  chess games between computer programs.  A PGN game consists of two
+  sections. The first is the header, which contains tags such as
   <b>[White "Kasparov, Gary"]</b>
   and
   <b>[Result "1/2-1/2"]</b>.
@@ -1695,12 +1787,39 @@ set helpText(PGN) {<h1>The PGN window</h1>
   You can use the PGN window to navigate around the game: clicking the
   left mouse button on a move will jump to that move. Click the left
   mouse button on a comment will edit it.
-  The arrow keys and (<b>v</b> and <b>z</b> keys for entering or leaving
-  variations) work for game navigation just as in the main window. Clicking
-  on a move with middle mouse button will display a small board. Clicking on right mouse
-  button will popup a contextual menu (for example for variation handling).
+  The arrow keys and (<b>v</b> and <b>z</b> keys for entering or
+  leaving variations) work for game navigation just as in the main
+  window. Clicking on a move with middle mouse button will display a
+  small board. Clicking on right mouse button will popup a contextual
+  menu.
   </p>
-  
+  <p>
+  From the context menu the following functions are available
+  <ul>
+     <li><term>Delete Variation:</term>
+     Deletes the current variation
+     </li>
+     <li><term>Make First Variation:</term>
+     Moves the current variation to the first position of all
+     variations on that level
+     </li>
+     <li><term>Promote Variation to Mainline</term>
+     Promotes the current variation to the mainline and demotes the
+     current mainline to a variation.
+     </li>
+     <li><term>Strip:Moves from the beginning</term>
+     </li>
+     <li><term>Strip:Moves to the End</term>
+     </li>
+     <li><term>Strip:Comments</term>
+     Removes all comments
+     </li>
+     <li><term>Strip:Variations</term>
+     Removes all variations
+     </li>
+  </ul>
+  </p>
+
   <h3>PGN display options</h3>
   <p>
   The PGN window menus contain options that affect the PGN window display.
@@ -2270,7 +2389,16 @@ set helpText(Maintenance) {<h1>Database maintenance</h1>
   9999999.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <h3>Repair a base</h3>
+  <p>
+  In the rare cases that a Scid database is corrupted one might try to
+  repair it using File / Maintanance / Repair base. For this to work,
+  the base in question must not be opened (which is not possible in
+  most cases anyway). Scid will then try its best to get the database
+  back in a consistent and usable state.
+  </p>
+
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -2395,23 +2523,98 @@ set helpText(Flags) {<h1>Game Flags</h1>
 set helpTitle(Analysis) "Analysis window"
 set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
-  The Scid analysis window shows the analysis by a chess program (known
-  as an <term>engine</term>) of the current board position. Whenever the
-  board changes, Scid sends the new position to the engine and it
-  shows its assessment of that position.
+  The Scid analysis window shows the analysis by a chess program
+  (known as an <term>engine</term>) of the current board position.
+  Whenever the board changes, Scid sends the new position to the
+  engine and it shows its assessment of that position.
+  Currently, up to two engines can be run simultaneously. To start the
+  first analysis engine, the short cut <term>F2</term> can be used,
+  for the second engine <term>F3</term>. To quickly close the engine
+  window just hit <term>ESC</term>.
   </p>
   <p>
-  The score shown in the analysis window is always from the perspective
-  of White, so a negative score indicates Black is better.
-  The lower frame in the window (with the scrollbar) shows the history of
-  evaluations produced by the engine for the current position, so you can
-  see how the assessment has changed.
+  The principle informations of the current analysis are shown on
+  top of the window. The first number signifies the evaluation value
+  in pawn units.  The score shown in the analysis window is always
+  from the perspective of White, so a negative score indicates Black
+  is better. <b>Depth:</b> shows the search depth already reached by
+  the engines calculations in half moves. The number after
+  <b>Nodes:</b> gives the number of positions analysed for the current
+  result while the number of positions per second (kn/s) is shown in
+  brackets.  <b>Time:</b> finally shows the amount of time spent for
+  the current analysis.
   </p>
+  <p>
+  Additional information can be accessed using the <button
+  tb_engineinfo> button. A new line will be added to the status area
+  showing the current move analysed, the number of tablebase hits, a
+  more exact number of nodes analysed per second, the watermark of the
+  engines hash and the current cpu load. Usually, this information is
+  hidden to save space for the analysis.
+  </p>
+  <p>
+  If the engine only analyses the line it considers the main
+  continuation, the lower frame in the window (with the scrollbar)
+  shows the history of evaluations produced by the engine for the
+  current position, so you can see how the assessment has changed.
+  </p>
+  <p>
+  Many recent <term>UCI</term> engines however allow to analyse several lines at
+  once. Using this <term>Multi-PV</term> feature, the user can also
+  see what the engine thinks is the second or third best continuation.
+  The best line is always on top and highlighted to ease reading.
+  If an engine allows for <term>Multi-PV analysis</term>, the spin box
+  below the analysis lines can be used to set the number of principal
+  variations that should be calculated and shown. In this case,
+  instead of the calculation history, only the resulting principal lines
+  are shown. However, if the number of principal lines is set to 1, one
+  can again observe the evaluation history. The spin box is disabled, if
+  an engine does offer this feature.
+  </p>
+  <p>
+  <b>Note</b> the output of the current analysis can be hidden/shown
+  by clicking with the right mouse button into the analysis window. In
+  this mode only the current evaluation is shown in the status line.
   <p>
   To add the best move chosen by the engine as a new move in the current
-  game, press the <b>Add move</b> button.
+  game, press the <b>Add move</b> button <button tb_addmove>. If the
+  whole main line of the engine should be added just use the <b>Add
+  Variation</b> button <button tb_addvar>. In case an engine offers
+  the <term>Multi-PV</term> mode, using the <b>Add all Variations</b>
+  button (<button tb_addallvars>) can be used to add all principal
+  variations to the game. The insertion of variations from the
+  analysis window will also add the name of the engine as a comment to
+  the game.
   </p>
-  
+  <p>
+  To temporarily interrupt the calculation process one can use the
+  stop engine button (<button tb_pause>). Once pressed, this button
+  changes to the start engine button (<button tb_play>) which will
+  restart the engines analysis. Note, however, that most engines will
+  restart the whole analysis again, forgetting all results that where
+  achieved in an earlier run. Only few engines are able to reuse the
+  results they have calculated till the analysis was stopped. For the
+  first analysis engine toggeling start/stop engine is mapped to the
+  hotkey <term>F4</term> while for the second engine <term>F5</term>
+  can be used.
+  </p>
+  <p>
+
+  </p>
+  <p>
+  To set an engine to analyse a position in the background while
+  other functions of Scid are used one can <term>lock the
+  position</term> using the <button tb_lockengine> button. Scid now
+  stops to send any changes of the main board to the engine, and the
+  engine stays calculating the position.
+  </p>
+  <p>
+  To finish the current game by the engine ("shoot out" or "demo" mode)
+  one can use the finish game button <button finish_off>. To indicate
+  the shootout mode this button turns to <button finish_on>. This
+  function is only available for the first analysis engine.
+  </p>
+
   <h3><name List>The Analysis Engines List</name></h3>
   <p>
   Scid maintains a list of the engines you have used, along with an
@@ -2430,12 +2633,10 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   The most likely cause of engine starting problems is the choice of
   which directory the engine should run in. Some engines require an
   initialization or opening book file in their start directory to run
-  properly.
-  Other engines (like Crafty) write log files to the directory they start
-  in, so you will need to run them in a directory where you have write
-  access.
-  If the directory setting for an engine is ".", Scid will just start
-  the engine in the current directory.
+  properly.  Other engines (like Crafty) write log files to the
+  directory they start in, so you will need to run them in a directory
+  where you have write access.  If the directory setting for an engine
+  is ".", Scid will just start the engine in the current directory.
   </p>
   <p>
   So if an engine that should work fine in Scid does not start, try
@@ -2457,19 +2658,73 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   
   <h3>Annotating a game</h3>
   <p>
-  The <b>Add variation</b> button in the analysis window adds the current
-  score and best line of play as a new variation in the game.
+  The <b>Add variation</b> button (<button tb_addvar> or <button
+  tb_addallvars>)in the analysis window adds the current score and
+  best line of play as a new variation in the game.
   </p>
   <p>
-  You can do this automatically for a number of moves (annotating the game)
-  by pressing the <b>Annotate</b> button. This prompts you for some
-  annotation options and then turns on autoplay mode.
-  When autoplay mode is used and the analysis window is open, a variation
-  containing the score and best line of play is automatically added for each
-  position as autoplay mode moves through the game.
-  Only positions from the current position until the end of the game
-  (or until you exit autoplay mode) are annotated, so you can skip annotation
-  of opening moves by moving to a middlegame position before starting autoplay.
+  You can do this automatically for a number of moves (annotating the
+  game) by pressing the <b>Annotate</b> button, <button tb_annotate>.
+  Besides, the engines best lines also <a Informant>Informant</a>
+  style evaluation symbols are added in this process.  First, the
+  parameters for automatic annotations have to be set:
+  <ul>
+     <li><term>Set the time between moves in seconds:</term> this
+     gives the time, the engine can spend on analysis before moving on
+     to the next move.</li>
+     <li><term>Add variations</term>: here, one has the choice if
+     moves for both sides or only one colour should be added, if all
+     moves should get an annotation or only if the game move is not
+     the best move according to the engines evaluation. Additionally,
+     one can add an annotation only if the game move is a blunder. The
+     threshold defines the drop of the evaluation necessary to signify
+     a blunder, the number is given in units of pawns (i.e. 0.2 means
+     that if the evaluation drops by more than 2 centi pawns, the game
+     move is a blunder).
+     </li>
+     <li><term>Annotate variations</term> will include variations
+     within the game in the analysis by the engine.</li>
+     <li><term>Short annotations<term> will only add minimal
+     annotations, that is the pure lines and NAG codes without the
+     engines names and usually without the current scores.</li>
+     <li><term>Add score to annotations</term> will add the engines
+     evaluation in pawn units to the annotations. This information can
+     be used later on to draw a <a Score>Score Graph</a> of the game
+     as a visualisation of the positions reached.
+     </li>
+     <li><term>Add annotator tag</term> will add an "Annotator" tag to
+     the game header. This is meant for the <term>Short
+     annotations</term> mode which does not signify which engine was
+     used to gain the current evaluations and lines.
+     </li>
+     <li><term>Use book</term> allows the specification of an opening
+     book. Moves that are contained in this opening book are skipped
+     in the annotation process, that is the annotation starts
+     automatically in the middle game.</li>
+     <li><term>Annotate several games</term>  Scid will first annotate
+     the current game with the settings specified, store the results,
+     then automatically load the next game and annotate that as well.
+     This is repeated till the game loaded reaches the number given in
+     the spin box. By this procedure, many games can be annotated
+     automatically without any user intervention.
+     </li>
+     <li><term>Find opening errors</term> will check the opening phase
+     up to the move specified for blunders. Additionally, the
+     Annotator-tag gets an entry "opBlunder X" where X is the move the
+     blunder occurred.
+     </li>
+     <li><term>Mark tactical exercises</term> This can be used to
+     generate exercises for the training function <a FindBestMove>Find
+     best move</a>.
+  </ul>
+  After pressing the Ok button,  autoplay mode is enabled and the
+  engine starts to analyse the game.  When autoplay mode is used and
+  the analysis window is open, a variation containing the score and
+  best line of play is automatically added for each position as
+  autoplay mode moves through the game.  Only positions from the
+  current position until the end of the game (or until you exit
+  autoplay mode) are annotated, so you can skip annotation of opening
+  moves by moving to a middlegame position before starting autoplay.
   </p>
   <p>
   To cancel annotation at any time, just turn off autoplay mode, for example by
@@ -2483,9 +2738,9 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   
   <h3>Analysis board</h3>
   <p>
-  Pressing the chessboard-icon button in an analysis window will show
-  or hide the analysis board, which shows the position at the end of
-  the current best line of play found by the engine. This works for
+  Pressing the button <button tb_coords> in an analysis window will
+  show or hide the analysis board, which shows the position at the end
+  of the current best line of play found by the engine. This works for
   most Scid-compatible engines but may not work for all; it depends on
   the move notation an engine uses.
   </p>
@@ -2493,62 +2748,16 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <h3>Engine priority</h3>
   <p>
   If an engine is using too much CPU time and affecting the use of Scid
-  or other applications, turning on the <b>Low CPU priority</b> checkbox
-  may help; it gives the engine a low priority for CPU scheduling.
-  </p>
-  
-  <h3>Interface details</h3>
-  <p>
-  To use the analysis window, you will need a chess program that supports
-  the <term>WinBoard/Xboard</term> protocol.
+  or other applications, turning on the <b>Low CPU priority</b> button
+  <button tb_cpu> may help; it gives the engine a low priority for CPU
+  scheduling. On Windows, engines are run on low priority by default.
   </p>
   <p>
-  Scid sends he <b>xboard</b>, <b>post</b> and <b>protover 2</b> to an
-  engine when it starts, and will use the <b>setboard</b> and <b>analyze</b>
-  commands for more efficient communication if the engine responds indicating
-  that it supports them.
-  If an engine does not support the <b>setboard</b> command, it will
-  not be able to provide analysis in any game that begins with a
-  non-standard start position.
+  <b>Note</b> that on Unix systems the engines priority can not be set
+  back to normal.
   </p>
-  <p>
-  For programs that do not support the <b>analyze</b> command, Scid sends
-  the following commands every time the position changes: <b>new</b> and
-  <b>force</b>, then the moves in the game to the current position, then
-  <b>go</b>.
-  </p>
-  <p>
-  Bob Hyatt's excellent free chess program <term>Crafty</term> is what I
-  use and recommend for the Scid analysis window, but many other WinBoard
-  or XBoard compatible programs have been successfully used with Scid.
-  Some download sites for a few engines are listed below.
-  </p>
-  <p>
-  Crafty:
-  <url ftp://ftp.cis.uab.edu/pub/hyatt/>ftp://ftp.cis.uab.edu/pub/hyatt/</url>
-  </p>
-  <p>
-  Yace:
-  <url http://home1.stofanet.dk/moq/>http://home1.stofanet.dk/moq/</url>
-  </p>
-  <p>
-  Phalanx:
-  <url ftp://ftp.math.muni.cz/pub/math/people/Dobes/>ftp://ftp.math.muni.cz/pub/math/people/Dobes/</url>
-  </p>
-  <p>
-  Comet:
-  <url http://members.aol.com/utuerke/comet/>http://members.aol.com/utuerke/comet/</url>
-  </p>
-  <p>
-  Gnuchess:
-  <url http://www.gnu.org/software/chess/chess.html>http://www.gnu.org/software/chess/chess.html</url>
-  </p>
-  <p>
-  The Crazy Bishop:
-  <url http://remi.coulom.free.fr/>http://remi.coulom.free.fr/</url>
-  </p>
-  
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -2647,6 +2856,16 @@ set helpText(EPD) {<h1>EPD files</h1>
   These commands move to the next/previous position in the file, clearing
   the current game and setting its start position.
   </p>
+
+  <h3>Annotating</h3>
+  <p>
+  EPD-files can be automatically annotated by selecting Tools /
+  Annotate position. The upcoming dialogue asks for the time that
+  should be used for the analysis, the engine is started and the
+  result added to the EPD. The EPD tags used are : acd, acn, ce and
+  pv.
+  </p>
+  ###--- which engine is used ---###
   
   <h3>Stripping out EPD fields</h3>
   <p>
@@ -2660,7 +2879,7 @@ set helpText(EPD) {<h1>EPD files</h1>
   the <menu>Strip out EPD field</menu> from the EPD window <menu>Tools</menu>
   menu.
   </p>
-  
+
   <h3>The EPD window status bar</h3>
   <p>
   The status bar of each EPD window shows:
@@ -2673,7 +2892,7 @@ set helpText(EPD) {<h1>EPD files</h1>
   in this EPD file.</li>
   </ul>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -3194,8 +3413,18 @@ set helpText(Cmdline) {<h1>Command-line options</h1>
   or <b>-f</b> does all three, so <b>scid -f</b> is equivalent
   to <b>scid -xeco -xspell -xtb</b>.
   </p>
+
+  <p>
+  Additionally, a filter file (.sso) can be used on the command line.
+  <ul>
+  <li>scid mybase myfilter</li>
+  </ul>
+  will open mybase and run myfilter immediately against it to select a
+  set of games. This can e.g. be used to select a list of unfinished
+  games in a pgn file.
+  </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -3806,38 +4035,72 @@ set helpText(Author) {<h1>Contact Information</h1>
 set helpTitle(Book) "Book Window"
 set helpText(Book) {<h1>Book window</h1>
   <p>
-  The book window displays a list of all book files present in Scid's books directory. The format of books are
-  the one used by Polyglot and the engines like Fruit and Toga.
+  A list of all book files present in Scid's books directory is
+  presented in the drop down list on top of the window. The active
+  book can be selected easily from that list.
   </p>
   <p>
-  For each position, the book window displays all possible moves it contains and their
-  relative weights in percentage. When a move is entered, the book window is updated.
-  Clicking on a move in the book window will enter that move in current position.
+  The format of books is the one used by Polyglot and the engines like
+  Fruit and Toga, their usual extension is .bin.
   </p>
   <p>
-  Current book in use can be quickly switched by selecting another book in the upper list.
+  For each position, the book window displays all possible moves it
+  contains and their relative weights in percent. When a move is
+  entered, the book window is updated. Clicking on a move in the book
+  window will play that move in current position.
   </p>
-  <p><footer>(Updated: Scid 3.6.5, February 2007)</footer></p>
+  <p>
+  The book in use can be selected from the drop down list in the
+  book window.
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  ###--- How to create a book ---###
+  ###--- How to open several books ---###
 }
 
 # Tactical game window help
 set helpTitle(TacticalGame) "Tactical Game Window"
 set helpText(TacticalGame) {<h1>Tactical game window</h1>
   <p>
-  Play a tactical game against an engine simulating an opponent with a given ELO rating.
-  The opponent is played by Phalanx and the coach by Crafty. The right engines are automatically selected
-  by their names, and should be correctly configured (this is the default when Scid is installed).
+  Play a tactical game against an engine simulating an opponent with a
+  given ELO rating.  The opponent is played by Phalanx and the coach
+  by Toga II. The right engines are automatically selected by their
+  names, and should be correctly configured (this is the default when
+  Scid is installed).
+  </p>
+  <p>
+  <b>Note</b> that a special version of the Phalanx engine is
+  required. This special version comes with the Scid package.
   </p>
   <p>
   The following parameters must be configured :
   <ul>
-  <li>difficulty : ELO rating of opponent</li>
-  <li>specific opening : the opponent will play a specific opening (useful for opening training)</li>
-  <li>player's errors are checked by an engine acting like a coach. The time to use to determine if a
-  move is good or not can be limited</li>
+  <li><term>Fixed level</term>: sets a fixed ELO rating for the opponent</li>
+  <li><term>Random level</term>: chooses a random level between the
+  minimum and maximum level specified by the left and right slider
+  respectively.
+  </li>
+  <li><term>Opening:</term>
+  <ul>
+     <li><term>Start new game</term>: starts a new game choosing a
+     random opening.</li>
+     <li><term>Start from current position</term>: let the game begin
+     with the current board position.</li>
+     <li><term>Specific opening</term>: the opponent will play a
+     specific opening, that can be chosen from the list below. This is
+     useful for opening training.</li>
   </ul>
-  <p>When you're ready just press play</p> 
-  <p><footer>(Updated: Scid 3.6.5, March 2007)</footer></p>
+  <li><term>Limit engine analysis time</term> allows to limit the time used by the
+  coach to check the players moves for errors. If this time is not
+  limited the coach is allowed to think in the background.</li>
+  </ul>
+  <p>To start a tactical game press <term>Play</term></p> 
+
+  <p><b>Note</b> a similar function can be achieved by playing a
+  <a SeriousGame>serious game</a> against any UCI engine that allows
+  for limiting its strength.
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 # Opening Trainer window help
@@ -4729,4 +4992,52 @@ are lost, the old setup stays in place.
 </p>
 
 <p><footer>(Updated: Scid 3.6.24, May 2008)</footer></p>
+}
+
+# Serious game window help
+set helpTitle(SeriousGame) "Serious Game Window"
+set helpText(SeriousGame) {<h1>Serious game window</h1>
+  <p>
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# Opening Trainer
+set helpTitle(OpeningTrainer) "Training: Openings"
+set helpText(OpeningTraioner) {<h1>Training: Openings</h1>
+  <p>
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# Tactics Trainer
+set helpTitle(OpeningTrainer) "Training: Tactics"
+set helpText(OpeningTraioner) {<h1>Training: Tactics</h1>
+  <p>
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# Find best move 
+set helpTitle(FindBestMove) "Training: Find best move"
+set helpText(FindBestMove) {<h1>Training: Find best move</h1>
+  <p>
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# FICS Login
+set helpTitle(FICSLogin) "FICS Login"
+set helpText(FICSLogin) {<h1>FICS Login</h1>
+  <p>
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# FICS
+set helpTitle(FICS) "FICS: Play on the Internet"
+set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
+  <p>
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
