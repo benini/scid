@@ -86,6 +86,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Tree Best>Best games</a> window</li>
   <li><a Searches Board>Board searches</a></li>
   <li><a Book>Book</a> window</li>
+  <li><a BookTuning>Book</a> tuning</li>
   <li><a Bookmarks>Bookmarks</a></li>
   <li><a GameList Browsing>Browsing games</a></li>
   </ul>
@@ -133,6 +134,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a FICSLogin>FICS Login</a></li>
   <li><a FICSfindOpp>FICS Find opponent</a></li>
   <li><a FICS>Play on the Internet (FICS)</a></li>
+  <li><a FICS Training>FICS lectures</a></li>
   <li><a Finder>File Finder</a></li>
   <li><a FindBestMove>Training: Find best move</a></li>
   <li><a Formats>File formats</a></li>
@@ -162,7 +164,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>I</h3>
   <ul>
   <li><a Import>Import</a> window</li>
-  <li><a Informant>Informant Symbols</a></li>
+  <li><a Moves Informant>Informant Symbols</a></li>
   <li><a CCGameListIcons>Icons for Correspondence Chess</a></li>
   </ul>
   
@@ -242,6 +244,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a FindBestMove>Training: Find best move</a></li>
   <li><a OpeningTrainer>Training: Openings</a></li>
   <li><a TacticsTrainer>Training: Tactics</a></li>
+  <li><a FICS Training>Training: FICS lectures</a></li>
   <li><a Tree>Tree window</a></li>
   <li><a Moves Trial>Trial mode</a></li>
   <li><a Maintenance Twins>Twin (duplicate) games</a></li>
@@ -510,10 +513,11 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   If Scid can find a suitable photo file (either in ~/.scid or Scids
   share directory within the photos folder) and photos for the players
   exist, also these photos show up in the information area. (Suitable
-  photo files can be downloaded from the Scid website; a documentation
-  of their format is contained within these files.) However, the
-  player photos tend to hide some text in the information area.
-  Therefore, they can be minimised temporarily by clicking on them.
+  photo files can be downloaded from the <url
+  http://scid.sourceforge.net/>Scid website</url>; a documentation of
+  their format is contained within these files.) However, the player
+  photos tend to hide some text in the information area.  Therefore,
+  they can be minimised temporarily by clicking on them.
   </p>
   <p>
   The game information area has a menu activated with the right mouse button,
@@ -867,7 +871,7 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   typing "<b>--</b>" (that is, pressing the minus key twice).
   </p>
   
-  <h3>Entering common annotation symbols</h3>
+  <h3><name Informant>Entering common annotation symbols</h3>
   <p>
   You can also add common <a NAGs>annotation symbols</a> using the keyboard
   in the main window, without needing to use the <a Comment>comment editor</a>
@@ -889,6 +893,10 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   <li> -/+: [-][/] </li>
   <li> =+ : [=][+] </li>
   </ul>
+  <b>Note</b> Scid uses some of these symbols for automatic
+  annotations, also. To this end, these symbols have to be associated
+  with a certain pawn value. These pawn values can be set via Options
+  / Game information / Configure Informant values.
   
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
@@ -992,9 +1000,9 @@ set helpText(Searches) {<h1>Searches in Scid</h1>
   
   <h3><name Header>Search: Header</name></h3>
   <p>
-  This search can be used to find aspects of the game that are
-  stored in the header (such as date, result, names, flags and ratings),
-  so it does not require any moves to be decoded.
+  This search can be used to find aspects of the game that are stored
+  in the header (such as date, result, names, flags and ratings), so
+  it does not require any moves to be decoded.
   </p>
   <p>
   For a game to match a Header search, <b>all</b> fields that you
@@ -1019,26 +1027,28 @@ set helpText(Searches) {<h1>Searches in Scid</h1>
   <b>Ignore Colors</b> option.
   </p>
   <p>
-  Finally, the Header search can be used to find any text (case-sensitive
-  and without wildcards) in the PGN representation of each game.
-  You may enter up to three text phrases, and they must all appear in a
-  game for it to be a match.
-  This search is very useful for searching in the comments or extra tags of
-  a game (such as <b>lost on time</b> or <b>Annotator</b>),
-  or for a move sequence like <b>Bxh7+</b> and <b>Kxh7</b> for a bishop
-  sacrifice on h7 that was accepted.
-  However, this type of search can be <i>very</i> slow since all the games that
-  match other criteria must be decoded and scanned for the text phrases.
-  So it is a good idea to limit these searches as much as possible.
-  Here are some examples.
-  To find games with under-promotions to a rook,
-  search for <b>=R</b> and also set the <b>Promotions</b> flag to Yes.
-  When searching for text that would appear in comments, set
-  the <b>Comments</b> flag to Yes.
-  If you are searching for the moves <b>Bxh7+</b> and <b>Kxh7</b>, you
-  may want to restrict the search to games with a 1-0 result and at least 40
-  half-moves, for example, or do a material/pattern search first to find
-  games where a white bishop moves to h7.
+  Finally, the Header search can be used to find any text
+  (case-sensitive and without wildcards) in the PGN representation of
+  each game.  You may enter up to three text phrases, and they must
+  all appear in a game for it to be a match.  This search is very
+  useful for searching in the comments or extra tags of a game (such
+  as <b>lost on time</b> or <b>Annotator</b>), or for a move sequence
+  like <b>Bxh7+</b> and <b>Kxh7</b> for a bishop sacrifice on h7 that
+  was accepted.  However, this type of search can be <i>very</i> slow
+  since all the games that match other criteria must be decoded and
+  scanned for the text phrases.  So it is a good idea to limit these
+  searches as much as possible.  Here are some examples.  To find
+  games with under-promotions to a rook, search for <b>=R</b> and also
+  set the <b>Promotions</b> flag to Yes.  When searching for text that
+  would appear in comments, set the <b>Comments</b> flag to Yes.  If
+  you are searching for the moves <b>Bxh7+</b> and <b>Kxh7</b>, you
+  may want to restrict the search to games with a 1-0 result and at
+  least 40 half-moves, for example, or do a material/pattern search
+  first to find games where a white bishop moves to h7.
+  </p>
+  <p>
+  <b>Note</b> If a search by <a ECO>ECO</a> code is performed, games
+  that have no ECO code attached are ignored.
   </p>
   
   <h3><name Settings>Saving search settings</name></h3>
@@ -2271,7 +2281,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   base or a game by choosing File / Fill Cache with base and File /
   Fill Cache with game, respectively. The cache will be filled with
   the contents of these including all variations. This is most helpful
-  if one has one or more repertoir bases that can serve as input. (See
+  if one has one or more repertoire bases that can serve as input. (See
   also <a OpeningTrainer> about this type of bases.)
   <p>
   Tree refresh can be dramatically enhanced if the database is sorted
@@ -2451,7 +2461,8 @@ set helpText(Maintenance) {<h1>Database maintenance</h1>
   <p>
   The spellcheck file "spelling.ssp" that comes with Scid does not contain
   the Elo rating information needed for this function, but a larger version
-  of it called "ratings.ssp" is available from the <a Author>Scid website</a>.
+  of it called "ratings.ssp" is available from the <url
+  http://scid.sourceforge.net/>Scid website</url>.
   </p>
   
   <h3><name Cleaner>The Cleaner</name></h3>
@@ -2518,19 +2529,20 @@ set helpText(Sorting) {<h1>Sorting a database</h1>
   
   <h3>Sort results</h3>
   <p>
-  When you sort a Scid database that is not read-only, the sort results
-  are saved so the order of games in the database is permanently changed.
-  If you want to the sort results to be temporary, make the database
-  read-only first using the <b>File: Read-only</b> menu command.
+  When you sort a Scid database that is not read-only, the sort
+  results are saved so the order of games in the database is
+  permanently changed.  If you want to the sort results to be
+  temporary, make the database read-only first using the <b>File:
+  Read-only</b> menu command.
   </p>
   <p>
-  When you sort a database that is read-only or is actually a PGN file,
-  the sort results cannot be saved so the sorted order of games will be lost
-  when the file is closed.
+  When you sort a database that is read-only or is actually a PGN
+  file, the sort results cannot be saved so the sorted order of games
+  will be lost when the file is closed.
   </p>
   <p>
-  Note that sorting a database resets the
-  <a Searches Filter>search filter</a> to contain all games.
+  Note that sorting a database resets the <a Searches Filter>search
+  filter</a> to contain all games.
   </p>
   
   <h3>Important note about sorting databases:</h3>
@@ -2542,6 +2554,11 @@ set helpText(Sorting) {<h1>Sorting a database</h1>
   <a Searches>searches</a>, so you should reorder the game file by
   <a Compact>compacting</a> it after sorting the database to maintain
   good search performance.
+  </p>
+  <p>
+  Note that only a database sorted by <a ECO>ECO</a> codes can use the fast
+  tree search modes. This however, also requires to compact the
+  database after the sort procedure!
   </p>
   
   <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
@@ -2778,7 +2795,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <p>
   You can do this automatically for a number of moves (annotating the
   game) by pressing the <b>Annotate</b> button, <button tb_annotate>.
-  Besides, the engines best lines also <a Informant>Informant</a>
+  Besides, the engines best lines also <a Moves Informant>Informant</a>
   style evaluation symbols are added in this process.  First, the
   parameters for automatic annotations have to be set:
   <ul>
@@ -2828,7 +2845,9 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
      </li>
      <li><term>Mark tactical exercises</term> This can be used to
      generate exercises for the training function <a FindBestMove>Find
-     best move</a>.
+     best move</a>. This option is only available for <term>UCI</term>
+     engines.
+     </li>
   </ul>
   After pressing the Ok button,  autoplay mode is enabled and the
   engine starts to analyse the game.  When autoplay mode is used and
@@ -2974,12 +2993,15 @@ set helpText(EPD) {<h1>EPD files</h1>
   <p>
   EPD-files can be automatically annotated by selecting Tools /
   Annotate position. The upcoming dialogue asks for the time that
-  should be used for the analysis, the engine is started and the
-  result added to the EPD. The EPD tags used are : acd, acn, ce and
-  pv.
+  should be used for the analysis, then the <a Analysis List>engine
+  list</a> is opened for selection of an engine to be used. <b>Note</b> If an
+  analysis window is already opened, the analysis is done using this
+  engine without asking the user beforehand. Then the engine is
+  started and the result added to the EPD. The EPD tags used are :
+  acd, acn, ce and pv.
   </p>
-  ###--- which engine is used ---###
-  
+  <p>
+
   <h3>Stripping out EPD fields</h3>
   <p>
   EPD files you find on the Internet may contain fields that do not
@@ -4156,7 +4178,9 @@ set helpText(Book) {<h1>Book window</h1>
   </p>
   <p>
   The format of books is the one used by Polyglot and the engines like
-  Fruit and Toga, their usual extension is .bin.
+  Fruit and Toga, their usual extension is .bin. Currently, to build
+  new books one has to use <term>polyglot</term> on the command line.
+  Please refer to polyglots documentation about how to create a book.
   </p>
   <p>
   For each position, the book window displays all possible moves it
@@ -4169,7 +4193,6 @@ set helpText(Book) {<h1>Book window</h1>
   book window.
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
-  ###--- How to create a book ---###
   ###--- How to open several books ---###
 }
 
@@ -4222,12 +4245,53 @@ set helpText(TacticalGame) {<h1>Tactical game window</h1>
 set helpTitle(OpeningTrainer) "Opening Trainer"
 set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   <p>
-  A Scid database can be used as a repertoire, each game representing an opening line.
+  A Scid database can be used as a repertoire, each game representing
+  an opening line. The games can contain variations and may also
+  contain NAG values to specify values for each line, and thus
+  allowing to mark preferred or dubious lines. To be a valid database
+  for the opening trainer it is also required to be of proper type.
+  That is, if openings for white are to be trained, the database has
+  to be of type <term>Openings for White</term> (similar for Black and
+  both colours). The type can be set via the <a Maintenance>Maintenance
+  window</a> by selecting the icon or via the database switchers
+  context menu.
   </p>
+  <p>
+  To use the opening trainer first of all open a repertoire database
+  of the proper type. Then choose Play / Training / Opening Trainer.
+  The upcoming dialogue offers some choices about the next training
+  session
+  <ul>
+      <li><term>white</term>/<term>black</term>/<term>both</term> is
+      used to select the side of the opening to train
+      </li>
+      <li><term>Allow only best moves</term> will treat lower rated moves
+      as error. The rating of a line is given by NAG values.</li>
+      <li><term>Opponent plays best moves</term> Scid will always play
+      the best continuation according to the repertoire database. If
+      unchecked Scid is allowed to choose also lower rated
+      continuations. This is helpful to learn the refutations as well.
+      </li>
+      <li><term>Only flagged lines</term> Scid will only play lines
+      from games flagged as <term>Opening for White</term> or
+      <term>Opening for Black</term>.
+      </li>
+      <li><term>Reset statistics</term> will reset the statistics
+      before the training session.</li>
+  </ul>
+  Press the <term>Continue</term> button to proceed with the training.
+  </p>
+  <p>
+  The actual opening trainer will show up. Here one can display
+  possible candidate moves (hidden by default) and also display their
+  values by just enabling these functions. If <term>Show
+  statistics</term> is enabled, the current statistics is shown in the
+  colour coded fields below the checkbox. Otherwise the overall
+  statistics can be accessed by the button <term>Show report</term>
   
   <h3>Opening trainer statistics</h3>
   <p>
-  Four numbers are displayed showing statistics for current position :
+  Four numbers are displayed showing statistics for current position:
   <ul>
   <li><term>Green</term> the number of moves played by the user that
   are good moves</li>
@@ -4242,14 +4306,18 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   
   <h3>The report</h3>
   <p>
-  The report shows statistics for the whole repertoire and gives information about user's knowledge :
+  The report shows statistics for the whole repertoire and gives
+  information about user's knowledge :
   <ul>
   <li><term>Positions in repertoire</term> the total number of
   positions in the repertoire (all lines in database)</li>
-  <li><term>Positions not played</term> the positions that were never encountered</li>
-  <li><term>Positions played</term> the positions that were played and the sum of the number of times they were encountered. Note that
-  this figure represents the sum of occurences of a position in all opening lines : this number can quickly become big
-  for positions that are close to the start position</li>
+  <li><term>Positions not played</term> the positions that were never
+  encountered</li>
+  <li><term>Positions played</term> the positions that were played and
+  the sum of the number of times they were encountered. Note that this
+  figure represents the sum of occurrences of a position in all
+  opening lines: this number can quickly become big for positions
+  that are close to the start position</li>
   <li><term>Success</term> the number of good moves made by the player</li>
   <li><term>Dubious moves</term> the number of weak moves made by the
   player</li>
@@ -4257,7 +4325,7 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   player that were not in repertoire</li>
   </ul>
   </p> 
-  <p><footer>(Updated: Scid 3.6.11, April 2007)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -5284,6 +5352,30 @@ set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
 set helpTitle(FindBestMove) "Training: Find best move"
 set helpText(FindBestMove) {<h1>Training: Find best move</h1>
   <p>
+  When annotating games with a chess engine, the engine can search for
+  tactical opportunities within a game. This can be achieve by setting
+  <term>Mark Tactical Exercise</term> in the <a
+  Analysis>Annotation</a> window accessible from analysis. In case a
+  tactical opportunity is found, Scid will then flag the game with the
+  <term>T</term> flag (Tactics) and add a special comment that is
+  evaluated in this exercise.
+  </p>
+  <p>
+  To use this training method, a properly prepared database is
+  required. This can be achieved by batch annotating a set of games or
+  one can just download them from the <url
+  http://scid.sourceforge.net/>Scid website</url>.
+  After opening a properly prepared database, just select Play /
+  Training / Find best move. Scid will then jump to the next location
+  of a tactical blow from the current game position. If necessary a
+  suitable new game will be loaded and Scid will display the critical
+  position. The user is now required to find the best continuation.
+  To jump to the next tactical position one can just right click on
+  the goto end of game button.
+  </p>
+  <p>
+  For this exercise it is advisable to close the PGN window and set
+  <term>Hide next move</term> from the status areas context menu.
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
@@ -5486,5 +5578,63 @@ set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
   <li><term>Close</term> closes the connection to FICS</li>
   </ul>
   </p>
+
+  <h3><name Training>FICS Lectures</h3>
+  <p>
+  FICS offers several options for chess training. One of the more
+  prominent once are the lecture bots <term>LectureBot</term> and
+  <term>WesBot</term>. They run all the time on FICS and offer various
+  training sessions that can be visited using Scid. The start of each
+  session is announced on <term>Channel 67</term> of FICS. Therefore,
+  to see these announcements one should first add this channel to the
+  personal observation list. This can be done by <term>+channel
+  67</term> (it can be removed again by <term>-channel 67</term>).
+  Once e.g. LectureBot announces a training session, one can take part
+  by issuing <term>observe lecturebot</term>. Please refer to the
+  online documentation of FICS for additional features of the Bots and
+  also other bots available.
+  </p>
+
+  <h3><name Observe>Observe games on FICS</h3>
+  <p>
+  From time to time FICS <term>relays</term> major events in
+  international chess. In these cases one can observe the games life
+  on the server and discuss them with other users on FICS. To find out
+  what games are currently relayed (if any) one can ask the relay for
+  a list by <term>relay listgames</term>. As FICS expects the terminal
+  to have 80 chars width it might be necessary to resize Scids FICS
+  window to get a nice table. The entries in the table are, first the
+  game number, colon, than the opponents, the result of the game (*
+  signifying an ongoing game as usual) and the <a ECO>ECO code</a> of
+  the opening. To observe a specific game one can just <term>observe
+  gamenumber</term>. Scid will then display the current board
+  position, the clocks will display the proper values sent by the
+  relay and it will fetch all moves of the game so far plus the usual
+  PGN header fields. If a player moves this move is performed in Scid
+  as usual. For discussing the game with other observers,
+  <term>whisper</term> and <term>kibitz</term> can be used. Please
+  refer to the online help of these commands. All these conversations
+  can be read in the console.
+  </p>
+  <p>
+  Note that only one game can be observed within Scid.
+  </p>
+
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# Book tuning
+set helpTitle(Novag) "Connecting the Novag Citrine Chess board"
+set helpText(Novag) {<h1>Connecting the Novag Citrine Chess board</h1>
+   <p>
+   </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
+
+# Book tuning
+set helpTitle(BookTuning) "Book tuning"
+set helpText(BookTuning) {<h1>Book tuning</h1>
+   <p>
+   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
