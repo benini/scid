@@ -2056,52 +2056,73 @@ set helpText(Tree) {<h1>The Tree window</h1>
   The <term>Tree</term> window displays information on all the
   moves made from the current position in games in the database.
   In tree mode, the tree window is updated automatically whenever the
-  main windows board changes. This can be slow for large databases.
+  main windows board changes. This can be slow for large databases and
+  can therefore be disabled using the <button engine_on>. To visualise
+  that a tree is not automatically refreshed this button changes to
+  <button engine_off>.
+  </p>
+  <p>To open the <term>Tree</term> window one can either first open a
+  database and then choose Windows / Tree Window (Ctrl-T) from the
+  menu, or open the base as tree right from the file menu.
+  <p>
+  Note that whenever the tree window is updated, the <a Searches
+  Filter>filter</a> is reset and only the games that contain the
+  current position will be included. This is also the case if e.g. a
+  header search was done: once the next move is entered, the tree
+  window updates and the filter is set to the games matching the tree
+  window.
   </p>
   <p>
-  Note that whenever the tree window is updated, the
-  <a Searches Filter>filter</a>
-  is reset and only the games that contain the current position will
-  be included.
+  Clicking the left mouse button on a move in the tree window adds
+  that move to the game.
   </p>
-  <p>
-  Clicking the left mouse button on a move in the tree window adds that
-  move to the game.
-  </p>
-  
   <h3>Tree window contents</h3>
   <p>
-  The tree window shows the <a ECO>ECO code</a> (if any), frequency (both as
-  number of games, and a percentage) and score of each move.
+  The tree window shows the <a ECO>ECO code</a> (if any), frequency
+  (both as number of games, and a percentage) and score of each move.
   The <term>score</term> is always computed from the <b>White</b>
-  perspective, so 100% means all White wins and 0% means all Black wins.
-  The <term>AvElo</term> (average Elo) corresponds to the player's on move and 
-  <term>Perf</term> (performance) represents the opponent's strength.
+  perspective, so 100% means all White wins and 0% means all Black
+  wins. Scores are highlighted for moves that have good (green) or bad
+  (red) results. On average a move should score 53.8% for white,
+  highlighting appears if a move scores more than 3% better or worse
+  than this average and if at least 15 games are contained in the
+  database. The <term>AvElo</term> (average Elo) corresponds to the
+  player's on move and <term>Perf</term> (performance) represents the
+  opponent's strength. Additionally, <term>AvYear</term> shows the
+  average year of games played in this move and <term>%Draws</term>
+  gives the percentage of draws for the line displayed. All these
+  values are calculated for the database displayed in the tree, and
+  therefore depend of course on the games in this database.
   </p>
   <p>
+  Additional information is displayed if a <term>Mask</term> has been
+  opened. For the use of <term>Masks</term> see below.
+  <p>
   The moves in the tree window can be sorted by move (alphabetically),
-  ECO code, frequency, or score. You can change the sort method
-  using the <menu>Sort</menu> menu.
+  ECO code, frequency, or score. You can change the sort method using
+  the <menu>Sort</menu> menu.
   </p>
-  
+
   <h3><name Best>Best games window</name></h3>
   <p>
   The tree window has a File menu command and button for opening the
-  <term>Best games</term> window, which shows a list of the highest-rated
-  games in the currently displayed tree branch.
-  The games are listed in order of average rating, and you can restrict
-  the list to show games with a particular result.
+  <term>Best games</term> window, which shows a list of the
+  highest-rated games in the currently displayed tree branch.
+  (Equivalently, one can use the <button b_list> button).  The games
+  are listed in order of average rating, and you can restrict the list
+  to show games with a particular result and also limit the number of
+  games shown in this list.
   </p>
   
   <h3><name Graph>Tree graph window</name></h3>
   <p>
   The tree window buttons include a button marked <term>Graph</term>
-  which produces a graphical display of the relative performance of each
-  move from the current position.
-  All moves that have been played at least 1% of the time, and at least 5
-  times, are displayed.
-  Percentage scores are always from White's perspective even when it is
-  Black to move.
+  (<button b_bargraph>) which produces a graphical display of the
+  relative performance of each move from the current position.  All
+  moves that have been played at least 1% of the time, and at least 5
+  times, are displayed.  Percentage scores are always from White's
+  perspective even when it is Black to move. The graphs can be saved
+  in PostScript format via the file menu.
   </p>
   <p>
   In the tree graph, a red line is plotted showing the mean over all games
@@ -2114,14 +2135,17 @@ set helpText(Tree) {<h1>The Tree window</h1>
   <h3><name Lock>Locking the tree window</name></h3>
   <p>
   Each tree window is associated with a specific base, that is, if
-  several bases are opend simultaneously, several tree windows may
+  several bases are opened simultaneously, several tree windows may
   exist. If the <term>Lock</term> button in the tree window is
   enabled, closing the tree window will also close the database
-  associated with this specific tree. Besides it also closes
-  associated graph or best games windows that are also associated with
-  the tree window. If the <term>Lock</term> button is not checked
-  closing the tree will leave all these windows and just close the
-  tree view of the base.
+  associated with this specific tree. Additionally, this also closes
+  associated graph or best games windows. If the <term>Lock</term>
+  button is not checked closing the tree will leave all these windows
+  opened and just close the tree view of the base.
+  </p>
+  <p>
+  Note that opening a base as tree from the file menu will
+  automatically lock the database by default.
   </p>
   
   <h3><name Training>Training</name></h3>
@@ -2132,42 +2156,84 @@ set helpText(Tree) {<h1>The Tree window</h1>
   in 80% of database games will be chosen by Scid with 80% probability.
   Turning on this feature, then hiding (or iconifying) the Tree window and
   playing openings against a large database, is a great way to test your
-  knowledge of your opening repertoire.
+  knowledge of your opening repertoire. Another option to train an
+  opening offers <a OpeningTrainer>Training / Openings</a>.
   </p>
   
+###--- Still valid? ---###
   <h3>Using the Tree with EPD files open</h3>
   <p>
-  For each open <a EPD>EPD file</a>, the tree window will contain an extra
-  column that shows a short (five character) summary of the contents of the
-  EPD file for each position reached from the moves listed.
+  For each open <a EPD>EPD file</a>, the tree window will contain an
+  extra column that shows a short (five character) summary of the
+  contents of the EPD file for each position reached from the moves
+  listed.
   </p>
   <p>
-  The summary could be an evaluation, an opening code or a suggested move;
-  it will be the contents of the first EPD field found from the
-  following list: <b>ce, eco, nic, pv, pm, bm, id</b>,
-  or just the first EPD field if none of the above are present.
+  The summary could be an evaluation, an opening code or a suggested
+  move; it will be the contents of the first EPD field found from the
+  following list: <b>ce, eco, nic, pv, pm, bm, id</b>, or just the
+  first EPD field if none of the above are present.
   </p>
   <p>
-  For a description of EPD fields, see the <a EPD>EPD file</a> help page.
-  Note that if the summary is of the <b>ce</b> field, it is shown as an
-  evaluation in pawns from Whites perspective (rather than as a score in
-  centipawns from the perspective of the side to move, which is its stored
-  format in the EPD file) for improved readability.
+  For a description of EPD fields, see the <a EPD>EPD file</a> help
+  page.  Note that if the summary is of the <b>ce</b> field, it is
+  shown as an evaluation in pawns from Whites perspective (rather than
+  as a score in centipawns from the perspective of the side to move,
+  which is its stored format in the EPD file) for improved
+  readability.
   </p>
+###--- Still valid? ---###
 
   <h3>Using a Mask file to configure display</h3>
   <p>
-  An user defined Mask file (.stm) can be defined to change the way
-  statistics are displayed in the Tree window. When a Mask file is
-  opened, Tree window changes. For each line in the Mask are displayed
-  a color marker, a NAG code and a comment. A comment can also be
-  entered for the position, for example to point out a critical
-  position.  </p> <p> To add markers to moves or to the current
-  position, right click on a line. Don't forget to save the Mask (even
-  if you will be prompted to do it if you close a Mask that has been
-  modified).  </p> <p> A mask can be automatically filled with a game
-  containing comments and variations (menu <term>Fill with game</term>
-  or <term>Fill with Database</term>).
+  An Mask file (.stm) can be defined to change the way statistics are
+  displayed in the Tree window. When a Mask file is opened, Tree
+  window changes. For each line in the Mask are displayed a color
+  marker, a NAG code and a comment. A comment can also be entered for
+  the position, for example to point out a critical position.
+  </p>
+  <p>
+  To add markers to moves, first add the move to the mask by choosing
+  <term>Add to mask</term> from the context menu available by clicking
+  on the line with the right mouse button. After a line was added, it
+  is highlighted in blue within the tree window, and one can select
+  the following markers from the context menu, that will show up left
+  to the line:
+  <ul>
+  <li>a NAG code (!!, !, !?, ?!, ?, ??, ~) </li>
+  <li>up to two graphical markers via the menu items <term>Marker
+  1</term> and <term>Marker 2</term>
+     <ul>
+     <li> <button ::rep::_tb_include> Include line in repertoir</li>
+     <li> <button ::rep::_tb_exclude> Exclude line from repertoir</li>
+     <li> <button ::tree::mask::imageMainLine> Main Line</li>
+     <li> <button tb_bkm> Bookmark</li>
+     <li> <button ::tree::mask::imageWhite> White</li>
+     <li> <button ::tree::mask::imageBlack> Black</li>
+     <li> <button tb_new> New line</li>
+     <li> <button tb_rfilter> To be verified by further analysis</li>
+     <li> <button tb_msearch> To train</li>
+     <li> <button tb_help> Doubious line</li>
+     <li> <button tb_cut> To remove</li>
+     </ul>
+  </li>
+  <li><term>Color</term> A colour mark</li>
+  <li><term>Comment move</term> allows to add a textual comment for
+  the line. This comment is shown  right to the line it is associated,
+  and also pops up in a tooltip window if the mouse is moved over the
+  line.
+  </li>
+  <li><term>Comment position</term> can be used to add a comment for the
+  current position. This comment is shown in the tree window once this
+  move is made.</li>
+  </ul>
+  Don't forget to save the Mask. You will be prompted to do it
+  if you close a Mask that has been modified.
+  </p>
+  <p>
+  A mask can be automatically filled with a game containing comments,
+  variations and NAG annotations using the menu <term>Fill with
+  game</term> or <term>Fill with Database</term>.
   </p>
   
   <h3>Caching for faster results</h3>
@@ -2190,6 +2256,17 @@ set helpText(Tree) {<h1>The Tree window</h1>
   then saves the cache file.
   </p>
   <p>
+  The maximum number of lines in the Cache can be configured by File /
+  Cache size. The default are up to 1000 lines.
+  </p>
+  <p>
+  Alternatively, one can fill the cache also with the content of a
+  base or a game by choosing File / Fill Cache with base and File /
+  Fill Cache with game, respectively. The cache will be filled with
+  the contents of these including all variations. This is most helpful
+  if one has one or more repertoir bases that can serve as input. (See
+  also <a OpeningTrainer> about this type of bases.)
+  <p>
   Tree refresh can be dramatically enhanced if the database is sorted
   by ECO code then compacted (see the <a Maintenance>maintenance</a>
   window). Once this is achieved (the whole process can last several
@@ -2209,7 +2286,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   adding or replacing a game, or sorting the database.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, August 2008)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 
@@ -2559,17 +2636,18 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   current position, so you can see how the assessment has changed.
   </p>
   <p>
-  Many recent <term>UCI</term> engines however allow to analyse several lines at
-  once. Using this <term>Multi-PV</term> feature, the user can also
-  see what the engine thinks is the second or third best continuation.
-  The best line is always on top and highlighted to ease reading.
-  If an engine allows for <term>Multi-PV analysis</term>, the spin box
-  below the analysis lines can be used to set the number of principal
-  variations that should be calculated and shown. In this case,
-  instead of the calculation history, only the resulting principal lines
-  are shown. However, if the number of principal lines is set to 1, one
-  can again observe the evaluation history. The spin box is disabled, if
-  an engine does offer this feature.
+  Many recent <term>UCI</term> engines however allow to analyse
+  several lines at once. Using this <term>Multi-PV</term> feature, the
+  user can also see what the engine thinks is the second or third best
+  continuation.  The best line is always on top and highlighted to
+  ease reading.  If an engine allows for <term>Multi-PV
+  analysis</term>, the spin box below the analysis lines can be used
+  to set the number of principal variations that should be calculated
+  and shown. In this case, instead of the calculation history, only
+  the resulting principal lines are shown. However, if the number of
+  principal lines is set to 1, one can again observe the evaluation
+  history. The spin box is disabled, if an engine does offer this
+  feature.
   </p>
   <p>
   <b>Note</b> the output of the current analysis can be hidden/shown
@@ -2599,9 +2677,6 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   can be used.
   </p>
   <p>
-
-  </p>
-  <p>
   To set an engine to analyse a position in the background while
   other functions of Scid are used one can <term>lock the
   position</term> using the <button tb_lockengine> button. Scid now
@@ -2618,9 +2693,10 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <h3><name List>The Analysis Engines List</name></h3>
   <p>
   Scid maintains a list of the engines you have used, along with an
-  estimated Elo rating (if you guess one) and the date when each
-  engine was last used. You can sort the engine list by name, Elo
-  rating, or date.
+  estimated Elo rating (if you guess one; additionally some pages on
+  the Internet offer these values as results from large engine-engine
+  tournaments) and the date when each engine was last used. You can
+  sort the engine list by name, Elo rating, or date.
   Select the <b>New</b> or <b>Edit</b> buttons to add a new engine to
   the list or edit the details for an existing entry.
   </p>
@@ -2648,6 +2724,36 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   <b>scid.exe dir</b> on Windows or <b>~/.scid</b> on Unix that lets
   you set the engine to start in this directory.
   </p>
+  <p>
+  If an engine needs additional parameters for startup (e.g. a
+  specific opening book) they can be specified in the
+  <term>Parameters</term> field. Please refer to the engines
+  documentation about the parameters required, if any.
+  </p>
+  <p><term>URL</term> allows you to set the engines homepage. This
+  comes in handy to check for updates e.g. or to have a look at recent
+  developments. Pressing the <term>Open...</term> button will open
+  this page in the web browser.
+  </p>
+  <p>
+  If the engine uses the <term>UCI</term> protocol please mark the
+  associated checkbox. Generally, there are two major engine protocols
+  available today: xboard sometimes referred to as winboard (UCI must
+  not be checked) which many, especially older engines use, and the
+  UCI protocol that can be found in most of the modern chess engines.
+  The main advantage of an <term>UCI</term> engine is, that this
+  protocol allows the user to configure the engines parameters from
+  within his preferred chess GUI like Scid, while for the other
+  engines usually configuration files are used that have to be edited.
+  Therefore, if the engine is an <term>UCI</term> engine, pressing the
+  <term>Configure UCI engine</term> button offers a graphical dialogue
+  where all engine parameters can be tuned to the users liking. This
+  dialogue will look different for each engine as each engine has
+  other parameters that can be set. Most of them will influence the
+  playing style of the engine. Please refer to the engines
+  documentation.
+  </p>
+
   
   <h3>Training</h3>
   <p>
@@ -4165,7 +4271,7 @@ chess.
 <p>
 If any of the correspondence chess functions are accessed from the
 menu a new window opens up. It can be opened manually from the window
-menue. This window contains the neccessary buttons to navigate through
+menu. This window contains the neccessary buttons to navigate through
 ongoing games, shortcut keys to fetch games by means of the Xfcc
 protocol and sync in eMail based games as well as a console stating
 which messages where sent or retrieved. Additionally this window
@@ -4239,7 +4345,7 @@ up once, and are stored afterwards for future use.
 <p>
 To access the configuration dialog choose <menu>Play</menu>
 <menu>Correspondence Chess</menu><menu>Configure</menu> from the
-menue. The details are described in <a CCSetupDialog>Correspondence
+menu. The details are described in <a CCSetupDialog>Correspondence
 Chess Setup</a>. Quitting this dialog by the <b>[Ok]</b> button will
 automatically store your options.
 </p>
@@ -4254,7 +4360,7 @@ external software.
 </p>
 <p>
 Once the games are in Scids Inbox invoking <menu>Process Inbox</menu>
-from the menue will work though the Inbox and add new moves to the
+from the menu will work though the Inbox and add new moves to the
 games already in the database. Additionally it will add games not
 found in the current correspondence chess database as new games.
 </p>
@@ -4295,7 +4401,7 @@ import all currently ongoing games.
 <p>
 Equivalent to the two buttons mentinoned are the items <menu>Previous
 Game</menu> and <menu>Next Game</menu> from the <menu>Correpondence
-Chess</menu> menue.
+Chess</menu> menu.
 </p>
 <p>
 An alternate way to jump to a specific game is by double clicking on
@@ -4465,7 +4571,7 @@ Notes:
 Xfcc always retrieves all games hosted on a specified server for your
 user ID at once. To retrieve the games just press the <button
 tb_CC_Retrieve> icon or select <menu>Retrieve Games</menu> from the
-<menu>Correspondence Chess</menu> menue. As a server connection is
+<menu>Correspondence Chess</menu> menu. As a server connection is
 required to fetch new games be sure that the system has network
 access. Scid will call the fetch tool configured in the <a
 CCSetupDialog>Configuration</a> dialog which will place the games in
@@ -4653,7 +4759,7 @@ tb_CC_Retrieve> is the most convenient way if you use both types of
 correspondence chess games.
 </p>
 <p>
-<b>Note</b> The <menu>Retrieve Games</menu> menue or the <button
+<b>Note</b> The <menu>Retrieve Games</menu> menu or the <button
 tb_CC_Retrieve> button do <b>not</b> fetch your eMail messages! You
 have to save your PGN files to Scids Inbox by hand. Probably this can
 be automatised by your eMail program (on Un*x systems setting up a
@@ -4668,7 +4774,7 @@ In- and Outbox directories.
 
 <p>
 After making your move send it by either the <menu>Mail Move</menu>
-item from the menue via <menu>Send move</menu> which is equivalent to
+item from the menu via <menu>Send move</menu> which is equivalent to
 <button tb_CC_Send>. The latter will Scid have to recognise the game
 as eMail correspondence and send it by mail while the former method
 will force Scid to generate an eMail message.
@@ -4998,7 +5104,98 @@ are lost, the old setup stays in place.
 set helpTitle(SeriousGame) "Serious Game Window"
 set helpText(SeriousGame) {<h1>Serious game window</h1>
   <p>
+  Serious games can be played against any <term>UCI</term> engine set
+  up for the usage with Scid. A list of all possible opponents is
+  given on top of the <term>Game configuration</term> window. The
+  button <term>Configure UCI engine</term> additionally gives access
+  to the engines parameters. By default, they are set such as in the
+  <a Analysis List>engine configuration</a>.
   </p>
+  <p>
+  Next, the book that should be used can be chosen from those opening
+  books available to Scid. Unchecking the <term>Use book</term> box
+  will disable the use of an opening book and the engine will start
+  calculating moves right from the beginning.
+  </p>
+  <p>
+  The section <term>Time mode</term> allows to set the timing used for
+  the engine. Various settings are possible here:
+  <ul>
+     <li><term>Time + bonus</term> specifies the time for the whole
+     game and a possible increment per move (Fisher clock). The
+     default is set to 5 minutes per game and 10 seconds increment per
+     move which is a usual setting for Blitz games. Note, that the
+     times for Black and White can be set independently. This allows
+     to set a short amount of time for the engine and give a longer
+     time of thinking to the player, and thus strengthening the
+     players analysing possibilities while weakening the engines
+     abilities in case of <term>Permanent thinking</term> is off (see
+     below).
+     </li>
+
+     <li><term>Fixed depth</term> does not set the time per game but
+     the depth the engine will calculate in half moves. As this
+     disables the ability to calculate deeper if necessary, the
+     computer will not see certain mates and combinations, the engine
+     may play weaker and thus offer a better partner for training
+     purposes.
+     <p>
+     <b>Note</b>: some, especially commercial, engines also offer to
+     weaken their strength in ELO units. Most likely this will offer a
+     more suitable algorithm than limiting the search depth. In Scid,
+     such games are also offered as <a TacticalGame>Tactical games</a>
+     against the free Phalanx engine.
+     </p>
+     </li>
+
+     <li><term>Nodes</term> is similar to limiting the search depth,
+     but here the engine has to move after the evaluation of a certain
+     number of positions. (The default is 10,000.)
+     </li>
+
+     <li><term>Seconds per move</term> allows the engine to spend a
+     certain amount of time at maximum for a given position. Some
+     engines will move faster in certain circumstances, but they will
+     not exceed the time limit set here. As <term>Fixed depth</term>
+     and <term>Nodes</term> this also limits the engines playing
+     strength, but also gives a pretty responsive game play.
+     </li>
+  </ul>
+  </p>
+  <p>
+  Serious games can start from the current board position if the box
+  <term>Start from current position</term> is checked. This allows
+  e.g. to play out defined middle game positions that arise from an
+  opening.
+  </p>
+  <p>
+  <term>Permanent thinking</term> (sometimes also called ponder)
+  allows the engine to calculate on the players time. If unchecked, the
+  engine will stop analysing the position if the player has the move.
+  If the game is set for a fixed time per move, this will weaken the
+  engine. On the other hand, the engine might move immediately, if the
+  player made the move it was analysing on the players time.
+  </p>
+  <p>
+  <term>Coach is watching</term> will open a dialogue offering to take
+  back a move if the player made a blunder (due to the engines
+  evaluation of his last move).
+  </p>
+  <p>
+  For training of openings <term>Specific opening</term> can be
+  checked. In the list below one can choose the opening to play. The
+  player then should follow the line chosen, otherwise Scid will ask
+  if the move should be taken back.
+  </p>
+
+  <p>
+  After setting all parameters of the game and hitting the Play
+  button, Scid will set up the opponent engine show the clocks and
+  start the game. The player must not make a move till the clocks
+  appear. Note that it might take some time for the chess engine to
+  start up and initialise properly.
+  </p>
+
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
@@ -5011,8 +5208,8 @@ set helpText(OpeningTraioner) {<h1>Training: Openings</h1>
 }
 
 # Tactics Trainer
-set helpTitle(OpeningTrainer) "Training: Tactics"
-set helpText(OpeningTraioner) {<h1>Training: Tactics</h1>
+set helpTitle(TacticsTrainer) "Training: Tactics"
+set helpText(TacticsTraioner) {<h1>Training: Tactics</h1>
   <p>
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
@@ -5030,6 +5227,7 @@ set helpText(FindBestMove) {<h1>Training: Find best move</h1>
 set helpTitle(FICSLogin) "FICS Login"
 set helpText(FICSLogin) {<h1>FICS Login</h1>
   <p>
+
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
