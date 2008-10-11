@@ -130,6 +130,9 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   
   <h3>F</h3>
   <ul>
+  <li><a FICSLogin>FICS Login</a></li>
+  <li><a FICSfindOpp>FICS Find opponent</a></li>
+  <li><a FICS>Play on the Internet (FICS)</a></li>
   <li><a Finder>File Finder</a></li>
   <li><a FindBestMove>Training: Find best move</a></li>
   <li><a Formats>File formats</a></li>
@@ -199,6 +202,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <ul>
   <li><a PGN>PGN</a> window</li>
   <li><a Pgnscid>Pgnscid</a></li>
+  <li><a FICS>Play on the Internet (FICS)</a></li>
   <li><a PTracker>Piece Tracker</a> window</li>
   <li><a PList>Player Finder</a> window</li>
   <li><a PInfo>Player Info</a> window</li>
@@ -1449,13 +1453,16 @@ set helpText(Finder) {<h1>The File Finder window</h1>
   menu. From this menu, accessible by a right mouse click as usual,
   the following functions can be performed
   <ul>
-      <li>Open will open the file in question, this is the same as
-      just clicking on the file with the left mouse button.</li>
-      <li>Backup: copies the file to its original name appended by teh
-      current date and time.</li>
-      <li>Copy: copies the selected database to a new location.</li>
-      <li>Move: moves the selected database to a new location.</li>
-      <li>Delete: deletes the selected database.</li>
+      <li><term>Open</term> will open the file in question, this is
+      the same as just clicking on the file with the left mouse
+      button.</li>
+      <li><term>Backup</term> copies the file to its original name
+      appended by the current date and time.</li>
+      <li><term>Copy</term> copies the selected database to a new
+      location.</li>
+      <li><term>Move</term> moves the selected database to a new
+      location.</li>
+      <li><term>Delete</term> deletes the selected database.</li>
    </ul>
    These functions are especially helpful for Scid databases as these
    consist of several files.
@@ -4142,8 +4149,10 @@ set helpTitle(Book) "Book Window"
 set helpText(Book) {<h1>Book window</h1>
   <p>
   A list of all book files present in Scid's books directory is
-  presented in the drop down list on top of the window. The active
-  book can be selected easily from that list.
+  presented in the drop down list on top of the window. To specify the
+  directory where Scid shoul search for opening books select Options /
+  Books directory from the menu. The active book can be selected
+  easily from that list.
   </p>
   <p>
   The format of books is the one used by Polyglot and the engines like
@@ -4220,10 +4229,14 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   <p>
   Four numbers are displayed showing statistics for current position :
   <ul>
-  <li>Green : the number of moves played by the user that are good moves</li>
-  <li>Yellow : the number of dubious moves played that are in the repertoire</li>
-  <li>Red : the number of moves played that are not in the repertoire</li>
-  <li>White : the number of times the position was encountered</li>
+  <li><term>Green</term> the number of moves played by the user that
+  are good moves</li>
+  <li><term>Yellow</term> the number of dubious moves played that are
+  in the repertoire</li>
+  <li><term>Red</term> the number of moves played that are not in the
+  repertoire</li>
+  <li><term>White</term> the number of times the position was
+  encountered</li>
   </ul>
   </p>
   
@@ -4231,14 +4244,17 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   <p>
   The report shows statistics for the whole repertoire and gives information about user's knowledge :
   <ul>
-  <li>Positions in repertoire : the total number of positions in the repertoire (all lines in database)</li>
-  <li>Positions not played : the positions that were never encountered</li>
-  <li>Positions played : the positions that were played and the sum of the number of times they were encountered. Note that
+  <li><term>Positions in repertoire</term> the total number of
+  positions in the repertoire (all lines in database)</li>
+  <li><term>Positions not played</term> the positions that were never encountered</li>
+  <li><term>Positions played</term> the positions that were played and the sum of the number of times they were encountered. Note that
   this figure represents the sum of occurences of a position in all opening lines : this number can quickly become big
   for positions that are close to the start position</li>
-  <li>Success : the number of good moves made by the player</li>
-  <li>Dubious moves : the number of weak moves made by the player</li>
-  <li>Out of repertoire : the number of moves made by the player that were not in repertoire</li>
+  <li><term>Success</term> the number of good moves made by the player</li>
+  <li><term>Dubious moves</term> the number of weak moves made by the
+  player</li>
+  <li><term>Out of repertoire</term> the number of moves made by the
+  player that were not in repertoire</li>
   </ul>
   </p> 
   <p><footer>(Updated: Scid 3.6.11, April 2007)</footer></p>
@@ -5199,19 +5215,68 @@ set helpText(SeriousGame) {<h1>Serious game window</h1>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
-# Opening Trainer
-set helpTitle(OpeningTrainer) "Training: Openings"
-set helpText(OpeningTraioner) {<h1>Training: Openings</h1>
-  <p>
-  </p>
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
-}
-
 # Tactics Trainer
 set helpTitle(TacticsTrainer) "Training: Tactics"
-set helpText(TacticsTraioner) {<h1>Training: Tactics</h1>
+set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
   <p>
+  Scid offers the possibility to solve chess puzzles. For this feature
+  special databases containing the puzzles are required. These
+  databases are searched in the <term>Bases</term> directory, that can
+  be specified via the menu Options / Bases directory. Unlike other
+  bases these bases usually do not contain full games but just a
+  starting position as is well known from the usual tactics puzzle
+  books. In fact, every puzzle book can easily be converted to such a
+  trainings base by just setting up the positions and storing them in
+  the <term>Bases</term> directory. Additionally, one has to set the
+  type of the base to <term>Tactics</term> by means of the <a
+  Maintenance>Maintenance</a> window.
   </p>
+  <p>
+  After choosing Play / Training / Tactics a dialogue pops up that
+  allows to choose a trainings base. There, the name of the base is
+  displayed, followed by the number of solved puzzles and the total
+  number of puzzles in the base in brackets. That is, Scid stores the
+  puzzles the user already solved with the base. Choosing a base an
+  clicking the <term>Reset scores</term> button will reset this
+  information marking all puzzles as unsolved.
+  </p>
+  <p>
+  <b>Note</b> it is advisable to close the PGN window and check
+  <term>hide next move</term> in the context menu of the information
+  area of Scids main window. Otherwise cheating is pretty simple.
+  <p>
+  To get a solution for the puzzles in a base the positions are
+  analysed by the Toga chess engine (included with Scid). The
+  <term>Limit engine analysis time</term> slider allows to limit the
+  time the engine has to solve the position. Several seconds should be
+  enough for most cases as usually tactical puzzles contain a
+  forced continuation which will be found very quickly by almost all
+  chess engines.
+  </p>
+  <p>
+  Clicking the <term>Continue</term> button will start the exercise,
+  displaying the first unsolved puzzle. That is, it is possible to
+  continue to work through a base. Also if some puzzle was skipped in
+  the first session or unsolved, it will be redisplayed. A new window
+  will pop up containing a clock and several buttons. The clock is
+  only for the user to check how long he thought about the position at
+  hand. No evaluation is done on the time required to solve a problem.
+  </p>
+  <p>
+  If a problem can not be solved, one can check the 
+  <term>Show solution</term> checkbox. The solution is then displayed
+  underneath in the dark gray field.
+  </p>
+  <p>
+  Clicking the <term>Next</term> button allows the user to skip a
+  puzzle and move on, the <term>Abort</term> button will end tactical
+  training and close the database. Besides the <term>Next</term>
+  button, the user can choose an exercise by whatever means one can
+  select a game within a database in Scid, e.g. by choosing a random
+  game via Ctrl-? or jumping to some bookmark or simply by the <a
+  GameList>game list</a>.
+  </p>
+  ###--- Win won game ?? ---###
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
@@ -5227,7 +5292,109 @@ set helpText(FindBestMove) {<h1>Training: Find best move</h1>
 set helpTitle(FICSLogin) "FICS Login"
 set helpText(FICSLogin) {<h1>FICS Login</h1>
   <p>
+  The Free Internet Chess Server (FICS) is a good place to play chess
+  online with people all over the world at various playing strengths.
+  One of the great advantages is, that one can play human opponents.
+  Additionally, FICS offers a rating system that allows to test the
+  own strength and monitor the own progress. Furthermore, FICS relays
+  international tournaments which can be observed and discussed life
+  on the server and there exist several training options. For a
+  detailed description of the services offered, on how to become a
+  member of FICS etc. please refer to the FICS homepage at
+  http://www.freechess.org.
+  </p>
+  <p>
+  Though in principle FICS can be used with a plain telnet program
+  playing with a real chess program offers several advantages.
+  Therefore, Scid offers an interface to this server. To establish a
+  connection to the server one has to log in first and several
+  parameters are required:
+  <ul>
+      <li><term>Login:</term> This is your login name on the FICS
+      server. Its value is stored in Scids configuration for later
+      reuse.</li>
+      <li><term>Password:</term> specifies your password for login.
+      <b>Note</b> that this password is displayed when you type,
+      allowing everybody to read it. Additionally, this password is
+      stored in plain text within Scids configuration. If you are
+      using a publicly accessible system please make sure to assign
+      proper rights to Scids config directory.
+      </li>
+      <li><term>Time seal</term> if checked, all connections to the
+      FICS server are routed through the <term>timeseal</term>
+      program. The purpose of <term>timeseal</term> is to cope with
+      network lags and keeping the clocks in correct order, that means
+      that you should not loose a game on time simply cause you are on
+      a very slow network connection. The suitable
+      <term>timeseal</term> program for your operating system has to
+      be selected in the next input line. It is available for free,
+      but required to be downloaded separately from
+      http://www.freechess.org.
+      </li>
+      <li><term>Server port</term> specifies the port on the server.
+      The default is 5000 and should be ok for almost all needs.</li>
+      <li><term>Timeseal port</term> specifies the port where the
+      <term>timeseal</term> program is listening. The default is 5001
+      and should be ok for almost all needs.</li>
+   </ul>
+   All these settings are stored with Scids configuration and
+   therefore have to be entered only once.
+   </p>
+  <p>
+  After checking the settings you can connect to the FICS server by
+  clicking the <term>Connect</term> button. Alternatively, Sicd offers
+  an anonymous login by choosing <term>Login as guest</term>. In this
+  mode you can try all functions of FICS play there anonymously, but
+  you will not be able to play rated games or obtain a rating
+  yourself. For the difference between Guest account and usual account
+  please refer to the documentation at the FICS homepage.
+  </p>
+  <p>
+  <b>Note</b> Besides standard chess FICS also offers a bunch of chess
+  variants like bughouse or crazyhouse etc. Scid does not support any
+  of these variations, so you can not play them using Scid. If you
+  want to play variations you may wish to check out other interfaces.
+  FICS offers a bunch of graphical interfaces for download on its
+  homepage.
+  </p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+}
 
+# FICS Find Opponent
+set helpTitle(FICSfindOpp) "FICS Find Opponent"
+set helpText(FICSfindOpp) {<h1>FICS Find Opponent</h1>
+  <p>
+  This dialogue offers a convenient way to challenge other players for
+  a game, in FICS speak to <term>place a seek</term>. For this several
+  parameters have to be set:
+  <ul>
+      <li><term>Initial time (min)</term> sets the initial time for
+      the game in minutes.</li>
+      <li><term>Increment (sec)</term> sets the increment per move,
+      this is equivalent to a <term>Fisher Clock</term>. Setting it to
+      0 will cause the game to last <term>Initial time</term> minutes.
+      </li>
+      <li><term>Rated game</term> If checked, the game will be rated,
+      uncheck it to play a leisure game.</li>
+      <li><term>Colour</term> If set to automatic, its up to the
+      opponent to choose the colour he wants to play, you will accept
+      either he choses. If you want to play black or white explicitly,
+      mark either of those choices.
+      </li>
+      <li><term>Limit rating between</term> allows you to offer a game
+      to players in the given rating interval. Using this option can
+      assure you to play opponents in your rating range and thus
+      having a good game.
+      </li>
+      <li><term>Confirm manually</term> allows you to confirm or deny
+      the game, once another player accepted your challenge.</li>
+      <li><term>Filter with formula</term> On FICS every player can
+      set a formula that describes what challenges will be denied
+      automatically. This formula can be enabled by checking this box.
+      </li>
+   </ul>
+   Clicking the <term>Issue seek</term> button will place your
+   offer on the server.
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
@@ -5236,6 +5403,88 @@ set helpText(FICSLogin) {<h1>FICS Login</h1>
 set helpTitle(FICS) "FICS: Play on the Internet"
 set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
   <p>
+  The window is split horizontally in tow main parts. On top the
+  console window is shown. Here all messages sent to the server or
+  retrieved from the server show up. Normal messages are written in
+  green, game offers form other players show up in red, commands sent
+  to the server are prepended by a prompt.
+  </p>
+  <p>
+  Interaction with FICS is command driven. Therefore, below the
+  console window is the command line. Here the user can enter commands
+  sent to the server by either hitting enter or the <term>send</term>
+  button. Describing all commands of FICS is beyond the scope of this
+  document, however FICS offers an extensive online help system. To
+  see a list of possible commands one can issue <term>help
+  commands</term>. To see the detailed documentation of a specific
+  command just prepend its name by <term>help</term>. Note, that a
+  command may have several help pages. To scroll down issue the
+  <term>next</term> command.
+  </p>
+  <p>
+  Below the command line, the dialogue is split in two parts. On the
+  left hand side the clocks show up, one for white and one for black.
+  Clicking into a clock will halt it, inside the analogue clocks a
+  digital representation is shown.
+  </p>
+  <p>
+  On the right hand side of the clocks appear the command buttons:
+  <ul>
+    <li><term>Silence</term> will filter out most of the messages on
+    FICS that are not explicitly directed to the user. It is
+    equivalent to sending the FICS commands 
+    <ul>
+    <li>set gin 0</li>
+    <li>set seek 0</li>
+    <li>set silence 0</li>
+    <li>set chanoff 1</li>
+    </ul>
+    </li>
+    <li><term>Offers</term> will show a graphical display of the
+    current game offers. The y-axis shows the ELO rating of the
+    opponent (the higher his level, the further up the offer appears),
+    while x-axis of the graph shows the timing of of the games (the
+    further to the right, the slower the game). The first red line
+    marks standard <term>Blitz</term> timing (5 min., no increment)
+    while the second red line marks the standard <term>Rapid</term>
+    timing (15 min., no increment). Additionally, the offers use the
+    following coding:
+    <ul>
+       <li><green>Green</green>: offers from human opponents</li>
+       <li><blue>Blue</blue>: offers from computer opponents</li>
+       <li><red>Red</red>: games with a total time of more than 1 hour</li>
+       <li><gray>Gray</gray>: anonymous offers, i.e. offers from guest logins</li>
+       <li>Boxes: unrated games</li>
+       <li>Circles: rated games</li>
+    </ul>
+    Hovering the mouse over a specific offer shows the full details in
+    a textual form:
+    <ul>
+       <li>the game number</li>
+       <li>the players login handle</li>
+       <li>the rating of the player in brackets</li>
+       <li>the initial time / the time increment</li>
+       <li>the word "rated" or "unrated" depending on the offer</li>
+       <li>the word "[white]" or "[black]" if the opponent wants to
+       play the specified colour only</li>
+    </ul>
+    To accept an offer just click on the symbol.
+  <li><term>Find opponent</term> opens a  <a FICSfindOpp>dialogue</a>
+  that allows to place an offer.</li>
+  <li><term>Draw</term> offers a draw in the ongoing game</li>
+  <li><term>Abort</term> aborts the ongoing game</li>
+  <li>term>Resign</term> resigns the ongoing game</li>
+  <li><term>Takeback</term> takes back a half move, useful in
+  analysis</li>
+  <li><term>Takback 2</term> takes back a full move, useful in
+  analysis</li>
+  <li><term>Games</li> gives a list of ongoing games on the server.
+  Note that FICS console is considered to be 80 chars wide, therefore,
+  to get a nice table it would be necessary to resize the FICS window.
+  </li>
+  <li>
+  <li><term>Close</term> closes the connection to FICS</li>
+  </ul>
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
