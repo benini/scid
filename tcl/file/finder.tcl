@@ -341,7 +341,7 @@ proc ::file::finder::backup { f } {
     catch { file copy "$r.stc" "$r$d.stc" }
   }
   
-  if { [catch { file copy "$r$ext" "$r$d$ext" } err ] } {
+  if { [catch { file copy "$r[file extension $f]" "$r$d[file extension $f]" } err ] } {
     tk_messageBox -title Scid -icon error -type ok -message "File copy error $err"
     return
   }
