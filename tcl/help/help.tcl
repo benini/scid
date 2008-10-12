@@ -1125,8 +1125,9 @@ set helpTitle(Annotating) "Annotating games"
 set helpText(Annotating) {<h1>Annotating games</h1>
   <p>
   Scid lets you add notes to games. There are three types of
-  annotation you can add after a move: symbols, a comment,
-  and variations.
+  annotation you can add after a move: symbols, a comment, and
+  variations. This section describes manual annotations, see the <a
+  Analysis Annotating>Analyis</a> for engine supported analysis.
   </p>
   
   <h3>Symbols and comments</h3>
@@ -1878,7 +1879,7 @@ set helpText(PGN) {<h1>The PGN window</h1>
   menu of the main window.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.11, april 2007)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 
@@ -2559,7 +2560,7 @@ set helpText(Sorting) {<h1>Sorting a database</h1>
   database after the sort procedure!
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -2612,8 +2613,19 @@ set helpText(Flags) {<h1>Game Flags</h1>
   flag for kingside pawn storms, or kingside heavy piece attacks,
   or even for endgames with all pawns on the kingside.
   </p>
+  <p>
+  Note, that sensible handling of flags can speed up searches
+  significantly!
+  </p>
+  <p>
+  The following functions of Scid set or require flags:
+  <ul>
+     <li><a OpeningTrainer>Opening Trainer</a>: can evaluate the (B) and (W) flags
+     <li><a Analysis Annotate>Find best move</a>: evaluates the (T) flag
+     <li><a Analysis Annotate>Find tactical exercise</a>: sets the (T) flag
+  </ul>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -2784,7 +2796,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   not shown when training mode is on.
   </p>
   
-  <h3>Annotating a game</h3>
+  <h3><a Annotate>Annotating a game</h3>
   <p>
   The <b>Add variation</b> button (<button tb_addvar> or <button
   tb_addallvars>)in the analysis window adds the current score and
@@ -2896,25 +2908,41 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
 set helpTitle(CalVar) "Calculation of variation"
 set helpText(CalVar) {<h1>The calculation of variation window</h1>
   <p>
-This training exercise is also known as the Stoyko exercise. 
-Its purpose is to analyse a complex position and evaluate as many sound lines as possible,
-and give a correct evaluation for each of them.
+   This training exercise is also known as the Stoyko exercise.  Its
+   purpose is to analyse a complex position and evaluate as many sound
+   lines as possible, and give a correct evaluation for each of them.
   </p> 
-<p><h3>Configuration</h3></p>
-Three parameters are set :
-<ul>
-<li>The UCI engine that will analyse various lines</li>
-<li>The time, in seconds, the engine will use to analyse the position</li>
-<li>The time, in seconds, the engine will use to analyse each line entered by the user</li>
-</ul>
-<p><h3>Entering lines</h3></p>
-Moves are entered as usual with mouse clicks on the board but they will not be displayed. At the end of a line the user needs to provide an evaluation by clicking on one of the buttons with NAG codes.
-  <p><h3>Evaluation verification</h3></p>
-Each time an evaluation is given to a line the engine calculates its value and append the line and score just below the user ones.
-  <p><h3>Done with position</h3></p>
-When  the user thinks he found all best lines, pressing <b>Done with position</b> will append to the game
-(with the comment <b>Missed line</b>), the lines that have a score higher than the best line entered by the user.
-  
+  <h3>Configuration</h3></p>
+  <p>
+  Three parameters are set :
+  <ul>
+     <li>The UCI engine that will analyse various lines</li>
+     <li>The time, in seconds, the engine will use to analyse the position</li>
+     <li>The time, in seconds, the engine will use to analyse each line entered by the user</li>
+  </ul>
+  </p>
+
+  <h3>Entering lines</h3></p>
+  <p>
+  Moves are entered as usual with mouse clicks on the board but they
+  will not be displayed. At the end of a line the user needs to provide
+  an evaluation by clicking on one of the buttons with NAG codes.
+  </p>
+
+  <h3>Evaluation verification</h3>
+  <p>
+  Each time an evaluation is given to a line the engine calculates its
+  value and append the line and score just below the user ones.
+  </p>
+
+  <h3>Done with position</h3>
+  <p>
+   When  the user thinks he found all best lines, pressing <term>Done with
+   position</term> will append to the game (with the comment <term>Missed
+   line</term>), the lines that have a score higher than the best line
+   entered by the user.
+  </p>
+
   <p><footer>(Updated: Scid 3.6.21, December 2007)</footer></p>
 }
 
@@ -3358,7 +3386,7 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   <a Tree Graph>Tree</a> help page.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.21, November 2007)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 ####################
@@ -4214,7 +4242,6 @@ set helpText(Book) {<h1>Book window</h1>
   book window.
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
-  ###--- How to open several books ---###
 }
 
 # Tactical game window help
