@@ -596,3 +596,4 @@ scid-3.6.26
 	* after a search with Tree window opened for current base, don't load automatically the first game in filter, or the Tree will be refreshed, overwriting the filter
 - updated spanish translation (thanks to Benigno Hernández)
 - updated swedish translation (thanks to Hans Eriksson)
+- Fix : finder (Unix systems) : backup of PGN files with upper case extension

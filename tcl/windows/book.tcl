@@ -282,7 +282,7 @@ namespace eval book {
   }
   ################################################################################
   # sends to book the list of updated probs in order. As the list of moves is in the same order, no need
-  # to send the modes.
+  # to send the moves.
   ################################################################################
   proc save {} {
     set prob {}
