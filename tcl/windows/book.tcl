@@ -233,6 +233,8 @@ namespace eval book {
     $w.fcombo.combo configure -command ::book::bookTuningSelect
     bind $w <Destroy> "::book::closeTuningBook"
     bind $w <Escape> { destroy  .bookTuningWin }
+    bind $w <F1> { helpWindow BookTuning }
+
     bookTuningSelect
     
   }

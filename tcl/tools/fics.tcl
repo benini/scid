@@ -108,6 +108,7 @@ namespace eval fics {
     grid $w.cancel -column 2 -row $row -sticky ew
     
     bind $w <Escape> "$w.cancel invoke"
+    bind $w <F1> { helpWindow FICSLogin}
     
     update
     # Get IP adress of server (as Timeseal needs IP adress)
@@ -227,6 +228,8 @@ namespace eval fics {
     bind $w <Destroy> { catch ::fics::close }
     bind $w <Configure> "recordWinSize $w"
     
+    bind $w <F1> { helpWindow FICS}
+
     # all widgets must be visible
     update
     set x [winfo reqwidth $w]
@@ -357,6 +360,8 @@ namespace eval fics {
       destroy .ficsfindopp
     }
     button $w.cancel -text "Cancel" -command "destroy $w"
+    bind $w <F1> { helpWindow FICSfindOpp}
+
     grid $w.seek -column 0 -row 9 -sticky ew
     grid $w.cancel -column 1 -row 9 -sticky ew
   }

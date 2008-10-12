@@ -5379,6 +5379,13 @@ set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
   hand. No evaluation is done on the time required to solve a problem.
   </p>
   <p>
+  Some tactical exercises do not end in a mate, but the correct
+  solution gives a clear advantage. If one wants to play out these
+  scenarios and only count the exercise solved in case of a win, just
+  check the <term>Win won game</term> option. (This option has no
+  meaning in case of a clear mate solution.)
+  </p>
+  <p>
   If a problem can not be solved, one can check the 
   <term>Show solution</term> checkbox. The solution is then displayed
   underneath in the dark gray field.
@@ -5392,7 +5399,6 @@ set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
   game via Ctrl-? or jumping to some bookmark or simply by the <a
   GameList>game list</a>.
   </p>
-  ###--- Win won game ?? ---###
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 

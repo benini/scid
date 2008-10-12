@@ -68,6 +68,7 @@ namespace eval opening {
     
     pack $w.f0 $w.f1 $w.f2 -side top -fill both
     
+    bind $w <F1> { helpWindow OpeningTrainer }
     bind $w <Escape> "destroy $w"
     bind $w <Destroy> ""
     bind $w <Configure> "recordWinSize $w"

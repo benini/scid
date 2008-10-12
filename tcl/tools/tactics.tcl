@@ -182,6 +182,8 @@ namespace eval tactics {
     
     pack $w.fconfig $w.fconfig.flist $w.fconfig.reset $w.fconfig.flimit $w.fconfig.fbutton
     bind $w <Configure> "recordWinSize $w"
+    bind $w <F1> { helpWindow TacticsTrainer }
+
   }
   ################################################################################
   #
@@ -231,6 +233,7 @@ namespace eval tactics {
     pack $w.fbuttons.next $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     bind $w <Destroy> { ::tactics::endTraining }
     bind $w <Configure> "recordWinSize $w"
+    bind $w <F1> { helpWindow TacticsTrainer }
     
     ::tactics::loadBase [file rootname $base]
     

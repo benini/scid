@@ -27,6 +27,7 @@ namespace eval novag {
     button $w.f2.bOk -text OK -command "destroy $w ; ::novag::connect"
     button $w.f2.bCancel -text Cancel -command "destroy $w"
     pack $w.f2.bOk $w.f2.bCancel -side left
+    bind $w <F1> { helpWindow Novag}
   }
   ##########################################################
   proc connect {} {
@@ -42,6 +43,7 @@ namespace eval novag {
     }
     bind $w.input <Return> " $w.send invoke "
     bind $w <Destroy> { catch ::novag::disconnect }
+    bind $w <F1> { helpWindow Novag}
     
     pack $w.output $w.input $w.send
     update
