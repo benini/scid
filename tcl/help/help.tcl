@@ -465,18 +465,20 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   The navigation buttons above the board have the following meanings, from
   left to right:
   <ul>
-  <li> <button tb_start> Move to the start of the game. </li>
-  <li> <button tb_prev> Move back one move. </li>
-  <li> <button tb_next> Move forward one move. </li>
-  <li> <button tb_end> Move to the end of the game. </li>
-  <li> <button tb_invar> Move into a variation. </li>
-  <li> <button tb_outvar> Move out of the current variation. </li>
-  <li> <button tb_addvar> Add a new variation. </li>
-  <li> <button autoplay_off> Start/stop autoplay mode (see below). </li>
-  <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>. </li>
-  <li> <button tb_flip> Rotate the board 180 degrees. </li>
-  <li> <button tb_coords> Show/hide board coordinates.</li>
+  <li> <button tb_start> Move to the start of the game. [Home] </li>
+  <li> <button tb_prev> Move back one move. [Left] </li>
+  <li> <button tb_next> Move forward one move. [Right] </li>
+  <li> <button tb_end> Move to the end of the game. [End] </li>
+  <li> <button tb_invar> Move into a variation. [v] </li>
+  <li> <button tb_outvar> Move out of the current variation. [z] </li>
+  <li> <button tb_addvar> Add a new variation. [Ctrl-A]</li>
+  <li> <button autoplay_off> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
+  <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>.
+  [Ctrl-Space] </li>
+  <li> <button tb_flip> Rotate the board 180 degrees. [.]</li>
+  <li> <button tb_coords> Show/hide board coordinates. [0]</li>
   </ul>
+  Keyboard shortcuts are given in square brackets.
   
   <h4><name Autoplay>Autoplay mode</name></h4>
   <p>
@@ -1155,10 +1157,18 @@ set helpText(Annotating) {<h1>Annotating games</h1>
   <p>
   When a move has variations, they are shown in the game information
   area. The first will be named <b>v1</b>, the second <b>v2</b>, etc.
-  You can click on a variation to enter it, or press "<b>v</b>" followed
-  by the variation number. (If there is only one variation, simply
-  pressing <b>v</b> will enter it.)
-  To leave a variation, you can use the "<b>z</b>" shortcut key.
+  You can click on a variation to enter it, or press "<b>v</b>". In
+  the latter case the <term>Variation</term> window will pop up
+  allowing to select a variation using the cursor keys. Setting
+  Options / Moves / Show variation window will pop up this window
+  automatically every time a move with a variation is found while
+  navigating through the game using the cursor keys. In the variation
+  window one can enter the variation by selecting it with the up/down
+  cursor keys and hitting enter or clicking on it with the mouse. This
+  allows for navigation through the game with the cursor keys only.
+  To leave a variation, you can use the "<b>z</b>" shortcut key. At
+  the beginning of the variation, the up arrow can be used
+  alternatively.
   </p>
   
   <h3><name Null>Null moves</name></h3>
@@ -1226,9 +1236,14 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   <h3>Comments</h3>
   <p>
   You can edit comments by typing in the text area provided and using
-  the Clear, Revert and Store buttons.
-  You do not need to press the Store button to update a comment; it is
-  automatically updated whenever you move to another position in the game.
+  the Clear, Revert and Store buttons.  You do not need to press the
+  Store button to update a comment; it is automatically updated
+  whenever you move to another position in the game.
+  </p>
+  <p>
+  <b>Hint:</b> To add a comment before the first move in a variation,
+  go to the first move and hit the left arrow key once and then insert
+  the comment.
   </p>
   
   <h3>Coloring squares</h3>
@@ -1803,12 +1818,19 @@ set helpText(PGN) {<h1>The PGN window</h1>
   <p>
   You can use the PGN window to navigate around the game: clicking the
   left mouse button on a move will jump to that move. Click the left
-  mouse button on a comment will edit it.
-  The arrow keys and (<b>v</b> and <b>z</b> keys for entering or
-  leaving variations) work for game navigation just as in the main
-  window. Clicking on a move with middle mouse button will display a
-  small board. Clicking on right mouse button will popup a contextual
-  menu.
+  mouse button on a comment will edit it.  The arrow keys and
+  (<b>v</b> and <b>z</b> keys for entering or leaving variations) work
+  for game navigation just as in the main window.  As in the main
+  window, hitting v will cause the <term>Variation</term> window to
+  pop up allowing to select a variation using the cursor keys. Setting
+  Options / Moves / Show variation window will pop up this window
+  automatically every time a move with a variation is found while
+  navigating through the game using the cursor keys. In the variation
+  window one can enter the variation by selecting it with the up/down
+  cursor keys and hitting enter or clicking on it with the mouse. This
+  allows for navigation through the game with the cursor keys only.
+  Clicking on a move with middle mouse button will display a small
+  board. Clicking on right mouse button will popup a contextual menu.
   </p>
   <p>
   From the context menu the following functions are available
@@ -2176,30 +2198,6 @@ set helpText(Tree) {<h1>The Tree window</h1>
   knowledge of your opening repertoire. Another option to train an
   opening offers <a OpeningTrainer>Training / Openings</a>.
   </p>
-  
-###--- Still valid? ---###
-  <h3>Using the Tree with EPD files open</h3>
-  <p>
-  For each open <a EPD>EPD file</a>, the tree window will contain an
-  extra column that shows a short (five character) summary of the
-  contents of the EPD file for each position reached from the moves
-  listed.
-  </p>
-  <p>
-  The summary could be an evaluation, an opening code or a suggested
-  move; it will be the contents of the first EPD field found from the
-  following list: <b>ce, eco, nic, pv, pm, bm, id</b>, or just the
-  first EPD field if none of the above are present.
-  </p>
-  <p>
-  For a description of EPD fields, see the <a EPD>EPD file</a> help
-  page.  Note that if the summary is of the <b>ce</b> field, it is
-  shown as an evaluation in pawns from Whites perspective (rather than
-  as a score in centipawns from the perspective of the side to move,
-  which is its stored format in the EPD file) for improved
-  readability.
-  </p>
-###--- Still valid? ---###
 
   <h3>Using a Mask file to configure display</h3>
   <p>
@@ -3150,6 +3148,12 @@ set helpText(Reports) {<h1>Reports</h1>
   positional theme to set the filter to contain only the report games where
   that theme occurred.
   </p>
+  <p>
+  Choosing <term>Merge Games</term> will merge the games from the
+  opening report into the currently displayed game. This merges in
+  the whole games as variations to the game, including the full
+  reference.
+  </p>
   
   <h4>Favorites</h4>
   <p>
@@ -3195,7 +3199,7 @@ set helpText(Reports) {<h1>Reports</h1>
   number of games used to generate the theory table in the Report options.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
 
@@ -3282,13 +3286,24 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   per 1000 games in the entire database, for a particular date or Elo
   rating range.
   </p>
-<p>
-The second Filter graph window is the <term>absolute Filter Graph</term> window. This graph shows the absolute quantity of games in the filter according the selecte criteria. It is possible to select the criteria: Decade, Year, Rating and Moves.<br>
-    The small button near the Close-Button opens the dialog to configure the graph. You can select the range (from, to) and the size of intervall for the x-axes. The "decade"-criteria can't be configured, use Year insteed. If "Estimate" selected a missing rating will be estimate like described below. In other case no estimation is done and missing ratings are count as zero. This matches the Min. Elo evaluation in the statistic-window. Use "Update" to start a new evaluation with the actual value without closing the dialog.
-</p>
-<p>
-Please note: The calculation can be need some time on large ranges and small intervalls, in addition the readability degreases.
-</p>
+  <p>
+  The second Filter graph window is the <term>absolute Filter
+  Graph</term> window. This graph shows the absolute quantity of games
+  in the filter according the selecte criteria. It is possible to select
+  the criteria: Decade, Year, Rating and Moves.<br>
+  The small button near the Close-Button opens the dialog to configure
+  the graph. You can select the range (from, to) and the size of
+  intervall for the x-axes. The "decade"-criteria can't be configured,
+  use Year insteed. If "Estimate" selected a missing rating will be
+  estimate like described below. In other case no estimation is done
+  and missing ratings are count as zero. This matches the Min. Elo
+  evaluation in the statistic-window. Use "Update" to start a new
+  evaluation with the actual value without closing the dialog.
+  </p>
+  <p>
+  Please note: The calculation can be need some time on large ranges and
+  small intervalls, in addition the readability degreases. 
+  </p>
   <p>
   When plotting the Filter graph by rating, Scid uses the average (mean)
   rating for each game. Estimate ratings (such as those in the spelling file)
@@ -3327,6 +3342,12 @@ Please note: The calculation can be need some time on large ranges and small int
   <li><b>1.e4 ({9:+0.25} ....)</b></li>
   </ul>
   and are also scores from White's perspective).
+  </p>
+  <p>
+  In case the scores are not given from whites perspective, one can
+  choose the perspective to use from the options menu to correct for
+  this.
+  ###--- Checking both ??? ---###
   </p>
   
   <h3><name Tree>Tree Graph window</name></h3>
@@ -5624,17 +5645,65 @@ set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
 }
 
 # Book tuning
-set helpTitle(Novag) "Connecting the Novag Citrine Chess board"
-set helpText(Novag) {<h1>Connecting the Novag Citrine Chess board</h1>
+set helpTitle(BookTuning) "Book tuning"
+set helpText(BookTuning) {<h1>Book tuning</h1>
    <p>
+   For each book move a percentage is given stating the probability
+   that Scid will use this move. Using <term>Book tuning</term> one
+   can adjust these values. First, the position where the lines should
+   be adopted has to be set up. After calling Tools / Book tuning one
+   gets a small window stating the moves in book and their percentage
+   in a spin box. Note, that only integer values are shown, therefore
+   a 0 may appear signifying that this move has a probability of "less
+   than 1%". (Most likely this happens in automatically generated
+   books from game collections.) All numbers add up to 100% of course.
+   </p>
+   <p>
+   To navigate through the branches of the book one can just click on
+   the line in the book tuning window or move around the game as usual
+   in Scid.
+   </p>
+   <p>
+   To adjust the probability, e.g. rise the probability of a certain
+   variation, one can just increase its value. Though the other values
+   stay the same, Scid will recalculate once <term>Save</term> is
+   pressed.
+   </p>
+   <p>
+   Choosing <term>Export</term> will export a branch of the book from
+   the current position onwards into a single game. The continuation
+   with the highest probability will make up the main line while all
+   others are stored in variations. This allows for semi manually
+   selecting lines to be included in a new book to be created. Note,
+   that Scid can handle 3000 moves in a single game, therefore it will
+   most likely not be possible (nor will it be very sensible) to
+   export a whole opening book into one game. Also note that export
+   can be done incrementally. That is, new lines are added to already
+   existing ones. This also allows to merge several books.
    </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
 
-# Book tuning
-set helpTitle(BookTuning) "Book tuning"
-set helpText(BookTuning) {<h1>Book tuning</h1>
+# Novag Citrine
+set helpTitle(Novag) "Connecting the Novag Citrine Chess board"
+set helpText(Novag) {<h1>Connecting the Novag Citrine Chess board</h1>
    <p>
+   The Novag Citrine is a wooden chess board that can be interfaced
+   from a PC by means of a serial connection. It can be used with Scid
+   to enter games, play against a computer opponent or on FICS
+   offering a "natural" chess interface.
+   </p>
+   <p>
+   Before the board can be used, one has to configure the port to use
+   (Tools / Novag Citrine / Configure). On Linux systems these ports
+   are called /dev/ttyS0, /dev/ttyS1 and so on for serial ports,
+   /dev/ttyUSB0, /dev/ttyUSB1 and so on for USB connections. On
+   Windows the names COM1:, COM2: and so on are common. 
+   </p>
+   <p>
+   Once the proper port is set, choose Tools / Novag Citrine / Connect
+   to hook up the board.
+   ###--- Detailed description needed ---###
    </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
