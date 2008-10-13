@@ -15,7 +15,7 @@ MINGW_BIN = C:\Dev-Cpp\bin
 TCL_DIR = C:\Tcl
 
 # Tcl/Tk version: it should be "83" for Tcl/Tk 8.3, etc.
-TCL_VERSION = 84
+TCL_VERSION = 85
 
 
 ### Compiler and linker:
