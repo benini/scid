@@ -13,7 +13,7 @@
 # tclsh program with a version number in the file name is found, the
 # default program to execute is just tclsh.
 # The backslashes at the end of these lines are needed: \
-tclsh=tclsh8.5;
+tclsh=tclsh;
 
 # This shell script code did not work for me in Linux so it is
 # commented out for now; the configure script will just run in

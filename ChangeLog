@@ -597,3 +597,9 @@ scid-3.6.26
 - updated spanish translation (thanks to Benigno Hernández)
 - updated swedish translation (thanks to Hans Eriksson)
 - Fix : finder (Unix systems) : backup of PGN files with upper case extension
+
+[October 2009 ]
+
+scid-3.6.27
+-----------
+Fix : export of Polyglot to PGN would fail with some books

@@ -334,11 +334,13 @@ namespace eval book {
       set hashList [lsort -integer -unique $hashList]
     }
     
+    updateBoard -pgn
+    
     set bookMoves [sc_book moves $::book::bookTuningSlot]
+
     incr ::book::exportCount
     if {[expr $::book::exportCount % 50] == 0} {
       updateProgressWindow $::book::exportCount $::book::exportMax
-      updateBoard
       update
     }
     if {[llength $bookMoves] == 0} { return }
