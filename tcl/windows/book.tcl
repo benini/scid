@@ -337,7 +337,6 @@ namespace eval book {
     updateBoard -pgn
     
     set bookMoves [sc_book moves $::book::bookTuningSlot]
-
     incr ::book::exportCount
     if {[expr $::book::exportCount % 50] == 0} {
       updateProgressWindow $::book::exportCount $::book::exportMax
