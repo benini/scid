@@ -602,4 +602,5 @@ scid-3.6.26
 
 scid-3.6.27
 -----------
-Fix : export of Polyglot to PGN would fail with some books
+- Fix : export of Polyglot to PGN would fail with some books
+- Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"

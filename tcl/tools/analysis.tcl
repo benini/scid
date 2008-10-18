@@ -919,8 +919,8 @@ proc addAnnotation { {n 1} } {
   set text [format "%d:%+.2f" $analysis(depth$n) $analysis(score$n)]
   set moves $analysis(moves$n)
   
-  # if next move is what engine guessed, do nothing
-  if { $analysis(prevmoves$n) != "" && ![sc_pos isAt vend]} {
+  # if next move is what engine guessed, do nothing (except if annotate mode is for all moves)
+  if { $analysis(prevmoves$n) != "" && ![sc_pos isAt vend] && $annotateBlunders != "allmoves"} {
     set move2 [sc_game info previousMoveNT]
     
     sc_info preMoveCmd {}
