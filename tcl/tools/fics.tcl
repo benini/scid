@@ -166,7 +166,12 @@ namespace eval fics {
     pack $w.bottom.graph.c
     
     scrollbar $w.top.f1.ysc -command { .fics.top.f1.console yview }
-    text $w.top.f1.console -bg black -fg LimeGreen -height 10 -width 40 -wrap word -yscrollcommand "$w.top.f1.ysc set"
+    ## text $w.top.f1.console -bg black -fg LimeGreen -height 10 -width 40 -wrap word -yscrollcommand "$w.top.f1.ysc set"
+	 # Use variables to set console layout. Default (start.tcl) is the
+	 # above, configuration could in principle be overwritten in
+	 # options.dat however.
+    text $w.top.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  -wrap word -yscrollcommand "$w.top.f1.ysc set"
+    ## text $w.top.f1.console  -wrap word -yscrollcommand "$w.top.f1.ysc set"
     pack $w.top.f1.ysc -side left -fill y -side right
     pack $w.top.f1.console -side left -fill both -expand 1 -side right
     

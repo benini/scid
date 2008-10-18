@@ -284,6 +284,12 @@ set ::fics::findopponent(rating1) 1500
 set ::fics::findopponent(rating2) 3000
 set ::fics::findopponent(manual) "auto"
 set ::fics::findopponent(formula) ""
+set ::fics::consolebg     black
+set ::fics::consolefg     LimeGreen
+set ::fics::consoleheight 10
+set ::fics::consolewidth  40
+
+
 
 # Defaults for initial directories:
 set initialDir(base) "."
