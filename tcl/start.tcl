@@ -33,7 +33,7 @@ set scidVersionDate "Oct 2008"
 
 # Set to 0 before releasing, so some alpha-state code is not included
 # Set to 1 to have access to all code
-set NOT_FOR_RELEASE 0
+set NOT_FOR_RELEASE 1
 
 package require Tcl 8.4
 package require Tk  8.4

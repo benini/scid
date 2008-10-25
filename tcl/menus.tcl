@@ -646,25 +646,21 @@ set helpMessage($m,[incr menuindex]) ToolsTracker
 $m add command -label ToolsBookTuning -command ::book::tuning
 set helpMessage($m,[incr menuindex]) ToolsBookTuning
 
-# Novag support
-menu $m.novag
-$m add cascade -label ToolsNovagCitrine -menu $m.novag
-incr menuindex
-$m.novag add command -label ToolsNovagCitrineConfig -command ::novag::config
-$m.novag add command -label ToolsNovagCitrineConnect -command ::novag::connect
+### # Novag support
+## menu $m.novag
+## $m add cascade -label ToolsNovagCitrine -menu $m.novag
+## incr menuindex
+## $m.novag add command -label ToolsNovagCitrineConfig -command ::novag::config
+## $m.novag add command -label ToolsNovagCitrineConnect -command ::novag::connect
 
-# Input Engine support
+# Connect Hardware
 if { $NOT_FOR_RELEASE } {
-  menu $m.inputengine
-  $m add cascade -label ConnectHardware         -menu $m.inputengine
-  incr menuindex
-  $m.inputengine add command -label Config      -command ::inputengine::config
-  $m.inputengine add separator
-  $m.inputengine add command -label ToggleConnect -command ::inputengine::connectdisconnect
-  $m.inputengine add command -label Synchronise -command ::inputengine::synchronise
-  $m.inputengine add separator
-  $m.inputengine add command -label Sysinfo     -command ::inputengine::sysinfo
-  $m.inputengine add command -label Usercommand -command ::inputengine::userSend
+menu $m.hardware
+$m add cascade -label ConnectHardware -menu $m.hardware
+incr menuindex
+  $m.hardware add command -label Configure -command ::ExtHardware::config
+  $m.hardware add command -label InputEngine -command ::inputengine::connectdisconnect
+  $m.hardware add command -label NovagCitrineConnect -command ::novag::connect
 }
 
 $m add separator
@@ -1481,14 +1477,9 @@ proc setLanguageMenus {{lang ""}} {
   
   foreach tag {Analysis Analysis2 Cross Email FilterGraph AbsFilterGraph OpReport Tracker
     Rating Score ExpCurrent ExpFilter ImportOne ImportFile StartEngine1 StartEngine2 BookTuning
-    NovagCitrine PInfo PlayerReport } {
+    PInfo PlayerReport } {
     configMenuText .menu.tools [tr Tools$tag $oldLang] Tools$tag $lang
   }
-  
-  foreach tag { NovagCitrineConfig NovagCitrineConnect } {
-    configMenuText .menu.tools.novag [tr Tools$tag $oldLang] Tools$tag $lang
-  }
-  
   
   .menu.tools.pinfo entryconfigure 0 -label $::tr(White)
   .menu.tools.pinfo entryconfigure 1 -label $::tr(Black)

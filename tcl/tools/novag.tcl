@@ -6,32 +6,15 @@
 ### add NOVAG board support
 
 namespace eval novag {
-  set serial "/dev/ttyUSB0"
   set fd ""
   set connected 0
   set waitBetweenMessages 0
   
   ##########################################################
-  proc config {} {
-    global ::novag::serial
-    set w .serialConfig
-    if { [winfo exists $w]} { return }
-    toplevel $w
-    wm title $w "Configure Serial port"
-    frame $w.f1
-    frame $w.f2
-    pack $w.f1 $w.f2
-    label $w.f1.l -text "enter the serial port\nLinux /dev/ttyS0, /dev/ttyUSB0, ...)\nWindows COM1, ..."
-    entry $w.f1.e -width 15 -textvariable ::novag::serial
-    pack $w.f1.l $w.f1.e
-    button $w.f2.bOk -text OK -command "destroy $w ; ::novag::connect"
-    button $w.f2.bCancel -text Cancel -command "destroy $w"
-    pack $w.f2.bOk $w.f2.bCancel -side left
-    bind $w <F1> { helpWindow Novag}
-  }
-  ##########################################################
   proc connect {} {
-    global ::novag::serial ::novag::fd
+    global ::novag::fd
+
+    set serial $::ExtHardware::port
     
     set w .novag
     toplevel $w
@@ -47,6 +30,9 @@ namespace eval novag {
     
     pack $w.output $w.input $w.send
     update
+
+    # Set button to "connection in progress"
+    .button.exthardware configure -image tb_eng_connecting -relief flat
     
     puts "connecting to $serial"
     set fd [open $serial r+]
@@ -65,6 +51,9 @@ namespace eval novag {
     wait 200
     ::novag::send "U ON"
     set ::novag::connected 1
+
+    # Set button to "connected, ready to use"
+    .button.exthardware configure -image tb_eng_ok -relief flat
   }
   ##########################################################
   proc disconnect {} {

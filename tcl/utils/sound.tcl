@@ -12,7 +12,7 @@ set ::utils::sound::isPlayingSound 0
 set ::utils::sound::soundQueue {}
 set ::utils::sound::soundFiles [list \
     King Queen Rook Bishop Knight CastleQ CastleK Back Mate Promote Check \
-    a b c d e f g h x 1 2 3 4 5 6 7 8 move]
+    a b c d e f g h x 1 2 3 4 5 6 7 8 move alert]
 
 # soundMap
 #
@@ -22,7 +22,7 @@ set ::utils::sound::soundFiles [list \
 #
 array set ::utils::sound::soundMap {
   K King Q Queen R Rook B Bishop N Knight k CastleK q CastleQ
-  x x U Back # Mate = Promote + Check
+  x x U Back # Mate = Promote + Check alert alert
   a a b b c c d d e e f f g g h h
   1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8
 }

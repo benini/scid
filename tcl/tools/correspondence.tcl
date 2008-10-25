@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.22 2008/10/18 17:46:23 arwagner Exp $
+### $Id: correspondence.tcl,v 1.23 2008/10/25 19:20:37 arwagner Exp $
 ###
-### Last change: <Wed, 2008/10/15 20:50:31 arwagner ingata>
+### Last change: <Sat, 2008/10/25 15:21:41 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1289,7 +1289,7 @@ namespace eval CorrespondenceChess {
 			puts $optionF "# Scid options file"
 			puts $optionF "# Version: $::scidVersion, $::scidVersionDate"
 			puts $optionF "# This file contains commands in the Tcl language format."
-			puts $optionF "# If you edit this file, you must preserve valid its Tcl"
+			puts $optionF "# If you edit this file, you must preserve valid Tcl"
 			puts $optionF "# format or it will not set your Scid options properly."
 			puts $optionF ""
 
@@ -1412,22 +1412,22 @@ namespace eval CorrespondenceChess {
 		grid $w.top.ysc        -stick ns   -column 13 -row 0 
 		grid $w.top.help       -stick nsew -column 14 -row 0 -columnspan 2
 
-		grid $w.top.retrieveCC           -column  0 -row 0
+		grid $w.top.retrieveCC             -column  0 -row 0
 # Disable the buttons as they do not act as they should. Probably
 # reenable them?
 ###		grid $w.top.prevCC     -stick e  -column  1 -row 0
 ###		grid $w.top.nextCC     -stick w  -column  2 -row 0
-		grid $w.top.sendCC               -column  2 -row 0
+		grid $w.top.sendCC                 -column  2 -row 0
 
-		grid $w.top.openDB               -column  0 -row 1 -columnspan 4
-		grid $w.top.inbox                -column  0 -row 2 -columnspan 3
-		grid $w.top.delinbox             -column  3 -row 2
-		grid $w.top.onoffline            -column  4 -row 2
+		grid $w.top.openDB      -stick ew  -column  0 -row 1 -columnspan 4
+		grid $w.top.inbox                  -column  0 -row 2 -columnspan 3
+		grid $w.top.delinbox               -column  3 -row 2
+		grid $w.top.onoffline              -column  4 -row 2
 
-		grid $w.top.resign               -column  6 -row 1
-		grid $w.top.claimDraw            -column  5 -row 2
-		grid $w.top.offerDraw            -column  6 -row 2
-		grid $w.top.acceptDraw           -column  7 -row 2
+		grid $w.top.resign      -stick ew  -column  6 -row 1
+		grid $w.top.claimDraw              -column  5 -row 2
+		grid $w.top.offerDraw   -stick ew  -column  6 -row 2
+		grid $w.top.acceptDraw             -column  7 -row 2
 
 		# build the table in the bottom frame. This table of text widgets has to
 		# scroll syncronously!
@@ -2775,8 +2775,7 @@ namespace eval CorrespondenceChess {
 		unbusyCursor .
 	}
 
-	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	# source the options file to overwrite the above setup
+	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - # source the options file to overwrite the above setup
 
 	set scidConfigFiles(correspondence) "correspondence.dat"
 	if {[catch {source [scidConfigFile correspondence]} ]} {

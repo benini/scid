@@ -603,3 +603,27 @@ scid-3.6.26
 scid-3.6.27
 -----------
 - Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"
+- Sound:
+  * Add "alert" sound from the CE to the PC version as well. Use
+    ::utils::sound::PlaySound "sound_alert"
+  * wav-file added to the package
+- Correspondence Chess
+  * Adopt button alignement
+- Tools Menu
+  * Remove Novag entrie
+  * Add "Connect Hardware" 
+  * Add "Connect Hardware / Configure" usable for Novag & Input Engine
+  * Add "Connect Hardware / Input Engine"
+  * Add "Connect Hardware / Novag Citrine"
+- Novag Citrine
+  * Remove own config (replaced by unified dialogu)
+  * Use unified "Connect Hardware" dialoge and parameters thereof
+  * Use "hardware connect" button
+  * Set button images according to current state
+- Input Engine Support:
+  * Rework of GUI
+  * Handle "illegal moves" (warn user, ignore them)
+  * Add "rotate board"
+  * Add Synchronise button
+  * Add Miniboard to the console
+

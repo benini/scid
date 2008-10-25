@@ -7,26 +7,11 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.1 2008/06/22 22:11:16 pgeorges Exp $
-###    Last change: <Sun, 2008/02/24 17:48:54 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.2 2008/10/25 19:20:37 arwagner Exp $
+###    Last change: <Sat, 2008/10/25 21:04:18 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
-
-## set m .menu.tools
-## $m add separator
-## # Input Engine support
-## menu $m.inputengine
-## $m add cascade -label ConnectHardware         -menu $m.inputengine
-## $m.inputengine add command -label Config      -command ::inputengine::config
-## $m.inputengine add separator
-## $m.inputengine add command -label ToggleConnect -accelerator "F12" -command ::inputengine::connectdisconnect
-## bind . <F12> ::inputengine::connect
-## $m.inputengine add command -label Synchronise -command ::inputengine::synchronise
-## $m.inputengine add separator
-## $m.inputengine add command -label Sysinfo     -command ::inputengine::sysinfo
-## $m.inputengine add command -label Usercommand -command ::inputengine::userSend
-##
 #----------------------------------------------------------------------
 # Toolbar icons to display current status to the user
 
@@ -185,22 +170,154 @@ image create photo tb_eng_query -data {
 # Add the button to connect the engine to the button bar
 if { $NOT_FOR_RELEASE } {
   frame .button.space4 -width 15
-  button .button.inputengine -image tb_eng_disconnected -command "::inputengine::connectdisconnect"
-  .button.inputengine configure -relief flat -border 1 -highlightthickness 0 \
+
+  button .button.exthardware -image tb_eng_disconnected
+  .button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
       -anchor n -takefocus 0
-  bind .button.inputengine <Any-Enter> "+.button.inputengine configure -relief groove"
-  bind .button.inputengine <Any-Leave> "+.button.inputengine configure -relief flat; statusBarRestore %W; break"
-  pack .button.space4 .button.inputengine -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+  bind .button.exthardware <Any-Enter> "+.button.exthardware configure -relief groove"
+  bind .button.exthardware <Any-Leave> "+.button.exthardware configure -relief flat; statusBarRestore %W; break"
+  pack .button.space4 .button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 }
+
+namespace eval ExtHardware {
+
+  set engine     "dgtdrv2.i686";
+  set port       "/dev/ttyUSB0"
+  set param      "la"
+  # the hardware configured by default:
+  #  1 : Novag Citrine
+  #  2 : Input Engine
+  set hardware   1
+
+  set bindbutton "::inputengine::connectdisconnect"
+
+  #----------------------------------------------------------------------
+  # Save the hardware options
+  #----------------------------------------------------------------------
+  proc saveHardwareOptions {} {
+     set optionF ""
+     if {[catch {open [scidConfigFile ExtHardware] w} optionF]} {
+        tk_messageBox -title "Scid: Unable to write file" -type ok -icon warning \
+           -message "Unable to write options file: [scidConfigFile InputEngine]\n$optionF"
+     } else {
+        puts $optionF "# Scid options file"
+        puts $optionF "# Version: $::scidVersion, $::scidVersionDate"
+        puts $optionF "# This file contains commands in the Tcl language format."
+        puts $optionF "# If you edit this file, you must preserve valid Tcl"
+        puts $optionF "# format or it will not set your Scid options properly."
+        puts $optionF ""
+
+        foreach i { ::ExtHardware::engine     \
+                    ::ExtHardware::port       \
+                    ::ExtHardware::param      \
+                    ::ExtHardware::hardware   \
+                    ::ExtHardware::bindbutton } {
+           puts $optionF "set $i [list [set $i]]"
+        }
+
+     }
+     close $optionF
+     set ::statusBar "External hardware options were saved to: [scidConfigFile correspondence]"
+  }
+
+
+  #----------------------------------------------------------------------
+  # config:
+  #    Opens the configuration dialog to input driver engines binary
+  #    and parameters required to fire up the engine
+  #----------------------------------------------------------------------
+  proc config {} {
+    global ::ExtHardware::port ::ExtHardware::engine ::ExtHardware::param ::ExtHardware::hardware
+
+    .button.exthardware configure -image tb_eng_query -relief flat
+
+    set w .exthardwareConfig
+    if { [winfo exists $w]} { return }
+    toplevel $w
+    wm title $w "Configure Input Engine"
+
+    label $w.lport -text  "Port"
+    entry $w.eport -width 50 -textvariable ::ExtHardware::port
+
+    label $w.lengine -text "Engine commmand"
+    entry $w.eengine -width 50 -textvariable ::ExtHardware::engine
+
+    label $w.lparam -text  "Engine parameter"
+    entry $w.eparam -width 50 -textvariable ::ExtHardware::param
+
+    label $w.options -text "Hardware"
+
+    #--------------
+    # Add a new radio button for subsequent new hardware here:
+    radiobutton $w.novag    -text "Novag Citrine"  -variable ::ExtHardware::hardware -value 1 -command { \
+       set ::ExtHardware::bindbutton "::novag::connect"
+       .exthardwareConfig.eengine configure -state disabled
+       .exthardwareConfig.eparam  configure -state disabled
+    }
+    radiobutton $w.inputeng -text "Input Engine"   -variable ::ExtHardware::hardware -value 2 -command { \
+       set ::ExtHardware::bindbutton "::inputengine::connectdisconnect"
+       .exthardwareConfig.eengine configure -state normal
+       .exthardwareConfig.eparam  configure -state normal
+    }
+    #--------------
+
+    if { $::ExtHardware::hardware == 1 } {
+       .exthardwareConfig.eengine configure -state disabled
+       .exthardwareConfig.eparam  configure -state disabled
+    }
+
+    button $w.bOk -text OK -command { ::ExtHardware::saveHardwareOptions
+       .button.exthardware configure -command $::ExtHardware::bindbutton
+       destroy .exthardwareConfig
+       $::ExtHardware::bindbutton
+    }
+    button $w.bCancel -text Cancel -command ".button.exthardware configure -image tb_eng_disconnected -relief flat ; destroy $w"
+
+
+    grid $w.options    -stick e     -row 0 -column 0
+    grid $w.novag      -stick w     -row 0 -column 1
+    grid $w.inputeng   -stick w     -row 1 -column 1
+
+    grid $w.lport      -stick e     -row 2 -column 0 
+    grid $w.eport                   -row 2 -column 1
+
+    grid $w.lengine    -stick e     -row 3 -column 0
+    grid $w.eengine                 -row 3 -column 1
+
+    grid $w.lparam     -stick e     -row 4 -column 0 
+    grid $w.eparam                  -row 4 -column 1
+
+    grid $w.bOk        -stick e     -row 5 -column 0 
+    grid $w.bCancel    -stick w     -row 5 -column 1
+
+
+  }
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # source the options file to overwrite the above setup
+
+  set scidConfigFiles(ExtHardware) "hardware.dat"
+  if {[catch {source [scidConfigFile ExtHardware]} ]} {
+    #::splash::add "Unable to find the options file: [file tail $optionsFile]"
+  } else {
+
+    .button.exthardware configure -command $::ExtHardware::bindbutton
+    #.menu.tools.inputengine.ToggleConnect configure -command $::ExtHardware::bindbutton
+
+    ::splash::add "External hardware configuration was found and loaded."
+  }
+}
+
+
 
 #======================================================================
 
 namespace eval inputengine {
-  
-  set engine     "/home/arwagner/bin/i386/dgtdrv2.i686";
+
+  set engine     "dgtdrv2.i686";
   set port       "/dev/ttyUSB0"
   set param      "la"
-  
+
   set InputEngine(pipe)     ""
   set InputEngine(log)      ""
   set InputEngine(logCount) 0
@@ -208,96 +325,80 @@ namespace eval inputengine {
   set connectimg            tb_eng_ok
   set MovingPieceImg        $::board::letterToPiece(.)80
   set MoveText              "     "
-  
-  #----------------------------------------------------------------------
-  # config:
-  #    Opens the configuration dialog to input driver engines binary
-  #    and parameters required to fire up the engine
-  #----------------------------------------------------------------------
-  proc config {} {
-    global ::inputengine::port ::inputengine::engine ::inputengine::param
-    
-    .button.inputengine configure -image tb_eng_query -relief flat
-    set w .inputengineConfig
-    if { [winfo exists $w]} { return }
-    toplevel $w
-    wm title $w "Configure Input Engine"
-    frame $w.f1
-    frame $w.f2
-    pack $w.f1 $w.f2
-    label $w.f1.lengine -text "Engine commmand"
-    entry $w.f1.eengine -width 50 -textvariable ::inputengine::engine
-    pack $w.f1.lengine $w.f1.eengine
-    
-    label $w.f1.lport -text "Enter port"
-    entry $w.f1.eport -width 50 -textvariable ::inputengine::port
-    pack $w.f1.lport $w.f1.eport
-    
-    label $w.f1.lparam -text "Parameter"
-    entry $w.f1.eparam -width 50 -textvariable ::inputengine::param
-    pack $w.f1.lparam $w.f1.eparam
-    
-    button $w.f2.bOk -text OK -command "destroy $w ; ::inputengine::connectdisconnect"
-    button $w.f2.bCancel -text Cancel -command "destroy $w"
-    pack $w.f2.bOk $w.f2.bCancel -side left
-  }
-  
+
+  font create moveFont -family Helvetica -size 56 -weight bold
+
+
   #----------------------------------------------------------------------
   #
   #----------------------------------------------------------------------
   proc consoleWindow {} {
-    
+
     set w .inputengineconsole
-    if { [winfo exists $w]} { return }
+    if { [winfo exists $w]} { 
+       ::inputengine::disconnect
+       return
+    }
     toplevel $w
-    
+
     wm title $w "Input Engine Console"
-    
+
     scrollbar $w.ysc     -command { .inputengineconsole.console yview }
-    text      $w.console -height 5 -width 60 -wrap word -yscrollcommand "$w.ysc set"
-    
+    text      $w.console -height 5  -width 80 -wrap word -yscrollcommand "$w.ysc set"
+
     label     $w.lmode   -text "Sending:"
-    
+
+    ::board::new $w.bd 25
+     $w.bd configure -relief solid -borderwidth 1
+
     radiobutton $w.sendboth  -text "Both"  -variable send -value 1 -command { ::inputengine::sendToEngine sendboth  }
     radiobutton $w.sendwhite -text "White" -variable send -value 2 -command { ::inputengine::sendToEngine sendwhite }
     radiobutton $w.sendblack -text "Black" -variable send -value 3 -command { ::inputengine::sendToEngine sendblack }
-    
-    button $w.bInfo  -text Info -command { ::inputengine::sysinfo }
-    
-    font create moveFont -family Helvetica -size 39 -weight bold
-    
+
+    button $w.bInfo          -text Info   -command { ::inputengine::sysinfo }
+    ###---### rotate does not work yet
+    button $w.bRotate        -text "Rotate"       -command { ::inputengine::rotateboard }
+    button $w.bSync          -text "Synchronise"  -command { ::inputengine::synchronise }
+
     # Buttons for visual move announcement
     button $w.bPiece -image $inputengine::MovingPieceImg
     button $w.bMove  -font moveFont -text  $inputengine::MoveText
-    $w.bPiece configure -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
-    $w.bMove  configure -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
-    
-    grid $w.console   -column 0 -row 0 -columnspan 4
-    grid $w.ysc       -column 4 -row 0
-    
-    grid $w.lmode     -column 0 -row 1
-    grid $w.sendboth  -column 1 -row 1
-    grid $w.sendwhite -column 2 -row 1
-    grid $w.sendblack -column 3 -row 1
-    
-    grid $w.bInfo     -column 0 -row 2
-    grid $w.bPiece    -column 1 -row 3
-    grid $w.bMove     -column 2 -row 3
-    
+    $w.bPiece configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
+    $w.bMove  configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
+
+
+
+    grid $w.console   -stick ns    -column 0  -row 0 -columnspan 10
+    grid $w.ysc       -stick ns    -column 11 -row 0
+
+    grid $w.lmode     -stick e     -column 0 -row 1
+    grid $w.sendboth               -column 1 -row 1
+    grid $w.sendwhite              -column 2 -row 1
+    grid $w.sendblack              -column 3 -row 1
+
+    grid $w.bInfo     -stick ew    -column 0 -row 2
+    grid $w.bRotate   -stick ew    -column 0 -row 3
+    grid $w.bSync     -stick ew    -column 0 -row 4
+
+    grid $w.bPiece    -stick nwes  -column 2 -row 2 -rowspan 2
+    grid $w.bMove     -stick nwes  -column 3 -row 2 -rowspan 2
+
+    grid $w.bd        -stick nw    -column 8 -row 1 -rowspan 4 -columnspan 4
+
   }
-  
+
   proc updateConsole {line} {
     set t .inputengineconsole.console
     $t insert end "$line\n"
     $t yview moveto 1
   }
-  
+
   #----------------------------------------------------------------------
   # userSend:
   #    Send arbitrary stings to the input engine
   #----------------------------------------------------------------------
   proc userSend {} {
-    
+
     set w .inputengineSend
     set toSend "bla"
     if { [winfo exists $w]} { return }
@@ -306,16 +407,16 @@ namespace eval inputengine {
     frame $w.f1
     frame $w.f2
     pack $w.f1 $w.f2
-    
+
     label $w.f1.lengine -text "Command:"
     entry $w.f1.eengine -width 125 -textvariable toSend
     pack $w.f1.lengine $w.f1.eengine
-    
+
     button $w.f2.bOk -text OK -command "destroy $w ; ::inputengine::sendToEngine display ; ::inputengine::sendToEngine getposition"
     button $w.f2.bCancel -text Cancel -command "destroy $w"
     pack $w.f2.bOk $w.f2.bCancel -side left
   }
-  
+
   #----------------------------------------------------------------------
   # connectdisconnect()
   #   Connects or disconnects depending on the current status of the
@@ -323,18 +424,17 @@ namespace eval inputengine {
   #----------------------------------------------------------------------
   proc connectdisconnect {} {
     global  ::inputengine::InputEngine
-    
+
     set connection $::inputengine::InputEngine(pipe)
-    
+
     if {$connection == ""} {
       consoleWindow
-      inputengine::connect
-    } \
-        else {
-          inputengine::disconnect
-        }
+      ::inputengine::connect
+    } else {
+      ::inputengine::disconnect
+    }
   }
-  
+
   #----------------------------------------------------------------------
   # connect():
   #     Fire upt the input engine and connect it to a local pipe.
@@ -343,20 +443,20 @@ namespace eval inputengine {
   proc connect {} {
     global ::inputengine::InputEngine ::inputengine::engine \
         ::inputengine::port ::inputengine::param
-    
-    .button.inputengine configure -image tb_eng_connecting -relief flat
-    
+
+    .button.exthardware configure -image tb_eng_connecting -relief flat
+
     if {[catch {set InputEngine(pipe) [open "| $engine $port $param" "r+"]} result]} {
-      .button.inputengine configure -image tb_eng_error -relief flat
+      .button.exthardware configure -image tb_eng_error -relief flat
       tk_messageBox -title "Scid: Input Engine" -icon warning -type ok \
           -message "Unable to start the program:\n$engine $port $param"
       ::inputengine::resetEngine
       return
     }
-    
+
     ::inputengine::Init
   }
-  
+
   #----------------------------------------------------------------------
   # disconnect()
   #    Disconnect and close the input engine
@@ -364,23 +464,27 @@ namespace eval inputengine {
   proc disconnect {} {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
-    
+
+    set ::inputengine::connectimg tb_eng_connecting 
+
     ::inputengine::sendToEngine "stop"
     ::inputengine::sendToEngine "quit"
-    puts $pipe "stop"
-    puts $pipe "quit"
-    set inputengine::connectimg tb_eng_disconnected
+    set ::inputengine::connectimg tb_eng_disconnected
+    ::utils::tooltip::Set .button.exthardware "No board"
+
+    if { [winfo exists ::inputengine::.inputengineconsole]} { 
+       destroy ::inputengine::.inputengineconsole
+    }
   }
-  
+
   #----------------------------------------------------------------------
   # logEngine
   #    Simple log routine, ie. writing to stdout
   #----------------------------------------------------------------------
   proc logEngine {msg} {
-    # puts stdout "$msg"
-    updateConsole "$msg"
+      updateConsole "$msg"
   }
-  
+
   #----------------------------------------------------------------------
   # sendToEngine()
   #    Send a string to the engine and log it by means of logEngine
@@ -388,12 +492,12 @@ namespace eval inputengine {
   proc sendToEngine {msg} {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
-    
+
     ::inputengine::logEngine "> $msg"
     puts $pipe $msg
     flush $pipe
   }
-  
+
   #----------------------------------------------------------------------
   # init()
   #    Initialises the engine and internal data
@@ -401,32 +505,33 @@ namespace eval inputengine {
   proc Init {} {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
-    
+
     # Configure the pipe and intitiate the engine
     set pipe $::inputengine::InputEngine(pipe)
     fconfigure $pipe -buffering full -blocking 0
     # register the eventhandler
     fileevent  $pipe readable "::inputengine::readFromEngine"
-    
+
     ::inputengine::newgame
   }
-  
+
   #----------------------------------------------------------------------
   # resetEngine()
   #    Resets the engines global variables
   #----------------------------------------------------------------------
   proc resetEngine {} {
     global ::inputengine::InputEngine
-    
-    .button.inputengine configure -image tb_eng_disconnected -relief flat
+
+    .button.exthardware configure -image tb_eng_disconnected -relief flat
+    ::utils::tooltip::Set .button.exthardware "No board"
     destroy .inputengineconsole
-    set inputengine::InputEngine(pipe)     ""
-    set inputengine::InputEngine(log)      ""
-    set inputengine::InputEngine(logCount) 0
-    set inputengine::InputEngine(init)     0
+    set ::inputengine::InputEngine(pipe)     ""
+    set ::inputengine::InputEngine(log)      ""
+    set ::inputengine::InputEngine(logCount) 0
+    set ::inputengine::InputEngine(init)     0
   }
-  
-  
+
+
   #----------------------------------------------------------------------
   # sysinfo()
   #    Initialises the engine and internal data
@@ -434,41 +539,68 @@ namespace eval inputengine {
   proc sysinfo {} {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
-    
+
     # call system information
     ::inputengine::sendToEngine "sysinfo"
   }
-  
+
+  #----------------------------------------------------------------------
+  # rotateboard()
+  #    Rotates the board, ie. exchanges a1 and h8
+  #----------------------------------------------------------------------
+  proc rotateboard {} {
+    global ::inputengine::InputEngine
+    set pipe $::inputengine::InputEngine(pipe)
+
+    # rotate the graphical boards
+    ::board::flip .board
+    ::board::flip .inputengineconsole.bd
+
+    ::inputengine::newgame
+    # rotate the board for the input engine
+    ::inputengine::sendToEngine "rotateboard"
+    ::inputengine::synchronise
+  }
+
   #----------------------------------------------------------------------
   # newgame()
   #    Handle NewGame event from board
   #----------------------------------------------------------------------
   proc newgame {} {
-    sc_game new
+
+    # Ask the user to save the current game
+    ::game::Clear
     sc_game tags set -event "InputEngine Input"
     sc_game tags set -date [::utils::date::today]
   }
-  
+
   #----------------------------------------------------------------------
   # endgame()
   #    Handle game ending (end game event + result)
   #----------------------------------------------------------------------
-  proc endgame {} {
-    logEngine "-> End Game"
+  proc endgame {result} {
+
+    set filternum [sc_filter first]
+
+    logEngine "  info End Game $filternum: $result"
+
+    sc_game tags set -result $result
+    gameAdd
   }
-  
+
   #----------------------------------------------------------------------
   # synchronise()
   #    read board position and set scid's representation accordingly
   #----------------------------------------------------------------------
   proc synchronise {} {
     global ::inputengine::InputEngine
-    
-    logEngine "Sync called"
+
+    logEngine "  info Sync called"
     set InputEngine(init) 0
-    inputengine::sendToEngine "getposition"
+
+    ::inputengine::sendToEngine "getposition"
   }
-  
+
   #----------------------------------------------------------------------
   # readFromEngine()
   #     Event Handler for commands and moves sent from the input
@@ -477,26 +609,40 @@ namespace eval inputengine {
   proc readFromEngine {} {
     global ::inputengine::InputEngine ::inputengine::connectimg
     set pipe $::inputengine::InputEngine(pipe)
-    
+
     set line [string trim [gets $pipe] ]
-    
+
     # Close the pipe in case the engine was stoped
     if [eof $pipe] {
       catch {close $pipe}
-      inputengine::resetEngine
+      ::inputengine::resetEngine
       return
     }
-    
+
     switch -regexp -- $line \
         "^move *" {
-          logEngine "$line"
           set m [string range $line 5 end]
-          sc_move addSan $m
-          # wm deiconify .inputengineconsole
-          .inputengineconsole.bMove configure -text $m
-          ::uci::formatPv $m
-          updateBoard -animate
-          updateBoard -pgn
+
+          set s1 [string range $m 0 1]
+          set s2 [string range $m 2 end]
+          set m "$s1-$s2"
+
+          logEngine "$line"
+
+          if {[catch {sc_move addSan $m}]} {
+             ::utils::sound::PlaySound "sound_alert"
+             logEngine "< info Illegal move detected!"
+             logEngine "< info Ignoring: $m"
+             .inputengineconsole.bPiece configure -background red
+             .inputengineconsole.bMove  configure -background red -text $m
+          } else {
+
+            .inputengineconsole.bPiece configure -background green
+            .inputengineconsole.bMove  configure -background green -text $m
+
+             updateBoard -animate
+             updateBoard -pgn
+          }
         } \
         "info *" {
           logEngine "< $line"
@@ -507,18 +653,18 @@ namespace eval inputengine {
             tk_messageBox -title "Scid: Input Engine" \
             -icon warning -type ok -message "Engine $err"
             catch {close $pipe}
-            .button.inputengine configure -image tb_eng_error -relief flat
+            .button.exthardware configure -image tb_eng_error -relief flat
             return
           } \
           "string Chessboard found and initialised*" {
             # switch to xboard mode and disable move
             # announcments by the driver engine
-            inputengine::sendToEngine "xboard"
-            inputengine::sendToEngine "announce"
+            ::inputengine::sendToEngine "xboard"
+            ::inputengine::sendToEngine "announce"
           } \
           "Engine mode    : xboard*" {
-            inputengine::sendToEngine "getposition"
-            .button.inputengine configure -image $inputengine::connectimg -relief flat
+            ::inputengine::sendToEngine "getposition"
+            .button.exthardware configure -image $inputengine::connectimg -relief flat
           } \
           "string FEN *" {
             set InputEngine(init) 0
@@ -549,23 +695,22 @@ namespace eval inputengine {
               # the piece settings.
               set space [string first " " $fenstr]
               set fen [string range $fenstr 0 $space]
-              
+
               set space [string first " " [sc_pos fen]]
               set int [string range [sc_pos fen] 0 $space]
-              
+
               if {$fen != $int} {
-                logEngine "Wrong Position! $int (scid) != $fen (external)"
+                ::utils::sound::PlaySound "sound_alert"
+                logEngine "  info Wrong Position! $int (scid) != $fen (external)"
               } else {
-                logEngine "Board and internal position match."
+                logEngine "  info Board and internal position match."
               }
             }
           } \
           {moving piece: [A-Z] *} {
-            logEngine "< White Piece"
             .inputengineconsole.bPiece configure -image $::board::letterToPiece([string range $event 14 end])80
           }\
           {moving piece: [a-z] *} {
-            logEngine "< Black Piece"
             .inputengineconsole.bPiece configure -image $::board::letterToPiece([string range $event 14 end])80
           }\
           "move *" {
@@ -579,21 +724,22 @@ namespace eval inputengine {
           } \
           "!end game 1-0!" {
             logEngine "< info $event"
+            ::inputengine::endgame "1-0"
           } \
           "!end game 0-1!" {
             logEngine "< info $event"
+            ::inputengine::endgame "0-1"
           } \
           "!end game 1/2-1/2!" {
             logEngine "< info $event"
+            ::inputengine::endgame "1/2-1/2"
           } \
-          ###					"# Wrong move performed:*" {
-          ###						logEngine "< info $event"
-          ###					} \
           "!enter setup mode!" {
             logEngine "< info $event"
           } \
           "!end setup mode!" {
             logEngine "< info $event"
+            ::inputengine::synchronise
           } \
           "!white to move!" {
             logEngine "< info $event"
@@ -607,16 +753,27 @@ namespace eval inputengine {
           "Time Black:" {
             logEngine "< info $event"
           } \
-          #					"DGT Projects*" {
-          #						logEngine "DGT Board found"
-          #						set inputengine::connectimg tb_eng_dgt
-          #					} \
+          "Wrong move performed:" {
+            ::utils::sound::PlaySound "sound_alert"
+            logEngine "< info $event"
+          } \
+          "DGT Projects - This DGT board" {
+            set ::inputengine::connectimg tb_eng_dgt
+            set txt [string range $event 7 end]
+            ::utils::tooltip::Set .button.exthardware "$::inputengine::port:\n$txt"
+          } \
         } \
         default  {
           logEngine "< $line"
         }
+        # Should better show current wooden board position? Return value of 
+        # sc_pos board is
+        # RNBQKBNRPPPP.PPP............P................n..pppppppprnbqkb.r w
+        ::board::update .inputengineconsole.bd [sc_pos board]
   }
-  
+
+
+
 }
 
 
