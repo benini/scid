@@ -187,6 +187,14 @@ menuText O ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText O ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
+menuText O ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+# ====== TODO To be translated ======
+menuText O ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+# ====== TODO To be translated ======
+menuText O ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+# ====== TODO To be translated ======
+menuText O ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+# ====== TODO To be translated ======
 menuText O ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 # ====== TODO To be translated ======
 menuText O ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
@@ -1892,6 +1900,34 @@ translate O CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate O CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate O ExtHWConfigConnection {Configure external hardware}
+# ====== TODO To be translated ======
+translate O ExtHWPort {Port}
+# ====== TODO To be translated ======
+translate O ExtHWEngineCmd {Engine command}
+# ====== TODO To be translated ======
+translate O ExtHWEngineParam {Engine parameter}
+# ====== TODO To be translated ======
+translate O ExtHWShowButton {Show button}
+# ====== TODO To be translated ======
+translate O ExtHWHardware {Hardware}
+# ====== TODO To be translated ======
+translate O ExtHWNovag {Novag Citrine}
+# ====== TODO To be translated ======
+translate O ExtHWInputEngine {Input Engine}
+# ====== TODO To be translated ======
+translate O ExtHWNoBoard {No board}
+# ====== TODO To be translated ======
+translate O IEConsole {Input Engine Console}
+# ====== TODO To be translated ======
+translate O IESending {Moves sent for}
+# ====== TODO To be translated ======
+translate O IESynchronise {Synchronise}
+# ====== TODO To be translated ======
+translate O IERotate  {Rotate}
+# ====== TODO To be translated ======
+translate O IEUnableToStart {Unable to start Input Engine:}
+# ====== TODO To be translated ======
 translate O DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
@@ -1900,6 +1936,9 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
+
+
 
 
 

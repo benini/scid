@@ -175,6 +175,14 @@ menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entrainement au calcul de 
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
 menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
 menuText F ToolsBookTuning "Config. bibliothèque" 0 {Configuration fine d'une bibliothèque}
+# ====== TODO To be translated ======
+menuText F ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+# ====== TODO To be translated ======
+menuText F ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+# ====== TODO To be translated ======
+menuText F ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+# ====== TODO To be translated ======
+menuText F ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
 menuText F ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 menuText F ToolsNovagCitrineConfig "Configurer" 0 {Configurer Novag Citrine}
 menuText F ToolsNovagCitrineConnect "Connecter" 0 {Connecter Novag Citrine}
@@ -1520,6 +1528,34 @@ translate F CCNextBtn {Aller à la partie suivante}
 translate F CCSendBtn {Envoyer coup}
 translate F CCEmptyBtn {Vider les boîtes d'envoi et de réception}
 translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide appuyer sur F1!}
+# ====== TODO To be translated ======
+translate F ExtHWConfigConnection {Configure external hardware}
+# ====== TODO To be translated ======
+translate F ExtHWPort {Port}
+# ====== TODO To be translated ======
+translate F ExtHWEngineCmd {Engine command}
+# ====== TODO To be translated ======
+translate F ExtHWEngineParam {Engine parameter}
+# ====== TODO To be translated ======
+translate F ExtHWShowButton {Show button}
+# ====== TODO To be translated ======
+translate F ExtHWHardware {Hardware}
+# ====== TODO To be translated ======
+translate F ExtHWNovag {Novag Citrine}
+# ====== TODO To be translated ======
+translate F ExtHWInputEngine {Input Engine}
+# ====== TODO To be translated ======
+translate F ExtHWNoBoard {No board}
+# ====== TODO To be translated ======
+translate F IEConsole {Input Engine Console}
+# ====== TODO To be translated ======
+translate F IESending {Moves sent for}
+# ====== TODO To be translated ======
+translate F IESynchronise {Synchronise}
+# ====== TODO To be translated ======
+translate F IERotate  {Rotate}
+# ====== TODO To be translated ======
+translate F IEUnableToStart {Unable to start Input Engine:}
 translate F DoneWithPosition {Position terminée}
 
 ##########
@@ -1728,6 +1764,9 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
+
+
 
 
 

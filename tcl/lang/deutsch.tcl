@@ -194,6 +194,10 @@ menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von
 menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
 menuText D ToolsTrainFics "Internetpartie"  0 {Internetpartie auf freechess.org}
 menuText D ToolsBookTuning "Buch abstimmen" 0 {Buch abstimmen}
+menuText D ToolsConnectHardware "Hardware verbinden" 0 {Externe Hardware mit Scid verbinden}
+menuText D ToolsConnectHardwareConfigure "Konfigurieren..." 0 {Hardware und Verbindung konfigurieren}
+menuText D ToolsConnectHardwareNovagCitrineConnect "Novag Citrine verbinden" 0 {Novag Citrine mit Scid verbinden}
+menuText D ToolsConnectHardwareInputEngineConnect "Input Engine verbinden" 0 {Input Engine (z.B. DGT Brett) mit Scid verbinden}
 menuText D ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 menuText D ToolsNovagCitrineConfig "Einstellungen" 0 {Novag Citrine Einstellungen}
 menuText D ToolsNovagCitrineConnect "Verbinden" 0 {Novag Citrine verbinden}
@@ -1571,6 +1575,20 @@ translate D CCNextBtn {Nächste Partie}
 translate D CCSendBtn {Zug versenden}
 translate D CCEmptyBtn {Postein- und ausgang leeren}
 translate D CCHelpBtn {Hilfe zu den Icons und Statusindikatoren\nFür allgemeine Hilfe bitte F1!}
+translate D ExtHWConfigConnection {Hardware Konfigurieren}
+translate D ExtHWPort {Schnittstelle}
+translate D ExtHWEngineCmd {Engine Kommando}
+translate D ExtHWEngineParam {Engine Parameter}
+translate D ExtHWShowButton {Knopf in Werzeugleiste anzeigen}
+translate D ExtHWHardware {Hardware}
+translate D ExtHWNovag {Novag Citrine}
+translate D ExtHWInputEngine {Input Engine}
+translate D ExtHWNoBoard {Kein Brett verbunden}
+translate D IEConsole {Input Engine Konsole}
+translate D IESending {Sende Züge für}
+translate D IESynchronise {Synchronisieren}
+translate D IERotate  {Brett drehen}
+translate D IEUnableToStart {Input Engine konnte nicht gestartet werden:}
 translate D DoneWithPosition {Positionsbearbeitung beendet}
 }
 
@@ -7114,7 +7132,12 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 }
 
 
+
+
 ### End of file: deutsch.tcl
+
+
+
 
 
 

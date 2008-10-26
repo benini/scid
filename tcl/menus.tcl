@@ -646,22 +646,17 @@ set helpMessage($m,[incr menuindex]) ToolsTracker
 $m add command -label ToolsBookTuning -command ::book::tuning
 set helpMessage($m,[incr menuindex]) ToolsBookTuning
 
-### # Novag support
-## menu $m.novag
-## $m add cascade -label ToolsNovagCitrine -menu $m.novag
-## incr menuindex
-## $m.novag add command -label ToolsNovagCitrineConfig -command ::novag::config
-## $m.novag add command -label ToolsNovagCitrineConnect -command ::novag::connect
-
 # Connect Hardware
-if { $NOT_FOR_RELEASE } {
 menu $m.hardware
-$m add cascade -label ConnectHardware -menu $m.hardware
+$m add cascade -label ToolsConnectHardware -menu $m.hardware
+set helpMessage($m,[incr menuindex]) ToolsConnectHardware
 incr menuindex
-  $m.hardware add command -label Configure -command ::ExtHardware::config
-  $m.hardware add command -label InputEngine -command ::inputengine::connectdisconnect
-  $m.hardware add command -label NovagCitrineConnect -command ::novag::connect
-}
+  $m.hardware add command -label ToolsConnectHardwareConfigure -command ::ExtHardware::config
+  set helpMessage($m.hardware,0) ToolsConnectHardwareConfigure
+  $m.hardware add command -label ToolsConnectHardwareInputEngineConnect -command ::inputengine::connectdisconnect
+  set helpMessage($m.hardware,1) ToolsConnectHardwareInputEngineConnect
+  $m.hardware add command -label ToolsConnectHardwareNovagCitrineConnect -command ::novag::connect
+  set helpMessage($m.hardware,2) ToolsConnectHardwareNovagCitrineConnect
 
 $m add separator
 incr menuindex
@@ -1477,7 +1472,7 @@ proc setLanguageMenus {{lang ""}} {
   
   foreach tag {Analysis Analysis2 Cross Email FilterGraph AbsFilterGraph OpReport Tracker
     Rating Score ExpCurrent ExpFilter ImportOne ImportFile StartEngine1 StartEngine2 BookTuning
-    PInfo PlayerReport } {
+    PInfo PlayerReport ConnectHardware} {
     configMenuText .menu.tools [tr Tools$tag $oldLang] Tools$tag $lang
   }
   
@@ -1492,6 +1487,10 @@ proc setLanguageMenus {{lang ""}} {
   foreach tag {Board Export Fonts GInfo Language Moves Numbers
     Startup Sounds Toolbar Windows ECO Spell Table BooksDir TacticsBasesDir Recent Save AutoSave} {
     configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
+  }
+
+  foreach tag { Configure NovagCitrineConnect InputEngineConnect  } {
+    configMenuText .menu.tools.hardware [tr ToolsConnectHardware$tag $oldLang] ToolsConnectHardware$tag $lang
   }
   
   foreach tag {Regular Menu Small Fixed} {

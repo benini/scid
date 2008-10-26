@@ -113,6 +113,8 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Sorting>Database sorting</a></li>
   <li><a Switcher>Database switcher</a> window</li>
   <li><a Maintenance Twins>Deleting twin games</a></li>
+  <li><a HardwareConfig>DGT Electronic Chess Board</a></li>
+  <li><a InputEngine>DGT usage</a></li>
   </ul>
   
   <h3>E</h3>
@@ -127,6 +129,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Moves>Entering chess moves</a></li>
   <li><a EPD>EPD files</a></li>
   <li><a Export>Exporting games to text files</a></li>
+  <li><a HardwareConfig>External Hardware (Novag, DGT...)</a></li>
   </ul>
   
   <h3>F</h3>
@@ -159,13 +162,15 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Searches Header>Header searches</a></li>
   <li><a Menus Help>Help menu</a></li>
   <li><a Hints>Hints</a></li>
+  <li><a HardwareConfig>Using Hardware (Novag, DGT)</a></li>
   </ul>
   
   <h3>I</h3>
   <ul>
+  <li><a CCGameListIcons>Icons for Correspondence Chess</a></li>
   <li><a Import>Import</a> window</li>
   <li><a Moves Informant>Informant Symbols</a></li>
-  <li><a CCGameListIcons>Icons for Correspondence Chess</a></li>
+  <li><a InputEngine>Input Engine drivers</a></li>
   </ul>
   
   <h3>L</h3>
@@ -189,6 +194,8 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Maintenance Spellcheck>Names, spellchecking</a></li>
   <li><a NAGs>NAG annotation values</a></li>
   <li><a Annotating Null>Null moves</a></li>
+  <li><a HardwareConfig>Novag Citrine Electronic Chess Board</a></li>
+  <li><a Novag>Novag Citrine usage</a></li>
   </ul>
   
   <h3>O</h3>
@@ -5727,16 +5734,294 @@ set helpText(Novag) {<h1>Connecting the Novag Citrine Chess board</h1>
    offering a "natural" chess interface.
    </p>
    <p>
-   Before the board can be used, one has to configure the port to use
-   (Tools / Novag Citrine / Configure). On Linux systems these ports
-   are called /dev/ttyS0, /dev/ttyS1 and so on for serial ports,
-   /dev/ttyUSB0, /dev/ttyUSB1 and so on for USB connections. On
-   Windows the names COM1:, COM2: and so on are common. 
+   <b>Note</b>: Before the board can be used, one has to <a
+   HardwareConfig>configure the port to use.</a>
    </p>
    <p>
-   Once the proper port is set, choose Tools / Novag Citrine / Connect
-   to hook up the board.
+   Once the proper port is set, choose Tools / Connect Hardware /
+   Connect Novag Citrine to hook up the board, or just click the
+   hardware connection button <button tb_eng_disconnected>. This
+   button also shows the <a HardwareStatus> status of the
+   connection.</a>
+
    ###--- Detailed description needed ---###
    </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
 }
+
+set helpTitle(HardwareConfig) "Connecting External Hardware"
+set helpText(HardwareConfig) {<h1>Connecting External Hardware</h1>
+  There are two types of hardware that can be used with Scid to play
+  or input games. Select from the <term>Hardware</term> list the one
+  you wish to use:
+  <ul>
+    <li><term>Novag Citrine</term> (and compatible boards) use an
+    internal driver that was developed specifically for the Novag
+    Citrine board, however there may exist other boards that support
+    this protocol.  This driver allows to enter moves, but the boards
+    logic does not recognise the position set up on the board nor the
+    pieces as such.
+    </li>
+    <li><term>Input Engine</term> drivers are meant to be an free,
+    open interface to hook up any hardware to some GUI like Scid. It
+    is modeled after the usual style of a chess engine. The
+    specifications of the protocol as well as a driver suitable for
+    the DGT Electronic Chess boards can be found at the <url
+    http://dgtdrv.sourceforge.net>dgtdrv website</url>.  Depending on
+    the hardware the board may know the positions set up and the
+    pieces by their move. This is e.g. the case for the DGT boards.
+    </li>
+  </ul>
+  <p>
+  <b>Note</b> Scid does not include any input engine by default. Input
+  engines are meant to be independent programs that can be used with a
+  variety of GUIs.
+  </p>
+  <p>
+  After selecting the hardware to use at least the port, this hardware
+  is connected to, has to be specified. Depending on the operating
+  system and the board to use this port varies. However, usually
+  external hardware is hooked up by a serial, USB or BlueTooth
+  connection, where the latter two are just derivatives of serial
+  connections. Depending on the platform usual names for the port in
+  question are:
+  </p>
+  <ul>
+    <li><term>Unix</term> (incl. <term>Linux</term>): usually a file
+    in the <term>/dev</term> directory is used. For serial ports the
+    common naming is <term>/dev/ttyS0</term>, for the first serial
+    port, <term>/dev/ttyS1</term>, for the second and so on. For
+    serial USB devices common names include <term>/dev/ttyUSB0</term>
+    for the first, <term>/dev/ttyUSB1</term> for the second and so on.
+    Other less common names are <term>/dev/usb/tts/*</term> or
+    <term>/dev/usbdev*</term> (where the asterisk * stands for some
+    additional name). BlueTooth devices commonly show up as
+    <term>/dev/rfcomm0</term> for the first, <term>/dev/rfcomm1</term>
+    for the second and so on.
+    </li>
+    <li><term>MacOS</term>:
+    ###--- details for naming on Mac OS X required ---###
+    </li>
+    <li><term>Windows</term> follows the usual DOS convention, where
+    the serial ports are labeled <term>COM1:</term>,
+    <term>COM2:</term> and so on. This naming also applies to
+    converters, however they sometimes get numbers beyond 4.
+    </li>
+    <li><term>Show button</term> will enable the <a
+    HardwareStatus>hardware connect button</a> in the toolbar if
+    checked. If unchecked the button will not show up to save space.
+    Removal of the button needs to restart Scid.
+    </li>
+  </ul>
+  <p>
+  <b>Note</b>: if a board is connected by means of an USB to serial or
+  BlueTooth to serial converter, these adaptors usually show up in the
+  above scheme as well.
+  </p>
+  <p>
+  If an Input Engine compatible driver should be used, the following
+  fields need to be filled in (for the Novag driver they are
+  disabled):
+  </p>
+  <ul>
+     <li><term>Engine command</term>: The name of the program that is
+     to be used as a driver engine. A fully qualified name may be
+     required, like in the configuration of a <name Analysis
+     List>chess engine</a>. (E.g. the DGT driver engine on a Linux
+     system is usually called <term>dgtdrv2.i686</term>.)
+     </li>
+     <li><term>Engine parameter</term>: The text given in this field
+     is passed along as parameters to the driver engine. The values
+     required here depend on the driver and should be given in its
+     documentation. (E.g. the DGT driver engine needs a two letter
+     code specifying the board orientation and the moves that should
+     be send to the GUI. The first letter may be <term>l</term> or
+     <term>r</term> depending on the clock sitting to Whites left or
+     right, the second letter may be <term>a</term>, <term>b</term> or
+     <term>w</term> depending whether all, only black or only whites
+     moves should be sent.)
+     </li>
+  </ul>
+  <p>
+  Hitting <term>OK</term> will store the setup in Scids configuration
+  and immediately start the driver selected.
+  </p>
+  <p>
+  The status of the external board can be monitored by the <a
+  HardwareStatus>Hardware status</a> button. This button can also be
+  used to hook up already configured hardware immediately without
+  calling the <term>Configuration</term> dialogue.
+  </p>
+
+
+  <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
+}
+
+set helpTitle(HardwareStatus) "Status of External Hardware"
+set helpText(HardwareStatus) {<h1>Status of External Hardware</h1>
+   <p>
+   This button is located on the right of Scids toolbar. Depending on
+   the status of the external hardware it shows different icons:
+   </p>
+   <ul>
+   <li><button tb_eng_disconnected>
+   This is the normal state after program startup and shows that no
+   external hardware is active at the moment. Pressing the button will
+   hook up the configured hardware.
+   </li>
+   <li><button tb_eng_connecting>
+   Scid started the communication with the external hardware,
+   initialisation is in progress. Depending on the driver and hardware
+   connected, it may take some seconds for things to settle.
+   </li>
+   <li><button tb_eng_error>
+   While communicating withe the external hardware some error
+   occurred. Usual sources of problems are e.g. another program
+   accessing the external hardware, the hardware is not connected to
+   the PC or simply is not switched on. In rare cases an external
+   hardware may also behave unexpected. Trying to connect again might
+   cure the problem as the hardware is usually reset upon disconnect.
+   Also unplugging and/or switching off the device is an option in
+   this case. Pressing the button will try again to hook up the
+   configured hardware.
+   </li>
+   <li><button tb_eng_ok>
+   The communication is established, the device is ready and can be
+   used for move input. Pressing the button will disconnect the
+   external hardware.
+   </li>
+   <li><button tb_eng_dgt>
+   In case a DGT Electronic Chess board is connected and ready, this
+   button shows up. Pressing the button will disconnect the
+   external hardware.
+   </li>
+   <li><button tb_eng_query>
+   The <a HardwareConfig</a> dialogue is open. Finish configuration
+   before hooking up the hardware.
+   </li>
+   </ul>
+
+  <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
+}
+
+set helpTitle(InputEngine) "Input Engine driver console"
+set helpText(InputEngine) {<h1>Input Engine driver console</h1>
+   <p>
+   On top of this window, a console shows up that monitors the
+   communication between Scid and the driver engine. Usually, this is
+   of no interest to the user, but it may provide helpful hints in
+   case of malfunction. All commands sent by Scid are prepended by an
+   arrow to the right, all answers retrieved from the driver engine by
+   an arrow to the left.  Below the console, the actual invokation of
+   the driver by Scid shows up for information.
+   </p>
+   <p>
+   <term>Moves sent for</term> allows to limit the moves sent by the
+   external hardware. For game input the board should of course send
+   the moves for both sides. For actually playing a game however, the
+   moves made by the opponent should be ingnored, as Scid would
+   otherwise notify them as "illegal moves".
+   </p>
+   <p>
+   The small board on the right shows the current position.
+   </p>
+   <p>
+   If a move is made, in the area between the buttons and the small
+   board the move performed (<term>move area</term>) on the external
+   board is shown in figurine long algebraic notation. Valid moves
+   show up on a <green>green</green> background while illegal moves
+   show up on a <red>red</red> background. Additionally, illegal moves
+   are announced by the alert sound, if Scid has sound enabled.
+   Depending on the settings, the moves are additionally announced.
+   </p>
+   <p>
+   The <term>Info</term> button calls up information from the driver
+   engine. The extend of this information depends on the engine, but
+   it should usually give as much as is available about the external
+   hardware and the driver itself. Additionally, the external driver
+   will return the current position on the external board as FEN which
+   is then compared to Scids internal representation. Discrepancies
+   show up in the console and issue an alert.
+   </p>
+   <p>
+   In case Scid and the external board got out of sync, the
+   <term>Synchronise</term> button can be used. A new game is set up
+   and the start position is set to the position on the external
+   board.  </p>
+   <p>
+   The <term>Close</term> button finally disconnects the external
+   hardware and closes the console.
+   </p>
+
+   <h2>Special Features</h2>
+   <p>
+   The following features depend on the driver engine and hardware
+   that is used. Their description is based on the functions available
+   with the <url http://www.dgt-projects.com>DGT Electronic Chess
+   Board</url> and specified in the
+   <url http://dgtdrv.sourceforge.net>Input Engine Protocol</url>
+   description. Some of these functions however rely on the fact that
+   the hardware is able to recognise the pieces on the board and their
+   current placement.
+   </p>
+
+   <h3>Position setup</h3>
+   <p>
+   The position setup mode is invoked by removing both kings from the
+   board. In this mode the <term>move area</term> is coloured yellow
+   and shows the White king and the string <b>Setup</b>.
+   </p>
+   <p>
+   In setup mode any valid position can be set up on the external
+   board, however Scids internal representation is not updated till
+   finished.
+   </p>
+   <p>
+   To end the setup mode both kings are set back to the board. Note,
+   that the king of the side to move is set back <b>last</b>, that is
+   if white should be on the move first set back the black king, then
+   the white king. Now, the <term>move area</term> shows the black
+   Queen and the string <b>OK</b>.
+   </p>
+
+   <h3>End a game</h3>
+   <p>
+   In game input or game play one can end the current game by setting
+   both kings into the center squares of the board. The result is
+   given as follows:
+   </p>
+   <ul>
+      <li><term>1-0</term> (White win): Set both kings to the squares
+      e4 and d5 in any order, ie. to the white centre squares.
+      The move area is coloured in white, showing the white king and
+      the result.
+      </li>
+      <li><term>0-1</term> (Black win): Set both kings to the squares
+      e5 and d4 in any order, ie. to the black centre squares.
+      The move area is coloured in gray, showing the black king and
+      the result.
+      </li>
+      <li><term>1/2-1/2</term> (Draw): Set one king on a white and one
+      on a black centre square in any order.
+      The move area is coloured in black and white, showing the result.
+      </li>
+   </ul>
+   <p>
+   In either case the <term>Save / Add game</term> dialogue shows up
+   to allow filling in the game tags and to store the game in the
+   current database.
+   </p>
+
+   <h3>Start a new game</h3>
+   <p>
+   A new game can be stared by entering setup mode (ie. removing both
+   kings) and setting up the start position. To notify, that Scid has
+   recognised the call for a new game the <term>move area</term> is
+   coloured in blue showing the white king and the string
+   <term>OK</term>.
+   </p>
+
+
+  <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
+}
+

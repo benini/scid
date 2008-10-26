@@ -188,6 +188,14 @@ menuText R ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText R ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
+menuText R ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+# ====== TODO To be translated ======
+menuText R ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+# ====== TODO To be translated ======
+menuText R ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+# ====== TODO To be translated ======
+menuText R ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+# ====== TODO To be translated ======
 menuText R ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 # ====== TODO To be translated ======
 menuText R ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
@@ -1925,10 +1933,43 @@ translate R CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate R CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate R ExtHWConfigConnection {Configure external hardware}
+# ====== TODO To be translated ======
+translate R ExtHWPort {Port}
+# ====== TODO To be translated ======
+translate R ExtHWEngineCmd {Engine command}
+# ====== TODO To be translated ======
+translate R ExtHWEngineParam {Engine parameter}
+# ====== TODO To be translated ======
+translate R ExtHWShowButton {Show button}
+# ====== TODO To be translated ======
+translate R ExtHWHardware {Hardware}
+# ====== TODO To be translated ======
+translate R ExtHWNovag {Novag Citrine}
+# ====== TODO To be translated ======
+translate R ExtHWInputEngine {Input Engine}
+# ====== TODO To be translated ======
+translate R ExtHWNoBoard {No board}
+# ====== TODO To be translated ======
+translate R IEConsole {Input Engine Console}
+# ====== TODO To be translated ======
+translate R IESending {Moves sent for}
+# ====== TODO To be translated ======
+translate R IESynchronise {Synchronise}
+# ====== TODO To be translated ======
+translate R IESyncrhonise {Synchronise}
+# ====== TODO To be translated ======
+translate R IERotate  {Rotate}
+# ====== TODO To be translated ======
+translate R IEUnableToStart {Unable to start Input Engine:}
+# ====== TODO To be translated ======
 translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
+
 
 
 

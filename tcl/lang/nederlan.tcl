@@ -195,6 +195,14 @@ menuText N ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 menuText N ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 menuText N ToolsBookTuning "Openingenboek afstemming " 0 {Openingenboek afstemming}
 # ====== TODO To be translated ======
+menuText N ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+# ====== TODO To be translated ======
+menuText N ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+# ====== TODO To be translated ======
+menuText N ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+# ====== TODO To be translated ======
+menuText N ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+# ====== TODO To be translated ======
 menuText N ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 # ====== TODO To be translated ======
 menuText N ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
@@ -1890,10 +1898,41 @@ translate N CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate N CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate N ExtHWConfigConnection {Configure external hardware}
+# ====== TODO To be translated ======
+translate N ExtHWPort {Port}
+# ====== TODO To be translated ======
+translate N ExtHWEngineCmd {Engine command}
+# ====== TODO To be translated ======
+translate N ExtHWEngineParam {Engine parameter}
+# ====== TODO To be translated ======
+translate N ExtHWShowButton {Show button}
+# ====== TODO To be translated ======
+translate N ExtHWHardware {Hardware}
+# ====== TODO To be translated ======
+translate N ExtHWNovag {Novag Citrine}
+# ====== TODO To be translated ======
+translate N ExtHWInputEngine {Input Engine}
+# ====== TODO To be translated ======
+translate N ExtHWNoBoard {No board}
+# ====== TODO To be translated ======
+translate N IEConsole {Input Engine Console}
+# ====== TODO To be translated ======
+translate N IESending {Moves sent for}
+# ====== TODO To be translated ======
+translate N IESynchronise {Synchronise}
+# ====== TODO To be translated ======
+translate N IERotate  {Rotate}
+# ====== TODO To be translated ======
+translate N IEUnableToStart {Unable to start Input Engine:}
+# ====== TODO To be translated ======
 translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
+
+
 
 
 

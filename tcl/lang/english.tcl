@@ -203,9 +203,16 @@ menuText E ToolsTrainCalvar "Calculation of variations"  0 {Calculation of varia
 menuText E ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 menuText E ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 menuText E ToolsBookTuning "Book tuning" 0 {Book tuning}
-menuText E ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-menuText E ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-menuText E ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
+
+### menuText E ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
+### menuText E ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
+### menuText E ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
+
+menuText E ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+menuText E ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+menuText E ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 9 {Connect Novag Citrine with Scid}
+menuText E ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 9 {Connect Input Engine (e.g. DGT board) with Scid}
+
 menuText E ToolsPInfo "Player Information"  0 \
   {Open/update the Player Information window}
 menuText E ToolsPlayerReport "Player Report..." 3 \
@@ -1568,6 +1575,25 @@ translate E CCNextBtn {Goto next game}
 translate E CCSendBtn {Send move}
 translate E CCEmptyBtn {Empty In- and Outbox}
 translate E CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+
+# Connect Hardware dialoges
+translate E ExtHWConfigConnection {Configure external hardware}
+translate E ExtHWPort {Port}
+translate E ExtHWEngineCmd {Engine command}
+translate E ExtHWEngineParam {Engine parameter}
+translate E ExtHWShowButton {Show button}
+translate E ExtHWHardware {Hardware}
+translate E ExtHWNovag {Novag Citrine}
+translate E ExtHWInputEngine {Input Engine}
+translate E ExtHWNoBoard {No board}
+
+# Input Engine dialogs
+translate E IEConsole {Input Engine Console}
+translate E IESending {Moves sent for}
+translate E IESynchronise {Synchronise}
+translate E IERotate  {Rotate}
+translate E IEUnableToStart {Unable to start Input Engine:}
+
 
 # Calculation of Variations
 translate E DoneWithPosition {Done with position}

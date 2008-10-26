@@ -169,6 +169,14 @@ menuText I ToolsTrainCalvar "Calcolo delle varianti"  0 {Allenati sul calcolo de
 menuText I ToolsTrainFindBestMove "Trova la mossa migliore"  0 {Trova la mossa migliore}
 menuText I ToolsTrainFics "Gioca su internet"  0 {Gioca su freechess.org}
 menuText I ToolsBookTuning "Raffina il libro delle aperture" 0 {Raffina il libro delle aperture}
+# ====== TODO To be translated ======
+menuText I ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+# ====== TODO To be translated ======
+menuText I ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+# ====== TODO To be translated ======
+menuText I ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+# ====== TODO To be translated ======
+menuText I ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
 menuText I ToolsNovagCitrine "Novag Citrine" 0 {Utilizza la periferica Novag Citrine}
 menuText I ToolsNovagCitrineConfig "Configurazione" 0 {Configura la periferica Novag Citrine}
 menuText I ToolsNovagCitrineConnect "Connetti" 0 {Connetti la periferica Novag Citrine}
@@ -1577,6 +1585,34 @@ translate I CCSendBtn {Send move}
 translate I CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate I CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
+translate I ExtHWConfigConnection {Configure external hardware}
+# ====== TODO To be translated ======
+translate I ExtHWPort {Port}
+# ====== TODO To be translated ======
+translate I ExtHWEngineCmd {Engine command}
+# ====== TODO To be translated ======
+translate I ExtHWEngineParam {Engine parameter}
+# ====== TODO To be translated ======
+translate I ExtHWShowButton {Show button}
+# ====== TODO To be translated ======
+translate I ExtHWHardware {Hardware}
+# ====== TODO To be translated ======
+translate I ExtHWNovag {Novag Citrine}
+# ====== TODO To be translated ======
+translate I ExtHWInputEngine {Input Engine}
+# ====== TODO To be translated ======
+translate I ExtHWNoBoard {No board}
+# ====== TODO To be translated ======
+translate I IEConsole {Input Engine Console}
+# ====== TODO To be translated ======
+translate I IESending {Moves sent for}
+# ====== TODO To be translated ======
+translate I IESynchronise {Synchronise}
+# ====== TODO To be translated ======
+translate I IERotate  {Rotate}
+# ====== TODO To be translated ======
+translate I IEUnableToStart {Unable to start Input Engine:}
 translate I DoneWithPosition {Posizione conclusa}
 }
 
@@ -1814,6 +1850,9 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
+
 
 
 

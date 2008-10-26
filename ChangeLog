@@ -610,13 +610,15 @@ scid-3.6.27
 - Correspondence Chess
   * Adopt button alignement
 - Tools Menu
-  * Remove Novag entrie
+  * Remove Novag entry
   * Add "Connect Hardware" 
   * Add "Connect Hardware / Configure" usable for Novag & Input Engine
   * Add "Connect Hardware / Input Engine"
   * Add "Connect Hardware / Novag Citrine"
+  * Make hardware connect buttons visibility configurable 
+    (remove it needs restart)
 - Novag Citrine
-  * Remove own config (replaced by unified dialogu)
+  * Remove own config (replaced by unified dialogue)
   * Use unified "Connect Hardware" dialoge and parameters thereof
   * Use "hardware connect" button
   * Set button images according to current state
@@ -626,4 +628,13 @@ scid-3.6.27
   * Add "rotate board"
   * Add Synchronise button
   * Add Miniboard to the console
+  * Add NLS
+  * Colour various states in move area
+- Docs
+  * Update Novag part (as far as possible)
+  * Add "Connect Hardware" with subtopics to english help
+  * Add "Input Engine" including some remarks about DGT
+- NLS
+  * Add tags for all hardware connection dialogues
+  * German translation for the tags added
 

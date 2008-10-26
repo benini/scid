@@ -179,6 +179,14 @@ menuText C ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
 menuText C ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
+menuText C ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+# ====== TODO To be translated ======
+menuText C ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+# ====== TODO To be translated ======
+menuText C ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+# ====== TODO To be translated ======
+menuText C ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+# ====== TODO To be translated ======
 menuText C ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 # ====== TODO To be translated ======
 menuText C ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
@@ -1888,6 +1896,34 @@ translate C CCSendBtn {Send move}
 translate C CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate C CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
+# ====== TODO To be translated ======
+translate C ExtHWConfigConnection {Configure external hardware}
+# ====== TODO To be translated ======
+translate C ExtHWPort {Port}
+# ====== TODO To be translated ======
+translate C ExtHWEngineCmd {Engine command}
+# ====== TODO To be translated ======
+translate C ExtHWEngineParam {Engine parameter}
+# ====== TODO To be translated ======
+translate C ExtHWShowButton {Show button}
+# ====== TODO To be translated ======
+translate C ExtHWHardware {Hardware}
+# ====== TODO To be translated ======
+translate C ExtHWNovag {Novag Citrine}
+# ====== TODO To be translated ======
+translate C ExtHWInputEngine {Input Engine}
+# ====== TODO To be translated ======
+translate C ExtHWNoBoard {No board}
+# ====== TODO To be translated ======
+translate C IEConsole {Input Engine Console}
+# ====== TODO To be translated ======
+translate C IESending {Moves sent for}
+# ====== TODO To be translated ======
+translate C IESynchronise {Synchronise}
+# ====== TODO To be translated ======
+translate C IERotate  {Rotate}
+# ====== TODO To be translated ======
+translate C IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate C DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
@@ -5531,6 +5567,9 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
+
 
 
 
