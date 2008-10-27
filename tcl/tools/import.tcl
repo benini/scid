@@ -171,6 +171,7 @@ proc importPgnFile {} {
   }
   set fnames [tk_getOpenFile -multiple 1 -filetypes $ftypes -title "Import from PGN files" ]
   if {$fnames == ""} { return }
+  
   foreach fname $fnames {
     doPgnFileImport $fname "" 1
   }

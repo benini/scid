@@ -603,6 +603,7 @@ scid-3.6.26
 scid-3.6.27
 -----------
 - Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"
+- Reworked board setup dialog (thanks to Steven Atkinson)
 - Sound:
   * Add "alert" sound from the CE to the PC version as well. Use
     ::utils::sound::PlaySound "sound_alert"
@@ -637,4 +638,3 @@ scid-3.6.27
 - NLS
   * Add tags for all hardware connection dialogues
   * German translation for the tags added
-
