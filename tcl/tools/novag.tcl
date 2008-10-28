@@ -32,7 +32,7 @@ namespace eval novag {
     update
 
     # Set button to "connection in progress"
-    .button.exthardware configure -image tb_eng_connecting -relief flat
+    ::ExtHardware::HWbuttonImg tb_eng_connecting
     
     puts "connecting to $serial"
     set fd [open $serial r+]
@@ -53,7 +53,7 @@ namespace eval novag {
     set ::novag::connected 1
 
     # Set button to "connected, ready to use"
-    .button.exthardware configure -image tb_eng_ok -relief flat
+    ::ExtHardware::HWbuttonImg tb_eng_ok
   }
   ##########################################################
   proc disconnect {} {
