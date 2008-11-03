@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.23 2008/10/25 19:20:37 arwagner Exp $
+### $Id: correspondence.tcl,v 1.24 2008/11/03 17:38:48 arwagner Exp $
 ###
-### Last change: <Sat, 2008/10/25 15:21:41 arwagner ingata>
+### Last change: <Mon, 2008/11/03 18:36:05 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -644,7 +644,6 @@ namespace eval Xfcc {
 					# discard the comment in the movelist.
 					if {[string range $moves end end] != "\}"} {
 						if {($myTurn == "true") && ($mess != "")} {
-							puts "writing comment from mess"
 							puts -nonewline $pgnF "\{"
 							puts -nonewline $pgnF $mess
 							puts $pgnF "\}"
@@ -718,7 +717,32 @@ namespace eval Xfcc {
 			set noTablebases    [$game selectNodes {string(noTablebases)}]
 			set noEngines       [$game selectNodes {string(noEngines)}]
 			set Result          [$game selectNodes {string(result)}]
+			set TimeControl     [$game selectNodes {string(timeControl)}]
 			set mess            [::Xfcc::xmldecrypt [$game selectNodes {string(message)}]]
+
+			# Set to official ICCF timing by default
+			# as ICCF does not send TimeControl
+			set TC "10/50d (?)"
+			if { [regexp {\+} $TimeControl] } {
+				set TC [split $TimeControl "+"]
+				set gametime  [ expr {[lindex $TC 0] / 86400} ]
+				set increment [ expr {[lindex $TC 1] / 86400} ]
+
+				set TC $gametime
+				append TC "d + "
+				append TC $increment
+				append TC "d (Fisher)"
+			}
+			if { [regexp {\/} $TimeControl] } {
+				set TC [split $TimeControl "/"]
+				set moves   [ expr {[lindex $TC 0]} ]
+				set days    [ expr {[lindex $TC 1] / 86400 }]
+				set TC "$moves/$days d"
+				# 10/50 is the official timing for ICCF
+				if { ($moves == 10) && ($days == 50) } {
+					set TC "$TC (ICCF)"
+				}
+			}
 
 			if {[$game selectNodes {string(hasWhite)}] == "true"} {
 				set clockW [format "%2ud %2u:%2u" $daysPlayer $hoursPlayer $minutesPlayer]
@@ -740,6 +764,7 @@ namespace eval Xfcc {
 				[list "noDatabases" $noDatabases] \
 				[list "noEngines" $noEngines] \
 				[list "result" $Result] \
+				[list "TimeControl" $TC] \
 				[list "message" $mess] ]
 		}
 
@@ -1466,7 +1491,7 @@ namespace eval CorrespondenceChess {
 	# the list has to be emptied if all games are resynced in.
 	#--------------------------------------------------------------------------
 	proc updateGamelist {id toMove event site white black clockW \
-								clockB var db books tb engines wc bc mess} {
+								clockB var db books tb engines wc bc mess TC} {
 		set num $::CorrespondenceChess::num
 		set w .ccWindow
 
@@ -1556,7 +1581,7 @@ namespace eval CorrespondenceChess {
 		$w.bottom.event   insert end "$event\n"
 		set endpos [$w.bottom.event index insert]
 		$w.bottom.event tag add event$id $curpos $endpos
-		::utils::tooltip::SetTag $w.bottom.event "$event" event$id
+		::utils::tooltip::SetTag $w.bottom.event "$event\nTime: $TC" event$id
 
 		set curpos [$w.bottom.site index insert]
 		$w.bottom.site    insert end "$site\n"
@@ -2462,7 +2487,7 @@ namespace eval CorrespondenceChess {
 
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
-								$Event $Site $White $Black "" "" "" "" "" "" "" $wc $bc ""
+								$Event $Site $White $Black "" "" "" "" "" "" "" $wc $bc "" ""
 
 					} else {
 						# search for extra information from Xfcc server
@@ -2513,6 +2538,9 @@ namespace eval CorrespondenceChess {
 									if { [string equal -nocase [lindex $i 0] "noEngines" ] } {
 										set noENG [string range $i 10 end]
 									}
+									if { [string equal -nocase [lindex $i 0] "TimeControl" ] } {
+										set TC [string range $i 13 end-1]
+									}
 									if { [string equal -nocase [lindex $i 0] "message" ] } {
 										set mess [string range $i 9 end-1]
 									}
@@ -2528,7 +2556,7 @@ namespace eval CorrespondenceChess {
 						}
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
 								$Event $Site $White $Black $clockW $clockB $var \
-								$noDB $noBK $noTB $noENG $wc $bc $mess
+								$noDB $noBK $noTB $noENG $wc $bc $mess $TC
 					}
 				}
 				.ccWindow.top.nextCC configure -state normal

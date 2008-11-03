@@ -604,6 +604,8 @@ scid-3.6.27
 -----------
 - Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"
 - Reworked board setup dialog (thanks to Steven Atkinson)
+- Correspondence chess :
+  * Parse "TimeControl" and show in tooltip if it is sent by the server
 - Sound:
   * Add "alert" sound from the CE to the PC version as well. Use
     ::utils::sound::PlaySound "sound_alert"
