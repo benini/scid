@@ -109,12 +109,14 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <ul>
   <li><a Compact>Database compaction</a></li>
   <li><a Formats>Database file formats</a></li>
+  <li><a Metadata>Database information (Metadata)</a></li>
   <li><a Maintenance>Database maintenance</a></li>
   <li><a Sorting>Database sorting</a></li>
   <li><a Switcher>Database switcher</a> window</li>
   <li><a Maintenance Twins>Deleting twin games</a></li>
   <li><a HardwareConfig>DGT Electronic Chess Board</a></li>
   <li><a InputEngine>DGT usage</a></li>
+  <li><a Metadata>Dublin Core Metadata</a></li>
   </ul>
   
   <h3>E</h3>
@@ -185,6 +187,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a Searches Material>Material/pattern searches</a></li>
   <li><a Menus>Menus</a></li>
   <li><a GameList Browsing>Merging games</a></li>
+  <li><a Metadata>Metadata</a></li>
   <li><a Moves>Move entry</a></li>
   </ul>
   
@@ -6021,6 +6024,49 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    <term>OK</term>.
    </p>
 
+
+  <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
+}
+
+set helpTitle(Metadata) "Dublin Core Metadata"
+set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
+   <p>
+   The <url "http://dublincore.org">Dublin Core</a> metadata element
+   defines a standardised and widelay used way to exchange
+   informations about electronic ressources (metadata, ie. data about
+   data). Dublin Core was defined in 2003 by ISO Standard 15836, and
+   NISO Standard Z39.85-2007.
+   </p>
+   <p>
+   Some databases that are used with Scid may contain additional
+   metadata information. Such information may refer to the License of
+   a database, the source of the database (in case it is published on
+   the Web), the date of a database and so on.
+   </p>
+   <p>
+   These informations can be viewed or appended to a database by
+   choosing <term>Database information</term>. A new window will open
+   up that shows the individual Dublin Core items and allows to edit
+   them.
+   </p>
+   <p>
+   Internally, metadata are stored in <term>sme</term> files that may
+   come with a database. In case no <term>sme</term> file exists
+   opening the <term>Database information</term> dialogue  will set
+   default values based on the current database. This is signified by
+   the labels showing up in <blue>blue</blue>.
+   </p>
+   <p>
+   After choosing <term>OK</term> Scid stores the metadata to the
+   <term>sme</term> file for usage with Scid. Additionally, an
+   <term>XML</term> file is genereated containing exactly the same
+   metadata, but in XML format for easy data exchange.
+   </p>
+   <p>
+   <b>Note</b>: Scid does not care about the XML file itself. It uses
+   only the <term>sme</term> file for its internal procedures.
+   However, other applications may well prefer the XML structure.
+   </p>
 
   <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
 }

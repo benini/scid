@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.24 2008/11/03 17:38:48 arwagner Exp $
+### $Id: correspondence.tcl,v 1.25 2008/11/09 14:45:24 arwagner Exp $
 ###
-### Last change: <Mon, 2008/11/03 18:36:05 arwagner ingata>
+### Last change: <Mon, 2008/11/03 19:54:45 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -731,13 +731,14 @@ namespace eval Xfcc {
 				set TC $gametime
 				append TC "d + "
 				append TC $increment
-				append TC "d (Fisher)"
+				append TC "d (Fischer)"
 			}
 			if { [regexp {\/} $TimeControl] } {
 				set TC [split $TimeControl "/"]
 				set moves   [ expr {[lindex $TC 0]} ]
 				set days    [ expr {[lindex $TC 1] / 86400 }]
-				set TC "$moves/$days d"
+				set TC "$moves/$days"
+				append TC "d"
 				# 10/50 is the official timing for ICCF
 				if { ($moves == 10) && ($days == 50) } {
 					set TC "$TC (ICCF)"

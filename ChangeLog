@@ -640,3 +640,7 @@ scid-3.6.27
 - NLS
   * Add tags for all hardware connection dialogues
   * German translation for the tags added
+- Database information
+  * Add the ability to write Dublin Core metadata for a Scid database
+  by means of Tools / Database information. This includes reading
+  metadata from a sme file.
