@@ -1434,7 +1434,8 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   
   menu $mctxt.nag
   $mctxt add cascade -label [tr Nag] -menu $mctxt.nag
-  foreach nag { "!!" " !" "!?" "?!" "??" " ~"} {
+
+  foreach nag [ list "!!" " !" "!?" "?!" "??" " ~" [::tr "None"]  ] {
     $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
   }
   
@@ -1608,6 +1609,10 @@ proc ::tree::mask::getNag { move { fen "" }} {
 ################################################################################
 proc ::tree::mask::setNag { move nag {fen ""} } {
   global ::tree::mask::mask
+  
+  if { $nag == [::tr "None"] } {
+    set nag ""
+  }
   
   if {$fen == ""} { set fen $::tree::mask::cacheFenIndex }
   

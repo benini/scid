@@ -644,3 +644,5 @@ scid-3.6.27
   * Add the ability to write Dublin Core metadata for a Scid database
   by means of Tools / Database information. This includes reading
   metadata from a sme file.
+- FICS console : autoscrolling is turned off if the view is not located at the end of the text
+- Mask : added menu entry to remove NAG value for a move

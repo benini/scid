@@ -855,12 +855,12 @@ proc ::board::size {w} {
 # resizing : should be fixed !
 ################################################################################
 proc ::board::resize2 {w psize} {
-  if { ! [ ::board::isFlipped .board ] } {
+  if { ! [ ::board::isFlipped $w ] } {
     ::board::resize $w $psize
   }  else {
-    ::board::flip .board
+    ::board::flip $w
     ::board::resize $w $psize
-    ::board::flip .board
+    ::board::flip $w
   }
 }
 

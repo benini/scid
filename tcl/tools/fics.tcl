@@ -113,7 +113,7 @@ namespace eval fics {
     update
     # Get IP adress of server (as Timeseal needs IP adress)
     if {[catch {set sockChan [socket $::fics::server $::fics::port_fics]} err] } {
-      tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err
+      tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w
       return
     }
     set peer [ fconfigure $sockChan -peername ]
@@ -167,9 +167,9 @@ namespace eval fics {
     
     scrollbar $w.top.f1.ysc -command { .fics.top.f1.console yview }
     ## text $w.top.f1.console -bg black -fg LimeGreen -height 10 -width 40 -wrap word -yscrollcommand "$w.top.f1.ysc set"
-	 # Use variables to set console layout. Default (start.tcl) is the
-	 # above, configuration could in principle be overwritten in
-	 # options.dat however.
+    # Use variables to set console layout. Default (start.tcl) is the
+    # above, configuration could in principle be overwritten in
+    # options.dat however.
     text $w.top.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  -wrap word -yscrollcommand "$w.top.f1.ysc set"
     ## text $w.top.f1.console  -wrap word -yscrollcommand "$w.top.f1.ysc set"
     pack $w.top.f1.ysc -side left -fill y -side right
@@ -234,7 +234,7 @@ namespace eval fics {
     bind $w <Configure> "recordWinSize $w"
     
     bind $w <F1> { helpWindow FICS}
-
+    
     # all widgets must be visible
     update
     set x [winfo reqwidth $w]
@@ -268,7 +268,7 @@ namespace eval fics {
     
     updateConsole "Socket opening"
     if { [catch { set sockchan [socket $server $port] } ] } {
-      tk_messageBox -title "Error" -icon error -type ok -message "Network error\nCan't connect to $::fics::server $port"
+      tk_messageBox -title "Error" -icon error -type ok -message "Network error\nCan't connect to $::fics::server $port" -parent .fics
       return
     }
     
@@ -366,7 +366,7 @@ namespace eval fics {
     }
     button $w.cancel -text "Cancel" -command "destroy $w"
     bind $w <F1> { helpWindow FICSfindOpp}
-
+    
     grid $w.seek -column 0 -row 9 -sticky ew
     grid $w.cancel -column 1 -row 9 -sticky ew
   }
@@ -645,7 +645,12 @@ namespace eval fics {
     } else {
       $t insert end "$line\n"
     }
-    $t yview moveto 1
+    
+    set pos [ lindex [ .fics.top.f1.ysc get ] 1 ]
+    if {$pos == 1.0} {
+      $t yview moveto 1
+    }
+    
   }
   ################################################################################
   #
@@ -1015,6 +1020,9 @@ namespace eval fics {
   #
   ################################################################################
   proc close {} {
+    # stop recursive call
+    bind .fics <Destroy> {}
+    
     set ::fics::sought 0
     after cancel ::fics::updateOffers
     writechan "exit"

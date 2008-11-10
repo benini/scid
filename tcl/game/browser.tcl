@@ -64,8 +64,8 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Right> "::gbrowser::update $n +1"
   bind $w <Up> "::gbrowser::update $n -10"
   bind $w <Down> "::gbrowser::update $n +10"
-  bind $w <Control-Shift-Left> "::board::resize $w.bd -1"
-  bind $w <Control-Shift-Right> "::board::resize $w.bd +1"
+  bind $w <Control-Shift-Left> "::board::resize2 $w.bd -1"
+  bind $w <Control-Shift-Right> "::board::resize2 $w.bd +1"
 
   button $w.b.start -image tb_start -command "::gbrowser::update $n start"
   button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
