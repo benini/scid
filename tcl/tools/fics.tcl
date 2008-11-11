@@ -234,6 +234,7 @@ namespace eval fics {
     bind $w <Configure> "recordWinSize $w"
     
     bind $w <F1> { helpWindow FICS}
+    bind $w.top.f1.console <FocusIn> "focus $w.top.f2.cmd"
     
     # all widgets must be visible
     update
