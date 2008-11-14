@@ -612,6 +612,8 @@ scid-3.6.27
   * wav-file added to the package
 - Correspondence Chess
   * Adopt button alignement
+  * Empty In/Outbox also cleans the game list
+  * Events that show up but have not yet officially started will show up in gray in the games list
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 

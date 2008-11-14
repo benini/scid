@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.25 2008/11/09 14:45:24 arwagner Exp $
+### $Id: correspondence.tcl,v 1.26 2008/11/14 19:44:31 arwagner Exp $
 ###
-### Last change: <Mon, 2008/11/03 19:54:45 arwagner ingata>
+### Last change: <Fri, 2008/11/14 20:34:41 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1491,7 +1491,7 @@ namespace eval CorrespondenceChess {
 	# This just adds another line at the end of the current list, hence
 	# the list has to be emptied if all games are resynced in.
 	#--------------------------------------------------------------------------
-	proc updateGamelist {id toMove event site white black clockW \
+	proc updateGamelist {id toMove event site date white black clockW \
 								clockB var db books tb engines wc bc mess TC} {
 		set num $::CorrespondenceChess::num
 		set w .ccWindow
@@ -1512,6 +1512,11 @@ namespace eval CorrespondenceChess {
 			$w.bottom.$tag      image create end -align center -image tb_CC_spacer
 		}
 
+		# Calculate the TimeDiff between the event date and the current
+		# date. This diff is used to mark event that have not yet
+		# started.
+		set TimeDiff [expr [clock seconds] - [clock scan $date -format "%Y.%m.%d"] ]
+
 		if { $::Xfcc::update > 0 } {
 			$w.top.onoffline  configure -image tb_CC_online
 			::utils::tooltip::Set $w.top.onoffline  [clock format $::Xfcc::lastupdate]
@@ -1531,6 +1536,7 @@ namespace eval CorrespondenceChess {
 		set endpos [$w.bottom.id index insert]
 		$w.bottom.id tag add id$id $curpos $endpos
 		::utils::tooltip::SetTag $w.bottom.id "$id" id$id
+
 
 		# ToMove may contain a mixture of text for game results plus
 		# several icons displayin the current game status.
@@ -1577,12 +1583,14 @@ namespace eval CorrespondenceChess {
 		}
 		$w.bottom.toMove insert end "\n"
 
+
 		# Add textual information to the edit fields
 		set curpos [$w.bottom.event index insert]
 		$w.bottom.event   insert end "$event\n"
 		set endpos [$w.bottom.event index insert]
 		$w.bottom.event tag add event$id $curpos $endpos
 		::utils::tooltip::SetTag $w.bottom.event "$event\nTime: $TC" event$id
+
 
 		set curpos [$w.bottom.site index insert]
 		$w.bottom.site    insert end "$site\n"
@@ -1641,6 +1649,12 @@ namespace eval CorrespondenceChess {
 				"::CorrespondenceChess::SetSelection %x %y; ::CorrespondenceChess::ProcessServerResult \$num; break"
 			# lock the area from changes
 			$w.bottom.$tag configure -state disable
+		}
+
+		if {$TimeDiff < 0} {
+			foreach col {id toMove event site} {
+				$w.bottom.$col tag configure $col$id -foreground DarkGray -font font_Bold
+			}
 		}
 	}
 
@@ -2396,6 +2410,7 @@ namespace eval CorrespondenceChess {
 		foreach f [glob -nocomplain [file join $outpath *]] {
 			file delete $f
 		}
+		::CorrespondenceChess::emptyGamelist
 	}
 
 	#----------------------------------------------------------------------
@@ -2459,6 +2474,7 @@ namespace eval CorrespondenceChess {
 					# get the header
 					set Event  [sc_game tags get Event]
 					set Site   [sc_game tags get Site ]
+					set Date   [sc_game tags get Date ]
 					set White  [sc_game tags get White]
 					set Black  [sc_game tags get Black]
 					set Result [sc_game tags get Result]
@@ -2488,7 +2504,7 @@ namespace eval CorrespondenceChess {
 
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
-								$Event $Site $White $Black "" "" "" "" "" "" "" $wc $bc "" ""
+								$Event $Site $Date $White $Black "" "" "" "" "" "" "" $wc $bc "" ""
 
 					} else {
 						# search for extra information from Xfcc server
@@ -2556,7 +2572,7 @@ namespace eval CorrespondenceChess {
 							set YM " = "
 						}
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
-								$Event $Site $White $Black $clockW $clockB $var \
+								$Event $Site $Date $White $Black $clockW $clockB $var \
 								$noDB $noBK $noTB $noENG $wc $bc $mess $TC
 					}
 				}

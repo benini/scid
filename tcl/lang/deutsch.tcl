@@ -6441,6 +6441,11 @@ werden.
    wurde zur Partienotation als Kommentar hinzugefügt.
    </li>
 </ul>
+<b>Hinweis:</b> Wenn ein Tournier noch nicht offiziell begonnen hat,
+aber die Aufstellung bereits bekannt gegeben wurde werden die Texte in
+den Spalten id, Event und Site in <gray><b>grau</b></gray>
+dargestellt.
+</p>
 
 <p>
 Für Xfcc-basierte Partien wird für jeden Gegner die jeweilige

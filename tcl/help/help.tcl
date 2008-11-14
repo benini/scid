@@ -4645,6 +4645,11 @@ if no interet connection is available.
    game notation.
    </li>
 </ul>
+<p>
+<b>Note:</b> If an event (e.g. a tournament) has not yet started, but
+the setup was already retrieved via Xfcc the id, event and site
+columns text show up in <gray><b>dark gray</b></gray>.
+</p>
 
 <p>
 In Xfcc games, each opponents country may be displayed by the
