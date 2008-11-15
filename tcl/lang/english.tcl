@@ -213,7 +213,7 @@ menuText E ToolsConnectHardwareConfigure "Configure..." 0 {Configure external ha
 menuText E ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 9 {Connect Novag Citrine with Scid}
 menuText E ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 9 {Connect Input Engine (e.g. DGT board) with Scid}
 
-menuText E ToolsPInfo "Player Information"  0 
+menuText E ToolsPInfo "Player Information"  0 \
   {Open/update the Player Information window}
 menuText E ToolsPlayerReport "Player Report..." 3 \
   {Generate a player report}
