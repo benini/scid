@@ -1461,7 +1461,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   
   $mctxt add separator
   menu $mctxt.matchmoves
-  $mctxt add cascade -label AddThisMoveToMask -menu $mctxt.matchmoves
+  $mctxt add cascade -label [ tr AddThisMoveToMask ] -menu $mctxt.matchmoves
   foreach m [sc_pos matchMoves ""] {
     $mctxt.matchmoves add command -label [::trans $m] -command "::tree::mask::addToMask $m"
   }
