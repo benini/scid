@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.3 2008/10/26 14:11:32 arwagner Exp $
-###    Last change: <Sun, 2008/10/26 14:41:46 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.4 2008/11/15 16:49:49 arwagner Exp $
+###    Last change: <Sat, 2008/11/15 17:44:16 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -361,11 +361,16 @@ namespace eval inputengine {
   set MovingPieceImg        $::board::letterToPiece(.)80
   set MoveText              "     "
 
+  set NoClockTime           "--:--"
+
+  set WhiteClock            $::inputengine::NoClockTime
+  set BlackClock            $::inputengine::NoClockTime
+  set toMove                "White"
+
   font create moveFont -family Helvetica -size 56 -weight bold
 
-
   #----------------------------------------------------------------------
-  #
+  # Generate the console window also used for status display
   #----------------------------------------------------------------------
   proc consoleWindow {} {
 
@@ -406,9 +411,15 @@ namespace eval inputengine {
     $w.bPiece configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
     $w.bMove  configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
 
+    # Buttons for clock display
+    button $w.wClock -text  $inputengine::WhiteClock
+    button $w.bClock -text  $inputengine::BlackClock
+    $w.wClock configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
+    $w.bClock configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
+
     grid $w.console   -stick ns    -column 0  -row 0 -columnspan 12
     grid $w.ysc       -stick ns    -column 12 -row 0
-    
+
     grid $w.engine    -stick ewns   -column 0  -row 1 -columnspan 9
 
     grid $w.lmode     -stick ew    -column 0  -row 2
@@ -421,10 +432,13 @@ namespace eval inputengine {
     grid $w.bSync     -stick ew    -column 0  -row 5
     grid $w.bClose    -stick ew    -column 0  -row 6
 
-    grid $w.bPiece    -stick nwes  -column 2  -row 3 -rowspan 4 -columnspan 3
-    grid $w.bMove     -stick nwes  -column 5  -row 3 -rowspan 4 -columnspan 3
+    grid $w.bPiece    -stick nwes  -column 2  -row 3 -rowspan 9 -columnspan 3
+    grid $w.bMove     -stick nwes  -column 5  -row 3 -rowspan 9 -columnspan 3
 
-    grid $w.bd        -stick nw    -column 9  -row 1 -rowspan 8 -columnspan 7
+    grid $w.wClock    -stick nwes  -column 9 -row 12 -columnspan 7
+    grid $w.bClock    -stick nwes  -column 9 -row 1  -columnspan 7
+
+    grid $w.bd        -stick nw    -column 9  -row 2 -rowspan 9 -columnspan 7
 
     bind $w <Destroy> { catch ::novag::disconnect }
     bind $w <F1> { helpWindow InputEngine}
@@ -804,15 +818,51 @@ namespace eval inputengine {
           } \
           "!white to move!" {
             logEngine "< info $event"
+            ::inputengine::toMove "White"
           } \
           "!black to move!" {
             logEngine "< info $event"
+            ::inputengine::toMove "Black"
+          } \
+          "No Clock detected" {
+             set ::inputengine::WhiteClock $::inputengine::NoClockTime
+             set ::inputengine::BlackClock $::inputengine::NoClockTime
+             .inputengineconsole.wClock configure -text $::inputengine::WhiteClock
+             .inputengineconsole.bClock configure -text $::inputengine::BlackClock
           } \
           "Time White:" {
-            logEngine "< info $event"
+            # Get the time in seconds
+            regsub -all {[A-Za-z:# ]} $event "" ::inputengine::WhiteClock
+
+            # calculate a sensible format
+            set wHrs [expr $::inputengine::WhiteClock / 60 / 60]
+            set wMin [expr ($::inputengine::WhiteClock - $wHrs*60*60) / 60 ]
+            set wSec [expr ($::inputengine::WhiteClock - $wHrs*60*60 - $wMin * 60) ]
+
+            if {$wHrs > 0} {
+               .inputengineconsole.wClock configure -text "$wHrs:$wMin:$wSec (EXT)"
+            } else {
+               .inputengineconsole.wClock configure -text "$wMin:$wSec (EXT)"
+            }
+
+            ##--## ::gameclock::setSec 1 [expr -1*$::inputengine::WhiteClock]
+            ##--## set ::sergame::wtime $::inputengine::WhiteClock
           } \
           "Time Black:" {
-            logEngine "< info $event"
+            regsub -all {[A-Za-z:# ]} $event "" ::inputengine::BlackClock
+
+            set bHrs [expr $::inputengine::BlackClock / 60 / 60]
+            set bMin [expr ($::inputengine::BlackClock - $bHrs*60*60) / 60 ]
+            set bSec [expr ($::inputengine::BlackClock - $bHrs*60*60 - $bMin * 60) ]
+
+            if {$bHrs > 0} {
+               .inputengineconsole.bClock configure -text "$bHrs:$bMin:$bSec (EXT)"
+            } else {
+               .inputengineconsole.bClock configure -text "$bMin:$bSec (EXT)"
+            }
+
+            ##--## ::gameclock::setSec 2 [expr -1*$::inputengine::BlackClock]
+            ##--## set ::sergame::btime $::inputengine::BlackClock
           } \
           "Wrong move performed:" {
             ::utils::sound::PlaySound "sound_alert"

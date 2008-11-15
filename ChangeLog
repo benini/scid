@@ -632,6 +632,7 @@ scid-3.6.27
   * Add Synchronise button
   * Add Miniboard to the console
   * Add NLS
+  * Add Support for DGT XL external clock
   * Colour various states in move area
 - Docs
   * Update Novag part (as far as possible)
