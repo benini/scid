@@ -530,6 +530,8 @@ translate S TreeTotal {TOTAL}
 translate S DoYouWantToSaveFirst {Quieres salvar primero}
 translate S AddToMask {Añadir a máscara}
 translate S RemoveFromMask {Elimina desde la máscara}
+# ====== TODO To be translated ======
+translate S AddThisMoveToMask {Add this move to Mask}
 translate S Nag {Código de regaño}
 translate S Marker {Marcador}
 translate S Include {Incluir}
@@ -1573,6 +1575,7 @@ translate S IEUnableToStart {Unable to start Input Engine:}
 translate S DoneWithPosition {Hecho con la posición}
 }
 # end of spanish.tcl
+
 
 
 

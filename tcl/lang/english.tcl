@@ -549,6 +549,7 @@ translate E TreeTotal {TOTAL}
 translate E DoYouWantToSaveFirst {Do you want to save first}
 translate E AddToMask {Add to Mask}
 translate E RemoveFromMask {Remove from Mask}
+translate E AddThisMoveToMask {Add this move to Mask}
 translate E Nag {Nag code}
 translate E Marker {Marker}
 translate E Include {Include}

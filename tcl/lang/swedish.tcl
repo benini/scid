@@ -578,6 +578,8 @@ translate W AddToMask {Lägg till i Sökmask}
 # ====== TODO To be translated ======
 translate W RemoveFromMask {Ta bort från Sökmask}
 # ====== TODO To be translated ======
+translate W AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate W Nag {NAG-kod}
 # ====== TODO To be translated ======
 translate W Marker {Markera}
@@ -6955,6 +6957,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

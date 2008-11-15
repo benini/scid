@@ -612,8 +612,6 @@ scid-3.6.27
   * wav-file added to the package
 - Correspondence Chess
   * Adopt button alignement
-  * Empty In/Outbox also cleans the game list
-  * Events that show up but have not yet officially started will show up in gray in the games list
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
@@ -647,4 +645,7 @@ scid-3.6.27
   by means of Tools / Database information. This includes reading
   metadata from a sme file.
 - FICS console : autoscrolling is turned off if the view is not located at the end of the text
-- Mask : added menu entry to remove NAG value for a move
+- Mask : 
+	* added menu entry to remove NAG value for a move
+	* added entry in popup menu to enter moves not present in Tree
+	

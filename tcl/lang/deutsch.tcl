@@ -537,6 +537,8 @@ translate D TreeTotal {SUMME}
 translate D DoYouWantToSaveFirst {Soll zuerst gespeichert werden}
 translate D AddToMask {Addiere zu Maske}
 translate D RemoveFromMask {Entferne von Maske}
+# ====== TODO To be translated ======
+translate D AddThisMoveToMask {Add this move to Mask}
 translate D Nag {NAG Code}
 translate D Marker {Marker}
 translate D Include {Einbezogene Variante}
@@ -7140,6 +7142,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

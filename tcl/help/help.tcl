@@ -2230,8 +2230,8 @@ set helpText(Tree) {<h1>The Tree window</h1>
   <li>up to two graphical markers via the menu items <term>Marker
   1</term> and <term>Marker 2</term>
      <ul>
-     <li> <button ::rep::_tb_include> Include line in repertoir</li>
-     <li> <button ::rep::_tb_exclude> Exclude line from repertoir</li>
+     <li> <button ::rep::_tb_include> Include line in repertoire</li>
+     <li> <button ::rep::_tb_exclude> Exclude line from repertoire</li>
      <li> <button ::tree::mask::imageMainLine> Main Line</li>
      <li> <button tb_bkm> Bookmark</li>
      <li> <button ::tree::mask::imageWhite> White</li>
@@ -2239,7 +2239,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
      <li> <button tb_new> New line</li>
      <li> <button tb_rfilter> To be verified by further analysis</li>
      <li> <button tb_msearch> To train</li>
-     <li> <button tb_help> Doubious line</li>
+     <li> <button tb_help> Dubious line</li>
      <li> <button tb_cut> To remove</li>
      </ul>
   </li>

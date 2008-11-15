@@ -583,6 +583,8 @@ translate B AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate B RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate B AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate B Nag {Nag code}
 # ====== TODO To be translated ======
 translate B Marker {Marker}
@@ -1942,6 +1944,7 @@ translate B DoneWithPosition {Done with position}
 }
 
 # end of portbr.tcl
+
 
 
 

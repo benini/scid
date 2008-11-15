@@ -175,14 +175,10 @@ menuText F ToolsTrainCalvar "Calcul de variantes"  0 {Entrainement au calcul de 
 menuText F ToolsTrainFindBestMove "Trouver le meilleur coup"  0 {Trouver le meilleur coup}
 menuText F ToolsTrainFics "Jouer sur internet"  0 {Jouer sur freechess.org}
 menuText F ToolsBookTuning "Config. bibliothèque" 0 {Configuration fine d'une bibliothèque}
-# ====== TODO To be translated ======
-menuText F ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
-# ====== TODO To be translated ======
-menuText F ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
-# ====== TODO To be translated ======
-menuText F ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
-# ====== TODO To be translated ======
-menuText F ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+menuText F ToolsConnectHardware "Connecter matériel" 0 {Connecter un échiquier externe}
+menuText F ToolsConnectHardwareConfigure "Configurer..." 0 {Configurer un échiquier externe et connection}
+menuText F ToolsConnectHardwareNovagCitrineConnect "Connecter Novag Citrine" 0 {Connecter Novag Citrine}
+menuText F ToolsConnectHardwareInputEngineConnect "Connecter entrée" 0 {Connecter un moteur en entrée (p.e. DGT)}
 menuText F ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
 menuText F ToolsNovagCitrineConfig "Configurer" 0 {Configurer Novag Citrine}
 menuText F ToolsNovagCitrineConnect "Connecter" 0 {Connecter Novag Citrine}
@@ -511,6 +507,7 @@ translate F TreeTotal {TOTAL}
 translate F DoYouWantToSaveFirst {voulez-vous d'abord sauvegarder}
 translate F AddToMask {Ajouter au masque}
 translate F RemoveFromMask {Enlever du masque}
+translate F AddThisMoveToMask {Ajouter ce coup au masque}
 translate F Nag {Code Nag}
 translate F Marker {Marqueur}
 translate F Include {Inclure}
@@ -1764,6 +1761,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

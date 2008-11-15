@@ -571,6 +571,8 @@ translate C AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate C RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate C AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate C Nag {Nag code}
 # ====== TODO To be translated ======
 translate C Marker {Marker}
@@ -5567,6 +5569,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

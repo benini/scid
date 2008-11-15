@@ -590,6 +590,8 @@ translate N AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate N RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate N AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate N Nag {Nag code}
 # ====== TODO To be translated ======
 translate N Marker {Marker}
@@ -1930,6 +1932,7 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

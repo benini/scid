@@ -580,6 +580,8 @@ translate R AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate R RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate R AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate R Nag {Nag code}
 # ====== TODO To be translated ======
 translate R Marker {Marker}
@@ -1967,6 +1969,7 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

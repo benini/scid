@@ -583,6 +583,8 @@ translate P AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate P RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate P AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate P Nag {Nag code}
 # ====== TODO To be translated ======
 translate P Marker {Marker}
@@ -2163,6 +2165,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

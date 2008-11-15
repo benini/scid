@@ -576,6 +576,8 @@ translate Y AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate Y RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate Y AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate Y Nag {Nag code}
 # ====== TODO To be translated ======
 translate Y Marker {Marker}
@@ -1938,6 +1940,7 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

@@ -528,6 +528,8 @@ translate I AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate I RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate I AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate I Nag {Nag code}
 # ====== TODO To be translated ======
 translate I Marker {Marker}
@@ -1850,6 +1852,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

@@ -398,7 +398,7 @@ proc ::tree::dorefresh { baseNumber } {
   set w .treeWin$baseNumber
   
   if {![winfo exists $w]} { return }
-
+  
   if { ! $tree(autorefresh$baseNumber) } { return }
   
   busyCursor .
@@ -587,7 +587,7 @@ proc ::tree::displayLines { baseNumber moves } {
       # NAG tag
       $w.f.tl insert end [::tree::mask::getNag [lindex $m 0]] tagclick$idx
       # move
-      $w.f.tl insert end "[lindex $m 0] " [ list bluefg tagclick$idx ]
+      $w.f.tl insert end "[::trans [lindex $m 0] ]" [ list bluefg tagclick$idx ]
       # comment
       set comment [lindex $m 3]
       set firstLine [ lindex [split $comment "\n"] 0 ]
@@ -1434,7 +1434,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   
   menu $mctxt.nag
   $mctxt add cascade -label [tr Nag] -menu $mctxt.nag
-
+  
   foreach nag [ list "!!" " !" "!?" "?!" "??" " ~" [::tr "None"]  ] {
     $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
   }
@@ -1458,6 +1458,13 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   $mctxt add separator
   $mctxt add command -label [ tr CommentMove] -command "::tree::mask::addComment $move"
   $mctxt add command -label [ tr CommentPosition] -command "::tree::mask::addComment"
+  
+  $mctxt add separator
+  menu $mctxt.matchmoves
+  $mctxt add cascade -label AddThisMoveToMask -menu $mctxt.matchmoves
+  foreach m [sc_pos matchMoves ""] {
+    $mctxt.matchmoves add command -label [::trans $m] -command "::tree::mask::addToMask $m"
+  }
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
   # grab $mctxt

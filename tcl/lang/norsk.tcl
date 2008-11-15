@@ -578,6 +578,8 @@ translate O AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate O RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate O AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate O Nag {Nag code}
 # ====== TODO To be translated ======
 translate O Marker {Marker}
@@ -1936,6 +1938,7 @@ translate O DoneWithPosition {Done with position}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

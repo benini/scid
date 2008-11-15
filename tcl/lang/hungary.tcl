@@ -572,6 +572,8 @@ translate H AddToMask {Add to Mask}
 # ====== TODO To be translated ======
 translate H RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
+translate H AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
 translate H Nag {Nag code}
 # ====== TODO To be translated ======
 translate H Marker {Marker}
@@ -2162,6 +2164,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 
