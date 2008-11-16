@@ -186,12 +186,6 @@ menuText C ToolsConnectHardwareConfigure "Configure..." 0 {Configure external ha
 menuText C ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
 # ====== TODO To be translated ======
 menuText C ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-# ====== TODO To be translated ======
-menuText C ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-# ====== TODO To be translated ======
-menuText C ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-# ====== TODO To be translated ======
-menuText C ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
 menuText C ToolsPInfo "Informace o hr·ËÌch"  0 \
   {Otev¯Ìt/aktualizovat okno s informacemi o hr·ËÌch}
 menuText C ToolsPlayerReport "Profil hr·Ëe..." 7 \

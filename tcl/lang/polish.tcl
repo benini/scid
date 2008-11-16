@@ -198,12 +198,6 @@ menuText P ToolsConnectHardwareConfigure "Configure..." 0 {Configure external ha
 menuText P ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
 # ====== TODO To be translated ======
 menuText P ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-# ====== TODO To be translated ======
-menuText P ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-# ====== TODO To be translated ======
-menuText P ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-# ====== TODO To be translated ======
-menuText P ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
 menuText P ToolsPInfo "Informacje o zawodniku"  0 \
   {Otwórz/od¶wie¿ okno informacji o zawodniku}
 menuText P ToolsPlayerReport "Raport o graczu..." 9 \

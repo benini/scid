@@ -202,12 +202,6 @@ menuText N ToolsConnectHardwareConfigure "Configure..." 0 {Configure external ha
 menuText N ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
 # ====== TODO To be translated ======
 menuText N ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-# ====== TODO To be translated ======
-menuText N ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-# ====== TODO To be translated ======
-menuText N ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-# ====== TODO To be translated ======
-menuText N ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
 menuText N ToolsPInfo "Speler Informatie"  7 \
   {Open/wijzig het spelerinformatievenster}
 menuText N ToolsPlayerReport "Speler Rapport ..." 3 \

@@ -195,12 +195,6 @@ menuText R ToolsConnectHardwareConfigure "Configure..." 0 {Configure external ha
 menuText R ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
 # ====== TODO To be translated ======
 menuText R ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-# ====== TODO To be translated ======
-menuText R ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-# ====== TODO To be translated ======
-menuText R ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-# ====== TODO To be translated ======
-menuText R ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
 menuText R ToolsPInfo "Информация об игроке"  1 \
   {Открыть/обновить окно информации об игроке}
 menuText R ToolsPlayerReport "Player Report..." 3 \
@@ -1958,8 +1952,6 @@ translate R IEConsole {Input Engine Console}
 translate R IESending {Moves sent for}
 # ====== TODO To be translated ======
 translate R IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate R IESyncrhonise {Synchronise}
 # ====== TODO To be translated ======
 translate R IERotate  {Rotate}
 # ====== TODO To be translated ======

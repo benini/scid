@@ -179,9 +179,6 @@ menuText F ToolsConnectHardware "Connecter matériel" 0 {Connecter un échiquier e
 menuText F ToolsConnectHardwareConfigure "Configurer..." 0 {Configurer un échiquier externe et connection}
 menuText F ToolsConnectHardwareNovagCitrineConnect "Connecter Novag Citrine" 0 {Connecter Novag Citrine}
 menuText F ToolsConnectHardwareInputEngineConnect "Connecter entrée" 0 {Connecter un moteur en entrée (p.e. DGT)}
-menuText F ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-menuText F ToolsNovagCitrineConfig "Configurer" 0 {Configurer Novag Citrine}
-menuText F ToolsNovagCitrineConnect "Connecter" 0 {Connecter Novag Citrine}
 menuText F ToolsPInfo "Information sur les joueurs"  0 \
   {Ouvrir/Mettre à jour la fenêtre d'information sur les joueurs}
 menuText F ToolsPlayerReport "Rapport pour le joueur..." 3 \

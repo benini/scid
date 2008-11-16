@@ -1,4 +1,4 @@
-# english.tcl:
+
 # Text for menu names and status bar help messages in English.
 # Part of Scid (Shane's Chess Information Database).
 #
@@ -203,15 +203,10 @@ menuText E ToolsTrainCalvar "Calculation of variations"  0 {Calculation of varia
 menuText E ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 menuText E ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 menuText E ToolsBookTuning "Book tuning" 0 {Book tuning}
-
-### menuText E ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-### menuText E ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-### menuText E ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
-
-menuText E ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+menuText E ToolsConnectHardware "Connect Hardware" 8 {Connect external hardware}
 menuText E ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
-menuText E ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 9 {Connect Novag Citrine with Scid}
-menuText E ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 9 {Connect Input Engine (e.g. DGT board) with Scid}
+menuText E ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 8 {Connect Novag Citrine with Scid}
+menuText E ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 8 {Connect Input Engine (e.g. DGT board) with Scid}
 
 menuText E ToolsPInfo "Player Information"  0 \
   {Open/update the Player Information window}
@@ -241,8 +236,8 @@ menuText E ToolsExpFilterLaTeX "Export Filter to LaTeX File..." 17 \
 menuText E ToolsImportOne "Import One PGN Game..." 0 \
   {Import a game from PGN text}
 menuText E ToolsImportFile "Import File of PGN Games..." 7 {Import games from a PGN file}
-menuText E ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
-menuText E ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
+menuText E ToolsStartEngine1 "Start engine 1" 13  {Start engine 1}
+menuText E ToolsStartEngine2 "Start engine 2" 13  {Start engine 2}
 
 # Play menue
 menuText E Play "Play" 0

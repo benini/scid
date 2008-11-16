@@ -186,14 +186,10 @@ menuText S ToolsBookTuning "Sintonizar Libro de aperturas" 0 {Sintonizar Libro (
 # ====== TODO To be translated ======
 menuText S ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
 # ====== TODO To be translated ======
-menuText S ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
-# ====== TODO To be translated ======
-menuText S ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+menuText S ToolsConnectHardwareConfigure "Configuración" 1 {Configuración}
+menuText S ToolsConnectHardwareNovagCitrineConnect "Conectar" 0 {Conectar Novag}
 # ====== TODO To be translated ======
 menuText S ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-menuText S ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-menuText S ToolsNovagCitrineConfig "Configuración" 0 {Configuración Novag Citrine}
-menuText S ToolsNovagCitrineConnect "Conectar" 0 {Conectar Novag}
 menuText S ToolsPInfo "Información del Jugador" 16 \
   {Abrir/actualizar la ventana de Información del Jugador}
 menuText S ToolsPlayerReport "Informe del jugador..." 3 \
@@ -1566,8 +1562,6 @@ translate S IEConsole {Input Engine Console}
 translate S IESending {Moves sent for}
 # ====== TODO To be translated ======
 translate S IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate S IESyncrhonise {Synchronise}
 # ====== TODO To be translated ======
 translate S IERotate  {Rotate}
 # ====== TODO To be translated ======

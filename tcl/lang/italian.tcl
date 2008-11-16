@@ -172,14 +172,11 @@ menuText I ToolsBookTuning "Raffina il libro delle aperture" 0 {Raffina il libro
 # ====== TODO To be translated ======
 menuText I ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
 # ====== TODO To be translated ======
-menuText I ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+menuText I ToolsConnectHardwareConfigure "Configurazione" 1 {Configura la periferica}
 # ====== TODO To be translated ======
-menuText I ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+menuText I ToolsConnectHardwareNovagCitrineConnect "Connetti Novag Citrine" 10 {Connetti la periferica Novag Citrine}
 # ====== TODO To be translated ======
-menuText I ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-menuText I ToolsNovagCitrine "Novag Citrine" 0 {Utilizza la periferica Novag Citrine}
-menuText I ToolsNovagCitrineConfig "Configurazione" 0 {Configura la periferica Novag Citrine}
-menuText I ToolsNovagCitrineConnect "Connetti" 0 {Connetti la periferica Novag Citrine}
+menuText I ToolsConnectHardwareInputEngineConnect "Connetti Input Engine" 10 {Connetti Input Engine (e.g. DGT)}
 menuText I ToolsPInfo "Informazioni sul giocatore"  17 \
   {Apre/aggiorna la finestra di Informazione del giocatore}
 menuText I ToolsPlayerReport "Report del giocatore ..." 3 \

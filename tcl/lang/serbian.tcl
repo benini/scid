@@ -192,12 +192,6 @@ menuText Y ToolsConnectHardwareConfigure "Configure..." 0 {Configure external ha
 menuText Y ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
 # ====== TODO To be translated ======
 menuText Y ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-# ====== TODO To be translated ======
-menuText Y ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-# ====== TODO To be translated ======
-menuText Y ToolsNovagCitrineConfig "Configuration" 0 {Novag Citrine configuration}
-# ====== TODO To be translated ======
-menuText Y ToolsNovagCitrineConnect "Connect" 0 {Novag Citrine connect}
 menuText Y ToolsPInfo "Informacije o igraèu"  0 \
   {Otvori/osve¾i informacije o igraèu}
 menuText Y ToolsPlayerReport "Player Report..." 3 \
@@ -1929,8 +1923,6 @@ translate Y IEConsole {Input Engine Console}
 translate Y IESending {Moves sent for}
 # ====== TODO To be translated ======
 translate Y IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate Y IESyncrhonise {Synchronise}
 # ====== TODO To be translated ======
 translate Y IERotate  {Rotate}
 # ====== TODO To be translated ======

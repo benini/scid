@@ -190,17 +190,11 @@ menuText W ToolsBookTuning "Bokfininställning" 0 {Bokfininställning}
 # ====== TODO To be translated ======
 menuText W ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
 # ====== TODO To be translated ======
-menuText W ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
+menuText W ToolsConnectHardwareConfigure  "Konfiguration" 0 {Konfiguration}
 # ====== TODO To be translated ======
-menuText W ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
+menuText W ToolsConnectHardwareNovagCitrineConnect "Anslut Novag Citrine" 0 {Anslut Novag Citrine}
 # ====== TODO To be translated ======
-menuText W ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-# ====== TODO To be translated ======
-menuText W ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-# ====== TODO To be translated ======
-menuText W ToolsNovagCitrineConfig "Konfiguration" 0 {Novag Citrine Konfiguration}
-# ====== TODO To be translated ======
-menuText W ToolsNovagCitrineConnect "Anslut" 0 {Anslut Novag Citrine}
+menuText W ToolsConnectHardwareInputEngineConnect "Anslut Input Engine" 0 {Anslut Input Engine (e.g. DGT)}
 menuText W ToolsPInfo "Spelarinformation"  0 \
   {Öppna/ uppdatera spelarinformation}
 menuText W ToolsPlayerReport "Spelarrapport..." 3 \
@@ -1932,8 +1926,6 @@ translate W IEConsole {Input Engine Console}
 translate W IESending {Moves sent for}
 # ====== TODO To be translated ======
 translate W IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate W IESyncrhonise {Synchronise}
 # ====== TODO To be translated ======
 translate W IERotate  {Rotate}
 # ====== TODO To be translated ======

@@ -634,6 +634,8 @@ scid-3.6.27
   * Add NLS
   * Add Support for DGT XL external clock
   * Colour various states in move area
+  * To use a DGT Electronic Chess Board  dgtdrv V1.21 or higher is
+    required. (http://dgtdrv.sf.net)
 - Docs
   * Update Novag part (as far as possible)
   * Add "Connect Hardware" with subtopics to english help

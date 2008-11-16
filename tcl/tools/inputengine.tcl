@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.4 2008/11/15 16:49:49 arwagner Exp $
-###    Last change: <Sat, 2008/11/15 17:44:16 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.5 2008/11/16 13:47:52 arwagner Exp $
+###    Last change: <Sun, 2008/11/16 14:42:02 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -656,6 +656,7 @@ namespace eval inputengine {
     set InputEngine(init) 0
 
     ::inputengine::sendToEngine "getposition"
+    ::inputengine::sendToEngine "getclock"
   }
 
   #----------------------------------------------------------------------
@@ -667,7 +668,7 @@ namespace eval inputengine {
     global ::inputengine::InputEngine ::inputengine::connectimg
     set pipe $::inputengine::InputEngine(pipe)
 
-    set line [string trim [gets $pipe] ]
+    set line     [string trim [gets $pipe] ]
 
     # Close the pipe in case the engine was stoped
     if [eof $pipe] {
@@ -682,14 +683,19 @@ namespace eval inputengine {
 
           set s1 [string range $m 0 1]
           set s2 [string range $m 2 end]
-          set m "$s1-$s2"
+          if {$s1 == "0-"} {
+            # casteling must not be rewritten
+            set m "$s1$s2"
+          } else {
+            set m "$s1-$s2"
+          }
 
           logEngine "$line"
 
           if {[catch {sc_move addSan $m}]} {
              ::utils::sound::PlaySound "sound_alert"
-             logEngine "< info Illegal move detected!"
-             logEngine "< info Ignoring: $m"
+             logEngine "  info Illegal move detected!"
+             logEngine "  info Ignoring: $m"
              .inputengineconsole.bPiece configure -background red
              .inputengineconsole.bMove  configure -background red -text $m
           } else {
@@ -699,6 +705,7 @@ namespace eval inputengine {
 
              updateBoard -animate
              updateBoard -pgn
+             ::inputengine::sendToEngine "getposition"
           }
         } \
         "info *" {
@@ -770,9 +777,6 @@ namespace eval inputengine {
           {moving piece: [a-z] *} {
             .inputengineconsole.bPiece configure -image $::board::letterToPiece([string range $event 14 end])80
           }\
-          "move *" {
-            ::inputengine::sendToEngine "getposition"
-          }\
           "!new game!" {
             ::inputengine::newgame
             .inputengineconsole.bPiece configure -background blue
@@ -817,12 +821,14 @@ namespace eval inputengine {
             .inputengineconsole.bPiece configure -image $::board::letterToPiece(q)80
           } \
           "!white to move!" {
-            logEngine "< info $event"
-            ::inputengine::toMove "White"
+            set ::inputengine::toMove "White"
+            .inputengineconsole.wClock configure -background white
+            .inputengineconsole.bClock configure -background gray -foreground black
           } \
           "!black to move!" {
-            logEngine "< info $event"
-            ::inputengine::toMove "Black"
+            set ::inputengine::toMove "Black"
+            .inputengineconsole.wClock configure -background gray
+            .inputengineconsole.bClock configure -background black -foreground white
           } \
           "No Clock detected" {
              set ::inputengine::WhiteClock $::inputengine::NoClockTime
@@ -845,8 +851,9 @@ namespace eval inputengine {
                .inputengineconsole.wClock configure -text "$wMin:$wSec (EXT)"
             }
 
-            ##--## ::gameclock::setSec 1 [expr -1*$::inputengine::WhiteClock]
-            ##--## set ::sergame::wtime $::inputengine::WhiteClock
+#            ::gameclock::stop 1
+            catch { ::gameclock::setSec 1 [expr -1*$::inputengine::WhiteClock] }
+            # catch { set ::sergame::wtime $::inputengine::WhiteClock }
           } \
           "Time Black:" {
             regsub -all {[A-Za-z:# ]} $event "" ::inputengine::BlackClock
@@ -861,12 +868,18 @@ namespace eval inputengine {
                .inputengineconsole.bClock configure -text "$bMin:$bSec (EXT)"
             }
 
-            ##--## ::gameclock::setSec 2 [expr -1*$::inputengine::BlackClock]
-            ##--## set ::sergame::btime $::inputengine::BlackClock
+#            ::gameclock::stop 2
+            catch { ::gameclock::setSec 2 [expr -1*$::inputengine::BlackClock] }
+            # catch { set ::sergame::btime $::inputengine::BlackClock }
           } \
           "Wrong move performed:" {
-            ::utils::sound::PlaySound "sound_alert"
-            logEngine "< info $event"
+             # This event can only be used if there is a possiblity to
+             # send the last move to the input engine for it ot cross
+             # check. This however is not easy in Scid, therefore
+             # compare FEN.
+             #
+             # ::utils::sound::PlaySound "sound_alert"
+             # logEngine "< info $event"
           } \
           "DGT Projects - This DGT board" {
             set ::inputengine::connectimg tb_eng_dgt

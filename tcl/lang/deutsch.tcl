@@ -198,9 +198,6 @@ menuText D ToolsConnectHardware "Hardware verbinden" 0 {Externe Hardware mit Sci
 menuText D ToolsConnectHardwareConfigure "Konfigurieren..." 0 {Hardware und Verbindung konfigurieren}
 menuText D ToolsConnectHardwareNovagCitrineConnect "Novag Citrine verbinden" 0 {Novag Citrine mit Scid verbinden}
 menuText D ToolsConnectHardwareInputEngineConnect "Input Engine verbinden" 0 {Input Engine (z.B. DGT Brett) mit Scid verbinden}
-menuText D ToolsNovagCitrine "Novag Citrine" 0 {Novag Citrine}
-menuText D ToolsNovagCitrineConfig "Einstellungen" 0 {Novag Citrine Einstellungen}
-menuText D ToolsNovagCitrineConnect "Verbinden" 0 {Novag Citrine verbinden}
 menuText D ToolsPInfo "Spielerinformation"  0 \
   {Spielerinformation öffnen/schließen}
 menuText D ToolsPlayerReport "Spielerbericht..." 7 \
