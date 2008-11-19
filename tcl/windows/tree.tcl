@@ -227,10 +227,8 @@ proc ::tree::make { { baseNumber -1 } } {
   # add a button to start/stop tree refresh
   button $w.buttons.bStartStop -image engine_on -command "::tree::toggleRefresh $baseNumber" -relief flat
   
-  checkbutton $w.buttons.lock -textvar ::tr(LockTree) \
-      -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
-  checkbutton $w.buttons.training -textvar ::tr(Training) \
-      -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
+  checkbutton $w.buttons.lock -textvar ::tr(LockTree) -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
+  checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
   
   foreach {b t} {
     best TreeFileBest graph TreeFileGraph lock TreeOptLock
@@ -349,6 +347,52 @@ proc ::tree::doTraining { { n 0 } } {
   }
   if {! [winfo exists .treeWin$::tree::trainingBase]} { return }
   if { $::tree::trainingBase == 0 } { return }
+  
+  # Before issuing a training move, annotate player's move
+  if { $::tree::mask::maskFile != ""  } {
+    set move_done [sc_game info previousMoveNT]
+    if {$move_done != ""} {
+      sc_move back
+      set fen [ ::tree::mask::toShortFen [sc_pos fen] ]
+      sc_move forward
+      if { [info exists ::tree::mask::mask($fen)] } {
+        set moves [ lindex $::tree::mask::mask($fen) 0 ]
+        
+        # if move out of Mask, and there exists moves in Mask, set a warning
+        if { ! [ ::tree::mask::moveExists $move_done $fen ] } {
+          if {[llength $moves] != 0} {
+            set txt ""
+            foreach elt $moves {
+              append txt "[::trans [lindex $elt 0]][lindex $elt 1] "
+            }
+            sc_pos setComment "[sc_pos getComment] Mask : $txt"
+          }
+        }
+        
+        # if move was bad, set a warning
+        set nag_played [::tree::mask::getNag $move_done $fen]
+        set nag_order { "??" " ?" "?!" "" "!?" " !" "!!"}
+        set txt ""
+        foreach elt $moves {
+          set n [lindex $elt 1]
+          if { [lsearch $nag_order $nag_played] < [lsearch $nag_order $n]} {
+            append txt "[::trans [lindex $elt 0]][lindex $elt 1] "
+          }
+        }
+        if {$txt != ""} {
+          sc_pos addNag [string trim $nag_played]
+          sc_pos setComment "[sc_pos getComment] Mask : $txt"
+        }
+        
+        # if move was on an exclude line, set a warning (img = ::rep::_tb_exclude)
+        if { [::tree::mask::getImage $move_done 0] ==  "::rep::_tb_exclude" || \
+              [::tree::mask::getImage $move_done 1] == "::rep::_tb_exclude"} {
+          sc_pos setComment "[sc_pos getComment] Mask : excluded line"
+        }
+      }
+    }
+  }
+  
   set move [sc_tree move $::tree::trainingBase random]
   addSanMove $move -animate -notraining
   updateBoard -pgn
@@ -1748,7 +1792,7 @@ proc ::tree::mask::setImage { move img nmr } {
   ::tree::refresh
 }
 ################################################################################
-#
+# nmr = 0 or 1 (two images per line)
 ################################################################################
 proc ::tree::mask::getImage { move nmr } {
   global ::tree::mask::mask

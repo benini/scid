@@ -1026,6 +1026,7 @@ namespace eval fics {
     
     set ::fics::sought 0
     after cancel ::fics::updateOffers
+    after cancel ::fics::stayConnected
     writechan "exit"
     set ::fics::playing 0
     set ::fics::observedGame -1

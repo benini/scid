@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
- 
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -16,13 +16,13 @@
 |                                                           |
  ===========================================================
 
+- add new move to book
+
 - stop engine after last move in annotation (?)
 
 - when FW on or network down, smoothen FICS connection
 
 - add variations from analysis engine when the engine is locked
-
-- Migrate optrainer to Mask
 
 - Option to set engines as 1st and 2nd default engines
 
