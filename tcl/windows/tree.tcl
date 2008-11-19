@@ -360,6 +360,7 @@ proc ::tree::doTraining { { n 0 } } {
         
         # if move out of Mask, and there exists moves in Mask, set a warning
         if { ! [ ::tree::mask::moveExists $move_done $fen ] } {
+          puts "coup pas dans le masque"
           if {[llength $moves] != 0} {
             set txt ""
             foreach elt $moves {
@@ -371,7 +372,7 @@ proc ::tree::doTraining { { n 0 } } {
         
         # if move was bad, set a warning
         set nag_played [::tree::mask::getNag $move_done $fen]
-        set nag_order { "??" " ?" "?!" "" "!?" " !" "!!"}
+        set nag_order { "??" " ?" "?!" $::tree::mask::emptyNag "!?" " !" "!!"}
         set txt ""
         foreach elt $moves {
           set n [lindex $elt 1]
