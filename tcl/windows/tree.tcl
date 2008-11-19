@@ -360,7 +360,6 @@ proc ::tree::doTraining { { n 0 } } {
         
         # if move out of Mask, and there exists moves in Mask, set a warning
         if { ! [ ::tree::mask::moveExists $move_done $fen ] } {
-          puts "coup pas dans le masque"
           if {[llength $moves] != 0} {
             set txt ""
             foreach elt $moves {
