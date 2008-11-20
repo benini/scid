@@ -32,7 +32,8 @@ extern void book_disp       (const board_t * board, const int BookNumber);
 
 extern void book_learn_move (const board_t * board, int move, int result, const int BookNumber);
 extern void book_flush      (const int BookNumber);
-extern void scid_book_update			(char * probs, const int BookNumber);
+extern void scid_book_update	   (char * probs, const int BookNumber);
+extern int  scid_book_movesupdate  (char *moves, char * probs, const int BookNumber, char *tempfile);
 
 #endif // !defined BOOK_H
 

@@ -39,7 +39,9 @@ static int BookSize[MaxBook];
 static int    find_pos      (uint64 key, const int BookNumber);
 
 static void   read_entry    (entry_t * entry, int n, const int BookNumber);
+static void   read_entry_file    (FILE *f, entry_t * entry);
 static void   write_entry   (const entry_t * entry, int n, const int BookNumber);
+static void   write_entry_file   (FILE *f, const entry_t * entry);
 
 #ifdef WINCE
 static uint64 read_integer  (Tcl_Channel file, int size);
@@ -100,6 +102,104 @@ void scid_book_update(char * probs, const int BookNumber) {
 			i++;
 			write_entry( entry, pos, BookNumber );
    }
+}
+
+#define MAX_MOVES 100
+
+int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char *tempfile) {
+ 
+    int maximum;
+    int pos;
+    entry_t entry[1], entry1[1];
+    uint16 move[MAX_MOVES];
+    int prob[MAX_MOVES];
+    int move_count = 0;
+    int prob_count = 0;
+    int prob_max = 0;
+    int probs_written;
+    int write_count;
+    int i;
+    FILE *f;
+//	printf("Updating book: moves=%s; probs=%s; tempfile=%s; key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
+        /* parse probs and fill prob array */
+    char *s;
+    s = strtok( probs, " " );
+    if(s!=NULL){
+        sscanf( s, "%d", &(prob[prob_count]) );
+        prob_count++;
+        while ( (s = strtok(NULL, " ")) != NULL) {
+            if(prob_count>=MAX_MOVES){
+                return -1; // fail
+            }
+            sscanf( s, "%d", &(prob[prob_count]) );
+            prob_count++;
+        }
+    }
+        // max
+     
+    maximum = 0xfff0;
+    
+    for (i=0; i< prob_count; i++)
+        if(prob[i]>prob_max) prob_max=prob[i];
+    double coef = double(maximum)/double(prob_max);
+    
+        /* parse moves and fill move array */
+    move_count=0;
+    s = strtok( moves, " " );
+    if(s!=NULL){
+        if(move_count>=MAX_MOVES){
+            return -1; // fail
+        }
+        move[move_count]=move_from_san(s,scid_board[BookNumber]);
+        move_count++;
+        while ( (s = strtok(NULL, " ")) != NULL) {
+            move[move_count]=move_from_san(s,scid_board[BookNumber]);
+            move_count++;
+        }
+    }
+    if (prob_count!=move_count){
+        return -1; //fail
+    }
+    if(prob_count==0){
+        return 0; // nothing to do
+    }
+    if(!(f=fopen(tempfile,"wb"))){
+        return -1;  //fail
+    }
+    probs_written=0;
+    write_count=0;
+    for(pos=0; pos<BookSize[BookNumber];pos++){
+        read_entry(entry,pos,BookNumber);
+        if (entry->key != scid_board[BookNumber]->key){
+            write_count++;
+            write_entry_file(f,entry);
+        }else if(!probs_written){
+            for(i=0;i<move_count;i++){
+                entry1->key=entry->key;
+                entry1->move=move[i];
+                if (prob[i] != 0) {
+                    entry1->count = int( double(prob[i]) * coef );
+                } else {
+                    entry1->count = 1;
+                }
+                entry1->n=0;
+                entry1->sum=0;
+                write_count++;
+                write_entry_file(f,entry1);
+            }
+            probs_written=1;
+        }
+    }
+    fclose(f);
+    if(!(f=fopen(tempfile,"rb"))){
+        return -1;  //fail
+    }
+    for(pos=0; pos<write_count ;pos++){
+        read_entry_file(f,entry);
+        write_entry(entry,pos,BookNumber);
+    }
+    fclose(f);
+    return 0; // success
 }
 
 // =================================================================
@@ -444,6 +544,20 @@ static int find_pos(uint64 key, const int BookNumber) {
 
 // read_entry()
 
+static void read_entry_file(FILE *f, entry_t * entry) {
+   ASSERT(entry!=NULL);
+
+   entry->key   = read_integer(f,8);
+   entry->move  = read_integer(f,2);
+   entry->count = read_integer(f,2);
+   entry->n     = read_integer(f,2);
+   entry->sum   = read_integer(f,2);
+}
+
+
+
+// read_entry()
+
 static void read_entry(entry_t * entry, int n, const int BookNumber) {
    ASSERT(entry!=NULL);
    ASSERT(n>=0&&n<BookSize[BookNumber]);
@@ -461,6 +575,18 @@ static void read_entry(entry_t * entry, int n, const int BookNumber) {
    entry->n     = read_integer(BookFile[BookNumber],2);
    entry->sum   = read_integer(BookFile[BookNumber],2);
 }
+
+// write_entry_file
+
+static void write_entry_file(FILE * f, const entry_t * entry) {
+
+   ASSERT(entry!=NULL);
+   write_integer(f,8,entry->key);
+   write_integer(f,2,entry->move);
+   write_integer(f,2,entry->count);
+   write_integer(f,2,entry->n);
+   write_integer(f,2,entry->sum);
+}   
 
 // write_entry()
 

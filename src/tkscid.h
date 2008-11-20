@@ -524,6 +524,7 @@ int sc_pos_isAt       (TCL_ARGS);
 int sc_pos_isLegal    (TCL_ARGS);
 int sc_pos_isPromo    (TCL_ARGS);
 int sc_pos_matchMoves (TCL_ARGS);
+int sc_pos_moves      (TCL_ARGS);
 int sc_pos_pgnBoard   (TCL_ARGS);
 int sc_pos_probe      (TCL_ARGS);
 int sc_pos_probe_board (TCL_ARGS);
@@ -562,6 +563,7 @@ int sc_book_load  		(TCL_ARGS);
 int sc_book_close  		(TCL_ARGS);
 int sc_book_moves  		(TCL_ARGS);
 int sc_book_update		(TCL_ARGS);
+int sc_book_movesupdate	(TCL_ARGS);
 //////////////////////////////////////////////////////////////////////
 /// END of tkscid.h
 //////////////////////////////////////////////////////////////////////

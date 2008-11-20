@@ -224,9 +224,16 @@ namespace eval book {
     $w.fcombo.combo select $idx
     
     frame $w.fbutton
+    
+    
+    menubutton $w.fbutton.mbAdd -text $::tr(AddMove) -menu $w.fbutton.mbAdd.otherMoves
+    menu $w.fbutton.mbAdd.otherMoves
+    
+    
     button $w.fbutton.bExport -text $::tr(Export) -command ::book::export
     button $w.fbutton.bSave -text $::tr(Save) -command ::book::save
-    pack $w.fbutton.bExport $w.fbutton.bSave -side top -fill x -expand yes
+    pack $w.fbutton.mbAdd $w.fbutton.bExport $w.fbutton.bSave -side top -fill x -expand yes
+    
     
     pack $w.fcombo $w.f $w.fbutton -side top
     
@@ -234,7 +241,7 @@ namespace eval book {
     bind $w <Destroy> "::book::closeTuningBook"
     bind $w <Escape> { destroy  .bookTuningWin }
     bind $w <F1> { helpWindow BookTuning }
-
+    
     bookTuningSelect
     
   }
@@ -253,6 +260,21 @@ namespace eval book {
   proc bookTuningSelect { { n "" }  { v  0} } {
     scBookOpen [.bookTuningWin.fcombo.combo get] $::book::bookTuningSlot
     refreshTuning
+  }
+  ################################################################################
+  #   add a move to displayed bookmoves
+  ################################################################################
+  proc addBookMove { move } {
+    set w .bookTuningWin
+    set children [winfo children $w.f]
+    set count [expr [llength $children] / 2]
+    label $w.f.m$count -text [::trans $move]
+    bind $w.f.m$count <ButtonPress-1> " ::book::makeBookMove $move"
+    spinbox $w.f.sp$count -from 0 -to 100 -width 3
+    $w.f.sp$count set 0
+    grid $w.f.m$count -row $count -column 0 -sticky w
+    grid $w.f.sp$count -row $count -column 1 -sticky w
+    $w.fbutton.mbAdd.otherMoves delete [::trans $move] 
   }
   ################################################################################
   #   updates book display when board changes
@@ -280,21 +302,35 @@ namespace eval book {
       grid $w.f.sp$row -row $row -column 1 -sticky w
       incr row
     }
-    
+    # load legal moves
+    $w.fbutton.mbAdd.otherMoves delete 0 end
+    $w.fbutton.mbAdd.otherMoves add command -label $::tr(None)
+    set moveList [ sc_pos moves ]
+    foreach move $moveList {
+      if { [ lsearch  $moves $move ] == -1 } {
+        $w.fbutton.mbAdd.otherMoves add command -label [::trans $move] -command "::book::addBookMove $move"
+      }
+    }
   }
   ################################################################################
-  # sends to book the list of updated probs in order. As the list of moves is in the same order, no need
-  # to send the moves.
+  # sends to book the list of moves and probabilities.
   ################################################################################
   proc save {} {
     set prob {}
+    set move {}
     set w .bookTuningWin
     set children [winfo children $w.f]
     set count [expr [llength $children] / 2]
     for {set row 0} {$row < $count} {incr row} {
       lappend prob [$w.f.sp$row get]
+      lappend move [::untrans [$w.f.m$row cget -text]]
     }
-    sc_book update $prob $::book::bookTuningSlot
+    set tempfile [file join $::scidUserDir tempfile.[pid]]
+    sc_book movesupdate $move $prob $::book::bookTuningSlot [file join $tempfile]
+    file delete $tempfile
+    if {  [ winfo exists .bookWin ] } {
+      ::book::refresh
+    }
   }
   ################################################################################
   #
@@ -316,6 +352,7 @@ namespace eval book {
     }
     updateBoard -pgn
   }
+  
   ################################################################################
   #
   ################################################################################

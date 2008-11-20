@@ -652,3 +652,4 @@ scid-3.6.27
 	* added menu entry to remove NAG value for a move
 	* added entry in popup menu to enter moves not present in Tree
 	* In training mode, game is annotated if the user made poor moves (related to values in Mask)
+- Book tuning : any move can be added to a polyglot book at a given position (thanks to Michel Van den Bergh)
