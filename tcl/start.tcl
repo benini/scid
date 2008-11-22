@@ -28,8 +28,8 @@ exec tkscid "$0" "$@"
 ############################################################
 
 # Alter the version if any patches have been made to the Tcl code only:
-set scidVersion "3.6.27"
-set scidVersionDate "Oct 2008"
+set scidVersion "3.7"
+set scidVersionDate "Devel 2008"
 
 # Set to 0 before releasing, so some alpha-state code is not included
 # Set to 1 to have access to all code
@@ -101,7 +101,7 @@ foreach ns {
   ::tb ::optable
   ::board ::move
   ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics
-  ::config
+  ::config ::docking
 } {
   namespace eval $ns {}
 }
@@ -653,6 +653,10 @@ proc raiseWin {w} {
 
 set autoIconify 1
 
+# windowsDock:
+# if true, most of toplevel windows are dockable and embedded in a main window
+# windows can be moves among tabs and undocked (right-clicking on tab)
+set windowsDock 0
 
 # Email configuration:
 set email(logfile) [file join $scidLogDir "scidmail.log"]
@@ -1075,6 +1079,8 @@ if {[catch {source $optionsFile} ]} {
 } else {
   ::splash::add "Your options file \"[file tail $optionsFile]\" was found and loaded."
 }
+
+set ::docking::USE_DOCKING $windowsDock
 
 # Now, if the options file was written by Scid 3.5 or older, it has a lot of
 # yucky variable names in the global namespace. So convert them to the new

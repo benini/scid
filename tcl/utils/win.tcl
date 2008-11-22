@@ -415,7 +415,7 @@ package require Ttk
 namespace eval docking {
   
   # Set to 1 to use docking windows
-  set USE_DOCKING 0
+  # set USE_DOCKING 1
   
   # tabs
   variable tbs

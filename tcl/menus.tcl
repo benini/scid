@@ -913,7 +913,7 @@ $m add command -label OptionsSave -command {
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
-          spellCheckFile ::splash::autoclose autoRaise autoIconify \
+          spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
           exportFlags(column) exportFlags(symbols) \
@@ -1107,6 +1107,8 @@ $m add checkbutton -label OptionsWindowsIconify -variable autoIconify
 set helpMessage($m,0) OptionsWindowsIconify
 $m add checkbutton -label OptionsWindowsRaise -variable autoRaise
 set helpMessage($m,1) OptionsWindowsRaise
+$m add checkbutton -label OptionsWindowsDock -variable windowsDock
+set helpMessage($m,2) OptionsWindowsDock
 
 menu .menu.options.language
 
