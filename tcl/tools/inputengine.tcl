@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.6 2008/11/22 10:39:47 pgeorges Exp $
-###    Last change: <Sun, 2008/11/16 14:42:02 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.7 2008/11/22 19:29:48 arwagner Exp $
+###    Last change: <Sat, 2008/11/22 20:28:43 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -205,15 +205,16 @@ namespace eval ExtHardware {
      } else {
         if { $::ExtHardware::showbutton == 1 } {
 
-           frame .button.space4 -width 15
-           button .button.exthardware -image tb_eng_disconnected
-           .button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
+           frame .main.button.space4 -width 15
+           button .main.button.exthardware -image tb_eng_disconnected
+           .main.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
                -anchor n -takefocus 0
-           bind .button.exthardware <Any-Enter> "+.button.exthardware configure -relief groove"
-           bind .button.exthardware <Any-Leave> "+.button.exthardware configure -relief flat; statusBarRestore %W; break"
-           pack .button.space4 .button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+           bind .main.button.exthardware <Any-Enter> "+.main.button.exthardware configure -relief groove"
+           bind .main.button.exthardware <Any-Leave> "+.main.button.exthardware configure -relief flat; statusBarRestore %W; break"
+           pack .main.button.space4 .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+           pack .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
-          .button.exthardware configure -command $::ExtHardware::bindbutton
+           .main.button.exthardware configure -command $::ExtHardware::bindbutton
         }
      }
 
@@ -247,7 +248,6 @@ namespace eval ExtHardware {
   proc config {} {
     global ::ExtHardware::port ::ExtHardware::engine ::ExtHardware::param ::ExtHardware::hardware
 
-    ###  .button.exthardware configure -image tb_eng_query -relief flat
     ::ExtHardware::HWbuttonImg tb_eng_query
 
     set w .exthardwareConfig
@@ -329,15 +329,16 @@ namespace eval ExtHardware {
      # Add the button to connect the engine to the button bar
      if { $::ExtHardware::showbutton == 1 } {
 
-        frame .button.space4 -width 15
-        button .button.exthardware -image tb_eng_disconnected
-        .button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
+        frame .main.button.space4 -width 15
+        button .main.button.exthardware -image tb_eng_disconnected
+        .main.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
             -anchor n -takefocus 0
-        bind .button.exthardware <Any-Enter> "+.button.exthardware configure -relief groove"
-        bind .button.exthardware <Any-Leave> "+.button.exthardware configure -relief flat; statusBarRestore %W; break"
-        pack .button.space4 .button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+        bind .main.button.exthardware <Any-Enter> "+.main.button.exthardware configure -relief groove"
+        bind .main.button.exthardware <Any-Leave> "+.main.button.exthardware configure -relief flat; statusBarRestore %W; break"
+        pack .main.button.space4 .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+        pack .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
-       .button.exthardware configure -command $::ExtHardware::bindbutton
+        .main.button.exthardware configure -command $::ExtHardware::bindbutton
      }
 
     ::splash::add "External hardware configuration was found and loaded."
@@ -362,9 +363,12 @@ namespace eval inputengine {
   set MoveText              "     "
 
   set NoClockTime           "--:--"
+  set StoreClock            0
 
   set WhiteClock            $::inputengine::NoClockTime
   set BlackClock            $::inputengine::NoClockTime
+  set oldWhiteClock         $::inputengine::NoClockTime
+  set oldBlackClock         $::inputengine::NoClockTime
   set toMove                "White"
 
   font create moveFont -family Helvetica -size 56 -weight bold
@@ -400,10 +404,10 @@ namespace eval inputengine {
     button $w.bInfo          -text Info           -command { ::inputengine::sysinfo }
 
     ###---### rotate does not work yet
-    button $w.bRotate        -text [::tr IERotate]       -command { ::inputengine::rotateboard }
+    button $w.bRotate        -text [::tr IERotate]      -command { ::inputengine::rotateboard }
 
-    button $w.bSync          -text [::tr IESynchronise]  -command { ::inputengine::synchronise }
-    button $w.bClose         -text [::tr Close]   -command { ::inputengine::connectdisconnect }
+    button $w.bSync          -text [::tr IESynchronise] -command { ::inputengine::synchronise }
+    button $w.bClose         -text [::tr Close]         -command { ::inputengine::connectdisconnect }
 
     # Buttons for visual move announcement
     button $w.bPiece -image $inputengine::MovingPieceImg
@@ -417,28 +421,33 @@ namespace eval inputengine {
     $w.wClock configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
     $w.bClock configure -relief flat -border 0 -highlightthickness 0 -takefocus 0
 
-    grid $w.console   -stick ns    -column 0  -row 0 -columnspan 12
-    grid $w.ysc       -stick ns    -column 12 -row 0
 
-    grid $w.engine    -stick ewns   -column 0  -row 1 -columnspan 9
+    # Store the time as comment
+    checkbutton $w.bStoreClock -text "Store Clock" -variable ::inputengine::StoreClock
 
-    grid $w.lmode     -stick ew    -column 0  -row 2
-    grid $w.sendboth  -stick e     -column 2  -row 2 
-    grid $w.sendwhite              -column 4  -row 2 
-    grid $w.sendblack -stick w     -column 6  -row 2 
+    grid $w.console    -stick ns    -column 0  -row 0 -columnspan 12
+    grid $w.ysc        -stick ns    -column 12 -row 0
 
-    grid $w.bInfo     -stick ew    -column 0  -row 3
+    grid $w.engine     -stick ewns   -column 0  -row 1 -columnspan 9
+
+    grid $w.lmode      -stick ew    -column 0  -row 2
+    grid $w.sendboth   -stick e     -column 2  -row 2 
+    grid $w.sendwhite               -column 4  -row 2 
+    grid $w.sendblack  -stick w     -column 6  -row 2 
+
+    grid $w.bInfo      -stick ew    -column 0  -row 3
     ###---### grid $w.bRotate   -stick ew    -column 0  -row 4
-    grid $w.bSync     -stick ew    -column 0  -row 5
-    grid $w.bClose    -stick ew    -column 0  -row 6
+    grid $w.bSync      -stick ew    -column 0  -row 5
+    grid $w.bStoreClock -stick ew   -column 0  -row 6
+    grid $w.bClose     -stick ew    -column 0  -row 11
 
-    grid $w.bPiece    -stick nwes  -column 2  -row 3 -rowspan 9 -columnspan 3
-    grid $w.bMove     -stick nwes  -column 5  -row 3 -rowspan 9 -columnspan 3
+    grid $w.bPiece     -stick nwes  -column 2  -row 3 -rowspan 9 -columnspan 3
+    grid $w.bMove      -stick nwes  -column 5  -row 3 -rowspan 9 -columnspan 3
 
-    grid $w.wClock    -stick nwes  -column 9 -row 12 -columnspan 7
-    grid $w.bClock    -stick nwes  -column 9 -row 1  -columnspan 7
+    grid $w.wClock     -stick nwes  -column 9 -row 12 -columnspan 7
+    grid $w.bClock     -stick nwes  -column 9 -row 1  -columnspan 7
 
-    grid $w.bd        -stick nw    -column 9  -row 2 -rowspan 9 -columnspan 7
+    grid $w.bd         -stick nw    -column 9  -row 2 -rowspan 9 -columnspan 7
 
     bind $w <Destroy> { catch ::novag::disconnect }
     bind $w <F1> { helpWindow InputEngine}
@@ -449,30 +458,6 @@ namespace eval inputengine {
     $t insert end "$line\n"
     $t yview moveto 1
   }
-
-  ### #----------------------------------------------------------------------
-  ### # userSend:
-  ### #    Send arbitrary stings to the input engine
-  ### #----------------------------------------------------------------------
-  ### proc userSend {} {
-
-  ###   set w .inputengineSend
-  ###   set toSend "bla"
-  ###   if { [winfo exists $w]} { return }
-  ###   toplevel $w
-  ###   wm title $w "Send command to Engine"
-  ###   frame $w.f1
-  ###   frame $w.f2
-  ###   pack $w.f1 $w.f2
-
-  ###   label $w.f1.lengine -text "Command:"
-  ###   entry $w.f1.eengine -width 125 -textvariable toSend
-  ###   pack $w.f1.lengine $w.f1.eengine
-
-  ###   button $w.f2.bOk -text OK -command "destroy $w ; ::inputengine::sendToEngine display ; ::inputengine::sendToEngine getposition"
-  ###   button $w.f2.bCancel -text Cancel -command "destroy $w"
-  ###   pack $w.f2.bOk $w.f2.bCancel -side left
-  ### }
 
   #----------------------------------------------------------------------
   # connectdisconnect()
@@ -515,7 +500,7 @@ namespace eval inputengine {
   }
 
   #----------------------------------------------------------------------
-  # disconnect()
+  # disconneet()
   #    Disconnect and close the input engine
   #----------------------------------------------------------------------
   proc disconnect {} {
@@ -527,7 +512,6 @@ namespace eval inputengine {
     ::inputengine::sendToEngine "stop"
     ::inputengine::sendToEngine "quit"
     set ::inputengine::connectimg tb_eng_disconnected
-    ## ::utils::tooltip::Set .button.exthardware [::tr ExtHWNoBoard]
 
     if { [winfo exists ::inputengine::.inputengineconsole]} { 
        destroy ::inputengine::.inputengineconsole
@@ -580,7 +564,6 @@ namespace eval inputengine {
     global ::inputengine::InputEngine
 
     ::ExtHardware::HWbuttonImg tb_eng_disconnected
-    ##::utils::tooltip::Set .button.exthardware [::tr ExtHWNoBoard]
     destroy .inputengineconsole
     set ::inputengine::InputEngine(pipe)     ""
     set ::inputengine::InputEngine(log)      ""
@@ -659,6 +642,13 @@ namespace eval inputengine {
     ::inputengine::sendToEngine "getclock"
   }
 
+  proc strreverse {str} {
+     set res {}
+     set i [string length $str]
+     while {$i > 0} {append res [string index $str [incr i -1]]}
+     set res
+  }
+
   #----------------------------------------------------------------------
   # readFromEngine()
   #     Event Handler for commands and moves sent from the input
@@ -706,6 +696,7 @@ namespace eval inputengine {
              updateBoard -animate
              updateBoard -pgn
              ::inputengine::sendToEngine "getposition"
+             ::inputengine::sendToEngine "getclock"
           }
         } \
         "info *" {
@@ -769,6 +760,23 @@ namespace eval inputengine {
               } else {
                 logEngine "  info Board and internal position match."
               }
+              # Generate a board position out of the FEN
+              # RNBQKBNRPPPP.PPP............P................n..pppppppprnbqkb.r w
+              # Something is in reverse here:
+              ###---### set extpos $fen
+              ###---### regsub -all {8} $extpos "........" extpos
+              ###---### regsub -all {7} $extpos "......." extpos
+              ###---### regsub -all {6} $extpos "......" extpos
+              ###---### regsub -all {5} $extpos "....." extpos
+              ###---### regsub -all {4} $extpos "...." extpos
+              ###---### regsub -all {3} $extpos "..." extpos
+              ###---### regsub -all {2} $extpos ".." extpos
+              ###---### regsub -all {1} $extpos "." extpos
+              ###---### regsub -all {/} $extpos "" extpos
+              ###---### puts stderr [sc_pos board]
+              ###---### puts stderr [strreverse "$extpos"]
+              ###---### set extpos "$extpos w"
+              ###---### ::board::update .inputengineconsole.bd "$extpos w"
             }
           } \
           {moving piece: [A-Z] *} {
@@ -824,11 +832,33 @@ namespace eval inputengine {
             set ::inputengine::toMove "White"
             .inputengineconsole.wClock configure -background white
             .inputengineconsole.bClock configure -background gray -foreground black
+
+            if {$::inputengine::StoreClock == 1} {
+               if { ($::inputengine::oldWhiteClock != $::inputengine::NoClockTime) && \
+                    ($::inputengine::WhiteClock    != $::inputengine::NoClockTime) } {
+                  set wHrs [expr $::inputengine::WhiteClock / 60 / 60]
+                  set wMin [expr ($::inputengine::WhiteClock - $wHrs*60*60) / 60 ]
+                  set wSec [expr ($::inputengine::WhiteClock - $wHrs*60*60 - $wMin * 60) ]
+                  set timediff [expr $::inputengine::oldWhiteClock - $::inputengine::WhiteClock]
+                  sc_pos setComment "\[%ct $bHrs:$bMin:$bSec\] \[%emt $timediff\]"
+               }
+            }
           } \
           "!black to move!" {
             set ::inputengine::toMove "Black"
             .inputengineconsole.wClock configure -background gray
             .inputengineconsole.bClock configure -background black -foreground white
+
+            if {$::inputengine::StoreClock == 1} {
+               if { ($::inputengine::oldBlackClock != $::inputengine::NoClockTime) && \
+                    ($::inputengine::BlackClock    != $::inputengine::NoClockTime) } {
+                  set bHrs [expr $::inputengine::BlackClock / 60 / 60]
+                  set bMin [expr ($::inputengine::BlackClock - $bHrs*60*60) / 60 ]
+                  set bSec [expr ($::inputengine::BlackClock - $bHrs*60*60 - $bMin * 60) ]
+                  set timediff [expr $::inputengine::oldBlackClock - $::inputengine::BlackClock]
+                  sc_pos setComment "\[%ct $bHrs:$bMin:$bSec\] \[%emt $timediff\]"
+               }
+            }
           } \
           "No Clock detected" {
              set ::inputengine::WhiteClock $::inputengine::NoClockTime
@@ -838,6 +868,7 @@ namespace eval inputengine {
           } \
           "Time White:" {
             # Get the time in seconds
+            set ::inputengine::oldWhiteClock $::inputengine::WhiteClock
             regsub -all {[A-Za-z:# ]} $event "" ::inputengine::WhiteClock
 
             # calculate a sensible format
@@ -851,11 +882,11 @@ namespace eval inputengine {
                .inputengineconsole.wClock configure -text "$wMin:$wSec (EXT)"
             }
 
-#            ::gameclock::stop 1
+            ###---### Is this enough to set game clocks for all possible occurences?
             catch { ::gameclock::setSec 1 [expr -1*$::inputengine::WhiteClock] }
-            # catch { set ::sergame::wtime $::inputengine::WhiteClock }
           } \
           "Time Black:" {
+            set ::inputengine::oldBlackClock $::inputengine::BlackClock
             regsub -all {[A-Za-z:# ]} $event "" ::inputengine::BlackClock
 
             set bHrs [expr $::inputengine::BlackClock / 60 / 60]
@@ -868,9 +899,8 @@ namespace eval inputengine {
                .inputengineconsole.bClock configure -text "$bMin:$bSec (EXT)"
             }
 
-#            ::gameclock::stop 2
+            ###---### Is this enough to set game clocks for all possible occurences?
             catch { ::gameclock::setSec 2 [expr -1*$::inputengine::BlackClock] }
-            # catch { set ::sergame::btime $::inputengine::BlackClock }
           } \
           "Wrong move performed:" {
              # This event can only be used if there is a possiblity to

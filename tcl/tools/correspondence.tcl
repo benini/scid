@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.26 2008/11/14 19:44:31 arwagner Exp $
+### $Id: correspondence.tcl,v 1.27 2008/11/22 19:29:48 arwagner Exp $
 ###
-### Last change: <Fri, 2008/11/14 20:34:41 arwagner ingata>
+### Last change: <Sat, 2008/11/22 18:48:00 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -699,6 +699,8 @@ namespace eval Xfcc {
 		set dom [dom parse $xml]
 		set doc [$dom documentElement]
 
+		###---### set ::Xfcc::xfccstate {}
+
 		set aNodes [$doc selectNodes //XfccGame]
 		foreach game $aNodes {
 			set id              [$game selectNodes {string(id)}]
@@ -732,8 +734,7 @@ namespace eval Xfcc {
 				append TC "d + "
 				append TC $increment
 				append TC "d (Fischer)"
-			}
-			if { [regexp {\/} $TimeControl] } {
+			} elseif { [regexp {\/} $TimeControl] } {
 				set TC [split $TimeControl "/"]
 				set moves   [ expr {[lindex $TC 0]} ]
 				set days    [ expr {[lindex $TC 1] / 86400 }]
@@ -2410,6 +2411,10 @@ namespace eval CorrespondenceChess {
 		foreach f [glob -nocomplain [file join $outpath *]] {
 			file delete $f
 		}
+
+		set filename [scidConfigFile xfccstate]
+		file delete $filename
+
 		::CorrespondenceChess::emptyGamelist
 	}
 
