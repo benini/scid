@@ -1563,7 +1563,16 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   #
   # Set up the  analysis window:
   #
-  toplevel $w
+  if {$::docking::USE_DOCKING} {
+    set name "analysisWin$n"
+    set f .fdock$name
+    frame $f  -container 1
+    toplevel .$name -use [ winfo id $f ]
+    docking::add_tab [new_frame $name] e
+  } else  {
+    toplevel $w
+  }
+  
   if {$n == 1} {
     wm title $w "Scid: Analysis: $analysisName"
   } else {

@@ -101,7 +101,7 @@ bind Label <Any-Leave> "+statusBarRestore %W"
 option add *Menu*TearOff 0
 
 menu .menu
-. configure -menu .menu
+.main configure -menu .menu
 
 .menu add cascade -label File -menu .menu.file
 .menu add cascade -label Edit -menu .menu.edit
@@ -1195,7 +1195,7 @@ foreach i $boardSizes {
   if {$count == 10} {set underline 1}
   # PG : dirty workaround !
   $m.bdsize add radio -label $count -variable boardSize -value $i -underline $underline \
-      -command "::board::resize2 .board $i "
+      -command "::board::resize2 .main.board $i "
   unset underline
 }
 
@@ -1206,12 +1206,12 @@ bind . <Control-Shift-Right> increaseBoardSize
 
 proc decreaseBoardSize {} {
   global boardSize
-  set boardSize [::board::resize .board -1]
+  set boardSize [::board::resize .main.board -1]
 }
 
 proc increaseBoardSize {} {
   global boardSize
-  set boardSize [::board::resize .board +1]
+  set boardSize [::board::resize .main.board +1]
 }
 
 # Menu for changing Piece set:
@@ -1317,7 +1317,7 @@ proc updateMenuStates {} {
     # Load previous button:
     if {[sc_filter previous]} {set state normal} else {set state disabled}
     $m.game entryconfig [tr GamePrev] -state $state
-    .tb.gprev configure -state $state
+    .main.tb.gprev configure -state $state
     
     # Reload button:
     if {[sc_game number]} {set state normal} else {set state disabled}
@@ -1326,7 +1326,7 @@ proc updateMenuStates {} {
     # Load next button:
     if {[sc_filter next]} {set state normal} else {set state disabled}
     $m.game entryconfig [tr GameNext] -state $state
-    .tb.gnext configure -state $state
+    .main.tb.gnext configure -state $state
     
     $m.game entryconfig [tr GameNumber] -state normal
     
@@ -1360,8 +1360,8 @@ proc updateMenuStates {} {
     foreach i {First Prev Reload Next Last Random Number Replace Add} {
       $m.game entryconfig [tr Game$i] -state disabled
     }
-    .tb.gprev configure -state disabled
-    .tb.gnext configure -state disabled
+    .main.tb.gprev configure -state disabled
+    .main.tb.gnext configure -state disabled
     
     # search:
     foreach i {Reset Negate} {
@@ -1525,12 +1525,12 @@ proc setLanguageMenus {{lang ""}} {
   
   foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
         TBNothing TBResult TBAll Delete Mark} {
-    configMenuText .gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
+    configMenuText .main.gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
   }
   
   set i 0
   foreach flag $::maintFlaglist {
-    .gameInfo.menu.mark entryconfigure $i \
+    .main.gameInfo.menu.mark entryconfigure $i \
         -label "$::tr($::maintFlags($flag)) ($flag)"
     incr i
   }
@@ -1581,7 +1581,6 @@ proc checkMenuUnderline {menu} {
   return $duplicates
 }
 
-
 # standardShortcuts:
 #    Sets up a number of standard shortcut keys for the specified window.
 #
@@ -1626,7 +1625,7 @@ proc standardShortcuts {w} {
   bind $w <Home>  ::move::Start
   bind $w <Up> {
     if {[sc_pos isAt vstart]} {
-      .button.exitVar invoke
+      .main.button.exitVar invoke
     } else  {
       ::move::Back 10
     }
@@ -1636,7 +1635,7 @@ proc standardShortcuts {w} {
   bind $w <Right> ::move::Forward
   bind $w <End>   ::move::End
   bind $w <KeyPress-v> { ::showVars }
-  bind $w <KeyPress-z> {.button.exitVar invoke}
+  bind $w <KeyPress-z> {.main.button.exitVar invoke}
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
   bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }

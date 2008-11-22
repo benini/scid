@@ -155,7 +155,7 @@ proc updateTitle {} {
   append title "$fname ($::tr(game) "
   append title "[::utils::thousands [sc_game number]] / "
   append title "[::utils::thousands [sc_base numGames]])"
-  wm title . $title
+  wm title .main $title
 }
 
 # updateStatusBar:
@@ -205,7 +205,7 @@ proc updateStatusBar {} {
 
 
 proc toggleRotateBoard {} {
-  ::board::flip .board
+  ::board::flip .main.board
 }
 
 proc toggleCoords {} {
@@ -213,22 +213,22 @@ proc toggleCoords {} {
   set coords [expr {1 + $boardCoords} ]
   if { $coords > 2 } { set coords 0 }
   set boardCoords $coords
-  ::board::coords .board
+  ::board::coords .main.board
 }
 
-frame .button.space3 -width 15
-button .button.flip -image tb_flip -takefocus 0 \
-    -command "::board::flip .board"
+frame .main.button.space3 -width 15
+button .main.button.flip -image tb_flip -takefocus 0 \
+    -command "::board::flip .main.board"
 
-button .button.coords -image tb_coords -takefocus 0 -command toggleCoords
+button .main.button.coords -image tb_coords -takefocus 0 -command toggleCoords
 bind . <KeyPress-0> toggleCoords
 
-button .button.stm -image tb_stm -takefocus 0 -command toggleSTM
+button .main.button.stm -image tb_stm -takefocus 0 -command toggleSTM
 
 proc toggleSTM {} {
   global boardSTM
   set boardSTM [expr {1 - $boardSTM} ]
-  ::board::stm .board
+  ::board::stm .main.board
 }
 
 image create photo autoplay_off -data {
@@ -341,99 +341,99 @@ image create photo finish_off -data {
   UEh/tDCAAxZ8oEEFCCxghUT/OGlIGkfkwIMUdHDZpJlopnlQQAA7
 }
 
-button .button.autoplay -image autoplay_off -command toggleAutoplay
-button .button.trial -image tb_trial -command {setTrialMode toggle}
+button .main.button.autoplay -image autoplay_off -command toggleAutoplay
+button .main.button.trial -image tb_trial -command {setTrialMode toggle}
 
 foreach i {start back forward end intoVar exitVar addVar autoplay \
       flip coords stm trial} {
-  .button.$i configure -relief flat -border 1 -highlightthickness 0 \
+  .main.button.$i configure -relief flat -border 1 -highlightthickness 0 \
       -anchor n -takefocus 0
-  bind .button.$i <Any-Enter> "+.button.$i configure -relief groove"
-  bind .button.$i <Any-Leave> "+.button.$i configure -relief flat; statusBarRestore %W; break"
+  bind .main.button.$i <Any-Enter> "+.main.button.$i configure -relief groove"
+  bind .main.button.$i <Any-Leave> "+.main.button.$i configure -relief flat; statusBarRestore %W; break"
 }
 
-pack .button.start .button.back .button.forward .button.end \
-    .button.space .button.intoVar .button.exitVar .button.addVar .button.space2 \
-    .button.autoplay .button.trial .button.space3 .button.flip .button.coords \
-    .button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+pack .main.button.start .main.button.back .main.button.forward .main.button.end \
+    .main.button.space .main.button.intoVar .main.button.exitVar .main.button.addVar .main.button.space2 \
+    .main.button.autoplay .main.button.trial .main.button.space3 .main.button.flip .main.button.coords \
+    .main.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
 
 ############################################################
 ### The board:
 
-::board::new .board $boardSize "showmat"
-#.board.bd configure -relief solid -border 2
-::board::showMarks .board 1
+::board::new .main.board $boardSize "showmat"
+#.main.board.bd configure -relief solid -border 2
+::board::showMarks .main.board 1
 if {$boardCoords} {
-  ::board::coords .board
+  ::board::coords .main.board
 }
 if {$boardSTM} {
-  ::board::stm .board
+  ::board::stm .main.board
 }
 
 # .gameInfo is the game information widget:
 #
-autoscrollframe .gameInfoFrame text .gameInfo
-.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none \
+autoscrollframe .main.gameInfoFrame text .main.gameInfo
+.main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none \
     -state disabled -cursor top_left_arrow -setgrid 1
-::htext::init .gameInfo
+::htext::init .main.gameInfo
 
 # Right-mouse button menu for gameInfo frame:
-menu .gameInfo.menu -tearoff 0
+menu .main.gameInfo.menu -tearoff 0
 
-.gameInfo.menu add checkbutton -label GInfoHideNext \
+.main.gameInfo.menu add checkbutton -label GInfoHideNext \
     -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
 
-.gameInfo.menu add checkbutton -label GInfoMaterial \
+.main.gameInfo.menu add checkbutton -label GInfoMaterial \
     -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 -command updateBoard
 
-.gameInfo.menu add checkbutton -label GInfoFEN \
+.main.gameInfo.menu add checkbutton -label GInfoFEN \
     -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
 
-.gameInfo.menu add checkbutton -label GInfoMarks \
+.main.gameInfo.menu add checkbutton -label GInfoMarks \
     -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
 
-.gameInfo.menu add checkbutton -label GInfoWrap \
+.main.gameInfo.menu add checkbutton -label GInfoWrap \
     -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
 
-.gameInfo.menu add checkbutton -label GInfoFullComment \
+.main.gameInfo.menu add checkbutton -label GInfoFullComment \
     -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
 
-.gameInfo.menu add checkbutton -label GInfoPhotos \
+.main.gameInfo.menu add checkbutton -label GInfoPhotos \
     -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
     -command {updatePlayerPhotos -force}
 
-.gameInfo.menu add separator
+.main.gameInfo.menu add separator
 
-.gameInfo.menu add radiobutton -label GInfoTBNothing \
+.main.gameInfo.menu add radiobutton -label GInfoTBNothing \
     -variable gameInfo(showTB) -value 0 -command updateBoard
 
-.gameInfo.menu add radiobutton -label GInfoTBResult \
+.main.gameInfo.menu add radiobutton -label GInfoTBResult \
     -variable gameInfo(showTB) -value 1 -command updateBoard
 
-.gameInfo.menu add radiobutton -label GInfoTBAll \
+.main.gameInfo.menu add radiobutton -label GInfoTBAll \
     -variable gameInfo(showTB) -value 2 -command updateBoard
 
-.gameInfo.menu add separator
+.main.gameInfo.menu add separator
 
-.gameInfo.menu add command -label GInfoDelete -command {
+.main.gameInfo.menu add command -label GInfoDelete -command {
   catch {sc_game flag delete [sc_game number] invert}
   updateBoard
   ::windows::gamelist::Refresh
 }
 
-.gameInfo.menu add cascade -label GInfoMark -menu .gameInfo.menu.mark
-menu .gameInfo.menu.mark
+.main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
+menu .main.gameInfo.menu.mark
 foreach flag $maintFlaglist {
-  .gameInfo.menu.mark add command -label "" -command "
+  .main.gameInfo.menu.mark add command -label "" -command "
   catch {sc_game flag $flag \[sc_game number\] invert}
   updateBoard
   ::windows::gamelist::Refresh
   "
 }
 
-bind .gameInfo <ButtonPress-3> "tk_popup .gameInfo.menu %X %Y"
-bind . <F9> "tk_popup .gameInfo.menu %X %Y"
+bind .main.gameInfo <ButtonPress-3> "tk_popup .main.gameInfo.menu %X %Y"
+bind . <F9> "tk_popup .main.gameInfo.menu %X %Y"
 
 
 # setBoard:
@@ -458,7 +458,7 @@ proc setBoard {board boardStr psize {rotated 0}} {
 proc updateVarMenus {} {
   set varList [sc_var list]
   set numVars [sc_var count]
-  .button.intoVar.menu delete 0 end
+  .main.button.intoVar.menu delete 0 end
   .menu.edit.del delete 0 end
   .menu.edit.first delete 0 end
   .menu.edit.main delete 0 end
@@ -466,7 +466,7 @@ proc updateVarMenus {} {
   if {$numVars > 0} {
     set move [sc_game info nextMove]
     if {$move == ""} { set move "($::tr(empty))" }
-    .button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
+    .main.button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
   }
   for {set i 0} {$i < $numVars} {incr i} {
     set move [lindex $varList $i]
@@ -478,10 +478,10 @@ proc updateVarMenus {} {
     set str "[expr {$i + 1}]: $move"
     set commandStr "sc_var moveInto $i; updateBoard"
     if {$i < 9} {
-      .button.intoVar.menu add command -label $str -command $commandStr \
+      .main.button.intoVar.menu add command -label $str -command $commandStr \
           -underline 0
     } else {
-      .button.intoVar.menu add command -label $str -command $commandStr
+      .main.button.intoVar.menu add command -label $str -command $commandStr
     }
     set commandStr "sc_var delete $i; updateBoard -pgn"
     .menu.edit.del add command -label $str -command $commandStr
@@ -612,7 +612,7 @@ proc showVars {} {
 # V and Z key bindings: move into/out of a variation.
 #
 bind . <KeyPress-v> { showVars }
-bind . <KeyPress-z> {.button.exitVar invoke}
+bind . <KeyPress-z> {.main.button.exitVar invoke}
 
 # editMyPlayerNames
 #   Present the dialog box for editing the list of player
@@ -675,7 +675,7 @@ proc editMyPlayerNamesOK {} {
 #   a pattern in the specified list and if so, flip the board if
 #   necessary to show from that players perspective.
 #
-proc flipBoardForPlayerNames {namelist {board .board}} {
+proc flipBoardForPlayerNames {namelist {board .main.board}} {
   set white [sc_game info white]
   set black [sc_game info black]
   foreach pattern $namelist {
@@ -708,11 +708,11 @@ proc updateBoard {args} {
   
   # Remove marked squares informations.
   # (This must be done _before_ updating the board!)
-  ::board::mark::clear .board
+  ::board::mark::clear .main.board
   
-  ::board::resize .board $boardSize
-  ::board::update .board [sc_pos board] $animate
-  ::board::material .board
+  ::board::resize .main.board $boardSize
+  ::board::update .main.board [sc_pos board] $animate
+  ::board::material .main.board
   
   # Draw arrows and marks, color squares:
   
@@ -724,69 +724,69 @@ proc updateBoard {args} {
     set dest   [expr {[string match {[a-h][1-8]} [lindex $cmd 2]] \
           ? [::board::sq [lindex $cmd 2]] : [lindex $cmd 2]}]
     # add mark to board
-    eval ::board::mark::add .board $type $square $dest $color
+    eval ::board::mark::add .main.board $type $square $dest $color
   }
   
   # Update the status of each navigation button:
   if {[sc_pos isAt start]} {
-    .button.start configure -state disabled
-  } else { .button.start configure -state normal }
+    .main.button.start configure -state disabled
+  } else { .main.button.start configure -state normal }
   if {[sc_pos isAt end]} {
-    .button.end configure -state disabled
-  } else { .button.end configure -state normal }
+    .main.button.end configure -state disabled
+  } else { .main.button.end configure -state normal }
   if {[sc_pos isAt vstart]} {
-    .button.back configure -state disabled
-  } else { .button.back configure -state normal }
+    .main.button.back configure -state disabled
+  } else { .main.button.back configure -state normal }
   if {[sc_pos isAt vend]} {
-    .button.forward configure -state disabled
-  } else { .button.forward configure -state normal }
+    .main.button.forward configure -state disabled
+  } else { .main.button.forward configure -state normal }
   # Cannot add a variation to an empty line:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
     .menu.edit entryconfig [tr EditAdd] -state disabled
-    .button.addVar configure -state disabled
+    .main.button.addVar configure -state disabled
     bind . <Control-a> {}
   } else {
     .menu.edit entryconfig [tr EditAdd] -state normal
-    .button.addVar configure -state normal
+    .main.button.addVar configure -state normal
     bind . <Control-a> {sc_var create; updateBoard -pgn}
   }
   if {[sc_var count] == 0} {
-    .button.intoVar configure -state disabled
+    .main.button.intoVar configure -state disabled
     .menu.edit entryconfig [tr EditDelete] -state disabled
     .menu.edit entryconfig [tr EditFirst] -state disabled
     .menu.edit entryconfig [tr EditMain] -state disabled
   } else {
-    .button.intoVar configure -state normal
+    .main.button.intoVar configure -state normal
     .menu.edit entryconfig [tr EditDelete] -state normal
     .menu.edit entryconfig [tr EditFirst] -state normal
     .menu.edit entryconfig [tr EditMain] -state normal
   }
   updateVarMenus
   if {[sc_var level] == 0} {
-    .button.exitVar configure -state disabled
+    .main.button.exitVar configure -state disabled
   } else {
-    .button.exitVar configure -state normal
+    .main.button.exitVar configure -state normal
   }
   
   if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
-    .tb.save configure -state disabled
+    .main.tb.save configure -state disabled
   } else {
-    .tb.save configure -state normal
+    .main.tb.save configure -state normal
   }
-  .gameInfo configure -state normal
-  .gameInfo delete 0.0 end
-  ::htext::display .gameInfo [sc_game info -hide $gameInfo(hideNextMove) \
+  .main.gameInfo configure -state normal
+  .main.gameInfo delete 0.0 end
+  ::htext::display .main.gameInfo [sc_game info -hide $gameInfo(hideNextMove) \
       -material $gameInfo(showMaterial) \
       -cfull $gameInfo(fullComment) \
       -fen $gameInfo(showFEN) -tb $gameInfo(showTB)]
   if {$gameInfo(wrap)} {
-    .gameInfo configure -wrap word
-    .gameInfo tag configure wrap -lmargin2 10
-    .gameInfo tag add wrap 1.0 end
+    .main.gameInfo configure -wrap word
+    .main.gameInfo tag configure wrap -lmargin2 10
+    .main.gameInfo tag add wrap 1.0 end
   } else {
-    .gameInfo configure -wrap none
+    .main.gameInfo configure -wrap none
   }
-  .gameInfo configure -state disabled
+  .main.gameInfo configure -state disabled
   updatePlayerPhotos
   updateEpdWins
   if {[winfo exists .analysisWin1]} { updateAnalysis 1 }
@@ -809,8 +809,8 @@ proc updateBoard {args} {
 
 image create photo photoW
 image create photo photoB
-label .photoW -background white -image photoW -anchor ne
-label .photoB -background white -image photoB -anchor ne
+label .main.photoW -background white -image photoW -anchor ne
+label .main.photoB -background white -image photoB -anchor ne
 
 proc readPhotoFile {fname} {
   set oldcount [array size ::photo]
@@ -893,8 +893,8 @@ proc updatePlayerPhotos {{force ""}} {
     # when the user selects to show or hide the photos.
     set photo(oldWhite) {}
     set photo(oldBlack) {}
-    place forget .photoW
-    place forget .photoB
+    place forget .main.photoW
+    place forget .main.photoB
   }
   if {! $::gameInfo(photos)} { return }
   #get photo from player
@@ -904,11 +904,11 @@ proc updatePlayerPhotos {{force ""}} {
   catch { set black [trimEngineName $black] }
   if {$black != $photo(oldBlack)} {
     set photo(oldBlack) $black
-    place forget .photoB
+    place forget .main.photoB
     if {[info exists ::photo($black)]} {
       image create photo photoB -data $::photo($black)
-      .photoB configure -image photoB -anchor ne
-      place .photoB -in .gameInfo -x -1 -relx 1.0 -anchor ne
+      .main.photoB configure -image photoB -anchor ne
+      place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -anchor ne
       # force to update white, black size could be changed
       set photo(oldWhite) {}
     }
@@ -917,15 +917,15 @@ proc updatePlayerPhotos {{force ""}} {
   if { $distance < 10 } { set distance 82 }
   if {$white != $photo(oldWhite)} {
     set photo(oldWhite) $white
-    place forget .photoW
+    place forget .main.photoW
     if {[info exists ::photo($white)]} {
       image create photo photoW -data $::photo($white)
-      .photoW configure -image photoW -anchor ne
-      place .photoW -in .gameInfo -x -$distance -relx 1.0 -anchor ne
+      .main.photoW configure -image photoW -anchor ne
+      place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -anchor ne
     }
   }
-  bind .photoW <ButtonPress-1> "togglePhotosSize"
-  bind .photoB <ButtonPress-1> "togglePhotosSize"
+  bind .main.photoW <ButtonPress-1> "togglePhotosSize"
+  bind .main.photoB <ButtonPress-1> "togglePhotosSize"
   set ::photosMinimized 0
 }
 ################################################################################
@@ -938,19 +938,19 @@ proc togglePhotosSize {} {
   
   if {$::photosMinimized} {
     set ::photosMinimized 0
-    if { [winfo ismapped .photoW] } {
-      place .photoW -in .gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
+    if { [winfo ismapped .main.photoW] } {
+      place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
     }
-    if { [winfo ismapped .photoB] } {
-      place .photoB -in .gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
+    if { [winfo ismapped .main.photoB] } {
+      place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
     }
   } else  {
     set ::photosMinimized 1
-    if { [winfo ismapped .photoW] } {
-      place .photoW -in .gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
+    if { [winfo ismapped .main.photoW] } {
+      place .main.photoW -in .main.gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
     }
-    if { [winfo ismapped .photoB] } {
-      place .photoB -in .gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
+    if { [winfo ismapped .main.photoB] } {
+      place .main.photoB -in .main.gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
     }
   }
   
@@ -1162,14 +1162,14 @@ proc enterSquare { square } {
   global highcolor currentSq bestSq bestcolor selectedSq suggestMoves
   set currentSq $square
   if {$selectedSq == -1} {
-    ::board::recolor .board
+    ::board::recolor .main.board
     set bestSq -1
     if {$suggestMoves} {
       set bestSq [sc_pos bestSquare $square]
     }
     if {[expr {$bestSq != -1}]} {
-      ::board::colorSquare .board $square $bestcolor
-      ::board::colorSquare .board $bestSq $bestcolor
+      ::board::colorSquare .main.board $square $bestcolor
+      ::board::colorSquare .main.board $bestSq $bestcolor
     }
   }
 }
@@ -1182,12 +1182,12 @@ proc leaveSquare { square } {
   global currentSq selectedSq bestSq
   #Klimmek: not needed anymore
   #  if {$square != $selectedSq} {
-  #    ::board::colorSquare .board $square
+  #    ::board::colorSquare .main.board $square
   #  }
   if {$bestSq != -1} {
     #Klimmek: changed, because Scid "hangs" very often (after 5-7 moves)
-    #    ::board::colorSquare .board $bestSq
-    ::board::update .board
+    #    ::board::colorSquare .main.board $bestSq
+    ::board::update .main.board
   }
 }
 
@@ -1208,18 +1208,18 @@ proc pressSquare { square } {
   
   if {$selectedSq == -1} {
     set selectedSq $square
-    ::board::recolor .board
-    ::board::colorSquare .board $square $highcolor
+    ::board::recolor .main.board
+    ::board::colorSquare .main.board $square $highcolor
     # Drag this piece if it is the same color as the side to move:
     set c [string index [sc_pos side] 0]  ;# will be "w" or "b"
-    set p [string index [::board::piece .board $square] 0] ;# "w", "b" or "e"
+    set p [string index [::board::piece .main.board $square] 0] ;# "w", "b" or "e"
     if {$c == $p} {
-      ::board::setDragSquare .board $square
+      ::board::setDragSquare .main.board $square
     }
   } else {
-    ::board::setDragSquare .board -1
-    ::board::colorSquare .board $selectedSq
-    ::board::colorSquare .board $square
+    ::board::setDragSquare .main.board -1
+    ::board::colorSquare .main.board $selectedSq
+    ::board::colorSquare .main.board $square
     if {$square != $selectedSq} {
       addMove $square $selectedSq -animate
     }
@@ -1236,8 +1236,8 @@ proc pressSquare2 { square } {
   if { [winfo exists .fics] } { return } ;# don't use this function with FICS
   
   global selectedSq bestSq
-  ::board::colorSquare .board $bestSq
-  ::board::colorSquare .board $square
+  ::board::colorSquare .main.board $bestSq
+  ::board::colorSquare .main.board $square
   addMove $square $bestSq -animate
   enterSquare $square
 }
@@ -1306,8 +1306,8 @@ proc backSquare {} {
   }
   
   #Klimmek: not needed anymore, in updateBoard included
-  #  ::board::colorSquare .board $selectedSq
-  #  ::board::colorSquare .board $bestSq
+  #  ::board::colorSquare .main.board $selectedSq
+  #  ::board::colorSquare .main.board $bestSq
   set selectedSq -1
   set bestSq -1
   updateBoard -pgn -animate
@@ -1362,7 +1362,7 @@ proc toggleAutoplay { } {
   global autoplayMode
   if {$autoplayMode == 0} {
     set autoplayMode 1
-    .button.autoplay configure -image autoplay_on -relief sunken
+    .main.button.autoplay configure -image autoplay_on -relief sunken
     autoplay
   } else {
     cancelAutoplay
@@ -1484,7 +1484,7 @@ proc cancelAutoplay {} {
   set annotateMode 0
   set annotateModeButtonValue 0
   after cancel autoplay
-  .button.autoplay configure -image autoplay_off -relief flat
+  .main.button.autoplay configure -image autoplay_off -relief flat
 }
 ################################################################################
 #
@@ -1512,11 +1512,11 @@ proc setTrialMode {mode} {
   if {$mode == 1} {
     set trialMode 1
     sc_game push copy
-    .button.trial configure -image tb_trial_on
+    .main.button.trial configure -image tb_trial_on
   } else {
     set trialMode 0
     sc_game pop
-    .button.trial configure -image tb_trial
+    .main.button.trial configure -image tb_trial
   }
   updateBoard -pgn
 }

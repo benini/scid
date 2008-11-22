@@ -220,8 +220,8 @@ proc chooseBoardColors {{choice -1}} {
     set \$i \$newColors(\$i)
   }
   set borderwidth \$newborderwidth
-  ::board::border .board \$borderwidth
-  ::board::recolor .board
+  ::board::border .main.board \$borderwidth
+  ::board::recolor .main.board
   recolorPieces
   grab release $w
   destroy $w
@@ -422,11 +422,11 @@ image create photo b_list -data {
   CSVxQ06rEQUAOw==
 }
 
-set tb .tb
+set tb .main.tb
 frame $tb -relief raised -border 1
 button $tb.new -image tb_new -command ::file::New
-button .tb.open -image tb_open -command ::file::Open
-button .tb.save -image tb_save -command {
+button .main.tb.open -image tb_open -command ::file::Open
+button .main.tb.save -image tb_save -command {
   if {[sc_game number] != 0} {
     #busyCursor .
     gameReplace
@@ -436,50 +436,50 @@ button .tb.save -image tb_save -command {
     gameAdd
   }
 }
-button .tb.close -image tb_close -command ::file::Close
-button .tb.finder -image tb_finder -command ::file::finder::Open
-menubutton .tb.bkm -image tb_bkm -menu .tb.bkm.menu
-menu .tb.bkm.menu
+button .main.tb.close -image tb_close -command ::file::Close
+button .main.tb.finder -image tb_finder -command ::file::finder::Open
+menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu
+menu .main.tb.bkm.menu
 bind . <Control-b> ::bookmarks::PostMenu
-bind .tb.bkm <ButtonPress-1> "+.tb.bkm configure -relief flat"
+bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
 
 
-frame .tb.space1 -width 12
-button .tb.cut -image tb_cut -command ::game::Clear
-button .tb.copy -image tb_copy \
+frame .main.tb.space1 -width 12
+button .main.tb.cut -image tb_cut -command ::game::Clear
+button .main.tb.copy -image tb_copy \
     -command {catch {sc_clipbase copy}; updateBoard}
-button .tb.paste -image tb_paste \
+button .main.tb.paste -image tb_paste \
     -command {catch {sc_clipbase paste}; updateBoard -pgn}
-frame .tb.space2 -width 12
-button .tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
-button .tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
-frame .tb.space3 -width 12
-button .tb.rfilter -image tb_rfilter -command ::search::filter::reset
-button .tb.bsearch -image tb_bsearch -command ::search::board
-button .tb.hsearch -image tb_hsearch -command ::search::header
-button .tb.msearch -image tb_msearch -command ::search::material
-frame .tb.space4 -width 12
-button .tb.switcher -image tb_switcher -command ::windows::switcher::Open
-button .tb.glist -image tb_glist -command ::windows::gamelist::Open
-button .tb.pgn -image tb_pgn -command ::pgn::OpenClose
-button .tb.tmt -image tb_tmt -command ::tourney::toggle
-button .tb.maint -image tb_maint -command ::maint::OpenClose
-button .tb.eco -image tb_eco -command ::windows::eco::OpenClose
-button .tb.tree -image tb_tree -command ::tree::make
-button .tb.crosst -image tb_crosst -command toggleCrosstabWin
-button .tb.engine -image tb_engine -command makeAnalysisWin
-button .tb.help -image tb_help -command {helpWindow Index}
+frame .main.tb.space2 -width 12
+button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
+button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
+frame .main.tb.space3 -width 12
+button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset
+button .main.tb.bsearch -image tb_bsearch -command ::search::board
+button .main.tb.hsearch -image tb_hsearch -command ::search::header
+button .main.tb.msearch -image tb_msearch -command ::search::material
+frame .main.tb.space4 -width 12
+button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open
+button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open
+button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose
+button .main.tb.tmt -image tb_tmt -command ::tourney::toggle
+button .main.tb.maint -image tb_maint -command ::maint::OpenClose
+button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose
+button .main.tb.tree -image tb_tree -command ::tree::make
+button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin
+button .main.tb.engine -image tb_engine -command makeAnalysisWin
+button .main.tb.help -image tb_help -command {helpWindow Index}
 
 foreach i {new open save close finder bkm cut copy paste gprev gnext \
       rfilter bsearch hsearch msearch \
       switcher glist pgn tmt maint eco tree crosst engine help} {
-  .tb.$i configure -relief flat -border 1 -highlightthickness 0 -anchor n \
+  .main.tb.$i configure -relief flat -border 1 -highlightthickness 0 -anchor n \
       -takefocus 0
-  bind .tb.$i <Any-Enter> "+.tb.$i configure -relief groove"
-  bind .tb.$i <Any-Leave> "+.tb.$i configure -relief flat; statusBarRestore %W; break"
+  bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
+  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; statusBarRestore %W; break"
 }
 
-#pack .tb -side top -fill x -before .button
+#pack .main.tb -side top -fill x -before .button
 
 proc configToolbar {} {
   set w .tbconfig
@@ -541,59 +541,59 @@ proc configToolbar {} {
 
 proc redrawToolbar {} {
   global toolbar
-  foreach i [winfo children .tb] { pack forget $i }
+  foreach i [winfo children .main.tb] { pack forget $i }
   set seenAny 0
   set seen 0
   foreach i {new open save close finder bkm} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
-      pack .tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
   }
-  if {$seen} { pack .tb.space1 -side left }
+  if {$seen} { pack .main.tb.space1 -side left }
   set seen 0
   foreach i {gprev gnext} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
-      pack .tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
   }
-  if {$seen} { pack .tb.space2 -side left }
+  if {$seen} { pack .main.tb.space2 -side left }
   set seen 0
   foreach i {cut copy paste} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
-      pack .tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
   }
-  if {$seen} { pack .tb.space3 -side left }
+  if {$seen} { pack .main.tb.space3 -side left }
   set seen 0
   foreach i {rfilter bsearch hsearch msearch} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
-      pack .tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
   }
-  if {$seen} { pack .tb.space4 -side left }
+  if {$seen} { pack .main.tb.space4 -side left }
   set seen 0
   foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
-      pack .tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
     }
   }
   if {$seenAny} {
-    grid .tb -row 0 -column 0 -columnspan 3 -sticky we
+    grid .main.tb -row 0 -column 0 -columnspan 3 -sticky we
   } else {
-    grid forget .tb
+    grid forget .main.tb
   }
 }
 
 proc setToolbar {x} {
   if {$x} {
-    grid .tb -row 0 -column 0 -columnspan 3 -sticky we
+    grid .main.tb -row 0 -column 0 -columnspan 3 -sticky we
   } else {
-    grid forget .tb
+    grid forget .main.tb
   }
 }
 
@@ -609,11 +609,11 @@ foreach {b m} {
   maint WindowsMaint eco WindowsECO tree WindowsTree crosst ToolsCross
   engine ToolsAnalysis
 } {
-  set helpMessage(.tb.$b) $m
+  set helpMessage(.main.tb.$b) $m
   # ::utils::tooltip::Set $tb.$b $m
 }
-set helpMessage(.button.addVar) EditAdd
-set helpMessage(.button.trial) EditTrial
+set helpMessage(.main.button.addVar) EditAdd
+set helpMessage(.main.button.trial) EditTrial
 
 
 image create photo tb_start -data {
@@ -652,24 +652,24 @@ image create photo tb_addvar -data {
   HZKFJAhk27qmqMq2rlGaJ43a46xslJR7AIMWIORzRCaXzKahAAA7
 }
 
-frame .button -relief raised -border 1
-button .button.start -image tb_start -command ::move::Start
-button .button.back -image tb_prev -command ::move::Back
-button .button.forward -image tb_next -command ::move::Forward
-button .button.end -image tb_end -command ::move::End
-bind .button.end <Button-3> ::tactics::findBestMove
-frame .button.space -width 15
+frame .main.button -relief raised -border 1
+button .main.button.start -image tb_start -command ::move::Start
+button .main.button.back -image tb_prev -command ::move::Back
+button .main.button.forward -image tb_next -command ::move::Forward
+button .main.button.end -image tb_end -command ::move::End
+bind .main.button.end <Button-3> ::tactics::findBestMove
+frame .main.button.space -width 15
 
 # The go-into-variation button is a menubutton:
-menubutton .button.intoVar -image tb_invar -menu .button.intoVar.menu \
+menubutton .main.button.intoVar -image tb_invar -menu .main.button.intoVar.menu \
     -relief raised
-menu .button.intoVar.menu -tearoff 0 -font font_Regular
+menu .main.button.intoVar.menu -tearoff 0 -font font_Regular
 
-button .button.exitVar -image tb_outvar \
+button .main.button.exitVar -image tb_outvar \
     -command {sc_var exit; updateBoard -animate}
-button .button.addVar -image tb_addvar \
+button .main.button.addVar -image tb_addvar \
     -command {sc_var create; updateBoard -pgn -animate}
-frame .button.space2 -width 15
+frame .main.button.space2 -width 15
 
 image create photo tb_flip -data {
   R0lGODdhFAAUAKEAAAAAANDAoKCAUIsAACwAAAAAFAAUAAACXoSPqcHiHJyA0tDXcHS2jT9s

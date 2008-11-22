@@ -359,16 +359,16 @@ menuText P GInfoMark "W³±cz/wy³±cz zaznaczenie tej partii" 0
 menuText P GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg P .button.start {Id¼ do pocz±tku partii (klawisz: Home)}
-helpMsg P .button.end {Id¼ na koniec partii  (klawisz: End)}
-helpMsg P .button.back {Cofnij o jedno posuniêcie  (klawisz: strza³ka w lewo)}
-helpMsg P .button.forward {Jedno posuniêcie do przodu (klawisz: strza³ka w prawo)}
-helpMsg P .button.intoVar {Wejd¼ w wariant (klawisz skrótu: v)}
-helpMsg P .button.exitVar {Opu¶æ wariant (klawisz skrótu: z)}
-helpMsg P .button.flip {Obróæ szachownicê  (klawisz skrótu: .)}
-helpMsg P .button.coords {Prze³±cz wy¶wietlanie opisu szachownicy  (klawisz skrótu: 0)}
-helpMsg P .button.stm {Prze³±cz wy¶wietlanie ikony koloru strony na posuniêciu} 
-helpMsg P .button.autoplay \
+helpMsg P .main.button.start {Id¼ do pocz±tku partii (klawisz: Home)}
+helpMsg P .main.button.end {Id¼ na koniec partii  (klawisz: End)}
+helpMsg P .main.button.back {Cofnij o jedno posuniêcie  (klawisz: strza³ka w lewo)}
+helpMsg P .main.button.forward {Jedno posuniêcie do przodu (klawisz: strza³ka w prawo)}
+helpMsg P .main.button.intoVar {Wejd¼ w wariant (klawisz skrótu: v)}
+helpMsg P .main.button.exitVar {Opu¶æ wariant (klawisz skrótu: z)}
+helpMsg P .main.button.flip {Obróæ szachownicê  (klawisz skrótu: .)}
+helpMsg P .main.button.coords {Prze³±cz wy¶wietlanie opisu szachownicy  (klawisz skrótu: 0)}
+helpMsg P .main.button.stm {Prze³±cz wy¶wietlanie ikony koloru strony na posuniêciu} 
+helpMsg P .main.button.autoplay \
   {Automatyczne przestawianie bierek (klawisz skrótu: Ctrl+Z)}
 
 # General buttons:

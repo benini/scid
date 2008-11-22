@@ -332,16 +332,16 @@ menuText D GInfoMark "(Un)Markiere diese Partie" 4
 menuText D GInfoInformant "Informatorwerte konfigurieren" 0
 
 # Main window buttons:
-helpMsg D .button.start {Gehe zum Partieanfang  (Taste: Pos 1)}
-helpMsg D .button.end {Gehe zum Partieende  (Taste: Ende)}
-helpMsg D .button.back {Gehe einen Zug zurück  (Taste: LinksPfeil)}
-helpMsg D .button.forward {Gehe einen Zug vor  (Taste: RechtsPfeil)}
-helpMsg D .button.intoVar {Gehe in Variante  (Taste: v)}
-helpMsg D .button.exitVar {Verlasse Variante  (Taste: z)}
-helpMsg D .button.flip {Brett drehen  (Taste: .)}
-helpMsg D .button.coords {Brettkoordinaten AN oder AUS  (Taste: 0)}
-helpMsg D .button.stm {Anzeige "Wer ist am Zug" an oder aus}
-helpMsg D .button.autoplay {Automatisches Vorspielen  (Taste: Strg+Z)}
+helpMsg D .main.button.start {Gehe zum Partieanfang  (Taste: Pos 1)}
+helpMsg D .main.button.end {Gehe zum Partieende  (Taste: Ende)}
+helpMsg D .main.button.back {Gehe einen Zug zurück  (Taste: LinksPfeil)}
+helpMsg D .main.button.forward {Gehe einen Zug vor  (Taste: RechtsPfeil)}
+helpMsg D .main.button.intoVar {Gehe in Variante  (Taste: v)}
+helpMsg D .main.button.exitVar {Verlasse Variante  (Taste: z)}
+helpMsg D .main.button.flip {Brett drehen  (Taste: .)}
+helpMsg D .main.button.coords {Brettkoordinaten AN oder AUS  (Taste: 0)}
+helpMsg D .main.button.stm {Anzeige "Wer ist am Zug" an oder aus}
+helpMsg D .main.button.autoplay {Automatisches Vorspielen  (Taste: Strg+Z)}
 
 # General buttons:
 translate D Back {Zurück}

@@ -1236,6 +1236,7 @@ proc gameReplace {} { gameSave [sc_game number] }
 #
 proc helpAbout {} {
   set str {}
+  puts [winfo children .]
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
@@ -1297,26 +1298,26 @@ proc drawArrow {sq color} {
 }
 
 for {set i 0} { $i < 64 } { incr i } {
-  ::board::bind .board $i <Enter> "enterSquare $i"
-  ::board::bind .board $i <Leave> "leaveSquare $i"
-  ::board::bind .board $i <ButtonPress-1> "set ::addVariationWithoutAsking 0 ; pressSquare $i"
-  ::board::bind .board $i <ButtonPress-2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
-  #::board::bind .board $i <ButtonPress-3> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
-  ::board::bind .board $i <Control-ButtonPress-1> "drawArrow $i green"
-  ::board::bind .board $i <Control-ButtonPress-2> "drawArrow $i yellow"
-  ::board::bind .board $i <Control-ButtonPress-3> "drawArrow $i red"
-  ::board::bind .board $i <Shift-ButtonPress-1> "addMarker $i green"
-  ::board::bind .board $i <Shift-ButtonPress-2> "addMarker $i yellow"
-  ::board::bind .board $i <Shift-ButtonPress-3> "addMarker $i red"
-  ::board::bind .board $i <B1-Motion> "::board::dragPiece .board %X %Y"
-  ::board::bind .board $i <ButtonRelease-1> "releaseSquare .board %X %Y ; set ::addVariationWithoutAsking 0"
-  ::board::bind .board $i <ButtonRelease-2> "releaseSquare .board %X %Y ; set ::addVariationWithoutAsking 0"
-  #::board::bind .board $i <ButtonRelease-3> "releaseSquare .board %X %Y ; set ::addVariationWithoutAsking 0"
+  ::board::bind .main.board $i <Enter> "enterSquare $i"
+  ::board::bind .main.board $i <Leave> "leaveSquare $i"
+  ::board::bind .main.board $i <ButtonPress-1> "set ::addVariationWithoutAsking 0 ; pressSquare $i"
+  ::board::bind .main.board $i <ButtonPress-2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
+  #::board::bind .main.board $i <ButtonPress-3> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
+  ::board::bind .main.board $i <Control-ButtonPress-1> "drawArrow $i green"
+  ::board::bind .main.board $i <Control-ButtonPress-2> "drawArrow $i yellow"
+  ::board::bind .main.board $i <Control-ButtonPress-3> "drawArrow $i red"
+  ::board::bind .main.board $i <Shift-ButtonPress-1> "addMarker $i green"
+  ::board::bind .main.board $i <Shift-ButtonPress-2> "addMarker $i yellow"
+  ::board::bind .main.board $i <Shift-ButtonPress-3> "addMarker $i red"
+  ::board::bind .main.board $i <B1-Motion> "::board::dragPiece .main.board %X %Y"
+  ::board::bind .main.board $i <ButtonRelease-1> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
+  ::board::bind .main.board $i <ButtonRelease-2> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
+  #::board::bind .main.board $i <ButtonRelease-3> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
   
-  #::board::bind .board $i <ButtonPress-2> "pressSquare $i"
+  #::board::bind .main.board $i <ButtonPress-2> "pressSquare $i"
   # Pascal Georges : this should be removed because I find it too dangerous for people with cats ??
   # put it back with Scid 3.6.13, let's see if this leads to problems
-  ::board::bind .board $i <ButtonPress-3> backSquare
+  ::board::bind .main.board $i <ButtonPress-3> backSquare
 }
 
 foreach i {o q r n k O Q R B N K} {
@@ -1362,7 +1363,7 @@ bind . <Home> ::move::Start
 bind . <Left> ::move::Back
 bind . <Up> {
   if {[sc_pos isAt vstart]} {
-    .button.exitVar invoke
+    .main.button.exitVar invoke
   } else  {
     ::move::Back 10
   }
@@ -1391,15 +1392,16 @@ if {! $windowsOS} {
 
 # Apply standard shortcuts to main window
 standardShortcuts .
+standardShortcuts .main
 
 ############################################################
 ### Packing the main window:
 
 
-label .statusbar -textvariable statusBar -relief sunken -anchor w -width 1 \
+label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 \
     -font font_Small
-grid .statusbar -row 4 -column 0 -columnspan 3 -sticky we
-bind .statusbar <1> gotoNextBase
+grid .main.statusbar -row 4 -column 0 -columnspan 3 -sticky we
+bind .main.statusbar <1> gotoNextBase
 
 proc gotoNextBase {} {
   set n [sc_base current]
@@ -1416,36 +1418,15 @@ proc gotoNextBase {} {
   ::windows::gamelist::Refresh
 }
 
-#frame .sep -width 2 -borderwidth 2 -relief groove
-#frame .panels
-#grid .boardframe -row 1 -column 0 -columnspan 3 -sticky news
-#grid .sep -row 1 -column 1 -rowspan 3 -sticky ns -padx 4
-#grid .panels -row 1 -column 2 -rowspan 3 -sticky news -pady 2
 grid columnconfigure . 0 -weight 1
 grid rowconfigure . 3 -weight 1
 
-grid .button -row 1 -column 0 -pady 5 -padx 5
+grid .main.button -row 1 -column 0 -pady 5 -padx 5
 
-grid .board -row 2 -column 0 -sticky we -padx 5 -pady 5
+grid .main.board -row 2 -column 0 -sticky we -padx 5 -pady 5
 
+grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
 
-grid .gameInfoFrame -row 3 -column 0 -sticky news -padx 2
-
-#set p .panels
-#::utils::pane::Create $p.pane top bottom 200 100 0.3
-#pack $p.pane -side top -fill both -expand yes
-#label $p.pane.top.db -font font_Bold -foreground white -background darkBlue -text "Databases" -anchor w
-#pack $p.pane.top.db -side top -fill x
-#autoscrollframe -bars y $p.pane.top.f canvas $p.pane.top.f.c
-#pack $p.pane.top.f -side top -fill both -expand yes
-
-#label $p.pane.bottom.title -font font_Bold -foreground white -background darkBlue -text "Notation" -anchor w
-#pack $p.pane.bottom.title -side top -fill x
-#autoscrollframe -bars y $p.pane.bottom.f text $p.pane.bottom.f.text -width 0
-#pack $p.pane.bottom.f -side top -fill both -expand yes
-#::htext::init $p.pane.bottom.f.text
-
-#setToolbar $showToolbar
 redrawToolbar
 
 wm resizable . 0 1
@@ -1627,27 +1608,27 @@ while {$argc > 0} {
       switch -- $::searchType {
         "Material" {
           sc_search material \
-            -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
-            -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \
-            -wb [list $pMin(wb) $pMax(wb)] -bb [list $pMin(bb) $pMax(bb)] \
-            -wn [list $pMin(wn) $pMax(wn)] -bn [list $pMin(bn) $pMax(bn)] \
-            -wm [list $pMin(wm) $pMax(wm)] -bm [list $pMin(bm) $pMax(bm)] \
-            -wp [list $pMin(wp) $pMax(wp)] -bp [list $pMin(bp) $pMax(bp)] \
-            -flip $ignoreColors -filter $::search::filter::operation \
-            -range [list $minMoveNum $maxMoveNum] \
-            -length $minHalfMoves -bishops $oppBishops \
-            -diff [list $minMatDiff $maxMatDiff] \
-            -patt "$pattBool(1) $pattPiece(1) $pattFyle(1) $pattRank(1)" \
-            -patt "$pattBool(2) $pattPiece(2) $pattFyle(2) $pattRank(2)" \
-            -patt "$pattBool(3) $pattPiece(3) $pattFyle(3) $pattRank(3)" \
-            -patt "$pattBool(4) $pattPiece(4) $pattFyle(4) $pattRank(4)" \
-            -patt "$pattBool(5) $pattPiece(5) $pattFyle(5) $pattRank(5)" \
-            -patt "$pattBool(6) $pattPiece(6) $pattFyle(6) $pattRank(6)" \
-            -patt "$pattBool(7) $pattPiece(7) $pattFyle(7) $pattRank(7)" \
-            -patt "$pattBool(8) $pattPiece(8) $pattFyle(8) $pattRank(8)" \
-            -patt "$pattBool(9) $pattPiece(9) $pattFyle(9) $pattRank(9)" \
-            -patt "$pattBool(10) $pattPiece(10) $pattFyle(10) $pattRank(10)"
-            ::splash::add "   Material/Pattern filter file $startbase correctly applied"
+              -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
+              -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \
+              -wb [list $pMin(wb) $pMax(wb)] -bb [list $pMin(bb) $pMax(bb)] \
+              -wn [list $pMin(wn) $pMax(wn)] -bn [list $pMin(bn) $pMax(bn)] \
+              -wm [list $pMin(wm) $pMax(wm)] -bm [list $pMin(bm) $pMax(bm)] \
+              -wp [list $pMin(wp) $pMax(wp)] -bp [list $pMin(bp) $pMax(bp)] \
+              -flip $ignoreColors -filter $::search::filter::operation \
+              -range [list $minMoveNum $maxMoveNum] \
+              -length $minHalfMoves -bishops $oppBishops \
+              -diff [list $minMatDiff $maxMatDiff] \
+              -patt "$pattBool(1) $pattPiece(1) $pattFyle(1) $pattRank(1)" \
+              -patt "$pattBool(2) $pattPiece(2) $pattFyle(2) $pattRank(2)" \
+              -patt "$pattBool(3) $pattPiece(3) $pattFyle(3) $pattRank(3)" \
+              -patt "$pattBool(4) $pattPiece(4) $pattFyle(4) $pattRank(4)" \
+              -patt "$pattBool(5) $pattPiece(5) $pattFyle(5) $pattRank(5)" \
+              -patt "$pattBool(6) $pattPiece(6) $pattFyle(6) $pattRank(6)" \
+              -patt "$pattBool(7) $pattPiece(7) $pattFyle(7) $pattRank(7)" \
+              -patt "$pattBool(8) $pattPiece(8) $pattFyle(8) $pattRank(8)" \
+              -patt "$pattBool(9) $pattPiece(9) $pattFyle(9) $pattRank(9)" \
+              -patt "$pattBool(10) $pattPiece(10) $pattFyle(10) $pattRank(10)"
+          ::splash::add "   Material/Pattern filter file $startbase correctly applied"
         }
         "Header"   {
           set sPgnlist {}
@@ -1662,37 +1643,37 @@ while {$argc > 0} {
             if $sTitles(b:$i) { lappend btitles $i }
           }
           sc_search header -white $sWhite -black $sBlack \
-            -event $sEvent -site $sSite -round $sRound \
-            -date [list $sDateMin $sDateMax] \
-            -results [list $sResWin $sResDraw $sResLoss $sResOther] \
-            -welo [list $sWhiteEloMin $sWhiteEloMax] \
-            -belo [list $sBlackEloMin $sBlackEloMax] \
-            -delo [list $sEloDiffMin $sEloDiffMax] \
-            -eco [list $sEcoMin $sEcoMax $sEco] \
-            -length [list $sGlMin $sGlMax] \
-            -toMove $sSideToMove \
-            -gameNumber [list $sGnumMin $sGnumMax] \
-            -flip $sIgnoreCol -filter $::search::filter::operation \
-            -fStdStart $sHeaderFlags(StdStart) \
-            -fPromotions $sHeaderFlags(Promotions) \
-            -fComments $sHeaderFlags(Comments) \
-            -fVariations $sHeaderFlags(Variations) \
-            -fAnnotations $sHeaderFlags(Annotations) \
-            -fDelete $sHeaderFlags(DeleteFlag) \
-            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-            -fBlackOp $sHeaderFlags(BlackOpFlag) \
-            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-            -fEndgame $sHeaderFlags(EndgameFlag) \
-            -fNovelty $sHeaderFlags(NoveltyFlag) \
-            -fPawnStruct $sHeaderFlags(PawnFlag) \
-            -fTactics $sHeaderFlags(TacticsFlag) \
-            -fKingside $sHeaderFlags(KsideFlag) \
-            -fQueenside $sHeaderFlags(QsideFlag) \
-            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-            -fBlunder $sHeaderFlags(BlunderFlag) \
-            -fUser $sHeaderFlags(UserFlag) \
-            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles
-            ::splash::add "   Header filter file $startbase correctly applied"
+              -event $sEvent -site $sSite -round $sRound \
+              -date [list $sDateMin $sDateMax] \
+              -results [list $sResWin $sResDraw $sResLoss $sResOther] \
+              -welo [list $sWhiteEloMin $sWhiteEloMax] \
+              -belo [list $sBlackEloMin $sBlackEloMax] \
+              -delo [list $sEloDiffMin $sEloDiffMax] \
+              -eco [list $sEcoMin $sEcoMax $sEco] \
+              -length [list $sGlMin $sGlMax] \
+              -toMove $sSideToMove \
+              -gameNumber [list $sGnumMin $sGnumMax] \
+              -flip $sIgnoreCol -filter $::search::filter::operation \
+              -fStdStart $sHeaderFlags(StdStart) \
+              -fPromotions $sHeaderFlags(Promotions) \
+              -fComments $sHeaderFlags(Comments) \
+              -fVariations $sHeaderFlags(Variations) \
+              -fAnnotations $sHeaderFlags(Annotations) \
+              -fDelete $sHeaderFlags(DeleteFlag) \
+              -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
+              -fBlackOp $sHeaderFlags(BlackOpFlag) \
+              -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
+              -fEndgame $sHeaderFlags(EndgameFlag) \
+              -fNovelty $sHeaderFlags(NoveltyFlag) \
+              -fPawnStruct $sHeaderFlags(PawnFlag) \
+              -fTactics $sHeaderFlags(TacticsFlag) \
+              -fKingside $sHeaderFlags(KsideFlag) \
+              -fQueenside $sHeaderFlags(QsideFlag) \
+              -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
+              -fBlunder $sHeaderFlags(BlunderFlag) \
+              -fUser $sHeaderFlags(UserFlag) \
+              -pgn $sPgnlist -wtitles $wtitles -btitles $btitles
+          ::splash::add "   Header filter file $startbase correctly applied"
         }
       }
       set glstart 1
@@ -1760,8 +1741,8 @@ update
 bind . <Configure> "recordWinSize ."
 
 # Bindings to map/unmap all windows when main window is mapped:
-bind .statusbar <Map> { showHideAllWindows deiconify}
-bind .statusbar <Unmap> { showHideAllWindows iconify}
+bind .main.statusbar <Map> { showHideAllWindows deiconify}
+bind .main.statusbar <Unmap> { showHideAllWindows iconify}
 
 ################################################################################
 # returns a list of all toplevel windows, except some that are utilities
@@ -1863,8 +1844,13 @@ if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
   if {$dndargs != 0} {
     set isopenBaseready 2
     catch {::tk::mac::OpenDocument $dndargs} errmsg
-    #::splash::add "Opening file(s)...\$dndargs"    
+    #::splash::add "Opening file(s)...\$dndargs"
   }
+}
+
+if { ! $::docking::USE_DOCKING} {
+  wm withdraw .
+  bind .main <Destroy> { destroy . }
 }
 
 ### End of file: end.tcl

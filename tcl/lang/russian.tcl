@@ -355,16 +355,16 @@ menuText R GInfoMark "(Снять отметку)Отметить эту партию" 2
 menuText R GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg R .button.start {Перейти к началу партии  (клавиша: Home)}
-helpMsg R .button.end {Перейти к концу партии  (клавиша: End)}
-helpMsg R .button.back {Один ход назад  (клавиша: LeftArrow)}
-helpMsg R .button.forward {Один ход вперед (клавиша: RightArrow)}
-helpMsg R .button.intoVar {Перейти к варианту  (клавиша: v)}
-helpMsg R .button.exitVar {Выйти из текущего варианта (клавиша: z)}
-helpMsg R .button.flip {Перевернуть доску (клавиша: .)}
-helpMsg R .button.coords {Включить/выключить координаты  (клавиша: 0)}
-helpMsg R .button.stm {Включить/выключить иконку очередности хода}
-helpMsg R .button.autoplay {Автоматическое выполнение ходов  (клавиши: Ctrl+Z)}
+helpMsg R .main.button.start {Перейти к началу партии  (клавиша: Home)}
+helpMsg R .main.button.end {Перейти к концу партии  (клавиша: End)}
+helpMsg R .main.button.back {Один ход назад  (клавиша: LeftArrow)}
+helpMsg R .main.button.forward {Один ход вперед (клавиша: RightArrow)}
+helpMsg R .main.button.intoVar {Перейти к варианту  (клавиша: v)}
+helpMsg R .main.button.exitVar {Выйти из текущего варианта (клавиша: z)}
+helpMsg R .main.button.flip {Перевернуть доску (клавиша: .)}
+helpMsg R .main.button.coords {Включить/выключить координаты  (клавиша: 0)}
+helpMsg R .main.button.stm {Включить/выключить иконку очередности хода}
+helpMsg R .main.button.autoplay {Автоматическое выполнение ходов  (клавиши: Ctrl+Z)}
 
 # General buttons:
 translate R Back {Назад}

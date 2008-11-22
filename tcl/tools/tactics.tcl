@@ -372,15 +372,15 @@ namespace eval tactics {
   # flips the board if necessary so the side to move is at the bottom
   ################################################################################
   proc sideToMoveAtBottom {} {
-    if { [sc_pos side] == "white" && [::board::isFlipped .board] || [sc_pos side] == "black" &&  ![::board::isFlipped .board] } {
-      ::board::flip .board
+    if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
+      ::board::flip .main.board
     }
   }
   ################################################################################
   #
   ################################################################################
   proc isPlayerTurn {} {
-    if { [sc_pos side] == "white" &&  ![::board::isFlipped .board] || [sc_pos side] == "black" &&  [::board::isFlipped .board] } {
+    if { [sc_pos side] == "white" &&  ![::board::isFlipped .main.board] || [sc_pos side] == "black" &&  [::board::isFlipped .main.board] } {
       return 1
     }
     return 0
@@ -410,8 +410,8 @@ namespace eval tactics {
     updateTitle
     updateStatusBar
     updateBoard -pgn
-    if { [sc_pos side] == "white" && [::board::isFlipped .board] || [sc_pos side] == "black" &&  ![::board::isFlipped .board] } {
-      ::board::flip .board
+    if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
+      ::board::flip .main.board
     }
     set ::tactics::prevFen [sc_pos fen]
     ::tactics::startAnalyze

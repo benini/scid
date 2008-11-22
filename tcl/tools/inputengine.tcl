@@ -7,7 +7,7 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.5 2008/11/16 13:47:52 arwagner Exp $
+###    $Id: inputengine.tcl,v 1.6 2008/11/22 10:39:47 pgeorges Exp $
 ###    Last change: <Sun, 2008/11/16 14:42:02 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
@@ -610,7 +610,7 @@ namespace eval inputengine {
     set pipe $::inputengine::InputEngine(pipe)
 
     # rotate the graphical boards
-    ::board::flip .board
+    ::board::flip .main.board
     ::board::flip .inputengineconsole.bd
 
     ::inputengine::newgame

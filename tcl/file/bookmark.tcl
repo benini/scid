@@ -14,11 +14,11 @@ namespace eval ::bookmarks {}
 #   Posts the bookmarks toolbar menu.
 #
 proc ::bookmarks::PostMenu {} {
-  .tb.bkm.menu post [winfo pointerx .] [winfo pointery .]
+  .main.tb.bkm.menu post [winfo pointerx .] [winfo pointery .]
   if {[::bookmarks::CanAdd]} {
-    .tb.bkm.menu activate 0
+    .main.tb.bkm.menu activate 0
   } else {
-    .tb.bkm.menu activate 2
+    .main.tb.bkm.menu activate 2
   }
 }
 
@@ -26,7 +26,7 @@ proc ::bookmarks::PostMenu {} {
 #   Updates all bookmarks submenus.
 #
 proc ::bookmarks::Refresh {} {
-  foreach menu {.menu.file.bookmarks .tb.bkm.menu} {
+  foreach menu {.menu.file.bookmarks .main.tb.bkm.menu} {
     ::bookmarks::RefreshMenu $menu
   }
 }

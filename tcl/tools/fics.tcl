@@ -492,10 +492,10 @@ namespace eval fics {
       sc_game tags set -blackElo $blackElo
       
       sc_game tags set -event "Fics [lrange $line 5 end]"
-      if { [::board::isFlipped .board] } {
-        if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .board }
+      if { [::board::isFlipped .main.board] } {
+        if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
       } else {
-        if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .board }
+        if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
       }
       updateBoard -pgn -animate
       return

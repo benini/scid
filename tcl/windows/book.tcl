@@ -265,6 +265,7 @@ namespace eval book {
   #   add a move to displayed bookmoves
   ################################################################################
   proc addBookMove { move } {
+    global ::book::bookTuningMoves
     set w .bookTuningWin
     set children [winfo children $w.f]
     set count [expr [llength $children] / 2]
@@ -274,12 +275,17 @@ namespace eval book {
     $w.f.sp$count set 0
     grid $w.f.m$count -row $count -column 0 -sticky w
     grid $w.f.sp$count -row $count -column 1 -sticky w
-    $w.fbutton.mbAdd.otherMoves delete [::trans $move] 
+    $w.fbutton.mbAdd.otherMoves delete [::trans $move]
+    lappend ::book::bookTuningMoves $move
   }
   ################################################################################
   #   updates book display when board changes
   ################################################################################
   proc refreshTuning {} {
+    #unfortunately we need this as the moves on the widgets are translated
+    #and widgets have no clientdata in tcl/tk
+        global ::book::bookTuningMoves
+        set ::book::bookTuningMoves {}
     set moves [sc_book moves $::book::bookTuningSlot]
     
     set w .bookTuningWin
@@ -292,6 +298,7 @@ namespace eval book {
     
     set row 0
     for {set i 0} {$i<[llength $moves]} {incr i 2} {
+      lappend ::book::bookTuningMoves [lindex $moves $i]
       label $w.f.m$row -text [::trans [lindex $moves $i]]
       bind $w.f.m$row <ButtonPress-1> " ::book::makeBookMove [lindex $moves $i] "
       spinbox $w.f.sp$row -from 0 -to 100 -width 3
@@ -316,17 +323,16 @@ namespace eval book {
   # sends to book the list of moves and probabilities.
   ################################################################################
   proc save {} {
+    global ::book::bookTuningMoves
     set prob {}
-    set move {}
     set w .bookTuningWin
     set children [winfo children $w.f]
     set count [expr [llength $children] / 2]
     for {set row 0} {$row < $count} {incr row} {
       lappend prob [$w.f.sp$row get]
-      lappend move [::untrans [$w.f.m$row cget -text]]
     }
     set tempfile [file join $::scidUserDir tempfile.[pid]]
-    sc_book movesupdate $move $prob $::book::bookTuningSlot [file join $tempfile]
+    sc_book movesupdate $::book::bookTuningMoves $prob $::book::bookTuningSlot [file join $tempfile]
     file delete $tempfile
     if {  [ winfo exists .bookWin ] } {
       ::book::refresh

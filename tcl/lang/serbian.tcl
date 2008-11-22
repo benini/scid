@@ -353,16 +353,16 @@ menuText Y GInfoMark "Mark/Unmark this game" 0 ;# ***
 menuText Y GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg Y .button.start {Idi na poèetak partije  (taster: Home)}
-helpMsg Y .button.end {Idi na kraj partije  (taster: End)}
-helpMsg Y .button.back {Idi jedan potez nazad  (taster: Levo)}
-helpMsg Y .button.forward {Idi jedan potez napred  (taster: Desno)}
-helpMsg Y .button.intoVar {Preði na varijantu  (taster preèica: v)}
-helpMsg Y .button.exitVar {Ostavi tekuæu varijantu  (taster preèica: z)}
-helpMsg Y .button.flip {Rotiraj tablu  (taster preèica: .)}
-helpMsg Y .button.coords {Ukljuèi/iskljuèi koordinate table  (taster preèica: 0)}
-helpMsg Y .button.stm {Turn the side-to-move icon on or off} ;# ***
-helpMsg Y .button.autoplay {Automatski menjaj poteze  (taster: Ctrl+Z)}
+helpMsg Y .main.button.start {Idi na poèetak partije  (taster: Home)}
+helpMsg Y .main.button.end {Idi na kraj partije  (taster: End)}
+helpMsg Y .main.button.back {Idi jedan potez nazad  (taster: Levo)}
+helpMsg Y .main.button.forward {Idi jedan potez napred  (taster: Desno)}
+helpMsg Y .main.button.intoVar {Preði na varijantu  (taster preèica: v)}
+helpMsg Y .main.button.exitVar {Ostavi tekuæu varijantu  (taster preèica: z)}
+helpMsg Y .main.button.flip {Rotiraj tablu  (taster preèica: .)}
+helpMsg Y .main.button.coords {Ukljuèi/iskljuèi koordinate table  (taster preèica: 0)}
+helpMsg Y .main.button.stm {Turn the side-to-move icon on or off} ;# ***
+helpMsg Y .main.button.autoplay {Automatski menjaj poteze  (taster: Ctrl+Z)}
 
 # General buttons:
 translate Y Back {Nazad}

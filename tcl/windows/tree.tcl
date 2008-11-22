@@ -68,9 +68,18 @@ proc ::tree::make { { baseNumber -1 } } {
     return
   }
   
-  toplevel .treeWin$baseNumber
-  set w .treeWin$baseNumber
-  setWinLocation $w
+      set w .treeWin$baseNumber
+      
+  if {$::docking::USE_DOCKING} {
+    set name "treeWin$baseNumber"
+    set f .fdock$name
+    frame $f  -container 1
+    toplevel .$name -use [ winfo id $f ]
+    docking::add_tab [new_frame $name] e
+  } else  {
+    toplevel .treeWin$baseNumber
+    setWinLocation $w
+  }
   
   # Set the tree window title now:
   wm title $w "Scid: [tr WindowsTree] $baseNumber [file tail [sc_base filename $baseNumber] ]"

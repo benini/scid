@@ -47,7 +47,19 @@ namespace eval pgn {
       set pgnWin 0
       return
     }
-    set w [toplevel .pgnWin]
+    
+    set w .pgnWin
+    
+    if {$::docking::USE_DOCKING} {
+      set name "pgnWin"
+      set f .fdock$name
+      frame $f  -container 1
+      toplevel .$name -use [ winfo id $f ]
+      docking::add_tab [new_frame $name] e
+    } else  {
+      toplevel $w
+    }
+    
     setWinLocation $w
     setWinSize $w
     bind $w <Configure> "recordWinSize $w"

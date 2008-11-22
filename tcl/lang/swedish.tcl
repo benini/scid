@@ -355,16 +355,16 @@ menuText W GInfoMark "(Av-)Markera detta parti" 5
 menuText W GInfoInformant "Konfigurera Informant-parametrar" 0
 
 # Main window buttons:
-helpMsg W .button.start {Gå till början av partiet  (kortkommando: Home)}
-helpMsg W .button.end {Gå till slutet av partiet  (kortkommando: End)}
-helpMsg W .button.back {Backa ett drag (kortkommando: Vänsterpil)}
-helpMsg W .button.forward {Gå fram ett drag  (kortkommando: Högerpil)}
-helpMsg W .button.intoVar {Gå in i variant (kortkommando: v)}
-helpMsg W .button.exitVar {Gå ur variant  (kortkommando: z)}
-helpMsg W .button.flip {Rotera brädet  (kortkommando: .)}
-helpMsg W .button.coords {Visa (inte) koordinater  (kortkommando: 0)}
-helpMsg W .button.stm {Visa (inte) vilken sida som är vid draget}
-helpMsg W .button.autoplay {Autospel  (kortkommando: Ctrl+Z)}
+helpMsg W .main.button.start {Gå till början av partiet  (kortkommando: Home)}
+helpMsg W .main.button.end {Gå till slutet av partiet  (kortkommando: End)}
+helpMsg W .main.button.back {Backa ett drag (kortkommando: Vänsterpil)}
+helpMsg W .main.button.forward {Gå fram ett drag  (kortkommando: Högerpil)}
+helpMsg W .main.button.intoVar {Gå in i variant (kortkommando: v)}
+helpMsg W .main.button.exitVar {Gå ur variant  (kortkommando: z)}
+helpMsg W .main.button.flip {Rotera brädet  (kortkommando: .)}
+helpMsg W .main.button.coords {Visa (inte) koordinater  (kortkommando: 0)}
+helpMsg W .main.button.stm {Visa (inte) vilken sida som är vid draget}
+helpMsg W .main.button.autoplay {Autospel  (kortkommando: Ctrl+Z)}
 
 # General buttons:
 translate W Back {Tillbaka}

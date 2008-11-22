@@ -74,7 +74,7 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   frame $w.b.gap -width 3
   button $w.b.autoplay -image autoplay_off -command "::gbrowser::autoplay $n"
   frame $w.b.gap2 -width 3
-  set ::gbrowser::flip($n) [::board::isFlipped .board]
+  set ::gbrowser::flip($n) [::board::isFlipped .main.board]
   button $w.b.flip -image tb_flip -command "::gbrowser::flip $n"
 
   pack $w.b.start $w.b.back $w.b.forward $w.b.end $w.b.gap \

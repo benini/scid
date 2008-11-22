@@ -5,7 +5,7 @@
 
 #include <cerrno>
 #include <cstdio>
-//#include <cstdlib>
+#include <cstdlib>
 #include <cstring>
 
 #include "board.h"
@@ -116,14 +116,17 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     int move_count = 0;
     int prob_count = 0;
     int prob_max = 0;
+    double coef=1.0;
     int probs_written;
     int write_count;
     int i;
     FILE *f;
-//	printf("Updating book: moves=%s; probs=%s; tempfile=%s; key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
+    char *probs_copy, *moves_copy;
+    //	printf("Updating book: moves=%s; probs=%s; tempfile=%s; key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
         /* parse probs and fill prob array */
     char *s;
-    s = strtok( probs, " " );
+    probs_copy=strdup(probs);  // strtok modifies its first argument
+    s = strtok( probs_copy, " " );
     if(s!=NULL){
         sscanf( s, "%d", &(prob[prob_count]) );
         prob_count++;
@@ -135,17 +138,20 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
             prob_count++;
         }
     }
+    free(probs_copy);
         // max
-     
     maximum = 0xfff0;
     
     for (i=0; i< prob_count; i++)
         if(prob[i]>prob_max) prob_max=prob[i];
-    double coef = double(maximum)/double(prob_max);
+    if(prob_max!=0){   // avoid division by zero
+      coef = double(maximum)/double(prob_max);
+    }
     
         /* parse moves and fill move array */
+    moves_copy=strdup(moves);  // strtok modifies its first argument
     move_count=0;
-    s = strtok( moves, " " );
+    s = strtok( moves_copy, " " );
     if(s!=NULL){
         if(move_count>=MAX_MOVES){
             return -1; // fail
@@ -157,6 +163,7 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
             move_count++;
         }
     }
+    free(moves_copy);   
     if (prob_count!=move_count){
         return -1; //fail
     }
@@ -170,12 +177,14 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     write_count=0;
     for(pos=0; pos<BookSize[BookNumber];pos++){
         read_entry(entry,pos,BookNumber);
-        if (entry->key != scid_board[BookNumber]->key){
+        if ((entry->key < scid_board[BookNumber]->key)||
+	    ((entry->key >scid_board[BookNumber]->key) && probs_written)
+	    ){
             write_count++;
             write_entry_file(f,entry);
-        }else if(!probs_written){
+        }else if(!probs_written) {
             for(i=0;i<move_count;i++){
-                entry1->key=entry->key;
+                entry1->key=scid_board[BookNumber]->key;
                 entry1->move=move[i];
                 if (prob[i] != 0) {
                     entry1->count = int( double(prob[i]) * coef );
@@ -187,10 +196,31 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
                 write_count++;
                 write_entry_file(f,entry1);
             }
+            if(entry->key> scid_board[BookNumber]->key){
+                write_count++;
+                write_entry_file(f,entry);
+            }
             probs_written=1;
         }
     }
+    if(!probs_written) { // not nice...
+      for(i=0;i<move_count;i++){
+	entry1->key=scid_board[BookNumber]->key;
+	entry1->move=move[i];
+	if (prob[i] != 0) {
+	  entry1->count = int( double(prob[i]) * coef );
+	} else {
+	  entry1->count = 1;
+	}
+	entry1->n=0;
+	entry1->sum=0;
+	write_count++;
+	write_entry_file(f,entry1);
+      }
+      probs_written=1;
+    }
     fclose(f);
+    ASSERT(probs_written);
     if(!(f=fopen(tempfile,"rb"))){
         return -1;  //fail
     }
@@ -199,6 +229,8 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
         write_entry(entry,pos,BookNumber);
     }
     fclose(f);
+    BookSize[BookNumber]=write_count;
+    fflush(BookFile[BookNumber]); // commit changes to disk
     return 0; // success
 }
 
