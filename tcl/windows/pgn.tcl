@@ -203,8 +203,8 @@ namespace eval pgn {
     bindMouseWheel $w $w.text
     
     # Add variation navigation bindings:
-    bind $w <KeyPress-v> [bind . <KeyPress-v>]
-    bind $w <KeyPress-z> [bind . <KeyPress-z>]
+    bind $w <KeyPress-v> [bind $::dot_w <KeyPress-v>]
+    bind $w <KeyPress-z> [bind $::dot_w <KeyPress-z>]
     
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors

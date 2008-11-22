@@ -204,7 +204,7 @@ proc ::commenteditor::Open {} {
   # Central subframe: a small board
   set board [::board::new $insertBoard.board 20]
   ::board::showMarks $board 1
-  set ::board::_mark($board) $::board::_mark(.board)
+  set ::board::_mark($board) $::board::_mark(.main.board)
   ::board::update $board
   pack $board -side top
   # TODO?: move this for loop into a new proc (e.g. 'BindSquares')

@@ -20,7 +20,7 @@ set moveEntry(List) {}
 # matching the move entry bindings, so Alt+letter ONLY invokes
 # the menus:
 foreach key {a b c d e f g h i j k l m n o p q r s t u v w x y z} {
-  bind . <Alt-$key> {
+  bind $dot_w <Alt-$key> {
     # nothing
   }
 }
@@ -221,7 +221,7 @@ button .main.button.flip -image tb_flip -takefocus 0 \
     -command "::board::flip .main.board"
 
 button .main.button.coords -image tb_coords -takefocus 0 -command toggleCoords
-bind . <KeyPress-0> toggleCoords
+bind $dot_w <KeyPress-0> toggleCoords
 
 button .main.button.stm -image tb_stm -takefocus 0 -command toggleSTM
 
@@ -433,7 +433,7 @@ foreach flag $maintFlaglist {
 }
 
 bind .main.gameInfo <ButtonPress-3> "tk_popup .main.gameInfo.menu %X %Y"
-bind . <F9> "tk_popup .main.gameInfo.menu %X %Y"
+bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
 
 
 # setBoard:
@@ -611,8 +611,8 @@ proc showVars {} {
 ################################################################################
 # V and Z key bindings: move into/out of a variation.
 #
-bind . <KeyPress-v> { showVars }
-bind . <KeyPress-z> {.main.button.exitVar invoke}
+bind $dot_w <KeyPress-v> { showVars }
+bind $dot_w <KeyPress-z> {.main.button.exitVar invoke}
 
 # editMyPlayerNames
 #   Present the dialog box for editing the list of player
@@ -744,11 +744,11 @@ proc updateBoard {args} {
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
     .menu.edit entryconfig [tr EditAdd] -state disabled
     .main.button.addVar configure -state disabled
-    bind . <Control-a> {}
+    bind $::dot_w <Control-a> {}
   } else {
     .menu.edit entryconfig [tr EditAdd] -state normal
     .main.button.addVar configure -state normal
-    bind . <Control-a> {sc_var create; updateBoard -pgn}
+    bind $::dot_w <Control-a> {sc_var create; updateBoard -pgn}
   }
   if {[sc_var count] == 0} {
     .main.button.intoVar configure -state disabled
@@ -1490,14 +1490,14 @@ proc cancelAutoplay {} {
 #
 ################################################################################
 
-bind . <Return> {
+bind $dot_w <Return> {
   if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
     .analysisWin1.b1.move invoke
   }
 }
 
-bind . <Control-z> {toggleAutoplay; break}
-bind . <Escape> cancelAutoplay
+bind $dot_w <Control-z> {toggleAutoplay; break}
+bind $dot_w <Escape> cancelAutoplay
 
 set trialMode 0
 

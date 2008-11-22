@@ -440,7 +440,7 @@ button .main.tb.close -image tb_close -command ::file::Close
 button .main.tb.finder -image tb_finder -command ::file::finder::Open
 menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu
 menu .main.tb.bkm.menu
-bind . <Control-b> ::bookmarks::PostMenu
+bind $dot_w <Control-b> ::bookmarks::PostMenu
 bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
 
 

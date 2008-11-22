@@ -656,15 +656,17 @@ namespace eval docking {
     $mctxt add command -label Bottom -command "::docking::ctx_cmd $w s"
     $mctxt add command -label Left -command "::docking::ctx_cmd $w w"
     $mctxt add command -label Right -command "::docking::ctx_cmd $w e"
+    $mctxt add separator
     # Main board can not be closed or undocked
     if { [$w select] != ".fdockmain" } {
-      $mctxt add separator
       $mctxt add command -label Undock -command "::docking::undock $w"
       $mctxt add command -label Close -command " ::docking::close $w "
+    } else  {
+      $mctxt add checkbutton -label showGameInfo -variable ::showGameInfo -command ::toggleGameInfo
     }
     $mctxt post [winfo pointerx .] [winfo pointery .]
   }
-  
+
   ################################################################################
   proc close {w} {
     set tabid [$w select]

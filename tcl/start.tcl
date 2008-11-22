@@ -35,8 +35,8 @@ set scidVersionDate "Devel 2008"
 # Set to 1 to have access to all code
 set NOT_FOR_RELEASE 1
 
-package require Tcl 8.4
-package require Tk  8.4
+package require Tcl 8.5
+package require Tk  8.5
 
 # Determine operating system platform: unix or windows
 #
@@ -658,6 +658,19 @@ set autoIconify 1
 # windows can be moves among tabs and undocked (right-clicking on tab)
 set windowsDock 0
 
+# showGameInfo:
+# The game info panel below the main board
+set showGameInfo 1
+
+################################################################################
+proc toggleGameInfo {} {
+  if {$::showGameInfo} {
+    grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
+  } else  {
+    grid forget .main.gameInfoFrame
+  }
+}
+
 # Email configuration:
 set email(logfile) [file join $scidLogDir "scidmail.log"]
 set email(oldlogfile) [file join $scidUserDir "scidmail.log"]
@@ -1081,6 +1094,13 @@ if {[catch {source $optionsFile} ]} {
 }
 
 set ::docking::USE_DOCKING $windowsDock
+
+# depending on the docking mode, change the definition of window "." (ie main window)
+if {$::docking::USE_DOCKING} {
+  set dot_w "."
+} else  {
+  set dot_w ".main"
+}
 
 # Now, if the options file was written by Scid 3.5 or older, it has a lot of
 # yucky variable names in the global namespace. So convert them to the new

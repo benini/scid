@@ -1321,78 +1321,77 @@ for {set i 0} { $i < 64 } { incr i } {
 }
 
 foreach i {o q r n k O Q R B N K} {
-  bind . <$i> "moveEntry_Char [string toupper $i]"
+  bind $dot_w <$i> "moveEntry_Char [string toupper $i]"
 }
 foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
-  bind . <Key-$i> "moveEntry_Char $i"
+  bind $dot_w <Key-$i> "moveEntry_Char $i"
 }
 
-bind . <Control-BackSpace> backSquare
-bind . <Control-Delete> backSquare
-bind . <BackSpace> moveEntry_Backspace
-bind . <Delete> moveEntry_Backspace
-bind . <space> moveEntry_Complete
+bind $dot_w <Control-BackSpace> backSquare
+bind $dot_w <Control-Delete> backSquare
+bind $dot_w <BackSpace> moveEntry_Backspace
+bind $dot_w <Delete> moveEntry_Backspace
+bind $dot_w <space> moveEntry_Complete
 
 
 ###  Other Key bindings:
 
 # Bindings for quick move annotation entry in the main window:
 
-bind . <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
-bind . <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
-bind . <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
-bind . <question><Return> "sc_pos addNag ?; updateBoard -pgn"
-bind . <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
-bind . <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
+bind $dot_w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
+bind $dot_w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
+bind $dot_w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
+bind $dot_w <question><Return> "sc_pos addNag ?; updateBoard -pgn"
+bind $dot_w <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
+bind $dot_w <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
 
-bind . <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
-bind . <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
-bind . <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
-bind . <equal><Return> "sc_pos addNag =; updateBoard -pgn"
-bind . <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
-bind . <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
-bind . <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
-bind . <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
-bind . <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
+bind $dot_w <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
+bind $dot_w <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
+bind $dot_w <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
+bind $dot_w <equal><Return> "sc_pos addNag =; updateBoard -pgn"
+bind $dot_w <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
+bind $dot_w <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
+bind $dot_w <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
+bind $dot_w <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
+bind $dot_w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
 
 # Null move entry:
-bind . <minus><minus> "addMove null null"
+bind $dot_w <minus><minus> "addMove null null"
 
 # Arrow keys, Home and End:
-bind . <Home> ::move::Start
-bind . <Left> ::move::Back
-bind . <Up> {
+bind $dot_w <Home> ::move::Start
+bind $dot_w <Left> ::move::Back
+bind $dot_w <Up> {
   if {[sc_pos isAt vstart]} {
     .main.button.exitVar invoke
   } else  {
     ::move::Back 10
   }
 }
-bind . <Down> {::move::Forward 10}
-bind . <Right> ::move::Forward
-bind . <End> ::move::End
+bind $dot_w <Down> {::move::Forward 10}
+bind $dot_w <Right> ::move::Forward
+bind $dot_w <End> ::move::End
 
-bind . <period> {if {!$tree(refresh)} {toggleRotateBoard}}
+bind $dot_w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
 
 # MouseWheel in main window:
-bind . <MouseWheel> {
+bind $dot_w <MouseWheel> {
   if {[expr -%D] < 0} { ::move::Back }
   if {[expr -%D] > 0} { ::move::Forward }
 }
-bind . <Shift-MouseWheel> {
+bind $dot_w <Shift-MouseWheel> {
   if {[expr -%D] < 0} { ::move::Back 10 }
   if {[expr -%D] > 0} { ::move::Forward 10}
 }
 if {! $windowsOS} {
-  bind . <Button-4> ::move::Back
-  bind . <Button-5> ::move::Forward
-  bind . <Shift-Button-4> {::move::Back 10}
-  bind . <Shift-Button-5> {::move::Forward 10}
+  bind $dot_w <Button-4> ::move::Back
+  bind $dot_w <Button-5> ::move::Forward
+  bind $dot_w <Shift-Button-4> {::move::Back 10}
+  bind $dot_w <Shift-Button-5> {::move::Forward 10}
 }
 
 # Apply standard shortcuts to main window
-standardShortcuts .
-standardShortcuts .main
+standardShortcuts $dot_w
 
 ############################################################
 ### Packing the main window:
@@ -1720,9 +1719,10 @@ while {$argc > 0} {
 ::splash::add "\nStartup completed."
 ::splash::add "Scid has 44 online help pages; just press F1 for help!\n"
 ::splash::add "Also look at the online tutorial http://scid.sourceforge.net/tutorial/ will always have the very latest "
-setWinLocation .
-wm deiconify .
-wm protocol . WM_DELETE_WINDOW { ::file::Exit }
+setWinLocation $dot_w
+wm deiconify $dot_w
+
+wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
 
 if {$startup(switcher)} { ::windows::switcher::Open }
 if {$startup(pgn)} { ::pgn::OpenClose }
@@ -1738,7 +1738,7 @@ updateStatusBar
 updateTitle
 updateLocale
 update
-bind . <Configure> "recordWinSize ."
+bind $dot_w <Configure> "recordWinSize ."
 
 # Bindings to map/unmap all windows when main window is mapped:
 bind .main.statusbar <Map> { showHideAllWindows deiconify}
@@ -1806,7 +1806,7 @@ proc raiseAllWindows {} {
 }
 
 # Bind double-click in main Scid window to raise all Scid windows:
-bind . <Double-Button-1> raiseAllWindows
+bind $dot_w <Double-Button-1> raiseAllWindows
 
 # Hack to extract gif images out of Scid:
 #
@@ -1828,7 +1828,7 @@ if {0} {
     }
   }
   
-  bind . <Control-Shift-F7> {puts "dumpGifImages" ; dumpGifImages "/tmp/ScidImages"}
+  bind $dot_w <Control-Shift-F7> {puts "dumpGifImages" ; dumpGifImages "/tmp/ScidImages"}
 }
 
 if {$startup(tip)} { ::tip::show }
@@ -1848,7 +1848,7 @@ if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
   }
 }
 
-if { ! $::docking::USE_DOCKING} {
+if { !$::docking::USE_DOCKING } {
   wm withdraw .
   bind .main <Destroy> { destroy . }
 }
