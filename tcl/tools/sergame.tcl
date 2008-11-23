@@ -310,7 +310,7 @@ namespace eval sergame {
       # create a new game if a DB is opened
       sc_game new
       sc_game tags set -event "Serious game"
-      if { [::board::isFlipped .board] } {
+      if { [::board::isFlipped .main.board] } {
         sc_game tags set -white "$::sergame::engineName"
       } else  {
         sc_game tags set -black "$::sergame::engineName"
@@ -657,7 +657,7 @@ namespace eval sergame {
   ################################################################################
   proc getEngineColor {} {
     # Engine always plays for the upper side
-    if { [::board::isFlipped .board] == 0 } {
+    if { [::board::isFlipped .main.board] == 0 } {
       return "black"
     } else  {
       return "white"

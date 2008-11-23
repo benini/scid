@@ -1738,7 +1738,7 @@ updateStatusBar
 updateTitle
 updateLocale
 update
-bind $dot_w <Configure> "recordWinSize ."
+bind $dot_w <Configure> "recordWinSize $dot_w"
 
 # Bindings to map/unmap all windows when main window is mapped:
 bind .main.statusbar <Map> { showHideAllWindows deiconify}
@@ -1858,6 +1858,9 @@ toggleGameInfo
 
 if { $::docking::USE_DOCKING } {
   setTitle .main [ ::tr "Board" ]
+  # restore geometry
+  setWinLocation $dot_w
+  setWinSize $dot_w
 }
 
 ### End of file: end.tcl

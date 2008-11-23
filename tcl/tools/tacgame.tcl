@@ -285,7 +285,7 @@ namespace eval tacgame {
     if {$::tacgame::openingType != "current"} {
       sc_game new
       sc_game tags set -event "Tactical game"
-      if { [::board::isFlipped .board] } {
+      if { [::board::isFlipped .main.board] } {
         sc_game tags set -white "Phalanx - $level ELO"
       } else  {
         sc_game tags set -black "Phalanx - $level ELO"
@@ -907,7 +907,7 @@ namespace eval tacgame {
   # ======================================================================
   proc getPhalanxColor {} {
     # Phalanx always plays for the upper side
-    if { [::board::isFlipped .board] == 0 } {
+    if { [::board::isFlipped .main.board] == 0 } {
       return "black"
     } else  {
       return "white"

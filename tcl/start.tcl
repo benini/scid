@@ -671,7 +671,9 @@ proc setTitle { w title } {
   
   if {$::docking::USE_DOCKING} {
     set f .fdock[ string range $w 1 end ]
-    set nb [ ::docking::find_tbn $f ]
+    if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
+      set nb ""
+    }
     if { $nb == "" } {
       wm title $w $title
     } else  {
