@@ -1522,35 +1522,23 @@ translate F CCNextBtn {Aller à la partie suivante}
 translate F CCSendBtn {Envoyer coup}
 translate F CCEmptyBtn {Vider les boîtes d'envoi et de réception}
 translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide appuyer sur F1!}
-# ====== TODO To be translated ======
+
 translate F ExtHWConfigConnection {Configure external hardware}
-# ====== TODO To be translated ======
 translate F ExtHWPort {Port}
-# ====== TODO To be translated ======
-translate F ExtHWEngineCmd {Engine command}
-# ====== TODO To be translated ======
-translate F ExtHWEngineParam {Engine parameter}
-# ====== TODO To be translated ======
-translate F ExtHWShowButton {Show button}
-# ====== TODO To be translated ======
-translate F ExtHWHardware {Hardware}
-# ====== TODO To be translated ======
+translate F ExtHWEngineCmd {Commande moteur}
+translate F ExtHWEngineParam {Paramètre moteur}
+translate F ExtHWShowButton {Montrer bouton}
+translate F ExtHWHardware {Matériel}
 translate F ExtHWNovag {Novag Citrine}
-# ====== TODO To be translated ======
-translate F ExtHWInputEngine {Input Engine}
-# ====== TODO To be translated ======
-translate F ExtHWNoBoard {No board}
-# ====== TODO To be translated ======
-translate F IEConsole {Input Engine Console}
-# ====== TODO To be translated ======
-translate F IESending {Moves sent for}
-# ====== TODO To be translated ======
-translate F IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate F IERotate  {Rotate}
-# ====== TODO To be translated ======
-translate F IEUnableToStart {Unable to start Input Engine:}
+translate F ExtHWInputEngine {Moteur en entrée}
+translate F ExtHWNoBoard {Pas d'échiquier}
+translate F IEConsole {Console du moteur en entrée}
+translate F IESending {Coups envoyés pour}
+translate F IESynchronise {Synchronizer}
+translate F IERotate  {Tourner}
+translate F IEUnableToStart {Impossible de démarrer le moteur en entrée:}
 translate F DoneWithPosition {Position terminée}
+translate F Board {Echiquier}
 
 ##########
 #
@@ -1758,6 +1746,7 @@ translate F DoneWithPosition {Position terminée}
 }
 
 # end of francais.tcl
+
 
 
 

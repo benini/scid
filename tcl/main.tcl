@@ -155,7 +155,7 @@ proc updateTitle {} {
   append title "$fname ($::tr(game) "
   append title "[::utils::thousands [sc_game number]] / "
   append title "[::utils::thousands [sc_base numGames]])"
-  wm title .main $title
+  ::setTitle .main $title
 }
 
 # updateStatusBar:
@@ -535,7 +535,7 @@ proc showVars {} {
   
   # Present a menu of the possible variations
   toplevel $w
-  wm title $w $::tr(Variations)
+  ::setTitle $w $::tr(Variations)
   setWinLocation $w
   set h [expr $numVars + 1]
   if { $h> 19} { set h 19 }
@@ -624,7 +624,7 @@ proc editMyPlayerNames {} {
   set w .editMyPlayerNames
   if {[winfo exists $w]} { return }
   toplevel $w
-  wm title $w "Scid: [tr OptionsBoardNames]"
+  ::setTitle $w "Scid: [tr OptionsBoardNames]"
   pack [frame $w.b] -side bottom -fill x
   
   autoscrollframe $w.desc text $w.desc.text \
@@ -980,7 +980,7 @@ proc getPromoPiece {} {
   set ::result 2
   toplevel $w
   wm transient $w .
-  wm title $w "Scid"
+  ::setTitle $w "Scid"
   wm resizable $w 0 0
   set col "w"
   if { [sc_pos side] == "black" } { set col "b" }
@@ -1331,7 +1331,7 @@ proc setAutoplayDelay {} {
   set w .apdialog
   if { [winfo exists $w] } { focus $w ; return }
   toplevel $w
-  wm title $w "Scid"
+  ::setTitle $w "Scid"
   wm resizable $w 0 0
   label $w.label -text $::tr(AnnotateTime:)
   pack $w.label -side top -pady 5 -padx 5

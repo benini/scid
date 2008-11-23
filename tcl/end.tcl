@@ -1853,4 +1853,11 @@ if { !$::docking::USE_DOCKING } {
   bind .main <Destroy> { destroy . }
 }
 
+# update Game Info panel visibility after loading options
+toggleGameInfo
+
+if { $::docking::USE_DOCKING } {
+  setTitle .main [ ::tr "Board" ]
+}
+
 ### End of file: end.tcl

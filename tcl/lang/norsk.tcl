@@ -1926,12 +1926,15 @@ translate O IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate O DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate O Board {Board}
+# ====== TODO To be translated ======
 }
 
 # norsk.tcl
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

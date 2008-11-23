@@ -1567,8 +1567,11 @@ translate S IERotate  {Rotate}
 # ====== TODO To be translated ======
 translate S IEUnableToStart {Unable to start Input Engine:}
 translate S DoneWithPosition {Hecho con la posición}
+# ====== TODO To be translated ======
+translate S Board {Board}
 }
 # end of spanish.tcl
+
 
 
 

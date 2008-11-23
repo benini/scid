@@ -1959,8 +1959,11 @@ translate R IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate R Board {Board}
+# ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

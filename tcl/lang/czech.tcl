@@ -1923,6 +1923,8 @@ translate C IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate C DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate C Board {Board}
+# ====== TODO To be translated ======
 }
 
 
@@ -5563,6 +5565,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

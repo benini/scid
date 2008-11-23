@@ -1925,6 +1925,8 @@ translate H IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate H DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate H Board {Board}
+# ====== TODO To be translated ======
 }
 
 # Tips of the day in Hungarian
@@ -2158,6 +2160,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -409,9 +409,6 @@ namespace eval ::scrolledframe {
 # http://wiki.tcl.tk/21846
 # which is published under BSD license
 
-package require Tk
-package require Ttk
-
 namespace eval docking {
   
   # Set to 1 to use docking windows
@@ -666,7 +663,7 @@ namespace eval docking {
     }
     $mctxt post [winfo pointerx .] [winfo pointery .]
   }
-
+  
   ################################################################################
   proc close {w} {
     set tabid [$w select]
@@ -695,7 +692,6 @@ namespace eval docking {
     wm deiconify $f
     
     set ::docking::notebook_name($f) [list $srctab $o]
-    puts "notebook_name $f -> [list $srctab $o]"
   }
   
   ################################################################################
@@ -749,6 +745,9 @@ namespace eval docking {
     }
     
     set title [ list [ wm title $::docking::_toplevel($path)] ]
+    # if {$path == ".fdockmain"} {
+    # set title $::tr(Board)
+    # }
     eval [list $dsttab add $path] $args -text "$title"
   }
   
@@ -788,7 +787,6 @@ namespace eval docking {
     }
     $tb add $path
   }
-  
 }
 ################################################################################
 # Name is the toplevel's name without leading "."
@@ -809,12 +807,4 @@ if {$::docking::USE_DOCKING} {
   set docking::tbs(.nb) .pw
 }
 
-if {$::docking::USE_DOCKING} {
-  set name "main"
-  set f .fdock$name
-  frame $f  -container 1
-  toplevel .$name -use [ winfo id $f ]
-  docking::add_tab [new_frame $name] e
-} else  {
-  toplevel .main
-}
+createToplevel .main

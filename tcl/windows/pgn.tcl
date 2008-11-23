@@ -50,15 +50,7 @@ namespace eval pgn {
     
     set w .pgnWin
     
-    if {$::docking::USE_DOCKING} {
-      set name "pgnWin"
-      set f .fdock$name
-      frame $f  -container 1
-      toplevel .$name -use [ winfo id $f ]
-      docking::add_tab [new_frame $name] e
-    } else  {
-      toplevel $w
-    }
+    ::createToplevel $w
     
     setWinLocation $w
     setWinSize $w
@@ -378,7 +370,7 @@ namespace eval pgn {
     if {$pgnNeedsUpdate} {
       busyCursor .
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
-      wm title .pgnWin "Scid: $windowTitle"
+      ::setTitle .pgnWin "$windowTitle"
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
       if {$::pgn::showColor} {

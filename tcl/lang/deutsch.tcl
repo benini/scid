@@ -1588,6 +1588,8 @@ translate D IESynchronise {Synchronisieren}
 translate D IERotate  {Brett drehen}
 translate D IEUnableToStart {Input Engine konnte nicht gestartet werden:}
 translate D DoneWithPosition {Positionsbearbeitung beendet}
+# ====== TODO To be translated ======
+translate D Board {Board}
 }
 
 ##########
@@ -7138,6 +7140,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

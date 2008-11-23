@@ -1594,5 +1594,7 @@ translate E IEUnableToStart {Unable to start Input Engine:}
 # Calculation of Variations
 translate E DoneWithPosition {Done with position}
 
+translate E Board {Board}
+
 }
 # end of english.tcl

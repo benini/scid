@@ -37,6 +37,7 @@ set NOT_FOR_RELEASE 1
 
 package require Tcl 8.5
 package require Tk  8.5
+package require Ttk
 
 # Determine operating system platform: unix or windows
 #
@@ -663,6 +664,49 @@ set windowsDock 0
 set showGameInfo 1
 
 ################################################################################
+# if undocked window : sets the title of the toplevel window
+# if docked : sets the name of the tab
+# w : name of the toplevel window
+proc setTitle { w title } {
+  
+  if {$::docking::USE_DOCKING} {
+    set f .fdock[ string range $w 1 end ]
+    set nb [ ::docking::find_tbn $f ]
+    if { $nb == "" } {
+      wm title $w $title
+    } else  {
+      # if target is main board, update the global window instead
+      if { $w == ".main" && $title != [ ::tr "Board" ] } {
+        wm title . $title
+      } else  {
+        # in docked mode trim down title
+        if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
+          set title [string range $title 6 end]
+        }
+        $nb tab $f -text $title
+      }
+    }
+  } else  {
+    wm title $w $title
+  }
+  
+}
+################################################################################
+# Creates a toplevel window depending of the docking option
+################################################################################
+proc createToplevel { w } {
+  set name [string range $w 1 end]
+  if {$::docking::USE_DOCKING} {
+    set f .fdock$name
+    frame $f  -container 1
+    toplevel .$name -use [ winfo id $f ]
+    docking::add_tab [new_frame $name] e
+  } else  {
+    toplevel $w
+  }
+}
+################################################################################
+# sets visibility of gameInfo panel at the bottom of main board
 proc toggleGameInfo {} {
   if {$::showGameInfo} {
     grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
@@ -670,6 +714,7 @@ proc toggleGameInfo {} {
     grid forget .main.gameInfoFrame
   }
 }
+################################################################################
 
 # Email configuration:
 set email(logfile) [file join $scidLogDir "scidmail.log"]

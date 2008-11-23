@@ -1930,8 +1930,11 @@ translate Y IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate Y Board {Board}
+# ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

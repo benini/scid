@@ -1924,8 +1924,11 @@ translate N IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate N Board {Board}
+# ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

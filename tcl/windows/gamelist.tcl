@@ -75,15 +75,7 @@ proc ::windows::gamelist::Open {} {
   }
   set w .glistWin
   
-  if {$::docking::USE_DOCKING} {
-    set name "glistWin"
-    set f .fdock$name
-    frame $f  -container 1
-    toplevel .$name -use [ winfo id $f ]
-    docking::add_tab [new_frame $name] e
-  } else  {
-    toplevel $w
-  }
+  ::createToplevel $w
   
   # Window is only directly resizable vertically:
   wm resizable $w false true

@@ -94,7 +94,6 @@ bind Button <Any-Leave> "+statusBarRestore %W"
 bind Label <Any-Enter> "+statusBarHelp %W"
 bind Label <Any-Leave> "+statusBarRestore %W"
 
-
 ############################################################
 ### Main window menus:
 
@@ -794,7 +793,7 @@ proc setTableBaseDir {} {
   
   set w .tbDialog
   toplevel $w
-  wm title $w Scid
+  ::setTitle $w Scid
   label $w.title -text "Select up to 4 table base directories:"
   pack $w.title -side top
   foreach i {1 2 3 4} {
@@ -1664,7 +1663,7 @@ proc configInformant {} {
   }
   
   toplevel $w
-  wm title $w $::tr(ConfigureInformant)
+  ::setTitle $w $::tr(ConfigureInformant)
   setWinLocation $w
   frame $w.spinF
   set idx 0

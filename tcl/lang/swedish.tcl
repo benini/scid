@@ -1933,6 +1933,8 @@ translate W IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate W DoneWithPosition {Klar med position}
 # ====== TODO To be translated ======
+translate W Board {Board}
+# ====== TODO To be translated ======
 }
 
 ############################################################
@@ -6949,6 +6951,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

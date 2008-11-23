@@ -78,8 +78,8 @@ namespace eval book {
     
     set ::book::isOpen 1
     
-    toplevel $w
-    wm title $w $::tr(Book)
+    ::createToplevel $w
+    ::setTitle $w $::tr(Book)
     wm resizable $w 0 1
     
     setWinLocation $w
@@ -196,8 +196,8 @@ namespace eval book {
       return
     }
     
-    toplevel $w
-    wm title $w $::tr(Book)
+    ::createToplevel $w
+    ::setTitle $w $::tr(Book)
     # wm resizable $w 0 0
     
     bind $w <F1> { helpWindow BookTuningWindow }

@@ -170,13 +170,14 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     if(prob_count==0){
         return 0; // nothing to do
     }
-    if(!(f=fopen(tempfile,"wb"))){
+    if(!(f=fopen(tempfile,"wb+"))){
         return -1;  //fail
     }
     probs_written=0;
     write_count=0;
+    fseek(BookFile[BookNumber],0,SEEK_SET);
     for(pos=0; pos<BookSize[BookNumber];pos++){
-        read_entry(entry,pos,BookNumber);
+        read_entry_file(BookFile[BookNumber],entry);
         if ((entry->key < scid_board[BookNumber]->key)||
 	    ((entry->key >scid_board[BookNumber]->key) && probs_written)
 	    ){
@@ -219,18 +220,16 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
       }
       probs_written=1;
     }
-    fclose(f);
     ASSERT(probs_written);
-    if(!(f=fopen(tempfile,"rb"))){
-        return -1;  //fail
-    }
+    fseek(BookFile[BookNumber],0,SEEK_SET);
+    fseek(f,0,SEEK_SET);
     for(pos=0; pos<write_count ;pos++){
         read_entry_file(f,entry);
-        write_entry(entry,pos,BookNumber);
+        write_entry_file(BookFile[BookNumber],entry);
     }
     fclose(f);
     BookSize[BookNumber]=write_count;
-    fflush(BookFile[BookNumber]); // commit changes to disk
+    book_flush(BookNumber); // commit changes to disk
     return 0; // success
 }
 

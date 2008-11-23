@@ -336,7 +336,7 @@ proc ::enginelist::choose {} {
   global engines
   set w .enginelist
   toplevel $w
-  wm title $w "Scid: [tr ToolsAnalysis]"
+  ::setTitle $w "Scid: [tr ToolsAnalysis]"
   label $w.flabel -text $::tr(EngineList:) -font font_Bold
   pack $w.flabel -side top
   
@@ -481,7 +481,7 @@ proc ::enginelist::edit {index} {
   
   set w .engineEdit
   toplevel $w
-  wm title $w Scid
+  ::setTitle $w Scid
   
   set f [frame $w.f]
   pack $f -side top -fill x -expand yes
@@ -641,7 +641,7 @@ proc configAnnotation {} {
   
   set tempdelay [expr {$autoplayDelay / 1000.0}]
   toplevel $w
-  wm title $w "Scid"
+  ::setTitle $w "Scid"
   wm resizable $w 0 0
   label $w.label -text $::tr(AnnotateTime:)
   pack $w.label -side top -pady 5 -padx 5
@@ -1563,20 +1563,12 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   #
   # Set up the  analysis window:
   #
-  if {$::docking::USE_DOCKING} {
-    set name "analysisWin$n"
-    set f .fdock$name
-    frame $f  -container 1
-    toplevel .$name -use [ winfo id $f ]
-    docking::add_tab [new_frame $name] e
-  } else  {
-    toplevel $w
-  }
+  ::createToplevel $w
   
   if {$n == 1} {
-    wm title $w "Scid: Analysis: $analysisName"
+    ::setTitle $w "Analysis: $analysisName"
   } else {
-    wm title $w "Scid: Analysis $n: $analysisName"
+    ::setTitle $w "Analysis $n: $analysisName"
   }
   bind $w <F1> { helpWindow Analysis }
   setWinLocation $w
@@ -1920,9 +1912,9 @@ proc processAnalysisInput {{n 1}} {
       if { !$analysis(wbEngineDetected$n) } { detectWBEngine $n $line  }
       if { [regexp "myname=\"(\[^\"\]*)\"" $line dummy name]} {
         if {$n == 1} {
-          catch {wm title .analysisWin$n "Scid: Analysis: $name"}
+          catch {::setTitle .analysisWin$n "Analysis: $name"}
         } else {
-          catch {wm title .analysisWin$n "Scid: Analysis $n: $name"}
+          catch {::setTitle .analysisWin$n "Analysis $n: $name"}
         }
       }
     }
@@ -2647,7 +2639,7 @@ proc setAutomoveTime {{n 1}} {
   set w .apdialog
   toplevel $w
   #wm transient $w .analysisWin
-  wm title $w "Scid: Engine thinking time"
+  ::setTitle $w "Scid: Engine thinking time"
   wm resizable $w 0 0
   label $w.label -text "Set the engine thinking time per move in seconds:"
   pack $w.label -side top -pady 5 -padx 5

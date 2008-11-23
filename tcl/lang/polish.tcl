@@ -1939,6 +1939,8 @@ translate P IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate P DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate P Board {Board}
+# ====== TODO To be translated ======
 }
 
 ### Tips of the day in Polish:
@@ -2159,6 +2161,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -1613,6 +1613,8 @@ translate I IERotate  {Rotate}
 # ====== TODO To be translated ======
 translate I IEUnableToStart {Unable to start Input Engine:}
 translate I DoneWithPosition {Posizione conclusa}
+# ====== TODO To be translated ======
+translate I Board {Board}
 }
 
 ############################################################
@@ -1849,6 +1851,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

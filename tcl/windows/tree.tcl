@@ -68,21 +68,13 @@ proc ::tree::make { { baseNumber -1 } } {
     return
   }
   
-      set w .treeWin$baseNumber
-      
-  if {$::docking::USE_DOCKING} {
-    set name "treeWin$baseNumber"
-    set f .fdock$name
-    frame $f  -container 1
-    toplevel .$name -use [ winfo id $f ]
-    docking::add_tab [new_frame $name] e
-  } else  {
-    toplevel .treeWin$baseNumber
-    setWinLocation $w
-  }
+  set w .treeWin$baseNumber
+  
+  ::createToplevel .treeWin$baseNumber
+  setWinLocation $w
   
   # Set the tree window title now:
-  wm title $w "Scid: [tr WindowsTree] $baseNumber [file tail [sc_base filename $baseNumber] ]"
+  ::setTitle $w "Scid: [tr WindowsTree] $baseNumber [file tail [sc_base filename $baseNumber] ]"
   set ::treeWin$baseNumber 1
   set tree(training$baseNumber) 0
   set tree(autorefresh$baseNumber) 1
@@ -929,7 +921,7 @@ proc ::tree::best { baseNumber } {
   if {! [winfo exists .treeWin$baseNumber]} { return }
   if {! [winfo exists $w]} {
     toplevel $w
-    wm title $w "Scid: $::tr(TreeBestGames) $baseNumber: [file tail [sc_base filename $baseNumber]]"
+    ::setTitle $w "Scid: $::tr(TreeBestGames) $baseNumber: [file tail [sc_base filename $baseNumber]]"
     setWinLocation $w
     bind $w <Escape> "destroy $w"
     bind $w <F1> {helpWindow Tree Best}
@@ -1090,7 +1082,7 @@ proc ::tree::graph { baseNumber } {
         ::utils::graph::configure tree$baseNumber -width [expr {[winfo width .treeGraph$baseNumber.c] - 50}] ;\
         ::utils::graph::redraw tree$baseNumber "
     bind $w.c <Button-1> "::tree::graph $baseNumber"
-    wm title $w "Scid: Tree Graph $baseNumber: [file tail [sc_base filename $baseNumber]]"
+    ::setTitle $w "Scid: Tree Graph $baseNumber: [file tail [sc_base filename $baseNumber]]"
     # wm minsize $w 300 200
     standardShortcuts $w
     ::tree::configGraphMenus "" $baseNumber

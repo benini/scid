@@ -1935,9 +1935,12 @@ translate B IEUnableToStart {Unable to start Input Engine:}
 # ====== TODO To be translated ======
 translate B DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
+translate B Board {Board}
+# ====== TODO To be translated ======
 }
 
 # end of portbr.tcl
+
 
 
 
