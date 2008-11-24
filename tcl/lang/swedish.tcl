@@ -309,6 +309,8 @@ menuText W OptionsWindowsIconify "Minimera automatiskt" 5 \
 menuText W OptionsWindowsRaise "Autofokus" 0 \
   {Visa åter vissa fönster (t ex. resultaträknare) automatiskt när de döljs}
 menuText W OptionsSounds "Ljud..." 2 {Konfigurera ljud för att annonsera drag}
+# ====== TODO To be translated ======
+menuText W OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText W OptionsToolbar "Verktygsfält" 0 \
   {Visa/ dölj huvudfönstrets verktygsfält}
 menuText W OptionsECO "Ladda ECO fil..." 7 {Ladda ECO-klassificeringen vid start}
@@ -1934,6 +1936,10 @@ translate W IEUnableToStart {Unable to start Input Engine:}
 translate W DoneWithPosition {Klar med position}
 # ====== TODO To be translated ======
 translate W Board {Board}
+# ====== TODO To be translated ======
+translate W showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate W autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 
@@ -6951,6 +6957,9 @@ set tips(W) {
   }
 }
 #}
+
+
+
 
 
 

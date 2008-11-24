@@ -309,6 +309,8 @@ menuText O OptionsWindowsIconify "Auto-minimer" 5 \
 menuText O OptionsWindowsRaise "Autoheving" 0 \
   {Hever visse vinduer (fremdriftsvisere etc) når de er skjult}
 menuText O OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+# ====== TODO To be translated ======
+menuText O OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText O OptionsToolbar "Verktøylinje i hovedvindu" 0 \
   {Vis/skjul menylinjen i hovedvinduet}
 menuText O OptionsECO "Hent ECO-fil..." 0 {Henter filen med ECO-klassifiseringer}
@@ -1928,12 +1930,19 @@ translate O DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate O Board {Board}
 # ====== TODO To be translated ======
+translate O showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate O autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 
 # norsk.tcl
 
 # Sjekkliste:
 # - Snarveier
+
+
+
 
 
 

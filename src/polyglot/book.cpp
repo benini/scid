@@ -12,8 +12,11 @@
 #include "book.h"
 #include "move.h"
 #include "move_legal.h"
+#include "move_gen.h"
+#include "move_do.h"
 #include "san.h"
 #include "util.h"
+#include "list.h"
 
 // types
 
@@ -153,12 +156,12 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     move_count=0;
     s = strtok( moves_copy, " " );
     if(s!=NULL){
-        if(move_count>=MAX_MOVES){
-            return -1; // fail
-        }
         move[move_count]=move_from_san(s,scid_board[BookNumber]);
         move_count++;
         while ( (s = strtok(NULL, " ")) != NULL) {
+            if(move_count>=MAX_MOVES){
+                return -1; // fail
+            }
             move[move_count]=move_from_san(s,scid_board[BookNumber]);
             move_count++;
         }
@@ -278,6 +281,26 @@ int scid_book_open(const char file_name[], const int BookNumber) {
    if (BookSize[BookNumber] == 0) return -1;
    return 0; //success
 }
+
+// =========================================================
+// similar signature as gen_legal_moves
+int gen_book_moves(list_t * list, const board_t * board, const int BookNumber){
+    int first_pos, pos;
+    entry_t entry[1];
+    list_clear(list);
+    first_pos = find_pos(board->key, BookNumber);
+    for (pos = first_pos; pos < BookSize[BookNumber]; pos++) {
+        read_entry(entry,pos,BookNumber);
+        if (entry->key != board->key) break;
+        if (entry->count > 0 &&
+            entry->move != MoveNone &&
+            move_is_legal(entry->move,board)) {
+            list_add(list,entry->move);
+        }
+    }
+    return 0; 
+}
+
 // =================================================================
 int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
 
@@ -325,6 +348,38 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
 
 	return 0;
 }
+
+// =================================================================
+int scid_opp_book_disp(const board_t *board, char * s, const int BookNumber) {
+
+    
+   int move;
+   char move_string[256];
+   char tmp[256];
+   list_t book_moves[1], legal_moves[1];
+   board_t new_board[1];
+   int i;
+   s[0] = '\0';
+   gen_legal_moves(legal_moves,board);
+   gen_book_moves(book_moves,board,BookNumber);
+   for (i = 0; i < list_size(legal_moves); i++) {
+       move = list_move(legal_moves,i);
+       if(list_contain(book_moves,move)) continue;
+           // scratch_board
+       memcpy(new_board, board, sizeof(board_t));
+       move_do(new_board,move);
+       move_to_san(move,board,move_string,256);
+       if(is_in_book(new_board,BookNumber)){
+           move_to_san(move,board,move_string,256);
+           sprintf(tmp, " %s",move_string);
+           strcat(s, tmp);
+       }
+   }
+   return 0;
+}
+
+
+
 
 // =================================================================
 
@@ -390,7 +445,6 @@ bool is_in_book(const board_t * board, const int BookNumber) {
    entry_t entry[1];
 
    ASSERT(board!=NULL);
-
    for (pos = find_pos(board->key, BookNumber); pos < BookSize[BookNumber]; pos++) {
       read_entry(entry,pos,BookNumber);
       if (entry->key == board->key) return true;
@@ -546,7 +600,6 @@ static int find_pos(uint64 key, const int BookNumber) {
    entry_t entry[1];
 
    // binary search (finds the leftmost entry)
-
    left = 0;
    right = BookSize[BookNumber]-1;
 

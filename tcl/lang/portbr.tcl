@@ -310,6 +310,8 @@ menuText B OptionsWindowsIconify "Auto-iconizar" 5 \
 menuText B OptionsWindowsRaise "Manter no topo" 0 \
   {Mantem no topo certas janelas (ex. barras de progresso) sempre que sao obscurecidas por outras}
 menuText B OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+# ====== TODO To be translated ======
+menuText B OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText B OptionsToolbar "Barra de Ferramentas da Janela Principal" 12 \
   {Exibe/Oculta a barra de ferramentas da janela principal}
 menuText B OptionsECO "Carregar arquivo ECO..." 7 {Carrega o arquivo com a classificacao ECO}
@@ -1937,9 +1939,16 @@ translate B DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate B Board {Board}
 # ====== TODO To be translated ======
+translate B showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate B autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 
 # end of portbr.tcl
+
+
+
 
 
 

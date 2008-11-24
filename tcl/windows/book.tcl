@@ -107,7 +107,9 @@ namespace eval book {
     
     # text displaying book moves
     text $w.f.text -wrap word -state disabled -width 12
+    text $w.f.text1 -wrap word -state disabled -width 12
     pack $w.f.text -expand yes -fill both
+    pack $w.f.text1 -expand yes -fill both
     
     pack $w.f
     
@@ -142,6 +144,11 @@ namespace eval book {
         .bookWin.f.text tag delete $t
       }
     }
+    foreach t [.bookWin.f.text1 tag names] {
+      if { [string match "bookMove*" $t] } {
+        .bookWin.f.text1 tag delete $t
+      }
+    }
     set bookMoves [sc_book moves $::book::bookSlot]
     .bookWin.f.text configure -state normal
     .bookWin.f.text delete 1.0 end
@@ -154,6 +161,20 @@ namespace eval book {
       .bookWin.f.text tag bind bookMove$line <ButtonPress-1> "::book::makeBookMove [lindex $bookMoves $i]"
     }
     .bookWin.f.text configure -state disabled -height [expr [llength $bookMoves] / 2 ]
+    
+    
+    set oppBookMoves [sc_book oppmoves $::book::bookSlot]
+    .bookWin.f.text1 configure -state normal
+    .bookWin.f.text1 delete 1.0 end
+    for {set i 0} {$i<[llength $oppBookMoves]} {incr i 1} {
+      set line [expr $i +1]
+      set m ""
+      append m [::trans [lindex $oppBookMoves $i]]  "\n"
+      .bookWin.f.text1 insert end $m
+      .bookWin.f.text1 tag add bookMove$line $line.0 $line.end
+      .bookWin.f.text1 tag bind bookMove$line <ButtonPress-1> "::book::makeBookMove [lindex $oppBookMoves $i]"
+    }
+    .bookWin.f.text1 configure -state disabled -height [llength $oppBookMoves]
   }
   ################################################################################
   #
@@ -284,8 +305,8 @@ namespace eval book {
   proc refreshTuning {} {
     #unfortunately we need this as the moves on the widgets are translated
     #and widgets have no clientdata in tcl/tk
-        global ::book::bookTuningMoves
-        set ::book::bookTuningMoves {}
+    global ::book::bookTuningMoves
+    set ::book::bookTuningMoves {}
     set moves [sc_book moves $::book::bookTuningSlot]
     
     set w .bookTuningWin
@@ -332,7 +353,7 @@ namespace eval book {
       lappend prob [$w.f.sp$row get]
     }
     set tempfile [file join $::scidUserDir tempfile.[pid]]
-    sc_book movesupdate $::book::bookTuningMoves $prob $::book::bookTuningSlot [file join $tempfile]
+    sc_book movesupdate $::book::bookTuningMoves $prob $::book::bookTuningSlot $tempfile
     file delete $tempfile
     if {  [ winfo exists .bookWin ] } {
       ::book::refresh

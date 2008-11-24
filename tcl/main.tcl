@@ -362,6 +362,7 @@ pack .main.button.start .main.button.back .main.button.forward .main.button.end 
 ### The board:
 
 ::board::new .main.board $boardSize "showmat"
+
 #.main.board.bd configure -relief solid -border 2
 ::board::showMarks .main.board 1
 if {$boardCoords} {

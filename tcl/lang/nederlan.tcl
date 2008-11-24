@@ -320,6 +320,8 @@ menuText N OptionsWindowsIconify "Auto-icoon" 5 \
 menuText N OptionsWindowsRaise "Auto-voorgrond" 0 \
   {Breng sommige vensters terug op de voorgrond (bvb. voortgangsbalken) gelijk wanneer ze verdwijnen.}
 menuText N OptionsSounds "Geluiden ..." 2 {Configureer zet aankondigingsgeluiden} ;
+# ====== TODO To be translated ======
+menuText N OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText N OptionsToolbar "Gereedschappenbalk" 12 \
   {Weergeven/verbergen hoofdvenster gereedschappenbalk}
 menuText N OptionsECO "ECO data laden..." 0 \
@@ -1926,8 +1928,15 @@ translate N DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate N Board {Board}
 # ====== TODO To be translated ======
+translate N showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate N autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
+
+
 
 
 

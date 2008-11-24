@@ -306,6 +306,8 @@ menuText H OptionsWindowsIconify "Automatikus ikonizálás" 12 \
 menuText H OptionsWindowsRaise "Automatikus elõhozás" 12 \
   {Elõhoz bizonyos ablakokat (pl. elõrehaladás-sávokat), amikor el vannak takarva.}
 menuText H OptionsSounds "Hangok..." 3 {Lépéseket bejelentõ hangok definiálása}
+# ====== TODO To be translated ======
+menuText H OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText H OptionsToolbar "Eszköztár" 0 {A fõ ablak eszköztárának összeállítása}
 menuText H OptionsECO "ECO-fájl betöltése..." 2 {Betölti az ECO-osztályozó fájlt.}
 menuText H OptionsSpell "Helyesírás-ellenõrzõ fájl betöltése..." 0 \
@@ -1927,6 +1929,10 @@ translate H DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate H Board {Board}
 # ====== TODO To be translated ======
+translate H showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate H autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 
 # Tips of the day in Hungarian
@@ -2160,6 +2166,9 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
+
 
 
 

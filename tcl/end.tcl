@@ -1428,7 +1428,10 @@ grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
 
 redrawToolbar
 
-wm resizable . 0 1
+if { ! $::docking::USE_DOCKING } {
+  wm resizable . 0 1
+}
+
 wm minsize . 0 0
 wm iconname . "Scid"
 
@@ -1856,11 +1859,53 @@ if { !$::docking::USE_DOCKING } {
 # update Game Info panel visibility after loading options
 toggleGameInfo
 
+# In docked mode, resize board automatically
+proc resizeMainBoard {} {
+  if { ! $::autoResizeBoard } {
+    return
+  }
+  
+  set w [winfo width .main]
+  set h [winfo height .main]
+  if {$::showGameInfo} {
+    set extrah 100
+  } else  {
+    set extrah 0
+  }
+  set availw [expr ($w - 80) / 8 ]
+  set availh [expr ($h - $extrah - 200) / 8 ]
+  if {$availh < $availw} {
+    set min $availh
+  } else  {
+    set min $availw
+  }
+  
+  # Find the closest available size
+  for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
+    set newSize [lindex $::boardSizes $i]
+    if { $newSize > $min} {
+      if {$i > 0} {
+        set newSize [lindex $::boardSizes [expr $i -1] ]
+      }
+      break
+    }
+  }
+  ::board::resize2 .main.board $newSize
+  set ::boardSize $newSize
+}
+
 if { $::docking::USE_DOCKING } {
   setTitle .main [ ::tr "Board" ]
   # restore geometry
   setWinLocation $dot_w
   setWinSize $dot_w
+  
+  # when main board pane is resized, auto-size it
+  bind .main <Configure> ::resizeMainBoard
+  
+  # basic layout
+  ::pgn::OpenClose
+  ::docking::ctx_cmd [::docking::find_tbn .fdockpgnWin ] w
 }
 
 ### End of file: end.tcl

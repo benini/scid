@@ -290,6 +290,8 @@ menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
 menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
   {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
 menuText D OptionsSounds "Töne..." 0 {Töne für Zugankündigung einstellen} ;# *** Hmm, :-|
+# ====== TODO To be translated ======
+menuText D OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
 menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
@@ -1590,6 +1592,10 @@ translate D IEUnableToStart {Input Engine konnte nicht gestartet werden:}
 translate D DoneWithPosition {Positionsbearbeitung beendet}
 # ====== TODO To be translated ======
 translate D Board {Board}
+# ====== TODO To be translated ======
+translate D showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate D autoResizeBoard {Automatic resize of board}
 }
 
 ##########
@@ -7140,6 +7146,9 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
+
 
 
 

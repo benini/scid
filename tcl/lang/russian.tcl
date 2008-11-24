@@ -310,6 +310,8 @@ menuText R OptionsWindowsRaise "Авто-выдвижение" 1 \
   {Выдвигатьть определенные окна (например, полосу прогресса) всякий раз, когда они скрыты}
 # ====== TODO To be translated ======
 menuText R OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
+# ====== TODO To be translated ======
+menuText R OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText R OptionsToolbar "Инструментальная панель" 0 {Конфигурация инструментальной панели основного окна}
 menuText R OptionsECO "Загрузить файл ECO..." 2 { Загрузить файл классификации ECO}
 menuText R OptionsSpell "Загрузить файл проверки правописания..." 4 \
@@ -1961,8 +1963,15 @@ translate R DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate R Board {Board}
 # ====== TODO To be translated ======
+translate R showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate R autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
+
 
 
 

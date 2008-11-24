@@ -95,6 +95,14 @@ int polyglot_moves(char *moves, const char *fen, const int BookNumber) {
   scid_book_disp(board, moves, BookNumber);
 	return 0;
 }
+/////////////////////////////////////////////////////////////////////
+// find moves to which there is a response in the book
+int polyglot_opp_moves(char *moves, const char *fen, const int BookNumber) {
+  board_t board[1];
+  board_from_fen(board, fen);
+  scid_opp_book_disp(board,moves, BookNumber);
+  return 0;
+}
 
 // parse_option()
 /*

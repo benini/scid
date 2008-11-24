@@ -308,6 +308,7 @@ menuText E OptionsWindowsIconify "Auto-Iconify" 5 \
 menuText E OptionsWindowsRaise "Auto-Raise" 5 \
   {Raise certain windows (e.g. progress bars) whenever they are obscured}
 menuText E OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
+menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText E OptionsToolbar "Toolbar..." 0 {Configure the main window toolbar}
 menuText E OptionsECO "Load ECO File..." 7 {Load the ECO classification file}
 menuText E OptionsSpell "Load Spellcheck File..." 11 \
@@ -1595,6 +1596,8 @@ translate E IEUnableToStart {Unable to start Input Engine:}
 translate E DoneWithPosition {Done with position}
 
 translate E Board {Board}
+translate E showGameInfo {Show game info}
+translate E autoResizeBoard {Automatic resize of board}
 
 }
 # end of english.tcl

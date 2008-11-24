@@ -282,6 +282,8 @@ menuText S OptionsWindowsIconify "Autominimizar" 4 \
 menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
   {Hace visibles ciertas ventanas (ej. barras de progreso) siempre que sean tapadas}
 menuText S OptionsSounds "Sonidos..." 2 {Configura el sonido del anuncio de las jugadas}
+# ====== TODO To be translated ======
+menuText S OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
   {Muestra/oculta la barra de herramientas de la ventana principal}
 menuText S OptionsECO "Cargar archivo ECO..." 7 \
@@ -1569,8 +1571,15 @@ translate S IEUnableToStart {Unable to start Input Engine:}
 translate S DoneWithPosition {Hecho con la posición}
 # ====== TODO To be translated ======
 translate S Board {Board}
+# ====== TODO To be translated ======
+translate S showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate S autoResizeBoard {Automatic resize of board}
 }
 # end of spanish.tcl
+
+
+
 
 
 

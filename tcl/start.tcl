@@ -663,6 +663,10 @@ set windowsDock 0
 # The game info panel below the main board
 set showGameInfo 1
 
+# autoResizeBoard:
+# resize the board to fit the container
+set autoResizeBoard 1
+
 ################################################################################
 # if undocked window : sets the title of the toplevel window
 # if docked : sets the name of the tab

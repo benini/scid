@@ -307,6 +307,8 @@ menuText Y OptionsWindowsIconify "Auto-iconify" 5 \
 menuText Y OptionsWindowsRaise "Auto podizanje" 0 \
   {Podigni odreðene prozore kad god su pokriveni}
 menuText Y OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+# ====== TODO To be translated ======
+menuText Y OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText Y OptionsToolbar "Toolbar glavnog prozora" 12 \
   {Prika¾i/sakrij toolbar glavnog prozora}
 menuText Y OptionsECO "Uèitaj E©O fajl..." 7 {Uèitaj E©O klasifikacioni fajl}
@@ -1932,8 +1934,15 @@ translate Y DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate Y Board {Board}
 # ====== TODO To be translated ======
+translate Y showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate Y autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
+
 
 
 

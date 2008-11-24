@@ -312,6 +312,8 @@ menuText P OptionsWindowsIconify "Minimalizuj wszystkie okna" 0 \
 menuText P OptionsWindowsRaise "Automatyczne uaktywnianie" 0 \
   {Automatycznie uaktywniaj niektóre okna (np. pasek postêpu), gdy s± zas³oniête}
 menuText P OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+# ====== TODO To be translated ======
+menuText P OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText P OptionsToolbar "Pasek narzêdziowy" 6 \
   {Schowaj/poka¿ pasek narzêdziowy}
 menuText P OptionsECO "Wczytaj ksi±¿kê debiutow±..." 16 \
@@ -1941,6 +1943,10 @@ translate P DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate P Board {Board}
 # ====== TODO To be translated ======
+translate P showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate P autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
 }
 
 ### Tips of the day in Polish:
@@ -2161,6 +2167,9 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
+
 
 
 

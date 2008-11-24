@@ -25,6 +25,7 @@ set nagValue 0
 proc recordWinSize {win} {
   global winWidth winHeight winX winY
   if {![winfo exists $win]} { return }
+  
   set temp [wm geometry $win]
 
   set n [scan $temp "%dx%d+%d+%d" width height x y]

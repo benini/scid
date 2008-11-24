@@ -1517,7 +1517,7 @@ proc setLanguageMenus {{lang ""}} {
         ToolsCross WindowsGList WindowsStats WindowsBook} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
-  foreach tag {Iconify Raise} {
+  foreach tag {Iconify Raise Dock} {
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
   }

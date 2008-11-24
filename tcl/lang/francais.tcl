@@ -268,6 +268,7 @@ menuText F OptionsWindowsIconify "Mise en icone automatique" 5 \
 menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsSounds "Sons..." 2 {Configurer l'annonce des sonore des coups}
+menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées}
 menuText F OptionsToolbar "Barre d'outils de la fenêtre principale" 12 \
   {Montrer/Cacher dans la barre d'outils de la fenêtre principale}
 menuText F OptionsECO "Charger le fichier ECO..." 20 \
@@ -1539,6 +1540,8 @@ translate F IERotate  {Tourner}
 translate F IEUnableToStart {Impossible de démarrer le moteur en entrée:}
 translate F DoneWithPosition {Position terminée}
 translate F Board {Echiquier}
+translate F showGameInfo {Montrer le panneau d'info}
+translate F autoResizeBoard {Redimensionnement automatique}
 
 ##########
 #
@@ -1746,6 +1749,9 @@ translate F Board {Echiquier}
 }
 
 # end of francais.tcl
+
+
+
 
 
 

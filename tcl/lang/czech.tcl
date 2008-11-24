@@ -301,6 +301,8 @@ menuText C OptionsWindowsIconify "Automatická minimalizace" 12 \
 menuText C OptionsWindowsRaise "Automaticky do popøedí" 15 \
   {Dát do popøedí jistá okna, jsou-li zakrytá}
 menuText C OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
+# ====== TODO To be translated ======
+menuText C OptionsWindowsDock "Dock windows" 0 {Dock windows}
 menuText C OptionsToolbar "Nástrojová li¹ta..." 11 \
   {Konfigurovat nástrojovou li¹tu hlavního okna}
 menuText C OptionsECO "Natáhnout ECO soubor..." 10 {Natáhnout soubor s klasifikací ECO}
@@ -1924,6 +1926,10 @@ translate C IEUnableToStart {Unable to start Input Engine:}
 translate C DoneWithPosition {Done with position}
 # ====== TODO To be translated ======
 translate C Board {Board}
+# ====== TODO To be translated ======
+translate C showGameInfo {Show game info}
+# ====== TODO To be translated ======
+translate C autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 
@@ -5565,6 +5571,9 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
+
 
 
 

@@ -402,12 +402,13 @@ namespace eval ::scrolledframe {
 
 ################################################################################
 #
-################################################################################
 # DockingFramework
-
+#
 # Code is inspired by
 # http://wiki.tcl.tk/21846
 # which is published under BSD license
+# 
+################################################################################
 
 namespace eval docking {
   
@@ -421,373 +422,371 @@ namespace eval docking {
   
   # associates frames' name to a managed toplevel
   array set _toplevel {}
-  
-  ################################################################################
-  # find notebook, corresponding to path
-  proc find_tbn {path} {
-    variable tbs
-    if {$path==""} { return $path }
-    # already a managed notebook?
-    if {[info exists tbs($path)]} {
-      return $path
-    }
-    # managed notebooks have the form .toplevel.tbn#
-    # pages within notebooks should also have the path .toplevel.page#
-    set spath [split $path "."]
-    if {[winfo toplevel $path]=="."} {
-      set path [join [lrange $path 0 1] "."]
-    } else {
-      set path [join [lrange $path 0 2] "."]
-    }
-    # is it a managed notebook?
-    if {[info exists tbs($path)]} {
-      return $path
-    }
-    # try to find notebook that manages this page
-    foreach tb [array names tbs] {
-      if {[lsearch -exact [$tb tabs] $path]>=0} {
-        return $tb
-      }
-    }
-    return {}
+}
+################################################################################
+# find notebook, corresponding to path
+proc ::docking::find_tbn {path} {
+  variable tbs
+  if {$path==""} { return $path }
+  # already a managed notebook?
+  if {[info exists tbs($path)]} {
+    return $path
   }
-  
-  ################################################################################
-  # added paned window of other direction, move a notebook there and create a new notebook
-  proc embed_tbn {tbn anchor} {
-    variable tbcnt
-    variable tbs
-    set pw $tbs($tbn)
-    if {$anchor=="w" || $anchor=="e"} {
-      set orient "horizontal"
-    } else {
-      set orient "vertical"
+  # managed notebooks have the form .toplevel.tbn#
+  # pages within notebooks should also have the path .toplevel.page#
+  set spath [split $path "."]
+  if {[winfo toplevel $path]=="."} {
+    set path [join [lrange $path 0 1] "."]
+  } else {
+    set path [join [lrange $path 0 2] "."]
+  }
+  # is it a managed notebook?
+  if {[info exists tbs($path)]} {
+    return $path
+  }
+  # try to find notebook that manages this page
+  foreach tb [array names tbs] {
+    if {[lsearch -exact [$tb tabs] $path]>=0} {
+      return $tb
     }
-    # create new paned window
-    set npw [ttk::panedwindow $pw.pw$tbcnt -orient $orient]
-    incr tbcnt
-    # move old notebook
+  }
+  return {}
+}
+
+################################################################################
+# added paned window of other direction, move a notebook there and create a new notebook
+proc ::docking::embed_tbn {tbn anchor} {
+  variable tbcnt
+  variable tbs
+  set pw $tbs($tbn)
+  if {$anchor=="w" || $anchor=="e"} {
+    set orient "horizontal"
+  } else {
+    set orient "vertical"
+  }
+  # create new paned window
+  set npw [ttk::panedwindow $pw.pw$tbcnt -orient $orient]
+  incr tbcnt
+  # move old notebook
+  set i [lsearch -exact [$pw panes] $tbn]
+  $pw forget $tbn
+  if {$i>=[llength [$pw panes]]} {
+    $pw add $npw -weight 1
+  } else {
+    $pw insert $i $npw -weight 1
+  }
+  # add new notebook
+  set ntb [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
+  incr tbcnt
+  set tbs($tbn) $npw
+  set tbs($ntb) $npw
+  # make sure correct order
+  if {$anchor=="s" || $anchor=="w"} {
+    $npw add $ntb -weight 1
+    $npw add $tbn -weight 1
+  } else {
+    $npw add $tbn -weight 1
+    $npw add $ntb -weight 1
+  }
+  return $ntb
+}
+
+################################################################################
+# add a new notebook to the side anchor of the notebook tbn
+proc ::docking::add_tbn {tbn anchor} {
+  variable tbcnt
+  variable tbs
+  
+  set pw $tbs($tbn)
+  set orient [$pw cget -orient]
+  
+  # if orientation of the uplevel panedwindow is consistent with anchor, just add the pane
+  if {$orient=="horizontal" && ($anchor=="w" || $anchor=="e")} {
     set i [lsearch -exact [$pw panes] $tbn]
-    $pw forget $tbn
-    if {$i>=[llength [$pw panes]]} {
-      $pw add $npw -weight 1
-    } else {
-      $pw insert $i $npw -weight 1
-    }
-    # add new notebook
-    set ntb [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
+    if {$anchor=="e"} { incr i }
+    set tbn [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
     incr tbcnt
-    set tbs($tbn) $npw
-    set tbs($ntb) $npw
-    # make sure correct order
-    if {$anchor=="s" || $anchor=="w"} {
-      $npw add $ntb -weight 1
-      $npw add $tbn -weight 1
+    set tbs($tbn) $pw
+    if {$i>=[llength [$pw panes]]} {
+      $pw add $tbn -weight 1
     } else {
-      $npw add $tbn -weight 1
-      $npw add $ntb -weight 1
+      $pw insert $i $tbn -weight 1
     }
-    return $ntb
-  }
-  
-  ################################################################################
-  # add a new notebook to the side anchor of the notebook tbn
-  proc add_tbn {tbn anchor} {
-    variable tbcnt
-    variable tbs
-    
-    set pw $tbs($tbn)
-    set orient [$pw cget -orient]
-    
-    # if orientation of the uplevel panedwindow is consistent with anchor, just add the pane
-    if {$orient=="horizontal" && ($anchor=="w" || $anchor=="e")} {
-      set i [lsearch -exact [$pw panes] $tbn]
-      if {$anchor=="e"} { incr i }
-      set tbn [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
-      incr tbcnt
-      set tbs($tbn) $pw
-      if {$i>=[llength [$pw panes]]} {
-        $pw add $tbn -weight 1
-      } else {
-        $pw insert $i $tbn -weight 1
-      }
-    } elseif {$orient=="vertical" && ($anchor=="n" || $anchor=="s")} {
-      set i [lsearch -exact [$pw panes] $tbn]
-      if {$anchor=="s"} { incr i}
-      set tbn [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
-      incr tbcnt
-      set tbs($tbn) $pw
-      if {$i>=[llength [$pw panes]]} {
-        $pw add $tbn -weight 1
-      } else {
-        $pw insert $i $tbn -weight 1
-      }
+  } elseif {$orient=="vertical" && ($anchor=="n" || $anchor=="s")} {
+    set i [lsearch -exact [$pw panes] $tbn]
+    if {$anchor=="s"} { incr i}
+    set tbn [ttk::notebook [winfo toplevel $pw].tb$tbcnt]
+    incr tbcnt
+    set tbs($tbn) $pw
+    if {$i>=[llength [$pw panes]]} {
+      $pw add $tbn -weight 1
     } else {
-      # orientation of the uplevel panedwindow is opposite to the anchor
-      # need to add new panedwindow
-      set tbn [embed_tbn $tbn $anchor]
+      $pw insert $i $tbn -weight 1
     }
-    return $tbn
+  } else {
+    # orientation of the uplevel panedwindow is opposite to the anchor
+    # need to add new panedwindow
+    set tbn [embed_tbn $tbn $anchor]
   }
-  
-  ################################################################################
-  proc get_class {path} { return [lindex [bindtags $path] 1] }
-  
-  ################################################################################
-  proc _cleanup_tabs {srctab} {
-    variable tbs
-    # if srctab is empty, then remove it
-    if {[llength [$srctab tabs]]==0} {
-      destroy $srctab
-      set pw $tbs($srctab)
-      unset tbs($srctab)
-      while {[llength [$pw panes]]==0} {
-        if {[get_class $pw]!="TPanedwindow"} { break }
-        set parent [winfo parent $pw]
-        destroy $pw
-        set pw $parent
-      }
+  return $tbn
+}
+
+################################################################################
+proc ::docking::get_class {path} { return [lindex [bindtags $path] 1] }
+
+################################################################################
+proc ::docking::_cleanup_tabs {srctab} {
+  variable tbs
+  # if srctab is empty, then remove it
+  if {[llength [$srctab tabs]]==0} {
+    destroy $srctab
+    set pw $tbs($srctab)
+    unset tbs($srctab)
+    while {[llength [$pw panes]]==0} {
+      if {[get_class $pw]!="TPanedwindow"} { break }
+      set parent [winfo parent $pw]
+      destroy $pw
+      set pw $parent
     }
-  }
-  
-  ################################################################################
-  proc move_tab {srctab dsttab} {
-    variable tbs
-    # move tab
-    set f [$srctab select]
-    set o [$srctab tab $f]
-    $srctab forget $f
-    eval $dsttab add $f $o
-    raise $f
-    $dsttab select $f
-    _cleanup_tabs $srctab
-  }
-  
-  variable c_path {}
-  
-  ################################################################################
-  proc start_motion {path} {
-    variable c_path
-    if {$path!=$c_path} {
-      set c_path [find_tbn $path]
-    }
-  }
-  
-  ################################################################################
-  proc end_motion {x y} {
-    variable c_path
-    if {$c_path==""} { return }
-    set path [winfo containing $x $y]
-    # essai
-    set anchor "t"
-    set t [find_tbn $path]
-    if {$t!=""} {
-      if {$t==$c_path} {
-        if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
-          set c_path {}
-          return
-        }
-      }
-      if {$anchor!="t"} {
-        set tbn [add_tbn $t $anchor]
-        #label $tbn.lb -text "This is a notebook $tbn" -borderwidth 10 -relief groove
-        #$tbn add $tbn.lb -text "$tbn"
-        move_tab $c_path $tbn
-      } elseif {$t!=$c_path} {
-        move_tab $c_path $t
-      }
-    }
-    set c_path {}
-  }
-  
-  bind TNotebook <Button-1> +[namespace code {start_motion %W}]
-  # bind TNotebook <B1-Motion> +[namespace code {motion %X %Y}]
-  bind TNotebook <ButtonRelease-1> +[namespace code {end_motion %X %Y}]
-  bind TNotebook <Escape> {
-    if {[winfo exists .ctxtMenu]} {
-      destroy .ctxtMenu
-    }
-  }
-  bind TNotebook <Button-3> +[namespace code {ctx_menu %W}]
-  
-  ################################################################################
-  #
-  ################################################################################
-  proc ctx_cmd {path anchor} {
-    variable c_path
-    if {$path!=$c_path} {
-      set c_path [find_tbn $path]
-    }
-    
-    if {$c_path==""} { return }
-    # set path [winfo containing $x $y]
-    # set t [find_tbn $path]
-    # on est resté sur le même onglet
-    set t $c_path
-    if {$t!=""} {
-      # if {$t==$c_path} {
-      # if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
-      # set c_path {}
-      # return
-      # }
-      # }
-      if {$anchor!="t"} {
-        set tbn [add_tbn $t $anchor]
-        move_tab $c_path $tbn
-      } elseif {$t!=$c_path} {
-        move_tab $c_path $t
-      }
-    }
-    set c_path {}
-  }
-  ################################################################################
-  proc ctx_menu {w} {
-    update idletasks
-    puts $w
-    set mctxt .ctxtMenu
-    if { [winfo exists $mctxt] } {
-      destroy $mctxt
-    }
-    menu $mctxt -tearoff 0
-    $mctxt add command -label Top -command "::docking::ctx_cmd $w n"
-    $mctxt add command -label Bottom -command "::docking::ctx_cmd $w s"
-    $mctxt add command -label Left -command "::docking::ctx_cmd $w w"
-    $mctxt add command -label Right -command "::docking::ctx_cmd $w e"
-    $mctxt add separator
-    # Main board can not be closed or undocked
-    if { [$w select] != ".fdockmain" } {
-      $mctxt add command -label Undock -command "::docking::undock $w"
-      $mctxt add command -label Close -command " ::docking::close $w "
-    } else  {
-      $mctxt add checkbutton -label showGameInfo -variable ::showGameInfo -command ::toggleGameInfo
-    }
-    $mctxt post [winfo pointerx .] [winfo pointery .]
-  }
-  
-  ################################################################################
-  proc close {w} {
-    set tabid [$w select]
-    $w forget $tabid
-    array unset ::docking::_toplevel $tabid
-    
-    destroy $tabid
-    _cleanup_tabs $w
-  }
-  ################################################################################
-  proc undock {srctab} {
-    variable tbs
-    if {[llength [$srctab tabs]]==1 && [llength [array names tbs]]==1} { return }
-    
-    set f [$srctab select]
-    set name [$srctab tab $f -text]
-    set o [$srctab tab $f]
-    
-    $srctab forget $f
-    _cleanup_tabs $srctab
-    
-    wm manage $f
-    catch {wm attributes $f -toolwindow 1}
-    wm title $f $name
-    wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
-    wm deiconify $f
-    
-    set ::docking::notebook_name($f) [list $srctab $o]
-  }
-  
-  ################################################################################
-  proc __dock {wnd} {
-    variable tbs
-    set name [wm title $wnd]
-    wm withdraw $wnd
-    wm forget $wnd
-    # try to find a notebook to place the window
-    # set d [$wnd.__notebook_name__ cget -text]
-    # destroy $wnd.__notebook_name__
-    set d  $::docking::notebook_name($wnd)
-    
-    set dsttab [lindex $d 0]
-    set o [lindex $d 1]
-    
-    if {![winfo exists $dsttab]} {
-      set dsttab [lindex [array names tbs] 0]
-    }
-    eval $dsttab add $wnd $o
-    raise $wnd
-    $dsttab select $wnd
-  }
-  
-  ################################################################################
-  proc add_tab {path anchor args} {
-    variable tbs
-    # scan all tabs to find the most suitable
-    set dsttab {}
-    
-    foreach tb [array names tbs] {
-      set x [winfo rootx $tb]
-      set y [winfo rooty $tb]
-      set w [winfo width $tb]
-      set h [winfo height $tb]
-      switch $anchor {
-        n { set rel {$y < $_y} }
-        w { set rel {$x < $_x} }
-        s { set rel {$y > $_y} }
-        e { set rel {$x > $_x} }
-      }
-      if {$dsttab==""} {
-        set dsttab $tb
-        set _x $x
-        set _y $y
-      } elseif { [expr $rel] } {
-        set dsttab $tb
-        set _x $x
-        set _y $y
-      }
-    }
-    
-    set title [ list [ wm title $::docking::_toplevel($path)] ]
-    # if {$path == ".fdockmain"} {
-    # set title $::tr(Board)
-    # }
-    eval [list $dsttab add $path] $args -text "$title"
-  }
-  
-  ################################################################################
-  proc remove_tab {path} {
-    set tb [find_tbn $path]
-    if {$tb==""} {
-      error -code "window $path is not managed by the framework"
-    }
-    $tb forget $path
-    _cleanup_tabs $tb
-  }
-  
-  ################################################################################
-  proc activate_tab {path} {
-    set tb [find_tbn $path]
-    if {$tb==""} {
-      error -code "window $path is not managed by the framework"
-    }
-    $tb select $path
-  }
-  
-  ################################################################################
-  proc hide_tab {path} {
-    set tb [find_tbn $path]
-    if {$tb==""} {
-      error -code "window $path is not managed by the framework"
-    }
-    $tb hide $path
-  }
-  
-  ################################################################################
-  proc show_tab {path} {
-    set tb [find_tbn $path]
-    if {$tb==""} {
-      error -code "window $path is not managed by the framework"
-    }
-    $tb add $path
   }
 }
+
+################################################################################
+proc ::docking::move_tab {srctab dsttab} {
+  variable tbs
+  # move tab
+  set f [$srctab select]
+  set o [$srctab tab $f]
+  $srctab forget $f
+  eval $dsttab add $f $o
+  raise $f
+  $dsttab select $f
+  _cleanup_tabs $srctab
+}
+
+variable ::docking::c_path {}
+
+################################################################################
+proc ::docking::start_motion {path} {
+  variable c_path
+  if {$path!=$c_path} {
+    set c_path [find_tbn $path]
+  }
+  $c_path configure -cursor exchange
+}
+
+################################################################################
+proc ::docking::end_motion {x y} {
+  variable c_path
+  if {$c_path==""} { return }
+  set path [winfo containing $x $y]
+  $path configure -cursor {}
+  # essai
+  set anchor "t"
+  set t [find_tbn $path]
+  if {$t!=""} {
+    if {$t==$c_path} {
+      if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
+        set c_path {}
+        return
+      }
+    }
+    if {$anchor!="t"} {
+      set tbn [add_tbn $t $anchor]
+      move_tab $c_path $tbn
+    } elseif {$t!=$c_path} {
+      move_tab $c_path $t
+    }
+  }
+  set c_path {}
+}
+
+bind TNotebook <Button-1> +[namespace code {::docking::start_motion %W}]
+# bind TNotebook <B1-Motion> +[namespace code {motion %X %Y}]
+bind TNotebook <ButtonRelease-1> +[namespace code {::docking::end_motion %X %Y}]
+bind TNotebook <Escape> {
+  if {[winfo exists .ctxtMenu]} {
+    destroy .ctxtMenu
+  }
+}
+bind TNotebook <Button-3> +[namespace code {::docking::ctx_menu %W}]
+
+################################################################################
+#
+################################################################################
+proc ::docking::ctx_cmd {path anchor} {
+  variable c_path
+  if {$path!=$c_path} {
+    set c_path [find_tbn $path]
+  }
+  
+  if {$c_path==""} { return }
+  # set path [winfo containing $x $y]
+  # set t [find_tbn $path]
+  # on est resté sur le même onglet
+  set t $c_path
+  if {$t!=""} {
+    # if {$t==$c_path} {
+    # if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
+    # set c_path {}
+    # return
+    # }
+    # }
+    if {$anchor!="t"} {
+      set tbn [add_tbn $t $anchor]
+      move_tab $c_path $tbn
+    } elseif {$t!=$c_path} {
+      move_tab $c_path $t
+    }
+  }
+  set c_path {}
+}
+################################################################################
+proc ::docking::ctx_menu {w} {
+  update idletasks
+  puts $w
+  set mctxt .ctxtMenu
+  if { [winfo exists $mctxt] } {
+    destroy $mctxt
+  }
+  menu $mctxt -tearoff 0
+  $mctxt add command -label Top -command "::docking::ctx_cmd $w n"
+  $mctxt add command -label Bottom -command "::docking::ctx_cmd $w s"
+  $mctxt add command -label Left -command "::docking::ctx_cmd $w w"
+  $mctxt add command -label Right -command "::docking::ctx_cmd $w e"
+  $mctxt add separator
+  # Main board can not be closed or undocked
+  if { [$w select] != ".fdockmain" } {
+    $mctxt add command -label Undock -command "::docking::undock $w"
+    $mctxt add command -label Close -command " ::docking::close $w "
+  } else {
+    $mctxt add checkbutton -label [::tr "showGameInfo"] -variable ::showGameInfo -command ::toggleGameInfo
+    $mctxt add checkbutton -label [::tr "autoResizeBoard"] -variable ::autoResizeBoard
+  }
+  $mctxt post [winfo pointerx .] [winfo pointery .]
+}
+
+################################################################################
+proc ::docking::close {w} {
+  set tabid [$w select]
+  $w forget $tabid
+  array unset ::docking::_toplevel $tabid
+  
+  destroy $tabid
+  _cleanup_tabs $w
+}
+################################################################################
+proc ::docking::undock {srctab} {
+  variable tbs
+  if {[llength [$srctab tabs]]==1 && [llength [array names tbs]]==1} { return }
+  
+  set f [$srctab select]
+  set name [$srctab tab $f -text]
+  set o [$srctab tab $f]
+  
+  $srctab forget $f
+  _cleanup_tabs $srctab
+  
+  wm manage $f
+  catch {wm attributes $f -toolwindow 1}
+  wm title $f $name
+  wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
+  wm deiconify $f
+  
+  set ::docking::notebook_name($f) [list $srctab $o]
+}
+
+################################################################################
+proc ::docking::__dock {wnd} {
+  variable tbs
+  set name [wm title $wnd]
+  wm withdraw $wnd
+  wm forget $wnd
+  # try to find a notebook to place the window
+  # set d [$wnd.__notebook_name__ cget -text]
+  # destroy $wnd.__notebook_name__
+  set d  $::docking::notebook_name($wnd)
+  
+  set dsttab [lindex $d 0]
+  set o [lindex $d 1]
+  
+  if {![winfo exists $dsttab]} {
+    set dsttab [lindex [array names tbs] 0]
+  }
+  eval $dsttab add $wnd $o
+  raise $wnd
+  $dsttab select $wnd
+}
+
+################################################################################
+proc ::docking::add_tab {path anchor args} {
+  variable tbs
+  # scan all tabs to find the most suitable
+  set dsttab {}
+  
+  foreach tb [array names tbs] {
+    set x [winfo rootx $tb]
+    set y [winfo rooty $tb]
+    set w [winfo width $tb]
+    set h [winfo height $tb]
+    switch $anchor {
+      n { set rel {$y < $_y} }
+      w { set rel {$x < $_x} }
+      s { set rel {$y > $_y} }
+      e { set rel {$x > $_x} }
+    }
+    if {$dsttab==""} {
+      set dsttab $tb
+      set _x $x
+      set _y $y
+    } elseif { [expr $rel] } {
+      set dsttab $tb
+      set _x $x
+      set _y $y
+    }
+  }
+  
+  set title [ list [ wm title $::docking::_toplevel($path)] ]
+  eval [list $dsttab add $path] $args -text "$title"
+}
+
+################################################################################
+proc ::docking::remove_tab {path} {
+  set tb [find_tbn $path]
+  if {$tb==""} {
+    error -code "window $path is not managed by the framework"
+  }
+  $tb forget $path
+  _cleanup_tabs $tb
+}
+
+################################################################################
+proc ::docking::activate_tab {path} {
+  set tb [find_tbn $path]
+  if {$tb==""} {
+    error -code "window $path is not managed by the framework"
+  }
+  $tb select $path
+}
+
+################################################################################
+proc ::docking::hide_tab {path} {
+  set tb [find_tbn $path]
+  if {$tb==""} {
+    error -code "window $path is not managed by the framework"
+  }
+  $tb hide $path
+}
+
+################################################################################
+proc ::docking::show_tab {path} {
+  set tb [find_tbn $path]
+  if {$tb==""} {
+    error -code "window $path is not managed by the framework"
+  }
+  $tb add $path
+}
+
 ################################################################################
 # Name is the toplevel's name without leading "."
 # The container frame is .fdock$name
