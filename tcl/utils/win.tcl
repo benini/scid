@@ -644,7 +644,6 @@ proc ::docking::ctx_cmd {path anchor} {
 ################################################################################
 proc ::docking::ctx_menu {w} {
   update idletasks
-  puts $w
   set mctxt .ctxtMenu
   if { [winfo exists $mctxt] } {
     destroy $mctxt
