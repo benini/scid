@@ -311,6 +311,8 @@ menuText O OptionsWindowsRaise "Autoheving" 0 \
 menuText O OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText O OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText O OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText O OptionsToolbar "Verktøylinje i hovedvindu" 0 \
   {Vis/skjul menylinjen i hovedvinduet}
 menuText O OptionsECO "Hent ECO-fil..." 0 {Henter filen med ECO-klassifiseringer}
@@ -763,6 +765,10 @@ translate O Informant+- {White has a decisive advantage}
 translate O Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate O Book {Book}
+# ====== TODO To be translated ======
+translate O OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate O OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate O EngineList {Liste over analysemotorer}
@@ -1940,6 +1946,9 @@ translate O autoResizeBoard {Automatic resize of board}
 
 # Sjekkliste:
 # - Snarveier
+
+
+
 
 
 

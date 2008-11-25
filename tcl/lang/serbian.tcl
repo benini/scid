@@ -309,6 +309,8 @@ menuText Y OptionsWindowsRaise "Auto podizanje" 0 \
 menuText Y OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText Y OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText Y OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText Y OptionsToolbar "Toolbar glavnog prozora" 12 \
   {Prika¾i/sakrij toolbar glavnog prozora}
 menuText Y OptionsECO "Uèitaj E©O fajl..." 7 {Uèitaj E©O klasifikacioni fajl}
@@ -761,6 +763,10 @@ translate Y Informant+- {White has a decisive advantage}
 translate Y Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate Y Book {Book}
+# ====== TODO To be translated ======
+translate Y OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate Y OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate Y EngineList {Analysis Engine List} ;# ***
@@ -1940,6 +1946,9 @@ translate Y autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
+
 
 
 

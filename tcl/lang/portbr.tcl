@@ -312,6 +312,8 @@ menuText B OptionsWindowsRaise "Manter no topo" 0 \
 menuText B OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText B OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText B OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText B OptionsToolbar "Barra de Ferramentas da Janela Principal" 12 \
   {Exibe/Oculta a barra de ferramentas da janela principal}
 menuText B OptionsECO "Carregar arquivo ECO..." 7 {Carrega o arquivo com a classificacao ECO}
@@ -768,6 +770,10 @@ translate B Informant+- {White has a decisive advantage}
 translate B Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate B Book {Book}
+# ====== TODO To be translated ======
+translate B OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate B OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate B EngineList {Lista de Programas de Analise}
@@ -1946,6 +1952,9 @@ translate B autoResizeBoard {Automatic resize of board}
 }
 
 # end of portbr.tcl
+
+
+
 
 
 

@@ -309,6 +309,7 @@ menuText E OptionsWindowsRaise "Auto-Raise" 5 \
   {Raise certain windows (e.g. progress bars) whenever they are obscured}
 menuText E OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
 menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows}
+menuText E OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText E OptionsToolbar "Toolbar..." 0 {Configure the main window toolbar}
 menuText E OptionsECO "Load ECO File..." 7 {Load the ECO classification file}
 menuText E OptionsSpell "Load Spellcheck File..." 11 \
@@ -681,6 +682,8 @@ translate E Informant++- {The game is considered won}
   
 # Book window
 translate E Book {Book}
+translate E OtherBookMoves {Other moves}
+translate E OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate E EngineList {Analysis Engine List}

@@ -322,6 +322,8 @@ menuText N OptionsWindowsRaise "Auto-voorgrond" 0 \
 menuText N OptionsSounds "Geluiden ..." 2 {Configureer zet aankondigingsgeluiden} ;
 # ====== TODO To be translated ======
 menuText N OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText N OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText N OptionsToolbar "Gereedschappenbalk" 12 \
   {Weergeven/verbergen hoofdvenster gereedschappenbalk}
 menuText N OptionsECO "ECO data laden..." 0 \
@@ -771,6 +773,10 @@ translate N Informant+- {White has a decisive advantage}
 # ====== TODO To be translated ======
 translate N Informant++- {The game is considered won}
 translate N Book {Openingenboek}
+# ====== TODO To be translated ======
+translate N OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate N OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate N EngineList {Analyse Machiene Lijst}
@@ -1934,6 +1940,9 @@ translate N autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
+
+
 
 
 

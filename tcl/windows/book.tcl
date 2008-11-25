@@ -18,6 +18,8 @@ namespace eval book {
   set hashList ""
   set bookSlot 0
   set bookTuningSlot 2
+  set oppMovesVisible 0
+  
   
   ################################################################################
   # open a book, closing any previously opened one (called by annotation analysis)
@@ -66,6 +68,20 @@ namespace eval book {
   }
   
   ################################################################################
+  #  Show moves to which the opponent has a reply
+  ################################################################################
+  proc toggleOppMoves {} {
+    global ::book::oppMovesVisible
+    if { $::book::oppMovesVisible == 0} {
+      set ::book::oppMovesVisible 1
+      pack .bookWin.f.text1 -expand yes -fill both
+    } else {
+      set ::book::oppMovesVisible 0
+      pack forget .bookWin.f.text1
+    }
+  }
+  
+  ################################################################################
   #  Open a window to select book and display book moves
   # arg name : gm2600.bin for example
   ################################################################################
@@ -107,8 +123,11 @@ namespace eval book {
     
     # text displaying book moves
     text $w.f.text -wrap word -state disabled -width 12
+    button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::toggleOppMoves }
+    ::utils::tooltip::Set $w.f.b $::tr(OtherBookMovesTooltip)
     text $w.f.text1 -wrap word -state disabled -width 12
     pack $w.f.text -expand yes -fill both
+    pack $w.f.b -expand yes -fill both
     pack $w.f.text1 -expand yes -fill both
     
     pack $w.f
@@ -175,6 +194,9 @@ namespace eval book {
       .bookWin.f.text1 tag bind bookMove$line <ButtonPress-1> "::book::makeBookMove [lindex $oppBookMoves $i]"
     }
     .bookWin.f.text1 configure -state disabled -height [llength $oppBookMoves]
+    if { $::book::oppMovesVisible == 0 } {
+      pack forget .bookWin.f.text1
+    }
   }
   ################################################################################
   #

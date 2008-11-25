@@ -314,6 +314,8 @@ menuText P OptionsWindowsRaise "Automatyczne uaktywnianie" 0 \
 menuText P OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText P OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText P OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText P OptionsToolbar "Pasek narzêdziowy" 6 \
   {Schowaj/poka¿ pasek narzêdziowy}
 menuText P OptionsECO "Wczytaj ksi±¿kê debiutow±..." 16 \
@@ -768,6 +770,10 @@ translate P Informant+- {White has a decisive advantage}
 translate P Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate P Book {Book}
+# ====== TODO To be translated ======
+translate P OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate P OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate P EngineList {Programy szachowe}
@@ -2167,6 +2173,9 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
+
 
 
 

@@ -712,6 +712,43 @@ proc createToplevel { w } {
   }
 }
 ################################################################################
+# In docked mode, resize board automatically
+# TODO : optimize board size (too much margin left)
+################################################################################
+proc resizeMainBoard {} {
+  if { ! $::autoResizeBoard } {
+    return
+  }
+  
+  set w [winfo width .main]
+  set h [winfo height .main]
+  if {$::showGameInfo} {
+    set extrah 100
+  } else  {
+    set extrah 0
+  }
+  set availw [expr ($w - 80) / 8 ]
+  set availh [expr ($h - $extrah - 200) / 8 ]
+  if {$availh < $availw} {
+    set min $availh
+  } else  {
+    set min $availw
+  }
+  
+  # Find the closest available size
+  for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
+    set newSize [lindex $::boardSizes $i]
+    if { $newSize > $min} {
+      if {$i > 0} {
+        set newSize [lindex $::boardSizes [expr $i -1] ]
+      }
+      break
+    }
+  }
+  ::board::resize2 .main.board $newSize
+  set ::boardSize $newSize
+}
+################################################################################
 # sets visibility of gameInfo panel at the bottom of main board
 proc toggleGameInfo {} {
   if {$::showGameInfo} {
@@ -719,6 +756,7 @@ proc toggleGameInfo {} {
   } else  {
     grid forget .main.gameInfoFrame
   }
+  resizeMainBoard
 }
 ################################################################################
 

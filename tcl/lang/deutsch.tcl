@@ -292,6 +292,8 @@ menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
 menuText D OptionsSounds "Töne..." 0 {Töne für Zugankündigung einstellen} ;# *** Hmm, :-|
 # ====== TODO To be translated ======
 menuText D OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText D OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
 menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
@@ -670,6 +672,10 @@ translate D Informant+/- {Weiß hat mäßigen Vorteil}
 translate D Informant+- {Weiß hat großen Vorteil}
 translate D Informant++- {Partie wird gewonnen}
 translate D Book {Buch}
+# ====== TODO To be translated ======
+translate D OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate D OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate D EngineList {Analyse-Engines}
@@ -7146,6 +7152,9 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
+
 
 
 

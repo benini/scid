@@ -1107,8 +1107,14 @@ $m add checkbutton -label OptionsWindowsRaise -variable autoRaise
 set helpMessage($m,1) OptionsWindowsRaise
 $m add checkbutton -label OptionsWindowsDock -variable windowsDock
 set helpMessage($m,2) OptionsWindowsDock
-$m add checkbutton -label OptionsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
+$m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 set helpMessage($m,3) OptionsShowGameInfo
+if {$::docking::USE_DOCKING} {
+  $m add command -label OptionsWindowsSaveLayout -command ::docking::layout_save
+  set helpMessage($m,4) OptionsWindowsSaveLayout
+  $m add command -label OptionsWindowsRestoreLayout -command ::docking::layout_restore
+  set helpMessage($m,5) OptionsWindowsRestoreLayout
+}
 
 menu .menu.options.language
 
@@ -1517,7 +1523,7 @@ proc setLanguageMenus {{lang ""}} {
         ToolsCross WindowsGList WindowsStats WindowsBook} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
-  foreach tag {Iconify Raise Dock} {
+  foreach tag {Iconify Raise Dock ShowGameInfo} {
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
   }

@@ -402,18 +402,15 @@ namespace eval ::scrolledframe {
 
 ################################################################################
 #
-# DockingFramework
+#     DockingFramework
 #
-# Code is inspired by
-# http://wiki.tcl.tk/21846
-# which is published under BSD license
-# 
+#     Code is inspired by
+#     http://wiki.tcl.tk/21846
+#     which is published under BSD license
+#
 ################################################################################
 
 namespace eval docking {
-  
-  # Set to 1 to use docking windows
-  # set USE_DOCKING 1
   
   # tabs
   variable tbs
@@ -720,70 +717,156 @@ proc ::docking::__dock {wnd} {
 ################################################################################
 proc ::docking::add_tab {path anchor args} {
   variable tbs
-  # scan all tabs to find the most suitable
-  set dsttab {}
   
-  foreach tb [array names tbs] {
-    set x [winfo rootx $tb]
-    set y [winfo rooty $tb]
-    set w [winfo width $tb]
-    set h [winfo height $tb]
-    switch $anchor {
-      n { set rel {$y < $_y} }
-      w { set rel {$x < $_x} }
-      s { set rel {$y > $_y} }
-      e { set rel {$x > $_x} }
+  if { $::docking::layout_dest_notebook == ""} {
+    # scan all tabs to find the most suitable
+    set dsttab {}
+    
+    foreach tb [array names tbs] {
+      set x [winfo rootx $tb]
+      set y [winfo rooty $tb]
+      set w [winfo width $tb]
+      set h [winfo height $tb]
+      switch $anchor {
+        n { set rel {$y < $_y} }
+        w { set rel {$x < $_x} }
+        s { set rel {$y > $_y} }
+        e { set rel {$x > $_x} }
+      }
+      if {$dsttab==""} {
+        set dsttab $tb
+        set _x $x
+        set _y $y
+      } elseif { [expr $rel] } {
+        set dsttab $tb
+        set _x $x
+        set _y $y
+      }
     }
-    if {$dsttab==""} {
-      set dsttab $tb
-      set _x $x
-      set _y $y
-    } elseif { [expr $rel] } {
-      set dsttab $tb
-      set _x $x
-      set _y $y
-    }
+  } else  {
+    set dsttab $::docking::layout_dest_notebook
   }
   
   set title [ list [ wm title $::docking::_toplevel($path)] ]
   eval [list $dsttab add $path] $args -text "$title"
 }
-
 ################################################################################
-proc ::docking::remove_tab {path} {
-  set tb [find_tbn $path]
-  if {$tb==""} {
-    error -code "window $path is not managed by the framework"
+# Layout management
+################################################################################
+# .pw vertical
+# .pw.pw0 horizontal
+# pw=.pw.pw0 notebook=.tb1  tabs => .fdockmain
+# pw=.pw.pw0 notebook=.tb2  tabs => .fdocktreeWin9
+# .pw.pw0.pw3 vertical
+# pw=.pw.pw0.pw3 notebook=.tb4  tabs => .fdockanalysisWin2
+# pw=.pw.pw0.pw3 notebook=.nb  tabs => .fdockpgnWin
+
+set ::docking::layout_data {}
+
+# associates pw -> notebook list
+array set ::docking::layout_notebook {}
+
+# associates notebook -> list of tabs
+array set ::docking::layout_tabs {}
+
+# the notebook into which to create a new tab
+set ::docking::layout_dest_notebook ""
+
+proc ::docking::layout_save {} {
+  puts "==== dump ===="
+  layout_save_pw .pw
+  puts "==== ========"
+}
+
+proc ::docking::layout_save_pw {pw} {
+  puts "$pw [$pw cget -orient]"
+  lappend ::docking::layout_data [list $pw [$pw cget -orient ] ]
+  set nb_list {}
+  foreach p [$pw panes] {
+    if {[get_class $p] == "TNotebook"} {
+      puts "      pw=$pw notebook=$p  tabs => [$p tabs]"
+      lappend $nb_list $p
+      set ::docking::layout_tabs($p) [$p tabs]
+    }
+    if {[get_class $p] == "TPanedwindow"} {
+      layout_save_pw $p
+    }
   }
-  $tb forget $path
-  _cleanup_tabs $tb
+  
+  set ::docking::layout_notebook($pw) $nb_list
+}
+################################################################################
+# restores paned windows and internal notebooks
+proc ::docking::layout_restore_pw {} {
+  puts "::docking::layout_data $::docking::layout_data"
+  foreach elt $::docking::layout_data {
+    set pw [lindex $d 0]
+    set orient [lindex $d 1]
+    if { $pw ==".pw"} {
+      continue
+    }
+    foreach nb $::docking::layout_notebook($pw) {
+      ::docking::layout_restore_nb $pw $nb
+    }
+  }
 }
 
 ################################################################################
-proc ::docking::activate_tab {path} {
-  set tb [find_tbn $path]
-  if {$tb==""} {
-    error -code "window $path is not managed by the framework"
-  }
-  $tb select $path
+proc ::docking::layout_restore {} {
+  ::docking::closeAll {.pw}
 }
-
 ################################################################################
-proc ::docking::hide_tab {path} {
-  set tb [find_tbn $path]
-  if {$tb==""} {
-    error -code "window $path is not managed by the framework"
+# erase all mapped windows, except .main
+proc ::docking::closeAll {pw} {
+  
+  foreach p [$pw panes] {
+    if {[get_class $p] == "TPanedwindow"} {
+      ::docking::closeAll $p
+    }
+    
+    if {[get_class $p] == "TNotebook"} {
+      foreach tabid [$p tabs] {
+        if {$tabid == ".fdockmain"} {  continue  }
+        $p forget $tabid
+        array unset ::docking::_toplevel $tabid
+        destroy $tabid
+        _cleanup_tabs $p
+      }
+    }
   }
-  $tb hide $path
+  
 }
-
 ################################################################################
-proc ::docking::show_tab {path} {
-  set tb [find_tbn $path]
-  if {$tb==""} {
-    error -code "window $path is not managed by the framework"
+# restores a notebook in a pre-existing panedwindow
+# panewindow -> pw
+# widget name -> name
+# data to make tabs -> data (list of names wich can be used to trigger the correct windows)
+proc ::docking::layout_restore_nb { pw name } {
+  puts "layout_restore_nb pw=$pw name=$name "
+  
+  set nb [ttk::notebook $name]
+  $pw add $nb -weight 1
+  
+  set ::docking::layout_dest_notebook $nb
+  
+  foreach d $::docking::layout_tabs($nb) {
+    puts "creation de l'onglet $d"
+    
+    if { $d == ".fdockmain" } {
+      # TODO : special treatment
+    }
+    if { $d == ".fdockpgnWin" } {
+      ::pgn::OpenClose
+    }
+    if { $d == ".fdockanalysisWin1" } {
+      ::makeAnalysisWin 1 0
+    }
+    if { $d == ".fdockanalysisWin2" } {
+      ::makeAnalysisWin 2 0
+    }
   }
-  $tb add $path
+  
+  set ::docking::layout_dest_notebook ""
 }
 
 ################################################################################

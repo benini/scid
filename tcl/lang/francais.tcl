@@ -269,6 +269,7 @@ menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsSounds "Sons..." 2 {Configurer l'annonce des sonore des coups}
 menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées}
+menuText F OptionsWindowsShowGameInfo "Montrer le panneau d'info" 0 {Montrer le panneau d'info}
 menuText F OptionsToolbar "Barre d'outils de la fenêtre principale" 12 \
   {Montrer/Cacher dans la barre d'outils de la fenêtre principale}
 menuText F OptionsECO "Charger le fichier ECO..." 20 \
@@ -641,6 +642,8 @@ translate F Informant++- {La partie est gagnée}
 
 # Book window
 translate F Book {Bibliothèque}
+translate F OtherBookMoves {Autres coups}
+translate F OtherBookMovesTooltip {Coups absents de la bibliothèque mais présents dans des positions ultérieures}
 
 # Analysis Engine open dialog:
 translate F EngineList {Liste des moteurs d'analyse}
@@ -1749,6 +1752,9 @@ translate F autoResizeBoard {Redimensionnement automatique}
 }
 
 # end of francais.tcl
+
+
+
 
 
 

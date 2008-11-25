@@ -4,6 +4,9 @@
 |                                                           |
  ===========================================================
 
+sauve layout
+autoscrollframe en mode docked ?
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -15,8 +18,6 @@
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
-
-- add new move to book
 
 - stop engine after last move in annotation (?)
 

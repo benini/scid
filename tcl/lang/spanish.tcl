@@ -284,6 +284,8 @@ menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
 menuText S OptionsSounds "Sonidos..." 2 {Configura el sonido del anuncio de las jugadas}
 # ====== TODO To be translated ======
 menuText S OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText S OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
   {Muestra/oculta la barra de herramientas de la ventana principal}
 menuText S OptionsECO "Cargar archivo ECO..." 7 \
@@ -663,6 +665,10 @@ translate S Informant+/- {Blancas tienen ventaja}
 translate S Informant+- {Blancas tienen una ventaja decisiva}
 translate S Informant++- {La partida es considerada ganada}
 translate S Book {Libro}
+# ====== TODO To be translated ======
+translate S OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate S OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate S EngineList {Lista de Motores de Análisis}
@@ -1577,6 +1583,9 @@ translate S showGameInfo {Show game info}
 translate S autoResizeBoard {Automatic resize of board}
 }
 # end of spanish.tcl
+
+
+
 
 
 

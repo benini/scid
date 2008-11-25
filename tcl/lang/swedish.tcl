@@ -311,6 +311,8 @@ menuText W OptionsWindowsRaise "Autofokus" 0 \
 menuText W OptionsSounds "Ljud..." 2 {Konfigurera ljud för att annonsera drag}
 # ====== TODO To be translated ======
 menuText W OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText W OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText W OptionsToolbar "Verktygsfält" 0 \
   {Visa/ dölj huvudfönstrets verktygsfält}
 menuText W OptionsECO "Ladda ECO fil..." 7 {Ladda ECO-klassificeringen vid start}
@@ -763,6 +765,10 @@ translate W Informant+- {Vit har en avgörande fördel}
 translate W Informant++- {Partiet anses vara vunnet}
 # ====== TODO To be translated ======
 translate W Book {Bok}
+# ====== TODO To be translated ======
+translate W OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate W OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate W EngineList {Lista över schackprogram}
@@ -6957,6 +6963,9 @@ set tips(W) {
   }
 }
 #}
+
+
+
 
 
 

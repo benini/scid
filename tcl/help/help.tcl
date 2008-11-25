@@ -4248,6 +4248,13 @@ set helpText(Book) {<h1>Book window</h1>
   window will play that move in current position.
   </p>
   <p>
+  At the bottom of the book window, the button <i>Other moves</i> displays the moves
+  that are not present in the book but part of lines that are present later on in the book.
+  This allows an engine to play the best moves, and to have book replies available in the 
+  book if the opponent chooses moves that are not in the book. The display of those <i>Other moves</i>
+  shows where there are holes in a book.
+  </p>
+  <p>
   The book in use can be selected from the drop down list in the
   book window.
   </p>

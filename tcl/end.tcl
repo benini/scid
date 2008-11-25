@@ -1236,7 +1236,6 @@ proc gameReplace {} { gameSave [sc_game number] }
 #
 proc helpAbout {} {
   set str {}
-  puts [winfo children .]
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
@@ -1417,14 +1416,15 @@ proc gotoNextBase {} {
   ::windows::gamelist::Refresh
 }
 
-grid columnconfigure . 0 -weight 1
-grid rowconfigure . 3 -weight 1
+grid columnconfigure .main 0 -weight 1
+grid rowconfigure .main 3 -weight 1
 
 grid .main.button -row 1 -column 0 -pady 5 -padx 5
 
 grid .main.board -row 2 -column 0 -sticky we -padx 5 -pady 5
-
-grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
+# update Game Info panel visibility after loading options
+toggleGameInfo
+# grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
 
 redrawToolbar
 
@@ -1854,44 +1854,6 @@ if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
 if { !$::docking::USE_DOCKING } {
   wm withdraw .
   bind .main <Destroy> { destroy . }
-}
-
-# update Game Info panel visibility after loading options
-toggleGameInfo
-
-# In docked mode, resize board automatically
-proc resizeMainBoard {} {
-  if { ! $::autoResizeBoard } {
-    return
-  }
-  
-  set w [winfo width .main]
-  set h [winfo height .main]
-  if {$::showGameInfo} {
-    set extrah 100
-  } else  {
-    set extrah 0
-  }
-  set availw [expr ($w - 80) / 8 ]
-  set availh [expr ($h - $extrah - 200) / 8 ]
-  if {$availh < $availw} {
-    set min $availh
-  } else  {
-    set min $availw
-  }
-  
-  # Find the closest available size
-  for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
-    set newSize [lindex $::boardSizes $i]
-    if { $newSize > $min} {
-      if {$i > 0} {
-        set newSize [lindex $::boardSizes [expr $i -1] ]
-      }
-      break
-    }
-  }
-  ::board::resize2 .main.board $newSize
-  set ::boardSize $newSize
 }
 
 if { $::docking::USE_DOCKING } {

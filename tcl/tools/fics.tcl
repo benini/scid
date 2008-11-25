@@ -44,7 +44,7 @@ namespace eval fics {
     }
     
     toplevel $w
-    wm title $w "ConfigureFics"
+    ::setTitle $w "ConfigureFics"
     label $w.lLogin -text "login:"
     entry $w.login -width 20 -textvariable ::fics::login
     label $w.lPwd -text "password:"
@@ -143,8 +143,8 @@ namespace eval fics {
     }
     
     set w .fics
-    toplevel $w
-    wm title $w "Free Internet Chess Server $::fics::reallogin"
+    ::createToplevel $w
+    ::setTitle $w "Free Internet Chess Server $::fics::reallogin"
     
     frame $w.top
     frame $w.top.f1
@@ -625,7 +625,7 @@ namespace eval fics {
     if {[string match "Logging you in as*" $line]} {
       set line [string map {"\"" "" ";" ""} $line ]
       set ::fics::reallogin [lindex $line 4]
-      wm title .fics "Free Internet Chess Server $::fics::reallogin"
+      ::setTitle .fics "Free Internet Chess Server $::fics::reallogin"
     }
     if {[string match "Press return to enter the server as*" $line]} {
       writechan "\n"

@@ -308,6 +308,8 @@ menuText H OptionsWindowsRaise "Automatikus elõhozás" 12 \
 menuText H OptionsSounds "Hangok..." 3 {Lépéseket bejelentõ hangok definiálása}
 # ====== TODO To be translated ======
 menuText H OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText H OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText H OptionsToolbar "Eszköztár" 0 {A fõ ablak eszköztárának összeállítása}
 menuText H OptionsECO "ECO-fájl betöltése..." 2 {Betölti az ECO-osztályozó fájlt.}
 menuText H OptionsSpell "Helyesírás-ellenõrzõ fájl betöltése..." 0 \
@@ -757,6 +759,10 @@ translate H Informant+- {White has a decisive advantage}
 translate H Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate H Book {Book}
+# ====== TODO To be translated ======
+translate H OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate H OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate H EngineList {Elemzõ motorok listája}
@@ -2166,6 +2172,9 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
+
 
 
 

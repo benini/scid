@@ -312,6 +312,8 @@ menuText R OptionsWindowsRaise "Авто-выдвижение" 1 \
 menuText R OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
 # ====== TODO To be translated ======
 menuText R OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText R OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText R OptionsToolbar "Инструментальная панель" 0 {Конфигурация инструментальной панели основного окна}
 menuText R OptionsECO "Загрузить файл ECO..." 2 { Загрузить файл классификации ECO}
 menuText R OptionsSpell "Загрузить файл проверки правописания..." 4 \
@@ -765,6 +767,10 @@ translate R Informant+- {White has a decisive advantage}
 translate R Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate R Book {Book}
+# ====== TODO To be translated ======
+translate R OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate R OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate R EngineList {Список анализирующих движков}
@@ -1969,6 +1975,9 @@ translate R autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
+
 
 
 

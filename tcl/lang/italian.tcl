@@ -273,6 +273,8 @@ menuText I OptionsWindowsRaise "Auto-aumenta" 0 \
 menuText I OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText I OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText I OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText I OptionsToolbar "Barra degli strumenti" 12 \
   {Mostra/nasconde la barra degli strumenti nella finestra principale}
 menuText I OptionsECO "Carica il file ECO..." 15 {Carica il file di classificazione ECO}
@@ -691,6 +693,10 @@ translate I Informant+/- {Il bianco ha un moderato vantaggio}
 translate I Informant+- {Il bianco ha un vantaggio decisivo}
 translate I Informant++- {La partita è considerata vinta}
 translate I Book {Libro}
+# ====== TODO To be translated ======
+translate I OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate I OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate I EngineList {Lista dei motori di analisi}
@@ -1857,6 +1863,9 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
+
 
 
 

@@ -303,6 +303,8 @@ menuText C OptionsWindowsRaise "Automaticky do popøedí" 15 \
 menuText C OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
 # ====== TODO To be translated ======
 menuText C OptionsWindowsDock "Dock windows" 0 {Dock windows}
+# ====== TODO To be translated ======
+menuText C OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText C OptionsToolbar "Nástrojová li¹ta..." 11 \
   {Konfigurovat nástrojovou li¹tu hlavního okna}
 menuText C OptionsECO "Natáhnout ECO soubor..." 10 {Natáhnout soubor s klasifikací ECO}
@@ -756,6 +758,10 @@ translate C Informant+- {White has a decisive advantage}
 translate C Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate C Book {Book}
+# ====== TODO To be translated ======
+translate C OtherBookMoves {Other moves}
+# ====== TODO To be translated ======
+translate C OtherBookMovesTooltip {Moves not in the book but present in further positions}
 
 # Analysis Engine open dialog:
 translate C EngineList {Seznam programù pro analýzu}
@@ -5571,6 +5577,9 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
+
 
 
 
