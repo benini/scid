@@ -290,10 +290,8 @@ menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
 menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
   {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
 menuText D OptionsSounds "Töne..." 0 {Töne für Zugankündigung einstellen} ;# *** Hmm, :-|
-# ====== TODO To be translated ======
-menuText D OptionsWindowsDock "Dock windows" 0 {Dock windows}
-# ====== TODO To be translated ======
-menuText D OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
+menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
 menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
@@ -363,7 +361,7 @@ translate D Import {Importieren}
 translate D Index {Index}
 translate D LoadGame {Partie laden}
 translate D BrowseGame {Partie betrachten}
-translate D MergeGame {Partie kombinieren} ;# mischen?! einfügen!?
+translate D MergeGame {Partie zusammenfügen}
 translate D MergeGames {Partien kombinieren}
 translate D Preview {Vorschau} ;# Voransicht!? (KDE)
 translate D Revert {Umkehren}
@@ -373,7 +371,7 @@ translate D Stop {Halt}
 translate D Store {Speichern}
 translate D Update {Aktualisieren}
 translate D ChangeOrient {Fensterausrichtung ändern}
-translate D ShowIcons {Show Icons} ;# ***
+translate D ShowIcons {Symbole anzeigen}
 translate D None {Keine}
 translate D First {Erste}
 translate D Current {Aktuelle}
@@ -672,10 +670,8 @@ translate D Informant+/- {Weiß hat mäßigen Vorteil}
 translate D Informant+- {Weiß hat großen Vorteil}
 translate D Informant++- {Partie wird gewonnen}
 translate D Book {Buch}
-# ====== TODO To be translated ======
-translate D OtherBookMoves {Other moves}
-# ====== TODO To be translated ======
-translate D OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate D OtherBookMoves {Andere Züge aus dem Buch}
+translate D OtherBookMovesTooltip {Züge, die nicht im Buch enthalten sind aber in anderen Positionen}
 
 # Analysis Engine open dialog:
 translate D EngineList {Analyse-Engines}
@@ -1596,12 +1592,9 @@ translate D IESynchronise {Synchronisieren}
 translate D IERotate  {Brett drehen}
 translate D IEUnableToStart {Input Engine konnte nicht gestartet werden:}
 translate D DoneWithPosition {Positionsbearbeitung beendet}
-# ====== TODO To be translated ======
-translate D Board {Board}
-# ====== TODO To be translated ======
-translate D showGameInfo {Show game info}
-# ====== TODO To be translated ======
-translate D autoResizeBoard {Automatic resize of board}
+translate D Board {Brett}
+translate D showGameInfo {Partieinformation anzeigen}
+translate D autoResizeBoard {Brettgröße automatisch berechnen}
 }
 
 ##########
