@@ -562,7 +562,7 @@ int sc_book  					(TCL_ARGS);
 int sc_book_load  		(TCL_ARGS);
 int sc_book_close  		(TCL_ARGS);
 int sc_book_moves  		(TCL_ARGS);
-int sc_book_oppmoves  		(TCL_ARGS);
+int sc_book_positions  		(TCL_ARGS);
 int sc_book_update		(TCL_ARGS);
 int sc_book_movesupdate	(TCL_ARGS);
 //////////////////////////////////////////////////////////////////////

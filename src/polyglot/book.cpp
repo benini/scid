@@ -350,7 +350,7 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
 }
 
 // =================================================================
-int scid_opp_book_disp(const board_t *board, char * s, const int BookNumber) {
+int scid_position_book_disp(const board_t *board, char * s, const int BookNumber) {
 
     
    int move;
@@ -361,10 +361,10 @@ int scid_opp_book_disp(const board_t *board, char * s, const int BookNumber) {
    int i;
    s[0] = '\0';
    gen_legal_moves(legal_moves,board);
-   gen_book_moves(book_moves,board,BookNumber);
+//   gen_book_moves(book_moves,board,BookNumber);
    for (i = 0; i < list_size(legal_moves); i++) {
        move = list_move(legal_moves,i);
-       if(list_contain(book_moves,move)) continue;
+//       if(list_contain(book_moves,move)) continue;
            // scratch_board
        memcpy(new_board, board, sizeof(board_t));
        move_do(new_board,move);

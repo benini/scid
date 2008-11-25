@@ -682,8 +682,8 @@ translate E Informant++- {The game is considered won}
   
 # Book window
 translate E Book {Book}
-translate E OtherBookMoves {Other moves}
-translate E OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate E OtherBookMoves {Opponent's book}
+translate E OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate E EngineList {Analysis Engine List}

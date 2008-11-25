@@ -15857,10 +15857,10 @@ int
 sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "load", "close", "moves", "oppmoves", "movesupdate", "update", NULL
+        "load", "close", "moves", "positions", "movesupdate", "update", NULL
     };
     enum {
-        BOOK_LOAD,    BOOK_CLOSE, BOOK_MOVE, BOOK_OPP_MOVE, BOOK_MOVES_UPDATE, BOOK_UPDATE,
+        BOOK_LOAD,    BOOK_CLOSE, BOOK_MOVE, BOOK_POSITIONS, BOOK_MOVES_UPDATE, BOOK_UPDATE,
     };
     int index = -1;
 
@@ -15876,8 +15876,8 @@ sc_book (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BOOK_MOVE:  
         return sc_book_moves (cd, ti, argc, argv);
 
-    case BOOK_OPP_MOVE:  
-        return sc_book_oppmoves (cd, ti, argc, argv);
+    case BOOK_POSITIONS:  
+        return sc_book_positions (cd, ti, argc, argv);
 
     case BOOK_UPDATE:  
         return sc_book_update (cd, ti, argc, argv);
@@ -15942,11 +15942,10 @@ sc_book_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_opp_book_moves:
-//    returns a list of all moves to which there is a reply in the book in
-//    a TCL list
+// sc_positions:
+//    returns a TCL list of moves to a position in the book
 int
-sc_book_oppmoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_book_positions (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
 		char moves[200] = "";
 		char boardStr[100];
@@ -15955,7 +15954,7 @@ sc_book_oppmoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     uint slot = strGetUnsigned (argv[2]);
 		db->game->GetCurrentPos()->PrintFEN (boardStr, FEN_ALL_FIELDS);
-		polyglot_opp_moves(moves, (const char *) boardStr, slot);
+		polyglot_positions(moves, (const char *) boardStr, slot);
     Tcl_AppendResult (ti, moves, NULL);
     return TCL_OK;
 }

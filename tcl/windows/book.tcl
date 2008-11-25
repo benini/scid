@@ -68,9 +68,9 @@ namespace eval book {
   }
   
   ################################################################################
-  #  Show moves to which the opponent has a reply
+  #  Show moves leading to book positions 
   ################################################################################
-  proc toggleOppMoves {} {
+  proc togglePositionsDisplay {} {
     global ::book::oppMovesVisible
     if { $::book::oppMovesVisible == 0} {
       set ::book::oppMovesVisible 1
@@ -123,7 +123,7 @@ namespace eval book {
     
     # text displaying book moves
     text $w.f.text -wrap word -state disabled -width 12
-    button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::toggleOppMoves }
+    button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::togglePositionsDisplay }
     ::utils::tooltip::Set $w.f.b $::tr(OtherBookMovesTooltip)
     text $w.f.text1 -wrap word -state disabled -width 12
     pack $w.f.text -expand yes -fill both
@@ -182,7 +182,7 @@ namespace eval book {
     .bookWin.f.text configure -state disabled -height [expr [llength $bookMoves] / 2 ]
     
     
-    set oppBookMoves [sc_book oppmoves $::book::bookSlot]
+    set oppBookMoves [sc_book positions $::book::bookSlot]
     .bookWin.f.text1 configure -state normal
     .bookWin.f.text1 delete 1.0 end
     for {set i 0} {$i<[llength $oppBookMoves]} {incr i 1} {

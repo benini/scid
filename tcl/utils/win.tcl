@@ -776,6 +776,7 @@ proc ::docking::layout_save {} {
   puts "==== dump ===="
   layout_save_pw .pw
   puts "==== ========"
+  puts "::docking::layout_notebook = [array get ::docking::layout_notebook]"
 }
 
 proc ::docking::layout_save_pw {pw} {
@@ -785,7 +786,7 @@ proc ::docking::layout_save_pw {pw} {
   foreach p [$pw panes] {
     if {[get_class $p] == "TNotebook"} {
       puts "      pw=$pw notebook=$p  tabs => [$p tabs]"
-      lappend $nb_list $p
+      lappend nb_list $p
       set ::docking::layout_tabs($p) [$p tabs]
     }
     if {[get_class $p] == "TPanedwindow"} {
@@ -800,8 +801,8 @@ proc ::docking::layout_save_pw {pw} {
 proc ::docking::layout_restore_pw {} {
   puts "::docking::layout_data $::docking::layout_data"
   foreach elt $::docking::layout_data {
-    set pw [lindex $d 0]
-    set orient [lindex $d 1]
+    set pw [lindex $elt 0]
+    set orient [lindex $elt 1]
     if { $pw ==".pw"} {
       continue
     }
@@ -813,7 +814,8 @@ proc ::docking::layout_restore_pw {} {
 
 ################################################################################
 proc ::docking::layout_restore {} {
-  ::docking::closeAll {.pw}
+  closeAll {.pw}
+  layout_restore_pw
 }
 ################################################################################
 # erase all mapped windows, except .main

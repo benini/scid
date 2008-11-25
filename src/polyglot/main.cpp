@@ -96,11 +96,11 @@ int polyglot_moves(char *moves, const char *fen, const int BookNumber) {
 	return 0;
 }
 /////////////////////////////////////////////////////////////////////
-// find moves to which there is a response in the book
-int polyglot_opp_moves(char *moves, const char *fen, const int BookNumber) {
+// find moves to positions in the book
+int polyglot_positions (char *moves, const char *fen, const int BookNumber) {
   board_t board[1];
   board_from_fen(board, fen);
-  scid_opp_book_disp(board,moves, BookNumber);
+  scid_position_book_disp(board,moves, BookNumber);
   return 0;
 }
 

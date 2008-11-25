@@ -26,7 +26,7 @@ extern void book_close      (const int BookNumber);
 extern int scid_book_open       (const char file_name[], const int BookNumber);
 extern int scid_book_close      (const int BookNumber);
 extern int scid_book_disp      (const board_t * board, char * s, const int BookNumber);
-extern int scid_opp_book_disp      (const board_t * board, char * s, const int BookNumber);
+extern int scid_position_book_disp      (const board_t * board, char * s, const int BookNumber);
 
 extern bool is_in_book      (const board_t * board, const int BookNumber);
 extern int  book_move       (const board_t * board, bool random, const int BookNumber);
