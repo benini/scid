@@ -1534,9 +1534,16 @@ proc setLanguageMenus {{lang ""}} {
         ToolsCross WindowsGList WindowsStats WindowsBook} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
-  foreach tag {Iconify Raise Dock ShowGameInfo SaveLayout RestoreLayout} {
+  
+  foreach tag {Iconify Raise Dock ShowGameInfo } {
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
+  }
+  if {$::docking::USE_DOCKING} {
+    foreach tag {SaveLayout RestoreLayout} {
+      configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
+          OptionsWindows$tag $lang
+    }
   }
   foreach tag {Contents Index Guide Hints Contact Tip Startup About} {
     configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang

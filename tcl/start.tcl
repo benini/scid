@@ -722,7 +722,7 @@ proc createToplevel { w } {
 # TODO : optimize board size (too much margin left)
 ################################################################################
 proc resizeMainBoard {} {
-  if { ! $::autoResizeBoard } {
+  if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } {
     return
   }
   
