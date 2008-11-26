@@ -529,22 +529,36 @@ proc ::docking::add_tbn {tbn anchor} {
 }
 
 ################################################################################
-proc ::docking::get_class {path} { return [lindex [bindtags $path] 1] }
+proc ::docking::get_class {path} {
+  if {![winfo exists $path]} {
+    return ""
+  }
+  return [lindex [bindtags $path] 1]
+}
 
 ################################################################################
+# always keep .pw paned window
 proc ::docking::_cleanup_tabs {srctab} {
   variable tbs
+  puts "+++_cleanup_tabs $srctab"
   # if srctab is empty, then remove it
   if {[llength [$srctab tabs]]==0} {
     destroy $srctab
     set pw $tbs($srctab)
     unset tbs($srctab)
+    
     while {[llength [$pw panes]]==0} {
+      puts "while pw = $pw"
       if {[get_class $pw]!="TPanedwindow"} { break }
       set parent [winfo parent $pw]
+      puts "destroy de $pw parent = $parent"
       destroy $pw
+      if {$parent == ".pw"} {
+        break
+      }
       set pw $parent
     }
+    
   }
 }
 
@@ -753,15 +767,9 @@ proc ::docking::add_tab {path anchor args} {
 ################################################################################
 # Layout management
 ################################################################################
-# .pw vertical
-# .pw.pw0 horizontal
-# pw=.pw.pw0 notebook=.tb1  tabs => .fdockmain
-# pw=.pw.pw0 notebook=.tb2  tabs => .fdocktreeWin9
-# .pw.pw0.pw3 vertical
-# pw=.pw.pw0.pw3 notebook=.tb4  tabs => .fdockanalysisWin2
-# pw=.pw.pw0.pw3 notebook=.nb  tabs => .fdockpgnWin
 
 set ::docking::layout_data {}
+set ::docking::layout_tbcnt 0
 
 # associates pw -> notebook list
 array set ::docking::layout_notebook {}
@@ -772,11 +780,27 @@ array set ::docking::layout_tabs {}
 # the notebook into which to create a new tab
 set ::docking::layout_dest_notebook ""
 
-proc ::docking::layout_save {} {
-  puts "==== dump ===="
+# saves layout
+proc ::docking::layout_save { slot } {
+  puts "==== dump $slot ===="
   layout_save_pw .pw
-  puts "==== ========"
-  puts "::docking::layout_notebook = [array get ::docking::layout_notebook]"
+  
+  set ::docking::layout_tbcnt $::docking::tbcnt
+  array set ::docking::layout_tbs [array get ::docking::tbs ]
+  array set ::docking::layout_notebook_name [array get ::docking::notebook_name ]
+  array set ::docking::layout__toplevel  [array get ::docking::_toplevel ]
+  
+  set ::docking::layout_list($slot) {}
+  lappend ::docking::layout_list($slot) $::docking::tbcnt
+  puts "apres enregistrement de tbcnt $::docking::layout_list($slot)"
+  lappend ::docking::layout_list($slot) [array get ::docking::tbs ]
+  lappend ::docking::layout_list($slot) [array get ::docking::notebook_name ]
+  lappend ::docking::layout_list($slot) [array get ::docking::_toplevel ]
+  lappend ::docking::layout_list($slot) $::docking::layout_data
+  lappend ::docking::layout_list($slot) [array get ::docking::layout_notebook ]
+  lappend ::docking::layout_list($slot) [array get ::docking::layout_tabs ]
+  puts "==== saved slot =$slot :"
+  puts "$::docking::layout_list($slot)"
 }
 
 proc ::docking::layout_save_pw {pw} {
@@ -799,44 +823,25 @@ proc ::docking::layout_save_pw {pw} {
 ################################################################################
 # restores paned windows and internal notebooks
 proc ::docking::layout_restore_pw {} {
-  puts "::docking::layout_data $::docking::layout_data"
+  puts "+++ layout_restore_pw       ::docking::layout_data = $::docking::layout_data"
   foreach elt $::docking::layout_data {
     set pw [lindex $elt 0]
     set orient [lindex $elt 1]
     if { $pw ==".pw"} {
       continue
     }
+    
+    # build a new pw
+    ttk::panedwindow $pw -orient $orient
+    set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
+    $parent add $pw -weight 1
+    puts "paned window créé $pw dans $parent"
+    
     foreach nb $::docking::layout_notebook($pw) {
       ::docking::layout_restore_nb $pw $nb
     }
   }
-}
-
-################################################################################
-proc ::docking::layout_restore {} {
-  closeAll {.pw}
-  layout_restore_pw
-}
-################################################################################
-# erase all mapped windows, except .main
-proc ::docking::closeAll {pw} {
-  
-  foreach p [$pw panes] {
-    if {[get_class $p] == "TPanedwindow"} {
-      ::docking::closeAll $p
-    }
-    
-    if {[get_class $p] == "TNotebook"} {
-      foreach tabid [$p tabs] {
-        if {$tabid == ".fdockmain"} {  continue  }
-        $p forget $tabid
-        array unset ::docking::_toplevel $tabid
-        destroy $tabid
-        _cleanup_tabs $p
-      }
-    }
-  }
-  
+  puts "--- layout_restore_pw"
 }
 ################################################################################
 # restores a notebook in a pre-existing panedwindow
@@ -844,10 +849,13 @@ proc ::docking::closeAll {pw} {
 # widget name -> name
 # data to make tabs -> data (list of names wich can be used to trigger the correct windows)
 proc ::docking::layout_restore_nb { pw name } {
-  puts "layout_restore_nb pw=$pw name=$name "
+  puts "*************  layout_restore_nb pw=$pw name=$name "
   
   set nb [ttk::notebook $name]
+  puts "$pw add $nb"
   $pw add $nb -weight 1
+  
+  set ::docking::tbs($nb) $pw
   
   set ::docking::layout_dest_notebook $nb
   
@@ -855,20 +863,66 @@ proc ::docking::layout_restore_nb { pw name } {
     puts "creation de l'onglet $d"
     
     if { $d == ".fdockmain" } {
-      # TODO : special treatment
+      puts "$nb add $d *** winfo exists .main = [winfo exists .main]"
+      $nb add $d -text $::tr(Board)
+      raise $d
     }
-    if { $d == ".fdockpgnWin" } {
-      ::pgn::OpenClose
-    }
-    if { $d == ".fdockanalysisWin1" } {
-      ::makeAnalysisWin 1 0
-    }
-    if { $d == ".fdockanalysisWin2" } {
-      ::makeAnalysisWin 2 0
-    }
+    if { $d == ".fdockpgnWin" } { ::pgn::OpenClose }
+    if { $d == ".fdockanalysisWin1" } { ::makeAnalysisWin 1 0 }
+    if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 }
+    if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
+    if { $d == ".fdockbookWin" } {  ::book::open }
+    
   }
   
   set ::docking::layout_dest_notebook ""
+}
+
+################################################################################
+proc ::docking::layout_restore { slot } {
+  closeAll {.pw}
+  
+  array set ::docking::tbs {}
+  set ::docking::tbs(.nb) .pw
+  set ::docking::layout_data [lindex $::docking::layout_list($slot) 4 ]
+  puts "debug 5 = [lindex $::docking::layout_list($slot) 5 ]"
+  array set ::docking::layout_notebook [lindex $::docking::layout_list($slot) 5 ]
+  array set ::docking::layout_tabs [lindex $::docking::layout_list($slot) 6 ]
+  puts "restore $slot data= $::docking::layout_data ***(liste = $::docking::layout_list($slot))"
+  puts "::docking::layout_notebook = [array get ::docking::layout_notebook]"
+  layout_restore_pw
+  
+  # restore layout's data
+  set ::docking::tbcnt [lindex $::docking::layout_list($slot) 0 ]
+  array set ::docking::tbs [lindex $::docking::layout_list($slot) 1 ]
+  array set ::docking::notebook_name [lindex $::docking::layout_list($slot) 2 ]
+  array set ::docking::_toplevel [lindex $::docking::layout_list($slot) 3 ]
+  
+}
+
+################################################################################
+# erase all mapped windows, except .main
+proc ::docking::closeAll {pw} {
+  puts "+++closeAll $pw"
+  
+  foreach p [$pw panes] {
+    puts "foreach $p (panes de $pw)"
+    if {[get_class $p] == "TPanedwindow"} {
+      ::docking::closeAll $p
+    }
+    
+    if {[get_class $p] == "TNotebook"} {
+      foreach tabid [$p tabs] {
+        $p forget $tabid
+        array unset ::docking::_toplevel $tabid
+        if {$tabid != ".fdockmain"} {
+          destroy $tabid
+        }
+        _cleanup_tabs $p
+      }
+    }
+  }
+  
 }
 
 ################################################################################

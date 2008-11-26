@@ -274,6 +274,10 @@ menuText I OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# *
 # ====== TODO To be translated ======
 menuText I OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText I OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText I OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText I OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText I OptionsToolbar "Barra degli strumenti" 12 \
   {Mostra/nasconde la barra degli strumenti nella finestra principale}
@@ -1863,6 +1867,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

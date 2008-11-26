@@ -124,6 +124,12 @@ set ::tacgame::isLimitedAnalysisTime 1
 set ::tacgame::analysisTime 10
 set ::tacgame::openingType new
 
+# List of saved layouts : 3 slots available
+array set ::docking::layout_list {}
+foreach i { 1 2 3 } {
+  set ::docking::layout_list($i) {}
+}
+
 #############################################################
 # Customisable variables:
 
@@ -685,7 +691,7 @@ proc setTitle { w title } {
       if { $w == ".main" && $title != [ ::tr "Board" ] } {
         wm title . $title
       } else  {
-        # in docked mode trim down title
+        # in docked mode trim down title to spare space
         if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
           set title [string range $title 6 end]
         }

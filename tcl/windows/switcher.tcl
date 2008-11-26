@@ -378,13 +378,14 @@ proc ::windows::switcher::Open {} {
     return
   }
   set baseWin 1
-  set w [toplevel .baseWin]
+  set w .baseWin
+  ::createToplevel .baseWin
+  
   bind $w <Configure> "+recordWinSize $w"
   bind $w <Configure> "+::windows::switcher::Refresh"
   setWinLocation $w
 
-  #wm resizable $w false false
-  wm title $w "Scid: [tr WindowsSwitcher]"
+  ::setTitle $w "Scid: [tr WindowsSwitcher]"
 
   bind $w <Escape> ::windows::switcher::Open
   bind $w <Destroy> { set baseWin 0 }

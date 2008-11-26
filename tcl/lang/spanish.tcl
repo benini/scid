@@ -285,6 +285,10 @@ menuText S OptionsSounds "Sonidos..." 2 {Configura el sonido del anuncio de las 
 # ====== TODO To be translated ======
 menuText S OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText S OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText S OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText S OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
   {Muestra/oculta la barra de herramientas de la ventana principal}
@@ -1583,6 +1587,7 @@ translate S showGameInfo {Show game info}
 translate S autoResizeBoard {Automatic resize of board}
 }
 # end of spanish.tcl
+
 
 
 

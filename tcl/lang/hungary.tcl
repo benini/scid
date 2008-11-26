@@ -309,6 +309,10 @@ menuText H OptionsSounds "Hangok..." 3 {Lépéseket bejelentõ hangok definiálása}
 # ====== TODO To be translated ======
 menuText H OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText H OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText H OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText H OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText H OptionsToolbar "Eszköztár" 0 {A fõ ablak eszköztárának összeállítása}
 menuText H OptionsECO "ECO-fájl betöltése..." 2 {Betölti az ECO-osztályozó fájlt.}
@@ -2172,6 +2176,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

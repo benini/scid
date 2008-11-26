@@ -999,6 +999,11 @@ $m add command -label OptionsSave -command {
       puts $optionF "set ::fics::findopponent($i) [list $::fics::findopponent($i)]"
     }
     
+    # Save layouts
+    foreach slot {1 2 3} {
+      puts $optionF "set ::docking::layout_list($slot) [list $::docking::layout_list($slot)]"
+    }
+    
     close $optionF
     set ::statusBar "Options were saved to: [scidConfigFile options]"
   }
@@ -1110,9 +1115,15 @@ set helpMessage($m,2) OptionsWindowsDock
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 set helpMessage($m,3) OptionsShowGameInfo
 if {$::docking::USE_DOCKING} {
-  $m add command -label OptionsWindowsSaveLayout -command ::docking::layout_save
+  menu $m.savelayout
+  menu $m.restorelayout
+  foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
+    $m.savelayout add command -label $i -command "::docking::layout_save $slot"
+    $m.restorelayout add command -label $i -command "::docking::layout_restore $slot"
+  }
+  $m add cascade -label OptionsWindowsSaveLayout -menu $m.savelayout
   set helpMessage($m,4) OptionsWindowsSaveLayout
-  $m add command -label OptionsWindowsRestoreLayout -command ::docking::layout_restore
+  $m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
   set helpMessage($m,5) OptionsWindowsRestoreLayout
 }
 
@@ -1523,7 +1534,7 @@ proc setLanguageMenus {{lang ""}} {
         ToolsCross WindowsGList WindowsStats WindowsBook} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
-  foreach tag {Iconify Raise Dock ShowGameInfo} {
+  foreach tag {Iconify Raise Dock ShowGameInfo SaveLayout RestoreLayout} {
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
   }

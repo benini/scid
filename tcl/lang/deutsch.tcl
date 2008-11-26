@@ -291,6 +291,8 @@ menuText D OptionsWindowsRaise "Autom. Verwaltung" 7 \
   {Bestimmte Fenster (z.B. Zustandsleiste) bei Bedarf öffnen}
 menuText D OptionsSounds "Töne..." 0 {Töne für Zugankündigung einstellen} ;# *** Hmm, :-|
 menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
+menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+menuText D OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}

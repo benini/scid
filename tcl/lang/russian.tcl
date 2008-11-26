@@ -313,6 +313,10 @@ menuText R OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
 # ====== TODO To be translated ======
 menuText R OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText R OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText R OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText R OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText R OptionsToolbar "Инструментальная панель" 0 {Конфигурация инструментальной панели основного окна}
 menuText R OptionsECO "Загрузить файл ECO..." 2 { Загрузить файл классификации ECO}
@@ -1975,6 +1979,7 @@ translate R autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

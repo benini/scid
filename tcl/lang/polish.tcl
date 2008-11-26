@@ -315,6 +315,10 @@ menuText P OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# *
 # ====== TODO To be translated ======
 menuText P OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText P OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText P OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText P OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText P OptionsToolbar "Pasek narzêdziowy" 6 \
   {Schowaj/poka¿ pasek narzêdziowy}
@@ -2173,6 +2177,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

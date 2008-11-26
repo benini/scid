@@ -323,6 +323,10 @@ menuText N OptionsSounds "Geluiden ..." 2 {Configureer zet aankondigingsgeluiden
 # ====== TODO To be translated ======
 menuText N OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText N OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText N OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText N OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText N OptionsToolbar "Gereedschappenbalk" 12 \
   {Weergeven/verbergen hoofdvenster gereedschappenbalk}
@@ -1940,6 +1944,7 @@ translate N autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
 
 
 

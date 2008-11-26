@@ -312,6 +312,10 @@ menuText W OptionsSounds "Ljud..." 2 {Konfigurera ljud för att annonsera drag}
 # ====== TODO To be translated ======
 menuText W OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText W OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText W OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText W OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText W OptionsToolbar "Verktygsfält" 0 \
   {Visa/ dölj huvudfönstrets verktygsfält}
@@ -6963,6 +6967,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

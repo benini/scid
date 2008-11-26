@@ -313,6 +313,10 @@ menuText B OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# *
 # ====== TODO To be translated ======
 menuText B OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText B OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText B OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText B OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText B OptionsToolbar "Barra de Ferramentas da Janela Principal" 12 \
   {Exibe/Oculta a barra de ferramentas da janela principal}
@@ -1952,6 +1956,7 @@ translate B autoResizeBoard {Automatic resize of board}
 }
 
 # end of portbr.tcl
+
 
 
 

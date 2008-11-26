@@ -312,6 +312,10 @@ menuText O OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# *
 # ====== TODO To be translated ======
 menuText O OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText O OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText O OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText O OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText O OptionsToolbar "Verktøylinje i hovedvindu" 0 \
   {Vis/skjul menylinjen i hovedvinduet}
@@ -1946,6 +1950,7 @@ translate O autoResizeBoard {Automatic resize of board}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

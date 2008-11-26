@@ -304,6 +304,10 @@ menuText C OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# *
 # ====== TODO To be translated ======
 menuText C OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText C OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText C OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText C OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText C OptionsToolbar "Nástrojová li¹ta..." 11 \
   {Konfigurovat nástrojovou li¹tu hlavního okna}
@@ -5577,6 +5581,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

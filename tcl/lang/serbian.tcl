@@ -310,6 +310,10 @@ menuText Y OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# *
 # ====== TODO To be translated ======
 menuText Y OptionsWindowsDock "Dock windows" 0 {Dock windows}
 # ====== TODO To be translated ======
+menuText Y OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+# ====== TODO To be translated ======
+menuText Y OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+# ====== TODO To be translated ======
 menuText Y OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
 menuText Y OptionsToolbar "Toolbar glavnog prozora" 12 \
   {Prika¾i/sakrij toolbar glavnog prozora}
@@ -1946,6 +1950,7 @@ translate Y autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 
