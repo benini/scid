@@ -252,9 +252,9 @@ proc ::search::material {} {
   set f $w.mp.material.b1
   pack [frame $f] -side top -ipady 2
   
-  dialogbutton $f.zero -textvar ::tr(Zero) -font $small -command ::search::material::zero
-  dialogbutton $f.reset -textvar ::tr(Any) -font $small -command ::search::material::any
-  dialogbutton $f.current -textvar ::tr(CurrentBoard) -font $small -command {
+  dialogbuttonsmall $f.zero -textvar ::tr(Zero) -command ::search::material::zero
+  dialogbuttonsmall $f.reset -textvar ::tr(Any) -command ::search::material::any
+  dialogbuttonsmall $f.current -textvar ::tr(CurrentBoard) -command {
     ::search::material::zero
     set bd [sc_pos board]
     for {set i 0} {$i < 64} {incr i} {
@@ -416,7 +416,7 @@ proc ::search::material {} {
   frame $f
   dialogbutton $f.clearPat -textvar ::tr(Clear) -command clearPatterns
   menubutton $f.common -textvar ::tr(CommonPatterns...) \
-      -menu $f.common.m -relief raised -font $small
+      -menu $f.common.m -relief raised
   menu $f.common.m -font $small
   $f.common.m add command -label [tr PatternWhiteIQP] -command {
     if {$pMin(wp) < 1} { set pMin(wp) 1 }
@@ -548,7 +548,7 @@ proc ::search::material {} {
   checkbutton $f.ignorecol -textvar ::tr(IgnoreColors) \
       -variable ignoreColors -padx 4
   
-  dialogbutton $f.save -textvar ::tr(Save...) -padx 10 -command ::search::material::save
+  dialogbutton $f.save -textvar ::tr(Save...) -command ::search::material::save
   
   dialogbutton $f.stop -textvar ::tr(Stop) -command sc_progressBar
   $f.stop configure -state disabled

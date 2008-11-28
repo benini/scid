@@ -262,13 +262,14 @@ menuText F OptionsMovesKey "Complétion clavier" 0 \
   {Activer/Désactiver le mode de complétion du clavier}
 menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
 menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
+menuText F OptionsTheme "Apparence" 0 {Change l'apparence de l'interface}
 menuText F OptionsWindows "Fenêtres" 0 {Options des fenêtres}
 menuText F OptionsWindowsIconify "Mise en icone automatique" 5 \
   {Mettre toutes les fenêtres en icones quand la fenêtre principale est mise en icone}
 menuText F OptionsWindowsRaise "Apparition automatique" 0 \
   {Faire apparaître certaines fenêtres (i.e. barres de progression) à chaque fois qu'elles sont obscurcies}
 menuText F OptionsSounds "Sons..." 2 {Configurer l'annonce des sonore des coups}
-menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées}
+menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées (nécessite un redémarrage)}
 menuText F OptionsWindowsSaveLayout "Enregistrer disposition" 0 {Enregistrer disposition}
 menuText F OptionsWindowsRestoreLayout "Remettre disposition" 0 {Remettre disposition}
 menuText F OptionsWindowsShowGameInfo "Montrer le panneau d'info" 0 {Montrer le panneau d'info}
@@ -1547,6 +1548,11 @@ translate F DoneWithPosition {Position terminée}
 translate F Board {Echiquier}
 translate F showGameInfo {Montrer le panneau d'info}
 translate F autoResizeBoard {Redimensionnement automatique}
+translate F DockTop {Déplacer en haut}
+translate F DockBottom {Déplacer en bas}
+translate F DockLeft {Déplacer à gauche}
+translate F DockRight {Déplacer à droite}
+translate F Undock {Détacher}
 
 ##########
 #
@@ -1754,6 +1760,8 @@ translate F autoResizeBoard {Redimensionnement automatique}
 }
 
 # end of francais.tcl
+
+
 
 
 

@@ -303,6 +303,8 @@ menuText W OptionsMovesKey "Tangentkomplettering" 0 \
   {Starta/ stäng av dragkomplettering vid tangentinmatning}
 menuText W OptionsNumbers "Talformat" 3 {Välj hur tal visas}
 menuText W OptionsStartup "Start" 3 {Välj vilka fönster som ska öppnas vid start}
+# ====== TODO To be translated ======
+menuText W OptionsTheme "Theme" 0 {Change look of interface}
 menuText W OptionsWindows "Fönster" 1 {Fönsteralternativ}
 menuText W OptionsWindowsIconify "Minimera automatiskt" 5 \
   {Minimera alla fönster när huvudfönstret minimeras}
@@ -1950,6 +1952,16 @@ translate W Board {Board}
 translate W showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate W autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
+translate W DockTop {Move to top}
+# ====== TODO To be translated ======
+translate W DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate W DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate W DockRight {Move to right}
+# ====== TODO To be translated ======
+translate W Undock {Undock}
 # ====== TODO To be translated ======
 }
 
@@ -6967,6 +6979,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 

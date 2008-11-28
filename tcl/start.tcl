@@ -296,8 +296,6 @@ set ::fics::consolefg     LimeGreen
 set ::fics::consoleheight 10
 set ::fics::consolewidth  40
 
-
-
 # Defaults for initial directories:
 set initialDir(base) "."
 set initialDir(book) "."
@@ -443,6 +441,9 @@ set blunderThreshold 1.0
 
 # Geometry of windows:
 array set geometry {}
+
+# Default theme
+set ::lookTheme "default"
 
 # startup:
 #   Stores which windows should be opened on startup.
@@ -684,6 +685,7 @@ proc setTitle { w title } {
     if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
       set nb ""
     }
+    
     if { $nb == "" } {
       wm title $w $title
     } else  {
@@ -935,16 +937,14 @@ proc ::splash::make {} {
   wm withdraw $w
   wm protocol $w WM_DELETE_WINDOW [list wm withdraw $w]
   wm title $w "Welcome to Scid $::scidVersion"
-  frame $w.f
-  frame $w.b
+  ttk::frame $w.f
+  ttk::frame $w.b
   text $w.t -height 15 -width 60 -cursor top_left_arrow \
       -background white -font font_Regular -wrap word \
       -yscrollcommand [list $w.ybar set] -setgrid 1
-  scrollbar $w.ybar -command [list $w.t yview]
-  checkbutton $w.auto -text "Auto-close after startup" \
-      -variable ::splash::autoclose -font font_Small -pady 5 -padx 5
-  button $w.dismiss -text Close -width 8 -command [list wm withdraw $w] \
-      -font font_Small
+  ttk::scrollbar $w.ybar -command [list $w.t yview]
+  ttk::checkbutton $w.auto -text "Auto-close after startup" -variable ::splash::autoclose -style Small.TCheckbutton ;# -pady 5 -padx 5
+  ttk::button $w.dismiss -text Close -width 8 -command [list wm withdraw $w] -style Small.TButton
   pack $w.f -side top -expand yes -fill both
   pack $w.b -side top -fill x
   pack $w.auto -side left -in .splash.b -pady 2 -ipadx 10 -padx 10
@@ -1248,6 +1248,13 @@ foreach sz $boardSizes {
   if {$boardSize >= $sz} { set newSize $sz }
 }
 set boardSize $newSize
+
+# Load theme
+ttk::style theme use $::lookTheme
+# Style definitions
+ttk::style configure Bold.TCheckbutton -font font_Bold
+ttk::style configure Small.TCheckbutton -font font_Small
+ttk::style configure Small.TButton -font font_Small
 
 # Check for old (single-directory) tablebase option:
 if {[info exists initialDir(tablebase)]} {

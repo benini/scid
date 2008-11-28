@@ -303,6 +303,8 @@ menuText O OptionsMovesKey "Autofullfør" 0 \
   {Slå av/på autofullføriring av tastaturtrekk}
 menuText O OptionsNumbers "Tallformat" 0 {Angi tallformat}
 menuText O OptionsStartup "Oppstart" 0 {Angi vinduer som skal åpne ved oppstart}
+# ====== TODO To be translated ======
+menuText O OptionsTheme "Theme" 0 {Change look of interface}
 menuText O OptionsWindows "Vinduer" 0 {Vindusinnstillinger}
 menuText O OptionsWindowsIconify "Auto-minimer" 5 \
   {Minimerer alle vinduer sammen med hovedvinduet}
@@ -1944,12 +1946,24 @@ translate O showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate O autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate O DockTop {Move to top}
+# ====== TODO To be translated ======
+translate O DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate O DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate O DockRight {Move to right}
+# ====== TODO To be translated ======
+translate O Undock {Undock}
+# ====== TODO To be translated ======
 }
 
 # norsk.tcl
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

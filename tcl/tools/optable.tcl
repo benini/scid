@@ -91,7 +91,7 @@ proc ::optable::ConfigMenus {{lang ""}} {
 }
 
 proc ::optable::makeReportWin {args} {
-  if {! [sc_base inUse]} { return }
+if {! [sc_base inUse]} { return }
   set ::optable::opReportBase [sc_base current]
   set showProgress 1
   set args [linsert $args 0 "args"]
@@ -147,16 +147,20 @@ proc ::optable::makeReportWin {args} {
     destroy $w
     if {$::optable::_interrupt} { return }
   }
+    
   set ::optable::_data(tree) $newTreeData
   ::optable::latexifyTree
   set ::optable::_data(bdLaTeX) [sc_pos tex]
   set ::optable::_data(bdHTML) [sc_pos html]
   set ::optable::_data(bdLaTeX_flip) [sc_pos tex flip]
   set ::optable::_data(bdHTML_flip) [sc_pos html -flip 1]
+    
   ::optable::setupRatios
+    
   set report [::optable::report ctext 1]
+    
   if {[lsearch -exact $args "-nodisplay"] >= 0} { return }
-  
+    
   set w .oprepWin
   if {![winfo exists $w]} {
     toplevel $w
@@ -169,6 +173,7 @@ proc ::optable::makeReportWin {args} {
     foreach i {file favorites helpmenu} {
       menu $w.menu.$i -tearoff 0
     }
+      
     $w.menu.file add command -label OprepFileText \
         -command {::optable::saveReport text}
     $w.menu.file add command -label OprepFileHtml \
@@ -192,8 +197,9 @@ proc ::optable::makeReportWin {args} {
         -accelerator F1 -command {helpWindow Reports Opening}
     $w.menu.helpmenu add command -label OprepHelpIndex \
         -command {helpWindow Index}
+          
     ::optable::updateFavoritesMenu
-    
+      
     bind $w <F1> {helpWindow Reports Opening}
     bind $w <Escape> "$w.b.close invoke"
     bind $w <Up> "$w.text yview scroll -1 units"
@@ -224,6 +230,7 @@ proc ::optable::makeReportWin {args} {
       ::optable::makeReportWin
       .oprepWin.text yview moveto $::optable::_data(yview)
     }
+      
     button $w.b.mergeGames -textvar ::tr(MergeGames) -command ::optable::mergeGames
     button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Opening}
     button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
@@ -272,6 +279,7 @@ proc ::optable::makeReportWin {args} {
   ::windows::gamelist::Refresh
   ::windows::stats::Refresh
   set ::gameInfo(showMaterial) $old_showMaterial
+    
 }
 ################################################################################
 # merges the N best games up to P plies to current game
@@ -360,11 +368,11 @@ proc ::optable::setOptions {} {
         spinbox $w.f.s$i -textvariable ::optable($i) -from 0 -to 5000 -increment 50 \
             -state readonly -width 5 -justify right -font font_Small
       } else  {
-        ::combobox::combobox $w.f.s$i -textvariable ::optable($i) \
-            -editable false -width 2 -height 11 -justify right -font font_Small
+        set tmpcombo {}
         for {set x $from} {$x <= $to} {incr x $res} {
-          $w.f.s$i list insert end $x
+          lappend tmpcombo $x
         }
+        ttk::combobox $w.f.s$i -textvariable ::optable($i) -width 2 -height 11 -values $tmpcombo
       }
       
       label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
@@ -928,7 +936,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r $::optable::_docEnd($fmt)
     return $r
   }
-  
+    
   if {$::optable(Stats) > 0  ||
     $::optable(Oldest) > 0  ||
     $::optable(Newest) > 0  ||
@@ -949,7 +957,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec $tr(OprepNewest)]
     append r [sc_report opening best n $::optable(Newest)]
   }
-  
+    
   if {$::optable(Popular) > 0} {
     append r [::optable::_subsec $tr(OprepPopular)]
     set next ""
@@ -1016,7 +1024,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
       append r "\\end{tabular}\n"
     }
   }
-  
+    
   if {$::optable(MostFrequent) > 0  &&  $::optable(MostFrequentWhite)} {
     append r [::optable::_subsec "$tr(OprepMostFrequent) ($tr(White))"]
     append r [sc_report opening players white $::optable(MostFrequent)]
@@ -1025,7 +1033,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec "$tr(OprepMostFrequent) ($tr(Black))"]
     append r [sc_report opening players black $::optable(MostFrequent)]
   }
-  
+    
   if {$::optable(AvgPerf)  ||  $::optable(HighRating)} {
     append r [::optable::_sec $tr(OprepRatingsPerf)]
   }
@@ -1058,7 +1066,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec $::tr(OprepResults)]
     append r [::optable::results opening $fmt]
   }
-  
+    
   if {$::optable(Shortest) > 0  &&  $::optable(ShortestWhite)} {
     append r [::optable::_subsec "$tr(OprepShortest) ($tr(White))"]
     append r [sc_report opening best w $::optable(Shortest)]
@@ -1067,7 +1075,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec "$tr(OprepShortest) ($tr(Black))"]
     append r [sc_report opening best b $::optable(Shortest)]
   }
-  
+      
   if {$::optable(MoveOrders) > 0  ||
     $::optable(MovesFrom) > 0  ||
     $::optable(Themes) > 0  ||
@@ -1098,7 +1106,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
       append r $postText
     }
   }
-  
+      
   if {$::optable(Themes) > 0} {
     append r [::optable::_subsec $tr(OprepThemes)]
     append r [sc_report opening themes $tr(OprepThemeDescription:) \
@@ -1109,7 +1117,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
         $tr(OprepThemeWP567:) $tr(OprepThemeBP234:) \
         $tr(OprepThemeOpenCDE:) ]
   }
-  
+    
   if {$::optable(Endgames) > 0} {
     append r [::optable::_subsec $tr(OprepEndgames)]
     append r "$tr(OprepEndClass:)$n"
@@ -1125,6 +1133,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [sc_report opening print $numRows $sec $comment]
     # puts [sc_report opening print $numRows $sec $comment]
   }
+    
   append r $::optable::_docEnd($fmt)
   
   # Eszet (ss) characters seem to be mishandled by LaTeX, even with

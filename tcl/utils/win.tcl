@@ -419,11 +419,13 @@ namespace eval docking {
   
   # associates frames' name to a managed toplevel
   array set _toplevel {}
+  
 }
 ################################################################################
 # find notebook, corresponding to path
 proc ::docking::find_tbn {path} {
   variable tbs
+  
   if {$path==""} { return $path }
   # already a managed notebook?
   if {[info exists tbs($path)]} {
@@ -437,16 +439,23 @@ proc ::docking::find_tbn {path} {
   } else {
     set path [join [lrange $path 0 2] "."]
   }
+  
   # is it a managed notebook?
   if {[info exists tbs($path)]} {
     return $path
   }
+  
   # try to find notebook that manages this page
   foreach tb [array names tbs] {
+    if {[get_class $tb] != "TNotebook"} {
+      puts "tb $tb pas notebook"
+      continue
+    }
     if {[lsearch -exact [$tb tabs] $path]>=0} {
       return $tb
     }
   }
+  
   return {}
 }
 
@@ -592,8 +601,7 @@ proc ::docking::end_motion {x y} {
   if {$c_path==""} { return }
   set path [winfo containing $x $y]
   $path configure -cursor {}
-  # essai
-  set anchor "t"
+  
   set t [find_tbn $path]
   if {$t!=""} {
     if {$t==$c_path} {
@@ -602,10 +610,7 @@ proc ::docking::end_motion {x y} {
         return
       }
     }
-    if {$anchor!="t"} {
-      set tbn [add_tbn $t $anchor]
-      move_tab $c_path $tbn
-    } elseif {$t!=$c_path} {
+    if {$t!=$c_path} {
       move_tab $c_path $t
     }
   }
@@ -660,15 +665,15 @@ proc ::docking::ctx_menu {w} {
     destroy $mctxt
   }
   menu $mctxt -tearoff 0
-  $mctxt add command -label Top -command "::docking::ctx_cmd $w n"
-  $mctxt add command -label Bottom -command "::docking::ctx_cmd $w s"
-  $mctxt add command -label Left -command "::docking::ctx_cmd $w w"
-  $mctxt add command -label Right -command "::docking::ctx_cmd $w e"
+  $mctxt add command -label [ ::tr DockTop ] -command "::docking::ctx_cmd $w n"
+  $mctxt add command -label [ ::tr DockBottom ] -command "::docking::ctx_cmd $w s"
+  $mctxt add command -label [ ::tr DockLeft ] -command "::docking::ctx_cmd $w w"
+  $mctxt add command -label [ ::tr DockRight ] -command "::docking::ctx_cmd $w e"
   $mctxt add separator
   # Main board can not be closed or undocked
   if { [$w select] != ".fdockmain" } {
-    $mctxt add command -label Undock -command "::docking::undock $w"
-    $mctxt add command -label Close -command " ::docking::close $w "
+    $mctxt add command -label [ ::tr Undock ] -command "::docking::undock $w"
+    $mctxt add command -label [ ::tr Close ] -command " ::docking::close $w "
   } else {
     $mctxt add checkbutton -label [::tr "showGameInfo"] -variable ::showGameInfo -command ::toggleGameInfo
     $mctxt add checkbutton -label [::tr "autoResizeBoard"] -variable ::autoResizeBoard
@@ -792,7 +797,6 @@ proc ::docking::layout_save { slot } {
   
   set ::docking::layout_list($slot) {}
   lappend ::docking::layout_list($slot) $::docking::tbcnt
-  puts "apres enregistrement de tbcnt $::docking::layout_list($slot)"
   lappend ::docking::layout_list($slot) [array get ::docking::tbs ]
   lappend ::docking::layout_list($slot) [array get ::docking::notebook_name ]
   lappend ::docking::layout_list($slot) [array get ::docking::_toplevel ]
@@ -804,12 +808,10 @@ proc ::docking::layout_save { slot } {
 }
 
 proc ::docking::layout_save_pw {pw} {
-  puts "$pw [$pw cget -orient]"
   lappend ::docking::layout_data [list $pw [$pw cget -orient ] ]
   set nb_list {}
   foreach p [$pw panes] {
     if {[get_class $p] == "TNotebook"} {
-      puts "      pw=$pw notebook=$p  tabs => [$p tabs]"
       lappend nb_list $p
       set ::docking::layout_tabs($p) [$p tabs]
     }
@@ -867,7 +869,7 @@ proc ::docking::layout_restore_nb { pw name } {
       $nb add $d -text $::tr(Board)
       raise $d
     }
-    if { $d == ".fdockpgnWin" } { ::pgn::OpenClose }
+    if { $d == ".fdockpgnWin" } { ::pgn::OpenClose ; ::pgn::Refresh 1 }
     if { $d == ".fdockanalysisWin1" } { ::makeAnalysisWin 1 0 }
     if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 }
     if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
@@ -880,23 +882,27 @@ proc ::docking::layout_restore_nb { pw name } {
 
 ################################################################################
 proc ::docking::layout_restore { slot } {
+  variable tbcnt
+  
+  # if no layout recorded, return
+  if { $::docking::layout_list($slot) == {} } {
+    return
+  }
+  
   closeAll {.pw}
   
   array set ::docking::tbs {}
   set ::docking::tbs(.nb) .pw
   set ::docking::layout_data [lindex $::docking::layout_list($slot) 4 ]
-  puts "debug 5 = [lindex $::docking::layout_list($slot) 5 ]"
   array set ::docking::layout_notebook [lindex $::docking::layout_list($slot) 5 ]
   array set ::docking::layout_tabs [lindex $::docking::layout_list($slot) 6 ]
-  puts "restore $slot data= $::docking::layout_data ***(liste = $::docking::layout_list($slot))"
-  puts "::docking::layout_notebook = [array get ::docking::layout_notebook]"
   layout_restore_pw
   
   # restore layout's data
   set ::docking::tbcnt [lindex $::docking::layout_list($slot) 0 ]
   array set ::docking::tbs [lindex $::docking::layout_list($slot) 1 ]
   array set ::docking::notebook_name [lindex $::docking::layout_list($slot) 2 ]
-  array set ::docking::_toplevel [lindex $::docking::layout_list($slot) 3 ]
+  array set ::docking::toplevel [lindex $::docking::layout_list($slot) 3 ]
   
 }
 

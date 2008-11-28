@@ -533,15 +533,17 @@ namespace eval uci {
       }
       if { $elt(type) == "combo"} {
         label $w.fopt.label$optnbr -text "$name$default"
-        ::combobox::combobox $w.fopt.opt$optnbr -editable false
         set idx 0
         set i 0
+        set tmp {}
         foreach e $elt(var) {
-          $w.fopt.opt$optnbr list insert end [join $e]
+          lappend tmp [join $e]
           if {[join $e] == $value} { set idx $i }
           incr i
         }
-        $w.fopt.opt$optnbr select $idx
+        ttk::combobox $w.fopt.opt$optnbr -values $tmp
+        
+        $w.fopt.opt$optnbr current $idx
         grid $w.fopt.label$optnbr -row $row -column $col -sticky e
         incr col
         grid $w.fopt.opt$optnbr -row $row -column $col -sticky w

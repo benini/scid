@@ -216,20 +216,20 @@ proc ::tree::make { { baseNumber -1 } } {
   
   bind $w <Configure> "recordWinSize $w"
   
-  label $w.status -width 1 -anchor w -font font_Small \
+  ttk::label $w.status -width 1 -anchor w -font font_Small \
       -relief sunken -textvar tree(status$baseNumber)
   pack $w.status -side bottom -fill x
   pack $w.progress -side bottom
-  pack [frame $w.buttons -relief sunken] -side bottom -fill x
+  pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both
   
-  button $w.buttons.best -image b_list -command "::tree::best $baseNumber"
-  button $w.buttons.graph -image b_bargraph -command "::tree::graph $baseNumber"
+  ttk::button $w.buttons.best -image b_list -command "::tree::best $baseNumber"
+  ttk::button $w.buttons.graph -image b_bargraph -command "::tree::graph $baseNumber"
   # add a button to start/stop tree refresh
-  button $w.buttons.bStartStop -image engine_on -command "::tree::toggleRefresh $baseNumber" -relief flat
+  ttk::button $w.buttons.bStartStop -image engine_on -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
   
-  checkbutton $w.buttons.lock -textvar ::tr(LockTree) -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
-  checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
+  ttk::checkbutton $w.buttons.lock -textvar ::tr(LockTree) -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
+  ttk::checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
   
   foreach {b t} {
     best TreeFileBest graph TreeFileGraph lock TreeOptLock
@@ -483,7 +483,7 @@ proc ::tree::dorefresh { baseNumber } {
   foreach button {best graph training lock close} {
     $w.buttons.$button configure -state normal
   }
-  $w.buttons.stop configure -state disabled -relief raised
+  $w.buttons.stop configure -state disabled
   
   unbusyCursor .
   set tree(refresh) 0
@@ -925,19 +925,19 @@ proc ::tree::best { baseNumber } {
     setWinLocation $w
     bind $w <Escape> "destroy $w"
     bind $w <F1> {helpWindow Tree Best}
-    pack [frame $w.b] -side bottom -fill x
-    pack [frame $w.opt] -side bottom -fill x
+    pack [ttk::frame $w.b] -side bottom -fill x
+    pack [ttk::frame $w.opt] -side bottom -fill x
     set pane [::utils::pane::Create $w.pane blist bpgn 520 320 0.6]
     ::utils::pane::SetRange $w.pane 0.3 0.8
     pack $pane -side top -expand true -fill both
-    scrollbar $pane.blist.ybar -command "$pane.blist.list yview" -takefocus 0
+    ttk::scrollbar $pane.blist.ybar -command "$pane.blist.list yview" -takefocus 0
     listbox $pane.blist.list -background white -yscrollcommand "$pane.blist.ybar set" -font font_Small
     pack $pane.blist.ybar -side right -fill y
     pack $pane.blist.list -side left -fill both -expand yes
     bind $pane.blist.list <<ListboxSelect>> "::tree::bestPgn $baseNumber"
     bind $pane.blist.list <Double-Button-1> "::tree::bestBrowse $baseNumber"
     
-    scrollbar $pane.bpgn.ybar -command "$pane.bpgn.text yview" -takefocus 0
+    ttk::scrollbar $pane.bpgn.ybar -command "$pane.bpgn.text yview" -takefocus 0
     text $pane.bpgn.text -width 50 -height 20 -background gray90 \
         -cursor top_left_arrow -yscrollcommand "$pane.bpgn.ybar set" -wrap word \
         -state disabled -font font_Small
@@ -951,21 +951,21 @@ proc ::tree::best { baseNumber } {
     bind $t <ButtonPress-3> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
     bind $t <ButtonRelease-3> :::pgn::HideBoard
     
-    label $w.opt.lmax -text $::tr(TreeBest:) -font font_Small
+    ttk::label $w.opt.lmax -text $::tr(TreeBest:) -font font_Small
     set m [tk_optionMenu $w.opt.max tree(bestMax$baseNumber) 10 20 50 100 200 500]
     $m configure -font font_Small
     $w.opt.max configure -font font_Small
-    label $w.opt.lres -text " $::tr(Result):" -font font_Small
+    ttk::label $w.opt.lres -text " $::tr(Result):" -font font_Small
     set m [tk_optionMenu $w.opt.res tree(bestRes$baseNumber) \
         "1-0 0-1 1/2 *" 1-0 0-1 "1-0 0-1" 1/2-1/2]
     $m configure -font font_Small
     $w.opt.res configure -font font_Small
     
-    button $w.b.browse -text $::tr(BrowseGame) -command "::tree::bestBrowse $baseNumber"
-    button $w.b.load -text $::tr(LoadGame) -command "::tree::bestLoad $baseNumber"
-    button $w.b.merge -text $::tr(MergeGame) -command "::tree::bestMerge $baseNumber"
-    button $w.b.close -text $::tr(Close) -command "destroy $w"
-    foreach i {browse load merge close} { $w.b.$i configure -font font_Small }
+    ttk::button $w.b.browse -text $::tr(BrowseGame) -command "::tree::bestBrowse $baseNumber"
+    ttk::button $w.b.load -text $::tr(LoadGame) -command "::tree::bestLoad $baseNumber"
+    ttk::button $w.b.merge -text $::tr(MergeGame) -command "::tree::bestMerge $baseNumber"
+    ttk::button $w.b.close -text $::tr(Close) -command "destroy $w"
+    foreach i {browse load merge close} { $w.b.$i configure -style Small.TButton }
     pack $w.b.close $w.b.merge $w.b.load $w.b.browse \
         -side right -padx 1 -pady 2
     pack $w.opt.lmax $w.opt.max -side left -padx 0 -pady 2
@@ -1193,10 +1193,10 @@ proc ::tree::toggleRefresh { baseNumber } {
   set b .treeWin$baseNumber.buttons.bStartStop
   
   if {$tree(autorefresh$baseNumber)} {
-    $b configure -image engine_off -relief flat
+    $b configure -image engine_off 
     set tree(autorefresh$baseNumber) 0
   } else  {
-    $b configure -image engine_on -relief flat
+    $b configure -image engine_on 
     set tree(autorefresh$baseNumber) 1
     ::tree::refresh $baseNumber
   }

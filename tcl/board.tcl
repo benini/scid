@@ -107,21 +107,21 @@ proc chooseBoardColors {{choice -1}} {
   
   foreach i $colors { set newColors($i) [set $i] }
   set bd $w.bd
-  pack [frame $bd] -side top -padx 2 -pady 2
+  pack [ttk::frame $bd] -side top -expand 1
   addHorizontalRule $w
-  pack [frame $w.select] -side top -fill x
+  pack [ttk::frame $w.select] -side top -fill x
   addHorizontalRule $w
-  pack [frame $w.preset] -side top -fill x
-  pack [frame $w.texture] -side top -fill x
+  pack [ttk::frame $w.preset] -side top -fill x
+  pack [ttk::frame $w.texture] -side top -fill x
   addHorizontalRule $w
-  pack [frame $w.border] -side top
+  pack [ttk::frame $w.border] -side top
   addHorizontalRule $w
-  pack [frame $w.buttons] -side top -fill x
+  pack [ttk::frame $w.buttons] -side top -fill x
   
   set column 0
   foreach j {r n b q k p} {
-    label $bd.w$j -image w${j}40
-    label $bd.b$j -image b${j}40
+    ttk::label $bd.w$j -image w${j}40
+    ttk::label $bd.b$j -image b${j}40
     grid $bd.b$j -row 0 -column $column
     grid $bd.w$j -row 1 -column $column
     incr column
@@ -137,7 +137,7 @@ proc chooseBoardColors {{choice -1}} {
     set x \[ tk_chooseColor -initialcolor \$newColors($c) -title Scid \]
     if {\$x != \"\"} { set newColors($c) \$x; chooseBoardColors }
     "
-    label $f.l$c -text "$::tr($n)  "
+    ttk::label $f.l$c -text "$::tr($n)  "
     grid $f.b$c -row $row -column $column
     grid $f.l$c -row $row -column [expr {$column + 1} ] -sticky w
   }
@@ -147,9 +147,9 @@ proc chooseBoardColors {{choice -1}} {
   #label $f.label -text "Border width"
   #pack $f.label -side left -padx 5
   foreach i {0 1 2 3} {
-    if {$i != 0} { pack [frame $f.gap$i -width 20] -side left -padx 1 }
+    if {$i != 0} { pack [ttk::frame $f.gap$i -width 20] -side left -padx 1 }
     set b $f.b$i
-    radiobutton $b -text "$i:" -variable newborderwidth -value $i
+    ttk::radiobutton $b -text "$i:" -variable newborderwidth -value $i
     set c $f.c$i
     canvas $c -height 40 -width 40 -background black
     $c create rectangle 0 0 [expr {20 - $i}] [expr {20 - $i}] -tag dark
@@ -165,12 +165,12 @@ proc chooseBoardColors {{choice -1}} {
   set psize 40
   foreach list $colorSchemes {
     set f $w.preset.p$count
-    pack [frame $f] -side left -padx 5
-    label $f.blite -image bp40 -background [lindex $list 1]
-    label $f.bdark -image bp40 -background [lindex $list 2]
-    label $f.wlite -image wp40 -background [lindex $list 1]
-    label $f.wdark -image wp40 -background [lindex $list 2]
-    button $f.select -text [expr {$count + 1}] -pady 2 -command "chooseBoardColors $count ; \
+    pack [ttk::frame $f] -side left -padx 5
+    ttk::label $f.blite -image bp40 -background [lindex $list 1]
+    ttk::label $f.bdark -image bp40 -background [lindex $list 2]
+    ttk::label $f.wlite -image wp40 -background [lindex $list 1]
+    ttk::label $f.wdark -image wp40 -background [lindex $list 2]
+    ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardColors $count ; \
         set ::boardfile_dark emptySquare ; \
         set ::boardfile_lite emptySquare ; \
         ::SetBoardTextures "
@@ -196,7 +196,7 @@ proc chooseBoardColors {{choice -1}} {
   set psize 40
   foreach tex $::textureSquare {
     set f $w.texture.p$count
-    grid [frame $f] -row $row -column $col -padx 5
+    grid [ttk::frame $f] -row $row -column $col -padx 5
     canvas $f.c -width [expr $psize*2] -height [expr $psize*2]
     $f.c create image 0 0 -image ${tex}-l -anchor nw
     $f.c create image $psize 0 -image ${tex}-d -anchor nw
@@ -206,7 +206,7 @@ proc chooseBoardColors {{choice -1}} {
     $f.c create image $psize 0 -image wp40 -anchor nw
     $f.c create image 0 $psize -image wp40 -anchor nw
     $f.c create image $psize $psize -image bp40 -anchor nw
-    button $f.select -text [expr {$count + 1}] -pady 2 -command "chooseBoardTextures $count"
+    ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardTextures $count"
     bind $f.c <1> "chooseBoardTextures $count"
     pack $f.c $f.select -side top -fill x
     
@@ -423,7 +423,7 @@ image create photo b_list -data {
 }
 
 set tb .main.tb
-frame $tb -relief raised -border 1
+ttk::frame $tb -relief raised -border 1
 button $tb.new -image tb_new -command ::file::New
 button .main.tb.open -image tb_open -command ::file::Open
 button .main.tb.save -image tb_save -command {
@@ -444,21 +444,21 @@ bind $dot_w <Control-b> ::bookmarks::PostMenu
 bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
 
 
-frame .main.tb.space1 -width 12
+ttk::frame .main.tb.space1 -width 12
 button .main.tb.cut -image tb_cut -command ::game::Clear
 button .main.tb.copy -image tb_copy \
     -command {catch {sc_clipbase copy}; updateBoard}
 button .main.tb.paste -image tb_paste \
     -command {catch {sc_clipbase paste}; updateBoard -pgn}
-frame .main.tb.space2 -width 12
+ttk::frame .main.tb.space2 -width 12
 button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
 button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
-frame .main.tb.space3 -width 12
+ttk::frame .main.tb.space3 -width 12
 button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset
 button .main.tb.bsearch -image tb_bsearch -command ::search::board
 button .main.tb.hsearch -image tb_hsearch -command ::search::header
 button .main.tb.msearch -image tb_msearch -command ::search::material
-frame .main.tb.space4 -width 12
+ttk::frame .main.tb.space4 -width 12
 button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open
 button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open
 button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose
@@ -473,8 +473,7 @@ button .main.tb.help -image tb_help -command {helpWindow Index}
 foreach i {new open save close finder bkm cut copy paste gprev gnext \
       rfilter bsearch hsearch msearch \
       switcher glist pgn tmt maint eco tree crosst engine help} {
-  .main.tb.$i configure -relief flat -border 1 -highlightthickness 0 -anchor n \
-      -takefocus 0
+  .main.tb.$i configure -takefocus 0 ;#-relief flat -border 1 -anchor n -highlightthickness 0
   bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
   bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; statusBarRestore %W; break"
 }
@@ -487,31 +486,31 @@ proc configToolbar {} {
   wm title $w "Scid: [tr OptionsToolbar]"
   
   array set ::toolbar_temp [array get ::toolbar]
-  pack [frame $w.f1] -side top -fill x
+  pack [ttk::frame $w.f1] -side top -fill x
   foreach i {new open save close finder bkm} {
     checkbutton $w.f1.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
         -variable toolbar_temp($i) -relief solid -borderwidth 1
     pack $w.f1.$i -side left -ipadx 2 -ipady 2
   }
-  pack [frame $w.f2] -side top -fill x
+  pack [ttk::frame $w.f2] -side top -fill x
   foreach i {gprev gnext} {
     checkbutton $w.f2.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
         -variable toolbar_temp($i) -relief solid -borderwidth 1
     pack $w.f2.$i -side left -ipadx 1 -ipady 1
   }
-  pack [frame $w.f3] -side top -fill x
+  pack [ttk::frame $w.f3] -side top -fill x
   foreach i {cut copy paste} {
     checkbutton $w.f3.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
         -variable toolbar_temp($i) -relief solid -borderwidth 1
     pack $w.f3.$i -side left -ipadx 1 -ipady 1
   }
-  pack [frame $w.f4] -side top -fill x
+  pack [ttk::frame $w.f4] -side top -fill x
   foreach i {rfilter bsearch hsearch msearch} {
     checkbutton $w.f4.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
         -variable toolbar_temp($i) -relief solid -borderwidth 1
     pack $w.f4.$i -side left -ipadx 1 -ipady 1
   }
-  pack [frame $w.f5] -side top -fill x
+  pack [ttk::frame $w.f5] -side top -fill x
   foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
     checkbutton $w.f5.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
         -variable toolbar_temp($i) -relief solid -borderwidth 1
@@ -519,20 +518,20 @@ proc configToolbar {} {
   }
   
   addHorizontalRule $w
-  pack [frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.b] -side bottom -fill x
   button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
     foreach i [array names toolbar_temp] { set toolbar_temp($i) 1 }
   }
   button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
     foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 }
   }
-  button $w.ok -text "OK" -command {
+  ttk::button $w.ok -text "OK" -command {
     array set toolbar [array get toolbar_temp]
     catch {grab release .tbconfig}
     destroy .tbconfig
     redrawToolbar
   }
-  button $w.cancel -text $::tr(Cancel) \
+  ttk::button $w.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"
   pack $w.cancel $w.ok -side right -padx 2
   pack $w.on $w.off -side left -padx 2
@@ -652,13 +651,13 @@ image create photo tb_addvar -data {
   HZKFJAhk27qmqMq2rlGaJ43a46xslJR7AIMWIORzRCaXzKahAAA7
 }
 
-frame .main.button -relief raised -border 1
+ttk::frame .main.button -relief raised -border 1
 button .main.button.start -image tb_start -command ::move::Start
 button .main.button.back -image tb_prev -command ::move::Back
 button .main.button.forward -image tb_next -command ::move::Forward
 button .main.button.end -image tb_end -command ::move::End
 bind .main.button.end <Button-3> ::tactics::findBestMove
-frame .main.button.space -width 15
+ttk::frame .main.button.space -width 15
 
 # The go-into-variation button is a menubutton:
 menubutton .main.button.intoVar -image tb_invar -menu .main.button.intoVar.menu \
@@ -669,7 +668,7 @@ button .main.button.exitVar -image tb_outvar \
     -command {sc_var exit; updateBoard -animate}
 button .main.button.addVar -image tb_addvar \
     -command {sc_var create; updateBoard -pgn -animate}
-frame .main.button.space2 -width 15
+ttk::frame .main.button.space2 -width 15
 
 image create photo tb_flip -data {
   R0lGODdhFAAUAKEAAAAAANDAoKCAUIsAACwAAAAAFAAUAAACXoSPqcHiHJyA0tDXcHS2jT9s
@@ -766,14 +765,14 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
   
-
-frame $w -class Board
+  
+  ttk::frame $w -class Board
   canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background black -borderwidth 0 -highlightthickness 0
   if {[info tclversion] == 8.5} {
     grid anchor $w center
   }
   
-grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
+  grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
   set bd $w.bd
   
   
@@ -792,24 +791,24 @@ grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
   
   # Set up coordinate labels:
   for {set i 1} {$i <= 8} {incr i} {
-    label $w.lrank$i -text [expr {9 - $i}]
+    ttk::label $w.lrank$i -text [expr {9 - $i}]
     grid $w.lrank$i -row $i -column 0 -sticky e
-    label $w.rrank$i -text [expr {9 - $i}]
+    ttk::label $w.rrank$i -text [expr {9 - $i}]
     grid $w.rrank$i -row $i -column 9 -sticky w
   }
   foreach i {1 2 3 4 5 6 7 8} file {a b c d e f g h} {
-    label $w.tfile$file -text $file
+    ttk::label $w.tfile$file -text $file
     grid $w.tfile$file -row 0 -column $i -sticky s
-    label $w.bfile$file -text $file
+    ttk::label $w.bfile$file -text $file
     grid $w.bfile$file -row 9 -column $i -sticky n
   }
   
   # Set up side-to-move icons:
-  frame $w.stmgap -width 3
-  frame $w.stm
+  ttk::frame $w.stmgap -width 3
+  ttk::frame $w.stm
   # frame $w.mat
-  frame $w.wtm -background white -relief solid -borderwidth 1
-  frame $w.btm -background black -relief solid -borderwidth 1
+  frame $w.wtm -relief solid -borderwidth 1 -background white
+  frame $w.btm -relief solid -borderwidth 1 -background black
   grid $w.stmgap -row 1 -column 10
   grid $w.stm -row 2 -column 11 -rowspan 5 -padx 2
   if {$::board::_showmat($w)} {
@@ -818,7 +817,7 @@ grid $w.bd -row 1 -column 1 -rowspan 8 -columnspan 8
   grid $w.wtm -row 8 -column 11
   grid $w.btm -row 1 -column 11
   if {$::board::_showmat($w)} {
-    grid $w.mat -row 1 -column 12 -rowspan 8
+    grid $w.mat -row 1 -column 12 -rowspan 8 -pady 5
   }
   
   ::board::stm $w

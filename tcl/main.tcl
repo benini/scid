@@ -216,7 +216,7 @@ proc toggleCoords {} {
   ::board::coords .main.board
 }
 
-frame .main.button.space3 -width 15
+ttk::frame .main.button.space3 -width 15
 button .main.button.flip -image tb_flip -takefocus 0 \
     -command "::board::flip .main.board"
 
@@ -346,8 +346,7 @@ button .main.button.trial -image tb_trial -command {setTrialMode toggle}
 
 foreach i {start back forward end intoVar exitVar addVar autoplay \
       flip coords stm trial} {
-  .main.button.$i configure -relief flat -border 1 -highlightthickness 0 \
-      -anchor n -takefocus 0
+  .main.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
   bind .main.button.$i <Any-Enter> "+.main.button.$i configure -relief groove"
   bind .main.button.$i <Any-Leave> "+.main.button.$i configure -relief flat; statusBarRestore %W; break"
 }
@@ -985,10 +984,10 @@ proc getPromoPiece {} {
   wm resizable $w 0 0
   set col "w"
   if { [sc_pos side] == "black" } { set col "b" }
-  button $w.bq -image ${col}q45 -command "set ::result 2 ; destroy $w"
-  button $w.br -image ${col}r45 -command "set ::result 3 ; destroy $w"
-  button $w.bb -image ${col}b45 -command "set ::result 4 ; destroy $w"
-  button $w.bn -image ${col}n45 -command "set ::result 5 ; destroy $w"
+  ttk::button $w.bq -image ${col}q45 -command "set ::result 2 ; destroy $w"
+  ttk::button $w.br -image ${col}r45 -command "set ::result 3 ; destroy $w"
+  ttk::button $w.bb -image ${col}b45 -command "set ::result 4 ; destroy $w"
+  ttk::button $w.bn -image ${col}n45 -command "set ::result 5 ; destroy $w"
   pack $w.bq $w.br $w.bb $w.bn -side left
   bind $w <Escape> "set ::result 2 ; destroy $w"
   bind $w <Return> "set ::result 2 ; destroy $w"
@@ -1334,18 +1333,18 @@ proc setAutoplayDelay {} {
   toplevel $w
   ::setTitle $w "Scid"
   wm resizable $w 0 0
-  label $w.label -text $::tr(AnnotateTime:)
+  ttk::label $w.label -text $::tr(AnnotateTime:)
   pack $w.label -side top -pady 5 -padx 5
   spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
   pack $w.spDelay -side top -pady 5
   
-  set b [frame $w.buttons]
+  set b [ttk::frame $w.buttons]
   pack $b -side top -fill x
-  button $b.cancel -text $::tr(Cancel) -command {
+  ttk::button $b.cancel -text $::tr(Cancel) -command {
     destroy .apdialog
     focus .
   }
-  button $b.ok -text "OK" -command {
+  ttk::button $b.ok -text "OK" -command {
     if {$tempdelay < 0.1} { set tempdelay 0.1 }
     set autoplayDelay [expr {int($tempdelay * 1000)}]
     destroy .apdialog

@@ -1,11 +1,11 @@
 proc fenErrorDialog {{msg {}}} {
-
+  
   if {[winfo exists .setup]} {
     tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg -parent .setup
   } else {
-    tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg 
+    tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg
   }
-
+  
 }
 
 # copyFEN
@@ -38,10 +38,10 @@ proc pasteFEN {} {
     catch {set fenStr [selection get -selection CLIPBOARD]}
   }
   set fenStr [string trim $fenStr]
-
+  
   set fenExplanation {FEN is the standard text representation of a chess position. As an example, the FEN representation of the standard starting position is:
-"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}
-
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}
+  
   if {$fenStr == ""} {
     set msg "The current text selection is empty. To paste the start board, select some text that contains a position in FEN notation.\n\n$fenExplanation"
     fenErrorDialog $msg
@@ -53,7 +53,7 @@ proc pasteFEN {} {
       append fenStr "..."
     }
     set msg "\"$fenStr\" is not a valid chess position in FEN notation.\n\n $fenExplanation"
-
+    
     fenErrorDialog $msg
     return
   }
@@ -61,15 +61,15 @@ proc pasteFEN {} {
 }
 
 proc setSetupBoardToFen {w setupFen} {
-
+  
   # Called from ".setup.status" FEN combo S.A
-
+  
   # Once the FEN combo box in the Setup board widget is accessed, the original
   # game poisiotn can still be had, but game history is lost
-
+  
   global setupboardSize setupBd
-
-
+  
+  
   if {[catch {sc_game startBoard $setupFen} err]} {
     fenErrorDialog $err
   } else {
@@ -194,9 +194,9 @@ proc setupBoardPiece { square } {
     }
   }
   append setupBd \
-    [string range $oldState 0 [expr {$square - 1} ]] \
-    $piece \
-    [string range $oldState [expr {$square + 1} ] 63]
+      [string range $oldState 0 [expr {$square - 1} ]] \
+      $piece \
+      [string range $oldState [expr {$square + 1} ] 63]
   unset oldState
   setBoard .setup.l.bd $setupBd $setupboardSize
   set setupFen [makeSetupFen]
@@ -218,18 +218,18 @@ proc switchPastePiece { switchType } {
 }
 
 proc exitSetupBoard {} {
-
+  
   # called when "OK" button hit
-
+  
   global setupFen
-
+  
   # unbind cancel binding
   bind .setup <Destroy> {}
-
+  
   if {[catch {sc_game startBoard $setupFen} err]} {
     fenErrorDialog $err
     bind .setup <Destroy> cancelSetupBoard
-
+    
     # Ideally, "$err" should be more specific than "Invalid FEN", but
     # procedural flow is a little complicated S.A.
   } else {
@@ -240,18 +240,18 @@ proc exitSetupBoard {} {
 }
 
 proc cancelSetupBoard {} {
-
+  
   # When FEN strings are previewed, the gameboard state is changed, but *not*
   # drawn in the main window. This means that while the game state can be
   # restored in the event of user hitting "cancel", game history has been lost
   # This behaviour is necessary to enable FEN previewing.
-
+  
   global origFen
-
+  
   bind .setup <Destroy> {}
-
+  
   # restore old gamestate if unchanged
-
+  
   if {$origFen != "[sc_pos fen]"} {
     catch {sc_game startBoard $origFen}
     updateBoard -pgn
@@ -291,29 +291,29 @@ proc setupBoard {} {
   set origFen [sc_pos fen]
   toplevel .setup
   wm title .setup "Scid: Setup Board"
-
+  
   ### Status entrybox contains the current FEN string.
-
-  frame .setup.statusbar
+  
+  ttk::frame .setup.statusbar
   pack .setup.statusbar -side bottom -expand yes -fill x
-
+  
   ### The actual board is created here. Bindings: left mouse sets/clears
   ### a square, middle mouse selects previous piece, right mouse selects
   ### next piece.  I should also set shortcut keys, e.g. "Q" for Queen.
-
+  
   # todo: drag and drop of pieces would be nice :>
-
-  frame .setup.l
-  frame .setup.r
-  frame .setup.l.bd
-
+  
+  ttk::frame .setup.l
+  ttk::frame .setup.r
+  ttk::frame .setup.l.bd
+  
   set sl .setup.l
   set sr .setup.r
   set sbd .setup.l.bd
-
-  pack $sl -side left
+  
+  pack $sl -side left -expand yes -fill y
   pack $sr -side right -expand yes -fill y
-
+  
   # make the setup board a couple of sizes smaller
   set index [lsearch -exact $boardSizes $boardSize]
   # incr index 0
@@ -323,9 +323,9 @@ proc setupBoard {} {
     set index 0
   }
   set setupboardSize [lindex $boardSizes $index]
-
+  
   for {set i 0} {$i < 64} {incr i} {
-    label $sbd.$i -image e$setupboardSize
+    ttk::label $sbd.$i -image e$setupboardSize
     set rank [expr {7 - int ($i / 8)} ]
     set fyle [expr {$i % 8} ]
     grid $sbd.$i -row $rank -column $fyle -sticky nesw
@@ -338,138 +338,131 @@ proc setupBoard {} {
     bind $sbd.$i <ButtonPress-2> "switchPastePiece prev"
     bind $sbd.$i <ButtonPress-3> "switchPastePiece next"
   }
-
-  pack $sbd -padx 10 -pady 10
-  pack [frame $sl.b] -side top -padx 8 -pady 8 ;# -expand yes -fill x
+  
+  pack $sbd -padx 10 -pady 10 -expand 1
+  pack [ttk::frame $sl.b] -side top -padx 8 -pady 8 ;# -expand yes -fill x
   # rearrange above two lines for different setup
-  pack [frame $sl.w] -side bottom -padx 8 -pady 8 ;# -expand yes -fill x
-
+  pack [ttk::frame $sl.w] -side bottom -padx 8 -pady 8 ;# -expand yes -fill x
+  
   setBoard $sbd $setupBd $setupboardSize
-
+  
   ### Piece Buttons
-
+  
   # set pastePiece P
   # set toMove White
-
+  
   foreach i {p n b r q k} {
     foreach color {w b} value "[string toupper $i] $i" {
       radiobutton $sl.$color.$i -image $color$i$setupboardSize -indicatoron 0 \
-	-variable pastePiece -value $value -activebackground $highcolor 
-	# -relief raised -activebackground grey75 -selectcolor rosybrown
+          -variable pastePiece -value $value -activebackground $highcolor
+      # -relief raised -activebackground grey75 -selectcolor rosybrown
       pack $sl.$color.$i -side left ;# -expand yes -fill x -padx 5
     }
   }
-
+  
   ### Side to move frame.
-
-  frame $sr.tomove
-  label $sr.tomove.label -textvar ::tr(SideToMove:)
-  frame $sr.tomove.buttons
-  radiobutton $sr.tomove.buttons.w -text $::tr(White) -variable toMove -value White \
-    -command {set setupFen [makeSetupFen]}
-  radiobutton $sr.tomove.buttons.b -text $::tr(Black) -variable toMove -value Black \
-    -command {set setupFen [makeSetupFen]}
-
+  
+  ttk::frame $sr.tomove
+  ttk::label $sr.tomove.label -textvar ::tr(SideToMove:)
+  ttk::frame $sr.tomove.buttons
+  ttk::radiobutton $sr.tomove.buttons.w -text $::tr(White) -variable toMove -value White \
+      -command {set setupFen [makeSetupFen]}
+  ttk::radiobutton $sr.tomove.buttons.b -text $::tr(Black) -variable toMove -value Black \
+      -command {set setupFen [makeSetupFen]}
+  
   pack $sr.tomove -pady 7
   pack $sr.tomove.label -side top -pady 2
   pack $sr.tomove.buttons -side top
   pack $sr.tomove.buttons.w $sr.tomove.buttons.b -side left
-
+  
   ### Entry boxes: Move number, Castling and En Passant file.
-
-  pack [frame $sr.mid] -padx 5 -pady 5
-
-  frame $sr.mid.movenum
-  label $sr.mid.movenum.label -textvar ::tr(MoveNumber:)
-  entry $sr.mid.movenum.e -width 3 -background white -textvariable moveNum
-
+  
+  pack [ttk::frame $sr.mid] -padx 5 -pady 5
+  
+  ttk::frame $sr.mid.movenum
+  ttk::label $sr.mid.movenum.label -textvar ::tr(MoveNumber:)
+  ttk::entry $sr.mid.movenum.e -width 3 -background white -textvariable moveNum
+  
   pack $sr.mid.movenum -pady 10 -expand yes -fill x
   pack $sr.mid.movenum.label $sr.mid.movenum.e -side left -anchor w -expand yes -fill x
-
-  frame $sr.mid.castle
-  label $sr.mid.castle.label -textvar ::tr(Castling:)
-  ::combobox::combobox $sr.mid.castle.e -width 5 -background white -textvariable castling
-  foreach c {KQkq KQ kq -} {
-    $sr.mid.castle.e list insert end $c
-  }
-
+  
+  ttk::frame $sr.mid.castle
+  ttk::label $sr.mid.castle.label -textvar ::tr(Castling:)
+  ttk::combobox $sr.mid.castle.e -width 5 -textvariable castling -values {KQkq KQ kq -}
+  
   pack $sr.mid.castle -pady 10 -expand yes -fill x
   pack $sr.mid.castle.label $sr.mid.castle.e -side left -anchor w -expand yes -fill x
-
-  frame $sr.mid.ep
-  label $sr.mid.ep.label -textvar ::tr(EnPassantFile:)
-  ::combobox::combobox $sr.mid.ep.e -width 2 -background white -textvariable epFile
+  
+  ttk::frame $sr.mid.ep
+  ttk::label $sr.mid.ep.label -textvar ::tr(EnPassantFile:)
+  ttk::combobox $sr.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h}
   set epFile {}
-  foreach f {- a b c d e f g h} {
-    $sr.mid.ep.e list insert end $f
-  }
-
+  
   pack $sr.mid.ep -pady 10 -expand yes -fill x
   pack $sr.mid.ep.label $sr.mid.ep.e -side left -anchor w -expand yes -fill x
-
+  
   # Set bindings so the Fen string is updated at any change. The "after idle"
   # is needed to ensure any keypress which causes a text edit is processed
   # before we regenerate the FEN text.
-
+  
   foreach i "$sr.mid.ep.e $sr.mid.castle.e $sr.mid.movenum.e" {
     bind $i <Any-KeyPress> {after idle {set setupFen [makeSetupFen]}}
     bind $i <FocusOut> {
       after idle {set setupFen [makeSetupFen]}}
   }
-
+  
   ### Buttons: Clear Board and Initial Board.
-
-  frame $sr.b
-  button $sr.b.clear -textvar ::tr(EmptyBoard) -command {
+  
+  ttk::frame $sr.b
+  ttk::button $sr.b.clear -textvar ::tr(EmptyBoard) -command {
     set setupBd \
-      "................................................................"
+        "................................................................"
     setBoard .setup.l.bd $setupBd $setupboardSize
     set castling {}
     set setupFen [makeSetupFen]
-  } 
-  button $sr.b.initial -textvar ::tr(InitialBoard) -command {
+  }
+  ttk::button $sr.b.initial -textvar ::tr(InitialBoard) -command {
     set setupBd \
-      "RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr"
+        "RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr"
     setBoard .setup.l.bd $setupBd $setupboardSize
     set castling KQkq
     set setupFen [makeSetupFen]
-  } 
+  }
   pack $sr.b -side top -pady 15
-  pack $sr.b.clear -side top -padx 5 -pady 10 -fill x 
-  pack $sr.b.initial -side bottom -padx 5 -pady 10 -fill x 
-
+  pack $sr.b.clear -side top -padx 5 -pady 10 -fill x
+  pack $sr.b.initial -side bottom -padx 5 -pady 10 -fill x
+  
   ### Buttons: Setup and Cancel.
-
-  frame $sr.b2
-  button $sr.b2.ok -text "OK" -width 7 -command exitSetupBoard
-  button $sr.b2.cancel -textvar ::tr(Cancel) -width 7 -command cancelSetupBoard
-
+  
+  ttk::frame $sr.b2
+  ttk::button $sr.b2.ok -text "OK" -width 7 -command exitSetupBoard
+  ttk::button $sr.b2.cancel -textvar ::tr(Cancel) -width 7 -command cancelSetupBoard
+  
   pack $sr.b2 -side bottom -pady 20 -anchor s
   pack $sr.b2.ok -side left -padx 5
   pack $sr.b2.cancel -side right -padx 5
-
-  button .setup.paste -textvar ::tr(PasteFen) -command {
+  
+  ttk::button .setup.paste -textvar ::tr(PasteFen) -command {
     if {[catch {set setupFen [selection get -selection PRIMARY]} ]} {
       catch {set setupFen [selection get -selection CLIPBOARD]}
       # PRIMARY is the X selection, unsure about CLIPBOARD
     }
   }
-  button .setup.clear -textvar ::tr(ClearFen) -command {set setupFen ""}
-
-  ::combobox::combobox .setup.status -relief sunken -textvariable setupFen \
-    -background white -height 10 -maxheight 10 -command setSetupBoardToFen
-
+  ttk::button .setup.clear -textvar ::tr(ClearFen) -command {set setupFen ""}
+  
+  ttk::combobox .setup.status -textvariable setupFen -height 10
+  bind .setup.status <<ComboboxSelected>> setSetupBoardToFen
   ::utils::history::SetCombobox setupFen .setup.status
-
+  
   update ; # necessary in case of quick-draw user interactions
-
+  
   pack .setup.paste .setup.clear -in .setup.statusbar -side left
   pack .setup.status -in .setup.statusbar -side right -expand yes -fill x -anchor w
   #bind .setup.status <FocusIn>  { %W configure -background lightYellow }
   #bind .setup.status <FocusOut> { %W configure -background white }
   bind .setup <Escape> cancelSetupBoard
   bind .setup <Destroy> cancelSetupBoard
-
+  
   set setupFen [makeSetupFen]
 }
 

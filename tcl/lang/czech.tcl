@@ -295,6 +295,8 @@ menuText C OptionsMovesKey "Klávesnicové doplòování" 13 \
   {Zapnout/vypnout automatické doplòování tahù zadávaných klávesnicí}
 menuText C OptionsNumbers "Formát èísel" 0 {Zvolit formát èísel}
 menuText C OptionsStartup "Pøi spu¹tìní" 4 {Zvolit okna, která se otevøou pøi spu¹tìní}
+# ====== TODO To be translated ======
+menuText C OptionsTheme "Theme" 0 {Change look of interface}
 menuText C OptionsWindows "Okna" 0 {Volby oken}
 menuText C OptionsWindowsIconify "Automatická minimalizace" 12 \
    {Minimalizovat v¹echna okna pøi minimalizování hlavního okna}
@@ -1940,6 +1942,16 @@ translate C Board {Board}
 translate C showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate C autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
+translate C DockTop {Move to top}
+# ====== TODO To be translated ======
+translate C DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate C DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate C DockRight {Move to right}
+# ====== TODO To be translated ======
+translate C Undock {Undock}
 # ====== TODO To be translated ======
 }
 
@@ -5581,6 +5593,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

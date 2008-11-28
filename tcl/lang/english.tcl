@@ -302,13 +302,14 @@ menuText E OptionsMovesKey "Keyboard Completion" 0 \
   {Turn on/off keyboard move auto-completion}
 menuText E OptionsNumbers "Number Format" 0 {Select the number format}
 menuText E OptionsStartup "Startup" 3 {Select windows to open at startup}
+menuText E OptionsTheme "Theme" 0 {Change look of interface}
 menuText E OptionsWindows "Windows" 0 {Window options}
 menuText E OptionsWindowsIconify "Auto-Iconify" 5 \
   {Iconify all windows when the main window is iconified}
 menuText E OptionsWindowsRaise "Auto-Raise" 5 \
   {Raise certain windows (e.g. progress bars) whenever they are obscured}
 menuText E OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
-menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows}
+menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows (needs restart)}
 menuText E OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText E OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText E OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
@@ -1603,6 +1604,11 @@ translate E DoneWithPosition {Done with position}
 translate E Board {Board}
 translate E showGameInfo {Show game info}
 translate E autoResizeBoard {Automatic resize of board}
+translate E DockTop {Move to top}
+translate E DockBottom {Move to bottom}
+translate E DockLeft {Move to left}
+translate E DockRight {Move to right}
+translate E Undock {Undock}
 
 }
 # end of english.tcl

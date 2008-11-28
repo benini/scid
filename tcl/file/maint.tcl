@@ -489,9 +489,8 @@ proc markTwins {{parent .}} {
   dialogbutton $w.b.defaults -textvar ::tr(Defaults) -command {
     array set twinSettings [array get twinSettingsDefaults]
   }
-  dialogbutton $w.b.help -text $::tr(Help) -font $small \
-      -command "helpWindow Maintenance Twins; focus $w"
-  dialogbutton $w.b.go -text $::tr(TwinsDelete) -font $small -command {
+  dialogbuttonsmall $w.b.help -text $::tr(Help) -command "helpWindow Maintenance Twins; focus $w"
+  dialogbuttonsmall $w.b.go -text $::tr(TwinsDelete) -command {
     if {[twinCriteriaOK .twinSettings]} {
       grab release .twinSettings
       sc_progressBar .twinSettings.progress bar 301 21 time
@@ -502,8 +501,7 @@ proc markTwins {{parent .}} {
     }
   }
   
-  dialogbutton $w.b.cancel -text $::tr(Cancel) -font $small \
-      -command "grab release $w; focus .; destroy $w"
+  dialogbuttonsmall $w.b.cancel -text $::tr(Cancel) -command "grab release $w; focus .; destroy $w"
   
   canvas $w.progress -width 300 -height 20 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar

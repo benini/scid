@@ -300,6 +300,8 @@ menuText H OptionsMovesKey "Billentyû-kiegészítés" 0 \
   {Be/kikapcsolja a billentyûzettel részlegesen bevitt lépések automatikus kiegészítését.}
 menuText H OptionsNumbers "Számformátum" 1 {Számformátum kiválasztása}
 menuText H OptionsStartup "Indítás" 0 {Az indításkor kinyitandó ablakok kiválasztása}
+# ====== TODO To be translated ======
+menuText H OptionsTheme "Theme" 0 {Change look of interface}
 menuText H OptionsWindows "Ablakok" 0 {Ablakbeállítások}
 menuText H OptionsWindowsIconify "Automatikus ikonizálás" 12 \
   {A fõ ablak ikonizálásakor az összes többit is ikonizálja.}
@@ -1943,6 +1945,16 @@ translate H showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate H autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate H DockTop {Move to top}
+# ====== TODO To be translated ======
+translate H DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate H DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate H DockRight {Move to right}
+# ====== TODO To be translated ======
+translate H Undock {Undock}
+# ====== TODO To be translated ======
 }
 
 # Tips of the day in Hungarian
@@ -2176,6 +2188,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

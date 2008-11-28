@@ -120,3 +120,15 @@ proc ::utils::validate::Regexp {expression name el op} {
   set $old [set $name]
 }
 
+# ::utils::validate::roundScale
+# will round var to the next integer which is a multiple of tickinterval
+# given its current value
+proc ::utils::validate::roundScale { var tickinterval value } {
+  set $var [expr int($value/$tickinterval ) * $tickinterval]
+}
+
+# ::utils::validate::floatScale
+# returns a float value with 1 decimal
+proc ::utils::validate::floatScale { var tickinterval value } {
+  set $var [format "%.1f" [expr ($value/$tickinterval ) * $tickinterval] ]
+}

@@ -314,6 +314,8 @@ menuText N OptionsMovesKey "Auto-aanvullen" 0 \
 menuText N OptionsNumbers "Getalformaat" 5 \
   {Kies de manier waarop getallen te zien zijn}
 menuText N OptionsStartup "Opstarten" 3 {Selecteer de vensters die tijdens starten geopend worden}
+# ====== TODO To be translated ======
+menuText N OptionsTheme "Theme" 0 {Change look of interface}
 menuText N OptionsWindows "Vensters" 0 {Venster opties}
 menuText N OptionsWindowsIconify "Auto-icoon" 5 \
   {Breng alle vensters in icoonvorm als het hoofdvenster naar icoon gaat.}
@@ -1942,8 +1944,20 @@ translate N showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate N autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate N DockTop {Move to top}
+# ====== TODO To be translated ======
+translate N DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate N DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate N DockRight {Move to right}
+# ====== TODO To be translated ======
+translate N Undock {Undock}
+# ====== TODO To be translated ======
 }
 # End of nederlan.tcl
+
+
 
 
 

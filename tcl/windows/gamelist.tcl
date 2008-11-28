@@ -242,8 +242,7 @@ proc ::windows::gamelist::Open {} {
   }
   
   label $w.b.findlabel -textvar ::tr(GlistFindText:)
-  ::combobox::combobox $w.b.find -background white -width 15 \
-      -textvariable ::windows::gamelist::findtext
+  ttk::combobox $w.b.find -width 15 -textvariable ::windows::gamelist::findtext
   ::utils::history::SetCombobox ::windows::gamelist::findtext $w.b.find
   bind $w.b.find <Return> ::windows::gamelist::FindText
   bind $w.b.find <Home> "$w.b.find icursor 0; break"

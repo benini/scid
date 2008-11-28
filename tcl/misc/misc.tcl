@@ -62,13 +62,13 @@ proc bindMouseWheel {win text} {
 #   should contain a widget name, and button arguments.
 #
 proc dialogbuttonframe {frame buttonlist} {
-  frame $frame
+  ttk::frame $frame
   set bnames {}
   set maxlength 0
   foreach buttonargs $buttonlist {
     set bname $frame.[lindex $buttonargs 0]
     set bargs [lrange $buttonargs 1 end]
-    eval button $bname $bargs
+    eval ttk::button $bname $bargs
     set bnames [linsert $bnames 0 $bname]
     set length [string length [$bname cget -text]]
     if {$length > $maxlength} { set length $maxlength}
@@ -93,10 +93,18 @@ proc packbuttons {side args} {
 #   is given a minumin width.
 #
 proc dialogbutton {w args} {
-  set retval [eval button $w $args]
+  set retval [eval ttk::button $w $args]
   set length [string length [$w cget -text]]
   if {$length < 7} { set length 7 }
-  $w configure -width $length -pady 1
+  $w configure -width $length
+  return retval
+}
+
+proc dialogbuttonsmall {w args} {
+  set retval [eval ttk::button $w -style Small.TButton $args]
+  set length [string length [$w cget -text]]
+  if {$length < 7} { set length 7 }
+  $w configure -width $length
   return retval
 }
 
@@ -141,7 +149,7 @@ proc autoscrollframe {args} {
   catch {set setgrid [$w cget -setgrid]}
   
   if {$bars == "y"  ||  $bars == "both"} {
-    scrollbar $frame.ybar -command [list $w yview] -takefocus 0 -borderwidth 1
+    ttk::scrollbar $frame.ybar -command [list $w yview] -takefocus 0
     $w configure -yscrollcommand [list _autoscroll $frame.ybar]
     grid $frame.ybar -row 0 -column 1 -sticky ns
     set _autoscroll($frame.ybar) 1
@@ -151,8 +159,7 @@ proc autoscrollframe {args} {
     }
   }
   if {$bars == "x"  ||  $bars == "both"} {
-    scrollbar $frame.xbar -command [list $w xview] -takefocus 0 \
-        -borderwidth 1 -orient horizontal
+    ttk::scrollbar $frame.xbar -command [list $w xview] -takefocus 0 -orient horizontal
     $w configure -xscrollcommand [list _autoscroll $frame.xbar]
     grid $frame.xbar -row 1 -column 0 -sticky we
     set _autoscroll($frame.xbar) 1
@@ -251,20 +258,24 @@ set vertRuleCounter 0
 
 proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
   global horizRuleCounter
-  set f [ frame $w.line$horizRuleCounter -height $height -borderwidth 2 \
-      -relief $relief -background white ]
-  pack $f -fill x -pady $ypadding
+  
+  ttk::separator $w.line$horizRuleCounter -orient horizontal
+  pack $w.line$horizRuleCounter -fill x
+  
+  # set f [ ttk::frame $w.line$horizRuleCounter -height $height -borderwidth 2 -relief $relief ]
+  # pack $f -fill x -pady $ypadding
   incr horizRuleCounter
-  return $f
 }
 
 proc addVerticalRule {w {xpadding 5} {relief sunken}} {
   global vertRuleCounter
-  set f [ frame $w.line$vertRuleCounter -width 2 -borderwidth 2 \
-      -relief $relief -background white ]
-  pack $f -fill y -padx $xpadding -side left
+  
+    ttk::separator $w.line$vertRuleCounter -orient horizontal
+    pack $w.line$vertRuleCounter -fill y
+  
+  # set f [ ttk::frame $w.line$vertRuleCounter -width 2 -borderwidth 2 -relief $relief ]
+  # pack $f -fill y -padx $xpadding -side left
   incr vertRuleCounter
-  return $f
 }
 
 
@@ -290,16 +301,15 @@ proc progressWindow {args} {
     set b 1
   } else { return }
   wm title $w $title
-  label $w.t -text $text
-  pack $w.t -side top
+  ttk::label $w.t -text $text
+  pack $w.t -side top -expand 1
   canvas $w.c -width 400 -height 20 -bg white -relief solid -border 1
   $w.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.c create text 395 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
+  $w.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   pack $w.c -side top -pady 10
   if {$b} {
-    pack [frame $w.b] -side bottom -fill x
-    button $w.b.cancel -text $button -command $command
+    pack [ttk::frame $w.b] -side bottom -fill x
+    ttk::button $w.b.cancel -text $button -command $command
     pack $w.b.cancel -side right -padx 5 -pady 2
   }
   # Set up geometry for middle of screen:

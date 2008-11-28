@@ -740,8 +740,8 @@ set helpMessage($m,[incr menuindex]) ToolsImportFile
 ### Options menu:
 
 set m .menu.options
-set optMenus {board export fonts ginfo language entry numbers startup windows}
-set optLabels {Board Export Fonts GInfo Language Moves Numbers Startup Windows}
+set optMenus {board export fonts ginfo language entry numbers startup windows theme}
+set optLabels {Board Export Fonts GInfo Language Moves Numbers Startup Windows Theme}
 set menuindex -1
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
@@ -931,7 +931,7 @@ $m add command -label OptionsSave -command {
           ::tacgame::isLimitedAnalysisTime ::tacgame::analysisTime ::tacgame::openingType \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
-          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO } {
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme } {
       puts $optionF "set $i [list [set $i]]"
     }
     puts $optionF ""
@@ -1125,6 +1125,12 @@ if {$::docking::USE_DOCKING} {
   set helpMessage($m,4) OptionsWindowsSaveLayout
   $m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
   set helpMessage($m,5) OptionsWindowsRestoreLayout
+}
+
+set m .menu.options.theme
+menu $m
+foreach i [ttk::style theme names] {
+  $m add radiobutton -label "$i" -value $i -variable ::lookTheme -command {ttk::style theme use $::lookTheme}
 }
 
 menu .menu.options.language
@@ -1504,7 +1510,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.tools.exportfilter [tr $tag $oldLang] $tag $lang
   }
   foreach tag {Board Export Fonts GInfo Language Moves Numbers
-    Startup Sounds Toolbar Windows ECO Spell Table BooksDir TacticsBasesDir Recent Save AutoSave} {
+    Startup Sounds Toolbar Windows Theme ECO Spell Table BooksDir TacticsBasesDir Recent Save AutoSave} {
     configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
   }
   

@@ -265,6 +265,8 @@ menuText I OptionsMovesKey "Completamento da tastiera" 0 \
   {Attiva/Disattiva l'autocompletamento di mosse da tastiera}
 menuText I OptionsNumbers "Formato del numero" 13 {Seglie il formato del numero}
 menuText I OptionsStartup "Apertura all'avvio" 3 {Sceglie le finestre da aprire all'avvio}
+# ====== TODO To be translated ======
+menuText I OptionsTheme "Theme" 0 {Change look of interface}
 menuText I OptionsWindows "Finestre" 2 {Opzioni di finestra}
 menuText I OptionsWindowsIconify "Minimizza automaticamente" 5 \
   {Minimizza tutte le finestre quando la finestra principale viene minimizzata}
@@ -1631,6 +1633,16 @@ translate I Board {Board}
 translate I showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate I autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
+translate I DockTop {Move to top}
+# ====== TODO To be translated ======
+translate I DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate I DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate I DockRight {Move to right}
+# ====== TODO To be translated ======
+translate I Undock {Undock}
 }
 
 ############################################################
@@ -1867,6 +1879,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 

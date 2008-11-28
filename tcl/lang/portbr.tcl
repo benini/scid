@@ -304,6 +304,8 @@ menuText B OptionsMovesKey "Auto completar" 0 \
 menuText B OptionsNumbers "Formato de Numeros" 0 {Selecione o formato usado para numeros}
 menuText B OptionsStartup "Iniciar" 1 \
   {Seleciona janelas que serao abertas ao iniciar o programa}
+# ====== TODO To be translated ======
+menuText B OptionsTheme "Theme" 0 {Change look of interface}
 menuText B OptionsWindows "Janelas" 0 {Opcoes para Janelas}
 menuText B OptionsWindowsIconify "Auto-iconizar" 5 \
   {Iconizar todas as janelas quando a janela principal eh iconizada}
@@ -1953,9 +1955,21 @@ translate B showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate B autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate B DockTop {Move to top}
+# ====== TODO To be translated ======
+translate B DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate B DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate B DockRight {Move to right}
+# ====== TODO To be translated ======
+translate B Undock {Undock}
+# ====== TODO To be translated ======
 }
 
 # end of portbr.tcl
+
+
 
 
 

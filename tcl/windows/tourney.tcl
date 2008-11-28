@@ -102,23 +102,18 @@ proc ::tourney::Open {} {
   pack $f.from $f.efrom $f.to $f.eto -side left
 
   label $f.cn -text "  $::tr(Country):" -font $fbold
-  ::combobox::combobox $f.ecn -width 4 -font $font -textvar ::tourney::country
-  foreach c {{} AUT CZE DEN ENG ESP FRA GER GRE HUN ITA NED POL RUS \
-             SCG SUI SWE USA YUG} {
-    $f.ecn list insert end $c
-  }
+  ttk::combobox $f.ecn -width 4 -textvar ::tourney::country -values {{} AUT CZE DEN ENG ESP FRA GER GRE HUN ITA NED POL RUS \
+        SCG SUI SWE USA YUG}
+  
   bindFocusColors $f.ecn
   bind $f.ecn <FocusOut> +::tourney::check
   pack $f.cn $f.ecn -side left
 
   label $f.size -text $::tr(TmtLimit:) -font $fbold
-  ::combobox::combobox $f.esize -width 4 -justify right -font $font \
-    -textvar ::tourney::size
+  ttk::combobox $f.esize -width 4 -justify right -textvar ::tourney::size -values {10 20 50 100 200 500 1000}
   trace variable ::tourney::size w {::utils::validate::Integer 1000 0}
   bindFocusColors $f.esize
-  foreach n {10 20 50 100 200 500 1000} {
-    $f.esize list insert end $n
-  }
+
   pack $f.esize $f.size -side right
 
   set f $w.o2
@@ -157,19 +152,19 @@ proc ::tourney::Open {} {
 
   set f $w.o3
   label $f.sitelab -text "$::tr(Site):" -font $fbold
-  ::combobox::combobox $f.site -textvariable ::tourney::site -width 12 -font $font
+  ttk::combobox $f.site -textvariable ::tourney::site -width 12
   ::utils::history::SetCombobox ::tourney::site $f.site
   bindFocusColors $f.site
   pack $f.sitelab $f.site -side left
 
   label $f.eventlab -text "   $::tr(Event):" -font $fbold
-  ::combobox::combobox $f.event -textvariable ::tourney::event -width 12 -font $font
+  ttk::combobox $f.event -textvariable ::tourney::event -width 12
   ::utils::history::SetCombobox ::tourney::event $f.event
   bindFocusColors $f.event
   pack $f.eventlab $f.event -side left
 
   label $f.playerlab -text "$::tr(Player):" -font $fbold
-  ::combobox::combobox $f.player -textvariable ::tourney::player -width 12 -font $font
+  ttk::combobox $f.player -textvariable ::tourney::player -width 12
   ::utils::history::SetCombobox ::tourney::player $f.player
   bindFocusColors $f.player
   pack $f.player $f.playerlab -side right

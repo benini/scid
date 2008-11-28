@@ -301,6 +301,8 @@ menuText Y OptionsMovesKey "Dopunjavanje poteza" 0 \
   {Ukljuèi/iskljuèi dopunjavanje poteza zadatih tastaturom}
 menuText Y OptionsNumbers "Format brojeva" 0 {Izaberi format brojeva}
 menuText Y OptionsStartup "Startup" 3 {Select windows to open at startup} ;# ***
+# ====== TODO To be translated ======
+menuText Y OptionsTheme "Theme" 0 {Change look of interface}
 menuText Y OptionsWindows "Prozori" 0 {Opcije prozora}
 menuText Y OptionsWindowsIconify "Auto-iconify" 5 \
   {Iconify all windows when the main window is iconified} ;# ***
@@ -1948,8 +1950,20 @@ translate Y showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate Y autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate Y DockTop {Move to top}
+# ====== TODO To be translated ======
+translate Y DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate Y DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate Y DockRight {Move to right}
+# ====== TODO To be translated ======
+translate Y Undock {Undock}
+# ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 

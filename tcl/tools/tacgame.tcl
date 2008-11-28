@@ -149,15 +149,15 @@ namespace eval tacgame {
     bind $w <F1> { helpWindow TacticalGame }
     setWinLocation $w
     
-    frame $w.flevel -relief raised -borderwidth 1
-    frame $w.flevel.diff_fixed
-    frame $w.flevel.diff_random
-    frame $w.fopening -relief raised -borderwidth 1
-    frame $w.flimit -relief raised -borderwidth 1
-    frame $w.fbuttons
+    ttk::frame $w.flevel -relief raised -borderwidth 1
+    ttk::frame $w.flevel.diff_fixed
+    ttk::frame $w.flevel.diff_random
+    ttk::frame $w.fopening -relief raised -borderwidth 1
+    ttk::frame $w.flimit -relief raised -borderwidth 1
+    ttk::frame $w.fbuttons
     
-    label $w.flevel.label -text [string toupper $::tr(difficulty) 0 0 ]
-    label $w.flevel.space -text {}
+    ttk::label $w.flevel.label -text [string toupper $::tr(difficulty) 0 0 ]
+    ttk::label $w.flevel.space -text {}
     
     pack $w.flevel -side top -fill x
     pack $w.flevel.label -side top -pady 3
@@ -167,55 +167,73 @@ namespace eval tacgame {
     pack $w.fopening  -side top -fill both -expand 1
     pack $w.flimit $w.fbuttons -side top -fill x
     
-    radiobutton $w.flevel.diff_random.cb -text $::tr(RandomLevel) -variable ::tacgame::randomLevel -value 1 -width 15  -anchor w
-    scale $w.flevel.diff_random.lMin -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMin -tickinterval 0 -resolution 50
-    scale $w.flevel.diff_random.lMax -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMax -tickinterval 0 -resolution 50
-    pack $w.flevel.diff_random.cb -side left
-    pack $w.flevel.diff_random.lMin $w.flevel.diff_random.lMax -side left -expand 1
+    ttk::radiobutton $w.flevel.diff_random.cb -text $::tr(RandomLevel) -variable ::tacgame::randomLevel -value 1 -width 15
+    ttk::scale $w.flevel.diff_random.lMin -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMin \
+        -command { ::utils::validate::roundScale ::tacgame::levelMin 50 }
+    ttk::label $w.flevel.diff_random.labelMin -textvariable ::tacgame::levelMin
+    ttk::scale $w.flevel.diff_random.lMax -orient horizontal -from 1200 -to 2200 -length 100 -variable ::tacgame::levelMax \
+        -command { ::utils::validate::roundScale ::tacgame::levelMax 50 }
+    ttk::label $w.flevel.diff_random.labelMax -textvariable ::tacgame::levelMax
     
-    radiobutton $w.flevel.diff_fixed.cb -text $::tr(FixedLevel) -variable ::tacgame::randomLevel -value 0 -width 15  -anchor w
-    scale $w.flevel.diff_fixed.scale -orient horizontal -from 1200 -to 2200 -length 200 \
-        -variable ::tacgame::levelFixed -tickinterval 0 -resolution 50
-    pack $w.flevel.diff_fixed.cb -side left
-    pack $w.flevel.diff_fixed.scale
+    grid $w.flevel.diff_random.cb -row 0 -column 0 -rowspan 2
+    grid $w.flevel.diff_random.labelMin -row 0 -column 1
+    grid $w.flevel.diff_random.lMin -row 1 -column 1
+    grid $w.flevel.diff_random.labelMax -row 0 -column 2
+    grid $w.flevel.diff_random.lMax -row 1 -column 2
     
-    label $w.fopening.label -text $::tr(Opening)
+    ttk::radiobutton $w.flevel.diff_fixed.cb -text $::tr(FixedLevel) -variable ::tacgame::randomLevel -value 0 -width 15
+    ttk::label $w.flevel.diff_fixed.labelFixed -textvariable ::tacgame::levelFixed
+    ttk::scale $w.flevel.diff_fixed.scale -orient horizontal -from 1200 -to 2200 -length 200 \
+        -variable ::tacgame::levelFixed -command { ::utils::validate::roundScale ::tacgame::levelFixed 50 }
+    
+    grid $w.flevel.diff_fixed.cb -row 0 -column 0 -rowspan 2
+    grid $w.flevel.diff_fixed.labelFixed -row 0 -column 1 -columnspan 2
+    grid $w.flevel.diff_fixed.scale -row 1 -column 1 -columnspan 2
+    
+    ttk::label $w.fopening.label -text $::tr(Opening)
     pack $w.fopening.label -side top -pady 3
     
     # start new game
-    radiobutton $w.fopening.cbNew -text $::tr(StartNewGame)  -variable ::tacgame::openingType -value new
+    ttk::radiobutton $w.fopening.cbNew -text $::tr(StartNewGame)  -variable ::tacgame::openingType -value new
     
     # start from current position
-    radiobutton $w.fopening.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::tacgame::openingType -value current
+    ttk::radiobutton $w.fopening.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::tacgame::openingType -value current
     
     # or choose a specific opening
-    radiobutton $w.fopening.cbSpecific -text $::tr(SpecificOpening) -variable ::tacgame::openingType -value specific
+    ttk::radiobutton $w.fopening.cbSpecific -text $::tr(SpecificOpening) -variable ::tacgame::openingType -value specific
     
     pack $w.fopening.cbNew -anchor w -padx 100
     pack $w.fopening.cbPosition -anchor w -padx 100
     pack $w.fopening.cbSpecific -anchor w -padx 100
     
-    frame $w.fopening.fOpeningList
+    ttk::frame $w.fopening.fOpeningList
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
         -height 5 -width 40 -list ::tacgame::openingList
     $w.fopening.fOpeningList.lbOpening selection set 0
-    scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
+    ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
     pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar  -side right -fill y
     pack $w.fopening.fOpeningList -expand yes -fill both -side top -expand 1
     
     # in order to limit CPU usage, limit the time for analysis (this prevents noise on laptops)
-    checkbutton $w.flimit.blimit -text $::tr(limitanalysis) -variable ::tacgame::isLimitedAnalysisTime -relief flat
-    scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -label $::tr(seconds) -variable ::tacgame::analysisTime -resolution 5
-    pack $w.flimit.blimit $w.flimit.analysisTime -side left -expand yes -pady 5
+    ttk::checkbutton $w.flimit.blimit -text $::tr(limitanalysis) -variable ::tacgame::isLimitedAnalysisTime
+    ttk::label $w.flimit.labelsecval -textvariable ::tacgame::analysisTime
+    ttk::label $w.flimit.labelsec -text $::tr(seconds)
+    ttk::scale $w.flimit.analysisTime -orient horizontal -from 5 -to 60 -length 200 -variable ::tacgame::analysisTime \
+        -command { ::utils::validate::roundScale ::tacgame::analysisTime 5 }
+    grid $w.flimit.blimit -column 0 -row 0 -rowspan 2
+    grid $w.flimit.labelsecval  -column 1 -row 0
+    grid $w.flimit.labelsec -column 2 -row 0
+    grid $w.flimit.analysisTime -column 1 -row 1 -columnspan 2
+    # pack $w.flimit.blimit $w.flimit.labelsec $w.flimit.analysisTime  $w.flimit.labelsecval -side left -expand yes -pady 5
     
-    button $w.fbuttons.close -text $::tr(Play) -command {
+    ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
       set ::tacgame::chosenOpening [.configWin.fopening.fOpeningList.lbOpening curselection]
       destroy .configWin
       ::tacgame::play
     }
-    button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
+    ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
     pack $w.fbuttons.close $w.fbuttons.cancel -expand yes -side left -padx 20 -pady 2
     
@@ -310,25 +328,27 @@ namespace eval tacgame {
     wm title $w "$::tr(coachgame) (Elo $level)"
     setWinLocation $w
     
-    frame $w.fdisplay -relief groove -borderwidth 1
-    frame $w.fthreshold -relief groove -borderwidth 1
-    frame $w.finformations -relief groove -borderwidth 1
-    frame $w.fclocks -relief raised -borderwidth 2
-    frame $w.fbuttons
+    ttk::frame $w.fdisplay -relief groove -borderwidth 1
+    ttk::frame $w.fthreshold -relief groove -borderwidth 1
+    ttk::frame $w.finformations -relief groove -borderwidth 1
+    ttk::frame $w.fclocks -relief raised -borderwidth 2
+    ttk::frame $w.fbuttons
     pack $w.fdisplay $w.fthreshold $w.finformations $w.fclocks $w.fbuttons -side top -expand yes -fill both
     
-    checkbutton $w.fdisplay.b1 -text $::tr(showblunderexists) -variable ::tacgame::showblunder -relief flat
-    checkbutton $w.fdisplay.b2 -text $::tr(showblundervalue) -variable ::tacgame::showblundervalue -relief flat
-    checkbutton $w.fdisplay.b5 -text $::tr(showscore) -variable ::tacgame::showevaluation -relief flat
+    ttk::checkbutton $w.fdisplay.b1 -text $::tr(showblunderexists) -variable ::tacgame::showblunder
+    ttk::checkbutton $w.fdisplay.b2 -text $::tr(showblundervalue) -variable ::tacgame::showblundervalue
+    ttk::checkbutton $w.fdisplay.b5 -text $::tr(showscore) -variable ::tacgame::showevaluation
     pack $w.fdisplay.b1 $w.fdisplay.b2 $w.fdisplay.b5 -expand yes -anchor w
     
-    label $w.fthreshold.l -text $::tr(moveblunderthreshold) -wraplength 300 -font font_Fixed
-    scale $w.fthreshold.t -orient horizontal -from 0.0 -to 10.0 -length 200 \
-        -variable ::tacgame::threshold -resolution 0.1 -tickinterval 2.0
-    pack $w.fthreshold.l $w.fthreshold.t -side top
+    ttk::label $w.fthreshold.l -text $::tr(moveblunderthreshold) -wraplength 300
     
-    label $w.finformations.l1 -textvariable ::tacgame::blunderWarningLabel -bg linen
-    label $w.finformations.l3 -textvariable ::tacgame::scoreLabel -fg WhiteSmoke -bg SlateGray
+    ttk::scale $w.fthreshold.t -orient horizontal -from 0.0 -to 10.0 -length 200 \
+        -variable ::tacgame::threshold -command { ::utils::validate::floatScale ::tacgame::threshold 0.1 }
+    ttk::label $w.fthreshold.labelt -textvariable ::tacgame::threshold
+    pack $w.fthreshold.l $w.fthreshold.labelt $w.fthreshold.t -side top
+    
+    ttk::label $w.finformations.l1 -textvariable ::tacgame::blunderWarningLabel -background linen
+    ttk::label $w.finformations.l3 -textvariable ::tacgame::scoreLabel -foreground WhiteSmoke -background SlateGray
     pack $w.finformations.l1 $w.finformations.l3 -padx 5 -pady 5 -side top -fill x
     
     ::gameclock::new $w.fclocks 2 80
@@ -337,14 +357,14 @@ namespace eval tacgame {
     ::gameclock::start 1
     
     ### Resume restarts paused computer (while player moves forward/back in history) S.A.
-    button $w.fbuttons.resume -state disabled -textvar ::tr(Resume) -command {
+    ttk::button $w.fbuttons.resume -state disabled -textvar ::tr(Resume) -command {
       set ::tacgame::analysisCoach(paused) 0
       .coachWin.fbuttons.resume configure -state disabled
       ::tacgame::phalanxGo
     }
     pack $w.fbuttons.resume -expand yes -fill both -padx 20 -pady 2
     
-    button $w.fbuttons.close -textvar ::tr(Abort) -command ::tacgame::abortGame
+    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::tacgame::abortGame
     pack $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     
     ::tacgame::launchengine $index1 1
@@ -869,7 +889,7 @@ namespace eval tacgame {
             }
           }
           
-          .coachWin.finformations.l1 configure -bg LightCoral
+          .coachWin.finformations.l1 configure -background LightCoral
           if { $showblundervalue } {
             set tmp $::tr(blunder)
             append tmp [format " %+8.2f" [expr abs($sc1-$sc2)]]
@@ -880,7 +900,7 @@ namespace eval tacgame {
           }
         } else {
           sc_pos clearNags
-          .coachWin.finformations.l1 configure -bg linen
+          .coachWin.finformations.l1 configure -background linen
           set blunderWarningLabel $::tr(Noblunder)
           set blunderpending 0
         }

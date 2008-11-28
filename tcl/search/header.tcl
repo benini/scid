@@ -133,7 +133,7 @@ proc search::header {} {
   foreach color {White Black} {
     pack $w.c$color -side top -fill x
     label $w.c$color.lab -textvar ::tr($color:) -font $bold -width 9 -anchor w
-    ::combobox::combobox $w.c$color.e -textvariable "s$color" -width 40 -font $regular
+    ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
     ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
     label $w.c$color.space
     label $w.c$color.elo1 -textvar ::tr(Rating:) -font $bold
@@ -191,7 +191,7 @@ proc search::header {} {
   pack $f -side top -fill x
   foreach i {Event Site} {
     label $f.l$i -textvar ::tr(${i}:) -font $bold
-    ::combobox::combobox $f.e$i -textvariable s$i -width 30 -font $regular
+    ttk::combobox $f.e$i -textvariable s$i -width 30
     ::utils::history::SetCombobox HeaderSearch$i $f.e$i
     bindFocusColors $f.e$i
   }

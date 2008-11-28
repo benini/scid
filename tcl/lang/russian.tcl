@@ -303,6 +303,8 @@ menuText R OptionsMovesKey "Клавиатурное завершение" 0 \
   {Включить/выключить автозавершение клавиатурных ходов}
 menuText R OptionsNumbers "Числовой формат" 0 {Выбрать числовой формат}
 menuText R OptionsStartup "Запуск" 0 {Выбрать окна, открывающиеся при запуске}
+# ====== TODO To be translated ======
+menuText R OptionsTheme "Theme" 0 {Change look of interface}
 menuText R OptionsWindows "Окна" 0 {Установки окон}
 menuText R OptionsWindowsIconify "Авто-иконизация" 0 \
   {Иконизировать все окна, когда иконизируется основное окно}
@@ -1977,8 +1979,20 @@ translate R showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate R autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate R DockTop {Move to top}
+# ====== TODO To be translated ======
+translate R DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate R DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate R DockRight {Move to right}
+# ====== TODO To be translated ======
+translate R Undock {Undock}
+# ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

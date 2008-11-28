@@ -276,6 +276,8 @@ menuText S OptionsMovesKey "Teclado Inteligente" 0 \
 con teclado}
 menuText S OptionsNumbers "Formato de números" 11 {Selecciona el formato de números}
 menuText S OptionsStartup "Inicio" 3 {Seleccionar ventanas a abrir al inicio}
+# ====== TODO To be translated ======
+menuText S OptionsTheme "Theme" 0 {Change look of interface}
 menuText S OptionsWindows "Ventanas" 0 {Opciones de ventana}
 menuText S OptionsWindowsIconify "Autominimizar" 4 \
   {Minimiza todas las ventanas cuando la ventana principal es minimizada}
@@ -1585,8 +1587,20 @@ translate S Board {Board}
 translate S showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate S autoResizeBoard {Automatic resize of board}
+# ====== TODO To be translated ======
+translate S DockTop {Move to top}
+# ====== TODO To be translated ======
+translate S DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate S DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate S DockRight {Move to right}
+# ====== TODO To be translated ======
+translate S Undock {Undock}
 }
 # end of spanish.tcl
+
+
 
 
 

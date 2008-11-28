@@ -102,28 +102,29 @@ namespace eval book {
     bind $w <Configure> "recordWinSize $w"
     bind $w <F1> { helpWindow Book }
     
-    frame $w.f
+    ttk::frame $w.f
     # load book names
     set bookPath $::scidBooksDir
-    ::combobox::combobox $w.f.combo -editable false -width 12
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
     set i 0
     set idx 0
+    set tmp {}
     foreach file  $bookList {
       set f [ file tail $file ]
-      $w.f.combo list insert end $f
+      lappend tmp $f
       if {$name == $f} {
         set idx $i
       }
       incr i
     }
+    ttk::combobox $w.f.combo -width 12 -values $tmp
     
-    $w.f.combo select $idx
+    $w.f.combo current $idx
     pack $w.f.combo
     
     # text displaying book moves
     text $w.f.text -wrap word -state disabled -width 12
-    button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::togglePositionsDisplay }
+    ttk::button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::togglePositionsDisplay }
     ::utils::tooltip::Set $w.f.b $::tr(OtherBookMovesTooltip)
     text $w.f.text1 -wrap word -state disabled -width 12
     pack $w.f.text -expand yes -fill both
@@ -132,7 +133,7 @@ namespace eval book {
     
     pack $w.f
     
-    $w.f.combo configure -command ::book::bookSelect
+    bind $w.f.combo <<ComboboxSelected>> ::book::bookSelect
     bind $w <Destroy> "::book::closeMainBook"
     bind $w <Escape> { destroy  .bookWin }
     if { [catch {bookSelect} ] } {
@@ -246,41 +247,43 @@ namespace eval book {
     bind $w <F1> { helpWindow BookTuningWindow }
     setWinLocation $w
     
-    frame $w.fcombo
-    frame $w.f
+    ttk::frame $w.fcombo
+    ttk::frame $w.f
     # load book names
     set bookPath $::scidBooksDir
-    ::combobox::combobox $w.fcombo.combo -editable false -width 0
-    pack $w.fcombo.combo -expand yes -fill x
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
     set i 0
     set idx 0
+    set tmp {}
     foreach file  $bookList {
       set f [ file tail $file ]
-      $w.fcombo.combo list insert end $f
+      lappend tmp $f 
       if {$name == $f} {
         set idx $i
       }
       incr i
     }
     
-    $w.fcombo.combo select $idx
+    ttk::combobox $w.fcombo.combo -width 12 -values $tmp
+    $w.fcombo.combo current $idx
+    pack $w.fcombo.combo -expand yes -fill x
     
-    frame $w.fbutton
+    ttk::frame $w.fbutton
     
     
     menubutton $w.fbutton.mbAdd -text $::tr(AddMove) -menu $w.fbutton.mbAdd.otherMoves
     menu $w.fbutton.mbAdd.otherMoves
     
     
-    button $w.fbutton.bExport -text $::tr(Export) -command ::book::export
-    button $w.fbutton.bSave -text $::tr(Save) -command ::book::save
+    ttk::button $w.fbutton.bExport -text $::tr(Export) -command ::book::export
+    ttk::button $w.fbutton.bSave -text $::tr(Save) -command ::book::save
     pack $w.fbutton.mbAdd $w.fbutton.bExport $w.fbutton.bSave -side top -fill x -expand yes
     
     
     pack $w.fcombo $w.f $w.fbutton -side top
     
-    $w.fcombo.combo configure -command ::book::bookTuningSelect
+    bind $w.fcombo.combo <<ComboboxSelected>> ::book::bookTuningSelect
+    
     bind $w <Destroy> "::book::closeTuningBook"
     bind $w <Escape> { destroy  .bookTuningWin }
     bind $w <F1> { helpWindow BookTuning }
@@ -312,7 +315,7 @@ namespace eval book {
     set w .bookTuningWin
     set children [winfo children $w.f]
     set count [expr [llength $children] / 2]
-    label $w.f.m$count -text [::trans $move]
+    ttk::label $w.f.m$count -text [::trans $move]
     bind $w.f.m$count <ButtonPress-1> " ::book::makeBookMove $move"
     spinbox $w.f.sp$count -from 0 -to 100 -width 3
     $w.f.sp$count set 0

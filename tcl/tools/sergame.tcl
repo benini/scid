@@ -60,23 +60,23 @@ namespace eval sergame {
     bind $w <F1> { helpWindow SeriousGame }
     setWinLocation $w
     
-    frame $w.fengines -relief groove -borderwidth 1
-    frame $w.fbook -relief groove -borderwidth 1
-    frame $w.ftime -relief groove -borderwidth 1
-    frame $w.fconfig -relief groove -borderwidth 1
-    frame $w.fopening -relief groove -borderwidth 1
-    frame $w.fbuttons
+    ttk::frame $w.fengines -relief groove -borderwidth 1
+    ttk::frame $w.fbook -relief groove -borderwidth 1
+    ttk::frame $w.ftime -relief groove -borderwidth 1
+    ttk::frame $w.fconfig -relief groove -borderwidth 1
+    ttk::frame $w.fopening -relief groove -borderwidth 1
+    ttk::frame $w.fbuttons
     
     pack $w.fengines $w.fbook $w.ftime $w.fconfig -side top -fill x
     pack $w.fopening -side top -fill both -expand 1
     pack $w.fbuttons -side top -fill x
     
     # builds the list of UCI engines
-    label $w.fengines.label -text $::tr(Engine)
-    frame $w.fengines.fEnginesList -relief raised -borderwidth 1
+    ttk::label $w.fengines.label -text $::tr(Engine)
+    ttk::frame $w.fengines.fEnginesList -relief raised -borderwidth 1
     listbox $w.fengines.fEnginesList.lbEngines -yscrollcommand "$w.fengines.fEnginesList.ybar set" \
         -height 5 -width 50 -exportselection 0
-    scrollbar $w.fengines.fEnginesList.ybar -command "$w.fengines.fEnginesList.lbEngines yview"
+    ttk::scrollbar $w.fengines.fEnginesList.ybar -command "$w.fengines.fEnginesList.lbEngines yview"
     pack $w.fengines.label -side top
     pack $w.fengines.fEnginesList.ybar -side left -fill y
     pack $w.fengines.fEnginesList.lbEngines -side left -fill both -expand yes
@@ -93,7 +93,7 @@ namespace eval sergame {
     }
     
     # Engine configuration (limit strength for example)
-    button $w.fengines.bEngineConfig -text $::tr(ConfigureUCIengine) -command {
+    ttk::button $w.fengines.bEngineConfig -text $::tr(ConfigureUCIengine) -command {
       set sel [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
       set index $::sergame::engineListBox($sel)
       set engineData [lindex $::engines(list) $index]
@@ -118,17 +118,18 @@ namespace eval sergame {
     $w.fengines.fEnginesList.lbEngines selection set 0
     
     # load book names
-    checkbutton $w.fbook.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
+    ttk::checkbutton $w.fbook.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
     set bookPath $::scidBooksDir
-    ::combobox::combobox $w.fbook.combo -editable false -width 12
     set bookList [ lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
     set i 0
     set idx 0
+    set tmp {}
     foreach file  $bookList {
-      set f [ file tail $file ]
-      $w.fbook.combo list insert end $f
+      lappend tmp [ file tail $file ]
     }
-    $w.fbook.combo select 0
+    
+    ttk::combobox $w.fbook.combo -width 12 -values $tmp
+    $w.fbook.combo current 0
     
     set row 0
     
@@ -136,36 +137,36 @@ namespace eval sergame {
     pack $w.fbook.combo -side right -expand yes -fill both
     
     # Time bonus frame
-    frame $w.ftime.timebonus
-    label $w.ftime.timebonus.label -text $::tr(TimeMode)
+    ttk::frame $w.ftime.timebonus
+    ttk::label $w.ftime.timebonus.label -text $::tr(TimeMode)
     pack  $w.ftime.timebonus -side top -fill x -expand 1
     grid $w.ftime.timebonus.label -row $row -column 0 -columnspan 5 -sticky nsew
     incr row
     
-    radiobutton $w.ftime.timebonus.rb1 -text $::tr(TimeBonus) -value "timebonus" -variable ::sergame::timeMode
+    ttk::radiobutton $w.ftime.timebonus.rb1 -text $::tr(TimeBonus) -value "timebonus" -variable ::sergame::timeMode
     grid $w.ftime.timebonus.rb1 -row $row -column 0 -sticky w -rowspan 2
     
-    label $w.ftime.timebonus.whitelabel -text $::tr(White)
+    ttk::label $w.ftime.timebonus.whitelabel -text $::tr(White)
     grid $w.ftime.timebonus.whitelabel -row $row -column 1
     spinbox $w.ftime.timebonus.whitespminutes -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.whitespminutes -row $row -column 2
-    label $w.ftime.timebonus.whitelminutes -text $::tr(TimeMin)
+    ttk::label $w.ftime.timebonus.whitelminutes -text $::tr(TimeMin)
     grid $w.ftime.timebonus.whitelminutes -row $row -column 3
     spinbox $w.ftime.timebonus.whitespseconds -background white -width 4 -from 0 -to 60 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.whitespseconds -row $row -column 4
-    label $w.ftime.timebonus.whitelseconds -text $::tr(TimeSec)
+    ttk::label $w.ftime.timebonus.whitelseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.whitelseconds -row $row -column 5
     
     incr row
-    label $w.ftime.timebonus.blacklabel -text $::tr(Black)
+    ttk::label $w.ftime.timebonus.blacklabel -text $::tr(Black)
     grid $w.ftime.timebonus.blacklabel -row $row -column 1
     spinbox $w.ftime.timebonus.blackspminutes -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.blackspminutes -row $row -column 2
-    label $w.ftime.timebonus.blacklminutes -text $::tr(TimeMin)
+    ttk::label $w.ftime.timebonus.blacklminutes -text $::tr(TimeMin)
     grid $w.ftime.timebonus.blacklminutes -row $row -column 3
     spinbox $w.ftime.timebonus.blackspseconds -background white -width 4 -from 0 -to 60 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.ftime.timebonus.blackspseconds -row $row -column 4
-    label $w.ftime.timebonus.blacklseconds -text $::tr(TimeSec)
+    ttk::label $w.ftime.timebonus.blacklseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.blacklseconds -row $row -column 5
     
     $w.ftime.timebonus.whitespminutes set 5
@@ -174,8 +175,8 @@ namespace eval sergame {
     $w.ftime.timebonus.blackspseconds set 10
     
     # Fixed depth
-    frame $w.ftime.depth
-    radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::timeMode
+    ttk::frame $w.ftime.depth
+    ttk::radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::timeMode
     spinbox $w.ftime.depth.value -background white -width 4 -from 1 -to 20 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     $w.ftime.depth.value set 3
     
@@ -183,8 +184,8 @@ namespace eval sergame {
     pack $w.ftime.depth.button -side left
     pack $w.ftime.depth.value -side left
     
-    frame $w.ftime.nodes
-    radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::timeMode
+    ttk::frame $w.ftime.nodes
+    ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::timeMode
     spinbox $w.ftime.nodes.value -background white -width 4 -from 5 -to 10000 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
     $w.ftime.nodes.value set 10
     
@@ -192,8 +193,8 @@ namespace eval sergame {
     pack $w.ftime.nodes.button -side left
     pack $w.ftime.nodes.value -side left
     
-    frame $w.ftime.movetime
-    radiobutton $w.ftime.movetime.button -text $::tr(SecondsPerMove) -value "movetime" -variable ::sergame::timeMode
+    ttk::frame $w.ftime.movetime
+    ttk::radiobutton $w.ftime.movetime.button -text $::tr(SecondsPerMove) -value "movetime" -variable ::sergame::timeMode
     spinbox $w.ftime.movetime.value -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     $w.ftime.movetime.value set 5
     
@@ -202,30 +203,30 @@ namespace eval sergame {
     pack $w.ftime.movetime.value -side left
     
     # New game or use current position ?
-    checkbutton $w.fconfig.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::startFromCurrent
+    ttk::checkbutton $w.fconfig.cbPosition -text $::tr(StartFromCurrentPosition) -variable ::sergame::startFromCurrent
     pack $w.fconfig.cbPosition  -side top -anchor w
     
     # ponder
-    checkbutton $w.fconfig.cbPonder -text $::tr(Ponder) -variable ::sergame::ponder
+    ttk::checkbutton $w.fconfig.cbPonder -text $::tr(Ponder) -variable ::sergame::ponder
     pack $w.fconfig.cbPonder  -side top -anchor w
     
     # Warn if the user makes weak/bad moves
-    checkbutton $w.fconfig.cbCoach -text $::tr(CoachIsWatching) -variable ::sergame::coachIsWatching
+    ttk::checkbutton $w.fconfig.cbCoach -text $::tr(CoachIsWatching) -variable ::sergame::coachIsWatching
     pack $w.fconfig.cbCoach -side top -anchor w
     
     # choose a specific opening
-    checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
-    frame $w.fopening.fOpeningList -relief raised -borderwidth 1
+    ttk::checkbutton $w.fopening.cbOpening -text $::tr(SpecificOpening) -variable ::sergame::isOpening
+    ttk::frame $w.fopening.fOpeningList -relief raised -borderwidth 1
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
         -height 5 -width 50 -list ::tacgame::openingList -exportselection 0
     $w.fopening.fOpeningList.lbOpening selection set 0
-    scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
+    ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
     pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar -side right -fill y
     pack $w.fopening.cbOpening -fill x -side top
     pack $w.fopening.fOpeningList -expand yes -fill both -side top -expand 1
     
-    button $w.fbuttons.close -text $::tr(Play) -command {
+    ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
       set chosenEngine [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
       set ::sergame::engineName [.configSerGameWin.fengines.fEnginesList.lbEngines get $chosenEngine]
@@ -244,7 +245,7 @@ namespace eval sergame {
       destroy .configSerGameWin
       ::sergame::play $chosenEngine
     }
-    button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
+    ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
     pack $w.fbuttons.close $w.fbuttons.cancel -expand yes -side left
     
@@ -335,8 +336,8 @@ namespace eval sergame {
     
     setWinLocation $w
     
-    frame $w.fclocks -relief raised -borderwidth 1
-    frame $w.fbuttons
+    ttk::frame $w.fclocks -relief raised -borderwidth 1
+    ttk::frame $w.fbuttons
     pack $w.fclocks $w.fbuttons -side top -expand yes -fill both
     
     ::gameclock::new $w.fclocks 2 80 1
@@ -344,7 +345,7 @@ namespace eval sergame {
     ::gameclock::reset 1
     ::gameclock::start 1
     
-    button $w.fbuttons.close -textvar ::tr(Abort) -command ::sergame::abortGame
+    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::sergame::abortGame
     pack $w.fbuttons.close -expand yes -fill both
     
     bind $w <F1> { helpWindow TacticalGame }

@@ -306,6 +306,8 @@ menuText P OptionsMovesKey "Automatyczne dope³nianie posuniêæ" 1 \
   {W³±cz/wy³±cz automatyczne dope³nianie posuniêæ wprowadzanych z klawiatury}
 menuText P OptionsNumbers "Format zapisu liczb" 0 {Wybierz format zapisu liczb}
 menuText P OptionsStartup "Start" 0 {Wybierz okna, które maj± byæ widoczne po uruchomieniu programu}
+# ====== TODO To be translated ======
+menuText P OptionsTheme "Theme" 0 {Change look of interface}
 menuText P OptionsWindows "Okna" 0 {Opcje okien}
 menuText P OptionsWindowsIconify "Minimalizuj wszystkie okna" 0 \
   {Schowaj wszystkie okna przy minimalizacji g³ównego okna}
@@ -1957,6 +1959,16 @@ translate P showGameInfo {Show game info}
 # ====== TODO To be translated ======
 translate P autoResizeBoard {Automatic resize of board}
 # ====== TODO To be translated ======
+translate P DockTop {Move to top}
+# ====== TODO To be translated ======
+translate P DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate P DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate P DockRight {Move to right}
+# ====== TODO To be translated ======
+translate P Undock {Undock}
+# ====== TODO To be translated ======
 }
 
 ### Tips of the day in Polish:
@@ -2177,6 +2189,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

@@ -8,20 +8,18 @@ proc ::tip::show {{n -1}} {
   if {! [winfo exists .tipsWin]} {
     toplevel $w
     wm title $w "Scid: [tr HelpTip]"
-    pack [frame $w.b] -side bottom -fill x
+    pack [ttk::frame $w.b] -side bottom -fill x
     text $w.text -background gray95 -foreground black \
       -cursor top_left_arrow -width 40 -height 8 -setgrid 1 \
       -yscrollcommand "$w.ybar set" -wrap word
     ::htext::init $w.text
-    scrollbar $w.ybar -command "$w.text yview"
+    ttk::scrollbar $w.ybar -command "$w.text yview"
     pack $w.ybar -side right -fill y
     pack $w.text -side left -fill both -expand 1
-    checkbutton $w.b.start -textvar ::tr(TipAtStartup) -font font_Small \
-      -variable startup(tip)
-    dialogbutton $w.b.prev -text "<" -font font_Small
-    dialogbutton $w.b.next -text ">" -font font_Small
-    dialogbutton $w.b.close -textvar ::tr(Close) -font font_Small \
-      -command "destroy $w"
+    ttk::checkbutton $w.b.start -textvar ::tr(TipAtStartup) -variable startup(tip) -style Small.TCheckbutton
+    dialogbuttonsmall $w.b.prev -text "<"
+    dialogbuttonsmall $w.b.next -text ">" 
+    dialogbuttonsmall $w.b.close -textvar ::tr(Close) -command "destroy $w"
     pack $w.b.start -side left -padx 2
     packbuttons right $w.b.close $w.b.next $w.b.prev
 
@@ -277,6 +275,11 @@ set tips(E) {
     the matching games by holding down <b>Ctrl</b> and pressing the
     <b>Up</b> or <b>Down</b> key to load the previous or next
     <a Searches Filter>filter</a> game.
+  }
+  {
+    Windows can be docked by checking the relevant entry in the option menu.
+    Tabs can be dragged and dropped from one notebook to another and moved
+    by right clicking on the tab widget.
   }
 }
 

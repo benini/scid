@@ -152,12 +152,12 @@ namespace eval pgn {
       $w.text configure -font font_Bold
     }
     
-    scrollbar $w.scroll -command "$w.text yview" -takefocus 0
-    pack [frame $w.buttons] -side bottom -fill x
+    ttk::scrollbar $w.scroll -command "$w.text yview" -takefocus 0
+    pack [ttk::frame $w.buttons] -side bottom -fill x
     pack $w.scroll -side right -fill y
     pack $w.text -fill both -expand yes
-    button $w.buttons.help -textvar ::tr(Help) -command { helpWindow PGN }
-    button $w.buttons.close -textvar ::tr(Close) -command { focus .; destroy .pgnWin }
+    ttk::button $w.buttons.help -textvar ::tr(Help) -command { helpWindow PGN }
+    ttk::button $w.buttons.close -textvar ::tr(Close) -command { focus .; destroy .pgnWin }
     #pack $w.buttons.close $w.buttons.help -side right -padx 5 -pady 2
     set pgnWin 1
     bind $w <Destroy> { set pgnWin 0 }
@@ -356,7 +356,6 @@ namespace eval pgn {
   #    tags will be updated.
   ################################################################################
   proc Refresh {{pgnNeedsUpdate 0}} {
-    
     if {![winfo exists .pgnWin]} { return }
     
     set format plain

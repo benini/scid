@@ -4,9 +4,8 @@
 |                                                           |
  ===========================================================
 
-sauve layout
-autoscrollframe en mode docked ?
-voir patch resize de SA
+virer combobox.tcl du CVS
+voir board.tcl avec ttk ajoutés non testés (l 349 de main.tcl modifiée)
 
  ===========================================================
 |                                                           |

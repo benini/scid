@@ -39,7 +39,7 @@ proc ::preport::preportDlg {args} {
   pack [frame $w.g] -side top -fill x -expand yes -padx 2
   label $w.g.where -text "Player:"
   grid $w.g.where -row 0 -column 0 -sticky w
-  ::combobox::combobox $w.g.player -width 40 -textvariable ::preport::_player
+  ttk::combobox $w.g.player -width 40 -textvariable ::preport::_player
   ::utils::history::SetCombobox ::preport::_player $w.g.player
   grid $w.g.player -row 0 -column 1 -sticky we
   label $w.g.has -text "Color:"
@@ -72,11 +72,11 @@ proc ::preport::preportDlg {args} {
   dialogbutton $w.b2.white -text "$::tr(White) ($whiteName)" -command {
     set ::preport::_player [sc_game info white]
     set ::preport::_color white
-  } -font font_Small
+  } 
   dialogbutton $w.b2.black -text "$::tr(Black) ($blackName)" -command {
     set ::preport::_player [sc_game info black]
     set ::preport::_color black
-  } -font font_Small
+  } 
   if {$whiteName == ""  ||  $whiteName == "?"} {
     $w.b2.white configure -state disabled
   }
@@ -90,9 +90,9 @@ proc ::preport::preportDlg {args} {
     -command "catch {grab release $w}; destroy $w; ::preport::makeReportWin"
   dialogbutton $w.b.cancel -text $::tr(Cancel) \
     -command "catch {grab release $w}; destroy $w"
-  foreach button {help ok cancel} {
-    $w.b.$button configure -font font_Small
-  }
+  # foreach button {help ok cancel} {
+    # $w.b.$button configure -font font_Small
+  # }
   if {$whiteName != ""  &&  $whiteName != "?"} {
     packbuttons left $w.b2.white
   }
@@ -612,7 +612,7 @@ proc ::preport::report {fmt {withTable 1}} {
 
   # Eszet (ss) characters seem to be mishandled by LaTeX, even with
   # the font encoding package, so convert them explicitly:
-  if {$fmt == "latex"} { regsub -all ß $r {{\\ss}} r }
+  if {$fmt == "latex"} { regsub -all ÃŸ $r {{\\ss}} r }
 
   return $r
 }

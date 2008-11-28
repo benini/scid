@@ -129,11 +129,9 @@ proc ::utils::history::RefillCombobox {key} {
   # it may not exist right now:
   if {! [winfo exists $cbWidget]} { return }
 
-  $cbWidget list delete 0 end
+  $cbWidget delete 0 end
   set entries [GetList $key]
-  foreach entry $entries {
-    $cbWidget list insert end $entry
-  }
+  $cbWidget configure -values $entries
 }
 
 

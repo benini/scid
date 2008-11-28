@@ -29,6 +29,11 @@ set stack ""
 
 set markTacticalExercises 1
 
+set isAnnotateVar 0
+set isShortAnnotation 0
+set addScoreToShortAnnotations 0
+set addAnnotatorTag 0
+
 ################################################################################
 # The different threshold values for !? ?? += etc
 array set informant {}
@@ -337,12 +342,12 @@ proc ::enginelist::choose {} {
   set w .enginelist
   toplevel $w
   ::setTitle $w "Scid: [tr ToolsAnalysis]"
-  label $w.flabel -text $::tr(EngineList:) -font font_Bold
-  pack $w.flabel -side top
+  ttk::label $w.flabel -text $::tr(EngineList:) -font font_Bold -anchor center
+  pack $w.flabel -side top -expand 1 -fill both
   
-  pack [frame $w.buttons] -side bottom -pady 6 -fill x
-  frame $w.rule -height 2 -borderwidth 2 -relief sunken -background white
-  pack $w.rule -side bottom -fill x -pady 5
+  pack [ttk::frame $w.buttons] -side bottom -fill x
+  ttk::frame $w.rule -height 2 -borderwidth 2 -relief sunken
+  pack $w.rule -side bottom -fill x
   
   # Set up title frame for sorting the list:
   text $w.title -width 55 -height 1 -font font_Fixed -relief flat \
@@ -371,12 +376,12 @@ proc ::enginelist::choose {} {
   
   # The list of choices:
   set f $w.list
-  pack [frame $f] -side top -expand yes -fill both
+  pack [ttk::frame $f] -side top -expand yes -fill both
   listbox $f.list -height 10 -width 55  -selectmode browse \
       -background white -setgrid 1 \
       -yscrollcommand "$f.ybar set" -font font_Fixed -exportselection 0
   bind $f.list <Double-ButtonRelease-1> "$w.buttons.ok invoke; break"
-  scrollbar $f.ybar -command "$f.list yview"
+  ttk::scrollbar $f.ybar -command "$f.list yview"
   pack $f.ybar -side right -fill y
   pack $f.list -side top -fill both -expand yes
   $f.list selection set 0
@@ -389,7 +394,7 @@ proc ::enginelist::choose {} {
   dialogbutton $f.delete -text $::tr(Delete...) -command {
     ::enginelist::delete [lindex [.enginelist.list.list curselection] 0]
   }
-  label $f.sep -text "   "
+  ttk::label $f.sep -text "   "
   dialogbutton $f.ok -text "OK" -command {
     set engines(selection) [lindex [.enginelist.list.list curselection] 0]
     destroy .enginelist
@@ -483,22 +488,22 @@ proc ::enginelist::edit {index} {
   toplevel $w
   ::setTitle $w Scid
   
-  set f [frame $w.f]
+  set f [ttk::frame $w.f]
   pack $f -side top -fill x -expand yes
   set row 0
   foreach i {Name Cmd Args Dir URL} {
-    label $f.l$i -text $i
+    ttk::label $f.l$i -text $i
     if {[info exists ::tr(Engine$i)]} {
       $f.l$i configure -text $::tr(Engine$i)
     }
-    entry $f.e$i -textvariable engines(new$i) -width 40
+    ttk::entry $f.e$i -textvariable engines(new$i) -width 40
     bindFocusColors $f.e$i
     grid $f.l$i -row $row -column 0 -sticky w
     grid $f.e$i -row $row -column 1 -sticky we
     
     # Browse button for choosing an executable file:
     if {$i == "Cmd"} {
-      button $f.b$i -text "..." -command {
+      ttk::button $f.b$i -text "..." -command {
         if {$::windowsOS} {
           set scid_temp(filetype) {
             {"Applications" {".bat" ".exe"} }
@@ -526,10 +531,10 @@ proc ::enginelist::edit {index} {
     }
     
     if {$i == "Dir"} {
-      button $f.current -text " . " -command {
+      ttk::button $f.current -text " . " -command {
         set engines(newDir) .
       }
-      button $f.user -text "~/.scid" -command {
+      ttk::button $f.user -text "~/.scid" -command {
         set engines(newDir) $scidUserDir
       }
       if {$::windowsOS} {
@@ -540,7 +545,7 @@ proc ::enginelist::edit {index} {
     }
     
     if {$i == "URL"} {
-      button $f.bURL -text [tr FileOpen] -command {
+      ttk::button $f.bURL -text [tr FileOpen] -command {
         if {$engines(newURL) != ""} { openURL $engines(newURL) }
       }
       grid $f.bURL -row $row -column 2 -sticky we
@@ -551,8 +556,8 @@ proc ::enginelist::edit {index} {
   
   grid columnconfigure $f 1 -weight 1
   
-  checkbutton $f.cbUci -text UCI -variable engines(newUCI)
-  button $f.bConfigUCI -text $::tr(ConfigureUCIengine) -command {
+  ttk::checkbutton $f.cbUci -text UCI -variable engines(newUCI) -style Bold.TCheckbutton
+  ttk::button $f.bConfigUCI -text $::tr(ConfigureUCIengine) -command {
     ::uci::uciConfig 2 [ toAbsPath $engines(newCmd) ] $engines(newArgs) \
         [ toAbsPath $engines(newDir) ] $engines(newUCIoptions)
   }
@@ -560,10 +565,10 @@ proc ::enginelist::edit {index} {
   $f.lName configure -font font_Bold
   $f.lCmd configure -font font_Bold
   $f.lDir configure -font font_Bold
-  $f.cbUci configure -font font_Bold
+  # $f.cbUci configure -font font_Bold
   
-  label $f.lElo -text $::tr(EngineElo)
-  entry $f.eElo -textvariable engines(newElo) -justify right -width 5
+  ttk::label $f.lElo -text $::tr(EngineElo)
+  ttk::entry $f.eElo -textvariable engines(newElo) -justify right -width 5
   bindFocusColors $f.eElo
   grid $f.lElo -row $row -column 0 -sticky w
   grid $f.eElo -row $row -column 1 -sticky w
@@ -572,15 +577,15 @@ proc ::enginelist::edit {index} {
   grid $f.bConfigUCI -row $row -column 1 -sticky w
   incr row
   
-  label $f.lTime -text $::tr(EngineTime)
-  label $f.eTime -textvariable engines(newDate) -anchor w -width 1
+  ttk::label $f.lTime -text $::tr(EngineTime)
+  ttk::label $f.eTime -textvariable engines(newDate) -anchor w -width 1
   grid $f.lTime -row $row -column 0 -sticky w
   grid $f.eTime -row $row -column 1 -sticky we
-  button $f.clearTime -text $::tr(Clear) -command {
+  ttk::button $f.clearTime -text $::tr(Clear) -command {
     set engines(newTime) 0
     set engines(newDate) $::tr(None)
   }
-  button $f.nowTime -text $::tr(Update) -command {
+  ttk::button $f.nowTime -text $::tr(Update) -command {
     set engines(newTime) [clock seconds]
     set engines(newDate) [::enginelist::date $engines(newTime)]
   }
@@ -588,8 +593,9 @@ proc ::enginelist::edit {index} {
   grid $f.nowTime -row $row -column 3 -sticky we
   
   addHorizontalRule $w
-  set f [frame $w.buttons]
-  button $f.ok -text OK -command {
+  
+  set f [ttk::frame $w.buttons]
+  ttk::button $f.ok -text OK -command {
     if {[string trim $engines(newName)] == ""  ||
       [string trim $engines(newCmd)] == ""  ||
       [string trim $engines(newDir)] == ""} {
@@ -611,10 +617,10 @@ proc ::enginelist::edit {index} {
       ::enginelist::write
     }
   }
-  button $f.cancel -text $::tr(Cancel) -command "destroy $w"
+  ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w"
   pack $f -side bottom -fill x
   pack $f.cancel $f.ok -side right -padx 2 -pady 2
-  label $f.required -font font_Small -text $::tr(EngineRequired)
+  ttk::label $f.required -font font_Small -text $::tr(EngineRequired)
   pack $f.required -side left
   
   bind $w <Return> "$f.ok invoke"
@@ -643,92 +649,98 @@ proc configAnnotation {} {
   toplevel $w
   ::setTitle $w "Scid"
   wm resizable $w 0 0
-  label $w.label -text $::tr(AnnotateTime:)
-  pack $w.label -side top -pady 5 -padx 5
-  spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
-  pack $w.spDelay -side top -pady 5
+  set f [ttk::frame $w.f]
+  pack $f -expand 1
+  ttk::label $f.label -text $::tr(AnnotateTime:)
+  pack $f.label -side top
+  spinbox $f.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
+  pack $f.spDelay -side top -pady 5
   bind $w <Escape> { .configAnnotation.buttons.cancel invoke }
   bind $w <Return> { .configAnnotation.buttons.ok invoke }
   
-  addHorizontalRule $w
-  label $w.avlabel -text $::tr(AnnotateWhich:)
-  radiobutton $w.all -text $::tr(AnnotateAll) -variable annotateMoves -value all -anchor w
-  radiobutton $w.white -text $::tr(AnnotateWhite) -variable annotateMoves -value white -anchor w
-  radiobutton $w.black -text $::tr(AnnotateBlack) -variable annotateMoves -value black -anchor w
-  radiobutton $w.allmoves -text $::tr(AnnotateAllMoves) -variable annotateBlunders -value allmoves -anchor w
-  radiobutton $w.notbest -text $::tr(AnnotateNotBest) -variable annotateBlunders -value notbest -anchor w
-  radiobutton $w.blundersonly -text $::tr(AnnotateBlundersOnly) \
-      -variable annotateBlunders -value blundersonly -anchor w
-  pack $w.avlabel -side top
-  pack $w.all $w.white $w.black $w.allmoves $w.notbest $w.blundersonly -side top -fill x
+  addHorizontalRule $f
+  ttk::label $f.avlabel -text $::tr(AnnotateWhich:)
+  ttk::radiobutton $f.all -text $::tr(AnnotateAll) -variable annotateMoves -value all
+  ttk::radiobutton $f.white -text $::tr(AnnotateWhite) -variable annotateMoves -value white
+  ttk::radiobutton $f.black -text $::tr(AnnotateBlack) -variable annotateMoves -value black
+  ttk::radiobutton $f.allmoves -text $::tr(AnnotateAllMoves) -variable annotateBlunders -value allmoves
+  ttk::radiobutton $f.notbest -text $::tr(AnnotateNotBest) -variable annotateBlunders -value notbest
+  ttk::radiobutton $f.blundersonly -text $::tr(AnnotateBlundersOnly) -variable annotateBlunders -value blundersonly
+  pack $f.avlabel -side top
+  pack $f.all $f.white $f.black $f.allmoves $f.notbest $f.blundersonly -side top -fill x -anchor w
   
-  frame $w.blunderbox
-  pack $w.blunderbox -side top -padx 5 -pady 5
+  ttk::frame $f.blunderbox
+  pack $f.blunderbox -side top -padx 5 -pady 5
   
-  label $w.blunderbox.label -text $::tr(BlundersThreshold:)
-  spinbox $w.blunderbox.spBlunder -background white -width 4 -textvariable blunderThreshold \
+  ttk::label $f.blunderbox.label -text $::tr(BlundersThreshold:)
+  spinbox $f.blunderbox.spBlunder -background white -width 4 -textvariable blunderThreshold \
       -from 0.1 -to 3.0 -increment 0.1
-  pack $w.blunderbox.label $w.blunderbox.spBlunder -side left -padx 5 -pady 5
+  pack $f.blunderbox.label $f.blunderbox.spBlunder -side left -padx 5 -pady 5
   
-  addHorizontalRule $w
-  checkbutton $w.cbAnnotateVar  -text $::tr(AnnotateVariations) -variable ::isAnnotateVar -anchor w
-  checkbutton $w.cbShortAnnotation  -text $::tr(ShortAnnotations) -variable ::isShortAnnotation -anchor w
-  checkbutton $w.cbAddScore  -text $::tr(AddScoreToShortAnnotations) -variable ::addScoreToShortAnnotations -anchor w
-  checkbutton $w.cbAddAnnotatorTag  -text $::tr(addAnnotatorTag) -variable ::addAnnotatorTag -anchor w
-  pack $w.cbAnnotateVar $w.cbShortAnnotation $w.cbAddScore $w.cbAddAnnotatorTag -anchor w
+  addHorizontalRule $f
+  ttk::checkbutton $f.cbAnnotateVar  -text $::tr(AnnotateVariations) -variable ::isAnnotateVar
+  ttk::checkbutton $f.cbShortAnnotation  -text $::tr(ShortAnnotations) -variable ::isShortAnnotation
+  ttk::checkbutton $f.cbAddScore  -text $::tr(AddScoreToShortAnnotations) -variable ::addScoreToShortAnnotations
+  ttk::checkbutton $f.cbAddAnnotatorTag  -text $::tr(addAnnotatorTag) -variable ::addAnnotatorTag
+  pack $f.cbAnnotateVar $f.cbShortAnnotation $f.cbAddScore $f.cbAddAnnotatorTag -fill x -anchor w
   
   # choose a book for analysis
-  addHorizontalRule $w
-  checkbutton $w.cbBook  -text $::tr(UseBook) -variable ::useAnalysisBook
+  addHorizontalRule $f
+  ttk::checkbutton $f.cbBook  -text $::tr(UseBook) -variable ::useAnalysisBook
   # load book names
   set bookPath $::scidBooksDir
-  ::combobox::combobox $w.comboBooks -editable false -width 12
-  set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
-  foreach file  $bookList {
-    $w.comboBooks list insert end [ file tail $file ]
-  }
-  $w.comboBooks select 0
-  pack $w.cbBook $w.comboBooks -side top
+  # ::combobox::combobox $w.comboBooks -editable false -width 12
   
-  addHorizontalRule $w
+  set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+  set tmp {}
+  foreach file  $bookList {
+    #    $w.comboBooks insert end [ file tail $file ]
+    lappend tmp [ file tail $file ]
+  }
+  ttk::combobox $f.comboBooks -width 12 -values $tmp
+  $f.comboBooks current 0
+  
+  pack $f.cbBook $f.comboBooks -side top
+  
+  addHorizontalRule $f
   
   # batch annotation of consecutive games, and optional opening errors finder
-  frame $w.batch
-  pack $w.batch -side top -fill x
+  ttk::frame $f.batch
+  pack $f.batch -side top -fill x
   set to [sc_base numGames]
   if {$to <1} { set to 1}
-  checkbutton $w.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
-  spinbox $w.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \
+  ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
+  spinbox $f.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \
       -from 1 -to $to -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
-  checkbutton $w.batch.cbBatchOpening -text $::tr(FindOpeningErrors) -variable ::isBatchOpening
-  spinbox $w.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
+  ttk::checkbutton $f.batch.cbBatchOpening -text $::tr(FindOpeningErrors) -variable ::isBatchOpening
+  spinbox $f.batch.spBatchOpening -background white -width 2 -textvariable ::isBatchOpeningMoves \
       -from 10 -to 20 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
-  label $w.batch.lBatchOpening -text $::tr(moves)
+  ttk::label $f.batch.lBatchOpening -text $::tr(moves)
   # pack $w.batch.cbBatch $w.batch.spBatchEnd -side top -fill x
   # pack $w.batch.cbBatchOpening $w.batch.spBatchOpening $w.batch.lBatchOpening  -side left -fill x
-  grid $w.batch.cbBatch -column 0 -row 0 -sticky w
-  grid $w.batch.spBatchEnd -column 1 -row 0 -sticky w
-  grid $w.batch.cbBatchOpening -column 0 -row 1 -sticky w
-  grid $w.batch.spBatchOpening -column 1 -row 1 -sticky e
-  grid $w.batch.lBatchOpening -column 2 -row 1 -sticky w
+  grid $f.batch.cbBatch -column 0 -row 0 -sticky w
+  grid $f.batch.spBatchEnd -column 1 -row 0 -sticky w
+  grid $f.batch.cbBatchOpening -column 0 -row 1 -sticky w
+  grid $f.batch.spBatchOpening -column 1 -row 1 -sticky e
+  grid $f.batch.lBatchOpening -column 2 -row 1 -sticky w
   set ::batchEnd $to
   
-  checkbutton $w.batch.cbMarkTactics -text $::tr(MarkTacticalExercises) -variable ::markTacticalExercises
-  grid $w.batch.cbMarkTactics -column 0 -row 2 -sticky w
+  ttk::checkbutton $f.batch.cbMarkTactics -text $::tr(MarkTacticalExercises) -variable ::markTacticalExercises
+  grid $f.batch.cbMarkTactics -column 0 -row 2 -sticky w
   if {! $::analysis(uci1)} {
     set ::markTacticalExercises 0
-    $w.batch.cbMarkTactics configure -state disabled
+    $f.batch.cbMarkTactics configure -state disabled
   }
   
-  addHorizontalRule $w
-  frame $w.buttons
-  pack $w.buttons -side top -fill x
-  button $w.buttons.cancel -text $::tr(Cancel) -command {
+  addHorizontalRule $f
+  ttk::frame $f.buttons
+  pack $f.buttons -side top -fill x
+  ttk::button $f.buttons.cancel -text $::tr(Cancel) -command {
     destroy .configAnnotation
     set annotateMode 0
     set annotateModeButtonValue 0
   }
-  button $w.buttons.ok -text "OK" -command {
+  ttk::button $f.buttons.ok -text "OK" -command {
     set ::useAnalysisBookName [.configAnnotation.comboBooks get]
     set  ::wentOutOfBook 0
     
@@ -752,8 +764,8 @@ proc configAnnotation {} {
     }
     if {$autoplayMode == 0} { toggleAutoplay }
   }
-  pack $w.buttons.cancel $w.buttons.ok -side right -padx 5 -pady 5
-  focus $w.spDelay
+  pack $f.buttons.cancel $f.buttons.ok -side right -padx 5 -pady 5
+  focus $f.spDelay
   update ; # or grab will fail
   grab $w
   bind $w <Destroy> { focus . }
@@ -1580,7 +1592,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   set analysis(showBoard$n) 0
   set analysis(showEngineInfo$n) 0
   
-  frame $w.b1
+  ttk::frame $w.b1
   pack $w.b1 -side bottom -fill x
   
   checkbutton $w.b1.automove -image tb_training  -indicatoron false -height 24 -relief raised -command "toggleAutomove $n" -variable analysis(automove$n)
@@ -1658,11 +1670,11 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   } else {
     text $w.text -width 60 -height 4 -fg black -bg white -font font_Fixed -wrap word -setgrid 1
   }
-  frame $w.hist
+  ttk::frame $w.hist
   text $w.hist.text -width 60 -height 8 -fg black -bg white -font font_Fixed \
       -wrap word -setgrid 1 -yscrollcommand "$w.hist.ybar set"
   $w.hist.text tag configure indent -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
-  scrollbar $w.hist.ybar -command "$w.hist.text yview" -takefocus 0
+  ttk::scrollbar $w.hist.ybar -command "$w.hist.text yview" -takefocus 0
   pack $w.text -side top -fill both
   pack $w.hist -side top -expand 1 -fill both
   pack $w.hist.ybar -side right -fill y
@@ -2641,9 +2653,9 @@ proc setAutomoveTime {{n 1}} {
   #wm transient $w .analysisWin
   ::setTitle $w "Scid: Engine thinking time"
   wm resizable $w 0 0
-  label $w.label -text "Set the engine thinking time per move in seconds:"
+  ttk::label $w.label -text "Set the engine thinking time per move in seconds:"
   pack $w.label -side top -pady 5 -padx 5
-  entry $w.entry -background white -width 10 -textvariable temptime
+  ttk::entry $w.entry -background white -width 10 -textvariable temptime
   pack $w.entry -side top -pady 5
   bind $w.entry <Escape> { .apdialog.buttons.cancel invoke }
   bind $w.entry <Return> { .apdialog.buttons.ok invoke }
@@ -2651,16 +2663,16 @@ proc setAutomoveTime {{n 1}} {
   addHorizontalRule $w
   
   set dialogResult ""
-  set b [frame $w.buttons]
+  set b [ttk::frame $w.buttons]
   pack $b -side top -fill x
-  button $b.cancel -text $::tr(Cancel) -command {
+  ttk::button $b.cancel -text $::tr(Cancel) -command {
     focus .
     catch {grab release .apdialog}
     destroy .apdialog
     focus .
     set dialogResult Cancel
   }
-  button $b.ok -text "OK" -command {
+  ttk::button $b.ok -text "OK" -command {
     catch {grab release .apdialog}
     if {$temptime < 0.1} { set temptime 0.1 }
     set analysis(automoveTime$tempn) [expr {int($temptime * 1000)} ]

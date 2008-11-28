@@ -284,6 +284,8 @@ menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
 menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
+# ====== TODO To be translated ======
+menuText D OptionsTheme "Theme" 0 {Change look of interface}
 menuText D OptionsWindows "Fenster" 6 {Fenster-Optionen}
 menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
   {Alle Fenster mit dem Hauptfenster minimieren}
@@ -1597,6 +1599,16 @@ translate D DoneWithPosition {Positionsbearbeitung beendet}
 translate D Board {Brett}
 translate D showGameInfo {Partieinformation anzeigen}
 translate D autoResizeBoard {Brettgröße automatisch berechnen}
+# ====== TODO To be translated ======
+translate D DockTop {Move to top}
+# ====== TODO To be translated ======
+translate D DockBottom {Move to bottom}
+# ====== TODO To be translated ======
+translate D DockLeft {Move to left}
+# ====== TODO To be translated ======
+translate D DockRight {Move to right}
+# ====== TODO To be translated ======
+translate D Undock {Undock}
 }
 
 ##########
@@ -7147,6 +7159,8 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
 
 
 
