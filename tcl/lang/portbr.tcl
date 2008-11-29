@@ -366,16 +366,16 @@ menuText B GInfoMark "Desmarcar este jogo" 0
 menuText B GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg B .main.button.start {Ir para o inicio do jogo  (tecla: Home)}
-helpMsg B .main.button.end {Ir para o final do jogo  (tecla: End)}
-helpMsg B .main.button.back {Retroceder um movimento  (tecla: Seta Esquerda)}
-helpMsg B .main.button.forward {Avancar um movimento  (tecla: Seta Direita)}
-helpMsg B .main.button.intoVar {Entrar na variante  (tecla de atalho: v)}
-helpMsg B .main.button.exitVar {Sair da variante  (tecla de atalho: z)}
-helpMsg B .main.button.flip {Girar tabuleiro  (tecla de atalho: .)}
-helpMsg B .main.button.coords {Liga/desliga coordenadas  (tecla de atalho: 0)}
-helpMsg B .main.button.stm {Turn the side-to-move icon on or off} ;# ***
-helpMsg B .main.button.autoplay {Jogo automatico  (tecla: Ctrl+Z)}
+helpMsg B .main.fbutton.button.start {Ir para o inicio do jogo  (tecla: Home)}
+helpMsg B .main.fbutton.button.end {Ir para o final do jogo  (tecla: End)}
+helpMsg B .main.fbutton.button.back {Retroceder um movimento  (tecla: Seta Esquerda)}
+helpMsg B .main.fbutton.button.forward {Avancar um movimento  (tecla: Seta Direita)}
+helpMsg B .main.fbutton.button.intoVar {Entrar na variante  (tecla de atalho: v)}
+helpMsg B .main.fbutton.button.exitVar {Sair da variante  (tecla de atalho: z)}
+helpMsg B .main.fbutton.button.flip {Girar tabuleiro  (tecla de atalho: .)}
+helpMsg B .main.fbutton.button.coords {Liga/desliga coordenadas  (tecla de atalho: 0)}
+helpMsg B .main.fbutton.button.stm {Turn the side-to-move icon on or off} ;# ***
+helpMsg B .main.fbutton.button.autoplay {Jogo automatico  (tecla: Ctrl+Z)}
 
 # General buttons:
 translate B Back {Voltar}

@@ -1255,6 +1255,7 @@ ttk::style theme use $::lookTheme
 ttk::style configure Bold.TCheckbutton -font font_Bold
 ttk::style configure Small.TCheckbutton -font font_Small
 ttk::style configure Small.TButton -font font_Small
+ttk::style configure Small.TRadiobutton -font font_Small
 
 # Check for old (single-directory) tablebase option:
 if {[info exists initialDir(tablebase)]} {

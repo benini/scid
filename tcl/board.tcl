@@ -611,8 +611,8 @@ foreach {b m} {
   set helpMessage(.main.tb.$b) $m
   # ::utils::tooltip::Set $tb.$b $m
 }
-set helpMessage(.main.button.addVar) EditAdd
-set helpMessage(.main.button.trial) EditTrial
+set helpMessage(.main.fbutton.button.addVar) EditAdd
+set helpMessage(.main.fbutton.button.trial) EditTrial
 
 
 image create photo tb_start -data {
@@ -651,24 +651,24 @@ image create photo tb_addvar -data {
   HZKFJAhk27qmqMq2rlGaJ43a46xslJR7AIMWIORzRCaXzKahAAA7
 }
 
-ttk::frame .main.button -relief raised -border 1
-button .main.button.start -image tb_start -command ::move::Start
-button .main.button.back -image tb_prev -command ::move::Back
-button .main.button.forward -image tb_next -command ::move::Forward
-button .main.button.end -image tb_end -command ::move::End
-bind .main.button.end <Button-3> ::tactics::findBestMove
-ttk::frame .main.button.space -width 15
+ttk::frame .main.fbutton
+ttk::frame .main.fbutton.button -relief raised -border 1
+button .main.fbutton.button.start -image tb_start -command ::move::Start
+button .main.fbutton.button.back -image tb_prev -command ::move::Back
+button .main.fbutton.button.forward -image tb_next -command ::move::Forward
+button .main.fbutton.button.end -image tb_end -command ::move::End
+bind .main.fbutton.button.end <Button-3> ::tactics::findBestMove
+ttk::frame .main.fbutton.button.space -width 15
 
 # The go-into-variation button is a menubutton:
-menubutton .main.button.intoVar -image tb_invar -menu .main.button.intoVar.menu \
-    -relief raised
-menu .main.button.intoVar.menu -tearoff 0 -font font_Regular
+menubutton .main.fbutton.button.intoVar -image tb_invar -menu .main.fbutton.button.intoVar.menu -relief raised
+menu .main.fbutton.button.intoVar.menu -tearoff 0 -font font_Regular
 
-button .main.button.exitVar -image tb_outvar \
+button .main.fbutton.button.exitVar -image tb_outvar \
     -command {sc_var exit; updateBoard -animate}
-button .main.button.addVar -image tb_addvar \
+button .main.fbutton.button.addVar -image tb_addvar \
     -command {sc_var create; updateBoard -pgn -animate}
-ttk::frame .main.button.space2 -width 15
+ttk::frame .main.fbutton.button.space2 -width 15
 
 image create photo tb_flip -data {
   R0lGODdhFAAUAKEAAAAAANDAoKCAUIsAACwAAAAAFAAUAAACXoSPqcHiHJyA0tDXcHS2jT9s
@@ -812,7 +812,7 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   grid $w.stmgap -row 1 -column 10
   grid $w.stm -row 2 -column 11 -rowspan 5 -padx 2
   if {$::board::_showmat($w)} {
-    canvas $w.mat -width 20
+    canvas $w.mat -width 20 -background lightgray -highlightthickness 0
   }
   grid $w.wtm -row 8 -column 11
   grid $w.btm -row 1 -column 11

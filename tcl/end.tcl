@@ -1362,7 +1362,7 @@ bind $dot_w <Home> ::move::Start
 bind $dot_w <Left> ::move::Back
 bind $dot_w <Up> {
   if {[sc_pos isAt vstart]} {
-    .main.button.exitVar invoke
+    .main.fbutton.button.exitVar invoke
   } else  {
     ::move::Back 10
   }
@@ -1419,9 +1419,11 @@ proc gotoNextBase {} {
 grid columnconfigure .main 0 -weight 1
 grid rowconfigure .main 3 -weight 1
 
-grid .main.button -row 1 -column 0 -pady 5 -padx 5
+pack .main.fbutton.button -anchor center
+grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2
 
-grid .main.board -row 2 -column 0 -sticky we -padx 5 -pady 5
+grid .main.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
+
 # update Game Info panel visibility after loading options
 toggleGameInfo
 # grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2

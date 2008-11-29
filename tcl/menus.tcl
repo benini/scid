@@ -1657,7 +1657,7 @@ proc standardShortcuts {w} {
   bind $w <Home>  ::move::Start
   bind $w <Up> {
     if {[sc_pos isAt vstart]} {
-      .main.button.exitVar invoke
+      .main.fbutton.button.exitVar invoke
     } else  {
       ::move::Back 10
     }
@@ -1667,7 +1667,7 @@ proc standardShortcuts {w} {
   bind $w <Right> ::move::Forward
   bind $w <End>   ::move::End
   bind $w <KeyPress-v> { ::showVars }
-  bind $w <KeyPress-z> {.main.button.exitVar invoke}
+  bind $w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
   bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }

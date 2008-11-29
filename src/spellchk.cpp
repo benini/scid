@@ -642,7 +642,6 @@ SpellChecker::SetElo (spellCheckNodeT * node,
 eloT
 SpellChecker::GetElo (const char * name, dateT date, bool exact)
 {
-printf("SpellChecker::GetElo");
     uint year = date_GetYear (date);
     uint month = date_GetMonth (date);
     if (month > 12) { month = 1; }

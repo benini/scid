@@ -377,16 +377,16 @@ menuText N GInfoMark "Partij markeren/niet markeren" 7
 menuText N GInfoInformant "Configure informant values" 0
 
 # Main windows buttons:
-helpMsg N .main.button.start {Naar begin van partij  (toets: home)}
-helpMsg N .main.button.end {Naar eind van partij  (toets: end)}
-helpMsg N .main.button.back {Een zet terug   (toets: pijl links)}
-helpMsg N .main.button.forward {Een zet vooruit  (toets: pijl rechts)}
-helpMsg N .main.button.intoVar {Naar variant  (toets: v)}
-helpMsg N .main.button.exitVar {Verlaat variant  (toets: z)}
-helpMsg N .main.button.flip {Draai bord  (toets: .)}
-helpMsg N .main.button.coords {Coordinaten aan/uit  (toets: 0)}
-helpMsg N .main.button.stm {Zet zijde-aan-zet ikoon aan ofaf} ;
-helpMsg N .main.button.autoplay {Speel zetten automatisch  (toets: Ctrl+Z)}
+helpMsg N .main.fbutton.button.start {Naar begin van partij  (toets: home)}
+helpMsg N .main.fbutton.button.end {Naar eind van partij  (toets: end)}
+helpMsg N .main.fbutton.button.back {Een zet terug   (toets: pijl links)}
+helpMsg N .main.fbutton.button.forward {Een zet vooruit  (toets: pijl rechts)}
+helpMsg N .main.fbutton.button.intoVar {Naar variant  (toets: v)}
+helpMsg N .main.fbutton.button.exitVar {Verlaat variant  (toets: z)}
+helpMsg N .main.fbutton.button.flip {Draai bord  (toets: .)}
+helpMsg N .main.fbutton.button.coords {Coordinaten aan/uit  (toets: 0)}
+helpMsg N .main.fbutton.button.stm {Zet zijde-aan-zet ikoon aan ofaf} ;
+helpMsg N .main.fbutton.button.autoplay {Speel zetten automatisch  (toets: Ctrl+Z)}
 
 # General buttons:
 translate N Back {Terug}

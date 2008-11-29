@@ -361,16 +361,16 @@ menuText H GInfoMark "Megjelöli ezt a játszmát/megszünteti a jelölést." 0
 menuText H GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg H .main.button.start {Ugrás a játszma elejére  (billentyû: Home)}
-helpMsg H .main.button.end {Ugrás a játszma végére  (billentyû: End)}
-helpMsg H .main.button.back {Vissza egy lépéssel  (billentyû: balra mutató nyíl)}
-helpMsg H .main.button.forward {Elõre egy lépéssel  (billentyû: jobbra mutató nyíl)}
-helpMsg H .main.button.intoVar {Belép egy változatba  (gyorsbillentyû: v).}
-helpMsg H .main.button.exitVar {Kilép az aktuális változatból  (gyorsbillentyû: z).}
-helpMsg H .main.button.flip {Tábla elforgatása  (gyorsbillentyû: .)}
-helpMsg H .main.button.coords {Koordináták be- vagy kikapcsolása  (gyorsbillentyû: 0)}
-helpMsg H .main.button.stm {Be- vagy kikapcsolja a lépésjogot mutató ikont}
-helpMsg H .main.button.autoplay {Automatikus visszajátszás  (billentyû: Ctrl+Z)}
+helpMsg H .main.fbutton.button.start {Ugrás a játszma elejére  (billentyû: Home)}
+helpMsg H .main.fbutton.button.end {Ugrás a játszma végére  (billentyû: End)}
+helpMsg H .main.fbutton.button.back {Vissza egy lépéssel  (billentyû: balra mutató nyíl)}
+helpMsg H .main.fbutton.button.forward {Elõre egy lépéssel  (billentyû: jobbra mutató nyíl)}
+helpMsg H .main.fbutton.button.intoVar {Belép egy változatba  (gyorsbillentyû: v).}
+helpMsg H .main.fbutton.button.exitVar {Kilép az aktuális változatból  (gyorsbillentyû: z).}
+helpMsg H .main.fbutton.button.flip {Tábla elforgatása  (gyorsbillentyû: .)}
+helpMsg H .main.fbutton.button.coords {Koordináták be- vagy kikapcsolása  (gyorsbillentyû: 0)}
+helpMsg H .main.fbutton.button.stm {Be- vagy kikapcsolja a lépésjogot mutató ikont}
+helpMsg H .main.fbutton.button.autoplay {Automatikus visszajátszás  (billentyû: Ctrl+Z)}
 
 # General buttons:
 translate H Back {Vissza}

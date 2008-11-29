@@ -365,16 +365,16 @@ menuText O GInfoMark "(Av)Merk dette partiet" 0
 menuText O GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg O .main.button.start {Gå til begynnelsen av partiet (tast: Home)}
-helpMsg O .main.button.end {Gå til slutten av partiet (tast: End)}
-helpMsg O .main.button.back {Gå ett trekk tilbake (tast: LeftArrow)}
-helpMsg O .main.button.forward {Gå et trekk fremover (tast: RightArrow)}
-helpMsg O .main.button.intoVar {Gå inn i en variasjon (snarvei: v)}
-helpMsg O .main.button.exitVar {Forlat variasjon (snarvei: z)}
-helpMsg O .main.button.flip {Roter brett (snarvei: .)}
-helpMsg O .main.button.coords {Slå av/på brettkoordinater (snarvei: 0)}
-helpMsg O .main.button.stm {Turn the side-to-move icon on or off} ;# ***
-helpMsg O .main.button.autoplay {Automatisk spill (tast: Ctrl+Z)}
+helpMsg O .main.fbutton.button.start {Gå til begynnelsen av partiet (tast: Home)}
+helpMsg O .main.fbutton.button.end {Gå til slutten av partiet (tast: End)}
+helpMsg O .main.fbutton.button.back {Gå ett trekk tilbake (tast: LeftArrow)}
+helpMsg O .main.fbutton.button.forward {Gå et trekk fremover (tast: RightArrow)}
+helpMsg O .main.fbutton.button.intoVar {Gå inn i en variasjon (snarvei: v)}
+helpMsg O .main.fbutton.button.exitVar {Forlat variasjon (snarvei: z)}
+helpMsg O .main.fbutton.button.flip {Roter brett (snarvei: .)}
+helpMsg O .main.fbutton.button.coords {Slå av/på brettkoordinater (snarvei: 0)}
+helpMsg O .main.fbutton.button.stm {Turn the side-to-move icon on or off} ;# ***
+helpMsg O .main.fbutton.button.autoplay {Automatisk spill (tast: Ctrl+Z)}
 
 # General buttons:
 translate O Back {Tilbake}

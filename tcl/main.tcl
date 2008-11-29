@@ -216,14 +216,14 @@ proc toggleCoords {} {
   ::board::coords .main.board
 }
 
-ttk::frame .main.button.space3 -width 15
-button .main.button.flip -image tb_flip -takefocus 0 \
+ttk::frame .main.fbutton.button.space3 -width 15
+button .main.fbutton.button.flip -image tb_flip -takefocus 0 \
     -command "::board::flip .main.board"
 
-button .main.button.coords -image tb_coords -takefocus 0 -command toggleCoords
+button .main.fbutton.button.coords -image tb_coords -takefocus 0 -command toggleCoords
 bind $dot_w <KeyPress-0> toggleCoords
 
-button .main.button.stm -image tb_stm -takefocus 0 -command toggleSTM
+button .main.fbutton.button.stm -image tb_stm -takefocus 0 -command toggleSTM
 
 proc toggleSTM {} {
   global boardSTM
@@ -341,20 +341,19 @@ image create photo finish_off -data {
   UEh/tDCAAxZ8oEEFCCxghUT/OGlIGkfkwIMUdHDZpJlopnlQQAA7
 }
 
-button .main.button.autoplay -image autoplay_off -command toggleAutoplay
-button .main.button.trial -image tb_trial -command {setTrialMode toggle}
+button .main.fbutton.button.autoplay -image autoplay_off -command toggleAutoplay
+button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
 
-foreach i {start back forward end intoVar exitVar addVar autoplay \
-      flip coords stm trial} {
-  .main.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
-  bind .main.button.$i <Any-Enter> "+.main.button.$i configure -relief groove"
-  bind .main.button.$i <Any-Leave> "+.main.button.$i configure -relief flat; statusBarRestore %W; break"
+foreach i {start back forward end exitVar addVar autoplay flip coords stm trial intoVar} {
+  .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
+  bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
+  bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
 }
 
-pack .main.button.start .main.button.back .main.button.forward .main.button.end \
-    .main.button.space .main.button.intoVar .main.button.exitVar .main.button.addVar .main.button.space2 \
-    .main.button.autoplay .main.button.trial .main.button.space3 .main.button.flip .main.button.coords \
-    .main.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
+    .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.space2 \
+    .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
+    .main.fbutton.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
 
 ############################################################
@@ -458,7 +457,7 @@ proc setBoard {board boardStr psize {rotated 0}} {
 proc updateVarMenus {} {
   set varList [sc_var list]
   set numVars [sc_var count]
-  .main.button.intoVar.menu delete 0 end
+  .main.fbutton.button.intoVar.menu delete 0 end
   .menu.edit.del delete 0 end
   .menu.edit.first delete 0 end
   .menu.edit.main delete 0 end
@@ -466,7 +465,7 @@ proc updateVarMenus {} {
   if {$numVars > 0} {
     set move [sc_game info nextMove]
     if {$move == ""} { set move "($::tr(empty))" }
-    .main.button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
+    .main.fbutton.button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
   }
   for {set i 0} {$i < $numVars} {incr i} {
     set move [lindex $varList $i]
@@ -478,10 +477,10 @@ proc updateVarMenus {} {
     set str "[expr {$i + 1}]: $move"
     set commandStr "sc_var moveInto $i; updateBoard"
     if {$i < 9} {
-      .main.button.intoVar.menu add command -label $str -command $commandStr \
+      .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr \
           -underline 0
     } else {
-      .main.button.intoVar.menu add command -label $str -command $commandStr
+      .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr
     }
     set commandStr "sc_var delete $i; updateBoard -pgn"
     .menu.edit.del add command -label $str -command $commandStr
@@ -612,7 +611,7 @@ proc showVars {} {
 # V and Z key bindings: move into/out of a variation.
 #
 bind $dot_w <KeyPress-v> { showVars }
-bind $dot_w <KeyPress-z> {.main.button.exitVar invoke}
+bind $dot_w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
 
 # editMyPlayerNames
 #   Present the dialog box for editing the list of player
@@ -729,43 +728,43 @@ proc updateBoard {args} {
   
   # Update the status of each navigation button:
   if {[sc_pos isAt start]} {
-    .main.button.start configure -state disabled
-  } else { .main.button.start configure -state normal }
+    .main.fbutton.button.start configure -state disabled
+  } else { .main.fbutton.button.start configure -state normal }
   if {[sc_pos isAt end]} {
-    .main.button.end configure -state disabled
-  } else { .main.button.end configure -state normal }
+    .main.fbutton.button.end configure -state disabled
+  } else { .main.fbutton.button.end configure -state normal }
   if {[sc_pos isAt vstart]} {
-    .main.button.back configure -state disabled
-  } else { .main.button.back configure -state normal }
+    .main.fbutton.button.back configure -state disabled
+  } else { .main.fbutton.button.back configure -state normal }
   if {[sc_pos isAt vend]} {
-    .main.button.forward configure -state disabled
-  } else { .main.button.forward configure -state normal }
+    .main.fbutton.button.forward configure -state disabled
+  } else { .main.fbutton.button.forward configure -state normal }
   # Cannot add a variation to an empty line:
   if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
     .menu.edit entryconfig [tr EditAdd] -state disabled
-    .main.button.addVar configure -state disabled
+    .main.fbutton.button.addVar configure -state disabled
     bind $::dot_w <Control-a> {}
   } else {
     .menu.edit entryconfig [tr EditAdd] -state normal
-    .main.button.addVar configure -state normal
+    .main.fbutton.button.addVar configure -state normal
     bind $::dot_w <Control-a> {sc_var create; updateBoard -pgn}
   }
   if {[sc_var count] == 0} {
-    .main.button.intoVar configure -state disabled
+    .main.fbutton.button.intoVar configure -state disabled
     .menu.edit entryconfig [tr EditDelete] -state disabled
     .menu.edit entryconfig [tr EditFirst] -state disabled
     .menu.edit entryconfig [tr EditMain] -state disabled
   } else {
-    .main.button.intoVar configure -state normal
+    .main.fbutton.button.intoVar configure -state normal
     .menu.edit entryconfig [tr EditDelete] -state normal
     .menu.edit entryconfig [tr EditFirst] -state normal
     .menu.edit entryconfig [tr EditMain] -state normal
   }
   updateVarMenus
   if {[sc_var level] == 0} {
-    .main.button.exitVar configure -state disabled
+    .main.fbutton.button.exitVar configure -state disabled
   } else {
-    .main.button.exitVar configure -state normal
+    .main.fbutton.button.exitVar configure -state normal
   }
   
   if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
@@ -1362,7 +1361,7 @@ proc toggleAutoplay { } {
   global autoplayMode
   if {$autoplayMode == 0} {
     set autoplayMode 1
-    .main.button.autoplay configure -image autoplay_on -relief sunken
+    .main.fbutton.button.autoplay configure -image autoplay_on -relief sunken
     autoplay
   } else {
     cancelAutoplay
@@ -1484,7 +1483,7 @@ proc cancelAutoplay {} {
   set annotateMode 0
   set annotateModeButtonValue 0
   after cancel autoplay
-  .main.button.autoplay configure -image autoplay_off -relief flat
+  .main.fbutton.button.autoplay configure -image autoplay_off -relief flat
 }
 ################################################################################
 #
@@ -1512,11 +1511,11 @@ proc setTrialMode {mode} {
   if {$mode == 1} {
     set trialMode 1
     sc_game push copy
-    .main.button.trial configure -image tb_trial_on
+    .main.fbutton.button.trial configure -image tb_trial_on
   } else {
     set trialMode 0
     sc_game pop
-    .main.button.trial configure -image tb_trial
+    .main.fbutton.button.trial configure -image tb_trial
   }
   updateBoard -pgn
 }

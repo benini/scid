@@ -7,7 +7,7 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.7 2008/11/22 19:29:48 arwagner Exp $
+###    $Id: inputengine.tcl,v 1.8 2008/11/29 10:15:53 pgeorges Exp $
 ###    Last change: <Sat, 2008/11/22 20:28:43 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
@@ -205,16 +205,16 @@ namespace eval ExtHardware {
      } else {
         if { $::ExtHardware::showbutton == 1 } {
 
-           frame .main.button.space4 -width 15
-           button .main.button.exthardware -image tb_eng_disconnected
-           .main.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
+           frame .main.fbutton.button.space4 -width 15
+           button .main.fbutton.button.exthardware -image tb_eng_disconnected
+           .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
                -anchor n -takefocus 0
-           bind .main.button.exthardware <Any-Enter> "+.main.button.exthardware configure -relief groove"
-           bind .main.button.exthardware <Any-Leave> "+.main.button.exthardware configure -relief flat; statusBarRestore %W; break"
-           pack .main.button.space4 .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
-           pack .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+           bind .main.fbutton.button.exthardware <Any-Enter> "+.main.fbutton.button.exthardware configure -relief groove"
+           bind .main.fbutton.button.exthardware <Any-Leave> "+.main.fbutton.button.exthardware configure -relief flat; statusBarRestore %W; break"
+           pack .main.fbutton.button.space4 .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+           pack .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
-           .main.button.exthardware configure -command $::ExtHardware::bindbutton
+           .main.fbutton.button.exthardware configure -command $::ExtHardware::bindbutton
         }
      }
 
@@ -329,16 +329,16 @@ namespace eval ExtHardware {
      # Add the button to connect the engine to the button bar
      if { $::ExtHardware::showbutton == 1 } {
 
-        frame .main.button.space4 -width 15
-        button .main.button.exthardware -image tb_eng_disconnected
-        .main.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
+        frame .main.fbutton.button.space4 -width 15
+        button .main.fbutton.button.exthardware -image tb_eng_disconnected
+        .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
             -anchor n -takefocus 0
-        bind .main.button.exthardware <Any-Enter> "+.main.button.exthardware configure -relief groove"
-        bind .main.button.exthardware <Any-Leave> "+.main.button.exthardware configure -relief flat; statusBarRestore %W; break"
-        pack .main.button.space4 .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
-        pack .main.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+        bind .main.fbutton.button.exthardware <Any-Enter> "+.main.fbutton.button.exthardware configure -relief groove"
+        bind .main.fbutton.button.exthardware <Any-Leave> "+.main.fbutton.button.exthardware configure -relief flat; statusBarRestore %W; break"
+        pack .main.fbutton.button.space4 .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+        pack .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
-        .main.button.exthardware configure -command $::ExtHardware::bindbutton
+        .main.fbutton.button.exthardware configure -command $::ExtHardware::bindbutton
      }
 
     ::splash::add "External hardware configuration was found and loaded."

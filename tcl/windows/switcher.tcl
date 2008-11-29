@@ -305,7 +305,7 @@ proc changeBaseType {baseNum} {
   pack $w.t -side left -fill both -expand yes
 
   dialogbutton $w.b.set -text "OK" -command \
-    "catch {sc_base type $baseNum \$temp_dbtype}; ::windows::switcher::Refresh;
+    "catch {sc_base type $baseNum \$temp_dbtype}; ::windows::switcher::Refresh; ::maint::Refresh;
      focus .; destroy $w"
 
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command "focus .; destroy $w"

@@ -357,16 +357,16 @@ menuText C GInfoMark "Oznaèit/Odznaèit tuto partii" 0
 menuText C GInfoInformant "Configure informant values" 0
 
 # Main window buttons:
-helpMsg C .main.button.start {Jdi na zaèátek partie  (klávesa: Home)}
-helpMsg C .main.button.end {Jdi na konec partie  (klávesa: End)}
-helpMsg C .main.button.back {Jdi o jeden tah nazpìt  (klávesa: ©ipkaVlevo)}
-helpMsg C .main.button.forward {Jdi o jeden tah dopøedu  (klávesa: ©ipkaVpravo)}
-helpMsg C .main.button.intoVar {Skoè do varianty  (klávesová zkratka: v)}
-helpMsg C .main.button.exitVar {Opus» aktuální variantu  (klávesová zkratka: z)}
-helpMsg C .main.button.flip {Otoè ¹achovnici  (klávesová zkratka: .)}
-helpMsg C .main.button.coords {Zapnout/Vypnout zobrazování souøadnic ¹achovnice  (klávesová zkratka: 0)}
-helpMsg C .main.button.stm {Zapnout/Vypnout zobrazování ikony strany, která je na tahu}
-helpMsg C .main.button.autoplay {Automatické pøehrávání tahù  (klávesa: Ctrl+Z)}
+helpMsg C .main.fbutton.button.start {Jdi na zaèátek partie  (klávesa: Home)}
+helpMsg C .main.fbutton.button.end {Jdi na konec partie  (klávesa: End)}
+helpMsg C .main.fbutton.button.back {Jdi o jeden tah nazpìt  (klávesa: ©ipkaVlevo)}
+helpMsg C .main.fbutton.button.forward {Jdi o jeden tah dopøedu  (klávesa: ©ipkaVpravo)}
+helpMsg C .main.fbutton.button.intoVar {Skoè do varianty  (klávesová zkratka: v)}
+helpMsg C .main.fbutton.button.exitVar {Opus» aktuální variantu  (klávesová zkratka: z)}
+helpMsg C .main.fbutton.button.flip {Otoè ¹achovnici  (klávesová zkratka: .)}
+helpMsg C .main.fbutton.button.coords {Zapnout/Vypnout zobrazování souøadnic ¹achovnice  (klávesová zkratka: 0)}
+helpMsg C .main.fbutton.button.stm {Zapnout/Vypnout zobrazování ikony strany, která je na tahu}
+helpMsg C .main.fbutton.button.autoplay {Automatické pøehrávání tahù  (klávesa: Ctrl+Z)}
 
 # General buttons:
 translate C Back {Zpìt}

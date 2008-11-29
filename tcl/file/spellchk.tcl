@@ -84,19 +84,19 @@ proc openSpellCheckWin {type {parent .}} {
   bind $w <F1> { helpWindow Maintenance }
   bind $w <Configure> "recordWinSize $w"
 
-  set f [frame $w.buttons]
+  set f [ttk::frame $w.buttons]
   pack $f -side bottom -ipady 1 -fill x
 
-  checkbutton $f.ambig -variable spellcheckAmbiguous -relief raised \
+ttk::checkbutton $f.ambig -variable spellcheckAmbiguous \
     -text "Ambiguous" -command "updateSpellCheckWin $type"
   pack $f.ambig -side left -padx 2 -ipady 2 -ipadx 3
   if {$type == "Player"} {
-    checkbutton $f.surnames -variable spellcheckSurnames -relief raised \
+    ttk::checkbutton $f.surnames -variable spellcheckSurnames \
       -text "Surnames" -command "updateSpellCheckWin Player"
     pack $f.surnames -side left -padx 2 -ipady 2 -ipadx 3
   }
 
-  button $f.ok -text "Make Corrections" -underline 0 -command {
+  ttk::button $f.ok -text "Make Corrections" -underline 0 -command {
     busyCursor .
     set spelltext ""
     catch {set spelltext [.spellcheckWin.text.text get 1.0 end-1c]}
@@ -127,10 +127,10 @@ proc openSpellCheckWin {type {parent .}} {
 
   pack $f.cancel $f.ok -side right -padx 5
 
-  set f [frame $w.text]
+  set f [ttk::frame $w.text]
   pack $w.text -expand yes -fill both
-  scrollbar $f.ybar -command "$f.text yview"
-  scrollbar $f.xbar -orient horizontal -command "$f.text xview"
+  ttk::scrollbar $f.ybar -command "$f.text yview"
+  ttk::scrollbar $f.xbar -orient horizontal -command "$f.text xview"
   text $f.text -yscrollcommand "$f.ybar set" -xscrollcommand "$f.xbar set" \
     -setgrid 1 -width $::winWidth($w) -height $::winHeight($w) \
     -background white -wrap none

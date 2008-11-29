@@ -324,16 +324,16 @@ menuText I GInfoMark "Smarca/Marca questa partita" 7
 menuText I GInfoInformant "Configura i valori informativi" 0
 
 # Main window buttons:
-helpMsg I .main.button.start {Va all'inizio della partita  (chiave: Home)}
-helpMsg I .main.button.end {Va alla fine della partita  (chiave: End)}
-helpMsg I .main.button.back {Indietro di una mossa (chiave: LeftArrow)}
-helpMsg I .main.button.forward {Avanti di una mossa (chiave: RightArrow)}
-helpMsg I .main.button.intoVar {Entra in una variante  (chiave abbreviata: v)}
-helpMsg I .main.button.exitVar {Lascia la variante attuale  (chiave abbreviata: z)}
-helpMsg I .main.button.flip {Ruota la scacchiera (chiave abbreviata: .)}
-helpMsg I .main.button.coords {Coordinate on/off  (chiave abbreviata: 0)}
-helpMsg I .main.button.stm {Visualizza l'icona di chi ha la mossa (si/no)}
-helpMsg I .main.button.autoplay {Mosse automatiche  (chiave: Ctrl+Z)}
+helpMsg I .main.fbutton.button.start {Va all'inizio della partita  (chiave: Home)}
+helpMsg I .main.fbutton.button.end {Va alla fine della partita  (chiave: End)}
+helpMsg I .main.fbutton.button.back {Indietro di una mossa (chiave: LeftArrow)}
+helpMsg I .main.fbutton.button.forward {Avanti di una mossa (chiave: RightArrow)}
+helpMsg I .main.fbutton.button.intoVar {Entra in una variante  (chiave abbreviata: v)}
+helpMsg I .main.fbutton.button.exitVar {Lascia la variante attuale  (chiave abbreviata: z)}
+helpMsg I .main.fbutton.button.flip {Ruota la scacchiera (chiave abbreviata: .)}
+helpMsg I .main.fbutton.button.coords {Coordinate on/off  (chiave abbreviata: 0)}
+helpMsg I .main.fbutton.button.stm {Visualizza l'icona di chi ha la mossa (si/no)}
+helpMsg I .main.fbutton.button.autoplay {Mosse automatiche  (chiave: Ctrl+Z)}
 
 # General buttons:
 translate I Back {Indietro}

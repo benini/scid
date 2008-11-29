@@ -307,10 +307,8 @@ proc search::header {} {
   label $f.l3 -text " " -font $regular
   button $f.all -text [::utils::string::Capital $::tr(all)] -pady 2 -font $regular \
       -command {set sGnumMin 1; set sGnumMax -1}
-  menubutton $f.first -textvar ::tr(First...) -pady 2 -font $regular \
-      -menu $f.first.m -indicatoron 0 -relief raised
-  menubutton $f.last -textvar ::tr(Last...) -pady 2 -font $regular \
-      -menu $f.last.m -indicatoron 0 -relief raised
+  ttk::menubutton $f.first -textvar ::tr(First...) -menu $f.first.m
+  ttk::menubutton $f.last -textvar ::tr(Last...) -menu $f.last.m
   menu $f.first.m -font $regular
   menu $f.last.m -font $regular
   foreach x {10 50 100 500 1000 5000 10000} {
