@@ -372,9 +372,8 @@ if {$boardSTM} {
 
 # .gameInfo is the game information widget:
 #
-autoscrollframe .main.gameInfoFrame text .main.gameInfo
-.main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none \
-    -state disabled -cursor top_left_arrow -setgrid 1
+autoscrollframe .main.gameInfoFrame text .main.gameInfo 
+.main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
 ::htext::init .main.gameInfo
 
 # Right-mouse button menu for gameInfo frame:

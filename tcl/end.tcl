@@ -1417,7 +1417,7 @@ proc gotoNextBase {} {
 }
 
 grid columnconfigure .main 0 -weight 1
-grid rowconfigure .main 3 -weight 1
+grid rowconfigure .main 3 -weight 0
 
 pack .main.fbutton.button -anchor center
 grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2

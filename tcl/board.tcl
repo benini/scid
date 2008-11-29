@@ -806,7 +806,6 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   # Set up side-to-move icons:
   ttk::frame $w.stmgap -width 3
   ttk::frame $w.stm
-  # frame $w.mat
   frame $w.wtm -relief solid -borderwidth 1 -background white
   frame $w.btm -relief solid -borderwidth 1 -background black
   grid $w.stmgap -row 1 -column 10
@@ -814,6 +813,10 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   if {$::board::_showmat($w)} {
     canvas $w.mat -width 20 -background lightgray -highlightthickness 0
   }
+  
+  # ttk::frame $w.mat -width 20
+  # pack [ttk::frame $w.mat.f]
+  
   grid $w.wtm -row 8 -column 11
   grid $w.btm -row 1 -column 11
   if {$::board::_showmat($w)} {

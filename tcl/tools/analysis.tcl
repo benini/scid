@@ -655,8 +655,8 @@ proc configAnnotation {} {
   pack $f.label -side top
   spinbox $f.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
   pack $f.spDelay -side top -pady 5
-  bind $w <Escape> { .configAnnotation.buttons.cancel invoke }
-  bind $w <Return> { .configAnnotation.buttons.ok invoke }
+  bind $w <Escape> { .configAnnotation.f.buttons.cancel invoke }
+  bind $w <Return> { .configAnnotation.f.buttons.ok invoke }
   
   addHorizontalRule $f
   ttk::label $f.avlabel -text $::tr(AnnotateWhich:)
@@ -741,7 +741,7 @@ proc configAnnotation {} {
     set annotateModeButtonValue 0
   }
   ttk::button $f.buttons.ok -text "OK" -command {
-    set ::useAnalysisBookName [.configAnnotation.comboBooks get]
+    set ::useAnalysisBookName [.configAnnotation.f.comboBooks get]
     set  ::wentOutOfBook 0
     
     # tactical positions is selected, must be in multipv mode

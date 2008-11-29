@@ -731,12 +731,12 @@ proc resizeMainBoard {} {
   set w [winfo width .main]
   set h [winfo height .main]
   if {$::showGameInfo} {
-    set extrah 100
+    set extrah 130
   } else  {
     set extrah 0
   }
   set availw [expr ($w - 80) / 8 ]
-  set availh [expr ($h - $extrah - 200) / 8 ]
+  set availh [expr ($h - $extrah - 100) / 8 ]
   if {$availh < $availw} {
     set min $availh
   } else  {
@@ -760,7 +760,7 @@ proc resizeMainBoard {} {
 # sets visibility of gameInfo panel at the bottom of main board
 proc toggleGameInfo {} {
   if {$::showGameInfo} {
-    grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
+    grid .main.gameInfoFrame -row 3 -column 0 -sticky ew -padx 2
   } else  {
     grid forget .main.gameInfoFrame
   }
