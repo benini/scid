@@ -302,7 +302,7 @@ proc progressWindow {args} {
   } else { return }
   wm title $w $title
   ttk::label $w.t -text $text
-  pack $w.t -side top -expand 1
+  pack $w.t -side top -expand 1 -fill x
   canvas $w.c -width 400 -height 20 -bg white -relief solid -border 1
   $w.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   $w.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"

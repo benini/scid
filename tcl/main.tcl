@@ -359,6 +359,15 @@ pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.f
 ############################################################
 ### The board:
 
+proc toggleShowMaterial {} {
+  if { $::gameInfo(showMaterial) } {
+    grid configure .main.board.mat
+  } else  {
+    grid remove .main.board.mat
+  }
+  updateBoard
+}
+
 ::board::new .main.board $boardSize "showmat"
 
 #.main.board.bd configure -relief solid -border 2
@@ -370,9 +379,13 @@ if {$boardSTM} {
   ::board::stm .main.board
 }
 
+if { ! $::gameInfo(showMaterial) } {
+  grid remove .main.board.mat
+}
+
 # .gameInfo is the game information widget:
 #
-autoscrollframe .main.gameInfoFrame text .main.gameInfo 
+autoscrollframe .main.gameInfoFrame text .main.gameInfo
 .main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
 ::htext::init .main.gameInfo
 
@@ -382,8 +395,8 @@ menu .main.gameInfo.menu -tearoff 0
 .main.gameInfo.menu add checkbutton -label GInfoHideNext \
     -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
 
-.main.gameInfo.menu add checkbutton -label GInfoMaterial \
-    -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 -command updateBoard
+.main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
+    -command { toggleShowMaterial }
 
 .main.gameInfo.menu add checkbutton -label GInfoFEN \
     -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
@@ -586,7 +599,7 @@ proc showVars {} {
     .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
   bind .variations <Left> { destroy .variations }
   bind .variations <Escape> { catch { event generate .variations <Destroy> } }
-  #in order to have the window always on top : this does not really work ...
+  # in order to have the window always on top : this does not really work ...
   bind .variations <Visibility> {
     if { "%s" != "VisibilityUnobscured" } {
       focus .variations
@@ -596,6 +609,11 @@ proc showVars {} {
   bind .variations <FocusOut> {
     focus .variations
     raise .variations
+  }
+  
+  # Needed or the main window loses the focus 
+  if { $::docking::USE_DOCKING } {
+    bind .variations <Destroy> { focus -force . }
   }
   
   sc_info preMoveCmd preMoveCommand

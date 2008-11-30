@@ -1017,7 +1017,7 @@ menu $m.ginfo
 $m.ginfo add checkbutton -label GInfoHideNext \
     -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoMaterial \
-    -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 -command updateBoard
+    -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 -command toggleShowMaterial
 $m.ginfo add checkbutton -label GInfoFEN \
     -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoMarks \

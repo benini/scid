@@ -814,9 +814,6 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
     canvas $w.mat -width 20 -background lightgray -highlightthickness 0
   }
   
-  # ttk::frame $w.mat -width 20
-  # pack [ttk::frame $w.mat.f]
-  
   grid $w.wtm -row 8 -column 11
   grid $w.btm -row 1 -column 11
   if {$::board::_showmat($w)} {
@@ -1668,9 +1665,9 @@ proc ::board::update {w {board ""} {animate 0}} {
   
   # Redraw material values
   if {$::board::_showmat($w)} {
-    grid remove $w.mat
+    # grid remove $w.mat
     if {$::gameInfo(showMaterial)} {
-      grid configure $w.mat
+      # grid configure $w.mat
       ::board::material $w
     }
   }

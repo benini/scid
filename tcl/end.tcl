@@ -1426,6 +1426,7 @@ grid .main.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
 
 # update Game Info panel visibility after loading options
 toggleGameInfo
+
 # grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
 
 redrawToolbar
