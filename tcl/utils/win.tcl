@@ -549,7 +549,7 @@ proc ::docking::get_class {path} {
 # always keep .pw paned window
 proc ::docking::_cleanup_tabs {srctab} {
   variable tbs
-  puts "+++_cleanup_tabs $srctab"
+  
   # if srctab is empty, then remove it
   if {[llength [$srctab tabs]]==0} {
     destroy $srctab
@@ -557,10 +557,8 @@ proc ::docking::_cleanup_tabs {srctab} {
     unset tbs($srctab)
     
     while {[llength [$pw panes]]==0} {
-      puts "while pw = $pw"
       if {[get_class $pw]!="TPanedwindow"} { break }
       set parent [winfo parent $pw]
-      puts "destroy de $pw parent = $parent"
       destroy $pw
       if {$parent == ".pw"} {
         break
@@ -576,6 +574,7 @@ proc ::docking::move_tab {srctab dsttab} {
   variable tbs
   # move tab
   set f [$srctab select]
+  puts "srctab $srctab select -> $f"
   set o [$srctab tab $f]
   $srctab forget $f
   eval $dsttab add $f $o
@@ -589,6 +588,9 @@ variable ::docking::c_path {}
 ################################################################################
 proc ::docking::start_motion {path} {
   variable c_path
+  if {[winfo exists .ctxtMenu]} {
+    destroy .ctxtMenu
+  }
   if {$path!=$c_path} {
     set c_path [find_tbn $path]
   }
@@ -617,6 +619,7 @@ proc ::docking::end_motion {x y} {
   set c_path {}
 }
 
+################################################################################
 bind TNotebook <Button-1> +[namespace code {::docking::start_motion %W}]
 # bind TNotebook <B1-Motion> +[namespace code {motion %X %Y}]
 bind TNotebook <ButtonRelease-1> +[namespace code {::docking::end_motion %X %Y}]
@@ -625,50 +628,47 @@ bind TNotebook <Escape> {
     destroy .ctxtMenu
   }
 }
-bind TNotebook <Button-3> +[namespace code {::docking::ctx_menu %W}]
+bind TNotebook <ButtonPress-3> +[namespace code {::docking::ctx_menu %W}]
 
 ################################################################################
 #
 ################################################################################
 proc ::docking::ctx_cmd {path anchor} {
   variable c_path
+  
   if {$path!=$c_path} {
     set c_path [find_tbn $path]
   }
   
-  if {$c_path==""} { return }
-  # set path [winfo containing $x $y]
-  # set t [find_tbn $path]
-  # on est resté sur le même onglet
-  set t $c_path
-  if {$t!=""} {
-    # if {$t==$c_path} {
-    # if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
-    # set c_path {}
-    # return
-    # }
-    # }
-    if {$anchor!="t"} {
-      set tbn [add_tbn $t $anchor]
-      move_tab $c_path $tbn
-    } elseif {$t!=$c_path} {
-      move_tab $c_path $t
-    }
+  puts "déplacement $path $anchor (c_path = $c_path)"
+  if {$c_path==""} {
+    puts "WARNING c_path null in ctx_cmd"
+    return
   }
+  
+  set tbn [add_tbn $path $anchor]
+  move_tab $c_path $tbn
   set c_path {}
+  return
 }
 ################################################################################
 proc ::docking::ctx_menu {w} {
+  puts "ctx menu $w"
   update idletasks
   set mctxt .ctxtMenu
   if { [winfo exists $mctxt] } {
     destroy $mctxt
   }
+  
   menu $mctxt -tearoff 0
-  $mctxt add command -label [ ::tr DockTop ] -command "::docking::ctx_cmd $w n"
-  $mctxt add command -label [ ::tr DockBottom ] -command "::docking::ctx_cmd $w s"
-  $mctxt add command -label [ ::tr DockLeft ] -command "::docking::ctx_cmd $w w"
-  $mctxt add command -label [ ::tr DockRight ] -command "::docking::ctx_cmd $w e"
+  set state "normal"
+  if { [llength [$w tabs]] == "1"} {
+    set state "disabled"
+  }
+  $mctxt add command -label [ ::tr DockTop ] -state $state -command "::docking::ctx_cmd $w n"
+  $mctxt add command -label [ ::tr DockBottom ] -state $state -command "::docking::ctx_cmd $w s"
+  $mctxt add command -label [ ::tr DockLeft ] -state $state -command "::docking::ctx_cmd $w w"
+  $mctxt add command -label [ ::tr DockRight ] -state $state -command "::docking::ctx_cmd $w e"
   $mctxt add separator
   # Main board can not be closed or undocked
   if { [$w select] != ".fdockmain" } {
@@ -788,7 +788,7 @@ set ::docking::layout_dest_notebook ""
 # saves layout
 proc ::docking::layout_save { slot } {
   puts "==== dump $slot ===="
-  layout_save_pw .pw
+  set ::docking::layout_data [ layout_save_pw .pw ]
   
   set ::docking::layout_tbcnt $::docking::tbcnt
   array set ::docking::layout_tbs [array get ::docking::tbs ]
@@ -801,57 +801,69 @@ proc ::docking::layout_save { slot } {
   lappend ::docking::layout_list($slot) [array get ::docking::notebook_name ]
   lappend ::docking::layout_list($slot) [array get ::docking::_toplevel ]
   lappend ::docking::layout_list($slot) $::docking::layout_data
-  lappend ::docking::layout_list($slot) [array get ::docking::layout_notebook ]
-  lappend ::docking::layout_list($slot) [array get ::docking::layout_tabs ]
   puts "==== saved slot =$slot :"
   puts "$::docking::layout_list($slot)"
 }
-
+################################################################################
 proc ::docking::layout_save_pw {pw} {
-  lappend ::docking::layout_data [list $pw [$pw cget -orient ] ]
-  set nb_list {}
+  set ret {}
+  lappend ret [list $pw [$pw cget -orient ] ]
+  
   foreach p [$pw panes] {
     if {[get_class $p] == "TNotebook"} {
-      lappend nb_list $p
-      set ::docking::layout_tabs($p) [$p tabs]
+      lappend ret [list "TNotebook" $p [$p tabs] ]
     }
     if {[get_class $p] == "TPanedwindow"} {
-      layout_save_pw $p
+      # record sash position for each panes
+      set sashpos {}
+      for {set i 0} {$i < [$p panes]} {incr i} {
+        lappend sashpos [$p sash coord $i]
+      }
+      lappend ret [ list "TPanedwindow" [layout_save_pw $p] ]
     }
   }
-  
-  set ::docking::layout_notebook($pw) $nb_list
+  return $ret
 }
+
 ################################################################################
 # restores paned windows and internal notebooks
-proc ::docking::layout_restore_pw {} {
-  puts "+++ layout_restore_pw       ::docking::layout_data = $::docking::layout_data"
-  foreach elt $::docking::layout_data {
-    set pw [lindex $elt 0]
-    set orient [lindex $elt 1]
-    if { $pw ==".pw"} {
-      continue
+proc ::docking::layout_restore_pw { data } {
+  puts "+++ layout_restore_pw      $data"
+  
+  foreach elt $data {
+    set type [lindex $elt 0]
+    puts "type = $type"
+    
+    if {$type == "TPanedwindow"} {
+      layout_restore_pw [lindex $elt 1]
+      
+    } elseif {$type == "TNotebook"} {
+      set name [lindex $elt 1]
+      set tabs [lindex $elt 2]
+      ::docking::layout_restore_nb $pw $name $tabs
+      
+    } else {
+      
+      set pw [lindex $elt 0]
+      set orient [lindex $elt 1]
+      if { $pw ==".pw"} { continue }
+      # build a new pw
+      ttk::panedwindow $pw -orient $orient
+      set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
+      $parent add $pw -weight 1
+      puts "paned window créé $pw $orient dans $parent"
     }
     
-    # build a new pw
-    ttk::panedwindow $pw -orient $orient
-    set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
-    $parent add $pw -weight 1
-    puts "paned window créé $pw dans $parent"
-    
-    foreach nb $::docking::layout_notebook($pw) {
-      ::docking::layout_restore_nb $pw $nb
-    }
   }
-  puts "--- layout_restore_pw"
+  
 }
 ################################################################################
 # restores a notebook in a pre-existing panedwindow
 # panewindow -> pw
 # widget name -> name
 # data to make tabs -> data (list of names wich can be used to trigger the correct windows)
-proc ::docking::layout_restore_nb { pw name } {
-  puts "*************  layout_restore_nb pw=$pw name=$name "
+proc ::docking::layout_restore_nb { pw name tabs} {
+  puts "*************  layout_restore_nb pw=$pw name=$name tabs=$tabs"
   
   set nb [ttk::notebook $name]
   puts "$pw add $nb"
@@ -861,7 +873,7 @@ proc ::docking::layout_restore_nb { pw name } {
   
   set ::docking::layout_dest_notebook $nb
   
-  foreach d $::docking::layout_tabs($nb) {
+  foreach d $tabs {
     puts "creation de l'onglet $d"
     
     if { $d == ".fdockmain" } {
@@ -894,9 +906,7 @@ proc ::docking::layout_restore { slot } {
   array set ::docking::tbs {}
   set ::docking::tbs(.nb) .pw
   set ::docking::layout_data [lindex $::docking::layout_list($slot) 4 ]
-  array set ::docking::layout_notebook [lindex $::docking::layout_list($slot) 5 ]
-  array set ::docking::layout_tabs [lindex $::docking::layout_list($slot) 6 ]
-  layout_restore_pw
+  layout_restore_pw $::docking::layout_data
   
   # restore layout's data
   set ::docking::tbcnt [lindex $::docking::layout_list($slot) 0 ]
@@ -913,6 +923,7 @@ proc ::docking::closeAll {pw} {
   
   foreach p [$pw panes] {
     puts "foreach $p (panes de $pw)"
+    
     if {[get_class $p] == "TPanedwindow"} {
       ::docking::closeAll $p
     }
