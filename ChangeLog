@@ -598,9 +598,9 @@ scid-3.6.26
 - updated swedish translation (thanks to Hans Eriksson)
 - Fix : finder (Unix systems) : backup of PGN files with upper case extension
 
-[October 2009 ]
+[xxx 2009 ]
 
-scid-3.6.27
+scid-3.6.7
 -----------
 - Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"
 - Reworked board setup dialog (thanks to Steven Atkinson)
@@ -655,6 +655,10 @@ scid-3.6.27
 - Book tuning : 
 	* any move can be added to a polyglot book at a given position (thanks to Michel Van den Bergh)
 	* moves present in the book at ply N+1 but where the previous move is not present at ply N, is displayed in the lower part of the book window : see button "other moves" and its tooltip (thanks to Michel Van den Bergh)
-- New entry in "options -> windows" to show / hide game info panel (this can also be triggered in docked mode by using main board tab)
-- New option-> Themes (only small parts of Scid are themable, this will be increased in the future)
-- Removed file combobox.tcl (widget migrated to ttk::combobox)
+- Plenty of changes in user interface
+	* New entry in "options -> windows" to show / hide game info panel (this can also be triggered in docked mode by using main board tab)
+	* New option-> Themes (only small parts of Scid are themable, this will be increased in the future)
+	* Removed file combobox.tcl (widget migrated to ttk::combobox)
+	* Windows can be docked inside a main window (options menu)
+
+

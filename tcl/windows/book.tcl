@@ -68,7 +68,7 @@ namespace eval book {
   }
   
   ################################################################################
-  #  Show moves leading to book positions 
+  #  Show moves leading to book positions
   ################################################################################
   proc togglePositionsDisplay {} {
     global ::book::oppMovesVisible
@@ -103,6 +103,7 @@ namespace eval book {
     bind $w <F1> { helpWindow Book }
     
     ttk::frame $w.f
+    
     # load book names
     set bookPath $::scidBooksDir
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
@@ -123,15 +124,19 @@ namespace eval book {
     pack $w.f.combo
     
     # text displaying book moves
-    text $w.f.text -wrap word -state disabled -width 12
+    frame $w.f.fscroll
+    autoscrollframe -bars y $w.f.fscroll text $w.f.text -wrap word -state disabled -width 12
+    
     ttk::button $w.f.b -text $::tr(OtherBookMoves)  -command { ::book::togglePositionsDisplay }
     ::utils::tooltip::Set $w.f.b $::tr(OtherBookMovesTooltip)
+    
     text $w.f.text1 -wrap word -state disabled -width 12
-    pack $w.f.text -expand yes -fill both
-    pack $w.f.b -expand yes -fill both
+    
+    pack $w.f.fscroll -expand yes -fill both
+    pack $w.f.b
     pack $w.f.text1 -expand yes -fill both
     
-    pack $w.f
+    pack $w.f -expand 1 -fill both
     
     bind $w.f.combo <<ComboboxSelected>> ::book::bookSelect
     bind $w <Destroy> "::book::closeMainBook"
@@ -257,7 +262,7 @@ namespace eval book {
     set tmp {}
     foreach file  $bookList {
       set f [ file tail $file ]
-      lappend tmp $f 
+      lappend tmp $f
       if {$name == $f} {
         set idx $i
       }

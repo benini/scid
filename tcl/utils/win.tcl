@@ -412,13 +412,11 @@ namespace eval ::scrolledframe {
 
 namespace eval docking {
   
-  # tabs
+  # associates notebook to paned window
   variable tbs
+  
   variable tbcnt 0
   array set notebook_name {}
-  
-  # associates frames' name to a managed toplevel
-  array set _toplevel {}
   
 }
 ################################################################################
@@ -487,7 +485,7 @@ proc ::docking::embed_tbn {tbn anchor} {
   set tbs($tbn) $npw
   set tbs($ntb) $npw
   # make sure correct order
-  if {$anchor=="s" || $anchor=="w"} {
+  if {$anchor=="n" || $anchor=="w"} {
     $npw add $ntb -weight 1
     $npw add $tbn -weight 1
   } else {
@@ -685,7 +683,6 @@ proc ::docking::ctx_menu {w} {
 proc ::docking::close {w} {
   set tabid [$w select]
   $w forget $tabid
-  array unset ::docking::_toplevel $tabid
   
   destroy $tabid
   _cleanup_tabs $w
@@ -766,14 +763,13 @@ proc ::docking::add_tab {path anchor args} {
     set dsttab $::docking::layout_dest_notebook
   }
   
-  set title [ list [ wm title $::docking::_toplevel($path)] ]
+  set title $path
   eval [list $dsttab add $path] $args -text "$title"
 }
 ################################################################################
 # Layout management
 ################################################################################
 
-set ::docking::layout_data {}
 set ::docking::layout_tbcnt 0
 
 # associates pw -> notebook list
@@ -785,22 +781,13 @@ array set ::docking::layout_tabs {}
 # the notebook into which to create a new tab
 set ::docking::layout_dest_notebook ""
 
+################################################################################
 # saves layout
 proc ::docking::layout_save { slot } {
   puts "==== dump $slot ===="
-  set ::docking::layout_data [ layout_save_pw .pw ]
   
-  set ::docking::layout_tbcnt $::docking::tbcnt
-  array set ::docking::layout_tbs [array get ::docking::tbs ]
-  array set ::docking::layout_notebook_name [array get ::docking::notebook_name ]
-  array set ::docking::layout__toplevel  [array get ::docking::_toplevel ]
+  set ::docking::layout_list($slot)  [ layout_save_pw .pw ]
   
-  set ::docking::layout_list($slot) {}
-  lappend ::docking::layout_list($slot) $::docking::tbcnt
-  lappend ::docking::layout_list($slot) [array get ::docking::tbs ]
-  lappend ::docking::layout_list($slot) [array get ::docking::notebook_name ]
-  lappend ::docking::layout_list($slot) [array get ::docking::_toplevel ]
-  lappend ::docking::layout_list($slot) $::docking::layout_data
   puts "==== saved slot =$slot :"
   puts "$::docking::layout_list($slot)"
 }
@@ -815,10 +802,10 @@ proc ::docking::layout_save_pw {pw} {
     }
     if {[get_class $p] == "TPanedwindow"} {
       # record sash position for each panes
-      set sashpos {}
-      for {set i 0} {$i < [$p panes]} {incr i} {
-        lappend sashpos [$p sash coord $i]
-      }
+      # set sashpos {}
+      # for {set i 0} {$i < [$p panes]} {incr i} {
+      # lappend sashpos [$p sash coord $i]
+      # }
       lappend ret [ list "TPanedwindow" [layout_save_pw $p] ]
     }
   }
@@ -863,10 +850,16 @@ proc ::docking::layout_restore_pw { data } {
 # widget name -> name
 # data to make tabs -> data (list of names wich can be used to trigger the correct windows)
 proc ::docking::layout_restore_nb { pw name tabs} {
+  variable tbcnt
+  variable tbs
+  
   puts "*************  layout_restore_nb pw=$pw name=$name tabs=$tabs"
   
   set nb [ttk::notebook $name]
+  incr tbcnt
   puts "$pw add $nb"
+  set tbs($nb) $pw
+  
   $pw add $nb -weight 1
   
   set ::docking::tbs($nb) $pw
@@ -886,7 +879,7 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 }
     if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
     if { $d == ".fdockbookWin" } {  ::book::open }
-    
+    if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
   }
   
   set ::docking::layout_dest_notebook ""
@@ -902,27 +895,20 @@ proc ::docking::layout_restore { slot } {
   }
   
   closeAll {.pw}
-  
+  set tbcnt 0
+  array set ::docking::notebook_name {}
   array set ::docking::tbs {}
-  set ::docking::tbs(.nb) .pw
-  set ::docking::layout_data [lindex $::docking::layout_list($slot) 4 ]
-  layout_restore_pw $::docking::layout_data
   
-  # restore layout's data
-  set ::docking::tbcnt [lindex $::docking::layout_list($slot) 0 ]
-  array set ::docking::tbs [lindex $::docking::layout_list($slot) 1 ]
-  array set ::docking::notebook_name [lindex $::docking::layout_list($slot) 2 ]
-  array set ::docking::toplevel [lindex $::docking::layout_list($slot) 3 ]
+  # set ::docking::tbs(.nb) .pw
+  layout_restore_pw $::docking::layout_list($slot)
   
 }
 
 ################################################################################
 # erase all mapped windows, except .main
 proc ::docking::closeAll {pw} {
-  puts "+++closeAll $pw"
   
   foreach p [$pw panes] {
-    puts "foreach $p (panes de $pw)"
     
     if {[get_class $p] == "TPanedwindow"} {
       ::docking::closeAll $p
@@ -931,7 +917,6 @@ proc ::docking::closeAll {pw} {
     if {[get_class $p] == "TNotebook"} {
       foreach tabid [$p tabs] {
         $p forget $tabid
-        array unset ::docking::_toplevel $tabid
         if {$tabid != ".fdockmain"} {
           destroy $tabid
         }
@@ -947,10 +932,7 @@ proc ::docking::closeAll {pw} {
 # The container frame is .fdock$name
 ################################################################################
 proc new_frame { name } {
-  global ::docking::_toplevel
-  set tl .$name
   set f .fdock$name
-  set _toplevel($f) $tl
   return $f
 }
 

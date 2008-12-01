@@ -147,7 +147,7 @@ namespace eval fics {
     set w .fics
     ::createToplevel $w
     ::setTitle $w "Free Internet Chess Server $::fics::reallogin"
-    pack [ttk::frame $w.f] -expand 1 -fill both
+    pack [ttk::panedwindow $w.f -orient vertical] -expand 1 -fill both
     
     ttk::frame $w.f.top
     ttk::frame $w.f.top.f1
@@ -155,26 +155,25 @@ namespace eval fics {
     pack $w.f.top.f1  -fill both -expand 1
     pack $w.f.top.f2 -fill x
     ttk::frame $w.f.bottom
-    pack $w.f.top -fill both -expand 1
-    pack $w.f.bottom
+    
+    # pack $w.f.top -fill both -expand 1
+    # pack $w.f.bottom
+    $w.f add $w.f.top -weight 1
+    $w.f add $w.f.bottom -weight 1
     
     ttk::frame $w.f.bottom.left
     ttk::frame $w.f.bottom.right
     ttk::frame $w.f.bottom.graph -relief sunken
     pack $w.f.bottom.left -side left
-    pack $w.f.bottom.right -side left ;#-expand 1 -fill both
+    pack $w.f.bottom.right -side left
     
     # graph
     canvas $w.f.bottom.graph.c -background white -width $width -height $height -relief solid
     pack $w.f.bottom.graph.c
     
     ttk::scrollbar $w.f.top.f1.ysc -command { .fics.f.top.f1.console yview }
-    ## text $w.f.top.f1.console -bg black -fg LimeGreen -height 10 -width 40 -wrap word -yscrollcommand "$w.f.top.f1.ysc set"
-    # Use variables to set console layout. Default (start.tcl) is the
-    # above, configuration could in principle be overwritten in
-    # options.dat however.
-    text $w.f.top.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  -wrap word -yscrollcommand "$w.f.top.f1.ysc set"
-    ## text $w.f.top.f1.console  -wrap word -yscrollcommand "$w.f.top.f1.ysc set"
+    text $w.f.top.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
+        -wrap word -yscrollcommand "$w.f.top.f1.ysc set"
     pack $w.f.top.f1.ysc -side left -fill y -side right
     pack $w.f.top.f1.console -side left -fill both -expand 1 -side right
     

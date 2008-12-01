@@ -378,8 +378,8 @@ namespace eval uci {
     wm title $w $::tr(ConfigureUCIengine)
     ::scrolledframe::scrolledframe .uciConfigWin.sf -xscrollcommand {.uciConfigWin.hs set} -yscrollcommand {.uciConfigWin.vs set} \
         -fill both -width 1000 -height 600
-    scrollbar .uciConfigWin.vs -command {.uciConfigWin.sf yview}
-    scrollbar .uciConfigWin.hs -command {.uciConfigWin.sf xview} -orient horizontal
+    ttk::scrollbar .uciConfigWin.vs -command {.uciConfigWin.sf yview}
+    ttk::scrollbar .uciConfigWin.hs -command {.uciConfigWin.sf xview} -orient horizontal
     grid .uciConfigWin.sf -row 0 -column 0 -sticky nsew
     grid .uciConfigWin.vs -row 0 -column 1 -sticky ns
     grid .uciConfigWin.hs -row 1 -column 0 -sticky ew
@@ -479,8 +479,8 @@ namespace eval uci {
     }
     
     set optnbr 0
-    frame $w.fopt
-    frame $w.fbuttons
+    ttk::frame $w.fopt
+    ttk::frame $w.fbuttons
     
     set row 0
     set col 0
@@ -514,13 +514,12 @@ namespace eval uci {
         }
       }
       if { $elt(type) == "check"} {
-        checkbutton $w.fopt.opt$optnbr -text "$name$default" -onvalue true -offvalue false -variable ::uci::check($optnbr)
-        if { $value == true } { $w.fopt.opt$optnbr select }
-        if { $value == false } { $w.fopt.opt$optnbr deselect }
+        ttk::checkbutton $w.fopt.opt$optnbr -text "$name$default" -onvalue true -offvalue false -variable ::uci::check($optnbr)
+        set ::uci::check($optnbr) $value
         grid $w.fopt.opt$optnbr -row $row -column $col -sticky w
       }
       if { $elt(type) == "spin"} {
-        label $w.fopt.label$optnbr -text "$name$default"
+        ttk::label $w.fopt.label$optnbr -text "$name$default"
         if { $elt(name) == "UCI_Elo" } {
           spinbox $w.fopt.opt$optnbr -from $elt(min) -to $elt(max) -width 5 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
         } else  {
@@ -532,7 +531,7 @@ namespace eval uci {
         grid $w.fopt.opt$optnbr -row $row -column $col -sticky w
       }
       if { $elt(type) == "combo"} {
-        label $w.fopt.label$optnbr -text "$name$default"
+        ttk::label $w.fopt.label$optnbr -text "$name$default"
         set idx 0
         set i 0
         set tmp {}
@@ -549,12 +548,12 @@ namespace eval uci {
         grid $w.fopt.opt$optnbr -row $row -column $col -sticky w
       }
       if { $elt(type) == "button"} {
-        button $w.fopt.opt$optnbr -text "$name$default"
+        ttk::button $w.fopt.opt$optnbr -text "$name$default"
         grid $w.fopt.opt$optnbr -row $row -column $col -sticky w
       }
       if { $elt(type) == "string"} {
-        label $w.fopt.label$optnbr -text "$name$default"
-        entry $w.fopt.opt$optnbr
+        ttk::label $w.fopt.label$optnbr -text "$name$default"
+        ttk::entry $w.fopt.opt$optnbr
         $w.fopt.opt$optnbr insert 0 $value
         grid $w.fopt.label$optnbr -row $row -column $col -sticky e
         incr col
@@ -564,15 +563,15 @@ namespace eval uci {
       incr optnbr
     }
     
-    button $w.fbuttons.save -text $::tr(Save) -command {
+    ttk::button $w.fbuttons.save -text $::tr(Save) -command {
       ::uci::saveConfig
       destroy .uciConfigWin
     }
-    button $w.fbuttons.cancel -text $::tr(Cancel) -command "destroy .uciConfigWin"
-    pack $w.fbuttons.save $w.fbuttons.cancel -side left -expand yes -fill both -padx 20 -pady 2
-    pack $w.fopt
+    ttk::button $w.fbuttons.cancel -text $::tr(Cancel) -command "destroy .uciConfigWin"
+    pack $w.fbuttons.save $w.fbuttons.cancel -side left -expand yes -fill x -padx 20 -pady 2
+    pack $w.fopt -expand 1 -fill both
     addHorizontalRule $w
-    pack $w.fbuttons
+    pack $w.fbuttons -expand 1 -fill both
     bind $w <Return> "$w.fbuttons.save invoke"
     bind $w <Escape> "destroy .uciConfigWin"
     catch {grab .uciConfigWin}
