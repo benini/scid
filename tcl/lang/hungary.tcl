@@ -316,6 +316,8 @@ menuText H OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText H OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText H OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText H OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText H OptionsToolbar "Eszköztár" 0 {A fõ ablak eszköztárának összeállítása}
 menuText H OptionsECO "ECO-fájl betöltése..." 2 {Betölti az ECO-osztályozó fájlt.}
 menuText H OptionsSpell "Helyesírás-ellenõrzõ fájl betöltése..." 0 \
@@ -766,9 +768,9 @@ translate H Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate H Book {Book}
 # ====== TODO To be translated ======
-translate H OtherBookMoves {Other moves}
+translate H OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate H OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate H OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate H EngineList {Elemzõ motorok listája}
@@ -2188,6 +2190,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

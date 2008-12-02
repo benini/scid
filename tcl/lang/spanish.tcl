@@ -292,6 +292,8 @@ menuText S OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText S OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText S OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText S OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
   {Muestra/oculta la barra de herramientas de la ventana principal}
 menuText S OptionsECO "Cargar archivo ECO..." 7 \
@@ -672,9 +674,9 @@ translate S Informant+- {Blancas tienen una ventaja decisiva}
 translate S Informant++- {La partida es considerada ganada}
 translate S Book {Libro}
 # ====== TODO To be translated ======
-translate S OtherBookMoves {Other moves}
+translate S OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate S OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate S OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate S EngineList {Lista de Motores de Análisis}
@@ -1599,6 +1601,8 @@ translate S DockRight {Move to right}
 translate S Undock {Undock}
 }
 # end of spanish.tcl
+
+
 
 
 

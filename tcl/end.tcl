@@ -1395,9 +1395,7 @@ standardShortcuts $dot_w
 ############################################################
 ### Packing the main window:
 
-
-label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 \
-    -font font_Small
+label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 -font font_Small
 grid .main.statusbar -row 4 -column 0 -columnspan 3 -sticky we
 bind .main.statusbar <1> gotoNextBase
 
@@ -1417,7 +1415,7 @@ proc gotoNextBase {} {
 }
 
 grid columnconfigure .main 0 -weight 1
-grid rowconfigure .main 3 -weight 0
+grid rowconfigure .main 3 -weight 1
 
 pack .main.fbutton.button -anchor center
 grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2
@@ -1432,7 +1430,7 @@ toggleGameInfo
 redrawToolbar
 
 if { ! $::docking::USE_DOCKING } {
-  wm resizable . 0 1
+  wm resizable .main 0 1
 }
 
 wm minsize . 0 0
@@ -1781,7 +1779,7 @@ proc showHideAllWindows {type} {
   # Some window managers like KDE generate Unmap events for other
   # situations like switching to another desktop, etc.
   # So if the main window is still mapped, do not iconify others:
-  if {($type == "iconify")  && ([winfo ismapped .] == 1)} { return }
+  if {($type == "iconify")  && ([winfo ismapped .main] == 1)} { return }
   
   # Now iconify/deiconify all the major Scid windows that exist:
   foreach w [getTopLevel] {
@@ -1868,9 +1866,14 @@ if { $::docking::USE_DOCKING } {
   # when main board pane is resized, auto-size it
   bind .main <Configure> ::resizeMainBoard
   
+  # restore default layout (number 1)
+  # BUG avec moteur : ns uci pas encore chargé
+    if { $::autoLoadLayout } {
+      ::docking::layout_restore 1
+    }
   # basic layout
-  ::pgn::OpenClose
-  ::docking::ctx_cmd [::docking::find_tbn .fdockpgnWin ] w
+  # ::pgn::OpenClose
+  # ::docking::ctx_cmd [::docking::find_tbn .fdockpgnWin ] w
 }
 
 ### End of file: end.tcl

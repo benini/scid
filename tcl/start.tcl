@@ -670,6 +670,10 @@ set windowsDock 0
 # The game info panel below the main board
 set showGameInfo 1
 
+# autoLoadLayout :
+# Automatic loading of layout # 1 at startup (docked windows mode only)
+set autoLoadLayout 0
+
 # autoResizeBoard:
 # resize the board to fit the container
 set autoResizeBoard 1
@@ -710,6 +714,7 @@ proc setTitle { w title } {
 ################################################################################
 proc createToplevel { w } {
   set name [string range $w 1 end]
+  
   if {$::docking::USE_DOCKING} {
     set f .fdock$name
     frame $f  -container 1
@@ -718,10 +723,10 @@ proc createToplevel { w } {
   } else  {
     toplevel $w
   }
+  
 }
 ################################################################################
 # In docked mode, resize board automatically
-# TODO : optimize board size (too much margin left)
 ################################################################################
 proc resizeMainBoard {} {
   if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } {
@@ -760,7 +765,13 @@ proc resizeMainBoard {} {
 # sets visibility of gameInfo panel at the bottom of main board
 proc toggleGameInfo {} {
   if {$::showGameInfo} {
-    grid .main.gameInfoFrame -row 3 -column 0 -sticky ew -padx 2
+    
+    if { $::docking::USE_DOCKING } {
+      grid .main.gameInfoFrame -row 3 -column 0 -sticky ew -padx 2
+    } else  {
+      grid .main.gameInfoFrame -row 3 -column 0 -sticky nsew -padx 2
+    }
+    
   } else  {
     grid forget .main.gameInfoFrame
   }

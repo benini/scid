@@ -281,6 +281,8 @@ menuText I OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText I OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText I OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText I OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText I OptionsToolbar "Barra degli strumenti" 12 \
   {Mostra/nasconde la barra degli strumenti nella finestra principale}
 menuText I OptionsECO "Carica il file ECO..." 15 {Carica il file di classificazione ECO}
@@ -700,9 +702,9 @@ translate I Informant+- {Il bianco ha un vantaggio decisivo}
 translate I Informant++- {La partita è considerata vinta}
 translate I Book {Libro}
 # ====== TODO To be translated ======
-translate I OtherBookMoves {Other moves}
+translate I OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate I OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate I OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate I EngineList {Lista dei motori di analisi}
@@ -1879,6 +1881,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 

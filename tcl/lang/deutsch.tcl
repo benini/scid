@@ -296,6 +296,8 @@ menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
 menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText D OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
+# ====== TODO To be translated ======
+menuText D OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
 menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
@@ -674,8 +676,10 @@ translate D Informant+/- {Weiß hat mäßigen Vorteil}
 translate D Informant+- {Weiß hat großen Vorteil}
 translate D Informant++- {Partie wird gewonnen}
 translate D Book {Buch}
-translate D OtherBookMoves {Andere Züge aus dem Buch}
-translate D OtherBookMovesTooltip {Züge, die nicht im Buch enthalten sind aber in anderen Positionen}
+# ====== TODO To be translated ======
+translate D OtherBookMoves {Opponent's book}
+# ====== TODO To be translated ======
+translate D OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate D EngineList {Analyse-Engines}
@@ -7159,6 +7163,8 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
 
 
 

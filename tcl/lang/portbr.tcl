@@ -320,6 +320,8 @@ menuText B OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText B OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText B OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText B OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText B OptionsToolbar "Barra de Ferramentas da Janela Principal" 12 \
   {Exibe/Oculta a barra de ferramentas da janela principal}
 menuText B OptionsECO "Carregar arquivo ECO..." 7 {Carrega o arquivo com a classificacao ECO}
@@ -777,9 +779,9 @@ translate B Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate B Book {Book}
 # ====== TODO To be translated ======
-translate B OtherBookMoves {Other moves}
+translate B OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate B OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate B OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate B EngineList {Lista de Programas de Analise}
@@ -1968,6 +1970,8 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
+
 
 
 

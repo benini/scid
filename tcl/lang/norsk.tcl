@@ -319,6 +319,8 @@ menuText O OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText O OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText O OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText O OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText O OptionsToolbar "Verktøylinje i hovedvindu" 0 \
   {Vis/skjul menylinjen i hovedvinduet}
 menuText O OptionsECO "Hent ECO-fil..." 0 {Henter filen med ECO-klassifiseringer}
@@ -772,9 +774,9 @@ translate O Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate O Book {Book}
 # ====== TODO To be translated ======
-translate O OtherBookMoves {Other moves}
+translate O OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate O OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate O OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate O EngineList {Liste over analysemotorer}
@@ -1962,6 +1964,8 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

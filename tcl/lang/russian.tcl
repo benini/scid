@@ -320,6 +320,8 @@ menuText R OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText R OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText R OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText R OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText R OptionsToolbar "Инструментальная панель" 0 {Конфигурация инструментальной панели основного окна}
 menuText R OptionsECO "Загрузить файл ECO..." 2 { Загрузить файл классификации ECO}
 menuText R OptionsSpell "Загрузить файл проверки правописания..." 4 \
@@ -774,9 +776,9 @@ translate R Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate R Book {Book}
 # ====== TODO To be translated ======
-translate R OtherBookMoves {Other moves}
+translate R OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate R OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate R OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate R EngineList {Список анализирующих движков}
@@ -1991,6 +1993,8 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

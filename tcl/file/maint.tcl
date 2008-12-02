@@ -650,20 +650,20 @@ proc makeClassifyWin {} {
   ttk::frame $w.f.b
   ttk::button $w.f.b.go -textvar ::tr(Classify) -command {
     busyCursor .
-    .classify.b.cancel configure -command "sc_progressBar"
-    .classify.b.cancel configure -textvar ::tr(Stop)
-    sc_progressBar .classify.progress bar 301 21 time
-    grab .classify.b.cancel
+    .classify.f.b.cancel configure -command "sc_progressBar"
+    .classify.f.b.cancel configure -textvar ::tr(Stop)
+    sc_progressBar .classify.f.progress bar 301 21 time
+    grab .classify.f.b.cancel
     if {[catch  {sc_eco base $classifyOption(AllGames) $classifyOption(ExtendedCodes)} result]} {
-      grab release .classify.b.cancel
+      grab release .classify.f.b.cancel
       unbusyCursor .
       tk_messageBox -parent .classify -type ok -icon info -title "Scid" -message $result
     } else {
-      grab release .classify.b.cancel
+      grab release .classify.f.b.cancel
       unbusyCursor .
     }
-    .classify.b.cancel configure -command {focus .; destroy .classify}
-    .classify.b.cancel configure -textvar ::tr(Close)
+    .classify.f.b.cancel configure -command {focus .; destroy .classify}
+    .classify.f.b.cancel configure -textvar ::tr(Close)
     ::windows::gamelist::Refresh
   }
   ttk::button $w.f.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"

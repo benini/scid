@@ -273,6 +273,7 @@ menuText F OptionsWindowsDock "Fenêtres groupées" 0 {Fenêtres groupées (nécessit
 menuText F OptionsWindowsSaveLayout "Enregistrer disposition" 0 {Enregistrer disposition}
 menuText F OptionsWindowsRestoreLayout "Remettre disposition" 0 {Remettre disposition}
 menuText F OptionsWindowsShowGameInfo "Montrer le panneau d'info" 0 {Montrer le panneau d'info}
+menuText F OptionsWindowsAutoLoadLayout "Chargement auto 1ère disposition" 0 {Chargement auto de la première disposition au démarrage}
 menuText F OptionsToolbar "Barre d'outils de la fenêtre principale" 12 \
   {Montrer/Cacher dans la barre d'outils de la fenêtre principale}
 menuText F OptionsECO "Charger le fichier ECO..." 20 \
@@ -645,7 +646,7 @@ translate F Informant++- {La partie est gagnée}
 
 # Book window
 translate F Book {Bibliothèque}
-translate F OtherBookMoves {Autres coups}
+translate F OtherBookMoves {Bibliothèque de l'adversaire}
 translate F OtherBookMovesTooltip {Coups pour lesquels l'adversaire a une réponse}
 
 # Analysis Engine open dialog:
@@ -1760,6 +1761,8 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
+
 
 
 

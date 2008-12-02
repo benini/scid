@@ -911,7 +911,7 @@ $m add command -label OptionsSave -command {
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
-          spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock showGameInfo \
+          spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
           exportFlags(column) exportFlags(symbols) \
@@ -1114,6 +1114,9 @@ $m add checkbutton -label OptionsWindowsDock -variable windowsDock
 set helpMessage($m,2) OptionsWindowsDock
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 set helpMessage($m,3) OptionsShowGameInfo
+$m add checkbutton -label OptionsWindowsAutoLoadLayout -variable autoLoadLayout
+set helpMessage($m,4) OptionsWindowsAutoLoadLayout
+
 if {$::docking::USE_DOCKING} {
   menu $m.savelayout
   menu $m.restorelayout
@@ -1122,9 +1125,9 @@ if {$::docking::USE_DOCKING} {
     $m.restorelayout add command -label $i -command "::docking::layout_restore $slot"
   }
   $m add cascade -label OptionsWindowsSaveLayout -menu $m.savelayout
-  set helpMessage($m,4) OptionsWindowsSaveLayout
+  set helpMessage($m,5) OptionsWindowsSaveLayout
   $m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
-  set helpMessage($m,5) OptionsWindowsRestoreLayout
+  set helpMessage($m,6) OptionsWindowsRestoreLayout
 }
 
 set m .menu.options.theme
@@ -1541,7 +1544,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {Iconify Raise Dock ShowGameInfo } {
+  foreach tag {Iconify Raise Dock ShowGameInfo AutoLoadLayout} { 
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
   }

@@ -311,6 +311,8 @@ menuText C OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText C OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText C OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText C OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText C OptionsToolbar "Nástrojová li¹ta..." 11 \
   {Konfigurovat nástrojovou li¹tu hlavního okna}
 menuText C OptionsECO "Natáhnout ECO soubor..." 10 {Natáhnout soubor s klasifikací ECO}
@@ -765,10 +767,9 @@ translate C Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate C Book {Book}
 # ====== TODO To be translated ======
-translate C OtherBookMoves {Other moves}
+translate C OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate C OtherBookMovesTooltip {Moves not in the book but present in further positions}
-
+translate C OtherBookMovesTooltip {Moves to which the opponent has a reply}
 # Analysis Engine open dialog:
 translate C EngineList {Seznam programù pro analýzu}
 translate C EngineName {Jméno}
@@ -5593,6 +5594,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

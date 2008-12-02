@@ -317,6 +317,8 @@ menuText Y OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText Y OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText Y OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText Y OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText Y OptionsToolbar "Toolbar glavnog prozora" 12 \
   {Prika¾i/sakrij toolbar glavnog prozora}
 menuText Y OptionsECO "Uèitaj E©O fajl..." 7 {Uèitaj E©O klasifikacioni fajl}
@@ -770,9 +772,9 @@ translate Y Informant++- {The game is considered won}
 # ====== TODO To be translated ======
 translate Y Book {Book}
 # ====== TODO To be translated ======
-translate Y OtherBookMoves {Other moves}
+translate Y OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate Y OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate Y OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate Y EngineList {Analysis Engine List} ;# ***
@@ -1962,6 +1964,8 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 

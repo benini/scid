@@ -555,12 +555,12 @@ proc ::docking::_cleanup_tabs {srctab} {
     unset tbs($srctab)
     
     while {[llength [$pw panes]]==0} {
-      if {[get_class $pw]!="TPanedwindow"} { break }
       set parent [winfo parent $pw]
-      destroy $pw
-      if {$parent == ".pw"} {
+      
+      if {$pw == ".pw"} {
         break
       }
+      destroy $pw
       set pw $parent
     }
     
@@ -833,7 +833,7 @@ proc ::docking::layout_restore_pw { data } {
       
       set pw [lindex $elt 0]
       set orient [lindex $elt 1]
-      if { $pw ==".pw"} { continue }
+      if { $pw == ".pw"} { continue }
       # build a new pw
       ttk::panedwindow $pw -orient $orient
       set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]

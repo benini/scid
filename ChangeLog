@@ -660,5 +660,5 @@ scid-3.6.7
 	* New option-> Themes (only small parts of Scid are themable, this will be increased in the future)
 	* Removed file combobox.tcl (widget migrated to ttk::combobox)
 	* Windows can be docked inside a main window (options menu)
-
+- updated dutch translation (thanks to Michel Van den Bergh)
 

@@ -313,6 +313,7 @@ menuText E OptionsWindowsDock "Dock windows" 0 {Dock windows (needs restart)}
 menuText E OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText E OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText E OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+menuText E OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText E OptionsToolbar "Toolbar..." 0 {Configure the main window toolbar}
 menuText E OptionsECO "Load ECO File..." 7 {Load the ECO classification file}
 menuText E OptionsSpell "Load Spellcheck File..." 11 \

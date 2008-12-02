@@ -319,6 +319,8 @@ menuText W OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText W OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 # ====== TODO To be translated ======
 menuText W OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+# ====== TODO To be translated ======
+menuText W OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
 menuText W OptionsToolbar "Verktygsfält" 0 \
   {Visa/ dölj huvudfönstrets verktygsfält}
 menuText W OptionsECO "Ladda ECO fil..." 7 {Ladda ECO-klassificeringen vid start}
@@ -772,9 +774,9 @@ translate W Informant++- {Partiet anses vara vunnet}
 # ====== TODO To be translated ======
 translate W Book {Bok}
 # ====== TODO To be translated ======
-translate W OtherBookMoves {Other moves}
+translate W OtherBookMoves {Opponent's book}
 # ====== TODO To be translated ======
-translate W OtherBookMovesTooltip {Moves not in the book but present in further positions}
+translate W OtherBookMovesTooltip {Moves to which the opponent has a reply}
 
 # Analysis Engine open dialog:
 translate W EngineList {Lista över schackprogram}
@@ -6979,6 +6981,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 
