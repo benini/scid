@@ -296,8 +296,7 @@ menuText D OptionsWindowsDock "Fenster docken" 0 {Fenster docken}
 menuText D OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
 menuText D OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
 menuText D OptionsWindowsShowGameInfo "Partieinformationen" 0 {Partieinformation anzeigen}
-# ====== TODO To be translated ======
-menuText D OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
+menuText D OptionsWindowsAutoLoadLayout "Automatisch laden: 1. Layout" 0 {Lädt das erste definierte Layout automatisch beim Programmstart}
 menuText D OptionsToolbar "Werkzeugleiste" 0 {Werkzeug- bzw. Symbolleiste Ein/Aus}
 menuText D OptionsECO "ECO-Datei laden..." 0 {ECO-Klassifikationsdatei laden}
 menuText D OptionsSpell "Schreibkorrekturdatei laden..." 7 \
@@ -676,10 +675,8 @@ translate D Informant+/- {Weiß hat mäßigen Vorteil}
 translate D Informant+- {Weiß hat großen Vorteil}
 translate D Informant++- {Partie wird gewonnen}
 translate D Book {Buch}
-# ====== TODO To be translated ======
-translate D OtherBookMoves {Opponent's book}
-# ====== TODO To be translated ======
-translate D OtherBookMovesTooltip {Moves to which the opponent has a reply}
+translate D OtherBookMoves {Eröffnungsbuch des Gegners}
+translate D OtherBookMovesTooltip {Züge, für die der Gegner eine Antwort kennt}
 
 # Analysis Engine open dialog:
 translate D EngineList {Analyse-Engines}
@@ -1603,14 +1600,10 @@ translate D DoneWithPosition {Positionsbearbeitung beendet}
 translate D Board {Brett}
 translate D showGameInfo {Partieinformation anzeigen}
 translate D autoResizeBoard {Brettgröße automatisch berechnen}
-# ====== TODO To be translated ======
-translate D DockTop {Move to top}
-# ====== TODO To be translated ======
-translate D DockBottom {Move to bottom}
-# ====== TODO To be translated ======
-translate D DockLeft {Move to left}
-# ====== TODO To be translated ======
-translate D DockRight {Move to right}
+translate D DockTop {Nach oben}
+translate D DockBottom {Nach unten}
+translate D DockLeft {Nach links}
+translate D DockRight {Nach rechts}
 # ====== TODO To be translated ======
 translate D Undock {Undock}
 }
