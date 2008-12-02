@@ -134,7 +134,7 @@ TCLS= \
   tcl\help\help.tcl tcl\help\tips.tcl \
   tcl\menus.tcl tcl\board.tcl tcl\move.tcl tcl\main.tcl \
     tcl\lang\english.tcl $(LANGUAGES) \
-  tcl\end.tcl tcl\tools\tacgame.tcl tcl\tools\sergame.tcl tcl\tools\fics.tcl tcl\tools\calvar.tcl tcl\tools\opening.tcl tcl\tools\tactics.tcl tcl\tools\uci.tcl tcl\tools\novag.tcl tcl\misc\flags.tcl tcl\tools\correspondence.tcl tcl\tools\inputengine.tcl
+  tcl\tools\uci.tcl tcl\end.tcl tcl\tools\tacgame.tcl tcl\tools\sergame.tcl tcl\tools\fics.tcl tcl\tools\calvar.tcl tcl\tools\opening.tcl tcl\tools\tactics.tcl tcl\tools\novag.tcl tcl\misc\flags.tcl tcl\tools\correspondence.tcl tcl\tools\inputengine.tcl
 
 
 ########################################
