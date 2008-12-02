@@ -1867,11 +1867,11 @@ if { $::docking::USE_DOCKING } {
   bind .main <Configure> ::resizeMainBoard
   
   # restore default layout (number 1)
-  # BUG avec moteur : ns uci pas encore chargé
     if { $::autoLoadLayout } {
       ::docking::layout_restore 1
     }
-  # basic layout
+
+# basic layout
   # ::pgn::OpenClose
   # ::docking::ctx_cmd [::docking::find_tbn .fdockpgnWin ] w
 }
