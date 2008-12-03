@@ -27,7 +27,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
   if {$code != "x"} { set ::windows::eco::code $code }
   if {! [winfo exists $w]} {
     set ::windows::eco::isOpen 1
-    toplevel $w
+    ::createToplevel $w
     wm minsize $w 200 100
     setWinLocation $w
     bind $w <Escape> "destroy $w"
@@ -37,9 +37,9 @@ proc ::windows::eco::Refresh {{code "x"}} {
     $w.title tag configure center -justify center
     $w.title configure -cursor top_left_arrow
     pack $w.title -side top -fill x
-    frame $w.b
+    ttk::frame $w.b
     pack $w.b -side bottom -fill x
-    button $w.b.classify -textvar ::tr(ReclassifyGames) -command classifyAllGames
+    ttk::button $w.b.classify -textvar ::tr(ReclassifyGames) -command classifyAllGames
     dialogbutton $w.b.help -textvar ::tr(Help) -command {helpWindow ECO}
     dialogbutton $w.b.close -textvar ::tr(Close) -command "destroy $w"
     pack $w.b.classify -side left -padx 5 -pady 5
@@ -58,8 +58,8 @@ proc ::windows::eco::Refresh {{code "x"}} {
     $text.text tag configure indent -lmargin2 20
     $text.text configure -cursor top_left_arrow
     ::htext::init $text.text
-    scrollbar $text.ybar -command "$text.text yview"
-    scrollbar $text.xbar -orient horizontal -command "$text.text xview"
+    ttk::scrollbar $text.ybar -command "$text.text yview"
+    ttk::scrollbar $text.xbar -orient horizontal -command "$text.text xview"
     grid $text.text -row 0 -column 0 -sticky nesw
     grid $text.ybar -row 0 -column 1 -sticky nesw
     #grid $text.xbar -row 1 -column 0 -sticky nesw
@@ -97,7 +97,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
       ::utils::graph::configure eco -width [expr {[winfo width .ecograph.pane.graph.c] - 60} ]
       ::utils::graph::redraw eco
     }
-    wm title $w "Scid: [tr WindowsECO]"
+    ::setTitle $w "Scid: [tr WindowsECO]"
     ::utils::graph::create eco -width 1 -height 1 -xtop 50 -ytop 20 \
       -xmin 0.5 -xtick 1 -ytick 5 -font font_Small -canvas $graph.c
     update

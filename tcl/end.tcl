@@ -1374,23 +1374,29 @@ bind $dot_w <End> ::move::End
 bind $dot_w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
 
 # MouseWheel in main window:
-bind $dot_w <MouseWheel> {
+bind .main <MouseWheel> {
   if {[expr -%D] < 0} { ::move::Back }
   if {[expr -%D] > 0} { ::move::Forward }
 }
-bind $dot_w <Shift-MouseWheel> {
+bind .main <Shift-MouseWheel> {
   if {[expr -%D] < 0} { ::move::Back 10 }
   if {[expr -%D] > 0} { ::move::Forward 10}
 }
+
 if {! $windowsOS} {
-  bind $dot_w <Button-4> ::move::Back
-  bind $dot_w <Button-5> ::move::Forward
-  bind $dot_w <Shift-Button-4> {::move::Back 10}
-  bind $dot_w <Shift-Button-5> {::move::Forward 10}
+  bind all <Button-4> {event generate [focus -displayof %W] <MouseWheel> -delta 120}
+  bind all <Button-5> {event generate [focus -displayof %W] <MouseWheel> -delta -120}
+  bind all <Shift-Button-4> {event generate [focus -displayof %W] <Shift-MouseWheel> -delta  120}
+  bind all <Shift-Button-5> {event generate [focus -displayof %W] <Shift-MouseWheel> -delta -120}
+  # bind $dot_w <Button-4> ::move::Back
+  # bind $dot_w <Button-5> ::move::Forward
+  # bind $dot_w <Shift-Button-4> {::move::Back 10}
+  # bind $dot_w <Shift-Button-5> {::move::Forward 10}
 }
 
 # Apply standard shortcuts to main window
-standardShortcuts $dot_w
+# standardShortcuts $dot_w
+standardShortcuts .main
 
 ############################################################
 ### Packing the main window:
@@ -1728,14 +1734,16 @@ wm deiconify $dot_w
 
 wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
 
-if {$startup(switcher)} { ::windows::switcher::Open }
-if {$startup(pgn)} { ::pgn::OpenClose }
-if {$startup(gamelist)} { ::windows::gamelist::Open }
-if {$startup(tree)} { ::tree::make }
-if {$startup(stats)} { ::windows::stats::Open }
-if {$startup(crosstable)} { crosstabWin }
-if {$startup(finder)} { ::file::finder::Open }
-if {$startup(book)} { ::book::open }
+if { !$::docking::USE_DOCKING } {
+  if {$startup(switcher)} { ::windows::switcher::Open }
+  if {$startup(pgn)} { ::pgn::OpenClose }
+  if {$startup(gamelist)} { ::windows::gamelist::Open }
+  if {$startup(tree)} { ::tree::make }
+  if {$startup(stats)} { ::windows::stats::Open }
+  if {$startup(crosstable)} { crosstabWin }
+  if {$startup(finder)} { ::file::finder::Open }
+  if {$startup(book)} { ::book::open }
+}
 
 updateBoard
 updateStatusBar
@@ -1772,6 +1780,7 @@ proc getTopLevel {} {
 #   Should be called type = "iconify" or "deiconify"
 #
 proc showHideAllWindows {type} {
+  puts "+++showHideAllWindows $type"
   
   # Don't do this if user option is off:
   if {! $::autoIconify} { return }
@@ -1788,6 +1797,7 @@ proc showHideAllWindows {type} {
     # .playerInfoWin .commentWin .repWin .statsWin .tbWin \
     # .sb .sh .sm .noveltyWin .emailWin .oprepWin .plist \
     # .rgraph .sgraph .importWin .helpWin .tipsWin
+    puts "wm $type $w"
     if {[winfo exists $w]} { catch {wm $type $w} }
   }
   
@@ -1867,11 +1877,11 @@ if { $::docking::USE_DOCKING } {
   bind .main <Configure> ::resizeMainBoard
   
   # restore default layout (number 1)
-    if { $::autoLoadLayout } {
-      ::docking::layout_restore 1
-    }
-
-# basic layout
+  if { $::autoLoadLayout } {
+    ::docking::layout_restore 1
+  }
+  
+  # basic layout
   # ::pgn::OpenClose
   # ::docking::ctx_cmd [::docking::find_tbn .fdockpgnWin ] w
 }

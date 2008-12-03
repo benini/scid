@@ -1114,7 +1114,13 @@ $m add checkbutton -label OptionsWindowsDock -variable windowsDock
 set helpMessage($m,2) OptionsWindowsDock
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 set helpMessage($m,3) OptionsShowGameInfo
-$m add checkbutton -label OptionsWindowsAutoLoadLayout -variable autoLoadLayout
+
+if { $::docking::USE_DOCKING } {
+  set state "normal"
+} else  {
+  set state "disabled"
+}
+$m add checkbutton -label OptionsWindowsAutoLoadLayout -variable autoLoadLayout -state $state
 set helpMessage($m,4) OptionsWindowsAutoLoadLayout
 
 if {$::docking::USE_DOCKING} {
@@ -1181,15 +1187,20 @@ set helpMessage($m,3) OptionsFontsFixed
 
 set m .menu.options.startup
 menu $m
-$m add checkbutton -label HelpTip -variable startup(tip)
-$m add checkbutton -label ToolsCross -variable startup(crosstable)
-$m add checkbutton -label WindowsSwitcher -variable startup(switcher)
-$m add checkbutton -label FileFinder -variable startup(finder)
-$m add checkbutton -label WindowsGList -variable startup(gamelist)
-$m add checkbutton -label WindowsPGN -variable startup(pgn)
-$m add checkbutton -label WindowsStats -variable startup(stats)
-$m add checkbutton -label WindowsTree -variable startup(tree)
-$m add checkbutton -label WindowsBook -variable startup(book)
+if { $::docking::USE_DOCKING } {
+  set state "disabled"
+} else  {
+  set state "normal"
+}
+$m add checkbutton -label HelpTip -variable startup(tip) -state $state
+$m add checkbutton -label ToolsCross -variable startup(crosstable) -state $state
+$m add checkbutton -label WindowsSwitcher -variable startup(switcher) -state $state
+$m add checkbutton -label FileFinder -variable startup(finder) -state $state
+$m add checkbutton -label WindowsGList -variable startup(gamelist) -state $state
+$m add checkbutton -label WindowsPGN -variable startup(pgn) -state $state
+$m add checkbutton -label WindowsStats -variable startup(stats) -state $state
+$m add checkbutton -label WindowsTree -variable startup(tree) -state $state
+$m add checkbutton -label WindowsBook -variable startup(book) -state $state
 
 set m .menu.options.board
 menu $m
@@ -1544,7 +1555,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {Iconify Raise Dock ShowGameInfo AutoLoadLayout} { 
+  foreach tag {Iconify Raise Dock ShowGameInfo AutoLoadLayout} {
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
   }

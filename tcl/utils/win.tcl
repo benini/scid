@@ -651,7 +651,6 @@ proc ::docking::ctx_cmd {path anchor} {
 }
 ################################################################################
 proc ::docking::ctx_menu {w} {
-  puts "ctx menu $w"
   update idletasks
   set mctxt .ctxtMenu
   if { [winfo exists $mctxt] } {
@@ -765,6 +764,7 @@ proc ::docking::add_tab {path anchor args} {
   
   set title $path
   eval [list $dsttab add $path] $args -text "$title"
+  $dsttab select $path
 }
 ################################################################################
 # Layout management
@@ -857,6 +857,13 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   
   set nb [ttk::notebook $name]
   incr tbcnt
+  if {[scan $name ".tb%d" tmp] == 1} {
+    if {$tmp > $tbcnt} {
+      set tbcnt [ expr $tmp +1]
+    }
+  } else  {
+    puts "ERROR $name != .tbX"
+  }
   puts "$pw add $nb"
   set tbs($nb) $pw
   
@@ -879,6 +886,8 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 }
     if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
     if { $d == ".fdockbookWin" } {  ::book::open }
+    if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
+    if { $d == ".fdocktbWin" } { ::tb::Open }
     if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
   }
   

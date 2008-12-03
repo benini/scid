@@ -126,9 +126,10 @@ set ::tacgame::openingType new
 
 # List of saved layouts : 3 slots available
 array set ::docking::layout_list {}
-foreach i { 1 2 3 } {
-  set ::docking::layout_list($i) {}
-}
+# Basic layout : PGN window with main board
+set ::docking::layout_list(1) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
+set ::docking::layout_list(2) {}
+set ::docking::layout_list(3) {}
 
 #############################################################
 # Customisable variables:
@@ -664,7 +665,7 @@ set autoIconify 1
 # windowsDock:
 # if true, most of toplevel windows are dockable and embedded in a main window
 # windows can be moves among tabs and undocked (right-clicking on tab)
-set windowsDock 0
+set windowsDock 1
 
 # showGameInfo:
 # The game info panel below the main board
@@ -672,7 +673,7 @@ set showGameInfo 1
 
 # autoLoadLayout :
 # Automatic loading of layout # 1 at startup (docked windows mode only)
-set autoLoadLayout 0
+set autoLoadLayout 1
 
 # autoResizeBoard:
 # resize the board to fit the container
@@ -716,10 +717,18 @@ proc createToplevel { w } {
   set name [string range $w 1 end]
   
   if {$::docking::USE_DOCKING} {
+    
     set f .fdock$name
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
     docking::add_tab [new_frame $name] e
+    # auto focus mode : when the mouse enters a toplevel, it gets a forced focus to handle mouse wheel
+    bind .$name <Enter> {
+      set tl [winfo toplevel %W]
+      focus -force $tl
+      # puts "Enter %W tl = $tl mousewheel = [bind $tl <MouseWheel>] focus = [focus]"
+    }
+    
   } else  {
     toplevel $w
   }

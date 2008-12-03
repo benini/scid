@@ -128,30 +128,28 @@ proc ::tb::Open {} {
   global tbInfo
   set w .tbWin
   if {[winfo exists $w]} { return }
-  toplevel $w
+  ::createToplevel $w
   setWinLocation $w
-  wm title $w "Scid: [tr WindowsTB]"
-  pack [frame $w.b] -side bottom -fill x
-  pack [frame $w.info] -side left -fill y
+  ::setTitle $w "Scid: [tr WindowsTB]"
+  pack [ttk::frame $w.b] -side bottom -fill x
+  pack [ttk::frame $w.info] -side left -fill y
   addVerticalRule $w
-  pack [frame $w.pos] -side right -fill both -expand yes
+  pack [ttk::frame $w.pos] -side right -fill both -expand yes
   
   # Left frame: tablebase browser and summary info
   
   set f $w.info
-  pack [frame $f.sec] -side top -fill x
+  pack [ttk::frame $f.sec] -side top -fill x
   foreach i $tbInfo(sections) {
     set name "[string index $i 0]-[string index $i 1]"
-    radiobutton $f.sec.b$i -text " $name " \
-        -variable tbInfo(section) -value $i \
-        -indicatoron 0 -command "::tb::section $i"
+    ttk::radiobutton $f.sec.b$i -text " $name " -variable tbInfo(section) -value $i -command "::tb::section $i" ;# -indicatoron 0
     pack $f.sec.b$i -side left -pady 1 -padx 1
   }
   autoscrollframe $f.list text $f.list.text \
       -width 35 -height 7 -font font_Fixed -wrap none \
       -foreground black -background white -cursor top_left_arrow
   pack $f.list -side top
-  pack [frame $f.separator -height 2]
+  pack [ttk::frame $f.separator -height 2]
   # addHorizontalRule $f
   
   autoscrollframe $f.data text $f.data.text \
@@ -179,17 +177,16 @@ proc ::tb::Open {} {
     grid $f.board -row 0 -column 2 -rowspan 2
   }
   
-  checkbutton $w.b.training -text $::tr(Training) -variable tbTraining -command ::tb::training -relief raised -padx 4 -pady 5
+  ttk::checkbutton $w.b.training -text $::tr(Training) -variable tbTraining -command ::tb::training ;# -padx 4 -pady 5
   # button $w.b.online -text Online -command ::tb::updateOnline -relief raised -padx 4 -pady 5
   if { !$::tb::online_available } {
     catch { $w.b.online configure -state disabled }
   }
-  button $w.b.random -text "Random" -command ::tb::random
-  button $w.b.showboard -image tb_coords -command ::tb::showBoard
+  ttk::button $w.b.random -text "Random" -command ::tb::random
+  ttk::button $w.b.showboard -image tb_coords -command ::tb::showBoard
   dialogbutton $w.b.help -text $::tr(Help) -command { helpWindow TB }
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
-  label $w.b.status -width 1 -textvar tbStatus -font font_Small \
-      -relief flat -anchor w -height 0
+  ttk::label $w.b.status -width 1 -textvar tbStatus -font font_Small -relief flat -anchor w ;# -height 0
   packbuttons right $w.b.close $w.b.help
   pack $w.b.training -side left -padx 2 -pady 2
   catch { pack $w.b.online -side left -padx 2 -pady 2 }
