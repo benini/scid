@@ -1245,12 +1245,12 @@ bind $dot_w <Control-Shift-Right> increaseBoardSize
 
 proc decreaseBoardSize {} {
   global boardSize
-  set boardSize [::board::resize .main.board -1]
+  set boardSize [::board::resize2 .main.board -1]
 }
 
 proc increaseBoardSize {} {
   global boardSize
-  set boardSize [::board::resize .main.board +1]
+  set boardSize [::board::resize2 .main.board +1]
 }
 
 # Menu for changing Piece set:

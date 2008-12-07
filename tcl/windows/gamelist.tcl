@@ -76,6 +76,7 @@ proc ::windows::gamelist::Open {} {
   set w .glistWin
   
   ::createToplevel $w
+  # toplevel $w
   
   # Window is only directly resizable vertically:
   wm resizable $w false true
@@ -652,7 +653,7 @@ proc ::windows::gamelist::Refresh {} {
     append str $::tr(noGames)
     .glistWin.scale configure -to 1
   }
-  wm title .glistWin $str
+  ::setTitle .glistWin $str
 }
 
 trace variable glexport w updateExportGList

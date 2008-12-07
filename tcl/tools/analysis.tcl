@@ -615,16 +615,17 @@ proc ::enginelist::edit {index} {
       destroy .engineEdit
       ::enginelist::sort
       ::enginelist::write
+      focus .enginelist
     }
   }
-  ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w"
+  ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w ; focus .enginelist"
   pack $f -side bottom -fill x
   pack $f.cancel $f.ok -side right -padx 2 -pady 2
   ttk::label $f.required -font font_Small -text $::tr(EngineRequired)
   pack $f.required -side left
   
   bind $w <Return> "$f.ok invoke"
-  bind $w <Escape> "destroy $w"
+  bind $w <Escape> "destroy $w ; focus .enginelist "
   bind $w <F1> { helpWindow Analysis List }
   focus $w.f.eName
   wm resizable $w 1 0

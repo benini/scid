@@ -409,6 +409,10 @@ namespace eval ::scrolledframe {
 #     which is published under BSD license
 #
 ################################################################################
+image create photo bluecross -format gif -data {
+  R0lGODlhCgAKAIABAAAp+f///yH5BAEKAAEALAAAAAAKAAoAAAIRjI8IkLdtnlpU1ppk05nB
+  VgAAOw==
+}
 
 namespace eval docking {
   
@@ -417,7 +421,6 @@ namespace eval docking {
   
   variable tbcnt 0
   array set notebook_name {}
-  
 }
 ################################################################################
 # find notebook, corresponding to path
@@ -446,7 +449,6 @@ proc ::docking::find_tbn {path} {
   # try to find notebook that manages this page
   foreach tb [array names tbs] {
     if {[get_class $tb] != "TNotebook"} {
-      puts "tb $tb pas notebook"
       continue
     }
     if {[lsearch -exact [$tb tabs] $path]>=0} {
@@ -469,7 +471,7 @@ proc ::docking::embed_tbn {tbn anchor} {
     set orient "vertical"
   }
   # create new paned window
-  set npw [ttk::panedwindow $pw.pw$tbcnt -orient $orient]
+  set npw [ttk::panedwindow $pw.pw$tbcnt -orient $orient  ]
   incr tbcnt
   # move old notebook
   set i [lsearch -exact [$pw panes] $tbn]
@@ -572,7 +574,6 @@ proc ::docking::move_tab {srctab dsttab} {
   variable tbs
   # move tab
   set f [$srctab select]
-  puts "srctab $srctab select -> $f"
   set o [$srctab tab $f]
   $srctab forget $f
   eval $dsttab add $f $o
@@ -638,7 +639,6 @@ proc ::docking::ctx_cmd {path anchor} {
     set c_path [find_tbn $path]
   }
   
-  puts "déplacement $path $anchor (c_path = $c_path)"
   if {$c_path==""} {
     puts "WARNING c_path null in ctx_cmd"
     return
@@ -675,7 +675,7 @@ proc ::docking::ctx_menu {w} {
     $mctxt add checkbutton -label [::tr "showGameInfo"] -variable ::showGameInfo -command ::toggleGameInfo
     $mctxt add checkbutton -label [::tr "autoResizeBoard"] -variable ::autoResizeBoard
   }
-  $mctxt post [winfo pointerx .] [winfo pointery .]
+  tk_popup $mctxt [winfo pointerx .] [winfo pointery .]
 }
 
 ################################################################################
@@ -784,12 +784,9 @@ set ::docking::layout_dest_notebook ""
 ################################################################################
 # saves layout
 proc ::docking::layout_save { slot } {
-  puts "==== dump $slot ===="
   
   set ::docking::layout_list($slot)  [ layout_save_pw .pw ]
   
-  puts "==== saved slot =$slot :"
-  puts "$::docking::layout_list($slot)"
 }
 ################################################################################
 proc ::docking::layout_save_pw {pw} {
@@ -815,11 +812,9 @@ proc ::docking::layout_save_pw {pw} {
 ################################################################################
 # restores paned windows and internal notebooks
 proc ::docking::layout_restore_pw { data } {
-  puts "+++ layout_restore_pw      $data"
   
   foreach elt $data {
     set type [lindex $elt 0]
-    puts "type = $type"
     
     if {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
@@ -838,7 +833,6 @@ proc ::docking::layout_restore_pw { data } {
       ttk::panedwindow $pw -orient $orient
       set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
       $parent add $pw -weight 1
-      puts "paned window créé $pw $orient dans $parent"
     }
     
   }
@@ -853,18 +847,14 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   variable tbcnt
   variable tbs
   
-  puts "*************  layout_restore_nb pw=$pw name=$name tabs=$tabs"
-  
   set nb [ttk::notebook $name]
   incr tbcnt
   if {[scan $name ".tb%d" tmp] == 1} {
     if {$tmp > $tbcnt} {
       set tbcnt [ expr $tmp +1]
     }
-  } else  {
-    puts "ERROR $name != .tbX"
   }
-  puts "$pw add $nb"
+  
   set tbs($nb) $pw
   
   $pw add $nb -weight 1
@@ -874,10 +864,8 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   set ::docking::layout_dest_notebook $nb
   
   foreach d $tabs {
-    puts "creation de l'onglet $d"
     
     if { $d == ".fdockmain" } {
-      puts "$nb add $d *** winfo exists .main = [winfo exists .main]"
       $nb add $d -text $::tr(Board)
       raise $d
     }
@@ -949,7 +937,10 @@ proc new_frame { name } {
 if {$::docking::USE_DOCKING} {
   pack [ttk::panedwindow .pw -orient vertical] -fill both -expand true
   .pw add [ttk::notebook .nb] -weight 1
+  
   set docking::tbs(.nb) .pw
 }
 
 createToplevel .main
+
+    

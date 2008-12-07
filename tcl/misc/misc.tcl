@@ -260,7 +260,7 @@ proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
   global horizRuleCounter
   
   ttk::separator $w.line$horizRuleCounter -orient horizontal
-  pack $w.line$horizRuleCounter -fill x
+  pack $w.line$horizRuleCounter -fill x ;# -pady $ypadding
   
   # set f [ ttk::frame $w.line$horizRuleCounter -height $height -borderwidth 2 -relief $relief ]
   # pack $f -fill x -pady $ypadding
@@ -270,14 +270,13 @@ proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
 proc addVerticalRule {w {xpadding 5} {relief sunken}} {
   global vertRuleCounter
   
-    ttk::separator $w.line$vertRuleCounter -orient horizontal
-    pack $w.line$vertRuleCounter -fill y
+    ttk::separator $w.line$vertRuleCounter -orient vertical
+    pack $w.line$vertRuleCounter -fill y -padx $xpadding -side left
   
   # set f [ ttk::frame $w.line$vertRuleCounter -width 2 -borderwidth 2 -relief $relief ]
   # pack $f -fill y -padx $xpadding -side left
   incr vertRuleCounter
 }
-
 
 # progressWindow:
 #   Creates a window with a label, progress bar, and (if specified),

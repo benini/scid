@@ -661,4 +661,4 @@ scid-3.6.7
 	* Removed file combobox.tcl (widget migrated to ttk::combobox)
 	* Windows can be docked inside a main window (options menu)
 - updated dutch translation (thanks to Michel Van den Bergh)
-
+- updated spanish translation (thanks to Benigno Hernández)

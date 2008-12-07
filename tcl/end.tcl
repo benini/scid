@@ -1881,9 +1881,8 @@ if { $::docking::USE_DOCKING } {
     ::docking::layout_restore 1
   }
   
-  # basic layout
-  # ::pgn::OpenClose
-  # ::docking::ctx_cmd [::docking::find_tbn .fdockpgnWin ] w
+      # button .nb.menuplus -image bluecross -width 6 -height 6
+      # place .nb.menuplus -x 0 -y 0
 }
 
 ### End of file: end.tcl

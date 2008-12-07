@@ -665,7 +665,7 @@ set autoIconify 1
 # windowsDock:
 # if true, most of toplevel windows are dockable and embedded in a main window
 # windows can be moves among tabs and undocked (right-clicking on tab)
-set windowsDock 1
+set windowsDock 0
 
 # showGameInfo:
 # The game info panel below the main board
@@ -728,6 +728,9 @@ proc createToplevel { w } {
       focus -force $tl
       # puts "Enter %W tl = $tl mousewheel = [bind $tl <MouseWheel>] focus = [focus]"
     }
+    # add a + to toplevel window
+    # button $w.menuplus -text "+"
+    # place $w.menuplus -x 10 -y 10
     
   } else  {
     toplevel $w

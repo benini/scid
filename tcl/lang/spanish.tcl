@@ -95,7 +95,7 @@ menuText S EditPasteBoard "Pegar tablero inicial" 6 \
 
 # Game menu:
 menuText S Game "Partida" 0
-menuText S GameNew "Limpiar partida" 0 \
+menuText S GameNew "Partida nueva" 0 \
   {Vuelve a una partida limpia, descartando cualquier cambio}
 menuText S GameFirst "Cargar primera partida" 7 {Carga la primera partida filtrada}
 menuText S GamePrev "Cargar partida anterior" 16 {Carga la anterior partida filtrada}
@@ -183,13 +183,10 @@ menuText S ToolsTrainCalvar "Cálculo of variaciones"  0 {Calculo de variantes}
 menuText S ToolsTrainFindBestMove "Encontrar la mejor jugada"  0 {Busca el movimiento mejor}
 menuText S ToolsTrainFics "Jugar en internet"  0 {Jugar en freechess.org}
 menuText S ToolsBookTuning "Sintonizar Libro de aperturas" 0 {Sintonizar Libro (Book)}
-# ====== TODO To be translated ======
-menuText S ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
-# ====== TODO To be translated ======
+menuText S ToolsConnectHardware "Conectar hardware" 0 {Conectar hardware externo"}
 menuText S ToolsConnectHardwareConfigure "Configuración" 1 {Configuración}
-menuText S ToolsConnectHardwareNovagCitrineConnect "Conectar" 0 {Conectar Novag}
-# ====== TODO To be translated ======
-menuText S ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+menuText S ToolsConnectHardwareNovagCitrineConnect "Conectar Novag" 0 {Conectar Novag}
+menuText S ToolsConnectHardwareInputEngineConnect "Conectar motor de entrada" 0 {Conectar motor de entrada (e.d. DGT)}
 menuText S ToolsPInfo "Información del Jugador" 16 \
   {Abrir/actualizar la ventana de Información del Jugador}
 menuText S ToolsPlayerReport "Informe del jugador..." 3 \
@@ -276,24 +273,18 @@ menuText S OptionsMovesKey "Teclado Inteligente" 0 \
 con teclado}
 menuText S OptionsNumbers "Formato de números" 11 {Selecciona el formato de números}
 menuText S OptionsStartup "Inicio" 3 {Seleccionar ventanas a abrir al inicio}
-# ====== TODO To be translated ======
-menuText S OptionsTheme "Theme" 0 {Change look of interface}
+menuText S OptionsTheme "Tema" 0 {Cambiar vista del interfaz}
 menuText S OptionsWindows "Ventanas" 0 {Opciones de ventana}
 menuText S OptionsWindowsIconify "Autominimizar" 4 \
   {Minimiza todas las ventanas cuando la ventana principal es minimizada}
 menuText S OptionsWindowsRaise "Poner a la vista automáticamente" 0 \
   {Hace visibles ciertas ventanas (ej. barras de progreso) siempre que sean tapadas}
 menuText S OptionsSounds "Sonidos..." 2 {Configura el sonido del anuncio de las jugadas}
-# ====== TODO To be translated ======
-menuText S OptionsWindowsDock "Dock windows" 0 {Dock windows}
-# ====== TODO To be translated ======
-menuText S OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
-# ====== TODO To be translated ======
-menuText S OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
-# ====== TODO To be translated ======
-menuText S OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
-# ====== TODO To be translated ======
-menuText S OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
+menuText S OptionsWindowsDock "Ventanas en dique" 0 {Ventanas en dique}
+menuText S OptionsWindowsSaveLayout "Salvar disposición" 0 {Salvar disposición}
+menuText S OptionsWindowsRestoreLayout "Restaurar disposición" 0 {Restaurar disposición}
+menuText S OptionsWindowsShowGameInfo "Mostrar información de la partida" 0 {Mostrar información de la partida}
+menuText S OptionsWindowsAutoLoadLayout "Auto cargar primera disposición" 0 {Autocargar primera disposición al iniciar}
 menuText S OptionsToolbar "Barra de herramientas ventana principal" 9 \
   {Muestra/oculta la barra de herramientas de la ventana principal}
 menuText S OptionsECO "Cargar archivo ECO..." 7 \
@@ -538,8 +529,7 @@ translate S TreeTotal {TOTAL}
 translate S DoYouWantToSaveFirst {Quieres salvar primero}
 translate S AddToMask {Añadir a máscara}
 translate S RemoveFromMask {Elimina desde la máscara}
-# ====== TODO To be translated ======
-translate S AddThisMoveToMask {Add this move to Mask}
+translate S AddThisMoveToMask {Añadir este movimiento a la Máscara}
 translate S Nag {Código de regaño}
 translate S Marker {Marcador}
 translate S Include {Incluir}
@@ -673,10 +663,8 @@ translate S Informant+/- {Blancas tienen ventaja}
 translate S Informant+- {Blancas tienen una ventaja decisiva}
 translate S Informant++- {La partida es considerada ganada}
 translate S Book {Libro}
-# ====== TODO To be translated ======
-translate S OtherBookMoves {Opponent's book}
-# ====== TODO To be translated ======
-translate S OtherBookMovesTooltip {Moves to which the opponent has a reply}
+translate S OtherBookMoves {Otros movimientos del libro}
+translate S OtherBookMovesTooltip {Movimientos para los que el oponente tiene una respuesta}
 
 # Analysis Engine open dialog:
 translate S EngineList {Lista de Motores de Análisis}
@@ -1070,7 +1058,7 @@ Puedes hacer fácilmente escribible la base de datos otra vez cerrándola y abrién
 ¿Realmente quieres hacer que esta base de datos sea de sólo lectura?}
 
 # Clear game dialog:
-translate S ClearGameDialog {Esta partida a sido cambiada.
+translate S ClearGameDialog {Esta partida ha sido cambiada.
 
 ¿Realmente quieres continuar y eliminar los cambios hechos en ella?
 }
@@ -1554,51 +1542,30 @@ translate S CCNextBtn {Ir a partida siguiente}
 translate S CCSendBtn {Enviar movimiento}
 translate S CCEmptyBtn {Correos entrante y saliente vacios}
 translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda general pulse F1!}
-# ====== TODO To be translated ======
-translate S ExtHWConfigConnection {Configure external hardware}
-# ====== TODO To be translated ======
-translate S ExtHWPort {Port}
-# ====== TODO To be translated ======
-translate S ExtHWEngineCmd {Engine command}
-# ====== TODO To be translated ======
-translate S ExtHWEngineParam {Engine parameter}
-# ====== TODO To be translated ======
-translate S ExtHWShowButton {Show button}
-# ====== TODO To be translated ======
+translate S ExtHWConfigConnection {Configurar hardware externo}
+translate S ExtHWPort {Puerto}
+translate S ExtHWEngineCmd {Comando del motor}
+translate S ExtHWEngineParam {Parámetro del motor}
+translate S ExtHWShowButton {Mostrar botón}
 translate S ExtHWHardware {Hardware}
-# ====== TODO To be translated ======
 translate S ExtHWNovag {Novag Citrine}
-# ====== TODO To be translated ======
-translate S ExtHWInputEngine {Input Engine}
-# ====== TODO To be translated ======
-translate S ExtHWNoBoard {No board}
-# ====== TODO To be translated ======
-translate S IEConsole {Input Engine Console}
-# ====== TODO To be translated ======
-translate S IESending {Moves sent for}
-# ====== TODO To be translated ======
-translate S IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate S IERotate  {Rotate}
-# ====== TODO To be translated ======
-translate S IEUnableToStart {Unable to start Input Engine:}
+translate S ExtHWInputEngine {Motor de entrada (Input Engine)}
+translate S ExtHWNoBoard {Sin tablero}
+translate S IEConsole {Consola de entrada del motor}
+translate S IESending {Movimientos enviados por}
+translate S IESynchronise {Sincronizar}
+translate S IERotate  {Rotar}
+translate S IEUnableToStart {Imposible empezar con el motor de entrada:}
 translate S DoneWithPosition {Hecho con la posición}
-# ====== TODO To be translated ======
-translate S Board {Board}
-# ====== TODO To be translated ======
-translate S showGameInfo {Show game info}
-# ====== TODO To be translated ======
-translate S autoResizeBoard {Automatic resize of board}
-# ====== TODO To be translated ======
-translate S DockTop {Move to top}
-# ====== TODO To be translated ======
-translate S DockBottom {Move to bottom}
-# ====== TODO To be translated ======
-translate S DockLeft {Move to left}
-# ====== TODO To be translated ======
-translate S DockRight {Move to right}
-# ====== TODO To be translated ======
-translate S Undock {Undock}
+translate S Board {Tablero}
+translate S showGameInfo {Mostrar información de la partida}
+translate S autoResizeBoard {Tamaño automático del tablero}
+translate S DockTop {Mover arriba}
+translate S DockBottom {Mover abajo}
+translate S DockLeft {Mover a la izquierda}
+translate S DockRight {Mover a la derecha}
+translate S Undock {Ventana flotante}
+
 }
 # end of spanish.tcl
 
