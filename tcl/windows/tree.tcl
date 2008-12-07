@@ -72,6 +72,7 @@ proc ::tree::make { { baseNumber -1 } } {
   
   ::createToplevel .treeWin$baseNumber
   setWinLocation $w
+  setWinSize $w
   
   # Set the tree window title now:
   ::setTitle $w "Scid: [tr WindowsTree] $baseNumber [file tail [sc_base filename $baseNumber] ]"
