@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.28 2008/12/03 17:14:34 arwagner Exp $
+### $Id: correspondence.tcl,v 1.29 2008/12/07 16:44:41 arwagner Exp $
 ###
-### Last change: <Sat, 2008/11/22 20:49:44 arwagner ingata>
+### Last change: <Sun, 2008/12/07 10:23:44 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1134,6 +1134,10 @@ namespace eval CorrespondenceChess {
 	set CorrSlot         -1
 	set LastProcessed    -1
 
+	# Hook up with SchemingMinds Game Explorer Database
+	set GEURL            "http://schemingmind.com/gameexplorer.aspx?epd="
+	set currentFEN       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
 	# current number in game list
 	set num              0
 
@@ -1330,7 +1334,8 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::bccaddr        \
 							::CorrespondenceChess::mailermode     \
 							::CorrespondenceChess::attache        \
-							::CorrespondenceChess::subject } {
+							::CorrespondenceChess::subject        \
+							::CorrespondenceChess::GEURL } {
 				puts $optionF "set $i [list [set $i]]"
 			}
 			if {$::CorrespondenceChess::XfccInternal < 0}  {
@@ -1485,6 +1490,14 @@ namespace eval CorrespondenceChess {
 
 		bind $w <F1>   { helpWindow Correspondence}
 		bind $w "?"    { helpWindow CCIcons}
+
+		# Call the Game Explorer (or any other web application that
+		# allows a FEN to be passed)
+		bind $w "g"    {
+			set ::CorrespondenceChess::currentFEN [sc_pos fen]
+			set URL "$::CorrespondenceChess::GEURL$::CorrespondenceChess::currentFEN"
+			openURL $URL
+		}
 	}
 
 	#--------------------------------------------------------------------------
@@ -1646,8 +1659,11 @@ namespace eval CorrespondenceChess {
 		# to be passed to the ProcessServerResult mascaraded to prevent
 		# from interpretation. See also Scids gamelist.
 		foreach tag {id toMove event site white black clockW clockB var feature} {
-			bind $w.bottom.$tag <Button-1> \
-				"::CorrespondenceChess::SetSelection %x %y; ::CorrespondenceChess::ProcessServerResult \$num; break"
+			bind $w.bottom.$tag <Button-1> {
+				::CorrespondenceChess::SetSelection %x %y
+				::CorrespondenceChess::ProcessServerResult $num
+				set ::CorrespondenceChess::currentFEN [sc_pos fen]
+				break }
 			# lock the area from changes
 			$w.bottom.$tag configure -state disable
 		}
