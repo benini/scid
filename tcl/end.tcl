@@ -1881,8 +1881,6 @@ if { $::docking::USE_DOCKING } {
     ::docking::layout_restore 1
   }
   
-      # button .nb.menuplus -image bluecross -width 6 -height 6
-      # place .nb.menuplus -x 0 -y 0
 }
 
 ### End of file: end.tcl

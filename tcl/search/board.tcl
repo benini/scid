@@ -26,17 +26,13 @@ proc ::search::board {} {
   bind $w <Return> "$w.b.search invoke"
   bind $w <F1> { helpWindow Searches Board }
   
-  label $w.type -textvar ::tr(SearchType) -font font_Bold
-  pack $w.type -side top
-  pack [frame $w.g] -side top -fill x
-  radiobutton $w.g.exact -textvar ::tr(SearchBoardExact) \
-      -variable sBoardSearchType -value Exact
-  radiobutton $w.g.pawns -textvar ::tr(SearchBoardPawns) \
-      -variable sBoardSearchType -value Pawns
-  radiobutton $w.g.files -textvar ::tr(SearchBoardFiles) \
-      -variable sBoardSearchType -value Fyles
-  radiobutton $w.g.material -textvar ::tr(SearchBoardAny) \
-      -variable sBoardSearchType -value Material
+  ttk::label $w.type -textvar ::tr(SearchType) -font font_Bold -anchor center
+  pack $w.type -side top -expand 1 -fill x
+  pack [ttk::frame $w.g] -side top -fill x
+  ttk::radiobutton $w.g.exact -textvar ::tr(SearchBoardExact) -variable sBoardSearchType -value Exact
+  ttk::radiobutton $w.g.pawns -textvar ::tr(SearchBoardPawns) -variable sBoardSearchType -value Pawns
+  ttk::radiobutton $w.g.files -textvar ::tr(SearchBoardFiles) -variable sBoardSearchType -value Fyles
+  ttk::radiobutton $w.g.material -textvar ::tr(SearchBoardAny) -variable sBoardSearchType -value Material
   set row 0
   foreach i {exact pawns files material} {
     grid $w.g.$i -row $row -column 0 -sticky w
@@ -49,19 +45,18 @@ proc ::search::board {} {
   
   ### Progress bar:
   
-  canvas $w.progress -height 20 -width 300 -bg white -relief solid -border 1
-  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
+  ttk::frame $w.fprogress
+  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
+  $w.fprogress.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
+  pack $w.fprogress.progress -side top -anchor center -expand 1 -pady 2
   
-  frame $w.b2
-  pack $w.b2 -side top
-  frame $w.b
+  ttk::frame $w.b2
+  pack $w.b2 -side top -fill x
+  ttk::frame $w.b
   pack $w.b -side top -fill x
-  checkbutton $w.b2.vars -textvar ::tr(LookInVars) -padx 10 -pady 5 \
-      -onvalue 1 -offvalue 0 -variable searchInVars
-  checkbutton $w.b2.flip -textvar ::tr(IgnoreColors) -padx 10 -pady 5 \
-      -onvalue 1 -offvalue 0 -variable sBoardIgnoreCols
+  ttk::checkbutton $w.b2.vars -textvar ::tr(LookInVars) -onvalue 1 -offvalue 0 -variable searchInVars 
+  ttk::checkbutton $w.b2.flip -textvar ::tr(IgnoreColors) -onvalue 1 -offvalue 0 -variable sBoardIgnoreCols 
   
   dialogbutton $w.b.stop -textvar ::tr(Stop) -command sc_progressBar
   $w.b.stop configure -state disabled
@@ -70,7 +65,7 @@ proc ::search::board {} {
     busyCursor .
     .sb.b.stop configure -state normal
     grab .sb.b.stop
-    sc_progressBar .sb.progress bar 301 21 time
+    sc_progressBar .sb.fprogress.progress bar 301 21 time
     set str [sc_search board \
         $::search::filter::operation \
         $sBoardSearchType $searchInVars $sBoardIgnoreCols]
@@ -89,8 +84,8 @@ proc ::search::board {} {
   dialogbutton $w.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.b2.vars $w.b2.flip -side left -pady 2 -padx 5
   packbuttons right $w.b.cancel .sb.b.search .sb.b.stop
-  pack $w.progress -side top -pady 2
-  label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
+  pack $w.fprogress -side top -fill x
+  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
   wm resizable $w 0 0
   standardShortcuts $w

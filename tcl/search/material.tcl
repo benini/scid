@@ -55,14 +55,11 @@ trace variable pMax w checkPieceCounts
 proc makeBoolMenu {w varName} {
   upvar #0 $varName var
   if {![info exists var]} { set var "Yes" }
-  menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
-      -relief raised -bd 2 -highlightthickness 2 -anchor w -image ""
+  ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -relief raised -bd 2 -highlightthickness 2 -indicatoron 0 -anchor w
   menu $w.menu -tearoff 0
-  $w.menu add radiobutton -label Yes -image ::rep::_tick \
-      -variable $varName -value Yes \
+  $w.menu add radiobutton -label Yes -image ::rep::_tick -variable $varName -value Yes \
       -command "$w configure -image ::rep::_tick" ;# -hidemargin 1
-  $w.menu add radiobutton -label No -image ::rep::_cross \
-      -variable $varName -value No \
+  $w.menu add radiobutton -label No -image ::rep::_cross -variable $varName -value No \
       -command "$w configure -image ::rep::_cross" ;# -hidemargin 1
   return $w.menu
 }
@@ -71,8 +68,7 @@ proc makePieceMenu {w varName} {
   global dark
   upvar #0 $varName var
   if {![info exists var]} { set var "?" }
-  menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
-      -relief raised -bd 2 -highlightthickness 2 -anchor w -image ""
+  ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -indicatoron 0 -relief raised -bd 2 -highlightthickness 2 -anchor w
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label " ? " -variable $varName -value "?" \
       -command "$w configure -image e20" ;# -hidemargin 1
@@ -187,49 +183,45 @@ proc ::search::material {} {
   bind $w <Escape> "$w.b3.cancel invoke"
   bind $w <Return> "$w.b3.search invoke"
   
-  pack [frame $w.mp] -side top
-  pack [frame $w.mp.material] -side left
+  pack [ttk::frame $w.mp] -side top
+  pack [ttk::frame $w.mp.material] -side left
   
   label $w.mp.material.title -font font_Bold -textvar ::tr(Material:)
   pack $w.mp.material.title -side top -pady 3
   
   foreach piece {q r b n m p} {
-    frame $w.mp.material.$piece
-    pack $w.mp.material.$piece -side top ;# -padx 2
+    ttk::frame $w.mp.material.$piece
+    pack $w.mp.material.$piece -side top
   }
   
   foreach i {q r b n m p} {
     set f $w.mp.material.$i
-    button $f.w0 -text "0" -command "set pMin(w$i) 0; set pMax(w$i) 0"
-    button $f.w1 -text "1" -command "set pMin(w$i) 1; set pMax(w$i) 1"
-    button $f.w2 -text "2" -command "set pMin(w$i) 2; set pMax(w$i) 2"
-    button $f.wa -text "0+" -command "set pMin(w$i) 0; set pMax(w$i) 2"
-    button $f.w1p -text "1+" -command "set pMin(w$i) 1; set pMax(w$i) 2"
-    label $f.wi -image w${i}20 -font font_Small
-    label $f.wto -text "-" -font font_Small -padx 0
-    entry $f.wmin -width 2 -relief sunken -textvar pMin(w$i) -font font_Small \
-        -justify right
-    entry $f.wmax -width 2 -relief sunken -textvar pMax(w$i) -font font_Small \
-        -justify right
+    ttk::button $f.w0 -text "0" -command "set pMin(w$i) 0; set pMax(w$i) 0"
+    ttk::button $f.w1 -text "1" -command "set pMin(w$i) 1; set pMax(w$i) 1"
+    ttk::button $f.w2 -text "2" -command "set pMin(w$i) 2; set pMax(w$i) 2"
+    ttk::button $f.wa -text "0+" -command "set pMin(w$i) 0; set pMax(w$i) 2"
+    ttk::button $f.w1p -text "1+" -command "set pMin(w$i) 1; set pMax(w$i) 2"
+    ttk::label $f.wi -image w${i}20 -font font_Small
+    ttk::label $f.wto -text "-" -font font_Small -padding 0
+    ttk::entry $f.wmin -width 2 -textvar pMin(w$i) -font font_Small -justify right ;#-relief sunken
+    ttk::entry $f.wmax -width 2 -textvar pMax(w$i) -font font_Small -justify right ;#-relief sunken
     pack $f.w0 $f.w1 $f.w2 $f.wa $f.w1p $f.wi $f.wmin $f.wto $f.wmax -side left -pady 1
     
-    pack [frame $f.space -width 20] -side left
-    button $f.b0 -text "0" -command "set pMin(b$i) 0; set pMax(b$i) 0"
-    button $f.b1 -text "1" -command "set pMin(b$i) 1; set pMax(b$i) 1"
-    button $f.b2 -text "2" -command "set pMin(b$i) 2; set pMax(b$i) 2"
-    button $f.ba -text "0+" -command "set pMin(b$i) 0; set pMax(b$i) 2"
-    button $f.b1p -text "1+" -command "set pMin(b$i) 1; set pMax(b$i) 2"
-    label $f.bi -image b${i}20 -font font_Small
-    label $f.bto -text "-" -font font_Small
-    entry $f.bmin -width 2 -relief sunken -textvar pMin(b$i) -font font_Small \
-        -justify right
-    entry $f.bmax -width 2 -relief sunken -textvar pMax(b$i) -font font_Small \
-        -justify right
+    pack [ttk::frame $f.space -width 20] -side left
+    ttk::button $f.b0 -text "0" -command "set pMin(b$i) 0; set pMax(b$i) 0"
+    ttk::button $f.b1 -text "1" -command "set pMin(b$i) 1; set pMax(b$i) 1"
+    ttk::button $f.b2 -text "2" -command "set pMin(b$i) 2; set pMax(b$i) 2"
+    ttk::button $f.ba -text "0+" -command "set pMin(b$i) 0; set pMax(b$i) 2"
+    ttk::button $f.b1p -text "1+" -command "set pMin(b$i) 1; set pMax(b$i) 2"
+    ttk::label $f.bi -image b${i}20 -font font_Small
+    ttk::label $f.bto -text "-" -font font_Small
+    ttk::entry $f.bmin -width 2 -textvar pMin(b$i) -font font_Small -justify right ;#-relief sunken
+    ttk::entry $f.bmax -width 2 -textvar pMax(b$i) -font font_Small -justify right ;#-relief sunken
     pack $f.b0 $f.b1 $f.b2 $f.ba $f.b1p $f.bi $f.bmin $f.bto $f.bmax -side left -pady 1
     
     foreach b {0 1 2 a 1p} {
-      $f.w$b configure -width 2 -pady 0 -padx 1 -takefocus 0 -font $small
-      $f.b$b configure -width 2 -pady 0 -padx 1 -takefocus 0 -font $small
+      $f.w$b configure -width 2 -takefocus 0 -style Pad0.Small.TButton ;# -font $small -pady 0 -padx 1
+      $f.b$b configure -width 2 -takefocus 0 -style Pad0.Small.TButton ;# -font $small -pady 0 -padx 1
     }
     foreach widget {wmin wmax bmin bmax} {
       bindFocusColors $f.$widget
@@ -250,11 +242,11 @@ proc ::search::material {} {
   
   # Buttons that manipulate material settings:
   set f $w.mp.material.b1
-  pack [frame $f] -side top -ipady 2
+  pack [ttk::frame $f] -side top -ipady 2
   
-  dialogbuttonsmall $f.zero -textvar ::tr(Zero) -command ::search::material::zero
-  dialogbuttonsmall $f.reset -textvar ::tr(Any) -command ::search::material::any
-  dialogbuttonsmall $f.current -textvar ::tr(CurrentBoard) -command {
+  dialogbuttonsmall $f.zero [ list -textvar ::tr(Zero) -command ::search::material::zero] Pad0.Small.TButton
+  dialogbuttonsmall $f.reset [ list -textvar ::tr(Any) -command ::search::material::any ] Pad0.Small.TButton
+  dialogbuttonsmall $f.current [ list -textvar ::tr(CurrentBoard) -command {
     ::search::material::zero
     set bd [sc_pos board]
     for {set i 0} {$i < 64} {incr i} {
@@ -263,10 +255,9 @@ proc ::search::material {} {
         incr pMin($piece); set pMax($piece) $pMin($piece)
       }
     }
-  }
+  } ] Pad0.Small.TButton
   
-  menubutton $f.common -textvar ::tr(CommonEndings...) \
-      -menu $f.common.m -relief raised -font $small
+  ttk::menubutton $f.common -textvar ::tr(CommonEndings...) -menu $f.common.m -style pad0.TMenubutton ;# -font $small -relief raised
   menu $f.common.m -font $small
   set m $f.common.m
   $m add command -label [tr EndingPawns] -command {
@@ -345,35 +336,28 @@ proc ::search::material {} {
   #}
   
   set f $w.mp.material.mdiff
-  pack [frame $f] -side top
-  label $f.label -font font_SmallBold -textvar ::tr(MaterialDiff:)
-  entry $f.min -width 3 -relief sunken -textvar minMatDiff -font $small \
-      -justify right
+  pack [ttk::frame $f] -side top
+  ttk::label $f.label -font font_SmallBold -textvar ::tr(MaterialDiff:)
+  ttk::entry $f.min -width 3 -textvar minMatDiff -font $small -justify right ;#-relief sunken
   bindFocusColors $f.min
-  label $f.sep -text "-" -font $small
-  entry $f.max -width 3 -relief sunken -textvar maxMatDiff -font $small \
-      -justify right
+  ttk::label $f.sep -text "-" -font $small
+  ttk::entry $f.max -width 3 -textvar maxMatDiff -font $small -justify right ;#-relief sunken
   bindFocusColors $f.max
-  label $f.sep2 -text " " -font $small
-  button $f.any -textvar ::tr(Any) -font $small -padx 1 -pady 1 \
-      -command {set minMatDiff -40; set maxMatDiff +40}
-  button $f.w1 -text " + " -font $small -padx 1 -pady 1 \
-      -command {set minMatDiff +1; set maxMatDiff +40}
-  button $f.equal -text " = " -font $small -padx 1 -pady 1 \
-      -command {set minMatDiff 0; set maxMatDiff 0}
-  button $f.b1 -text " - " -font $small -padx 1 -pady 1 \
-      -command {set minMatDiff -40; set maxMatDiff -1}
+  ttk::label $f.sep2 -text " " -font $small
+  ttk::button $f.any -textvar ::tr(Any) -style Pad0.Small.TButton -command {set minMatDiff -40; set maxMatDiff +40} -width 0
+  ttk::button $f.w1 -text " + " -style Pad0.Small.TButton -command {set minMatDiff +1; set maxMatDiff +40}  -width 0
+  ttk::button $f.equal -text " = " -style Pad0.Small.TButton -command {set minMatDiff 0; set maxMatDiff 0}  -width 0
+  ttk::button $f.b1 -text " - " -style Pad0.Small.TButton -command {set minMatDiff -40; set maxMatDiff -1}  -width 0
   pack $f.label $f.min $f.sep $f.max -side left
-  pack $f.sep2 $f.any $f.w1 $f.equal $f.b1 -side left
-  set f [frame $w.mp.material.mdiff2]
+  pack $f.sep2 $f.any $f.w1 $f.equal $f.b1 -side left -padx 1 -pady 1
+  set f [ttk::frame $w.mp.material.mdiff2]
   pack $f -side top
-  label $f.explan -font $small \
-      -text "($::tr(MaterialDiff) = $::tr(White) - $::tr(Black); Q=9 R=5 B=3 N=3 P=1)"
+  ttk::label $f.explan -font $small -text "($::tr(MaterialDiff) = $::tr(White) - $::tr(Black); Q=9 R=5 B=3 N=3 P=1)"
   pack $f.explan -side top
   
   addVerticalRule $w.mp
   
-  set f [frame $w.mp.patt]
+  set f [ttk::frame $w.mp.patt]
   pack $f -side top
   
   #dialogbutton $w.pattl -font font_Bold -textvar ::tr(Patterns:) -command {
@@ -385,18 +369,18 @@ proc ::search::material {} {
   #    pack .sm.patt .sm.b2 -after .sm.pattl
   #  }
   #}
-  label $w.mp.patt.title -textvar ::tr(Patterns:) -font font_Bold
+  ttk::label $w.mp.patt.title -textvar ::tr(Patterns:) -font font_Bold
   pack $w.mp.patt.title -side top -pady 3
   
-  pack [frame $f.grid] -side top
+  pack [ttk::frame $f.grid] -side top
   for { set i 1 } { $i <= $nPatterns } { incr i } {
     makeBoolMenu $f.grid.b$i pattBool($i)
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
     tk_optionMenu $f.grid.f$i pattFyle($i) "?" a b c d e f g h
     tk_optionMenu $f.grid.r$i pattRank($i) "?" 1 2 3 4 5 6 7 8
-    $f.grid.b$i configure -indicatoron 0 ;# -width 4
-    $f.grid.f$i configure -indicatoron 0 -width 1 -pady 1
-    $f.grid.r$i configure -indicatoron 0 -width 1 -pady 1
+    $f.grid.b$i configure -style pad0.TMenubutton ;# -indicatoron 0
+    $f.grid.f$i configure -width 1 -indicatoron 0 -pady 1
+    $f.grid.r$i configure -width 1 -indicatoron 0 -pady 1
     set column [expr {5 * (($i - 1) / 5)} ]
     set row [expr {($i - 1) % 5} ]
     grid $f.grid.b$i -row $row -column $column -padx 0; incr column
@@ -413,10 +397,9 @@ proc ::search::material {} {
   
   ### Buttons that manipulate patterns:
   set f .sm.mp.patt.b2
-  frame $f
+  ttk::frame $f
   dialogbutton $f.clearPat -textvar ::tr(Clear) -command clearPatterns
-  menubutton $f.common -textvar ::tr(CommonPatterns...) \
-      -menu $f.common.m -relief raised
+  ttk::menubutton $f.common -textvar ::tr(CommonPatterns...) -menu $f.common.m
   menu $f.common.m -font $small
   $f.common.m add command -label [tr PatternWhiteIQP] -command {
     if {$pMin(wp) < 1} { set pMin(wp) 1 }
@@ -501,29 +484,26 @@ proc ::search::material {} {
   
   set f $w.bishops
   pack [frame $f] -side top
-  label $f.t1 -text "1" -font font_Small
-  label $f.t2 -image wb20
-  label $f.t3 -text "- 1" -font font_Small
-  label $f.t4 -image bb20
-  label $f.t5 -textvar ::tr(squares:) -font font_Small
-  radiobutton $f.same -textvar ::tr(SameColor) -variable oppBishops \
-      -value "Same" -padx 5 -pady 4 -font font_Small
-  radiobutton $f.opp -textvar ::tr(OppColor) -variable oppBishops \
-      -value "Opposite" -padx 5 -pady 4 -font font_Small
-  radiobutton $f.either -textvar ::tr(Either) -variable oppBishops \
-      -value "Either" -padx 5 -pady 4 -font font_Small
+  ttk::label $f.t1 -text "1" -font font_Small
+  ttk::label $f.t2 -image wb20
+  ttk::label $f.t3 -text "- 1" -font font_Small
+  ttk::label $f.t4 -image bb20
+  ttk::label $f.t5 -textvar ::tr(squares:) -font font_Small
+  ttk::radiobutton $f.same -textvar ::tr(SameColor) -variable oppBishops -value "Same" -style Small.TRadiobutton ;# -padx 5 -pady 4
+  ttk::radiobutton $f.opp -textvar ::tr(OppColor) -variable oppBishops -value "Opposite" -style Small.TRadiobutton ;# -padx 5 -pady 4
+  ttk::radiobutton $f.either -textvar ::tr(Either) -variable oppBishops -value "Either" -style Small.TRadiobutton ;# -padx 5 -pady 4
   foreach i {t1 t2 t3 t4 t5 same opp either} { pack $f.$i -side left }
   
   set f $w.move
-  pack [frame $f] -side top -ipady 5
-  label $f.fromlab -textvar ::tr(MoveNumberRange:)
-  entry $f.from -width 4 -relief sunken -textvar minMoveNum -justify right
-  label $f.tolab -text "-"
-  entry $f.to -width 4 -relief sunken -textvar maxMoveNum -justify right
-  label $f.space -text "  "
-  label $f.label1 -textvar ::tr(MatchForAtLeast)
-  entry $f.hmoves -width 3 -relief sunken -textvar minHalfMoves -justify right
-  label $f.label2 -textvar ::tr(HalfMoves)
+  pack [ttk::frame $f] -side top -ipady 5
+  ttk::label $f.fromlab -textvar ::tr(MoveNumberRange:)
+  ttk::entry $f.from -width 4 -textvar minMoveNum -justify right
+  ttk::label $f.tolab -text "-"
+  ttk::entry $f.to -width 4 -textvar maxMoveNum -justify right
+  ttk::label $f.space -text "  "
+  ttk::label $f.label1 -textvar ::tr(MatchForAtLeast)
+  ttk::entry $f.hmoves -width 3 -textvar minHalfMoves -justify right
+  ttk::label $f.label2 -textvar ::tr(HalfMoves)
   bindFocusColors $f.from
   bindFocusColors $f.to
   bindFocusColors $f.hmoves
@@ -538,15 +518,13 @@ proc ::search::material {} {
   
   canvas $w.progress -height 20 -width 300 -bg white -relief solid -border 1
   $w.progress create rectangle 0 0 0 0 -outline blue -fill blue -tags bar
-  $w.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
+  $w.progress create text 295 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   
   ### Last of all, the buttons frame:
   
   set f $w.b3
-  pack [frame $f] -side top -ipady 5 -fill x
-  checkbutton $f.ignorecol -textvar ::tr(IgnoreColors) \
-      -variable ignoreColors -padx 4
+  pack [ttk::frame $f] -side top -ipady 5 -fill x
+  ttk::checkbutton $f.ignorecol -textvar ::tr(IgnoreColors) -variable ignoreColors ;# -padx 4
   
   dialogbutton $f.save -textvar ::tr(Save...) -command ::search::material::save
   

@@ -57,7 +57,8 @@ namespace eval pgn {
     bind $w <Configure> "recordWinSize $w"
     
     menu $w.menu
-    $w configure -menu $w.menu
+    ::setMenu $w $w.menu
+    
     $w.menu add cascade -label PgnFile -menu $w.menu.file -underline 0
     $w.menu add cascade -label PgnOpt -menu $w.menu.opt -underline 0
     $w.menu add cascade -label PgnColor -menu $w.menu.color -underline 0

@@ -100,8 +100,8 @@ proc dialogbutton {w args} {
   return retval
 }
 
-proc dialogbuttonsmall {w args} {
-  set retval [eval ttk::button $w -style Small.TButton $args]
+proc dialogbuttonsmall {w args {style "Small.TButton"} } {
+  set retval [eval ttk::button $w -style $style $args]
   set length [string length [$w cget -text]]
   if {$length < 7} { set length 7 }
   $w configure -width $length
@@ -271,7 +271,7 @@ proc addVerticalRule {w {xpadding 5} {relief sunken}} {
   global vertRuleCounter
   
     ttk::separator $w.line$vertRuleCounter -orient vertical
-    pack $w.line$vertRuleCounter -fill y -padx $xpadding -side left
+    pack $w.line$vertRuleCounter -fill y -side left ;# -padx $xpadding
   
   # set f [ ttk::frame $w.line$vertRuleCounter -width 2 -borderwidth 2 -relief $relief ]
   # pack $f -fill y -padx $xpadding -side left

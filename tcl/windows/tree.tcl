@@ -98,7 +98,7 @@ proc ::tree::make { { baseNumber -1 } } {
   standardShortcuts $w
   
   menu $w.menu
-  $w configure -menu $w.menu
+  ::setMenu $w $w.menu
   $w.menu add cascade -label TreeFile -menu $w.menu.file
   $w.menu add cascade -label TreeMask -menu $w.menu.mask
   $w.menu add cascade -label TreeSort -menu $w.menu.sort
@@ -1194,10 +1194,10 @@ proc ::tree::toggleRefresh { baseNumber } {
   set b .treeWin$baseNumber.buttons.bStartStop
   
   if {$tree(autorefresh$baseNumber)} {
-    $b configure -image engine_off 
+    $b configure -image engine_off
     set tree(autorefresh$baseNumber) 0
   } else  {
-    $b configure -image engine_on 
+    $b configure -image engine_on
     set tree(autorefresh$baseNumber) 1
     ::tree::refresh $baseNumber
   }

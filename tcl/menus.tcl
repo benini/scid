@@ -100,7 +100,12 @@ bind Label <Any-Leave> "+statusBarRestore %W"
 option add *Menu*TearOff 0
 
 menu .menu
-.main configure -menu .menu
+
+if { $::docking::USE_DOCKING } {
+  . configure -menu .menu
+} else  {
+  .main configure -menu .menu
+}
 
 .menu add cascade -label File -menu .menu.file
 .menu add cascade -label Edit -menu .menu.edit

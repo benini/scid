@@ -63,24 +63,25 @@ proc ::search::filter::negate {} {
 #   to be chosen.
 #   The default value for the first search is RESET:
 proc ::search::addFilterOpFrame {w {small 0}} {
-  frame $w.filterop
+  ttk::frame $w.filterop
   set f $w.filterop
-  pack $f -side top
-  set regular font_Regular
-  set bold font_Bold
+  pack $f -side top -fill x
+  
+  set regular Regular.TRadiobutton
+  set bold Bold.TRadiobutton
   if {$small} {
-    set regular font_Small
-    set bold font_SmallBold
+    set regular Small.TRadiobutton
+    set bold SmallBold.TRadiobutton
   }
-  label $f.title -font $bold -textvar ::tr(FilterOperation)
-  radiobutton $f.and -textvar ::tr(FilterAnd) -variable ::search::filter::operation \
-    -value 0 -pady 5 -padx 5 -font $regular
-  radiobutton $f.or -textvar ::tr(FilterOr) -variable ::search::filter::operation \
-    -value 1 -pady 5 -padx 5 -font $regular
-  radiobutton $f.ignore -textvar ::tr(FilterIgnore) -variable ::search::filter::operation \
-    -value 2 -pady 5 -padx 5 -font $regular
+  
+  ttk::label $f.title -font $bold -textvar ::tr(FilterOperation) -anchor center
+  ttk::frame $f.b
+  ttk::radiobutton $f.b.and -textvar ::tr(FilterAnd) -variable ::search::filter::operation -value 0 -style $regular 
+  ttk::radiobutton $f.b.or -textvar ::tr(FilterOr) -variable ::search::filter::operation -value 1 -style $regular
+  ttk::radiobutton $f.b.ignore -textvar ::tr(FilterIgnore) -variable ::search::filter::operation -value 2 -style $regular
   pack $f.title -side top
-  pack $f.and $f.or $f.ignore -side left
+  pack $f.b -anchor center -side top
+  pack $f.b.and $f.b.or $f.b.ignore -side left -pady 5 -padx 5
 }
 
 
@@ -103,12 +104,12 @@ proc ::search::Config {{state ""}} {
 proc ::search::usefile {} {
   set ftype { { "Scid SearchOption files" {".sso"} } }
   set ::fName [tk_getOpenFile -initialdir $::initialDir(base) \
-                 -filetypes $ftype -title "Select a SearchOptions file"]
+      -filetypes $ftype -title "Select a SearchOptions file"]
   if {$::fName == ""} { return }
-
+  
   if {[catch {uplevel "#0" {source $::fName} } ]} {
     tk_messageBox -title "Scid: Error reading file" -type ok -icon warning \
-                -message "Unable to open or read SearchOptions file: $fName"
+        -message "Unable to open or read SearchOptions file: $fName"
   } else {
     switch -- $::searchType {
       "Material" { ::search::material }
@@ -120,7 +121,7 @@ proc ::search::usefile {} {
 
 # will go to the first game found, except if the Tree of current base is opened (of there will be filter collision)
 proc ::search::loadFirstGame {} {
-    set w ".treeWin[sc_base current]"    
-    if {[winfo exists $w]} { return }    
-    ::game::Load [sc_filter first]
+  set w ".treeWin[sc_base current]"
+  if {[winfo exists $w]} { return }
+  ::game::Load [sc_filter first]
 }

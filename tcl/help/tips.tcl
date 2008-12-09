@@ -17,9 +17,9 @@ proc ::tip::show {{n -1}} {
     pack $w.ybar -side right -fill y
     pack $w.text -side left -fill both -expand 1
     ttk::checkbutton $w.b.start -textvar ::tr(TipAtStartup) -variable startup(tip) -style Small.TCheckbutton
-    dialogbuttonsmall $w.b.prev -text "<"
-    dialogbuttonsmall $w.b.next -text ">" 
-    dialogbuttonsmall $w.b.close -textvar ::tr(Close) -command "destroy $w"
+    dialogbuttonsmall $w.b.prev [list -text "<" ]
+    dialogbuttonsmall $w.b.next [list -text ">" ]
+    dialogbuttonsmall $w.b.close [list -textvar ::tr(Close) -command "destroy $w" ]
     pack $w.b.start -side left -padx 2
     packbuttons right $w.b.close $w.b.next $w.b.prev
 
@@ -53,10 +53,6 @@ proc ::tip::show {{n -1}} {
   $w.b.next configure -command "::tip::show $next"
   set tip "<center><b>$::tr(Tip) [expr $n + 1]:</b></center><br><br>"
   append tip [string trim [lindex $tiplist $n]]
-  if {$::hasEncoding  &&  $::langEncoding($language) != ""  &&  $::tcl_version <= 8.3} {
-    # Convert tip charset, e.g. from is08859-2 coding in Tcl/Tk 8.3:
-    # catch {set tip [encoding convertfrom $::langEncoding($language) $tip]}
-  }
   ::htext::display $w.text $tip "" 0
 }
 

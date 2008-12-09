@@ -738,6 +738,14 @@ proc createToplevel { w } {
   
 }
 ################################################################################
+# Sets the menu for a new window : in docked mode the menu is displayed by clicking on the tab of the notebook
+################################################################################
+proc setMenu { w m} {
+  if { ! $::docking::USE_DOCKING } {
+    $w configure -menu $m
+  }
+}
+################################################################################
 # In docked mode, resize board automatically
 ################################################################################
 proc resizeMainBoard {} {
@@ -1274,11 +1282,22 @@ set boardSize $newSize
 
 # Load theme
 ttk::style theme use $::lookTheme
+
 # Style definitions
 ttk::style configure Bold.TCheckbutton -font font_Bold
 ttk::style configure Small.TCheckbutton -font font_Small
+
 ttk::style configure Small.TButton -font font_Small
+ttk::style configure Bold.TButton -font font_Bold
+ttk::style configure Pad0.Small.TButton -padding 0
+
 ttk::style configure Small.TRadiobutton -font font_Small
+ttk::style configure Regular.TRadiobutton -font font_Regular
+ttk::style configure Bold.TRadiobutton -font font_Bold
+ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
+
+ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
+# ttk::style configure Small.TMenubutton -font font_Small
 
 # Check for old (single-directory) tablebase option:
 if {[info exists initialDir(tablebase)]} {

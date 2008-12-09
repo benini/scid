@@ -409,15 +409,20 @@ namespace eval ::scrolledframe {
 #     which is published under BSD license
 #
 ################################################################################
-image create photo bluecross -format gif -data {
-  R0lGODlhCgAKAIABAAAp+f///yH5BAEKAAEALAAAAAAKAAoAAAIRjI8IkLdtnlpU1ppk05nB
-  VgAAOw==
+image create photo bluetriangle -data {
+  R0lGODlhCAAIAKECADNBUEFYb////////yH5BAEKAAIALAAAAAAIAAgAAAINlI8pAe2wHjSs
+  JaayKgA7
 }
+# {R0lGODlhCAAIAIABAClc/////yH5BAEKAAEALAAAAAAIAAgAAAINjI+gcLvmFIzTtYdyAQA7}
 
 namespace eval docking {
-  
   # associates notebook to paned window
   variable tbs
+  
+  # keep tracks of active tab for each notebook
+  array set activeTab {}
+  # associates notebook with a boolean value indicating the tab has changed
+  array set changedTab {}
   
   variable tbcnt 0
   array set notebook_name {}
@@ -593,12 +598,20 @@ proc ::docking::start_motion {path} {
   if {$path!=$c_path} {
     set c_path [find_tbn $path]
   }
+}
+################################################################################
+proc ::docking::motion {path} {
+  variable c_path
+  if {$c_path==""} { return }
+  
   $c_path configure -cursor exchange
 }
-
 ################################################################################
-proc ::docking::end_motion {x y} {
+proc ::docking::end_motion {w x y} {
   variable c_path
+  
+  bind TNotebook <ButtonRelease-1> [namespace code {::docking::show_menu %W %X %Y}]
+  
   if {$c_path==""} { return }
   set path [winfo containing $x $y]
   $path configure -cursor {}
@@ -606,6 +619,9 @@ proc ::docking::end_motion {x y} {
   set t [find_tbn $path]
   if {$t!=""} {
     if {$t==$c_path} {
+      # we stayed on the same notebook, so display the menu
+      show_menu $w $x $y
+      
       if {[$c_path identify [expr $x-[winfo rootx $c_path]] [expr $y-[winfo rooty $c_path]]]!=""} {
         set c_path {}
         return
@@ -616,18 +632,95 @@ proc ::docking::end_motion {x y} {
     }
   }
   set c_path {}
+  
+  setTabStatus
+  
+}
+################################################################################
+proc ::docking::show_menu { path x y} {
+  variable c_path
+  if {[winfo exists .ctxtMenu]} {
+    destroy .ctxtMenu
+  }
+  
+  if {$path!=$c_path} {
+    set c_path [find_tbn $path]
+  }
+  
+  # display window's menu (workaround for windows where the menu
+  # of embedded toplevels is not displayed. The menu must be of the form $w.menu
+  
+  puts "show_menu active tab = $::docking::activeTab($c_path)"
+  
+  # if the tab has changed, don't display the menu at once (wait a second click)
+  if { $::docking::changedTab($c_path) == 1 } {
+    set ::docking::changedTab($c_path) 0
+  } else  {
+    # the tab was already active, show the menu
+    set f [$c_path select]
+    set m [getMenu $f]
+    if { [winfo exists $m]} {
+      puts "menu =$m"
+      tk_popup $m [winfo pointerx .] [winfo pointery .]
+    }
+  }
+  
+}
+################################################################################
+# returns the menu name of a toplevel window (must be in the form $w.menu)
+# f is the frame embedding the toplevel (.fdock$w)
+proc  ::docking::getMenu  {f} {
+  if { [scan $f ".fdock%s" tl] != 1 || $f == ".fdockmain"} {
+    return ""
+  }
+  return ".$tl.menu"
+}
+################################################################################
+# Toggles menu visibility
+# f is the frame embedding the toplevel (.fdock$w)
+proc ::docking::setMenuVisibility  { f show } {
+  
+  if { [scan $f ".fdock%s" tl] != 1 || $f == ".fdockmain"} {
+    return
+  }
+  set tl ".$tl"
+  
+  if { $show == "true" || $show == "1" } {
+    $tl configure -menu "$tl.menu"
+  } else  {
+    $tl configure -menu {}
+  }
+  
 }
 
 ################################################################################
-bind TNotebook <Button-1> +[namespace code {::docking::start_motion %W}]
-# bind TNotebook <B1-Motion> +[namespace code {motion %X %Y}]
-bind TNotebook <ButtonRelease-1> +[namespace code {::docking::end_motion %X %Y}]
+proc  ::docking::tabChanged  {path} {
+  update
+  puts "tabChanged $path select [$path select]"
+  if { [$path select] != $::docking::activeTab($path)} {
+    set ::docking::activeTab($path) [$path select]
+    set ::docking::changedTab($path) 1
+  }
+}
+
+################################################################################
+bind TNotebook <ButtonRelease-1> [namespace code {::docking::show_menu %W %X %Y} ]
+
+bind TNotebook <ButtonPress-1> +[namespace code {::docking::start_motion %W}]
+
+bind TNotebook <B1-Motion> [namespace code {
+  ::docking::motion %W
+  bind TNotebook <ButtonRelease-1> [namespace code {::docking::end_motion %W %X %Y}]
+} ]
+
 bind TNotebook <Escape> {
   if {[winfo exists .ctxtMenu]} {
     destroy .ctxtMenu
   }
 }
-bind TNotebook <ButtonPress-3> +[namespace code {::docking::ctx_menu %W}]
+
+bind TNotebook <ButtonPress-3> [namespace code {::docking::ctx_menu %W}]
+bind TNotebook <<NotebookTabChanged>> [namespace code {::docking::tabChanged %W}]
 
 ################################################################################
 #
@@ -646,8 +739,10 @@ proc ::docking::ctx_cmd {path anchor} {
   
   set tbn [add_tbn $path $anchor]
   move_tab $c_path $tbn
+  
   set c_path {}
-  return
+  
+  setTabStatus
 }
 ################################################################################
 proc ::docking::ctx_menu {w} {
@@ -685,6 +780,7 @@ proc ::docking::close {w} {
   
   destroy $tabid
   _cleanup_tabs $w
+  setTabStatus
 }
 ################################################################################
 proc ::docking::undock {srctab} {
@@ -692,6 +788,7 @@ proc ::docking::undock {srctab} {
   if {[llength [$srctab tabs]]==1 && [llength [array names tbs]]==1} { return }
   
   set f [$srctab select]
+  
   set name [$srctab tab $f -text]
   set o [$srctab tab $f]
   
@@ -699,23 +796,31 @@ proc ::docking::undock {srctab} {
   _cleanup_tabs $srctab
   
   wm manage $f
+  
+  setMenuVisibility $f true
+  
   catch {wm attributes $f -toolwindow 1}
   wm title $f $name
-  wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
+  
+  # Uncomment this code to dock windows that have been previously undocked
+  # wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
+  
   wm deiconify $f
   
   set ::docking::notebook_name($f) [list $srctab $o]
+  setTabStatus
 }
 
 ################################################################################
 proc ::docking::__dock {wnd} {
   variable tbs
+  
+  setMenuVisibility $wnd false
+  
   set name [wm title $wnd]
   wm withdraw $wnd
   wm forget $wnd
-  # try to find a notebook to place the window
-  # set d [$wnd.__notebook_name__ cget -text]
-  # destroy $wnd.__notebook_name__
+  
   set d  $::docking::notebook_name($wnd)
   
   set dsttab [lindex $d 0]
@@ -764,7 +869,15 @@ proc ::docking::add_tab {path anchor args} {
   
   set title $path
   eval [list $dsttab add $path] $args -text "$title"
+  setMenuMark $dsttab $path
   $dsttab select $path
+}
+################################################################################
+# display a blue triangle showing the tab has a menu associated
+proc ::docking::setMenuMark { nb tab} {
+  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] } {
+    $nb tab $tab -image bluetriangle -compound left
+  }
 }
 ################################################################################
 # Layout management
@@ -879,12 +992,17 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
   }
   
+  # force the selection of first tab
+  $nb select [ lindex [ $nb tabs] 0 ]
+  
   set ::docking::layout_dest_notebook ""
 }
 
 ################################################################################
 proc ::docking::layout_restore { slot } {
   variable tbcnt
+  variable tbs
+  bind TNotebook <<NotebookTabChanged>> {}
   
   # if no layout recorded, return
   if { $::docking::layout_list($slot) == {} } {
@@ -898,9 +1016,25 @@ proc ::docking::layout_restore { slot } {
   
   # set ::docking::tbs(.nb) .pw
   layout_restore_pw $::docking::layout_list($slot)
+  array set ::docking::activeTab {}
+  
+  setTabStatus
+  bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
   
 }
-
+################################################################################
+# for every notebook, keeps track of the last selected tab to see if the local menu can be popped up or not
+proc ::docking::setTabStatus { } {
+  variable tbs
+  array set ::docking::activeTab {}
+  array set ::docking::changedTab {}
+  
+  foreach nb [array names tbs] {
+    set ::docking::activeTab($nb) [$nb select]
+    set ::docking::changedTab($nb) 0
+  }
+  
+}
 ################################################################################
 # erase all mapped windows, except .main
 proc ::docking::closeAll {pw} {
@@ -939,8 +1073,8 @@ if {$::docking::USE_DOCKING} {
   .pw add [ttk::notebook .nb] -weight 1
   
   set docking::tbs(.nb) .pw
+  
 }
 
 createToplevel .main
-
-    
+::docking::setTabStatus
