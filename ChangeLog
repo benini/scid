@@ -659,6 +659,6 @@ scid-3.6.7
 	* New entry in "options -> windows" to show / hide game info panel (this can also be triggered in docked mode by using main board tab)
 	* New option-> Themes (only small parts of Scid are themable, this will be increased in the future)
 	* Removed file combobox.tcl (widget migrated to ttk::combobox)
-	* Windows can be docked inside a main window (options menu)
+	* Windows can be docked inside a main window (options menu) : In docked mode, the most important windows are embedded into a main one. The windows can be reordered by right-clicking on the tab (where the title of the window is) and by dragging tabs from one notebook to another. The menu for each window that has one (marked with a triangle at the left of the tab) is opened by left cliking on the tab.
 - updated dutch translation (thanks to Michel Van den Bergh)
 - updated spanish translation (thanks to Benigno Hernández)

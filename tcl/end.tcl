@@ -1734,6 +1734,7 @@ wm deiconify $dot_w
 
 wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
 
+# In docked mode, reopen only the windows that are not dockable
 if { !$::docking::USE_DOCKING } {
   if {$startup(switcher)} { ::windows::switcher::Open }
   if {$startup(pgn)} { ::pgn::OpenClose }
@@ -1743,6 +1744,10 @@ if { !$::docking::USE_DOCKING } {
   if {$startup(crosstable)} { crosstabWin }
   if {$startup(finder)} { ::file::finder::Open }
   if {$startup(book)} { ::book::open }
+} else  {
+    if {$startup(stats)} { ::windows::stats::Open }
+    if {$startup(crosstable)} { crosstabWin }
+    if {$startup(finder)} { ::file::finder::Open }
 }
 
 updateBoard

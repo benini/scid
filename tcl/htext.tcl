@@ -79,26 +79,24 @@ proc updateHelpWindow {name {heading ""}} {
     toplevel $w
     wm geometry $w -10+0
     wm minsize $w 40 5
-    text $w.text -setgrid yes -wrap word -width $::winWidth($w) \
-        -height $::winHeight($w) -relief sunken -border 2 \
-        -yscroll "$w.scroll set"
-    scrollbar $w.scroll -relief sunken -command "$w.text yview"
+    text $w.text -setgrid yes -wrap word -width $::winWidth($w) -height $::winHeight($w) -relief sunken -border 0 -yscroll "$w.scroll set"
+    ttk::scrollbar $w.scroll -command "$w.text yview"
     
-    frame $w.b -relief raised -border 2
+    ttk::frame $w.b -relief raised -border 2
     pack $w.b -side bottom -fill x
-    button $w.b.contents -textvar ::tr(Contents) -command { helpWindow Contents }
-    button $w.b.index -textvar ::tr(Index) -command { helpWindow Index }
-    button $w.b.back -textvar ::tr(Back) -command { help_PopStack }
-    button $w.b.close -textvar ::tr(Close) -command {
+    ttk::button $w.b.contents -textvar ::tr(Contents) -command { helpWindow Contents }
+    ttk::button $w.b.index -textvar ::tr(Index) -command { helpWindow Index }
+    ttk::button $w.b.back -textvar ::tr(Back) -command { help_PopStack }
+    ttk::button $w.b.close -textvar ::tr(Close) -command {
       set ::helpWin(Stack) {}
       set ::helpWin(yStack) {}
       destroy .helpWin
     }
     
-    pack $w.b.contents $w.b.index $w.b.back -side left -padx 5 -pady 2
+    pack $w.b.contents $w.b.index $w.b.back -side left -padx 1 -pady 2
     pack $w.b.close -side right -padx 5 -pady 2
     pack $w.scroll -side right -fill y -padx 2 -pady 2
-    pack $w.text -fill both -expand 1 -padx 5
+    pack $w.text -fill both -expand 1 -padx 1
     
     $w.text configure -font font_Regular -foreground black -background white
     ::htext::init $w.text

@@ -573,18 +573,16 @@ $m add checkbutton -label WindowsTree \
 bind $dot_w <Control-t> { .menu.windows invoke [tr WindowsTree] }
 set helpMessage($m,[incr menuindex]) WindowsTree
 
-$m add checkbutton -label WindowsTB -variable ::tb::isOpen -command ::tb::Open \
-    -accelerator "Ctrl+="
+$m add checkbutton -label WindowsTB -variable ::tb::isOpen -command ::tb::Open -accelerator "Ctrl+="
 bind $dot_w <Control-equal> ::tb::Open
 set helpMessage($m,[incr menuindex]) WindowsTB
 
-$m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open \
-    -accelerator "F11"
+$m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open -accelerator "F11"
 set helpMessage($m,[incr menuindex]) WindowsBook
 bind $dot_w <F11>  ::book::open
 
 $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
-    -command ::CorrespondenceChess::CCWindow -accelerator "F12"
+   -command ::CorrespondenceChess::CCWindow -accelerator "F12"
 bind $dot_w <F12> ::CorrespondenceChess::CCWindow
 
 ### Tools menu:
@@ -1190,6 +1188,7 @@ $m add command -label OptionsFontsFixed -underline 0 -command {
 }
 set helpMessage($m,3) OptionsFontsFixed
 
+# The windows that are not dockable are always configurable for auto start
 set m .menu.options.startup
 menu $m
 if { $::docking::USE_DOCKING } {
@@ -1197,13 +1196,13 @@ if { $::docking::USE_DOCKING } {
 } else  {
   set state "normal"
 }
-$m add checkbutton -label HelpTip -variable startup(tip) -state $state
-$m add checkbutton -label ToolsCross -variable startup(crosstable) -state $state
+$m add checkbutton -label HelpTip -variable startup(tip) 
+$m add checkbutton -label ToolsCross -variable startup(crosstable) 
 $m add checkbutton -label WindowsSwitcher -variable startup(switcher) -state $state
-$m add checkbutton -label FileFinder -variable startup(finder) -state $state
+$m add checkbutton -label FileFinder -variable startup(finder)
 $m add checkbutton -label WindowsGList -variable startup(gamelist) -state $state
 $m add checkbutton -label WindowsPGN -variable startup(pgn) -state $state
-$m add checkbutton -label WindowsStats -variable startup(stats) -state $state
+$m add checkbutton -label WindowsStats -variable startup(stats)
 $m add checkbutton -label WindowsTree -variable startup(tree) -state $state
 $m add checkbutton -label WindowsBook -variable startup(book) -state $state
 
@@ -1296,8 +1295,6 @@ $m  add command -label HelpAbout -command helpAbout
 set helpMessage($m,[incr menuindex]) HelpAbout
 
 bind $dot_w <F1> {helpWindow Contents}
-
-
 
 ##################################################
 
@@ -1687,11 +1684,13 @@ proc standardShortcuts {w} {
   bind $w <End>   ::move::End
   bind $w <KeyPress-v> { ::showVars }
   bind $w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
+  bind $w <F1> {helpWindow Contents}
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
   bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }
   bind $w <F5> { catch { .analysisWin2.b1.bStartStop invoke } }
   bind $w <F11>  ::book::open
+  bind $w <F12> ::CorrespondenceChess::CCWindow
   bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}
   bind $w <Control-v> {catch {sc_clipbase paste}; ::updateBoard -pgn}
   bind $w <Control-S> ::setupBoard

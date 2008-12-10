@@ -311,9 +311,15 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   <a Pgnscid>pgnscid</a> utility.
   </p>
   <p>
+  Windows can be used in docked mode or as independant windows (see flag in the options menu).
+  In docked mode, the most important windows are embedded into a main one. The windows can be reordered
+  by right-clicking on the tab (where the title of the window is) and by dragging tabs from one notebook
+  to another. The menu for each window that has one (marked with a triangle at the left of the tab) is opened by left cliking on the tab.
+  </p>
+  <p>
   The <a MainWindow>main window</a>
   of Scid (with the graphical chess board) shows details of
-  the active game and database. At any time, you can have up to four
+  the active game and database. At any time, you can have up to nine
   databases open (five including the <a Clipbase>clipbase</a>),
   and each will have its own active game.
   (A game numbered 0 indicates a scratch game that is not part of the
@@ -330,7 +336,7 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   author of Scid.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.6.7, December 2008)</footer></p>
 }
 
 

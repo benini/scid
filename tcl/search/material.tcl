@@ -55,10 +55,13 @@ trace variable pMax w checkPieceCounts
 proc makeBoolMenu {w varName} {
   upvar #0 $varName var
   if {![info exists var]} { set var "Yes" }
-  ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -relief raised -bd 2 -highlightthickness 2 -indicatoron 0 -anchor w
+  # ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -relief raised -bd 2 -highlightthickness 2 -indicatoron 0 -anchor w
+  menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
+      -relief raised -bd 2 -highlightthickness 0 -anchor w -image ""
+  
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label Yes -image ::rep::_tick -variable $varName -value Yes \
-      -command "$w configure -image ::rep::_tick" ;# -hidemargin 1
+      -command "$w configure -image ::rep::_tick"  ;# -hidemargin 1
   $w.menu add radiobutton -label No -image ::rep::_cross -variable $varName -value No \
       -command "$w configure -image ::rep::_cross" ;# -hidemargin 1
   return $w.menu
@@ -68,14 +71,16 @@ proc makePieceMenu {w varName} {
   global dark
   upvar #0 $varName var
   if {![info exists var]} { set var "?" }
-  ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -indicatoron 0 -relief raised -bd 2 -highlightthickness 2 -anchor w
+  # ttk::menubutton $w -textvariable $varName -menu $w.menu -image "" -style pad0.TMenubutton ;# -indicatoron 0 -relief raised -bd 2 -highlightthickness 2 -anchor w
+  menubutton $w -textvariable $varName -indicatoron 0 -menu $w.menu \
+      -relief raised -bd 2 -highlightthickness 0 -anchor w -image ""
   menu $w.menu -tearoff 0
   $w.menu add radiobutton -label " ? " -variable $varName -value "?" \
-      -command "$w configure -image e20" ;# -hidemargin 1
+      -command "$w configure -image e20"  -hidemargin 1
   foreach i {wk wq wr wb wn wp bk bq br bb bn bp} {
     $w.menu add radiobutton -label $i -image ${i}20 -value $i \
         -variable $varName \
-        -command "$w configure -image ${i}20" ;# -hidemargin 1
+        -command "$w configure -image ${i}20"  -hidemargin 1
   }
   foreach i {" ? " wk bk} {
     $w.menu entryconfigure $i -columnbreak 1
@@ -186,7 +191,7 @@ proc ::search::material {} {
   pack [ttk::frame $w.mp] -side top
   pack [ttk::frame $w.mp.material] -side left
   
-  label $w.mp.material.title -font font_Bold -textvar ::tr(Material:)
+  ttk::label $w.mp.material.title -font font_Bold -textvar ::tr(Material:)
   pack $w.mp.material.title -side top -pady 3
   
   foreach piece {q r b n m p} {
@@ -372,23 +377,25 @@ proc ::search::material {} {
   ttk::label $w.mp.patt.title -textvar ::tr(Patterns:) -font font_Bold
   pack $w.mp.patt.title -side top -pady 3
   
-  pack [ttk::frame $f.grid] -side top
+  pack [ttk::frame $f.grid] -side top -fill both -expand 1
   for { set i 1 } { $i <= $nPatterns } { incr i } {
     makeBoolMenu $f.grid.b$i pattBool($i)
     set menuPiece1 [ makePieceMenu $f.grid.p$i pattPiece($i) ]
     tk_optionMenu $f.grid.f$i pattFyle($i) "?" a b c d e f g h
     tk_optionMenu $f.grid.r$i pattRank($i) "?" 1 2 3 4 5 6 7 8
-    $f.grid.b$i configure -style pad0.TMenubutton ;# -indicatoron 0
-    $f.grid.f$i configure -width 1 -indicatoron 0 -pady 1
-    $f.grid.r$i configure -width 1 -indicatoron 0 -pady 1
+    # $f.grid.b$i configure -style pad0.TMenubutton
+    $f.grid.b$i configure -indicatoron 0 ;# -width 4
+    
+    $f.grid.f$i configure -width 1 -indicatoron 0 -pady 0
+    $f.grid.r$i configure -width 1 -indicatoron 0 -pady 0
     set column [expr {5 * (($i - 1) / 5)} ]
     set row [expr {($i - 1) % 5} ]
-    grid $f.grid.b$i -row $row -column $column -padx 0; incr column
-    grid $f.grid.p$i -row $row -column $column -padx 0; incr column
-    grid $f.grid.f$i -row $row -column $column -padx 0; incr column
-    grid $f.grid.r$i -row $row -column $column -padx 0; incr column
+    grid $f.grid.b$i -row $row -column $column -padx 0 -pady 0 ; incr column
+    grid $f.grid.p$i -row $row -column $column -padx 0 -pady 0 ; incr column
+    grid $f.grid.f$i -row $row -column $column -padx 0 -pady 0 ; incr column
+    grid $f.grid.r$i -row $row -column $column -padx 0 -pady 0; incr column
     if {$column == 4  ||  $column == 9} {
-      label $f.grid.sp_$i -text "  "
+      ttk::label $f.grid.sp_$i -text "  "
       grid $f.grid.sp_$i -row $row -column $column
     }
   }
@@ -481,12 +488,13 @@ proc ::search::material {} {
   addHorizontalRule $w
   
   ### Now the move counter:
+  pack [ ttk::frame $w.fmc ] -side top -expand 1 -fill both
   
-  set f $w.bishops
-  pack [frame $f] -side top
+  set f $w.fmc.bishops
+  pack [ttk::frame $f] -side top ;#-expand 1 -fill both
   ttk::label $f.t1 -text "1" -font font_Small
   ttk::label $f.t2 -image wb20
-  ttk::label $f.t3 -text "- 1" -font font_Small
+  ttk::label $f.t3 -text "- 1" -font font_Small -font font_Small
   ttk::label $f.t4 -image bb20
   ttk::label $f.t5 -textvar ::tr(squares:) -font font_Small
   ttk::radiobutton $f.same -textvar ::tr(SameColor) -variable oppBishops -value "Same" -style Small.TRadiobutton ;# -padx 5 -pady 4
@@ -494,31 +502,30 @@ proc ::search::material {} {
   ttk::radiobutton $f.either -textvar ::tr(Either) -variable oppBishops -value "Either" -style Small.TRadiobutton ;# -padx 5 -pady 4
   foreach i {t1 t2 t3 t4 t5 same opp either} { pack $f.$i -side left }
   
-  set f $w.move
-  pack [ttk::frame $f] -side top -ipady 5
-  ttk::label $f.fromlab -textvar ::tr(MoveNumberRange:)
-  ttk::entry $f.from -width 4 -textvar minMoveNum -justify right
-  ttk::label $f.tolab -text "-"
-  ttk::entry $f.to -width 4 -textvar maxMoveNum -justify right
+  set f $w.fmc.move
+  pack [ttk::frame $f] -side top -ipady 5 ;# -expand 1 -fill both
+  ttk::label $f.fromlab -textvar ::tr(MoveNumberRange:) -font font_Small
+  ttk::entry $f.from -width 4 -textvar minMoveNum -justify right -font font_Small
+  ttk::label $f.tolab -text "-" -font font_Small
+  ttk::entry $f.to -width 4 -textvar maxMoveNum -justify right -font font_Small
   ttk::label $f.space -text "  "
-  ttk::label $f.label1 -textvar ::tr(MatchForAtLeast)
-  ttk::entry $f.hmoves -width 3 -textvar minHalfMoves -justify right
-  ttk::label $f.label2 -textvar ::tr(HalfMoves)
+  ttk::label $f.label1 -textvar ::tr(MatchForAtLeast) -font font_Small
+  ttk::entry $f.hmoves -width 3 -textvar minHalfMoves -justify right -font font_Small
+  ttk::label $f.label2 -textvar ::tr(HalfMoves) -font font_Small
   bindFocusColors $f.from
   bindFocusColors $f.to
   bindFocusColors $f.hmoves
-  pack $f.fromlab $f.from $f.tolab $f.to $f.space \
-      $f.label1 $f.hmoves $f.label2 -side left
+  pack $f.fromlab $f.from $f.tolab $f.to $f.space $f.label1 $f.hmoves $f.label2 -side left
   
   addHorizontalRule $w
   ::search::addFilterOpFrame $w 1
   addHorizontalRule $w
   
   ### Progress bar:
-  
-  canvas $w.progress -height 20 -width 300 -bg white -relief solid -border 1
-  $w.progress create rectangle 0 0 0 0 -outline blue -fill blue -tags bar
-  $w.progress create text 295 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
+  ttk::frame $w.fprogress
+  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
+  $w.fprogress.progress create rectangle 0 0 0 0 -outline blue -fill blue -tags bar
+  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   
   ### Last of all, the buttons frame:
   
@@ -535,7 +542,7 @@ proc ::search::material {} {
     busyCursor .
     .sm.b3.stop configure -state normal
     grab .sm.b3.stop
-    sc_progressBar .sm.progress bar 301 21 time
+    sc_progressBar .sm.fprogress.progress bar 301 21 time
     set str [sc_search material \
         -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
         -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \
@@ -575,7 +582,8 @@ proc ::search::material {} {
   
   pack $f.ignorecol $w.b3.save -side left -pady 5 -padx 5
   pack $w.b3.cancel $w.b3.search $w.b3.stop -side right -pady 5 -padx 5
-  pack $w.progress -side top -pady 2
+  pack $w.fprogress.progress -side top -pady 2
+  pack $w.fprogress -expand 1 -fill both
   
   label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
