@@ -64,7 +64,7 @@ namespace eval tactics {
     
     if { ! $found } {
       sc_game load $old_game
-      tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"      
+      tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"
     } else  {
       sideToMoveAtBottom
     }
@@ -82,7 +82,7 @@ namespace eval tactics {
       # TODO old format to be removed
       set res [scan $cmt "\*\*\*\*d%dfrom%fto%f" dif prevscore score ]
       if {$res != 3} { ; # try new format if the old format failed
-      set res [scan $cmt "\*\*\*\*D%d %f->%f" dif prevscore score ]
+        set res [scan $cmt "\*\*\*\*D%d %f->%f" dif prevscore score ]
       }
       if {$res == 3} {
         return [list $dif $score $prevscore]
@@ -146,44 +146,46 @@ namespace eval tactics {
     updateStatusBar
     updateTitle
     
-    frame $w.fconfig -relief raised -borderwidth 1
-    label $w.fconfig.l1 -text $::tr(ChooseTrainingBase)
+    ttk::frame $w.fconfig -relief raised ;# -borderwidth 1
+    ttk::label $w.fconfig.l1 -text $::tr(ChooseTrainingBase)
     pack $w.fconfig.l1
     
-    frame $w.fconfig.flist
+    ttk::frame $w.fconfig.flist
     listbox $w.fconfig.flist.lb -selectmode single -exportselection 0 \
         -yscrollcommand "$w.fconfig.flist.ybar set" -height 10 -width 30
-    scrollbar $w.fconfig.flist.ybar -command "$w.fconfig.flist.lb yview"
+    ttk::scrollbar $w.fconfig.flist.ybar -command "$w.fconfig.flist.lb yview"
     pack $w.fconfig.flist.lb $w.fconfig.flist.ybar -side left -fill y
     for {set i 1} {$i<[llength $baseList]} {incr i 2} {
       $w.fconfig.flist.lb insert end [lindex $baseList $i]
     }
     $w.fconfig.flist.lb selection set 0
     
-    frame $w.fconfig.reset
-    button $w.fconfig.reset.button -text $::tr(ResetScores) \
+    ttk::frame $w.fconfig.reset
+    ttk::button $w.fconfig.reset.button -text $::tr(ResetScores) \
         -command {::tactics::resetScores [ lindex $::tactics::baseList [expr [.configTactics.fconfig.flist.lb curselection] * 2 ] ]}
     pack $w.fconfig.reset.button -expand yes -fill both
     
     # in order to limit CPU usage, limit the time for analysis (this prevents noise on laptops)
-    frame $w.fconfig.flimit
-    label $w.fconfig.flimit.blimit -text $::tr(limitanalysis) -relief flat
-    scale $w.fconfig.flimit.analysisTime -orient horizontal -from 1 -to 60 -length 120 -label $::tr(seconds) -variable ::tactics::analysisTime -resolution 1
-    pack $w.fconfig.flimit.blimit $w.fconfig.flimit.analysisTime -side left -expand yes
+    ttk::labelframe $w.fconfig.flimit -text $::tr(limitanalysis)
+    ttk::label $w.fconfig.flimit.analabel -text  "($::tr(seconds))"
+    ttk::scale $w.fconfig.flimit.analysisTime -orient horizontal -from 1 -to 60 -length 120 -variable ::tactics::analysisTime \
+        -command { ::utils::validate::roundScale ::tactics::analysisTime 1 }
+    ttk::label $w.fconfig.flimit.value -textvar ::tactics::analysisTime
+    pack $w.fconfig.flimit.analabel $w.fconfig.flimit.analysisTime $w.fconfig.flimit.value -side left -expand yes -fill x
     
-    frame $w.fconfig.fbutton
-    button $w.fconfig.fbutton.ok -text $::tr(Continue) -command {
+    ttk::frame $w.fconfig.fbutton
+    ttk::button $w.fconfig.fbutton.ok -text $::tr(Continue) -command {
       set base [ lindex $::tactics::baseList [expr [.configTactics.fconfig.flist.lb curselection] * 2 ] ]
       destroy .configTactics
       ::tactics::start $base
     }
-    button $w.fconfig.fbutton.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
+    ttk::button $w.fconfig.fbutton.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
     pack $w.fconfig.fbutton.ok $w.fconfig.fbutton.cancel -expand yes -side left -padx 20 -pady 2
     
-    pack $w.fconfig $w.fconfig.flist $w.fconfig.reset $w.fconfig.flimit $w.fconfig.fbutton
+    pack $w.fconfig $w.fconfig.flist $w.fconfig.reset $w.fconfig.flimit $w.fconfig.fbutton -expand 1 -fill x
     bind $w <Configure> "recordWinSize $w"
     bind $w <F1> { helpWindow TacticsTrainer }
-
+    
   }
   ################################################################################
   #
@@ -201,35 +203,35 @@ namespace eval tactics {
     set w .tacticsWin
     if {[winfo exists $w]} { focus $w ; return }
     
-    toplevel $w
-    wm title $w $::tr(Tactics)
+    createToplevel $w
+    setTitle $w $::tr(Tactics)
     setWinLocation $w
     # because sometimes the 2 buttons at the bottom are hidden
     wm minsize $w 170 170
-    frame $w.f1 -relief groove -borderwidth 1
-    label $w.f1.labelInfo -textvariable ::tactics::infoEngineLabel -bg linen
-    checkbutton $w.f1.cbWinWonGame -text $::tr(WinWonGame) -variable ::tactics::winWonGame
+    ttk::frame $w.f1 -relief groove ;# -borderwidth 1
+    ttk::label $w.f1.labelInfo -textvariable ::tactics::infoEngineLabel -background linen
+    ttk::checkbutton $w.f1.cbWinWonGame -text $::tr(WinWonGame) -variable ::tactics::winWonGame
     pack $w.f1.labelInfo $w.f1.cbWinWonGame -expand yes -fill both -side top
     
-    frame $w.fclock
+    ttk::frame $w.fclock
     ::gameclock::new $w.fclock 1 80 0
     ::gameclock::reset 1
     ::gameclock::start 1
     
-    frame $w.f2 -relief groove
-    checkbutton $w.f2.cbSolution -text $::tr(ShowSolution) -variable ::tactics::showSolution -command ::tactics::toggleSolution
-    label $w.f2.lSolution -textvariable ::tactics::labelSolution -wraplength 120
+    ttk::frame $w.f2 -relief groove
+    ttk::checkbutton $w.f2.cbSolution -text $::tr(ShowSolution) -variable ::tactics::showSolution -command ::tactics::toggleSolution
+    ttk::label $w.f2.lSolution -textvariable ::tactics::labelSolution -wraplength 120
     pack $w.f2.cbSolution $w.f2.lSolution -expand yes -fill both -side top
     
-    frame $w.fbuttons -relief groove -borderwidth 1
+    ttk::frame $w.fbuttons -relief groove -borderwidth 1
     pack $w.f1 $w.fclock $w.f2 $w.fbuttons -expand yes -fill both
     
     setInfoEngine $::tr(LoadingBase)
     
-    button $w.fbuttons.next -text $::tr(Next) -command {
+    ttk::button $w.fbuttons.next -text $::tr(Next) -command {
       ::tactics::stopAnalyze
       ::tactics::loadNextGame }
-    button $w.fbuttons.close -textvar ::tr(Abort) -command ::tactics::endTraining
+    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::tactics::endTraining
     pack $w.fbuttons.next $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     bind $w <Destroy> { ::tactics::endTraining }
     bind $w <Configure> "recordWinSize $w"
@@ -264,7 +266,7 @@ namespace eval tactics {
   proc toggleSolution {} {
     global ::tactics::showSolution ::tactics::labelSolution ::tactics::analysisEngine
     if {$showSolution} {
-      set labelSolution "$analysisEngine(score) : $analysisEngine(moves)"
+      set labelSolution "$analysisEngine(score) : [::trans $analysisEngine(moves)]"
     } else  {
       set labelSolution ". . . . . . "
     }

@@ -555,6 +555,8 @@ menuText H TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
 menuText H TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
 # ====== TODO To be translated ======
 menuText H TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
+# ====== TODO To be translated ======
+menuText H TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText H TreeOptLock "Rögzítés" 0 {A fát az aktuális adatbázishoz köti ill. a kötést feloldja.}
 menuText H TreeOptTraining "Edzés" 0 {Edzésüzemmód be- vagy kikapcsolása}
 menuText H TreeOptAutosave "Cache-fájl automatikus mentése" 11 \
@@ -2190,6 +2192,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -563,6 +563,8 @@ menuText P TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
 menuText P TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
 # ====== TODO To be translated ======
 menuText P TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
+# ====== TODO To be translated ======
+menuText P TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText P TreeOptLock "Blokada" 0 {Zablokuj/odblokuj drzewo na aktualnej bazie}
 menuText P TreeOptTraining "Trening" 0 {W³±cz/wy³±cz tryb treningowy}
 menuText P TreeOptAutosave "Automatyczny zapis bufora" 0 \
@@ -2191,6 +2193,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

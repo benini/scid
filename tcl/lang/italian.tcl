@@ -512,6 +512,8 @@ menuText I TreeOpt "Opzioni" 0
 menuText I TreeOptSlowmode "Modalità lenta" 0 {Modalità lenta per l'aggiornamento (più precisa)}
 menuText I TreeOptFastmode "Modalità veloce" 0 {Modalità veloce per l'aggiornamento (nessuna trasposizione di mosse)}
 menuText I TreeOptFastAndSlowmode "Modalità lenta e veloce" 0 {Modalità lenta e veloce per l'aggiornamento}
+# ====== TODO To be translated ======
+menuText I TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText I TreeOptLock "Blocca" 0 {Blocca/sblocca l'albero al database corrente}
 menuText I TreeOptTraining "Training" 0 {Attiva/disattiva la modalita' di esercizio dell'albero}
 menuText I TreeOptAutosave "File di cache per Auto-salvare" 0 \
@@ -1881,6 +1883,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

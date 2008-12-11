@@ -1504,9 +1504,13 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   
   resetEngine $n
   
-  #Klimmek: if parameter index is a valid engine then start engine
+  # if parameter index is a valid engine then start engine. Only update engine's time
+  # when it was chosen in the engines dialog box
   if { $index < 0 } {
     set index [::enginelist::choose]
+    catch {
+      ::enginelist::setTime $index
+    }
   } else {
     set index [expr {$n - 1}]
   }
@@ -1515,8 +1519,10 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     set analysisWin$n 0
     return
   }
-  ::enginelist::setTime $index
-  catch {::enginelist::write}
+  
+  # ::enginelist::setTime $index
+  # catch {::enginelist::write}
+  
   set analysis(index$n) $index
   set engineData [lindex $::engines(list) $index]
   set analysisName [lindex $engineData 0]
@@ -1749,6 +1755,11 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   if {$::windowsOS || $analysis(priority$n) == "idle"} {
     set analysis(priority$n) idle
     setAnalysisPriority $n
+  }
+  
+  catch {
+    ::enginelist::sort
+    ::enginelist::write
   }
   
 }

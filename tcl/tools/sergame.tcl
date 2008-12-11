@@ -60,9 +60,9 @@ namespace eval sergame {
     bind $w <F1> { helpWindow SeriousGame }
     setWinLocation $w
     
-    ttk::frame $w.fengines -relief groove -borderwidth 1
+    ttk::labelframe $w.fengines -text $::tr(Engine)
     ttk::frame $w.fbook -relief groove -borderwidth 1
-    ttk::frame $w.ftime -relief groove -borderwidth 1
+    ttk::labelframe $w.ftime -text $::tr(TimeMode)
     ttk::frame $w.fconfig -relief groove -borderwidth 1
     ttk::frame $w.fopening -relief groove -borderwidth 1
     ttk::frame $w.fbuttons
@@ -72,12 +72,10 @@ namespace eval sergame {
     pack $w.fbuttons -side top -fill x
     
     # builds the list of UCI engines
-    ttk::label $w.fengines.label -text $::tr(Engine)
     ttk::frame $w.fengines.fEnginesList -relief raised -borderwidth 1
     listbox $w.fengines.fEnginesList.lbEngines -yscrollcommand "$w.fengines.fEnginesList.ybar set" \
         -height 5 -width 50 -exportselection 0
     ttk::scrollbar $w.fengines.fEnginesList.ybar -command "$w.fengines.fEnginesList.lbEngines yview"
-    pack $w.fengines.label -side top
     pack $w.fengines.fEnginesList.ybar -side left -fill y
     pack $w.fengines.fEnginesList.lbEngines -side left -fill both -expand yes
     pack $w.fengines.fEnginesList -expand yes -fill both -side top
@@ -138,10 +136,7 @@ namespace eval sergame {
     
     # Time bonus frame
     ttk::frame $w.ftime.timebonus
-    ttk::label $w.ftime.timebonus.label -text $::tr(TimeMode)
     pack  $w.ftime.timebonus -side top -fill x -expand 1
-    grid $w.ftime.timebonus.label -row $row -column 0 -columnspan 5 -sticky nsew
-    incr row
     
     ttk::radiobutton $w.ftime.timebonus.rb1 -text $::tr(TimeBonus) -value "timebonus" -variable ::sergame::timeMode
     grid $w.ftime.timebonus.rb1 -row $row -column 0 -sticky w -rowspan 2
@@ -331,14 +326,13 @@ namespace eval sergame {
       return
     }
     
-    toplevel $w
-    wm title $w "$::tr(coachgame) ($::sergame::engineName)"
+    createToplevel $w
+    setTitle $w "$::tr(coachgame) ($::sergame::engineName)"
     
     setWinLocation $w
     
     ttk::frame $w.fclocks -relief raised -borderwidth 1
     ttk::frame $w.fbuttons
-    pack $w.fclocks $w.fbuttons -side top -expand yes -fill both
     
     ::gameclock::new $w.fclocks 2 80 1
     ::gameclock::new $w.fclocks 1 80 1
@@ -346,14 +340,17 @@ namespace eval sergame {
     ::gameclock::start 1
     
     ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::sergame::abortGame
-    pack $w.fbuttons.close -expand yes -fill both
+    pack $w.fbuttons.close -expand yes
+    
+    pack $w.fclocks -side top -expand yes -fill both
+    pack $w.fbuttons -side top -expand yes -fill both
     
     bind $w <F1> { helpWindow TacticalGame }
     bind $w <Destroy> ::sergame::abortGame
     bind $w <Escape> ::sergame::abortGame
     bind $w <Configure> "recordWinSize $w"
     wm minsize $w 45 0
-    
+
     # setup clocks
     if { [::sergame::getEngineColor] == "white" } {
       ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(wtime$n)/1000]

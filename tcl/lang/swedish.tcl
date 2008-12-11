@@ -559,6 +559,8 @@ menuText W TreeOptSlowmode "Långsam mod" 0 {Långsam mod för uppdateringar (hög n
 menuText W TreeOptFastmode "Snabb mod" 0 {Snabb mod för uppdateringar (ingen dragtranspositionering)}
 # ====== TODO To be translated ======
 menuText W TreeOptFastAndSlowmode "Snabb och långsam mod" 0 {Snabb mod sedan långsam mod för uppdateringar}
+# ====== TODO To be translated ======
+menuText W TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText W TreeOptLock "Lås" 0 {Lås/ lås upp trädet för den aktuella databasen}
 menuText W TreeOptTraining "Träna" 0 {Starta/ stäng av träningsläge}
 menuText W TreeOptAutosave "Spara cache filen automatiskt" 0 \
@@ -6981,6 +6983,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

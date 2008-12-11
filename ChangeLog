@@ -662,3 +662,4 @@ scid-3.6.7
 	* Windows can be docked inside a main window (options menu) : In docked mode, the most important windows are embedded into a main one. The windows can be reordered by right-clicking on the tab (where the title of the window is) and by dragging tabs from one notebook to another. The menu for each window that has one (marked with a triangle at the left of the tab) is opened by left cliking on the tab.
 - updated dutch translation (thanks to Michel Van den Bergh)
 - updated spanish translation (thanks to Benigno Hernández)
+- Fix : Tree window : when a Mask is opened, the whole line is clickable (not only the part with moves and stats)

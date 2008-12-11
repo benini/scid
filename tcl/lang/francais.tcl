@@ -490,6 +490,7 @@ menuText F TreeOpt "Options" 0
 menuText F TreeOptSlowmode "Mode lent" 0 {Mode lent pour rafraichissement (précis)}
 menuText F TreeOptFastmode "Mode rapide" 0 {Mode rapide pour rafraichissement (pas de transpositions)}
 menuText F TreeOptFastAndSlowmode "Mode rapide puis lent" 0 {Mode rapide puis lent pour rafraichissement}
+menuText F TreeOptStartStop "Rafraîchissement auto" 0 {Rafraîchissement automatique de la fenêtre}
 menuText F TreeOptLock "Verrouille" 0 {Dé/verrouiller l'arbre à la base en cours}
 menuText F TreeOptTraining "Entraînement" 0 {Démarrer/Arrêter l'arbre du mode d'entraînement}
 menuText F TreeOptAutosave "Sauver le cache automatiquement" 0
@@ -1761,6 +1762,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

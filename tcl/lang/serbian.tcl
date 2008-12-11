@@ -557,6 +557,8 @@ menuText Y TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
 menuText Y TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
 # ====== TODO To be translated ======
 menuText Y TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
+# ====== TODO To be translated ======
+menuText Y TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText Y TreeOptLock "Zakljuèaj" 0 {Zakljuèaj/otkljuèaj stablo za tekuæu bazu}
 menuText Y TreeOptTraining "Trening" 0 {Ukljuèi/iskljuèi trening mod stabla}
 menuText Y TreeOptAutosave "Automatski saèuvaj cache fajl" 0 \
@@ -1964,6 +1966,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

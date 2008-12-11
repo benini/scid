@@ -559,6 +559,8 @@ menuText O TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
 menuText O TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
 # ====== TODO To be translated ======
 menuText O TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
+# ====== TODO To be translated ======
+menuText O TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText O TreeOptLock "Lås" 0 {Låser treet til nåværende database}
 menuText O TreeOptTraining "Trening" 0 {Slår av/på treningsmodus}
 menuText O TreeOptAutosave "Autolagre hurtigbuffer" 0 \
@@ -1964,6 +1966,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

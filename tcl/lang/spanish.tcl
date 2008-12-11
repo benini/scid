@@ -508,6 +508,8 @@ menuText S TreeOpt "Opciones" 1
 menuText S TreeOptSlowmode "Modo Lento" 0 {Movimiento lento para actualizaciones (Alta calidad)}
 menuText S TreeOptFastmode "Modo Rápido" 0 {Movimiento rápido para actualizaciones (no transpone movimientos)}
 menuText S TreeOptFastAndSlowmode "Modo Rápido y Lento" 0 {Movimiento rápido y modo lento para actualizaciones}
+# ====== TODO To be translated ======
+menuText S TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText S TreeOptLock "Bloquear" 1 {Bloquea/desbloquea el árbol de la base de datos actual}
 menuText S TreeOptTraining "Entrenamiento" 2 {Activa/desactiva el modo de entrenamiento de árbol}
 menuText S TreeOptAutosave "Autoguardar archivo caché" 0 \
@@ -1568,6 +1570,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

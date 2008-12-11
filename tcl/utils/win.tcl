@@ -650,8 +650,6 @@ proc ::docking::show_menu { path x y} {
   # display window's menu (workaround for windows where the menu
   # of embedded toplevels is not displayed. The menu must be of the form $w.menu
   
-  puts "show_menu active tab = $::docking::activeTab($c_path)"
-  
   # if the tab has changed, don't display the menu at once (wait a second click)
   if { $::docking::changedTab($c_path) == 1 } {
     set ::docking::changedTab($c_path) 0
@@ -660,7 +658,6 @@ proc ::docking::show_menu { path x y} {
     set f [$c_path select]
     set m [getMenu $f]
     if { [winfo exists $m]} {
-      puts "menu =$m"
       tk_popup $m [winfo pointerx .] [winfo pointery .]
     }
   }
@@ -696,7 +693,7 @@ proc ::docking::setMenuVisibility  { f show } {
 ################################################################################
 proc  ::docking::tabChanged  {path} {
   update
-  puts "tabChanged $path select [$path select]"
+  # puts "tabChanged $path select [$path select]"
   if { [$path select] != $::docking::activeTab($path)} {
     set ::docking::activeTab($path) [$path select]
     set ::docking::changedTab($path) 1

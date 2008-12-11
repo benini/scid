@@ -563,6 +563,8 @@ menuText B TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
 menuText B TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
 # ====== TODO To be translated ======
 menuText B TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
+# ====== TODO To be translated ======
+menuText B TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText B TreeOptLock "Lock" 0 {Trava/Destrava a arvore para o banco corrente}
 menuText B TreeOptTraining "Treinamento" 0 \
   {Liga/Desliga o modo treinamento na arvore}
@@ -1970,6 +1972,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

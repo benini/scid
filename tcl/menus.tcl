@@ -94,6 +94,13 @@ bind Button <Any-Leave> "+statusBarRestore %W"
 bind Label <Any-Enter> "+statusBarHelp %W"
 bind Label <Any-Leave> "+statusBarRestore %W"
 
+bind TMenubutton <Any-Enter> "+statusBarHelp %W"
+bind TMenubutton <Any-Leave> "+statusBarRestore %W"
+bind TButton <Any-Enter> "+statusBarHelp %W"
+bind TButton <Any-Leave> "+statusBarRestore %W"
+bind TLabel <Any-Enter> "+statusBarHelp %W"
+bind TLabel <Any-Leave> "+statusBarRestore %W"
+
 ############################################################
 ### Main window menus:
 

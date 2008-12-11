@@ -232,10 +232,7 @@ proc ::tree::make { { baseNumber -1 } } {
   ttk::checkbutton $w.buttons.lock -textvar ::tr(LockTree) -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
   ttk::checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
   
-  foreach {b t} {
-    best TreeFileBest graph TreeFileGraph lock TreeOptLock
-    training TreeOptTraining
-  } {
+  foreach {b t} { best TreeFileBest graph TreeFileGraph lock TreeOptLock  training TreeOptTraining bStartStop TreeOptStartStop } {
     set helpMessage($w.buttons.$b) $t
   }
   
@@ -575,19 +572,15 @@ proc ::tree::displayLines { baseNumber moves } {
     
     # Move and stats
     if {[expr $i % 2] && $i < [expr $len -3] } {
-      $w.f.tl insert end "$line" [list greybg $tagfg tagclick$i tagtooltip$i]
+      $w.f.tl insert end "$line" [list greybg $tagfg tagtooltip$i]
     } else  {
-      $w.f.tl insert end "$line" [list whitebg $tagfg tagclick$i tagtooltip$i]
+      $w.f.tl insert end "$line" [list whitebg $tagfg tagtooltip$i]
     }
     if {$colorScore != ""} {
       $w.f.tl tag add $colorScore end-30c end-26c
     }
     if {$move != "" && $move != "---" && $move != "\[end\]" && $i != [expr $len -2] && $i != 0} {
       $w.f.tl tag bind tagclick$i <Button-1> "[list ::tree::selectCallback $baseNumber $move ] ; break"
-      if { $maskFile != "" } {
-        # Bind right button to popup a contextual menu:
-        $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
-      }
     }
     
     if { $maskFile != "" } {
@@ -599,11 +592,17 @@ proc ::tree::displayLines { baseNumber moves } {
         ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$i
         $w.f.tl tag bind tagtooltip$i <Double-Button-1> "::tree::mask::addComment $move"
       }
-      $w.f.tl insert end "\n"
-    } else  {
-      $w.f.tl insert end "\n"
     }
-  }
+    
+    if { $maskFile != "" } {
+      # Bind right button to popup a contextual menu:
+      $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
+      $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
+    }
+    
+    $w.f.tl insert end "\n"
+    
+  } ;# end for loop
   
   # Add moves present in Mask and not in Tree
   set idx $len
@@ -616,8 +615,6 @@ proc ::tree::displayLines { baseNumber moves } {
       }
       
       $w.f.tl tag bind tagclick$idx <Button-1> "[list ::tree::selectCallback $baseNumber [lindex $m 0] ] ; break"
-      # Bind right button to popup a contextual menu:
-      $w.f.tl tag bind tagclick$idx <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl [lindex $m 0] %x %y %X %Y"
       # images
       foreach j {4 5} {
         if {[lindex $m $j] == ""} {
@@ -629,16 +626,20 @@ proc ::tree::displayLines { baseNumber moves } {
       
       # color tag
       $w.f.tl tag configure color$idx -background [lindex $m 2]
-      $w.f.tl insert end "  " [ list color$idx tagclick$idx ]
+      $w.f.tl insert end "  " color$idx
       # NAG tag
-      $w.f.tl insert end [::tree::mask::getNag [lindex $m 0]] tagclick$idx
+      $w.f.tl insert end [::tree::mask::getNag [lindex $m 0]] 
       # move
-      $w.f.tl insert end "[::trans [lindex $m 0] ]" [ list bluefg tagclick$idx ]
+      $w.f.tl insert end "[::trans [lindex $m 0] ]" bluefg
       # comment
       set comment [lindex $m 3]
       set firstLine [ lindex [split $comment "\n"] 0 ]
-      $w.f.tl insert end "$firstLine\n" tagtooltip$idx
+      $w.f.tl insert end " $firstLine\n" tagtooltip$idx
       ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$idx
+      
+      # Bind right button to popup a contextual menu:
+      $w.f.tl tag bind tagclick$idx <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl  [lindex $m 0] %x %y %X %Y"
+      $w.f.tl tag add tagclick$idx $idx.0 $idx.end
       incr idx
     }
   }

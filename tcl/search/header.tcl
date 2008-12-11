@@ -135,6 +135,8 @@ proc search::header {} {
     ttk::label $w.c$color.lab -textvar ::tr($color:) -font $bold -width 9 -anchor w
     ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
     ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
+    bind $w.c$color.e <Return> "$w.b.search invoke; break"
+    
     ttk::label $w.c$color.space
     ttk::label $w.c$color.elo1 -textvar ::tr(Rating:) -font $bold
     ttk::entry $w.c$color.elomin -textvar s${color}EloMin -width 6 -justify right \
@@ -187,6 +189,7 @@ proc search::header {} {
   foreach i {Event Site} {
     ttk::label $f.l$i -textvar ::tr(${i}:) -font $bold
     ttk::combobox $f.e$i -textvariable s$i -width 30
+    bind $f.e$i <Return> "$w.b.search invoke; break"
     ::utils::history::SetCombobox HeaderSearch$i $f.e$i
     bindFocusColors $f.e$i
   }
@@ -447,181 +450,179 @@ proc search::header {} {
     pack $w.b.defaults $w.b.save -side left -padx 5
     pack $w.b.cancel $w.b.search -side right -padx 5
   }
-    
-    pack [ ttk::frame $w.fprogress ] -fill both
-    canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
-    $w.fprogress.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-    $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time \
-        -fill black -text "0:00 / 0:00"
-    pack $w.fprogress.progress -side top -pady 2
-    ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
-    pack $w.status -side bottom -fill x
-    # update
-    wm resizable $w 0 0
-    standardShortcuts $w
-    ::search::Config
-    focus $w.cWhite.e
+  
+  pack [ ttk::frame $w.fprogress ] -fill both
+  canvas $w.fprogress.progress -height 20 -width 300 -bg white -relief solid -border 1
+  $w.fprogress.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.fprogress.progress create text 295 10 -anchor e -font font_Regular -tags time \
+      -fill black -text "0:00 / 0:00"
+  pack $w.fprogress.progress -side top -pady 2
+  ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
+  pack $w.status -side bottom -fill x
+  # update
+  wm resizable $w 0 0
+  standardShortcuts $w
+  ::search::Config
+  focus $w.cWhite.e
+}
+
+proc ::search::header::save {} {
+  global sWhite sBlack sEvent sSite sRound sDateMin sDateMax sIgnoreCol
+  global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
+  global sEloDiffMin sEloDiffMax sGlMin sGlMax
+  global sEco sEcoMin sEcoMax sHeaderFlags sSideToMove
+  global sResWin sResLoss sResDraw sResOther glstart sPgntext
+  
+  set ftype { { "Scid SearchOptions files" {".sso"} } }
+  set fName [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Create a SearchOptions file"]
+  if {$fName == ""} { return }
+  
+  if {[string compare [file extension $fName] ".sso"] != 0} {
+    append fName ".sso"
   }
   
-  proc ::search::header::save {} {
-    global sWhite sBlack sEvent sSite sRound sDateMin sDateMax sIgnoreCol
-    global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
-    global sEloDiffMin sEloDiffMax sGlMin sGlMax
-    global sEco sEcoMin sEcoMax sHeaderFlags sSideToMove
-    global sResWin sResLoss sResDraw sResOther glstart sPgntext
-    
-    set ftype { { "Scid SearchOptions files" {".sso"} } }
-    set fName [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Create a SearchOptions file"]
-    if {$fName == ""} { return }
-    
-    if {[string compare [file extension $fName] ".sso"] != 0} {
-      append fName ".sso"
-    }
-    
-    if {[catch {set searchF [open [file nativename $fName] w]} ]} {
-      tk_messageBox -title "Error: Unable to open file" -type ok -icon error \
-          -message "Unable to create SearchOptions file: $fName"
-      return
-    }
-    puts $searchF "\# SearchOptions File created by Scid [sc_info version]"
-    puts $searchF "set searchType Header"
-    
-    # First write the regular variables:
-    foreach i {sWhite sBlack sEvent sSite sRound sDateMin sDateMax sResWin
-      sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
-      sBlackEloMax sEcoMin sEcoMax sEloDiffMin sEloDiffMax
-      sIgnoreCol sSideToMove sGlMin sGlMax ::search::filter::operation} {
-      puts $searchF "set $i [list [set $i]]"
-    }
-    
-    # Now write the array values:
-    foreach i [array names sHeaderFlags] {
-      puts $searchF "set sHeaderFlags($i) [list $sHeaderFlags($i)]"
-    }
-    foreach i [array names sPgntext] {
-      puts $searchF "set sPgntext($i) [list $sPgntext($i)]"
-    }
-    
-    tk_messageBox -type ok -icon info -title "Search Options saved" \
-        -message "Header search options saved to: $fName"
-    close $searchF
+  if {[catch {set searchF [open [file nativename $fName] w]} ]} {
+    tk_messageBox -title "Error: Unable to open file" -type ok -icon error \
+        -message "Unable to create SearchOptions file: $fName"
+    return
+  }
+  puts $searchF "\# SearchOptions File created by Scid [sc_info version]"
+  puts $searchF "set searchType Header"
+  
+  # First write the regular variables:
+  foreach i {sWhite sBlack sEvent sSite sRound sDateMin sDateMax sResWin
+    sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
+    sBlackEloMax sEcoMin sEcoMax sEloDiffMin sEloDiffMax
+    sIgnoreCol sSideToMove sGlMin sGlMax ::search::filter::operation} {
+    puts $searchF "set $i [list [set $i]]"
   }
   
-  
-  ##############################
-  ### Selecting common ECO ranges
-  
-  set scid_ecoRangeChosen ""
-  set ecoCommonRanges {}
-  proc chooseEcoRange {} {
-    global ecoCommonRanges scid_ecoRangeChosen
-    set ecoCommonRanges [ list \
-        "A04-A09  [tr Reti]: [trans 1.Nf3]" \
-        "A10-A39  [tr English]: 1.c4" \
-        "A40-A49  1.d4, [tr d4Nf6Miscellaneous]" \
-        "A45l-A45z  [tr Trompowsky]: [trans [list 1.d4 Nf6 2.Bg5]]" \
-        "A51-A52  [tr Budapest]: [trans [list 1.d4 Nf6 2.c4 e5]]" \
-        "A53-A55  [tr OldIndian]: [trans [list 1.d4 Nf6 2.c4 d6]]" \
-        "A57-A59  [tr BenkoGambit]: [trans [list 1.d4 Nf6 2.c4 c5 3.d5 b5]]" \
-        "A60-A79  [tr ModernBenoni]: [trans [list 1.d4 Nf6 2.c4 c5 3.d5 e6]]" \
-        "A80-A99  [tr DutchDefence]: 1.d4 f5" \
-        "____________________________________________________________" \
-        "B00-C99  1.e4" \
-        "B01-B01     [tr Scandinavian]: 1.e4 d5" \
-        "B02-B05     [tr AlekhineDefence]: [trans [list 1.e4 Nf6]]" \
-        "B07-B09     [tr Pirc]: 1.e4 d6" \
-        "B10-B19     [tr CaroKann]: 1.e4 c6" \
-        "B12i-B12z      [tr CaroKannAdvance]: 1.e4 c6 2.d4 d5 3.e5" \
-        "B20-B99  [tr Sicilian]: 1.e4 c5" \
-        "B22-B22     [tr SicilianAlapin]: 1.e4 c5 2.c3" \
-        "B23-B26     [tr SicilianClosed]: [trans [list 1.e4 c5 2.Nc3]]" \
-        "B30-B39     [tr Sicilian]: [trans [list 1.e4 c5 2.Nf3 Nc6]]" \
-        "B40-B49     [tr Sicilian]: [trans [list 1.e4 c5 2.Nf3 e6]]" \
-        "B50-B59     [tr SicilianRauzer]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 Nc6]]" \
-        "B70-B79     [tr SicilianDragon]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 g6]]" \
-        "B80-B89     [tr SicilianScheveningen]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 e6]]" \
-        "B90-B99     [tr SicilianNajdorf]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 a6]]" \
-        "____________________________________________________________" \
-        "C00-C19  [tr FrenchDefence]: 1.e4 e6" \
-        "C02-C02     [tr FrenchAdvance]: 1.e4 e6 2.d4 d5 3.e5" \
-        "C03-C09     [tr FrenchTarrasch]: [trans [list 1.e4 e6 2.d4 d5 3.Nd2]]" \
-        "C15-C19     [tr FrenchWinawer]: [trans [list 1.e4 e6 2.d4 d5 3.Nc3 Bb4]]" \
-        "C20-C99  [tr OpenGame]: 1.e4 e5" \
-        "C25-C29     [tr Vienna]: [trans [list 1.e4 e5 2.Nc3]]" \
-        "C30-C39     [tr KingsGambit]: 1.e4 e5 2.f4" \
-        "C42-C43     [tr RussianGame]: [trans [list 1.e4 e5 2.Nf3 Nf6]]" \
-        "C44-C49     [tr OpenGame]: [trans [list 1.e4 e5 2.Nf3 Nc6]]" \
-        "C50-C59     [tr ItalianTwoKnights]: 1.e4 e5 2.Nf3 Nc6 3.Bc4]]" \
-        "C60-C99  [tr Spanish]: [trans [list 1.e4 e5 2.Nf3 Nc6 3.Bb5]]" \
-        "C68-C69      [tr SpanishExchange]: [trans [list 3.Bb5 a6 4.Bxc6]]" \
-        "C80-C83      [tr SpanishOpen]: [trans [list 3.Bb5 a6 4.Ba4 Nf6 5.O-O Nxe4]]" \
-        "C84-C99      [tr SpanishClosed]: [trans [list 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7]]" \
-        "____________________________________________________________" \
-        "D00-D99  [tr Queen's Pawn]: 1.d4 d5" \
-        "D10-D19  [tr Slav]: 1.d4 d5 2.c4 c6" \
-        "D20-D29  [tr QGA]: 1.d4 d5 2.c4 dxc4" \
-        "D30-D69  [tr QGD]: 1.d4 d5 2.c4 e6" \
-        "D35-D36     [tr QGDExchange]: 1.d4 d5 2.c4 e6 3.cxd5 exd5" \
-        "D43-D49     [tr SemiSlav]: [trans [list 3.Nc3 Nf6 4.Nf3 c6]]" \
-        "D50-D69     [tr QGDwithBg5]: [trans [list 1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5]]" \
-        "D60-D69     [tr QGDOrthodox]: [trans [list 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7]]" \
-        "D70-D99  [tr Grunfeld]: [trans [list 1.d4 Nf6 2.c4 g6 with 3...d5]]" \
-        "D85-D89     [tr GrunfeldExchange]: [trans [list 3.Nc3 d5 4.e4 Nxc3 5.bxc3]]" \
-        "D96-D99     [tr GrunfeldRussian]: [trans [list 3.Nc3 d5 4.Nf3 Bg7 5.Qb3]]" \
-        "____________________________________________________________" \
-        "E00-E09  [tr Catalan]: [trans [list 1.d4 Nf6 2.c4 e6 3.g3/...]]" \
-        "E02-E05     [tr CatalanOpen]: [trans [list 3.g3 d5 4.Bg2 dxc4]]" \
-        "E06-E09     [tr CatalanClosed]: [trans [list 3.g3 d5 4.Bg2 Be7]]" \
-        "E12-E19  [tr QueensIndian]: [trans [list 1.d4 Nf6 2.c4 e6 3.Nf3 b6]]" \
-        "E20-E59  [tr NimzoIndian]: [trans [list 1.d4 Nf6 2.c4 e6 3.Nc3 Bb4]]" \
-        "E32-E39     [tr NimzoIndianClassical]: [trans [list 4.Qc2]]" \
-        "E40-E59     [tr NimzoIndianRubinstein]: 4.e3" \
-        "E60-E99  [tr KingsIndian]: [trans [list 1.d4 Nf6 2.c4 g6]]" \
-        "E80-E89     [tr KingsIndianSamisch]: 4.e4 d6 5.f3" \
-        "E90-E99     [tr KingsIndianMainLine]: [trans [list 4.e4 d6 5.Nf3]]" \
-        ]
-    
-    if {[winfo exists .ecoRangeWin]} { return }
-    set w .ecoRangeWin
-    toplevel $w
-    wm title $w "Scid: Choose ECO Range"
-    wm minsize $w 30 5
-    
-    listbox $w.list -yscrollcommand "$w.ybar set" -height 20 -width 60 \
-        -background white -setgrid 1
-    foreach i $ecoCommonRanges { $w.list insert end $i }
-    ttk::scrollbar $w.ybar -command "$w.list yview" -takefocus 0
-    pack [ttk::frame $w.b] -side bottom -fill x
-    pack $w.ybar -side right -fill y
-    pack $w.list -side left -fill both -expand yes
-    
-    ttk::button $w.b.ok -text "OK" -command {
-      set sel [.ecoRangeWin.list curselection]
-      if {[llength $sel] > 0} {
-        set scid_ecoRangeChosen [lindex $ecoCommonRanges [lindex $sel 0]]
-        set ::sEco No
-      }
-      focus .sh
-      destroy .ecoRangeWin
-    }
-    ttk::button $w.b.cancel -text $::tr(Cancel) -command "focus .sh; destroy $w"
-    pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 2
-    bind $w <Escape> "
-    set scid_ecoRangeChosen {}
-    grab release $w
-    focus .
-    destroy $w
-    break"
-    bind $w <Return> "$w.b.ok invoke; break"
-    bind $w.list <Double-ButtonRelease-1> "$w.b.ok invoke; break"
-    focus $w.list
-    grab $w
-    tkwait window $w
-    return $scid_ecoRangeChosen
+  # Now write the array values:
+  foreach i [array names sHeaderFlags] {
+    puts $searchF "set sHeaderFlags($i) [list $sHeaderFlags($i)]"
+  }
+  foreach i [array names sPgntext] {
+    puts $searchF "set sPgntext($i) [list $sPgntext($i)]"
   }
   
+  tk_messageBox -type ok -icon info -title "Search Options saved" \
+      -message "Header search options saved to: $fName"
+  close $searchF
+}
+
+
+##############################
+### Selecting common ECO ranges
+
+set scid_ecoRangeChosen ""
+set ecoCommonRanges {}
+proc chooseEcoRange {} {
+  global ecoCommonRanges scid_ecoRangeChosen
+  set ecoCommonRanges [ list \
+      "A04-A09  [tr Reti]: [trans 1.Nf3]" \
+      "A10-A39  [tr English]: 1.c4" \
+      "A40-A49  1.d4, [tr d4Nf6Miscellaneous]" \
+      "A45l-A45z  [tr Trompowsky]: [trans [list 1.d4 Nf6 2.Bg5]]" \
+      "A51-A52  [tr Budapest]: [trans [list 1.d4 Nf6 2.c4 e5]]" \
+      "A53-A55  [tr OldIndian]: [trans [list 1.d4 Nf6 2.c4 d6]]" \
+      "A57-A59  [tr BenkoGambit]: [trans [list 1.d4 Nf6 2.c4 c5 3.d5 b5]]" \
+      "A60-A79  [tr ModernBenoni]: [trans [list 1.d4 Nf6 2.c4 c5 3.d5 e6]]" \
+      "A80-A99  [tr DutchDefence]: 1.d4 f5" \
+      "____________________________________________________________" \
+      "B00-C99  1.e4" \
+      "B01-B01     [tr Scandinavian]: 1.e4 d5" \
+      "B02-B05     [tr AlekhineDefence]: [trans [list 1.e4 Nf6]]" \
+      "B07-B09     [tr Pirc]: 1.e4 d6" \
+      "B10-B19     [tr CaroKann]: 1.e4 c6" \
+      "B12i-B12z      [tr CaroKannAdvance]: 1.e4 c6 2.d4 d5 3.e5" \
+      "B20-B99  [tr Sicilian]: 1.e4 c5" \
+      "B22-B22     [tr SicilianAlapin]: 1.e4 c5 2.c3" \
+      "B23-B26     [tr SicilianClosed]: [trans [list 1.e4 c5 2.Nc3]]" \
+      "B30-B39     [tr Sicilian]: [trans [list 1.e4 c5 2.Nf3 Nc6]]" \
+      "B40-B49     [tr Sicilian]: [trans [list 1.e4 c5 2.Nf3 e6]]" \
+      "B50-B59     [tr SicilianRauzer]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 Nc6]]" \
+      "B70-B79     [tr SicilianDragon]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 g6]]" \
+      "B80-B89     [tr SicilianScheveningen]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 e6]]" \
+      "B90-B99     [tr SicilianNajdorf]: [trans [list 1.e4 c5 2.Nf3 d6 ... 5.Nc3 a6]]" \
+      "____________________________________________________________" \
+      "C00-C19  [tr FrenchDefence]: 1.e4 e6" \
+      "C02-C02     [tr FrenchAdvance]: 1.e4 e6 2.d4 d5 3.e5" \
+      "C03-C09     [tr FrenchTarrasch]: [trans [list 1.e4 e6 2.d4 d5 3.Nd2]]" \
+      "C15-C19     [tr FrenchWinawer]: [trans [list 1.e4 e6 2.d4 d5 3.Nc3 Bb4]]" \
+      "C20-C99  [tr OpenGame]: 1.e4 e5" \
+      "C25-C29     [tr Vienna]: [trans [list 1.e4 e5 2.Nc3]]" \
+      "C30-C39     [tr KingsGambit]: 1.e4 e5 2.f4" \
+      "C42-C43     [tr RussianGame]: [trans [list 1.e4 e5 2.Nf3 Nf6]]" \
+      "C44-C49     [tr OpenGame]: [trans [list 1.e4 e5 2.Nf3 Nc6]]" \
+      "C50-C59     [tr ItalianTwoKnights]: 1.e4 e5 2.Nf3 Nc6 3.Bc4]]" \
+      "C60-C99  [tr Spanish]: [trans [list 1.e4 e5 2.Nf3 Nc6 3.Bb5]]" \
+      "C68-C69      [tr SpanishExchange]: [trans [list 3.Bb5 a6 4.Bxc6]]" \
+      "C80-C83      [tr SpanishOpen]: [trans [list 3.Bb5 a6 4.Ba4 Nf6 5.O-O Nxe4]]" \
+      "C84-C99      [tr SpanishClosed]: [trans [list 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7]]" \
+      "____________________________________________________________" \
+      "D00-D99  [tr Queen's Pawn]: 1.d4 d5" \
+      "D10-D19  [tr Slav]: 1.d4 d5 2.c4 c6" \
+      "D20-D29  [tr QGA]: 1.d4 d5 2.c4 dxc4" \
+      "D30-D69  [tr QGD]: 1.d4 d5 2.c4 e6" \
+      "D35-D36     [tr QGDExchange]: 1.d4 d5 2.c4 e6 3.cxd5 exd5" \
+      "D43-D49     [tr SemiSlav]: [trans [list 3.Nc3 Nf6 4.Nf3 c6]]" \
+      "D50-D69     [tr QGDwithBg5]: [trans [list 1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5]]" \
+      "D60-D69     [tr QGDOrthodox]: [trans [list 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7]]" \
+      "D70-D99  [tr Grunfeld]: [trans [list 1.d4 Nf6 2.c4 g6 with 3...d5]]" \
+      "D85-D89     [tr GrunfeldExchange]: [trans [list 3.Nc3 d5 4.e4 Nxc3 5.bxc3]]" \
+      "D96-D99     [tr GrunfeldRussian]: [trans [list 3.Nc3 d5 4.Nf3 Bg7 5.Qb3]]" \
+      "____________________________________________________________" \
+      "E00-E09  [tr Catalan]: [trans [list 1.d4 Nf6 2.c4 e6 3.g3/...]]" \
+      "E02-E05     [tr CatalanOpen]: [trans [list 3.g3 d5 4.Bg2 dxc4]]" \
+      "E06-E09     [tr CatalanClosed]: [trans [list 3.g3 d5 4.Bg2 Be7]]" \
+      "E12-E19  [tr QueensIndian]: [trans [list 1.d4 Nf6 2.c4 e6 3.Nf3 b6]]" \
+      "E20-E59  [tr NimzoIndian]: [trans [list 1.d4 Nf6 2.c4 e6 3.Nc3 Bb4]]" \
+      "E32-E39     [tr NimzoIndianClassical]: [trans [list 4.Qc2]]" \
+      "E40-E59     [tr NimzoIndianRubinstein]: 4.e3" \
+      "E60-E99  [tr KingsIndian]: [trans [list 1.d4 Nf6 2.c4 g6]]" \
+      "E80-E89     [tr KingsIndianSamisch]: 4.e4 d6 5.f3" \
+      "E90-E99     [tr KingsIndianMainLine]: [trans [list 4.e4 d6 5.Nf3]]" \
+      ]
   
-  ###
-  ### End of file: search.tcl
+  if {[winfo exists .ecoRangeWin]} { return }
+  set w .ecoRangeWin
+  toplevel $w
+  wm title $w "Scid: Choose ECO Range"
+  wm minsize $w 30 5
   
+  listbox $w.list -yscrollcommand "$w.ybar set" -height 20 -width 60 -background white -setgrid 1
+  foreach i $ecoCommonRanges { $w.list insert end $i }
+  ttk::scrollbar $w.ybar -command "$w.list yview" -takefocus 0
+  pack [ttk::frame $w.b] -side bottom -fill x
+  pack $w.ybar -side right -fill y
+  pack $w.list -side left -fill both -expand yes
   
+  ttk::button $w.b.ok -text "OK" -command {
+    set sel [.ecoRangeWin.list curselection]
+    if {[llength $sel] > 0} {
+      set scid_ecoRangeChosen [lindex $ecoCommonRanges [lindex $sel 0]]
+      set ::sEco No
+    }
+    focus .sh
+    destroy .ecoRangeWin
+  }
+  ttk::button $w.b.cancel -text $::tr(Cancel) -command "focus .sh; destroy $w"
+  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 2
+  bind $w <Escape> "
+  set scid_ecoRangeChosen {}
+  grab release $w
+  focus .
+  destroy $w
+  break"
+  bind $w <Return> "$w.b.ok invoke; break"
+  bind $w.list <Double-ButtonRelease-1> "$w.b.ok invoke; break"
+  focus $w.list
+  grab $w
+  tkwait window $w
+  return $scid_ecoRangeChosen
+}
+
+
+###
+### End of file: search.tcl
+

@@ -286,6 +286,8 @@ proc progressWindow {args} {
   set w .progressWin
   if {[winfo exists $w]} { return }
   toplevel $w
+  pack [ttk::frame $w.f] -expand 1
+  
   wm withdraw $w
   wm resizable $w 0 0
   if {[llength $args] == 2} {
@@ -300,16 +302,16 @@ proc progressWindow {args} {
     set b 1
   } else { return }
   wm title $w $title
-  ttk::label $w.t -text $text
-  pack $w.t -side top -expand 1 -fill x
-  canvas $w.c -width 400 -height 20 -bg white -relief solid -border 1
-  $w.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
-  pack $w.c -side top -pady 10
+  ttk::label $w.f.t -text $text
+  pack $w.f.t -side top -expand 1 -fill both
+  canvas $w.f.c -width 400 -height 20 -bg white -relief solid -border 1
+  $w.f.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+  $w.f.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
+  pack $w.f.c -side top -pady 10
   if {$b} {
-    pack [ttk::frame $w.b] -side bottom -fill x
-    ttk::button $w.b.cancel -text $button -command $command
-    pack $w.b.cancel -side right -padx 5 -pady 2
+    pack [ttk::frame $w.f.b] -side bottom -fill x
+    ttk::button $w.f.b.cancel -text $button -command $command
+    pack $w.f.b.cancel -side right -padx 5 -pady 2
   }
   # Set up geometry for middle of screen:
   set x [winfo screenwidth $w]
@@ -319,12 +321,12 @@ proc progressWindow {args} {
   set y [expr {$y - 20} ]
   set y [expr {$y / 2} ]
   wm geometry $w +$x+$y
-  sc_progressBar $w.c bar 401 21 time
+  sc_progressBar $w.f.c bar 401 21 time
   update idletasks
   wm deiconify $w
   raiseWin $w
   if {$b} {
-    catch { grab $w.b.cancel }
+    catch { grab $w.f.b.cancel }
   } else {
     grab $w
   }
@@ -335,14 +337,14 @@ proc progressWindow {args} {
 proc leftJustifyProgressWindow {} {
   set w .progressWin
   if {! [winfo exists $w]} { return }
-  pack configure $w.t -fill x
-  $w.t configure -width 1 -anchor w
+  pack configure $w.f.t -fill x
+  $w.f.t configure -width 1 -anchor w
 }
 
 proc changeProgressWindow {newtext} {
   set w .progressWin
   if {[winfo exists $w]} {
-    $w.t configure -text $newtext
+    $w.f.t configure -text $newtext
     update idletasks
   }
 }
@@ -351,8 +353,8 @@ proc resetProgressWindow {} {
   set w .progressWin
   set ::progressWin_time [clock seconds]
   if {[winfo exists $w]} {
-    $w.c coords bar 0 0 0 0
-    $w.c itemconfigure time -text "0:00 / 0:00"
+    $w.f.c coords bar 0 0 0 0
+    $w.f.c itemconfigure time -text "0:00 / 0:00"
     update idletasks
   }
 }
@@ -365,7 +367,7 @@ proc updateProgressWindow {done total} {
   if {$total > 0} {
     set width [expr {int(double($width) * double($done) / double($total))}]
   }
-  $w.c coords bar 0 0 $width 21
+  $w.f.c coords bar 0 0 $width 21
   set estimated $elapsed
   if {$done != 0} {
     set estimated [expr {int(double($elapsed) * double($total) / double($done))}]
@@ -373,7 +375,7 @@ proc updateProgressWindow {done total} {
   set t [format "%d:%02d / %d:%02d" \
       [expr {$elapsed / 60}] [expr {$elapsed % 60}] \
       [expr {$estimated / 60}] [expr {$estimated % 60}]]
-  $w.c itemconfigure time -text $t
+  $w.f.c itemconfigure time -text $t
   update
 }
 

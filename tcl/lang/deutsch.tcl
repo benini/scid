@@ -519,6 +519,8 @@ menuText D TreeOpt "Optionen" 0
 menuText D TreeOptSlowmode "Gründliche Suche" 0 {Update mit hoher Genauigkeit, langsamer}
 menuText D TreeOptFastmode "Schneller Modus" 0 {Schnelles Update (ignoriert Zugumstellungen)}
 menuText D TreeOptFastAndSlowmode "Gründlicher und Schneller Modus" 0 {Zunächst schneller Updatemodus, dann nacharbeit im gründlichen Modus}
+# ====== TODO To be translated ======
+menuText D TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText D TreeOptLock "Anbinden" 0 \
   {Zugbaum an aktive Datenbank anbinden(/lösen)}
 menuText D TreeOptTraining "Training" 0 {Trainingsmodus ein-/ausschalten}
@@ -7156,6 +7158,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

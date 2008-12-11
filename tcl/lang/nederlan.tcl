@@ -511,6 +511,8 @@ menuText N TreeOpt "Opties" 0
 menuText N TreeOptSlowmode "Trage modus" 0 {Trage modus voor updates (hoge nauwkeurigheid)}
 menuText N TreeOptFastmode "Snelle modus" 0 {Snelle modus voor updates (geen omwisselingen van zetten)}
 menuText N TreeOptFastAndSlowmode "Snelle en trage modus" 0 {Eerst snelle modus en daarna trage modus voor updates}
+# ====== TODO To be translated ======
+menuText N TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText N TreeOptLock "Vergrendelen" 0 {Vergrendelen/Ontgrendelen van de boom bij de huidige database}
 menuText N TreeOptTraining "Training" 0 {Aan/Uit zetten training modus}
 menuText N TreeOptAutosave "Autom.cache-data Bewaren" 4 \
@@ -1705,6 +1707,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

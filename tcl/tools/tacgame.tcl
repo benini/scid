@@ -149,21 +149,16 @@ namespace eval tacgame {
     bind $w <F1> { helpWindow TacticalGame }
     setWinLocation $w
     
-    ttk::frame $w.flevel -relief raised -borderwidth 1
+    ttk::labelframe $w.flevel -text [string toupper $::tr(difficulty) 0 0 ]
     ttk::frame $w.flevel.diff_fixed
     ttk::frame $w.flevel.diff_random
-    ttk::frame $w.fopening -relief raised -borderwidth 1
+    ttk::labelframe $w.fopening -text $::tr(Opening)
     ttk::frame $w.flimit -relief raised -borderwidth 1
     ttk::frame $w.fbuttons
     
-    ttk::label $w.flevel.label -text [string toupper $::tr(difficulty) 0 0 ]
-    ttk::label $w.flevel.space -text {}
-    
     pack $w.flevel -side top -fill x
-    pack $w.flevel.label -side top -pady 3
     pack $w.flevel.diff_fixed -side top
     pack $w.flevel.diff_random -side top
-    pack $w.flevel.space -side bottom
     pack $w.fopening  -side top -fill both -expand 1
     pack $w.flimit $w.fbuttons -side top -fill x
     
@@ -189,9 +184,6 @@ namespace eval tacgame {
     grid $w.flevel.diff_fixed.cb -row 0 -column 0 -rowspan 2
     grid $w.flevel.diff_fixed.labelFixed -row 0 -column 1 -columnspan 2
     grid $w.flevel.diff_fixed.scale -row 1 -column 1 -columnspan 2
-    
-    ttk::label $w.fopening.label -text $::tr(Opening)
-    pack $w.fopening.label -side top -pady 3
     
     # start new game
     ttk::radiobutton $w.fopening.cbNew -text $::tr(StartNewGame)  -variable ::tacgame::openingType -value new
@@ -324,8 +316,8 @@ namespace eval tacgame {
       return
     }
     
-    toplevel $w
-    wm title $w "$::tr(coachgame) (Elo $level)"
+    createToplevel $w
+    setTitle $w "$::tr(coachgame) (Elo $level)"
     setWinLocation $w
     
     ttk::frame $w.fdisplay -relief groove -borderwidth 1
@@ -659,7 +651,7 @@ namespace eval tacgame {
         }
         
         if { [lsearch $openingMovesHash [sc_pos hash]] == -1 && [llength $openingMovesList] >= $ply} {
-          set answer [tk_messageBox -icon question -parent .board -title $::tr(OutOfOpening) -type yesno \
+          set answer [tk_messageBox -icon question -parent .main -title $::tr(OutOfOpening) -type yesno \
               -message "$::tr(NotFollowedLine) $openingMoves\n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
             sc_move back 1
