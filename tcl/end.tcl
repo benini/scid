@@ -1402,7 +1402,7 @@ standardShortcuts .main
 ### Packing the main window:
 
 label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 -font font_Small
-grid .main.statusbar -row 4 -column 0 -columnspan 3 -sticky we
+grid .main.statusbar -row 5 -column 0 -columnspan 3 -sticky we
 bind .main.statusbar <1> gotoNextBase
 
 proc gotoNextBase {} {

@@ -665,7 +665,7 @@ set autoIconify 1
 # windowsDock:
 # if true, most of toplevel windows are dockable and embedded in a main window
 # windows can be moves among tabs and undocked (right-clicking on tab)
-set windowsDock 0
+set windowsDock 1
 
 # showGameInfo:
 # The game info panel below the main board
@@ -1297,7 +1297,6 @@ ttk::style configure Bold.TRadiobutton -font font_Bold
 ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
 ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
-# ttk::style configure Small.TMenubutton -font font_Small
 
 # Check for old (single-directory) tablebase option:
 if {[info exists initialDir(tablebase)]} {

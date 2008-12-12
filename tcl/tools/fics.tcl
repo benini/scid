@@ -31,6 +31,7 @@ namespace eval fics {
   #
   ################################################################################
   proc config {} {
+    global ::fics::sockChan
     set w ".ficsConfig"
     
     if {[winfo exists $w]} {
@@ -51,11 +52,11 @@ namespace eval fics {
     ttk::entry $w.f.login -width 20 -textvariable ::fics::login
     ttk::label $w.f.lPwd -text "password:"
     ttk::entry $w.f.passwd -width 20 -textvariable ::fics::password
-    ttk::button $w.f.connect -text Connect -command {
+    ttk::button $w.f.connect -text Connect -state disabled -command {
       ::fics::connect [.ficsConfig.f.login get] [.ficsConfig.f.passwd get]
       destroy .ficsConfig
     }
-    ttk::button $w.f.guest -text "Login as guest" -command {
+    ttk::button $w.f.guest -text "Login as guest" -state disabled -command {
       ::fics::connect "guest" ""
       destroy .ficsConfig
     }
@@ -114,13 +115,29 @@ namespace eval fics {
     
     update
     # Get IP adress of server (as Timeseal needs IP adress)
-    if {[catch {set sockChan [socket $::fics::server $::fics::port_fics]} err] } {
-      tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
-      return
+    set sockChan -1
+    set sockChan [socket -async $::fics::server $::fics::port_fics]
+    
+    for {set i 0} {$i<5} {incr i} {
+      after 1000
+      
+      if { [catch {set peer [ fconfigure $sockChan -peername ]} err]} {
+        if {$i == 4} {
+          tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
+          return
+        }
+      } else  {
+        break
+      }
     }
-    set peer [ fconfigure $sockChan -peername ]
+    
+    
     set ::fics::server_ip [lindex $peer 0]
     ::close $sockChan
+    
+    $w.f.connect configure -state normal
+    $w.f.guest configure -state normal
+    
   }
   
   ################################################################################

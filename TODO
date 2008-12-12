@@ -3,7 +3,9 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-voir à répondre.txt
+
+voir possibilités corruption cache (faire un test avec 2 arbres ouverts et fast/slow modes)
+essayer de mettre -async sur connection FICS
 
  ===========================================================
 |                                                           |
@@ -18,8 +20,6 @@ voir à répondre.txt
  ===========================================================
 
 - stop engine after last move in annotation (?)
-
-- when FW on or network down, smoothen FICS connection
 
 - add variations from analysis engine when the engine is locked
 

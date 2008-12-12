@@ -162,8 +162,7 @@ proc ::tree::make { { baseNumber -1 } } {
         -variable tree(order$baseNumber) -value $value -command " ::tree::refresh $baseNumber "
   }
   
-  $w.menu.opt add checkbutton -label TreeOptLock -variable tree(locked$baseNumber) \
-      -command "::tree::toggleLock $baseNumber"
+  $w.menu.opt add checkbutton -label TreeOptLock -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
   set helpMessage($w.menu.opt,0) TreeOptLock
   
   $w.menu.opt add checkbutton -label TreeOptTraining -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
@@ -224,10 +223,10 @@ proc ::tree::make { { baseNumber -1 } } {
   pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both
   
-  ttk::button $w.buttons.best -image b_list -command "::tree::best $baseNumber"
-  ttk::button $w.buttons.graph -image b_bargraph -command "::tree::graph $baseNumber"
+  ttk::button $w.buttons.best -image b_list -style Pad0.Small.TButton -command "::tree::best $baseNumber"
+  ttk::button $w.buttons.graph -image b_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber"
   # add a button to start/stop tree refresh
-  ttk::button $w.buttons.bStartStop -image engine_on -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
+  ttk::button $w.buttons.bStartStop -image engine_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
   
   ttk::checkbutton $w.buttons.lock -textvar ::tr(LockTree) -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
   ttk::checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
@@ -628,7 +627,7 @@ proc ::tree::displayLines { baseNumber moves } {
       $w.f.tl tag configure color$idx -background [lindex $m 2]
       $w.f.tl insert end "  " color$idx
       # NAG tag
-      $w.f.tl insert end [::tree::mask::getNag [lindex $m 0]] 
+      $w.f.tl insert end [::tree::mask::getNag [lindex $m 0]]
       # move
       $w.f.tl insert end "[::trans [lindex $m 0] ]" bluefg
       # comment
