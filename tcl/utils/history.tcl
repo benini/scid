@@ -39,10 +39,11 @@ proc ::utils::history::GetList {key} {
 #
 proc ::utils::history::AddEntry {key entry} {
   variable listData
-
   # We do not add the empty string to a history list:
-  if {$entry == ""} { return }
-
+  if {$entry == "" } {
+    return
+  }
+  
   if {[info exists listData($key)]} {
     # Take out this entry if it exists, so it will not appear twice:
     set index [lsearch -exact $listData($key) $entry]
@@ -58,6 +59,14 @@ proc ::utils::history::AddEntry {key entry} {
     set listData($key) [list $entry]
   }
   RefillCombobox $key
+  
+  if { [llength [GetList $key]] > 0 } {
+    set cb [ GetCombobox $key ]
+    if { $cb != "" } {
+      $cb current 0
+    }
+  }
+  
 }
 
 
@@ -124,11 +133,11 @@ proc ::utils::history::RefillCombobox {key} {
   
   set cbWidget [GetCombobox $key]
   if {$cbWidget == ""} { return }
-
+  
   # If the combobox widget is part of a dialog which is generated as needed,
   # it may not exist right now:
   if {! [winfo exists $cbWidget]} { return }
-
+  
   $cbWidget delete 0 end
   set entries [GetList $key]
   $cbWidget configure -values $entries
@@ -141,18 +150,18 @@ proc ::utils::history::RefillCombobox {key} {
 #
 proc ::utils::history::Save {{reportError 0}} {
   variable listData
-
+  
   set f {}
   set filename [scidConfigFile history]
-
+  
   if  {[catch {open $filename w} f]} {
     if {$reportError} {
       tk_messageBox -title "Scid" -type ok -icon warning \
-        -message "Unable to write file: $filename\n$f"
+          -message "Unable to write file: $filename\n$f"
     }
     return
   }
-
+  
   puts $f "# Scid [sc_info version] combobox history lists"
   puts $f ""
   foreach i [lsort [array names listData]] {

@@ -135,7 +135,7 @@ proc search::header {} {
     ttk::label $w.c$color.lab -textvar ::tr($color:) -font $bold -width 9 -anchor w
     ttk::combobox $w.c$color.e -textvariable "s$color" -width 40
     ::utils::history::SetCombobox HeaderSearch$color $w.c$color.e
-    bind $w.c$color.e <Return> { .sh.b.search invoke; break}
+    bind $w.c$color.e <Return> { .sh.b.search invoke; break }
     
     ttk::label $w.c$color.space
     ttk::label $w.c$color.elo1 -textvar ::tr(Rating:) -font $bold
