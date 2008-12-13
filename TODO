@@ -4,8 +4,8 @@
 |                                                           |
  ===========================================================
 
-voir possibilités corruption cache (faire un test avec 2 arbres ouverts et fast/slow modes)
-essayer de mettre -async sur connection FICS
+ajouter cleanup après destroy des fenêtres en mode doqué
+faire marcher racourcis menus
 
  ===========================================================
 |                                                           |

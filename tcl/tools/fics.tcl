@@ -84,16 +84,11 @@ namespace eval fics {
     grid $w.f.eExec -column 0 -row $row -columnspan 2
     grid $w.f.bExec -column 2 -row $row -sticky w
     incr row
-    # label $w.f.lFICS_IP -text "Server IP"
-    # entry $w.f.ip -width 16 -textvariable ::fics::server_ip
     ttk::label $w.f.lFICS_port -text "Server port"
     ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
     ttk::label $w.f.ltsport -text "Timeseal port"
     ttk::entry $w.f.portts -width 6 -textvariable ::fics::port_timeseal
     
-    # grid $w.f.lFICS_IP -column 0 -row $row
-    # grid $w.f.ip -column 1 -row $row
-    # incr row
     grid $w.f.lFICS_port -column 0 -row $row
     grid $w.f.portserver -column 1 -row $row
     incr row
@@ -115,22 +110,28 @@ namespace eval fics {
     
     update
     # Get IP adress of server (as Timeseal needs IP adress)
-    set sockChan -1
-    set sockChan [socket -async $::fics::server $::fics::port_fics]
+    # First handle the case of a network down
+    if { [catch {set sockChan [socket -async $::fics::server $::fics::port_fics]} err]} {
+      tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
+      return
+    }
     
-    for {set i 0} {$i<5} {incr i} {
+    # Then the case of a proxy
+    set timeOut 5
+    set i 0
+    while { $i <= $timeOut } {
       after 1000
       
       if { [catch {set peer [ fconfigure $sockChan -peername ]} err]} {
-        if {$i == 4} {
+        if {$i == $timeOut} {
           tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
           return
         }
       } else  {
         break
       }
+      incr i
     }
-    
     
     set ::fics::server_ip [lindex $peer 0]
     ::close $sockChan
