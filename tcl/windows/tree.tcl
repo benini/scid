@@ -596,9 +596,9 @@ proc ::tree::displayLines { baseNumber moves } {
     if { $maskFile != "" } {
       # Bind right button to popup a contextual menu:
       $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
-      $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
     }
-    
+      $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
+      
     $w.f.tl insert end "\n"
     
   } ;# end for loop
