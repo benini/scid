@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.29 2008/12/07 16:44:41 arwagner Exp $
+### $Id: correspondence.tcl,v 1.30 2008/12/14 12:36:23 arwagner Exp $
 ###
-### Last change: <Sun, 2008/12/07 10:23:44 arwagner ingata>
+### Last change: <Sun, 2008/12/14 11:19:54 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1092,6 +1092,16 @@ image create photo tb_CC_offline -data {
 	WdSQbQHRWeTl5udZQQA7
 }
 
+image create photo tb_CC_pluginactive -data {
+	R0lGODlhEAAQAKUmAAAAAAEAABgGAz8RCG4eD6MtFrExGLgzGbozGcY3G845G9Y7HclEKcBLMuFC
+	IuFFJuJIKeRXO+hvV+l3YOp+aeuEcOyHc+6Vg++fkPGrnsXSyPfNxPfOxvnZ0vbb1PXc1vnc1vnf
+	2vrl4fvm4unu6vDz8f//////////////////////////////////////////////////////////
+	/////////////////////////////////////////////yH+FUNyZWF0ZWQgd2l0aCBUaGUgR0lN
+	UAAh+QQBCgA/ACwAAAAAEAAQAAAGYMCfcEgsGo/IIgCQHC4jC2aSYMF0okspEcARTa4AjYbEzAIW
+	3S92Kfx4OvARyBGKFhuMRSJxqSg2CVpCWQEJEBIIGYFZRgKHiYFiJYJCAw8HFAZmSAICEQWUnAJN
+	pKVEQQA7
+}
+
 image create photo tb_CC_spacer -data {
 	R0lGODlhAQAYAIAAAP///////yH5BAEKAAEALAAAAAABABgAAAIEjI+pVwA7
 }
@@ -1115,6 +1125,11 @@ namespace eval CorrespondenceChess {
 	set XfccInternal     1
 	set xfccrcfile      [file nativename [file join $scidConfigDir "xfccrc"]]
 
+	# Path for additional functions that should be available in the CC
+	# window only. All files from here are sourced once the CC window
+	# starts up.
+	set PluginPath      [file nativename [file join $scidDataDir "Plugins/Correspondence"]]
+
 	# external fetch  tool (eg. Xfcc)
 	set XfccFetchcmd     "./Xfcc-Receive.pl"
 	# external send tool (eg. Xfcc)
@@ -1133,10 +1148,6 @@ namespace eval CorrespondenceChess {
 
 	set CorrSlot         -1
 	set LastProcessed    -1
-
-	# Hook up with SchemingMinds Game Explorer Database
-	set GEURL            "http://schemingmind.com/gameexplorer.aspx?epd="
-	set currentFEN       "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 	# current number in game list
 	set num              0
@@ -1335,7 +1346,7 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::mailermode     \
 							::CorrespondenceChess::attache        \
 							::CorrespondenceChess::subject        \
-							::CorrespondenceChess::GEURL } {
+							::CorrespondenceChess::PluginPath } {
 				puts $optionF "set $i [list [set $i]]"
 			}
 			if {$::CorrespondenceChess::XfccInternal < 0}  {
@@ -1384,6 +1395,8 @@ namespace eval CorrespondenceChess {
 	# and in case of Xfcc the special moves availabe (resign etc.)
 	#----------------------------------------------------------------------
 	proc CCWindow {} {
+		global scidDataDir 
+
 		set w .ccWindow
 		if {[winfo exists .ccWindow]} {
 			focus .
@@ -1429,6 +1442,7 @@ namespace eval CorrespondenceChess {
 
 		button    $w.top.help       -image tb_help -height 24 -width 24 -command { helpWindow CCIcons }
 
+		button    $w.top.plugins    -image tb_CC_spacer  -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
 		button    $w.top.onoffline  -image tb_CC_offline -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
 
 
@@ -1445,16 +1459,13 @@ namespace eval CorrespondenceChess {
 		grid $w.top.help       -stick nsew -column 14 -row 0 -columnspan 2
 
 		grid $w.top.retrieveCC             -column  0 -row 0
-# Disable the buttons as they do not act as they should. Probably
-# reenable them?
-###		grid $w.top.prevCC     -stick e  -column  1 -row 0
-###		grid $w.top.nextCC     -stick w  -column  2 -row 0
 		grid $w.top.sendCC                 -column  2 -row 0
 
-		grid $w.top.openDB      -stick ew  -column  0 -row 1 -columnspan 4
-		grid $w.top.inbox                  -column  0 -row 2 -columnspan 3
+		grid $w.top.openDB      -stick ew  -column  0 -row 1 -columnspan 3
+		grid $w.top.onoffline              -column  4 -row 1
+		grid $w.top.inbox       -stick ew  -column  0 -row 2 -columnspan 3
 		grid $w.top.delinbox               -column  3 -row 2
-		grid $w.top.onoffline              -column  4 -row 2
+		grid $w.top.plugins                -column  4 -row 2
 
 		grid $w.top.resign      -stick ew  -column  6 -row 1
 		grid $w.top.claimDraw              -column  5 -row 2
@@ -1491,13 +1502,12 @@ namespace eval CorrespondenceChess {
 		bind $w <F1>   { helpWindow Correspondence}
 		bind $w "?"    { helpWindow CCIcons}
 
-		# Call the Game Explorer (or any other web application that
-		# allows a FEN to be passed)
-		bind $w "g"    {
-			set ::CorrespondenceChess::currentFEN [sc_pos fen]
-			set URL "$::CorrespondenceChess::GEURL$::CorrespondenceChess::currentFEN"
-			openURL $URL
+		foreach f [glob -nocomplain [file join "$CorrespondenceChess::PluginPath" *]] {
+			$w.top.plugins    configure -image tb_CC_pluginactive
+			puts stderr $f
+			source $f
 		}
+
 	}
 
 	#--------------------------------------------------------------------------
@@ -1637,7 +1647,7 @@ namespace eval CorrespondenceChess {
 		$w.bottom.var     insert end "$var\n"
 
 		# Xfcc defines noDB, noTablebase no etc.pp. Hence check for
-		# false to dispaly the icons for allowed features.
+		# false to display the icons for allowed features.
 		if {$db == "false"} {
 			$w.bottom.feature image create end -align center -image tb_CC_database
 		}
@@ -1662,7 +1672,6 @@ namespace eval CorrespondenceChess {
 			bind $w.bottom.$tag <Button-1> {
 				::CorrespondenceChess::SetSelection %x %y
 				::CorrespondenceChess::ProcessServerResult $num
-				set ::CorrespondenceChess::currentFEN [sc_pos fen]
 				break }
 			# lock the area from changes
 			$w.bottom.$tag configure -state disable
