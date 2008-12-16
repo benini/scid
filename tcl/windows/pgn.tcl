@@ -202,6 +202,7 @@ namespace eval pgn {
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors
     
+    ::createToplevelFinalize $w
   }
   
   ################################################################################

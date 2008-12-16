@@ -205,6 +205,7 @@ proc ::tree::make { { baseNumber -1 } } {
   
   bind $w.f.tl <Destroy> {
     set win "%W"
+    bind $win <Destroy> {}
     set bn ""
     scan $win ".treeWin%%d.f.tl" bn
     ::tree::closeTree $tree(base$bn)
@@ -236,7 +237,7 @@ proc ::tree::make { { baseNumber -1 } } {
   }
   
   dialogbutton $w.buttons.stop -textvar ::tr(Stop) -command { sc_progressBar }
-  dialogbutton $w.buttons.close -textvar ::tr(Close) -command "::tree::closeTree $baseNumber"
+  dialogbutton $w.buttons.close -textvar ::tr(Close) -command "::tree::closeTree $baseNumber ; ::docking::cleanup .treeWin$baseNumber "
   
   pack $w.buttons.best $w.buttons.graph $w.buttons.bStartStop $w.buttons.lock $w.buttons.training \
       -side left -padx 3 -pady 2
@@ -597,8 +598,8 @@ proc ::tree::displayLines { baseNumber moves } {
       # Bind right button to popup a contextual menu:
       $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
     }
-      $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
-      
+    $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
+    
     $w.f.tl insert end "\n"
     
   } ;# end for loop

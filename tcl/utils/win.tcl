@@ -413,7 +413,6 @@ image create photo bluetriangle -data {
   R0lGODlhCAAIAKECADNBUEFYb////////yH5BAEKAAIALAAAAAAIAAgAAAINlI8pAe2wHjSs
   JaayKgA7
 }
-# {R0lGODlhCAAIAIABAClc/////yH5BAEKAAEALAAAAAAIAAgAAAINjI+gcLvmFIzTtYdyAQA7}
 
 namespace eval docking {
   # associates notebook to paned window
@@ -573,7 +572,23 @@ proc ::docking::_cleanup_tabs {srctab} {
     
   }
 }
-
+################################################################################
+# cleans up a window when it was closed without calling the notebook menu
+proc ::docking::cleanup { w } {
+  variable tbs
+  
+  if { ! $::docking::USE_DOCKING } { return }
+  
+  set w ".fdock[string range $w 1 end]"
+  foreach nb [array names tbs] {
+    if { [lsearch  [$nb tabs] $w ] != -1 } {
+      $nb forget $w
+      destroy $w
+      ::docking::_cleanup_tabs $nb
+      return
+    }
+  }
+}
 ################################################################################
 proc ::docking::move_tab {srctab dsttab} {
   variable tbs
@@ -701,14 +716,14 @@ proc  ::docking::tabChanged  {path} {
 }
 
 ################################################################################
-bind TNotebook <ButtonRelease-1> [namespace code {::docking::show_menu %W %X %Y} ]
+bind TNotebook <ButtonRelease-1> {::docking::show_menu %W %X %Y}
 
-bind TNotebook <ButtonPress-1> +[namespace code {::docking::start_motion %W}]
+bind TNotebook <ButtonPress-1> +[ list ::docking::start_motion %W ]
 
-bind TNotebook <B1-Motion> [namespace code {
+bind TNotebook <B1-Motion> {
   ::docking::motion %W
-  bind TNotebook <ButtonRelease-1> [namespace code {::docking::end_motion %W %X %Y}]
-} ]
+  bind TNotebook <ButtonRelease-1> {::docking::end_motion %W %X %Y}
+} 
 
 bind TNotebook <Escape> {
   if {[winfo exists .ctxtMenu]} {
@@ -716,8 +731,8 @@ bind TNotebook <Escape> {
   }
 }
 
-bind TNotebook <ButtonPress-3> [namespace code {::docking::ctx_menu %W}]
-bind TNotebook <<NotebookTabChanged>> [namespace code {::docking::tabChanged %W}]
+bind TNotebook <ButtonPress-3> {::docking::ctx_menu %W}
+bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
 
 ################################################################################
 #

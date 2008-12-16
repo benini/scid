@@ -76,18 +76,16 @@ proc ::windows::gamelist::Open {} {
   set w .glistWin
   
   ::createToplevel $w
-  # toplevel $w
   
   # Window is only directly resizable vertically:
   wm resizable $w false true
   setWinLocation $w
   
   # Pack buttons frame first:
-  pack [frame $w.b] -side bottom -fill x -ipady 5 -padx 10
-  scale $w.scale -from 1 -length 250 -orient horiz \
-      -variable glstart -showvalue 0 -command ::windows::gamelist::SetStart \
+  pack [ttk::frame $w.b] -side bottom -fill x -expand 1 -ipady 5 ;# -padx 10
+  scale $w.scale -from 1 -length 250 -orient horiz -variable glstart -showvalue 0 -command ::windows::gamelist::SetStart \
       -bigincrement $glistSize -takefocus 0 -width 10 -troughcolor $buttoncolor
-  pack $w.scale -side bottom -fill x -padx 30 -pady 4
+  pack $w.scale -side bottom -fill x
   frame $w.columns -takefocus 1 -highlightcolor black -highlightthickness 2
   pack $w.columns -side top -expand yes -fill both
   
@@ -106,11 +104,10 @@ proc ::windows::gamelist::Open {} {
     if {[info exists ::tr(Glist$name)]} { set name $::tr(Glist$name) }
     
     # Each heading is a label:
-    label $w.c$code.header -foreground darkBlue -width $width \
-        -font font_Small -relief flat -background gray90 \
+    ttk::label $w.c$code.header -foreground darkBlue -width $width -font font_Small -relief flat -background gray90 \
         -text $name -anchor w
-    set helpMessage(E,$w.c$code.header) \
-        {Press the left or right mouse button here for a configuration menu}
+    ::utils::tooltip::Set $w.c$code.header $name
+    set helpMessage(E,$w.c$code.header) {Press the left or right mouse button here for a configuration menu}
     
     bind $w.c$code.header <Control-ButtonPress-3> "incrGLwidth $code; break"
     bind $w.c$code.header <Control-ButtonPress-1> "decrGLwidth $code; break"
@@ -118,36 +115,31 @@ proc ::windows::gamelist::Open {} {
     bind $w.c$code.header <Shift-ButtonPress-1> "decrGLwidth $code; break"
     bind $w.c$code.header <ButtonPress-1> "popupGLconfig $code %x %y %X %Y"
     bind $w.c$code.header <ButtonPress-3> "popupGLconfig $code %x %y %X %Y"
-    pack $w.c$code -in $w.columns -side left -expand yes -fill y -padx 0
-    pack $w.c$code.header -side top
+    
+    pack $w.c$code -in $w.columns -side left -expand yes -fill both -padx 0
+    
+    pack $w.c$code.header -side top -fill x -padx 2
     addHorizontalRule $w.c$code 1 flat
     
-    text $w.c$code.text -background white -width $width \
-        -height $glistSize -font font_Small -relief flat \
+    text $w.c$code.text -background white -width $width -height $glistSize -font font_Small -relief flat \
         -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
-    $w.c$code.text tag configure align -justify $justify \
-        -foreground $fgcolor
+    $w.c$code.text tag configure align -justify $justify -foreground $fgcolor
     $w.c$code.text tag configure highlight -background lightBlue
     $w.c$code.text tag configure current -background lightYellow2
     $w.c$code.text tag configure underline -underline true
     
     bind $w.c$code.text <Button1-Motion> "break"
     bind $w.c$code.text <Button2-Motion> "break"
-    bind $w.c$code.text <Double-Button-1> \
-        "::windows::gamelist::SetSelection $code %x %y; ::game::Load \$glNumber; break"
-    bind $w.c$code.text <Button-1> \
-        "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Highlight \$glSelection; break"
-    bind $w.c$code.text <ButtonRelease-1> \
-        "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Dehighlight; break"
+    bind $w.c$code.text <Double-Button-1> "::windows::gamelist::SetSelection $code %x %y; ::game::Load \$glNumber; break"
+    bind $w.c$code.text <Button-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Highlight \$glSelection; break"
+    bind $w.c$code.text <ButtonRelease-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Dehighlight; break"
     
     bind $w.c$code.text <ButtonPress-3> "popupGLmenu $code %x %y %X %Y"
     
-    bind $w.c$code.text <ButtonPress-2> \
-        "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
-    bind $w.c$code.text <ButtonRelease-2> \
-        "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
+    bind $w.c$code.text <ButtonPress-2> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
+    bind $w.c$code.text <ButtonRelease-2> "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
     
-    pack $w.c$code.text -side top -expand true -fill y
+    pack $w.c$code.text -side top -expand true -fill both
     if {$sep} { addVerticalRule $w.columns 1 flat }
   }
   
@@ -160,37 +152,30 @@ proc ::windows::gamelist::Open {} {
   $w.config add command -label $::tr(GlistDeleteField)
   
   menu $w.popup -tearoff 0
-  $w.popup add command -label $::tr(BrowseGame) \
-      -command {::gbrowser::new 0 $glNumber}
+  $w.popup add command -label $::tr(BrowseGame) -command {::gbrowser::new 0 $glNumber}
   $w.popup add command -label $::tr(LoadGame) -command {::game::Load $glNumber}
   $w.popup add command -label $::tr(MergeGame) -command mergeGame
   $w.popup add separator
-  $w.popup add command -label $::tr(GlistRemoveThisGameFromFilter) \
-      -command removeFromFilter
-  $w.popup add command -label $::tr(GlistRemoveGameAndAboveFromFilter) \
-      -command {removeFromFilter up}
-  $w.popup add command -label $::tr(GlistRemoveGameAndBelowFromFilter) \
-      -command {removeFromFilter down}
+  $w.popup add command -label $::tr(GlistRemoveThisGameFromFilter) -command removeFromFilter
+  $w.popup add command -label $::tr(GlistRemoveGameAndAboveFromFilter) -command {removeFromFilter up}
+  $w.popup add command -label $::tr(GlistRemoveGameAndBelowFromFilter) -command {removeFromFilter down}
   #when changing here the menu entry then change index numbers in proc popupGLmenu also
   $w.popup add separator
-  $w.popup add command -label $::tr(GlistDeleteGame) \
-      -command {::windows::gamelist::ToggleFlag delete}
-  $w.popup add command -label $::tr(GlistDeleteAllGames) \
-      -command {catch {sc_game flag delete filter 1}; ::windows::gamelist::Refresh}
-  $w.popup add command -label $::tr(GlistUndeleteAllGames) \
-      -command {catch {sc_game flag delete filter 0}; ::windows::gamelist::Refresh}
+  $w.popup add command -label $::tr(GlistDeleteGame) -command {::windows::gamelist::ToggleFlag delete}
+  $w.popup add command -label $::tr(GlistDeleteAllGames) -command {catch {sc_game flag delete filter 1}; ::windows::gamelist::Refresh}
+  $w.popup add command -label $::tr(GlistUndeleteAllGames) -command {catch {sc_game flag delete filter 0}; ::windows::gamelist::Refresh}
   
-  button $w.b.start -image tb_start -command {set glstart 1; ::windows::gamelist::Refresh}
+  ttk::button $w.b.start -image tb_start -style Pad0.Small.TButton -command {set glstart 1; ::windows::gamelist::Refresh}
   set helpMessage(E,$w.b.start) {Go to the first page of games}
   
-  button $w.b.pgup -image tb_prev -command {
+  ttk::button $w.b.pgup -image tb_prev -style Pad0.Small.TButton -command {
     set glstart [expr {$glstart - $glistSize}];
     if {$glstart < 1} { set glstart 1 };
     ::windows::gamelist::Refresh
   }
   set helpMessage(E,$w.b.pgup) {Previous page of games}
   
-  button $w.b.pgdn -image tb_next  -command {
+  ttk::button $w.b.pgdn -image tb_next  -style Pad0.Small.TButton -command {
     set glstart [expr {$glstart + $glistSize}];
     if {$glstart > [sc_filter count] } {
       set glstart [sc_filter count]
@@ -200,14 +185,14 @@ proc ::windows::gamelist::Open {} {
   }
   set helpMessage(E,$w.b.pgdn) {Next page of games}
   
-  button $w.b.end -image tb_end -command {
+  ttk::button $w.b.end -image tb_end  -style Pad0.Small.TButton -command {
     set glstart [expr {[sc_filter count] - $glistSize + 1}]
     if {$glstart < 1} { set glstart 1}
     ::windows::gamelist::Refresh
   }
   set helpMessage(E,$w.b.end) {Go to the last page of games}
   
-  button $w.b.current -textvar ::tr(Current) -font font_Small -command {
+  ttk::button $w.b.current -textvar ::tr(Current) -style Pad0.Small.TButton -command {
     set glstart [sc_filter locate [sc_game number]]
     if {$glstart < 1} { set glstart 1}
     ::windows::gamelist::Refresh
@@ -231,8 +216,8 @@ proc ::windows::gamelist::Open {} {
   bind $w <Prior> "$w.b.pgup invoke"
   bind $w <Next>  "$w.b.pgdn invoke"
   
-  label $w.b.gotolabel -textvar ::tr(GlistGameNumber:)
-  entry $w.b.goto -bg white -width 8 -textvariable ::windows::gamelist::goto
+  ttk::label $w.b.gotolabel -textvar ::tr(GlistGameNumber:)
+  ttk::entry $w.b.goto -width 8 -textvariable ::windows::gamelist::goto ;# -bg white
   bind $w.b.goto <Home> "$w.b.start invoke; break"
   bind $w.b.goto <End> "$w.b.end invoke; break"
   bind $w.b.goto <Return> {
@@ -242,19 +227,19 @@ proc ::windows::gamelist::Open {} {
     ::windows::gamelist::Refresh
   }
   
-  label $w.b.findlabel -textvar ::tr(GlistFindText:)
+  ttk::label $w.b.findlabel -textvar ::tr(GlistFindText:)
   ttk::combobox $w.b.find -width 15 -textvariable ::windows::gamelist::findtext
   ::utils::history::SetCombobox ::windows::gamelist::findtext $w.b.find
   bind $w.b.find <Return> ::windows::gamelist::FindText
   bind $w.b.find <Home> "$w.b.find icursor 0; break"
   bind $w.b.find <End> "$w.b.find icursor end; break"
   
-  frame $w.b.space -width 0.25c
-  frame $w.b.space2 -width 0.25c
+  ttk::frame $w.b.space -width 0.25c
+  ttk::frame $w.b.space2 -width 0.25c
   
-  button $w.b.export -textvar ::tr(Save...) -command openExportGList
-  button $w.b.help -textvar ::tr(Help) -command { helpWindow GameList }
-  button $w.b.close -textvar ::tr(Close) -command { focus .; destroy .glistWin }
+  ttk::button $w.b.export -textvar ::tr(Save...) -style Pad0.Small.TButton -command openExportGList
+  ttk::button $w.b.help -textvar ::tr(Help) -style Pad0.Small.TButton -command { helpWindow GameList }
+  ttk::button $w.b.close -textvar ::tr(Close) -style Pad0.Small.TButton -command { focus .; destroy .glistWin }
   
   pack $w.b.start $w.b.pgup $w.b.pgdn $w.b.end $w.b.current -side left -padx 1
   pack $w.b.space $w.b.gotolabel $w.b.goto -side left
@@ -300,6 +285,8 @@ proc ::windows::gamelist::Open {} {
   wm iconname $w "Scid: [tr WindowsGList]"
   ::windows::gamelist::Refresh
   focus $w.b.goto
+  
+  ::createToplevelFinalize $w
 }
 
 proc ::windows::gamelist::Scroll {nlines} {
@@ -631,8 +618,7 @@ proc ::windows::gamelist::Refresh {} {
     append cformat "*\n"
     .glistWin.c$code.text config -state normal
     .glistWin.c$code.text delete 1.0 end
-    .glistWin.c$code.text insert end \
-        [sc_game list $glstart $glistSize $cformat] align
+    .glistWin.c$code.text insert end [sc_game list $glstart $glistSize $cformat] align
     if {$linenum > 0} {
       .glistWin.c$code.text tag add current $linenum.0 [expr {$linenum+1}].0
     }
@@ -680,8 +666,7 @@ proc openExportGList {} {
   pack $w.lfmt -side top
   entry $w.fmt -textvar glexport -bg white -fg black -font font_Fixed
   pack $w.fmt -side top -fill x
-  text $w.tfmt -width 1 -height 5 -font font_Fixed -fg black \
-      -wrap none -relief flat
+  text $w.tfmt -width 1 -height 5 -font font_Fixed -fg black -wrap none -relief flat
   pack $w.tfmt -side top -fill x
   $w.tfmt insert end "w: White            b: Black            "
   $w.tfmt insert end "W: White Elo        B: Black Elo        \n"

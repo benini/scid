@@ -274,7 +274,7 @@ set tips(E) {
   }
   {
     Windows can be docked by checking the relevant entry in the option menu.
-    Tabs can be dragged and dropped from one notebook to another and moved
+    Tabs can be dragged and dropped from one notebook to another and layed out
     by right clicking on the tab widget.
   }
 }

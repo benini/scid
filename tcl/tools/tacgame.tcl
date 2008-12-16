@@ -386,6 +386,7 @@ namespace eval tacgame {
     focus .
     ::tacgame::closeEngine 1
     ::tacgame::closeEngine 2
+    ::docking::cleanup .coachWin
   }
   # ======================================================================
   #   ::tacgame::launchengine

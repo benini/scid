@@ -664,7 +664,7 @@ set autoIconify 1
 
 # windowsDock:
 # if true, most of toplevel windows are dockable and embedded in a main window
-# windows can be moves among tabs and undocked (right-clicking on tab)
+# windows can be moves among tabs (drag and drop) or undocked (right-clicking on tab)
 set windowsDock 1
 
 # showGameInfo:
@@ -737,6 +737,15 @@ proc createToplevel { w } {
   }
   
 }
+
+################################################################################
+# In the case of a window closed without the context menu in docked mode, arrange for the tabs to be cleaned up
+# Alternative way : directly call ::docking::cleanup $w when closing window
+################################################################################
+proc createToplevelFinalize {w} {
+  bind $w <Destroy> +[ namespace code "::docking::cleanup $w"]
+}
+
 ################################################################################
 # Sets the menu for a new window : in docked mode the menu is displayed by clicking on the tab of the notebook
 ################################################################################

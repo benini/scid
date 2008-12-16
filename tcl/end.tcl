@@ -935,9 +935,8 @@ proc nameEditor {} {
 #   used in gameSave for setting up the simpler labels and entry boxes.
 #
 proc addGameSaveEntry { name row textname } {
-  label .save.g.label$name -textvar $textname
-  entry .save.g.entry$name -width 30 -background white -relief sunken \
-      -textvariable $name
+  ttk::label .save.g.label$name -textvar $textname
+  ttk::entry .save.g.entry$name -width 30 -textvariable $name
   grid .save.g.label$name -row $row -column 0 -sticky w
   grid .save.g.entry$name -row $row -column 1 -columnspan 7 -sticky w
 }
@@ -954,8 +953,7 @@ proc gameSave { gnum } {
   
   if {![sc_base inUse]} {
     # We can't load a game, no database is open
-    tk_messageBox -title "Scid: No database open" -type ok -icon info \
-        -message "No database is open; open or create one first."
+    tk_messageBox -title "Scid: No database open" -type ok -icon info -message "No database is open; open or create one first."
     return
   }
   
@@ -970,10 +968,10 @@ proc gameSave { gnum } {
   set gsaveNum $gnum
   catch {grab $w}
   
-  set f [frame $w.g]
+  set f [ttk::frame $w.g]
   pack $f -side top
   
-  label $f.title -textvar ::tr(NameEditMatches)
+  ttk::label $f.title -textvar ::tr(NameEditMatches)
   text $f.list -height 9 -width 40 -relief sunken -background grey90 \
       -tabs {2c right 2.5c left} -wrap none
   
@@ -1002,19 +1000,16 @@ proc gameSave { gnum } {
   addGameSaveEntry event 0 ::tr(Event:)
   addGameSaveEntry site 1 ::tr(Site:)
   
-  frame $f.dateframe
-  label $f.datelabel -textvar ::tr(Date:)
-  entry $f.dateyear -width 6 -background white -relief sunken \
-      -textvariable year -justify right
-  label $f.datedot1 -text "."
-  entry $f.datemonth -width 3 -background white -relief sunken \
-      -textvariable month -justify right
-  label $f.datedot2 -text "."
-  entry $f.dateday -width 3 -background white -relief sunken \
-      -textvariable day -justify right
+  ttk::frame $f.dateframe
+  ttk::label $f.datelabel -textvar ::tr(Date:)
+  ttk::entry $f.dateyear -width 6 -textvariable year -justify right ;# -background white -relief sunken
+  ttk::label $f.datedot1 -text "."
+  ttk::entry $f.datemonth -width 3 -textvariable month -justify right
+  ttk::label $f.datedot2 -text "."
+  ttk::entry $f.dateday -width 3 -textvariable day -justify right
   grid $f.datelabel -row 2 -column 0 -sticky w
   grid $f.dateframe -row 2 -column 1 -columnspan 5 -sticky w
-  button $f.datechoose -image ::utils::date::calendar -command {
+  ttk::button $f.datechoose -image ::utils::date::calendar -style Pad0.Small.TButton -command {
     set newdate [::utils::date::chooser "$year-$month-$day"]
     if {[llength $newdate] == 3} {
       set year [lindex $newdate 0]
@@ -1022,7 +1017,7 @@ proc gameSave { gnum } {
       set day [lindex $newdate 2]
     }
   }
-  button $f.today -textvar ::tr(Today) -command {
+  ttk::button $f.today -textvar ::tr(Today) -command {
     set year [::utils::date::today year]
     set month [::utils::date::today month]
     set day [::utils::date::today day]
@@ -1034,19 +1029,16 @@ proc gameSave { gnum } {
   }
   pack $f.today -in $f.dateframe -side left
   
-  frame $f.edateframe
-  label $f.edatelabel -textvar ::tr(EventDate:)
-  entry $f.edateyear -width 6 -background white -relief sunken \
-      -textvariable eyear -justify right
-  label $f.edatedot1 -text "."
-  entry $f.edatemonth -width 3 -background white -relief sunken \
-      -textvariable emonth -justify right
-  label $f.edatedot2 -text "."
-  entry $f.edateday -width 3 -background white -relief sunken \
-      -textvariable eday -justify right
+  ttk::frame $f.edateframe
+  ttk::label $f.edatelabel -textvar ::tr(EventDate:)
+  ttk::entry $f.edateyear -width 6 -textvariable eyear -justify right
+  ttk::label $f.edatedot1 -text "."
+  ttk::entry $f.edatemonth -width 3 -textvariable emonth -justify right
+  ttk::label $f.edatedot2 -text "."
+  ttk::entry $f.edateday -width 3 -textvariable eday -justify right
   grid $f.edatelabel -row 3 -column 0 -sticky w
   grid $f.edateframe -row 3 -column 1 -columnspan 5 -sticky w
-  button $f.edatechoose -image ::utils::date::calendar -command {
+  ttk::button $f.edatechoose -image ::utils::date::calendar -style Pad0.Small.TButton -command {
     set newdate [::utils::date::chooser "$eyear-$emonth-$eday"]
     if {[llength $newdate] == 3} {
       set eyear [lindex $newdate 0]
@@ -1054,7 +1046,7 @@ proc gameSave { gnum } {
       set eday [lindex $newdate 2]
     }
   }
-  button $f.esame -text "=$::tr(Date)" -command {
+  ttk::button $f.esame -text "=$::tr(Date)" -command {
     set eyear $year
     set emonth $month
     set eday $day
@@ -1070,25 +1062,24 @@ proc gameSave { gnum } {
   addGameSaveEntry white 5 ::tr(White:)
   addGameSaveEntry black 6 ::tr(Black:)
   
-  label $f.reslabel -textvar ::tr(Result:)
-  entry $f.resentry -width 2 -background white -relief sunken \
-      -textvariable resultVal
-  label $f.rescomment -text "(1, =, 0, *)"
+  ttk::label $f.reslabel -textvar ::tr(Result:)
+  ttk::entry $f.resentry -width 2 -textvariable resultVal
+  ttk::label $f.rescomment -text "(1, =, 0, *)"
   grid $f.reslabel -row 7 -column 0 -sticky w
   grid $f.resentry -row 7 -column 1 -sticky w
   grid $f.rescomment -row 7 -column 2 -columnspan 4 -sticky w
   
-  label $f.welolabel -text "$::tr(White) "
-  eval tk_optionMenu $f.wrtype whiteRType [sc_info ratings]
-  $f.wrtype configure -indicatoron 0 -width 7 -takefocus 1
-  entry $f.weloentry -width 5 -background white -relief sunken \
-      -textvariable whiteElo -justify right
+  ttk::label $f.welolabel -text "$::tr(White) "
   
-  label $f.belolabel -text "$::tr(Black) "
-  eval tk_optionMenu $f.brtype blackRType [sc_info ratings]
-  $f.brtype configure -indicatoron 0 -width 7 -takefocus 1
-  entry $f.beloentry -width 5 -background white -relief sunken \
-      -textvariable blackElo -justify right
+  ttk::combobox $f.wrtype -values [sc_info ratings] -width 7 -textvariable whiteRType
+  
+  ttk::entry $f.weloentry -width 5 -textvariable whiteElo -justify right
+  
+  ttk::label $f.belolabel -text "$::tr(Black) "
+  
+  ttk::combobox $f.brtype -values [sc_info ratings] -width 7 -textvariable blackRType
+  
+  ttk::entry $f.beloentry -width 5 -textvariable blackElo -justify right
   
   grid $f.welolabel -row 8 -column 0 -sticky w
   grid $f.wrtype -row 8 -column 1 -sticky w
@@ -1097,37 +1088,33 @@ proc gameSave { gnum } {
   grid $f.brtype -row 9 -column 1 -sticky w
   grid $f.beloentry -row 9 -column 2 -sticky w
   
-  label $f.ecolabel -text "ECO Code:"
-  entry $f.ecoentry -width 6 -background white -relief sunken \
-      -textvariable eco
+  ttk::label $f.ecolabel -text "ECO Code:"
+  ttk::entry $f.ecoentry -width 6 -textvariable eco
   grid $f.ecolabel -row 10 -column 0 -sticky w
   grid $f.ecoentry -row 10 -column 1 -sticky w
   
-  button $f.ecob -textvar ::tr(ClassifyGame) -command {set eco [sc_eco game]}
+  ttk::button $f.ecob -textvar ::tr(ClassifyGame) -command {set eco [sc_eco game]}
   grid $f.ecob -row 10 -column 2 -sticky w
   
   grid $f.title -row 0 -column 8 -sticky n -padx 10
   grid $f.list -row 1 -column 8 -rowspan 9 -sticky nw -padx 10
   
-  frame .save.bar -height 2 -borderwidth 1 -relief sunken
-  pack .save.bar -fill x -pady 4
+  addHorizontalRule .save
   
-  label .save.extralabel -text \
-      "Extra Tags: (example format: Annotator \"Anand, V\") "
-  pack .save.extralabel -side top
-  frame .save.extra
+  ttk::label .save.extralabel -text "Extra Tags: (example format: Annotator \"Anand, V\") "
+  pack .save.extralabel -side top -fill x
+  ttk::frame .save.extra
   text .save.extra.text -height 4 -width 40 -bg white -wrap none \
       -yscrollcommand ".save.extra.scroll set"
   # Override tab-binding for this text widget:
   bind .save.extra.text <Key-Tab> "[bind all <Key-Tab>]; break"
-  scrollbar .save.extra.scroll -command ".save.extra.text yview" \
-      -takefocus 0
-  button .save.extra.last -text "Use\nlast\ngame's\ntags" -command {
+  ttk::scrollbar .save.extra.scroll -command ".save.extra.text yview" -takefocus 0
+  ttk::button .save.extra.last -text "Use\nlast\ngame's\ntags" -command {
     set extraTags [sc_game tag get -last Extra]
     .save.extra.text delete 1.0 end
     .save.extra.text insert 1.0 $extraTags
   }
-  pack .save.extra -side top -ipady 10
+  pack .save.extra -side top -fill both -expand 1 -ipady 10
   pack .save.extra.text -side left -fill both -expand 1
   if {$gnum == 0} {
     pack .save.extra.last -side right -padx 10
@@ -1159,11 +1146,11 @@ proc gameSave { gnum } {
     }
   }
   
-  frame .save.bar2 -height 2 -borderwidth 1 -relief sunken
-  pack .save.bar2 -fill x -pady 10
-  frame .save.buttons
+  addHorizontalRule .save
+  
+  ttk::frame .save.buttons
   if {$gnum == 0} {
-    button .save.buttons.prev -text "As last game" -command {
+    ttk::button .save.buttons.prev -text "As last game" -command {
     }
   }
   dialogbutton .save.buttons.save -textvar ::tr(Save) -underline 0 -command {
@@ -1173,7 +1160,7 @@ proc gameSave { gnum } {
   }
   
   dialogbutton .save.buttons.cancel -textvar ::tr(Cancel) -command {destroy .save}
-  pack .save.buttons -side bottom -pady 10 -fill x
+  pack .save.buttons -side bottom -ipady 10 -fill both -expand 1
   if {$gnum == 0} {
     #pack .save.buttons.prev -side left -padx 10
   }
@@ -1745,9 +1732,9 @@ if { !$::docking::USE_DOCKING } {
   if {$startup(finder)} { ::file::finder::Open }
   if {$startup(book)} { ::book::open }
 } else  {
-    if {$startup(stats)} { ::windows::stats::Open }
-    if {$startup(crosstable)} { crosstabWin }
-    if {$startup(finder)} { ::file::finder::Open }
+  if {$startup(stats)} { ::windows::stats::Open }
+  if {$startup(crosstable)} { crosstabWin }
+  if {$startup(finder)} { ::file::finder::Open }
 }
 
 updateBoard

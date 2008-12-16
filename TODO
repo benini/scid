@@ -3,9 +3,10 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+Tester FICS state
 
-ajouter cleanup après destroy des fenêtres en mode doqué
 faire marcher racourcis menus
+enlever barre blanche sous échiquier en mode docked
 
  ===========================================================
 |                                                           |
@@ -19,11 +20,7 @@ faire marcher racourcis menus
 |                                                           |
  ===========================================================
 
-- stop engine after last move in annotation (?)
-
 - add variations from analysis engine when the engine is locked
-
-- Option to set engines as 1st and 2nd default engines
 
 - Add a Game training ala Fritz' "Friend mode"
 

@@ -1419,6 +1419,8 @@ proc destroyAnalysisWin {{n 1}} {
   }
   set analysis(pipe$n) ""
   set ::analysisWin$n 0
+  
+  ::docking::cleanup ".analysisWin$n"
 }
 
 # sendToEngine:
@@ -1629,7 +1631,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   
   # add a button to start/stop engine analysis
   button $w.b1.bStartStop -image tb_pause -command "toggleEngineAnalysis $n"
-  ::utils::tooltip::Set $w.b1.bStartStop "$::tr(StopEngine)(a)"
+  ::utils::tooltip::Set $w.b1.bStartStop "$::tr(StopEngine) (F[expr 3 + $n])"
   
   if {$n == 1} {
     set ::finishGameMode 0

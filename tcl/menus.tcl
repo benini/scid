@@ -171,8 +171,7 @@ menu $m.utils
 $m add cascade -label FileMaint -menu .menu.file.utils
 set helpMessage($m,[incr menuindex]) FileMaint
 
-$m.utils add checkbutton -label FileMaintWin \
-    -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
+$m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
 bind $dot_w <Control-m> ::maint::OpenClose
 set helpMessage($m.utils,0) FileMaintWin
 
@@ -199,8 +198,7 @@ menu $m.utils.name
 $m.utils add cascade -label FileMaintName -menu .menu.file.utils.name
 set helpMessage($m.utils,8) FileMaintName
 
-$m.utils.name add checkbutton -label FileMaintNameEditor \
-    -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
+$m.utils.name add checkbutton -label FileMaintNameEditor -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
 bind $dot_w <Control-N> nameEditor
 set helpMessage($m.utils.name,0) FileMaintNameEditor
 
@@ -255,8 +253,7 @@ set helpMessage($m,[incr menuindex]) FileExit
 ### Edit menu:
 set menuindex -1
 set m .menu.edit
-$m add command -label EditAdd \
-    -accel "Ctrl+A" -command {sc_var create; updateBoard -pgn}
+$m add command -label EditAdd -accel "Ctrl+A" -command {sc_var create; updateBoard -pgn}
 set helpMessage($m,[incr menuindex]) EditAdd
 
 menu $m.del
@@ -271,8 +268,7 @@ menu $m.main
 $m add cascade -label EditMain -menu $m.main
 set helpMessage($m,[incr menuindex]) EditMain
 
-$m add checkbutton -label EditTrial -variable trialMode \
-    -accelerator "Ctrl+space" -command {setTrialMode update}
+$m add checkbutton -label EditTrial -variable trialMode -accelerator "Ctrl+space" -command {setTrialMode update}
 bind $dot_w <Control-space> { setTrialMode toggle }
 set helpMessage($m,[incr menuindex]) EditTrial
 
@@ -324,13 +320,11 @@ $m add command -label EditSetup -accelerator "Ctrl+Shift+S" -command setupBoard
 bind $dot_w <Control-S> setupBoard
 set helpMessage($m,[incr menuindex]) EditSetup
 
-$m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" \
-    -command copyFEN
+$m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" -command copyFEN
 bind $dot_w <Control-C> copyFEN
 set helpMessage($m,[incr menuindex]) EditCopyBoard
 
-$m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" \
-    -command pasteFEN
+$m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteFEN
 bind $dot_w <Control-V> pasteFEN
 set helpMessage($m,[incr menuindex]) EditPasteBoard
 
@@ -342,28 +336,23 @@ $m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
 bind $dot_w <Control-x> ::game::Clear
 set helpMessage($m,[incr menuindex]) GameNew
 
-$m add command -label GameFirst -accelerator "Ctrl+Shift+Up" \
-    -command {::game::LoadNextPrev first}
+$m add command -label GameFirst -accelerator "Ctrl+Shift+Up" -command {::game::LoadNextPrev first}
 bind $dot_w <Control-Shift-Up> {::game::LoadNextPrev first}
 set helpMessage($m,[incr menuindex]) GameFirst
 
-$m add command -label GamePrev -accelerator "Ctrl+Up" \
-    -command {::game::LoadNextPrev previous}
+$m add command -label GamePrev -accelerator "Ctrl+Up" -command {::game::LoadNextPrev previous}
 bind $dot_w <Control-Up> {::game::LoadNextPrev previous}
 set helpMessage($m,[incr menuindex]) GamePrev
 
-$m add command -label GameReload -command ::game::Reload \
-    -accelerator "Ctrl+Shift+L"
+$m add command -label GameReload -command ::game::Reload -accelerator "Ctrl+Shift+L"
 bind $dot_w <Control-L> ::game::Reload
 set helpMessage($m,[incr menuindex]) GameReload
 
-$m add command -label GameNext -accelerator "Ctrl+Down" \
-    -command {::game::LoadNextPrev next}
+$m add command -label GameNext -accelerator "Ctrl+Down" -command {::game::LoadNextPrev next}
 bind $dot_w <Control-Down> {::game::LoadNextPrev next}
 set helpMessage($m,[incr menuindex]) GameNext
 
-$m add command -label GameLast -accelerator "Ctrl+Shift+Down" \
-    -command {::game::LoadNextPrev last}
+$m add command -label GameLast -accelerator "Ctrl+Shift+Down" -command {::game::LoadNextPrev last}
 bind $dot_w <Control-Shift-Down> {::game::LoadNextPrev last}
 set helpMessage($m,[incr menuindex]) GameLast
 
@@ -396,13 +385,11 @@ $m add command -label GameDeepest -accelerator "Ctrl+Shift+D" -command {
 bind $dot_w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
 set helpMessage($m,[incr menuindex]) GameDeepest
 
-$m add command -label GameGotoMove -accelerator "Ctrl+U" \
-    -command ::game::GotoMoveNumber
+$m add command -label GameGotoMove -accelerator "Ctrl+U" -command ::game::GotoMoveNumber
 set helpMessage($m,[incr menuindex]) GameGotoMove
 bind $dot_w <Control-u> ::game::GotoMoveNumber
 
-$m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" \
-    -command findNovelty
+$m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" -command findNovelty
 bind $dot_w <Control-Y> findNovelty
 set helpMessage($m,[incr menuindex]) GameNovelty
 
@@ -410,39 +397,33 @@ set helpMessage($m,[incr menuindex]) GameNovelty
 ### Search menu:
 set menuindex -1
 set m .menu.search
-$m  add command -label SearchReset -acc "Ctrl+F" \
-    -command ::search::filter::reset
+$m  add command -label SearchReset -acc "Ctrl+F" -command ::search::filter::reset
 bind $dot_w <Control-f> search::filter::reset
 set helpMessage($m,[incr menuindex]) SearchReset
 
-$m  add command -label SearchNegate -acc "Ctrl+Shift+F" \
-    -command ::search::filter::negate
+$m  add command -label SearchNegate -acc "Ctrl+Shift+F" -command ::search::filter::negate
 bind $dot_w <Control-F> ::search::filter::negate
 set helpMessage($m,[incr menuindex]) SearchNegate
 
 $m  add separator
 incr menuindex
 
-$m  add command -label SearchCurrent \
-    -command ::search::board -accelerator "Ctrl+Shift+B"
+$m  add command -label SearchCurrent -command ::search::board -accelerator "Ctrl+Shift+B"
 bind $dot_w <Control-B> ::search::board
 set helpMessage($m,[incr menuindex]) SearchCurrent
 
-$m  add command -label SearchHeader \
-    -command ::search::header -accelerator "Ctrl+Shift+H"
+$m  add command -label SearchHeader -command ::search::header -accelerator "Ctrl+Shift+H"
 bind $dot_w <Control-H> ::search::header
 set helpMessage($m,[incr menuindex]) SearchHeader
 
-$m  add command -label SearchMaterial \
-    -command ::search::material -accelerator "Ctrl+Shift+M"
+$m  add command -label SearchMaterial -command ::search::material -accelerator "Ctrl+Shift+M"
 bind $dot_w <Control-M> ::search::material
 set helpMessage($m,[incr menuindex]) SearchMaterial
 
 $m  add separator
 incr menuindex
 
-$m add command -label SearchUsing -accel "Ctrl+Shift+U" \
-    -command ::search::usefile
+$m add command -label SearchUsing -accel "Ctrl+Shift+U" -command ::search::usefile
 bind $dot_w <Control-KeyPress-U> ::search::usefile
 set helpMessage($m,[incr menuindex]) SearchUsing
 
@@ -519,8 +500,7 @@ set helpMessage($m.correspondence,17) CCMailMove
 ### Windows menu:
 set menuindex -1
 set m .menu.windows
-$m  add checkbutton -label WindowsComment \
-    -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
+$m  add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
 
 bind $dot_w <Control-e> makeCommentWin
 set helpMessage($m,[incr menuindex]) WindowsComment
@@ -530,53 +510,44 @@ $m  add checkbutton -label WindowsGList \
 bind $dot_w <Control-l> ::windows::gamelist::Open
 set helpMessage($m,[incr menuindex]) WindowsGList
 
-$m  add checkbutton -label WindowsPGN \
-    -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
+$m  add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
 bind $dot_w <Control-p> ::pgn::OpenClose
 set helpMessage($m,[incr menuindex]) WindowsPGN
 
-$m add checkbutton -label WindowsPList \
-    -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
+$m add checkbutton -label WindowsPList -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
 bind $dot_w <Control-P> ::plist::toggle
 set helpMessage($m,[incr menuindex]) WindowsPList
 
-$m add checkbutton -label WindowsTmt \
-    -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
+$m add checkbutton -label WindowsTmt -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
 bind $dot_w <Control-T> ::tourney::toggle
 set helpMessage($m,[incr menuindex]) WindowsTmt
 
 $m add separator
 incr menuindex
 
-$m add checkbutton -label WindowsSwitcher \
-    -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
+$m add checkbutton -label WindowsSwitcher -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
 set helpMessage($m,[incr menuindex]) WindowsSwitcher
 
-$m add checkbutton -label WindowsMaint \
-    -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
+$m add checkbutton -label WindowsMaint -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
 bind $dot_w <Control-m> ::maint::OpenClose
 set helpMessage($m,[incr menuindex]) WindowsMaint
 
 $m add separator
 incr menuindex
 
-$m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" \
-    -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
+$m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
 bind $dot_w <Control-y> ::windows::eco::OpenClose
 set helpMessage($m,[incr menuindex]) WindowsECO
 
-$m add checkbutton -label WindowsRepertoire -variable ::rep::Win \
-    -accelerator "Ctrl+Shift+R" -command ::rep::OpenCloseWindow
+$m add checkbutton -label WindowsRepertoire -variable ::rep::Win -accelerator "Ctrl+Shift+R" -command ::rep::OpenCloseWindow
 bind $dot_w <Control-R> ::rep::OpenCloseWindow
 set helpMessage($m,[incr menuindex]) WindowsRepertoire
 
-$m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen \
-    -accelerator "Ctrl+I" -command ::windows::stats::Open
+$m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accelerator "Ctrl+I" -command ::windows::stats::Open
 bind $dot_w <Control-i> ::windows::stats::Open
 set helpMessage($m,[incr menuindex]) WindowsStats
 
-$m add checkbutton -label WindowsTree \
-    -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
+$m add checkbutton -label WindowsTree -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
 bind $dot_w <Control-t> { .menu.windows invoke [tr WindowsTree] }
 set helpMessage($m,[incr menuindex]) WindowsTree
 
@@ -589,7 +560,7 @@ set helpMessage($m,[incr menuindex]) WindowsBook
 bind $dot_w <F11>  ::book::open
 
 $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
-   -command ::CorrespondenceChess::CCWindow -accelerator "F12"
+    -command ::CorrespondenceChess::CCWindow -accelerator "F12"
 bind $dot_w <F12> ::CorrespondenceChess::CCWindow
 
 ### Tools menu:
@@ -1203,8 +1174,8 @@ if { $::docking::USE_DOCKING } {
 } else  {
   set state "normal"
 }
-$m add checkbutton -label HelpTip -variable startup(tip) 
-$m add checkbutton -label ToolsCross -variable startup(crosstable) 
+$m add checkbutton -label HelpTip -variable startup(tip)
+$m add checkbutton -label ToolsCross -variable startup(crosstable)
 $m add checkbutton -label WindowsSwitcher -variable startup(switcher) -state $state
 $m add checkbutton -label FileFinder -variable startup(finder)
 $m add checkbutton -label WindowsGList -variable startup(gamelist) -state $state
@@ -1641,42 +1612,78 @@ proc checkMenuUnderline {menu} {
 #
 proc standardShortcuts {w} {
   if {! [winfo exists $w]} { return }
-  bind $w <Control-o> ::file::Open
-  bind $w <Control-w> ::file::Close
-  bind $w <Control-slash> ::file::finder::Open
-  bind $w <Control-m> ::maint::OpenClose
+  
+  # Global shortcuts for docked mode
+  if { $::docking::USE_DOCKING } {
+    bind $w <F1> {helpWindow Contents}
+    bind $w <Control-N> nameEditor
+    bind $w <Control-a> {sc_var create; updateBoard -pgn}
+    bind $w <Control-space> { setTrialMode toggle }
+    bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
+    bind $w <Control-u> ::game::GotoMoveNumber
+    bind $w <Control-Y> findNovelty
+    bind $w <Control-F> ::search::filter::negate
+    bind $w <Control-p> ::pgn::OpenClose
+    bind $w <Control-P> ::plist::toggle
+    bind $w <Control-T> ::tourney::toggle
+    bind $w <Control-y> ::windows::eco::OpenClose
+    bind $w <Control-equal> ::tb::Open
+    bind $w <Control-G> tools::graphs::filter::Open
+    bind $w <Control-J> tools::graphs::absfilter::Open
+    bind $w <Control-O> ::optable::makeReportWin
+    bind $w <Control-K> ::ptrack::make
+  }
+  
+  bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}
   bind $w <Control-d> ::windows::switcher::Open
+  bind $w <Control-e> makeCommentWin
+  bind $w <Control-f> ::search::filter::reset
+  bind $w <Control-g> ::game::LoadNumber
+  bind $w <Control-i> ::windows::stats::Open
+  bind $w <Control-l> ::windows::gamelist::Open
+  bind $w <Control-m> ::maint::OpenClose
+  bind $w <Control-n> ::file::New
+  bind $w <Control-o> ::file::Open
+  bind $w <Control-p> ::pgn::OpenClose
   bind $w <Control-q> ::file::Exit
+  bind $w <Control-r> ::gameReplace
+  bind $w <Control-s> ::gameAdd
+  bind $w <Control-t> ::tree::make
+  bind $w <Control-v> {catch {sc_clipbase paste}; ::updateBoard -pgn}
+  bind $w <Control-w> ::file::Close
+  bind $w <Control-x> ::game::Clear
+  
+  bind $w <Control-A> makeAnalysisWin
+  bind $w <Control-B> ::search::board
+  bind $w <Control-C> ::copyFEN
+  bind $w <Control-E> ::tools::email
+  bind $w <Control-H> ::search::header
+  bind $w <Control-I> importPgnGame
   bind $w <Control-L> ::game::Reload
+  bind $w <Control-M> ::search::material
+  bind $w <Control-O> ::optable::makeReportWin
+  bind $w <Control-R> ::rep::OpenCloseWindow
+  bind $w <Control-S> ::setupBoard
+  bind $w <Control-T> ::tourney::toggle
+  bind $w <Control-V> ::pasteFEN
+  bind $w <Control-KeyPress-U> ::search:::usefile
+  bind $w <Control-X> crosstabWin
+  bind $w <Control-Z> ::tools::graphs::score::Refresh
+  
+  bind $w <Control-slash> ::file::finder::Open
   bind $w <Control-Shift-Up> {::game::LoadNextPrev first}
   bind $w <Control-Shift-Down> {::game::LoadNextPrev last}
   bind $w <Control-Up> {::game::LoadNextPrev previous}
   bind $w <Control-Down> {::game::LoadNextPrev next}
   bind $w <Control-question> ::game::LoadRandom
-  bind $w <Control-g> ::game::LoadNumber
-  bind $w <Control-f> ::search::filter::reset
-  bind $w <Control-B> ::search::board
-  bind $w <Control-H> ::search::header
-  bind $w <Control-M> ::search::material
-  bind $w <Control-KeyPress-U> ::search:::usefile
-  bind $w <Control-e> makeCommentWin
-  bind $w <Control-l> ::windows::gamelist::Open
-  bind $w <Control-p> ::pgn::OpenClose
-  bind $w <Control-T> ::tourney::toggle
-  bind $w <Control-i> ::windows::stats::Open
-  bind $w <Control-t> ::tree::make
-  bind $w <Control-A> makeAnalysisWin
-  bind $w <Control-X> crosstabWin
-  bind $w <Control-E> ::tools::email
-  bind $w <Control-O> ::optable::makeReportWin
-  # bind $w <Control-R> {::tools::graphs::rating::Refresh both}
-  bind $w <Control-R> ::rep::OpenCloseWindow
-  bind $w <Control-Z> ::tools::graphs::score::Refresh
-  bind $w <Control-I> importPgnGame
+  
+  bind $w <KeyPress-v> { ::showVars }
+  bind $w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
+  
   for {set i 1} { $i <= $::totalBaseSlots} {incr i} {
     bind $w "<Control-Key-$i>" "::file::SwitchToBase $i"
   }
-  # extra generic bindings added for Scid 3.6.24 : hope there is no conflict
+  
   bind $w <Home>  ::move::Start
   bind $w <Up> {
     if {[sc_pos isAt vstart]} {
@@ -1689,22 +1696,12 @@ proc standardShortcuts {w} {
   bind $w <Down>  {::move::Forward 10}
   bind $w <Right> ::move::Forward
   bind $w <End>   ::move::End
-  bind $w <KeyPress-v> { ::showVars }
-  bind $w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
-  bind $w <F1> {helpWindow Contents}
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
   bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }
   bind $w <F5> { catch { .analysisWin2.b1.bStartStop invoke } }
   bind $w <F11>  ::book::open
   bind $w <F12> ::CorrespondenceChess::CCWindow
-  bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}
-  bind $w <Control-v> {catch {sc_clipbase paste}; ::updateBoard -pgn}
-  bind $w <Control-S> ::setupBoard
-  bind $w <Control-C> ::copyFEN
-  bind $w <Control-V> ::pasteFEN
-  bind $w <Control-r> ::gameReplace
-  bind $w <Control-s> ::gameAdd
 }
 ################################################################################
 #

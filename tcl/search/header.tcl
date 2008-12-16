@@ -374,7 +374,7 @@ proc search::header {} {
   ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults ;# -padx 20
   ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save ;# -padx 20
   ttk::button $w.b.stop -textvar ::tr(Stop) -command sc_progressBar
-  ttk::button $w.b.search -textvar ::tr(Search) -command { ;# -padx 20
+  ttk::button $w.b.search -textvar ::tr(Search) -command { 
     ::utils::history::AddEntry HeaderSearchWhite $sWhite
     ::utils::history::AddEntry HeaderSearchBlack $sBlack
     ::utils::history::AddEntry HeaderSearchEvent $sEvent
@@ -461,7 +461,7 @@ proc search::header {} {
   pack $w.status -side bottom -fill x
   # update
   wm resizable $w 0 0
-  standardShortcuts $w
+  # standardShortcuts $w
   ::search::Config
   focus $w.cWhite.e
 }

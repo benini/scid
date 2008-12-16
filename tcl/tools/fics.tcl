@@ -212,7 +212,7 @@ namespace eval fics {
     ::gameclock::new $w.f.bottom.left 2 100 0
     
     set row 0
-    ttk::checkbutton $w.f.bottom.right.silence -text "Silence" -state disabled -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
+    ttk::checkbutton $w.f.bottom.right.silence -text "Silence" -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
       ::fics::writechan "set gin $::fics::silence" "echo"
       ::fics::writechan "set seek $::fics::silence" "echo"
       ::fics::writechan "set silence $::fics::silence" "echo"
@@ -222,7 +222,7 @@ namespace eval fics {
     
     grid $w.f.bottom.right.silence -column 0 -row $row -sticky w
     incr row
-    ttk::checkbutton $w.f.bottom.right.offers -state disabled -text "Offers" -variable ::fics::graphon -command ::fics::showOffers
+    ttk::checkbutton $w.f.bottom.right.offers -text "Offers" -variable ::fics::graphon -command ::fics::showOffers
     set ::fics::graphon 0
     ttk::button $w.f.bottom.right.games -text "Games" -command { ::fics::writechan "games /bs"}
     grid $w.f.bottom.right.offers -column 0 -row $row -sticky w
@@ -298,6 +298,7 @@ namespace eval fics {
     
     fconfigure $sockchan -blocking 0 -buffering line -translation auto ;#-encoding iso8859-1 -translation crlf
     fileevent $sockchan readable ::fics::readchan
+    setState disabled
   }
   ################################################################################
   #
@@ -558,8 +559,7 @@ namespace eval fics {
       writechan "style 12"
       writechan "iset nowrap 1"
       writechan "iset nohighlight 1"
-      .fics.f.bottom.right.offers configure -state normal
-      .fics.f.bottom.right.silence configure -state normal
+      setState normal
       return
     }
     
@@ -653,6 +653,18 @@ namespace eval fics {
       writechan "\n"
     }
     
+  }
+  ################################################################################
+  #  Set the state of user interface related to connection state
+  ################################################################################
+  proc setState { state } {
+    set w .fics
+    
+    foreach elt [list $w.f.bottom.right.offers $w.f.bottom.right.silence $w.f.top.f2.send $w.f.bottom.right.offers $w.f.bottom.right.games \
+          $w.f.bottom.right.findopp $w.f.bottom.right.abort $w.f.bottom.right.draw $w.f.bottom.right.resign $w.f.bottom.right.takeback \
+          $w.f.bottom.right.takeback2] {
+      $elt configure -state $state
+    }
   }
   ################################################################################
   #

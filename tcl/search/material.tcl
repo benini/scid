@@ -590,7 +590,7 @@ proc ::search::material {} {
   
   # update
   wm resizable $w 0 0
-  standardShortcuts $w
+  # standardShortcuts $w
   ::search::Config
   focus $f.search
 }

@@ -376,6 +376,7 @@ namespace eval sergame {
     set ::uci::uciInfo(bestmove$n) "abort"
     destroy .serGameWin
     focus .
+    ::docking::cleanup .serGameWin
   }
   
   ################################################################################
