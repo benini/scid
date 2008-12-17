@@ -444,6 +444,8 @@ foreach flag $maintFlaglist {
 }
 
 bind .main.gameInfo <ButtonPress-3> "tk_popup .main.gameInfo.menu %X %Y"
+# alternate code that may work better on MacOS ?
+# bind .main.gameInfo <ButtonPress-3> ".main.gameInfo.menu post %X %Y"
 bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
 
 

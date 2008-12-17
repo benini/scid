@@ -723,7 +723,7 @@ bind TNotebook <ButtonPress-1> +[ list ::docking::start_motion %W ]
 bind TNotebook <B1-Motion> {
   ::docking::motion %W
   bind TNotebook <ButtonRelease-1> {::docking::end_motion %W %X %Y}
-} 
+}
 
 bind TNotebook <Escape> {
   if {[winfo exists .ctxtMenu]} {
@@ -1001,6 +1001,7 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     if { $d == ".fdockbookWin" } {  ::book::open }
     if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
     if { $d == ".fdocktbWin" } { ::tb::Open }
+    if { $d == ".fdockcommentWin" } {  ::commenteditor::Open }
     if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
   }
   

@@ -1810,8 +1810,7 @@ proc ::board::stm {w} {
 
 # ::board::coords
 #   Add or remove coordinates around the edge of the board.
-#
-#Klimmek: Toggle between 0,1,2.
+# Toggle between 0,1,2.
 proc ::board::coords {w} {
   set coords [expr {1 + $::board::_coords($w)} ]
   if { $coords > 2 } { set coords 0 }

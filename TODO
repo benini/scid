@@ -3,11 +3,9 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-Tester FICS state
 
-faire marcher racourcis menus
-enlever barre blanche sous échiquier en mode docked
-
+enlever barre blanche sous échiquier en mode docked (à finir, voir lignes 1390 de end.tcl)
+ET LIGNES 790 de start.tcl
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -53,21 +51,12 @@ ide: larger feature, idea or new concept
 usa: improve usability, clean interface
 
 GAME EDITOR
-* cmd: [~] and [~=] buttons in Comment editor
-* cmd: "Save/Replace" option for "Current game has changed" dialog
 * fea: automatically delete empty comments
 * fea: merge game ignoring move sequences (use last matching position)
 * fea: merge game into variations too
 * fea: properly detect that game was modified
 * fea: warn user when replacing large portions of game comments
-* ide: any NAG in Comment editor (combo box?)
 * ide: better editor (best: merge Comment Editor and PGN Window?)
-* ide: allow merging two commentaries of the same games (f. e. we got
-  (Annotator: Fritz    15. Bg5 ( {better } 15. Ng3) )
-   Annotator: Crafty   15. Bg5 ( {with equality} )
-   =>
-   15. Bg5 ( {Fritz: better } 15. Bg3 )
-           ( {Crafty: with equality} )
 
 GAME LIST
 * fea: highlight current game in game list by default
@@ -93,7 +82,6 @@ SEARCH MATERIAL
 * usa: Material Search window (use tabs)
 
 DATABASE
-* fea: reopen last databases/games
 * ide: datasets (you define current filter to be current database subset)
 * usa: improve Maintenance usability
 
@@ -105,9 +93,6 @@ PLAYER INFO
 PLAYER BROWSER
 * cmd: popup menu to load All/White/Black games of a player
 * opt: incrementally match player name
-
-ANALYSIS WINDOW & ENGINES
-* fea: chess engine output in main window
   
 SPELLCHECKER
 * fea: don't match partial name for surname
@@ -115,6 +100,3 @@ SPELLCHECKER
 INTERNAL GAME HANDLING 
 * fea: in non-strict PGN view, convert all $ NAGs to symbols/words
 * ide: datasets (allowing to work on current filter as on the whole database)
-
-CLIPBOARD
-* cmd: remove game(s) from clipboard -> WORKAROUND : USE GAME LIST AND REMOVE FROM FILTER

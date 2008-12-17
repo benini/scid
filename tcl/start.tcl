@@ -764,13 +764,25 @@ proc resizeMainBoard {} {
   
   set w [winfo width .main]
   set h [winfo height .main]
-  if {$::showGameInfo} {
-    set extrah 130
-  } else  {
-    set extrah 0
+  
+  set h0 [ lindex [grid bbox .main 0 0] 3]
+  set h1 [ lindex [grid bbox .main 0 1] 3]
+  set h2 [ lindex [grid bbox .main 0 3] 3]
+  set h3 [ lindex [grid bbox .main 0 5] 3]
+  # coordinates
+  set h4 0
+  if { $::board::_coords(.main.board) == 2 } {
+    set h4 [ lindex [ grid bbox .main.board 0 9 ] 3 ]
   }
-  set availw [expr ($w - 80) / 8 ]
-  set availh [expr ($h - $extrah - 100) / 8 ]
+  if { $::board::_coords(.main.board) == 0 } {
+    set h4 [expr  2 * [ lindex [ grid bbox .main.board 0 0 ] 3 ] ]
+  }
+  
+  set height_used [ expr $h0 + $h1 + $h2 + $h3 + $h4]
+  
+  set availw [expr $w - 80 ]
+  set availh [expr $h - $height_used - 10]
+  
   if {$availh < $availw} {
     set min $availh
   } else  {
@@ -780,13 +792,14 @@ proc resizeMainBoard {} {
   # Find the closest available size
   for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
     set newSize [lindex $::boardSizes $i]
-    if { $newSize > $min} {
+    if { $newSize > [ expr $min / 8 ] } {
       if {$i > 0} {
         set newSize [lindex $::boardSizes [expr $i -1] ]
       }
       break
     }
   }
+  
   ::board::resize2 .main.board $newSize
   set ::boardSize $newSize
 }
@@ -794,13 +807,7 @@ proc resizeMainBoard {} {
 # sets visibility of gameInfo panel at the bottom of main board
 proc toggleGameInfo {} {
   if {$::showGameInfo} {
-    
-    if { $::docking::USE_DOCKING } {
-      grid .main.gameInfoFrame -row 3 -column 0 -sticky ew -padx 2
-    } else  {
-      grid .main.gameInfoFrame -row 3 -column 0 -sticky nsew -padx 2
-    }
-    
+    grid .main.gameInfoFrame -row 3 -column 0 -sticky nsew
   } else  {
     grid forget .main.gameInfoFrame
   }

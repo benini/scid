@@ -44,13 +44,6 @@ proc makeCommentWin {} {
 
 # ::commenteditor::Open --
 #
-#	TODO: brief description (abstract)
-#
-# Arguments:
-#	none
-# Results:
-#	TODO: detailed description
-#
 proc ::commenteditor::Open {} {
   global commentWin nagValue highcolor helpMessage
   variable colorList
@@ -64,36 +57,35 @@ proc ::commenteditor::Open {} {
     return
   }
   set w .commentWin
-  toplevel $w
+  ::createToplevel $w
   setWinLocation $w
   bind $w <F1> {helpWindow Comment}
   bind $w <Destroy> [namespace code {set commentWin 0; set State(isOpen) 0}]
   bind $w <Configure> "recordWinSize $w"
   
-  set mark [frame $w.markFrame]
-  pack $mark -side left -fill x -padx 2 -anchor n
+  set mark [ttk::frame $w.markFrame]
+  pack $mark -side left -fill both -expand 1 -padx 1 -anchor n
   
   # Comment frame:
-  frame $w.cf
-  text $w.cf.text -width $::winWidth($w) -height $::winHeight($w) \
-      -background white -wrap word -font font_Regular \
+  ttk::frame $w.cf
+  text $w.cf.text -width $::winWidth($w) -height $::winHeight($w) -background white -wrap word -font font_Regular \
       -yscrollcommand ".commentWin.cf.scroll set" -setgrid 1
-  scrollbar $w.cf.scroll -command ".commentWin.cf.text yview"
-  label $w.cf.label -font font_Bold -textvar ::tr(Comment)
+  ttk::scrollbar $w.cf.scroll -command ".commentWin.cf.text yview"
+  ttk::label $w.cf.label -font font_Bold -textvar ::tr(Comment)
   bindFocusColors $w.cf.text
   bind $w.cf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
   bind $w.cf.text <Alt-KeyRelease-s> { .commentWin.b.store invoke }
   
   # NAG frame:
-  frame $w.nf -width 100
-  frame $w.nf.tf
-  entry $w.nf.tf.text -width 20 -background white
+  ttk::frame $w.nf -width 100
+  ttk::frame $w.nf.tf
+  ttk::entry $w.nf.tf.text -width 20 -background white
   bindFocusColors $w.nf.tf.text
   bind $w.nf.tf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
   
   set nagbox $w.nf.tf.text
   set nagbuttons $w.nf.b
-  frame $w.nf.b
+  ttk::frame $w.nf.b
   set i 0
   set row 0
   set column 0
@@ -115,19 +107,18 @@ proc ::commenteditor::Open {} {
     N Novelty
     D Diagram
   } {
-    button $nagbuttons.b$i -takefocus 0 -text "$nag" -width 2 \
-        -command [namespace code [list addNag "$nag"]]
+    ttk::button $nagbuttons.b$i -takefocus 0 -text "$nag" -width 2 -command [namespace code [list addNag "$nag"]]
     # set helpMessage(E,$nagbuttons.b$i) $description
     ::utils::tooltip::Set $nagbuttons.b$i $description
     grid $nagbuttons.b$i -row [expr {$i % 2}] -column [expr {int($i / 2)}] -padx 2 -pady 2
     incr i
   }
   
-  label $w.nf.label -font font_Bold -textvar ::tr(AnnotationSymbols)
-  pack $w.nf -side top -pady 2
+  ttk::label $w.nf.label -font font_Bold -textvar ::tr(AnnotationSymbols)
+  pack $w.nf -side top -pady 1 -expand 1 -fill both
   #addHorizontalRule $w
   
-  button $w.nf.tf.clear -textvar ::tr(Clear) -command {
+  ttk::button $w.nf.tf.clear -textvar ::tr(Clear) -command {
     .commentWin.nf.tf.text delete 0 end
     ::commenteditor::storeComment
     ::pgn::Refresh 1
@@ -140,8 +131,8 @@ proc ::commenteditor::Open {} {
   pack $w.nf.tf.clear -side right -padx 20 -pady 5
   pack $w.nf.b -side top
   
-  frame $w.b
-  pack $w.b -side bottom -ipady 4 -fill x -padx 2
+  ttk::frame $w.b
+  pack $w.b -side bottom -ipady 4 -fill both -expand 1 -padx 1
   
   pack $w.cf -side top -expand 1 -fill both
   pack $w.cf.label -side top -pady 2
@@ -154,50 +145,38 @@ proc ::commenteditor::Open {} {
   
   # Main buttons:
   
-  dialogbutton $w.b.clear -textvar ::tr(Clear) \
-      -command [namespace code [list ClearComments .commentWin]]
+  dialogbutton $w.b.clear -textvar ::tr(Clear) -command [namespace code [list ClearComments .commentWin]]
   set helpMessage(E,$w.b.clear) {Clear this comment}
-  dialogbutton $w.b.revert -textvar ::tr(Revert) \
-      -command ::commenteditor::Refresh
+  dialogbutton $w.b.revert -textvar ::tr(Revert) -command ::commenteditor::Refresh
   set helpMessage(E,$w.b.revert) {Revert to the stored comment}
-  dialogbutton $w.b.store -textvar ::tr(Store) \
-      -command [namespace code {storeComment; ::pgn::Refresh 1; updateBoard}]
+  dialogbutton $w.b.store -textvar ::tr(Store) -command [namespace code {storeComment; ::pgn::Refresh 1; updateBoard}]
   set helpMessage(E,$w.b.store) {Store this comment in the game}
-  frame $w.b.space -width 10
-  dialogbutton $w.b.close -textvar ::tr(Close) \
-      -command { focus .; destroy .commentWin}
+  ttk::frame $w.b.space -width 10
+  dialogbutton $w.b.close -textvar ::tr(Close) -command { focus .; destroy .commentWin}
   set helpMessage(E,$w.b.close) {Close the comment editor window}
   
-  pack $w.b.close $w.b.space $w.b.store $w.b.revert $w.b.clear -side right -padx 2
+  pack $w.b.close $w.b.space $w.b.store $w.b.revert $w.b.clear -side right -padx 1
   
   ### Insert-mark frame
   
-  label $mark.header -font font_Bold -text $::tr(InsertMark:)
+  ttk::label $mark.header -font font_Bold -text $::tr(InsertMark:)
   pack $mark.header -side top -ipady 1 -fill x -padx 1
   
-  pack [frame [set usage $mark.usage]] -side bottom -pady 1 -expand true
-  pack [label [set usage $usage.text] \
-      -text [string trim $::tr(InsertMarkHelp)] -justify left]
+  # pack [ttk::frame $mark.usage] -side bottom -pady 1 -expand true
+  # pack [ttk::label $mark.usage.text -text [string trim $::tr(InsertMarkHelp)] -justify left]
+  ::utils::tooltip::Set $mark [string trim $::tr(InsertMarkHelp)]
   
   # Subframes for insert board and two button rows:
-  pack [frame [set colorButtons $mark.colorButtons]] \
-      -side top -pady 1 -anchor n
-  pack [frame [set insertBoard $mark.insertBoard]] \
-      -side top -pady 1
-  pack [frame [set typeButtons $mark.typeButtons]] \
-      -side top -pady 1 -anchor s
+  pack [ttk::frame [set colorButtons $mark.colorButtons]] -side top -pady 1 -anchor n
+  pack [ttk::frame [set insertBoard $mark.insertBoard]] -side top -pady 1
+  pack [ttk::frame [set typeButtons $mark.typeButtons]] -side top -pady 1 -anchor s
   
   # Left subframe: color (radio)buttons
   foreach color $colorList {
     image create photo markColor_$color -width 18 -height 18
     markColor_$color put $color -to 1 1 16 16
-    radiobutton $colorButtons.c$color \
-        -image markColor_$color \
-        -variable [namespace current]::State(markColor) \
-        -value $color \
-        -indicatoron 0 \
-        -takefocus 0 \
-        -command [namespace code [list SetMarkColor $color]]
+    radiobutton $colorButtons.c$color -image markColor_$color -variable [namespace current]::State(markColor) \
+        -value $color -takefocus 0 -command [namespace code [list SetMarkColor $color]] -indicatoron 0
     pack $colorButtons.c$color -side left -padx 0 -pady 3
   }
   
@@ -207,41 +186,29 @@ proc ::commenteditor::Open {} {
   set ::board::_mark($board) $::board::_mark(.main.board)
   ::board::update $board
   pack $board -side top
-  # TODO?: move this for loop into a new proc (e.g. 'BindSquares')
   for {set square 0} {$square < 64} {incr square} {
-    ::board::bind $board $square <ButtonPress-1> [namespace code \
-        [list InsertMark $board $square]]
-    ::board::bind $board $square <ButtonRelease-1> [namespace code \
-        [list ButtonReleased $board %b %X %Y]]
-    #::board::bind $board $square <ButtonPress-2> [namespace code \
-    #        [list InsertMark $board [expr {$square + 64}]]]
-    ::board::bind $board $square <ButtonPress-3> [namespace code \
-        [list InsertMark $board [expr {$square + 64}]]]
+    ::board::bind $board $square <ButtonPress-1> [namespace code [list InsertMark $board $square]]
+    ::board::bind $board $square <ButtonRelease-1> [namespace code [list ButtonReleased $board %b %X %Y]]
+    ::board::bind $board $square <ButtonPress-3> [namespace code [list InsertMark $board [expr {$square + 64}]]]
   }
   
   # Right subframe: type/shape (pseudo-radio)buttons
   set size 20	;# button/rectangle size
-  pack [set types [frame $typeButtons.all]] -side left -padx 10
+  pack [set types [ttk::frame $typeButtons.all]] -side left -padx 10
   set row 0
   foreach buttons $markTypeList {
     set column 0
     foreach shape $buttons {
       set color [::board::defaultColor [expr {($column + $row) % 2}]]
       # Create and draw a button:
-      set button [frame $types.button_${shape} -class PseudoButton]
+      set button [ttk::frame $types.button_${shape} -class PseudoButton]
       grid $button -row $row -column $column -padx 1 -pady 1
       # The "board" is a 1x1 board, containing one single square.
-      set board1x1 [canvas $button.bd \
-          -height $size -width $size -highlightthickness 0 \
-          -borderwidth 2 -relief raised]
-      $board1x1 create rectangle 0 0 $size $size \
-          -fill $color -outline "" \
-          -tag [list sq0 button${shape}]
-      ::board::mark::add $types.button_${shape} \
-          $shape 0 $State(markColor) "false"
+      set board1x1 [canvas $button.bd -height $size -width $size -highlightthickness 0 -borderwidth 1 -relief raised]
+      $board1x1 create rectangle 0 0 $size $size -fill $color -outline "" -tag [list sq0 button${shape}]
+      ::board::mark::add $types.button_${shape} $shape 0 $State(markColor) "false"
       pack $board1x1
-      bind $board1x1 <Button-1> \
-          [namespace code [list SetMarkType $board $shape]]
+      bind $board1x1 <Button-1> [namespace code [list SetMarkType $board $shape]]
       incr column
     } ;# foreach shape
     incr row
@@ -250,11 +217,11 @@ proc ::commenteditor::Open {} {
   SetMarkType $board $State(markType)
   
   ### Start editing
-  
-  wm title $w "Scid: [tr {Comment editor}]"
+  ::setTitle $w "Scid: [tr {Comment editor}]"
   wm iconname $w "Scid: [tr {Comment editor}]"
   ::commenteditor::Refresh
   focus $w.cf.text
+  ::createToplevelFinalize $w
 }
 
 # ::commenteditor::SetMarkColor --

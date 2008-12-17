@@ -1388,6 +1388,12 @@ standardShortcuts .main
 ############################################################
 ### Packing the main window:
 
+if { $::docking::USE_DOCKING} {
+  ttk::frame .main.space
+  grid .main.space -row 4 -column 0 -columnspan 3 -sticky nsew
+  grid rowconfigure .main 4 -weight 1
+}
+
 label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 -font font_Small
 grid .main.statusbar -row 5 -column 0 -columnspan 3 -sticky we
 bind .main.statusbar <1> gotoNextBase
@@ -1408,7 +1414,13 @@ proc gotoNextBase {} {
 }
 
 grid columnconfigure .main 0 -weight 1
-grid rowconfigure .main 3 -weight 1
+
+# game info widget only gets its requested size
+if { $::docking::USE_DOCKING } {
+  grid rowconfigure .main 3 -weight 0
+} else  {
+  grid rowconfigure .main 3 -weight 1
+}
 
 pack .main.fbutton.button -anchor center
 grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2
@@ -1862,6 +1874,7 @@ if { !$::docking::USE_DOCKING } {
 if { $::docking::USE_DOCKING } {
   setTitle .main [ ::tr "Board" ]
   # restore geometry
+  wm minsize $dot_w 360 320
   setWinLocation $dot_w
   setWinSize $dot_w
   
