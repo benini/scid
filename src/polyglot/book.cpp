@@ -42,9 +42,15 @@ static int BookSize[MaxBook];
 static int    find_pos      (uint64 key, const int BookNumber);
 
 static void   read_entry    (entry_t * entry, int n, const int BookNumber);
-static void   read_entry_file    (FILE *f, entry_t * entry);
 static void   write_entry   (const entry_t * entry, int n, const int BookNumber);
+
+#ifdef WINCE
+static void   read_entry_file    (Tcl_Channel file, entry_t * entry);
+static void   write_entry_file   (Tcl_Channel file, const entry_t * entry);
+#else
+static void   read_entry_file    (FILE *f, entry_t * entry);
 static void   write_entry_file   (FILE *f, const entry_t * entry);
+#endif
 
 #ifdef WINCE
 static uint64 read_integer  (Tcl_Channel file, int size);
@@ -123,7 +129,11 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     int probs_written;
     int write_count;
     int i;
+#ifdef WINCE
+  Tcl_Channel f;
+#else
     FILE *f;
+#endif
     char *probs_copy, *moves_copy;
     //	printf("Updating book: moves=%s; probs=%s; tempfile=%s; key=%016llx.\n",moves,probs,tempfile,scid_board[BookNumber]->key);
         /* parse probs and fill prob array */
@@ -173,12 +183,23 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
     if(prob_count==0){
         return 0; // nothing to do
     }
+
+#ifdef WINCE
+  if ((f = my_Tcl_OpenFileChannel(NULL, tempfile, "w+", 0666) ) == NULL) {
+#else
     if(!(f=fopen(tempfile,"wb+"))){
+#endif
         return -1;  //fail
     }
     probs_written=0;
     write_count=0;
+
+#ifdef WINCE
+    my_Tcl_Seek(BookFile[BookNumber],0,SEEK_SET);
+#else
     fseek(BookFile[BookNumber],0,SEEK_SET);
+#endif
+
     for(pos=0; pos<BookSize[BookNumber];pos++){
         read_entry_file(BookFile[BookNumber],entry);
         if ((entry->key < scid_board[BookNumber]->key)||
@@ -224,13 +245,22 @@ int scid_book_movesupdate(char * moves, char * probs, const int BookNumber, char
       probs_written=1;
     }
     ASSERT(probs_written);
+#ifdef WINCE
+    my_Tcl_Seek(BookFile[BookNumber],0,SEEK_SET);
+    my_Tcl_Seek(f,0,SEEK_SET);
+#else
     fseek(BookFile[BookNumber],0,SEEK_SET);
     fseek(f,0,SEEK_SET);
+#endif
     for(pos=0; pos<write_count ;pos++){
         read_entry_file(f,entry);
         write_entry_file(BookFile[BookNumber],entry);
     }
+#ifdef WINCE   
+    my_Tcl_Close(NULL, f);
+#else
     fclose(f);
+#endif
     BookSize[BookNumber]=write_count;
     book_flush(BookNumber); // commit changes to disk
     return 0; // success
@@ -352,11 +382,10 @@ int scid_book_disp(const board_t * board, char * s, const int BookNumber) {
 // =================================================================
 int scid_position_book_disp(const board_t *board, char * s, const int BookNumber) {
 
-    
    int move;
    char move_string[256];
    char tmp[256];
-   list_t book_moves[1], legal_moves[1];
+   list_t /*book_moves[1],*/ legal_moves[1];
    board_t new_board[1];
    int i;
    s[0] = '\0';
@@ -627,8 +656,11 @@ static int find_pos(uint64 key, const int BookNumber) {
 }
 
 // read_entry()
-
+#ifdef WINCE
+static void read_entry_file(Tcl_Channel f, entry_t * entry) {
+#else
 static void read_entry_file(FILE *f, entry_t * entry) {
+#endif
    ASSERT(entry!=NULL);
 
    entry->key   = read_integer(f,8);
@@ -661,9 +693,11 @@ static void read_entry(entry_t * entry, int n, const int BookNumber) {
 }
 
 // write_entry_file
-
+#ifdef WINCE
+static void write_entry_file(Tcl_Channel f, const entry_t * entry) {
+#else
 static void write_entry_file(FILE * f, const entry_t * entry) {
-
+#endif
    ASSERT(entry!=NULL);
    write_integer(f,8,entry->key);
    write_integer(f,2,entry->move);

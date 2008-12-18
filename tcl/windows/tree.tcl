@@ -494,6 +494,17 @@ proc ::tree::dorefresh { baseNumber } {
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
   ::windows::gamelist::Refresh
   updateTitle
+  
+  # if the Tree base is not the current one, updates the Tree base to the first game in filter : that way it is possible to
+  # directly generate an opening report for example
+  if {$baseNumber != [sc_base current] } {
+    set current [sc_base current]
+    sc_base switch $baseNumber
+    if { [sc_filter first] != 0 } {
+      sc_game load [sc_filter first]
+    }
+    sc_base switch $current
+  }
 }
 
 ################################################################################

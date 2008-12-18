@@ -199,6 +199,10 @@ cab: dist
 	cd $(CABWIZTOOLS) && wine Cabwiz.exe scidpocket.inf /cpu Arm
 	cp $(CABWIZTOOLS)/scidpocket.Arm.CAB /media/disk/
 
+### build cab file for Pocket PC with dll and exe UPXed
+upx: dist
+# TODO
+	
 tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o \
           src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o
 	cd src/zlib && $(MAKE) -f Makefile.arm

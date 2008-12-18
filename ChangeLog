@@ -664,3 +664,4 @@ scid-3.6.7
 - updated spanish translation (thanks to Benigno Hernández)
 - Fix : Tree window : when a Mask is opened, the whole line is clickable (not only the part with moves and stats)
 - Fix : FICS connection. Better handling of connection error if behind a firewall or network is down
+- Tree window : when a Tree is updated and the current base is not the Tree's one, the Tree base will automatically load the first game in the filter (so by switching to the Tree's base, the position is already set to the previous one and for example an Opening report can be immediately generated)

@@ -256,6 +256,7 @@ namespace eval fics {
     bind $w <F1> { helpWindow FICS}
     bind $w.f.top.f1.console <FocusIn> "focus $w.f.top.f2.cmd"
     bind $w.f.top.f1.console <Configure> { .fics.f.top.f1.console yview moveto 1 }
+    standardShortcuts $w
     
     # all widgets must be visible
     update
