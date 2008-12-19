@@ -1246,7 +1246,13 @@ foreach i $boardStyles {
 ### Help menu:
 set menuindex -1
 set m .menu.helpmenu
-$m add command -label HelpContents -command {helpWindow Contents} -accelerator "F1"
+# On Mac use accelerator "Command-?" for Help:
+if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+	$m add command -label HelpContents -command {helpWindow Contents} -accelerator "Command-?"
+	
+} else {
+  $m add command -label HelpContents -command {helpWindow Contents} -accelerator "F1"
+}
 set helpMessage($m,[incr menuindex]) HelpContents
 $m add command -label HelpIndex -command {helpWindow Index}
 set helpMessage($m,[incr menuindex]) HelpIndex
@@ -1273,6 +1279,37 @@ $m  add command -label HelpAbout -command helpAbout
 set helpMessage($m,[incr menuindex]) HelpAbout
 
 bind $dot_w <F1> {helpWindow Contents}
+
+### Mac Application Menu:
+
+if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+  # Application menu:
+  .menu add cascade -label Scid -menu .menu.apple
+  menu .menu.apple
+  
+  set menuindex -1
+  set m .menu.apple
+
+  $m add command -label HelpAbout -command helpAbout
+  set helpMessage($m,[incr menuindex]) HelpAbout
+
+  $m add separator  
+  incr menuindex
+
+  # To Quit
+  bind all <Command-q> "exit"
+  bind all <Command-Q> "exit"
+  
+  # To get Help
+  bind all <Command-?> {helpWindow Contents}
+  bind all <Help> {helpWindow Contents}
+  
+  # Fix Quitting on MacOS X, now it will save options on quit:
+  proc exit {}  {
+    ::file::Exit
+  }
+}
+
 
 ##################################################
 
@@ -1548,6 +1585,13 @@ proc setLanguageMenus {{lang ""}} {
   foreach tag {Contents Index Guide Hints Contact Tip Startup About} {
     configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang
   }
+
+  if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+    foreach tag {About} {
+      configMenuText .menu.apple [tr Help$tag $oldLang] Help$tag $lang
+    }
+  }
+
   
   foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
         TBNothing TBResult TBAll Delete Mark} {
