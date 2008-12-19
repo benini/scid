@@ -65,12 +65,12 @@ proc ::crosstab::Open {} {
     ::crosstab::Refresh
     return
   }
-
+  
   toplevel $w
   wm title $w "Scid: [tr ToolsCross]"
   wm minsize $w 50 5
   setWinLocation $w
-
+  
   menu $w.menu
   $w configure -menu $w.menu
   $w.menu add cascade -label CrosstabFile -menu $w.menu.file
@@ -82,7 +82,7 @@ proc ::crosstab::Open {} {
   foreach i {file edit opt sort color helpmenu} {
     menu $w.menu.$i -tearoff 0
   }
-
+  
   $w.menu.file add command -label CrosstabFileText -command {
     set ftype {
       { "Text files" {".txt"} }
@@ -91,9 +91,7 @@ proc ::crosstab::Open {} {
     set fname [tk_getSaveFile -initialdir [pwd] -filetypes $ftype  -title "Save Crosstable"]
     if {$fname != ""} {
       if {[catch {set tempfile [open $fname w]}]} {
-        tk_messageBox -title "Scid: Error saving file" \
-          -type ok -icon warning \
-          -message "Unable to save the file: $fname\n\n"
+        tk_messageBox -title "Scid: Error saving file" -type ok -icon warning -message "Unable to save the file: $fname\n\n"
       } else {
         puts -nonewline $tempfile [.crosstabWin.f.text get 1.0 end]
         close $tempfile
@@ -107,16 +105,17 @@ proc ::crosstab::Open {} {
     }
     set fname [tk_getSaveFile -initialdir $::initialDir(html) -filetypes $ftype  -title "Save Crosstable as HTML"]
     if {$fname != ""} {
+      if {[file extension $fname] != ".html" && [file extension $fname] != ".htm" } {
+        append fname ".html"
+      }
       if {[catch {set tempfile [open $fname w]}]} {
-        tk_messageBox -title "Scid: Error saving file" \
-          -type ok -icon warning \
-          -message "Unable to save the file: $fname\n\n"
+        tk_messageBox -title "Scid: Error saving file" -type ok -icon warning -message "Unable to save the file: $fname\n\n"
       } else {
         catch {sc_game crosstable html $crosstab(sort) $crosstab(type) \
-                 $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
-                 $crosstab(colors) $crosstab(groups) $crosstab(ages) \
-                 $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} \
-          result
+              $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
+              $crosstab(colors) $crosstab(groups) $crosstab(ages) \
+              $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} \
+            result
         puts $tempfile $result
         close $tempfile
       }
@@ -129,16 +128,19 @@ proc ::crosstab::Open {} {
     }
     set fname [tk_getSaveFile -initialdir $::initialDir(tex) -filetypes $ftype  -title "Save Crosstable as LaTeX"]
     if {$fname != ""} {
+      if {[file extension $fname] != ".tex" && [file extension $fname] != ".ltx" } {
+        append fname ".tex"
+      }
       if {[catch {set tempfile [open $fname w]}]} {
         tk_messageBox -title "Scid: Error saving file" \
-          -type ok -icon warning \
-          -message "Unable to save the file: $fname\n\n"
+            -type ok -icon warning \
+            -message "Unable to save the file: $fname\n\n"
       } else {
         catch {sc_game crosstable latex $crosstab(sort) $crosstab(type) \
-                 $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
-                 $crosstab(colors) $crosstab(groups) $crosstab(ages) \
-                 $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} \
-          result
+              $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
+              $crosstab(colors) $crosstab(groups) $crosstab(ages) \
+              $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} \
+            result
         puts $tempfile $result
         close $tempfile
       }
@@ -146,8 +148,8 @@ proc ::crosstab::Open {} {
   }
   $w.menu.file add separator
   $w.menu.file add command -label CrosstabFileClose \
-    -command { .crosstabWin.b.cancel invoke } -accelerator Esc
-
+      -command { .crosstabWin.b.cancel invoke } -accelerator Esc
+  
   $w.menu.edit add command -label CrosstabEditEvent -command {
     makeNameEditor
     setNameEditorType event
@@ -170,73 +172,73 @@ proc ::crosstab::Open {} {
     set editDateNew [sc_game info date]
     set editNameSelect crosstable
   }
-
+  
   $w.menu.opt add radiobutton -label CrosstabOptAll \
-    -variable crosstab(type) -value allplay -command crosstabWin
+      -variable crosstab(type) -value allplay -command crosstabWin
   $w.menu.opt add radiobutton -label CrosstabOptSwiss \
-    -variable crosstab(type) -value swiss -command crosstabWin
+      -variable crosstab(type) -value swiss -command crosstabWin
   $w.menu.opt add radiobutton -label CrosstabOptKnockout \
-    -variable crosstab(type) -value knockout -command crosstabWin
+      -variable crosstab(type) -value knockout -command crosstabWin
   $w.menu.opt add radiobutton -label CrosstabOptAuto \
-    -variable crosstab(type) -value auto -command crosstabWin
+      -variable crosstab(type) -value auto -command crosstabWin
   $w.menu.opt add separator
   $w.menu.opt add checkbutton -label CrosstabOptAges \
-    -variable crosstab(ages) -onvalue "+ages" \
-    -offvalue "-ages" -command crosstabWin
+      -variable crosstab(ages) -onvalue "+ages" \
+      -offvalue "-ages" -command crosstabWin
   $w.menu.opt add checkbutton -label CrosstabOptNats \
-    -variable crosstab(countries) -onvalue "+countries" \
-    -offvalue "-countries" -command crosstabWin
+      -variable crosstab(countries) -onvalue "+countries" \
+      -offvalue "-countries" -command crosstabWin
   $w.menu.opt add checkbutton -label CrosstabOptRatings \
-    -variable crosstab(ratings) -onvalue "+ratings" -offvalue "-ratings" \
-    -command crosstabWin
+      -variable crosstab(ratings) -onvalue "+ratings" -offvalue "-ratings" \
+      -command crosstabWin
   $w.menu.opt add checkbutton -label CrosstabOptTitles \
-    -variable crosstab(titles) -onvalue "+titles" -offvalue "-titles" \
-    -command crosstabWin
+      -variable crosstab(titles) -onvalue "+titles" -offvalue "-titles" \
+      -command crosstabWin
   $w.menu.opt add checkbutton -label CrosstabOptBreaks \
-    -variable crosstab(breaks) -onvalue "+breaks" \
-    -offvalue "-breaks" -command crosstabWin
+      -variable crosstab(breaks) -onvalue "+breaks" \
+      -offvalue "-breaks" -command crosstabWin
   $w.menu.opt add checkbutton -label CrosstabOptDeleted \
-    -variable crosstab(deleted) -onvalue "+deleted" \
-    -offvalue "-deleted" -command crosstabWin
+      -variable crosstab(deleted) -onvalue "+deleted" \
+      -offvalue "-deleted" -command crosstabWin
   $w.menu.opt add separator
   $w.menu.opt add checkbutton -label CrosstabOptColors \
-    -underline 0 -variable crosstab(colors) \
-    -onvalue "+colors" -offvalue "-colors" -command crosstabWin
+      -underline 0 -variable crosstab(colors) \
+      -onvalue "+colors" -offvalue "-colors" -command crosstabWin
   $w.menu.opt add checkbutton -label CrosstabOptColumnNumbers \
-    -underline 0 -variable crosstab(cnumbers) \
-    -onvalue "+numcolumns" -offvalue "-numcolumns" -command crosstabWin
+      -underline 0 -variable crosstab(cnumbers) \
+      -onvalue "+numcolumns" -offvalue "-numcolumns" -command crosstabWin
   $w.menu.opt add separator
   $w.menu.opt add checkbutton -label CrosstabOptGroup \
-    -underline 0 -variable crosstab(groups) \
-    -onvalue "+groups" -offvalue "-groups" -command crosstabWin
-
+      -underline 0 -variable crosstab(groups) \
+      -onvalue "+groups" -offvalue "-groups" -command crosstabWin
+  
   $w.menu.sort add radiobutton -label CrosstabSortName \
-    -variable crosstab(sort) -value name -command crosstabWin
+      -variable crosstab(sort) -value name -command crosstabWin
   $w.menu.sort add radiobutton -label CrosstabSortRating \
-    -variable crosstab(sort) -value rating -command crosstabWin
+      -variable crosstab(sort) -value rating -command crosstabWin
   $w.menu.sort add radiobutton -label CrosstabSortScore \
-    -variable crosstab(sort) -value score -command crosstabWin
-
+      -variable crosstab(sort) -value score -command crosstabWin
+  
   $w.menu.color add radiobutton -label CrosstabColorPlain \
-    -variable crosstab(text) -value plain -command crosstabWin
+      -variable crosstab(text) -value plain -command crosstabWin
   $w.menu.color add radiobutton -label CrosstabColorHyper \
-    -variable crosstab(text) -value hypertext -command crosstabWin
-
+      -variable crosstab(text) -value hypertext -command crosstabWin
+  
   $w.menu.helpmenu add command -label CrosstabHelpCross \
-    -accelerator F1 -command {helpWindow Crosstable}
+      -accelerator F1 -command {helpWindow Crosstable}
   $w.menu.helpmenu add command -label CrosstabHelpIndex \
-     -command {helpWindow Index}
-
+      -command {helpWindow Index}
+  
   ::crosstab::ConfigMenus
-
+  
   frame $w.b
   pack $w.b -side bottom -fill x
   frame $w.f
   pack $w.f -side top -fill both -expand true
   text $w.f.text -width $::winWidth($w) -height $::winHeight($w) \
-    -wrap none -font font_Fixed \
-    -background white -yscroll "$w.f.ybar set" \
-    -xscroll "$w.f.xbar set" -setgrid 1 -cursor top_left_arrow
+      -wrap none -font font_Fixed \
+      -background white -yscroll "$w.f.ybar set" \
+      -xscroll "$w.f.xbar set" -setgrid 1 -cursor top_left_arrow
   ::htext::init $w.f.text
   $w.f.text tag configure bgGray -background gray95
   scrollbar $w.f.ybar -command "$w.f.text yview"
@@ -247,18 +249,18 @@ proc ::crosstab::Open {} {
   grid rowconfig $w.f 0 -weight 1 -minsize 0
   grid columnconfig $w.f 0 -weight 1 -minsize 0
   button $w.b.stop -textvar ::tr(Stop) -state disabled \
-    -command { set ::htext::interrupt 1 }
+      -command { set ::htext::interrupt 1 }
   menubutton $w.b.type -text "" -menu $w.b.type.menu \
-    -relief raised -bd 2 -indicatoron 1
+      -relief raised -bd 2 -indicatoron 1
   menu $w.b.type.menu
   $w.b.type.menu add radiobutton -label [tr CrosstabOptAll] \
-    -variable crosstab(type) -value allplay -command crosstabWin
+      -variable crosstab(type) -value allplay -command crosstabWin
   $w.b.type.menu add radiobutton -label [tr CrosstabOptSwiss] \
-    -variable crosstab(type) -value swiss -command crosstabWin
+      -variable crosstab(type) -value swiss -command crosstabWin
   $w.b.type.menu add radiobutton -label [tr CrosstabOptKnockout] \
-    -variable crosstab(type) -value knockout -command crosstabWin
+      -variable crosstab(type) -value knockout -command crosstabWin
   $w.b.type.menu add radiobutton -label [tr CrosstabOptAuto] \
-    -variable crosstab(type) -value auto -command crosstabWin
+      -variable crosstab(type) -value auto -command crosstabWin
   button $w.b.update -textvar ::tr(Update) -command crosstabWin
   button $w.b.cancel -textvar ::tr(Close) -command {
     focus .
@@ -275,9 +277,9 @@ proc ::crosstab::Open {} {
     ::windows::gamelist::Refresh
   }
   pack $w.b.cancel $w.b.update $w.b.type \
-    -side right -pady 3 -padx 5
+      -side right -pady 3 -padx 5
   pack $w.b.setfilter $w.b.addfilter -side left -pady 3 -padx 5
-
+  
   bind $w <Configure> "recordWinSize $w"
   bind $w <F1> { helpWindow Crosstable }
   bind $w <Return> { .crosstabWin.b.update invoke }
@@ -295,14 +297,14 @@ proc ::crosstab::Open {} {
     .crosstabWin.f.text xview moveto 0.99
   }
   standardShortcuts $w
-
+  
   # MouseWheel Bindings:
   bind $w <MouseWheel> { .crosstabWin.f.text yview scroll [expr {- (%D / 120)}] units}
   if {! $::windowsOS} {
     bind $w <Button-4> { .crosstabWin.f.text yview scroll -1 units }
     bind $w <Button-5> { .crosstabWin.f.text yview scroll  1 units }
   }
-
+  
   ::crosstab::Refresh
 }
 
@@ -314,7 +316,7 @@ proc ::crosstab::Refresh {} {
   global crosstab
   set w .crosstabWin
   if {! [winfo exists $w]} { return }
-
+  
   switch $crosstab(type) {
     allplay  { $w.b.type configure -text [tr CrosstabOptAll] }
     swiss    { $w.b.type configure -text [tr CrosstabOptSwiss] }
@@ -334,9 +336,9 @@ proc ::crosstab::Refresh {} {
   catch {grab $w.b.stop}
   update
   catch {sc_game crosstable $crosstab(text) $crosstab(sort) $crosstab(type) \
-         $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
-         $crosstab(colors) $crosstab(groups) $crosstab(ages) \
-         $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} result
+        $crosstab(ratings) $crosstab(countries) $crosstab(titles) \
+        $crosstab(colors) $crosstab(groups) $crosstab(ages) \
+        $crosstab(breaks) $crosstab(cnumbers) $crosstab(deleted)} result
   $w.f.text configure -state normal
   if {$crosstab(text) == "plain"} {
     $w.f.text insert end $result

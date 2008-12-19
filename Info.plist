@@ -10,11 +10,10 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>si3</string>
-				<string>sg3</string>
-				<string>sn3</string>
+				<string>si</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Scid Database</string>
+			<string>Scid Database Index</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>Scid</string>
@@ -23,6 +22,46 @@
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
 			<false/>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidDB.icns</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sg3</string>
+				<string>sg</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Scid Database Games</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>Scid</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidDB.icns</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sn3</string>
+				<string>sn</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Scid Database Names</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>Scid</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidDB.icns</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -36,6 +75,8 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Portable Game Notation (PGN)</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidPGN.icns</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>cpgn</string>
@@ -57,6 +98,8 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Extended Position Description (EPD)</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidEPD.icns</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>cepd</string>
@@ -103,7 +146,9 @@
 				<string>text/plain</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Scid SearchOptions File</string>
+			<string>Scid Search Options File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidSSO.icns</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>ssso</string>
@@ -124,6 +169,8 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Scid Repertoire File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidSOR.icns</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>ssor</string>
@@ -144,9 +191,143 @@
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Scid Email File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidSEM.icns</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>ssem</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>ssp</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/plain</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Scid Spelling File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidSSP.icns</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>sssp</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>stm</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/plain</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Scid Tree Mask File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidSTM.icns</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>sstm</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>eco</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/plain</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>ECO File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidECO.icns</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>seco</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>emd</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string></string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Nalimov Endgame Tablebase File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidEMD.icns</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>semd</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>nbw</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string></string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Uncompressed Nalimov Endgame Tablebase White to Move File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidNBW.icns</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>snbw</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>nbb</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string></string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Uncompressed Nalimov Endgame Tablebase Black to Move File</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>ScidNBB.icns</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>snbb</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -157,11 +338,11 @@
 	<key>CFBundleExecutable</key>
 	<string>scid</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Scid 3.6.25</string>
+	<string>Scid 3.7</string>
 	<key>CFBundleIconFile</key>
-	<string>scid.icns</string>
+	<string>ScidApp.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.sf.scid</string>
+	<string>net.sourceforge.scid</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

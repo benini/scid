@@ -127,6 +127,9 @@ proc newEpdWin {cmd {fname ""}} {
   if {$fname == ""} {
     if {$cmd == "create"} {
       set fname [tk_getSaveFile -initialdir $::initialDir(epd) -filetypes $new_types -title "Create an EPD file"]
+      if {[string compare [file extension $fname] ".epd"] != 0} {
+        append fname ".epd"
+      }
     } elseif {$cmd == "open"} {
       set fname [tk_getOpenFile -initialdir $::initialDir(epd) -filetypes $open_types -title "Open an EPD file"]
     } else { return 0 }

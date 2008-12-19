@@ -1441,6 +1441,9 @@ proc ::tree::mask::new {} {
   set filename [tk_getSaveFile -filetypes $types -defaultextension ".stm"]
   
   if {$filename != ""} {
+    if {[file extension $filename] != ".stm" } {
+      append filename ".stm"
+    }
     if {$::tree::mask::dirty} {
       ::tree::mask::askForSave
     }

@@ -549,10 +549,8 @@ proc exportGames {selection exportType} {
     set getfile tk_getSaveFile
     set title "Create $title"
   }
-  set fName [$getfile -initialdir $idir -filetypes $ftype \
-      -defaultextension $default -title $title]
+  set fName [$getfile -initialdir $idir -filetypes $ftype -defaultextension $default -title $title]
   if {$fName == ""} { return }
-  
   if {$exportFilter} {
     progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
   }

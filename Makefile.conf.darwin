@@ -317,7 +317,7 @@ scid_app: all_scid
 	install -m 644 -p scid.eco dist/Scid.app/Contents/Resources/share/scid/data/
 	#install -m 666 ./books/* dist/Scid.app/Contents/Resources/share/scid/books/
 	#install -m 666 ./bases/* dist/Scid.app/Contents/Resources/share/scid/bases/
-	install -m 644 scid.icns dist/Scid.app/Contents/Resources/
+	install -m 644  ./mac_icons/Scid*.icns dist/Scid.app/Contents/Resources/
 	install -m 644 Info.plist dist/Scid.app/Contents/
 	cp -r ./html/* dist/Scid.app/Contents/Resources/share/scid/html/
 	sed -e 's|exec tkscid|exec $$(cd $$(dirname $$0)/$$(dirname $$(readlink $$0)); pwd)/tkscid|' < scid > dist/Scid.app/Contents/Resources/bin/scid

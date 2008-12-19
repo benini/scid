@@ -93,6 +93,9 @@ namespace eval pgn {
       }
       set fname [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Save PGN file"]
       if {$fname != ""} {
+        if {[file extension $fname] != ".txt" && [file extension $fname] != ".pgn" } {
+          append fname ".pgn"
+        }
         if {[catch {set tempfile [open $fname w]}]} {
           tk_messageBox -title "Scid: Error saving file" -type ok -icon warning \
               -message "Unable to save the file: $fname\n\n"

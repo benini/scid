@@ -1071,11 +1071,12 @@ proc ::rep::saveFile {w {type current}} {
   set fname $::rep::_data($w:filename)
   if {$type == "new"  ||  $fname == ""} {
     set ftype { {"Scid repertoire files" {".sor"}} }
-    set fname [tk_getSaveFile -filetypes $ftype \
-        -defaultextension ".sor" \
-        -title "Create a repertoire file"]
+    set fname [tk_getSaveFile -filetypes $ftype -defaultextension ".sor" -title "Create a repertoire file"]
   }
   if {$fname == ""} { return }
+  if {[file extension $fname] != ".sor" } {
+    append fname ".sor"
+  }
   ::rep::writeFile $w $fname
 }
 

@@ -270,8 +270,8 @@ proc addHorizontalRule {w {ypadding 5} {relief sunken} {height 2} } {
 proc addVerticalRule {w {xpadding 5} {relief sunken}} {
   global vertRuleCounter
   
-    ttk::separator $w.line$vertRuleCounter -orient vertical
-    pack $w.line$vertRuleCounter -fill y -side left ;# -padx $xpadding
+  ttk::separator $w.line$vertRuleCounter -orient vertical
+  pack $w.line$vertRuleCounter -fill y -side left ;# -padx $xpadding
   
   # set f [ ttk::frame $w.line$vertRuleCounter -width 2 -borderwidth 2 -relief $relief ]
   # pack $f -fill y -padx $xpadding -side left
@@ -544,6 +544,9 @@ namespace eval html {
     set idir $::initialDir(html)
     set fName [tk_getSaveFile -initialdir $idir -filetypes $ftype -defaultextension ".html" -title "Create an HTML file"]
     if {$fName == ""} { return }
+    if {[file extension $fName] != ".html" } {
+      append fName ".html"
+    }
     set prefix [file rootname [file tail $fName] ]
     set dirtarget [file dirname $fName]
     set sourcedir [file join $::scidExeDir html]
@@ -590,6 +593,9 @@ namespace eval html {
     }
     set idir $::initialDir(html)
     set fName [tk_getSaveFile -initialdir $idir -filetypes $ftype -defaultextension ".html" -title "Create an HTML file"]
+    if {[file extension $fName] != ".html" && [file extension $fName] != ".htm" } {
+      append fName ".html"
+    }
     if {$fName == ""} { return }
     set prefix [file rootname [file tail $fName] ]
     set dirtarget [file dirname $fName]

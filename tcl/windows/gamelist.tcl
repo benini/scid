@@ -714,8 +714,7 @@ proc updateExportGList {args} {
 proc saveExportGList {} {
   global glexport
   set ftypes {{"Text files" {.txt}} {"All files" *}}
-  set fname [tk_getSaveFile -filetypes $ftypes -parent .glexport \
-      -title "Scid: Save Game List"]
+  set fname [tk_getSaveFile -filetypes $ftypes -parent .glexport -title "Scid: Save Game List"]
   if {$fname == ""} { return }
   set showProgress 0
   if {[sc_filter count] >= 20000} { set showProgress 1 }

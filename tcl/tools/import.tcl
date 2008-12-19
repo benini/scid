@@ -20,8 +20,7 @@ proc importPgnGame {} {
   # Override tab-binding for this widget:
   bind $edit.text <Key-Tab> "[bind all <Key-Tab>]; break"
   scrollbar $edit.ybar -command "$edit.text yview" -takefocus 0
-  scrollbar $edit.xbar -orient horizontal -command "$edit.text xview" \
-      -takefocus 0
+  scrollbar $edit.xbar -orient horizontal -command "$edit.text xview" -takefocus 0
   grid $edit.text -row 0 -column 0 -sticky nesw
   grid $edit.ybar -row 0 -column 1 -sticky nesw
   grid $edit.xbar -row 1 -column 0 -sticky nesw
@@ -33,12 +32,10 @@ proc importPgnGame {} {
   $edit.text.rmenu add command -label "Cut" -command "tk_textCut $edit.text"
   $edit.text.rmenu add command -label "Copy" -command "tk_textCopy $edit.text"
   $edit.text.rmenu add command -label "Paste" -command "tk_textPaste $edit.text"
-  $edit.text.rmenu add command -label "Select all" -command \
-      "$edit.text tag add sel 1.0 end"
+  $edit.text.rmenu add command -label "Select all" -command "$edit.text tag add sel 1.0 end"
   bind $edit.text <ButtonPress-3> "tk_popup $edit.text.rmenu %X %Y"
   
-  text $pane.err.text -height 4 -width 75 -wrap word \
-      -yscroll "$pane.err.scroll set"
+  text $pane.err.text -height 4 -width 75 -wrap word -yscroll "$pane.err.scroll set"
   $pane.err.text insert end $::tr(ImportHelp1)
   $pane.err.text insert end "\n"
   $pane.err.text insert end $::tr(ImportHelp2)
@@ -79,9 +76,9 @@ proc importPgnGame {} {
   pack $w.b.paste $w.b.clear $w.b.space -side left -padx 2 -pady 2
   pack $w.b.cancel $w.b.ok -side right -padx 10 -pady 5
   # Paste the current selected text automatically:
-  if {[catch {$w.pane.edit.text insert end [selection get]}]} {
-    # ?
-  }
+  # if {[catch {$w.pane.edit.text insert end [selection get]}]} {
+  # ?
+  # }
   # Select all of the pasted text:
   $w.pane.edit.text tag add sel 1.0 end
   
@@ -98,6 +95,10 @@ proc importPgnGame {} {
 proc importClipboardGame {} {
   importPgnGame
   catch {event generate .importWin.pane.edit.text <<Paste>>}
+  # Paste the current selected text automatically if no data was pasted from clipboard:
+  if { [ .importWin.pane.edit.text get 1.0 end ] == "\n" } {
+    catch { .importWin.pane.edit.text insert end [selection get] }
+  }
 }
 
 proc importPgnLine {line} {
