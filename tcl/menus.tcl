@@ -902,7 +902,7 @@ $m add command -label OptionsSave -command {
           gameInfo(photos) gameInfo(hideNextMove) gameInfo(wrap) \
           gameInfo(fullComment) gameInfo(showMarks) \
           gameInfo(showMaterial) gameInfo(showFEN) gameInfo(showTB) \
-          engineCoach1 engineCoach2 scidBooksDir scidBasesDir \
+          engineCoach1 engineCoach2 scidBooksDir scidBasesDir ::book::lastBook \
           ::utils::sound::soundFolder ::utils::sound::announceNew \
           ::utils::sound::announceForward ::utils::sound::announceBack \
           ::tacgame::threshold ::tacgame::blunderwarning ::tacgame::blunderwarningvalue \

@@ -86,7 +86,7 @@ namespace eval book {
   # arg name : gm2600.bin for example
   ################################################################################
   proc open { {name ""} } {
-    global ::book::bookList ::book::bookPath ::book::currentBook ::book::isOpen
+    global ::book::bookList ::book::bookPath ::book::currentBook ::book::isOpen ::book::lastBook
     
     set w .bookWin
     
@@ -105,6 +105,9 @@ namespace eval book {
     ttk::frame $w.f
     
     # load book names
+    if { $name == "" && $lastBook != "" } {
+      set name $lastBook
+    }
     set bookPath $::scidBooksDir
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
     set i 0
@@ -230,6 +233,7 @@ namespace eval book {
   #
   ################################################################################
   proc bookSelect { { n "" }  { v  0} } {
+    set ::book::lastBook [.bookWin.f.combo get]
     scBookOpen [.bookWin.f.combo get] $::book::bookSlot
     refresh
   }

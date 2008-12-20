@@ -1799,7 +1799,6 @@ proc showHideAllWindows {type} {
     # .playerInfoWin .commentWin .repWin .statsWin .tbWin \
     # .sb .sh .sm .noveltyWin .emailWin .oprepWin .plist \
     # .rgraph .sgraph .importWin .helpWin .tipsWin
-    puts "wm $type $w"
     if {[winfo exists $w]} { catch {wm $type $w} }
   }
   
@@ -1884,6 +1883,7 @@ if { $::docking::USE_DOCKING } {
     ::docking::layout_restore 1
   }
   
+  standardShortcuts TNotebook
 }
 
 ### End of file: end.tcl

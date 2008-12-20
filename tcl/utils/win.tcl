@@ -716,6 +716,7 @@ proc  ::docking::tabChanged  {path} {
 }
 
 ################################################################################
+
 bind TNotebook <ButtonRelease-1> {::docking::show_menu %W %X %Y}
 
 bind TNotebook <ButtonPress-1> +[ list ::docking::start_motion %W ]

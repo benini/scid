@@ -805,12 +805,12 @@ namespace eval fics {
     
     set fen "$fen $castle $enpassant [lindex $line 15] $moveNumber"
     
-    puts $verbose_move
+    # puts $verbose_move
     # try to play the move and check if fen corresponds. If not this means the position needs to be set up.
     if {$moveSan != "none" && $::fics::playing != -1} {
       # first check side's coherency
       if { ([sc_pos side] == "white" && $color == "B") || ([sc_pos side] == "black" && $color == "W") } {
-        puts "sc_move addSan $moveSan"
+        # puts "sc_move addSan $moveSan"
         ::utils::sound::PlaySound sound_move
         ::utils::sound::AnnounceNewMove $moveSan
         if { [catch { sc_move addSan $moveSan } err ] } {

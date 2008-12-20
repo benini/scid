@@ -2,7 +2,7 @@
 ### metadata.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: metadata.tcl,v 1.2 2008/12/20 19:58:02 arwagner Exp $
+### $Id: metadata.tcl,v 1.3 2008/12/20 22:34:09 pgeorges Exp $
 ###
 ### Last change: <Sat, 2008/12/20 20:57:35 arwagner ingata>
 ###
@@ -12,7 +12,7 @@
 
 set m .menu.tools
 
-## $m add command -label "Database information..." -command {::metadata::show}
+# $m add command -label "Database information..." -command {::metadata::show}
 
 #======================================================================
 #

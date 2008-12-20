@@ -758,30 +758,48 @@ proc setMenu { w m} {
 # In docked mode, resize board automatically
 ################################################################################
 proc resizeMainBoard {} {
-  if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } {
-    return
-  }
+  
+  if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } { return }
   
   set w [winfo width .main]
   set h [winfo height .main]
+  set bd .main.board
   
-  set h0 [ lindex [grid bbox .main 0 0] 3]
-  set h1 [ lindex [grid bbox .main 0 1] 3]
-  set h2 [ lindex [grid bbox .main 0 3] 3]
-  set h3 [ lindex [grid bbox .main 0 5] 3]
+  # calculate available height
+  set height_used 0
+  incr height_used [ lindex [grid bbox .main 0 0] 3]
+  incr height_used [ lindex [grid bbox .main 0 1] 3] ;# buttons
   # coordinates
-  set h4 0
-  if { $::board::_coords(.main.board) == 2 } {
-    set h4 [ lindex [ grid bbox .main.board 0 9 ] 3 ]
+  if { $::board::_coords($bd) == 2 || $::board::_coords($bd) == 0} {
+    incr height_used [ lindex [ grid bbox $bd 0 9 ] 3 ]
   }
-  if { $::board::_coords(.main.board) == 0 } {
-    set h4 [expr  2 * [ lindex [ grid bbox .main.board 0 0 ] 3 ] ]
+  if { $::board::_coords($bd) == 0 } {
+    incr height_used [ lindex [ grid bbox $bd 0 0 ] 3 ]
   }
+  # game info
+  incr height_used [ lindex [grid bbox .main 0 3] 3]
   
-  set height_used [ expr $h0 + $h1 + $h2 + $h3 + $h4]
+  # staus bar
+  incr height_used [ lindex [grid bbox .main 0 5] 3]
   
-  set availw [expr $w - 80 ]
-  set availh [expr $h - $height_used - 10]
+  set availh [expr $h - $height_used -10]
+  
+  # calculate available width
+  set width_used 0
+  if { $::board::_coords($bd) == 2 || $::board::_coords($bd) == 0} {
+    incr width_used [ lindex [ grid bbox $bd 0 1 ] 2 ]
+  }
+  if { $::board::_coords($bd) == 0 } {
+    incr width_used [ lindex [ grid bbox $bd 9 1 ] 2 ]
+  }
+  if {$::board::_stm($bd)} {
+    incr width_used [ lindex [ grid bbox $bd 10 1 ] 2 ]
+    incr width_used [ lindex [ grid bbox $bd 11 2 ] 2 ]
+  }
+  if {$::board::_showmat($bd)} {
+    incr width_used [ lindex [ grid bbox $bd 12 1 ] 2 ]
+  }
+  set availw [expr $w - $width_used ]
   
   if {$availh < $availw} {
     set min $availh
@@ -839,6 +857,9 @@ if {$windowsOS} {
 } else {
   set spellCheckFile "/usr/local/share/scid/spelling.ssp"
 }
+
+# book configuration
+set ::book::lastBook "" ; # book name without extension (.bin)
 
 # Engines list file: -- OLD NAMES, NO LONGER USED
 #set engines(file) [file join $scidUserDir "engines.lis"]
