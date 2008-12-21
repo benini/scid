@@ -62,7 +62,7 @@ proc ::utils::history::AddEntry {key entry} {
   
   if { [llength [GetList $key]] > 0 } {
     set cb [ GetCombobox $key ]
-    if { $cb != "" } {
+    if { $cb != "" && [winfo exists $cb]} {
       $cb current 0
     }
   }

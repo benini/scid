@@ -16,7 +16,10 @@ set ::preport::_clipbase 0
 #   player and color for which to generate a player report.
 #
 proc ::preport::preportDlg {args} {
-
+  if {[sc_base numGames] == 0} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "No games in current base"
+    return
+  }
   # Set default player and color if parameters are provided
   if {[llength $args] >= 1} {
     set ::preport::_player [lindex $args 0]
@@ -29,7 +32,7 @@ proc ::preport::preportDlg {args} {
   if {[llength $args] >= 2} {
     set ::preport::_color [lindex $args 1]
   }
-
+  
   set w .preportDlg
   if {[winfo exists $w]} { return }
   toplevel $w
@@ -46,23 +49,23 @@ proc ::preport::preportDlg {args} {
   grid $w.g.has -row 1 -column 0 -sticky w
   frame $w.g.color
   radiobutton $w.g.color.white -text $::tr(White) \
-    -variable ::preport::_color -value white
+      -variable ::preport::_color -value white
   frame $w.g.color.gap -width 5
   radiobutton $w.g.color.black -text $::tr(Black) \
-    -variable ::preport::_color -value black
+      -variable ::preport::_color -value black
   pack $w.g.color.white $w.g.color.gap $w.g.color.black -side left
   grid $w.g.color -row 1 -column 1 -sticky w
   label $w.g.pos -text "Start position:"
   grid $w.g.pos -row 2 -column 0
   frame $w.g.pselect
   radiobutton $w.g.pselect.start -text "Standard start position" \
-    -variable ::preport::_pos -value start
+      -variable ::preport::_pos -value start
   radiobutton $w.g.pselect.current -text "Current board position" \
-    -variable ::preport::_pos -value current
+      -variable ::preport::_pos -value current
   pack $w.g.pselect.start $w.g.pselect.current -side left
   grid $w.g.pselect -row 2 -column 1 -sticky w
   checkbutton $w.g.clipbase -text $::tr(PReportClipbase) \
-    -variable ::preport::_clipbase
+      -variable ::preport::_clipbase
   grid $w.g.clipbase -row 3 -column 1 -sticky w
   addHorizontalRule $w
   pack [frame $w.b] -side bottom -fill x
@@ -72,26 +75,26 @@ proc ::preport::preportDlg {args} {
   dialogbutton $w.b2.white -text "$::tr(White) ($whiteName)" -command {
     set ::preport::_player [sc_game info white]
     set ::preport::_color white
-  } 
+  }
   dialogbutton $w.b2.black -text "$::tr(Black) ($blackName)" -command {
     set ::preport::_player [sc_game info black]
     set ::preport::_color black
-  } 
+  }
   if {$whiteName == ""  ||  $whiteName == "?"} {
     $w.b2.white configure -state disabled
   }
   if {$blackName == ""  ||  $blackName == "?"} {
     $w.b2.black configure -state disabled
   }
-
+  
   dialogbutton $w.b.help -text $::tr(Help) \
-    -command {helpWindow Reports Player}
+      -command {helpWindow Reports Player}
   dialogbutton $w.b.ok -text OK \
-    -command "catch {grab release $w}; destroy $w; ::preport::makeReportWin"
+      -command "catch {grab release $w}; destroy $w; ::preport::makeReportWin"
   dialogbutton $w.b.cancel -text $::tr(Cancel) \
-    -command "catch {grab release $w}; destroy $w"
+      -command "catch {grab release $w}; destroy $w"
   # foreach button {help ok cancel} {
-    # $w.b.$button configure -font font_Small
+  # $w.b.$button configure -font font_Small
   # }
   if {$whiteName != ""  &&  $whiteName != "?"} {
     packbuttons left $w.b2.white
@@ -124,7 +127,7 @@ proc ::preport::ConfigMenus {{lang ""}} {
   foreach idx {0 1} tag {Report Index} {
     configMenuText $m.helpmenu $idx OprepHelp$tag $lang
   }
-
+  
 }
 
 proc ::preport::makeReportWin {args} {
@@ -138,7 +141,7 @@ proc ::preport::makeReportWin {args} {
     wm withdraw $w
     wm title $w "Scid: [tr ToolsPlayerReport]"
     bind $w <Visibility> "raiseWin $w"
-
+    
     pack [frame $w.b] -side bottom -fill x
     set ::preport::_interrupt 0
     button $w.b.cancel -text $::tr(Cancel) -command {
@@ -146,15 +149,15 @@ proc ::preport::makeReportWin {args} {
       sc_progressBar
     }
     pack $w.b.cancel -side right -pady 5 -padx 2
-
+    
     foreach i {1 2} name {"Searching database for report games"
-                        "Generating report information"} {
+      "Generating report information"} {
       label $w.text$i -text "$i. $name"
       pack $w.text$i -side top
       canvas $w.c$i -width 400 -height 20 -bg white -relief solid -border 1
       $w.c$i create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
       $w.c$i create text 395 10 -anchor e -font font_Regular -tags time \
-        -fill black -text "0:00 / 0:00"
+          -fill black -text "0:00 / 0:00"
       pack $w.c$i -side top -pady 10
     }
     wm resizable $w 0 0
@@ -181,9 +184,9 @@ proc ::preport::makeReportWin {args} {
     }
     sc_progressBar $w.c2 bar 401 21 time
   }
-
+  
   ::utils::history::AddEntry ::preport::_player $::preport::_player
-
+  
   if {$::preport::_pos == "start"} { sc_game push }
   sc_search board AND Exact false
   sc_report player create $::preport(ExtraMoves) $::preport(MaxGames)
@@ -201,9 +204,9 @@ proc ::preport::makeReportWin {args} {
     if {$::preport::_interrupt} { return }
   }
   set report [::preport::report ctext 1]
-
+  
   if {[lsearch -exact $args "-nodisplay"] >= 0} { return }
-
+  
   set w .preportWin
   if {![winfo exists $w]} {
     toplevel $w
@@ -216,22 +219,22 @@ proc ::preport::makeReportWin {args} {
       menu $w.menu.$i -tearoff 0
     }
     $w.menu.file add command -label OprepFileText \
-      -command {::preport::saveReport text}
+        -command {::preport::saveReport text}
     $w.menu.file add command -label OprepFileHtml \
-      -command {::preport::saveReport html}
+        -command {::preport::saveReport html}
     $w.menu.file add command -label OprepFileLaTeX \
-      -command {::preport::saveReport latex}
+        -command {::preport::saveReport latex}
     $w.menu.file add separator
     $w.menu.file add command -label OprepFileOptions \
-      -command ::preport::setOptions
+        -command ::preport::setOptions
     $w.menu.file add separator
     $w.menu.file add command -label Close \
-      -command "$w.b.close invoke"
+        -command "$w.b.close invoke"
     $w.menu.helpmenu add command -label "Player Report Help" \
-      -accelerator F1 -command {helpWindow Reports Player}
+        -accelerator F1 -command {helpWindow Reports Player}
     $w.menu.helpmenu add command -label "Index" \
-      -command {helpWindow Index}
-
+        -command {helpWindow Index}
+    
     bind $w <F1> {helpWindow Reports Player}
     bind $w <Escape> "$w.b.close invoke"
     bind $w <Up> "$w.text yview scroll -1 units"
@@ -241,16 +244,16 @@ proc ::preport::makeReportWin {args} {
     bind $w <Key-Home> "$w.text yview moveto 0"
     bind $w <Key-End> "$w.text yview moveto 0.99"
     bindMouseWheel $w $w.text
-
+    
     autoscrollframe -bars y $w.scroll text $w.text \
-      -height 30 -width 85 -font font_Small -setgrid 1 -wrap word \
-      -background white -foreground black -cursor top_left_arrow
+        -height 30 -width 85 -font font_Small -setgrid 1 -wrap word \
+        -background white -foreground black -cursor top_left_arrow
     ::htext::init $w.text
     frame $w.b
     button $w.b.opts -text [tr OprepFileOptions] -command ::preport::setOptions
     button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Player}
     button $w.b.viewHTML -text $::tr(OprepViewHTML) \
-      -command ::preport::previewHTML
+        -command ::preport::previewHTML
     button $w.b.update -textvar ::tr(Update...) -command {
       ::preport::preportDlg
     }
@@ -265,7 +268,7 @@ proc ::preport::makeReportWin {args} {
     ::preport::ConfigMenus
     ::utils::win::Centre $w
   }
-
+  
   busyCursor .
   $w.text configure -state normal
   $w.text delete 1.0 end
@@ -288,9 +291,9 @@ proc ::preport::setOptions {} {
     set yesno($i) 1
   }
   foreach i {Stats Oldest Newest MostFrequentOpponents Results sep \
-               AvgPerf HighRating sep \
-               MostFrequentEcoCodes Themes Endgames sep \
-               MaxGames ExtraMoves} {
+        AvgPerf HighRating sep \
+        MostFrequentEcoCodes Themes Endgames sep \
+        MaxGames ExtraMoves} {
     set from 0; set to 10; set tick 1; set res 1
     if {$i == "MaxGames"} {
       set from 0; set to 500; set tick 100; set res 50
@@ -303,9 +306,9 @@ proc ::preport::setOptions {} {
     } elseif {[info exists yesno($i)]} {
       frame $w.f.f$i
       radiobutton $w.f.f$i.yes -variable ::preport($i) -value 1 \
-        -text "$::tr(Yes)   " -font font_Small
+          -text "$::tr(Yes)   " -font font_Small
       radiobutton $w.f.f$i.no -variable ::preport($i) -value 0 \
-        -text "$::tr(No)   "  -font font_Small
+          -text "$::tr(No)   "  -font font_Small
       pack $w.f.f$i.yes -side left
       pack $w.f.f$i.no -side right
       label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
@@ -313,8 +316,8 @@ proc ::preport::setOptions {} {
       grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3
     } else {
       scale $w.f.s$i -variable ::preport($i) -from $from -to $to \
-        -width 8 -length 200 -tickinterval $tick -orient horizontal \
-        -font font_Small -resolution $res -showvalue 0
+          -width 8 -length 200 -tickinterval $tick -orient horizontal \
+          -font font_Small -resolution $res -showvalue 0
       label $w.f.t$i -textvar ::tr(Oprep$i) -font font_Small
       grid $w.f.s$i -row $row -column 0 -sticky we
       grid $w.f.t$i -row $row -column 1 -sticky w -columnspan 3
@@ -357,7 +360,7 @@ proc ::preport::previewHTML {} {
   set fname [file join $tmpdir $tmpfile]
   if {[catch {set tempfile [open $fname.html w]}]} {
     tk_messageBox -title "Scid: Error writing report" -type ok -icon warning \
-      -message "Unable to write the file: $fname.html"
+        -message "Unable to write the file: $fname.html"
   }
   puts $tempfile [::preport::report html 1]
   close $tempfile
@@ -388,15 +391,15 @@ proc ::preport::saveReport {fmt} {
       { "All files"  {"*"}    }
     }
   }
-
+  
   set fname [tk_getSaveFile -initialdir [pwd] -filetypes $ftype \
-               -defaultextension $default -title "Scid: Save opening report"]
+      -defaultextension $default -title "Scid: Save opening report"]
   if {$fname == ""} { return }
-
+  
   busyCursor .
   if {[catch {set tempfile [open $fname w]}]} {
     tk_messageBox -title "Scid: Error writing report" -type ok -icon warning \
-      -message "Unable to write the file: $fname\n\n"
+        -message "Unable to write the file: $fname\n\n"
   } else {
     set report [::preport::report $fmt 1]
     if {$::hasEncoding  &&  $::langEncoding($::language) != ""} {
@@ -466,16 +469,16 @@ proc ::preport::report {fmt {withTable 1}} {
   set fmt [string tolower $fmt]
   set ::preport::_data(fmt) $fmt
   ::preport::_reset
-
+  
   # numRows: the number of rows to show in the theory table.
   # If it is zero, the number of rows if decided according to the
   # number of games in the report.
   set numRows 0
-
+  
   # Specify whether a theory table is to be printed, so note numbers
   # can be generated and displayed if necessary:
   sc_report player notes $withTable $numRows
-
+  
   set n "\n"; set p "\n\n"; set preText ""; set postText ""
   set percent "%"; set bullet "  * "
   if {$fmt == "latex"} {
@@ -489,14 +492,14 @@ proc ::preport::report {fmt {withTable 1}} {
   } elseif {$fmt == "ctext"} {
     set preText "<tt>"; set postText "</tt>"
   }
-
+  
   # Generate the report:
   set games $tr(games)
   set moves $tr(moves)
   set counts [sc_report player count]
   set rgames [lindex $counts 0]
   set tgames [lindex $counts 1]
-
+  
   set r {}
   append r $::optable::_docStart($fmt)
   set r [string map [list "\[OprepTitle\]" $tr(PReportTitle)] $r]
@@ -525,9 +528,9 @@ proc ::preport::report {fmt {withTable 1}} {
     append r "$tr(ECO): $eco$n"
   }
   append r "$::tr(OprepGenerated) Scid [sc_info version], [::utils::date::today]$n"
-
+  
   if {$preport(Stats)  ||  $preport(Oldest) > 0  ||  $preport(Newest) > 0  ||
-      $preport(MostFrequentOpponents) > 0  ||  $preport(Results)} {
+    $preport(MostFrequentOpponents) > 0  ||  $preport(Results)} {
     append r [::preport::_sec $tr(OprepStatsHist)]
   }
   if {$preport(Stats)} {
@@ -554,7 +557,7 @@ proc ::preport::report {fmt {withTable 1}} {
     append r [::preport::_subsec $::tr(OprepResults)]
     append r [::optable::results player $fmt]
   }
-
+  
   if {$preport(AvgPerf)  ||  $preport(HighRating)} {
     append r [::preport::_sec $tr(OprepRatingsPerf)]
   }
@@ -575,9 +578,9 @@ proc ::preport::report {fmt {withTable 1}} {
     append r [::preport::_subsec $tr(OprepHighRating)]
     append r [sc_report player best a $preport(HighRating)]
   }
-
+  
   if {$preport(Themes)  ||  $preport(MostFrequentEcoCodes) > 0  ||
-      $preport(Endgames)} {
+    $preport(Endgames)} {
     append r [::preport::_sec $tr(OprepMovesThemes)]
   }
   if {$preport(MostFrequentEcoCodes) > 0} {
@@ -587,19 +590,19 @@ proc ::preport::report {fmt {withTable 1}} {
   if {$preport(Themes)} {
     append r [::preport::_subsec $tr(OprepThemes)]
     append r [sc_report player themes $tr(OprepThemeDescription:) \
-                $tr(OprepThemeSameCastling:) $tr(OprepThemeOppCastling:) \
-                $tr(OprepThemeKPawnStorm:) $tr(OprepThemeQueenswap:) \
-                $tr(OprepTheme1BishopPair:) \
-                $tr(OprepThemeWIQP:) $tr(OprepThemeBIQP:) \
-                $tr(OprepThemeWP567:) $tr(OprepThemeBP234:) \
-                $tr(OprepThemeOpenCDE:) ]
+        $tr(OprepThemeSameCastling:) $tr(OprepThemeOppCastling:) \
+        $tr(OprepThemeKPawnStorm:) $tr(OprepThemeQueenswap:) \
+        $tr(OprepTheme1BishopPair:) \
+        $tr(OprepThemeWIQP:) $tr(OprepThemeBIQP:) \
+        $tr(OprepThemeWP567:) $tr(OprepThemeBP234:) \
+        $tr(OprepThemeOpenCDE:) ]
   }
   if {$preport(Endgames)} {
     append r [::preport::_subsec $tr(OprepEndgames)]
     append r "$tr(OprepEndClass:)$n"
     append r [sc_report player endmat]
   }
-
+  
   if {$withTable  &&  $::preport(MaxGames) > 0} {
     set sec [::preport::_sec $tr(OprepTheoryTable)]
     set comment ""
@@ -609,10 +612,10 @@ proc ::preport::report {fmt {withTable 1}} {
     append r [sc_report player print $numRows $sec $comment]
   }
   append r $::optable::_docEnd($fmt)
-
+  
   # Eszet (ss) characters seem to be mishandled by LaTeX, even with
   # the font encoding package, so convert them explicitly:
   if {$fmt == "latex"} { regsub -all ß $r {{\\ss}} r }
-
+  
   return $r
 }

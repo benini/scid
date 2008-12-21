@@ -650,7 +650,7 @@ $m.pinfo add command -label Black -underline 0 -command {
   playerInfo [sc_game info black]
 }
 
-$m add command -label ToolsPlayerReport -command ::preport::preportDlg
+$m add command -label ToolsPlayerReport -command ::preport::preportDlg -state disabled
 set helpMessage($m,[incr menuindex]) ToolsPlayerReport
 
 $m add command -label ToolsRating -command {::tools::graphs::rating::Refresh both}

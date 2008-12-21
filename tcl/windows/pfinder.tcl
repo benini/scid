@@ -101,12 +101,12 @@ proc ::plist::Open {} {
   bindFocusColors $f.name
   focus $f.name
   label $f.size -text $::tr(TmtLimit:) -font $fbold
-  ttk::combobox $f.esize -width 4 -justify right -textvar ::plist::size 
+  ttk::combobox $f.esize -width 4 -justify right -textvar ::plist::size -values {50 100 200 500 1000}
   trace variable ::plist::size w {::utils::validate::Integer 1000 0}
   bindFocusColors $f.esize
-  foreach n {50 100 200 500 1000} {
-    $f.esize list insert end $n
-  }
+  # foreach n {50 100 200 500 1000} {
+    # $f.esize list insert end $n
+  # }
   pack $f.esize $f.size -side right
   pack $f.nlabel $f.name -side left
 

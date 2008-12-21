@@ -1886,4 +1886,6 @@ if { $::docking::USE_DOCKING } {
   standardShortcuts TNotebook
 }
 
+# updateMenuStates
+
 ### End of file: end.tcl
