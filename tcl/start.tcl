@@ -1320,6 +1320,12 @@ set boardSize $newSize
 # Load theme
 ttk::style theme use $::lookTheme
 
+# Use default font everywhere
+ttk::style configure TButton -font font_Regular
+ttk::style configure TRadiobutton -font font_Regular
+ttk::style configure TCheckbutton -font font_Regular
+ttk::style configure TMenubutton -font font_Regular
+
 # Style definitions
 ttk::style configure Bold.TCheckbutton -font font_Bold
 ttk::style configure Small.TCheckbutton -font font_Small

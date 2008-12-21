@@ -981,8 +981,7 @@ proc compactNames {} {
   set stats [sc_compact stats names]
   if {[lindex $stats 1] == 0  &&  [lindex $stats 3] == 0  && \
         [lindex $stats 5] == 0  &&  [lindex $stats 7] == 0} {
-    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactNames)] \
-        -message $::tr(NoUnusedNames)
+    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactNames)] -message $::tr(NoUnusedNames)
     return
   }
   progressWindow "Scid" [concat $::tr(CompactNames) "..."]
@@ -992,12 +991,9 @@ proc compactNames {} {
   closeProgressWindow
   set w .compactWin
   if {$err} {
-    tk_messageBox -type ok -icon warning -parent $w \
-        -title "Scid: Error compacting file" -message $result
+    tk_messageBox -type ok -icon warning -parent $w -title "Scid: Error compacting file" -message $result
   } else {
-    tk_messageBox -type ok -icon info -parent $w \
-        -title [concat "Scid: " $::tr(CompactNames)] \
-        -message [subst $::tr(NameFileCompacted)]
+    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactNames)] -message [subst $::tr(NameFileCompacted)]
   }
   grab release $w
   destroy $w
@@ -1011,8 +1007,7 @@ proc compactGames {} {
   set stats [sc_compact stats games]
   if {[lindex $stats 1] == [lindex $stats 3]  && \
         [lindex $stats 0] == [lindex $stats 2]} {
-    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactGames)] \
-        -message $::tr(NoUnusedGames)
+    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactGames)] -message $::tr(NoUnusedGames)
     return
   }
   progressWindow "Scid" [concat $::tr(CompactGames) "..."] \

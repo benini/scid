@@ -296,8 +296,8 @@ proc search::header {} {
   bindFocusColors $f.emax
   ttk::label $f.l3 -text " " -font $regular
   ttk::button $f.all -text [::utils::string::Capital $::tr(all)] -style Pad0.Small.TButton -command {set sGnumMin 1; set sGnumMax -1}
-  ttk::menubutton $f.first -textvar ::tr(First...) -menu $f.first.m
-  ttk::menubutton $f.last -textvar ::tr(Last...) -menu $f.last.m
+  ttk::menubutton $f.first -style pad0.TMenubutton -textvar ::tr(First...) -menu $f.first.m
+  ttk::menubutton $f.last -style pad0.TMenubutton -textvar ::tr(Last...) -menu $f.last.m
   menu $f.first.m -font $regular
   menu $f.last.m -font $regular
   foreach x {10 50 100 500 1000 5000 10000} {
