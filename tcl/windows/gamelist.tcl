@@ -84,7 +84,7 @@ proc ::windows::gamelist::ReOpen {} {
   scale $w.scale -from 1 -length 250 -orient horiz -variable glstart -showvalue 0 -command ::windows::gamelist::SetStart \
       -bigincrement $glistSize -takefocus 0 -width 10 -troughcolor $buttoncolor
   pack $w.scale -side bottom -fill x
-  frame $w.columns -takefocus 1 -highlightcolor black -highlightthickness 2
+  frame $w.columns -takefocus 1 -highlightcolor black ;# -highlightthickness 2
   pack $w.columns -side top -expand yes -fill both
   
   # Make each column in the listing:
@@ -277,7 +277,11 @@ proc ::windows::gamelist::ReOpen {} {
       set temp [string range $temp 0 [expr {$idx - 1}]]
     }
     if {$temp != $glistSize && $temp > 0} {
-      set glistSize $temp
+      set glistSize [ expr $temp -1]
+      foreach i $glistFields {
+        set code [lindex $i 0]
+        .glistWin.c$code.text configure -height $glistSize
+      }
       ::windows::gamelist::Refresh
     }
   }
@@ -306,6 +310,7 @@ proc ::windows::gamelist::Open {} {
   setWinLocation $w
   
   ::windows::gamelist::ReOpen
+  event generate $w <Configure>
 }
 
 proc ::windows::gamelist::Scroll {nlines} {

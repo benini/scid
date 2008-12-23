@@ -684,8 +684,7 @@ set autoResizeBoard 1
 # if docked : sets the name of the tab
 # w : name of the toplevel window
 proc setTitle { w title } {
-  
-  if {$::docking::USE_DOCKING} {
+  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ]} {
     set f .fdock[ string range $w 1 end ]
     if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
       set nb ""
@@ -706,6 +705,8 @@ proc setTitle { w title } {
       }
     }
   } else  {
+    set wdock ".fdock[string range $w 1 end]"
+    if { [winfo exists $wdock ] } { set w $wdock }
     wm title $w $title
   }
   
