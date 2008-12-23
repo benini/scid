@@ -63,23 +63,21 @@ proc ::windows::gamelist::FindText {} {
   ::windows::gamelist::Refresh
 }
 
-
-proc ::windows::gamelist::Open {} {
+proc ::windows::gamelist::ReOpen {} {
   global glstart glistSize highcolor glSelection helpMessage
   global glistFields glNumber buttoncolor
-  if {[winfo exists .glistWin]} {
-    focus .
-    destroy .glistWin
-    set ::windows::gamelist::isOpen 0
-    return
-  }
   set w .glistWin
   
-  ::createToplevel $w
+  bind $w <Configure> {}
+  set oldDestroy [bind $w <Destroy>]
+  bind $w <Destroy> {}
   
-  # Window is only directly resizable vertically:
-  wm resizable $w false true
-  setWinLocation $w
+  # erase the window
+  foreach c [winfo children $w] {
+    destroy $c
+  }
+  
+  # bind $w <Destroy> $oldDestroy
   
   # Pack buttons frame first:
   pack [ttk::frame $w.b] -side bottom -fill x -expand 1 -ipady 5 ;# -padx 10
@@ -251,6 +249,7 @@ proc ::windows::gamelist::Open {} {
   bind $w <Destroy> { set ::windows::gamelist::isOpen 0 }
   bind $w <Escape> "$w.b.close invoke"
   standardShortcuts $w
+  ::createToplevelFinalize $w
   
   # MouseWheel bindings:
   bind $w <MouseWheel> {::windows::gamelist::Scroll [expr {- (%D / 120)}]}
@@ -264,6 +263,7 @@ proc ::windows::gamelist::Open {} {
   # find that actually works.
   # Set temp to window geometry (e.g. 80x20+...) and then
   # extract the part between the "x" and the first "+" or "-":
+  update
   bind $w <Configure> {
     recordWinSize .glistWin
     set temp [wm geometry .glistWin]
@@ -286,7 +286,26 @@ proc ::windows::gamelist::Open {} {
   ::windows::gamelist::Refresh
   focus $w.b.goto
   
-  ::createToplevelFinalize $w
+}
+
+proc ::windows::gamelist::Open {} {
+  global glstart glistSize highcolor glSelection helpMessage
+  global glistFields glNumber buttoncolor
+  if {[winfo exists .glistWin]} {
+    focus .
+    destroy .glistWin
+    set ::windows::gamelist::isOpen 0
+    return
+  }
+  set w .glistWin
+  
+  ::createToplevel $w
+  
+  # Window is only directly resizable vertically:
+  wm resizable $w false true
+  setWinLocation $w
+  
+  ::windows::gamelist::ReOpen
 }
 
 proc ::windows::gamelist::Scroll {nlines} {
@@ -484,8 +503,8 @@ proc configGLfield {code} {
       break
     }
   }
-  destroy .glistWin
-  ::windows::gamelist::Open
+  # destroy .glistWin
+  ::windows::gamelist::ReOpen
 }
 
 proc moveGLfield {code delta} {
@@ -501,8 +520,8 @@ proc moveGLfield {code delta} {
       break
     }
   }
-  destroy .glistWin
-  ::windows::gamelist::Open
+  # destroy .glistWin
+  ::windows::gamelist::ReOpen
 }
 
 proc insertGLfield {code newcode} {
@@ -524,8 +543,8 @@ proc insertGLfield {code newcode} {
       break
     }
   }
-  destroy .glistWin
-  ::windows::gamelist::Open
+  # destroy .glistWin
+  ::windows::gamelist::ReOpen
 }
 
 proc deleteGLfield {code} {
@@ -537,8 +556,8 @@ proc deleteGLfield {code} {
     if {$tcode != $code} { continue }
     set glistFields [lreplace $glistFields $i $i]
   }
-  destroy .glistWin
-  ::windows::gamelist::Open
+  # destroy .glistWin
+  ::windows::gamelist::ReOpen
 }
 
 proc popupGLmenu {code xcoord ycoord xscreen yscreen} {

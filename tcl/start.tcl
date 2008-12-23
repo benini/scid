@@ -716,7 +716,7 @@ proc setTitle { w title } {
 proc createToplevel { w } {
   set name [string range $w 1 end]
   
-  if {$::docking::USE_DOCKING} {
+  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
     
     set f .fdock$name
     frame $f  -container 1
@@ -726,11 +726,7 @@ proc createToplevel { w } {
     bind .$name <Enter> {
       set tl [winfo toplevel %W]
       focus -force $tl
-      # puts "Enter %W tl = $tl mousewheel = [bind $tl <MouseWheel>] focus = [focus]"
     }
-    # add a + to toplevel window
-    # button $w.menuplus -text "+"
-    # place $w.menuplus -x 10 -y 10
     
   } else  {
     toplevel $w
@@ -743,7 +739,9 @@ proc createToplevel { w } {
 # Alternative way : directly call ::docking::cleanup $w when closing window
 ################################################################################
 proc createToplevelFinalize {w} {
-  bind $w <Destroy> +[ namespace code "::docking::cleanup $w"]
+  if { $::docking::USE_DOCKING } {
+    bind $w <Destroy> +[ namespace code "::docking::cleanup $w"]
+  }
 }
 
 ################################################################################
@@ -1321,10 +1319,13 @@ set boardSize $newSize
 ttk::style theme use $::lookTheme
 
 # Use default font everywhere
+ttk::style configure TLabel -font font_Regular
 ttk::style configure TButton -font font_Regular
 ttk::style configure TRadiobutton -font font_Regular
 ttk::style configure TCheckbutton -font font_Regular
 ttk::style configure TMenubutton -font font_Regular
+ttk::style configure TCombobox -font font_Regular
+ttk::style configure TEntry -font font_Regular
 
 # Style definitions
 ttk::style configure Bold.TCheckbutton -font font_Bold

@@ -669,3 +669,4 @@ scid-3.6.7
 - MacOS : various updates (better support) (thanks to Israel Chauca Fuentes)
 - Book : last opened book is reopened by default
 - Bug : fixed a possible crash when generating a player report when the opened base has no games (segmentation fault)
+- Analysis / Game annotation : book moves are now translated

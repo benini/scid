@@ -203,15 +203,15 @@ proc ::maint::OpenClose {} {
   ttk::label $w.db.title -textvar ::tr(DatabaseOps) -font $bold
   grid $w.db.title -columnspan 3 -row 0 -column 0 -sticky n
   
-  ttk::button $w.db.eco -textvar ::tr(ReclassifyGames...) -command classifyAllGames
-  ttk::button $w.db.compact -textvar ::tr(CompactDatabase...) -command makeCompactWin
-  ttk::button $w.db.sort -textvar ::tr(SortDatabase...) -command makeSortWin
-  ttk::button $w.db.elo -textvar ::tr(AddEloRatings...) -command allocateRatings
-  ttk::button $w.db.dups -textvar ::tr(DeleteTwins...) -command "markTwins $w"
-  ttk::button $w.db.cleaner -textvar ::tr(Cleaner...) -command cleanerWin
-  ttk::button $w.db.autoload -textvar ::tr(AutoloadGame...) -command ::maint::SetAutoloadGame
-  ttk::button $w.db.strip -textvar ::tr(StripTags...) -command stripTags
-  
+  ttk::button $w.db.eco -style Small.TButton -textvar ::tr(ReclassifyGames...) -command classifyAllGames
+  ttk::button $w.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command makeCompactWin
+  ttk::button $w.db.sort -style Small.TButton -textvar ::tr(SortDatabase...) -command makeSortWin
+  ttk::button $w.db.elo -style Small.TButton -textvar ::tr(AddEloRatings...) -command allocateRatings
+  ttk::button $w.db.dups -style Small.TButton -textvar ::tr(DeleteTwins...) -command "markTwins $w"
+  ttk::button $w.db.cleaner -style Small.TButton -textvar ::tr(Cleaner...) -command cleanerWin
+  ttk::button $w.db.autoload -style Small.TButton -textvar ::tr(AutoloadGame...) -command ::maint::SetAutoloadGame
+  ttk::button $w.db.strip -style Small.TButton -textvar ::tr(StripTags...) -command stripTags
+
   foreach i {eco compact sort elo dups cleaner autoload strip} {
     $w.db.$i configure -style Small.TButton
   }
@@ -229,6 +229,7 @@ proc ::maint::OpenClose {} {
   dialogbutton $w.buttons.help -textvar ::tr(Help) -command {helpWindow Maintenance}
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
   packbuttons right $w.buttons.close $w.buttons.help
+  
   bind $w <Alt-h> "$w.buttons.help invoke"
   bind $w <Alt-c> "destroy $w; break"
   standardShortcuts $w

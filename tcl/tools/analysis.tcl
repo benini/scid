@@ -803,7 +803,7 @@ proc bookAnnotation { {n 1} } {
     
     if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
       if {$prevbookmoves != ""} {
-        sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook ($prevbookmoves)"
+        sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook [::trans $prevbookmoves]"
       } else  {
         sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook"
       }

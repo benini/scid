@@ -119,7 +119,7 @@ ttk::checkbutton $f.ambig -variable spellcheckAmbiguous \
   }
   bind $w <Alt-m> "$f.ok invoke; break"
 
-  button $f.cancel -text "Cancel" -underline 0 -command {
+  ttk::button $f.cancel -text "Cancel" -underline 0 -command {
     focus .
     destroy .spellcheckWin
   }

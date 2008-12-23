@@ -93,7 +93,7 @@ proc packbuttons {side args} {
 #   is given a minumin width.
 #
 proc dialogbutton {w args} {
-  set retval [eval ttk::button $w $args]
+  set retval [eval ttk::button $w $args] ;# -style TButton
   set length [string length [$w cget -text]]
   if {$length < 7} { set length 7 }
   $w configure -width $length

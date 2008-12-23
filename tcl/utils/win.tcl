@@ -579,15 +579,35 @@ proc ::docking::cleanup { w } {
   
   if { ! $::docking::USE_DOCKING } { return }
   
-  set w ".fdock[string range $w 1 end]"
+  set dockw ".fdock[string range $w 1 end]"
+  
+  catch {
+    bind $w <Destroy> {}
+    bind $dockw <Destroy> {}
+  }
+  puts "cleanup $dockw "
+  
   foreach nb [array names tbs] {
-    if { [lsearch  [$nb tabs] $w ] != -1 } {
-      $nb forget $w
-      destroy $w
+    if { [lsearch  [$nb tabs] $dockw ] != -1 } {
+      $nb forget $dockw
+      destroy $dockw
       ::docking::_cleanup_tabs $nb
       return
     }
   }
+  
+  # Make sure the frame is destroyed
+  if { [winfo exists $dockw]} {
+    destroy $dockw
+  }
+  
+  array unset ::docking::notebook_name $dockw
+  
+}
+################################################################################
+proc ::docking::isUndocked { w } {
+  set w ".fdock[string range $w 1 end]"
+  return [info exists ::docking::notebook_name($w)]
 }
 ################################################################################
 proc ::docking::move_tab {srctab dsttab} {
@@ -819,7 +839,6 @@ proc ::docking::undock {srctab} {
   # wm protocol $f WM_DELETE_WINDOW [namespace code [list __dock $f]]
   
   wm deiconify $f
-  
   set ::docking::notebook_name($f) [list $srctab $o]
   setTabStatus
 }
