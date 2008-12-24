@@ -425,6 +425,26 @@ namespace eval docking {
   
   variable tbcnt 0
   array set notebook_name {}
+  
+  # redraw takes some time : skip some events
+  variable lastConfigureEvent 0
+  variable deltaConfigureEvent 400
+}
+
+################################################################################
+proc ::docking::handleConfigureEvent { cmd } {
+  variable lastConfigureEvent
+  variable deltaConfigureEvent
+  
+  after cancel "eval $cmd"
+  set t [clock clicks -milliseconds]
+  
+  if {  [expr $t - $lastConfigureEvent ] < $deltaConfigureEvent } {
+    after [ expr $deltaConfigureEvent + $lastConfigureEvent -$t ] "eval $cmd"
+  } else  {
+    set lastConfigureEvent $t
+    eval $cmd
+  }
 }
 ################################################################################
 # find notebook, corresponding to path

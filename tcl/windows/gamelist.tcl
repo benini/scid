@@ -263,8 +263,17 @@ proc ::windows::gamelist::ReOpen {} {
   # find that actually works.
   # Set temp to window geometry (e.g. 80x20+...) and then
   # extract the part between the "x" and the first "+" or "-":
-  update
-  bind $w <Configure> {
+  bind $w <Configure> { ::docking::handleConfigureEvent ::windows::gamelist::Resize }
+  
+  wm iconname $w "Scid: [tr WindowsGList]"
+  ::windows::gamelist::Refresh
+  focus $w.b.goto
+  
+}
+
+proc ::windows::gamelist::Resize {} {
+    global glistSize glistFields
+    set w .glistWin
     recordWinSize .glistWin
     set temp [wm geometry .glistWin]
     set temp [string range $temp [expr {[string first "x" $temp] + 1}] end]
@@ -277,19 +286,13 @@ proc ::windows::gamelist::ReOpen {} {
       set temp [string range $temp 0 [expr {$idx - 1}]]
     }
     if {$temp != $glistSize && $temp > 0} {
-      set glistSize [ expr $temp -1]
+      set glistSize $temp
       foreach i $glistFields {
         set code [lindex $i 0]
         .glistWin.c$code.text configure -height $glistSize
       }
       ::windows::gamelist::Refresh
     }
-  }
-  
-  wm iconname $w "Scid: [tr WindowsGList]"
-  ::windows::gamelist::Refresh
-  focus $w.b.goto
-  
 }
 
 proc ::windows::gamelist::Open {} {
