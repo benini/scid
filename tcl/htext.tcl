@@ -350,7 +350,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         set gnum [string range $gameTag 2 end]
         set glCommand "::game::LoadMenu $w [sc_base current] $gnum %X %Y"
         $w tag bind $gameTag <ButtonPress-1> $glCommand
-        $w tag bind $gameTag <ButtonPress-3> \
+        $w tag bind $gameTag <ButtonPress-$::MB3> \
             "::gbrowser::new [sc_base current] $gnum"
         $w tag bind $gameTag <Any-Enter> \
             "$w tag configure $gameTag -foreground yellow
@@ -367,7 +367,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         $w tag bind $moveTag <ButtonRelease-1> \
             "sc_move pgn [string range $moveTag 2 end]; updateBoard"
         # invoking contextual menu in PGN window
-        $w tag bind $moveTag <ButtonPress-3> \
+        $w tag bind $moveTag <ButtonPress-$::MB3> \
             "sc_move pgn [string range $moveTag 2 end]; updateBoard"
         $w tag bind $moveTag <Any-Enter> \
             "$w tag configure $moveTag -underline 1

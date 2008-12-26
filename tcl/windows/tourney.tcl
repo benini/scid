@@ -335,7 +335,7 @@ proc ::tourney::refresh {{option ""}} {
     if {$np == 2} { set best "$one $white, $two $black" }
 
     $t tag bind g$count <ButtonPress-1> [list ::tourney::select $g]
-    $t tag bind g$count <ButtonPress-3> [list ::tourney::select $g 1]
+    $t tag bind g$count <ButtonPress-$::MB3> [list ::tourney::select $g 1]
     $t tag bind g$count <Any-Enter> \
       "$t tag configure g$count -background $hc"
     $t tag bind g$count <Any-Leave> \

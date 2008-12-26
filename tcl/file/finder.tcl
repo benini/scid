@@ -267,7 +267,7 @@ proc ::file::finder::Refresh {{newdir ""}} {
     
     $t tag bind f$path <ButtonPress-1> "::file::Open [list $fullpath]"
     # Bind right button to popup a contextual menu:
-    $t tag bind f$path <ButtonPress-3> "::file::finder::contextMenu .finder.t.text [list $fullpath] %x %y %X %Y"
+    $t tag bind f$path <ButtonPress-$::MB3> "::file::finder::contextMenu .finder.t.text [list $fullpath] %x %y %X %Y"
     
     $t tag bind f$path <Any-Enter> \
         "$t tag configure [list f$path] -background $hc"

@@ -408,7 +408,7 @@ proc emailMessageEditor {idx name addr subj gamelist sig} {
   $f.text.edit add command -label "Cut" -command "tk_textCut $f.text"
   $f.text.edit add command -label "Copy" -command "tk_textCopy $f.text"
   $f.text.edit add command -label "Paste" -command "tk_textPaste $f.text"
-  bind $f.text <ButtonPress-3> "tk_popup $f.text.edit %X %Y"
+  bind $f.text <ButtonPress-$::MB3> "tk_popup $f.text.edit %X %Y"
 
   set text $w.message.text
   # $text insert end "Hi $name,\n\n"

@@ -209,7 +209,7 @@ proc ::plist::refresh {} {
     set name [lindex $player 4]
 
     $t tag bind p$count <ButtonPress-1> [list playerInfo $name]
-    #$t tag bind p$count <ButtonPress-3> [list playerInfo $name]
+    #$t tag bind p$count <ButtonPress-$::MB3> [list playerInfo $name]
     $t tag bind p$count <Any-Enter> \
       "$t tag configure p$count -background $hc"
     $t tag bind p$count <Any-Leave> \

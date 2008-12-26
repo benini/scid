@@ -441,7 +441,7 @@ proc ::rep::_drawLevel {w v in} {
         set s [expr {1 - $::rep::_data($w:$p/$c:shown)} ]
         $w bind $tag <1> "set ::rep::_data($w:$p/$c:shown) $s; ::rep::_draw $w"
       }
-      $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
+      $w bind $tag <$::MB3> "::rep::_popupMenu $w $p/$c %X %Y"
     }
     set moves [::rep::_decode $c]
     if {$moves == ""} { set moves "..." }
@@ -452,7 +452,7 @@ proc ::rep::_drawLevel {w v in} {
         -anchor w -tags $taglist]
     set ::rep::_data($w:tag:$tag) $p/$c
     set ::rep::_data($w:$p/$c:tag) $tag
-    $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
+    $w bind $tag <$::MB3> "::rep::_popupMenu $w $p/$c %X %Y"
     set comment ""
     if {[string length $::rep::_data($w:$p/$c:text)] > 0} {
       set comment "** "
@@ -464,7 +464,7 @@ proc ::rep::_drawLevel {w v in} {
       incr x [expr {3 + [lindex [$w bbox $tag] 2] - [lindex [$w bbox $tag] 0]} ]
       set tag [$w create text $x $y -text $comment -font font_Small \
           -fill red3 -anchor w -tags $taglist]
-      $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
+      $w bind $tag <$::MB3> "::rep::_popupMenu $w $p/$c %X %Y"
       set ::rep::_data($w:tag:$tag) $p/$c
     }
     
@@ -477,7 +477,7 @@ proc ::rep::_drawLevel {w v in} {
         set tag [$w create image $in $y -image ::rep::_hidden]
         $w bind $tag <1> "set ::rep::_data($w:$p/$c:shown) 1; ::rep::_draw $w"
       }
-      $w bind $tag <3> "::rep::_popupMenu $w $p/$c %X %Y"
+      $w bind $tag <$::MB3> "::rep::_popupMenu $w $p/$c %X %Y"
     }
   }
   set tag [$w create line $in $start $in [expr {$y+1} ] -fill gray50 ]

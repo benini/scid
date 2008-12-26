@@ -107,12 +107,12 @@ proc ::windows::gamelist::ReOpen {} {
     ::utils::tooltip::Set $w.c$code.header $name
     set helpMessage(E,$w.c$code.header) {Press the left or right mouse button here for a configuration menu}
     
-    bind $w.c$code.header <Control-ButtonPress-3> "incrGLwidth $code; break"
+    bind $w.c$code.header <Control-ButtonPress-$::MB3> "incrGLwidth $code; break"
     bind $w.c$code.header <Control-ButtonPress-1> "decrGLwidth $code; break"
-    bind $w.c$code.header <Shift-ButtonPress-3> "incrGLwidth $code; break"
+    bind $w.c$code.header <Shift-ButtonPress-$::MB3> "incrGLwidth $code; break"
     bind $w.c$code.header <Shift-ButtonPress-1> "decrGLwidth $code; break"
     bind $w.c$code.header <ButtonPress-1> "popupGLconfig $code %x %y %X %Y"
-    bind $w.c$code.header <ButtonPress-3> "popupGLconfig $code %x %y %X %Y"
+    bind $w.c$code.header <ButtonPress-$::MB3> "popupGLconfig $code %x %y %X %Y"
     
     pack $w.c$code -in $w.columns -side left -expand yes -fill both -padx 0
     
@@ -132,10 +132,10 @@ proc ::windows::gamelist::ReOpen {} {
     bind $w.c$code.text <Button-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Highlight \$glSelection; break"
     bind $w.c$code.text <ButtonRelease-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Dehighlight; break"
     
-    bind $w.c$code.text <ButtonPress-3> "popupGLmenu $code %x %y %X %Y"
+    bind $w.c$code.text <ButtonPress-$::MB3> "popupGLmenu $code %x %y %X %Y"
     
-    bind $w.c$code.text <ButtonPress-2> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
-    bind $w.c$code.text <ButtonRelease-2> "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
+    bind $w.c$code.text <ButtonPress-$::MB2> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
+    bind $w.c$code.text <ButtonRelease-$::MB2> "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
     
     pack $w.c$code.text -side top -expand true -fill both
     if {$sep} { addVerticalRule $w.columns 1 flat }
@@ -426,7 +426,7 @@ proc popupGLconfig {code xcoord ycoord xscreen yscreen} {
   } else {
     $menu entryconfig 3 -state normal -command "deleteGLfield $code"
   }
-  # event generate .glistWin <ButtonRelease-3>
+  # event generate .glistWin <ButtonRelease-$::MB3>
   $menu post $xscreen [expr {$yscreen + 2}]
   event generate $menu <ButtonPress-1>
 }

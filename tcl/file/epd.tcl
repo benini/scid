@@ -257,7 +257,7 @@ proc newEpdWin {cmd {fname ""}} {
   $w.text.edit add command -label "Cut"  -command "tk_textCut $w.text"
   $w.text.edit add command -label "Copy" -command "tk_textCopy $w.text"
   $w.text.edit add command -label "Paste" -command "tk_textPaste $w.text"
-  bind $w.text <ButtonPress-3> "tk_popup $w.text.edit %X %Y"
+  bind $w.text <ButtonPress-$::MB3> "tk_popup $w.text.edit %X %Y"
   
   updateEpdWin $id
   

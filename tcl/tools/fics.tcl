@@ -26,11 +26,14 @@ namespace eval fics {
   set offers_maxelo 2500
   set offers_mintime 0
   set offers_maxtime 60
+  variable logged 0
+  variable isGuestLogin 0
   
   ################################################################################
   #
   ################################################################################
   proc config {} {
+    variable logged
     global ::fics::sockChan
     set w ".ficsConfig"
     
@@ -43,6 +46,8 @@ namespace eval fics {
       focus .fics
       return
     }
+    
+    set logged 0
     
     toplevel $w
     ::setTitle $w "ConfigureFics"
@@ -146,6 +151,7 @@ namespace eval fics {
   ################################################################################
   proc connect { login passwd } {
     global ::fics::sockchan ::fics::seeklist ::fics::width ::fics::height ::fics::off
+    variable isGuestLogin
     
     if {$login != ""} {
       set ::fics::reallogin $login
@@ -153,6 +159,8 @@ namespace eval fics {
     } else {
       return
     }
+    
+    set isGuestLogin [string match -nocase "guest" $login]
     
     # check timeseal configuration
     if {$::fics::use_timeseal} {
@@ -203,8 +211,8 @@ namespace eval fics {
     ttk::entry $w.f.top.f2.cmd -width 32
     ttk::button $w.f.top.f2.send -text send -command ::fics::cmd
     bind $w.f.top.f2.cmd <Return> { ::fics::cmd }
-    bind $w.f.top.f2.cmd <Up> { ::fics::cmdHistory up }
-    bind $w.f.top.f2.cmd <Down> { ::fics::cmdHistory down }
+    bind $w.f.top.f2.cmd <Up> { ::fics::cmdHistory up ; break }
+    bind $w.f.top.f2.cmd <Down> { ::fics::cmdHistory down ; break }
     pack $w.f.top.f2.cmd $w.f.top.f2.send -side left -fill x
     
     # clock 1 is white
@@ -399,16 +407,24 @@ namespace eval fics {
   #
   ################################################################################
   proc readchan {} {
+    variable logged
+    
     if {[eof $::fics::sockchan]} {
       tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
       return
     }
-    set line [read $::fics::sockchan]
-    set line [string map {"\a" ""} $line]
-    foreach l [split $line "\n"] {
-      readparse $l
-    }
     
+    # switch from read to gets in case a read is done at the middle of a line
+    if {! $logged} {
+      set line [read $::fics::sockchan]
+      foreach l [split $line "\n"] {
+        readparse $l
+      }
+    } else  {
+      set line [gets $::fics::sockchan]
+      set line [string map {"\a" ""} $line]
+      readparse $line
+    }
   }
   
   ################################################################################
@@ -456,7 +472,12 @@ namespace eval fics {
   #
   ################################################################################
   proc readparse {line} {
+    variable logged
+    variable isGuestLogin
+    
     if {$line == "" || [string match "fics*" $line] } {return}
+    
+    # puts  "readparse $line"
     
     if { $::fics::sought } {
       if {[string match "* ad* displayed." $line]} {
@@ -471,10 +492,14 @@ namespace eval fics {
     
     if {[string match "login: " $line]} {
       writechan $::fics::reallogin
+      if { $isGuestLogin} {
+        set logged 1
+      }
       return
     }
     if {[string match "password: " $line]} {
       writechan $::fics::password
+      set logged 1
       return
     }
     if {[string match "<sc>*" $line]} {
@@ -548,6 +573,7 @@ namespace eval fics {
       scan $line "You are now observing game %d." ::fics::observedGame
     }
     
+    # Start session
     if {[string match "*Starting FICS session*" $line]} {
       # init commands
       writechan "iset seekremove 1"
@@ -662,10 +688,10 @@ namespace eval fics {
     set w .fics
     
     foreach elt [list $w.f.bottom.right.offers $w.f.bottom.right.silence $w.f.top.f2.send $w.f.bottom.right.offers $w.f.bottom.right.games \
-          $w.f.bottom.right.findopp $w.f.bottom.right.abort $w.f.bottom.right.draw $w.f.bottom.right.resign $w.f.bottom.right.takeback \
-          $w.f.bottom.right.takeback2] {
-      $elt configure -state $state
-    }
+        $w.f.bottom.right.findopp $w.f.bottom.right.abort $w.f.bottom.right.draw $w.f.bottom.right.resign $w.f.bottom.right.takeback \
+        $w.f.bottom.right.takeback2] {
+          $elt configure -state $state
+        }
   }
   ################################################################################
   #
@@ -1058,12 +1084,14 @@ namespace eval fics {
   #
   ################################################################################
   proc close {} {
+    variable logged
     # stop recursive call
     bind .fics <Destroy> {}
     
     set ::fics::sought 0
     after cancel ::fics::updateOffers
     after cancel ::fics::stayConnected
+    set logged 0
     
     writechan "exit"
     set ::fics::playing 0

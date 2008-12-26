@@ -192,7 +192,7 @@ proc tools::graphs::filter::Open {} {
     ::utils::graph::redraw filter
   }
   bind $w.c <1> tools::graphs::filter::Switch
-  bind $w.c <3> ::tools::graphs::filter::Refresh
+  bind $w.c <$::MB3> ::tools::graphs::filter::Refresh
   
   foreach {name text} {decade Decade year Year elo Rating move moves} {
     radiobutton $w.b.$name -padx 4 -pady 3 -text $::tr($text) \
@@ -420,7 +420,7 @@ proc ::tools::graphs::score::Refresh {} {
       ::utils::graph::configure score -width [expr {[winfo width .sgraph.c] - 100}]
       ::utils::graph::redraw score
     }
-    bind $w.c <3> ::tools::graphs::score::Refresh
+    bind $w.c <$::MB3> ::tools::graphs::score::Refresh
     bind $w.c <1> {::tools::graphs::score::Move %x}
     wm title $w "Scid: [tr ToolsScore]"
     ::tools::graphs::score::ConfigMenus
@@ -541,7 +541,7 @@ proc ::tools::graphs::rating::Refresh {{type ""} {player ""}} {
       ::utils::graph::redraw ratings
     }
     bind $w.c <Button-1> "::tools::graphs::rating::Refresh"
-    bind $w.c <Button-3> "::tools::graphs::rating::Refresh"
+    bind $w.c <Button-$::MB3> "::tools::graphs::rating::Refresh"
     wm title $w "Scid: [tr ToolsRating]"
     ::tools::graphs::rating::ConfigMenus
   }
@@ -656,7 +656,7 @@ proc tools::graphs::absfilter::Open {} {
     ::utils::graph::redraw absfilter
   }
   bind $w.c <1> tools::graphs::absfilter::Switch
-  bind $w.c <3> ::tools::graphs::absfilter::Refresh
+  bind $w.c <$::MB3> ::tools::graphs::absfilter::Refresh
   foreach {name text} {decade Decade year Year elo Rating move moves} {
     radiobutton $w.b.$name -padx 4 -pady 3 -text $::tr($text) \
         -variable ::tools::graphs::absfilter::type -value $name \

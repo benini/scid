@@ -1285,23 +1285,23 @@ for {set i 0} { $i < 64 } { incr i } {
   ::board::bind .main.board $i <Enter> "enterSquare $i"
   ::board::bind .main.board $i <Leave> "leaveSquare $i"
   ::board::bind .main.board $i <ButtonPress-1> "set ::addVariationWithoutAsking 0 ; pressSquare $i"
-  ::board::bind .main.board $i <ButtonPress-2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
-  #::board::bind .main.board $i <ButtonPress-3> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
+  ::board::bind .main.board $i <ButtonPress-$::MB2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
+  #::board::bind .main.board $i <ButtonPress-$::MB3> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
   ::board::bind .main.board $i <Control-ButtonPress-1> "drawArrow $i green"
-  ::board::bind .main.board $i <Control-ButtonPress-2> "drawArrow $i yellow"
-  ::board::bind .main.board $i <Control-ButtonPress-3> "drawArrow $i red"
+  ::board::bind .main.board $i <Control-ButtonPress-$::MB2> "drawArrow $i yellow"
+  ::board::bind .main.board $i <Control-ButtonPress-$::MB3> "drawArrow $i red"
   ::board::bind .main.board $i <Shift-ButtonPress-1> "addMarker $i green"
-  ::board::bind .main.board $i <Shift-ButtonPress-2> "addMarker $i yellow"
-  ::board::bind .main.board $i <Shift-ButtonPress-3> "addMarker $i red"
+  ::board::bind .main.board $i <Shift-ButtonPress-$::MB2> "addMarker $i yellow"
+  ::board::bind .main.board $i <Shift-ButtonPress-$::MB3> "addMarker $i red"
   ::board::bind .main.board $i <B1-Motion> "::board::dragPiece .main.board %X %Y"
   ::board::bind .main.board $i <ButtonRelease-1> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-  ::board::bind .main.board $i <ButtonRelease-2> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-  #::board::bind .main.board $i <ButtonRelease-3> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
+  ::board::bind .main.board $i <ButtonRelease-$::MB2> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
+  #::board::bind .main.board $i <ButtonRelease-$::MB3> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
   
-  #::board::bind .main.board $i <ButtonPress-2> "pressSquare $i"
+  #::board::bind .main.board $i <ButtonPress-$::MB2> "pressSquare $i"
   # Pascal Georges : this should be removed because I find it too dangerous for people with cats ??
   # put it back with Scid 3.6.13, let's see if this leads to problems
-  ::board::bind .main.board $i <ButtonPress-3> backSquare
+  ::board::bind .main.board $i <ButtonPress-$::MB3> backSquare
 }
 
 foreach i {o q r n k O Q R B N K} {

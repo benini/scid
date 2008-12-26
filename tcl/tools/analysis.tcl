@@ -1689,7 +1689,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
   pack $w.hist.ybar -side right -fill y
   pack $w.hist.text -side left -expand 1 -fill both
   
-  bind $w.hist.text <ButtonPress-3> "toggleMovesDisplay $n"
+  bind $w.hist.text <ButtonPress-$::MB3> "toggleMovesDisplay $n"
   $w.text tag configure blue -foreground blue
   $w.text tag configure bold -font font_Bold
   $w.text tag configure small -font font_Small

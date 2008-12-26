@@ -178,7 +178,7 @@ proc ::ptrack::make {} {
     label $b -image b$p$::ptrack::psize -border 1 -relief raised
     grid $b -row 11 -column $c
     bind $b <1> "::ptrack::select $sq"
-    bind $b <3> "::ptrack::select {a7 b7 c7 d7 e7 f7 g7 h7}"
+    bind $b <$::MB3> "::ptrack::select {a7 b7 c7 d7 e7 f7 g7 h7}"
   }
   grid [frame $w.bd.gap2 -height 5] -row 12 -column 0
   foreach file {a b c d e f g h} c {1 2 3 4 5 6 7 8} p {p p p p p p p p} {
@@ -187,7 +187,7 @@ proc ::ptrack::make {} {
     label $b -image w$p$::ptrack::psize -border 1 -relief raised
     grid $b -row 13 -column $c
     bind $b <ButtonPress-1> "::ptrack::select $sq"
-    bind $b <3> "::ptrack::select {a2 b2 c2 d2 e2 f2 g2 h2}"
+    bind $b <$::MB3> "::ptrack::select {a2 b2 c2 d2 e2 f2 g2 h2}"
   }
   foreach file {a b c d e f g h} c {1 2 3 4 5 6 7 8} p {r n b q k b n r} {
     set sq ${file}1
@@ -199,15 +199,15 @@ proc ::ptrack::make {} {
 
   # Both-piece bindings:
   foreach sq {d1 e1 d8 e8} {
-    bind $w.bd.p$sq <3> [list ::ptrack::select $sq]
+    bind $w.bd.p$sq <$::MB3> [list ::ptrack::select $sq]
   }
   foreach left {a b c} right {h g f} {
     set cmd [list ::ptrack::select [list ${left}1 ${right}1]]
-    bind $w.bd.p${left}1 <ButtonPress-3> $cmd
-    bind $w.bd.p${right}1 <ButtonPress-3> $cmd
+    bind $w.bd.p${left}1 <ButtonPress-$::MB3> $cmd
+    bind $w.bd.p${right}1 <ButtonPress-$::MB3> $cmd
     set cmd [list ::ptrack::select [list ${left}8 ${right}8]]
-    bind $w.bd.p${left}8 <ButtonPress-3> $cmd
-    bind $w.bd.p${right}8 <ButtonPress-3> $cmd
+    bind $w.bd.p${left}8 <ButtonPress-$::MB3> $cmd
+    bind $w.bd.p${right}8 <ButtonPress-$::MB3> $cmd
   }
 
   # Status-bar help:

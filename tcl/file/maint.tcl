@@ -750,7 +750,7 @@ proc updateTwinChecker {} {
     bind $w <Alt-d> "markTwins $w"
     bind $w <KeyPress-d> "markTwins $w"
     bind $w <KeyPress-1> "$w.f.left.title.d invoke"
-    bind $w <KeyPress-2> "$w.f.right.title.d invoke"
+    bind $w <KeyPress-$::MB2> "$w.f.right.title.d invoke"
     bind $w <KeyPress-s> "$w.b.share invoke"
     bind $w <KeyPress-u> {
       if {$twincheck(left)} {.twinchecker.f.left.title.d invoke}

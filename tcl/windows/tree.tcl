@@ -607,7 +607,7 @@ proc ::tree::displayLines { baseNumber moves } {
     
     if { $maskFile != "" } {
       # Bind right button to popup a contextual menu:
-      $w.f.tl tag bind tagclick$i <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
+      $w.f.tl tag bind tagclick$i <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
     }
     $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
     
@@ -649,7 +649,7 @@ proc ::tree::displayLines { baseNumber moves } {
       ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$idx
       
       # Bind right button to popup a contextual menu:
-      $w.f.tl tag bind tagclick$idx <ButtonPress-3> "::tree::mask::contextMenu $w.f.tl  [lindex $m 0] %x %y %X %Y"
+      $w.f.tl tag bind tagclick$idx <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl  [lindex $m 0] %x %y %X %Y"
       $w.f.tl tag add tagclick$idx $idx.0 $idx.end
       incr idx
     }
@@ -959,10 +959,10 @@ proc ::tree::best { baseNumber } {
     set t $pane.bpgn.text
     bind $t <ButtonPress-1> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
     bind $t <ButtonRelease-1> ::pgn::HideBoard
-    bind $t <ButtonPress-2> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
-    bind $t <ButtonRelease-2> ::pgn::HideBoard
-    bind $t <ButtonPress-3> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
-    bind $t <ButtonRelease-3> :::pgn::HideBoard
+    bind $t <ButtonPress-$::MB2> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
+    bind $t <ButtonRelease-$::MB2> ::pgn::HideBoard
+    bind $t <ButtonPress-$::MB3> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
+    bind $t <ButtonRelease-$::MB3> :::pgn::HideBoard
     
     ttk::label $w.opt.lmax -text $::tr(TreeBest:) -font font_Small
     set m [tk_optionMenu $w.opt.max tree(bestMax$baseNumber) 10 20 50 100 200 500]

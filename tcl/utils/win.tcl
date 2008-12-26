@@ -605,7 +605,6 @@ proc ::docking::cleanup { w } {
     bind $w <Destroy> {}
     bind $dockw <Destroy> {}
   }
-  puts "cleanup $dockw "
   
   foreach nb [array names tbs] {
     if { [lsearch  [$nb tabs] $dockw ] != -1 } {
@@ -772,7 +771,7 @@ bind TNotebook <Escape> {
   }
 }
 
-bind TNotebook <ButtonPress-3> {::docking::ctx_menu %W}
+bind TNotebook <ButtonPress-$::MB3> {::docking::ctx_menu %W}
 bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
 
 ################################################################################

@@ -172,11 +172,11 @@ namespace eval pgn {
     }
     
     # Bind middle button to popup a PGN board:
-    bind $w <ButtonPress-2> "::pgn::ShowBoard .pgnWin.text 5 %x %y %X %Y"
-    bind $w <ButtonRelease-2> ::pgn::HideBoard
+    bind $w <ButtonPress-$::MB2> "::pgn::ShowBoard .pgnWin.text 5 %x %y %X %Y"
+    bind $w <ButtonRelease-$::MB2> ::pgn::HideBoard
     
     # Bind right button to popup a contextual menu:
-    bind $w <ButtonPress-3> "::pgn::contextMenu .pgnWin.text 5 %x %y %X %Y"
+    bind $w <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text 5 %x %y %X %Y"
     
     # set the same arrow key, etc bindings that the main window has:
     bind $w <F1> { helpWindow PGN }

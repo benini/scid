@@ -884,6 +884,16 @@ if {$::windowsOS} {
   }
 }
 
+# Reversed mouse buttons in mac (::MB2 and ::MB3 are middle and right mouse buttons respectively.):
+if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+  set ::MB2 3
+  set ::MB3 2
+} else {
+  set ::MB2 2
+  set ::MB3 3
+}
+
+
 # Opening files by drag & drop on Scid icon on Mac
 if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
   # Drag & Drop

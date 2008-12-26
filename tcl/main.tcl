@@ -443,9 +443,9 @@ foreach flag $maintFlaglist {
   "
 }
 
-bind .main.gameInfo <ButtonPress-3> "tk_popup .main.gameInfo.menu %X %Y"
+bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
 # alternate code that may work better on MacOS ?
-# bind .main.gameInfo <ButtonPress-3> ".main.gameInfo.menu post %X %Y"
+# bind .main.gameInfo <ButtonPress-$::MB3> ".main.gameInfo.menu post %X %Y"
 bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
 
 
@@ -615,7 +615,7 @@ proc showVars {} {
   
   # Needed or the main window loses the focus 
   if { $::docking::USE_DOCKING } {
-    bind .variations <Destroy> { focus -force .main }
+    bind .variations <Destroy> { focus -force . }
   }
   
   sc_info preMoveCmd preMoveCommand

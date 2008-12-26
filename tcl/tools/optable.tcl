@@ -256,7 +256,7 @@ if {! [sc_base inUse]} { return }
   $w.text.bd configure -relief solid -borderwidth 1
   for {set i 0} {$i < 63} {incr i} {
     ::board::bind $w.text.bd $i <ButtonPress-1> ::optable::flipBoard
-    #::board::bind $w.text.bd $i <ButtonPress-3> ::optable::resizeBoard
+    #::board::bind $w.text.bd $i <ButtonPress-$::MB3> ::optable::resizeBoard
   }
   ::board::update $w.text.bd [sc_pos board]
   $w.b.exclude.m delete 0 end

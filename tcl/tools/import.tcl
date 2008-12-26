@@ -33,7 +33,7 @@ proc importPgnGame {} {
   $edit.text.rmenu add command -label "Copy" -command "tk_textCopy $edit.text"
   $edit.text.rmenu add command -label "Paste" -command "tk_textPaste $edit.text"
   $edit.text.rmenu add command -label "Select all" -command "$edit.text tag add sel 1.0 end"
-  bind $edit.text <ButtonPress-3> "tk_popup $edit.text.rmenu %X %Y"
+  bind $edit.text <ButtonPress-$::MB3> "tk_popup $edit.text.rmenu %X %Y"
   
   text $pane.err.text -height 4 -width 75 -wrap word -yscroll "$pane.err.scroll set"
   $pane.err.text insert end $::tr(ImportHelp1)

@@ -434,7 +434,7 @@ proc ::windows::switcher::Open {} {
     $f.menu add command -label $closeLabel \
       -command [list ::file::Close $i]
     foreach win {"" .img .name .ngames} {
-      bind $f$win <ButtonPress-3> "tk_popup $f.menu %X %Y"
+      bind $f$win <ButtonPress-$::MB3> "tk_popup $f.menu %X %Y"
     }
     $f.menu add separator
     $f.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \

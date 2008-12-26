@@ -657,7 +657,7 @@ button .main.fbutton.button.start -image tb_start -command ::move::Start
 button .main.fbutton.button.back -image tb_prev -command ::move::Back
 button .main.fbutton.button.forward -image tb_next -command ::move::Forward
 button .main.fbutton.button.end -image tb_end -command ::move::End
-bind .main.fbutton.button.end <Button-3> ::tactics::findBestMove
+bind .main.fbutton.button.end <Button-$::MB3> ::tactics::findBestMove
 ttk::frame .main.fbutton.button.space -width 15
 
 # The go-into-variation button is a menubutton:

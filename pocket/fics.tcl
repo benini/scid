@@ -16,6 +16,8 @@ namespace eval fics {
   set waitForRating ""
   set consoleList {}
   set connected 0
+  variable logged 0
+  variable isGuestLogin 0
   
   ################################################################################
   #
@@ -58,6 +60,8 @@ namespace eval fics {
   ################################################################################
   proc connect {login passwd} {
     global ::fics::sockchan
+    
+    set isGuestLogin [string match -nocase "guest" $login]
     
     set ::options(fics_login) $login
     set ::options(fics_password) $passwd
@@ -218,11 +222,23 @@ namespace eval fics {
   ################################################################################
   proc readchan {} {
     # gets $::fics::sockchan line
-    set line [read $::fics::sockchan]
-    set line [string map {"\a" ""} $line]
+    variable logged
     
-    foreach l [split $line "\n"] {
-      readparse $l
+    if {[eof $::fics::sockchan]} {
+      tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
+      return
+    }
+    
+    # switch from read to gets in case a read is done at the middle of a line
+    if {! $logged} {
+      set line [read $::fics::sockchan]
+      foreach l [split $line "\n"] {
+        readparse $l
+      }
+    } else  {
+      set line [gets $::fics::sockchan]
+      set line [string map {"\a" ""} $line]
+      readparse $line
     }
     
   }
@@ -230,14 +246,21 @@ namespace eval fics {
   #
   ################################################################################
   proc readparse {line} {
+    variable logged
+    variable isGuestLogin
+    
     if {$line == "" || [string match "fics*" $line] } {return}
     
     if {[string match "login: " $line]} {
       writechan $::options(fics_login)
+      if { $isGuestLogin} {
+        set logged 1
+      }
       return
     }
     if {[string match "password: " $line]} {
       writechan $::options(fics_password)
+      set logged 1
       return
     }
     if {[string match "<sc>*" $line]} {

@@ -189,7 +189,7 @@ proc ::commenteditor::Open {} {
   for {set square 0} {$square < 64} {incr square} {
     ::board::bind $board $square <ButtonPress-1> [namespace code [list InsertMark $board $square]]
     ::board::bind $board $square <ButtonRelease-1> [namespace code [list ButtonReleased $board %b %X %Y]]
-    ::board::bind $board $square <ButtonPress-3> [namespace code [list InsertMark $board [expr {$square + 64}]]]
+    ::board::bind $board $square <ButtonPress-$::MB3> [namespace code [list InsertMark $board [expr {$square + 64}]]]
   }
   
   # Right subframe: type/shape (pseudo-radio)buttons

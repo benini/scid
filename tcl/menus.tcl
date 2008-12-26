@@ -1742,8 +1742,8 @@ proc standardShortcuts {w} {
   bind $w <End>   ::move::End
   bind $w <F2> "::makeAnalysisWin 1 0"
   bind $w <F3> "::makeAnalysisWin 2 0"
-  bind $w <F4> { catch { .analysisWin1.b1.bStartStop invoke } }
-  bind $w <F5> { catch { .analysisWin2.b1.bStartStop invoke } }
+  bind $w <F4> { if {[winfo exists .analysisWin1]} { .analysisWin1.b1.bStartStop invoke } }
+  bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
   bind $w <F11>  ::book::open
   bind $w <F12> ::CorrespondenceChess::CCWindow
 }

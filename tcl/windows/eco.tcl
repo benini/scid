@@ -85,7 +85,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
     bindMouseWheel $w $w.pane.text.text
 
     bind $graph.c <1> { ::windows::eco::Select %x }
-    bind $graph.c <3> { ::windows::eco::KeyPress "<" }
+    bind $graph.c <$::MB3> { ::windows::eco::KeyPress "<" }
 
     bind $graph <Configure> {
       ::utils::graph::configure eco -height [expr {[winfo height .ecograph.pane.graph.c] - 50} ]

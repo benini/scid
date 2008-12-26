@@ -335,8 +335,8 @@ proc setupBoard {} {
       $sbd.$i configure -background $dark
     }
     bind $sbd.$i <ButtonPress-1> "setupBoardPiece $i"
-    bind $sbd.$i <ButtonPress-2> "switchPastePiece prev"
-    bind $sbd.$i <ButtonPress-3> "switchPastePiece next"
+    bind $sbd.$i <ButtonPress-$::MB2> "switchPastePiece prev"
+    bind $sbd.$i <ButtonPress-$::MB3> "switchPastePiece next"
   }
   
   pack $sbd -padx 10 -pady 10 -expand 1
