@@ -1923,6 +1923,16 @@ translate B CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate B CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate B CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate B CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate B CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate B CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate B CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate B ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate B ExtHWPort {Port}
@@ -1972,6 +1982,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

@@ -1947,6 +1947,16 @@ translate R CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate R CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate R CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate R CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate R CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate R CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate R CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate R ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate R ExtHWPort {Port}
@@ -1995,6 +2005,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

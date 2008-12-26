@@ -1531,6 +1531,16 @@ translate F CCNextBtn {Aller à la partie suivante}
 translate F CCSendBtn {Envoyer coup}
 translate F CCEmptyBtn {Vider les boîtes d'envoi et de réception}
 translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide appuyer sur F1!}
+# ====== TODO To be translated ======
+translate F CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate F CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate F CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate F CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate F CCDlgRatingType {Rating Type:}
 
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
@@ -1762,6 +1772,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

@@ -1921,6 +1921,16 @@ translate W CCEmptyBtn {Töm Inkorgen och Utkorgen}
 # ====== TODO To be translated ======
 translate W CCHelpBtn {Hjälp med ikoner och statusindikatorer.\nFör generell Hjälp tryck på F1!}
 # ====== TODO To be translated ======
+translate W CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate W CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate W CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate W CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate W CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate W ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate W ExtHWPort {Port}
@@ -6983,6 +6993,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

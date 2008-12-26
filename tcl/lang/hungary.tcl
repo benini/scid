@@ -1913,6 +1913,16 @@ translate H CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate H CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate H CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate H CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate H CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate H CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate H CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate H ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate H ExtHWPort {Port}
@@ -2192,6 +2202,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

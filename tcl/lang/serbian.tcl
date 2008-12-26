@@ -1918,6 +1918,16 @@ translate Y CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate Y CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate Y CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate Y CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate Y CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate Y CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate Y CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate Y ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate Y ExtHWPort {Port}
@@ -1966,6 +1976,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

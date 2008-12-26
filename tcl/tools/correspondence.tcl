@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.32 2008/12/26 12:13:56 arwagner Exp $
+### $Id: correspondence.tcl,v 1.33 2008/12/26 12:24:09 arwagner Exp $
 ###
-### Last change: <Fri, 2008/12/26 13:13:20 arwagner ingata>
+### Last change: <Fri, 2008/12/26 13:21:43 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -90,7 +90,6 @@ namespace eval Xfcc {
 						puts $optionF "\t\t<uri>http://</uri>"
 						puts $optionF "\t\t<user>User_Name</user>"
 						puts $optionF "\t\t<pass>Password</pass>"
-						###---### 
 						puts $optionF "\t\t<rating>Rating</rating>"
 						puts $optionF "\t</server>"
 					}
@@ -100,7 +99,6 @@ namespace eval Xfcc {
 					puts $optionF "\t\t<uri>$::Xfcc::xfccsrv($i,1)</uri>"
 					puts $optionF "\t\t<user>$::Xfcc::xfccsrv($i,2)</user>"
 					puts $optionF "\t\t<pass>$::Xfcc::xfccsrv($i,3)</pass>"
-					###---###
 					puts $optionF "\t\t<rating>$::Xfcc::xfccsrv($i,4)</rating>"
 					puts $optionF "\t</server>"
 				}
@@ -120,7 +118,6 @@ namespace eval Xfcc {
 		set ::Xfcc::Server   "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,0)"
 		set ::Xfcc::Username "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,2)"
 		set ::Xfcc::Password "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,3)"
-		###---###
 		set ::Xfcc::Rating   "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,4)"
 		set ::Xfcc::URI      "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,1)"
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum) $::Xfcc::Server
@@ -135,7 +132,6 @@ namespace eval Xfcc {
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,2) $::Xfcc::Username
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,3) $::Xfcc::Password
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,1) $::Xfcc::URI
-		###---###
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,4) $::Xfcc::Rating
 
  		set size [expr [ array size ::Xfcc::xfccsrv ] / 4]
@@ -146,14 +142,12 @@ namespace eval Xfcc {
  		set ::Xfcc::xfccsrv($size,0) "Unique_ServerName"
  		set ::Xfcc::xfccsrv($size,2) "Your_Login"
  		set ::Xfcc::xfccsrv($size,3) "SeCrEt!"
-		###---###
  		set ::Xfcc::xfccsrv($size,4) "Rating"
  		set ::Xfcc::xfccsrv($size,1) "http://"
  
  		set ::Xfcc::Server    $::Xfcc::xfccsrv($size,0)
  		set ::Xfcc::Username  $::Xfcc::xfccsrv($size,2)
  		set ::Xfcc::Password  $::Xfcc::xfccsrv($size,3)
-		###---###
  		set ::Xfcc::Rating    $::Xfcc::xfccsrv($size,4)
  		set ::Xfcc::URI       $::Xfcc::xfccsrv($size,1)
  
@@ -174,14 +168,12 @@ namespace eval Xfcc {
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,0) $::Xfcc::Server
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,2) $::Xfcc::Username
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,3) $::Xfcc::Password
-		###---###
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,4) $::Xfcc::Rating
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,1) $::Xfcc::URI
 
 		set ::Xfcc::Server    $::Xfcc::xfccsrv($number,0)
 		set ::Xfcc::Username  $::Xfcc::xfccsrv($number,2)
 		set ::Xfcc::Password  $::Xfcc::xfccsrv($number,3)
-		###---###
 		set ::Xfcc::Rating    $::Xfcc::xfccsrv($number,4)
 		set ::Xfcc::URI       $::Xfcc::xfccsrv($number,1)
 
@@ -211,7 +203,6 @@ namespace eval Xfcc {
 		set ::Xfcc::Server    $::Xfcc::xfccsrv($::Xfcc::Oldnum,0)
 		set ::Xfcc::Username  $::Xfcc::xfccsrv($::Xfcc::Oldnum,2)
 		set ::Xfcc::Password  $::Xfcc::xfccsrv($::Xfcc::Oldnum,3)
-		###---###
 		set ::Xfcc::Rating    $::Xfcc::xfccsrv($::Xfcc::Oldnum,4)
 		set ::Xfcc::URI       $::Xfcc::xfccsrv($::Xfcc::Oldnum,1)
 
@@ -232,18 +223,18 @@ namespace eval Xfcc {
 		# select the first entry
 		$w.xfccSrvList selection set $::Xfcc::Oldnum
 
-		label  $w.lxfccSrv   -text "Server name:"
-		label  $w.lxfccUid   -text "Login name:"
-		label  $w.lxfccPas   -text "Password:"
-		label  $w.lxfccURI   -text "URL:"
-		label  $w.lxfccrtype -text "Rating Type:"
+		label  $w.lxfccSrv   -text [::tr CCDlgServerName]
+		label  $w.lxfccUid   -text [::tr CCDlgLoginName]
+		label  $w.lxfccPas   -text [::tr CCDlgPassword]
+		label  $w.lxfccURI   -text [::tr CCDlgURL]
+		label  $w.lxfccrtype -text [::tr CCDlgRatingType]
 
 		entry  .configXfccSrv.xfccSrv  -width 60 -textvariable ::Xfcc::Server
 		entry  .configXfccSrv.xfccUid  -width 60 -textvariable ::Xfcc::Username
 		entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
 		entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
 
-		eval tk_optionMenu .configXfccSrv.xfccrtype ::Xfcc::Rating [sc_info ratings]¬
+		eval tk_optionMenu .configXfccSrv.xfccrtype ::Xfcc::Rating [sc_info ratings]
 		.configXfccSrv.xfccrtype configure -indicatoron 0 -width 7 -takefocus 1
 
 		# Tcl/Tk 8.5:
@@ -312,7 +303,6 @@ namespace eval Xfcc {
 				set ::Xfcc::xfccsrv($number,1) $uri
 				set ::Xfcc::xfccsrv($number,2) $username
 				set ::Xfcc::xfccsrv($number,3) $password
-				###---###
 				set ::Xfcc::xfccsrv($number,4) $rating
 
 				lappend ::Xfcc::lsrvname [list $name ]

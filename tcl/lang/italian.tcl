@@ -1603,6 +1603,16 @@ translate I CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate I CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate I CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate I CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate I CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate I CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate I CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate I ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate I ExtHWPort {Port}
@@ -1883,6 +1893,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

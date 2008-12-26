@@ -1910,6 +1910,16 @@ translate C CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate C CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate C CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate C CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate C CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate C CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate C CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate C ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate C ExtHWPort {Port}
@@ -5596,6 +5606,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

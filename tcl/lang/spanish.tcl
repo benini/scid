@@ -1544,6 +1544,16 @@ translate S CCNextBtn {Ir a partida siguiente}
 translate S CCSendBtn {Enviar movimiento}
 translate S CCEmptyBtn {Correos entrante y saliente vacios}
 translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda general pulse F1!}
+# ====== TODO To be translated ======
+translate S CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate S CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate S CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate S CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate S CCDlgRatingType {Rating Type:}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
@@ -1570,6 +1580,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

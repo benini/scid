@@ -1682,6 +1682,16 @@ translate N CCNextBtn {Ga naar de volgende}
 translate N CCSendBtn {Stuur de zet op}
 translate N CCEmptyBtn {Ledig In- en Outbox}
 translate N CCHelpBtn {Hulp over iconen en status indicatoren.\nVoor algemen hulp: druk F1!}
+# ====== TODO To be translated ======
+translate N CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate N CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate N CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate N CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate N CCDlgRatingType {Rating Type:}
 translate N ExtHWConfigConnection {Configureer externe hardware}
 translate N ExtHWPort {Poort}
 translate N ExtHWEngineCmd {Engine commando}
@@ -1707,6 +1717,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

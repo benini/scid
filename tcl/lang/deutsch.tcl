@@ -284,8 +284,7 @@ menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
 menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
-# ====== TODO To be translated ======
-menuText D OptionsTheme "Theme" 0 {Change look of interface}
+menuText D OptionsTheme "Design" 0 {Verändert das Aussehen der Oberfläche}
 menuText D OptionsWindows "Fenster" 6 {Fenster-Optionen}
 menuText D OptionsWindowsIconify "Autom. minimieren" 7 \
   {Alle Fenster mit dem Hauptfenster minimieren}
@@ -519,8 +518,7 @@ menuText D TreeOpt "Optionen" 0
 menuText D TreeOptSlowmode "Gründliche Suche" 0 {Update mit hoher Genauigkeit, langsamer}
 menuText D TreeOptFastmode "Schneller Modus" 0 {Schnelles Update (ignoriert Zugumstellungen)}
 menuText D TreeOptFastAndSlowmode "Gründlicher und Schneller Modus" 0 {Zunächst schneller Updatemodus, dann nacharbeit im gründlichen Modus}
-# ====== TODO To be translated ======
-menuText D TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
+menuText D TreeOptStartStop "Automatisch aktualisieren" 0 {Schaltet das automatische aktualisieren ein/aus}
 menuText D TreeOptLock "Anbinden" 0 \
   {Zugbaum an aktive Datenbank anbinden(/lösen)}
 menuText D TreeOptTraining "Training" 0 {Trainingsmodus ein-/ausschalten}
@@ -1584,6 +1582,11 @@ translate D CCNextBtn {Nächste Partie}
 translate D CCSendBtn {Zug versenden}
 translate D CCEmptyBtn {Postein- und ausgang leeren}
 translate D CCHelpBtn {Hilfe zu den Icons und Statusindikatoren\nFür allgemeine Hilfe bitte F1!}
+translate D CCDlgServerName {Server Name:}
+translate D CCDlgLoginName  {Login Name:}
+translate D CCDlgPassword   {Paßwort:}
+translate D CCDlgURL        {Xfcc-URL:}
+translate D CCDlgRatingType {Wertungszahl:}
 translate D ExtHWConfigConnection {Hardware Konfigurieren}
 translate D ExtHWPort {Schnittstelle}
 translate D ExtHWEngineCmd {Engine Kommando}
@@ -7158,6 +7161,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

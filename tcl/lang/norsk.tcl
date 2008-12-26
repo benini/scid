@@ -1914,6 +1914,16 @@ translate O CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate O CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate O CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate O CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate O CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate O CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate O CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate O ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate O ExtHWPort {Port}
@@ -1966,6 +1976,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

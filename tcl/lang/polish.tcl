@@ -1927,6 +1927,16 @@ translate P CCEmptyBtn {Empty In- and Outbox}
 # ====== TODO To be translated ======
 translate P CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 # ====== TODO To be translated ======
+translate P CCDlgServerName {Server Name:}
+# ====== TODO To be translated ======
+translate P CCDlgLoginName  {Login Name:}
+# ====== TODO To be translated ======
+translate P CCDlgPassword   {Password:}
+# ====== TODO To be translated ======
+translate P CCDlgURL        {Xfcc-URL:}
+# ====== TODO To be translated ======
+translate P CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
 translate P ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate P ExtHWPort {Port}
@@ -2193,6 +2203,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

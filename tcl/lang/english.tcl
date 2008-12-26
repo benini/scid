@@ -1581,6 +1581,13 @@ translate E CCSendBtn {Send move}
 translate E CCEmptyBtn {Empty In- and Outbox}
 translate E CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
 
+translate E CCDlgServerName {Server Name:}
+translate E CCDlgLoginName  {Login Name:}
+translate E CCDlgPassword   {Password:}
+translate E CCDlgURL        {Xfcc-URL:}
+translate E CCDlgRatingType {Rating Type:}
+
+
 # Connect Hardware dialoges
 translate E ExtHWConfigConnection {Configure external hardware}
 translate E ExtHWPort {Port}
