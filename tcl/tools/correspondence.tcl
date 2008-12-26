@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.30 2008/12/14 12:36:23 arwagner Exp $
+### $Id: correspondence.tcl,v 1.31 2008/12/26 12:10:03 arwagner Exp $
 ###
-### Last change: <Sun, 2008/12/14 11:19:54 arwagner ingata>
+### Last change: <Fri, 2008/12/26 13:06:28 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -59,7 +59,7 @@ namespace eval Xfcc {
 	proc xmldecrypt {chdata} {
 
 		foreach from {{\&amp;} {\&lt;} {\&gt;} {\&quot;} {\&apos;}}   \
-			to {{\&} < > {"} {'}} {
+			to {{\&} < > {"} {'}} {                                     ;# '"
 				regsub -all $from $chdata $to chdata
 		 }   
 		 return $chdata
@@ -90,6 +90,8 @@ namespace eval Xfcc {
 						puts $optionF "\t\t<uri>http://</uri>"
 						puts $optionF "\t\t<user>User_Name</user>"
 						puts $optionF "\t\t<pass>Password</pass>"
+						###---### 
+						puts $optionF "\t\t<rating>Rating</rating>"
 						puts $optionF "\t</server>"
 					}
 				} else {
@@ -98,6 +100,8 @@ namespace eval Xfcc {
 					puts $optionF "\t\t<uri>$::Xfcc::xfccsrv($i,1)</uri>"
 					puts $optionF "\t\t<user>$::Xfcc::xfccsrv($i,2)</user>"
 					puts $optionF "\t\t<pass>$::Xfcc::xfccsrv($i,3)</pass>"
+					###---###
+					puts $optionF "\t\t<rating>$::Xfcc::xfccsrv($i,4)</rating>"
 					puts $optionF "\t</server>"
 				}
 			}
@@ -116,6 +120,8 @@ namespace eval Xfcc {
 		set ::Xfcc::Server   "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,0)"
 		set ::Xfcc::Username "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,2)"
 		set ::Xfcc::Password "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,3)"
+		###---###
+		set ::Xfcc::Rating   "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,4)"
 		set ::Xfcc::URI      "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,1)"
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum) $::Xfcc::Server
 		}
@@ -129,6 +135,8 @@ namespace eval Xfcc {
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,2) $::Xfcc::Username
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,3) $::Xfcc::Password
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,1) $::Xfcc::URI
+		###---###
+		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,4) $::Xfcc::Rating
 
  		set size [expr [ array size ::Xfcc::xfccsrv ] / 4]
 
@@ -138,11 +146,15 @@ namespace eval Xfcc {
  		set ::Xfcc::xfccsrv($size,0) "Unique_ServerName"
  		set ::Xfcc::xfccsrv($size,2) "Your_Login"
  		set ::Xfcc::xfccsrv($size,3) "SeCrEt!"
+		###---###
+ 		set ::Xfcc::xfccsrv($size,4) "Rating"
  		set ::Xfcc::xfccsrv($size,1) "http://"
  
  		set ::Xfcc::Server    $::Xfcc::xfccsrv($size,0)
  		set ::Xfcc::Username  $::Xfcc::xfccsrv($size,2)
  		set ::Xfcc::Password  $::Xfcc::xfccsrv($size,3)
+		###---###
+ 		set ::Xfcc::Rating    $::Xfcc::xfccsrv($size,4)
  		set ::Xfcc::URI       $::Xfcc::xfccsrv($size,1)
  
  		lappend ::Xfcc::lsrvname [list $::Xfcc::xfccsrv($size,0)]
@@ -162,11 +174,15 @@ namespace eval Xfcc {
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,0) $::Xfcc::Server
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,2) $::Xfcc::Username
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,3) $::Xfcc::Password
+		###---###
+		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,4) $::Xfcc::Rating
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,1) $::Xfcc::URI
 
 		set ::Xfcc::Server    $::Xfcc::xfccsrv($number,0)
 		set ::Xfcc::Username  $::Xfcc::xfccsrv($number,2)
 		set ::Xfcc::Password  $::Xfcc::xfccsrv($number,3)
+		###---###
+		set ::Xfcc::Rating    $::Xfcc::xfccsrv($number,4)
 		set ::Xfcc::URI       $::Xfcc::xfccsrv($number,1)
 
 		set ::Xfcc::Oldnum    $number
@@ -195,6 +211,8 @@ namespace eval Xfcc {
 		set ::Xfcc::Server    $::Xfcc::xfccsrv($::Xfcc::Oldnum,0)
 		set ::Xfcc::Username  $::Xfcc::xfccsrv($::Xfcc::Oldnum,2)
 		set ::Xfcc::Password  $::Xfcc::xfccsrv($::Xfcc::Oldnum,3)
+		###---###
+		set ::Xfcc::Rating    $::Xfcc::xfccsrv($::Xfcc::Oldnum,4)
 		set ::Xfcc::URI       $::Xfcc::xfccsrv($::Xfcc::Oldnum,1)
 
 		# create the window and buttons
@@ -214,15 +232,19 @@ namespace eval Xfcc {
 		# select the first entry
 		$w.xfccSrvList selection set $::Xfcc::Oldnum
 
-		label  $w.lxfccSrv -text "Server name:"
-		label  $w.lxfccUid -text "Login name:"
-		label  $w.lxfccPas -text "Password:"
-		label  $w.lxfccURI -text "URL:"
+		label  $w.lxfccSrv   -text "Server name:"
+		label  $w.lxfccUid   -text "Login name:"
+		label  $w.lxfccPas   -text "Password:"
+		label  $w.lxfccURI   -text "URL:"
+		label  $w.lxfccrtype -text "Rating Type:"
 
 		entry  .configXfccSrv.xfccSrv  -width 60 -textvariable ::Xfcc::Server
 		entry  .configXfccSrv.xfccUid  -width 60 -textvariable ::Xfcc::Username
 		entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
 		entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
+
+		ttk::combobox .configXfccSrv.xfccrtype -values [sc_info ratings] -width 7 -textvariable ::Xfcc::Rating
+
 
 		# Bind the change of selection to a proper update of variables and internal representatio
 		bind .configXfccSrv.xfccSrvList <<ListboxSelect>> {
@@ -235,17 +257,19 @@ namespace eval Xfcc {
 		grid $w.lxfccUid     -stick e -columnspan 2 -column  0 -row [expr {$number + 2}]
 		grid $w.lxfccPas     -stick e -columnspan 2 -column  0 -row [expr {$number + 3}]
 		grid $w.lxfccURI     -stick e -columnspan 2 -column  0 -row [expr {$number + 4}]
+		grid $w.lxfccrtype   -stick e -columnspan 2 -column  0 -row [expr {$number + 5}]
 
 		grid $w.xfccSrv      -stick w -columnspan 4 -column  2 -row [expr {$number + 1}]
 		grid $w.xfccUid      -stick w -columnspan 4 -column  2 -row [expr {$number + 2}]
 		grid $w.xfccPas      -stick w -columnspan 4 -column  2 -row [expr {$number + 3}]
 		grid $w.xfccURI      -stick w -columnspan 4 -column  2 -row [expr {$number + 4}]
+		grid $w.xfccrtype    -stick w -columnspan 4 -column  2 -row [expr {$number + 5}]
 
 		# Add the buttons to the window
-		grid $w.bOk     -column 2 -row [expr {$number + 5}]
-		grid $w.bAdd    -column 3 -row [expr {$number + 5}]
-		grid $w.bDelete -column 4 -row [expr {$number + 5}]
-		grid $w.bCancel -column 5 -row [expr {$number + 5}]
+		grid $w.bOk     -column 2 -row [expr {$number + 6}]
+		grid $w.bAdd    -column 3 -row [expr {$number + 6}]
+		grid $w.bDelete -column 4 -row [expr {$number + 6}]
+		grid $w.bCancel -column 5 -row [expr {$number + 6}]
 
 		bind $w <Escape> "$w.bCancel invoke"
 		bind $w <F1> { helpWindow CCXfccSetupDialog}
@@ -278,11 +302,14 @@ namespace eval Xfcc {
 				set uri      [$srv selectNodes {string(uri)}]
 				set username [$srv selectNodes {string(user)}]
 				set password [$srv selectNodes {string(pass)}]
+				set rating   [$srv selectNodes {string(rating)}]
 
 				set ::Xfcc::xfccsrv($number,0) $name
 				set ::Xfcc::xfccsrv($number,1) $uri
 				set ::Xfcc::xfccsrv($number,2) $username
 				set ::Xfcc::xfccsrv($number,3) $password
+				###---###
+				set ::Xfcc::xfccsrv($number,4) $rating
 
 				lappend ::Xfcc::lsrvname [list $name ]
 
@@ -382,11 +409,16 @@ namespace eval Xfcc {
 			set uri      [$srv selectNodes {string(uri)}]
 			set username [$srv selectNodes {string(user)}]
 			set password [$srv selectNodes {string(pass)}]
+			set rating   [$srv selectNodes {string(rating)}]
+
+			if {$rating == ""} {
+				set rating "ICCF"
+			}
 
 			::CorrespondenceChess::updateConsole "info Processing $username\@$name..."
 			set xml [::Xfcc::Receive $uri $username $password]
 			::Xfcc::SOAPError $name $xml
-			::Xfcc::WritePGN $path $name $xml
+			::Xfcc::WritePGN $path $name $rating $xml
 			::Xfcc::PrintStatus $path $name $xml
 		}
 	}
@@ -494,10 +526,14 @@ namespace eval Xfcc {
 
 	#----------------------------------------------------------------------
 	# Given the name of the Xfcc-Server and the XML-result from the web
-	# server. name is the name of the server used for generation of the
-	# CmailGameID, xml is the result from the web service
+	# server a PGN file with a single game is written. name is the name
+	# of the server used for generation of the CmailGameID, xml is the
+	# result from the web service. rating contains the string that
+	# should be used to specify the rating system. It could be
+	# something like Rating, Elo, ICCF, USCF, BCF etc. like usual in
+	# Scid
 	#----------------------------------------------------------------------
-	proc WritePGN {path name xml} {
+	proc WritePGN {path name rating xml} {
 
 		# The following removes the SOAP-Envelope. tDOM does not seem to
 		# like it for whatever reason, but it's not needed anyway.
@@ -571,8 +607,8 @@ namespace eval Xfcc {
 					puts $pgnF "\[Date \"$Date\"\]";
 					puts $pgnF "\[White \"$White\"\]";
 					puts $pgnF "\[Black \"$Black\"\]";
-					puts $pgnF "\[WhiteElo \"$WhiteElo\"\]";
-					puts $pgnF "\[BlackElo \"$BlackElo\"\]";
+					puts $pgnF "\[White$rating \"$WhiteElo\"\]";
+					puts $pgnF "\[Black$rating \"$BlackElo\"\]";
 					puts $pgnF "\[TimeControl \"$TimeControl\"\]";
 					puts $pgnF "\[GameId \"$GameId\"\]";
 					puts $pgnF "\[Source \"$Source\"\]";

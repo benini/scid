@@ -2,9 +2,9 @@
 ### metadata.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: metadata.tcl,v 1.3 2008/12/20 22:34:09 pgeorges Exp $
+### $Id: metadata.tcl,v 1.4 2008/12/26 12:10:03 arwagner Exp $
 ###
-### Last change: <Sat, 2008/12/20 20:57:35 arwagner ingata>
+### Last change: <Fri, 2008/12/26 13:08:31 arwagner ingata>
 ###
 ### Read/Write/Show descriptive information for a specific database
 ###

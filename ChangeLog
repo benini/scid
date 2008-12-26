@@ -612,6 +612,8 @@ scid-3.6.7
   * wav-file added to the package
 - Correspondence Chess
   * Adopt button alignement
+  * Allow to specify the rating system used by the site
+    (if none is given, default to ICCF)
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
