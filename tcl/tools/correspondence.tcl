@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.31 2008/12/26 12:10:03 arwagner Exp $
+### $Id: correspondence.tcl,v 1.32 2008/12/26 12:13:56 arwagner Exp $
 ###
-### Last change: <Fri, 2008/12/26 13:06:28 arwagner ingata>
+### Last change: <Fri, 2008/12/26 13:13:20 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -243,7 +243,11 @@ namespace eval Xfcc {
 		entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
 		entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
 
-		ttk::combobox .configXfccSrv.xfccrtype -values [sc_info ratings] -width 7 -textvariable ::Xfcc::Rating
+		eval tk_optionMenu .configXfccSrv.xfccrtype ::Xfcc::Rating [sc_info ratings]¬
+		.configXfccSrv.xfccrtype configure -indicatoron 0 -width 7 -takefocus 1
+
+		# Tcl/Tk 8.5:
+		## ttk::combobox .configXfccSrv.xfccrtype -values [sc_info ratings] -width 7 -textvariable ::Xfcc::Rating
 
 
 		# Bind the change of selection to a proper update of variables and internal representatio
