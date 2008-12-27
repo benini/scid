@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.33 2008/12/26 12:24:09 arwagner Exp $
+### $Id: correspondence.tcl,v 1.34 2008/12/27 16:06:28 arwagner Exp $
 ###
-### Last change: <Fri, 2008/12/26 13:21:43 arwagner ingata>
+### Last change: <Sat, 2008/12/27 15:35:53 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1415,6 +1415,26 @@ namespace eval CorrespondenceChess {
 		eval [linsert $args 0 $w.bottom.feature yview]
 	}
 
+
+	proc doConfigMenus { } {
+
+		set lang $::language
+
+		if {! [winfo exists .ccWindow]} { return }
+
+		set m .ccWindow.menu
+
+		foreach idx {0} tag {CorrespondenceChess} {
+			configMenuText $m $idx $tag $lang
+		}
+		foreach idx {0 2 3 5 6 7 8 9 11 12} tag {CCConfigure CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCNewMailGame CCMailMove} {
+			configMenuText $m.correspondence $idx $tag $lang
+		}
+
+	}
+
+
+
 	#----------------------------------------------------------------------
 	# Generate the Correspondence Chess Window. This Window offers a
 	# console displaying whats going on and which game is displayed
@@ -1425,7 +1445,7 @@ namespace eval CorrespondenceChess {
 	# and in case of Xfcc the special moves availabe (resign etc.)
 	#----------------------------------------------------------------------
 	proc CCWindow {} {
-		global scidDataDir 
+		global scidDataDir helpMessage
 
 		set w .ccWindow
 		if {[winfo exists .ccWindow]} {
@@ -1436,23 +1456,64 @@ namespace eval CorrespondenceChess {
 		}
 		set ::CorrespondenceChess::isOpen 1
 
-		toplevel $w
+		::createToplevel $w
 		wm title $w [::tr "CorrespondenceChess"]
 		# the window is not resizable
-		wm resizable $w 0 0
+		#wm resizable $w 0 0
 
 		# hook up with scids geometry manager
 		setWinLocation $w
 		setWinSize $w
-		bind $w <Configure> "recordWinSize $w"
 
 		# enable the standard shortcuts
 		standardShortcuts $w
 
+		# create the menu and add default CC menu items here as well
+		menu $w.menu
+		::setMenu $w $w.menu
+		set m $w.menu
+		$w.menu add cascade -label CorrespondenceChess -menu $w.menu.correspondence
+		foreach i {correspondence} {
+			menu $w.menu.$i -tearoff 0
+		}
+
+		$m.correspondence add command -label CCConfigure   -command {::CorrespondenceChess::config}
+		set helpMessage($m.correspondence,0) CCConfigure
+
+		$m.correspondence add separator
+		$m.correspondence add command -label CCRetrieve    -command { ::CorrespondenceChess::FetchGames }
+		set helpMessage($m.correspondence,2) CCRetrieve
+
+		$m.correspondence add command -label CCInbox       -command { ::CorrespondenceChess::ReadInbox }
+		set helpMessage($m.correspondence,3) CCInbox
+
+		$m.correspondence add separator
+		$m.correspondence add command -label CCSend        -command {::CorrespondenceChess::SendMove 0 0 0 0}
+		set helpMessage($m.correspondence,5) CCSend
+		$m.correspondence add command -label CCResign      -command {::CorrespondenceChess::SendMove 1 0 0 0}
+		set helpMessage($m.correspondence,6) CCResign
+		$m.correspondence add command -label CCClaimDraw   -command {::CorrespondenceChess::SendMove 0 1 0 0}
+		set helpMessage($m.correspondence,7) CCClaimDraw
+		$m.correspondence add command -label CCOfferDraw   -command {::CorrespondenceChess::SendMove 0 0 1 0}
+		set helpMessage($m.correspondence,8) CCOfferDraw
+		$m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
+		set helpMessage($m.correspondence,9) CCAcceptDraw
+		$m.correspondence add separator
+		$m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
+		set helpMessage($m.correspondence,11) CCNewMailGame
+		$m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
+		set helpMessage($m.correspondence,12) CCMailMove
+
+		# Translate the menu
+		::CorrespondenceChess::doConfigMenus
+
 		frame $w.top
 		frame $w.bottom
-		pack $w.top -anchor w -expand 1
-		pack $w.bottom -fill both -expand 1
+##		label $w.status -width 1 -anchor w -font font_Small -relief sunken -textvar helpMessage($m.correspondence)
+
+		pack $w.top -anchor w -expand no
+		pack $w.bottom -fill both -expand yes
+##		pack $w.status -side bottom -fill x
 
 		scrollbar $w.top.ysc        -command { .ccWindow.top.console yview }
 		text      $w.top.console    -height 3 -width 80 -wrap word -yscrollcommand "$w.top.ysc set"
@@ -1506,16 +1567,19 @@ namespace eval CorrespondenceChess {
 		# scroll syncronously!
 		scrollbar $w.bottom.ysc      -command ::CorrespondenceChess::yview
 
-		text $w.bottom.id       -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.toMove   -cursor top_left_arrow -font font_Small -height 25 -width 4  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.event    -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.site     -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.white    -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.black    -cursor top_left_arrow -font font_Small -height 25 -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.clockW   -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.clockB   -cursor top_left_arrow -font font_Small -height 25 -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.var      -cursor top_left_arrow -font font_Small -height 25 -width 3  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
-		text $w.bottom.feature  -cursor top_left_arrow -font font_Small -height 25 -width 16 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		set height $::winHeight(.ccWindow)
+		set width  $::winWidth(.ccWindow)
+
+		text $w.bottom.id       -cursor top_left_arrow -font font_Small -height $height -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.toMove   -cursor top_left_arrow -font font_Small -height $height -width 4  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.event    -cursor top_left_arrow -font font_Small -height $height -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.site     -cursor top_left_arrow -font font_Small -height $height -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.white    -cursor top_left_arrow -font font_Small -height $height -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.black    -cursor top_left_arrow -font font_Small -height $height -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.clockW   -cursor top_left_arrow -font font_Small -height $height -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.clockB   -cursor top_left_arrow -font font_Small -height $height -width 10 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.var      -cursor top_left_arrow -font font_Small -height $height -width 3  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
+		text $w.bottom.feature  -cursor top_left_arrow -font font_Small -height $height -width 16 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
 
 		grid $w.bottom.id       -column  0 -row 1
 		grid $w.bottom.toMove   -column  1 -row 1
@@ -1531,6 +1595,11 @@ namespace eval CorrespondenceChess {
 
 		bind $w <F1>   { helpWindow Correspondence}
 		bind $w "?"    { helpWindow CCIcons}
+
+		bind $w <Configure> {
+			set w .ccWindow
+			recordWinSize $w
+		}
 
 		foreach f [glob -nocomplain [file join "$CorrespondenceChess::PluginPath" *]] {
 			$w.top.plugins    configure -image tb_CC_pluginactive
