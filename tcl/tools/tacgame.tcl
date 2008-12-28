@@ -14,7 +14,6 @@ namespace eval tacgame {
   set resignCount 0
   
   # if true, follow a specific opening
-  set chosenOpening ""
   set openingMovesList {}
   set openingMovesHash {}
   set openingMoves ""
@@ -201,7 +200,9 @@ namespace eval tacgame {
     ttk::frame $w.fopening.fOpeningList
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
         -height 5 -width 40 -list ::tacgame::openingList
-    $w.fopening.fOpeningList.lbOpening selection set 0
+    $w.fopening.fOpeningList.lbOpening selection set $::tacgame::chosenOpening
+    $w.fopening.fOpeningList.lbOpening see $::tacgame::chosenOpening
+    
     ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
     pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar  -side right -fill y
@@ -539,7 +540,7 @@ namespace eval tacgame {
       ::tacgame::closeEngine 1
       # ::tacgame::closeEngine 2
       ::uci::closeUCIengine 2
-      tk_messageBox -type ok -icon warning -parent . -title "Scid" -message "Please choose the correct Phalanx engine"
+      tk_messageBox -type ok -icon warning -parent .main -title "Scid" -message "Please choose the correct Phalanx engine"
       focus .
       destroy .coachWin
       ::tacgame::config
@@ -551,7 +552,7 @@ namespace eval tacgame {
       fileevent $analysisCoach(pipe1) readable {}
       catch {close $analysisCoach(pipe1)}
       set analysisCoach(pipe1) ""
-      tk_messageBox -type ok -icon info -parent . -title "Scid" \
+      tk_messageBox -type ok -icon info -parent .main -title "Scid" \
           -message "The analysis engine 1 terminated without warning; it probably crashed or had an internal error."
     }
     
@@ -718,7 +719,7 @@ namespace eval tacgame {
     set elt [lrange [split [sc_pos fen]] 0 2]
     lappend ::tacgame::lFen $elt
     if { [llength [lsearch -all $::tacgame::lFen $elt] ] >=3 } {
-      tk_messageBox -type ok -message $::tr(Draw) -parent .board -icon info
+      tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
       return 1
     }
     return 0
@@ -804,7 +805,7 @@ namespace eval tacgame {
     repetition
     
     if { $resignCount > 3 } {
-      tk_messageBox -type ok -message $::tr(Iresign) -parent .board -icon info
+      tk_messageBox -type ok -message $::tr(Iresign) -parent .main -icon info
       set resignCount 0
     }
     

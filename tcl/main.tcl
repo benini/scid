@@ -615,7 +615,7 @@ proc showVars {} {
   
   # Needed or the main window loses the focus 
   if { $::docking::USE_DOCKING } {
-    bind .variations <Destroy> { focus -force . }
+    bind .variations <Destroy> { focus -force .main }
   }
   
   sc_info preMoveCmd preMoveCommand

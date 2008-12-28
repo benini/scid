@@ -123,6 +123,7 @@ set ::tacgame::showevaluation 1
 set ::tacgame::isLimitedAnalysisTime 1
 set ::tacgame::analysisTime 10
 set ::tacgame::openingType new
+set ::tacgame::chosenOpening 0
 
 # List of saved layouts : 3 slots available
 array set ::docking::layout_list {}
@@ -276,6 +277,7 @@ set pgnColor(Current) lightSteelBlue
 set pgnColor(NextMove) "\#fefe80"
 set pgnColor(Background) "\#ffffff"
 
+# Defaults for FICS
 array set findopponent {}
 set ::fics::use_timeseal 1
 set ::fics::timeseal_exec "timeseal"
@@ -296,6 +298,24 @@ set ::fics::consolebg     black
 set ::fics::consolefg     LimeGreen
 set ::fics::consoleheight 10
 set ::fics::consolewidth  40
+
+# Defaults for serious game training
+set ::sergame::isOpening 0
+set ::sergame::chosenOpening 0
+set ::sergame::chosenEngine 0
+set ::sergame::useBook 1
+set ::sergame::bookToUse ""
+set ::sergame::startFromCurrent 0
+set ::sergame::coachIsWatching 0
+set ::sergame::timeMode "timebonus"
+set ::sergame::depth 3
+set ::sergame::movetime 0
+set ::sergame::nodes 10000
+set ::sergame::ponder 0
+set ::uci::uciInfo(wtime3) [expr 5 * 60 * 1000 ]
+set ::uci::uciInfo(winc3) [expr 10 * 1000 ]
+set ::uci::uciInfo(btime3) [expr 5 * 60 * 1000 ]
+set ::uci::uciInfo(binc3) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."

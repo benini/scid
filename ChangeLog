@@ -602,6 +602,7 @@ scid-3.6.26
 
 scid-3.6.7
 -----------
+- This release requires Tcl/Tk 8.5 or higher
 - Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"
 - Reworked board setup dialog (thanks to Steven Atkinson)
 - Correspondence chess :
@@ -672,3 +673,5 @@ scid-3.6.7
 - Book : last opened book is reopened by default
 - Bug : fixed a possible crash when generating a player report when the opened base has no games (segmentation fault)
 - Analysis / Game annotation : book moves are now translated
+- Serious game and Tactical game : parameters are saved
+- added spanish ECO file scid-esp.eco (thanks to Benigno Hernández)

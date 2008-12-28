@@ -668,6 +668,9 @@ proc ::docking::end_motion {w x y} {
   
   if {$c_path==""} { return }
   set path [winfo containing $x $y]
+  if {$path == ""} {
+    return
+  }
   $path configure -cursor {}
   
   set t [find_tbn $path]

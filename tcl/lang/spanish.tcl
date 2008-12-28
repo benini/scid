@@ -83,7 +83,7 @@ menuText S EditReset "Poner a cero la base de trabajo" 0 \
 menuText S EditCopy "Copiar esta partida a la base de trabajo" 1 \
   {Copia esta partida a la base de trabajo (clipbase)}
 menuText S EditPaste "Pegar la última partida de la base de trabajo" 2 \
-  {Pega la partida activa en la base de trabajo (clipbase) aquí}
+  {Pega en la base actual la partida activa en la base de trabajo (clipbase)}
 menuText S EditPastePGN "Paste Clipboard text as PGN game..." 10 \
   {Interpreta el texto  de la base de trabajo (clipbase) como una partida en notacion PGN y la pega aquí}
 menuText S EditSetup "Iniciar tablero de posición..." 26 \
@@ -96,7 +96,7 @@ menuText S EditPasteBoard "Pegar tablero inicial" 6 \
 # Game menu:
 menuText S Game "Partida" 0
 menuText S GameNew "Partida nueva" 0 \
-  {Vuelve a una partida limpia, descartando cualquier cambio}
+  {Partida nueva, descarta cambios de la partida actual}
 menuText S GameFirst "Cargar primera partida" 7 {Carga la primera partida filtrada}
 menuText S GamePrev "Cargar partida anterior" 16 {Carga la anterior partida filtrada}
 menuText S GameReload "Recargar partida actual" 0 \
@@ -508,8 +508,7 @@ menuText S TreeOpt "Opciones" 1
 menuText S TreeOptSlowmode "Modo Lento" 0 {Movimiento lento para actualizaciones (Alta calidad)}
 menuText S TreeOptFastmode "Modo Rápido" 0 {Movimiento rápido para actualizaciones (no transpone movimientos)}
 menuText S TreeOptFastAndSlowmode "Modo Rápido y Lento" 0 {Movimiento rápido y modo lento para actualizaciones}
-# ====== TODO To be translated ======
-menuText S TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
+menuText S TreeOptStartStop "Auto actualizado" 0 {Actualizado automático de la ventana del árbol}
 menuText S TreeOptLock "Bloquear" 1 {Bloquea/desbloquea el árbol de la base de datos actual}
 menuText S TreeOptTraining "Entrenamiento" 2 {Activa/desactiva el modo de entrenamiento de árbol}
 menuText S TreeOptAutosave "Autoguardar archivo caché" 0 \
@@ -1516,10 +1515,10 @@ translate S CCDlgEmailCommunication {Comunicación eMail}
 translate S CCDlgMailPrg {Programa de correo:}
 translate S CCDlgBCCAddr {(B)CC Dirección:}
 translate S CCDlgMailerMode {Modo:}
-translate S CCDlgThunderbirdEg {e.d. Thunderbird, Mozilla Mail, Icedove...}
-translate S CCDlgMailUrlEg {e.d. Evolution}
-translate S CCDlgClawsEg {e.d. Sylpheed Claws}
-translate S CCDlgmailxEg {e.d. mailx, mutt, nail...}
+translate S CCDlgThunderbirdEg {p.e. Thunderbird, Mozilla Mail, Icedove...}
+translate S CCDlgMailUrlEg {p.e. Evolution}
+translate S CCDlgClawsEg {p.e. Sylpheed Claws}
+translate S CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate S CCDlgAttachementPar {Parámetro Adhesión (Attachment):}
 translate S CCDlgInternalXfcc {Usar soporte interno Xfcc}
 translate S CCDlgSubjectPar {Parámetro Sujeto (Subject):}
@@ -1544,16 +1543,12 @@ translate S CCNextBtn {Ir a partida siguiente}
 translate S CCSendBtn {Enviar movimiento}
 translate S CCEmptyBtn {Correos entrante y saliente vacios}
 translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda general pulse F1!}
-# ====== TODO To be translated ======
-translate S CCDlgServerName {Server Name:}
-# ====== TODO To be translated ======
-translate S CCDlgLoginName  {Login Name:}
-# ====== TODO To be translated ======
-translate S CCDlgPassword   {Password:}
+translate S CCDlgServerName {Nombre del servidos:}
+translate S CCDlgLoginName  {Nombre de registro:}
+translate S CCDlgPassword   {Contraseña:}
 # ====== TODO To be translated ======
 translate S CCDlgURL        {Xfcc-URL:}
-# ====== TODO To be translated ======
-translate S CCDlgRatingType {Rating Type:}
+translate S CCDlgRatingType {Tipo de clasificación (Rating):}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
@@ -1580,8 +1575,6 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
-
-
 
 
 

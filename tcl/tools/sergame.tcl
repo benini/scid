@@ -12,24 +12,13 @@ namespace eval sergame {
   set ::uci::uciInfo(log_stdout3) 0
   
   # if true, follow a specific opening
-  set isOpening 0
-  set chosenOpening ""
   set openingMovesList {}
   set openingMovesHash {}
   set openingMoves ""
   set outOfOpening 0
-  set useBook 1
-  set bookToUse ""
   array set engineListBox {}
-  set startFromCurrent 0
-  set coachIsWatching 0
   set engineName ""
   set bookSlot 2
-  set timeMode "timebonus"
-  set depth 0
-  set movetime 0
-  set nodes 0
-  set ponder 0
   
   # list of fen positions played to detect 3 fold repetition
   set lFen {}
@@ -113,7 +102,8 @@ namespace eval sergame {
       return
     }
     
-    $w.fengines.fEnginesList.lbEngines selection set 0
+    $w.fengines.fEnginesList.lbEngines selection set $::sergame::chosenEngine
+    $w.fengines.fEnginesList.lbEngines see $::sergame::chosenEngine
     
     # load book names
     ttk::checkbutton $w.fbook.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
@@ -124,10 +114,14 @@ namespace eval sergame {
     set tmp {}
     foreach file  $bookList {
       lappend tmp [ file tail $file ]
+      if { $::sergame::bookToUse == [ file tail $file ]} {
+        set idx $i
+      }
+      incr i
     }
     
     ttk::combobox $w.fbook.combo -width 12 -values $tmp
-    $w.fbook.combo current 0
+    $w.fbook.combo current $idx
     
     set row 0
     
@@ -164,16 +158,16 @@ namespace eval sergame {
     ttk::label $w.ftime.timebonus.blacklseconds -text $::tr(TimeSec)
     grid $w.ftime.timebonus.blacklseconds -row $row -column 5
     
-    $w.ftime.timebonus.whitespminutes set 5
-    $w.ftime.timebonus.whitespseconds set 10
-    $w.ftime.timebonus.blackspminutes set 5
-    $w.ftime.timebonus.blackspseconds set 10
+    $w.ftime.timebonus.whitespminutes set [expr $::uci::uciInfo(wtime3) / (60 * 1000)]
+    $w.ftime.timebonus.whitespseconds set [expr $::uci::uciInfo(winc3) /  1000]
+    $w.ftime.timebonus.blackspminutes set [expr $::uci::uciInfo(btime3) / (60 * 1000)]
+    $w.ftime.timebonus.blackspseconds set [expr $::uci::uciInfo(binc3) /  1000 ]
     
     # Fixed depth
     ttk::frame $w.ftime.depth
     ttk::radiobutton $w.ftime.depth.button -text $::tr(FixedDepth) -value "depth" -variable ::sergame::timeMode
     spinbox $w.ftime.depth.value -background white -width 4 -from 1 -to 20 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
-    $w.ftime.depth.value set 3
+    $w.ftime.depth.value set $::sergame::depth
     
     pack $w.ftime.depth -side top -fill x
     pack $w.ftime.depth.button -side left
@@ -182,7 +176,7 @@ namespace eval sergame {
     ttk::frame $w.ftime.nodes
     ttk::radiobutton $w.ftime.nodes.button -text "$::tr(Nodes) (x1000)" -value "nodes" -variable ::sergame::timeMode
     spinbox $w.ftime.nodes.value -background white -width 4 -from 5 -to 10000 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
-    $w.ftime.nodes.value set 10
+    $w.ftime.nodes.value set [ expr $::sergame::nodes /1000]
     
     pack $w.ftime.nodes -side top -fill x
     pack $w.ftime.nodes.button -side left
@@ -191,7 +185,7 @@ namespace eval sergame {
     ttk::frame $w.ftime.movetime
     ttk::radiobutton $w.ftime.movetime.button -text $::tr(SecondsPerMove) -value "movetime" -variable ::sergame::timeMode
     spinbox $w.ftime.movetime.value -background white -width 4 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
-    $w.ftime.movetime.value set 5
+    $w.ftime.movetime.value set [ expr $::sergame::movetime /1000]
     
     pack $w.ftime.movetime -side top -fill x
     pack $w.ftime.movetime.button -side left
@@ -214,7 +208,9 @@ namespace eval sergame {
     ttk::frame $w.fopening.fOpeningList -relief raised -borderwidth 1
     listbox $w.fopening.fOpeningList.lbOpening -yscrollcommand "$w.fopening.fOpeningList.ybar set" \
         -height 5 -width 50 -list ::tacgame::openingList -exportselection 0
-    $w.fopening.fOpeningList.lbOpening selection set 0
+    $w.fopening.fOpeningList.lbOpening selection set $::sergame::chosenOpening
+    $w.fopening.fOpeningList.lbOpening see $::sergame::chosenOpening
+    
     ttk::scrollbar $w.fopening.fOpeningList.ybar -command "$w.fopening.fOpeningList.lbOpening yview"
     pack $w.fopening.fOpeningList.lbOpening -side right -fill both -expand 1
     pack $w.fopening.fOpeningList.ybar -side right -fill y
@@ -223,8 +219,8 @@ namespace eval sergame {
     
     ttk::button $w.fbuttons.close -text $::tr(Play) -command {
       focus .
-      set chosenEngine [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
-      set ::sergame::engineName [.configSerGameWin.fengines.fEnginesList.lbEngines get $chosenEngine]
+      set ::sergame::chosenEngine [.configSerGameWin.fengines.fEnginesList.lbEngines curselection]
+      set ::sergame::engineName [.configSerGameWin.fengines.fEnginesList.lbEngines get $::sergame::chosenEngine]
       set ::sergame::chosenOpening [.configSerGameWin.fopening.fOpeningList.lbOpening curselection]
       if {$::sergame::useBook} {
         set ::sergame::bookToUse [.configSerGameWin.fbook.combo get]
@@ -238,7 +234,7 @@ namespace eval sergame {
       set ::uci::uciInfo(movetime3) [expr [.configSerGameWin.ftime.movetime.value get]*1000]
       
       destroy .configSerGameWin
-      ::sergame::play $chosenEngine
+      ::sergame::play $::sergame::chosenEngine
     }
     ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
@@ -350,7 +346,7 @@ namespace eval sergame {
     bind $w <Escape> ::sergame::abortGame
     bind $w <Configure> "recordWinSize $w"
     wm minsize $w 45 0
-
+    
     # setup clocks
     if { [::sergame::getEngineColor] == "white" } {
       ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(wtime$n)/1000]
@@ -437,7 +433,7 @@ namespace eval sergame {
         }
         
         if { [lsearch $openingMovesHash [sc_pos hash]] == -1 && [llength $openingMovesList] >= $ply} {
-          set answer [tk_messageBox -icon question -parent .board -title $::tr(OutOfOpening) -type yesno \
+          set answer [tk_messageBox -icon question -parent .main -title $::tr(OutOfOpening) -type yesno \
               -message "$::tr(NotFollowedLine) $openingMoves\n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
             sc_move back 1
@@ -580,7 +576,7 @@ namespace eval sergame {
       }
       
       if {$blunder != 0} {
-        set answer [tk_messageBox -icon question -parent .board -title "Scid" -type yesno -message $::tr($tBlunder) ]
+        set answer [tk_messageBox -icon question -parent .main -title "Scid" -type yesno -message $::tr($tBlunder) ]
         if {$answer == yes} {
           sc_move back 1
           updateBoard -pgn
@@ -645,7 +641,7 @@ namespace eval sergame {
     set elt [lrange [split [sc_pos fen]] 0 2]
     lappend ::sergame::lFen $elt
     if { [llength [lsearch -all $::sergame::lFen $elt] ] >=3 } {
-      tk_messageBox -type ok -message $::tr(Draw) -parent .board -icon info
+      tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
       puts $::sergame::lFen
       return 1
     }

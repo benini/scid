@@ -207,6 +207,7 @@ namespace eval fics {
     $w.f.top.f1.console tag configure seeking -foreground coral
     $w.f.top.f1.console tag configure game -foreground grey70
     $w.f.top.f1.console tag configure gameresult -foreground SlateBlue1
+    $w.f.top.f1.console tag configure ficspercent -foreground khaki1
     
     ttk::entry $w.f.top.f2.cmd -width 32
     ttk::button $w.f.top.f2.send -text send -command ::fics::cmd
@@ -475,7 +476,7 @@ namespace eval fics {
     variable logged
     variable isGuestLogin
     
-    if {$line == "" || [string match "fics*" $line] } {return}
+    if {$line == "" || $line == "fics% "} {return}
     
     # puts  "readparse $line"
     
@@ -704,7 +705,9 @@ namespace eval fics {
       $t insert end "$line\n" game
     } elseif { [string match "\{Game *\} *" $line ] } {
       $t insert end "$line\n" gameresult
-    } else {
+    } elseif { [string match "fics% *" $line ] } {
+      $t insert end "$line\n" ficspercent
+    } else  {
       $t insert end "$line\n"
     }
     
@@ -1099,6 +1102,8 @@ namespace eval fics {
     ::close $::fics::sockchan
     if { ! $::windowsOS } { catch { exec -- kill -s INT [ $::fics::timeseal_pid ] }  }
     destroy .fics
+    # necessary on windows
+    ::docking::cleanup .fics
   }
 }
 
