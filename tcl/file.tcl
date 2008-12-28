@@ -92,6 +92,9 @@ proc ::file::New {} {
   }
   ::windows::gamelist::Refresh
   ::tree::refresh
+  ::windows::stats::Refresh
+  set ::initialDir(base) [file dirname $fName]
+  ::recentFiles::add "$fName.si3"
   updateMenuStates
   updateTitle
   updateStatusBar

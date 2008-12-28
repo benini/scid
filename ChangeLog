@@ -675,3 +675,4 @@ scid-3.6.7
 - Analysis / Game annotation : book moves are now translated
 - Serious game and Tactical game : parameters are saved
 - added spanish ECO file scid-esp.eco (thanks to Benigno Hernández)
+- newly created bases are appended to the recently opened bases in menu (thanks to Benigno Hernández)
