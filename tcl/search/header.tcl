@@ -123,6 +123,8 @@ proc search::header {} {
     ttk::frame $w.$frame
   }
   
+  raise $w
+  
   bind $w <F1> { helpWindow Searches Header }
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.search invoke"

@@ -67,6 +67,7 @@ proc importPgnGame {} {
     if {! $err} {
       updateBoard -pgn
       updateTitle
+      ::windows::gamelist::Refresh
     }
   }
   button $w.b.cancel -textvar ::tr(Close) -command {
@@ -176,6 +177,7 @@ proc importPgnFile {} {
   foreach fname $fnames {
     doPgnFileImport $fname "" 1
   }
+  ::windows::gamelist::Refresh
 }
 
 proc doPgnFileImport {fname text {multiple 0} } {

@@ -77,8 +77,6 @@ proc ::windows::gamelist::ReOpen {} {
     destroy $c
   }
   
-  # bind $w <Destroy> $oldDestroy
-  
   # Pack buttons frame first:
   pack [ttk::frame $w.b] -side bottom -fill x -expand 1 -ipady 5 ;# -padx 10
   scale $w.scale -from 1 -length 250 -orient horiz -variable glstart -showvalue 0 -command ::windows::gamelist::SetStart \
@@ -94,7 +92,7 @@ proc ::windows::gamelist::ReOpen {} {
     set justify [lindex $i 2]
     set fgcolor [lindex $i 3]
     set sep [lindex $i 4]
-    frame $w.c$code
+    frame $w.columns.c$code
     
     if {[info exists ::windows::gamelist::names($code)]} {
       set name $::windows::gamelist::names($code)
@@ -102,42 +100,42 @@ proc ::windows::gamelist::ReOpen {} {
     if {[info exists ::tr(Glist$name)]} { set name $::tr(Glist$name) }
     
     # Each heading is a label:
-    ttk::label $w.c$code.header -foreground darkBlue -width $width -font font_Small -relief flat -background gray90 \
+    ttk::label $w.columns.c$code.header -foreground darkBlue -width $width -font font_Small -relief flat -background gray90 \
         -text $name -anchor w
-    ::utils::tooltip::Set $w.c$code.header $name
-    set helpMessage(E,$w.c$code.header) {Press the left or right mouse button here for a configuration menu}
+    ::utils::tooltip::Set $w.columns.c$code.header $name
+    set helpMessage(E,$w.columns.c$code.header) {Press the left or right mouse button here for a configuration menu}
     
-    bind $w.c$code.header <Control-ButtonPress-$::MB3> "incrGLwidth $code; break"
-    bind $w.c$code.header <Control-ButtonPress-1> "decrGLwidth $code; break"
-    bind $w.c$code.header <Shift-ButtonPress-$::MB3> "incrGLwidth $code; break"
-    bind $w.c$code.header <Shift-ButtonPress-1> "decrGLwidth $code; break"
-    bind $w.c$code.header <ButtonPress-1> "popupGLconfig $code %x %y %X %Y"
-    bind $w.c$code.header <ButtonPress-$::MB3> "popupGLconfig $code %x %y %X %Y"
+    bind $w.columns.c$code.header <Control-ButtonPress-$::MB3> "incrGLwidth $code; break"
+    bind $w.columns.c$code.header <Control-ButtonPress-1> "decrGLwidth $code; break"
+    bind $w.columns.c$code.header <Shift-ButtonPress-$::MB3> "incrGLwidth $code; break"
+    bind $w.columns.c$code.header <Shift-ButtonPress-1> "decrGLwidth $code; break"
+    bind $w.columns.c$code.header <ButtonPress-1> "popupGLconfig $code %x %y %X %Y"
+    bind $w.columns.c$code.header <ButtonPress-$::MB3> "popupGLconfig $code %x %y %X %Y"
     
-    pack $w.c$code -in $w.columns -side left -expand yes -fill both -padx 0
+    pack $w.columns.c$code -side left -expand yes -fill both -padx 0 ;# -in $w.columns
     
-    pack $w.c$code.header -side top -fill x -padx 2
-    addHorizontalRule $w.c$code 1 flat
-    
-    text $w.c$code.text -background white -width $width -height $glistSize -font font_Small -relief flat \
+    pack $w.columns.c$code.header -side top -fill x -padx 2
+    addHorizontalRule $w.columns.c$code 1 flat
+    # -height $glistSize
+    text $w.columns.c$code.text -background white -width $width -height 999 -font font_Small -relief flat \
         -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
-    $w.c$code.text tag configure align -justify $justify -foreground $fgcolor
-    $w.c$code.text tag configure highlight -background lightBlue
-    $w.c$code.text tag configure current -background lightYellow2
-    $w.c$code.text tag configure underline -underline true
+    $w.columns.c$code.text tag configure align -justify $justify -foreground $fgcolor
+    $w.columns.c$code.text tag configure highlight -background lightBlue
+    $w.columns.c$code.text tag configure current -background lightYellow2
+    $w.columns.c$code.text tag configure underline -underline true
     
-    bind $w.c$code.text <Button1-Motion> "break"
-    bind $w.c$code.text <Button2-Motion> "break"
-    bind $w.c$code.text <Double-Button-1> "::windows::gamelist::SetSelection $code %x %y; ::game::Load \$glNumber; break"
-    bind $w.c$code.text <Button-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Highlight \$glSelection; break"
-    bind $w.c$code.text <ButtonRelease-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Dehighlight; break"
+    bind $w.columns.c$code.text <Button1-Motion> "break"
+    bind $w.columns.c$code.text <Button2-Motion> "break"
+    bind $w.columns.c$code.text <Double-Button-1> "::windows::gamelist::SetSelection $code %x %y; ::game::Load \$glNumber; break"
+    bind $w.columns.c$code.text <Button-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Highlight \$glSelection; break"
+    bind $w.columns.c$code.text <ButtonRelease-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Dehighlight; break"
     
-    bind $w.c$code.text <ButtonPress-$::MB3> "popupGLmenu $code %x %y %X %Y"
+    bind $w.columns.c$code.text <ButtonPress-$::MB3> "popupGLmenu $code %x %y %X %Y"
     
-    bind $w.c$code.text <ButtonPress-$::MB2> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
-    bind $w.c$code.text <ButtonRelease-$::MB2> "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
+    bind $w.columns.c$code.text <ButtonPress-$::MB2> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
+    bind $w.columns.c$code.text <ButtonRelease-$::MB2> "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
     
-    pack $w.c$code.text -side top -expand true -fill both
+    pack $w.columns.c$code.text -side top -expand true -fill both
     if {$sep} { addVerticalRule $w.columns 1 flat }
   }
   
@@ -258,41 +256,48 @@ proc ::windows::gamelist::ReOpen {} {
     bind $w <Button-5> {::windows::gamelist::Scroll 1}
   }
   
-  # Binding to reset glistSize when the window is resized:
-  # The way this is done is very ugly, but the only way I could
-  # find that actually works.
-  # Set temp to window geometry (e.g. 80x20+...) and then
-  # extract the part between the "x" and the first "+" or "-":
+  update idletasks
   bind $w <Configure> { ::docking::handleConfigureEvent ::windows::gamelist::Resize }
-  
   wm iconname $w "Scid: [tr WindowsGList]"
   ::windows::gamelist::Refresh
   focus $w.b.goto
-  
+    setWinLocation $w
+    setWinSize $w
 }
 
+# Binding to reset glistSize when the window is resized:
+# The way this is done is very ugly, but the only way I could
+# find that actually works.
+# Set temp to window geometry (e.g. 80x20+...) and then
+# extract the part between the "x" and the first "+" or "-":
 proc ::windows::gamelist::Resize {} {
-    global glistSize glistFields
-    set w .glistWin
-    recordWinSize .glistWin
-    set temp [wm geometry .glistWin]
-    set temp [string range $temp [expr {[string first "x" $temp] + 1}] end]
-    set idx [string first "+" $temp]
-    if {$idx != -1} {
-      set temp [string range $temp 0 [expr {$idx - 1}]]
-    }
-    set idx [string first "-" $temp]
-    if {$idx != -1} {
-      set temp [string range $temp 0 [expr {$idx - 1}]]
-    }
-    if {$temp != $glistSize && $temp > 0} {
-      set glistSize $temp
-      foreach i $glistFields {
-        set code [lindex $i 0]
-        .glistWin.c$code.text configure -height $glistSize
-      }
-      ::windows::gamelist::Refresh
-    }
+  global glistSize glistFields
+  set w .glistWin
+  bind $w <Configure> {}
+  
+  recordWinSize .glistWin
+  set temp [wm geometry .glistWin]
+  set temp [string range $temp [expr {[string first "x" $temp] + 1}] end]
+  set idx [string first "+" $temp]
+  if {$idx != -1} {
+    set temp [string range $temp 0 [expr {$idx - 1}]]
+  }
+  set idx [string first "-" $temp]
+  if {$idx != -1} {
+    set temp [string range $temp 0 [expr {$idx - 1}]]
+  }
+  if {$temp != $glistSize && $temp > 0} {
+    set glistSize $temp
+    # if { $::docking::USE_DOCKING } {
+    # foreach i $glistFields {
+    # set code [lindex $i 0]
+    # .glistWin.columns.c$code.text configure -height $glistSize
+    # }
+    # }
+    ::windows::gamelist::Refresh
+  }
+  update idletasks
+  bind $w <Configure> { ::docking::handleConfigureEvent ::windows::gamelist::Resize }
 }
 
 proc ::windows::gamelist::Open {} {
@@ -307,13 +312,11 @@ proc ::windows::gamelist::Open {} {
   set w .glistWin
   
   ::createToplevel $w
-  
+   
   # Window is only directly resizable vertically:
   wm resizable $w false true
-  setWinLocation $w
   
   ::windows::gamelist::ReOpen
-  event generate $w <Configure>
 }
 
 proc ::windows::gamelist::Scroll {nlines} {
@@ -328,13 +331,13 @@ proc ::windows::gamelist::Scroll {nlines} {
 
 proc ::windows::gamelist::SetSelection {code xcoord ycoord} {
   global glSelection glNumber
-  set glSelection [expr {int([.glistWin.c$code.text index @$xcoord,$ycoord])}]
+  set glSelection [expr {int([.glistWin.columns.c$code.text index @$xcoord,$ycoord])}]
   set glNumber [.glistWin.cg.text get $glSelection.0 $glSelection.end]
 }
 
 proc incrGLwidth {code} {
   global glistSize glistMaxWidth
-  set w .glistWin.c$code
+  set w .glistWin.columns.c$code
   set width [$w.header cget -width]
   if {$width >= $glistMaxWidth} { return }
   incr width
@@ -345,7 +348,7 @@ proc incrGLwidth {code} {
 
 proc decrGLwidth {code} {
   global glistSize
-  set w .glistWin.c$code
+  set w .glistWin.columns.c$code
   set width [$w.header cget -width]
   if {$width <= 1} { return }
   incr width -1
@@ -373,7 +376,7 @@ proc ::windows::gamelist::Dehighlight {} {
   global glistFields glistSize
   foreach column $glistFields {
     set code [lindex $column 0]
-    .glistWin.c$code.text tag remove highlight 1.0 end
+    .glistWin.columns.c$code.text tag remove highlight 1.0 end
   }
 }
 
@@ -381,8 +384,8 @@ proc ::windows::gamelist::Highlight {linenum} {
   global glistFields glistSize
   foreach column $glistFields {
     set code [lindex $column 0]
-    .glistWin.c$code.text tag remove highlight 1.0 end
-    .glistWin.c$code.text tag add highlight $linenum.0 [expr {$linenum+1}].0
+    .glistWin.columns.c$code.text tag remove highlight 1.0 end
+    .glistWin.columns.c$code.text tag add highlight $linenum.0 [expr {$linenum+1}].0
   }
 }
 
@@ -643,13 +646,13 @@ proc ::windows::gamelist::Refresh {} {
     set code [lindex $column 0]
     set cformat $code
     append cformat "*\n"
-    .glistWin.c$code.text config -state normal
-    .glistWin.c$code.text delete 1.0 end
-    .glistWin.c$code.text insert end [sc_game list $glstart $glistSize $cformat] align
+    .glistWin.columns.c$code.text config -state normal
+    .glistWin.columns.c$code.text delete 1.0 end
+    .glistWin.columns.c$code.text insert end [sc_game list $glstart $glistSize $cformat] align
     if {$linenum > 0} {
-      .glistWin.c$code.text tag add current $linenum.0 [expr {$linenum+1}].0
+      .glistWin.columns.c$code.text tag add current $linenum.0 [expr {$linenum+1}].0
     }
-    .glistWin.c$code.text config -state disabled
+    .glistWin.columns.c$code.text config -state disabled
   }
   
   # Now update the window title:

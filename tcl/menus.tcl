@@ -930,6 +930,16 @@ $m add command -label OptionsSave -command {
       puts $optionF "set winY($i)  [expr $winY($i)]"
     }
     puts $optionF ""
+    foreach i [lsort [array names winWidth_docked]] {
+      puts $optionF "set winWidth_docked($i)  [expr $winWidth_docked($i)]"
+      puts $optionF "set winHeight_docked($i) [expr $winHeight_docked($i)]"
+    }
+    puts $optionF ""
+    foreach i [lsort [array names winX_docked]] {
+      puts $optionF "set winX_docked($i)  [expr $winX_docked($i)]"
+      puts $optionF "set winY_docked($i)  [expr $winY_docked($i)]"
+    }
+    puts $optionF ""
     puts $optionF "set analysisCommand [list $analysisCommand]"
     puts $optionF "set analysisChoices [list $analysisChoices]"
     puts $optionF ""
@@ -1252,8 +1262,8 @@ set menuindex -1
 set m .menu.helpmenu
 # On Mac use accelerator "Command-?" for Help:
 if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
-	$m add command -label HelpContents -command {helpWindow Contents} -accelerator "Command-?"
-	
+  $m add command -label HelpContents -command {helpWindow Contents} -accelerator "Command-?"
+  
 } else {
   $m add command -label HelpContents -command {helpWindow Contents} -accelerator "F1"
 }
@@ -1293,13 +1303,13 @@ if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
   
   set menuindex -1
   set m .menu.apple
-
+  
   $m add command -label HelpAbout -command helpAbout
   set helpMessage($m,[incr menuindex]) HelpAbout
-
-  $m add separator  
+  
+  $m add separator
   incr menuindex
-
+  
   # To Quit
   bind all <Command-q> "exit"
   bind all <Command-Q> "exit"
@@ -1589,13 +1599,13 @@ proc setLanguageMenus {{lang ""}} {
   foreach tag {Contents Index Guide Hints Contact Tip Startup About} {
     configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang
   }
-
+  
   if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
     foreach tag {About} {
       configMenuText .menu.apple [tr Help$tag $oldLang] Help$tag $lang
     }
   }
-
+  
   
   foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
         TBNothing TBResult TBAll Delete Mark} {

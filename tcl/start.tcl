@@ -393,6 +393,13 @@ set winHeight(.playerInfoWin) 20
 set winWidth(.baseWin) 310
 set winHeight(.baseWin) 110
 
+# In docked mode, use same default geometry values
+foreach elt {winX winY winWidth winHeight} {
+  foreach name [array names $elt] {
+    set [subst $elt]_docked($name) $[subst $elt]($name)
+  }
+}
+
 # Default stats window lines:
 array set ::windows::stats::display {
   r2600 1
