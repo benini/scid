@@ -35,10 +35,10 @@ proc recordWinSize {win} {
   
   set n [scan $temp "%dx%d+%d+%d" width height x y]
   if {$n == 4} {
-    set winWidth[subst $suffix]($win) $width
-    set winHeight[subst $suffix]($win) $height
-    set winX[subst $suffix]($win) $x
-    set winY[subst $suffix]($win) $y
+    set winWidth${suffix}($win) $width
+    set winHeight${suffix}($win) $height
+    set winX${suffix}($win) $x
+    set winY${suffix}($win) $y
   }
 }
 
@@ -51,9 +51,9 @@ if { $::docking::USE_DOCKING } {
     set suffix ""
   }
   
-  if {[info exists winX[subst $suffix]($win)]  &&  [info exists winY[subst $suffix]($win)]  && \
-        [subst $[subst winX$suffix]($win) ] >= 0  &&  [subst $[subst winY$suffix]($win) ] >= 0} {
-    catch [list wm geometry $win "+[subst $[subst winX$suffix]($win) ]+[subst $[subst winY$suffix]($win) ]"]
+  if {[info exists winX${suffix}($win)]  &&  [info exists winY${suffix}($win)]  && \
+        [set winX${suffix}($win)] >= 0  &&  [set winY${suffix}($win)] >= 0} {
+    catch [list wm geometry $win "+[set winX${suffix}($win)]+[set winY${suffix}($win)]"]
   }
 }
 
@@ -66,9 +66,9 @@ proc setWinSize {win} {
     set suffix ""
   }
   
-  if {[info exists winWidth[subst $suffix]($win)]  &&  [info exists winHeight[subst $suffix]($win)]  &&  \
-        [subst $[subst winWidth$suffix]($win) ] > 0  &&  [subst $[subst winHeight$suffix]($win) ] > 0 } {
-    catch [list wm geometry $win "[subst $[subst winWidth$suffix]($win) ]x[subst $[subst winHeight$suffix]($win) ]"]
+  if {[info exists winWidth${suffix}($win)]  &&  [info exists winHeight${suffix}($win)]  &&  \
+        [set winWidth${suffix}($win) ] > 0  &&  [set winHeight${suffix}($win) ] > 0 } {
+    catch [list wm geometry $win "[set winWidth${suffix}($win) ]x[set winHeight${suffix}($win) ]"]
   }
 }
 

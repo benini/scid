@@ -396,7 +396,7 @@ set winHeight(.baseWin) 110
 # In docked mode, use same default geometry values
 foreach elt {winX winY winWidth winHeight} {
   foreach name [array names $elt] {
-    set [subst $elt]_docked($name) $[subst $elt]($name)
+    set ${elt}_docked($name) [set ${elt}($name)]
   }
 }
 

@@ -958,18 +958,19 @@ proc ::docking::layout_save { slot } {
 ################################################################################
 proc ::docking::layout_save_pw {pw} {
   set ret {}
-  lappend ret [list $pw [$pw cget -orient ] ]
+  
+  # record sash position for each panes
+  set sashpos {}
+  for {set i 0} {$i < [ expr [llength [$pw panes]] -1]} {incr i} {
+    lappend sashpos [$pw sashpos $i]
+  }
+  lappend ret [list $pw [$pw cget -orient ] $sashpos ]
   
   foreach p [$pw panes] {
     if {[get_class $p] == "TNotebook"} {
       lappend ret [list "TNotebook" $p [$p tabs] ]
     }
     if {[get_class $p] == "TPanedwindow"} {
-      # record sash position for each panes
-      # set sashpos {}
-      # for {set i 0} {$i < [$p panes]} {incr i} {
-      # lappend sashpos [$p sash coord $i]
-      # }
       lappend ret [ list "TPanedwindow" [layout_save_pw $p] ]
     }
   }
@@ -979,6 +980,8 @@ proc ::docking::layout_save_pw {pw} {
 ################################################################################
 # restores paned windows and internal notebooks
 proc ::docking::layout_restore_pw { data } {
+  
+  puts "layout_restore_pw  $data"
   
   foreach elt $data {
     set type [lindex $elt 0]
@@ -995,6 +998,10 @@ proc ::docking::layout_restore_pw { data } {
       
       set pw [lindex $elt 0]
       set orient [lindex $elt 1]
+      # we have sash geometry
+      if {[llength $elt] > 2} {
+        set ::docking::sashpos($pw) [lindex $elt 2]
+      }
       if { $pw == ".pw"} { continue }
       # build a new pw
       ttk::panedwindow $pw -orient $orient
@@ -1004,6 +1011,20 @@ proc ::docking::layout_restore_pw { data } {
     
   }
   
+}
+################################################################################
+# Sash position 
+################################################################################
+proc ::docking::restoreGeometry {} {
+  update idletasks
+  
+  foreach pw [array names ::docking::sashpos] {
+    set i 0
+    foreach pos $::docking::sashpos($pw) {
+      $pw sashpos $i $pos
+      incr i
+    }
+  }
 }
 ################################################################################
 # restores a notebook in a pre-existing panedwindow
@@ -1044,6 +1065,8 @@ proc ::docking::layout_restore_nb { pw name tabs} {
     if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
     if { $d == ".fdocktbWin" } { ::tb::Open }
     if { $d == ".fdockcommentWin" } {  ::commenteditor::Open }
+    if { $d == ".fdockglistWin" } {::windows::gamelist::Open}
+    if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
     if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
   }
   
@@ -1068,14 +1091,15 @@ proc ::docking::layout_restore { slot } {
   set tbcnt 0
   array set ::docking::notebook_name {}
   array set ::docking::tbs {}
+  array set ::docking::sashpos {}
   
-  # set ::docking::tbs(.nb) .pw
   layout_restore_pw $::docking::layout_list($slot)
+  restoreGeometry
+  
   array set ::docking::activeTab {}
-  
   setTabStatus
-  bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
   
+  bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
 }
 ################################################################################
 # for every notebook, keeps track of the last selected tab to see if the local menu can be popped up or not

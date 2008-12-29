@@ -4,10 +4,8 @@
 |                                                           |
  ===========================================================
 
-resize game list vertical mauvais 
-l 396 de start.tcl
-l 923 de menus.tcl
-tout windows.tcl
+Sauver les dimensions des fenêtres lors de la sauvegarde des layouts
+-> BUG du layout 2
 
  ===========================================================
 |                                                           |
