@@ -1609,8 +1609,7 @@ translate D DockTop {Nach oben}
 translate D DockBottom {Nach unten}
 translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
-# ====== TODO To be translated ======
-translate D Undock {Undock}
+translate D Undock {Fenster befreien}
 }
 
 ##########

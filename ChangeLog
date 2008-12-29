@@ -615,6 +615,8 @@ scid-3.6.7
   * Adopt button alignement
   * Allow to specify the rating system used by the site
     (if none is given, default to ICCF)
+  * Make window resizable
+  * Make window dockable
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
@@ -639,6 +641,7 @@ scid-3.6.7
   * Colour various states in move area
   * To use a DGT Electronic Chess Board  dgtdrv V1.21 or higher is
     required. (http://dgtdrv.sf.net)
+  * Make window dockable
 - Docs
   * Update Novag part (as far as possible)
   * Add "Connect Hardware" with subtopics to english help

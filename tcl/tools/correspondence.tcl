@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.34 2008/12/27 16:06:28 arwagner Exp $
+### $Id: correspondence.tcl,v 1.35 2008/12/29 15:24:37 arwagner Exp $
 ###
-### Last change: <Sat, 2008/12/27 15:35:53 arwagner ingata>
+### Last change: <Mon, 2008/12/29 16:17:53 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1456,8 +1456,10 @@ namespace eval CorrespondenceChess {
 		}
 		set ::CorrespondenceChess::isOpen 1
 
+		### toplevel $w
 		::createToplevel $w
-		wm title $w [::tr "CorrespondenceChess"]
+		### wm title $w [::tr "CorrespondenceChess"]
+		::setTitle $w [::tr "CorrespondenceChess"]
 		# the window is not resizable
 		#wm resizable $w 0 0
 
