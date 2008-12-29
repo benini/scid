@@ -4,8 +4,8 @@
 |                                                           |
  ===========================================================
 
-Sauver les dimensions des fenêtres lors de la sauvegarde des layouts
--> BUG du layout 2
+Layout 2 : changer de base n'est pas bien remis (geometry & sash)
+restoreGeometry appelé 2 fois -> marche !
 
  ===========================================================
 |                                                           |

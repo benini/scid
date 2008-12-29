@@ -981,8 +981,6 @@ proc ::docking::layout_save_pw {pw} {
 # restores paned windows and internal notebooks
 proc ::docking::layout_restore_pw { data } {
   
-  puts "layout_restore_pw  $data"
-  
   foreach elt $data {
     set type [lindex $elt 0]
     
@@ -1000,7 +998,7 @@ proc ::docking::layout_restore_pw { data } {
       set orient [lindex $elt 1]
       # we have sash geometry
       if {[llength $elt] > 2} {
-        set ::docking::sashpos($pw) [lindex $elt 2]
+        lappend ::docking::sashpos [ list $pw [lindex $elt 2] ]
       }
       if { $pw == ".pw"} { continue }
       # build a new pw
@@ -1017,10 +1015,11 @@ proc ::docking::layout_restore_pw { data } {
 ################################################################################
 proc ::docking::restoreGeometry {} {
   update idletasks
-  
-  foreach pw [array names ::docking::sashpos] {
+  foreach elt $::docking::sashpos {
+    set pw [lindex $elt 0]
+    set sash [lindex $elt 1]
     set i 0
-    foreach pos $::docking::sashpos($pw) {
+    foreach pos $sash {
       $pw sashpos $i $pos
       incr i
     }
@@ -1091,11 +1090,11 @@ proc ::docking::layout_restore { slot } {
   set tbcnt 0
   array set ::docking::notebook_name {}
   array set ::docking::tbs {}
-  array set ::docking::sashpos {}
+  set ::docking::sashpos {}
   
   layout_restore_pw $::docking::layout_list($slot)
   restoreGeometry
-  
+  restoreGeometry
   array set ::docking::activeTab {}
   setTabStatus
   
