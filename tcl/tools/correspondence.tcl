@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.36 2008/12/30 11:53:43 arwagner Exp $
+### $Id: correspondence.tcl,v 1.37 2008/12/30 22:56:31 arwagner Exp $
 ###
-### Last change: <Tue, 2008/12/30 11:47:18 arwagner ingata>
+### Last change: <Tue, 2008/12/30 23:54:56 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1454,6 +1454,43 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
+	# Resize the console window
+	#----------------------------------------------------------------------
+	proc ConsoleResize {} {
+
+		set w .ccWindow
+
+		# unbind configure event
+		bind $w <Configure> {}
+
+		# get old window width and height
+		set oldheight $::winHeight($w)
+		set oldwidth  $::winWidth($w)
+
+		# get the new window width and height
+		set temp [wm geometry $w]
+		set n [scan $temp "%dx%d+%d+%d" width height x y]
+
+		if {$height > 0 && $width > 0} {
+			if {$height != $oldheight} {
+				# resize the table of games
+				foreach col {id toMove event site white black clockW clockB var feature} {
+					$w.bottom.$col  configure -height $height
+				}
+				# record the new size
+				recordWinSize $w
+				# set the windows size to this new size explicitly to
+				# avoid flicker
+				setWinSize $w
+			}
+		}
+		recordWinSize $w
+
+		# rebind the configure event
+		bind $w <Configure> { ::docking::handleConfigureEvent ::CorrespondenceChess::ConsoleResize }
+	}
+
+	#----------------------------------------------------------------------
 	# Generate the Correspondence Chess Window. This Window offers a
 	# console displaying whats going on and which game is displayed
 	# plus a gmae list containing current games synced in and their
@@ -1587,8 +1624,8 @@ namespace eval CorrespondenceChess {
 		# scroll syncronously!
 		scrollbar $w.bottom.ysc      -command ::CorrespondenceChess::yview
 
-		set height $::winHeight(.ccWindow)
-		set width  $::winWidth(.ccWindow)
+		set height $::winHeight($w)
+		set width  $::winWidth($w)
 
 		text $w.bottom.id       -cursor top_left_arrow -font font_Small -height $height -width 15 -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
 		text $w.bottom.toMove   -cursor top_left_arrow -font font_Small -height $height -width 4  -setgrid 1 -relief flat -wrap none -yscrollcommand ::CorrespondenceChess::yset
@@ -1616,14 +1653,11 @@ namespace eval CorrespondenceChess {
 		bind $w <F1>   { helpWindow Correspondence}
 		bind $w "?"    { helpWindow CCIcons}
 
-		bind $w <Configure> {
-			set w .ccWindow
-			recordWinSize $w
-		}
+		bind $w <Configure> { ::docking::handleConfigureEvent ::CorrespondenceChess::ConsoleResize }
+		bind $w <Destroy>   { set ::CorrespondenceChess::isOpen 0 }
 
 		foreach f [glob -nocomplain [file join "$CorrespondenceChess::PluginPath" *]] {
 			$w.top.plugins    configure -image tb_CC_pluginactive
-			puts stderr $f
 			source $f
 		}
 
