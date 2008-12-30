@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.35 2008/12/29 15:24:37 arwagner Exp $
+### $Id: correspondence.tcl,v 1.36 2008/12/30 11:53:43 arwagner Exp $
 ###
-### Last change: <Mon, 2008/12/29 16:17:53 arwagner ingata>
+### Last change: <Tue, 2008/12/30 11:47:18 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1416,6 +1416,9 @@ namespace eval CorrespondenceChess {
 	}
 
 
+	#----------------------------------------------------------------------
+	# Translate the local menu
+	#----------------------------------------------------------------------
 	proc doConfigMenus { } {
 
 		set lang $::language
@@ -1427,13 +1430,28 @@ namespace eval CorrespondenceChess {
 		foreach idx {0} tag {CorrespondenceChess} {
 			configMenuText $m $idx $tag $lang
 		}
-		foreach idx {0 2 3 5 6 7 8 9 11 12} tag {CCConfigure CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCNewMailGame CCMailMove} {
+		foreach idx {0 2 3 5 6 7 8 9 10 12 13} tag {CCConfigure CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage CCNewMailGame CCMailMove } {
 			configMenuText $m.correspondence $idx $tag $lang
 		}
 
 	}
 
-
+	#----------------------------------------------------------------------
+	# Call the web page of the game. The URL is extracted from the
+	# Source tag that is stored with each game.
+	#----------------------------------------------------------------------
+	proc CallWWWGame {} {
+		::CorrespondenceChess::updateConsole "Calling web page..."
+		set Extra  [sc_game tags get Extra]
+		set extraTagsList [split $Extra "\n"]
+		set source ""
+		foreach i $extraTagsList {
+			if { [string equal -nocase [lindex $i 0] "Source" ] } {
+				set source [string range $i 8 end-1]
+				openURL $source
+			}
+		}
+	}
 
 	#----------------------------------------------------------------------
 	# Generate the Correspondence Chess Window. This Window offers a
@@ -1500,11 +1518,13 @@ namespace eval CorrespondenceChess {
 		set helpMessage($m.correspondence,8) CCOfferDraw
 		$m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
 		set helpMessage($m.correspondence,9) CCAcceptDraw
+		$m.correspondence add command -label CCGamePage    -command {::CorrespondenceChess::CallWWWGame}
+		set helpMessage($m.correspondence,10) CCGamePage
 		$m.correspondence add separator
 		$m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
-		set helpMessage($m.correspondence,11) CCNewMailGame
+		set helpMessage($m.correspondence,12) CCNewMailGame
 		$m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
-		set helpMessage($m.correspondence,12) CCMailMove
+		set helpMessage($m.correspondence,13) CCMailMove
 
 		# Translate the menu
 		::CorrespondenceChess::doConfigMenus
@@ -1540,8 +1560,6 @@ namespace eval CorrespondenceChess {
 
 
 		::utils::tooltip::Set $w.top.retrieveCC [::tr "CCFetchBtn"]
-		::utils::tooltip::Set $w.top.prevCC     [::tr "CCPrevBtn"]
-		::utils::tooltip::Set $w.top.nextCC     [::tr "CCNextBtn"]
 		::utils::tooltip::Set $w.top.sendCC     [::tr "CCSendBtn"]
 		::utils::tooltip::Set $w.top.delinbox   [::tr "CCEmptyBtn"]
 		::utils::tooltip::Set $w.top.help       [::tr "CCHelpBtn"]
@@ -1609,6 +1627,7 @@ namespace eval CorrespondenceChess {
 			source $f
 		}
 
+		::createToplevelFinalize $w
 	}
 
 	#--------------------------------------------------------------------------
@@ -2404,10 +2423,10 @@ namespace eval CorrespondenceChess {
 			.ccWindow.top.offerDraw  configure -state disabled
 			.ccWindow.top.acceptDraw configure -state disabled
 
+			$m entryconfigure 8 -state disabled
+			$m entryconfigure 9 -state disabled
+			$m entryconfigure 10 -state disabled
 			$m entryconfigure 11 -state disabled
-			$m entryconfigure 12 -state disabled
-			$m entryconfigure 13 -state disabled
-			$m entryconfigure 14 -state disabled
 		} else {
 			.ccWindow.top.resign     configure -state normal
 			.ccWindow.top.claimDraw  configure -state normal
@@ -2415,10 +2434,10 @@ namespace eval CorrespondenceChess {
 			.ccWindow.top.acceptDraw configure -state normal
 			::CorrespondenceChess::updateConsole "info Event: $Event (Xfcc-based)"
 
+			$m entryconfigure 8 -state normal
+			$m entryconfigure 9 -state normal
+			$m entryconfigure 10 -state normal
 			$m entryconfigure 11 -state normal
-			$m entryconfigure 12 -state normal
-			$m entryconfigure 13 -state normal
-			$m entryconfigure 14 -state normal
 		}
 		::CorrespondenceChess::updateConsole "info Site: $Site"
 

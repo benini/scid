@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.9 2008/12/29 15:24:37 arwagner Exp $
-###    Last change: <Mon, 2008/12/29 16:18:08 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.10 2008/12/30 11:53:43 arwagner Exp $
+###    Last change: <Tue, 2008/12/30 11:48:05 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -385,6 +385,7 @@ namespace eval inputengine {
     }
     ### toplevel $w
     ::createToplevel $w
+    recordWinSize $w
 
     ### wm title $w [::tr IEConsole]
     ::setTitle $w [::tr IEConsole]
@@ -451,8 +452,10 @@ namespace eval inputengine {
 
     grid $w.bd         -stick nw    -column 9  -row 2 -rowspan 9 -columnspan 7
 
-    bind $w <Destroy> { catch ::novag::disconnect }
+    bind $w <Destroy> { catch ::inputengine::connectdisconnect }
     bind $w <F1> { helpWindow InputEngine}
+
+    ::createToplevelFinalize $w
   }
 
   proc updateConsole {line} {
