@@ -260,6 +260,8 @@ menuText W CCAcceptDraw "Acceptera Remi" 0 {Acceptera en erbjuden Remi (inte via
 menuText W CCNewMailGame "Nytt eMail-parti..." 0 {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
 menuText W CCMailMove "Skicka Drag..." 0 {Skicka draget via eMail till motståndaren}
+# ====== TODO To be translated ======
+menuText W CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText W Options "Alternativ" 2
@@ -6993,6 +6995,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

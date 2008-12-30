@@ -227,6 +227,8 @@ menuText I CCOfferDraw "Offri Patta" 0 {Spedisce la mossa e offre la patta (non 
 menuText I CCAcceptDraw "Accetta Patta" 0 {Accetta l'offerta di patta (non tramite eMail)}
 menuText I CCNewMailGame "Nuova Partita con eMail..." 0 {Avvia una nuova partita tramite eMail}
 menuText I CCMailMove "Mossa per eMail..." 0 {Spedisce la mossa all'avversariio tramite eMail}
+# ====== TODO To be translated ======
+menuText I CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText I Options "Opzioni" 0
@@ -1893,6 +1895,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

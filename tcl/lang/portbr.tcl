@@ -259,6 +259,8 @@ menuText B CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 menuText B CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
 menuText B CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+# ====== TODO To be translated ======
+menuText B CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText B Options "Opcoes" 0
@@ -1982,6 +1984,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

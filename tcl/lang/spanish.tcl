@@ -234,6 +234,8 @@ menuText S CCOfferDraw "Ofrecer tablas" 0 {Enviar un movimiento y ofrecer tablas
 menuText S CCAcceptDraw "Aceptar tablas" 0 {Aceptar un ofrecimiento de tablas}
 menuText S CCNewMailGame "Nueva partida email..." 0 {Empezar una nueva partida eMail}
 menuText S CCMailMove "Enviar jugada via email..." 0 {Envía el movimiento via eMail al oponente}
+# ====== TODO To be translated ======
+menuText S CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText S Options "Opciones" 0
@@ -1575,6 +1577,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

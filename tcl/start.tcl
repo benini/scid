@@ -393,6 +393,15 @@ set winHeight(.playerInfoWin) 20
 set winWidth(.baseWin) 310
 set winHeight(.baseWin) 110
 
+# Default Correspondence Chess window size:
+set winWidth(.ccWindow) 10
+set winHeight(.ccWindow) 20
+
+# Default size for input engine console:
+###---### needs adjustment!
+set winWidth(.inputengineconsole) 10
+set winHeight(.inputengineconsole) 20
+
 # In docked mode, use same default geometry values
 foreach elt {winX winY winWidth winHeight} {
   foreach name [array names $elt] {

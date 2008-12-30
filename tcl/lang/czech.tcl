@@ -251,6 +251,8 @@ menuText C CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 menuText C CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
 menuText C CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+# ====== TODO To be translated ======
+menuText C CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText C Options "Volby" 0
@@ -5606,6 +5608,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

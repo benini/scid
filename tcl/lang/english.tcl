@@ -250,8 +250,6 @@ menuText E CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)hel
 
 menuText E CCInbox "Process Inbox" 8 {Process all files in scids Inbox}
 
-menuText E CCPrevious "Previous Game" 0 {Go to previous game in Inbox}
-menuText E CCNext "Next Game" 0 {Go to next game in Inbox}
 menuText E CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
 
 menuText E CCResign "Resign" 1 {Resign (not via eMail)}
@@ -261,6 +259,7 @@ menuText E CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 
 menuText E CCNewMailGame "New eMail Game..." 2 {Start a new eMail game}
 menuText E CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+menuText E CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 
 #  B    GHiJKL    Q  TUV XYZ

@@ -260,6 +260,8 @@ menuText R CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 menuText R CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
 menuText R CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+# ====== TODO To be translated ======
+menuText R CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText R Options "Установки" 0
@@ -2005,6 +2007,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

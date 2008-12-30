@@ -257,6 +257,8 @@ menuText H CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 menuText H CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
 menuText H CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+# ====== TODO To be translated ======
+menuText H CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText H Options "Beállítások" 0
@@ -2202,6 +2204,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

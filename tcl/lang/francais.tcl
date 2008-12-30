@@ -225,6 +225,8 @@ menuText F CCOfferDraw "Proposer la nulle" 0 {Envoyer coup et proposer nulle (pa
 menuText F CCAcceptDraw "Accepter la nulle" 0 {Accepter la nulle (pas par eMail)}
 menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
 menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
+# ====== TODO To be translated ======
+menuText F CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText F Options "Options" 0
@@ -1772,6 +1774,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

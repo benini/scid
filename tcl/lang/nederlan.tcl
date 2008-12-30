@@ -238,6 +238,8 @@ menuText N CCOfferDraw "Stel Remise voor" 0 {Stuur de zet op en stel remise voor
 menuText N CCAcceptDraw "Accepteer Remise" 0 {Accepteer een remise voorstel (niet via eMail)}
 menuText N CCNewMailGame "Nieuwe eMail Partij..." 0 {Start een nieuwe eMail partij}
 menuText N CCMailMove "Stuur de zet op..." 0 {Stuur de zet op naar de tegenspeler via eMail}
+# ====== TODO To be translated ======
+menuText N CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText N Options "Opties" 0
@@ -1717,6 +1719,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

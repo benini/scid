@@ -259,6 +259,8 @@ menuText O CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 menuText O CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
 menuText O CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+# ====== TODO To be translated ======
+menuText O CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText O Options "Innstillinger" 0
@@ -1976,6 +1978,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

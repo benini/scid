@@ -257,6 +257,8 @@ menuText Y CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
 menuText Y CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 # ====== TODO To be translated ======
 menuText Y CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
+# ====== TODO To be translated ======
+menuText Y CCGamePage "Game Page..." 0 {Call up the game via the web browser}
 
 # Options menu:
 menuText Y Options "Opcije" 0
@@ -1976,6 +1978,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

@@ -475,26 +475,23 @@ $m.correspondence add command -label CCInbox       -command { ::CorrespondenceCh
 set helpMessage($m.correspondence,5) CCInbox
 
 $m.correspondence add separator
-$m.correspondence add command -label CCPrevious    -command {::CorrespondenceChess::PrevGame}
-set helpMessage($m.correspondence,7) CCPrevious
-$m.correspondence add command -label CCNext        -command {::CorrespondenceChess::NextGame}
-set helpMessage($m.correspondence,8) CCNext
-$m.correspondence add separator
 $m.correspondence add command -label CCSend        -command {::CorrespondenceChess::SendMove 0 0 0 0}
-set helpMessage($m.correspondence,10) CCSend
+set helpMessage($m.correspondence,7) CCSend
 $m.correspondence add command -label CCResign      -command {::CorrespondenceChess::SendMove 1 0 0 0}
-set helpMessage($m.correspondence,11) CCResign
+set helpMessage($m.correspondence,8) CCResign
 $m.correspondence add command -label CCClaimDraw   -command {::CorrespondenceChess::SendMove 0 1 0 0}
-set helpMessage($m.correspondence,12) CCClaimDraw
+set helpMessage($m.correspondence,9) CCClaimDraw
 $m.correspondence add command -label CCOfferDraw   -command {::CorrespondenceChess::SendMove 0 0 1 0}
-set helpMessage($m.correspondence,13) CCOfferDraw
+set helpMessage($m.correspondence,10) CCOfferDraw
 $m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
-set helpMessage($m.correspondence,14) CCAcceptDraw
+set helpMessage($m.correspondence,11) CCAcceptDraw
+$m.correspondence add command -label CCGamePage    -command {::CorrespondenceChess::CallWWWGame}
+set helpMessage($m.correspondence,12) CCGamePage
 $m.correspondence add separator
 $m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
-set helpMessage($m.correspondence,16) CCNewMailGame
+set helpMessage($m.correspondence,14) CCNewMailGame
 $m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
-set helpMessage($m.correspondence,17) CCMailMove
+set helpMessage($m.correspondence,15) CCMailMove
 
 
 ### Windows menu:
@@ -1493,9 +1490,9 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.play.training [tr Tools$tag $oldLang] Tools$tag $lang
   }
   
-  foreach tag { CCConfigure CCOpenDB CCRetrieve CCInbox CCPrevious \
-        CCNext CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw   \
-        CCNewMailGame CCMailMove } {
+  foreach tag { CCConfigure CCOpenDB CCRetrieve CCInbox \
+        CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw   \
+        CCNewMailGame CCMailMove CCGamePage } {
     configMenuText .menu.play.correspondence [tr $tag $oldLang] $tag $lang
   }
   
