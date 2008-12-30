@@ -981,6 +981,8 @@ proc ::docking::layout_save_pw {pw} {
 proc ::docking::layout_restore_pw { data } {
   
   foreach elt $data {
+    update idletasks
+    
     set type [lindex $elt 0]
     
     if {$type == "MainWindowGeometry"} {
@@ -1006,6 +1008,7 @@ proc ::docking::layout_restore_pw { data } {
       if { $pw == ".pw"} { continue }
       # build a new pw
       ttk::panedwindow $pw -orient $orient
+      
       set parent [string range $pw 0 [expr [string last "." $pw ]-1 ] ]
       $parent add $pw -weight 1
     }
