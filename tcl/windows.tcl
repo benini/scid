@@ -17,8 +17,6 @@ set pgnWin 0
 set commentWin 0
 set filterGraph 0
 
-set nagValue 0
-
 # recordWinSize:
 #   Records window width and height, for saving in options file.
 #

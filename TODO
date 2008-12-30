@@ -4,8 +4,8 @@
 |                                                           |
  ===========================================================
 
-Layout 2 : changer de base n'est pas bien remis (geometry & sash)
-restoreGeometry appelé 2 fois -> marche !
+Moteur arrêté au restore startAnalyzeMode l. 258 de uci.tcl
+FICS ouvert : pas de save layout
 
  ===========================================================
 |                                                           |

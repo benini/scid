@@ -45,7 +45,7 @@ proc makeCommentWin {} {
 # ::commenteditor::Open --
 #
 proc ::commenteditor::Open {} {
-  global commentWin nagValue highcolor helpMessage
+  global commentWin highcolor helpMessage
   variable colorList
   variable markTypeList
   variable State

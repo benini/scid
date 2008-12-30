@@ -951,9 +951,8 @@ set ::docking::layout_dest_notebook ""
 ################################################################################
 # saves layout
 proc ::docking::layout_save { slot } {
-  
-  set ::docking::layout_list($slot)  [ layout_save_pw .pw ]
-  
+  set ::docking::layout_list($slot) [list [list "MainWindowGeometry" [wm geometry .]] ]
+  lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
 }
 ################################################################################
 proc ::docking::layout_save_pw {pw} {
@@ -984,7 +983,11 @@ proc ::docking::layout_restore_pw { data } {
   foreach elt $data {
     set type [lindex $elt 0]
     
-    if {$type == "TPanedwindow"} {
+    if {$type == "MainWindowGeometry"} {
+      wm geometry . [lindex $elt 1]
+      layout_restore_pw [lindex $data 1]
+      break
+    } elseif {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
       
     } elseif {$type == "TNotebook"} {
@@ -1011,11 +1014,11 @@ proc ::docking::layout_restore_pw { data } {
   
 }
 ################################################################################
-# Sash position 
+# Sash position
 ################################################################################
 proc ::docking::restoreGeometry {} {
-  update idletasks
   foreach elt $::docking::sashpos {
+    update idletasks
     set pw [lindex $elt 0]
     set sash [lindex $elt 1]
     set i 0
@@ -1094,7 +1097,7 @@ proc ::docking::layout_restore { slot } {
   
   layout_restore_pw $::docking::layout_list($slot)
   restoreGeometry
-  restoreGeometry
+  
   array set ::docking::activeTab {}
   setTabStatus
   
