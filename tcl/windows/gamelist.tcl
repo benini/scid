@@ -332,7 +332,7 @@ proc ::windows::gamelist::Scroll {nlines} {
 proc ::windows::gamelist::SetSelection {code xcoord ycoord} {
   global glSelection glNumber
   set glSelection [expr {int([.glistWin.columns.c$code.text index @$xcoord,$ycoord])}]
-  set glNumber [.glistWin.cg.text get $glSelection.0 $glSelection.end]
+  set glNumber [.glistWin.columns.cg.text get $glSelection.0 $glSelection.end]
 }
 
 proc incrGLwidth {code} {
