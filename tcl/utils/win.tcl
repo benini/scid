@@ -1043,7 +1043,7 @@ proc ::docking::layout_restore_nb { pw name tabs} {
   set nb [ttk::notebook $name]
   incr tbcnt
   if {[scan $name ".tb%d" tmp] == 1} {
-    if {$tmp > $tbcnt} {
+    if {$tmp >= $tbcnt} {
       set tbcnt [ expr $tmp +1]
     }
   }

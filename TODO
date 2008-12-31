@@ -6,6 +6,7 @@
 
 Moteur arrêté au restore startAnalyzeMode l. 258 de uci.tcl
 FICS ouvert : pas de save layout
+tbcnt ne tient pas compte des nmr de pw, et layout 3 = 12 ald de 13
 
  ===========================================================
 |                                                           |
