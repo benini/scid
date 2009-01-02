@@ -929,7 +929,7 @@ proc ::docking::add_tab {path anchor args} {
 ################################################################################
 # display a blue triangle showing the tab has a menu associated
 proc ::docking::setMenuMark { nb tab} {
-  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] } {
+  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow"} {
     $nb tab $tab -image bluetriangle -compound left
   }
 }
@@ -949,8 +949,12 @@ array set ::docking::layout_tabs {}
 set ::docking::layout_dest_notebook ""
 
 ################################################################################
-# saves layout
+# saves layout (bail out if some windows cannot be restored like FICS)
 proc ::docking::layout_save { slot } {
+  if {[winfo exists .fics]} {
+    tk_messageBox -title Scid -icon question -type ok -message "Cannot save layout with FICS opened"
+    return
+  }
   set ::docking::layout_list($slot) [list [list "MainWindowGeometry" [wm geometry .]] ]
   lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
 }
