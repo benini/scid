@@ -4,6 +4,7 @@
 #   Centres a window on the screen.
 #
 proc ::utils::win::Centre {w} {
+  if { $::docking::USE_DOCKING } { return }
   wm withdraw $w
   update idletasks
   set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
@@ -955,6 +956,11 @@ proc ::docking::layout_save { slot } {
     tk_messageBox -title Scid -icon question -type ok -message "Cannot save layout with FICS opened"
     return
   }
+  if {[winfo exists .oprepWin]} {
+    tk_messageBox -title Scid -icon question -type ok -message "Cannot save layout with opening report opened"
+    return
+  }
+  
   set ::docking::layout_list($slot) [list [list "MainWindowGeometry" [wm geometry .]] ]
   lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
 }

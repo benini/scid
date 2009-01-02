@@ -697,7 +697,7 @@ menuText F PgnColorNextMove "Next move background..." 0
 menuText F PgnHelp "Aide" 0
 menuText F PgnHelpPgn "Aide PGN" 0
 menuText F PgnHelpIndex "Index" 0
-translate F PgnWindowTitle {Notation partie - partie %u}
+translate F PgnWindowTitle {Notation - partie %u}
 
 # Crosstable window menus:
 menuText F CrosstabFile "Fichier" 0

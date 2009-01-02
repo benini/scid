@@ -163,8 +163,8 @@ if {! [sc_base inUse]} { return }
     
   set w .oprepWin
   if {![winfo exists $w]} {
-    toplevel $w
-    wm title $w "Scid: [tr ToolsOpReport]"
+    ::createToplevel $w
+    ::setTitle $w "[tr ToolsOpReport]"
     menu $w.menu
     $w configure -menu $w.menu
     $w.menu add cascade -label OprepFile -menu $w.menu.file
@@ -246,6 +246,7 @@ if {! [sc_base inUse]} { return }
     pack $w.b.opts $w.b.lexclude $w.b.exclude $w.b.mergeGames -side left -padx 1 -pady 2
     ::optable::ConfigMenus
     ::utils::win::Centre $w
+    ::createToplevelFinalize $w
   }
   
   catch {destroy $w.text.bd}
