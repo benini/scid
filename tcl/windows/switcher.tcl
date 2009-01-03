@@ -444,6 +444,7 @@ proc ::windows::switcher::Open {} {
   }
   setWinSize $w
   ::windows::switcher::Refresh
+  createToplevelFinalize $w
 }
 
 proc ::windows::switcher::Orientate {} {

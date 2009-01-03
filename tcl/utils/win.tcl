@@ -865,7 +865,6 @@ proc ::docking::undock {srctab} {
   
   setMenuVisibility $f true
   
-  catch {wm attributes $f -toolwindow 1}
   wm title $f $name
   
   # Uncomment this code to dock windows that have been previously undocked
