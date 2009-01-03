@@ -1884,6 +1884,7 @@ if { $::docking::USE_DOCKING } {
   }
   
   standardShortcuts TNotebook
+  ::docking::toggleAutoResizeBoard
 }
 
 # updateMenuStates

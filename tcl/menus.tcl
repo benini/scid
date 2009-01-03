@@ -1226,8 +1226,7 @@ foreach i $boardSizes {
   if {$count < 10} {set underline 0}
   if {$count == 10} {set underline 1}
   # PG : dirty workaround !
-  $m.bdsize add radio -label $count -variable boardSize -value $i -underline $underline \
-      -command "::board::resize2 .main.board $i "
+  $m.bdsize add radio -label $count -variable boardSize -value $i -underline $underline -command "::board::resize2 .main.board $i "
   unset underline
 }
 

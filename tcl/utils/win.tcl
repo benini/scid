@@ -824,11 +824,21 @@ proc ::docking::ctx_menu {w} {
     $mctxt add command -label [ ::tr Close ] -command " ::docking::close $w "
   } else {
     $mctxt add checkbutton -label [::tr "showGameInfo"] -variable ::showGameInfo -command ::toggleGameInfo
-    $mctxt add checkbutton -label [::tr "autoResizeBoard"] -variable ::autoResizeBoard
+    $mctxt add checkbutton -label [::tr "autoResizeBoard"] -variable ::autoResizeBoard -command ::docking::toggleAutoResizeBoard
   }
   tk_popup $mctxt [winfo pointerx .] [winfo pointery .]
 }
-
+################################################################################
+proc ::docking::toggleAutoResizeBoard {} {
+  ::resizeMainBoard
+  set m .menu.options.board
+  
+  if {$::autoResizeBoard} {
+    $m entryconfigure 0 -state disabled
+  } else  {
+    $m entryconfigure 0 -state normal
+  }
+}
 ################################################################################
 proc ::docking::close {w} {
   set tabid [$w select]

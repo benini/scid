@@ -5,6 +5,7 @@
  ===========================================================
 
 Moteur arrêté au restore startAnalyzeMode l. 258 de uci.tcl
+Si autoresize = on, inhiber le menu options
 
  ===========================================================
 |                                                           |
