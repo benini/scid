@@ -1670,6 +1670,7 @@ proc standardShortcuts {w} {
   # Global shortcuts for docked mode
   if { $::docking::USE_DOCKING } {
     bind $w <F1> {helpWindow Contents}
+    bind $w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
     bind $w <Control-N> nameEditor
     bind $w <Control-a> {sc_var create; updateBoard -pgn}
     bind $w <Control-space> { setTrialMode toggle }
@@ -1686,6 +1687,23 @@ proc standardShortcuts {w} {
     bind $w <Control-J> tools::graphs::absfilter::Open
     bind $w <Control-O> ::optable::makeReportWin
     bind $w <Control-K> ::ptrack::make
+    
+    bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
+    bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
+    bind $w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
+    bind $w <question><Return> "sc_pos addNag ?; updateBoard -pgn"
+    bind $w <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
+    bind $w <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
+    
+    bind $w <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
+    bind $w <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
+    bind $w <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
+    bind $w <equal><Return> "sc_pos addNag =; updateBoard -pgn"
+    bind $w <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
+    bind $w <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
+    bind $w <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
+    bind $w <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
+    bind $w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
   }
   
   bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}

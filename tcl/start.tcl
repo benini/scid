@@ -795,6 +795,8 @@ proc resizeMainBoard {} {
   
   if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } { return }
   
+  bind .main <Configure> {}
+  
   set w [winfo width .main]
   set h [winfo height .main]
   set bd .main.board
@@ -854,6 +856,10 @@ proc resizeMainBoard {} {
   
   ::board::resize2 .main.board $newSize
   set ::boardSize $newSize
+  
+  update idletasks
+  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
+  
 }
 ################################################################################
 # sets visibility of gameInfo panel at the bottom of main board

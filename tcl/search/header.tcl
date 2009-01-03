@@ -179,7 +179,7 @@ proc search::header {} {
       if {$i == "none"} { set name "-" }
       checkbutton $w.t$c.b$i -text $name -width 5 -font $regular -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -indicatoron 0 \
           -state $spellstate -pady 0
-      pack $w.t$c.b$i -side left -padx 1 -expand 1 -fill both
+      pack $w.t$c.b$i -side left -padx 1
     }
   }
   
