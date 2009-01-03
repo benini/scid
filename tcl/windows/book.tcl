@@ -142,7 +142,7 @@ namespace eval book {
     pack $w.f -expand 1 -fill both
     
     bind $w.f.combo <<ComboboxSelected>> ::book::bookSelect
-    bind $w <Destroy> "::book::closeMainBook"
+    bind $w <Destroy> "::book::closeMainBook ; ::docking::cleanup $w"
     bind $w <Escape> { destroy  .bookWin }
     if { [catch {bookSelect} ] } {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
@@ -293,7 +293,7 @@ namespace eval book {
     
     bind $w.fcombo.combo <<ComboboxSelected>> ::book::bookTuningSelect
     
-    bind $w <Destroy> "::book::closeTuningBook"
+    bind $w <Destroy> "::book::closeTuningBook  ; ::docking::cleanup $w"
     bind $w <Escape> { destroy  .bookTuningWin }
     bind $w <F1> { helpWindow BookTuning }
     
@@ -373,6 +373,7 @@ namespace eval book {
         $w.fbutton.mbAdd.otherMoves add command -label [::trans $move] -command "::book::addBookMove $move"
       }
     }
+        bind $w <Destroy> "::book::closeTuningBook  ; ::docking::cleanup $w"
   }
   ################################################################################
   # sends to book the list of moves and probabilities.

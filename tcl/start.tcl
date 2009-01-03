@@ -29,11 +29,7 @@ exec tkscid "$0" "$@"
 
 # Alter the version if any patches have been made to the Tcl code only:
 set scidVersion "3.7"
-set scidVersionDate "Devel 2008"
-
-# Set to 0 before releasing, so some alpha-state code is not included
-# Set to 1 to have access to all code
-set NOT_FOR_RELEASE 1
+set scidVersionDate "Devel 2009"
 
 package require Tcl 8.5
 package require Tk  8.5
@@ -1194,7 +1190,7 @@ proc ::splash::add {text} {
 }
 
 ::splash::add "Copyright (C) 1999-2004 Shane Hudson  (sgh@users.sourceforge.net)"
-::splash::add "Copyright (C) 2006-2008 Pascal Georges  (pascal.georges1@free.fr)"
+::splash::add "Copyright (C) 2006-2009 Pascal Georges  (pascal.georges1@free.fr)"
 ::splash::add "This is Scid $::scidVersion, released $::scidVersionDate."
 ::splash::add "Website: scid.sourceforge.net\n"
 
