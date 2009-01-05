@@ -83,7 +83,7 @@ bool parse_is_ok(const parse_t * parse) {
 
    if (parse == NULL) return false;
    if (parse->string == NULL) return false;
-   if (parse->pos < 0 || parse->pos > strlen(parse->string)) return false;
+   if (parse->pos < 0 || parse->pos > (int) strlen(parse->string)) return false;
    if (parse->keyword_nb < 0 || parse->keyword_nb >= KEYWORD_NUMBER) return false;
 
    return true;

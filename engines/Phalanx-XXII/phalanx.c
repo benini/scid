@@ -87,8 +87,8 @@ setvbuf(stdout, (char*)NULL, _IONBF, 0);
 
 printf("Phalanx "); puts(VERSION);
 
-if(argc>1) if( strncmp("bcreate\0",argv[1],8) == 0 )
-{ return bcreate(argc-1,argv+1); }
+// if(argc>1) if( strncmp("bcreate\0",argv[1],8) == 0 )
+// { return bcreate(argc-1,argv+1); }
 
 /* Initialize the random number generator. */
 srand( ((unsigned)time(NULL)) + ((unsigned)getpid()) );

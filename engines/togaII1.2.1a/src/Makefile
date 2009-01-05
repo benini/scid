@@ -44,5 +44,5 @@ $(EXE): $(OBJS)
 .depend:
 	$(CXX) -MM $(OBJS:.o=.cpp) > $@
 
-include .depend
+#include .depend
 

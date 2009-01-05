@@ -1123,7 +1123,6 @@ Index::ReadEntireFile (int reportFrequency,
 
     uint numChunks = NumChunksRequired();
 
-#warning Tweak_Mem_Min_For_PocketPC
 #ifdef POCKET
 // Check if there is enough memory left with a good margin
   #define MARGIN 1000000

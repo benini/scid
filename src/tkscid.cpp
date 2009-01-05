@@ -2149,7 +2149,7 @@ sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Date information: minimum year, maximum year, and mean year:
         appendUintElement (ti, date_GetYear (basePtr->stats.minDate));
         appendUintElement (ti, date_GetYear (basePtr->stats.maxDate));
-        uint avgYear = 0;
+        unsigned long long avgYear = 0;
         if (basePtr->stats.nYears > 0) {
             avgYear = basePtr->stats.sumYears / basePtr->stats.nYears;
         }
@@ -2953,8 +2953,8 @@ class Tourney
     uint      NumGames;
     uint      NumPlayers;
     tourneyPlayerT * PlayerList;
-    uint      EloSum;
-    uint      EloCount;
+    unsigned long long      EloSum;
+    unsigned long long      EloCount;
     gameNumberT FirstGame;
     Tourney  * Next;
 
@@ -13576,7 +13576,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             perf = Crosstable::Performance (perf, score);
 #endif
         }
-        uint avgYear = 0;
+        unsigned long long avgYear = 0;
         if (node->yearCount > 0) {
             avgYear = (node->yearSum + (node->yearCount/2)) / node->yearCount;
         }
@@ -13629,7 +13629,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (avgYear == 0) {
             strCopy (temp, listMode ? " {}" : "      ");
         } else {
-            sprintf (temp, "  %4u", avgYear);
+            sprintf (temp, "  %4llu", avgYear);
         }
         output->Append (temp);
         uint pctDraws = node->freq[RESULT_Draw] * 1000 / node->total;
@@ -13666,12 +13666,12 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (tree->moveCount > 0) {
         int totalScore = 0;
-        uint eloSum = 0;
-        uint eloCount = 0;
-        uint perfSum = 0;
-        uint perfCount = 0;
-        uint yearCount = 0;
-        uint yearSum = 0;
+        unsigned long long eloSum = 0;
+        unsigned long long eloCount = 0;
+        unsigned long long perfSum = 0;
+        unsigned long long perfCount = 0;
+        unsigned long long yearCount = 0;
+        unsigned long long yearSum = 0;
         uint nDraws = 0;
         node = tree->node;
         for (uint count=0; count < tree->moveCount; count++, node++) {
@@ -13686,7 +13686,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             nDraws += node->freq[RESULT_Draw];
         }
         totalScore = totalScore * 500 / tree->totalCount;
-        uint avgElo = 0;
+        unsigned long long avgElo = 0;
         if (eloCount >= 10) {
             avgElo = eloSum / eloCount;
         }
@@ -13720,7 +13720,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (avgElo == 0) {
             output->Append (listMode ? " {}" : "      ");
         } else {
-            sprintf (temp, "  %4u", avgElo);
+            sprintf (temp, "  %4llu", avgElo);
             output->Append (temp);
         }
         if (perf == 0) {
@@ -13732,7 +13732,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (yearCount == 0) {
             output->Append (listMode ? " {}" : "      ");
         } else {
-            sprintf (temp, "  %4u", (yearSum + (yearCount/2)) / yearCount);
+            sprintf (temp, "  %4llu", (yearSum + (yearCount/2)) / yearCount);
             output->Append (temp);
         }
         uint pctDraws = nDraws * 1000 / tree->totalCount;

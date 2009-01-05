@@ -623,8 +623,8 @@ static void pgn_char_read(pgn_t * pgn) {
    }
 
    // read a new character
-      unsigned char c;
 #ifdef WINCE
+      unsigned char c;
       if (my_Tcl_Read(pgn->file, (char *)&c , 1) != 1)
         pgn->char_hack = TOKEN_EOF;
       else

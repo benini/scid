@@ -17,7 +17,7 @@
 
 // prototypes
 
-static bool move_is_legal_debug (int move, const board_t * board);
+// static bool move_is_legal_debug (int move, const board_t * board);
 
 // functions
 
@@ -99,17 +99,17 @@ void filter_legal(list_t * list, const board_t * board) {
 
 // move_is_legal_debug()
 
-static bool move_is_legal_debug(int move, const board_t * board) {
-
-   list_t list[1];
-
-   ASSERT(move_is_ok(move));
-   ASSERT(board_is_ok(board));
-
-   gen_legal_moves(list,board);
-
-   return list_contain(list,move);
-}
+// static bool move_is_legal_debug(int move, const board_t * board) {
+// 
+//    list_t list[1];
+// 
+//    ASSERT(move_is_ok(move));
+//    ASSERT(board_is_ok(board));
+// 
+//    gen_legal_moves(list,board);
+// 
+//    return list_contain(list,move);
+// }
 
 // end of move_legal.cpp
 

@@ -376,8 +376,8 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
         fp.ReadLine (line, 1024);
         if (fp.EndOfFile()) { break; }
 
-        char * name;
-        char * comment;
+        char * name = NULL;
+        char * comment = NULL;
         getNameAndComment (line, &name, &comment);
 
         // Now s contains just the name, no extra space or comment.

@@ -44,8 +44,8 @@ static uint8 DeltaMask[256];
 
 // prototypes
 
-static bool delta_is_ok (int delta);
-static bool inc_is_ok   (int inc);
+// static bool delta_is_ok (int delta);
+// static bool inc_is_ok   (int inc);
 
 // functions
 
@@ -106,25 +106,25 @@ void attack_init() {
 
 // delta_is_ok()
 
-static bool delta_is_ok(int delta) {
-
-   if (delta < -119 || delta > +119) return false;
-
-   return true;
-}
+// static bool delta_is_ok(int delta) {
+// 
+//    if (delta < -119 || delta > +119) return false;
+// 
+//    return true;
+// }
 
 // inc_is_ok()
 
-static bool inc_is_ok(int inc) {
-
-   int dir;
-
-   for (dir = 0; dir < 8; dir++) {
-      if (KingInc[dir] == inc) return true;
-   }
-
-   return false;
-}
+// static bool inc_is_ok(int inc) {
+// 
+//    int dir;
+// 
+//    for (dir = 0; dir < 8; dir++) {
+//       if (KingInc[dir] == inc) return true;
+//    }
+// 
+//    return false;
+// }
 
 // is_in_check()
 

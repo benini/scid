@@ -287,7 +287,6 @@ static uint64 read_integer(FILE * file, int size) {
    uint64 n;
    int i;
    int b;
-   unsigned char c;
 
    ASSERT(file!=NULL);
    ASSERT(size>0&&size<=8);
@@ -297,6 +296,7 @@ static uint64 read_integer(FILE * file, int size) {
    for (i = 0; i < size; i++) {
 
 #ifdef WINCE
+      unsigned char c;
       my_Tcl_Read(file, (char *)&c , 1);
       b = c;
 #else
@@ -325,7 +325,6 @@ static void write_integer(FILE * file, int size, uint64 n) {
 #endif
    int i;
    int b;
-   unsigned char c;
 
    ASSERT(file!=NULL);
    ASSERT(size>0&&size<=8);
@@ -338,6 +337,7 @@ static void write_integer(FILE * file, int size, uint64 n) {
 
 
 #ifdef WINCE
+      unsigned char c;
       c = b;
       if (my_Tcl_Write(file, (char*) &c, 1) != 1) {
 #else

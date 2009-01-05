@@ -47,7 +47,7 @@ static int MoveNb;
 
 // prototypes
 
-static bool depth_is_ok (int depth);
+// static bool depth_is_ok (int depth);
 
 static void perft       (const board_t * board, int depth);
 
@@ -55,10 +55,10 @@ static void perft       (const board_t * board, int depth);
 
 // depth_is_ok()
 
-static bool depth_is_ok(int depth) {
-
-   return depth >= 0 && depth < DepthMax;
-}
+// static bool depth_is_ok(int depth) {
+// 
+//    return depth >= 0 && depth < DepthMax;
+// }
 
 // search()
 

@@ -141,11 +141,11 @@ struct scidStatsT {
     uint  flagCount [IDX_NUM_FLAGS];  // Num of games with each flag set.
     dateT minDate;
     dateT maxDate;
-    uint  nYears;
-    uint  sumYears;
+    unsigned long long  nYears;
+    unsigned long long  sumYears;
     uint  nResults [NUM_RESULT_TYPES];
     uint  nRatings;
-    uint  sumRatings;
+    unsigned long long  sumRatings;
     uint  minRating;
     uint  maxRating;
 #ifndef WINCE

@@ -41,7 +41,7 @@ void
 usage (void) {
     fprintf(stderr, "Usage: %s newfile oldfile1 [oldfile2 ...]\n", progName);
     fprintf(stderr, "   Or: %s newfile - (will take file names on stdin separated by newlines)\n", progName);
-    fprintf(stderr, "   For example : find . -name '*.si3' | sed s/\\.si3// | scmerge newbase -\n", progName);
+    fprintf(stderr, "   For example : find . -name '*.si3' | sed s/\\.si3// | scmerge newbase -\n");
     exit(1);
 }
 

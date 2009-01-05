@@ -52,8 +52,8 @@ struct treeNodeT {
     uint        eloSum;     // Sum of Elos.
     uint        perfCount;  // Count of games with an opponent Elo.
     uint        perfSum;    // Sum of opponent Elos.
-    uint        yearCount;  // Count of games with year != 0.
-    uint        yearSum;    // Sum of years.
+    unsigned long long        yearCount;  // Count of games with year != 0.
+    unsigned long long        yearSum;    // Sum of years.
 };
 
 void initTreeNode (treeNodeT * tnode);
