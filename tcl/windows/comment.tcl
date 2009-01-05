@@ -42,6 +42,28 @@ proc makeCommentWin {} {
   }
 }
 
+# ::commenteditor::Resize
+# handle resize requests for the comment edtor window.
+proc ::commenteditor::Resize {} {
+    set w .commentWin
+
+    bind $w <Configure> {}
+    set oldheight $::winHeight($w)
+    set oldwidth  $::winWidth($w)
+    # get the new window width and height
+    set temp [wm geometry $w]
+    set n [scan $temp "%dx%d+%d+%d" width height x y]
+
+    if {$height > 0 && $width > 0} {
+      if { ($height != $oldheight) || ($width != $oldwidth) } {
+        $w.cf.text configure -width $width -height $height
+        recordWinSize $w
+        setWinSize $w
+      }
+    }
+    bind $w <Configure> { ::docking::handleConfigureEvent ::commenteditor::Resize }
+}
+
 # ::commenteditor::Open --
 #
 proc ::commenteditor::Open {} {
@@ -59,9 +81,6 @@ proc ::commenteditor::Open {} {
   set w .commentWin
   ::createToplevel $w
   setWinLocation $w
-  bind $w <F1> {helpWindow Comment}
-  bind $w <Destroy> [namespace code {set commentWin 0; set State(isOpen) 0}]
-  bind $w <Configure> "recordWinSize $w"
   
   set mark [ttk::frame $w.markFrame]
   pack $mark -side left -fill both -expand 1 -padx 1 -anchor n
@@ -141,7 +160,8 @@ proc ::commenteditor::Open {} {
   
   # addHorizontalRule $w
   
-  wm minsize $w 40 3
+  # minsize seems not to be necessary.
+###---###  wm minsize $w 40 3
   
   # Main buttons:
   
@@ -181,7 +201,7 @@ proc ::commenteditor::Open {} {
   }
   
   # Central subframe: a small board
-  set board [::board::new $insertBoard.board 20]
+  set board [::board::new $insertBoard.board 25]
   ::board::showMarks $board 1
   set ::board::_mark($board) $::board::_mark(.main.board)
   ::board::update $board
@@ -215,7 +235,12 @@ proc ::commenteditor::Open {} {
   } ;# foreach button_line
   # "Press" button:
   SetMarkType $board $State(markType)
-  
+
+  # Add bindings at the end, especially <Configure>
+  bind $w <F1> {helpWindow Comment}
+  bind $w <Destroy> [namespace code {set commentWin 0; set State(isOpen) 0}]
+  bind $w <Configure> { ::docking::handleConfigureEvent ::commenteditor::Resize }
+
   ### Start editing
   ::setTitle $w "Scid: [tr {Comment editor}]"
   wm iconname $w "Scid: [tr {Comment editor}]"

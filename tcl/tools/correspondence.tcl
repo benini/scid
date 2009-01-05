@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.37 2008/12/30 22:56:31 arwagner Exp $
+### $Id: correspondence.tcl,v 1.38 2009/01/05 16:29:55 arwagner Exp $
 ###
-### Last change: <Tue, 2008/12/30 23:54:56 arwagner ingata>
+### Last change: <Mon, 2009/01/05 17:28:46 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1484,8 +1484,6 @@ namespace eval CorrespondenceChess {
 				setWinSize $w
 			}
 		}
-		recordWinSize $w
-
 		# rebind the configure event
 		bind $w <Configure> { ::docking::handleConfigureEvent ::CorrespondenceChess::ConsoleResize }
 	}
