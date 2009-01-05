@@ -1849,10 +1849,11 @@ proc ::tree::mask::addComment { { move "" } } {
     set oldComment [::tree::mask::getComment $move ]
   }
   set oldComment [ string trim $oldComment ]
-  autoscrollframe $w.f text $w.f.e -width 40 -height 5 -wrap none -setgrid 1
+  autoscrollframe $w.f text $w.f.e -width 40 -height 5 -wrap word -setgrid 1
   $w.f.e insert end $oldComment
   button $w.ok -text OK -command "::tree::mask::updateComment $move ; destroy $w ; ::tree::refresh"
-  pack $w.f $w.ok
+  pack  $w.f  -side top -expand 1 -fill both
+  pack  $w.ok -side bottom
   focus $w.f.e
 }
 ################################################################################

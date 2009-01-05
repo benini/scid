@@ -42,27 +42,6 @@ proc makeCommentWin {} {
   }
 }
 
-# ::commenteditor::Resize
-# handle resize requests for the comment edtor window.
-proc ::commenteditor::Resize {} {
-    set w .commentWin
-
-    bind $w <Configure> {}
-    set oldheight $::winHeight($w)
-    set oldwidth  $::winWidth($w)
-    # get the new window width and height
-    set temp [wm geometry $w]
-    set n [scan $temp "%dx%d+%d+%d" width height x y]
-
-    if {$height > 0 && $width > 0} {
-      if { ($height != $oldheight) || ($width != $oldwidth) } {
-        $w.cf.text configure -width $width -height $height
-        recordWinSize $w
-        setWinSize $w
-      }
-    }
-    bind $w <Configure> { ::docking::handleConfigureEvent ::commenteditor::Resize }
-}
 
 # ::commenteditor::Open --
 #
@@ -239,7 +218,7 @@ proc ::commenteditor::Open {} {
   # Add bindings at the end, especially <Configure>
   bind $w <F1> {helpWindow Comment}
   bind $w <Destroy> [namespace code {set commentWin 0; set State(isOpen) 0}]
-  bind $w <Configure> { ::docking::handleConfigureEvent ::commenteditor::Resize }
+  bind $w <Configure> "recordWinSize $w; setWinSize $w"
 
   ### Start editing
   ::setTitle $w "Scid: [tr {Comment editor}]"
