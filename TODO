@@ -5,6 +5,7 @@
  ===========================================================
 
 Moteur arrêté au restore startAnalyzeMode l. 258 de uci.tcl
+Voir diff pour -Wall dans tmp/
 
  ===========================================================
 |                                                           |
@@ -17,6 +18,8 @@ Moteur arrêté au restore startAnalyzeMode l. 258 de uci.tcl
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- Re-use icons http://webdesignledger.com/freebies/21-best-icon-sets-for-designing-web-apps
 
 - add variations from analysis engine when the engine is locked
 

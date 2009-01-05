@@ -126,6 +126,7 @@ proc findTclTkPaths {} {
     # libraryPath: List of possible locations of Tcl/Tk library.
     set libraryPath {
         /usr/lib
+        /usr/lib64
         /usr/local/tcl/lib
         /usr/local/lib
         /usr/X11R6/lib
