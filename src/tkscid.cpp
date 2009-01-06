@@ -6804,18 +6804,18 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 while (*flagStr != 0) {
                     char * flagName = NULL;
                     switch (*flagStr) {
-                        case 'W': flagName = "WhiteOpFlag"; break;
-                        case 'B': flagName = "BlackOpFlag"; break;
-                        case 'M': flagName = "MiddlegameFlag"; break;
-                        case 'E': flagName = "EndgameFlag"; break;
-                        case 'N': flagName = "NoveltyFlag"; break;
-                        case 'P': flagName = "PawnFlag"; break;
-                        case 'T': flagName = "TacticsFlag"; break;
-                        case 'Q': flagName = "QsideFlag"; break;
-                        case 'K': flagName = "KsideFlag"; break;
-                        case '!': flagName = "BrilliancyFlag"; break;
-                        case '?': flagName = "BlunderFlag"; break;
-                        case 'U': flagName = "UserFlag"; break;
+                        case 'W': flagName = (char *) "WhiteOpFlag"; break;
+                        case 'B': flagName = (char *) "BlackOpFlag"; break;
+                        case 'M': flagName = (char *) "MiddlegameFlag"; break;
+                        case 'E': flagName = (char *) "EndgameFlag"; break;
+                        case 'N': flagName = (char *) "NoveltyFlag"; break;
+                        case 'P': flagName = (char *) "PawnFlag"; break;
+                        case 'T': flagName = (char *) "TacticsFlag"; break;
+                        case 'Q': flagName = (char *) "QsideFlag"; break;
+                        case 'K': flagName = (char *) "KsideFlag"; break;
+                        case '!': flagName = (char *) "BrilliancyFlag"; break;
+                        case '?': flagName = (char *) "BlunderFlag"; break;
+                        case 'U': flagName = (char *) "UserFlag"; break;
                     }
                     if (flagName != NULL) {
                         Tcl_AppendResult (ti, (flagCount > 0 ? ", " : " - "),
@@ -7967,7 +7967,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     idNumberT id = 0;
 
     // WHITE:
-    s = game->GetWhiteStr();  if (!s) { s = "?"; }
+    s = game->GetWhiteStr();  if (!s) { s = (char *) "?"; }
     if (base->nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
         Tcl_AppendResult (ti, "Too many player names.", NULL);
         return TCL_ERROR;
@@ -7976,7 +7976,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     iE.SetWhite (id);
 
     // BLACK:
-    s = game->GetBlackStr();  if (!s) { s = "?"; }
+    s = game->GetBlackStr();  if (!s) { s = (char *) "?"; }
     if (base->nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
         Tcl_AppendResult (ti, "Too many player names.", NULL);
         return TCL_ERROR;
@@ -7985,7 +7985,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     iE.SetBlack (id);
 
     // EVENT:
-    s = game->GetEventStr();  if (!s) { s = "?"; }
+    s = game->GetEventStr();  if (!s) { s = (char *) "?"; }
     if (base->nb->AddName (NAME_EVENT, s, &id) == ERROR_NameBaseFull) {
         Tcl_AppendResult (ti, "Too many event names.", NULL);
         return TCL_ERROR;
@@ -7994,7 +7994,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     iE.SetEvent (id);
 
     // SITE:
-    s = game->GetSiteStr();  if (!s) { s = "?"; }
+    s = game->GetSiteStr();  if (!s) { s = (char *) "?"; }
     if (base->nb->AddName (NAME_SITE, s, &id) == ERROR_NameBaseFull) {
         Tcl_AppendResult (ti, "Too many site names.", NULL);
         return TCL_ERROR;
@@ -8003,7 +8003,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     iE.SetSite (id);
 
     // ROUND:
-    s = game->GetRoundStr();  if (!s) { s = "?"; }
+    s = game->GetRoundStr();  if (!s) { s = (char *) "?"; }
     if (base->nb->AddName (NAME_ROUND, s, &id) == ERROR_NameBaseFull) {
         Tcl_AppendResult (ti, "Too many round names.", NULL);
         return TCL_ERROR;
@@ -8531,12 +8531,12 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case T_Event:
-        s = g->GetEventStr();  if (!s) { s = "?"; }
+        s = g->GetEventStr();  if (!s) { s = (char *) "?"; }
         Tcl_AppendResult (ti, s, NULL);
         break;
 
     case T_Site:
-        s = g->GetSiteStr();  if (!s) { s = "?"; }
+        s = g->GetSiteStr();  if (!s) { s = (char *) "?"; }
         Tcl_AppendResult (ti, s, NULL);
         break;
 
@@ -8558,17 +8558,17 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return setUintWidthResult (ti, date_GetDay (g->GetDate()), 2);
 
     case T_Round:
-        s = g->GetRoundStr();  if (!s) { s = "?"; }
+        s = g->GetRoundStr();  if (!s) { s = (char *) "?"; }
         Tcl_AppendResult (ti, s, NULL);
         break;
 
     case T_White:
-        s = g->GetWhiteStr();  if (!s) { s = "?"; }
+        s = g->GetWhiteStr();  if (!s) { s = (char *) "?"; }
         Tcl_AppendResult (ti, s, NULL);
         break;
 
     case T_Black:
-        s = g->GetBlackStr();  if (!s) { s = "?"; }
+        s = g->GetBlackStr();  if (!s) { s = (char *) "?"; }
         Tcl_AppendResult (ti, s, NULL);
         break;
 

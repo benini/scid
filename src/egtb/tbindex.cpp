@@ -1161,24 +1161,24 @@ static void VInitEnumerations (void)
 	if (fPrint)
 		{
 		for (pi1 = x_pieceNone; pi1 <= x_pieceQueen; pi1 = (piece) (pi1 + 1))
-			printf ("%c - %d enumerated positions\n", "pPNBRQ"[pi1], rgcSinglePawnPresent[pi1]);
+			printf ("%c - %ld enumerated positions\n", "pPNBRQ"[pi1], rgcSinglePawnPresent[pi1]);
 		for (pi1 = x_pieceNone; pi1 <= x_pieceQueen; pi1 = (piece) (pi1 + 1))
 			{
 			if (0 != rgcSinglePawnless[pi1])
-				printf ("pawnless %c - %d enumerated positions\n", "pPNBRQ"[pi1], rgcSinglePawnless[pi1]);
+				printf ("pawnless %c - %ld enumerated positions\n", "pPNBRQ"[pi1], rgcSinglePawnless[pi1]);
 			}
 		for (pi1 = x_pieceNone; pi1 <= x_pieceQueen; pi1 = (piece) (pi1 + 1))
 			for (pi2 = x_pieceNone; pi2 <= pi1; pi2 = (piece) (pi2 + 1))
 				{
 				if (0 != rgcPairPawnPresent[pi1][pi2])
-					printf ("%c%c - %d enumerated positions\n", "pPNBRQ"[pi1], "pPNBRQ"[pi2],
+					printf ("%c%c - %ld enumerated positions\n", "pPNBRQ"[pi1], "pPNBRQ"[pi2],
 							rgcPairPawnPresent[pi1][pi2]);
 				}
 		for (pi1 = x_pieceNone; pi1 <= x_pieceQueen; pi1 = (piece) (pi1 + 1))
 			for (pi2 = x_pieceNone; pi2 <= pi1; pi2 = (piece) (pi2 + 1))
 				{
 				if (0 != rgcPairPawnless[pi1][pi2])
-					printf ("pawnless %c%c - %d enumerated positions\n", "pPNBRQ"[pi1], "pPNBRQ"[pi2],
+					printf ("pawnless %c%c - %ld enumerated positions\n", "pPNBRQ"[pi1], "pPNBRQ"[pi2],
 							rgcPairPawnless[pi1][pi2]);
 				}
 #if defined (T41_INCLUDE)
@@ -1187,7 +1187,7 @@ static void VInitEnumerations (void)
 				for (pi3 = x_pieceNone; pi3 <= pi2; pi3 = (piece) (pi3 + 1))
 					{
 					if (0 != rgcTriplePawnPresent[pi1][pi2][pi3])
-						printf ("%c%c%c - %d enumerated positions\n",
+						printf ("%c%c%c - %ld enumerated positions\n",
 								"pPNBRQ"[pi1], "pPNBRQ"[pi2], "pPNBRQ"[pi3],
 								rgcTriplePawnPresent[pi1][pi2][pi3]);
 					}
@@ -1196,7 +1196,7 @@ static void VInitEnumerations (void)
 				for (pi3 = x_pieceNone; pi3 <= pi2; pi3 = (piece) (pi3 + 1))
 					{
 					if (0 != rgcTriplePawnless[pi1][pi2][pi3])
-						printf ("pawnless %c%c%c - %d enumerated positions\n",
+						printf ("pawnless %c%c%c - %ld enumerated positions\n",
 								"pPNBRQ"[pi1], "pPNBRQ"[pi2], "pPNBRQ"[pi3],
 								rgcTriplePawnless[pi1][pi2][pi3]);
 					}
