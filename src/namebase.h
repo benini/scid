@@ -236,7 +236,7 @@ inline char *
 NameBase::GetName (nameT nt, idNumberT id)
 {
     ASSERT (IsValidNameType(nt));
-    if (id >= GetNumNames(nt)) { return ""; }
+    if (id >= GetNumNames(nt)) { return (char *)""; }
     return NameByID[nt][id]->name;
 }
 

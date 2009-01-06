@@ -255,6 +255,8 @@ namespace eval tacgame {
     
     set ::tacgame::lFen {}
     
+    set analysisCoach(paused) 0
+    
     if {$::tacgame::randomLevel} {
       if {$::tacgame::levelMax < $::tacgame::levelMin} {
         set tmp $::tacgame::levelMax

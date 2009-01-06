@@ -323,7 +323,7 @@ printNameInfo (NameBase * nb, Index * idx)
 {
     errorT err;
     nameT nt;
-    char *ntStr[4] = {"PLAYER", "EVENT", "SITE", "ROUND"};
+    const char *ntStr[4] = {"PLAYER", "EVENT", "SITE", "ROUND"};
 
     err= nb->ReadNameFile();
     if (err != OK) { fileErr (filename, NAMEBASE_SUFFIX, err); }

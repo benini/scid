@@ -286,9 +286,9 @@ recalcFlagCounts (scidBaseT * basePtr)
         ecoT eco = ie->GetEcoCode();
         ecoStringT ecoStr;
         eco_ToExtendedString (eco, ecoStr);
+#ifndef WINCE
         uint length = strLength (ecoStr);
         resultT result = ie->GetResult();
-#ifndef WINCE
         if (length >= 3) {
             uint code = 0;
             stats->ecoCount0[code].count++;

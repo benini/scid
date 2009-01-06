@@ -34,7 +34,7 @@
 // Piece letters translation
 int language = 0; // default to english
 //  0 = en, 1 = fr, 2 = es, 3 = de, 4 = it, 5 = ne, 6 = cz
-char * langPieces[] = { "", "PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS", ""
+const char * langPieces[] = { "", "PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS", ""
 "PPKRQDRTBANC", "PpKKQDRTBLNP", "PPKKQDRVBSNJ" };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3400,7 +3400,7 @@ encodeVariation (ByteBuffer * buf, moveT * m, uint * subVarCount,
 // is detected. It is changed to the actual comment later when the
 // comments are decoded.
 
-char * defaultComment = "";
+char * defaultComment = (char *) "";
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -973,11 +973,11 @@ Index::Open (fileModeT fmode, bool old)
     char * modeStr;
     switch (fmode) {
         case FMODE_ReadOnly:
-            modeStr = "rb"; break;
+            modeStr = (char *) "rb"; break;
         case FMODE_WriteOnly:
-            modeStr = "wb"; break;
+            modeStr = (char *) "wb"; break;
         case FMODE_Both:
-            modeStr = "r+b"; break;
+            modeStr = (char *) "r+b"; break;
         default:
             return ERROR_FileMode;
     }
