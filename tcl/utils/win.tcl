@@ -430,6 +430,9 @@ namespace eval docking {
   # redraw takes some time : skip some events
   variable lastConfigureEvent 0
   variable deltaConfigureEvent 400
+  
+  # set to 1 to inhibit autostart of engines when restoring the default layout at startup
+  set restore_running 0
 }
 
 ################################################################################
@@ -607,12 +610,15 @@ proc ::docking::cleanup { w } {
     bind $dockw <Destroy> {}
   }
   
-  foreach nb [array names tbs] {
-    if { [lsearch  [$nb tabs] $dockw ] != -1 } {
-      $nb forget $dockw
-      destroy $dockw
-      ::docking::_cleanup_tabs $nb
-      return
+  # Maybe during Scid closing, some race conditions lead to exceptions ? In case, catch this by default
+  catch {
+    foreach nb [array names tbs] {
+      if { [lsearch  [$nb tabs] $dockw ] != -1 } {
+        $nb forget $dockw
+        destroy $dockw
+        ::docking::_cleanup_tabs $nb
+        return
+      }
     }
   }
   
@@ -1159,15 +1165,6 @@ proc ::docking::closeAll {pw} {
     }
   }
   
-}
-
-################################################################################
-# Name is the toplevel's name without leading "."
-# The container frame is .fdock$name
-################################################################################
-proc new_frame { name } {
-  set f .fdock$name
-  return $f
 }
 
 ################################################################################

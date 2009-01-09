@@ -1880,7 +1880,10 @@ if { $::docking::USE_DOCKING } {
   
   # restore default layout (number 1)
   if { $::autoLoadLayout } {
+    set ::docking::restore_running 1
     ::docking::layout_restore 1
+    # engines may take time to start. Wait a few seconds before allowing an engine to automatically start analyzing
+    after 2000 { set ::docking::restore_running 0 }
   }
   
   standardShortcuts TNotebook

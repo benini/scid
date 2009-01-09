@@ -2123,7 +2123,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
   if {$analysis(analyzeMode$n)} {
     stopAnalyzeMode $n
     $b configure -image tb_play
-    ::utils::tooltip::Set $b "$::tr(StartEngine)(a)"
+    ::utils::tooltip::Set $b "$::tr(StartEngine)"
     # reset lock mode and disable lock button
     set analysis(lockEngine$n) 0
     toggleLockEngine $n
@@ -2144,6 +2144,22 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
 proc startAnalyzeMode {{n 1} {force 0}} {
   global analysis
   
+  # don't start analysis mode when restoring the default layout in docked mode
+  if { $::docking::USE_DOCKING && $::docking::restore_running } {
+    set b ".analysisWin$n.b1.bStartStop"
+    $b configure -image tb_play
+    ::utils::tooltip::Set $b "$::tr(StartEngine)"
+    # reset lock mode and disable lock button
+    set analysis(lockEngine$n) 0
+    toggleLockEngine $n
+    .analysisWin$n.b1.lockengine configure -relief raised
+    .analysisWin$n.b1.lockengine configure -state disabled
+    set t .analysisWin$n.text
+    $t configure -state normal
+    $t delete 0.0 end
+    return
+  }
+  
   # Check that the engine has not already had analyze mode started:
   if {$analysis(analyzeMode$n) && ! $force } { return }
   set analysis(analyzeMode$n) 1
@@ -2160,7 +2176,6 @@ proc startAnalyzeMode {{n 1} {force 0}} {
       sendToEngine $n "setboard [sc_pos fen]"
     }
     if { $analysis(has_analyze$n) } {
-      #updateAnalysis $n
       sendToEngine $n "analyze"
     } else  {
       updateAnalysis $n ;# in order to handle special cases (engines without setboard and analyse commands)

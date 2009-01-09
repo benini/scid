@@ -287,10 +287,22 @@ namespace eval fics {
     if {[string match "Creating: *" $line]} {
       sc_game new
       ::novag::newGame
-      set white [lindex $line 1]
-      set whiteElo [string map { "(" "" ")" "" } [lindex $line 2] ]
-      set black [lindex $line 3]
-      set blackElo [string map { "(" "" ")" "" } [lindex $line 4] ]
+      
+      set idx1 [string first "(" $line]
+      set white [string trim [string range $line 10 [expr $idx1 -1]] ]
+      set idx2 [string first ")" $line]
+      set whiteElo [string trim [string range $line [expr $idx1 +1] [expr $idx2 -1]] ]
+      
+      set idx1 [expr $idx2 +1]
+      set idx2 [string first "(" $line $idx1]
+      set black [string trim [string range $line $idx1 [expr $idx2 -1]] ]
+      
+      set idx1 [expr $idx2 +1]
+      set idx2 [string first ")" $line $idx1]
+      set blackElo [string trim [string range $line $idx1 [expr $idx2 -1]] ]
+      
+      if { $whiteElo == "++++"} { set whiteElo 0 }
+      if { $blackElo == "++++"} { set blackElo 0 }
       
       sc_game tags set -white $white
       sc_game tags set -whiteElo $whiteElo
