@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.10 2008/12/30 11:53:43 arwagner Exp $
-###    Last change: <Tue, 2008/12/30 11:48:05 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.11 2009/01/10 12:40:01 arwagner Exp $
+###    Last change: <Sat, 2009/01/10 13:35:42 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -200,7 +200,7 @@ namespace eval ExtHardware {
      set ::statusBar "External hardware options were saved to: [scidConfigFile correspondence]"
 
      # Check if the hw connect button exists already. If not, add it.
-     if { [winfo exists .button.exthardware]} { 
+     if { [winfo exists .main.fbutton.button.exthardware]} { 
         return 
      } else {
         if { $::ExtHardware::showbutton == 1 } {
@@ -226,7 +226,7 @@ namespace eval ExtHardware {
   proc HWbuttonImg {img} {
 
     if { $::ExtHardware::showbutton == 1 } {
-      .button.exthardware configure -image $img -relief flat
+      .main.fbutton.button.exthardware configure -image $img -relief flat
     }
   }
 
@@ -447,7 +447,7 @@ namespace eval inputengine {
     grid $w.bPiece     -stick nwes  -column 2  -row 3 -rowspan 9 -columnspan 3
     grid $w.bMove      -stick nwes  -column 5  -row 3 -rowspan 9 -columnspan 3
 
-    grid $w.wClock     -stick nwes  -column 9 -row 12 -columnspan 7
+    grid $w.wClock     -stick nwes  -column 9 -row 11 -columnspan 7
     grid $w.bClock     -stick nwes  -column 9 -row 1  -columnspan 7
 
     grid $w.bd         -stick nw    -column 9  -row 2 -rowspan 9 -columnspan 7
@@ -491,6 +491,7 @@ namespace eval inputengine {
     global ::inputengine::InputEngine ::inputengine::engine \
         ::inputengine::port ::inputengine::param
 
+    set ::inputengine::port $::ExtHardware::port
     ::ExtHardware::HWbuttonImg tb_eng_connecting
 
     if {[catch {set InputEngine(pipe) [open "| $engine $port $param" "r+"]} result]} {
@@ -845,7 +846,8 @@ namespace eval inputengine {
                   set wMin [expr ($::inputengine::WhiteClock - $wHrs*60*60) / 60 ]
                   set wSec [expr ($::inputengine::WhiteClock - $wHrs*60*60 - $wMin * 60) ]
                   set timediff [expr $::inputengine::oldWhiteClock - $::inputengine::WhiteClock]
-                  sc_pos setComment "\[%ct $bHrs:$bMin:$bSec\] \[%emt $timediff\]"
+                  set ::inputengine::oldWhiteClock $::inputengine::WhiteClock
+                  sc_pos setComment "\[%ct $wHrs:$wMin:$wSec\] \[%emt $timediff\]"
                }
             }
           } \
@@ -861,6 +863,7 @@ namespace eval inputengine {
                   set bMin [expr ($::inputengine::BlackClock - $bHrs*60*60) / 60 ]
                   set bSec [expr ($::inputengine::BlackClock - $bHrs*60*60 - $bMin * 60) ]
                   set timediff [expr $::inputengine::oldBlackClock - $::inputengine::BlackClock]
+                  set ::inputengine::oldBlackClock $::inputengine::BlackClock
                   sc_pos setComment "\[%ct $bHrs:$bMin:$bSec\] \[%emt $timediff\]"
                }
             }
@@ -872,8 +875,10 @@ namespace eval inputengine {
              .inputengineconsole.bClock configure -text $::inputengine::BlackClock
           } \
           "Time White:" {
+            if { ($::inputengine::oldWhiteClock == $::inputengine::NoClockTime) } {
+               set ::inputengine::oldWhiteClock $::inputengine::WhiteClock
+            }
             # Get the time in seconds
-            set ::inputengine::oldWhiteClock $::inputengine::WhiteClock
             regsub -all {[A-Za-z:# ]} $event "" ::inputengine::WhiteClock
 
             # calculate a sensible format
@@ -891,7 +896,9 @@ namespace eval inputengine {
             catch { ::gameclock::setSec 1 [expr -1*$::inputengine::WhiteClock] }
           } \
           "Time Black:" {
-            set ::inputengine::oldBlackClock $::inputengine::BlackClock
+            if { ($::inputengine::oldBlackClock == $::inputengine::NoClockTime) } {
+               set ::inputengine::oldBlackClock $::inputengine::BlackClock
+            }
             regsub -all {[A-Za-z:# ]} $event "" ::inputengine::BlackClock
 
             set bHrs [expr $::inputengine::BlackClock / 60 / 60]
