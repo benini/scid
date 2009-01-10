@@ -674,7 +674,10 @@ scid-3.6.7
 - Tree window : when a Tree is updated and the current base is not the Tree's one, the Tree base will automatically load the first game in the filter (so by switching to the Tree's base, the position is already set to the previous one and for example an Opening report can be immediately generated)
 - Import clipboard as game : on Unix systems the X selection is pasted only if the clipboard is empty
 - MacOS : various updates (better support, among them the switch of mouse buttons 2 & 3) (thanks to Israel Chauca Fuentes)
-- Book : last opened book is reopened by default
+- Book : 
+	* last opened book is reopened by default
+	* Books should be usable from read only drives as well (without
+	tuning/save of course)
 - Bug : fixed a possible crash when generating a player report when the opened base has no games (segmentation fault)
 - Analysis / Game annotation : book moves are now translated
 - Serious game and Tactical game : parameters are saved
