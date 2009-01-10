@@ -204,10 +204,15 @@ namespace eval fics {
     pack $w.f.top.f1.console -side left -fill both -expand 1 -side right
     
     #define colors for console
-    $w.f.top.f1.console tag configure seeking -foreground coral
-    $w.f.top.f1.console tag configure game -foreground grey70
-    $w.f.top.f1.console tag configure gameresult -foreground SlateBlue1
-    $w.f.top.f1.console tag configure ficspercent -foreground khaki1
+    # $w.f.top.f1.console tag configure seeking     -foreground coral
+    # $w.f.top.f1.console tag configure game        -foreground grey70
+    # $w.f.top.f1.console tag configure gameresult  -foreground SlateBlue1
+    # $w.f.top.f1.console tag configure ficspercent -foreground khaki1
+
+    $w.f.top.f1.console tag configure seeking     -foreground $::fics::colseeking    
+    $w.f.top.f1.console tag configure game        -foreground $::fics::colgame       
+    $w.f.top.f1.console tag configure gameresult  -foreground $::fics::colgameresult 
+    $w.f.top.f1.console tag configure ficspercent -foreground $::fics::colficspercent
     
     ttk::entry $w.f.top.f2.cmd -width 32
     ttk::button $w.f.top.f2.send -text send -command ::fics::cmd

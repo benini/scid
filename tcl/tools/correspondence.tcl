@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.38 2009/01/05 16:29:55 arwagner Exp $
+### $Id: correspondence.tcl,v 1.39 2009/01/10 13:35:50 arwagner Exp $
 ###
-### Last change: <Mon, 2009/01/05 17:28:46 arwagner ingata>
+### Last change: <Sat, 2009/01/10 14:34:49 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -53,6 +53,11 @@ namespace eval Xfcc {
 	# To pass on directories on windows with a backslash
 	set xfccrcfile ""
 
+	# Set up a proper user agent
+	# Something like 
+	#    Scid/3.7 (x11; Linux i686; rv:Devel 2009) Tcl/Tk 8.5.2
+	set useragent "Scid/$::scidVersion ([tk windowingsystem]; $::tcl_platform(os) $::tcl_platform(machine); rv:$scidVersionDate) Tcl/Tk [info patchlevel]"
+	
 	#----------------------------------------------------------------------
 	# Replace XML entities by their normal characters
 	#----------------------------------------------------------------------
@@ -3014,6 +3019,8 @@ namespace eval CorrespondenceChess {
 	if {[catch { package require http }]} {
 	  ::splash::add "http package not found, disabeling internal Xfcc support"
 		set XfccInternal -1
+	} else {
+		::http::config -useragent $::Xfcc::useragent
 	}
 
 	if {[catch {package require tdom}]} {

@@ -294,6 +294,12 @@ set ::fics::consolebg     black
 set ::fics::consolefg     LimeGreen
 set ::fics::consoleheight 10
 set ::fics::consolewidth  40
+set ::fics::colseeking     coral
+set ::fics::colgame        grey70
+set ::fics::colgameresult  SlateBlue1
+set ::fics::colficspercent khaki1
+
+
 
 # Defaults for serious game training
 set ::sergame::isOpening 0
