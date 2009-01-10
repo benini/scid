@@ -126,37 +126,37 @@ PrintGameList (Index * i, NameBase * nb, gameNumberT first,
 void
 printDebugInfo () {
     printf ("Sizes of classes and structs, in bytes:\n");
-    printf ("\nByteBuffer class: %u\n", sizeof(ByteBuffer));
+    printf ("\nByteBuffer class: %lu\n", (unsigned long) sizeof(ByteBuffer));
 
-    printf ("\nIndex class: %u\n", sizeof(Index));
-    printf ("   indexHeaderT struct: %u\n", sizeof(indexHeaderT));
-    printf ("   IndexEntry class: %u\n", sizeof(IndexEntry));
+    printf ("\nIndex class: %lu\n", (unsigned long) sizeof(Index));
+    printf ("   indexHeaderT struct: %lu\n", (unsigned long) sizeof(indexHeaderT));
+    printf ("   IndexEntry class: %lu\n", (unsigned long) sizeof(IndexEntry));
 
-    printf ("\nGame class: %u\n", sizeof(Game));
-    printf ("   patternT struct: %u\n", sizeof(patternT));
-    printf ("   moveT struct: %u\n", sizeof(moveT));
-    printf ("   moveChunkT struct: %u\n", sizeof(moveChunkT));
-    printf ("   tagT struct: %u\n", sizeof(tagT));
+    printf ("\nGame class: %lu\n", (unsigned long) sizeof(Game));
+    printf ("   patternT struct: %lu\n", (unsigned long) sizeof(patternT));
+    printf ("   moveT struct: %lu\n", (unsigned long) sizeof(moveT));
+    printf ("   moveChunkT struct: %lu\n", (unsigned long) sizeof(moveChunkT));
+    printf ("   tagT struct: %lu\n", (unsigned long) sizeof(tagT));
 
-    printf ("\nGFile class: %u\n", sizeof(GFile));
-    printf ("   gfBlockT struct: %u\n", sizeof(gfBlockT));
+    printf ("\nGFile class: %lu\n", (unsigned long) sizeof(GFile));
+    printf ("   gfBlockT struct: %lu\n", (unsigned long) sizeof(gfBlockT));
 
-    printf ("\nNameBase class: %u\n", sizeof(NameBase));
-    printf ("   nameBaseHeaderT struct: %u\n", sizeof(nameBaseHeaderT));
-    printf ("   nameNodeT struct: %u\n", sizeof(nameNodeT));
+    printf ("\nNameBase class: %lu\n", (unsigned long) sizeof(NameBase));
+    printf ("   nameBaseHeaderT struct: %lu\n", (unsigned long) sizeof(nameBaseHeaderT));
+    printf ("   nameNodeT struct: %lu\n", (unsigned long) sizeof(nameNodeT));
 
-    printf ("\nPosition class: %u\n", sizeof(Position));
-    printf ("   simpleMoveT struct: %u\n", sizeof(simpleMoveT));
-    printf ("   LegalMoveList class: %u\n", sizeof(MoveList));
-    printf ("   sanListT struct: %u\n", sizeof(sanListT));
+    printf ("\nPosition class: %lu\n", (unsigned long) sizeof(Position));
+    printf ("   simpleMoveT struct: %lu\n", (unsigned long) sizeof(simpleMoveT));
+    printf ("   LegalMoveList class: %lu\n", (unsigned long) sizeof(MoveList));
+    printf ("   sanListT struct: %lu\n", (unsigned long) sizeof(sanListT));
 //    printf ("   pseudoLegalListT struct: %u\n", sizeof(pseudoLegalListT));
 
-    printf ("\nTextBuffer class: %u\n", sizeof(TextBuffer));
+    printf ("\nTextBuffer class: %lu\n", (unsigned long) sizeof(TextBuffer));
     
-    printf ("\nTreeCache class: %u\n", sizeof(TreeCache));
-    printf ("   cachedTreeT struct: %u\n", sizeof(cachedTreeT));
-    printf ("   treeT struct: %u\n", sizeof(treeT));
-    printf ("   treeNodeT struct: %u\n", sizeof(treeNodeT));
+    printf ("\nTreeCache class: %lu\n", (unsigned long) sizeof(TreeCache));
+    printf ("   cachedTreeT struct: %lu\n", (unsigned long) sizeof(cachedTreeT));
+    printf ("   treeT struct: %lu\n", (unsigned long) sizeof(treeT));
+    printf ("   treeNodeT struct: %lu\n", (unsigned long) sizeof(treeNodeT));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

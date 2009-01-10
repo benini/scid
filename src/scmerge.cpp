@@ -190,7 +190,7 @@ main (int argc, char ** argv)
                 if( l <= 1)
                     continue;
                 if( thisFile[l-1] != '\n') {
-                    fprintf(stderr, "File name too long (max: %d chars)\n", sizeof(thisFile));
+                  fprintf(stderr, "File name too long (max: %lu chars)\n", (unsigned long) sizeof(thisFile));
                     exit(1);
                 }
                 thisFile[l-1] = 0; // throw away \n

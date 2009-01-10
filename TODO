@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-
+-> deleting "All games" in "Maintaince" + e.g. "Compacting" leaves 0 games in the db. But however the mainwindow title is not updated. So you still see foo (game 1 / 158200) there for example. So exactly the state before deleting/compacting all
  ===========================================================
 |                                                           |
 |                          BUGS                             |
