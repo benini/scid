@@ -7,6 +7,7 @@
 
 namespace eval book {
   set isOpen 0
+  set isReadonly 0
   set bookList ""
   set bookPath ""
   set currentBook "" ; # book in form abc.bin
@@ -40,7 +41,7 @@ namespace eval book {
     }
     
     set bn [ file join $::scidBooksDir $name ]
-    sc_book load $bn $slot
+    set ::book::isReadonly [sc_book load $bn $slot]
   }
   
   ################################################################################
@@ -286,6 +287,7 @@ namespace eval book {
     
     ttk::button $w.fbutton.bExport -text $::tr(Export) -command ::book::export
     ttk::button $w.fbutton.bSave -text $::tr(Save) -command ::book::save
+
     pack $w.fbutton.mbAdd $w.fbutton.bExport $w.fbutton.bSave -side top -fill x -expand yes
     
     
@@ -313,7 +315,13 @@ namespace eval book {
   #
   ################################################################################
   proc bookTuningSelect { { n "" }  { v  0} } {
+    set w .bookTuningWin
     scBookOpen [.bookTuningWin.fcombo.combo get] $::book::bookTuningSlot
+    if { $::book::isReadonly > 0 } {
+       $w.fbutton.bSave configure -state disabled
+    } else {
+       $w.fbutton.bSave configure -state normal
+    }
     refreshTuning
   }
   ################################################################################
@@ -321,6 +329,9 @@ namespace eval book {
   ################################################################################
   proc addBookMove { move } {
     global ::book::bookTuningMoves
+
+    if { $::book::isReadonly > 0 } { return }
+
     set w .bookTuningWin
     set children [winfo children $w.f]
     set count [expr [llength $children] / 2]
@@ -337,6 +348,9 @@ namespace eval book {
   #   updates book display when board changes
   ################################################################################
   proc refreshTuning {} {
+
+    if { $::book::isReadonly > 0 } { return }
+
     #unfortunately we need this as the moves on the widgets are translated
     #and widgets have no clientdata in tcl/tk
     global ::book::bookTuningMoves
@@ -380,6 +394,8 @@ namespace eval book {
   ################################################################################
   proc save {} {
     global ::book::bookTuningMoves
+    if { $::book::isReadonly > 0 } { return }
+
     set prob {}
     set w .bookTuningWin
     set children [winfo children $w.f]

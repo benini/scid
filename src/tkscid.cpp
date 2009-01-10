@@ -15903,10 +15903,22 @@ sc_book_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
  
     uint slot = strGetUnsigned (argv[3]);
-    if (polyglot_open(argv[2], slot) == -1 ) {
+
+	 int bookstate = polyglot_open(argv[2], slot);
+
+    if (bookstate == -1 ) {
 			return errorResult (ti, "Unable to load book");
 		}
+    if (bookstate  >  0 ) {
+		   // state == 1: book is read only
+			return setIntResult (ti, bookstate);
+	 }
     return TCL_OK;
+
+//--//    if (polyglot_open(argv[2], slot) == -1 ) {
+//--//			return errorResult (ti, "Unable to load book");
+//--//		}
+//--//    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

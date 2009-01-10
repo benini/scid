@@ -284,13 +284,27 @@ int scid_book_close(const int BookNumber) {
 // =================================================================
 int scid_book_open(const char file_name[], const int BookNumber) {
 
+   int ReadOnlyFile = 0;
+
 #ifdef WINCE
    BookFile[BookNumber] = my_Tcl_OpenFileChannel(NULL, file_name, "r+", 0666);
 #else
    BookFile[BookNumber] = fopen(file_name,"rb+");
 #endif
 
-   if (BookFile[BookNumber] == NULL) return -1;
+   //--------------------------------------------------
+   if (BookFile[BookNumber] == NULL) {
+      // the book can not be opened in read/write mode, try read only
+#ifdef WINCE
+      BookFile[BookNumber] = my_Tcl_OpenFileChannel(NULL, file_name, "r", 0666);
+#else
+      BookFile[BookNumber] = fopen(file_name,"rb");
+#endif
+      ReadOnlyFile = 1;
+      if (BookFile[BookNumber] == NULL) return -1;
+   }
+   //--------------------------------------------------
+
 
 #ifdef WINCE
    my_Tcl_SetChannelOption(NULL, BookFile[BookNumber], "-encoding", "binary");
@@ -309,7 +323,7 @@ int scid_book_open(const char file_name[], const int BookNumber) {
     BookSize[BookNumber] = ftell(BookFile[BookNumber]) / 16;
 #endif
    if (BookSize[BookNumber] == 0) return -1;
-   return 0; //success
+   return(0+ReadOnlyFile); //success
 }
 
 // =========================================================

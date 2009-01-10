@@ -78,6 +78,7 @@ int polyglot_open(const char * BookFile, const int BookNumber) {
    // opening book
   book_clear(BookNumber);
   res = scid_book_open(BookFile, BookNumber);
+
 	return res;
 }
 /////////////////////////////////////////////////////////////////////
