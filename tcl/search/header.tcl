@@ -177,8 +177,8 @@ proc search::header {} {
     foreach i $sTitleList {
       set name [string toupper $i]
       if {$i == "none"} { set name "-" }
-      checkbutton $w.t$c.b$i -text $name -width 5 -font $regular -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -indicatoron 0 \
-          -state $spellstate -pady 0
+      # checkbutton $w.t$c.b$i -text $name -width 5 -font $regular -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -indicatoron 0 -state $spellstate -pady 0
+      ttk::checkbutton $w.t$c.b$i -text $name -width 5 -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -state $spellstate
       pack $w.t$c.b$i -side left -padx 1
     }
   }
@@ -375,7 +375,7 @@ proc search::header {} {
   ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults ;# -padx 20
   ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save ;# -padx 20
   ttk::button $w.b.stop -textvar ::tr(Stop) -command sc_progressBar
-  ttk::button $w.b.search -textvar ::tr(Search) -command { 
+  ttk::button $w.b.search -textvar ::tr(Search) -command {
     ::utils::history::AddEntry HeaderSearchWhite $sWhite
     ::utils::history::AddEntry HeaderSearchBlack $sBlack
     ::utils::history::AddEntry HeaderSearchEvent $sEvent

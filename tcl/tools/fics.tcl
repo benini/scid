@@ -208,10 +208,10 @@ namespace eval fics {
     # $w.f.top.f1.console tag configure game        -foreground grey70
     # $w.f.top.f1.console tag configure gameresult  -foreground SlateBlue1
     # $w.f.top.f1.console tag configure ficspercent -foreground khaki1
-
-    $w.f.top.f1.console tag configure seeking     -foreground $::fics::colseeking    
-    $w.f.top.f1.console tag configure game        -foreground $::fics::colgame       
-    $w.f.top.f1.console tag configure gameresult  -foreground $::fics::colgameresult 
+    
+    $w.f.top.f1.console tag configure seeking     -foreground $::fics::colseeking
+    $w.f.top.f1.console tag configure game        -foreground $::fics::colgame
+    $w.f.top.f1.console tag configure gameresult  -foreground $::fics::colgameresult
     $w.f.top.f1.console tag configure ficspercent -foreground $::fics::colficspercent
     
     ttk::entry $w.f.top.f2.cmd -width 32
@@ -219,6 +219,8 @@ namespace eval fics {
     bind $w.f.top.f2.cmd <Return> { ::fics::cmd }
     bind $w.f.top.f2.cmd <Up> { ::fics::cmdHistory up ; break }
     bind $w.f.top.f2.cmd <Down> { ::fics::cmdHistory down ; break }
+    bind $w.f.top.f2.cmd <Left> " [bind TEntry <Left>] ; break "
+    bind $w.f.top.f2.cmd <Right> " [bind TEntry <Right>] ; break "
     pack $w.f.top.f2.cmd $w.f.top.f2.send -side left -fill x
     
     # clock 1 is white
@@ -621,6 +623,10 @@ namespace eval fics {
       set m1 ""
       set m2 ""
       set line [string trim $line]
+      
+      # Because some free text may be in the form (".)
+      if {[catch {[llength $line ]} ]} { return }
+      
       if {[llength $line ] == 5 && [scan $line "%d. %s (%d:%d) %s (%d:%d)" t1 m1 t2 t3 m2 t4 t5] != 7} {
         return
       }

@@ -1027,8 +1027,9 @@ proc compactGames {} {
   }
   grab release $w
   destroy $w
-  updateBoard
+  updateBoard -pgn
   ::windows::gamelist::Refresh
+  updateTitle
   ::maint::Refresh
 }
 

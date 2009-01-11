@@ -4,6 +4,9 @@
 |                                                           |
  ===========================================================
 -> deleting "All games" in "Maintaince" + e.g. "Compacting" leaves 0 games in the db. But however the mainwindow title is not updated. So you still see foo (game 1 / 158200) there for example. So exactly the state before deleting/compacting all
+
+5.  Moves in an FICS game get sent either the console/command line or moving the pieces with the mouse.  However, when doing puzzles using puzzlebot "ie tell puzzlebot gm1"  the moves have to be entered with the command line for the server to recieve the moves.
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |

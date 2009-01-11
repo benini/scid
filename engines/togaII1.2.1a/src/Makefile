@@ -19,7 +19,7 @@ clean:
 # general
 
 CXX      = g++
-CXXFLAGS = -pipe
+CXXFLAGS = -pipe -Wall
 LDFLAGS  = -lm
 
 # C++
