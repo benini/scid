@@ -177,7 +177,6 @@ proc search::header {} {
     foreach i $sTitleList {
       set name [string toupper $i]
       if {$i == "none"} { set name "-" }
-      # checkbutton $w.t$c.b$i -text $name -width 5 -font $regular -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -indicatoron 0 -state $spellstate -pady 0
       ttk::checkbutton $w.t$c.b$i -text $name -width 5 -variable sTitles($c:$i) -offvalue 0 -onvalue 1 -state $spellstate
       pack $w.t$c.b$i -side left -padx 1
     }
