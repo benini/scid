@@ -684,3 +684,4 @@ scid-3.6.7
 - added spanish ECO file scid-esp.eco (thanks to Benigno Hernández)
 - newly created bases are appended to the recently opened bases in menu (thanks to Benigno Hernández)
 - "Average Elo" and "average year" could be wrong with large databases. Corrected by using 64 bits integers (thanks to Heinz van Saanen)
+- PGN window : colors for current and next moves are now user configurable

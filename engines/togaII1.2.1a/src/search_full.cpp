@@ -79,7 +79,7 @@ static /* const */ bool UseFutility = true; // false
 static const int FutilityMargin = 100;
 static /* const */ int FutilityMargin1 = 100;
 static /* const */ int FutilityMargin2 = 300;
-static /* const */ int FutilityMargin3 = 950;
+// static /* const */ int FutilityMargin3 = 950;
 
 // quiescence search
 
@@ -415,7 +415,7 @@ static int full_search(board_t * board, int alpha, int beta, int depth, int heig
    int i;
    int opt_value;
    bool reduced;
-   int mb;
+//    int mb;
    attack_t attack[1];
    sort_t sort[1];
    undo_t undo[1];
@@ -945,7 +945,7 @@ static int full_quiescence(board_t * board, int alpha, int beta, int depth, int 
    sort_t sort[1];
    undo_t undo[1];
    mv_t new_pv[HeightMax];
-   int cd;
+//    int cd;
 
    ASSERT(board!=NULL);
    ASSERT(range_is_ok(alpha,beta));

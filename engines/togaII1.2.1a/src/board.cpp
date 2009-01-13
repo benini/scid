@@ -436,7 +436,7 @@ bool board_is_stalemate(board_t * board) {
 
 bool board_is_repetition(const board_t * board) {
 
-   int i, z;
+   int i;
    
    ASSERT(board!=NULL);
 

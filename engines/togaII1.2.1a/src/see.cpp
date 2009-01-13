@@ -34,7 +34,7 @@ static int  see_rec       (alists_t * alists, const board_t * board, int colour,
 static void alist_build   (alist_t * alist, const board_t * board, int to, int colour);
 static void alists_hidden (alists_t * alists, const board_t * board, int from, int to);
 
-static void alist_clear   (alist_t * alist);
+// static void alist_clear   (alist_t * alist);
 static void alist_add     (alist_t * alist, int square, const board_t * board);
 static void alist_remove  (alist_t * alist, int pos);
 static int  alist_pop     (alist_t * alist, const board_t * board);
@@ -324,12 +324,12 @@ static void alists_hidden(alists_t * alists, const board_t * board, int from, in
 
 // alist_clear()
 
-static void alist_clear(alist_t * alist) {
-
-   ASSERT(alist!=NULL);
-
-   alist->size = 0;
-}
+// static void alist_clear(alist_t * alist) {
+// 
+//    ASSERT(alist!=NULL);
+// 
+//    alist->size = 0;
+// }
 
 // alist_add()
 

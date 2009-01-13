@@ -1105,6 +1105,21 @@ namespace eval fics {
     }
   }
   ################################################################################
+  #   returns 1 if the player is allowed to enter a move (either playing or using puzzlebot)
+  ################################################################################
+  proc playerCanMove {} {
+    
+    if { ! [winfo exists .fics] } { return 1 }
+    
+    if { [sc_game info white] == "puzzlebot" && [sc_game info white] == "puzzlebot" } {
+      return 1
+    }
+    
+    if { $::fics::playing == 1 } { return 1 }
+    
+    return 0
+  }
+  ################################################################################
   #
   ################################################################################
   proc close {} {

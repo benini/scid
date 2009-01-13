@@ -20,7 +20,7 @@ static void add_moves               (list_t * list, const board_t * board);
 static void add_captures            (list_t * list, const board_t * board);
 static void add_quiet_moves         (list_t * list, const board_t * board);
 
-static void add_promotes            (list_t * list, const board_t * board);
+// static void add_promotes            (list_t * list, const board_t * board);
 static void add_en_passant_captures (list_t * list, const board_t * board);
 static void add_castle_moves        (list_t * list, const board_t * board);
 
@@ -606,29 +606,29 @@ static void add_quiet_moves(list_t * list, const board_t * board) {
 
 // add_promotes()
 
-static void add_promotes(list_t * list, const board_t * board) {
-
-   int me;
-   int inc;
-   const sq_t * ptr;
-   int from, to;
-
-   ASSERT(list!=NULL);
-   ASSERT(board!=NULL);
-
-   me = board->turn;
-
-   inc = PAWN_MOVE_INC(me);
-
-   for (ptr = &board->pawn[me][0]; (from=*ptr) != SquareNone; ptr++) {
-      if (PAWN_RANK(from,me) == Rank7) {
-         to = from + inc;
-         if (board->square[to] == Empty) {
-            add_promote(list,MOVE_MAKE(from,to));
-         }
-      }
-   }
-}
+// static void add_promotes(list_t * list, const board_t * board) {
+// 
+//    int me;
+//    int inc;
+//    const sq_t * ptr;
+//    int from, to;
+// 
+//    ASSERT(list!=NULL);
+//    ASSERT(board!=NULL);
+// 
+//    me = board->turn;
+// 
+//    inc = PAWN_MOVE_INC(me);
+// 
+//    for (ptr = &board->pawn[me][0]; (from=*ptr) != SquareNone; ptr++) {
+//       if (PAWN_RANK(from,me) == Rank7) {
+//          to = from + inc;
+//          if (board->square[to] == Empty) {
+//             add_promote(list,MOVE_MAKE(from,to));
+//          }
+//       }
+//    }
+// }
 
 // add_en_passant_captures()
 

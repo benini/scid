@@ -87,7 +87,7 @@ static uint16 HistTot[HistorySize];
 
 // prototypes
 
-static void note_captures     (list_t * list, const board_t * board);
+// static void note_captures     (list_t * list, const board_t * board);
 static void note_quiet_moves  (list_t * list, const board_t * board);
 static void note_moves_simple (list_t * list, const board_t * board);
 static void note_mvv_lva      (list_t * list, const board_t * board);
@@ -673,23 +673,23 @@ void note_moves(list_t * list, const board_t * board, int height, int trans_kill
 
 // note_captures()
 
-static void note_captures(list_t * list, const board_t * board) {
-
-   int size;
-   int i, move;
-
-   ASSERT(list_is_ok(list));
-   ASSERT(board!=NULL);
-
-   size = LIST_SIZE(list);
-
-   if (size >= 2) {
-      for (i = 0; i < size; i++) {
-         move = LIST_MOVE(list,i);
-         list->value[i] = capture_value(move,board);
-      }
-   }
-}
+// static void note_captures(list_t * list, const board_t * board) {
+// 
+//    int size;
+//    int i, move;
+// 
+//    ASSERT(list_is_ok(list));
+//    ASSERT(board!=NULL);
+// 
+//    size = LIST_SIZE(list);
+// 
+//    if (size >= 2) {
+//       for (i = 0; i < size; i++) {
+//          move = LIST_MOVE(list,i);
+//          list->value[i] = capture_value(move,board);
+//       }
+//    }
+// }
 
 // note_quiet_moves()
 

@@ -754,7 +754,7 @@ proc setTitle { w title } {
 ################################################################################
 proc createToplevel { w } {
   set name [string range $w 1 end]
-  
+   
   if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
     
     set f .fdock$name

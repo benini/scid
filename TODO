@@ -4,8 +4,6 @@
 |                                                           |
  ===========================================================
 
-5.  Moves in an FICS game get sent either the console/command line or moving the pieces with the mouse.  However, when doing puzzles using puzzlebot "ie tell puzzlebot gm1"  the moves have to be entered with the command line for the server to recieve the moves.
-
  ===========================================================
 |                                                           |
 |                          BUGS                             |

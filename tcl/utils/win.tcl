@@ -827,7 +827,7 @@ proc ::docking::ctx_menu {w} {
   # Main board can not be closed or undocked
   if { [$w select] != ".fdockmain" } {
     $mctxt add command -label [ ::tr Undock ] -command "::docking::undock $w"
-    $mctxt add command -label [ ::tr Close ] -command " ::docking::close $w "
+    $mctxt add command -label [ ::tr Close ] -command " ::docking::close $w"
   } else {
     $mctxt add checkbutton -label [::tr "showGameInfo"] -variable ::showGameInfo -command ::toggleGameInfo
     $mctxt add checkbutton -label [::tr "autoResizeBoard"] -variable ::autoResizeBoard -command ::docking::toggleAutoResizeBoard

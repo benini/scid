@@ -34,7 +34,7 @@ proc moveEntry_Clear {} {
 proc moveEntry_Complete {} {
   global moveEntry
   
-  if { [winfo exists .fics] && $::fics::playing == -1} { ;# not player's turn
+  if { ! [::fics::playerCanMove] } { ;# not player's turn
     moveEntry_Clear
     return
   }
@@ -71,7 +71,7 @@ proc moveEntry_Complete {} {
       set promoletter [ string tolower [ string index $moveuci end ] ]
     }
     if { [winfo exists .fics] } {
-      if { $::fics::playing == 1} {
+      if { [::fics::playerCanMove] } {
         if { $promoletter != "" } {
           ::fics::writechan "promote $promoLetter"
         }
@@ -1058,7 +1058,7 @@ proc addNullMove {} {
 #   If the optional parameter is "-animate", the move will be animated.
 #
 proc addMove { sq1 sq2 {animate ""}} {
-  if { $::fics::playing == -1} { return } ;# not player's turn
+  if { ! [::fics::playerCanMove] } { return } ;# not player's turn
   
   global EMPTY
   set nullmove 0
@@ -1120,7 +1120,7 @@ proc addMove { sq1 sq2 {animate ""}} {
   
   if {[winfo exists .fics]} {
     
-    if { $::fics::playing == 1} {
+    if { [::fics::playerCanMove] } {
       if { $promo != $EMPTY } {
         ::fics::writechan "promote $promoLetter"
       }
@@ -1216,7 +1216,7 @@ proc leaveSquare { square } {
 proc pressSquare { square } {
   global selectedSq highcolor
   
-  if { [winfo exists .fics] && $::fics::playing == -1} { return } ;# not player's turn
+  if { ![::fics::playerCanMove] } { return } ;# not player's turn
   
   # if training with calculations of var is on, just log the event
   if { [winfo exists .calvarWin] } {

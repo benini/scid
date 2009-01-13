@@ -7,8 +7,7 @@ namespace eval pgn {
   ################################################################################
   proc ChooseColor {type name} {
     global pgnColor
-    set x [tk_chooseColor -initialcolor $pgnColor($type) \
-        -title "PGN $name color"]
+    set x [tk_chooseColor -initialcolor $pgnColor($type) -title "PGN $name color"]
     if {$x != ""} { set pgnColor($type) $x; ::pgn::ResetColors }
   }
   ################################################################################
@@ -29,7 +28,7 @@ namespace eval pgn {
     } {
       configMenuText $m.opt $idx PgnOpt$tag $lang
     }
-    foreach idx {0 1 2 3 4} tag {Header Anno Comments Vars Background} {
+    foreach idx {0 1 2 3 4 5 6} tag {Header Anno Comments Vars Background Current NextMove } {
       configMenuText $m.color $idx PgnColor$tag $lang
     }
     foreach idx {0 1} tag {Pgn Index} {
@@ -142,6 +141,8 @@ namespace eval pgn {
         -command {::pgn::ChooseColor Var variation}
     $w.menu.color add command -label PgnColorBackground \
         -command {::pgn::ChooseColor Background background}
+    $w.menu.color add command -label PgnColorCurrent -command {::pgn::ChooseColor Current current}
+    $w.menu.color add command -label PgnColorNextmove -command {::pgn::ChooseColor NextMove nextmove}
     
     $w.menu.helpmenu add command -label PgnHelpPgn \
         -accelerator F1 -command {helpWindow PGN}

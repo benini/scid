@@ -66,7 +66,7 @@ static int       trans_age      (const trans_t * trans, int date);
 
 static entry_t * trans_entry    (trans_t * trans, uint64 key);
 
-static bool      entry_is_ok    (const entry_t * entry);
+// static bool      entry_is_ok    (const entry_t * entry);
 
 // functions
 
@@ -180,7 +180,7 @@ void trans_clear(trans_t * trans) {
    clear_entry->min_value = -ValueInf;
    clear_entry->max_value = +ValueInf;
 
-   ASSERT(entry_is_ok(clear_entry));
+//    ASSERT(entry_is_ok(clear_entry));
 
    entry = trans->table;
 
@@ -294,7 +294,7 @@ void trans_store(trans_t * trans, uint64 key, int move, int depth, int min_value
             entry->max_value = max_value;
          }
 
-         ASSERT(entry_is_ok(entry));
+//          ASSERT(entry_is_ok(entry));
 
          return;
       }
@@ -339,7 +339,7 @@ void trans_store(trans_t * trans, uint64 key, int move, int depth, int min_value
    entry->min_value = min_value;
    entry->max_value = max_value;
 
-   ASSERT(entry_is_ok(entry));
+//    ASSERT(entry_is_ok(entry));
 }
 
 // trans_retrieve()
@@ -426,23 +426,23 @@ static entry_t * trans_entry(trans_t * trans, uint64 key) {
 
 // entry_is_ok()
 
-static bool entry_is_ok(const entry_t * entry) {
-
-   if (entry == NULL) return false;
-
-   if (entry->date >= DateSize) return false;
-
-   if (entry->move == MoveNone && entry->move_depth != DepthNone) return false;
-   if (entry->move != MoveNone && entry->move_depth == DepthNone) return false;
-
-   if (entry->min_value == -ValueInf && entry->min_depth != DepthNone) return false;
-   if (entry->min_value >  -ValueInf && entry->min_depth == DepthNone) return false;
-
-   if (entry->max_value == +ValueInf && entry->max_depth != DepthNone) return false;
-   if (entry->max_value <  +ValueInf && entry->max_depth == DepthNone) return false;
-
-   return true;
-}
+// static bool entry_is_ok(const entry_t * entry) {
+// 
+//    if (entry == NULL) return false;
+// 
+//    if (entry->date >= DateSize) return false;
+// 
+//    if (entry->move == MoveNone && entry->move_depth != DepthNone) return false;
+//    if (entry->move != MoveNone && entry->move_depth == DepthNone) return false;
+// 
+//    if (entry->min_value == -ValueInf && entry->min_depth != DepthNone) return false;
+//    if (entry->min_value >  -ValueInf && entry->min_depth == DepthNone) return false;
+// 
+//    if (entry->max_value == +ValueInf && entry->max_depth != DepthNone) return false;
+//    if (entry->max_value <  +ValueInf && entry->max_depth == DepthNone) return false;
+// 
+//    return true;
+// }
 
 // end of trans.cpp
 
