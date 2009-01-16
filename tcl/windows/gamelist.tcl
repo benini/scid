@@ -112,13 +112,12 @@ proc ::windows::gamelist::ReOpen {} {
     bind $w.columns.c$code.header <ButtonPress-1> "popupGLconfig $code %x %y %X %Y"
     bind $w.columns.c$code.header <ButtonPress-$::MB3> "popupGLconfig $code %x %y %X %Y"
     
-    pack $w.columns.c$code -side left -expand yes -fill both -padx 0 ;# -in $w.columns
+    pack $w.columns.c$code -side left -expand yes -fill both -padx 0
     
     pack $w.columns.c$code.header -side top -fill x -padx 2
     addHorizontalRule $w.columns.c$code 1 flat
     # -height $glistSize
-    text $w.columns.c$code.text -background white -width $width -height 999 -font font_Small -relief flat \
-        -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
+    text $w.columns.c$code.text -background white -width $width -height 99 -font font_Small -relief flat -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
     $w.columns.c$code.text tag configure align -justify $justify -foreground $fgcolor
     $w.columns.c$code.text tag configure highlight -background lightBlue
     $w.columns.c$code.text tag configure current -background lightYellow2
@@ -261,8 +260,8 @@ proc ::windows::gamelist::ReOpen {} {
   wm iconname $w "Scid: [tr WindowsGList]"
   ::windows::gamelist::Refresh
   focus $w.b.goto
-    setWinLocation $w
-    setWinSize $w
+  setWinLocation $w
+  setWinSize $w
 }
 
 # Binding to reset glistSize when the window is resized:
@@ -286,8 +285,15 @@ proc ::windows::gamelist::Resize {} {
   if {$idx != -1} {
     set temp [string range $temp 0 [expr {$idx - 1}]]
   }
+  
+  # setgrid option does not work in docked mode, so the last line may be partially visible
+  if { $::docking::USE_DOCKING } {
+      catch { incr temp -1 }
+  }
+  
   if {$temp != $glistSize && $temp > 0} {
     set glistSize $temp
+    set t $w.columns.cg.text
     # if { $::docking::USE_DOCKING } {
     # foreach i $glistFields {
     # set code [lindex $i 0]
@@ -312,7 +318,7 @@ proc ::windows::gamelist::Open {} {
   set w .glistWin
   
   ::createToplevel $w
-   
+  
   # Window is only directly resizable vertically:
   wm resizable $w false true
   

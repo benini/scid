@@ -306,8 +306,9 @@ namespace eval fics {
     }
     
     updateConsole "Socket opening"
+    
     if { [catch { set sockchan [socket $server $port] } ] } {
-      tk_messageBox -title "Error" -icon error -type ok -message "Network error\nCan't connect to $::fics::server $port" -parent .fics
+      tk_messageBox -title "Error" -icon error -type ok -message "Network error\nCan't connect to $server $port" -parent .fics
       return
     }
     
@@ -623,9 +624,12 @@ namespace eval fics {
       set m1 ""
       set m2 ""
       set line [string trim $line]
-      
+            
       # Because some free text may be in the form (".)
-      if {[catch {[llength $line ]} ]} { return }
+      if {[catch {llength $line} err]} {
+        puts "Exception $err llength $line"
+        return
+      }
       
       if {[llength $line ] == 5 && [scan $line "%d. %s (%d:%d) %s (%d:%d)" t1 m1 t2 t3 m2 t4 t5] != 7} {
         return

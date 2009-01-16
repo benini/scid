@@ -36,8 +36,6 @@
 
 - book generation from Scid (re-use of Polyglot code)
 
-- Highlight exact position of errors in PGN import window
-
 ======================================================================================================================
 From: Michal Rudolf <mrudolf@kdewebdev.org>
 Subject: Re: Scid bugs
@@ -62,13 +60,9 @@ GAME LIST
 * fea: highlight current game in game list by default
 * fea: mark that there are no matches instead of showing 1st game
 
-CROSSTABLE
-* fea: support larger swiss tournaments (such as Olympiad)
-
 PGN WINDOW
 * cmd: print game
 * ide: better PGN display (figurine font?)
-* opt: display 'strict' PGN
 * opt: strip spaces after/before brackets for variations in PGN window
 
 SEARCH HEADER
@@ -80,10 +74,6 @@ SEARCH MATERIAL
 * fea: find certain moves, specially captures (f. e. BxPe6 or RxNc3)
 * fea: 'any white(black) piece' in patterns
 * usa: Material Search window (use tabs)
-
-DATABASE
-* ide: datasets (you define current filter to be current database subset)
-* usa: improve Maintenance usability
 
 TREE
 * opt: configurable number of moves for best game
@@ -99,4 +89,3 @@ SPELLCHECKER
 
 INTERNAL GAME HANDLING 
 * fea: in non-strict PGN view, convert all $ NAGs to symbols/words
-* ide: datasets (allowing to work on current filter as on the whole database)
