@@ -579,11 +579,11 @@ namespace eval fics {
           tk_messageBox -title "Game result" -icon info -type ok -message "$res"
         }
         sc_game tags set -result $res
-        updateBoard -pgn
         set ::fics::playing 0
         set ::fics::observedGame -1
         ::gameclock::stop 1
         ::gameclock::stop 2
+        updateBoard -pgn
       }
       return
     }
@@ -624,7 +624,7 @@ namespace eval fics {
       set m1 ""
       set m2 ""
       set line [string trim $line]
-            
+      
       # Because some free text may be in the form (".)
       if {[catch {llength $line} err]} {
         puts "Exception $err llength $line"
