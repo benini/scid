@@ -3,6 +3,8 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+wm geometry vs winfo geometry
+modifs : l 1222 de end.tcl et l 978 de win.tcl
 
  ===========================================================
 |                                                           |

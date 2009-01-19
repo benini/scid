@@ -976,7 +976,14 @@ proc ::docking::layout_save { slot } {
     return
   }
   
-  set ::docking::layout_list($slot) [list [list "MainWindowGeometry" [wm geometry .]] ]
+  # on Windows the geometry is false if the window was maximized (x and y offsets are the ones before the maximization)
+  set geometry [wm geometry .]
+  if {[wm state .] == "zoomed"} {
+    if { [scan $geometry "%dx%d+%d+%d" w h x y] == 4 } {
+      set geometry "${w}x${h}+0+0"
+    }
+  }
+  set ::docking::layout_list($slot) [list [list "MainWindowGeometry" $geometry] ]
   lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
 }
 ################################################################################
@@ -1130,6 +1137,7 @@ proc ::docking::layout_restore { slot } {
   setTabStatus
   
   bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
+  
 }
 ################################################################################
 # for every notebook, keeps track of the last selected tab to see if the local menu can be popped up or not

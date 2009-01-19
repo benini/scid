@@ -1220,7 +1220,7 @@ proc gameReplace {} { gameSave [sc_game number] }
 #    Displays information about Scid.
 #
 proc helpAbout {} {
-  set str {}
+set str {}
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
@@ -1782,7 +1782,6 @@ proc getTopLevel {} {
 #   Should be called type = "iconify" or "deiconify"
 #
 proc showHideAllWindows {type} {
-  puts "+++showHideAllWindows $type"
   
   # Don't do this if user option is off:
   if {! $::autoIconify} { return }

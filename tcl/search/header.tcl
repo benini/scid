@@ -346,14 +346,17 @@ proc search::header {} {
     set lab [ttk::label $w.flags.l$var -textvar ::tr($var) -font font_Small]
     grid $lab -row $row -column $col -sticky e
     incr col
-    grid [radiobutton $w.flags.yes$var -variable sHeaderFlags($var) -ind 0 -value yes -text $::tr(Yes) -padx 2 -pady 0 -font font_Small] \
-        -row $row -column $col
+    # grid [radiobutton $w.flags.yes$var -variable sHeaderFlags($var) -ind 0 -value yes -text $::tr(Yes) -padx 2 -pady 0 -font font_Small] \
+    # -row $row -column $col
+    grid [ttk::radiobutton $w.flags.yes$var -variable sHeaderFlags($var) -value yes -text $::tr(Yes)] -row $row -column $col
     incr col
-    grid [radiobutton $w.flags.no$var -variable sHeaderFlags($var) -ind 0 -value no -text $::tr(No) -padx 2 -pady 0 -font font_Small] \
-        -row $row -column $col
+    # grid [radiobutton $w.flags.no$var -variable sHeaderFlags($var) -ind 0 -value no -text $::tr(No) -padx 2 -pady 0 -font font_Small] \
+    # -row $row -column $col
+    grid [ttk::radiobutton $w.flags.no$var -variable sHeaderFlags($var) -value no -text $::tr(No)] -row $row -column $col
     incr col
-    grid [radiobutton $w.flags.both$var -variable sHeaderFlags($var) -ind 0 -value both -text $::tr(Both) -padx 2 -pady 0 -font font_Small] \
-        -row $row -column $col
+    # grid [radiobutton $w.flags.both$var -variable sHeaderFlags($var) -ind 0 -value both -text $::tr(Both) -padx 2 -pady 0 -font font_Small] \
+    # -row $row -column $col
+    grid [ttk::radiobutton $w.flags.both$var -variable sHeaderFlags($var) -value both -text $::tr(Both)] -row $row -column $col
     incr count
     incr col -3
     incr row
