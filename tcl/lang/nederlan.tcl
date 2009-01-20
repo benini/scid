@@ -1643,6 +1643,52 @@ translate N KingsIndian {Koningsindisch}
 translate N KingsIndianSamisch {Koningsindisch Sämisch}
 
 translate N KingsIndianMainLine {Koningsindisch Hoofdvariant}
+# ====== TODO To be translated ======
+translate N ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate N FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate N FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate N FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate N FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate N FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate N FICSGames {Games}
+# ====== TODO To be translated ======
+translate N FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate N FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate N FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate N FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate N FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate N FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate N FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate N FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate N FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate N FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate N FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate N FICSAccept {accept}
+# ====== TODO To be translated ======
+translate N FICSDecline {decline}
+# ====== TODO To be translated ======
+translate N FICSColour {Colour}
+# ====== TODO To be translated ======
+translate N FICSSend {send}
+# ====== TODO To be translated ======
+translate N FICSConnect {Connect}
 translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
 translate N CCDlgDefaultDB {Default Databank:}
@@ -1719,6 +1765,10 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
+
+
+
 
 
 

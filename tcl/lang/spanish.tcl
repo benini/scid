@@ -1504,6 +1504,52 @@ translate S NimzoIndianRubinstein {Variante Rubinstein de la Nimzo-India}
 translate S KingsIndian {India de Rey}
 translate S KingsIndianSamisch {Ataque Sämish de la India de Rey}
 translate S KingsIndianMainLine {Linea Principal India de Rey}
+# ====== TODO To be translated ======
+translate S ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate S FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate S FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate S FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate S FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate S FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate S FICSGames {Games}
+# ====== TODO To be translated ======
+translate S FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate S FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate S FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate S FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate S FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate S FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate S FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate S FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate S FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate S FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate S FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate S FICSAccept {accept}
+# ====== TODO To be translated ======
+translate S FICSDecline {decline}
+# ====== TODO To be translated ======
+translate S FICSColour {Colour}
+# ====== TODO To be translated ======
+translate S FICSSend {send}
+# ====== TODO To be translated ======
+translate S FICSConnect {Connect}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1577,6 +1623,10 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
+
+
+
 
 
 

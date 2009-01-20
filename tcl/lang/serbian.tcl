@@ -1838,6 +1838,52 @@ translate Y KingsIndianSamisch {King's Indian Sämisch}
 # ====== TODO To be translated ======
 translate Y KingsIndianMainLine {King's Indian Main Line}
 # ====== TODO To be translated ======
+translate Y ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate Y FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate Y FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate Y FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate Y FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate Y FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate Y FICSGames {Games}
+# ====== TODO To be translated ======
+translate Y FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate Y FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate Y FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate Y FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate Y FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate Y FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate Y FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate Y FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate Y FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate Y FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate Y FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate Y FICSAccept {accept}
+# ====== TODO To be translated ======
+translate Y FICSDecline {decline}
+# ====== TODO To be translated ======
+translate Y FICSColour {Colour}
+# ====== TODO To be translated ======
+translate Y FICSSend {send}
+# ====== TODO To be translated ======
+translate Y FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate Y CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate Y CCDlgCGeneraloptions {General Options}
@@ -1978,6 +2024,10 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
+
+
 
 
 

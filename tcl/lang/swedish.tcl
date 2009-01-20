@@ -1841,6 +1841,52 @@ translate W KingsIndianSamisch {Kungsindiskt Sämisch}
 # ====== TODO To be translated ======
 translate W KingsIndianMainLine {Kungsindiskt Huvudvariation}
 # ====== TODO To be translated ======
+translate W ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate W FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate W FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate W FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate W FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate W FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate W FICSGames {Games}
+# ====== TODO To be translated ======
+translate W FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate W FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate W FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate W FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate W FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate W FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate W FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate W FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate W FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate W FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate W FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate W FICSAccept {accept}
+# ====== TODO To be translated ======
+translate W FICSDecline {decline}
+# ====== TODO To be translated ======
+translate W FICSColour {Colour}
+# ====== TODO To be translated ======
+translate W FICSSend {send}
+# ====== TODO To be translated ======
+translate W FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
 translate W CCDlgCGeneraloptions {Generella inställningar}
@@ -6995,6 +7041,10 @@ set tips(W) {
   }
 }
 #}
+
+
+
+
 
 
 

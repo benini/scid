@@ -201,7 +201,7 @@ menuText E ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 menuText E ToolsTrainTactics "Tactics"  0 {Solve tactics}
 menuText E ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 menuText E ToolsTrainFindBestMove "Find best move"  0 {Find best move}
-menuText E ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
+menuText E ToolsTrainFics "Play on FICS"  0 {Play on freechess.org}
 menuText E ToolsBookTuning "Book tuning" 0 {Book tuning}
 menuText E ToolsConnectHardware "Connect Hardware" 8 {Connect external hardware}
 menuText E ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
@@ -1532,6 +1532,31 @@ translate E NimzoIndianRubinstein {Nimzo-Indian Rubinstein}
 translate E KingsIndian {King's Indian}
 translate E KingsIndianSamisch {King's Indian Sämisch}
 translate E KingsIndianMainLine {King's Indian Main Line}
+
+# FICS
+translate E ConfigureFics {Configure FICS}
+translate E FICSGuest {Login as Guest}
+translate E FICSServerPort {Server port}
+translate E FICSTimesealPort {Timeseal port}
+translate E FICSSilence {Console filter}
+translate E FICSOffers {Offers}
+translate E FICSGames {Games}
+translate E FICSFindOpponent {Find opponent}
+translate E FICSTakeback {Takeback}
+translate E FICSTakeback2 {Takeback 2}
+translate E FICSInitTime {Initial time (min)}
+translate E FICSIncrement {Increment (sec)}
+translate E FICSRatedGame {Rated Game}
+translate E FICSAutoColour {automatic}
+translate E FICSManualConfirm {confirm manually}
+translate E FICSFilterFormula {Filter with formula}
+translate E FICSIssueSeek {Issue seek}
+translate E FICSChallenge {Callenge}
+translate E FICSAccept {accept}
+translate E FICSDecline {decline}
+translate E FICSColour {Colour}
+translate E FICSSend {send}
+translate E FICSConnect {Connect}
 
 # Correspondence Chess Dialogs:
 translate E CCDlgConfigureWindowTitle {Configure Correspondence Chess}

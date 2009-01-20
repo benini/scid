@@ -1833,6 +1833,52 @@ translate H KingsIndianSamisch {King's Indian Sämisch}
 # ====== TODO To be translated ======
 translate H KingsIndianMainLine {King's Indian Main Line}
 # ====== TODO To be translated ======
+translate H ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate H FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate H FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate H FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate H FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate H FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate H FICSGames {Games}
+# ====== TODO To be translated ======
+translate H FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate H FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate H FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate H FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate H FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate H FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate H FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate H FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate H FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate H FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate H FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate H FICSAccept {accept}
+# ====== TODO To be translated ======
+translate H FICSDecline {decline}
+# ====== TODO To be translated ======
+translate H FICSColour {Colour}
+# ====== TODO To be translated ======
+translate H FICSSend {send}
+# ====== TODO To be translated ======
+translate H FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate H CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate H CCDlgCGeneraloptions {General Options}
@@ -2204,6 +2250,10 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
+
+
 
 
 

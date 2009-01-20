@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.11 2009/01/10 12:40:01 arwagner Exp $
-###    Last change: <Sat, 2009/01/10 13:35:42 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.12 2009/01/20 20:12:02 arwagner Exp $
+###    Last change: <Sat, 2009/01/17 19:32:56 arwagner ingata>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -383,12 +383,15 @@ namespace eval inputengine {
        ::inputengine::disconnect
        return
     }
-    ### toplevel $w
-    ::createToplevel $w
-    recordWinSize $w
+    if {$::tcl_version >= 8.5} {
+       ::createToplevel $w
+      ::setTitle $w [::tr IEConsole]
+    } else {
+       toplevel $w
+       wm title $w [::tr IEConsole]
+    }
 
-    ### wm title $w [::tr IEConsole]
-    ::setTitle $w [::tr IEConsole]
+    recordWinSize $w
 
     scrollbar $w.ysc     -command { .inputengineconsole.console yview }
     text      $w.console -height 5  -width 80 -wrap word -yscrollcommand "$w.ysc set"

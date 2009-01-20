@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.39 2009/01/10 13:35:50 arwagner Exp $
+### $Id: correspondence.tcl,v 1.40 2009/01/20 20:12:02 arwagner Exp $
 ###
-### Last change: <Sat, 2009/01/10 14:34:49 arwagner ingata>
+### Last change: <Tue, 2009/01/20 14:09:05 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -239,12 +239,12 @@ namespace eval Xfcc {
 		entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
 		entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
 
-		eval tk_optionMenu .configXfccSrv.xfccrtype ::Xfcc::Rating [sc_info ratings]
-		.configXfccSrv.xfccrtype configure -indicatoron 0 -width 7 -takefocus 1
-
-		# Tcl/Tk 8.5:
-		## ttk::combobox .configXfccSrv.xfccrtype -values [sc_info ratings] -width 7 -textvariable ::Xfcc::Rating
-
+		if {$::tcl_version >= 8.5} {
+			ttk::combobox .configXfccSrv.xfccrtype -values [sc_info ratings] -width 7 -textvariable ::Xfcc::Rating
+		} else {
+			eval tk_optionMenu .configXfccSrv.xfccrtype ::Xfcc::Rating [sc_info ratings]
+			.configXfccSrv.xfccrtype configure -indicatoron 0 -width 7 -takefocus 1
+		}
 
 		# Bind the change of selection to a proper update of variables and internal representatio
 		bind .configXfccSrv.xfccSrvList <<ListboxSelect>> {
@@ -1314,6 +1314,7 @@ namespace eval CorrespondenceChess {
 	# Check for In-/Outbox directories and create them if not avaiable
 	#----------------------------------------------------------------------
 	proc checkInOutbox {} {
+		global windowsOS
 		global scidDataDir ::CorrespondenceChess::Inbox ::CorrespondenceChess::Outbox
 
 		if {[file exists $Inbox]} {
@@ -1514,12 +1515,13 @@ namespace eval CorrespondenceChess {
 		}
 		set ::CorrespondenceChess::isOpen 1
 
-		### toplevel $w
-		::createToplevel $w
-		### wm title $w [::tr "CorrespondenceChess"]
-		::setTitle $w [::tr "CorrespondenceChess"]
-		# the window is not resizable
-		#wm resizable $w 0 0
+		if {$::tcl_version >= 8.5} {
+			::createToplevel $w
+			::setTitle $w [::tr "CorrespondenceChess"]
+		} else {
+			toplevel $w
+			wm title $w [::tr "CorrespondenceChess"]
+		}
 
 		# hook up with scids geometry manager
 		setWinLocation $w
@@ -2158,9 +2160,9 @@ namespace eval CorrespondenceChess {
 		if {$windowsOS} {
 			# On Windows, use the "start" command:
 			if {[string match $::tcl_platform(os) "Windows NT"]} {
-				catch {exec $::env(COMSPEC) /c start "$callstring"}
+				catch {exec $::env(COMSPEC) /c start "$callstring" &}
 			} else {
-				catch {exec start "$callstring"}
+				catch {exec start "$callstring" &}
 			}
 		} else {
 			# On Unix just call the shell with the converter tool
@@ -2801,6 +2803,7 @@ namespace eval CorrespondenceChess {
 			::CorrespondenceChess::attache ::CorrespondenceChess::subject \
 			::CorrespondenceChess::bccaddr ::CorrespondenceChess::CorrSlot
 		global emailData
+		global windowsOS
 
 		busyCursor .
 
@@ -2880,16 +2883,20 @@ namespace eval CorrespondenceChess {
 			#            a parameter for attachements
 			switch -regexp -- $::CorrespondenceChess::mailermode \
 			"mailx" {
-				set callstring "$mailer $subject \"$title\" -b $bccaddr $attache $pgnfile $to <$pgnfile &"
+				set callstring "\"$mailer\" $subject \"$title\" -b \"$bccaddr\" $attache \"$pgnfile\" \"$to\" <\"$pgnfile\" &"
 			} \
 			"mozilla" {
-				set callstring "$mailer -compose 'subject=$title,bcc=$bccaddr,attachment=file://$pgnfile,to=$to,body=$body' &"
+				if {$windowsOS} {
+					set callstring "\"$mailer\" -compose subject='$title',bcc='$bccaddr',attachment='file:///$pgnfile',to='$to',body='$body' &"
+				} else {
+					set callstring "\"$mailer\" -compose subject='$title',bcc='$bccaddr',attachment='file://$pgnfile',to='$to',body='$body' &"
+				}
 			} \
 			"mailurl" {
-				set callstring "$mailer \'mailto:\<$to\>?bcc=$bccaddr\&subject=$title\&attach=$pgnfile\&body=$body\' &"
+				set callstring "\"$mailer\" \'mailto:\<$to\>?bcc=$bccaddr\&subject=$title\&attach=$pgnfile\&body=$body\' &"
 			} \
 			"claws" {
-				set callstring "$mailer --compose \'mailto:$to?subject=$title&cc=$bccaddr&body=$body\' --attach $pgnfile &"
+				set callstring "\"$mailer\" --compose \'mailto:$to?subject=$title&cc=$bccaddr&body=$body\' --attach \"$pgnfile\" &"
 			}
 			::CorrespondenceChess::updateConsole "info Calling eMail program: $mailer..."
 			CallExternal $callstring
@@ -2963,7 +2970,7 @@ namespace eval CorrespondenceChess {
 			# yellow while sending in progress,
 			# green if the move was sent in the
 			# current session (ie. without update)
-			.ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
+			####---#### .ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background yellow -font font_Bold
 
 			# If Event = "Email correspondence game"

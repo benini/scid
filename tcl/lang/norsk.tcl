@@ -1834,6 +1834,52 @@ translate O KingsIndianSamisch {King's Indian Sämisch}
 # ====== TODO To be translated ======
 translate O KingsIndianMainLine {King's Indian Main Line}
 # ====== TODO To be translated ======
+translate O ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate O FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate O FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate O FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate O FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate O FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate O FICSGames {Games}
+# ====== TODO To be translated ======
+translate O FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate O FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate O FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate O FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate O FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate O FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate O FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate O FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate O FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate O FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate O FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate O FICSAccept {accept}
+# ====== TODO To be translated ======
+translate O FICSDecline {decline}
+# ====== TODO To be translated ======
+translate O FICSColour {Colour}
+# ====== TODO To be translated ======
+translate O FICSSend {send}
+# ====== TODO To be translated ======
+translate O FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate O CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate O CCDlgCGeneraloptions {General Options}
@@ -1978,6 +2024,10 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
+
+
+
 
 
 

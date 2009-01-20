@@ -1867,6 +1867,52 @@ translate R KingsIndianSamisch {King's Indian S?misch}
 # ====== TODO To be translated ======
 translate R KingsIndianMainLine {King's Indian Main Line}
 # ====== TODO To be translated ======
+translate R ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate R FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate R FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate R FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate R FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate R FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate R FICSGames {Games}
+# ====== TODO To be translated ======
+translate R FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate R FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate R FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate R FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate R FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate R FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate R FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate R FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate R FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate R FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate R FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate R FICSAccept {accept}
+# ====== TODO To be translated ======
+translate R FICSDecline {decline}
+# ====== TODO To be translated ======
+translate R FICSColour {Colour}
+# ====== TODO To be translated ======
+translate R FICSSend {send}
+# ====== TODO To be translated ======
+translate R FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate R CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate R CCDlgCGeneraloptions {General Options}
@@ -2007,6 +2053,10 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
+
+
 
 
 

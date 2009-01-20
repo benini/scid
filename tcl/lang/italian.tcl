@@ -1557,6 +1557,52 @@ translate I NimzoIndianRubinstein {Nimzo-Indian Rubinstein}
 translate I KingsIndian {Indiana di Re}
 translate I KingsIndianSamisch {Indiana di Re Samisch}
 translate I KingsIndianMainLine {Indiana di Re Liena Principale}
+# ====== TODO To be translated ======
+translate I ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate I FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate I FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate I FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate I FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate I FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate I FICSGames {Games}
+# ====== TODO To be translated ======
+translate I FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate I FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate I FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate I FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate I FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate I FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate I FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate I FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate I FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate I FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate I FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate I FICSAccept {accept}
+# ====== TODO To be translated ======
+translate I FICSDecline {decline}
+# ====== TODO To be translated ======
+translate I FICSColour {Colour}
+# ====== TODO To be translated ======
+translate I FICSSend {send}
+# ====== TODO To be translated ======
+translate I FICSConnect {Connect}
 translate I CCDlgConfigureWindowTitle {Configura Scacchi per Corrispondenza}
 translate I CCDlgCGeneraloptions {Opzioni generali}
 translate I CCDlgDefaultDB {Database di Default:}
@@ -1895,6 +1941,10 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
+
+
 
 
 

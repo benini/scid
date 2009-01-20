@@ -50,22 +50,22 @@ namespace eval fics {
     set logged 0
     
     toplevel $w
-    ::setTitle $w "ConfigureFics"
+    ::setTitle $w [::tr "ConfigureFics"]
     pack [ttk::frame $w.f]
     
-    ttk::label $w.f.lLogin -text "login:"
+    ttk::label $w.f.lLogin -text [::tr "CCDlgLoginName"]
     ttk::entry $w.f.login -width 20 -textvariable ::fics::login
-    ttk::label $w.f.lPwd -text "password:"
+    ttk::label $w.f.lPwd -text [::tr "CCDlgPassword"]
     ttk::entry $w.f.passwd -width 20 -textvariable ::fics::password
-    ttk::button $w.f.connect -text Connect -state disabled -command {
+    ttk::button $w.f.connect -text [::tr "FICSConnect"] -state disabled -command {
       ::fics::connect [.ficsConfig.f.login get] [.ficsConfig.f.passwd get]
       destroy .ficsConfig
     }
-    ttk::button $w.f.guest -text "Login as guest" -state disabled -command {
+    ttk::button $w.f.guest -text [::tr FICSGuest] -state disabled -command {
       ::fics::connect "guest" ""
       destroy .ficsConfig
     }
-    ttk::button $w.f.cancel -text Cancel -command { destroy .ficsConfig }
+    ttk::button $w.f.cancel -text [::tr "Cancel"] -command { destroy .ficsConfig }
     
     set row 0
     grid $w.f.lLogin -column 0 -row $row
@@ -89,9 +89,9 @@ namespace eval fics {
     grid $w.f.eExec -column 0 -row $row -columnspan 2
     grid $w.f.bExec -column 2 -row $row -sticky w
     incr row
-    ttk::label $w.f.lFICS_port -text "Server port"
+    ttk::label $w.f.lFICS_port -text [::tr "FICSServerPort"]
     ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
-    ttk::label $w.f.ltsport -text "Timeseal port"
+    ttk::label $w.f.ltsport -text [::tr "FICSTimesealPort"]
     ttk::entry $w.f.portts -width 6 -textvariable ::fics::port_timeseal
     
     grid $w.f.lFICS_port -column 0 -row $row
@@ -204,18 +204,13 @@ namespace eval fics {
     pack $w.f.top.f1.console -side left -fill both -expand 1 -side right
     
     #define colors for console
-    # $w.f.top.f1.console tag configure seeking     -foreground coral
-    # $w.f.top.f1.console tag configure game        -foreground grey70
-    # $w.f.top.f1.console tag configure gameresult  -foreground SlateBlue1
-    # $w.f.top.f1.console tag configure ficspercent -foreground khaki1
-    
     $w.f.top.f1.console tag configure seeking     -foreground $::fics::colseeking
     $w.f.top.f1.console tag configure game        -foreground $::fics::colgame
     $w.f.top.f1.console tag configure gameresult  -foreground $::fics::colgameresult
     $w.f.top.f1.console tag configure ficspercent -foreground $::fics::colficspercent
     
     ttk::entry $w.f.top.f2.cmd -width 32
-    ttk::button $w.f.top.f2.send -text send -command ::fics::cmd
+    ttk::button $w.f.top.f2.send -text [::tr "FICSSend"] -command ::fics::cmd
     bind $w.f.top.f2.cmd <Return> { ::fics::cmd }
     bind $w.f.top.f2.cmd <Up> { ::fics::cmdHistory up ; break }
     bind $w.f.top.f2.cmd <Down> { ::fics::cmdHistory down ; break }
@@ -228,7 +223,7 @@ namespace eval fics {
     ::gameclock::new $w.f.bottom.left 2 100 0
     
     set row 0
-    ttk::checkbutton $w.f.bottom.right.silence -text "Silence" -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
+    ttk::checkbutton $w.f.bottom.right.silence -text [::tr "FICSSilence"] -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
       ::fics::writechan "set gin $::fics::silence" "echo"
       ::fics::writechan "set seek $::fics::silence" "echo"
       ::fics::writechan "set silence $::fics::silence" "echo"
@@ -238,31 +233,31 @@ namespace eval fics {
     
     grid $w.f.bottom.right.silence -column 0 -row $row -sticky w
     incr row
-    ttk::checkbutton $w.f.bottom.right.offers -text "Offers" -variable ::fics::graphon -command ::fics::showOffers
+    ttk::checkbutton $w.f.bottom.right.offers -text [::tr "FICSOffers"] -variable ::fics::graphon -command ::fics::showOffers
     set ::fics::graphon 0
-    ttk::button $w.f.bottom.right.games -text "Games" -command { ::fics::writechan "games /bs"}
+    ttk::button $w.f.bottom.right.games -text [::tr "FICSGames"] -command { ::fics::writechan "games /bs"}
     grid $w.f.bottom.right.offers -column 0 -row $row -sticky w
     grid $w.f.bottom.right.games -column 1 -row $row -sticky ew
     incr row
-    ttk::button $w.f.bottom.right.findopp -text "Find opponent" -command { ::fics::findOpponent }
+    ttk::button $w.f.bottom.right.findopp -text [::tr "FICSFindOpponent"] -command { ::fics::findOpponent }
     grid $w.f.bottom.right.findopp -column 0 -row $row -sticky ew
-    ttk::button $w.f.bottom.right.abort -text "Abort" -command { ::fics::writechan "abort" }
+    ttk::button $w.f.bottom.right.abort -text [::tr "Abort"] -command { ::fics::writechan "abort" }
     grid $w.f.bottom.right.abort -column 1 -row $row -sticky ew
     incr row
     
-    ttk::button $w.f.bottom.right.draw -text "Draw" -command { ::fics::writechan "draw"}
-    ttk::button $w.f.bottom.right.resign -text "Resign" -command { ::fics::writechan "resign"}
+    ttk::button $w.f.bottom.right.draw -text [::tr "CCClaimDraw"] -command { ::fics::writechan "draw"}
+    ttk::button $w.f.bottom.right.resign -text [::tr "CCResign"] -command { ::fics::writechan "resign"}
     grid $w.f.bottom.right.draw -column 0 -row $row -sticky ew
     grid $w.f.bottom.right.resign -column 1 -row $row -sticky ew
     incr row
     
-    ttk::button $w.f.bottom.right.takeback -text "Takeback" -command { ::fics::writechan "takeback"}
-    ttk::button $w.f.bottom.right.takeback2 -text "Takeback 2" -command { ::fics::writechan "takeback 2"}
+    ttk::button $w.f.bottom.right.takeback -text [::tr "FICSTakeback"] -command { ::fics::writechan "takeback"}
+    ttk::button $w.f.bottom.right.takeback2 -text [::tr "FICSTakeback2"] -command { ::fics::writechan "takeback 2"}
     grid $w.f.bottom.right.takeback -column 0 -row $row -sticky ew
     grid $w.f.bottom.right.takeback2 -column 1 -row $row -sticky ew
     incr row
     
-    ttk::button $w.f.bottom.right.cancel -text "Close" -command { ::fics::close }
+    ttk::button $w.f.bottom.right.cancel -text [::tr "Close"] -command { ::fics::close }
     
     grid $w.f.bottom.right.cancel -column 0 -row $row -sticky ew
     
@@ -363,40 +358,40 @@ namespace eval fics {
     toplevel $w
     pack [ttk::frame $w.f]
     
-    ttk::label $w.f.linit -text "initial time (min)"
+    ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
     spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
-    ttk::label $w.f.linc -text "increment (sec)"
+    ttk::label $w.f.linc -text [::tr "FICSIncrement"]
     spinbox $w.f.sbTime2 -background white -width 3 -textvariable ::fics::findopponent(incTime) -from 0 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.f.linit -column 0 -row 0 -sticky ew
     grid $w.f.sbTime1 -column 1 -row 0 -sticky ew
     grid $w.f.linc -column 0 -row 1 -sticky ew
     grid $w.f.sbTime2 -column 1 -row 1 -sticky ew
     
-    ttk::checkbutton $w.f.cbrated -text "Rated game" -onvalue "rated" -offvalue "unrated" -variable ::fics::findopponent(rated)
+    ttk::checkbutton $w.f.cbrated -text [::tr "FICSRatedGame"] -onvalue "rated" -offvalue "unrated" -variable ::fics::findopponent(rated)
     grid $w.f.cbrated -column 0 -row 2 -columnspan 2 -sticky ew
     
-    ttk::label $w.f.color -text color
+    ttk::label $w.f.color -text [::tr "FICSColour"]
     grid $w.f.color -column 0 -row 3 -columnspan 3 -sticky ew
-    ttk::radiobutton $w.f.rb1 -text "automatic" -value "" -variable ::fics::findopponent(color)
-    ttk::radiobutton $w.f.rb2 -text "white" -value "white" -variable ::fics::findopponent(color)
-    ttk::radiobutton $w.f.rb3 -text "black" -value "black" -variable ::fics::findopponent(color)
+    ttk::radiobutton $w.f.rb1 -text [::tr "FICSAutoColour"] -value "" -variable ::fics::findopponent(color)
+    ttk::radiobutton $w.f.rb2 -text [::tr "White"] -value "white" -variable ::fics::findopponent(color)
+    ttk::radiobutton $w.f.rb3 -text [::tr "Black"] -value "black" -variable ::fics::findopponent(color)
     grid $w.f.rb1 -column 0 -row 4 -sticky ew
     grid $w.f.rb2 -column 1 -row 4 -sticky ew
     grid $w.f.rb3 -column 2 -row 4 -sticky ew
     
-    ttk::checkbutton $w.f.cblimitrating -text "Limit rating between" -variable ::fics::findopponent(limitrating)
+    ttk::checkbutton $w.f.cblimitrating -text [::tr "RatingRange"] -variable ::fics::findopponent(limitrating)
     spinbox $w.f.sbrating1 -background white -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
     spinbox $w.f.sbrating2 -background white -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.f.cblimitrating -column 0 -row 5 -columnspan 2 -sticky ew
     grid $w.f.sbrating1 -column 0 -row 6 -sticky ew
     grid $w.f.sbrating2 -column 1 -row 6 -sticky ew
     
-    ttk::checkbutton $w.f.cbmanual -text "confirm manually" -onvalue "manual" -offvalue "auto" -variable ::fics::findopponent(manual)
+    ttk::checkbutton $w.f.cbmanual -text [::tr "FICSManualConfirm"] -onvalue "manual" -offvalue "auto" -variable ::fics::findopponent(manual)
     grid $w.f.cbmanual -column 0 -row 7 -columnspan 2 -sticky ew
-    ttk::checkbutton $w.f.cbformula -text "Filter with formula" -onvalue "formula" -offvalue "" -variable ::fics::findopponent(formula)
+    ttk::checkbutton $w.f.cbformula -text [::tr "FICSFilterFormula"] -onvalue "formula" -offvalue "" -variable ::fics::findopponent(formula)
     grid $w.f.cbformula -column 0 -row 8 -columnspan 2 -sticky ew
     
-    ttk::button $w.f.seek -text "Issue seek" -command {
+    ttk::button $w.f.seek -text [::tr "FICSIssueSeek"] -command {
       set range ""
       if {$::fics::findopponent(limitrating) } {
         set range "$::fics::findopponent(rating1)-$::fics::findopponent(rating2)"
@@ -406,7 +401,7 @@ namespace eval fics {
       ::fics::writechan $cmd
       destroy .ficsfindopp
     }
-    ttk::button $w.f.cancel -text "Cancel" -command "destroy $w"
+    ttk::button $w.f.cancel -text [::tr "Cancel"] -command "destroy $w"
     bind $w <F1> { helpWindow FICSfindOpp}
     
     grid $w.f.seek -column 0 -row 9 -sticky ew
@@ -574,9 +569,9 @@ namespace eval fics {
       set res [lindex $line end]
       if {$num == $::fics::observedGame} {
         if {[string match "1/2*" $res]} {
-          tk_messageBox -title "Game result" -icon info -type ok -message "Draw"
+          tk_messageBox -title [::tr "Result"] -icon info -type ok -message "Draw"
         } else {
-          tk_messageBox -title "Game result" -icon info -type ok -message "$res"
+          tk_messageBox -title [::tr "Result"] -icon info -type ok -message "$res"
         }
         sc_game tags set -result $res
         set ::fics::playing 0
@@ -648,7 +643,7 @@ namespace eval fics {
     }
     
     if {[string match "Challenge:*" $line]} {
-      set ans [tk_dialog .challenge "Challenge" $line "" 0 "accept" "decline"]
+      set ans [tk_dialog .challenge [::tr "FICSChallenge"] $line "" 0 [::tr "FICSAccept"] [::tr "FICSDecline"]]
       if {$ans == 0} {
         writechan "accept"
       } else {
@@ -658,7 +653,7 @@ namespace eval fics {
     
     # abort request
     if {[string match "* would like to abort the game;*" $line]} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesno -message "$line\nDo you accept ?" ]
+      set ans [tk_messageBox -title [::tr "Abort"] -icon question -type yesno -message "$line\nDo you accept ?" ]
       if {$ans == yes} {
         writechan "accept"
       } else {

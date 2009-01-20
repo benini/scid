@@ -1847,6 +1847,52 @@ translate P KingsIndianSamisch {King's Indian Sämisch}
 # ====== TODO To be translated ======
 translate P KingsIndianMainLine {King's Indian Main Line}
 # ====== TODO To be translated ======
+translate P ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate P FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate P FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate P FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate P FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate P FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate P FICSGames {Games}
+# ====== TODO To be translated ======
+translate P FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate P FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate P FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate P FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate P FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate P FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate P FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate P FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate P FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate P FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate P FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate P FICSAccept {accept}
+# ====== TODO To be translated ======
+translate P FICSDecline {decline}
+# ====== TODO To be translated ======
+translate P FICSColour {Colour}
+# ====== TODO To be translated ======
+translate P FICSSend {send}
+# ====== TODO To be translated ======
+translate P FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate P CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate P CCDlgCGeneraloptions {General Options}
@@ -2205,6 +2251,10 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
+
+
 
 
 

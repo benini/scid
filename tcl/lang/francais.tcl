@@ -1492,6 +1492,52 @@ translate F NimzoIndianRubinstein {Nimzo-Indienne Rubinstein}
 translate F KingsIndian {Est-indienne}
 translate F KingsIndianSamisch {Est-indienne Sämisch}
 translate F KingsIndianMainLine {Est-indienne ligne principale}
+# ====== TODO To be translated ======
+translate F ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate F FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate F FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate F FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate F FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate F FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate F FICSGames {Games}
+# ====== TODO To be translated ======
+translate F FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate F FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate F FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate F FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate F FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate F FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate F FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate F FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate F FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate F FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate F FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate F FICSAccept {accept}
+# ====== TODO To be translated ======
+translate F FICSDecline {decline}
+# ====== TODO To be translated ======
+translate F FICSColour {Colour}
+# ====== TODO To be translated ======
+translate F FICSSend {send}
+# ====== TODO To be translated ======
+translate F FICSConnect {Connect}
 translate F CCDlgConfigureWindowTitle {Configurer échecs par correspondance}
 translate F CCDlgCGeneraloptions {Options générales}
 translate F CCDlgDefaultDB {Base par défaut:}
@@ -1774,6 +1820,10 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
+
+
+
 
 
 

@@ -192,7 +192,7 @@ menuText D ToolsTrainOpenings "Eröffnungen"  0 {Eröffnungsrepertoire trainieren}
 menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
 menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
-menuText D ToolsTrainFics "Internetpartie"  0 {Internetpartie auf freechess.org}
+menuText D ToolsTrainFics "Internetpartie (FICS)"  0 {Internetpartie auf freechess.org}
 menuText D ToolsBookTuning "Buch abstimmen" 0 {Buch abstimmen}
 menuText D ToolsConnectHardware "Hardware verbinden" 0 {Externe Hardware mit Scid verbinden}
 menuText D ToolsConnectHardwareConfigure "Konfigurieren..." 0 {Hardware und Verbindung konfigurieren}
@@ -1540,6 +1540,29 @@ translate D NimzoIndianRubinstein {Nimzoinsisch, Rubinstein}
 translate D KingsIndian {Königsindische Verteidigung}
 translate D KingsIndianSamisch {Königsinsisch, Sämisch}
 translate D KingsIndianMainLine {Königsinsisch, Hauptvariante}
+translate D ConfigureFics {FICS Konfigurieren}
+translate D FICSGuest {Gastlogin}
+translate D FICSServerPort {Serverport}
+translate D FICSTimesealPort {Timesealport}
+translate D FICSSilence {Konsolenfilter}
+translate D FICSOffers {Herausforderungen}
+translate D FICSGames {laufende Partien}
+translate D FICSFindOpponent {Gegner suchen}
+translate D FICSTakeback {Zurücknehmen}
+translate D FICSTakeback2 {2 zurücknehmen}
+translate D FICSInitTime {Zeit (min)}
+translate D FICSIncrement {Inkrement (s)}
+translate D FICSRatedGame {Wertungspartie}
+translate D FICSAutoColour {automatisch}
+translate D FICSManualConfirm {manuell bestätigen}
+translate D FICSFilterFormula {Filterformel anwenden}
+translate D FICSIssueSeek {Partie anbieten}
+translate D FICSChallenge {Herausfordern}
+translate D FICSAccept {Annehmen}
+translate D FICSDecline {Ablehnen}
+translate D FICSColour {Seite wählen:}
+translate D FICSSend {senden}
+translate D FICSConnect {Verbinden}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
@@ -7162,6 +7185,10 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
+
+
 
 
 

@@ -1830,6 +1830,52 @@ translate C KingsIndianSamisch {King's Indian Sämisch}
 # ====== TODO To be translated ======
 translate C KingsIndianMainLine {King's Indian Main Line}
 # ====== TODO To be translated ======
+translate C ConfigureFics {Configure FICS}
+# ====== TODO To be translated ======
+translate C FICSGuest {Login as Guest}
+# ====== TODO To be translated ======
+translate C FICSServerPort {Server port}
+# ====== TODO To be translated ======
+translate C FICSTimesealPort {Timeseal port}
+# ====== TODO To be translated ======
+translate C FICSSilence {Silence}
+# ====== TODO To be translated ======
+translate C FICSOffers {Offers}
+# ====== TODO To be translated ======
+translate C FICSGames {Games}
+# ====== TODO To be translated ======
+translate C FICSFindOpponent {Find opponent}
+# ====== TODO To be translated ======
+translate C FICSTakeback {Takeback}
+# ====== TODO To be translated ======
+translate C FICSTakeback2 {Takeback 2}
+# ====== TODO To be translated ======
+translate C FICSInitTime {Initial time (min)}
+# ====== TODO To be translated ======
+translate C FICSIncrement {Increment (sec)}
+# ====== TODO To be translated ======
+translate C FICSRatedGame {Rated Game}
+# ====== TODO To be translated ======
+translate C FICSAutoColour {automatic}
+# ====== TODO To be translated ======
+translate C FICSManualConfirm {confirm manually}
+# ====== TODO To be translated ======
+translate C FICSFilterFormula {Filter with formula}
+# ====== TODO To be translated ======
+translate C FICSIssueSeek {Issue seek}
+# ====== TODO To be translated ======
+translate C FICSChallenge {Callenge}
+# ====== TODO To be translated ======
+translate C FICSAccept {accept}
+# ====== TODO To be translated ======
+translate C FICSDecline {decline}
+# ====== TODO To be translated ======
+translate C FICSColour {Colour}
+# ====== TODO To be translated ======
+translate C FICSSend {send}
+# ====== TODO To be translated ======
+translate C FICSConnect {Connect}
+# ====== TODO To be translated ======
 translate C CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate C CCDlgCGeneraloptions {General Options}
@@ -5608,6 +5654,10 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
+
+
 
 
 
