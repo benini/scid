@@ -77,8 +77,8 @@ proc updateHelpWindow {name {heading ""}} {
   
   if {![winfo exists $w]} {
     toplevel $w
-    wm geometry $w -10+0
-    wm minsize $w 40 5
+    # wm geometry $w -10+0
+    wm minsize $w 20 5
     text $w.text -setgrid yes -wrap word -width $::winWidth($w) -height $::winHeight($w) -relief sunken -border 0 -yscroll "$w.scroll set"
     ttk::scrollbar $w.scroll -command "$w.text yview"
     
