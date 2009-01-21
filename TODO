@@ -3,7 +3,18 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-Traduire TODO dans french.tcl
+
+Bug l 251 / 254 de optable en mode docked : le destroy flingue la fenêtre
+
+  if { ! [winfo exists $w.text.bd]} {
+  ::board::new $w.text.bd 30
+}
+makeReportWin winfo exists .oprepWin 1
+makeReportWin winfo exists .oprepWin après destroy 1
+alloc: invalid block: 0x121c6380: 48 12
+Abandon
+
+When I save the layout with only the board on it and Auto load first layout is selected, the next time Scid starts the board doesn&#39;t show up, only the &quot;board&quot; tab can be seen. After resizing the window the board appears. It happens only when there is no other tab open besides Board when the layout was saved.
 
  ===========================================================
 |                                                           |

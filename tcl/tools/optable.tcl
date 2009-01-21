@@ -91,7 +91,7 @@ proc ::optable::ConfigMenus {{lang ""}} {
 }
 
 proc ::optable::makeReportWin {args} {
-if {! [sc_base inUse]} { return }
+  if {! [sc_base inUse]} { return }
   set ::optable::opReportBase [sc_base current]
   set showProgress 1
   set args [linsert $args 0 "args"]
@@ -147,20 +147,20 @@ if {! [sc_base inUse]} { return }
     destroy $w
     if {$::optable::_interrupt} { return }
   }
-    
+  
   set ::optable::_data(tree) $newTreeData
   ::optable::latexifyTree
   set ::optable::_data(bdLaTeX) [sc_pos tex]
   set ::optable::_data(bdHTML) [sc_pos html]
   set ::optable::_data(bdLaTeX_flip) [sc_pos tex flip]
   set ::optable::_data(bdHTML_flip) [sc_pos html -flip 1]
-    
+  
   ::optable::setupRatios
-    
+  
   set report [::optable::report ctext 1]
-    
+  
   if {[lsearch -exact $args "-nodisplay"] >= 0} { return }
-    
+  
   set w .oprepWin
   if {![winfo exists $w]} {
     ::createToplevel $w
@@ -173,7 +173,7 @@ if {! [sc_base inUse]} { return }
     foreach i {file favorites helpmenu} {
       menu $w.menu.$i -tearoff 0
     }
-      
+    
     $w.menu.file add command -label OprepFileText \
         -command {::optable::saveReport text}
     $w.menu.file add command -label OprepFileHtml \
@@ -197,9 +197,9 @@ if {! [sc_base inUse]} { return }
         -accelerator F1 -command {helpWindow Reports Opening}
     $w.menu.helpmenu add command -label OprepHelpIndex \
         -command {helpWindow Index}
-          
+    
     ::optable::updateFavoritesMenu
-      
+    
     bind $w <F1> {helpWindow Reports Opening}
     bind $w <Escape> "$w.b.close invoke"
     bind $w <Up> "$w.text yview scroll -1 units"
@@ -230,7 +230,7 @@ if {! [sc_base inUse]} { return }
       ::optable::makeReportWin
       .oprepWin.text yview moveto $::optable::_data(yview)
     }
-      
+    
     button $w.b.mergeGames -textvar ::tr(MergeGames) -command ::optable::mergeGames
     button $w.b.help -textvar ::tr(Help) -command {helpWindow Reports Opening}
     button $w.b.close -textvar ::tr(Close) -command "focus .; destroy $w"
@@ -249,10 +249,14 @@ if {! [sc_base inUse]} { return }
     ::createToplevelFinalize $w
   }
   
+  # whithout this, destroying a child widget will destroy the embedding window in docked mode
+  bind $w <Destroy> {}
   catch {destroy $w.text.bd}
+  
   set old_showMaterial $::gameInfo(showMaterial)
   set ::gameInfo(showMaterial) 0
   ::board::new $w.text.bd 30
+  
   if {$::optable::_flip} { ::board::flip $w.text.bd }
   $w.text.bd configure -relief solid -borderwidth 1
   for {set i 0} {$i < 63} {incr i} {
@@ -261,11 +265,9 @@ if {! [sc_base inUse]} { return }
   }
   ::board::update $w.text.bd [sc_pos board]
   $w.b.exclude.m delete 0 end
-  $w.b.exclude.m add radiobutton -label "---" \
-      -variable ::optable::_data(exclude) -command "$w.b.update invoke"
+  $w.b.exclude.m add radiobutton -label "---" -variable ::optable::_data(exclude) -command "$w.b.update invoke"
   foreach move $::optable::_data(moves) {
-    $w.b.exclude.m add radiobutton -label $move \
-        -variable ::optable::_data(exclude) -command "$w.b.update invoke"
+    $w.b.exclude.m add radiobutton -label $move -variable ::optable::_data(exclude) -command "$w.b.update invoke"
   }
   if {[lsearch $::optable::_data(moves) $::optable::_data(exclude)] < 0} {
     set ::optable::_data(exclude) "---"
@@ -280,7 +282,7 @@ if {! [sc_base inUse]} { return }
   ::windows::gamelist::Refresh
   ::windows::stats::Refresh
   set ::gameInfo(showMaterial) $old_showMaterial
-    
+  
 }
 ################################################################################
 # merges the N best games up to P plies to current game
@@ -937,7 +939,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r $::optable::_docEnd($fmt)
     return $r
   }
-    
+  
   if {$::optable(Stats) > 0  ||
     $::optable(Oldest) > 0  ||
     $::optable(Newest) > 0  ||
@@ -958,7 +960,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec $tr(OprepNewest)]
     append r [sc_report opening best n $::optable(Newest)]
   }
-    
+  
   if {$::optable(Popular) > 0} {
     append r [::optable::_subsec $tr(OprepPopular)]
     set next ""
@@ -1025,7 +1027,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
       append r "\\end{tabular}\n"
     }
   }
-    
+  
   if {$::optable(MostFrequent) > 0  &&  $::optable(MostFrequentWhite)} {
     append r [::optable::_subsec "$tr(OprepMostFrequent) ($tr(White))"]
     append r [sc_report opening players white $::optable(MostFrequent)]
@@ -1034,7 +1036,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec "$tr(OprepMostFrequent) ($tr(Black))"]
     append r [sc_report opening players black $::optable(MostFrequent)]
   }
-    
+  
   if {$::optable(AvgPerf)  ||  $::optable(HighRating)} {
     append r [::optable::_sec $tr(OprepRatingsPerf)]
   }
@@ -1067,7 +1069,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec $::tr(OprepResults)]
     append r [::optable::results opening $fmt]
   }
-    
+  
   if {$::optable(Shortest) > 0  &&  $::optable(ShortestWhite)} {
     append r [::optable::_subsec "$tr(OprepShortest) ($tr(White))"]
     append r [sc_report opening best w $::optable(Shortest)]
@@ -1076,7 +1078,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [::optable::_subsec "$tr(OprepShortest) ($tr(Black))"]
     append r [sc_report opening best b $::optable(Shortest)]
   }
-      
+  
   if {$::optable(MoveOrders) > 0  ||
     $::optable(MovesFrom) > 0  ||
     $::optable(Themes) > 0  ||
@@ -1107,7 +1109,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
       append r $postText
     }
   }
-      
+  
   if {$::optable(Themes) > 0} {
     append r [::optable::_subsec $tr(OprepThemes)]
     append r [sc_report opening themes $tr(OprepThemeDescription:) \
@@ -1118,7 +1120,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
         $tr(OprepThemeWP567:) $tr(OprepThemeBP234:) \
         $tr(OprepThemeOpenCDE:) ]
   }
-    
+  
   if {$::optable(Endgames) > 0} {
     append r [::optable::_subsec $tr(OprepEndgames)]
     append r "$tr(OprepEndClass:)$n"
@@ -1134,7 +1136,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r [sc_report opening print $numRows $sec $comment]
     # puts [sc_report opening print $numRows $sec $comment]
   }
-    
+  
   append r $::optable::_docEnd($fmt)
   
   # Eszet (ss) characters seem to be mishandled by LaTeX, even with
