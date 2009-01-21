@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.41 2009/01/21 17:32:17 arwagner Exp $
+### $Id: correspondence.tcl,v 1.42 2009/01/21 20:58:07 arwagner Exp $
 ###
-### Last change: <Wed, 2009/01/21 18:21:04 arwagner ingata>
+### Last change: <Wed, 2009/01/21 21:50:55 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2040,6 +2040,8 @@ namespace eval CorrespondenceChess {
 	# user (own and opponent names and mail addresses and unique id)
 	#----------------------------------------------------------------------
 	proc startEmailGame {ownname ownmail oppname oppmail gameid} {
+		global ::CorrespondenceChess::Inbox
+
 		# the following header tags have to be in this form for cmail to
 		# recognise the mail as an eMail correspondence game.
 		# Additonally scid searched for some of them to retrieve mail
@@ -2051,6 +2053,9 @@ namespace eval CorrespondenceChess {
 		set CmailGameName "CmailGameName \"$gameid\""
 		set WhiteNA       "WhiteNA \"$ownmail\""
 		set BlackNA       "BlackNA \"$oppmail\""
+		set whiteCountry  "whiteCountry \"EUR\""
+		set blackCountry  "blackCountry \"EUR\""
+
 		set Mode          "Mode \"EM\""
 
 		set year          [::utils::date::today year]
@@ -2071,7 +2076,7 @@ namespace eval CorrespondenceChess {
 		sc_game tags set -eventdate $today
 
 		# add cmails extra header tags
-		sc_game tags set -extra [list $CmailGameName $WhiteNA $BlackNA $Mode]
+		sc_game tags set -extra [list $CmailGameName $WhiteNA $BlackNA $whiteCountry $blackCountry $Mode]
 
 		updateBoard -pgn
 		updateTitle
@@ -2080,7 +2085,14 @@ namespace eval CorrespondenceChess {
 		# Call gameSave with argument 0 to append to the current
 		# database. This also gives the Save-dialog for additional user
 		# values.
-		gameSave 0
+		### gameSave 0
+
+		# construct a PGN in Inbox for CC gamelist to work
+		set pgnfile "[file join $Inbox $gameid].pgn"
+		sc_base export "current" "PGN" $pgnfile -append 0 -comments 0 -variations 0 \
+					-space 1 -symbols 0 -indentC 0 -indentV 0 -column 0 -noMarkCodes 0 -convertNullMoves 1
+
+		::CorrespondenceChess::ReadInbox
 	}
 
 	#----------------------------------------------------------------------
@@ -2981,7 +2993,7 @@ namespace eval CorrespondenceChess {
 			# yellow while sending in progress,
 			# green if the move was sent in the
 			# current session (ie. without update)
-			####---#### .ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background yellow -font font_Bold
 
 			# If Event = "Email correspondence game"

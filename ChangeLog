@@ -618,6 +618,8 @@ scid-3.6.7
   * Make window resizable
   * Make window dockable
   * Fix: call mailers on windows if installed to dirs with spaces
+  * New email games now show up in the game list immediately, flags
+  are preset for europe to give the user an idea what to set at all.
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
