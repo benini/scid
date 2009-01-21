@@ -866,7 +866,8 @@ proc resizeMainBoard {} {
   set ::boardSize $newSize
   
   update idletasks
-  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
+#  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
+  bind .main <Configure> { ::resizeMainBoard }
   
 }
 ################################################################################
