@@ -617,6 +617,7 @@ scid-3.6.7
     (if none is given, default to ICCF)
   * Make window resizable
   * Make window dockable
+  * Fix: call mailers on windows if installed to dirs with spaces
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
@@ -653,6 +654,7 @@ scid-3.6.7
   * Add the ability to write Dublin Core metadata for a Scid database
   by means of Tools / Database information. This includes reading
   metadata from a sme file.
+  * menu item disabled for future use
 - Mask (Tree window) : 
 	* added menu entry to remove NAG value for a move
 	* added entry in popup menu to enter moves not present in Tree

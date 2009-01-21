@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.40 2009/01/20 20:12:02 arwagner Exp $
+### $Id: correspondence.tcl,v 1.41 2009/01/21 17:32:17 arwagner Exp $
 ###
-### Last change: <Tue, 2009/01/20 14:09:05 arwagner ingata>
+### Last change: <Wed, 2009/01/21 18:21:04 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2152,7 +2152,13 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
-	# Call the mailer program to send the game by e-mail
+	# Call an external program via a proper shell
+	# open and exec call the external without a shell environment
+	# For Windows make sure that the executable uses its short name
+	#     catch {set mailer [file attributes $mailer -shortname]}
+	# or it resides in a path without spaces
+	# For Windows quoting is not possible as usual, < and > are not allowed
+	# as textual arguments even if quoted properly.
 	#----------------------------------------------------------------------
 	proc CallExternal {callstring} {
 		global windowsOS
@@ -2160,13 +2166,13 @@ namespace eval CorrespondenceChess {
 		if {$windowsOS} {
 			# On Windows, use the "start" command:
 			if {[string match $::tcl_platform(os) "Windows NT"]} {
-				catch {exec $::env(COMSPEC) /c start "$callstring" &}
+				catch {exec $::env(COMSPEC) /c "$callstring" &}
 			} else {
 				catch {exec start "$callstring" &}
 			}
 		} else {
 			# On Unix just call the shell with the converter tool
-			catch {exec /bin/sh -c "$callstring"}
+			catch {exec /bin/sh -c "$callstring" &}
 		}
 	}
 
@@ -2861,7 +2867,12 @@ namespace eval CorrespondenceChess {
 				set to   $BlackNA
 			}
 
-			set title   "scid mail 1 game <$CmailGameName>"
+			# get rid of spaces in names by using Windows internal real names
+			if {$windowsOS} {
+				catch {set mailer [file attributes $mailer -shortname]}
+			}
+
+			set title   "scid mail 1 game ($CmailGameName)"
 			set body    "Final FEN: "
 			append body [sc_pos fen]
 			append body "\n\n"
@@ -2883,20 +2894,20 @@ namespace eval CorrespondenceChess {
 			#            a parameter for attachements
 			switch -regexp -- $::CorrespondenceChess::mailermode \
 			"mailx" {
-				set callstring "\"$mailer\" $subject \"$title\" -b \"$bccaddr\" $attache \"$pgnfile\" \"$to\" <\"$pgnfile\" &"
+				set callstring "$mailer $subject \"$title\" -b $bccaddr $attache \"$pgnfile\" $to <\"$pgnfile\""
 			} \
 			"mozilla" {
 				if {$windowsOS} {
-					set callstring "\"$mailer\" -compose subject='$title',bcc='$bccaddr',attachment='file:///$pgnfile',to='$to',body='$body' &"
+					set callstring "$mailer -compose subject='$title',bcc=$bccaddr,attachment='file:///$pgnfile',to=$to,body=$body"
 				} else {
-					set callstring "\"$mailer\" -compose subject='$title',bcc='$bccaddr',attachment='file://$pgnfile',to='$to',body='$body' &"
+					set callstring "$mailer -compose subject='$title',bcc=$bccaddr,attachment='file://$pgnfile',to='$to',body='$body'"
 				}
 			} \
 			"mailurl" {
-				set callstring "\"$mailer\" \'mailto:\<$to\>?bcc=$bccaddr\&subject=$title\&attach=$pgnfile\&body=$body\' &"
+				set callstring "$mailer \'mailto:\<$to\>?bcc=$bccaddr\&subject=$title\&attach=$pgnfile\&body=$body\'"
 			} \
 			"claws" {
-				set callstring "\"$mailer\" --compose \'mailto:$to?subject=$title&cc=$bccaddr&body=$body\' --attach \"$pgnfile\" &"
+				set callstring "$mailer --compose \'mailto:$to?subject=$title&cc=$bccaddr&body=$body\' --attach \"$pgnfile\""
 			}
 			::CorrespondenceChess::updateConsole "info Calling eMail program: $mailer..."
 			CallExternal $callstring
