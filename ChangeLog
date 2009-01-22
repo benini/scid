@@ -674,7 +674,9 @@ scid-3.6.7
 - updated dutch translation (thanks to Michel Van den Bergh)
 - updated spanish translation (thanks to Benigno Hernández)
 - Fix : Tree window : when a Mask is opened, the whole line is clickable (not only the part with moves and stats)
-
+- EPD:
+  * UCI lines are now written in the usual formatted form
+  * acs is added as resulted from the analysis
 - FICS:
   * console : autoscrolling is turned off if the view is not located at the end of the text
   * Fix : FICS connection. Better handling of connection error if behind a firewall or network is down, and avoid parsing of incomplete packets (new code ported to Scid Pocket)

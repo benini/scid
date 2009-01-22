@@ -382,10 +382,18 @@ proc epd_pasteAnalysis {textwidget} {
   if {! [winfo exists .analysisWin1]} { return }
   $textwidget insert insert "acd $analysis(depth1)\n"
   $textwidget insert insert "acn $analysis(nodes1)\n"
+  $textwidget insert insert "acs $analysis(time1)\n"
   set ce [expr {int($analysis(score1) * 100)} ]
   if {[sc_pos side] == "black"} { set ce [expr {0 - $ce} ] }
   $textwidget insert insert "ce $ce\n"
-  $textwidget insert insert "pv $analysis(moves1)\n"
+  if { $analysis(uci1) } {
+      $textwidget insert insert "pv "
+      set moves [::uci::formatPv $analysis(moves1) $analysis(fen1)]
+      $textwidget insert insert [addMoveNumbers [::trans $moves]]
+      $textwidget insert insert "\n"
+  } else {
+      $textwidget insert insert "pv $analysis(moves1)\n"
+  }
 }
 
 set epd_stripField ""
