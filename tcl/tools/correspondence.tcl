@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.42 2009/01/21 20:58:07 arwagner Exp $
+### $Id: correspondence.tcl,v 1.43 2009/01/22 13:48:55 arwagner Exp $
 ###
-### Last change: <Wed, 2009/01/21 21:50:55 arwagner ingata>
+### Last change: <Thu, 2009/01/22 14:41:36 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1426,7 +1426,6 @@ namespace eval CorrespondenceChess {
 	# Translate the local menu
 	#----------------------------------------------------------------------
 	proc doConfigMenus { } {
-
 		set lang $::language
 
 		if {! [winfo exists .ccWindow]} { return }
@@ -1439,7 +1438,6 @@ namespace eval CorrespondenceChess {
 		foreach idx {0 2 3 5 6 7 8 9 10 12 13} tag {CCConfigure CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage CCNewMailGame CCMailMove } {
 			configMenuText $m.correspondence $idx $tag $lang
 		}
-
 	}
 
 	#----------------------------------------------------------------------
@@ -1463,7 +1461,6 @@ namespace eval CorrespondenceChess {
 	# Resize the console window
 	#----------------------------------------------------------------------
 	proc ConsoleResize {} {
-
 		set w .ccWindow
 
 		# unbind configure event
@@ -1515,13 +1512,8 @@ namespace eval CorrespondenceChess {
 		}
 		set ::CorrespondenceChess::isOpen 1
 
-		if {$::tcl_version >= 8.5} {
-			::createToplevel $w
-			::setTitle $w [::tr "CorrespondenceChess"]
-		} else {
-			toplevel $w
-			wm title $w [::tr "CorrespondenceChess"]
-		}
+		::createToplevel $w
+		::setTitle $w [::tr "CorrespondenceChess"]
 
 		# hook up with scids geometry manager
 		setWinLocation $w
@@ -1611,19 +1603,23 @@ namespace eval CorrespondenceChess {
 		grid $w.top.ysc        -stick ns   -column 13 -row 0 
 		grid $w.top.help       -stick nsew -column 14 -row 0 -columnspan 2
 
-		grid $w.top.retrieveCC             -column  0 -row 0
-		grid $w.top.sendCC                 -column  2 -row 0
+		grid $w.top.retrieveCC  -stick ewns  -column  0 -row 0
+		grid $w.top.sendCC      -stick ewns  -column  2 -row 0
+
 
 		grid $w.top.openDB      -stick ew  -column  0 -row 1 -columnspan 3
 		grid $w.top.onoffline              -column  4 -row 1
 		grid $w.top.inbox       -stick ew  -column  0 -row 2 -columnspan 3
-		grid $w.top.delinbox               -column  3 -row 2
+		# grid $w.top.delinbox               -column  3 -row 2
 		grid $w.top.plugins                -column  4 -row 2
 
-		grid $w.top.resign      -stick ew  -column  6 -row 1
-		grid $w.top.claimDraw              -column  5 -row 2
+		grid $w.top.resign      -stick ew  -column  5 -row 1
+
+		grid $w.top.delinbox    -stick e   -column  7 -row 1
+
+		grid $w.top.claimDraw   -stick ew  -column  5 -row 2
 		grid $w.top.offerDraw   -stick ew  -column  6 -row 2
-		grid $w.top.acceptDraw             -column  7 -row 2
+		grid $w.top.acceptDraw  -stick ew  -column  7 -row 2
 
 		# build the table in the bottom frame. This table of text widgets has to
 		# scroll syncronously!
@@ -1675,7 +1671,7 @@ namespace eval CorrespondenceChess {
 	# the list has to be emptied if all games are resynced in.
 	#--------------------------------------------------------------------------
 	proc updateGamelist {id toMove event site date white black clockW \
-								clockB var db books tb engines wc bc mess TC} {
+								clockB var db books tb engines wc bc mess TC lastmove} {
 		set num $::CorrespondenceChess::num
 		set w .ccWindow
 
@@ -1727,43 +1723,55 @@ namespace eval CorrespondenceChess {
 				$w.bottom.toMove image create end -align center -image tb_CC_outoftime
 		}
 
+		set text ""
 		switch -regexp -- $toMove \
 		"1-0" {
 			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image $::board::letterToPiece(K)25
 			$w.bottom.toMove  insert end " $toMove"
 			set endpos [$w.bottom.toMove index insert]
-			$w.bottom.toMove tag add toMove$id $curpos $endpos
-			::utils::tooltip::SetTag $w.bottom.toMove "$toMove" toMove$id
+			set text "$lastmove ($toMove)"
 		} \
 		"0-1" {
 			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image $::board::letterToPiece(k)25
 			$w.bottom.toMove  insert end " $toMove"
 			set endpos [$w.bottom.toMove index insert]
-			$w.bottom.toMove tag add toMove$id $curpos $endpos
-			::utils::tooltip::SetTag $w.bottom.toMove "$toMove" toMove$id
+			set text "$lastmove ($toMove)"
 		} \
 		" = " {
 			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image tb_CC_draw
 			$w.bottom.toMove  insert end "$toMove"
 			set endpos [$w.bottom.toMove index insert]
-			$w.bottom.toMove tag add toMove$id $curpos $endpos
-			::utils::tooltip::SetTag $w.bottom.toMove "$toMove" toMove$id
+			set text "$lastmove ($toMove)"
 		} \
 		"yes" {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image tb_CC_yourmove
+			set endpos [$w.bottom.toMove index insert]
+			set text "$lastmove"
 		} \
 		"no"  {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image tb_CC_oppmove
+			set endpos [$w.bottom.toMove index insert]
+			set text "$lastmove"
 		} \
 		" ? " {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove  insert end "$toMove"
+			set endpos [$w.bottom.toMove index insert]
+			set text "$lastmove"
 		} \
 		"EML" {
+			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image tb_CC_envelope
+			set endpos [$w.bottom.toMove index insert]
+			set text "$lastmove"
 		}
+		$w.bottom.toMove tag add toMove$id $curpos $endpos
+		::utils::tooltip::SetTag $w.bottom.toMove "$text" toMove$id
 		$w.bottom.toMove insert end "\n"
 
 
@@ -2275,9 +2283,9 @@ namespace eval CorrespondenceChess {
 	proc SearchGame {Event Site White Black CmailGameName result} {
 		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::LastProcessed
 
-
 		# switch to the Correspondence Games DB
 		sc_base switch $CorrSlot
+		set move ""
 
 		set sPgnlist {}
 		lappend sPgnlist [string trim $CmailGameName]
@@ -2442,8 +2450,6 @@ namespace eval CorrespondenceChess {
 			::utils::tooltip::Set .ccWindow.top.claimDraw  "$CmailGameName: $Event\n$Site\n\n$White - $Black"
 			::utils::tooltip::Set .ccWindow.top.acceptDraw "$CmailGameName: $Event\n$Site\n\n$White - $Black"
 			::utils::tooltip::Set .ccWindow.top.offerDraw  "$CmailGameName: $Event\n$Site\n\n$White - $Black"
-
-
 		}
 	}
 
@@ -2708,10 +2714,22 @@ namespace eval CorrespondenceChess {
 							set bc "flag_$bc"
 						}
 					}
+					sc_move end
+					set number [sc_pos moveNumber]
+					set move [sc_game info previousMoveNT]
+					set side   [sc_pos side]
+
+					if {$side == "white"} {
+						set number [expr {$number-1}]
+						set lastmove "$number...$move"
+					} else {
+						set lastmove "$number. $move"
+					}
 
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
-								$Event $Site $Date $White $Black "" "" "" "" "" "" "" $wc $bc "" ""
+								$Event $Site $Date $White $Black "" "" "" "" "" "" "" \
+								$wc $bc "" "" $lastmove
 
 					} else {
 						# search for extra information from Xfcc server
@@ -2780,7 +2798,7 @@ namespace eval CorrespondenceChess {
 						}
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
 								$Event $Site $Date $White $Black $clockW $clockB $var \
-								$noDB $noBK $noTB $noENG $wc $bc $mess $TC
+								$noDB $noBK $noTB $noENG $wc $bc $mess $TC $lastmove
 					}
 				}
 				.ccWindow.top.nextCC configure -state normal

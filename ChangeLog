@@ -620,6 +620,8 @@ scid-3.6.7
   * Fix: call mailers on windows if installed to dirs with spaces
   * New email games now show up in the game list immediately, flags
   are preset for europe to give the user an idea what to set at all.
+  * Show last move in tooltip for the "to move" icon (suggested by Dhanish)
+  * move delete in/outbox button furter away from Process Inbox (suggested by Dhanish)
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
