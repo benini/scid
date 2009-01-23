@@ -249,8 +249,6 @@ proc ::optable::makeReportWin {args} {
     ::createToplevelFinalize $w
   }
   
-  # whithout this, destroying a child widget will destroy the embedding window in docked mode
-  bind $w <Destroy> {}
   catch {destroy $w.text.bd}
   
   set old_showMaterial $::gameInfo(showMaterial)

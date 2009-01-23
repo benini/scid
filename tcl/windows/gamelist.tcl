@@ -69,7 +69,6 @@ proc ::windows::gamelist::ReOpen {} {
   set w .glistWin
   
   bind $w <Configure> {}
-  set oldDestroy [bind $w <Destroy>]
   bind $w <Destroy> {}
   
   # erase the window

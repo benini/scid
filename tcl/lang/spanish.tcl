@@ -234,8 +234,7 @@ menuText S CCOfferDraw "Ofrecer tablas" 0 {Enviar un movimiento y ofrecer tablas
 menuText S CCAcceptDraw "Aceptar tablas" 0 {Aceptar un ofrecimiento de tablas}
 menuText S CCNewMailGame "Nueva partida email..." 0 {Empezar una nueva partida eMail}
 menuText S CCMailMove "Enviar jugada via email..." 0 {Envía el movimiento via eMail al oponente}
-# ====== TODO To be translated ======
-menuText S CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+menuText S CCGamePage "Página de la partida..." 0 {Abrir la partida desde el navegador}
 
 # Options menu:
 menuText S Options "Opciones" 0
@@ -1504,52 +1503,29 @@ translate S NimzoIndianRubinstein {Variante Rubinstein de la Nimzo-India}
 translate S KingsIndian {India de Rey}
 translate S KingsIndianSamisch {Ataque Sämish de la India de Rey}
 translate S KingsIndianMainLine {Linea Principal India de Rey}
-# ====== TODO To be translated ======
-translate S ConfigureFics {Configure FICS}
-# ====== TODO To be translated ======
-translate S FICSGuest {Login as Guest}
-# ====== TODO To be translated ======
-translate S FICSServerPort {Server port}
-# ====== TODO To be translated ======
-translate S FICSTimesealPort {Timeseal port}
-# ====== TODO To be translated ======
-translate S FICSSilence {Silence}
-# ====== TODO To be translated ======
-translate S FICSOffers {Offers}
-# ====== TODO To be translated ======
-translate S FICSGames {Games}
-# ====== TODO To be translated ======
-translate S FICSFindOpponent {Find opponent}
-# ====== TODO To be translated ======
-translate S FICSTakeback {Takeback}
-# ====== TODO To be translated ======
-translate S FICSTakeback2 {Takeback 2}
-# ====== TODO To be translated ======
-translate S FICSInitTime {Initial time (min)}
-# ====== TODO To be translated ======
-translate S FICSIncrement {Increment (sec)}
-# ====== TODO To be translated ======
-translate S FICSRatedGame {Rated Game}
-# ====== TODO To be translated ======
-translate S FICSAutoColour {automatic}
-# ====== TODO To be translated ======
-translate S FICSManualConfirm {confirm manually}
-# ====== TODO To be translated ======
-translate S FICSFilterFormula {Filter with formula}
-# ====== TODO To be translated ======
-translate S FICSIssueSeek {Issue seek}
-# ====== TODO To be translated ======
-translate S FICSChallenge {Callenge}
-# ====== TODO To be translated ======
-translate S FICSAccept {accept}
-# ====== TODO To be translated ======
-translate S FICSDecline {decline}
-# ====== TODO To be translated ======
-translate S FICSColour {Colour}
-# ====== TODO To be translated ======
-translate S FICSSend {send}
-# ====== TODO To be translated ======
-translate S FICSConnect {Connect}
+translate S ConfigureFics {Configurar FICS}
+translate S FICSGuest {Autentificación como invitado}
+translate S FICSServerPort {Puerto del servidor}
+translate S FICSTimesealPort {Puerto Timeseal}
+translate S FICSSilence {Silencio}
+translate S FICSOffers {Ofertas}
+translate S FICSGames {Partidas}
+translate S FICSFindOpponent {Buscar oponente}
+translate S FICSTakeback {Retrocede}
+translate S FICSTakeback2 {Retrocede 2}
+translate S FICSInitTime {Tiempo inicial (min)}
+translate S FICSIncrement {Incremento (seg)}
+translate S FICSRatedGame {Partida valorada}
+translate S FICSAutoColour {automático}
+translate S FICSManualConfirm {confirma manualmente}
+translate S FICSFilterFormula {Filtrar con fórmula}
+translate S FICSIssueSeek {Panel de retos}
+translate S FICSChallenge {Retar}
+translate S FICSAccept {aceptar}
+translate S FICSDecline {rechazar}
+translate S FICSColour {Color}
+translate S FICSSend {enviar}
+translate S FICSConnect {Conectar}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1594,9 +1570,8 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S CCDlgServerName {Nombre del servidos:}
 translate S CCDlgLoginName  {Nombre de registro:}
 translate S CCDlgPassword   {Contraseña:}
-# ====== TODO To be translated ======
 translate S CCDlgURL        {Xfcc-URL:}
-translate S CCDlgRatingType {Tipo de clasificación (Rating):}
+translate S CCDlgRatingType {Tipo de puntuación (Rating):}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}

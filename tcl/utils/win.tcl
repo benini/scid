@@ -598,10 +598,16 @@ proc ::docking::_cleanup_tabs {srctab} {
 }
 ################################################################################
 # cleans up a window when it was closed without calling the notebook menu
-proc ::docking::cleanup { w } {
+proc ::docking::cleanup { w { origin "" } } {
   variable tbs
   
   if { ! $::docking::USE_DOCKING } { return }
+  
+  # if the destroy event came from a sub-widget, do nothing. Necessary because if a widget is destroyed, it sends a destroy event to
+  # its containing window
+  if { [ string last "." $origin ] > 0 } {
+    return
+  }
   
   set dockw ".fdock[string range $w 1 end]"
   

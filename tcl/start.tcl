@@ -754,7 +754,7 @@ proc setTitle { w title } {
 ################################################################################
 proc createToplevel { w } {
   set name [string range $w 1 end]
-   
+  
   if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
     
     set f .fdock$name
@@ -784,7 +784,7 @@ proc createToplevel { w } {
 ################################################################################
 proc createToplevelFinalize {w} {
   if { $::docking::USE_DOCKING } {
-    bind $w <Destroy> +[ namespace code "::docking::cleanup $w"]
+    bind $w <Destroy> +[ namespace code "::docking::cleanup $w %W"]
   }
 }
 
@@ -866,9 +866,7 @@ proc resizeMainBoard {} {
   set ::boardSize $newSize
   
   update idletasks
-#  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
-  bind .main <Configure> { ::resizeMainBoard }
-  
+  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
 }
 ################################################################################
 # sets visibility of gameInfo panel at the bottom of main board
