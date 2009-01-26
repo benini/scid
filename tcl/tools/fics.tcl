@@ -532,6 +532,10 @@ namespace eval fics {
         .fics.f.bottom.right.offers invoke
       }
       ::utils::sound::PlaySound sound_move
+      # Create a game in an opened base
+      if {![sc_base inUse]} {
+        sc_base switch clipbase
+      }
       sc_game new
       set idx1 [string first "(" $line]
       set white [string trim [string range $line 10 [expr $idx1 -1]] ]
@@ -878,7 +882,10 @@ namespace eval fics {
     
     if {$fen != [sc_pos fen]} {
       puts "Debug fen \n$fen\n[sc_pos fen]"
-      
+      # Create a game in an opened base
+      if {![sc_base inUse]} {
+        sc_base switch clipbase
+      }
       sc_game new
       
       set ::fics::waitForRating "wait"

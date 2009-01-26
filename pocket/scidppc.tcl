@@ -185,6 +185,7 @@ set engineconfig(fruit_231)     { Fruit       2.3.1       12940  MultiPV_OK uci 
 set engineconfig(scorpio)       { Scorpio     2.0         12941  MultiPV_NO xboard }
 set engineconfig(greko)         { Greko       6.0         12942  MultiPV_OK uci }
 set engineconfig(scidlet)       { Scidlet     3.4         12943  MultiPV_NO xboard }
+set engineconfig(toga141SE)       { Toga        1.4.1SE       12944  MultiPV_NO uci }
 
 set playMode 0
 set tournamentMode 0

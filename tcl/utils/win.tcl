@@ -448,6 +448,8 @@ proc ::docking::handleConfigureEvent { cmd } {
   } else  {
     set lastConfigureEvent $t
     eval $cmd
+    # Necessary on MacOs to refresh user interface
+    update idletasks
   }
 }
 ################################################################################

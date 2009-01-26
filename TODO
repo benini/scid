@@ -3,10 +3,14 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+ 
+toga 1.4.1SE à porter sur PPC à la place de 1.3.4
+-> multi PV marche pas
+-> mettre threads à 1
+Faire tests de perfs Toga 141SE
 
-Rafraichissement sur Mac HS
-  bind .main <Configure> {} l 805 de start.tcl
-  
+voir Glaurung2.2
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |

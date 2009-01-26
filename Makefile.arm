@@ -86,7 +86,7 @@ CFLAGS = $(OPT) -Wall $(PROFILE) $(PPC)
 ############################################################
 
 ### EXECS: executable programs compiled from C++ files.
-EXECS= tkscid toga toga134 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet
+EXECS= tkscid toga toga134 toga141 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -143,6 +143,9 @@ toga:
 toga134:
 	cd pocket/toga134/src && $(MAKE) -f Makefile.arm
 
+toga141:
+	cd pocket/toga141SE/src && $(MAKE) -f Makefile.arm
+	
 fruit_21:
 	cd pocket/fruit_21/src && $(MAKE) -f Makefile.arm
 
@@ -179,6 +182,7 @@ dist: all
 	cp ./pocket/scidppc.tcl ./pocket/core.tcl ./pocket/scid_pocket/
 	cp ./pocket/toga/src/toga.exe tkscid.dll ./pocket/scid_pocket/
 	cp ./pocket/toga134/src/toga134.exe ./pocket/scid_pocket/
+	cp ./pocket/toga141SE/src/toga141.exe ./pocket/scid_pocket/
 	cp ./pocket/glaurung/src/glaurung.exe ./pocket/scid_pocket/
 	cp ./pocket/glaurung/src/kpk.bin ./pocket/scid_pocket/
 	cp ./pocket/fruit_21/src/fruit_21.exe ./pocket/scid_pocket/
