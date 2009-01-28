@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.45 2009/01/23 19:38:28 arwagner Exp $
+### $Id: correspondence.tcl,v 1.46 2009/01/28 19:26:07 arwagner Exp $
 ###
-### Last change: <Fri, 2009/01/23 20:36:22 arwagner ingata>
+### Last change: <Wed, 2009/01/28 20:18:33 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1496,7 +1496,7 @@ namespace eval CorrespondenceChess {
 		}
 		recordWinSize $w
 		# rebind the configure event
-		bind $w <Configure> { ::docking::handleConfigureEvent ::CorrespondenceChess::ConsoleResize }
+		bind $w <Configure> { ::CorrespondenceChess::ConsoleResize }
 	}
 
 	#----------------------------------------------------------------------
@@ -1585,12 +1585,12 @@ namespace eval CorrespondenceChess {
 		button    $w.top.prevCC     -image tb_CC_Prev            -command {::CorrespondenceChess::PrevGame}
 		button    $w.top.nextCC     -image tb_CC_Next            -command {::CorrespondenceChess::NextGame}
 		button    $w.top.sendCC     -image tb_CC_Send            -command {::CorrespondenceChess::SendMove 0 0 0 0}
+		button    $w.top.delinbox   -image tb_CC_delete          -command {::CorrespondenceChess::EmptyInOutbox}
 
 		button    $w.top.openDB     -text  [::tr "CCOpenDB"]     -command {::CorrespondenceChess::OpenCorrespondenceDB}
 		button    $w.top.inbox      -text  [::tr "CCInbox"]      -command {::CorrespondenceChess::ReadInbox}
-		button    $w.top.delinbox   -image tb_CC_delete -command {::CorrespondenceChess::EmptyInOutbox}
 
-		button    $w.top.resign     -text  [::tr "CCResign"]     -state disabled -command {::CorrespondenceChess::SendMove 1 0 0 0}
+		button    $w.top.resign     -text  [::tr "CCResign"]     -state disabled -command {::CorrespondenceChess::SendMove 1 0 0 0} -font font_Bold
 		button    $w.top.claimDraw  -text  [::tr "CCClaimDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 1 0 0}
 		button    $w.top.offerDraw  -text  [::tr "CCOfferDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 0 1 0}
 		button    $w.top.acceptDraw -text  [::tr "CCAcceptDraw"] -state disabled -command {::CorrespondenceChess::SendMove 0 0 0 1}
@@ -1607,27 +1607,27 @@ namespace eval CorrespondenceChess {
 		::utils::tooltip::Set $w.top.help       [::tr "CCHelpBtn"]
 		::utils::tooltip::Set $w.top.onoffline  [clock format $::Xfcc::lastupdate]
 
-		grid $w.top.console                -column  4 -row 0 -columnspan 8
-		grid $w.top.ysc        -stick ns   -column 13 -row 0 
-		grid $w.top.help       -stick nsew -column 14 -row 0 -columnspan 2
+ 		grid $w.top.retrieveCC  -stick ewns  -column  0 -row 0
+ 		grid $w.top.openDB      -stick ew    -column  0 -row 1 -columnspan 2
+ 		grid $w.top.inbox       -stick ew    -column  0 -row 2 -columnspan 2
+ 
+ 		grid $w.top.sendCC      -stick ewns  -column  1 -row 0
 
-		grid $w.top.retrieveCC  -stick ewns  -column  0 -row 0
-		grid $w.top.sendCC      -stick ewns  -column  2 -row 0
+		grid $w.top.console                  -column  4 -row 0 -columnspan 8
+		grid $w.top.ysc         -stick ns    -column 13 -row 0 
+		grid $w.top.help        -stick nsew  -column 14 -row 0 -columnspan 2
 
+		grid $w.top.delinbox    -stick ewns  -column  5 -row 1 -rowspan 2
+		grid $w.top.onoffline                -column  6 -row 1
+		grid $w.top.plugins                  -column  6 -row 2
 
-		grid $w.top.openDB      -stick ew  -column  0 -row 1 -columnspan 3
-		grid $w.top.onoffline              -column  4 -row 1
-		grid $w.top.inbox       -stick ew  -column  0 -row 2 -columnspan 3
-		# grid $w.top.delinbox               -column  3 -row 2
-		grid $w.top.plugins                -column  4 -row 2
+		grid $w.top.resign      -stick ew    -column  7 -row 1
 
-		grid $w.top.resign      -stick ew  -column  5 -row 1
+		#### grid $w.top.delinbox    -stick e   -column  7 -row 1
 
-		grid $w.top.delinbox    -stick e   -column  7 -row 1
-
-		grid $w.top.claimDraw   -stick ew  -column  5 -row 2
-		grid $w.top.offerDraw   -stick ew  -column  6 -row 2
-		grid $w.top.acceptDraw  -stick ew  -column  7 -row 2
+		grid $w.top.claimDraw   -stick ew    -column  7 -row 2
+		grid $w.top.offerDraw   -stick ew    -column  8 -row 2
+		grid $w.top.acceptDraw  -stick ew    -column  9 -row 2
 
 		# build the table in the bottom frame. This table of text widgets has to
 		# scroll syncronously!
@@ -1662,7 +1662,7 @@ namespace eval CorrespondenceChess {
 		bind $w <F1>   { helpWindow Correspondence}
 		bind $w "?"    { helpWindow CCIcons}
 
-		bind $w <Configure> { ::docking::handleConfigureEvent ::CorrespondenceChess::ConsoleResize }
+		bind $w <Configure> { ::CorrespondenceChess::ConsoleResize }
 		bind $w <Destroy>   { set ::CorrespondenceChess::isOpen 0 }
 
 		foreach f [glob -nocomplain [file join "$CorrespondenceChess::PluginPath" *]] {
@@ -2620,18 +2620,21 @@ namespace eval CorrespondenceChess {
 			set inpath  "$Inbox/"
 			set outpath "$Outbox/"
 		}
+		set result [tk_dialog .roDialog "Scid: [tr CCDlgDeleteBoxes]" \
+				$::tr(CCDlgDeleteBoxesText) "" 1 $::tr(Yes) $::tr(No)]
+		if {$result == 0} {
+			foreach f [glob -nocomplain [file join $inpath *]] {
+				file delete $f
+			}
+			foreach f [glob -nocomplain [file join $outpath *]] {
+				file delete $f
+			}
+			set filename [scidConfigFile xfccstate]
+			file delete $filename
 
-		foreach f [glob -nocomplain [file join $inpath *]] {
-			file delete $f
+			::CorrespondenceChess::emptyGamelist
 		}
-		foreach f [glob -nocomplain [file join $outpath *]] {
-			file delete $f
-		}
 
-		set filename [scidConfigFile xfccstate]
-		file delete $filename
-
-		::CorrespondenceChess::emptyGamelist
 	}
 
 	#----------------------------------------------------------------------

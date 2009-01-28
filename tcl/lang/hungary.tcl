@@ -1919,6 +1919,10 @@ translate H CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
 translate H CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
+translate H CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate H CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
 translate H CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
 translate H CCDlgYourName {Your Name:}
@@ -2250,6 +2254,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -1579,6 +1579,8 @@ translate E CCDlgmailxEg {e.g. mailx, mutt, nail...}
 translate E CCDlgAttachementPar {Attachment parameter:}
 translate E CCDlgInternalXfcc {Use internal Xfcc support}
 translate E CCDlgSubjectPar {Subject parameter:}
+translate E CCDlgDeleteBoxes {Empty In-/Outbox}
+translate E CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess?\nThis requires a new sync to show the last state of your games.}
 
 translate E CCDlgStartEmail {Start new eMail game}
 translate E CCDlgYourName {Your Name:}

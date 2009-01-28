@@ -1534,6 +1534,10 @@ translate F CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate F CCDlgAttachementPar {Attachement:}
 translate F CCDlgInternalXfcc {Utiliser Xfcc interne}
 translate F CCDlgSubjectPar {Objet:}
+# ====== TODO To be translated ======
+translate F CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate F CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
 translate F CCDlgStartEmail {Commencer nouvelle partie par eMail}
 translate F CCDlgYourName {Votre nom:}
 translate F CCDlgYourMail {Votre adresse mail:}
@@ -1790,6 +1794,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

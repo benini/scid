@@ -1924,6 +1924,10 @@ translate Y CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
 translate Y CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
+translate Y CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate Y CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
 translate Y CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
 translate Y CCDlgYourName {Your Name:}
@@ -2024,6 +2028,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

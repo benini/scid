@@ -1709,6 +1709,10 @@ translate N CCDlgmailxEg {b.v. mailx, mutt, nail...}
 translate N CCDlgAttachementPar {Aanhangsel parameter:}
 translate N CCDlgInternalXfcc {Gebruik interne Xfcc ondersteuning}
 translate N CCDlgSubjectPar {Onderwerp parameter:}
+# ====== TODO To be translated ======
+translate N CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate N CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
 translate N CCDlgStartEmail {Start een nieuwe eMail partij}
 translate N CCDlgYourName {Uw Naam:}
 translate N CCDlgYourMail {Uw eMail Addres:}
@@ -1765,6 +1769,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

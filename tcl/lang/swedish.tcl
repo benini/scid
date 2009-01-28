@@ -1927,6 +1927,10 @@ translate W CCDlgInternalXfcc {Använd internt Xfcc-stöd}
 # ====== TODO To be translated ======
 translate W CCDlgSubjectPar {Ämnes-parameter:}
 # ====== TODO To be translated ======
+translate W CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate W CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
 translate W CCDlgStartEmail {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
 translate W CCDlgYourName {Ditt Namn:}
@@ -7041,6 +7045,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

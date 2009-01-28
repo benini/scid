@@ -1546,6 +1546,10 @@ translate S CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate S CCDlgAttachementPar {Parámetro Adhesión (Attachment):}
 translate S CCDlgInternalXfcc {Usar soporte interno Xfcc}
 translate S CCDlgSubjectPar {Parámetro Sujeto (Subject):}
+# ====== TODO To be translated ======
+translate S CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate S CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
 translate S CCDlgStartEmail {Empezar nueva partida eMail}
 translate S CCDlgYourName {Tu nombre:}
 translate S CCDlgYourMail {Tu dirección eMail:}
@@ -1598,6 +1602,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

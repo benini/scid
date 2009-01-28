@@ -1929,6 +1929,10 @@ translate B CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
 translate B CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
+translate B CCDlgDeleteBoxes {Empty In-/Outbox}
+# ====== TODO To be translated ======
+translate B CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
 translate B CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
 translate B CCDlgYourName {Your Name:}
@@ -2030,6 +2034,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

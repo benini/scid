@@ -1585,6 +1585,8 @@ translate D CCDlgmailxEg {z. B. mailx, mutt, nail...}
 translate D CCDlgAttachementPar {Parameter für Anhang:}
 translate D CCDlgInternalXfcc {Interne Xfcc-Unterstützung verwenden}
 translate D CCDlgSubjectPar {Parameter für Betreff:}
+translate D CCDlgDeleteBoxes {Leeren des Postein- und Ausgangs}
+translate D CCDlgDeleteBoxesText {Wollen Sie wirklich Ihren Postein- und Ausgang leeren?\nDies erfordert ein erneutes Synchronisieren zum den aktuellen Zustand Ihrer Partien anzuzeigen.}
 translate D CCDlgStartEmail {Neue eMail Partie}
 translate D CCDlgYourName {Ihr Name:}
 translate D CCDlgYourMail {Ihre eMail Adresse:}
@@ -1597,7 +1599,7 @@ translate D CCDlgTitNoGames {Scid: Keine Fernschachpartien}
 translate D CCErrInboxDir {Der Posteingang für Fernschachpartien unter:}
 translate D CCErrOutboxDir {Der Postausgang für Fernschachpartien unter:}
 translate D CCErrDirNotUsable {existiert nicht oder ist nicht benutzbar!\nBitte überprüfen und die Einstellungen korrigieren.}
-translate D CCErrNoGames {Enthält keine Partien!\nBitte sychronisieren Sie zunächst.}
+translate D CCErrNoGames {enthält keine Partien!\nBitte sychronisieren Sie zunächst.}
 
 translate D CCDlgTitNoCCDB {Scid: Keine Fernschach-Datenbank}
 translate D CCErrNoCCDB {Es wurde keine Datenbank vom Typ 'Fernschach' geöffnet. Bitte öffen Sie eine solche bevor Sie Funktionen des Fernschachmoduls benutzen.}
@@ -7185,6 +7187,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 
