@@ -1897,7 +1897,7 @@ translate R FICSFilterFormula {Filter with formula}
 # ====== TODO To be translated ======
 translate R FICSIssueSeek {Issue seek}
 # ====== TODO To be translated ======
-translate R FICSChallenge {Callenge}
+translate R FICSChallenge {Challenge}
 # ====== TODO To be translated ======
 translate R FICSAccept {accept}
 # ====== TODO To be translated ======

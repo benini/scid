@@ -1549,7 +1549,7 @@ translate E FICSAutoColour {automatic}
 translate E FICSManualConfirm {confirm manually}
 translate E FICSFilterFormula {Filter with formula}
 translate E FICSIssueSeek {Issue seek}
-translate E FICSChallenge {Callenge}
+translate E FICSChallenge {Challenge}
 translate E FICSAccept {accept}
 translate E FICSDecline {decline}
 translate E FICSColour {Colour}

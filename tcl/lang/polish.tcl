@@ -1877,7 +1877,7 @@ translate P FICSFilterFormula {Filter with formula}
 # ====== TODO To be translated ======
 translate P FICSIssueSeek {Issue seek}
 # ====== TODO To be translated ======
-translate P FICSChallenge {Callenge}
+translate P FICSChallenge {Challenge}
 # ====== TODO To be translated ======
 translate P FICSAccept {accept}
 # ====== TODO To be translated ======
