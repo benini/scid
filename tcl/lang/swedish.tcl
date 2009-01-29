@@ -188,13 +188,13 @@ menuText W ToolsTrainFics "Spela på Internet"  0 {Spela på freechess.org}
 # ====== TODO To be translated ======
 menuText W ToolsBookTuning "Bokfininställning" 0 {Bokfininställning}
 # ====== TODO To be translated ======
-menuText W ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
+menuText W ToolsConnectHardware "Anslut Hårdwara" 0 {Anslut extern hårdvara}
 # ====== TODO To be translated ======
 menuText W ToolsConnectHardwareConfigure  "Konfiguration" 0 {Konfiguration}
 # ====== TODO To be translated ======
 menuText W ToolsConnectHardwareNovagCitrineConnect "Anslut Novag Citrine" 0 {Anslut Novag Citrine}
 # ====== TODO To be translated ======
-menuText W ToolsConnectHardwareInputEngineConnect "Anslut Input Engine" 0 {Anslut Input Engine (e.g. DGT)}
+menuText W ToolsConnectHardwareInputEngineConnect "Anslut Inmatningsschackmotor" 0 {Anslut Inmatningsschackmotor (t.ex. DGT)}
 menuText W ToolsPInfo "Spelarinformation"  0 \
   {Öppna/ uppdatera spelarinformation}
 menuText W ToolsPlayerReport "Spelarrapport..." 3 \
@@ -243,6 +243,10 @@ menuText W CCRetrieve "Hämta Partier" 0 {Hämta partier via extern (Xfcc-)hjälpar
 # ====== TODO To be translated ======
 menuText W CCInbox "Hantera Inkorg" 0 {Hantera alla filer i Scids Inkorg}
 # ====== TODO To be translated ======
+menuText W CCPrevious "Förra partiet" 0 {Gå till förra partiet i Inkorgen}
+# ====== TODO To be translated ======
+menuText W CCNext "Nästa Parti" 0 {Gå till nästa parti i Inkorgen}
+# ====== TODO To be translated ======
 menuText W CCSend "Skicka Drag" 0 {Skicka ditt drag via eMail eller extern (Xfcc-)hjälpare}
 # ====== TODO To be translated ======
 menuText W CCResign "Ge upp" 0 {Ge upp (inte via eMail)}
@@ -257,7 +261,7 @@ menuText W CCNewMailGame "Nytt eMail-parti..." 0 {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
 menuText W CCMailMove "Skicka Drag..." 0 {Skicka draget via eMail till motståndaren}
 # ====== TODO To be translated ======
-menuText W CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+menuText W CCGamePage "Partisida..." 0 {Starta upp bartiet via webläsaren}
 
 # Options menu:
 menuText W Options "Alternativ" 2
@@ -302,7 +306,7 @@ menuText W OptionsMovesKey "Tangentkomplettering" 0 \
 menuText W OptionsNumbers "Talformat" 3 {Välj hur tal visas}
 menuText W OptionsStartup "Start" 3 {Välj vilka fönster som ska öppnas vid start}
 # ====== TODO To be translated ======
-menuText W OptionsTheme "Theme" 0 {Change look of interface}
+menuText W OptionsTheme "Tema" 0 {Ändra utseende på gränssnitt}
 menuText W OptionsWindows "Fönster" 1 {Fönsteralternativ}
 menuText W OptionsWindowsIconify "Minimera automatiskt" 5 \
   {Minimera alla fönster när huvudfönstret minimeras}
@@ -310,15 +314,15 @@ menuText W OptionsWindowsRaise "Autofokus" 0 \
   {Visa åter vissa fönster (t ex. resultaträknare) automatiskt när de döljs}
 menuText W OptionsSounds "Ljud..." 2 {Konfigurera ljud för att annonsera drag}
 # ====== TODO To be translated ======
-menuText W OptionsWindowsDock "Dock windows" 0 {Dock windows}
+menuText W OptionsWindowsDock "Dockningsfönster" 0 {Dockningsfönster}
 # ====== TODO To be translated ======
-menuText W OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
+menuText W OptionsWindowsSaveLayout "Spara layout" 0 {Sparar layout}
 # ====== TODO To be translated ======
-menuText W OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
+menuText W OptionsWindowsRestoreLayout "Återställ layout" 0 {Återställer layout}
 # ====== TODO To be translated ======
-menuText W OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
+menuText W OptionsWindowsShowGameInfo "Visa partiinformation" 0 {Visar partiinformation}
 # ====== TODO To be translated ======
-menuText W OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
+menuText W OptionsWindowsAutoLoadLayout "Automatiskt öppna första layouten" 0 {Öppnar automatiskt första layouten vid uppstart}
 menuText W OptionsToolbar "Verktygsfält" 0 \
   {Visa/ dölj huvudfönstrets verktygsfält}
 menuText W OptionsECO "Ladda ECO fil..." 7 {Ladda ECO-klassificeringen vid start}
@@ -558,7 +562,7 @@ menuText W TreeOptFastmode "Snabb mod" 0 {Snabb mod för uppdateringar (ingen dra
 # ====== TODO To be translated ======
 menuText W TreeOptFastAndSlowmode "Snabb och långsam mod" 0 {Snabb mod sedan långsam mod för uppdateringar}
 # ====== TODO To be translated ======
-menuText W TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
+menuText W TreeOptStartStop "Automatisk uppdatering" 0 {Växlar automatisk uppdatering av trädfönstret}
 menuText W TreeOptLock "Lås" 0 {Lås/ lås upp trädet för den aktuella databasen}
 menuText W TreeOptTraining "Träna" 0 {Starta/ stäng av träningsläge}
 menuText W TreeOptAutosave "Spara cache filen automatiskt" 0 \
@@ -584,7 +588,7 @@ translate W AddToMask {Lägg till i Sökmask}
 # ====== TODO To be translated ======
 translate W RemoveFromMask {Ta bort från Sökmask}
 # ====== TODO To be translated ======
-translate W AddThisMoveToMask {Add this move to Mask}
+translate W AddThisMoveToMask {Lägg till deta drag i Sökmask}
 # ====== TODO To be translated ======
 translate W Nag {NAG-kod}
 # ====== TODO To be translated ======
@@ -774,9 +778,9 @@ translate W Informant++- {Partiet anses vara vunnet}
 # ====== TODO To be translated ======
 translate W Book {Bok}
 # ====== TODO To be translated ======
-translate W OtherBookMoves {Opponent's book}
+translate W OtherBookMoves {Motståndarens bok}
 # ====== TODO To be translated ======
-translate W OtherBookMovesTooltip {Moves to which the opponent has a reply}
+translate W OtherBookMovesTooltip {Drag som motståndaren har ett svar på}
 
 # Analysis Engine open dialog:
 translate W EngineList {Lista över schackprogram}
@@ -1837,51 +1841,51 @@ translate W KingsIndianSamisch {Kungsindiskt Sämisch}
 # ====== TODO To be translated ======
 translate W KingsIndianMainLine {Kungsindiskt Huvudvariation}
 # ====== TODO To be translated ======
-translate W ConfigureFics {Configure FICS}
+translate W ConfigureFics {Konfigurera FICS}
 # ====== TODO To be translated ======
-translate W FICSGuest {Login as Guest}
+translate W FICSGuest {Logga in som Gäst}
 # ====== TODO To be translated ======
-translate W FICSServerPort {Server port}
+translate W FICSServerPort {Server-port}
 # ====== TODO To be translated ======
-translate W FICSTimesealPort {Timeseal port}
+translate W FICSTimesealPort {Timeseal-port}
 # ====== TODO To be translated ======
-translate W FICSSilence {Silence}
+translate W FICSSilence {Tystnad}
 # ====== TODO To be translated ======
-translate W FICSOffers {Offers}
+translate W FICSOffers {Erbjuder}
 # ====== TODO To be translated ======
-translate W FICSGames {Games}
+translate W FICSGames {Partier}
 # ====== TODO To be translated ======
-translate W FICSFindOpponent {Find opponent}
+translate W FICSFindOpponent {Hitta motståndare}
 # ====== TODO To be translated ======
-translate W FICSTakeback {Takeback}
+translate W FICSTakeback {Ta tillbaka}
 # ====== TODO To be translated ======
-translate W FICSTakeback2 {Takeback 2}
+translate W FICSTakeback2 {Ta tillbaka 2}
 # ====== TODO To be translated ======
-translate W FICSInitTime {Initial time (min)}
+translate W FICSInitTime {Initialtid (minuter)}
 # ====== TODO To be translated ======
-translate W FICSIncrement {Increment (sec)}
+translate W FICSIncrement {Inkrementering (sekunder)}
 # ====== TODO To be translated ======
-translate W FICSRatedGame {Rated Game}
+translate W FICSRatedGame {Ratingparti}
 # ====== TODO To be translated ======
-translate W FICSAutoColour {automatic}
+translate W FICSAutoColour {automatisk}
 # ====== TODO To be translated ======
-translate W FICSManualConfirm {confirm manually}
+translate W FICSManualConfirm {bekräfta manuellt}
 # ====== TODO To be translated ======
-translate W FICSFilterFormula {Filter with formula}
+translate W FICSFilterFormula {Filtrera med formel}
 # ====== TODO To be translated ======
-translate W FICSIssueSeek {Issue seek}
+translate W FICSIssueSeek {Sökfråga}
 # ====== TODO To be translated ======
-translate W FICSChallenge {Challenge}
+translate W FICSChallenge {Utmana}
 # ====== TODO To be translated ======
-translate W FICSAccept {accept}
+translate W FICSAccept {acceptera}
 # ====== TODO To be translated ======
-translate W FICSDecline {decline}
+translate W FICSDecline {avböj}
 # ====== TODO To be translated ======
-translate W FICSColour {Colour}
+translate W FICSColour {färg}
 # ====== TODO To be translated ======
-translate W FICSSend {send}
+translate W FICSSend {skicka}
 # ====== TODO To be translated ======
-translate W FICSConnect {Connect}
+translate W FICSConnect {Anslut}
 # ====== TODO To be translated ======
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
@@ -1923,10 +1927,10 @@ translate W CCDlgInternalXfcc {Använd internt Xfcc-stöd}
 # ====== TODO To be translated ======
 translate W CCDlgSubjectPar {Ämnes-parameter:}
 # ====== TODO To be translated ======
-translate W CCDlgDeleteBoxes {Empty In-/Outbox}
-# ====== TODO To be translated ======
-translate W CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
-# ====== TODO To be translated ======
+translate W CCDlgDeleteBoxes {Töm In-/Utbox} 
+# ====== TODO To be translated ====== 
+translate W CCDlgDeleteBoxesText {Vill du verkligen tömma dina In- och Utboxkataloger för Korrespondensschack? Detta kräver en ny synkronisering för att visa den seanaste statusen på dina partier} 
+# ====== TODO To be translated ====== 
 translate W CCDlgStartEmail {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
 translate W CCDlgYourName {Ditt Namn:}
@@ -1969,61 +1973,61 @@ translate W CCEmptyBtn {Töm Inkorgen och Utkorgen}
 # ====== TODO To be translated ======
 translate W CCHelpBtn {Hjälp med ikoner och statusindikatorer.\nFör generell Hjälp tryck på F1!}
 # ====== TODO To be translated ======
-translate W CCDlgServerName {Server Name:}
+translate W CCDlgServerName {Servernamn:}
 # ====== TODO To be translated ======
-translate W CCDlgLoginName  {Login Name:}
+translate W CCDlgLoginName  {Inloggningsnamn:}
 # ====== TODO To be translated ======
-translate W CCDlgPassword   {Password:}
+translate W CCDlgPassword   {Lösenord:}
 # ====== TODO To be translated ======
 translate W CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
-translate W CCDlgRatingType {Rating Type:}
+translate W CCDlgRatingType {Ratingtyp:}
 # ====== TODO To be translated ======
-translate W ExtHWConfigConnection {Configure external hardware}
+translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 # ====== TODO To be translated ======
 translate W ExtHWPort {Port}
 # ====== TODO To be translated ======
-translate W ExtHWEngineCmd {Engine command}
+translate W ExtHWEngineCmd {Schackmotorkommando}
 # ====== TODO To be translated ======
-translate W ExtHWEngineParam {Engine parameter}
+translate W ExtHWEngineParam {Schackmotorparameter}
 # ====== TODO To be translated ======
-translate W ExtHWShowButton {Show button}
+translate W ExtHWShowButton {Visa knapp}
 # ====== TODO To be translated ======
-translate W ExtHWHardware {Hardware}
+translate W ExtHWHardware {Hårdvara}
 # ====== TODO To be translated ======
 translate W ExtHWNovag {Novag Citrine}
 # ====== TODO To be translated ======
-translate W ExtHWInputEngine {Input Engine}
+translate W ExtHWInputEngine {Inmatningsschackmotor}
 # ====== TODO To be translated ======
-translate W ExtHWNoBoard {No board}
+translate W ExtHWNoBoard {Inget bräde}
 # ====== TODO To be translated ======
-translate W IEConsole {Input Engine Console}
+translate W IEConsole {Inmatningsschackmotorkonsol}
 # ====== TODO To be translated ======
-translate W IESending {Moves sent for}
+translate W IESending {Drag skickade för}
 # ====== TODO To be translated ======
-translate W IESynchronise {Synchronise}
+translate W IESynchronise {Synkronisera}
 # ====== TODO To be translated ======
-translate W IERotate  {Rotate}
+translate W IERotate  {Rotera}
 # ====== TODO To be translated ======
-translate W IEUnableToStart {Unable to start Input Engine:}
+translate W IEUnableToStart {Kunde inste starta Inmatningsschackmotor:}
 # ====== TODO To be translated ======
 translate W DoneWithPosition {Klar med position}
 # ====== TODO To be translated ======
-translate W Board {Board}
+translate W Board {Bräde}
 # ====== TODO To be translated ======
-translate W showGameInfo {Show game info}
+translate W showGameInfo {Visa partiinformation}
 # ====== TODO To be translated ======
-translate W autoResizeBoard {Automatic resize of board}
+translate W autoResizeBoard {Ändra storleken på brädet automatiskt}
 # ====== TODO To be translated ======
-translate W DockTop {Move to top}
+translate W DockTop {Drag överst}
 # ====== TODO To be translated ======
-translate W DockBottom {Move to bottom}
+translate W DockBottom {Drag nederst}
 # ====== TODO To be translated ======
-translate W DockLeft {Move to left}
+translate W DockLeft {Drag till vänster}
 # ====== TODO To be translated ======
-translate W DockRight {Move to right}
+translate W DockRight {Drag till höger}
 # ====== TODO To be translated ======
-translate W Undock {Undock}
+translate W Undock {Avdocka}
 # ====== TODO To be translated ======
 }
 
@@ -7041,7 +7045,6 @@ set tips(W) {
   }
 }
 #}
-
 
 
 
