@@ -84,7 +84,7 @@ CFLAGS = -O2 -Wall $(PROFILE) $(OPTIMIZE) $(PPC) -DWINCE
 ### EXECS: executable programs compiled from C++ files.
 #     Note: scidt and eco2epd are obsolete and not compiled by default.
 #
-EXECS= tkscid toga toga134 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet
+EXECS= tkscid toga toga134 toga141SE glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -156,6 +156,9 @@ toga:
 
 toga134:
 	cd pocket/toga134/src && $(MAKE) -f Makefile
+
+toga141SE:
+	cd pocket/toga141SE/src && $(MAKE) -f Makefile
 
 fruit_21:
 	cd pocket/fruit_21/src && $(MAKE) -f Makefile

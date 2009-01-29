@@ -243,10 +243,6 @@ menuText W CCRetrieve "Hämta Partier" 0 {Hämta partier via extern (Xfcc-)hjälpar
 # ====== TODO To be translated ======
 menuText W CCInbox "Hantera Inkorg" 0 {Hantera alla filer i Scids Inkorg}
 # ====== TODO To be translated ======
-menuText W CCPrevious "Förra partiet" 0 {Gå till förra partiet i Inkorgen}
-# ====== TODO To be translated ======
-menuText W CCNext "Nästa Parti" 0 {Gå till nästa parti i Inkorgen}
-# ====== TODO To be translated ======
 menuText W CCSend "Skicka Drag" 0 {Skicka ditt drag via eMail eller extern (Xfcc-)hjälpare}
 # ====== TODO To be translated ======
 menuText W CCResign "Ge upp" 0 {Ge upp (inte via eMail)}

@@ -800,7 +800,7 @@ proc setMenu { w m} {
 # In docked mode, resize board automatically
 ################################################################################
 proc resizeMainBoard {} {
-  
+  # puts "resizeMainBoard [clock clicks -milliseconds]"
   if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } { return }
   
   bind .main <Configure> {}
