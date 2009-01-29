@@ -218,8 +218,6 @@ menuText I CCConfigure "Configura..." 0 {Configurazione generale e degli strumen
 menuText I CCOpenDB "Apri Database..." 0 {Apri il database di default per il gioco per corrispondenza}
 menuText I CCRetrieve "Trova Partite" 0 {Trova le partite tramite l'aiuto esterno Xfcc}
 menuText I CCInbox "Processa Posta in Arrivo" 0 {Processa tutti i file nella posta in arrivo di Scid}
-menuText I CCPrevious "Partita precedente" 0 {Va alla partita precedente in Posta in Arrivo}
-menuText I CCNext "Partita seguente" 0 {Va alla partita seguente in Posta in Arrivo}
 menuText I CCSend "Spedisci Mossa" 0 {Spedisce la tua mossa tramite eMail o Xfcc}
 menuText I CCResign "Abbandona" 0 {Abbandona la partita (non tramite eMail)}
 menuText I CCClaimDraw "Richiedi Patta" 0 {Spedisce la mossa e richiede la patta (non tramite eMail)}

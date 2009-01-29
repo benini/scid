@@ -242,10 +242,6 @@ menuText O CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)hel
 # ====== TODO To be translated ======
 menuText O CCInbox "Process Inobx" 0 {Process all files in scids Inbox}
 # ====== TODO To be translated ======
-menuText O CCPrevious "Previous Game" 0 {Go to previous game in Inbox}
-# ====== TODO To be translated ======
-menuText O CCNext "Next Game" 0 {Go to next game in Inbox}
-# ====== TODO To be translated ======
 menuText O CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
 # ====== TODO To be translated ======
 menuText O CCResign "Resign" 0 {Resign (not via eMail)}

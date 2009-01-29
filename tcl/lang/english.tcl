@@ -247,9 +247,7 @@ menuText E CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and
 menuText E CCConfigure "Configure..." 0 {Configure external tools and general setup}
 menuText E CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 menuText E CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
-
 menuText E CCInbox "Process Inbox" 8 {Process all files in scids Inbox}
-
 menuText E CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
 
 menuText E CCResign "Resign" 1 {Resign (not via eMail)}

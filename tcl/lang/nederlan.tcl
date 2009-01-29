@@ -229,8 +229,6 @@ menuText N CCConfigure "Configureer..." 0 {Configureer externe tools en algemene
 menuText N CCOpenDB "Open Database..." 0 {Open de default correspondentieschaak database}
 menuText N CCRetrieve "Haal Partijen op" 0 {Haal partijen op via externe (Xfcc-)helper}
 menuText N CCInbox "Verwerk Inbox" 0 {Verwerk alle bestanden in scids Inbox}
-menuText N CCPrevious "Vorige Partij" 0 {Ga naar de vorige partij in de Inbox}
-menuText N CCNext "Volgende Partij" 0 {Ga naar de volgende partij in de Inbox}
 menuText N CCSend "Stuur de Zet op" 0 {Stuur de zet op via eMail of de externe (Xfcc-)helper}
 menuText N CCResign "Geef op" 0 {Geef op (niet via eMail)}
 menuText N CCClaimDraw "Eis Remise" 0 {Stuur de zet op en eis remise (niet via eMail)}

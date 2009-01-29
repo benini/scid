@@ -225,8 +225,6 @@ menuText S CCConfigure "Configurar..." 0 {Configurar herramientas externas y Set
 menuText S CCOpenDB "Abrir base de datos..." 0 {Abrir la base de Correo por defecto}
 menuText S CCRetrieve "Reparar partidas" 0 {Reparar partidas via Ayuda externa (Xfcc)}
 menuText S CCInbox "Procesar correo entrante" 0 {Procesar todos los ficheros en Correo entrante de Scid (Inbox)}
-menuText S CCPrevious "Partida previa" 0 {Previa partida en correo entrante (Inbox)}
-menuText S CCNext "Partida siguiente" 0 {Próxima partida en correo entrante (Inbox)}
 menuText S CCSend "Enviar movimiento" 0 {Enviar tu movimiento via eMail o ayuda externa (Xfcc)}
 menuText S CCResign "Abandonar" 0 {Abandonar}
 menuText S CCClaimDraw "Reclamar tablas" 0 {Enviar un movimiento y reclamar tablas}

@@ -216,8 +216,6 @@ menuText F CCConfigure "Configurer..." 0 {Configurer outils externes et config g
 menuText F CCOpenDB "Ouvrir base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
 menuText F CCRetrieve "Récupérer parties" 0 {Récupérer les parties via Xfcc}
 menuText F CCInbox "Analyser boîte" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
-menuText F CCPrevious "Partie précédente" 0 {Aller à la partie précédente dans la boîte de réception}
-menuText F CCNext "Partie suivante" 0 {Aller à la partie suivante dans la boîte de réception}
 menuText F CCSend "Envoyer coup" 0 {Envoyer votre coup via eMail ou outil externe (Xfcc)}
 menuText F CCResign "Abandonner" 0 {Abandonner (pas par eMail)}
 menuText F CCClaimDraw "Réclamer la nulle" 0 {Envoyer coup et réclamer nulle (pas par eMail)}
