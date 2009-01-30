@@ -257,7 +257,7 @@ menuText W CCNewMailGame "Nytt eMail-parti..." 0 {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
 menuText W CCMailMove "Skicka Drag..." 0 {Skicka draget via eMail till motståndaren}
 # ====== TODO To be translated ======
-menuText W CCGamePage "Partisida..." 0 {Starta upp bartiet via webläsaren}
+menuText W CCGamePage "Partisida..." 0 {Starta upp partiet via webläsaren}
 
 # Options menu:
 menuText W Options "Alternativ" 2

@@ -155,7 +155,7 @@ proc ::ui::About {} {
   # }
   
   tk_messageBox -type ok -icon info -parent .fTop -title "About" -message \
-      "Engine #1 : [::engine::getName 1]\nEngine #2 : [::engine::getName 2]\n$::scidppc_version\nScid Pocket is based on Scid\nhttp://prolinux.free.fr/scid\nReleased under GPL (free)\n[sc_info pocket]"
+      "Engine #1 : [::engine::getName 1]\nEngine #2 : [::engine::getName 2]\n$::scidppc_version\nScid Pocket is based on Scid\nhttp://scid.sourceforge.net\nReleased under GPL (free)\n[sc_info pocket]"
 }
 
 ################################################################################
