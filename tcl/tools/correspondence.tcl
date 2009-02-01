@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.46 2009/01/28 19:26:07 arwagner Exp $
+### $Id: correspondence.tcl,v 1.47 2009/02/01 09:48:51 arwagner Exp $
 ###
-### Last change: <Wed, 2009/01/28 20:18:33 arwagner ingata>
+### Last change: <Sun, 2009/02/01 10:47:13 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2188,19 +2188,19 @@ namespace eval CorrespondenceChess {
 	# For Windows quoting is not possible as usual, < and > are not allowed
 	# as textual arguments even if quoted properly.
 	#----------------------------------------------------------------------
-	proc CallExternal {callstring} {
+	proc CallExternal {callstring {param ""}} {
 		global windowsOS
 
 		if {$windowsOS} {
 			# On Windows, use the "start" command:
 			if {[string match $::tcl_platform(os) "Windows NT"]} {
-				catch {exec $::env(COMSPEC) /c "$callstring" &}
+				catch {exec $::env(COMSPEC) /c "$callstring $param" &}
 			} else {
-				catch {exec start "$callstring" &}
+				catch {exec start "$callstring $param" &}
 			}
 		} else {
 			# On Unix just call the shell with the converter tool
-			catch {exec /bin/sh -c "$callstring" &}
+			catch {exec /bin/sh -c "$callstring $param" &}
 		}
 	}
 
