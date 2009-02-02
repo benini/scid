@@ -623,6 +623,7 @@ scid-3.6.7
   * Show last move in tooltip for the "to move" icon (suggested by Dhanish)
   * move delete in/outbox button furter away from Process Inbox (suggested by Dhanish)
   * Yes/No dialogue before cleaning the in/outbox (suggeted by Dhanish)
+  * All paths required use $scidDataDir/$scidConfigDir variable if possible. This allows more seemless usage from an USB drive on Windows where the drive letters change all the time.
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 

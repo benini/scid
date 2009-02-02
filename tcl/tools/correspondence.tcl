@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.47 2009/02/01 09:48:51 arwagner Exp $
+### $Id: correspondence.tcl,v 1.48 2009/02/02 19:53:43 arwagner Exp $
 ###
-### Last change: <Sun, 2009/02/01 10:47:13 arwagner ingata>
+### Last change: <Mon, 2009/02/02 20:51:05 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -77,7 +77,7 @@ namespace eval Xfcc {
 		global ::Xfcc::xfccrc ::Xfcc::xfccrcfile
 		# file delete $xfccrcfile
 		if {[catch {open $xfccrcfile w} optionF]} {
-			puts stderr "error"
+			puts stderr "$xfccrcfile does not exist"
 		} else {
 			# devide by 4 as the size function returns all subarray entries
 			set size [expr [ array size ::Xfcc::xfccsrv ] / 4]
@@ -770,18 +770,13 @@ namespace eval Xfcc {
 				append TC $increment
 				append TC "d (Fischer)"
 			} elseif { [regexp {\/} $TimeControl] } {
-				puts stderr $TimeControl
 				set TC [split $TimeControl "/"]
 				set moves   [ expr {[lindex $TC 0]} ]
 				set days    [ expr {[lindex $TC 1] / 86400 }]
-				puts stderr $TC
-				puts stderr $moves
-				puts stderr $days
 				set TC $moves
 				append TC " / "
 				append TC $days
 				append TC "d"
-				puts stderr $TC
 				# 10/50 is the official timing for ICCF
 				if { ($moves == 10) && ($days == 50) } {
 					set TC "$TC (ICCF)"
@@ -1381,7 +1376,6 @@ namespace eval CorrespondenceChess {
 			foreach i { ::CorrespondenceChess::CorrBase       \
 							::CorrespondenceChess::Inbox          \
 							::CorrespondenceChess::Outbox         \
-							::CorrespondenceChess::xfccrcfile     \
 							::CorrespondenceChess::XfccFetchcmd   \
 							::CorrespondenceChess::XfccSendcmd    \
 							::CorrespondenceChess::mailer         \
@@ -1390,7 +1384,28 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::attache        \
 							::CorrespondenceChess::subject        \
 							::CorrespondenceChess::PluginPath } {
-				puts $optionF "set $i [list [set $i]]"
+				set path [set $i]
+
+				# If possible replace absolute path by a relative one to
+				# $scidDataDir
+				if { [regexp $::scidDataDir $path] } {
+					regsub -all $::scidDataDir $path "scidDataDir" path
+					puts $optionF "set $i \$$path"
+				} else {
+					puts $optionF "set $i [list [set $i]]"
+				}
+			}
+			foreach i { ::CorrespondenceChess::xfccrcfile     \
+			} {
+				set path [set $i]
+				# If possible replace absolute path by a relative one to
+				# $scidConfigDir
+				if { [regexp $::scidConfigDir $path] } {
+					regsub -all $::scidConfigDir $path "scidConfigDir" path
+					puts $optionF "set $i \$$path"
+				} else {
+					puts $optionF "set $i [list [set $i]]"
+				}
 			}
 			if {$::CorrespondenceChess::XfccInternal < 0}  {
 				puts $optionF {set ::CorrespondenceChess::XfccInternal 0}
