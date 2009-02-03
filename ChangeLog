@@ -698,3 +698,4 @@ scid-3.6.7
 - newly created bases are appended to the recently opened bases in menu (thanks to Benigno Hernández)
 - "Average Elo" and "average year" could be wrong with large databases. Corrected by using 64 bits integers (thanks to Heinz van Saanen)
 - PGN window : colors for current and next moves are now user configurable
+- Bug fix : Scid could crash when using some languages like Hungarian and Swedish (segfault in functions transPieces and transPiecesChar)

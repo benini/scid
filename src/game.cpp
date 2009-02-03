@@ -42,7 +42,7 @@ const char * langPieces[] = { "", "PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS"
 // transPieces():
 // Given a string, will translate pieces from english to another language
 void transPieces(char *s) {
-  if (language == 0 || language > 6) return;
+  if (language == 0 || language > LANGUAGE_MAX) return;
   char * ptr = s;
   int i;
 
@@ -61,7 +61,7 @@ void transPieces(char *s) {
 
 char transPiecesChar(char c) {
   char ret = c;
-  if (language == 0 || language > 6) return c;
+  if (language == 0 || language > LANGUAGE_MAX) return c;
   for (int i=0; i<12; i+=2) {
     if (c == langPieces[language][i]) {
       ret = langPieces[language][i+1];
