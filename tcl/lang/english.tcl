@@ -355,10 +355,10 @@ helpMsg E .main.fbutton.button.start {Go to start of game  (key: Home)}
 helpMsg E .main.fbutton.button.end {Go to end of game  (key: End)}
 helpMsg E .main.fbutton.button.back {Go back one move  (key: LeftArrow)}
 helpMsg E .main.fbutton.button.forward {Go forward one move  (key: RightArrow)}
-helpMsg E .main.fbutton.button.intoVar {Move into a variation  (shortcut key: v)}
-helpMsg E .main.fbutton.button.exitVar {Leave the current variation  (shortcut key: z)}
-helpMsg E .main.fbutton.button.flip {Rotate board  (shortcut key: .)}
-helpMsg E .main.fbutton.button.coords {Turn board coordinates on or off  (shortcut key: 0)}
+helpMsg E .main.fbutton.button.intoVar {Move into a variation  (key: v)}
+helpMsg E .main.fbutton.button.exitVar {Leave the current variation  (key: z)}
+helpMsg E .main.fbutton.button.flip {Rotate board  (key: .)}
+helpMsg E .main.fbutton.button.coords {Turn board coordinates on or off  (key: 0)}
 helpMsg E .main.fbutton.button.stm {Turn the side-to-move icon on or off}
 helpMsg E .main.fbutton.button.autoplay {Autoplay moves  (key: Ctrl+Z)}
 

@@ -816,6 +816,7 @@ proc updateBoard {args} {
   updateMenuStates
   moveEntry_Clear
   updateStatusBar
+    
   if {[winfo exists .twinchecker]} { updateTwinChecker }
   if {[winfo exists .pgnWin]} { ::pgn::Refresh $pgnNeedsUpdate }
   if {[winfo exists .bookWin]} { ::book::refresh }

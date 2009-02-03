@@ -116,7 +116,7 @@ proc ::windows::gamelist::ReOpen {} {
     pack $w.columns.c$code.header -side top -fill x -padx 2
     addHorizontalRule $w.columns.c$code 1 flat
     # -height $glistSize
-    text $w.columns.c$code.text -background white -width $width -height 99 -font font_Small -relief flat -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
+    text $w.columns.c$code.text -background white -width $width -height 50 -font font_Small -relief flat -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
     $w.columns.c$code.text tag configure align -justify $justify -foreground $fgcolor
     $w.columns.c$code.text tag configure highlight -background lightBlue
     $w.columns.c$code.text tag configure current -background lightYellow2
@@ -287,18 +287,18 @@ proc ::windows::gamelist::Resize {} {
   
   # setgrid option does not work in docked mode, so the last line may be partially visible
   if { $::docking::USE_DOCKING } {
-      catch { incr temp -1 }
+    catch { incr temp -1 }
   }
   
   if {$temp != $glistSize && $temp > 0} {
     set glistSize $temp
     set t $w.columns.cg.text
-    # if { $::docking::USE_DOCKING } {
-    # foreach i $glistFields {
-    # set code [lindex $i 0]
-    # .glistWin.columns.c$code.text configure -height $glistSize
-    # }
-    # }
+    if { $::docking::USE_DOCKING } {
+      # foreach i $glistFields {
+        # set code [lindex $i 0]
+        # .glistWin.columns.c$code.text configure -height $glistSize
+      # }
+    }
     ::windows::gamelist::Refresh
   }
   update idletasks

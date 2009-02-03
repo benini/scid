@@ -34,15 +34,15 @@
 // Piece letters translation
 int language = 0; // default to english
 //  0 = en, 1 = fr, 2 = es, 3 = de, 4 = it, 5 = ne, 6 = cz
-const char * langPieces[] = { "", "PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS", ""
+const char * langPieces[] = { "", "PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS", 
 "PPKRQDRTBANC", "PpKKQDRTBLNP", "PPKKQDRVBSNJ" };
+#define LANGUAGE_MAX 6
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // transPieces():
 // Given a string, will translate pieces from english to another language
 void transPieces(char *s) {
-
-  if (language == 0) return;
+  if (language == 0 || language > 6) return;
   char * ptr = s;
   int i;
 
@@ -61,7 +61,7 @@ void transPieces(char *s) {
 
 char transPiecesChar(char c) {
   char ret = c;
-  if (language == 0) return c;
+  if (language == 0 || language > 6) return c;
   for (int i=0; i<12; i+=2) {
     if (c == langPieces[language][i]) {
       ret = langPieces[language][i+1];

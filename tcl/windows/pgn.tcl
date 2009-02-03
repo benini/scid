@@ -364,7 +364,6 @@ namespace eval pgn {
   ################################################################################
   proc Refresh {{pgnNeedsUpdate 0}} {
     if {![winfo exists .pgnWin]} { return }
-    
     set format plain
     if {$::pgn::showColor} {set format color}
     
@@ -427,6 +426,7 @@ namespace eval pgn {
       
       .pgnWin.text configure -state disabled
     }
+    
     return
   }
   ################################################################################
