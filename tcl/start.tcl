@@ -35,12 +35,14 @@ package require Tcl 8.5
 package require Tk  8.5
 package require Ttk
 
-# Determine operating system platform: unix or windows
+# Determine operating system platform: unix, windows or macos
 #
 set windowsOS 0
 if {$tcl_platform(platform) == "windows"} { set windowsOS 1 }
 set unixOS 0
 if {$tcl_platform(platform) == "unix"} { set unixOS 1 }
+set macOS 0
+if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} { set macOS 1 }
 
 # A lot of code assumes tcl_platform is either windows or unix, so
 # lotsa stuff may break if this is not the case.
@@ -933,7 +935,7 @@ if {$::windowsOS} {
 }
 
 # Reversed mouse buttons in mac (::MB2 and ::MB3 are middle and right mouse buttons respectively.):
-if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+if { $macOS } {
   set ::MB2 3
   set ::MB3 2
 } else {
@@ -943,7 +945,7 @@ if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
 
 
 # Opening files by drag & drop on Scid icon on Mac
-if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+if { $macOS } {
   # Drag & Drop
   set dndisbusy 0
   set isopenBaseready 0

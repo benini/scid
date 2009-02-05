@@ -20,7 +20,7 @@ label .tooltip.text -relief solid -borderwidth 1 -justify left \
     -background lightYellow -padx 3 -pady 1
 pack .tooltip.text -side left
 wm overrideredirect .tooltip 1
-if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"}  {
+if { $macOS }  {
   ::tk::unsupported::MacWindowStyle style .tooltip help none
 }
 bind .tooltip <Button-1> { wm withdraw .tooltip }

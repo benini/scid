@@ -545,7 +545,15 @@ proc ::tree::displayLines { baseNumber moves } {
     }
   }
   
-  for { set i 0 } { $i < [expr $len - 1 ] } { incr i } {
+  # Display the first line
+  if { $maskFile != "" } {
+    $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+    $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+    $w.f.tl insert end "    "
+  }
+  $w.f.tl insert end "[lindex $moves 0]\n"
+  
+  for { set i 1 } { $i < [expr $len - 3 ] } { incr i } {
     set line [lindex $moves $i]
     if {$line == ""} { continue }
     set move [lindex $line 1]
@@ -614,6 +622,16 @@ proc ::tree::displayLines { baseNumber moves } {
     $w.f.tl insert end "\n"
     
   } ;# end for loop
+  
+  # Display the last lines (total)
+  for { set i [expr $len - 3 ] } { $i < [expr $len - 1 ] } { incr i } {
+    if { $maskFile != "" } {
+      $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+      $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+      $w.f.tl insert end "    "
+    }
+    $w.f.tl insert end "[lindex $moves $i]\n"
+  }
   
   # Add moves present in Mask and not in Tree
   set idx $len

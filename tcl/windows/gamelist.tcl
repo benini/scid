@@ -248,7 +248,11 @@ proc ::windows::gamelist::ReOpen {} {
   ::createToplevelFinalize $w
   
   # MouseWheel bindings:
-  bind $w <MouseWheel> {::windows::gamelist::Scroll [expr {- (%D / 120)}]}
+  if { $::macOS } {
+    bind $w <MouseWheel> {::windows::gamelist::Scroll [expr {- (%D)}]}
+  } else {
+    bind $w <MouseWheel> {::windows::gamelist::Scroll [expr {- (%D / 120)}]}
+  }
   if {! $::windowsOS} {
     bind $w <Button-4> {::windows::gamelist::Scroll -1}
     bind $w <Button-5> {::windows::gamelist::Scroll 1}

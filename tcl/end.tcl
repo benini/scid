@@ -1852,7 +1852,7 @@ after 500 {
 }
 
 # Opening files by drag & drop on Scid icon on Mac
-if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+if { $macOS } {
   # We opened for a drag & drop request, process it now:
   set isopenBaseready 1
   if {$dndargs != 0} {

@@ -1257,7 +1257,7 @@ foreach i $boardStyles {
 set menuindex -1
 set m .menu.helpmenu
 # On Mac use accelerator "Command-?" for Help:
-if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+if { $macOS } {
   $m add command -label HelpContents -command {helpWindow Contents} -accelerator "Command-?"
   
 } else {
@@ -1292,7 +1292,7 @@ bind $dot_w <F1> {helpWindow Contents}
 
 ### Mac Application Menu:
 
-if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+if { $macOS } {
   # Application menu:
   .menu add cascade -label Scid -menu .menu.apple
   menu .menu.apple
@@ -1596,7 +1596,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang
   }
   
-  if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} {
+  if { $::macOS } {
     foreach tag {About} {
       configMenuText .menu.apple [tr Help$tag $oldLang] Help$tag $lang
     }
