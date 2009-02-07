@@ -535,9 +535,11 @@ proc ::tree::displayLines { baseNumber moves } {
   }
   
   # Position comment
+  set hasPositionComment 0
   if { $maskFile != "" } {
     set posComment [::tree::mask::getPositionComment]
     if {$posComment != ""} {
+      set hasPositionComment 1
       set firstLine [ lindex [split $posComment "\n"] 0 ]
       $w.f.tl insert end "$firstLine\n" [ list bluefg tagtooltip_poscomment ]
       ::utils::tooltip::SetTag $w.f.tl $posComment tagtooltip_poscomment
@@ -557,7 +559,6 @@ proc ::tree::displayLines { baseNumber moves } {
     set line [lindex $moves $i]
     if {$line == ""} { continue }
     set move [lindex $line 1]
-    
     set move [::untrans $move]
     lappend lMoves $move
     set colorScore [::tree::getColorScore $line]
@@ -617,7 +618,7 @@ proc ::tree::displayLines { baseNumber moves } {
       # Bind right button to popup a contextual menu:
       $w.f.tl tag bind tagclick$i <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
     }
-    $w.f.tl tag add tagclick$i [expr $i +1].0 [expr $i + 1].end
+    $w.f.tl tag add tagclick$i [expr $i +1 + $hasPositionComment].0 [expr $i + 1 + $hasPositionComment].end
     
     $w.f.tl insert end "\n"
     
@@ -638,6 +639,9 @@ proc ::tree::displayLines { baseNumber moves } {
   if { $maskFile != "" } {
     set movesMask [::tree::mask::getAllMoves]
     foreach m $movesMask {
+      if {  [ scan [$w.f.tl index end] "%d.%d" currentLine dummy] != 2 } {
+        puts "ERROR scan index end [$w.f.tl index end]"
+      }
       # move nag color move_anno
       if {[lsearch $lMoves [lindex $m 0]] != -1 || [lindex $m 0] == "null"} {
         continue
@@ -668,13 +672,12 @@ proc ::tree::displayLines { baseNumber moves } {
       
       # Bind right button to popup a contextual menu:
       $w.f.tl tag bind tagclick$idx <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl  [lindex $m 0] %x %y %X %Y"
-      $w.f.tl tag add tagclick$idx $idx.0 $idx.end
+      $w.f.tl tag add tagclick$idx [ expr $currentLine -1].0 [ expr $currentLine -1].end
       incr idx
     }
   }
   
   $w.f.tl configure -state disabled
-  
 }
 ################################################################################
 # returns a list with (ngames freq success eloavg perf) or
@@ -1498,7 +1501,6 @@ proc ::tree::mask::save {} {
 #
 ################################################################################
 proc ::tree::mask::contextMenu {win move x y xc yc} {
-  
   update idletasks
   
   set mctxt $win.ctxtMenu

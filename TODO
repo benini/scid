@@ -9,6 +9,7 @@ protocol.cpp)
 SearchInput->multipv = option_get_int("MultiPV");)
 -------------------------------
 99 lignes de gamelist pose pb
+-------------------------------
 
  ===========================================================
 |                                                           |
