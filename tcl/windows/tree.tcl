@@ -1865,8 +1865,10 @@ proc ::tree::mask::addComment { { move "" } } {
   toplevel .treeMaskAddComment
   if {$move == ""} {
     set oldComment [::tree::mask::getPositionComment]
+    ::setTitle $w [::tr CommentPosition]
   } else  {
     set oldComment [::tree::mask::getComment $move ]
+    ::setTitle $w [::tr CommentMove]
   }
   set oldComment [ string trim $oldComment ]
   autoscrollframe $w.f text $w.f.e -width 40 -height 5 -wrap word -setgrid 1

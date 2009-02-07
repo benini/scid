@@ -6451,9 +6451,14 @@ werden.
    Statusangaben verfügbar.
    </li>
    <li><button tb_CC_yourmove>
-   Sie sind am Zug! Hinweis: Dieser Status wird nur aktualisiert, wenn
+   Sie sind am Zug!
+   <br>
+   <b>Hinweis 1:</b> Dieser Status wird nur aktualisiert, wenn
    mit dem Fernschachserver synchronisiert wird, d. h. er gibt immer
    den Zustand des Servers bei der letzten Synchronisation wieder.
+   <br>
+   <b>Hinweis 2:</b> Fährt man mit der Maus über dieses Symbol wird
+   der letzte Zug des Gegners angezeigt.
    </li>
    <li><button tb_CC_oppmove>
    Der Gegner ist am Zug. Hinweis: Dieser Status wird nur aktualisiert, wenn
@@ -6486,10 +6491,18 @@ werden.
    wurde zur Partienotation als Kommentar hinzugefügt.
    </li>
 </ul>
-<b>Hinweis:</b> Wenn ein Tournier noch nicht offiziell begonnen hat,
+<b>Hinweis 1:</b> Wenn ein Tournier noch nicht offiziell begonnen hat,
 aber die Aufstellung bereits bekannt gegeben wurde werden die Texte in
 den Spalten id, Event und Site in <gray><b>grau</b></gray>
 dargestellt.
+<br>
+<b>Hinweis 2:</b> Fährt man mit der Maus über die Site-Spalte, wird
+der komplette Sitetag angezeigt. Fährt man über die Event-Spalte wird
+ebenfalls der komplette Event-Tag angezeigt, sowie die Zeitkontrollen
+der jeweiligen Partie, sofern diese vom Server übermittelt wurden.
+Wurden keine Zeitkontrollen übermittelt zeigt Scid <i>10 / 50d (?)</i>
+an, d. h. vermutet die offiziellen ICCF-Zeitkontrollen. (Der
+ICCF-Server selbst sendet niemals die Zeitvorgaben.)
 </p>
 
 <p>
@@ -6508,6 +6521,9 @@ flag_gbr>, "FRA" <button flag_fra>, "RUS" <button flag_rus>, "CHN"
 Beachten Sie auch das Kapitel <a Correspondence>Fernschach</a> für
 allgemeine Informationen.
 </p>
+
+
+<p><footer>(Updated: Scid 3.7b4, February 2009)</footer></p>
 }
 
 set helpTitle(D,CCXfcc) "Fernschach-Server"

@@ -4624,9 +4624,13 @@ if no interet connection is available.
    available due to the limitation of the medium.
    </li>
    <li><button tb_CC_yourmove>
-   Its your move. Note: this status is only updated if you
+   Its your move.<br>
+   <b>Note 1:</b> this status is only updated if you
    synchronise your games with the server, that is, it always refers
    to the servers status at last syncronisation.
+   <br>
+   <b>Note 2:</b>Hovering over this icon with the mouse will display
+   the opponents last move.
    </li>
    <li><button tb_CC_oppmove>
    Its the opponents move. Note: this status is only updated if you
@@ -4659,9 +4663,17 @@ if no interet connection is available.
    </li>
 </ul>
 <p>
-<b>Note:</b> If an event (e.g. a tournament) has not yet started, but
+<b>Note 1:</b> If an event (e.g. a tournament) has not yet started, but
 the setup was already retrieved via Xfcc the id, event and site
 columns text show up in <gray><b>dark gray</b></gray>.
+</p>
+<p>
+<b>Note 2:</b> Hovering over the site comlumn will show the whole site
+tag, hovering over the event column will show the whole event tag and
+the time control if it was sent along with the game. If no time
+control was sent, Scid will denote it as <i>10 / 50d (?)</i>, that is,
+guessing ICCFs official default timing of 10 moves in 50 days. (The
+ICCF server itself never sends any timings.)
 </p>
 
 <p>
@@ -4679,6 +4691,9 @@ flag_gbr>, "FRA" <button flag_fra>, "RUS" <button flag_rus>, "CHN"
 See also the chapter <a Correspondence>Correspondence Chess</a> for
 general information.
 </p>
+
+
+<p><footer>(Updated: Scid 3.7b4, February 2009)</footer></p>
 }
 
 
