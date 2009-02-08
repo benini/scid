@@ -1516,7 +1516,7 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   menu $mctxt.nag
   $mctxt add cascade -label [tr Nag] -menu $mctxt.nag
   
-  foreach nag [ list "!!" " !" "!?" "?!" "??" " ~" [::tr "None"]  ] {
+  foreach nag [ list "!!" " !" "!?" "?!" " ?" "??" " ~" [::tr "None"]  ] {
     $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
   }
   
