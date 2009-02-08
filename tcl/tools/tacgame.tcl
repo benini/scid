@@ -719,7 +719,10 @@ namespace eval tacgame {
   ################################################################################
   proc repetition {} {
     set elt [lrange [split [sc_pos fen]] 0 2]
-    lappend ::tacgame::lFen $elt
+    # append the position only if different from the last element
+    if { $elt != [ lindex $::tacgame::lFen end ] } {
+      lappend ::tacgame::lFen $elt
+    }
     if { [llength [lsearch -all $::tacgame::lFen $elt] ] >=3 } {
       tk_messageBox -type ok -message $::tr(Draw) -parent .main -icon info
       return 1
