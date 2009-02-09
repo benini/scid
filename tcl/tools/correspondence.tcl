@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.48 2009/02/02 19:53:43 arwagner Exp $
+### $Id: correspondence.tcl,v 1.49 2009/02/09 16:53:10 arwagner Exp $
 ###
-### Last change: <Mon, 2009/02/02 20:51:05 arwagner ingata>
+### Last change: <Sat, 2009/02/07 15:32:54 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2377,8 +2377,30 @@ namespace eval CorrespondenceChess {
 				set comment [sc_pos getComment]
 				# switch to Correspondence DB and add the move and comment
 				sc_base switch     $CorrSlot
+				set basecomment [sc_pos getComment]
+				## regsub -all $::scidDataDir $path "scidDataDir" path
 				sc_move addSan     $move
-				sc_pos  setComment $comment
+				puts stderr "base $CmailGameName: $basecomment [string length $basecomment]"
+				puts stderr "pgn  $CmailGameName: $comment [string length $comment]"
+				if { [string length $basecomment] == 0} {
+					sc_pos  setComment "$comment"
+					puts stderr "$comment"
+				} elseif { [string length $comment] < [string length $basecomment ]} {
+					# base contains more text than the one retrieved
+					if { [string first $comment $basecomment] < 0 } {
+						sc_pos  setComment "$basecomment $comment"
+						puts stderr "$basecomment $comment"
+					}
+				} else {
+					# retrieved game contains more text than the stored
+					if { [string first $basecomment $comment] < 0 } {
+						sc_pos  setComment "$basecomment $comment"
+						puts stderr "$basecomment $comment"
+					} else {
+						sc_pos  setComment "$comment"
+						puts stderr "$comment"
+					}
+				}
 			}
 			sc_game tags set -result $result
 			sc_base switch $CorrSlot
