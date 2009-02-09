@@ -169,7 +169,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   
   <h3>I</h3>
   <ul>
-  <li><a CCGameListIcons>Icons for Correspondence Chess</a></li>
+  <li><a CCIcons>Icons for Correspondence Chess</a></li>
   <li><a Import>Import</a> window</li>
   <li><a Moves Informant>Informant Symbols</a></li>
   <li><a InputEngine>Input Engine drivers</a></li>
