@@ -6,6 +6,7 @@ set playerInfoName ""
 
 proc playerInfo {{player ""}} {
   global playerInfoName
+  global spffile
   if {$player == ""} { set player $playerInfoName }
   if {[catch {sc_name info -htext $player} pinfo]} { return }
   set playerInfoName $player
@@ -54,8 +55,8 @@ proc playerInfo {{player ""}} {
     standardShortcuts $w
   }
   set player [trimEngineName $player]
-  if {[info exists ::photo($player)]} {
-    image create photo photoPInfo -data $::photo($player)
+  if {[info exists spffile($player)]} {
+    image create photo photoPInfo -data [getphoto $player]
     $w.photo configure -image photoPInfo -anchor ne
     place $w.photo -in $w.text -relx 1.0 -x -1 -rely 0.0 -y 1 -anchor ne
   } else {

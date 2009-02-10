@@ -831,27 +831,112 @@ image create photo photoB
 label .main.photoW -background white -image photoW -anchor ne
 label .main.photoB -background white -image photoB -anchor ne
 
+# readPhotoFile executed once at startup for each SPF file. Loads SPI file if it exists.
+# Otherwise it generates index information and tries to write SPI file to disk (if it can be done)
 proc readPhotoFile {fname} {
-  set oldcount [array size ::photo]
-  if {! [file readable $fname]} { return }
-  catch {source $fname}
-  set newcount [expr {[array size ::photo] - $oldcount}]
-  if {$newcount > 0} {
-    ::splash::add "Found $newcount player photos in [file tail $fname]"
+  global photobegin
+  global photosize
+  global spffile
+  set count 0
+  set writespi 0
+
+  if {! [regsub {\.spf$} $fname {.spi} spi]} { 
+  # How does it happend?
+    return 
   }
+
+  # If SPI file was found then just source it and exit
+  if { [file readable $spi]} {
+    set count [array size spffile]
+    source $spi
+    set newcount [array size spffile]
+    if {[expr $newcount - $count] > 0} {
+      ::splash::add "Found [expr $newcount - $count] player photos in [file tail $fname]"
+      ::splash::add "Loading information from index file [file tail $spi]"
+      return
+    }
+  }
+
+  # Check for the absence of the SPI file and check for the write permissions
+  if { ![file exists $spi] && ![catch {open $spi w} fd_spi]} {
+    # SPI file will be written to disk by scid
+    set writespi 1
+  }
+
+  if {! [file readable $fname]} { return }
+
+  set fd [open $fname]
+  while {[gets $fd line] >= 0} {
+    # search for the string      photo "Player Name" 
+    if { [regexp {^photo \"(.*)\" \{$} $line -> name] } {
+      set count [expr $count + 1 ]
+      set begin [tell $fd]
+      # skip data block 
+      while {1} {
+        set end [tell $fd]
+        gets $fd line
+        if {[regexp {.*\}.*} $line ]} {break}
+      }
+      set trimname [trimString $name]
+      set size [expr $end - $begin ]
+      set photobegin($trimname) $begin
+      set photosize($trimname) $size
+      set spffile($trimname) $fname
+      if { $writespi } {
+        # writing SPI file to disk
+        puts $fd_spi "set \"photobegin($trimname)\" $begin"
+        puts $fd_spi "set \"photosize($trimname)\" $size"
+        puts $fd_spi "set \"spffile($trimname)\" \"\$fname\""
+      }
+    }
+  }
+  if {$count > 0 && $writespi} {
+    ::splash::add "Found $count player photos in [file tail $fname]"
+    ::splash::add "Index file [file tail $spi] was generated succesfully"
+  }
+  if {$count > 0 && !$writespi} {
+    ::splash::add "Found $count player photos in [file tail $fname]"
+    ::splash::add "Could not generate index file [file tail $spi]"
+    ::splash::add "Use spf2spi script to generate [file tail $spi] file "
+  }
+
+  if { $writespi } { close $fd_spi }
+  close $fd
 }
 
-proc photo {player data} {
-  #convert names tolower case and strip the first two blanks.
-  set player [string tolower $player]
-  set strindex [string first "\ " $player]
-  set player [string replace $player $strindex $strindex]
-  set strindex [string first "\ " $player]
-  set player [string replace $player $strindex $strindex]
-  set ::photo($player) $data
+
+#convert $data string tolower case and strip the first two blanks.
+proc trimString {data} {
+  set data [string tolower $data]
+  set strindex [string first "\ " $data]
+  set data [string replace $data $strindex $strindex]
+  set strindex [string first "\ " $data]
+  set player [string replace $data $strindex $strindex]
+  return $data
 }
 
-array set photo {}
+
+# retrieve photo from the SPF file using index information
+proc getphoto {name} {
+  global photobegin
+  global photosize
+  global spffile
+  set data ""
+  if {[info exists spffile($name)]} {
+    set fd [open $spffile($name)]
+    seek $fd $photobegin($name) start
+    set data [read $fd $photosize($name) ]
+    close $fd
+  }
+  return $data
+}
+
+# photobegin($name) - file offset of the photo for the player $name
+# photobegin($name) - size (in bytes) of the photo for the player $name
+# spffile($name) - location of the SPF file where photo for the player $name is stored
+array set photobegin {}
+array set photosize {}
+array set spffile {}
 
 # Read all Scid photo (*.spf) files in the Scid data/user/config directories:
 foreach photofile [glob -nocomplain -directory $scidDataDir "*.spf"] {
@@ -867,14 +952,12 @@ foreach photofile [glob -nocomplain -directory [file join $scidShareDir "photos"
   readPhotoFile $photofile
 }
 
-# Read players.img for compatibility with older versions:
-readPhotoFile [file join $scidUserDir players.img]
-
 set photo(oldWhite) {}
 set photo(oldBlack) {}
 
 # Try to change the engine name: ignore version number, try to ignore blanks
 proc trimEngineName { engine } {
+  global spffile
   set engine [sc_name retrievename $engine]
   
   set engine [string tolower $engine]
@@ -894,7 +977,7 @@ proc trimEngineName { engine } {
     #seems to be a engine name:
     # search until longest name matches an engine name
     set slen [string len $engine]
-    for { set strindex $slen} {![info exists ::photo([string range $engine 0 $strindex])]\
+    for { set strindex $slen} {![info exists spffile([string range $engine 0 $strindex])]\
           && $strindex > 2 } {set strindex [expr {$strindex - 1}] } { }
     set engine [string range $engine 0 $strindex]
   }
@@ -907,6 +990,7 @@ proc trimEngineName { engine } {
 #
 proc updatePlayerPhotos {{force ""}} {
   global photo
+  global spffile
   if {$force == "-force"} {
     # Force update even if it seems unnecessary. This is done
     # when the user selects to show or hide the photos.
@@ -924,8 +1008,8 @@ proc updatePlayerPhotos {{force ""}} {
   if {$black != $photo(oldBlack)} {
     set photo(oldBlack) $black
     place forget .main.photoB
-    if {[info exists ::photo($black)]} {
-      image create photo photoB -data $::photo($black)
+    if {[info exists spffile($black)]} {
+      image create photo photoB -data [getphoto $black ]
       .main.photoB configure -image photoB -anchor ne
       place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -anchor ne
       # force to update white, black size could be changed
@@ -937,8 +1021,8 @@ proc updatePlayerPhotos {{force ""}} {
   if {$white != $photo(oldWhite)} {
     set photo(oldWhite) $white
     place forget .main.photoW
-    if {[info exists ::photo($white)]} {
-      image create photo photoW -data $::photo($white)
+    if {[info exists spffile($white)]} {
+      image create photo photoW -data [getphoto $white ]
       .main.photoW configure -image photoW -anchor ne
       place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -anchor ne
     }

@@ -701,4 +701,5 @@ scid-3.6.7
 - Bug fix : Scid could crash when using some languages like Hungarian and Swedish (segfault in functions transPieces and transPiecesChar)
 - Added piece translations for hungarian, swedish and norvegian languages
 - Serious and tactical games : fixed repetition detection
+- Changed the way SPF files (data players) are loaded. This spares some memory and Scid's start up is a little bit faster. New script in scripts directory : scf2spi.tcl (thanks to Mikhail Kalenkov)
 
