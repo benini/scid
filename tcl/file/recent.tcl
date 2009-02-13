@@ -41,6 +41,9 @@ proc ::recentFiles::save {{reportError 0}} {
 #
 proc ::recentFiles::add {fname} {
   global recentFiles
+  
+  if {$fname == "" } { return }
+  
   set rlist $recentFiles(data)
   
   # Remove file ot be added from its current place in the

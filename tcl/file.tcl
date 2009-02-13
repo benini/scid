@@ -1,3 +1,9 @@
+# adds a checkbox to show hidden files
+catch {tk_getOpenFile -with-invalid-argument}
+namespace eval ::tk::dialog::file {
+  variable showHiddenBtn 1
+  variable showHiddenVar 0
+}
 
 # ::file::Exit
 #
@@ -131,6 +137,7 @@ proc ::file::Open {{fName ""}} {
       { "Repertoire files" {".sor"} }
     }
   }
+  
   if {$fName == ""} {
     set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
     if {$fName == ""} { return }
