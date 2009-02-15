@@ -1612,6 +1612,8 @@ translate D CCDlgLoginName  {Login Name:}
 translate D CCDlgPassword   {Paßwort:}
 translate D CCDlgURL        {Xfcc-URL:}
 translate D CCDlgRatingType {Wertungszahl:}
+translate D CCDlgDuplicateGame {Nichteindeutige Partie}
+translate D CCDlgDuplicateGameError {Diese Partie existiert mehr als einmal in der Datenbank. Bitte löschen Sie alle Doubletten und komprimieren Sie die Datenbank (Datei/Wartung/Datenbank komprimieren).}
 translate D ExtHWConfigConnection {Hardware Konfigurieren}
 translate D ExtHWPort {Schnittstelle}
 translate D ExtHWEngineCmd {Engine Kommando}
@@ -7201,6 +7203,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

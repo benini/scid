@@ -1742,6 +1742,10 @@ translate N CCDlgPassword   {Password:}
 translate N CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
 translate N CCDlgRatingType {Rating Type:}
+# ====== TODO To be translated ======
+translate N CCDlgDuplicateGame {Non-unique game ID}
+# ====== TODO To be translated ======
+translate N CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
 translate N ExtHWConfigConnection {Configureer externe hardware}
 translate N ExtHWPort {Poort}
 translate N ExtHWEngineCmd {Engine commando}
@@ -1767,6 +1771,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

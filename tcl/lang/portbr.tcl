@@ -1981,6 +1981,10 @@ translate B CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
 translate B CCDlgRatingType {Rating Type:}
 # ====== TODO To be translated ======
+translate B CCDlgDuplicateGame {Non-unique game ID}
+# ====== TODO To be translated ======
+translate B CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
+# ====== TODO To be translated ======
 translate B ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate B ExtHWPort {Port}
@@ -2030,6 +2034,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

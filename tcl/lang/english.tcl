@@ -1611,6 +1611,9 @@ translate E CCDlgPassword   {Password:}
 translate E CCDlgURL        {Xfcc-URL:}
 translate E CCDlgRatingType {Rating Type:}
 
+translate E CCDlgDuplicateGame {Non-unique game ID}
+translate E CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
+
 
 # Connect Hardware dialoges
 translate E ExtHWConfigConnection {Configure external hardware}

@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.49 2009/02/09 16:53:10 arwagner Exp $
+### $Id: correspondence.tcl,v 1.50 2009/02/15 12:34:26 arwagner Exp $
 ###
-### Last change: <Sat, 2009/02/07 15:32:54 arwagner ingata>
+### Last change: <Sun, 2009/02/15 13:30:07 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2363,6 +2363,9 @@ namespace eval CorrespondenceChess {
 			# comments, but requires that tries are inserted as variants
 			# as it is always appended to the end of the game
 			for {set x $plyStart} {$x < $plyEnd} {incr x} {
+				set basecomment  ""
+				set comment      ""
+
 				sc_base switch "clipbase"
 
 				# move to the beginning of the new part
@@ -2377,28 +2380,42 @@ namespace eval CorrespondenceChess {
 				set comment [sc_pos getComment]
 				# switch to Correspondence DB and add the move and comment
 				sc_base switch     $CorrSlot
+				# Get the comment stored in the base for comparison
 				set basecomment [sc_pos getComment]
-				## regsub -all $::scidDataDir $path "scidDataDir" path
 				sc_move addSan     $move
-				puts stderr "base $CmailGameName: $basecomment [string length $basecomment]"
-				puts stderr "pgn  $CmailGameName: $comment [string length $comment]"
-				if { [string length $basecomment] == 0} {
+
+				# Some servers keep old comments within the game
+				# (SchemingMind) some don't (ICCF). Try to preserve
+				# comments inserted by the user as well as add new
+				# responses properly.
+				set sbasecomment ""
+				set scomment     ""
+				# Strip of [%ccsnt...] like comments (SchemingMind time stamps)
+				regsub -all "\[.*\]"  $basecomment  "" sbasecomment
+				# Strip of "Name: " to compare original text entered by
+				# the user only.
+				regsub -all "$White:" $sbasecomment "" sbasecomment
+				regsub -all "$Black:" $sbasecomment "" sbasecomment
+
+				# Same for the game delivered by Xfcc
+				regsub -all "\[.*\]"  $comment      "" scomment
+				regsub -all "$White:" $scomment     "" scomment
+				regsub -all "$Black:" $scomment     "" scomment
+
+				# Check what to preserve and which comment to set.
+				if { [string length $sbasecomment] == 0} {
 					sc_pos  setComment "$comment"
-					puts stderr "$comment"
-				} elseif { [string length $comment] < [string length $basecomment ]} {
+				} elseif { [string length $scomment] < [string length $sbasecomment ]} {
 					# base contains more text than the one retrieved
-					if { [string first $comment $basecomment] < 0 } {
+					if { [string first $scomment $sbasecomment] < 0 } {
 						sc_pos  setComment "$basecomment $comment"
-						puts stderr "$basecomment $comment"
 					}
 				} else {
 					# retrieved game contains more text than the stored
-					if { [string first $basecomment $comment] < 0 } {
+					if { [string first $sbasecomment $scomment] < 0 } {
 						sc_pos  setComment "$basecomment $comment"
-						puts stderr "$basecomment $comment"
 					} else {
 						sc_pos  setComment "$comment"
-						puts stderr "$comment"
 					}
 				}
 			}
@@ -2418,7 +2435,16 @@ namespace eval CorrespondenceChess {
 			# reload the game and jump to the end
 			::game::Reload
 		} else {
-			::CorrespondenceChess::updateConsole "info Game-ID not unique?"
+			if {[winfo exists .glistWin]} {
+				focus .glistWin
+			} else {
+				::windows::gamelist::Open
+			}
+			set Title [::tr CCDlgDuplicateGame]
+			set Error [::tr CCDlgDuplicateGameError]
+			tk_messageBox -icon warning -type ok -parent . \
+				-title $Title -message $Error
+
 		}
 	}
 

@@ -931,6 +931,20 @@ proc getphoto {name} {
   return $data
 }
 
+proc addPhotoAlias {aliasname name} {
+  global photobegin
+  global photosize
+  global spffile
+  global droppedaliases
+  if {[info exists spffile([trimString $name])]} {
+    set photobegin([trimString $aliasname]) $photobegin([trimString $name])
+    set photosize([trimString $aliasname]) $photosize([trimString $name])
+    set spffile([trimString $aliasname]) $spffile([trimString $name])
+  } else {
+    set droppedaliases [expr $droppedaliases + 1 ]
+  }
+}
+
 # photobegin($name) - file offset of the photo for the player $name
 # photobegin($name) - size (in bytes) of the photo for the player $name
 # spffile($name) - location of the SPF file where photo for the player $name is stored
@@ -938,19 +952,38 @@ array set photobegin {}
 array set photosize {}
 array set spffile {}
 
+# variable droppedaliases counts the number of the dropped aliases. 
+# Alias is dropped if the player hasn't photo.
+set droppedaliases 0
+
+# Directories where Scid searches for the photo files
+set photodirs [list $scidDataDir $scidUserDir $scidConfigDir [file join $scidShareDir "photos"]]
+
 # Read all Scid photo (*.spf) files in the Scid data/user/config directories:
-foreach photofile [glob -nocomplain -directory $scidDataDir "*.spf"] {
-  readPhotoFile $photofile
+foreach dir $photodirs {
+  foreach photofile [glob -nocomplain -directory $dir "*.spf"] {
+    readPhotoFile $photofile
+  }
 }
-foreach photofile [glob -nocomplain -directory $scidUserDir "*.spf"] {
-  readPhotoFile $photofile
+
+# Read all Scid photo aliases (*.spa)
+foreach dir $photodirs {
+  foreach spa [glob -nocomplain -directory $dir "*.spa"] {
+    if {! [file readable $spa]} { return }
+    set count [array size spffile]
+    set droppedcount $droppedaliases
+    source $spa
+    set newcount [array size spffile]
+    set newdroppedcount $droppedaliases
+    if {[expr $newcount - $count] > 0} {
+      ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $photofile]"
+    }
+    if {[expr $newdroppedcount - $droppedcount] > 0} {
+      ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $photofile]"
+    }
+  }
 }
-foreach photofile [glob -nocomplain -directory $scidConfigDir "*.spf"] {
-  readPhotoFile $photofile
-}
-foreach photofile [glob -nocomplain -directory [file join $scidShareDir "photos"] "*.spf"] {
-  readPhotoFile $photofile
-}
+
 
 set photo(oldWhite) {}
 set photo(oldBlack) {}

@@ -1562,6 +1562,10 @@ translate F CCDlgLoginName  {Login:}
 translate F CCDlgPassword   {Mot de passe:}
 translate F CCDlgURL        {Xfcc-URL:}
 translate F CCDlgRatingType {Type classement:}
+# ====== TODO To be translated ======
+translate F CCDlgDuplicateGame {Non-unique game ID}
+# ====== TODO To be translated ======
+translate F CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
@@ -1792,6 +1796,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

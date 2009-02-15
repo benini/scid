@@ -2005,6 +2005,10 @@ translate R CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
 translate R CCDlgRatingType {Rating Type:}
 # ====== TODO To be translated ======
+translate R CCDlgDuplicateGame {Non-unique game ID}
+# ====== TODO To be translated ======
+translate R CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
+# ====== TODO To be translated ======
 translate R ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate R ExtHWPort {Port}
@@ -2053,6 +2057,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 
