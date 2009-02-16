@@ -976,10 +976,10 @@ foreach dir $photodirs {
     set newcount [array size spffile]
     set newdroppedcount $droppedaliases
     if {[expr $newcount - $count] > 0} {
-      ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $photofile]"
+      ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $spa]"
     }
     if {[expr $newdroppedcount - $droppedcount] > 0} {
-      ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $photofile]"
+      ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $spa]"
     }
   }
 }
