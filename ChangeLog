@@ -693,7 +693,10 @@ scid-3.6.7
 	* Books should be usable from read only drives as well (without
 	tuning/save of course)
 - Bug : fixed a possible crash when generating a player report when the opened base has no games (segmentation fault)
-- Analysis / Game annotation : book moves are now translated
+- Analysis / Game annotation:
+  * book moves are now translated
+  * Fix: Error when engine list was opened with window already open
+  * Fix: typo for UCI_ShredderbasesPath in preserved UCI_ options
 - Serious game and Tactical game : parameters are saved
 - added spanish ECO file scid-esp.eco (thanks to Benigno Hernández)
 - newly created bases are appended to the recently opened bases in menu (thanks to Benigno Hernández)

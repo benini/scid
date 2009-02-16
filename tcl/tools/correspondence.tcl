@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.50 2009/02/15 12:34:26 arwagner Exp $
+### $Id: correspondence.tcl,v 1.51 2009/02/16 11:06:55 arwagner Exp $
 ###
-### Last change: <Sun, 2009/02/15 13:30:07 arwagner ingata>
+### Last change: <Mon, 2009/02/16 11:56:18 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2436,7 +2436,7 @@ namespace eval CorrespondenceChess {
 			::game::Reload
 		} else {
 			if {[winfo exists .glistWin]} {
-				focus .glistWin
+				raise .glistWin
 			} else {
 				::windows::gamelist::Open
 			}

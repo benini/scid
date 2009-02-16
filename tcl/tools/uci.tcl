@@ -23,7 +23,7 @@ namespace eval uci {
         currmove currmovenumber hashfull nps tbhits sbhits cpuload string refutation currline }
   set optionToken {name type default min max var }
   set optionImportant { MultiPV Hash OwnBook BookFile UCI_LimitStrength UCI_Elo }
-  set optionToKeep { UCI_LimitStrength UCI_Elo UCI_shredderbases }
+  set optionToKeep { UCI_LimitStrength UCI_Elo UCI_ShredderbasesPath }
   array set uciInfo {}
   ################################################################################
   #

@@ -340,6 +340,9 @@ proc ::enginelist::sort {{type ""}} {
 proc ::enginelist::choose {} {
   global engines
   set w .enginelist
+  if {[winfo exists $w]} { 
+     raise .enginelist
+     return }
   toplevel $w
   ::setTitle $w "Scid: [tr ToolsAnalysis]"
   ttk::label $w.flabel -text $::tr(EngineList:) -font font_Bold -anchor center
