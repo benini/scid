@@ -625,6 +625,7 @@ scid-3.6.7
   * Yes/No dialogue before cleaning the in/outbox (suggested by Dhanish)
   * All paths required use $scidDataDir/$scidConfigDir variable if possible. This allows more seemless usage from an USB drive on Windows where the drive letters change all the time.
   * Improve GUI for non-unique game IDs.
+  * Deleted games are now ignored in search of a sync-target.
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
