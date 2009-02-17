@@ -291,7 +291,7 @@ namespace eval opening {
     after cancel ::opening::mainLoop
     
     # Handle case of player's turn (which always plays from bottom of the board)
-    if { [sc_pos side] == "white" &&  ![::board::isFlipped .board] || [sc_pos side] == "black" &&  [::board::isFlipped .board] } {
+    if { [sc_pos side] == "white" &&  ![::board::isFlipped .main.board] || [sc_pos side] == "black" &&  [::board::isFlipped .main.board] } {
       # it is player's turn : update UI
       ::opening::update_tCM
       ::opening::updateStats
@@ -300,7 +300,7 @@ namespace eval opening {
     }
     
     # check the position has not been treated already
-    if {[sc_pos fen] == $::opening::lastMainLoopFen && [::board::isFlipped .board] == $::opening::lastMainLoopFlipped} {
+    if {[sc_pos fen] == $::opening::lastMainLoopFen && [::board::isFlipped .main.board] == $::opening::lastMainLoopFlipped} {
       after 1000 ::opening::mainLoop
       return
     }
@@ -323,7 +323,7 @@ namespace eval opening {
       set l [lsearch -all $cm $move_done]
       # move not in repertoire
       if {[llength $l] == 0} {
-        tk_messageBox -type ok -message $::tr(Movenotinrepertoire) -parent .board -icon info
+        tk_messageBox -type ok -message $::tr(Movenotinrepertoire) -icon info
         sc_move back
         addStats -good 0 -dubious 0 -absent 1 -total 1
         ::opening::update_tCM
@@ -349,7 +349,7 @@ namespace eval opening {
         # The move is not good : offer to take back
         if { ! $moveOK } {
           # addStatsPrev -good 0 -dubious 0 -absent 1 -total 0
-          set answer [tk_messageBox -icon question -parent .board -title $::tr(OutOfOpening) -type yesno \
+          set answer [tk_messageBox -icon question -title $::tr(OutOfOpening) -type yesno \
               -message "$::tr(yourmoveisnotgood) ($nag) \n $::tr(DoYouWantContinue)" ]
           if {$answer == no} {
             sc_move back
@@ -384,7 +384,7 @@ namespace eval opening {
       ::opening::play $cm
     }
     set ::opening::lastMainLoopFen [sc_pos fen]
-    set ::opening::lastMainLoopFlipped [::board::isFlipped .board]
+    set ::opening::lastMainLoopFlipped [::board::isFlipped .main.board]
     
     ::opening::update_tCM
     ::opening::updateStats
