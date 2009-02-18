@@ -707,4 +707,4 @@ scid-3.6.7
 - Added piece translations for hungarian, swedish and norvegian languages
 - Serious and tactical games : fixed repetition detection
 - Changed the way SPF files (data players) are loaded. This spares some memory and Scid's start up is a little bit faster. New script in scripts directory : scf2spi.tcl (thanks to Mikhail Kalenkov)
-
+- Players' name standarization : strictly follow PGN requests by leaving a period after an initial (standardPlayerName in pgnparse.cpp)

@@ -250,8 +250,8 @@ standardPlayerName (char * source)
     }
     *to = 0;
 
-    // Now trim any trailling spaces, tabs and dots:
-    strTrimRight (source, ". \t");
+    // Now trim any trailling spaces, tabs :
+    strTrimRight (source, " \t");
 
     // Now standardise the capital letters of Dutch/etc prefix names:
     standardDutchName(source);
