@@ -18,7 +18,13 @@
 # The "\" at the end of the comment line below is necessary! It means
 #   that the "exec" line is a comment to Tcl/Tk, but not to /bin/sh.
 # The next line restarts using tkscid: \
-exec tkscid "$0" "$@"
+exec `dirname $0`/tkscid "$0" "$@"
+# exec tkscid "$0" "$@"
+
+# The above launches tkscid from the same directory that this startup
+# script was launched from (which feels as a suitable default scenario).
+# Alternatively, you can change the top line of this startup script
+# to start tkscid directly from a specific location, e.g.:
 
 # For the above to work, tkscid must be in a directory in your PATH.
 # Alternatively, you can set the first line to start tkscid directly
