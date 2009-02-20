@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.52 2009/02/16 16:32:56 arwagner Exp $
+### $Id: correspondence.tcl,v 1.53 2009/02/20 18:39:47 arwagner Exp $
 ###
-### Last change: <Mon, 2009/02/16 12:23:55 arwagner ingata>
+### Last change: <Fri, 2009/02/20 19:35:44 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -398,6 +398,9 @@ namespace eval Xfcc {
 	proc ProcessAll {path} {
 		global xfccrc
 
+		# empty the state array
+		set ::Xfcc::xfccstate {}
+
 		set dom [dom parse $xfccrc]
 		set doc [$dom documentElement]
 
@@ -733,8 +736,6 @@ namespace eval Xfcc {
 
 		set dom [dom parse $xml]
 		set doc [$dom documentElement]
-
-		###---### set ::Xfcc::xfccstate {}
 
 		set aNodes [$doc selectNodes //XfccGame]
 		foreach game $aNodes {
@@ -2667,7 +2668,6 @@ namespace eval CorrespondenceChess {
 			# process what was just retrieved
 			::CorrespondenceChess::ReadInbox 
 		}
-
 		unbusyCursor .
 	}
 

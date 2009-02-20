@@ -626,6 +626,7 @@ scid-3.6.7
   * All paths required use $scidDataDir/$scidConfigDir variable if possible. This allows more seemless usage from an USB drive on Windows where the drive letters change all the time.
   * Improve GUI for non-unique game IDs.
   * Deleted games are now ignored in search of a sync-target.
+  * Fix: offline state file kept growing infinitely
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
