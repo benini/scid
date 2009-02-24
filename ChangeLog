@@ -627,6 +627,7 @@ scid-3.6.7
   * Improve GUI for non-unique game IDs.
   * Deleted games are now ignored in search of a sync-target.
   * Fix: offline state file kept growing infinitely
+  * Cancelled games now no longer show up in the games list (suggested by Austin and wyb)
 - Tools Menu
   * Remove Novag entry
   * Add "Connect Hardware" 
