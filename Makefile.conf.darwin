@@ -320,7 +320,7 @@ scid_app: all_scid
 	install -m 644  ./mac_icons/Scid*.icns dist/Scid.app/Contents/Resources/
 	install -m 644 Info.plist dist/Scid.app/Contents/
 	cp -r ./html/* dist/Scid.app/Contents/Resources/share/scid/html/
-	sed -e 's|exec tkscid|exec $$(cd $$(dirname $$0)/$$(dirname $$(readlink $$0)); pwd)/tkscid|' < scid > dist/Scid.app/Contents/Resources/bin/scid
+	sed -e 's|exec `dirname $$0`/tkscid|exec $$(cd $$(dirname $$0)/$$(dirname $$(readlink $$0)); pwd)/tkscid|' < scid > dist/Scid.app/Contents/Resources/bin/scid
 	chmod +x dist/Scid.app/Contents/Resources/bin/scid
 	cd dist/Scid.app/Contents/MacOS && ln -sf ../Resources/bin/scid
 
