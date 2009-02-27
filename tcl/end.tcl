@@ -1227,7 +1227,7 @@ set str {}
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
   append str "Author: Shane Hudson\n"
   append str "Email: sgh@users.sourceforge.net\n"
-  append str "Contribution: Pascal Georges\n"
+  append str "Author: Pascal Georges\n"
   append str "Email: pgeorges@users.sourceforge.net\n\n"
   append str "Copyright (C) Shane Hudson and others\n"
   append str "Scid is licenced under the\n"

@@ -613,7 +613,7 @@ proc showVars {} {
     raise .variations
   }
   
-  # Needed or the main window loses the focus 
+  # Needed or the main window loses the focus
   if { $::docking::USE_DOCKING } {
     bind .variations <Destroy> { focus -force .main }
   }
@@ -816,7 +816,7 @@ proc updateBoard {args} {
   updateMenuStates
   moveEntry_Clear
   updateStatusBar
-    
+  
   if {[winfo exists .twinchecker]} { updateTwinChecker }
   if {[winfo exists .pgnWin]} { ::pgn::Refresh $pgnNeedsUpdate }
   if {[winfo exists .bookWin]} { ::book::refresh }
@@ -839,12 +839,12 @@ proc readPhotoFile {fname} {
   global spffile
   set count 0
   set writespi 0
-
-  if {! [regsub {\.spf$} $fname {.spi} spi]} { 
-  # How does it happend?
-    return 
+  
+  if {! [regsub {\.spf$} $fname {.spi} spi]} {
+    # How does it happend?
+    return
   }
-
+  
   # If SPI file was found then just source it and exit
   if { [file readable $spi]} {
     set count [array size spffile]
@@ -856,22 +856,22 @@ proc readPhotoFile {fname} {
       return
     }
   }
-
+  
   # Check for the absence of the SPI file and check for the write permissions
   if { ![file exists $spi] && ![catch {open $spi w} fd_spi]} {
     # SPI file will be written to disk by scid
     set writespi 1
   }
-
+  
   if {! [file readable $fname]} { return }
-
+  
   set fd [open $fname]
   while {[gets $fd line] >= 0} {
-    # search for the string      photo "Player Name" 
+    # search for the string      photo "Player Name"
     if { [regexp {^photo \"(.*)\" \{$} $line -> name] } {
       set count [expr $count + 1 ]
       set begin [tell $fd]
-      # skip data block 
+      # skip data block
       while {1} {
         set end [tell $fd]
         gets $fd line
@@ -899,7 +899,7 @@ proc readPhotoFile {fname} {
     ::splash::add "Could not generate index file [file tail $spi]"
     ::splash::add "Use spf2spi script to generate [file tail $spi] file "
   }
-
+  
   if { $writespi } { close $fd_spi }
   close $fd
 }
@@ -952,7 +952,7 @@ array set photobegin {}
 array set photosize {}
 array set spffile {}
 
-# variable droppedaliases counts the number of the dropped aliases. 
+# variable droppedaliases counts the number of the dropped aliases.
 # Alias is dropped if the player hasn't photo.
 set droppedaliases 0
 
@@ -994,6 +994,18 @@ proc trimEngineName { engine } {
   set engine [sc_name retrievename $engine]
   
   set engine [string tolower $engine]
+  
+  # Seems a human name (in the form "Name, Firstname")
+  # return the value without the space after comma
+  set strindex [string first "," $engine]
+  incr strindex
+  if {[string length $engine] > [expr $strindex +1]} {
+    if { $strindex != 0 && [string index $engine $strindex ] == " " } {
+      set engine [string replace $engine $strindex $strindex]
+      return $engine
+    }
+  }
+  
   if { [string first "deep " $engine] == 0 } {
     # strip "deep "
     set engine [string range $engine 5 end]
@@ -1036,8 +1048,10 @@ proc updatePlayerPhotos {{force ""}} {
   #get photo from player
   set white [sc_game info white]
   set black [sc_game info black]
+  
   catch { set white [trimEngineName $white] }
   catch { set black [trimEngineName $black] }
+  
   if {$black != $photo(oldBlack)} {
     set photo(oldBlack) $black
     place forget .main.photoB
