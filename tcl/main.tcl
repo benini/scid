@@ -911,7 +911,7 @@ proc trimString {data} {
   set strindex [string first "\ " $data]
   set data [string replace $data $strindex $strindex]
   set strindex [string first "\ " $data]
-  set player [string replace $data $strindex $strindex]
+  set data [string replace $data $strindex $strindex]
   return $data
 }
 
@@ -997,14 +997,14 @@ proc trimEngineName { engine } {
   
   # Seems a human name (in the form "Name, Firstname")
   # return the value without the space after comma
-  set strindex [string first "," $engine]
-  incr strindex
-  if {[string length $engine] > [expr $strindex +1]} {
-    if { $strindex != 0 && [string index $engine $strindex ] == " " } {
-      set engine [string replace $engine $strindex $strindex]
-      return $engine
-    }
-  }
+  # set strindex [string first "," $engine]
+  # incr strindex
+  # if {[string length $engine] > [expr $strindex +1]} {
+    # if { $strindex != 0 && [string index $engine $strindex ] == " " } {
+      # set engine [string replace $engine $strindex $strindex]
+      # return $engine
+    # }
+  # }
   
   if { [string first "deep " $engine] == 0 } {
     # strip "deep "

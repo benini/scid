@@ -15,7 +15,7 @@ proc trimString {data} {
   set strindex [string first "\ " $data]
   set data [string replace $data $strindex $strindex]
   set strindex [string first "\ " $data]
-  set player [string replace $data $strindex $strindex]
+  set data [string replace $data $strindex $strindex]
   return $data
 }
 
