@@ -1774,6 +1774,8 @@ proc standardShortcuts {w} {
   bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
   bind $w <F11>  ::book::open
   bind $w <F12> ::CorrespondenceChess::CCWindow
+  bind $w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB}
+  bind $w <Alt-F12> {::CorrespondenceChess::OpenCorrespondenceDB;  ::CorrespondenceChess::FetchGames}
 }
 ################################################################################
 #

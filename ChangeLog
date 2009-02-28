@@ -636,6 +636,8 @@ scid-3.6.7
   * Add "Connect Hardware / Novag Citrine"
   * Make hardware connect buttons visibility configurable 
     (remove it needs restart)
+  * Fix: Ctrl-F12 did not work from other windows than the main window
+  * New Shortcut: Alt-F12 will open CC window, default DB and fetch the games
 - Novag Citrine
   * Remove own config (replaced by unified dialogue)
   * Use unified "Connect Hardware" dialoge and parameters thereof
@@ -677,6 +679,7 @@ scid-3.6.7
 	* New option-> Themes (only small parts of Scid are themable, this will be increased in the future)
 	* Removed file combobox.tcl (widget migrated to ttk::combobox)
 	* Windows can be docked inside a main window (options menu) : In docked mode, the most important windows are embedded into a main one. The windows can be reordered by right-clicking on the tab (where the title of the window is) and by dragging tabs from one notebook to another. The menu for each window that has one (marked with a triangle at the left of the tab) is opened by left cliking on the tab.
+	* USCF piece set
 - updated dutch translation (thanks to Michel Van den Bergh)
 - updated spanish translation (thanks to Benigno Hernández)
 - Fix : Tree window : when a Mask is opened, the whole line is clickable (not only the part with moves and stats)
