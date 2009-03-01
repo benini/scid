@@ -179,7 +179,7 @@ proc ::utils::sound::OptionsDialog {} {
   
   toplevel $w
   wm title $w "Scid: Sound Options"
-  wm transient $w .
+  # wm transient $w .
   
   
   label $w.status -text ""

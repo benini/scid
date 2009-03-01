@@ -1118,7 +1118,7 @@ proc getPromoPiece {} {
   set w .promoWin
   set ::result 2
   toplevel $w
-  wm transient $w .main
+  # wm transient $w .main
   ::setTitle $w "Scid"
   wm resizable $w 0 0
   set col "w"

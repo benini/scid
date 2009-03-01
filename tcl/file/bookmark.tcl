@@ -266,7 +266,7 @@ proc ::bookmarks::Edit {} {
   set bookmarks(old) $bookmarks(data)
   toplevel $w
   wm title $w "Scid: [tr FileBookmarksEdit]"
-  wm transient $w .
+  # wm transient $w .
   bind $w <F1> {helpWindow Bookmarks}
   entry $w.e -width 40 -foreground black -background white \
     -textvariable bookmarks(edit) -font font_Small -exportselection 0

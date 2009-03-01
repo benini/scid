@@ -1265,7 +1265,7 @@ proc ::optable::editFavoritesDlg {} {
   set ::reportFavoritesTemp $::reportFavorites
   toplevel $w
   wm title $w "Scid: [tr OprepFavoritesEdit]"
-  wm transient $w .
+  # wm transient $w .
   bind $w <F1> {helpWindow Reports Opening}
   entry $w.e -width 60 -foreground black -background white \
       -textvariable reportFavoritesName -font font_Small -exportselection 0

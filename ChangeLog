@@ -600,7 +600,7 @@ scid-3.6.26
 
 [March 2009 ]
 
-scid-3.6.7
+scid-3.7
 -----------
 - This release requires Tcl/Tk 8.5 or higher
 - Fix : Game annotation, annotating all moves : when the next move was the expected one (calculated by the engine), no annotation was added, which was not coherent with "annotate all moves"
@@ -712,11 +712,14 @@ scid-3.6.7
 - Players' name standarization : strictly follow PGN requests by leaving a period after an initial (standardPlayerName in pgnparse.cpp)
 - Unix version : changed the way the tkscid path is searched to use scid's directory (thanks to Joost´t Hart)
 
+[March 2009 ]
 
-scid-3.6.7.1
+scid-3.7.1
 -----------
+- Bug fix : dialog to export games locked Scid UI under Windows
 - Correspondence Chess
   * Fix: Ctrl-F12 did not work from other windows than the main window
   * New Shortcut: Alt-F12 will open CC window, default DB and fetch the games
 - Plenty of changes in user interface, among others :
 	* USCF piece set
+

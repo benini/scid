@@ -359,7 +359,7 @@ proc exportOptions {exportType} {
   set exportFlags(ok) -1
   toplevel $w
   wm title $w "Scid: [tr OptionsExport]"
-  wm transient $w .
+  # wm transient $w .
   wm protocol $w WM_DELETE_WINDOW { }
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.ok invoke"
