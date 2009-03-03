@@ -279,14 +279,9 @@ proc ::file::Close {{base -1}} {
     }
     
     # Now switch back to the original base
-    sc_base switch $current
-    
-    ::windows::gamelist::Refresh
-    # Close Tree and Email windows whenever a base is closed/switched:
+    ::file::SwitchToBase $current
+    # Close Tree window whenever a base is closed/switched:
     if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
-    if {[winfo exists .emailWin]} { destroy .emailWin }
-    ::pgn::Refresh
-    updateBoard -pgn
   }
   updateMenuStates
   updateStatusBar
