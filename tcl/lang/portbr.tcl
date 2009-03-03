@@ -1983,7 +1983,7 @@ translate B CCDlgRatingType {Rating Type:}
 # ====== TODO To be translated ======
 translate B CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
-translate B CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
+translate B CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
 translate B ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======

@@ -2007,7 +2007,7 @@ translate R CCDlgRatingType {Rating Type:}
 # ====== TODO To be translated ======
 translate R CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
-translate R CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
+translate R CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
 translate R ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======

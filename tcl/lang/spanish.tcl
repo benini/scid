@@ -1577,7 +1577,7 @@ translate S CCDlgRatingType {Tipo de puntuación (Rating):}
 # ====== TODO To be translated ======
 translate S CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
-translate S CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Datbase).}
+translate S CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
