@@ -1855,7 +1855,11 @@ translate P FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate P FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate P FICSConsole {Console}
+# ====== TODO To be translated ======
 translate P FICSGames {Games}
+# ====== TODO To be translated ======
+translate P FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate P FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -2255,6 +2259,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

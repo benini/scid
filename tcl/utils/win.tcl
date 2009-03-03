@@ -711,12 +711,18 @@ proc ::docking::end_motion {w x y} {
 ################################################################################
 proc ::docking::show_menu { path x y} {
   variable c_path
+  
   if {[winfo exists .ctxtMenu]} {
     destroy .ctxtMenu
   }
   
   if {$path!=$c_path} {
     set c_path [find_tbn $path]
+  }
+  
+  # HACK ! Because notebooks may also be used inside internal windows
+  if {! [info exists ::docking::changedTab($c_path)] } {
+    return
   }
   
   # display window's menu (workaround for windows where the menu
@@ -766,6 +772,11 @@ proc ::docking::setMenuVisibility  { f show } {
 proc  ::docking::tabChanged  {path} {
   update
   # puts "tabChanged $path select [$path select]"
+  
+  # HACK ! Because notebooks may also be used inside internal windows
+  if { ! [ info exists ::docking::activeTab($path)] } {
+    return
+  }
   if { [$path select] != $::docking::activeTab($path)} {
     set ::docking::activeTab($path) [$path select]
     set ::docking::changedTab($path) 1

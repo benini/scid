@@ -1495,7 +1495,9 @@ translate F FICSServerPort {Port du serveur}
 translate F FICSTimesealPort {Port Timeseal}
 translate F FICSSilence {Silence}
 translate F FICSOffers {Offres}
+translate F FICSConsole {Console}
 translate F FICSGames {Parties}
+translate F FICSRelayedGames {Parties retransmises}
 translate F FICSFindOpponent {Trouver adversaire}
 translate F FICSTakeback {Reprendre un coup}
 translate F FICSTakeback2 {Rependre deux coups}
@@ -1796,6 +1798,8 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
+
 
 
 

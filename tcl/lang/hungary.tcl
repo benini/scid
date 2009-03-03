@@ -1841,7 +1841,11 @@ translate H FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate H FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate H FICSConsole {Console}
+# ====== TODO To be translated ======
 translate H FICSGames {Games}
+# ====== TODO To be translated ======
+translate H FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate H FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -2254,6 +2258,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

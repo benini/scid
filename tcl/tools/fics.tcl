@@ -175,48 +175,52 @@ namespace eval fics {
     ::setTitle $w "Free Internet Chess Server $::fics::reallogin"
     pack [ttk::panedwindow $w.f -orient vertical] -expand 1 -fill both
     
-    ttk::frame $w.f.top
-    ttk::frame $w.f.top.f1
-    ttk::frame $w.f.top.f2
-    pack $w.f.top.f1  -fill both -expand 1
-    pack $w.f.top.f2 -fill x
+    ttk::notebook $w.f.top
+    
+    ttk::frame $w.f.top.fconsole
+    ttk::frame $w.f.top.fconsole.f1
+    ttk::frame $w.f.top.fconsole.f2
+    
+    ttk::frame $w.f.top.foffers
+    $w.f.top add $w.f.top.fconsole -sticky nsew -text [::tr "FICSConsole"]
+    $w.f.top add $w.f.top.foffers -sticky nsew -text [::tr "FICSOffers"]
+    
+    pack $w.f.top.fconsole.f1  -fill both -expand 1
+    pack $w.f.top.fconsole.f2 -fill x
     ttk::frame $w.f.bottom
     
-    # pack $w.f.top -fill both -expand 1
-    # pack $w.f.bottom
     $w.f add $w.f.top -weight 1
     $w.f add $w.f.bottom -weight 1
     
     ttk::frame $w.f.bottom.left
     ttk::frame $w.f.bottom.right
-    ttk::frame $w.f.bottom.graph -relief sunken
     pack $w.f.bottom.left -side left
     pack $w.f.bottom.right -side left
     
     # graph
-    canvas $w.f.bottom.graph.c -background white -width $width -height $height -relief solid
-    pack $w.f.bottom.graph.c
+    canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
+    pack $w.f.top.foffers.c
     
-    ttk::scrollbar $w.f.top.f1.ysc -command { .fics.f.top.f1.console yview }
-    text $w.f.top.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
-        -wrap word -yscrollcommand "$w.f.top.f1.ysc set"
-    pack $w.f.top.f1.ysc -side left -fill y -side right
-    pack $w.f.top.f1.console -side left -fill both -expand 1 -side right
+    ttk::scrollbar $w.f.top.fconsole.f1.ysc -command { .fics.f.top.fconsole.f1.console yview }
+    text $w.f.top.fconsole.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
+        -wrap word -yscrollcommand "$w.f.top.fconsole.f1.ysc set"
+    pack $w.f.top.fconsole.f1.ysc -side left -fill y -side right
+    pack $w.f.top.fconsole.f1.console -side left -fill both -expand 1 -side right
     
     #define colors for console
-    $w.f.top.f1.console tag configure seeking     -foreground $::fics::colseeking
-    $w.f.top.f1.console tag configure game        -foreground $::fics::colgame
-    $w.f.top.f1.console tag configure gameresult  -foreground $::fics::colgameresult
-    $w.f.top.f1.console tag configure ficspercent -foreground $::fics::colficspercent
+    $w.f.top.fconsole.f1.console tag configure seeking     -foreground $::fics::colseeking
+    $w.f.top.fconsole.f1.console tag configure game        -foreground $::fics::colgame
+    $w.f.top.fconsole.f1.console tag configure gameresult  -foreground $::fics::colgameresult
+    $w.f.top.fconsole.f1.console tag configure ficspercent -foreground $::fics::colficspercent
     
-    ttk::entry $w.f.top.f2.cmd -width 32
-    ttk::button $w.f.top.f2.send -text [::tr "FICSSend"] -command ::fics::cmd
-    bind $w.f.top.f2.cmd <Return> { ::fics::cmd }
-    bind $w.f.top.f2.cmd <Up> { ::fics::cmdHistory up ; break }
-    bind $w.f.top.f2.cmd <Down> { ::fics::cmdHistory down ; break }
-    bind $w.f.top.f2.cmd <Left> " [bind TEntry <Left>] ; break "
-    bind $w.f.top.f2.cmd <Right> " [bind TEntry <Right>] ; break "
-    pack $w.f.top.f2.cmd $w.f.top.f2.send -side left -fill x
+    ttk::entry $w.f.top.fconsole.f2.cmd -width 32
+    ttk::button $w.f.top.fconsole.f2.send -text [::tr "FICSSend"] -command ::fics::cmd
+    bind $w.f.top.fconsole.f2.cmd <Return> { ::fics::cmd }
+    bind $w.f.top.fconsole.f2.cmd <Up> { ::fics::cmdHistory up ; break }
+    bind $w.f.top.fconsole.f2.cmd <Down> { ::fics::cmdHistory down ; break }
+    bind $w.f.top.fconsole.f2.cmd <Left> " [bind TEntry <Left>] ; break "
+    bind $w.f.top.fconsole.f2.cmd <Right> " [bind TEntry <Right>] ; break "
+    pack $w.f.top.fconsole.f2.cmd $w.f.top.fconsole.f2.send -side left -fill x
     
     # clock 1 is white
     ::gameclock::new $w.f.bottom.left 1 100 0
@@ -233,11 +237,11 @@ namespace eval fics {
     
     grid $w.f.bottom.right.silence -column 0 -row $row -sticky w
     incr row
-    ttk::checkbutton $w.f.bottom.right.offers -text [::tr "FICSOffers"] -variable ::fics::graphon -command ::fics::showOffers
     set ::fics::graphon 0
     ttk::button $w.f.bottom.right.games -text [::tr "FICSGames"] -command { ::fics::writechan "games /bs"}
-    grid $w.f.bottom.right.offers -column 0 -row $row -sticky w
     grid $w.f.bottom.right.games -column 1 -row $row -sticky ew
+    ttk::button $w.f.bottom.right.relay -text [::tr "FICSRelayedGames"] -command { ::fics::writechan "tell relay listgames"}
+    grid $w.f.bottom.right.relay -column 0 -row $row -sticky ew
     incr row
     ttk::button $w.f.bottom.right.findopp -text [::tr "FICSFindOpponent"] -command { ::fics::findOpponent }
     grid $w.f.bottom.right.findopp -column 0 -row $row -sticky ew
@@ -261,12 +265,14 @@ namespace eval fics {
     
     grid $w.f.bottom.right.cancel -column 0 -row $row -sticky ew
     
+    bind $w.f.top <<NotebookTabChanged>> { ::fics::tabchanged }
     bind $w <Destroy> { catch ::fics::close }
     bind $w <Configure> "recordWinSize $w"
     
     bind $w <F1> { helpWindow FICS}
-    bind $w.f.top.f1.console <FocusIn> "focus $w.f.top.f2.cmd"
-    bind $w.f.top.f1.console <Configure> { .fics.f.top.f1.console yview moveto 1 }
+    bind $w.f.top.fconsole.f1.console <FocusIn> "focus $w.f.top.fconsole.f2.cmd"
+    bind $w.f.top.fconsole.f1.console <Configure> { .fics.f.top.fconsole.f1.console yview moveto 1 }
+    bind $w.f.top.fconsole.f1.console <ButtonPress-1> { ::fics::consoleClick %x %y %W }
     standardShortcuts $w
     
     # all widgets must be visible
@@ -317,8 +323,8 @@ namespace eval fics {
   #
   ################################################################################
   proc cmd {} {
-    set l [.fics.f.top.f2.cmd get]
-    .fics.f.top.f2.cmd delete 0 end
+    set l [.fics.f.top.fconsole.f2.cmd get]
+    .fics.f.top.fconsole.f2.cmd delete 0 end
     if {$l == "quit"} {
       ::fics::close
       return
@@ -333,7 +339,7 @@ namespace eval fics {
   #
   ################################################################################
   proc cmdHistory { action } {
-    set t .fics.f.top.f2.cmd
+    set t .fics.f.top.fconsole.f2.cmd
     
     if {$action == "up" && $::fics::history_pos > 0} {
       incr ::fics::history_pos -1
@@ -528,9 +534,10 @@ namespace eval fics {
     updateConsole $line
     if {[string match "Creating: *" $line]} {
       # hide offers graph
-      if { $::fics::graphon } {
-        .fics.f.bottom.right.offers invoke
-      }
+      # if { $::fics::graphon } {
+      # .fics.f.bottom.right.offers invoke
+      .fics.f.top select 0
+      # }
       ::utils::sound::PlaySound sound_move
       # Create a game in an opened base
       if {![sc_base inUse]} {
@@ -712,17 +719,22 @@ namespace eval fics {
   proc setState { state } {
     set w .fics
     
-    foreach elt [list $w.f.bottom.right.offers $w.f.bottom.right.silence $w.f.top.f2.send $w.f.bottom.right.offers $w.f.bottom.right.games \
+    foreach elt [list $w.f.bottom.right.silence $w.f.top.fconsole.f2.send $w.f.bottom.right.games \
         $w.f.bottom.right.findopp $w.f.bottom.right.abort $w.f.bottom.right.draw $w.f.bottom.right.resign $w.f.bottom.right.takeback \
         $w.f.bottom.right.takeback2] {
           $elt configure -state $state
+        }
+        if {$state == "normal" } {
+              $w.f.top add $w.f.top.foffers ;# -sticky nsew -text [::tr "FICSOffers"]
+        } else  {
+          $w.f.top hide $w.f.top.foffers
         }
   }
   ################################################################################
   #
   ################################################################################
   proc updateConsole {line} {
-    set t .fics.f.top.f1.console
+    set t .fics.f.top.fconsole.f1.console
     if { [string match "* seeking *" $line ] } {
       $t insert end "$line\n" seeking
     } elseif { [string match "\{Game *\}" $line ] } {
@@ -735,7 +747,7 @@ namespace eval fics {
       $t insert end "$line\n"
     }
     
-    set pos [ lindex [ .fics.f.top.f1.ysc get ] 1 ]
+    set pos [ lindex [ .fics.f.top.fconsole.f1.ysc get ] 1 ]
     if {$pos == 1.0} {
       $t yview moveto 1
     }
@@ -765,7 +777,7 @@ namespace eval fics {
           array set g [lindex $::fics::soughtlist $idx]
           set num $g(game)
           if { $num == $l } {
-            .fics.f.bottom.graph.c delete game_$idx
+            .fics.f.top.foffers.c delete game_$idx
             break
           }
         }
@@ -943,34 +955,6 @@ namespace eval fics {
   ################################################################################
   #
   ################################################################################
-  proc redim {} {
-    set w .fics
-    update
-    set x [winfo reqwidth $w]
-    set y [winfo reqheight $w]
-    wm geometry $w ${x}x${y}
-  }
-  ################################################################################
-  #
-  ################################################################################
-  proc showOffers {} {
-    set w .fics.f.bottom.graph
-    
-    if { $::fics::graphon } {
-      bind .fics <Configure> ""
-      pack $w -side right -after .fics.f.bottom.right -anchor n
-      redim
-      updateOffers
-    } else {
-      after cancel ::fics::updateOffers
-      pack forget $w
-      setWinSize .fics
-      bind .fics <Configure> "recordWinSize .fics"
-    }
-  }
-  ################################################################################
-  #
-  ################################################################################
   proc updateOffers { } {
     set ::fics::sought 1
     set ::fics::soughtlist {}
@@ -986,7 +970,7 @@ namespace eval fics {
         ::fics::offers_minelo ::fics::offers_maxelo ::fics::offers_mintime ::fics::offers_maxtime
     after cancel ::fics::updateOffers
     
-    set w .fics.f.bottom.graph
+    set w .fics.f.top.foffers
     set size 5
     set idx 0
     
@@ -1052,7 +1036,7 @@ namespace eval fics {
   proc setOfferStatus { idx x y } {
     global ::fics::height ::fics::width
     
-    set w .fics.f.bottom.graph
+    set w .fics.f.top.foffers
     if { $idx != -1 } {
       set gl [lindex $::fics::soughtlist $idx]
       if { $gl == "" } { return }
@@ -1124,6 +1108,56 @@ namespace eval fics {
     if { $::fics::playing == 1 } { return 1 }
     
     return 0
+  }
+  ################################################################################
+  # Handle mouse button 1 on console : observe the selected game
+  ################################################################################
+  proc consoleClick { x y win } {
+    set idx [ $win index @$x,$y ]
+    if { [ scan $idx "%d.%d" l c ] != 2 } {
+      # should never happen
+      return
+    }
+    set elt [$win get $l.0 $l.end]
+    
+    # validate format
+    set game [lindex $elt 0]
+    set elow [lindex $elt 1]
+    set white [lindex $elt 2]
+    set elob [lindex $elt 3]
+    set black [lindex $elt 4]
+    
+    if { [ scan $game "%d" tmp ] != 1 || \
+          ( [ scan $elow "%d" tmp ] != 1 && $elow != "++++" ) || \
+          ( [ scan $elob "%d" tmp ] != 1 && $elob != "++++" ) } {
+      puts "$elt not a valid game"
+      return
+    }
+    
+    # warn the user before observing a game because it can interfere with a game played or
+    # other that would be disturbed by observing a game
+    set ans [tk_messageBox -title "Observe game" -icon question -type yesno \
+        -message "Do you want to observe game $game\n$white ($elow) - $black ($elob)  ?" ]
+    if { $ans == yes } {
+      writechan "unobserve" "echo"
+      writechan "observe $game" "echo"
+    }
+    
+  }
+  ################################################################################
+  # updates the offers view if it is visible
+  ################################################################################
+  proc tabchanged {} {
+    set nb .fics.f.top
+    set w .fics.f.top.foffers
+    
+    if { [ $nb select ] == $w } {
+      updateOffers
+      set ::fics::graphon 1
+    } else  {
+      after cancel ::fics::updateOffers
+      set ::fics::graphon 0
+    }
   }
   ################################################################################
   #

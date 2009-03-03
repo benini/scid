@@ -1568,7 +1568,11 @@ translate I FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate I FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate I FICSConsole {Console}
+# ====== TODO To be translated ======
 translate I FICSGames {Games}
+# ====== TODO To be translated ======
+translate I FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate I FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -1947,6 +1951,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 

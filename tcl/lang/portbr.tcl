@@ -1851,7 +1851,11 @@ translate B FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate B FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate B FICSConsole {Console}
+# ====== TODO To be translated ======
 translate B FICSGames {Games}
+# ====== TODO To be translated ======
+translate B FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate B FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -2034,6 +2038,8 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
+
 
 
 

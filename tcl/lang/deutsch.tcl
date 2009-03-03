@@ -1544,7 +1544,11 @@ translate D FICSServerPort {Serverport}
 translate D FICSTimesealPort {Timesealport}
 translate D FICSSilence {Konsolenfilter}
 translate D FICSOffers {Herausforderungen}
+# ====== TODO To be translated ======
+translate D FICSConsole {Console}
 translate D FICSGames {laufende Partien}
+# ====== TODO To be translated ======
+translate D FICSRelayedGames {Relayed games}
 translate D FICSFindOpponent {Gegner suchen}
 translate D FICSTakeback {Zurücknehmen}
 translate D FICSTakeback2 {2 zurücknehmen}
@@ -7203,6 +7207,8 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
 
 
 

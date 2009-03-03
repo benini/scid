@@ -1842,7 +1842,11 @@ translate O FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate O FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate O FICSConsole {Console}
+# ====== TODO To be translated ======
 translate O FICSGames {Games}
+# ====== TODO To be translated ======
+translate O FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate O FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -2028,6 +2032,8 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

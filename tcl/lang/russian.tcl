@@ -1875,7 +1875,11 @@ translate R FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate R FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate R FICSConsole {Console}
+# ====== TODO To be translated ======
 translate R FICSGames {Games}
+# ====== TODO To be translated ======
+translate R FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate R FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -2057,6 +2061,8 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

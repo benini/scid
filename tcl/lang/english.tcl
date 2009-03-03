@@ -1538,7 +1538,9 @@ translate E FICSServerPort {Server port}
 translate E FICSTimesealPort {Timeseal port}
 translate E FICSSilence {Console filter}
 translate E FICSOffers {Offers}
+translate E FICSConsole {Console}
 translate E FICSGames {Games}
+translate E FICSRelayedGames {Relayed games}
 translate E FICSFindOpponent {Find opponent}
 translate E FICSTakeback {Takeback}
 translate E FICSTakeback2 {Takeback 2}

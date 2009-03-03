@@ -1654,7 +1654,11 @@ translate N FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate N FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate N FICSConsole {Console}
+# ====== TODO To be translated ======
 translate N FICSGames {Games}
+# ====== TODO To be translated ======
+translate N FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate N FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -1771,6 +1775,8 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
+
 
 
 

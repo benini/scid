@@ -188,7 +188,7 @@ menuText W ToolsTrainFics "Spela på Internet"  0 {Spela på freechess.org}
 # ====== TODO To be translated ======
 menuText W ToolsBookTuning "Bokfininställning" 0 {Bokfininställning}
 # ====== TODO To be translated ======
-menuText W ToolsConnectHardware "Anslut Hårdwara" 0 {Anslut extern hårdvara}
+menuText W ToolsConnectHardware "Anslut Hårdvara" 0 {Anslut extern hårdvara}
 # ====== TODO To be translated ======
 menuText W ToolsConnectHardwareConfigure  "Konfiguration" 0 {Konfiguration}
 # ====== TODO To be translated ======
@@ -1849,7 +1849,11 @@ translate W FICSSilence {Tystnad}
 # ====== TODO To be translated ======
 translate W FICSOffers {Erbjuder}
 # ====== TODO To be translated ======
+translate W FICSConsole {Console}
+# ====== TODO To be translated ======
 translate W FICSGames {Partier}
+# ====== TODO To be translated ======
+translate W FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate W FICSFindOpponent {Hitta motståndare}
 # ====== TODO To be translated ======
@@ -1979,9 +1983,9 @@ translate W CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
 translate W CCDlgRatingType {Ratingtyp:}
 # ====== TODO To be translated ======
-translate W CCDlgDuplicateGame {Non-unique game ID}
+translate W CCDlgDuplicateGame {Icke unikt parti-ID}
 # ====== TODO To be translated ======
-translate W CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
+translate W CCDlgDuplicateGameError {Detta parti finns fler än en gång i din databas. Var god och ta bort alla dubbletter och komprimera din partifil (Arkiv/Underhåll/Komprimera Databas).}
 # ====== TODO To be translated ======
 translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 # ====== TODO To be translated ======
@@ -7045,6 +7049,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 

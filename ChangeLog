@@ -727,3 +727,6 @@ scid-3.7.1
 
 scid-3.7.2
 -----------
+- updated swedish translation (thanks to Hans Eriksson)
+- FICS : user interface improvements (click on a game to observe it, redesign in notebook style)
+- 

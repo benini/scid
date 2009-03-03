@@ -1838,7 +1838,11 @@ translate C FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate C FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate C FICSConsole {Console}
+# ====== TODO To be translated ======
 translate C FICSGames {Games}
+# ====== TODO To be translated ======
+translate C FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate C FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -5658,6 +5662,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

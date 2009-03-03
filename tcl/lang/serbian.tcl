@@ -1846,7 +1846,11 @@ translate Y FICSSilence {Silence}
 # ====== TODO To be translated ======
 translate Y FICSOffers {Offers}
 # ====== TODO To be translated ======
+translate Y FICSConsole {Console}
+# ====== TODO To be translated ======
 translate Y FICSGames {Games}
+# ====== TODO To be translated ======
+translate Y FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate Y FICSFindOpponent {Find opponent}
 # ====== TODO To be translated ======
@@ -2028,6 +2032,8 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 

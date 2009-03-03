@@ -1507,7 +1507,11 @@ translate S FICSServerPort {Puerto del servidor}
 translate S FICSTimesealPort {Puerto Timeseal}
 translate S FICSSilence {Silencio}
 translate S FICSOffers {Ofertas}
+# ====== TODO To be translated ======
+translate S FICSConsole {Console}
 translate S FICSGames {Partidas}
+# ====== TODO To be translated ======
+translate S FICSRelayedGames {Relayed games}
 translate S FICSFindOpponent {Buscar oponente}
 translate S FICSTakeback {Retrocede}
 translate S FICSTakeback2 {Retrocede 2}
@@ -1604,6 +1608,8 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
+
 
 
 
