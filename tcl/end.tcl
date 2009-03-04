@@ -1221,7 +1221,7 @@ proc gameReplace {} { gameSave [sc_game number] }
 #
 proc helpAbout {} {
   ::utils::sound::PlaySound sound_move
-set str {}
+  set str {}
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
