@@ -237,14 +237,24 @@ namespace eval fics {
     
     grid $w.f.bottom.right.silence -column 0 -row $row -sticky w
     incr row
+    
     set ::fics::graphon 0
     ttk::button $w.f.bottom.right.games -text [::tr "FICSGames"] -command { ::fics::writechan "games /bs"}
     grid $w.f.bottom.right.games -column 1 -row $row -sticky ew
     ttk::button $w.f.bottom.right.relay -text [::tr "FICSRelayedGames"] -command { ::fics::writechan "tell relay listgames"}
     grid $w.f.bottom.right.relay -column 0 -row $row -sticky ew
     incr row
+    ttk::separator $w.f.bottom.right.sep$row -orient horizontal
+    grid $w.f.bottom.right.sep$row -column 0 -row $row -columnspan 2 -sticky ew -pady 3
+    incr row
+    
     ttk::button $w.f.bottom.right.findopp -text [::tr "FICSFindOpponent"] -command { ::fics::findOpponent }
     grid $w.f.bottom.right.findopp -column 0 -row $row -sticky ew
+    incr row
+    ttk::separator $w.f.bottom.right.sep$row -orient horizontal
+    grid $w.f.bottom.right.sep$row -column 0 -row $row -columnspan 2 -sticky ew -pady 3
+    incr row
+    
     ttk::button $w.f.bottom.right.abort -text [::tr "Abort"] -command { ::fics::writechan "abort" }
     grid $w.f.bottom.right.abort -column 1 -row $row -sticky ew
     incr row
@@ -261,6 +271,9 @@ namespace eval fics {
     grid $w.f.bottom.right.takeback2 -column 1 -row $row -sticky ew
     incr row
     
+    ttk::separator $w.f.bottom.right.sep$row -orient horizontal
+    grid $w.f.bottom.right.sep$row -column 0 -row $row -columnspan 2 -sticky ew -pady 3
+    incr row
     ttk::button $w.f.bottom.right.cancel -text [::tr "Close"] -command { ::fics::close }
     
     grid $w.f.bottom.right.cancel -column 0 -row $row -sticky ew
@@ -724,11 +737,11 @@ namespace eval fics {
         $w.f.bottom.right.takeback2] {
           $elt configure -state $state
         }
-        if {$state == "normal" } {
-              $w.f.top add $w.f.top.foffers ;# -sticky nsew -text [::tr "FICSOffers"]
-        } else  {
-          $w.f.top hide $w.f.top.foffers
-        }
+    if {$state == "normal" } {
+      $w.f.top add $w.f.top.foffers ;# -sticky nsew -text [::tr "FICSOffers"]
+    } else  {
+      $w.f.top hide $w.f.top.foffers
+    }
   }
   ################################################################################
   #
@@ -1119,17 +1132,36 @@ namespace eval fics {
       return
     }
     set elt [$win get $l.0 $l.end]
+    set found 0
     
-    # validate format
-    set game [lindex $elt 0]
-    set elow [lindex $elt 1]
-    set white [lindex $elt 2]
-    set elob [lindex $elt 3]
-    set black [lindex $elt 4]
+    if { [llength $elt] > 4} {
+      # validate format
+      set game [lindex $elt 0]
+      set elow [lindex $elt 1]
+      set white [lindex $elt 2]
+      set elob [lindex $elt 3]
+      set black [lindex $elt 4]
+      
+      if { [ scan $game "%d" tmp ] != 1 || \
+            ( [ scan $elow "%d" tmp ] != 1 && $elow != "++++" ) || \
+            ( [ scan $elob "%d" tmp ] != 1 && $elob != "++++" ) } {
+      } else  {
+        set found 1
+      }
+    }
     
-    if { [ scan $game "%d" tmp ] != 1 || \
-          ( [ scan $elow "%d" tmp ] != 1 && $elow != "++++" ) || \
-          ( [ scan $elob "%d" tmp ] != 1 && $elob != "++++" ) } {
+    # Second chance : try to parse "tell relay listgames" (:104 GMxxxx GMyyyyy * B22)
+    if { [llength $elt] == 5 && ! $found } {
+      if { [ scan [lindex $elt 0] ":%d" game ] == 1 } {
+        set white [lindex $elt 1]
+        set black [lindex $elt 2]
+        set elow "-"
+        set elob "-"
+        set found 1
+      }
+    }
+    
+    if { ! $found } {
       puts "$elt not a valid game"
       return
     }

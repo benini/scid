@@ -163,7 +163,7 @@ proc ::commenteditor::Open {} {
   
   # pack [ttk::frame $mark.usage] -side bottom -pady 1 -expand true
   # pack [ttk::label $mark.usage.text -text [string trim $::tr(InsertMarkHelp)] -justify left]
-  ::utils::tooltip::Set $mark [string trim $::tr(InsertMarkHelp)]
+  ::utils::tooltip::Set $mark.header [string trim $::tr(InsertMarkHelp)]
   
   # Subframes for insert board and two button rows:
   pack [ttk::frame [set colorButtons $mark.colorButtons]] -side top -pady 1 -anchor n

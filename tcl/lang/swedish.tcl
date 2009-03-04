@@ -1849,11 +1849,11 @@ translate W FICSSilence {Tystnad}
 # ====== TODO To be translated ======
 translate W FICSOffers {Erbjuder}
 # ====== TODO To be translated ======
-translate W FICSConsole {Console}
+translate W FICSConsole {Konsol}
 # ====== TODO To be translated ======
 translate W FICSGames {Partier}
 # ====== TODO To be translated ======
-translate W FICSRelayedGames {Relayed games}
+translate W FICSRelayedGames {Återutsända partier}
 # ====== TODO To be translated ======
 translate W FICSFindOpponent {Hitta motståndare}
 # ====== TODO To be translated ======
