@@ -1842,6 +1842,10 @@ translate C FICSConsole {Console}
 # ====== TODO To be translated ======
 translate C FICSGames {Games}
 # ====== TODO To be translated ======
+translate C FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate C FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate C FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate C FICSFindOpponent {Find opponent}
@@ -1875,6 +1879,8 @@ translate C FICSColour {Colour}
 translate C FICSSend {send}
 # ====== TODO To be translated ======
 translate C FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate C FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate C CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -5662,6 +5668,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

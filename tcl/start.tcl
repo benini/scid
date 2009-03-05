@@ -289,6 +289,7 @@ set ::fics::port_fics 5000
 set ::fics::port_timeseal 5001
 set ::fics::login ""
 set ::fics::password ""
+set ::fics::usedefaultvars 1
 set ::fics::findopponent(initTime) 15
 set ::fics::findopponent(incTime) 20
 set ::fics::findopponent(rated) "rated"

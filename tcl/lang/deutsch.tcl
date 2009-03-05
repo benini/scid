@@ -1548,6 +1548,10 @@ translate D FICSOffers {Herausforderungen}
 translate D FICSConsole {Console}
 translate D FICSGames {laufende Partien}
 # ====== TODO To be translated ======
+translate D FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate D FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate D FICSRelayedGames {Relayed games}
 translate D FICSFindOpponent {Gegner suchen}
 translate D FICSTakeback {Zurücknehmen}
@@ -1565,6 +1569,8 @@ translate D FICSDecline {Ablehnen}
 translate D FICSColour {Seite wählen:}
 translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
+# ====== TODO To be translated ======
+translate D FICSdefaultuservars {Use default variables}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
@@ -7207,6 +7213,8 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
 
 
 

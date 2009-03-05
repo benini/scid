@@ -1540,6 +1540,8 @@ translate E FICSSilence {Console filter}
 translate E FICSOffers {Offers}
 translate E FICSConsole {Console}
 translate E FICSGames {Games}
+translate E FICSUnobserve {Stop observing game}
+translate E FICSProfile {Display your history and profile}
 translate E FICSRelayedGames {Relayed games}
 translate E FICSFindOpponent {Find opponent}
 translate E FICSTakeback {Takeback}
@@ -1557,6 +1559,7 @@ translate E FICSDecline {decline}
 translate E FICSColour {Colour}
 translate E FICSSend {send}
 translate E FICSConnect {Connect}
+translate E FICSdefaultuservars {Use default variables}
 
 # Correspondence Chess Dialogs:
 translate E CCDlgConfigureWindowTitle {Configure Correspondence Chess}

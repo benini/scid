@@ -1879,6 +1879,10 @@ translate R FICSConsole {Console}
 # ====== TODO To be translated ======
 translate R FICSGames {Games}
 # ====== TODO To be translated ======
+translate R FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate R FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate R FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate R FICSFindOpponent {Find opponent}
@@ -1912,6 +1916,8 @@ translate R FICSColour {Colour}
 translate R FICSSend {send}
 # ====== TODO To be translated ======
 translate R FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate R FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate R CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -2061,6 +2067,8 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

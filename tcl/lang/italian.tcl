@@ -1572,6 +1572,10 @@ translate I FICSConsole {Console}
 # ====== TODO To be translated ======
 translate I FICSGames {Games}
 # ====== TODO To be translated ======
+translate I FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate I FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate I FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate I FICSFindOpponent {Find opponent}
@@ -1605,6 +1609,8 @@ translate I FICSColour {Colour}
 translate I FICSSend {send}
 # ====== TODO To be translated ======
 translate I FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate I FICSdefaultuservars {Use default variables}
 translate I CCDlgConfigureWindowTitle {Configura Scacchi per Corrispondenza}
 translate I CCDlgCGeneraloptions {Opzioni generali}
 translate I CCDlgDefaultDB {Database di Default:}
@@ -1951,6 +1957,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 

@@ -1853,6 +1853,10 @@ translate W FICSConsole {Konsol}
 # ====== TODO To be translated ======
 translate W FICSGames {Partier}
 # ====== TODO To be translated ======
+translate W FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate W FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate W FICSRelayedGames {Återutsända partier}
 # ====== TODO To be translated ======
 translate W FICSFindOpponent {Hitta motståndare}
@@ -1886,6 +1890,8 @@ translate W FICSColour {färg}
 translate W FICSSend {skicka}
 # ====== TODO To be translated ======
 translate W FICSConnect {Anslut}
+# ====== TODO To be translated ======
+translate W FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
@@ -7049,6 +7055,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 

@@ -1859,6 +1859,10 @@ translate P FICSConsole {Console}
 # ====== TODO To be translated ======
 translate P FICSGames {Games}
 # ====== TODO To be translated ======
+translate P FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate P FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate P FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate P FICSFindOpponent {Find opponent}
@@ -1892,6 +1896,8 @@ translate P FICSColour {Colour}
 translate P FICSSend {send}
 # ====== TODO To be translated ======
 translate P FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate P FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate P CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -2259,6 +2265,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

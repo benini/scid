@@ -1658,6 +1658,10 @@ translate N FICSConsole {Console}
 # ====== TODO To be translated ======
 translate N FICSGames {Games}
 # ====== TODO To be translated ======
+translate N FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate N FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate N FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate N FICSFindOpponent {Find opponent}
@@ -1691,6 +1695,8 @@ translate N FICSColour {Colour}
 translate N FICSSend {send}
 # ====== TODO To be translated ======
 translate N FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate N FICSdefaultuservars {Use default variables}
 translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
 translate N CCDlgDefaultDB {Default Databank:}
@@ -1775,6 +1781,8 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
+
 
 
 

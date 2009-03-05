@@ -1511,6 +1511,10 @@ translate S FICSOffers {Ofertas}
 translate S FICSConsole {Console}
 translate S FICSGames {Partidas}
 # ====== TODO To be translated ======
+translate S FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate S FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate S FICSRelayedGames {Relayed games}
 translate S FICSFindOpponent {Buscar oponente}
 translate S FICSTakeback {Retrocede}
@@ -1528,6 +1532,8 @@ translate S FICSDecline {rechazar}
 translate S FICSColour {Color}
 translate S FICSSend {enviar}
 translate S FICSConnect {Conectar}
+# ====== TODO To be translated ======
+translate S FICSdefaultuservars {Use default variables}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1608,6 +1614,8 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
+
 
 
 

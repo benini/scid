@@ -80,14 +80,19 @@ namespace eval fics {
     grid $w.f.line$row -pady 5 -column 0 -row $row -columnspan 3 -sticky ew
     incr row
     
+    # use default user variables
+    ttk::checkbutton $w.f.cbvars -text [::tr "FICSdefaultuservars"] -variable ::fics::usedefaultvars
+    grid $w.f.cbvars -column 0 -row $row -sticky w
+    incr row
+    
     # Time seal configuration
     ttk::checkbutton $w.f.cbts -text "Time seal" -variable ::fics::use_timeseal -onvalue 1 -offvalue 0
-    grid $w.f.cbts -column 0 -row $row
+    grid $w.f.cbts -column 0 -row $row -sticky w
     incr row
     ttk::entry $w.f.eExec -width 30 -textvariable ::fics::timeseal_exec
     ttk::button $w.f.bExec -text "..." -command { set ::fics::timeseal_exec [tk_getOpenFile] }
     grid $w.f.eExec -column 0 -row $row -columnspan 2
-    grid $w.f.bExec -column 2 -row $row -sticky w
+    grid $w.f.bExec -column 2 -row $row
     incr row
     ttk::label $w.f.lFICS_port -text [::tr "FICSServerPort"]
     ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
@@ -227,12 +232,13 @@ namespace eval fics {
     ::gameclock::new $w.f.bottom.left 2 100 0
     
     set row 0
-    ttk::checkbutton $w.f.bottom.right.silence -text [::tr "FICSSilence"] -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
+    ttk::checkbutton $w.f.bottom.right.silence -image FICSsilence -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
       ::fics::writechan "set gin $::fics::silence" "echo"
       ::fics::writechan "set seek $::fics::silence" "echo"
       ::fics::writechan "set silence $::fics::silence" "echo"
       ::fics::writechan "set chanoff [expr ! $::fics::silence ]" "echo"
     }
+    ::utils::tooltip::Set $w.f.bottom.right.silence "[::tr FICSSilence]\n(set gin 0\nset seek 0\nset silence 0\nset chanoff 1)"
     set ::fics::silence 1
     
     grid $w.f.bottom.right.silence -column 0 -row $row -sticky w
@@ -242,13 +248,19 @@ namespace eval fics {
     
     ttk::button $w.f.bottom.right.findopp -image FICSsearch  -command { ::fics::findOpponent }
     ::utils::tooltip::Set $w.f.bottom.right.findopp [::tr "FICSFindOpponent"]
-    grid $w.f.bottom.right.findopp -column 0 -row $row -sticky ew
-    ttk::button $w.f.bottom.right.games -image FICSusers -compound image -command { ::fics::writechan "games /bs"}
-    ::utils::tooltip::Set $w.f.bottom.right.games "[::tr FICSGames]\n(games /bs)"
-    grid $w.f.bottom.right.games -column 2 -row $row -sticky ew
+    grid $w.f.bottom.right.findopp -column 0 -row $row -sticky ew -pady 2
     ttk::button $w.f.bottom.right.relay -image FICSrelayedgames -compound image -command { ::fics::writechan "tell relay listgames"}
     ::utils::tooltip::Set $w.f.bottom.right.relay "[::tr FICSRelayedGames]\n(tell relay listgames)"
-    grid $w.f.bottom.right.relay -column 1 -row $row -sticky ew
+    grid $w.f.bottom.right.relay -column 1 -row $row -sticky ew -pady 2
+    ttk::button $w.f.bottom.right.games -image FICSusers -compound image -command { ::fics::writechan "games /bsu"}
+    ::utils::tooltip::Set $w.f.bottom.right.games "[::tr FICSGames]\n(games /bsu)"
+    grid $w.f.bottom.right.games -column 2 -row $row -sticky ew -pady 2
+    ttk::button $w.f.bottom.right.uno -image FICSunobserve -compound image -command { ::fics::writechan "unobserve"}
+    ::utils::tooltip::Set $w.f.bottom.right.uno "[::tr FICSUnobserve]\n(unobserve)"
+    grid $w.f.bottom.right.uno -column 3 -row $row -sticky ew -pady 2
+    ttk::button $w.f.bottom.right.profile -image FICSprofile -compound image -command { ::fics::writechan "finger" ; ::fics::writechan "history" }
+    ::utils::tooltip::Set $w.f.bottom.right.profile "[::tr FICSProfile]\n(finger, history)"
+    grid $w.f.bottom.right.profile -column 4 -row $row -sticky ew -pady 2
     
     incr row
     
@@ -256,11 +268,11 @@ namespace eval fics {
     ::utils::tooltip::Set $w.f.bottom.right.draw "[::tr CCClaimDraw]\n(draw)"
     ttk::button $w.f.bottom.right.resign -image FICSresign -command { ::fics::writechan "resign"}
     ::utils::tooltip::Set $w.f.bottom.right.resign "[::tr CCResign]\n(resign)"
-    grid $w.f.bottom.right.draw -column 0 -row $row -sticky ew
-    grid $w.f.bottom.right.resign -column 1 -row $row -sticky ew
+    grid $w.f.bottom.right.draw -column 0 -row $row -sticky ew -pady 2
+    grid $w.f.bottom.right.resign -column 1 -row $row -sticky ew -pady 2
     ttk::button $w.f.bottom.right.abort -image FICSabort -command { ::fics::writechan "abort" }
     ::utils::tooltip::Set $w.f.bottom.right.abort "[::tr Abort]\n(abort)"
-    grid $w.f.bottom.right.abort -column 2 -row $row -sticky ew
+    grid $w.f.bottom.right.abort -column 2 -row $row -sticky ew -pady 2
     incr row
     
     ttk::button $w.f.bottom.right.takeback -image FICStakeback1 -command { ::fics::writechan "takeback"}
@@ -268,13 +280,13 @@ namespace eval fics {
     ttk::button $w.f.bottom.right.takeback2 -image FICStakeback2 -command { ::fics::writechan "takeback 2"}
     ::utils::tooltip::Set $w.f.bottom.right.takeback2 "[::tr FICSTakeback2]\n(takeback 2)"
     
-    grid $w.f.bottom.right.takeback -column 0 -row $row -sticky ew
-    grid $w.f.bottom.right.takeback2 -column 1 -row $row -sticky ew
+    grid $w.f.bottom.right.takeback -column 0 -row $row -sticky ew -pady 2
+    grid $w.f.bottom.right.takeback2 -column 1 -row $row -sticky ew -pady 2
     incr row
     
     ttk::button $w.f.bottom.right.cancel -image FICSexit -command { ::fics::close }
     ::utils::tooltip::Set $w.f.bottom.right.cancel [::tr "Close"]
-    grid $w.f.bottom.right.cancel -column 0 -columnspan 3 -row $row -sticky ew
+    grid $w.f.bottom.right.cancel -column 0 -columnspan 3 -row $row -sticky ew  -pady 2
     
     bind $w.f.top <<NotebookTabChanged>> { ::fics::tabchanged }
     bind $w <Destroy> { catch ::fics::close }
@@ -545,10 +557,7 @@ namespace eval fics {
     updateConsole $line
     if {[string match "Creating: *" $line]} {
       # hide offers graph
-      # if { $::fics::graphon } {
-      # .fics.f.bottom.right.offers invoke
       .fics.f.top select 0
-      # }
       ::utils::sound::PlaySound sound_move
       # Create a game in an opened base
       if {![sc_base inUse]} {
@@ -611,17 +620,22 @@ namespace eval fics {
     
     # Start session
     if {[string match "*Starting FICS session*" $line]} {
-      # init commands
+      
+      # mandatory init commands
       writechan "iset seekremove 1"
       writechan "iset seekinfo 1"
-      writechan "set seek 1"
-      writechan "set silence 1"
-      writechan "set chanoff 0"
-      writechan "set echo 1"
-      writechan "set cshout 0"
       writechan "style 12"
       writechan "iset nowrap 1"
       writechan "iset nohighlight 1"
+      
+      # user init commands
+      if { $::fics::usedefaultvars } {
+        writechan "set seek 1" ; # be informed of "seek" ads when they are made
+        writechan "set silence 1" ; #  turn off shouts, cshouts and channel tells while you play
+        writechan "set chanoff 0" ; # stop hearing tells to channels
+        writechan "set echo 1" ; # shouts and most other communications will be echoed to you
+        writechan "set cshout 0" ; # do not hear cshouts
+      }
       setState normal
       return
     }
@@ -1589,6 +1603,129 @@ image create photo FICStakeback2 -format png -data {
   iL7GDzn15ze5lAE0+eymHkE2EpclYm4uekEBntJ5+JYtIjh7LjkBDY8tcfp6iZ5oI3KyHTMN
   UKURcZN5k6mRTKsKMqxNTUSVBpycHdJ+ZsQ0G5CWBVykgZMCmKrA/+zndCrwdCWmNf4NzBqe
   iwJ5hqQAAAAASUVORK5CYII=
+}
+image create photo FICSunobserve -format png -data {
+  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
+}
+image create photo FICSprofile -format png -data {
+  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
+  AElFTkSuQmCC
+}
+image create photo FICSsilence -format png -data {
+  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
+  RU5ErkJggg==
 }
 ###
 ### End of file: fics.tcl

@@ -1855,6 +1855,10 @@ translate B FICSConsole {Console}
 # ====== TODO To be translated ======
 translate B FICSGames {Games}
 # ====== TODO To be translated ======
+translate B FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate B FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate B FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate B FICSFindOpponent {Find opponent}
@@ -1888,6 +1892,8 @@ translate B FICSColour {Colour}
 translate B FICSSend {send}
 # ====== TODO To be translated ======
 translate B FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate B FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate B CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -2038,6 +2044,8 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
+
 
 
 

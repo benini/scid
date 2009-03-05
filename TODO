@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-http://commons.wikimedia.org/wiki/Crystal_Clear
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -16,8 +16,6 @@ http://commons.wikimedia.org/wiki/Crystal_Clear
 |                                                           |
  ===========================================================
 
-- add variations from analysis engine when the engine is locked
-
 - Add a Game training ala Fritz' "Friend mode"
 
 - compile openseal for PocketPC
@@ -25,8 +23,6 @@ http://commons.wikimedia.org/wiki/Crystal_Clear
 - use tablelist package to revamp Game List window
 
 - port FICS canvas to PPC
-
-- FICS : user defined commands at login
 
 - Start game analysis at the end of the game to fill hash tables
 

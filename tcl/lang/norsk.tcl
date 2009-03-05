@@ -1846,6 +1846,10 @@ translate O FICSConsole {Console}
 # ====== TODO To be translated ======
 translate O FICSGames {Games}
 # ====== TODO To be translated ======
+translate O FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate O FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate O FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate O FICSFindOpponent {Find opponent}
@@ -1879,6 +1883,8 @@ translate O FICSColour {Colour}
 translate O FICSSend {send}
 # ====== TODO To be translated ======
 translate O FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate O FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate O CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -2032,6 +2038,8 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

@@ -1850,6 +1850,10 @@ translate Y FICSConsole {Console}
 # ====== TODO To be translated ======
 translate Y FICSGames {Games}
 # ====== TODO To be translated ======
+translate Y FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate Y FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate Y FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate Y FICSFindOpponent {Find opponent}
@@ -1883,6 +1887,8 @@ translate Y FICSColour {Colour}
 translate Y FICSSend {send}
 # ====== TODO To be translated ======
 translate Y FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate Y FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate Y CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -2032,6 +2038,8 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 

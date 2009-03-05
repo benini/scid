@@ -1497,6 +1497,8 @@ translate F FICSSilence {Silence}
 translate F FICSOffers {Offres}
 translate F FICSConsole {Console}
 translate F FICSGames {Parties}
+translate F FICSUnobserve {Arrêter de suivre la partie}
+translate F FICSProfile {Afficher mon historique et mes données}
 translate F FICSRelayedGames {Parties retransmises}
 translate F FICSFindOpponent {Trouver adversaire}
 translate F FICSTakeback {Reprendre un coup}
@@ -1514,6 +1516,7 @@ translate F FICSDecline {refuser}
 translate F FICSColour {Couleur}
 translate F FICSSend {envoyer}
 translate F FICSConnect {Connecter}
+translate F FICSdefaultuservars {Variables par défaut}
 translate F CCDlgConfigureWindowTitle {Configurer échecs par correspondance}
 translate F CCDlgCGeneraloptions {Options générales}
 translate F CCDlgDefaultDB {Base par défaut:}
@@ -1798,6 +1801,8 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
+
 
 
 

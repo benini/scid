@@ -1845,6 +1845,10 @@ translate H FICSConsole {Console}
 # ====== TODO To be translated ======
 translate H FICSGames {Games}
 # ====== TODO To be translated ======
+translate H FICSUnobserve {Stop observing game}
+# ====== TODO To be translated ======
+translate H FICSProfile {Display your history and profile}
+# ====== TODO To be translated ======
 translate H FICSRelayedGames {Relayed games}
 # ====== TODO To be translated ======
 translate H FICSFindOpponent {Find opponent}
@@ -1878,6 +1882,8 @@ translate H FICSColour {Colour}
 translate H FICSSend {send}
 # ====== TODO To be translated ======
 translate H FICSConnect {Connect}
+# ====== TODO To be translated ======
+translate H FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate H CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
@@ -2258,6 +2264,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 
