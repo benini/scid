@@ -1611,6 +1611,8 @@ translate I FICSSend {send}
 translate I FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate I FICSdefaultuservars {Use default variables}
+# ====== TODO To be translated ======
+translate I FICSObserveconfirm {Do you want to observe game}
 translate I CCDlgConfigureWindowTitle {Configura Scacchi per Corrispondenza}
 translate I CCDlgCGeneraloptions {Opzioni generali}
 translate I CCDlgDefaultDB {Database di Default:}
@@ -1957,6 +1959,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

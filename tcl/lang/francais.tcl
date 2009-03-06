@@ -1517,6 +1517,7 @@ translate F FICSColour {Couleur}
 translate F FICSSend {envoyer}
 translate F FICSConnect {Connecter}
 translate F FICSdefaultuservars {Variables par défaut}
+translate F FICSObserveconfirm {Voulez-vous suivre la partie}
 translate F CCDlgConfigureWindowTitle {Configurer échecs par correspondance}
 translate F CCDlgCGeneraloptions {Options générales}
 translate F CCDlgDefaultDB {Base par défaut:}
@@ -1801,6 +1802,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

@@ -771,7 +771,6 @@ proc ::docking::setMenuVisibility  { f show } {
 ################################################################################
 proc  ::docking::tabChanged  {path} {
   update
-  # puts "tabChanged $path select [$path select]"
   
   # HACK ! Because notebooks may also be used inside internal windows
   if { ! [ info exists ::docking::activeTab($path)] } {

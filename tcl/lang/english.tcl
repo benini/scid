@@ -1560,6 +1560,7 @@ translate E FICSColour {Colour}
 translate E FICSSend {send}
 translate E FICSConnect {Connect}
 translate E FICSdefaultuservars {Use default variables}
+translate E FICSObserveconfirm {Do you want to observe game}
 
 # Correspondence Chess Dialogs:
 translate E CCDlgConfigureWindowTitle {Configure Correspondence Chess}

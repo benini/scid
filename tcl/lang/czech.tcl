@@ -1882,6 +1882,8 @@ translate C FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate C FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate C FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate C CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate C CCDlgCGeneraloptions {General Options}
@@ -5668,6 +5670,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

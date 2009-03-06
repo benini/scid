@@ -1697,6 +1697,8 @@ translate N FICSSend {send}
 translate N FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate N FICSdefaultuservars {Use default variables}
+# ====== TODO To be translated ======
+translate N FICSObserveconfirm {Do you want to observe game}
 translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
 translate N CCDlgDefaultDB {Default Databank:}
@@ -1781,6 +1783,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

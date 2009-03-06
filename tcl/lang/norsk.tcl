@@ -1886,6 +1886,8 @@ translate O FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate O FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate O FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate O CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate O CCDlgCGeneraloptions {General Options}
@@ -2038,6 +2040,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

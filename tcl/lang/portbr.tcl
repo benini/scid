@@ -1895,6 +1895,8 @@ translate B FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate B FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate B FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate B CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate B CCDlgCGeneraloptions {General Options}
@@ -2044,6 +2046,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

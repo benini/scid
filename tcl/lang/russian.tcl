@@ -1919,6 +1919,8 @@ translate R FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate R FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate R FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate R CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate R CCDlgCGeneraloptions {General Options}
@@ -2067,6 +2069,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

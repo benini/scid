@@ -1890,6 +1890,8 @@ translate Y FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate Y FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate Y FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate Y CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate Y CCDlgCGeneraloptions {General Options}
@@ -2038,6 +2040,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

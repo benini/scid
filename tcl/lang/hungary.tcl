@@ -1885,6 +1885,8 @@ translate H FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate H FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate H FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate H CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate H CCDlgCGeneraloptions {General Options}
@@ -2264,6 +2266,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -1534,6 +1534,8 @@ translate S FICSSend {enviar}
 translate S FICSConnect {Conectar}
 # ====== TODO To be translated ======
 translate S FICSdefaultuservars {Use default variables}
+# ====== TODO To be translated ======
+translate S FICSObserveconfirm {Do you want to observe game}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1614,6 +1616,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

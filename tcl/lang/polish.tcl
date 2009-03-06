@@ -1899,6 +1899,8 @@ translate P FICSConnect {Connect}
 # ====== TODO To be translated ======
 translate P FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate P FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate P CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate P CCDlgCGeneraloptions {General Options}
@@ -2265,6 +2267,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -1571,6 +1571,8 @@ translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
 # ====== TODO To be translated ======
 translate D FICSdefaultuservars {Use default variables}
+# ====== TODO To be translated ======
+translate D FICSObserveconfirm {Do you want to observe game}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
@@ -7213,6 +7215,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

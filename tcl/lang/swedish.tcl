@@ -1893,6 +1893,8 @@ translate W FICSConnect {Anslut}
 # ====== TODO To be translated ======
 translate W FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
+translate W FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
 translate W CCDlgCGeneraloptions {Generella inställningar}
@@ -7055,6 +7057,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 
