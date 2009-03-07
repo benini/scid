@@ -1935,11 +1935,17 @@ translate B CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
 translate B CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
+translate B CCDlgConfirmXfcc {Confirm moves}
+# ====== TODO To be translated ======
 translate B CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
 translate B CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate B CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate B CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate B CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate B CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
@@ -2046,6 +2052,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

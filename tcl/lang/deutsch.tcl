@@ -1544,15 +1544,11 @@ translate D FICSServerPort {Serverport}
 translate D FICSTimesealPort {Timesealport}
 translate D FICSSilence {Konsolenfilter}
 translate D FICSOffers {Herausforderungen}
-# ====== TODO To be translated ======
-translate D FICSConsole {Console}
+translate D FICSConsole {Konsole}
 translate D FICSGames {laufende Partien}
-# ====== TODO To be translated ======
-translate D FICSUnobserve {Stop observing game}
-# ====== TODO To be translated ======
-translate D FICSProfile {Display your history and profile}
-# ====== TODO To be translated ======
-translate D FICSRelayedGames {Relayed games}
+translate D FICSUnobserve {Beobachtung abbrechen}
+translate D FICSProfile {Eigenes Profil ausgeben}
+translate D FICSRelayedGames {Übertragene Partien}
 translate D FICSFindOpponent {Gegner suchen}
 translate D FICSTakeback {Zurücknehmen}
 translate D FICSTakeback2 {2 zurücknehmen}
@@ -1569,10 +1565,8 @@ translate D FICSDecline {Ablehnen}
 translate D FICSColour {Seite wählen:}
 translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
-# ====== TODO To be translated ======
-translate D FICSdefaultuservars {Use default variables}
-# ====== TODO To be translated ======
-translate D FICSObserveconfirm {Do you want to observe game}
+translate D FICSdefaultuservars {Standardvariablen verwenden}
+translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
@@ -1594,9 +1588,12 @@ translate D CCDlgClawsEg {z. B. Sylpheed Claws}
 translate D CCDlgmailxEg {z. B. mailx, mutt, nail...}
 translate D CCDlgAttachementPar {Parameter für Anhang:}
 translate D CCDlgInternalXfcc {Interne Xfcc-Unterstützung verwenden}
+translate D CCDlgConfirmXfcc {Züge bestätigen}
 translate D CCDlgSubjectPar {Parameter für Betreff:}
 translate D CCDlgDeleteBoxes {Leeren des Postein- und Ausgangs}
 translate D CCDlgDeleteBoxesText {Wollen Sie wirklich Ihren Postein- und Ausgang leeren?\nDies erfordert ein erneutes Synchronisieren zum den aktuellen Zustand Ihrer Partien anzuzeigen.}
+translate D CCDlgConfirmMove {Zug bestätigen}
+translate D CCDlgConfirmMoveText {Durch bestätigen wird folgender Zug und Kommentar an den Server übertragen:}
 translate D CCDlgStartEmail {Neue eMail Partie}
 translate D CCDlgYourName {Ihr Name:}
 translate D CCDlgYourMail {Ihre eMail Adresse:}
@@ -7215,6 +7212,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

@@ -1632,11 +1632,17 @@ translate I CCDlgClawsEg {p.e Sylpheed Claws}
 translate I CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate I CCDlgAttachementPar {Parametro per l'allegato:}
 translate I CCDlgInternalXfcc {Usa il supporto interno per Xfcc}
+# ====== TODO To be translated ======
+translate I CCDlgConfirmXfcc {Confirm moves}
 translate I CCDlgSubjectPar {Parametro per l'oggetto:}
 # ====== TODO To be translated ======
 translate I CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate I CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate I CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate I CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 translate I CCDlgStartEmail {Avvia una nuova partita tramite eMail}
 translate I CCDlgYourName {Il tuo nome:}
 translate I CCDlgYourMail {Il tuo indirizzo eMail:}
@@ -1959,6 +1965,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

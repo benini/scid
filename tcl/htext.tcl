@@ -512,27 +512,50 @@ proc openURL {url} {
     } else {
       catch {exec start $url &}
     }
-    unbusyCursor .
-    return
-  }
-  
-  # On Unix systems, there is no standard for invoking favorite
-  # web browser, so just try starting Mozilla or Netscape.
-  
-  # First, check if Mozilla seems to be available:
-  if {[file executable /usr/bin/mozilla]  ||
-    [file executable /usr/local/bin/mozilla]} {
-    # First, try -remote mode:
-    if {[catch {exec /bin/sh -c "mozilla -remote 'openURL($url)'"}]} {
-      # Now try a new Mozilla process:
-      catch {exec /bin/sh -c "mozilla '$url'" &}
-    }
+  } elseif {$::macOS} {
+    # On Mac OS X use the "open" command:
+    catch {exec open $url &}
   } else {
-    # OK, no Mozilla (poor user) so try Netscape (yuck):
-    # First, try -remote mode to avoid starting a new netscape process:
-    if {[catch {exec /bin/sh -c "netscape -raise -remote 'openURL($url)'"}]} {
-      # Now just try starting a new netscape process:
-      catch {exec /bin/sh -c "netscape '$url'" &}
+    # On Unix systems, there is no standard for invoking favorite
+    # web browser, so just try starting Mozilla or Netscape.
+    
+    # First, check if Mozilla seems to be available:
+    if {[file executable [auto_execok firefox]]} {
+      # First, try -remote mode:
+      if {[catch {exec /bin/sh -c "$::auto_execs(firefox) -remote 'openURL($url)'"}]} {
+        # Now try a new Mozilla process:
+        catch {exec /bin/sh -c "$::auto_execs(firefox) '$url'" &}
+      }
+    } elseif {[file executable [auto_execok iceweasel]]} {
+      # First, try -remote mode:
+      if {[catch {exec /bin/sh -c "$::auto_execs(iceweasel) -remote 'openURL($url)'"}]} {
+        # Now try a new Mozilla process:
+        catch {exec /bin/sh -c "$::auto_execs(iceweasel) '$url'" &}
+      }
+    } elseif {[file executable [auto_execok mozilla]]} {
+      # First, try -remote mode:
+      if {[catch {exec /bin/sh -c "$::auto_execs(mozilla) -remote 'openURL($url)'"}]} {
+        # Now try a new Mozilla process:
+        catch {exec /bin/sh -c "$::auto_execs(mozilla) '$url'" &}
+      }
+    } elseif {[file executable [auto_execok netscape]]} {
+      # OK, no Mozilla (poor user) so try Netscape (yuck):
+      # First, try -remote mode to avoid starting a new netscape process:
+      if {[catch {exec /bin/sh -c "$::auto_execs(netscape) -raise -remote 'openURL($url)'"}]} {
+        # Now just try starting a new netscape process:
+        catch {exec /bin/sh -c "$::auto_execs(netscape) '$url'" &}
+      }
+    } else {
+      foreach executable {iexplorer opera lynx w3m links epiphan galeon 
+                          konqueror mosaic amaya browsex elinks} {
+        set executable [auto_execok $executable]
+        if [string length $executable] {
+          # Is there any need to give options to these browsers? how?
+          set command [list $executable $url &]
+          catch {exec /bin/sh -c "$executable '$url'" &}
+          break
+        }
+      }
     }
   }
   unbusyCursor .

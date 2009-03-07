@@ -1926,11 +1926,17 @@ translate O CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
 translate O CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
+translate O CCDlgConfirmXfcc {Confirm moves}
+# ====== TODO To be translated ======
 translate O CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
 translate O CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate O CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate O CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate O CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate O CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
@@ -2040,6 +2046,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

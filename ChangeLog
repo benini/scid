@@ -733,4 +733,5 @@ scid-3.7.2
 	* redesign in notebook style
 	* used icons from http://webdesignledger.com/freebies/21-best-icon-sets-for-designing-web-apps
 	* added a check box to enable standard user variables
-- 
+- Correspondence Chess:
+	* Add confirmation dialogue of CC moves

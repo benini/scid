@@ -1922,11 +1922,17 @@ translate C CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
 translate C CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
+translate C CCDlgConfirmXfcc {Confirm moves}
+# ====== TODO To be translated ======
 translate C CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
 translate C CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate C CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate C CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate C CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate C CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
@@ -5670,6 +5676,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

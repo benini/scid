@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.54 2009/02/24 19:26:35 arwagner Exp $
+### $Id: correspondence.tcl,v 1.55 2009/03/07 17:12:36 arwagner Exp $
 ###
-### Last change: <Tue, 2009/02/24 20:21:10 arwagner ingata>
+### Last change: <Sat, 2009/03/07 18:09:06 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1175,6 +1175,8 @@ namespace eval CorrespondenceChess {
 	# external send tool (eg. Xfcc)
 	set XfccSendcmd      "./Xfcc-Send.pl"
 
+	set XfccConfirm      1
+
 	# email-programm capable of SMTP auth and attachements
 	set mailer           "/usr/bin/nail"
 	# mail a bcc of the outgoing mails to this address
@@ -1391,29 +1393,45 @@ namespace eval CorrespondenceChess {
 
 				# If possible replace absolute path by a relative one to
 				# $scidDataDir
-				if { [regexp $::scidDataDir $path] } {
-					regsub -all $::scidDataDir $path "scidDataDir" path
+
+				# first get rid of windows path separators as they get
+				# interpreted by TCL
+				regsub -all {\\} $::scidDataDir "/" sdd
+				regsub -all {\\}  $path "/" pd
+
+				if { [regexp $sdd $pd] } {
+					regsub -all $sdd $pd "scidDataDir" path
+					# now convert back to nativename
+					set path [file nativename $path]
 					puts $optionF "set $i \$$path"
 				} else {
 					puts $optionF "set $i [list [set $i]]"
 				}
+
 			}
 			foreach i { ::CorrespondenceChess::xfccrcfile     \
 			} {
 				set path [set $i]
-				# If possible replace absolute path by a relative one to
-				# $scidConfigDir
-				if { [regexp $::scidConfigDir $path] } {
-					regsub -all $::scidConfigDir $path "scidConfigDir" path
+				regsub -all {\\} $::scidConfigDir "/" sdd
+				regsub -all {\\} $path "/" pd
+				if { [regexp $sdd $pd] } {
+					regsub -all $sdd $pd "scidDataDir" path
+					set path [file nativename $path]
 					puts $optionF "set $i \$$path"
 				} else {
 					puts $optionF "set $i [list [set $i]]"
 				}
+
 			}
 			if {$::CorrespondenceChess::XfccInternal < 0}  {
 				puts $optionF {set ::CorrespondenceChess::XfccInternal 0}
 			} else {
 				puts $optionF "set ::CorrespondenceChess::XfccInternal $::CorrespondenceChess::XfccInternal"
+			}
+			if {$::CorrespondenceChess::XfccConfirm < 0}  {
+				puts $optionF {set ::CorrespondenceChess::XfccConfirm 0}
+			} else {
+				puts $optionF "set ::CorrespondenceChess::XfccConfirm $::CorrespondenceChess::XfccConfirm"
 			}
 
 		}
@@ -1640,8 +1658,6 @@ namespace eval CorrespondenceChess {
 		grid $w.top.plugins                  -column  6 -row 2
 
 		grid $w.top.resign      -stick ew    -column  7 -row 1
-
-		#### grid $w.top.delinbox    -stick e   -column  7 -row 1
 
 		grid $w.top.claimDraw   -stick ew    -column  7 -row 2
 		grid $w.top.offerDraw   -stick ew    -column  8 -row 2
@@ -1975,6 +1991,9 @@ namespace eval CorrespondenceChess {
 		checkbutton $w.internalXfcc -text [::tr "CCDlgInternalXfcc"] \
 			-variable ::CorrespondenceChess::XfccInternal
 
+		checkbutton $w.confirmXfcc -text [::tr "CCDlgConfirmXfcc"] \
+			-variable ::CorrespondenceChess::XfccConfirm
+
 		button $w.xfconf  -text [::tr CCConfigure] -command { ::CorrespondenceChess::checkXfccrc
 			::Xfcc::config $::CorrespondenceChess::xfccrcfile}
 
@@ -2013,56 +2032,57 @@ namespace eval CorrespondenceChess {
 		grid $w.linbox       -sticky e -column 0 -row  2
 		grid $w.loutbox      -sticky e -column 0 -row  3
 
-		grid $w.lxfccrc      -sticky e -column 0 -row  5
-		grid $w.lxfcc                  -column 0 -row  6 -columnspan 3 -pady 10
-		grid $w.lfetch       -sticky e -column 0 -row  7
-		grid $w.lsend        -sticky e -column 0 -row  8
+		grid $w.lxfccrc      -sticky e -column 0 -row  6
+		grid $w.lxfcc                  -column 0 -row  7 -columnspan 3 -pady 10
+		grid $w.lfetch       -sticky e -column 0 -row  8
+		grid $w.lsend        -sticky e -column 0 -row  9
 
-		grid $w.lemail                 -column 0 -row  9 -columnspan 3 -pady 10
-		grid $w.lmailx       -sticky e -column 0 -row 10
-		grid $w.lbccaddr     -sticky e -column 0 -row 11
-		grid $w.lmoderb      -sticky e -column 0 -row 12
+		grid $w.lemail                 -column 0 -row 10 -columnspan 3 -pady 10
+		grid $w.lmailx       -sticky e -column 0 -row 11
+		grid $w.lbccaddr     -sticky e -column 0 -row 12
+		grid $w.lmoderb      -sticky e -column 0 -row 13
 
-		grid $w.lmoderb1     -sticky w -column 2 -row 12 -columnspan 2
-		grid $w.lmoderb2     -sticky w -column 2 -row 13 -columnspan 2
-		grid $w.lmoderb3     -sticky w -column 2 -row 14 -columnspan 2
-		grid $w.lmoderb4     -sticky w -column 2 -row 15 -columnspan 2
+		grid $w.lmoderb1     -sticky w -column 2 -row 14 -columnspan 2
+		grid $w.lmoderb2     -sticky w -column 2 -row 15 -columnspan 2
+		grid $w.lmoderb3     -sticky w -column 2 -row 16 -columnspan 2
+		grid $w.lmoderb4     -sticky w -column 2 -row 17 -columnspan 2
 
-		grid $w.lattache     -sticky e -column 0 -row 17
-		grid $w.lsubject     -sticky e -column 0 -row 18
+		grid $w.lattache     -sticky e -column 0 -row 18
+		grid $w.lsubject     -sticky e -column 0 -row 19
 
 		# placing entry fields
 		grid $w.db           -sticky w -column 1 -row  1 -columnspan 2
 		grid $w.inbox        -sticky w -column 1 -row  2 -columnspan 2
 		grid $w.outbox       -sticky w -column 1 -row  3 -columnspan 2
 
-		grid $w.internalXfcc -sticky w -column 1 -row  4 -pady 10
-		grid $w.xfconf                 -column 2 -row  4 -columnspan 2
+		grid $w.confirmXfcc  -sticky w -column 1 -row  4
+		grid $w.internalXfcc -sticky w -column 1 -row  5 -pady 10
+		grid $w.xfconf                 -column 2 -row  5 -columnspan 2
 
-		grid $w.xfccrc       -sticky w -column 1 -row  5 -columnspan 2
-		grid $w.fetch        -sticky w -column 1 -row  7 -columnspan 2
-		grid $w.send         -sticky w -column 1 -row  8 -columnspan 2
+		grid $w.xfccrc       -sticky w -column 1 -row  6 -columnspan 2
+		grid $w.fetch        -sticky w -column 1 -row  8 -columnspan 2
+		grid $w.send         -sticky w -column 1 -row  9 -columnspan 2
 
-		grid $w.mailx        -sticky w -column 1 -row 10 -columnspan 2
-		grid $w.bccaddr      -sticky w -column 1 -row 11 -columnspan 2
+		grid $w.mailx        -sticky w -column 1 -row 11 -columnspan 2
+		grid $w.bccaddr      -sticky w -column 1 -row 12 -columnspan 2
 
-		grid $w.moderb1      -sticky w -column 1 -row 12
-		grid $w.moderb2      -sticky w -column 1 -row 13
-		grid $w.moderb3      -sticky w -column 1 -row 14
-		grid $w.moderb4      -sticky w -column 1 -row 15
+		grid $w.moderb1      -sticky w -column 1 -row 13
+		grid $w.moderb2      -sticky w -column 1 -row 14
+		grid $w.moderb3      -sticky w -column 1 -row 15
+		grid $w.moderb4      -sticky w -column 1 -row 16
 
-		grid $w.attache      -sticky w -column 1 -row 17 -columnspan 2
-		grid $w.subject      -sticky w -column 1 -row 18 -columnspan 2
+		grid $w.attache      -sticky w -column 1 -row 18 -columnspan 2
+		grid $w.subject      -sticky w -column 1 -row 19 -columnspan 2
 
 		grid $w.bdb          -sticky w -column 3 -row  1
 		grid $w.binbox       -sticky w -column 3 -row  2
 		grid $w.boutbox      -sticky w -column 3 -row  3
-		grid $w.bfetch       -sticky w -column 3 -row  7
-		grid $w.bsend        -sticky w -column 3 -row  8
+		grid $w.bfetch       -sticky w -column 3 -row  8
+		grid $w.bsend        -sticky w -column 3 -row  9
 
 		# Buttons and ESC-key
-		grid $w.bOk          -column 0 -row 19 -pady 10 -columnspan 2
-		grid $w.bCancel      -column 1 -row 19 -pady 10
+		grid $w.bOk          -column 0 -row 20 -pady 10 -columnspan 2
+		grid $w.bCancel      -column 1 -row 20 -pady 10
 		bind $w <Escape> "$w.bCancel invoke"
 
 		bind $w <F1> { helpWindow CCSetupDialog}
@@ -2119,7 +2139,7 @@ namespace eval CorrespondenceChess {
 		# Call gameSave with argument 0 to append to the current
 		# database. This also gives the Save-dialog for additional user
 		# values.
-		### gameSave 0
+		gameSave 0
 
 		# construct a PGN in Inbox for CC gamelist to work
 		set pgnfile "[file join $Inbox $gameid].pgn"
@@ -3046,17 +3066,15 @@ namespace eval CorrespondenceChess {
 	# Send the move to the opponent via XFCC or eMail
 	#----------------------------------------------------------------------
 	proc SendMove {resign claimDraw offerDraw acceptDraw } {
-		global ::CorrespondenceChess::Outbox   ::CorrespondenceChess::XfccSendcmd \
-				 ::CorrespondenceChess::CorrSlot num
+		global ::CorrespondenceChess::Outbox
+		global ::CorrespondenceChess::XfccSendcmd
+		global ::CorrespondenceChess::CorrSlot
+		global ::CorrespondenceChess::XfccConfirm num
 
 		busyCursor .
 
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
-
-			# Go to the last move is important to send the comment for
-			# the last move only not the comment for the current game
-			# position!
 			sc_move end
 
 			set Extra [sc_game tags get Extra]
@@ -3093,43 +3111,68 @@ namespace eval CorrespondenceChess {
 			.ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background yellow -font font_Bold
 
-			# If Event = "Email correspondence game"
-			# treat it as cmail game that is send by mail, otherwise it is
-			# Xfcc and sent accordingly
-			set Mode [::CorrespondenceChess::CheckMode]
-			if {$Mode == "EM"} {
-				eMailMove
-			} else {
-				if {$::CorrespondenceChess::XfccInternal == 1} {
-					# use internal Xfcc-handling
-					::Xfcc::ReadConfig $::CorrespondenceChess::xfccrcfile
-					::Xfcc::Send $name $gameid $movecount $move $comment \
-							$resign $acceptDraw $offerDraw $claimDraw
-				} else {
-					if {[file executable "$XfccSendcmd"]} {
-						set callstring "$XfccSendcmd $Outbox $name $gameid $movecount $move \"$comment\" $resign $claimDraw $offerDraw $acceptDraw &"
+			set DlgBoxText "[::tr CCDlgConfirmMoveText]\n\n$name-$gameid:\n\t$movecount. $move\n\t{$comment}"
+			if {$resign == 1} {
+				set DlgBoxText "$DlgBoxText\n\n[::tr CCResign]"
+			} elseif {$acceptDraw == 1} {
+				set DlgBoxText "$DlgBoxText\n\n[::tr CCAcceptDraw]"
+			} elseif {$offerDraw  == 1} {
+				set DlgBoxText "$DlgBoxText\n\n[::tr CCofferDraw]"
+			} elseif {$claimDraw  == 1} {
+				set DlgBoxText "$DlgBoxText\n\n[::tr CCClaimDraw]"
+			}
 
-						::CorrespondenceChess::updateConsole "info Spawning external send tool $XfccSendcmd..."
-						CallExternal $callstring
+			set result 0
+			if {$::CorrespondenceChess::XfccConfirm == 1} {
+				set result [tk_dialog .roDialog "Scid: [tr CCDlgConfirmMove]" \
+						$DlgBoxText "" 1 $::tr(Yes) $::tr(No)]
+			}
+			if {$result == 0} {
+				# Go to the last move is important to send the comment for
+				# the last move only not the comment for the current game
+				# position!
+
+				# If Event = "Email correspondence game"
+				# treat it as cmail game that is send by mail, otherwise it is
+				# Xfcc and sent accordingly
+				set Mode [::CorrespondenceChess::CheckMode]
+				if {$Mode == "EM"} {
+					eMailMove
+				} else {
+
+					if {$::CorrespondenceChess::XfccInternal == 1} {
+						# use internal Xfcc-handling
+						::Xfcc::ReadConfig $::CorrespondenceChess::xfccrcfile
+						::Xfcc::Send $name $gameid $movecount $move $comment \
+								$resign $acceptDraw $offerDraw $claimDraw
+					} else {
+						if {[file executable "$XfccSendcmd"]} {
+							set callstring "$XfccSendcmd $Outbox $name $gameid $movecount $move \"$comment\" $resign $claimDraw $offerDraw $acceptDraw &"
+
+							::CorrespondenceChess::updateConsole "info Spawning external send tool $XfccSendcmd..."
+							CallExternal $callstring
+						}
 					}
 				}
+
+				# Save the game once the move is sent
+				sc_game save [sc_game number]
+
+				# setting "noMarkCodes" to 1 would drop the timing comments
+				# inserted e.g. by SchemingMind. Do not overwrite eMail based
+				# games as the mailer might not have sent them and most
+				# mailers load the file right before transmission.
+				if {!($Mode == "EM")} {
+					sc_base export "current" "PGN" $pgnfile -append 0 -comments 1 -variations 1 \
+								-space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 0 -convertNullMoves 1
+				}
+
+				# Everything done, set background to green
+				.ccWindow.bottom.id tag configure hlsent$CmailGameName -background green -font font_Bold
+			} else {
+				# mark games with unconfirmed moves in gray:
+				.ccWindow.bottom.id tag configure hlsent$CmailGameName -background gray -font font_Small
 			}
-
-			# Save the game once the move is sent
-			sc_game save [sc_game number]
-
-			# setting "noMarkCodes" to 1 would drop the timing comments
-			# inserted e.g. by SchemingMind. Do not overwrite eMail based
-			# games as the mailer might not have sent them and most
-			# mailers load the file right before transmission.
-			if {!($Mode == "EM")} {
-				sc_base export "current" "PGN" $pgnfile -append 0 -comments 1 -variations 1 \
-							-space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 0 -convertNullMoves 1
-			}
-
-			# Everything done, set background to green
-			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background green -font font_Bold
-
 		}
 		unbusyCursor .
 	}

@@ -1939,11 +1939,17 @@ translate P CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
 translate P CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
+translate P CCDlgConfirmXfcc {Confirm moves}
+# ====== TODO To be translated ======
 translate P CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
 translate P CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate P CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate P CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate P CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate P CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
@@ -2267,6 +2273,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -1959,11 +1959,17 @@ translate R CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
 translate R CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
+translate R CCDlgConfirmXfcc {Confirm moves}
+# ====== TODO To be translated ======
 translate R CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
 translate R CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate R CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate R CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate R CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate R CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
@@ -2069,6 +2075,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

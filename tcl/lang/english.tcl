@@ -1582,9 +1582,12 @@ translate E CCDlgClawsEg {e.g Sylpheed Claws}
 translate E CCDlgmailxEg {e.g. mailx, mutt, nail...}
 translate E CCDlgAttachementPar {Attachment parameter:}
 translate E CCDlgInternalXfcc {Use internal Xfcc support}
+translate E CCDlgConfirmXfcc {Confirm moves}
 translate E CCDlgSubjectPar {Subject parameter:}
 translate E CCDlgDeleteBoxes {Empty In-/Outbox}
 translate E CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess?\nThis requires a new sync to show the last state of your games.}
+translate E CCDlgConfirmMove {Confirm move}
+translate E CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 
 translate E CCDlgStartEmail {Start new eMail game}
 translate E CCDlgYourName {Your Name:}

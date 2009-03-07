@@ -1925,11 +1925,17 @@ translate H CCDlgAttachementPar {Attachment parameter:}
 # ====== TODO To be translated ======
 translate H CCDlgInternalXfcc {Use internal Xfcc support}
 # ====== TODO To be translated ======
+translate H CCDlgConfirmXfcc {Confirm moves}
+# ====== TODO To be translated ======
 translate H CCDlgSubjectPar {Subject parameter:}
 # ====== TODO To be translated ======
 translate H CCDlgDeleteBoxes {Empty In-/Outbox}
 # ====== TODO To be translated ======
 translate H CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
+# ====== TODO To be translated ======
+translate H CCDlgConfirmMove {Confirm move}
+# ====== TODO To be translated ======
+translate H CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate H CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
@@ -2266,6 +2272,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 
