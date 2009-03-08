@@ -101,6 +101,7 @@ proc ::windows::eco::Refresh {{code "x"}} {
     ::utils::graph::create eco -width 1 -height 1 -xtop 50 -ytop 20 \
       -xmin 0.5 -xtick 1 -ytick 5 -font font_Small -canvas $graph.c
     update
+    ::createToplevelFinalize $w
   }
 
   set height [expr {[winfo height $graph.c] - 50} ]

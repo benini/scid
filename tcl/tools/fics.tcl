@@ -204,6 +204,7 @@ namespace eval fics {
     # graph
     canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
     pack $w.f.top.foffers.c
+    bind $w.f.top.foffers <Configure> { ::fics::configureCanvas}
     
     ttk::scrollbar $w.f.top.fconsole.f1.ysc -command { .fics.f.top.fconsole.f1.console yview }
     text $w.f.top.fconsole.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
@@ -986,6 +987,16 @@ namespace eval fics {
     writechan "sought"
     vwaitTimed ::fics::sought 5000 "nowarn"
     after 3000 ::fics::updateOffers
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc configureCanvas {} {
+    set w .fics.f.top.foffers
+    set ::fics::height [winfo height $w]
+    set ::fics::width [winfo width $w]
+    $w.c configure -width $::fics::width -height $::fics::height
+    displayOffers
   }
   ################################################################################
   #

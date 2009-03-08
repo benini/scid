@@ -278,10 +278,10 @@ proc ::file::Close {{base -1}} {
       sc_game new
     }
     
-    # Now switch back to the original base
-    ::file::SwitchToBase $current
     # Close Tree window whenever a base is closed/switched:
     if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
+    # Now switch back to the original base
+    ::file::SwitchToBase $current
   }
   updateMenuStates
   updateStatusBar

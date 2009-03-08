@@ -1214,10 +1214,10 @@ proc ::splash::add {text} {
   update
 }
 
-::splash::add "Copyright (C) 1999-2004 Shane Hudson  (sgh@users.sourceforge.net)"
-::splash::add "Copyright (C) 2006-2009 Pascal Georges  (pascal.georges1@free.fr)"
+::splash::add "Copyright (C) 1999-2004 Shane Hudson"
+::splash::add "Copyright (C) 2006-2009 Pascal Georges"
 ::splash::add "This is Scid $::scidVersion, released $::scidVersionDate."
-::splash::add "Website: scid.sourceforge.net\n"
+::splash::add "Website: http://scid.sourceforge.net\n"
 
 # Remember old font settings before loading options file:
 set fontOptions(oldRegular) $fontOptions(Regular)
