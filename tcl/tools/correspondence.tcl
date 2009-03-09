@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.56 2009/03/09 19:16:26 arwagner Exp $
+### $Id: correspondence.tcl,v 1.57 2009/03/09 19:49:28 arwagner Exp $
 ###
-### Last change: <Mon, 2009/03/09 19:58:14 arwagner ingata>
+### Last change: <Mon, 2009/03/09 20:47:49 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1918,10 +1918,7 @@ namespace eval CorrespondenceChess {
 		if {$tb == "false"} {
 			$w.bottom.feature image create end -align center -image tb_CC_tablebase
 		}
-		if {$engines == "false"} {
-			$w.bottom.feature image create end -align center -image tb_CC_engine
-		}
-		if {$engines == "{}"} {
+		if {!($engines == "true")} {
 			$w.bottom.feature image create end -align center -image tb_CC_engine
 		}
 
@@ -2574,10 +2571,10 @@ namespace eval CorrespondenceChess {
 					}
 				}
 			}
-			if {$noENG == "false"} {
-				::CorrespondenceChess::EnableEngineAnalysis 1
-			} else {
+			if {$noENG == "true"} {
 				::CorrespondenceChess::EnableEngineAnalysis 0
+			} else {
+				::CorrespondenceChess::EnableEngineAnalysis 1
 			}
 
 			SearchGame $Event $Site $White $Black $CmailGameName $result
