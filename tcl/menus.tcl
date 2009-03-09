@@ -1726,6 +1726,7 @@ proc standardShortcuts {w} {
   bind $w <Control-x> ::game::Clear
   
   bind $w <Control-A> makeAnalysisWin
+  bind $w <Control-Shift-2>  "makeAnalysisWin 2"
   bind $w <Control-B> ::search::board
   bind $w <Control-C> ::copyFEN
   bind $w <Control-E> ::tools::email

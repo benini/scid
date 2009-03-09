@@ -735,5 +735,7 @@ scid-3.7.2
 	* used icons from http://webdesignledger.com/freebies/21-best-icon-sets-for-designing-web-apps
 	* added a check box to enable standard user variables
 - Fixed a small bug when closing ECO graph window (missing cleanup)
+- Fix: add missing global shortcuts
 - Correspondence Chess:
 	* Add confirmation dialogue of CC moves
+	* Disable engine analysis in games that do not allow it,  ie. Xfcc noEngines = true. If noEngines is not set assume "engines allowed" (ICCF). Suggested by Austin

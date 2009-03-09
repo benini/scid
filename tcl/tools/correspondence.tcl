@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.55 2009/03/07 17:12:36 arwagner Exp $
+### $Id: correspondence.tcl,v 1.56 2009/03/09 19:16:26 arwagner Exp $
 ###
-### Last change: <Sat, 2009/03/07 18:09:06 arwagner ingata>
+### Last change: <Mon, 2009/03/09 19:58:14 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1536,6 +1536,55 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
+	# Allow to disable engine analysis in case engines are not allowed
+	# for the ongoing game.
+	#----------------------------------------------------------------------
+	proc EnableEngineAnalysis {on} {
+	
+		if {$on == 0} {
+			set m .menu.tools
+			$m entryconfigure 0 -state disabled
+			$m entryconfigure 1 -state disabled
+			$m entryconfigure 2 -state disabled
+			$m entryconfigure 3 -state disabled
+
+			# disable hotkeys, needs to be done for each window
+			foreach w { .maintWin .sortWin .playerInfoWin .repWin \
+							.fics .metadataWindow .crosstabWin .ecograph \
+							.glistWin .plist .statsWin .baseWin .tourney \
+							.pgnWin .main .nedit .ccWindow } {
+			
+				if {[winfo exists $w]} {
+					bind $w <Control-A> {}
+					bind $w <Control-Shift-2> {}
+					bind $w <F2> {}
+					bind $w <F3> {}
+				}
+			}
+		} else {
+			set m .menu.tools
+			$m entryconfigure 0 -state normal
+			$m entryconfigure 1 -state normal
+			$m entryconfigure 2 -state normal
+			$m entryconfigure 3 -state normal
+
+			# disable hotkeys, needs to be done for each window
+			foreach w { .maintWin .sortWin .playerInfoWin .repWin \
+							.fics .metadataWindow .crosstabWin .ecograph \
+							.glistWin .plist .statsWin .baseWin .tourney \
+							.pgnWin .main .nedit .ccWindow } {
+			
+				if {[winfo exists $w]} {
+					bind $w <Control-A> makeAnalysisWin
+					bind $w <Control-Shift-2> "makeAnalysisWin 2"
+					bind $w <F2> "::makeAnalysisWin 1 0"
+					bind $w <F3> "::makeAnalysisWin 2 0"
+				}
+			}
+		}
+	}
+
+	#----------------------------------------------------------------------
 	# Generate the Correspondence Chess Window. This Window offers a
 	# console displaying whats going on and which game is displayed
 	# plus a gmae list containing current games synced in and their
@@ -1565,6 +1614,8 @@ namespace eval CorrespondenceChess {
 
 		# enable the standard shortcuts
 		standardShortcuts $w
+
+		::CorrespondenceChess::EnableEngineAnalysis 0
 
 		# create the menu and add default CC menu items here as well
 		menu $w.menu
@@ -1697,7 +1748,8 @@ namespace eval CorrespondenceChess {
 		bind $w "?"    { helpWindow CCIcons}
 
 		bind $w <Configure> { ::CorrespondenceChess::ConsoleResize }
-		bind $w <Destroy>   { set ::CorrespondenceChess::isOpen 0 }
+		bind $w <Destroy>   { ::CorrespondenceChess::EnableEngineAnalysis 1
+			set ::CorrespondenceChess::isOpen 0 }
 
 		foreach f [glob -nocomplain [file join "$CorrespondenceChess::PluginPath" *]] {
 			$w.top.plugins    configure -image tb_CC_pluginactive
@@ -1869,6 +1921,10 @@ namespace eval CorrespondenceChess {
 		if {$engines == "false"} {
 			$w.bottom.feature image create end -align center -image tb_CC_engine
 		}
+		if {$engines == "{}"} {
+			$w.bottom.feature image create end -align center -image tb_CC_engine
+		}
+
 		$w.bottom.feature insert end "\n"
 
 		# Link the double click on each field to jump to this specific
@@ -2509,8 +2565,24 @@ namespace eval CorrespondenceChess {
 				}
 			}
 			# Search the game in the correspondence DB and display it
+			foreach xfccextra $::Xfcc::xfccstate {
+				if { [string equal -nocase [lindex $xfccextra 0] "$CmailGameName" ] } {
+					foreach i $xfccextra {
+						if { [string equal -nocase [lindex $i 0] "noEngines" ] } {
+							set noENG [string range $i 10 end]
+						}
+					}
+				}
+			}
+			if {$noENG == "false"} {
+				::CorrespondenceChess::EnableEngineAnalysis 1
+			} else {
+				::CorrespondenceChess::EnableEngineAnalysis 0
+			}
+
 			SearchGame $Event $Site $White $Black $CmailGameName $result
 			set Mode [::CorrespondenceChess::CheckMode]
+
 
 			# hook up with the old email manager: this implements the
 			# manual timestamping required
