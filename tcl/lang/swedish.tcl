@@ -1853,9 +1853,9 @@ translate W FICSConsole {Konsol}
 # ====== TODO To be translated ======
 translate W FICSGames {Partier}
 # ====== TODO To be translated ======
-translate W FICSUnobserve {Stop observing game}
+translate W FICSUnobserve {Sluta observera parti}
 # ====== TODO To be translated ======
-translate W FICSProfile {Display your history and profile}
+translate W FICSProfile {Visa din historik och profil}
 # ====== TODO To be translated ======
 translate W FICSRelayedGames {Återutsända partier}
 # ====== TODO To be translated ======
@@ -1891,10 +1891,10 @@ translate W FICSSend {skicka}
 # ====== TODO To be translated ======
 translate W FICSConnect {Anslut}
 # ====== TODO To be translated ======
-translate W FICSdefaultuservars {Use default variables}
+translate W FICSdefaultuservars {Använd standardvariabler}
 # ====== TODO To be translated ======
-translate W FICSObserveconfirm {Do you want to observe game}
-# ====== TODO To be translated ======
+translate W FICSObserveconfirm {Vill du observera parti} 
+# ====== TODO To be translated ====== 
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
 translate W CCDlgCGeneraloptions {Generella inställningar}
@@ -1933,17 +1933,17 @@ translate W CCDlgAttachementPar {Bilage-parameter:}
 # ====== TODO To be translated ======
 translate W CCDlgInternalXfcc {Använd internt Xfcc-stöd}
 # ====== TODO To be translated ======
-translate W CCDlgConfirmXfcc {Confirm moves}
+translate W CCDlgConfirmXfcc {Bekräfta drag}
 # ====== TODO To be translated ======
 translate W CCDlgSubjectPar {Ämnes-parameter:}
 # ====== TODO To be translated ======
 translate W CCDlgDeleteBoxes {Töm In-/Utbox} 
 # ====== TODO To be translated ====== 
 translate W CCDlgDeleteBoxesText {Vill du verkligen tömma dina In- och Utboxkataloger för Korrespondensschack? Detta kräver en ny synkronisering för att visa den seanaste statusen på dina partier} 
-# ====== TODO To be translated ======
-translate W CCDlgConfirmMove {Confirm move}
-# ====== TODO To be translated ======
-translate W CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
+# ====== TODO To be translated ====== 
+translate W CCDlgConfirmMove {Bekräfta drag} 
+# ====== TODO To be translated ====== 
+translate W CCDlgConfirmMoveText {Om du bekräftar, kommer följande drag och kommentar att skickas till servern:} 
 # ====== TODO To be translated ====== 
 translate W CCDlgStartEmail {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
@@ -7063,8 +7063,6 @@ set tips(W) {
   }
 }
 #}
-
-
 
 
 

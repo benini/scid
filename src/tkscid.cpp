@@ -10618,10 +10618,20 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     dateT * endDate = new dateT [nameCount];
 #endif
 
+    bool interrupted = false;
+
+    // Set the scroll bar to its initial state
+    //
+    bool showProgress = startProgressBar();
+    
+    // Scroll bar threshold (about 200 steps)
+    //
+    uint threshold = (db->numGames / 200) + 1;
+
     for (idNumberT id=0; id < nameCount; id++) {
         newIDs[id] = id;
-        startDate[0] = ZERO_DATE;
-        endDate[0] = ZERO_DATE;
+        startDate[id] = ZERO_DATE;
+        endDate[id] = ZERO_DATE;
     }
 
     while (*str != 0) {
@@ -10664,8 +10674,12 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (correctionCount == 0) {
 #ifdef WINCE
         my_Tcl_Free((char*) newIDs);
+        my_Tcl_Free((char*) startDate);
+        my_Tcl_Free((char*) endDate);
 #else
         delete[] newIDs;
+        delete[] startDate;
+        delete[] endDate;
 #endif
 
         return setResult (ti, "No valid corrections were found.");
@@ -10675,8 +10689,12 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if ((!db->memoryOnly)  &&  db->nb->WriteNameFile() != OK) {
 #ifdef WINCE
         my_Tcl_Free((char*) newIDs);
+        my_Tcl_Free((char*) startDate);
+        my_Tcl_Free((char*) endDate);
 #else
         delete[] newIDs;
+        delete[] startDate;
+        delete[] endDate;
 #endif
         return errorResult (ti, "Error writing name file.");
     }
@@ -10757,19 +10775,48 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (corrected) {
             if (db->idx->WriteEntries (&newIE, i, 1) != OK) {
 #ifdef WINCE
-        my_Tcl_Free((char*) newIDs);
+              my_Tcl_Free((char*) newIDs);
+              my_Tcl_Free((char*) startDate);
+              my_Tcl_Free((char*) endDate);
 #else
-        delete[] newIDs;
+              delete[] newIDs;
+              delete[] startDate;
+              delete[] endDate;
 #endif
-                return errorResult (ti, "Error writing index file.");
+              return errorResult (ti, "Error writing index file.");
             }
+        }
+        
+        // Update the scroll bar
+        //
+        if ( showProgress && (i % threshold) == 1 ) {
+          updateProgressBar( ti, i, db->numGames );
+          
+          // Give the user a chance for a safe interrupt
+          //
+          if ( (interrupted = interruptedProgress()) ) {
+              break;
+          }
+        }
+    }
+    
+    if ( ! interrupted )
+    {
+        // Ensure the scroll bar is complete at this point
+        //
+        if ( showProgress )  {
+            updateProgressBar( ti, 1, 1 );
         }
     }
 
 #ifdef WINCE
-        my_Tcl_Free((char*) newIDs);
+    my_Tcl_Free((char*) newIDs);
+    my_Tcl_Free((char*) startDate);
+    my_Tcl_Free((char*) endDate);
 #else
-        delete[] newIDs;
+    delete[] newIDs;
+    delete[] startDate;
+    delete[] endDate;
 #endif
 
     if (db->idx->WriteHeader() != OK) {
@@ -12199,6 +12246,7 @@ strPromoteSurname (char * target, const char * source)
     return;
 }
 
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_name_spellcheck:
 //   Scan the current database for spelling corrections.
@@ -12218,6 +12266,12 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     enum {
         OPT_MAX, OPT_SURNAMES, OPT_AMBIGUOUS
     };
+    
+    bool interrupted = false;
+    
+    // Set the progress bar to its intial state
+    //
+    bool showProgress = startProgressBar();
 
     int arg = 2;
     while (arg+1 < argc) {
@@ -12230,6 +12284,9 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         switch (index) {
         case OPT_MAX:
             maxCorrections = strGetUnsigned (value);
+            if ( maxCorrections == 0 ) {
+                maxCorrections = (uint)-1;
+            }
             break;
         case OPT_SURNAMES:
             doSurnames = strGetBoolean (value);
@@ -12267,6 +12324,18 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     const char * prevCorrection = "";
     idNumberT id = 0;
     uint correctionCount = 0;
+    
+    // Counters to monitor the crawl through the name base
+    //
+    uint maxName  = nb->GetNumNames( nt );
+    uint thisName = 0;
+    
+    // Thresholds for progress-bar updating
+    // We try to make about 200 steps, which should allow
+    // an update at least every second, even for a big name base.
+    //
+    uint nameThres = (maxName / 200)        + 1;
+    uint corrThres = (maxCorrections / 200) + 1;
 
     // Check every name of the specified type:
 
@@ -12274,20 +12343,26 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     while (nb->Iterate (nt, &id) == OK) {
         uint frequency = nb->GetFrequency (nt, id);
-        // Do not bother trying to correct unused names:
-        if (frequency == 0) { continue; }
-
+        
+        // We have got the next name from the base
+        //
+        thisName++;
+        
         const char * name = nb->GetName (nt, id);
         const char * origName = name;
 
-        if (nt == NAME_PLAYER  &&  !doSurnames  && strIsSurnameOnly (name)) {
-            continue;
-        }
-
-        // First, check for a general prefix or suffix correction:
         int offset = 0;
         const char * replace;
 
+        // Do not bother trying to correct unused names:
+        if (frequency == 0) { goto bar; }
+
+        if (nt == NAME_PLAYER  &&  !doSurnames  && strIsSurnameOnly (name)) {
+            goto bar;
+        }
+
+        // First, check for a general prefix or suffix correction:
+        //
         replace = spellChecker[nt]->CorrectPrefix (name, &offset);
         if (replace != NULL) {
             if (correctionCount < maxCorrections) {
@@ -12300,7 +12375,7 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                 prevCorrection = origName;
             }
             correctionCount++;
-            continue;
+            goto bar;
         }
 
         replace = spellChecker[nt]->CorrectSuffix (name, &offset);
@@ -12315,24 +12390,26 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                 prevCorrection = origName;
             }
             correctionCount++;
-            continue;
+            goto bar;
         }
 
-        int replacedLength = 0;
-        replace = spellChecker[nt]->CorrectInfix (name, &offset, &replacedLength);
-        if (replace != NULL) {
-            if (correctionCount < maxCorrections) {
-                strCopy (tempName, name);
-                strCopy (tempName + offset, replace);
-                strAppend (tempName, &(name[offset + replacedLength]));
-                sprintf (tempStr, "%s\"%s\"\t>> \"%s\" (%u)\n",
-                         *origName == *prevCorrection ? "" : "\n",
-                         origName, tempName, frequency);
-                dstr->Append (tempStr);
-                prevCorrection = origName;
+        {
+            int replacedLength = 0;
+            replace = spellChecker[nt]->CorrectInfix (name, &offset, &replacedLength);
+            if (replace != NULL) {
+                if (correctionCount < maxCorrections) {
+                    strCopy (tempName, name);
+                    strCopy (tempName + offset, replace);
+                    strAppend (tempName, &(name[offset + replacedLength]));
+                    sprintf (tempStr, "%s\"%s\"\t>> \"%s\" (%u)\n",
+                                      *origName == *prevCorrection ? "" : "\n",
+                                      origName, tempName, frequency);
+                    dstr->Append (tempStr);
+                    prevCorrection = origName;
+                }
+                correctionCount++;
+                goto bar;
             }
-            correctionCount++;
-            continue;
         }
 
         // If spellchecking names, remove any country code like " (USA)"
@@ -12348,84 +12425,131 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             }
         }
 
-        const uint maxAmbiguous = 10;
-        uint count = 0;
-        const char * corrections [maxAmbiguous];
-        count = spellChecker[nt]->Corrections (name, corrections, maxAmbiguous);
+        {
+            const uint maxAmbiguous = 10;
+            uint count = 0;
+            const char * corrections [maxAmbiguous];
+            count = spellChecker[nt]->Corrections (name, corrections, maxAmbiguous);
 
-        if (nt == NAME_PLAYER  &&  count < maxAmbiguous) {
-            // If correcting player names, also try the name with the text
-            // after the last space moved to the start, e.g. "R. J. Fischer"
-            // converted to "Fischer R. J.":
-            strPromoteSurname (tempStr, name);
-            count += spellChecker[nt]->Corrections (tempStr,
-                          &(corrections[count]), maxAmbiguous - count);
-            // The above step can cause duplicated corrections, so
-            // remove them:
-            for (uint i=1; i < count; i++) {
-                if (strEqual (corrections[i], corrections[i-1])) {
-                    for (uint j=i+1; j < count; j++) {
-                        corrections[j-1] = corrections[j];
+            if (nt == NAME_PLAYER  &&  count < maxAmbiguous) {
+                // If correcting player names, also try the name with the text
+                // after the last space moved to the start, e.g. "R. J. Fischer"
+                // converted to "Fischer R. J.":
+                strPromoteSurname (tempStr, name);
+                count += spellChecker[nt]->Corrections( tempStr, &(corrections[count]), maxAmbiguous - count);
+                // The above step can cause duplicated corrections, so
+                // remove them:
+                for (uint i=1; i < count; i++) {
+                    if (strEqual (corrections[i], corrections[i-1])) {
+                        for (uint j=i+1; j < count; j++) {
+                            corrections[j-1] = corrections[j];
+                        }
+                        count--;
                     }
-                    count--;
+                }
+            }
+
+            // Handle ambiguous corrections, if wanted
+            //
+            if ( ambiguous || count == 1) {
+                for (uint i=0; i < count; i++) {
+
+                    // No need to include onself. Skip.
+                    //
+                    if (strEqual (origName, corrections[i])) { 
+                        continue; // to next ambiguous candidate
+                    }
+
+                    // We have a new one
+                    //
+                    correctionCount++;
+                    
+                    // Add correction to output, with a blank line first if the
+                    // correction starts with a different character to the
+                    // previous correction:
+                    sprintf (tempStr, "%s%s\"%s\"\t>> \"%s\" (%u)",
+                                      *origName == *prevCorrection ? "" : "\n",
+                                      count > 1 ? "Ambiguous: " : "",
+                                      origName, corrections[i], frequency);
+                    dstr->Append (tempStr);
+                    if (nt == NAME_PLAYER) {
+                        // Look for a player birthdate:
+                        const char * text =
+                            spellChecker[nt]->GetCommentExact (corrections[i]);
+                        dateT birthdate = SpellChecker::GetBirthdate(text);
+                        dateT deathdate = SpellChecker::GetDeathdate(text);
+                        if (birthdate != ZERO_DATE  ||  deathdate != ZERO_DATE) {
+                            dstr->Append ("  ");
+                            if (birthdate != ZERO_DATE) {
+                                date_DecodeToString (birthdate, tempStr);
+                                dstr->Append(tempStr);
+                            }
+                            dstr->Append ("--");
+                            if (deathdate != ZERO_DATE) {
+                                date_DecodeToString (deathdate, tempStr);
+                                dstr->Append(tempStr);
+                            }
+                        }
+                    }
+                    dstr->Append ("\n");
+                    prevCorrection = origName;
+                }
+            }
+        }
+        
+        // Update the progress bar
+        //
+        
+        bar:
+        
+        if ( showProgress ) {
+            // Update filter to avoid hyperactivity
+            //
+            bool filter = (thisName        % nameThres == 1)
+                       || (correctionCount % corrThres == 1);
+        
+            // Try to be clever here: If we go for maxCorrections only, we do not know if and when
+            // they will be found. So we base our progress indicator on either the name base crawl
+            // or the actual correction counter, whichever is closer to its finish.
+            //
+            if ( filter ) {
+                if ( (double)correctionCount / (double)maxCorrections > (double)thisName / (double)maxName ) {
+                    updateProgressBar( ti, correctionCount, maxCorrections );
+                }
+                else {
+                    updateProgressBar( ti, thisName, maxName );
+                }
+
+                // Allow the user to break in at this point
+                //
+                if ( (interrupted = interruptedProgress()) )  {
+                    break;
                 }
             }
         }
 
-        if (count > 1  &&  !ambiguous) { count = 0; }
+        // Bail out once we have found maxCorrections
+        //
+        if ( correctionCount >= maxCorrections ) {
+            break;
+        }
+    }
 
-        for (uint i=0; i < count; i++) {
-            if (strEqual (origName, corrections[i])) { continue; }
-            correctionCount++;
-            if (correctionCount >= maxCorrections) { continue; }
-
-            // Add correction to output, with a blank line first if the
-            // correction starts with a different character to the
-            // previous correction:
-            sprintf (tempStr, "%s%s\"%s\"\t>> \"%s\" (%u)",
-                     *origName == *prevCorrection ? "" : "\n",
-                     count > 1 ? "Ambiguous: " : "",
-                     origName, corrections[i], frequency);
-            dstr->Append (tempStr);
-            if (nt == NAME_PLAYER) {
-                // Look for a player birthdate:
-                    const char * text =
-                        spellChecker[nt]->GetCommentExact (corrections[i]);
-                    dateT birthdate = SpellChecker::GetBirthdate(text);
-                    dateT deathdate = SpellChecker::GetDeathdate(text);
-                    if (birthdate != ZERO_DATE  ||  deathdate != ZERO_DATE) {
-                        dstr->Append ("  ");
-                        if (birthdate != ZERO_DATE) {
-                            date_DecodeToString (birthdate, tempStr);
-                            dstr->Append(tempStr);
-                        }
-                        dstr->Append ("--");
-                        if (deathdate != ZERO_DATE) {
-                            date_DecodeToString (deathdate, tempStr);
-                            dstr->Append(tempStr);
-                        }
-                    }
-                }
-                dstr->Append ("\n");
-                prevCorrection = origName;
-
+    // Ensure a truely full bar at this point, but only do so if
+    // the user chose to run the thing till the very end.
+    //    
+    if ( ! interrupted )  {
+        if ( showProgress ) {
+            updateProgressBar (ti, 1, 1);
         }
     }
 
     // Now generate the return message:
 
-    sprintf (tempStr, "Scid found %u %s name correction%s",
+    sprintf (tempStr, "Scid found %u %s name correction%s.\n",
              correctionCount, NAME_TYPE_STRING[nt],
              strPlural (correctionCount));
     Tcl_AppendResult (ti, tempStr, NULL);
-    if (correctionCount > maxCorrections) {
-        sprintf (tempStr, ", the first %u are listed below.", maxCorrections);
-    } else if (correctionCount > 0) {
-        strCopy (tempStr, ", all are listed below.");
-    } else {
-        strCopy (tempStr, ".");
-    }
-    Tcl_AppendResult (ti, tempStr, "\n", NULL);
 
     Tcl_AppendResult (ti,
         "Edit the list to remove any corrections you do not want.\n",

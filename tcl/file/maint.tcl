@@ -1439,8 +1439,16 @@ proc cleanerWin {} {
   catch {grab $w}
 }
 
+# Maximum nr of corrections to be scanned
+# Set to zero to find them all
+# Set to some positive number to limit
+#
+set cleaner_maxSpellCorrections 0
+
+
 proc doCleaner {} {
   global cleaner twinSettings
+  global cleaner_maxSpellCorrections
   
   set answer [tk_dialog .mtoolDialog "Scid" \
       [string trim $::tr(CleanerConfirm)] "" \
@@ -1483,7 +1491,7 @@ proc doCleaner {} {
       mtoolAdd $t "$count: $::tr(Spellchecking): $::tr($names)..."
       incr count
       set result "0 $nameType names were corrected."
-      if {! [catch {sc_name spellcheck -max 100000 $nameType} corrections]} {
+      if {! [catch {sc_name spellcheck -max $cleaner_maxSpellCorrections $nameType} corrections]} {
         update
         catch {sc_name correct $nameType $corrections} result
       }
