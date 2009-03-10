@@ -1969,7 +1969,7 @@ translate R CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbo
 # ====== TODO To be translated ======
 translate R CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
-translate R CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
+translate R CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 # ====== TODO To be translated ======
 translate R CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======

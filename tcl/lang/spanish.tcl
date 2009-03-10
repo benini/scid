@@ -1565,7 +1565,7 @@ translate S CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbo
 # ====== TODO To be translated ======
 translate S CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
-translate S CCDlgConfirmMoveText {If you confirm, the follwing move and comment will be sent to the server:}
+translate S CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 translate S CCDlgStartEmail {Empezar nueva partida eMail}
 translate S CCDlgYourName {Tu nombre:}
 translate S CCDlgYourMail {Tu dirección eMail:}
