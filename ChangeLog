@@ -742,3 +742,4 @@ scid-3.7.2
 - Fixed a bug when closing a locked Tree window : the base switch was incomplete.
 - Spell checker : enhanced user feedback, operation can be cancelled, all names corrected instead of the first 2000 (thanks to Joost Hart)
 - Fixed a bug when changing board pieces set when board was flipped
+- updated hungarian translation (thanks to Szőts Gábor)
