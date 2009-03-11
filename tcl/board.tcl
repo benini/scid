@@ -144,8 +144,6 @@ proc chooseBoardColors {{choice -1}} {
   
   # Border width option:
   set f $w.border
-  #label $f.label -text "Border width"
-  #pack $f.label -side left -padx 5
   foreach i {0 1 2 3} {
     if {$i != 0} { pack [ttk::frame $f.gap$i -width 20] -side left -padx 1 }
     set b $f.b$i
@@ -180,11 +178,11 @@ proc chooseBoardColors {{choice -1}} {
           set ::boardfile_lite emptySquare ; \
           ::SetBoardTextures "
     }
-    grid $f.blite -row 0 -column 0
-    grid $f.bdark -row 0 -column 1
-    grid $f.wlite -row 1 -column 1
-    grid $f.wdark -row 1 -column 0
-    grid $f.select -row 2 -column 0 -columnspan 2 -sticky we
+    grid $f.blite -row 0 -column 0 -sticky e
+    grid $f.bdark -row 0 -column 1 -sticky w
+    grid $f.wlite -row 1 -column 1 -sticky w
+    grid $f.wdark -row 1 -column 0 -sticky e
+    grid $f.select -row 2 -column 0 -columnspan 2 ; # -sticky we
     incr count
   }
   
@@ -196,19 +194,20 @@ proc chooseBoardColors {{choice -1}} {
   set psize 40
   foreach tex $::textureSquare {
     set f $w.texture.p$count
-    grid [ttk::frame $f] -row $row -column $col -padx 5
-    canvas $f.c -width [expr $psize*2] -height [expr $psize*2]
+    grid [ ttk::frame $f ] -row $row -column $col -padx 5   
+    canvas $f.c -width [expr $psize*2] -height [expr $psize*2] -background red
     $f.c create image 0 0 -image ${tex}-l -anchor nw
     $f.c create image $psize 0 -image ${tex}-d -anchor nw
     $f.c create image 0 $psize -image ${tex}-d -anchor nw
     $f.c create image $psize $psize -image ${tex}-l -anchor nw
+    
     $f.c create image 0 0 -image bp40 -anchor nw
     $f.c create image $psize 0 -image wp40 -anchor nw
     $f.c create image 0 $psize -image wp40 -anchor nw
     $f.c create image $psize $psize -image bp40 -anchor nw
     ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardTextures $count"
     bind $f.c <1> "chooseBoardTextures $count"
-    pack $f.c $f.select -side top -fill x
+    pack $f.c $f.select -side top
     
     incr count
     incr col
@@ -221,8 +220,6 @@ proc chooseBoardColors {{choice -1}} {
   }
   set borderwidth \$newborderwidth
   ::board::border .main.board \$borderwidth
-  ::board::recolor .main.board
-  recolorPieces
   grab release $w
   destroy $w
   "
@@ -233,32 +230,6 @@ proc chooseBoardColors {{choice -1}} {
   chooseBoardColors
   wm resizable $w 0 0
   catch {grab $w}
-}
-
-# recolorPieces:
-#   Used to recolor the pieces after a color is changed by the user.
-#
-proc recolorPieces {} {
-  
-  # This now does nothing since pieces are transparent photo images
-  # and only square colors can be altered.
-  return
-  
-  # global whitecolor blackcolor whiteborder blackborder boardSizes
-  # foreach i $boardSizes {
-  #   foreach p { k q r b n p } {
-  #     if {[w$p$i cget -maskdata] != ""} {
-  #       w${p}$i configure -foreground $whiteborder -background $whitecolor
-  #     } else {
-  #       w${p}$i configure -foreground $whitecolor
-  #     }
-  #     if {[b$p$i cget -maskdata] != ""} {
-  #       b${p}$i configure -foreground $blackborder -background $blackcolor
-  #     } else {
-  #       b${p}$i configure -foreground $blackcolor
-  #     }
-  #   }
-  # }
 }
 
 ############################################################
@@ -703,7 +674,7 @@ image create photo tb_trial_on -data {
 
 namespace eval ::board {
   
-  namespace export sq san recolor colorSquare isFlipped
+  namespace export sq san colorSquare isFlipped
   
   # List of square names in order; used by sq procedure.
   variable squareIndex [list a1 b1 c1 d1 e1 f1 g1 h1 a2 b2 c2 d2 e2 f2 g2 h2 \
@@ -849,7 +820,7 @@ proc ::board::size {w} {
 
 ################################################################################
 # Pascal Georges :
-# an alias resize function to handle the bug (flip + resize) : when the board was flipped, and the bord resized
+# an alias resize function to handle the bug (flip + resize) : when the board was flipped, and the board resized
 # its state was incoherent. As this did not occur when the board is not flipped, unflip the board before the
 # resizing : should be fixed !
 ################################################################################
@@ -936,7 +907,7 @@ proc ::board::border {w {border ""}} {
     return $::board::_border($w)
   } else {
     set ::board::_border($w) $border
-    ::board::resize $w redraw
+    ::board::resize2 $w redraw
   }
 }
 
@@ -970,16 +941,6 @@ proc ::board::getSquare {w x y} {
 #
 proc ::board::showMarks {w value} {
   set ::board::_showMarks($w) $value
-}
-
-# ::board::recolor
-#   Recolor every square on the board.
-#
-#not needed anymore (?)
-proc ::board::recolor {w} {
-  # for {set i 0} {$i < 64} {incr i} {
-  # ::board::colorSquare $w $i
-  # }
 }
 
 # ::board::colorSquare

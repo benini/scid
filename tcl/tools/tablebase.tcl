@@ -226,7 +226,6 @@ proc ::tb::resultsBoard {sq} {
   # If selected square is empty, take no action:
   if {[string index $board $sq] == "."} { return }
   # Clear any previous results:
-  ::board::recolor $f.board
   ::board::clearText $f.board
   # Highlight the selected square:
   ::board::colorSquare $f.board $sq $::highcolor
@@ -460,7 +459,6 @@ proc ::tb::results {} {
   if {! [winfo exists $w]} { return }
   
   # Reset results board:
-  ::board::recolor $w.pos.board
   ::board::clearText $w.pos.board
   ::board::update $w.pos.board [sc_pos board]
   

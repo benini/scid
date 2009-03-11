@@ -741,3 +741,4 @@ scid-3.7.2
 	* Disable engine analysis in games that do not allow it,  ie. Xfcc noEngines = true. If noEngines is not set assume "engines allowed" (ICCF). Suggested by Austin
 - Fixed a bug when closing a locked Tree window : the base switch was incomplete.
 - Spell checker : enhanced user feedback, operation can be cancelled, all names corrected instead of the first 2000 (thanks to Joost Hart)
+- Fixed a bug when changing board pieces set when board was flipped

@@ -1841,7 +1841,7 @@ if {0} {
     }
   }
   
-  bind $dot_w <Control-Shift-F7> {puts "dumpGifImages" ; dumpGifImages "/tmp/ScidImages"}
+  bind $dot_w <Control-Shift-F7> {puts "dumpGifImages" ; dumpGifImages "/tmp/images"}
 }
 
 if {$startup(tip)} { ::tip::show }

@@ -1301,7 +1301,6 @@ proc enterSquare { square } {
   global highcolor currentSq bestSq bestcolor selectedSq suggestMoves
   set currentSq $square
   if {$selectedSq == -1} {
-    ::board::recolor .main.board
     set bestSq -1
     if {$suggestMoves} {
       set bestSq [sc_pos bestSquare $square]
@@ -1347,7 +1346,6 @@ proc pressSquare { square } {
   
   if {$selectedSq == -1} {
     set selectedSq $square
-    ::board::recolor .main.board
     ::board::colorSquare .main.board $square $highcolor
     # Drag this piece if it is the same color as the side to move:
     set c [string index [sc_pos side] 0]  ;# will be "w" or "b"
@@ -1397,7 +1395,6 @@ proc releaseSquare { w x y } {
   set square [::board::getSquare $w $x $y]
   if {$square < 0} {
     set selectedSq -1
-    ::board::recolor $w
     return
   }
   
