@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.57 2009/03/09 19:49:28 arwagner Exp $
+### $Id: correspondence.tcl,v 1.58 2009/03/12 17:29:38 arwagner Exp $
 ###
-### Last change: <Mon, 2009/03/09 20:47:49 arwagner ingata>
+### Last change: <Wed, 2009/03/11 17:53:32 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -3138,7 +3138,8 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::Outbox
 		global ::CorrespondenceChess::XfccSendcmd
 		global ::CorrespondenceChess::CorrSlot
-		global ::CorrespondenceChess::XfccConfirm num
+		global ::CorrespondenceChess::XfccConfirm 
+		global ::CorrespondenceChess::num
 
 		busyCursor .
 
