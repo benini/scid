@@ -230,7 +230,9 @@ proc doBusyCursor {w flag} {
   if {[winfo class $w] == "Menu"} { return }
   
   if {$flag} {
-    set scid_busycursor($w) [$w cget -cursor]
+    if { [ catch { set scid_busycursor($w) [$w cget -cursor] } ] } {
+      return
+    }
     catch {$w configure -cursor watch}
   } else {
     catch {$w configure -cursor $scid_busycursor($w)} err

@@ -1,5 +1,3 @@
-Szõts Gábor írta:
-
 # hungary.tcl:
 # Hungarian text for menu names and status bar help messages for SCID
 # Translated by: Gábor Szõts
