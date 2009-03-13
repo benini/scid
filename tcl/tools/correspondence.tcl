@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.59 2009/03/13 17:18:15 arwagner Exp $
+### $Id: correspondence.tcl,v 1.60 2009/03/13 20:18:47 arwagner Exp $
 ###
-### Last change: <Fri, 2009/03/13 17:18:48 arwagner ingata>
+### Last change: <Fri, 2009/03/13 21:18:24 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1189,10 +1189,12 @@ namespace eval CorrespondenceChess {
 	set subject          "-s"
 
 	set CorrSlot         -1
-	set LastProcessed    -1
 
 	# current number in game list
 	set num              0
+
+	# Content of CC windows games list
+	set clipboardText    ""
 
 	set glccstart        1
 	set glgames          0
@@ -1585,6 +1587,14 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
+	# Copy the games list as CSV (tab separated) to the clipboard
+	#----------------------------------------------------------------------
+	proc List2Clipboard {} {
+		clipboard clear
+		clipboard append $::CorrespondenceChess::clipboardText
+	}
+
+	#----------------------------------------------------------------------
 	# Generate the Correspondence Chess Window. This Window offers a
 	# console displaying whats going on and which game is displayed
 	# plus a gmae list containing current games synced in and their
@@ -1669,8 +1679,6 @@ namespace eval CorrespondenceChess {
 		scrollbar $w.top.ysc        -command { .ccWindow.top.console yview }
 		text      $w.top.console    -height 3 -width 80 -wrap word -yscrollcommand "$w.top.ysc set"
 		button    $w.top.retrieveCC -image tb_CC_Retrieve        -command {::CorrespondenceChess::FetchGames}
-		button    $w.top.prevCC     -image tb_CC_Prev            -command {::CorrespondenceChess::PrevGame}
-		button    $w.top.nextCC     -image tb_CC_Next            -command {::CorrespondenceChess::NextGame}
 		button    $w.top.sendCC     -image tb_CC_Send            -command {::CorrespondenceChess::SendMove 0 0 0 0}
 		button    $w.top.delinbox   -image tb_CC_delete          -command {::CorrespondenceChess::EmptyInOutbox}
 
@@ -1744,8 +1752,17 @@ namespace eval CorrespondenceChess {
 		grid $w.bottom.feature  -column 18 -row 1
 		grid $w.bottom.ysc      -column 19 -row 1 -stick ns
 
-		bind $w <F1>   { helpWindow Correspondence}
-		bind $w "?"    { helpWindow CCIcons}
+		# Copy games list to clipboard
+		bind $w <Control-Insert> { ::CorrespondenceChess::List2Clipboard }
+		bind $w <Control-c>      { ::CorrespondenceChess::List2Clipboard }
+
+		# Handle scrolling in the games list by keyboard
+		bind $w <Control-Up>     { ::CorrespondenceChess::PrevGame}
+		bind $w <Control-Down>   { ::CorrespondenceChess::NextGame}
+
+		# Help
+		bind $w <F1>        { helpWindow Correspondence}
+		bind $w "?"         { helpWindow CCIcons}
 
 		bind $w <Configure> { ::CorrespondenceChess::ConsoleResize }
 		bind $w <Destroy>   { ::CorrespondenceChess::EnableEngineAnalysis 1
@@ -1767,6 +1784,7 @@ namespace eval CorrespondenceChess {
 	proc updateGamelist {id toMove event site date white black clockW \
 								clockB var db books tb engines wc bc mess TC lastmove} {
 		global ::CorrespondenceChess::num
+		global ::CorrespondenceChess::clipboardText
 
 		set w .ccWindow
 
@@ -1945,26 +1963,26 @@ namespace eval CorrespondenceChess {
 				$w.bottom.$col tag configure $col$id -foreground DarkGray -font font_Bold
 			}
 		}
+
+		regsub -all "flag_"  $wc "" wc1
+		regsub -all "flag_"  $bc "" bc1
+
+		set wc1 [string toupper $wc1]
+		set bc1 [string toupper $bc1]
+
+		set ::CorrespondenceChess::clipboardText "$::CorrespondenceChess::clipboardText\n$id\t $event\t$site\t$date\t$white\t$black\t$wc1\t$bc1\t$clockW\t$clockB\t$toMove\t$mess\t$lastmove\t$var\t$db\t$books\t$tb\t$engines\t$TC"
 	}
 
 	#----------------------------------------------------------------------
-	# Set the global $num to the row the user clicked upon
+	# Visually highlight line $::CorrespondenceChess::num
 	#----------------------------------------------------------------------
-	proc SetSelection {xcoord ycoord} {
+	proc SetHighlightedLine {} {
 		global ::CorrespondenceChess::num 
-
 		set gamecount $::CorrespondenceChess::glgames
 
 		# remove old highlighting
 		foreach col {id toMove event site white black clockW clockB var feature} {
 			.ccWindow.bottom.$col tag remove highlight 1.0 end
-		}
-
-		set num [expr {int([.ccWindow.bottom.id index @$xcoord,$ycoord]) + $::CorrespondenceChess::glccstart - 1 }]
-
-		# Prevent clicking beyond the last game
-		if { $num > $gamecount } {
-				set num $gamecount
 		}
 
 		# highlight current games line
@@ -1973,6 +1991,23 @@ namespace eval CorrespondenceChess {
 			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
 		}
 		updateConsole "info: switched to game $num/$gamecount"
+	}
+
+	#----------------------------------------------------------------------
+	# Set the global $num to the row the user clicked upon
+	#----------------------------------------------------------------------
+	proc SetSelection {xcoord ycoord} {
+		global ::CorrespondenceChess::num 
+		set gamecount $::CorrespondenceChess::glgames
+
+		set num [expr {int([.ccWindow.bottom.id index @$xcoord,$ycoord]) + $::CorrespondenceChess::glccstart - 1 }]
+
+		# Prevent clicking beyond the last game
+		if { $num > $gamecount } {
+				set num $gamecount
+		}
+
+		SetHighlightedLine
 	}
 
 	#----------------------------------------------------------------------
@@ -1989,6 +2024,8 @@ namespace eval CorrespondenceChess {
 		}
 		# reset the number of processed games
 		set ::CorrespondenceChess::num 0
+		set ::CorrespondenceChess::clipboardText ""
+
 	}
 
 	#----------------------------------------------------------------------
@@ -2381,7 +2418,7 @@ namespace eval CorrespondenceChess {
 	# No problem with cmail and Xfcc as GameIDs are unique.
 	#----------------------------------------------------------------------
 	proc SearchGame {Event Site White Black CmailGameName result} {
-		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::LastProcessed
+		global ::CorrespondenceChess::CorrSlot
 
 		# switch to the Correspondence Games DB
 		sc_base switch $CorrSlot
@@ -2422,22 +2459,34 @@ namespace eval CorrespondenceChess {
 			set mnCorr [expr {[sc_pos moveNumber]-1}]
 			set side   [sc_pos side]
 
-			if {$side == "white"} {
-				set plyStart [expr {$mnCorr*2-1}]
-			} else {
-				set plyStart [expr {$mnCorr*2}]
-			}
-
 			# Number of moves in the new game in Clipbase
 			sc_base switch "clipbase"
 			sc_move end
 			set mnClip [sc_pos moveNumber]
+
+			if {$side == "white"} {
+				set plyStart [expr {$mnCorr*2-1}]
+
+			} else {
+				set plyStart [expr {$mnCorr*2}]
+			}
+
 			set side   [sc_pos side]
 			if {$side == "white"} {
 				set plyEnd [expr {$mnClip*2-1}]
 			} else {
 				set plyEnd [expr {$mnClip*2}]
 			}
+
+			# Check if the games mainline in DB contains more ply than
+			# the game in the clipbase. If so inform the user.
+			if {$plyEnd-$plyStart < 2} {
+				set Title [::tr CCDlgDBGameToLong]
+				set Error [::tr CCDlgDBGameToLongError]
+				tk_messageBox -icon warning -type ok -parent . \
+					-title $Title -message "$Error $mnClip (= ply $plyEnd)"
+			}
+
 
 			# Add moves from clipbase to the DB game. This keeps
 			# comments, but requires that tries are inserted as variants
@@ -2679,24 +2728,17 @@ namespace eval CorrespondenceChess {
 	# If at last game already nothing happens
 	#----------------------------------------------------------------------
 	proc PrevGame {} {
-		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::LastProcessed
+		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::num
+		set gamecount $::CorrespondenceChess::glgames
 
 		busyCursor .
-
 		# Regardless how the user opend this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
-			sc_base switch "clipbase"
-			if {$LastProcessed < 2} { 
-				.ccWindow.top.prevCC configure -state disabled
-				unbusyCursor .
-				return
-			}
-			.ccWindow.top.nextCC configure -state normal
-			set LastProcessed [expr {$LastProcessed - 1}]
-			ProcessServerResult $LastProcessed
-			if {$LastProcessed < 2} { 
-				.ccWindow.top.prevCC configure -state disabled
+			if {$num > 1} {
+				set num [expr {$num - 1}]
+				SetHighlightedLine
+				::CorrespondenceChess::ProcessServerResult $::CorrespondenceChess::num
 			}
 		}
 		unbusyCursor .
@@ -2707,28 +2749,17 @@ namespace eval CorrespondenceChess {
 	# If at last game already nothing happens
 	#----------------------------------------------------------------------
 	proc NextGame {} {
-		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::LastProcessed
+		global ::CorrespondenceChess::CorrSlot ::CorrespondenceChess::num
+		set gamecount $::CorrespondenceChess::glgames
 
 		busyCursor .
 		# Regardless how the user opend this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
-			sc_base switch "clipbase"
-			if {$LastProcessed < 0} {
-				# for initalisation only
-				set LastProcessed 0
-				.ccWindow.top.prevCC configure -state disabled
-			}
-			if {$LastProcessed == [sc_base numGames]} { 
-				.ccWindow.top.nextCC configure -state disabled
-				unbusyCursor .
-				return 
-			}
-			.ccWindow.top.prevCC configure -state normal
-			set LastProcessed [expr {$LastProcessed + 1}]
-			ProcessServerResult $LastProcessed
-			if {$LastProcessed == [sc_base numGames]} { 
-				.ccWindow.top.nextCC configure -state disabled
+			if {$num < $gamecount} {
+				set num [expr {$num + 1}]
+				SetHighlightedLine
+				::CorrespondenceChess::ProcessServerResult $::CorrespondenceChess::num
 			}
 		}
 		unbusyCursor .
@@ -2739,7 +2770,6 @@ namespace eval CorrespondenceChess {
 	#----------------------------------------------------------------------
 	proc FetchGames {} {
 		global ::CorrespondenceChess::Inbox ::CorrespondenceChess::XfccFetchcmd ::CorrespondenceChess::CorrSlot
-
 		busyCursor .
 
 		# Regardless how the user opend this DB, find it! ;)
@@ -2846,6 +2876,7 @@ namespace eval CorrespondenceChess {
 			if {$glgames > 0} {
 				# work through all games processed and fill in the gamelist 
 				# in the console window
+
 				for {set game $glccstart} {$game < [expr {$games+1}]} {incr game} {
 
 					set wc "";
@@ -2970,9 +3001,6 @@ namespace eval CorrespondenceChess {
 								$noDB $noBK $noTB $noENG $wc $bc $mess $TC $lastmove
 					}
 				}
-				.ccWindow.top.nextCC configure -state normal
-				.ccWindow.top.sendCC configure -state normal
-
 				# ::CorrespondenceChess::num is the game currently shown
 				set ::CorrespondenceChess::num 0
 				# current game is game 0 -> go to game 1 in the list
@@ -3214,7 +3242,7 @@ namespace eval CorrespondenceChess {
 					if {$::CorrespondenceChess::XfccInternal == 1} {
 						# use internal Xfcc-handling
 						::Xfcc::ReadConfig $::CorrespondenceChess::xfccrcfile
-						# ::Xfcc::Send $name $gameid $movecount $move $comment \
+						::Xfcc::Send $name $gameid $movecount $move $comment \
 								$resign $acceptDraw $offerDraw $claimDraw
 					} else {
 						if {[file executable "$XfccSendcmd"]} {
