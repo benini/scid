@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.58 2009/03/12 17:29:38 arwagner Exp $
+### $Id: correspondence.tcl,v 1.59 2009/03/13 17:18:15 arwagner Exp $
 ###
-### Last change: <Wed, 2009/03/11 17:53:32 arwagner ingata>
+### Last change: <Fri, 2009/03/13 17:18:48 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1766,7 +1766,8 @@ namespace eval CorrespondenceChess {
 	#--------------------------------------------------------------------------
 	proc updateGamelist {id toMove event site date white black clockW \
 								clockB var db books tb engines wc bc mess TC lastmove} {
-		set num $::CorrespondenceChess::num
+		global ::CorrespondenceChess::num
+
 		set w .ccWindow
 
 		#----------------------------------------------------------------------
@@ -1933,7 +1934,7 @@ namespace eval CorrespondenceChess {
 		foreach tag {id toMove event site white black clockW clockB var feature} {
 			bind $w.bottom.$tag <Button-1> {
 				::CorrespondenceChess::SetSelection %x %y
-				::CorrespondenceChess::ProcessServerResult $num
+				::CorrespondenceChess::ProcessServerResult $::CorrespondenceChess::num
 				break }
 			# lock the area from changes
 			$w.bottom.$tag configure -state disable
@@ -1950,7 +1951,7 @@ namespace eval CorrespondenceChess {
 	# Set the global $num to the row the user clicked upon
 	#----------------------------------------------------------------------
 	proc SetSelection {xcoord ycoord} {
-		global num 
+		global ::CorrespondenceChess::num 
 
 		set gamecount $::CorrespondenceChess::glgames
 
@@ -3213,7 +3214,7 @@ namespace eval CorrespondenceChess {
 					if {$::CorrespondenceChess::XfccInternal == 1} {
 						# use internal Xfcc-handling
 						::Xfcc::ReadConfig $::CorrespondenceChess::xfccrcfile
-						::Xfcc::Send $name $gameid $movecount $move $comment \
+						# ::Xfcc::Send $name $gameid $movecount $move $comment \
 								$resign $acceptDraw $offerDraw $claimDraw
 					} else {
 						if {[file executable "$XfccSendcmd"]} {
