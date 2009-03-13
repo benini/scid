@@ -8,12 +8,12 @@
 
 namespace eval calvar {
   # DEBUG
-  set ::uci::uciInfo(log_stdout4) 1
+  set ::uci::uciInfo(log_stdout4) 0
   
   array set engineListBox {}
   set blunderThreshold 0.2
-  set thinkingTimePerLine 10
-  set thinkingTimePosition 30
+  set thinkingTimePerLine 5 ;# 10
+  set thinkingTimePosition 10 ; # 30
   set currentLine 1
   set currentListMoves {}
   # each line begins with a list of moves, a nag code and ends with FEN
@@ -79,9 +79,9 @@ namespace eval calvar {
     setWinLocation $w
     
     # builds the list of UCI engines
-    frame $w.fengines -relief raised -borderwidth 1
+    ttk::frame $w.fengines -relief raised -borderwidth 1
     listbox $w.fengines.lbEngines -yscrollcommand "$w.fengines.ybar set" -height 5 -width 50 -exportselection 0
-    scrollbar $w.fengines.ybar -command "$w.fengines.lbEngines yview"
+    ttk::scrollbar $w.fengines.ybar -command "$w.fengines.lbEngines yview"
     pack $w.fengines.ybar -side left -fill y
     pack $w.fengines.lbEngines -side left -fill both -expand yes
     pack $w.fengines -expand yes -fill both -side top
@@ -106,28 +106,28 @@ namespace eval calvar {
     
     # parameters setting
     set f $w.parameters
-    frame $w.parameters
-    pack $f
+    ttk::frame $w.parameters
+    pack $f -expand yes -fill both
     # label $f.lThreshold -text "Threshold"
     # spinbox $f.sbThreshold -background white -width 3 -textvariable ::calvar::blunderThreshold -from 0.1 -to 1.5 -increment 0.1
     # pack $f.lThreshold $f.sbThreshold -side left
-    label $f.lTime -text "Move thinking time"
+    ttk::label $f.lTime -text "Move thinking time"
     spinbox $f.sbTime -background white -width 3 -textvariable ::calvar::thinkingTimePerLine -from 5 -to 120 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
     pack $f.lTime $f.sbTime -side left
-    label $f.lTime2 -text "Position thinking time"
+    ttk::label $f.lTime2 -text "Position thinking time"
     spinbox $f.sbTime2 -background white -width 3 -textvariable ::calvar::thinkingTimePosition -from 5 -to 300 -increment 5 -validate all -vcmd { regexp {^[0-9]+$} %P }
     pack $f.lTime2 $f.sbTime2 -side left
     
-    frame $w.fbuttons
-    pack $w.fbuttons
-    button $w.fbuttons.start -text Start -command {
+    ttk::frame $w.fbuttons
+    pack $w.fbuttons -expand yes -fill both
+    ttk::button $w.fbuttons.start -text Start -command {
       focus .
       set chosenEngine [.configCalvarWin.fengines.lbEngines curselection]
       set ::calvar::engineName [.configCalvarWin.fengines.lbEngines get $chosenEngine]
       destroy .configCalvarWin
       ::calvar::start $chosenEngine
     }
-    button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
+    ttk::button $w.fbuttons.cancel -textvar ::tr(Cancel) -command "focus .; destroy $w"
     
     pack $w.fbuttons.start $w.fbuttons.cancel -expand yes -side left -padx 20 -pady 2
     
@@ -149,47 +149,47 @@ namespace eval calvar {
       focus .calvarWin
       return
     }
-    toplevel $w
-    wm title $w [::tr "Calvar"]
+    createToplevel $w
+    ::setTitle $w [::tr "Calvar"]
     bind $w <F1> { helpWindow CalVar }
     setWinLocation $w
     
     set f $w.fNag
-    frame $f
+    ttk::frame $f
     set i 0
     foreach nag { "=" "+=" "+/-" "+-" "=+" "-/+" "-+" } {
-      button $f.nag$i -text $nag -command "::calvar::nag $nag"
+      ttk::button $f.nag$i -text $nag -command "::calvar::nag $nag" -width 3
       pack $f.nag$i -side left
       incr i
     }
-    pack $f
+    pack $f -expand 1 -fill both
     
     set f $w.fText
-    frame $f
+    ttk::frame $f
     text $f.t -height 12 -width 50
     pack $f.t
-    pack $f
+    pack $f -expand 1 -fill both
     
     set f $w.fPieces
-    frame $f
-    label $f.lPromo -text "Promotion"
+    ttk::frame $f
+    ttk::label $f.lPromo -text "Promotion"
     pack $f.lPromo -side left
     foreach piece { "q" "r" "b" "n" } {
-      button $f.p$piece -image w${piece}20 -command "::calvar::promo $piece"
+      ttk::button $f.p$piece -image w${piece}20 -command "::calvar::promo $piece"
       pack $f.p$piece -side left
     }
-    pack $f
+    pack $f -expand 1 -fill both
     
     set f $w.fCommand
-    frame $f
-    button $f.bDone -text [::tr "DoneWithPosition"] -command ::calvar::positionDone
+    ttk::frame $f
+    ttk::button $f.bDone -text [::tr "DoneWithPosition"] -command ::calvar::positionDone
     pack $f.bDone
-    pack $f
+    pack $f -expand 1 -fill both
     
     set f $w.fbuttons
-    frame $f
-    pack $f
-    button $w.fbuttons.stop -textvar ::tr(Stop) -command "::calvar::stop"
+    ttk::frame $f
+    pack $f -expand 1 -fill both
+    ttk::button $w.fbuttons.stop -textvar ::tr(Stop) -command "::calvar::stop"
     pack $w.fbuttons.stop -expand yes -side left -padx 20 -pady 2
     
     bind $w <Escape> { .calvarWin.fbuttons.stop invoke }
@@ -214,6 +214,7 @@ namespace eval calvar {
     ::calvar::startAnalyze "" "" [sc_pos fen]
     
     set ::calvar::afterIdPosition [after [expr $::calvar::thinkingTimePosition * 1000] { ::calvar::stopAnalyze "" "" "" ; ::calvar::addLineToCompute "" }]
+    ::createToplevelFinalize $w
   }
   ################################################################################
   #
@@ -305,38 +306,41 @@ namespace eval calvar {
   proc handleResult {moves nag fen {n 4} } {
     set comment ""
     
+    set usermoves [::uci::formatPv $moves $fen]
+    set firstmove [lindex $usermoves 0]
+    
+    # format engine's output
     # append first move to the variations
-    set firstmove [lindex $moves 0]
-    for {set i 0 } {$i < [llength $::uci::uciInfo(pvlist$n)]} {incr i} {
-      set elt [lindex $::uci::uciInfo(pvlist$n) $i]
-      set m [linsert [lindex $elt 2] 0 $firstmove]
-      set m [::uci::formatPv $m]
-      set elt [list [lindex $elt 0] [lindex $elt 1] $m ]
-      lset ::uci::uciInfo(pvlist$n) $i $elt
+    set ::analysis(multiPV$n) {}
+    for {set i 0 } {$i < [llength $::analysis(multiPVraw$n)]} {incr i} {
+      set elt [lindex $::analysis(multiPVraw$n) $i ]
+      set line [::uci::formatPvAfterMoves $firstmove [lindex $elt 2] ]
+      set line "$firstmove $line"
+      lappend ::analysis(multiPV$n) [list [lindex $elt 0] [lindex $elt 1] $line [lindex $elt 3]]
     }
+    
     puts "==================================="
-    puts "handleResult $::uci::uciInfo(pvlist$n)"
+    puts "handleResult $::analysis(multiPV$n)"
     puts "==================================="
     
-    set usermoves [::uci::formatPv $moves]
     puts "usermoves $usermoves moves (avant format) $moves"
     
     if { [llength $moves] != [llength $usermoves]} {
       set comment " error in user moves [lrange $moves [llength $usermoves] end ]"
       puts $comment
     }
-    foreach pv $::uci::uciInfo(pvlist$n) {
+    
+    set pv [ lindex $::analysis(multiPV$n) 0 ]
+    if { [ llength $pv ] == 4 } {
       set engmoves [lindex $pv 2]
       # score is computed for the opposite side, so invert it
       set engscore [expr - 1.0 * [lindex $pv 1] ]
       set engdepth [lindex $pv 0]
-      # find a line with the same first move
-      if {[lindex $usermoves 0] == [lindex $engmoves 0]} {
-        addVar $moves $engmoves $nag $comment $engscore
-        break
-      }
+      puts "pv = $pv usermoves $usermoves engmoves $engmoves"
+      addVar $usermoves $engmoves $nag $comment $engscore
+    } else  {
+      puts "Error pv = $pv"
     }
-    
   }
   ################################################################################
   # will add a variation at current position.
@@ -363,7 +367,8 @@ namespace eval calvar {
     # first enter the user moves
     sc_var create
     if {$repeat_move != ""} {sc_move addSan $repeat_move}
-    if { [::uci::sc_move_add $usermoves] } {
+    sc_move addSan $usermoves
+    if {$comment != ""} {
       sc_pos setComment $comment
     }
     
@@ -453,10 +458,13 @@ namespace eval calvar {
   }
   ################################################################################
   # startAnalyze:
-  #   Put the engine in analyze mode.
+  #   Put the engine in analyze mode and ponder on the first move entered by the user to see
+  # if the line's evaluation is coherent
   ################################################################################
   proc startAnalyze {moves nag fen {n 4}} {
     global analysis
+    
+    puts "startAnalyze $moves $nag $fen"
     
     # Check that the engine has not already had analyze mode started:
     if {$analysis(analyzeMode$n)} { return }
@@ -464,6 +472,7 @@ namespace eval calvar {
     set analysis(waitForReadyOk$n) 1
     ::uci::sendToEngine $n "isready"
     vwait analysis(waitForReadyOk$n)
+    set analysis(fen$n) $fen
     if { [llength $moves] > 0 } {
       ::uci::sendToEngine $n "position fen $fen moves [lindex $moves 0]"
     } else {

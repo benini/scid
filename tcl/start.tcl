@@ -885,6 +885,7 @@ proc toggleGameInfo {} {
   } else  {
     grid forget .main.gameInfoFrame
   }
+  update idletasks
   resizeMainBoard
 }
 ################################################################################

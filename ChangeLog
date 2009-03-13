@@ -723,7 +723,7 @@ scid-3.7.1
 - Plenty of changes in user interface, among others :
 	* USCF piece set
 
-[xxx 2009 ]
+[April 2009 ]
 
 scid-3.7.2
 -----------
@@ -745,4 +745,5 @@ scid-3.7.2
 - Fixed a bug when changing board pieces set when board was flipped
 - updated hungarian translation (thanks to Szőts Gábor)
 - Fixed a bug with cursor handling (triggered for example by opening the tree window, the tree help and issuing the fill cache command)
-
+- Fixed board auto resize when toggling game info display
+- Fixed a bug in "Calculation of variations" training (aka Stoyko exercise)

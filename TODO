@@ -3,7 +3,22 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-
+calcul de variantes à mettre en docked
+can't read "::uci::uciInfo(pvlist4)": no such element in array
+can't read "::uci::uciInfo(pvlist4)": no such element in array
+    while executing
+"llength $::uci::uciInfo(pvlist$n)"
+    (procedure "handleResult" line 6)
+    invoked from within
+"handleResult $moves $nag $fen"
+    (procedure "::calvar::stopAnalyze" line 7)
+    invoked from within
+"::calvar::stopAnalyze {d2d4 d7d5 c2c4 e7e6} = {rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1}"
+    ("after" script)
+    
+    ==> pvlist commenté dans uci
+    voir modifs l 310 et +
+    
  ===========================================================
 |                                                           |
 |                          BUGS                             |
