@@ -1588,6 +1588,9 @@ translate E CCDlgDeleteBoxes {Empty In-/Outbox}
 translate E CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess?\nThis requires a new sync to show the last state of your games.}
 translate E CCDlgConfirmMove {Confirm move}
 translate E CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
+translate E CCDlgDBGameToLong {Inconsistent Mainline}
+translate E CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+
 
 translate E CCDlgStartEmail {Start new eMail game}
 translate E CCDlgYourName {Your Name:}

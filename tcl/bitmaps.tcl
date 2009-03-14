@@ -34503,6 +34503,114 @@ set pieceImageData(Kingdom,80) {
 #
 ################################################################################
 
+lappend boardStyles Blindfold
+set pieceImageData(Blindfold,25) {
+R0lGODlhLAEZAPAAAAAAAMzMzCH5BAEAAAEALAAAAAAsARkAAAJgjI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8/r4AADs=
+}
+
+set pieceImageData(Blindfold,30) {
+R0lGODlhaAEeAPAAAAAAAMzMzCH5BAEAAAEALAAAAABoAR4AAAJ5jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaZlUAAA7
+}
+
+set pieceImageData(Blindfold,35) {
+R0lGODlhpAEjAPAAAAAAAMzMzCH5BAEAAAEALAAAAACkASMAAAKRjI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6ppaAAA7
+}
+
+set pieceImageData(Blindfold,40) {
+R0lGODlh4AEoAPAAAAAAAMzMzCH5BAEAAAEALAAAAADgASgAAAKqjI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHzsVQAAOw==
+}
+
+set pieceImageData(Blindfold,45) {
+R0lGODlhHAItAPAAAAAAAMzMzCH5BAEAAAEALAAAAAAcAi0AAALCjI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f1tXQAAOw==
+}
+
+set pieceImageData(Blindfold,50) {
+R0lGODlhWAIyAPAAAAAAAMzMzCH5BAEAAAEALAAAAABYAjIAAALbjI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+PL1cAADs=
+}
+
+set pieceImageData(Blindfold,55) {
+R0lGODlhlAI3APAAAAAAAMzMzCH5BAEAAAEALAAAAACUAjcAAAL1jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsa
+PIgwocKFDBs6fAhRYAEAOw==
+}
+
+set pieceImageData(Blindfold,60) {
+R0lGODlh0AI8APAAAAAAAMzMzCH5BAEAAAEALAAAAADQAjwAAAL+jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsa
+PIgwocKFDBs6fAgxosSJFCtavIgxo8YTjRw7evwIMqTIkSRLmjyJMmWhAgA7
+}
+
+set pieceImageData(Blindfold,65) {
+R0lGODlhDANBAPAAAAAAAMzMzCH5BAEAAAEALAAAAAAMA0EAAAL+jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsa
+PIgwocKFDBs6fAgxosSJFCtavIgxo8YujRw7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr
+2ryJM6fOnTx7+vwJNGjLAgA7
+}
+
+set pieceImageData(Blindfold,70) {
+R0lGODlhSANGAPAAAAAAAMzMzCH5BAEAAAEALAAAAABIA0YAAAL+jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsa
+PIgwocKFDBs6fAgxosSJFCtavIgxo8ZLjRw7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr
+2ryJM6fOnTx7+vwJNKjQoUSLGj2KNKnSpUybOn0KNarUqVSrWr2KNavWSwUAADs=
+}
+
+set pieceImageData(Blindfold,75) {
+R0lGODlhhANLAPAAAAAAAMzMzCH5BAEAAAEALAAAAACEA0sAAAL+jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsa
+PIgwocKFDBs6fAgxosSJFCtavIgxo8ZmjRw7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr
+2ryJM6fOnTx7+vwJNKjQoUSLGj2KNKnSpUybOn0KNarUqVSrWr2KNavWrVy7ev0KNqzYsWTL
+mj2LNq3atWzbun0LN67cqwUAADs=
+}
+
+set pieceImageData(Blindfold,80) {
+R0lGODlhwANQAPAAAAAAAMzMzCH5BAEAAAEALAAAAADAA1AAAAL+jI+py+0Po5y02ouz3rz7
+D4biSJbmiabqyrbuC8fyTNf2jef6zvf+DwwKh8Si8YhMKpfMpvMJjUqn1Kr1is1qt9yu9wsO
+i8fksvmMTqvX7Lb7DY/L5/S6/Y7P6/f8vv8PGCg4SFhoeIiYqLjI2Oj4CBkpOUlZaXmJmam5
+ydnp+QkaKjpKWmp6ipqqusra6voKGys7S1tre4ubq7vL2+v7CxwsPExcbHyMnKy8zNzs/Awd
+LT1NXW19jZ2tvc3d7f0NHi4+Tl5ufo6err7O3u7+Dh8vP09fb3+Pn6+/z9/v/w8woMCBBAsa
+PIgwocKFDBs6fAgxosSJFCtavIgxo8aCjRw7evwIMqTIkSRLmjyJMqXKlSxbunwJM6bMmTRr
+2ryJM6fOnTx7+vwJNKjQoUSLGj2KNKnSpUybOn0KNarUqVSrWr2KNavWrVy7ev0KNqzYsWTL
+mj2LNq3atWzbun0LN67cuXTr2r2LN6/evXz7+v0LOLDgwYQLGz6MOLHixagKAAA7
+}
+
+
+################################################################################
+#
+################################################################################
+
 lappend boardStyles USCF
 set pieceImageData(USCF,25) {
 iVBORw0KGgoAAAANSUhEUgAAASwAAAAZEAYAAADbLc+cAAAABmJLR0QAAAAAAAD5Q7t/AAAA

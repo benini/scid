@@ -1951,6 +1951,10 @@ translate P CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
 translate P CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 # ====== TODO To be translated ======
+translate P CCDlgDBGameToLong {Inconsistent Mainline}
+# ====== TODO To be translated ======
+translate P CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+# ====== TODO To be translated ======
 translate P CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
 translate P CCDlgYourName {Your Name:}
@@ -2273,6 +2277,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

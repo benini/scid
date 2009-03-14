@@ -301,6 +301,7 @@ $m add command -label EditCopy -accelerator "Ctrl+C" -command {
   updateBoard
 }
 bind $dot_w <Control-c> {catch {sc_clipbase copy}; updateBoard}
+bind $dot_w <Control-Insert> {catch {sc_clipbase copy}; updateBoard}
 set helpMessage($m,[incr menuindex]) EditCopy
 
 $m add command -label EditPaste -accelerator "Ctrl+V" -command {
@@ -308,6 +309,7 @@ $m add command -label EditPaste -accelerator "Ctrl+V" -command {
   updateBoard -pgn
 }
 bind $dot_w <Control-v> {catch {sc_clipbase paste}; updateBoard -pgn}
+bind $dot_w <Shift-Insert> {catch {sc_clipbase paste}; updateBoard -pgn}
 set helpMessage($m,[incr menuindex]) EditPaste
 
 $m add command -label EditPastePGN -command importClipboardGame
@@ -462,9 +464,9 @@ $m.correspondence add command -label CCConfigure   -command {::CorrespondenceChe
 set helpMessage($m.correspondence,0) CCConfigure
 
 $m.correspondence add separator
-$m.correspondence add command -label CCOpenDB      -command {::CorrespondenceChess::OpenCorrespondenceDB} \
+$m.correspondence add command -label CCOpenDB      -command {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox} \
     -accelerator "Ctrl+F12"
-bind $dot_w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB}
+bind $dot_w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox}
 set helpMessage($m.correspondence,2) CCOpenDB
 
 $m.correspondence add separator
@@ -1775,7 +1777,7 @@ proc standardShortcuts {w} {
   bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
   bind $w <F11>  ::book::open
   bind $w <F12> ::CorrespondenceChess::CCWindow
-  bind $w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB}
+  bind $w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox}
   bind $w <Alt-F12> {::CorrespondenceChess::OpenCorrespondenceDB;  ::CorrespondenceChess::FetchGames}
 }
 ################################################################################

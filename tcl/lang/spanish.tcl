@@ -1566,6 +1566,10 @@ translate S CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbo
 translate S CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
 translate S CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
+# ====== TODO To be translated ======
+translate S CCDlgDBGameToLong {Inconsistent Mainline}
+# ====== TODO To be translated ======
+translate S CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
 translate S CCDlgStartEmail {Empezar nueva partida eMail}
 translate S CCDlgYourName {Tu nombre:}
 translate S CCDlgYourMail {Tu dirección eMail:}
@@ -1622,6 +1626,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

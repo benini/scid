@@ -1971,6 +1971,10 @@ translate R CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
 translate R CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 # ====== TODO To be translated ======
+translate R CCDlgDBGameToLong {Inconsistent Mainline}
+# ====== TODO To be translated ======
+translate R CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+# ====== TODO To be translated ======
 translate R CCDlgStartEmail {Start new eMail game}
 # ====== TODO To be translated ======
 translate R CCDlgYourName {Your Name:}
@@ -2075,6 +2079,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

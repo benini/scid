@@ -1539,6 +1539,10 @@ translate H CCDlgDeleteBoxesText {Tényleg ki akarod üríteni a levelezési sakk be
 translate H CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
 translate H CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
+# ====== TODO To be translated ======
+translate H CCDlgDBGameToLong {Inconsistent Mainline}
+# ====== TODO To be translated ======
+translate H CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
 translate H CCDlgStartEmail {Start new eMail game}
 translate H CCDlgYourName {Neved:}
 translate H CCDlgYourMail {eMail-címed:}
@@ -1823,6 +1827,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

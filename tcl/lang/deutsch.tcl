@@ -1594,6 +1594,8 @@ translate D CCDlgDeleteBoxes {Leeren des Postein- und Ausgangs}
 translate D CCDlgDeleteBoxesText {Wollen Sie wirklich Ihren Postein- und Ausgang leeren?\nDies erfordert ein erneutes Synchronisieren zum den aktuellen Zustand Ihrer Partien anzuzeigen.}
 translate D CCDlgConfirmMove {Zug bestätigen}
 translate D CCDlgConfirmMoveText {Durch bestätigen wird folgender Zug und Kommentar an den Server übertragen:}
+translate D CCDlgDBGameToLong {Inkonsistente Hauptvariante}
+translate D CCDlgDBGameToLongError {Die Hauptvariante dieser Partie in der Datenbank enthält mehr Züge als in der Partie tatsächlich gespielt. Sofern die Partie im Posteingang vollständig und aktuell ist (z. B. direkt nach einer Synchronisation) muß die Hauptvariante in der Datenbank ensprechend gekürzt werden. Der letzte Zug in der Partie ist Nr. \n}
 translate D CCDlgStartEmail {Neue eMail Partie}
 translate D CCDlgYourName {Ihr Name:}
 translate D CCDlgYourMail {Ihre eMail Adresse:}
@@ -7212,6 +7214,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

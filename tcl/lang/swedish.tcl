@@ -1944,6 +1944,10 @@ translate W CCDlgDeleteBoxesText {Vill du verkligen tömma dina In- och Utboxkata
 translate W CCDlgConfirmMove {Bekräfta drag} 
 # ====== TODO To be translated ====== 
 translate W CCDlgConfirmMoveText {Om du bekräftar, kommer följande drag och kommentar att skickas till servern:} 
+# ====== TODO To be translated ======
+translate W CCDlgDBGameToLong {Inconsistent Mainline}
+# ====== TODO To be translated ======
+translate W CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
 # ====== TODO To be translated ====== 
 translate W CCDlgStartEmail {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
@@ -7063,6 +7067,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

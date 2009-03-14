@@ -1643,6 +1643,10 @@ translate I CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbo
 translate I CCDlgConfirmMove {Confirm move}
 # ====== TODO To be translated ======
 translate I CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
+# ====== TODO To be translated ======
+translate I CCDlgDBGameToLong {Inconsistent Mainline}
+# ====== TODO To be translated ======
+translate I CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
 translate I CCDlgStartEmail {Avvia una nuova partita tramite eMail}
 translate I CCDlgYourName {Il tuo nome:}
 translate I CCDlgYourMail {Il tuo indirizzo eMail:}
@@ -1965,6 +1969,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

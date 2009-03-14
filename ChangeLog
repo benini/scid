@@ -720,30 +720,39 @@ scid-3.7.1
 - Correspondence Chess
   * Fix: Ctrl-F12 did not work from other windows than the main window
   * New Shortcut: Alt-F12 will open CC window, default DB and fetch the games
-- Plenty of changes in user interface, among others :
+- Changes in user interface:
 	* USCF piece set
 
 [April 2009 ]
 
 scid-3.7.2
 -----------
-- updated swedish translation (thanks to Hans Eriksson)
+- Fixes:
+	* Small bug when closing ECO graph window (missing cleanup)
+	* add missing global shortcuts
+	* Bug when changing board pieces while the board was flipped
+	* Closing a locked Tree window : the base switch was incomplete.
+	* Bug with cursor handling (triggered for example by opening the tree window, the tree help and issuing the fill cache command)
+	* Board auto resize while toggling game info display
+	* Bug in "Calculation of variations" training (aka Stoyko exercise)
+	* wrong assignments to ::CorrespondenceChess::num corrected
 - FICS : user interface improvements : 
 	* click on a game to observe it
 	* redesign in notebook style
 	* better looking offers graph
 	* used icons from http://webdesignledger.com/freebies/21-best-icon-sets-for-designing-web-apps
 	* added a check box to enable standard user variables
-- Fixed a small bug when closing ECO graph window (missing cleanup)
-- Fix: add missing global shortcuts
 - Correspondence Chess:
-	* Add confirmation dialogue of CC moves
-	* Disable engine analysis in games that do not allow it,  ie. Xfcc noEngines = true. If noEngines is not set assume "engines allowed" (ICCF). Suggested by Austin
-	* Fix: handling of a global var
-- Fixed a bug when closing a locked Tree window : the base switch was incomplete.
+	* Add confirmation dialogue of CC moves. (Suggested by Dhanish)
+	* Add copy cc games list to clipboard. (Suggested by Dhanish)
+	* Add Ctrl-Up/Down scrolling through games. (Suggested by Dhanish)
+	* Ctrl-F12 now also processes the inbox automatically. (Suggested by Dhanish)
+	* Check if mainline is longer then the games mainline, eg. due to a users error (Suggested by Dhanish)
+	* Disable engine analysis in games that do not allow it,  ie. Xfcc noEngines = true. If noEngines is not set assume "engines allowed" (ICCF). (Suggested by Austin)
 - Spell checker : enhanced user feedback, operation can be cancelled, all names corrected instead of the first 2000 (thanks to Joost Hart)
-- Fixed a bug when changing board pieces set when board was flipped
-- updated hungarian translation (thanks to Szőts Gábor)
-- Fixed a bug with cursor handling (triggered for example by opening the tree window, the tree help and issuing the fill cache command)
-- Fixed board auto resize when toggling game info display
-- Fixed a bug in "Calculation of variations" training (aka Stoyko exercise)
+- User interface:
+	* blindfold play (piece set)
+	* Add SAA/CUA hotkeys for clipboard (Ctrl-Ins, Shift-Ins)
+- Translations:
+	* hungarian updated (thanks to Szőts Gábor)
+	* swedish updated (thanks to Hans Eriksson)
