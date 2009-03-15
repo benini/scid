@@ -749,6 +749,8 @@ scid-3.7.2
 	* Ctrl-F12 now also processes the inbox automatically. (Suggested by Dhanish)
 	* Check if mainline is longer then the games mainline, eg. due to a users error (Suggested by Dhanish)
 	* Disable engine analysis in games that do not allow it,  ie. Xfcc noEngines = true. If noEngines is not set assume "engines allowed" (ICCF). (Suggested by Austin)
+	* Strip of text in [] when sending game comments
+	* Show start date for individual challenges in tooltip
 - Spell checker : enhanced user feedback, operation can be cancelled, all names corrected instead of the first 2000 (thanks to Joost Hart)
 - User interface:
 	* blindfold play (piece set)

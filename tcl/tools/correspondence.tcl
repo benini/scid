@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.60 2009/03/13 20:18:47 arwagner Exp $
+### $Id: correspondence.tcl,v 1.61 2009/03/15 19:25:09 arwagner Exp $
 ###
-### Last change: <Fri, 2009/03/13 21:18:24 arwagner ingata>
+### Last change: <Sun, 2009/03/15 20:21:40 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1893,7 +1893,6 @@ namespace eval CorrespondenceChess {
 		$w.bottom.event   insert end "$event\n"
 		set endpos [$w.bottom.event index insert]
 		$w.bottom.event tag add event$id $curpos $endpos
-		::utils::tooltip::SetTag $w.bottom.event "$event\nTime: $TC" event$id
 
 
 		set curpos [$w.bottom.site index insert]
@@ -1962,6 +1961,9 @@ namespace eval CorrespondenceChess {
 			foreach col {id toMove event site} {
 				$w.bottom.$col tag configure $col$id -foreground DarkGray -font font_Bold
 			}
+			::utils::tooltip::SetTag $w.bottom.event "$event\nTime: $TC\n\nStart: $date" event$id
+		} else {
+			::utils::tooltip::SetTag $w.bottom.event "$event\nTime: $TC" event$id
 		}
 
 		regsub -all "flag_"  $wc "" wc1
@@ -3195,6 +3197,10 @@ namespace eval CorrespondenceChess {
 			set move      [sc_game info previousMoveNT]
 			set comment   [sc_pos getComment]
 			set Event     [sc_game tags get Event]
+
+			# Throw away everything in [] as often as it exists
+			# This matches [%ccsnt] as well as scid marker codes
+			regsub -all {\[[^\]]*\]} $comment {} comment
 
 			# moveNumber gives the number of the next full move. This is
 			# one to high in case of playing black. Note that for this
