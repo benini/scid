@@ -33,6 +33,9 @@ proc ::file::Exit {}  {
   # Switch back to original database:
   sc_base switch $savedBase
   
+  # Check if a mask is opened and dirty
+  ::tree::mask::close
+  
   if {$msg != ""} {
     append msg "\n"
   }

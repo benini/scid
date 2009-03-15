@@ -323,8 +323,6 @@ namespace eval calvar {
     puts "handleResult $::analysis(multiPV$n)"
     puts "==================================="
     
-    puts "usermoves $usermoves moves (avant format) $moves"
-    
     if { [llength $moves] != [llength $usermoves]} {
       set comment " error in user moves [lrange $moves [llength $usermoves] end ]"
       puts $comment
@@ -336,7 +334,6 @@ namespace eval calvar {
       # score is computed for the opposite side, so invert it
       set engscore [expr - 1.0 * [lindex $pv 1] ]
       set engdepth [lindex $pv 0]
-      puts "pv = $pv usermoves $usermoves engmoves $engmoves"
       addVar $usermoves $engmoves $nag $comment $engscore
     } else  {
       puts "Error pv = $pv"
@@ -378,7 +375,7 @@ namespace eval calvar {
     while {![sc_pos isAt vstart] } {sc_move back}
     if {$repeat_move != ""} {sc_move forward}
     sc_var create
-    sc_pos setComment $engscore
+    sc_pos setComment  "$::calvar::engineName : $engscore"
     sc_move addSan $engmoves
     sc_var exit
     sc_var exit
@@ -463,8 +460,6 @@ namespace eval calvar {
   ################################################################################
   proc startAnalyze {moves nag fen {n 4}} {
     global analysis
-    
-    puts "startAnalyze $moves $nag $fen"
     
     # Check that the engine has not already had analyze mode started:
     if {$analysis(analyzeMode$n)} { return }

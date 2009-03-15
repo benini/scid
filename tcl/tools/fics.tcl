@@ -241,9 +241,6 @@ namespace eval fics {
     ::utils::tooltip::Set $w.f.bottom.right.silence "[::tr FICSSilence]\n(set gin 0\nset seek 0\nset silence 0\nset chanoff 1)"
     set ::fics::silence 1
     
-    grid $w.f.bottom.right.silence -column 0 -row $row -sticky w
-    incr row
-    
     set ::fics::graphon 0
     
     ttk::button $w.f.bottom.right.findopp -image FICSsearch  -command { ::fics::findOpponent }
@@ -273,6 +270,7 @@ namespace eval fics {
     ttk::button $w.f.bottom.right.abort -image FICSabort -command { ::fics::writechan "abort" }
     ::utils::tooltip::Set $w.f.bottom.right.abort "[::tr Abort]\n(abort)"
     grid $w.f.bottom.right.abort -column 2 -row $row -sticky ew -pady 2
+    grid $w.f.bottom.right.silence -column 4 -row $row -sticky w
     incr row
     
     ttk::button $w.f.bottom.right.takeback -image FICStakeback1 -command { ::fics::writechan "takeback"}
@@ -748,6 +746,10 @@ namespace eval fics {
       if { $elt != "$w.f.bottom.right.cancel" } {
         $elt configure -state $state
       }
+    }
+    
+    foreach elt [list $w.f.top.fconsole.f2.send $w.f.top.fconsole.f2.cmd ] {
+      $elt configure -state $state
     }
     
     if {$state == "normal" } {

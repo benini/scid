@@ -275,6 +275,8 @@ proc ::tree::selectCallback { baseNumber move } {
 proc ::tree::closeTree {baseNumber} {
   global tree
   
+  ::tree::mask::close
+  
   ::tree::hideCtxtMenu $baseNumber
   .treeWin$baseNumber.buttons.stop invoke
   
@@ -1465,9 +1467,7 @@ proc ::tree::mask::new {} {
     if {[file extension $filename] != ".stm" } {
       append filename ".stm"
     }
-    if {$::tree::mask::dirty} {
-      ::tree::mask::askForSave
-    }
+    ::tree::mask::askForSave
     set ::tree::mask::dirty 0
     set ::tree::mask::maskFile $filename
     array unset ::tree::mask::mask
@@ -1479,9 +1479,10 @@ proc ::tree::mask::new {} {
 #
 ################################################################################
 proc ::tree::mask::close {} {
-  if {$::tree::mask::dirty} {
-    ::tree::mask::askForSave
+  if { $::tree::mask::maskFile == "" } {
+    return
   }
+  ::tree::mask::askForSave
   set ::tree::mask::dirty 0
   array unset ::tree::mask::mask
   array set ::tree::mask::mask {}
