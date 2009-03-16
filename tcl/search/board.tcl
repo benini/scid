@@ -40,6 +40,22 @@ proc ::search::board {} {
   }
   addHorizontalRule $w
   
+  pack [ttk::frame $w.refdb] -side top -fill x
+  ttk::checkbutton $w.refdb.cb -textvar ::tr(SearchInRefDatabase) -variable sBoardSearchRefBase
+  set listbases {}
+  # populate the combobox
+  for {set i 1} {$i <= [sc_base count total]} {incr i} {
+    if {[sc_base inUse $i]} {
+      set fname [file tail [sc_base filename $i]]
+      lappend listbases "$i $fname"
+    }
+  }
+  ttk::combobox $w.refdb.lb -textvariable refDatabase -values $listbases
+  $w.refdb.lb current 0
+  
+  pack $w.refdb.cb $w.refdb.lb -side left
+  addHorizontalRule $w
+  
   ::search::addFilterOpFrame $w
   addHorizontalRule $w
   
@@ -55,8 +71,8 @@ proc ::search::board {} {
   pack $w.b2 -side top -fill x
   ttk::frame $w.b
   pack $w.b -side top -fill x
-  ttk::checkbutton $w.b2.vars -textvar ::tr(LookInVars) -onvalue 1 -offvalue 0 -variable searchInVars 
-  ttk::checkbutton $w.b2.flip -textvar ::tr(IgnoreColors) -onvalue 1 -offvalue 0 -variable sBoardIgnoreCols 
+  ttk::checkbutton $w.b2.vars -textvar ::tr(LookInVars) -onvalue 1 -offvalue 0 -variable searchInVars
+  ttk::checkbutton $w.b2.flip -textvar ::tr(IgnoreColors) -onvalue 1 -offvalue 0 -variable sBoardIgnoreCols
   
   dialogbutton $w.b.stop -textvar ::tr(Stop) -command sc_progressBar
   $w.b.stop configure -state disabled
@@ -66,9 +82,12 @@ proc ::search::board {} {
     .sb.b.stop configure -state normal
     grab .sb.b.stop
     sc_progressBar .sb.fprogress.progress bar 301 21 time
-    set str [sc_search board \
-        $::search::filter::operation \
-        $sBoardSearchType $searchInVars $sBoardIgnoreCols]
+    
+    set base ""
+    if { $sBoardSearchRefBase } {
+      set base [lindex $refDatabase 0]
+    }
+    set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
     unbusyCursor .
     grab release .sb.b.stop
     .sb.b.stop configure -state disabled
@@ -77,6 +96,9 @@ proc ::search::board {} {
     set glstart 1
     ::windows::gamelist::Refresh
     
+    if { $sBoardSearchRefBase } {
+      ::file::SwitchToBase $base
+    }
     ::search::loadFirstGame
     
     ::windows::stats::Refresh

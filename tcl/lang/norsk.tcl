@@ -1112,6 +1112,8 @@ translate O SearchBoardExact {Nøyaktig stilling (alle brikker på samme felt)}
 translate O SearchBoardPawns {Bønder (samme kvalitet, alle bønder på samme felt)}
 translate O SearchBoardFiles {Kolonner (samme kvalitet, alle bønder på samme kolonner)}
 translate O SearchBoardAny {Alle (samme kvalitet, bønder og brikker hvor som helst)}
+# ====== TODO To be translated ======
+translate O SearchInRefDatabase { Search in base }
 translate O LookInVars {Søk i variasjoner}
 
 # Material search:
@@ -2050,6 +2052,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

@@ -1010,6 +1010,8 @@ translate I SearchBoardExact {Posizione Esatta (tutti i pezzi sulla stessa casa)
 translate I SearchBoardPawns {Pedoni (stesso materiale, tutti i pedoni sulla stessa casa)}
 translate I SearchBoardFiles {File (stesso materiale, tutti i pedoni sulle stesse file)}
 translate I SearchBoardAny {Dovunque (stesso materiale, pedoni e pezzi dovunque)}
+# ====== TODO To be translated ======
+translate I SearchInRefDatabase { Search in base }
 translate I LookInVars {Osserva nelle varianti}
 
 # Material search:
@@ -1969,6 +1971,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

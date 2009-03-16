@@ -1119,6 +1119,8 @@ translate P SearchBoardExact {Identyczna pozycja (bierki na tych samych polach)}
 translate P SearchBoardPawns {Pionki (ten sam materia³, pionki na tych samych polach)}
 translate P SearchBoardFiles {Kolumny (ten sam materia³, pionki na tych samych kolumnach)}
 translate P SearchBoardAny {Materia³ (ten sam materia³, pozycja dowolna)}
+# ====== TODO To be translated ======
+translate P SearchInRefDatabase { Search in base }
 translate P LookInVars {Przeszukuj warianty}
 
 # Material search:
@@ -2277,6 +2279,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

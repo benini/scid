@@ -947,6 +947,8 @@ translate H SearchBoardExact {Pontos állás (minden figura azonos mezõn)}
 translate H SearchBoardPawns {Gyalogok (azonos anyag, minden gyalog azonos mezõn)}
 translate H SearchBoardFiles {Vonalak (azonos anyag, minden gyalog azonos vonalon)}
 translate H SearchBoardAny {Bármi (azonos anyag, gyalogok és figurák bárhol)}
+# ====== TODO To be translated ======
+translate H SearchInRefDatabase { Search in base }
 translate H LookInVars {Változatokban is keres.}
 
 # Material search:
@@ -1827,6 +1829,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -1104,6 +1104,8 @@ translate C SearchBoardExact {Pøesná pozice (v¹echny figury na stejných polích)}
 translate C SearchBoardPawns {Pì¹ci (tentý¾ materiál, v¹ichni pì¹ci na stejných polích)}
 translate C SearchBoardFiles {Sloupce (tentý¾ materiál, v¹ichni pì¹ci na stejných sloupcích)}
 translate C SearchBoardAny {Jakákoliv (tentý¾ materiál, pì¹ci a figury kdekoliv)}
+# ====== TODO To be translated ======
+translate C SearchInRefDatabase { Search in base }
 translate C LookInVars {Dívat se do variant}
 
 # Material search:
@@ -5680,6 +5682,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

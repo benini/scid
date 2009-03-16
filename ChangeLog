@@ -758,3 +758,4 @@ scid-3.7.2
 - Translations:
 	* hungarian updated (thanks to Szőts Gábor)
 	* swedish updated (thanks to Hans Eriksson)
+- Position search : added the possibility to search for current position in another opened base (this avoids the use of the Tree window that can also be used for this, but can be found less convenient).

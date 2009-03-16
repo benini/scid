@@ -981,6 +981,8 @@ translate N SearchBoardExact {Exacte stelling (stukken op dezelfde velden)}
 translate N SearchBoardPawns {Pionnen (hetzelfde materiaal, alle pionnen op dezelfde velden)}
 translate N SearchBoardFiles {Lijnen (hetzelfde materiaal, alle pionnen op dezelfde lijnen)}
 translate N SearchBoardAny {Willekeurig (hetzelfde materiaal, pionnen en stukken willekeurig)}
+# ====== TODO To be translated ======
+translate N SearchInRefDatabase { Search in base }
 translate N LookInVars {Zoek in varianten}
 
 # Material search:
@@ -1793,6 +1795,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

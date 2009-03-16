@@ -1117,6 +1117,8 @@ translate B SearchBoardExact {Posicao exata (todas as pecas nas mesmas casas)}
 translate B SearchBoardPawns {Peoes (mesmo material, todos os peoes nas mesmas casas)}
 translate B SearchBoardFiles {Colunas (mesmo material, todos os peoes na mesma coluna)}
 translate B SearchBoardAny {Qualquer (mesmo material, peoes e pecas em qualquer posicao)}
+# ====== TODO To be translated ======
+translate B SearchInRefDatabase { Search in base }
 translate B LookInVars {Olhar nas variantes}
 
 # Material search:
@@ -2056,6 +2058,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

@@ -957,6 +957,7 @@ translate F SearchBoardExact {Position exacte (mêmes pièces sur les mêmes cases)
 translate F SearchBoardPawns {Pions (même matériel, tous les pions sur les mêmes cases)}
 translate F SearchBoardFiles {Colonnes (même matériel, tous les pions sur mêmes colonnes)}
 translate F SearchBoardAny {Tous (même matériel, pions et pièces n'importe où)}
+translate F SearchInRefDatabase { Dans la base de référence }
 translate F LookInVars {Chercher dans les variantes}
 
 # Material search:
@@ -1812,6 +1813,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

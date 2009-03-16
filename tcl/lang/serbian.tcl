@@ -1110,6 +1110,8 @@ translate Y SearchBoardExact {Ista pozicija (sve figure na istim poljima)}
 translate Y SearchBoardPawns {Pe¹aci (isti materijal, svi pe¹aci na istim poljima)}
 translate Y SearchBoardFiles {Linije (isti materijal, svi pe¹aci na istim linijama)}
 translate Y SearchBoardAny {Materijal (isti materijal, pe¹aci i figure bilo gde)}
+# ====== TODO To be translated ======
+translate Y SearchInRefDatabase { Search in base }
 translate Y LookInVars {Pogledaj u varijantama}
 
 # Material search:
@@ -2050,6 +2052,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

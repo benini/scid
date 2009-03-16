@@ -997,6 +997,8 @@ translate D SearchBoardExact {Exakte Position (alle Steine auf gleichen Feldern)
 translate D SearchBoardPawns {Bauern (gleiche Figuren, alle Bauern auf gleichen Feldern)}
 translate D SearchBoardFiles {Linien (gleiches Material, alle Bauern auf gleichen Linien)}
 translate D SearchBoardAny {Material (gleiches Material, Bauern und Figuren beliebig)}
+# ====== TODO To be translated ======
+translate D SearchInRefDatabase { Search in base }
 translate D LookInVars {Schaue in Varianten}
 
 # Material search:
@@ -7214,6 +7216,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

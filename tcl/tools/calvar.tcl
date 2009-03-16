@@ -167,7 +167,7 @@ namespace eval calvar {
     set f $w.fText
     ttk::frame $f
     text $f.t -height 12 -width 50
-    pack $f.t
+    pack $f.t -expand 1 -fill both
     pack $f -expand 1 -fill both
     
     set f $w.fPieces

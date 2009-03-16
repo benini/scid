@@ -13998,16 +13998,18 @@ startFilterSize (scidBaseT * base, filterOpT filterOp)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_search_board:
 //    Searches for exact match for the current position.
+//    if <base> is present, search for current position in base <base>,
+//    and sets <base> filter accordingly
 int
 sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usageStr =
-        "Usage: sc_search board <filterOp> <searchType> <searchInVars> [<flip>]";
+        "Usage: sc_search board <filterOp> <searchType> <searchInVars> <flip> [<base>]";
     bool showProgress = startProgressBar();
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
-    if (argc < 5  ||  argc > 6) { return errorResult (ti, usageStr); }
+    if (argc < 6  ||  argc > 7) { return errorResult (ti, usageStr); }
     filterOpT filterOp = strGetFilterOp (argv[2]);
 
     bool useHpSigSpeedup = false;
@@ -14034,10 +14036,22 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     bool searchInVars = strGetBoolean (argv[4]);
     bool flip = false;
-    if (argc == 6) { flip = strGetBoolean (argv[5]); }
-
-    Timer timer;  // Start timing this search.
+//     if (argc == 6) { flip = strGetBoolean (argv[5]); }
+    flip = strGetBoolean (argv[5]);
+    
     Position * pos = db->game->GetCurrentPos();
+    
+    int baseNum = -1;
+    int oldCurrentBase = currentBase;
+    bool searchInRefBase = false;
+    if (argc == 7) {
+      baseNum = strGetUnsigned( argv[6] );
+      searchInRefBase = true;
+      currentBase = baseNum - 1;
+      db = &(dbList[currentBase]);
+    }
+    
+    Timer timer;  // Start timing this search.
     Position * posFlip =  NULL;
     matSigT msig = matsig_Make (pos->GetMaterial());
     matSigT msigFlip = 0;
@@ -14217,7 +14231,13 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     sprintf(temp, "  Skipped %u games.", skipcount);
     Tcl_AppendResult (ti, temp, NULL);
 #endif
-    return TCL_OK;
+
+    if (searchInRefBase ) {
+      currentBase = oldCurrentBase;
+      db = &(dbList[currentBase]);
+    }
+    
+return TCL_OK;
 }
 
 

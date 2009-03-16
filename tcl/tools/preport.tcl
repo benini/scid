@@ -188,7 +188,7 @@ proc ::preport::makeReportWin {args} {
   ::utils::history::AddEntry ::preport::_player $::preport::_player
   
   if {$::preport::_pos == "start"} { sc_game push }
-  sc_search board AND Exact false
+  sc_search board AND Exact false 0
   sc_report player create $::preport(ExtraMoves) $::preport(MaxGames)
   if {$::preport::_pos == "start"} { sc_game pop }
   if {$::preport::_clipbase} {

@@ -996,6 +996,7 @@ translate E SearchBoardExact {Exact position (all pieces on same squares)}
 translate E SearchBoardPawns {Pawns (same material, all pawns on same squares)}
 translate E SearchBoardFiles {Files (same material, all pawns on same files)}
 translate E SearchBoardAny {Any (same material, pawns and pieces anywhere)}
+translate E SearchInRefDatabase { Search in reference base }
 translate E LookInVars {Look in variations}
 
 # Material search:

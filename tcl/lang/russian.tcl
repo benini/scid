@@ -1116,6 +1116,8 @@ translate R SearchBoardExact {“очна€ позици€ (все фигуры на тех же пол€х)}
 translate R SearchBoardPawns {ѕешки (тот же материал, все пешки на тех же пол€х)}
 translate R SearchBoardFiles {–€ды (тот же материал, все пешки на тех же р€дах)}
 translate R SearchBoardAny {Ћюба€ (тот же материал, пешки и фигуры в любом месте)}
+# ====== TODO To be translated ======
+translate R SearchInRefDatabase { Search in base }
 translate R LookInVars {ѕосмотреть в вариантах}
 
 # Material search:
@@ -2079,6 +2081,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 
