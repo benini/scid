@@ -982,6 +982,8 @@ translate O GlistDeleteGame {(Un)Delete this game}
 translate O GlistDeleteAllGames {Delete all games in filter} 
 # ====== TODO To be translated ======
 translate O GlistUndeleteAllGames {Undelete all games in filter} 
+# ====== TODO To be translated ======
+translate O GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate O DatabaseName {Databasenavn:}
@@ -2052,6 +2054,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

@@ -73,10 +73,10 @@ menuText F EditStripBegin "Coups depuis le début" 1 \
 menuText F EditStripEnd "Coups jusqu'à la fin" 0 \
   {Épurer cette partie des coups jusqu'à la fin}
 menuText F EditReset "Vider le presse-papier" 0 {Vider le presse-papier}
-menuText F EditCopy "Copier dans le presse-papier" 0 \
-  {Copier la partie en cours dans le presse-papier}
-menuText F EditPaste "Coller depuis le presse-papier" 1 \
-  {Copier la partie contenue dans le presse-papier à cet emplacement}
+menuText F EditCopy "Copier dans la base presse-papier" 0 \
+  {Copier la partie en cours dans la base clipbase (9)}
+menuText F EditPaste "Coller depuis la base presse-papier" 1 \
+  {Copier la partie contenue dans la base clipbase (9) à cet emplacement}
 menuText F EditPastePGN "Coller le presse-papier comme partie PGN..." 10 \
   {Interpréter le texte du presse-papiers comme de la notation PGN et le coller ici}
 menuText F EditSetup "Position de départ" 0 \
@@ -847,6 +847,7 @@ translate F GlistRemoveGameAndBelowFromFilter  {Enlever cette partie (et celles 
 translate F GlistDeleteGame {(Dés-)effacer cette partie} 
 translate F GlistDeleteAllGames {Effacer toutes les parties du filtre} 
 translate F GlistUndeleteAllGames {Dés-effacer toutes les parties du filtre} 
+translate F GlistMergeGameInBase {Fusionner la partie dans une autre base} 
 
 # Maintenance window:
 translate F DatabaseName {Nom de base:}
@@ -1813,6 +1814,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

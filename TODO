@@ -45,10 +45,8 @@ usa: improve usability, clean interface
 
 GAME EDITOR
 * fea: automatically delete empty comments
-* fea: merge game ignoring move sequences (use last matching position)
 * fea: merge game into variations too
 * fea: properly detect that game was modified
-* fea: warn user when replacing large portions of game comments
 * ide: better editor (best: merge Comment Editor and PGN Window?)
 
 GAME LIST

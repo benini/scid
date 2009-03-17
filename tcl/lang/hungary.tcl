@@ -837,6 +837,8 @@ translate H GlistRemoveGameAndBelowFromFilter  {Vedd ki a játszmát és az összes 
 translate H GlistDeleteGame {Töröld/állítsd helyre ezt a játszmát} 
 translate H GlistDeleteAllGames {Töröld a szûrõ összes játszmáját} 
 translate H GlistUndeleteAllGames {Állítsd helyre a szûrõ összes játszmáját} 
+# ====== TODO To be translated ======
+translate H GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate H DatabaseName {Az adatbázis neve:}
@@ -1829,6 +1831,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

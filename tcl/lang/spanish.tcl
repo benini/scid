@@ -861,6 +861,8 @@ translate S GlistRemoveGameAndBelowFromFilter  {Quita esta partida y todas las d
 translate S GlistDeleteGame {Elimina/Recupera esta partida de la base} 
 translate S GlistDeleteAllGames {Elimina todas las partidas de la base que aparecen en el Filtro} 
 translate S GlistUndeleteAllGames {Recupera todas las partidas borradas de la base que aparecen en el filtro} 
+# ====== TODO To be translated ======
+translate S GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate S DatabaseName {Nombre de la base:}
@@ -1628,6 +1630,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

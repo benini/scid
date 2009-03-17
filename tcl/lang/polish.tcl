@@ -987,6 +987,8 @@ translate P GlistDeleteGame {(Un)Delete this game}
 translate P GlistDeleteAllGames {Delete all games in filter} 
 # ====== TODO To be translated ======
 translate P GlistUndeleteAllGames {Undelete all games in filter} 
+# ====== TODO To be translated ======
+translate P GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate P DatabaseName {Nazwa bazy:}
@@ -2279,6 +2281,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -875,6 +875,8 @@ translate D GlistRemoveGameAndBelowFromFilter  {Partie (und alle darunter) aus F
 translate D GlistDeleteGame {(Ent)Loesche Partie}
 translate D GlistDeleteAllGames {Lösche alle Partien im Filter} 
 translate D GlistUndeleteAllGames {Entlösche alle Partien im Filter} 
+# ====== TODO To be translated ======
+translate D GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate D DatabaseName {Datenbankname:}
@@ -7216,6 +7218,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

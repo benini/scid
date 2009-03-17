@@ -987,6 +987,8 @@ translate B GlistDeleteGame {(Un)Delete this game}
 translate B GlistDeleteAllGames {Delete all games in filter} 
 # ====== TODO To be translated ======
 translate B GlistUndeleteAllGames {Undelete all games in filter} 
+# ====== TODO To be translated ======
+translate B GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate B DatabaseName {Nome da base de dados:}
@@ -2058,6 +2060,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 

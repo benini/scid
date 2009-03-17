@@ -149,6 +149,15 @@ proc ::windows::gamelist::ReOpen {} {
   $w.popup add command -label $::tr(BrowseGame) -command {::gbrowser::new 0 $glNumber}
   $w.popup add command -label $::tr(LoadGame) -command {::game::Load $glNumber}
   $w.popup add command -label $::tr(MergeGame) -command mergeGame
+  menu $w.popup.merge
+  for {set i 1} {$i <= [sc_base count total]} {incr i} {
+    if { $i == [sc_base current] || [sc_base isReadOnly] } { continue }
+    if {[sc_base inUse $i]} {
+      set fname [file tail [sc_base filename $i]]
+      $w.popup.merge add command -label "$i $fname" -command "::game::mergeInBase [sc_base current] $i"
+    }
+  }
+  $w.popup add cascade -label $::tr(GlistMergeGameInBase) -menu $w.popup.merge
   $w.popup add separator
   $w.popup add command -label $::tr(GlistRemoveThisGameFromFilter) -command removeFromFilter
   $w.popup add command -label $::tr(GlistRemoveGameAndAboveFromFilter) -command {removeFromFilter up}
@@ -299,8 +308,8 @@ proc ::windows::gamelist::Resize {} {
     set t $w.columns.cg.text
     if { $::docking::USE_DOCKING } {
       # foreach i $glistFields {
-        # set code [lindex $i 0]
-        # .glistWin.columns.c$code.text configure -height $glistSize
+      # set code [lindex $i 0]
+      # .glistWin.columns.c$code.text configure -height $glistSize
       # }
     }
     ::windows::gamelist::Refresh
@@ -587,13 +596,13 @@ proc popupGLmenu {code xcoord ycoord xscreen yscreen} {
   ::windows::gamelist::Highlight $glSelection
   #Enable/disable last 3 Popupmenupoint: Delete/Undelete (all) Games
   if {[sc_base isReadOnly]} {
-    .glistWin.popup entryconfig 8 -state disabled
     .glistWin.popup entryconfig 9 -state disabled
     .glistWin.popup entryconfig 10 -state disabled
+    .glistWin.popup entryconfig 11 -state disabled
   } else {
-    .glistWin.popup entryconfig 8 -state normal
     .glistWin.popup entryconfig 9 -state normal
     .glistWin.popup entryconfig 10 -state normal
+    .glistWin.popup entryconfig 11 -state normal
   }
   .glistWin.popup post $xscreen [expr {$yscreen + 2}]
   event generate .glistWin.popup <ButtonPress-1>

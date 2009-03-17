@@ -308,3 +308,16 @@ proc ::game::GotoMoveNumber {} {
   
   focus $w.entry
 }
+
+################################################################################
+# merge game gnum in base srcBase in current game in base destBase
+# then switch to destbase
+# If game number is not provided, take current glNumber
+################################################################################
+proc ::game::mergeInBase { srcBase destBase { gnum -1 }} {
+  if {$gnum == -1} {
+    set gnum $::glNumber
+  }
+  ::file::SwitchToBase $destBase
+  mergeGame $srcBase $gnum
+}

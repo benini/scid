@@ -985,6 +985,8 @@ translate R GlistDeleteGame {(Un)Delete this game}
 translate R GlistDeleteAllGames {Delete all games in filter} 
 # ====== TODO To be translated ======
 translate R GlistUndeleteAllGames {Undelete all games in filter} 
+# ====== TODO To be translated ======
+translate R GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate R DatabaseName {Название базы данных:}
@@ -2081,6 +2083,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

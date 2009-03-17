@@ -982,6 +982,8 @@ translate W GlistDeleteGame {Ta tillbaka detta parti}
 translate W GlistDeleteAllGames {Ta bort alla partier i filtret} 
 # ====== TODO To be translated ======
 translate W GlistUndeleteAllGames {Ta tillbaka alla partier i filtret} 
+# ====== TODO To be translated ======
+translate W GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate W DatabaseName {Databasnamn:}
@@ -7069,6 +7071,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

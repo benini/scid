@@ -904,6 +904,8 @@ translate I GlistRemoveGameAndBelowFromFilter  {Rimuovi la partita (e le seguent
 translate I GlistDeleteGame {Elimina/Recupera questa partita}
 translate I GlistDeleteAllGames {Elimina tutte le partite nel filtro}
 translate I GlistUndeleteAllGames {Recupera tutte le partite nel filtro}
+# ====== TODO To be translated ======
+translate I GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate I DatabaseName {Nome del Database:}
@@ -1971,6 +1973,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

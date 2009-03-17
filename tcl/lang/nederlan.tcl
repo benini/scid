@@ -872,6 +872,8 @@ translate N GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) f
 translate N GlistDeleteGame {Maak de verwijdering van deze partij ongedaan} 
 translate N GlistDeleteAllGames {Verwijder alle partijen in de filter} 
 translate N GlistUndeleteAllGames {Maak de verwijdering van alle partijen in de filter ongedaan} 
+# ====== TODO To be translated ======
+translate N GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance windows
 translate N DatabaseName {Naam database:}
@@ -1795,6 +1797,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

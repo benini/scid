@@ -1632,12 +1632,14 @@ set helpText(GameList) {<h1>The Game List window</h1>
   selected game as a variation of the current game. Scid finds the
   deepest point where the selected game differs from the current
   game (taking transpositions into account) and adds a variation
-  for the selected game at that position. You can change the number
+  for the selected game at that position. The selected game can also be merged
+  with the current game of another opened base (this base must not be set read only).
+  You can change the number
   of moves of the selected game to be shown, depending on whether you
   are interested in adding the whole game or just its opening phase.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 3.7.2, april 2009)</footer></p>
 }
 
 

@@ -980,6 +980,8 @@ translate Y GlistDeleteGame {(Un)Delete this game}
 translate Y GlistDeleteAllGames {Delete all games in filter} 
 # ====== TODO To be translated ======
 translate Y GlistUndeleteAllGames {Undelete all games in filter} 
+# ====== TODO To be translated ======
+translate Y GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate Y DatabaseName {Ime baze:}
@@ -2052,6 +2054,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

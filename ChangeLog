@@ -739,7 +739,7 @@ scid-3.7.2
 - FICS : user interface improvements : 
 	* click on a game to observe it
 	* redesign in notebook style
-	* better looking offers graph
+	* better looking "offers" graph
 	* used icons from http://webdesignledger.com/freebies/21-best-icon-sets-for-designing-web-apps
 	* added a check box to enable standard user variables
 - Correspondence Chess:
@@ -759,3 +759,4 @@ scid-3.7.2
 	* hungarian updated (thanks to Szőts Gábor)
 	* swedish updated (thanks to Hans Eriksson)
 - Position search : added the possibility to search for current position in another opened base (this avoids the use of the Tree window that can also be used for this, but can be found less convenient).
+- Game merging : it is now possible to merge directly a game from one base to the current game in another base (see context menu in Game list window)

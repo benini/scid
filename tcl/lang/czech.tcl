@@ -974,6 +974,8 @@ translate C GlistDeleteGame {(Un)Delete this game}
 translate C GlistDeleteAllGames {Delete all games in filter} 
 # ====== TODO To be translated ======
 translate C GlistUndeleteAllGames {Undelete all games in filter} 
+# ====== TODO To be translated ======
+translate C GlistMergeGameInBase {Merge Game in other base} 
 
 # Maintenance window:
 translate C DatabaseName {Jméno databáze:}
@@ -5682,6 +5684,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 
