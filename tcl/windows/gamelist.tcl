@@ -604,6 +604,17 @@ proc popupGLmenu {code xcoord ycoord xscreen yscreen} {
     .glistWin.popup entryconfig 10 -state normal
     .glistWin.popup entryconfig 11 -state normal
   }
+  # update the list of opened base for game merging
+  set m .glistWin.popup.merge
+  $m delete 0 end
+  for {set i 1} {$i <= [sc_base count total]} {incr i} {
+    if { $i == [sc_base current] } { continue }
+    if {[sc_base inUse $i]} {
+      set fname [file tail [sc_base filename $i]]
+      $m add command -label "$i $fname" -command "::game::mergeInBase [sc_base current] $i"
+    }
+  }
+  
   .glistWin.popup post $xscreen [expr {$yscreen + 2}]
   event generate .glistWin.popup <ButtonPress-1>
 }
