@@ -16,6 +16,12 @@ fignoler FICS et calvar
 |                                                           |
  ===========================================================
 
+- Translate NAG symbols to text or proper annotation symbols
+
+- improve commentary arrows: thicker, starting form the real middle of
+  the field, ending at the middle of the field, get a thin black
+  frame.
+
 - Add a Game training ala Fritz' "Friend mode"
 
 - compile openseal for PocketPC
