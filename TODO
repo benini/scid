@@ -6,6 +6,7 @@
 fignoler FICS et calvar
 bind SPACE ajoute coup
 l 247 de analysis.tcl
+voir scidhtml export
  ===========================================================
 |                                                           |
 |                          BUGS                             |
