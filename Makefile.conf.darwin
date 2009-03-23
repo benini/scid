@@ -217,10 +217,10 @@ all: all_scid all_engines
 
 all_scid: scid $(SCRIPTS) $(EXECS)
 
-all_engines: phalanx toga
+all_engines: phalanx-scid toga
 
-phalanx:
-	$(MAKE) -C engines/Phalanx-XXII CFLAGS="-O3 -fomit-frame-pointer -funroll-loops"
+phalanx-scid:
+	$(MAKE) -C engines/phalanx-scid CFLAGS="-O3 -fomit-frame-pointer -funroll-loops"
 
 toga:
 	$(MAKE) -C engines/togaII1.2.1a/src
@@ -247,8 +247,8 @@ install_scid: all_scid
 
 install_engines: all_engines
 	install -m 755 -d $(SHAREDIR)/engines
-	install -m 755 -d $(SHAREDIR)/engines/Phalanx-XXII
-	install ./engines/Phalanx-XXII/phalanx $(SHAREDIR)/engines/Phalanx-XXII
+	install -m 755 -d $(SHAREDIR)/engines/phalanx-scid
+	install ./engines/phalanx-scid/phalanx $(SHAREDIR)/engines/phalanx-scid
 	install -m 755 -d $(SHAREDIR)/engines/togaII1.2.1a
 	install ./engines/togaII1.2.1a/src/fruit $(SHAREDIR)/engines/togaII1.2.1a/
 
@@ -277,7 +277,7 @@ distclean: clean
 #
 clean:
 	rm -f game.* tkscid.so tkscid.dll position.* src/*.o src/zlib/*.o src/zlib/*.a src/polyglot/*.o $(EXECS) scid $(SCRIPTS)
-	cd engines/Phalanx-XXII/ && make clean && cd ../../
+	cd engines/phalanx-scid/ && make clean && cd ../../
 	cd engines/togaII1.2.1a/src/ && make clean && cd ../../../
 	cd pocket/toga/src/ && make clean && cd ../../../
 	cd pocket/toga134/src/ && make clean && cd ../../../

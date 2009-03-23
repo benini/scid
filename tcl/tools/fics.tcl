@@ -1145,6 +1145,7 @@ namespace eval fics {
     
     if { $::fics::playing == 1 } { return 1 }
     
+    puts "DEBUG : playerCanMove returned 0"
     return 0
   }
   ################################################################################

@@ -760,3 +760,7 @@ scid-3.7.2
 	* swedish updated (thanks to Hans Eriksson)
 - Position search : added the possibility to search for current position in another opened base (this avoids the use of the Tree window that can also be used for this, but can be found less convenient).
 - Game merging : it is now possible to merge directly a game from one base to the current game in another base (see context menu in Game list window)
+- Engines handling : 
+	* renamed Phalanx-XII to phalanx-scid (as Phalanx is no longer maintained we need a way to differentiate them)
+	* try to auto-configure engines (scidlet, toga and phalanx) (thanks to Israel Chauca)
+	

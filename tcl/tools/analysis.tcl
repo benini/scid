@@ -246,24 +246,64 @@ proc ::enginelist::write {} {
 #
 catch { ::enginelist::read }
 if {[llength $engines(list)] == 0} {
-  # No engines, so set up a default engine list with Scidlet and Crafty:
-  set cmd scidlet
-  if {$::windowsOS} {
-    set cmd [file join $::scidExeDir scidlet.exe]
+  # No engines, so set up a default engine list:
+  set scidlet "scidlet"
+  set phalanx "phalanx-scid"
+  set togaII "togaII"
+  if { $::windowsOS } {
+    set scidlet "scidlet.exe"
+    set phalanx "phalanx-scid.exe"
+    set togaII "TogaII.exe"
   }
-  engine [list \
-      Name Scidlet \
-      Cmd  $cmd \
-      Dir  . \
-      ]
-  set cmd crafty
-  if {$::windowsOS} { set cmd wcrafty.exe }
-  engine [list \
-      Name Crafty \
-      Cmd  $cmd \
-      Dir  . \
-      URL  ftp://ftp.cis.uab.edu/pub/hyatt/ \
-      ]
+  set scidEngPaths [list $::scidExeDir [file join $::scidExeDir "engines" ] [file join $::scidShareDir "engines" ] \
+      [ file join $::scidUserDir "engines" ]  [ file join usr local share scid engines ] \
+      [ file join usr local bin ] [ file join  usr bin ] [ file join usr local games ] [ file join usr games ] \
+      [file join $::scidExeDir "engines" "phalanx-scid" ] [file join $::scidExeDir "engines" "togaII1.2.1a" "src" ] ]
+  
+  # The next four lists should have the same length!
+  set scidEngCmds [list $phalanx $togaII $scidlet ]
+  set scidEngNames [list "Phalanx-Scid" "Toga II" "Scidlet" ]
+  array set parentDirs "
+    $phalanx { phalanx-scid Phalanx-XXII }
+    $togaII  { togaII1.2.1a toga togaII [ file join togaII1.2.1a src ] }
+    $scidlet { . }
+  "
+  
+  set isUCI [list 0 1 0 ]
+  
+  # Let's search the engines:
+  foreach cmd $scidEngCmds name $scidEngNames uci $isUCI {
+    set leave 0
+    foreach path $scidEngPaths {
+      set c [ file join $path $cmd]
+      if { [file executable $c ] && ! [ file isdirectory $c ] } {
+        engine [list \
+            Name $name \
+            Cmd  $c \
+            Dir  . \
+            UCI  $uci \
+            UCIoptions {} \
+            ]
+        set leave 1
+      } else {
+        foreach parent $parentDirs($cmd) {
+          set c [ file join $path $parent $cmd ]
+          if { [file executable $c] && ! [ file isdirectory $c ] } {
+            engine [list \
+                Name $name \
+                Cmd  $c \
+                Dir  . \
+                UCI  $uci \
+                UCIoptions {} \
+                ]
+            set leave 1
+            break
+          }
+        }
+      }
+      if { $leave } { break }
+    }
+  }
 }
 
 # ::enginelist::date
@@ -340,9 +380,9 @@ proc ::enginelist::sort {{type ""}} {
 proc ::enginelist::choose {} {
   global engines
   set w .enginelist
-  if {[winfo exists $w]} { 
-     raise .enginelist
-     return }
+  if {[winfo exists $w]} {
+    raise .enginelist
+    return }
   toplevel $w
   ::setTitle $w "Scid: [tr ToolsAnalysis]"
   ttk::label $w.flabel -text $::tr(EngineList:) -font font_Bold -anchor center

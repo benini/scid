@@ -915,7 +915,7 @@ $m add command -label OptionsSave -command {
           ::uci::uciInfo(wtime3) ::uci::uciInfo(winc3) ::uci::uciInfo(btime3) ::uci::uciInfo(binc3) \
           boardfile_lite boardfile_dark \
           FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo \
-          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme } {
+          FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
     }
     puts $optionF ""
