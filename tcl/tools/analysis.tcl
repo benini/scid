@@ -264,9 +264,9 @@ if {[llength $engines(list)] == 0} {
   set scidEngCmds [list $phalanx $togaII $scidlet ]
   set scidEngNames [list "Phalanx-Scid" "Toga II" "Scidlet" ]
   array set parentDirs "
-    $phalanx { phalanx-scid Phalanx-XXII }
-    $togaII  { togaII1.2.1a toga togaII [ file join togaII1.2.1a src ] }
-    $scidlet { . }
+  $phalanx { phalanx-scid Phalanx-XXII }
+  $togaII  { togaII1.2.1a toga togaII [ file join togaII1.2.1a src ] }
+  $scidlet { . }
   "
   
   set isUCI [list 0 1 0 ]
@@ -733,17 +733,19 @@ proc configAnnotation {} {
   ttk::checkbutton $f.cbBook  -text $::tr(UseBook) -variable ::useAnalysisBook
   # load book names
   set bookPath $::scidBooksDir
-  # ::combobox::combobox $w.comboBooks -editable false -width 12
-  
   set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
   set tmp {}
+  set idx 0
+  set i 0
   foreach file  $bookList {
-    #    $w.comboBooks insert end [ file tail $file ]
     lappend tmp [ file tail $file ]
+    if {$::book::lastBook == [ file tail $file ] } {
+      set idx $i
+    }
+    incr i
   }
   ttk::combobox $f.comboBooks -width 12 -values $tmp
-  $f.comboBooks current 0
-  
+  $f.comboBooks current $idx
   pack $f.cbBook $f.comboBooks -side top
   
   addHorizontalRule $f
@@ -787,6 +789,7 @@ proc configAnnotation {} {
   ttk::button $f.buttons.ok -text "OK" -command {
     set ::useAnalysisBookName [.configAnnotation.f.comboBooks get]
     set  ::wentOutOfBook 0
+    set ::book::lastBook $::useAnalysisBookName
     
     # tactical positions is selected, must be in multipv mode
     if {$::markTacticalExercises} {
@@ -1166,8 +1169,10 @@ proc scoreToNag {score} {
     return "-/+"
   }
   if {$score <= [expr 0.0 - $::informant("+=") ]} {
-    return "-="
+    return "=+"
   }
+  puts "ERROR scoreToNag returned no NAG code"
+  return ""
 }
 ################################################################################
 # will append arg to current game Annotator tag

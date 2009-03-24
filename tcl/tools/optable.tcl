@@ -166,7 +166,8 @@ proc ::optable::makeReportWin {args} {
     ::createToplevel $w
     ::setTitle $w "[tr ToolsOpReport]"
     menu $w.menu
-    $w configure -menu $w.menu
+    ::setMenu $w $w.menu
+    
     $w.menu add cascade -label OprepFile -menu $w.menu.file
     $w.menu add cascade -label OprepFavorites -menu $w.menu.favorites
     $w.menu add cascade -label OprepHelp -menu $w.menu.helpmenu

@@ -735,7 +735,7 @@ proc ::docking::show_menu { path x y} {
     # the tab was already active, show the menu
     set f [$c_path select]
     set m [getMenu $f]
-    if { [winfo exists $m]} {
+    if { [winfo exists $m] } {
       tk_popup $m [winfo pointerx .] [winfo pointery .]
     }
   }
@@ -963,7 +963,8 @@ proc ::docking::add_tab {path anchor args} {
 ################################################################################
 # display a blue triangle showing the tab has a menu associated
 proc ::docking::setMenuMark { nb tab} {
-  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow"} {
+  if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || \
+      $tab == ".fdockoprepWin" } {
     $nb tab $tab -image bluetriangle -compound left
   }
 }
