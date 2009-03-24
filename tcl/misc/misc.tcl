@@ -555,28 +555,39 @@ namespace eval html {
     catch {file copy -force [file join $sourcedir bitmaps] $dirtarget}
     catch {file copy -force [file join $sourcedir scid.js] $dirtarget}
     catch {file copy -force [file join $sourcedir scid.css] $dirtarget}
-    writeIndex "[file join $dirtarget $prefix].html" $prefix
+    # writeIndex "[file join $dirtarget $prefix].html" $prefix
     progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
     busyCursor .
     set savedGameNum [sc_game number]
     set gn [sc_filter first]
     set players {}
     set ::html::cancelHTML 0
-    set idx 1
     set total [sc_filter count]
     
+    # build the list of matches
+        set idx 1
+    while {$gn != 0 && ! $::html::cancelHTML} {
+      updateProgressWindow $idx $total
+      sc_game load $gn
+      set pl "[sc_game tags get White] - [sc_game tags get Black]"
+      lappend players $pl
+      set gn [sc_filter next]
+      incr idx
+    }
+    
+    set idx 1
+    set gn [sc_filter first]
     while {$gn != 0 && ! $::html::cancelHTML} {
       updateProgressWindow $idx $total
       sc_game load $gn
       fillData
       set pl "[sc_game tags get White] - [sc_game tags get Black]"
-      lappend players $pl
-      toHtml $::html::data $idx $dirtarget $prefix $pl [sc_game tags get "Event"] [sc_game tags get "ECO"] [sc_game info result] [sc_game tags get "Date"]
+      toHtml $::html::data $idx $dirtarget $prefix $players $pl [sc_game tags get "Event"] [sc_game tags get "ECO"] [sc_game info result] [sc_game tags get "Date"]
       set gn [sc_filter next]
       incr idx
     }
     
-    navhtml $dirtarget $players $prefix
+    # navhtml $dirtarget $players $prefix
     closeProgressWindow
     unbusyCursor .
     exportPGN "[file join $dirtarget $prefix].pgn" "filter"
@@ -605,19 +616,119 @@ namespace eval html {
     catch { file copy -force [file join $sourcedir bitmaps] $dirtarget }
     catch { file copy -force [file join $sourcedir scid.js] $dirtarget }
     catch { file copy -force [file join $sourcedir scid.css] $dirtarget }
-    writeIndex "[file join $dirtarget $prefix].html" $prefix
+    # writeIndex "[file join $dirtarget $prefix].html" $prefix
     
     fillData
     set players [list "[sc_game tags get White] - [sc_game tags get Black]"]
-    navhtml $dirtarget $players $prefix
-    toHtml $::html::data 1 $dirtarget $prefix $players \
+    # navhtml $dirtarget $players $prefix
+    toHtml $::html::data 1 $dirtarget $prefix $players $players \
         [sc_game tags get "Event"] [sc_game tags get "ECO"] \
         [sc_game info result] [sc_game tags get "Date"]
     exportPGN "[file join $dirtarget $prefix].pgn" "current"
   }
-  
   ################################################################################
-  proc toHtml { dt game dirtarget prefix {players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
+  proc toHtml { dt game dirtarget prefix {players ""} {this_players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
+    set f [open "[file join $dirtarget $prefix]_${game}.html" w]
+    # header
+    puts $f "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
+    puts $f "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">"
+    puts $f "<head>"
+    puts $f "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />"
+    puts $f "<link rel=\"stylesheet\" type=\"text/css\" href=\"scid.css\" />"
+    puts $f "<script src=\"scid.js\" type=\"text/javascript\"></script>"
+    puts $f "<script type=\"text/javascript\">"
+    puts $f "// <!\[CDATA\["
+    puts $f "movesArray = new Array("
+    for {set i 0} {$i<[llength $dt]} {incr i} {
+      array set elt [lindex $dt $i]
+      puts -nonewline $f "\"$elt(fen) $elt(prev) $elt(next)\""
+      if {$i < [expr [llength $dt] -1]} { puts $f "," }
+    }
+    puts $f ");"
+    puts $f "var current = 0;"
+    puts $f "var prefix = \"$prefix\";"
+    puts $f "// \]\]>"
+    puts $f "</script>"
+    puts $f "<title>Scid</title>"
+    puts $f "<meta content=\"Scid\" name=\"author\" />"
+    puts $f "</head>"
+    puts $f "<body onload=\"doinit()\" onkeydown=\"handlekey(event)\">"
+    puts $f "<table>"
+    puts $f "<tr>"
+    puts $f "<td id=\"diagram\" style=\"width: 380px\"><!-- diagram goes here --></td>"
+    puts $f "<td rowspan=\"2\" id=\"moves\"><!-- moves go here -->"
+    # game header
+    puts $f "<span class=\"hPlayers\">$this_players</span>"
+    puts $f "<span class=\"hEvent\"><br />$event</span>"
+    puts $f "<span class=\"hAnnot\"><br />\[$eco\]</span>"
+    puts $f "<span class=\"hEvent\"><br />\[$date\]</span>"
+    puts $f "<p>"
+    # link moves
+    set prevdepth 0
+    set prevvarnumber 0
+    for {set i 1} {$i<[llength $dt]} {incr i} {
+      array set elt [lindex $dt $i]
+      if {$elt(depth) == 0} {
+        set class "V0"
+      } elseif {$elt(depth) == 1} {
+        set class "V1"
+      } else {
+        set class "V2"
+      }
+      if {$prevdepth != $elt(depth) || $prevvarnumber != $elt(var)} {
+        if {$prevdepth != 0} { puts $f "\]" }
+        puts $f "<br>"
+        for {set j 0} {$j<$elt(depth)} {incr j} {puts $f "&nbsp; &nbsp; "}
+        if {$elt(depth) != 0} { puts $f "\[" }
+      }
+      set prevdepth $elt(depth)
+      set prevvarnumber $elt(var)
+      # id = "mv1" not "id=1" now
+      puts $f "<a href=\"javascript:gotoMove($elt(idx))\" id=\"mv$elt(idx)\" class=\"$class\">$elt(move)</a>$elt(nag)$elt(comment)"
+      if {$elt(diag)} {
+        insertMiniDiag $elt(fen) $f
+      }
+    }
+    if {$prevdepth != 0} {puts $f "\]"}
+    
+    # <a href="javascript:gotoMove(1)" id="mv1" class="V0">1.Rd8</a>
+    puts $f "<br /><span class=\"VH\">$result</span>"
+    puts $f "</p>"
+    puts $f "<a href=\"http://scid.sourceforge.net/\" style=\"font-size: 0.8em\">Created with Scid</a>"
+    puts $f "</td>"
+    puts $f "</tr>"
+    puts $f "<tr>"
+    puts $f "<td id=\"nav\" style=\"text-align: center\"><!-- navigation goes here -->"
+    puts $f "<form action=\"#\">"
+    puts $f "<p>"
+    puts $f "<input type='button' value=' o ' onclick='rotate()' /> <input type='button' value=' |&lt; ' onclick='jump(0)' /> <input type='button' value=' &lt; ' onclick='moveForward(0)' /> <input type='button' value=' &gt; ' onclick='moveForward(1)' /> <input type='button' value=' &gt;| ' onclick='jump(1)' /> "
+    puts $f "</p><p>"
+    puts $f "<select name=\"gameselect\" id=\"gameselect\" size=\"1\" onchange=\"gotogame()\">"
+    set i 1
+    foreach l $players {
+      # next line needs a function to change "<option>" to <option selected="selected"> when it is the corresponding game
+      # for example if it is game1 or i==1 than the modification will occur
+      if { $game == $i } {
+        puts $f "<option  selected=\"selected\">$i. $l</option>"
+      } else  {
+        puts $f "<option>$i. $l</option>"
+      }
+      incr i
+    }
+    puts $f "</select>"
+    puts $f "</p<p>"
+    puts $f "<input type=\"button\" value=\"&lt;--\" onclick=\"gotoprevgame()\" /> &nbsp; <input type=\"button\" value=\"--&gt;\" onclick=\"gotonextgame()\" />"
+    puts $f "</p><p>"
+    puts $f "<a href=\"${prefix}.pgn\">${prefix}.pgn</a>"
+    puts $f "</p>"
+    puts $f "</form>"
+    puts $f "</td></tr></table>"
+    puts $f "</body>"
+    puts $f "</html>"
+    close $f
+  }
+  ################################################################################
+  proc toHtml2 { dt game dirtarget prefix {players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
     set f [open "[file join $dirtarget $prefix]_${game}.html" w]
     # header
     puts $f "<html>"
@@ -743,41 +854,41 @@ namespace eval html {
   
   ################################################################################
   # generate nav.html
-  proc navhtml { dirtarget players prefix } {
-    set f [open "[file join $dirtarget ${prefix}_nav.html]" w]
-    puts $f "<body BGCOLOR=\"#d7d7d7\">"
-    puts $f "<table ALIGN='CENTER'>"
-    puts $f "<td VALIGN='TOP'>"
-    puts $f "<center>"
-    puts $f "<form NAME='formgames'>"
-    puts $f "<input TYPE='button' VALUE=' o ' ONCLICK='parent.moves.rotate()'>"
-    puts $f "<input TYPE='button' VALUE=' |&lt; ' ONCLICK='parent.moves.jump(0)'>"
-    puts $f "<input TYPE='button' VALUE=' &lt; '  ONCLICK='parent.moves.moveForward(0)'>"
-    puts $f "<input TYPE='button' VALUE=' &gt; '  ONCLICK='parent.moves.moveForward(1)'>"
-    puts $f "<input TYPE='button' VALUE=' &gt;| ' ONCLICK='parent.moves.jump(1)'>"
-    puts $f "</center>"
-    puts $f "</td>"
-    puts $f "</table>"
-    
-    puts $f "<center>"
-    puts $f "<select NAME=\"gameselect\" ID=\"gameselect\" SIZE=1 WIDTH=244 ONCHANGE='parent.moves.gotogame()'>"
-    set i 1
-    foreach l $players {
-      puts $f "<option>$i. $l"
-      incr i
-    }
-    puts $f "</select>"
-    puts $f "<nobr>"
-    puts $f "<input TYPE=\"button\" VALUE=\"&lt;--\" ONCLICK=\"parent.moves.gotoprevgame()\">"
-    puts $f "<input TYPE=\"button\" VALUE=\"--&gt;\" ONCLICK=\"parent.moves.gotonextgame()\">"
-    puts $f "</nobr>"
-    puts $f "</center>"
-    puts $f "</form>"
-    puts $f "<br><CENTER><a href=\"${prefix}.pgn\">${prefix}.pgn</a></CENTER>"
-    puts $f "</body>"
-    
-    close $f
-  }
+  # proc navhtml { dirtarget players prefix } {
+  # set f [open "[file join $dirtarget ${prefix}_nav.html]" w]
+  # puts $f "<body BGCOLOR=\"#d7d7d7\">"
+  # puts $f "<table ALIGN='CENTER'>"
+  # puts $f "<td VALIGN='TOP'>"
+  # puts $f "<center>"
+  # puts $f "<form NAME='formgames'>"
+  # puts $f "<input TYPE='button' VALUE=' o ' ONCLICK='parent.moves.rotate()'>"
+  # puts $f "<input TYPE='button' VALUE=' |&lt; ' ONCLICK='parent.moves.jump(0)'>"
+  # puts $f "<input TYPE='button' VALUE=' &lt; '  ONCLICK='parent.moves.moveForward(0)'>"
+  # puts $f "<input TYPE='button' VALUE=' &gt; '  ONCLICK='parent.moves.moveForward(1)'>"
+  # puts $f "<input TYPE='button' VALUE=' &gt;| ' ONCLICK='parent.moves.jump(1)'>"
+  # puts $f "</center>"
+  # puts $f "</td>"
+  # puts $f "</table>"
+  #
+  # puts $f "<center>"
+  # puts $f "<select NAME=\"gameselect\" ID=\"gameselect\" SIZE=1 WIDTH=244 ONCHANGE='parent.moves.gotogame()'>"
+  # set i 1
+  # foreach l $players {
+  # puts $f "<option>$i. $l"
+  # incr i
+  # }
+  # puts $f "</select>"
+  # puts $f "<nobr>"
+  # puts $f "<input TYPE=\"button\" VALUE=\"&lt;--\" ONCLICK=\"parent.moves.gotoprevgame()\">"
+  # puts $f "<input TYPE=\"button\" VALUE=\"--&gt;\" ONCLICK=\"parent.moves.gotonextgame()\">"
+  # puts $f "</nobr>"
+  # puts $f "</center>"
+  # puts $f "</form>"
+  # puts $f "<br><CENTER><a href=\"${prefix}.pgn\">${prefix}.pgn</a></CENTER>"
+  # puts $f "</body>"
+  #
+  # close $f
+  # }
   ################################################################################
   # fill data with { idx FEN prev next move nag comment depth }
   proc fillData {} {
@@ -879,25 +990,25 @@ namespace eval html {
   }
   
   ################################################################################
-  proc writeIndex {fn prefix} {
-    set f [open $fn w]
-    puts $f "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
-    puts $f "<html>"
-    puts $f "<head>"
-    puts $f "<meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">"
-    puts $f "<title>Scid</title>"
-    puts $f "<meta content=\"Scid\" name=\"author\">"
-    puts $f "</head>"
-    puts $f "<frameset BORDER=\"0\" FRAMEBORDER=\"0\" FRAMESPACING=\"0\" COLS=\"380,*\">"
-    puts $f "<frameset BORDER=\"0\" FRAMEBORDER=\"0\" FRAMESPACING=\"0\" ROWS=\"380,*\">"
-    puts $f "<frame NAME=\"diagram\" SCROLLING=\"Auto\">"
-    puts $f "<frame NAME=\"nav\" SRC=\"${prefix}_nav.html\" SCROLLING=\"Auto\">"
-    puts $f "</frameset>"
-    puts $f "<frame NAME=\"moves\" SRC=\"${prefix}_1.html\" SCROLLING=\"Auto\">"
-    puts $f "</frameset>"
-    puts $f "</html>"
-    close $f
-  }
+  # proc writeIndex {fn prefix} {
+  # set f [open $fn w]
+  # puts $f "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
+  # puts $f "<html>"
+  # puts $f "<head>"
+  # puts $f "<meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">"
+  # puts $f "<title>Scid</title>"
+  # puts $f "<meta content=\"Scid\" name=\"author\">"
+  # puts $f "</head>"
+  # puts $f "<frameset BORDER=\"0\" FRAMEBORDER=\"0\" FRAMESPACING=\"0\" COLS=\"380,*\">"
+  # puts $f "<frameset BORDER=\"0\" FRAMEBORDER=\"0\" FRAMESPACING=\"0\" ROWS=\"380,*\">"
+  # puts $f "<frame NAME=\"diagram\" SCROLLING=\"Auto\">"
+  # puts $f "<frame NAME=\"nav\" SRC=\"${prefix}_nav.html\" SCROLLING=\"Auto\">"
+  # puts $f "</frameset>"
+  # puts $f "<frame NAME=\"moves\" SRC=\"${prefix}_1.html\" SCROLLING=\"Auto\">"
+  # puts $f "</frameset>"
+  # puts $f "</html>"
+  # close $f
+  # }
   ################################################################################
   proc exportPGN { fName selection } {
     if {$selection == "filter"} {

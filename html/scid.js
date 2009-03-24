@@ -3,14 +3,12 @@
 		http://prolinux.free.fr/scid
 		(c) 2007 - Pascal Georges 
 		Feel free to send comments/enhancements
+		
+		Modified 2009 Charly Founes - cf29.com
    ============================================================= */
 // Globals
-var oldColor = "#ececec"; // should be the same as background color
-var bgcolor = "#d7d7d7"
+var oldColor = "#ffffff"; // should be the same as background color
 var highlightMove = "#e9aa5d";
-var black_square = "#7389b6";
-var white_square = "#f3f3f3";
-var	bgcolor_coordinates = "#edeca4";
 var turned = 0;
 
 /* ------ handlekey ---------- */
@@ -51,9 +49,12 @@ function moveForward(dir) {
 // or end of the game
 function jump(x) {
 	var oldcurrent = current;
+	var oldcurrentDiv = "mv";
+	var currentDiv = "mv";
 	
 	if (current != 0) {
-		parent.moves.document.getElementById(oldcurrent).style.background = oldColor;	
+		oldcurrentDiv += oldcurrent;
+		document.getElementById(oldcurrentDiv).style.background = oldColor;	
 	}
 	
 	if (x==0) { // goto start
@@ -61,7 +62,8 @@ function jump(x) {
 	}
 	if (x==1) { // goto end
 		current = movesArray.length-1;
-		parent.moves.document.getElementById(current).style.background = highlightMove;
+		currentDiv += current;
+		document.getElementById(currentDiv).style.background = highlightMove;
 	}
 	refresh(movesArray[current]);
 }
@@ -73,11 +75,13 @@ function gotoMove(cur) {
 	
 	var oldcurrent = current;
 	current = cur;
+	var oldcurrentDiv = "mv" + oldcurrent; // conflict with same id in diagram
+	var currentDiv = "mv" + current; // id isn't supposed to start with a number
 	if (oldcurrent != 0) {
-		parent.moves.document.getElementById(oldcurrent).style.background = oldColor;	
+		document.getElementById(oldcurrentDiv).style.background = oldColor;	
 	}
 	if (current != 0) {
-		parent.moves.document.getElementById(current).style.background = highlightMove;
+		document.getElementById(currentDiv).style.background = highlightMove;
 	}
 	refresh(movesArray[current]);
 }
@@ -92,11 +96,11 @@ function refresh(fen) {
 		var c = s.charAt(i);
 		if ( c >= '1' && c <= '8' ) {
 			for (j=0; j<c; j++) {
-				parent.diagram.document.getElementById(square).src = "bitmaps/" + piece2gif(" ") + ".gif" ;
+document.getElementById(square).src = "bitmaps/" + piece2gif(" ") + ".gif" ;
 				square++;
 			}
 		} else if (c != '/') {
-				parent.diagram.document.getElementById(square).src = "bitmaps/" + piece2gif(c) + ".gif" ;
+document.getElementById(square).src = "bitmaps/" + piece2gif(c) + ".gif" ;
 			square++;
 		}
 	}
@@ -117,10 +121,10 @@ function trimfen(fen) {
 /* ------ colorSq ---------- */
 function colorSq(sq) {
 	if ( (sq%2) == 1 && Math.floor(sq/8) %2 == 0 || (sq%2) == 0 && Math.floor(sq/8) %2 == 1 ) {
-		return black_square;
-		} else { 
-		return white_square;
-		}
+		return "black_square";
+	} else { 
+		return "white_square";
+	}
 }
 
 /* ------ initFen ---------- */
@@ -133,80 +137,84 @@ function initFen(fen, force) {
 	var drow = 0;
 	
 	if (turned) s = inverse(s);
-	parent.diagram.document.open();
-	parent.diagram.document.write("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"scid.css\"></head><body bgcolor="+bgcolor+">");
-	parent.diagram.document.write("<table Border=0 CellSpacing=0 CellPadding=0>");
+	
+	var diagramContent = "";
+	
+	diagramContent += "<table id='diagramTable'>";
 	var row = 8;
 	if (turned) row = 1;
 	
-	parent.diagram.document.write("</tr><tr align='center'><td bgcolor="+bgcolor_coordinates+"></td>");
+	diagramContent += "</tr><tr><td class='coordinates'>&nbsp;</td>";
 	for (i = 0; i < 8; i++) {
 		if (turned)
-			parent.diagram.document.write( "<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+ccol.charAt(7-i)+"</span></td>" );
+			diagramContent += "<td class='coordinates'>"+ccol.charAt(7-i)+"</td>";
 		else
-			parent.diagram.document.write( "<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+ccol.charAt(i)+"</span></td>" );
+			diagramContent += "<td class='coordinates'>"+ccol.charAt(i)+"</td>";
+
 	}
-	parent.diagram.document.write( "<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'> </span></td></tr>" );
+	diagramContent += "<td class='coordinates'>&nbsp;</td></tr>";
 	
-	parent.diagram.document.write("<tr><td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+row+"</span></td>");
+	diagramContent += "<tr><td class='coordinates'>"+row+"</td>";
 	if (turned)	drow=1; else drow=-1;
 	row += drow;
 	for (i=0; i<s.length; i++) {
 		var c = s.charAt(i);
 		if ( c >= '1' && c <= '8' ) {
 			for (j=0; j<c; j++) {
-			html = "<td bgcolor=" + colorSq(square) + "><img border=0 src=bitmaps/" + piece2gif(" ") + ".gif ID=\"" + square + "\" </td>";
-				parent.diagram.document.write(html);
+				html = "<td class=\"" + colorSq(square) + "\"><img width=\"40\" height=\"40\" src=bitmaps/" + piece2gif(" ") + ".gif id=\"" + square + "\" /></td>";
+				diagramContent += html;
 				square++;
 			}
 		} else if (c == '/') {
-			parent.diagram.document.write("<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+(row-drow)+"</span></td></tr><tr><td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+row+"</span></td>");
+			diagramContent += "<td class='coordinates'>"+(row-drow)+"</td></tr><tr><td class='coordinates'>"+row+"</td>";
 		row += drow;
 		} else {
-			html = "<td bgcolor=" + colorSq(square) + "><img border=0 src=bitmaps/" + piece2gif(c) + ".gif ID=\"" + square + "\" </td>";
-			parent.diagram.document.write(html);
+			html = "<td class=\"" + colorSq(square) + "\"><img width=\"40\" height=\"40\" src=bitmaps/" + piece2gif(c) + ".gif id=\"" + square + "\" /></td>";
+			diagramContent += html;
 			square++;
 		}
 	}
 	
-	parent.diagram.document.write("<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+(row-drow)+"</span></td></tr><tr align='center'><td bgcolor="+bgcolor_coordinates+"></td>");
+	diagramContent += "<td class='coordinates'>"+(row-drow)+"</td></tr><tr><td class='coordinates'></td>";
 	for (i = 0; i < 8; i++) {
 		if (turned)
-			parent.diagram.document.write( "<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+ccol.charAt(7-i)+"</span></td>" );
+			diagramContent += "<td class='coordinates'>"+ccol.charAt(7-i)+"</td>";
 		else
-			parent.diagram.document.write( "<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'>"+ccol.charAt(i)+"</span></td>" );
-	}
-	parent.diagram.document.write( "<td bgcolor="+bgcolor_coordinates+"><span class='coordinates'> </span></td>" );
+			diagramContent += "<td class='coordinates'>"+ccol.charAt(i)+"</td>";
 
-	parent.diagram.document.write("</tr></table>");
-	parent.diagram.document.write("</body></html>");
-	parent.diagram.document.close();
+	}
+	diagramContent += "<td class='coordinates'>&nbsp;</td>";
+
+	diagramContent += "</tr></table>";
+	document.getElementById("diagram").innerHTML = diagramContent;
 }
 /* ------  gotogame --------- */
 function gotogame() {
 	current = 0;
-	var i = parent.nav.document.getElementById("gameselect").selectedIndex +1;
-	parent.moves.location.href = prefix+"_"+i+".html";
+	var i = document.getElementById("gameselect").selectedIndex +1;
+location.href = prefix+"_"+i+".html";
 	refresh(movesArray[current]);
+
 }
 
 /* ------  gotoprevgame --------- */
 function gotoprevgame() {
-	var i = parent.nav.document.getElementById("gameselect").selectedIndex;
+	var i = document.getElementById("gameselect").selectedIndex;
 	if (i>0) {
-		parent.nav.document.getElementById("gameselect").selectedIndex = i-1;
+		document.getElementById("gameselect").selectedIndex = i-1;
 		gotogame();
 	}
 }
 
 /* ------  gotonextgame --------- */
 function gotonextgame() {
-	var i = parent.nav.document.getElementById("gameselect").selectedIndex;
-	if ( i < parent.nav.document.getElementById("gameselect").length) {
-		parent.nav.document.getElementById("gameselect").selectedIndex = i+1;
+	var i = document.getElementById("gameselect").selectedIndex;
+	if ( i < document.getElementById("gameselect").length - 1) {
+		document.getElementById("gameselect").selectedIndex = i+1;
 		gotogame();
 	}
 }
+
 /* ------  piece2gif --------- */
 function piece2gif(piece) {
 		if (piece == "K") return "wk"; 

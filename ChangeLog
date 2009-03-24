@@ -767,4 +767,4 @@ scid-3.7.2
 - Game annotation : 
   * book to use is saved (defaults to same book as Book window)
   * fixed a wrong NAG code (used -= instead of the correct =+)
-  
+- HTML export of games : improved output, no frames (thanks to Charly Founes) 

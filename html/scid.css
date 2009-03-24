@@ -110,4 +110,25 @@ A:active {text-decoration: none}
 	font-weight:bold;
 	font-size:10pt;
 	color:#2e2ebf;
+	background-color: #cccccc;
+	width: 1em;
 }
+
+/* diagram */
+#diagramTable {
+	border: 0;
+	border-collapse: collapse;
+	}
+
+#diagramTable td {
+	text-align: center;
+	margin: 0;
+	padding: 0;
+	}
+
+.black_square {background-color: #7389b6; width: 40px; height: 40px;}
+.white_square { background-color: #f3f3f3; width: 40px; height: 40px;}
+
+img {border: 0}
+
+#moves {vertical-align: top;}
