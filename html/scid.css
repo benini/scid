@@ -1,6 +1,51 @@
-A:link {text-decoration: none}
-A:visited {text-decoration: none}
-A:active {text-decoration: none}
+a:link {text-decoration: none}
+a:visited {text-decoration: none}
+a:active {text-decoration: none}
+
+body{
+margin: 0;
+padding: 0;
+border: 0;
+overflow: hidden;
+height: 100%; 
+max-height: 100%; 
+background: #fff;
+color: #000;
+}
+
+#framecontent{
+position: absolute;
+top: 0;
+bottom: 0; 
+left: 0;
+width: 380px; /*Width of frame div*/
+height: 100%;
+overflow: hidden; /*Disable scrollbars. Set to "scroll" to enable*/
+}
+
+#maincontent{
+position: fixed;
+top: 0; 
+left: 380px; /*Set left value to WidthOfFrameDiv*/
+right: 0;
+bottom: 0;
+overflow: auto; 
+}
+
+.innertube{
+margin: 15px; /*Margins for inner DIV inside each DIV (to provide padding)*/
+}
+
+* html body{ /*IE6 hack*/
+padding: 0 0 0 200px; /*Set value to (0 0 0 WidthOfFrameDiv)*/
+}
+
+* html #maincontent{ /*IE6 hack*/
+height: 100%; 
+width: 100%; 
+}
+
+
 
 /* Current move */
 .currentMove
@@ -124,11 +169,10 @@ A:active {text-decoration: none}
 	text-align: center;
 	margin: 0;
 	padding: 0;
+	vertical-align: top;
 	}
 
 .black_square {background-color: #7389b6; width: 40px; height: 40px;}
 .white_square { background-color: #f3f3f3; width: 40px; height: 40px;}
 
 img {border: 0}
-
-#moves {vertical-align: top;}
