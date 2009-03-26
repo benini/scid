@@ -615,16 +615,16 @@ namespace eval html {
     catch { file copy -force [file join $sourcedir bitmaps] $dirtarget }
     catch { file copy -force [file join $sourcedir scid.js] $dirtarget }
     catch { file copy -force [file join $sourcedir scid.css] $dirtarget }
-    # writeIndex "[file join $dirtarget $prefix].html" $prefix
     
     fillData
     set players [list "[sc_game tags get White] - [sc_game tags get Black]"]
-    toHtml $::html::data 1 $dirtarget $prefix $players $players \
+    toHtml $::html::data -1 $dirtarget $prefix $players $players \
         [sc_game tags get "Event"] [sc_game tags get "ECO"] \
         [sc_game info result] [sc_game tags get "Date"]
     exportPGN "[file join $dirtarget $prefix].pgn" "current"
   }
-  # Dictionary mapping from special characters to their entities.
+  ################################################################################
+  # Dictionary mapping from special characters to their entities. (from tcllib)
   variable entities {
     \xa0 &nbsp; \xa1 &iexcl; \xa2 &cent; \xa3 &pound; \xa4 &curren;
     \xa5 &yen; \xa6 &brvbar; \xa7 &sect; \xa8 &uml; \xa9 &copy;
@@ -687,7 +687,11 @@ namespace eval html {
   }
   ################################################################################
   proc toHtml { dt game dirtarget prefix {players ""} {this_players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
-    set f [open "[file join $dirtarget $prefix]_${game}.html" w]
+    if { $game != -1 } {
+      set f [open "[file join $dirtarget $prefix]_${game}.html" w]
+    } else  {
+      set f [open "[file join $dirtarget $prefix].html" w]
+    }
     # header
     puts $f "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
     puts $f "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">"
@@ -726,8 +730,6 @@ namespace eval html {
     puts $f "<select name=\"gameselect\" id=\"gameselect\" size=\"1\" onchange=\"gotogame()\">"
     set i 1
     foreach l $players {
-      # next line needs a function to change "<option>" to <option selected="selected"> when it is the corresponding game
-      # for example if it is game1 or i==1 than the modification will occur
       if { $game == $i } {
         puts $f "<option  selected=\"selected\">$i. [html_entities $l]</option>"
       } else  {
@@ -749,8 +751,8 @@ namespace eval html {
     puts $f "<div class=\"innertube\">"
     puts $f "<div id=\"moves\"><!-- moves go here -->"
     # game header
-    puts $f "<span class=\"hPlayers\">$this_players</span>"
-    puts $f "<span class=\"hEvent\"><br />$event</span>"
+    puts $f "<span class=\"hPlayers\"> [html_entities $this_players]</span>"
+    puts $f "<span class=\"hEvent\"><br /> [html_entities $event]</span>"
     puts $f "<span class=\"hAnnot\"><br />\[$eco\]</span>"
     puts $f "<span class=\"hEvent\"><br />\[$date\]</span>"
     puts $f "<p>"
