@@ -34,8 +34,8 @@ proc copyFEN {} {
 #
 proc pasteFEN {} {
   set fenStr ""
-  if {[catch {set fenStr [selection get -selection PRIMARY]} ]} {
-    catch {set fenStr [selection get -selection CLIPBOARD]}
+  if {[catch {set fenStr [selection get -selection CLIPBOARD]} ]} {
+    catch {set fenStr [selection get -selection PRIMARY]}
   }
   set fenStr [string trim $fenStr]
   
@@ -443,8 +443,8 @@ proc setupBoard {} {
   pack $sr.b2.cancel -side right -padx 5
   
   ttk::button .setup.paste -textvar ::tr(PasteFen) -command {
-    if {[catch {set setupFen [selection get -selection PRIMARY]} ]} {
-      catch {set setupFen [selection get -selection CLIPBOARD]}
+    if {[catch {set setupFen [selection get -selection CLIPBOARD]} ]} {
+      catch {set setupFen [selection get -selection PRIMARY]}
       # PRIMARY is the X selection, unsure about CLIPBOARD
     }
   }
