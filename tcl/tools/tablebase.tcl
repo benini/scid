@@ -196,6 +196,7 @@ proc ::tb::Open {} {
   bind $w <F1> { helpWindow TB }
   bind $w <Configure> "recordWinSize $w"
   wm minsize $w 15 20
+  ::createToplevelFinalize $w
   set ::tbTraining 0
   ::tb::section
   ::tb::summary

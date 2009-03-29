@@ -1824,16 +1824,25 @@ bind $dot_w <Double-Button-1> raiseAllWindows
 # Hack to extract gif images out of Scid:
 #
 if {0} {
-  proc dumpGifImages {dir} {
+  proc dumpImages {dir} {
     package require base64
     file mkdir $dir
     set images [image names]
     foreach i $images {
+      puts "$i type = [image type $i]"
+      if {[image type $i] == "photo" } {
+        set ext [$i cget -format]
+        if {$ext == ""} {
+          set ext "gif"
+        }
+      } else  {
+        set ext "gif"
+      }
       set data [string trim [$i cget -data]]
       if {$data == ""} { continue }
       if {[catch {set d [::base64::decode $data]}]} { continue }
       regsub -all {:} $i {_} i
-      set fname [file join $dir $i.gif]
+      set fname [file join $dir $i.$ext]
       set f [open $fname w]
       fconfigure $f -translation binary -encoding binary
       puts -nonewline $f $d
@@ -1841,7 +1850,7 @@ if {0} {
     }
   }
   
-  bind $dot_w <Control-Shift-F7> {puts "dumpGifImages" ; dumpGifImages "/tmp/images"}
+  bind $dot_w <Control-Shift-F7> {puts "dumpImages" ; dumpImages "/tmp/images"}
 }
 
 if {$startup(tip)} { ::tip::show }

@@ -739,6 +739,7 @@ scid-3.7.2
 	* Game annotation : fixed a wrong NAG code (used -= instead of the correct =+)
 	* Fixed menu in opening report window (docked mode)
 	* FEN pasting : reversed CLIPBOARD and PRIMARY (file edit.tcl)
+	* Endgame tablebase window cleanup when closing (remove its tab)
 - FICS : user interface improvements : 
 	* click on a game to observe it
 	* redesign in notebook style
