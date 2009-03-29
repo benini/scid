@@ -513,6 +513,57 @@ proc ::search::header::save {} {
   close $searchF
 }
 
+proc ::search::header::Filter2OngoingGames {} {
+
+	set str [sc_search header  \
+		-results [list 0 0 0 1] \
+		-gameNumber [list 1 -1] \
+		-fDelete no             \
+		]
+
+	::windows::gamelist::Refresh
+	::windows::stats::Refresh
+}
+
+proc ::search::header::Filter2OngoingOwnMove {} {
+
+	# search filter operations: 0 = AND, 1 = OR, 2=Reset
+	set i 0
+	foreach name $::myPlayerNames {
+
+		set filter 0
+
+		if {$i == 0} { 
+			set filter 2
+		} else {
+			set filter 1
+		}
+
+		set str [sc_search header  \
+			-white $name            \
+			-toMove w               \
+			-results [list 0 0 0 1] \
+			-gameNumber [list 1 -1] \
+			-fDelete no             \
+			-filter  $filter        \
+			]
+
+		set str [sc_search header  \
+			-black $name            \
+			-toMove b               \
+			-results [list 0 0 0 1] \
+			-gameNumber [list 1 -1] \
+			-fDelete no             \
+			-filter  1              \
+			]
+
+		set i [expr {$i+1}]
+	}
+
+	::windows::gamelist::Refresh
+	::windows::stats::Refresh
+}
+
 
 ##############################
 ### Selecting common ECO ranges
