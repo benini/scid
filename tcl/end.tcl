@@ -1829,7 +1829,6 @@ if {0} {
     file mkdir $dir
     set images [image names]
     foreach i $images {
-      puts "$i type = [image type $i]"
       if {[image type $i] == "photo" } {
         set ext [$i cget -format]
         if {$ext == ""} {

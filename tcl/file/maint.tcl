@@ -494,7 +494,11 @@ proc markTwins {{parent .}} {
       set result [doMarkDups .twinSettings]
       focus .
       destroy .twinSettings
-      if {$result > 0} { updateTwinChecker }
+      if {$result > 0} {
+        set gn [sc_filter first]
+        ::game::Load $gn
+        updateTwinChecker
+      }
     }
   } ]
   

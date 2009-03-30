@@ -983,7 +983,7 @@ translate W GlistDeleteAllGames {Ta bort alla partier i filtret}
 # ====== TODO To be translated ======
 translate W GlistUndeleteAllGames {Ta tillbaka alla partier i filtret} 
 # ====== TODO To be translated ======
-translate W GlistMergeGameInBase {Merge Game in other base} 
+translate W GlistMergeGameInBase {Lägg till parti i annan databas} 
 
 # Maintenance window:
 translate W DatabaseName {Databasnamn:}
@@ -1115,7 +1115,7 @@ translate W SearchBoardPawns {Bönder (samma material, alla bönder på samma rutor
 translate W SearchBoardFiles {Filer (samma material, alla bönder på samma filer)}
 translate W SearchBoardAny {Obestämt (samma material, bönder och pjäser på valfria rutor)}
 # ====== TODO To be translated ======
-translate W SearchInRefDatabase { Search in base }
+translate W SearchInRefDatabase {Sök i databas}
 translate W LookInVars {Sök i variationer}
 
 # Material search:
@@ -1941,17 +1941,17 @@ translate W CCDlgConfirmXfcc {Bekräfta drag}
 # ====== TODO To be translated ======
 translate W CCDlgSubjectPar {Ämnes-parameter:}
 # ====== TODO To be translated ======
-translate W CCDlgDeleteBoxes {Töm In-/Utbox} 
+translate W CCDlgDeleteBoxes {Töm In-/Utkorg} 
 # ====== TODO To be translated ====== 
-translate W CCDlgDeleteBoxesText {Vill du verkligen tömma dina In- och Utboxkataloger för Korrespondensschack? Detta kräver en ny synkronisering för att visa den seanaste statusen på dina partier} 
+translate W CCDlgDeleteBoxesText {Vill du verkligen tömma dina In- och Utkorgskataloger för Korrespondensschack? Detta kräver en ny synkronisering för att visa den seanaste statusen på dina partier} 
 # ====== TODO To be translated ====== 
 translate W CCDlgConfirmMove {Bekräfta drag} 
 # ====== TODO To be translated ====== 
 translate W CCDlgConfirmMoveText {Om du bekräftar, kommer följande drag och kommentar att skickas till servern:} 
 # ====== TODO To be translated ======
-translate W CCDlgDBGameToLong {Inconsistent Mainline}
+translate W CCDlgDBGameToLong {Inkonsekvent huvudvariation}
 # ====== TODO To be translated ======
-translate W CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+translate W CCDlgDBGameToLongError {Huvudvariationen i din databas är längre än partiet i din Inkorg. Om Inkorgen innehåller aktuella partier, dvs precis efter en synkronisering, lades några drag felaktigt till i huvudvariationen i databasen.\nI detta fall var god och förkorta huvudvariationen till (maximalt) drag\n}
 # ====== TODO To be translated ====== 
 translate W CCDlgStartEmail {Starta ett nytt eMail-parti}
 # ====== TODO To be translated ======
@@ -4704,7 +4704,7 @@ den andra databasen.
 <h3>Träning</h3>
 
 <p>
-När Träningscheckboxen i trädfönstret väljs kommer Scid  
+När Träningscheckrutan i trädfönstret väljs kommer Scid  
 slumpmässigt att göra ett drag varje gång du lägger till ett drag till partiet. 
 Draget som Scid väljer beror på databasstatistiken, så ett drag som spelats
 i 80% av databaspartierna kommer att väljas av Scid med 80% 

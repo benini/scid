@@ -740,6 +740,7 @@ scid-3.7.2
 	* Fixed menu in opening report window (docked mode)
 	* FEN pasting : reversed CLIPBOARD and PRIMARY (file edit.tcl)
 	* Endgame tablebase window cleanup when closing (remove its tab)
+	* Twin checker : loads the first pair of twin games (thanks to  J. Wesley Cleveland)  
 - FICS : user interface improvements : 
 	* click on a game to observe it
 	* redesign in notebook style

@@ -12,8 +12,8 @@ namespace eval calvar {
   
   array set engineListBox {}
   set blunderThreshold 0.2
-  set thinkingTimePerLine 5 ;# 10
-  set thinkingTimePosition 10 ; # 30
+  set thinkingTimePerLine 10
+  set thinkingTimePosition 30
   set currentLine 1
   set currentListMoves {}
   # each line begins with a list of moves, a nag code and ends with FEN
