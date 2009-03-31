@@ -875,8 +875,7 @@ translate D GlistRemoveGameAndBelowFromFilter  {Partie (und alle darunter) aus F
 translate D GlistDeleteGame {(Ent)Loesche Partie}
 translate D GlistDeleteAllGames {Lösche alle Partien im Filter} 
 translate D GlistUndeleteAllGames {Entlösche alle Partien im Filter} 
-# ====== TODO To be translated ======
-translate D GlistMergeGameInBase {Merge Game in other base} 
+translate D GlistMergeGameInBase {Mit Partie in anderer Datebank zusammenführen} 
 
 # Maintenance window:
 translate D DatabaseName {Datenbankname:}
@@ -999,8 +998,7 @@ translate D SearchBoardExact {Exakte Position (alle Steine auf gleichen Feldern)
 translate D SearchBoardPawns {Bauern (gleiche Figuren, alle Bauern auf gleichen Feldern)}
 translate D SearchBoardFiles {Linien (gleiches Material, alle Bauern auf gleichen Linien)}
 translate D SearchBoardAny {Material (gleiches Material, Bauern und Figuren beliebig)}
-# ====== TODO To be translated ======
-translate D SearchInRefDatabase { Search in base }
+translate D SearchInRefDatabase { In folgender Datenbank suchen }
 translate D LookInVars {Schaue in Varianten}
 
 # Material search:
