@@ -4439,7 +4439,7 @@ conatins a list of ongoing games retrieved from your Inbox directory.
 To use the correspondence chess features a database of the type
 "Correspondence chess" has to be opened before calling any
 correspondence chess functions. If you do not have such a database
-yet, just create a new database an set its type to "Correspondence
+yet, just create a new database and set its type to "Correspondence
 chess" by means of the <a Maintenance>Maintenance</a> function.
 Setting the type is important as Scid will recognise the database for
 synchronisation by this type. As this database is empty after the
@@ -4457,7 +4457,7 @@ database of this type as Scid then can not recognise the one to use.
 
 <p>
 If everything is set up correctly the usage of the correspondence
-chess functions can easily accessed by the follwoing buttons:
+chess functions can easily accessed by the following buttons:
 <ul>
    <li><button tb_CC_Retrieve> Retrieve the correspondence chess games.
    To this end the external fetch tool is called and all games retrieved
@@ -4777,7 +4777,7 @@ use variations!
 <p>
 Xfcc base games offer extensive status display within the games list.
 This information, however, is only available if Scids internal Xfcc
-support is used.  The follwoing icon are for visual display:
+support is used.  The following icon are for visual display:
 <ul>
    <li><button tb_CC_draw> A draw was agreed with the last move.
    </li>
@@ -5387,14 +5387,14 @@ set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
   bases these bases usually do not contain full games but just a
   starting position as is well known from the usual tactics puzzle
   books. In fact, every puzzle book can easily be converted to such a
-  trainings base by just setting up the positions and storing them in
+  training base by just setting up the positions and storing them in
   the <term>Bases</term> directory. Additionally, one has to set the
   type of the base to <term>Tactics</term> by means of the <a
   Maintenance>Maintenance</a> window.
   </p>
   <p>
   After choosing Play / Training / Tactics a dialogue pops up that
-  allows to choose a trainings base. There, the name of the base is
+  allows to choose a training base. There, the name of the base is
   displayed, followed by the number of solved puzzles and the total
   number of puzzles in the base in brackets. That is, Scid stores the
   puzzles the user already solved with the base. Choosing a base an
@@ -5800,7 +5800,7 @@ set helpText(HardwareConfig) {<h1>Connecting External Hardware</h1>
     logic does not recognise the position set up on the board nor the
     pieces as such.
     </li>
-    <li><term>Input Engine</term> drivers are meant to be an free,
+    <li><term>Input Engine</term> drivers are meant to be a free,
     open interface to hook up any hardware to some GUI like Scid. It
     is modeled after the usual style of a chess engine. The
     specifications of the protocol as well as a driver suitable for

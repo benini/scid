@@ -884,7 +884,7 @@ translate E GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) f
 translate E GlistDeleteGame {(Un)Delete this game} 
 translate E GlistDeleteAllGames {Delete all games in filter} 
 translate E GlistUndeleteAllGames {Undelete all games in filter}  
-translate E GlistMergeGameInBase {Merge Game in other base}
+translate E GlistMergeGameInBase {Merge Game in other database}
 
 # Maintenance window:
 translate E DatabaseName {Database Name:}
@@ -997,7 +997,7 @@ translate E SearchBoardExact {Exact position (all pieces on same squares)}
 translate E SearchBoardPawns {Pawns (same material, all pawns on same squares)}
 translate E SearchBoardFiles {Files (same material, all pawns on same files)}
 translate E SearchBoardAny {Any (same material, pawns and pieces anywhere)}
-translate E SearchInRefDatabase { Search in reference base }
+translate E SearchInRefDatabase { Search in reference database }
 translate E LookInVars {Look in variations}
 
 # Material search:
