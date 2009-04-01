@@ -734,6 +734,13 @@ proc configAnnotation {} {
   # load book names
   set bookPath $::scidBooksDir
   set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+  
+  # No book found
+  if { [llength $bookList] == 0 } {
+    set ::useAnalysisBook 0
+    $f.cbBook configure -state disabled
+  }
+  
   set tmp {}
   set idx 0
   set i 0
@@ -745,7 +752,7 @@ proc configAnnotation {} {
     incr i
   }
   ttk::combobox $f.comboBooks -width 12 -values $tmp
-  $f.comboBooks current $idx
+  catch { $f.comboBooks current $idx }
   pack $f.cbBook $f.comboBooks -side top
   
   addHorizontalRule $f

@@ -111,6 +111,17 @@ namespace eval book {
     }
     set bookPath $::scidBooksDir
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+    
+    # No book found
+    if { [llength $bookList] == 0 } {
+      tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
+      set ::book::isOpen 0
+      set ::book::currentBook ""
+      destroy $w
+      ::docking::cleanup $w
+      return
+    }
+    
     set i 0
     set idx 0
     set tmp {}
@@ -124,7 +135,7 @@ namespace eval book {
     }
     ttk::combobox $w.f.combo -width 12 -values $tmp
     
-    $w.f.combo current $idx
+    catch { $w.f.combo current $idx }
     pack $w.f.combo
     
     # text displaying book moves
@@ -145,6 +156,7 @@ namespace eval book {
     bind $w.f.combo <<ComboboxSelected>> ::book::bookSelect
     bind $w <Destroy> "::book::closeMainBook ; ::docking::cleanup $w"
     bind $w <Escape> { destroy  .bookWin }
+    # we make a redundant check here, another one is done a few line above
     if { [catch {bookSelect} ] } {
       tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
       set ::book::isOpen 0
@@ -287,7 +299,7 @@ namespace eval book {
     
     ttk::button $w.fbutton.bExport -text $::tr(Export) -command ::book::export
     ttk::button $w.fbutton.bSave -text $::tr(Save) -command ::book::save
-
+    
     pack $w.fbutton.mbAdd $w.fbutton.bExport $w.fbutton.bSave -side top -fill x -expand yes
     
     
@@ -318,9 +330,9 @@ namespace eval book {
     set w .bookTuningWin
     scBookOpen [.bookTuningWin.fcombo.combo get] $::book::bookTuningSlot
     if { $::book::isReadonly > 0 } {
-       $w.fbutton.bSave configure -state disabled
+      $w.fbutton.bSave configure -state disabled
     } else {
-       $w.fbutton.bSave configure -state normal
+      $w.fbutton.bSave configure -state normal
     }
     refreshTuning
   }
@@ -329,9 +341,9 @@ namespace eval book {
   ################################################################################
   proc addBookMove { move } {
     global ::book::bookTuningMoves
-
+    
     if { $::book::isReadonly > 0 } { return }
-
+    
     set w .bookTuningWin
     set children [winfo children $w.f]
     set count [expr [llength $children] / 2]
@@ -348,9 +360,9 @@ namespace eval book {
   #   updates book display when board changes
   ################################################################################
   proc refreshTuning {} {
-
+    
     if { $::book::isReadonly > 0 } { return }
-
+    
     #unfortunately we need this as the moves on the widgets are translated
     #and widgets have no clientdata in tcl/tk
     global ::book::bookTuningMoves
@@ -387,7 +399,7 @@ namespace eval book {
         $w.fbutton.mbAdd.otherMoves add command -label [::trans $move] -command "::book::addBookMove $move"
       }
     }
-        bind $w <Destroy> "::book::closeTuningBook  ; ::docking::cleanup $w"
+    bind $w <Destroy> "::book::closeTuningBook  ; ::docking::cleanup $w"
   }
   ################################################################################
   # sends to book the list of moves and probabilities.
@@ -395,7 +407,7 @@ namespace eval book {
   proc save {} {
     global ::book::bookTuningMoves
     if { $::book::isReadonly > 0 } { return }
-
+    
     set prob {}
     set w .bookTuningWin
     set children [winfo children $w.f]
