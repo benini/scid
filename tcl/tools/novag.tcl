@@ -9,28 +9,45 @@ namespace eval novag {
   set fd ""
   set connected 0
   set waitBetweenMessages 0
+  set referee "OFF"
   
   ##########################################################
   proc connect {} {
     global ::novag::fd
-
+    
     set serial $::ExtHardware::port
     
     set w .novag
-    toplevel $w
-    text $w.output -width 40 -height 30
-    entry $w.input -width 20
-    button $w.send -text Send -command {
-      ::novag::send [.novag.input get]
-      .novag.input delete 0 end
+    ::createToplevel $w
+    ::setTitle $w "Novag Citrine"
+    pack [ttk::panedwindow $w.f -orient vertical] -expand 1 -fill both
+    
+    ttk::frame $w.f.top
+    ttk::frame $w.f.bottom
+    $w.f add $w.f.top -weight 1
+    $w.f add $w.f.bottom -weight 1
+    
+    ttk::scrollbar $w.f.top.ysc -command { .novag.f.top.output yview }
+    text $w.f.top.output -width 20 -height 20  -wrap word  -yscrollcommand ".novag.f.top.ysc set"
+    pack $w.f.top.ysc -side left -fill y -side right
+    pack .novag.f.top.output -side left -fill both -expand 1 -side right
+    
+    entry $w.f.bottom.input -width 20
+    ttk::button $w.f.bottom.send -text Send -command {
+      ::novag::send [.novag.f.bottom.input get]
+      .novag.f.bottom.input delete 0 end
     }
-    bind $w.input <Return> " $w.send invoke "
+    bind $w.f.bottom.input <Return> " $w.f.bottom.send invoke "
     bind $w <Destroy> { catch ::novag::disconnect }
     bind $w <F1> { helpWindow Novag}
+    ::createToplevelFinalize $w
     
-    pack $w.output $w.input $w.send
+    ttk::checkbutton $w.f.bottom.cbref -text [tr "NovagReferee" ] -variable ::novag::referee -offvalue "OFF" -onvalue "ON" -command { ::novag::send  "U $::novag::referee" }
+    
+    pack $w.f.top.output -fill both -expand 1
+    pack $w.f.bottom.input $w.f.bottom.send  $w.f.bottom.cbref -side left
     update
-
+    
     # Set button to "connection in progress"
     ::ExtHardware::HWbuttonImg tb_eng_connecting
     
@@ -51,7 +68,7 @@ namespace eval novag {
     wait 200
     ::novag::send "U ON"
     set ::novag::connected 1
-
+    
     # Set button to "connected, ready to use"
     ::ExtHardware::HWbuttonImg tb_eng_ok
   }
@@ -87,16 +104,19 @@ namespace eval novag {
   ##########################################################
   proc recv {} {
     global ::novag::fd
+    
+    set output .novag.f.top.output
+    
     set l [gets $fd]
     if { $l == "" } { return }
     puts "received $l"
-    .novag.output insert end "$l\n"
-    .novag.output yview moveto 1
+    $output insert end "$l\n"
+    $output yview moveto 1
     
     if {[string match -nocase "New Game*" $l]} {
       sc_game new
       updateBoard -pgn
-      ::novag::send "U ON"
+      ::novag::send "U $::novag::referee"
       return
     }
     

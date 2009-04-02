@@ -2020,6 +2020,8 @@ translate O ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate O ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate O NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate O IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate O IESending {Moves sent for}
@@ -2054,6 +2056,7 @@ translate O Undock {Undock}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

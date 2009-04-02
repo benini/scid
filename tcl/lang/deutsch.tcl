@@ -1636,6 +1636,8 @@ translate D ExtHWHardware {Hardware}
 translate D ExtHWNovag {Novag Citrine}
 translate D ExtHWInputEngine {Input Engine}
 translate D ExtHWNoBoard {Kein Brett verbunden}
+# ====== TODO To be translated ======
+translate D NovagReferee {Referee}
 translate D IEConsole {Input Engine Konsole}
 translate D IESending {Sende Züge für}
 translate D IESynchronise {Synchronisieren}
@@ -7216,6 +7218,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

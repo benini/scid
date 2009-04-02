@@ -2053,6 +2053,8 @@ translate R ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate R ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate R NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate R IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate R IESending {Moves sent for}
@@ -2083,6 +2085,7 @@ translate R Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

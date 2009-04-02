@@ -1584,6 +1584,8 @@ translate H ExtHWHardware {Hardver}
 translate H ExtHWNovag {Novag Citrine}
 translate H ExtHWInputEngine {Bemeneti motor}
 translate H ExtHWNoBoard {Nincs sakktábla}
+# ====== TODO To be translated ======
+translate H NovagReferee {Referee}
 translate H IEConsole {Bemeneti motor kezelõszerve}
 translate H IESending {Lépések bekérve}
 translate H IESynchronise {Szinkronizálás}
@@ -1831,6 +1833,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

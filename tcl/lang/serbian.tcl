@@ -2024,6 +2024,8 @@ translate Y ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate Y ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate Y NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate Y IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate Y IESending {Moves sent for}
@@ -2054,6 +2056,7 @@ translate Y Undock {Undock}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

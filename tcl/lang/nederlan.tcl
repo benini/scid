@@ -1781,6 +1781,8 @@ translate N ExtHWHardware {Hardware}
 translate N ExtHWNovag {Novag Citrine}
 translate N ExtHWInputEngine {Invoer Engine}
 translate N ExtHWNoBoard {Geen bord}
+# ====== TODO To be translated ======
+translate N NovagReferee {Referee}
 translate N IEConsole {Invoer Engine Console}
 translate N IESending {Zetten verzonden voor}
 translate N IESynchronise {Synchroniseer}
@@ -1797,6 +1799,7 @@ translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
 }
 # End of nederlan.tcl
+
 
 
 

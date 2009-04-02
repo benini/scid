@@ -109,6 +109,10 @@ namespace eval sergame {
     ttk::checkbutton $w.fbook.cbUseBook -text $::tr(UseBook) -variable ::sergame::useBook
     set bookPath $::scidBooksDir
     set bookList [ lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+    if { [llength $bookList] == 0 } {
+      $w.fbook.cbUseBook configure -state disabled
+      set ::sergame::useBook 0
+    }
     set i 0
     set idx 0
     set tmp {}
@@ -121,7 +125,7 @@ namespace eval sergame {
     }
     
     ttk::combobox $w.fbook.combo -width 12 -values $tmp
-    $w.fbook.combo current $idx
+    catch { ch$w.fbook.combo current $idx }
     
     set row 0
     

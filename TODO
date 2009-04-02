@@ -6,9 +6,6 @@
 
 fignoler 
 - FICS et calvar
-- console citrine sur PC
-
-blinder book absent tacgame et serious
 
  ===========================================================
 |                                                           |
@@ -21,6 +18,8 @@ blinder book absent tacgame et serious
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- Highlight last move (either arrow or color squares)
 
 - Translate NAG symbols to text or proper annotation symbols
 

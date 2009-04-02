@@ -1629,7 +1629,7 @@ translate E CCDlgDuplicateGame {Non-unique game ID}
 translate E CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 
 
-# Connect Hardware dialoges
+# Connect Hardware dialogs
 translate E ExtHWConfigConnection {Configure external hardware}
 translate E ExtHWPort {Port}
 translate E ExtHWEngineCmd {Engine command}
@@ -1639,6 +1639,7 @@ translate E ExtHWHardware {Hardware}
 translate E ExtHWNovag {Novag Citrine}
 translate E ExtHWInputEngine {Input Engine}
 translate E ExtHWNoBoard {No board}
+translate E NovagReferee {Referee}
 
 # Input Engine dialogs
 translate E IEConsole {Input Engine Console}

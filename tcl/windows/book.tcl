@@ -274,6 +274,17 @@ namespace eval book {
     # load book names
     set bookPath $::scidBooksDir
     set bookList [  lsort -dictionary [ glob -nocomplain -directory $bookPath *.bin ] ]
+    
+    # No book found
+    if { [llength $bookList] == 0 } {
+      tk_messageBox -title "Scid" -type ok -icon error -message "No books found. Check books directory"
+      set ::book::isOpen 0
+      set ::book::currentBook ""
+      destroy $w
+      ::docking::cleanup $w
+      return
+    }
+    
     set i 0
     set idx 0
     set tmp {}
@@ -287,7 +298,7 @@ namespace eval book {
     }
     
     ttk::combobox $w.fcombo.combo -width 12 -values $tmp
-    $w.fcombo.combo current $idx
+    catch { $w.fcombo.combo current $idx }
     pack $w.fcombo.combo -expand yes -fill x
     
     ttk::frame $w.fbutton

@@ -2027,6 +2027,8 @@ translate W ExtHWInputEngine {Inmatningsschackmotor}
 # ====== TODO To be translated ======
 translate W ExtHWNoBoard {Inget bräde}
 # ====== TODO To be translated ======
+translate W NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate W IEConsole {Inmatningsschackmotorkonsol}
 # ====== TODO To be translated ======
 translate W IESending {Drag skickade för}
@@ -7071,6 +7073,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

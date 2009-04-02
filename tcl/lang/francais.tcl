@@ -1593,6 +1593,7 @@ translate F ExtHWHardware {Matériel}
 translate F ExtHWNovag {Novag Citrine}
 translate F ExtHWInputEngine {Moteur en entrée}
 translate F ExtHWNoBoard {Pas d'échiquier}
+translate F NovagReferee {Arbitre}
 translate F IEConsole {Console du moteur en entrée}
 translate F IESending {Coups envoyés pour}
 translate F IESynchronise {Synchronizer}
@@ -1814,6 +1815,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

@@ -2016,6 +2016,8 @@ translate C ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate C ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate C NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate C IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate C IESending {Moves sent for}
@@ -5684,6 +5686,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

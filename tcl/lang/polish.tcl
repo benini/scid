@@ -2033,6 +2033,8 @@ translate P ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate P ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate P NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate P IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate P IESending {Moves sent for}
@@ -2281,6 +2283,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

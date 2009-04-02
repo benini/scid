@@ -1613,6 +1613,8 @@ translate S ExtHWHardware {Hardware}
 translate S ExtHWNovag {Novag Citrine}
 translate S ExtHWInputEngine {Motor de entrada (Input Engine)}
 translate S ExtHWNoBoard {Sin tablero}
+# ====== TODO To be translated ======
+translate S NovagReferee {Referee}
 translate S IEConsole {Consola de entrada del motor}
 translate S IESending {Movimientos enviados por}
 translate S IESynchronise {Sincronizar}
@@ -1630,6 +1632,7 @@ translate S Undock {Ventana flotante}
 
 }
 # end of spanish.tcl
+
 
 
 

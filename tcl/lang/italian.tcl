@@ -1711,6 +1711,8 @@ translate I ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate I ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate I NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate I IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate I IESending {Moves sent for}
@@ -1973,6 +1975,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

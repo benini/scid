@@ -2029,6 +2029,8 @@ translate B ExtHWInputEngine {Input Engine}
 # ====== TODO To be translated ======
 translate B ExtHWNoBoard {No board}
 # ====== TODO To be translated ======
+translate B NovagReferee {Referee}
+# ====== TODO To be translated ======
 translate B IEConsole {Input Engine Console}
 # ====== TODO To be translated ======
 translate B IESending {Moves sent for}
@@ -2060,6 +2062,7 @@ translate B Undock {Undock}
 }
 
 # end of portbr.tcl
+
 
 
 
