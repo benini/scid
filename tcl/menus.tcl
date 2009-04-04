@@ -440,10 +440,6 @@ incr menuindex
 $m add command -label ToolsTrainFics -command ::fics::config
 incr menuindex
 $m add separator
-$m add command -label Filter2Ongoing -command ::search::header::Filter2OngoingGames
-$m add command -label Filter2OwnMove -command ::search::header::Filter2OngoingOwnMove
-
-$m add separator
 incr menuindex
 
 # sub-menu for training

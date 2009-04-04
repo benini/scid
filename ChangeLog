@@ -758,13 +758,16 @@ scid-3.7.2
 	* Strip of text in [] when sending game comments
 	* Show start date for individual challenges in tooltip
 - Spell checker : enhanced user feedback, operation can be cancelled, all names corrected instead of the first 2000 (thanks to Joost Hart)
+- Search 
+	* Header: Allow to search for the special player !me which is mapped to all Playernames defined in Options / Chessboard / My Player names (can be combined with all other header search options as well as saved as search)
+	* Header: Allow to search for the special player !mymove. Similar to !me but the player has to have the move at the end of the game.
+	* Position: added the possibility to search for current position in another opened base (this avoids the use of the Tree window that can also be used for this, but can be found less convenient).
 - User interface:
 	* blindfold play (piece set)
 	* Add SAA/CUA hotkeys for clipboard (Ctrl-Ins, Shift-Ins)
 - Translations:
 	* hungarian updated (thanks to Szőts Gábor)
 	* swedish updated (thanks to Hans Eriksson)
-- Position search : added the possibility to search for current position in another opened base (this avoids the use of the Tree window that can also be used for this, but can be found less convenient).
 - Game merging : it is now possible to merge directly a game from one base to the current game in another base (see context menu in Game list window)
 - Engines handling : 
 	* renamed Phalanx-XII to phalanx-scid (as Phalanx is no longer maintained we need a way to differentiate them)
@@ -772,4 +775,3 @@ scid-3.7.2
 - Game annotation : book to use is saved (defaults to same book as Book window)
 - HTML export of games (HTML + Javascript) : improved output, better piece sets, no frames (thanks to Charly Founes) 
 - Novag Citrine support : improved interface
- 

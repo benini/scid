@@ -398,7 +398,145 @@ proc search::header {} {
       if $sTitles(w:$i) { lappend wtitles $i }
       if $sTitles(b:$i) { lappend btitles $i }
     }
-    
+
+    if {($sWhite == "!me") || ($sBlack == "!me")} {
+      set i 0
+      foreach name $::myPlayerNames {
+
+         set filter 0
+
+         if {$i == 0} { 
+            set filter 2
+         } else {
+            set filter 1
+         }
+         set i [expr {$i+1}]
+         set wname $sWhite
+         set bname $sBlack
+
+         if {$sWhite == "!me"} {
+            set wname $name
+         }
+         if {$sBlack == "!me"} {
+            set bname $name
+         }
+
+         set str [sc_search header -white $wname -black $bname \
+             -event $sEvent -site $sSite -round $sRound \
+             -date [list $sDateMin $sDateMax] \
+             -results [list $sResWin $sResDraw $sResLoss $sResOther] \
+             -welo [list $sWhiteEloMin $sWhiteEloMax] \
+             -belo [list $sBlackEloMin $sBlackEloMax] \
+             -delo [list $sEloDiffMin $sEloDiffMax] \
+             -eco [list $sEcoMin $sEcoMax $sEco] \
+             -length [list $sGlMin $sGlMax] \
+             -toMove $sSideToMove \
+             -gameNumber [list $sGnumMin $sGnumMax] \
+             -flip $sIgnoreCol -filter $filter \
+             -fStdStart $sHeaderFlags(StdStart) \
+             -fPromotions $sHeaderFlags(Promotions) \
+             -fComments $sHeaderFlags(Comments) \
+             -fVariations $sHeaderFlags(Variations) \
+             -fAnnotations $sHeaderFlags(Annotations) \
+             -fDelete $sHeaderFlags(DeleteFlag) \
+             -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
+             -fBlackOp $sHeaderFlags(BlackOpFlag) \
+             -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
+             -fEndgame $sHeaderFlags(EndgameFlag) \
+             -fNovelty $sHeaderFlags(NoveltyFlag) \
+             -fPawnStruct $sHeaderFlags(PawnFlag) \
+             -fTactics $sHeaderFlags(TacticsFlag) \
+             -fKingside $sHeaderFlags(KsideFlag) \
+             -fQueenside $sHeaderFlags(QsideFlag) \
+             -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
+             -fBlunder $sHeaderFlags(BlunderFlag) \
+             -fUser $sHeaderFlags(UserFlag) \
+             -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
+             ]
+      }
+    } elseif {($sWhite == "!mymove") || ($sBlack == "!mymove")} {
+      set i 0
+      foreach name $::myPlayerNames {
+
+         set filter 0
+
+         if {$i == 0} { 
+            set filter 2
+         } else {
+            set filter 1
+         }
+
+         set str [sc_search header  \
+            -white $name            \
+            -toMove w               \
+            -results [list 0 0 0 1] \
+            -event $sEvent -site $sSite -round $sRound \
+            -date [list $sDateMin $sDateMax] \
+            -welo [list $sWhiteEloMin $sWhiteEloMax] \
+            -belo [list $sBlackEloMin $sBlackEloMax] \
+            -delo [list $sEloDiffMin $sEloDiffMax] \
+            -eco [list $sEcoMin $sEcoMax $sEco] \
+            -length [list $sGlMin $sGlMax] \
+            -gameNumber [list $sGnumMin $sGnumMax] \
+            -flip $sIgnoreCol -filter $filter \
+            -fStdStart $sHeaderFlags(StdStart) \
+            -fPromotions $sHeaderFlags(Promotions) \
+            -fComments $sHeaderFlags(Comments) \
+            -fVariations $sHeaderFlags(Variations) \
+            -fAnnotations $sHeaderFlags(Annotations) \
+            -fDelete $sHeaderFlags(DeleteFlag) \
+            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
+            -fBlackOp $sHeaderFlags(BlackOpFlag) \
+            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
+            -fEndgame $sHeaderFlags(EndgameFlag) \
+            -fNovelty $sHeaderFlags(NoveltyFlag) \
+            -fPawnStruct $sHeaderFlags(PawnFlag) \
+            -fTactics $sHeaderFlags(TacticsFlag) \
+            -fKingside $sHeaderFlags(KsideFlag) \
+            -fQueenside $sHeaderFlags(QsideFlag) \
+            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
+            -fBlunder $sHeaderFlags(BlunderFlag) \
+            -fUser $sHeaderFlags(UserFlag) \
+            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
+         ]
+
+         set str [sc_search header  \
+            -black $name            \
+            -toMove b               \
+            -results [list 0 0 0 1] \
+            -event $sEvent -site $sSite -round $sRound \
+            -date [list $sDateMin $sDateMax] \
+            -welo [list $sWhiteEloMin $sWhiteEloMax] \
+            -belo [list $sBlackEloMin $sBlackEloMax] \
+            -delo [list $sEloDiffMin $sEloDiffMax] \
+            -eco [list $sEcoMin $sEcoMax $sEco] \
+            -length [list $sGlMin $sGlMax] \
+            -gameNumber [list $sGnumMin $sGnumMax] \
+            -flip $sIgnoreCol -filter $filter \
+            -fStdStart $sHeaderFlags(StdStart) \
+            -fPromotions $sHeaderFlags(Promotions) \
+            -fComments $sHeaderFlags(Comments) \
+            -fVariations $sHeaderFlags(Variations) \
+            -fAnnotations $sHeaderFlags(Annotations) \
+            -fDelete $sHeaderFlags(DeleteFlag) \
+            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
+            -fBlackOp $sHeaderFlags(BlackOpFlag) \
+            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
+            -fEndgame $sHeaderFlags(EndgameFlag) \
+            -fNovelty $sHeaderFlags(NoveltyFlag) \
+            -fPawnStruct $sHeaderFlags(PawnFlag) \
+            -fTactics $sHeaderFlags(TacticsFlag) \
+            -fKingside $sHeaderFlags(KsideFlag) \
+            -fQueenside $sHeaderFlags(QsideFlag) \
+            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
+            -fBlunder $sHeaderFlags(BlunderFlag) \
+            -fUser $sHeaderFlags(UserFlag) \
+            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
+         ]
+
+         set i [expr {$i+1}]
+      }
+    } else {
     set str [sc_search header -white $sWhite -black $sBlack \
         -event $sEvent -site $sSite -round $sRound \
         -date [list $sDateMin $sDateMax] \
@@ -431,6 +569,7 @@ proc search::header {} {
         -fUser $sHeaderFlags(UserFlag) \
         -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
         ]
+    }
     
     grab release .sh.b.stop
     pack forget .sh.b.stop
@@ -499,7 +638,6 @@ proc ::search::header::save {} {
     sIgnoreCol sSideToMove sGlMin sGlMax ::search::filter::operation} {
     puts $searchF "set $i [list [set $i]]"
   }
-  
   # Now write the array values:
   foreach i [array names sHeaderFlags] {
     puts $searchF "set sHeaderFlags($i) [list $sHeaderFlags($i)]"
@@ -512,58 +650,6 @@ proc ::search::header::save {} {
       -message "Header search options saved to: $fName"
   close $searchF
 }
-
-proc ::search::header::Filter2OngoingGames {} {
-
-	set str [sc_search header  \
-		-results [list 0 0 0 1] \
-		-gameNumber [list 1 -1] \
-		-fDelete no             \
-		]
-
-	::windows::gamelist::Refresh
-	::windows::stats::Refresh
-}
-
-proc ::search::header::Filter2OngoingOwnMove {} {
-
-	# search filter operations: 0 = AND, 1 = OR, 2=Reset
-	set i 0
-	foreach name $::myPlayerNames {
-
-		set filter 0
-
-		if {$i == 0} { 
-			set filter 2
-		} else {
-			set filter 1
-		}
-
-		set str [sc_search header  \
-			-white $name            \
-			-toMove w               \
-			-results [list 0 0 0 1] \
-			-gameNumber [list 1 -1] \
-			-fDelete no             \
-			-filter  $filter        \
-			]
-
-		set str [sc_search header  \
-			-black $name            \
-			-toMove b               \
-			-results [list 0 0 0 1] \
-			-gameNumber [list 1 -1] \
-			-fDelete no             \
-			-filter  1              \
-			]
-
-		set i [expr {$i+1}]
-	}
-
-	::windows::gamelist::Refresh
-	::windows::stats::Refresh
-}
-
 
 ##############################
 ### Selecting common ECO ranges
