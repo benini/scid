@@ -86,7 +86,13 @@ proc ::file::New {} {
     { "Scid databases" {".si3"} }
     { "EPD files" {".epd"} }
   }
-  set fName [tk_getSaveFile -initialdir $::initialDir(base) -filetypes $ftype -title "Create a Scid database"]
+  
+  if { [ file exists $::initialDir(base) ] } {
+    set fName [tk_getSaveFile -initialdir $::initialDir(base) -filetypes $ftype -title "Create a Scid database"]
+  } else  {
+    set fName [tk_getSaveFile -filetypes $ftype -title "Create a Scid database"]
+  }
+  
   if {$fName == ""} {
     # do nothing
   } elseif {[file extension $fName] == ".epd"} {
