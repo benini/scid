@@ -538,6 +538,9 @@ proc openURL {url} {
         # Now try a new Mozilla process:
         catch {exec /bin/sh -c "$::auto_execs(mozilla) '$url'" &}
       }
+    } elseif {[file executable [auto_execok www-browser]]} {
+      # Now try a new Mozilla process:
+      catch {exec /bin/sh -c "$::auto_execs(www-browser) '$url'" &}
     } elseif {[file executable [auto_execok netscape]]} {
       # OK, no Mozilla (poor user) so try Netscape (yuck):
       # First, try -remote mode to avoid starting a new netscape process:

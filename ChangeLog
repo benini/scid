@@ -768,6 +768,7 @@ scid-3.7.2
 - Translations:
 	* hungarian updated (thanks to Szőts Gábor)
 	* swedish updated (thanks to Hans Eriksson)
+	* try for www-browser as generic web browser (thanks to Tiurgin)
 - Game merging : it is now possible to merge directly a game from one base to the current game in another base (see context menu in Game list window)
 - Engines handling : 
 	* renamed Phalanx-XII to phalanx-scid (as Phalanx is no longer maintained we need a way to differentiate them)
