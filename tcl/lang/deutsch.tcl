@@ -1636,8 +1636,7 @@ translate D ExtHWHardware {Hardware}
 translate D ExtHWNovag {Novag Citrine}
 translate D ExtHWInputEngine {Input Engine}
 translate D ExtHWNoBoard {Kein Brett verbunden}
-# ====== TODO To be translated ======
-translate D NovagReferee {Referee}
+translate D NovagReferee {Nur Züge aufzeichnen}
 translate D IEConsole {Input Engine Konsole}
 translate D IESending {Sende Züge für}
 translate D IESynchronise {Synchronisieren}
