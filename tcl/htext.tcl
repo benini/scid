@@ -507,6 +507,7 @@ proc openURL {url} {
   busyCursor .
   if {$windowsOS} {
     # On Windows, use the "start" command:
+    regsub -all " " $url "%20" url
     if {[string match $::tcl_platform(os) "Windows NT"]} {
       catch {exec $::env(COMSPEC) /c start $url &}
     } else {
