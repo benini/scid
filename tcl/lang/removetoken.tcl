@@ -21,10 +21,11 @@ array set encodings {
   serbian iso8859-2
   spanish iso8859-1
   swedish iso8859-1
+  catalan iso8859-1
 }
 
 set languages {czech deutsch francais hungary italian nederlan norsk polish
-  portbr spanish swedish serbian russian
+  portbr spanish swedish serbian russian catalan
 }
 
 ################################################################################

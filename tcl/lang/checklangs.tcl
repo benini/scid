@@ -21,10 +21,11 @@ array set codes {
   serbian Y
   spanish S
   swedish W
+  catalan K
 }
 
 set languages {czech deutsch francais hungary italian nederlan norsk polish
-  portbr spanish swedish serbian russian
+  portbr spanish swedish serbian russian catalan
 }
 
 ################################################################################

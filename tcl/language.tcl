@@ -32,6 +32,8 @@ set transPieces(O)   { P B K K Q D R T B L N S }
 set untransPieces(O) { B P K K D Q T R L B S N }
 set transPieces(W)   { P B K K Q D R T B L N S }
 set untransPieces(W) { B P K K D Q T R L B S N }
+set transPieces(K)   { P P K R Q D R T B A N C }
+set untransPieces(K) { P P R K D Q T R A B C N }
 
 ################################################################################
 proc trans { msg } {
@@ -169,6 +171,7 @@ proc setLanguage {{lang ""}} {
       H {sc_info language hu}
       O {sc_info language no}
       W {sc_info language sw}
+      K {sc_info language ca}
       default {sc_info language en}
     }
   } else {
@@ -208,6 +211,7 @@ proc setLanguageTemp { lang } {
     H {sc_info language hu}
     O {sc_info language no}
     W {sc_info language sw}
+    K {sc_info language ca}
     default {sc_info language en}
   }
 }

@@ -34,10 +34,10 @@
 // Piece letters translation
 int language = 0; // default to english
 //  0 = en, 1 = fr, 2 = es, 3 = de, 4 = it, 5 = ne, 6 = cz
-//  7 = hu, 8 = no, 9 = sw
+//  7 = hu, 8 = no, 9 = sw, 10 = ca
 const char * langPieces[] = { "", "PPKRQDRTBFNC", "PPKRQDRTBANC", "PBKKQDRTBLNS", 
 "PPKRQDRTBANC", "PpKKQDRTBLNP", "PPKKQDRVBSNJ",
-"PGKKQVRBBFNH", "PBKKQDRTBLNS", "PBKKQDRTBLNS" };
+"PGKKQVRBBFNH", "PBKKQDRTBLNS", "PBKKQDRTBLNS", "PPKRQDRTBANC" };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // transPieces():

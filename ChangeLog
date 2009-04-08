@@ -768,7 +768,8 @@ scid-3.7.2
 - Translations:
 	* hungarian updated (thanks to Szőts Gábor)
 	* swedish updated (thanks to Hans Eriksson)
-	* try for www-browser as generic web browser (thanks to Tiurgin)
+	* added catalan translation (thanks to Natalia Pares Vives)
+- try for www-browser as generic web browser (thanks to Tiurgin)
 	* replace " " in urls for the Windows "start" command by %20 (thanks to Tiurgin)
 - Game merging : it is now possible to merge directly a game from one base to the current game in another base (see context menu in Game list window)
 - Engines handling : 

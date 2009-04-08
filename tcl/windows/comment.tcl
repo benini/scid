@@ -218,7 +218,7 @@ proc ::commenteditor::Open {} {
   # Add bindings at the end, especially <Configure>
   bind $w <F1> {helpWindow Comment}
   bind $w <Destroy> [namespace code {set commentWin 0; set State(isOpen) 0}]
-  bind $w <Configure> "recordWinSize $w; setWinSize $w"
+  bind $w <Configure> "recordWinSize $w"
 
   ### Start editing
   ::setTitle $w "Scid: [tr {Comment editor}]"

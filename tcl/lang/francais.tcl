@@ -1539,21 +1539,14 @@ translate F CCDlgClawsEg {p.e Sylpheed Claws}
 translate F CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate F CCDlgAttachementPar {Attachement:}
 translate F CCDlgInternalXfcc {Utiliser Xfcc interne}
-# ====== TODO To be translated ======
-translate F CCDlgConfirmXfcc {Confirm moves}
+translate F CCDlgConfirmXfcc {Confirmer coups}
 translate F CCDlgSubjectPar {Objet:}
-# ====== TODO To be translated ======
-translate F CCDlgDeleteBoxes {Empty In-/Outbox}
-# ====== TODO To be translated ======
-translate F CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
-# ====== TODO To be translated ======
-translate F CCDlgConfirmMove {Confirm move}
-# ====== TODO To be translated ======
-translate F CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
-# ====== TODO To be translated ======
-translate F CCDlgDBGameToLong {Inconsistent Mainline}
-# ====== TODO To be translated ======
-translate F CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+translate F CCDlgDeleteBoxes {Vider boîtes}
+translate F CCDlgDeleteBoxesText {Voulez-vous réellement vider les boîtes entrantes et sortantes pour les échecs par correspondance ? Cela nécessite une nouvelle synchronisation pour afficher le dernier état de vos parties}
+translate F CCDlgConfirmMove {Confirmer coup}
+translate F CCDlgConfirmMoveText {Si vous confirmez, le coup ci-dessous et le commentaire sont envoyés au serveur:}
+translate F CCDlgDBGameToLong {Ligne principale incohérente}
+translate F CCDlgDBGameToLongError {La ligne principale dans votre base de données est plus longue que la partie dans votre boîte de réception. Si la boîte de réception contient les parties en cours, c'est-à-dire juste après une synchronisation, certains coups ont été ajoutés à tort à la ligne principale dans la base de données.\nDans ce cas veuillez raccourcir la ligne principale à au plus coup\n}
 translate F CCDlgStartEmail {Commencer nouvelle partie par eMail}
 translate F CCDlgYourName {Votre nom:}
 translate F CCDlgYourMail {Votre adresse mail:}
@@ -1580,10 +1573,8 @@ translate F CCDlgLoginName  {Login:}
 translate F CCDlgPassword   {Mot de passe:}
 translate F CCDlgURL        {Xfcc-URL:}
 translate F CCDlgRatingType {Type classement:}
-# ====== TODO To be translated ======
-translate F CCDlgDuplicateGame {Non-unique game ID}
-# ====== TODO To be translated ======
-translate F CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
+translate F CCDlgDuplicateGame {Identifiant de partie non-unique}
+translate F CCDlgDuplicateGameError {Cette partie existe à plusieurs exemplaires dans la base de données. Veuillez effacer tous les doublons et compacter votre fichier de parties (Fichier/Maintenance/Compacter base).}
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
