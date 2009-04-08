@@ -24,6 +24,11 @@ Comment editor prend un CPU
 
 - Translate NAG symbols to text or proper annotation symbols
 
+- Notify games with annotations in "Best game", show annotator there.
+  Consider sort order: e.g. annotated games on top?
+
+- Add more complete header to browse game.
+
 - improve commentary arrows: thicker, starting form the real middle of
   the field, ending at the middle of the field, get a thin black
   frame.
