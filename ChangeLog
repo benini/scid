@@ -742,6 +742,7 @@ scid-3.7.2
 	* Endgame tablebase window cleanup when closing (remove its tab)
 	* Twin checker : loads the first pair of twin games (thanks to  J. Wesley Cleveland)  
 	* when no book is found, handle this case correctly (Book window, serious game, ...)
+	* Comment editor window taking a lot of CPU under Windows 
 - FICS : user interface improvements : 
 	* click on a game to observe it
 	* redesign in notebook style
