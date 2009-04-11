@@ -5,6 +5,7 @@
 set searchInVars 0
 set sBoardIgnoreCols 0
 set sBoardSearchType Exact
+set sBoardSearchRefBase 0
 
 # ::search::board
 #   Opens the search window for the current board position.
@@ -86,8 +87,10 @@ proc ::search::board {} {
     set base ""
     if { $sBoardSearchRefBase } {
       set base [lindex $refDatabase 0]
+      set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
+    } else  {
+      set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols ]
     }
-    set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
     unbusyCursor .
     grab release .sb.b.stop
     .sb.b.stop configure -state disabled
