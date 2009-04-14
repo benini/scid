@@ -94,6 +94,8 @@ proc ::commenteditor::Open {} {
     ?? Blunder
     !? InterestingMove
     ?! DubiousMove
+    +-- WhiteCrushing
+    --+ BlackCrushing
     +- WhiteDecisiveAdvantage
     -+ BlackDecisiveAdvantage
     +/- WhiteClearAdvantage

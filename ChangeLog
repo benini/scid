@@ -786,3 +786,8 @@ scid-3.7.3
 -----------
 Maintenance release of Scid 3.7.2 fixing a bug in search position
 
+scid-3.7.4
+-----------
+- NAG support
+	* add symbolic NAGs using UTF-8
+

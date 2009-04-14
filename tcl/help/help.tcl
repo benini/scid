@@ -4428,7 +4428,21 @@ chess.
 <p>
 If any of the correspondence chess functions are accessed from the
 menu a new window opens up. It can be opened manually from the window
-menu. This window contains the neccessary buttons to navigate through
+menu or one can use the keyboard shortcut F12. There are two
+additional shortcuts:
+<ul>
+   <li><b>Ctrl-F12</b>
+      This will open the correspondence chess window and the default
+      database. It will also process your current Inbox.
+   </li>
+   <li><b>Alt-F12</b>
+      This will open the correspondence chess window, the default
+      database and also initiate the fetch of Xfcc games in one go.
+   </li
+</ul>
+Please see below for further details.
+
+This window contains the neccessary buttons to navigate through
 ongoing games, shortcut keys to fetch games by means of the Xfcc
 protocol and sync in eMail based games as well as a console stating
 which messages where sent or retrieved. Additionally this window
@@ -4598,7 +4612,19 @@ exchanged in server based correspondence chess.
 </p>
 
 
-<p><footer>(Updated: Scid 3.6.25, August 2008)</footer></p>
+<h3>Additional features of the Correspondence Chess Window</h3>
+<p>
+The Correspondence Chess window offers additional functions by means
+of its own menu, which is identical to Play / Correspondence Chess. It
+is also possible to use the usual scrolling features of Scid, like
+jumping to the next (previous) game by Ctrl-Down (Ctrl-Up). Hovering
+with the mouse over certain fields in the game list will also give
+additional informations as far as they are provided by the server. If
+you want to copy the current game list to the clipboard one can use
+the usual shortcuts Ctrl-Ins (or Ctrl-C).
+</p>
+
+<p><footer>(Updated: Scid 3.7.4, April 2009)</footer></p>
 }
 
 set helpTitle(CCIcons) "Correspondence Chess Icons and Status Indicators"

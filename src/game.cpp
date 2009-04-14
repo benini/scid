@@ -19,6 +19,7 @@
 #include "position.h"
 #include "pgnparse.h"
 #include "naglatex.h"
+#include "nagtext.h"
 
 #include "bytebuf.h"
 #include "textbuf.h"
@@ -181,66 +182,37 @@ typedef Game * GamePtr;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // printNag(): converts a numeric NAG to its string equivalent.
 //    The parameter <str> should point to a string at least 10 bytes long.
-//
+// TODO
+//    replace < and > in NAG codes by <lt> and <gt>
 void
 game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format)
 {
     ASSERT (str != NULL);
-    const char * commonNags[] = { "!", "?", "!!", "??", "!?", "?!"};
-    const char * evalNagsRegular[] = {
-        "=", "=", "=", "~", "+=", "=+", "+/-", "-/+", "+-", "-+", "+-", "-+"
-    };
 
     if (nag == 0) {
         *str = 0;
         return;
     }
 
-    if (asSymbol  &&  nag >= NAG_GoodMove  &&  nag <= NAG_DubiousMove) {
-        strcpy (str, commonNags[nag - NAG_GoodMove]);
-        return;
-    }
     if (asSymbol) {
-        if (nag >= NAG_Equal  &&  nag <= NAG_BlackCrushing) {
-            if (format == PGN_FORMAT_LaTeX) {
-    		strcpy (str, evalNagsLatex[nag]);
-            }
-            else {
-        	strcpy (str, evalNagsRegular[(nag - NAG_Equal)]);
-    	    }
-            return;
-        } else if (nag == NAG_Novelty) {
-            if (format == PGN_FORMAT_LaTeX) {
-    		strcpy (str, evalNagsLatex[nag]);
-            } else {
-                strcpy (str, "N");
-            }
-            return;
-        } else if (nag == NAG_Compensation) {
-            if (format == PGN_FORMAT_LaTeX) {
-    		strcpy (str, evalNagsLatex[nag]);
-            } else {
-                strcpy(str, "~=");
-            }
-            return;
-        } else if (nag == NAG_Diagram) {
-            if (format == PGN_FORMAT_LaTeX) {
-                strcpy(str, "{\\rm \\it (D)}");
-            } else if (format == PGN_FORMAT_HTML) {
-                strcpy(str, "<i>(D)</i>");
-            } else {
-                str[0] = 'D'; str[1] = 0;
-            }
-            return;
-        } else if (nag <= MAX_NAGS_ARRAY) {
-            if (format == PGN_FORMAT_LaTeX) {
-    		strcpy (str, evalNagsLatex[nag]);
-    		
-    	    return;
-            } 
-        }
-    }
+       if (format == PGN_FORMAT_LaTeX) {
+          strcpy (str, evalNagsLatex[nag]);
+       } else {
+         strcpy (str, evalNagsRegular[nag]);
+       }
+       if (nag == NAG_Diagram) {
+          if (format == PGN_FORMAT_LaTeX) {
+              strcpy (str, evalNagsLatex[nag]);
+          } else if (format == PGN_FORMAT_HTML) {
+              strcpy(str, "<i>(D)</i>");
+          } else {
+              str[0] = 'D'; str[1] = 0;
+          }
+       }
+       return;
+    } else {
     sprintf (str, "%s$%d", format == PGN_FORMAT_LaTeX ? "\\" : "", nag);
+    }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -264,54 +236,208 @@ game_parseNag (const char * str)
     if (*str == '!') {
         // Must be "!", "!!", "!?", or invalid:
         str++;
-        if (*str == 0) { return NAG_GoodMove; }
-        if (*str == '!') { return NAG_ExcellentMove; }
-        if (*str == '?') { return NAG_InterestingMove; }
+        if (*str == 0) { return NAG_GoodMove; }            // !      $1
+        if (*str == '!') { return NAG_ExcellentMove; }     // !!     $3
+        if (*str == '?') { return NAG_InterestingMove; }   // !?     $5
         return 0;
     }
+
     if (*str == '?') {
         // Must be "?", "??", "?!", or invalid:
         str++;
-        if (*str == 0) { return NAG_PoorMove; }
-        if (*str == '?') { return NAG_Blunder; }
-        if (*str == '!') { return NAG_DubiousMove; }
+        if (*str == 0) { return NAG_PoorMove; }            // ?      $2
+        if (*str == '?') { return NAG_Blunder; }           // ??     $4
+        if (*str == '!') { return NAG_DubiousMove; }       // ?!     $6
         return 0;
     }
 
     if (*str == '+') {
-        // Must be "+=", "+/=", "+/-", "+-", or invalid:
+        // Must be "+=", "+/=", "+/-", "+-", "+--", "+>" or invalid:
         str++;
-        if (*str == '=') { return NAG_WhiteSlight; }
-        if (*str == '-') { return NAG_WhiteDecisive; }
-        if (*str == '/'  &&  str[1] == '-') { return NAG_WhiteClear; }
-        if (*str == '/'  &&  str[1] == '=') { return NAG_WhiteSlight; }
+        if (*str == '=') { return NAG_WhiteSlight; }      // +=      $14
+        if (*str == '-' && str[1] == 0) {                 // +-      $18
+           return NAG_WhiteDecisive; }
+        if (*str == '>') { return NAG_WithAttack; }       // +>      $40
+        if (*str == '/'  &&  str[1] == '-') {             // +/-     $16
+           return NAG_WhiteClear; }
+        if (*str == '/'  &&  str[1] == '=') {             // +/=     $14
+           return NAG_WhiteSlight; }
+        if (*str == '-'  &&  str[1] == '-') {             // +--     $20
+           return NAG_WhiteCrushing; }
         return 0;
     }
+
     if (*str == '=') {
-        // Must be "=" (equal), "=+", "=/+", or invalid:
+        // Must be "=" (equal), "=+", "=/+", "=/&" or invalid:
         str++;
-        if (*str == 0) { return NAG_Equal; }
-        if (*str == '+') { return NAG_BlackSlight; }
-        if (*str == '/'  &&  str[1] == '+') { return NAG_BlackSlight; }
+        if (*str == 0) { return NAG_Equal; }              // =       $10
+        if (*str == '+') { return NAG_BlackSlight; }      // =+      $15
+        if (*str == '/'  &&  str[1] == '+') {             // =/+     $15
+           return NAG_BlackSlight; }
+        if (*str == '/'  &&  str[1] == '&') {             // =/&     $44
+           return NAG_Compensation; }
         return 0;
     }
+
     if (*str == '-') {
-        // Must be "-+" or "-/+":
+        // Must be "-+", "-/+" or "--+", "->":
         str++;
-        if (*str == '+') { return NAG_BlackDecisive; }
-        if (*str == '/'  &&  str[1] == '+') { return NAG_BlackClear; }
+        if (*str == '+') { return NAG_BlackDecisive; }     // -+     $19
+        if (*str == '>') { return NAG_WithBlackAttack; }   // ->     $41
+        if (*str == '/'  &&  str[1] == '+') {              // -/+    $17
+           return NAG_BlackClear; }
+        if (*str == '-'  &&  str[1] == '+') {              // --+    $21
+           return NAG_BlackCrushing; }
+        if (*str == '-'  &&  str[1] == 0) {                // --     $210
+           return NAG_See; }
         return 0;
     }
-    if (*str == '~' && *(str+1) == '=') {  // Compensation symbol:
+
+    if (*str == '/') {
+        // Must be "/\" or "/"
+        str++;
+        if (*str == 0)    { return NAG_Diagonal; }         // /      $150
+        if (*str == '\\') { return NAG_WithIdea; }         // Tri    $140
+        return 0;
+    }
+
+    if (*str == 'R') {
+        // Must be "R", "RR"
+        str++;
+        if (*str == 0)   { return NAG_VariousMoves; }      // R      $144
+        if (*str == 'R') { return NAG_Comment; }           // RR     $145
+        return 0;
+    }
+
+    if (*str == 'z') {
+        // Must be "zz"
+        str++;
+        if (*str == 'z') { return NAG_BlackZugZwang; }     // zz     $23
+        return 0;
+    }
+    if (*str == 'Z') {
+        // Must be "ZZ"
+        str++;
+        if (*str == 'Z') { return NAG_ZugZwang; }          // ZZ     $22
+        return 0;
+    }
+
+    if (*str == 'B') {
+        // Must be "BB", "Bb"
+        str++;
+        if (*str == 'B') { return NAG_BishopPair; }        // BB     $151
+        if (*str == 'b') { return NAG_OppositeBishops; }   // Bb     $153
+        return 0;
+    }
+
+    if (*str == 'o') {
+        // Must be "BB", "Bb"
+        str++;
+        if (*str == '-'  &&  str[1] == 'o') {              // o-o    $192
+           return NAG_SeparatedPawns; }
+        if (*str == 'o'  &&  str[1] == 0)   {              // [+]    $193
+           return NAG_UnitedPawns; }
+        if (*str == '^'  &&  str[1] == 0)   {              // o^     $212
+           return NAG_PassedPawn; }
+        return 0;
+    }
+
+    if (*str == '(') {
+        // Must be (_)
+        str++;
+        if (*str == '_'  &&  str[1] == ')') {             // (_)     $142
+           return NAG_BetterIs; }
+        return 0;
+    }
+
+    if (*str == '[') {
+        // Must be (_)
+        str++;
+        if (*str == ']'  &&  str[1] == 0) {                // []     $8
+           return NAG_OnlyMove; }
+        if (*str == '+'  &&  str[1] == ']') {              // [+]    $48
+           return NAG_SlightCentre; }
+        if (*str   == '+' &&
+            str[1] == '+' && str[2] == ']') {              // [++]   $50
+           return NAG_Centre; }
+        return 0;
+    }
+
+    if (*str == '_') {
+        // must be _|_ or _|
+        str++;
+        if (*str == '|'  &&  str[1] == '_') {              // _|_    $148
+           return NAG_Ending; }
+        if (*str == '|'  &&  str[1] == 0) {                // _|     $215
+           return NAG_Without; }
+        return 0;
+    }
+
+    if (*str == '|') {
+        // must be ||, |_
+        str++;
+        if (*str == '|' ) { return NAG_Etc; }             // ||      $190
+        if (*str == '_') { return NAG_With; }             // |_      $214
+        return 0;
+    }
+
+    if (*str == '>') {
+        // must be >, >>, >>>
+        str++;
+        if (*str == 0) { return NAG_SlightKingSide; }     // >       $54
+        if (*str == '>'  &&  str[1] == 0) {               // >>      $56
+           return NAG_ModerateKingSide; }
+        if (*str == '>'  &&  str[1] == '>') {             // >>>     $58
+           return NAG_KingSide; }
+        return 0;
+    }
+
+    if (*str == '<') {
+        // must be <, <<, <<<, <=>
+        str++;
+        if (*str == 0) { return NAG_SlightQueenSide; }   // <        $60
+        if (*str == '<'  &&  str[1] == 0) {              // <<       $62
+           return NAG_ModerateQueenSide; }
+        if (*str   == '<'  &&                            // <<<      $64
+            str[1] == '<' && str[2] == 0) { return NAG_QueenSide; }
+        if (*str == '='  &&                              // <=>      $149
+            str[1] == '>' && str[2] == 0) { return NAG_File; }
+        if (*str == '+' &&                               // <+>      $130
+            str[1] == '>' && str[2] == 0) { return NAG_SlightCounterPlay; }
+        if (*str == '-' &&                               // <->      $131
+              str[1] == '>' && str[2] == 0) { return NAG_BlackSlightCounterPlay; }
+        if (*str == '+' &&                               // <++>     $132
+              str[1] == '+' && str[2] == '>' && str[3] == 0) { return NAG_CounterPlay; }
+        if (*str == '-' &&                               // <-->     $133
+              str[1] == '-' && str[2] == '>' && str[3] == 0) { return NAG_BlackCounterPlay; }
+        if (*str == '+' &&                               // <+++>    $134
+              str[1] == '+' && str[2] == '+' && str[3] == '>') { return NAG_DecisiveCounterPlay; }
+        if (*str   == '-' &&                             // <--->    $135
+            str[1] == '-' && str[2] == '-' && str[3] == '>') { return NAG_BlackDecisiveCounterPlay; }
+        return 0;
+    }
+
+    if (*str == '~' && *(str+1) == '=') {                // ~=       $44
+       // alternative Compensation symbol:
         return NAG_Compensation;
     }
-    if (*str == '~') {  // Unclear symbol:
+
+    if (*str == '~') {                                   // ~        $13
+       // Unclear symbol:
         return NAG_Unclear;
     }
-    if (str[0] == 'N'  &&  str[1] == 0) {  // Novelty symbol:
+
+    if (*str == 'x') {                                   // x        $147
+        return NAG_WeakPoint;
+    }
+
+    if (str[0] == 'N'  &&  str[1] == 0) {                // N        $146
+       // Novelty symbol:
         return NAG_Novelty;
     }
-    if (str[0] == 'D'  &&  str[1] == 0) {  // Diagram symbol:
+
+    if (str[0] == 'D'  &&  str[1] == 0) {                // D        $201
+       // Diagram symbol:
         return NAG_Diagram;
     }
     return 0;
