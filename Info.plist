@@ -338,7 +338,7 @@
 	<key>CFBundleExecutable</key>
 	<string>scid</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Scid 3.7</string>
+	<string>Scid x.x</string>
 	<key>CFBundleIconFile</key>
 	<string>ScidApp.icns</string>
 	<key>CFBundleIdentifier</key>

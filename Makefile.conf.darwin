@@ -30,6 +30,13 @@ SHAREDIR = @SHAREDIR@
 #
 TCL_VERSION = @TCL_VERSION@
 
+### SCID_VERSION: Set this to the release version or it will find it by itself.
+#SCID_VERSION = 3.x
+SCID_VERSION = `grep 'set scidVersion ' tcl/start.tcl | sed -E -e 's/^set scidVersion \"(.+)\"/\1/'`
+
+### SCID_APP_BIN: This will find the correct path to tkscid and tcscid.
+SCID_APP_BIN = $$(cd "$$(dirname "$$0")/$$(dirname $$(readlink "$$0"))"; pwd)/
+
 # TCL_INCLUDE, TCL_LIBRARY, TK_LIBRARY: these are the compiler options
 #    needed for linking Scid with Tcl/Tk.  The program "./configure"
 #    will try to determine them automatically, but if it cannot, you
@@ -250,7 +257,7 @@ install_engines: all_engines
 	install -m 755 -d $(SHAREDIR)/engines/phalanx-scid
 	install ./engines/phalanx-scid/phalanx $(SHAREDIR)/engines/phalanx-scid
 	install -m 755 -d $(SHAREDIR)/engines/togaII1.2.1a
-	install ./engines/togaII1.2.1a/src/fruit $(SHAREDIR)/engines/togaII1.2.1a/
+	install ./engines/togaII1.2.1a/src/togaII $(SHAREDIR)/engines/togaII1.2.1a/
 
 uninstall:
 	rm -rf $(SHAREDIR)/engines
@@ -306,26 +313,62 @@ scid: $(TCLS)
 	cat $(TCLS) > ./scid
 	chmod +x scid
 
-scid_app: all_scid
+scid_app: all
 	install -m 755 -d dist/Scid.app/Contents/MacOS
 	install -m 755 -d dist/Scid.app/Contents/Resources/bin
 	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/data
 	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/books
 	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/bases
 	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/html
-	install -m 755 $(SCRIPTS) $(EXECS) dist/Scid.app/Contents/Resources/bin/
+	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/sounds
+	#install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/engines
+	#install -m 755 $(SCRIPTS) $(EXECS) dist/Scid.app/Contents/Resources/bin/
+	install -m 755 $(EXECS) dist/Scid.app/Contents/Resources/bin/
 	install -m 644 -p scid.eco dist/Scid.app/Contents/Resources/share/scid/data/
-	#install -m 666 ./books/* dist/Scid.app/Contents/Resources/share/scid/books/
-	#install -m 666 ./bases/* dist/Scid.app/Contents/Resources/share/scid/bases/
-	install -m 644  ./mac_icons/Scid*.icns dist/Scid.app/Contents/Resources/
-	install -m 644 Info.plist dist/Scid.app/Contents/
-	cp -r ./html/* dist/Scid.app/Contents/Resources/share/scid/html/
-	sed -e 's|exec `dirname $$0`/tkscid|exec "$$(cd "$$(dirname "$$0")/$$(dirname $$(readlink "$$0"))"; pwd)/tkscid"|' < scid > dist/Scid.app/Contents/Resources/bin/scid
-	chmod +x dist/Scid.app/Contents/Resources/bin/scid
+	install -m 666 -p ./books/* dist/Scid.app/Contents/Resources/share/scid/books/
+	install -m 666 -p ./bases/* dist/Scid.app/Contents/Resources/share/scid/bases/
+	install -m 644 -p ./sounds/* dist/Scid.app/Contents/Resources/share/scid/sounds/
+	install -m 755 -p ./engines/togaII1.2.1a/src/togaII dist/Scid.app/Contents/Resources/bin/
+	install -m 755 -p ./engines/phalanx-scid/phalanx-scid dist/Scid.app/Contents/Resources/bin/
+	install -m 644 -p ./mac_icons/Scid*.icns dist/Scid.app/Contents/Resources/
+	ditto ./html dist/Scid.app/Contents/Resources/share/scid/html
+	install -m 666 Info.plist dist/Scid.app/Contents/
+	perl -pi -e "s|\<string\>Scid x\.x\</string\>|\<string\>Scid $(SCID_VERSION)</string\>|" dist/Scid.app/Contents/Info.plist
+	cd dist/Scid.app/Contents/Resources/bin/ && ln -sf ../share/scid/sounds
+	cd dist/Scid.app/Contents/Resources/bin/ && ln -sf ../share/scid/html
+	sed -e 's|exec .*tkscid|exec "$(SCID_APP_BIN)tkscid"|' < scid > dist/Scid.app/Contents/Resources/bin/scid
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_addmove > dist/Scid.app/Contents/Resources/bin/sc_addmove
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_epgn > dist/Scid.app/Contents/Resources/bin/sc_epgn
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_spell > dist/Scid.app/Contents/Resources/bin/sc_spell
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_eco > dist/Scid.app/Contents/Resources/bin/sc_eco
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_import > dist/Scid.app/Contents/Resources/bin/sc_import
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_remote > dist/Scid.app/Contents/Resources/bin/sc_remote
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_tree > dist/Scid.app/Contents/Resources/bin/sc_tree
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < scidpgn > dist/Scid.app/Contents/Resources/bin/scidpgn
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < pgnfix > dist/Scid.app/Contents/Resources/bin/pgnfix
+	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < spliteco > dist/Scid.app/Contents/Resources/bin/spliteco
+	chmod +x dist/Scid.app/Contents/Resources/bin/*
 	cd dist/Scid.app/Contents/MacOS && ln -sf ../Resources/bin/scid
 
 scid_dmg: scid_app
-	hdiutil create -fs "HFS+" -volname Scid -srcfolder dist Scid-$(SCID_VERSION)-$$(uname -p).dmg
+	install -m 755 -d dist/bitmaps
+	install -m 755 -d dist/bitmaps2
+	install -m 755 -d dist/Scripts
+	install -m 755 -d dist/Scripts/CB-MEGA
+	install -m 644 -p ChangeLog ./dist/Change\ Log.txt
+	install -m 644 -p CHANGES ./dist/Changes.txt
+	install -m 644 -p COPYING ./dist/Copying.txt
+	install -m 644 -p README ./dist/Read\ Me.txt
+	install -m 644 -p THANKS ./dist/Thanks.txt
+	install -m 644 -p TODO ./dist/To\ Do.txt
+	install -m 644 -p ./bitmaps/* ./dist/bitmaps/
+	install -m 644 -p ./bitmaps2/* ./dist/bitmaps2/
+	#install -m 755 -p ./scripts/* ./dist/Scripts/
+	install -m 755 -p ./scripts/eco2pgn.py ./dist/Scripts/
+	install -m 755 -p ./scripts/pgnfix.py ./dist/Scripts/
+	install -m 755 -p ./scripts/twic2scid.py ./dist/Scripts/
+	install -p ./scripts/CB-Mega/* ./dist/Scripts/CB-Mega/
+	hdiutil create -fs "HFS+" -volname Scid\ Installer -srcfolder dist "Scid $(SCID_VERSION) (`sw_vers -productName` `sw_vers -productVersion` `uname -p`).dmg"
 
 sc_addmove: scripts/sc_addmove.tcl
 	cp scripts/sc_addmove.tcl ./sc_addmove
