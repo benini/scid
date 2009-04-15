@@ -8,8 +8,8 @@
 //
 //  Notice:     Copyright (c) 2000-2003 Shane Hudson.  All rights reserved.
 //
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
-// Updated: W. van den Akker
+//  Author:     A. Wagner
+//
 //
 //////////////////////////////////////////////////////////////////////
 

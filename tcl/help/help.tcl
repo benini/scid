@@ -4430,6 +4430,7 @@ If any of the correspondence chess functions are accessed from the
 menu a new window opens up. It can be opened manually from the window
 menu or one can use the keyboard shortcut F12. There are two
 additional shortcuts:
+</p>
 <ul>
    <li><b>Ctrl-F12</b>
       This will open the correspondence chess window and the default
@@ -4440,8 +4441,11 @@ additional shortcuts:
       database and also initiate the fetch of Xfcc games in one go.
    </li
 </ul>
+<p>
 Please see below for further details.
+</p>
 
+<p>
 This window contains the neccessary buttons to navigate through
 ongoing games, shortcut keys to fetch games by means of the Xfcc
 protocol and sync in eMail based games as well as a console stating
