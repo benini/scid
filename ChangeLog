@@ -790,5 +790,10 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 
 scid-3.7.4
 -----------
-- NAG support
-	* add symbolic NAGs using UTF-8
+- Fixes :
+  * serious game play when use book is checked and book name is empty leads to crash (thanks to Benigno Hernández)
+- Features
+  * NAG support : add symbolic NAGs using UTF-8
+  * Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no gme
+- Translations:	
+  * updated spanish translation (thanks to Benigno Hernández)

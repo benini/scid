@@ -98,8 +98,8 @@ proc ::search::board {} {
     .sb.status configure -text $str
     set glstart 1
     ::windows::gamelist::Refresh
-    
-    if { $sBoardSearchRefBase } {
+    set gamesFound [lindex $str 0]
+    if { $sBoardSearchRefBase && $gamesFound != 0} {
       ::file::SwitchToBase $base
     }
     ::search::loadFirstGame

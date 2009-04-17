@@ -861,8 +861,7 @@ translate S GlistRemoveGameAndBelowFromFilter  {Quita esta partida y todas las d
 translate S GlistDeleteGame {Elimina/Recupera esta partida de la base} 
 translate S GlistDeleteAllGames {Elimina todas las partidas de la base que aparecen en el Filtro} 
 translate S GlistUndeleteAllGames {Recupera todas las partidas borradas de la base que aparecen en el filtro} 
-# ====== TODO To be translated ======
-translate S GlistMergeGameInBase {Merge Game in other base} 
+translate S GlistMergeGameInBase {Fusionar la partida en otra base} 
 
 # Maintenance window:
 translate S DatabaseName {Nombre de la base:}
@@ -974,8 +973,7 @@ translate S SearchBoardExact {Posición exacta (todas las piezas en las mismas ca
 translate S SearchBoardPawns {Peones (igual material, todos los peones en las mismas casillas)}
 translate S SearchBoardFiles {Columnas (igual material, todos los peones en las mismas columnas)}
 translate S SearchBoardAny {Cualquiera (igual material, peones y piezas en cualquier parte)}
-# ====== TODO To be translated ======
-translate S SearchInRefDatabase { Search in base }
+translate S SearchInRefDatabase {Búsqueda en la base de referencia}
 translate S LookInVars {Mirar en variaciones}
 
 # Material search:
@@ -1511,15 +1509,11 @@ translate S FICSServerPort {Puerto del servidor}
 translate S FICSTimesealPort {Puerto Timeseal}
 translate S FICSSilence {Silencio}
 translate S FICSOffers {Ofertas}
-# ====== TODO To be translated ======
-translate S FICSConsole {Console}
+translate S FICSConsole {Consola}
 translate S FICSGames {Partidas}
-# ====== TODO To be translated ======
-translate S FICSUnobserve {Stop observing game}
-# ====== TODO To be translated ======
-translate S FICSProfile {Display your history and profile}
-# ====== TODO To be translated ======
-translate S FICSRelayedGames {Relayed games}
+translate S FICSUnobserve {Parar vistazo de partida}
+translate S FICSProfile {Muestra tu historia y perfil}
+translate S FICSRelayedGames {Partidas retransmitidas}
 translate S FICSFindOpponent {Buscar oponente}
 translate S FICSTakeback {Retrocede}
 translate S FICSTakeback2 {Retrocede 2}
@@ -1536,10 +1530,8 @@ translate S FICSDecline {rechazar}
 translate S FICSColour {Color}
 translate S FICSSend {enviar}
 translate S FICSConnect {Conectar}
-# ====== TODO To be translated ======
-translate S FICSdefaultuservars {Use default variables}
-# ====== TODO To be translated ======
-translate S FICSObserveconfirm {Do you want to observe game}
+translate S FICSdefaultuservars {Usa valores por defecto}
+translate S FICSObserveconfirm {Quieres observar la partida}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1559,21 +1551,14 @@ translate S CCDlgClawsEg {p.e. Sylpheed Claws}
 translate S CCDlgmailxEg {p.e. mailx, mutt, nail...}
 translate S CCDlgAttachementPar {Parámetro Adhesión (Attachment):}
 translate S CCDlgInternalXfcc {Usar soporte interno Xfcc}
-# ====== TODO To be translated ======
-translate S CCDlgConfirmXfcc {Confirm moves}
+translate S CCDlgConfirmXfcc {Confirmar jugadas}
 translate S CCDlgSubjectPar {Parámetro Sujeto (Subject):}
-# ====== TODO To be translated ======
-translate S CCDlgDeleteBoxes {Empty In-/Outbox}
-# ====== TODO To be translated ======
-translate S CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
-# ====== TODO To be translated ======
-translate S CCDlgConfirmMove {Confirm move}
-# ====== TODO To be translated ======
-translate S CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
-# ====== TODO To be translated ======
-translate S CCDlgDBGameToLong {Inconsistent Mainline}
-# ====== TODO To be translated ======
-translate S CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+translate S CCDlgDeleteBoxes {Vaciar Entrante/Saliente}
+translate S CCDlgDeleteBoxesText {¿Quieres realmente vaciar tus carpetas Entrante y Saliente para Ajedrez por correspondencia? Esto requiere una nueva sincronización para mostrar el estado último de tus partidas}
+translate S CCDlgConfirmMove {Confirmar jugada}
+translate S CCDlgConfirmMoveText {Si tu confirmas, la siguiente jugada y comentario será enviado al servidor:}
+translate S CCDlgDBGameToLong {Linea principal Inconsistente}
+translate S CCDlgDBGameToLongError {La linea principal en tu base es más larga que de la partida en la bandeja de entrada. Si la bandeja de entrada contiene la partida actual, algunos movimientos fueron añadidos a la linea principal en la base erróneamente.\nEn este caso acorte la linea principal a la (max) jugada\n}
 translate S CCDlgStartEmail {Empezar nueva partida eMail}
 translate S CCDlgYourName {Tu nombre:}
 translate S CCDlgYourMail {Tu dirección eMail:}
@@ -1600,10 +1585,8 @@ translate S CCDlgLoginName  {Nombre de registro:}
 translate S CCDlgPassword   {Contraseña:}
 translate S CCDlgURL        {Xfcc-URL:}
 translate S CCDlgRatingType {Tipo de puntuación (Rating):}
-# ====== TODO To be translated ======
-translate S CCDlgDuplicateGame {Non-unique game ID}
-# ====== TODO To be translated ======
-translate S CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
+translate S CCDlgDuplicateGame {El ID de la partida no es único}
+translate S CCDlgDuplicateGameError {Esta partida existe más de una vez en tu base. Por favor, borra todos los duplicados y compacta tu fichero de partidas (Fichero/Mantenimiento/Compactar base de datos).}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
@@ -1613,8 +1596,7 @@ translate S ExtHWHardware {Hardware}
 translate S ExtHWNovag {Novag Citrine}
 translate S ExtHWInputEngine {Motor de entrada (Input Engine)}
 translate S ExtHWNoBoard {Sin tablero}
-# ====== TODO To be translated ======
-translate S NovagReferee {Referee}
+translate S NovagReferee {Árbitro}
 translate S IEConsole {Consola de entrada del motor}
 translate S IESending {Movimientos enviados por}
 translate S IESynchronise {Sincronizar}
