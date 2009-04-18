@@ -448,12 +448,14 @@ namespace eval fics {
     # switch from read to gets in case a read is done at the middle of a line
     if {! $logged} {
       set line [read $::fics::sockchan]
+      puts "not logged readparse ->$line"
       foreach l [split $line "\n"] {
         readparse $l
       }
     } else  {
       set line [gets $::fics::sockchan]
-      set line [string map {"\a" ""} $line]
+      puts "gets readparse ->$line "
+      # set line [string map {"\a" ""} $line]
       readparse $line
     }
   }
