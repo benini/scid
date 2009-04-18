@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.62 2009/04/18 15:47:50 arwagner Exp $
+### $Id: correspondence.tcl,v 1.63 2009/04/18 19:27:36 arwagner Exp $
 ###
-### Last change: <Sat, 2009/04/18 17:38:55 arwagner ingata>
+### Last change: <Sat, 2009/04/18 19:27:57 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2871,7 +2871,7 @@ namespace eval CorrespondenceChess {
 
 			set filelist {}
 			set skiplist {}
-			set sortmode ""
+			set sortmode "-ascii"
 
 			# generate a list of games retrieved by Xfcc. Add game-ID and
 			# timing to two lists: one holds all games and one holds
@@ -2921,8 +2921,8 @@ namespace eval CorrespondenceChess {
 			}
 
 			# sort file list by mytime, ascending
-			set filelist [lsort -index 1 $sortmode $filelist]
-			set skiplist [lsort -index 1 $sortmode $skiplist]
+			set filelist [lsort -index 1 "$sortmode" $filelist]
+			set skiplist [lsort -index 1 "$sortmode" $skiplist]
 
 			::CorrespondenceChess::emptyGamelist
 			sc_clipbase clear
