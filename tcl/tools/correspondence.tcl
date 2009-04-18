@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.61 2009/03/15 19:25:09 arwagner Exp $
+### $Id: correspondence.tcl,v 1.62 2009/04/18 15:47:50 arwagner Exp $
 ###
-### Last change: <Sun, 2009/03/15 20:21:40 arwagner ingata>
+### Last change: <Sat, 2009/04/18 17:38:55 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -786,6 +786,9 @@ namespace eval Xfcc {
 				}
 			}
 
+			set mytime [expr $daysPlayer*24*60+$hoursPlayer*60+$minutesPlayer]
+			set opptime [expr $daysOpponent*24*60+$hoursOpponent*60+$minutesOpponent]
+
 			if {[$game selectNodes {string(hasWhite)}] == "true"} {
 				set clockW [format "%2ud %2u:%2u" $daysPlayer $hoursPlayer $minutesPlayer]
 				set clockB [format "%2ud %2u:%2u" $daysOpponent $hoursOpponent $minutesOpponent]
@@ -807,7 +810,9 @@ namespace eval Xfcc {
 				[list "noEngines" $noEngines] \
 				[list "result" $Result] \
 				[list "TimeControl" $TC] \
-				[list "message" $mess] ]
+				[list "message" $mess] \
+				[list "mytime" $mytime] \
+				[list "opptime" $opptime] ]
 		}
 
 		set filename [scidConfigFile xfccstate]
@@ -1175,7 +1180,20 @@ namespace eval CorrespondenceChess {
 	# external send tool (eg. Xfcc)
 	set XfccSendcmd      "./Xfcc-Send.pl"
 
-	set XfccConfirm      1
+	# confirm before sending moves?
+	set XfccConfirm          1
+
+	# Show only games where the player has the move?
+	set CCListOnlyOwnMove    0
+
+	# Sort criteria to use
+	set CCOrderClassic       0
+	set CCOrderMyTime        1
+	set CCOrderOppTime       2
+	set CCOrderOppName       3
+
+	# Which to use
+	set CCListOrder          $CCOrderClassic
 
 	# email-programm capable of SMTP auth and attachements
 	set mailer           "/usr/bin/nail"
@@ -2613,6 +2631,7 @@ namespace eval CorrespondenceChess {
 					set CmailGameName [string range $i 15 end-1]
 				}
 			}
+			set noENG "false"
 			# Search the game in the correspondence DB and display it
 			foreach xfccextra $::Xfcc::xfccstate {
 				if { [string equal -nocase [lindex $xfccextra 0] "$CmailGameName" ] } {
@@ -2850,29 +2869,90 @@ namespace eval CorrespondenceChess {
 		set games 0
 		if {$CorrSlot > -1} {
 
+			set filelist {}
+			set skiplist {}
+			set sortmode ""
+
+			# generate a list of games retrieved by Xfcc. Add game-ID and
+			# timing to two lists: one holds all games and one holds
+			# those the user does not have the move (they may be skipped
+			# in display)
+			foreach xfccextra $::Xfcc::xfccstate {
+				set CmailGameName [lindex $xfccextra 0]
+				set criterion 0
+				foreach i $xfccextra {
+					if { [string equal -nocase [lindex $i 0] "myTurn" ] } {
+						set myTurn [string range $i 7 end]
+					}
+					if { [string equal -nocase [lindex $i 0] "mytime" ] } {
+						set mytime [string range $i 7 end]
+					}
+					if { [string equal -nocase [lindex $i 0] "opptime" ] } {
+						set opptime [string range $i 8 end]
+					}
+				}
+				switch -regexp -- $::CorrespondenceChess::CCListOrder \
+					"$::CorrespondenceChess::CCOrderMyTime" {
+						set criterion $mytime
+						set sortmode "-integer"
+
+					} \
+					"$::CorrespondenceChess::CCOrderOppTime" {
+						set criterion $opptime
+						set sortmode "-integer"
+					}
+
+				if {($myTurn == "false") && ($::CorrespondenceChess::CCListOnlyOwnMove == 1) } {
+					lappend skiplist [list $CmailGameName $criterion]
+				} else {
+					lappend filelist [list $CmailGameName $criterion]
+				}
+			}
+
+			foreach f [glob -nocomplain [file join $inpath *]] {
+				regsub -all {\\} $f "/" id
+				regsub -all "\.pgn" $id "" id
+				regsub -all "$inpath" $id "" id
+				if {([lsearch -regexp $filelist "^$id *"] == -1)} {
+					if {([lsearch -regexp $skiplist "^$id *"] == -1)} {
+						lappend filelist [list $id "0"]
+					}
+				}
+			}
+
+			# sort file list by mytime, ascending
+			set filelist [lsort -index 1 $sortmode $filelist]
+			set skiplist [lsort -index 1 $sortmode $skiplist]
+
 			::CorrespondenceChess::emptyGamelist
 			sc_clipbase clear
 			sc_base switch "clipbase"
-			foreach f [glob -nocomplain [file join $inpath *]] {
-				if {[catch {sc_base import file $f} result]} {
+
+			# import the games on basis of the sorted list created above
+			foreach f $filelist {
+				set filename "[file join $inpath [lindex $f 0]].pgn"
+				if {[catch {sc_base import file $filename} result]} {
 					::CorrespondenceChess::updateConsole "info Error retrieving server response from $pgnfile"
 				} else {
 					# count the games processed successfully
 					set games [expr {$games+1}]
 				}
 			}
+
 			set glgames $games
 
 			sc_base switch "clipbase"
 
-			# Sort the clipbase to get a sorted list of games in CC
-			# window and process them in sorted order by prev/next
-			set sortCriteria "Site, Event, Round, Result, White, Black"
-			progressWindow "Scid" "Sorting the database..."
-			set err [catch {sc_base sort $sortCriteria \
-									{changeProgressWindow "Sorting..."} \
-								 } result]
-			closeProgressWindow
+			if {$::CorrespondenceChess::CCListOrder == $::CorrespondenceChess::CCOrderClassic} {
+				# For Classic sorting: sort the clipbase, this is easier
+				# to implement than individual sorting upon import.
+				set sortCriteria "Site, Event, Round, Result, White, Black"
+				progressWindow "Scid" "Sorting the database..."
+				set err [catch {sc_base sort $sortCriteria \
+										{changeProgressWindow "Sorting..."} \
+									 } result]
+				closeProgressWindow
+			}
 
 
 			if {$glgames > 0} {
@@ -2943,8 +3023,8 @@ namespace eval CorrespondenceChess {
 
 						# actually check the $xfccstate list for the current
 						# values. If it is not set (e.g. only inbox processed
-						# buy no current retrieval) set some default values.
-						foreach xfccextra $::Xfcc::xfccstate {
+							# buy no current retrieval) set some default values.
+							foreach xfccextra $::Xfcc::xfccstate {
 							if { [string equal -nocase [lindex $xfccextra 0] "$CmailGameName" ] } {
 								foreach i $xfccextra {
 									if { [string equal -nocase [lindex $i 0] "myTurn" ] } {
