@@ -455,23 +455,24 @@ namespace eval fics {
     } else  {
       set line [gets $::fics::sockchan]
       puts "gets readparse ->$line "
-      # set line [string map {"\a" ""} $line]
+      set line [string map {"\a" ""} $line]
       readparse $line
     }
   }
   
   ################################################################################
   # Appends an array to soughtlist if the parameter is correct
+  # returns 0 if the line is not parsed and so it is still pending for use
   ################################################################################
   proc parseSoughtLine { l } {
     global ::fics::offers_minelo ::fics::offers_maxelo ::fics::offers_mintime ::fics::offers_maxtime
     
-    if { [ catch { if {[llength $l] < 8} { return } } ] } { return }
+    if { [ catch { if {[llength $l] < 8} { return 0} } ] } { return 0}
     array set ga {}
     
     set offset 0
     set ga(game) [lindex $l 0]
-    if { ! [string is integer $ga(game)] } { return }
+    if { ! [string is integer $ga(game)] } { return 0}
     set tmp [lindex $l 1]
     if { [scan $tmp "%d" ga(elo)] != 1} { set ga(elo) $offers_minelo }
     if { $ga(elo) < $offers_minelo } { set ga(elo) $offers_minelo }
@@ -483,11 +484,11 @@ namespace eval fics {
     if { [scan $tmp "%d" ga(time_inc)] != 1} { set ga(time_inc) 0 }
     
     set ga(rated) [lindex $l 5]
-    if {$ga(rated) != "rated" && $ga(rated) != "unrated"} { return }
+    if {$ga(rated) != "rated" && $ga(rated) != "unrated"} { return 0 }
     
     set ga(type) [lindex $l 6]
     if { $ga(type) != "untimed" && $ga(type) != "blitz" && $ga(type) != "standard" && $ga(type) != "lightning" } {
-      return
+      return 0
     }
     set ga(color) ""
     if { [lindex $l 7] == "\[white\]" || [lindex $l 7] == "\[black\]" } {
@@ -500,6 +501,7 @@ namespace eval fics {
     }
     
     lappend ::fics::soughtlist [array get ga]
+    return 1
   }
   ################################################################################
   #
@@ -519,8 +521,9 @@ namespace eval fics {
         return
       }
       # lappend ::fics::soughtlist $line
-      parseSoughtLine $line
-      return
+      if { [ parseSoughtLine $line ] } {
+        return
+      }
     }
     
     if {[string match "login: " $line]} {
@@ -819,6 +822,8 @@ namespace eval fics {
   #
   ################################################################################
   proc parseStyle12 {line} {
+    puts "parseStyle12 $line"
+    puts "length = [llength $line] (req 33)"
     set color [lindex $line 9]
     set gameNumber [lindex $line 16]
     set white [lindex $line 17]
@@ -900,7 +905,7 @@ namespace eval fics {
     
     set fen "$fen $castle $enpassant [lindex $line 15] $moveNumber"
     
-    # puts $verbose_move
+    puts "verbose_move $verbose_move (fen = $fen) ::fics::playing $::fics::playing"
     # try to play the move and check if fen corresponds. If not this means the position needs to be set up.
     if {$moveSan != "none" && $::fics::playing != -1} {
       # first check side's coherency
@@ -1153,7 +1158,7 @@ namespace eval fics {
   ################################################################################
   # Handle mouse button 1 on console : observe the selected game
   ################################################################################
-  proc consoleClick { x y win } {
+  proc consoleClick { x y win } {   
     set idx [ $win index @$x,$y ]
     if { [ scan $idx "%d.%d" l c ] != 2 } {
       # should never happen
