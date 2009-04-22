@@ -5,6 +5,9 @@
 ### Uses the free Tcl/Tk sound package "Snack", which comes with
 ### most Tcl distributions. See http://www.speech.kth.se/snack/
 
+### when an other application uses the audio device, no sound can be played. Forces a reset of pending sounds after 5 seconds
+### which limits the maximum length of a playable sound
+
 namespace eval ::utils::sound {}
 
 set ::utils::sound::hasSnackPackage 0
@@ -91,6 +94,7 @@ proc ::utils::sound::AnnounceMove {move} {
   
   if {[string range $move 0 4] == "O-O-O"} { set move q }
   if {[string range $move 0 2] == "O-O"} { set move k }
+  set move [::untrans $move]
   set parts [split $move ""]
   set soundList {}
   foreach part $parts {
@@ -121,6 +125,7 @@ proc ::utils::sound::AnnounceBack {} {
 
 
 proc ::utils::sound::SoundFinished {} {
+  after cancel ::utils::sound::CancelSounds
   set ::utils::sound::isPlayingSound 0
   CheckSoundQueue
 }
@@ -152,7 +157,6 @@ proc ::utils::sound::PlaySound {sound} {
 proc ::utils::sound::CheckSoundQueue {} {
   variable soundQueue
   variable isPlayingSound
-  
   if {$isPlayingSound} { return }
   if {[llength $soundQueue] == 0} { return }
   
@@ -161,6 +165,7 @@ proc ::utils::sound::CheckSoundQueue {} {
   set isPlayingSound 1
   
   catch { $next play -blocking 0 -command ::utils::sound::SoundFinished }
+  after 5000 ::utils::sound::CancelSounds
 }
 
 

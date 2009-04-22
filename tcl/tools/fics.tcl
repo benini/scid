@@ -454,7 +454,6 @@ namespace eval fics {
       }
     } else  {
       set line [gets $::fics::sockchan]
-      puts "gets readparse ->$line "
       set line [string map {"\a" ""} $line]
       readparse $line
     }
@@ -466,6 +465,11 @@ namespace eval fics {
   ################################################################################
   proc parseSoughtLine { l } {
     global ::fics::offers_minelo ::fics::offers_maxelo ::fics::offers_mintime ::fics::offers_maxtime
+    
+    # it seems that the first offer starts with a prompt
+    if {[string match "fics% *" $l]} {
+      set l [string range $l 6 end]
+    }
     
     if { [ catch { if {[llength $l] < 8} { return 0} } ] } { return 0}
     array set ga {}
@@ -512,7 +516,7 @@ namespace eval fics {
     
     if {$line == "" || $line == "fics% "} {return}
     
-    # puts  "readparse $line"
+    puts  "readparse $line"
     
     if { $::fics::sought } {
       if {[string match "* ad* displayed." $line]} {
@@ -1118,6 +1122,7 @@ namespace eval fics {
   #
   ################################################################################
   proc writechan {line {echo "noecho"}} {
+    puts "writechan>>$line"
     after cancel ::fics::stayConnected
     if {[eof $::fics::sockchan]} {
       tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
@@ -1158,7 +1163,7 @@ namespace eval fics {
   ################################################################################
   # Handle mouse button 1 on console : observe the selected game
   ################################################################################
-  proc consoleClick { x y win } {   
+  proc consoleClick { x y win } {
     set idx [ $win index @$x,$y ]
     if { [ scan $idx "%d.%d" l c ] != 2 } {
       # should never happen

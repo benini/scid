@@ -949,7 +949,8 @@ proc markExercise { prevscore score } {
   set difficulty [expr $t +2]
   
   puts "flag T pour [sc_game number] difficulty $difficulty"
-  sc_game flag T [sc_game number] 1
+  # If the base opened is read only, like a PGN file, avoids an exception
+  catch { sc_game flag T [sc_game number] 1 }
   sc_pos setComment "****D${difficulty} [format %.1f $prevscore]->[format %.1f $score] [sc_pos getComment]"
   updateBoard
 }
