@@ -48,7 +48,7 @@ array set codes {
 }
 
 set languages {czech deutsch francais hungary italian nederlan norsk polish
-  portbr spanish swedish serbian russian
+  portbr spanish swedish serbian russian catalan
 }
 
 ################################################################################

@@ -2046,6 +2046,8 @@ translate C DockRight {Move to right}
 # ====== TODO To be translated ======
 translate C Undock {Undock}
 # ====== TODO To be translated ======
+translate C ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
 }
 
 
@@ -5686,6 +5688,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

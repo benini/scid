@@ -1739,6 +1739,8 @@ translate I DockLeft {Move to left}
 translate I DockRight {Move to right}
 # ====== TODO To be translated ======
 translate I Undock {Undock}
+# ====== TODO To be translated ======
+translate I ChangeIcon {Change icon...}
 }
 
 ############################################################
@@ -1975,6 +1977,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

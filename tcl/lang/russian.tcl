@@ -2083,8 +2083,11 @@ translate R DockRight {Move to right}
 # ====== TODO To be translated ======
 translate R Undock {Undock}
 # ====== TODO To be translated ======
+translate R ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -1611,9 +1611,12 @@ translate S DockBottom {Mover abajo}
 translate S DockLeft {Mover a la izquierda}
 translate S DockRight {Mover a la derecha}
 translate S Undock {Ventana flotante}
+# ====== TODO To be translated ======
+translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

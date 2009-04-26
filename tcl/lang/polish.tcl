@@ -2063,6 +2063,8 @@ translate P DockRight {Move to right}
 # ====== TODO To be translated ======
 translate P Undock {Undock}
 # ====== TODO To be translated ======
+translate P ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
 }
 
 ### Tips of the day in Polish:
@@ -2283,6 +2285,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

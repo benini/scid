@@ -1599,6 +1599,7 @@ translate F DockBottom {Déplacer en bas}
 translate F DockLeft {Déplacer à gauche}
 translate F DockRight {Déplacer à droite}
 translate F Undock {Détacher}
+translate F ChangeIcon {Changer icone...}
 
 ##########
 #
@@ -1806,6 +1807,7 @@ translate F Undock {Détacher}
 }
 
 # end of francais.tcl
+
 
 
 

@@ -1651,6 +1651,8 @@ translate D DockBottom {Nach unten}
 translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
 translate D Undock {Fenster befreien}
+# ====== TODO To be translated ======
+translate D ChangeIcon {Change icon...}
 }
 
 ##########
@@ -7217,6 +7219,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

@@ -1619,8 +1619,11 @@ translate K DockBottom {Moure abaix}
 translate K DockLeft {Moure a l'esquerra}
 translate K DockRight {Moure a la dreta}
 translate K Undock {Finestra flotant}
+# ====== TODO To be translated ======
+translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 

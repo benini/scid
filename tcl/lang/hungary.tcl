@@ -1600,6 +1600,8 @@ translate H DockBottom {Mozgatás alulra}
 translate H DockLeft {Mozgatás balra}
 translate H DockRight {Mozgatás jobbra}
 translate H Undock {Feloldás}
+# ====== TODO To be translated ======
+translate H ChangeIcon {Change icon...}
 }
 
 # Tips of the day in Hungarian
@@ -1833,6 +1835,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

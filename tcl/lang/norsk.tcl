@@ -2050,12 +2050,15 @@ translate O DockRight {Move to right}
 # ====== TODO To be translated ======
 translate O Undock {Undock}
 # ====== TODO To be translated ======
+translate O ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
 }
 
 # norsk.tcl
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

@@ -1661,5 +1661,8 @@ translate E DockLeft {Move to left}
 translate E DockRight {Move to right}
 translate E Undock {Undock}
 
+# Switcher window
+translate E ChangeIcon {Change icon...}
+
 }
 # end of english.tcl

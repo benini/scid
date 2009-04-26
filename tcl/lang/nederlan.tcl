@@ -1797,8 +1797,11 @@ translate N DockBottom {Zend naar laatste plaats}
 translate N DockLeft {Zend naar links}
 translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
+# ====== TODO To be translated ======
+translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

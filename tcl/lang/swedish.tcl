@@ -2057,6 +2057,8 @@ translate W DockRight {Drag till höger}
 # ====== TODO To be translated ======
 translate W Undock {Avdocka}
 # ====== TODO To be translated ======
+translate W ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
 }
 
 ############################################################
@@ -7073,6 +7075,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

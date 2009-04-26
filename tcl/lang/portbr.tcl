@@ -2059,9 +2059,12 @@ translate B DockRight {Move to right}
 # ====== TODO To be translated ======
 translate B Undock {Undock}
 # ====== TODO To be translated ======
+translate B ChangeIcon {Change icon...}
+# ====== TODO To be translated ======
 }
 
 # end of portbr.tcl
+
 
 
 
