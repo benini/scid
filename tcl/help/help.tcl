@@ -2265,6 +2265,10 @@ set helpText(Tree) {<h1>The Tree window</h1>
   if you close a Mask that has been modified.
   </p>
   <p>
+  A search can be made to retrieve positions that have been annotated for example. to go 
+  to a position, just click on a line in the result panel.
+  </p>
+  <p>
   A mask can be automatically filled with a game containing comments,
   variations and NAG annotations using the menu <term>Fill with
   game</term> or <term>Fill with Database</term>.
@@ -2320,7 +2324,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   adding or replacing a game, or sorting the database.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 3.7.4, April 2009)</footer></p>
 }
 
 

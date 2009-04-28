@@ -480,6 +480,7 @@ menuText F TreeMaskClose "Fermer" 0 {Fermer masque}
 menuText F TreeMaskFillWithGame "Remplir avec partie" 0 {Remplir le masque avec partie}
 menuText F TreeMaskFillWithBase "Remplir avec base" 0 {Remplir le masque avec les parties de la base}
 menuText F TreeMaskInfo "Info" 0 {Statistiques du masque}
+menuText F TreeMaskSearch "Chercher" 0 {Chercher dans le masque courant}
 menuText F TreeSort "Trier" 0
 menuText F TreeSortAlpha "Alphabétique" 0
 menuText F TreeSortECO "code ECO" 0
@@ -511,6 +512,7 @@ translate F DoYouWantToSaveFirst {voulez-vous d'abord sauvegarder}
 translate F AddToMask {Ajouter au masque}
 translate F RemoveFromMask {Enlever du masque}
 translate F AddThisMoveToMask {Ajouter ce coup au masque}
+translate F SearchMask {Recherche dans masque}
 translate F Nag {Code Nag}
 translate F Marker {Marqueur}
 translate F Include {Inclure}
@@ -1807,6 +1809,8 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
+
 
 
 

@@ -545,6 +545,8 @@ menuText O TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText O TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 # ====== TODO To be translated ======
 menuText O TreeMaskInfo "Info" 0 {Show statistics for current mask}
+# ====== TODO To be translated ======
+menuText O TreeMaskSearch "Search" 0 {Search in current mask}
 menuText O TreeSort "Sorter" 0
 menuText O TreeSortAlpha "Alfabetisk" 0
 menuText O TreeSortECO "ECO-kode" 0
@@ -585,6 +587,8 @@ translate O AddToMask {Add to Mask}
 translate O RemoveFromMask {Remove from Mask}
 # ====== TODO To be translated ======
 translate O AddThisMoveToMask {Add this move to Mask}
+# ====== TODO To be translated ======
+translate O SearchMask {Search in Mask}
 # ====== TODO To be translated ======
 translate O Nag {Nag code}
 # ====== TODO To be translated ======
@@ -2058,6 +2062,8 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

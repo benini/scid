@@ -517,6 +517,7 @@ menuText E TreeMaskClose "Close" 0 {Close mask}
 menuText E TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
 menuText E TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
 menuText E TreeMaskInfo "Info" 0 {Show statistics for current mask}
+menuText E TreeMaskSearch "Search" 0 {Search in current mask}
 menuText E TreeSort "Sort" 0
 menuText E TreeSortAlpha "Alphabetical" 0
 menuText E TreeSortECO "ECO Code" 0
@@ -549,6 +550,7 @@ translate E DoYouWantToSaveFirst {Do you want to save first}
 translate E AddToMask {Add to Mask}
 translate E RemoveFromMask {Remove from Mask}
 translate E AddThisMoveToMask {Add this move to Mask}
+translate E SearchMask {Search in Mask}
 translate E Nag {Nag code}
 translate E Marker {Marker}
 translate E Include {Include}

@@ -794,11 +794,14 @@ scid-3.7.4
   * serious game play when use book is checked and book name is empty leads to crash (thanks to Benigno Hernández)
   * Check for engines allowed in eMail games caused an exception (noENG not set)
   * Internet play (FICS) : the first offer not displayed on the graph
+  * Internet play (FICS) : hardened the code to avoid the (rare) case where the opponent moves but Scid does not reflect it. Still the need to see wether it is a FICS bug or a Scid one. 
   * Sound : when another application uses the sound device and once it is released, forces Scid to reset pending sounds hence be able to use sounds again (this has the drawback of limiting maximum sound length to 5 seconds)
   * Move annoucement : if pieces are translated, announces moves using english sounds (as only english annoucements are supported)
+  * Tree window : fixed game loading from browse game window (when the Tree was not locked)
 - Features
   * NAG support : add symbolic NAGs using UTF-8 symbols
-  * Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no gme
+  * Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game
+  * Tree mask : added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
 - Correspondence Chess:
 	* Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 	* Do not show games where the player does not have the move (Xfcc only)

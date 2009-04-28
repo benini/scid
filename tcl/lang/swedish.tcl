@@ -545,6 +545,8 @@ menuText W TreeMaskFillWithGame "Fyll med parti" 0 {Fyll sökmask med parti}
 menuText W TreeMaskFillWithBase "Fyll med databas" 0 {Fyll sökmask med alla partier i databasen}
 # ====== TODO To be translated ======
 menuText W TreeMaskInfo "Info" 0 {Visa statistik för aktuell sökmask}
+# ====== TODO To be translated ======
+menuText W TreeMaskSearch "Search" 0 {Search in current mask}
 menuText W TreeSort "Sortera" 0
 menuText W TreeSortAlpha "Alfabetiskt" 0
 menuText W TreeSortECO "ECO kod" 0
@@ -585,6 +587,8 @@ translate W AddToMask {Lägg till i Sökmask}
 translate W RemoveFromMask {Ta bort från Sökmask}
 # ====== TODO To be translated ======
 translate W AddThisMoveToMask {Lägg till deta drag i Sökmask}
+# ====== TODO To be translated ======
+translate W SearchMask {Search in Mask}
 # ====== TODO To be translated ======
 translate W Nag {NAG-kod}
 # ====== TODO To be translated ======
@@ -7075,6 +7079,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 

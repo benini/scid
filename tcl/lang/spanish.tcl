@@ -498,6 +498,8 @@ menuText S TreeMaskClose "Cerrar" 0 {Cerrar máscara}
 menuText S TreeMaskFillWithGame "Llenar con partida" 0 {Llenar máscara con partida}
 menuText S TreeMaskFillWithBase "LLenar con base" 0 {Llenar máscar con todas las partidas de la base}
 menuText S TreeMaskInfo "Info" 0 {Muestra estadísticas para la máscara actual}
+# ====== TODO To be translated ======
+menuText S TreeMaskSearch "Search" 0 {Search in current mask}
 menuText S TreeSort "Ordenar" 0
 menuText S TreeSortAlpha "Alfabéticamente" 0
 menuText S TreeSortECO "Por código ECO" 11
@@ -530,6 +532,8 @@ translate S DoYouWantToSaveFirst {Quieres salvar primero}
 translate S AddToMask {Añadir a máscara}
 translate S RemoveFromMask {Elimina desde la máscara}
 translate S AddThisMoveToMask {Añadir este movimiento a la Máscara}
+# ====== TODO To be translated ======
+translate S SearchMask {Search in Mask}
 translate S Nag {Código de regaño}
 translate S Marker {Marcador}
 translate S Include {Incluir}
@@ -1616,6 +1620,8 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
+
 
 
 

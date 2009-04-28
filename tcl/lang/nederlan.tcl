@@ -502,6 +502,8 @@ menuText N TreeMaskClose "Sluiten" 0 {Sluit het masker}
 menuText N TreeMaskFillWithGame "Vullen met partij" 0 {Vul het masker met de partij}
 menuText N TreeMaskFillWithBase "Vullen met databestand" 0 {Vul het masker met alle partijen in het databestand}
 menuText N TreeMaskInfo "Info" 0 {Toon de statistieken voor het huidige masker}
+# ====== TODO To be translated ======
+menuText N TreeMaskSearch "Search" 0 {Search in current mask}
 menuText N TreeSort "Sorteren" 0
 menuText N TreeSortAlpha "Alfabetisch" 0
 menuText N TreeSortECO "ECO code" 0
@@ -535,6 +537,8 @@ translate N DoYouWantToSaveFirst {Wil u eerst de verandering bewaren?}
 translate N AddToMask {Toevoegen aan het Masker}
 translate N RemoveFromMask {Verwijderen uit het Masker}
 translate N AddThisMoveToMask {Voeg deze zet toe aan het Masker}
+# ====== TODO To be translated ======
+translate N SearchMask {Search in Mask}
 translate N Nag {Nag code}
 translate N Marker {Aanwijzer}
 translate N Include {Invoegen}
@@ -1801,6 +1805,8 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
+
 
 
 
