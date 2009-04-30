@@ -2012,17 +2012,6 @@ proc ::tree::mask::infoMask {} {
 proc ::tree::mask::displayMask {} {
   global ::tree::mask::mask
   
-  # use clipbase to enter a dummy game
-  set currentbase [sc_base current]
-  set fen [sc_pos fen]
-  sc_base switch clipbase
-  sc_info preMoveCmd {}
-  sc_game push copyfast
-  
-  if {[catch {sc_game startBoard $fen} err]} {
-    puts "sc_game startBoard $fen => $err"
-  }
-  
   set w .displaymask
   if { [winfo exists $w] } {
     focus $w
@@ -2030,7 +2019,9 @@ proc ::tree::mask::displayMask {} {
   }
   toplevel $w
   wm title $w [::tr DisplayMask]
+  ttk::button $w.bupdate -text [::tr "Update"] -command ::tree::mask::updateDisplayMask
   ttk::frame $w.f
+  pack $w.bupdate -fill x
   pack $w.f -fill both -expand 1
   
   ttk::treeview $w.f.tree -yscrollcommand "$w.f.ybar set" -xscrollcommand "$w.f.xbar set" -show tree -selectmode browse
@@ -2041,18 +2032,37 @@ proc ::tree::mask::displayMask {} {
   pack $w.f.ybar -side right -fill y
   pack $w.f.tree -side left -expand 1 -fill both
   
-  set fen [toShortFen $fen]
+  updateDisplayMask
+  
+  bind $w <Escape> { destroy  .displaymask }
+  $w.f.tree tag bind dblClickTree <Double-Button-1> {::tree::mask::maskTreeUnfold }
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::updateDisplayMask {} {
+  global ::tree::mask::mask
+  
+  set tree  .displaymask.f.tree
+  $tree delete [ $tree children {} ]
+  set fen [toShortFen [sc_pos fen] ]
+  # use clipbase to enter a dummy game
+  set currentbase [sc_base current]
+  sc_base switch clipbase
+  sc_info preMoveCmd {}
+  sc_game push copyfast
+  
+  if {[catch {sc_game startBoard $fen} err]} {
+    puts "sc_game startBoard $fen => $err"
+  }
   if { [info exists mask($fen) ] } {
     set moves [lindex $mask($fen) 0]
     ::tree::mask::populateDisplayMask $moves {} $fen {}
   }
-  
   sc_game pop
   sc_info preMoveCmd preMoveCommand
   
   sc_base switch $currentbase
-  bind $w <Escape> { destroy  .displaymask }
-  $w.f.tree tag bind dblClickTree <Double-Button-1> {::tree::mask::maskTreeUnfold }
 }
 ################################################################################
 #
@@ -2088,7 +2098,7 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
     } elseif {[lindex $m 5] != ""} {
       set img [lindex $m 5]
     }
-    set id [ $tree insert $parent end -text [::trans $move] -image $img -tags dblClickTree ]
+    set id [ $tree insert $parent end -text "[::trans $move][lindex $m 1]" -image $img -tags dblClickTree ]
     if {[catch {sc_game startBoard $fen} err]} {
       puts "ERROR sc_game startBoard $fen => $err"
     }
@@ -2105,7 +2115,7 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
         set newfen [toShortFen [sc_pos fen] ]
         if {[lsearch $fenSeen $newfen] != -1} { return }
         lappend fenSeen $newfen
-        $tree item $id -text "[ $tree item $id -text ] [::trans [ lindex $newmoves { 0 0 }  ] ]"
+        $tree item $id -text "[ $tree item $id -text ] [::trans [ lindex $newmoves { 0 0 }  ] ][ lindex $newmoves { 0 1 }  ]"
         if { ! [info exists mask($newfen) ] } {
           break
         }
