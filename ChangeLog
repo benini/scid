@@ -801,7 +801,9 @@ scid-3.7.4
 - Features
   * NAG support : add symbolic NAGs using UTF-8 symbols
   * Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game
-  * Tree mask : added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
+  * Tree mask : 
+    - added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
+    - added a sub-menu for displaying the Mask content in a tree form
 - Correspondence Chess:
 	* Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 	* Do not show games where the player does not have the move (Xfcc only)

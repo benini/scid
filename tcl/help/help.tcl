@@ -2269,6 +2269,12 @@ set helpText(Tree) {<h1>The Tree window</h1>
   to a position, just click on a line in the result panel.
   </p>
   <p>
+  The menu <b>display mask</b> will display the current Mask, from the current position, in a tree like representation.
+  Note that not all information are displayed (like comments) and as the Mask is a graph (hence
+  contains loops) it cannot be mapped perfectly to a tree representation, and some lines may be truncated
+  to avoid loops.
+  </p>
+  <p>
   A mask can be automatically filled with a game containing comments,
   variations and NAG annotations using the menu <term>Fill with
   game</term> or <term>Fill with Database</term>.

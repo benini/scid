@@ -548,6 +548,8 @@ menuText R TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in 
 # ====== TODO To be translated ======
 menuText R TreeMaskInfo "Info" 0 {Show statistics for current mask}
 # ====== TODO To be translated ======
+menuText R TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText R TreeMaskSearch "Search" 0 {Search in current mask}
 menuText R TreeSort "Сортировка" 0
 menuText R TreeSortAlpha "Алфавитная" 0
@@ -591,6 +593,8 @@ translate R RemoveFromMask {Remove from Mask}
 translate R AddThisMoveToMask {Add this move to Mask}
 # ====== TODO To be translated ======
 translate R SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate R DisplayMask {Display Mask}
 # ====== TODO To be translated ======
 translate R Nag {Nag code}
 # ====== TODO To be translated ======
@@ -2091,6 +2095,8 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

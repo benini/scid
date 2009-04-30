@@ -61,8 +61,6 @@ proc ::windows::stats::Open {} {
       -variable ::windows::stats::display($i) -command ::windows::stats::Refresh
   }
 
-
-#Klimmek: use autoscrollframe to display large infos     
 #  text $w.stats -borderwidth 0 \
     -width $::winWidth($w) -height $::winHeight($w) -font font_Fixed \
     -foreground black -background white -cursor top_left_arrow -wrap none \

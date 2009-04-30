@@ -550,6 +550,8 @@ menuText P TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in 
 # ====== TODO To be translated ======
 menuText P TreeMaskInfo "Info" 0 {Show statistics for current mask}
 # ====== TODO To be translated ======
+menuText P TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText P TreeMaskSearch "Search" 0 {Search in current mask}
 menuText P TreeSort "Sortowanie" 0
 menuText P TreeSortAlpha "Alfabetycznie" 0
@@ -594,6 +596,8 @@ translate P RemoveFromMask {Remove from Mask}
 translate P AddThisMoveToMask {Add this move to Mask}
 # ====== TODO To be translated ======
 translate P SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate P DisplayMask {Display Mask}
 # ====== TODO To be translated ======
 translate P Nag {Nag code}
 # ====== TODO To be translated ======
@@ -2289,6 +2293,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

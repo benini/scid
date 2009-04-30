@@ -539,6 +539,8 @@ menuText C TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in 
 # ====== TODO To be translated ======
 menuText C TreeMaskInfo "Info" 0 {Show statistics for current mask}
 # ====== TODO To be translated ======
+menuText C TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText C TreeMaskSearch "Search" 0 {Search in current mask}
 menuText C TreeSort "Øadit" 2
 menuText C TreeSortAlpha "Abecednì" 0
@@ -582,6 +584,8 @@ translate C RemoveFromMask {Remove from Mask}
 translate C AddThisMoveToMask {Add this move to Mask}
 # ====== TODO To be translated ======
 translate C SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate C DisplayMask {Display Mask}
 # ====== TODO To be translated ======
 translate C Nag {Nag code}
 # ====== TODO To be translated ======
@@ -5692,6 +5696,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

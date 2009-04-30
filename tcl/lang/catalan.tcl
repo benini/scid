@@ -498,6 +498,8 @@ menuText K TreeMaskFillWithGame "Omplir amb partida" 0 {Omple la màscara amb la 
 menuText K TreeMaskFillWithBase "Omplir amb base" 0 {Omple la màscara amb totes les partides de la base}
 menuText K TreeMaskInfo "Info" 0 {Mostra estadístiques per la màscara actual}
 # ====== TODO To be translated ======
+menuText K TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText K TreeMaskSearch "Search" 0 {Search in current mask}
 menuText K TreeSort "Ordenar" 0
 menuText K TreeSortAlpha "Alfabéticament" 0
@@ -533,6 +535,8 @@ translate K RemoveFromMask {Elimina des de la màscara}
 translate K AddThisMoveToMask {Afegir aquesta jugada a la Màscara}
 # ====== TODO To be translated ======
 translate K SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate K DisplayMask {Display Mask}
 translate K Nag {Codi Nag}
 translate K Marker {Marcador}
 translate K Include {Incloure}
@@ -1628,6 +1632,8 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
+
 
 
 

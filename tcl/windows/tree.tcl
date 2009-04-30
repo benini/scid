@@ -21,7 +21,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3 4 5 7 8 10 12} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Best Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
-  foreach idx {0 1 2 3 4 5 6 7} tag {New Open Save Close FillWithGame FillWithBase Search Info } {
+  foreach idx {0 1 2 3 4 5 6 7 8} tag {New Open Save Close FillWithGame FillWithBase Search Info Display} {
     configMenuText $m.mask $idx TreeMask$tag $lang
   }
   foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
@@ -157,7 +157,8 @@ proc ::tree::make { { baseNumber -1 } } {
   set helpMessage($w.menu.mask,6) TreeMaskSearch
   $w.menu.mask add command -label TreeMaskInfo -command "::tree::mask::infoMask"
   set helpMessage($w.menu.mask,7) TreeMaskInfo
-  
+  $w.menu.mask add command -label TreeMaskDisplay -command "::tree::mask::displayMask"
+  set helpMessage($w.menu.mask,8) TreeMaskDisplay
   
   foreach label {Alpha ECO Freq Score} value {alpha eco frequency score} {
     $w.menu.sort add radiobutton -label TreeSort$label \
@@ -1428,6 +1429,9 @@ namespace eval ::tree::mask {
   set searchMask_usecolor 0
   set searchMask_usemovecomment 0
   set searchMask_useposcomment 0
+  array set marker2image { Include ::rep::_tb_include Exclude ::rep::_tb_exclude MainLine ::tree::mask::imageMainLine Bookmark tb_bkm \
+        White ::tree::mask::imageWhite Black ::tree::mask::imageBlack \
+        NewLine tb_new ToBeVerified tb_rfilter ToTrain tb_msearch Dubious tb_help ToRemove tb_cut }
 }
 ################################################################################
 #
@@ -1534,11 +1538,10 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
   foreach j { 0 1 } {
     menu $mctxt.image$j
     $mctxt add cascade -label "[tr Marker] [expr $j +1]" -menu $mctxt.image$j
-    foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } \
-        i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
-          tb_new tb_rfilter tb_msearch tb_help tb_cut} {
-          $mctxt.image$j add command -label [ tr $e ] -image $i -compound left -command "::tree::mask::setImage $move $i $j"
-        }
+    foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } {
+      set i  $::tree::mask::marker2image($e)
+      $mctxt.image$j add command -label [ tr $e ] -image $i -compound left -command "::tree::mask::setImage $move $i $j"
+    }
     $mctxt.image$j add command -label [tr NoMarker] -command "::tree::mask::setImage $move {} $j"
   }
   menu $mctxt.color
@@ -2003,6 +2006,121 @@ proc ::tree::mask::infoMask {} {
   tk_messageBox -title "Mask info" -type ok -icon info -message "Mask : $::tree::mask::maskFile\n[tr Positions] : $npos\n[tr Moves] : $nmoves"
 }
 ################################################################################
+# Dumps mask content in a tree view widget
+# The current position is the reference base
+################################################################################
+proc ::tree::mask::displayMask {} {
+  global ::tree::mask::mask
+  
+  # use clipbase to enter a dummy game
+  set currentbase [sc_base current]
+  set fen [sc_pos fen]
+  sc_base switch clipbase
+  sc_info preMoveCmd {}
+  sc_game push copyfast
+  
+  if {[catch {sc_game startBoard $fen} err]} {
+    puts "sc_game startBoard $fen => $err"
+  }
+  
+  set w .displaymask
+  if { [winfo exists $w] } {
+    focus $w
+    return
+  }
+  toplevel $w
+  wm title $w [::tr DisplayMask]
+  ttk::frame $w.f
+  pack $w.f -fill both -expand 1
+  
+  ttk::treeview $w.f.tree -yscrollcommand "$w.f.ybar set" -xscrollcommand "$w.f.xbar set" -show tree -selectmode browse
+  ttk::scrollbar $w.f.xbar -command "$w.f.tree xview" -orient horizontal
+  ttk::scrollbar $w.f.ybar -command "$w.f.tree yview"
+  
+  pack $w.f.xbar -side bottom -fill x
+  pack $w.f.ybar -side right -fill y
+  pack $w.f.tree -side left -expand 1 -fill both
+  
+  set fen [toShortFen $fen]
+  if { [info exists mask($fen) ] } {
+    set moves [lindex $mask($fen) 0]
+    ::tree::mask::populateDisplayMask $moves {} $fen {}
+  }
+  
+  sc_game pop
+  sc_info preMoveCmd preMoveCommand
+  
+  sc_base switch $currentbase
+  bind $w <Escape> { destroy  .displaymask }
+  $w.f.tree tag bind dblClickTree <Double-Button-1> {::tree::mask::maskTreeUnfold }
+}
+################################################################################
+#
+################################################################################
+proc  ::tree::mask::maskTreeUnfold {} {
+  set t .displaymask.f.tree
+  
+  proc unfold {id} {
+    set t .displaymask.f.tree
+    foreach c [$t children $id] {
+      $t item $c -open true
+      unfold $c
+    }
+  }
+  
+  set id [$t selection]
+  unfold $id
+}
+################################################################################
+#
+################################################################################
+proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
+  global ::tree::mask::mask
+  
+  set tree .displaymask.f.tree
+  
+  foreach m $moves {
+    set move [lindex $m 0]
+    if {$move == "null"} { continue }
+    set img ""
+    if {[lindex $m 4] != ""} {
+      set img [lindex $m 4]
+    } elseif {[lindex $m 5] != ""} {
+      set img [lindex $m 5]
+    }
+    set id [ $tree insert $parent end -text [::trans $move] -image $img -tags dblClickTree ]
+    if {[catch {sc_game startBoard $fen} err]} {
+      puts "ERROR sc_game startBoard $fen => $err"
+    }
+    sc_move addSan $move
+    
+    set newfen [toShortFen [sc_pos fen] ]
+    if {[lsearch $fenSeen $newfen] != -1} { return }
+    if { [info exists mask($newfen) ] } {
+      set newmoves [lindex $mask($newfen) 0]
+      
+      while { [llength $newmoves] == 1 } {
+        lappend fenSeen $newfen
+        sc_move addSan [ lindex $newmoves { 0 0 } ]
+        set newfen [toShortFen [sc_pos fen] ]
+        if {[lsearch $fenSeen $newfen] != -1} { return }
+        lappend fenSeen $newfen
+        $tree item $id -text "[ $tree item $id -text ] [::trans [ lindex $newmoves { 0 0 }  ] ]"
+        if { ! [info exists mask($newfen) ] } {
+          break
+        }
+        set newmoves [lindex $mask($newfen) 0]
+      }
+      
+      if { [info exists mask($newfen) ] } {
+        set newmoves [lindex $mask($newfen) 0]
+        ::tree::mask::populateDisplayMask $newmoves $id $newfen $fenSeen
+      }
+    }
+  }
+  
+}
+################################################################################
 #
 ################################################################################
 proc ::tree::mask::searchMask { baseNumber } {
@@ -2036,13 +2154,12 @@ proc ::tree::mask::searchMask { baseNumber } {
     menu $w.f1.menum$j
     ttk::menubutton $w.f1.m$j -textvariable ::tree::mask::searchMask_trm$j -menu $w.f1.menum$j -style pad0.TMenubutton
     set ::tree::mask::searchMask_trm$j [tr "Include"]
-    set ::tree::mask::searchMask_m$j "::rep::_tb_include"
-    foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } \
-        i {::rep::_tb_include ::rep::_tb_exclude ::tree::mask::imageMainLine tb_bkm ::tree::mask::imageWhite ::tree::mask::imageBlack \
-          tb_new tb_rfilter tb_msearch tb_help tb_cut} {
-          $w.f1.menum$j add command -label [ tr $e ] -image $i -compound left \
+    set ::tree::mask::searchMask_m$j $::tree::mask::marker2image(Include)
+    foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } {
+      set i $::tree::mask::marker2image($e)
+      $w.f1.menum$j add command -label [ tr $e ] -image $i -compound left \
           -command "set ::tree::mask::searchMask_trm$j \"[tr $e ]\" ; set ::tree::mask::searchMask_m$j $i"
-        }
+    }
     grid $w.f1.ml$j -column [expr 1 + $j] -row 0
     grid $w.f1.m$j -column [expr 1 + $j] -row 1
   }
@@ -2169,7 +2286,7 @@ proc  ::tree::mask::perfomSearch  { baseNumber } {
   foreach l $res {
     $t insert end "$l\n"
   }
-    wm title .searchmask "[::tr SearchMask] [::tr Positions] $pos_count / $pos_total - [::tr moves] $move_count / $move_total"
+  wm title .searchmask "[::tr SearchMask] [::tr Positions] $pos_count / $pos_total - [::tr moves] $move_count / $move_total"
 }
 ################################################################################
 #

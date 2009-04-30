@@ -4,8 +4,8 @@
 |                                                           |
  ===========================================================
 
-ajouter recherhce navigation mask (stats, trouver positions, marqueurs particuliers, etc..)
-searchClick à continuer et autres vars de filtre
+displayMask : détecter boucles dans graph (meilleur algo)
+ajouter scrollbars X qui fonctionne
 
  ===========================================================
 |                                                           |

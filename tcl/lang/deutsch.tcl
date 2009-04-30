@@ -510,6 +510,8 @@ menuText D TreeMaskFillWithGame "Mit aktueller Partie füllen" 0 {Maske mit der a
 menuText D TreeMaskFillWithBase "Mit Datenbank füllen" 0 {Maske mit Datenbankpartien füllen}
 menuText D TreeMaskInfo "Info" 0 {Statistik für die aktuelle Maske anzeigen}
 # ====== TODO To be translated ======
+menuText D TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText D TreeMaskSearch "Search" 0 {Search in current mask}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
@@ -546,6 +548,8 @@ translate D RemoveFromMask {Entferne von Maske}
 translate D AddThisMoveToMask {Diesen Zug zur Maske hinzufügen}
 # ====== TODO To be translated ======
 translate D SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate D DisplayMask {Display Mask}
 translate D Nag {NAG Code}
 translate D Marker {Marker}
 translate D Include {Einbezogene Variante}
@@ -7223,6 +7227,8 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
 
 
 

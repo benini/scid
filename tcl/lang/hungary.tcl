@@ -476,6 +476,8 @@ menuText H TreeMaskFillWithGame "Feltöltés játszmával" 1 {Maszk feltöltése játsz
 menuText H TreeMaskFillWithBase "Feltöltés adatbázissal" 2 {Maszk feltöltése az adatbázis összes játszmájával}
 menuText H TreeMaskInfo "Információ" 0 {Az aktuális maszk fõbb adatai}
 # ====== TODO To be translated ======
+menuText H TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText H TreeMaskSearch "Search" 0 {Search in current mask}
 menuText H TreeSort "Rendezés" 0
 menuText H TreeSortAlpha "ABC" 0
@@ -509,6 +511,8 @@ translate H RemoveFromMask {Vedd ki a maszkból}
 translate H AddThisMoveToMask {Add hozzá ezt a lépést a maszkhoz}
 # ====== TODO To be translated ======
 translate H SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate H DisplayMask {Display Mask}
 translate H Nag {NAG-kód}
 translate H Marker {Jelölés}
 translate H Include {Belevesz}
@@ -1839,6 +1843,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

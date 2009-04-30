@@ -550,6 +550,8 @@ menuText B TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in 
 # ====== TODO To be translated ======
 menuText B TreeMaskInfo "Info" 0 {Show statistics for current mask}
 # ====== TODO To be translated ======
+menuText B TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText B TreeMaskSearch "Search" 0 {Search in current mask}
 menuText B TreeSort "Ordenar" 0
 menuText B TreeSortAlpha "Alfabetica" 0
@@ -594,6 +596,8 @@ translate B RemoveFromMask {Remove from Mask}
 translate B AddThisMoveToMask {Add this move to Mask}
 # ====== TODO To be translated ======
 translate B SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate B DisplayMask {Display Mask}
 # ====== TODO To be translated ======
 translate B Nag {Nag code}
 # ====== TODO To be translated ======
@@ -2068,6 +2072,8 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
+
 
 
 

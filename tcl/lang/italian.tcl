@@ -504,6 +504,8 @@ menuText I TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in 
 # ====== TODO To be translated ======
 menuText I TreeMaskInfo "Info" 0 {Show statistics for current mask}
 # ====== TODO To be translated ======
+menuText I TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+# ====== TODO To be translated ======
 menuText I TreeMaskSearch "Search" 0 {Search in current mask}
 menuText I TreeSort "Ordina" 0
 menuText I TreeSortAlpha "Alfabetico" 0
@@ -544,6 +546,8 @@ translate I RemoveFromMask {Remove from Mask}
 translate I AddThisMoveToMask {Add this move to Mask}
 # ====== TODO To be translated ======
 translate I SearchMask {Search in Mask}
+# ====== TODO To be translated ======
+translate I DisplayMask {Display Mask}
 # ====== TODO To be translated ======
 translate I Nag {Nag code}
 # ====== TODO To be translated ======
@@ -1981,6 +1985,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 
