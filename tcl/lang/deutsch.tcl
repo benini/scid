@@ -504,6 +504,8 @@ menuText D TreeFileClose "Baumfenster schließen" 12 {Schließe Zugbaum}
 menuText D TreeMask "Maskieren" 0
 menuText D TreeMaskNew "Neu" 0 {Neue Maske anlegen}
 menuText D TreeMaskOpen "Öffnen" 0 {Maske öffnen}
+# ====== TODO To be translated ======
+menuText D TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
 menuText D TreeMaskSave "Speichern" 0 {Maske speichern}
 menuText D TreeMaskClose "Schließen" 0 {Maske schließen}
 menuText D TreeMaskFillWithGame "Mit aktueller Partie füllen" 0 {Maske mit der aktuellen Partie füllen}
@@ -7227,6 +7229,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

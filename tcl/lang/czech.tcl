@@ -529,6 +529,8 @@ menuText C TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText C TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText C TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText C TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText C TreeMaskClose "Close" 0 {Close mask}
@@ -5696,6 +5698,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

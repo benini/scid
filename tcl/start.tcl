@@ -97,7 +97,7 @@ foreach ns {
   ::search
   ::search::filter ::search::board ::search::header ::search::material
   ::windows
-  ::windows::gamelist ::windows::stats ::tree ::windows::tree
+  ::windows::gamelist ::windows::stats ::tree ::tree::mask ::windows::tree
   ::windows::switcher ::windows::eco ::crosstab ::pgn ::book
   ::tools
   ::tools::analysis ::tools::email
@@ -135,6 +135,9 @@ array set ::docking::layout_list {}
 set ::docking::layout_list(1) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
 set ::docking::layout_list(2) {}
 set ::docking::layout_list(3) {}
+
+### Tree/mask options:
+set ::tree::mask::recentMask {}
 
 #############################################################
 # Customisable variables:
@@ -906,8 +909,7 @@ set ::utils::sound::soundFolder [file nativename [file join $::scidExeDir sounds
 set ::utils::sound::announceNew 0
 set ::utils::sound::announceForward 0
 set ::utils::sound::announceBack 0
-
-
+  
 # Spell-checking file: default is "spelling.ssp".
 if {$windowsOS} {
   set spellCheckFile [file join $scidDataDir "spelling.ssp"]

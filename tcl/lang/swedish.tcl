@@ -536,6 +536,8 @@ menuText W TreeMaskNew "Ny" 0 {Ny sökmask}
 # ====== TODO To be translated ======
 menuText W TreeMaskOpen "Öppna" 0 {Öppna sökmask}
 # ====== TODO To be translated ======
+menuText W TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText W TreeMaskSave "Spara" 0 {Spara sökmask}
 # ====== TODO To be translated ======
 menuText W TreeMaskClose "Stäng" 0 {Stäng sökmask}
@@ -7083,6 +7085,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

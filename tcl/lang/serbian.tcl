@@ -534,6 +534,8 @@ menuText Y TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText Y TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText Y TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText Y TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText Y TreeMaskClose "Close" 0 {Close mask}
@@ -2066,6 +2068,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

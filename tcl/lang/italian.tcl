@@ -494,6 +494,8 @@ menuText I TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText I TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText I TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText I TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText I TreeMaskClose "Close" 0 {Close mask}
@@ -1985,6 +1987,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

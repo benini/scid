@@ -540,6 +540,8 @@ menuText B TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText B TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText B TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText B TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText B TreeMaskClose "Close" 0 {Close mask}
@@ -2072,6 +2074,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

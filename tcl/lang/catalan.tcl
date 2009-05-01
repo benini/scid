@@ -492,6 +492,8 @@ menuText K TreeFileClose "Tancar finestra de l'arbre" 0 \
 menuText K TreeMask "Màscara" 0
 menuText K TreeMaskNew "Nova" 0 {Nova màscara}
 menuText K TreeMaskOpen "Obrir" 0 {Obrir màscara}
+# ====== TODO To be translated ======
+menuText K TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
 menuText K TreeMaskSave "Salvar" 0 {Salvar màscara}
 menuText K TreeMaskClose "Tancar" 0 {Tancar màscara}
 menuText K TreeMaskFillWithGame "Omplir amb partida" 0 {Omple la màscara amb la partida}
@@ -1632,6 +1634,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

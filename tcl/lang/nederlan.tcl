@@ -497,6 +497,8 @@ menuText N TreeFileClose "Zoekboom venster sluiten" 0 {Sluiten van het zoekboom 
 menuText N TreeMask "Masker" 0
 menuText N TreeMaskNew "Nieuw" 0 {Nieuw masker}
 menuText N TreeMaskOpen "Open" 0 {Open mask}
+# ====== TODO To be translated ======
+menuText N TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
 menuText N TreeMaskSave "Slaag op" 0 {Slaag het masker op}
 menuText N TreeMaskClose "Sluiten" 0 {Sluit het masker}
 menuText N TreeMaskFillWithGame "Vullen met partij" 0 {Vul het masker met de partij}
@@ -1809,6 +1811,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

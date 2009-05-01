@@ -512,6 +512,7 @@ menuText E TreeFileClose "Close Tree Window" 0 {Close the tree window}
 menuText E TreeMask "Mask" 0
 menuText E TreeMaskNew "New" 0 {New mask}
 menuText E TreeMaskOpen "Open" 0 {Open mask}
+menuText E TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
 menuText E TreeMaskSave "Save" 0 {Save mask}
 menuText E TreeMaskClose "Close" 0 {Close mask}
 menuText E TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}

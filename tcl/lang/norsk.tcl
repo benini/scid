@@ -536,6 +536,8 @@ menuText O TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText O TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText O TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText O TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText O TreeMaskClose "Close" 0 {Close mask}
@@ -2066,6 +2068,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

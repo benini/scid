@@ -538,6 +538,8 @@ menuText R TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText R TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText R TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText R TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText R TreeMaskClose "Close" 0 {Close mask}
@@ -2095,6 +2097,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

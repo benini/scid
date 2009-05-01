@@ -475,6 +475,7 @@ menuText F TreeFileClose "Fermer la fenêtre d'arbre" 0
 menuText F TreeMask "Masque" 0
 menuText F TreeMaskNew "Nouveau" 0 {Nouveau masque}
 menuText F TreeMaskOpen "Ouvrir" 0 {Ouvrir masque}
+menuText F TreeMaskOpenRecent "Ouvrir récent" 0 {Ouvrir un masque récent}
 menuText F TreeMaskSave "Sauver" 0 {Sauver masque}
 menuText F TreeMaskClose "Fermer" 0 {Fermer masque}
 menuText F TreeMaskFillWithGame "Remplir avec partie" 0 {Remplir le masque avec partie}
@@ -1811,6 +1812,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

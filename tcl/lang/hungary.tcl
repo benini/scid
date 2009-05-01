@@ -470,6 +470,8 @@ menuText H TreeFileClose "Faablak bezárása" 10 {Bezárja a faszerkezet-ablakot.}
 menuText H TreeMask "Maszk" 0
 menuText H TreeMaskNew "Új" 0 {Új maszk}
 menuText H TreeMaskOpen "Megnyitás" 0 {Maszk megnyitása}
+# ====== TODO To be translated ======
+menuText H TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
 menuText H TreeMaskSave "Mentés" 5 {Maszk mentése}
 menuText H TreeMaskClose "Bezárás" 0 {Maszk bezárása}
 menuText H TreeMaskFillWithGame "Feltöltés játszmával" 1 {Maszk feltöltése játszmával}
@@ -1843,6 +1845,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

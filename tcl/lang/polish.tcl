@@ -540,6 +540,8 @@ menuText P TreeMaskNew "New" 0 {New mask}
 # ====== TODO To be translated ======
 menuText P TreeMaskOpen "Open" 0 {Open mask}
 # ====== TODO To be translated ======
+menuText P TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+# ====== TODO To be translated ======
 menuText P TreeMaskSave "Save" 0 {Save mask}
 # ====== TODO To be translated ======
 menuText P TreeMaskClose "Close" 0 {Close mask}
@@ -2293,6 +2295,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

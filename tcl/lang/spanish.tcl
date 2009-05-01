@@ -493,6 +493,8 @@ menuText S TreeFileClose "Cerrar ventana del árbol" 0 \
 menuText S TreeMask "Máscara" 0
 menuText S TreeMaskNew "Nuevo" 0 {Nueva máscara}
 menuText S TreeMaskOpen "Abrir" 0 {Abrir máscara}
+# ====== TODO To be translated ======
+menuText S TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
 menuText S TreeMaskSave "Salvar" 0 {Salvar máscara}
 menuText S TreeMaskClose "Cerrar" 0 {Cerrar máscara}
 menuText S TreeMaskFillWithGame "Llenar con partida" 0 {Llenar máscara con partida}
@@ -1624,6 +1626,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 
