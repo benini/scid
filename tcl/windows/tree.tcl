@@ -2051,6 +2051,9 @@ proc ::tree::mask::displayMask {} {
   }
   toplevel $w
   wm title $w [::tr DisplayMask]
+  setWinLocation $w
+  setWinSize $w
+
   ttk::button $w.bupdate -text [::tr "Update"] -command ::tree::mask::updateDisplayMask
   ttk::frame $w.f
   pack $w.bupdate -fill x
@@ -2067,6 +2070,7 @@ proc ::tree::mask::displayMask {} {
   updateDisplayMask
   
   bind $w <Escape> { destroy  .displaymask }
+  bind $w <Configure> "recordWinSize $w"
   $w.f.tree tag bind dblClickTree <Double-Button-1> {::tree::mask::maskTreeUnfold }
 }
 ################################################################################
