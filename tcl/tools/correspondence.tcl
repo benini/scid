@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.63 2009/04/18 19:27:36 arwagner Exp $
+### $Id: correspondence.tcl,v 1.64 2009/05/01 19:29:34 arwagner Exp $
 ###
-### Last change: <Sat, 2009/04/18 19:27:57 arwagner ingata>
+### Last change: <Fri, 2009/05/01 21:28:50 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1975,7 +1975,7 @@ namespace eval CorrespondenceChess {
 			$w.bottom.$tag configure -state disable
 		}
 
-		if {$TimeDiff < 0} {
+		if {$TimeDiff < -1} {
 			foreach col {id toMove event site} {
 				$w.bottom.$col tag configure $col$id -foreground DarkGray -font font_Bold
 			}
@@ -3020,10 +3020,11 @@ namespace eval CorrespondenceChess {
 						set var "";             set noDB "";
 						set noBK "";            set noTB ""; 
 						set noENG "";           set mess ""
+						set TC "";
 
 						# actually check the $xfccstate list for the current
 						# values. If it is not set (e.g. only inbox processed
-							# buy no current retrieval) set some default values.
+						# buy no current retrieval) set some default values.
 							foreach xfccextra $::Xfcc::xfccstate {
 							if { [string equal -nocase [lindex $xfccextra 0] "$CmailGameName" ] } {
 								foreach i $xfccextra {
