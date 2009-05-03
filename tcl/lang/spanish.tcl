@@ -1597,6 +1597,20 @@ translate S CCDlgURL        {Xfcc-URL:}
 translate S CCDlgRatingType {Tipo de puntuación (Rating):}
 translate S CCDlgDuplicateGame {El ID de la partida no es único}
 translate S CCDlgDuplicateGameError {Esta partida existe más de una vez en tu base. Por favor, borra todos los duplicados y compacta tu fichero de partidas (Fichero/Mantenimiento/Compactar base de datos).}
+# ====== TODO To be translated ======
+translate S CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate S CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate S CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate S CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate S CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate S CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate S CCOrderOppTimeTxt {Opponents Clock}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
@@ -1626,6 +1640,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

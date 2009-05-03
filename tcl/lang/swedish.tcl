@@ -2019,6 +2019,20 @@ translate W CCDlgDuplicateGame {Icke unikt parti-ID}
 # ====== TODO To be translated ======
 translate W CCDlgDuplicateGameError {Detta parti finns fler än en gång i din databas. Var god och ta bort alla dubbletter och komprimera din partifil (Arkiv/Underhåll/Komprimera Databas).}
 # ====== TODO To be translated ======
+translate W CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate W CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate W CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate W CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate W CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate W CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate W CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
 translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 # ====== TODO To be translated ======
 translate W ExtHWPort {Port}
@@ -7085,6 +7099,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

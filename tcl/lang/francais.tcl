@@ -1580,6 +1580,20 @@ translate F CCDlgURL        {Xfcc-URL:}
 translate F CCDlgRatingType {Type classement:}
 translate F CCDlgDuplicateGame {Identifiant de partie non-unique}
 translate F CCDlgDuplicateGameError {Cette partie existe à plusieurs exemplaires dans la base de données. Veuillez effacer tous les doublons et compacter votre fichier de parties (Fichier/Maintenance/Compacter base).}
+# ====== TODO To be translated ======
+translate F CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate F CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate F CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate F CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate F CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate F CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate F CCOrderOppTimeTxt {Opponents Clock}
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
@@ -1812,6 +1826,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

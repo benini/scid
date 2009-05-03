@@ -504,17 +504,14 @@ menuText D TreeFileClose "Baumfenster schließen" 12 {Schließe Zugbaum}
 menuText D TreeMask "Maskieren" 0
 menuText D TreeMaskNew "Neu" 0 {Neue Maske anlegen}
 menuText D TreeMaskOpen "Öffnen" 0 {Maske öffnen}
-# ====== TODO To be translated ======
-menuText D TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+menuText D TreeMaskOpenRecent "Aktuelle Masken" 0 {Zuletzt geöffnete Masken erneut laden}
 menuText D TreeMaskSave "Speichern" 0 {Maske speichern}
 menuText D TreeMaskClose "Schließen" 0 {Maske schließen}
 menuText D TreeMaskFillWithGame "Mit aktueller Partie füllen" 0 {Maske mit der aktuellen Partie füllen}
 menuText D TreeMaskFillWithBase "Mit Datenbank füllen" 0 {Maske mit Datenbankpartien füllen}
 menuText D TreeMaskInfo "Info" 0 {Statistik für die aktuelle Maske anzeigen}
-# ====== TODO To be translated ======
-menuText D TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
-# ====== TODO To be translated ======
-menuText D TreeMaskSearch "Search" 0 {Search in current mask}
+menuText D TreeMaskDisplay "Maske als Baum" 0 {Zeigt den Inhalt der aktuellen Maske als Zugbaum}
+menuText D TreeMaskSearch "Suchen" 0 {Suchen innerhalb der aktuellen Maske}
 menuText D TreeSort "Sortieren" 0
 menuText D TreeSortAlpha "Alphabetisch" 0
 menuText D TreeSortECO "ECO-Code" 0
@@ -548,10 +545,8 @@ translate D DoYouWantToSaveFirst {Soll zuerst gespeichert werden}
 translate D AddToMask {Zur Maske hinzufügen}
 translate D RemoveFromMask {Entferne von Maske}
 translate D AddThisMoveToMask {Diesen Zug zur Maske hinzufügen}
-# ====== TODO To be translated ======
-translate D SearchMask {Search in Mask}
-# ====== TODO To be translated ======
-translate D DisplayMask {Display Mask}
+translate D SearchMask {Suche in einer Maske}
+translate D DisplayMask {Maske als Zugbaum}
 translate D Nag {NAG Code}
 translate D Marker {Marker}
 translate D Include {Einbezogene Variante}
@@ -1637,6 +1632,13 @@ translate D CCDlgURL        {Xfcc-URL:}
 translate D CCDlgRatingType {Wertungszahl:}
 translate D CCDlgDuplicateGame {Nichteindeutige Partie}
 translate D CCDlgDuplicateGameError {Diese Partie existiert mehr als einmal in der Datenbank. Bitte löschen Sie alle Doubletten und komprimieren Sie die Datenbank (Datei/Wartung/Datenbank komprimieren).}
+translate D CCDlgSortOption {Sortierung:}
+translate D CCDlgListOnlyOwnMove {Partien mit anhängigen Zügen}
+translate D CCOrderClassicTxt {Ort, Turnier, Runde, Ergebnis, Weiß, Schwarz}
+translate D CCOrderMyTimeTxt {Eigene Bedenkzeit}
+translate D CCOrderTimePerMoveTxt {Zeit pro Zug bis zur nächsten Zeitkontrolle}
+translate D CCOrderStartDate {Startdatum}
+translate D CCOrderOppTimeTxt {Gegnerische Bedenkzeit}
 translate D ExtHWConfigConnection {Hardware Konfigurieren}
 translate D ExtHWPort {Schnittstelle}
 translate D ExtHWEngineCmd {Engine Kommando}
@@ -1661,8 +1663,7 @@ translate D DockBottom {Nach unten}
 translate D DockLeft {Nach links}
 translate D DockRight {Nach rechts}
 translate D Undock {Fenster befreien}
-# ====== TODO To be translated ======
-translate D ChangeIcon {Change icon...}
+translate D ChangeIcon {Symbol ändern...}
 }
 
 ##########
@@ -7229,6 +7230,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

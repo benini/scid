@@ -1603,6 +1603,20 @@ translate K CCDlgURL        {Xfcc-URL:}
 translate K CCDlgRatingType {Tipus de puntuació (Rating):}
 translate K CCDlgDuplicateGame {ID de partida no únic}
 translate K CCDlgDuplicateGameError {Aquesta partida existeix més d'un cop a la base. Si-us-plau esborra totes les duplicades i compacta el fitxer de partides (Arxiu/Manteniment/Compactar Base).}
+# ====== TODO To be translated ======
+translate K CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate K CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate K CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate K CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate K CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate K CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate K CCOrderOppTimeTxt {Opponents Clock}
 translate K ExtHWConfigConnection {Configurar maquinari extern}
 translate K ExtHWPort {Port}
 translate K ExtHWEngineCmd {Línia d'ordres del motor}
@@ -1634,6 +1648,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

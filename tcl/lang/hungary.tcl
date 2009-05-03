@@ -1585,6 +1585,20 @@ translate H CCDlgURL        {Xfcc-URL:}
 translate H CCDlgRatingType {Értékszám típusa:}
 translate H CCDlgDuplicateGame {Nem egyedi játszmaazonosító}
 translate H CCDlgDuplicateGameError {Ez a játszma egynél többször fordul elõ adatbázisodban. Töröld a másolatokat, és tömörítsd játszmafájlodat (Fájl/Gondozás/Adatbázis tömörítése).}
+# ====== TODO To be translated ======
+translate H CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate H CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate H CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate H CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate H CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate H CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate H CCOrderOppTimeTxt {Opponents Clock}
 translate H ExtHWConfigConnection {Külsõ hardver beállítása}
 translate H ExtHWPort {Port}
 translate H ExtHWEngineCmd {Motorparancs}
@@ -1845,6 +1859,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

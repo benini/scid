@@ -1633,6 +1633,13 @@ translate E CCDlgRatingType {Rating Type:}
 translate E CCDlgDuplicateGame {Non-unique game ID}
 translate E CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 
+translate E CCDlgSortOption {Sorting:}
+translate E CCDlgListOnlyOwnMove {Only games I have the move}
+translate E CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+translate E CCOrderMyTimeTxt {My Clock}
+translate E CCOrderTimePerMoveTxt {Time per move till next time control}
+translate E CCOrderStartDate {Start date}
+translate E CCOrderOppTimeTxt {Opponents Clock}
 
 # Connect Hardware dialogs
 translate E ExtHWConfigConnection {Configure external hardware}

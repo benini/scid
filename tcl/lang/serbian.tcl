@@ -2016,6 +2016,20 @@ translate Y CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
 translate Y CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
+translate Y CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate Y CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate Y CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate Y CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate Y CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate Y CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate Y CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
 translate Y ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate Y ExtHWPort {Port}
@@ -2068,6 +2082,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

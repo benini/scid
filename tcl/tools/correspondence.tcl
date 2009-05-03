@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.64 2009/05/01 19:29:34 arwagner Exp $
+### $Id: correspondence.tcl,v 1.65 2009/05/03 10:39:35 arwagner Exp $
 ###
-### Last change: <Fri, 2009/05/01 21:28:50 arwagner ingata>
+### Last change: <Sun, 2009/05/03 12:31:05 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -246,7 +246,8 @@ namespace eval Xfcc {
 			.configXfccSrv.xfccrtype configure -indicatoron 0 -width 7 -takefocus 1
 		}
 
-		# Bind the change of selection to a proper update of variables and internal representatio
+		# Bind the change of selection to a proper update of variables
+		# and internal representation
 		bind .configXfccSrv.xfccSrvList <<ListboxSelect>> {
 			::Xfcc::xfccsrvstore
 		}
@@ -1184,16 +1185,18 @@ namespace eval CorrespondenceChess {
 	set XfccConfirm          1
 
 	# Show only games where the player has the move?
-	set CCListOnlyOwnMove    0
-
+	set ListOnlyOwnMove    0
+	# set sortoptlist        [list "Site, Event, Round, Result, White, Black" "My Time" "Time per Move" "Opponent Time"]
+	
 	# Sort criteria to use
 	set CCOrderClassic       0
 	set CCOrderMyTime        1
-	set CCOrderOppTime       2
-	set CCOrderOppName       3
+	set CCOrderTimePerMove   2
+	set CCOrderStartDate     3
+	set CCOrderOppTime       4
 
 	# Which to use
-	set CCListOrder          $CCOrderClassic
+	set ListOrder          $CCOrderClassic
 
 	# email-programm capable of SMTP auth and attachements
 	set mailer           "/usr/bin/nail"
@@ -1408,7 +1411,8 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::mailermode     \
 							::CorrespondenceChess::attache        \
 							::CorrespondenceChess::subject        \
-							::CorrespondenceChess::PluginPath } {
+							::CorrespondenceChess::PluginPath     \
+							::CorrespondenceChess::ListOrder  } {
 				set path [set $i]
 
 				# If possible replace absolute path by a relative one to
@@ -1452,6 +1456,11 @@ namespace eval CorrespondenceChess {
 				puts $optionF {set ::CorrespondenceChess::XfccConfirm 0}
 			} else {
 				puts $optionF "set ::CorrespondenceChess::XfccConfirm $::CorrespondenceChess::XfccConfirm"
+			}
+			if {$::CorrespondenceChess::ListOnlyOwnMove < 0}  {
+				puts $optionF {set ::CorrespondenceChess::ListOnlyOwnMove 0}
+			} else {
+				puts $optionF "set ::CorrespondenceChess::ListOnlyOwnMove $::CorrespondenceChess::ListOnlyOwnMove"
 			}
 
 		}
@@ -2069,6 +2078,15 @@ namespace eval CorrespondenceChess {
 		toplevel $w
 		wm title $w [::tr "CCDlgConfigureWindowTitle"]
 
+		set ::CorrespondenceChess::sortoptlist [list \
+			[::tr "CCOrderClassicTxt"] \
+			[::tr "CCOrderMyTimeTxt"] \
+			[::tr "CCOrderTimePerMoveTxt"] \
+			[::tr "CCOrderStartDate"] \
+			[::tr "CCOrderOppTimeTxt"] \
+		]
+
+
 		button $w.bOk     -text OK -command {
 				::CorrespondenceChess::saveCCoptions
 				destroy .correspondenceChessConfig
@@ -2085,6 +2103,7 @@ namespace eval CorrespondenceChess {
 		label  $w.lxfcc    -text [::tr "CCDlgExternalProtocol"]
 		label  $w.lfetch   -text [::tr "CCDlgFetchTool"]
 		label  $w.lsend    -text [::tr "CCDlgSendTool"]
+		label  $w.lsortopt -text [::tr "CCDlgSortOption"]
 
 		label  $w.lemail   -text [::tr "CCDlgEmailCommunication"]
 		label  $w.lmailx   -text [::tr "CCDlgMailPrg"]
@@ -2104,6 +2123,19 @@ namespace eval CorrespondenceChess {
 
 		checkbutton $w.confirmXfcc -text [::tr "CCDlgConfirmXfcc"] \
 			-variable ::CorrespondenceChess::XfccConfirm
+
+		checkbutton $w.onlyOwnMove -text [::tr "CCDlgListOnlyOwnMove"] \
+			-variable ::CorrespondenceChess::ListOnlyOwnMove
+
+		scrollbar $w.ysc    -command { .correspondenceChessConfig.sortopt yview }
+		listbox   $w.sortopt -height 3 -width 60 -exportselection 0 -selectmode single -list ::CorrespondenceChess::sortoptlist -yscrollcommand "$w.ysc set"
+		$w.sortopt selection set $::CorrespondenceChess::ListOrder
+		bind .correspondenceChessConfig.sortopt <<ListboxSelect>> {
+			set ::CorrespondenceChess::ListOrder [ .correspondenceChessConfig.sortopt curselection ]
+			###if {[winfo exists .ccWindow]} {
+			###	::CorrespondenceChess::ReadInbox
+			###}
+		}
 
 		button $w.xfconf  -text [::tr CCConfigure] -command { ::CorrespondenceChess::checkXfccrc
 			::Xfcc::config $::CorrespondenceChess::xfccrcfile}
@@ -2137,63 +2169,65 @@ namespace eval CorrespondenceChess {
 		button $w.bfetch  -text "..." -command {::CorrespondenceChess::chooseFetch    }
 		button $w.bsend   -text "..." -command {::CorrespondenceChess::chooseSend     }
 
-		# placing lables
-		grid $w.lgeneral               -column 0 -row  0 -columnspan 3 -pady 10
-		grid $w.ldb          -sticky e -column 0 -row  1
-		grid $w.linbox       -sticky e -column 0 -row  2
-		grid $w.loutbox      -sticky e -column 0 -row  3
+		grid $w.lgeneral                  -column 0 -row  0 -columnspan 3 -pady 10
 
-		grid $w.lxfccrc      -sticky e -column 0 -row  6
-		grid $w.lxfcc                  -column 0 -row  7 -columnspan 3 -pady 10
-		grid $w.lfetch       -sticky e -column 0 -row  8
-		grid $w.lsend        -sticky e -column 0 -row  9
+		grid $w.ldb          -sticky e    -column 0 -row  1
+		grid $w.db           -sticky w    -column 1 -row  1 -columnspan 2
+		grid $w.bdb          -sticky w    -column 3 -row  1
+		grid $w.linbox       -sticky e    -column 0 -row  2
+		grid $w.inbox        -sticky w    -column 1 -row  2 -columnspan 2
+		grid $w.binbox       -sticky w    -column 3 -row  2
+		grid $w.loutbox      -sticky e    -column 0 -row  3
+		grid $w.outbox       -sticky w    -column 1 -row  3 -columnspan 2
+		grid $w.boutbox      -sticky w    -column 3 -row  3
 
-		grid $w.lemail                 -column 0 -row 10 -columnspan 3 -pady 10
-		grid $w.lmailx       -sticky e -column 0 -row 11
-		grid $w.lbccaddr     -sticky e -column 0 -row 12
-		grid $w.lmoderb      -sticky e -column 0 -row 13
+		grid $w.internalXfcc -sticky w    -column 1 -row  4 -pady 10
+		grid $w.xfconf                    -column 2 -row  4 -columnspan 2
+		grid $w.lxfccrc      -sticky e    -column 0 -row  4
+		grid $w.lxfcc                     -column 0 -row  5 -columnspan 3 -pady 10
+		grid $w.xfccrc       -sticky w    -column 1 -row  5 -columnspan 2
 
-		grid $w.lmoderb1     -sticky w -column 2 -row 14 -columnspan 2
-		grid $w.lmoderb2     -sticky w -column 2 -row 15 -columnspan 2
-		grid $w.lmoderb3     -sticky w -column 2 -row 16 -columnspan 2
-		grid $w.lmoderb4     -sticky w -column 2 -row 17 -columnspan 2
+		grid $w.lfetch       -sticky e    -column 0 -row  6
+		grid $w.fetch        -sticky w    -column 1 -row  6 -columnspan 2
+		grid $w.bfetch       -sticky w    -column 3 -row  6
+		grid $w.lsend        -sticky e    -column 0 -row  7
+		grid $w.send         -sticky w    -column 1 -row  7 -columnspan 2
+		grid $w.bsend        -sticky w    -column 3 -row  7
 
-		grid $w.lattache     -sticky e -column 0 -row 18
-		grid $w.lsubject     -sticky e -column 0 -row 19
 
-		# placing entry fields
-		grid $w.db           -sticky w -column 1 -row  1 -columnspan 2
-		grid $w.inbox        -sticky w -column 1 -row  2 -columnspan 2
-		grid $w.outbox       -sticky w -column 1 -row  3 -columnspan 2
+		grid $w.confirmXfcc  -sticky w    -column 1 -row  8
+		grid $w.onlyOwnMove  -sticky w    -column 2 -row  8
+		grid $w.lsortopt     -sticky e    -column 0 -row  9
+		grid $w.sortopt      -sticky w    -column 1 -row  9 -columnspan 2
+		grid $w.ysc          -sticky wns  -column 3 -row 9
 
-		grid $w.confirmXfcc  -sticky w -column 1 -row  4
-		grid $w.internalXfcc -sticky w -column 1 -row  5 -pady 10
-		grid $w.xfconf                 -column 2 -row  5 -columnspan 2
+		grid $w.lemail                    -column 0 -row 10 -columnspan 3 -pady 10
 
-		grid $w.xfccrc       -sticky w -column 1 -row  6 -columnspan 2
-		grid $w.fetch        -sticky w -column 1 -row  8 -columnspan 2
-		grid $w.send         -sticky w -column 1 -row  9 -columnspan 2
+		grid $w.lmailx       -sticky e    -column 0 -row 11
+		grid $w.mailx        -sticky w    -column 1 -row 11 -columnspan 2
+		grid $w.lbccaddr     -sticky e    -column 0 -row 12
+		grid $w.bccaddr      -sticky w    -column 1 -row 12 -columnspan 2
 
-		grid $w.mailx        -sticky w -column 1 -row 11 -columnspan 2
-		grid $w.bccaddr      -sticky w -column 1 -row 12 -columnspan 2
+		grid $w.lmoderb      -sticky e    -column 0 -row 13
+		grid $w.lmoderb1     -sticky w    -column 2 -row 13 -columnspan 2
+		grid $w.lmoderb2     -sticky w    -column 2 -row 14 -columnspan 2
+		grid $w.lmoderb3     -sticky w    -column 2 -row 15 -columnspan 2
+		grid $w.lmoderb4     -sticky w    -column 2 -row 16 -columnspan 2
+		grid $w.moderb1      -sticky w    -column 1 -row 13
+		grid $w.moderb2      -sticky w    -column 1 -row 14
+		grid $w.moderb3      -sticky w    -column 1 -row 15
+		grid $w.moderb4      -sticky w    -column 1 -row 16
 
-		grid $w.moderb1      -sticky w -column 1 -row 13
-		grid $w.moderb2      -sticky w -column 1 -row 14
-		grid $w.moderb3      -sticky w -column 1 -row 15
-		grid $w.moderb4      -sticky w -column 1 -row 16
+		grid $w.lattache     -sticky e    -column 0 -row 18
+		grid $w.attache      -sticky w    -column 1 -row 18 -columnspan 2
 
-		grid $w.attache      -sticky w -column 1 -row 18 -columnspan 2
-		grid $w.subject      -sticky w -column 1 -row 19 -columnspan 2
+		grid $w.lsubject     -sticky e    -column 0 -row 19
+		grid $w.subject      -sticky w    -column 1 -row 19 -columnspan 2
 
-		grid $w.bdb          -sticky w -column 3 -row  1
-		grid $w.binbox       -sticky w -column 3 -row  2
-		grid $w.boutbox      -sticky w -column 3 -row  3
-		grid $w.bfetch       -sticky w -column 3 -row  8
-		grid $w.bsend        -sticky w -column 3 -row  9
 
 		# Buttons and ESC-key
-		grid $w.bOk          -column 0 -row 20 -pady 10 -columnspan 2
-		grid $w.bCancel      -column 1 -row 20 -pady 10
+		grid $w.bOk          -column 0    -row 20 -pady 10 -columnspan 2
+		grid $w.bCancel      -column 1    -row 20 -pady 10
 		bind $w <Escape> "$w.bCancel invoke"
 
 		bind $w <F1> { helpWindow CCSetupDialog}
@@ -2869,17 +2903,49 @@ namespace eval CorrespondenceChess {
 		set games 0
 		if {$CorrSlot > -1} {
 
-			set filelist {}
-			set skiplist {}
-			set sortmode "-ascii"
+
+			# extract the number of the last move using Scids internal
+			# PGN parser as comments etc. might appear, and this number
+			# is not given via Xfcc. Similar for the event date.
+			sc_clipbase clear
+			sc_base switch "clipbase"
+			set game 0
+			set gamemoves {}
+			foreach f [glob -nocomplain [file join $inpath *]] {
+				catch {sc_base import file $f}
+				set game [expr {$game + 1}]
+				sc_game load $game
+				sc_move end
+				set number [sc_pos moveNumber]
+				set Date   [sc_game tags get Date ]
+				set Extra  [sc_game tags get Extra]
+				set extraTagsList [split $Extra "\n"]
+				foreach i $extraTagsList {
+					if { [string equal -nocase [lindex $i 0] "CmailGameName" ] } {
+						set CmailGameName [string range $i 15 end-1]
+					}
+				}
+				lappend gamemoves [list $CmailGameName $number $Date]
+			}
 
 			# generate a list of games retrieved by Xfcc. Add game-ID and
 			# timing to two lists: one holds all games and one holds
 			# those the user does not have the move (they may be skipped
 			# in display)
+			set filelist {}
+			set skiplist {}
+			set sortmode "-ascii"
+
 			foreach xfccextra $::Xfcc::xfccstate {
 				set CmailGameName [lindex $xfccextra 0]
 				set criterion 0
+				set timepermove 0
+				set movestoTC 1
+				set idx    [lsearch -exact -index 0 $gamemoves $CmailGameName]
+				set number [lindex [lindex $gamemoves $idx] 1]
+				set Date   [lindex [lindex $gamemoves $idx] 2]
+				regsub -all {\.} $Date "" Date
+
 				foreach i $xfccextra {
 					if { [string equal -nocase [lindex $i 0] "myTurn" ] } {
 						set myTurn [string range $i 7 end]
@@ -2890,19 +2956,45 @@ namespace eval CorrespondenceChess {
 					if { [string equal -nocase [lindex $i 0] "opptime" ] } {
 						set opptime [string range $i 8 end]
 					}
+					if { [string equal -nocase [lindex $i 0] "TimeControl" ] } {
+						set TCstr [string range $i 13 end]
+						# Calculate the moves to the next time control.
+						# Makes sense only if no Fischer Clock is used.
+						if { [regexp {/} $TCstr ]} {
+							set TC [split $TCstr "/"]
+							set moves  [ expr {[lindex $TC 0]} ]
+							set movestoTC [ expr {$moves - ($number % $moves)}]
+						} else {
+							# Fischer Clock
+							set moves 1
+						}
+					}
 				}
-				switch -regexp -- $::CorrespondenceChess::CCListOrder \
+				# Calculate the time per move till next TC
+				set timepermove [expr {$mytime / $movestoTC}]
+
+				# Define criteria to be added to the list to sort. Classic
+				# mode is handled below by resorting the clipbase
+				switch -regexp -- $::CorrespondenceChess::ListOrder \
 					"$::CorrespondenceChess::CCOrderMyTime" {
 						set criterion $mytime
 						set sortmode "-integer"
-
 					} \
 					"$::CorrespondenceChess::CCOrderOppTime" {
 						set criterion $opptime
 						set sortmode "-integer"
+					} \
+					"$::CorrespondenceChess::CCOrderTimePerMove" {
+						set criterion $timepermove
+						set sortmode "-integer"
+					} \
+					"$::CorrespondenceChess::CCOrderStartDate" {
+						set criterion $Date
+						set sortmode "-integer"
 					}
 
-				if {($myTurn == "false") && ($::CorrespondenceChess::CCListOnlyOwnMove == 1) } {
+
+				if {($myTurn == "false") && ($::CorrespondenceChess::ListOnlyOwnMove == 1) } {
 					lappend skiplist [list $CmailGameName $criterion]
 				} else {
 					lappend filelist [list $CmailGameName $criterion]
@@ -2943,9 +3035,9 @@ namespace eval CorrespondenceChess {
 
 			sc_base switch "clipbase"
 
-			if {$::CorrespondenceChess::CCListOrder == $::CorrespondenceChess::CCOrderClassic} {
-				# For Classic sorting: sort the clipbase, this is easier
-				# to implement than individual sorting upon import.
+			# For Classic sorting: sort the clipbase, this is easier
+			# to implement than individual sorting upon import.
+			if {$::CorrespondenceChess::ListOrder == $::CorrespondenceChess::CCOrderClassic} {
 				set sortCriteria "Site, Event, Round, Result, White, Black"
 				progressWindow "Scid" "Sorting the database..."
 				set err [catch {sc_base sort $sortCriteria \
@@ -2998,7 +3090,7 @@ namespace eval CorrespondenceChess {
 					}
 					sc_move end
 					set number [sc_pos moveNumber]
-					set move [sc_game info previousMoveNT]
+					set move   [sc_game info previousMoveNT]
 					set side   [sc_pos side]
 
 					if {$side == "white"} {

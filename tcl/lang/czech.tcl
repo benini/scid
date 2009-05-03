@@ -2008,6 +2008,20 @@ translate C CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
 translate C CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
+translate C CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate C CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate C CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate C CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate C CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate C CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate C CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
 translate C ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate C ExtHWPort {Port}
@@ -5698,6 +5712,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

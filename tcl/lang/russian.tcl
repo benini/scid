@@ -2045,6 +2045,20 @@ translate R CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
 translate R CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
+translate R CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate R CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate R CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate R CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate R CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate R CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate R CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
 translate R ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate R ExtHWPort {Port}
@@ -2097,6 +2111,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -1782,6 +1782,20 @@ translate N CCDlgRatingType {Rating Type:}
 translate N CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
 translate N CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
+# ====== TODO To be translated ======
+translate N CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate N CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate N CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate N CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate N CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate N CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate N CCOrderOppTimeTxt {Opponents Clock}
 translate N ExtHWConfigConnection {Configureer externe hardware}
 translate N ExtHWPort {Poort}
 translate N ExtHWEngineCmd {Engine commando}
@@ -1811,6 +1825,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

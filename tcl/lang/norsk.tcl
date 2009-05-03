@@ -2012,6 +2012,20 @@ translate O CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
 translate O CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
+translate O CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate O CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate O CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate O CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate O CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate O CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate O CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
 translate O ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate O ExtHWPort {Port}
@@ -2068,6 +2082,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

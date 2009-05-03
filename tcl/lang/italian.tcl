@@ -1703,6 +1703,20 @@ translate I CCDlgDuplicateGame {Non-unique game ID}
 # ====== TODO To be translated ======
 translate I CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
 # ====== TODO To be translated ======
+translate I CCDlgSortOption {Sorting:}
+# ====== TODO To be translated ======
+translate I CCDlgListOnlyOwnMove {Only games I have the move}
+# ====== TODO To be translated ======
+translate I CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+# ====== TODO To be translated ======
+translate I CCOrderMyTimeTxt {My Clock}
+# ====== TODO To be translated ======
+translate I CCOrderTimePerMoveTxt {Time per move till next time control}
+# ====== TODO To be translated ======
+translate I CCOrderStartDate {Start date}
+# ====== TODO To be translated ======
+translate I CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
 translate I ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate I ExtHWPort {Port}
@@ -1987,6 +2001,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 
