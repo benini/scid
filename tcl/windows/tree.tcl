@@ -1437,6 +1437,9 @@ namespace eval ::tree::mask {
   set searchMask_usecolor 0
   set searchMask_usemovecomment 0
   set searchMask_useposcomment 0
+  set displayMask_showNag 1
+  set displayMask_showComment 1
+  
   array set marker2image { Include ::rep::_tb_include Exclude ::rep::_tb_exclude MainLine ::tree::mask::imageMainLine Bookmark tb_bkm \
         White ::tree::mask::imageWhite Black ::tree::mask::imageBlack \
         NewLine tb_new ToBeVerified tb_rfilter ToTrain tb_msearch Dubious tb_help ToRemove tb_cut }
@@ -2056,6 +2059,14 @@ proc ::tree::mask::displayMask {} {
 
   ttk::button $w.bupdate -text [::tr "Update"] -command ::tree::mask::updateDisplayMask
   ttk::frame $w.f
+  
+  
+  ttk::frame $w.fcb
+  pack $w.fcb -fill x
+  ttk::checkbutton $w.fcb.nag -text [::tr "Nag"] -variable ::tree::mask::displayMask_showNag -command ::tree::mask::updateDisplayMask
+  ttk::checkbutton $w.fcb.comment -text [::tr "Comments"] -variable ::tree::mask::displayMask_showComment -command ::tree::mask::updateDisplayMask
+  pack $w.fcb.nag $w.fcb.comment -side left
+  
   pack $w.bupdate -fill x
   pack $w.f -fill both -expand 1
   
@@ -2093,12 +2104,32 @@ proc ::tree::mask::updateDisplayMask {} {
   }
   if { [info exists mask($fen) ] } {
     set moves [lindex $mask($fen) 0]
-    ::tree::mask::populateDisplayMask $moves {} $fen {}
+    ::tree::mask::populateDisplayMask $moves {} $fen {} [lindex $mask($fen) 1]
   }
   sc_game pop
   sc_info preMoveCmd preMoveCommand
   
   sc_base switch $currentbase
+}
+################################################################################
+# creates a new image whose name is name1_name2, and concatenates two images.
+# parameters are the markers, not the images names
+################################################################################
+proc ::tree::mask::createImage {marker1 marker2} {
+  
+  if {[lsearch [image names] "$marker1$marker2" ] != -1} {
+    return
+  }
+  set img1 $::tree::mask::marker2image($marker1)
+  set img2 $::tree::mask::marker2image($marker2)
+  set w1 [image width $img1]
+  set w2 [image width $img2]
+  set h1 [image height $img1]
+  set h2 [image height $img2]
+  set margin 2
+  image create photo $marker1$marker2 -height $h1 -width [expr $w1 + $w2 + $margin]
+  $marker1$marker2 copy $img1 -from 0 0 -to 0 0
+  $marker1$marker2 copy $img2 -from 0 0 -to [expr $w1 +$margin] 0
 }
 ################################################################################
 #
@@ -2120,8 +2151,12 @@ proc  ::tree::mask::maskTreeUnfold {} {
 ################################################################################
 #
 ################################################################################
-proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
+proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen posComment} {
   global ::tree::mask::mask
+  
+  if { $posComment != ""} {
+    set posComment "\[$posComment\] "
+  }
   
   set tree .displaymask.f.tree
   
@@ -2129,12 +2164,36 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
     set move [lindex $m 0]
     if {$move == "null"} { continue }
     set img ""
-    if {[lindex $m 4] != ""} {
+    if {[lindex $m 4] != "" && [lindex $m 5] == ""} {
       set img [lindex $m 4]
-    } elseif {[lindex $m 5] != ""} {
+    }
+    if {[lindex $m 4] == "" && [lindex $m 5] != ""} {
       set img [lindex $m 5]
     }
-    set id [ $tree insert $parent end -text "[::trans $move][lindex $m 1]" -image $img -tags dblClickTree ]
+    if {[lindex $m 4] != "" && [lindex $m 5] != ""} {
+      set l [array get ::tree::mask::marker2image]
+      set idx [ lsearch $l [lindex $m 4] ]
+      set mark1 [lindex $l [expr $idx -1 ] ]
+      set idx [ lsearch $l [lindex $m 5] ]
+      set mark2 [lindex $l [expr $idx -1 ] ]
+      createImage $mark1 $mark2
+      set img $mark1$mark2
+    }
+    
+    set nag ""
+    if { $::tree::mask::displayMask_showNag } {
+      set nag [lindex $m 1]
+    }
+    
+    if {[lindex $m 3] != "" && $::tree::mask::displayMask_showComment} {
+      set move_comment " [lindex $m 3]"
+    } else  {
+      set move_comment ""
+    }
+    if { ! $::tree::mask::displayMask_showComment} {
+      set posComment ""
+    }
+    set id [ $tree insert $parent end -text "$posComment[::trans $move][set nag]$move_comment" -image $img -tags dblClickTree ]
     if {[catch {sc_game startBoard $fen} err]} {
       puts "ERROR sc_game startBoard $fen => $err"
     }
@@ -2151,7 +2210,22 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
         set newfen [toShortFen [sc_pos fen] ]
         if {[lsearch $fenSeen $newfen] != -1} { return }
         lappend fenSeen $newfen
-        $tree item $id -text "[ $tree item $id -text ] [::trans [ lindex $newmoves { 0 0 }  ] ][ lindex $newmoves { 0 1 }  ]"
+        if {[lindex $newmoves 0 3] != "" && $::tree::mask::displayMask_showComment } {
+          set move_comment " [lindex $newmoves 0 3]"
+        } else  {
+          set move_comment ""
+        }
+        
+        if {[lindex $newmoves 1] != "" && $::tree::mask::displayMask_showComment } {
+          set pos_comment " \[[lindex $newmoves 1]\]"
+        } else  {
+          set pos_comment ""
+        }
+        set nag ""
+        if { $::tree::mask::displayMask_showNag } {
+          set nag [ lindex $newmoves { 0 1 }  ]
+        }
+        $tree item $id -text "[ $tree item $id -text ] $pos_comment[::trans [ lindex $newmoves { 0 0 }  ] ][ set nag  ]$move_comment"
         if { ! [info exists mask($newfen) ] } {
           break
         }
@@ -2160,7 +2234,7 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen} {
       
       if { [info exists mask($newfen) ] } {
         set newmoves [lindex $mask($newfen) 0]
-        ::tree::mask::populateDisplayMask $newmoves $id $newfen $fenSeen
+        ::tree::mask::populateDisplayMask $newmoves $id $newfen $fenSeen [lindex $mask($newfen) 1]
       }
     }
   }
@@ -2291,7 +2365,7 @@ proc  ::tree::mask::perfomSearch  { baseNumber } {
       if { $::tree::mask::searchMask_usenag } {
         set nag $::tree::mask::searchMask_nag
         if { $nag == [::tr "None"] } {  set nag ""  }
-        if { [lindex $m 1] != $nag } {
+        if { [ string trim [lindex $m 1] ] != $nag } {
           continue
         }
       }
@@ -2369,7 +2443,12 @@ proc  ::tree::mask::searchClick {x y win baseNumber} {
   
   sc_base switch $baseNumber
   # ::file::SwitchToBase $baseNumber
-  ::game::Load [sc_filter first]
+  if {[sc_filter first != 0]} {
+    ::game::Load [sc_filter first]
+  } else  {
+    updateBoard -pgn
+  }
+  
   # updateBoard -pgn
   
 }
