@@ -2056,7 +2056,7 @@ proc ::tree::mask::displayMask {} {
   wm title $w [::tr DisplayMask]
   setWinLocation $w
   setWinSize $w
-
+  
   ttk::button $w.bupdate -text [::tr "Update"] -command ::tree::mask::updateDisplayMask
   ttk::frame $w.f
   
@@ -2071,6 +2071,8 @@ proc ::tree::mask::displayMask {} {
   pack $w.f -fill both -expand 1
   
   ttk::treeview $w.f.tree -yscrollcommand "$w.f.ybar set" -xscrollcommand "$w.f.xbar set" -show tree -selectmode browse
+  # workaround for a bug in treeview (xscrollbar does not get view size)
+  $w.f.tree column #0 -minwidth 1200
   ttk::scrollbar $w.f.xbar -command "$w.f.tree xview" -orient horizontal
   ttk::scrollbar $w.f.ybar -command "$w.f.tree yview"
   
@@ -2081,7 +2083,10 @@ proc ::tree::mask::displayMask {} {
   updateDisplayMask
   
   bind $w <Escape> { destroy  .displaymask }
-  bind $w <Configure> "recordWinSize $w"
+  bind $w <Configure>  {
+    recordWinSize .displaymask
+  }
+  
   $w.f.tree tag bind dblClickTree <Double-Button-1> {::tree::mask::maskTreeUnfold }
 }
 ################################################################################
