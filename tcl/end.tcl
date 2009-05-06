@@ -923,7 +923,6 @@ proc nameEditor {} {
   bind $w <Return> {.nedit.buttons.replace invoke}
   bind $w <Destroy> {set nameEditorWin 0}
   bind $w <F1> {helpWindow Maintenance Editing}
-  standardShortcuts $w
   focus $w
   $w.typeButtons.$editNameType invoke
 }
