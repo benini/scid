@@ -536,7 +536,7 @@ menuText W TreeMaskNew "Ny" 0 {Ny sökmask}
 # ====== TODO To be translated ======
 menuText W TreeMaskOpen "Öppna" 0 {Öppna sökmask}
 # ====== TODO To be translated ======
-menuText W TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+menuText W TreeMaskOpenRecent "Öppna senaste" 0 {Öppna senaste sökmasken}
 # ====== TODO To be translated ======
 menuText W TreeMaskSave "Spara" 0 {Spara sökmask}
 # ====== TODO To be translated ======
@@ -546,11 +546,11 @@ menuText W TreeMaskFillWithGame "Fyll med parti" 0 {Fyll sökmask med parti}
 # ====== TODO To be translated ======
 menuText W TreeMaskFillWithBase "Fyll med databas" 0 {Fyll sökmask med alla partier i databasen}
 # ====== TODO To be translated ======
-menuText W TreeMaskInfo "Info" 0 {Visa statistik för aktuell sökmask}
+menuText W TreeMaskInfo "Info om sökmask" 0 {Visa statistik för aktuell sökmask}
 # ====== TODO To be translated ======
-menuText W TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
+menuText W TreeMaskDisplay "Visa sökmaskkarta" 0 {Visa sökmaskdata i trädform}
 # ====== TODO To be translated ======
-menuText W TreeMaskSearch "Search" 0 {Search in current mask}
+menuText W TreeMaskSearch "Sök" 0 {Sök i aktuell sökmask}
 menuText W TreeSort "Sortera" 0
 menuText W TreeSortAlpha "Alfabetiskt" 0
 menuText W TreeSortECO "ECO kod" 0
@@ -586,15 +586,15 @@ translate W TreeTotal {TOTALT}
 # ====== TODO To be translated ======
 translate W DoYouWantToSaveFirst {Vill du spara först}
 # ====== TODO To be translated ======
-translate W AddToMask {Lägg till i Sökmask}
+translate W AddToMask {Lägg till i sökmask}
 # ====== TODO To be translated ======
-translate W RemoveFromMask {Ta bort från Sökmask}
+translate W RemoveFromMask {Ta bort från sökmask}
 # ====== TODO To be translated ======
-translate W AddThisMoveToMask {Lägg till deta drag i Sökmask}
+translate W AddThisMoveToMask {Lägg till deta drag i sökmask}
 # ====== TODO To be translated ======
-translate W SearchMask {Search in Mask}
+translate W SearchMask {Sök i sökmask}
 # ====== TODO To be translated ======
-translate W DisplayMask {Display Mask}
+translate W DisplayMask {Visa sökmask}
 # ====== TODO To be translated ======
 translate W Nag {NAG-kod}
 # ====== TODO To be translated ======
@@ -2019,19 +2019,19 @@ translate W CCDlgDuplicateGame {Icke unikt parti-ID}
 # ====== TODO To be translated ======
 translate W CCDlgDuplicateGameError {Detta parti finns fler än en gång i din databas. Var god och ta bort alla dubbletter och komprimera din partifil (Arkiv/Underhåll/Komprimera Databas).}
 # ====== TODO To be translated ======
-translate W CCDlgSortOption {Sorting:}
+translate W CCDlgSortOption {Sorterar:}
 # ====== TODO To be translated ======
-translate W CCDlgListOnlyOwnMove {Only games I have the move}
+translate W CCDlgListOnlyOwnMove {Bara partier där jag är vid draget}
 # ====== TODO To be translated ======
-translate W CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
+translate W CCOrderClassicTxt {Plats, Evenemang, Runda, Resultat, Vit, Svart}
 # ====== TODO To be translated ======
-translate W CCOrderMyTimeTxt {My Clock}
+translate W CCOrderMyTimeTxt {Min klocka}
 # ====== TODO To be translated ======
-translate W CCOrderTimePerMoveTxt {Time per move till next time control}
+translate W CCOrderTimePerMoveTxt {Tid per drag till nästa tidskontroll}
 # ====== TODO To be translated ======
-translate W CCOrderStartDate {Start date}
+translate W CCOrderStartDate {Startdatum}
 # ====== TODO To be translated ======
-translate W CCOrderOppTimeTxt {Opponents Clock}
+translate W CCOrderOppTimeTxt {Motståndarens klocka}
 # ====== TODO To be translated ======
 translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 # ====== TODO To be translated ======
@@ -2051,7 +2051,7 @@ translate W ExtHWInputEngine {Inmatningsschackmotor}
 # ====== TODO To be translated ======
 translate W ExtHWNoBoard {Inget bräde}
 # ====== TODO To be translated ======
-translate W NovagReferee {Referee}
+translate W NovagReferee {Nedteckna bara dragen}
 # ====== TODO To be translated ======
 translate W IEConsole {Inmatningsschackmotorkonsol}
 # ====== TODO To be translated ======
@@ -2081,7 +2081,7 @@ translate W DockRight {Drag till höger}
 # ====== TODO To be translated ======
 translate W Undock {Avdocka}
 # ====== TODO To be translated ======
-translate W ChangeIcon {Change icon...}
+translate W ChangeIcon {Ändra ikon...}
 # ====== TODO To be translated ======
 }
 

@@ -217,6 +217,7 @@ namespace eval fics {
     $w.f.top.fconsole.f1.console tag configure game        -foreground $::fics::colgame
     $w.f.top.fconsole.f1.console tag configure gameresult  -foreground $::fics::colgameresult
     $w.f.top.fconsole.f1.console tag configure ficspercent -foreground $::fics::colficspercent
+    $w.f.top.fconsole.f1.console tag configure ficshelpnext -foreground $::fics::colficshelpnext -underline 1
     
     ttk::entry $w.f.top.fconsole.f2.cmd -width 32
     ttk::button $w.f.top.fconsole.f2.send -text [::tr "FICSSend"] -command ::fics::cmd
@@ -383,6 +384,7 @@ namespace eval fics {
       return
     }
     toplevel $w
+    wm title $w [::tr "FICSFindOpponent"]
     pack [ttk::frame $w.f]
     
     ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
@@ -772,6 +774,7 @@ namespace eval fics {
   ################################################################################
   proc updateConsole {line} {
     set t .fics.f.top.fconsole.f1.console
+    
     if { [string match "* seeking *" $line ] } {
       $t insert end "$line\n" seeking
     } elseif { [string match "\{Game *\}" $line ] } {
@@ -780,6 +783,8 @@ namespace eval fics {
       $t insert end "$line\n" gameresult
     } elseif { [string match "fics% *" $line ] } {
       $t insert end "$line\n" ficspercent
+    } elseif  { $line == "Type \[next\] to see next page."  } {
+      $t insert end "Click or type \[next\] to see next page.\n" ficshelpnext
     } else  {
       $t insert end "$line\n"
     }
@@ -1162,6 +1167,7 @@ namespace eval fics {
   }
   ################################################################################
   # Handle mouse button 1 on console : observe the selected game
+  # or handle commands (like <next>)
   ################################################################################
   proc consoleClick { x y win } {
     set idx [ $win index @$x,$y ]
@@ -1170,6 +1176,12 @@ namespace eval fics {
       return
     }
     set elt [$win get $l.0 $l.end]
+    
+    if { $elt ==  "Click or type \[next\] to see next page." } {
+      writechan "next"
+      return
+    }
+    
     set found 0
     
     if { [llength $elt] > 4} {

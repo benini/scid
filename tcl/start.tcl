@@ -310,8 +310,7 @@ set ::fics::colseeking     coral
 set ::fics::colgame        grey70
 set ::fics::colgameresult  SlateBlue1
 set ::fics::colficspercent khaki1
-
-
+set ::fics::colficshelpnext blue
 
 # Defaults for serious game training
 set ::sergame::isOpening 0

@@ -1,10 +1,10 @@
 ##### Makefile for Scid for Pocket PC
 
-COMPILE = arm-wince-cegcc-g++
-CC = arm-wince-cegcc-gcc
-STRIP = arm-wince-cegcc-strip
-LINK = arm-wince-cegcc-g++
-RANLIB = arm-wince-cegcc-ranlib
+COMPILE = arm-cegcc-g++
+CC = arm-cegcc-gcc
+STRIP = arm-cegcc-strip
+LINK = arm-cegcc-g++
+RANLIB = arm-cegcc-ranlib
 OPT = -O4
 MAKEFLAGS = -j 2
 
