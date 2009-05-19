@@ -805,6 +805,7 @@ scid-3.7.4
     - added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
     - added a sub-menu for displaying the Mask content in a tree form
     - remember the most recent opened masks
+  * FICS play : save options for finding opponents based on login
 - Correspondence Chess:
 	* Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 	* Do not show games where the player does not have the move (Xfcc only)

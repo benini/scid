@@ -988,8 +988,11 @@ $m add command -label OptionsSave -command {
     foreach i { use_timeseal timeseal_exec port_fics port_timeseal login password usedefaultvars consolebg consolefg consoleheight consolewidth colseeking colgame colgameresult colficspercent} {
       puts $optionF "set ::fics::$i [list [set ::fics::$i]]"
     }
-    foreach i [lsort [array names ::fics::findopponent]] {
-      puts $optionF "set ::fics::findopponent($i) [list $::fics::findopponent($i)]"
+    # foreach i [lsort [array names ::fics::findopponent]] {
+    # puts $optionF "set ::fics::findopponent($i) [list $::fics::findopponent($i)]"
+    # }
+    foreach i [lsort [array names ::fics::profileVars]] {
+      puts $optionF "set ::fics::profileVars($i) [list $::fics::profileVars($i)]"
     }
     
     # Save layouts

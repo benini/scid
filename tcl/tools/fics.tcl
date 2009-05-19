@@ -28,6 +28,7 @@ namespace eval fics {
   set offers_maxtime 60
   variable logged 0
   variable isGuestLogin 0
+  array set profileVars {}
   
   ################################################################################
   #
@@ -150,7 +151,40 @@ namespace eval fics {
     $w.f.guest configure -state normal
     
   }
-  
+  ################################################################################
+  #
+  ################################################################################
+  proc setProfileVars { login } {
+    global  ::fics::profileVars
+    if { ! [info exists profileVars(initTime_$login)] } {
+      return
+    }
+    set ::fics::findopponent(initTime) $profileVars(initTime_$login)
+    set ::fics::findopponent(incTime) $profileVars(incTime_$login)
+    set ::fics::findopponent(rated) $profileVars(rated_$login)
+    set ::fics::findopponent(color) $profileVars(color_$login)
+    set ::fics::findopponent(limitrating) $profileVars(limitrating_$login)
+    set ::fics::findopponent(rating1) $profileVars(rating1_$login)
+    set ::fics::findopponent(rating2) $profileVars(rating2_$login)
+    set ::fics::findopponent(manual) $profileVars(manual_$login)
+    set ::fics::findopponent(formula) $profileVars(formula_$login)
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc syncProfileVars { login } {
+    global  ::fics::profileVars
+    
+    set profileVars(initTime_$login) $::fics::findopponent(initTime)
+    set profileVars(incTime_$login) $::fics::findopponent(incTime)
+    set profileVars(rated_$login) $::fics::findopponent(rated)
+    set profileVars(color_$login) $::fics::findopponent(color)
+    set profileVars(limitrating_$login) $::fics::findopponent(limitrating)
+    set profileVars(rating1_$login) $::fics::findopponent(rating1)
+    set profileVars(rating2_$login) $::fics::findopponent(rating2)
+    set profileVars(manual_$login) $::fics::findopponent(manual)
+    set profileVars(formula_$login) $::fics::findopponent(formula)
+  }
   ################################################################################
   #
   ################################################################################
@@ -166,6 +200,8 @@ namespace eval fics {
     }
     
     set isGuestLogin [string match -nocase "guest" $login]
+    
+    setProfileVars $login
     
     # check timeseal configuration
     if {$::fics::use_timeseal} {
@@ -421,6 +457,8 @@ namespace eval fics {
     grid $w.f.cbformula -column 0 -row 8 -columnspan 2 -sticky ew
     
     ttk::button $w.f.seek -text [::tr "FICSIssueSeek"] -command {
+      ::fics::syncProfileVars $::fics::reallogin
+      
       set range ""
       if {$::fics::findopponent(limitrating) } {
         set range "$::fics::findopponent(rating1)-$::fics::findopponent(rating2)"
