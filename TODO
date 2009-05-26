@@ -3,7 +3,14 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+(voi mask blancs après d4 Cf6)
+I just stumbled upon some points in this one. The function is fine already.
 
+- It would be very nice to add move numbers to the display (this increases readability, IMHO)
+
+- There seems to be a display problem if comments are more than one line long. For a very long comment I get a cluttered window with characters all around.
+
+- If I enable "show comments" the moves are gone in case I have a position comment.
 
  ===========================================================
 |                                                           |

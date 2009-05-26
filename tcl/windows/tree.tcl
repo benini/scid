@@ -2154,10 +2154,19 @@ proc  ::tree::mask::maskTreeUnfold {} {
   unfold $id
 }
 ################################################################################
+# returns the first line of multi-line string (separated with \n)
+################################################################################
+proc ::tree::mask::trimToFirstLine {s} {
+  set s [ lindex [ split $s "\n" ] 0 ]
+  return $s
+}
+################################################################################
 #
 ################################################################################
 proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen posComment} {
   global ::tree::mask::mask
+  
+  set posComment [ trimToFirstLine $posComment ]
   
   if { $posComment != ""} {
     set posComment "\[$posComment\] "
@@ -2192,6 +2201,7 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen posComment} {
     
     if {[lindex $m 3] != "" && $::tree::mask::displayMask_showComment} {
       set move_comment " [lindex $m 3]"
+      set move_comment [ trimToFirstLine $move_comment ]
     } else  {
       set move_comment ""
     }
@@ -2217,12 +2227,14 @@ proc ::tree::mask::populateDisplayMask { moves parent fen fenSeen posComment} {
         lappend fenSeen $newfen
         if {[lindex $newmoves 0 3] != "" && $::tree::mask::displayMask_showComment } {
           set move_comment " [lindex $newmoves 0 3]"
+          set move_comment [ trimToFirstLine $move_comment ]
         } else  {
           set move_comment ""
         }
         
         if {[lindex $newmoves 1] != "" && $::tree::mask::displayMask_showComment } {
           set pos_comment " \[[lindex $newmoves 1]\]"
+          set pos_comment [ trimToFirstLine $pos_comment ]
         } else  {
           set pos_comment ""
         }

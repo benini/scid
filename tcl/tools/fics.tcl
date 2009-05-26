@@ -174,7 +174,11 @@ namespace eval fics {
   ################################################################################
   proc syncProfileVars { login } {
     global  ::fics::profileVars
+    variable isGuestLogin
     
+    if {$isGuestLogin} {
+      set login "guest"
+    }
     set profileVars(initTime_$login) $::fics::findopponent(initTime)
     set profileVars(incTime_$login) $::fics::findopponent(incTime)
     set profileVars(rated_$login) $::fics::findopponent(rated)
@@ -457,7 +461,7 @@ namespace eval fics {
     grid $w.f.cbformula -column 0 -row 8 -columnspan 2 -sticky ew
     
     ttk::button $w.f.seek -text [::tr "FICSIssueSeek"] -command {
-      ::fics::syncProfileVars $::fics::reallogin
+      ::fics::syncProfileVars $::fics::login
       
       set range ""
       if {$::fics::findopponent(limitrating) } {
