@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.65 2009/05/03 10:39:35 arwagner Exp $
+### $Id: correspondence.tcl,v 1.66 2009/05/26 20:39:40 arwagner Exp $
 ###
-### Last change: <Sun, 2009/05/03 12:31:05 arwagner ingata>
+### Last change: <Sat, 2009/05/16 11:39:10 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -787,7 +787,7 @@ namespace eval Xfcc {
 				}
 			}
 
-			set mytime [expr $daysPlayer*24*60+$hoursPlayer*60+$minutesPlayer]
+			set mytime  [expr $daysPlayer*24*60+$hoursPlayer*60+$minutesPlayer]
 			set opptime [expr $daysOpponent*24*60+$hoursOpponent*60+$minutesOpponent]
 
 			if {[$game selectNodes {string(hasWhite)}] == "true"} {
@@ -1344,7 +1344,6 @@ namespace eval CorrespondenceChess {
 	# Check for In-/Outbox directories and create them if not avaiable
 	#----------------------------------------------------------------------
 	proc checkInOutbox {} {
-		global windowsOS
 		global scidDataDir ::CorrespondenceChess::Inbox ::CorrespondenceChess::Outbox
 
 		if {[file exists $Inbox]} {
@@ -1354,11 +1353,7 @@ namespace eval CorrespondenceChess {
 			}
 		} else {
 			if {[catch { file mkdir "$Inbox" } result]} {
-				if {$windowsOS} {
-					set ::CorrespondenceChess::Inbox "$scidDataDir\\Inbox"
-				} else {
-					set ::CorrespondenceChess::Inbox "$scidDataDir/Inbox"
-				}
+				set ::CorrespondenceChess::Inbox [file nativename [file join $scidDataDir "Inbox"]]
 				file mkdir $Inbox
 			}
 		}
@@ -1370,11 +1365,7 @@ namespace eval CorrespondenceChess {
 			}
 		} else {
 			if {[catch { file mkdir "$Outbox" } result]} {
-				if {$windowsOS} {
-					set ::CorrespondenceChess::Outbox  "$scidDataDir\\Outbox"
-				} else {
-					set ::CorrespondenceChess::Outbox  "$scidDataDir/Outbox"
-				}
+				set ::CorrespondenceChess::Inbox [file nativename [file join $scidDataDir "Outbox"]]
 				file mkdir $Outbox
 			}
 		}
@@ -1415,36 +1406,40 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::ListOrder  } {
 				set path [set $i]
 
+				puts $optionF "set $i [list [set $i]]"
+
 				# If possible replace absolute path by a relative one to
 				# $scidDataDir
 
 				# first get rid of windows path separators as they get
 				# interpreted by TCL
-				regsub -all {\\} $::scidDataDir "/" sdd
-				regsub -all {\\}  $path "/" pd
+				# regsub -all {\\} $::scidDataDir "/" sdd
+				# regsub -all {\\}  $path "/" pd
 
-				if { [regexp $sdd $pd] } {
-					regsub -all $sdd $pd "scidDataDir" path
-					# now convert back to nativename
-					set path [file nativename $path]
-					puts $optionF "set $i \$$path"
-				} else {
-					puts $optionF "set $i [list [set $i]]"
-				}
+				# if { [regexp $sdd $pd] } {
+				#	regsub -all $sdd $pd "scidDataDir" path
+				#	# now convert back to nativename
+				#	set path [file nativename $path]
+				#	puts $optionF "set $i \$$path"
+				#} else {
+				#	puts $optionF "set $i [list [set $i]]"
+				#}
 
 			}
 			foreach i { ::CorrespondenceChess::xfccrcfile     \
 			} {
-				set path [set $i]
-				regsub -all {\\} $::scidConfigDir "/" sdd
-				regsub -all {\\} $path "/" pd
-				if { [regexp $sdd $pd] } {
-					regsub -all $sdd $pd "scidDataDir" path
-					set path [file nativename $path]
-					puts $optionF "set $i \$$path"
-				} else {
-					puts $optionF "set $i [list [set $i]]"
-				}
+				puts $optionF "set $i [list [set $i]]"
+
+				# set path [set $i]
+				# regsub -all {\\} $::scidConfigDir "/" sdd
+				# regsub -all {\\} $path "/" pd
+				# if { [regexp $sdd $pd] } {
+				#	regsub -all $sdd $pd "scidDataDir" path
+				#	set path [file nativename $path]
+				#	puts $optionF "set $i \$$path"
+				#} else {
+				#	puts $optionF "set $i [list [set $i]]"
+				#}
 
 			}
 			if {$::CorrespondenceChess::XfccInternal < 0}  {
@@ -2938,12 +2933,16 @@ namespace eval CorrespondenceChess {
 
 			foreach xfccextra $::Xfcc::xfccstate {
 				set CmailGameName [lindex $xfccextra 0]
-				set criterion 0
-				set timepermove 0
-				set movestoTC 1
-				set idx    [lsearch -exact -index 0 $gamemoves $CmailGameName]
-				set number [lindex [lindex $gamemoves $idx] 1]
-				set Date   [lindex [lindex $gamemoves $idx] 2]
+				set criterion     0
+				set timepermove   0
+				set mytime        0
+				set opptime       0
+				set movestoTC     1
+				set myTurn        "false"
+				set TimeControl   "10/50"
+				set idx           [lsearch -exact -index 0 $gamemoves $CmailGameName]
+				set number        [lindex [lindex $gamemoves $idx] 1]
+				set Date          [lindex [lindex $gamemoves $idx] 2]
 				regsub -all {\.} $Date "" Date
 
 				foreach i $xfccextra {
@@ -2998,17 +2997,6 @@ namespace eval CorrespondenceChess {
 					lappend skiplist [list $CmailGameName $criterion]
 				} else {
 					lappend filelist [list $CmailGameName $criterion]
-				}
-			}
-
-			foreach f [glob -nocomplain [file join $inpath *]] {
-				regsub -all {\\} $f "/" id
-				regsub -all "\.pgn" $id "" id
-				regsub -all "$inpath" $id "" id
-				if {([lsearch -regexp $filelist "^$id *"] == -1)} {
-					if {([lsearch -regexp $skiplist "^$id *"] == -1)} {
-						lappend filelist [list $id "0"]
-					}
 				}
 			}
 
