@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.66 2009/05/26 20:39:40 arwagner Exp $
+### $Id: correspondence.tcl,v 1.67 2009/05/28 16:05:10 arwagner Exp $
 ###
-### Last change: <Sat, 2009/05/16 11:39:10 arwagner ingata>
+### Last change: <Thu, 2009/05/28 18:04:23 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2870,6 +2870,9 @@ namespace eval CorrespondenceChess {
 			set filename [scidConfigFile xfccstate]
 			file delete $filename
 
+			# clean also status information as they're now invalid!
+			set ::Xfcc::xfccstate {}
+
 			::CorrespondenceChess::emptyGamelist
 		}
 
@@ -3012,7 +3015,7 @@ namespace eval CorrespondenceChess {
 			foreach f $filelist {
 				set filename "[file join $inpath [lindex $f 0]].pgn"
 				if {[catch {sc_base import file $filename} result]} {
-					::CorrespondenceChess::updateConsole "info Error retrieving server response from $pgnfile"
+					::CorrespondenceChess::updateConsole "info Error retrieving server response from $filename"
 				} else {
 					# count the games processed successfully
 					set games [expr {$games+1}]
