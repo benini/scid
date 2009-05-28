@@ -282,6 +282,8 @@ menuText R OptionsGInfo "»нформаци€ о партии" 0 {”становки информации о партии}
 menuText R OptionsLanguage "язык" 0 {ћеню выбора €зыка}
 # ====== TODO To be translated ======
 menuText R OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
+# ====== TODO To be translated ======
+menuText R OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText R OptionsMoves "’оды" 0 {”становки дл€ ходов}
 menuText R OptionsMovesAsk "—просить перед заменой ходов" 0 \
   {—просить перед перезаписью любых ходов}
@@ -2111,6 +2113,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -285,6 +285,8 @@ menuText P OptionsGInfo "Informacje o partii" 0 {Sposób wy¶wietlania informacji 
 menuText P OptionsLanguage "Jêzyk" 0 {Wybierz jêzyk}
 # ====== TODO To be translated ======
 menuText P OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
+# ====== TODO To be translated ======
+menuText P OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText P OptionsMoves "Posuniêcia" 0 {Wprowadzanie posuniêæ}
 menuText P OptionsMovesAsk "Zapytaj przed zast±pieniem posuniêæ" 0 \
   {Zapytaj przed zast±pieniem aktualnych posuniêæ}
@@ -2309,6 +2311,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

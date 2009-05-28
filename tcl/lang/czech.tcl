@@ -274,6 +274,8 @@ menuText C OptionsGInfo "Informace o partii" 0 {Volby pro informace o partii}
 menuText C OptionsLanguage "Jazyk" 0 {Vybrat jazyk menu}
 # ====== TODO To be translated ======
 menuText C OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
+# ====== TODO To be translated ======
+menuText C OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText C OptionsMoves "Tahy" 0 {Volby pro zadávání tahù}
 menuText C OptionsMovesAsk "Ptát se pøed nahrazením tahù" 0 \
   {Ptát se v¾dy pøed pøepsáním existujícího tahu}
@@ -5712,6 +5714,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

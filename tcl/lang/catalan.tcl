@@ -254,6 +254,8 @@ menuText K OptionsFontsFixed "Fixa" 0 {Canvia la amplada de la font a fixa}
 menuText K OptionsGInfo "Informació de la partida" 0 {Informació de la partida}
 menuText K OptionsLanguage "Llenguatge" 0 {Selecciona el llenguatge del programa}
 menuText K OptionsMovesTranslatePieces "Tradueix peces" 0 {Tradueix la primera lletra de les peces}
+# ====== TODO To be translated ======
+menuText K OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText K OptionsMoves "Jugades" 0 {Opcions d'entrada de jugades}
 menuText K OptionsMovesAsk "Preguntar abans de substituir jugades" 0 \
   {Pregunta abans de sobreescriure qualsevol jugada existent}
@@ -1648,6 +1650,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

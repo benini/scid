@@ -282,6 +282,8 @@ menuText W OptionsGInfo "Partiinformation" 0 {Alternativ för partiinformation}
 menuText W OptionsLanguage "Språk" 0 {Välj språk}
 # ====== TODO To be translated ======
 menuText W OptionsMovesTranslatePieces "Översätt pjäser" 0 {Översätt första bokstaven för pjäser}
+# ====== TODO To be translated ======
+menuText W OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText W OptionsMoves "Drag" 0 {Alternativ för dragangivelse}
 menuText W OptionsMovesAsk "Fråga före ersätt drag" 0 \
   {Fråga innan du ersätter befintliga drag}
@@ -7099,6 +7101,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

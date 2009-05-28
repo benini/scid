@@ -745,6 +745,8 @@ proc updateBoard {args} {
     eval ::board::mark::add .main.board $type $square $dest $color
   }
   
+  ::board::lastMoveHighlight .main.board
+  
   # Update the status of each navigation button:
   if {[sc_pos isAt start]} {
     .main.fbutton.button.start configure -state disabled
@@ -822,6 +824,7 @@ proc updateBoard {args} {
   if {[winfo exists .bookWin]} { ::book::refresh }
   if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
   if {[winfo exists .noveltyWin]} { updateNoveltyWin }
+  
 }
 
 # Set up player photos:

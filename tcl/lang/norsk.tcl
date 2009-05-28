@@ -282,6 +282,8 @@ menuText O OptionsGInfo "Partiinformasjon" 0 {Informasjonsinnstillinger}
 menuText O OptionsLanguage "Språk" 0 {Velg menyspråk}
 # ====== TODO To be translated ======
 menuText O OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
+# ====== TODO To be translated ======
+menuText O OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText O OptionsMoves "Trekk" 0 {Innstillinger for hvordan trekk angis}
 menuText O OptionsMovesAsk "Spør før trekk erstattes" 0 \
   {Spør før eksisterende trekk erstattes av et nytt}
@@ -2082,6 +2084,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

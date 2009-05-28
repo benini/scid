@@ -238,6 +238,8 @@ menuText H OptionsFontsFixed "Rögzített" 0 {A rögzített szélességû karakterkészl
 menuText H OptionsGInfo "Játszmainformáció" 0 {Játszmainformáció változtatása}
 menuText H OptionsLanguage "Nyelv" 0 {A menü nyelvének kiválasztása}
 menuText H OptionsMovesTranslatePieces "Figurák nevének lefordítása" 0 {Lefordítja a figurák nevének elsõ betûjét.}
+# ====== TODO To be translated ======
+menuText H OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText H OptionsMoves "Lépések" 0 {Lépések bevitelének beállításai}
 menuText H OptionsMovesAsk "Lépés cseréje elõtt rákérdez." 6 \
   {Mielõtt átírna egy meglevõ lépést, rákérdez.}
@@ -1859,6 +1861,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

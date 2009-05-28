@@ -248,6 +248,8 @@ menuText I OptionsFontsFixed "Fisso" 0 {Cambia il font di larghezza fissa}
 menuText I OptionsGInfo "Informazioni sulla partita" 0 {Opzioni sulle informazioni della partita}
 menuText I OptionsLanguage "Lingua" 0 {Sceglie una nuova lingua di menu}
 menuText I OptionsMovesTranslatePieces "Traduci i pezzi" 0 {Traduce la prima lettera dei pezzi}
+# ====== TODO To be translated ======
+menuText I OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
 menuText I OptionsMoves "Mosse" 0 {Opzioni di immissione di mosse}
 menuText I OptionsMovesAsk "Conferma prima di sostituire le mosse" 0 \
   {Chiede prima di sovrascrivere ogni mossa esistente}
@@ -2001,6 +2003,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

@@ -889,7 +889,7 @@ $m add command -label OptionsSave -command {
           ecoFile suggestMoves showVarPopup glistSize glexport \
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
-          translatePieces askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
+          translatePieces highlightLastMove askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
           spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
@@ -1074,6 +1074,10 @@ set helpMessage($m.entry,7) OptionsMovesSpace
 $m.entry add checkbutton -label OptionsMovesTranslatePieces \
     -variable ::translatePieces -offvalue 0 -onvalue 1 -command setLanguage
 set helpMessage($m.entry,8) OptionsMovesTranslatePieces
+
+$m.entry add checkbutton -label OptionsMovesHighlightLastMove \
+    -variable ::highlightLastMove -offvalue 0 -onvalue 1 -command updateBoard
+set helpMessage($m.entry,9) OptionsMovesHighlightLast
 
 proc updateLocale {} {
   global locale
@@ -1577,7 +1581,7 @@ proc setLanguageMenus {{lang ""}} {
         GInfo$tag $lang
   }
   configMenuText .menu.options.entry [tr OptionsShowVarPopup $oldLang] OptionsShowVarPopup $lang
-  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces } {
+  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove } {
     configMenuText .menu.options.entry [tr OptionsMoves$tag $oldLang] \
         OptionsMoves$tag $lang
   }
