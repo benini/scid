@@ -284,6 +284,12 @@ menuText R OptionsLanguage "язык" 0 {ћеню выбора €зыка}
 menuText R OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
 # ====== TODO To be translated ======
 menuText R OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText R OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText R OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText R OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText R OptionsMoves "’оды" 0 {”становки дл€ ходов}
 menuText R OptionsMovesAsk "—просить перед заменой ходов" 0 \
   {—просить перед перезаписью любых ходов}
@@ -2113,6 +2119,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

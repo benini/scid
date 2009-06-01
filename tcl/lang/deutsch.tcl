@@ -269,6 +269,12 @@ menuText D OptionsLanguage "Sprache" 0 {Sprache wählen}
 menuText D OptionsMovesTranslatePieces "Figurennamen übersetzen" 0 {Übersetze den ersten Buchstaben der Figurenbezeichnung}
 # ====== TODO To be translated ======
 menuText D OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText D OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText D OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText D OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText D OptionsMoves "Züge" 0 {Zugeingabeoptionen}
 menuText D OptionsMovesAsk "Fragen vor Ersetzen" 0 \
   {Vor Überschreiben existierender Züge nachfragen}
@@ -7232,6 +7238,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

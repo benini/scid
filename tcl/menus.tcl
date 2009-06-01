@@ -889,7 +889,8 @@ $m add command -label OptionsSave -command {
           ecoFile suggestMoves showVarPopup glistSize glexport \
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
-          translatePieces highlightLastMove askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
+          translatePieces highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
+          askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
           spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
@@ -1075,8 +1076,21 @@ $m.entry add checkbutton -label OptionsMovesTranslatePieces \
     -variable ::translatePieces -offvalue 0 -onvalue 1 -command setLanguage
 set helpMessage($m.entry,8) OptionsMovesTranslatePieces
 
-$m.entry add checkbutton -label OptionsMovesHighlightLastMove \
-    -variable ::highlightLastMove -offvalue 0 -onvalue 1 -command updateBoard
+menu $m.entry.highlightlastmove
+$m.entry add cascade -label OptionsMovesHighlightLastMove -menu  $m.entry.highlightlastmove
+$m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveDisplay -variable ::highlightLastMove -command updateBoard
+menu $m.entry.highlightlastmove.width
+$m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth -menu $m.entry.highlightlastmove.width
+foreach i {1 2 3 4 5} {
+  $m.entry.highlightlastmove.width add radiobutton -label $i -value $i -variable ::highlightLastMoveWidth -command updateBoard
+}
+$m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor -command {
+  set col [ tk_chooseColor -initialcolor $::highlightLastMoveColor -title "Scid"]
+  if { $col != "" } {
+    set ::highlightLastMoveColor $col
+    updateBoard
+  }
+}
 set helpMessage($m.entry,9) OptionsMovesHighlightLast
 
 proc updateLocale {} {
@@ -1585,6 +1599,11 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.options.entry [tr OptionsMoves$tag $oldLang] \
         OptionsMoves$tag $lang
   }
+  
+  foreach tag { Color Width Display } {
+    configMenuText .menu.options.entry.highlightlastmove [tr OptionsMovesHighlightLastMove$tag $oldLang] OptionsMovesHighlightLastMove$tag $lang
+  }
+  
   foreach tag {HelpTip WindowsSwitcher WindowsPGN WindowsTree FileFinder \
         ToolsCross WindowsGList WindowsStats WindowsBook} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang

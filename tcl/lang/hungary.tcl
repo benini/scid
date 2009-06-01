@@ -240,6 +240,12 @@ menuText H OptionsLanguage "Nyelv" 0 {A menü nyelvének kiválasztása}
 menuText H OptionsMovesTranslatePieces "Figurák nevének lefordítása" 0 {Lefordítja a figurák nevének elsõ betûjét.}
 # ====== TODO To be translated ======
 menuText H OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText H OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText H OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText H OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText H OptionsMoves "Lépések" 0 {Lépések bevitelének beállításai}
 menuText H OptionsMovesAsk "Lépés cseréje elõtt rákérdez." 6 \
   {Mielõtt átírna egy meglevõ lépést, rákérdez.}
@@ -1861,6 +1867,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -284,6 +284,12 @@ menuText B OptionsLanguage "Linguagem" 0 {Menu de selecao de linguagem}
 menuText B OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
 # ====== TODO To be translated ======
 menuText B OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText B OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText B OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText B OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
 menuText B OptionsMovesAsk "Perguntar antes de substituir movimentos" 0 \
   {Pergunta antes de substituir movimentos existentes}
@@ -2090,6 +2096,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

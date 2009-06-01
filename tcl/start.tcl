@@ -470,6 +470,8 @@ set translatePieces 1
 
 # Hightlight the last move played
 set highlightLastMove 1
+set highlightLastMoveWidth 2
+set highlightLastMoveColor "grey"
 
 # Ask before replacing existing moves: on by default
 set askToReplaceMoves 1

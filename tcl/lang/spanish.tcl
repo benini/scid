@@ -256,6 +256,12 @@ menuText S OptionsLanguage "Lenguaje" 0 {Selecciona el lenguaje del menú}
 menuText S OptionsMovesTranslatePieces "Traducir piezas" 0 {Traducir la primera letra de las piezas}
 # ====== TODO To be translated ======
 menuText S OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText S OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText S OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAsk "Preguntar antes de reemplazar movimientos" 0 \
   {Pregunta antes de sobreescribir cualquier movimiento existente}
@@ -1642,6 +1648,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

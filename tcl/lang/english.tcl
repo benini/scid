@@ -283,6 +283,9 @@ menuText E OptionsGInfo "Game Information" 0 {Game information options}
 menuText E OptionsLanguage "Language" 0 {Select menu language}
 menuText E OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
 menuText E OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+menuText E OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+menuText E OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+menuText E OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText E OptionsMoves "Moves" 0 {Move entry options}
 menuText E OptionsMovesAsk "Ask Before Replacing Moves" 0 \
   {Ask before overwriting any existing moves}

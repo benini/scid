@@ -276,6 +276,12 @@ menuText C OptionsLanguage "Jazyk" 0 {Vybrat jazyk menu}
 menuText C OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
 # ====== TODO To be translated ======
 menuText C OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText C OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText C OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText C OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText C OptionsMoves "Tahy" 0 {Volby pro zadávání tahù}
 menuText C OptionsMovesAsk "Ptát se pøed nahrazením tahù" 0 \
   {Ptát se v¾dy pøed pøepsáním existujícího tahu}
@@ -5714,6 +5720,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

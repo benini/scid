@@ -1332,7 +1332,8 @@ proc ::board::mark::DrawArrow {pathName from to color} {
 proc ::board::mark::DrawRectangle { pathName square color } {
   if {$square < 0  ||  $square > 63} { puts "error square = $square" ; return }
   set box [::board::mark::GetBox $pathName $square]
-  $pathName create rectangle [lindex $box 0] [lindex $box 1] [lindex $box 2] [lindex $box 3] -outline $color -width 2 -dash {2 4} -tag highlightLastMove
+  $pathName create rectangle [lindex $box 0] [lindex $box 1] [lindex $box 2] [lindex $box 3] \
+      -outline $color -width $::highlightLastMoveWidth -dash {2 4} -tag highlightLastMove
 }
 
 # ::board::mark::DrawTux --
@@ -1581,8 +1582,8 @@ proc  ::board::lastMoveHighlight {w} {
     set moveuci [ string range $moveuci 0 3 ]
     set square1 [ ::board::sq [string range $moveuci 0 1 ] ]
     set square2 [ ::board::sq [string range $moveuci 2 3 ] ]
-    ::board::mark::DrawRectangle $w.bd $square1 "grey"
-    ::board::mark::DrawRectangle $w.bd $square2 "grey"
+    ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor
+    ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor
   }
 }
 
@@ -1646,8 +1647,10 @@ proc ::board::update {w {board ""} {animate 0}} {
     ::board::mark::drawAll $w
   }
   
-  # Redraw last move highlight
-  ::board::lastMoveHighlight $w
+  # Redraw last move highlight if mainboard
+  if { $w == ".main.board"} {
+    ::board::lastMoveHighlight $w
+  }
   
   # Redraw material values
   if {$::board::_showmat($w)} {

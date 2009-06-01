@@ -256,6 +256,12 @@ menuText K OptionsLanguage "Llenguatge" 0 {Selecciona el llenguatge del programa
 menuText K OptionsMovesTranslatePieces "Tradueix peces" 0 {Tradueix la primera lletra de les peces}
 # ====== TODO To be translated ======
 menuText K OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText K OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText K OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText K OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText K OptionsMoves "Jugades" 0 {Opcions d'entrada de jugades}
 menuText K OptionsMovesAsk "Preguntar abans de substituir jugades" 0 \
   {Pregunta abans de sobreescriure qualsevol jugada existent}
@@ -1650,6 +1656,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

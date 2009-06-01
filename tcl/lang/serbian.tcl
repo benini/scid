@@ -282,6 +282,12 @@ menuText Y OptionsLanguage "Jezik" 0 {Izaberi jezik}
 menuText Y OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
 # ====== TODO To be translated ======
 menuText Y OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+# ====== TODO To be translated ======
+menuText Y OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+# ====== TODO To be translated ======
+menuText Y OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+# ====== TODO To be translated ======
+menuText Y OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
 menuText Y OptionsMoves "Potezi" 0 {Opcije uno¹enja poteza}
 menuText Y OptionsMovesAsk "Pitaj pre zamene poteza" 0 \
   {Pitaj, da li se mo¾e postojeæi zameniti novim potezom}
@@ -2084,6 +2090,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 
