@@ -826,6 +826,12 @@ proc ::docking::ctx_cmd {path anchor} {
 }
 ################################################################################
 proc ::docking::ctx_menu {w} {
+  
+  # HACK ! Because notebooks may also be used inside internal windows
+  if {! [info exists ::docking::changedTab($w)] } {
+    return
+  }
+  
   update idletasks
   set mctxt .ctxtMenu
   if { [winfo exists $mctxt] } {
@@ -964,7 +970,7 @@ proc ::docking::add_tab {path anchor args} {
 # display a blue triangle showing the tab has a menu associated
 proc ::docking::setMenuMark { nb tab} {
   if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || \
-      $tab == ".fdockoprepWin" } {
+        $tab == ".fdockoprepWin" } {
     $nb tab $tab -image bluetriangle -compound left
   }
 }
