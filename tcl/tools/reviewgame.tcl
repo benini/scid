@@ -300,6 +300,7 @@ proc ::reviewgame::mainLoop {} {
     $w.finfo.sc2 configure -text "Game's move score : $analysisEngine(score,1)"
     # display engine's score
     $w.finfo.sc1 configure -text "Engine's score $analysisEngine(score,2)"
+    set  ::reviewgame::sequence 2
     after 1000 ::reviewgame::mainLoop
     return
   }
