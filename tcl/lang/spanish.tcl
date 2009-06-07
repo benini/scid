@@ -178,6 +178,8 @@ menuText S ToolsTraining "Entrenamiento"  0 {Entrenamiento (táctica, aperturas,.
 menuText S ToolsTacticalGame "Partida Táctica"  0 {Jugar una partida táctica}
 menuText S ToolsSeriousGame "Partida seria"  0 {Jugar una partida seria}
 menuText S ToolsTrainOpenings "Entrenamiento de aperturas"  0 {Entrenamiento con un repertorio}
+# ====== TODO To be translated ======
+menuText S ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText S ToolsTrainTactics "Táctica (problemas)"  0 {Resover problemas de táctica}
 menuText S ToolsTrainCalvar "Cálculo of variaciones"  0 {Calculo de variantes}
 menuText S ToolsTrainFindBestMove "Encontrar la mejor jugada"  0 {Busca el movimiento mejor}
@@ -1648,6 +1650,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

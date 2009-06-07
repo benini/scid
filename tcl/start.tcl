@@ -105,7 +105,7 @@ foreach ns {
   ::tools::graphs::filter ::tools::graphs::absfilter ::tools::graphs::rating ::tools::graphs::score
   ::tb ::optable
   ::board ::move
-  ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics
+  ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame
   ::config ::docking
 } {
   namespace eval $ns {}
@@ -472,6 +472,7 @@ set translatePieces 1
 set highlightLastMove 1
 set highlightLastMoveWidth 2
 set highlightLastMoveColor "grey"
+set highlightLastMovePattern {} ; # this option is not saved
 
 # Ask before replacing existing moves: on by default
 set askToReplaceMoves 1

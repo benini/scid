@@ -178,6 +178,8 @@ menuText R ToolsSeriousGame "Serious game"  0 {Play a serious game}
 # ====== TODO To be translated ======
 menuText R ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 # ====== TODO To be translated ======
+menuText R ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+# ====== TODO To be translated ======
 menuText R ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText R ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
@@ -2119,6 +2121,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

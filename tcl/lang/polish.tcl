@@ -181,6 +181,8 @@ menuText P ToolsSeriousGame "Serious game"  0 {Play a serious game}
 # ====== TODO To be translated ======
 menuText P ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 # ====== TODO To be translated ======
+menuText P ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+# ====== TODO To be translated ======
 menuText P ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText P ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
@@ -2317,6 +2319,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

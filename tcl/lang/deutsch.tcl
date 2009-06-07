@@ -189,6 +189,8 @@ menuText D ToolsTraining "Training"  0 {Trainingswerkzeuge (Taktik, Eröffnungen,
 menuText D ToolsTacticalGame "Trainingspartie"  0 {Trainingspartie spielen}
 menuText D ToolsSeriousGame "Ernste Partie"  0 {Ernste Partie spielen}
 menuText D ToolsTrainOpenings "Eröffnungen"  0 {Eröffnungsrepertoire trainieren}
+# ====== TODO To be translated ======
+menuText D ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
 menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
@@ -7238,6 +7240,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

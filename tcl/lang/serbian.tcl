@@ -175,6 +175,8 @@ menuText Y ToolsSeriousGame "Serious game"  0 {Play a serious game}
 # ====== TODO To be translated ======
 menuText Y ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 # ====== TODO To be translated ======
+menuText Y ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+# ====== TODO To be translated ======
 menuText Y ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText Y ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
@@ -2090,6 +2092,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

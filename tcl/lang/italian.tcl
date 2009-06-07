@@ -164,6 +164,8 @@ menuText I ToolsTraining "Allenamento"  0 {Strumenti per l'allenamento (tattica,
 menuText I ToolsTacticalGame "Partita tattica"  0 {Gioca una partita con le tattiche}
 menuText I ToolsSeriousGame "Partita seria"  0 {Gioca una partita seria}
 menuText I ToolsTrainOpenings "Aperture"  0 {Allenati con un repertorio}
+# ====== TODO To be translated ======
+menuText I ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText I ToolsTrainTactics "Tattiche"  0 {Risolvi problemi tattici}
 menuText I ToolsTrainCalvar "Calcolo delle varianti"  0 {Allenati sul calcolo delle varianti}
 menuText I ToolsTrainFindBestMove "Trova la mossa migliore"  0 {Trova la mossa migliore}
@@ -2009,6 +2011,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

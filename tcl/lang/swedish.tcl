@@ -178,6 +178,8 @@ menuText W ToolsSeriousGame "Seriöst parti"  0 {Spela ett seriöst parti}
 # ====== TODO To be translated ======
 menuText W ToolsTrainOpenings "Öppningar"  0 {Träna med en repetoar}
 # ====== TODO To be translated ======
+menuText W ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+# ====== TODO To be translated ======
 menuText W ToolsTrainTactics "Taktik"  0 {Lösa taktik}
 # ====== TODO To be translated ======
 menuText W ToolsTrainCalvar "Variantberäkning"  0 {Variantberäkningsträning}
@@ -7107,6 +7109,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

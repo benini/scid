@@ -6703,6 +6703,11 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             db->game->GetSAN (temp);
             Tcl_AppendResult (ti, temp, NULL);
             return TCL_OK;
+// returns next move played in UCI format
+        } else if (strIsPrefix (argv[arg], "nextMoveUCI")) {
+          db->game->GetNextMoveUCI (temp);
+          Tcl_AppendResult (ti, temp, NULL);
+          return TCL_OK;
         } else if (strIsPrefix (argv[arg], "previousMove")) {
             db->game->GetPrevSAN (temp);
             strcpy(tempTrans, temp);

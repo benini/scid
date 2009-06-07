@@ -164,6 +164,8 @@ menuText H ToolsTraining "Edzés"  0 {Segédeszközök edzéshez (taktika, megnyitás,
 menuText H ToolsTacticalGame "Taktikai játszma"  0 {Taktikai jellegû játszma kezdése}
 menuText H ToolsSeriousGame "Komoly játszma"  0 {Komoly játszma kezdése}
 menuText H ToolsTrainOpenings "Megnyitás"  0 {Edzés repertoárral}
+# ====== TODO To be translated ======
+menuText H ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText H ToolsTrainTactics "Taktika"  0 {Feladványok megfejtése}
 menuText H ToolsTrainCalvar "Változatszámítás"  0 {Változatszámítás gyakorlása}
 menuText H ToolsTrainFindBestMove "Legjobb lépés"  0 {A legjobb lépés megkeresése}
@@ -1867,6 +1869,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

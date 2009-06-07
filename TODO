@@ -4,14 +4,14 @@
 |                                                           |
  ===========================================================
 http://innokuo.altervista.org/chesshero.html (à faire sur modèle tactique)
-surbrillance dernier coup : - changer couleur, épaisseur, motif
 
  ===========================================================
 |                                                           |
 |                          BUGS                             |
 |                                                           |
  ===========================================================
-
+appui 3 fois sur une case vide
+::board::colorSquare source du bug ligne 968 de board.tcl
  ===========================================================
 |                                                           |
 |                     FEATURE REQUESTS                      |

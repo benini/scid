@@ -507,6 +507,7 @@ public:
     void      GetSAN (char * str);
     void      GetPrevSAN (char * str);
     void      GetPrevMoveUCI (char * str);
+    void      GetNextMoveUCI (char * str);
 
     bool      CommentEmpty ( const char * comment);
     void      WriteComment (TextBuffer * tb, const char * preStr,

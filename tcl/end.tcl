@@ -1226,7 +1226,8 @@ proc helpAbout {} {
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
   append str "Author: Shane Hudson\n"
   append str "Author: Pascal Georges\n"
-  append str "Copyright (C) Shane Hudson and others\n"
+  append str "Copyright (C) 1999-2004 Shane Hudson\n"
+  append str "Copyright (C) 2006-2009 Pascal Georges\n"
   append str "Scid is licenced under the\n"
   append str "GNU General Public License.\n"
   set asserts [sc_info asserts]

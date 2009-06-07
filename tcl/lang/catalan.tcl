@@ -178,6 +178,8 @@ menuText K ToolsTraining "Entrenament"  0 {Entrenament (tàctica, obertures,...}
 menuText K ToolsTacticalGame "Partida Tàctica"  0 {Jugar una partida tàctica}
 menuText K ToolsSeriousGame "Partida seriosa"  0 {Jugar una partida seriosa}
 menuText K ToolsTrainOpenings "Obertures"  0 {Entrenament amb un repertori}
+# ====== TODO To be translated ======
+menuText K ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText K ToolsTrainTactics "Tàctica"  0 {Resoldre problemes de tàctica}
 menuText K ToolsTrainCalvar "Càlcul de variants"  0 {Càlcul de variants}
 menuText K ToolsTrainFindBestMove "Trobar la millor jugada"  0 {Cerca la millor jugada}
@@ -1656,6 +1658,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

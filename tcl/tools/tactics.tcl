@@ -236,6 +236,7 @@ namespace eval tactics {
     bind $w <Destroy> { ::tactics::endTraining }
     bind $w <Configure> "recordWinSize $w"
     bind $w <F1> { helpWindow TacticsTrainer }
+    createToplevelFinalize $w
     
     ::tactics::loadBase [file rootname $base]
     

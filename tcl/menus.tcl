@@ -434,11 +434,11 @@ set menuindex -1
 set m .menu.play
 
 $m add command -label ToolsSeriousGame -command ::sergame::config
-incr menuindex
+set helpMessage($m,[incr menuindex]) ToolsSeriousGame
 $m add command -label ToolsTacticalGame -command ::tacgame::config
-incr menuindex
+set helpMessage($m,[incr menuindex]) ToolsTacticalGame
 $m add command -label ToolsTrainFics -command ::fics::config
-incr menuindex
+set helpMessage($m,[incr menuindex]) ToolsTrainFics
 $m add separator
 incr menuindex
 
@@ -447,9 +447,15 @@ menu $m.training
 $m add cascade -label ToolsTraining -menu $m.training
 set helpMessage($m,[incr menuindex]) ToolsTraining
 $m.training add command -label ToolsTrainOpenings -command ::opening::config
+set helpMessage($m.training,0) ToolsTrainOpenings
 $m.training add command -label ToolsTrainTactics -command ::tactics::config
+set helpMessage($m.training,1) ToolsTrainTactics
+$m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
+set helpMessage($m.training,2) ToolsTrainReviewGame
 $m.training add command -label ToolsTrainCalvar -command ::calvar::config
+set helpMessage($m.training,3) ToolsTrainCalvar
 $m.training add command -label ToolsTrainFindBestMove -command ::tactics::findBestMove
+set helpMessage($m.training,4) ToolsTrainFindBestMove
 
 $m add separator
 incr menuindex
@@ -918,6 +924,7 @@ $m add command -label OptionsSave -command {
           FilterMaxYear FilterMinYear FilterStepYear FilterGuessELO lookTheme autoResizeBoard } {
       puts $optionF "set $i [list [set $i]]"
     }
+    
     puts $optionF ""
     foreach i [lsort [array names winWidth]] {
       puts $optionF "set winWidth($i)  [expr $winWidth($i)]"
@@ -1084,6 +1091,11 @@ $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth
 foreach i {1 2 3 4 5} {
   $m.entry.highlightlastmove.width add radiobutton -label $i -value $i -variable ::highlightLastMoveWidth -command updateBoard
 }
+# menu $m.entry.highlightlastmove.pattern
+# $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMovePattern -menu $m.entry.highlightlastmove.pattern
+# foreach i {"plain" "." "-" "-." "-.." ". " "," ".  "} j { "" "." "-" "-." "-.." ". " "," ".  "} {
+  # $m.entry.highlightlastmove.pattern add radiobutton -label $i -value $j -variable ::highlightLastMovePattern -command updateBoard
+# }
 $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor -command {
   set col [ tk_chooseColor -initialcolor $::highlightLastMoveColor -title "Scid"]
   if { $col != "" } {
@@ -1490,11 +1502,9 @@ proc updateMenuStates {} {
 proc configMenuText {menu entry tag lang} {
   global menuLabel menuUnder
   if {[info exists menuLabel($lang,$tag)] && [info exists menuUnder($lang,$tag)]} {
-    $menu entryconfig $entry -label $menuLabel($lang,$tag) \
-        -underline $menuUnder($lang,$tag)
+    $menu entryconfig $entry -label $menuLabel($lang,$tag) -underline $menuUnder($lang,$tag)
   } else {
-    $menu entryconfig $entry -label $menuLabel(E,$tag) \
-        -underline $menuUnder(E,$tag)
+    $menu entryconfig $entry -label $menuLabel(E,$tag) -underline $menuUnder(E,$tag)
   }
 }
 
@@ -1503,11 +1513,11 @@ proc setLanguageMenus {{lang ""}} {
   
   if {$lang == ""} {set lang $::language}
   
-  foreach tag {CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsSeriousGame ToolsTrainFics} {
+  foreach tag { ToolsSeriousGame CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsTrainFics} {
     configMenuText .menu.play [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {TrainOpenings TrainTactics TrainCalvar TrainFindBestMove} {
+  foreach tag {TrainOpenings TrainTactics TrainCalvar TrainFindBestMove TrainReviewGame } {
     configMenuText .menu.play.training [tr Tools$tag $oldLang] Tools$tag $lang
   }
   

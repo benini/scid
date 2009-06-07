@@ -770,7 +770,6 @@ namespace eval uci {
   #make UCI output more readable (b1c3 -> Nc3)
   ################################################################################
   proc formatPv { moves { fen "" } } {
-    
     sc_info preMoveCmd {}
     # Push a temporary copy of the current game:
     if {$fen != ""} {

@@ -965,7 +965,11 @@ proc ::board::colorSquare {w i {color ""}} {
   set boc bgd$psize
   if { ($i + ($i / 8)) % 2 } { set boc bgl$psize }
   $w.bd delete br$i
+  
   $w.bd create image $xc $yc -image $boc -tag br$i
+  # otherwise clicking 3 times on an empty square will prevent the binding to work
+  $w.bd lower br$i p$i
+  
   set piece [string index $::board::_data($w) $i]
   if { $piece != "." } {
     set flip $::board::_flip($w)
@@ -973,7 +977,6 @@ proc ::board::colorSquare {w i {color ""}} {
     $w.bd create image $xc $yc -image $::board::letterToPiece($piece)$psize -tag p$i
   }
   
-  #if {$::board::_showMarks($w) && [info exists ::board::_mark($w)]} {}
   if {[info exists ::board::_mark($w)]} {
     set color ""
     foreach mark $::board::_mark($w) {
@@ -988,6 +991,7 @@ proc ::board::colorSquare {w i {color ""}} {
       catch {$w.bd itemconfigure sq$i -outline "" -fill $color } ; # -outline $color
     }
   }
+  
 }
 
 # ::board::midSquare
@@ -1329,11 +1333,11 @@ proc ::board::mark::DrawArrow {pathName from to color} {
 
 # ::board::mark::DrawRectangle --
 # Draws a rectangle surrounding the square
-proc ::board::mark::DrawRectangle { pathName square color } {
+proc ::board::mark::DrawRectangle { pathName square color pattern } {
   if {$square < 0  ||  $square > 63} { puts "error square = $square" ; return }
   set box [::board::mark::GetBox $pathName $square]
   $pathName create rectangle [lindex $box 0] [lindex $box 1] [lindex $box 2] [lindex $box 3] \
-      -outline $color -width $::highlightLastMoveWidth -dash {2 4} -tag highlightLastMove
+      -outline $color -width $::highlightLastMoveWidth -dash $pattern -tag highlightLastMove
 }
 
 # ::board::mark::DrawTux --
@@ -1582,8 +1586,8 @@ proc  ::board::lastMoveHighlight {w} {
     set moveuci [ string range $moveuci 0 3 ]
     set square1 [ ::board::sq [string range $moveuci 0 1 ] ]
     set square2 [ ::board::sq [string range $moveuci 2 3 ] ]
-    ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor
-    ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor
+    ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor $::highlightLastMovePattern
+    ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor $::highlightLastMovePattern
   }
 }
 

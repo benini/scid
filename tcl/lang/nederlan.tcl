@@ -182,6 +182,8 @@ menuText N ToolsTraining "Training"  0 {Training gereedschappen (taktiek, openin
 menuText N ToolsTacticalGame "Taktische partij"  0 {Speel een taktische partij}
 menuText N ToolsSeriousGame "Ernstige partij"  0 {Speel een ernstige partij}
 menuText N ToolsTrainOpenings "Openingen "  0 {Repertoriumtraining}
+# ====== TODO To be translated ======
+menuText N ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText N ToolsTrainTactics "Tactiek "  0 {Los taktische stellingen op }
 menuText N ToolsTrainCalvar "Berekenen van varianten"  0 {Training in het berekenen van varianten}
 menuText N ToolsTrainFindBestMove "Vind de beste zet"  0 {Vind de beste zet}
@@ -1833,6 +1835,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

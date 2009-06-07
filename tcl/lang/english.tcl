@@ -198,6 +198,7 @@ menuText E ToolsTraining "Training"  0 {Training tools (tactics, openings,...) }
 menuText E ToolsTacticalGame "Tactical game"  0 {Play a game with tactics}
 menuText E ToolsSeriousGame "Serious game"  0 {Play a serious game}
 menuText E ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
+menuText E ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
 menuText E ToolsTrainTactics "Tactics"  0 {Solve tactics}
 menuText E ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 menuText E ToolsTrainFindBestMove "Find best move"  0 {Find best move}

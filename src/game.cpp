@@ -2058,6 +2058,25 @@ Game::GetPrevMoveUCI (char * str)
 //     }
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Game::GetNextMoveUCI():
+//      Print the UCI representation of the next move to a string.
+//      Prints an empty string ("") if not at a move.
+void
+Game::GetNextMoveUCI (char * str)
+{
+  ASSERT (str != NULL);
+  moveT * m = CurrentMove;
+
+  if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
+    str[0] = 0;
+    return;
+  }
+  //MoveBackup();
+  CurrentPos->MakeUCIString (&(m->moveData), str);
+  //MoveForward();
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // commentEmpty:
 //    Called by WriteMoveList to check there is really

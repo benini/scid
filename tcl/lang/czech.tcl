@@ -169,6 +169,8 @@ menuText C ToolsSeriousGame "Serious game"  0 {Play a serious game}
 # ====== TODO To be translated ======
 menuText C ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 # ====== TODO To be translated ======
+menuText C ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+# ====== TODO To be translated ======
 menuText C ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText C ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
@@ -5720,6 +5722,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

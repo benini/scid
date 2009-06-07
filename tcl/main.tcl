@@ -34,7 +34,7 @@ proc moveEntry_Clear {} {
 proc moveEntry_Complete {} {
   global moveEntry
   
-  if { ! [::fics::playerCanMove] } { ;# not player's turn
+  if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove] } { ;# not player's turn
     moveEntry_Clear
     return
   }
@@ -1152,6 +1152,11 @@ set addVariationWithoutAsking 0
 proc confirmReplaceMove {} {
   global askToReplaceMoves trialMode
   
+  # If reviewing a game, enter a var automatically
+  if {[winfo exists $::reviewgame::window]} {
+    return "var"
+  }
+  
   if {$::addVariationWithoutAsking} { return "var" }
   
   if {! $askToReplaceMoves} { return "replace" }
@@ -1182,7 +1187,7 @@ proc addNullMove {} {
 #   If the optional parameter is "-animate", the move will be animated.
 #
 proc addMove { sq1 sq2 {animate ""}} {
-  if { ! [::fics::playerCanMove] } { return } ;# not player's turn
+  if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
   
   global EMPTY
   set nullmove 0
@@ -1339,7 +1344,7 @@ proc leaveSquare { square } {
 proc pressSquare { square } {
   global selectedSq highcolor
   
-  if { ![::fics::playerCanMove] } { return } ;# not player's turn
+  if { ![::fics::playerCanMove] || ![::reviewgame::playerCanMove] } { return } ;# not player's turn
   
   # if training with calculations of var is on, just log the event
   if { [winfo exists .calvarWin] } {

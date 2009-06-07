@@ -177,6 +177,8 @@ menuText B ToolsSeriousGame "Serious game"  0 {Play a serious game}
 # ====== TODO To be translated ======
 menuText B ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
 # ====== TODO To be translated ======
+menuText B ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+# ====== TODO To be translated ======
 menuText B ToolsTrainTactics "Tactics"  0 {Solve tactics}
 # ====== TODO To be translated ======
 menuText B ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
@@ -2096,6 +2098,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 
