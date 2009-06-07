@@ -6103,6 +6103,17 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
   <p><footer>(Updated: Scid 3.6.27, October 2008)</footer></p>
 }
 
+set helpTitle(ReviewGame) "Game Review"
+set helpText(ReviewGame) {<h1>Reviewing a game</h1>
+   <p>
+   This feature is designed to study a game, which means you should try 
+to guess the moves played during the match. So you first open a game from any Scid's
+base, and enter this function with the command <b>Review game</b> in the <b>Play</b> menu.
+As usually, to play with Black, flip board first (you always play from the bottom of the board).
+   </p>
+  <p><footer>(Updated: Scid 3.7.4, June 2009)</footer></p>
+}
+
 set helpTitle(Metadata) "Dublin Core Metadata"
 set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
    <p>
