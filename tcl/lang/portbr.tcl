@@ -1921,6 +1921,38 @@ translate B FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate B FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate B GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate B GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate B GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate B GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate B GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate B GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate B GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate B GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate B GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate B GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate B GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate B GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate B GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate B GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate B GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate B GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
 translate B CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate B CCDlgCGeneraloptions {General Options}
@@ -2098,6 +2130,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

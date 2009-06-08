@@ -1908,6 +1908,38 @@ translate C FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate C FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate C GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate C GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate C GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate C GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate C GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate C GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate C GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate C GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate C GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate C GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate C GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate C GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate C GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate C GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate C GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate C GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
 translate C CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate C CCDlgCGeneraloptions {General Options}
@@ -5722,6 +5754,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

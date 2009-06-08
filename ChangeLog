@@ -801,6 +801,7 @@ scid-3.7.4
   * fixed status bar detailing some menu entries
   * fixed context menu in notebook tabs for FICS window
   * fixed a bug selecting more than 3 times an empty square : entering a move with this square as target was difficult (lower in ::board::colorSquare)
+  * fixed the contextual menu in Mask for the command "Add this move to mask" (display all the possible moves in several menus to fit in screen's height)
 - Features
   * NAG support : add symbolic NAGs using UTF-8 symbols
   * Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game
@@ -808,6 +809,7 @@ scid-3.7.4
     - added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
     - added a sub-menu for displaying the Mask content in a tree form
     - remember the most recent opened masks
+    - new moves can be added to a mask even if there is no corresponding position in the Tree 
   * FICS play : save options for finding opponents based on login
   * Highlight last move played (switchable and configurable in options menu)
   * added a new call "sc_game info nextMoveUCI"

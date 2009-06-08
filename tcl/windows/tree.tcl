@@ -565,8 +565,9 @@ proc ::tree::displayLines { baseNumber moves } {
     $w.f.tl image create end -image ::tree::mask::emptyImage -align center
     $w.f.tl image create end -image ::tree::mask::emptyImage -align center
     $w.f.tl insert end "    "
+    $w.f.tl tag bind tagclick0 <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl dummy %x %y %X %Y ; break"
   }
-  $w.f.tl insert end "[lindex $moves 0]\n"
+  $w.f.tl insert end "[lindex $moves 0]\n" tagclick0
   
   for { set i 1 } { $i < [expr $len - 3 ] } { incr i } {
     set line [lindex $moves $i]
@@ -629,7 +630,7 @@ proc ::tree::displayLines { baseNumber moves } {
     
     if { $maskFile != "" } {
       # Bind right button to popup a contextual menu:
-      $w.f.tl tag bind tagclick$i <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y"
+      $w.f.tl tag bind tagclick$i <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl $move %x %y %X %Y ; break"
     }
     $w.f.tl tag add tagclick$i [expr $i +1 + $hasPositionComment].0 [expr $i + 1 + $hasPositionComment].end
     
@@ -684,7 +685,7 @@ proc ::tree::displayLines { baseNumber moves } {
       ::utils::tooltip::SetTag $w.f.tl $comment tagtooltip$idx
       
       # Bind right button to popup a contextual menu:
-      $w.f.tl tag bind tagclick$idx <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl  [lindex $m 0] %x %y %X %Y"
+      $w.f.tl tag bind tagclick$idx <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl  [lindex $m 0] %x %y %X %Y ; break"
       $w.f.tl tag add tagclick$idx [ expr $currentLine -1].0 [ expr $currentLine -1].end
       incr idx
     }
@@ -1558,21 +1559,26 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
     destroy $mctxt
   }
   
+  if {$move == "dummy"} {
+    set state "disabled"
+  } else  {
+    set state "normal"
+  }
   menu $mctxt
-  $mctxt add command -label [tr AddToMask] -command "::tree::mask::addToMask $move"
-  $mctxt add command -label [tr RemoveFromMask] -command "::tree::mask::removeFromMask $move"
+  $mctxt add command -label [tr AddToMask] -command "::tree::mask::addToMask $move" -state $state
+  $mctxt add command -label [tr RemoveFromMask] -command "::tree::mask::removeFromMask $move" -state $state
   $mctxt add separator
   
   menu $mctxt.nag
-  $mctxt add cascade -label [tr Nag] -menu $mctxt.nag
+  $mctxt add cascade -label [tr Nag] -menu $mctxt.nag -state $state
   
   foreach nag [ list "!!" " !" "!?" "?!" " ?" "??" " ~" [::tr "None"]  ] {
-    $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]"
+    $mctxt.nag add command -label $nag -command "::tree::mask::setNag [list $move $nag]" -state $state
   }
   
   foreach j { 0 1 } {
     menu $mctxt.image$j
-    $mctxt add cascade -label "[tr Marker] [expr $j +1]" -menu $mctxt.image$j
+    $mctxt add cascade -label "[tr Marker] [expr $j +1]" -menu $mctxt.image$j -state $state
     foreach e { Include Exclude MainLine Bookmark White Black NewLine ToBeVerified ToTrain Dubious ToRemove } {
       set i  $::tree::mask::marker2image($e)
       $mctxt.image$j add command -label [ tr $e ] -image $i -compound left -command "::tree::mask::setImage $move $i $j"
@@ -1580,24 +1586,43 @@ proc ::tree::mask::contextMenu {win move x y xc yc} {
     $mctxt.image$j add command -label [tr NoMarker] -command "::tree::mask::setImage $move {} $j"
   }
   menu $mctxt.color
-  $mctxt add cascade -label [tr ColorMarker] -menu $mctxt.color
+  $mctxt add cascade -label [tr ColorMarker] -menu $mctxt.color  -state $state
   foreach c { "White" "Green" "Yellow" "Blue" "Red"} {
     $mctxt.color add command -label [ tr "${c}Mark" ] -background $c -command "::tree::mask::setColor $move $c"
   }
   
   $mctxt add separator
-  $mctxt add command -label [ tr CommentMove] -command "::tree::mask::addComment $move"
+  $mctxt add command -label [ tr CommentMove] -command "::tree::mask::addComment $move" -state $state
   $mctxt add command -label [ tr CommentPosition] -command "::tree::mask::addComment"
   
   $mctxt add separator
-  menu $mctxt.matchmoves
-  $mctxt add cascade -label [ tr AddThisMoveToMask ] -menu $mctxt.matchmoves
-  foreach m [sc_pos matchMoves ""] {
-    $mctxt.matchmoves add command -label [::trans $m] -command "::tree::mask::addToMask $m"
+  set lMatchMoves [sc_pos matchMoves ""]
+  if {[llength $lMatchMoves ] > 16} {
+    # split the moves in several menus
+    for {set idxMenu 0} { $idxMenu <= [expr int([llength $lMatchMoves ] / 16) ]} {incr idxMenu} {
+      menu $mctxt.matchmoves$idxMenu
+      $mctxt add cascade -label "[ tr AddThisMoveToMask ] ([expr $idxMenu + 1 ])" -menu $mctxt.matchmoves$idxMenu
+      for {set i 0} {$i < 16} {incr i} {
+        if {[expr $i + $idxMenu * 16 +1] > [llength $lMatchMoves ] } {
+          break
+        }
+        set m [lindex $lMatchMoves [expr $i + $idxMenu * 16]]
+        if {$m == "OK"} { set m "O-O" }
+        if {$m == "OQ"} { set m "O-O-O" }
+        $mctxt.matchmoves$idxMenu add command -label [::trans $m] -command "::tree::mask::addToMask $m"
+      }
+    }
+  } else  {
+    menu $mctxt.matchmoves
+    $mctxt add cascade -label [ tr AddThisMoveToMask ] -menu $mctxt.matchmoves
+    foreach m [sc_pos matchMoves ""] {
+      if {$m == "OK"} { set m "O-O" }
+      if {$m == "OQ"} { set m "O-O-O" }
+      $mctxt.matchmoves add command -label [::trans $m] -command "::tree::mask::addToMask $m"
+    }
   }
   
   $mctxt post [winfo pointerx .] [winfo pointery .]
-  # grab $mctxt
 }
 ################################################################################
 #

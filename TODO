@@ -3,22 +3,18 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-http://innokuo.altervista.org/chesshero.html (à faire sur modèle tactique)
 
  ===========================================================
 |                                                           |
 |                          BUGS                             |
 |                                                           |
  ===========================================================
-appui 3 fois sur une case vide
-::board::colorSquare source du bug ligne 968 de board.tcl
+
  ===========================================================
 |                                                           |
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
-
-- Translate NAG symbols to text or proper annotation symbols
 
 - Notify games with annotations in "Best game", show annotator there.
   Consider sort order: e.g. annotated games on top?

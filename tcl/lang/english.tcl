@@ -1574,6 +1574,24 @@ translate E FICSConnect {Connect}
 translate E FICSdefaultuservars {Use default variables}
 translate E FICSObserveconfirm {Do you want to observe game}
 
+# Game review
+translate E GameReviewTimeExtended {Time extended}
+translate E GameReviewMargin {Error margin}
+translate E GameReviewAutoContinue {Auto continue when move is correct}
+translate E GameReviewReCalculate {Use extended time}
+translate E GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+translate E GameReviewAnalyzingThePosition {Analyzing the position}
+translate E GameReviewEnterYourMove {Enter your move}
+translate E GameReviewCheckingYourMove {Checking your move}
+translate E GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+translate E GameReviewYouPlayedSameMove {You played the same move as in match}
+translate E GameReviewScoreOfYourMove {Score of your move}
+translate E GameReviewGameMoveScore {Game move's score}
+translate E GameReviewEngineScore {Engine's score}
+translate E GameReviewYouPlayedLikeTheEngine {You played like the engine}
+translate E GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+translate E GameReviewMoveNotGood {This move is not good, score is}
+
 # Correspondence Chess Dialogs:
 translate E CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 translate E CCDlgCGeneraloptions {General Options}

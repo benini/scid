@@ -1637,6 +1637,38 @@ translate I FICSConnect {Connect}
 translate I FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate I FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
+translate I GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate I GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate I GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate I GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate I GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate I GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate I GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate I GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate I GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate I GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate I GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate I GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate I GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate I GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate I GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate I GameReviewMoveNotGood {This move is not good, score is}
 translate I CCDlgConfigureWindowTitle {Configura Scacchi per Corrispondenza}
 translate I CCDlgCGeneraloptions {Opzioni generali}
 translate I CCDlgDefaultDB {Database di Default:}
@@ -2011,6 +2043,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

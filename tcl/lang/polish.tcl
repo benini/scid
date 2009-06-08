@@ -1925,6 +1925,38 @@ translate P FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate P FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate P GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate P GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate P GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate P GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate P GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate P GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate P GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate P GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate P GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate P GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate P GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate P GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate P GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate P GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate P GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate P GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
 translate P CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate P CCDlgCGeneraloptions {General Options}
@@ -2319,6 +2351,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

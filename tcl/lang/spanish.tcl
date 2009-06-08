@@ -1552,6 +1552,38 @@ translate S FICSSend {enviar}
 translate S FICSConnect {Conectar}
 translate S FICSdefaultuservars {Usa valores por defecto}
 translate S FICSObserveconfirm {Quieres observar la partida}
+# ====== TODO To be translated ======
+translate S GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate S GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate S GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate S GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate S GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate S GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate S GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate S GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate S GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate S GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate S GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate S GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate S GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate S GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate S GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate S GameReviewMoveNotGood {This move is not good, score is}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1650,6 +1682,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

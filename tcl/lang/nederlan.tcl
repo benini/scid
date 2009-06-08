@@ -1723,6 +1723,38 @@ translate N FICSConnect {Connect}
 translate N FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate N FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
+translate N GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate N GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate N GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate N GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate N GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate N GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate N GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate N GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate N GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate N GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate N GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate N GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate N GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate N GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate N GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate N GameReviewMoveNotGood {This move is not good, score is}
 translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
 translate N CCDlgDefaultDB {Default Databank:}
@@ -1835,6 +1867,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

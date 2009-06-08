@@ -1535,6 +1535,38 @@ translate H FICSConnect {Csatlakozás}
 translate H FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate H FICSObserveconfirm {Do you want to observe game}
+# ====== TODO To be translated ======
+translate H GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate H GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate H GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate H GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate H GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate H GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate H GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate H GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate H GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate H GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate H GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate H GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate H GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate H GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate H GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate H GameReviewMoveNotGood {This move is not good, score is}
 translate H CCDlgConfigureWindowTitle {Levelezési sakk beállításai}
 translate H CCDlgCGeneraloptions {Általános lehetõségek}
 translate H CCDlgDefaultDB {Alapértelmezésû adatbázis:}
@@ -1869,6 +1901,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

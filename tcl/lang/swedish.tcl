@@ -1918,6 +1918,38 @@ translate W FICSConnect {Anslut}
 translate W FICSdefaultuservars {Använd standardvariabler}
 # ====== TODO To be translated ======
 translate W FICSObserveconfirm {Vill du observera parti} 
+# ====== TODO To be translated ======
+translate W GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate W GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate W GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate W GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate W GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate W GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate W GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate W GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate W GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate W GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate W GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate W GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate W GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate W GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate W GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate W GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ====== 
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
@@ -7109,6 +7141,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

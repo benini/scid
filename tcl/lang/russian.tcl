@@ -1945,6 +1945,38 @@ translate R FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate R FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate R GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate R GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate R GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate R GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate R GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate R GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate R GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate R GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate R GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate R GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate R GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate R GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate R GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate R GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate R GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate R GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
 translate R CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate R CCDlgCGeneraloptions {General Options}
@@ -2121,6 +2153,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -1584,6 +1584,38 @@ translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
 translate D FICSdefaultuservars {Standardvariablen verwenden}
 translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
+# ====== TODO To be translated ======
+translate D GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate D GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate D GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate D GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate D GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate D GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate D GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate D GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate D GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate D GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate D GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate D GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate D GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate D GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate D GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate D GameReviewMoveNotGood {This move is not good, score is}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
@@ -7240,6 +7272,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

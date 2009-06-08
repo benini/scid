@@ -1916,6 +1916,38 @@ translate Y FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate Y FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate Y GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate Y GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate Y GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate Y GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate Y GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate Y GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate Y GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate Y GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate Y GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate Y GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate Y GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate Y GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate Y GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate Y GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate Y GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate Y GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
 translate Y CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate Y CCDlgCGeneraloptions {General Options}
@@ -2092,6 +2124,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

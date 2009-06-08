@@ -1530,6 +1530,22 @@ translate F FICSSend {envoyer}
 translate F FICSConnect {Connecter}
 translate F FICSdefaultuservars {Variables par défaut}
 translate F FICSObserveconfirm {Voulez-vous suivre la partie}
+translate F GameReviewTimeExtended {Temps étendu}
+translate F GameReviewMargin {Marge d'erreur}
+translate F GameReviewAutoContinue {Continuer quand le coup est correct}
+translate F GameReviewReCalculate {Utiliser temps étendu}
+translate F GameReviewAnalyzingMovePlayedDuringTheGame {Analyze du coup joué pendant la partie}
+translate F GameReviewAnalyzingThePosition {Analyse de la position}
+translate F GameReviewEnterYourMove {Jouez votre coup}
+translate F GameReviewCheckingYourMove {Vérification de votre coup}
+translate F GameReviewYourMoveWasAnalyzed {Votre coup a été analysé}
+translate F GameReviewYouPlayedSameMove {Vous avez joué le même coup que dans la partie}
+translate F GameReviewScoreOfYourMove {Score de votre coup}
+translate F GameReviewGameMoveScore {Score du coup de la partie}
+translate F GameReviewEngineScore {Score du moteur}
+translate F GameReviewYouPlayedLikeTheEngine {Vous avez joué comme le moteur}
+translate F GameReviewNotEngineMoveButGoodMove {Pas le coup du moteur, mais un coup jouable}
+translate F GameReviewMoveNotGood {Ce coup n'est pas bon, le score est}
 translate F CCDlgConfigureWindowTitle {Configurer échecs par correspondance}
 translate F CCDlgCGeneraloptions {Options générales}
 translate F CCDlgDefaultDB {Base par défaut:}
@@ -1831,6 +1847,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

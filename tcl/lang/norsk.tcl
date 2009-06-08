@@ -1912,6 +1912,38 @@ translate O FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate O FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate O GameReviewTimeExtended {Time extended}
+# ====== TODO To be translated ======
+translate O GameReviewMargin {Error margin}
+# ====== TODO To be translated ======
+translate O GameReviewAutoContinue {Auto continue when move is correct}
+# ====== TODO To be translated ======
+translate O GameReviewReCalculate {Use extended time}
+# ====== TODO To be translated ======
+translate O GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+# ====== TODO To be translated ======
+translate O GameReviewAnalyzingThePosition {Analyzing the position}
+# ====== TODO To be translated ======
+translate O GameReviewEnterYourMove {Enter your move}
+# ====== TODO To be translated ======
+translate O GameReviewCheckingYourMove {Checking your move}
+# ====== TODO To be translated ======
+translate O GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+# ====== TODO To be translated ======
+translate O GameReviewYouPlayedSameMove {You played the same move as in match}
+# ====== TODO To be translated ======
+translate O GameReviewScoreOfYourMove {Score of your move}
+# ====== TODO To be translated ======
+translate O GameReviewGameMoveScore {Game move's score}
+# ====== TODO To be translated ======
+translate O GameReviewEngineScore {Engine's score}
+# ====== TODO To be translated ======
+translate O GameReviewYouPlayedLikeTheEngine {You played like the engine}
+# ====== TODO To be translated ======
+translate O GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+# ====== TODO To be translated ======
+translate O GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
 translate O CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate O CCDlgCGeneraloptions {General Options}
@@ -2092,6 +2124,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 
