@@ -22,6 +22,10 @@ set colorSchemes {
 }
 array set newColors {}
 
+set ::board::highlightColour1 "grey"
+set ::board::highlightColour2 "grey"
+  
+
 proc SetBoardTextures {} {
   global boardfile_dark boardfile_lite
   # handle cases of old configuration files
@@ -1022,7 +1026,7 @@ namespace eval ::board::mark {
   
   # Regular expression constants for
   # matching Scid's embedded commands in PGN files.
-  
+
   variable StartTag {\[%}
   variable ScidKey  {mark|arrow}
   variable Command  {draw}

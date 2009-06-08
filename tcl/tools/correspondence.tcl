@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.67 2009/05/28 16:05:10 arwagner Exp $
+### $Id: correspondence.tcl,v 1.68 2009/06/08 21:08:21 arwagner Exp $
 ###
-### Last change: <Thu, 2009/05/28 18:04:23 arwagner ingata>
+### Last change: <Mon, 2009/06/08 23:07:26 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2930,6 +2930,7 @@ namespace eval CorrespondenceChess {
 			# timing to two lists: one holds all games and one holds
 			# those the user does not have the move (they may be skipped
 			# in display)
+			set xfcclist {}
 			set filelist {}
 			set skiplist {}
 			set sortmode "-ascii"
@@ -3001,6 +3002,7 @@ namespace eval CorrespondenceChess {
 				} else {
 					lappend filelist [list $CmailGameName $criterion]
 				}
+					lappend xfcclist [list $CmailGameName]
 			}
 
 			# sort file list by mytime, ascending
@@ -3010,6 +3012,16 @@ namespace eval CorrespondenceChess {
 			::CorrespondenceChess::emptyGamelist
 			sc_clipbase clear
 			sc_base switch "clipbase"
+
+			# Loop over all files and add all game files that are not
+			# Xfcc (ie. eMail chess)
+			foreach f [glob -nocomplain [file join $inpath *]] {
+				set id [file tail $f]
+				regsub -all ".pgn" $id "" id
+				if { [lsearch $xfcclist "$id"] < 0 } {
+					set filelist [concat $id $filelist]
+				}
+			}
 
 			# import the games on basis of the sorted list created above
 			foreach f $filelist {
@@ -3456,14 +3468,14 @@ namespace eval CorrespondenceChess {
 	}
 
 	if {[catch { package require http }]} {
-	  ::splash::add "http package not found, disabeling internal Xfcc support"
+	  ::splash::add "http package not found, disabling internal Xfcc support"
 		set XfccInternal -1
 	} else {
 		::http::config -useragent $::Xfcc::useragent
 	}
 
 	if {[catch {package require tdom}]} {
-		::splash::add "tDOM package not found, disabeling internal Xfcc support"
+		::splash::add "tDOM package not found, disabling internal Xfcc support"
 		set XfccInternal -1
 	}
 
