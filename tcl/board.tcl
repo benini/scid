@@ -22,10 +22,6 @@ set colorSchemes {
 }
 array set newColors {}
 
-set ::board::highlightColour1 "grey"
-set ::board::highlightColour2 "grey"
-  
-
 proc SetBoardTextures {} {
   global boardfile_dark boardfile_lite
   # handle cases of old configuration files
