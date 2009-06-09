@@ -5,6 +5,10 @@
 ### Try to guess the moves of a game
 #
 
+# TODO :
+# - permettre tourner l'échiquier après le démarrage
+# - stats de réussite (coups comme XX, comme moteur)
+
 namespace eval reviewgame {
   
   set prevScore 0
@@ -42,6 +46,20 @@ proc ::reviewgame::start {} {
   setTitle $w "GameReview"
   setWinLocation $w
   wm minsize $w 200 200
+  
+  ttk::frame $w.fgameinfo
+  set welo [sc_game tags get WhiteElo]
+  set belo [sc_game tags get BlackElo]
+  if { $welo == "0"} { set welo "-" }
+  if { $belo == "0"} { set belo "-" }
+  ttk::label $w.fgameinfo.l1 -text "[sc_game tags get White] ($welo) - [sc_game tags get Black] ($belo)"
+  set result [sc_game tags get Result]
+  if { $result == "1" } { set result "1-0" }
+  if { $result == "0" } { set result "0-1" }
+  if { $result == "=" } { set result "1/2 - 1/2" }
+  ttk::label $w.fgameinfo.l2 -text "$result"
+  pack $w.fgameinfo.l1 $w.fgameinfo.l2
+  pack $w.fgameinfo -expand 1 -fill both
   
   ttk::frame $w.fparam
   ttk::label $w.fparam.ltime1 -text "[::tr Time] ([::tr sec])"
@@ -97,11 +115,18 @@ proc ::reviewgame::start {} {
   
   ttk::button $w.finfo.sol -text [::tr ShowSolution ] -command ::reviewgame::showSolution
   grid $w.finfo.sol -column 0 -row $row  -sticky nw
+  incr row
+  
+  # Display statistics
+  ttk::label $w.finfo.stats -text ""
+  grid $w.finfo.stats -column 0 -row $row -sticky nw -columnspan 3
   
   ttk::frame $w.fbuttons
   pack $w.fbuttons -fill x
   ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::reviewgame::endTraining
   pack $w.fbuttons.close -expand 1 -fill x
+  
+  set ::reviewgame::boardFlipped [::board::isFlipped .main.board]
   
   if { ! [::reviewgame::launchengine] } {
     tk_messageBox -title "Scid" -icon error -type ok -message "Error launching engine"
@@ -109,6 +134,9 @@ proc ::reviewgame::start {} {
   }
   
   set ::reviewgame::prevFen [sc_pos fen]
+  set ::reviewgame::movesLikePlayer 0
+  set ::reviewgame::movesLikeEngine 0
+  set ::reviewgame::numberMovesPlayed 0
   ::reviewgame::resetValues
   ::reviewgame::mainLoop
   
@@ -123,12 +151,19 @@ proc ::reviewgame::start {} {
 proc ::reviewgame::showSolution {} {
   set w $::reviewgame::window
   $w.finfo.sol configure -text "[ sc_game info nextMove ]"
+  set ::reviewgame::solutionDisplayed 1
 }
 ################################################################################
 #
 ################################################################################
 proc ::reviewgame::endTraining {} {
   set w $::reviewgame::window
+  
+  if {$::reviewgame::pushedgame} {
+    sc_game pop
+    sc_info preMoveCmd preMoveCommand
+  }
+  
   after cancel ::reviewgame::mainLoop
   set ::reviewgame::bailout 1
   set ::reviewgame::sequence 0
@@ -179,6 +214,8 @@ proc ::reviewgame::mainLoop {} {
   set w $::reviewgame::window
   
   after cancel ::reviewgame::mainLoop
+  
+  if { ! [ checkConsistency ] } { return }
   
   if { $useExtendedTime } {
     set thinkingTime [expr $::reviewgame::timeExtended * 60 ]
@@ -232,6 +269,8 @@ proc ::reviewgame::mainLoop {} {
   }
   $w.finfo.sol configure -text "[::tr ShowSolution]"
   
+  incr ::reviewgame::numberMovesPlayed
+  
   # Phase 3 : ponder on user's move if different of best engine move and move played
   # We know user has played
   set user_move [sc_game info previousMoveNT]
@@ -240,7 +279,7 @@ proc ::reviewgame::mainLoop {} {
   if {$user_move != $::reviewgame::movePlayed} {
     $w.finfo.pblabel configure -image ReviewGameStop -text "[::tr GameReviewCheckingYourMove]"
     $w.finfo.sc3 configure -text ""
-    ::reviewgame::startAnalyze $thinkingTime $user_move
+    ::reviewgame::startAnalyze $thinkingTime ;#$user_move
     vwait ::reviewgame::sequence
     if { $::reviewgame::bailout } { return }
     $w.finfo.pblabel configure -image ReviewGameStop -text "[::tr GameReviewYourMoveWasAnalyzed]"
@@ -250,7 +289,10 @@ proc ::reviewgame::mainLoop {} {
   
   # User guessed the correct move played in game
   if {$user_move == $::reviewgame::movePlayed } {
-    $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedSameMove]" -foreground green
+    $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedSameMove]" -foreground "sea green"
+    if {  ! $::reviewgame::solutionDisplayed } {
+      incr ::reviewgame::movesLikePlayer
+    }
     set var [sc_var number]
     sc_var exit
     sc_var delete $var
@@ -267,9 +309,12 @@ proc ::reviewgame::mainLoop {} {
     }
     $w.finfo.pblabel configure -image ReviewGameGreenArrowUp -text ""
   } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
+    
     # User guessed engine's move
     if {$user_move == [ lindex $analysisEngine(moves,2) 0]} {
-      $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedLikeTheEngine]" -foreground green
+      $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedLikeTheEngine]" -foreground "sea green"
+      incr ::reviewgame::movesLikeEngine
+      
     } else  {
       $w.finfo.sc3 configure -text "[::tr GameReviewNotEngineMoveButGoodMove] : [::trans $user_move] ($analysisEngine(score,3))" -foreground blue
     }
@@ -299,16 +344,32 @@ proc ::reviewgame::mainLoop {} {
     after 1000 ::reviewgame::mainLoop
     return
   }
+  
   $w.finfo.proceed configure -state normal
   $w.finfo.extended configure -state normal
+  updateStats
   set ::reviewgame::useExtendedTime 0
+}
+################################################################################
+#
+################################################################################
+proc ::reviewgame::updateStats {} {
+  
+  set l $::reviewgame::window.finfo.stats
+  if { ![::board::isFlipped .main.board] } {
+    set player [sc_game info white]
+  } else  {
+    set player [sc_game info black]
+  }
+  
+  $l configure -text "[::tr GameReviewMovesPlayedLike] $player : $::reviewgame::movesLikePlayer / $::reviewgame::numberMovesPlayed\n[::tr GameReviewMovesPlayedEngine] : $::reviewgame::movesLikeEngine / $::reviewgame::numberMovesPlayed"
 }
 ################################################################################
 #
 ################################################################################
 proc ::reviewgame::isGoodScore {engine player} {
   global ::reviewgame::margin
-  
+  puts "isGoodScore engine $engine player $player"
   if { ![::board::isFlipped .main.board] } {
     # if player plays white
     if {$player >= [expr $engine - $margin]} {
@@ -319,6 +380,7 @@ proc ::reviewgame::isGoodScore {engine player} {
       return 1
     }
   }
+  puts "return 0"
   return 0
 }
 ################################################################################
@@ -334,6 +396,7 @@ proc ::reviewgame::resetValues {} {
   set ::reviewgame::analysisEngine(analyzeMode) 0
   set ::reviewgame::bailout 0
   set ::reviewgame::useExtendedTime 0
+  set ::reviewgame::solutionDisplayed 0
 }
 
 ################################################################################
@@ -381,6 +444,8 @@ proc ::reviewgame::sendToEngine {text} {
 proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   global ::reviewgame::analysisEngine ::reviewgame::engineSlot
   
+  puts "startAnalyze $move"
+  
   set pb $::reviewgame::window.finfo.pb
   set length [$pb cget -maximum]
   set ::reviewgame::progressBarTimer  [expr ( $analysisTime * 1000 * $::reviewgame::progressBarStep ) / $length ]
@@ -393,25 +458,30 @@ proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   set analysisEngine(analyzeMode) 1
   after cancel ::reviewgame::stopAnalyze
   
+  # we want to ponder on a particular move, hence we need to switch to a temporary position so
+  # UCI code can correctly format the variations
   if {$move != ""} {
     sc_info preMoveCmd {}
     sc_game push copyfast
-    ::uci::sc_move_add $move
+    set ::reviewgame::pushedgame 1
+    # puts "::uci::sc_move_add $move"
+    # ::uci::sc_move_add $move
+    sc_move addSan $move
     set ::analysis(fen$engineSlot) [sc_pos fen]
-    sc_game pop
-    sc_info preMoveCmd preMoveCommand
   } else  {
     set ::analysis(fen$engineSlot) ""
+    set ::reviewgame::pushedgame 0
   }
+  
   ::reviewgame::sendToEngine "position fen [sc_pos fen] $move"
   ::reviewgame::sendToEngine "go infinite ponder"
-  after [expr 1000 * $analysisTime] ::reviewgame::stopAnalyze
+  after [expr 1000 * $analysisTime] "::reviewgame::stopAnalyze $move"
 }
 # ======================================================================
 # stopAnalyzeMode:
 #   Stop the engine analyze mode
 # ======================================================================
-proc ::reviewgame::stopAnalyze { } {
+proc ::reviewgame::stopAnalyze { { move "" } } {
   global ::reviewgame::analysisEngine ::reviewgame::sequence
   
   # Check that the engine has already had analyze mode started:
@@ -425,9 +495,14 @@ proc ::reviewgame::stopAnalyze { } {
   set analysisEngine(score,$sequence) [lindex $pv 1]
   set analysisEngine(moves,$sequence) [lindex $pv 2]
   
+  puts "résultat analyse $sequence : $analysisEngine(score,$sequence) $analysisEngine(moves,$sequence)"
   set analysisEngine(analyzeMode) 0
   ::reviewgame::sendToEngine  "stop"
   
+  if {$move != ""} {
+    sc_game pop
+    sc_info preMoveCmd preMoveCommand
+  }
 }
 ################################################################################
 #
@@ -444,7 +519,7 @@ proc ::reviewgame::proceed {} {
 ################################################################################
 proc ::reviewgame::extendedTime {} {
   
-  # if already calculating, to nothing
+  # if already calculating, do nothing
   if { $::reviewgame::analysisEngine(analyzeMode)} {
     return
   }
@@ -465,6 +540,17 @@ proc ::reviewgame::updateProgressBar {} {
   $::reviewgame::window.finfo.pb step $::reviewgame::progressBarStep
   after $::reviewgame::progressBarTimer ::reviewgame::updateProgressBar
 }
+################################################################################
+#
+################################################################################
+proc ::reviewgame::checkConsistency {} {
+  if { $::reviewgame::boardFlipped != [::board::isFlipped .main.board] } {
+    tk_messageBox -type ok -icon warning -title "Scid" -message "Choose the side BEFORE starting the exercise"
+    return 0
+  }
+  return 1
+}
+
 ################################################################################
 #   returns 1 if the player is allowed to enter a move (pondering is done)
 ################################################################################

@@ -1584,6 +1584,10 @@ translate S GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate S GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate S GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate S GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate S GameReviewMovesPlayedEngine {Moves played like engine}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1682,6 +1686,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

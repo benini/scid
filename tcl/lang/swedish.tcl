@@ -1950,6 +1950,10 @@ translate W GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate W GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate W GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate W GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate W GameReviewMovesPlayedEngine {Moves played like engine}
 # ====== TODO To be translated ====== 
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
@@ -7141,6 +7145,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

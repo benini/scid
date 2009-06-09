@@ -1944,6 +1944,10 @@ translate O GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also
 # ====== TODO To be translated ======
 translate O GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ======
+translate O GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate O GameReviewMovesPlayedEngine {Moves played like engine}
+# ====== TODO To be translated ======
 translate O CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate O CCDlgCGeneraloptions {General Options}
@@ -2124,6 +2128,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

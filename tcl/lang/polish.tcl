@@ -1957,6 +1957,10 @@ translate P GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also
 # ====== TODO To be translated ======
 translate P GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ======
+translate P GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate P GameReviewMovesPlayedEngine {Moves played like engine}
+# ====== TODO To be translated ======
 translate P CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate P CCDlgCGeneraloptions {General Options}
@@ -2351,6 +2355,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

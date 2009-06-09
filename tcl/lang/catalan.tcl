@@ -1583,6 +1583,10 @@ translate K GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate K GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate K GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate K GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate K GameReviewMovesPlayedEngine {Moves played like engine}
 translate K CCDlgConfigureWindowTitle {Configurar Escacs Postals}
 translate K CCDlgCGeneraloptions {Opcions Generals}
 translate K CCDlgDefaultDB {Base per defecte:}
@@ -1690,6 +1694,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

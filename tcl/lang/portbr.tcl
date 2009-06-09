@@ -1953,6 +1953,10 @@ translate B GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also
 # ====== TODO To be translated ======
 translate B GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ======
+translate B GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate B GameReviewMovesPlayedEngine {Moves played like engine}
+# ====== TODO To be translated ======
 translate B CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate B CCDlgCGeneraloptions {General Options}
@@ -2130,6 +2134,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

@@ -1755,6 +1755,10 @@ translate N GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate N GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate N GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate N GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate N GameReviewMovesPlayedEngine {Moves played like engine}
 translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
 translate N CCDlgDefaultDB {Default Databank:}
@@ -1867,6 +1871,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

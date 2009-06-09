@@ -1588,9 +1588,11 @@ translate E GameReviewYouPlayedSameMove {You played the same move as in match}
 translate E GameReviewScoreOfYourMove {Score of your move}
 translate E GameReviewGameMoveScore {Game move's score}
 translate E GameReviewEngineScore {Engine's score}
-translate E GameReviewYouPlayedLikeTheEngine {You played like the engine}
+translate E GameReviewYouPlayedLikeTheEngine {You played as good as engine's}
 translate E GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 translate E GameReviewMoveNotGood {This move is not good, score is}
+translate E GameReviewMovesPlayedLike {Moves played like}
+translate E GameReviewMovesPlayedEngine {Moves played like engine}
 
 # Correspondence Chess Dialogs:
 translate E CCDlgConfigureWindowTitle {Configure Correspondence Chess}

@@ -1616,6 +1616,10 @@ translate D GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate D GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate D GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate D GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate D GameReviewMovesPlayedEngine {Moves played like engine}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
@@ -7272,6 +7276,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

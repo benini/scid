@@ -1534,7 +1534,7 @@ translate F GameReviewTimeExtended {Temps étendu}
 translate F GameReviewMargin {Marge d'erreur}
 translate F GameReviewAutoContinue {Continuer quand le coup est correct}
 translate F GameReviewReCalculate {Utiliser temps étendu}
-translate F GameReviewAnalyzingMovePlayedDuringTheGame {Analyze du coup joué pendant la partie}
+translate F GameReviewAnalyzingMovePlayedDuringTheGame {Analyse du coup joué pendant la partie}
 translate F GameReviewAnalyzingThePosition {Analyse de la position}
 translate F GameReviewEnterYourMove {Jouez votre coup}
 translate F GameReviewCheckingYourMove {Vérification de votre coup}
@@ -1543,9 +1543,11 @@ translate F GameReviewYouPlayedSameMove {Vous avez joué le même coup que dans la
 translate F GameReviewScoreOfYourMove {Score de votre coup}
 translate F GameReviewGameMoveScore {Score du coup de la partie}
 translate F GameReviewEngineScore {Score du moteur}
-translate F GameReviewYouPlayedLikeTheEngine {Vous avez joué comme le moteur}
+translate F GameReviewYouPlayedLikeTheEngine {Vous avez joué un coup aussi bon que le moteur}
 translate F GameReviewNotEngineMoveButGoodMove {Pas le coup du moteur, mais un coup jouable}
 translate F GameReviewMoveNotGood {Ce coup n'est pas bon, le score est}
+translate F GameReviewMovesPlayedLike {Coups joués comme}
+translate F GameReviewMovesPlayedEngine {coups joués comme le moteur}
 translate F CCDlgConfigureWindowTitle {Configurer échecs par correspondance}
 translate F CCDlgCGeneraloptions {Options générales}
 translate F CCDlgDefaultDB {Base par défaut:}
@@ -1601,20 +1603,13 @@ translate F CCDlgURL        {Xfcc-URL:}
 translate F CCDlgRatingType {Type classement:}
 translate F CCDlgDuplicateGame {Identifiant de partie non-unique}
 translate F CCDlgDuplicateGameError {Cette partie existe à plusieurs exemplaires dans la base de données. Veuillez effacer tous les doublons et compacter votre fichier de parties (Fichier/Maintenance/Compacter base).}
-# ====== TODO To be translated ======
-translate F CCDlgSortOption {Sorting:}
-# ====== TODO To be translated ======
-translate F CCDlgListOnlyOwnMove {Only games I have the move}
-# ====== TODO To be translated ======
-translate F CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
-# ====== TODO To be translated ======
-translate F CCOrderMyTimeTxt {My Clock}
-# ====== TODO To be translated ======
-translate F CCOrderTimePerMoveTxt {Time per move till next time control}
-# ====== TODO To be translated ======
-translate F CCOrderStartDate {Start date}
-# ====== TODO To be translated ======
-translate F CCOrderOppTimeTxt {Opponents Clock}
+translate F CCDlgSortOption {Tri:}
+translate F CCDlgListOnlyOwnMove {Parties où c'est mon tour}
+translate F CCOrderClassicTxt {Site, Evénement, Ronde, Résultat, Blancs, Noirs}
+translate F CCOrderMyTimeTxt {Ma pendule}
+translate F CCOrderTimePerMoveTxt {Temps par coup jusqu'au prochain contrôlede temps}
+translate F CCOrderStartDate {Date de départ}
+translate F CCOrderOppTimeTxt {Pendule adversaire}
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
@@ -1847,6 +1842,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

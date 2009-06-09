@@ -1669,6 +1669,10 @@ translate I GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate I GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate I GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate I GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate I GameReviewMovesPlayedEngine {Moves played like engine}
 translate I CCDlgConfigureWindowTitle {Configura Scacchi per Corrispondenza}
 translate I CCDlgCGeneraloptions {Opzioni generali}
 translate I CCDlgDefaultDB {Database di Default:}
@@ -2043,6 +2047,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

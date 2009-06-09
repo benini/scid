@@ -1977,6 +1977,10 @@ translate R GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also
 # ====== TODO To be translated ======
 translate R GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ======
+translate R GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate R GameReviewMovesPlayedEngine {Moves played like engine}
+# ====== TODO To be translated ======
 translate R CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate R CCDlgCGeneraloptions {General Options}
@@ -2153,6 +2157,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

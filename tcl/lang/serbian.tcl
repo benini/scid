@@ -1948,6 +1948,10 @@ translate Y GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also
 # ====== TODO To be translated ======
 translate Y GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ======
+translate Y GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate Y GameReviewMovesPlayedEngine {Moves played like engine}
+# ====== TODO To be translated ======
 translate Y CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate Y CCDlgCGeneraloptions {General Options}
@@ -2124,6 +2128,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

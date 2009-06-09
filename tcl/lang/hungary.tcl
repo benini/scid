@@ -1567,6 +1567,10 @@ translate H GameReviewYouPlayedLikeTheEngine {You played like the engine}
 translate H GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
 # ====== TODO To be translated ======
 translate H GameReviewMoveNotGood {This move is not good, score is}
+# ====== TODO To be translated ======
+translate H GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate H GameReviewMovesPlayedEngine {Moves played like engine}
 translate H CCDlgConfigureWindowTitle {Levelezési sakk beállításai}
 translate H CCDlgCGeneraloptions {Általános lehetõségek}
 translate H CCDlgDefaultDB {Alapértelmezésû adatbázis:}
@@ -1901,6 +1905,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

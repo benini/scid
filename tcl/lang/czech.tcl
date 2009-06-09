@@ -1940,6 +1940,10 @@ translate C GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also
 # ====== TODO To be translated ======
 translate C GameReviewMoveNotGood {This move is not good, score is}
 # ====== TODO To be translated ======
+translate C GameReviewMovesPlayedLike {Moves played like}
+# ====== TODO To be translated ======
+translate C GameReviewMovesPlayedEngine {Moves played like engine}
+# ====== TODO To be translated ======
 translate C CCDlgConfigureWindowTitle {Configure Correspondence Chess}
 # ====== TODO To be translated ======
 translate C CCDlgCGeneraloptions {General Options}
@@ -5754,6 +5758,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 
