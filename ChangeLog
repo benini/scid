@@ -819,6 +819,7 @@ scid-3.7.4
 	* Do not show games where the player does not have the move (Xfcc only)
 	* Add GUI to set sort criteria
 	* Implement sort by "time per move till next TC" (Suggested by Dhanish)
+	* Display draw offers
 - Translations:
   * updated spanish translation (thanks to Benigno Hernández)
   * updated swedish translation (thanks to Hans Eriksson)

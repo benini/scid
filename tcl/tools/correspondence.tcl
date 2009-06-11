@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.69 2009/06/11 14:30:14 arwagner Exp $
+### $Id: correspondence.tcl,v 1.70 2009/06/11 15:45:35 arwagner Exp $
 ###
-### Last change: <Thu, 2009/06/11 16:16:33 arwagner ingata>
+### Last change: <Thu, 2009/06/11 17:43:28 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2731,8 +2731,12 @@ namespace eval CorrespondenceChess {
 			if {$drawoffer == "true"} {
 				.ccWindow.top.acceptDraw configure -font font_Bold    -foreground red   -state normal
 				set comment   [sc_pos getComment]
-				set comment "$comment ? [::tr Draw] ?"
-				sc_pos  setComment "$comment"
+				set drwstr    "- [::tr Draw] -"
+				if { [regexp "$drwstr" $comment] } {
+				} else {
+					sc_pos  setComment "$comment $drwstr"
+					updateBoard -pgn
+				}
 			} else {
 				.ccWindow.top.acceptDraw configure -font font_Regular -foreground black -state disabled
 			}
