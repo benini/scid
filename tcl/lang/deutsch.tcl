@@ -189,8 +189,7 @@ menuText D ToolsTraining "Training"  0 {Trainingswerkzeuge (Taktik, Eröffnungen,
 menuText D ToolsTacticalGame "Trainingspartie"  0 {Trainingspartie spielen}
 menuText D ToolsSeriousGame "Ernste Partie"  0 {Ernste Partie spielen}
 menuText D ToolsTrainOpenings "Eröffnungen"  0 {Eröffnungsrepertoire trainieren}
-# ====== TODO To be translated ======
-menuText D ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+menuText D ToolsTrainReviewGame "Partie nachspielen"  0 {Finden von Zügen wie in vorgegebener Partie}
 menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
 menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
@@ -269,14 +268,10 @@ menuText D OptionsFontsFixed "Fest" 0 {Schriftart mit fester Breite (nicht-propo
 menuText D OptionsGInfo "Partieinformation" 0 {Optionen für Informationsbereich}
 menuText D OptionsLanguage "Sprache" 0 {Sprache wählen}
 menuText D OptionsMovesTranslatePieces "Figurennamen übersetzen" 0 {Übersetze den ersten Buchstaben der Figurenbezeichnung}
-# ====== TODO To be translated ======
-menuText D OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
-# ====== TODO To be translated ======
-menuText D OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
-# ====== TODO To be translated ======
-menuText D OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
-# ====== TODO To be translated ======
-menuText D OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+menuText D OptionsMovesHighlightLastMove "Letzen Zug hervorheben" 0 {Rahmt Start- und Zielfeld des letzten Zuges farbig ein}
+menuText D OptionsMovesHighlightLastMoveDisplay "Anzeigen" 0 {Hervorhebung des letzen Zuges anzeigen}
+menuText D OptionsMovesHighlightLastMoveWidth "Dicke" 0 {Dicke der Linie}
+menuText D OptionsMovesHighlightLastMoveColor "Farbe" 0 {Farbe der Linie}
 menuText D OptionsMoves "Züge" 0 {Zugeingabeoptionen}
 menuText D OptionsMovesAsk "Fragen vor Ersetzen" 0 \
   {Vor Überschreiben existierender Züge nachfragen}
@@ -1586,40 +1581,24 @@ translate D FICSdefaultuservars {Standardvariablen verwenden}
 translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
 # ====== TODO To be translated ======
 translate D GameReviewTimeExtended {Time extended}
-# ====== TODO To be translated ======
-translate D GameReviewMargin {Error margin}
-# ====== TODO To be translated ======
-translate D GameReviewAutoContinue {Auto continue when move is correct}
+translate D GameReviewMargin {Fehlergrenze}
+translate D GameReviewAutoContinue {Bei korrektem Zug Automatisch weiter}
 # ====== TODO To be translated ======
 translate D GameReviewReCalculate {Use extended time}
-# ====== TODO To be translated ======
-translate D GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
-# ====== TODO To be translated ======
-translate D GameReviewAnalyzingThePosition {Analyzing the position}
-# ====== TODO To be translated ======
-translate D GameReviewEnterYourMove {Enter your move}
-# ====== TODO To be translated ======
-translate D GameReviewCheckingYourMove {Checking your move}
-# ====== TODO To be translated ======
-translate D GameReviewYourMoveWasAnalyzed {Your move was analyzed}
-# ====== TODO To be translated ======
-translate D GameReviewYouPlayedSameMove {You played the same move as in match}
-# ====== TODO To be translated ======
-translate D GameReviewScoreOfYourMove {Score of your move}
-# ====== TODO To be translated ======
-translate D GameReviewGameMoveScore {Game move's score}
-# ====== TODO To be translated ======
-translate D GameReviewEngineScore {Engine's score}
-# ====== TODO To be translated ======
-translate D GameReviewYouPlayedLikeTheEngine {You played like the engine}
-# ====== TODO To be translated ======
-translate D GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
-# ====== TODO To be translated ======
-translate D GameReviewMoveNotGood {This move is not good, score is}
-# ====== TODO To be translated ======
-translate D GameReviewMovesPlayedLike {Moves played like}
-# ====== TODO To be translated ======
-translate D GameReviewMovesPlayedEngine {Moves played like engine}
+translate D GameReviewAnalyzingMovePlayedDuringTheGame {Analysiere den Partiezug}
+translate D GameReviewAnalyzingThePosition {Analysiere Stellung}
+translate D GameReviewEnterYourMove {Zug eingeben}
+translate D GameReviewCheckingYourMove {Überprüfe Antwort}
+translate D GameReviewYourMoveWasAnalyzed {Antwort wurde analysiert}
+translate D GameReviewYouPlayedSameMove {Identischer Zug zur Partie}
+translate D GameReviewScoreOfYourMove {Wertung des Antwortzuges}
+translate D GameReviewGameMoveScore {Wertung des Partiezuges}
+translate D GameReviewEngineScore {Bewertung der Engine}
+translate D GameReviewYouPlayedLikeTheEngine {Antworzug wie Engine}
+translate D GameReviewNotEngineMoveButGoodMove {Nicht der Computerzug, aber ebenfalls ein guter Zug!}
+translate D GameReviewMoveNotGood {Dieser Zug ist nicht gut. Bewertung:}
+translate D GameReviewMovesPlayedLike {Züge gespielt wie Partie}
+translate D GameReviewMovesPlayedEngine {Züge wie Computer gespielt}
 
 # Correspondence Chess Dialogs:
 translate D CCDlgConfigureWindowTitle {Einstellungen für Fernschach}
