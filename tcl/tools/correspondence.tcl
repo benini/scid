@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.68 2009/06/08 21:08:21 arwagner Exp $
+### $Id: correspondence.tcl,v 1.69 2009/06/11 14:30:14 arwagner Exp $
 ###
-### Last change: <Mon, 2009/06/08 23:07:26 arwagner ingata>
+### Last change: <Thu, 2009/06/11 16:16:33 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -447,6 +447,16 @@ namespace eval Xfcc {
 
 		# retrieve result
 		set xmlresult [::http::data $token]
+
+		###---###
+		# if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
+		# 	::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
+		# } else {
+		# 	puts $dbg $xmlresult
+		# }
+		# close dbg
+		###---###
+
 		return $xmlresult
 	}
 
@@ -560,6 +570,7 @@ namespace eval Xfcc {
 			set GameId      [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
 			set Source      [::Xfcc::xmldecrypt [$game selectNodes {string(gameLink)}]]
 			set Result      [::Xfcc::xmldecrypt [$game selectNodes {string(result)}]]
+			set drawOffered [::Xfcc::xmldecrypt [$game selectNodes {string(drawOffered)}]]
 
 			# These values may not be set, they were first introduced by
 			# SchemingMind as extension to Xfcc
@@ -1692,11 +1703,9 @@ namespace eval CorrespondenceChess {
 
 		frame $w.top
 		frame $w.bottom
-##		label $w.status -width 1 -anchor w -font font_Small -relief sunken -textvar helpMessage($m.correspondence)
 
 		pack $w.top -anchor w -expand no
 		pack $w.bottom -fill both -expand yes
-##		pack $w.status -side bottom -fill x
 
 		scrollbar $w.top.ysc        -command { .ccWindow.top.console yview }
 		text      $w.top.console    -height 3 -width 80 -wrap word -yscrollcommand "$w.top.ysc set"
@@ -1804,7 +1813,8 @@ namespace eval CorrespondenceChess {
 	# the list has to be emptied if all games are resynced in.
 	#--------------------------------------------------------------------------
 	proc updateGamelist {id toMove event site date white black clockW \
-								clockB var db books tb engines wc bc mess TC lastmove} {
+								clockB var db books tb engines wc bc mess TC \
+								lastmove drawoffer } {
 		global ::CorrespondenceChess::num
 		global ::CorrespondenceChess::clipboardText
 
@@ -1964,6 +1974,7 @@ namespace eval CorrespondenceChess {
 
 		$w.bottom.feature insert end "\n"
 
+
 		# Link the double click on each field to jump to this specific
 		# game easily, then lock the entry field from changes by the
 		# user. SetSelection just sets the global $num to the actual row
@@ -2014,6 +2025,7 @@ namespace eval CorrespondenceChess {
 			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
 		}
+
 		updateConsole "info: switched to game $num/$gamecount"
 	}
 
@@ -2660,13 +2672,20 @@ namespace eval CorrespondenceChess {
 					set CmailGameName [string range $i 15 end-1]
 				}
 			}
-			set noENG "false"
+
+			# set these variables for email games where they get no
+			# values otherwise
+			set noENG     "false"
+			set drawoffer "false"
 			# Search the game in the correspondence DB and display it
 			foreach xfccextra $::Xfcc::xfccstate {
 				if { [string equal -nocase [lindex $xfccextra 0] "$CmailGameName" ] } {
 					foreach i $xfccextra {
 						if { [string equal -nocase [lindex $i 0] "noEngines" ] } {
 							set noENG [string range $i 10 end]
+						}
+						if { [string equal -nocase [lindex $i 0] "drawOffered" ] } {
+							set drawoffer [string range $i 12 end]
 						}
 					}
 				}
@@ -2679,7 +2698,6 @@ namespace eval CorrespondenceChess {
 
 			SearchGame $Event $Site $White $Black $CmailGameName $result
 			set Mode [::CorrespondenceChess::CheckMode]
-
 
 			# hook up with the old email manager: this implements the
 			# manual timestamping required
@@ -2710,6 +2728,15 @@ namespace eval CorrespondenceChess {
 			}
 			# Jump to the end of the game and update the display
 			::move::End
+			if {$drawoffer == "true"} {
+				.ccWindow.top.acceptDraw configure -font font_Bold    -foreground red   -state normal
+				set comment   [sc_pos getComment]
+				set comment "$comment ? [::tr Draw] ?"
+				sc_pos  setComment "$comment"
+			} else {
+				.ccWindow.top.acceptDraw configure -font font_Regular -foreground black -state disabled
+			}
+
 
 			# Set some basic info also to the button tooltips
 			::utils::tooltip::Set .ccWindow.top.resign     "$CmailGameName: $Event\n$Site\n\n$White - $Black"
@@ -2741,6 +2768,7 @@ namespace eval CorrespondenceChess {
 
 		set m .menu.play.correspondence
 
+		# do not set state of top.acceptDraw as this is set dynamically
 		if {$Mode == "EM"} {
 			::CorrespondenceChess::updateConsole "info Event: $Event (eMail-based)"
 
@@ -2750,7 +2778,7 @@ namespace eval CorrespondenceChess {
 			.ccWindow.top.resign     configure -state disabled
 			.ccWindow.top.claimDraw  configure -state disabled
 			.ccWindow.top.offerDraw  configure -state disabled
-			.ccWindow.top.acceptDraw configure -state disabled
+			# .ccWindow.top.acceptDraw configure -state disabled
 
 			$m entryconfigure 8 -state disabled
 			$m entryconfigure 9 -state disabled
@@ -2760,7 +2788,7 @@ namespace eval CorrespondenceChess {
 			.ccWindow.top.resign     configure -state normal
 			.ccWindow.top.claimDraw  configure -state normal
 			.ccWindow.top.offerDraw  configure -state normal
-			.ccWindow.top.acceptDraw configure -state normal
+			# .ccWindow.top.acceptDraw configure -state normal
 			::CorrespondenceChess::updateConsole "info Event: $Event (Xfcc-based)"
 
 			$m entryconfigure 8 -state normal
@@ -3141,7 +3169,7 @@ namespace eval CorrespondenceChess {
 										regsub -all "\}" $clockB "" clockB
 									}
 									if { [string equal -nocase [lindex $i 0] "drawOffered" ] } {
-										set drawoffer [string range $i 7 end]
+										set drawoffer [string range $i 12 end]
 									}
 									if { [string equal -nocase [lindex $i 0] "variant" ] } {
 										set var [string range $i 8 end]
@@ -3176,7 +3204,7 @@ namespace eval CorrespondenceChess {
 						}
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
 								$Event $Site $Date $White $Black $clockW $clockB $var \
-								$noDB $noBK $noTB $noENG $wc $bc $mess $TC $lastmove
+								$noDB $noBK $noTB $noENG $wc $bc $mess $TC $lastmove $drawoffer
 					}
 				}
 				# ::CorrespondenceChess::num is the game currently shown
