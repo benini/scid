@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.70 2009/06/11 15:45:35 arwagner Exp $
+### $Id: correspondence.tcl,v 1.71 2009/06/12 10:38:34 arwagner Exp $
 ###
-### Last change: <Thu, 2009/06/11 17:43:28 arwagner ingata>
+### Last change: <Fri, 2009/06/12 12:21:43 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2974,6 +2974,8 @@ namespace eval CorrespondenceChess {
 				set mytime        0
 				set opptime       0
 				set movestoTC     1
+				set tincrement    0
+				set moves         0
 				set myTurn        "false"
 				set TimeControl   "10/50"
 				set idx           [lsearch -exact -index 0 $gamemoves $CmailGameName]
@@ -2997,7 +2999,9 @@ namespace eval CorrespondenceChess {
 						# Makes sense only if no Fischer Clock is used.
 						if { [regexp {/} $TCstr ]} {
 							set TC [split $TCstr "/"]
-							set moves  [ expr {[lindex $TC 0]} ]
+							set moves      [ lindex $TC 0]
+							set tincrement [ lindex $TC 1]
+							regsub -all "d.*" $tincrement "" tincrement
 							set movestoTC [ expr {$moves - ($number % $moves)}]
 						} else {
 							# Fischer Clock
@@ -3005,8 +3009,9 @@ namespace eval CorrespondenceChess {
 						}
 					}
 				}
-				# Calculate the time per move till next TC
-				set timepermove [expr {$mytime / $movestoTC}]
+				# Calculate the time per move till next TC: include also
+				# the next time control periode in this calculation
+				set timepermove [expr {($mytime+$tincrement) / ($movestoTC+$moves)}]
 
 				# Define criteria to be added to the list to sort. Classic
 				# mode is handled below by resorting the clipbase
@@ -3138,7 +3143,7 @@ namespace eval CorrespondenceChess {
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
 								$Event $Site $Date $White $Black "" "" "" "" "" "" "" \
-								$wc $bc "" "" $lastmove
+								$wc $bc "" "" $lastmove "false"
 
 					} else {
 						# search for extra information from Xfcc server
