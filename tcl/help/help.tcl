@@ -6111,6 +6111,24 @@ to guess the moves played during the match. So you first open a game from any Sc
 base, and enter this function with the command <b>Review game</b> in the <b>Play</b> menu.
 As usually, to play with Black, flip board first (you always play from the bottom of the board).
    </p>
+The process is the following :
+<ul>
+<li>- engines ponders on the move played during the game</li>
+<li>- engine ponders on the position and finds the best move</li>
+<li>- user is then allowed to enter his move</li>
+<li>- engine ponders on the move played by the user</li>
+</ul>
+If the move played by the user is either the move actually played during the game
+or the move chosen by the engine or a move whose score is close to the best move found by the engine
+(using the margin error defined by the user), then the move is considered as a good one. If the user disagrees with 
+the engine he can use the <b>extended time</b> button to get a confirmation of engine's analysis.
+<p>
+<b>Notes:</b> 
+<ul>
+<li>- The side must be chosen before game reviewing </li>
+<li>- The user always plays from the bottom of the board</li>
+</ul>
+</p>
   <p><footer>(Updated: Scid 3.7.4, June 2009)</footer></p>
 }
 

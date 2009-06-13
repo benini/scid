@@ -39,11 +39,7 @@
 
 - Add a Game training ala Fritz' "Friend mode"
 
-- compile openseal for PocketPC
-
 - use tablelist package to revamp Game List window
-
-- port FICS canvas to PPC
 
 - Start game analysis at the end of the game to fill hash tables
 
@@ -76,20 +72,12 @@ GAME LIST
 PGN WINDOW
 * cmd: print game
 * ide: better PGN display (figurine font?)
-* opt: strip spaces after/before brackets for variations in PGN window
-
-SEARCH HEADER
-* usa: improve Header Search window (use tabs?)
-
+* opt: strip spaces after/before brackets for variations in PGN window
 SEARCH MATERIAL
 * fea: find symmetrical patterns (pawns a,b,c = f,g,h)
-* fea: search by white/black/all piece count
 * fea: find certain moves, specially captures (f. e. BxPe6 or RxNc3)
 * fea: 'any white(black) piece' in patterns
-* usa: Material Search window (use tabs)
 
-TREE
-* opt: configurable number of moves for best game
 PLAYER INFO
 * fea: filter games selectable in Player info
 
@@ -99,6 +87,3 @@ PLAYER BROWSER
   
 SPELLCHECKER
 * fea: don't match partial name for surname
-
-INTERNAL GAME HANDLING 
-* fea: in non-strict PGN view, convert all $ NAGs to symbols/words

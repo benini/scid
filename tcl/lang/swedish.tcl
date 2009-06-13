@@ -178,7 +178,7 @@ menuText W ToolsSeriousGame "Seriöst parti"  0 {Spela ett seriöst parti}
 # ====== TODO To be translated ======
 menuText W ToolsTrainOpenings "Öppningar"  0 {Träna med en repetoar}
 # ====== TODO To be translated ======
-menuText W ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+menuText W ToolsTrainReviewGame "Granska parti"  0 {Gissa drag spelade i ett parti}
 # ====== TODO To be translated ======
 menuText W ToolsTrainTactics "Taktik"  0 {Lösa taktik}
 # ====== TODO To be translated ======
@@ -285,13 +285,13 @@ menuText W OptionsLanguage "Språk" 0 {Välj språk}
 # ====== TODO To be translated ======
 menuText W OptionsMovesTranslatePieces "Översätt pjäser" 0 {Översätt första bokstaven för pjäser}
 # ====== TODO To be translated ======
-menuText W OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
+menuText W OptionsMovesHighlightLastMove "Markera senaste draget" 0 {Markera senaste draget}
 # ====== TODO To be translated ======
-menuText W OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
+menuText W OptionsMovesHighlightLastMoveDisplay "Visa" 0 {Visa senaste markerade draget}
 # ====== TODO To be translated ======
-menuText W OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
+menuText W OptionsMovesHighlightLastMoveWidth "Bredd" 0 {Tjockhet på rad}
 # ====== TODO To be translated ======
-menuText W OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+menuText W OptionsMovesHighlightLastMoveColor "Färg" 0 {Färg på rad}
 menuText W OptionsMoves "Drag" 0 {Alternativ för dragangivelse}
 menuText W OptionsMovesAsk "Fråga före ersätt drag" 0 \
   {Fråga innan du ersätter befintliga drag}
@@ -1919,41 +1919,41 @@ translate W FICSdefaultuservars {Använd standardvariabler}
 # ====== TODO To be translated ======
 translate W FICSObserveconfirm {Vill du observera parti} 
 # ====== TODO To be translated ======
-translate W GameReviewTimeExtended {Time extended}
+translate W GameReviewTimeExtended {Utökad tid}
 # ====== TODO To be translated ======
-translate W GameReviewMargin {Error margin}
+translate W GameReviewMargin {Felmarginal}
 # ====== TODO To be translated ======
-translate W GameReviewAutoContinue {Auto continue when move is correct}
+translate W GameReviewAutoContinue {Fortsätt automatiskt när drag är korrekt}
 # ====== TODO To be translated ======
-translate W GameReviewReCalculate {Use extended time}
+translate W GameReviewReCalculate {Använd utökad tid}
 # ====== TODO To be translated ======
-translate W GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
+translate W GameReviewAnalyzingMovePlayedDuringTheGame {Analysera drag spelat under partiet}
 # ====== TODO To be translated ======
-translate W GameReviewAnalyzingThePosition {Analyzing the position}
+translate W GameReviewAnalyzingThePosition {Analysera positionen}
 # ====== TODO To be translated ======
-translate W GameReviewEnterYourMove {Enter your move}
+translate W GameReviewEnterYourMove {Ange ditt drag}
 # ====== TODO To be translated ======
-translate W GameReviewCheckingYourMove {Checking your move}
+translate W GameReviewCheckingYourMove {Kontrollerar ditt drag}
 # ====== TODO To be translated ======
-translate W GameReviewYourMoveWasAnalyzed {Your move was analyzed}
+translate W GameReviewYourMoveWasAnalyzed {Ditt drag analyserades}
 # ====== TODO To be translated ======
-translate W GameReviewYouPlayedSameMove {You played the same move as in match}
+translate W GameReviewYouPlayedSameMove {Du speladade samma drag som i partiet}
 # ====== TODO To be translated ======
-translate W GameReviewScoreOfYourMove {Score of your move}
+translate W GameReviewScoreOfYourMove {Värdering av ditt drag}
 # ====== TODO To be translated ======
-translate W GameReviewGameMoveScore {Game move's score}
+translate W GameReviewGameMoveScore {Partidragets värdering}
 # ====== TODO To be translated ======
-translate W GameReviewEngineScore {Engine's score}
+translate W GameReviewEngineScore {Schackmotorns värdering}
 # ====== TODO To be translated ======
-translate W GameReviewYouPlayedLikeTheEngine {You played like the engine}
+translate W GameReviewYouPlayedLikeTheEngine {Du spelade som schackmotorn}
 # ====== TODO To be translated ======
-translate W GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
+translate W GameReviewNotEngineMoveButGoodMove {Inte schackmotordraget, men det är också ett bra drag}
 # ====== TODO To be translated ======
-translate W GameReviewMoveNotGood {This move is not good, score is}
+translate W GameReviewMoveNotGood {Detta drag är inte bra, värderingen är}
 # ====== TODO To be translated ======
-translate W GameReviewMovesPlayedLike {Moves played like}
+translate W GameReviewMovesPlayedLike {Drag spelade som}
 # ====== TODO To be translated ======
-translate W GameReviewMovesPlayedEngine {Moves played like engine}
+translate W GameReviewMovesPlayedEngine {Drag apelade som schackmotorn}
 # ====== TODO To be translated ====== 
 translate W CCDlgConfigureWindowTitle {Konfigurera Korrespondensschack}
 # ====== TODO To be translated ======
