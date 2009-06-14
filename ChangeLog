@@ -816,6 +816,7 @@ scid-3.7.4
   * added a new call "sc_game info nextMoveUCI"
   * new feature to review game. The user guesses moves played from one side of a played game.
   * game browser : automatically flip board if the main board is flipped
+  * updated Scid icon (thanks to Israel Chauca Fuentes)
 - Correspondence Chess:
 	* Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 	* Do not show games where the player does not have the move (Xfcc only)
