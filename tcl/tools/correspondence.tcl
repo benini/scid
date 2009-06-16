@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.71 2009/06/12 10:38:34 arwagner Exp $
+### $Id: correspondence.tcl,v 1.72 2009/06/16 20:00:43 arwagner Exp $
 ###
-### Last change: <Fri, 2009/06/12 12:21:43 arwagner ingata>
+### Last change: <Tue, 2009/06/16 21:56:47 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -3011,7 +3011,13 @@ namespace eval CorrespondenceChess {
 				}
 				# Calculate the time per move till next TC: include also
 				# the next time control periode in this calculation
-				set timepermove [expr {($mytime+$tincrement) / ($movestoTC+$moves)}]
+				set timepermove1 [expr {($mytime+$tincrement) / ($movestoTC+$moves)}]
+				set timepermove2 [expr {$mytime / $movestoTC}]
+
+				# Time per move is the minimum of the two above
+				set timepermove [expr min($timepermove1, $timepermove2)]
+
+				::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $timepermove"
 
 				# Define criteria to be added to the list to sort. Classic
 				# mode is handled below by resorting the clipbase
