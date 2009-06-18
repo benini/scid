@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.73 2009/06/18 17:50:34 arwagner Exp $
+### $Id: correspondence.tcl,v 1.74 2009/06/18 18:15:54 arwagner Exp $
 ###
-### Last change: <Thu, 2009/06/18 19:47:51 arwagner ingata>
+### Last change: <Thu, 2009/06/18 20:12:42 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1510,11 +1510,14 @@ namespace eval CorrespondenceChess {
 
 		set m .ccWindow.menu
 
-		foreach idx {0} tag {CorrespondenceChess} {
+		foreach idx {0 1} tag {CorrespondenceChess Edit} {
 			configMenuText $m $idx $tag $lang
 		}
 		foreach idx {0 2 3 5 6 7 8 9 10 12 13} tag {CCConfigure CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage CCNewMailGame CCMailMove } {
 			configMenuText $m.correspondence $idx $tag $lang
+		}
+		foreach idx {0 } tag { CCEditCopy } {
+			configMenuText $m.edit $idx $tag $lang
 		}
 	}
 
@@ -1665,7 +1668,8 @@ namespace eval CorrespondenceChess {
 		::setMenu $w $w.menu
 		set m $w.menu
 		$w.menu add cascade -label CorrespondenceChess -menu $w.menu.correspondence
-		foreach i {correspondence} {
+		$w.menu add cascade -label Edit                -menu $w.menu.edit
+		foreach i {correspondence edit} {
 			menu $w.menu.$i -tearoff 0
 		}
 
@@ -1697,6 +1701,8 @@ namespace eval CorrespondenceChess {
 		set helpMessage($m.correspondence,12) CCNewMailGame
 		$m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
 		set helpMessage($m.correspondence,13) CCMailMove
+
+		$m.edit add command -label CCEditCopy -accelerator "Ctrl+C" -command { ::CorrespondenceChess::List2Clipboard }
 
 		# Translate the menu
 		::CorrespondenceChess::doConfigMenus

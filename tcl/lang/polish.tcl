@@ -263,6 +263,8 @@ menuText P CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 menuText P CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
 # ====== TODO To be translated ======
 menuText P CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+# ====== TODO To be translated ======
+menuText P CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 menuText P Options "Opcje" 0
 menuText P OptionsBoard "Szachownica" 0 {Konfiguracja wygl±du szachownicy}
@@ -2355,6 +2357,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

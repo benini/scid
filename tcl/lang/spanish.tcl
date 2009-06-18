@@ -235,6 +235,8 @@ menuText S CCAcceptDraw "Aceptar tablas" 0 {Aceptar un ofrecimiento de tablas}
 menuText S CCNewMailGame "Nueva partida email..." 0 {Empezar una nueva partida eMail}
 menuText S CCMailMove "Enviar jugada via email..." 0 {Envía el movimiento via eMail al oponente}
 menuText S CCGamePage "Página de la partida..." 0 {Abrir la partida desde el navegador}
+# ====== TODO To be translated ======
+menuText S CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText S Options "Opciones" 0
@@ -1686,6 +1688,7 @@ translate S ChangeIcon {Change icon...}
 
 }
 # end of spanish.tcl
+
 
 
 

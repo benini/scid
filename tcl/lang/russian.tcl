@@ -260,6 +260,8 @@ menuText R CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 menuText R CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
 # ====== TODO To be translated ======
 menuText R CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+# ====== TODO To be translated ======
+menuText R CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText R Options "Установки" 0
@@ -2157,6 +2159,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

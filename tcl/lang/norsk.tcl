@@ -259,6 +259,8 @@ menuText O CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 menuText O CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
 # ====== TODO To be translated ======
 menuText O CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+# ====== TODO To be translated ======
+menuText O CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText O Options "Innstillinger" 0
@@ -2128,6 +2130,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

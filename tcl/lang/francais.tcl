@@ -225,6 +225,8 @@ menuText F CCAcceptDraw "Accepter la nulle" 0 {Accepter la nulle (pas par eMail)
 menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
 menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
 menuText F CCGamePage "Page partie..." 0 {Ouvrir la partie dans navigateur web}
+# ====== TODO To be translated ======
+menuText F CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText F Options "Options" 0
@@ -1842,6 +1844,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

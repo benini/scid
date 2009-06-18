@@ -235,6 +235,8 @@ menuText K CCAcceptDraw "Acceptar taules" 0 {Acceptar un oferiment de taules}
 menuText K CCNewMailGame "Nova partida per email..." 0 {Iniciar una nova partida eMail}
 menuText K CCMailMove "Enviar jugada via email..." 0 {Envia la jugada via EMail al contrari}
 menuText K CCGamePage "Pàgina de la partida..." 0 {Obrir la partida al navegador}
+# ====== TODO To be translated ======
+menuText K CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText K Options "Opcions" 0
@@ -1694,6 +1696,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

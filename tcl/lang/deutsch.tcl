@@ -246,6 +246,7 @@ menuText D CCAcceptDraw "Remis annehmen" 10 {Remis annehmen (funktioniert nicht 
 menuText D CCNewMailGame "Neue eMail Partie..." 0 {Beginnt eine neue Partie via eMail}
 menuText D CCMailMove "Zug per eMail senden..." 9 {Verschickt den letzten Zug per eMail}
 menuText D CCGamePage "Partieseite (WWW)..." 13 {Ruft die Webseite der Partie auf}
+menuText D CCEditCopy "Partieliste in Ablage" 0 {Kopiert die Parieliste als CSV in die Zwischenablage}
 #-----AW------
 
 # Options menu:
@@ -7253,6 +7254,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

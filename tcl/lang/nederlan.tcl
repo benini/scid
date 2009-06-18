@@ -240,6 +240,8 @@ menuText N CCNewMailGame "Nieuwe eMail Partij..." 0 {Start een nieuwe eMail part
 menuText N CCMailMove "Stuur de zet op..." 0 {Stuur de zet op naar de tegenspeler via eMail}
 # ====== TODO To be translated ======
 menuText N CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+# ====== TODO To be translated ======
+menuText N CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText N Options "Opties" 0
@@ -1871,6 +1873,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

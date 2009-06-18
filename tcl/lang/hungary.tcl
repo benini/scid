@@ -220,6 +220,8 @@ menuText H CCAcceptDraw "Döntetlenajánlat elfogadása" 17 {Döntetlenajánlat elfog
 menuText H CCNewMailGame "Új eMail-es játszma" 0 {Új eMail-es játszma kezdése}
 menuText H CCMailMove "Lépés elküldése" 4 {Lépés elküldése az ellenfélnek eMail útján}
 menuText H CCGamePage "Játszmaoldal..." 0 {Böngészõvel jeleníti meg a játszmát.}
+# ====== TODO To be translated ======
+menuText H CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText H Options "Beállítások" 0
@@ -1905,6 +1907,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

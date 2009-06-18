@@ -251,6 +251,8 @@ menuText C CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
 menuText C CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
 # ====== TODO To be translated ======
 menuText C CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+# ====== TODO To be translated ======
+menuText C CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText C Options "Volby" 0
@@ -5758,6 +5760,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

@@ -229,6 +229,8 @@ menuText I CCNewMailGame "Nuova Partita con eMail..." 0 {Avvia una nuova partita
 menuText I CCMailMove "Mossa per eMail..." 0 {Spedisce la mossa all'avversariio tramite eMail}
 # ====== TODO To be translated ======
 menuText I CCGamePage "Game Page..." 0 {Call up the game via the web browser}
+# ====== TODO To be translated ======
+menuText I CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText I Options "Opzioni" 0
@@ -2047,6 +2049,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

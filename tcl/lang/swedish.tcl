@@ -260,6 +260,8 @@ menuText W CCNewMailGame "Nytt eMail-parti..." 0 {Starta ett nytt eMail-parti}
 menuText W CCMailMove "Skicka Drag..." 0 {Skicka draget via eMail till motståndaren}
 # ====== TODO To be translated ======
 menuText W CCGamePage "Partisida..." 0 {Starta upp partiet via webläsaren}
+# ====== TODO To be translated ======
+menuText W CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText W Options "Alternativ" 2
@@ -7145,6 +7147,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 
