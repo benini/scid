@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.72 2009/06/16 20:00:43 arwagner Exp $
+### $Id: correspondence.tcl,v 1.73 2009/06/18 17:50:34 arwagner Exp $
 ###
-### Last change: <Tue, 2009/06/16 21:56:47 arwagner ingata>
+### Last change: <Thu, 2009/06/18 19:47:51 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -449,12 +449,12 @@ namespace eval Xfcc {
 		set xmlresult [::http::data $token]
 
 		###---###
-		# if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
-		# 	::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
-		# } else {
-		# 	puts $dbg $xmlresult
-		# }
-		# close dbg
+		if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
+			::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
+		} else {
+			puts $dbg $xmlresult
+		}
+		close $dbg
 		###---###
 
 		return $xmlresult
@@ -2568,11 +2568,13 @@ namespace eval CorrespondenceChess {
 				sc_move forward
 				# ... and get the comment
 				set comment [sc_pos getComment]
+
 				# switch to Correspondence DB and add the move and comment
 				sc_base switch     $CorrSlot
+				sc_move addSan     $move
+
 				# Get the comment stored in the base for comparison
 				set basecomment [sc_pos getComment]
-				sc_move addSan     $move
 
 				# Some servers keep old comments within the game
 				# (SchemingMind) some don't (ICCF). Try to preserve
@@ -2580,17 +2582,33 @@ namespace eval CorrespondenceChess {
 				# responses properly.
 				set sbasecomment ""
 				set scomment     ""
+
+				### puts stderr "   --- $x ---"
+				### puts stderr "* base    : $basecomment"
+				### puts stderr "* sbase   : $sbasecomment"
+				### puts stderr "* comment : $comment"
+				### puts stderr "* scomment: $scomment"
+
 				# Strip of [%ccsnt...] like comments (SchemingMind time stamps)
-				regsub -all "\[.*\]"  $basecomment  "" sbasecomment
+				regsub -all {\[.*\]} $basecomment   "" sbasecomment
+				regsub -all {^\s*}   $sbasecomment  "" sbasecomment
 				# Strip of "Name: " to compare original text entered by
 				# the user only.
 				regsub -all "$White:" $sbasecomment "" sbasecomment
 				regsub -all "$Black:" $sbasecomment "" sbasecomment
 
 				# Same for the game delivered by Xfcc
-				regsub -all "\[.*\]"  $comment      "" scomment
+				regsub -all {\[.*\]}  $comment      "" scomment
+				regsub -all {^\s*}    $scomment     "" scomment
 				regsub -all "$White:" $scomment     "" scomment
 				regsub -all "$Black:" $scomment     "" scomment
+
+				### puts stderr "   xxxxxxxxxxx"
+				### puts stderr "* base    : $basecomment"
+				### puts stderr "* sbase   : $sbasecomment"
+				### puts stderr "* comment : $comment"
+				### puts stderr "* scomment: $scomment"
+				### puts stderr "-------------------"
 
 				# Check what to preserve and which comment to set.
 				if { [string length $sbasecomment] == 0} {
@@ -3009,6 +3027,8 @@ namespace eval CorrespondenceChess {
 						}
 					}
 				}
+				set mytime  [expr {$mytime / 60.0 / 60.0 / 24.0}]
+
 				# Calculate the time per move till next TC: include also
 				# the next time control periode in this calculation
 				set timepermove1 [expr {($mytime+$tincrement) / ($movestoTC+$moves)}]
@@ -3017,7 +3037,7 @@ namespace eval CorrespondenceChess {
 				# Time per move is the minimum of the two above
 				set timepermove [expr min($timepermove1, $timepermove2)]
 
-				::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $timepermove"
+				::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $timepermove $mytime"
 
 				# Define criteria to be added to the list to sort. Classic
 				# mode is handled below by resorting the clipbase
