@@ -33,3 +33,4 @@ proc ::utils::percentFormat {num denom} {
   if {$denom == 0} {set denom 1}
   return "[::utils::thousands $num] ([expr $num * 100 / $denom]%)"
 }
+

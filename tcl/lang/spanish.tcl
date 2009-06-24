@@ -178,8 +178,7 @@ menuText S ToolsTraining "Entrenamiento"  0 {Entrenamiento (táctica, aperturas,.
 menuText S ToolsTacticalGame "Partida Táctica"  0 {Jugar una partida táctica}
 menuText S ToolsSeriousGame "Partida seria"  0 {Jugar una partida seria}
 menuText S ToolsTrainOpenings "Entrenamiento de aperturas"  0 {Entrenamiento con un repertorio}
-# ====== TODO To be translated ======
-menuText S ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
+menuText S ToolsTrainReviewGame "Revisar partida"  0 {Adivinar movimientos jugados en una partida}
 menuText S ToolsTrainTactics "Táctica (problemas)"  0 {Resover problemas de táctica}
 menuText S ToolsTrainCalvar "Cálculo of variaciones"  0 {Calculo de variantes}
 menuText S ToolsTrainFindBestMove "Encontrar la mejor jugada"  0 {Busca el movimiento mejor}
@@ -258,14 +257,10 @@ menuText S OptionsFontsFixed "Fijada" 0 {Cambia la anchura fijada de la fuente}
 menuText S OptionsGInfo "Información de la partida" 0 {Información de la partida}
 menuText S OptionsLanguage "Lenguaje" 0 {Selecciona el lenguaje del menú}
 menuText S OptionsMovesTranslatePieces "Traducir piezas" 0 {Traducir la primera letra de las piezas}
-# ====== TODO To be translated ======
-menuText S OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
-# ====== TODO To be translated ======
-menuText S OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
-# ====== TODO To be translated ======
-menuText S OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
-# ====== TODO To be translated ======
-menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+menuText S OptionsMovesHighlightLastMove "Iluminar última jugada" 0 {Iluminar última jugada}
+menuText S OptionsMovesHighlightLastMoveDisplay "Mostrar" 0 {Mostrar última jugada iluminada}
+menuText S OptionsMovesHighlightLastMoveWidth "Ancho" 0 {Espesor de la línea}
+menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color de línea}
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAsk "Preguntar antes de reemplazar movimientos" 0 \
   {Pregunta antes de sobreescribir cualquier movimiento existente}
@@ -505,17 +500,14 @@ menuText S TreeFileClose "Cerrar ventana del árbol" 0 \
 menuText S TreeMask "Máscara" 0
 menuText S TreeMaskNew "Nuevo" 0 {Nueva máscara}
 menuText S TreeMaskOpen "Abrir" 0 {Abrir máscara}
-# ====== TODO To be translated ======
-menuText S TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
+menuText S TreeMaskOpenRecent "Abrir reciente" 0 {Abrir máscara reciente}
 menuText S TreeMaskSave "Salvar" 0 {Salvar máscara}
 menuText S TreeMaskClose "Cerrar" 0 {Cerrar máscara}
 menuText S TreeMaskFillWithGame "Llenar con partida" 0 {Llenar máscara con partida}
 menuText S TreeMaskFillWithBase "LLenar con base" 0 {Llenar máscar con todas las partidas de la base}
 menuText S TreeMaskInfo "Info" 0 {Muestra estadísticas para la máscara actual}
-# ====== TODO To be translated ======
-menuText S TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
-# ====== TODO To be translated ======
-menuText S TreeMaskSearch "Search" 0 {Search in current mask}
+menuText S TreeMaskDisplay "Mostrar mapa de la máscara" 0 {Mostrar máscara en forma de árbol}
+menuText S TreeMaskSearch "Buscar" 0 {Buscar en máscara actual}
 menuText S TreeSort "Ordenar" 0
 menuText S TreeSortAlpha "Alfabéticamente" 0
 menuText S TreeSortECO "Por código ECO" 11
@@ -548,10 +540,8 @@ translate S DoYouWantToSaveFirst {Quieres salvar primero}
 translate S AddToMask {Añadir a máscara}
 translate S RemoveFromMask {Elimina desde la máscara}
 translate S AddThisMoveToMask {Añadir este movimiento a la Máscara}
-# ====== TODO To be translated ======
-translate S SearchMask {Search in Mask}
-# ====== TODO To be translated ======
-translate S DisplayMask {Display Mask}
+translate S SearchMask {Buscar en máscara}
+translate S DisplayMask {Mostrar máscara}
 translate S Nag {Código de regaño}
 translate S Marker {Marcador}
 translate S Include {Incluir}
@@ -1554,42 +1544,24 @@ translate S FICSSend {enviar}
 translate S FICSConnect {Conectar}
 translate S FICSdefaultuservars {Usa valores por defecto}
 translate S FICSObserveconfirm {Quieres observar la partida}
-# ====== TODO To be translated ======
-translate S GameReviewTimeExtended {Time extended}
-# ====== TODO To be translated ======
-translate S GameReviewMargin {Error margin}
-# ====== TODO To be translated ======
-translate S GameReviewAutoContinue {Auto continue when move is correct}
-# ====== TODO To be translated ======
-translate S GameReviewReCalculate {Use extended time}
-# ====== TODO To be translated ======
-translate S GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
-# ====== TODO To be translated ======
-translate S GameReviewAnalyzingThePosition {Analyzing the position}
-# ====== TODO To be translated ======
-translate S GameReviewEnterYourMove {Enter your move}
-# ====== TODO To be translated ======
-translate S GameReviewCheckingYourMove {Checking your move}
-# ====== TODO To be translated ======
-translate S GameReviewYourMoveWasAnalyzed {Your move was analyzed}
-# ====== TODO To be translated ======
-translate S GameReviewYouPlayedSameMove {You played the same move as in match}
-# ====== TODO To be translated ======
-translate S GameReviewScoreOfYourMove {Score of your move}
-# ====== TODO To be translated ======
-translate S GameReviewGameMoveScore {Game move's score}
-# ====== TODO To be translated ======
-translate S GameReviewEngineScore {Engine's score}
-# ====== TODO To be translated ======
-translate S GameReviewYouPlayedLikeTheEngine {You played like the engine}
-# ====== TODO To be translated ======
-translate S GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
-# ====== TODO To be translated ======
-translate S GameReviewMoveNotGood {This move is not good, score is}
-# ====== TODO To be translated ======
-translate S GameReviewMovesPlayedLike {Moves played like}
-# ====== TODO To be translated ======
-translate S GameReviewMovesPlayedEngine {Moves played like engine}
+translate S GameReviewTimeExtended {Tiempo extendido}
+translate S GameReviewMargin {Margen de error}
+translate S GameReviewAutoContinue {Auto-continuar cuando el movimiento es correcto}
+translate S GameReviewReCalculate {Usar tiempo extendido}
+translate S GameReviewAnalyzingMovePlayedDuringTheGame {Analizando movimiento jugado durante la partida}
+translate S GameReviewAnalyzingThePosition {Analizando la posición}
+translate S GameReviewEnterYourMove {Introduce tu movimiento}
+translate S GameReviewCheckingYourMove {Chequeando tu movimiento}
+translate S GameReviewYourMoveWasAnalyzed {Tu movimiento fue analizado}
+translate S GameReviewYouPlayedSameMove {Jugaste el mismo momiento que en la partida}
+translate S GameReviewScoreOfYourMove {Puntuación de tu movimiento}
+translate S GameReviewGameMoveScore {Puntuación del movimiento de la partida}
+translate S GameReviewEngineScore {Puntuación del motor}
+translate S GameReviewYouPlayedLikeTheEngine {Tu jugaste como el motor}
+translate S GameReviewNotEngineMoveButGoodMove {No es el movimiento del motor, pero es también un buen movimiento}
+translate S GameReviewMoveNotGood {Este movimiento no es bueno, la puntuación es }
+translate S GameReviewMovesPlayedLike {Movimientos jugados como}
+translate S GameReviewMovesPlayedEngine {Movimientos jugados como motor}
 translate S CCDlgConfigureWindowTitle {Configurar Ajedrez por Correo}
 translate S CCDlgCGeneraloptions {Opciones Generales}
 translate S CCDlgDefaultDB {Base por defecto:}
@@ -1645,20 +1617,13 @@ translate S CCDlgURL        {Xfcc-URL:}
 translate S CCDlgRatingType {Tipo de puntuación (Rating):}
 translate S CCDlgDuplicateGame {El ID de la partida no es único}
 translate S CCDlgDuplicateGameError {Esta partida existe más de una vez en tu base. Por favor, borra todos los duplicados y compacta tu fichero de partidas (Fichero/Mantenimiento/Compactar base de datos).}
-# ====== TODO To be translated ======
-translate S CCDlgSortOption {Sorting:}
-# ====== TODO To be translated ======
-translate S CCDlgListOnlyOwnMove {Only games I have the move}
-# ====== TODO To be translated ======
-translate S CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
-# ====== TODO To be translated ======
-translate S CCOrderMyTimeTxt {My Clock}
-# ====== TODO To be translated ======
-translate S CCOrderTimePerMoveTxt {Time per move till next time control}
-# ====== TODO To be translated ======
-translate S CCOrderStartDate {Start date}
-# ====== TODO To be translated ======
-translate S CCOrderOppTimeTxt {Opponents Clock}
+translate S CCDlgSortOption {Ordenando:}
+translate S CCDlgListOnlyOwnMove {Solo partidas que tienen el movimiento}
+translate S CCOrderClassicTxt {Lugar, Evento, Ronda, Resultado, Blancas, Negras}
+translate S CCOrderMyTimeTxt {Mi reloj}
+translate S CCOrderTimePerMoveTxt {Tiempo por movimiento falta el próximo control de tiempo}
+translate S CCOrderStartDate {Empezar fecha}
+translate S CCOrderOppTimeTxt {Relo0j de los oponentesOpponents}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
@@ -1683,8 +1648,7 @@ translate S DockBottom {Mover abajo}
 translate S DockLeft {Mover a la izquierda}
 translate S DockRight {Mover a la derecha}
 translate S Undock {Ventana flotante}
-# ====== TODO To be translated ======
-translate S ChangeIcon {Change icon...}
+translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl

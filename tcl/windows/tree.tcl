@@ -1030,7 +1030,7 @@ proc ::tree::best { baseNumber } {
   foreach {idx line} [sc_tree best $tree(base$baseNumber) $tree(bestMax$baseNumber) $tree(bestRes$baseNumber)] {
     incr count
     # listbox widget does not like ' character
-    set line [ string map { "'" " " } $line ]
+    set line [ string map { "'" "\'" } $line ]
     $w.pane.blist.list insert end "[format %02d $count]:  $line"
     lappend tree(bestList$baseNumber) $idx
   }
