@@ -993,14 +993,17 @@ $m add command -label OptionsSave -command {
     puts $optionF ""
     
     # save FICS config
-    foreach i { use_timeseal timeseal_exec port_fics port_timeseal login password usedefaultvars consolebg consolefg consoleheight consolewidth colseeking colgame colgameresult colficspercent} {
+    foreach i { use_timeseal timeseal_exec port_fics port_timeseal login password usedefaultvars \
+          consolebg consolefg consoleheight consolewidth colseeking colgame colgameresult colficspercent server_ip } {
       puts $optionF "set ::fics::$i [list [set ::fics::$i]]"
     }
-    # foreach i [lsort [array names ::fics::findopponent]] {
-    # puts $optionF "set ::fics::findopponent($i) [list $::fics::findopponent($i)]"
-    # }
     foreach i [lsort [array names ::fics::profileVars]] {
       puts $optionF "set ::fics::profileVars($i) [list $::fics::profileVars($i)]"
+    }
+    
+    # save NOVAG config
+    foreach i { referee } {
+      puts $optionF "set ::novag::$i [list [set ::novag::$i]]"
     }
     
     # Save layouts
@@ -1094,7 +1097,7 @@ foreach i {1 2 3 4 5} {
 # menu $m.entry.highlightlastmove.pattern
 # $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMovePattern -menu $m.entry.highlightlastmove.pattern
 # foreach i {"plain" "." "-" "-." "-.." ". " "," ".  "} j { "" "." "-" "-." "-.." ". " "," ".  "} {
-  # $m.entry.highlightlastmove.pattern add radiobutton -label $i -value $j -variable ::highlightLastMovePattern -command updateBoard
+# $m.entry.highlightlastmove.pattern add radiobutton -label $i -value $j -variable ::highlightLastMovePattern -command updateBoard
 # }
 $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor -command {
   set col [ tk_chooseColor -initialcolor $::highlightLastMoveColor -title "Scid"]

@@ -95,11 +95,18 @@ namespace eval fics {
     grid $w.f.eExec -column 0 -row $row -columnspan 2
     grid $w.f.bExec -column 2 -row $row
     incr row
+    ttk::label $w.f.lFICS_ip -text "FICSServerAddress"
+    ttk::entry $w.f.ipserver -width 16 -textvariable ::fics::server_ip -state readonly
+    ttk::button $w.f.bRefresh -text "Refresh" -command ::fics::getIP
     ttk::label $w.f.lFICS_port -text [::tr "FICSServerPort"]
     ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
     ttk::label $w.f.ltsport -text [::tr "FICSTimesealPort"]
     ttk::entry $w.f.portts -width 6 -textvariable ::fics::port_timeseal
     
+    grid $w.f.lFICS_ip -column 0 -row $row
+    grid $w.f.ipserver -column 1 -row $row
+    grid $w.f.bRefresh -column 2 -row $row
+    incr row
     grid $w.f.lFICS_port -column 0 -row $row
     grid $w.f.portserver -column 1 -row $row
     incr row
@@ -119,8 +126,22 @@ namespace eval fics {
     bind $w <Escape> "$w.f.cancel invoke"
     bind $w <F1> { helpWindow FICSLogin}
     
-    update
     # Get IP adress of server (as Timeseal needs IP adress)
+    if { $::fics::server_ip == "0.0.0.0" } {
+      getIP
+    }
+    
+    $w.f.connect configure -state normal
+    $w.f.guest configure -state normal
+    
+  }
+  ################################################################################
+  #
+  ################################################################################
+  proc getIP {} {
+    set b .ficsConfig.f.bRefresh
+    $b configure -state disabled
+    update
     # First handle the case of a network down
     if { [catch {set sockChan [socket -async $::fics::server $::fics::port_fics]} err]} {
       tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
@@ -146,10 +167,7 @@ namespace eval fics {
     
     set ::fics::server_ip [lindex $peer 0]
     ::close $sockChan
-    
-    $w.f.connect configure -state normal
-    $w.f.guest configure -state normal
-    
+    $b configure -state normal
   }
   ################################################################################
   #

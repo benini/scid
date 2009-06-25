@@ -105,7 +105,7 @@ foreach ns {
   ::tools::graphs::filter ::tools::graphs::absfilter ::tools::graphs::rating ::tools::graphs::score
   ::tb ::optable
   ::board ::move
-  ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame
+  ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame ::novag
   ::config ::docking
 } {
   namespace eval $ns {}
@@ -311,6 +311,10 @@ set ::fics::colgame        grey70
 set ::fics::colgameresult  SlateBlue1
 set ::fics::colficspercent khaki1
 set ::fics::colficshelpnext blue
+set ::fics::server_ip "0.0.0.0"
+
+# Defaults for Novag Citrine
+set ::novag::referee "OFF"
 
 # Defaults for serious game training
 set ::sergame::isOpening 0

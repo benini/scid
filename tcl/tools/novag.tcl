@@ -9,7 +9,6 @@ namespace eval novag {
   set fd ""
   set connected 0
   set waitBetweenMessages 0
-  set referee "OFF"
   
   ##########################################################
   proc connect {} {

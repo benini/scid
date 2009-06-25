@@ -120,11 +120,18 @@ proc ::plist::Open {} {
   label $f.gto -text "-"
   entry $f.gmax -textvariable ::plist::maxGames
 
-  foreach entry {emin emax gmin gmax} {
+  foreach entry {emin emax} {
     $f.$entry configure -width 4 -justify right -font $font
     bindFocusColors $f.$entry
     bind $f.$entry <FocusOut> +::plist::check
   }
+
+  foreach entry {gmin gmax} {
+    $f.$entry configure -width 6 -justify right -font $font
+    bindFocusColors $f.$entry
+    bind $f.$entry <FocusOut> +::plist::check
+  }
+  
   pack $f.elo $f.emin $f.eto $f.emax -side left
   pack $f.gmax $f.gto $f.gmin $f.games -side right
 
