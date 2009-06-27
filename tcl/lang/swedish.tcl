@@ -1869,6 +1869,10 @@ translate W FICSGuest {Logga in som Gäst}
 # ====== TODO To be translated ======
 translate W FICSServerPort {Server-port}
 # ====== TODO To be translated ======
+translate W FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate W FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate W FICSTimesealPort {Timeseal-port}
 # ====== TODO To be translated ======
 translate W FICSSilence {Tystnad}
@@ -7147,6 +7151,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

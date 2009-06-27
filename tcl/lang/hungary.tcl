@@ -1505,6 +1505,10 @@ translate H KingsIndianMainLine {Királyindiai - fõváltozat}
 translate H ConfigureFics {FICS beállítása}
 translate H FICSGuest {Belépés vendégként}
 translate H FICSServerPort {Szerverport}
+# ====== TODO To be translated ======
+translate H FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate H FICSRefresh {Refresh}
 translate H FICSTimesealPort {Idõbélyegport}
 translate H FICSSilence {Csend}
 translate H FICSOffers {Ajánlatok}
@@ -1907,6 +1911,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

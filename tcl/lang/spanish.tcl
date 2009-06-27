@@ -1518,6 +1518,10 @@ translate S KingsIndianMainLine {Linea Principal India de Rey}
 translate S ConfigureFics {Configurar FICS}
 translate S FICSGuest {Autentificación como invitado}
 translate S FICSServerPort {Puerto del servidor}
+# ====== TODO To be translated ======
+translate S FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate S FICSRefresh {Refresh}
 translate S FICSTimesealPort {Puerto Timeseal}
 translate S FICSSilence {Silencio}
 translate S FICSOffers {Ofertas}
@@ -1652,6 +1656,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

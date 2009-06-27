@@ -1588,6 +1588,10 @@ translate I FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate I FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate I FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate I FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate I FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate I FICSSilence {Silence}
@@ -2049,6 +2053,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

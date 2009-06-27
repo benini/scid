@@ -1862,6 +1862,10 @@ translate O FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate O FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate O FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate O FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate O FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate O FICSSilence {Silence}
@@ -2130,6 +2134,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

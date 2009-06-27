@@ -1674,6 +1674,10 @@ translate N FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate N FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate N FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate N FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate N FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate N FICSSilence {Silence}
@@ -1873,6 +1877,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

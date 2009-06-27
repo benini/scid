@@ -1506,6 +1506,8 @@ translate F KingsIndianMainLine {Est-indienne ligne principale}
 translate F ConfigureFics {Configurer FICS}
 translate F FICSGuest {Login comme invité}
 translate F FICSServerPort {Port du serveur}
+translate F FICSServerAddress {Adresse IP}
+translate F FICSRefresh {Rafraîchir}
 translate F FICSTimesealPort {Port Timeseal}
 translate F FICSSilence {Silence}
 translate F FICSOffers {Offres}
@@ -1844,6 +1846,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

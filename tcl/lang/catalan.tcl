@@ -1527,6 +1527,10 @@ translate K KingsIndianMainLine {Linia Principal India de Rei}
 translate K ConfigureFics {Configurar FICS}
 translate K FICSGuest {Autentificació com convidat}
 translate K FICSServerPort {Port del servidor}
+# ====== TODO To be translated ======
+translate K FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate K FICSRefresh {Refresh}
 translate K FICSTimesealPort {Port Timeseal}
 translate K FICSSilence {Silenci}
 translate K FICSOffers {Ofertes}
@@ -1696,6 +1700,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

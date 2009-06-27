@@ -1858,6 +1858,10 @@ translate C FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate C FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate C FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate C FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate C FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate C FICSSilence {Silence}
@@ -5760,6 +5764,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

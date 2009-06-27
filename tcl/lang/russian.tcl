@@ -1895,6 +1895,10 @@ translate R FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate R FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate R FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate R FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate R FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate R FICSSilence {Silence}
@@ -2159,6 +2163,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -1875,6 +1875,10 @@ translate P FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate P FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate P FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate P FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate P FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate P FICSSilence {Silence}
@@ -2357,6 +2361,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

@@ -807,7 +807,9 @@ scid-3.7.4
 	* Player finder window : increased entry fields for number of games (10000 is sufficient for human players but not for engines)
 	* when using a Novag Citrine board, the referee mode selected is saved
 	* updated zlib to version 1.2.3
-	* FICS : IP address of FICS server is cached (faster login)
+	* FICS : 
+			- IP address of FICS server is cached (faster login)
+			- in case of a network error, quit FICS without popping tons of error messages
 - Features
 	* NAG support : add symbolic NAGs using UTF-8 symbols
 	* Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game

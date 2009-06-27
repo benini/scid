@@ -1866,6 +1866,10 @@ translate Y FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate Y FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate Y FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate Y FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate Y FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate Y FICSSilence {Silence}
@@ -2130,6 +2134,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

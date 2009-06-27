@@ -1871,6 +1871,10 @@ translate B FICSGuest {Login as Guest}
 # ====== TODO To be translated ======
 translate B FICSServerPort {Server port}
 # ====== TODO To be translated ======
+translate B FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate B FICSRefresh {Refresh}
+# ====== TODO To be translated ======
 translate B FICSTimesealPort {Timeseal port}
 # ====== TODO To be translated ======
 translate B FICSSilence {Silence}
@@ -2136,6 +2140,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

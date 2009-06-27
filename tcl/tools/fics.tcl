@@ -95,9 +95,9 @@ namespace eval fics {
     grid $w.f.eExec -column 0 -row $row -columnspan 2
     grid $w.f.bExec -column 2 -row $row
     incr row
-    ttk::label $w.f.lFICS_ip -text "FICSServerAddress"
+    ttk::label $w.f.lFICS_ip -text [::tr "FICSServerAddress" ]
     ttk::entry $w.f.ipserver -width 16 -textvariable ::fics::server_ip -state readonly
-    ttk::button $w.f.bRefresh -text "Refresh" -command ::fics::getIP
+    ttk::button $w.f.bRefresh -text [::tr "FICSRefresh" ] -command ::fics::getIP
     ttk::label $w.f.lFICS_port -text [::tr "FICSServerPort"]
     ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
     ttk::label $w.f.ltsport -text [::tr "FICSTimesealPort"]
@@ -503,7 +503,9 @@ namespace eval fics {
     variable logged
     
     if {[eof $::fics::sockchan]} {
-      tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
+      fileevent $::fics::sockchan readable {}
+      tk_messageBox -title "FICS" -icon error -type ok -message "Network error reading channel"
+      ::fics::close "error"
       return
     }
     
@@ -1190,7 +1192,8 @@ namespace eval fics {
     puts "writechan>>$line"
     after cancel ::fics::stayConnected
     if {[eof $::fics::sockchan]} {
-      tk_messageBox -title "FICS" -icon error -type ok -message "Network error"
+      tk_messageBox -title "FICS" -icon error -type ok -message "Network error writing channel"
+      ::fics::close "error"
       return
     }
     puts $::fics::sockchan $line
@@ -1304,7 +1307,7 @@ namespace eval fics {
   ################################################################################
   #
   ################################################################################
-  proc close {} {
+  proc close { {mode ""} } {
     variable logged
     # stop recursive call
     bind .fics <Destroy> {}
@@ -1314,7 +1317,10 @@ namespace eval fics {
     after cancel ::fics::stayConnected
     set logged 0
     
-    writechan "exit"
+    if {$mode != "error"} {
+      writechan "exit"
+    }
+    
     set ::fics::playing 0
     set ::fics::observedGame -1
     ::close $::fics::sockchan

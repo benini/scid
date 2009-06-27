@@ -1554,6 +1554,10 @@ translate D KingsIndianMainLine {Königsinsisch, Hauptvariante}
 translate D ConfigureFics {FICS Konfigurieren}
 translate D FICSGuest {Gastlogin}
 translate D FICSServerPort {Serverport}
+# ====== TODO To be translated ======
+translate D FICSServerAddress {IP Address}
+# ====== TODO To be translated ======
+translate D FICSRefresh {Refresh}
 translate D FICSTimesealPort {Timesealport}
 translate D FICSSilence {Konsolenfilter}
 translate D FICSOffers {Herausforderungen}
@@ -7254,6 +7258,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

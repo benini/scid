@@ -1549,6 +1549,8 @@ translate E KingsIndianMainLine {King's Indian Main Line}
 translate E ConfigureFics {Configure FICS}
 translate E FICSGuest {Login as Guest}
 translate E FICSServerPort {Server port}
+translate E FICSServerAddress {IP Address}
+translate E FICSRefresh {Refresh}
 translate E FICSTimesealPort {Timeseal port}
 translate E FICSSilence {Console filter}
 translate E FICSOffers {Offers}
