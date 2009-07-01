@@ -357,8 +357,6 @@ class IndexEntry
 
     errorT Read (MFile * fp, versionT version);
     errorT Write (MFile * fp, versionT version);
-    errorT ReadOld (MFile * fp);
-    errorT WriteOld (MFile * fp);
 
     void PrintGameInfo (char * outStr,
                         gameNumberT gnFiltered, gameNumberT gnReal,

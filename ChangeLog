@@ -810,6 +810,7 @@ scid-3.7.4
 	* FICS : 
 			- IP address of FICS server is cached (faster login)
 			- in case of a network error, quit FICS without popping tons of error messages
+	* cleaned up code for Scid versions 2.x (don't think anybody still uses it)
 - Features
 	* NAG support : add symbolic NAGs using UTF-8 symbols
 	* Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game
@@ -818,7 +819,9 @@ scid-3.7.4
 		- added a sub-menu for displaying the Mask content in a tree form
 		- remember the most recent opened masks
 		- new moves can be added to a mask even if there is no corresponding position in the Tree 
-	* FICS play : save options for finding opponents based on login
+	* FICS : 
+		- save options for finding opponents based on login
+		- display forecast of win / draw / loss score (in fact sends assess when creating the game)
 	* Highlight last move played (switchable and configurable in options menu)
 	* added a new call "sc_game info nextMoveUCI"
 	* new feature to review game. The user guesses moves played from one side of a played game.

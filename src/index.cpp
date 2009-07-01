@@ -171,9 +171,6 @@ IndexEntry::Read (MFile * fp, versionT version)
 {
     ASSERT (fp != NULL);
 
-    if (version < 300) {
-        return ReadOld (fp);
-    }
     version = 0; // We dont have any other version-specific code.
 
     // Length of each gamefile record and its offset.
@@ -280,79 +277,6 @@ IndexEntry::Write (MFile * fp, versionT version)
         fp->WriteOneByte (*pb);
         pb++;
     }
-
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IndexEntry::ReadOld():
-//    Reads an old (version 2.x) Index entry.
-errorT
-IndexEntry::ReadOld (MFile * fp)
-{
-    ASSERT (fp != NULL);
-    uint upperBits;
-
-    // Length of each gamefile record and its offset.
-    Offset = fp->ReadFourBytes ();
-    Length = fp->ReadTwoBytes ();
-
-    NumHalfMoves = fp->ReadOneByte ();
-    byte f = fp->ReadOneByte();
-    Flags = 0;
-    if (f &  1) { SetDeleteFlag (true); }
-    if (f &  2) { SetUserFlag (true); }
-    if (f &  4) { SetPromotionsFlag (true); }
-    if (f &  8) { SetStartFlag (true); }
-    if (f & 16) { SetCommentCount (1); }
-    if (f & 32) { SetVariationCount (1); }
-
-    // White and Black player names:
-    WhiteBlack_High = fp->ReadOneByte ();
-    WhiteID_Low = fp->ReadTwoBytes ();
-    BlackID_Low = fp->ReadTwoBytes ();
-
-    // Event, Site and Round names:
-    EventSiteRnd_High = fp->ReadOneByte ();
-    EventID_Low = fp->ReadTwoBytes ();
-    SiteID_Low = fp->ReadTwoBytes ();
-    RoundID_Low = fp->ReadTwoBytes ();
-
-    EcoCode = fp->ReadTwoBytes ();
-
-    // Date and result are stored in the same value.
-    // Result is in the highest 4 bits, date is in the lowest 20 bits.
-    uint dateResult = fp->ReadThreeBytes ();
-    SetResult ((dateResult >> 20) & 3);
-    SetDate (dateResult & 0xFFFFF);
-    SetEventDate (ZERO_DATE);
-
-    // The two ELO ratings are stored in 3 bytes.
-    upperBits = (uint) fp->ReadOneByte ();
-    WhiteElo = fp->ReadOneByte ();
-    BlackElo = fp->ReadOneByte ();
-    WhiteElo |= ((upperBits >> 4) << 8);
-    BlackElo |= ((upperBits & 15) << 8);
-
-    SetFinalMatSig (fp->ReadThreeBytes());
-    SetStoredLineCode (0);
-
-    // Read the 9-byte homePawnData array:
-    byte * pb = HomePawnData;
-    for (uint i2 = 0; i2 < HPSIG_SIZE; i2++) {
-        *pb = fp->ReadOneByte ();  pb++;
-    }
-
-    // Read the obsolete FirstMoveCode:
-    byte dummy = fp->ReadOneByte();
-
-    // The rating types are stuffed into the spare top 3 bits in the
-    // HomePawnData and FirstMoveCode for now until the on-disk index
-    // format is extended to more than 41 bytes:
-
-    SetWhiteRatingType (HomePawnData[0] >> 5);
-    HomePawnData[0] = HomePawnData[0] & 31;
-    SetBlackRatingType (dummy >> 5);
 
     return OK;
 }

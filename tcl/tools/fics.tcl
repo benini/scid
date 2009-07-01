@@ -663,6 +663,8 @@ namespace eval fics {
         if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
       }
       updateBoard -pgn -animate
+      # display the win / draw / loss score
+      ::fics::writechan "assess" "noecho"
       return
     }
     

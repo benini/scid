@@ -261,7 +261,7 @@ menuText W CCMailMove "Skicka Drag..." 0 {Skicka draget via eMail till motstånda
 # ====== TODO To be translated ======
 menuText W CCGamePage "Partisida..." 0 {Starta upp partiet via webläsaren}
 # ====== TODO To be translated ======
-menuText W CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText W CCEditCopy "Kopiera partilista till Clipbase" 0 {Kopiera partierna som CSV-lista till Clipbase}
 
 # Options menu:
 menuText W Options "Alternativ" 2
@@ -468,7 +468,7 @@ translate W Filter {Filter}
 translate W noGames {inga partier}
 translate W allGames {alla partier}
 translate W empty {tom}
-translate W clipbase {temporär databas}
+translate W clipbase {Clipbase}
 translate W score {resultat}
 translate W StartPos {Utgångsställning}
 translate W Total {Totalt}
@@ -1869,9 +1869,9 @@ translate W FICSGuest {Logga in som Gäst}
 # ====== TODO To be translated ======
 translate W FICSServerPort {Server-port}
 # ====== TODO To be translated ======
-translate W FICSServerAddress {IP Address}
+translate W FICSServerAddress {IP-adress}
 # ====== TODO To be translated ======
-translate W FICSRefresh {Refresh}
+translate W FICSRefresh {Uppdatera}
 # ====== TODO To be translated ======
 translate W FICSTimesealPort {Timeseal-port}
 # ====== TODO To be translated ======
