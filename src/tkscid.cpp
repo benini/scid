@@ -7876,6 +7876,7 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
 {
+
     if (! base->inUse) {
         Tcl_AppendResult (ti, errMsgNotOpen(ti), NULL);
         return TCL_ERROR;
@@ -7904,38 +7905,18 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     IndexEntry * oldIE = NULL;
     IndexEntry iE;
     iE.Init();
-/*
-    if (game->Encode (base->bbuf, &iE) != OK) {
-        Tcl_AppendResult (ti, "Error encoding game.", NULL);
-        return TCL_ERROR;
-    }
 
-    // as each game entry is coded on 16 bits, return an error if there is an overflow
-    if (base->bbuf->GetByteCount() > 65535) {
-        Tcl_AppendResult (ti, "Game is too long.", NULL);
-        return TCL_ERROR;
+    if (game->Encode (base->bbuf, &iE) != OK) {
+      Tcl_AppendResult (ti, "Error encoding game.", NULL);
+      return TCL_ERROR;
     }
-*/
-/*    if (replaceMode) {
-        oldIE = base->idx->FetchEntry (gNumber);
-        // Remember previous user-settable flags:
-        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
-            char flags [32];
-            oldIE->GetFlagStr (flags, NULL);
-            iE.SetFlagStr (flags);
-        }
-    } else {*/
+    
     if (!replaceMode) {
         if (base->idx->AddGame (&gNumber, &iE) != OK) {
             Tcl_AppendResult (ti, "Too many games in this database.", NULL);
             return TCL_ERROR;
         }
         base->numGames = base->idx->GetNumGames();
-    }
-
-    if (game->Encode (base->bbuf, &iE) != OK) {
-        Tcl_AppendResult (ti, "Error encoding game.", NULL);
-        return TCL_ERROR;
     }
 
     // game->Encode computes flags, so we have to re-set flags if replace mode
@@ -7948,12 +7929,6 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
             iE.SetFlagStr (flags);
         }
     } 
-
-    // as each game entry is coded on 16 bits, return an error if there is an overflow
-    if (base->bbuf->GetByteCount() > 65535) {
-        Tcl_AppendResult (ti, "Game is too long.", NULL);
-        return TCL_ERROR;
-    }
 
     base->bbuf->BackToStart();
 

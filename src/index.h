@@ -23,6 +23,9 @@
 #include "date.h"
 #include "mfile.h"
 
+// Length is encoded as unsigned short
+#define MAX_GAME_LENGTH 65535
+
 //////////////////////////////////////////////////////////////////////
 //  Index:  Constants
 

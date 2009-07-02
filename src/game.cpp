@@ -16,6 +16,7 @@
 #include "common.h"
 #include "error.h"
 #include "game.h"
+#include "gfile.h"
 #include "position.h"
 #include "pgnparse.h"
 #include "naglatex.h"
@@ -3904,6 +3905,12 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
             }
         }
         ie->SetStoredLineCode (storedLineCode);
+    }
+
+    // as each game entry length is coded on 16 bits, and game must fit in a block
+    // return an error if there is an overflow
+    if (buf->GetByteCount() > MAX_GAME_LENGTH || buf->GetByteCount() > GF_BLOCKSIZE) {
+      err = ERROR_GameFull;
     }
 
     return err;
