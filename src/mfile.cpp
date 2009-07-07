@@ -271,17 +271,43 @@ MFile::Close ()
     return (result == 0 ? OK : ERROR);
 }
 
-
 errorT
 MFile::WriteNBytes (const char * str, uint length)
 {
     ASSERT (FileMode != FMODE_ReadOnly);
+
     errorT err = OK;
-    while (length-- > 0) {
-        err = WriteOneByte (*str);
+//     while (length-- > 0) {
+//         err = WriteOneByte (*str);
+//         str++;
+//     }
+
+    if (Type == MFILE_MEMORY) {
+      while (length-- > 0) {
+        if (Location >= Capacity) { Extend(); }
+        *CurrentPtr++ = *str;
+        Location++;
         str++;
+      }
+      return OK;
     }
-    return err;
+
+    Location += length;
+    
+    if (Type == MFILE_GZIP) {
+      err = OK;
+      while (length-- > 0 && err == OK) {
+        err = (gzputc(GzHandle, *str) == EOF) ? ERROR_FileWrite : OK;
+        str++;
+      }
+      return err;
+    }
+
+#ifdef WINCE
+    return (my_Tcl_Write(Handle, (const char *)str, length) == -1 ) ? ERROR_FileWrite : OK;
+#else
+    return (fwrite( str, length, 1, Handle) != 1) ? ERROR_FileWrite : OK;
+#endif
 }
 
 errorT

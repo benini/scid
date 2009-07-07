@@ -3637,17 +3637,17 @@ encodeTags (ByteBuffer * buf, tagT * tagList, uint numTags)
     uint length;
     for (uint i=0; i < numTags; i++) {
         char * tag = tagList[i].tag;
-        char * value = tagList[i].value;
+//         char * value = tagList[i].value;
         // Try to encode "EventDate" tags compactly in binary format:
         // (Obsolete in Scid 3.x; EventDate is now stored in the index)
-        if (strEqual (tag, "EventDate")  &&  date_ValidString (value)) {
+/*        if (strEqual (tag, "EventDate")  &&  date_ValidString (value)) {
             dateT date = date_EncodeFromString (value);
             buf->PutByte (255);
             buf->PutByte ((date >> 16) & 255);
             buf->PutByte ((date >> 8) & 255);
             buf->PutByte (date & 255);
             continue;
-        }
+    }*/
         uint tagnum = 1;
         const char ** common = commonTags;
         while (*common != NULL) {

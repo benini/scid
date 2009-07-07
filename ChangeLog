@@ -812,6 +812,7 @@ scid-3.7.4
 			- in case of a network error, quit FICS without popping tons of error messages
 	* cleaned up code for Scid versions 2.x (don't think anybody still uses it)
 	* Scid no longer crashes when importing a very long game (current limit is still 32 kB)
+	* Code optimisation in I/O and memory copies. For example stripping PGN Tags is 3 times faster 
 - Features
 	* NAG support : add symbolic NAGs using UTF-8 symbols
 	* Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game

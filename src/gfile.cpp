@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
+#include <string.h>
 
 #include "common.h"
 #include "error.h"
@@ -30,7 +31,8 @@ clearBlockData (gfBlockT * blk)
 {
     blk->length = 0;
     register byte * b = blk->data;
-    for (register uint i = GF_BLOCKSIZE; i > 0; i--, b++) { *b = 0; } 
+//     for (register uint i = GF_BLOCKSIZE; i > 0; i--, b++) { *b = 0; }
+    memset( b, 0, GF_BLOCKSIZE );
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

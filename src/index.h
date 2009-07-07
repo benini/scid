@@ -630,7 +630,7 @@ class Index
     inline IndexEntry * FetchEntry (gameNumberT g);
 
     gameNumberT GetNumGames ()     { return Header.numGames; }
-    errorT      AddGame (gameNumberT * g, IndexEntry * ie);
+    errorT      AddGame (gameNumberT * g, IndexEntry * ie, bool initIE = false);
 
     // Sorting-related methods:
   private:

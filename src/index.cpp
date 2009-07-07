@@ -1246,9 +1246,10 @@ Index::SetDescription (const char * str)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Index::AddGame():
 //      Adds a new Game to this index if possible.
-//
+//      if initIE is false, don't reset index, as it has already been reseted before
+//      and eventually filled by encoding
 errorT
-Index::AddGame (gameNumberT * g, IndexEntry * ie)
+Index::AddGame (gameNumberT * g, IndexEntry * ie, bool initIE)
 {
     // Have we reached the maximum number of games?
     if (Header.numGames >= MAX_GAMES) {  return ERROR_IndexFull; }
@@ -1256,7 +1257,9 @@ Index::AddGame (gameNumberT * g, IndexEntry * ie)
     uint oldNumChunks = NumChunksRequired();
     *g = Header.numGames;
     Header.numGames++;
-    ie->Init();
+
+    if (initIE)
+      ie->Init();
 
     if (InMemory) {
         uint newNumChunks = NumChunksRequired();

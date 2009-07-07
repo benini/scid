@@ -16,7 +16,7 @@
 #include "error.h"
 #include "bytebuf.h"
 #include <stdio.h>
-
+#include <string.h>
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ByteBuffer::Init():
@@ -250,14 +250,16 @@ void
 ByteBuffer::CopyTo (byte * target)
 {
     ASSERT (Current != NULL  &&  target != NULL);
-    register byte * from, * to;
-    register uint i = ByteCount;
-    from = Buffer;
-    to = target;
-    while (i) {
-        *to++ = *from++;
-        i--;
-    }
+    memcpy( target , Buffer, ByteCount);
+
+//     register byte * from, * to;
+//     register uint i = ByteCount;
+//     from = Buffer;
+//     to = target;
+//     while (i) {
+//         *to++ = *from++;
+//         i--;
+//     }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -270,13 +272,15 @@ ByteBuffer::CopyFrom (byte * source, uint length)
     ASSERT (BufferSize >= length);
     Current = Buffer;
     ReadPos = 0;
-    register byte * from, * to;
-    register uint i = length;
-    from = source; to = Buffer;
-    while (i) {
-        *to++ = *from++;
-        i--;
-    }
+    memcpy( Buffer , source, ByteCount);
+
+//     register byte * from, * to;
+//     register uint i = length;
+//     from = source; to = Buffer;
+//     while (i) {
+//         *to++ = *from++;
+//         i--;
+//     }
     ByteCount = length;
     Err = OK;
 }

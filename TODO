@@ -4,9 +4,6 @@
 |                                                           |
  ===========================================================
 regarder les tailles de buffer des autres utilitaires (setbufsize)
-crash qd import long partie (sc_base import et sc_game import)
-l 3910 de game.cpp
-l 7916 de tkscid.cpp
 
  ===========================================================
 |                                                           |

@@ -7905,20 +7905,13 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     IndexEntry * oldIE = NULL;
     IndexEntry iE;
     iE.Init();
-
+    
+    
     if (game->Encode (base->bbuf, &iE) != OK) {
       Tcl_AppendResult (ti, "Error encoding game.", NULL);
       return TCL_ERROR;
     }
     
-    if (!replaceMode) {
-        if (base->idx->AddGame (&gNumber, &iE) != OK) {
-            Tcl_AppendResult (ti, "Too many games in this database.", NULL);
-            return TCL_ERROR;
-        }
-        base->numGames = base->idx->GetNumGames();
-    }
-
     // game->Encode computes flags, so we have to re-set flags if replace mode
     if (replaceMode) {
         oldIE = base->idx->FetchEntry (gNumber);
@@ -7928,8 +7921,15 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
             oldIE->GetFlagStr (flags, NULL);
             iE.SetFlagStr (flags);
         }
-    } 
-
+    } else {
+      // add game without resetting the index, because it has been filled by game->encode above
+      if (base->idx->AddGame (&gNumber, &iE, false) != OK) {
+        Tcl_AppendResult (ti, "Too many games in this database.", NULL);
+        return TCL_ERROR;
+      }
+      base->numGames = base->idx->GetNumGames();
+    }
+    
     base->bbuf->BackToStart();
 
     // Now try writing the game to the gfile:
