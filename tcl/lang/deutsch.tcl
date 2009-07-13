@@ -898,6 +898,8 @@ translate D YearRange {Jahr-Spanne:}
 translate D RatingRange {Elo-Spanne:}
 translate D Description {Beschreibung}
 translate D Flag {Markierung}
+# ====== TODO To be translated ======
+translate D CustomFlags {Custom flags}
 translate D DeleteCurrent {Lösche aktuelle Partie}
 translate D DeleteFilter {Lösche Partien im Filter}
 translate D DeleteAll {Lösche alle Partien}
@@ -1351,14 +1353,14 @@ translate D SoundsAnnounceBack {Kündige Zug an beim Zurückgehen}
 # Upgrading databases:
 translate D Upgrading {Upgrading}
 translate D ConfirmOpenNew {
-Dies ist eine Datenbank im alten (Scid 2.x) Format, die nicht in Scid 3.x
+Dies ist eine Datenbank im alten (Scid 3.x) Format, die nicht in Scid 4.x
 geöffnet werden kann. Aber eine Version im neuen Format wurde schon erstellt.
 
 Wollen Sie die Version der Datenbank im neuen Format öffnen?
 }
 translate D ConfirmUpgrade {
-Dies ist eine Datenbank im alten (Scid 2.x) Format. Vor der Verwendung in
-Scid 3 muß eine Version im neuen Format der Datenbank erstellt werden.
+Dies ist eine Datenbank im alten (Scid 3.x) Format. Vor der Verwendung in
+Scid 4 muß eine Version im neuen Format der Datenbank erstellt werden.
 
 Beim Erstellen der neuen Version der Datenbank bleiben die Dateien der alten Version erhalten.
 
@@ -7258,6 +7260,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

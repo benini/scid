@@ -98,14 +98,6 @@ const uint SCID_TreeCacheSize = 1000; //250
 const uint SCID_BackupCacheSize = 100;
 #endif
 
-// Buffer sizes
-#ifdef WINCE
-#define BBUF_SIZE 30000
-#define TBUF_SIZE 100000
-#else
-#define BBUF_SIZE 120000 //40000
-#define TBUF_SIZE 160000 //160000
-#endif
 //////////////////////////////////////////////////////////////////////
 //
 // Data structures for Scid Tcl/Tk extensions:

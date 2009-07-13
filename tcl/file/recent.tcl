@@ -72,7 +72,7 @@ proc ::recentFiles::add {fname} {
 #
 proc ::recentFiles::load {fname} {
   set rname $fname
-  if {[file extension $rname] == ".si3"} {
+  if {[file extension $rname] == ".si4"} {
     set rname [file rootname $rname]
   }
   for {set i 1} {$i <= [sc_base count total]} {incr i} {

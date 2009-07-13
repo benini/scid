@@ -1017,6 +1017,8 @@ translate O YearRange {Til/fra år:}
 translate O RatingRange {Til/fra rating:}
 translate O Description {Description} ;# ***
 translate O Flag {Flagg}
+# ====== TODO To be translated ======
+translate O CustomFlags {Custom flags}
 translate O DeleteCurrent {Slett gjeldende parti}
 translate O DeleteFilter {Slett filtrerte partier}
 translate O DeleteAll {Slett alle partier}
@@ -1476,14 +1478,14 @@ translate O SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate O Upgrading {Oppgraderer}
 translate O ConfirmOpenNew {
-Dette er en database i gammelt format (Scid 2) som ikke kan åpnes i Scid 3, men en ny versjon (Scid 3) har allerede blitt opprettet.
+Dette er en database i gammelt format (Scid 3) som ikke kan åpnes i Scid 4, men en ny versjon (Scid 4) har allerede blitt opprettet.
 
 Vil du åpne versjonen som er i det nye formatet?
 }
 translate O ConfirmUpgrade {
-Dette er en database i gammelt format (Scid2). En versjon i nytt format må opprettes før den kan brukes i Scid 3.
+Dette er en database i gammelt format (Scid3). En versjon i nytt format må opprettes før den kan brukes i Scid 4.
 
-Oppgradering vil opprette en ny versjon av databasen; det vil ikke redigere eller slette de opprinnelige filene.
+Oppgradering vil opprette en ny versjon av databasen.
 
 Dette kan ta en stund, men det trenger kun å gjøres en gang. Du kan avbryte om det tar for lang tid.
 
@@ -2134,6 +2136,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

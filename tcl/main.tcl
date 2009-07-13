@@ -1443,18 +1443,17 @@ proc backSquare {} {
   }
   sc_move back
   
-  if {[sc_pos isAt vstart] && [sc_var level] != 0} {
-    ::pgn::deleteVar [sc_var number]
-  } elseif {$lastMoveInLine} {
-    sc_game truncate
-  }
+  # RMB used to delete the move if it was the last in a line. Removed it as there is no undo.
+  # if {[sc_pos isAt vstart] && [sc_var level] != 0} {
+    # ::pgn::deleteVar [sc_var number]
+  # } elseif {$lastMoveInLine} {
+    # sc_game truncate
+  # }
   
-  #Klimmek: not needed anymore, in updateBoard included
-  #  ::board::colorSquare .main.board $selectedSq
-  #  ::board::colorSquare .main.board $bestSq
   set selectedSq -1
   set bestSq -1
-  updateBoard -pgn -animate
+  # update the board without -pgn option because of poor performance with long games
+  updateBoard -animate
   ::utils::sound::AnnounceBack
 }
 

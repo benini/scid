@@ -45,16 +45,25 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 
+// Buffer sizes
+#ifdef WINCE
+#define BBUF_SIZE 30000
+#define TBUF_SIZE 100000
+#else
+#define BBUF_SIZE 256000 //120000
+#define TBUF_SIZE 1280000 //160000
+#endif
+
 typedef unsigned short versionT;
 
 // Version: div by 100 for major number, modulo 100 for minor number
 // so 109 = 1.9, 110 = 1.10, etc.
 
-const versionT SCID_VERSION = 300;     // Current file format version = 3.0
-const versionT SCID_OLDEST_VERSION = 300; // Oldest compatible format: 3.0
+const versionT SCID_VERSION = 400;     // Current file format version = 4.0
+const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 4.0
 
-const char SCID_VERSION_STRING[] = "3.7.4 DEVEL";     // Current Scid version
-const char SCID_VERSION_DATE[] = "April 2009";
+const char SCID_VERSION_STRING[] = "4.0 DEVEL";     // Current Scid version
+const char SCID_VERSION_DATE[] = "xxx 2009";
 const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
 
 const char TREEFILE_SUFFIX[] = ".stc";

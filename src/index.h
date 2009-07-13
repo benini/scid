@@ -4,12 +4,13 @@
 //              Index File Class
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.2
+//  Version:    4.0
 //
 //  Notice:     Copyright (c) 1999-2002  Shane Hudson.  all rights reserved.
+//  Notice:     Copyright (c) 2006-2009  Pascal Georges.  all rights reserved.
 //
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
-//
+//  Authors:     Shane Hudson (sgh@users.sourceforge.net)
+//               Pascal Georges
 //////////////////////////////////////////////////////////////////////
 
 
@@ -24,18 +25,20 @@
 #include "mfile.h"
 
 // Length is encoded as unsigned short
-#define MAX_GAME_LENGTH 65535
+#define MAX_GAME_LENGTH 131072
 
 //////////////////////////////////////////////////////////////////////
 //  Index:  Constants
 
-const char         INDEX_SUFFIX[]     = ".si3";
-const char         OLD_INDEX_SUFFIX[] = ".si";
+const char         INDEX_SUFFIX[]     = ".si4";
+const char         OLD_INDEX_SUFFIX[] = ".si3";
 const char         INDEX_MAGIC[8]     = "Scid.si";
 const gameNumberT  MAX_GAMES          = 16000000;  // max. # of games in file
 
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
+const uint  CUSTOM_FLAG_DESC_LENGTH = 8;
+const uint  CUSTOM_FLAG_MAX = 6;
 
 const uint  MAX_ELO = 4000;   // Since we store Elo Ratings in 12 bits
                               // each in the index file.
@@ -53,13 +56,16 @@ struct indexHeaderT {
                              //   unset will load game 1.
     // description is a fixed-length string describing the database.
     char        description [SCID_DESC_LENGTH + 1];
+    // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
+    char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
 };
 
 // Header on-disk size: magic=8, version=2, numGames=3, baseType=4, autoLoad=3
 // Description length = 111 bytes including trailing '\0'.
-// So total is 128 bytes for the whole header.
-const uint  INDEX_HEADER_SIZE = 8 + 2 + 3 + 4 + 3 + SCID_DESC_LENGTH + 1;
-const uint  OLD_INDEX_HEADER_SIZE = INDEX_HEADER_SIZE;
+// Custom flag desc length = 9 bytes including trailing '\0'.
+// So total is 128 bytes + 9*6 = 182 bytes for the whole header.
+const uint  INDEX_HEADER_SIZE = 8 + 2 + 3 + 4 + 3 + SCID_DESC_LENGTH + 1 + (CUSTOM_FLAG_DESC_LENGTH+1) * CUSTOM_FLAG_MAX;
+const uint  OLD_INDEX_HEADER_SIZE = INDEX_HEADER_SIZE - (CUSTOM_FLAG_DESC_LENGTH+1) * CUSTOM_FLAG_MAX;
 
 // INDEX_MaxSortCriteria is the maximum number of fields allowed in
 // a sorting criteria list.
@@ -71,10 +77,9 @@ const uint  INDEX_MaxSortCriteria = 16;
 
 const uint HPSIG_SIZE = 9;
 
-
 // IndexEntry Flag types:
 
-#define  IDX_NUM_FLAGS 16
+#define  IDX_NUM_FLAGS 22
 
 #define  IDX_FLAG_START         0   // Game has own start position.
 #define  IDX_FLAG_PROMO         1   // Game contains promotion(s).
@@ -93,6 +98,13 @@ const uint HPSIG_SIZE = 9;
 #define  IDX_FLAG_BLUNDER      14   // Blunder or bad play.
 #define  IDX_FLAG_USER         15   // User-defined flag.
 
+#define  IDX_FLAG_CUSTOM1      16   // Custom flag.
+#define  IDX_FLAG_CUSTOM2      17   // Custom flag.
+#define  IDX_FLAG_CUSTOM3      18   // Custom flag.
+#define  IDX_FLAG_CUSTOM4      19   // Custom flag.
+#define  IDX_FLAG_CUSTOM5      20   // Custom flag.
+#define  IDX_FLAG_CUSTOM6      21   // Custom flag.
+
 #define  IDX_MASK_START         (1 << IDX_FLAG_START)
 #define  IDX_MASK_PROMO         (1 << IDX_FLAG_PROMO)
 #define  IDX_MASK_UPROMO        (1 << IDX_FLAG_UPROMO)
@@ -109,6 +121,8 @@ const uint HPSIG_SIZE = 9;
 #define  IDX_MASK_BRILLIANCY    (1 << IDX_FLAG_BRILLIANCY)
 #define  IDX_MASK_BLUNDER       (1 << IDX_FLAG_BLUNDER)
 #define  IDX_MASK_USER          (1 << IDX_FLAG_USER)
+
+const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
 
 // Bitmask functions for index entry decoding:
 inline byte   u32_high_8 (uint x)   { return (byte)(x >> 24); }
@@ -150,7 +164,6 @@ class IndexEntry
   private:
 
     uint           Offset;     // Start of gamefile record for this game.
-    ushort         Length;     // Size of gamefile record for this game.
 
     // Name ID values are packed into 12 bytes, saving 8 bytes over the
     // simpler method of just storing each as a 4-byte idNumberT.
@@ -173,9 +186,13 @@ class IndexEntry
                               // VarCounts also stores the result.
     ushort       NumHalfMoves;
     byte         HomePawnData [HPSIG_SIZE];  // homePawnSig data.
-    byte         Padding;     // Padding out to 48 bytes.
-
+    // Length of gamefile record for this game. 17 bits are used so the max length is
+    // 128 ko (131071). So 7 bits are usable for custom flags or other.
+    ushort       Length_Low;
+    byte         Length_High; // LxFFFFFF ( L = length for long games, x = spare, F = custom flags)
+    
   public:
+    
 #ifdef WINCE
   void* operator new (size_t sz) {
     void* m = my_Tcl_AttemptAlloc(sz);
@@ -204,7 +221,9 @@ class IndexEntry
 
     // Get() methods:
 
-    inline uint GetLength ()  { return Length; }
+    inline uint GetLength () {
+      return (Length_Low + ((Length_High & 0x80) << 9));
+    }
     inline uint GetOffset ()  { return Offset; }
 
     inline idNumberT GetWhite ();
@@ -232,8 +251,13 @@ class IndexEntry
     inline ecoT    GetEcoCode ()  { return EcoCode; }
     inline ushort  GetNumHalfMoves () { return NumHalfMoves; }
 
-    inline uint GetFlags ()          { return Flags; }
-    inline bool GetFlag (uint mask)  { return Flags & mask; }
+//     inline uint GetFlags ()          { return Flags; }
+    inline bool GetFlag (uint mask)  {
+      if (mask & 0xFFFF)
+        return Flags & mask;
+      else
+        return Length_High & ( mask >> 16 ) ;
+    }
     inline bool GetStartFlag ()      { return Flags & IDX_MASK_START; }
     inline bool GetPromotionsFlag () { return Flags & IDX_MASK_PROMO; }
     inline bool GetUnderPromoFlag()  { return Flags & IDX_MASK_UPROMO; }
@@ -253,6 +277,10 @@ class IndexEntry
     inline bool GetBrilliancyFlag () { return Flags & IDX_MASK_BRILLIANCY; }
     inline bool GetBlunderFlag ()    { return Flags & IDX_MASK_BLUNDER; }
     inline bool GetUserFlag ()       { return Flags & IDX_MASK_USER; }
+    // Custom flags are bits numbered from 1 to 6 from left to right
+    inline bool GetCustomFlag (byte c) {
+      return (Length_High & CUSTOM_FLAG_MASK[c-1]) ;
+    }
 
     static uint   CharToFlag (char ch);
     uint   GetFlagStr (char * str, const char * flags);
@@ -282,7 +310,13 @@ class IndexEntry
     // Set() Methods:
 
     inline void SetOffset (uint offset) { Offset = offset; }
-    inline void SetLength (uint length) { Length = length; }
+    
+    inline void SetLength (uint length) {
+      ASSERT(length >= 0 && length < 131072);
+      Length_Low = (unsigned short) (length & 0xFFFF);
+      // preserve the last 7 bits
+      Length_High = ( Length_High & 0x7F ) | (byte) ( (length >> 16) << 7 );
+    }
 
     inline void SetWhite (idNumberT id);
     inline void SetBlack (idNumberT id);
@@ -314,9 +348,13 @@ class IndexEntry
     inline void SetEcoCode (ecoT eco)   { EcoCode = eco; }
     inline void SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
 
-    inline void SetFlags (uint flags) { Flags = flags; }
+//     inline void SetFlags (uint flags) { Flags = flags; }
     inline void SetFlag (uint flagMask, bool b) {
+      if (flagMask & 0xFFFF) {
         if (b) { Flags |= flagMask; } else { Flags &= ~flagMask; }
+      } else {
+        if (b) { Length_High |= (flagMask >> 16); } else { Length_High &= ~ (flagMask >> 16); }
+      }
     }
 
     inline void SetStartFlag (bool b)      { SetFlag (IDX_MASK_START, b); }
@@ -496,8 +534,8 @@ IndexEntry::SetRound (idNumberT id)
 
 
 // Total on-disk size per index entry: currently 46 bytes.
-const uint  INDEX_ENTRY_SIZE = 46;
-const uint  OLD_INDEX_ENTRY_SIZE = 41;
+const uint  INDEX_ENTRY_SIZE = 47;
+const uint  OLD_INDEX_ENTRY_SIZE = 46;
 
 typedef IndexEntry * IndexEntryPtr;
 
@@ -599,6 +637,15 @@ class Index
     void        SetDescription (const char *s);
     const char * GetDescription ()  { return Header.description; }
 
+    // fill param str with custom flag description. Number is 1..6
+    void        GetCustomFlagDesc (char * str, byte c) {
+      strcpy(str, Header.customFlagDesc[c-1] );
+    }
+    
+    void        SetCustomFlagDesc (const char * str, byte c) {
+      strncpy( Header.customFlagDesc[c-1], str, CUSTOM_FLAG_DESC_LENGTH );
+      Dirty = 1;
+    }
     void        SetAutoLoad (gameNumberT gnum) { Header.autoLoad = gnum + 1; }
     gameNumberT GetAutoLoad () {
         return ((Header.autoLoad == 0) ? 1 : (Header.autoLoad - 1));
@@ -610,7 +657,7 @@ class Index
     errorT      CreateIndexFile (fileModeT);
     errorT      CreateMemoryOnly ();
     errorT      WriteHeader ();
-    errorT      CloseIndexFile ();
+    errorT      CloseIndexFile (bool NoHeader = false);
     errorT      SetReadOnly ();
 
     errorT      ReadEntries (IndexEntry * ie, gameNumberT start, uint count);
@@ -624,6 +671,8 @@ class Index
         return ReadEntireFile (0, NULL, NULL);
     }
 
+    MFile *     GetMFile() { return FilePtr; }
+    
     uint        VerifyFile (NameBase * nb);
     bool        AllInMemory() { return InMemory; }
 

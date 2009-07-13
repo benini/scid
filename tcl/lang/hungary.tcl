@@ -872,6 +872,8 @@ translate H YearRange {Évtartomány:}
 translate H RatingRange {Értékszámtartomány:}
 translate H Description {Leírás}
 translate H Flag {Megjelölés}
+# ====== TODO To be translated ======
+translate H CustomFlags {Custom flags}
 translate H DeleteCurrent {Törli az aktuális játszmát.}
 translate H DeleteFilter {Törli a szûrt játszmákat.}
 translate H DeleteAll {Minden játszmát töröl.}
@@ -1305,12 +1307,12 @@ translate H SoundsAnnounceBack {Lépés bemondása amikor visszaveszünk vagy egy lé
 # Upgrading databases:
 translate H Upgrading {Felújítás}
 translate H ConfirmOpenNew {
-Ez régi formátumú (SCID 2) adatbázis, amelyet SCID 3 nem tud megnyitni, de már létrehozott egy új formátumú (SCID 3) verziót.
+Ez régi formátumú (SCID 3) adatbázis, amelyet SCID 4 nem tud megnyitni, de már létrehozott egy új formátumú (SCID 4) verziót.
 
 Szeretnéd megnyitni az adatbázis új formátumú verzióját?
 }
 translate H ConfirmUpgrade {
-Ez régi formátumú (SCID 2) adatbázis. Új formátumú verziót kell létrehozni belõle, hogy SCID 3 használni tudja.
+Ez régi formátumú (SCID 3) adatbázis. Új formátumú verziót kell létrehozni belõle, hogy SCID 4 használni tudja.
 
 A felújítás új verziót hoz létre az adatbázisból. Az eredeti fájlok sértetlenül megmaradnak.
 
@@ -1911,6 +1913,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

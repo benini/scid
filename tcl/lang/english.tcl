@@ -908,6 +908,7 @@ translate E YearRange {Year range:}
 translate E RatingRange {Rating range:}
 translate E Description {Description}
 translate E Flag {Flag}
+translate E CustomFlags {Custom flags}
 translate E DeleteCurrent {Delete current game}
 translate E DeleteFilter {Delete filter games}
 translate E DeleteAll {Delete all games}
@@ -1344,14 +1345,14 @@ translate E SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate E Upgrading {Upgrading}
 translate E ConfirmOpenNew {
-This is an old-format (Scid 2) database that cannot be opened in Scid 3, but a new-format (Scid 3) version has already been created.
+This is an old-format (Scid 3) database that cannot be opened in Scid 4, but a new-format (Scid 4) version has already been created.
 
 Do you want to open the new-format version of the database?
 }
 translate E ConfirmUpgrade {
-This is an old-format (Scid 2) database. A new-format version of the database must be created before it can be used in Scid 3.
+This is an old-format (Scid 3) database. A new-format version of the database must be created before it can be used in Scid 4.
 
-Upgrading will create a new version of the database; it will not edit or remove the original files.
+Upgrading will create a new version of the database and after that remove the original files.
 
 This may take a while, but it only needs to be done one time. You can cancel if it takes too long.
 

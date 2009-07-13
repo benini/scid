@@ -1219,6 +1219,7 @@ proc gameReplace {} { gameSave [sc_game number] }
 #    Displays information about Scid.
 #
 proc helpAbout {} {
+
   ::utils::sound::PlaySound sound_move
   set str {}
   append str "Scid: Shane's chess information database\n\n"
@@ -1304,17 +1305,17 @@ for {set i 0} { $i < 64 } { incr i } {
 }
 
 foreach i {o q r n k O Q R B N K} {
-  bind $dot_w <$i> "moveEntry_Char [string toupper $i]"
+  bind .main <$i> "moveEntry_Char [string toupper $i]"
 }
 foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
-  bind $dot_w <Key-$i> "moveEntry_Char $i"
+  bind .main <Key-$i> "moveEntry_Char $i"
 }
 
-bind $dot_w <Control-BackSpace> backSquare
-bind $dot_w <Control-Delete> backSquare
-bind $dot_w <BackSpace> moveEntry_Backspace
-bind $dot_w <Delete> moveEntry_Backspace
-bind $dot_w <space> moveEntry_Complete
+bind .main <Control-BackSpace> backSquare
+bind .main <Control-Delete> backSquare
+bind .main <BackSpace> moveEntry_Backspace
+bind .main <Delete> moveEntry_Backspace
+bind .main <space> moveEntry_Complete
 
 
 ###  Other Key bindings:
@@ -1706,7 +1707,7 @@ while {$argc > 0} {
       }
     } else {
       set err [catch {openBase [file rootname $startbase]} errMessage]
-      if {! $err} { ::recentFiles::add "[file rootname $startbase].si3" }
+      if {! $err} { ::recentFiles::add "[file rootname $startbase].si4" }
     }
     if {$err} {
       ::splash::add "   Error: could not open database \"$startbase\":\n  $errMessage"

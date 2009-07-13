@@ -885,6 +885,8 @@ translate S YearRange {Rango de años:}
 translate S RatingRange {Rango de Elo:}
 translate S Description {Descripción}
 translate S Flag {Señal}
+# ====== TODO To be translated ======
+translate S CustomFlags {Custom flags}
 translate S DeleteCurrent {Borrar partida actual}
 translate S DeleteFilter {Borrar partidas filtradas}
 translate S DeleteAll {Borrar todas las partidas}
@@ -1318,14 +1320,14 @@ translate S SoundsAnnounceBack {Anunciar movimiento cuando rectifiquemos o retro
 # Upgrading databases:
 translate S Upgrading {Actualización}
 translate S ConfirmOpenNew {
-Este es un formato de base de datos antiguo (Scid 2) que no puede ser abierto con Scid 3, pero ya se ha creado una versión de formato nuevo (Scid 3).
+Este es un formato de base de datos antiguo (Scid 3) que no puede ser abierto con Scid 4, pero ya se ha creado una versión de formato nuevo (Scid 4).
 
 ¿Quieres abrir la versión de formato nuevo de la base de datos?
 }
 translate S ConfirmUpgrade {
-Esta es una base de datos en un formato antiguo (Scid 2). Se debe crear una versión de formato nuevo de base de datos antes de poder ser usada en Scid 3.
+Esta es una base de datos en un formato antiguo (Scid 3). Se debe crear una versión de formato nuevo de base de datos antes de poder ser usada en Scid 4.
 
-La actualización creará una nueva versión de la base de datos; esta no corregirá o borrará los archivos originales.
+La actualización creará una nueva versión de la base de datos.
 
 Esto puede tomar un tiempo, pero sólo es necesario hacerlo una vez. Puedes cancelar si toma demasiado tiempo.
 
@@ -1656,6 +1658,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

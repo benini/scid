@@ -1009,6 +1009,8 @@ translate C YearRange {Rozsah rokù:}
 translate C RatingRange {Rozsah ratingu:}
 translate C Description {Popis}
 translate C Flag {Pøíznak}
+# ====== TODO To be translated ======
+translate C CustomFlags {Custom flags}
 translate C DeleteCurrent {Vymazat aktuální partii}
 translate C DeleteFilter {Vymazat filtrované partie}
 translate C DeleteAll {Vymazat v¹echny partie}
@@ -1472,14 +1474,14 @@ translate C SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate C Upgrading {Upgrade}
 translate C ConfirmOpenNew {
-Toto je starý formát (Scid 2) databáze, jen¾ není mo¾no otevøít ve Scidu 3. Verze s novým formátem (Scid 3) pøitom ji¾ byla vytvoøena.
+Toto je starý formát (Scid 3) databáze, jen¾ není mo¾no otevøít ve Scidu 4. Verze s novým formátem (Scid 4) pøitom ji¾ byla vytvoøena.
 
 Chcete otevøít verzi s novým formátem datábáze?
 }
 translate C ConfirmUpgrade {
-Toto je starý formát (Scid 2) databáze. K otevøení ve Scidu 3 je nutno databázi nejprve zkonvertovat do nového formátu.
+Toto je starý formát (Scid 3) databáze. K otevøení ve Scidu 4 je nutno databázi nejprve zkonvertovat do nového formátu.
 
-Upgrade vytvoøí novou verzi databáze; originální soubory se nebudou ani editovat, ani mazat.
+Upgrade vytvoøí novou verzi databáze.
 
 Tento úkon mù¾e zabrat trochu èasu, ale je tøeba jej provést pouze jednou. Mù¾ete ho pøeru¹it, pokud bude trvat pøíli¹ dlouho.
 
@@ -5764,6 +5766,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

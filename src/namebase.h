@@ -55,8 +55,8 @@ typedef uint caseFlagT;
 const caseFlagT
     CASE_SENSITIVE = 0,  CASE_INSENSITIVE = 1;
 
-const char OLD_NAMEBASE_SUFFIX[] = ".sn";
-const char NAMEBASE_SUFFIX[] = ".sn3";
+// const char OLD_NAMEBASE_SUFFIX[] = ".sn3";
+const char NAMEBASE_SUFFIX[] = ".sn4";
 
 const char NAMEBASE_MAGIC[8] = "Scid.sn";
 
@@ -207,11 +207,11 @@ class NameBase
 
     errorT    OpenNameFile (const char * suffix);
     errorT    OpenNameFile () { return OpenNameFile (NAMEBASE_SUFFIX); }
-    errorT    OpenOldNameFile () { return OpenNameFile (OLD_NAMEBASE_SUFFIX); }
+//     errorT    OpenOldNameFile () { return OpenNameFile (OLD_NAMEBASE_SUFFIX); }
     errorT    CloseNameFile ();
     errorT    ReadNameFile (const char * suffix);
     errorT    ReadNameFile () { return ReadNameFile (NAMEBASE_SUFFIX); }
-    errorT    ReadOldNameFile () { return ReadNameFile (OLD_NAMEBASE_SUFFIX); }
+//     errorT    ReadOldNameFile () { return ReadNameFile (OLD_NAMEBASE_SUFFIX); }
     errorT    WriteNameFile ();
 
     errorT    IncArraySize (nameT nt, idNumberT increment);

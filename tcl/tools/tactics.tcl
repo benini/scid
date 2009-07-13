@@ -120,7 +120,7 @@ namespace eval tactics {
     set prevBase [sc_base current]
     # go through all bases and take descriptions
     set baseList {}
-    set fileList [  lsort -dictionary [ glob -nocomplain -directory $basePath *.si3 ] ]
+    set fileList [  lsort -dictionary [ glob -nocomplain -directory $basePath *.si4 ] ]
     foreach file  $fileList {
       if {[sc_base slot $file] == 0} {
         sc_base open [file rootname $file]

@@ -1090,7 +1090,6 @@ void base_open_failure( int oldBaseNum ) {
   db = &(dbList[currentBase]);
   db->idx->CloseIndexFile();
   db->idx->Clear();
-  // Scid 3.6.24 missing call, seems necessary
   db->nb->Clear();
   db->gfile->Close();
   db->inUse = false;
@@ -1109,6 +1108,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool showProgress = 0;
     showProgress = startProgressBar();
+
     bool readOnly = false;  // Open database read-only.
 #ifdef WINCE
     bool fastOpen = true;  // Fast open (no flag counts, etc)
@@ -1264,6 +1264,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->idx->CloseIndexFile();
         return errorResult (ti, "Error: name corruption in index file.\nRun \"scidt -N\" on this database to fix it.");
     }
+
     db->numGames = db->idx->GetNumGames();
 
     // Compute name frequencies, flag counts, etc unless a fast open
@@ -2876,7 +2877,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 // The tag was found and stripped. Re-save the game,
                 // remembering to load its standard tags first:
                 g->LoadStandardTags (ie, db->nb);
-                if (sc_savegame (ti, g, gnum+1, db) != OK) { return TCL_ERROR; }
+                 if (sc_savegame (ti, g, gnum+1, db) != OK) { return TCL_ERROR; }
                 nEditedGames++;
             }
         } else {
@@ -3360,8 +3361,8 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_upgrade:
-//    Upgrades an old (version 2.x, suffix .si) Scid database
-//    to version 3 (suffix .si3).
+//    Upgrades an old (version 3.x, suffix .si3) Scid database
+//    to version 4 (suffix .si4).
 int
 sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -3373,65 +3374,59 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * fname = argv[2];
     Index * oldIndex = new Index;
     Index * newIndex = new Index;
-    NameBase * oldNB = new NameBase;
-    NameBase * newNB = new NameBase;
-    GFile * oldGFile = new GFile;
-    GFile * newGFile = new GFile;
 
     oldIndex->SetFileName (fname);
     newIndex->SetFileName (fname);
-    oldNB->SetFileName (fname);
-    newNB->SetFileName (fname);
 
     if (newIndex->OpenIndexFile(FMODE_ReadOnly) == OK) {
         newIndex->CloseIndexFile();
-        delete oldIndex;  delete oldNB;  delete oldGFile;
-        delete newIndex;  delete newNB;  delete newGFile;
-        return errorResult (ti, "A upgraded version of this database already exists.");
+        delete oldIndex;  
+        delete newIndex; 
+        return errorResult (ti, "An upgraded version of this database already exists.");
     }
 
     if (oldIndex->OpenOldIndexFile (FMODE_ReadOnly) != OK) {
-        delete oldIndex;  delete oldNB;  delete oldGFile;
-        delete newIndex;  delete newNB;  delete newGFile;
-        return errorResult (ti, "Error opening the old database.");
-    }
-    if (oldNB->ReadOldNameFile() != OK
-        ||  oldGFile->OpenOld (fname, FMODE_ReadOnly) != OK) {
-        oldIndex->CloseIndexFile();
-        delete oldIndex;  delete oldNB;  delete oldGFile;
-        delete newIndex;  delete newNB;  delete newGFile;
+        delete oldIndex;  
+        delete newIndex; 
         return errorResult (ti, "Error opening the old database.");
     }
 
-    if (newGFile->Create (fname, FMODE_WriteOnly) != OK) {
-        oldIndex->CloseIndexFile();
-        oldGFile->Close();
-        delete oldIndex;  delete oldNB;  delete oldGFile;
-        delete newIndex;  delete newNB;  delete newGFile;
-        return errorResult (ti, "Error creating the new dataabse.");
-    }
     if (newIndex->CreateIndexFile (FMODE_WriteOnly) != OK) {
         oldIndex->CloseIndexFile();
-        oldGFile->Close();
-        newGFile->Close();
-        delete oldIndex;  delete oldNB;  delete oldGFile;
-        delete newIndex;  delete newNB;  delete newGFile;
+        delete oldIndex;
+        delete newIndex;
         return errorResult (ti, "Error creating the new dataabse.");
     }
 
-    newIndex->SetType (oldIndex->GetType());
+    MFile * oldMFile = oldIndex->GetMFile();
+    MFile * newMFile = newIndex->GetMFile();
 
+    char buf[256];
+    // First copy the header with new version number
+
+    oldMFile->Seek(0);
+    newMFile->Seek(0);
+    
+    oldMFile->ReadNBytes( buf, 8);
+    newMFile->WriteNBytes(buf, 8);
+
+    oldMFile->ReadTwoBytes();
+    newMFile->WriteTwoBytes(SCID_VERSION);
+
+    oldMFile->ReadNBytes(buf, 4 + 3 + 3 + SCID_DESC_LENGTH + 1);
+    newMFile->WriteNBytes(buf, 4 + 3 + 3 + SCID_DESC_LENGTH + 1);
+
+    // write the descriptions of the custom flags added with v4 version of base
+    memset( buf, 0, 256 );
+    newMFile->WriteNBytes( buf, CUSTOM_FLAG_MAX * ( CUSTOM_FLAG_DESC_LENGTH+1 ) );
+    
+    // Now copy each index entry
     uint i;
     uint numGames = oldIndex->GetNumGames();
-    ByteBuffer * bbuf = new ByteBuffer;
-    bbuf->SetBufferSize (BBUF_SIZE);
-    TextBuffer * tbuf = new TextBuffer;
-    tbuf->SetBufferSize (TBUF_SIZE);
     errorT err = OK;
-    Game * g = scratchGame;
     uint updateStart = 250;
     uint update = updateStart;
-
+    
     for (i=0; i < numGames; i++) {
         if (showProgress) {
             update--;
@@ -3441,89 +3436,35 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 updateProgressBar (ti, i, numGames);
             }
         }
+        
+        oldMFile->ReadNBytes(buf, 4 + 2);
+        newMFile->WriteNBytes(buf, 4 + 2);
+        
+        // insert one byte for Length_High and user bits
+        newMFile->WriteNBytes( "\0", 1 );
 
-        IndexEntry ieOld, ieNew;
-        err = oldIndex->ReadEntries (&ieOld, i, 1);
-        if (err != OK) { setResult (ti, "Read index error"); break; }
-        err = oldGFile->ReadGame (bbuf, ieOld.GetOffset(), ieOld.GetLength());
-        if (err != OK) { setResult (ti, "Read game error"); break; }
-        bbuf->BackToStart();
-        g->Clear();
-        err = g->Decode (bbuf, GAME_DECODE_ALL);
-        dateT edate = g->GetEventDate();
-        g->LoadStandardTags (&ieOld, oldNB);
-        g->SetEventDate (edate);
-        if (err != OK) { continue; }
-
-        // Now encode the game in the new database:
-        bbuf->Empty();
-        //bbuf->BackToStart();
-        gameNumberT gnum = 0;
-        ieNew.Init();
-        err = newIndex->AddGame (&gnum, &ieNew);
-        if (err != OK) { setResult (ti, "Add index error");  break; }
-        err = g->Encode (bbuf, &ieNew);
-        if (err != OK) { setResult (ti, "Game encode error"); break; }
-        idNumberT id;
-        err = newNB->AddName (NAME_PLAYER, g->GetWhiteStr(), &id);
-        if (err != OK) { setResult (ti, "White name error"); break; }
-        newNB->IncFrequency (NAME_PLAYER, id, 1);
-        ieNew.SetWhite (id);
-        err = newNB->AddName (NAME_PLAYER, g->GetBlackStr(), &id);
-        if (err != OK) { setResult (ti, "Black name error"); break; }
-        newNB->IncFrequency (NAME_PLAYER, id, 1);
-        ieNew.SetBlack (id);
-        err = newNB->AddName (NAME_EVENT, g->GetEventStr(), &id);
-        if (err != OK) { setResult (ti, "Event name error"); break; }
-        newNB->IncFrequency (NAME_EVENT, id, 1);
-        ieNew.SetEvent (id);
-        err = newNB->AddName (NAME_SITE, g->GetSiteStr(), &id);
-        if (err != OK) { setResult (ti, "Site name error"); break; }
-        newNB->IncFrequency (NAME_SITE, id, 1);
-        ieNew.SetSite (id);
-        err = newNB->AddName (NAME_ROUND, g->GetRoundStr(), &id);
-        if (err != OK) { setResult (ti, "Round name error"); break; }
-        newNB->IncFrequency (NAME_ROUND, id, 1);
-        ieNew.SetRound (id);
-        uint offset = 0;
-        err = newGFile->AddGame (bbuf, &offset);
-        if (err != OK) { setResult (ti, "Game file error"); break; }
-        ieNew.SetOffset (offset);
-        ieNew.SetLength (bbuf->GetByteCount());
-        newIndex->WriteEntries (&ieNew, gnum, 1);
+        oldMFile->ReadNBytes(buf, 40 );
+        newMFile->WriteNBytes(buf, 40 );
+        
     }
-
-    if (err == OK) {
-        err = newIndex->WriteHeader();
-    }
-
-    delete bbuf;
-    delete tbuf;
 
     oldIndex->CloseIndexFile();
-    newIndex->CloseIndexFile();
-    oldGFile->Close();
-    newGFile->Close();
+    newIndex->CloseIndexFile(true); // don't write again the header
 
     if (err == OK  &&  !interruptedProgress()) {
-        err = newNB->WriteNameFile();
         if (err != OK) { setResult (ti, "Error writing name file"); }
     }
 
-    delete oldIndex;  delete oldNB;  delete oldGFile;
-    delete newIndex;  delete newNB;  delete newGFile;
+    delete oldIndex;  
+    delete newIndex;  
 
     if (interruptedProgress()) {
         removeFile (fname, INDEX_SUFFIX);
-        removeFile (fname, NAMEBASE_SUFFIX);
-        removeFile (fname, GFILE_SUFFIX);
         return errorResult (ti, "Upgrading was cancelled.");
     }
 
     if (err != OK) {
         removeFile (fname, INDEX_SUFFIX);
-        removeFile (fname, NAMEBASE_SUFFIX);
-        removeFile (fname, GFILE_SUFFIX);
         return TCL_ERROR;
     }
 
@@ -6164,11 +6105,12 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 //    Extra calling methods:
 //      sc_game flag <flag> filter <0|1|invert> operates on all filtered games.
 //      sc_game flag <flag> all <0|1|invert> operates on all games.
+//      sc_game flag <flag> description 
 int
 sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_game flag <flag> <gameNum> [0|1]";
-    if (argc < 4  ||  argc > 5) {
+    if (argc < 3  ||  argc > 5) {
         return errorResult (ti, usage);
     }
     if (!db->inUse) {
@@ -6182,7 +6124,30 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     flagType = 1 << IndexEntry::CharToFlag (argv[2][0]);
 
-    if (strEqual (argv[3], "all")) {
+    if (strEqual (argv[3], "description")) {
+        // Returns the description associated with a Custom flag
+      if (argc != 4) {
+        return errorResult (ti, usage);
+      } else {
+        char desc[9];
+        uint num = IndexEntry::CharToFlag (argv[2][0]) - 15;
+        if (num < 1 || num > CUSTOM_FLAG_MAX )
+          return errorResult (ti, "Custom flag number out of range");
+        db->idx->GetCustomFlagDesc(desc, num);
+        Tcl_AppendResult (ti, desc, NULL);
+        return TCL_OK;
+      }
+    } else if (strEqual (argv[3], "setdescription")) {
+      if (argc != 5) {
+        return errorResult (ti, usage);
+      } else {
+        uint num = IndexEntry::CharToFlag (argv[2][0]) - 15;
+        if (num < 1 || num > CUSTOM_FLAG_MAX )
+          return errorResult (ti, "Custom flag number out of range");
+        db->idx->SetCustomFlagDesc( argv[4], num);
+        return TCL_OK;
+      }
+    } else if (strEqual (argv[3], "all")) {
         // Delete or undelete all games: the flag value must be specified.
         if (argc != 5) {
             return errorResult (ti, usage);
@@ -7199,7 +7164,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * corruptMsg = "Sorry, this game appears to be corrupt.";
 
     IndexEntry * ie = db->idx->FetchEntry (gnum);
-
+       
     if (db->gfile->ReadGame (db->bbuf,ie->GetOffset(),ie->GetLength()) != OK) {
         return errorResult (ti, corruptMsg);
     }
@@ -7876,7 +7841,6 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
 {
-
     if (! base->inUse) {
         Tcl_AppendResult (ti, errMsgNotOpen(ti), NULL);
         return TCL_ERROR;
@@ -7905,13 +7869,13 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     IndexEntry * oldIE = NULL;
     IndexEntry iE;
     iE.Init();
-    
+
     
     if (game->Encode (base->bbuf, &iE) != OK) {
       Tcl_AppendResult (ti, "Error encoding game.", NULL);
       return TCL_ERROR;
     }
-    
+
     // game->Encode computes flags, so we have to re-set flags if replace mode
     if (replaceMode) {
         oldIE = base->idx->FetchEntry (gNumber);
@@ -14707,7 +14671,9 @@ matchGameFlags (IndexEntry * ie, flagT fStdStart, flagT fPromos,
                 flagT fWhiteOp, flagT fBlackOp, flagT fMiddle,
                 flagT fEndgame, flagT fNovelty, flagT fPawn,
                 flagT fTactics, flagT fKside, flagT fQside,
-                flagT fBrill, flagT fBlunder, flagT fUser)
+                flagT fBrill, flagT fBlunder, flagT fUser,
+                flagT fCustom1, flagT fCustom2, flagT fCustom3,
+                flagT fCustom4, flagT fCustom5, flagT fCustom6 )
 {
     bool flag;
 
@@ -14801,6 +14767,36 @@ matchGameFlags (IndexEntry * ie, flagT fStdStart, flagT fPromos,
         return false;
     }
 
+    flag = ie->GetCustomFlag(1);
+    if ((flag && !flag_Yes(fCustom1))  ||  (!flag && !flag_No(fCustom1))) {
+      return false;
+    }
+
+    flag = ie->GetCustomFlag(2);
+    if ((flag && !flag_Yes(fCustom2))  ||  (!flag && !flag_No(fCustom2))) {
+      return false;
+    }
+    
+    flag = ie->GetCustomFlag(3);
+    if ((flag && !flag_Yes(fCustom3))  ||  (!flag && !flag_No(fCustom3))) {
+      return false;
+    }
+    
+    flag = ie->GetCustomFlag(4);
+    if ((flag && !flag_Yes(fCustom4))  ||  (!flag && !flag_No(fCustom4))) {
+      return false;
+    }
+    
+    flag = ie->GetCustomFlag(5);
+    if ((flag && !flag_Yes(fCustom5))  ||  (!flag && !flag_No(fCustom5))) {
+      return false;
+    }
+    
+    flag = ie->GetCustomFlag(6);
+    if ((flag && !flag_Yes(fCustom6))  ||  (!flag && !flag_No(fCustom6))) {
+      return false;
+    }
+    
     // If we reach here, the game matched all flag restrictions.
     return true;
 }
@@ -15013,7 +15009,13 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     flagT fBrilliancy = FLAG_BOTH;
     flagT fBlunder = FLAG_BOTH;
     flagT fUser = FLAG_BOTH;
-
+    flagT fCustom1 = FLAG_BOTH;
+    flagT fCustom2 = FLAG_BOTH;
+    flagT fCustom3 = FLAG_BOTH;
+    flagT fCustom4 = FLAG_BOTH;
+    flagT fCustom5 = FLAG_BOTH;
+    flagT fCustom6 = FLAG_BOTH;
+        
     int pgnTextCount = 0;
     char ** sPgnText = NULL;
 
@@ -15026,7 +15028,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "fAnnotations", "fDelete", "fWhiteOpening", "fBlackOpening",
         "fMiddlegame", "fEndgame", "fNovelty", "fPawnStructure",
         "fTactics", "fKingside", "fQueenside", "fBrilliancy", "fBlunder",
-        "fUser", "pgn", NULL
+        "fUser", "fCustom1" , "fCustom2" , "fCustom3" ,
+        "fCustom4" , "fCustom5" , "fCustom6" , "pgn", NULL
     };
     enum {
         OPT_WHITE, OPT_BLACK, OPT_EVENT, OPT_SITE, OPT_ROUND,
@@ -15037,7 +15040,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         OPT_FANNOTATIONS, OPT_FDELETE, OPT_FWHITEOP, OPT_FBLACKOP,
         OPT_FMIDDLEGAME, OPT_FENDGAME, OPT_FNOVELTY, OPT_FPAWNSTRUCT,
         OPT_FTACTICS, OPT_FKSIDE, OPT_FQSIDE, OPT_FBRILLIANCY, OPT_FBLUNDER,
-        OPT_FUSER, OPT_PGN
+        OPT_FUSER, OPT_FCUSTOM1, OPT_FCUSTOM2, OPT_FCUSTOM3,
+        OPT_FCUSTOM4,  OPT_FCUSTOM5, OPT_FCUSTOM6, OPT_PGN
     };
 
     int arg = 2;
@@ -15165,6 +15169,12 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         case OPT_FQSIDE:       fQside       = strGetFlag (value); break;
         case OPT_FBRILLIANCY:  fBrilliancy  = strGetFlag (value); break;
         case OPT_FBLUNDER:     fBlunder     = strGetFlag (value); break;
+        case OPT_FCUSTOM1:     fCustom1     = strGetFlag (value); break;
+        case OPT_FCUSTOM2:     fCustom2     = strGetFlag (value); break;
+        case OPT_FCUSTOM3:     fCustom3     = strGetFlag (value); break;
+        case OPT_FCUSTOM4:     fCustom4     = strGetFlag (value); break;
+        case OPT_FCUSTOM5:     fCustom5     = strGetFlag (value); break;
+        case OPT_FCUSTOM6:     fCustom6     = strGetFlag (value); break;
         case OPT_FUSER:        fUser        = strGetFlag (value); break;
 
         case OPT_PGN:
@@ -15179,7 +15189,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
     if (arg != argc) { return errorResult (ti, "Odd number of parameters."); }
-
     // Set up White name matches array:
     if (sWhite != NULL  &&  sWhite[0] != 0) {
         char * search = sWhite;
@@ -15485,7 +15494,9 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                             fComments, fVariations, fAnnotations, fDelete,
                             fWhiteOp, fBlackOp, fMiddlegame, fEndgame,
                             fNovelty, fPawnStruct, fTactics, fKside,
-                            fQside, fBrilliancy, fBlunder, fUser)) {
+                            fQside, fBrilliancy, fBlunder, fUser,
+                            fCustom1, fCustom2, fCustom3, fCustom4, fCustom5, fCustom6
+                           )) {
             if (matchGameHeader (ie, db->nb, mWhite, mBlack,
                                  mEvent, mSite, mRound,
                                  dateRange[0], dateRange[1], results,

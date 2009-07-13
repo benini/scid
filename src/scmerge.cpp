@@ -154,7 +154,7 @@ main (int argc, char ** argv)
     GFile * sourceGFile = new GFile;
 
     ByteBuffer * bbuf = new ByteBuffer;
-    bbuf->SetBufferSize (32000);
+    bbuf->SetBufferSize (BBUF_SIZE); //32000
 
     targetIndex->SetFileName (targetFileName);
     targetNameBase->SetFileName (targetFileName);

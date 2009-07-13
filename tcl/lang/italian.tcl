@@ -939,6 +939,8 @@ translate I YearRange {Intervallo di anni:}
 translate I RatingRange {Intervallo di Punteggio:}
 translate I Description {Descrizione}
 translate I Flag {Identificatore}
+# ====== TODO To be translated ======
+translate I CustomFlags {Custom flags}
 translate I DeleteCurrent {Cancella la partita attuale}
 translate I DeleteFilter {Cancella le partite del filtro}
 translate I DeleteAll {Cancella tutte le partite}
@@ -1368,14 +1370,14 @@ translate I SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate I Upgrading {Aggiornamento}
 translate I ConfirmOpenNew {
-Questo e' un vecchio formato (Scid 2) di database che non puo' essere aperto da Scid 3, ma e' stata appena creata una nuova versione nel formato (Scid 3).
+Questo e' un vecchio formato (Scid 3) di database che non puo' essere aperto da Scid 4, ma e' stata appena creata una nuova versione nel formato (Scid 4).
 
 Vuoi aprire la nuova versione del database?
 }
 translate I ConfirmUpgrade {
-Questo e' un vecchio formato (Scid 2) di database. Prima di poter utilizzare il database in Scid 3 va' creata una nuova versione.
+Questo e' un vecchio formato (Scid 3) di database. Prima di poter utilizzare il database in Scid 4 va' creata una nuova versione.
 
-L'aggiornamento creera' una nuova versione del database; non verranno modificati o cancellati i files originali.
+L'aggiornamento creera' una nuova versione del database.
 
 Questo richiedera' del tempo, ma necessita di essere fatto una volta sola. Puoi arrestare il processo se durera' a lungo.
 
@@ -2053,6 +2055,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

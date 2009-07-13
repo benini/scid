@@ -1022,6 +1022,8 @@ translate P YearRange {Data:}
 translate P RatingRange {Ranking:}
 translate P Description {Opis} 
 translate P Flag {Oznaczenie:}
+# ====== TODO To be translated ======
+translate P CustomFlags {Custom flags}
 translate P DeleteCurrent {Usuñ aktualn± partiê}
 translate P DeleteFilter {Usuñ partie z filtra}
 translate P DeleteAll {Usuñ wszystkie partie}
@@ -1488,13 +1490,13 @@ translate P SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate P Upgrading {Konwersja}
 translate P ConfirmOpenNew {
-Ta baza jest zapisana w starym formacie (Scid 2) i nie mo¿e zostaæ otwarta w nowszej wersji
+Ta baza jest zapisana w starym formacie (Scid 3) i nie mo¿e zostaæ otwarta w nowszej wersji
 Scid-a. Baza zosta³a ju¿ automatycznie przekonwertowana do nowego formatu.
 
 Czy otworzyæ now± wersjê bazy?
 }
 translate P ConfirmUpgrade {
-Ta baza jest zapisana w starym formacie (Scid 2) i nie mo¿e zostaæ otwarta w nowszej wersji Scid-a. ¯eby móc otworzyæ bazê, trzeba przekonwertowaæ j± do nowego formatu.
+Ta baza jest zapisana w starym formacie (Scid 3) i nie mo¿e zostaæ otwarta w nowszej wersji Scid-a. ¯eby móc otworzyæ bazê, trzeba przekonwertowaæ j± do nowego formatu.
 
 Konwersja utworzy now± wersjê bazy - stara wersja nie zostanie zmieniona ani usuniêta.
 
@@ -2361,6 +2363,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

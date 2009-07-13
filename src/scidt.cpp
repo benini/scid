@@ -509,7 +509,7 @@ compactGameFile ()
 
     bool treefileOutOfDate = false;
     ByteBuffer * bbuf = new ByteBuffer;
-    bbuf->SetBufferSize (32000);
+    bbuf->SetBufferSize (BBUF_SIZE); // 32000
     gameNumberT newNumGames = 0;
     uint oldNumGames = idxOld->GetNumGames();
     err = OK;

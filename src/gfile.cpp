@@ -31,8 +31,8 @@ clearBlockData (gfBlockT * blk)
 {
     blk->length = 0;
     register byte * b = blk->data;
-//     for (register uint i = GF_BLOCKSIZE; i > 0; i--, b++) { *b = 0; }
     memset( b, 0, GF_BLOCKSIZE );
+//     for (register uint i = GF_BLOCKSIZE; i > 0; i--, b++) { *b = 0; } 
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -250,58 +250,25 @@ GFile::Fetch (gfBlockT * blk, uint blkNum)
 //      actually copied into the bytebuffer, which would be slower
 //      and a waste of time if the bytebuffer is not going to be
 //      modified.
-//
 errorT
-GFile::ReadGame (ByteBuffer * bb, uint offset, uint length)
+    GFile::ReadGame (ByteBuffer * bb, uint offset, uint length)
 {
-    ASSERT (bb != NULL);
-    if (Handle == NULL) { return ERROR_FileNotOpen; }
-    int blockNum = (offset / GF_BLOCKSIZE);
-    int endBlockNum = (offset + length - 1) / GF_BLOCKSIZE;
-
-// Scid 3.6.23 : the increase of GF_BLOCKSIZE was an error, so now use Pocket PC code to handle
-// the case of games overlapping blocks
-// #ifdef WINCE
-    if ( (endBlockNum != blockNum && endBlockNum != (blockNum+1) )  ||  (uint)blockNum >= NumBlocks) {
-        return ERROR_CorruptData;
+  ASSERT (bb != NULL);
+  if (Handle == NULL) { return ERROR_FileNotOpen; }
+  int blockNum = (offset / GF_BLOCKSIZE);
+  int endBlockNum = (offset + length - 1) / GF_BLOCKSIZE;
+  if (endBlockNum != blockNum  ||  (uint)blockNum >= NumBlocks) {
+    return ERROR_CorruptData;
+  }
+  if (CurrentBlock->blockNum != blockNum) {
+    if (Fetch (CurrentBlock, blockNum) != OK) {
+      return ERROR_FileRead;
     }
-    if (endBlockNum == blockNum+1) { // block overlap
-      bb->RemoveExternal();
-      if (CurrentBlock->blockNum != blockNum) {
-          if (Fetch (CurrentBlock, blockNum) != OK) {
-              return ERROR_FileRead;
-          }
-      }
-      uint end = (blockNum+1)*GF_BLOCKSIZE-offset;
-      bb->CopyFrom(&(CurrentBlock->data[offset % GF_BLOCKSIZE]), end);
-
-      if (Fetch (CurrentBlock, blockNum+1) != OK) {
-           return ERROR_FileRead;
-      }
-      bb->CopyFrom(&(CurrentBlock->data[0]), length - end , end);
-
-    } else { // no block overlap
-      if (CurrentBlock->blockNum != blockNum) {
-          if (Fetch (CurrentBlock, blockNum) != OK) {
-              return ERROR_FileRead;
-          }
-      }
-      bb->ProvideExternal (&(CurrentBlock->data[offset % GF_BLOCKSIZE]), length);
-    }
-// #else
-//     if (endBlockNum != blockNum  ||  (uint)blockNum >= NumBlocks) {
-//         return ERROR_CorruptData;
-//     }
-//     if (CurrentBlock->blockNum != blockNum) {
-//         if (Fetch (CurrentBlock, blockNum) != OK) {
-//             return ERROR_FileRead;
-//         }
-//     }
-//     bb->ProvideExternal (&(CurrentBlock->data[offset % GF_BLOCKSIZE]), length);
-// #endif
-    return OK;
+  }
+  bb->ProvideExternal (&(CurrentBlock->data[offset % GF_BLOCKSIZE]),
+                         length);
+  return OK;
 }
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GFile::AddGame():
 //      Add a game record to the file. It is added to the end of the

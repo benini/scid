@@ -12,7 +12,7 @@ namespace eval ::maint {}
 ################################################################################
 proc ::maint::fixCorruptedBase {} {
   set ftype {
-    { "Scid databases" {".si3" ".si"} }
+    { "Scid databases" {".si4"} }
   }
   set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
   if {$fName == ""} { return }
@@ -67,7 +67,7 @@ proc ::maint::SetGameFlags {flag type value} {
 }
 
 set maintFlag W
-set maintFlaglist {W B M E N P T Q K ! ? U}
+set maintFlaglist {W B M E N P T Q K ! ? U 1 2 3 4 5 6}
 array set maintFlags {
   W WhiteOpFlag
   B BlackOpFlag
@@ -81,6 +81,12 @@ array set maintFlags {
   ! BrilliancyFlag
   ? BlunderFlag
   U UserFlag
+  1 CustomFlag1
+  2 CustomFlag2
+  3 CustomFlag3
+  4 CustomFlag4
+  5 CustomFlag5
+  6 CustomFlag6
 }
 
 
@@ -125,6 +131,7 @@ proc ::maint::OpenClose {} {
   ttk::label $w.title.dates -textvar ::tr(YearRange) -font $font
   ttk::label $w.title.ratings -textvar ::tr(RatingRange) -font $font
   ttk::button $w.title.vicon -command {changeBaseType [sc_base current]}
+  
   ttk::frame $w.title.desc
   ttk::label $w.title.desc.lab -text $::tr(Description:) -font font_SmallBold
   ttk::label $w.title.desc.text -width 1 -font $font -relief sunken -anchor w
@@ -133,6 +140,20 @@ proc ::maint::OpenClose {} {
   pack $w.title.desc.edit -side right -padx 2
   pack $w.title.desc.text -side left -fill x -expand yes
   
+  # Custom flags
+  ttk::frame $w.title.cust
+  ttk::label $w.title.cust.lab -text "[::tr CustomFlags]:" -font font_SmallBold
+  for {set i 1} { $i < 7} { incr i} {
+    set desc [sc_game flag $i description]
+    ttk::label $w.title.cust.text$i -width 8 -font $font -relief sunken -anchor w -text $desc
+  }
+  
+  ttk::button $w.title.cust.edit -text "[tr Edit]..." -style Small.TButton -command ::maint::ChangeCustomDescription
+  pack $w.title.cust.lab -side left
+  pack $w.title.cust.edit -side right -padx 2
+  for {set i 1} { $i < 7} { incr i} {
+    pack $w.title.cust.text$i -side left -fill x -expand yes
+  }
   foreach name {name games delete mark filter dates ratings} {
     ttk::label $w.title.v$name -text "0" -font $font
   }
@@ -151,6 +172,8 @@ proc ::maint::OpenClose {} {
   $w.title.vname configure -font font_Bold
   $w.title.vgames configure -font font_SmallBold
   grid $w.title.desc -row $row -column 0 -columnspan 5 -sticky we
+  incr row
+  grid $w.title.cust -row $row -column 0 -columnspan 5 -sticky we
   
   foreach grid {title delete mark spell db} cols {5 3 3 4 3} {
     for {set i 0} {$i < $cols} {incr i} {
@@ -161,10 +184,19 @@ proc ::maint::OpenClose {} {
   ttk::label $w.delete.title -textvar ::tr(DeleteFlag) -font $bold
   ttk::menubutton $w.mark.title -menu $w.mark.title.m ;# -indicatoron 1 -relief raised -font $bold
   menu $w.mark.title.m -font $font
-  foreach i $maintFlaglist  {
-    $w.mark.title.m add command -label "$::tr($maintFlags($i)) ($i)" \
-        -command "set maintFlag $i; ::maint::Refresh"
+  
+  set i 0
+  foreach flag $maintFlaglist  {
+    if {$i < 12} {
+      $w.mark.title.m add command -label "$::tr($maintFlags($flag)) ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
+    } else  {
+      set tmp [sc_game flag $flag description]
+      if {$tmp == "" } { set tmp $maintFlags($flag) }
+      $w.mark.title.m add command -label "$tmp ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
+    }
+    incr i
   }
+  
   foreach flag {delete mark} on {Delete Mark} off {Undelete Unmark} {
     foreach b {Current Filter All} {
       ttk::button $w.$flag.on$b -textvar "::tr($on$b)" -style Small.TButton -command "::maint::SetGameFlags $flag [string tolower $b] 1"
@@ -211,7 +243,7 @@ proc ::maint::OpenClose {} {
   ttk::button $w.db.cleaner -style Small.TButton -textvar ::tr(Cleaner...) -command cleanerWin
   ttk::button $w.db.autoload -style Small.TButton -textvar ::tr(AutoloadGame...) -command ::maint::SetAutoloadGame
   ttk::button $w.db.strip -style Small.TButton -textvar ::tr(StripTags...) -command stripTags
-
+  
   foreach i {eco compact sort elo dups cleaner autoload strip} {
     $w.db.$i configure -style Small.TButton
   }
@@ -258,7 +290,62 @@ proc ::maint::ChangeBaseDescription {} {
   wm resizable $w 0 0
   catch {grab $w}
 }
+################################################################################
+#  Change custom flags description
+################################################################################
+proc ::maint::ChangeCustomDescription {} {
+  set w .bcustom
+  if {[winfo exists $w]} { return }
+  toplevel $w
+  wm title $w "Scid: $::tr(CustomFlags): [file tail [sc_base filename]]"
+  ttk::frame $w.a
+  ttk::label $w.a.lb -text [::tr CustomFlags]
+  grid $w.a.lb -column 0 -row 0 -columnspan 12
+  set col 0
+  for {set i 1} {$i <7} {incr i} {
+    ttk::label $w.a.lab$i -text "$i:"
+    ttk::entry $w.a.e$i -width 8
+    set desc [sc_game flag $i description]
+    $w.a.e$i insert end $desc
+    grid $w.a.lab$i -column $col -row 1
+    incr col
+    grid $w.a.e$i -column $col -row 1
+    incr col
+  }
+  ttk::frame $w.b
+  ttk::button $w.b.ok -text OK -command {
+    for {set i 1} {$i <7} {incr i} {
+      set desc [ string range [.bcustom.a.e$i get] 0 7 ]
+      sc_game flag $i setdescription $desc
+    }
 
+    grab release .bcustom
+    destroy .bcustom
+    
+    # update the drop down menu of maint window and the menu of GameInfo window
+    for {set idx 12} {$idx < 18} {incr idx} {
+      set flag [ lindex $::maintFlaglist $idx]
+      set tmp [sc_game flag $flag description]
+      if {$tmp == "" } { set tmp $::maintFlags($flag) }
+      .maintWin.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
+      .main.gameInfo.menu.mark entryconfigure $i -label "$tmp ($flag)"      
+    }
+    
+    # update the custom flags labels
+    for {set i 1} { $i < 7} { incr i} {
+      set desc [sc_game flag $i description]
+      .maintWin.title.cust.text$i configure -text $desc
+    }
+    
+    # ::maint::Refresh
+  }
+  ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+  pack $w.a -side top -fill x
+  pack $w.b -side bottom -fill x
+  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
+  wm resizable $w 0 0
+  catch {grab $w}
+}
 
 proc ::maint::Refresh {} {
   global maintFlag maintFlags
@@ -284,7 +371,15 @@ proc ::maint::Refresh {} {
   $w.title.vratings configure \
       -text "[lindex $ratings 0]-[lindex $ratings 1] ([lindex $ratings 2])"
   
-  set flagname "$::tr(Flag): $::tr($maintFlags($maintFlag)) ($maintFlag)"
+  if { [lsearch { 1 2 3 4 5 6} $maintFlag ] != -1 } {
+    set tmp [sc_game flag $maintFlag description]
+    if {$tmp == "" } { set tmp $maintFlags($maintFlag) }
+  } else  {
+    set tmp $::tr($maintFlags($maintFlag))
+  }
+  
+  set flagname "$::tr(Flag): $tmp ($maintFlag)"
+  
   $w.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
   $w.title.desc.text configure -text [sc_base description]

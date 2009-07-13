@@ -4,11 +4,8 @@
 |                                                           |
  ===========================================================
 
-V4 :
-regarder les tailles de buffer des autres utilitaires (setbufsize)
-faire conversion v3 -> v4 (sc_base_upgrade)
-terminer userFlagDesc et utilisation des 6 bits user
-
+arrêt brutal correction de noms
+       
  ===========================================================
 |                                                           |
 |                          BUGS                             |

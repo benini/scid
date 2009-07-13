@@ -26,10 +26,10 @@
 #ifdef WINCE
 #define GF_BLOCKSIZE  65536
 #else
-#define GF_BLOCKSIZE  32768 //524288
+#define GF_BLOCKSIZE  131072 //524288
 #endif
-const char OLD_GFILE_SUFFIX [] = ".sg";
-const char GFILE_SUFFIX [] = ".sg3";
+// const char OLD_GFILE_SUFFIX [] = ".sg3";
+const char GFILE_SUFFIX [] = ".sg4";
 
 
 // The block structure type:
@@ -92,9 +92,9 @@ class GFile
     errorT    Open (const char * filename, fileModeT fmode) {
         return Open (filename, fmode, GFILE_SUFFIX);
     }
-    errorT    OpenOld (const char * filename, fileModeT fmode) {
-        return Open (filename, fmode, OLD_GFILE_SUFFIX);
-    }
+//     errorT    OpenOld (const char * filename, fileModeT fmode) {
+//         return Open (filename, fmode, OLD_GFILE_SUFFIX);
+//     }
     errorT    Close ();
     errorT    Fetch (gfBlockT * blk, uint blockNum);
     errorT    Flush (gfBlockT * blk);

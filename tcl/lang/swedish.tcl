@@ -1017,6 +1017,8 @@ translate W YearRange {Tidsperiod:}
 translate W RatingRange {Ratingintervall:}
 translate W Description {Beskrivning} 
 translate W Flag {Flagga}
+# ====== TODO To be translated ======
+translate W CustomFlags {Custom flags}
 translate W DeleteCurrent {Ta bort aktuellt parti}
 translate W DeleteFilter {Ta bort partierna i filtret}
 translate W DeleteAll {Ta bort alla partier}
@@ -1484,12 +1486,12 @@ translate W SoundsAnnounceBack {Annonsera drag när du går fram eller tillbaka et
 # Upgrading databases:
 translate W Upgrading {Uppdaterar}
 translate W ConfirmOpenNew {
-Denna databas är i ett gammal format (Scid 2) och kan inte öppnas i Scid 3, men en databas i det nya formatet (Scid 3) har redan skapats.
+Denna databas är i ett gammal format (Scid 3) och kan inte öppnas i Scid 4, men en databas i det nya formatet (Scid 4) har redan skapats.
 
 Vill du öppna den senare databasen istället?
 }
 translate W ConfirmUpgrade {
-Denna databas är i ett gammal format (Scid 2). En databas i det nyare formatet måste skapas innan den kan användas i Scid 3.
+Denna databas är i ett gammal format (Scid 3). En databas i det nyare formatet måste skapas innan den kan användas i Scid 4.
 
 Genom att uppdatera skapas en databas i det nya formatet med samma innehåll; uppdateringen ändrar ingenting i den gamla databasen.
 
@@ -7151,6 +7153,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

@@ -786,10 +786,13 @@ scid-3.7.3
 -----------
 Maintenance release of Scid 3.7.2 fixing a bug in search position
 
-[xxx 2009 ]
-
-scid-3.7.4
------------
+ =============================================================================
+|                                                                             |
+|                              scid-4.0                                       |
+|                                                                             |
+|                           [August 2009]                                     |
+|                                                                             |
+ =============================================================================
 - Fixes :
 	* serious game play when use book is checked and book name is empty leads to crash (thanks to Benigno Hernández)
 	* Check for engines allowed in eMail games caused an exception (noENG not set)
@@ -813,7 +816,12 @@ scid-3.7.4
 	* cleaned up code for Scid versions 2.x (don't think anybody still uses it)
 	* Scid no longer crashes when importing a very long game (current limit is still 32 kB)
 	* Code optimisation in I/O and memory copies. For example stripping PGN Tags is 3 times faster 
+	* Right mouse button takes back a move. It used to also delete the last move of a line. This is inhibited now as there is no possible undo, and the user can have triggered this function by error. 
 - Features
+	* New base format :
+		- import games with a length (encoded) up to 128 kB
+		- 6 new user customizable flags
+		- any base opened in version 3 will be automatically converted to new format in a few seconds (.si3 file is converted to .si4 and then removed, .sg3 and sn3 files are renamed respectively to .sg4 and .sn4)
 	* NAG support : add symbolic NAGs using UTF-8 symbols
 	* Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game
 	* Tree mask : 

@@ -21,6 +21,7 @@
 #include "pgnparse.h"
 #include "naglatex.h"
 #include "nagtext.h"
+// #include "tkscid.h"
 
 #include "bytebuf.h"
 #include "textbuf.h"
@@ -1325,8 +1326,9 @@ Game::TruncateStart (void)
     FirstMove->next = CurrentMove;
     CurrentMove->prev = FirstMove;
     TextBuffer tb;
-    tb.SetBufferSize (20000);
-    tb.SetWrapColumn (20000);
+    // 20000 does not seem to be enough with the capacity to handle long games (Scid 4.0)
+    tb.SetBufferSize (TBUF_SIZE); // 20000
+    tb.SetWrapColumn (TBUF_SIZE); // 20000
     gameFormatT gfmt = PgnFormat;
     SetPgnFormat (PGN_FORMAT_Plain);
     // we need to switch off short header style or PGN parsing will not work
@@ -3637,17 +3639,6 @@ encodeTags (ByteBuffer * buf, tagT * tagList, uint numTags)
     uint length;
     for (uint i=0; i < numTags; i++) {
         char * tag = tagList[i].tag;
-//         char * value = tagList[i].value;
-        // Try to encode "EventDate" tags compactly in binary format:
-        // (Obsolete in Scid 3.x; EventDate is now stored in the index)
-/*        if (strEqual (tag, "EventDate")  &&  date_ValidString (value)) {
-            dateT date = date_EncodeFromString (value);
-            buf->PutByte (255);
-            buf->PutByte ((date >> 16) & 255);
-            buf->PutByte ((date >> 8) & 255);
-            buf->PutByte (date & 255);
-            continue;
-    }*/
         uint tagnum = 1;
         const char ** common = commonTags;
         while (*common != NULL) {
@@ -3906,8 +3897,8 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         }
         ie->SetStoredLineCode (storedLineCode);
     }
-
-    // as each game entry length is coded on 16 bits, and game must fit in a block
+    
+    // as each game entry length is coded on 17 bits, and game must fit in a block
     // return an error if there is an overflow
     if (buf->GetByteCount() > MAX_GAME_LENGTH || buf->GetByteCount() > GF_BLOCKSIZE) {
       err = ERROR_GameFull;

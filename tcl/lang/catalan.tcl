@@ -894,6 +894,8 @@ translate K YearRange {Rang d'anys:}
 translate K RatingRange {Rang d'Elo:}
 translate K Description {Descripció}
 translate K Flag {Marca}
+# ====== TODO To be translated ======
+translate K CustomFlags {Custom flags}
 translate K DeleteCurrent {Esborrar partida actual}
 translate K DeleteFilter {Esborrar partides filtrades}
 translate K DeleteAll {Esborrar totes les partides}
@@ -1327,14 +1329,14 @@ translate K SoundsAnnounceBack {Anunciar jugada quan rectifiquem o retrocedim un
 # Upgrading databases:
 translate K Upgrading {Actualització}
 translate K ConfirmOpenNew {
-Aquest es un format de base de dades antico (Scid 2) que no es pot obrir amb Scid 3, pero ja s'ha creat una versión en el format nou (Scid 3).
+Aquest es un format de base de dades antico (Scid 3) que no es pot obrir amb Scid 4, pero ja s'ha creat una versión en el format nou (Scid 4).
 
 Vols abrir la versió de format nou de la base de dades?
 }
 translate K ConfirmUpgrade {
-Aquesta es una base de dades en un format antic (Scid 2). S'ha de crear una versió amb el nou format abans de poder utilitzar-la a Scid 3.
+Aquesta es una base de dades en un format antic (Scid 3). S'ha de crear una versió amb el nou format abans de poder utilitzar-la a Scid 4.
 
-L'actualització crearà una nova versió de la base de dades; no es corregiran ni s'esborraran els arxius originals.
+L'actualització crearà una nova versió de la base de dades.
 
 Pot trigar temps, pero només cal fer-ho un cop. Pots cancelar si triga massa temps.
 
@@ -1700,6 +1702,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

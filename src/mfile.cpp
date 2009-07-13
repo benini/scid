@@ -271,6 +271,7 @@ MFile::Close ()
     return (result == 0 ? OK : ERROR);
 }
 
+
 errorT
 MFile::WriteNBytes (const char * str, uint length)
 {
@@ -281,7 +282,8 @@ MFile::WriteNBytes (const char * str, uint length)
 //         err = WriteOneByte (*str);
 //         str++;
 //     }
-
+//     return err;
+    
     if (Type == MFILE_MEMORY) {
       while (length-- > 0) {
         if (Location >= Capacity) { Extend(); }

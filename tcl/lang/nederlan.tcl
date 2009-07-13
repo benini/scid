@@ -907,6 +907,8 @@ translate N YearRange {JaarBereik:}
 translate N RatingRange {EloBereik (laag/hoog):}
 translate N Description {Beschrijving} ;
 translate N Flag {Markering}
+# ====== TODO To be translated ======
+translate N CustomFlags {Custom flags}
 translate N DeleteCurrent {Wis huidige partij}
 translate N DeleteFilter {Wis geselecteerde partijen}
 translate N DeleteAll {Wis alle partijen}
@@ -1342,14 +1344,14 @@ translate N SoundsAnnounceBack {Kondig  aan als één zet terug gedaan of genomen 
 # Upgrading databases:
 translate N Upgrading {Bijwerken}
 translate N ConfirmOpenNew {
-Dit is een oud formaat (Scid 2) database welke in Scid 3 niet kan worden geopend. Maar een nieuwe versie (Scid 3) is reeds aangemaakt.
+Dit is een oud formaat (Scid 3) database welke in Scid 4 niet kan worden geopend. Maar een nieuwe versie (Scid 4) is reeds aangemaakt.
 
 Wilt u de database in het nieuwe formaat openen?
 }
 translate N ConfirmUpgrade {
-Dit is een oud formaat (Scid 2) database. Een versie in het nieuwe formaat moet worden gemaakt, voordat het in Scid 3 kan worden gebruikt.
+Dit is een oud formaat (Scid 3) database. Een versie in het nieuwe formaat moet worden gemaakt, voordat het in Scid 4 kan worden gebruikt.
 
-Bijwerken creëert een nieuwe versie van de database. De originele bestanden blijven bestaan en worden niet gewijzigd.
+Bijwerken creëert een nieuwe versie van de database.
 
 Dit kan enige tijd duren, maar het hoeft slechts eenmalig plaats te vinden. U kunt het afbreken indien het te lang duurt.
 
@@ -1877,6 +1879,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

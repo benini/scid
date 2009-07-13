@@ -1015,6 +1015,8 @@ translate Y YearRange {Raspon godina:}
 translate Y RatingRange {Raspon rejtinga:}
 translate Y Description {Description} ;# ***
 translate Y Flag {Oznaka}
+# ====== TODO To be translated ======
+translate Y CustomFlags {Custom flags}
 translate Y DeleteCurrent {Obri¹i tekuæu partiju}
 translate Y DeleteFilter {Obri¹i filtrirane partije}
 translate Y DeleteAll {Obri¹i sve partije}
@@ -1480,14 +1482,14 @@ translate Y SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate Y Upgrading {Unapreðivanje}
 translate Y ConfirmOpenNew {
-Ovo je baza u starom formatu (Scid 2), koju ne mo¾e da otvori Scid 3, veæ je kreirana verzija u novom formatu (Scid 3).
+Ovo je baza u starom formatu (Scid 3), koju ne mo¾e da otvori Scid 4, veæ je kreirana verzija u novom formatu (Scid 4).
 
 Da li ¾elite da otvorite verziju baze u novom formatu?
 }
 translate Y ConfirmUpgrade {
-Ovo je baza u starom formatu (Scid 2). Verzija baze u novom formatu mora biti kreirana pre kori¹æenja u Scid-u 3.
+Ovo je baza u starom formatu (Scid 3). Verzija baze u novom formatu mora biti kreirana pre kori¹æenja u Scid-u 4.
 
-Unapreðivanjem æe se kreirati nova verzija baze; neæe se uklanjati originalni fajlovi.
+Unapreðivanjem æe se kreirati nova verzija baze.
 
 Ovo mo¾e potrajati, ali treba da se uradi samo jednom. Mo¾ete prekinuti ukoliko bude predugo trajalo.
 
@@ -2134,6 +2136,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

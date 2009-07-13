@@ -144,7 +144,7 @@ namespace eval fics {
     update
     # First handle the case of a network down
     if { [catch {set sockChan [socket -async $::fics::server $::fics::port_fics]} err]} {
-      tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
+      tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent .ficsConfig.f
       return
     }
     
@@ -156,7 +156,7 @@ namespace eval fics {
       
       if { [catch {set peer [ fconfigure $sockChan -peername ]} err]} {
         if {$i == $timeOut} {
-          tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent $w.f
+          tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent .ficsConfig.f
           return
         }
       } else  {

@@ -871,6 +871,8 @@ translate F YearRange {Années:}
 translate F RatingRange {Classements:}
 translate F Description {Description}
 translate F Flag {Drapeau}
+# ====== TODO To be translated ======
+translate F CustomFlags {Custom flags}
 translate F DeleteCurrent {Effacer la partie courante}
 translate F DeleteFilter {Effacer le filtre de parties}
 translate F DeleteAll {Effacer toutes les parties}
@@ -1304,14 +1306,14 @@ translate F SoundsAnnounceBack {Annoncer quand retour arrière d'un coup}
 # Upgrading databases:
 translate F Upgrading {Mise à jour}
 translate F ConfirmOpenNew {
-Ceci est une base de données à l'ancien format (Scid 2) qui ne peut être ouverte dans Scid 3, mais une version au nouveau format (Scid 3) a déjà été crée.
+Ceci est une base de données à l'ancien format (Scid 3) qui ne peut être ouverte dans Scid 4, mais une version au nouveau format (Scid 4) a déjà été crée.
 
 Voulez vous ouvrir le nouveau format de la base de données?
 }
 translate F ConfirmUpgrade {
-Ceci est une base de données à l'ancien format (Scid 2). Une version de la base de données au nouveau format doit être créée avant de pouvoir être utilisée dans Scid 3.
+Ceci est une base de données à l'ancien format (Scid 3). Une version de la base de données au nouveau format doit être créée avant de pouvoir être utilisée dans Scid 4.
 
-Mettre à jour va créer une nouvelle version de la base de données; les fichiers originaux ne seront pas édités ou effacés.
+Mettre à jour va créer une nouvelle version de la base de données; les fichiers originaux seront effacés.
 
 Cela peut prendre un peu de temps, mais il n'est nécessaire de le faire qu'une fois. Vous pouvez abandonner si cela dure trop longtemps.
 
@@ -1846,6 +1848,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

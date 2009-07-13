@@ -1022,6 +1022,8 @@ translate B YearRange {Faixa de Anos:}
 translate B RatingRange {Faixa de Rating:}
 translate B Description {Description} ;# ***
 translate B Flag {Sinalizador}
+# ====== TODO To be translated ======
+translate B CustomFlags {Custom flags}
 translate B DeleteCurrent {Deletar jogo corrente}
 translate B DeleteFilter {Deletar jogos filtrados}
 translate B DeleteAll {Deletar todos os jogos}
@@ -1485,12 +1487,12 @@ translate B SoundsAnnounceBack {Announce when retracting or moving back one move
 # Upgrading databases:
 translate B Upgrading {Atualizando}
 translate B ConfirmOpenNew {
-Esta e uma base em formato antigo (Scid 2) que nao pode ser aberta pelo Scid 3, mas uma versao no novo formato (Scid 3) ja foi criada.
+Esta e uma base em formato antigo (Scid 3) que nao pode ser aberta pelo Scid 4, mas uma versao no novo formato (Scid 4) ja foi criada.
 
-Voce quer abrir a nova versao da base Scid 3?
+Voce quer abrir a nova versao da base Scid 4?
 }
 translate B ConfirmUpgrade {
-Esta e uma base em formato antigo (Scid 2). Uma versao da base no novo formato deve ser criada antes de poder ser usada no Scid 3.
+Esta e uma base em formato antigo (Scid 3). Uma versao da base no novo formato deve ser criada antes de poder ser usada no Scid 4.
 
 A atualizacao criara uma nova versao da base; isto nao altera nem remove os registros originais.
 
@@ -2140,6 +2142,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

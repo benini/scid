@@ -250,12 +250,12 @@ void
 ByteBuffer::CopyTo (byte * target)
 {
     ASSERT (Current != NULL  &&  target != NULL);
-    memcpy( target , Buffer, ByteCount);
-
 //     register byte * from, * to;
 //     register uint i = ByteCount;
 //     from = Buffer;
 //     to = target;
+    memcpy( target , Buffer, ByteCount);
+    
 //     while (i) {
 //         *to++ = *from++;
 //         i--;
@@ -272,11 +272,11 @@ ByteBuffer::CopyFrom (byte * source, uint length)
     ASSERT (BufferSize >= length);
     Current = Buffer;
     ReadPos = 0;
-    memcpy( Buffer , source, ByteCount);
-
 //     register byte * from, * to;
 //     register uint i = length;
 //     from = source; to = Buffer;
+    
+    memcpy( Buffer , source, ByteCount);
 //     while (i) {
 //         *to++ = *from++;
 //         i--;
