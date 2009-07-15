@@ -794,6 +794,7 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 |                                                                             |
  =============================================================================
 - Fixes :
+---------
 	* serious game play when use book is checked and book name is empty leads to crash (thanks to Benigno Hernández)
 	* Check for engines allowed in eMail games caused an exception (noENG not set)
 	* Internet play (FICS) : the first offer not displayed on the graph
@@ -817,7 +818,9 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* Scid no longer crashes when importing a very long game (current limit is still 32 kB)
 	* Code optimisation in I/O and memory copies. For example stripping PGN Tags is 3 times faster 
 	* Right mouse button takes back a move. It used to also delete the last move of a line. This is inhibited now as there is no possible undo, and the user can have triggered this function by error. 
-- Features
+	* Game export to HTML + Javascript : export comment before first move, fixed a problem when exporting some variations (which were stripped)
+- Features :
+------------
 	* New base format :
 		- import games with a length (encoded) up to 128 kB
 		- 6 new user customizable flags
@@ -837,12 +840,13 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* new feature to review game. The user guesses moves played from one side of a played game.
 	* game browser : automatically flip board if the main board is flipped
 	* updated Scid icon (thanks to Israel Chauca Fuentes)
-- Correspondence Chess:
-	* Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
-	* Do not show games where the player does not have the move (Xfcc only)
-	* Add GUI to set sort criteria
-	* Implement sort by "time per move till next TC" including the next timing period (Suggested by Dhanish)
-	* Add Edit menu to cc window
+  * Correspondence Chess:
+		- Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
+		- Do not show games where the player does not have the move (Xfcc only)
+		- Add GUI to set sort criteria
+		- Implement sort by "time per move till next TC" including the next timing period (Suggested by Dhanish)
+		- Add Edit menu to cc window
 - Translations:
+---------------
 	* updated spanish translation (thanks to Benigno Hernández)
 	* updated swedish translation (thanks to Hans Eriksson)

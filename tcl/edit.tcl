@@ -354,7 +354,9 @@ proc setupBoard {} {
   foreach i {p n b r q k} {
     foreach color {w b} value "[string toupper $i] $i" {
       radiobutton $sl.$color.$i -image $color$i$setupboardSize -indicatoron 0 \
-          -variable pastePiece -value $value -activebackground $highcolor
+          -variable pastePiece -value $value -activebackground $highcolor    
+      # ttk::radiobutton $sl.$color.$i -image $color$i$setupboardSize \
+               # -variable pastePiece -value $value
       # -relief raised -activebackground grey75 -selectcolor rosybrown
       pack $sl.$color.$i -side left ;# -expand yes -fill x -padx 5
     }

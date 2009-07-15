@@ -687,6 +687,7 @@ namespace eval html {
   }
   ################################################################################
   proc toHtml { dt game dirtarget prefix {players ""} {this_players ""} {event ""} {eco "ECO"} {result "*"} {date ""} } {
+    
     if { $game != -1 } {
       set f [open "[file join $dirtarget $prefix]_${game}.html" w]
     } else  {
@@ -759,7 +760,7 @@ namespace eval html {
     # link moves
     set prevdepth 0
     set prevvarnumber 0
-    for {set i 1} {$i<[llength $dt]} {incr i} {
+    for {set i 0} {$i<[llength $dt]} {incr i} {
       array set elt [lindex $dt $i]
       if {$elt(depth) == 0} {
         set class "V0"
@@ -861,29 +862,34 @@ namespace eval html {
   }
   
   ################################################################################
-  proc parseGame { {prev -2} {dots 0} } {
+  proc parseGame { {prev -2} } {
     global ::html::data ::html::idx
     
+    set already_written 0
+    
     while {1} {
-      recordElt $prev $dots
+      if { ! $already_written } {
+        recordElt $prev
+      }
       set prev -2
-      set dots 0
+      set already_written 0
       
       # handle variants
       if {[sc_var count]>0} {
         if { ![sc_pos isAt vend]} {
           sc_move forward
           recordElt
-          set lastIdx $idx
           sc_move back
+          set lastIdx $idx
+          set already_written 1
         }
-        set dots 1
         for {set v 0} {$v<[sc_var count]} {incr v} {
           sc_var enter $v
-          parseGame $idx $dots
+          # in order to get the comment before first move
+          sc_move back
+          parseGame $idx
           sc_var exit
         }
-        if { ![sc_pos isAt vend] } { sc_move forward }
         #update the "next" token
         array set elt [lindex $data $lastIdx]
         set elt(next) [expr $idx + 1]
@@ -897,7 +903,7 @@ namespace eval html {
     }
   }
   ################################################################################
-  proc recordElt { {prev -2} {dots 0} } {
+  proc recordElt { {prev -2} } {
     global ::html::data ::html::idx
     
     array set elt {}
@@ -935,14 +941,26 @@ namespace eval html {
     set m [sc_game info previousMove]
     set mn [sc_pos moveNumber]
     
-    if {[sc_pos side] == "black"} {
+    set dots 0
+    set elt(move) ""
+    if {[sc_pos side] == "black" && $m != ""} {
       set elt(move) "$mn.$m"
     } else {
-      if {$dots} {
+      
+      if {! [sc_pos isAt vstart] } {
+        sc_move back
+        if {  [sc_pos isAt vstart] ||  [sc_pos getComment] != ""} {
+          set dots 1
+        }
+        sc_move forward
+      }
+      
+      if {$dots && $m != ""} {
         set elt(move) "[expr $mn -1]. ... $m"
       } else  {
         set elt(move) $m
       }
+      
     }
     
     lappend ::html::data [array get elt]

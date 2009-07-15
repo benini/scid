@@ -7164,7 +7164,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * corruptMsg = "Sorry, this game appears to be corrupt.";
 
     IndexEntry * ie = db->idx->FetchEntry (gnum);
-       
+//     printf("length = %d\n", ie->GetLength());
     if (db->gfile->ReadGame (db->bbuf,ie->GetOffset(),ie->GetLength()) != OK) {
         return errorResult (ti, corruptMsg);
     }

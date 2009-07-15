@@ -35,7 +35,7 @@ exec `dirname $0`/tkscid "$0" "$@"
 
 # Alter the version if any patches have been made to the Tcl code only:
 set scidVersion "4.0 DEVEL"
-set scidVersionDate "xxx 2009"
+set scidVersionDate "August 2009"
 
 package require Tcl 8.5
 package require Tk  8.5
