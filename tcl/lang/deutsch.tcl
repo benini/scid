@@ -898,8 +898,7 @@ translate D YearRange {Jahr-Spanne:}
 translate D RatingRange {Elo-Spanne:}
 translate D Description {Beschreibung}
 translate D Flag {Markierung}
-# ====== TODO To be translated ======
-translate D CustomFlags {Custom flags}
+translate D CustomFlags {Benutzerdefinierte Markierungen}
 translate D DeleteCurrent {Lösche aktuelle Partie}
 translate D DeleteFilter {Lösche Partien im Filter}
 translate D DeleteAll {Lösche alle Partien}
@@ -1556,11 +1555,9 @@ translate D KingsIndianMainLine {Königsinsisch, Hauptvariante}
 translate D ConfigureFics {FICS Konfigurieren}
 translate D FICSGuest {Gastlogin}
 translate D FICSServerPort {Serverport}
-# ====== TODO To be translated ======
-translate D FICSServerAddress {IP Address}
-# ====== TODO To be translated ======
-translate D FICSRefresh {Refresh}
-translate D FICSTimesealPort {Timesealport}
+translate D FICSServerAddress {IP Adresse}
+translate D FICSRefresh {Aktualisieren}
+translate D FICSTimesealPort {Timeseal Port}
 translate D FICSSilence {Konsolenfilter}
 translate D FICSOffers {Herausforderungen}
 translate D FICSConsole {Konsole}

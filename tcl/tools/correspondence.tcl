@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.74 2009/06/18 18:15:54 arwagner Exp $
+### $Id: correspondence.tcl,v 1.75 2009/07/15 18:16:50 arwagner Exp $
 ###
-### Last change: <Thu, 2009/06/18 20:12:42 arwagner ingata>
+### Last change: <Wed, 2009/07/15 20:06:29 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1171,7 +1171,7 @@ namespace eval CorrespondenceChess {
 	set isOpen   0
 	
 	# default Database
-	set CorrBase        [file nativename [file join $scidDataDir "Correspondence.si3"]]
+	set CorrBase        [file nativename [file join $scidDataDir "Correspondence.si4"]]
 
 	# incoming PGN files
 	set Inbox           [file nativename [file join $scidDataDir "Inbox"]]
@@ -1254,7 +1254,7 @@ namespace eval CorrespondenceChess {
 	proc chooseCorrBase {} {
 		global ::CorrespondenceChess::CorrBase
 
-		set filetype { "Scid databases" {".si3" ".si"} }
+		set filetype { "Scid databases" {".si4" ".si"} }
 		set CorrBase [chooseFile "default correspondence chess DB..." $filetype]
 	}
 
