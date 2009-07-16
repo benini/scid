@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.75 2009/07/15 18:16:50 arwagner Exp $
+### $Id: correspondence.tcl,v 1.76 2009/07/16 14:23:42 arwagner Exp $
 ###
-### Last change: <Wed, 2009/07/15 20:06:29 arwagner ingata>
+### Last change: <Thu, 2009/07/16 16:19:05 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2460,12 +2460,19 @@ namespace eval CorrespondenceChess {
 	proc OpenCorrespondenceDB {} {
 		global ::CorrespondenceChess::CorrBase
 
-		set fName [file rootname $CorrBase]
-		if {[catch {openBase $fName} result]} {
+		## set fName [file rootname $CorrBase]
+		set fName $CorrBase
+
+		if {[catch {::file::Open $fName} result]} {
 			set err 1
 			tk_messageBox -icon warning -type ok -parent . \
 				-title "Scid: Error opening file" -message $result
 		} else {
+			if {[file extension $fName] == ".si3"} {
+				# file has been converted to si4
+				set CorrBase "[file rootname $CorrBase].si4"
+				::CorrespondenceChess::saveCCoptions
+			}
 			set ::initialDir(base) [file dirname $fName]
 		}
 		::windows::gamelist::Refresh
