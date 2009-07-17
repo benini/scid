@@ -254,7 +254,7 @@ proc ::file::Upgrade {name} {
 # openBase:
 #    Opens a Scid database, showing a progress bar in a separate window
 #    if the database is around 1 Mb or larger in size.
-#
+#   ::file::Open should be used if the base is not already in si4 format
 proc openBase {name} {
   set bsize 0
   set gfile "[file rootname $name].sg4"

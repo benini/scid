@@ -1705,7 +1705,7 @@ while {$argc > 0} {
         ::recentFiles::add $startbase
       }
     } else {
-      set err [catch {openBase [file rootname $startbase]} errMessage]
+      set err [catch { ::file::Open $startbase} errMessage]
       if {! $err} { ::recentFiles::add "[file rootname $startbase].si4" }
     }
     if {$err} {

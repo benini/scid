@@ -512,7 +512,6 @@ namespace eval fics {
     # switch from read to gets in case a read is done at the middle of a line
     if {! $logged} {
       set line [read $::fics::sockchan]
-      puts "not logged readparse ->$line"
       foreach l [split $line "\n"] {
         readparse $l
       }
@@ -579,8 +578,6 @@ namespace eval fics {
     variable isGuestLogin
     
     if {$line == "" || $line == "fics% "} {return}
-    
-    puts  "readparse $line"
     
     if { $::fics::sought } {
       if {[string match "* ad* displayed." $line]} {
@@ -895,8 +892,6 @@ namespace eval fics {
   #
   ################################################################################
   proc parseStyle12 {line} {
-    puts "parseStyle12 $line"
-    puts "length = [llength $line] (req 33)"
     set color [lindex $line 9]
     set gameNumber [lindex $line 16]
     set white [lindex $line 17]
@@ -978,7 +973,6 @@ namespace eval fics {
     
     set fen "$fen $castle $enpassant [lindex $line 15] $moveNumber"
     
-    puts "verbose_move $verbose_move (fen = $fen) ::fics::playing $::fics::playing"
     # try to play the move and check if fen corresponds. If not this means the position needs to be set up.
     if {$moveSan != "none" && $::fics::playing != -1} {
       # first check side's coherency
@@ -1191,7 +1185,6 @@ namespace eval fics {
   #
   ################################################################################
   proc writechan {line {echo "noecho"}} {
-    puts "writechan>>$line"
     after cancel ::fics::stayConnected
     if {[eof $::fics::sockchan]} {
       tk_messageBox -title "FICS" -icon error -type ok -message "Network error writing channel"
