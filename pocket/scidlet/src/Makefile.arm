@@ -15,11 +15,11 @@ clean:
 	$(RM) *.o .depend gmon.out $(EXE) $(OBJS)
 
 # general
-CXX      = arm-wince-cegcc-g++ -DPOCKET -DPOCKETENGINE 
+CXX      = arm-cegcc-g++ -DPOCKET -DPOCKETENGINE
 CXXFLAGS = -pipe -DWIN32 -Wcast-align -I$(SRC) -I$(SRC)/zlib/ -I.
 CXXFLAGS += -fno-exceptions -fno-rtti -O3 -fstrict-aliasing -fomit-frame-pointer
 #LDFLAGS  = -lm
-CC       = arm-wince-cegcc-gcc -DWIN32 -O3 -DPOCKET
+CC       = arm-cegcc-gcc -DWIN32 -O3 -DPOCKET
 
 LDFLAGS += -s
 
@@ -28,7 +28,7 @@ ipc.armo: ipc.c
 
 $(EXE): $(OBJS) ipc.armo
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJS) ipc.armo
-	arm-wince-cegcc-strip $(EXE)
+	arm-cegcc-strip $(EXE)
 
 # dependencies
 

@@ -21,8 +21,8 @@ TCL_VERSION = 8.5
 #
 # The settings determined by "./configure" are:
 #
-TCL_INCLUDE = -I/usr/local/ActiveTcl8.5/include
-TCL_LIBRARY = -L/usr/local/ActiveTcl8.5/lib -ltcl$(TCL_VERSION) -ldl
+TCL_INCLUDE = -I/usr/include
+TCL_LIBRARY = -ltcl$(TCL_VERSION) -ldl
 TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) 
 
 ########################################
@@ -105,9 +105,10 @@ SCIDOBJS= src/misc.o src/index.o src/date.o src/namebase.o src/position.o \
 ### ZLIBOBJS: object files in the zlib compression library.
 #
 ZLIBOBJS= src/zlib/adler32.o src/zlib/compress.o src/zlib/crc32.o \
-      src/zlib/deflate.o src/zlib/gzio.o src/zlib/inffast.o src/zlib/inflate.o \
-      src/zlib/infback.o src/zlib/inftrees.o src/zlib/trees.o \
-      src/zlib/uncompr.o src/zlib/zutil.o
+      src/zlib/gzio.o src/zlib/uncompr.o src/zlib/deflate.o src/zlib/trees.o \
+      src/zlib/zutil.o src/zlib/inflate.o src/zlib/infblock.o \
+      src/zlib/inftrees.o src/zlib/infcodes.o src/zlib/infutil.o \
+      src/zlib/inffast.o
        
 ### ZLIB: Should be "-lz" if your system has zlib, "" otherwise.
 #
@@ -187,7 +188,7 @@ tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o 
           src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o
 
 	cd src/zlib && $(MAKE) -f Makefile.pocket_x86
-	$(LINK) -shared -pipe -o tkscid.so src/tkscid.o $(OBJS) $(ZLIBOBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB) -lstdc++ -L../../etcl/tcl8.5/unix/ -ltcl_x86stub8.5
+	$(LINK) -shared -pipe -o tkscid.so src/tkscid.o $(OBJS) $(ZLIBOBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB) -lstdc++ -L../etcl/tcl8.5/unix/ -ltcl_x86stub8.5
 
 #-L../../etcl/tcl8.5/unix/ -ltcl_x86stub8.5
 #-L../../../prog/etcl/tcl8.4.14/ -ltclstub_x868.4

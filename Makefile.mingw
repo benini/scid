@@ -87,9 +87,11 @@ SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
 ### ZLIBOBJS: object files in the zlib compression library.
 ###
 ZLIBOBJS= src/zlib/adler32.o src/zlib/compress.o src/zlib/crc32.o \
-      src/zlib/deflate.o src/zlib/gzio.o src/zlib/inffast.o src/zlib/inflate.o \
-      src/zlib/infback.o src/zlib/inftrees.o src/zlib/trees.o \
-      src/zlib/uncompr.o src/zlib/zutil.o
+      src/zlib/gzio.o src/zlib/uncompr.o src/zlib/deflate.o src/zlib/trees.o \
+      src/zlib/zutil.o src/zlib/inflate.o src/zlib/infblock.o \
+      src/zlib/inftrees.o src/zlib/infcodes.o src/zlib/infutil.o \
+      src/zlib/inffast.o
+
 
 ### OBJS: all standard object files for scid.
 ###

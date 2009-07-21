@@ -1,4 +1,4 @@
-CC = arm-wince-cegcc-gcc
+CC = arm-cegcc-gcc
 
 ####### choose the line that makes the binary faster on your machine
 # CFLAGS = -O3 -Wall -fomit-frame-pointer -funroll-loops
@@ -23,7 +23,7 @@ OBJ = .o/phalanx.o .o/search.o .o/io.o .o/data.o .o/evaluate.o .o/genmoves.o \
 
 phalanx: .o $(OBJ)
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(OBJ) -o phalanx.exe
-	arm-wince-cegcc-strip phalanx.exe
+	arm-cegcc-strip phalanx.exe
 
 .o/%.o: Makefile %.c
 	$(CC) $(CFLAGS) $(DEFINES) -c $*.c -o .o/$*.o

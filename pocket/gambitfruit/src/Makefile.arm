@@ -17,12 +17,12 @@ clean:
 	$(RM) *.o .depend gmon.out
 
 # general
-CXX      = arm-wince-cegcc-g++
+CXX      = arm-cegcc-g++
 #ARCH 		 = -mcpu=xscale -march=armv5te
 ARCH 		 = 
 CXXFLAGS = -pipe -DWIN32 -Wcast-align
 LDFLAGS  = -lm
-CC       = arm-wince-cegcc-gcc -DWIN32 -O3 $(ARCH)
+CC       = arm-cegcc-gcc -DWIN32 -O3 $(ARCH)
 
 # C++
 
@@ -44,7 +44,7 @@ ipc.armo: ipc.c
 
 $(EXE): $(OBJS) ipc.armo
 	$(CXX) $(LDFLAGS) -o $@ $(OBJS) ipc.armo
-	arm-wince-cegcc-strip $(EXE)
+	arm-cegcc-strip $(EXE)
 
 .depend:
 	$(CXX) -MM $(OBJS:.o=.cpp) > $@

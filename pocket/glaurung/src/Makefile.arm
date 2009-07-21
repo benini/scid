@@ -1,4 +1,4 @@
-CC = arm-wince-cegcc-g++
+CC = arm-cegcc-g++
 #ARCH = -mcpu=xscale -march=armv5te
 ARCH 		 = 
 CFLAGS = $(ARCH) -O4 -funroll-loops -fomit-frame-pointer -fstrict-aliasing -Wall -Wcast-align
@@ -35,10 +35,10 @@ OBJ = .o/book.o \
 
 glaurung: .o $(OBJ) ipc.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(OBJ) .o/ipc.o -o glaurung.exe -lm
-	arm-wince-cegcc-strip glaurung.exe
+	arm-cegcc-strip glaurung.exe
 
 ipc.o : ipc.h ipc.c
-	arm-wince-cegcc-gcc $(CFLAGS) $(DEFINES) -c -o .o/ipc.o ipc.c
+	arm-cegcc-gcc $(CFLAGS) $(DEFINES) -c -o .o/ipc.o ipc.c
 
 .o/%.o: Makefile %.cpp
 	$(CC) $(CFLAGS) $(DEFINES) -c $*.cpp -o .o/$*.o

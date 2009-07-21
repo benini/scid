@@ -1,5 +1,5 @@
-CPP = arm-wince-cegcc-g++
-CC = arm-wince-cegcc-gcc
+CPP = arm-cegcc-g++
+CC = arm-cegcc-gcc
 CFLAGS = -Wcast-align -Wpacked -fstrict-aliasing -fomit-frame-pointer
 CPPFLAGS = -Wcast-align -Wpacked -fno-exceptions -fno-rtti -fstrict-aliasing -fomit-frame-pointer
 DEFINES = -DWIN32
@@ -11,7 +11,7 @@ OBJ = attack.o scorpio.o eval.o hash.o moves.o search.o see.o probe.o util.o
 
 $(EXE): $(OBJ) ipc.o
 	$(CC) $(OPT) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(OBJ) ipc.o -o scorpio.exe -lstdc++
-	arm-wince-cegcc-strip $(EXE)
+	arm-cegcc-strip $(EXE)
 #-lpthread -ldl -lm
 
 %.o: %.cpp scorpio.h

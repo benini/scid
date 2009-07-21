@@ -1,5 +1,5 @@
-CPP = arm-wince-cegcc-g++
-CC = arm-wince-cegcc-gcc
+CPP = arm-cegcc-g++
+CC = arm-cegcc-gcc
 
 CPPFLAGS = -DNDEBUG -DWIN32 -Wall -Wcast-align -O3 -fno-exceptions -fomit-frame-pointer -fno-rtti
 CFLAGS =  -DNDEBUG -DWIN32 -Wall -Wcast-align -O3 -fomit-frame-pointer

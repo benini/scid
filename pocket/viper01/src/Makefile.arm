@@ -1,4 +1,4 @@
-CC = arm-wince-cegcc-g++
+CC = arm-cegcc-g++
 
 CFLAGS = -O2 -funroll-loops -fomit-frame-pointer -fstrict-aliasing -Wall -Wcast-align
 
@@ -19,13 +19,13 @@ OBJ = .o/data.o .o/endgame.o .o/eval.o \
 
 viper: .o $(OBJ)
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(OBJ) -o viper01.exe -lm
-	arm-wince-cegcc-strip viper01.exe
+	arm-cegcc-strip viper01.exe
 
 .o/%.o: Makefile %.cpp
 	$(CC) $(CFLAGS) $(DEFINES) -c $*.cpp -o .o/$*.o
 
 .o/ipc.o: ipc.h ipc.c
-	arm-wince-cegcc-gcc $(CFLAGS) $(DEFINES) -c ipc.c -o .o/ipc.o
+	arm-cegcc-gcc $(CFLAGS) $(DEFINES) -c ipc.c -o .o/ipc.o
 
 .o:
 	mkdir .o

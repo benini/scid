@@ -8,7 +8,7 @@ RANLIB = arm-cegcc-ranlib
 OPT = -O4
 MAKEFLAGS = -j 2
 
-CABWIZTOOLS = ../../cabwiz/Tools/
+CABWIZTOOLS = ../cabwiz/Tools/
 
 # use -DPOCKET to target pocket hardware (no Linux emul)
 PPC = -DUSE_TCL_STUBS -DTCL_ONLY -DWINCE -DPOCKET -fsigned-char
@@ -26,7 +26,7 @@ SHAREDIR = /usr/local/share/scid
 #
 TCL_VERSION = 8.5
 
-TCL_INCLUDE = -I../../etcl/tcl8.5/generic/
+TCL_INCLUDE = -I../etcl/tcl8.5/generic/
 TCL_LIBRARY = -L/usr/lib -ltcl$(TCL_VERSION) -ldl
 TK_LIBRARY  = $(TCL_LIBRARY) -ltk$(TCL_VERSION) 
 
@@ -106,9 +106,11 @@ SCIDOBJS= src/misc.o src/index.o src/date.o src/namebase.o src/position.o \
 ### ZLIBOBJS: object files in the zlib compression library.
 #
 ZLIBOBJS= src/zlib/adler32.o src/zlib/compress.o src/zlib/crc32.o \
-      src/zlib/deflate.o src/zlib/gzio.o src/zlib/inffast.o src/zlib/inflate.o \
-      src/zlib/infback.o src/zlib/inftrees.o src/zlib/trees.o \
-      src/zlib/uncompr.o src/zlib/zutil.o
+      src/zlib/gzio.o src/zlib/uncompr.o src/zlib/deflate.o src/zlib/trees.o \
+      src/zlib/zutil.o src/zlib/inflate.o src/zlib/infblock.o \
+      src/zlib/inftrees.o src/zlib/infcodes.o src/zlib/infutil.o \
+      src/zlib/inffast.o
+
        
 ### ZLIB: Should be "-lz" if your system has zlib, "" otherwise.
 #
@@ -207,7 +209,7 @@ cab: dist
 tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o \
           src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o
 	cd src/zlib && $(MAKE) -f Makefile.arm
-	$(LINK) -shared -pipe -o tkscid.dll src/tkscid.o $(OBJS) $(ZLIBOBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB)  -L../../etcl/tcl8.5/unix/ -ltcl_armstub8.5
+	$(LINK) -shared -pipe -o tkscid.dll src/tkscid.o $(OBJS) $(ZLIBOBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o $(ZLIB)  -L../etcl/tcl8.5/unix/ -ltcl_armstub8.5
 	$(STRIP) tkscid.dll
 	
 ### Rules to create .o files from .cpp files:

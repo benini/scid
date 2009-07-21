@@ -810,7 +810,6 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* FIX: Display draw offers in CC games
 	* Player finder window : increased entry fields for number of games (10000 is sufficient for human players but not for engines)
 	* when using a Novag Citrine board, the referee mode selected is saved
-	* updated zlib to version 1.2.3
 	* FICS : 
 			- IP address of FICS server is cached (faster login)
 			- in case of a network error, quit FICS without popping tons of error messages

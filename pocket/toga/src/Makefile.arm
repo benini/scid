@@ -1,7 +1,7 @@
-CXX      = arm-wince-cegcc-g++
+CXX      = arm-cegcc-g++
 #ARCH 		 = -mcpu=xscale -march=armv5te
 ARCH 		 = 
-CC       = arm-wince-cegcc-gcc -DWIN32 -O3 $(ARCH)
+CC       = arm-cegcc-gcc -DWIN32 -O3 $(ARCH)
 CXXFLAGS = $(ARCH) -pipe -fno-exceptions -fno-rtti -O3 -fstrict-aliasing -fomit-frame-pointer -Wcast-align -DWIN32
 LDFLAGS  = -lm -s
 
@@ -23,7 +23,7 @@ clean:
 
 $(EXE): $(OBJS) ipc.armo
 	$(CXX) $(LDFLAGS) -o $@ $(OBJS) ipc.armo
-	arm-wince-cegcc-strip $(EXE)
+	arm-cegcc-strip $(EXE)
 
 ### Generic rule for all other .cpp files:
 #

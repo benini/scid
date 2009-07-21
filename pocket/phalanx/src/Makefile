@@ -2,8 +2,8 @@ CC = gcc
 
 ####### choose the line that makes the binary faster on your machine
 # CFLAGS = -O3 -Wall -fomit-frame-pointer -funroll-loops
-CFLAGS = -O0 -Wall -fomit-frame-pointer -std=c99 -D_GNU_SOURCE
-
+# CFLAGS = -O0 -Wall -fomit-frame-pointer -std=c99 -D_GNU_SOURCE
+CFLAGS = -O3 -Wall -fomit-frame-pointer --std=gnu89 -D_GNU_SOURCE
 #######
 ### DEFINES
 ### -DSHOW_FORCED_MOVES

@@ -918,7 +918,7 @@ set ::utils::sound::soundFolder [file nativename [file join $::scidExeDir sounds
 set ::utils::sound::announceNew 0
 set ::utils::sound::announceForward 0
 set ::utils::sound::announceBack 0
-  
+
 # Spell-checking file: default is "spelling.ssp".
 if {$windowsOS} {
   set spellCheckFile [file join $scidDataDir "spelling.ssp"]
@@ -1036,6 +1036,14 @@ if { $macOS } {
         }
         continue
       }
+      
+      # Scid doesn't handle well .sg4 and .sn4 files.
+      if {([file extension $file] == ".sg4") || \
+            ([file extension $file] == ".sn4")} {
+        set eName ".si4"
+        set fName [file rootname $file]
+        set file "$fName$eName"
+      }
       # Scid doesn't handle well .sg3 and .sn3 files.
       if {([file extension $file] == ".sg3") || \
             ([file extension $file] == ".sn3")} {
@@ -1043,13 +1051,7 @@ if { $macOS } {
         set fName [file rootname $file]
         set file "$fName$eName"
       }
-      # Scid doesn't handle well .sg and .sn files either.
-      if {([file extension $file] == ".sg") || \
-            ([file extension $file] == ".sn")} {
-        set eName ".si"
-        set fName [file rootname $file]
-        set file "$fName$eName"
-      }
+      
       # Check if base is already opened
       if {[sc_base slot $file] != 0} {
         tk_messageBox -type ok -icon info -title "Scid" -message \
