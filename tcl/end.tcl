@@ -1450,6 +1450,13 @@ set loadAtStart(tb) 1
 
 proc getCommandLineOptions {} {
   global argc argv windowsOS loadAtStart
+  
+  if { $::macOS && ([string first "-psn" [lindex $argv 0]] == 0)} {
+    # Remove Process Serial Number from argument list:
+    set argv [lrange $argv 1 end]
+    incr argc -1
+  }
+  
   while {$argc > 0} {
     set arg [lindex $argv 0]
     set firstChar [string index $arg 0]

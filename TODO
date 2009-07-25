@@ -62,8 +62,6 @@ usa: improve usability, clean interface
 GAME EDITOR
 * fea: automatically delete empty comments
 * fea: merge game into variations too
-* fea: properly detect that game was modified
-* ide: better editor (best: merge Comment Editor and PGN Window?)
 
 GAME LIST
 * fea: highlight current game in game list by default
