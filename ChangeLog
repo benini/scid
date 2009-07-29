@@ -839,7 +839,8 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* new feature to review game. The user guesses moves played from one side of a played game.
 	* game browser : automatically flip board if the main board is flipped
 	* updated Scid icon (thanks to Israel Chauca Fuentes)
-  * Correspondence Chess:
+	* First version of VIAF/PND support for hooking up Wikipedia et al.
+	* Correspondence Chess:
 		- Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 		- Do not show games where the player does not have the move (Xfcc only)
 		- Add GUI to set sort criteria
