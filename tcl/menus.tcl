@@ -648,10 +648,10 @@ menu $m.pinfo
 $m add cascade -label ToolsPInfo -menu $m.pinfo
 set helpMessage($m,[incr menuindex]) ToolsPInfo
 $m.pinfo add command -label White -underline 0 -command {
-  playerInfo [sc_game info white]
+  ::pinfo::playerInfo [sc_game info white]
 }
 $m.pinfo add command -label Black -underline 0 -command {
-  playerInfo [sc_game info black]
+  ::pinfo::playerInfo [sc_game info black]
 }
 
 $m add command -label ToolsPlayerReport -command ::preport::preportDlg -state disabled
@@ -999,6 +999,11 @@ $m add command -label OptionsSave -command {
     }
     foreach i [lsort [array names ::fics::profileVars]] {
       puts $optionF "set ::fics::profileVars($i) [list $::fics::profileVars($i)]"
+    }
+
+    # save pinfo config
+    foreach i { wikipurl dnburl viafurl fideurl iccfurl } {
+      puts $optionF "set ::pinfo::$i [list [set ::pinfo::$i]]"
     }
     
     # save NOVAG config

@@ -2,6 +2,7 @@
 ####################
 # Player Info window
 
+namespace eval pinfo {
 set playerInfoName ""
 
 image create photo wikiplnk -data {
@@ -59,6 +60,34 @@ image create photo viaflnk -data {
 	tCA2LwODJ4IENI+M6AKYESWACuXlIBBFFADwVdgSK9bRBCC5ajBOTYYiNWumIguFPSdmledA42JJ
 	8DIHABhYghoqPAxZTgsEEQwTPBILDFEiAhBIeIYOhgBTd0QZCEpZEBcJA2lLFyolKayqGiEAOw==
 }
+
+proc ReplaceIDTags { pinfo } {
+  # replace certain BIO lines by links to external media
+  regsub -all ".*PND "    $pinfo "" pnd
+  regsub -all ".*VIAF "   $pinfo "" viaf
+  regsub -all ".*FIDEID " $pinfo "" fide
+  regsub -all ".*ICCFID " $pinfo "" iccf
+  regsub -all {<br>.*}    $pnd  "" pnd
+  regsub -all {<br>.*}    $viaf "" viaf
+  regsub -all {<br>.*}    $fide "" fide
+  regsub -all {<br>.*}    $iccf "" iccf
+
+  # add &name=$playerInfoName for wikipedia
+  set wikiplink  "<run openURL $::pinfo::wikipurl?PND=$pnd; ::windows::stats::Refresh><button wikiplnk><blue>WP</blue></run>"
+  set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk><blue>DNB</blue></run>"
+  set viaflink   "<run openURL $::pinfo::viafurl/$viaf; ::windows::stats::Refresh><button viaflnk><blue>VIAF</blue></run>"
+  set fidelink   "<run openURL $::pinfo::fideurl=$fide; ::windows::stats::Refresh><button fidelnk><blue>FIDE</blue></run>"
+  set iccflink   "<run openURL $::pinfo::iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk><blue>ICCF</blue></run>"
+
+  regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink" pinfo
+  regsub -all "FIDEID $fide<br>" $pinfo "$fidelink" pinfo
+  regsub -all "ICCFID $iccf<br>" $pinfo "$iccflink" pinfo
+  regsub -all "VIAF $viaf"   $pinfo "$viaflink" pinfo
+  regsub -all "</run>  <run" $pinfo "</run> <run" pinfo
+
+  return $pinfo
+}
+
 
 proc playerInfo {{player ""}} {
   global playerInfoName
@@ -121,32 +150,7 @@ proc playerInfo {{player ""}} {
   $w.text configure -state normal
   $w.text delete 1.0 end
 
-  # replace certain BIO lines by links to external media
-  set wikipurl "http://tools.wikimedia.de/~kolossos/PD/search.php"
-  set dnburl   "http://d-nb.info/gnd"
-  set viafurl  "http://viaf.org"
-  set fideurl  "http://ratings.fide.com/card.phtml?event"
-  set iccfurl  "http://www.iccf-webchess.com/PlayerDetails.aspx?id"
-  regsub -all ".*PND "    $pinfo "" pnd
-  regsub -all ".*VIAF "   $pinfo "" viaf
-  regsub -all ".*FIDEID " $pinfo "" fide
-  regsub -all ".*ICCFID " $pinfo "" iccf
-  regsub -all {<br>.*}    $pnd  "" pnd
-  regsub -all {<br>.*}    $viaf "" viaf
-  regsub -all {<br>.*}    $fide "" fide
-  regsub -all {<br>.*}    $iccf "" iccf
-
-  set wikiplink  "<run openURL $wikipurl?PND=$pnd; ::windows::stats::Refresh><button wikiplnk><blue>WP</blue></run>"
-  set dnblink    "<run openURL $dnburl/$pnd; ::windows::stats::Refresh><button dnblnk><blue>DNB</blue></run>"
-  set viaflink   "<run openURL $viafurl/$viaf; ::windows::stats::Refresh><button viaflnk><blue>VIAF</blue></run>"
-  set fidelink   "<run openURL $fideurl=$fide; ::windows::stats::Refresh><button fidelnk><blue>FIDE</blue></run>"
-  set iccflink   "<run openURL $iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk><blue>ICCF</blue></run>"
-
-  regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink" pinfo
-  regsub -all "FIDEID $fide<br>" $pinfo "$fidelink" pinfo
-  regsub -all "ICCFID $iccf<br>" $pinfo "$iccflink" pinfo
-  regsub -all "VIAF $viaf"   $pinfo "$viaflink" pinfo
-  regsub -all "</run>  <run" $pinfo "</run> <run" pinfo
+  set pinfo [::pinfo::ReplaceIDTags $pinfo]
 
   # Display the player info
   ::htext::display $w.text $pinfo
@@ -157,3 +161,4 @@ proc playerInfo {{player ""}} {
   #raiseWin $w
 }
 
+}

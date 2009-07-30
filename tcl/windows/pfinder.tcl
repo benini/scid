@@ -215,7 +215,7 @@ proc ::plist::refresh {} {
     set elo [lindex $player 3]
     set name [lindex $player 4]
 
-    $t tag bind p$count <ButtonPress-1> [list playerInfo $name]
+    $t tag bind p$count <ButtonPress-1> [list ::pinfo::playerInfo $name]
     #$t tag bind p$count <ButtonPress-$::MB3> [list playerInfo $name]
     $t tag bind p$count <Any-Enter> \
       "$t tag configure p$count -background $hc"

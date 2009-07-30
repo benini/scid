@@ -107,6 +107,7 @@ foreach ns {
   ::board ::move
   ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame ::novag
   ::config ::docking
+  ::pinfo
 } {
   namespace eval $ns {}
 }
@@ -312,6 +313,13 @@ set ::fics::colgameresult  SlateBlue1
 set ::fics::colficspercent khaki1
 set ::fics::colficshelpnext blue
 set ::fics::server_ip "0.0.0.0"
+
+# default resolvers for player info
+set ::pinfo::wikipurl "http://tools.wikimedia.de/~kolossos/PD/search.php"
+set ::pinfo::dnburl   "http://d-nb.info/gnd"
+set ::pinfo::viafurl  "http://viaf.org"
+set ::pinfo::fideurl  "http://ratings.fide.com/card.phtml?event"
+set ::pinfo::iccfurl  "http://www.iccf-webchess.com/PlayerDetails.aspx?id"
 
 # Defaults for Novag Citrine
 set ::novag::referee "OFF"
