@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.76 2009/07/16 14:23:42 arwagner Exp $
+### $Id: correspondence.tcl,v 1.77 2009/07/31 16:39:05 arwagner Exp $
 ###
-### Last change: <Thu, 2009/07/16 16:19:05 arwagner ingata>
+### Last change: <Fri, 2009/07/31 18:29:01 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -3040,7 +3040,7 @@ namespace eval CorrespondenceChess {
 						}
 					}
 				}
-				set mytime  [expr {$mytime / 60.0 / 60.0 / 24.0}]
+				set mytime  [expr {int($mytime / 60.0 / 24.0)}]
 
 				# Calculate the time per move till next TC: include also
 				# the next time control periode in this calculation
@@ -3050,7 +3050,7 @@ namespace eval CorrespondenceChess {
 				# Time per move is the minimum of the two above
 				set timepermove [expr min($timepermove1, $timepermove2)]
 
-				::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $timepermove $mytime"
+				::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $mytime $tincrement $movestoTC $moves : $timepermove $mytime"
 
 				# Define criteria to be added to the list to sort. Classic
 				# mode is handled below by resorting the clipbase
@@ -3065,7 +3065,7 @@ namespace eval CorrespondenceChess {
 					} \
 					"$::CorrespondenceChess::CCOrderTimePerMove" {
 						set criterion $timepermove
-						set sortmode "-integer"
+						set sortmode "-real"
 					} \
 					"$::CorrespondenceChess::CCOrderStartDate" {
 						set criterion $Date
