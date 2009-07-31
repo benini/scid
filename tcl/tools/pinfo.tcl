@@ -115,7 +115,7 @@ proc playerInfo {{player ""}} {
     button $w.b2.report -text [tr ToolsPlayerReport] \
       -command {::preport::preportDlg $playerInfoName}
     dialogbutton $w.b2.help -textvar ::tr(Help) -command {helpWindow PInfo}
-    dialogbutton $w.b2.update -textvar ::tr(Update) -command {playerInfo $playerInfoName}
+    dialogbutton $w.b2.update -textvar ::tr(Update) -command {::pinfo::playerInfo $playerInfoName}
     dialogbutton $w.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
     packbuttons right $w.b2.close $w.b2.update $w.b2.help
     packbuttons left $w.b.graph $w.b.edit
