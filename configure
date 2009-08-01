@@ -94,6 +94,52 @@ proc findDir {f path {exp ""}} {
     return $best
 }
 
+# findTclTkPathsDarwin:
+#    Set-up paths using frameworks. Since frameworks are quite
+#    different, the UNIX search logic is not sharable:
+proc findTclTkPathsAqua {} {
+    global var
+    set frameworkPaths "\
+        [ file nativename ~/Library/Frameworks ] \
+        /Library/Frameworks \
+        /System/Library/Frameworks \
+    "
+    set fw_path ""
+    # Find the path to the Tcl and Tk frameworks:
+    foreach F $frameworkPaths {
+        set both 1
+        foreach fw {"Tcl" "Tk"} {
+            # Both Tcl.framework and Tk.framework must be present:
+            if {! [file exists "$F/$fw.framework/Versions/$var(TCL_VERSION)"]} {
+                set both 0
+                break
+            }
+        }
+        if {$both == 1} {
+            # $F has both frameworks, continue:
+            set fw_path $F
+            break
+        }
+    }
+    if {$both == 0} {
+        # Couldn't find Tcl and Tk frameworks, keep searching the "unix" way:
+        return 0
+    }
+    if {! [info exists var(TCL_INCLUDE)]} {
+        set var(TCL_INCLUDE) "-F$fw_path/Tcl.framework -F$fw_path/Tk.framework"
+    }
+    if {! [info exists var(TCL_LIBRARY)]} {
+        set var(TCL_LIBRARY) {-framework Tcl -ldl}
+    }
+    if {! [info exists var(TK_LIBRARY)]} {
+        set var(TK_LIBRARY) {$(TCL_LIBRARY) -framework Tk}
+        #if {! [file exists "$fw_path/Tk.framework/Headers/X11"]} {
+        #   append var(TK_LIBRARY) " -L/usr/X11R6/lib -lX11"
+        #}
+    }
+    puts "    Location of Tcl/Tk frameworks: $fw_path"
+    return 1
+}
 
 # findTclTkPaths:
 #    Finds all details of the Tcl/Tk installation.
@@ -103,6 +149,10 @@ proc findTclTkPaths {} {
     global tclv tclv_nodot var
     set success 1
     array set opt {}
+    if {"$::tcl_platform(os)" == "Darwin" && [findTclTkPathsAqua]} {
+        # Frameworks found, stop looking for paths:
+        return 1
+    }
 
     # headerPath: List of possible locations for tcl.h and tk.h
     set headerPath {
