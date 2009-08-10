@@ -1232,7 +1232,7 @@ proc addMove { sq1 sq2 {animate ""}} {
   if {$nullmove} {
     sc_move addSan null
   } else {
-    # if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
+    if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
     set ::sergame::lastPlayerMoveUci ""
     if {[winfo exists ".serGameWin"]} {
       set ::sergame::lastPlayerMoveUci "[::board::san $sq2][::board::san $sq1]$promoLetter"

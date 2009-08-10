@@ -766,7 +766,7 @@ set helpMessage($m,[incr menuindex]) OptionsSpell
 
 $m add command -label OptionsTable -command setTableBaseDir
 set helpMessage($m,[incr menuindex]) OptionsTable
-if {![sc_info tb]} { $m entryconfigure 13 -state disabled }
+if {![sc_info tb]} { $m entryconfigure 15 -state disabled }
 
 # setTableBaseDir:
 #    Prompt user to select a tablebase file; all the files in its

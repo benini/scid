@@ -818,6 +818,8 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* Code optimisation in I/O and memory copies. For example stripping PGN Tags is 3 times faster 
 	* Right mouse button takes back a move. It used to also delete the last move of a line. This is inhibited now as there is no possible undo, and the user can have triggered this function by error. 
 	* Game export to HTML + Javascript : export comment before first move, fixed a problem when exporting some variations (which were stripped)
+	* Comment editor : avoid the repetition of last comment when entering a new variation (see line 1235 of main.tcl)
+	* Fixed menus when Scid is compiled without endgame tablebases support (thanks to Vlastimil Babula)
 - Features :
 ------------
 	* New base format :
