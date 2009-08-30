@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.77 2009/07/31 16:39:05 arwagner Exp $
+### $Id: correspondence.tcl,v 1.78 2009/08/30 15:08:08 arwagner Exp $
 ###
-### Last change: <Fri, 2009/07/31 18:29:01 arwagner ingata>
+### Last change: <Sun, 2009/08/30 17:06:57 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -558,6 +558,7 @@ namespace eval Xfcc {
 
 		set aNodes [$doc selectNodes //XfccGame]
 		foreach game $aNodes {
+
 			set id          [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
 			set Event       [::Xfcc::xmldecrypt [$game selectNodes {string(event)}]]
 			set Site        [::Xfcc::xmldecrypt [$game selectNodes {string(site)}]]
@@ -569,6 +570,7 @@ namespace eval Xfcc {
 			set TimeControl [::Xfcc::xmldecrypt [$game selectNodes {string(timeControl)}]]
 			set GameId      [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
 			set Source      [::Xfcc::xmldecrypt [$game selectNodes {string(gameLink)}]]
+			set Round       [::Xfcc::xmldecrypt [$game selectNodes {string(round)}]]
 			set Result      [::Xfcc::xmldecrypt [$game selectNodes {string(result)}]]
 			set drawOffered [::Xfcc::xmldecrypt [$game selectNodes {string(drawOffered)}]]
 
@@ -621,6 +623,7 @@ namespace eval Xfcc {
 					puts $pgnF "\[Event \"$Event\"\]";
 					puts $pgnF "\[Site \"$Site\"\]";
 					puts $pgnF "\[Date \"$Date\"\]";
+					puts $pgnF "\[Round \"$Round\"\]";
 					puts $pgnF "\[White \"$White\"\]";
 					puts $pgnF "\[Black \"$Black\"\]";
 					puts $pgnF "\[White$rating \"$WhiteElo\"\]";
@@ -3050,7 +3053,7 @@ namespace eval CorrespondenceChess {
 				# Time per move is the minimum of the two above
 				set timepermove [expr min($timepermove1, $timepermove2)]
 
-				::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $mytime $tincrement $movestoTC $moves : $timepermove $mytime"
+				#### ::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $mytime $tincrement $movestoTC $moves : $timepermove $mytime"
 
 				# Define criteria to be added to the list to sort. Classic
 				# mode is handled below by resorting the clipbase

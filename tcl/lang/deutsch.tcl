@@ -7235,7 +7235,7 @@ eines anderen Servers aktiviert diese Einstellungen.
 <p>
 Um einen neuen Server zu addieren wählt man den <term>Neu</term>
 Knopf. Es wird ein neuer Eintrag erzeugt in dem die entsprechenden
-Felder ausgfüllt werden können.
+Felder ausgefüllt werden können.
 </p>
 <p>
 Um einen Server zu löschen wählt man ihn aus der Liste aus und drückt
