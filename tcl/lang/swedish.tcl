@@ -1018,7 +1018,7 @@ translate W RatingRange {Ratingintervall:}
 translate W Description {Beskrivning} 
 translate W Flag {Flagga}
 # ====== TODO To be translated ======
-translate W CustomFlags {Custom flags}
+translate W CustomFlags {Anpassade flaggor}
 translate W DeleteCurrent {Ta bort aktuellt parti}
 translate W DeleteFilter {Ta bort partierna i filtret}
 translate W DeleteAll {Ta bort alla partier}
@@ -1491,11 +1491,11 @@ Denna databas är i ett gammal format (Scid 3) och kan inte öppnas i Scid 4, men 
 Vill du öppna den senare databasen istället?
 }
 translate W ConfirmUpgrade {
-Denna databas är i ett gammal format (Scid 3). En databas i det nyare formatet måste skapas innan den kan användas i Scid 4.
+Denna databas är i ett gammalt format (Scid 3). En databas i det nyare formatet måste skapas innan den kan användas i Scid 4.
 
 Genom att uppdatera skapas en databas i det nya formatet med samma innehåll; uppdateringen ändrar ingenting i den gamla databasen.
 
-Detta kan ta ett tag men behöver bara göras en gång. Om du tycker det tar alltför lång tid kan du avbryta processen.
+Detta kan ta ett tag men behöver bara göras en gång. Om du tycker att det tar alltför lång tid kan du avbryta processen.
 
 Vill du uppdatera denna databas nu?
 }

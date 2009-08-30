@@ -726,7 +726,11 @@ namespace eval uci {
     catch { puts $pipe "exit" ; puts $pipe "quit" }
     
     # last resort : try to kill the engine (TODO if Windows : no luck, welcome zombies !)
-    if { ! $windowsOS } { catch { exec -- kill -s INT [ pid $pipe ] }  }
+    # No longer try to kill the engine as :
+    # - it does not work on Windows
+    # - Rybka MP uses processes instead of threads : killing the main process will leave the children processes running
+    # - engines should normally exit
+    # if { ! $windowsOS } { catch { exec -- kill -s INT [ pid $pipe ] }  }
     
     catch { flush $pipe }
     catch { close $pipe }

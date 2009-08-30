@@ -790,7 +790,7 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 |                                                                             |
 |                              scid-4.0                                       |
 |                                                                             |
-|                           [August 2009]                                     |
+|                           [September 2009]                                     |
 |                                                                             |
  =============================================================================
 - Fixes :
@@ -820,6 +820,7 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* Game export to HTML + Javascript : export comment before first move, fixed a problem when exporting some variations (which were stripped)
 	* Comment editor : avoid the repetition of last comment when entering a new variation (see line 1235 of main.tcl)
 	* Fixed menus when Scid is compiled without endgame tablebases support (thanks to Vlastimil Babula)
+	* Under non windows systems, no longer try to kill an UCI engine after the quit command has been sent to it. This is necessary for Rybka 3 multiple CPU engine that spawns processes instead of threads (killing the main process before it has the possibility to stop the sub processes may leave processes eating CPU)
 - Features :
 ------------
 	* New base format :

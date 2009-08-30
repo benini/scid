@@ -25,10 +25,10 @@ set ::utils::sound::soundFiles [list \
 #
 array set ::utils::sound::soundMap {
   K King Q Queen R Rook B Bishop N Knight k CastleK q CastleQ
-  x x U Back # Mate = Promote + Check alert alert
+  x x U Back # Mate = Promote  + Check alert alert
   a a b b c c d d e e f f g g h h
   1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8
-}
+} 
 
 
 # ::utils::sound::Setup
@@ -104,7 +104,9 @@ proc ::utils::sound::AnnounceMove {move} {
   }
   if {[llength $soundList] > 0} {
     CancelSounds
-    foreach s $soundList { PlaySound $s }
+    foreach s $soundList {
+      PlaySound $s
+    }
   }
 }
 
@@ -163,7 +165,6 @@ proc ::utils::sound::CheckSoundQueue {} {
   set next [lindex $soundQueue 0]
   set soundQueue [lrange $soundQueue 1 end]
   set isPlayingSound 1
-  
   catch { $next play -blocking 0 -command ::utils::sound::SoundFinished }
   after 5000 ::utils::sound::CancelSounds
 }
