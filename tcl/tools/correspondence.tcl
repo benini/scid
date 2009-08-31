@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.78 2009/08/30 15:08:08 arwagner Exp $
+### $Id: correspondence.tcl,v 1.79 2009/08/31 18:03:53 arwagner Exp $
 ###
-### Last change: <Sun, 2009/08/30 17:06:57 arwagner ingata>
+### Last change: <Mon, 2009/08/31 20:03:40 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -449,12 +449,12 @@ namespace eval Xfcc {
 		set xmlresult [::http::data $token]
 
 		###---###
-		if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
-			::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
-		} else {
-			puts $dbg $xmlresult
-		}
-		close $dbg
+		##if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
+		##	::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
+		##} else {
+		##	puts $dbg $xmlresult
+		##}
+		##close $dbg
 		###---###
 
 		return $xmlresult
