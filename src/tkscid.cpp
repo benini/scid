@@ -6129,7 +6129,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
       if (argc != 4) {
         return errorResult (ti, usage);
       } else {
-        char desc[9];
+        char desc[CUSTOM_FLAG_DESC_LENGTH+1];
         uint num = IndexEntry::CharToFlag (argv[2][0]) - 15;
         if (num < 1 || num > CUSTOM_FLAG_MAX )
           return errorResult (ti, "Custom flag number out of range");

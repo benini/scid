@@ -3,6 +3,42 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+Just experienced the following while adding custom flags:
+
+- Define a new custom flag: if the text is to long (?) Scid silently
+dies. The input box allowed me to add a 9 chars tag, but it seems the
+length is limited. Using a shorter text works.
+------------------------------------------------------------------------------
+Yes, flag's description is limited to 8 chars. I fixed this overflow bug.
+------------------------------------------------------------------------------
+
+- After adding a custom flag text the internal representations are not
+updated, ie. the "Mark this game as" submenue of game info still shows
+"Custom n".
+
+------------------------------------------------------------------------------
+Fixed.
+------------------------------------------------------------------------------
+
+- How would I add a (custom) flag to all games in filter? I'm sure I had
+this option before via context menu of the games list.
+
+------------------------------------------------------------------------------
+No, I don't think you had this option via context menu of the game list. 
+To add a flag to a bunch of games is done via the maintenance window.
+------------------------------------------------------------------------------
+
+- Currently, it seems that adding a flag to a game is only available via
+game info context menu. This would cause some trouble in case you hide
+that area.
+
+------------------------------------------------------------------------------
+You can also use the maintenance window.
+
+By the way, Alexander, did you finish the correspondence stuff you wanted to do ? If so, I can release Scid 4.0.
+
+Pascal
+------------------------------------------------------------------------------
 
  ===========================================================
 |                                                           |

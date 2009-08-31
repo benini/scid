@@ -315,10 +315,9 @@ proc ::maint::ChangeCustomDescription {} {
   ttk::frame $w.b
   ttk::button $w.b.ok -text OK -command {
     for {set i 1} {$i <7} {incr i} {
-      set desc [ string range [.bcustom.a.e$i get] 0 7 ]
+      set desc [.bcustom.a.e$i get]
       sc_game flag $i setdescription $desc
     }
-
     grab release .bcustom
     destroy .bcustom
     
@@ -328,15 +327,15 @@ proc ::maint::ChangeCustomDescription {} {
       set tmp [sc_game flag $flag description]
       if {$tmp == "" } { set tmp $::maintFlags($flag) }
       .maintWin.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
-      .main.gameInfo.menu.mark entryconfigure $i -label "$tmp ($flag)"      
     }
+    
+    updateGameInfoMenu
     
     # update the custom flags labels
     for {set i 1} { $i < 7} { incr i} {
       set desc [sc_game flag $i description]
       .maintWin.title.cust.text$i configure -text $desc
     }
-    
     # ::maint::Refresh
   }
   ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
