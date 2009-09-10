@@ -1223,6 +1223,12 @@ proc addMove { sq1 sq2 {animate ""}} {
   if {$action == "replace"} {
     # nothing
   } elseif {$action == "mainline" || $action == "var"} {
+    # sc_var create stores comments (premovecommand). So avoid comment repetition.
+    # Maybe it would be better to void premovecommand for sc_var create
+    if {[winfo exists .commentWin]} {
+      ::commenteditor::storeComment
+      .commentWin.cf.text delete 0.0 end
+    }
     sc_var create
   } else {
     # Do not add the move at all:
@@ -1232,7 +1238,6 @@ proc addMove { sq1 sq2 {animate ""}} {
   if {$nullmove} {
     sc_move addSan null
   } else {
-    if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
     set ::sergame::lastPlayerMoveUci ""
     if {[winfo exists ".serGameWin"]} {
       set ::sergame::lastPlayerMoveUci "[::board::san $sq2][::board::san $sq1]$promoLetter"
@@ -1245,6 +1250,8 @@ proc addMove { sq1 sq2 {animate ""}} {
       sc_move forward 1
     }
     after idle [list ::utils::sound::AnnounceNewMove $san]
+    
+    if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
   }
   
   if {[winfo exists .fics]} {
@@ -1445,9 +1452,9 @@ proc backSquare {} {
   
   # RMB used to delete the move if it was the last in a line. Removed it as there is no undo.
   # if {[sc_pos isAt vstart] && [sc_var level] != 0} {
-    # ::pgn::deleteVar [sc_var number]
+  # ::pgn::deleteVar [sc_var number]
   # } elseif {$lastMoveInLine} {
-    # sc_game truncate
+  # sc_game truncate
   # }
   
   set selectedSq -1
