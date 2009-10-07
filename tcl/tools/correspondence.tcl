@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.79 2009/08/31 18:03:53 arwagner Exp $
+### $Id: correspondence.tcl,v 1.80 2009/10/07 18:33:55 arwagner Exp $
 ###
-### Last change: <Mon, 2009/08/31 20:03:40 arwagner ingata>
+### Last change: <Sat, 2009/10/03 17:22:21 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -615,7 +615,13 @@ namespace eval Xfcc {
 			# games from the inbox to get proper playlists.
 			if { ($Result == "Cancelled") } {
 					::CorrespondenceChess::updateConsole "info $name-$id was cancelled...";
-			} elseif {($variant == "chess") || ($variant == "")} {
+			} elseif {($variant == "chess") || ($variant == "") || ($variant == "randompieces") || ($variant == "upsidedown") || ($variant == "loosers") ||  ($variant == "nocastle")} {
+				### --- Istvan --- ###
+				### Racing Kings is not possible due to unambigious moves
+				### that are ambigious if check is allowed
+				### ($variant == "racingkings") ||
+				### --- Istvan --- ###
+
 				if {[catch {open $filename w} pgnF]} {
 					::CorrespondenceChess::updateConsole "info ERROR: Unable ot open config file $filename";
 				} else {
@@ -3194,7 +3200,7 @@ namespace eval CorrespondenceChess {
 						set var "";             set noDB "";
 						set noBK "";            set noTB ""; 
 						set noENG "";           set mess ""
-						set TC "";
+						set TC "";              set drawoffer "false";
 
 						# actually check the $xfccstate list for the current
 						# values. If it is not set (e.g. only inbox processed
