@@ -315,11 +315,17 @@ set ::fics::colficshelpnext blue
 set ::fics::server_ip "0.0.0.0"
 
 # default resolvers for player info
-set ::pinfo::wikipurl "http://tools.wikimedia.de/~kolossos/PD/search.php"
-set ::pinfo::dnburl   "http://d-nb.info/gnd"
-set ::pinfo::viafurl  "http://viaf.org"
-set ::pinfo::fideurl  "http://ratings.fide.com/card.phtml?event"
-set ::pinfo::iccfurl  "http://www.iccf-webchess.com/PlayerDetails.aspx?id"
+set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query"
+# Official server
+set ::pinfo::wikipurl      "http://wikimeta.de/pnd/"
+# Alternative server, but seems to have droped pnd resolver :(
+#   set ::pinfo::wikipurl      "http://tools.wikimedia.de/~kolossos/PD/search.php"
+# SeeAlso resolver for PND -> WikiPedia
+set ::pinfo::SeeAlsoPND2WP "http://ws.gbv.de/seealso/pnd2wikipedia/?format=seealso&id="
+set ::pinfo::dnburl        "http://d-nb.info/gnd"
+set ::pinfo::viafurl       "http://viaf.org"
+set ::pinfo::fideurl       "http://ratings.fide.com/card.phtml?event"
+set ::pinfo::iccfurl       "http://www.iccf-webchess.com/PlayerDetails.aspx?id"
 
 # Defaults for Novag Citrine
 set ::novag::referee "OFF"

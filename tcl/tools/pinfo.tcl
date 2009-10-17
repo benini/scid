@@ -61,6 +61,48 @@ image create photo viaflnk -data {
 	8DIHABhYghoqPAxZTgsEEQwTPBILDFEiAhBIeIYOhgBTd0QZCEpZEBcJA2lLFyolKayqGiEAOw==
 }
 
+image create photo seealsolnk -data {
+R0lGODlhFQAVAMZ5AAAAAAEBAAICAQQGAhEXCSEtECMwESouJjw8PDJFGEJcH0xpJGFhYVRuMVV1
+KF6CLH2IbmuVM4+Pj5SUlHysO4imYYGwQYK0PaKiooa6QIe7QKioqIi8Qoq9RIq9RYu9R4y+SI2+
+SY2+SqysrI/ATZDAT62urK6urpHBUJLBUa+vr7GxsZXDVrKyspXEV5bEWJfEWrOzs7W1tZrGX7a2
+tre3t57IZbm5ubq6uru7u6TLbry8vL29vajOdanOdsDAwMHBwavQecLCwqzQe63QfMPDw8TExLDS
+gbDSgsXFxbHTg8bGxsfHx7LUhbTUh8jIyLXVicnJycrKyrfWjcvLy8zMzM3Nzc7OztDQ0L/bmdHR
+0dLS0sbfpNbW1s/ks9bovdbovtrqxNrqxdvqxd3syN3syeLv0ePv0ubx1+jy2urz3fL46vP47Pf3
+9/T57vb68Pn89vv7+/r8+Pz9+v3++/3+/P7+/f7+/v///v///////////////////////////yH+
+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAFQAVAAAH/oAjKi00Nzs/QEJFi4tAPzw3NC0qJy01O0BJ
+T1RWV55XVlVRS0A7NS0rNDt5rK15LxqxsrE7NDE3QHlsRCIcJTaws7JCODI8S3k+GmJzaEMvIXJ5
+cB+ySzw1P1J5HhpsrS9NrUeyUkA3RVZ5KRooUF5sL2R5aXljsldFOUtYeWHssTq4qENnhh06JGJp
+WbKDiRZWdc5wgaEBhD0NZfJMibWFScMtrvKs0eAhDxINSvKY4fjkYx4dYNyYOKAhCKs4NfLgYaFh
+S0uHeXq8sDCAgJM3XzQ4CAAhT5aeTPb1Y9UFAAMqVCpEiGAAwAQ1GhaiU8fqDgIAaNOmvaDhipFs
+TdtatcEgocGCuwUAJMigwZwxZCFfxXogYG+sa7dyBQ5GQQHfWMRSrVosTFatSqoyReH0CZQoUqZa
+CCJkCJEiRkUcQZKkYoPr17Bjyw4EADs=
+}
+
+proc saPND2WP { pnd } {
+
+   # set WikiPediaAPI "http://de.wikipedia.org/w/api.php?action=query"
+   # set WikiPediaLL  "&prop=langlinks"
+   # set WikiPediaTI  "&titles="
+
+   set SeeAlso "$::pinfo::SeeAlsoPND2WP$pnd"
+   puts stderr $SeeAlso
+   set token [::http::geturl $SeeAlso]
+
+   set LinkList [::http::data $token]
+   regsub -all {\[} $LinkList "" LinkList
+   regsub -all {\]} $LinkList "" LinkList
+   regsub -all {\"} $LinkList "" LinkList
+   set LinkList [split $LinkList ,]
+   set Title    [lindex $LinkList 3]
+   regsub -all {.*/} $Title "" Title
+
+   openURL [lindex $LinkList 3]
+
+   # puts stderr $Title
+   # page title will allow for NLS, but requires XML parsing
+   #http://de.wikipedia.org/w/api.php?action=query&prop=langlinks&titles=Viswanathan%20Anand
+}
+
 proc ReplaceIDTags { pinfo } {
   # replace certain BIO lines by links to external media
   regsub -all ".*PND "    $pinfo "" pnd
@@ -74,12 +116,13 @@ proc ReplaceIDTags { pinfo } {
 
   # add &name=$playerInfoName for wikipedia
   set wikiplink  "<run openURL $::pinfo::wikipurl?PND=$pnd; ::windows::stats::Refresh><button wikiplnk><blue>WP</blue></run>"
+  set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk><blue>SeeAlso</blue></run>"
   set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk><blue>DNB</blue></run>"
   set viaflink   "<run openURL $::pinfo::viafurl/$viaf; ::windows::stats::Refresh><button viaflnk><blue>VIAF</blue></run>"
   set fidelink   "<run openURL $::pinfo::fideurl=$fide; ::windows::stats::Refresh><button fidelnk><blue>FIDE</blue></run>"
   set iccflink   "<run openURL $::pinfo::iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk><blue>ICCF</blue></run>"
 
-  regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink" pinfo
+  regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink $seealsolink" pinfo
   regsub -all "FIDEID $fide<br>" $pinfo "$fidelink" pinfo
   regsub -all "ICCFID $iccf<br>" $pinfo "$iccflink" pinfo
   regsub -all "VIAF $viaf"   $pinfo "$viaflink" pinfo
