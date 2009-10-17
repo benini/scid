@@ -78,14 +78,45 @@ TdtatcEgocGCuwUAJMigwZwxZCFfxXogYG+sa7dyBQ5GQQHfWMRSrVosTFatSqoyReH0CZQoUqZa
 CCJkCJEiRkUcQZKkYoPr17Bjyw4EADs=
 }
 
-proc saPND2WP { pnd } {
+proc WikipNLS { LinkList } {
 
    # set WikiPediaAPI "http://de.wikipedia.org/w/api.php?action=query"
-   # set WikiPediaLL  "&prop=langlinks"
-   # set WikiPediaTI  "&titles="
+
+   set WikiPLL  "&prop=langlinks"
+   set WikiPTI  "&titles="
+
+   openURL [lindex $LinkList 3]
+
+   # if {[catch {package require tdom}]} {
+   #   # no tDOM use what we have
+   #   openURL [lindex $LinkList 3]
+   # } else {
+   #
+   #    set Title    [lindex $LinkList 3]
+   #    regsub -all {.*/} $Title "" Title
+   #    set WPfetchURL "$::pinfo::wikipAPI$WikiPLL$WikiPTI$Title"
+   #    puts stderr $WPfetchURL
+   #    set token [::http::geturl $WPfetchURL]
+   #    set xmlresult [::http::data $token]
+   #    puts stderr $Title
+   #    puts stderr $WPfetchURL
+   #    puts stderr $xmlresult
+   #    set dom [dom parse $xmlresult]
+   #    set doc [$dom documentElement]
+   #    set aNodes [$doc selectNodes {/api/query/pages/page/langlinks}]
+   #    foreach lng $aNodes {
+   #       set link     [$lng selectNodes {string(ll)}]
+   #       puts stderr $link
+   #    }
+   #    openURL $newlink
+   # }
+}
+
+proc saPND2WP { pnd } {
+
 
    set SeeAlso "$::pinfo::SeeAlsoPND2WP$pnd"
-   puts stderr $SeeAlso
+
    set token [::http::geturl $SeeAlso]
 
    set LinkList [::http::data $token]
@@ -93,10 +124,12 @@ proc saPND2WP { pnd } {
    regsub -all {\]} $LinkList "" LinkList
    regsub -all {\"} $LinkList "" LinkList
    set LinkList [split $LinkList ,]
-   set Title    [lindex $LinkList 3]
-   regsub -all {.*/} $Title "" Title
 
-   openURL [lindex $LinkList 3]
+   puts stderr [lindex $LinkList 3]
+
+   WikipNLS $LinkList
+
+   # openURL [lindex $LinkList 3]
 
    # puts stderr $Title
    # page title will allow for NLS, but requires XML parsing

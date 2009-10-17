@@ -315,7 +315,7 @@ set ::fics::colficshelpnext blue
 set ::fics::server_ip "0.0.0.0"
 
 # default resolvers for player info
-set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query"
+set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query&format=xml"
 # Official server
 set ::pinfo::wikipurl      "http://wikimeta.de/pnd/"
 # Alternative server, but seems to have droped pnd resolver :(

@@ -1002,7 +1002,7 @@ $m add command -label OptionsSave -command {
     }
 
     # save pinfo config
-    foreach i { wikipurl dnburl viafurl fideurl iccfurl } {
+    foreach i { wikipurl dnburl viafurl fideurl iccfurl SeeAlsoPND2WP wikipAPI} {
       puts $optionF "set ::pinfo::$i [list [set ::pinfo::$i]]"
     }
     
