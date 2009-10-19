@@ -4243,6 +4243,14 @@ sc_compact_games (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     newIdx->SetType (db->idx->GetType());
     newIdx->SetDescription (db->idx->GetDescription());
+    
+    // Copy custom flags description
+    char newDesc[ CUSTOM_FLAG_DESC_LENGTH + 1 ];
+    for ( byte b = 1 ; b <= CUSTOM_FLAG_MAX ; b++ ) {
+      db->idx->GetCustomFlagDesc( newDesc , b );
+      newIdx->SetCustomFlagDesc( newDesc , b );
+    }
+
     newIdx->SetAutoLoad (db->idx->GetAutoLoad());
     if (newIdx->CloseIndexFile() != OK  ||  newGfile->Close() != OK) {
         CLEANUP;

@@ -370,7 +370,7 @@ proc ::maint::Refresh {} {
   $w.title.vratings configure \
       -text "[lindex $ratings 0]-[lindex $ratings 1] ([lindex $ratings 2])"
   
-  if { [lsearch { 1 2 3 4 5 6} $maintFlag ] != -1 } {
+  if { [lsearch -exact { 1 2 3 4 5 6 } $maintFlag ] != -1 } {
     set tmp [sc_game flag $maintFlag description]
     if {$tmp == "" } { set tmp $maintFlags($maintFlag) }
   } else  {

@@ -645,7 +645,7 @@ class Index
     void        SetCustomFlagDesc (const char * str, byte c) {
       strncpy( Header.customFlagDesc[c-1], str, CUSTOM_FLAG_DESC_LENGTH );
       Header.customFlagDesc[c-1][CUSTOM_FLAG_DESC_LENGTH] = 0;
-      Dirty = 1;
+      WriteHeader ();
     }
     void        SetAutoLoad (gameNumberT gnum) { Header.autoLoad = gnum + 1; }
     gameNumberT GetAutoLoad () {

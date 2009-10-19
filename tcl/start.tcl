@@ -34,8 +34,8 @@ exec `dirname $0`/tkscid "$0" "$@"
 ############################################################
 
 # Alter the version if any patches have been made to the Tcl code only:
-set scidVersion "4.0"
-set scidVersionDate "September 2009"
+set scidVersion "4.1"
+set scidVersionDate "November 2009"
 
 package require Tcl 8.5
 package require Tk  8.5

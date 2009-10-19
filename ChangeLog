@@ -855,9 +855,15 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* updated swedish translation (thanks to Hans Eriksson)
 	* updated german translation
 
+[November 2009 ]
+
 scid-4.1
 ========
 - Fixes :
 ---------
 - entering comments for last move of a line was broken
+- setting the blunder flag from maintenance window was broken ("?" was considered part of a regular expression)
+- when compacting a game file, custom flags description was lost
+- custom flags description are now commited to index file as soon as they are modified
+
 
