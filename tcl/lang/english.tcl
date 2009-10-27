@@ -304,6 +304,7 @@ menuText E OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText E OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText E OptionsMovesKey "Keyboard Completion" 0 \
   {Turn on/off keyboard move auto-completion}
+menuText E OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText E OptionsNumbers "Number Format" 0 {Select the number format}
 menuText E OptionsStartup "Startup" 3 {Select windows to open at startup}
 menuText E OptionsTheme "Theme" 0 {Change look of interface}

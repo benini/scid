@@ -311,6 +311,8 @@ menuText O OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText O OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText O OptionsMovesKey "Autofullfør" 0 \
   {Slå av/på autofullføriring av tastaturtrekk}
+# ====== TODO To be translated ======
+menuText O OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText O OptionsNumbers "Tallformat" 0 {Angi tallformat}
 menuText O OptionsStartup "Oppstart" 0 {Angi vinduer som skal åpne ved oppstart}
 # ====== TODO To be translated ======
@@ -2136,6 +2138,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

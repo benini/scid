@@ -311,6 +311,8 @@ menuText B OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText B OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText B OptionsMovesKey "Auto completar" 0 \
   {Liga/desliga auto completar a partir do que for digitado}
+# ====== TODO To be translated ======
+menuText B OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText B OptionsNumbers "Formato de Numeros" 0 {Selecione o formato usado para numeros}
 menuText B OptionsStartup "Iniciar" 1 \
   {Seleciona janelas que serao abertas ao iniciar o programa}
@@ -2142,6 +2144,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

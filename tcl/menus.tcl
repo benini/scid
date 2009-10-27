@@ -892,7 +892,7 @@ $m add command -label OptionsSave -command {
           ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks \
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat myPlayerNames \
           tree(order) tree(autoSave) optionsAutoSave ::tree::mask::recentMask \
-          ecoFile suggestMoves showVarPopup glistSize glexport \
+          ecoFile suggestMoves showVarPopup showVarArrows glistSize glexport \
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
@@ -1112,6 +1112,10 @@ $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor
   }
 }
 set helpMessage($m.entry,9) OptionsMovesHighlightLast
+
+$m.entry add checkbutton -label OptionsMovesShowVarArrows \
+    -variable showVarArrows -offvalue 0 -onvalue 1
+set helpMessage($m.entry,10) OptionsMovesShowVarArrows
 
 proc updateLocale {} {
   global locale
@@ -1613,7 +1617,7 @@ proc setLanguageMenus {{lang ""}} {
         GInfo$tag $lang
   }
   configMenuText .menu.options.entry [tr OptionsShowVarPopup $oldLang] OptionsShowVarPopup $lang
-  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove } {
+  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove ShowVarArrows } {
     configMenuText .menu.options.entry [tr OptionsMoves$tag $oldLang] \
         OptionsMoves$tag $lang
   }

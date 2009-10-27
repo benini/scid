@@ -15937,11 +15937,13 @@ sc_var_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_var_list (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    bool uci = (argc > 2) && ! strCompare("UCI", argv[2]);
     uint varCount = db->game->GetNumVariations();
     char s[100];
     for (uint varNumber = 0; varNumber < varCount; varNumber++) {
         db->game->MoveIntoVariation (varNumber);
-        db->game->GetSAN (s);
+        if (uci) db->game->GetNextMoveUCI (s);
+        else db->game->GetSAN (s);
         // if (s[0] == 0) { strCopy (s, "(empty)"); }
         Tcl_AppendElement (ti, s);
         db->game->MoveExitVariation ();

@@ -303,6 +303,8 @@ menuText C OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText C OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText C OptionsMovesKey "Klávesnicové doplòování" 13 \
   {Zapnout/vypnout automatické doplòování tahù zadávaných klávesnicí}
+# ====== TODO To be translated ======
+menuText C OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText C OptionsNumbers "Formát èísel" 0 {Zvolit formát èísel}
 menuText C OptionsStartup "Pøi spu¹tìní" 4 {Zvolit okna, která se otevøou pøi spu¹tìní}
 # ====== TODO To be translated ======
@@ -5766,6 +5768,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

@@ -225,8 +225,7 @@ menuText F CCAcceptDraw "Accepter la nulle" 0 {Accepter la nulle (pas par eMail)
 menuText F CCNewMailGame "Nouvelle partie eMail..." 0 {Commencer une nouvelle partie par eMail}
 menuText F CCMailMove "eMailer le coup..." 0 {Envoyer le coup par eMail à l'adversaire}
 menuText F CCGamePage "Page partie..." 0 {Ouvrir la partie dans navigateur web}
-# ====== TODO To be translated ======
-menuText F CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText F CCEditCopy "Copier parties dans Clipbase" 0 {Copy the games as CSV list to clipbase}
 
 # Options menu:
 menuText F Options "Options" 0
@@ -266,6 +265,7 @@ menuText F OptionsShowVarPopup "Montrer fenêtre des variantes" 0 {Affichage auto
 menuText F OptionsMovesSpace "Ajouter un espace après le numéro du coup" 0 {Espace après numéro du coup}  
 menuText F OptionsMovesKey "Complétion clavier" 0 \
   {Activer/Désactiver le mode de complétion du clavier}
+menuText F OptionsMovesShowVarArrows "Montrer flêches pour les variations" 0 {Montrer des flêches pour les variations existantes}
 menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
 menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
 menuText F OptionsTheme "Apparence" 0 {Change l'apparence de l'interface}
@@ -1848,6 +1848,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

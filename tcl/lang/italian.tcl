@@ -275,6 +275,7 @@ menuText I OptionsShowVarPopup "Mostra Finestra Varianti" 0 {Attiva/Disattiva la
 menuText I OptionsMovesSpace "Aggiungi Spazi dopo Mossa" 0 {Agginuge spazi dopo il numero della mossa}
 menuText I OptionsMovesKey "Completamento da tastiera" 0 \
   {Attiva/Disattiva l'autocompletamento di mosse da tastiera}
+menuText I OptionsMovesShowVarArrows "Mostra Frecce x Varianti" 0 {Attiva/Disattiva le freccie indicanti le mosse delle varianti}
 menuText I OptionsNumbers "Formato del numero" 13 {Seglie il formato del numero}
 menuText I OptionsStartup "Apertura all'avvio" 3 {Sceglie le finestre da aprire all'avvio}
 # ====== TODO To be translated ======
@@ -2055,6 +2056,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

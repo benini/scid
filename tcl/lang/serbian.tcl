@@ -309,6 +309,8 @@ menuText Y OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText Y OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText Y OptionsMovesKey "Dopunjavanje poteza" 0 \
   {Ukljuèi/iskljuèi dopunjavanje poteza zadatih tastaturom}
+# ====== TODO To be translated ======
+menuText Y OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText Y OptionsNumbers "Format brojeva" 0 {Izaberi format brojeva}
 menuText Y OptionsStartup "Startup" 3 {Select windows to open at startup} ;# ***
 # ====== TODO To be translated ======
@@ -2136,6 +2138,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

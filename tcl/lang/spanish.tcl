@@ -275,8 +275,9 @@ menuText S OptionsMovesSuggest "Mostrar movimientos sugeridos" 20 \
 menuText S OptionsShowVarPopup "Mostrar ventana de variaciones" 0 {Activar/Desactivar La ventana de variaciones}
 menuText S OptionsMovesSpace "Añadir espacios detrás de número de movimiento" 0 {Añadir espacios detrás del número de movimiento}  
 menuText S OptionsMovesKey "Teclado Inteligente" 0 \
-{Activa/desactiva la función de autocompletado inteligente de movimientos
-con teclado}
+{Activa/desactiva la función de autocompletado inteligente de movimientos con teclado}
+# ====== TODO To be translated ======
+menuText S OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText S OptionsNumbers "Formato de números" 11 {Selecciona el formato de números}
 menuText S OptionsStartup "Inicio" 3 {Seleccionar ventanas a abrir al inicio}
 menuText S OptionsTheme "Tema" 0 {Cambiar vista del interfaz}
@@ -1658,6 +1659,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

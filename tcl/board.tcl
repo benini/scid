@@ -636,7 +636,7 @@ menubutton .main.fbutton.button.intoVar -image tb_invar -menu .main.fbutton.butt
 menu .main.fbutton.button.intoVar.menu -tearoff 0 -font font_Regular
 
 button .main.fbutton.button.exitVar -image tb_outvar \
-    -command {sc_var exit; updateBoard -animate}
+    -command {::move::ExitVar }
 button .main.fbutton.button.addVar -image tb_addvar \
     -command {sc_var create; updateBoard -pgn -animate}
 ttk::frame .main.fbutton.button.space2 -width 15

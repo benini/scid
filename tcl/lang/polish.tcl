@@ -314,6 +314,8 @@ menuText P OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText P OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText P OptionsMovesKey "Automatyczne dope³nianie posuniêæ" 1 \
   {W³±cz/wy³±cz automatyczne dope³nianie posuniêæ wprowadzanych z klawiatury}
+# ====== TODO To be translated ======
+menuText P OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText P OptionsNumbers "Format zapisu liczb" 0 {Wybierz format zapisu liczb}
 menuText P OptionsStartup "Start" 0 {Wybierz okna, które maj± byæ widoczne po uruchomieniu programu}
 # ====== TODO To be translated ======
@@ -2363,6 +2365,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

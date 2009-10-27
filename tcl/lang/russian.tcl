@@ -311,6 +311,8 @@ menuText R OptionsShowVarPopup "Show variations window" 0 {Turn on/off the displ
 menuText R OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
 menuText R OptionsMovesKey "Клавиатурное завершение" 0 \
   {Включить/выключить автозавершение клавиатурных ходов}
+# ====== TODO To be translated ======
+menuText R OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText R OptionsNumbers "Числовой формат" 0 {Выбрать числовой формат}
 menuText R OptionsStartup "Запуск" 0 {Выбрать окна, открывающиеся при запуске}
 # ====== TODO To be translated ======
@@ -2165,6 +2167,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -311,6 +311,8 @@ menuText W OptionsShowVarPopup "Visa Variantfönster" 0 {Starta/Avsluta visningen
 menuText W OptionsMovesSpace "Lägg till mellanslag efter dragnummer" 0 {Lägg till mellanslag efter dragnummer}  
 menuText W OptionsMovesKey "Tangentkomplettering" 0 \
   {Starta/ stäng av dragkomplettering vid tangentinmatning}
+# ====== TODO To be translated ======
+menuText W OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
 menuText W OptionsNumbers "Talformat" 3 {Välj hur tal visas}
 menuText W OptionsStartup "Start" 3 {Välj vilka fönster som ska öppnas vid start}
 # ====== TODO To be translated ======

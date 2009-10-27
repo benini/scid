@@ -859,6 +859,10 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 
 scid-4.1
 ========
+- Features :
+------------
+- Added the display of arrows when several variations are available. The display can be toggled using the menu Options -> Moves -> Show arrows for variations (Thanks to Fluvio)
+
 - Fixes :
 ---------
 - entering comments for last move of a line was broken
