@@ -862,12 +862,11 @@ scid-4.1
 - Features :
 ------------
 - Added the display of arrows when several variations are available. The display can be toggled using the menu Options -> Moves -> Show arrows for variations (Thanks to Fluvio)
-
 - Fixes :
 ---------
 - entering comments for last move of a line was broken
 - setting the blunder flag from maintenance window was broken ("?" was considered part of a regular expression)
 - when compacting a game file, custom flags description was lost
 - custom flags description are now commited to index file as soon as they are modified
-
+- Informant values were overwritten by default values at startup
 

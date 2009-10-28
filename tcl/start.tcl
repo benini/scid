@@ -655,6 +655,18 @@ array set preport {
 }
 array set preportDefaults [array get preport]
 
+# Analysis options (Informant values)
+# The different threshold values for !? ?? += etc
+array set informant {}
+set informant("!?") 0.5
+set informant("?") 1.5
+set informant("??") 3.0
+set informant("?!") 0.5
+set informant("+=") 0.5
+set informant("+/-") 1.5
+set informant("+-") 3.0
+set informant("++-") 5.5
+
 # Export file options:
 set exportFlags(comments) 1
 set exportFlags(indentc) 0
@@ -1344,6 +1356,9 @@ set optionsFile [scidConfigFile options]
 
 set ecoFile ""
 
+################################################################################
+#  Load options file. All default values should be set before this point or new saved values will be overwritten by default ones
+################################################################################
 if {[catch {source $optionsFile} ]} {
   #::splash::add "Unable to find the options file: [file tail $optionsFile]"
 } else {
