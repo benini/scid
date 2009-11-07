@@ -861,7 +861,8 @@ scid-4.1
 ========
 - Features :
 ------------
-- Added the display of arrows when several variations are available. The display can be toggled using the menu Options -> Moves -> Show arrows for variations (Thanks to Fluvio)
+- Added the display of arrows when several variations are available. The display can be toggled using the menu Options -> Moves -> Show arrows for variations (Thanks to Fulvio)
+- When playing a move already existing in a variation, the variation is automatically entered into. To add a new variation starting with the same move, the menu Edit-> Add variation must be used (Thanks to Fulvio)
 - Fixes :
 ---------
 - entering comments for last move of a line was broken
