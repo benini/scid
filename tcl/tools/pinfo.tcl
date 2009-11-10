@@ -6,59 +6,59 @@ namespace eval pinfo {
 set playerInfoName ""
 
 image create photo wikiplnk -data {
-	R0lGODlhEAAQAIQQAAQCBBkYGSgoKDw6PEhHSFdYV2lqaXp7eoSDhJiYmKmoqbm6ucjHyNjZ2Ono
-	6fz9/P///////////////////////////////////////////////////////////////yH+EUNy
-	ZWF0ZWQgd2l0aCBHSU1QACH5BAEKABAALAAAAAAQABAAAAV24COOZGmeaDouBbE8CnE0z1E0jVE8
-	iPA+BEHDgUg8HAZjI2BwPBIBBcMgQo4KAcajEUQoRIsvOIAQJQC7I+InIhBojQFB1DiUEIBv3Pc0
-	lgQFDgoGA1QITncDBwp1AgllJgoCAl8Lk1onbjQPBgIpC5hbbConIQA7
+   R0lGODlhEAAQAIQQAAQCBBkYGSgoKDw6PEhHSFdYV2lqaXp7eoSDhJiYmKmoqbm6ucjHyNjZ2Ono
+   6fz9/P///////////////////////////////////////////////////////////////yH+EUNy
+   ZWF0ZWQgd2l0aCBHSU1QACH5BAEKABAALAAAAAAQABAAAAV24COOZGmeaDouBbE8CnE0z1E0jVE8
+   iPA+BEHDgUg8HAZjI2BwPBIBBcMgQo4KAcajEUQoRIsvOIAQJQC7I+InIhBojQFB1DiUEIBv3Pc0
+   lgQFDgoGA1QITncDBwp1AgllJgoCAl8Lk1onbjQPBgIpC5hbbConIQA7
 }
 image create photo fidelnk -data {
-	R0lGODlhEAAQAOecACIxWSY0XSc2XSg2YCc3Xig3Xik3Xyk4Xyo4Xyo4YCo5Xyo5YCs5Xyo6Xys6
-	YCs6YSw6YCw6YSw7YSw7Yi07Yi48Yi48Yy88Yi89YzA+ZDE/ZDE/ZTI/ZTJAZTJBZjNBZTNBZjRB
-	ZjNCZTRCZjZEaDdEaThEaThGaTlGaTpIazxKbT1KbT9MbkBNb0NQc0VRc0ZScUZUdEhUdEdVdkhV
-	dElVdEpXdk1ZeE5ZeFRef1NgfVRgf1dgf1hhf11nhGFsh2JsiGFtiGJtiGNtiGZyi2lzjWt3kHB4
-	kHN+lnqEm36GnYCJnYmSo4qTpZWbrpWcq5eerZeer5qgrp6ltaGns6asuKesuqetvK60wrC1wLa6
-	xra8x7i9xLu/x7vAyb3CyMvO1MzP09DS2tDT2dHU2dHV2tLV2dPV29PX29fZ3tna3dna3tra3tzd
-	4d3d4dze4Nze4d3e4d3e4tzf4d3f4d3f497f4d7f5N/g4d7h497h5t/h5ODi5OHi5eHj5eLj5eLk
-	5uPl6OTm6efn6eXo6ejq6+rq6+rq7Orr7Ors6+vs7ezt7+3u7+/w8vDw8O/x8fDx8vHx8vHy9PHz
-	9PX19fb29vf39/j4+fr6+/v6+/z9/f39/v//////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////yH+EUNyZWF0ZWQgd2l0aCBH
-	SU1QACH5BAEKAP8ALAAAAAAQABAAAAjbAEEIHEiwoMGDBz1IGGDhhIkKBhx0IBhiAgUjWMSYiXRH
-	C5IPC0YIfLBji51KV1wESWPpT5chCUBggDGH06UsACYE0DFIEqdGPSBsKIMojxwgRFg84MGmzh5B
-	elbccATp0SNGVjgIWBKpUCJFjH7gcPOGDh8yFzAISGLID6A+f4SQCMQIzhovJVqouDFGTZtDk15Q
-	8EEI0yZKVGrIgCJJU6ZFRxiAQFAEDR4wVXLYkBImzhklCgY2ENEkChMuX55McYLiQMEOBSCkiEFj
-	RgQCGhCC6JCht+7fAwMCADs=
+   R0lGODlhEAAQAOecACIxWSY0XSc2XSg2YCc3Xig3Xik3Xyk4Xyo4Xyo4YCo5Xyo5YCs5Xyo6Xys6
+   YCs6YSw6YCw6YSw7YSw7Yi07Yi48Yi48Yy88Yi89YzA+ZDE/ZDE/ZTI/ZTJAZTJBZjNBZTNBZjRB
+   ZjNCZTRCZjZEaDdEaThEaThGaTlGaTpIazxKbT1KbT9MbkBNb0NQc0VRc0ZScUZUdEhUdEdVdkhV
+   dElVdEpXdk1ZeE5ZeFRef1NgfVRgf1dgf1hhf11nhGFsh2JsiGFtiGJtiGNtiGZyi2lzjWt3kHB4
+   kHN+lnqEm36GnYCJnYmSo4qTpZWbrpWcq5eerZeer5qgrp6ltaGns6asuKesuqetvK60wrC1wLa6
+   xra8x7i9xLu/x7vAyb3CyMvO1MzP09DS2tDT2dHU2dHV2tLV2dPV29PX29fZ3tna3dna3tra3tzd
+   4d3d4dze4Nze4d3e4d3e4tzf4d3f4d3f497f4d7f5N/g4d7h497h5t/h5ODi5OHi5eHj5eLj5eLk
+   5uPl6OTm6efn6eXo6ejq6+rq6+rq7Orr7Ors6+vs7ezt7+3u7+/w8vDw8O/x8fDx8vHx8vHy9PHz
+   9PX19fb29vf39/j4+fr6+/v6+/z9/f39/v//////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////yH+EUNyZWF0ZWQgd2l0aCBH
+   SU1QACH5BAEKAP8ALAAAAAAQABAAAAjbAEEIHEiwoMGDBz1IGGDhhIkKBhx0IBhiAgUjWMSYiXRH
+   C5IPC0YIfLBji51KV1wESWPpT5chCUBggDGH06UsACYE0DFIEqdGPSBsKIMojxwgRFg84MGmzh5B
+   elbccATp0SNGVjgIWBKpUCJFjH7gcPOGDh8yFzAISGLID6A+f4SQCMQIzhovJVqouDFGTZtDk15Q
+   8EEI0yZKVGrIgCJJU6ZFRxiAQFAEDR4wVXLYkBImzhklCgY2ENEkChMuX55McYLiQMEOBSCkiEFj
+   RgQCGhCC6JCht+7fAwMCADs=
 }
 image create photo iccflnk -data {
-	R0lGODlhEAAQAMZqAAAA/wEB/wMD/wQE/wUF/wYG/wcH/wgI/woK/wsL/wwM/xAQ/xER/xIS/xMT
-	/xQU/xYW/xcX/xgY/xkZ/xoa/xsb/x4e/yEh/yIi/yUl/yYm/ycn/ykp/zIy/zQ0/zY2/zc3/zo6
-	/zs7/zw8/z09/0ZG/0lJ/01N/1hY/1lZ/1pa/1tb/1xc/2Nj/2Vl/2lp/2pq/3R0/3V1/3Z2/3d3
-	/3h4/3t7/3x8/39//4SE/4WF/4uL/42N/4+P/5CQ/5KS/5OT/5SU/5WV/5aW/5eX/5iY/5ub/5+f
-	/6Cg/6Gh/6en/6mp/6qq/66u/6+v/7S0/7i4/7u7/729/7+//8DA/8LC/8PD/8rK/8zM/83N/87O
-	/9PT/9fX/9jY/+Pj/+Tk/+bm/+jo/+vr/+zs//Hx//Ly//T0//b2//j4//z8////////////////
-	/////////////////////////////////////////////////////////////////////////yH+
-	EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAfjgFJTaF86R2dpXjlIZ2JQUFIV
-	GGMnAAVFaCaWRlQKCRULE1cGBwIgWwQIASFSAAAMDBJKAC4XEEwALRcWTwAUKAwTQwA0GQs9ADIZ
-	Dk0ALGmhw8ULPAAzGgvNK2nBQtYjHNUxJBxOABw/3dZcW0YANl1bUa4eod40aWlHADf5rQAegkmT
-	8QIIgBozXvQqoUWgNWM7kmVg0EwFtAlFiE30kWxDA23cJiwBAAODBFwvdvXaFsvKgAcGQGQJEGGA
-	iFYsJYT5ACBAEDMdAAggMi9FGiVMzmhhcYNMGiwrcJQBk6RKmkAAOw==
+   R0lGODlhEAAQAMZqAAAA/wEB/wMD/wQE/wUF/wYG/wcH/wgI/woK/wsL/wwM/xAQ/xER/xIS/xMT
+   /xQU/xYW/xcX/xgY/xkZ/xoa/xsb/x4e/yEh/yIi/yUl/yYm/ycn/ykp/zIy/zQ0/zY2/zc3/zo6
+   /zs7/zw8/z09/0ZG/0lJ/01N/1hY/1lZ/1pa/1tb/1xc/2Nj/2Vl/2lp/2pq/3R0/3V1/3Z2/3d3
+   /3h4/3t7/3x8/39//4SE/4WF/4uL/42N/4+P/5CQ/5KS/5OT/5SU/5WV/5aW/5eX/5iY/5ub/5+f
+   /6Cg/6Gh/6en/6mp/6qq/66u/6+v/7S0/7i4/7u7/729/7+//8DA/8LC/8PD/8rK/8zM/83N/87O
+   /9PT/9fX/9jY/+Pj/+Tk/+bm/+jo/+vr/+zs//Hx//Ly//T0//b2//j4//z8////////////////
+   /////////////////////////////////////////////////////////////////////////yH+
+   EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAfjgFJTaF86R2dpXjlIZ2JQUFIV
+   GGMnAAVFaCaWRlQKCRULE1cGBwIgWwQIASFSAAAMDBJKAC4XEEwALRcWTwAUKAwTQwA0GQs9ADIZ
+   Dk0ALGmhw8ULPAAzGgvNK2nBQtYjHNUxJBxOABw/3dZcW0YANl1bUa4eod40aWlHADf5rQAegkmT
+   8QIIgBozXvQqoUWgNWM7kmVg0EwFtAlFiE30kWxDA23cJiwBAAODBFwvdvXaFsvKgAcGQGQJEGGA
+   iFYsJYT5ACBAEDMdAAggMi9FGiVMzmhhcYNMGiwrcJQBk6RKmkAAOw==
 }
 image create photo dnblnk -data {
-	R0lGODlhFAAUALMAAAAAAGZmZld/u8zMzP8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	AAAAACH5BAEAAAQALAAAAAAUABQAAARkkMg5BaA4SxHs1RknjB5YdSQJfCGapismvjRLzDTM4vkI
-	BB9e7ze4CHPEIsDT8wUGUAsHuKw9o8YAIUCFXQeWzbNQ4K4s37BkOSCTzWkb4dx2x0F0N9a0ZhfA
-	ciZnanwYMSARAAA7
+   R0lGODlhFAAUALMAAAAAAGZmZld/u8zMzP8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+   AAAAACH5BAEAAAQALAAAAAAUABQAAARkkMg5BaA4SxHs1RknjB5YdSQJfCGapismvjRLzDTM4vkI
+   BB9e7ze4CHPEIsDT8wUGUAsHuKw9o8YAIUCFXQeWzbNQ4K4s37BkOSCTzWkb4dx2x0F0N9a0ZhfA
+   ciZnanwYMSARAAA7
 }
 image create photo viaflnk -data {
-	R0lGODlhEAAQAIQaAP8AAP8ICP8QEP8YGP8hIf8pKf8xMf85Of9CQv9SUv9aWv9jY/9zc/97e/+E
-	hP+MjP+UlP+cnP+lpf+trf+1tf/Gxv/Ozv/W1v/e3v/v7////////////////////////yH+EUNy
-	ZWF0ZWQgd2l0aCBHSU1QACH5BAEKAB8ALAAAAAAQABAAAAWDoCZm1lVp1ZVhqSWOSnBpEJNlynC+
-	tCA2LwODJ4IENI+M6AKYESWACuXlIBBFFADwVdgSK9bRBCC5ajBOTYYiNWumIguFPSdmledA42JJ
-	8DIHABhYghoqPAxZTgsEEQwTPBILDFEiAhBIeIYOhgBTd0QZCEpZEBcJA2lLFyolKayqGiEAOw==
+   R0lGODlhEAAQAIQaAP8AAP8ICP8QEP8YGP8hIf8pKf8xMf85Of9CQv9SUv9aWv9jY/9zc/97e/+E
+   hP+MjP+UlP+cnP+lpf+trf+1tf/Gxv/Ozv/W1v/e3v/v7////////////////////////yH+EUNy
+   ZWF0ZWQgd2l0aCBHSU1QACH5BAEKAB8ALAAAAAAQABAAAAWDoCZm1lVp1ZVhqSWOSnBpEJNlynC+
+   tCA2LwODJ4IENI+M6AKYESWACuXlIBBFFADwVdgSK9bRBCC5ajBOTYYiNWumIguFPSdmledA42JJ
+   8DIHABhYghoqPAxZTgsEEQwTPBILDFEiAhBIeIYOhgBTd0QZCEpZEBcJA2lLFyolKayqGiEAOw==
 }
 
 image create photo seealsolnk -data {
@@ -84,32 +84,105 @@ proc WikipNLS { LinkList } {
 
    set WikiPLL  "&prop=langlinks"
    set WikiPTI  "&titles="
+   set lang     $::language
+   set langlink [lindex $LinkList 3]
 
-   openURL [lindex $LinkList 3]
+   # translate Scids internal single letter language representation by
+   # a more common two letter one; the same is used by WP
+   switch $lang {
+      B {set wplanguage pt}
+      C {set wplanguage cs}
+      D {set wplanguage de}
+      F {set wplanguage fr}
+      H {set wplanguage hu}
+      I {set wplanguage it}
+      K {set wplanguage ca}
+      N {set wplanguage nl}
+      O {set wplanguage no}
+      P {set wplanguage pl}
+      R {set wplanguage ru}
+      S {set wplanguage es}
+      W {set wplanguage sv}
+      Y {set wplanguage sr}
+      default {set wplanguage en}
+   }
 
-   # if {[catch {package require tdom}]} {
-   #   # no tDOM use what we have
-   #   openURL [lindex $LinkList 3]
-   # } else {
-   #
-   #    set Title    [lindex $LinkList 3]
-   #    regsub -all {.*/} $Title "" Title
-   #    set WPfetchURL "$::pinfo::wikipAPI$WikiPLL$WikiPTI$Title"
-   #    puts stderr $WPfetchURL
-   #    set token [::http::geturl $WPfetchURL]
-   #    set xmlresult [::http::data $token]
-   #    puts stderr $Title
-   #    puts stderr $WPfetchURL
-   #    puts stderr $xmlresult
-   #    set dom [dom parse $xmlresult]
-   #    set doc [$dom documentElement]
-   #    set aNodes [$doc selectNodes {/api/query/pages/page/langlinks}]
-   #    foreach lng $aNodes {
-   #       set link     [$lng selectNodes {string(ll)}]
-   #       puts stderr $link
-   #    }
-   #    openURL $newlink
-   # }
+   set Title    [lindex $LinkList 3]
+   regsub -all {.*/} $Title "" Title
+
+   # Spaces etc in URLs are bad, especially for TCL.
+   # Use poor mans urlencoding:
+   regsub -all { } $Title "%20" Title
+
+   # collect all languages in $fullresult, each page contains a
+   # llcontinue item linking to the following languages
+   set fullresult ""
+   set llcontinue ""
+
+   # start out here:
+   set WPfetchURL "$::pinfo::wikipAPI$WikiPLL$WikiPTI$Title"
+
+   set token     [::http::geturl $WPfetchURL]
+   set xmlresult [::http::data $token]
+   ::http::cleanup $token
+
+   # avoid requirement of tDOM and use simple regexping here as the
+   # XML structure returned is simple enough
+
+   # for more than 10 translations, a continue url is returned.
+   # Extract it
+   regsub -all {.*<langlinks llcontinue=} $xmlresult  "" llcontinue
+   regsub -all {/>.*}                     $llcontinue "" llcontinue
+   regsub -all {\|} $llcontinue "%7C" llcontinue
+   regsub -all {\"} $llcontinue "" llcontinue
+
+   # keep only the langlinks-section of the XML
+   regsub -all {.*<langlinks>} $xmlresult "" xmlresult
+   regsub -all {</langlinks>.*} $xmlresult "" xmlresult
+   regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
+   set fullresult $xmlresult
+      puts stderr $xmlresult
+
+   while { $llcontinue != "" } {
+
+      set WPfetchURL "$::pinfo::wikipAPI$WikiPLL$WikiPTI$Title&llcontinue=$llcontinue"
+      regsub -all { } $WPfetchURL "" WPfetchURL
+
+      set token     [::http::geturl $WPfetchURL]
+      set xmlresult [::http::data $token]
+      ::http::cleanup $token
+
+      if {[string match "*llcontinue*" $xmlresult]} {
+         regsub -all {.*<langlinks llcontinue=} $xmlresult  "" llcontinue
+         regsub -all {/>.*}                     $llcontinue "" llcontinue
+         regsub -all {\|} $llcontinue "%7C" llcontinue
+         regsub -all {\"} $llcontinue "" llcontinue
+      } else {
+         set llcontinue ""
+      }
+
+      regsub -all {.*<langlinks>} $xmlresult "" xmlresult
+      regsub -all {</langlinks>.*} $xmlresult "" xmlresult
+      regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
+      puts stderr $llcontinue
+      puts stderr $xmlresult
+      set fullresult "$fullresult$xmlresult"
+   }
+
+   set langlist [split $fullresult "\n"]
+
+   foreach ll $langlist {
+      puts stderr $ll
+      # construct the NLS-enabled link to WP
+      if { [string match "*lang=\"$wplanguage\"*" $ll] } {
+         set baselink "http://$wplanguage.wikipedia.org/wiki/"
+         regsub -all {.*preserve">} $ll       "" pagename
+         regsub -all {<.*} $pagename "" pagename
+         set langlink "$baselink$pagename"
+      }
+   }
+
+   openURL $langlink
 }
 
 proc saPND2WP { pnd } {
@@ -125,15 +198,7 @@ proc saPND2WP { pnd } {
    regsub -all {\"} $LinkList "" LinkList
    set LinkList [split $LinkList ,]
 
-   puts stderr [lindex $LinkList 3]
-
    WikipNLS $LinkList
-
-   # openURL [lindex $LinkList 3]
-
-   # puts stderr $Title
-   # page title will allow for NLS, but requires XML parsing
-   #http://de.wikipedia.org/w/api.php?action=query&prop=langlinks&titles=Viswanathan%20Anand
 }
 
 proc ReplaceIDTags { pinfo } {
@@ -147,7 +212,8 @@ proc ReplaceIDTags { pinfo } {
   regsub -all {<br>.*}    $fide "" fide
   regsub -all {<br>.*}    $iccf "" iccf
 
-  # add &name=$playerInfoName for wikipedia
+  # disable direct wikipedia linking till the resolver is up and
+  # running again
   set wikiplink  "<run openURL $::pinfo::wikipurl?PND=$pnd; ::windows::stats::Refresh><button wikiplnk><blue>WP</blue></run>"
   set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk><blue>SeeAlso</blue></run>"
   set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk><blue>DNB</blue></run>"
@@ -155,7 +221,8 @@ proc ReplaceIDTags { pinfo } {
   set fidelink   "<run openURL $::pinfo::fideurl=$fide; ::windows::stats::Refresh><button fidelnk><blue>FIDE</blue></run>"
   set iccflink   "<run openURL $::pinfo::iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk><blue>ICCF</blue></run>"
 
-  regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink $seealsolink" pinfo
+  # regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink $seealsolink" pinfo
+  regsub -all "PND $pnd<br>"     $pinfo "$dnblink $seealsolink" pinfo
   regsub -all "FIDEID $fide<br>" $pinfo "$fidelink" pinfo
   regsub -all "ICCFID $iccf<br>" $pinfo "$iccflink" pinfo
   regsub -all "VIAF $viaf"   $pinfo "$viaflink" pinfo

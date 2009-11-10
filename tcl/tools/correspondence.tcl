@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.80 2009/10/07 18:33:55 arwagner Exp $
+### $Id: correspondence.tcl,v 1.81 2009/11/10 17:41:56 arwagner Exp $
 ###
-### Last change: <Sat, 2009/10/03 17:22:21 arwagner ingata>
+### Last change: <Mon, 2009/11/09 21:42:46 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -447,14 +447,15 @@ namespace eval Xfcc {
 
 		# retrieve result
 		set xmlresult [::http::data $token]
+		::http::cleanup $token
 
 		###---###
-		##if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
-		##	::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
-		##} else {
-		##	puts $dbg $xmlresult
-		##}
-		##close $dbg
+		if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
+			::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
+		} else {
+			puts $dbg $xmlresult
+		}
+		close $dbg
 		###---###
 
 		return $xmlresult
@@ -491,6 +492,7 @@ namespace eval Xfcc {
 
 		# retrieve result
 		set xmlresult [::http::data $token]
+		::http::cleanup $token
 		return $xmlresult
 	}
 
@@ -573,6 +575,8 @@ namespace eval Xfcc {
 			set Round       [::Xfcc::xmldecrypt [$game selectNodes {string(round)}]]
 			set Result      [::Xfcc::xmldecrypt [$game selectNodes {string(result)}]]
 			set drawOffered [::Xfcc::xmldecrypt [$game selectNodes {string(drawOffered)}]]
+			set setup       [::Xfcc::xmldecrypt [$game selectNodes {string(setup)}]]
+			set fen         [::Xfcc::xmldecrypt [$game selectNodes {string(fen)}]]
 
 			# These values may not be set, they were first introduced by
 			# SchemingMind as extension to Xfcc
@@ -659,6 +663,9 @@ namespace eval Xfcc {
 					}
 					if {$blackFideID > 0} {
 						puts $pgnF "\[blackFideID \"$blackFideID\"\]";
+					}
+					if {$setup == "true"} {
+						puts $pgnF "\[FEN \"$fen\"\]";
 					}
 
 					# add result to the header
@@ -772,6 +779,7 @@ namespace eval Xfcc {
 			set minutesOpponent [$game selectNodes {string(minutesOpponent)}]
 			set drawOffered     [$game selectNodes {string(drawOffered)}]
 			set setup           [$game selectNodes {string(setup)}]
+			set fen             [$game selectNodes {string(fen)}]
 			set variant         [$game selectNodes {string(variant)}]
 			set noOpeningBooks  [$game selectNodes {string(noOpeningBooks)}]
 			set noDatabases     [$game selectNodes {string(noDatabases)}]
@@ -780,6 +788,7 @@ namespace eval Xfcc {
 			set Result          [$game selectNodes {string(result)}]
 			set TimeControl     [$game selectNodes {string(timeControl)}]
 			set mess            [::Xfcc::xmldecrypt [$game selectNodes {string(message)}]]
+			set serverinfo      [::Xfcc::xmldecrypt [$game selectNodes {string(serverInfo)}]]
 
 			# Set to official ICCF timing by default
 			# as ICCF does not send TimeControl
@@ -824,6 +833,7 @@ namespace eval Xfcc {
 				[list "clockB" $clockB] \
 				[list "drawOffered"  $drawOffered ]\
 				[list "setup" $setup] \
+				[list "fen" $fen] \
 				[list "variant" $variant] \
 				[list "noOpeningBooks" $noOpeningBooks] \
 				[list "noTablebases" $noTablebases] \
@@ -833,7 +843,8 @@ namespace eval Xfcc {
 				[list "TimeControl" $TC] \
 				[list "message" $mess] \
 				[list "mytime" $mytime] \
-				[list "opptime" $opptime] ]
+				[list "opptime" $opptime] \
+				[list "serverInfo" $serverinfo] ]
 		}
 
 		set filename [scidConfigFile xfccstate]
