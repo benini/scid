@@ -474,7 +474,7 @@ proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   }
   
   ::reviewgame::sendToEngine "position fen [sc_pos fen] $move"
-  ::reviewgame::sendToEngine "go infinite ponder"
+  ::reviewgame::sendToEngine "go infinite"
   after [expr 1000 * $analysisTime] "::reviewgame::stopAnalyze $move"
 }
 # ======================================================================

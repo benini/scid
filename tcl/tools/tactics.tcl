@@ -677,7 +677,7 @@ namespace eval tactics {
     set analysisEngine(analyzeMode) 1
     after cancel ::tactics::stopAnalyze
     ::tactics::sendToEngine "position fen [sc_pos fen]"
-    ::tactics::sendToEngine "go infinite ponder"
+    ::tactics::sendToEngine "go infinite"
     after [expr 1000 * $analysisTime] ::tactics::stopAnalyze
   }
   # ======================================================================

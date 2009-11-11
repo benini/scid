@@ -473,7 +473,7 @@ namespace eval calvar {
     } else {
       ::uci::sendToEngine $n "position fen $fen"
     }
-    ::uci::sendToEngine $n "go infinite ponder"
+    ::uci::sendToEngine $n "go infinite"
   }
   ################################################################################
   # stopAnalyzeMode

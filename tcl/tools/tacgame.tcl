@@ -580,7 +580,7 @@ namespace eval tacgame {
     ::uci::sendToEngine $n "isready"
     vwait ::analysis(waitForReadyOk$n)
     ::uci::sendToEngine $n "position fen [sc_pos fen]"
-    ::uci::sendToEngine $n "go infinite ponder"
+    ::uci::sendToEngine $n "go infinite"
     
     if { $isLimitedAnalysisTime == 1 }  {
       after [expr 1000 * $analysisTime] ::tacgame::stopAnalyze

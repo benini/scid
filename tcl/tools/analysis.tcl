@@ -1845,7 +1845,7 @@ proc changePVSize { n } {
       vwait analysis(waitForBestMove$n)
       sendToEngine $n "setoption name MultiPV value $analysis(multiPVCount$n)"
       sendToEngine $n "position fen [sc_pos fen]"
-      sendToEngine $n "go ponder infinite"
+      sendToEngine $n "go infinite"
     } else  {
       sendToEngine $n "setoption name MultiPV value $analysis(multiPVCount$n)"
     }
@@ -2212,7 +2212,7 @@ proc startAnalyzeMode {{n 1} {force 0}} {
     sendToEngine $n "isready"
     vwait analysis(waitForReadyOk$n)
     sendToEngine $n "position fen [sc_pos fen]"
-    sendToEngine $n "go ponder infinite"
+    sendToEngine $n "go infinite"
     set analysis(fen$n) [sc_pos fen]
     set analysis(maxmovenumber$n) 0
   } else  {
@@ -2598,7 +2598,7 @@ proc updateAnalysis {{n 1}} {
     set analysis(waitForBestMove$n) 1
     vwait analysis(waitForBestMove$n)
     sendToEngine $n "position fen [sc_pos fen]"
-    sendToEngine $n "go ponder infinite"
+    sendToEngine $n "go infinite"
     set analysis(fen$n) [sc_pos fen]
     set analysis(maxmovenumber$n) 0
   } else {
