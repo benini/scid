@@ -150,7 +150,7 @@ namespace eval uci {
         if { $t == "multipv" } { incr i ; set uciInfo(multipv$n) [ lindex $data $i ] ; continue }
         if { $t == "score" } {
           incr i
-          set next [ lindex $data $i ]
+          set next [ lindex $data $i ]        
           if { $next == "cp" } {
             incr i
             set uciInfo(tmp_score$n) [ lindex $data $i ]

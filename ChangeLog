@@ -871,5 +871,5 @@ scid-4.1
 - custom flags description are now commited to index file as soon as they are modified
 - Informant values were overwritten by default values at startup
 - UCI engines : send "go infinite" instead of "go infinite ponder" because it is not handled correctly by some engines and "go infinite" seems sufficient
-- fixed a bug when USCF piece set was selected and the lib tkimg not installed
+- fixed a bug when USCF piece set was selected and the library tkimg not installed (under Linux)
 

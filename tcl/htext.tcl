@@ -80,7 +80,7 @@ proc updateHelpWindow {name {heading ""}} {
     # wm geometry $w -10+0
     setWinLocation $w
     setWinSize $w
-
+    
     wm minsize $w 20 5
     text $w.text -setgrid yes -wrap word -width $::winWidth($w) -height $::winHeight($w) -relief sunken -border 0 -yscroll "$w.scroll set"
     ttk::scrollbar $w.scroll -command "$w.text yview"
@@ -460,10 +460,17 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
       $w window create end -window $winName
     }
     if {[strIsPrefix "button " $tagName]} {
-      set imgName [string range $tagName 7 end]
+      set idx [ string first "-command" $tagName]
+      set cmd ""
+      if {$idx == -1} {
+        set imgName [string range $tagName 7 end]
+      } else  {
+        set imgName [string trim [string range $tagName 7 [expr $idx -1]]]
+        set cmd [ string range $tagName [expr $idx +9] end ]
+      }
       set winName $w.$imgName
       while {[winfo exists $winName]} { append winName a }
-      button $winName -image $imgName
+      button $winName -image $imgName -command $cmd
       $w window create end -window $winName
     }
     if {[strIsPrefix "window " $tagName]} {
@@ -542,8 +549,8 @@ proc openURL {url} {
         catch {exec /bin/sh -c "$::auto_execs(netscape) '$url'" &}
       }
     } else {
-      foreach executable {iexplorer opera lynx w3m links epiphan galeon 
-                          konqueror mosaic amaya browsex elinks} {
+      foreach executable {iexplorer opera lynx w3m links epiphan galeon
+        konqueror mosaic amaya browsex elinks} {
         set executable [auto_execok $executable]
         if [string length $executable] {
           # Is there any need to give options to these browsers? how?

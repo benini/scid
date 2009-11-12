@@ -218,7 +218,7 @@ proc ReplaceIDTags { pinfo } {
   set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk><blue>SeeAlso</blue></run>"
   set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk><blue>DNB</blue></run>"
   set viaflink   "<run openURL $::pinfo::viafurl/$viaf; ::windows::stats::Refresh><button viaflnk><blue>VIAF</blue></run>"
-  set fidelink   "<run openURL $::pinfo::fideurl=$fide; ::windows::stats::Refresh><button fidelnk><blue>FIDE</blue></run>"
+  set fidelink   "<run openURL $::pinfo::fideurl=$fide; ::windows::stats::Refresh><button fidelnk -command openURL $::pinfo::fideurl=$fide><blue>FIDE</blue></run>"
   set iccflink   "<run openURL $::pinfo::iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk><blue>ICCF</blue></run>"
 
   # regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink $seealsolink" pinfo
