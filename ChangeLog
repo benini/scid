@@ -872,4 +872,6 @@ scid-4.1
 - Informant values were overwritten by default values at startup
 - UCI engines : send "go infinite" instead of "go infinite ponder" because it is not handled correctly by some engines and "go infinite" seems sufficient
 - fixed a bug when USCF piece set was selected and the library tkimg not installed (under Linux)
+- UI may be unresponsive when an engine outputs lots of garbage when nearing a mate. Fixed for UCI engines only as I don't have an example of such misbehaviour of an xboard engine.
+
 

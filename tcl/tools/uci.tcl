@@ -92,6 +92,9 @@ namespace eval uci {
     
     logEngine $n "Engine: $line"
     
+    # keep UI responsive when engine outputs lots of info (garbage ?)
+    update idletasks
+    
     if {[string match "bestmove*" $line]} {
       set data [split $line]
       set uciInfo(bestmove$n) [lindex $data 1]
