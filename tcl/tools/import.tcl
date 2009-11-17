@@ -219,6 +219,7 @@ proc doPgnFileImport {fname text {multiple 0} } {
   
   set importPgnErrors ""
   set err [catch {sc_base import file $fname} result]
+  unbusyCursor .
   
   set warnings ""
   $w.text configure -state normal
@@ -243,7 +244,7 @@ proc doPgnFileImport {fname text {multiple 0} } {
   $w.buttons.stop configure -state disabled
   catch {grab release $w.buttons.stop}
   bind $w <Escape> "$w.buttons.close invoke; break"
-  unbusyCursor .
+  
   # Auto-close import progress window if there were no errors/warnings?
   if {!$err  &&  $warnings == "" && ! $multiple} { destroy $w }
   updateTitle

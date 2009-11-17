@@ -855,7 +855,7 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* updated swedish translation (thanks to Hans Eriksson)
 	* updated german translation
 
-[November 2009 ]
+[January 2010 ]
 
 scid-4.1
 ========
@@ -873,5 +873,8 @@ scid-4.1
 - UCI engines : send "go infinite" instead of "go infinite ponder" because it is not handled correctly by some engines and "go infinite" seems sufficient
 - fixed a bug when USCF piece set was selected and the library tkimg not installed (under Linux)
 - UI may be unresponsive when an engine outputs lots of garbage when nearing a mate. Fixed for UCI engines only as I don't have an example of such misbehaviour of an xboard engine.
+- Fixed a possible buffer overflow when parsing a malformed PGN (Thanks to Fulvio)
+- Modified slightly UCI parser in order to get Prodeo work (there's no garantee that Prodeo will work as it does comply to UCI protocol) (Thanks to Shiv Shivaji)
+
 
 

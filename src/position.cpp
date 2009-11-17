@@ -2357,6 +2357,9 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT token)
         }
         s++;
     }
+
+    if (slen < 2) return ERROR_InvalidMove;
+    
     *s2 = '\0';
     s = mStr;
 
