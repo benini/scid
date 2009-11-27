@@ -5674,7 +5674,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             language = old_language;
         break;
     case GAME_UNDO:
-        printf("undo");
+        printf("undo %d\n", db->undoIndex);
         if (db->undoIndex != -1) {
           Game * g = db->undoGame[db->undoIndex];
           db->undoGame[db->undoIndex] = NULL;
@@ -8945,7 +8945,6 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 void sc_game_save_for_undo() {
 
     Game * g = new Game;
-    
     db->undoIndex++;
     if ( db->undoIndex >= UNDO_MAX ) {
       for (int i = 0 ; i < UNDO_MAX-1 ; i++) {
@@ -8953,6 +8952,8 @@ void sc_game_save_for_undo() {
       }
       db->undoIndex = UNDO_MAX-1;
     }
+    
+    printf("sc_game_save_for_undo idx %d\n", db->undoIndex);
     
     db->undoGame[db->undoIndex] = g;
     
