@@ -8449,7 +8449,9 @@ sc_game_tags (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
         case OPT_GET:    return sc_game_tags_get (cd, ti, argc, argv);
-        case OPT_SET:    return sc_game_tags_set (cd, ti, argc, argv);
+        case OPT_SET:
+          sc_game_save_for_undo();
+          return sc_game_tags_set (cd, ti, argc, argv);
         case OPT_RELOAD: return sc_game_tags_reload (cd, ti, argc, argv);
         case OPT_SHARE:  return sc_game_tags_share (cd, ti, argc, argv);
         default:         return InvalidCommand (ti, "sc_game tags", options);
