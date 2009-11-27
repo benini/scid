@@ -84,6 +84,8 @@ menuText D EditTrial "Variante testen" 9 \
   {Testmodus starten/stoppen, um eine Idee am Brett auszuprobieren}
 menuText D EditStrip "Entfernen" 1 \
    {Kommentare oder Varianten aus der Partie entfernen}
+# ====== TODO To be translated ======
+menuText D EditUndo "Undo" 0 {Undo last game change}
 menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \
@@ -7259,6 +7261,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

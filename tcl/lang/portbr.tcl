@@ -67,6 +67,8 @@ menuText B EditTrial "Experimentar variante" 0 \
   {Inicia/Para experimentacao, para testar alguma nova ideia no tabuleiro}
 menuText B EditStrip "Limpar Comentarios e Variantes" 2 \
   {Limpa comentarios e variantes no jogo atual}
+# ====== TODO To be translated ======
+menuText B EditUndo "Undo" 0 {Undo last game change}
 menuText B EditStripComments "Limpar Comentarios" 0 \
   {Limpa comentarios e anotacoes no jogo atual}
 menuText B EditStripVars "Limpar Variantes" 0 \
@@ -2144,6 +2146,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

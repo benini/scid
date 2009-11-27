@@ -521,7 +521,6 @@ proc getNextMoves { {num 4} } {
   return $tmp
 }
 ################################################################################
-#  Pascal Georges :
 # displays a box with main line and variations for easy selection with keyboard
 ################################################################################
 proc showVars {} {
@@ -620,9 +619,9 @@ proc showVars {} {
   
   sc_info preMoveCmd preMoveCommand
   
-  focus .variations
+  catch { focus .variations }
+  catch { grab $w }
   update
-  grab $w
 }
 ################################################################################
 #
@@ -1219,19 +1218,19 @@ proc addMove { sq1 sq2 {animate ""}} {
   set moveUCI [::board::san $sq2][::board::san $sq1]$promoLetter
   set move [sc_game info nextMoveUCI]
   if { [ string compare -nocase $moveUCI $move] == 0 } {
-  	sc_move forward
-	updateBoard
-	return
-  }  
+    sc_move forward
+    updateBoard
+    return
+  }
   set varList [sc_var list UCI]
   set i 0
   foreach { move } $varList {
-	if { [ string compare -nocase $moveUCI $move] == 0 } {
-		sc_var moveInto $i		
-		updateBoard
-		return
-	}
-	incr i
+    if { [ string compare -nocase $moveUCI $move] == 0 } {
+      sc_var moveInto $i
+      updateBoard
+      return
+    }
+    incr i
   }
   
   set action "replace"
@@ -1300,21 +1299,21 @@ proc addMove { sq1 sq2 {animate ""}} {
 proc addSanMove {san {animate ""} {noTraining ""}} {
   set move [sc_game info nextMoveNT]
   if { [ string compare -nocase $san $move] == 0 } {
-  	sc_move forward
-	updateBoard
-	return
-  }  
+    sc_move forward
+    updateBoard
+    return
+  }
   set varList [sc_var list]
   set i 0
   foreach { move } $varList {
-	if { [ string compare -nocase $san $move] == 0 } {
-		sc_var moveInto $i		
-		updateBoard
-		return
-	}
-	incr i
+    if { [ string compare -nocase $san $move] == 0 } {
+      sc_var moveInto $i
+      updateBoard
+      return
+    }
+    incr i
   }
-
+  
   set action "replace"
   if {![sc_pos isAt vend]} {
     set action [confirmReplaceMove]

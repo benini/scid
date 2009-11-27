@@ -578,6 +578,8 @@ public:
     static ushort GetStoredLineCount (void);
     static Game * GetStoredLine (ushort i);
     static const char * GetStoredLineText (ushort i);
+
+    void undo();
 };
 
 

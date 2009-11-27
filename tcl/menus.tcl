@@ -275,6 +275,9 @@ set helpMessage($m,[incr menuindex]) EditTrial
 $m add cascade -label EditStrip -menu $m.strip
 set helpMessage($m,[incr menuindex]) EditStrip
 
+$m add command -label EditUndo -accelerator "Ctrl+z" -command {  sc_game undo ; updateBoard -pgn }
+set helpMessage($m,[incr menuindex]) EditUndo
+
 menu $m.strip
 $m.strip add command -label EditStripComments -command {::game::Strip comments}
 set helpMessage($m.strip,0) EditStripComments
@@ -1560,7 +1563,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.file.utils.name [tr FileMaintName$tag $oldLang] \
         FileMaintName$tag $lang
   }
-  foreach tag {Add Delete First Main Trial Strip Reset Copy Paste PastePGN Setup
+  foreach tag {Add Delete First Main Trial Strip Reset Copy Paste PastePGN Setup Undo
     CopyBoard PasteBoard} {
     configMenuText .menu.edit [tr Edit$tag $oldLang] Edit$tag $lang
   }
@@ -1748,7 +1751,7 @@ proc standardShortcuts {w} {
     bind $w <Control-J> tools::graphs::absfilter::Open
     bind $w <Control-O> ::optable::makeReportWin
     bind $w <Control-K> ::ptrack::make
-    
+    bind $w <Control-z> {  sc_game undo ; updateBoard -pgn }
     bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
     bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
     bind $w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"

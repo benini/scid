@@ -3,7 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-
+terminer undo
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -15,6 +15,8 @@
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- undo function
 
 - Notify games with annotations in "Best game", show annotator there.
   Consider sort order: e.g. annotated games on top?

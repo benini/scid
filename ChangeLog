@@ -863,6 +863,7 @@ scid-4.1
 ------------
 - Added the display of arrows when several variations are available. The display can be toggled using the menu Options -> Moves -> Show arrows for variations (Thanks to Fulvio)
 - When playing a move already existing in a variation, the variation is automatically entered into. To add a new variation starting with the same move, the menu Edit-> Add variation must be used (Thanks to Fulvio)
+- Added undo feature (10 undos max). Shortcut is Ctrl-z.
 - Fixes :
 ---------
 - entering comments for last move of a line was broken
@@ -875,6 +876,6 @@ scid-4.1
 - UI may be unresponsive when an engine outputs lots of garbage when nearing a mate. Fixed for UCI engines only as I don't have an example of such misbehaviour of an xboard engine.
 - Fixed a possible buffer overflow when parsing a malformed PGN (Thanks to Fulvio)
 - Modified slightly UCI parser in order to get Prodeo work (there's no garantee that Prodeo will work as it does comply to UCI protocol) (Thanks to Shiv Shivaji)
-
+- Fixed an error popping up when pressing right arrow very quickly with the variations window displayed and engines taking all available CPU
 
 

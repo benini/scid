@@ -66,6 +66,8 @@ menuText Y EditMain "Postavi varijantu na glavnu liniju" 21 \
 menuText Y EditTrial "Probaj varijantu" 0 \
   {Pokreni/zaustavi mod za testiranje ideje na tabli}
 menuText Y EditStrip "Ukloni" 2 {Ukloni komentare ili varijante iz ove partije}
+# ====== TODO To be translated ======
+menuText Y EditUndo "Undo" 0 {Undo last game change}
 menuText Y EditStripComments "Komentare" 0 \
   {Ukloni sve komentare i napomene iz ove partije}
 menuText Y EditStripVars "Varijante" 0 {Ukloni sve varijante iz ove partije}
@@ -2138,6 +2140,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

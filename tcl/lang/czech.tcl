@@ -66,6 +66,8 @@ menuText C EditMain "Pový¹it stávající variantu na hlavní" 30 \
 menuText C EditTrial "Zkusit variantu" 1 \
     {Spustit/Ukonèit zku¹ební mód pro testování my¹lenky na ¹achovnici}
 menuText C EditStrip "Odstranit" 0 {Odstranit komentáøe nebo varianty z této partie}
+# ====== TODO To be translated ======
+menuText C EditUndo "Undo" 0 {Undo last game change}
 menuText C EditStripComments "Komentáøe" 0 \
   {Odstranit v¹echny poznámky a anotace z této partie}
 menuText C EditStripVars "Varianty" 0 {Odstranit v¹echny varianty z této partie}
@@ -5768,6 +5770,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

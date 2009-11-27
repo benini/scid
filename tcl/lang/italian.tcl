@@ -69,6 +69,8 @@ menuText I EditMain "Promuove una Variante a Linea Principale" 0 \
 menuText I EditTrial "Prova una variante" 0 \
   {Attiva/disattiva la modalita' di prova di una variante, per provare idee direttamente sulla scacchiera}
 menuText I EditStrip "Pulisci" 2 {Elimina commenti o varianti dalla partita corrente}
+# ====== TODO To be translated ======
+menuText I EditUndo "Undo" 0 {Undo last game change}
 menuText I EditStripComments "Commenti" 0 \
   {Elimina tutti i commenti e le annotazioni dalla parita corrente}
 menuText I EditStripVars "Varianti" 0 {Elimina tutte le varianti dalla partita corrente}
@@ -2056,6 +2058,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

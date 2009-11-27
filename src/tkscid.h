@@ -98,6 +98,9 @@ const uint SCID_TreeCacheSize = 1000; //250
 const uint SCID_BackupCacheSize = 100;
 #endif
 
+// Number of undo levels
+#define UNDO_MAX 10
+
 //////////////////////////////////////////////////////////////////////
 //
 // Data structures for Scid Tcl/Tk extensions:
@@ -157,6 +160,8 @@ struct scidBaseT {
     Index *      idx;           // the Index file in memory for this base.
     NameBase *   nb;            // the NameBase file in memory.
     Game *       game;          // the active game for this base.
+    Game *       undoGame[UNDO_MAX]; // array of games kept for undos
+    int          undoIndex;
     int          gameNumber;    // game number of active game.
     bool         gameAltered;   // true if game is modified
     bool         inUse;         // true if the database is open (in use).
@@ -474,6 +479,8 @@ int sc_game_tags_get  (TCL_ARGS);
 int sc_game_tags_set  (TCL_ARGS);
 int sc_game_tags_reload (TCL_ARGS);
 int sc_game_tags_share (TCL_ARGS);
+void sc_game_save_for_undo ();
+void sc_game_undo_reset();
 
 int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);

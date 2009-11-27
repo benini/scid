@@ -501,6 +501,9 @@ scid_InitTclTk (Tcl_Interp * ti)
         db->idx = new Index;
         db->nb = new NameBase;
         db->game = new Game;
+        for (int u = 0; u < UNDO_MAX; u++)
+          db->undoGame[u] = NULL;
+        db->undoIndex = -1;
         db->gameNumber = -1;
         db->gameAltered = false;
         db->gfile = new GFile;
@@ -1414,6 +1417,16 @@ sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (!basePtr->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
+
+    // reset undo data
+    basePtr->undoIndex = -1;
+    for (int u = 0; u < UNDO_MAX; u++) {
+      if ( basePtr->undoGame[u] != NULL ) {
+        delete basePtr->undoGame[u];
+        basePtr->undoGame[u] = NULL;        
+      }
+    }
+    
     // If the database is the clipbase, do not close it, just clear it:
     if (basePtr == clipbase) { return sc_clipbase_clear (ti); }
     basePtr->idx->CloseIndexFile();
@@ -5540,7 +5553,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "save",       "scores",
         "startBoard", "strip",      "summary",    "tags",
-        "truncate",   "truncatefree", NULL
+        "truncate",   "truncatefree", "undo", NULL
     };
     enum {
         GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,        GAME_FIND,
@@ -5549,7 +5562,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SAVE,       GAME_SCORES,
         GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,    GAME_TAGS,
-        GAME_TRUNCATE, GAME_TRUNCATEANDFREE
+        GAME_TRUNCATE, GAME_TRUNCATEANDFREE, GAME_UNDO
     };
     int index = -1;
     char old_language = 0;
@@ -5624,9 +5637,11 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_game_scores (cd, ti, argc, argv);
 
     case GAME_STARTBOARD:
+        sc_game_save_for_undo();
         return sc_game_startBoard (cd, ti, argc, argv);
 
     case GAME_STRIP:
+        sc_game_save_for_undo();
         return sc_game_strip (cd, ti, argc, argv);
 
     case GAME_SUMMARY:
@@ -5636,6 +5651,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_game_tags (cd, ti, argc, argv);
 
     case GAME_TRUNCATE:
+        sc_game_save_for_undo();
         old_language = language;
         language = 0;
         if (argc > 2 && strIsPrefix (argv[2], "-start")) {
@@ -5656,6 +5672,17 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
            // and free moves memory (to FreeList
             db->game->TruncateAndFree();
             language = old_language;
+        break;
+    case GAME_UNDO:
+        printf("undo");
+        if (db->undoIndex != -1) {
+          Game * g = db->undoGame[db->undoIndex];
+          db->undoGame[db->undoIndex] = NULL;
+          delete db->game;
+          db->gameAltered = g->GetAltered();
+          db->game = g;
+          db->undoIndex--;
+        }
         break;
     default:
         return InvalidCommand (ti, "sc_game", options);
@@ -7149,6 +7176,8 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_game load <gameNumber>");
     }
 
+    sc_game_undo_reset();
+    
     db->bbuf->Empty();
     uint gnum = strGetUnsigned (argv[2]);
 
@@ -8908,6 +8937,54 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     return TCL_OK;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_game_save_for_undo:
+//    change current game to latest saved state
+void sc_game_save_for_undo() {
+
+    Game * g = new Game;
+    
+    db->undoIndex++;
+    if ( db->undoIndex >= UNDO_MAX ) {
+      for (int i = 0 ; i < UNDO_MAX-1 ; i++) {
+        db->undoGame[i] = db->undoGame[i+1];
+      }
+      db->undoIndex = UNDO_MAX-1;
+    }
+    
+    db->undoGame[db->undoIndex] = g;
+    
+    db->game->SetAltered (db->gameAltered);
+    db->game->SaveState();
+    db->game->Encode (db->bbuf, NULL);
+    db->game->RestoreState();
+    db->bbuf->BackToStart();
+    g->Decode (db->bbuf, GAME_DECODE_ALL);
+    g->CopyStandardTags (db->game);
+    db->game->ResetPgnStyle (PGN_STYLE_VARS);
+    db->game->SetPgnFormat (PGN_FORMAT_Plain);
+    db->tbuf->Empty();
+    db->game->WriteToPGN (db->tbuf);
+    uint location = db->game->GetPgnOffset (0);
+    db->tbuf->Empty();
+    g->MoveToLocationInPGN (db->tbuf, location);    
+
+    db->gameAltered = false;  
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_game_undo_reset:
+//    resets data used for undos (for example after loading another game)
+void sc_game_undo_reset() {
+  db->undoIndex = -1;
+  for (int i = 0 ; i < UNDO_MAX ; i++) {
+    if (db->undoGame[i] != NULL) {
+      delete db->undoGame[i];
+      db->undoGame[i] = NULL;
+    }
+  }
+}
+
 //////////////////////////////////////////////////////////////////////
 ///  INFO functions
 
@@ -9431,12 +9508,15 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case MOVE_ADD:
+        sc_game_save_for_undo();
         return sc_move_add (cd, ti, argc, argv);
 
     case MOVE_ADDSAN:
+        sc_game_save_for_undo();
         return sc_move_addSan (cd, ti, argc, argv);
 
     case MOVE_ADDUCI:
+        sc_game_save_for_undo();
         return sc_move_addUCI (cd, ti, argc, argv);
 
     case MOVE_BACK:
@@ -9777,6 +9857,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_pos_probe (cd, ti, argc, argv);
 
     case POS_SETCOMMENT:
+        sc_game_save_for_undo();
         return sc_pos_setComment (cd, ti, argc, argv);
 
     case POS_SIDE:
@@ -15829,6 +15910,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case VAR_CREATE:
         if (! (db->game->AtVarStart()  &&  db->game->AtVarEnd())) {
+            sc_game_save_for_undo();
             PreMoveCommand (ti);
             db->game->MoveForward();
             db->game->AddVariation();
@@ -15837,6 +15919,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     case VAR_DELETE:
+        sc_game_save_for_undo();
         return sc_var_delete (cd, ti, argc, argv);
 
     case VAR_DELETEFREE:
@@ -15863,6 +15946,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_var_enter (cd, ti, argc, argv);
 
     case VAR_PROMOTE:
+        sc_game_save_for_undo();
         return sc_var_promote (cd, ti, argc, argv);
 
     default:

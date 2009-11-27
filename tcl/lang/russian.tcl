@@ -68,6 +68,8 @@ menuText R EditMain "Заменить основную линию вариантом" 0 \
 menuText R EditTrial "Попробовать вариант" 0 \
   {Запустить/закончить пробный режим, для проверки идеи на доске}
 menuText R EditStrip "Убрать" 1 {Убрать комментарии или варианты из партии}
+# ====== TODO To be translated ======
+menuText R EditUndo "Undo" 0 {Undo last game change}
 menuText R EditStripComments "Комментарии" 0 \
   {Убрать все комментарии и аннотации из этой партии}
 menuText R EditStripVars "Варианты" 0 {Убрать все варианты из этой партии}
@@ -2167,6 +2169,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 
