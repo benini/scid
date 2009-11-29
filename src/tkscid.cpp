@@ -5674,12 +5674,11 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             language = old_language;
         break;
     case GAME_UNDO:
-        printf("undo %d\n", db->undoIndex);
         if (db->undoIndex != -1) {
           Game * g = db->undoGame[db->undoIndex];
           db->undoGame[db->undoIndex] = NULL;
           delete db->game;
-          db->gameAltered = g->GetAltered();
+          db->gameAltered = true; //g->GetAltered();
           db->game = g;
           db->undoIndex--;
         }
@@ -8952,8 +8951,6 @@ void sc_game_save_for_undo() {
       }
       db->undoIndex = UNDO_MAX-1;
     }
-    
-    printf("sc_game_save_for_undo idx %d\n", db->undoIndex);
     
     db->undoGame[db->undoIndex] = g;
     

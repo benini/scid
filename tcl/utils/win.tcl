@@ -604,7 +604,7 @@ proc ::docking::cleanup { w { origin "" } } {
   variable tbs
   
   if { ! $::docking::USE_DOCKING } { return }
-  
+
   # if the destroy event came from a sub-widget, do nothing. Necessary because if a widget is destroyed, it sends a destroy event to
   # its containing window
   if { [ string last "." $origin ] > 0 } {

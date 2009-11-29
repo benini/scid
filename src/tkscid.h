@@ -363,6 +363,12 @@ translate (Tcl_Interp * ti, const char * name)
 }
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// manage undo functions
+//
+void sc_game_save_for_undo ();
+void sc_game_undo_reset();
+
 //////////////////////////////////////////////////////////////////////
 // Declarations for Scid application-specific Tcl commands
 //
@@ -479,8 +485,6 @@ int sc_game_tags_get  (TCL_ARGS);
 int sc_game_tags_set  (TCL_ARGS);
 int sc_game_tags_reload (TCL_ARGS);
 int sc_game_tags_share (TCL_ARGS);
-void sc_game_save_for_undo ();
-void sc_game_undo_reset();
 
 int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);

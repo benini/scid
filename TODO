@@ -3,7 +3,9 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-terminer undo
+reviewgame cleanup ne marche pas (onglet séparé)
+les vars ne sont pas en coups mais en commentaires
+
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -15,8 +17,6 @@ terminer undo
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
-
-- undo function
 
 - Notify games with annotations in "Best game", show annotator there.
   Consider sort order: e.g. annotated games on top?
