@@ -84,8 +84,7 @@ menuText D EditTrial "Variante testen" 9 \
   {Testmodus starten/stoppen, um eine Idee am Brett auszuprobieren}
 menuText D EditStrip "Entfernen" 1 \
    {Kommentare oder Varianten aus der Partie entfernen}
-# ====== TODO To be translated ======
-menuText D EditUndo "Undo" 0 {Undo last game change}
+menuText D EditUndo "Rückgängig" 0 {Macht die letzte Änderung rückgängig}
 menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \
@@ -290,8 +289,7 @@ menuText D OptionsShowVarPopup "Variantenfenster zeigen" 0 { Anzeige des Variant
 menuText D OptionsMovesSpace "Leerzeichen nach Zugnummer einfügen" 0 {Leerzeichen nach Zugnummer einfügen}  
 menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
-# ====== TODO To be translated ======
-menuText D OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+menuText D OptionsMovesShowVarArrows "Pfeile für Varianten anzeigen" 0 {Zeige Pfeile in Varianten an: ja/nein}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
 menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
 menuText D OptionsTheme "Design" 0 {Verändert das Aussehen der Oberfläche}
