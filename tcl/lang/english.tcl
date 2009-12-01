@@ -1582,6 +1582,7 @@ translate E FICSdefaultuservars {Use default variables}
 translate E FICSObserveconfirm {Do you want to observe game}
 
 # Game review
+translate E GameReview {Game review}
 translate E GameReviewTimeExtended {Time extended}
 translate E GameReviewMargin {Error margin}
 translate E GameReviewAutoContinue {Auto continue when move is correct}

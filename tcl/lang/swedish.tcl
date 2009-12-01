@@ -1931,6 +1931,8 @@ translate W FICSdefaultuservars {Använd standardvariabler}
 # ====== TODO To be translated ======
 translate W FICSObserveconfirm {Vill du observera parti} 
 # ====== TODO To be translated ======
+translate W GameReview {Game review}
+# ====== TODO To be translated ======
 translate W GameReviewTimeExtended {Utökad tid}
 # ====== TODO To be translated ======
 translate W GameReviewMargin {Felmarginal}
@@ -7157,6 +7159,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

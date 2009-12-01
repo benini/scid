@@ -1920,6 +1920,8 @@ translate C FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate C FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate C GameReview {Game review}
+# ====== TODO To be translated ======
 translate C GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate C GameReviewMargin {Error margin}
@@ -5770,6 +5772,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

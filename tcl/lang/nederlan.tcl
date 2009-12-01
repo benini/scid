@@ -1736,6 +1736,8 @@ translate N FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate N FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate N GameReview {Game review}
+# ====== TODO To be translated ======
 translate N GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate N GameReviewMargin {Error margin}
@@ -1883,6 +1885,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

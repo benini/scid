@@ -1924,6 +1924,8 @@ translate O FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate O FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate O GameReview {Game review}
+# ====== TODO To be translated ======
 translate O GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate O GameReviewMargin {Error margin}
@@ -2140,6 +2142,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

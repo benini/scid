@@ -1937,6 +1937,8 @@ translate P FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate P FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate P GameReview {Game review}
+# ====== TODO To be translated ======
 translate P GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate P GameReviewMargin {Error margin}
@@ -2367,6 +2369,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

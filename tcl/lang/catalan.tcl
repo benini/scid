@@ -1564,6 +1564,8 @@ translate K FICSConnect {Connectar}
 translate K FICSdefaultuservars {Utilitza valors per defecte}
 translate K FICSObserveconfirm {Vols observar la partida}
 # ====== TODO To be translated ======
+translate K GameReview {Game review}
+# ====== TODO To be translated ======
 translate K GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate K GameReviewMargin {Error margin}
@@ -1706,6 +1708,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

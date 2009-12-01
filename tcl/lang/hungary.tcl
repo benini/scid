@@ -1548,6 +1548,8 @@ translate H FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate H FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate H GameReview {Game review}
+# ====== TODO To be translated ======
 translate H GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate H GameReviewMargin {Error margin}
@@ -1917,6 +1919,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -1553,6 +1553,8 @@ translate S FICSSend {enviar}
 translate S FICSConnect {Conectar}
 translate S FICSdefaultuservars {Usa valores por defecto}
 translate S FICSObserveconfirm {Quieres observar la partida}
+# ====== TODO To be translated ======
+translate S GameReview {Game review}
 translate S GameReviewTimeExtended {Tiempo extendido}
 translate S GameReviewMargin {Margen de error}
 translate S GameReviewAutoContinue {Auto-continuar cuando el movimiento es correcto}
@@ -1661,6 +1663,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

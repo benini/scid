@@ -5613,6 +5613,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_game_moves (cd, ti, argc, argv);
 
     case GAME_NEW:
+        sc_game_undo_reset();
         return sc_game_new (cd, ti, argc, argv);
 
     case GAME_NOVELTY:
@@ -8249,6 +8250,11 @@ sc_game_strip (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * options[] = { "comments", "variations", NULL };
     enum { OPT_COMS, OPT_VARS };
 
+    // we need to switch off short header style or PGN parsing will not work
+    uint  old_style = db->game->GetPgnStyle ();
+    if (old_style & PGN_STYLE_SHORT_HEADER)
+      db->game->SetPgnStyle (PGN_STYLE_SHORT_HEADER, false);
+    
     db->game->AddPgnStyle (PGN_STYLE_TAGS);
     db->game->AddPgnStyle (PGN_STYLE_COMMENTS);
     db->game->AddPgnStyle (PGN_STYLE_VARS);
@@ -8277,6 +8283,11 @@ sc_game_strip (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     parser.Reset ((const char *) db->tbuf->GetBuffer());
     db->game->Clear();
     parser.ParseGame (db->game);
+
+    // Restore PGN style (Short header)
+    if (old_style & PGN_STYLE_SHORT_HEADER) 
+      db->game->SetPgnStyle (PGN_STYLE_SHORT_HEADER, true);
+    
     db->gameAltered = true;
     language = old_lang;
     return TCL_OK;
@@ -8942,7 +8953,6 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 // sc_game_save_for_undo:
 //    change current game to latest saved state
 void sc_game_save_for_undo() {
-
     Game * g = new Game;
     db->undoIndex++;
     if ( db->undoIndex >= UNDO_MAX ) {
@@ -8954,7 +8964,7 @@ void sc_game_save_for_undo() {
     
     db->undoGame[db->undoIndex] = g;
     
-    db->game->SetAltered (db->gameAltered);
+//    db->game->SetAltered (db->gameAltered);
     db->game->SaveState();
     db->game->Encode (db->bbuf, NULL);
     db->game->RestoreState();
@@ -8967,9 +8977,9 @@ void sc_game_save_for_undo() {
     db->game->WriteToPGN (db->tbuf);
     uint location = db->game->GetPgnOffset (0);
     db->tbuf->Empty();
-    g->MoveToLocationInPGN (db->tbuf, location);    
+    g->MoveToLocationInPGN (db->tbuf, location);
 
-    db->gameAltered = false;  
+//    db->gameAltered = false;  
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -15911,7 +15921,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case VAR_CREATE:
         if (! (db->game->AtVarStart()  &&  db->game->AtVarEnd())) {
             sc_game_save_for_undo();
-            PreMoveCommand (ti);
+//             PreMoveCommand (ti);
             db->game->MoveForward();
             db->game->AddVariation();
             db->gameAltered = true;

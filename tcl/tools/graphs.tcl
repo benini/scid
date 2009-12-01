@@ -400,7 +400,7 @@ proc ::tools::graphs::score::Refresh {} {
     $w.menu.file add separator
     $w.menu.file add command -label GraphFileClose -command "destroy $w"
     $w.menu add cascade -label GraphOptions -menu $w.menu.options
-    #Klimmek: Checkbuttons for Invert white/black Score in Score graph
+    #Checkbuttons for Invert white/black Score in Score graph
     menu $w.menu.options
     foreach i {White Black} {
       $w.menu.options add checkbutton -label GraphOptions$i \
@@ -422,6 +422,7 @@ proc ::tools::graphs::score::Refresh {} {
     }
     bind $w.c <$::MB3> ::tools::graphs::score::Refresh
     bind $w.c <1> {::tools::graphs::score::Move %x}
+    bind $w <Control-Z> ::tools::graphs::score::Refresh
     wm title $w "Scid: [tr ToolsScore]"
     ::tools::graphs::score::ConfigMenus
   }

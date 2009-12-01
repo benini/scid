@@ -1649,6 +1649,8 @@ translate I FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate I FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate I GameReview {Game review}
+# ====== TODO To be translated ======
 translate I GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate I GameReviewMargin {Error margin}
@@ -2058,6 +2060,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

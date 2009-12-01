@@ -1957,6 +1957,8 @@ translate R FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate R FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate R GameReview {Game review}
+# ====== TODO To be translated ======
 translate R GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate R GameReviewMargin {Error margin}
@@ -2169,6 +2171,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -1933,6 +1933,8 @@ translate B FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate B FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate B GameReview {Game review}
+# ====== TODO To be translated ======
 translate B GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate B GameReviewMargin {Error margin}
@@ -2146,6 +2148,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

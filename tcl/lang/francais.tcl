@@ -1537,6 +1537,7 @@ translate F FICSSend {envoyer}
 translate F FICSConnect {Connecter}
 translate F FICSdefaultuservars {Variables par défaut}
 translate F FICSObserveconfirm {Voulez-vous suivre la partie}
+translate F GameReview {Revue de partie}
 translate F GameReviewTimeExtended {Temps étendu}
 translate F GameReviewMargin {Marge d'erreur}
 translate F GameReviewAutoContinue {Continuer quand le coup est correct}
@@ -1849,6 +1850,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

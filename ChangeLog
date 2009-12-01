@@ -877,5 +877,7 @@ scid-4.1
 - Fixed a possible buffer overflow when parsing a malformed PGN (Thanks to Fulvio)
 - Modified slightly UCI parser in order to get Prodeo work (there's no garantee that Prodeo will work as it does comply to UCI protocol) (Thanks to Shiv Shivaji)
 - Fixed an error popping up when pressing right arrow very quickly with the variations window displayed and engines taking all available CPU
+- Fixed impossibility of stripping comments and variations when display of short headers was turned on.
+- Rewrite of "Review game" code : moves are no longer in comments, engine analysis is updated more often 
 
 

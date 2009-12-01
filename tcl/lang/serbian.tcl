@@ -1928,6 +1928,8 @@ translate Y FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate Y FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate Y GameReview {Game review}
+# ====== TODO To be translated ======
 translate Y GameReviewTimeExtended {Time extended}
 # ====== TODO To be translated ======
 translate Y GameReviewMargin {Error margin}
@@ -2140,6 +2142,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

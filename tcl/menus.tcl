@@ -664,9 +664,8 @@ $m add command -label ToolsRating -command {::tools::graphs::rating::Refresh bot
 # bind $dot_w <Control-R> {::tools::graphs::rating::Refresh both}
 set helpMessage($m,[incr menuindex]) ToolsRating
 
-$m add command -label ToolsScore \
-    -accelerator "Ctrl+Shift+Z" -command ::tools::graphs::score::Refresh
-bind $dot_w <Control-Z> ::tools::graphs::score::Refresh
+$m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -accelerator "Ctrl+Shift+Z"
+# bind $dot_w <Control-Z> ::tools::graphs::score::Refresh
 set helpMessage($m,[incr menuindex]) ToolsScore
 
 $m add separator
@@ -1805,7 +1804,7 @@ proc standardShortcuts {w} {
   bind $w <Control-V> ::pasteFEN
   bind $w <Control-KeyPress-U> ::search:::usefile
   bind $w <Control-X> crosstabWin
-  bind $w <Control-Z> ::tools::graphs::score::Refresh
+  bind $w <Control-Z> ::toggleAutoplay ;#::tools::graphs::score::Refresh
   
   bind $w <Control-slash> ::file::finder::Open
   bind $w <Control-Shift-Up> {::game::LoadNextPrev first}

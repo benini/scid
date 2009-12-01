@@ -7,7 +7,6 @@
 
 # TODO :
 # - permettre tourner l'échiquier après le démarrage
-# - stats de réussite (coups comme XX, comme moteur)
 
 namespace eval reviewgame {
   
@@ -29,6 +28,7 @@ namespace eval reviewgame {
   set scoreEngine 0.0
   
   set sequence 0
+  set pushedgame 0
   
   array set analysisEngine {}
   
@@ -43,7 +43,7 @@ namespace eval reviewgame {
 proc ::reviewgame::start {} {
   set w $::reviewgame::window
   createToplevel $w
-  setTitle $w "GameReview"
+  setTitle $w [::tr "GameReview" ]
   setWinLocation $w
   wm minsize $w 200 200
   
@@ -133,6 +133,10 @@ proc ::reviewgame::start {} {
     return
   }
   
+  bind $w <Destroy> { ::reviewgame::endTraining }
+  bind $w <Configure> "recordWinSize $w"
+  bind $w <F1> { helpWindow ReviewGame }
+  
   set ::reviewgame::prevFen [sc_pos fen]
   set ::reviewgame::movesLikePlayer 0
   set ::reviewgame::movesLikeEngine 0
@@ -140,10 +144,6 @@ proc ::reviewgame::start {} {
   ::reviewgame::resetValues
   ::reviewgame::mainLoop
   
-  bind $w <Destroy> { ::reviewgame::endTraining }
-  bind $w <Configure> "recordWinSize $w"
-  bind $w <F1> { helpWindow ReviewGame }
-  createToplevelFinalize $w
 }
 ################################################################################
 #
@@ -172,6 +172,7 @@ proc ::reviewgame::endTraining {} {
   focus .
   bind $w <Destroy> {}
   destroy $w
+  ::docking::cleanup $w
   
   catch { ::uci::closeUCIengine $::reviewgame::engineSlot }
 }
@@ -215,27 +216,23 @@ proc ::reviewgame::mainLoop {} {
   
   after cancel ::reviewgame::mainLoop
   
-  if { ! [ checkConsistency ] } { return }
+  if { ! [ checkConsistency ] } { puts "ERROR checkConsistency returns false" ; return }
   
   if { $useExtendedTime } {
-    set thinkingTime [expr $::reviewgame::timeExtended * 60 ]
+    set ::reviewgame::thinkingTime [expr $::reviewgame::timeExtended * 60 ]
   } else {
-    set thinkingTime $::reviewgame::timeShort
+    set ::reviewgame::thinkingTime $::reviewgame::timeShort
   }
   
-  # if { [sc_pos fen] != $::reviewgame::prevFen } {
-  # ::reviewgame::abnormalContinuation
-  # return
-  # }
-  
   # in start position, it must be user's turn
-  if { ! [::reviewgame::isPlayerTurn] } {
-    ::move::Forward
+  if { ! [::reviewgame::isPlayerTurn] && $sequence == 0} {
+    if { [ sc_game info nextMoveNT ] != ""} {
+      ::move::Forward
+    }
   }
   
   $w.finfo.proceed configure -state disabled
   $w.finfo.sol configure -state disabled
-  # $w.finfo.extended configure -state disabled
   
   # Phase 1 : analyze the move really played during the game
   if {$sequence == 0} {
@@ -246,7 +243,7 @@ proc ::reviewgame::mainLoop {} {
       return
     }
     $w.finfo.pblabel configure -image ReviewGameStop -text "[::tr GameReviewAnalyzingMovePlayedDuringTheGame]"
-    ::reviewgame::startAnalyze $thinkingTime $::reviewgame::movePlayed
+    ::reviewgame::startAnalyze $::reviewgame::thinkingTime $::reviewgame::movePlayed
     vwait ::reviewgame::sequence
     if { $::reviewgame::bailout } { return }
   }
@@ -254,7 +251,7 @@ proc ::reviewgame::mainLoop {} {
   # Phase 2 : find the best engine move in current position
   if { $sequence == 1 } {
     $w.finfo.pblabel configure -image ReviewGameStop -text "[::tr GameReviewAnalyzingThePosition]"
-    ::reviewgame::startAnalyze $thinkingTime
+    ::reviewgame::startAnalyze $::reviewgame::thinkingTime
     vwait ::reviewgame::sequence
     if { $::reviewgame::bailout } { return }
   }
@@ -267,7 +264,24 @@ proc ::reviewgame::mainLoop {} {
     after 1000  ::reviewgame::mainLoop
     return
   }
+  
   $w.finfo.sol configure -text "[::tr ShowSolution]"
+  
+  checkPlayerMove
+  
+  $w.finfo.proceed configure -state normal
+  $w.finfo.extended configure -state normal
+  updateStats
+  set ::reviewgame::useExtendedTime 0
+  after 1000  ::reviewgame::mainLoop
+}
+################################################################################
+#
+################################################################################
+proc ::reviewgame::checkPlayerMove {} {
+  global ::reviewgame::prevScore ::reviewgame::prevLine ::reviewgame::analysisEngine ::reviewgame::nextEngineMove
+  global ::reviewgame::sequence ::reviewgame::useExtendedTime
+  set w $::reviewgame::window
   
   incr ::reviewgame::numberMovesPlayed
   
@@ -279,7 +293,7 @@ proc ::reviewgame::mainLoop {} {
   if {$user_move != $::reviewgame::movePlayed} {
     $w.finfo.pblabel configure -image ReviewGameStop -text "[::tr GameReviewCheckingYourMove]"
     $w.finfo.sc3 configure -text ""
-    ::reviewgame::startAnalyze $thinkingTime ;#$user_move
+    ::reviewgame::startAnalyze $::reviewgame::thinkingTime ;#$user_move
     vwait ::reviewgame::sequence
     if { $::reviewgame::bailout } { return }
     $w.finfo.pblabel configure -image ReviewGameStop -text "[::tr GameReviewYourMoveWasAnalyzed]"
@@ -289,16 +303,20 @@ proc ::reviewgame::mainLoop {} {
   
   # User guessed the correct move played in game
   if {$user_move == $::reviewgame::movePlayed } {
+    
+    set  ::reviewgame::sequence 0
+    
     $w.finfo.sc3 configure -text "[::tr GameReviewYouPlayedSameMove]" -foreground "sea green"
     if {  ! $::reviewgame::solutionDisplayed } {
       incr ::reviewgame::movesLikePlayer
     }
-    set var [sc_var number]
-    sc_var exit
-    sc_var delete $var
-    # updateBoard -pgn
-    sc_move forward
-    updateBoard -animate -pgn
+    # Starting with Scid 4.1, when the move entered already exists it is not added but we simply move forward, so the code below is useless
+    # set var [sc_var number]
+    # sc_var exit
+    # sc_var delete $var
+    # sc_move forward
+    # updateBoard -animate -pgn
+    
     # display played move score
     $w.finfo.sc2 configure -text "[::tr GameReviewGameMoveScore] : $analysisEngine(score,1) [::trans $::reviewgame::movePlayed]"
     # display engine's score
@@ -308,7 +326,10 @@ proc ::reviewgame::mainLoop {} {
       proceed
     }
     $w.finfo.pblabel configure -image ReviewGameGreenArrowUp -text ""
+    set sequence 0
   } elseif { $user_move == [ lindex $analysisEngine(moves,2) 0] || [ isGoodScore $analysisEngine(score,2) $analysisEngine(score,3)  ] } {
+    
+    set  ::reviewgame::sequence 0
     
     # User guessed engine's move
     if {$user_move == [ lindex $analysisEngine(moves,2) 0]} {
@@ -326,10 +347,22 @@ proc ::reviewgame::mainLoop {} {
     # display engine's score
     $w.finfo.sc1 configure -text "[::tr GameReviewEngineScore] $analysisEngine(score,2) [::trans [lindex $analysisEngine(moves,2) 0]]"
   } else  {
+    
     # user played a bad move : comment it and restart the process
+    
+    set  ::reviewgame::sequence 2
+    
     $w.finfo.sc3 configure -text "[::tr GameReviewMoveNotGood] $analysisEngine(score,3) \n([::trans $analysisEngine(moves,3)])" -foreground red
     sc_pos addNag "?"
-    sc_pos setComment "($analysisEngine(score,3)) $analysisEngine(moves,3) Engine : ($analysisEngine(score,2)) \n[::trans $analysisEngine(moves,2)]"
+    
+    # Instead of adding info in comments, add real variations
+    # sc_pos setComment "($analysisEngine(score,3)) $analysisEngine(moves,3) Engine : ($analysisEngine(score,2)) \n[::trans $analysisEngine(moves,2)]"
+    sc_pos setComment "($analysisEngine(score,3))"
+    sc_move addSan $analysisEngine(moves,3)
+    sc_var exit
+    sc_var create
+    sc_pos setComment "Engine : ($analysisEngine(score,2))"
+    sc_move addSan $analysisEngine(moves,2)
     sc_var exit
     updateBoard -pgn
     
@@ -341,14 +374,10 @@ proc ::reviewgame::mainLoop {} {
     # display engine's score
     $w.finfo.sc1 configure -text "[::tr GameReviewEngineScore] $analysisEngine(score,2)"
     set  ::reviewgame::sequence 2
-    after 1000 ::reviewgame::mainLoop
-    return
+    # after 1000 ::reviewgame::mainLoop
+    # return
   }
   
-  $w.finfo.proceed configure -state normal
-  $w.finfo.extended configure -state normal
-  updateStats
-  set ::reviewgame::useExtendedTime 0
 }
 ################################################################################
 #
