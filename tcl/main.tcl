@@ -136,7 +136,7 @@ proc moveEntry_Char {ch} {
 # preMoveCommand: called before making a move to store text in the comment
 #   editor window and EPD windows.
 proc preMoveCommand {} {
-  ::commenteditor::storeComment
+  # ::commenteditor::storeComment
   storeEpdTexts
 }
 

@@ -15921,7 +15921,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case VAR_CREATE:
         if (! (db->game->AtVarStart()  &&  db->game->AtVarEnd())) {
             sc_game_save_for_undo();
-//             PreMoveCommand (ti);
+            PreMoveCommand (ti);
             db->game->MoveForward();
             db->game->AddVariation();
             db->gameAltered = true;
