@@ -87,6 +87,9 @@ proc WikipNLS { LinkList } {
    set lang     $::language
    set langlink [lindex $LinkList 3]
 
+   puts stderr $LinkList
+
+
    # translate Scids internal single letter language representation by
    # a more common two letter one; the same is used by WP
    switch $lang {
@@ -136,12 +139,17 @@ proc WikipNLS { LinkList } {
    regsub -all {\|} $llcontinue "%7C" llcontinue
    regsub -all {\"} $llcontinue "" llcontinue
 
-   # keep only the langlinks-section of the XML
-   regsub -all {.*<langlinks>} $xmlresult "" xmlresult
-   regsub -all {</langlinks>.*} $xmlresult "" xmlresult
-   regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
+   # check if more langlinks exist, if so set the watermark, otherwise
+   # it has to be emptied.
+   if {[string match "*llcontinue*" $xmlresult]} {
+      # keep only the langlinks-section of the XML
+      regsub -all {.*<langlinks>} $xmlresult "" xmlresult
+      regsub -all {</langlinks>.*} $xmlresult "" xmlresult
+      regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
+   } else {
+      set llcontinue ""
+   }
    set fullresult $xmlresult
-      puts stderr $xmlresult
 
    while { $llcontinue != "" } {
 
