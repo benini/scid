@@ -76,6 +76,7 @@ char transPiecesChar(char c) {
 }
 // ============ PG : destructor that frees all memory ===============
     Game::~Game() {
+
 #ifdef WINCE
      if (!LowMem) {
         while (MoveChunk->next != NULL) {

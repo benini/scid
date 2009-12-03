@@ -3,38 +3,7 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
-voir ligne 5679 et 8956 d etkscid.cpp
 
-2009/12/2 Joost 't Hart <joost.t.hart@planet.nl>
-
-    Hi,
-
-    Another attempt from my side to do something about Scid's crazy appetite
-    for memory. After playing a few hours with a tree and a UCI engine
-    running, the OS kicks Scid out; it uses more than 3 GB of RAM by that time.
-
-    This one is about memory consumption in the Game class (we have to start
-    somewhere).
-
-    With my memory tool I notice that with every move I make on the board,
-    AllocateMoreMoves() (game.cpp:515) is called to eat another chunk of
-    8KB. From the code it transpires that such chunk should be for 100
-    moves, so this is strange...
-
-    All these calls come via the Game::Init() function - others seem to take
-    freely available chunks into account indeed.
-
-    I have no idea what structure the code above the game class is supposed
-    to have, but
-    1) it must be strange to construct a new game object (the constructor in
-    game.h seems to be the only user of Init(), is this done indeed?) for
-    each move played on the board
-    2) if this is necessary for tcl/tk to work, I see no reason not to
-    destroy the previous game object (note that the destructor ~Game() is
-    never invoked - not even upon program termination).
-
-    Would be nice to hear your opinion.
-    Joost.
  ===========================================================
 |                                                           |
 |                          BUGS                             |
