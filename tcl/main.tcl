@@ -1233,7 +1233,9 @@ proc addMove { sq1 sq2 {animate ""}} {
     }
     incr i
   }
-  
+
+  sc_game undoPoint
+    
   set action "replace"
   if {![sc_pos isAt vend]} {
     set action [confirmReplaceMove]
@@ -1260,7 +1262,6 @@ proc addMove { sq1 sq2 {animate ""}} {
     if {[winfo exists ".serGameWin"]} {
       set ::sergame::lastPlayerMoveUci "[::board::san $sq2][::board::san $sq1]$promoLetter"
     }
-    sc_game undoPoint
     sc_move add $sq1 $sq2 $promo
     set san [sc_game info previous]
     if {$action == "mainline"} {
