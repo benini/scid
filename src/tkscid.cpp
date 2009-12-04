@@ -8954,7 +8954,7 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 // sc_game_save_for_undo:
 //    change current game to latest saved state
 void sc_game_save_for_undo() {
-printf("sc_game_save_for_undo\n");
+
     Game * g = NULL;
 
     db->undoIndex++;
