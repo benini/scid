@@ -1216,26 +1216,29 @@ proc addMove { sq1 sq2 {animate ""}} {
     default {set promoLetter ""}
   }
   
-  set moveUCI [::board::san $sq2][::board::san $sq1]$promoLetter
-  set move [sc_game info nextMoveUCI]
-  if { [ string compare -nocase $moveUCI $move] == 0 } {
-    sc_move forward
-    updateBoard
-    return
-  }
-  set varList [sc_var list UCI]
-  set i 0
-  foreach { move } $varList {
+  # Autmatically follow the main line if the next move is the same or enter the relevant variation if it exists
+  if {! $::annotateMode} {
+    set moveUCI [::board::san $sq2][::board::san $sq1]$promoLetter
+    set move [sc_game info nextMoveUCI]
     if { [ string compare -nocase $moveUCI $move] == 0 } {
-      sc_var moveInto $i
+      sc_move forward
       updateBoard
       return
     }
-    incr i
+    set varList [sc_var list UCI]
+    set i 0
+    foreach { move } $varList {
+      if { [ string compare -nocase $moveUCI $move] == 0 } {
+        sc_var moveInto $i
+        updateBoard
+        return
+      }
+      incr i
+    }
   }
-
+  
   sc_game undoPoint
-    
+  
   set action "replace"
   if {![sc_pos isAt vend]} {
     set action [confirmReplaceMove]
