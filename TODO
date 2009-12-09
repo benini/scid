@@ -3,7 +3,18 @@
 |               PENDING - WORK IN PROGRESS                  |
 |                                                           |
  ===========================================================
+Sorry, but it is not fixed (actually, it has become worse).
 
+At the variation point, the analyis goes one move back (instead of one move forward?).
+
+See attached screen shot.
+
+Start analysis - without book - of 1.e4 e5 2.Nf3 Nc6 3.a4 (3.h4 h6 4.g3) 3... a6 4.b3
+
+At the point where the two arrows for 3.a4 and 3.h4 are displayed, analysis now resumes at 2... Nf6 (and keeps on resuming there, see the screen shot).
+
+Thanks,
+Joost.
  ===========================================================
 |                                                           |
 |                          BUGS                             |

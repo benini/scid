@@ -17,13 +17,14 @@
 
 namespace eval ::move {}
 
-proc ::move::drawVarArrows {} {	
+proc ::move::drawVarArrows {} {
 	if {! $::showVarArrows} { return 0 }
 	if {[winfo exists .coachWin]} { return 0 }
 	if {[winfo exists .serGameWin]} { return 0 }
 	
 	set bDrawArrow 0
-	set varList [sc_var list UCI]	 
+  set varList [sc_var list UCI]
+
 	if {$varList != ""} {		
 		set move [sc_game info nextMoveUCI]
 		if {$move != ""} { set varList [linsert $varList 0 $move] }		
@@ -41,12 +42,13 @@ proc ::move::drawVarArrows {} {
 			}
 			if {! $bDrawn } { set bDrawArrow 1; break }
 		}
-	}
+  }
+  
 	return $bDrawArrow
 }
 
-proc ::move::showVarArrows {} {    
-  	set move [sc_game info nextMoveUCI]
+proc ::move::showVarArrows {} {
+   	set move [sc_game info nextMoveUCI]
   	if {$move != ""} {
   		set sq_start [ ::board::sq [ string range $move 0 1 ] ]
 		set sq_end [ ::board::sq [ string range $move 2 3 ] ]

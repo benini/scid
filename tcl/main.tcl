@@ -525,6 +525,7 @@ proc getNextMoves { {num 4} } {
 # displays a box with main line and variations for easy selection with keyboard
 ################################################################################
 proc showVars {} {
+  if {$autoplayMode == 1} { return }
   
   # No need to display an empty menu
   if {[sc_var count] == 0} {
@@ -1303,21 +1304,24 @@ proc addMove { sq1 sq2 {animate ""}} {
 #   a pair of squares.
 #
 proc addSanMove {san {animate ""} {noTraining ""}} {
-  set move [sc_game info nextMoveNT]
-  if { [ string compare -nocase $san $move] == 0 } {
-    sc_move forward
-    updateBoard
-    return
-  }
-  set varList [sc_var list]
-  set i 0
-  foreach { move } $varList {
+  
+  if {! $::annotateMode} {
+    set move [sc_game info nextMoveNT]
     if { [ string compare -nocase $san $move] == 0 } {
-      sc_var moveInto $i
+      sc_move forward
       updateBoard
       return
     }
-    incr i
+    set varList [sc_var list]
+    set i 0
+    foreach { move } $varList {
+      if { [ string compare -nocase $san $move] == 0 } {
+        sc_var moveInto $i
+        updateBoard
+        return
+      }
+      incr i
+    }
   }
   
   set action "replace"
