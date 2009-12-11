@@ -18,7 +18,7 @@
 namespace eval ::move {}
 
 proc ::move::drawVarArrows {} {
-	if {! $::showVarArrows} { return 0 }
+  if {! $::showVarArrows || $::autoplayMode} { return 0 }
 	if {[winfo exists .coachWin]} { return 0 }
 	if {[winfo exists .serGameWin]} { return 0 }
 	
@@ -68,7 +68,6 @@ proc ::move::Start {} {
   if {[winfo exists .coachWin]} {
     set ::tacgame::analysisCoach(paused) 1
     .coachWin.fbuttons.resume configure -state normal
-    # mess with game clocks ??? S.A
   }
   
   sc_move start
@@ -113,18 +112,24 @@ proc ::move::Back {{count 1}} {
 
   if {[::move::drawVarArrows]} { ::move::showVarArrows }
 }
-
+################################################################################
+# 
+################################################################################
 proc ::move::Forward {{count 1}} {
   global autoplayMode
+  
   if {$::tree(refresh)} { return }
+  
   if {[sc_pos isAt end]  ||  [sc_pos isAt vend]} { return }
+  
   set bArrows [::move::drawVarArrows]
+  
   set move [sc_game info next]
   if {$count == 1} {
     if {[sc_var count] != 0 && ! $autoplayMode && $::showVarPopup} {
       ::commenteditor::storeComment
       showVars
-      set bArrows $::showVarArrows
+      set bArrows $::showVarArrows 
     } else {    
       if {! $bArrows} { sc_move forward }
     }    
@@ -138,3 +143,4 @@ proc ::move::Forward {{count 1}} {
   }
   if {$bArrows} { ::move::showVarArrows }
 }
+

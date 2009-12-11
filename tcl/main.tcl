@@ -525,7 +525,7 @@ proc getNextMoves { {num 4} } {
 # displays a box with main line and variations for easy selection with keyboard
 ################################################################################
 proc showVars {} {
-  if {$autoplayMode == 1} { return }
+  if {$::autoplayMode == 1} { return }
   
   # No need to display an empty menu
   if {[sc_var count] == 0} {
@@ -1638,7 +1638,7 @@ proc autoplay {} {
     }
     cancelAutoplay
     return
-  }
+  } ;#end if sc_pos isAt end
   
   # annotate all sub variations
   if { $annotateMode && $::isAnnotateVar } {
@@ -1668,6 +1668,7 @@ proc autoplay {} {
   }
   
   ::move::Forward
+   
   after $autoplayDelay autoplay
 }
 ################################################################################
