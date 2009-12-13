@@ -751,6 +751,7 @@ proc ::board::menuInit {} {
   .menu.game.goto add command -label [::msgcat::mc "Random"] -command ::game::random
   
   .menu.game add command -label [::msgcat::mc "Info"] -command ::game::info
+  .menu.game add command -label [::msgcat::mc "Undo"] -command { sc_game undo ; ::board::updateBoard -nolastmove }
   .menu.game add command -label [::msgcat::mc "List"] -command ::game::GameList
   .menu.game add command -label [::msgcat::mc "Comment"] -command ::game::MoveComment
   .menu.game add command -label [::msgcat::mc "Board setup"] -command ::game::BoardSetup
@@ -1238,6 +1239,8 @@ proc ::board::getImg {sq size board} {
 ################################################################################
 proc ::board::makeMove {from to} {
   set EMPTY 0 ;    set KING 1 ;    set QUEEN 2 ;    set ROOK 3 ;    set BISHOP 4 ;    set KNIGHT 5 ;    set PAWN 6
+  
+  sc_game undoPoint
   
   set promo $EMPTY
   if {[sc_pos isPromotion $from $to] == 1} {

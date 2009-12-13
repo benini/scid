@@ -171,7 +171,7 @@ MFile::Open (const char * name, fileModeT fmode)
         GzBuffer_Avail = 0;
     } else {
 #ifdef WINCE
-        Handle = my_Tcl_OpenFileChannel(NULL, name, modeStr, 0666);//fopen (name, modeStr);
+        Handle = mySilent_Tcl_OpenFileChannel(NULL, name, modeStr, 0666);//fopen (name, modeStr);
         if (Handle == NULL) { return ERROR_FileOpen; }
         my_Tcl_SetChannelOption(NULL, Handle, "-encoding", "binary");
         my_Tcl_SetChannelOption(NULL, Handle, "-translation", "binary");

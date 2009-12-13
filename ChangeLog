@@ -865,6 +865,7 @@ scid-4.1
 - When playing a move already existing in a variation, the variation is automatically entered into. To add a new variation starting with the same move, the menu Edit-> Add variation must be used (Thanks to Fulvio)
 - Added undo feature (10 undos max). Shortcut is Ctrl-z. 
     For coders : rollback points are set by calling {sc_game undoPoint} in Tcl or sc_game_save_for_undo() in C++.
+- Updated Scid Pocket to new base format (version 4).
 - Fixes :
 ---------
 - entering comments for last move of a line was broken

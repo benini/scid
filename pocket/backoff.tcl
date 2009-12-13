@@ -255,17 +255,17 @@ proc ::base::baseOpen {{fName ""}} {
   
   if {[sc_info gzip]} {
     set ftype {
-      { "All Scid files" {".si3" ".si" ".pgn" ".pgn.gz" ".epd" ".epd.gz"} }
-      { "Scid databases, PGN files" {".si3" ".si" ".pgn" ".PGN" ".pgn.gz"} }
-      { "Scid databases" {".si3" ".si"} }
+      { "All Scid files" {".si4" ".si3" ".pgn" ".pgn.gz" ".epd" ".epd.gz"} }
+      { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN" ".pgn.gz"} }
+      { "Scid databases" {".si4" ".si3"} }
       { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
       { "EPD files" {".epd" ".EPD" ".epd.gz"} }
     }
   } else {
     set ftype {
-      { "All Scid files" {".si3" ".si" ".pgn" ".epd"} }
-      { "Scid databases, PGN files" {".si3" ".si" ".pgn" ".PGN"} }
-      { "Scid databases" {".si3" ".si"} }
+      { "All Scid files" {".si4" ".si3" ".pgn" ".epd"} }
+      { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
+      { "Scid databases" {".si4" ".si3"} }
       { "PGN files" {".pgn" ".PGN"} }
       { "EPD files" {".epd" ".EPD"} }
     }
@@ -275,12 +275,17 @@ proc ::base::baseOpen {{fName ""}} {
     if {$fName == ""} { return }
   }
   
+  if {[file extension $fName] == ".si3"} {
+    ::base::upgrade [file rootname $fName]
+    return
+  }
+  
   if {[file extension $fName] == ""} {
-    set fName "$fName.si3"
+    set fName "$fName.si4"
   }
   
   set err 0
-  if {[file extension $fName] == ".si3"} {
+  if {[file extension $fName] == ".si4"} {
     set fName [file rootname $fName]
     if {[catch {launchOpenBase $fName} result]} {
       set err 1
@@ -315,6 +320,38 @@ proc ::base::baseOpen {{fName ""}} {
     ::addRecentFile $fName
     ::ui::updateMenus
   }
+}
+################################################################################
+#   Upgrades an old (version 3) Scid database to version 4.
+proc ::base::upgrade {name} {
+  if {[file readable "$name.si4"]} {
+    set msg "This is an old Scid format (v3).\nDo you wish to use the new format ?"
+    set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
+    if {$res == "no"} { return }
+    ::file::Open "$name.si4"
+    return
+  }
+  
+  set msg "This will upgrade base format to Scid v4.\nDo you confirm this ?"
+  set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
+  if {$res == "no"} { return }
+  progressWindow "Scid" "Upgrading: [file tail $name]..."  [::msgcat::mc "Cancel"] "sc_progressBar"
+  busyCursor .
+  update
+  set err [catch {sc_base upgrade $name} res]
+  
+  unbusyCursor .
+  closeProgressWindow
+  if {$err} {
+    tk_messageBox -title "Scid" -type ok -icon warning -message "Unable to upgrade the database:\n$res"
+    return
+  } else  {
+    # rename game and name files, delete old .si3
+    file rename "$name.sg3"  "$name.sg4"
+    file rename "$name.sn3"  "$name.sn4"
+    file delete "$name.si3"
+  }
+  ::base::baseOpen "$name.si4"
 }
 ################################################################################
 proc ::base::launchOpenBase {name} {
@@ -1777,7 +1814,7 @@ proc ::game::draw50moves { { showMessage 1 } } {
 ################################################################################
 proc ::game::drawInsufficientMaterial { { showMessage 1 } } {
   set fen [ lindex [sc_pos fen] 0]
-
+  
   set wp 0 ; set wb 0 ; set wr 0 ; set wn 0 ; set wq 0
   set bp 0 ; set bb 0 ; set br 0 ; set bn 0 ; set bq 0
   
@@ -1891,7 +1928,7 @@ proc ::game::MoveComment {} {
   pack $w.fCommentButton.b0
   
   ttk::frame $w.fClose
-  ttk::button $w.fClose.bClose -text "OK" -command {::game::updateComment; destroy .moveComment}
+  ttk::button $w.fClose.bClose -text "OK" -command { sc_game undoPoint ; ::game::updateComment; destroy .moveComment}
   ttk::button $w.fClose.bCancel -text [::msgcat::mc "Cancel"] -command {destroy .moveComment}
   pack $w.fClose.bClose $w.fClose.bCancel -side left
   

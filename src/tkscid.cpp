@@ -3432,7 +3432,7 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // write the descriptions of the custom flags added with v4 version of base
     memset( buf, 0, 256 );
     newMFile->WriteNBytes( buf, CUSTOM_FLAG_MAX * ( CUSTOM_FLAG_DESC_LENGTH+1 ) );
-    
+
     // Now copy each index entry
     uint i;
     uint numGames = oldIndex->GetNumGames();
