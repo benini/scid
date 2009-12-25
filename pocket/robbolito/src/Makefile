@@ -23,7 +23,7 @@
 OUTPUTFILE=robbolito
 
 x86-gcc:
-	gcc -O3 -mtune=native -lm -o $(OUTPUTFILE) *.c
+	gcc -O3 -DUSE_X86_ASM -mtune=native -lm -o $(OUTPUTFILE) *.c
 	
 x86-icc:
 	icc -fast -o $(OUTPUTFILE)-$@ *.c
@@ -63,4 +63,4 @@ x86_64-icc-sse4.2:
 #}--------------------------------------------------------------------------
 
 clean:
-	rm -f $(OUTPUTFILE)*
+	rm -f $(OUTPUTFILE)

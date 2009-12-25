@@ -25,10 +25,12 @@ OUTPUTFILE=robbolito.exe
 CC = arm-cegcc-gcc
 STRIP = arm-cegcc-strip
 
-# OPT = -mtune=arm 
+# OPT = -mtune=arm
+OPT = -DWIN32 -DUSE_ARM_ASM
+
 x86-gcc:
-	$(CC) -DWIN32 -O3 -lm -o $(OUTPUTFILE) *.c
+	$(CC) $(OPT) -O3 -lm -o $(OUTPUTFILE) *.c
 	$(STRIP) $(OUTPUTFILE)
 	
 clean:
-	rm -f $(OUTPUTFILE)*
+	rm -f $(OUTPUTFILE)

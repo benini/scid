@@ -103,9 +103,15 @@ extern const int lsb_64_table[64];
 extern const char msb_256_table[256];
 
 static inline int BSR32(uint32 bb) {
-  int result = 0;
 
-   if (bb > 0xFFFF) {
+#ifdef USE_ARM_ASM
+  
+  return ( 31 - __builtin_clz(bb) );
+      
+#else  
+  int result = 0;
+   
+  if (bb > 0xFFFF) {
       bb >>= 16;
       result += 16;
    }
@@ -115,20 +121,22 @@ static inline int BSR32(uint32 bb) {
    }
 
    return (result + msb_256_table[bb]);
+#endif
 }
 
-static inline int
-BSR (uint64 bb)
-{
+static inline int BSR (uint64 bb) {
+#ifdef USE_X86_ASM
+    int x1, x2;
+asm ("bsr %1,%0\n" "jnz 1f\n" "bsr %0,%0\n" "subl $32,%0\n"
+     "1: addl $32,%0\n": "=&q" (x1), "=&q" (x2):"1" ((int) (bb >> 32)),
+     "0" ((int) bb));
+  return x1;
+#else
   const uint32 hb = bb >> 32;
   return hb ? 32 + BSR32((uint32)hb) : BSR32((uint32)bb);
-/*
-  int x1, x2;
-asm ("bsr %1,%0\n" "jnz 1f\n" "bsr %0,%0\n" "subl $32,%0\n"
-     "1: addl $32,%0\n": "=&q" (x1), "=&q" (x2):"1" ((int) (w >> 32)),
-     "0" ((int) w));
-  return x1;*/
+#endif
 }
+
 static inline int
 BSF (uint64 bb)
 {
