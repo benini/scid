@@ -26,7 +26,7 @@ CC = arm-cegcc-gcc
 STRIP = arm-cegcc-strip
 
 # OPT = -mtune=arm
-OPT = -DWIN32 -DUSE_ARM_ASM
+OPT = -DWIN32 -DUSE_ARM_ASM -Wcast-align
 
 x86-gcc:
 	$(CC) $(OPT) -O3 -lm -o $(OUTPUTFILE) *.c

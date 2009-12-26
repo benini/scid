@@ -155,26 +155,6 @@ asm ("bsf %0,%0\n" "jnz 1f\n" "bsf %1,%0\n" "jz 1f\n" "addl $32,%0\n"
 
 }
 
-/*
-static inline int
-BSR (uint64 w)
-{
-  int x1, x2;
-asm ("bsr %1,%0\n" "jnz 1f\n" "bsr %0,%0\n" "subl $32,%0\n"
-     "1: addl $32,%0\n": "=&q" (x1), "=&q" (x2):"1" ((int) (w >> 32)),
-     "0" ((int) w));
-  return x1;
-}
-static inline int
-BSF (uint64 w)
-{
-  int x1, x2;
-asm ("bsf %0,%0\n" "jnz 1f\n" "bsf %1,%0\n" "jz 1f\n" "addl $32,%0\n"
-     "1:": "=&q" (x1), "=&q" (x2):"1" ((int) (w >> 32)),
-     "0" ((int) w));
-  return x1;
-}
-*/
 #endif
 static inline int
 POPCNT( UINT64 v )
