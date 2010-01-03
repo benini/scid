@@ -69,7 +69,7 @@ menuText W EditTrial "Testa variant" 6 \
   {Starta/ stoppa testläge, undersök en idé på brädet}
 menuText W EditStrip "Ta bort" 3 {Avlägsna kommentarer eller varianter från partiet}
 # ====== TODO To be translated ======
-menuText W EditUndo "Undo" 0 {Undo last game change}
+menuText W EditUndo "Ångra" 0 {Ångra senaste ändring i parti}
 menuText W EditStripComments "Kommentarer" 0 \
   {Avlägsna alla kommentarer och noteringar från partiet}
 menuText W EditStripVars "Varianter" 0 {Avlägsna alla varianter från partiet}
@@ -314,7 +314,7 @@ menuText W OptionsMovesSpace "Lägg till mellanslag efter dragnummer" 0 {Lägg til
 menuText W OptionsMovesKey "Tangentkomplettering" 0 \
   {Starta/ stäng av dragkomplettering vid tangentinmatning}
 # ====== TODO To be translated ======
-menuText W OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+menuText W OptionsMovesShowVarArrows "Visa pilar för variationer" 0 {Växlar på/av pilar som visar drag i variationer}
 menuText W OptionsNumbers "Talformat" 3 {Välj hur tal visas}
 menuText W OptionsStartup "Start" 3 {Välj vilka fönster som ska öppnas vid start}
 # ====== TODO To be translated ======
@@ -1931,7 +1931,7 @@ translate W FICSdefaultuservars {Använd standardvariabler}
 # ====== TODO To be translated ======
 translate W FICSObserveconfirm {Vill du observera parti} 
 # ====== TODO To be translated ======
-translate W GameReview {Game review}
+translate W GameReview {Partiöversikt}
 # ====== TODO To be translated ======
 translate W GameReviewTimeExtended {Utökad tid}
 # ====== TODO To be translated ======

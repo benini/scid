@@ -1173,8 +1173,8 @@ fileSize (const char * name, const char * suffix)
 uint
 rawFileSize (const char * name)
 {
-    struct stat statBuf;    // Defined in <sys/stat.h>
-    if (stat (name, &statBuf) != 0) {
+    struct stat64 statBuf;    // Defined in <sys/stat.h>
+    if (stat64 (name, &statBuf) != 0) {
         return 0;
     }
     return (uint) statBuf.st_size;

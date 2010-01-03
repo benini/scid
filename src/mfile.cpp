@@ -107,7 +107,15 @@ MFile::Seek (uint position)
     }
     if (result == -1) { return ERROR_FileSeek; }
 #else
-        result = fseek (Handle, position, 0);
+        // handle position > 2GB
+#define MAX_INT 2147483647
+        if ( position >= MAX_INT ) {
+          result = fseek (Handle, MAX_INT, SEEK_SET);
+          if (result != 0) { return ERROR_FileSeek; }
+          result = fseek (Handle, position - MAX_INT, SEEK_CUR);          
+        } else {
+          result = fseek (Handle, position, 0);
+        }
     }
     if (result != 0) { return ERROR_FileSeek; }
 #endif
@@ -176,7 +184,7 @@ MFile::Open (const char * name, fileModeT fmode)
         my_Tcl_SetChannelOption(NULL, Handle, "-encoding", "binary");
         my_Tcl_SetChannelOption(NULL, Handle, "-translation", "binary");
 #else
-        Handle = fopen (name, modeStr);
+        Handle = fopen64 (name, modeStr);
         if (Handle == NULL) { return ERROR_FileOpen; }
 #endif
         Type = MFILE_REGULAR;
@@ -210,7 +218,7 @@ MFile::Create (const char * name, fileModeT fmode)
         default:              return ERROR_FileMode;
     }
 
-    if ((Handle = fopen (name, modeStr)) == NULL) { return ERROR_FileOpen; }
+    if ((Handle = fopen64 (name, modeStr)) == NULL) { return ERROR_FileOpen; }
     FileMode = fmode;
 #endif
     FileName = strDuplicate (name);

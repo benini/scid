@@ -877,9 +877,19 @@ scid-4.1
 - fixed a bug when USCF piece set was selected and the library tkimg not installed (under Linux)
 - UI may be unresponsive when an engine outputs lots of garbage when nearing a mate. Fixed for UCI engines only as I don't have an example of such misbehaviour of an xboard engine.
 - Fixed a possible buffer overflow when parsing a malformed PGN (Thanks to Fulvio)
-- Modified slightly UCI parser in order to get Prodeo work (there's no garantee that Prodeo will work as it does comply to UCI protocol) (Thanks to Shiv Shivaji)
+- Modified slightly UCI parser in order to get Prodeo to work (there's no garantee that Prodeo will work as it does not comply to UCI protocol) (Thanks to Shiv Shivaji)
 - Fixed an error popping up when pressing right arrow very quickly with the variations window displayed and engines taking all available CPU
 - Fixed impossibility of stripping comments and variations when display of short headers was turned on.
 - Rewrite of "Review game" code : moves are no longer in comments, engine analysis is updated more often 
 
+[January 2010 ]
+
+scid-4.2
+==========
+- Features :
+------------
+- Scid has a limit of 16 millions games per base. Before reaching this limit, the size of the game file could exceed 2 GB, which was not possible on 32 bit systems. So now some of Scid's IO handle large files (64 bit system calls even on 32 bit systems) (but the limit for the game file is still 4 GB, given that games offsets are saved as unsigned integers). So now it is possible to have bases that effectively contain up to 16 M games.
+- updated swedish translation (thanks to Hans Eriksson)
+- Fixes :
+---------
 

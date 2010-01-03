@@ -63,4 +63,4 @@ x86_64-icc-sse4.2:
 #}--------------------------------------------------------------------------
 
 clean:
-	rm -f $(OUTPUTFILE)
+	rm -f robbolito robbolito.exe
