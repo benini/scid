@@ -108,14 +108,7 @@ MFile::Seek (uint position)
     if (result == -1) { return ERROR_FileSeek; }
 #else
         // handle position > 2GB
-#define MAX_INT 2147483647
-        if ( position >= MAX_INT ) {
-          result = fseek (Handle, MAX_INT, SEEK_SET);
-          if (result != 0) { return ERROR_FileSeek; }
-          result = fseek (Handle, position - MAX_INT, SEEK_CUR);          
-        } else {
-          result = fseek (Handle, position, 0);
-        }
+    result = fseeko64(Handle, position, 0);
     }
     if (result != 0) { return ERROR_FileSeek; }
 #endif

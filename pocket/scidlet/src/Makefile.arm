@@ -5,7 +5,9 @@ EXE = scidlet.exe
 
 OBJS = scidlet.o engine.o recog.o misc.o position.o movelist.o
 
-SRC = ../../../src/
+SRC = ../src/
+
+TCL_INCLUDE = -I/usr/include/
 
 # rules
 
@@ -16,11 +18,11 @@ clean:
 
 # general
 CXX      = arm-cegcc-g++ -DPOCKET -DPOCKETENGINE
-CXXFLAGS = -pipe -DWIN32 -Wcast-align -I$(SRC) -I$(SRC)/zlib/ -I.
+CXXFLAGS = -pipe -Wcast-align -I$(SRC) -I$(SRC)/zlib/ -I. $(TCL_INCLUDE)
 CXXFLAGS += -fno-exceptions -fno-rtti -O3 -fstrict-aliasing -fomit-frame-pointer
 #LDFLAGS  = -lm
-CC       = arm-cegcc-gcc -DWIN32 -O3 -DPOCKET
-
+CC       = arm-cegcc-gcc -O3 -DPOCKET
+#-DWIN32
 LDFLAGS += -s
 
 ipc.armo: ipc.c

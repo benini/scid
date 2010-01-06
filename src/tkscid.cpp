@@ -430,7 +430,7 @@ Tkscid_Init (Tcl_Interp * ti)
   //lowPrio(253);
 // ==============================================================
     int code;
-    currentTclInterp = ti;
+//     currentTclInterp = ti;
     if (Tcl_InitStubs(ti, TCL_VERSION, 0) == NULL) {
       return TCL_ERROR;
     }
@@ -458,7 +458,8 @@ scid_InitTclTk (Tcl_Interp * ti)
  Tcl_CreateCommand ((ip), (name), (Tcl_CmdProc *)(cmd), \
  (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL)
 
-
+    currentTclInterp = ti;
+    
     ////////////////////
     /// Scid-specific Tcl/Tk commands:
 

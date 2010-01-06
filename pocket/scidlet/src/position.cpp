@@ -3093,6 +3093,7 @@ Position::PrintFEN (char * str, uint flags)
     return;
 }
 
+#ifndef POCKETENGINE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::DumpHtmlBoard():
 //      Prints the board in a format for use in HTML documents.
@@ -3211,6 +3212,7 @@ Position::DumpLatexBoard (DString * dstr, bool flip)
         } else { dstr->AddChar ('}'); }
     }
 }
+#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::Compare():

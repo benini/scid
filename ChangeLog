@@ -888,8 +888,12 @@ scid-4.2
 ==========
 - Features :
 ------------
-- Scid has a limit of 16 millions games per base. Before reaching this limit, the size of the game file could exceed 2 GB, which was not possible on 32 bit systems. So now some of Scid's IO handle large files (64 bit system calls even on 32 bit systems) (but the limit for the game file is still 4 GB, given that games offsets are saved as unsigned integers). So now it is possible to have bases that effectively contain up to 16 M games.
+- Training -> Find best move : make it more user friendly :
+	* The next moves are automaticaly hidden
+	* click on the >>| button to go to next exercise
+	* Leave the training mode by unchecking the menu entry
 - updated swedish translation (thanks to Hans Eriksson)
 - Fixes :
 ---------
+- Scid has a limit of 16 millions games per base. Before reaching this limit, the size of the game file could exceed 2 GB, which was not possible on 32 bit systems. So now some of Scid's IO handle large files (64 bit I/O system calls even on 32 bit systems) (but the limit for the game file is still 4 GB, given that games offsets are saved as unsigned integers). So now it is possible to have bases that effectively contain up to 16 M games.
 

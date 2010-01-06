@@ -378,11 +378,18 @@ namespace eval pgn {
       ::setTitle .pgnWin "$windowTitle"
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
+      
+      # Hide all information after the first **** encountered in order to hide tactics to user
+      # This has the drawback to also hide the first moves when there is several markers ****
+      if { $::tactics::findBestMoveRunning } {
+        set idx [ string first "****"  $pgnStr ]
+        if { $idx != -1 } {
+          set pgnStr [ string range $pgnStr 0 $idx ]
+        }
+      }
+      
       if {$::pgn::showColor} {
-        #set start [clock clicks -milli]
         ::htext::display .pgnWin.text $pgnStr
-        #set end [clock clicks -milli]
-        #puts "PGN: [expr $end - $start] ms"
       } else {
         .pgnWin.text insert 1.0 $pgnStr
       }

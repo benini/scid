@@ -36,8 +36,6 @@ extern int logMemory;
 
 #include <tcl.h>
 
-extern Tcl_Interp * currentTclInterp;
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

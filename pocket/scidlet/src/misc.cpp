@@ -16,7 +16,9 @@
 #include "error.h"
 #include "misc.h"
 
-#include "tkscid.h"
+#ifndef POCKETENGINE
+ #include "tkscid.h"
+#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -80,148 +82,7 @@ scid_Init ()
     }
 }
 
-//////////////////////////////////////////////////////////////////////
-//   my_ functions for I/O debugging and memory allocation
-//
-// =======================================================
-
-#include <tcl.h>
-
-// =======================================================
-char * my_Tcl_Alloc(int size) {
-
-  char * buf = Tcl_AttemptAlloc(size);
-#ifndef POCKET
-  if (logMemory)
-    printf("Alloc %u %d\n", (unsigned int) buf, size );
-#endif
-  if (buf == NULL) {
-    Tcl_Eval(currentTclInterp, "tk_messageBox -type ok -icon error -parent . -title \"Scid\" -message \"Out of memory\nScid should crash rather quickly\"");
-  }
-  return buf;
-}
-// =======================================================
-char *  my_Tcl_AttemptAlloc(int size){
-
-  char * buf = Tcl_AttemptAlloc(size);
-#ifndef POCKET
-  if (logMemory)
-    printf("Alloc %u %d\n", (unsigned int) buf, size );
-#endif
-  return buf;
-}
-// =======================================================
-char * my_Tcl_Realloc(char * ptr, int size) {
-  char * buf = Tcl_AttemptRealloc(ptr, size);
-#ifndef POCKET
-  if (logMemory)
-    printf("Realloc %u -> %u %d\n", (unsigned int) ptr, (unsigned int) buf, size );
-#endif
-  if (buf == NULL) {
-    Tcl_Eval(currentTclInterp, "tk_messageBox -type ok -icon error -parent . -title \"Scid\" -message \"Out of memory\nScid could crash rather quickly\"");
-  }
-  return buf;
-}
-// =======================================================
-void my_Tcl_Free(char * ptr) {
-#ifndef POCKET
-  if (logMemory)
-    printf("Free %u\n", (unsigned int) ptr );
-#endif
-
-  Tcl_Free(ptr);
-}
-// =======================================================
-Tcl_Channel  my_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions){
-  Tcl_Channel chan = Tcl_OpenFileChannel (currentTclInterp, fileName, modeString, permissions);
-  if (chan == NULL) {
-    char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_OpenFileChannel error %s\"", Tcl_ErrnoMsg(Tcl_GetErrno()));
-    Tcl_Eval(currentTclInterp, buf);
-  }
-  return chan;
-}
-// =======================================================
-// interpreter is set to NULL, so in case of any error, it is not appended to current result
-Tcl_Channel  mySilent_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions){
-  Tcl_Channel chan = Tcl_OpenFileChannel (NULL, fileName, modeString, permissions);
-  return chan;
-}
-// =======================================================
-int my_Tcl_Close (Tcl_Interp * interp, Tcl_Channel chan) {
-  int res = Tcl_Close (currentTclInterp, chan);
-  if (res != TCL_OK) {
-      char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_Close error %s\"", Tcl_ErrnoMsg(Tcl_GetErrno()));
-    Tcl_Eval(currentTclInterp, buf);
-  }
-  return res;
-}
-// =======================================================
-int my_Tcl_Read (Tcl_Channel chan, char * bufPtr, int toRead) {
-  int res = Tcl_Read (chan, bufPtr, toRead);
-  if (res == -1) {
-    char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_Read error %s\"", Tcl_ErrnoMsg(Tcl_GetErrno()));
-    Tcl_Eval(currentTclInterp, buf);
-  }
-  return res;
-}
-// =======================================================
-int my_Tcl_Write (Tcl_Channel chan, CONST char * s, int slen){
-  int res;
-  res = Tcl_Write ( chan, s, slen);
-  if (res == -1) {
-    char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_Write error %s\"", Tcl_ErrnoMsg(Tcl_GetErrno()));
-    Tcl_Eval(currentTclInterp, buf);
-  }
-  return res;
-}
-// =======================================================
-int my_Tcl_Flush (Tcl_Channel chan){
-  int res = Tcl_Flush (chan);
-  if (res != TCL_OK) {
-    char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_Flush error %s\"", Tcl_ErrnoMsg(Tcl_GetErrno()));
-    Tcl_Eval(currentTclInterp, buf);
-  }
-  return res;
-}
-// =======================================================
-Tcl_WideInt my_Tcl_Seek (Tcl_Channel chan, Tcl_WideInt offset, int mode){
-  Tcl_WideInt res = Tcl_Seek ( chan, offset, mode);
-  if (res == -1) {
-    char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_Seek error %s\"", Tcl_ErrnoMsg(Tcl_GetErrno()));
-    Tcl_Eval(currentTclInterp, buf);
-  }
-  return res;
-}
-// =======================================================
-Tcl_WideInt my_Tcl_Tell (Tcl_Channel chan){
-  Tcl_WideInt res = Tcl_Tell (chan);
-  if (res == -1) {
-    Tcl_Eval(currentTclInterp, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_Tell error\"");
-  }
-  return res;
-}
-// =======================================================
-int my_Tcl_SetChannelOption ( Tcl_Interp * interp, Tcl_Channel chan, CONST char * optionName, CONST char * newValue){
-  int res = Tcl_SetChannelOption ( currentTclInterp, chan, optionName, newValue);
-  if (res == TCL_ERROR) {
-    char buf[200];
-    sprintf(buf, "tk_messageBox -type ok -icon error -parent . -title \"Error\" -message \"Tcl_SetChannelOption %s %s error\"", optionName, newValue);
-    Tcl_Eval(currentTclInterp, buf);
-
-  }
-  return res;
-}
-// =======================================================
-int my_Tcl_Eof (Tcl_Channel chan) {
-  return Tcl_Eof (chan);
-}
-
+#ifndef POCKETENGINE
 //////////////////////////////////////////////////////////////////////
 //   ECO Code Routines
 
@@ -338,6 +199,7 @@ eco_LastSubCode (ecoT eco)
     if (((eco % 131) % 5) == 1) { eco += 4; }
     return eco + 1;
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //   String Routines
@@ -1239,6 +1101,7 @@ strGetSquare (const char * str)
     return square_Make (fyle_FromChar(chFyle), rank_FromChar(chRank));
 }
 
+#ifndef POCKETENGINE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strUniqueExactMatch():
 //      Given a string <keyStr> and a null-terminated array of strings
@@ -1321,19 +1184,45 @@ fileSize (const char * name, const char * suffix)
 uint
 rawFileSize (const char * name)
 {
+  char buf[500];
   uint size = 0;
-  // Avoid C stat functions for portability
-  Tcl_StatBuf * statbuf = Tcl_AllocStatBuf();
-  Tcl_Obj * obj = Tcl_NewStringObj( name, strlen(name) );
-  Tcl_IncrRefCount(obj);
-  int res = Tcl_FSStat( obj, statbuf );
-  if ( res != 0) return 0;
-
-  size = (uint) statbuf->st_size;
-  ckfree( (char*) statbuf);
-  Tcl_DecrRefCount(obj);
-   
+    
+  sprintf( buf, "file size %s", name );
+  Tcl_Eval(currentTclInterp, buf);
+  strcpy ( buf , Tcl_GetStringResult(currentTclInterp) );
+  size = (uint) atoll( buf );
   return size;
+
+  // Avoid stat functions for portability
+//   Tcl_StatBuf statbuf;
+//   Tcl_Obj * obj = Tcl_NewStringObj( name, strlen(name) );
+//   Tcl_IncrRefCount(obj); // avoid: Tcl_FSGetFileSystemForPath called with object with refCount == 0
+//   int res = Tcl_FSStat( obj, &statbuf );
+//   if ( res != 0)
+//         return 0;
+
+//   size = (uint) statbuf.st_size;
+
+  // Désespoir, le segfault arrive quand même ...
+//    Tcl_DecrRefCount(obj);
+//    Tcl_InvalidateStringRep( obj );
+   
+// printf("size %u\n", size);
+//   return size;
+  
+// #ifdef WINCE
+//     struct stat statBuf;
+//     if (stat (name, &statBuf) != 0) {
+// #elifdef WIN32
+//     struct _stati64 statBuf;
+//     if (_stati64 (name, &statBuf) != 0) {
+// #else
+//     struct stat64 statBuf;
+//     if (stat64 (name, &statBuf) != 0) {
+// #endif
+//         return 0;
+//     }
+//     return (uint) statBuf.st_size;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1550,6 +1439,7 @@ readString (FILE * fp, char * str, uint length)
 }
 #endif
 
+#endif
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: misc.cpp

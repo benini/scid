@@ -264,7 +264,8 @@ set buttoncolor "\#b0c0d0"
 set borderwidth 1
 
 set ::tactics::analysisTime 3
-
+set ::tactics::findBestMoveRunning 0
+  
 # Defaults for the PGN window:
 # if ::pgn::showColor is 1, the PGN text will be colorized.
 set ::pgn::showColor 1

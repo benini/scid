@@ -457,7 +457,7 @@ $m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
 set helpMessage($m.training,2) ToolsTrainReviewGame
 $m.training add command -label ToolsTrainCalvar -command ::calvar::config
 set helpMessage($m.training,3) ToolsTrainCalvar
-$m.training add command -label ToolsTrainFindBestMove -command ::tactics::findBestMove
+$m.training add checkbutton -label ToolsTrainFindBestMove -variable ::tactics::findBestMoveRunning -command ::tactics::findBestMoveStart
 set helpMessage($m.training,4) ToolsTrainFindBestMove
 
 $m add separator

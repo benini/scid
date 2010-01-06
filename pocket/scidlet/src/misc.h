@@ -31,6 +31,7 @@ extern Tcl_Interp * currentTclInterp;
 //
 void   scid_Init ();
 
+#ifndef POCKETENGINE
 // ECO string routines
 //
 void eco_ToString (ecoT ecoCode, char * ecoStr, bool extensions = true);
@@ -43,6 +44,7 @@ inline void eco_ToExtendedString (ecoT ecoCode, char * ecoStr) {
 ecoT eco_FromString (const char * ecoStr);
 ecoT eco_LastSubCode (ecoT ecoCode);
 ecoT eco_BasicCode (ecoT ecoCode);
+#endif
 
 // String routines. Some are identical to ANSI standard functions, but
 //      I have included them:
@@ -165,11 +167,14 @@ flagT  strGetFlag (const char * str);
 
 squareT strGetSquare (const char * str);
 
+#ifndef POCKETENGINE
 inline uint
 strTrimFileSuffix (char * target) { return strTrimSuffix (target, '.'); }
 
 inline const char *
 strFileSuffix (const char * target) { return strLastChar (target, '.'); }
+
+
 
 int strUniqueExactMatch (const char * keyStr, const char ** strTable,
                          bool exact);
@@ -180,6 +185,7 @@ inline int strUniqueMatch (const char * keyStr, const char ** strTable) {
 inline int strExactMatch (const char * keyStr, const char ** strTable) {
     return strUniqueExactMatch (keyStr, strTable, true);
 }
+#endif
 
 inline bool
 strContainsChar (const char * str, char ch)
@@ -243,6 +249,7 @@ isPowerOf2 (uint x)
     return ((x & (x-1)) == 0);
 }
 
+#ifndef POCKETENGINE
 //////////////////////////////////////////////////////////////////////
 //   FILE I/O Routines.
 
@@ -551,6 +558,8 @@ readCompactUint (FILE * fp)
     return v;
 }
 #endif // WINCE
+
+#endif // POCKETENGINE
 
 #endif  // #ifdef SCID_MISC_H
 

@@ -76,6 +76,12 @@ proc ::move::Start {} {
 }
 
 proc ::move::End {} {
+  
+  if { $::tactics::findBestMoveRunning } {
+    ::tactics::findBestMove
+    return
+  }
+  
   if {$::tree(refresh)} { return }
   sc_move end
   updateBoard

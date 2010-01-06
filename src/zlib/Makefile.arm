@@ -14,7 +14,7 @@
 
 CC= arm-cegcc-gcc
 
-CFLAGS=-O3 -Wall -I../../../tcl8.4.14/generic/ -DZLIB -DWINCE -I/usr/include
+CFLAGS=-O3 -Wall -DZLIB -DWINCE -I/usr/include
 LDFLAGS=-L. -lz
 LDSHARED=$(CC)
 CPP=$(CC) -E

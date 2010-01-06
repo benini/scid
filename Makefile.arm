@@ -236,7 +236,7 @@ src/cutil.o: src/cutil.c
 ### Generic rule for all other .cpp files:
 #
 %.o: %.cpp
-	$(COMPILE) $(CPP_FLAGS) -o $@ -c $<
+	$(COMPILE) $(CPP_FLAGS) $(TCL_INCLUDE) -o $@ -c $<
 
 ### Rule for compiling zlib source files:
 #

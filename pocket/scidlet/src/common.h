@@ -21,15 +21,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #if defined (WINCE) || defined (POCKET)
 #include <tcl.h>
 #endif
-
+#ifndef POCKETENGINE
 #include "tclmy.h"
 #include "myassert.h"
+#endif
 #include "error.h"
 
+#ifndef POCKETENGINE
 // Include the zlib header file if it is being compiled with Scid:
 #ifndef NO_ZLIB
 #  ifdef ZLIB
@@ -38,7 +39,9 @@
 #    include <zlib.h>
 #  endif
 #endif
-
+#else
+#define ASSERT(f)
+#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 

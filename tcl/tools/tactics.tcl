@@ -33,14 +33,17 @@ namespace eval tactics {
   # Current base must contain games with Tactics flag and **** markers
   # for certain moves. The first var should contain the best move (the next best move
   # is at least 1.0 point away.
-  # TODO preset the filter on flag == Tactics to speed up searching
   ################################################################################
   proc findBestMove {} {
+    
     set old_game [sc_game number]
     
     set found 0
     
-    if {![sc_base inUse] || [sc_base numGames] == 0} { return }
+    if {![sc_base inUse] || [sc_base numGames] == 0} {
+      tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"
+      return
+    }
     
     # Try to find in current game, from current pos (exit vars first)
     if {[sc_game flag T [sc_game number]]} {
@@ -50,7 +53,7 @@ namespace eval tactics {
       }
     }
     
-    if {!$found} {
+    if { ! $found } {
       for {set g [expr [sc_game number] +1] } { $g <= [sc_base numGames]} { incr g} {
         sc_game load $g
         if {![sc_game flag T $g]} { continue }
@@ -71,6 +74,21 @@ namespace eval tactics {
     updateBoard -pgn
     ::windows::gamelist::Refresh
     updateTitle
+  }
+  ################################################################################
+  # The initial proc to start Find Best Move training
+  proc findBestMoveStart {} {
+    
+    if { $::tactics::findBestMoveRunning } {
+      set ::tactics::hideNextMove_old $::gameInfo(hideNextMove)
+      set ::gameInfo(hideNextMove) 1
+      findBestMove
+    } else  {
+      # stop the training, restore normal PGN display
+      ::pgn::Refresh 1
+      set ::gameInfo(hideNextMove) $::tactics::hideNextMove_old
+    }
+    
   }
   ################################################################################
   # returns a list with depth score prevscore

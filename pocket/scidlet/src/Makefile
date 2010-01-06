@@ -3,7 +3,7 @@
 
 EXE = scidlet
 
-SRC = ../../../src/
+SRC = ../src/
 
 OBJS = scidlet.o engine.o recog.o misc.o position.o movelist.o
 
