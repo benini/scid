@@ -54,10 +54,12 @@ int my_sc_msg_init(char * eng , char bread);
 
 #endif
 
+#ifdef WINCE
 char *  my_Tcl_Alloc(int size);
 char *  my_Tcl_Realloc(char * ptr, int size);
 char *  my_Tcl_AttemptAlloc(int size);
 void    my_Tcl_Free(char * ptr);
+#endif
 
 Tcl_Channel my_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions);
 Tcl_Channel mySilent_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions);

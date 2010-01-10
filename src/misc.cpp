@@ -87,6 +87,7 @@ scid_Init ()
 
 #include <tcl.h>
 
+#ifdef WINCE
 // =======================================================
 char * my_Tcl_Alloc(int size) {
 
@@ -131,6 +132,8 @@ void my_Tcl_Free(char * ptr) {
 
   Tcl_Free(ptr);
 }
+#endif // WINCE
+
 // =======================================================
 Tcl_Channel  my_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions){
   Tcl_Channel chan = Tcl_OpenFileChannel (currentTclInterp, fileName, modeString, permissions);
