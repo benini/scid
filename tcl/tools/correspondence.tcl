@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.82 2010/01/09 19:31:18 arwagner Exp $
+### $Id: correspondence.tcl,v 1.83 2010/01/10 17:05:07 arwagner Exp $
 ###
-### Last change: <Sat, 2010/01/09 14:44:27 arwagner ingata>
+### Last change: <Sun, 2010/01/10 18:03:59 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -71,6 +71,19 @@ namespace eval Xfcc {
 	}
 
 	#----------------------------------------------------------------------
+	# Replace normal characters by their XML entities
+	#----------------------------------------------------------------------
+	proc xmlencrypt {chdata} {
+
+		foreach from {{\&} < > {"} {'}} \
+				to {{\&amp;} {\&lt;} {\&gt;} {\&quot;} {\&apos;}} {    ;# '"
+				regsub -all $from $chdata $to chdata
+		 }   
+		 return $chdata
+	}
+
+
+	#----------------------------------------------------------------------
 	# Configure Xfcc by means of rewriting the .xfccrc in xml
 	#----------------------------------------------------------------------
 	proc SaveXfcc {} {
@@ -99,6 +112,11 @@ namespace eval Xfcc {
 						puts $optionF "\t</server>"
 					}
 				} else {
+					set ::Xfcc::xfccsrv($i,0) [::Xfcc::xmlencrypt $::Xfcc::xfccsrv($i,0) ]
+					set ::Xfcc::xfccsrv($i,1) [::Xfcc::xmlencrypt $::Xfcc::xfccsrv($i,1) ]
+					set ::Xfcc::xfccsrv($i,2) [::Xfcc::xmlencrypt $::Xfcc::xfccsrv($i,2) ]
+					set ::Xfcc::xfccsrv($i,3) [::Xfcc::xmlencrypt $::Xfcc::xfccsrv($i,3) ]
+					set ::Xfcc::xfccsrv($i,4) [::Xfcc::xmlencrypt $::Xfcc::xfccsrv($i,4) ]
 					puts $optionF "\t<server>"
 					puts $optionF "\t\t<name>$::Xfcc::xfccsrv($i,0)</name>"
 					puts $optionF "\t\t<uri>$::Xfcc::xfccsrv($i,1)</uri>"
@@ -408,10 +426,10 @@ namespace eval Xfcc {
 		set aNodes [$doc selectNodes {/xfcc/server}]
 
 		foreach srv $aNodes {
-			set name     [$srv selectNodes {string(name)}]
-			set uri      [$srv selectNodes {string(uri)}]
-			set username [$srv selectNodes {string(user)}]
-			set password [$srv selectNodes {string(pass)}]
+			set name     [::Xfcc::xmlencrypt [$srv selectNodes {string(name)}]]
+			set uri      [::Xfcc::xmlencrypt [$srv selectNodes {string(uri)} ]]
+			set username [::Xfcc::xmlencrypt [$srv selectNodes {string(user)}]]
+			set password [::Xfcc::xmlencrypt [$srv selectNodes {string(pass)}]]
 			set rating   [$srv selectNodes {string(rating)}]
 
 			if {$rating == ""} {
@@ -470,6 +488,13 @@ namespace eval Xfcc {
 	#----------------------------------------------------------------------
 	proc SendMove {uri username password gameid movecount move comment \
 						resign acceptdraw offerdraw claimdraw} {
+
+		# Encrypt textual entities to conform to XML
+		set uri      [::Xfcc::xmlencrypt $uri]
+		set username [::Xfcc::xmlencrypt $username]
+		set password [::Xfcc::xmlencrypt $password]
+		set comment  [::Xfcc::xmlencrypt $comment]
+
 		set xmlmessage $::Xfcc::SOAPstart
 			append xmlmessage {<MakeAMove xmlns="http://www.bennedik.com/webservices/XfccBasic">}
 			append xmlmessage "<username>$username</username>"
@@ -510,7 +535,7 @@ namespace eval Xfcc {
 
 		foreach srv $aNodes {
 			set server   [$srv selectNodes {string(name)}]
-			set uri      [$srv selectNodes {string(uri)}]
+			set uri      [$srv selectNodes {string(uri)}] 
 			set username [$srv selectNodes {string(user)}]
 			set password [$srv selectNodes {string(pass)}]
 			
