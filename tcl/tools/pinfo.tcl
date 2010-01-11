@@ -220,9 +220,29 @@ proc ReplaceIDTags { pinfo } {
   regsub -all {<br>.*}    $fide "" fide
   regsub -all {<br>.*}    $iccf "" iccf
 
+  switch $::language {
+     B {set wplanguage pt}
+     C {set wplanguage cs}
+     D {set wplanguage de}
+     F {set wplanguage fr}
+     H {set wplanguage hu}
+     I {set wplanguage it}
+     K {set wplanguage ca}
+     N {set wplanguage nl}
+     O {set wplanguage no}
+     P {set wplanguage pl}
+     R {set wplanguage ru}
+     S {set wplanguage es}
+     W {set wplanguage sv}
+     Y {set wplanguage sr}
+     default {set wplanguage en}
+  }
+  set ::pinfo::wikipurl "http://toolserver.org/~apper/pd/person/pnd-redirect"
+
   # disable direct wikipedia linking till the resolver is up and
   # running again
-  set wikiplink  "<run openURL $::pinfo::wikipurl?PND=$pnd; ::windows::stats::Refresh><button wikiplnk -command openURL $::pinfo::wikipurl?PND=$pnd;><blue>WP</blue></run>"
+  # set wikiplink  "<run openURL $::pinfo::wikipurl?PND=$pnd; ::windows::stats::Refresh><button wikiplnk -command openURL $::pinfo::wikipurl?PND=$pnd;><blue>WP</blue></run>"
+  set wikiplink  "<run openURL $::pinfo::wikipurl/$wplanguage/$pnd; ::windows::stats::Refresh><button wikiplnk -command openURL $::pinfo::wikipurl/$wplanguage/$pnd;><blue>WP</blue></run>"
   set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk -command ::pinfo::saPND2WP $pnd><blue>SeeAlso</blue></run>"
   set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk -command openURL $::pinfo::dnburl/$pnd><blue>DNB</blue></run>"
   set viaflink   "<run openURL $::pinfo::viafurl/$viaf; ::windows::stats::Refresh><button viaflnk -command openURL $::pinfo::viafurl/$viaf><blue>VIAF</blue></run>"
@@ -230,7 +250,7 @@ proc ReplaceIDTags { pinfo } {
   set iccflink   "<run openURL $::pinfo::iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk -command openURL $::pinfo::iccfurl=$iccf><blue>ICCF</blue></run>"
 
   # regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink $seealsolink" pinfo
-  regsub -all "PND $pnd<br>"     $pinfo "$dnblink $seealsolink" pinfo
+  regsub -all "PND $pnd<br>"     $pinfo "$seealsolink $wikiplink $dnblink" pinfo
   regsub -all "FIDEID $fide<br>" $pinfo "$fidelink" pinfo
   regsub -all "ICCFID $iccf<br>" $pinfo "$iccflink" pinfo
   regsub -all "VIAF $viaf"   $pinfo "$viaflink" pinfo
