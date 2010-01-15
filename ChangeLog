@@ -896,4 +896,4 @@ scid-4.2
 - Fixes :
 ---------
 - Scid has a limit of 16 millions games per base. Before reaching this limit, the size of the game file could exceed 2 GB, which was not possible on 32 bit systems. So now some of Scid's IO handle large files (64 bit I/O system calls even on 32 bit systems) (but the limit for the game file is still 4 GB, given that games offsets are saved as unsigned integers). So now it is possible to have bases that effectively contain up to 16 M games.
-
+- FIDE changed the number of rating list per year. Add code to handle this properly. Maximum year for ratings added by spellchecker is _2010_. (Thanks to Joost 't Hart)
