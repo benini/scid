@@ -438,17 +438,18 @@ proc search::header {} {
         if {$sBlack == "!me"} {
           set bname $name
         }
-
-        set str [sc_search header -white $wname -black $bname \
+        set str [sc_search header  \
+            -white $wname           \
+            -black $bname           \
+            -toMove $sSideToMove \
+            -results [list $sResWin $sResDraw $sResLoss $sResOther] \
             -event $sEvent -site $sSite -round $sRound \
             -date [list $sDateMin $sDateMax] \
-            -results [list $sResWin $sResDraw $sResLoss $sResOther] \
             -welo [list $sWhiteEloMin $sWhiteEloMax] \
             -belo [list $sBlackEloMin $sBlackEloMax] \
             -delo [list $sEloDiffMin $sEloDiffMax] \
             -eco [list $sEcoMin $sEcoMax $sEco] \
             -length [list $sGlMin $sGlMax] \
-            -toMove $sSideToMove \
             -gameNumber [list $sGnumMin $sGnumMax] \
             -flip $sIgnoreCol -filter $filter \
             -fStdStart $sHeaderFlags(StdStart) \
@@ -474,7 +475,7 @@ proc search::header {} {
             -fCustom3 $sHeaderFlags(CustomFlag3) \
             -fCustom4 $sHeaderFlags(CustomFlag4) \
             -fCustom5 $sHeaderFlags(CustomFlag5) \
-            -fCustom6 $sHeaderFlags(CustomFlag6) \            
+            -fCustom6 $sHeaderFlags(CustomFlag6) \
             -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
             ]
       }
