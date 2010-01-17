@@ -317,10 +317,8 @@ set ::fics::server_ip "0.0.0.0"
 
 # default resolvers for player info
 set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query&format=xml"
-# Official server
-set ::pinfo::wikipurl      "http://wikimeta.de/pnd/"
-# Alternative server, but seems to have droped pnd resolver :(
-#   set ::pinfo::wikipurl      "http://tools.wikimedia.de/~kolossos/PD/search.php"
+# Appers PND resolver
+set ::pinfo::wikipurl      "http://toolserver.org/~apper/pd/person/pnd-redirect"
 # SeeAlso resolver for PND -> WikiPedia
 set ::pinfo::SeeAlsoPND2WP "http://ws.gbv.de/seealso/pnd2wikipedia/?format=seealso&id="
 set ::pinfo::dnburl        "http://d-nb.info/gnd"
