@@ -216,7 +216,7 @@ src\scid.obj: src\tkscid.cpp
 	  -c src\tkscid.cpp -o .\src\scid.obj
 
 src\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
-	$(COMPILE) $(CPPFLAGSNOWARN) $(TB) -c src\probe.cpp -o .\src\probe.obj
+	$(COMPILE) $(CPPFLAGSNOWARN) $(TCL_INCLUDE) $(TB) -c src\probe.cpp -o .\src\probe.obj
 
 %.obj: %.cpp
 	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -c $< -o .\$@

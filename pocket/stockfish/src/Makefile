@@ -31,7 +31,7 @@ strip:
 	strip $(EXE)
 
 clean:
-	$(RM) *.o .o/* .depend *~ $(EXE)
+	$(RM) *.o .o/* .depend *~ $(EXE) *.exe
 
 ### Dependencies. Do not change
 .depend:
