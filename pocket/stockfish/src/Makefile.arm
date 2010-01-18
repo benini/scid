@@ -1,0 +1,50 @@
+
+# files
+
+EXE = stockfish.exe
+
+OBJS = application.o bitboard.o pawns.o material.o endgame.o evaluate.o main.o \
+	misc.o move.o movegen.o history.o movepick.o search.o piece.o \
+	position.o direction.o tt.o value.o uci.o ucioption.o \
+	mersenne.o book.o bitbase.o san.o benchmark.o
+
+# rules
+
+all: $(EXE) .depend
+
+clean:
+	$(RM) *.o .depend gmon.out
+
+# general
+CXX      = arm-cegcc-g++
+#ARCH 		 = -mcpu=xscale -march=armv5te
+ARCH 		 = 
+CXXFLAGS = -pipe -DWIN32 -Wcast-align
+LDFLAGS  = -lm
+CC       = arm-cegcc-gcc -DWIN32 -O3 $(ARCH)
+# C++
+
+CXXFLAGS += -fno-exceptions -fno-rtti
+
+# optimisation
+
+CXXFLAGS += -O3 -fstrict-aliasing
+CXXFLAGS += -fomit-frame-pointer
+
+# strip
+
+LDFLAGS += -s
+
+# dependencies
+ipc.armo: ipc.c
+	$(CC) -c -o ipc.armo ipc.c
+
+$(EXE): $(OBJS) ipc.armo
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJS) ipc.armo
+	arm-cegcc-strip $(EXE)
+
+.depend:
+	$(CXX) -MM $(OBJS:.o=.cpp) > $@
+
+include .depend
+

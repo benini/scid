@@ -1399,6 +1399,9 @@ translate F ResetScores {Remise à zéro des scores}
 translate F LoadingBase {Chargement de la base}
 translate F Tactics {Tactique}
 translate F ShowSolution {Montrer la solution}
+translate F NextExercise {Exercice suivant}
+translate F PrevExercise {Exercice précédent}
+translate F StopTraining {Arrêter l'entrainement}
 translate F Next {Suivant}
 translate F ResettingScore {Remise à zéro des scores}
 translate F LoadingGame {Chargement partie}
@@ -1850,6 +1853,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

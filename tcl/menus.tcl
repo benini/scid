@@ -1018,6 +1018,11 @@ $m add command -label OptionsSave -command {
       puts $optionF "set ::docking::layout_list($slot) [list $::docking::layout_list($slot)]"
     }
     
+    # Save tactics (find best move history)
+    foreach i [lsort [array names ::tactics::findBestMove_History]] {
+        puts $optionF "set ::tactics::findBestMove_History($i) [list $::tactics::findBestMove_History($i)]"
+    }
+    
     close $optionF
     set ::statusBar "Options were saved to: [scidConfigFile options]"
   }

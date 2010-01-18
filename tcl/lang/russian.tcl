@@ -1679,6 +1679,12 @@ translate R Tactics {Tactics}
 # ====== TODO To be translated ======
 translate R ShowSolution {Show solution}
 # ====== TODO To be translated ======
+translate R NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate R PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate R StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate R Next {Next}
 # ====== TODO To be translated ======
 translate R ResettingScore {Resetting score}
@@ -2171,6 +2177,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

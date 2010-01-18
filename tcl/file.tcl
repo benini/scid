@@ -52,6 +52,8 @@ proc ::file::Exit {}  {
     if {[winfo exists .tacticsWin]} {
       ::tactics::restoreAskToReplaceMoves
     }
+    # restore options if findBestMove in progress
+    ::tactics::findBestMoveExit
     .menu.options invoke [tr OptionsSave]
   }
   ::recentFiles::save

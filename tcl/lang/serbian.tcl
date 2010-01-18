@@ -1650,6 +1650,12 @@ translate Y Tactics {Tactics}
 # ====== TODO To be translated ======
 translate Y ShowSolution {Show solution}
 # ====== TODO To be translated ======
+translate Y NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate Y PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate Y StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate Y Next {Next}
 # ====== TODO To be translated ======
 translate Y ResettingScore {Resetting score}
@@ -2142,6 +2148,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

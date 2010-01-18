@@ -1655,6 +1655,12 @@ translate B Tactics {Tactics}
 # ====== TODO To be translated ======
 translate B ShowSolution {Show solution}
 # ====== TODO To be translated ======
+translate B NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate B PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate B StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate B Next {Next}
 # ====== TODO To be translated ======
 translate B ResettingScore {Resetting score}
@@ -2148,6 +2154,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

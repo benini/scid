@@ -1448,6 +1448,12 @@ translate D ResetScores {Punkte zurücksetzten}
 translate D LoadingBase {Lade Datenbank}
 translate D Tactics {Taktik}
 translate D ShowSolution {Lösung zeigen}
+# ====== TODO To be translated ======
+translate D NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate D PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate D StopTraining {Stop training}
 translate D Next {Nächste}
 translate D ResettingScore {Punkte zurücksetzen}
 translate D LoadingGame {Lade Partie}
@@ -7261,6 +7267,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

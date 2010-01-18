@@ -1659,6 +1659,12 @@ translate P Tactics {Tactics}
 # ====== TODO To be translated ======
 translate P ShowSolution {Show solution}
 # ====== TODO To be translated ======
+translate P NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate P PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate P StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate P Next {Next}
 # ====== TODO To be translated ======
 translate P ResettingScore {Resetting score}
@@ -2369,6 +2375,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

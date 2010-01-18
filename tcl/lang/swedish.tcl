@@ -1653,6 +1653,12 @@ translate W Tactics {Taktik}
 # ====== TODO To be translated ======
 translate W ShowSolution {Visa lösning}
 # ====== TODO To be translated ======
+translate W NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate W PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate W StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate W Next {Nästa}
 # ====== TODO To be translated ======
 translate W ResettingScore {Nollställer poäng}
@@ -7159,6 +7165,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

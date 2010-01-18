@@ -622,6 +622,96 @@ image create photo tb_addvar -data {
   HZKFJAhk27qmqMq2rlGaJ43a46xslJR7AIMWIORzRCaXzKahAAA7
 }
 
+################################################################################
+#  Image data for "find best move" training
+################################################################################
+image create photo tb_lightbulb -data {
+  R0lGODlhFAAUAOf7AJB+DJKAD5WCEpGFHpaJGZ2PFZ+QBm2UlaCSJKGTJaaWEnOam6ubGqed
+  GaScLHeen6ieG3mgoauhH3yjpKSmE4CkoIGloaaoI6+lLomlooamqbCmL4qmo6qrHLSpKYqp
+  rI2pprWqKouqraOvQo+rqLSrRIaur6GsdYuuqq+wLYevsJ6tgrGxJJGtqpitrJOwoZOvra2y
+  R5SwrpqvrrO1MpaysJmznp6ysbe4NZm1s723N6ays6C0s7m6OJe3uqi3i6K2tb66Qbu8Opm5
+  vJ25tp66t8C/Kp+7uMLAIL2+RMa7TJy8v7+/PaC8uae7uqG9uq26u56+waK+u8DCR6O/vKa+
+  wqm+vcbEMaTAvqe/xLC9vsPEQqq/vqjAxcTFQ8vEPMPFSqnBxqzBwMTGTK3Cwa7Dws/HP8fI
+  TqzEycnJR7HFxLLGxcnLWLPHxrXJyLvIyb7Iw9PNVLPLz7zJyrbLyr3Ky77LzLjNzNDSXr/M
+  zbnOzbrPztLUYLvQz9HUZ7zR0MPP0L3S0b/T0sLS2MXS0sDU08bT08nTzcfU1d/bSdzeOMjV
+  1sLX1tjbbtzcWd/aaMnW1+PbW8PY19ncb8rX2M3X0svY2cXa2czZ2uLgVtLY2s3a2+PhV8fc
+  29jkXtbkZeHfeuPiYNfbys/c3OPlSMne3ebjWdDd3efkWtHe3+XifePig93ex9Lf4NPg4dTh
+  4ubnctfh3NXi4+Xoetji3dvi19bj5OjpdNfk5drk3+zpg97l2tjm5t3m4drn59rp3OHn3O/s
+  huDp0Nvo6eTm49zp6uDr2N3q6+Dq5ePq3+Tp7OHs2d7r7OHr5uTr4OTt1N/s7eXs4eDt7ubs
+  7uHu7+ft7/HzoOnu8Onw5efw6+rv8uvw8+7y4ezx9Ov02+zz5/Dz4u3y9e7z9vHz8Pv3rPT1
+  3u/19/j22fL42fD37PD2+Pb34PL3+fP4+/b49PT5/Pf59vX6/fj69/b7/vn7+Pr8+ff9//v9
+  +vj+//z/+/7//P///////////////////yH5BAEKAP8ALAAAAAAUABQAAAimAP8JHEiwoMGD
+  RBISOcjQkr6H+sIxJEhEHkSI7/RM/Afp4kVfCxnyuufxYbc9DInIajfPY71jp1Ke2sau3sN7
+  9MzJsjTRki1k4NClw6bs16kmE4m44gXJl69DxlwJ2vjP0M5Rp1zJgkRVIKFTZaoYGtVVoAxX
+  ZFrswVJW4AMNHw6saPuPTSNVfBrQDRWM3C29bRVlQkUKcNkpY7YkUUD3HwMGjcsGBAA7
+}
+image create photo tb_backward -data {
+  R0lGODlhFAAUAOevAAAfTQAgUAAjWAAmXQA4dQpFfQBQlA9NhwBVmwBgpwVnrgBrrw5rrgBx
+  twBxuBZsrx9sqwB4vgB4wAB5wAB7zwB8zwB9zwV+zwSA0Cx5twCE0QCFzgCF1ACG0gCHygCH
+  zgCHzwCJzQuG0gCJ1QCK1h+DxACL1wCM1yuCwQCO2ACP0geN1QCP1xeJ0wCR1BaL1ACT2gWS
+  2QCV2wCW2wiU2SKN1AGX3AOX2wCa3g2Y2QCc3gOd3hWZ2jmTwwCh4hya2hWc3AOi4hOf4A2h
+  4ACl5Q+i4ASm5ACn5gCn6Aml4hqh2CSe3Bmi2imd3Q6l4wCp6TGc2gWo5gGp6AOp6ACq6gmo
+  5QCs7ACs7RWn5Aar6gCt7jue20Oc2ACu8FCa0wCv7yql4ACx8z6j0EGh3ACy9Cuo4VWf1h2u
+  5w+y7guz8E+i2Taq4iKw6HOduxq07lil2imz6kat3lyn2xy48Si27WOp3UKz5hu9+CC89S25
+  71qu2YCnxEq05ku14yO/+GKw12uv4lS352K13DXA9k+87UfH+WXB7GTD71jJ9lfK+aK5yqy3
+  yGXJ9HjQ+pbN64TT+ozV+rLO35zZ+6Da+afc+6jd+8PY5bza79TV3K/f+8fe6rzj/crl9s3l
+  8dDl9Mfo/+Hj6ebi5tXn8ubn6+zo6u/p6vDt7vDu7u/u8fHu7+/v8vbx8Pfy8fb09fz39///
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////yH5BAEKAP8ALAAAAAAUABQAAAj+AP8JHEiwoMGD
+  CBMO1NChgwaFBJcYqvRp0yQ+PxRuOJQJUqE7fhJJomQnIaFGeMKEIUNm5aBHZQ7mYJTmi82b
+  Nucg+lBQghs0V65okVIlaBcmVvJEKRiCzhMqScQs6oNEyZ5IU7LAmUDQxZkjPRShcvWnDahW
+  nYwQYROBoAonekKtOpUKE6tTpjQF8YGlAUEPQ3AE8jSqlCBOqkhZ2qGjyAKCDoTMkHFjzaU4
+  MMA4EnXDBpAEBA3QiJGiNAkWpU2cSMEDhEEFUEZwmE179oomCA6W2CKCAoUKFShYeDGGAUIC
+  KORwaXEBQw01bx5APJDBDKA6XiAUgDgwwAABALgEix8YEAA7
+}
+image create photo tb_forward -data {
+  R0lGODlhFAAUAOerAAAfTQAgUAAjWAAmXQA4dQpFfQBQlA9NhwBVmwBgpwVnrgBrrw5rrgBx
+  twBxuBZsrx9sqwB4vgB4wAB5wAB7zwB8zwB9zwV+zwSA0Cx5twCE0QCFzgCF1ACG0gCHygCH
+  zgCHzwCJzQuG0gCJ1QCK1gCK1x+DxCuCwQCN1wCO2ACP0geN1QCP2BeJ0wCR1BaL1AWS2QCU
+  2wCV2wCW2wiU2SKN1AGX3ACb3giZ3A2Y2QCc3hWZ2kKPvACg4gCg4xya2hWc3BOf4A2h4ACl
+  5ACl5Q+i4ACm5Qqk4QKn5iSe3Cmd3ROk3gum4wCp6TGc2gWo5iWh1gCq6xGm4waq5wCs7QCs
+  7hWn5Aar6gCt7zue20Oc2FCa0wCv7y2k2wCx80Gh3ACy9Cuo4TGo4VWf1h2u5w+y7kykzk+i
+  2Qu08CKw6FGl0Rq07lil2imz6j+u4zWx5Vyn2xy48Si27WOp3UKz5hu9+CC89S2570q05oOn
+  wCO/+Fqy3Guv4o2pwzXA9nC02U+87UfH+Wy/6mXB7GTD71jJ9lfK+WXJ9JLH4LHC0HjQ+r7B
+  zp7L4oTT+qHP5ozV+qnU7KbV66rU7ZzZ+6Da+afc+6jd+9TV3K/f+7zj/dLi8cfo/9bn9Ojn
+  7Ovn6ujo6+zo6trs+fPr6vDt7u/u8PLv8PHw8vXx8Pbx8fb09v/6+P//////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////yH5BAEKAP8ALAAAAAAUABQAAAj+AP8JHEiwoMGD
+  CBMO1NChgwaFBJMMsrQpEyU8PxRuIITpUaA6egxNqkQnISBFdrx4AQNmpZ9GYQ7mOISGi82b
+  NuMU+lBQwpoyS7BUoTKFCRYqSO88KRhCThNEfaAgebPIzJEoTa60mUDQBRkikVJ1yqNGlalE
+  PIwMSROBoAopPRyNGoXqUqlRpzz98WGlAUEPQm4wAkUq1B5RnzgJuqGjyAKCDoLIgCRJTIwu
+  mtzgiDHDBpAEBA3QgIGiRIoULEicPr0DhEEFTkZwmE179golCA6ayCKCAoUKFShYePGFAUIC
+  J+BoaXEBQ40zbB5APJBhDJ85WyAUgDgwwAABALgEix8YEAA7
+}
+image create photo tb_stop -data {
+  R0lGODlhFAAUAOedAF0AAGAAAGgAAGwAADYSBD0UBEMVA38IAI4NAKMJAKQJAKMKAKQKAJkP
+  AIgUC54SAKMSAKMVAKQVAJEaESk2NagXADA2MzU1MasXAKoZALIXAKsaBrYcADNAPzpAPcwb
+  AD8/O8wcAL8gAMMgAK4lENAeANAfAMsiANwgAMwlANQjAMwmAMwmBNElBD1KSssmDc0nA0hI
+  RERJR7AuGdImCdcmANInCbouEcwpEdgoAOMlAM8qD8gtCNYqBtEsA9IrC9sqAK01ItYtCOcp
+  AL40GNcvBOEtAF9NSFtOS0lTVVZQTlNRT09SUuwsANAzG+UwAMI3JNszBeUxAPAuAN00Bdg1
+  D901Btg1Fdw2DeE2A884JuM3AOI4A/QzAOo2AOQ4AOE5BrlBMuo5AMFBMO45ANE+LtBCFuc+
+  CvI9APM9AGJfXl5gYfU9APY9APs8AFliZedBDPU/APY/ANpDLe9DB/NDBNdHNO9HC+pIFdRO
+  Ie5JEvNKDdhQQdJVLPBRG9pVRvZSE9ZWS/lUCflXEOVeL9FhV/ZcI9dgV9RlXd1nQNhnYNlq
+  ZOVqQfpoMPlsOtpybPVwRPpwPN55dfuBVvyIYPqNZfWXdfuWdPidffudf/uhhf6qjv+zl///
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////yH5BAEKAP8ALAAAAAAUABQAAAj+AP8JHEiwoMGD
+  CBMOXKCAQQKFBIkkwsRpk6U+NxRCYKSpUiNBgyJdypQnIaFJgNqwiROHjRxDlMwc5AGpDpo0
+  OHOi2eOIQ0EJd+iQ2VLAgFEDBNyQ8fOloAg9XryAWaOmqpo3XbyIwYOB4IozUqREYbKk7JIk
+  U6Q8gZOBYIosRowUkRGjbgwXTeJyqUBwBBUgQHx4AEEYRIchgK1EIKgBS40aMCxcmHyBgo4a
+  Oao8IIhASA8VLJAcGX1ECQoVV04Y3GCnhQkbNGLTsFHix5wGB6Hw2fHhQ4gQvp38IYHwwJhF
+  gbS8wFHmkKIZECeEQSTpUaEgDiAODDBAAADt4AcCBgQAOw==
+}
+
 ttk::frame .main.fbutton
 ttk::frame .main.fbutton.button -relief raised -border 1
 button .main.fbutton.button.start -image tb_start -command ::move::Start
@@ -1022,7 +1112,7 @@ namespace eval ::board::mark {
   
   # Regular expression constants for
   # matching Scid's embedded commands in PGN files.
-
+  
   variable StartTag {\[%}
   variable ScidKey  {mark|arrow}
   variable Command  {draw}

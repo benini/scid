@@ -1402,6 +1402,12 @@ translate H ResetScores {Eredmények törlése}
 translate H LoadingBase {Adatbázis betöltése}
 translate H Tactics {Taktika}
 translate H ShowSolution {Mutasd meg a megfejtést.}
+# ====== TODO To be translated ======
+translate H NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate H PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate H StopTraining {Stop training}
 translate H Next {Következõ}
 translate H ResettingScore {Eredmények törlése}
 translate H LoadingGame {Játszma betöltése}
@@ -1919,6 +1925,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

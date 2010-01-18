@@ -86,7 +86,7 @@ CFLAGS = $(OPT) -Wall $(PROFILE) $(PPC)
 ############################################################
 
 ### EXECS: executable programs compiled from C++ files.
-EXECS= tkscid toga toga134 toga141 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet robbolito
+EXECS= tkscid toga toga134 toga141 glaurung fruit_21 gambitfruit viper01 phalanx scorpio greko scidlet robbolito stockfish
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -174,6 +174,9 @@ scidlet:
 robbolito:
 	cd pocket/robbolito/src && $(MAKE) -f Makefile.arm
 
+stockfish:
+	cd pocket/stockfish/src && $(MAKE) -f Makefile.arm
+
 ### To remove object and executable files: type "make clean".
 #
 clean:
@@ -198,6 +201,7 @@ dist: all
 	cp ./pocket/greko/src/greko.exe ./pocket/scid_pocket/
 	cp ./pocket/scidlet/src/scidlet.exe ./pocket/scid_pocket/
 	cp ./pocket/robbolito/src/robbolito.exe ./pocket/scid_pocket/
+	cp ./pocket/stockfish/src/stockfish.exe ./pocket/scid_pocket/
 	cp -r ./pocket/books ./pocket/scid_pocket
 	cp -r ./pocket/sounds ./pocket/scid_pocket
 	cp -r ./pocket/msgs ./pocket/scid_pocket

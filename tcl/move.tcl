@@ -75,13 +75,7 @@ proc ::move::Start {} {
   if {[::move::drawVarArrows]} { ::move::showVarArrows }
 }
 
-proc ::move::End {} {
-  
-  if { $::tactics::findBestMoveRunning } {
-    ::tactics::findBestMove
-    return
-  }
-  
+proc ::move::End {} { 
   if {$::tree(refresh)} { return }
   sc_move end
   updateBoard

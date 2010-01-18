@@ -362,7 +362,7 @@ namespace eval pgn {
   #    window text is not regenerated; only the current and next move
   #    tags will be updated.
   ################################################################################
-  proc Refresh {{pgnNeedsUpdate 0}} {
+  proc Refresh { {pgnNeedsUpdate 0} } {
     if {![winfo exists .pgnWin]} { return }
     set format plain
     if {$::pgn::showColor} {set format color}
@@ -384,10 +384,10 @@ namespace eval pgn {
       if { $::tactics::findBestMoveRunning } {
         set idx [ string first "****"  $pgnStr ]
         if { $idx != -1 } {
-          set pgnStr [ string range $pgnStr 0 $idx ]
+          set pgnStr "[ string range $pgnStr 0 [expr $idx + 3] ]</c>\n"
         }
       }
-      
+
       if {$::pgn::showColor} {
         ::htext::display .pgnWin.text $pgnStr
       } else {

@@ -1440,6 +1440,9 @@ translate E ResetScores {Reset scores}
 translate E LoadingBase {Loading base}
 translate E Tactics {Tactics}
 translate E ShowSolution {Show solution}
+translate E NextExercise {Next exercise}
+translate E PrevExercise {Previous exercise}
+translate E StopTraining {Stop training}
 translate E Next {Next}
 translate E ResettingScore {Resetting score}
 translate E LoadingGame {Loading game}

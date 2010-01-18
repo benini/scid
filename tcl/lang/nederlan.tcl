@@ -1474,6 +1474,12 @@ translate N LoadingBase {Laad database}
 translate N Tactics {Taktiek}
  
 translate N ShowSolution {Toon oplossing}
+# ====== TODO To be translated ======
+translate N NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate N PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate N StopTraining {Stop training}
  
 translate N Next {Volgende}
  
@@ -1885,6 +1891,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

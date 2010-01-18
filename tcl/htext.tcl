@@ -378,7 +378,7 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         # Check if it is a comment tag:
         set commentTag $tagName
         set tagName "c"
-        if { $::::pgn::boldMainLine } {
+        if { $::pgn::boldMainLine } {
           $w tag configure $commentTag -foreground $::pgnColor(Comment) -font font_Regular
         } else {
           $w tag configure $commentTag -foreground $::pgnColor(Comment)

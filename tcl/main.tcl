@@ -20,127 +20,127 @@ set moveEntry(List) {}
 # matching the move entry bindings, so Alt+letter ONLY invokes
 # the menus:
 foreach key {a b c d e f g h i j k l m n o p q r s t u v w x y z} {
-  bind $dot_w <Alt-$key> {
-    # nothing
-  }
+    bind $dot_w <Alt-$key> {
+        # nothing
+    }
 }
 
 proc moveEntry_Clear {} {
-  global moveEntry
-  set moveEntry(Text) ""
-  set moveEntry(List) {}
+    global moveEntry
+    set moveEntry(Text) ""
+    set moveEntry(List) {}
 }
 
 proc moveEntry_Complete {} {
-  global moveEntry
-  
-  if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove] } { ;# not player's turn
-    moveEntry_Clear
-    return
-  }
-  
-  set len [llength $moveEntry(List)]
-  if {$len > 0} {
-    if {$moveEntry(AutoExpand)} {
-      # Play a bell sound to let the user know the move was accepted already,
-      # but only if move announcement is off?
-      # bell
-    }
-    set move [lindex $moveEntry(List) 0]
-    if {$move == "OK"} { set move "O-O" }
-    if {$move == "OQ"} { set move "O-O-O" }
-    set action "replace"
-    if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
-    if {$action == "replace"} {
-      sc_game undoPoint
-      sc_move addSan $move
-    } elseif {$action == "var"} {
-      sc_game undoPoint
-      sc_var create
-      sc_move addSan $move
-    } elseif {$action == "mainline"} {
-      sc_game undoPoint
-      sc_var create
-      sc_move addSan $move
-      sc_var exit
-      sc_var promote [expr {[sc_var count] - 1}]
-      sc_move forward 1
+    global moveEntry
+    
+    if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove] } { ;# not player's turn
+        moveEntry_Clear
+        return
     }
     
-    # Now send the move done to FICS and NOVAG Citrine
-    set promoletter ""
-    set moveuci [sc_game info previousMoveUCI]
-    if { [ string length $moveuci ] == 5 } {
-      set promoletter [ string tolower [ string index $moveuci end ] ]
-    }
-    if { [winfo exists .fics] } {
-      if { [::fics::playerCanMove] } {
-        if { $promoletter != "" } {
-          ::fics::writechan "promote $promoLetter"
+    set len [llength $moveEntry(List)]
+    if {$len > 0} {
+        if {$moveEntry(AutoExpand)} {
+            # Play a bell sound to let the user know the move was accepted already,
+            # but only if move announcement is off?
+            # bell
         }
-        ::fics::writechan [ string range $moveuci 0 3 ]
-      }
+        set move [lindex $moveEntry(List) 0]
+        if {$move == "OK"} { set move "O-O" }
+        if {$move == "OQ"} { set move "O-O-O" }
+        set action "replace"
+        if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
+        if {$action == "replace"} {
+            sc_game undoPoint
+            sc_move addSan $move
+        } elseif {$action == "var"} {
+            sc_game undoPoint
+            sc_var create
+            sc_move addSan $move
+        } elseif {$action == "mainline"} {
+            sc_game undoPoint
+            sc_var create
+            sc_move addSan $move
+            sc_var exit
+            sc_var promote [expr {[sc_var count] - 1}]
+            sc_move forward 1
+        }
+        
+        # Now send the move done to FICS and NOVAG Citrine
+        set promoletter ""
+        set moveuci [sc_game info previousMoveUCI]
+        if { [ string length $moveuci ] == 5 } {
+            set promoletter [ string tolower [ string index $moveuci end ] ]
+        }
+        if { [winfo exists .fics] } {
+            if { [::fics::playerCanMove] } {
+                if { $promoletter != "" } {
+                    ::fics::writechan "promote $promoLetter"
+                }
+                ::fics::writechan [ string range $moveuci 0 3 ]
+            }
+        }
+        
+        if {$::novag::connected} {
+            ::novag::addMove "[ string range $moveuci 0 3 ]$promoLetter"
+        }
+        
+        moveEntry_Clear
+        updateBoard -pgn -animate
+        ::utils::sound::AnnounceNewMove $move
+        if {$action == "replace"} { ::tree::doTraining }
     }
-    
-    if {$::novag::connected} {
-      ::novag::addMove "[ string range $moveuci 0 3 ]$promoLetter"
-    }
-    
-    moveEntry_Clear
-    updateBoard -pgn -animate
-    ::utils::sound::AnnounceNewMove $move
-    if {$action == "replace"} { ::tree::doTraining }
-  }
 }
 
 proc moveEntry_Backspace {} {
-  global moveEntry
-  set moveEntry(Text) [string range $moveEntry(Text) 0 \
-      [expr {[string length $moveEntry(Text)] - 2}]]
-  set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
-  updateStatusBar
+    global moveEntry
+    set moveEntry(Text) [string range $moveEntry(Text) 0 \
+            [expr {[string length $moveEntry(Text)] - 2}]]
+    set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
+    updateStatusBar
 }
 
 proc moveEntry_Char {ch} {
-  global moveEntry
-  set oldMoveText $moveEntry(Text)
-  set oldMoveList $moveEntry(List)
-  append moveEntry(Text) $ch
-  set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
-  set len [llength $moveEntry(List)]
-  if {$len == 0} {
-    # No matching moves, so do not accept this character as input:
-    set moveEntry(Text) $oldMoveText
-    set moveEntry(List) $oldMoveList
-  } elseif {$len == 1} {
-    # Exactly one matching move, so make it if AutoExpand is on,
-    # or if it equals the move entered. Note the comparison is
-    # case insensitive to allow for 'b' to match both pawn and
-    # Bishop moves.
-    set move [string tolower [lindex $moveEntry(List) 0]]
-    
-    if {$moveEntry(AutoExpand) > 0  ||
-      ![string compare [string tolower $moveEntry(Text)] $move]} {
-      moveEntry_Complete
+    global moveEntry
+    set oldMoveText $moveEntry(Text)
+    set oldMoveList $moveEntry(List)
+    append moveEntry(Text) $ch
+    set moveEntry(List) [sc_pos matchMoves $moveEntry(Text) $moveEntry(Coord)]
+    set len [llength $moveEntry(List)]
+    if {$len == 0} {
+        # No matching moves, so do not accept this character as input:
+        set moveEntry(Text) $oldMoveText
+        set moveEntry(List) $oldMoveList
+    } elseif {$len == 1} {
+        # Exactly one matching move, so make it if AutoExpand is on,
+        # or if it equals the move entered. Note the comparison is
+        # case insensitive to allow for 'b' to match both pawn and
+        # Bishop moves.
+        set move [string tolower [lindex $moveEntry(List) 0]]
+        
+        if {$moveEntry(AutoExpand) > 0  ||
+            ![string compare [string tolower $moveEntry(Text)] $move]} {
+            moveEntry_Complete
+        }
+    } elseif {$len == 2} {
+        # Check for the special case where the user has entered a b-pawn
+        # capture that clashes with a Bishop move (e.g. bxc4 and Bxc4):
+        set first [string tolower [lindex $moveEntry(List) 0]]
+        set second [string tolower [lindex $moveEntry(List) 1]]
+        if {[string equal $first $second]} {
+            set moveEntry(List) [list $moveEntry(Text)]
+            moveEntry_Complete
+        }
     }
-  } elseif {$len == 2} {
-    # Check for the special case where the user has entered a b-pawn
-    # capture that clashes with a Bishop move (e.g. bxc4 and Bxc4):
-    set first [string tolower [lindex $moveEntry(List) 0]]
-    set second [string tolower [lindex $moveEntry(List) 1]]
-    if {[string equal $first $second]} {
-      set moveEntry(List) [list $moveEntry(Text)]
-      moveEntry_Complete
-    }
-  }
-  updateStatusBar
+    updateStatusBar
 }
 
 # preMoveCommand: called before making a move to store text in the comment
 #   editor window and EPD windows.
 proc preMoveCommand {} {
-  # ::commenteditor::storeComment
-  storeEpdTexts
+    # ::commenteditor::storeComment
+    storeEpdTexts
 }
 
 sc_info preMoveCmd preMoveCommand
@@ -150,76 +150,76 @@ sc_info preMoveCmd preMoveCommand
 #   Updates the main Scid window title.
 #
 proc updateTitle {} {
-  set title "Scid - "
-  set fname [sc_base filename]
-  set fname [file tail $fname]
-  append title "$fname ($::tr(game) "
-  append title "[::utils::thousands [sc_game number]] / "
-  append title "[::utils::thousands [sc_base numGames]])"
-  ::setTitle .main $title
+    set title "Scid - "
+    set fname [sc_base filename]
+    set fname [file tail $fname]
+    append title "$fname ($::tr(game) "
+    append title "[::utils::thousands [sc_game number]] / "
+    append title "[::utils::thousands [sc_base numGames]])"
+    ::setTitle .main $title
 }
 
 # updateStatusBar:
 #   Updates the main Scid window status bar.
 #
 proc updateStatusBar {} {
-  global statusBar moveEntry
-  ::windows::switcher::Refresh
-  ::maint::Refresh
-  set statusBar "  "
-  
-  if {$moveEntry(Text) != ""} {
-    append statusBar "Enter move: \[" $moveEntry(Text) "\]  "
-    foreach thisMove $moveEntry(List) {
-      append statusBar $thisMove " "
+    global statusBar moveEntry
+    ::windows::switcher::Refresh
+    ::maint::Refresh
+    set statusBar "  "
+    
+    if {$moveEntry(Text) != ""} {
+        append statusBar "Enter move: \[" $moveEntry(Text) "\]  "
+        foreach thisMove $moveEntry(List) {
+            append statusBar $thisMove " "
+        }
+        return
     }
-    return
-  }
-  
-  # Check if translations have not been set up yet:
-  if {! [info exists ::tr(Database)]} { return }
-  
-  # Show "%%" if base is read-only, "XX" if game altered, "--" otherwise:
-  if {[sc_base isReadOnly]} {
-    append statusBar "%%"
-  } elseif {[sc_game altered]} {
-    append statusBar "XX"
-  } else {
-    append statusBar "--"
-  }
-  
-  set current [sc_base current]
-  append statusBar "  $::tr(Database)"
-  if {$current != [sc_info clipbase]} {
-    append statusBar " $current"
-  }
-  append statusBar ": "
-  set fname [sc_base filename]
-  set fname [file tail $fname]
-  if {$fname == ""} { set fname "<none>" }
-  append statusBar $fname
-  
-  # Show filter count:
-  append statusBar "   $::tr(Filter)"
-  append statusBar ": [filterText]"
+    
+    # Check if translations have not been set up yet:
+    if {! [info exists ::tr(Database)]} { return }
+    
+    # Show "%%" if base is read-only, "XX" if game altered, "--" otherwise:
+    if {[sc_base isReadOnly]} {
+        append statusBar "%%"
+    } elseif {[sc_game altered]} {
+        append statusBar "XX"
+    } else {
+        append statusBar "--"
+    }
+    
+    set current [sc_base current]
+    append statusBar "  $::tr(Database)"
+    if {$current != [sc_info clipbase]} {
+        append statusBar " $current"
+    }
+    append statusBar ": "
+    set fname [sc_base filename]
+    set fname [file tail $fname]
+    if {$fname == ""} { set fname "<none>" }
+    append statusBar $fname
+    
+    # Show filter count:
+    append statusBar "   $::tr(Filter)"
+    append statusBar ": [filterText]"
 }
 
 
 proc toggleRotateBoard {} {
-  ::board::flip .main.board
+    ::board::flip .main.board
 }
 
 proc toggleCoords {} {
-  global boardCoords
-  set coords [expr {1 + $boardCoords} ]
-  if { $coords > 2 } { set coords 0 }
-  set boardCoords $coords
-  ::board::coords .main.board
+    global boardCoords
+    set coords [expr {1 + $boardCoords} ]
+    if { $coords > 2 } { set coords 0 }
+    set boardCoords $coords
+    ::board::coords .main.board
 }
 
 ttk::frame .main.fbutton.button.space3 -width 15
 button .main.fbutton.button.flip -image tb_flip -takefocus 0 \
-    -command "::board::flip .main.board"
+        -command "::board::flip .main.board"
 
 button .main.fbutton.button.coords -image tb_coords -takefocus 0 -command toggleCoords
 bind $dot_w <KeyPress-0> toggleCoords
@@ -227,146 +227,146 @@ bind $dot_w <KeyPress-0> toggleCoords
 button .main.fbutton.button.stm -image tb_stm -takefocus 0 -command toggleSTM
 
 proc toggleSTM {} {
-  global boardSTM
-  set boardSTM [expr {1 - $boardSTM} ]
-  ::board::stm .main.board
+    global boardSTM
+    set boardSTM [expr {1 - $boardSTM} ]
+    ::board::stm .main.board
 }
 
 image create photo autoplay_off -data {
-  R0lGODdhFAAUAKEAANnZ2QAAAFFR+wAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
-  IgOG4ugd55oC6+u98iPXSz0r+Enjcf7jtVyoofGoKAAAOw==
+    R0lGODdhFAAUAKEAANnZ2QAAAFFR+wAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
+    IgOG4ugd55oC6+u98iPXSz0r+Enjcf7jtVyoofGoKAAAOw==
 }
 
 image create photo autoplay_on -data {
-  R0lGODdhFAAUAKEAAP//4AAAAPoTQAAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
-  IgOG4ugd55oC6+u98iPXSz0r+Enjcf7jtVyoofGoKAAAOw==
+    R0lGODdhFAAUAKEAAP//4AAAAPoTQAAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
+    IgOG4ugd55oC6+u98iPXSz0r+Enjcf7jtVyoofGoKAAAOw==
 }
 
 image create photo engine_on -data {
-  R0lGODlhGAAYAOf4AFFOdGdOTQBk9AVi9ItNEVhVfAVt8FVafwRt91ZbgGhZYVdcgZNTEF1a
-  gVtghV1ih15iiGNjg2ZmhlJrpDB01mdnhxV8+J9iFV1rm2lpimZqkGpqi2trjG1tjm5uj7Fl
-  CnBwkXFxkrZpAXJyk2Z2oDeB6nNzlHR0lXV1lnZ2l3B4pDKI+LBwJTSJ+Xx4lHl5mjaK+nN7
-  p356l397mIB8mYF9mpF8ebx6KECS+4KGoYOHooaKpUmZ/IeLplSW+2KU5omMp8qFK4uOqZmN
-  jXSUz4yPqo2Qq1Ki/tCKKJKSqFOj/9mLGFSk/5+Tk5WVq1+j+5SXs2Ck/JeXrZWYtGGl/ZiY
-  ruGRFFqq/3Sj5JqasGSn/+WUBpycspSfuWet/o2i05+ftqCgt42l0Gqv/2uw/6OiuYyp2aSj
-  up+mu3Sx/YGv8KamvPSgDaqmt+iiJZ6qxG+3/3ez/6unuHC4/3i0/6mpv4mx7JOw4e6mH8Op
-  iKurwXq6/5ez13u7/328/7Guv7KvwKizzrOwwYa9/YDC/6W40Za76+6uQYe//4HD/7ezxIjA
-  /8Kzrpi+7bm1xrq2yIrF/ru3ybO60IvG/7y4yrS70ajA37i8zI7I/7K92LO+2Y/K/7q+zr+8
-  zZbK/rvAz5DO/5HP/6XJ7L/D0pnO//zASZnR/sHF1aTO95rS/8LG1pvT/77K2MfI0p3V/8XJ
-  2cLK36LV/L7N4aPW/crL1aXX/7zQ6cjN3KbY/83N1/TLeKfa/87O2c/Q2qfe/q7b/dDR26jf
-  /9HS3Kng/9LT3avi/8vX5f/Yb7Pl/7Tm/7Xn/7ro/Lvp/b3q/vzhkL/s/8Tt/PnjpMXu/cbv
-  /sfw/8jx//7ti8nz/8n2/cr3/9D1/tzw/dbz/sv5/9H2/9f0/9n1/9T5/9r2/9v3/9L8/efz
-  /9/4/dr7/uH5/tz9/+j5/93//+n6/+L//er7/+j+/f/9xu/8/en//uv///H+//L///n///7/
-  /P///////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JFJgFzCdH
-  fwYqXKgwh5M3sri5s1eOFa1ODBnWCJOkWjVw6tTF2wbrVsaFNYRg8ugNHbpx4LTJonRyIAlM
-  ppA9q8at2rdnzZDlwnjSA5FFoHAla7YTaLJfgUyezFCCDqZauIYpe7bs165Vd4QpOpkCAQIL
-  POjMGePlCp1FntS8EnQSggELMLSM6bNoUZ8xT5RgaaXnZAQKJXy89YQL16o+dJR84SSnJoQf
-  XkgNexYuXLdfnvpIAlPznwYMaoZVI9cOXbpmsQy1Kf1vgQYVw7ylu2dv3jRRVeoAol17RIou
-  tyqhqZJERy8gNqzQbmAix4wkRlz868BhSBA30mlDR8jgwcNABSx0WcMTnrhCAh/YOINnrb17
-  gfBLzQd//z0b/evZdx988tHX33si6BdNHgcORAAbh9yQRYMKBQAAhScFBAA7
+    R0lGODlhGAAYAOf4AFFOdGdOTQBk9AVi9ItNEVhVfAVt8FVafwRt91ZbgGhZYVdcgZNTEF1a
+    gVtghV1ih15iiGNjg2ZmhlJrpDB01mdnhxV8+J9iFV1rm2lpimZqkGpqi2trjG1tjm5uj7Fl
+    CnBwkXFxkrZpAXJyk2Z2oDeB6nNzlHR0lXV1lnZ2l3B4pDKI+LBwJTSJ+Xx4lHl5mjaK+nN7
+    p356l397mIB8mYF9mpF8ebx6KECS+4KGoYOHooaKpUmZ/IeLplSW+2KU5omMp8qFK4uOqZmN
+    jXSUz4yPqo2Qq1Ki/tCKKJKSqFOj/9mLGFSk/5+Tk5WVq1+j+5SXs2Ck/JeXrZWYtGGl/ZiY
+    ruGRFFqq/3Sj5JqasGSn/+WUBpycspSfuWet/o2i05+ftqCgt42l0Gqv/2uw/6OiuYyp2aSj
+    up+mu3Sx/YGv8KamvPSgDaqmt+iiJZ6qxG+3/3ez/6unuHC4/3i0/6mpv4mx7JOw4e6mH8Op
+    iKurwXq6/5ez13u7/328/7Guv7KvwKizzrOwwYa9/YDC/6W40Za76+6uQYe//4HD/7ezxIjA
+    /8Kzrpi+7bm1xrq2yIrF/ru3ybO60IvG/7y4yrS70ajA37i8zI7I/7K92LO+2Y/K/7q+zr+8
+    zZbK/rvAz5DO/5HP/6XJ7L/D0pnO//zASZnR/sHF1aTO95rS/8LG1pvT/77K2MfI0p3V/8XJ
+    2cLK36LV/L7N4aPW/crL1aXX/7zQ6cjN3KbY/83N1/TLeKfa/87O2c/Q2qfe/q7b/dDR26jf
+    /9HS3Kng/9LT3avi/8vX5f/Yb7Pl/7Tm/7Xn/7ro/Lvp/b3q/vzhkL/s/8Tt/PnjpMXu/cbv
+    /sfw/8jx//7ti8nz/8n2/cr3/9D1/tzw/dbz/sv5/9H2/9f0/9n1/9T5/9r2/9v3/9L8/efz
+    /9/4/dr7/uH5/tz9/+j5/93//+n6/+L//er7/+j+/f/9xu/8/en//uv///H+//L///n///7/
+    /P///////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JFJgFzCdH
+    fwYqXKgwh5M3sri5s1eOFa1ODBnWCJOkWjVw6tTF2wbrVsaFNYRg8ugNHbpx4LTJonRyIAlM
+    ppA9q8at2rdnzZDlwnjSA5FFoHAla7YTaLJfgUyezFCCDqZauIYpe7bs165Vd4QpOpkCAQIL
+    POjMGePlCp1FntS8EnQSggELMLSM6bNoUZ8xT5RgaaXnZAQKJXy89YQL16o+dJR84SSnJoQf
+    XkgNexYuXLdfnvpIAlPznwYMaoZVI9cOXbpmsQy1Kf1vgQYVw7ylu2dv3jRRVeoAol17RIou
+    tyqhqZJERy8gNqzQbmAix4wkRlz868BhSBA30mlDR8jgwcNABSx0WcMTnrhCAh/YOINnrb17
+    gfBLzQd//z0b/evZdx988tHX33si6BdNHgcORAAbh9yQRYMKBQAAhScFBAA7
 }
 
 image create photo engine_off -data {
-  R0lGODlhGAAYAOfyAOYFO+YGQOgINugJPOcKQVFOdOkOPeAUOWdOTeAUPgBk9AVi9LUpUuEX
-  P+AXRItNEeIZQM8hTVhVfOIaRdgeTAVt8FVafwRt9+IdS+UeQuQeR2hZYVdcgZNTEN4nUFtg
-  hdUrWM8vVuEqTV5iiOEqUmNjg+MtVGZmhlJrpNY2WjB01mdnhxV8+OYwVp9iFd81WV1rm2lp
-  iqtNcd82X2pqi2trjMlCdG1tjm5uj7FlCuQ8Y+Y9X3BwkbZpAb5NhWZ2oDeB6nNzlNxGaHR0
-  ldNKdoZtj3Z2l6hdnHB4pDKI+LBwJTSJ+Xl5mjaK+nN7p356l+ROb4B8mdpWc4F9mpF8ebx6
-  KECS+61wjIKGoYOHoqt1oIaKpUmZ/K12roeLplSW+2KU5omMp8qFK4uOqZmNjXSUz7J+nY2Q
-  q9CKKJKSqNmLGJ+Tk5WVq8eAmV+j+8p+n8SDmpSXs2Ck/GGl/ZiYruGRFNZ/mJqasGSn/+WU
-  Bpycsq+UxJ+ftqCgt42l0L6Uqmqv/9OLpGuw/6OiuaSjuqamvPSgDaqmt+iiJW+3/3ez/72b
-  wXC4/3i0/6mpv4mx7NGYspOw4e6mH8OpiJWv53q6/9absLGuv7KvwKizzrOwwcSnxYa9/YDC
-  /5a76+6uQYHD/4jA/8Kzrpi+7bm1xrq2yIrF/ru3ybO60IvG/7y4yqjA37i8zLK92Nmuw7O+
-  2Y/K/7q+zr+8zZbK/rvAz5DO/5HP/6XJ7MW91r/D0ueyxPzASZnR/sHF1aTO95rS/5vT/8bG
-  3bjM5cfI0p3V/8LK36LV/L7N4crL1aXX/6bY/83N1/TLeM7O2c/Q2qfe/q7b/dDR26jf/9HS
-  3NLT3avi/8vX5f/Yb7Pl/7Tm/7Xn/7vp/eLb5/zhkL/s//njpMXu/cbv/sfw/8jx//7ti8nz
-  /9bz/tH2/9f0/9n1/9v3/+fz/9/4/eH5/un6/+r7///9xu/8/f//////////////////////
-  /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JFHiHDy1S
-  lwYqXKgQCxszL3TEi7cuFzJZDBlO6ZPGDoAD7ty9Q1esWcaFU8aMgiTgALd27dKNO6bq5EAn
-  sHwV03DAgCtz3rxhW4bxJI4ynWxJe9PyRVBs0DKZFChAgMIVQBqlUiYthQADm6BJA+Zp2Z+W
-  B6oONHKhAgs3eBq1zCAoFaWPX3suHOG2iZxGldIKOBJhQloDVa0qLKGiCZdEnWqJEJxXgAab
-  I8AA8iVtnIaqaR2g4mPzXwkYjaQFa1FZyqhDpf9JuPFjMmUNt+IUwlR6QE+0gQLxDIHFWRgq
-  dU4KPhBBBpYsXg/gqEFGDKLkDA+kFbiCRo0IajdFKGFGThL22FSrPshhqBs8cudjo/23fpf7
-  6+j/JRb4wJD98vGdBNpA67X3Xn7bEdiDfd9Mgh5iC/X3SRV35HcSAgVYiF5AADs=
+    R0lGODlhGAAYAOfyAOYFO+YGQOgINugJPOcKQVFOdOkOPeAUOWdOTeAUPgBk9AVi9LUpUuEX
+    P+AXRItNEeIZQM8hTVhVfOIaRdgeTAVt8FVafwRt9+IdS+UeQuQeR2hZYVdcgZNTEN4nUFtg
+    hdUrWM8vVuEqTV5iiOEqUmNjg+MtVGZmhlJrpNY2WjB01mdnhxV8+OYwVp9iFd81WV1rm2lp
+    iqtNcd82X2pqi2trjMlCdG1tjm5uj7FlCuQ8Y+Y9X3BwkbZpAb5NhWZ2oDeB6nNzlNxGaHR0
+    ldNKdoZtj3Z2l6hdnHB4pDKI+LBwJTSJ+Xl5mjaK+nN7p356l+ROb4B8mdpWc4F9mpF8ebx6
+    KECS+61wjIKGoYOHoqt1oIaKpUmZ/K12roeLplSW+2KU5omMp8qFK4uOqZmNjXSUz7J+nY2Q
+    q9CKKJKSqNmLGJ+Tk5WVq8eAmV+j+8p+n8SDmpSXs2Ck/GGl/ZiYruGRFNZ/mJqasGSn/+WU
+    Bpycsq+UxJ+ftqCgt42l0L6Uqmqv/9OLpGuw/6OiuaSjuqamvPSgDaqmt+iiJW+3/3ez/72b
+    wXC4/3i0/6mpv4mx7NGYspOw4e6mH8OpiJWv53q6/9absLGuv7KvwKizzrOwwcSnxYa9/YDC
+    /5a76+6uQYHD/4jA/8Kzrpi+7bm1xrq2yIrF/ru3ybO60IvG/7y4yqjA37i8zLK92Nmuw7O+
+    2Y/K/7q+zr+8zZbK/rvAz5DO/5HP/6XJ7MW91r/D0ueyxPzASZnR/sHF1aTO95rS/5vT/8bG
+    3bjM5cfI0p3V/8LK36LV/L7N4crL1aXX/6bY/83N1/TLeM7O2c/Q2qfe/q7b/dDR26jf/9HS
+    3NLT3avi/8vX5f/Yb7Pl/7Tm/7Xn/7vp/eLb5/zhkL/s//njpMXu/cbv/sfw/8jx//7ti8nz
+    /9bz/tH2/9f0/9n1/9v3/+fz/9/4/eH5/un6/+r7///9xu/8/f//////////////////////
+    /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JFHiHDy1S
+    lwYqXKgQCxszL3TEi7cuFzJZDBlO6ZPGDoAD7ty9Q1esWcaFU8aMgiTgALd27dKNO6bq5EAn
+    sHwV03DAgCtz3rxhW4bxJI4ynWxJe9PyRVBs0DKZFChAgMIVQBqlUiYthQADm6BJA+Zp2Z+W
+    B6oONHKhAgs3eBq1zCAoFaWPX3suHOG2iZxGldIKOBJhQloDVa0qLKGiCZdEnWqJEJxXgAab
+    I8AA8iVtnIaqaR2g4mPzXwkYjaQFa1FZyqhDpf9JuPFjMmUNt+IUwlR6QE+0gQLxDIHFWRgq
+    dU4KPhBBBpYsXg/gqEFGDKLkDA+kFbiCRo0IajdFKGFGThL22FSrPshhqBs8cudjo/23fpf7
+    6+j/JRb4wJD98vGdBNpA67X3Xn7bEdiDfd9Mgh5iC/X3SRV35HcSAgVYiF5AADs=
 }
 
 image create photo finish_on -data {
-  R0lGODlhGAAYAOfwAJbK/np6dkJCOh4qQo62+mZmXsrKyoaGgi5Cbtra2qKinhIWSmJiWkpq
-  nlp+utri8p6amiI2UjI+rkJajmJiXiY6VqaiokJiyjpSfuru+iImbl6GxnKe8ra2shIeMiYq
-  eprG/mqS5iYufmqG/j5OugoODioyhkpmzkJWsvL2/jpaxsLK6jpKtkpGRlJyrl6C3mJ6/mKG
-  znqq/jo2Ni4yqhYSCrrC5jpGsgoOMk5qzl6G3vb6/lJSTlp6xjI6lm6a6sbGwjI6mmKK4mJy
-  ylp+2lJuzhoeGjZKdnKC0kpexjY+uuLm9m5uapKOjgYOIk5i3lJm5kpa1tLS0sbS8jI2pnqm
-  +jJCttba8m6G1prK/hISDhIaKr6+viYmHgYGBmaK7qLO/kZawurq9oKy/i42qlpyzmqO8lp2
-  0maO4kJSvnqi7vr6/jY+ss7O6lpWUlJy0lZ61jY6rjpCshYWDoKCfgoWJtLW8nKa8goKDnae
-  9l5+1h4aGm6W6maK4lp61lJiwu7y+io6skJWvm5qaoKq8jI6qoJ+fjo+rg4OFmaG3iIeHlZy
-  2rq6tkpiwv7+/j5Gvnai9gYKDt7e3n5+es7Oyubq9tbW1qLS/s7S7jZCslZyzmqK3i5GcmqK
-  /jZOdhIWEl561nai/k5m0kZWxvb2+j5KtnKe+gYOFhYWFh4uRoq6/qamoj46NnJyapKSjmqO
-  7l5aVjY+qmJ+2mKC2mKG3mqO4nqi9jJCdjY6sgoKEm6W8k5iylZy1kJOuk5mylJqynKa6lZu
-  zjo+vtbS0p7K/vLy+kZWvjY+tk5exsK+vg4KCi46rgoOFmKC3mqS6l5+2jY+rjpGtmaK5jZC
-  tl6Gyurq+lp21nKa9jI6rnai+s7OzlZy0mqO5kJCPmZmYhIWTra2tkpa2jI2qnqm/hISEiYm
-  Ilpy0jpCtrq6ugYKEvb2/j5KulJqznKa7kZWwgICCv//////////////////////////////
-  /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JHEiwoMGD
-  BbUdgNWthTcFkhAaTDbjFCcX1DY0iOBlUAKJAidFcgAADBhbHCDJqOIJFReJFDyoApMFBIgQ
-  OPm0G0etBLqDTeqMuUSMGAEhOmj1QcPNGaQYWoYVTKDsxx1CamoR2ZRhExFaifqEyDbBTUEm
-  nvL0efHsmZ8pjnbIgvOsGa0QMvBQIogKGLdZevxY4/UmhSNSoN74qXsNg6GBUt6FmmWtyIkL
-  F1RocuQoRZkc5kBJi8FqILhU186wwwJoiesH6jgXC+Zr2zNTewauqvCqSBIknIMLtxOmtqka
-  AxkN+ILM3ZArmKKvKMa5mqA0YX7pUjTQEjMzxta1RZtmxUqgP5zFkGBBoteuHgIIlpuVBpqc
-  GyyilVrjqFK0TJlAE4soRxxA0CQIjFJIHNBAI4ENjoiRyTJxiBMFFIsgIkVBnzSCSxwgknFI
-  G9DQEAcVT4wAwy0UGGTBFo+wAWIcZNQIYiGdjICCER8ZFIAT5xzz4YwgYhNOEOQAIZEruYgg
-  jBLHsMHGMcIc800XBoD0jzY8pLPABz6YoAEOc9ChJUEJQNAKAwVM0sGZcMYpp0ABAQA7
+    R0lGODlhGAAYAOfwAJbK/np6dkJCOh4qQo62+mZmXsrKyoaGgi5Cbtra2qKinhIWSmJiWkpq
+    nlp+utri8p6amiI2UjI+rkJajmJiXiY6VqaiokJiyjpSfuru+iImbl6GxnKe8ra2shIeMiYq
+    eprG/mqS5iYufmqG/j5OugoODioyhkpmzkJWsvL2/jpaxsLK6jpKtkpGRlJyrl6C3mJ6/mKG
+    znqq/jo2Ni4yqhYSCrrC5jpGsgoOMk5qzl6G3vb6/lJSTlp6xjI6lm6a6sbGwjI6mmKK4mJy
+    ylp+2lJuzhoeGjZKdnKC0kpexjY+uuLm9m5uapKOjgYOIk5i3lJm5kpa1tLS0sbS8jI2pnqm
+    +jJCttba8m6G1prK/hISDhIaKr6+viYmHgYGBmaK7qLO/kZawurq9oKy/i42qlpyzmqO8lp2
+    0maO4kJSvnqi7vr6/jY+ss7O6lpWUlJy0lZ61jY6rjpCshYWDoKCfgoWJtLW8nKa8goKDnae
+    9l5+1h4aGm6W6maK4lp61lJiwu7y+io6skJWvm5qaoKq8jI6qoJ+fjo+rg4OFmaG3iIeHlZy
+    2rq6tkpiwv7+/j5Gvnai9gYKDt7e3n5+es7Oyubq9tbW1qLS/s7S7jZCslZyzmqK3i5GcmqK
+    /jZOdhIWEl561nai/k5m0kZWxvb2+j5KtnKe+gYOFhYWFh4uRoq6/qamoj46NnJyapKSjmqO
+    7l5aVjY+qmJ+2mKC2mKG3mqO4nqi9jJCdjY6sgoKEm6W8k5iylZy1kJOuk5mylJqynKa6lZu
+    zjo+vtbS0p7K/vLy+kZWvjY+tk5exsK+vg4KCi46rgoOFmKC3mqS6l5+2jY+rjpGtmaK5jZC
+    tl6Gyurq+lp21nKa9jI6rnai+s7OzlZy0mqO5kJCPmZmYhIWTra2tkpa2jI2qnqm/hISEiYm
+    Ilpy0jpCtrq6ugYKEvb2/j5KulJqznKa7kZWwgICCv//////////////////////////////
+    /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JHEiwoMGD
+    BbUdgNWthTcFkhAaTDbjFCcX1DY0iOBlUAKJAidFcgAADBhbHCDJqOIJFReJFDyoApMFBIgQ
+    OPm0G0etBLqDTeqMuUSMGAEhOmj1QcPNGaQYWoYVTKDsxx1CamoR2ZRhExFaifqEyDbBTUEm
+    nvL0efHsmZ8pjnbIgvOsGa0QMvBQIogKGLdZevxY4/UmhSNSoN74qXsNg6GBUt6FmmWtyIkL
+    F1RocuQoRZkc5kBJi8FqILhU186wwwJoiesH6jgXC+Zr2zNTewauqvCqSBIknIMLtxOmtqka
+    AxkN+ILM3ZArmKKvKMa5mqA0YX7pUjTQEjMzxta1RZtmxUqgP5zFkGBBoteuHgIIlpuVBpqc
+    GyyilVrjqFK0TJlAE4soRxxA0CQIjFJIHNBAI4ENjoiRyTJxiBMFFIsgIkVBnzSCSxwgknFI
+    G9DQEAcVT4wAwy0UGGTBFo+wAWIcZNQIYiGdjICCER8ZFIAT5xzz4YwgYhNOEOQAIZEruYgg
+    jBLHsMHGMcIc800XBoD0jzY8pLPABz6YoAEOc9ChJUEJQNAKAwVM0sGZcMYpp0ABAQA7
 }
 
 image create photo finish_off -data {
-  R0lGODlhGAAYAOeVAAMDAwYGBgkJCQoKCgsLCwwMDA4ODg8PDxERERISEhQUFBUVFRYWFhkZ
-  GRsbGx0dHR8fHyUlJSYmJikpKSwsLC0tLTIyMjMzMzQ0NDc3Nzk5OTs7Oz4+PkBAQEFBQUJC
-  QkNDQ0REREZGRkdHR0hISElJSUpKSktLS0xMTE5OTk9PT1BQUFFRUVJSUlNTU1VVVecQOVZW
-  VldXV1lZWVtbW1xcXF1dXV5eXl9fX2FhYWJiYmNjY2VlZWZmZmdnZ2hoaGlpaWpqamtra21t
-  bW5ubm9vb3BwcHFxcXNzc3R0dHV1dXd3d3h4eHl5eXp6ent7e3x8fH19fX5+fn9/f4CAgIGB
-  gYKCgoODg4SEhIWFhYaGhoiIiImJiYqKiouLi4yMjI2NjY6Ojo+Pj5CQkJOTk5SUlJeXl5iY
-  mJqampubm5ycnJ6enp+fn6KioqOjo6WlpaampqysrLGxsbOzs7a2trq6ur6+vr+/v8DAwMHB
-  wcPDw8TExMbGxsjIyMrKys7OztHR0dLS0tPT09TU1NbW1tjY2Nra2tvb297e3uHh4efn5+rq
-  6uvr6+zs7O7u7vLy8vPz8/b29vn5+fr6+v7+/v//////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JHEiwoMGD
-  Bf9oofFhRI82iBAavJOhQIgiVar0uBBAiCGDMGAMlCLACR4+fNigWfOmzQkGdkISDAlDx4M5
-  fPLcuSOmJxkzbarIBKkgTh89euRswZKFixcwY0ImEFTQEIGQcNZ8idLFUZcoWbSEXDNDRkEi
-  J9SEnDLlSSBKkqg0CZlFzJsBfwgyMAPGCk0lSCJRigQFxpMpV86smDIwEAA2VpgYARKyRhJK
-  IZUMUQKFy5UNA+lQOMOEyJZHikImCkkJ0pEgSaakcTAQToYwRnZoocQbM4zehXDATpNgYJ0J
-  XXjYWHJokHOalBrRmIFjSBkIAwkZCGPDhYoTJkypwPjh+wWLFzF8NPFAUIKVGSRQpGABo8Uk
-  SotCniAxQkgJLQRJ4cENIYhAQkh7UMLICSCEtAMRShwQSEEK8CCCCDCI0EEJgJDAgQgeBBES
-  CDoY5EYD9GWoYQcdXBgCGF6E9JFBToRUwoU4urjDBwnQdBAMBGBwQgklkEBCCUM6EIEfAg01
-  UEh/tDCAAxZ8oEEFCCxghUT/OGlIGkfkwIMUdHDZpJlopnlQQAA7
+    R0lGODlhGAAYAOeVAAMDAwYGBgkJCQoKCgsLCwwMDA4ODg8PDxERERISEhQUFBUVFRYWFhkZ
+    GRsbGx0dHR8fHyUlJSYmJikpKSwsLC0tLTIyMjMzMzQ0NDc3Nzk5OTs7Oz4+PkBAQEFBQUJC
+    QkNDQ0REREZGRkdHR0hISElJSUpKSktLS0xMTE5OTk9PT1BQUFFRUVJSUlNTU1VVVecQOVZW
+    VldXV1lZWVtbW1xcXF1dXV5eXl9fX2FhYWJiYmNjY2VlZWZmZmdnZ2hoaGlpaWpqamtra21t
+    bW5ubm9vb3BwcHFxcXNzc3R0dHV1dXd3d3h4eHl5eXp6ent7e3x8fH19fX5+fn9/f4CAgIGB
+    gYKCgoODg4SEhIWFhYaGhoiIiImJiYqKiouLi4yMjI2NjY6Ojo+Pj5CQkJOTk5SUlJeXl5iY
+    mJqampubm5ycnJ6enp+fn6KioqOjo6WlpaampqysrLGxsbOzs7a2trq6ur6+vr+/v8DAwMHB
+    wcPDw8TExMbGxsjIyMrKys7OztHR0dLS0tPT09TU1NbW1tjY2Nra2tvb297e3uHh4efn5+rq
+    6uvr6+zs7O7u7vLy8vPz8/b29vn5+fr6+v7+/v//////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JHEiwoMGD
+    Bf9oofFhRI82iBAavJOhQIgiVar0uBBAiCGDMGAMlCLACR4+fNigWfOmzQkGdkISDAlDx4M5
+    fPLcuSOmJxkzbarIBKkgTh89euRswZKFixcwY0ImEFTQEIGQcNZ8idLFUZcoWbSEXDNDRkEi
+    J9SEnDLlSSBKkqg0CZlFzJsBfwgyMAPGCk0lSCJRigQFxpMpV86smDIwEAA2VpgYARKyRhJK
+    IZUMUQKFy5UNA+lQOMOEyJZHikImCkkJ0pEgSaakcTAQToYwRnZoocQbM4zehXDATpNgYJ0J
+    XXjYWHJokHOalBrRmIFjSBkIAwkZCGPDhYoTJkypwPjh+wWLFzF8NPFAUIKVGSRQpGABo8Uk
+    SotCniAxQkgJLQRJ4cENIYhAQkh7UMLICSCEtAMRShwQSEEK8CCCCDCI0EEJgJDAgQgeBBES
+    CDoY5EYD9GWoYQcdXBgCGF6E9JFBToRUwoU4urjDBwnQdBAMBGBwQgklkEBCCUM6EIEfAg01
+    UEh/tDCAAxZ8oEEFCCxghUT/OGlIGkfkwIMUdHDZpJlopnlQQAA7
 }
 
 button .main.fbutton.button.autoplay -image autoplay_off -command toggleAutoplay
 button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
 
 foreach i {start back forward end exitVar addVar autoplay flip coords stm trial intoVar} {
-  .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
-  bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
-  bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
+    .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
+    bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
+    bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
 }
 
 pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
-    .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.space2 \
-    .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
-    .main.fbutton.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+        .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.space2 \
+        .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
+        .main.fbutton.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
 
 ############################################################
 ### The board:
 
 proc toggleShowMaterial {} {
-  if { $::gameInfo(showMaterial) } {
-    grid configure .main.board.mat
-  } else  {
-    grid remove .main.board.mat
-  }
-  updateBoard
+    if { $::gameInfo(showMaterial) } {
+        grid configure .main.board.mat
+    } else  {
+        grid remove .main.board.mat
+    }
+    updateBoard
 }
 
 ::board::new .main.board $boardSize "showmat"
@@ -374,14 +374,14 @@ proc toggleShowMaterial {} {
 #.main.board.bd configure -relief solid -border 2
 ::board::showMarks .main.board 1
 if {$boardCoords} {
-  ::board::coords .main.board
+    ::board::coords .main.board
 }
 if {$boardSTM} {
-  ::board::stm .main.board
+    ::board::stm .main.board
 }
 
 if { ! $::gameInfo(showMaterial) } {
-  grid remove .main.board.mat
+    grid remove .main.board.mat
 }
 
 # .gameInfo is the game information widget:
@@ -394,54 +394,54 @@ autoscrollframe .main.gameInfoFrame text .main.gameInfo
 menu .main.gameInfo.menu -tearoff 0
 
 .main.gameInfo.menu add checkbutton -label GInfoHideNext \
-    -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
+        -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
 
 .main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
-    -command { toggleShowMaterial }
+        -command { toggleShowMaterial }
 
 .main.gameInfo.menu add checkbutton -label GInfoFEN \
-    -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
+        -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
 
 .main.gameInfo.menu add checkbutton -label GInfoMarks \
-    -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
+        -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
 
 .main.gameInfo.menu add checkbutton -label GInfoWrap \
-    -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
+        -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
 
 .main.gameInfo.menu add checkbutton -label GInfoFullComment \
-    -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
+        -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
 
 .main.gameInfo.menu add checkbutton -label GInfoPhotos \
-    -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-    -command {updatePlayerPhotos -force}
+        -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+        -command {updatePlayerPhotos -force}
 
 .main.gameInfo.menu add separator
 
 .main.gameInfo.menu add radiobutton -label GInfoTBNothing \
-    -variable gameInfo(showTB) -value 0 -command updateBoard
+        -variable gameInfo(showTB) -value 0 -command updateBoard
 
 .main.gameInfo.menu add radiobutton -label GInfoTBResult \
-    -variable gameInfo(showTB) -value 1 -command updateBoard
+        -variable gameInfo(showTB) -value 1 -command updateBoard
 
 .main.gameInfo.menu add radiobutton -label GInfoTBAll \
-    -variable gameInfo(showTB) -value 2 -command updateBoard
+        -variable gameInfo(showTB) -value 2 -command updateBoard
 
 .main.gameInfo.menu add separator
 
 .main.gameInfo.menu add command -label GInfoDelete -command {
-  catch {sc_game flag delete [sc_game number] invert}
-  updateBoard
-  ::windows::gamelist::Refresh
+    catch {sc_game flag delete [sc_game number] invert}
+    updateBoard
+    ::windows::gamelist::Refresh
 }
 
 .main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
 menu .main.gameInfo.menu.mark
 foreach flag $maintFlaglist {
-  .main.gameInfo.menu.mark add command -label "" -command "
-  catch {sc_game flag $flag \[sc_game number\] invert}
-  updateBoard
-  ::windows::gamelist::Refresh
-  "
+    .main.gameInfo.menu.mark add command -label "" -command "
+    catch {sc_game flag $flag \[sc_game number\] invert}
+    updateBoard
+    ::windows::gamelist::Refresh
+    "
 }
 
 bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
@@ -455,14 +455,14 @@ bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
 #   "boardStr" and the piece bitmap size "psize".
 #
 proc setBoard {board boardStr psize {rotated 0}} {
-  for {set i 0} { $i < 64 } { incr i } {
-    if {$rotated > 0} {
-      set piece [string index $boardStr [expr {63 - $i}]]
-    } else {
-      set piece [ string index $boardStr $i ]
+    for {set i 0} { $i < 64 } { incr i } {
+        if {$rotated > 0} {
+            set piece [string index $boardStr [expr {63 - $i}]]
+        } else {
+            set piece [ string index $boardStr $i ]
+        }
+        $board.$i configure -image $::board::letterToPiece($piece)$psize
     }
-    $board.$i configure -image $::board::letterToPiece($piece)$psize
-  }
 }
 
 # updateVarMenus:
@@ -470,160 +470,160 @@ proc setBoard {board boardStr psize {rotated 0}} {
 #   Calls sc_var list and sc_var count to get the list of variations.
 #
 proc updateVarMenus {} {
-  set varList [sc_var list]
-  set numVars [sc_var count]
-  .main.fbutton.button.intoVar.menu delete 0 end
-  .menu.edit.del delete 0 end
-  .menu.edit.first delete 0 end
-  .menu.edit.main delete 0 end
-  # PG: add the move of main line
-  if {$numVars > 0} {
-    set move [sc_game info nextMove]
-    if {$move == ""} { set move "($::tr(empty))" }
-    .main.fbutton.button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
-  }
-  for {set i 0} {$i < $numVars} {incr i} {
-    set move [lindex $varList $i]
-    set state normal
-    if {$move == ""} {
-      set move "($::tr(empty))"
-      set state disabled
+    set varList [sc_var list]
+    set numVars [sc_var count]
+    .main.fbutton.button.intoVar.menu delete 0 end
+    .menu.edit.del delete 0 end
+    .menu.edit.first delete 0 end
+    .menu.edit.main delete 0 end
+    # PG: add the move of main line
+    if {$numVars > 0} {
+        set move [sc_game info nextMove]
+        if {$move == ""} { set move "($::tr(empty))" }
+        .main.fbutton.button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
     }
-    set str "[expr {$i + 1}]: $move"
-    set commandStr "sc_var moveInto $i; updateBoard"
-    if {$i < 9} {
-      .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr \
-          -underline 0
-    } else {
-      .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr
+    for {set i 0} {$i < $numVars} {incr i} {
+        set move [lindex $varList $i]
+        set state normal
+        if {$move == ""} {
+            set move "($::tr(empty))"
+            set state disabled
+        }
+        set str "[expr {$i + 1}]: $move"
+        set commandStr "sc_var moveInto $i; updateBoard"
+        if {$i < 9} {
+            .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr \
+                    -underline 0
+        } else {
+            .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr
+        }
+        set commandStr "sc_var delete $i; updateBoard -pgn"
+        .menu.edit.del add command -label $str -command $commandStr
+        set commandStr "sc_var first $i; updateBoard -pgn"
+        .menu.edit.first add command -label $str -command $commandStr
+        set commandStr "sc_var promote $i; updateBoard -pgn"
+        .menu.edit.main add command -label $str -command $commandStr \
+                -state $state
     }
-    set commandStr "sc_var delete $i; updateBoard -pgn"
-    .menu.edit.del add command -label $str -command $commandStr
-    set commandStr "sc_var first $i; updateBoard -pgn"
-    .menu.edit.first add command -label $str -command $commandStr
-    set commandStr "sc_var promote $i; updateBoard -pgn"
-    .menu.edit.main add command -label $str -command $commandStr \
-        -state $state
-  }
 }
 ################################################################################
 # added by Pascal Georges
 # returns a list of num moves from main line following current position
 ################################################################################
 proc getNextMoves { {num 4} } {
-  set tmp ""
-  set count 0
-  while { [sc_game info nextMove] != "" && $count < $num} {
-    append tmp " [sc_game info nextMove]"
-    sc_move forward
-    incr count
-  }
-  sc_move back $count
-  return $tmp
+    set tmp ""
+    set count 0
+    while { [sc_game info nextMove] != "" && $count < $num} {
+        append tmp " [sc_game info nextMove]"
+        sc_move forward
+        incr count
+    }
+    sc_move back $count
+    return $tmp
 }
 ################################################################################
 # displays a box with main line and variations for easy selection with keyboard
 ################################################################################
 proc showVars {} {
-  if {$::autoplayMode == 1} { return }
-  
-  # No need to display an empty menu
-  if {[sc_var count] == 0} {
-    return
-  }
-  
-  if {[sc_var count] == 1 &&  [sc_game info nextMove] == ""} {
-    # There is only one variation and no main line, so enter it
-    sc_var moveInto 0
-    updateBoard
-    return
-  }
-  
-  sc_info preMoveCmd {}
-  
-  set w .variations
-  if {[winfo exists $w]} { return }
-  
-  set varList [sc_var list]
-  set numVars [sc_var count]
-  
-  # Present a menu of the possible variations
-  toplevel $w
-  ::setTitle $w $::tr(Variations)
-  setWinLocation $w
-  set h [expr $numVars + 1]
-  if { $h> 19} { set h 19 }
-  listbox $w.lbVar -selectmode browse -height $h -width 20
-  pack $w.lbVar -expand yes -fill both -side top
-  
-  #insert main line
-  set move [sc_game info nextMove]
-  if {$move == ""} {
-    set move "($::tr(empty))"
-  } else  {
-    $w.lbVar insert end "0: [getNextMoves 5]"
-  }
-  
-  # insert variations
-  for {set i 0} {$i < $numVars} {incr i} {
-    set move [::trans [lindex $varList $i]]
+    if {$::autoplayMode == 1} { return }
+    
+    # No need to display an empty menu
+    if {[sc_var count] == 0} {
+        return
+    }
+    
+    if {[sc_var count] == 1 &&  [sc_game info nextMove] == ""} {
+        # There is only one variation and no main line, so enter it
+        sc_var moveInto 0
+        updateBoard
+        return
+    }
+    
+    sc_info preMoveCmd {}
+    
+    set w .variations
+    if {[winfo exists $w]} { return }
+    
+    set varList [sc_var list]
+    set numVars [sc_var count]
+    
+    # Present a menu of the possible variations
+    toplevel $w
+    ::setTitle $w $::tr(Variations)
+    setWinLocation $w
+    set h [expr $numVars + 1]
+    if { $h> 19} { set h 19 }
+    listbox $w.lbVar -selectmode browse -height $h -width 20
+    pack $w.lbVar -expand yes -fill both -side top
+    
+    #insert main line
+    set move [sc_game info nextMove]
     if {$move == ""} {
-      set move "($::tr(empty))"
+        set move "($::tr(empty))"
     } else  {
-      sc_var moveInto $i
-      append move [getNextMoves 5]
-      sc_var exit
+        $w.lbVar insert end "0: [getNextMoves 5]"
     }
-    set str "[expr {$i + 1}]: $move"
-    $w.lbVar insert end $str
-  }
-  $w.lbVar selection set 0
-  # bindings
-  bind $w <Configure> "recordWinSize $w"
-  bind .variations <Return> {catch { event generate .variations <Right> } }
-  bind .variations <ButtonRelease-1> {catch { event generate .variations <Right> } }
-  bind .variations <Right> {
+    
+    # insert variations
+    for {set i 0} {$i < $numVars} {incr i} {
+        set move [::trans [lindex $varList $i]]
+        if {$move == ""} {
+            set move "($::tr(empty))"
+        } else  {
+            sc_var moveInto $i
+            append move [getNextMoves 5]
+            sc_var exit
+        }
+        set str "[expr {$i + 1}]: $move"
+        $w.lbVar insert end $str
+    }
+    $w.lbVar selection set 0
+    # bindings
+    bind $w <Configure> "recordWinSize $w"
+    bind .variations <Return> {catch { event generate .variations <Right> } }
+    bind .variations <ButtonRelease-1> {catch { event generate .variations <Right> } }
+    bind .variations <Right> {
+        sc_info preMoveCmd preMoveCommand
+        set cur [.variations.lbVar curselection]
+        destroy .variations
+        if {$cur == 0} {
+            sc_move forward; updateBoard -animate
+        } else  {
+            sc_var moveInto [expr $cur - 1]; updateBoard -animate
+        }
+    }
+    bind .variations <Up> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
+        set sel [expr $cur - 1]
+        if {$sel < 0} { set sel 0 }
+        .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
+    bind .variations <Down> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
+        set sel [expr $cur + 1]
+        if {$sel >= [.variations.lbVar index end]} { set sel end }
+        .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
+    bind .variations <Left> { destroy .variations }
+    bind .variations <Escape> { catch { event generate .variations <Destroy> } }
+    # in order to have the window always on top : this does not really work ...
+    bind .variations <Visibility> {
+        if { "%s" != "VisibilityUnobscured" } {
+            focus .variations
+            raise .variations
+        }
+    }
+    bind .variations <FocusOut> {
+        focus .variations
+        raise .variations
+    }
+    
+    # Needed or the main window loses the focus
+    if { $::docking::USE_DOCKING } {
+        bind .variations <Destroy> { focus -force .main }
+    }
+    
     sc_info preMoveCmd preMoveCommand
-    set cur [.variations.lbVar curselection]
-    destroy .variations
-    if {$cur == 0} {
-      sc_move forward; updateBoard -animate
-    } else  {
-      sc_var moveInto [expr $cur - 1]; updateBoard -animate
-    }
-  }
-  bind .variations <Up> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
-    set sel [expr $cur - 1]
-    if {$sel < 0} { set sel 0 }
-    .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
-  bind .variations <Down> { set cur [.variations.lbVar curselection] ; .variations.lbVar selection clear $cur
-    set sel [expr $cur + 1]
-    if {$sel >= [.variations.lbVar index end]} { set sel end }
-    .variations.lbVar selection set $sel ; .variations.lbVar see $sel}
-  bind .variations <Left> { destroy .variations }
-  bind .variations <Escape> { catch { event generate .variations <Destroy> } }
-  # in order to have the window always on top : this does not really work ...
-  bind .variations <Visibility> {
-    if { "%s" != "VisibilityUnobscured" } {
-      focus .variations
-      raise .variations
-    }
-  }
-  bind .variations <FocusOut> {
-    focus .variations
-    raise .variations
-  }
-  
-  # Needed or the main window loses the focus
-  if { $::docking::USE_DOCKING } {
-    bind .variations <Destroy> { focus -force .main }
-  }
-  
-  sc_info preMoveCmd preMoveCommand
-  
-  catch { focus .variations }
-  catch { grab $w }
-  update
+    
+    catch { focus .variations }
+    catch { grab $w }
+    update
 }
 ################################################################################
 #
@@ -639,54 +639,54 @@ bind $dot_w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
 #   whenever a game is loaded.
 #
 proc editMyPlayerNames {} {
-  global myPlayerNames
-  set w .editMyPlayerNames
-  if {[winfo exists $w]} { return }
-  toplevel $w
-  ::setTitle $w "Scid: [tr OptionsBoardNames]"
-  pack [frame $w.b] -side bottom -fill x
-  
-  autoscrollframe $w.desc text $w.desc.text \
-      -foreground black -background gray90 \
-      -width 50 -height 8 -wrap word -cursor top_left_arrow
-  $w.desc.text insert end [string trim $::tr(MyPlayerNamesDescription)]
-  $w.desc.text configure -state disabled
-  pack $w.desc -side top -fill x
-  autoscrollframe $w.f text $w.f.text \
-      -background white -width 50 -height 10 -wrap none
-  foreach name $myPlayerNames {
-    $w.f.text insert end "\n\"$name\""
-  }
-  pack $w.f -side top -fill both -expand yes
-  button $w.b.white -text $::tr(White) -command {
-    .editMyPlayerNames.f.text insert end "\"[sc_game info white]\"\n"
-  }
-  button $w.b.black -text $::tr(Black) -command {
-    .editMyPlayerNames.f.text insert end "\"[sc_game info black]\"\n"
-  }
-  button $w.b.help -text $::tr(Help) \
-      -command {helpWindow Options MyPlayerNames}
-  button $w.b.ok -text OK -command editMyPlayerNamesOK
-  button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
-  pack $w.b.white $w.b.black $w.b.help -side left -padx 5 -pady 5
-  grab $w
+    global myPlayerNames
+    set w .editMyPlayerNames
+    if {[winfo exists $w]} { return }
+    toplevel $w
+    ::setTitle $w "Scid: [tr OptionsBoardNames]"
+    pack [frame $w.b] -side bottom -fill x
+    
+    autoscrollframe $w.desc text $w.desc.text \
+            -foreground black -background gray90 \
+            -width 50 -height 8 -wrap word -cursor top_left_arrow
+    $w.desc.text insert end [string trim $::tr(MyPlayerNamesDescription)]
+    $w.desc.text configure -state disabled
+    pack $w.desc -side top -fill x
+    autoscrollframe $w.f text $w.f.text \
+            -background white -width 50 -height 10 -wrap none
+    foreach name $myPlayerNames {
+        $w.f.text insert end "\n\"$name\""
+    }
+    pack $w.f -side top -fill both -expand yes
+    button $w.b.white -text $::tr(White) -command {
+        .editMyPlayerNames.f.text insert end "\"[sc_game info white]\"\n"
+    }
+    button $w.b.black -text $::tr(Black) -command {
+        .editMyPlayerNames.f.text insert end "\"[sc_game info black]\"\n"
+    }
+    button $w.b.help -text $::tr(Help) \
+            -command {helpWindow Options MyPlayerNames}
+    button $w.b.ok -text OK -command editMyPlayerNamesOK
+    button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+    pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
+    pack $w.b.white $w.b.black $w.b.help -side left -padx 5 -pady 5
+    grab $w
 }
 
 proc editMyPlayerNamesOK {} {
-  global myPlayerNames
-  set w .editMyPlayerNames
-  set text [string trim [$w.f.text get 1.0 end]]
-  set myPlayerNames {}
-  foreach name [split $text "\n"] {
-    set name [string trim $name]
-    if {[string match "\"*\"" $name]} {
-      set name [string trim $name "\""]
+    global myPlayerNames
+    set w .editMyPlayerNames
+    set text [string trim [$w.f.text get 1.0 end]]
+    set myPlayerNames {}
+    foreach name [split $text "\n"] {
+        set name [string trim $name]
+        if {[string match "\"*\"" $name]} {
+            set name [string trim $name "\""]
+        }
+        if {$name != ""} { lappend myPlayerNames $name }
     }
-    if {$name != ""} { lappend myPlayerNames $name }
-  }
-  grab release $w
-  destroy $w
+    grab release $w
+    destroy $w
 }
 
 # flipBoardForPlayerNames
@@ -695,18 +695,18 @@ proc editMyPlayerNamesOK {} {
 #   necessary to show from that players perspective.
 #
 proc flipBoardForPlayerNames {namelist {board .main.board}} {
-  set white [sc_game info white]
-  set black [sc_game info black]
-  foreach pattern $namelist {
-    if {[string match $pattern $white]} {
-      ::board::flip $board 0
-      return
+    set white [sc_game info white]
+    set black [sc_game info black]
+    foreach pattern $namelist {
+        if {[string match $pattern $white]} {
+            ::board::flip $board 0
+            return
+        }
+        if {[string match $pattern $black]} {
+            ::board::flip $board 1
+            return
+        }
     }
-    if {[string match $pattern $black]} {
-      ::board::flip $board 1
-      return
-    }
-  }
 }
 
 # updateBoard:
@@ -717,115 +717,115 @@ proc flipBoardForPlayerNames {namelist {board .main.board}} {
 #    If a parameter "-animate" is specified, board changes are animated.
 #
 proc updateBoard {args} {
-  global boardSize gameInfo
-  set pgnNeedsUpdate 0
-  set animate 0
-  foreach arg $args {
-    if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
-    if {! [string compare $arg "-animate"]} { set animate 1 }
-  }
-  
-  # Remove marked squares informations.
-  # (This must be done _before_ updating the board!)
-  ::board::mark::clear .main.board
-  
-  ::board::resize .main.board $boardSize
-  ::board::update .main.board [sc_pos board] $animate
-  ::board::material .main.board
-  
-  # Draw arrows and marks, color squares:
-  
-  foreach {cmd discard} [::board::mark::getEmbeddedCmds [sc_pos getComment]] {
-    set type   [lindex $cmd 0]
-    set square [::board::sq [lindex $cmd 1]]
-    set color  [lindex $cmd end]
-    if {[llength $cmd] < 4} { set cmd [linsert $cmd 2 ""] }
-    set dest   [expr {[string match {[a-h][1-8]} [lindex $cmd 2]] \
-          ? [::board::sq [lindex $cmd 2]] : [lindex $cmd 2]}]
-    # add mark to board
-    eval ::board::mark::add .main.board $type $square $dest $color
-  }
-  
-  ::board::lastMoveHighlight .main.board
-  
-  # Update the status of each navigation button:
-  if {[sc_pos isAt start]} {
-    .main.fbutton.button.start configure -state disabled
-  } else { .main.fbutton.button.start configure -state normal }
-  if {[sc_pos isAt end]} {
-    .main.fbutton.button.end configure -state disabled
-  } else { .main.fbutton.button.end configure -state normal }
-  if {[sc_pos isAt vstart]} {
-    .main.fbutton.button.back configure -state disabled
-  } else { .main.fbutton.button.back configure -state normal }
-  if {[sc_pos isAt vend]} {
-    .main.fbutton.button.forward configure -state disabled
-  } else { .main.fbutton.button.forward configure -state normal }
-  # Cannot add a variation to an empty line:
-  if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
-    .menu.edit entryconfig [tr EditAdd] -state disabled
-    .main.fbutton.button.addVar configure -state disabled
-    bind $::dot_w <Control-a> {}
-  } else {
-    .menu.edit entryconfig [tr EditAdd] -state normal
-    .main.fbutton.button.addVar configure -state normal
-    bind $::dot_w <Control-a> {sc_var create; updateBoard -pgn}
-  }
-  if {[sc_var count] == 0} {
-    .main.fbutton.button.intoVar configure -state disabled
-    .menu.edit entryconfig [tr EditDelete] -state disabled
-    .menu.edit entryconfig [tr EditFirst] -state disabled
-    .menu.edit entryconfig [tr EditMain] -state disabled
-  } else {
-    .main.fbutton.button.intoVar configure -state normal
-    .menu.edit entryconfig [tr EditDelete] -state normal
-    .menu.edit entryconfig [tr EditFirst] -state normal
-    .menu.edit entryconfig [tr EditMain] -state normal
-  }
-  updateVarMenus
-  if {[sc_var level] == 0} {
-    .main.fbutton.button.exitVar configure -state disabled
-  } else {
-    .main.fbutton.button.exitVar configure -state normal
-  }
-  
-  if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
-    .main.tb.save configure -state disabled
-  } else {
-    .main.tb.save configure -state normal
-  }
-  .main.gameInfo configure -state normal
-  .main.gameInfo delete 0.0 end
-  ::htext::display .main.gameInfo [sc_game info -hide $gameInfo(hideNextMove) \
-      -material $gameInfo(showMaterial) \
-      -cfull $gameInfo(fullComment) \
-      -fen $gameInfo(showFEN) -tb $gameInfo(showTB)]
-  if {$gameInfo(wrap)} {
-    .main.gameInfo configure -wrap word
-    .main.gameInfo tag configure wrap -lmargin2 10
-    .main.gameInfo tag add wrap 1.0 end
-  } else {
-    .main.gameInfo configure -wrap none
-  }
-  .main.gameInfo configure -state disabled
-  updatePlayerPhotos
-  updateEpdWins
-  if {[winfo exists .analysisWin1]} { updateAnalysis 1 }
-  if {[winfo exists .analysisWin2]} { updateAnalysis 2 }
-  # if {[winfo exists .treeWin]} { ::tree::refresh }
-  ::tree::refresh
-  if {[winfo exists .commentWin]} { ::commenteditor::Refresh }
-  if {[::tb::isopen]} { ::tb::results }
-  updateMenuStates
-  moveEntry_Clear
-  updateStatusBar
-  
-  if {[winfo exists .twinchecker]} { updateTwinChecker }
-  if {[winfo exists .pgnWin]} { ::pgn::Refresh $pgnNeedsUpdate }
-  if {[winfo exists .bookWin]} { ::book::refresh }
-  if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
-  if {[winfo exists .noveltyWin]} { updateNoveltyWin }
-  
+    global boardSize gameInfo
+    set pgnNeedsUpdate 0
+    set animate 0
+    foreach arg $args {
+        if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
+        if {! [string compare $arg "-animate"]} { set animate 1 }
+    }
+    
+    # Remove marked squares informations.
+    # (This must be done _before_ updating the board!)
+    ::board::mark::clear .main.board
+    
+    ::board::resize .main.board $boardSize
+    ::board::update .main.board [sc_pos board] $animate
+    ::board::material .main.board
+    
+    # Draw arrows and marks, color squares:
+    
+    foreach {cmd discard} [::board::mark::getEmbeddedCmds [sc_pos getComment]] {
+        set type   [lindex $cmd 0]
+        set square [::board::sq [lindex $cmd 1]]
+        set color  [lindex $cmd end]
+        if {[llength $cmd] < 4} { set cmd [linsert $cmd 2 ""] }
+        set dest   [expr {[string match {[a-h][1-8]} [lindex $cmd 2]] \
+                    ? [::board::sq [lindex $cmd 2]] : [lindex $cmd 2]}]
+        # add mark to board
+        eval ::board::mark::add .main.board $type $square $dest $color
+    }
+    
+    ::board::lastMoveHighlight .main.board
+    
+    # Update the status of each navigation button:
+    if {[sc_pos isAt start]} {
+        .main.fbutton.button.start configure -state disabled
+    } else { .main.fbutton.button.start configure -state normal }
+    if {[sc_pos isAt end]} {
+        .main.fbutton.button.end configure -state disabled
+    } else { .main.fbutton.button.end configure -state normal }
+    if {[sc_pos isAt vstart]} {
+        .main.fbutton.button.back configure -state disabled
+    } else { .main.fbutton.button.back configure -state normal }
+    if {[sc_pos isAt vend]} {
+        .main.fbutton.button.forward configure -state disabled
+    } else { .main.fbutton.button.forward configure -state normal }
+    # Cannot add a variation to an empty line:
+    if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
+        .menu.edit entryconfig [tr EditAdd] -state disabled
+        .main.fbutton.button.addVar configure -state disabled
+        bind $::dot_w <Control-a> {}
+    } else {
+        .menu.edit entryconfig [tr EditAdd] -state normal
+        .main.fbutton.button.addVar configure -state normal
+        bind $::dot_w <Control-a> {sc_var create; updateBoard -pgn}
+    }
+    if {[sc_var count] == 0} {
+        .main.fbutton.button.intoVar configure -state disabled
+        .menu.edit entryconfig [tr EditDelete] -state disabled
+        .menu.edit entryconfig [tr EditFirst] -state disabled
+        .menu.edit entryconfig [tr EditMain] -state disabled
+    } else {
+        .main.fbutton.button.intoVar configure -state normal
+        .menu.edit entryconfig [tr EditDelete] -state normal
+        .menu.edit entryconfig [tr EditFirst] -state normal
+        .menu.edit entryconfig [tr EditMain] -state normal
+    }
+    updateVarMenus
+    if {[sc_var level] == 0} {
+        .main.fbutton.button.exitVar configure -state disabled
+    } else {
+        .main.fbutton.button.exitVar configure -state normal
+    }
+    
+    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
+        .main.tb.save configure -state disabled
+    } else {
+        .main.tb.save configure -state normal
+    }
+    .main.gameInfo configure -state normal
+    .main.gameInfo delete 0.0 end
+    ::htext::display .main.gameInfo [sc_game info -hide $gameInfo(hideNextMove) \
+            -material $gameInfo(showMaterial) \
+            -cfull $gameInfo(fullComment) \
+            -fen $gameInfo(showFEN) -tb $gameInfo(showTB)]
+    if {$gameInfo(wrap)} {
+        .main.gameInfo configure -wrap word
+        .main.gameInfo tag configure wrap -lmargin2 10
+        .main.gameInfo tag add wrap 1.0 end
+    } else {
+        .main.gameInfo configure -wrap none
+    }
+    .main.gameInfo configure -state disabled
+    updatePlayerPhotos
+    updateEpdWins
+    if {[winfo exists .analysisWin1]} { updateAnalysis 1 }
+    if {[winfo exists .analysisWin2]} { updateAnalysis 2 }
+    # if {[winfo exists .treeWin]} { ::tree::refresh }
+    ::tree::refresh
+    if {[winfo exists .commentWin]} { ::commenteditor::Refresh }
+    if {[::tb::isopen]} { ::tb::results }
+    updateMenuStates
+    moveEntry_Clear
+    updateStatusBar
+    
+    if {[winfo exists .twinchecker]} { updateTwinChecker }
+    if {[winfo exists .pgnWin]} { ::pgn::Refresh $pgnNeedsUpdate }
+    if {[winfo exists .bookWin]} { ::book::refresh }
+    if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
+    if {[winfo exists .noveltyWin]} { updateNoveltyWin }
+    
 }
 
 # Set up player photos:
@@ -838,115 +838,115 @@ label .main.photoB -background white -image photoB -anchor ne
 # readPhotoFile executed once at startup for each SPF file. Loads SPI file if it exists.
 # Otherwise it generates index information and tries to write SPI file to disk (if it can be done)
 proc readPhotoFile {fname} {
-  global photobegin
-  global photosize
-  global spffile
-  set count 0
-  set writespi 0
-  
-  if {! [regsub {\.spf$} $fname {.spi} spi]} {
-    # How does it happend?
-    return
-  }
-  
-  # If SPI file was found then just source it and exit
-  if { [file readable $spi]} {
-    set count [array size spffile]
-    source $spi
-    set newcount [array size spffile]
-    if {[expr $newcount - $count] > 0} {
-      ::splash::add "Found [expr $newcount - $count] player photos in [file tail $fname]"
-      ::splash::add "Loading information from index file [file tail $spi]"
-      return
+    global photobegin
+    global photosize
+    global spffile
+    set count 0
+    set writespi 0
+    
+    if {! [regsub {\.spf$} $fname {.spi} spi]} {
+        # How does it happend?
+        return
     }
-  }
-  
-  # Check for the absence of the SPI file and check for the write permissions
-  if { ![file exists $spi] && ![catch {open $spi w} fd_spi]} {
-    # SPI file will be written to disk by scid
-    set writespi 1
-  }
-  
-  if {! [file readable $fname]} { return }
-  
-  set fd [open $fname]
-  while {[gets $fd line] >= 0} {
-    # search for the string      photo "Player Name"
-    if { [regexp {^photo \"(.*)\" \{$} $line -> name] } {
-      set count [expr $count + 1 ]
-      set begin [tell $fd]
-      # skip data block
-      while {1} {
-        set end [tell $fd]
-        gets $fd line
-        if {[regexp {.*\}.*} $line ]} {break}
-      }
-      set trimname [trimString $name]
-      set size [expr $end - $begin ]
-      set photobegin($trimname) $begin
-      set photosize($trimname) $size
-      set spffile($trimname) $fname
-      if { $writespi } {
-        # writing SPI file to disk
-        puts $fd_spi "set \"photobegin($trimname)\" $begin"
-        puts $fd_spi "set \"photosize($trimname)\" $size"
-        puts $fd_spi "set \"spffile($trimname)\" \"\$fname\""
-      }
+    
+    # If SPI file was found then just source it and exit
+    if { [file readable $spi]} {
+        set count [array size spffile]
+        source $spi
+        set newcount [array size spffile]
+        if {[expr $newcount - $count] > 0} {
+            ::splash::add "Found [expr $newcount - $count] player photos in [file tail $fname]"
+            ::splash::add "Loading information from index file [file tail $spi]"
+            return
+        }
     }
-  }
-  if {$count > 0 && $writespi} {
-    ::splash::add "Found $count player photos in [file tail $fname]"
-    ::splash::add "Index file [file tail $spi] was generated succesfully"
-  }
-  if {$count > 0 && !$writespi} {
-    ::splash::add "Found $count player photos in [file tail $fname]"
-    ::splash::add "Could not generate index file [file tail $spi]"
-    ::splash::add "Use spf2spi script to generate [file tail $spi] file "
-  }
-  
-  if { $writespi } { close $fd_spi }
-  close $fd
+    
+    # Check for the absence of the SPI file and check for the write permissions
+    if { ![file exists $spi] && ![catch {open $spi w} fd_spi]} {
+        # SPI file will be written to disk by scid
+        set writespi 1
+    }
+    
+    if {! [file readable $fname]} { return }
+    
+    set fd [open $fname]
+    while {[gets $fd line] >= 0} {
+        # search for the string      photo "Player Name"
+        if { [regexp {^photo \"(.*)\" \{$} $line -> name] } {
+            set count [expr $count + 1 ]
+            set begin [tell $fd]
+            # skip data block
+            while {1} {
+                set end [tell $fd]
+                gets $fd line
+                if {[regexp {.*\}.*} $line ]} {break}
+            }
+            set trimname [trimString $name]
+            set size [expr $end - $begin ]
+            set photobegin($trimname) $begin
+            set photosize($trimname) $size
+            set spffile($trimname) $fname
+            if { $writespi } {
+                # writing SPI file to disk
+                puts $fd_spi "set \"photobegin($trimname)\" $begin"
+                puts $fd_spi "set \"photosize($trimname)\" $size"
+                puts $fd_spi "set \"spffile($trimname)\" \"\$fname\""
+            }
+        }
+    }
+    if {$count > 0 && $writespi} {
+        ::splash::add "Found $count player photos in [file tail $fname]"
+        ::splash::add "Index file [file tail $spi] was generated succesfully"
+    }
+    if {$count > 0 && !$writespi} {
+        ::splash::add "Found $count player photos in [file tail $fname]"
+        ::splash::add "Could not generate index file [file tail $spi]"
+        ::splash::add "Use spf2spi script to generate [file tail $spi] file "
+    }
+    
+    if { $writespi } { close $fd_spi }
+    close $fd
 }
 
 
 #convert $data string tolower case and strip the first two blanks.
 proc trimString {data} {
-  set data [string tolower $data]
-  set strindex [string first "\ " $data]
-  set data [string replace $data $strindex $strindex]
-  set strindex [string first "\ " $data]
-  set data [string replace $data $strindex $strindex]
-  return $data
+    set data [string tolower $data]
+    set strindex [string first "\ " $data]
+    set data [string replace $data $strindex $strindex]
+    set strindex [string first "\ " $data]
+    set data [string replace $data $strindex $strindex]
+    return $data
 }
 
 
 # retrieve photo from the SPF file using index information
 proc getphoto {name} {
-  global photobegin
-  global photosize
-  global spffile
-  set data ""
-  if {[info exists spffile($name)]} {
-    set fd [open $spffile($name)]
-    seek $fd $photobegin($name) start
-    set data [read $fd $photosize($name) ]
-    close $fd
-  }
-  return $data
+    global photobegin
+    global photosize
+    global spffile
+    set data ""
+    if {[info exists spffile($name)]} {
+        set fd [open $spffile($name)]
+        seek $fd $photobegin($name) start
+        set data [read $fd $photosize($name) ]
+        close $fd
+    }
+    return $data
 }
 
 proc addPhotoAlias {aliasname name} {
-  global photobegin
-  global photosize
-  global spffile
-  global droppedaliases
-  if {[info exists spffile([trimString $name])]} {
-    set photobegin([trimString $aliasname]) $photobegin([trimString $name])
-    set photosize([trimString $aliasname]) $photosize([trimString $name])
-    set spffile([trimString $aliasname]) $spffile([trimString $name])
-  } else {
-    set droppedaliases [expr $droppedaliases + 1 ]
-  }
+    global photobegin
+    global photosize
+    global spffile
+    global droppedaliases
+    if {[info exists spffile([trimString $name])]} {
+        set photobegin([trimString $aliasname]) $photobegin([trimString $name])
+        set photosize([trimString $aliasname]) $photosize([trimString $name])
+        set spffile([trimString $aliasname]) $spffile([trimString $name])
+    } else {
+        set droppedaliases [expr $droppedaliases + 1 ]
+    }
 }
 
 # photobegin($name) - file offset of the photo for the player $name
@@ -965,27 +965,27 @@ set photodirs [list $scidDataDir $scidUserDir $scidConfigDir [file join $scidSha
 
 # Read all Scid photo (*.spf) files in the Scid data/user/config directories:
 foreach dir $photodirs {
-  foreach photofile [glob -nocomplain -directory $dir "*.spf"] {
-    readPhotoFile $photofile
-  }
+    foreach photofile [glob -nocomplain -directory $dir "*.spf"] {
+        readPhotoFile $photofile
+    }
 }
 
 # Read all Scid photo aliases (*.spa)
 foreach dir $photodirs {
-  foreach spa [glob -nocomplain -directory $dir "*.spa"] {
-    if {! [file readable $spa]} { return }
-    set count [array size spffile]
-    set droppedcount $droppedaliases
-    source $spa
-    set newcount [array size spffile]
-    set newdroppedcount $droppedaliases
-    if {[expr $newcount - $count] > 0} {
-      ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $spa]"
+    foreach spa [glob -nocomplain -directory $dir "*.spa"] {
+        if {! [file readable $spa]} { return }
+        set count [array size spffile]
+        set droppedcount $droppedaliases
+        source $spa
+        set newcount [array size spffile]
+        set newdroppedcount $droppedaliases
+        if {[expr $newcount - $count] > 0} {
+            ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $spa]"
+        }
+        if {[expr $newdroppedcount - $droppedcount] > 0} {
+            ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $spa]"
+        }
     }
-    if {[expr $newdroppedcount - $droppedcount] > 0} {
-      ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $spa]"
-    }
-  }
 }
 
 
@@ -994,32 +994,32 @@ set photo(oldBlack) {}
 
 # Try to change the engine name: ignore version number, try to ignore blanks
 proc trimEngineName { engine } {
-  global spffile
-  set engine [sc_name retrievename $engine]
-  
-  set engine [string tolower $engine]
-  
-  if { [string first "deep " $engine] == 0 } {
-    # strip "deep "
-    set engine [string range $engine 5 end]
-  }
-  # delete two first blank to make "The King" same as "TheKing"
-  # or "Green Light Chess" as "Greenlightchess"
-  set strindex [string first "\ " $engine]
-  set engine [string replace $engine $strindex $strindex]
-  set strindex [string first "\ " $engine]
-  set engine [string replace $engine $strindex $strindex]
-  set strindex [string first "," $engine]
-  set slen [string len $engine]
-  if { $strindex == -1 && $slen > 2 } {
-    #seems to be a engine name:
-    # search until longest name matches an engine name
+    global spffile
+    set engine [sc_name retrievename $engine]
+    
+    set engine [string tolower $engine]
+    
+    if { [string first "deep " $engine] == 0 } {
+        # strip "deep "
+        set engine [string range $engine 5 end]
+    }
+    # delete two first blank to make "The King" same as "TheKing"
+    # or "Green Light Chess" as "Greenlightchess"
+    set strindex [string first "\ " $engine]
+    set engine [string replace $engine $strindex $strindex]
+    set strindex [string first "\ " $engine]
+    set engine [string replace $engine $strindex $strindex]
+    set strindex [string first "," $engine]
     set slen [string len $engine]
-    for { set strindex $slen} {![info exists spffile([string range $engine 0 $strindex])]\
-          && $strindex > 2 } {set strindex [expr {$strindex - 1}] } { }
-    set engine [string range $engine 0 $strindex]
-  }
-  return $engine
+    if { $strindex == -1 && $slen > 2 } {
+        #seems to be a engine name:
+        # search until longest name matches an engine name
+        set slen [string len $engine]
+        for { set strindex $slen} {![info exists spffile([string range $engine 0 $strindex])]\
+                    && $strindex > 2 } {set strindex [expr {$strindex - 1}] } { }
+        set engine [string range $engine 0 $strindex]
+    }
+    return $engine
 }
 
 # updatePlayerPhotos
@@ -1027,76 +1027,76 @@ proc trimEngineName { engine } {
 #   for the two players of the current game.
 #
 proc updatePlayerPhotos {{force ""}} {
-  global photo
-  global spffile
-  if {$force == "-force"} {
-    # Force update even if it seems unnecessary. This is done
-    # when the user selects to show or hide the photos.
-    set photo(oldWhite) {}
-    set photo(oldBlack) {}
-    place forget .main.photoW
-    place forget .main.photoB
-  }
-  if {! $::gameInfo(photos)} { return }
-  #get photo from player
-  set white [sc_game info white]
-  set black [sc_game info black]
-  
-  catch { set white [trimEngineName $white] }
-  catch { set black [trimEngineName $black] }
-  
-  if {$black != $photo(oldBlack)} {
-    set photo(oldBlack) $black
-    place forget .main.photoB
-    if {[info exists spffile($black)]} {
-      image create photo photoB -data [getphoto $black ]
-      .main.photoB configure -image photoB -anchor ne
-      place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -anchor ne
-      # force to update white, black size could be changed
-      set photo(oldWhite) {}
+    global photo
+    global spffile
+    if {$force == "-force"} {
+        # Force update even if it seems unnecessary. This is done
+        # when the user selects to show or hide the photos.
+        set photo(oldWhite) {}
+        set photo(oldBlack) {}
+        place forget .main.photoW
+        place forget .main.photoB
     }
-  }
-  set distance [expr {[image width photoB] + 2}]
-  if { $distance < 10 } { set distance 82 }
-  if {$white != $photo(oldWhite)} {
-    set photo(oldWhite) $white
-    place forget .main.photoW
-    if {[info exists spffile($white)]} {
-      image create photo photoW -data [getphoto $white ]
-      .main.photoW configure -image photoW -anchor ne
-      place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -anchor ne
+    if {! $::gameInfo(photos)} { return }
+    #get photo from player
+    set white [sc_game info white]
+    set black [sc_game info black]
+    
+    catch { set white [trimEngineName $white] }
+    catch { set black [trimEngineName $black] }
+    
+    if {$black != $photo(oldBlack)} {
+        set photo(oldBlack) $black
+        place forget .main.photoB
+        if {[info exists spffile($black)]} {
+            image create photo photoB -data [getphoto $black ]
+            .main.photoB configure -image photoB -anchor ne
+            place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -anchor ne
+            # force to update white, black size could be changed
+            set photo(oldWhite) {}
+        }
     }
-  }
-  bind .main.photoW <ButtonPress-1> "togglePhotosSize"
-  bind .main.photoB <ButtonPress-1> "togglePhotosSize"
-  set ::photosMinimized 0
+    set distance [expr {[image width photoB] + 2}]
+    if { $distance < 10 } { set distance 82 }
+    if {$white != $photo(oldWhite)} {
+        set photo(oldWhite) $white
+        place forget .main.photoW
+        if {[info exists spffile($white)]} {
+            image create photo photoW -data [getphoto $white ]
+            .main.photoW configure -image photoW -anchor ne
+            place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -anchor ne
+        }
+    }
+    bind .main.photoW <ButtonPress-1> "togglePhotosSize"
+    bind .main.photoB <ButtonPress-1> "togglePhotosSize"
+    set ::photosMinimized 0
 }
 ################################################################################
 # Toggles photo sizes
 ################################################################################
 set photosMinimized 0
 proc togglePhotosSize {} {
-  set distance [expr {[image width photoB] + 2}]
-  if { $distance < 10 } { set distance 82 }
-  
-  if {$::photosMinimized} {
-    set ::photosMinimized 0
-    if { [winfo ismapped .main.photoW] } {
-      place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
+    set distance [expr {[image width photoB] + 2}]
+    if { $distance < 10 } { set distance 82 }
+    
+    if {$::photosMinimized} {
+        set ::photosMinimized 0
+        if { [winfo ismapped .main.photoW] } {
+            place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
+        }
+        if { [winfo ismapped .main.photoB] } {
+            place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
+        }
+    } else  {
+        set ::photosMinimized 1
+        if { [winfo ismapped .main.photoW] } {
+            place .main.photoW -in .main.gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
+        }
+        if { [winfo ismapped .main.photoB] } {
+            place .main.photoB -in .main.gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
+        }
     }
-    if { [winfo ismapped .main.photoB] } {
-      place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
-    }
-  } else  {
-    set ::photosMinimized 1
-    if { [winfo ismapped .main.photoW] } {
-      place .main.photoW -in .main.gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
-    }
-    if { [winfo ismapped .main.photoB] } {
-      place .main.photoB -in .main.gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
-    }
-  }
-  
+    
 }
 #########################################################
 ### Chess move input
@@ -1119,25 +1119,25 @@ set PAWN 6
 #
 ################################################################################
 proc getPromoPiece {} {
-  set w .promoWin
-  set ::result 2
-  toplevel $w
-  # wm transient $w .main
-  ::setTitle $w "Scid"
-  wm resizable $w 0 0
-  set col "w"
-  if { [sc_pos side] == "black" } { set col "b" }
-  ttk::button $w.bq -image ${col}q45 -command "set ::result 2 ; destroy $w"
-  ttk::button $w.br -image ${col}r45 -command "set ::result 3 ; destroy $w"
-  ttk::button $w.bb -image ${col}b45 -command "set ::result 4 ; destroy $w"
-  ttk::button $w.bn -image ${col}n45 -command "set ::result 5 ; destroy $w"
-  pack $w.bq $w.br $w.bb $w.bn -side left
-  bind $w <Escape> "set ::result 2 ; destroy $w"
-  bind $w <Return> "set ::result 2 ; destroy $w"
-  update
-  catch { grab $w }
-  tkwait window $w
-  return $::result
+    set w .promoWin
+    set ::result 2
+    toplevel $w
+    # wm transient $w .main
+    ::setTitle $w "Scid"
+    wm resizable $w 0 0
+    set col "w"
+    if { [sc_pos side] == "black" } { set col "b" }
+    ttk::button $w.bq -image ${col}q45 -command "set ::result 2 ; destroy $w"
+    ttk::button $w.br -image ${col}r45 -command "set ::result 3 ; destroy $w"
+    ttk::button $w.bb -image ${col}b45 -command "set ::result 4 ; destroy $w"
+    ttk::button $w.bn -image ${col}n45 -command "set ::result 5 ; destroy $w"
+    pack $w.bq $w.br $w.bb $w.bn -side left
+    bind $w <Escape> "set ::result 2 ; destroy $w"
+    bind $w <Return> "set ::result 2 ; destroy $w"
+    update
+    catch { grab $w }
+    tkwait window $w
+    return $::result
 }
 
 # confirmReplaceMove:
@@ -1151,34 +1151,34 @@ proc getPromoPiece {} {
 set addVariationWithoutAsking 0
 
 proc confirmReplaceMove {} {
-  global askToReplaceMoves trialMode
-  
-  # If reviewing a game, enter a var automatically
-  if {[winfo exists $::reviewgame::window]} {
-    return "var"
-  }
-  
-  if {$::addVariationWithoutAsking} { return "var" }
-  
-  if {! $askToReplaceMoves} { return "replace" }
-  if {$trialMode} { return "replace" }
-  
-  option add *Dialog.msg.wrapLength 4i interactive
-  catch {tk_dialog .dialog "Scid: $::tr(ReplaceMove)?" \
-        $::tr(ReplaceMoveMessage) "" 0 \
-        $::tr(ReplaceMove) $::tr(NewMainLine) \
-        $::tr(AddNewVar) [tr EditTrial] \
-        $::tr(Cancel)} answer
-  option add *Dialog.msg.wrapLength 3i interactive
-  if {$answer == 0} { return "replace" }
-  if {$answer == 1} { return "mainline" }
-  if {$answer == 2} { return "var" }
-  if {$answer == 3} { setTrialMode 1; return "replace" }
-  return "cancel"
+    global askToReplaceMoves trialMode
+    
+    # If reviewing a game, enter a var automatically
+    if {[winfo exists $::reviewgame::window]} {
+        return "var"
+    }
+    
+    if {$::addVariationWithoutAsking} { return "var" }
+    
+    if {! $askToReplaceMoves} { return "replace" }
+    if {$trialMode} { return "replace" }
+    
+    option add *Dialog.msg.wrapLength 4i interactive
+    catch {tk_dialog .dialog "Scid: $::tr(ReplaceMove)?" \
+                $::tr(ReplaceMoveMessage) "" 0 \
+                $::tr(ReplaceMove) $::tr(NewMainLine) \
+                $::tr(AddNewVar) [tr EditTrial] \
+                $::tr(Cancel)} answer
+    option add *Dialog.msg.wrapLength 3i interactive
+    if {$answer == 0} { return "replace" }
+    if {$answer == 1} { return "mainline" }
+    if {$answer == 2} { return "var" }
+    if {$answer == 3} { setTrialMode 1; return "replace" }
+    return "cancel"
 }
 
 proc addNullMove {} {
-  addMove null null
+    addMove null null
 }
 
 # addMove:
@@ -1188,115 +1188,115 @@ proc addNullMove {} {
 #   If the optional parameter is "-animate", the move will be animated.
 #
 proc addMove { sq1 sq2 {animate ""}} {
-  if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
-  
-  global EMPTY
-  set nullmove 0
-  if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
-  if {!$nullmove  &&  [sc_pos isLegal $sq1 $sq2] == 0} {
-    # Illegal move, but if it is King takes king then treat it as
-    # entering a null move:
-    set board [sc_pos board]
-    set k1 [string tolower [string index $board $sq1]]
-    set k2 [string tolower [string index $board $sq2]]
-    if {$k1 == "k"  &&  $k2 == "k"} { set nullmove 1 } else { return }
-  }
-  set promo $EMPTY
-  if {[sc_pos isPromotion $sq1 $sq2] == 1} {
-    # sometimes, addMove is triggered twice
-    if { [winfo exists .promoWin] } { return }
-    set promo [getPromoPiece]
-  }
-  
-  set promoLetter ""
-  switch -- $promo {
-    2 { set promoLetter "q"}
-    3 { set promoLetter "r"}
-    4 { set promoLetter "b"}
-    5 { set promoLetter "n"}
-    default {set promoLetter ""}
-  }
-  
-  # Autmatically follow the main line if the next move is the same or enter the relevant variation if it exists
-  if {! $::annotateMode} {
-    set moveUCI [::board::san $sq2][::board::san $sq1]$promoLetter
-    set move [sc_game info nextMoveUCI]
-    if { [ string compare -nocase $moveUCI $move] == 0 } {
-      sc_move forward
-      updateBoard
-      return
+    if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
+    
+    global EMPTY
+    set nullmove 0
+    if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
+    if {!$nullmove  &&  [sc_pos isLegal $sq1 $sq2] == 0} {
+        # Illegal move, but if it is King takes king then treat it as
+        # entering a null move:
+        set board [sc_pos board]
+        set k1 [string tolower [string index $board $sq1]]
+        set k2 [string tolower [string index $board $sq2]]
+        if {$k1 == "k"  &&  $k2 == "k"} { set nullmove 1 } else { return }
     }
-    set varList [sc_var list UCI]
-    set i 0
-    foreach { move } $varList {
-      if { [ string compare -nocase $moveUCI $move] == 0 } {
-        sc_var moveInto $i
-        updateBoard
+    set promo $EMPTY
+    if {[sc_pos isPromotion $sq1 $sq2] == 1} {
+        # sometimes, addMove is triggered twice
+        if { [winfo exists .promoWin] } { return }
+        set promo [getPromoPiece]
+    }
+    
+    set promoLetter ""
+    switch -- $promo {
+        2 { set promoLetter "q"}
+        3 { set promoLetter "r"}
+        4 { set promoLetter "b"}
+        5 { set promoLetter "n"}
+        default {set promoLetter ""}
+    }
+    
+    # Autmatically follow the main line if the next move is the same or enter the relevant variation if it exists
+    if {! $::annotateMode} {
+        set moveUCI [::board::san $sq2][::board::san $sq1]$promoLetter
+        set move [sc_game info nextMoveUCI]
+        if { [ string compare -nocase $moveUCI $move] == 0 } {
+            sc_move forward
+            updateBoard
+            return
+        }
+        set varList [sc_var list UCI]
+        set i 0
+        foreach { move } $varList {
+            if { [ string compare -nocase $moveUCI $move] == 0 } {
+                sc_var moveInto $i
+                updateBoard
+                return
+            }
+            incr i
+        }
+    }
+    
+    sc_game undoPoint
+    
+    set action "replace"
+    if {![sc_pos isAt vend]} {
+        set action [confirmReplaceMove]
+    }
+    if {$action == "replace"} {
+        # nothing
+    } elseif {$action == "mainline" || $action == "var"} {
+        # sc_var create stores comments (premovecommand). So avoid comment repetition.
+        # Maybe it would be better to void premovecommand for sc_var create
+        if {[winfo exists .commentWin]} {
+            ::commenteditor::storeComment
+            .commentWin.cf.text delete 0.0 end
+        }
+        sc_var create
+    } else {
+        # Do not add the move at all:
         return
-      }
-      incr i
     }
-  }
-  
-  sc_game undoPoint
-  
-  set action "replace"
-  if {![sc_pos isAt vend]} {
-    set action [confirmReplaceMove]
-  }
-  if {$action == "replace"} {
-    # nothing
-  } elseif {$action == "mainline" || $action == "var"} {
-    # sc_var create stores comments (premovecommand). So avoid comment repetition.
-    # Maybe it would be better to void premovecommand for sc_var create
-    if {[winfo exists .commentWin]} {
-      ::commenteditor::storeComment
-      .commentWin.cf.text delete 0.0 end
-    }
-    sc_var create
-  } else {
-    # Do not add the move at all:
-    return
-  }
-  
-  if {$nullmove} {
-    sc_move addSan null
-  } else {
-    set ::sergame::lastPlayerMoveUci ""
-    if {[winfo exists ".serGameWin"]} {
-      set ::sergame::lastPlayerMoveUci "[::board::san $sq2][::board::san $sq1]$promoLetter"
-    }
-    sc_move add $sq1 $sq2 $promo
-    set san [sc_game info previous]
-    if {$action == "mainline"} {
-      sc_var exit
-      sc_var promote [expr {[sc_var count] - 1}]
-      sc_move forward 1
-    }
-    after idle [list ::utils::sound::AnnounceNewMove $san]
     
-    if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
-  }
-  
-  if {[winfo exists .fics]} {
-    
-    if { [::fics::playerCanMove] } {
-      if { $promo != $EMPTY } {
-        ::fics::writechan "promote $promoLetter"
-      }
-      ::fics::writechan [ string range [sc_game info previousMoveUCI] 0 3 ]
+    if {$nullmove} {
+        sc_move addSan null
+    } else {
+        set ::sergame::lastPlayerMoveUci ""
+        if {[winfo exists ".serGameWin"]} {
+            set ::sergame::lastPlayerMoveUci "[::board::san $sq2][::board::san $sq1]$promoLetter"
+        }
+        sc_move add $sq1 $sq2 $promo
+        set san [sc_game info previous]
+        if {$action == "mainline"} {
+            sc_var exit
+            sc_var promote [expr {[sc_var count] - 1}]
+            sc_move forward 1
+        }
+        after idle [list ::utils::sound::AnnounceNewMove $san]
+        
+        if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
     }
-  }
-  
-  if {$::novag::connected} {
-    ::novag::addMove "[::board::san $sq2][::board::san $sq1]$promoLetter"
-  }
-  
-  moveEntry_Clear
-  updateBoard -pgn $animate
-  
-  ::tree::doTraining
-  
+    
+    if {[winfo exists .fics]} {
+        
+        if { [::fics::playerCanMove] } {
+            if { $promo != $EMPTY } {
+                ::fics::writechan "promote $promoLetter"
+            }
+            ::fics::writechan [ string range [sc_game info previousMoveUCI] 0 3 ]
+        }
+    }
+    
+    if {$::novag::connected} {
+        ::novag::addMove "[::board::san $sq2][::board::san $sq1]$promoLetter"
+    }
+    
+    moveEntry_Clear
+    updateBoard -pgn $animate
+    
+    ::tree::doTraining
+    
 }
 
 # addSanMove
@@ -1304,51 +1304,51 @@ proc addMove { sq1 sq2 {animate ""}} {
 #   a pair of squares.
 #
 proc addSanMove {san {animate ""} {noTraining ""}} {
-  
-  if {! $::annotateMode} {
-    set move [sc_game info nextMoveNT]
-    if { [ string compare -nocase $san $move] == 0 } {
-      sc_move forward
-      updateBoard
-      return
+    
+    if {! $::annotateMode} {
+        set move [sc_game info nextMoveNT]
+        if { [ string compare -nocase $san $move] == 0 } {
+            sc_move forward
+            updateBoard
+            return
+        }
+        set varList [sc_var list]
+        set i 0
+        foreach { move } $varList {
+            if { [ string compare -nocase $san $move] == 0 } {
+                sc_var moveInto $i
+                updateBoard
+                return
+            }
+            incr i
+        }
     }
-    set varList [sc_var list]
-    set i 0
-    foreach { move } $varList {
-      if { [ string compare -nocase $san $move] == 0 } {
-        sc_var moveInto $i
-        updateBoard
+    
+    set action "replace"
+    if {![sc_pos isAt vend]} {
+        set action [confirmReplaceMove]
+    }
+    if {$action == "replace"} {
+        # nothing
+    } elseif {$action == "var" || $action == "mainline"} {
+        sc_var create
+    } else {
+        # Do not add the move at all:
         return
-      }
-      incr i
     }
-  }
-  
-  set action "replace"
-  if {![sc_pos isAt vend]} {
-    set action [confirmReplaceMove]
-  }
-  if {$action == "replace"} {
-    # nothing
-  } elseif {$action == "var" || $action == "mainline"} {
-    sc_var create
-  } else {
-    # Do not add the move at all:
-    return
-  }
-  # if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
-  sc_game undoPoint
-  sc_move addSan $san
-  if {$action == "mainline"} {
-    sc_var exit
-    sc_var promote [expr {[sc_var count] - 1}]
-  }
-  moveEntry_Clear
-  updateBoard -pgn $animate
-  ::utils::sound::AnnounceNewMove $san
-  if {$noTraining != "-notraining"} {
-    ::tree::doTraining
-  }
+    # if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
+    sc_game undoPoint
+    sc_move addSan $san
+    if {$action == "mainline"} {
+        sc_var exit
+        sc_var promote [expr {[sc_var count] - 1}]
+    }
+    moveEntry_Clear
+    updateBoard -pgn $animate
+    ::utils::sound::AnnounceNewMove $san
+    if {$noTraining != "-notraining"} {
+        ::tree::doTraining
+    }
 }
 
 # enterSquare:
@@ -1358,18 +1358,18 @@ proc addSanMove {san {animate ""} {noTraining ""}} {
 #   to indicate the suggested move.
 #
 proc enterSquare { square } {
-  global highcolor currentSq bestSq bestcolor selectedSq suggestMoves
-  set currentSq $square
-  if {$selectedSq == -1} {
-    set bestSq -1
-    if {$suggestMoves} {
-      set bestSq [sc_pos bestSquare $square]
+    global highcolor currentSq bestSq bestcolor selectedSq suggestMoves
+    set currentSq $square
+    if {$selectedSq == -1} {
+        set bestSq -1
+        if {$suggestMoves} {
+            set bestSq [sc_pos bestSquare $square]
+        }
+        if {[expr {$bestSq != -1}]} {
+            ::board::colorSquare .main.board $square $bestcolor
+            ::board::colorSquare .main.board $bestSq $bestcolor
+        }
     }
-    if {[expr {$bestSq != -1}]} {
-      ::board::colorSquare .main.board $square $bestcolor
-      ::board::colorSquare .main.board $bestSq $bestcolor
-    }
-  }
 }
 
 # leaveSquare:
@@ -1377,16 +1377,16 @@ proc enterSquare { square } {
 #    Recolors squares to normal (lite/dark) color.
 #
 proc leaveSquare { square } {
-  global currentSq selectedSq bestSq
-  #Klimmek: not needed anymore
-  #  if {$square != $selectedSq} {
-  #    ::board::colorSquare .main.board $square
-  #  }
-  if {$bestSq != -1} {
-    #Klimmek: changed, because Scid "hangs" very often (after 5-7 moves)
-    #    ::board::colorSquare .main.board $bestSq
-    ::board::update .main.board
-  }
+    global currentSq selectedSq bestSq
+    #Klimmek: not needed anymore
+    #  if {$square != $selectedSq} {
+    #    ::board::colorSquare .main.board $square
+    #  }
+    if {$bestSq != -1} {
+        #Klimmek: changed, because Scid "hangs" very often (after 5-7 moves)
+        #    ::board::colorSquare .main.board $bestSq
+        ::board::update .main.board
+    }
 }
 
 # pressSquare:
@@ -1394,35 +1394,35 @@ proc leaveSquare { square } {
 #    that square to be the selected square.
 #
 proc pressSquare { square } {
-  global selectedSq highcolor
-  
-  if { ![::fics::playerCanMove] || ![::reviewgame::playerCanMove] } { return } ;# not player's turn
-  
-  # if training with calculations of var is on, just log the event
-  if { [winfo exists .calvarWin] } {
-    ::calvar::pressSquare $square
-    return
-  }
-  
-  if {$selectedSq == -1} {
-    set selectedSq $square
-    ::board::colorSquare .main.board $square $highcolor
-    # Drag this piece if it is the same color as the side to move:
-    set c [string index [sc_pos side] 0]  ;# will be "w" or "b"
-    set p [string index [::board::piece .main.board $square] 0] ;# "w", "b" or "e"
-    if {$c == $p} {
-      ::board::setDragSquare .main.board $square
+    global selectedSq highcolor
+    
+    if { ![::fics::playerCanMove] || ![::reviewgame::playerCanMove] } { return } ;# not player's turn
+    
+    # if training with calculations of var is on, just log the event
+    if { [winfo exists .calvarWin] } {
+        ::calvar::pressSquare $square
+        return
     }
-  } else {
-    ::board::setDragSquare .main.board -1
-    ::board::colorSquare .main.board $selectedSq
-    ::board::colorSquare .main.board $square
-    if {$square != $selectedSq} {
-      addMove $square $selectedSq -animate
+    
+    if {$selectedSq == -1} {
+        set selectedSq $square
+        ::board::colorSquare .main.board $square $highcolor
+        # Drag this piece if it is the same color as the side to move:
+        set c [string index [sc_pos side] 0]  ;# will be "w" or "b"
+        set p [string index [::board::piece .main.board $square] 0] ;# "w", "b" or "e"
+        if {$c == $p} {
+            ::board::setDragSquare .main.board $square
+        }
+    } else {
+        ::board::setDragSquare .main.board -1
+        ::board::colorSquare .main.board $selectedSq
+        ::board::colorSquare .main.board $square
+        if {$square != $selectedSq} {
+            addMove $square $selectedSq -animate
+        }
+        set selectedSq -1
+        enterSquare $square
     }
-    set selectedSq -1
-    enterSquare $square
-  }
 }
 
 # pressSquare2:
@@ -1430,13 +1430,13 @@ proc pressSquare { square } {
 #   makes the suggested best move.
 #
 proc pressSquare2 { square } {
-  if { [winfo exists .fics] } { return } ;# don't use this function with FICS
-  
-  global selectedSq bestSq
-  ::board::colorSquare .main.board $bestSq
-  ::board::colorSquare .main.board $square
-  addMove $square $bestSq -animate
-  enterSquare $square
+    if { [winfo exists .fics] } { return } ;# don't use this function with FICS
+    
+    global selectedSq bestSq
+    ::board::colorSquare .main.board $bestSq
+    ::board::colorSquare .main.board $square
+    addMove $square $bestSq -animate
+    enterSquare $square
 }
 
 # releaseSquare:
@@ -1446,38 +1446,38 @@ proc pressSquare2 { square } {
 #   part of a move.
 #
 proc releaseSquare { w x y } {
-  
-  if { [winfo exists .calvarWin] } { return }
-  
-  global selectedSq bestSq currentSq
-  
-  ::board::setDragSquare $w -1
-  set square [::board::getSquare $w $x $y]
-  if {$square < 0} {
-    set selectedSq -1
-    return
-  }
-  
-  if {$square == $selectedSq} {
-    if {$::suggestMoves} {
-      # User pressed and released on same square, so make the
-      # suggested move if there is one:
-      set selectedSq -1
-      ::board::colorSquare $w $bestSq
-      ::board::colorSquare $w $square
-      addMove $square $bestSq -animate
-      enterSquare $square
-    } else {
-      # Current square is the square user pressed the button on,
-      # so we do nothing.
+    
+    if { [winfo exists .calvarWin] } { return }
+    
+    global selectedSq bestSq currentSq
+    
+    ::board::setDragSquare $w -1
+    set square [::board::getSquare $w $x $y]
+    if {$square < 0} {
+        set selectedSq -1
+        return
     }
-  } else {
-    # User has dragged to another square, so try to add this as a move:
-    addMove $square $selectedSq
-    ::board::colorSquare $w $selectedSq
-    set selectedSq -1
-    ::board::colorSquare $w $square
-  }
+    
+    if {$square == $selectedSq} {
+        if {$::suggestMoves} {
+            # User pressed and released on same square, so make the
+            # suggested move if there is one:
+            set selectedSq -1
+            ::board::colorSquare $w $bestSq
+            ::board::colorSquare $w $square
+            addMove $square $bestSq -animate
+            enterSquare $square
+        } else {
+            # Current square is the square user pressed the button on,
+            # so we do nothing.
+        }
+    } else {
+        # User has dragged to another square, so try to add this as a move:
+        addMove $square $selectedSq
+        ::board::colorSquare $w $selectedSq
+        set selectedSq -1
+        ::board::colorSquare $w $square
+    }
 }
 
 
@@ -1488,25 +1488,25 @@ proc releaseSquare { w x y } {
 #    by truncating the game after retracting the move.
 #
 proc backSquare {} {
-  global selectedSq bestSq
-  set lastMoveInLine 0
-  if {[sc_pos isAt vend]} {
-    set lastMoveInLine 1
-  }
-  sc_move back
-  
-  # RMB used to delete the move if it was the last in a line. Removed it as there is no undo.
-  # if {[sc_pos isAt vstart] && [sc_var level] != 0} {
-  # ::pgn::deleteVar [sc_var number]
-  # } elseif {$lastMoveInLine} {
-  # sc_game truncate
-  # }
-  
-  set selectedSq -1
-  set bestSq -1
-  # update the board without -pgn option because of poor performance with long games
-  updateBoard -animate
-  ::utils::sound::AnnounceBack
+    global selectedSq bestSq
+    set lastMoveInLine 0
+    if {[sc_pos isAt vend]} {
+        set lastMoveInLine 1
+    }
+    sc_move back
+    
+    # RMB used to delete the move if it was the last in a line. Removed it as there is no undo.
+    # if {[sc_pos isAt vstart] && [sc_var level] != 0} {
+    # ::pgn::deleteVar [sc_var number]
+    # } elseif {$lastMoveInLine} {
+    # sc_game truncate
+    # }
+    
+    set selectedSq -1
+    set bestSq -1
+    # update the board without -pgn option because of poor performance with long games
+    updateBoard -animate
+    ::utils::sound::AnnounceBack
 }
 
 
@@ -1521,175 +1521,177 @@ trace variable tempdelay w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
 # Set the delay between moves in options menu
 ################################################################################
 proc setAutoplayDelay {} {
-  global autoplayDelay tempdelay
-  set tempdelay [expr {$autoplayDelay / 1000.0}]
-  set w .apdialog
-  if { [winfo exists $w] } { focus $w ; return }
-  toplevel $w
-  ::setTitle $w "Scid"
-  wm resizable $w 0 0
-  ttk::label $w.label -text $::tr(AnnotateTime:)
-  pack $w.label -side top -pady 5 -padx 5
-  spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
-  pack $w.spDelay -side top -pady 5
-  
-  set b [ttk::frame $w.buttons]
-  pack $b -side top -fill x
-  ttk::button $b.cancel -text $::tr(Cancel) -command {
-    destroy .apdialog
-    focus .
-  }
-  ttk::button $b.ok -text "OK" -command {
-    if {$tempdelay < 0.1} { set tempdelay 0.1 }
-    set autoplayDelay [expr {int($tempdelay * 1000)}]
-    destroy .apdialog
-    focus .
-  }
-  pack $b.cancel $b.ok -side right -padx 5 -pady 5
-  bind $w <Escape> { .apdialog.buttons.cancel invoke }
-  bind $w <Return> { .apdialog.buttons.ok invoke }
-  focus $w.spDelay
+    global autoplayDelay tempdelay
+    set tempdelay [expr {$autoplayDelay / 1000.0}]
+    set w .apdialog
+    if { [winfo exists $w] } { focus $w ; return }
+    toplevel $w
+    ::setTitle $w "Scid"
+    wm resizable $w 0 0
+    ttk::label $w.label -text $::tr(AnnotateTime:)
+    pack $w.label -side top -pady 5 -padx 5
+    spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
+    pack $w.spDelay -side top -pady 5
+    
+    set b [ttk::frame $w.buttons]
+    pack $b -side top -fill x
+    ttk::button $b.cancel -text $::tr(Cancel) -command {
+        destroy .apdialog
+        focus .
+    }
+    ttk::button $b.ok -text "OK" -command {
+        if {$tempdelay < 0.1} { set tempdelay 0.1 }
+        set autoplayDelay [expr {int($tempdelay * 1000)}]
+        destroy .apdialog
+        focus .
+    }
+    pack $b.cancel $b.ok -side right -padx 5 -pady 5
+    bind $w <Escape> { .apdialog.buttons.cancel invoke }
+    bind $w <Return> { .apdialog.buttons.ok invoke }
+    focus $w.spDelay
 }
 ################################################################################
 #
 ################################################################################
 proc toggleAutoplay { } {
-  global autoplayMode
-  if {$autoplayMode == 0} {
-    set autoplayMode 1
-    .main.fbutton.button.autoplay configure -image autoplay_on -relief sunken
-    autoplay
-  } else {
-    cancelAutoplay
-  }
+    global autoplayMode
+    if {$autoplayMode == 0} {
+        set autoplayMode 1
+        .main.fbutton.button.autoplay configure -image autoplay_on -relief sunken
+        autoplay
+    } else {
+        cancelAutoplay
+    }
 }
 
 ################################################################################
 #
 ################################################################################
 proc autoplay {} {
-  global autoplayDelay autoplayMode annotateMode analysis
-  
-  if {$autoplayMode == 0} { return }
-  
-  if {$annotateMode} {
-    if { ![sc_pos isAt start] } { addAnnotation }
-  }
-  
-  # stop game annotation when out of opening
-  if { $::isBatch && $annotateMode && $::isBatchOpening && \
-        [sc_pos moveNumber] > $::isBatchOpeningMoves } {
-    sc_game save [sc_game number]
-    if {[sc_game number] < $::batchEnd} {
-      sc_game load [expr [sc_game number] + 1]
-      if {$::addAnnotatorTag} {
-        appendAnnotator " $analysis(name1)"
-      }
-      set ::wentOutOfBook 0
-      updateMenuStates
-      updateStatusBar
-      updateTitle
-      updateBoard -pgn
-      addAnnotation
-      after $autoplayDelay autoplay
-      return
-    } else  {
-      cancelAutoplay
-      return
+    global autoplayDelay autoplayMode annotateMode analysis
+    
+    if {$autoplayMode == 0} { return }
+    
+    if {$annotateMode} {
+        if { ![sc_pos isAt start] } { addAnnotation }
     }
-  }
-  
-  if { [sc_pos isAt end] } {
-    if {$annotateMode} { ; # end of game if not mate, add the thinking line
-      set move_done [sc_game info previousMoveNT]
-      if { [string index $move_done end] != "#"} {
-        set text [format "%d:%+.2f" $analysis(depth1) $analysis(score1)]
-        set moves $analysis(moves1)
-        sc_move back
-        sc_info preMoveCmd {}
-        sc_var create
-        sc_move addSan $move_done
-        sc_pos setComment "[sc_pos getComment] $text"
-        sc_move_add $moves 1
-        sc_var exit
-        sc_info preMoveCmd preMoveCommand
-        updateBoard -pgn
-      }
-      if {$::isBatch && [sc_game number] != 0} {
+    
+    # stop game annotation when out of opening
+    if { $::isBatch && $annotateMode && $::isBatchOpening && \
+                [sc_pos moveNumber] > $::isBatchOpeningMoves } {
         sc_game save [sc_game number]
         if {[sc_game number] < $::batchEnd} {
-          sc_game load [expr [sc_game number] + 1]
-          if {$::addAnnotatorTag} {
-            appendAnnotator " $analysis(name1)"
-          }
-          set ::wentOutOfBook 0
-          updateMenuStates
-          updateStatusBar
-          updateTitle
-          updateBoard -pgn
-          addAnnotation
-          after $autoplayDelay autoplay
-          return
+            sc_game load [expr [sc_game number] + 1]
+            if {$::addAnnotatorTag} {
+                appendAnnotator " $analysis(name1)"
+            }
+            set ::wentOutOfBook 0
+            updateMenuStates
+            updateStatusBar
+            updateTitle
+            updateBoard -pgn
+            addAnnotation
+            after $autoplayDelay autoplay
+            return
         } else  {
-          cancelAutoplay
-          return
+            cancelAutoplay
+            return
         }
-      }
     }
-    cancelAutoplay
-    return
-  } ;#end if sc_pos isAt end
-  
-  # annotate all sub variations
-  if { $annotateMode && $::isAnnotateVar } {
-    if { [sc_pos isAt vend] } {
-      sc_var exit
-      set lastVar [::popAnalysisData]
-      if { $lastVar > 0 } {
-        incr lastVar -1
-        sc_var enter $lastVar
-        updateBoard -pgn
-        ::pushAnalysisData $lastVar
-      } else {
-        ::move::Forward
-      }
-    } else {
-      if {[sc_var count] > 0} {
-        set lastVar [expr [sc_var count] -1]
-        sc_var enter $lastVar
-        updateBoard -pgn
-        ::pushAnalysisData $lastVar
-      } else  {
-        ::move::Forward
-      }
+    
+    if { [sc_pos isAt end] } {
+        if { $annotateMode } { ; # end of game if not mate, add the thinking line
+            if {! $::onlyMarkExercise} {
+                set move_done [sc_game info previousMoveNT]
+                if { [string index $move_done end] != "#"} {
+                    set text [format "%d:%+.2f" $analysis(depth1) $analysis(score1)]
+                    set moves $analysis(moves1)
+                    sc_move back
+                    sc_info preMoveCmd {}
+                    sc_var create
+                    sc_move addSan $move_done
+                    sc_pos setComment "[sc_pos getComment] $text"
+                    sc_move_add $moves 1
+                    sc_var exit
+                    sc_info preMoveCmd preMoveCommand
+                    updateBoard -pgn
+                }
+            }
+            if {$::isBatch && [sc_game number] != 0} {
+                sc_game save [sc_game number]
+                if {[sc_game number] < $::batchEnd} {
+                    sc_game load [expr [sc_game number] + 1]
+                    if {$::addAnnotatorTag} {
+                        appendAnnotator " $analysis(name1)"
+                    }
+                    set ::wentOutOfBook 0
+                    updateMenuStates
+                    updateStatusBar
+                    updateTitle
+                    updateBoard -pgn
+                    addAnnotation
+                    after $autoplayDelay autoplay
+                    return
+                } else  {
+                    cancelAutoplay
+                    return
+                }
+            }
+        }
+        cancelAutoplay
+        return
+    } ;#end if sc_pos isAt end
+    
+    # annotate all sub variations
+    if { $annotateMode && $::isAnnotateVar } {
+        if { [sc_pos isAt vend] } {
+            sc_var exit
+            set lastVar [::popAnalysisData]
+            if { $lastVar > 0 } {
+                incr lastVar -1
+                sc_var enter $lastVar
+                updateBoard -pgn
+                ::pushAnalysisData $lastVar
+            } else {
+                ::move::Forward
+            }
+        } else {
+            if {[sc_var count] > 0} {
+                set lastVar [expr [sc_var count] -1]
+                sc_var enter $lastVar
+                updateBoard -pgn
+                ::pushAnalysisData $lastVar
+            } else  {
+                ::move::Forward
+            }
+        }
+        after $autoplayDelay autoplay
+        return
     }
+    
+    ::move::Forward
+    
     after $autoplayDelay autoplay
-    return
-  }
-  
-  ::move::Forward
-   
-  after $autoplayDelay autoplay
 }
 ################################################################################
 #
 ################################################################################
 proc cancelAutoplay {} {
-  global autoplayMode annotateMode annotateModeButtonValue
-  set autoplayMode 0
-  set annotateMode 0
-  set annotateModeButtonValue 0
-  after cancel autoplay
-  .main.fbutton.button.autoplay configure -image autoplay_off -relief flat
+    global autoplayMode annotateMode annotateModeButtonValue
+    set autoplayMode 0
+    set annotateMode 0
+    set annotateModeButtonValue 0
+    after cancel autoplay
+    .main.fbutton.button.autoplay configure -image autoplay_off -relief flat
 }
 ################################################################################
 #
 ################################################################################
 
 bind $dot_w <Return> {
-  if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
-    .analysisWin1.b1.move invoke
-  }
+    if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
+        .analysisWin1.b1.move invoke
+    }
 }
 
 bind $dot_w <Control-z> {toggleAutoplay; break}
@@ -1698,23 +1700,23 @@ bind $dot_w <Escape> cancelAutoplay
 set trialMode 0
 
 proc setTrialMode {mode} {
-  global trialMode
-  if {$mode == "toggle"} {
-    set mode [expr {1 - $trialMode}]
-  }
-  if {$mode == $trialMode} { return }
-  if {$mode == "update"} { set mode $trialMode }
-  
-  if {$mode == 1} {
-    set trialMode 1
-    sc_game push copy
-    .main.fbutton.button.trial configure -image tb_trial_on
-  } else {
-    set trialMode 0
-    sc_game pop
-    .main.fbutton.button.trial configure -image tb_trial
-  }
-  updateBoard -pgn
+    global trialMode
+    if {$mode == "toggle"} {
+        set mode [expr {1 - $trialMode}]
+    }
+    if {$mode == $trialMode} { return }
+    if {$mode == "update"} { set mode $trialMode }
+    
+    if {$mode == 1} {
+        set trialMode 1
+        sc_game push copy
+        .main.fbutton.button.trial configure -image tb_trial_on
+    } else {
+        set trialMode 0
+        sc_game pop
+        .main.fbutton.button.trial configure -image tb_trial
+    }
+    updateBoard -pgn
 }
 
 

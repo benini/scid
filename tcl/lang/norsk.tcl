@@ -1646,6 +1646,12 @@ translate O Tactics {Tactics}
 # ====== TODO To be translated ======
 translate O ShowSolution {Show solution}
 # ====== TODO To be translated ======
+translate O NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate O PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate O StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate O Next {Next}
 # ====== TODO To be translated ======
 translate O ResettingScore {Resetting score}
@@ -2142,6 +2148,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

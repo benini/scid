@@ -166,7 +166,7 @@ namespace eval engine {
       ::engine::resetAnalysis $n
       ::infopanel::updateAnalysis $n
       sendToEngine "position fen [sc_pos fen]" $n
-      sendToEngine "go infinite ponder" $n
+      sendToEngine "go infinite" $n
     }
     
     set ::engine::data(running$n) 1

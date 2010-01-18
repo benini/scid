@@ -265,7 +265,8 @@ set borderwidth 1
 
 set ::tactics::analysisTime 3
 set ::tactics::findBestMoveRunning 0
-  
+array set ::tactics::findBestMove_History {}
+    
 # Defaults for the PGN window:
 # if ::pgn::showColor is 1, the PGN text will be colorized.
 set ::pgn::showColor 1

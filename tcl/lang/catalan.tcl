@@ -1424,6 +1424,12 @@ translate K ResetScores {Reiniciar marcadors (puntuacions)}
 translate K LoadingBase {Cargant base}
 translate K Tactics {Tàctica}
 translate K ShowSolution {Mostrar resposta}
+# ====== TODO To be translated ======
+translate K NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate K PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate K StopTraining {Stop training}
 translate K Next {Següent}
 translate K ResettingScore {Reiniciant marcador}
 translate K LoadingGame {Cargant partida}
@@ -1708,6 +1714,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

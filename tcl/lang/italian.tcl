@@ -1471,6 +1471,12 @@ translate I ResetScores {Azzara i punteggi}
 translate I LoadingBase {Leggo il database}
 translate I Tactics {Tattiche}
 translate I ShowSolution {Mostra la soluzione}
+# ====== TODO To be translated ======
+translate I NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate I PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate I StopTraining {Stop training}
 translate I Next {Seguente}
 translate I ResettingScore {Azzero il punteggio}
 translate I LoadingGame {Leggo la partita}
@@ -2060,6 +2066,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

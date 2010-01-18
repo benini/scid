@@ -21,7 +21,7 @@ if {$profile} {
   ::profiler::init
 }
 
-set scidppc_version "Scid Pocket 4.1"
+set scidppc_version "Scid Pocket 4.2"
 
 set chan ""
 set chanid ""
@@ -187,6 +187,7 @@ set engineconfig(greko)         { Greko       6.0         12942  MultiPV_OK uci 
 set engineconfig(scidlet)       { Scidlet     3.4         12943  MultiPV_NO xboard }
 set engineconfig(toga141SE)       { Toga        1.4.1SE       12944  MultiPV_NO uci }
 set engineconfig(robbolito)       { Robbolito        0.85       12945  MultiPV_NO uci }
+set engineconfig(stockfish)       { Stockfish        1.6.2       12946  MultiPV_OK uci }
 
 set playMode 0
 set tournamentMode 0

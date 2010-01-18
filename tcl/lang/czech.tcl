@@ -1642,6 +1642,12 @@ translate C Tactics {Tactics}
 # ====== TODO To be translated ======
 translate C ShowSolution {Show solution}
 # ====== TODO To be translated ======
+translate C NextExercise {Next exercise}
+# ====== TODO To be translated ======
+translate C PrevExercise {previous exercise}
+# ====== TODO To be translated ======
+translate C StopTraining {Stop training}
+# ====== TODO To be translated ======
 translate C Next {Next}
 # ====== TODO To be translated ======
 translate C ResettingScore {Resetting score}
@@ -5772,6 +5778,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 
