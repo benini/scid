@@ -1144,6 +1144,31 @@ namespace eval ::board::mark {
   (?:,($Color))?         # optional: color name
   $EndTag                # closing tag
   "
+
+  # ChessBase' syntax for markers and arrows
+  variable CBSquare    {csl}
+  variable CBarrow     {cal}
+  variable CBColor     {[GRY]}
+  variable Square      {[a-h][1-8]\M}
+  variable sqintern    {[a-h][1-8]}
+
+  variable CBSquareRegex \
+     "$StartTag
+     ($CBSquare)\\\ +
+     ($CBColor)
+     ($Square)
+     (?:,($CBColor)($Square))?
+     $EndTag
+     "
+
+  variable CBArrowRegex \
+     "$StartTag
+     ($CBarrow)\\\ +
+     ($CBColor)
+     ($sqintern)
+     ($sqintern)
+     $EndTag
+     "
 }
 
 # ::board::mark::getEmbeddedCmds --
@@ -1171,11 +1196,13 @@ proc ::board::mark::getEmbeddedCmds {comment} {
   if {$comment == ""} {return}
   variable ScidCmdRegex
   variable StdCmdRegex
+  variable CBSquareRegex
+  variable CBArrowRegex
   set result {}
   
   # Build regex and search script for embedded commands:
   set regex  ""
-  foreach r [list $ScidCmdRegex $StdCmdRegex] {
+  foreach r [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
     if {[string equal $regex ""]} {set regex $r} else {append regex "|$r"}
   }
   set locateScript  {regexp -expanded -indices -start $start \
@@ -1185,17 +1212,31 @@ proc ::board::mark::getEmbeddedCmds {comment} {
   
   for {set start 0} {[eval $locateScript]} {incr start} {
     foreach {first last} $indices {}	;# just a multi-assign
-    foreach re [list $ScidCmdRegex $StdCmdRegex] {
+    foreach re [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
       # Assing matching subexpressions to variables:
       if {![regexp -expanded $re [string range $comment $first $last] \
             match type arg1 arg2 color]} {
         continue
       }
+      # CB uses rotated arguments. Bring them in order
+      if {[string equal $type "csl"] || [string equal $type "cal"]} {
+         set dummy1 $arg1
+         set dummy2 $arg2
+         set dummy3 $color
+         set color $dummy1
+         set arg1  $dummy2
+         set arg2  $dummy3
+         if {[string equal $type "csl"]} {set type  "full"  }
+         if {[string equal $type "cal"]} {set type  "arrow" }
+         if {[string equal $color "R"]}  {set color "red"   }
+         if {[string equal $color "G"]}  {set color "green" }
+         if {[string equal $color "Y"]}  {set color "yellow"}
+      }
       # Settings of (default) type and arguments:
-      if {[string equal $color ""]} { set color "red" }
+      if {[string equal $color ""]}   { set color "red" }
       switch -glob -- $type {
         ""   {set type [expr {[string length $arg2] ? "arrow" : "full"}]}
-        mark {set type "full"	;# new syntax}
+        mark {set type "fu"	;# new syntax}
         ?    {if {[string length $arg2]} break else {
             set arg2 $type; set type "text"}
         }

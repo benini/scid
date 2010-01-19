@@ -1448,12 +1448,9 @@ translate D ResetScores {Punkte zurücksetzten}
 translate D LoadingBase {Lade Datenbank}
 translate D Tactics {Taktik}
 translate D ShowSolution {Lösung zeigen}
-# ====== TODO To be translated ======
-translate D NextExercise {Next exercise}
-# ====== TODO To be translated ======
-translate D PrevExercise {previous exercise}
-# ====== TODO To be translated ======
-translate D StopTraining {Stop training}
+translate D NextExercise {Nächste Aufgabe}
+translate D PrevExercise {Vorherige Aufgabe}
+translate D StopTraining {Training beenden}
 translate D Next {Nächste}
 translate D ResettingScore {Punkte zurücksetzen}
 translate D LoadingGame {Lade Partie}
