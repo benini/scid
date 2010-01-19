@@ -112,15 +112,17 @@ namespace eval tactics {
             set ::showVarPopup 0
             
             # create UI to handle commands and feed back for find best move
-            ttk::frame $f.fbm_space1 -width 15
-            button $f.fbm_solution -image tb_lightbulb -command ::tactics::findBestMoveShowSolution
-            ::utils::tooltip::Set $f.fbm_solution [::tr ShowSolution]
-            button $f.fbm_prev -image tb_backward -command { ::tactics::findBestMove previous }
-            ::utils::tooltip::Set $f.fbm_prev [::tr PrevExercise ]
-            button $f.fbm_next -image tb_forward -command ::tactics::findBestMove
-            ::utils::tooltip::Set $f.fbm_next [::tr NextExercise ]
-            button $f.fbm_stop -image tb_stop -command { set ::tactics::findBestMoveRunning 0 ;  ::tactics::findBestMoveStart }
-            ::utils::tooltip::Set $f.fbm_stop [::tr StopTraining ]
+            if { ![winfo exists $f.fbm_space1]} {
+                ttk::frame $f.fbm_space1 -width 15
+                button $f.fbm_solution -image tb_lightbulb -command ::tactics::findBestMoveShowSolution
+                ::utils::tooltip::Set $f.fbm_solution [::tr ShowSolution]
+                button $f.fbm_prev -image tb_backward -command { ::tactics::findBestMove previous }
+                ::utils::tooltip::Set $f.fbm_prev [::tr PrevExercise ]
+                button $f.fbm_next -image tb_forward -command ::tactics::findBestMove
+                ::utils::tooltip::Set $f.fbm_next [::tr NextExercise ]
+                button $f.fbm_stop -image tb_stop -command { set ::tactics::findBestMoveRunning 0 ;  ::tactics::findBestMoveStart }
+                ::utils::tooltip::Set $f.fbm_stop [::tr StopTraining ]
+            }
             pack $f.fbm_space1 -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
             pack $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
             
@@ -161,8 +163,8 @@ namespace eval tactics {
             if { $fname != "\[empty\]" && $fname != "\[clipbase\]"} {
                 set ::tactics::findBestMove_History($fname) [sc_game number]
             }
-            
-            destroy $f.fbm_space1 $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop
+            pack forget $f.fbm_space1 $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop
+            # destroy $f.fbm_space1 $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop
         }
     }
     ################################################################################

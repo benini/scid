@@ -857,7 +857,7 @@ namespace eval engine {
       }
     }
     
-    ::vwaitTimed ::engine::data(uciok$n) 3000
+    ::vwaitTimed ::engine::data(uciok$n) 10000
     
     # no need to set multiPV for engines != 1 (but may lead to comparison problems in tournament)
     if {$n == 1} { setMultiPv $n }
