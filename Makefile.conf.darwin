@@ -140,7 +140,7 @@ LANGUAGES = @LANGUAGES@
 ### EXECS: executable programs compiled from C++ files.
 #     Note: scidt and eco2epd are obsolete and not compiled by default.
 #
-EXECS= pgnscid tkscid tcscid scmerge scidlet
+EXECS= pgnscid tkscid tcscid scmerge scidlet scidt
 
 ### SCIDOBJS: not all the .o files that make up Scid, just the standard ones 
 #     that most of the programs include.
@@ -215,7 +215,7 @@ TCLS= \
 # Small extra programs. Most are written in Tcl using tcscid, but
 # a few contributed ones may be in Python or other languages.
 #
-SCRIPTS= sc_addmove sc_epgn sc_spell sc_eco sc_import sc_remote sc_tree scidpgn pgnfix spliteco
+SCRIPTS= sc_addmove sc_epgn sc_spell sc_eco sc_import sc_remote sc_tree scidpgn pgnfix spliteco spf2spi
 
 ####################
 
@@ -296,6 +296,7 @@ clean:
 	cd pocket/viper01/src/ && make clean && cd ../../../
 	rm -f pocket/toga.exe pocket/glaurung.exe
 	rm -rf pocket/scid_pocket
+	rm -Rf dist
 
 
 ### To make the executable files smaller: type "make strip".
@@ -338,16 +339,7 @@ scid_app: all
 	cd dist/Scid.app/Contents/Resources/bin/ && ln -sf ../share/scid/sounds
 	cd dist/Scid.app/Contents/Resources/bin/ && ln -sf ../share/scid/html
 	sed -e 's|exec .*tkscid|exec "$(SCID_APP_BIN)tkscid"|' < scid > dist/Scid.app/Contents/Resources/bin/scid
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_addmove > dist/Scid.app/Contents/Resources/bin/sc_addmove
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_epgn > dist/Scid.app/Contents/Resources/bin/sc_epgn
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_spell > dist/Scid.app/Contents/Resources/bin/sc_spell
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_eco > dist/Scid.app/Contents/Resources/bin/sc_eco
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_import > dist/Scid.app/Contents/Resources/bin/sc_import
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_remote > dist/Scid.app/Contents/Resources/bin/sc_remote
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < sc_tree > dist/Scid.app/Contents/Resources/bin/sc_tree
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < scidpgn > dist/Scid.app/Contents/Resources/bin/scidpgn
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < pgnfix > dist/Scid.app/Contents/Resources/bin/pgnfix
-	sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < spliteco > dist/Scid.app/Contents/Resources/bin/spliteco
+	for script in $(SCRIPTS); do sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < $${script} > dist/Scid.app/Contents/Resources/bin/$${script};done
 	chmod +x dist/Scid.app/Contents/Resources/bin/*
 	cd dist/Scid.app/Contents/MacOS && ln -sf ../Resources/bin/scid
 
@@ -369,7 +361,7 @@ scid_dmg: scid_app
 	install -m 755 -p ./scripts/pgnfix.py ./dist/Scripts/
 	install -m 755 -p ./scripts/twic2scid.py ./dist/Scripts/
 	install -p ./scripts/CB-Mega/* ./dist/Scripts/CB-Mega/
-	hdiutil create -fs "HFS+" -volname Scid\ Installer -srcfolder dist "Scid $(SCID_VERSION) (`sw_vers -productName` `sw_vers -productVersion` `uname -p`).dmg"
+	hdiutil create -fs "HFS+" -volname Scid -srcfolder dist "Scid $(SCID_VERSION) (`sw_vers -productName` `sw_vers -productVersion` `uname -p`).dmg"
 
 sc_addmove: scripts/sc_addmove.tcl
 	cp scripts/sc_addmove.tcl ./sc_addmove
@@ -431,20 +423,24 @@ twic2pgn: scripts/twic2pgn.py
 	cp scripts/twic2pgn.py ./twic2pgn
 	chmod +x twic2pgn
 
+spf2spi: scripts/spf2spi.tcl
+	cp scripts/spf2spi.tcl ./spf2spi
+	chmod +x spf2spi
+
 scmerge: src/scmerge.o src/misc.o src/index.o src/date.o src/namebase.o \
           src/gfile.o src/bytebuf.o src/textbuf.o src/myassert.o \
           src/stralloc.o
-	$(LINK) -o scmerge src/scmerge.o $(OBJS) $(ZLIB)
+	$(LINK) -o scmerge src/scmerge.o $(OBJS) $(ZLIB) $(TCL_LIBRARY)
 
 pgnscid: src/pgnscid.o $(OBJS)
-	$(LINK) $(PROFILE) -o pgnscid src/pgnscid.o $(OBJS) $(ZLIB)
+	$(LINK) $(PROFILE) -o pgnscid src/pgnscid.o $(OBJS) $(ZLIB) $(TCL_LIBRARY)
 
 scidlet: src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o \
           src/dstring.o src/movelist.o
-	$(LINK) -o scidlet src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o src/movelist.o src/dstring.o
+	$(LINK) -o scidlet src/scidlet.o src/engine.o src/recog.o src/misc.o src/position.o src/movelist.o src/dstring.o $(TCL_LIBRARY)
 
 scidt: src/scidt.o $(OBJS)
-	$(LINK) -o scidt src/scidt.o $(OBJS) $(ZLIB)
+	$(LINK) -o scidt src/scidt.o $(OBJS) $(ZLIB) $(TCL_LIBRARY)
 
 tkscid: src/tkscid.o $(OBJS) src/tree.o src/filter.o src/pbook.o src/crosstab.o \
           src/spellchk.o src/probe.o src/optable.o src/engine.o src/recog.o
@@ -482,5 +478,64 @@ src/probe.o: src/probe.cpp src/egtb/tbindex.cpp src/egtb/tbdecode.c
 #
 src/zlib/%.o: src/zlib/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
+
+#####
+# Main Dependencies
+# src/.depend:
+#	$(COMPILE) $(CPP_FLAGS) $(TCL_INCLUDE) -MM $(SCIDOBJS:.o=.cpp) > $@
+#####
+src/misc.o: src/misc.cpp src/common.h src/tclmy.h src/myassert.h src/error.h \
+  src/sqmove.h src/misc.h
+src/index.o: src/index.cpp src/common.h src/tclmy.h src/myassert.h \
+  src/error.h src/sqmove.h src/index.h src/matsig.h src/namebase.h \
+  src/date.h src/misc.h src/stralloc.h src/strtree.h src/mfile.h \
+  src/dstring.h src/game.h src/position.h src/movelist.h src/sqlist.h \
+  src/sqset.h src/tokens.h src/textbuf.h src/bytebuf.h src/stored.h
+src/date.o: src/date.cpp src/common.h src/tclmy.h src/myassert.h src/error.h \
+  src/sqmove.h src/date.h src/misc.h
+src/namebase.o: src/namebase.cpp src/common.h src/tclmy.h src/myassert.h \
+  src/error.h src/sqmove.h src/namebase.h src/date.h src/misc.h \
+  src/stralloc.h src/strtree.h
+src/position.o: src/position.cpp src/common.h src/tclmy.h src/myassert.h \
+  src/error.h src/sqmove.h src/position.h src/dstring.h src/misc.h \
+  src/movelist.h src/sqlist.h src/sqset.h src/tokens.h src/attacks.h \
+  src/hash.h
+src/game.o: src/game.cpp src/common.h src/tclmy.h src/myassert.h src/error.h \
+  src/sqmove.h src/game.h src/date.h src/index.h src/matsig.h \
+  src/namebase.h src/misc.h src/stralloc.h src/strtree.h src/mfile.h \
+  src/dstring.h src/position.h src/movelist.h src/sqlist.h src/sqset.h \
+  src/tokens.h src/textbuf.h src/bytebuf.h src/gfile.h src/pgnparse.h \
+  src/naglatex.h src/nagtext.h src/stored.h
+src/gfile.o: src/gfile.cpp src/common.h src/tclmy.h src/myassert.h \
+  src/error.h src/sqmove.h src/gfile.h src/bytebuf.h src/mfile.h \
+  src/dstring.h src/misc.h
+src/matsig.o: src/matsig.cpp src/matsig.h src/common.h src/tclmy.h \
+  src/myassert.h src/error.h src/sqmove.h
+src/bytebuf.o: src/bytebuf.cpp src/error.h src/bytebuf.h src/common.h \
+  src/tclmy.h src/myassert.h src/sqmove.h
+src/textbuf.o: src/textbuf.cpp src/error.h src/textbuf.h src/common.h \
+  src/tclmy.h src/myassert.h src/sqmove.h src/misc.h
+src/myassert.o: src/myassert.cpp src/myassert.h
+src/stralloc.o: src/stralloc.cpp src/stralloc.h src/common.h src/tclmy.h \
+  src/myassert.h src/error.h src/sqmove.h src/misc.h
+src/mfile.o: src/mfile.cpp src/common.h src/tclmy.h src/myassert.h \
+  src/error.h src/sqmove.h src/mfile.h src/dstring.h src/misc.h
+src/dstring.o: src/dstring.cpp src/dstring.h src/common.h src/tclmy.h \
+  src/myassert.h src/error.h src/sqmove.h src/misc.h src/mfile.h
+src/pgnparse.o: src/pgnparse.cpp src/pgnparse.h src/common.h src/tclmy.h \
+  src/myassert.h src/error.h src/sqmove.h src/tokens.h src/game.h \
+  src/date.h src/index.h src/matsig.h src/namebase.h src/misc.h \
+  src/stralloc.h src/strtree.h src/mfile.h src/dstring.h src/position.h \
+  src/movelist.h src/sqlist.h src/sqset.h src/textbuf.h src/bytebuf.h
+src/stored.o: src/stored.cpp src/stored.h src/game.h src/common.h src/tclmy.h \
+  src/myassert.h src/error.h src/sqmove.h src/date.h src/index.h \
+  src/matsig.h src/namebase.h src/misc.h src/stralloc.h src/strtree.h \
+  src/mfile.h src/dstring.h src/position.h src/movelist.h src/sqlist.h \
+  src/sqset.h src/tokens.h src/textbuf.h src/bytebuf.h src/pgnparse.h \
+  src/timer.h src/tkscid.h src/engine.h src/gfile.h src/tree.h \
+  src/filter.h src/pbook.h src/crosstab.h src/spellchk.h src/probe.h \
+  src/optable.h src/polyglot.h
+src/movelist.o: src/movelist.cpp src/movelist.h src/common.h src/tclmy.h \
+  src/myassert.h src/error.h src/sqmove.h src/misc.h
 
 ### End of Makefile

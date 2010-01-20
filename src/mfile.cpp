@@ -107,7 +107,6 @@ MFile::Seek (uint position)
     }
     if (result == -1) { return ERROR_FileSeek; }
 #else
-        // handle position > 2GB
     result = fseek (Handle, position, 0);
     }
     if (result != 0) { return ERROR_FileSeek; }
