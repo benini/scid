@@ -901,3 +901,8 @@ scid-4.2
 - FIDE changed the number of rating list per year. Add code to handle this properly. Maximum year for ratings added by spellchecker is _2010_. (Thanks to Joost 't Hart)
 - Searching for !me (own games) was broken
 - Xfcc passwords with XML entities were not handled correctly
+
+scid-4.2.2
+==========
+This maintenance release reverts to 32 bits file I/O. Large file handling across many platforms seems a bit hard too achieve ...
+

@@ -1318,25 +1318,32 @@ fileSize (const char * name, const char * suffix)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // rawFileSize():
-//    Uses the stat() system call to get the size of the file.
+//    Uses Tcl_ system call to get the size of the file.
 //    Returns 0 if any error occurs.
 
 uint
 rawFileSize (const char * name)
 {
-  uint size = 0;
-  // Avoid C stat functions for portability
-  Tcl_StatBuf * statbuf = Tcl_AllocStatBuf();
-  Tcl_Obj * obj = Tcl_NewStringObj( name, strlen(name) );
-  Tcl_IncrRefCount(obj);
-  int res = Tcl_FSStat( obj, statbuf );
-  if ( res != 0) return 0;
-
-  size = (uint) statbuf->st_size;
-  ckfree( (char*) statbuf);
-  Tcl_DecrRefCount(obj);
-   
-  return size;
+    struct stat statBuf;    // Defined in <sys/stat.h>
+    if (stat (name, &statBuf) != 0) {
+        return 0;
+    }
+    return (uint) statBuf.st_size;
+  
+//   uint size = 0;
+//   // Avoid C stat functions for portability
+//   Tcl_StatBuf * statbuf = Tcl_AllocStatBuf();
+//   Tcl_Obj * obj = Tcl_NewStringObj( name, strlen(name) );
+//   Tcl_IncrRefCount(obj);
+//   int res = Tcl_FSStat( obj, statbuf );
+// 
+//   if ( res != 0) return 0;
+// 
+//   size = (uint) statbuf->st_size;
+//   ckfree( (char*) statbuf);
+//   Tcl_DecrRefCount(obj);
+// 
+//   return size;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

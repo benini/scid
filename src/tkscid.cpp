@@ -380,6 +380,7 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
 int
 main (int argc, char * argv[])
 {
+ 
     scid_Init();
 
     // If SOURCE_TCL_FILE is provided, we need to insert it (with the
@@ -443,13 +444,13 @@ Tkscid_Init (Tcl_Interp * ti)
 int
 scid_InitTclTk (Tcl_Interp * ti)
 {
-
+  
 #endif
     if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
 #ifndef TCL_ONLY
     if (Tk_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
 #endif
-
+      
     // Register Scid application-specific commands:
     // CREATE_CMD() is a macro to reduce the clutter of the final two args
     // to Tcl_CreateCommand().

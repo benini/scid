@@ -28,7 +28,6 @@
 #include <time.h>
 #include <string.h>
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // fatalNameError():
 //      Called if there are too many names of a certain type
@@ -91,12 +90,9 @@ main (int argc, char * argv[])
         nextArg++;
     }
     if (argsleft != 1  &&  argsleft != 2) { usage (progname); }
-
     char * pgnName = *nextArg;
     MFile * pgnFile = new MFile;
-
     pgnFileSize = fileSize (pgnName, "");
-
     // Ensure positive file size counter to avoid division by zero:
     if (pgnFileSize < 1) { pgnFileSize = 1; }
 
@@ -142,7 +138,6 @@ main (int argc, char * argv[])
     
     printf ("Converting file %s to Scid database %s:\n", pgnName, baseName);
     printf ("Errors/warnings will be written to %s.\n\n", fname);
-
     scid_Init();
 
     GFile * gameFile = new GFile;
@@ -154,7 +149,6 @@ main (int argc, char * argv[])
         pgnFile->Close();
         exit(1);
     }
-
     NameBase * nb = new NameBase;
     Index * idx = new Index;
     IndexEntry * ie = new IndexEntry;
