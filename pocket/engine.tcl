@@ -338,7 +338,7 @@ namespace eval engine {
     $nb1.sbNodes set 10
     
     ttk::radiobutton $nb1.rb4 -text [::msgcat::mc "Sec / move"] -value "movetime" -variable ::options(engine_timeMode)
-    spinbox $nb1.sbMoveTime -background white -width 3 -from 1 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
+    spinbox $nb1.sbMoveTime -background white -width 3 -from 1 -to 180 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     $nb1.sbMoveTime set 5
     
     grid $nb1.rb2 -row $row -column 0 -sticky w

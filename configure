@@ -61,6 +61,7 @@ set var(TB) {-DSCID_USE_TB -DT41_INCLUDE}
 set var(TCL_VERSION) $tcl_version
 set var(WARNINGS) -Wall
 set var(ZLIB) -lz
+set var(MAKEFILE) Makefile.conf
 
 set defaultVar(TCL_INCLUDE) {-I/usr/include}
 set defaultVar(TCL_LIBRARY) {-L/usr/lib -ltcl$(TCL_VERSION) -ldl}
@@ -408,10 +409,12 @@ proc writeMakefile {{type ""}} {
 
     checkZlib
 
-    if {[catch {set from [open "Makefile.conf" r]}]} {
-       puts "Error opening file for reading: Makefile.conf"
+    if {[catch {set from [open $var(MAKEFILE) r]}]} {
+       puts "Error opening file for reading: $var(MAKEFILE)"
        exit 1
     }
+    puts "    Using $var(MAKEFILE)."
+
     if {[catch {set to [open "Makefile" w]}]} {
        puts "Error opening file for writing: Makefile"
        exit 1
@@ -476,6 +479,7 @@ proc usage {} {
     puts {  TCL_VERSION  Your Tcl/Tk version. Example: TCL_VERSION="8.3".}
     puts {  TK_LIBRARY   Compiler directives for linking Tcl/Tk.}
     puts {  WARNINGS     C++ compiler warnings. Default: "-Wall".}
+    puts {  MAKEFILE     Makefile configuration file. Default: "Makefile.conf".}
     puts {}
     puts {  This configure program should find the proper values for the options}
     puts {  starting with TCL_ and TK_ automatically, so you should only use those}
