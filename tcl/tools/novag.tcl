@@ -50,9 +50,12 @@ namespace eval novag {
     # Set button to "connection in progress"
     ::ExtHardware::HWbuttonImg tb_eng_connecting
     
-    puts "connecting to $serial"
-    set fd [open $serial r+]
-    puts "fd $fd"
+    if {[catch { set fd [open $serial r+ ] } err]} {
+        tk_messageBox -type ok -icon error -parent . -title "Novag Citrine" -message "Connection error for $serial \n $err"
+        destroy $w
+        return
+    }
+    
     # 57600 bauds, no parity, 8 bits, 1 stop
     fconfigure $fd -mode 57600,n,8,1 -blocking 0 -buffering line
     fileevent $fd readable ::novag::recv
