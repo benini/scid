@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.83 2010/01/10 17:05:07 arwagner Exp $
+### $Id: correspondence.tcl,v 1.84 2010/02/02 20:38:07 arwagner Exp $
 ###
-### Last change: <Sun, 2010/01/10 18:03:59 arwagner ingata>
+### Last change: <Tue, 2010/02/02 20:55:52 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -652,7 +652,7 @@ namespace eval Xfcc {
 				### --- Istvan --- ###
 
 				if {[catch {open $filename w} pgnF]} {
-					::CorrespondenceChess::updateConsole "info ERROR: Unable ot open config file $filename";
+					::CorrespondenceChess::updateConsole "info ERROR: Unable to open config file $filename";
 				} else {
 					::CorrespondenceChess::updateConsole "info $name-$id..."
 					puts $pgnF "\[Event \"$Event\"\]";
@@ -1204,6 +1204,13 @@ image create photo tb_CC_pluginactive -data {
 	pKVEQQA7
 }
 
+image create photo tb_CC_relay -data {
+	R0lGODlhFAAUALMAAAAAADMzM2ZmZpmZmczMzP//////////////////////////////////////
+	/wAA/yH5BAkAAAUALAAAAAAUABQAAAhgAAsIHEiwoMGDCAsKWMiwocOGAgEUkEhxosWKEicC2Mix
+	o0eOBQgAIEByZEmSIlGODGky5cmXKVmqnAlzpcubLXMS0PixZ8eIF4NitFjgodGHCZMqXcq0qdOn
+	UKNKNRgQADs=
+}
+
 image create photo tb_CC_spacer -data {
 	R0lGODlhAQAYAIAAAP///////yH5BAEKAAEALAAAAAABABgAAAIEjI+pVwA7
 }
@@ -1240,8 +1247,12 @@ namespace eval CorrespondenceChess {
 	# confirm before sending moves?
 	set XfccConfirm          1
 
+	# Relay games from ICCF: this list contains all MakeAMove-URLs for
+	# the games to be relayed
+	set RelayGames           {}
+
 	# Show only games where the player has the move?
-	set ListOnlyOwnMove    0
+	set ListOnlyOwnMove      0
 	# set sortoptlist        [list "Site, Event, Round, Result, White, Black" "My Time" "Time per Move" "Opponent Time"]
 	
 	# Sort criteria to use
@@ -1275,6 +1286,17 @@ namespace eval CorrespondenceChess {
 
 	set glccstart        1
 	set glgames          0
+
+
+	#----------------------------------------------------------------------
+	# Fetch a file via http
+	#----------------------------------------------------------------------
+	proc getPage { url } {
+		set token [::http::geturl $url]
+		set data [::http::data $token]
+		::http::cleanup $token
+		return $data
+	}
 
 	#----------------------------------------------------------------------
 	# Open a File select dialog and returns the file selected
@@ -1459,6 +1481,7 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::attache        \
 							::CorrespondenceChess::subject        \
 							::CorrespondenceChess::PluginPath     \
+							::CorrespondenceChess::RelayGames     \
 							::CorrespondenceChess::ListOrder  } {
 				set path [set $i]
 
@@ -1580,6 +1603,45 @@ namespace eval CorrespondenceChess {
 				set source [string range $i 8 end-1]
 				openURL $source
 			}
+		}
+	}
+
+	#----------------------------------------------------------------------
+	# Fetch PGN file of games to be relayed and put them with the
+	# proper header tags into Scids inbox for display
+	# As parameter use the MakeAMove-URL from ICCF.
+	# Currently only relaying from ICCF is supported.
+	#----------------------------------------------------------------------
+	proc RelayGames { gameurl } {
+		global ::CorrespondenceChess::Inbox
+
+		regsub -all {http://www.iccf-webchess.com/MakeAMove.aspx\?id=} $gameurl {} gameid
+
+		set pgnurl "$::CorrespondenceChess::PluginSchemingMind::pgnbaseurl$gameid"
+		set cmailgamename "$::CorrespondenceChess::PluginSchemingMind::cmailprefix$gameid"
+
+		# convert from latin-1 to utf-8
+		set pgn [encoding convertfrom iso8859-1 [::CorrespondenceChess::WSFC::getPage $pgnurl ]]
+
+		# split by line endings for insertion of necessary header tags
+		set gamelist [split $pgn {}]
+
+		set filename [file nativename [file join $::CorrespondenceChess::Inbox "$cmailgamename.pgn"]]
+
+		if {[catch {open $filename w} pgnF]} {
+			::CorrespondenceChess::updateConsole "info ERROR: Unable to open $filename";
+		} else {
+			foreach line $gamelist {
+				if {[string match "*Result *" $line]} {
+					puts $pgnF $line
+					puts $pgnF "\[CmailGameName \"$cmailgamename\"\]"
+					puts $pgnF "\[Source \"$gameurl\"\]"
+					puts $pgnF "\[Mode \"Relay\"\]"
+				} else {
+					puts $pgnF $line
+				}
+			}
+			close $pgnF
 		}
 	}
 
@@ -1965,6 +2027,12 @@ namespace eval CorrespondenceChess {
 			$w.bottom.toMove image create end -align center -image tb_CC_envelope
 			set endpos [$w.bottom.toMove index insert]
 			set text "$lastmove"
+		} \
+		"REL" {
+			set curpos [$w.bottom.toMove index insert]
+			$w.bottom.toMove image create end -align center -image tb_CC_relay
+			set endpos [$w.bottom.toMove index insert]
+			set text "$lastmove"
 		}
 		$w.bottom.toMove tag add toMove$id $curpos $endpos
 		::utils::tooltip::SetTag $w.bottom.toMove "$text" toMove$id
@@ -2076,7 +2144,6 @@ namespace eval CorrespondenceChess {
 			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0 
 			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
 		}
-
 		updateConsole "info: switched to game $num/$gamecount"
 	}
 
@@ -2777,7 +2844,7 @@ namespace eval CorrespondenceChess {
 
 			# hook up with the old email manager: this implements the
 			# manual timestamping required
-			if {$Mode == "EM"} {
+			if {($Mode == "EM") || ($Mode == "Relay")} {
 				set emailData [::tools::email::readOpponentFile]
 				set done 0
 				set idx  0
@@ -2849,7 +2916,7 @@ namespace eval CorrespondenceChess {
 		set m .menu.play.correspondence
 
 		# do not set state of top.acceptDraw as this is set dynamically
-		if {$Mode == "EM"} {
+		if {($Mode == "EM") || ($Mode == "Relay")} {
 			::CorrespondenceChess::updateConsole "info Event: $Event (eMail-based)"
 
 			# eMail games: manual handling for resign and draw is needed,
@@ -2944,6 +3011,11 @@ namespace eval CorrespondenceChess {
 					::CorrespondenceChess::updateConsole "info Calling external fetch tool $XfccFetchcmd..."
 					CallExternal "$XfccFetchcmd $Inbox"
 				}
+			}
+			# Fetch games that should be relayed from the ICCF Server
+			::CorrespondenceChess::updateConsole "info Fetching relayed games from ICCF..."
+			foreach g $::CorrespondenceChess::RelayGames {
+				::CorrespondenceChess::RelayGames $g
 			}
 			# process what was just retrieved
 			::CorrespondenceChess::ReadInbox 
@@ -3229,6 +3301,10 @@ namespace eval CorrespondenceChess {
 								$Event $Site $Date $White $Black "" "" "" "" "" "" "" \
 								$wc $bc "" "" $lastmove "false"
 
+					} elseif {$Mode == "Relay"} {
+						::CorrespondenceChess::updateGamelist $CmailGameName "REL" \
+								$Event $Site $Date $White $Black "" "" "" "" "" "" "" \
+								$wc $bc "" "" $lastmove "false"
 					} else {
 						# search for extra information from Xfcc server
 						set YM " ? ";  
@@ -3540,7 +3616,7 @@ namespace eval CorrespondenceChess {
 				set Mode [::CorrespondenceChess::CheckMode]
 				if {$Mode == "EM"} {
 					eMailMove
-				} else {
+				} elseif {$Mode == "XFCC"} {
 
 					if {$::CorrespondenceChess::XfccInternal == 1} {
 						# use internal Xfcc-handling
@@ -3564,7 +3640,7 @@ namespace eval CorrespondenceChess {
 				# inserted e.g. by SchemingMind. Do not overwrite eMail based
 				# games as the mailer might not have sent them and most
 				# mailers load the file right before transmission.
-				if {!($Mode == "EM")} {
+				if {!(($Mode == "EM") || ($Mode == "Relay"))} {
 					sc_base export "current" "PGN" $pgnfile -append 0 -comments 1 -variations 1 \
 								-space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 0 -convertNullMoves 1
 				}
