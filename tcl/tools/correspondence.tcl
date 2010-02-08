@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.85 2010/02/08 17:40:48 arwagner Exp $
+### $Id: correspondence.tcl,v 1.86 2010/02/08 17:54:56 arwagner Exp $
 ###
-### Last change: <Mon, 2010/02/08 18:33:02 arwagner ingata>
+### Last change: <Mon, 2010/02/08 18:52:50 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1581,7 +1581,7 @@ namespace eval CorrespondenceChess {
 		foreach idx {0 1} tag {CorrespondenceChess Edit} {
 			configMenuText $m $idx $tag $lang
 		}
-		foreach idx {0 2 3 5 6 7 8 9 10 12 13} tag {CCConfigure CCConfigRelay CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage CCNewMailGame CCMailMove } {
+		foreach idx {0 1 3 4 6 7 8 9 10 11 13 14} tag {CCConfigure CCConfigRelay CCRetrieve  CCInbox  CCSend  CCResign  CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage  CCNewMailGame CCMailMove } {
 			configMenuText $m.correspondence $idx $tag $lang
 		}
 		foreach idx {0 } tag { CCEditCopy } {
@@ -1839,6 +1839,8 @@ namespace eval CorrespondenceChess {
 
 		$m.correspondence add command -label CCConfigure   -command {::CorrespondenceChess::config}
 		set helpMessage($m.correspondence,0) CCConfigure
+		$m.correspondence add command -label CCConfigRelay -command {::CorrespondenceChess::ConfigureRelay}
+		set helpMessage($m.correspondence,1) CCConfigRelay
 
 		$m.correspondence add separator
 		$m.correspondence add command -label CCRetrieve    -command { ::CorrespondenceChess::FetchGames }
