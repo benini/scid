@@ -219,6 +219,8 @@ menuText I Play "Gioca" 0
 # --- Correspondence Chess
 menuText I CorrespondenceChess "Gioco per corrispondenza" 0 {Funzioni per il gioco per corrispondenza tramite eMail e Xfcc}
 menuText I CCConfigure "Configura..." 0 {Configurazione generale e degli strumenti esterni}
+# ====== TODO To be translated ======
+menuText I CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText I CCOpenDB "Apri Database..." 0 {Apri il database di default per il gioco per corrispondenza}
 menuText I CCRetrieve "Trova Partite" 0 {Trova le partite tramite l'aiuto esterno Xfcc}
 menuText I CCInbox "Processa Posta in Arrivo" 0 {Processa tutti i file nella posta in arrivo di Scid}
@@ -1782,6 +1784,10 @@ translate I CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate I CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
+translate I CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate I CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+# ====== TODO To be translated ======
 translate I ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate I ExtHWPort {Port}
@@ -2066,6 +2072,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

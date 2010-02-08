@@ -240,6 +240,8 @@ menuText B CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and
 # ====== TODO To be translated ======
 menuText B CCConfigure "Configure..." 0 {Configure external tools and general setup}
 # ====== TODO To be translated ======
+menuText B CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+# ====== TODO To be translated ======
 menuText B CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 # ====== TODO To be translated ======
 menuText B CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
@@ -2101,6 +2103,10 @@ translate B CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate B CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
+translate B CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate B CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+# ====== TODO To be translated ======
 translate B ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate B ExtHWPort {Port}
@@ -2154,6 +2160,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

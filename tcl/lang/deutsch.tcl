@@ -236,6 +236,7 @@ menuText D ToolsStartEngine2 "Starte Engine2" 0  {Starte Analyse von Analyse-Eng
 menuText D Play "Spielen" 0 {Partien spielen}
 menuText D CorrespondenceChess "Fernschach" 0 {Funktionen für eMail und Xfcc basiertes Fernschach}
 menuText D CCConfigure "Einstellungen..." 0 {Generelle Einstellungen und externe Werkzeuge}
+menuText D CCConfigRelay "Beobachtete Partien..." 10 {Configure games to be observed}
 menuText D CCOpenDB "Datenbank öffnen..." 0 {Öffnet die Standarddatenbank für Fernschachpartien}
 menuText D CCRetrieve "Partien synchronisieren" 0 {Synchronisiert Partien mit dem Posteingang und mittels (Xfcc-)Hilfsprogramm}
 menuText D CCInbox "Posteingang synchronisieren" 12 {Synchronisiert alle Partien im Posteingang}
@@ -1673,6 +1674,8 @@ translate D CCOrderMyTimeTxt {Eigene Bedenkzeit}
 translate D CCOrderTimePerMoveTxt {Zeit pro Zug bis zur nächsten Zeitkontrolle}
 translate D CCOrderStartDate {Startdatum}
 translate D CCOrderOppTimeTxt {Gegnerische Bedenkzeit}
+translate D CCDlgConfigRelay {Partien auf iccf-webchess beobachten}
+translate D CCDlgConfigRelayHelp {Besuchen Sie http://www.iccf-webchess.com und lassen Sie die Partie anzeigen, die Sie beobachten wollen. Wenn das Brett sichtbar ist bitte die Adresse aus dem Browser in untenstehende Liste kopieren. Nur eine URL pro Zeile!\nBeispiel: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate D ExtHWConfigConnection {Hardware Konfigurieren}
 translate D ExtHWPort {Schnittstelle}
 translate D ExtHWEngineCmd {Engine Kommando}
@@ -7264,6 +7267,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

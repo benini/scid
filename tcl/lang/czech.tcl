@@ -232,6 +232,8 @@ menuText C CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and
 # ====== TODO To be translated ======
 menuText C CCConfigure "Configure..." 0 {Configure external tools and general setup}
 # ====== TODO To be translated ======
+menuText C CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+# ====== TODO To be translated ======
 menuText C CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 # ====== TODO To be translated ======
 menuText C CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
@@ -2087,6 +2089,10 @@ translate C CCOrderTimePerMoveTxt {Time per move till next time control}
 translate C CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate C CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
+translate C CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate C CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 # ====== TODO To be translated ======
 translate C ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
@@ -5778,6 +5784,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

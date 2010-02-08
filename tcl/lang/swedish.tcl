@@ -241,6 +241,8 @@ menuText W CorrespondenceChess "Korrespondensschack" 0 {Funktioner för eMail och
 # ====== TODO To be translated ======
 menuText W CCConfigure "Konfigurera..." 0 {Konfigurera externa verktyg och generella inställningar}
 # ====== TODO To be translated ======
+menuText W CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+# ====== TODO To be translated ======
 menuText W CCOpenDB "Öppna Databas..." 0 {Öppna standardkorrespondensdatabasen}
 # ====== TODO To be translated ======
 menuText W CCRetrieve "Hämta Partier" 0 {Hämta partier via extern (Xfcc-)hjälpare}
@@ -2098,6 +2100,10 @@ translate W CCOrderTimePerMoveTxt {Tid per drag till nästa tidskontroll}
 translate W CCOrderStartDate {Startdatum}
 # ====== TODO To be translated ======
 translate W CCOrderOppTimeTxt {Motståndarens klocka}
+# ====== TODO To be translated ======
+translate W CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate W CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 # ====== TODO To be translated ======
 translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 # ====== TODO To be translated ======
@@ -7165,6 +7171,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

@@ -226,6 +226,8 @@ menuText K ToolsStartEngine2 "Iniciar motor 2" 0  {Iniciar Motor 2}
 menuText K Play "Jugar" 0
 menuText K CorrespondenceChess "Escacs Postal" 0 {Funcions d'Escacs Postal per a eMail i Xfcc}
 menuText K CCConfigure "Configurar..." 0 {Configurar eines externes i Paràmetres Generals}
+# ====== TODO To be translated ======
+menuText K CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText K CCOpenDB "Obrir base de dades..." 0 {Obrir la base per defecte d'Escac Postal}
 menuText K CCRetrieve "Recuperar partides" 0 {Recuperar partides via programari extern (Xfcc)}
 menuText K CCInbox "Processa Bústia D'Entrada" 0 {Processar tots els registres de la bústia d'entrada (Inbox) d'Scid }
@@ -1683,6 +1685,10 @@ translate K CCOrderTimePerMoveTxt {Time per move till next time control}
 translate K CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate K CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
+translate K CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate K CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate K ExtHWConfigConnection {Configurar maquinari extern}
 translate K ExtHWPort {Port}
 translate K ExtHWEngineCmd {Línia d'ordres del motor}
@@ -1714,6 +1720,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

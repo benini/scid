@@ -229,6 +229,8 @@ menuText S CorrespondenceChess "Ajedrez por correo" 0 \
   {Funciones para ajedrez por correo basado en email y Xfcc}
 menuText S CCConfigure "Configurar..." 0 \
   {Configura herramientas externas y configuración general}
+# ====== TODO To be translated ======
+menuText S CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText S CCOpenDB "Abrir base de datos..." 0 \
   {Abrir la base de correo por defecto}
 menuText S CCRetrieve "Reparar partidas" 0 \
@@ -1676,6 +1678,10 @@ translate S CCOrderMyTimeTxt {Mi reloj}
 translate S CCOrderTimePerMoveTxt {Tiempo por movimiento falta el próximo control de tiempo}
 translate S CCOrderStartDate {Empezar fecha}
 translate S CCOrderOppTimeTxt {Reloj de los oponentes}
+# ====== TODO To be translated ======
+translate S CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate S CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate S ExtHWConfigConnection {Configurar hardware externo}
 translate S ExtHWPort {Puerto}
 translate S ExtHWEngineCmd {Comando del motor}
@@ -1704,6 +1710,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

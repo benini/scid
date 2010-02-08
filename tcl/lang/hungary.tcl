@@ -211,6 +211,8 @@ menuText H ToolsStartEngine2 "A 2. motor elindítása" 2  {Elindítja a 2. motort.}
 menuText H Play "Játék" 0
 menuText H CorrespondenceChess "Levelezési sakk" 0 {Segédeszközök eMail vagy Xfcc alapú levelezési sakkhoz}
 menuText H CCConfigure "Beállítások" 0 {Külsõ eszközök és alaptulajdonságok}
+# ====== TODO To be translated ======
+menuText H CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText H CCOpenDB "Adatbázis megnyitása" 0 {Megnyitja az alapértelmezésû levelezési adatbázist.}
 menuText H CCRetrieve "Játszmák bekérése" 0 {Játszmák lekérdezése külsõ (Xfcc-) segédeszköz útján}
 menuText H CCInbox "Bejövõ postafiók feldolgozása" 7 {A SCID bejövõ postafiókjában található összes fájl feldolgozása}
@@ -1665,6 +1667,10 @@ translate H CCOrderTimePerMoveTxt {Time per move till next time control}
 translate H CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate H CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
+translate H CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate H CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate H ExtHWConfigConnection {Külsõ hardver beállítása}
 translate H ExtHWPort {Port}
 translate H ExtHWEngineCmd {Motorparancs}
@@ -1925,6 +1931,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

@@ -215,6 +215,8 @@ menuText F ToolsStartEngine2 "Démarrer moteur 2" 0  {Démarrer moteur 2}
 menuText F Play "Jouer" 0
 menuText F CorrespondenceChess "Echecs par correspondance" 0 {eMail et Xfcc échecs par correspondance}
 menuText F CCConfigure "Configurer..." 0 {Configurer outils externes et config générale}
+# ====== TODO To be translated ======
+menuText F CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText F CCOpenDB "Ouvrir base..." 0 {Ouvrir la base de jeu par correspondance par défaut}
 menuText F CCRetrieve "Récupérer parties" 0 {Récupérer les parties via Xfcc}
 menuText F CCInbox "Analyser boîte" 0 {Analyser tous les fichiers dans la boîte de réception de Scid}
@@ -1621,6 +1623,10 @@ translate F CCOrderMyTimeTxt {Ma pendule}
 translate F CCOrderTimePerMoveTxt {Temps par coup jusqu'au prochain contrôlede temps}
 translate F CCOrderStartDate {Date de départ}
 translate F CCOrderOppTimeTxt {Pendule adversaire}
+# ====== TODO To be translated ======
+translate F CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate F CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate F ExtHWConfigConnection {Configure external hardware}
 translate F ExtHWPort {Port}
 translate F ExtHWEngineCmd {Commande moteur}
@@ -1853,6 +1859,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

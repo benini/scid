@@ -230,6 +230,8 @@ menuText N ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
 menuText N Play "Speel" 0
 menuText N CorrespondenceChess "Correspondentieschaak" 0 {Functies voor eMail en Xfcc gebaseerde correspondentieschaak}
 menuText N CCConfigure "Configureer..." 0 {Configureer externe tools en algemene instellingen}
+# ====== TODO To be translated ======
+menuText N CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText N CCOpenDB "Open Database..." 0 {Open de default correspondentieschaak database}
 menuText N CCRetrieve "Haal Partijen op" 0 {Haal partijen op via externe (Xfcc-)helper}
 menuText N CCInbox "Verwerk Inbox" 0 {Verwerk alle bestanden in scids Inbox}
@@ -1862,6 +1864,10 @@ translate N CCOrderTimePerMoveTxt {Time per move till next time control}
 translate N CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate N CCOrderOppTimeTxt {Opponents Clock}
+# ====== TODO To be translated ======
+translate N CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate N CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate N ExtHWConfigConnection {Configureer externe hardware}
 translate N ExtHWPort {Poort}
 translate N ExtHWEngineCmd {Engine commando}
@@ -1891,6 +1897,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

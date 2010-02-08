@@ -240,6 +240,8 @@ menuText O CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and
 # ====== TODO To be translated ======
 menuText O CCConfigure "Configure..." 0 {Configure external tools and general setup}
 # ====== TODO To be translated ======
+menuText O CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+# ====== TODO To be translated ======
 menuText O CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 # ====== TODO To be translated ======
 menuText O CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
@@ -2092,6 +2094,10 @@ translate O CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate O CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
+translate O CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate O CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+# ====== TODO To be translated ======
 translate O ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate O ExtHWPort {Port}
@@ -2148,6 +2154,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

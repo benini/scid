@@ -6395,53 +6395,53 @@ B50v "Sicilian: 2.Nf3 d6 3.c3 Nf6 4.Be2 g6"
 B50w "Sicilian: 2.Nf3 d6 3.c3, Torre Variation"
   1.e4 c5 2.Nf3 d6 3.c3 Nf6 4.Be2 g6 5.O-O Bg7 6.Bb5+ *
 
-B51a "Sicilian: 3.Bb5+"  1.e4 c5 2.Nf3 d6 3.Bb5+ *
-B51a "Sicilian: 3.Bb5+ Nd7"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 *
-B51b "Sicilian: 3.Bb5+ Nd7 4.c3"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.c3 *
-B51c "Sicilian: 3.Bb5+ Nd7 4.O-O"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.O-O *
-B51d "Sicilian: 3.Bb5+ Nd7 4.O-O Nf6"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.O-O Nf6 *
-B51e "Sicilian: 3.Bb5+ Nd7 4.O-O Nf6 5.Re1 a6 6.Bf1"
+B51a "Sicilian: Moscow"  1.e4 c5 2.Nf3 d6 3.Bb5+ *
+B51a "Sicilian: Moscow 3...Nd7"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 *
+B51b "Sicilian: Moscow 3...Nd7 4.c3"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.c3 *
+B51c "Sicilian: Moscow 3...Nd7 4.O-O"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.O-O *
+B51d "Sicilian: Moscow 3...Nd7 4.O-O Nf6"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.O-O Nf6 *
+B51e "Sicilian: Moscow 3...Nd7 4.O-O Nf6 5.Re1 a6 6.Bf1"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.O-O Nf6 5.Re1 a6 6.Bf1 *
-B51f "Sicilian: 3.Bb5+ Nd7 4.d4"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 *
-B51f "Sicilian: 3.Bb5+ Nd7 4.d4 cxd4"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 cxd4 *
-B51g "Sicilian: 3.Bb5+ Nd7 4.d4 Nf6"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 Nf6 *
-B51h "Sicilian: 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3"
+B51f "Sicilian: Moscow 3...Nd7 4.d4"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 *
+B51f "Sicilian: Moscow 3...Nd7 4.d4 cxd4"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 cxd4 *
+B51g "Sicilian: Moscow 3...Nd7 4.d4 Nf6"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 Nf6 *
+B51h "Sicilian: Moscow 3...Nd7 4.d4 Nf6 5.Nc3"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 *
-B51i "Sicilian: 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 cxd4"
+B51i "Sicilian: Moscow 3...Nd7 4.d4 Nf6 5.Nc3 cxd4"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 cxd4 *
-B51i "Sicilian: 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 cxd4 6.Qxd4"
+B51i "Sicilian: Moscow 3...Nd7 4.d4 Nf6 5.Nc3 cxd4 6.Qxd4"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 cxd4 6.Qxd4 *
-B51j "Sicilian: 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 cxd4 6.Qxd4 e5"
+B51j "Sicilian: Moscow 3...Nd7 4.d4 Nf6 5.Nc3 cxd4 6.Qxd4 e5"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nd7 4.d4 Nf6 5.Nc3 cxd4 6.Qxd4 e5 *
-B51k "Sicilian: 3.Bb5+ Nc6"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 *
-B51l "Sicilian: 3.Bb5+ Nc6 4.Bxc6+"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.Bxc6+ *
-B51m "Sicilian: 3.Bb5+ Nc6 4.O-O"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O *
-B51n "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 *
-B51o "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1"
+B51k "Sicilian: Moscow 3...Nc6"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 *
+B51l "Sicilian: Moscow 3...Nc6 4.Bxc6+"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.Bxc6+ *
+B51m "Sicilian: Moscow 3...Nc6 4.O-O"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O *
+B51n "Sicilian: Moscow 3...Nc6 4.O-O Bd7"  1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 *
+B51o "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 *
-B51p "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 a6"
+B51p "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1 a6"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 a6 *
-B51q "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6"
+B51q "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1 Nf6"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 *
-B51r "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3"
+B51r "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 *
-B51s "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Ba4"
+B51s "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Ba4"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Ba4 *
-B51t "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Bf1"
+B51t "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Bf1"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Bf1 *
-B51u "Sicilian: 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Bf1 Bg4 8.h3"
+B51u "Sicilian: Moscow 3...Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Bf1 Bg4 8.h3"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Nc6 4.O-O Bd7 5.Re1 Nf6 6.c3 a6 7.Bf1 Bg4 8.h3 *
 
-B52a "Sicilian: 3.Bb5+ Bd7"  1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 *
-B52b "Sicilian: 3.Bb5+ Bd7 4.Bxd7+ Nxd7"
+B52a "Sicilian: Moscow 3...Bd7"  1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 *
+B52b "Sicilian: Moscow 3...Bd7 4.Bxd7+ Nxd7"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 4.Bxd7+ Nxd7 *
-B52c "Sicilian: 3.Bb5+ Bd7 4.Bxd7+ Nxd7 5.O-O"
+B52c "Sicilian: Moscow 3...Bd7 4.Bxd7+ Nxd7 5.O-O"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 4.Bxd7+ Nxd7 5.O-O *
-B52d "Sicilian: 3.Bb5+ Bd7 4.Bxd7+ Nxd7 5.O-O Ngf6"
+B52d "Sicilian: Moscow 3...Bd7 4.Bxd7+ Nxd7 5.O-O Ngf6"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 4.Bxd7+ Nxd7 5.O-O Ngf6 *
-B52e "Sicilian: 3.Bb5+ Bd7 4.Bxd7+ Nxd7 5.O-O Ngf6 6.Qe2"
+B52e "Sicilian: Moscow 3...Bd7 4.Bxd7+ Nxd7 5.O-O Ngf6 6.Qe2"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 4.Bxd7+ Nxd7 5.O-O Ngf6 6.Qe2 *
-B52f "Sicilian: 3.Bb5+ Bd7 4.Bxd7+ Qxd7"
+B52f "Sicilian: Moscow 3...Bd7 4.Bxd7+ Qxd7"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 4.Bxd7+ Qxd7 *
 B52g "Sicilian: 3.Bb5+, Sokolsky Variation"
   1.e4 c5 2.Nf3 d6 3.Bb5+ Bd7 4.Bxd7+ Qxd7 5.c4 *

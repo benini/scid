@@ -20,6 +20,9 @@ tester plusieurs connexions successives sur Citrine (avec échec)
 |                                                           |
  ===========================================================
 
+- Given a list of names create the proper set of empty games to set up
+  a tournament. (Suggested by Michael Blake)
+
 - Notify games with annotations in "Best game", show annotator there.
   Consider sort order: e.g. annotated games on top?
 

@@ -247,6 +247,7 @@ menuText E Play "Play" 0
 # --- Correspondence Chess
 menuText E CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
 menuText E CCConfigure "Configure..." 0 {Configure external tools and general setup}
+menuText E CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
 menuText E CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 menuText E CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
 menuText E CCInbox "Process Inbox" 8 {Process all files in scids Inbox}
@@ -1676,6 +1677,9 @@ translate E CCOrderMyTimeTxt {My Clock}
 translate E CCOrderTimePerMoveTxt {Time per move till next time control}
 translate E CCOrderStartDate {Start date}
 translate E CCOrderOppTimeTxt {Opponents Clock}
+
+translate E CCDlgConfigRelay {Configure ICCF observations}
+translate E CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs
 translate E ExtHWConfigConnection {Configure external hardware}

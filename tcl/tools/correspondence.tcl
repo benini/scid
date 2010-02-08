@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.84 2010/02/02 20:38:07 arwagner Exp $
+### $Id: correspondence.tcl,v 1.85 2010/02/08 17:40:48 arwagner Exp $
 ###
-### Last change: <Tue, 2010/02/02 20:55:52 arwagner ingata>
+### Last change: <Mon, 2010/02/08 18:33:02 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1581,7 +1581,7 @@ namespace eval CorrespondenceChess {
 		foreach idx {0 1} tag {CorrespondenceChess Edit} {
 			configMenuText $m $idx $tag $lang
 		}
-		foreach idx {0 2 3 5 6 7 8 9 10 12 13} tag {CCConfigure CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage CCNewMailGame CCMailMove } {
+		foreach idx {0 2 3 5 6 7 8 9 10 12 13} tag {CCConfigure CCConfigRelay CCRetrieve CCInbox CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw CCGamePage CCNewMailGame CCMailMove } {
 			configMenuText $m.correspondence $idx $tag $lang
 		}
 		foreach idx {0 } tag { CCEditCopy } {
@@ -1604,6 +1604,63 @@ namespace eval CorrespondenceChess {
 				openURL $source
 			}
 		}
+	}
+
+	#----------------------------------------------------------------------
+	# Store the relays list, but only those URLs that match
+	# iccf-webchess' games page.
+	#----------------------------------------------------------------------
+	proc RelaysOK { } {
+		global ::CorrespondenceChess::RelayGames
+
+		set w .editCCRelays
+
+		set text [string trim [$w.f.text get 1.0 end]]
+		set ::CorrespondenceChess::RelayGames {}
+		foreach game [split $text "\n"] {
+			set game [string trim $game]
+			if {[string match "*www.iccf-webchess.com/MakeAMove.aspx*" $game]} {
+				lappend ::CorrespondenceChess::RelayGames $game
+			}
+		} 
+
+		::CorrespondenceChess::saveCCoptions
+		destroy .editCCRelays
+	}
+
+	#----------------------------------------------------------------------
+	# Configure the games to be relayed from ICCF Webchess
+	#----------------------------------------------------------------------
+	proc ConfigureRelay { } {
+		global ::CorrespondenceChess::RelayGames
+
+		set w .editCCRelays
+		set oldRelays $::CorrespondenceChess::RelayGames
+
+		if {[winfo exists $w]} { return }
+		toplevel $w
+		::setTitle $w [::tr "CCDlgConfigRelay"]
+
+		autoscrollframe $w.desc text $w.desc.text \
+				-background gray90 -foreground black \
+				-width 60 -height 7 -wrap word -cursor top_left_arrow
+		$w.desc.text insert end [::tr "CCDlgConfigRelayHelp"]
+		$w.desc.text configure -state disabled
+		pack $w.desc -side top -fill x
+
+		pack [frame $w.b] -side bottom -fill x
+		autoscrollframe $w.f text $w.f.text -width 60 -height 10 -wrap none
+
+		foreach g $::CorrespondenceChess::RelayGames {
+			$w.f.text insert end "$g\n"
+		}
+		pack $w.f -side top -fill both -expand yes
+
+		button $w.b.ok -text OK -command {
+				::CorrespondenceChess::RelaysOK
+		}
+		button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+		pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
 	}
 
 	#----------------------------------------------------------------------
@@ -1785,29 +1842,29 @@ namespace eval CorrespondenceChess {
 
 		$m.correspondence add separator
 		$m.correspondence add command -label CCRetrieve    -command { ::CorrespondenceChess::FetchGames }
-		set helpMessage($m.correspondence,2) CCRetrieve
+		set helpMessage($m.correspondence,3) CCRetrieve
 
 		$m.correspondence add command -label CCInbox       -command { ::CorrespondenceChess::ReadInbox }
-		set helpMessage($m.correspondence,3) CCInbox
+		set helpMessage($m.correspondence,4) CCInbox
 
 		$m.correspondence add separator
 		$m.correspondence add command -label CCSend        -command {::CorrespondenceChess::SendMove 0 0 0 0}
-		set helpMessage($m.correspondence,5) CCSend
+		set helpMessage($m.correspondence,6) CCSend
 		$m.correspondence add command -label CCResign      -command {::CorrespondenceChess::SendMove 1 0 0 0}
-		set helpMessage($m.correspondence,6) CCResign
+		set helpMessage($m.correspondence,7) CCResign
 		$m.correspondence add command -label CCClaimDraw   -command {::CorrespondenceChess::SendMove 0 1 0 0}
-		set helpMessage($m.correspondence,7) CCClaimDraw
+		set helpMessage($m.correspondence,8) CCClaimDraw
 		$m.correspondence add command -label CCOfferDraw   -command {::CorrespondenceChess::SendMove 0 0 1 0}
-		set helpMessage($m.correspondence,8) CCOfferDraw
+		set helpMessage($m.correspondence,9) CCOfferDraw
 		$m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
-		set helpMessage($m.correspondence,9) CCAcceptDraw
+		set helpMessage($m.correspondence,10) CCAcceptDraw
 		$m.correspondence add command -label CCGamePage    -command {::CorrespondenceChess::CallWWWGame}
-		set helpMessage($m.correspondence,10) CCGamePage
+		set helpMessage($m.correspondence,11) CCGamePage
 		$m.correspondence add separator
 		$m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
-		set helpMessage($m.correspondence,12) CCNewMailGame
+		set helpMessage($m.correspondence,13) CCNewMailGame
 		$m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
-		set helpMessage($m.correspondence,13) CCMailMove
+		set helpMessage($m.correspondence,14) CCMailMove
 
 		$m.edit add command -label CCEditCopy -accelerator "Ctrl+C" -command { ::CorrespondenceChess::List2Clipboard }
 
@@ -2708,12 +2765,6 @@ namespace eval CorrespondenceChess {
 				set sbasecomment ""
 				set scomment     ""
 
-				### puts stderr "   --- $x ---"
-				### puts stderr "* base    : $basecomment"
-				### puts stderr "* sbase   : $sbasecomment"
-				### puts stderr "* comment : $comment"
-				### puts stderr "* scomment: $scomment"
-
 				# Strip of [%ccsnt...] like comments (SchemingMind time stamps)
 				regsub -all {\[.*\]} $basecomment   "" sbasecomment
 				regsub -all {^\s*}   $sbasecomment  "" sbasecomment
@@ -2727,13 +2778,6 @@ namespace eval CorrespondenceChess {
 				regsub -all {^\s*}    $scomment     "" scomment
 				regsub -all "$White:" $scomment     "" scomment
 				regsub -all "$Black:" $scomment     "" scomment
-
-				### puts stderr "   xxxxxxxxxxx"
-				### puts stderr "* base    : $basecomment"
-				### puts stderr "* sbase   : $sbasecomment"
-				### puts stderr "* comment : $comment"
-				### puts stderr "* scomment: $scomment"
-				### puts stderr "-------------------"
 
 				# Check what to preserve and which comment to set.
 				if { [string length $sbasecomment] == 0} {

@@ -244,6 +244,8 @@ menuText P CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and
 # ====== TODO To be translated ======
 menuText P CCConfigure "Configure..." 0 {Configure external tools and general setup}
 # ====== TODO To be translated ======
+menuText P CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+# ====== TODO To be translated ======
 menuText P CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 # ====== TODO To be translated ======
 menuText P CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
@@ -2105,6 +2107,10 @@ translate P CCOrderStartDate {Start date}
 # ====== TODO To be translated ======
 translate P CCOrderOppTimeTxt {Opponents Clock}
 # ====== TODO To be translated ======
+translate P CCDlgConfigRelay {Configure ICCF observations}
+# ====== TODO To be translated ======
+translate P CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+# ====== TODO To be translated ======
 translate P ExtHWConfigConnection {Configure external hardware}
 # ====== TODO To be translated ======
 translate P ExtHWPort {Port}
@@ -2375,6 +2381,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

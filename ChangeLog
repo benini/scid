@@ -909,6 +909,9 @@ This maintenance release reverts to 32 bits file I/O. Large file handling across
 [xxxx 2010 ]
 scid-4.3
 ==========
+- New featrues:
+	* Correspondence Chess:
+		- Allow observation of games on ICCF webchess
 - Fixes :
 ---------
 - Fixed a bug in exception handling of Novag Citrine connection
