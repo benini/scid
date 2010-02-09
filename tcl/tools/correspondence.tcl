@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.86 2010/02/08 17:54:56 arwagner Exp $
+### $Id: correspondence.tcl,v 1.87 2010/02/09 17:46:45 arwagner Exp $
 ###
-### Last change: <Mon, 2010/02/08 18:52:50 arwagner ingata>
+### Last change: <Tue, 2010/02/09 18:45:53 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1674,8 +1674,11 @@ namespace eval CorrespondenceChess {
 
 		regsub -all {http://www.iccf-webchess.com/MakeAMove.aspx\?id=} $gameurl {} gameid
 
-		set pgnurl "$::CorrespondenceChess::PluginSchemingMind::pgnbaseurl$gameid"
-		set cmailgamename "$::CorrespondenceChess::PluginSchemingMind::cmailprefix$gameid"
+		set pgnbaseurl         "http://www.iccf-webchess.com/GetPGN.aspx?id="
+		set cmailprefix        "game"
+		set cmailgamename      "$cmailprefix$gameid"
+
+		set pgnurl "$pgnbaseurl$gameid"
 
 		# convert from latin-1 to utf-8
 		set pgn [encoding convertfrom iso8859-1 [::CorrespondenceChess::WSFC::getPage $pgnurl ]]
