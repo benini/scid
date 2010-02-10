@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.87 2010/02/09 17:46:45 arwagner Exp $
+### $Id: correspondence.tcl,v 1.88 2010/02/10 20:41:26 arwagner Exp $
 ###
-### Last change: <Tue, 2010/02/09 18:45:53 arwagner ingata>
+### Last change: <Wed, 2010/02/10 21:38:53 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1230,6 +1230,9 @@ namespace eval CorrespondenceChess {
 	# outgoing PGN files
 	set Outbox          [file nativename [file join $scidDataDir "Outbox"]]
 
+	# Connector config for game relay
+	set Connector       [file nativename [file join $scidDataDir "connector.xml"]]
+
 	# use internal xfcc-support
 	set XfccInternal     1
 	set xfccrcfile      [file nativename [file join $scidConfigDir "xfccrc"]]
@@ -1481,6 +1484,7 @@ namespace eval CorrespondenceChess {
 							::CorrespondenceChess::attache        \
 							::CorrespondenceChess::subject        \
 							::CorrespondenceChess::PluginPath     \
+							::CorrespondenceChess::Connector      \
 							::CorrespondenceChess::RelayGames     \
 							::CorrespondenceChess::ListOrder  } {
 				set path [set $i]
@@ -1615,14 +1619,35 @@ namespace eval CorrespondenceChess {
 
 		set w .editCCRelays
 
-		set text [string trim [$w.f.text get 1.0 end]]
-		set ::CorrespondenceChess::RelayGames {}
-		foreach game [split $text "\n"] {
-			set game [string trim $game]
-			if {[string match "*www.iccf-webchess.com/MakeAMove.aspx*" $game]} {
-				lappend ::CorrespondenceChess::RelayGames $game
+		if {[catch {open $::CorrespondenceChess::Connector r} connectF]} {
+				set Title "Error"
+				append Error "$::CorrespondenceChess::Connector\n"
+				append Error [::tr CCErrDirNotUsable]
+				tk_messageBox -icon warning -type ok -parent . \
+					-title $Title -message $Error
+				return
+		} else {
+			set connectxml [read $connectF]
+
+			set dom [dom parse $connectxml]
+			set doc [$dom documentElement]
+			set aNodes [$doc selectNodes {/connector/server}]
+			set number   0
+			foreach srv $aNodes {
+				set stripforid   [$srv selectNodes {string(stripforid)}]
+
+				set text [string trim [$w.f.text get 1.0 end]]
+				set ::CorrespondenceChess::RelayGames {}
+				foreach game [split $text "\n"] {
+					set game [string trim $game]
+					## if {[string match "*www.iccf-webchess.com/MakeAMove.aspx*" $game]} {}
+					if {[string match "*$stripforid*" $game]} {
+						lappend ::CorrespondenceChess::RelayGames $game
+					}
+				} 
 			}
-		} 
+			close $connectF
+		}
 
 		::CorrespondenceChess::saveCCoptions
 		destroy .editCCRelays
@@ -1634,33 +1659,43 @@ namespace eval CorrespondenceChess {
 	proc ConfigureRelay { } {
 		global ::CorrespondenceChess::RelayGames
 
-		set w .editCCRelays
-		set oldRelays $::CorrespondenceChess::RelayGames
+		if {[catch {open $::CorrespondenceChess::Connector r} connectF]} {
+				set Title "Error"
+				append Error "$::CorrespondenceChess::Connector\n"
+				append Error [::tr CCErrDirNotUsable]
+				tk_messageBox -icon warning -type ok -parent . \
+					-title $Title -message $Error
+				return
+		} else {
+			close $connectF
+			set w .editCCRelays
+			set oldRelays $::CorrespondenceChess::RelayGames
 
-		if {[winfo exists $w]} { return }
-		toplevel $w
-		::setTitle $w [::tr "CCDlgConfigRelay"]
+			if {[winfo exists $w]} { return }
+			toplevel $w
+			::setTitle $w [::tr "CCDlgConfigRelay"]
 
-		autoscrollframe $w.desc text $w.desc.text \
-				-background gray90 -foreground black \
-				-width 60 -height 7 -wrap word -cursor top_left_arrow
-		$w.desc.text insert end [::tr "CCDlgConfigRelayHelp"]
-		$w.desc.text configure -state disabled
-		pack $w.desc -side top -fill x
+			autoscrollframe $w.desc text $w.desc.text \
+					-background gray90 -foreground black \
+					-width 60 -height 7 -wrap word -cursor top_left_arrow
+			$w.desc.text insert end [::tr "CCDlgConfigRelayHelp"]
+			$w.desc.text configure -state disabled
+			pack $w.desc -side top -fill x
 
-		pack [frame $w.b] -side bottom -fill x
-		autoscrollframe $w.f text $w.f.text -width 60 -height 10 -wrap none
+			pack [frame $w.b] -side bottom -fill x
+			autoscrollframe $w.f text $w.f.text -width 60 -height 10 -wrap none
 
-		foreach g $::CorrespondenceChess::RelayGames {
-			$w.f.text insert end "$g\n"
+			foreach g $::CorrespondenceChess::RelayGames {
+				$w.f.text insert end "$g\n"
+			}
+			pack $w.f -side top -fill both -expand yes
+
+			button $w.b.ok -text OK -command {
+					::CorrespondenceChess::RelaysOK
+			}
+			button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+			pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
 		}
-		pack $w.f -side top -fill both -expand yes
-
-		button $w.b.ok -text OK -command {
-				::CorrespondenceChess::RelaysOK
-		}
-		button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
-		pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
 	}
 
 	#----------------------------------------------------------------------
@@ -1672,37 +1707,58 @@ namespace eval CorrespondenceChess {
 	proc RelayGames { gameurl } {
 		global ::CorrespondenceChess::Inbox
 
-		regsub -all {http://www.iccf-webchess.com/MakeAMove.aspx\?id=} $gameurl {} gameid
-
-		set pgnbaseurl         "http://www.iccf-webchess.com/GetPGN.aspx?id="
-		set cmailprefix        "game"
-		set cmailgamename      "$cmailprefix$gameid"
-
-		set pgnurl "$pgnbaseurl$gameid"
-
-		# convert from latin-1 to utf-8
-		set pgn [encoding convertfrom iso8859-1 [::CorrespondenceChess::WSFC::getPage $pgnurl ]]
-
-		# split by line endings for insertion of necessary header tags
-		set gamelist [split $pgn {}]
-
-		set filename [file nativename [file join $::CorrespondenceChess::Inbox "$cmailgamename.pgn"]]
-
-		if {[catch {open $filename w} pgnF]} {
-			::CorrespondenceChess::updateConsole "info ERROR: Unable to open $filename";
+		if {[catch {open $::CorrespondenceChess::Connector r} connectF]} {
+			::CorrespondenceChess::updateConsole "info ERROR: Unable ot open connector $::CorrespondenceChess::Connector";
 		} else {
-			foreach line $gamelist {
-				if {[string match "*Result *" $line]} {
-					puts $pgnF $line
-					puts $pgnF "\[CmailGameName \"$cmailgamename\"\]"
-					puts $pgnF "\[Source \"$gameurl\"\]"
-					puts $pgnF "\[Mode \"Relay\"\]"
-				} else {
-					puts $pgnF $line
+
+			set connectxml [read $connectF]
+
+			set dom [dom parse $connectxml]
+			set doc [$dom documentElement]
+			set aNodes [$doc selectNodes {/connector/server}]
+			set number   0
+			foreach srv $aNodes {
+				set name         [$srv selectNodes {string(name)}]
+				set stripforid   [$srv selectNodes {string(stripforid)}]
+				set pgnbaseurl   [$srv selectNodes {string(pgnbaseurl)}]
+				set cmailprefix  [$srv selectNodes {string(cmailprefix)}]
+
+				if {[regexp "$stripforid" $gameurl]} {
+
+					regsub -all "$stripforid" $gameurl {} gameid
+
+					::CorrespondenceChess::updateConsole "info Fetching $gameid from $name";
+					set cmailgamename   "$cmailprefix$gameid"
+					set pgnurl          "$pgnbaseurl$gameid"
+
+					# convert from latin-1 to utf-8
+					set pgn [encoding convertfrom iso8859-1 [::CorrespondenceChess::getPage $pgnurl ]]
+
+					# split by line endings for insertion of necessary header tags
+					set gamelist [split $pgn {}]
+
+					set filename [file nativename [file join $::CorrespondenceChess::Inbox "$cmailgamename.pgn"]]
+
+					if {[catch {open $filename w} pgnF]} {
+						::CorrespondenceChess::updateConsole "info ERROR: Unable to open $filename";
+					} else {
+						foreach line $gamelist {
+							if {[string match "*Result *" $line]} {
+								puts $pgnF $line
+								puts $pgnF "\[CmailGameName \"$cmailgamename\"\]"
+								puts $pgnF "\[Source \"$gameurl\"\]"
+								puts $pgnF "\[Mode \"Relay\"\]"
+							} else {
+								puts $pgnF $line
+							}
+						}
+						close $pgnF
+					}
 				}
+
 			}
-			close $pgnF
 		}
+		close $connectF
 	}
 
 	#----------------------------------------------------------------------
@@ -2966,7 +3022,11 @@ namespace eval CorrespondenceChess {
 
 		# do not set state of top.acceptDraw as this is set dynamically
 		if {($Mode == "EM") || ($Mode == "Relay")} {
-			::CorrespondenceChess::updateConsole "info Event: $Event (eMail-based)"
+			if {($Mode == "EM")} {
+				::CorrespondenceChess::updateConsole "info Event: $Event (eMail-based)"
+			} else {
+				::CorrespondenceChess::updateConsole "info Event: $Event (observed)"
+			}
 
 			# eMail games: manual handling for resign and draw is needed,
 			# no standard way/protocol exists => disable the buttons and
@@ -3704,7 +3764,8 @@ namespace eval CorrespondenceChess {
 		unbusyCursor .
 	}
 
-	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - # source the options file to overwrite the above setup
+	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	# source the options file to overwrite the above setup
 
 	set scidConfigFiles(correspondence) "correspondence.dat"
 	if {[catch {source [scidConfigFile correspondence]} ]} {

@@ -247,7 +247,7 @@ menuText E Play "Play" 0
 # --- Correspondence Chess
 menuText E CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
 menuText E CCConfigure "Configure..." 0 {Configure external tools and general setup}
-menuText E CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+menuText E CCConfigRelay "Observe games..." 10 {Configure games to be observed}
 menuText E CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
 menuText E CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
 menuText E CCInbox "Process Inbox" 8 {Process all files in scids Inbox}
@@ -1633,7 +1633,10 @@ translate E CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbo
 translate E CCDlgConfirmMove {Confirm move}
 translate E CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
 translate E CCDlgDBGameToLong {Inconsistent Mainline}
-translate E CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+translate E CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.
+
+In this case please shorten the mainline to (at max) move
+}
 
 
 translate E CCDlgStartEmail {Start new eMail game}
@@ -1678,7 +1681,7 @@ translate E CCOrderTimePerMoveTxt {Time per move till next time control}
 translate E CCOrderStartDate {Start date}
 translate E CCOrderOppTimeTxt {Opponents Clock}
 
-translate E CCDlgConfigRelay {Configure ICCF observations}
+translate E CCDlgConfigRelay {Observe games}
 translate E CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs

@@ -912,6 +912,7 @@ scid-4.3
 - New featrues:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
+		- Add connector file support to configure game relay from the internet
 - Fixes :
 ---------
 - Fixed a bug in exception handling of Novag Citrine connection
