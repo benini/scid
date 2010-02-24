@@ -460,7 +460,7 @@ proc ::commenteditor::Refresh {} {
     addMark $board $type $square $arg $color 1
   }
   $text insert insert [string range $comment $offset end]
-  ::board::update $board
+  ::board::update $board [sc_pos board]
 }
 
 ### End of namespace ::commenteditor
