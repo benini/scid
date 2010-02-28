@@ -18,6 +18,22 @@ image create photo ::file::finder::updir -data {
   pfIohE4zCgA7
 }
 
+#----------------------------------------------------------------------
+if {$png_image_support} {
+	image create photo ::file::finder::updir -data {
+		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAABfklE
+		QVR42s2TsWtTURTGfwkOQjWxi6BDF4da0EGEaoJdG3CIKQ5KrGNWwX9D0k5i1hoQQ7bSsXRwiSRi
+		UwgBWzRJ0VQSF4s6pN5zjsN7eeXV8FBcPPBxuZfzfec7594L/1OkADuB1F+RP/U71mo3rNVu2IuX
+		pT8Siftr7dv3r7yubzL88pHBoMeZs6d59HgZoDbB2RiFmC9gB58/kEye5/BwGKirKvF4HCfOSzIL
+		zvv9HrfStzk1Tp4+d4H33SZgmCrP1yo8eHgXFUEDongwpbnzBuBYYDT6EVQul6usFJ9hGPn8UuTw
+		AgFiMUyFanWd4pOnAKwWS4g47t3Peg5MMVVUFVEXFjAznPwkl8uQvbPI/PUMtfoGaor4M1CfrCao
+		SFhAVXDOBX0CiLiA5DnwiGaK6AkBw3DuKLAJsJD2+r9x8xozMxdJJKa4PHeJK1dnf5+BOxqFKm69
+		qhxX8+1GDrGzv8fb7bpn18xz4l/fpNh91w3tCxGvLQqFf/6BvwBEXv0OVwBBhgAAAABJRU5ErkJg
+		gg==
+	}
+}
+#----------------------------------------------------------------------
+
 proc ::file::finder::Open {} {
   set w .finder
   if {[winfo exists $w]} { return }
