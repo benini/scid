@@ -180,7 +180,7 @@ set boardfile_lite "emptySquare"
 set boardSize 40
 
 # boardStyle: Default board piece set. See bitmaps.tcl for styles.
-set boardStyle Eboard
+set boardStyle Alpha
 
 # language for help pages and messages:
 set language E
@@ -274,7 +274,7 @@ set ::pgn::indentVars 1
 set ::pgn::indentComments 1
 set ::pgn::symbolicNags 1
 set ::pgn::moveNumberSpaces 0
-set ::pgn::shortHeader 0
+set ::pgn::shortHeader 1
 set ::pgn::boldMainLine 1
 set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
@@ -1133,7 +1133,9 @@ proc ::splash::make {} {
   set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
         - [winfo vrooty .]}]
   wm geom $w +$x+$y
-  wm deiconify $w
+
+  # Do not show the startup window by default
+  # wm deiconify $w
   
   bind $w <F1> {helpWindow Index}
   bind $w <Escape> {.splash.dismiss invoke}

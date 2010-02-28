@@ -918,3 +918,5 @@ scid-4.3
 ---------
 - Fixed a bug in exception handling of Novag Citrine connection
 - Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
+- Hide the startup window
+- Improve some defaults of Scids empty config
