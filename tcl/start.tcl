@@ -219,11 +219,22 @@ proc configureFont {name} {
 }
 
 if {$windowsOS} {
-  set fontOptions(Regular) [list Arial           10 normal roman]
-  set fontOptions(Menu)    [list {MS Sans Serif}  9 normal roman]
-  set fontOptions(Small)   [list Arial            9 normal roman]
-  set fontOptions(Tiny)    [list Arial            8 normal roman]
-  set fontOptions(Fixed)   [list Courier          9 normal roman]
+  ## set fontOptions(Regular) [list Arial           10 normal roman]
+  ## set fontOptions(Menu)    [list {MS Sans Serif}  9 normal roman]
+  ## set fontOptions(Small)   [list Arial            9 normal roman]
+  ## set fontOptions(Tiny)    [list Arial            8 normal roman]
+  ## set fontOptions(Fixed)   [list Courier          9 normal roman]
+  set fontOptions(Regular) [list system          10 normal roman]
+  set fontOptions(Menu)    [list system           9 normal roman]
+  set fontOptions(Small)   [list system           9 normal roman]
+  set fontOptions(Tiny)    [list system           8 normal roman]
+  set fontOptions(Fixed)   [list systemfixed      9 normal roman]
+} elseif {$macOS} {
+  set fontOptions(Regular) [list system    11 normal roman]
+  set fontOptions(Menu)    [list system    10 normal roman]
+  set fontOptions(Small)   [list system    10 normal roman]
+  set fontOptions(Tiny)    [list system     9 normal roman]
+  set fontOptions(Fixed)   [list fixed     10 normal roman]
 } else {
   set fontOptions(Regular) [list helvetica 11 normal roman]
   set fontOptions(Menu)    [list helvetica 10 normal roman]

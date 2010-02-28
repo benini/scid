@@ -913,6 +913,7 @@ scid-4.3
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
 		- Add connector file support to configure game relay from the internet
+		- Make dialogues etc. theme aware for Tk 8.5
 	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
 - Fixes :
 ---------
