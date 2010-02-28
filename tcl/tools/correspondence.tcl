@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.88 2010/02/10 20:41:26 arwagner Exp $
+### $Id: correspondence.tcl,v 1.89 2010/02/28 14:40:46 arwagner Exp $
 ###
-### Last change: <Wed, 2010/02/10 21:38:53 arwagner ingata>
+### Last change: <Sun, 2010/02/28 15:34:51 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -232,30 +232,30 @@ namespace eval Xfcc {
 		# create the window and buttons
 		toplevel $w
 		wm title $w "\[$xfccrcfile\]"
-		button $w.bOk     -text OK -command "::Xfcc::xfccsrvstore; ::Xfcc::SaveXfcc; destroy .configXfccSrv"
-		button $w.bAdd    -text  [::tr "GlistAddField"] -command {
+		ttk::button $w.bOk     -text OK -command "::Xfcc::xfccsrvstore; ::Xfcc::SaveXfcc; destroy .configXfccSrv"
+		ttk::button $w.bAdd    -text  [::tr "GlistAddField"] -command {
 			::Xfcc::AddServer
 		}
 
-		button $w.bDelete -text [::tr "GlistDeleteField"] -command {
+		ttk::button $w.bDelete -text [::tr "GlistDeleteField"] -command {
 			::Xfcc::DeleteServer
 		}
-		button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
+		ttk::button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
 
 		listbox $w.xfccSrvList -height [expr [ array size ::Xfcc::xfccsrv ] / 4 + 1] -width 60 -selectmode single -list ::Xfcc::lsrvname
 		# select the first entry
 		$w.xfccSrvList selection set $::Xfcc::Oldnum
 
-		label  $w.lxfccSrv   -text [::tr CCDlgServerName]
-		label  $w.lxfccUid   -text [::tr CCDlgLoginName]
-		label  $w.lxfccPas   -text [::tr CCDlgPassword]
-		label  $w.lxfccURI   -text [::tr CCDlgURL]
-		label  $w.lxfccrtype -text [::tr CCDlgRatingType]
+		ttk::label  $w.lxfccSrv   -text [::tr CCDlgServerName]
+		ttk::label  $w.lxfccUid   -text [::tr CCDlgLoginName]
+		ttk::label  $w.lxfccPas   -text [::tr CCDlgPassword]
+		ttk::label  $w.lxfccURI   -text [::tr CCDlgURL]
+		ttk::label  $w.lxfccrtype -text [::tr CCDlgRatingType]
 
-		entry  .configXfccSrv.xfccSrv  -width 60 -textvariable ::Xfcc::Server
-		entry  .configXfccSrv.xfccUid  -width 60 -textvariable ::Xfcc::Username
-		entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
-		entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
+		ttk::entry  .configXfccSrv.xfccSrv  -width 60 -textvariable ::Xfcc::Server
+		ttk::entry  .configXfccSrv.xfccUid  -width 60 -textvariable ::Xfcc::Username
+		ttk::entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
+		ttk::entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
 
 		if {$::tcl_version >= 8.5} {
 			ttk::combobox .configXfccSrv.xfccrtype -values [sc_info ratings] -width 7 -textvariable ::Xfcc::Rating
@@ -1682,7 +1682,7 @@ namespace eval CorrespondenceChess {
 			$w.desc.text configure -state disabled
 			pack $w.desc -side top -fill x
 
-			pack [frame $w.b] -side bottom -fill x
+			pack [ttk::frame $w.b] -side bottom -fill x
 			autoscrollframe $w.f text $w.f.text -width 60 -height 10 -wrap none
 
 			foreach g $::CorrespondenceChess::RelayGames {
@@ -1690,10 +1690,10 @@ namespace eval CorrespondenceChess {
 			}
 			pack $w.f -side top -fill both -expand yes
 
-			button $w.b.ok -text OK -command {
+			ttk::button $w.b.ok -text OK -command {
 					::CorrespondenceChess::RelaysOK
 			}
-			button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
+			ttk::button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
 			pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
 		}
 	}
@@ -1932,30 +1932,30 @@ namespace eval CorrespondenceChess {
 		# Translate the menu
 		::CorrespondenceChess::doConfigMenus
 
-		frame $w.top
-		frame $w.bottom
+		ttk::frame $w.top
+		ttk::frame $w.bottom
 
 		pack $w.top -anchor w -expand no
 		pack $w.bottom -fill both -expand yes
 
-		scrollbar $w.top.ysc        -command { .ccWindow.top.console yview }
+		ttk::scrollbar $w.top.ysc        -command { .ccWindow.top.console yview }
 		text      $w.top.console    -height 3 -width 80 -wrap word -yscrollcommand "$w.top.ysc set"
-		button    $w.top.retrieveCC -image tb_CC_Retrieve        -command {::CorrespondenceChess::FetchGames}
-		button    $w.top.sendCC     -image tb_CC_Send            -command {::CorrespondenceChess::SendMove 0 0 0 0}
-		button    $w.top.delinbox   -image tb_CC_delete          -command {::CorrespondenceChess::EmptyInOutbox}
+		ttk::button    $w.top.retrieveCC -image tb_CC_Retrieve        -command {::CorrespondenceChess::FetchGames}
+		ttk::button    $w.top.sendCC     -image tb_CC_Send            -command {::CorrespondenceChess::SendMove 0 0 0 0}
+		ttk::button    $w.top.delinbox   -image tb_CC_delete          -command {::CorrespondenceChess::EmptyInOutbox}
 
-		button    $w.top.openDB     -text  [::tr "CCOpenDB"]     -command {::CorrespondenceChess::OpenCorrespondenceDB}
-		button    $w.top.inbox      -text  [::tr "CCInbox"]      -command {::CorrespondenceChess::ReadInbox}
+		ttk::button    $w.top.openDB     -text  [::tr "CCOpenDB"]     -command {::CorrespondenceChess::OpenCorrespondenceDB}
+		ttk::button    $w.top.inbox      -text  [::tr "CCInbox"]      -command {::CorrespondenceChess::ReadInbox}
 
-		button    $w.top.resign     -text  [::tr "CCResign"]     -state disabled -command {::CorrespondenceChess::SendMove 1 0 0 0} -font font_Bold
-		button    $w.top.claimDraw  -text  [::tr "CCClaimDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 1 0 0}
-		button    $w.top.offerDraw  -text  [::tr "CCOfferDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 0 1 0}
-		button    $w.top.acceptDraw -text  [::tr "CCAcceptDraw"] -state disabled -command {::CorrespondenceChess::SendMove 0 0 0 1}
+		ttk::button    $w.top.resign     -text  [::tr "CCResign"]     -state disabled -command {::CorrespondenceChess::SendMove 1 0 0 0}
+		ttk::button    $w.top.claimDraw  -text  [::tr "CCClaimDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 1 0 0}
+		ttk::button    $w.top.offerDraw  -text  [::tr "CCOfferDraw"]  -state disabled -command {::CorrespondenceChess::SendMove 0 0 1 0}
+		ttk::button    $w.top.acceptDraw -text  [::tr "CCAcceptDraw"] -state disabled -command {::CorrespondenceChess::SendMove 0 0 0 1}
 
-		button    $w.top.help       -image tb_help -height 24 -width 24 -command { helpWindow CCIcons }
+		ttk::button    $w.top.help       -image tb_help -width 24 -command { helpWindow CCIcons }
 
-		button    $w.top.plugins    -image tb_CC_spacer  -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
-		button    $w.top.onoffline  -image tb_CC_offline -relief flat -border 0 -highlightthickness 0 -anchor n -takefocus 0
+		ttk::label $w.top.plugins    -image tb_CC_spacer  -takefocus 0
+		ttk::label $w.top.onoffline  -image tb_CC_offline -takefocus 0
 
 
 		::utils::tooltip::Set $w.top.retrieveCC [::tr "CCFetchBtn"]
@@ -1986,7 +1986,7 @@ namespace eval CorrespondenceChess {
 
 		# build the table in the bottom frame. This table of text widgets has to
 		# scroll syncronously!
-		scrollbar $w.bottom.ysc      -command ::CorrespondenceChess::yview
+		ttk::scrollbar $w.bottom.ysc      -command ::CorrespondenceChess::yview
 
 		set height $::winHeight($w)
 		set width  $::winWidth($w)
@@ -2330,57 +2330,54 @@ namespace eval CorrespondenceChess {
 		]
 
 
-		button $w.bOk     -text OK -command {
+		ttk::button $w.bOk     -text OK -command {
 				::CorrespondenceChess::saveCCoptions
 				destroy .correspondenceChessConfig
 		}
-		button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
+		ttk::button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
 
-		label  $w.lgeneral -text [::tr "CCDlgCGeneraloptions"]
-		label  $w.ldb      -text [::tr "CCDlgDefaultDB"]
-		label  $w.linbox   -text [::tr "CCDlgInbox"]
-		label  $w.loutbox  -text [::tr "CCDlgOutbox"]
+		ttk::label  $w.lgeneral -text [::tr "CCDlgCGeneraloptions"]
+		ttk::label  $w.ldb      -text [::tr "CCDlgDefaultDB"]
+		ttk::label  $w.linbox   -text [::tr "CCDlgInbox"]
+		ttk::label  $w.loutbox  -text [::tr "CCDlgOutbox"]
 
-		label  $w.lxfccrc  -text [::tr "CCDlgXfcc"]
+		ttk::label  $w.lxfccrc  -text [::tr "CCDlgXfcc"]
 
-		label  $w.lxfcc    -text [::tr "CCDlgExternalProtocol"]
-		label  $w.lfetch   -text [::tr "CCDlgFetchTool"]
-		label  $w.lsend    -text [::tr "CCDlgSendTool"]
-		label  $w.lsortopt -text [::tr "CCDlgSortOption"]
+		ttk::label  $w.lxfcc    -text [::tr "CCDlgExternalProtocol"]
+		ttk::label  $w.lfetch   -text [::tr "CCDlgFetchTool"]
+		ttk::label  $w.lsend    -text [::tr "CCDlgSendTool"]
+		ttk::label  $w.lsortopt -text [::tr "CCDlgSortOption"]
 
-		label  $w.lemail   -text [::tr "CCDlgEmailCommunication"]
-		label  $w.lmailx   -text [::tr "CCDlgMailPrg"]
-		label  $w.lbccaddr -text [::tr "CCDlgBCCAddr"]
+		ttk::label  $w.lemail   -text [::tr "CCDlgEmailCommunication"]
+		ttk::label  $w.lmailx   -text [::tr "CCDlgMailPrg"]
+		ttk::label  $w.lbccaddr -text [::tr "CCDlgBCCAddr"]
 
-		label  $w.lmoderb  -text [::tr "CCDlgMailerMode"]
-		label  $w.lmoderb1 -text [::tr "CCDlgThunderbirdEg"]
-		label  $w.lmoderb2 -text [::tr "CCDlgMailUrlEg"]
-		label  $w.lmoderb3 -text [::tr "CCDlgClawsEg"]
-		label  $w.lmoderb4 -text [::tr "CCDlgmailxEg"]
+		ttk::label  $w.lmoderb  -text [::tr "CCDlgMailerMode"]
+		ttk::label  $w.lmoderb1 -text [::tr "CCDlgThunderbirdEg"]
+		ttk::label  $w.lmoderb2 -text [::tr "CCDlgMailUrlEg"]
+		ttk::label  $w.lmoderb3 -text [::tr "CCDlgClawsEg"]
+		ttk::label  $w.lmoderb4 -text [::tr "CCDlgmailxEg"]
 
-		label  $w.lattache -text [::tr "CCDlgAttachementPar"]
-		label  $w.lsubject -text [::tr "CCDlgSubjectPar"]
+		ttk::label  $w.lattache -text [::tr "CCDlgAttachementPar"]
+		ttk::label  $w.lsubject -text [::tr "CCDlgSubjectPar"]
 
-		checkbutton $w.internalXfcc -text [::tr "CCDlgInternalXfcc"] \
+		ttk::checkbutton $w.internalXfcc -text [::tr "CCDlgInternalXfcc"] \
 			-variable ::CorrespondenceChess::XfccInternal
 
-		checkbutton $w.confirmXfcc -text [::tr "CCDlgConfirmXfcc"] \
+		ttk::checkbutton $w.confirmXfcc -text [::tr "CCDlgConfirmXfcc"] \
 			-variable ::CorrespondenceChess::XfccConfirm
 
-		checkbutton $w.onlyOwnMove -text [::tr "CCDlgListOnlyOwnMove"] \
+		ttk::checkbutton $w.onlyOwnMove -text [::tr "CCDlgListOnlyOwnMove"] \
 			-variable ::CorrespondenceChess::ListOnlyOwnMove
 
-		scrollbar $w.ysc    -command { .correspondenceChessConfig.sortopt yview }
+		ttk::scrollbar $w.ysc    -command { .correspondenceChessConfig.sortopt yview }
 		listbox   $w.sortopt -height 3 -width 60 -exportselection 0 -selectmode single -list ::CorrespondenceChess::sortoptlist -yscrollcommand "$w.ysc set"
 		$w.sortopt selection set $::CorrespondenceChess::ListOrder
 		bind .correspondenceChessConfig.sortopt <<ListboxSelect>> {
 			set ::CorrespondenceChess::ListOrder [ .correspondenceChessConfig.sortopt curselection ]
-			###if {[winfo exists .ccWindow]} {
-			###	::CorrespondenceChess::ReadInbox
-			###}
 		}
 
-		button $w.xfconf  -text [::tr CCConfigure] -command { ::CorrespondenceChess::checkXfccrc
+		ttk::button $w.xfconf  -text [::tr CCConfigure] -command { ::CorrespondenceChess::checkXfccrc
 			::Xfcc::config $::CorrespondenceChess::xfccrcfile}
 
 		if {$::CorrespondenceChess::XfccInternal < 0} {
@@ -2388,29 +2385,29 @@ namespace eval CorrespondenceChess {
 			$w.xfconf       configure -state disabled
 		}
 
-		entry  $w.db      -width 60 -textvariable ::CorrespondenceChess::CorrBase
-		entry  $w.inbox   -width 60 -textvariable ::CorrespondenceChess::Inbox
-		entry  $w.outbox  -width 60 -textvariable ::CorrespondenceChess::Outbox
+		ttk::entry  $w.db      -width 60 -textvariable ::CorrespondenceChess::CorrBase
+		ttk::entry  $w.inbox   -width 60 -textvariable ::CorrespondenceChess::Inbox
+		ttk::entry  $w.outbox  -width 60 -textvariable ::CorrespondenceChess::Outbox
 
-		entry  $w.xfccrc  -width 60 -textvariable ::CorrespondenceChess::xfccrcfile
-		entry  $w.fetch   -width 60 -textvariable ::CorrespondenceChess::XfccFetchcmd
-		entry  $w.send    -width 60 -textvariable ::CorrespondenceChess::XfccSendcmd
+		ttk::entry  $w.xfccrc  -width 60 -textvariable ::CorrespondenceChess::xfccrcfile
+		ttk::entry  $w.fetch   -width 60 -textvariable ::CorrespondenceChess::XfccFetchcmd
+		ttk::entry  $w.send    -width 60 -textvariable ::CorrespondenceChess::XfccSendcmd
 
-		entry  $w.mailx   -width 60 -textvariable ::CorrespondenceChess::mailer
-		entry  $w.bccaddr -width 60 -textvariable ::CorrespondenceChess::bccaddr
-		entry  $w.attache -width 30 -textvariable ::CorrespondenceChess::attache
-		entry  $w.subject -width 30 -textvariable ::CorrespondenceChess::subject
+		ttk::entry  $w.mailx   -width 60 -textvariable ::CorrespondenceChess::mailer
+		ttk::entry  $w.bccaddr -width 60 -textvariable ::CorrespondenceChess::bccaddr
+		ttk::entry  $w.attache -width 30 -textvariable ::CorrespondenceChess::attache
+		ttk::entry  $w.subject -width 30 -textvariable ::CorrespondenceChess::subject
 
-		radiobutton $w.moderb1 -text "Mozilla"  -value "mozilla" -variable ::CorrespondenceChess::mailermode
-		radiobutton $w.moderb2 -text "Mail-URL" -value "mailurl" -variable ::CorrespondenceChess::mailermode
-		radiobutton $w.moderb3 -text "Claws"    -value "claws"   -variable ::CorrespondenceChess::mailermode
-		radiobutton $w.moderb4 -text "mailx"    -value "mailx"   -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb1 -text "Mozilla"  -value "mozilla" -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb2 -text "Mail-URL" -value "mailurl" -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb3 -text "Claws"    -value "claws"   -variable ::CorrespondenceChess::mailermode
+		ttk::radiobutton $w.moderb4 -text "mailx"    -value "mailx"   -variable ::CorrespondenceChess::mailermode
 
-		button $w.bdb     -text "..." -command {::CorrespondenceChess::chooseCorrBase }
-		button $w.binbox  -text "..." -command {::CorrespondenceChess::chooseInbox    }
-		button $w.boutbox -text "..." -command {::CorrespondenceChess::chooseOutbox   }
-		button $w.bfetch  -text "..." -command {::CorrespondenceChess::chooseFetch    }
-		button $w.bsend   -text "..." -command {::CorrespondenceChess::chooseSend     }
+		ttk::button $w.bdb     -text "..." -command {::CorrespondenceChess::chooseCorrBase }
+		ttk::button $w.binbox  -text "..." -command {::CorrespondenceChess::chooseInbox    }
+		ttk::button $w.boutbox -text "..." -command {::CorrespondenceChess::chooseOutbox   }
+		ttk::button $w.bfetch  -text "..." -command {::CorrespondenceChess::chooseFetch    }
+		ttk::button $w.bsend   -text "..." -command {::CorrespondenceChess::chooseSend     }
 
 		grid $w.lgeneral                  -column 0 -row  0 -columnspan 3 -pady 10
 
@@ -2562,19 +2559,19 @@ namespace eval CorrespondenceChess {
 			set oppname    ""
 			set gameid     ""
 
-			label  $w.lownname -text [::tr CCDlgYourName]
-			label  $w.lownmail -text [::tr CCDlgYourMail]
-			label  $w.loppname -text [::tr CCDlgOpponentName]
-			label  $w.loppmail -text [::tr CCDlgOpponentMail]
-			label  $w.lgameid  -text [::tr CCDlgGameID]
+			ttk::label  $w.lownname -text [::tr CCDlgYourName]
+			ttk::label  $w.lownmail -text [::tr CCDlgYourMail]
+			ttk::label  $w.loppname -text [::tr CCDlgOpponentName]
+			ttk::label  $w.loppmail -text [::tr CCDlgOpponentMail]
+			ttk::label  $w.lgameid  -text [::tr CCDlgGameID]
 
-			entry  $w.ownname -width 40 -textvariable ownname
-			entry  $w.ownmail -width 40 -textvariable $ownemail
-			entry  $w.oppname -width 40 -textvariable oppname
-			entry  $w.oppmail -width 40 -textvariable oppemail
-			entry  $w.gameid  -width 40 -textvariable gameid
+			ttk::entry  $w.ownname -width 40 -textvariable ownname
+			ttk::entry  $w.ownmail -width 40 -textvariable $ownemail
+			ttk::entry  $w.oppname -width 40 -textvariable oppname
+			ttk::entry  $w.oppmail -width 40 -textvariable oppemail
+			ttk::entry  $w.gameid  -width 40 -textvariable gameid
 
-			button $w.bOk     -text OK -command {
+			ttk::button $w.bOk     -text OK -command {
 				::CorrespondenceChess::startEmailGame \
 						[.wnewEMailGame.ownname get] \
 						[.wnewEMailGame.ownmail get] \
@@ -2583,7 +2580,7 @@ namespace eval CorrespondenceChess {
 						[.wnewEMailGame.gameid  get]
 				destroy .wnewEMailGame
 			}
-			button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
+			ttk::button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
 
 			grid $w.lownname   -sticky e -column 0 -row 0
 			grid $w.lownmail   -sticky e -column 0 -row 1
