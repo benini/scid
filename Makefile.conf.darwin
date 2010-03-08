@@ -324,6 +324,7 @@ scid_app: all
 	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/html
 	install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/sounds
 	#install -m 755 -d dist/Scid.app/Contents/Resources/share/scid/engines
+	install -m 755 -d dist/Scid.app/Contents/Resources/Scripts
 	#install -m 755 $(SCRIPTS) $(EXECS) dist/Scid.app/Contents/Resources/bin/
 	install -m 755 $(EXECS) dist/Scid.app/Contents/Resources/bin/
 	install -m 644 -p scid.eco dist/Scid.app/Contents/Resources/share/scid/data/
@@ -335,13 +336,14 @@ scid_app: all
 	install -m 644 -p ./mac_icons/Scid*.icns dist/Scid.app/Contents/Resources/
 	ditto ./html dist/Scid.app/Contents/Resources/share/scid/html
 	install -m 666 Info.plist dist/Scid.app/Contents/
-	perl -pi -e "s|\<string\>Scid x\.x\</string\>|\<string\>Scid $(SCID_VERSION)</string\>|" dist/Scid.app/Contents/Info.plist
+	perl -pi -e "s|x\.x\</string\>|$(SCID_VERSION)</string\>|" dist/Scid.app/Contents/Info.plist
 	cd dist/Scid.app/Contents/Resources/bin/ && ln -sf ../share/scid/sounds
 	cd dist/Scid.app/Contents/Resources/bin/ && ln -sf ../share/scid/html
 	sed -e 's|exec .*tkscid|exec "$(SCID_APP_BIN)tkscid"|' < scid > dist/Scid.app/Contents/Resources/bin/scid
 	for script in $(SCRIPTS); do sed -e 's|exec .*tcscid|exec "$(SCID_APP_BIN)tcscid"|' < $${script} > dist/Scid.app/Contents/Resources/bin/$${script};done
 	chmod +x dist/Scid.app/Contents/Resources/bin/*
-	cd dist/Scid.app/Contents/MacOS && ln -sf ../Resources/bin/scid
+	cd dist/Scid.app/Contents/MacOS && ln -sf ../Resources/bin/tkscid scid
+	cd dist/Scid.app/Contents/Resources/Scripts && ln -sf ../bin/scid AppMain.tcl
 
 scid_dmg: scid_app
 	install -m 755 -d dist/bitmaps

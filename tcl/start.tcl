@@ -231,10 +231,10 @@ if {$windowsOS} {
   set fontOptions(Fixed)   [list systemfixed      9 normal roman]
 } elseif {$macOS} {
   set fontOptions(Regular) [list system    11 normal roman]
-  set fontOptions(Menu)    [list system    10 normal roman]
+  set fontOptions(Menu)    [list menu      14 normal roman]
   set fontOptions(Small)   [list system    10 normal roman]
   set fontOptions(Tiny)    [list system     9 normal roman]
-  set fontOptions(Fixed)   [list fixed     10 normal roman]
+  set fontOptions(Fixed)   [list Monaco    10 normal roman]
 } else {
   set fontOptions(Regular) [list helvetica 11 normal roman]
   set fontOptions(Menu)    [list helvetica 10 normal roman]
