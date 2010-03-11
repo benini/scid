@@ -235,6 +235,8 @@ menuText W ToolsStartEngine1 "Starta schackmotor 1" 0  {Starta schackmotor 1}
 # ====== TODO To be translated ======
 menuText W ToolsStartEngine2 "Starta schackmotor 2" 0  {Starta schackmotor 2}
 # ====== TODO To be translated ======
+menuText W ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+# ====== TODO To be translated ======
 menuText W Play "Spela" 0
 # ====== TODO To be translated ======
 menuText W CorrespondenceChess "Korrespondensschack" 0 {Funktioner för eMail och Xfcc baserad Korrespondensschack}
@@ -7171,6 +7173,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

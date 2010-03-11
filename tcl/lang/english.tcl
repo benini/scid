@@ -240,6 +240,7 @@ menuText E ToolsImportOne "Import One PGN Game..." 0 \
 menuText E ToolsImportFile "Import File of PGN Games..." 7 {Import games from a PGN file}
 menuText E ToolsStartEngine1 "Start engine 1" 13  {Start engine 1}
 menuText E ToolsStartEngine2 "Start engine 2" 13  {Start engine 2}
+menuText E ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
 
 # Play menue
 menuText E Play "Play" 0

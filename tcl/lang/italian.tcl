@@ -212,6 +212,8 @@ menuText I ToolsImportFile "Importa il file di partite PGN..." 11 \
   {Importa le partite da un file PGN}
 menuText I ToolsStartEngine1 "Avvia il motore 1" 0  {Avvia il primo motore per l'analisi della posizione}
 menuText I ToolsStartEngine2 "Avvia il motore 2" 0  {Avvia il secondo motore per l'analisi della posizione}
+# ====== TODO To be translated ======
+menuText I ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 
 # Play menue
 menuText I Play "Gioca" 0
@@ -2072,6 +2074,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

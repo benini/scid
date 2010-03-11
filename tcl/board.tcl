@@ -2453,6 +2453,74 @@ proc ::board::_animate {w} {
   after 5 "::board::_animate $w"
 }
 
+# Capture board screenshot.
+# Based on code from David Easton:
+# http://wiki.tcl.tk/9127
+
+set window_image_support 1
+if { [catch {package require img::window}] } {
+  set window_image_support 0
+}
+
+if {!$png_image_support || !$window_image_support} {
+  .menu.tools entryconfig [tr ToolsCaptureBoard] -state disabled
+  ::splash::add "Capture Current Board is disabled."
+}
+
+proc captureWidget { widget image px py } {
+
+  if {![winfo ismapped $widget]} {
+    return
+  }
+
+  regexp {([0-9]*)x([0-9]*)\+([0-9]*)\+([0-9]*)} [winfo geometry $widget] - w h x y
+
+  incr px $x
+  incr py $y
+
+  # Make an image from this widget
+  set tempImage [image create photo -format window -data $widget]
+
+  # Copy this image into place on the main image
+  $image copy $tempImage -to $px $py
+  image delete $tempImage
+
+  foreach child [winfo children $widget] {
+    captureWidget $child $image $px $py
+  }
+}
+
+proc boardToFile { format filepath } {
+
+  set board .main.board.bd
+
+  if { $format == "" } {
+    set format png
+  }
+  set filename $filepath
+
+  # Make the base image based on the board
+  set image [image create photo -format window -data $board]
+
+  foreach child [winfo children $board] {
+    captureboard $child $image 0 0
+  }
+
+  if { $filename == "" } {
+    set types {{"Image Files" {.$format}}}
+    set filename [tk_getSaveFile -filetypes $types \
+                                 -initialfile current_board.$format \
+                                 -defaultextension .$format \
+                                 -title "Scid: Save Current Board:"]
+  }
+  if {[llength $filename]} {
+    if {[catch {$image write -format $format $filename} result ]} {
+      tk_messageBox -type ok -icon error -title "Scid" -message $result
+    }
+  }
+  image delete $image
+}
+
 
 ###
 ### End of file: board.tcl

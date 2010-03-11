@@ -227,6 +227,8 @@ menuText N ToolsImportFile "PGN database importeren..." 4 \
   {Importeer PGN bestand}
 menuText N ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
 menuText N ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
+# ====== TODO To be translated ======
+menuText N ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 menuText N Play "Speel" 0
 menuText N CorrespondenceChess "Correspondentieschaak" 0 {Functies voor eMail en Xfcc gebaseerde correspondentieschaak}
 menuText N CCConfigure "Configureer..." 0 {Configureer externe tools en algemene instellingen}
@@ -1897,6 +1899,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Change icon...}
 }
 # End of nederlan.tcl
+
 
 
 

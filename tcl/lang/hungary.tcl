@@ -208,6 +208,8 @@ menuText H ToolsImportFile "PGN-fájl importálása..." 2 \
   {PGN-fájl összes játszmájának importálása}
 menuText H ToolsStartEngine1 "Az 1. motor elindítása" 3  {Elindítja az 1. motort.}
 menuText H ToolsStartEngine2 "A 2. motor elindítása" 2  {Elindítja a 2. motort.}
+# ====== TODO To be translated ======
+menuText H ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 menuText H Play "Játék" 0
 menuText H CorrespondenceChess "Levelezési sakk" 0 {Segédeszközök eMail vagy Xfcc alapú levelezési sakkhoz}
 menuText H CCConfigure "Beállítások" 0 {Külsõ eszközök és alaptulajdonságok}
@@ -1931,6 +1933,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

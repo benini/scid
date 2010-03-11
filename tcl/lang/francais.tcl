@@ -212,6 +212,8 @@ menuText F ToolsImportFile "Importer un fichier en PGN..." 12 \
   {Importer des parties à partir d'un fichier PGN}
 menuText F ToolsStartEngine1 "Démarrer moteur 1" 0  {Démarrer moteur 1}
 menuText F ToolsStartEngine2 "Démarrer moteur 2" 0  {Démarrer moteur 2}
+# ====== TODO To be translated ======
+menuText F ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 menuText F Play "Jouer" 0
 menuText F CorrespondenceChess "Echecs par correspondance" 0 {eMail et Xfcc échecs par correspondance}
 menuText F CCConfigure "Configurer..." 0 {Configurer outils externes et config générale}
@@ -1859,6 +1861,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

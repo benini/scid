@@ -224,6 +224,7 @@ menuText S ToolsImportFile "Importar un archivo de partidas PGN..." 2 \
   {Importa partidas de un archivo PGN}
 menuText S ToolsStartEngine1 "Empezar motor 1" 0  {Empieza el motor 1}
 menuText S ToolsStartEngine2 "Empezar motor 2" 0  {Empieza el motor 2}
+menuText S ToolsCaptureBoard "Capturar Tablero Actual..." 0  {Guardar el tablero actual como imagen.}
 menuText S Play "Jugar" 0
 menuText S CorrespondenceChess "Ajedrez por correo" 0 \
   {Funciones para ajedrez por correo basado en email y Xfcc}
@@ -1710,6 +1711,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

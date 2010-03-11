@@ -235,6 +235,8 @@ menuText R ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
 # ====== TODO To be translated ======
 menuText R ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
 # ====== TODO To be translated ======
+menuText R ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+# ====== TODO To be translated ======
 menuText R Play "Play" 0
 # ====== TODO To be translated ======
 menuText R CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
@@ -2183,6 +2185,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

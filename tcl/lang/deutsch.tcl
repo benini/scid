@@ -231,6 +231,7 @@ menuText D ToolsImportFile "PGN-Partien importieren..." 0 \
   {Partien aus einer PGN-Datei lesen}
 menuText D ToolsStartEngine1 "Starte Engine1" 0  {Starte Analyse von Analyse-Engine1}
 menuText D ToolsStartEngine2 "Starte Engine2" 0  {Starte Analyse von Analyse-Engine2}
+menuText D ToolsCaptureBoard "Brettfoto..." 0  {Aktuelles Brett als Bild speichern.}
 #-----AW------
 ###  BC   GHIJKL  O Q  TUV XY 
 menuText D Play "Spielen" 0 {Partien spielen}
@@ -7267,6 +7268,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

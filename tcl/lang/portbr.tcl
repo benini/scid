@@ -234,6 +234,8 @@ menuText B ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
 # ====== TODO To be translated ======
 menuText B ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
 # ====== TODO To be translated ======
+menuText B ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+# ====== TODO To be translated ======
 menuText B Play "Play" 0
 # ====== TODO To be translated ======
 menuText B CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
@@ -2160,6 +2162,7 @@ translate B ChangeIcon {Change icon...}
 }
 
 # end of portbr.tcl
+
 
 
 

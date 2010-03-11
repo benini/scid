@@ -223,6 +223,8 @@ menuText K ToolsImportFile "Importar un arxiu de partides PGN..." 2 \
   {Importa partides de un arxiu PGN}
 menuText K ToolsStartEngine1 "Iniciar motor 1" 0  {Iniciar motor 1}
 menuText K ToolsStartEngine2 "Iniciar motor 2" 0  {Iniciar Motor 2}
+# ====== TODO To be translated ======
+menuText K ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
 menuText K Play "Jugar" 0
 menuText K CorrespondenceChess "Escacs Postal" 0 {Funcions d'Escacs Postal per a eMail i Xfcc}
 menuText K CCConfigure "Configurar..." 0 {Configurar eines externes i Paràmetres Generals}
@@ -1720,6 +1722,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

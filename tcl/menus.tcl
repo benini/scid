@@ -756,6 +756,14 @@ set helpMessage($m,[incr menuindex]) ToolsImportOne
 $m add command -label ToolsImportFile -command importPgnFile
 set helpMessage($m,[incr menuindex]) ToolsImportFile
 
+$m add separator
+incr menuindex
+
+#### needs to be fixed
+# $m add command -label ToolsCaptureBoard \
+#     -command { boardToFile "" "" }
+# set helpMessage($m,[incr menuindex]) ToolsCaptureBoard
+
 ### Options menu:
 
 set m .menu.options
@@ -1590,7 +1598,7 @@ proc setLanguageMenus {{lang ""}} {
   
   foreach tag {Analysis Analysis2 Cross Email FilterGraph AbsFilterGraph OpReport Tracker
     Rating Score ExpCurrent ExpFilter ImportOne ImportFile StartEngine1 StartEngine2 BookTuning
-    PInfo PlayerReport ConnectHardware} {
+    PInfo PlayerReport ConnectHardware CaptureBoard} {
     configMenuText .menu.tools [tr Tools$tag $oldLang] Tools$tag $lang
   }
   
