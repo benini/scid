@@ -759,10 +759,10 @@ set helpMessage($m,[incr menuindex]) ToolsImportFile
 $m add separator
 incr menuindex
 
-#### needs to be fixed
-# $m add command -label ToolsCaptureBoard \
-#     -command { boardToFile "" "" }
-# set helpMessage($m,[incr menuindex]) ToolsCaptureBoard
+#### needs to be fixed (at least for Linux)
+$m add command -label ToolsCaptureBoard \
+     -command { boardToFile "" "" }
+set helpMessage($m,[incr menuindex]) ToolsCaptureBoard
 
 ### Options menu:
 
