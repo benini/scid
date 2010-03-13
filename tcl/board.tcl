@@ -2492,7 +2492,8 @@ proc captureWidget { widget image px py } {
 
 proc boardToFile { format filepath } {
 
-  set board .main.board.bd
+  set w .main.board
+  set board $w.bd
 
   if { $format == "" } {
     set format png
@@ -2500,19 +2501,19 @@ proc boardToFile { format filepath } {
   set filename $filepath
 
   # Make the base image based on the board
+  ::board::update $w
+  update idletask
   set image [image create photo -format window -data $board]
 
-  foreach child [winfo children $board] {
-    captureboard $child $image 0 0
-  }
-
   if { $filename == "" } {
-    set types {{"Image Files" {.$format}}}
+    # set types {{"Image Files" {.$format}}}
+    set types {{"All Files" {*}}}
     set filename [tk_getSaveFile -filetypes $types \
                                  -initialfile current_board.$format \
                                  -defaultextension .$format \
                                  -title "Scid: Save Current Board:"]
   }
+
   if {[llength $filename]} {
     if {[catch {$image write -format $format $filename} result ]} {
       tk_messageBox -type ok -icon error -title "Scid" -message $result
