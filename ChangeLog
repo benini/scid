@@ -921,3 +921,4 @@ scid-4.3
 - Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
 - Hide the startup window
 - Improve some defaults of Scids empty config
+- Major update for brazilian portugese translation (thanks ot Gilberto de Almeida Peres)

@@ -49,11 +49,10 @@ menuText B FileMaintNameRound "Verificacao Ortografica de Rodadas..." 11 \
   {Verificacao dos nomes de rodadas usando o arquivo de correcao ortografica}
 menuText B FileReadOnly "Apenas Leitura..." 7 \
   {Trata a base de dados corrente como arquivo de leitura, impedindo mudancas}
-menuText B FileSwitch "Switch to database" 0 \
-  {Switch to a different opened database} ;# ***
+menuText B FileSwitch "Mudar a base de dados" 0 \
+  {Muda para uma base de dados diferente, já aberta} ;# ***
 menuText B FileExit "Sair" 0 {Encerrar o Scid}
-# ====== TODO To be translated ======
-menuText B FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
+menuText B FileMaintFixBase "Corrigir base corrompida" 0 {Tenta corrigir uma base corrompida}
 
 # Edit menu:
 menuText B Edit "Editar" 0
@@ -67,28 +66,27 @@ menuText B EditTrial "Experimentar variante" 0 \
   {Inicia/Para experimentacao, para testar alguma nova ideia no tabuleiro}
 menuText B EditStrip "Limpar Comentarios e Variantes" 2 \
   {Limpa comentarios e variantes no jogo atual}
-# ====== TODO To be translated ======
-menuText B EditUndo "Undo" 0 {Undo last game change}
+menuText B EditUndo "Desfazer" 0 {Desfaz última mudança no jogo}
 menuText B EditStripComments "Limpar Comentarios" 0 \
   {Limpa comentarios e anotacoes no jogo atual}
 menuText B EditStripVars "Limpar Variantes" 0 \
   {Limpa todas as variantes no jogo atual}
-menuText B EditStripBegin "Moves from the beginning" 1 \
-  {Strip moves from the beginning of the game} ;# ***
-menuText B EditStripEnd "Moves to the end" 0 \
-  {Strip moves to the end of the game} ;# ***
+menuText B EditStripBegin "Movimentos a partir do início" 1 \
+  {Remove movimentos a partir do início do jogo} ;# ***
+menuText B EditStripEnd "Movimentos até o final do jogo" 0 \
+  {Remove movimentos até o final do jogo} ;# ***
 menuText B EditReset "Limpar a base de trabalho" 0 \
   {Limpa completamente a base de trabalho}
 menuText B EditCopy "Copiar jogo para a base de trabalho" 0 \
   {Copia o jogo corrente para a base de trabalho}
 menuText B EditPaste "Colar jogo da base de trabalho" 1 \
   {Cola o jogo ativo da base de trabalho}
-menuText B EditPastePGN "Paste Clipboard text as PGN game..." 10 \
-  {Interpret the clipboard text as a game in PGN notation and paste it here} ;# ***
+menuText B EditPastePGN "Colar como jogo em PGN..." 10 \
+  {Interpreta o texto na área de transferência como um jogo em notação PGN e cola na posição corrente} ;# ***
 menuText B EditSetup "Configura posicao inicial..." 12 \
   {Configura a posicao inicial para o jogo}
-menuText B EditCopyBoard "Copy position" 6 \
-  {Copy the current board in FEN notation to the text selection (clipboard)} ;# ***
+menuText B EditCopyBoard "Copia posição" 6 \
+  {Copia o tabuleiro corrente em notação FEN para a área de transferência} ;# ***
 menuText B EditPasteBoard "Colar Posicao" 12 \
   {Configura a posicao inicial a partir da area de transferencia}
 
@@ -102,7 +100,7 @@ menuText B GameReload "Recarrega o Jogo atual" 3 \
   {Recarrega o jogo, descartando qualquer alteracao}
 menuText B GameNext "Proximo Jogo" 5 {Carrega o proximo jogo}
 menuText B GameLast "Ultimo Jogo" 8 {Carrega o ultimo jogo}
-menuText B GameRandom "Load Random Game" 8 {Load a random filtered game} ;# ***
+menuText B GameRandom "Carrega jogo aleatório" 8 {Carrega um jogo filtrado aleatoriamente} ;# ***
 menuText B GameNumber "Carrega Jogo Numero..." 5 \
   {Carrega um jogo pelo seu numero}
 menuText B GameReplace "Salvar: Substituir Jogo..." 8 \
@@ -131,7 +129,7 @@ menuText B WindowsComment "Editor de Comentarios" 0 {Abre/fecha o editor de come
 menuText B WindowsGList "Lista de Jogos" 0 {Abre/fecha a janela com a lista de jogos}
 menuText B WindowsPGN "Notacao PGN" 0 \
   {Abre/fecha a janela com a notacao PGN do jogo}
-menuText B WindowsPList "Player Finder" 2 {Open/close the player finder} ;# ***
+menuText B WindowsPList "Procura Jogador" 2 {Abre/Fecha o buscador de jogadores} ;# ***
 menuText B WindowsTmt "Buscador de Torneio" 2 {Abre/Fecha o buscador de torneio}
 menuText B WindowsSwitcher "Intercambio de bases de dados" 0 \
   {Abre/fecha a janela de intercambio de bases de dados}
@@ -145,10 +143,8 @@ menuText B WindowsStats "Estatisticas" 0 \
 menuText B WindowsTree "Arvore" 0 {Abre/fecha a janela da Arvore de pesquisa}
 menuText B WindowsTB "Tabela base de Finais" 1 \
   {Abre/fecha a janela da tabela base de finais}
-# ====== TODO To be translated ======
-menuText B WindowsBook "Book Window" 0 {Open/close the Book window}
-# ====== TODO To be translated ======
-menuText B WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
+menuText B WindowsBook "Janela do Livro de Aberturas" 0 {Abre/Fecha  a janela do livro de aberturas}
+menuText B WindowsCorrChess "Janela de Correspondencia" 0 {Abre/Fecha a janela de correspondencia}
 
 # Tools menu:
 menuText B Tools "Ferramentas" 0
@@ -159,49 +155,32 @@ menuText B ToolsAnalysis2 "Analisador #2..." 17 \
 menuText B ToolsCross "Tabela de Cruzamento" 0 {Mostra a tabela de cruzamentos do torneio para o jogo corrente}
 menuText B ToolsEmail "Gerenciador de e-mails" 0 \
   {Abre/fecha a janela do gerenciador de e-mails}
-menuText B ToolsFilterGraph "Filter graph" 7 \
-  {Open/close the filter graph window} ;# ***
-# ====== TODO To be translated ======
-menuText B ToolsAbsFilterGraph "Abs. Filter Graph" 7 {Open/close the filter graph window for absolute values}
+menuText B ToolsFilterGraph "Gréfico de filtro" 7 \
+  {Abre/Fecha a janela do gráfico de filtro} ;# ***
+menuText B ToolsAbsFilterGraph "Grafico de Filtro Absoluto" 7 {Abre/Fecha a janela do grafico de filtro por valor absoluto}
 menuText B ToolsOpReport "Relatorio de abertura" 0 \
   {Gera um relatorio de abertura para a posicao corrente}
-# ====== TODO To be translated ======
-menuText B ToolsOpenBaseAsTree "Open base as tree" 0   {Open a base and use it in Tree window}
-# ====== TODO To be translated ======
-menuText B ToolsOpenRecentBaseAsTree "Open recent base as tree" 0   {Open a recent base and use it in Tree window}
-menuText B ToolsTracker "Piece Tracker"  0 {Open the Piece Tracker window} ;# ***
-# ====== TODO To be translated ======
-menuText B ToolsTraining "Training"  0 {Training tools (tactics, openings,...) }
-# ====== TODO To be translated ======
-menuText B ToolsTacticalGame "Tactical game"  0 {Play a game with tactics}
-# ====== TODO To be translated ======
-menuText B ToolsSeriousGame "Serious game"  0 {Play a serious game}
-# ====== TODO To be translated ======
-menuText B ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
-# ====== TODO To be translated ======
-menuText B ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
-# ====== TODO To be translated ======
-menuText B ToolsTrainTactics "Tactics"  0 {Solve tactics}
-# ====== TODO To be translated ======
-menuText B ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
-# ====== TODO To be translated ======
-menuText B ToolsTrainFindBestMove "Find best move"  0 {Find best move}
-# ====== TODO To be translated ======
-menuText B ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
-# ====== TODO To be translated ======
-menuText B ToolsBookTuning "Book tuning" 0 {Book tuning}
-# ====== TODO To be translated ======
-menuText B ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
-# ====== TODO To be translated ======
-menuText B ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
-# ====== TODO To be translated ======
-menuText B ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
-# ====== TODO To be translated ======
-menuText B ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
+menuText B ToolsOpenBaseAsTree "Abre base como árvore" 0   {Abre uma base e a utiliza numa janela de Árvore}
+menuText B ToolsOpenRecentBaseAsTree "Abre base recente como árvore" 0   {Abre uma base recente e a utiliza numa janela de Árvore}
+menuText B ToolsTracker "Acompanha Peça"  0 {Abre a janela de acompanhamento de peças} ;# ***
+menuText B ToolsTraining "Treinamento"  0 {Ferramentas de Treinamento (táticas, aberturas,...) }
+menuText B ToolsTacticalGame "Jogo Tático"  0 {Jogar com táticas}
+menuText B ToolsSeriousGame "Jogo Sério"  0 {Jogar um jogo sério}
+menuText B ToolsTrainOpenings "Aberturas"  0 {Treinamento com um repertório}
+menuText B ToolsTrainReviewGame "Rever jogo"  0 {Acompanhar movimentos de um jogo}
+menuText B ToolsTrainTactics "Táticas"  0 {Exercícios de tática}
+menuText B ToolsTrainCalvar "Cálculo de Variantes"  0 {Treinamento de cálculo de variantes}
+menuText B ToolsTrainFindBestMove "Procurar melhor movimento"  0 {Procura o melhor movimento}
+menuText B ToolsTrainFics "Jogar na internet"  0 {Jogar em  freechess.org}
+menuText B ToolsBookTuning "Sintonizar Livro" 0 {Sintonizar livro de aberturas}
+menuText B ToolsConnectHardware "Conectar Hardware" 0 {Conectar hardware externo}
+menuText B ToolsConnectHardwareConfigure "Configurar..." 0 {Configurar hardware e conexão externa}
+menuText B ToolsConnectHardwareNovagCitrineConnect "Conectar Novag Citrine" 0 {Conectar Novag Citrine}
+menuText B ToolsConnectHardwareInputEngineConnect "Conectar Engine de Entrada" 0 {Conectar engine de entrada (ex. DGT)}
 menuText B ToolsPInfo "Informacao do Jogador"  0 \
   {Abre/atualiza a janela de informacao do jogador}
-menuText B ToolsPlayerReport "Player Report..." 3 \
-  {Generate a player report} ;# ***
+menuText B ToolsPlayerReport "Relatório de jogador..." 3 \
+  {Gera um relatório de jogador} ;# ***
 menuText B ToolsRating "Grafico de Rating" 0 \
   {Mostra, em um grafico, a evolucao do rating de um jogador}
 menuText B ToolsScore "Grafico de Resultados" 0 {Mostra a janela com o grafico dos resultados}
@@ -211,8 +190,7 @@ menuText B ToolsExpCurrentPGN "Exporta para PGN..." 15 \
   {Grava o jogo corrente em um arquivo PGN}
 menuText B ToolsExpCurrentHTML "Exporta para HTML..." 15 \
   {Grava o jogo corrente em um arquivo HTML}
-# ====== TODO To be translated ======
-menuText B ToolsExpCurrentHTMLJS "Export Game to HTML and JavaScript File..." 15 {Write current game to a HTML and JavaScript file}  
+menuText B ToolsExpCurrentHTMLJS "Exportar jogo para arquivo HTML e JavaScript..." 15 {Escreve o jogo corrente em um arquivo HTML e JavaScript}  
 menuText B ToolsExpCurrentLaTeX "Exporta para LaTex..." 15 \
   {Grava o jogo corrente em um arquivo LaTex}
 menuText B ToolsExpFilter "Exporta jogos filtrados" 1 \
@@ -221,67 +199,42 @@ menuText B ToolsExpFilterPGN "Exporta jogos filtrados - PGN..." 17 \
   {Exporta todos os jogos filtrados para um arquivo PGN}
 menuText B ToolsExpFilterHTML "Exporta jogos filtrados - HTML..." 17 \
   {Exporta todos os jogos filtrados para um arquivo HTML}
-# ====== TODO To be translated ======
-menuText B ToolsExpFilterHTMLJS "Export Filter to HTML and JavaScript File..." 17 {Write all filtered games to a HTML and JavaScript file}  
+menuText B ToolsExpFilterHTMLJS "Exporta filtro para arquivo HTML e JavaScript..." 17 {Escreve todos os jogos filtrados para um arquivo HTML e JavaScript}  
 menuText B ToolsExpFilterLaTeX "Exporta jogos filtrados - LaTex..." 17 \
   {Exporta todos os jogos filtrados para um arquivo LaTex}
 menuText B ToolsImportOne "Importa PGN texto..." 0 \
   {Importa jogo de um texto em PGN}
 menuText B ToolsImportFile "Importa arquivo de jogos PGN..." 7 \
   {Importa jogos de um arquivo PGN}
-# ====== TODO To be translated ======
-menuText B ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
-# ====== TODO To be translated ======
-menuText B ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
-# ====== TODO To be translated ======
-menuText B ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
-# ====== TODO To be translated ======
-menuText B Play "Play" 0
-# ====== TODO To be translated ======
-menuText B CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
-# ====== TODO To be translated ======
-menuText B CCConfigure "Configure..." 0 {Configure external tools and general setup}
-# ====== TODO To be translated ======
-menuText B CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
-# ====== TODO To be translated ======
-menuText B CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
-# ====== TODO To be translated ======
-menuText B CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
-# ====== TODO To be translated ======
-menuText B CCInbox "Process Inobx" 0 {Process all files in scids Inbox}
-# ====== TODO To be translated ======
-menuText B CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
-# ====== TODO To be translated ======
-menuText B CCResign "Resign" 0 {Resign (not via eMail)}
-# ====== TODO To be translated ======
-menuText B CCClaimDraw "Claim Draw" 0 {Send move and claim a draw (not via eMail)}
-# ====== TODO To be translated ======
-menuText B CCOfferDraw "Offer Draw" 0 {Send move and offer a draw (not via eMail)}
-# ====== TODO To be translated ======
-menuText B CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
-# ====== TODO To be translated ======
-menuText B CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
-# ====== TODO To be translated ======
-menuText B CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
-# ====== TODO To be translated ======
-menuText B CCGamePage "Game Page..." 0 {Call up the game via the web browser}
-# ====== TODO To be translated ======
-menuText B CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText B ToolsStartEngine1 "Iniciar engine 1" 0  {Inicia engine 1}
+menuText B ToolsStartEngine2 "Iniciar engine 2" 0  {Inicia engine 2}
+menuText B Play "Jogar" 0
+menuText B CorrespondenceChess "Xadrez por correspondência" 0 {Funções para jogar xadrez por correspondência usando eMail e Xfcc}
+menuText B CCConfigure "Configurar..." 0 {Configura ferramentas externas e configuração geral}
+menuText B CCOpenDB "Abrir base..." 0 {Abre a base de correspondência padrão}
+menuText B CCRetrieve "Recupera jogos" 0 {Recupera jogos via (Xfcc-)}
+menuText B CCInbox "Processa caixa de entrada" 0 {Processa todos os arquivos na caixa de entrada do Scid}
+menuText B CCSend "Enviar movimento" 0 {Envia seu movimento via eMail ou (Xfcc-)}
+menuText B CCResign "Resignar" 0 {Aceita a derrota (não via eMail)}
+menuText B CCClaimDraw "Declarar empate" 0 {Envia o movimento e declara empate (não via eMail)}
+menuText B CCOfferDraw "Oferecer empate" 0 {Envia o movimento e oferece empate (não via eMail)}
+menuText B CCAcceptDraw "Aceitar empate" 0 {Aceita uma oferta de empate (não via eMail)}
+menuText B CCNewMailGame "Novo jogo por eMail..." 0 {Inicia um novo jogo por eMail}
+menuText B CCMailMove "Enviar movimento..." 0 {Envia movimento ao oponente via eMaail}
+menuText B CCGamePage "Página do jogo..." 0 {Chama o jogo através do browser}
+menuText B CCEditCopy "Copiar Lista de Jogos para a base de cópia" 0 {Copia os jogos no formato CSV para a base de cópia}
 
 # Options menu:
 menuText B Options "Opcoes" 0
-menuText B OptionsBoard "Chessboard" 0 {Chess board appearance options} ;# ***
+menuText B OptionsBoard "Tabuleiro" 0 {Opções de aparência do tabuleiro} ;# ***
 menuText B OptionsBoardSize "Tamanho do Tabuleiro" 0 {Muda o tamanho do tabuleiro}
 menuText B OptionsBoardPieces "Estilo de Pecas no Tabuleiro" 10 \
   {Muda o estilo das pecas mostradas no tabuleiro}
 menuText B OptionsBoardColors "Cores..." 0 {Muda as cores do tabuleiro}
-# ====== TODO To be translated ======
-menuText B OptionsBoardGraphics "Squares..." 0 {Select textures for squares}
-# ====== TODO To be translated ======
-translate B OptionsBGW {Select texture for squares}
-# ====== TODO To be translated ======
-translate B OptionsBoardGraphicsText {Select graphic files for white and black squares:}
-menuText B OptionsBoardNames "My Player Names..." 0 {Edit my player names} ;# ***
+menuText B OptionsBoardGraphics "Casas..." 0 {Seleciona texturas para as casas}
+translate B OptionsBGW {Seleciona texturas para as casas}
+translate B OptionsBoardGraphicsText {Seleciona arquivos gráficos para as casas brancas e pretas:}
+menuText B OptionsBoardNames "Meus nomes de jogadores..." 0 {Edita meus nomes de jogadores} ;# ***
 menuText B OptionsExport "Exportacao" 0 {Muda as opcoes de exportacao de texto}
 menuText B OptionsFonts "Fontes" 0 {Muda os fontes}
 menuText B OptionsFontsRegular "Normal" 0 {Fonte Normal}
@@ -290,56 +243,42 @@ menuText B OptionsFontsSmall "Pequeno" 0 {Fonte pequeno}
 menuText B OptionsFontsFixed "Fixo" 0 {Fonte de largura fixa}
 menuText B OptionsGInfo "Informacoes do Jogo" 0 {Opcoes de informacao do jogo}
 menuText B OptionsLanguage "Linguagem" 0 {Menu de selecao de linguagem}
-# ====== TODO To be translated ======
-menuText B OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
-# ====== TODO To be translated ======
-menuText B OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
-# ====== TODO To be translated ======
-menuText B OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
-# ====== TODO To be translated ======
-menuText B OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
-# ====== TODO To be translated ======
-menuText B OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+menuText B OptionsMovesTranslatePieces "Traduzir Peças" 0 {Traduz a primeira letra do nome das peças}
+menuText B OptionsMovesHighlightLastMove "Destacar último movimento" 0 {Destaca o último movimento}
+menuText B OptionsMovesHighlightLastMoveDisplay "Mostrar" 0 {Mostra o destaque do último movimento}
+menuText B OptionsMovesHighlightLastMoveWidth "Espessura" 0 {Espessura da linha}
+menuText B OptionsMovesHighlightLastMoveColor "Cor" 0 {Cor da linha}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
 menuText B OptionsMovesAsk "Perguntar antes de substituir movimentos" 0 \
   {Pergunta antes de substituir movimentos existentes}
-menuText B OptionsMovesAnimate "Animation time" 1 \
-  {Set the amount of time used to animate moves} ;# ***
+menuText B OptionsMovesAnimate "Tempo de animação" 1 \
+  {Define a quantidade de tempo usada para animar os movimentos} ;# ***
 menuText B OptionsMovesDelay "Tempo de atraso p/ Jogo automatico..." 1 \
   {Define o tempo de espera antes de entrar no modo de jogo automatico}
 menuText B OptionsMovesCoord "Entrada de movimentos por coordenadas" 0 \
   {Aceita o estilo de entrada de movimentos por coordenadas ("g1f3")}
 menuText B OptionsMovesSuggest "Mostrar movimentos sugeridos" 0 \
   {Liga/desliga sugestao de movimentos}
-# ====== TODO To be translated ======
-menuText B OptionsShowVarPopup "Show variations window" 0 {Turn on/off the display of a variations window}  
-# ====== TODO To be translated ======
-menuText B OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
+menuText B OptionsShowVarPopup "Mostrar janela de variantes" 0 {Liga/Desliga a janela de variantes}  
+menuText B OptionsMovesSpace "Adicionar espaços após o número do movimento" 0 {Adiciona espaços após o número do movimento}  
 menuText B OptionsMovesKey "Auto completar" 0 \
   {Liga/desliga auto completar a partir do que for digitado}
-# ====== TODO To be translated ======
-menuText B OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+menuText B OptionsMovesShowVarArrows "Mostrar Setas para variantes" 0 {Liga/Desliga as setas que mostram movimentos em variantes}
 menuText B OptionsNumbers "Formato de Numeros" 0 {Selecione o formato usado para numeros}
 menuText B OptionsStartup "Iniciar" 1 \
   {Seleciona janelas que serao abertas ao iniciar o programa}
-# ====== TODO To be translated ======
-menuText B OptionsTheme "Theme" 0 {Change look of interface}
+menuText B OptionsTheme "Tema" 0 {Muda a aparência da interface}
 menuText B OptionsWindows "Janelas" 0 {Opcoes para Janelas}
 menuText B OptionsWindowsIconify "Auto-iconizar" 5 \
   {Iconizar todas as janelas quando a janela principal eh iconizada}
 menuText B OptionsWindowsRaise "Manter no topo" 0 \
   {Mantem no topo certas janelas (ex. barras de progresso) sempre que sao obscurecidas por outras}
-menuText B OptionsSounds "Sounds..." 2 {Configure move announcement sounds} ;# ***
-# ====== TODO To be translated ======
-menuText B OptionsWindowsDock "Dock windows" 0 {Dock windows}
-# ====== TODO To be translated ======
-menuText B OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
-# ====== TODO To be translated ======
-menuText B OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
-# ====== TODO To be translated ======
-menuText B OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
-# ====== TODO To be translated ======
-menuText B OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
+menuText B OptionsSounds "Sons..." 2 {Configura sons para anunciar os movimentos} ;# ***
+menuText B OptionsWindowsDock "Estacionar janelas" 0 {Estaciona as janelas}
+menuText B OptionsWindowsSaveLayout "Salvar layout" 0 {Salva o layout das janelas}
+menuText B OptionsWindowsRestoreLayout "Restaurar layout" 0 {Restaura layout}
+menuText B OptionsWindowsShowGameInfo "Mostrar Informações do Jogo" 0 {Mostra informações do jogo}
+menuText B OptionsWindowsAutoLoadLayout "Carregar primeiro layout na entrada" 0 {Carrega automaticamente o primeiro layout ao entrar na aplicação}
 menuText B OptionsToolbar "Barra de Ferramentas da Janela Principal" 12 \
   {Exibe/Oculta a barra de ferramentas da janela principal}
 menuText B OptionsECO "Carregar arquivo ECO..." 7 {Carrega o arquivo com a classificacao ECO}
@@ -347,12 +286,10 @@ menuText B OptionsSpell "Carregar arquivo de verificacao ortografica..." 6 \
   {Carrega o arquivo de verificacao ortografica do Scid}
 menuText B OptionsTable "Diretorio de tabelas de base..." 0 \
   {Selecione um arquivo de tabela de base; todas as tabelas nesse diretorio serao usadas}
-menuText B OptionsRecent "Recent files..." 0 \
-  {Change the number of recent files displayed in the File menu} ;# ***
-# ====== TODO To be translated ======
-menuText B OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
-# ====== TODO To be translated ======
-menuText B OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
+menuText B OptionsRecent "Arquivos recentes..." 0 \
+  {Muda o número de arquivos recentes no menu Arquivo} ;# ***
+menuText B OptionsBooksDir "Diretório de Livros..." 0 {Define o diretório para os livros de aberturas}
+menuText B OptionsTacticsBasesDir "Diretório de bases..." 0 {Define o diretório para as bases de treinamento de táticas}
 menuText B OptionsSave "Salvar Configuracao" 0 \
   "Salva a configuracao no arquivo $::optionsFile"
 menuText B OptionsAutoSave "Salva Opcoes ao sair" 0 \
@@ -376,14 +313,13 @@ menuText B GInfoFEN "Mostra Diagrama FEN" 16
 menuText B GInfoMarks "Mostra setas e casas coloridas" 7
 menuText B GInfoWrap "Quebra de linhas longas" 0
 menuText B GInfoFullComment "Mostrar comentario completo" 8
-menuText B GInfoPhotos "Show Photos" 5 ;# ***
+menuText B GInfoPhotos "Mostrar Fotos" 5 ;# ***
 menuText B GInfoTBNothing "Tabelas de Base: nada" 12
 menuText B GInfoTBResult "Tabelas de Base: apenas resultado" 12
 menuText B GInfoTBAll "Tabelas de Base: resultado e melhores movimentos" 19
 menuText B GInfoDelete "Recuperar este jogo" 0
 menuText B GInfoMark "Desmarcar este jogo" 0
-# ====== TODO To be translated ======
-menuText B GInfoInformant "Configure informant values" 0
+menuText B GInfoInformant "Configurar valores do informante" 0
 
 # Main window buttons:
 helpMsg B .main.fbutton.button.start {Ir para o inicio do jogo  (tecla: Home)}
@@ -394,18 +330,17 @@ helpMsg B .main.fbutton.button.intoVar {Entrar na variante  (tecla de atalho: v)
 helpMsg B .main.fbutton.button.exitVar {Sair da variante  (tecla de atalho: z)}
 helpMsg B .main.fbutton.button.flip {Girar tabuleiro  (tecla de atalho: .)}
 helpMsg B .main.fbutton.button.coords {Liga/desliga coordenadas  (tecla de atalho: 0)}
-helpMsg B .main.fbutton.button.stm {Turn the side-to-move icon on or off} ;# ***
+helpMsg B .main.fbutton.button.stm {Liga/Desliga o ícone que indica o lado que tem o movimento} ;# ***
 helpMsg B .main.fbutton.button.autoplay {Jogo automatico  (tecla: Ctrl+Z)}
 
 # General buttons:
 translate B Back {Voltar}
-translate B Browse {Browse} ;# ***
+translate B Browse {Navegar} ;# ***
 translate B Cancel {Cancelar}
-# ====== TODO To be translated ======
-translate B Continue {Continue}
+translate B Continue {Continuar}
 translate B Clear {Limpar}
 translate B Close {Fechar}
-translate B Contents {Contents} ;# ***
+translate B Contents {Conteúdo} ;# ***
 translate B Defaults {Defaults}
 translate B Delete {Deletar}
 translate B Graph {Grafico}
@@ -415,8 +350,7 @@ translate B Index {Indice}
 translate B LoadGame {Carrega jogo}
 translate B BrowseGame {Listar jogo}
 translate B MergeGame {Fazer merge do jogo}
-# ====== TODO To be translated ======
-translate B MergeGames {Merge Games}
+translate B MergeGames {Merge dos jogos}
 translate B Preview {Visualizacao}
 translate B Revert {Reverter}
 translate B Save {Salvar}
@@ -425,7 +359,7 @@ translate B Stop {Parar}
 translate B Store {Guardar}
 translate B Update {Atualizar}
 translate B ChangeOrient {Muda orientacao da janela}
-translate B ShowIcons {Show Icons} ;# ***
+translate B ShowIcons {Mostrar Ícones} ;# ***
 translate B None {Nenhum}
 translate B First {Primeiro}
 translate B Current {Atual}
@@ -451,14 +385,14 @@ translate B Black {Preto}
 translate B Player {Jogador}
 translate B Rating {Rating}
 translate B RatingDiff {Diferenca de Rating (Brancas - Pretas)}
-translate B AverageRating {Average Rating} ;# ***
+translate B AverageRating {Rating Médio} ;# ***
 translate B Event {Evento}
 translate B Site {Lugar}
 translate B Country {Pais}
 translate B IgnoreColors {Ignorar cores}
 translate B Date {Data}
 translate B EventDate {Evento data}
-translate B Decade {Decade} ;# ***
+translate B Decade {Década} ;# ***
 translate B Year {Ano}
 translate B Month {Mes}
 translate B Months {Janeiro Fevereiro Marco Abril Maio Junho Julho Agosto Setembro Outubro Novembro Dezembro}
@@ -484,9 +418,9 @@ translate B Total {Total}
 translate B readonly {apenas leitura}
 
 # Standard error messages:
-translate B ErrNotOpen {This is not an open database.} ;# ***
-translate B ErrReadOnly {This database is read-only; it cannot be altered.} ;# ***
-translate B ErrSearchInterrupted {Search was interrupted; results are incomplete.} ;# ***
+translate B ErrNotOpen {Esta base não está aberta.} ;# ***
+translate B ErrReadOnly {Esta base é apenas para leitura; não pode ser alterada.} ;# ***
+translate B ErrSearchInterrupted {Pesquisa interrompida; os resultados estão incompletos.} ;# ***
 
 # Game information:
 translate B twin {duplicata}
@@ -508,7 +442,7 @@ translate B PInfoMostWhite {Aberturas mais comuns com as Brancas}
 translate B PInfoMostBlack {Aberturas mais comuns com as Pretas}
 translate B PInfoRating {Historico de Rating}
 translate B PInfoBio {Biografia}
-translate B PInfoEditRatings {Edit Ratings} ;# ***
+translate B PInfoEditRatings {Editar Ratings} ;# ***
 
 # Tablebase information:
 translate B Draw {Empate}
@@ -523,10 +457,10 @@ translate B allOthersLose {qualquer outro perde}
 translate B matesIn {mate em}
 translate B hasCheckmated {recebeu xeque-mate}
 translate B longest {mais longo}
-translate B WinningMoves {Winning moves} ;# ***
-translate B DrawingMoves {Drawing moves} ;# ***
-translate B LosingMoves {Losing moves} ;# ***
-translate B UnknownMoves {Unknown-result moves} ;# ***
+translate B WinningMoves {Movimentos vencedores} ;# ***
+translate B DrawingMoves {Movimentos para empate} ;# ***
+translate B LosingMoves {Movimentos perdedores} ;# ***
+translate B UnknownMoves {Movimentos com resultado desconhecido} ;# ***
 
 # Tip of the day:
 translate B Tip {Dica}
@@ -534,61 +468,42 @@ translate B TipAtStartup {Dica ao iniciar}
 
 # Tree window menus: ***
 menuText B TreeFile "Arquivo" 0
-# ====== TODO To be translated ======
-menuText B TreeFileFillWithBase "Fill Cache with base" 0 {Fill the cache file with all games in current base}
-# ====== TODO To be translated ======
-menuText B TreeFileFillWithGame "Fill Cache with game" 0 {Fill the cache file with current game in current base}
-# ====== TODO To be translated ======
-menuText B TreeFileSetCacheSize "Cache size" 0 {Set the cache size}
-# ====== TODO To be translated ======
-menuText B TreeFileCacheInfo "Cache info" 0 {Get info on cache usage}
+menuText B TreeFileFillWithBase "Carregar Cache com base" 0 {Carrega todos os jogos da base corrente no Cache}
+menuText B TreeFileFillWithGame "Carregar Cache com jogo" 0 {Carrega o jogo corrente da base corrente no Cache}
+menuText B TreeFileSetCacheSize "Tamanho do Cache" 0 {Define o tamanho do cache}
+menuText B TreeFileCacheInfo "Informação do Cache" 0 {Informações sobre a utilização do cache}
 menuText B TreeFileSave "Salvar arquivo de cache" 0 \
   {Salvar o arquivo de cache da arvore (.stc)}
 menuText B TreeFileFill "Criar arquivo de cache" 0 \
   {Enche o arquivo de cache com as posicoes comuns na abertura}
-menuText B TreeFileBest "Best games list" 0 \
+menuText B TreeFileBest "Lista dos melhores jogos" 0 \
   {Mostra a lista dos melhores jogos da arvore}
 menuText B TreeFileGraph "Janela de Grafico" 0 \
   {Mostra o grafico para este galho da arvore}
 menuText B TreeFileCopy "Copiar texto da arvore para a area de transferencia" \
   1 {Copiar texto da arvore para a area de transferencia}
 menuText B TreeFileClose "Fechar janela de arvore" 0 {Fechar janela de arvore}
-# ====== TODO To be translated ======
-menuText B TreeMask "Mask" 0
-# ====== TODO To be translated ======
-menuText B TreeMaskNew "New" 0 {New mask}
-# ====== TODO To be translated ======
-menuText B TreeMaskOpen "Open" 0 {Open mask}
-# ====== TODO To be translated ======
-menuText B TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
-# ====== TODO To be translated ======
-menuText B TreeMaskSave "Save" 0 {Save mask}
-# ====== TODO To be translated ======
-menuText B TreeMaskClose "Close" 0 {Close mask}
-# ====== TODO To be translated ======
-menuText B TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
-# ====== TODO To be translated ======
-menuText B TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
-# ====== TODO To be translated ======
-menuText B TreeMaskInfo "Info" 0 {Show statistics for current mask}
-# ====== TODO To be translated ======
-menuText B TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
-# ====== TODO To be translated ======
-menuText B TreeMaskSearch "Search" 0 {Search in current mask}
+menuText B TreeMask "Máscara" 0
+menuText B TreeMaskNew "Nova" 0 {Nova máscara}
+menuText B TreeMaskOpen "Abrir" 0 {Abrir máscara}
+menuText B TreeMaskOpenRecent "Abrir recente" 0 {Abre máscara recente}
+menuText B TreeMaskSave "Salvar" 0 {Salva máscara}
+menuText B TreeMaskClose "Fechar" 0 {Fecha máscara}
+menuText B TreeMaskFillWithGame "Preencher com jogo" 0 {Preenche máscara com jogo}
+menuText B TreeMaskFillWithBase "Preencher com base" 0 {Preenche a máscara com todos os jogos da base}
+menuText B TreeMaskInfo "Info" 0 {Mostrar estatisticas para a máscara corrente}
+menuText B TreeMaskDisplay "Mostrar mapa da máscara" 0 {Mostra os dados da máscara em forma de árvore}
+menuText B TreeMaskSearch "Pesquisar" 0 {Pesquisa na máscara corrente}
 menuText B TreeSort "Ordenar" 0
 menuText B TreeSortAlpha "Alfabetica" 0
 menuText B TreeSortECO "ECO" 0
 menuText B TreeSortFreq "Frequencia" 0
 menuText B TreeSortScore "Pontuacao" 0
 menuText B TreeOpt "Opcoes" 0
-# ====== TODO To be translated ======
-menuText B TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
-# ====== TODO To be translated ======
-menuText B TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
-# ====== TODO To be translated ======
-menuText B TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
-# ====== TODO To be translated ======
-menuText B TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
+menuText B TreeOptSlowmode "Modo Lento" 0 {Modo lento para atualizações (mais acurado)}
+menuText B TreeOptFastmode "Modo Rápido" 0 {Modo rápido para atualizações (sem transsposições de movimentos)}
+menuText B TreeOptFastAndSlowmode "Modo rápido e lento" 0 {Modo rápido e lento para atualizações}
+menuText B TreeOptStartStop "Atualização automática" 0 {Liga/Desliga a atualização automática da janela de árvore}
 menuText B TreeOptLock "Lock" 0 {Trava/Destrava a arvore para o banco corrente}
 menuText B TreeOptTraining "Treinamento" 0 \
   {Liga/Desliga o modo treinamento na arvore}
@@ -606,68 +521,38 @@ translate B TreeBestGames {Melhores jogos da arvore}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate B TreeTitleRow \
-  {    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws} ;# ***
+  {    Mov.   ECO       Frequencia   Score  AvElo Perf AvYear %Empat} ;# ***
 translate B TreeTotal {TOTAL}
-# ====== TODO To be translated ======
-translate B DoYouWantToSaveFirst {Do you want to save first}
-# ====== TODO To be translated ======
-translate B AddToMask {Add to Mask}
-# ====== TODO To be translated ======
-translate B RemoveFromMask {Remove from Mask}
-# ====== TODO To be translated ======
-translate B AddThisMoveToMask {Add this move to Mask}
-# ====== TODO To be translated ======
-translate B SearchMask {Search in Mask}
-# ====== TODO To be translated ======
-translate B DisplayMask {Display Mask}
-# ====== TODO To be translated ======
-translate B Nag {Nag code}
-# ====== TODO To be translated ======
-translate B Marker {Marker}
-# ====== TODO To be translated ======
-translate B Include {Include}
-# ====== TODO To be translated ======
-translate B Exclude {Exclude}
-# ====== TODO To be translated ======
-translate B MainLine {Main line}
-# ====== TODO To be translated ======
-translate B Bookmark {Bookmark}
-# ====== TODO To be translated ======
-translate B NewLine {New line}
-# ====== TODO To be translated ======
-translate B ToBeVerified {To be verified}
-# ====== TODO To be translated ======
-translate B ToTrain {To train}
-# ====== TODO To be translated ======
-translate B Dubious {Dubious}
-# ====== TODO To be translated ======
-translate B ToRemove {To remove}
-# ====== TODO To be translated ======
-translate B NoMarker {No marker}
-# ====== TODO To be translated ======
-translate B ColorMarker {Color}
-# ====== TODO To be translated ======
-translate B WhiteMark {White}
-# ====== TODO To be translated ======
-translate B GreenMark {Green}
-# ====== TODO To be translated ======
-translate B YellowMark {Yellow}
-# ====== TODO To be translated ======
-translate B BlueMark {Blue}
-# ====== TODO To be translated ======
-translate B RedMark {Red}
-# ====== TODO To be translated ======
-translate B CommentMove {Comment move}
-# ====== TODO To be translated ======
-translate B CommentPosition {Comment position}
-# ====== TODO To be translated ======
-translate B AddMoveToMaskFirst {Add move to mask first}
-# ====== TODO To be translated ======
-translate B OpenAMaskFileFirst {Open a mask file first}
-# ====== TODO To be translated ======
-translate B Positions {Positions}
-# ====== TODO To be translated ======
-translate B Moves {Moves}
+translate B DoYouWantToSaveFirst {Quer salvar primeiro?}
+translate B AddToMask {Adicionar à máscara}
+translate B RemoveFromMask {Remover da máscara}
+translate B AddThisMoveToMask {Adicionar este movimento à máscara}
+translate B SearchMask {Pesquisar na máscara}
+translate B DisplayMask {Mostrar máscara}
+translate B Nag {Código Nag}
+translate B Marker {Marcador}
+translate B Include {Incluir}
+translate B Exclude {Excluir}
+translate B MainLine {Linha Principal}
+translate B Bookmark {Marcador}
+translate B NewLine {Nova Linha}
+translate B ToBeVerified {Verificar}
+translate B ToTrain {Para treinar}
+translate B Dubious {Duvidoso}
+translate B ToRemove {Para remover}
+translate B NoMarker {Sem marcador}
+translate B ColorMarker {Cor}
+translate B WhiteMark {Branca}
+translate B GreenMark {Verde}
+translate B YellowMark {Amarela}
+translate B BlueMark {Azul}
+translate B RedMark {Vermelha}
+translate B CommentMove {Comentar movimento}
+translate B CommentPosition {Comentar posição}
+translate B AddMoveToMaskFirst {Adicionar movimento à máscara primeiro}
+translate B OpenAMaskFileFirst {Abrir uma máscara primeiro}
+translate B Positions {Posições}
+translate B Moves {Movimentos}
 
 # Finder window:
 menuText B FinderFile "Arquivo" 0
@@ -693,16 +578,11 @@ translate B FinderDir {Diretorio}
 translate B FinderDirs {Diretorios}
 translate B FinderFiles {Arquivos}
 translate B FinderUpDir {Acima}
-# ====== TODO To be translated ======
-translate B FinderCtxOpen {Open}
-# ====== TODO To be translated ======
+translate B FinderCtxOpen {Abrir}
 translate B FinderCtxBackup {Backup}
-# ====== TODO To be translated ======
-translate B FinderCtxCopy {Copy}
-# ====== TODO To be translated ======
-translate B FinderCtxMove {Move}
-# ====== TODO To be translated ======
-translate B FinderCtxDelete {Delete}
+translate B FinderCtxCopy {Copiar}
+translate B FinderCtxMove {Mover}
+translate B FinderCtxDelete {Apagar}
 
 # Player finder:
 menuText B PListFile "Arquivo" 0
@@ -712,8 +592,8 @@ menuText B PListSort "Ordenar" 0
 menuText B PListSortName "Name" 0 ;# ***
 menuText B PListSortElo "Elo" 0
 menuText B PListSortGames "Jogos" 0
-menuText B PListSortOldest "Oldest" 0 ;# ***
-menuText B PListSortNewest "Newest" 0 ;# ***
+menuText B PListSortOldest "Mais antigo" 0 ;# ***
+menuText B PListSortNewest "Mais novo" 0 ;# ***
 
 # Tournament finder:
 menuText B TmtFile "Arquivo" 0
@@ -741,77 +621,49 @@ menuText B GraphOptionsWhite "Branco" 0
 menuText B GraphOptionsBlack "Preto" 0
 menuText B GraphOptionsBoth "Ambos" 0
 menuText B GraphOptionsPInfo "Informacao do Jogador" 0
-translate B GraphFilterTitle "Filter graph: frequency per 1000 games" ;# ***
-# ====== TODO To be translated ======
-translate B GraphAbsFilterTitle "Filter Graph: frequency of the games"
-# ====== TODO To be translated ======
-translate B ConfigureFilter {Configure X-Axes for Year, Rating and Moves}
-# ====== TODO To be translated ======
-translate B FilterEstimate "Estimate"
-# ====== TODO To be translated ======
-translate B TitleFilterGraph "Scid: Filter Graph"
+translate B GraphFilterTitle "Gráfico de filtro: frequencia por 1000 jogos" ;# ***
+translate B GraphAbsFilterTitle "Gráfico de filtro: frequencia dos jogos"
+translate B ConfigureFilter {Configurar Eixos X para Ano, Rating e Movimentos}
+translate B FilterEstimate "Estimar"
+translate B TitleFilterGraph "Scid: Gráfico de Filtro"
 
 # Analysis window:
 translate B AddVariation {Adicionar variante}
-# ====== TODO To be translated ======
-translate B AddAllVariations {Add All Variations}
+translate B AddAllVariations {Adicionar todas as Variantes}
 translate B AddMove {Adicionar movimento}
 translate B Annotate {Anotar}
-# ====== TODO To be translated ======
-translate B ShowAnalysisBoard {Show analysis board}
-# ====== TODO To be translated ======
-translate B ShowInfo {Show engine info}
-# ====== TODO To be translated ======
-translate B FinishGame {Finish game}
-# ====== TODO To be translated ======
-translate B StopEngine {Stop engine}
-# ====== TODO To be translated ======
-translate B StartEngine {Start engine}
-# ====== TODO To be translated ======
-translate B LockEngine {Lock engine to current position}
+translate B ShowAnalysisBoard {Mostrar tabuleiro de análise}
+translate B ShowInfo {Mostrar informações do engine}
+translate B FinishGame {Encerrar jogo}
+translate B StopEngine {Parar engine}
+translate B StartEngine {Iniciar engine}
+translate B LockEngine {Travar engine na posição corrente}
 translate B AnalysisCommand {Comando de Analise}
 translate B PreviousChoices {Escolhas Anteriores}
 translate B AnnotateTime {Define o tempo entre movimentos em segundos}
 translate B AnnotateWhich {Adiciona variante}
-translate B AnnotateAll {Para movimentos de ambos os lados}
-# ====== TODO To be translated ======
-translate B AnnotateAllMoves {Annotate all moves}
+translate B AnnotateAll {Parar movimentos de ambos os lados}
+translate B AnnotateAllMoves {Anotar todos os movimentos}
 translate B AnnotateWhite {Apenas para movimentos das Brancas}
 translate B AnnotateBlack {Apenas para movimentos das Pretas}
 translate B AnnotateNotBest {Quando o movimento do jogo nao for o melhor movimento}
-# ====== TODO To be translated ======
-translate B AnnotateBlundersOnly {When game move is an obvious blunder}
-# ====== TODO To be translated ======
-translate B AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
-# ====== TODO To be translated ======
-translate B BlundersThreshold {Threshold}
-translate B LowPriority {Low CPU priority} ;# ***
-# ====== TODO To be translated ======
-translate B ClickHereToSeeMoves {Click here to see moves}
-# ====== TODO To be translated ======
-translate B ConfigureInformant {Configure Informant}
-# ====== TODO To be translated ======
-translate B Informant!? {Interesting move}
-# ====== TODO To be translated ======
-translate B Informant? {Poor move}
-# ====== TODO To be translated ======
-translate B Informant?? {Blunder}
-# ====== TODO To be translated ======
-translate B Informant?! {Dubious move}
-# ====== TODO To be translated ======
-translate B Informant+= {White has a slight advantage}
-# ====== TODO To be translated ======
-translate B Informant+/- {White has a moderate advantage}
-# ====== TODO To be translated ======
-translate B Informant+- {White has a decisive advantage}
-# ====== TODO To be translated ======
-translate B Informant++- {The game is considered won}
-# ====== TODO To be translated ======
-translate B Book {Book}
-# ====== TODO To be translated ======
-translate B OtherBookMoves {Opponent's book}
-# ====== TODO To be translated ======
-translate B OtherBookMovesTooltip {Moves to which the opponent has a reply}
+translate B AnnotateBlundersOnly {Quando o mivimento for um erro crasso}
+translate B AnnotateBlundersOnlyScoreChange {As análises indicam um erro crasso, com mudança de score de/para: }
+translate B BlundersThreshold {Limite}
+translate B LowPriority {Baixa prioridade da CPU} ;# ***
+translate B ClickHereToSeeMoves {Clique aqui para ver os movimentos}
+translate B ConfigureInformant {Configurar Informante}
+translate B Informant!? {Movimento interessante}
+translate B Informant? {Movimento pobre}
+translate B Informant?? {Erro crasso}
+translate B Informant?! {Movimento duvidoso}
+translate B Informant+= {Branca tem alguma vantagem}
+translate B Informant+/- {Branca tem vantagem moderada}
+translate B Informant+- {Branca tem vantagem decisiva}
+translate B Informant++- {O jogo é considerado como ganho}
+translate B Book {Livro}
+translate B OtherBookMoves {Livro do oponente}
+translate B OtherBookMovesTooltip {Movimentos para os quais o oponente tem resposta}
 
 # Analysis Engine open dialog:
 translate B EngineList {Lista de Programas de Analise}
@@ -823,7 +675,7 @@ translate B EngineElo {Elo}
 translate B EngineTime {Data}
 translate B EngineNew {Novo}
 translate B EngineEdit {Editar}
-translate B EngineRequired {Fields in bold are required; others are optional}
+translate B EngineRequired {Campos em negrito são obrigatórios; os demais são opcionais}
 
 # Stats window menus:
 menuText B StatsFile "Arquivo" 0
@@ -833,7 +685,7 @@ menuText B StatsOpt "Opcoes" 0
 
 # PGN window menus:
 menuText B PgnFile "Arquivo" 0
-menuText B PgnFileCopy "Copy Game to Clipboard" 0 ;# ***
+menuText B PgnFileCopy "Copiar o jogo para a área de transferência" 0 ;# ***
 menuText B PgnFilePrint "Imprimir para arquivo..." 0
 menuText B PgnFileClose "Fechar janela PGN" 0
 menuText B PgnOpt "Monitor" 0
@@ -844,24 +696,21 @@ menuText B PgnOptIndentC "Identar comentarios" 0
 menuText B PgnOptIndentV "Identar variantes" 7
 menuText B PgnOptColumn "Estilo Coluna (um movimento por linha)" 0
 menuText B PgnOptSpace "Espaco apos o numero do movimento" 0
-menuText B PgnOptStripMarks "Strip out colored square/arrow codes" 1 ;# ***
-menuText B PgnOptBoldMainLine "Use Bold Text for Main Line Moves" 4 ;# ***
+menuText B PgnOptStripMarks "Remover os códigos coloridos das casas/setas" 1 ;# ***
+menuText B PgnOptBoldMainLine "Use negrito para movimentos da linha principal" 4 ;# ***
 menuText B PgnColor "Cores" 0
 menuText B PgnColorHeader "Cabecalho..." 0
 menuText B PgnColorAnno "Anotacoes..." 0
 menuText B PgnColorComments "Comentarios..." 0
 menuText B PgnColorVars "Variantes..." 0
 menuText B PgnColorBackground "Cor de fundo..." 0
-# ====== TODO To be translated ======
-menuText B PgnColorMain "Main line..." 0
-# ====== TODO To be translated ======
-menuText B PgnColorCurrent "Current move background..." 1
-# ====== TODO To be translated ======
-menuText B PgnColorNextMove "Next move background..." 0
+menuText B PgnColorMain "Linha principal..." 0
+menuText B PgnColorCurrent "Cor de fundo do movimento atual..." 1
+menuText B PgnColorNextMove "Cor de fundo do próximo movimento..." 0
 menuText B PgnHelp "Ajuda" 0
 menuText B PgnHelpPgn "Ajuda PGN" 0
 menuText B PgnHelpIndex "Indice" 0
-translate B PgnWindowTitle {Game Notation - game %u} ;# ***
+translate B PgnWindowTitle {Notação do Jogo - jogo %u} ;# ***
 
 # Crosstable window menus:
 menuText B CrosstabFile "Arquivo" 0
@@ -875,7 +724,7 @@ menuText B CrosstabEditSite "Lugar" 0
 menuText B CrosstabEditDate "Data" 0
 menuText B CrosstabOpt "Monitor" 0
 menuText B CrosstabOptAll "Todos contra todos" 0
-menuText B CrosstabOptSwiss "Swiss" 0
+menuText B CrosstabOptSwiss "Suiço" 0
 menuText B CrosstabOptKnockout "Knockout" 0
 menuText B CrosstabOptAuto "Automatico" 0
 menuText B CrosstabOptAges "Idade em anos" 0
@@ -883,9 +732,9 @@ menuText B CrosstabOptNats "Nacionalidades" 0
 menuText B CrosstabOptRatings "Ratings" 0
 menuText B CrosstabOptTitles "Titulos" 0
 menuText B CrosstabOptBreaks "Scores de desempate" 0
-menuText B CrosstabOptDeleted "Include deleted games" 8 ;# ***
+menuText B CrosstabOptDeleted "Incluir jogos apagados" 8 ;# ***
 menuText B CrosstabOptColors "Cores (apenas para tabela Swiss)" 0
-menuText B CrosstabOptColumnNumbers "Numbered columns (All-play-all table only)" 2 ;# ***
+menuText B CrosstabOptColumnNumbers "Colunas numeradas (apenas tabelas Todos-contra-Todos)" 2 ;# ***
 menuText B CrosstabOptGroup "Pontuacao do Grupo" 0
 menuText B CrosstabSort "Ordenar" 0
 menuText B CrosstabSortName "Nome" 0
@@ -899,8 +748,8 @@ menuText B CrosstabHelpCross "Ajuda para tabela de cruzamentos" 0
 menuText B CrosstabHelpIndex "Indice da Ajuda" 0
 translate B SetFilter {Setar filtro}
 translate B AddToFilter {Adicionar ao filtro}
-translate B Swiss {Swiss}
-translate B Category {Category} ;# ***
+translate B Swiss {Suiço}
+translate B Category {Categoria} ;# ***
 
 # Opening report window menus:
 menuText B OprepFile "Arquivo" 0
@@ -909,10 +758,10 @@ menuText B OprepFileHtml "Imprimir para arquivo HTML..." 9
 menuText B OprepFileLaTeX "Imprimir para arquivo LaTex..." 9
 menuText B OprepFileOptions "Opcoes..." 0
 menuText B OprepFileClose "Fechar janela de relatorio" 0
-menuText B OprepFavorites "Favorites" 1 ;# ***
-menuText B OprepFavoritesAdd "Add Report..." 0 ;# ***
-menuText B OprepFavoritesEdit "Edit Report Favorites..." 0 ;# ***
-menuText B OprepFavoritesGenerate "Generate Reports..." 0 ;# ***
+menuText B OprepFavorites "Favoritos" 1 ;# ***
+menuText B OprepFavoritesAdd "Adicionar Relatório..." 0 ;# ***
+menuText B OprepFavoritesEdit "Editar Relatório de Favoritos..." 0 ;# ***
+menuText B OprepFavoritesGenerate "Gerar Relatórios..." 0 ;# ***
 menuText B OprepHelp "Ajuda" 0
 menuText B OprepHelpReport "Ajuda para Relatorio de abertura" 0
 menuText B OprepHelpIndex "Indice da Ajuda" 0
@@ -947,7 +796,7 @@ Voce realmente quer continuar e descartar as alteracoes que foram feitas?
 
 # Header search:
 translate B HeaderSearch {Busca por cabecalho}
-translate B EndSideToMove {Side to move at end of game} ;# ***
+translate B EndSideToMove {Lado que tem o mivimento ao final do jogo} ;# ***
 translate B GamesWithNoECO {Jogos sem ECO?}
 translate B GameLength {Tamanho do jogo}
 translate B FindGamesWith {Encontrar jogos com}
@@ -956,7 +805,7 @@ translate B Promotions {Promocoes}
 translate B Comments {Comentarios}
 translate B Variations {Variantes}
 translate B Annotations {Anotacoes}
-translate B DeleteFlag {Delete flag}
+translate B DeleteFlag {Apagar Flag}
 translate B WhiteOpFlag {Abertura Brancas}
 translate B BlackOpFlag {Abertura Pretas}
 translate B MiddlegameFlag {Meio-jogo}
@@ -988,7 +837,7 @@ translate B GlistLength {Tamanho}
 translate B GlistCountry {Pais}
 translate B GlistECO {ECO}
 translate B GlistOpening {Abertura}
-translate B GlistEndMaterial {End-Material}
+translate B GlistEndMaterial {Material-Final}
 translate B GlistDeleted {Apagado}
 translate B GlistFlags {Sinalizador}
 translate B GlistVars {Variantes}
@@ -1005,20 +854,13 @@ translate B GlistWidth {Largura}
 translate B GlistAlign {Alinhar}
 translate B GlistColor {Cor}
 translate B GlistSep {Separador}
-# ====== TODO To be translated ======
-translate B GlistRemoveThisGameFromFilter  {Remove this game from Filter}
-# ====== TODO To be translated ======
-translate B GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
-# ====== TODO To be translated ======
-translate B GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) from Filter}
-# ====== TODO To be translated ======
-translate B GlistDeleteGame {(Un)Delete this game} 
-# ====== TODO To be translated ======
-translate B GlistDeleteAllGames {Delete all games in filter} 
-# ====== TODO To be translated ======
-translate B GlistUndeleteAllGames {Undelete all games in filter} 
-# ====== TODO To be translated ======
-translate B GlistMergeGameInBase {Merge Game in other base} 
+translate B GlistRemoveThisGameFromFilter  {Remover este jogo do filtro}
+translate B GlistRemoveGameAndAboveFromFilter  {Remover jogo (e todos antes dele) do filtro}
+translate B GlistRemoveGameAndBelowFromFilter  {Remover jogo (e todos depois dele) do filtro}
+translate B GlistDeleteGame {Recuperar este jogo} 
+translate B GlistDeleteAllGames {Apagar todos os jogos no filtro} 
+translate B GlistUndeleteAllGames {Recuperar todos os jogos no filtro} 
+translate B GlistMergeGameInBase {Incorporar jogo em outra base} 
 
 # Maintenance window:
 translate B DatabaseName {Nome da base de dados:}
@@ -1028,10 +870,9 @@ translate B NumDeletedGames {Jogos deletados:}
 translate B NumFilterGames {Jogos no filtro:}
 translate B YearRange {Faixa de Anos:}
 translate B RatingRange {Faixa de Rating:}
-translate B Description {Description} ;# ***
+translate B Description {Descrição} ;# ***
 translate B Flag {Sinalizador}
-# ====== TODO To be translated ======
-translate B CustomFlags {Custom flags}
+translate B CustomFlags {Flags customizadas}
 translate B DeleteCurrent {Deletar jogo corrente}
 translate B DeleteFilter {Deletar jogos filtrados}
 translate B DeleteAll {Deletar todos os jogos}
@@ -1056,8 +897,8 @@ translate B CompactDatabase {Compactar base de dados}
 translate B SortDatabase {Ordenar base de dados}
 translate B AddEloRatings {Adicionar ratings}
 translate B AutoloadGame {Carregar autom. o jogo numero}
-translate B StripTags {Strip PGN tags} ;# ***
-translate B StripTag {Strip tag} ;# ***
+translate B StripTags {Remover tags PGN} ;# ***
+translate B StripTag {Remover tag} ;# ***
 translate B Cleaner {Limpador}
 translate B CleanerHelp {
 O Limpador do Scid executara todas as acoes de manutencao selecionadas da lista abaixo, no banco corrente.
@@ -1071,74 +912,53 @@ Esta operacao pode levar muito tempo para ser executada em uma grande base de da
 
 Voce esta certo de que quer iniciar as acoes de manutencao selecionadas?
 }
-# ====== TODO To be translated ======
-translate B TwinCheckUndelete {to flip; "u" undeletes both)}
-# ====== TODO To be translated ======
-translate B TwinCheckprevPair {Previous pair}
-# ====== TODO To be translated ======
-translate B TwinChecknextPair {Next pair}
-# ====== TODO To be translated ======
-translate B TwinChecker {Scid: Twin game checker}
-# ====== TODO To be translated ======
-translate B TwinCheckTournament {Games in tournament:}
-# ====== TODO To be translated ======
-translate B TwinCheckNoTwin {No twin  }
-# ====== TODO To be translated ======
-translate B TwinCheckNoTwinfound {No twin was detected for this game.\nTo show twins using this window, you must first use the "Delete twin games..." function. }
-# ====== TODO To be translated ======
-translate B TwinCheckTag {Share tags...}
-# ====== TODO To be translated ======
-translate B TwinCheckFound1 {Scid found $result twin games}
-# ====== TODO To be translated ======
-translate B TwinCheckFound2 { and set their delete flags}
-# ====== TODO To be translated ======
-translate B TwinCheckNoDelete {There are no games in this database to delete.}
-# ====== TODO To be translated ======
-translate B TwinCriteria1 { Your settings for finding twin games are potentially likely to\ncause non-twin games with similar moves to be marked as twins.}
-# ====== TODO To be translated ======
-translate B TwinCriteria2 {It is recommended that if you select "No" for "same moves", you should select "Yes" for the colors, event, site, round, year and month settings.\nDo you want to continue and delete twins anyway? }
-# ====== TODO To be translated ======
-translate B TwinCriteria3 {It is recommended that you specify "Yes" for at least two of the "same site", "same round" and "same year" settings.\nDo you want to continue and delete twins anyway?}
-# ====== TODO To be translated ======
-translate B TwinCriteriaConfirm {Scid: Confirm twin settings}
-# ====== TODO To be translated ======
-translate B TwinChangeTag "Change the following game tags:\n\n"
-# ====== TODO To be translated ======
-translate B AllocRatingDescription "This command will use the current spellcheck file to add Elo ratings to games in this database. Wherever a player has no currrent rating but his/her rating at the time of the game is listed in the spellcheck file, that rating will be added."
-# ====== TODO To be translated ======
-translate B RatingOverride "Overwrite existing non-zero ratings?"
-# ====== TODO To be translated ======
-translate B AddRatings "Add ratings to:"
-# ====== TODO To be translated ======
-translate B AddedRatings {Scid added $r Elo ratings in $g games.}
-# ====== TODO To be translated ======
-translate B NewSubmenu "New submenu"
+translate B TwinCheckUndelete {para virar; "u" recupera ambos)}
+translate B TwinCheckprevPair {Par anterior}
+translate B TwinChecknextPair {Próximo par}
+translate B TwinChecker {Scid: Verificador de duplicatas}
+translate B TwinCheckTournament {Jogos no torneio:}
+translate B TwinCheckNoTwin {Nenhuma duplicata  }
+translate B TwinCheckNoTwinfound {Nenhuma duplicata foi detectada para este jogo.\nPara mostrar duplicatas nesta janela, você deve usar primeiro a função "Apagar Duplicatas...". }
+translate B TwinCheckTag {Compartilhar tags...}
+translate B TwinCheckFound1 {Scid encontrou $result duplicatas}
+translate B TwinCheckFound2 { e definiu suas flags de exclusão}
+translate B TwinCheckNoDelete {Não há jogos para excluir nesta base.}
+translate B TwinCriteria1 { Suas configurações para encontrar duplicatas podem \nfazer com que não duplicatas com movimentos similares sejam marcadas como se fossem.}
+translate B TwinCriteria2 {É recomendado que, se você selecionar "Não" para "mesmos movimentos", você selecione "Sim" para as cores, evento, local, rodada, ano e mês.\nVocê quer continuar e excluir as duplicatas mesmo assim? }
+translate B TwinCriteria3 {É recomendado que você especifique "Sim" para pelo menos duas das configurações de "mesmo local", "mesma rodada" e "mesmo ano".\nVocê quer continuar e excluir as duplicatas mesmo assim?}
+translate B TwinCriteriaConfirm {Scid: Confirme as configurações de duplicatas}
+translate B TwinChangeTag "Alterar as seguintes tags:\n\n"
+translate B AllocRatingDescription "Este comando utilizará o arquivo corrente de verificação ortográfica para adicionar ratings Elo aos jogos nesta base. Sempre que um jogador não tiver um rating corrente, mas seu rating no momento do jogo estiver listado no arquivo de verificação, esse rating será adicionado."
+translate B RatingOverride "Sobrescrever ratings existentes diferentes de zero?"
+translate B AddRatings "Adicionar ratings a:"
+translate B AddedRatings {Scid adicionou $r ratings Elo em $g jogos.}
+translate B NewSubmenu "Novo Submenu"
 
 # Comment editor:
 translate B AnnotationSymbols  {Simbolos de Anotacao:}
 translate B Comment {Comentario:}
-translate B InsertMark {Insert mark} ;# ***
+translate B InsertMark {Inserir marca} ;# ***
 translate B InsertMarkHelp {
-Insert/remove mark: Select color, type, square.
-Insert/remove arrow: Right-click two squares.
+Insere/remove marca: Seleciona cor, tipo, casa.
+Insere/remove seta: Clique com o botão direito em duas casas.
 } ;# ***
 
 # Nag buttons in comment editor:
-translate B GoodMove {Good move} ;# ***
-translate B PoorMove {Poor move} ;# ***
-translate B ExcellentMove {Excellent move} ;# ***
-translate B Blunder {Blunder} ;# ***
-translate B InterestingMove {Interesting move} ;# ***
-translate B DubiousMove {Dubious move} ;# ***
-translate B WhiteDecisiveAdvantage {White has a decisive advantage} ;# ***
-translate B BlackDecisiveAdvantage {Black has a decisive advantage} ;# ***
-translate B WhiteClearAdvantage {White has a clear advantage} ;# ***
-translate B BlackClearAdvantage {Black has a clear advantage} ;# ***
-translate B WhiteSlightAdvantage {White has a slight advantage} ;# ***
-translate B BlackSlightAdvantage {Black has a slight advantage} ;# ***
-translate B Equality {Equality} ;# ***
-translate B Unclear {Unclear} ;# ***
-translate B Diagram {Diagram} ;# ***
+translate B GoodMove {Bom Movimento} ;# ***
+translate B PoorMove {Movimento Pobre} ;# ***
+translate B ExcellentMove {Movimento Excelente} ;# ***
+translate B Blunder {Erro!!!} ;# ***
+translate B InterestingMove {Movimento Interessante} ;# ***
+translate B DubiousMove {Movimento Duvidoso} ;# ***
+translate B WhiteDecisiveAdvantage {Branca tem vantagem decisiva} ;# ***
+translate B BlackDecisiveAdvantage {Preta tem vantagem decisiva} ;# ***
+translate B WhiteClearAdvantage {Branca tem clara vantagem} ;# ***
+translate B BlackClearAdvantage {Preta tem clara vantagem} ;# ***
+translate B WhiteSlightAdvantage {Branca tem alguma vantagem} ;# ***
+translate B BlackSlightAdvantage {Preta tem alguma vantagem} ;# ***
+translate B Equality {Igualdade} ;# ***
+translate B Unclear {Não claro} ;# ***
+translate B Diagram {Diagrama} ;# ***
 
 # Board search:
 translate B BoardSearch {Pesquisa Tabuleiro}
@@ -1151,8 +971,7 @@ translate B SearchBoardExact {Posicao exata (todas as pecas nas mesmas casas)}
 translate B SearchBoardPawns {Peoes (mesmo material, todos os peoes nas mesmas casas)}
 translate B SearchBoardFiles {Colunas (mesmo material, todos os peoes na mesma coluna)}
 translate B SearchBoardAny {Qualquer (mesmo material, peoes e pecas em qualquer posicao)}
-# ====== TODO To be translated ======
-translate B SearchInRefDatabase { Search in base }
+translate B SearchInRefDatabase { Pesquisa na base }
 translate B LookInVars {Olhar nas variantes}
 
 # Material search:
@@ -1174,35 +993,35 @@ translate B MatchForAtLeast {Conferem por pelo menos}
 translate B HalfMoves {meios movimentos}
 
 # Common endings in material search:
-translate B EndingPawns {Pawn endings} ;# ***
-translate B EndingRookVsPawns {Rook vs. Pawn(s)} ;# ***
-translate B EndingRookPawnVsRook {Rook and 1 Pawn vs. Rook} ;# ***
-translate B EndingRookPawnsVsRook {Rook and Pawn(s) vs. Rook} ;# ***
-translate B EndingRooks {Rook vs. Rook endings} ;# ***
-translate B EndingRooksPassedA {Rook vs. Rook endings with a passed a-pawn} ;# ***
-translate B EndingRooksDouble {Double Rook endings} ;# ***
-translate B EndingBishops {Bishop vs. Bishop endings} ;# ***
-translate B EndingBishopVsKnight {Bishop vs. Knight endings} ;# ***
-translate B EndingKnights {Knight vs. Knight endings} ;# ***
-translate B EndingQueens {Queen vs. Queen endings} ;# ***
-translate B EndingQueenPawnVsQueen {Queen and 1 Pawn vs. Queen} ;# ***
-translate B BishopPairVsKnightPair {Two Bishops vs. Two Knights middlegame} ;# ***
+translate B EndingPawns {Finais com Peões} ;# ***
+translate B EndingRookVsPawns {Torre contra Peões} ;# ***
+translate B EndingRookPawnVsRook {Torre e 1 Peão contra Torre} ;# ***
+translate B EndingRookPawnsVsRook {Torre e Peões contra Torre} ;# ***
+translate B EndingRooks {Finais Torre contra Torre} ;# ***
+translate B EndingRooksPassedA {Finais Torre contra Torre com Peão passado na coluna a} ;# ***
+translate B EndingRooksDouble {Finais com Torres dobradas} ;# ***
+translate B EndingBishops {Finais Bispo contra Bispo} ;# ***
+translate B EndingBishopVsKnight {Finais Bispo contra Cavalo} ;# ***
+translate B EndingKnights {Finais Cavalo contra Cavalo} ;# ***
+translate B EndingQueens {Finais Dama contra Dama} ;# ***
+translate B EndingQueenPawnVsQueen {Dama e 1 Peão contra Dama} ;# ***
+translate B BishopPairVsKnightPair {Meio-jogo com 2 Bispos contra 2 Cavalos} ;# ***
 
 # Common patterns in material search:
-translate B PatternWhiteIQP {White IQP} ;# ***
-translate B PatternWhiteIQPBreakE6 {White IQP: d4-d5 break vs. e6} ;# ***
-translate B PatternWhiteIQPBreakC6 {White IQP: d4-d5 break vs. c6} ;# ***
-translate B PatternBlackIQP {Black IQP} ;# ***
-translate B PatternWhiteBlackIQP {White IQP vs. Black IQP} ;# ***
-translate B PatternCoupleC3D4 {White c3+d4 Isolated Pawn Couple} ;# ***
-translate B PatternHangingC5D5 {Black Hanging Pawns on c5 and d5} ;# ***
-translate B PatternMaroczy {Maroczy Center (with Pawns on c4 and e4)} ;# ***
-translate B PatternRookSacC3 {Rook Sacrifice on c3} ;# ***
-translate B PatternKc1Kg8 {O-O-O vs. O-O (Kc1 vs. Kg8)} ;# ***
-translate B PatternKg1Kc8 {O-O vs. O-O-O (Kg1 vs. Kc8)} ;# ***
-translate B PatternLightFian {Light-Square Fianchettos (Bishop-g2 vs. Bishop-b7)} ;# ***
-translate B PatternDarkFian {Dark-Square Fianchettos (Bishop-b2 vs. Bishop-g7)} ;# ***
-translate B PatternFourFian {Four Fianchettos (Bishops on b2,g2,b7,g7)} ;# ***
+translate B PatternWhiteIQP {IQP Branca} ;# ***
+translate B PatternWhiteIQPBreakE6 {IQP Branca: avanço d4-d5 contra e6} ;# ***
+translate B PatternWhiteIQPBreakC6 {IQP Branca: avanço d4-d5 contra c6} ;# ***
+translate B PatternBlackIQP {IQP Preta} ;# ***
+translate B PatternWhiteBlackIQP {IQP Branca vs. IQP Preta} ;# ***
+translate B PatternCoupleC3D4 {Peões Brancos isolados em c3+d4} ;# ***
+translate B PatternHangingC5D5 {Peões Pretos em c5 e d5} ;# ***
+translate B PatternMaroczy {Maroczy Center (com Peões em c4 e e4)} ;# ***
+translate B PatternRookSacC3 {Sacrifício de Torre em c3} ;# ***
+translate B PatternKc1Kg8 {O-O-O vs. O-O (Rc1 vs. Rg8)} ;# ***
+translate B PatternKg1Kc8 {O-O vs. O-O-O (Rg1 vs. Rc8)} ;# ***
+translate B PatternLightFian {Fianchettos nas casas brancas(Bispo-g2 vs. Bispo-b7)} ;# ***
+translate B PatternDarkFian {Fianchettos nas casas pretas (Bispo-b2 vs. Bispo-g7)} ;# ***
+translate B PatternFourFian {Quatro Fianchettos (Bispos em b2,g2,b7,g7)} ;# ***
 
 # Game saving:
 translate B Today {Hoje}
@@ -1217,18 +1036,14 @@ translate B Castling {Roque}
 translate B EnPassantFile {coluna En Passant}
 translate B ClearFen {Limpar FEN}
 translate B PasteFen {Colar FEN}
-# ====== TODO To be translated ======
-translate B SaveAndContinue {Save and continue}
-# ====== TODO To be translated ======
-translate B DiscardChangesAndContinue {Discard changes\nand continue}
-# ====== TODO To be translated ======
-translate B GoBack {Go back}
+translate B SaveAndContinue {Salvar e continuar}
+translate B DiscardChangesAndContinue {Descartar alterações\ne continuar}
+translate B GoBack {Voltar}
 
 # Replace move dialog:
 translate B ReplaceMove {Substituir movimento}
 translate B AddNewVar {Adicionar nova variante}
-# ====== TODO To be translated ======
-translate B NewMainLine {New Main Line}
+translate B NewMainLine {Nova linha principal}
 translate B ReplaceMoveMessage {Um movimento ja existe nesta posicao.
 
 Voce pode substitui-lo, descartar todos os movimentos que o seguem, ou adicionar seu movimento como uma nova variante.
@@ -1236,7 +1051,7 @@ Voce pode substitui-lo, descartar todos os movimentos que o seguem, ou adicionar
 (Voce pode evitar que esta mensagem apareca no futuro desligando a opcao "Perguntar antes de substituir movimentos" no menu Opcoes:Movimentos.)}
 
 # Make database read-only dialog:
-translate B ReadOnlyDialog {Se voce fizer esta base de dados apenas para leitura, nenhuma alteracao sera permitida.
+translate B ReadOnlyDialog {Se voce tornar esta base de dados apenas para leitura, nenhuma alteracao sera permitida.
 Nenhum jogo podera ser salvo ou substituido, e nenhuma flag de exclusao podera ser alterada.
 Qualquer ordenacao ou resultados de classificacao por ECO serao temporarios.
 
@@ -1252,14 +1067,13 @@ Voce realmente quer continuar e descartar as mudancas feitas?
 
 # Exit dialog:
 translate B ExitDialog {Voce quer realmente sair do Scid?}
-translate B ExitUnsaved {The following databases have unsaved game changes. If you exit now, these changes will be lost.} ;# ***
+translate B ExitUnsaved {As bases a seguir tem mudanças nos jogos que não foram salvas. Se você sair agora, essas mudanças serão perdidas.} ;# ***
 
 # Import window:
 translate B PasteCurrentGame {Colar jogo corrente}
 translate B ImportHelp1 {Introduzir ou colar um jogo em formato PGN no quadro acima.}
 translate B ImportHelp2 {Quaisquer erros ao importar o jogo serao mostrados aqui.}
-# ====== TODO To be translated ======
-translate B OverwriteExistingMoves {Overwrite existing moves ?}
+translate B OverwriteExistingMoves {Sobrescrever movimentos existentes ?}
 
 # ECO Browser:
 translate B ECOAllSections {todas as secoes ECO}
@@ -1283,12 +1097,12 @@ translate B OprepFreqAll {Frequencia em todos os anos:   }
 translate B OprepFreq1   {No ultimo ano: }
 translate B OprepFreq5   {Nos ultimos 5 anos: }
 translate B OprepFreq10  {Nos ultimos 10 anos: }
-translate B OprepEvery {uma vez en cada %u jogos}
+translate B OprepEvery {uma vez em cada %u jogos}
 translate B OprepUp {ate %u%s de todos os anos}
 translate B OprepDown {menos que %u%s de todos os anos}
 translate B OprepSame {nenhuma mudanca em todos os anos}
 translate B OprepMostFrequent {Jogadores mais frequentes}
-translate B OprepMostFrequentOpponents {Most frequent opponents} ;# ***
+translate B OprepMostFrequentOpponents {Oponentes mais frequentes} ;# ***
 translate B OprepRatingsPerf {Ratings e Desempenho}
 translate B OprepAvgPerf {Ratings e desempenho medios}
 translate B OprepWRating {Rating Brancas}
@@ -1314,16 +1128,16 @@ translate B OprepMoveOrdersAll \
 translate B OprepMoveOrdersMany \
   {Houve %u ordens de movimentos que atingem esta posicao. As %u primeiras sao:}
 translate B OprepMovesFrom {Movimentos da posicao do relatorio}
-translate B OprepMostFrequentEcoCodes {Most frequent ECO codes} ;# ***
+translate B OprepMostFrequentEcoCodes {Códigos ECO mais frequentes} ;# ***
 translate B OprepThemes {Temas Posicionais}
-translate B OprepThemeDescription {Frequency of themes in the first %u moves of each game} ;# ***
+translate B OprepThemeDescription {Frequencia dos temas nos primeiros  %u movimentos de cada jogo} ;# ***
 translate B OprepThemeSameCastling {Roque do mesmo lado}
 translate B OprepThemeOppCastling {Roques opostos}
 translate B OprepThemeNoCastling {Ninguem efetuou o roque}
 translate B OprepThemeKPawnStorm {Tempestade de Peoes no lado do Rei}
 translate B OprepThemeQueenswap {Damas ja trocadas}
-translate B OprepThemeWIQP {White Isolated Queen Pawn} ;# ***
-translate B OprepThemeBIQP {Black Isolated Queen Pawn} ;# ***
+translate B OprepThemeWIQP {Peão branco da Dama isolado} ;# ***
+translate B OprepThemeBIQP {Peão preto da Dama isolado} ;# ***
 translate B OprepThemeWP567 {Peao Branco na 5/6/7a fila}
 translate B OprepThemeBP234 {Peao Preto na 2/3/4a fila}
 translate B OprepThemeOpenCDE {Colunas c/d/e abertas}
@@ -1336,27 +1150,27 @@ translate B OprepTheoryTable {Tabela de Teoria}
 translate B OprepTableComment {Gerada a partir dos %u jogos com rating mais alto.}
 translate B OprepExtraMoves {Movimentos com nota extra na Tabela de Teoria}
 translate B OprepMaxGames {Qtde. Maxima de jogos na tabela de teoria}
-translate B OprepViewHTML {View HTML} ;# ***
-translate B OprepViewLaTeX {View LaTeX} ;# ***
+translate B OprepViewHTML {Visualizar HTML} ;# ***
+translate B OprepViewLaTeX {Visualizar LaTeX} ;# ***
 
 # Player Report:
-translate B PReportTitle {Player Report} ;# ***
-translate B PReportColorWhite {with the White pieces} ;# ***
-translate B PReportColorBlack {with the Black pieces} ;# ***
-translate B PReportMoves {after %s} ;# ***
-translate B PReportOpenings {Openings} ;# ***
-translate B PReportClipbase {Empty clipbase and copy matching games to it} ;# ***
+translate B PReportTitle {Relatorio do Jogador} ;# ***
+translate B PReportColorWhite {com as Brancas} ;# ***
+translate B PReportColorBlack {com as Pretas} ;# ***
+translate B PReportMoves {após %s} ;# ***
+translate B PReportOpenings {Aberturas} ;# ***
+translate B PReportClipbase {Limpa base de cópia e copia os jogos encontrados para ela} ;# ***
 
 # Piece Tracker window:
-translate B TrackerSelectSingle {Left mouse button selects this piece.} ;# ***
-translate B TrackerSelectPair {Left mouse button selects this piece; right button also selects its sibling.}
-translate B TrackerSelectPawn {Left mouse button selects this pawn; right button selects all 8 pawns.}
-translate B TrackerStat {Statistic}
-translate B TrackerGames {% games with move to square}
-translate B TrackerTime {% time on each square}
-translate B TrackerMoves {Moves}
-translate B TrackerMovesStart {Enter the move number where tracking should begin.}
-translate B TrackerMovesStop {Enter the move number where tracking should stop.}
+translate B TrackerSelectSingle {Use o botão esquerdo do mouse para selecionar esta peça.} ;# ***
+translate B TrackerSelectPair {Botão esquerdo seleciona esta peça; botão direito seleciona sua parceira.}
+translate B TrackerSelectPawn {Botão esquerdo seleciona este Peão; botão direito seleciona os 8 Peões}
+translate B TrackerStat {Estatisticas}
+translate B TrackerGames {% jogos com movimentos para a casa}
+translate B TrackerTime {% tempo em cada casa}
+translate B TrackerMoves {Movimentos}
+translate B TrackerMovesStart {Entre o número do movimento a partir do qual o acompanhamento deve ser feito.}
+translate B TrackerMovesStop {Entre com o numero do movimento onde deve parar o acompanhamento.}
 
 # Game selection dialogs:
 translate B SelectAllGames {Todos os jogos na base de dados}
@@ -1387,10 +1201,10 @@ translate B TwinsUndelete {Recuperar todos os jogos antes?}
 translate B TwinsSetFilter {Definir filtro para todas as duplicatas deletadas?}
 translate B TwinsComments {Manter sempre os jogos com comentarios?}
 translate B TwinsVars {Manter sempre os jogos com variantes?}
-translate B TwinsDeleteWhich {Delete which game:} ;# ***
-translate B TwinsDeleteShorter {Shorter game} ;# ***
-translate B TwinsDeleteOlder {Smaller game number} ;# ***
-translate B TwinsDeleteNewer {Larger game number} ;# ***
+translate B TwinsDeleteWhich {Excluir qual jogo:} ;# ***
+translate B TwinsDeleteShorter {Menor jogo} ;# ***
+translate B TwinsDeleteOlder {Menor numero de jogo} ;# ***
+translate B TwinsDeleteNewer {Maior numero de jogo} ;# ***
 translate B TwinsDelete {Deletar jogos}
 
 # Name editor window:
@@ -1421,14 +1235,10 @@ translate B CurrentState {Estado Atual}
 translate B AfterCompaction {Apos compactacao}
 translate B CompactNames {Compactar arquivo de nomes}
 translate B CompactGames {Compactar arquivo de nomes}
-# ====== TODO To be translated ======
-translate B NoUnusedNames "There are no unused names, so the name file is already fully compacted."
-# ====== TODO To be translated ======
-translate B NoUnusedGames "The game file is already fully compacted."
-# ====== TODO To be translated ======
-translate B NameFileCompacted {The name file for the database "[file tail [sc_base filename]]" was compacted.}
-# ====== TODO To be translated ======
-translate B GameFileCompacted {The game file for the database "[file tail [sc_base filename]]" was compacted.}
+translate B NoUnusedNames "Não há nomes não utilizados, então o arquivo já está totalmente compactado."
+translate B NoUnusedGames "O arquivo de jogo já está totalmente compactado."
+translate B NameFileCompacted {O arquivo de nomes para a base "[file tail [sc_base filename]]" está compactado.}
+translate B GameFileCompacted {O arquivo de jogos para a base "[file tail [sc_base filename]]" está compactado.}
 
 # Sorting:
 translate B SortCriteria {Criterio}
@@ -1444,7 +1254,7 @@ translate B IndentComments {Identar Comentarios?}
 translate B IndentVariations {Identar Variantes?}
 translate B ExportColumnStyle {Estilo Coluna (um movimento por linha)?}
 translate B ExportSymbolStyle {Estilo de anotacao simbolica:}
-translate B ExportStripMarks {Strip square/arrow mark codes from comments?} ;# ***
+translate B ExportStripMarks {Remover códigos de marca de casa/seta dos comentários?} ;# ***
 
 # Goto game/move dialogs:
 translate B LoadGameNumber {Entre o numero do jogo a ser carregado:}
@@ -1485,12 +1295,12 @@ Scid buscara o primeiro movimento do jogo atual que alcanca uma posicao nao enco
 }
 
 # Sounds configuration:
-translate B SoundsFolder {Sound Files Folder} ;# ***
-translate B SoundsFolderHelp {The folder should contain the files King.wav, a.wav, 1.wav, etc} ;# ***
-translate B SoundsAnnounceOptions {Move Announcement Options} ;# ***
-translate B SoundsAnnounceNew {Announce new moves as they are made} ;# ***
-translate B SoundsAnnounceForward {Announce moves when moving forward one move} ;# ***
-translate B SoundsAnnounceBack {Announce when retracting or moving back one move} ;# ***
+translate B SoundsFolder {Pasta de arquivos de som} ;# ***
+translate B SoundsFolderHelp {A pasta deve conter os arquivos King.wav, a.wav, 1.wav, etc} ;# ***
+translate B SoundsAnnounceOptions {Opções de anuncio de movimentos} ;# ***
+translate B SoundsAnnounceNew {Anuncia novos movimentos quando eles são feitos} ;# ***
+translate B SoundsAnnounceForward {Anuncia movimentos quando avançar um movimento} ;# ***
+translate B SoundsAnnounceBack {Anuncia movimentos quando retroceder um movimento} ;# ***
 
 # Upgrading databases:
 translate B Upgrading {Atualizando}
@@ -1510,270 +1320,141 @@ Voce quer atualizar esta base agora?
 }
 
 # Recent files options:
-translate B RecentFilesMenu {Number of recent files in File menu} ;# ***
-translate B RecentFilesExtra {Number of recent files in extra submenu} ;# ***
+translate B RecentFilesMenu {Numero de arquivos recentes no menu Arquivo} ;# ***
+translate B RecentFilesExtra {Numero de arquivos recentes no submenu extra} ;# ***
 
 # My Player Names options:
 translate B MyPlayerNamesDescription {
-Enter a list of preferred player names below, one name per line. Wildcards (e.g. "?" for any single character, "*" for any sequence of characters) are permitted.
+Entre com uma lista dos nomes de jogadores preferidos, abaixo, um nome por linha. Substitutos (ex. "?" para qualquer caracter único, "*" para qualquer sequencia de caracteres) são permitidas.
 
-Every time a game with a player in the list is loaded, the main window chessboard will be rotated if necessary to show the game from that players perspective.
+Cada vez que um jogo com um jogador da lista é carregado, o tabuleiro da janela principal sofrerá rotação, se necessário, para mostrar o jogo da perspectiva desse jogador..
 } ;# ***
-# ====== TODO To be translated ======
-translate B showblunderexists {show blunder exists}
-# ====== TODO To be translated ======
-translate B showblundervalue {show blunder value}
-# ====== TODO To be translated ======
-translate B showscore {show score}
-# ====== TODO To be translated ======
-translate B coachgame {coach game}
-# ====== TODO To be translated ======
-translate B configurecoachgame {configure coach game}
-# ====== TODO To be translated ======
-translate B configuregame {Game configuration}
-# ====== TODO To be translated ======
-translate B Phalanxengine {Phalanx engine}
-# ====== TODO To be translated ======
-translate B Coachengine {Coach engine}
-# ====== TODO To be translated ======
-translate B difficulty {difficulty}
-# ====== TODO To be translated ======
-translate B hard {hard}
-# ====== TODO To be translated ======
-translate B easy {easy}
-# ====== TODO To be translated ======
-translate B Playwith {Play with}
-# ====== TODO To be translated ======
-translate B white {white}
-# ====== TODO To be translated ======
-translate B black {black}
-# ====== TODO To be translated ======
-translate B both {both}
-# ====== TODO To be translated ======
-translate B Play {Play}
-# ====== TODO To be translated ======
-translate B Noblunder {No blunder}
-# ====== TODO To be translated ======
-translate B blunder {blunder}
-# ====== TODO To be translated ======
-translate B Noinfo {-- No info --}
-# ====== TODO To be translated ======
-translate B PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate B moveblunderthreshold {move is a blunder if loss is greater than}
-# ====== TODO To be translated ======
-translate B limitanalysis {limit engine analysis time}
-# ====== TODO To be translated ======
-translate B seconds {seconds}
-# ====== TODO To be translated ======
-translate B Abort {Abort}
-# ====== TODO To be translated ======
-translate B Resume {Resume}
-# ====== TODO To be translated ======
-translate B OutOfOpening {Out of opening}
-# ====== TODO To be translated ======
-translate B NotFollowedLine {You did not follow the line}
-# ====== TODO To be translated ======
-translate B DoYouWantContinue {Do you want yo continue ?}
-# ====== TODO To be translated ======
-translate B CoachIsWatching {Coach is watching}
-# ====== TODO To be translated ======
-translate B Ponder {Permanent thinking}
-# ====== TODO To be translated ======
-translate B LimitELO {Limit ELO strength}
-# ====== TODO To be translated ======
-translate B DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
-# ====== TODO To be translated ======
-translate B WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
-# ====== TODO To be translated ======
-translate B BadMovePlayedTakeBack {Bad move played, do you want to take back ?}
-# ====== TODO To be translated ======
-translate B Iresign {I resign}
-# ====== TODO To be translated ======
-translate B yourmoveisnotgood {your move is not good}
-# ====== TODO To be translated ======
-translate B EndOfVar {End of variation}
-# ====== TODO To be translated ======
-translate B Openingtrainer {Opening trainer}
-# ====== TODO To be translated ======
-translate B DisplayCM {Display candidate moves}
-# ====== TODO To be translated ======
-translate B DisplayCMValue {Display candidate moves value}
-# ====== TODO To be translated ======
-translate B DisplayOpeningStats {Show statistics}
-# ====== TODO To be translated ======
-translate B ShowReport {Show report}
-# ====== TODO To be translated ======
-translate B NumberOfGoodMovesPlayed {good moves played}
-# ====== TODO To be translated ======
-translate B NumberOfDubiousMovesPlayed {dubious moves played}
-# ====== TODO To be translated ======
-translate B NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
-# ====== TODO To be translated ======
-translate B NumberOfTimesPositionEncountered {times position encountered}
-# ====== TODO To be translated ======
-translate B PlayerBestMove  {Allow only best moves}
-# ====== TODO To be translated ======
-translate B OpponentBestMove {Opponent plays best moves}
-# ====== TODO To be translated ======
-translate B OnlyFlaggedLines {Only flagged lines}
-# ====== TODO To be translated ======
-translate B resetStats {Reset statistics}
-# ====== TODO To be translated ======
-translate B Repertoiretrainingconfiguration {Repertoire training configuration}
-# ====== TODO To be translated ======
-translate B Loadingrepertoire {Loading repertoire}
-# ====== TODO To be translated ======
-translate B Movesloaded {Moves loaded}
-# ====== TODO To be translated ======
-translate B Repertoirenotfound {Repertoire not found}
-# ====== TODO To be translated ======
-translate B Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
-# ====== TODO To be translated ======
-translate B Movenotinrepertoire {Move not in repertoire}
-# ====== TODO To be translated ======
-translate B PositionsInRepertoire {Positions in repertoire}
-# ====== TODO To be translated ======
-translate B PositionsNotPlayed {Positions not played}
-# ====== TODO To be translated ======
-translate B PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate B Success {Success}
-# ====== TODO To be translated ======
-translate B DubiousMoves {Dubious moves}
-# ====== TODO To be translated ======
-translate B OutOfRepertoire {OutOfRepertoire}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate B ConfigureTactics {Configure tactics}
-# ====== TODO To be translated ======
-translate B ResetScores {Reset scores}
-# ====== TODO To be translated ======
-translate B LoadingBase {Loading base}
-# ====== TODO To be translated ======
-translate B Tactics {Tactics}
-# ====== TODO To be translated ======
-translate B ShowSolution {Show solution}
-# ====== TODO To be translated ======
-translate B NextExercise {Next exercise}
-# ====== TODO To be translated ======
-translate B PrevExercise {previous exercise}
-# ====== TODO To be translated ======
-translate B StopTraining {Stop training}
-# ====== TODO To be translated ======
-translate B Next {Next}
-# ====== TODO To be translated ======
-translate B ResettingScore {Resetting score}
-# ====== TODO To be translated ======
-translate B LoadingGame {Loading game}
-# ====== TODO To be translated ======
-translate B MateFound {Mate found}
-# ====== TODO To be translated ======
-translate B BestSolutionNotFound {Best solution NOT found !}
-# ====== TODO To be translated ======
-translate B MateNotFound {Mate not found}
-# ====== TODO To be translated ======
-translate B ShorterMateExists {Shorter mate exists}
-# ====== TODO To be translated ======
-translate B ScorePlayed {Score played}
-# ====== TODO To be translated ======
-translate B Expected {expected}
-# ====== TODO To be translated ======
-translate B ChooseTrainingBase {Choose training base}
-# ====== TODO To be translated ======
-translate B Thinking {Thinking}
-# ====== TODO To be translated ======
-translate B AnalyzeDone {Analyze done}
-# ====== TODO To be translated ======
-translate B WinWonGame {Win won game}
-# ====== TODO To be translated ======
-translate B Lines {Lines}
-# ====== TODO To be translated ======
-translate B ConfigureUCIengine {Configure UCI engine}
-# ====== TODO To be translated ======
-translate B SpecificOpening {Specific opening}
-# ====== TODO To be translated ======
-translate B StartNewGame {Start new game}
-# ====== TODO To be translated ======
-translate B FixedLevel {Fixed level}
-# ====== TODO To be translated ======
-translate B Opening {Opening}
-# ====== TODO To be translated ======
-translate B RandomLevel {Random level}
-# ====== TODO To be translated ======
-translate B StartFromCurrentPosition {Start from current position}
-# ====== TODO To be translated ======
-translate B FixedDepth {Fixed depth}
-# ====== TODO To be translated ======
-translate B Nodes {Nodes} 
-# ====== TODO To be translated ======
-translate B Depth {Depth}
-# ====== TODO To be translated ======
-translate B Time {Time} 
-# ====== TODO To be translated ======
-translate B SecondsPerMove {Seconds per move}
-# ====== TODO To be translated ======
+translate B showblunderexists {mostra que existe um erro crasso}
+translate B showblundervalue {mostra o valor do erro crasso}
+translate B showscore {mostra o score}
+translate B coachgame {auxilio ao jogo}
+translate B configurecoachgame {configura auxilio ao jogo}
+translate B configuregame {Configuração do jogo}
+translate B Phalanxengine {Engine Phalanx}
+translate B Coachengine {Engine de auxilio}
+translate B difficulty {dificuldade}
+translate B hard {dificil}
+translate B easy {facil}
+translate B Playwith {Jogar com}
+translate B white {branca}
+translate B black {preta}
+translate B both {ambas}
+translate B Play {Jogar}
+translate B Noblunder {Nenhum erro crasso}
+translate B blunder {erro crasso}
+translate B Noinfo {-- Sem informações --}
+translate B PhalanxOrTogaMissing {Phalanx ou Toga não encontrado}
+translate B moveblunderthreshold {movimento e um erro crasso se a perda e maior que}
+translate B limitanalysis {limita tempo de analise do engine}
+translate B seconds {segundos}
+translate B Abort {Abortar}
+translate B Resume {Continuar}
+translate B OutOfOpening {Fora da abertura}
+translate B NotFollowedLine {Você não seguiu a linha}
+translate B DoYouWantContinue {Voce quer continuar ?}
+translate B CoachIsWatching {Auxilio esta observando}
+translate B Ponder {Pensando permanentemente}
+translate B LimitELO {Limite da força ELO}
+translate B DubiousMovePlayedTakeBack {Movimento duvidoso, quer voltar ?}
+translate B WeakMovePlayedTakeBack {Movimento fraco, quer voltar ?}
+translate B BadMovePlayedTakeBack {Movimento ruim, quer voltar ?}
+translate B Iresign {Eu desisto}
+translate B yourmoveisnotgood {seu movimento nao e bom}
+translate B EndOfVar {Fim da variante}
+translate B Openingtrainer {Treinador de aberturas}
+translate B DisplayCM {Mostrar movimentos candidatos}
+translate B DisplayCMValue {Mostrar valor dos movimentos candidatos}
+translate B DisplayOpeningStats {Mostrar estatisticas}
+translate B ShowReport {Mostrar relatorio}
+translate B NumberOfGoodMovesPlayed {bom movimentos jogados}
+translate B NumberOfDubiousMovesPlayed {movimentos duvidosos jogados}
+translate B NumberOfMovesPlayedNotInRepertoire {movimentos jogados não existem no repertorio}
+translate B NumberOfTimesPositionEncountered {vezes a posição foi encontrada}
+translate B PlayerBestMove  {Permitir somente os melhores movimentos}
+translate B OpponentBestMove {Oponente joga os melhores movimentos}
+translate B OnlyFlaggedLines {Somente linhas marcadas}
+translate B resetStats {Reiniciar estatisticas}
+translate B Repertoiretrainingconfiguration {Configuração do repertorio de treinamento}
+translate B Loadingrepertoire {Carregando repertorio}
+translate B Movesloaded {Movimentos carregados}
+translate B Repertoirenotfound {Repertorio não encontrado}
+translate B Openfirstrepertoirewithtype {Abra primeiro uma base de repertorio com o ícone/tipo definido do lado direito}
+translate B Movenotinrepertoire {Movimento não existe no repertorio}
+translate B PositionsInRepertoire {Posições no repertorio}
+translate B PositionsNotPlayed {Posições não jogadas}
+translate B PositionsPlayed {Posições jogadas}
+translate B Success {Successo}
+translate B DubiousMoves {Movimentos duvidosos}
+translate B OutOfRepertoire {Fora do Repertorio}
+translate B ConfigureTactics {Configurar taticas}
+translate B ResetScores {Reiniciar scores}
+translate B LoadingBase {Carregando base}
+translate B Tactics {Taticas}
+translate B ShowSolution {Mostrar solução}
+translate B NextExercise {Proximo exercicio}
+translate B PrevExercise {exercicio anterior}
+translate B StopTraining {Parar treinamento}
+translate B Next {Proximo}
+translate B ResettingScore {Reinicializando score}
+translate B LoadingGame {Carregando jogo}
+translate B MateFound {Mate encontrado}
+translate B BestSolutionNotFound {Melhor solução NÃO encontrada !}
+translate B MateNotFound {Mate não encontrado}
+translate B ShorterMateExists {Existe mate mais curto}
+translate B ScorePlayed {Score obtido}
+translate B Expected {esperado}
+translate B ChooseTrainingBase {Escolher base de treinamento}
+translate B Thinking {Pensando}
+translate B AnalyzeDone {Analise completa}
+translate B WinWonGame {Win venceu o jogo}
+translate B Lines {Linhas}
+translate B ConfigureUCIengine {Configurar engine UCI}
+translate B SpecificOpening {Abertura especifica}
+translate B StartNewGame {Iniciar novo jogo}
+translate B FixedLevel {Nivel fixo}
+translate B Opening {Abertura}
+translate B RandomLevel {Nivel aleatorio}
+translate B StartFromCurrentPosition {Iniciar a paartir da posição corrente}
+translate B FixedDepth {Profundidade fixa}
+translate B Nodes {Nós} 
+translate B Depth {Profundidade}
+translate B Time {Tempo} 
+translate B SecondsPerMove {Segundos por movimento}
 translate B Engine {Engine}
-# ====== TODO To be translated ======
-translate B TimeMode {Time mode}
-# ====== TODO To be translated ======
-translate B TimeBonus {Time + bonus}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
+translate B TimeMode {Modo de tempo}
+translate B TimeBonus {Bonus de tempo}
 translate B TimeMin {min}
-# ====== TODO To be translated ======
-translate B TimeSec {sec}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate B AllExercisesDone {All exercises done}
-# ====== TODO To be translated ======
-translate B MoveOutOfBook {Move out of book}
-# ====== TODO To be translated ======
-translate B LastBookMove {Last book move}
-# ====== TODO To be translated ======
-translate B AnnotateSeveralGames {Annotate several games\nfrom current to :}
-# ====== TODO To be translated ======
-translate B FindOpeningErrors {Find opening errors}
-# ====== TODO To be translated ======
-translate B MarkTacticalExercises {Mark tactical exercises}
-# ====== TODO To be translated ======
-translate B UseBook {Use book}
-# ====== TODO To be translated ======
-translate B MultiPV {Multiple variations}
-# ====== TODO To be translated ======
-translate B Hash {Hash memory}
-# ====== TODO To be translated ======
-translate B OwnBook {Use engine book}
-# ====== TODO To be translated ======
-translate B BookFile {Opening book}
-# ====== TODO To be translated ======
-translate B AnnotateVariations {Annotate variations}
-# ====== TODO To be translated ======
-translate B ShortAnnotations {Short annotations}
-# ====== TODO To be translated ======
-translate B addAnnotatorTag {Add annotator tag}
-# ====== TODO To be translated ======
-translate B AddScoreToShortAnnotations {Add score to short annotations}
-# ====== TODO To be translated ======
-translate B Export {Export}
-# ====== TODO To be translated ======
-translate B BookPartiallyLoaded {Book partially loaded}
-# ====== TODO To be translated ======
-translate B Calvar {Calculation of variations}
-# ====== TODO To be translated ======
-translate B ConfigureCalvar {Configuration}
-# ====== TODO To be translated ======
+translate B TimeSec {seg}
+translate B AllExercisesDone {Todos os exercicios completos}
+translate B MoveOutOfBook {Movimento fora do livro}
+translate B LastBookMove {Ultimo movimento do livro}
+translate B AnnotateSeveralGames {Anotar diversos jogos\ndo atual até :}
+translate B FindOpeningErrors {Encontrar erros na abertura}
+translate B MarkTacticalExercises {Marcar exercicios taticos}
+translate B UseBook {Usar livro}
+translate B MultiPV {Variantes multiplas}
+translate B Hash {Varrer memória}
+translate B OwnBook {Usar livro do engine}
+translate B BookFile {Livro de aberturas}
+translate B AnnotateVariations {Anotar variantes}
+translate B ShortAnnotations {Anotações curtas}
+translate B addAnnotatorTag {Adicionar tag do anotador}
+translate B AddScoreToShortAnnotations {Adicionar o score às anotações curtas}
+translate B Export {Exportar}
+translate B BookPartiallyLoaded {Livro parcialmente carregado}
+translate B Calvar {Calculo de variantes}
+translate B ConfigureCalvar {Configuração}
 # ====== TODO To be translated ======
 translate B Reti {Reti}
 # ====== TODO To be translated ======
 translate B English {English}
 # ====== TODO To be translated ======
-translate B d4Nf6Miscellaneous {1.d4 Nf6 Miscellaneous}
+translate B d4Nf6Miscellaneous {1.d4 Nf6 Diversas}
 # ====== TODO To be translated ======
 translate B Trompowsky {Trompowsky}
 # ====== TODO To be translated ======
@@ -1880,353 +1561,144 @@ translate B KingsIndian {King's Indian}
 translate B KingsIndianSamisch {King's Indian Sämisch}
 # ====== TODO To be translated ======
 translate B KingsIndianMainLine {King's Indian Main Line}
-# ====== TODO To be translated ======
-translate B ConfigureFics {Configure FICS}
-# ====== TODO To be translated ======
-translate B FICSGuest {Login as Guest}
-# ====== TODO To be translated ======
-translate B FICSServerPort {Server port}
-# ====== TODO To be translated ======
-translate B FICSServerAddress {IP Address}
-# ====== TODO To be translated ======
-translate B FICSRefresh {Refresh}
-# ====== TODO To be translated ======
-translate B FICSTimesealPort {Timeseal port}
-# ====== TODO To be translated ======
-translate B FICSSilence {Silence}
-# ====== TODO To be translated ======
-translate B FICSOffers {Offers}
-# ====== TODO To be translated ======
+translate B ConfigureFics {Configurar FICS}
+translate B FICSGuest {Login como convidado}
+translate B FICSServerPort {Porta do Servidor}
+translate B FICSServerAddress {Endereço IP}
+translate B FICSRefresh {Atualizar}
+translate B FICSTimesealPort {Porta Timeseal}
+translate B FICSSilence {Silencio}
+translate B FICSOffers {Ofertas}
 translate B FICSConsole {Console}
-# ====== TODO To be translated ======
-translate B FICSGames {Games}
-# ====== TODO To be translated ======
-translate B FICSUnobserve {Stop observing game}
-# ====== TODO To be translated ======
-translate B FICSProfile {Display your history and profile}
-# ====== TODO To be translated ======
-translate B FICSRelayedGames {Relayed games}
-# ====== TODO To be translated ======
-translate B FICSFindOpponent {Find opponent}
-# ====== TODO To be translated ======
-translate B FICSTakeback {Takeback}
-# ====== TODO To be translated ======
-translate B FICSTakeback2 {Takeback 2}
-# ====== TODO To be translated ======
-translate B FICSInitTime {Initial time (min)}
-# ====== TODO To be translated ======
-translate B FICSIncrement {Increment (sec)}
-# ====== TODO To be translated ======
-translate B FICSRatedGame {Rated Game}
-# ====== TODO To be translated ======
-translate B FICSAutoColour {automatic}
-# ====== TODO To be translated ======
-translate B FICSManualConfirm {confirm manually}
-# ====== TODO To be translated ======
-translate B FICSFilterFormula {Filter with formula}
-# ====== TODO To be translated ======
-translate B FICSIssueSeek {Issue seek}
-# ====== TODO To be translated ======
-translate B FICSChallenge {Challenge}
-# ====== TODO To be translated ======
-translate B FICSAccept {accept}
-# ====== TODO To be translated ======
-translate B FICSDecline {decline}
-# ====== TODO To be translated ======
-translate B FICSColour {Colour}
-# ====== TODO To be translated ======
-translate B FICSSend {send}
-# ====== TODO To be translated ======
-translate B FICSConnect {Connect}
-# ====== TODO To be translated ======
-translate B FICSdefaultuservars {Use default variables}
-# ====== TODO To be translated ======
-translate B FICSObserveconfirm {Do you want to observe game}
-# ====== TODO To be translated ======
-translate B GameReview {Game review}
-# ====== TODO To be translated ======
-translate B GameReviewTimeExtended {Time extended}
-# ====== TODO To be translated ======
-translate B GameReviewMargin {Error margin}
-# ====== TODO To be translated ======
-translate B GameReviewAutoContinue {Auto continue when move is correct}
-# ====== TODO To be translated ======
-translate B GameReviewReCalculate {Use extended time}
-# ====== TODO To be translated ======
-translate B GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
-# ====== TODO To be translated ======
-translate B GameReviewAnalyzingThePosition {Analyzing the position}
-# ====== TODO To be translated ======
-translate B GameReviewEnterYourMove {Enter your move}
-# ====== TODO To be translated ======
-translate B GameReviewCheckingYourMove {Checking your move}
-# ====== TODO To be translated ======
-translate B GameReviewYourMoveWasAnalyzed {Your move was analyzed}
-# ====== TODO To be translated ======
-translate B GameReviewYouPlayedSameMove {You played the same move as in match}
-# ====== TODO To be translated ======
-translate B GameReviewScoreOfYourMove {Score of your move}
-# ====== TODO To be translated ======
-translate B GameReviewGameMoveScore {Game move's score}
-# ====== TODO To be translated ======
-translate B GameReviewEngineScore {Engine's score}
-# ====== TODO To be translated ======
-translate B GameReviewYouPlayedLikeTheEngine {You played like the engine}
-# ====== TODO To be translated ======
-translate B GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
-# ====== TODO To be translated ======
-translate B GameReviewMoveNotGood {This move is not good, score is}
-# ====== TODO To be translated ======
-translate B GameReviewMovesPlayedLike {Moves played like}
-# ====== TODO To be translated ======
-translate B GameReviewMovesPlayedEngine {Moves played like engine}
-# ====== TODO To be translated ======
-translate B CCDlgConfigureWindowTitle {Configure Correspondence Chess}
-# ====== TODO To be translated ======
-translate B CCDlgCGeneraloptions {General Options}
-# ====== TODO To be translated ======
-translate B CCDlgDefaultDB {Default Database:}
-# ====== TODO To be translated ======
-translate B CCDlgInbox {Inbox (path):}
-# ====== TODO To be translated ======
-translate B CCDlgOutbox {Outbox (path):}
-# ====== TODO To be translated ======
-translate B CCDlgXfcc {Xfcc Configuration:}
-# ====== TODO To be translated ======
-translate B CCDlgExternalProtocol {External Protocol Handler (e.g. Xfcc)}
-# ====== TODO To be translated ======
-translate B CCDlgFetchTool {Fetch Tool:}
-# ====== TODO To be translated ======
-translate B CCDlgSendTool {Send Tool:}
-# ====== TODO To be translated ======
-translate B CCDlgEmailCommunication {eMail Communication}
-# ====== TODO To be translated ======
-translate B CCDlgMailPrg {Mail program:}
-# ====== TODO To be translated ======
-translate B CCDlgBCCAddr {(B)CC Address:}
-# ====== TODO To be translated ======
-translate B CCDlgMailerMode {Mode:}
-# ====== TODO To be translated ======
-translate B CCDlgThunderbirdEg {e.g. Thunderbird, Mozilla Mail, Icedove...}
-# ====== TODO To be translated ======
-translate B CCDlgMailUrlEg {e.g. Evolution}
-# ====== TODO To be translated ======
-translate B CCDlgClawsEg {e.g Sylpheed Claws}
-# ====== TODO To be translated ======
-translate B CCDlgmailxEg {e.g. mailx, mutt, nail...}
-# ====== TODO To be translated ======
-translate B CCDlgAttachementPar {Attachment parameter:}
-# ====== TODO To be translated ======
-translate B CCDlgInternalXfcc {Use internal Xfcc support}
-# ====== TODO To be translated ======
-translate B CCDlgConfirmXfcc {Confirm moves}
-# ====== TODO To be translated ======
-translate B CCDlgSubjectPar {Subject parameter:}
-# ====== TODO To be translated ======
-translate B CCDlgDeleteBoxes {Empty In-/Outbox}
-# ====== TODO To be translated ======
-translate B CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
-# ====== TODO To be translated ======
-translate B CCDlgConfirmMove {Confirm move}
-# ====== TODO To be translated ======
-translate B CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
-# ====== TODO To be translated ======
-translate B CCDlgDBGameToLong {Inconsistent Mainline}
-# ====== TODO To be translated ======
-translate B CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
-# ====== TODO To be translated ======
-translate B CCDlgStartEmail {Start new eMail game}
-# ====== TODO To be translated ======
-translate B CCDlgYourName {Your Name:}
-# ====== TODO To be translated ======
-translate B CCDlgYourMail {Your eMail Address:}
-# ====== TODO To be translated ======
-translate B CCDlgOpponentName {Opponents Name:}
-# ====== TODO To be translated ======
-translate B CCDlgOpponentMail {Opponents eMail Address:}
-# ====== TODO To be translated ======
-translate B CCDlgGameID {Game ID (unique):}
-# ====== TODO To be translated ======
-translate B CCDlgTitNoOutbox {Scid: Correspondence Chess Outbox}
-# ====== TODO To be translated ======
-translate B CCDlgTitNoInbox {Scid: Correspondence Chess Inbox}
-# ====== TODO To be translated ======
-translate B CCDlgTitNoGames {Scid: No Correspondence Chess Games}
-# ====== TODO To be translated ======
-translate B CCErrInboxDir {Correspondence Chess inbox directory:}
-# ====== TODO To be translated ======
-translate B CCErrOutboxDir {Correspondence Chess outbox directory:}
-# ====== TODO To be translated ======
-translate B CCErrDirNotUsable {does not exist or is not accessible!\nPlease check and correct the settings.}
-# ====== TODO To be translated ======
-translate B CCErrNoGames {does not contain any games!\nPlease fetch them first.}
-# ====== TODO To be translated ======
-translate B CCDlgTitNoCCDB {Scid: No Correspondence Database}
-# ====== TODO To be translated ======
-translate B CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
-# ====== TODO To be translated ======
-translate B CCFetchBtn {Fetch games from the server and process the Inbox}
-# ====== TODO To be translated ======
-translate B CCPrevBtn {Goto previous game}
-# ====== TODO To be translated ======
-translate B CCNextBtn {Goto next game}
-# ====== TODO To be translated ======
-translate B CCSendBtn {Send move}
-# ====== TODO To be translated ======
-translate B CCEmptyBtn {Empty In- and Outbox}
-# ====== TODO To be translated ======
-translate B CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
-# ====== TODO To be translated ======
-translate B CCDlgServerName {Server Name:}
-# ====== TODO To be translated ======
+translate B FICSGames {Jogos}
+translate B FICSUnobserve {Parar de observar jogo}
+translate B FICSProfile {Exibir seu perfil e historico}
+translate B FICSRelayedGames {Jogos conectados}
+translate B FICSFindOpponent {Encontrar Oponente}
+translate B FICSTakeback {Voltar}
+translate B FICSTakeback2 {Voltar 2}
+translate B FICSInitTime {Tempo inicial (min)}
+translate B FICSIncrement {Incremento (seg)}
+translate B FICSRatedGame {Jogo com rate}
+translate B FICSAutoColour {automatico}
+translate B FICSManualConfirm {confirmar manualmente}
+translate B FICSFilterFormula {Filtro com formula}
+translate B FICSIssueSeek {Busca item}
+translate B FICSChallenge {Desafiar}
+translate B FICSAccept {aceitar}
+translate B FICSDecline {recusar}
+translate B FICSColour {Cor}
+translate B FICSSend {enviar}
+translate B FICSConnect {Conectar}
+translate B FICSdefaultuservars {Usar variaveis default}
+translate B FICSObserveconfirm {Voce quer observar o jogo}
+translate B GameReview {Rever jogo}
+translate B GameReviewTimeExtended {Tempo estendido}
+translate B GameReviewMargin {Mergem de erro}
+translate B GameReviewAutoContinue {Continuar automaticamente quando o movimento estiver correto}
+translate B GameReviewReCalculate {Usar tempo estendido}
+translate B GameReviewAnalyzingMovePlayedDuringTheGame {Analisando movimento feito durante o jogo}
+translate B GameReviewAnalyzingThePosition {Analisando a posição}
+translate B GameReviewEnterYourMove {Entre seu movimento}
+translate B GameReviewCheckingYourMove {Verificando seu movimento}
+translate B GameReviewYourMoveWasAnalyzed {Seu movimento foi analisado}
+translate B GameReviewYouPlayedSameMove {Você usou o mesmo movimento como na resposta}
+translate B GameReviewScoreOfYourMove {Score do seu movimento}
+translate B GameReviewGameMoveScore {Score do movimento do jogo}
+translate B GameReviewEngineScore {Score do Engine}
+translate B GameReviewYouPlayedLikeTheEngine {Voce jogou como o engine}
+translate B GameReviewNotEngineMoveButGoodMove {Não é o movimento do engine, mas é um bom movimento}
+translate B GameReviewMoveNotGood {Este movimento não é bom; seu score e}
+translate B GameReviewMovesPlayedLike {Movimentos semelhantes}
+translate B GameReviewMovesPlayedEngine {Movimentos semelhantes aos do engine}
+translate B CCDlgConfigureWindowTitle {Configurar Xadrez por correspondencia}
+translate B CCDlgCGeneraloptions {Opções Gerais}
+translate B CCDlgDefaultDB {Base default:}
+translate B CCDlgInbox {Caixa de Entrada (caminho):}
+translate B CCDlgOutbox {Caixa de Saida (caminho):}
+translate B CCDlgXfcc {Configuraçãao do Xfcc:}
+translate B CCDlgExternalProtocol {Tratamento de protocolo externo (ex. Xfcc)}
+translate B CCDlgFetchTool {Ferramenta de busca:}
+translate B CCDlgSendTool {Ferramenta de envio:}
+translate B CCDlgEmailCommunication {Comunicação por eMail}
+translate B CCDlgMailPrg {Programa de Mail:}
+translate B CCDlgBCCAddr {Endereço Cópia Oculta:}
+translate B CCDlgMailerMode {Modo:}
+translate B CCDlgThunderbirdEg {ex. Thunderbird, Mozilla Mail, Icedove...}
+translate B CCDlgMailUrlEg {ex. Evolution}
+translate B CCDlgClawsEg {ex. Sylpheed Claws}
+translate B CCDlgmailxEg {ex. mailx, mutt, nail...}
+translate B CCDlgAttachementPar {Parametro de anexos:}
+translate B CCDlgInternalXfcc {Usar suporte internal Xfcc}
+translate B CCDlgConfirmXfcc {Confirmar movimentos}
+translate B CCDlgSubjectPar {Parametro de Assunto:}
+translate B CCDlgDeleteBoxes {Esvaziar caixas de entrada e saída}
+translate B CCDlgDeleteBoxesText {Voce quer realmente esvaziar as caixas de Entrada e Saida usadas para o Xadrez por correspondência? Esta operação exige uma novaa sincronização para mostrar o ultimo estado dos seus jogos}
+translate B CCDlgConfirmMove {Confirmar movimento}
+translate B CCDlgConfirmMoveText {Se voce confirmar, o movimento indicado a seguir e os comentários serão enviados para o servidor:}
+translate B CCDlgDBGameToLong {Linha principal inconsistente}
+translate B CCDlgDBGameToLongError {A linha principal na sua base é maior do que o jogo que está na caixa de entrada. Se a caixa de entrada contem jogos correntes, isto é logo após uma sincronização, alguns movimentos foram adicionados erroneamente à linha principal na base.\nNeste caso, por favor, diminua a linha principal para (no maximo) movimentos\n}
+translate B CCDlgStartEmail {Iniciar novo jogo por eMail}
+translate B CCDlgYourName {Seu nome:}
+translate B CCDlgYourMail {Seu eMail:}
+translate B CCDlgOpponentName {Nome do Oponente:}
+translate B CCDlgOpponentMail {eMail do Oponente:}
+translate B CCDlgGameID {ID do jogo (unico):}
+translate B CCDlgTitNoOutbox {Scid: Caixa de Saida}
+translate B CCDlgTitNoInbox {Scid: Caixa de Entrada}
+translate B CCDlgTitNoGames {Scid: Nenhum jogo por correspondência}
+translate B CCErrInboxDir {Diretorio da Caixa de Entrada:}
+translate B CCErrOutboxDir {Diretorio da Caixa de Saida:}
+translate B CCErrDirNotUsable {não existe ou não está acessivel!\nPor favor, verifique e corrija a configuração.}
+translate B CCErrNoGames {não contem nenhum jogo!\nPor favor, localize-os primeiro.}
+translate B CCDlgTitNoCCDB {Scid: Nenhuma base de correspondência}
+translate B CCErrNoCCDB {Nenhuma base do tipo 'Correspondencia' está aberta. Por favor, abra uma antes de usar as funcoes do xadrez por correspondencia.}
+translate B CCFetchBtn {Busca jogos no servidor e processa a Caixa de Entrada}
+translate B CCPrevBtn {Ir para o jogo anterior}
+translate B CCNextBtn {Ir para o proximo jogo}
+translate B CCSendBtn {Enviar movimento}
+translate B CCEmptyBtn {Esvaziar caixas de entrada e saida}
+translate B CCHelpBtn {Ajuda sobre icones e indicadores de estado.\nPara ajuda geral, use a tecla F1!}
+translate B CCDlgServerName {Nome do Servidor:}
 translate B CCDlgLoginName  {Login Name:}
-# ====== TODO To be translated ======
-translate B CCDlgPassword   {Password:}
-# ====== TODO To be translated ======
+translate B CCDlgPassword   {Senha:}
 translate B CCDlgURL        {Xfcc-URL:}
-# ====== TODO To be translated ======
-translate B CCDlgRatingType {Rating Type:}
-# ====== TODO To be translated ======
-translate B CCDlgDuplicateGame {Non-unique game ID}
-# ====== TODO To be translated ======
-translate B CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
-# ====== TODO To be translated ======
-translate B CCDlgSortOption {Sorting:}
-# ====== TODO To be translated ======
-translate B CCDlgListOnlyOwnMove {Only games I have the move}
-# ====== TODO To be translated ======
-translate B CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
-# ====== TODO To be translated ======
-translate B CCOrderMyTimeTxt {My Clock}
-# ====== TODO To be translated ======
-translate B CCOrderTimePerMoveTxt {Time per move till next time control}
-# ====== TODO To be translated ======
-translate B CCOrderStartDate {Start date}
-# ====== TODO To be translated ======
-translate B CCOrderOppTimeTxt {Opponents Clock}
-# ====== TODO To be translated ======
-translate B CCDlgConfigRelay {Configure ICCF observations}
-# ====== TODO To be translated ======
-translate B CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
-# ====== TODO To be translated ======
-translate B ExtHWConfigConnection {Configure external hardware}
-# ====== TODO To be translated ======
-translate B ExtHWPort {Port}
-# ====== TODO To be translated ======
-translate B ExtHWEngineCmd {Engine command}
-# ====== TODO To be translated ======
-translate B ExtHWEngineParam {Engine parameter}
-# ====== TODO To be translated ======
-translate B ExtHWShowButton {Show button}
-# ====== TODO To be translated ======
+translate B CCDlgRatingType {Tipo de Rating:}
+translate B CCDlgDuplicateGame {ID de jogo não único}
+translate B CCDlgDuplicateGameError {Este jogo existe mais de uma vez em sua base. Exclua todas as duplicatas e compacte seu arquivo de jogos (Arquivo/Manutenção/Compactar Base).}
+translate B CCDlgSortOption {Ordenando:}
+translate B CCDlgListOnlyOwnMove {Somente jogos nos quais tenho o movimento}
+translate B CCOrderClassicTxt {Local, Evento, Rodada, Resultado, Branca, Preta}
+translate B CCOrderMyTimeTxt {Meu Relógio}
+translate B CCOrderTimePerMoveTxt {Tempo por movimento até o próximo controle de tempo}
+translate B CCOrderStartDate {Data de Inicio}
+translate B CCOrderOppTimeTxt {Relogio do Oponente}
+translate B ExtHWConfigConnection {Configurar hardware externo}
+translate B ExtHWPort {Porta}
+translate B ExtHWEngineCmd {Comando do Engine}
+translate B ExtHWEngineParam {Parametro do Engine}
+translate B ExtHWShowButton {Mostrar botão}
 translate B ExtHWHardware {Hardware}
-# ====== TODO To be translated ======
 translate B ExtHWNovag {Novag Citrine}
-# ====== TODO To be translated ======
-translate B ExtHWInputEngine {Input Engine}
-# ====== TODO To be translated ======
-translate B ExtHWNoBoard {No board}
-# ====== TODO To be translated ======
-translate B NovagReferee {Referee}
-# ====== TODO To be translated ======
-translate B IEConsole {Input Engine Console}
-# ====== TODO To be translated ======
-translate B IESending {Moves sent for}
-# ====== TODO To be translated ======
-translate B IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate B IERotate  {Rotate}
-# ====== TODO To be translated ======
-translate B IEUnableToStart {Unable to start Input Engine:}
-# ====== TODO To be translated ======
-translate B DoneWithPosition {Done with position}
-# ====== TODO To be translated ======
-translate B Board {Board}
-# ====== TODO To be translated ======
-translate B showGameInfo {Show game info}
-# ====== TODO To be translated ======
-translate B autoResizeBoard {Automatic resize of board}
-# ====== TODO To be translated ======
-translate B DockTop {Move to top}
-# ====== TODO To be translated ======
-translate B DockBottom {Move to bottom}
-# ====== TODO To be translated ======
-translate B DockLeft {Move to left}
-# ====== TODO To be translated ======
-translate B DockRight {Move to right}
-# ====== TODO To be translated ======
-translate B Undock {Undock}
-# ====== TODO To be translated ======
-translate B ChangeIcon {Change icon...}
-# ====== TODO To be translated ======
+translate B ExtHWInputEngine {Entrar com o Engine}
+translate B ExtHWNoBoard {Nenhum tabuleiro}
+translate B NovagReferee {Arbitro}
+translate B IEConsole {Entrar na console do Engine}
+translate B IESending {Movimentos enviados para}
+translate B IESynchronise {Sincronizar}
+translate B IERotate  {Girar}
+translate B IEUnableToStart {Não é possivel iniciar Engine:}
+translate B DoneWithPosition {Posição definida}
+translate B Board {Tabuleiro}
+translate B showGameInfo {Mostrar informações do jogo}
+translate B autoResizeBoard {Tamanho automático do tabuleiro}
+translate B DockTop {Mover para cima}
+translate B DockBottom {Mover para o final}
+translate B DockLeft {Mover para a esquerda}
+translate B DockRight {Mover para a direita}
+translate B Undock {Desacoplar}
+translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
