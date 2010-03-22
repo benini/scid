@@ -235,7 +235,7 @@ menuText W ToolsStartEngine1 "Starta schackmotor 1" 0  {Starta schackmotor 1}
 # ====== TODO To be translated ======
 menuText W ToolsStartEngine2 "Starta schackmotor 2" 0  {Starta schackmotor 2}
 # ====== TODO To be translated ======
-menuText W ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+menuText W ToolsCaptureBoard "Spara aktuellt schackbräde..." 0  {Spara det aktuella schackbrädet som en bild.}
 # ====== TODO To be translated ======
 menuText W Play "Spela" 0
 # ====== TODO To be translated ======
@@ -243,7 +243,7 @@ menuText W CorrespondenceChess "Korrespondensschack" 0 {Funktioner för eMail och
 # ====== TODO To be translated ======
 menuText W CCConfigure "Konfigurera..." 0 {Konfigurera externa verktyg och generella inställningar}
 # ====== TODO To be translated ======
-menuText W CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
+menuText W CCConfigRelay "Konfigurera observationer..." 10 {Konfigurera partier att observera}
 # ====== TODO To be translated ======
 menuText W CCOpenDB "Öppna Databas..." 0 {Öppna standardkorrespondensdatabasen}
 # ====== TODO To be translated ======
@@ -1657,11 +1657,11 @@ translate W Tactics {Taktik}
 # ====== TODO To be translated ======
 translate W ShowSolution {Visa lösning}
 # ====== TODO To be translated ======
-translate W NextExercise {Next exercise}
+translate W NextExercise {Nästa övning}
 # ====== TODO To be translated ======
-translate W PrevExercise {previous exercise}
+translate W PrevExercise {Tidigare övning}
 # ====== TODO To be translated ======
-translate W StopTraining {Stop training}
+translate W StopTraining {Avbryt träning}
 # ====== TODO To be translated ======
 translate W Next {Nästa}
 # ====== TODO To be translated ======
@@ -2103,9 +2103,9 @@ translate W CCOrderStartDate {Startdatum}
 # ====== TODO To be translated ======
 translate W CCOrderOppTimeTxt {Motståndarens klocka}
 # ====== TODO To be translated ======
-translate W CCDlgConfigRelay {Configure ICCF observations}
+translate W CCDlgConfigRelay {Konfigurera ICCF-observationer}
 # ====== TODO To be translated ======
-translate W CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+translate W CCDlgConfigRelayHelp {Gå till partisidan på http://www.iccf-webchess.com och visa partiet att observera.  Om du ser schackbräder kopiera webadressen från din webläsare till listan nedanför. Bara en webadress per rad!\nExempel: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 # ====== TODO To be translated ======
 translate W ExtHWConfigConnection {Konfigurera extern hårdvara}
 # ====== TODO To be translated ======
