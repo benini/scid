@@ -4,10 +4,60 @@
 |                                                           |
  ===========================================================
 
-porter SF PPC -> se bloque parfois
---------------------------------------------------------------
-tester plusieurs connexions successives sur Citrine (avec échec)
+I'm using scid-4.2.2 and it crashes while annotating the following game
+by Greco:
+######################
+[Event "Miscellaneous Game"]
+[Site "?"]
+[Date "1620.??.??"]
+[EventDate "?"]
+[Round "61"]
+[Result "1-0"]
+[White "Gioachino Greco"]
+[Black "NN"]
+[ECO "C33"]
+[WhiteElo "?"]
+[BlackElo "?"]
+[PlyCount "47"]
 
+1.e4 e5 2.f4 exf4 3.Bc4 Qh4+ 4.Kf1 d6 5.Nf3 Bg4 6.d4 Qh6 7.g3
+Qh3+ 8.Kf2 fxg3+ 9.hxg3 Bxf3 10.Bxf7+ Kd8 11.Qxf3 Qd7 12.Rxh7
+Rxh7 13.Bxg8 Rh2+ 14.Kg1 Rxc2 15.Qxf8+ Qe8 16.Bg5+ Kd7 17.Be6+
+Qxe6 18.Qd8+ Kc6 19.d5+ Qxd5 20.exd5+ Kxd5 21.Nc3+ Ke5 22.Qe8+
+Kd4 23.Qe4+ Kc5 24.Be3# 1-0
+###################################
+
+I invite other people to confirm that this happens always.
+
+I tried 2 different Toga engines one of them being the one included with
+scid (Toga 1.2).
+
+By the way, I was doing some testing so the delay time was 3 seconds but
+I tried also 5 seconds per move.
+
+I have annotated quite a few games and I never got this problem. I
+wonder if this has something to do with Greco.
+
+Cheers
+Ricardo
+
+More details can be found below:
+
+I'm using gentoo and I get this on the terminal that runs scid:
+
+#################################
+~/apps/scid-4.2.2 $ scid
+*** buffer overflow detected ***: /usr/games/bin/tkscid terminated
+======= Backtrace: =========
+/lib/libc.so.6(__fortify_fail+0x48)[0xb7220db8]
+/lib/libc.so.6[0xb721ee00]
+/lib/libc.so.6[0xb721e488]
+/lib/libc.so.6(_IO_default_xsputn+0xa0)[0xb71a4600]
+/lib/libc.so.6(_IO_vfprintf+0x354a)[0xb717a9ca]
+/lib/libc.so.6(__vsprintf_chk+0xa7)[0xb721e537]
+/lib/libc.so.6(__sprintf_chk+0x2d)[0xb721e47d]
+/usr/games/bin/tkscid[0x8087327]
+======= Memory map: ========
  ===========================================================
 |                                                           |
 |                          BUGS                             |
@@ -19,6 +69,8 @@ tester plusieurs connexions successives sur Citrine (avec échec)
 |                     FEATURE REQUESTS                      |
 |                                                           |
  ===========================================================
+
+- when engine analysis is in locked mode so that the engine remains analyzing a certain position while the board is changed, the "V" buttons are disabled and that makes it impossible to ever have results of a locked-down engine analysis inserted into the game score
 
 - Given a list of names create the proper set of empty games to set up
   a tournament. (Suggested by Michael Blake)

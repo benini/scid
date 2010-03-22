@@ -7,11 +7,11 @@
 # This is freely redistributable software; see the file named "COPYING"
 # or "copying.txt" that came with this program.
 #
+
+# Scid's current version is an enhanced version of the original Scid, the author of which is
+# Shane Hudson. His email is sgh@users.sourceforge.net
 # To contact the current maintainer of Scid, email to the Scid users
 # list at scid-users@lists.sourceforge.net
-# Scid's current version is an enhanced version of the original Scid,
-# the author of which is Shane Hudson. His email is
-# sgh@users.sourceforge.net
 
 #
 # The following few comments are only for Unix versions of Scid:
