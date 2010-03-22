@@ -4209,8 +4209,8 @@ set helpText(Author) {<h1>Contact Information</h1>
   files that are available.
   </p>
   <p>
-  Please send any comments, questions, suggestions or bug reports to Pascal Georges
-  <b>pascal.georges1@free.fr</b>
+  Please send any comments, questions, suggestions or bug reports to
+  the Scid mailinglist <b>scid-users@lists.sourceforge.net</b>.
   </p>
   
   <h3><name Related>Related Links</name></h3>

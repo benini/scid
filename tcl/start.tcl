@@ -7,9 +7,11 @@
 # This is freely redistributable software; see the file named "COPYING"
 # or "copying.txt" that came with this program.
 #
-# To contact the current maintainer of Scid, email to pascal.georges1@free.fr
-# Scid's current version is an enhanced version of the original Scid, the author of which is
-# Shane Hudson. His email is sgh@users.sourceforge.net
+# To contact the current maintainer of Scid, email to the Scid users
+# list at scid-users@lists.sourceforge.net
+# Scid's current version is an enhanced version of the original Scid,
+# the author of which is Shane Hudson. His email is
+# sgh@users.sourceforge.net
 
 #
 # The following few comments are only for Unix versions of Scid:
@@ -1269,6 +1271,7 @@ proc ::splash::add {text} {
 
 ::splash::add "Copyright (C) 1999-2004 Shane Hudson"
 ::splash::add "Copyright (C) 2006-2009 Pascal Georges"
+::splash::add "Copyright (C) 2010 The Scid Project"
 ::splash::add "This is Scid $::scidVersion, released $::scidVersionDate."
 ::splash::add "Website: http://scid.sourceforge.net\n"
 

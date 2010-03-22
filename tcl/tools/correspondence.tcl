@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.91 2010/03/08 16:20:17 arwagner Exp $
+### $Id: correspondence.tcl,v 1.92 2010/03/22 16:23:57 arwagner Exp $
 ###
-### Last change: <Fri, 2010/03/05 17:23:50 arwagner ingata>
+### Last change: <Tue, 2010/03/16 17:31:20 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
