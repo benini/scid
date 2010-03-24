@@ -208,9 +208,13 @@ menuText B ToolsImportFile "Importa arquivo de jogos PGN..." 7 \
   {Importa jogos de um arquivo PGN}
 menuText B ToolsStartEngine1 "Iniciar engine 1" 0  {Inicia engine 1}
 menuText B ToolsStartEngine2 "Iniciar engine 2" 0  {Inicia engine 2}
+# ====== TODO To be translated ======
+menuText B ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
 menuText B Play "Jogar" 0
 menuText B CorrespondenceChess "Xadrez por correspondência" 0 {Funções para jogar xadrez por correspondência usando eMail e Xfcc}
 menuText B CCConfigure "Configurar..." 0 {Configura ferramentas externas e configuração geral}
+# ====== TODO To be translated ======
+menuText B CCConfigRelay "Observe games..." 10 {Configure games to be observed}
 menuText B CCOpenDB "Abrir base..." 0 {Abre a base de correspondência padrão}
 menuText B CCRetrieve "Recupera jogos" 0 {Recupera jogos via (Xfcc-)}
 menuText B CCInbox "Processa caixa de entrada" 0 {Processa todos os arquivos na caixa de entrada do Scid}
@@ -1673,6 +1677,12 @@ translate B CCOrderMyTimeTxt {Meu Relógio}
 translate B CCOrderTimePerMoveTxt {Tempo por movimento até o próximo controle de tempo}
 translate B CCOrderStartDate {Data de Inicio}
 translate B CCOrderOppTimeTxt {Relogio do Oponente}
+
+# ====== TODO To be translated ======
+translate B CCDlgConfigRelay {Observe games}
+# ====== TODO To be translated ======
+translate B CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+
 translate B ExtHWConfigConnection {Configurar hardware externo}
 translate B ExtHWPort {Porta}
 translate B ExtHWEngineCmd {Comando do Engine}
