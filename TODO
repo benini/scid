@@ -108,6 +108,8 @@ I'm using gentoo and I get this on the terminal that runs scid:
 
 - FIDE changed the number of rating list per year. Alas, Scid seems to use 4 lists per year layout even for new games.
 
+- Export Tournament grid in XML
+
 --- Joram op den Kelder -----------------------------------------------
 
 - When merging game A into game B, A is added as a new variation. Is this a conscious choice? It seems illogical to me. For example: if game B is analysis of an opening variation, it's not possible to add a newly played game to a non-main variation of the analysis. Workaround: manually change the appropriate variation into the main line, merge games, and change back to the original main line.
