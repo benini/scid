@@ -73,8 +73,7 @@ menuText N EditMain "Variatie op hoofdvariant" 13 \
 menuText N EditTrial "Probeer variatie" 0 \
   {Start/stop probeer modus, om een idee op het bord te testen}
 menuText N EditStrip "Verwijder analyse" 2 {Verwijder commentaar of varianten uit deze partij}
-# ====== TODO To be translated ======
-menuText N EditUndo "Undo" 0 {Undo last game change}
+menuText N EditUndo "Ongedaan" 0 {Maak laatset verandering ongedaan}
 menuText N EditStripComments "Commentaar" 0 \
   {Verwijder alle commentaar en annotaties uit deze partij}
 menuText N EditStripVars "Varianten" 0 {Verwijder alle varianten uit deze partij}
@@ -184,9 +183,8 @@ menuText N ToolsTraining "Training"  0 {Training gereedschappen (taktiek, openin
 menuText N ToolsTacticalGame "Taktische partij"  0 {Speel een taktische partij}
 menuText N ToolsSeriousGame "Ernstige partij"  0 {Speel een ernstige partij}
 menuText N ToolsTrainOpenings "Openingen "  0 {Repertoriumtraining}
-# ====== TODO To be translated ======
-menuText N ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
-menuText N ToolsTrainTactics "Tactiek "  0 {Los taktische stellingen op }
+menuText N ToolsTrainReviewGame "Herspeel Partij"  0 {Zoek de zetten gespeeld in een partij}
+menuText N ToolsTrainTactics "Tactiek "  0 {Los tactische stellingen op }
 menuText N ToolsTrainCalvar "Berekenen van varianten"  0 {Training in het berekenen van varianten}
 menuText N ToolsTrainFindBestMove "Vind de beste zet"  0 {Vind de beste zet}
 menuText N ToolsTrainFics "Speel op het internet"  0 {Speel of freechess.org}
@@ -228,13 +226,13 @@ menuText N ToolsImportFile "PGN database importeren..." 4 \
 menuText N ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
 menuText N ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
 # ====== TODO To be translated ======
-menuText N ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
+menuText N ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
 menuText N Play "Speel" 0
 menuText N CorrespondenceChess "Correspondentieschaak" 0 {Functies voor eMail en Xfcc gebaseerde correspondentieschaak}
-menuText N CCConfigure "Configureer..." 0 {Configureer externe tools en algemene instellingen}
+menuText N CCConfigure "Configureer..." 0 {Configureer externe gereedschappen en algemene instellingen}
 # ====== TODO To be translated ======
-menuText N CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
-menuText N CCOpenDB "Open Database..." 0 {Open de default correspondentieschaak database}
+menuText N CCConfigRelay "Observe games..." 10 {Configure games to be observed}
+menuText N CCOpenDB "Open Database..." 0 {Open de standaard correspondentieschaak database}
 menuText N CCRetrieve "Haal Partijen op" 0 {Haal partijen op via externe (Xfcc-)helper}
 menuText N CCInbox "Verwerk Inbox" 0 {Verwerk alle bestanden in scids Inbox}
 menuText N CCSend "Stuur de Zet op" 0 {Stuur de zet op via eMail of de externe (Xfcc-)helper}
@@ -244,10 +242,8 @@ menuText N CCOfferDraw "Stel Remise voor" 0 {Stuur de zet op en stel remise voor
 menuText N CCAcceptDraw "Accepteer Remise" 0 {Accepteer een remise voorstel (niet via eMail)}
 menuText N CCNewMailGame "Nieuwe eMail Partij..." 0 {Start een nieuwe eMail partij}
 menuText N CCMailMove "Stuur de zet op..." 0 {Stuur de zet op naar de tegenspeler via eMail}
-# ====== TODO To be translated ======
-menuText N CCGamePage "Game Page..." 0 {Call up the game via the web browser}
-# ====== TODO To be translated ======
-menuText N CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText N CCGamePage "Partij Pagina..." 0 {Roep de partij op met een web browser}
+menuText N CCEditCopy "Kopieer de Partijlijst naar het Clipbord" 0 {Kopieer de Partijen als CSV lijst naar het clipbord}
 
 # Options menu:
 menuText N Options "Opties" 0
@@ -269,14 +265,10 @@ menuText N OptionsFontsFixed "Vaste grootte" 0 {Wijzig dit lettertype}
 menuText N OptionsGInfo "Partij Informatie" 0 {Parij-informatie opties}
 menuText N OptionsLanguage "Kies taal" 5 {Kies taal}
 menuText N OptionsMovesTranslatePieces "Vertaal stukken" 0 {Vertaal de eerste letters van de stukken}
-# ====== TODO To be translated ======
-menuText N OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
-# ====== TODO To be translated ======
-menuText N OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
-# ====== TODO To be translated ======
-menuText N OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
-# ====== TODO To be translated ======
-menuText N OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+menuText N OptionsMovesHighlightLastMove "Markeer de laatste zet" 0 {Markeer de laatste zet}
+menuText N OptionsMovesHighlightLastMoveDisplay "Toon" 0 {Toon de laatste zet markering}
+menuText N OptionsMovesHighlightLastMoveWidth "Breedte" 0 {Variantdikte}
+menuText N OptionsMovesHighlightLastMoveColor "Kleur" 0 {Varinatkleur}
 menuText N OptionsMoves "Zetten" 0 {Wijzig optie voor zet-invoer}
 menuText N OptionsMovesAsk "Bevestiging voor overschrijven" 0 \
   {Bevestig het overschrijven van bestaande zetten}
@@ -293,8 +285,7 @@ menuText N OptionsMovesSpace "Voeg spaties in na het nummer van de zet" 0 {Voeg 
 menuText E OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}   
 menuText N OptionsMovesKey "Auto-aanvullen" 0 \
   {Aan/uitschakelen van toetsenbordzet auto-aanvullen}
-# ====== TODO To be translated ======
-menuText N OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+menuText N OptionsMovesShowVarArrows "Toon Pijlen voor Varianten" 0 {Zet aan/af pijlen om variantenzetten te tonen}
 menuText N OptionsNumbers "Getalformaat" 5 \
   {Kies de manier waarop getallen te zien zijn}
 menuText N OptionsStartup "Opstarten" 3 {Selecteer de vensters die tijdens starten geopend worden}
@@ -309,8 +300,7 @@ menuText N OptionsWindowsDock "Veranker de vensters" 0 {Veranker de vensters}
 menuText N OptionsWindowsSaveLayout "Opmaak opslaan" 0 {Opmaak opslaan}
 menuText N OptionsWindowsRestoreLayout "Opmaak herstellen" 0 {Opmaak herstellen}
 menuText N OptionsWindowsShowGameInfo "Toon de informatie over de partij" 0 {Toon de informatie over de partij}
-# ====== TODO To be translated ======
-menuText N OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
+menuText N OptionsWindowsAutoLoadLayout "Auto laad eerste layout" 0 {Auto laad eerste layout bij opstarten}
 menuText N OptionsToolbar "Gereedschappenbalk" 12 \
   {Weergeven/verbergen hoofdvenster gereedschappenbalk}
 menuText N OptionsECO "ECO data laden..." 0 \
@@ -517,17 +507,14 @@ menuText N TreeFileClose "Zoekboom venster sluiten" 0 {Sluiten van het zoekboom 
 menuText N TreeMask "Masker" 0
 menuText N TreeMaskNew "Nieuw" 0 {Nieuw masker}
 menuText N TreeMaskOpen "Open" 0 {Open mask}
-# ====== TODO To be translated ======
-menuText N TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
-menuText N TreeMaskSave "Slaag op" 0 {Slaag het masker op}
+menuText N TreeMaskOpenRecent "Open recent" 0 {Open recent masker}
+menuText N TreeMaskSave "Bewaar" 0 {Bewaar het masker}
 menuText N TreeMaskClose "Sluiten" 0 {Sluit het masker}
 menuText N TreeMaskFillWithGame "Vullen met partij" 0 {Vul het masker met de partij}
 menuText N TreeMaskFillWithBase "Vullen met databestand" 0 {Vul het masker met alle partijen in het databestand}
 menuText N TreeMaskInfo "Info" 0 {Toon de statistieken voor het huidige masker}
-# ====== TODO To be translated ======
-menuText N TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
-# ====== TODO To be translated ======
-menuText N TreeMaskSearch "Search" 0 {Search in current mask}
+menuText N TreeMaskDisplay "Toon masker overzicht" 0 {Toon maskerdata in boomvorm}
+menuText N TreeMaskSearch "Zoek" 0 {Zoek in huidig masker}
 menuText N TreeSort "Sorteren" 0
 menuText N TreeSortAlpha "Alfabetisch" 0
 menuText N TreeSortECO "ECO code" 0
@@ -537,8 +524,7 @@ menuText N TreeOpt "Opties" 0
 menuText N TreeOptSlowmode "Trage modus" 0 {Trage modus voor updates (hoge nauwkeurigheid)}
 menuText N TreeOptFastmode "Snelle modus" 0 {Snelle modus voor updates (geen omwisselingen van zetten)}
 menuText N TreeOptFastAndSlowmode "Snelle en trage modus" 0 {Eerst snelle modus en daarna trage modus voor updates}
-# ====== TODO To be translated ======
-menuText N TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
+menuText N TreeOptStartStop "Auto verversing" 0 {Zet automatische verversing van het boomvenster op/af}
 menuText N TreeOptLock "Vergrendelen" 0 {Vergrendelen/Ontgrendelen van de boom bij de huidige database}
 menuText N TreeOptTraining "Training" 0 {Aan/Uit zetten training modus}
 menuText N TreeOptAutosave "Autom.cache-data Bewaren" 4 \
@@ -561,10 +547,8 @@ translate N DoYouWantToSaveFirst {Wil u eerst de verandering bewaren?}
 translate N AddToMask {Toevoegen aan het Masker}
 translate N RemoveFromMask {Verwijderen uit het Masker}
 translate N AddThisMoveToMask {Voeg deze zet toe aan het Masker}
-# ====== TODO To be translated ======
-translate N SearchMask {Search in Mask}
-# ====== TODO To be translated ======
-translate N DisplayMask {Display Mask}
+translate N SearchMask {Zoek in Masker}
+translate N DisplayMask {Toon Masker}
 translate N Nag {Nag code}
 translate N Marker {Aanwijzer}
 translate N Include {Invoegen}
@@ -902,8 +886,7 @@ translate N GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) f
 translate N GlistDeleteGame {Maak de verwijdering van deze partij ongedaan} 
 translate N GlistDeleteAllGames {Verwijder alle partijen in de filter} 
 translate N GlistUndeleteAllGames {Maak de verwijdering van alle partijen in de filter ongedaan} 
-# ====== TODO To be translated ======
-translate N GlistMergeGameInBase {Merge Game in other base} 
+translate N GlistMergeGameInBase {Voeg Partij toe aan een andere database} 
 
 # Maintenance windows
 translate N DatabaseName {Naam database:}
@@ -915,8 +898,7 @@ translate N YearRange {JaarBereik:}
 translate N RatingRange {EloBereik (laag/hoog):}
 translate N Description {Beschrijving} ;
 translate N Flag {Markering}
-# ====== TODO To be translated ======
-translate N CustomFlags {Custom flags}
+translate N CustomFlags {Markering volgens keus}
 translate N DeleteCurrent {Wis huidige partij}
 translate N DeleteFilter {Wis geselecteerde partijen}
 translate N DeleteAll {Wis alle partijen}
@@ -1015,8 +997,7 @@ translate N SearchBoardExact {Exacte stelling (stukken op dezelfde velden)}
 translate N SearchBoardPawns {Pionnen (hetzelfde materiaal, alle pionnen op dezelfde velden)}
 translate N SearchBoardFiles {Lijnen (hetzelfde materiaal, alle pionnen op dezelfde lijnen)}
 translate N SearchBoardAny {Willekeurig (hetzelfde materiaal, pionnen en stukken willekeurig)}
-# ====== TODO To be translated ======
-translate N SearchInRefDatabase { Search in base }
+translate N SearchInRefDatabase { Zoek in database }
 translate N LookInVars {Zoek in varianten}
 
 # Material search:
@@ -1478,11 +1459,8 @@ translate N LoadingBase {Laad database}
 translate N Tactics {Taktiek}
  
 translate N ShowSolution {Toon oplossing}
-# ====== TODO To be translated ======
-translate N NextExercise {Next exercise}
-# ====== TODO To be translated ======
-translate N PrevExercise {previous exercise}
-# ====== TODO To be translated ======
+translate N NextExercise {Volgende oefening}
+translate N PrevExercise {Voorgaande oefening}
 translate N StopTraining {Stop training}
  
 translate N Next {Volgende}
@@ -1527,17 +1505,10 @@ translate N Depth {Diepte}
 translate N Time {Tijd} 
 translate N SecondsPerMove {Seconden per zet}
 translate N Engine {Engine}
-# ====== TODO To be translated ======
-translate N TimeMode {Time mode}
-# ====== TODO To be translated ======
-translate N TimeBonus {Time + bonus}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
+translate N TimeMode {Tijd methode}
+translate N TimeBonus {Tiid + bonus}
 translate N TimeMin {min}
-# ====== TODO To be translated ======
 translate N TimeSec {sec}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
  
 translate N AllExercisesDone {Alle oefeningen gedaan}
  
@@ -1683,106 +1654,56 @@ translate N KingsIndian {Koningsindisch}
 translate N KingsIndianSamisch {Koningsindisch Sämisch}
 
 translate N KingsIndianMainLine {Koningsindisch Hoofdvariant}
-# ====== TODO To be translated ======
-translate N ConfigureFics {Configure FICS}
-# ====== TODO To be translated ======
-translate N FICSGuest {Login as Guest}
-# ====== TODO To be translated ======
-translate N FICSServerPort {Server port}
-# ====== TODO To be translated ======
-translate N FICSServerAddress {IP Address}
-# ====== TODO To be translated ======
-translate N FICSRefresh {Refresh}
-# ====== TODO To be translated ======
-translate N FICSTimesealPort {Timeseal port}
-# ====== TODO To be translated ======
-translate N FICSSilence {Silence}
-# ====== TODO To be translated ======
-translate N FICSOffers {Offers}
-# ====== TODO To be translated ======
+translate N ConfigureFics {Configureer FICS}
+translate N FICSGuest {Login als Gast}
+translate N FICSServerPort {Server poort}
+translate N FICSServerAddress {IP Addres}
+translate N FICSRefresh {Ververs}
+translate N FICSTimesealPort {Tijdsoverschrijdingspoort}
+translate N FICSSilence {Stilte}
+translate N FICSOffers {Biedt aan}
 translate N FICSConsole {Console}
-# ====== TODO To be translated ======
-translate N FICSGames {Games}
-# ====== TODO To be translated ======
-translate N FICSUnobserve {Stop observing game}
-# ====== TODO To be translated ======
-translate N FICSProfile {Display your history and profile}
-# ====== TODO To be translated ======
-translate N FICSRelayedGames {Relayed games}
-# ====== TODO To be translated ======
-translate N FICSFindOpponent {Find opponent}
-# ====== TODO To be translated ======
-translate N FICSTakeback {Takeback}
-# ====== TODO To be translated ======
-translate N FICSTakeback2 {Takeback 2}
-# ====== TODO To be translated ======
-translate N FICSInitTime {Initial time (min)}
-# ====== TODO To be translated ======
-translate N FICSIncrement {Increment (sec)}
-# ====== TODO To be translated ======
-translate N FICSRatedGame {Rated Game}
-# ====== TODO To be translated ======
-translate N FICSAutoColour {automatic}
-# ====== TODO To be translated ======
-translate N FICSManualConfirm {confirm manually}
-# ====== TODO To be translated ======
-translate N FICSFilterFormula {Filter with formula}
-# ====== TODO To be translated ======
-translate N FICSIssueSeek {Issue seek}
-# ====== TODO To be translated ======
-translate N FICSChallenge {Challenge}
-# ====== TODO To be translated ======
-translate N FICSAccept {accept}
-# ====== TODO To be translated ======
-translate N FICSDecline {decline}
-# ====== TODO To be translated ======
-translate N FICSColour {Colour}
-# ====== TODO To be translated ======
-translate N FICSSend {send}
-# ====== TODO To be translated ======
-translate N FICSConnect {Connect}
-# ====== TODO To be translated ======
-translate N FICSdefaultuservars {Use default variables}
-# ====== TODO To be translated ======
-translate N FICSObserveconfirm {Do you want to observe game}
-# ====== TODO To be translated ======
-translate N GameReview {Game review}
-# ====== TODO To be translated ======
-translate N GameReviewTimeExtended {Time extended}
-# ====== TODO To be translated ======
-translate N GameReviewMargin {Error margin}
-# ====== TODO To be translated ======
-translate N GameReviewAutoContinue {Auto continue when move is correct}
-# ====== TODO To be translated ======
-translate N GameReviewReCalculate {Use extended time}
-# ====== TODO To be translated ======
-translate N GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
-# ====== TODO To be translated ======
-translate N GameReviewAnalyzingThePosition {Analyzing the position}
-# ====== TODO To be translated ======
-translate N GameReviewEnterYourMove {Enter your move}
-# ====== TODO To be translated ======
-translate N GameReviewCheckingYourMove {Checking your move}
-# ====== TODO To be translated ======
-translate N GameReviewYourMoveWasAnalyzed {Your move was analyzed}
-# ====== TODO To be translated ======
-translate N GameReviewYouPlayedSameMove {You played the same move as in match}
-# ====== TODO To be translated ======
-translate N GameReviewScoreOfYourMove {Score of your move}
-# ====== TODO To be translated ======
-translate N GameReviewGameMoveScore {Game move's score}
-# ====== TODO To be translated ======
-translate N GameReviewEngineScore {Engine's score}
-# ====== TODO To be translated ======
-translate N GameReviewYouPlayedLikeTheEngine {You played like the engine}
-# ====== TODO To be translated ======
-translate N GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
-# ====== TODO To be translated ======
-translate N GameReviewMoveNotGood {This move is not good, score is}
-# ====== TODO To be translated ======
-translate N GameReviewMovesPlayedLike {Moves played like}
-# ====== TODO To be translated ======
-translate N GameReviewMovesPlayedEngine {Moves played like engine}
+translate N FICSGames {Partiejen}
+translate N FICSUnobserve {Stop gadeslaan partij}
+translate N FICSProfile {Toon jouw geschiedenis en profiel}
+translate N FICSRelayedGames {Doorgezonden partijen}
+translate N FICSFindOpponent {Zoek opponent}
+translate N FICSTakeback {Terugnemen}
+translate N FICSTakeback2 {Terugnemen 2}
+translate N FICSInitTime {Initiële tijd (min)}
+translate N FICSIncrement {Toename (sec)}
+translate N FICSRatedGame {De Betreffende Partij}
+translate N FICSAutoColour {Automatisch}
+translate N FICSManualConfirm {Bevestig manueel}
+translate N FICSFilterFormula {Filter met fromule}
+translate N FICSIssueSeek {Zoek uitdager}
+translate N FICSChallenge {Uitdagen}
+translate N FICSAccept {Aanvaard}
+translate N FICSDecline {weiger}
+translate N FICSColour {Kleur}
+translate N FICSSend {Zend}
+translate N FICSConnect {Verbind}
+translate N FICSdefaultuservars {Gebruik standaard waarden}
+translate N FICSObserveconfirm {Wil je de partij gadeslaan}
+translate N GameReview {Partij herbekijken}
+translate N GameReviewTimeExtended {Tijd overschreden}
+translate N GameReviewMargin {Fout marge}
+translate N GameReviewAutoContinue {Auto vervolg als de zet juist is}
+translate N GameReviewReCalculate {Gebruik verlengde tijd}
+translate N GameReviewAnalyzingMovePlayedDuringTheGame {Analyseer de gespeelde zet tijdens de partij}
+translate N GameReviewAnalyzingThePosition {Analyseer de stelling}
+translate N GameReviewEnterYourMove {Voer je zet in}
+translate N GameReviewCheckingYourMove {Controle van je zet}
+translate N GameReviewYourMoveWasAnalyzed {Je zet werd geanalyseerd}
+translate N GameReviewYouPlayedSameMove {Je speelde dezelfde zet als in de partij}
+translate N GameReviewScoreOfYourMove {Score van je zet}
+translate N GameReviewGameMoveScore {Partijzet score}
+translate N GameReviewEngineScore {Score van engine}
+translate N GameReviewYouPlayedLikeTheEngine {Je speelde zoals de engine}
+translate N GameReviewNotEngineMoveButGoodMove {Geen engine zet maar ook goed}
+translate N GameReviewMoveNotGood {Deze zet is niet goed, de score is}
+translate N GameReviewMovesPlayedLike {Zetten gespeeld zoals}
+translate N GameReviewMovesPlayedEngine {Zetten gespeeld zoals de engine}
 translate N CCDlgConfigureWindowTitle {Configureer Correspondentie Schaak}
 translate N CCDlgCGeneraloptions {Algemene Opties}
 translate N CCDlgDefaultDB {Default Databank:}
@@ -1802,21 +1723,14 @@ translate N CCDlgClawsEg {b.v Sylpheed Claws}
 translate N CCDlgmailxEg {b.v. mailx, mutt, nail...}
 translate N CCDlgAttachementPar {Aanhangsel parameter:}
 translate N CCDlgInternalXfcc {Gebruik interne Xfcc ondersteuning}
-# ====== TODO To be translated ======
-translate N CCDlgConfirmXfcc {Confirm moves}
+translate N CCDlgConfirmXfcc {Bevestig de zetten}
 translate N CCDlgSubjectPar {Onderwerp parameter:}
-# ====== TODO To be translated ======
-translate N CCDlgDeleteBoxes {Empty In-/Outbox}
-# ====== TODO To be translated ======
-translate N CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
-# ====== TODO To be translated ======
-translate N CCDlgConfirmMove {Confirm move}
-# ====== TODO To be translated ======
-translate N CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
-# ====== TODO To be translated ======
-translate N CCDlgDBGameToLong {Inconsistent Mainline}
-# ====== TODO To be translated ======
-translate N CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
+translate N CCDlgDeleteBoxes {Lege In-/Uitbox}
+translate N CCDlgDeleteBoxesText {Wil je echt de  In- and Uitbox mappen voor Correspondentieschaak ledigen? Dit vereist een nieuwe synchronisatie om de laatste staat van je partijen te tonen.}
+translate N CCDlgConfirmMove {Bevestig zet}
+translate N CCDlgConfirmMoveText {Als je bevestigt zal volgende zet en commentaar naar de server gestuurd worden:}
+translate N CCDlgDBGameToLong {Onverenigbare Hoofdvariant}
+translate N CCDlgDBGameToLongError {De hoofdvariant in jouw database is langer dan de partij in je Inbox. Als de Inbox huidige partijen bevat bvb. vlak na een synchronisatie, dan werden enkele verkeerde zetten toegevoegd aan de hoofdvariant.\nIn dit geval verkort de hoofdvariant tot (max) zetten\n}
 translate N CCDlgStartEmail {Start een nieuwe eMail partij}
 translate N CCDlgYourName {Uw Naam:}
 translate N CCDlgYourMail {Uw eMail Addres:}
@@ -1838,36 +1752,22 @@ translate N CCNextBtn {Ga naar de volgende}
 translate N CCSendBtn {Stuur de zet op}
 translate N CCEmptyBtn {Ledig In- en Outbox}
 translate N CCHelpBtn {Hulp over iconen en status indicatoren.\nVoor algemen hulp: druk F1!}
-# ====== TODO To be translated ======
-translate N CCDlgServerName {Server Name:}
-# ====== TODO To be translated ======
-translate N CCDlgLoginName  {Login Name:}
-# ====== TODO To be translated ======
-translate N CCDlgPassword   {Password:}
-# ====== TODO To be translated ======
+translate N CCDlgServerName {Server Naam:}
+translate N CCDlgLoginName  {Login Naam:}
+translate N CCDlgPassword   {Paswoord:}
 translate N CCDlgURL        {Xfcc-URL:}
-# ====== TODO To be translated ======
-translate N CCDlgRatingType {Rating Type:}
-# ====== TODO To be translated ======
-translate N CCDlgDuplicateGame {Non-unique game ID}
-# ====== TODO To be translated ======
+translate N CCDlgRatingType {Klassering Type:}
+translate N CCDlgDuplicateGame {Niet-unieke partij ID}
 translate N CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
+translate N CCDlgSortOption {Rangschikken:}
+translate N CCDlgListOnlyOwnMove {De enige partijen waarvan ik de zet heb}
+translate N CCOrderClassicTxt {Plaats, Wedstrijd, Ronde, Resultaat, Wit, Zwart}
+translate N CCOrderMyTimeTxt {Mijn klok}
+translate N CCOrderTimePerMoveTxt {Tijd per zet tot de volgende tijdscontrole}
+translate N CCOrderStartDate {Start datum}
+translate N CCOrderOppTimeTxt {Tegenstander Klok}
 # ====== TODO To be translated ======
-translate N CCDlgSortOption {Sorting:}
-# ====== TODO To be translated ======
-translate N CCDlgListOnlyOwnMove {Only games I have the move}
-# ====== TODO To be translated ======
-translate N CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
-# ====== TODO To be translated ======
-translate N CCOrderMyTimeTxt {My Clock}
-# ====== TODO To be translated ======
-translate N CCOrderTimePerMoveTxt {Time per move till next time control}
-# ====== TODO To be translated ======
-translate N CCOrderStartDate {Start date}
-# ====== TODO To be translated ======
-translate N CCOrderOppTimeTxt {Opponents Clock}
-# ====== TODO To be translated ======
-translate N CCDlgConfigRelay {Configure ICCF observations}
+translate N CCDlgConfigRelay {Observe games}
 # ====== TODO To be translated ======
 translate N CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 translate N ExtHWConfigConnection {Configureer externe hardware}
@@ -1879,8 +1779,7 @@ translate N ExtHWHardware {Hardware}
 translate N ExtHWNovag {Novag Citrine}
 translate N ExtHWInputEngine {Invoer Engine}
 translate N ExtHWNoBoard {Geen bord}
-# ====== TODO To be translated ======
-translate N NovagReferee {Referee}
+translate N NovagReferee {Scheidsrechter}
 translate N IEConsole {Invoer Engine Console}
 translate N IESending {Zetten verzonden voor}
 translate N IESynchronise {Synchroniseer}
@@ -1895,11 +1794,9 @@ translate N DockBottom {Zend naar laatste plaats}
 translate N DockLeft {Zend naar links}
 translate N DockRight {Zend naar rechts}
 translate N Undock {Undock}
-# ====== TODO To be translated ======
-translate N ChangeIcon {Change icon...}
+translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
-
 
 
 
