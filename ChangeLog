@@ -916,13 +916,12 @@ scid-4.3
 		- Make dialogues etc. theme aware for Tk 8.5
 	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
 - Fixes :
----------
-- Fixed a bug in exception handling of Novag Citrine connection
-- Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
-- Hide the startup window
-- Improve some defaults of Scids empty config
-- Major update for brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
-- Fix crosstable export to reflect contents from spell checking file (thanks to Steve)
-- updated nederland translation (thanks to Leander Laruelle)
-- updated spanish translation (thanks to Benigno Hernández)
-
+	* Fixed a bug in exception handling of Novag Citrine connection
+	* Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
+	* Hide the startup window
+	* Improve some defaults of Scids empty config
+	* Fix crosstable export to reflect contents from spell checking file (thanks to Steve)
+- Language updates:
+	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
+	* nederland translation (thanks to Leander Laruelle)
+	* spanish translation (thanks to Benigno Hernandez)

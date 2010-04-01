@@ -656,7 +656,11 @@ Crosstable::PrintPlayer (DString * dstr, playerDataT * pdata)
         if (pdata->elo) {
             sprintf (stemp, "%4u ", pdata->elo);
         } else {
-            strcpy (stemp, "     ");
+	    if (OutputFormat == CROSSTABLE_Html) {
+	      strcpy (stemp, "  -  ");
+	    } else {
+	      strcpy (stemp, "     ");
+	    }
         }
         dstr->Append (StartRightCol, stemp, EndRightCol);
     }
