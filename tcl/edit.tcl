@@ -387,8 +387,8 @@ proc setupBoard {} {
   
   ttk::frame $sr.mid.castle
   ttk::label $sr.mid.castle.label -textvar ::tr(Castling:)
-  ttk::combobox $sr.mid.castle.e -width 5 -textvariable castling -values {KQkq KQ kq -}
-  
+  ttk::combobox $sr.mid.castle.e -width 5 -textvariable castling -values {KQkq K Q k q - KQ kq Kk Kq Kkq Qk Qq Qkq KQk KQq}
+
   pack $sr.mid.castle -pady 10 -expand yes -fill x
   pack $sr.mid.castle.label $sr.mid.castle.e -side left -anchor w -expand yes -fill x
   

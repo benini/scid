@@ -3046,6 +3046,21 @@ image create photo tb_lockengine -data {
     ZviQRhx2mFBAADs=
 }
 
+if {$png_image_support} {
+	image create photo tb_addmove -data {
+		iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
+		WXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAYAAAAGAB4TKWmAAABRklEQVRIx+1US04CQRB9Vd0D
+		zFxgWOnKEym/uAMNHkFdkZgIibpSIwcwhnAUwb0XGBQ37JAJM10uDEQZIz3ERE14m+6uqtfvpfoD
+		rPHbINvC8m7pKY4in4gMaw46t91NGx7bCsRRlG+etmivtq/iabxhy7MWmBM4HSW1QGpD/15ALwbK
+		leKzEeMvxj3XnQDIERE815sUStvyMU9EYOZh566b/1aAmPzmSSvhRERyRIRMJoNqtZYjosU8rq4v
+		E8YSArPiIAjmzkQkMTfGfFrPxuUCguHR8eEXLfLCev0gS0Rot2/C8es4C0CISAAIADiODlY+rFKl
+		MO3176X/0JNieSey5WnbwneHDpRSQIovJtU1VUpBaw0Rseat+g6k0WhYcVO1KAxDiAiY2QwGAwXA
+		/JiAo/Xj+cXZFgBmxS+j0Wjp5mv8DbwBYHRvj9quE3MAAAAielRYdFNvZnR3YXJlAAB42isvL9fL
+		zMsuTk4sSNXLL0oHADbYBlgQU8pcAAAAAElFTkSuQmCC
+	}
+}
+
+
 ###
 ### End of file: analysis.tcl
 ###

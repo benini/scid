@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.92 2010/03/22 16:23:57 arwagner Exp $
+### $Id: correspondence.tcl,v 1.93 2010/04/13 19:23:12 arwagner Exp $
 ###
-### Last change: <Tue, 2010/03/16 17:31:20 arwagner ingata>
+### Last change: <Wed, 2010/04/07 19:33:09 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -270,19 +270,19 @@ namespace eval Xfcc {
 			::Xfcc::xfccsrvstore
 		}
 
-		grid $w.xfccSrvList  -stick e -columnspan 6 -column  0 -row 0 -rowspan $number
+		grid $w.xfccSrvList  -sticky e -columnspan 6 -column  0 -row 0 -rowspan $number
 
-		grid $w.lxfccSrv     -stick e -columnspan 2 -column  0 -row [expr {$number + 1}]
-		grid $w.lxfccUid     -stick e -columnspan 2 -column  0 -row [expr {$number + 2}]
-		grid $w.lxfccPas     -stick e -columnspan 2 -column  0 -row [expr {$number + 3}]
-		grid $w.lxfccURI     -stick e -columnspan 2 -column  0 -row [expr {$number + 4}]
-		grid $w.lxfccrtype   -stick e -columnspan 2 -column  0 -row [expr {$number + 5}]
+		grid $w.lxfccSrv     -sticky e -columnspan 2 -column  0 -row [expr {$number + 1}]
+		grid $w.lxfccUid     -sticky e -columnspan 2 -column  0 -row [expr {$number + 2}]
+		grid $w.lxfccPas     -sticky e -columnspan 2 -column  0 -row [expr {$number + 3}]
+		grid $w.lxfccURI     -sticky e -columnspan 2 -column  0 -row [expr {$number + 4}]
+		grid $w.lxfccrtype   -sticky e -columnspan 2 -column  0 -row [expr {$number + 5}]
 
-		grid $w.xfccSrv      -stick w -columnspan 4 -column  2 -row [expr {$number + 1}]
-		grid $w.xfccUid      -stick w -columnspan 4 -column  2 -row [expr {$number + 2}]
-		grid $w.xfccPas      -stick w -columnspan 4 -column  2 -row [expr {$number + 3}]
-		grid $w.xfccURI      -stick w -columnspan 4 -column  2 -row [expr {$number + 4}]
-		grid $w.xfccrtype    -stick w -columnspan 4 -column  2 -row [expr {$number + 5}]
+		grid $w.xfccSrv      -sticky w -columnspan 4 -column  2 -row [expr {$number + 1}]
+		grid $w.xfccUid      -sticky w -columnspan 4 -column  2 -row [expr {$number + 2}]
+		grid $w.xfccPas      -sticky w -columnspan 4 -column  2 -row [expr {$number + 3}]
+		grid $w.xfccURI      -sticky w -columnspan 4 -column  2 -row [expr {$number + 4}]
+		grid $w.xfccrtype    -sticky w -columnspan 4 -column  2 -row [expr {$number + 5}]
 
 		# Add the buttons to the window
 		grid $w.bOk     -column 2 -row [expr {$number + 6}]
@@ -612,6 +612,15 @@ namespace eval Xfcc {
 			set whiteFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(whiteFideID)}]]
 			set blackFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(blackFideID)}]]
 
+			# If uppercase settings (usual default) exist: use them and
+			# they should take precedence
+			set whiteCountry [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteCountry)}]]
+			set blackCountry [::Xfcc::xmldecrypt [$game selectNodes {string(BlackCountry)}]]
+			set whiteIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteIccfID)}]]
+			set blackIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(BlackIccfID)}]]
+			set whiteFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteFideID)}]]
+			set blackFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(BlackFideID)}]]
+
 			# White/BlackNA are normally left blank but if the user
 			# allwos contain the mail addresses of the player
 			set WhiteNA     [::Xfcc::xmldecrypt [$game selectNodes {string(whiteNA)}]]
@@ -672,22 +681,22 @@ namespace eval Xfcc {
 					puts $pgnF "\[CmailGameName \"$name-$id\"\]";
 
 					if {$whiteCountry != ""} {
-						puts $pgnF "\[whiteCountry \"$whiteCountry\"\]";
+						puts $pgnF "\[WhiteCountry \"$whiteCountry\"\]";
 					}
 					if {$blackCountry != ""} {
-						puts $pgnF "\[blackCountry \"$blackCountry\"\]";
+						puts $pgnF "\[BlackCountry \"$blackCountry\"\]";
 					}
 					if {$whiteIccfID > 0} {
-						puts $pgnF "\[whiteIccfID \"$whiteIccfID\"\]";
+						puts $pgnF "\[WhiteIccfID \"$whiteIccfID\"\]";
 					}
 					if {$blackIccfID > 0} {
-						puts $pgnF "\[blackIccfID \"$blackIccfID\"\]";
+						puts $pgnF "\[BlackIccfID \"$blackIccfID\"\]";
 					}
 					if {$whiteFideID  > 0} {
-						puts $pgnF "\[whiteFideID \"$whiteFideID\"\]";
+						puts $pgnF "\[WhiteFideID \"$whiteFideID\"\]";
 					}
 					if {$blackFideID > 0} {
-						puts $pgnF "\[blackFideID \"$blackFideID\"\]";
+						puts $pgnF "\[BlackFideID \"$blackFideID\"\]";
 					}
 					if {$setup == "true"} {
 						puts $pgnF "\[FEN \"$fen\"\]";
@@ -3384,6 +3393,16 @@ namespace eval CorrespondenceChess {
 							set wc "flag_$wc"
 						}
 						if { [string equal -nocase [lindex $i 0] "blackCountry" ] } {
+							set bc [string range $i 14 end-1]
+							set bc [string tolower $bc]
+							set bc "flag_$bc"
+						}
+						if { [string equal -nocase [lindex $i 0] "WhiteCountry" ] } {
+							set wc [string range $i 14 end-1]
+							set wc [string tolower $wc]
+							set wc "flag_$wc"
+						}
+						if { [string equal -nocase [lindex $i 0] "BlackCountry" ] } {
 							set bc [string range $i 14 end-1]
 							set bc [string tolower $bc]
 							set bc "flag_$bc"

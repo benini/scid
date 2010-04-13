@@ -915,7 +915,9 @@ scid-4.3
 		- Add connector file support to configure game relay from the internet
 		- Make dialogues etc. theme aware for Tk 8.5
 	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
+	* Show WhiteCountry/BlackCountry in game info area
 - Fixes :
+	* Improve documentation for opening trainer (thanks ot Dale Hards)
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
 	* Hide the startup window

@@ -4340,8 +4340,54 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   context menu.
   </p>
   <p>
-  To use the opening trainer first of all open a repertoire database
-  of the proper type. Then choose Play / Training / Opening Trainer.
+  <h2>Creating a repertoir base</h2>
+  Before running the opening trainer, please be aware that the entire
+  repertoire database will be loaded into the trainer. For this
+  reason, it is good to use a smaller database. It is a good idea to
+  first assemble a large database of quality games, then filter the
+  database for a specific opening (e.g. the Ruy Lopez). These filtered
+  games could then be copied to a new database for that specific
+  opening you had in mind (please name it intelligently, so you can
+  easily understand which opening it is for). Then instead of an
+  entire 2 million or so game database, you have a much smaller
+  repertoire database that will be loaded quickly into the opening
+  trainer.
+  </p>
+  <p>
+  You could also buy or download special databases that cover
+  particular openings, although we cannot point you in the direction
+  of any possible sources in this help file.
+  </p>
+  <p>
+  Once you have a smaller database aimed at just the opening you
+  require, set the type as mentioned using the <a
+  Maintenance>Maintenance window</a>.  You will need to restart Scid
+  to use the opening trainer with this new repertoire database.
+  </p>
+  <p>
+  If you choose, for the opening trainer to work better, you may flag
+  certain games as "White opening" or "Black opening". An exhaustive
+  way of doing this would be to go through the entire database 'by
+  hand' and assign the flags individually. A quicker way, may be to
+  filter your database for white openings, then set the flag for all
+  those filtered games, and similarly for black openings. Remember you
+  can have a repertoire for both white and black in the same database.
+  You can set the flags in this way via the <a Maintenance>Maintenance
+  window</a>. How you choose to filter the games for flagging is
+  entirely up to the user. One possible way is to filter 1-0 games for
+  white openings, and 0-1 for black openings. This way is not the best
+  however, and it is left to the user to find the system they feel
+  most comfortable with.
+  </p>
+  <p>
+  Finally, to work best, the Opening Trainer can use NAG values to understand 
+  how a move in the opening is to be rated. Please refer to the <a NAGs>NAG 
+  annotation help</a> for more information.
+  </p>
+  <p>
+  <h2>Using the opening trainer</h2>
+  To use the opening trainer first of all open the repertoire database you
+  created, or one of the proper type. Then choose Play / Training / Opening Trainer.
   The upcoming dialogue offers some choices about the next training
   session
   <ul>

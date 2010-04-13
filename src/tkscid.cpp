@@ -6741,6 +6741,10 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     sprintf (temp, "%c%s %u:  <pi %s>%s</pi>", toupper(gameStr[0]),
              gameStr + 1, db->gameNumber + 1,
              db->game->GetWhiteStr(), db->game->GetWhiteStr());
+    if (db->game->FindExtraTag("WhiteCountry") != NULL) {
+       sprintf (temp, "%s (%s)", temp, db->game->FindExtraTag("WhiteCountry"));
+    }
+
     Tcl_AppendResult (ti, temp, NULL);
     eloT elo = db->game->GetWhiteElo();
     bool eloEstimated = false;
@@ -6754,6 +6758,9 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     sprintf (temp, "  --  <pi %s>%s</pi>",
              db->game->GetBlackStr(), db->game->GetBlackStr());
+    if (db->game->FindExtraTag("BlackCountry") != NULL) {
+       sprintf (temp, "%s (%s)", temp, db->game->FindExtraTag("BlackCountry"));
+    }
     Tcl_AppendResult (ti, temp, NULL);
     elo = db->game->GetBlackElo();
     eloEstimated = false;
@@ -6834,6 +6841,10 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
                 Tcl_AppendResult (ti, ")</gray>", NULL);
             }
+        }
+
+        if (db->game->FindExtraTag("Ref") != NULL) {
+           Tcl_AppendResult (ti, "  <red><run ::Bibliography::ShowRef>Ref</run></red>", NULL);
         }
 
         // Check if this game has a twin (duplicate):

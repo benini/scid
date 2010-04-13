@@ -4,6 +4,9 @@
 |                                                           |
  ===========================================================
 
+* Opening Trainger picks up tye of DB only after restart of Scid(?)
+
+
 I'm using scid-4.2.2 and it crashes while annotating the following game
 by Greco:
 ######################
@@ -71,6 +74,9 @@ I'm using gentoo and I get this on the terminal that runs scid:
  ===========================================================
 
 - when engine analysis is in locked mode so that the engine remains analyzing a certain position while the board is changed, the "V" buttons are disabled and that makes it impossible to ever have results of a locked-down engine analysis inserted into the game score
+
+- Switch sides button for game play instead of automatically switching
+  of sides by board rotation.  (komyt@yahoo.com)
 
 - Given a list of names create the proper set of empty games to set up
   a tournament. (Suggested by Michael Blake)

@@ -36,11 +36,13 @@ for( s=A1; s!=H9; s++ )
   if( color(B[s]) == Color ) G[0].mtrl += Values[ B[s]>>4 ];
   else G[0].xmtrl += Values[ B[s]>>4 ];
 
-G[0].castling = 0; /* enabled all, disable if impossible: */
+/* busted! S.A.
+G[0].castling = 0;
 if( B[E1]!=WK || B[A1]!=WR ) G[0].castling |= WLONG;
 if( B[E1]!=WK || B[H1]!=WR ) G[0].castling |= WSHORT;
 if( B[E8]!=BK || B[A8]!=BR ) G[0].castling |= BLONG;
 if( B[E8]!=BK || B[H8]!=BR ) G[0].castling |= BSHORT;
+*/
 
 G[0].rule50 = 0;
 
@@ -731,14 +733,32 @@ for( s=A8; s>=A1; f++ )
 	s++;
 }
 
-switch( tolower(*f) )
+switch( *f )
 {
 	case 'w': Color = WHITE; break;
+	case 'W': Color = WHITE; break;
 	case 'b': Color = BLACK; break;
+	case 'B': Color = BLACK; break;
 	default:
 		puts("error: side to move must be either 'w' or 'b'");
 		return 1;
 }
+
+// set up castling
+
+// f++;
+
+G[0].castling = 0;
+if  (strchr(f, 'K')==NULL) G[0].castling |= WSHORT;
+if  (strchr(f, 'Q')==NULL) G[0].castling |= WLONG;
+if  (strchr(f, 'k')==NULL) G[0].castling |= BSHORT;
+if  (strchr(f, 'q')==NULL) G[0].castling |= BLONG;
+// #define WSHORT 1 /* if set, white short castling is impossible */
+
+//
+// en-passant
+
+// Sometime soon S.A.
 
 initbs();
 
@@ -1050,7 +1070,8 @@ int command(void)
 	if( strncmp( Inp, "new", 3 ) == 0 )
 	{
 		if( Flag.ponder >= 2 ) { Abort = 1; return 0; }
-		setfen("rnbqkbnr/pppppppp/////PPPPPPPP/RNBQKBNR/w");
+		// setfen("rnbqkbnr/pppppppp/////PPPPPPPP/RNBQKBNR/w");
+		setfen("rnbqkbnr/pppppppp/////PPPPPPPP/RNBQKBNR w KQkq");
 		DrawScore = -20;
 		if( Flag.analyze ) Flag.machine_color = WHITE;
 		else
