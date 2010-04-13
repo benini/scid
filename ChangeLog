@@ -916,6 +916,11 @@ scid-4.3
 		- Make dialogues etc. theme aware for Tk 8.5
 	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
 	* Show WhiteCountry/BlackCountry in game info area
+	* Initial support for bibliographic links in PGN headers:
+		- A BibTeX-file named like the database is parsed as bibliographic input
+		- Header lines of the form [Bib "<bibtexkey>, <addinfo> ; <bibtexkey>, <addinfo>"]
+		  open a new window with bibliographic reference; <addinfo> e.g. No.27 p.85.
+		- if Bib-header exists a new link shows up in game info area
 - Fixes :
 	* Improve documentation for opening trainer (thanks ot Dale Hards)
 	* Fixed a bug in exception handling of Novag Citrine connection

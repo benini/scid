@@ -6843,8 +6843,8 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
 
-        if (db->game->FindExtraTag("Ref") != NULL) {
-           Tcl_AppendResult (ti, "  <red><run ::Bibliography::ShowRef>Ref</run></red>", NULL);
+        if (db->game->FindExtraTag("Bib") != NULL) {
+           Tcl_AppendResult (ti, "  <red><run ::Bibliography::ShowRef>Bib</run></red>", NULL);
         }
 
         // Check if this game has a twin (duplicate):

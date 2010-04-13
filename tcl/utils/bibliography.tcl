@@ -2,18 +2,18 @@
 ### bibliography.tcl: part of Scid.
 ### Copyright (C) 2010 Alexander Wagner
 ###
-### $Id: bibliography.tcl,v 1.1 2010/04/13 19:22:40 arwagner Exp $
+### $Id: bibliography.tcl,v 1.2 2010/04/13 21:28:04 arwagner Exp $
 ###
-### Last change: <Wed, 2010/04/07 20:47:03 arwagner ingata>
+### Last change: <Tue, 2010/04/13 23:24:03 arwagner ingata>
 ###
-### Handle Ref pgn headers to show bibliographic references for a
+### Handle Bib pgn headers to show bibliographic references for a
 ### given game. The bibliographic database should be available in
 ### BibTeX format. The ref header should be of the form:
 ###
-### [Ref "<bibtexkey>, <additional info> ; <bibtexkey>, <additional info>]
+### [Bib "<bibtexkey>, <additional info> ; <bibtexkey>, <additional info>]
 ###
 ### E.g.
-###     [Ref "Botvinnik:1960, No. 27 p.57"]
+###     [Bib "Botvinnik:1960, No. 27 p.57"]
 ###
 ### Refering to the BibTeX record:
 ###
@@ -270,8 +270,9 @@ if {$png_image_support} {
 		set literature ""
 
 		foreach i $extraTagsList {
-			if { [string equal -nocase [lindex $i 0] "Ref" ] } {
+			if { [string equal -nocase [lindex $i 0] "Bib" ] } {
 				set ref [string range $i 5 end-1]
+				puts stderr $ref
 
 				regsub -all { ; } $ref {|} ref
 
@@ -306,8 +307,8 @@ if {$png_image_support} {
 		set w .showRef
 
 		if { [winfo exists $w] } {
+			# recreate the widget with new data
 			destroy $w
-			#return
 		}
 
 		toplevel $w
@@ -346,4 +347,6 @@ if {$png_image_support} {
 
 }
 
-
+###
+### End of file: bibliography.tcl
+###
