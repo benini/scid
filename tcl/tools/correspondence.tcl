@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.93 2010/04/13 19:23:12 arwagner Exp $
+### $Id: correspondence.tcl,v 1.94 2010/04/20 20:31:27 arwagner Exp $
 ###
-### Last change: <Wed, 2010/04/07 19:33:09 arwagner ingata>
+### Last change: <Tue, 2010/04/20 22:30:12 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -586,48 +586,66 @@ namespace eval Xfcc {
 		set aNodes [$doc selectNodes //XfccGame]
 		foreach game $aNodes {
 
-			set id          [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
-			set Event       [::Xfcc::xmldecrypt [$game selectNodes {string(event)}]]
-			set Site        [::Xfcc::xmldecrypt [$game selectNodes {string(site)}]]
-			set Date        [::Xfcc::xmldecrypt [$game selectNodes {string(eventDate)}]]
-			set White       [::Xfcc::xmldecrypt [$game selectNodes {string(white)}]]
-			set Black       [::Xfcc::xmldecrypt [$game selectNodes {string(black)}]]
-			set WhiteElo    [::Xfcc::xmldecrypt [$game selectNodes {string(whiteElo)}]]
-			set BlackElo    [::Xfcc::xmldecrypt [$game selectNodes {string(blackElo)}]]
-			set TimeControl [::Xfcc::xmldecrypt [$game selectNodes {string(timeControl)}]]
-			set GameId      [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
-			set Source      [::Xfcc::xmldecrypt [$game selectNodes {string(gameLink)}]]
-			set Round       [::Xfcc::xmldecrypt [$game selectNodes {string(round)}]]
-			set Result      [::Xfcc::xmldecrypt [$game selectNodes {string(result)}]]
-			set drawOffered [::Xfcc::xmldecrypt [$game selectNodes {string(drawOffered)}]]
-			set setup       [::Xfcc::xmldecrypt [$game selectNodes {string(setup)}]]
-			set fen         [::Xfcc::xmldecrypt [$game selectNodes {string(fen)}]]
+			set id           [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
+			set Event        [::Xfcc::xmldecrypt [$game selectNodes {string(event)}]]
+			set Site         [::Xfcc::xmldecrypt [$game selectNodes {string(site)}]]
+			set Date         [::Xfcc::xmldecrypt [$game selectNodes {string(eventDate)}]]
+			set White        [::Xfcc::xmldecrypt [$game selectNodes {string(white)}]]
+			set Black        [::Xfcc::xmldecrypt [$game selectNodes {string(black)}]]
+			set WhiteElo     [::Xfcc::xmldecrypt [$game selectNodes {string(whiteElo)}]]
+			set BlackElo     [::Xfcc::xmldecrypt [$game selectNodes {string(blackElo)}]]
+			set TimeControl  [::Xfcc::xmldecrypt [$game selectNodes {string(timeControl)}]]
+			set GameId       [::Xfcc::xmldecrypt [$game selectNodes {string(id)}]]
+			set Source       [::Xfcc::xmldecrypt [$game selectNodes {string(gameLink)}]]
+			set Round        [::Xfcc::xmldecrypt [$game selectNodes {string(round)}]]
+			set Result       [::Xfcc::xmldecrypt [$game selectNodes {string(result)}]]
+			set drawOffered  [::Xfcc::xmldecrypt [$game selectNodes {string(drawOffered)}]]
+			set setup        [::Xfcc::xmldecrypt [$game selectNodes {string(setup)}]]
+			set fen          [::Xfcc::xmldecrypt [$game selectNodes {string(fen)}]]
+			set myTurn       [$game selectNodes {string(myTurn)}]
+			set moves        [::Xfcc::xmldecrypt [$game selectNodes {string(moves)}]]
+			set mess         [::Xfcc::xmldecrypt [$game selectNodes {string(message)}]]
 
 			# These values may not be set, they were first introduced by
-			# SchemingMind as extension to Xfcc
-			set whiteCountry [::Xfcc::xmldecrypt [$game selectNodes {string(whiteCountry)}]]
-			set blackCountry [::Xfcc::xmldecrypt [$game selectNodes {string(blackCountry)}]]
-			set whiteIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(whiteIccfID)}]]
-			set blackIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(blackIccfID)}]]
-			set whiteFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(whiteFideID)}]]
-			set blackFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(blackFideID)}]]
-
-			# If uppercase settings (usual default) exist: use them and
-			# they should take precedence
+			# SchemingMind as extension to Xfcc.  If uppercase settings
+			# (usual default) exist: use them and they should take
+			# precedence. Note that the PNG header should use upper case
+			# by convention
 			set whiteCountry [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteCountry)}]]
 			set blackCountry [::Xfcc::xmldecrypt [$game selectNodes {string(BlackCountry)}]]
 			set whiteIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteIccfID)}]]
 			set blackIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(BlackIccfID)}]]
 			set whiteFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteFideID)}]]
 			set blackFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(BlackFideID)}]]
+			set WhiteNA      [::Xfcc::xmldecrypt [$game selectNodes {string(WhiteNA)}]]
+			set BlackNA      [::Xfcc::xmldecrypt [$game selectNodes {string(BlackNA)}]]
 
+			if {$whiteCountry == ""} {
+				set whiteCountry [::Xfcc::xmldecrypt [$game selectNodes {string(whiteCountry)}]]
+			}
+			if {$whiteIccfID == ""} {
+				set whiteIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(whiteIccfID)}]]
+			}
+			if {$whiteFideID == ""} {
+				set whiteFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(whiteFideID)}]]
+			}
+			if {$blackCountry == ""} {
+				set blackCountry [::Xfcc::xmldecrypt [$game selectNodes {string(blackCountry)}]]
+			}
+			if {$blackIccfID == ""} {
+				set blackIccfID  [::Xfcc::xmldecrypt [$game selectNodes {string(blackIccfID)}]]
+			}
+			if {$blackFideID == ""} {
+				set blackFideID  [::Xfcc::xmldecrypt [$game selectNodes {string(blackFideID)}]]
+			}
 			# White/BlackNA are normally left blank but if the user
 			# allwos contain the mail addresses of the player
-			set WhiteNA     [::Xfcc::xmldecrypt [$game selectNodes {string(whiteNA)}]]
-			set BlackNA     [::Xfcc::xmldecrypt [$game selectNodes {string(blackNA)}]]
-
-			set myTurn          [$game selectNodes {string(myTurn)}]
-
+			if {$WhiteNA == ""} {
+				set WhiteNA      [::Xfcc::xmldecrypt [$game selectNodes {string(whiteNA)}]]
+			}
+			if {$BlackNA == ""} {
+				set BlackNA      [::Xfcc::xmldecrypt [$game selectNodes {string(blackNA)}]]
+			}
 			if {$WhiteNA == ""} {
 				set WhiteNA "white@unknown.org"
 			}
@@ -635,8 +653,6 @@ namespace eval Xfcc {
 				set BlackNA "black@unknown.org"
 			}
 
-			set moves       [::Xfcc::xmldecrypt [$game selectNodes {string(moves)}]]
-			set mess        [::Xfcc::xmldecrypt [$game selectNodes {string(message)}]]
 
 			# get the variant as scid can not handle many of them.
 			# a list of all possible tags can be found here:
