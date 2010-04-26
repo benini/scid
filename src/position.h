@@ -163,6 +163,7 @@ public:
 
 #endif
     Position()   { Init(); }
+    Position(const Position& p);
     ~Position()  {
                      if (LegalMoves != NULL) { delete LegalMoves; }
 #ifdef WINCE

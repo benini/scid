@@ -904,6 +904,8 @@ proc updateBoard {args} {
     updateMenuStates
     moveEntry_Clear
     updateStatusBar
+
+    update idletasks
     
     if {[winfo exists .twinchecker]} { updateTwinChecker }
     if {[winfo exists .pgnWin]} { ::pgn::Refresh $pgnNeedsUpdate }

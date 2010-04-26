@@ -2238,17 +2238,17 @@ set helpText(Tree) {<h1>The Tree window</h1>
   <li>up to two graphical markers via the menu items <term>Marker
   1</term> and <term>Marker 2</term>
      <ul>
-     <li> <button ::rep::_tb_include> Include line in repertoire</li>
-     <li> <button ::rep::_tb_exclude> Exclude line from repertoire</li>
-     <li> <button ::tree::mask::imageMainLine> Main Line</li>
-     <li> <button tb_bkm> Bookmark</li>
-     <li> <button ::tree::mask::imageWhite> White</li>
-     <li> <button ::tree::mask::imageBlack> Black</li>
-     <li> <button tb_new> New line</li>
-     <li> <button tb_rfilter> To be verified by further analysis</li>
-     <li> <button tb_msearch> To train</li>
-     <li> <button tb_help> Dubious line</li>
-     <li> <button tb_cut> To remove</li>
+     <li> <img ::rep::_tb_include> Include line in repertoire</li>
+     <li> <img ::rep::_tb_exclude> Exclude line from repertoire</li>
+     <li> <img ::tree::mask::imageMainLine> Main Line</li>
+     <li> <img tb_bkm> Bookmark</li>
+     <li> <img ::tree::mask::imageWhite> White</li>
+     <li> <img ::tree::mask::imageBlack> Black</li>
+     <li> <img tb_new> New line</li>
+     <li> <img tb_rfilter> To be verified by further analysis</li>
+     <li> <img tb_msearch> To train</li>
+     <li> <img tb_help> Dubious line</li>
+     <li> <img tb_cut> To remove</li>
      </ul>
   </li>
   <li><term>Color</term> A colour mark</li>
@@ -4549,14 +4549,17 @@ chess functions can easily accessed by the following buttons:
    </li>
    <li><button tb_CC_delete> empties your In- and Outbox directories.
    </li>
-   <li><button tb_CC_online> is shown if the game list was refreshed
+   <li><img tb_CC_online> is shown if the game list was refreshed
    from the server within the current Scid session. The tool tip for
    this icon shows date and time of the last refresh.
    </li>
-   <li><button tb_CC_offline> indicates, that Xfcc status icons are
+   <li><img tb_CC_offline> indicates, that Xfcc status icons are
    restored from saved results. No update has taken place in the
    current Scid session. The tool tip for this icon shows date and
    time of the last refresh.
+   </li>
+   <li><img tb_CC_pluginactive> indicates, that Correpsondence Chess
+   plugin(s) were loaded and activated upon startup.
    </li>
 </ul>
 </p>
@@ -4698,20 +4701,23 @@ stored internally and are restored to the last update from the server
 if no interet connection is available.
 </p>
 <ul>
-   <li><button tb_CC_online> is shown if the game list was refreshed
+   <li><img tb_CC_online> is shown if the game list was refreshed
    from the server within the current Scid session. The tool tip for
    this icon shows date and time of the last refresh.
    </li>
-   <li><button tb_CC_offline> indicates, that Xfcc status icons are
+   <li><img tb_CC_offline> indicates, that Xfcc status icons are
    restored from saved results. No update has taken place in the
    current Scid session. The tool tip for this icon shows date and
    time of the last refresh.
    </li>
-   <li><button tb_CC_envelope> This is an eMail based game. In those
+   <li><img tb_CC_pluginactive> indicates, that Correpsondence Chess
+   plugin(s) were loaded and activated upon startup.
+   </li>
+   <li><img tb_CC_envelope> This is an eMail based game. In those
    games many of the status flags used in Xfcc-based games are not
    available due to the limitation of the medium.
    </li>
-   <li><button tb_CC_yourmove>
+   <li><img tb_CC_yourmove>
    Its your move.<br>
    <b>Note 1:</b> this status is only updated if you
    synchronise your games with the server, that is, it always refers
@@ -4720,32 +4726,32 @@ if no interet connection is available.
    <b>Note 2:</b>Hovering over this icon with the mouse will display
    the opponents last move.
    </li>
-   <li><button tb_CC_oppmove>
+   <li><img tb_CC_oppmove>
    Its the opponents move. Note: this status is only updated if you
    synchronise your games with the server, that is, it always refers
    to the servers status at last syncronisation.
    </li>
-   <li><button tb_CC_draw>
+   <li><img tb_CC_draw>
    Peace was agreed by a draw.
    </li>
-   <li><button tb_CC_book>
+   <li><img tb_CC_book>
    The use of opening books is allowed for this game.
    </li>
-   <li><button tb_CC_database>
+   <li><img tb_CC_database>
    The use of databases is allowed for this game.
    </li>
-   <li><button tb_CC_tablebase>
+   <li><img tb_CC_tablebase>
    The use of endgame tablebases (e.g. Nalimov tablebases etc.) is
    allowed for this game.
    </li>
-   <li><button tb_CC_engine>
+   <li><img tb_CC_engine>
    Chess Engines are allowed for this game. Sometimes these games are
    also refered to as "Advanced Chess".
    </li>
-   <li><button tb_CC_outoftime>
+   <li><img tb_CC_outoftime>
    Your opponent ran out of time. You may claim a win on time.
    </li>
-   <li><button tb_CC_message>
+   <li><img tb_CC_message>
    Your oppenent sent a message along with his last move. Check the
    game notation.
    </li>
@@ -4770,9 +4776,9 @@ associated flag, if the server provides that information. For eMail
 based games this can be achieved by adding additional PGN tags for
 <i>whiteCountry</i> and <i>blackCountry</i>, each followed by the
 international three letter country code according to ISO 3166-1
-(e.g. "EUR" <button flag_eur>, "USA" <button flag_usa>, "GBR" <button
-flag_gbr>, "FRA" <button flag_fra>, "RUS" <button flag_rus>, "CHN"
-<button flag_chn>...).
+(e.g. "EUR" <img flag_eur>, "USA" <img flag_usa>, "GBR" <img
+flag_gbr>, "FRA" <img flag_fra>, "RUS" <img flag_rus>, "CHN"
+<img flag_chn>...).
 </p>
 
 <p>
@@ -4865,19 +4871,19 @@ Xfcc base games offer extensive status display within the games list.
 This information, however, is only available if Scids internal Xfcc
 support is used.  The following icon are for visual display:
 <ul>
-   <li><button tb_CC_draw> A draw was agreed with the last move.
+   <li><img tb_CC_draw> A draw was agreed with the last move.
    </li>
-   <li><button tb_CC_yourmove> You're on the move.
+   <li><img tb_CC_yourmove> You're on the move.
    </li>
-   <li><button tb_CC_oppmove> Your opponent is on the move.
+   <li><img tb_CC_oppmove> Your opponent is on the move.
    </li>
-   <li><button tb_CC_book> This game allows the use of opening books.
+   <li><img tb_CC_book> This game allows the use of opening books.
    </li>
-   <li><button tb_CC_database> This game allows the use of databases.
+   <li><img tb_CC_database> This game allows the use of databases.
    </li>
-   <li><button tb_CC_tablebase> This game allows the use of tablebases.
+   <li><img tb_CC_tablebase> This game allows the use of tablebases.
    </li>
-   <li><button tb_CC_engine> This game allows the use of chess engines.
+   <li><img tb_CC_engine> This game allows the use of chess engines.
    </li>
 </ul>
 <p>
@@ -4980,7 +4986,7 @@ Essential header fields are:
 </ul>
 <p>
 eMail based chess does not contain that extended status codes as Xfcc.
-These games show the <button tb_CC_envelope> icon to notify them as
+These games show the <img tb_CC_envelope> icon to notify them as
 eMail based.
 </p>
 
@@ -5051,7 +5057,7 @@ your analysis along.
 If a GUI-mailer is used, its usual compose window is opened. The
 address of your opponent is filled in as well as a generic subject
 containing the game id for easy filtering and the bcc address if
-specified in the <a CCSetupDialog>Configuraion</a> dialog. The mail
+specified in the <a CCSetupDialog>Configuration</a> dialog. The mail
 body is set to contain the FEN of the final position and the list of
 moves made so far. This way the opponent can quickly look up your
 move. Finally, Scid attaches the current game including your move in

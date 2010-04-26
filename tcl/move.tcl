@@ -63,8 +63,6 @@ proc ::move::showVarArrows {} {
 }
 
 proc ::move::Start {} {
-  if {$::tree(refresh)} { return }
-  
   if {[winfo exists .coachWin]} {
     set ::tacgame::analysisCoach(paused) 1
     .coachWin.fbuttons.resume configure -state normal
@@ -76,7 +74,6 @@ proc ::move::Start {} {
 }
 
 proc ::move::End {} { 
-  if {$::tree(refresh)} { return }
   sc_move end
   updateBoard
   if {[::move::drawVarArrows]} { ::move::showVarArrows }
@@ -89,7 +86,7 @@ proc ::move::ExitVar {} {
 }
 
 proc ::move::Back {{count 1}} {
-  if {$::tree(refresh)} { return }
+  if {[sc_pos isAt start]} { return } 
   if {[sc_pos isAt vstart]} { ::move::ExitVar; return }
   
   ### todo: if playing, remove this move from hash array S.A ??
@@ -117,8 +114,6 @@ proc ::move::Back {{count 1}} {
 ################################################################################
 proc ::move::Forward {{count 1}} {
   global autoplayMode
-  
-  if {$::tree(refresh)} { return }
   
   if {[sc_pos isAt end]  ||  [sc_pos isAt vend]} { return }
   

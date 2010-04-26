@@ -921,13 +921,21 @@ scid-4.3
 		- Header lines of the form [Bib "<bibtexkey>, <addinfo> ; <bibtexkey>, <addinfo>"]
 		  open a new window with bibliographic reference; <addinfo> e.g. No.27 p.85.
 		- if Bib-header exists a new link shows up in game info area
+		- To handle the bibliographic database 3rd party tools can be
+		  used. A valuabe free, open source  solution might be
+		  http://jabref.sf.net (or any other bibliography tool for BibTeX)
+	* Best games list:
+		- For annotated games (NAGs, Comments, Variations) show an A in the list
+		- For flagged games show up to 4 flag chars or the number of
+		  flags if there are more than 4 flags present.
+	* Allow to change the board without waiting for tree windows to complete search. (Thanks to Fulvio)
 - Fixes :
 	* Improve documentation for opening trainer (thanks ot Dale Hards)
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
 	* Hide the startup window
 	* Improve some defaults of Scids empty config
-	* Fix crosstable export to reflect contents from spell checking file (thanks to Steve)
+	* Replace some buttons in help by proper img tags
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

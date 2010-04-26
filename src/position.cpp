@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 static uint hashVal [16][64];
 static uint stdStartHash = 0;
@@ -30,6 +31,26 @@ static uint stdStartPawnHash = 0;
 // HASH and UNHASH are identical: XOR the hash value for a (piece,square).
 #define HASH(h,p,sq)    (h) ^= hashVal[(p)][(sq)]
 #define UNHASH(h,p,sq)  (h) ^= hashVal[(p)][(sq)]
+
+Position::Position(const Position& p)
+: EPTarget(p.EPTarget), ToMove(p.ToMove), HalfMoveClock(p.HalfMoveClock),
+  PlyCounter (p.PlyCounter), Castling(p.Castling), StrictCastling(p.StrictCastling),
+  Hash(p.Hash), PawnHash(p.PawnHash), LegalMoves(0), SANStrings(0)
+{
+	memcpy(Board, p.Board, sizeof(Board));
+	memcpy(Count, p.Count, sizeof(Count));
+	memcpy(Material, p.Material, sizeof(Material));
+	memcpy(ListPos, p.ListPos, sizeof(ListPos));
+	memcpy(List, p.List, sizeof(List));
+	memcpy(NumOnRank, p.NumOnRank, sizeof(NumOnRank));
+	memcpy(NumOnFyle, p.NumOnFyle, sizeof(NumOnFyle));
+	memcpy(NumOnLeftDiag, p.NumOnLeftDiag, sizeof(NumOnLeftDiag));
+	memcpy(NumOnRightDiag, p.NumOnRightDiag, sizeof(NumOnRightDiag));
+	memcpy(NumOnSquareColor, p.NumOnSquareColor, sizeof(NumOnSquareColor));
+	memcpy(Pinned, p.Pinned, sizeof(Pinned));
+	if (p.LegalMoves) LegalMoves = new MoveList(*p.LegalMoves);
+	if (p.SANStrings) SANStrings = new sanListT(*p.SANStrings);
+}
 
 inline void
 Position::AddHash (pieceT p, squareT sq)

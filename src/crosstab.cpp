@@ -221,11 +221,8 @@ Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
     }
 
     // Find this players title and country if the SpellChecker is defined:
-    // if (SpellCheck != NULL  &&  !strIsSurnameOnly (name)) // makes it need an initial
-
-    if (SpellCheck != NULL ) {
-        const char * comment = SpellCheck->GetComment (name);
-        // SpellCheck->GetCommentExact // makes it need a full christian name
+    if (SpellCheck != NULL  &&  !strIsSurnameOnly (name)) {
+        const char * comment = SpellCheck->GetCommentExact (name);
         if (comment != NULL) {
             strCopy (pdata->title, SpellChecker::GetTitle (comment));
             strCopy (pdata->country, SpellChecker::GetLastCountry (comment));
@@ -567,7 +564,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit)
     if (PrintRatings) { LineWidth += 16; }
     if (PrintTitles) { LineWidth += 4; }
     if (PrintCountries) { LineWidth += 4; }
-    if (PrintAges) { LineWidth += 4; }
+    if (PrintAges) { LineWidth += 3; }
 
     if (mode == CROSSTABLE_Swiss) {
         LineWidth += 16 + PlayerNumWidth;
@@ -586,7 +583,7 @@ Crosstable::PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit)
         if (PrintRatings) { LineWidth += 10; }
         if (PrintTitles) { LineWidth += 8; }
         if (PrintCountries) { LineWidth += 8; }
-        if (PrintAges) { LineWidth += 8; }
+        if (PrintAges) { LineWidth += 6; }
     }
 
     switch (mode) {
@@ -656,44 +653,24 @@ Crosstable::PrintPlayer (DString * dstr, playerDataT * pdata)
         if (pdata->elo) {
             sprintf (stemp, "%4u ", pdata->elo);
         } else {
-	    if (OutputFormat == CROSSTABLE_Html) {
-	      strcpy (stemp, "  -  ");
-	    } else {
-	      strcpy (stemp, "     ");
-	    }
+            strcpy (stemp, "     ");
         }
         dstr->Append (StartRightCol, stemp, EndRightCol);
     }
-
-    // if exporting to html, don't print blank fields
-    //   as firefox doesn't make a grid box for blanks S.A.
-
     if (PrintTitles) {
-	if (OutputFormat == CROSSTABLE_Html && !strCompare(pdata->title,"")) {
-	  sprintf (stemp, " -  ");
-	} else {
-	  sprintf (stemp, "%3s ", pdata->title);
-	}
+        sprintf (stemp, "%3s ", pdata->title);
         dstr->Append (StartCol, stemp, EndCol);
     }
     if (PrintAges) {
         if (pdata->ageInYears == 0) {
-	    if (OutputFormat == CROSSTABLE_Html) {
-	      sprintf (stemp, " -  ");
-	    } else {
-	      strCopy (stemp, "    ");
-	    }
+            strCopy (stemp, "   ");
         } else {
-            sprintf (stemp, "%3d ", pdata->ageInYears);
+            sprintf (stemp, "%2d ", pdata->ageInYears);
         }
         dstr->Append (StartCol, stemp, EndCol);
     }
     if (PrintCountries) {
-	if (OutputFormat == CROSSTABLE_Html && !strCompare(pdata->country,"")) {
-	  sprintf (stemp, " -  ");
-	} else {
-	  sprintf (stemp, "%-3s ", pdata->country);
-	}
+        sprintf (stemp, "%-3s ", pdata->country);
         dstr->Append (StartCol, stemp, EndCol);
     }
     if (OutputFormat == CROSSTABLE_Hypertext) { dstr->Append ("</pi>"); }
@@ -757,10 +734,10 @@ Crosstable::PrintAllPlayAll (DString * dstr, uint playerLimit)
         dstr->Append (StartBoldCol, " Rtng", EndBoldCol);
     }
     if (PrintTitles) {
-        dstr->Append (StartBoldCol, "  Ti", EndBoldCol);
+        dstr->Append (StartBoldCol, "    ", EndBoldCol);
     }
     if (PrintAges) {
-        dstr->Append (StartBoldCol, " Age", EndBoldCol);
+        dstr->Append (StartBoldCol, "Age", EndBoldCol);
     }
     if (PrintCountries) {
         dstr->Append (StartBoldCol, " Nat", EndBoldCol);
@@ -924,10 +901,10 @@ Crosstable::PrintSwiss (DString * dstr, uint playerLimit)
         dstr->Append (StartBoldCol, " Rtng", EndBoldCol);
     }
     if (PrintTitles) {
-        dstr->Append (StartBoldCol, "  Ti", EndBoldCol);
+        dstr->Append (StartBoldCol, "    ", EndBoldCol);
     }
     if (PrintAges) {
-        dstr->Append (StartBoldCol, " Age", EndBoldCol);
+        dstr->Append (StartBoldCol, "Age", EndBoldCol);
     }
     if (PrintCountries) {
         dstr->Append (StartBoldCol, " Nat", EndBoldCol);

@@ -427,11 +427,12 @@ proc ::tree::select { move baseNumber } {
 set tree(refresh) 0
 
 ################################################################################
-proc ::tree::refresh { { baseNumber "" }} {
-  
+proc ::tree::refresh { { baseNumber "" }} {  
   set stack [lsearch -glob -inline -all [ wm stackorder . ] ".treeWin*"]
   
   if {$baseNumber == "" } {
+    sc_tree search -cancel all    
+    
     set topwindow [lindex [lsearch -glob -inline -all [ wm stackorder . ] ".treeWin*"] end ]
     set topbase -1
     if { [ catch { scan $topwindow ".treeWin%d" topbase } ] } {
@@ -440,7 +441,7 @@ proc ::tree::refresh { { baseNumber "" }} {
     }
     for {set i 1 } {$i <= [sc_base count total]} {incr i} {
       if { $i == $topbase } { continue }
-      ::tree::dorefresh $i
+      if { [::tree::dorefresh $i] == "canceled" } { break }
     }
   } else {
     ::tree::dorefresh $baseNumber
@@ -465,8 +466,6 @@ proc ::tree::dorefresh { baseNumber } {
   $w.buttons.stop configure -state normal
   set tree(refresh) 1
   
-  update
-  
   set base $baseNumber
   
   if { $tree(fastmode$baseNumber) == 0 } {
@@ -476,19 +475,6 @@ proc ::tree::dorefresh { baseNumber } {
   }
   
   set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode]
-  displayLines $baseNumber $moves
-  
-  if {[winfo exists .treeBest$baseNumber]} { ::tree::best $baseNumber}
-  
-  # ========================================
-  if { $tree(fastmode$baseNumber) == 2 } {
-    ::tree::status "" $baseNumber
-    sc_progressBar $w.progress bar 251 16
-    set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode 0]
-    displayLines $baseNumber $moves
-  }
-  # ========================================
-  
   catch {$w.f.tl itemconfigure 0 -foreground darkBlue}
   
   foreach button {best graph training lock close} {
@@ -507,6 +493,19 @@ proc ::tree::dorefresh { baseNumber } {
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
   ::windows::gamelist::Refresh
   updateTitle
+  
+  if { $moves == "canceled" } { return "canceled"}
+  displayLines $baseNumber $moves  
+  if {[winfo exists .treeBest$baseNumber]} { ::tree::best $baseNumber}
+  
+  # ========================================
+  if { $tree(fastmode$baseNumber) == 2 } {
+    ::tree::status "" $baseNumber
+    sc_progressBar $w.progress bar 251 16
+    set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode 0]
+    displayLines $baseNumber $moves
+  }
+  # ========================================
   
   # if the Tree base is not the current one, updates the Tree base to the first game in filter : that way it is possible to
   # directly generate an opening report for example

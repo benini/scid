@@ -2,9 +2,9 @@
 ### bibliography.tcl: part of Scid.
 ### Copyright (C) 2010 Alexander Wagner
 ###
-### $Id: bibliography.tcl,v 1.2 2010/04/13 21:28:04 arwagner Exp $
+### $Id: bibliography.tcl,v 1.3 2010/04/26 17:52:33 arwagner Exp $
 ###
-### Last change: <Tue, 2010/04/13 23:24:03 arwagner ingata>
+### Last change: <Mon, 2010/04/26 19:51:13 arwagner ingata>
 ###
 ### Handle Bib pgn headers to show bibliographic references for a
 ### given game. The bibliographic database should be available in
@@ -272,7 +272,6 @@ if {$png_image_support} {
 		foreach i $extraTagsList {
 			if { [string equal -nocase [lindex $i 0] "Bib" ] } {
 				set ref [string range $i 5 end-1]
-				puts stderr $ref
 
 				regsub -all { ; } $ref {|} ref
 
