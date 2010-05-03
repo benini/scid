@@ -936,6 +936,10 @@ scid-4.3
 	* Hide the startup window
 	* Improve some defaults of Scids empty config
 	* Replace some buttons in help by proper img tags
+	* FICS console uses fixed font
+	* Comment editor now opens by clicking the comment in game info area
+	* Bring Best games / tree graph to front if they exist and the
+	button is pressed again
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

@@ -116,6 +116,8 @@ I'm using gentoo and I get this on the terminal that runs scid:
 
 - Export Tournament grid in XML
 
+- Comment Editor: make toggle for the tiny board (Esteban Cervetto)
+
 --- Joram op den Kelder -----------------------------------------------
 
 - When merging game A into game B, A is added as a new variation. Is this a conscious choice? It seems illogical to me. For example: if game B is analysis of an opening variation, it's not possible to add a newly played game to a non-main variation of the analysis. Workaround: manually change the appropriate variation into the main line, merge games, and change back to the original main line.
@@ -124,7 +126,7 @@ I'm using gentoo and I get this on the terminal that runs scid:
 
 - Is it possible to merge multiple games at ones?
 
-======================================================================================================================
+======================================================================
 From: Michal Rudolf <mrudolf@kdewebdev.org>
 Subject: Re: Scid bugs
 
@@ -147,7 +149,7 @@ GAME LIST
 PGN WINDOW
 * cmd: print game
 * ide: better PGN display (figurine font?)
-* opt: strip spaces after/before brackets for variations in PGN window
+* opt: strip spaces after/before brackets for variations in PGN window
 SEARCH MATERIAL
 * fea: find symmetrical patterns (pawns a,b,c = f,g,h)
 * fea: find certain moves, specially captures (f. e. BxPe6 or RxNc3)

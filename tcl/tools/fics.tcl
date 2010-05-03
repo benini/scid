@@ -266,7 +266,7 @@ namespace eval fics {
     
     ttk::scrollbar $w.f.top.fconsole.f1.ysc -command { .fics.f.top.fconsole.f1.console yview }
     text $w.f.top.fconsole.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
-        -wrap word -yscrollcommand "$w.f.top.fconsole.f1.ysc set"
+         -font font_Fixed -wrap word -yscrollcommand "$w.f.top.fconsole.f1.ysc set"
     pack $w.f.top.fconsole.f1.ysc -side left -fill y -side right
     pack $w.f.top.fconsole.f1.console -side left -fill both -expand 1 -side right
     

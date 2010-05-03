@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.94 2010/04/20 20:31:27 arwagner Exp $
+### $Id: correspondence.tcl,v 1.95 2010/05/03 15:59:24 arwagner Exp $
 ###
-### Last change: <Tue, 2010/04/20 22:30:12 arwagner ingata>
+### Last change: <Tue, 2010/04/27 18:04:52 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2516,8 +2516,8 @@ namespace eval CorrespondenceChess {
 		set CmailGameName "CmailGameName \"$gameid\""
 		set WhiteNA       "WhiteNA \"$ownmail\""
 		set BlackNA       "BlackNA \"$oppmail\""
-		set whiteCountry  "whiteCountry \"EUR\""
-		set blackCountry  "blackCountry \"EUR\""
+		set whiteCountry  "WhiteCountry \"EUR\""
+		set blackCountry  "BlackCountry \"EUR\""
 
 		set Mode          "Mode \"EM\""
 

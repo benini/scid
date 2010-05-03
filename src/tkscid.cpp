@@ -7009,7 +7009,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (db->game->GetMoveComment() != NULL) {
         Tcl_AppendResult (ti, "<br>", translate(ti, "Comment"),
-                          " <green><run ::commmenteditor::Open>", NULL);
+                          " <green><run makeCommentWin>", NULL);
         char * str = strDuplicate(db->game->GetMoveComment());
         strTrimMarkCodes (str);
         const char * s = str;

@@ -1019,6 +1019,9 @@ proc ::tree::best { baseNumber } {
     pack $w.opt.lres $w.opt.res -side left -padx 0 -pady 2
     bind $w <Configure> "recordWinSize $w"
     focus $w.pane.blist.list
+  } else {
+    focus $w
+    raise $w
   }
   $w.pane.blist.list delete 0 end
   set tree(bestList$baseNumber) {}
@@ -1137,6 +1140,9 @@ proc ::tree::graph { baseNumber } {
     # wm minsize $w 300 200
     standardShortcuts $w
     ::tree::configGraphMenus "" $baseNumber
+  } else {
+    focus $w
+    raise $w
   }
   
   $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50}]
