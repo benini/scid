@@ -129,10 +129,10 @@ proc ::tree::make { { baseNumber -1 } } {
   set helpMessage($w.menu.file,5) TreeFileCacheInfo
   
   $w.menu.file add separator
-  $w.menu.file add command -label TreeFileBest -command "::tree::best $baseNumber"
+  $w.menu.file add command -label TreeFileBest -command "::tree::best $baseNumber 1"
   set helpMessage($w.menu.file,7) TreeFileBest
   
-  $w.menu.file add command -label TreeFileGraph -command "::tree::graph $baseNumber"
+  $w.menu.file add command -label TreeFileGraph -command "::tree::graph $baseNumber 1"
   set helpMessage($w.menu.file,8) TreeFileGraph
   $w.menu.file add separator
   $w.menu.file add command -label TreeFileCopy -command "::tree::menuCopyToSelection $baseNumber"
@@ -235,8 +235,8 @@ proc ::tree::make { { baseNumber -1 } } {
   pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both
   
-  ttk::button $w.buttons.best -image b_list -style Pad0.Small.TButton -command "::tree::best $baseNumber"
-  ttk::button $w.buttons.graph -image b_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber"
+  ttk::button $w.buttons.best -image b_list -style Pad0.Small.TButton -command "::tree::best $baseNumber 1"
+  ttk::button $w.buttons.graph -image b_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber 1"
   # add a button to start/stop tree refresh
   ttk::button $w.buttons.bStartStop -image engine_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
   
@@ -961,8 +961,9 @@ proc ::tree::prime { baseNumber } {
 ################################################################################
 # ::tree::best
 #   Updates the window of best (highest-rated) tree games.
+#   bpress: the button/menu was selected => bring window to front
 #
-proc ::tree::best { baseNumber } {
+proc ::tree::best { baseNumber {bpress 0}} {
   global tree
   set w .treeBest$baseNumber
   if {! [winfo exists .treeWin$baseNumber]} { return }
@@ -1019,9 +1020,9 @@ proc ::tree::best { baseNumber } {
     pack $w.opt.lres $w.opt.res -side left -padx 0 -pady 2
     bind $w <Configure> "recordWinSize $w"
     focus $w.pane.blist.list
-  } else {
-    focus $w
-    raise $w
+  } elseif {$bpress == 1} {
+       focus $w
+       raise $w
   }
   $w.pane.blist.list delete 0 end
   set tree(bestList$baseNumber) {}
@@ -1106,8 +1107,9 @@ proc ::tree::bestPgn { baseNumber } {
 ################################################################################
 # ::tree::graph
 #   Updates the tree graph window, creating it if necessary.
+#   bpress: the button/menu was selected => bring window to front
 #
-proc ::tree::graph { baseNumber } {
+proc ::tree::graph { baseNumber {bpress 0}} {
   set w .treeGraph$baseNumber
   if {! [winfo exists .treeWin$baseNumber]} { return }
   if {! [winfo exists $w]} {
@@ -1140,11 +1142,11 @@ proc ::tree::graph { baseNumber } {
     # wm minsize $w 300 200
     standardShortcuts $w
     ::tree::configGraphMenus "" $baseNumber
-  } else {
+  } elseif {$bpress == 1} {
     focus $w
     raise $w
   }
-  
+
   $w.c itemconfigure text -width [expr {[winfo width $w.c] - 50}]
   $w.c coords text [expr {[winfo width $w.c] / 2}] 10
   set height [expr {[winfo height $w.c] - 100}]
