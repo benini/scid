@@ -341,8 +341,16 @@ set ::pinfo::wikipurl      "http://toolserver.org/~apper/pd/person/pnd-redirect"
 set ::pinfo::SeeAlsoPND2WP "http://ws.gbv.de/seealso/pnd2wikipedia/?format=seealso&id="
 set ::pinfo::dnburl        "http://d-nb.info/gnd"
 set ::pinfo::viafurl       "http://viaf.org"
+# Federation International d'Echeces
 set ::pinfo::fideurl       "http://ratings.fide.com/card.phtml?event"
+# International Correspoindence Chess Federation
 set ::pinfo::iccfurl       "http://www.iccf-webchess.com/PlayerDetails.aspx?id"
+# SchemingMind internationally recognised CC Club
+set ::pinfo::smurl         "http://www.schemingmind.com/plyrprofile.aspx?profile_id"
+# german chess association ratings database
+set ::pinfo::dwzurl        "http://www.schachbund.de/dwz/db/spieler.html?zps"
+# British chess federation
+set ::pinfo::bcfurl        "http://grading.bcfservices.org.uk/getref.php?ref"
 
 # Defaults for Novag Citrine
 set ::novag::referee "OFF"

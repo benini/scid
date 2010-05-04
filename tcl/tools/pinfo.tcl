@@ -61,6 +61,36 @@ image create photo viaflnk -data {
    8DIHABhYghoqPAxZTgsEEQwTPBILDFEiAhBIeIYOhgBTd0QZCEpZEBcJA2lLFyolKayqGiEAOw==
 }
 
+image create photo smlnk -data {
+   R0lGODlhEAAQAOMNAAAAABgYITE5OVJSUmNja3Nzc4SEjJycpbW1tcbOztbW3ufn5+/39///////
+   /////yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAEAAQAAAEl7AVZEprawCSmkJLQy2HwCiFJgzK
+   1RyAUBBKMhjBEAgGchSFWOGAahACh8GNsEDkBhaPStA6SAA7gytRMHQ8GQFCYcWEMK4DsoNwoS+L
+   hIAwUnxA8Iv6N0gYBDkdDC5KCF0JCAQEgw0MIQxiBD0GTQRdUSETfQcHCAgCADEIjJwgY2N/VIw1
+   lJ0vnTEKISEGRAOeuAhfLhEAOw==
+}
+
+image create photo bcflnk -data {
+   R0lGODlhEAAQAIQRAAAAAAAAIAAAQAAgYCAgIDAwMABAgEBAQGBgYDBvbwCAgD9/fzCQkH9/f2Cg
+   oDCvr4/Pz////////////////////////////////////////////////////////////yH+EUNy
+   ZWF0ZWQgd2l0aCBHSU1QACwAAAAAEAAQAAAFWmCBjGRZEgixFE3kqqwbHUjCGK1r4zJdGINc5Bfs
+   IRrIpFJJkzUAUCcU0HQ9o9ZpNXIFSKE0mFBs3AnNRqJQbVy6k9uuE/IIxKdOh0Jwx3IDAlQEB4SF
+   hoYEIQA7
+}
+
+image create photo dwzlnk -data {
+   R0lGODlhEAAQAMZMABIRERYVFDsQDUoTDyMiInUfGWclIDQzM3QmF4QiG0A3G0A3HU47OU49O0VE
+   RE9FI1BNTFFNTFFOTVFOTlJOTlJQT1JRUVJSUVNSUlRTU1VUVFZVVds5LMw+Mto7Kds7L80/NF1d
+   XNs9Mdo/K9s+Mts+M9pAK9xAM9xANNtBNW9iNtxDN9xDONpGLNxFOdlIK9lILH5tN9xQRXh3d458
+   P4iIiK2XTJmZmb2lU6qqqru7u9zAYszMzOzNZuzNZ+zOZ+zOaOzOae3Qbe3Qbu7Rce3Sc93d3e7u
+   7vn39/v5+fz6+v37+///////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////yH+
+   EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAEAAQAAAHs4BMghAUIi5CPT2Ci4sVEgwpJkGJjI0SDSgv
+   lJWLExUiIj49RZyCGBMyJCk9Q6WCS0sCBSM7Kg41gg66OUxIIScGNDG4NTdMDkxHB0xKFxwgCjYb
+   N0aCBDUzM0xJEyIfCz1GNw7GBzo6DkZIqAkID9VHyMhMMzqwAQMdOAsOBzxMAHRp0xBhAosTQBS5
+   YmIhQoYTHn4odBUhgowSLSQuzDABwooTMIAAIeKKYzcUMnokZBQIADs=
+}
+
 image create photo seealsolnk -data {
 R0lGODlhFQAVAMZ5AAAAAAEBAAICAQQGAhEXCSEtECMwESouJjw8PDJFGEJcH0xpJGFhYVRuMVV1
 KF6CLH2IbmuVM4+Pj5SUlHysO4imYYGwQYK0PaKiooa6QIe7QKioqIi8Qoq9RIq9RYu9R4y+SI2+
@@ -86,9 +116,6 @@ proc WikipNLS { LinkList } {
    set WikiPTI  "&titles="
    set lang     $::language
    set langlink [lindex $LinkList 3]
-
-   puts stderr $LinkList
-
 
    # translate Scids internal single letter language representation by
    # a more common two letter one; the same is used by WP
@@ -172,15 +199,12 @@ proc WikipNLS { LinkList } {
       regsub -all {.*<langlinks>} $xmlresult "" xmlresult
       regsub -all {</langlinks>.*} $xmlresult "" xmlresult
       regsub -all {</ll>} $xmlresult "</ll>\n" xmlresult
-      puts stderr $llcontinue
-      puts stderr $xmlresult
       set fullresult "$fullresult$xmlresult"
    }
 
    set langlist [split $fullresult "\n"]
 
    foreach ll $langlist {
-      puts stderr $ll
       # construct the NLS-enabled link to WP
       if { [string match "*lang=\"$wplanguage\"*" $ll] } {
          set baselink "http://$wplanguage.wikipedia.org/wiki/"
@@ -189,7 +213,6 @@ proc WikipNLS { LinkList } {
          set langlink "$baselink$pagename"
       }
    }
-
    openURL $langlink
 }
 
@@ -215,10 +238,24 @@ proc ReplaceIDTags { pinfo } {
   regsub -all ".*VIAF "   $pinfo "" viaf
   regsub -all ".*FIDEID " $pinfo "" fide
   regsub -all ".*ICCFID " $pinfo "" iccf
+  regsub -all ".*SchemingMind" $pinfo "" smid
+  regsub -all ".*BCF"     $pinfo "" bcfid
+  regsub -all ".*DSB"     $pinfo "" dsbid
   regsub -all {<br>.*}    $pnd  "" pnd
   regsub -all {<br>.*}    $viaf "" viaf
   regsub -all {<br>.*}    $fide "" fide
   regsub -all {<br>.*}    $iccf "" iccf
+  regsub -all {<br>.*}    $smid "" smid
+  regsub -all {<br>.*}    $bcfid "" bcfid
+  regsub -all {<br>.*}    $dsbid "" dsbid
+
+  set pnd   [string trim $pnd]
+  set viaf  [string trim $viaf]
+  set fide  [string trim $fide]
+  set iccf  [string trim $iccf]
+  set smid  [string trim $smid]
+  set bcfid [string trim $bcfid]
+  set dsbid [string trim $dsbid]
 
   switch $::language {
      B {set wplanguage pt}
@@ -237,7 +274,6 @@ proc ReplaceIDTags { pinfo } {
      Y {set wplanguage sr}
      default {set wplanguage en}
   }
-  set ::pinfo::wikipurl "http://toolserver.org/~apper/pd/person/pnd-redirect"
 
   # disable direct wikipedia linking till the resolver is up and
   # running again
@@ -248,13 +284,19 @@ proc ReplaceIDTags { pinfo } {
   set viaflink   "<run openURL $::pinfo::viafurl/$viaf; ::windows::stats::Refresh><button viaflnk -command openURL $::pinfo::viafurl/$viaf><blue>VIAF</blue></run>"
   set fidelink   "<run openURL $::pinfo::fideurl=$fide; ::windows::stats::Refresh><button fidelnk -command openURL $::pinfo::fideurl=$fide><blue>FIDE</blue></run>"
   set iccflink   "<run openURL $::pinfo::iccfurl=$iccf; ::windows::stats::Refresh><button iccflnk -command openURL $::pinfo::iccfurl=$iccf><blue>ICCF</blue></run>"
+  set smlink   "<run openURL $::pinfo::smurl=$smid; ::windows::stats::Refresh><button smlnk -command openURL $::pinfo::smurl=$smid><blue>SchemingMind</blue></run>"
+  set bcflink   "<run openURL $::pinfo::bcfurl=$bcfid; ::windows::stats::Refresh><button bcflnk -command openURL $::pinfo::bcfurl=$bcfid><blue>BCF</blue></run>"
+  set dsblink   "<run openURL $::pinfo::dwzurl=$dsbid; ::windows::stats::Refresh><button dwzlnk -command openURL $::pinfo::dwzurl=$dsbid><blue>DSB</blue></run>"
 
-  # regsub -all "PND $pnd<br>"     $pinfo "$wikiplink $dnblink $seealsolink" pinfo
-  regsub -all "PND $pnd<br>"     $pinfo "$seealsolink $wikiplink $dnblink" pinfo
-  regsub -all "FIDEID $fide<br>" $pinfo "$fidelink" pinfo
-  regsub -all "ICCFID $iccf<br>" $pinfo "$iccflink" pinfo
-  regsub -all "VIAF $viaf"   $pinfo "$viaflink" pinfo
-  regsub -all "</run>  <run" $pinfo "</run> <run" pinfo
+  regsub -all "PND $pnd<br>"           $pinfo "$seealsolink $wikiplink $dnblink" pinfo
+  regsub -all "FIDEID $fide<br>"       $pinfo "$fidelink" pinfo
+  regsub -all "ICCFID $iccf<br>"       $pinfo "$iccflink" pinfo
+  regsub -all "VIAF $viaf"             $pinfo "$viaflink" pinfo
+  regsub -all "SchemingMind $smid<br>" $pinfo "$smlink" pinfo
+  regsub -all "DSB $dsbid<br>"         $pinfo "$dsblink" pinfo
+  regsub -all "BCF $bcfid<br>"         $pinfo "$bcflink" pinfo
+  regsub -all "</run>  <run"           $pinfo "</run> <run" pinfo
+
 
   return $pinfo
 }

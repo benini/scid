@@ -561,7 +561,7 @@ SpellChecker::GetBioData (const char * name)
 }
 
 
-static const uint ELO_YEAR_LAST  = 2010;
+static const uint ELO_YEAR_LAST  = 2015; // end of current ELO scheme, could be increased in case the rating period does not change
 static const uint ELO_YEAR_FIRST = 1970;
 
 static const uint ELO_YEAR_RANGE = ELO_YEAR_LAST + 1 - ELO_YEAR_FIRST;

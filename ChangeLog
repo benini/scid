@@ -929,6 +929,9 @@ scid-4.3
 		- For flagged games show up to 4 flag chars or the number of
 		  flags if there are more than 4 flags present.
 	* Allow to change the board without waiting for tree windows to complete search. (Thanks to Fulvio)
+	* Add Ctrl-N shortcut to Edit window to call NAG values help
+	* Allow for %Bio DSB and %Bio BCF stanzas in ratings file and
+	  proper uplinking to DSB and BCF online ratings bases
 - Fixes :
 	* Improve documentation for opening trainer (thanks ot Dale Hards)
 	* Fixed a bug in exception handling of Novag Citrine connection
@@ -940,7 +943,10 @@ scid-4.3
 	* Comment editor now opens by clicking the comment in game info area
 	* Bring Best games / tree graph to front if they exist and the
 	button is pressed again
+	* allow Elo-rating corrections up to 2015
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
 	* spanish translation (thanks to Benigno Hernandez)
+- Help:
+	* Add UTF-8 NAG-symbols
