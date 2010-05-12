@@ -930,8 +930,14 @@ scid-4.3
 		  flags if there are more than 4 flags present.
 	* Allow to change the board without waiting for tree windows to complete search. (Thanks to Fulvio)
 	* Add Ctrl-N shortcut to Edit window to call NAG values help
-	* Allow for %Bio DSB and %Bio BCF stanzas in ratings file and
-	  proper uplinking to DSB and BCF online ratings bases
+	* Rework ID linking code
+		- Tags, resolverurls, icons etc. are read from a config file.
+		  This eases up future extensions of IDs known by Scid
+		- If no config exists create a default one handling FIDE, ICCF, DSB, BCF, VIAF, SM
+		- Each ID has to link to a unique page, multiple links are not possible
+		- PND is still special as it is used to link to various complex
+		  locations like Wikipedia (including NLS) and SeeAlso. This is
+		  still treated internally
 - Fixes :
 	* Improve documentation for opening trainer (thanks ot Dale Hards)
 	* Fixed a bug in exception handling of Novag Citrine connection

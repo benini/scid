@@ -1738,7 +1738,7 @@ while {$argc > 0} {
 
 ::splash::add "\nStartup completed."
 ::splash::add "Scid has 44 online help pages; just press F1 for help!\n"
-::splash::add "Also look at the online tutorial http://scid.sourceforge.net/tutorial/ will always have the very latest "
+::splash::add "Also look at the online tutorial\nhttp://scid.sourceforge.net/tutorial/\n"
 setWinLocation $dot_w
 wm deiconify $dot_w
 

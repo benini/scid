@@ -339,18 +339,9 @@ set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query&forma
 set ::pinfo::wikipurl      "http://toolserver.org/~apper/pd/person/pnd-redirect"
 # SeeAlso resolver for PND -> WikiPedia
 set ::pinfo::SeeAlsoPND2WP "http://ws.gbv.de/seealso/pnd2wikipedia/?format=seealso&id="
+# Deutsche NationalBibliothek
 set ::pinfo::dnburl        "http://d-nb.info/gnd"
-set ::pinfo::viafurl       "http://viaf.org"
-# Federation International d'Echeces
-set ::pinfo::fideurl       "http://ratings.fide.com/card.phtml?event"
-# International Correspoindence Chess Federation
-set ::pinfo::iccfurl       "http://www.iccf-webchess.com/PlayerDetails.aspx?id"
-# SchemingMind internationally recognised CC Club
-set ::pinfo::smurl         "http://www.schemingmind.com/plyrprofile.aspx?profile_id"
-# german chess association ratings database
-set ::pinfo::dwzurl        "http://www.schachbund.de/dwz/db/spieler.html?zps"
-# British chess federation
-set ::pinfo::bcfurl        "http://grading.bcfservices.org.uk/getref.php?ref"
+# all other ID resolvers come from [scidConfigFile resolvers]
 
 # Defaults for Novag Citrine
 set ::novag::referee "OFF"
@@ -1283,7 +1274,7 @@ proc ::splash::add {text} {
 
 ::splash::add "Copyright (C) 1999-2004 Shane Hudson"
 ::splash::add "Copyright (C) 2006-2009 Pascal Georges"
-::splash::add "Copyright (C) 2010 The Scid Project"
+::splash::add "Copyright (C) 2010-     The Scid Project"
 ::splash::add "This is Scid $::scidVersion, released $::scidVersionDate."
 ::splash::add "Website: http://scid.sourceforge.net\n"
 
@@ -1303,6 +1294,7 @@ set scidConfigFiles(history) "history.dat"
 set scidConfigFiles(bookmarks) "bookmarks.dat"
 set scidConfigFiles(reports) "reports.dat"
 set scidConfigFiles(optrainer) "optrainer.dat"
+set scidConfigFiles(resolvers) "resolvers.dat"
 
 # scidConfigFile:
 #   Returns the full path and name of a Scid configuration file,
