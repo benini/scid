@@ -2279,6 +2279,8 @@ proc toggleLockEngine {n} {
     global analysis
     if { $analysis(lockEngine$n) } {
         set state disabled
+	set analysis(lockN$n) [sc_pos moveNumber]
+	set analysis(lockSide$n) [sc_pos side]
     } else {
         # when i unlock the engine, i must restart the analysis if the engine is running
         # (it's possible to be here with the engine stopped, if i press the stop button
@@ -2409,7 +2411,7 @@ proc updateAnalysisText {{n 1}} {
     if { $analysis(uci$n) } {
         if {$cleared} { set analysis(multiPV$n) {} ; set analysis(multiPVraw$n) {} }
         if {$analysis(multiPVCount$n) == 1} {
-            set newhst [format "%2d %s %s" $analysis(depth$n) [scoreToMate $score $moves $n] [addMoveNumbers [::trans $moves]]]
+            set newhst [format "%2d %s %s" $analysis(depth$n) [scoreToMate $score $moves $n] [addMoveNumbers $n [::trans $moves]]]
             if {$newhst != $analysis(lastHistory$n) && $moves != ""} {
                 $h insert end [format "%s (%.2f)\n" $newhst $analysis(time$n)] indent
                 $h see end-1c
@@ -2422,7 +2424,7 @@ proc updateAnalysisText {{n 1}} {
             catch { set newStr [format "%2d %s " [lindex $pv 0] [scoreToMate $score [lindex $pv 2] $n] ] }
             
             $h insert end "1 " gray
-            append newStr "[addMoveNumbers [::trans [lindex $pv 2]]]\n"
+            append newStr "[addMoveNumbers $n [::trans [lindex $pv 2]]]\n"
             $h insert end $newStr blue
             
             set lineNumber 1
@@ -2430,7 +2432,7 @@ proc updateAnalysisText {{n 1}} {
                 if {$lineNumber == 1} { incr lineNumber ; continue }
                 $h insert end "$lineNumber " gray
                 set score [scoreToMate [lindex $pv 1] [lindex $pv 2] $n]
-                $h insert end [format "%2d %s %s\n" [lindex $pv 0] $score [addMoveNumbers [::trans [lindex $pv 2]]] ] indent
+                $h insert end [format "%2d %s %s\n" [lindex $pv 0] $score [addMoveNumbers $n [::trans [lindex $pv 2]]] ] indent
                 incr lineNumber
             }
         }
@@ -2495,15 +2497,28 @@ proc scoreToMate { score pv n } {
 # returns the pv with move numbers added
 # ::pgn::moveNumberSpaces controls space between number and move
 ################################################################################
-proc addMoveNumbers { pv } {
-    set spc ""
-    if {$::pgn::moveNumberSpaces} { set spc " " }
-    set n [sc_pos moveNumber]
+proc addMoveNumbers { e pv } {
+    global analysis
+
+    if { $analysis(lockEngine$e) } {
+      set n $analysis(lockN$e)
+      set turn $analysis(lockSide$e)
+    } else {
+      set n [sc_pos moveNumber]
+      set turn [sc_pos side]
+    }
+
+    if {$::pgn::moveNumberSpaces} {
+      set spc { }
+    } else {
+      set spc {}
+    }
+
     set ret ""
     set start 0
-    if {[sc_pos side] == "black"} {
+    if {$turn == "black"} {
         set ret "$n.$spc... [lindex $pv 0] "
-        set start 1
+        incr start
         incr n
     }
     for {set i $start} {$i < [llength $pv]} {incr i} {

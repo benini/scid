@@ -112,8 +112,6 @@ I'm using gentoo and I get this on the terminal that runs scid:
 
 - book generation from Scid (re-use of Polyglot code)
 
-- FIDE changed the number of rating list per year. Alas, Scid seems to use 4 lists per year layout even for new games.
-
 - Export Tournament grid in XML
 
 - Comment Editor: make toggle for the tiny board (Esteban Cervetto)
