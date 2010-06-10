@@ -4,6 +4,8 @@
 |                                                           |
  ===========================================================
 
+* Check for bases/books dir not upon startup but once the related
+  function is called for the first time.
 * Opening Trainger picks up tye of DB only after restart of Scid(?)
 
 

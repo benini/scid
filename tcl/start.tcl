@@ -1150,8 +1150,8 @@ proc ::splash::make {} {
         - [winfo vrooty .]}]
   wm geom $w +$x+$y
 
-  # Do not show the startup window by default
-  # wm deiconify $w
+  # Show the startup window by default
+  wm deiconify $w
   
   bind $w <F1> {helpWindow Index}
   bind $w <Escape> {.splash.dismiss invoke}
