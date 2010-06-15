@@ -914,6 +914,17 @@ scid-4.3
 		- Allow observation of games on ICCF webchess
 		- Add connector file support to configure game relay from the internet
 		- Make dialogues etc. theme aware for Tk 8.5
+		- Allow for postal games by the Mode "Postal" header. Those
+		  games are not touched but show up in the cc window provided a
+		  suitable PGN is present in the Inbox. (ICCF might generate this
+		  in case of mixed events.)
+		- Add two new headers: WhiteAddress / BlackAddress to hold
+		  postal adresses for eventual postcard printing
+		- Read additional header tags from the database and thus allow
+		  to show e.g. flags if Black/WhiteCountry header is set even if
+		  those tags are not provided by the games in the Inbox
+		- Rewrite of some parts of the update procedure
+		- Code cleanup and performance improvements
 	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
 	* Show WhiteCountry/BlackCountry in game info area
 	* Initial support for bibliographic links in PGN headers:
@@ -951,6 +962,7 @@ scid-4.3
 	* allow Elo-rating corrections up to 2015
 	* Correct move numbers in engine PV output in locked mode
 	  (http://sourceforge.net/tracker/index.php?func=detail&aid=3001826&group_id=26963&atid=389080)
+	* Limit the history list of FEN notation in board setup (thanks to Steve)
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

@@ -452,6 +452,7 @@ proc setupBoard {} {
   ttk::combobox .setup.status -textvariable setupFen -height 10
   bind .setup.status <<ComboboxSelected>> setSetupBoardToFen
   ::utils::history::SetCombobox setupFen .setup.status
+  ::utils::history::SetLimit setupFen 20
   
   update ; # necessary in case of quick-draw user interactions
   

@@ -87,12 +87,12 @@ proc ::utils::history::GetLimit {key} {
 
 
 proc ::utils::history::PruneList {key {length -1}} {
-  variable data
-  if {! [info exists data($key)]} { return }
+  variable listData
+  if {! [info exists listData($key)]} { return }
   if {$length < 0} {
     set length [::utils::history::GetLimit $key]
   }
-  set data($key) [lrange $data($key) 0 [expr {$length - 1}]]
+  set listData($key) [lrange $listData($key) 0 [expr {$length - 1}]]
 }
 
 

@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.95 2010/05/03 15:59:24 arwagner Exp $
+### $Id: correspondence.tcl,v 1.96 2010/06/15 17:51:06 arwagner Exp $
 ###
-### Last change: <Tue, 2010/04/27 18:04:52 arwagner ingata>
+### Last change: <Tue, 2010/06/15 19:43:33 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -90,7 +90,7 @@ namespace eval Xfcc {
 		global ::Xfcc::xfccrc ::Xfcc::xfccrcfile
 		# file delete $xfccrcfile
 		if {[catch {open $xfccrcfile w} optionF]} {
-			puts stderr "$xfccrcfile does not exist"
+			puts stderr "$xfccrcfile can not be created"
 		} else {
 			# devide by 4 as the size function returns all subarray entries
 			set size [expr [ array size ::Xfcc::xfccsrv ] / 4]
@@ -2116,7 +2116,6 @@ namespace eval CorrespondenceChess {
 		$w.bottom.id tag add id$id $curpos $endpos
 		::utils::tooltip::SetTag $w.bottom.id "$id" id$id
 
-
 		# ToMove may contain a mixture of text for game results plus
 		# several icons displayin the current game status.
 		if { (($clockW == " 0d  0: 0") || ($clockB == " 0d  0: 0")) && (($toMove == "yes") || ($toMove == "no")) } {
@@ -2164,6 +2163,12 @@ namespace eval CorrespondenceChess {
 			set endpos [$w.bottom.toMove index insert]
 			set text "$lastmove"
 		} \
+		"POS" {
+			set curpos [$w.bottom.toMove index insert]
+			$w.bottom.toMove image create end -align center -image tb_CC_envelope
+			set endpos [$w.bottom.toMove index insert]
+			set text "$lastmove"
+		} \
 		"EML" {
 			set curpos [$w.bottom.toMove index insert]
 			$w.bottom.toMove image create end -align center -image tb_CC_envelope
@@ -2204,7 +2209,7 @@ namespace eval CorrespondenceChess {
 		}
 		$w.bottom.white   insert end "$white\n"
 
-		if {$wc != ""} {
+		if {$bc != ""} {
 			if {[lsearch [image names] $bc] > -1} {
 				$w.bottom.black   image create end -align center -image $bc
 				$w.bottom.black   insert end " "
@@ -2235,12 +2240,11 @@ namespace eval CorrespondenceChess {
 
 		$w.bottom.feature insert end "\n"
 
-
-		# Link the double click on each field to jump to this specific
-		# game easily, then lock the entry field from changes by the
-		# user. SetSelection just sets the global $num to the actual row
-		# the user clicked. This has to be a global variable and it has
-		# to be passed to the ProcessServerResult mascaraded to prevent
+		# Link the click on each field to jump to this specific game
+		# easily, then lock the entry field from changes by the user.
+		# SetSelection just sets the global $num to the actual row the
+		# user clicked. This has to be a global variable and it has to
+		# be passed to the ProcessServerResult mascaraded to prevent
 		# from interpretation. See also Scids gamelist.
 		foreach tag {id toMove event site white black clockW clockB var feature} {
 			bind $w.bottom.$tag <Button-1> {
@@ -2742,7 +2746,7 @@ namespace eval CorrespondenceChess {
 	# This has to result in only one game matching the criteria. 
 	# No problem with cmail and Xfcc as GameIDs are unique.
 	#----------------------------------------------------------------------
-	proc SearchGame {Event Site White Black CmailGameName result} {
+	proc SearchGame {Event Site White Black CmailGameName result refresh} {
 		global ::CorrespondenceChess::CorrSlot
 
 		# switch to the Correspondence Games DB
@@ -2777,7 +2781,16 @@ namespace eval CorrespondenceChess {
 		if {[sc_filter count] == 1} {
 			set filternum [sc_filter first]
 
-			::game::Load $filternum
+			# Refresh windows only if necessary
+			if {$refresh == 1} {
+				# ::game::Load  also checks the dirty flag and asks to
+				# save the game in case necessary.
+				::game::Load $filternum
+			} else {
+				sc_game load $filternum
+			}
+
+			set Mode [::CorrespondenceChess::CheckMode]
 
 			sc_move end
 			# Number of moves in the current DB game
@@ -2791,7 +2804,6 @@ namespace eval CorrespondenceChess {
 
 			if {$side == "white"} {
 				set plyStart [expr {$mnCorr*2-1}]
-
 			} else {
 				set plyStart [expr {$mnCorr*2}]
 			}
@@ -2805,83 +2817,101 @@ namespace eval CorrespondenceChess {
 
 			# Check if the games mainline in DB contains more ply than
 			# the game in the clipbase. If so inform the user.
-			if {$plyEnd-$plyStart < 2} {
+			if {($plyEnd-$plyStart < 2) && ($Mode == "XFCC") && ($result == "*")} {
 				set Title [::tr CCDlgDBGameToLong]
 				set Error [::tr CCDlgDBGameToLongError]
 				tk_messageBox -icon warning -type ok -parent . \
 					-title $Title -message "$Error $mnClip (= ply $plyEnd)"
 			}
 
+			# Add moves from the relayed games if the mode is not Postal.
+			# On mixed ICCF Events also the ICCF server deliveres an
+			# empty game via Xfcc, therefore this check is required
+			if {$Mode != "Postal"} {
 
-			# Add moves from clipbase to the DB game. This keeps
-			# comments, but requires that tries are inserted as variants
-			# as it is always appended to the end of the game
-			for {set x $plyStart} {$x < $plyEnd} {incr x} {
-				set basecomment  ""
-				set comment      ""
+				# Add moves from clipbase to the DB game. This keeps
+				# comments, but requires that tries are inserted as variants
+				# as it is always appended to the end of the game
+				for {set x $plyStart} {$x < $plyEnd} {incr x} {
+					set basecomment  ""
+					set comment      ""
 
-				sc_base switch "clipbase"
+					sc_base switch "clipbase"
 
-				# move to the beginning of the new part
-				sc_move start
-				sc_move forward [expr {$x+1}]
+					# move to the beginning of the new part
+					sc_move start
+					sc_move forward [expr {$x+1}]
 
-				# Get the move in _untranslated_ form...
-				set move [sc_game info nextMoveNT]
-				# ... move on one ply ...
-				sc_move forward
-				# ... and get the comment
-				set comment [sc_pos getComment]
+					# Get the move in _untranslated_ form...
+					set move [sc_game info nextMoveNT]
+					# ... move on one ply ...
+					sc_move forward
+					# ... and get the comment
+					set comment [sc_pos getComment]
 
-				# switch to Correspondence DB and add the move and comment
-				sc_base switch     $CorrSlot
-				sc_move addSan     $move
+					# switch to Correspondence DB and add the move and comment
+					sc_base switch     $CorrSlot
+					sc_move addSan     $move
 
-				# Get the comment stored in the base for comparison
-				set basecomment [sc_pos getComment]
+					# Get the comment stored in the base for comparison
+					set basecomment [sc_pos getComment]
 
-				# Some servers keep old comments within the game
-				# (SchemingMind) some don't (ICCF). Try to preserve
-				# comments inserted by the user as well as add new
-				# responses properly.
-				set sbasecomment ""
-				set scomment     ""
+					# Some servers keep old comments within the game
+					# (SchemingMind) some don't (ICCF). Try to preserve
+					# comments inserted by the user as well as add new
+					# responses properly.
+					set sbasecomment ""
+					set scomment     ""
 
-				# Strip of [%ccsnt...] like comments (SchemingMind time stamps)
-				regsub -all {\[.*\]} $basecomment   "" sbasecomment
-				regsub -all {^\s*}   $sbasecomment  "" sbasecomment
-				# Strip of "Name: " to compare original text entered by
-				# the user only.
-				regsub -all "$White:" $sbasecomment "" sbasecomment
-				regsub -all "$Black:" $sbasecomment "" sbasecomment
+					# Strip of [%ccsnt...] like comments (SchemingMind time stamps)
+					regsub -all {\[.*\]} $basecomment   "" sbasecomment
+					regsub -all {^\s*}   $sbasecomment  "" sbasecomment
+					# Strip of "Name: " to compare original text entered by
+					# the user only.
+					regsub -all "$White:" $sbasecomment "" sbasecomment
+					regsub -all "$Black:" $sbasecomment "" sbasecomment
 
-				# Same for the game delivered by Xfcc
-				regsub -all {\[.*\]}  $comment      "" scomment
-				regsub -all {^\s*}    $scomment     "" scomment
-				regsub -all "$White:" $scomment     "" scomment
-				regsub -all "$Black:" $scomment     "" scomment
+					# Same for the game delivered by Xfcc
+					regsub -all {\[.*\]}  $comment      "" scomment
+					regsub -all {^\s*}    $scomment     "" scomment
+					regsub -all "$White:" $scomment     "" scomment
+					regsub -all "$Black:" $scomment     "" scomment
 
-				# Check what to preserve and which comment to set.
-				if { [string length $sbasecomment] == 0} {
-					sc_pos  setComment "$comment"
-				} elseif { [string length $scomment] < [string length $sbasecomment ]} {
-					# base contains more text than the one retrieved
-					if { [string first $scomment $sbasecomment] < 0 } {
-						sc_pos  setComment "$basecomment $comment"
-					}
-				} else {
-					# retrieved game contains more text than the stored
-					if { [string first $sbasecomment $scomment] < 0 } {
-						sc_pos  setComment "$basecomment $comment"
+					# Check what to preserve and which comment to set.
+					if { [string length $sbasecomment] == 0} {
+						sc_pos setComment "$comment"
+					} elseif { [string length $scomment] < [string length $sbasecomment ]} {
+						# base contains more text than the one retrieved
+						if { [string first $scomment $sbasecomment] < 0 } {
+							sc_pos  setComment "$basecomment $comment"
+						}
 					} else {
-						sc_pos  setComment "$comment"
+						# retrieved game contains more text than the stored
+						if { [string first $sbasecomment $scomment] < 0 } {
+							sc_pos setComment "$basecomment $comment"
+						} else {
+							sc_pos setComment "$comment"
+						}
 					}
 				}
+				sc_game tags set -result $result
+				sc_base switch $CorrSlot
+				sc_game save $filternum
+
+				# Only refresh when SearchGame was triggered by the user,
+				# otherwise just reload the game but leave the window in
+				# state to save considerable amount of time
+				if {$refresh == 1} {
+					::CorrespondenceChess::updateConsole "info game::Load"
+					::game::Load $filternum
+				} else {
+					::CorrespondenceChess::updateConsole "info sc_game load"
+					sc_game load $filternum
+				}
+			} else {
+				# only switch to base for postal games
+				sc_base switch $CorrSlot
 			}
-			sc_game tags set -result $result
-			sc_base switch $CorrSlot
-			sc_game save $filternum
-			::game::Load $filternum
 		} elseif {[sc_filter count] == 0} {
 			# No matching game found, add it as a new one
 			# Clear the current game first, then just paste the clipboard
@@ -2903,7 +2933,6 @@ namespace eval CorrespondenceChess {
 			set Error [::tr CCDlgDuplicateGameError]
 			tk_messageBox -icon warning -type ok -parent . \
 				-title $Title -message $Error
-
 		}
 	}
 
@@ -2965,12 +2994,15 @@ namespace eval CorrespondenceChess {
 				::CorrespondenceChess::EnableEngineAnalysis 1
 			}
 
-			SearchGame $Event $Site $White $Black $CmailGameName $result
+			# After this search the windows need to be refreshed to show
+			# the current state
+			SearchGame $Event $Site $White $Black $CmailGameName $result 1
+
 			set Mode [::CorrespondenceChess::CheckMode]
 
 			# hook up with the old email manager: this implements the
 			# manual timestamping required
-			if {($Mode == "EM") || ($Mode == "Relay")} {
+			if {($Mode == "EM") || ($Mode == "Relay") || ($Mode == "Postal")} {
 				set emailData [::tools::email::readOpponentFile]
 				set done 0
 				set idx  0
@@ -3003,7 +3035,7 @@ namespace eval CorrespondenceChess {
 				set drwstr    "- [::tr Draw] -"
 				if { [regexp "$drwstr" $comment] } {
 				} else {
-					sc_pos  setComment "$comment $drwstr"
+					sc_pos setComment "$comment $drwstr"
 					updateBoard -pgn
 				}
 			} else {
@@ -3042,16 +3074,18 @@ namespace eval CorrespondenceChess {
 		set m .menu.play.correspondence
 
 		# do not set state of top.acceptDraw as this is set dynamically
-		if {($Mode == "EM") || ($Mode == "Relay")} {
-			if {($Mode == "EM")} {
+		if {($Mode == "EM") || ($Mode == "Relay") || ($Mode == "Postal")} {
+			if {$Mode == "EM"} {
 				::CorrespondenceChess::updateConsole "info Event: $Event (eMail-based)"
-			} else {
+			} elseif {$Mode == "Relay"} {
 				::CorrespondenceChess::updateConsole "info Event: $Event (observed)"
+			} elseif {$Mode == "Postal"} {
+				::CorrespondenceChess::updateConsole "info Event: $Event (postal)"
 			}
 
-			# eMail games: manual handling for resign and draw is needed,
-			# no standard way/protocol exists => disable the buttons and
-			# menue entries accordingly
+			# eMail/postal games: manual handling for resign and draw is
+			# needed, no standard way/protocol exists => disable the
+			# buttons and menue entries accordingly
 			.ccWindow.top.resign     configure -state disabled
 			.ccWindow.top.claimDraw  configure -state disabled
 			.ccWindow.top.offerDraw  configure -state disabled
@@ -3197,6 +3231,8 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::glccstart ::CorrespondenceChess::glgames windowsOS
 		global ::Xfcc::lastupdate ::Xfcc::xfccstate
 
+		set pgnopen 0
+
 		busyCursor .
 
 		if {$windowsOS} {
@@ -3210,7 +3246,6 @@ namespace eval CorrespondenceChess {
 
 		set games 0
 		if {$CorrSlot > -1} {
-
 
 			# extract the number of the last move using Scids internal
 			# PGN parser as comments etc. might appear, and this number
@@ -3359,7 +3394,7 @@ namespace eval CorrespondenceChess {
 
 			set glgames $games
 
-			sc_base switch "clipbase"
+			### sc_base switch "clipbase"
 
 			# For Classic sorting: sort the clipbase, this is easier
 			# to implement than individual sorting upon import.
@@ -3381,6 +3416,12 @@ namespace eval CorrespondenceChess {
 
 					set wc "";
 					set bc "";
+					set YM " ? ";  
+					set clockW "no update"; set clockB "no update";
+					set var "";             set noDB "";
+					set noBK "";            set noTB ""; 
+					set noENG "";           set mess ""
+					set TC "";              set drawoffer "false";
 
 					sc_base switch "clipbase"
 					sc_game load $game
@@ -3393,6 +3434,20 @@ namespace eval CorrespondenceChess {
 					set Result [sc_game tags get Result]
 					set Extra  [sc_game tags get Extra]
 					# CmailGameName is an extra header :(
+					set extraTagsList [split $Extra "\n"]
+					foreach i $extraTagsList {
+						if { [string equal -nocase [lindex $i 0] "CmailGameName" ] } {
+							set CmailGameName [string range $i 15 end-1]
+						}
+					}
+					#
+					# Switch to the real database to retrieve locally
+					# stored additions like addresses, countries etc.
+					# Disable refresh for SearchGame to speed up the list
+					# building considerably
+					SearchGame $Event $Site $White $Black $CmailGameName $result 0
+					sc_base switch $CorrSlot
+					set Extra  [sc_game tags get Extra]
 					set extraTagsList [split $Extra "\n"]
 
 					# ... extract it as it contains the unique ID
@@ -3423,6 +3478,9 @@ namespace eval CorrespondenceChess {
 							set bc [string tolower $bc]
 							set bc "flag_$bc"
 						}
+						if { [string equal -nocase [lindex $i 0] "TimeControl" ] } {
+							set TC [string range $i 13 end-1]
+						}
 					}
 					sc_move end
 					set number [sc_pos moveNumber]
@@ -3438,16 +3496,19 @@ namespace eval CorrespondenceChess {
 
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
-								$Event $Site $Date $White $Black "" "" "" "" "" "" "" \
+								$Event $Site $Date $White $Black "" "" "" "" $TC "" "" \
 								$wc $bc "" "" $lastmove "false"
-
 					} elseif {$Mode == "Relay"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "REL" \
-								$Event $Site $Date $White $Black "" "" "" "" "" "" "" \
+								$Event $Site $Date $White $Black "" "" "" "" $TC "" "" \
+								$wc $bc "" "" $lastmove "false"
+					} elseif {$Mode == "Postal"} {
+						::CorrespondenceChess::updateGamelist $CmailGameName "POS" \
+								$Event $Site $Date $White $Black "" "" "" "" $TC "" "" \
 								$wc $bc "" "" $lastmove "false"
 					} else {
 						# search for extra information from Xfcc server
-						set YM " ? ";  
+						set YM " ? ";
 						set clockW "no update"; set clockB "no update";
 						set var "";             set noDB "";
 						set noBK "";            set noTB ""; 
@@ -3699,6 +3760,14 @@ namespace eval CorrespondenceChess {
 				if { [string equal -nocase [lindex $i 0] "CmailGameName" ] } {
 					set CmailGameName [string range $i 15 end-1]
 				}
+				if { [string equal -nocase [lindex $i 0] "WhiteAddress" ] } {
+					set WhiteAdr [split [string range $i 14 end-1] ";"]
+					set WhiteAdr [split [string range $i 14 end-1] ";"]
+				}
+				if { [string equal -nocase [lindex $i 0] "BlackAddress" ] } {
+					set BlackAdr [string range $i 14 end-1]
+					set BlackAdr [split [string range $i 14 end-1] ";"]
+				}
 			}
 
 			set pgnfile "[file join $Outbox $CmailGameName].pgn"
@@ -3771,6 +3840,8 @@ namespace eval CorrespondenceChess {
 							CallExternal $callstring
 						}
 					}
+				} elseif {$Mode == "Postal"} {
+					# produce a postcard
 				}
 
 				# Save the game once the move is sent
