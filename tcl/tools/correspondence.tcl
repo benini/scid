@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.96 2010/06/15 17:51:06 arwagner Exp $
+### $Id: correspondence.tcl,v 1.97 2010/06/30 20:41:45 arwagner Exp $
 ###
-### Last change: <Tue, 2010/06/15 19:43:33 arwagner ingata>
+### Last change: <Fri, 2010/06/18 17:48:50 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1066,6 +1066,15 @@ image create photo tb_CC_envelope -data {
 	SCwaj8ikcslsIgEBgHRKXQIusKx2+wAoAbADSwVTqVwq0iDjTYJViNbq9VKNCCNL+1lWFWJmJQQq
 	H3pfZSgNAlBUjXtDYCkLKldbljBdRWAMKiBgYmRmaGpsmhsREhJvcXN1d3mPQo19f4GDhbGaiA0E
 	WQQKJB4VuUSRkyoGBiUmCR3Dh5wgJyIiJiEcDhjEkKepEhERExMUGhDbkI6NTuvs7e7v8EVBADs=
+}
+
+image create photo tb_CC_postal -data {
+	R0lGODlhGAAYAIQaAAAAAD4+PkNDQ01NTU9PT1NTU2NjY2pqanNzc3x8fIGBgZWVlaCgoKysrK6u
+	rrm5uby8vMbGxsjIyNTU1OTk5O7u7vX19ff39/r6+vv7+////////////////////////yH+EUNy
+	ZWF0ZWQgd2l0aCBHSU1QACH5BAEKAB8ALAAAAAAYABgAAAWf4CeOZGmeaKqubOu+IyDPdC2bQKHt
+	fO8XgBKgQrBkjJej8oKxEBxBEkBDEViu2KyzIYnGNBZKUYsVMCZdoeZYJTsXE0paCr5SAtqBIkKR
+	e0VTR1cHVlcEBwwUYXNfWAYPD0UECxEIEYt/H4EWBpcUEwQNfBYJfYyAYAgTWX1ZpaeaGglxfbW2
+	fQmwAAgQvb6/wAaZmjbFNDDIycrLzCwhADs=
 }
 
 image create photo tb_CC_book     -data {
@@ -2165,7 +2174,7 @@ namespace eval CorrespondenceChess {
 		} \
 		"POS" {
 			set curpos [$w.bottom.toMove index insert]
-			$w.bottom.toMove image create end -align center -image tb_CC_envelope
+			$w.bottom.toMove image create end -align center -image tb_CC_postal
 			set endpos [$w.bottom.toMove index insert]
 			set text "$lastmove"
 		} \
@@ -2902,10 +2911,8 @@ namespace eval CorrespondenceChess {
 				# otherwise just reload the game but leave the window in
 				# state to save considerable amount of time
 				if {$refresh == 1} {
-					::CorrespondenceChess::updateConsole "info game::Load"
 					::game::Load $filternum
 				} else {
-					::CorrespondenceChess::updateConsole "info sc_game load"
 					sc_game load $filternum
 				}
 			} else {
@@ -3332,8 +3339,6 @@ namespace eval CorrespondenceChess {
 				# Time per move is the minimum of the two above
 				set timepermove [expr min($timepermove1, $timepermove2)]
 
-				#### ::CorrespondenceChess::updateConsole "info DEBUG $CmailGameName $mytime $tincrement $movestoTC $moves : $timepermove $mytime"
-
 				# Define criteria to be added to the list to sort. Classic
 				# mode is handled below by resorting the clipbase
 				switch -regexp -- $::CorrespondenceChess::ListOrder \
@@ -3353,7 +3358,6 @@ namespace eval CorrespondenceChess {
 						set criterion $Date
 						set sortmode "-integer"
 					}
-
 
 				if {($myTurn == "false") && ($::CorrespondenceChess::ListOnlyOwnMove == 1) } {
 					lappend skiplist [list $CmailGameName $criterion]
@@ -3394,8 +3398,6 @@ namespace eval CorrespondenceChess {
 
 			set glgames $games
 
-			### sc_base switch "clipbase"
-
 			# For Classic sorting: sort the clipbase, this is easier
 			# to implement than individual sorting upon import.
 			if {$::CorrespondenceChess::ListOrder == $::CorrespondenceChess::CCOrderClassic} {
@@ -3414,14 +3416,13 @@ namespace eval CorrespondenceChess {
 
 				for {set game $glccstart} {$game < [expr {$games+1}]} {incr game} {
 
-					set wc "";
-					set bc "";
-					set YM " ? ";  
 					set clockW "no update"; set clockB "no update";
 					set var "";             set noDB "";
 					set noBK "";            set noTB ""; 
 					set noENG "";           set mess ""
 					set TC "";              set drawoffer "false";
+					set wc "";              set bc "";
+					set YM " ? ";
 
 					sc_base switch "clipbase"
 					sc_game load $game
@@ -3493,6 +3494,7 @@ namespace eval CorrespondenceChess {
 					} else {
 						set lastmove "$number. $move"
 					}
+					::CorrespondenceChess::updateConsole "info TC (base): $TC..."
 
 					if {$Mode == "EM"} {
 						::CorrespondenceChess::updateGamelist $CmailGameName "EML" \
@@ -3507,14 +3509,6 @@ namespace eval CorrespondenceChess {
 								$Event $Site $Date $White $Black "" "" "" "" $TC "" "" \
 								$wc $bc "" "" $lastmove "false"
 					} else {
-						# search for extra information from Xfcc server
-						set YM " ? ";
-						set clockW "no update"; set clockB "no update";
-						set var "";             set noDB "";
-						set noBK "";            set noTB ""; 
-						set noENG "";           set mess ""
-						set TC "";              set drawoffer "false";
-
 						# actually check the $xfccstate list for the current
 						# values. If it is not set (e.g. only inbox processed
 						# buy no current retrieval) set some default values.
@@ -3572,6 +3566,7 @@ namespace eval CorrespondenceChess {
 						} elseif {$Result == "="} {
 							set YM " = "
 						}
+						::CorrespondenceChess::updateConsole "info TC (xfcc): $TC..."
 						::CorrespondenceChess::updateGamelist $CmailGameName $YM \
 								$Event $Site $Date $White $Black $clockW $clockB $var \
 								$noDB $noBK $noTB $noENG $wc $bc $mess $TC $lastmove $drawoffer

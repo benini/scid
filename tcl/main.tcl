@@ -1781,7 +1781,6 @@ bind $dot_w <Return> {
     }
 }
 
-bind $dot_w <Control-z> {toggleAutoplay; break}
 bind $dot_w <Escape> cancelAutoplay
 
 set trialMode 0

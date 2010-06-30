@@ -1325,28 +1325,7 @@ bind .main <space> moveEntry_Complete
 
 
 ###  Other Key bindings:
-
-# Bindings for quick move annotation entry in the main window:
-
-bind $dot_w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
-bind $dot_w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
-bind $dot_w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
-bind $dot_w <question><Return> "sc_pos addNag ?; updateBoard -pgn"
-bind $dot_w <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
-bind $dot_w <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
-
-bind $dot_w <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
-bind $dot_w <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
-bind $dot_w <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
-bind $dot_w <equal><Return> "sc_pos addNag =; updateBoard -pgn"
-bind $dot_w <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
-bind $dot_w <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
-bind $dot_w <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
-bind $dot_w <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
-bind $dot_w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
-
-# Null move entry:
-bind $dot_w <minus><minus> "addMove null null"
+# Set via menus.tcl -> standardShortcuts
 
 # Arrow keys, Home and End:
 bind $dot_w <Home> ::move::Start

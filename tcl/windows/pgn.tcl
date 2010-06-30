@@ -233,6 +233,8 @@ namespace eval pgn {
     $mctxt add separator
     $mctxt add command -label "[tr EditStrip]:[tr EditStripComments]" -command {::game::Strip comments}
     $mctxt add command -label "[tr EditStrip]:[tr EditStripVars]" -command {::game::Strip variations}
+    $mctxt add separator
+    $mctxt add command -label "[tr WindowsComment]" -command {makeCommentWin}
     
     $mctxt post [winfo pointerx .] [winfo pointery .]
     

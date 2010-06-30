@@ -75,6 +75,13 @@ I'm using gentoo and I get this on the terminal that runs scid:
 |                                                           |
  ===========================================================
 
+- I would like the "games" window to display the continuation from the
+current position, rather than the opening from move one (something I
+find rather useless).  Is there a way to effect this?  If not, being
+something of a programmer, I might turn my hand to making it possible.
+(Mark Mross)
+
+
 - when engine analysis is in locked mode so that the engine remains analyzing a certain position while the board is changed, the "V" buttons are disabled and that makes it impossible to ever have results of a locked-down engine analysis inserted into the game score
 
 - Switch sides button for game play instead of automatically switching

@@ -4486,6 +4486,14 @@ chess.
    Xfcc. The fetch and send tool are implemented as external tools for
    easy extension if other protocols arise.
    </li>
+   <li><b>Postal play</b>
+   <b>---TODO---</b>
+   </li>
+   <li><b>Observation of games</b> is supported by just adding the URL
+   for the PGN file to the list offered by <menu>Play / Correspondence
+   Chess / Observe Game</menu>
+   <b>---TODO---</b>
+   </li>
 </ul>
 <p>
 If any of the correspondence chess functions are accessed from the
@@ -4723,6 +4731,14 @@ if no interet connection is available.
    games many of the status flags used in Xfcc-based games are not
    available due to the limitation of the medium.
    </li>
+   <li><img tb_CC_relay> This is a observed game, ie. you're just
+   fetching it and you will not make any move in those games.
+   </li>
+   <li><img tb_CC_postal> The mode of this game is set to
+   <i>postal</i> (ie. real classical correspondence play via postal
+   service). Scid will show those games but ignore them in the update
+   process as no PGN game file will exist in postal play.
+   </li>
    <li><img tb_CC_yourmove>
    Its your move.<br>
    <b>Note 1:</b> this status is only updated if you
@@ -4786,6 +4802,10 @@ international three letter country code according to ISO 3166-1
 flag_gbr>, "FRA" <img flag_fra>, "RUS" <img flag_rus>, "CHN"
 <img flag_chn>...).
 </p>
+<p>
+To show country flags for other types of games (postal, observed) just
+add WhiteCountry/BlackCountry headers ot the games in your database.
+</p>
 
 <p>
 See also the chapter <a Correspondence>Correspondence Chess</a> for
@@ -4793,7 +4813,7 @@ general information.
 </p>
 
 
-<p><footer>(Updated: Scid 3.7b4, February 2009)</footer></p>
+<p><footer>(Updated: Scid 4.3, Jun 2010)</footer></p>
 }
 
 
@@ -4993,7 +5013,8 @@ Essential header fields are:
 <p>
 eMail based chess does not contain that extended status codes as Xfcc.
 These games show the <img tb_CC_envelope> icon to notify them as
-eMail based.
+eMail based. The same applies to observed games, denoted by <img
+tb_CC_relay> and postal games which show the <img tb_CC_postal> icon.
 </p>
 
 <h3>Start a new game</h3>

@@ -1764,25 +1764,27 @@ proc standardShortcuts {w} {
     bind $w <Control-J> tools::graphs::absfilter::Open
     bind $w <Control-O> ::optable::makeReportWin
     bind $w <Control-K> ::ptrack::make
-    bind $w <Control-z> {  sc_game undo ; updateBoard -pgn }
-    bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
-    bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
-    bind $w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
-    bind $w <question><Return> "sc_pos addNag ?; updateBoard -pgn"
-    bind $w <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
-    bind $w <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
-    
-    bind $w <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
-    bind $w <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
-    bind $w <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
-    bind $w <equal><Return> "sc_pos addNag =; updateBoard -pgn"
-    bind $w <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
-    bind $w <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
-    bind $w <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
-    bind $w <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
-    bind $w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
   }
+
+  bind $w <Control-z> {  sc_game undo ; updateBoard -pgn }
+  bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
+  bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
+  bind $w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"
+  bind $w <question><Return> "sc_pos addNag ?; updateBoard -pgn"
+  bind $w <question><question><Return> "sc_pos addNag ??; updateBoard -pgn"
+  bind $w <question><exclam><Return> "sc_pos addNag ?!; updateBoard -pgn"
   
+  bind $w <plus><minus> "sc_pos addNag +-; updateBoard -pgn"
+  bind $w <plus><slash> "sc_pos addNag +/-; updateBoard -pgn"
+  bind $w <plus><equal> "sc_pos addNag +=; updateBoard -pgn"
+  bind $w <equal><Return> "sc_pos addNag =; updateBoard -pgn"
+  bind $w <minus><plus> "sc_pos addNag -+; updateBoard -pgn"
+  bind $w <minus><slash> "sc_pos addNag -/+; updateBoard -pgn"
+  bind $w <equal><plus> "sc_pos addNag =+; updateBoard -pgn"
+  bind $w <asciitilde><Return> "sc_pos addNag ~; updateBoard -pgn"
+  bind $w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
+  bind $w <minus><minus> "addMove null null"
+
   bind $w <Control-c> {catch {sc_clipbase copy}; ::updateBoard}
   bind $w <Control-d> ::windows::switcher::Open
   bind $w <Control-e> makeCommentWin
