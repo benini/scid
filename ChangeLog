@@ -909,6 +909,15 @@ This maintenance release reverts to 32 bits file I/O. Large file handling across
 [xxxx 2010 ]
 scid-4.3
 ==========
+- Improvements
+	* documentation for opening trainer (thanks ot Dale Hards)
+	* Some of the programs icons based on GNOME Stock Icons in case png-support is available
+	* Some defaults of Scids empty config
+	* Gamelist: show delete-flag to the very left of the list by default
+	* Replace some buttons in help by proper img tags
+	* Comment editor now opens by clicking the comment in game info area
+	* Bring Best games / tree graph to front if they exist and the button is pressed again
+	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
@@ -951,21 +960,12 @@ scid-4.3
 		  still treated internally
 	* Add "Open Comment editor" to PGN context menu
 - Fixes :
-	* Improve documentation for opening trainer (thanks ot Dale Hards)
 	* Fixed a bug in exception handling of Novag Citrine connection
-	* Improve some of the programs icons based on GNOME Stock Icons in case png-support is available
-	* Hide the startup window
-	* Improve some defaults of Scids empty config
-	* Replace some buttons in help by proper img tags
 	* FICS console uses fixed font
-	* Comment editor now opens by clicking the comment in game info area
-	* Bring Best games / tree graph to front if they exist and the button is pressed again
 	* allow Elo-rating corrections up to 2015
 	* Correct move numbers in engine PV output in locked mode
 	  (http://sourceforge.net/tracker/index.php?func=detail&aid=3001826&group_id=26963&atid=389080)
 	* Limit the history list of FEN notation in board setup (thanks to Steve)
-	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
-	* Allow to insert all major NAGs by just pressing ?<enter> !<enter> etc. independent of the current window
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

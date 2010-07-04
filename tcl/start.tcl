@@ -560,6 +560,7 @@ set startup(book) 0
 #    src/index.cpp for a list of available field codes.
 #
 set glistFields {
+  { D  1 left  darkRed    0 }
   { g  7 right black      1 }
   { w 14 left  darkBlue   0 }
   { W  5 right darkGreen  1 }
@@ -573,7 +574,6 @@ set glistFields {
   { m  3 right black      1 }
   { o  5 left  darkGreen  0 }
   { O  6 left  darkGreen  1 }
-  { D  1 left  darkRed    0 }
   { U  2 left  blue       1 }
   { V  2 right blue       0 }
   { C  2 right blue       0 }
