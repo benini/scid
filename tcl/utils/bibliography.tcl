@@ -2,9 +2,9 @@
 ### bibliography.tcl: part of Scid.
 ### Copyright (C) 2010 Alexander Wagner
 ###
-### $Id: bibliography.tcl,v 1.3 2010/04/26 17:52:33 arwagner Exp $
+### $Id: bibliography.tcl,v 1.4 2010/07/14 20:46:00 arwagner Exp $
 ###
-### Last change: <Mon, 2010/04/26 19:51:13 arwagner ingata>
+### Last change: <Tue, 2010/07/13 23:08:01 arwagner ingata>
 ###
 ### Handle Bib pgn headers to show bibliographic references for a
 ### given game. The bibliographic database should be available in
@@ -302,6 +302,7 @@ if {$png_image_support} {
 	# referenced entities from the BibTeX file.
 	#----------------------------------------------------------------------
 	proc ShowRef {} {
+		global scidDataDir
 
 		set w .showRef
 
@@ -331,7 +332,12 @@ if {$png_image_support} {
 		pack $w.f.ybar -side right  -fill y
 		pack $w.f.tree -side left   -expand 1 -fill both
 
-		set bibfile "[sc_base filename].bib"
+		# set a global bib file
+		set bibfile [file nativename [file join $scidDataDir "Bookshelf.bib"]]
+		# ... but overwrite it if a bibliography for the base itself exits
+		if {[file readable "[sc_base filename].bib"]} {
+			set bibfile "[sc_base filename].bib"
+		}
 		set ::Bibliography::literature [::Bibliography::ExtractRef $bibfile]
 
 		bind $w <Escape> { destroy  .showRef}
@@ -341,7 +347,6 @@ if {$png_image_support} {
 		# Copy references to clipboard
 		bind $w <Control-Insert> { clipboard clear; clipboard append $::Bibliography::literature }
 		bind $w <Control-c>      { clipboard clear; clipboard append $::Bibliography::literature }
-		
 	}
 
 }

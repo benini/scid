@@ -7,6 +7,8 @@
 * Check for bases/books dir not upon startup but once the related
   function is called for the first time.
 * Opening Trainger picks up tye of DB only after restart of Scid(?)
+* Blunder check in tactical game should be for the players moves not
+  for phalanx moves.
 
 
 I'm using scid-4.2.2 and it crashes while annotating the following game
