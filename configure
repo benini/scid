@@ -50,6 +50,7 @@ set var(LANGUAGES) [list \
   tcl/lang/hungary.tcl \
   tcl/lang/serbian.tcl \
   tcl/lang/catalan.tcl \
+  tcl/lang/suomi.tcl \
   tcl/lang/russian.tcl]
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}

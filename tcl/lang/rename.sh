@@ -14,6 +14,7 @@ mv norsk.tcl norsk.tcl.bak
 mv polish.tcl polish.tcl.bak
 mv spanish.tcl spanish.tcl.bak
 mv catalan.tcl catalan.tcl.bak
+mv suomi.tcl suomi.tcl.bak
 
 mv italian.tcl.new italian.tcl
 mv portbr.tcl.new portbr.tcl
@@ -29,3 +30,4 @@ mv norsk.tcl.new norsk.tcl
 mv polish.tcl.new polish.tcl
 mv spanish.tcl.new spanish.tcl
 mv catalan.tcl.new catalan.tcl
+mv suomi.tcl.new suomi.tcl

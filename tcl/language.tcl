@@ -172,6 +172,7 @@ proc setLanguage {{lang ""}} {
       O {sc_info language no}
       W {sc_info language sw}
       K {sc_info language ca}
+      U {sc_info language fi}
       default {sc_info language en}
     }
   } else {
@@ -212,6 +213,7 @@ proc setLanguageTemp { lang } {
     O {sc_info language no}
     W {sc_info language sw}
     K {sc_info language ca}
+    U {sc_info language fi}
     default {sc_info language en}
   }
 }
