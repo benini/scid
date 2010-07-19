@@ -34,6 +34,8 @@ set transPieces(W)   { P B K K Q D R T B L N S }
 set untransPieces(W) { B P K K D Q T R L B S N }
 set transPieces(K)   { P P K R Q D R T B A N C }
 set untransPieces(K) { P P R K D Q T R A B C N }
+set transPieces(U)   { P S K K Q D R T B L N R }
+set untransPieces(U) { S P K K D Q T R L B R N }
 
 ################################################################################
 proc trans { msg } {
