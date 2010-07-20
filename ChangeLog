@@ -966,10 +966,12 @@ scid-4.3
 	* Correct move numbers in engine PV output in locked mode
 	  (http://sourceforge.net/tracker/index.php?func=detail&aid=3001826&group_id=26963&atid=389080)
 	* Limit the history list of FEN notation in board setup (thanks to Steve)
+	* Remove some CE-engines not in the default distribution from Makefile.conf
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
 	* spanish translation (thanks to Benigno Hernandez)
-	* czech translation (thanks to,Milan Zamazal)
+	* czech translation (thanks to Milan Zamazal)
+	* NEW: suomi translation (thanks to Timo Pirinen)
 - Help:
 	* Add UTF-8 NAG-symbols
