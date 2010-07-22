@@ -11,6 +11,8 @@ if {[catch {encoding names}]} {
 }
 ################################################################################
 #  Translation of pieces
+#  Note to adopt also tkscid.cpp to allow for a new langauge as well
+#  as add transPieces to langPieces[] in game.cpp
 ################################################################################
 array set transPieces {}
 
