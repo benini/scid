@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.97 2010/06/30 20:41:45 arwagner Exp $
+### $Id: correspondence.tcl,v 1.98 2010/08/02 16:06:14 arwagner Exp $
 ###
-### Last change: <Fri, 2010/06/18 17:48:50 arwagner ingata>
+### Last change: <Sat, 2010/07/31 15:34:10 arwagner ingata>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2924,12 +2924,15 @@ namespace eval CorrespondenceChess {
 			# Clear the current game first, then just paste the clipboard
 			# game as it is. No need to do something as complex as for
 			# already existing games above.
-			::game::Clear
+			game::Clear
 			sc_clipbase paste
-			# gameAdd presents scids "Save" dialog
-			gameAdd
-			# reload the game and jump to the end
-			::game::Reload
+			# append the current game without asking and the header
+			# supplied
+			# gameAdd gets confused here with with an altered game opeing
+			# another dialogue besides the save game
+			sc_game save 0
+
+			CorrespondenceChess::updateConsole "info: new game added"
 		} else {
 			if {[winfo exists .glistWin]} {
 				raise .glistWin
