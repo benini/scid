@@ -4,6 +4,15 @@
 |                                                           |
  ===========================================================
 
+So, truncating games by removing leading moves has at least two bugs:
+1. NAGs are removed.
+2. Optional tags (WhiteElo, BlackElo) are removed.
+
+Is there a way to set the seed for the random number generator used by Scid?
+Now it appears that each time Scid is restarted, the training mode (togglable
+from the tree window) plays the same moves as the previous time when I'm using
+the same database.
+
 * In docked mode board rotation breaks piece animation for autoplay
 * Check for bases/books dir not upon startup but once the related
   function is called for the first time.
