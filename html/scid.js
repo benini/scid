@@ -147,9 +147,9 @@ function trimfen(fen) {
 /* ------ colorSq ---------- */
 function colorSq(sq) {
 	if ( (sq%2) == 1 && Math.floor(sq/8) %2 == 0 || (sq%2) == 0 && Math.floor(sq/8) %2 == 1 ) {
-		return "black_square";
+		return "bs";
 	} else { 
-		return "white_square";
+		return "ws";
 	}
 }
 

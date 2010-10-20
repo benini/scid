@@ -19,6 +19,32 @@
     color: #ffffff;
 }    
 
+/* Black square
+ */
+.bs{
+    background-color: #7389b6;
+}
+
+/* White square
+ */
+.ws{
+    background-color: #f3f3f3;
+}
+
+
+/* Board rim
+ */
+.coordinates
+{ 
+	font-family:"Courier New", Arial;
+	font-style:normal;
+	text-decoration:none;
+	font-weight:bold;
+	font-size:10pt;
+	color:#2e2ebf;
+	background-color: #cccccc;
+	width: 1em;
+}
 
 /* Indentation of variations
  */
@@ -164,19 +190,6 @@ width: 100%;
 	color:#000000;
 }
 
-/* board coordinates */
-.coordinates
-{ 
-	font-family:"Courier New", Arial;
-	font-style:normal;
-	text-decoration:none;
-	font-weight:bold;
-	font-size:10pt;
-	color:#2e2ebf;
-	background-color: #cccccc;
-	width: 1em;
-}
-
 /* diagram */
 #diagramTable {
 	border: 0;
@@ -189,8 +202,5 @@ width: 100%;
 	padding: 0;
 	vertical-align: top;
 	}
-
-.black_square {background-color: #7389b6; width: 40px; height: 40px;}
-.white_square { background-color: #f3f3f3; width: 40px; height: 40px;}
 
 img {border: 0}

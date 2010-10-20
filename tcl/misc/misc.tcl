@@ -523,8 +523,6 @@ namespace eval gameclock {
 namespace eval html {
   set data {}
   set idx 0
-  set black_square "#7389b6"
-  set white_square "#f3f3f3"
   
   ################################################################################
   proc exportCurrentFilter {} {
@@ -791,7 +789,9 @@ namespace eval html {
       if {$elt(diag)} {
         insertMiniDiag $elt(fen) $f
       }
-      puts $f "<span class=\"VC\">$comment</span>"
+      if {$comment != ""} {
+        puts $f "<span class=\"VC\">$comment</span>"
+      }
     }
     while { $prevdepth > 0 } {
         puts $f "<span class=\"VC\">\]</span></div>"
@@ -811,9 +811,9 @@ namespace eval html {
   ################################################################################
   proc colorSq {sq} {
     if { [expr $sq % 2] == 1 && [expr int($sq / 8) %2 ] == 0 || [expr $sq % 2] == 0 && [expr int($sq / 8) %2 ] == 1 } {
-      return $::html::black_square
+      return "bs"
     } else {
-      return $::html::white_square
+      return "ws"
     }
   }
   ################################################################################
@@ -845,14 +845,14 @@ namespace eval html {
       if {$res == 1} {
         if  { $c >= 1 && $c <= 8 } {
           for { set j 0} {$j < $c} {incr j} {
-            puts $f "<td bgcolor=\"[colorSq $square]\"><img border=0 align=\"left\" src=\"bitmaps/mini/[piece2gif $space].gif\"></td>"
+            puts $f "<td class=\"[colorSq $square]\"><img border=0 align=\"left\" src=\"bitmaps/mini/[piece2gif $space].gif\"></td>"
             incr square
           }
         }
       } elseif {$l == "/"}  {
         puts $f "</tr><tr>"
       } else  {
-        puts $f "<td bgcolor=\"[colorSq $square]\"><img border=0 align=\"left\" src=\"bitmaps/mini/[piece2gif $l].gif\"></td>"
+        puts $f "<td class=\"[colorSq $square]\"><img border=0 align=\"left\" src=\"bitmaps/mini/[piece2gif $l].gif\"></td>"
         incr square
       }
     }
