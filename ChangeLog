@@ -918,6 +918,14 @@ scid-4.3
 	* Comment editor now opens by clicking the comment in game info area
 	* Bring Best games / tree graph to front if they exist and the button is pressed again
 	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
+	* HTML export
+	    - Move nags rendered in same font as the move
+	    - Diagram immediately follows the move (order of diagram and comments are swapped), which is a more common scenario
+	    - Indentation of variations enhanced by putting them in indented div sections
+	    - Current move hightlighting, board and diagram colors follow css style definition
+	    - Cursor key navigation works in IE
+	    - Cursor left key navigation works the same way backwards as right works its way forwards, i.e. skipping variations
+	    - Dotted move numbers for black moves in a main line are also applied following a diagram and a variation.
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
@@ -967,6 +975,9 @@ scid-4.3
 	  (http://sourceforge.net/tracker/index.php?func=detail&aid=3001826&group_id=26963&atid=389080)
 	* Limit the history list of FEN notation in board setup (thanks to Steve)
 	* Remove some CE-engines not in the default distribution from Makefile.conf
+	* HTML export
+	    - Corrected display of player names (no {} pair around it)
+	    - Move comments are rendered according css style
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

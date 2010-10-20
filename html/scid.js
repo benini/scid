@@ -7,22 +7,48 @@
 		Modified 2009 Charly Founes - cf29.com
    ============================================================= */
 // Globals
-var oldColor = "#ffffff"; // should be the same as background color
-var highlightMove = "#e9aa5d";
+var oldColor      = "";
+var highlightMove = "";
 var turned = 0;
 
 /* ------ handlekey ---------- */
 function handlekey(e) {
-	var keycode = e.which
+	var keycode
+	if ( !e ) {
+	  return;
+	}
+	if ( e.keyCode ) {
+	  keycode = e.keyCode;
+	}
+	else if ( e.which ) {
+	  keycode = e.which;
+	}
+	else {
+	  return;
+	}
 	if (keycode == 37)
 		moveForward(0);
-	if (keycode == 39)
+	else if (keycode == 39)
 		moveForward(1);
 }
 
 /* ------ doinit ---------- */
 function doinit() {
+    var crossrule;
+    
 	initFen(movesArray[0],1);
+
+    // Get colors for move highlighting from style sheet
+    //
+    if ( document.styleSheets[0].cssRules ) {
+        crossrule = document.styleSheets[0].cssRules;
+    }
+    else if ( document.styleSheets[0].rules ) {
+        crossrule = document.styleSheets[0].rules;
+    }
+   
+    highlightMove = crossrule[0].style.color;
+    oldColor      = crossrule[1].style.color;
 }
 
 /* ------ rotate ---------- */

@@ -1,3 +1,33 @@
+/* Style file for scid HTML export
+ */
+
+/* WARNING:
+ * Do not change the order of elements in this sheet
+ * The exported Javascript may or may not depend on it (using document.styleSheets[0].cssRules[index])
+ */
+
+/* The background color for the current move
+ */
+#highlight{
+    color: #e9aa5d;
+}
+
+
+/* The background color for other moves
+ */
+#lowlight{
+    color: #ffffff;
+}    
+
+
+/* Indentation of variations
+ */
+div.var{
+    text-indent: -1em;
+    margin-left: 3em;
+}
+
+
 a:link {text-decoration: none}
 a:visited {text-decoration: none}
 a:active {text-decoration: none}
@@ -45,18 +75,6 @@ height: 100%;
 width: 100%; 
 }
 
-
-
-/* Current move */
-.currentMove
-{
-	font-family:"Courier New", Arial;
-	font-style:normal;
-	text-decoration:none;
-	font-weight:normal;
-	font-size:12pt;
-	color:#e9aa5d;
-}
 
 /* Header: Event, Site, Date */
 .hEvent

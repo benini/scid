@@ -725,7 +725,7 @@ namespace eval html {
     puts $f "<div id=\"nav\" style=\"text-align: center\"><!-- navigation goes here -->"
     puts $f "<form action=\"#\">"
     puts $f "<p>"
-    puts $f "<input type='button' value=' o ' onclick='rotate()' /> <input type='button' value=' |&lt; ' onclick='jump(0)' /> <input type='button' value=' &lt; ' onclick='moveForward(0)' /> <input type='button' value=' &gt; ' onclick='moveForward(1)' /> <input type='button' value=' &gt;| ' onclick='jump(1)' /> "
+    puts $f "<input type='button' value=' &darr;&uarr; ' onclick='rotate()' /> <input type='button' value=' |&lt; ' onclick='jump(0)' /> <input type='button' value=' &lt; ' onclick='moveForward(0)' /> <input type='button' value=' &gt; ' onclick='moveForward(1)' /> <input type='button' value=' &gt;| ' onclick='jump(1)' /> "
     puts $f "</p><p>"
     # other games navigation
     puts $f "<select name=\"gameselect\" id=\"gameselect\" size=\"1\" onchange=\"gotogame()\">"
@@ -752,10 +752,11 @@ namespace eval html {
     puts $f "<div class=\"innertube\">"
     puts $f "<div id=\"moves\"><!-- moves go here -->"
     # game header
-    puts $f "<span class=\"hPlayers\"> [html_entities $this_players]</span>"
+    set l [lindex $this_players 0]
+    puts $f "<span class=\"hPlayers\"> [html_entities $l]</span>"
     puts $f "<span class=\"hEvent\"><br /> [html_entities $event]</span>"
-    puts $f "<span class=\"hAnnot\"><br />\[$eco\]</span>"
     puts $f "<span class=\"hEvent\"><br />\[$date\]</span>"
+    puts $f "<span class=\"hAnnot\"><br />\[$eco\]</span>"
     puts $f "<p>"
     # link moves
     set prevdepth 0
@@ -769,26 +770,36 @@ namespace eval html {
       } else {
         set class "V2"
       }
-      if {$prevdepth != $elt(depth) || $prevvarnumber != $elt(var)} {
-        if {$prevdepth != 0} { puts $f "\]" }
-        puts $f "<br />"
-        for {set j 0} {$j<$elt(depth)} {incr j} {puts $f "&nbsp; &nbsp; "}
-        if {$elt(depth) != 0} { puts $f "\[" }
+      if { $prevdepth == $elt(depth) && $prevvarnumber != $elt(var) } {
+        puts $f "<span class=\"VC\">\]</span></div>"
+        puts $f "<div class=\"var\"><span class=\"VC\">\[</span>"
+      } else {
+        while { $prevdepth > $elt(depth) } {
+            puts $f "<span class=\"VC\">\]</span></div>"
+            set prevdepth [expr $prevdepth - 1]
+        }
+        while { $prevdepth < $elt(depth) } {
+            puts $f "<div class=\"var\"><span class=\"VC\">\[</span>"
+            set prevdepth [expr $prevdepth + 1]
+        }
       }
-      set prevdepth $elt(depth)
       set prevvarnumber $elt(var)
       # id = "mv1" not "id=1" now
       set nag [html_entities $elt(nag)]
       set comment [html_entities $elt(comment)]
-      puts $f "<a href=\"javascript:gotoMove($elt(idx))\" id=\"mv$elt(idx)\" class=\"$class\">$elt(move)</a>$nag $comment"
+      puts $f "<a href=\"javascript:gotoMove($elt(idx))\" id=\"mv$elt(idx)\" class=\"$class\">$elt(move)$nag</a>"
       if {$elt(diag)} {
         insertMiniDiag $elt(fen) $f
       }
+      puts $f "<span class=\"VC\">$comment</span>"
     }
-    if {$prevdepth != 0} {puts $f "\]"}
-    # <a href="javascript:gotoMove(1)" id="mv1" class="V0">1.Rd8</a>
+    while { $prevdepth > 0 } {
+        puts $f "<span class=\"VC\">\]</span></div>"
+        set prevdepth [expr $prevdepth - 1]
+    }
+
     puts $f "<br /><span class=\"VH\">$result</span>"
-    puts $f "</p>"
+    puts $f "<p>"
     puts $f "<a href=\"http://scid.sourceforge.net/\" style=\"font-size: 0.8em\">Created with Scid</a>"
     puts $f "</div>"
     puts $f "</div>"
@@ -834,20 +845,19 @@ namespace eval html {
       if {$res == 1} {
         if  { $c >= 1 && $c <= 8 } {
           for { set j 0} {$j < $c} {incr j} {
-            puts $f "<td bgcolor= [colorSq $square ] ><img border=0 src=bitmaps/mini/[piece2gif $space].gif </td>"
+            puts $f "<td bgcolor=\"[colorSq $square]\"><img border=0 align=\"left\" src=\"bitmaps/mini/[piece2gif $space].gif\"></td>"
             incr square
           }
         }
       } elseif {$l == "/"}  {
         puts $f "</tr><tr>"
       } else  {
-        puts $f "<td bgcolor= [colorSq $square ] ><img border=0 src=bitmaps/mini/[piece2gif $l].gif </td>"
+        puts $f "<td bgcolor=\"[colorSq $square]\"><img border=0 align=\"left\" src=\"bitmaps/mini/[piece2gif $l].gif\"></td>"
         incr square
       }
     }
     
     puts $f "</tr></table>"
-    puts $f "</body></html>"
   }
   
   ################################################################################
@@ -867,18 +877,25 @@ namespace eval html {
     
     set already_written 0
     
+    set dots 0
+    
     while {1} {
       if { ! $already_written } {
-        recordElt $prev
+        recordElt $dots $prev
+        set dots 0
+        set prev -2
+      } else {
+        set dots 1
       }
-      set prev -2
       set already_written 0
       
       # handle variants
       if {[sc_var count]>0} {
+        # First write the move in the current line for which variations exist
+        #
         if { ![sc_pos isAt vend]} {
           sc_move forward
-          recordElt
+          recordElt $dots $prev
           sc_move back
           set lastIdx $idx
           set already_written 1
@@ -887,7 +904,7 @@ namespace eval html {
           sc_var enter $v
           # in order to get the comment before first move
           sc_move back
-          parseGame $idx
+          parseGame -1
           sc_var exit
         }
         #update the "next" token
@@ -903,7 +920,7 @@ namespace eval html {
     }
   }
   ################################################################################
-  proc recordElt { {prev -2} } {
+  proc recordElt { dots {prev -2} } {
     global ::html::data ::html::idx
     
     array set elt {}
@@ -941,7 +958,6 @@ namespace eval html {
     set m [sc_game info previousMove]
     set mn [sc_pos moveNumber]
     
-    set dots 0
     set elt(move) ""
     if {[sc_pos side] == "black" && $m != ""} {
       set elt(move) "$mn.$m"
@@ -949,7 +965,14 @@ namespace eval html {
       
       if {! [sc_pos isAt vstart] } {
         sc_move back
-        if {  [sc_pos isAt vstart] ||  [sc_pos getComment] != ""} {
+        set pnag [sc_pos getNags]
+        if {$pnag == "0"} { set pnag "" }
+        if {[string match "*D *" $pnag] || [string match "*# *" $pnag]} {
+          set pdiag 1
+        } else  {
+          set pdiag 0
+        }
+        if {  [sc_pos isAt vstart] ||  [sc_pos getComment] != "" || $pdiag > 0 } {
           set dots 1
         }
         sc_move forward
