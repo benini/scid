@@ -918,7 +918,7 @@ proc updateTwinChecker {} {
   # Now color the differences if appropriate:
   if {$dup > 0} {
     set rlen [$w.f.right.t.text index end-1c]
-    set llen [$w.f.right.t.text index end-1c]
+    set llen [$w.f.left.t.text index end-1c]
     
     for {set i 0} {$i < $rlen} {incr i} {
       set line [$w.f.right.t.text get $i.0 "$i.0 lineend"]

@@ -4,6 +4,8 @@
 |                                                           |
  ===========================================================
 
+Tiny font can not be set from the GUI
+
 So, truncating games by removing leading moves has at least two bugs:
 1. NAGs are removed.
 2. Optional tags (WhiteElo, BlackElo) are removed.

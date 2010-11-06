@@ -856,6 +856,9 @@ proc openTableBaseDirs {} {
   }
   
   set npieces [sc_info tb $tableBaseDirs]
+  foreach i {1 2 3 4} {
+    set initialDir(tablebase$i) $tempDir(tablebase$i)
+  }
   if {$npieces == 0} {
     set msg "No tablebases were found."
   } else {
@@ -863,9 +866,6 @@ proc openTableBaseDirs {} {
     append msg "If you want these tablebases be used whenever\n"
     append msg "you start Scid, select \"Save Options\" from the\n"
     append msg "Options menu before you exit Scid."
-    foreach i {1 2 3 4} {
-      set initialDir(tablebase$i) $tempDir(tablebase$i)
-    }
   }
   tk_messageBox -type ok -icon info -title "Scid: Tablebase results" \
       -message $msg

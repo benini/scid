@@ -978,6 +978,8 @@ scid-4.3
 	* HTML export
 	    - Corrected display of player names (no {} pair around it)
 	    - Move comments are rendered according css style
+	* Duplicate games display did not highlight correctly
+	* It was not possible to remove a tb directory
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
