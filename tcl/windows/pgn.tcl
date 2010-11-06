@@ -223,7 +223,33 @@ namespace eval pgn {
     } else  {
       set state normal
     }
+	
     menu $mctxt
+
+    menu $mctxt.evals1
+    $mctxt.evals1 add command -label "Clear" -command {sc_pos addNag X; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "!" -command {sc_pos addNag ! ; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "?" -command {sc_pos addNag ? ; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "!?" -command {sc_pos addNag !? ; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "?!" -command {sc_pos addNag ?! ; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "!!" -command {sc_pos addNag !! ; ::pgn::Refresh 1}
+    $mctxt.evals1 add command -label "??" -command {sc_pos addNag ?? ; ::pgn::Refresh 1}
+
+    menu $mctxt.evals2
+    $mctxt.evals2 add command -label "Clear" -command {sc_pos addNag Y ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "=" -command {sc_pos addNag = ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "~" -command {sc_pos addNag ~ ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "+=" -command {sc_pos addNag += ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "=+" -command {sc_pos addNag =+ ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "+/-" -command {sc_pos addNag +/- ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "-/+" -command {sc_pos addNag -/+ ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "+-" -command {sc_pos addNag +- ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "-+" -command {sc_pos addNag -+ ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "+--" -command {sc_pos addNag +-- ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "--+" -command {sc_pos addNag --+ ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "N" -command {sc_pos addNag N ; ::pgn::Refresh 1}
+    $mctxt.evals2 add command -label "D" -command {sc_pos addNag D ; ::pgn::Refresh 1}
+	
     $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar [sc_var number]"
     $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar [sc_var number]"
     $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar [sc_var number]"
@@ -234,12 +260,14 @@ namespace eval pgn {
     $mctxt add command -label "[tr EditStrip]:[tr EditStripComments]" -command {::game::Strip comments}
     $mctxt add command -label "[tr EditStrip]:[tr EditStripVars]" -command {::game::Strip variations}
     $mctxt add separator
+    $mctxt add cascade -label "!  ?  ..." -menu $mctxt.evals1
+    $mctxt add cascade -label "+-  +/-  ..." -menu $mctxt.evals2
     $mctxt add command -label "[tr WindowsComment]" -command {makeCommentWin}
     
     $mctxt post [winfo pointerx .] [winfo pointery .]
     
   }
-  
+
   proc deleteVar { var } {
     sc_var exit
     sc_var delete $var

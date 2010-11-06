@@ -422,6 +422,7 @@ public:
     char *   GetMoveComment () { return CurrentMove->prev->comment; }
 
     inline errorT AddNag (byte nag);
+    inline errorT RemoveNag (bool isMoveNag);
     byte *   GetNags () { return CurrentMove->prev->nags; }
     byte *   GetNextNags () { return CurrentMove->nags; }
     void     ClearNags () {
@@ -602,10 +603,61 @@ Game::AddNag (byte nag)
     moveT * m = CurrentMove->prev;
     if (m->nagCount + 1 >= MAX_NAGS) { return ERROR_GameFull; }
     if (nag == 0) { /* Nags cannot be zero! */ return OK; }
-    m->nags[m->nagCount] = nag;
-    m->nagCount += 1;
-    m->nags[m->nagCount] = 0;
-    //if (nag > 0) NagsFlag = 1;
+	// If it is a move nag replace an existing
+	if( nag >= 1 && nag <= 6)
+		for( int i=0; i<m->nagCount; i++)
+			if( m->nags[i] >= 1 && m->nags[i] <= 6)
+			{
+				m->nags[i] = nag;
+				return OK;
+			}
+	// If it is a position nag replace an existing
+	if( nag >= 10 && nag <= 21)
+		for( int i=0; i<m->nagCount; i++)
+			if( m->nags[i] >= 10 && m->nags[i] <= 21)
+			{
+				m->nags[i] = nag;
+				return OK;
+			}
+	if( nag >= 1 && nag <= 6)
+	{
+		// Put Move Nags at the beginning
+		for( int i=m->nagCount; i>0; i--)  m->nags[i] =  m->nags[i-1];
+		m->nags[0] = nag;
+	}
+	else
+		m->nags[m->nagCount] = nag;
+	m->nagCount += 1;
+	m->nags[m->nagCount] = 0;
+    return OK;
+}
+
+inline errorT
+Game::RemoveNag (bool isMoveNag)
+{
+    moveT * m = CurrentMove->prev;
+	if( isMoveNag)
+	{
+		for( int i=0; i<m->nagCount; i++)
+			if( m->nags[i] >= 1 && m->nags[i] <= 6)
+			{
+				m->nagCount -= 1;
+				for( int j=i; j<m->nagCount; j++)  m->nags[j] =  m->nags[j+1];
+				m->nags[m->nagCount] = 0;
+				return OK;
+			}
+	}
+	else
+	{
+		for( int i=0; i<m->nagCount; i++)
+			if( m->nags[i] >= 10 && m->nags[i] <= 21)
+			{
+				m->nagCount -= 1;
+				for( int j=i; j<m->nagCount; j++)  m->nags[j] =  m->nags[j+1];
+				m->nags[m->nagCount] = 0;
+				return OK;
+			}
+	}
     return OK;
 }
 

@@ -9927,6 +9927,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_addNag:
 //    Adds a NAG (annotation symbol) for the current move.
@@ -9937,13 +9938,21 @@ sc_pos_addNag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_pos addNag <nagvalue>");
     }
     const char * nagStr = argv[2];
-    byte nag = game_parseNag (nagStr);
-    if (nag != 0) {
-        db->game->AddNag ((byte) nag);
-    }
-    db->gameAltered = true;
+	if( strcmp(nagStr, "X") == 0)
+		db->game->RemoveNag( true);
+	else if( strcmp(nagStr, "Y") == 0)
+		db->game->RemoveNag( false);
+	else
+	{
+		byte nag = game_parseNag (nagStr);
+		if (nag != 0) {
+			db->game->AddNag ((byte) nag);
+		}
+		db->gameAltered = true;
+	}
     return TCL_OK;
 }
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_analyze:

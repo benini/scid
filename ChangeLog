@@ -967,6 +967,7 @@ scid-4.3
 		  locations like Wikipedia (including NLS) and SeeAlso. This is
 		  still treated internally
 	* Add "Open Comment editor" to PGN context menu
+	* Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
 - Fixes :
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* FICS console uses fixed font
