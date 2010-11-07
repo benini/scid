@@ -20,6 +20,10 @@ set useAnalysisBook 1
 set analysisBookSlot 1
 set useAnalysisBookName ""
 set wentOutOfBook 0
+# State variable: 1 <=> engine is making an initial
+# assessment of the current position, before progressing
+# into the game
+set initialAnalysis 0
 
 set isBatch 0
 set batchEnd 1
@@ -797,14 +801,32 @@ proc configAnnotation {} {
         if {$tempdelay < 0.1} { set tempdelay 0.1 }
         set autoplayDelay [expr {int($tempdelay * 1000)}]
         destroy .configAnnotation
+        # Stop analyis if it is running
+        # We do not want initial super-accuracy
+        #
+        stopEngineAnalysis 1
+        cancelAutoplay
         set annotateMode 1
-        if {! $analysis(analyzeMode1)} {
-            toggleEngineAnalysis 1 1
-        }
         if {$::addAnnotatorTag} {
-            appendAnnotator "$analysis(name1)"
+            set _tmp [expr {$autoplayDelay / 1000}]
+            appendAnnotator "$analysis(name1) ($_tmp sec)"
         }
-        if {$autoplayMode == 0} { toggleAutoplay }
+        # First do the book analysis (if this is configured)
+        # The latter condition is handled by the operation itself
+        set ::wentOutOfBook 0
+        # A hack needed to keep book annotation moving forward
+        # bypassing possible variations (if the variation selection
+        # popup is configured to appear)...
+        set autoplayMode 1
+        bookAnnotation 1
+        set autoplayMode 0
+        # Tell the analysis mode that we want an initial assessment of the
+        # position. So: no comments yet, please!
+        set ::initialAnalysis 1
+        # Start the engine
+        startEngineAnalysis 1 1
+        # And start the time slicer
+        toggleAutoplay
     }
     pack $f.buttons.cancel $f.buttons.ok -side right -padx 5 -pady 5
     focus $f.spDelay
@@ -858,7 +880,6 @@ proc bookAnnotation { {n 1} } {
         if { ![catch { sc_move back 1 } ] } {
             resetAnalysis
             updateBoard -pgn
-            for {set i 0} {$i<100} {incr i} { update ; after [expr $::autoplayDelay / 100] }
             set analysis(prevscore$n) $analysis(score$n)
             set analysis(prevmoves$n) $analysis(moves$n)
             updateBoard -pgn
@@ -959,9 +980,25 @@ set ::onlyMarkExercise 0
 proc addAnnotation { {n 1} } {
     global analysis annotateMoves annotateBlunders annotateMode blunderThreshold
     
+    # Check if we only need to register an initial
+    # assessment of the position
+    # If so, we do not generate any annotation yet
+    if { $::initialAnalysis } {
+        set ::initialAnalysis 0
+        
+        set analysis(prevscore$n) $analysis(score$n)
+        set analysis(prevmoves$n) $analysis(moves$n)
+    
+        # Update score graph if it is open:
+        if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
+        
+        return
+    }
+            
     set exerciseMarked 0
     
     # First look in the book selected
+    # TODO: Is this dead code by now?
     if { ! $::wentOutOfBook && $::useAnalysisBook } {
         bookAnnotation
         return
@@ -971,6 +1008,7 @@ proc addAnnotation { {n 1} } {
     if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
     
     # Cannot (yet) add a variation at the end of the game or a variation:
+    # TODO: This is silly, and should be repaired
     if {[sc_pos isAt vend]} { return }
     
     set tomove [sc_pos side]
@@ -988,7 +1026,7 @@ proc addAnnotation { {n 1} } {
     set moves $analysis(moves$n)
     
     # if next move is what engine guessed, do nothing (except if annotate mode is for all moves)
-    if { $analysis(prevmoves$n) != "" && ![sc_pos isAt vend] && $annotateBlunders != "allmoves"} {
+    if { $analysis(prevmoves$n) != "" && $annotateBlunders != "allmoves"} {
         set move2 [sc_game info previousMoveNT]
         
         sc_info preMoveCmd {}
@@ -2183,20 +2221,33 @@ proc autoplayFinishGame { {n 1} } {
     }
     after $::autoplayDelay autoplayFinishGame
 }
+
 ################################################################################
 #
 ################################################################################
-proc toggleEngineAnalysis { { n 1 } { force 0 } } {
+proc startEngineAnalysis { {n 1} {force 0} } {
     global analysis
-    set b ".analysisWin$n.b1.bStartStop"
     
-    if { $n == 1} {
-        if { ($::annotateModeButtonValue || $::finishGameMode) && ! $force } {
-            return
-        }
+    if { !$analysis(analyzeMode$n) } {
+        set b ".analysisWin$n.b1.bStartStop"
+        
+        startAnalyzeMode $n $force
+        $b configure -image tb_pause
+        ::utils::tooltip::Set $b "$::tr(StopEngine)(a)"
+        # enable lock button
+        .analysisWin$n.b1.lockengine configure -state normal
     }
+}
+
+################################################################################
+#
+################################################################################
+proc stopEngineAnalysis { {n 1} } {
+    global analysis
     
-    if {$analysis(analyzeMode$n)} {
+    if { $analysis(analyzeMode$n) } {
+        set b ".analysisWin$n.b1.bStartStop"
+
         stopAnalyzeMode $n
         $b configure -image tb_play
         ::utils::tooltip::Set $b "$::tr(StartEngine)"
@@ -2205,12 +2256,25 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
         toggleLockEngine $n
         .analysisWin$n.b1.lockengine configure -relief raised
         .analysisWin$n.b1.lockengine configure -state disabled
+    }
+}
+
+################################################################################
+#
+################################################################################
+proc toggleEngineAnalysis { { n 1 } { force 0 } } {
+    global analysis
+    
+    if { $n == 1} {
+        if { ($::annotateModeButtonValue || $::finishGameMode) && ! $force } {
+            return
+        }
+    }
+    
+    if {$analysis(analyzeMode$n)} {
+        stopEngineAnalysis $n
     } else  {
-        startAnalyzeMode $n
-        $b configure -image tb_pause
-        ::utils::tooltip::Set $b "$::tr(StopEngine)(a)"
-        # enable lock button
-        .analysisWin$n.b1.lockengine configure -state normal
+        startEngineAnalysis $n $force
     }
 }
 ################################################################################

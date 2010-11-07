@@ -1641,11 +1641,13 @@ proc setAutoplayDelay {} {
 #
 ################################################################################
 proc toggleAutoplay { } {
-    global autoplayMode
+    global autoplayMode autoplayDelay
     if {$autoplayMode == 0} {
         set autoplayMode 1
         .main.fbutton.button.autoplay configure -image autoplay_on -relief sunken
-        autoplay
+        # Start with an inital delay
+        # It gives the engine time to settle
+        after $autoplayDelay autoplay
     } else {
         cancelAutoplay
     }
@@ -1660,24 +1662,33 @@ proc autoplay {} {
     if {$autoplayMode == 0} { return }
     
     if {$annotateMode} {
-        if { ![sc_pos isAt start] } { addAnnotation }
+        addAnnotation
     }
     
     # stop game annotation when out of opening
     if { $::isBatch && $annotateMode && $::isBatchOpening && \
                 [sc_pos moveNumber] > $::isBatchOpeningMoves } {
         sc_game save [sc_game number]
+        # Stop the engine
+        stopEngineAnalysis 1
         if {[sc_game number] < $::batchEnd} {
             sc_game load [expr [sc_game number] + 1]
             if {$::addAnnotatorTag} {
-                appendAnnotator " $analysis(name1)"
+                set _tmp [expr {$autoplayDelay / 1000}]
+                appendAnnotator " $analysis(name1) ($_tmp sec)"
             }
-            set ::wentOutOfBook 0
             updateMenuStates
             updateStatusBar
             updateTitle
             updateBoard -pgn
-            addAnnotation
+            # First do book analysis
+            set ::wentOutOfBook 0
+            bookAnnotation 1
+            # Start with initial assessment of the position
+            set ::initialAnalysis 1
+            # Start the engine
+            startEngineAnalysis 1 1
+            # And respawn
             after $autoplayDelay autoplay
             return
         } else  {
@@ -1706,17 +1717,26 @@ proc autoplay {} {
             }
             if {$::isBatch && [sc_game number] != 0} {
                 sc_game save [sc_game number]
+                # Stop the engine
+                stopEngineAnalysis 1
                 if {[sc_game number] < $::batchEnd} {
                     sc_game load [expr [sc_game number] + 1]
                     if {$::addAnnotatorTag} {
-                        appendAnnotator " $analysis(name1)"
+                        set _tmp [expr {$autoplayDelay / 1000}]
+                        appendAnnotator " $analysis(name1) ($_tmp sec)"
                     }
-                    set ::wentOutOfBook 0
                     updateMenuStates
                     updateStatusBar
                     updateTitle
                     updateBoard -pgn
-                    addAnnotation
+                    # First do book analysis
+                    set ::wentOutOfBook 0
+                    bookAnnotation 1
+                    # Start with initial assessment of the position
+                    set ::initialAnalysis 1
+                    # Start the engine
+                    startEngineAnalysis 1 1
+                    # And respawn
                     after $autoplayDelay autoplay
                     return
                 } else  {

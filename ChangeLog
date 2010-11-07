@@ -910,7 +910,7 @@ This maintenance release reverts to 32 bits file I/O. Large file handling across
 scid-4.3
 ==========
 - Improvements
-	* documentation for opening trainer (thanks ot Dale Hards)
+	* documentation for opening trainer (thanks to Dale Hards)
 	* Some of the programs icons based on GNOME Stock Icons in case png-support is available
 	* Some defaults of Scids empty config
 	* Gamelist: show delete-flag to the very left of the list by default
@@ -926,6 +926,7 @@ scid-4.3
 	    - Cursor key navigation works in IE
 	    - Cursor left key navigation works the same way backwards as right works its way forwards, i.e. skipping variations
 	    - Dotted move numbers for black moves in a main line are also applied following a diagram and a variation.
+	* Added engine thinking time to annotator string
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
@@ -983,6 +984,7 @@ scid-4.3
 	* It was not possible to remove a tb directory
 	* Allow for Phalanx XXIII as a version of Phalanx, as it includes all patches necessary for Scid
 	* Crash when replacing a game in certain languages (Thanks to Milan Zamazal)
+	* Game annotation inrush fix, mainly noticeable with batch annotation without using book
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
