@@ -4,6 +4,11 @@
 |                                                           |
  ===========================================================
 
+Go over proc standardShortcuts and define a list that might be usual
+edit keys. Add a funtion that unbinds those keys and get it called in
+windows that offer a general edit field for texts.
+
+
 Tiny font can not be set from the GUI
 
 So, truncating games by removing leading moves has at least two bugs:

@@ -139,11 +139,6 @@ proc ::commenteditor::Open {} {
   pack $w.cf.scroll -side right -fill y
   pack $w.cf.text -side right -expand 1 -fill both
   
-  # addHorizontalRule $w
-  
-  # minsize seems not to be necessary.
-###---###  wm minsize $w 40 3
-  
   # Main buttons:
   
   dialogbutton $w.b.clear -textvar ::tr(Clear) -command [namespace code [list ClearComments .commentWin]]
