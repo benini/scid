@@ -79,7 +79,7 @@ menuText C EditCopy "Zkopírovat tuto partii do schránky" 23 \
   {Zkopírovat tuto partií do databáze schránka}
 menuText C EditPaste "Vlo¾it poslední partii ze schránky" 24 \
   {Vlo¾it aktivní partii z databáze schránka}
-menuText C EditPastePGN "Paste Clipboard text as PGN game..." 10 \
+menuText C EditPastePGN "Vlo¾it text ze schránky jako PGN..." 10 \
   {Interpretovat text schránky jako partii v PGN notaci a vlo¾it ji sem}
 menuText C EditSetup "Nastavit výchozí pozici..." 0 \
   {Nastavit výchozí pozici pro tuto partii}
@@ -254,7 +254,7 @@ menuText C OptionsMovesCoord "Souøadnicové zadávání tahù" 0 \
 menuText C OptionsMovesSuggest "Ukázat navrhované tahy" 0 \
   {Zapnout/vypnout zobrazování navrhovaných tahù}
 menuText C OptionsShowVarPopup "Zobrazit okno variant" 0 {Zapnout/vypnout zobrazení okna variant}  
-menuText C OptionsMovesSpace "Pøidat mezery za èíslo tahu spaces after move number" 0 {Pøidat mezery za èíslo tahu spaces after move number}  
+menuText C OptionsMovesSpace "Pøidat mezeru za èíslo tahu" 0 {Pøidat mezeru za èíslo tahu}  
 menuText C OptionsMovesKey "Klávesnicové doplòování" 13 \
   {Zapnout/vypnout automatické doplòování tahù zadávaných klávesnicí}
 menuText C OptionsMovesShowVarArrows "Zobrazit ¹ipky pro varianty" 0 {Zapnout/vypnout zobrazování ¹ipek ukazujících tahy variant}
@@ -804,8 +804,8 @@ translate C PawnFlag {Pì¹cová struktura}
 translate C TacticsFlag {Taktika}
 translate C QsideFlag {Hra na dámském køídle}
 translate C KsideFlag {Hra na královském køídle}
-translate C BrilliancyFlag {Brilantní}
-translate C BlunderFlag {Hrubka}
+translate C BrilliancyFlag {Velmi silný tah}
+translate C BlunderFlag {Hrubá chyba}
 translate C UserFlag {U¾ivatel}
 translate C PgnContains {PGN obsahuje text}
 
@@ -1228,7 +1228,7 @@ translate C CompactGames {Zhustit partiový soubor}
 translate C NoUnusedNames "Nejsou ¾ádná nevyu¾itá jména, tak¾e jmenný soubor je ji¾ plnì zhu¹tìn."
 translate C NoUnusedGames "Partiový soubor je ji¾ plnì zhu¹tìn."
 translate C NameFileCompacted {Jmenný soubor pro databázi "[file tail [sc_base filename]]" byl zhu¹tìn.}
-translate C GameFileCompacted {Jmenný soubor pro databázi "[file tail [sc_base filename]]" byl zhu¹tìn.}
+translate C GameFileCompacted {Partiový soubor pro databázi "[file tail [sc_base filename]]" byl zhu¹tìn.}
 
 # Sorting:
 translate C SortCriteria {Kritéria}
@@ -1334,8 +1334,7 @@ translate C Playwith {Hrát s}
 translate C white {bílý}
 translate C black {èerný}
 translate C both {oba}
-# ====== TODO To be translated ======
-translate C Play {Play}
+translate C Play {Hrát}
 translate C Noblunder {®ádná hrubá chyba}
 translate C blunder {hrubá chyba}
 translate C Noinfo {-- ®ádné informace --}
@@ -3930,8 +3929,8 @@ partie se zapnutým mazacím pøíznakem jsou oznaèeny k výmazu a pøi
 <li>Taktika (T)</li>
 <li>Hra na dámském køídle (Q)</li>
 <li>Hra na královské køídle (K)</li>
-<li>Brilantní (!)</li>
-<li>Hrubka (?)</li>
+<li>Velmi silný tah (!)</li>
+<li>Hrubá chyba (?)</li>
 <li>U¾ivatel (U)</li>
 </ul>
 

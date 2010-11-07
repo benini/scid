@@ -981,6 +981,8 @@ scid-4.3
 	    - Move comments are rendered according css style
 	* Duplicate games display did not highlight correctly
 	* It was not possible to remove a tb directory
+	* Allow for Phalanx XXIII as a version of Phalanx, as it includes all patches necessary for Scid
+	* Crash when replacing a game in certain languages (Thanks to Milan Zamazal)
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

@@ -615,7 +615,7 @@ StrTree<C>::GetFirstMatches (const char * str, uint maxMatches,
     ASSERT (array != NULL  &&  maxMatches > 0);
     if (! TreeMode) { MakeTree(); }
     uint matches = 0;
-    nodeT<C> * root = Root[(uint) *str];
+    nodeT<C> * root = Root[(byte) *str];
     FindMatches (str, strlen(str), root, &matches, maxMatches, array);
     return matches;
 }
