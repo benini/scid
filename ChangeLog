@@ -985,6 +985,8 @@ scid-4.3
 	* Allow for Phalanx XXIII as a version of Phalanx, as it includes all patches necessary for Scid
 	* Crash when replacing a game in certain languages (Thanks to Milan Zamazal)
 	* Game annotation inrush fix, mainly noticeable with batch annotation without using book
+	* Repair annotation lockup with UCI engines that announce their bestmove before being stopped
+	  when they see a forced mate (stockfish...)
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
