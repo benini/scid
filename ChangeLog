@@ -926,7 +926,9 @@ scid-4.3
 	    - Cursor key navigation works in IE
 	    - Cursor left key navigation works the same way backwards as right works its way forwards, i.e. skipping variations
 	    - Dotted move numbers for black moves in a main line are also applied following a diagram and a variation.
-	* Added engine thinking time to annotator string
+	* Annotation
+	    - Added engine thinking time to annotator string
+	    - Stop engine at end of annotation
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess

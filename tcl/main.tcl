@@ -1698,6 +1698,8 @@ proc autoplay {} {
     }
     
     if { [sc_pos isAt end] } {
+        # Stop the engine
+        stopEngineAnalysis 1
         if { $annotateMode } { ; # end of game if not mate, add the thinking line
             if {! $::onlyMarkExercise} {
                 set move_done [sc_game info previousMoveNT]
@@ -1717,8 +1719,6 @@ proc autoplay {} {
             }
             if {$::isBatch && [sc_game number] != 0} {
                 sc_game save [sc_game number]
-                # Stop the engine
-                stopEngineAnalysis 1
                 if {[sc_game number] < $::batchEnd} {
                     sc_game load [expr [sc_game number] + 1]
                     if {$::addAnnotatorTag} {
