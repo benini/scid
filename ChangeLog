@@ -989,6 +989,7 @@ scid-4.3
 	* Game annotation inrush fix, mainly noticeable with batch annotation without using book
 	* Repair annotation lockup with UCI engines that announce their bestmove before being stopped
 	  when they see a forced mate (stockfish...)
+	* Header search with ignore colours: colours were obeyed for the results (thanks to Gerd Lohrscheid)
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

@@ -15140,7 +15140,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     dateRange[1] = DATE_MAKE (YEAR_MAX, 12, 31);
 
     bool results [NUM_RESULT_TYPES];
-    bool resultsF [NUM_RESULT_TYPES];  // Flipped results for ignore-colors.
     results[RESULT_White] = results[RESULT_Black] = true;
     results[RESULT_Draw] = results[RESULT_None] = true;
 
@@ -15583,12 +15582,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-    // Set up flipped results flags for ignore-colors option:
-    resultsF[RESULT_White] = results[RESULT_Black];
-    resultsF[RESULT_Draw]  = results[RESULT_Draw];
-    resultsF[RESULT_Black] = results[RESULT_White];
-    resultsF[RESULT_None]  = results[RESULT_None];
-
     // Swap rating difference values if necesary:
     if (dEloRange[0] > dEloRange[1]) {
         int x = dEloRange[0]; dEloRange[0] = dEloRange[1]; dEloRange[1] = x;
@@ -15698,7 +15691,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (!match  &&  ignoreColors  &&
                 matchGameHeader (ie, db->nb, mBlack, mWhite,
                                  mEvent, mSite, mRound,
-                                 dateRange[0], dateRange[1], resultsF,
+                                 dateRange[0], dateRange[1], results,
                                  bEloRange[0], bEloRange[1],
                                  wEloRange[0], wEloRange[1],
                                  -dEloRange[1], -dEloRange[0],
