@@ -2,7 +2,7 @@
 # Contributed by Pavel Hanák, Vlastimil Babula and Milan Zamazal.
 # Untranslated messages are marked with a "***" comment.
 
-addLanguage C Czech 0 utf-8
+addLanguage C Czech 0 iso-8859-2
 
 proc setLanguage_C {} {
 
@@ -475,23 +475,23 @@ menuText C TreeFileCopy "Kopírovat text stromu do clipboardu" 0 \
   {Kopírovat stromové statistiky do textového výbìru}
 menuText C TreeFileClose "Zavøít stromové okno" 0 {Zavøít stromové okno}
 menuText C TreeMask "Maska" 0
-menuText C TreeMaskNew "New" 0 {Nová maska}
-menuText C TreeMaskOpen "Open" 0 {Otevøít masku}
-menuText C TreeMaskOpenRecent "Open recent" 0 {Otevøít nedávnou masku}
-menuText C TreeMaskSave "Save" 0 {Ulo¾it masku}
-menuText C TreeMaskClose "Close" 0 {Uzavøit masku}
+menuText C TreeMaskNew "Nová" 0 {Nová maska}
+menuText C TreeMaskOpen "Otevøít" 0 {Otevøít masku}
+menuText C TreeMaskOpenRecent "Otevøít nedávnou" 0 {Otevøít nedávnou masku}
+menuText C TreeMaskSave "Ulo¾it" 0 {Ulo¾it masku}
+menuText C TreeMaskClose "Zavøít" 0 {Uzavøít masku}
 menuText C TreeMaskFillWithGame "Naplnit partií" 0 {Naplnit masku partií}
 menuText C TreeMaskFillWithBase "Naplnit databází" 0 {Naplnit masku v¹emi partiemi z databáze}
-menuText C TreeMaskInfo "Info" 0 {Ukázat statistiku aktuální masky}
-menuText C TreeMaskDisplay "Display mask map" 0 {Ukázat data masky ve formì stromu}
-menuText C TreeMaskSearch "Search" 0 {Hledat v aktuální masce}
+menuText C TreeMaskInfo "Informace" 0 {Ukázat statistiku aktuální masky}
+menuText C TreeMaskDisplay "Ukázat mapu masky" 0 {Ukázat data masky ve formì stromu}
+menuText C TreeMaskSearch "Hledat" 0 {Hledat v aktuální masce}
 menuText C TreeSort "Øadit" 2
 menuText C TreeSortAlpha "Abecednì" 0
 menuText C TreeSortECO "ECO kód" 0
 menuText C TreeSortFreq "Frekvence" 0
 menuText C TreeSortScore "Skóre" 0
 menuText C TreeOpt "Volby" 0
-menuText C TreeOptSlowmode "pomalý re¾im" 0 {Pomalý re¾im aktualizace (vysoká pøesnost)}
+menuText C TreeOptSlowmode "Pomalý re¾im" 0 {Pomalý re¾im aktualizace (vysoká pøesnost)}
 menuText C TreeOptFastmode "Rychlý re¾im" 0 {Rychlý re¾im aktualizace (beze zmìny poøadí tahù)}
 menuText C TreeOptFastAndSlowmode "Rychlý a pomalý re¾im" 0 {Rychlý re¾im a potom pomalý re¾im aktualizace}
 menuText C TreeOptStartStop "Automatické aktualizace" 0 {Pøepnout automatické aktualizace stromového okna}

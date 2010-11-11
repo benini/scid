@@ -971,6 +971,7 @@ scid-4.3
 		  still treated internally
 	* Add "Open Comment editor" to PGN context menu
 	* Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
+	* Allow suppression of Abort/Adjourn/Draw/Take back requests/offers (thanks to Jose Joao Morais)
 - Fixes :
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* FICS console uses fixed font
@@ -990,6 +991,7 @@ scid-4.3
 	* Repair annotation lockup with UCI engines that announce their bestmove before being stopped
 	  when they see a forced mate (stockfish...)
 	* Header search with ignore colours: colours were obeyed for the results (thanks to Gerd Lohrscheid)
+	* Allow suppression of Abort/Adjourn/Draw/Takeback requests on FICS
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

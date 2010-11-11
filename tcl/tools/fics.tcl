@@ -29,7 +29,13 @@ namespace eval fics {
   variable logged 0
   variable isGuestLogin 0
   array set profileVars {}
-  
+
+  set showabortreq 1
+  set showadjournreq 1
+  set showdrawreq 1
+  set showtakebackreq 1
+
+
   ################################################################################
   #
   ################################################################################
@@ -37,23 +43,23 @@ namespace eval fics {
     variable logged
     global ::fics::sockChan
     set w ".ficsConfig"
-    
+
     if {[winfo exists $w]} {
       focus $w
       return
     }
-    
+
     if {[winfo exists .fics]} {
       focus .fics
       return
     }
-    
+
     set logged 0
-    
+
     toplevel $w
     ::setTitle $w [::tr "ConfigureFics"]
     pack [ttk::frame $w.f]
-    
+
     ttk::label $w.f.lLogin -text [::tr "CCDlgLoginName"]
     ttk::entry $w.f.login -width 20 -textvariable ::fics::login
     ttk::label $w.f.lPwd -text [::tr "CCDlgPassword"]
@@ -67,7 +73,7 @@ namespace eval fics {
       destroy .ficsConfig
     }
     ttk::button $w.f.cancel -text [::tr "Cancel"] -command { destroy .ficsConfig }
-    
+
     set row 0
     grid $w.f.lLogin -column 0 -row $row
     grid $w.f.login -column 1 -row $row
@@ -75,17 +81,17 @@ namespace eval fics {
     grid $w.f.lPwd -column 0 -row $row
     grid $w.f.passwd -column 1 -row $row
     incr row
-    
+
     # horizontal line
     ttk::frame $w.f.line$row -height 2 -borderwidth 2 -relief sunken
     grid $w.f.line$row -pady 5 -column 0 -row $row -columnspan 3 -sticky ew
     incr row
-    
+
     # use default user variables
     ttk::checkbutton $w.f.cbvars -text [::tr "FICSdefaultuservars"] -variable ::fics::usedefaultvars
     grid $w.f.cbvars -column 0 -row $row -sticky w
     incr row
-    
+
     # Time seal configuration
     ttk::checkbutton $w.f.cbts -text "Time seal" -variable ::fics::use_timeseal -onvalue 1 -offvalue 0
     grid $w.f.cbts -column 0 -row $row -sticky w
@@ -102,7 +108,7 @@ namespace eval fics {
     ttk::entry $w.f.portserver -width 6 -textvariable ::fics::port_fics
     ttk::label $w.f.ltsport -text [::tr "FICSTimesealPort"]
     ttk::entry $w.f.portts -width 6 -textvariable ::fics::port_timeseal
-    
+
     grid $w.f.lFICS_ip -column 0 -row $row
     grid $w.f.ipserver -column 1 -row $row
     grid $w.f.bRefresh -column 2 -row $row
@@ -113,27 +119,27 @@ namespace eval fics {
     grid $w.f.ltsport -column 0 -row $row
     grid $w.f.portts -column 1 -row $row
     incr row
-    
+
     # horizontal line
     ttk::separator $w.f.line$row -orient horizontal
     grid $w.f.line$row -pady 5 -column 0 -row $row -columnspan 3 -sticky ew
     incr row
-    
+
     grid $w.f.connect -column 0 -row $row -sticky ew
     grid $w.f.guest  -column 1 -row $row -sticky ew
     grid $w.f.cancel -column 2 -row $row -sticky ew
-    
+
     bind $w <Escape> "$w.f.cancel invoke"
     bind $w <F1> { helpWindow FICSLogin}
-    
+
     # Get IP adress of server (as Timeseal needs IP adress)
     if { $::fics::server_ip == "0.0.0.0" } {
       getIP
     }
-    
+
     $w.f.connect configure -state normal
     $w.f.guest configure -state normal
-    
+
   }
   ################################################################################
   #
@@ -147,13 +153,13 @@ namespace eval fics {
       tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent .ficsConfig.f
       return
     }
-    
+
     # Then the case of a proxy
     set timeOut 5
     set i 0
     while { $i <= $timeOut } {
       after 1000
-      
+
       if { [catch {set peer [ fconfigure $sockChan -peername ]} err]} {
         if {$i == $timeOut} {
           tk_messageBox -icon error -type ok -title "Unable to contact $::fics::server" -message $err -parent .ficsConfig.f
@@ -164,7 +170,7 @@ namespace eval fics {
       }
       incr i
     }
-    
+
     set ::fics::server_ip [lindex $peer 0]
     ::close $sockChan
     $b configure -state normal
@@ -193,7 +199,7 @@ namespace eval fics {
   proc syncProfileVars { login } {
     global  ::fics::profileVars
     variable isGuestLogin
-    
+
     if {$isGuestLogin} {
       set login "guest"
     }
@@ -213,18 +219,18 @@ namespace eval fics {
   proc connect { login passwd } {
     global ::fics::sockchan ::fics::seeklist ::fics::width ::fics::height ::fics::off
     variable isGuestLogin
-    
+
     if {$login != ""} {
       set ::fics::reallogin $login
       set ::fics::password $passwd
     } else {
       return
     }
-    
+
     set isGuestLogin [string match -nocase "guest" $login]
-    
+
     setProfileVars $login
-    
+
     # check timeseal configuration
     if {$::fics::use_timeseal} {
       if {![ file executable $::fics::timeseal_exec ]} {
@@ -232,51 +238,51 @@ namespace eval fics {
         return
       }
     }
-    
+
     set w .fics
     ::createToplevel $w
     ::setTitle $w "Free Internet Chess Server $::fics::reallogin"
     pack [ttk::panedwindow $w.f -orient vertical] -expand 1 -fill both
-    
+
     ttk::notebook $w.f.top
     ttk::frame $w.f.top.fconsole
     ttk::frame $w.f.top.fconsole.f1
     ttk::frame $w.f.top.fconsole.f2
-    
+
     ttk::frame $w.f.top.foffers
     $w.f.top add $w.f.top.fconsole -sticky nsew -text [::tr "FICSConsole"]
     $w.f.top add $w.f.top.foffers -sticky nsew -text [::tr "FICSOffers"]
-    
+
     pack $w.f.top.fconsole.f1  -fill both -expand 1
     pack $w.f.top.fconsole.f2 -fill x
     ttk::frame $w.f.bottom
-    
+
     $w.f add $w.f.top -weight 1
     $w.f add $w.f.bottom -weight 1
-    
+
     ttk::frame $w.f.bottom.left
     ttk::frame $w.f.bottom.right
     pack $w.f.bottom.left -side left
     pack $w.f.bottom.right -side left
-    
+
     # graph
     canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
     pack $w.f.top.foffers.c
     bind $w.f.top.foffers <Configure> { ::fics::configureCanvas}
-    
+
     ttk::scrollbar $w.f.top.fconsole.f1.ysc -command { .fics.f.top.fconsole.f1.console yview }
     text $w.f.top.fconsole.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
          -font font_Fixed -wrap word -yscrollcommand "$w.f.top.fconsole.f1.ysc set"
     pack $w.f.top.fconsole.f1.ysc -side left -fill y -side right
     pack $w.f.top.fconsole.f1.console -side left -fill both -expand 1 -side right
-    
+
     #define colors for console
     $w.f.top.fconsole.f1.console tag configure seeking     -foreground $::fics::colseeking
     $w.f.top.fconsole.f1.console tag configure game        -foreground $::fics::colgame
     $w.f.top.fconsole.f1.console tag configure gameresult  -foreground $::fics::colgameresult
     $w.f.top.fconsole.f1.console tag configure ficspercent -foreground $::fics::colficspercent
     $w.f.top.fconsole.f1.console tag configure ficshelpnext -foreground $::fics::colficshelpnext -underline 1
-    
+
     ttk::entry $w.f.top.fconsole.f2.cmd -width 32
     ttk::button $w.f.top.fconsole.f2.send -text [::tr "FICSSend"] -command ::fics::cmd
     bind $w.f.top.fconsole.f2.cmd <Return> { ::fics::cmd }
@@ -285,11 +291,11 @@ namespace eval fics {
     bind $w.f.top.fconsole.f2.cmd <Left> " [bind TEntry <Left>] ; break "
     bind $w.f.top.fconsole.f2.cmd <Right> " [bind TEntry <Right>] ; break "
     pack $w.f.top.fconsole.f2.cmd $w.f.top.fconsole.f2.send -side left -fill x
-    
+
     # clock 1 is white
     ::gameclock::new $w.f.bottom.left 1 100 0
     ::gameclock::new $w.f.bottom.left 2 100 0
-    
+
     set row 0
     ttk::checkbutton $w.f.bottom.right.silence -image FICSsilence -variable ::fics::silence -onvalue 0 -offvalue 1 -command {
       ::fics::writechan "set gin $::fics::silence" "echo"
@@ -299,9 +305,9 @@ namespace eval fics {
     }
     ::utils::tooltip::Set $w.f.bottom.right.silence "[::tr FICSSilence]\n(set gin 0\nset seek 0\nset silence 0\nset chanoff 1)"
     set ::fics::silence 1
-    
+
     set ::fics::graphon 0
-    
+
     ttk::button $w.f.bottom.right.findopp -image FICSsearch  -command { ::fics::findOpponent }
     ::utils::tooltip::Set $w.f.bottom.right.findopp [::tr "FICSFindOpponent"]
     grid $w.f.bottom.right.findopp -column 0 -row $row -sticky ew -pady 2
@@ -317,9 +323,9 @@ namespace eval fics {
     ttk::button $w.f.bottom.right.profile -image FICSprofile -compound image -command { ::fics::writechan "finger" ; ::fics::writechan "history" }
     ::utils::tooltip::Set $w.f.bottom.right.profile "[::tr FICSProfile]\n(finger, history)"
     grid $w.f.bottom.right.profile -column 4 -row $row -sticky ew -pady 2
-    
+
     incr row
-    
+
     ttk::button $w.f.bottom.right.draw -image FICSdraw -command { ::fics::writechan "draw"}
     ::utils::tooltip::Set $w.f.bottom.right.draw "[::tr CCClaimDraw]\n(draw)"
     ttk::button $w.f.bottom.right.resign -image FICSresign -command { ::fics::writechan "resign"}
@@ -331,44 +337,44 @@ namespace eval fics {
     grid $w.f.bottom.right.abort -column 2 -row $row -sticky ew -pady 2
     grid $w.f.bottom.right.silence -column 4 -row $row -sticky w
     incr row
-    
+
     ttk::button $w.f.bottom.right.takeback -image FICStakeback1 -command { ::fics::writechan "takeback"}
     ::utils::tooltip::Set $w.f.bottom.right.takeback "[::tr FICSTakeback]\n(takeback)"
     ttk::button $w.f.bottom.right.takeback2 -image FICStakeback2 -command { ::fics::writechan "takeback 2"}
     ::utils::tooltip::Set $w.f.bottom.right.takeback2 "[::tr FICSTakeback2]\n(takeback 2)"
-    
+
     grid $w.f.bottom.right.takeback -column 0 -row $row -sticky ew -pady 2
     grid $w.f.bottom.right.takeback2 -column 1 -row $row -sticky ew -pady 2
     incr row
-    
+
     ttk::button $w.f.bottom.right.cancel -image FICSexit -command { ::fics::close }
     ::utils::tooltip::Set $w.f.bottom.right.cancel [::tr "Close"]
     grid $w.f.bottom.right.cancel -column 0 -columnspan 3 -row $row -sticky ew  -pady 2
-    
+
     bind $w.f.top <<NotebookTabChanged>> { ::fics::tabchanged ; break }
     bind $w <Destroy> { catch ::fics::close }
     bind $w <Configure> "recordWinSize $w"
-    
+
     bind $w <F1> { helpWindow FICS}
     bind $w.f.top.fconsole.f1.console <FocusIn> "focus $w.f.top.fconsole.f2.cmd"
     bind $w.f.top.fconsole.f1.console <Configure> { .fics.f.top.fconsole.f1.console yview moveto 1 }
     bind $w.f.top.fconsole.f1.console <ButtonPress-1> { ::fics::consoleClick %x %y %W }
     standardShortcuts $w
-    
+
     # all widgets must be visible
     update
     set x [winfo reqwidth $w]
     set y [winfo reqheight $w]
     wm minsize $w $x $y
-    
+
     setWinLocation $w
     setWinSize $w
-    
+
     ::gameclock::setColor 1 white
     ::gameclock::setColor 2 black
-    
+
     updateConsole "Connecting $login"
-    
+
     # start timeseal proxy
     if {$::fics::use_timeseal} {
       updateConsole "Starting TimeSeal"
@@ -385,16 +391,16 @@ namespace eval fics {
       set server $::fics::server
       set port $::fics::port_fics
     }
-    
+
     updateConsole "Socket opening"
-    
+
     if { [catch { set sockchan [socket $server $port] } ] } {
       tk_messageBox -title "Error" -icon error -type ok -message "Network error\nCan't connect to $server $port" -parent .fics
       return
     }
-    
+
     updateConsole "Channel configuration"
-    
+
     fconfigure $sockchan -blocking 0 -buffering line -translation auto ;#-encoding iso8859-1 -translation crlf
     fileevent $sockchan readable ::fics::readchan
     setState disabled
@@ -420,7 +426,7 @@ namespace eval fics {
   ################################################################################
   proc cmdHistory { action } {
     set t .fics.f.top.fconsole.f2.cmd
-    
+
     if {$action == "up" && $::fics::history_pos > 0} {
       incr ::fics::history_pos -1
       $t delete 0 end
@@ -444,7 +450,7 @@ namespace eval fics {
     toplevel $w
     wm title $w [::tr "FICSFindOpponent"]
     pack [ttk::frame $w.f]
-    
+
     ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
     spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
     ttk::label $w.f.linc -text [::tr "FICSIncrement"]
@@ -453,10 +459,10 @@ namespace eval fics {
     grid $w.f.sbTime1 -column 1 -row 0 -sticky ew
     grid $w.f.linc -column 0 -row 1 -sticky ew
     grid $w.f.sbTime2 -column 1 -row 1 -sticky ew
-    
+
     ttk::checkbutton $w.f.cbrated -text [::tr "FICSRatedGame"] -onvalue "rated" -offvalue "unrated" -variable ::fics::findopponent(rated)
     grid $w.f.cbrated -column 0 -row 2 -columnspan 2 -sticky ew
-    
+
     ttk::label $w.f.color -text [::tr "FICSColour"]
     grid $w.f.color -column 0 -row 3 -columnspan 3 -sticky ew
     ttk::radiobutton $w.f.rb1 -text [::tr "FICSAutoColour"] -value "" -variable ::fics::findopponent(color)
@@ -465,22 +471,22 @@ namespace eval fics {
     grid $w.f.rb1 -column 0 -row 4 -sticky ew
     grid $w.f.rb2 -column 1 -row 4 -sticky ew
     grid $w.f.rb3 -column 2 -row 4 -sticky ew
-    
+
     ttk::checkbutton $w.f.cblimitrating -text [::tr "RatingRange"] -variable ::fics::findopponent(limitrating)
     spinbox $w.f.sbrating1 -background white -width 4 -textvariable ::fics::findopponent(rating1) -from 1000 -to 3000 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
     spinbox $w.f.sbrating2 -background white -width 4 -textvariable ::fics::findopponent(rating2) -from 1000 -to 3000 -increment 50 -validate all -vcmd { regexp {^[0-9]+$} %P }
     grid $w.f.cblimitrating -column 0 -row 5 -columnspan 2 -sticky ew
     grid $w.f.sbrating1 -column 0 -row 6 -sticky ew
     grid $w.f.sbrating2 -column 1 -row 6 -sticky ew
-    
+
     ttk::checkbutton $w.f.cbmanual -text [::tr "FICSManualConfirm"] -onvalue "manual" -offvalue "auto" -variable ::fics::findopponent(manual)
     grid $w.f.cbmanual -column 0 -row 7 -columnspan 2 -sticky ew
     ttk::checkbutton $w.f.cbformula -text [::tr "FICSFilterFormula"] -onvalue "formula" -offvalue "" -variable ::fics::findopponent(formula)
     grid $w.f.cbformula -column 0 -row 8 -columnspan 2 -sticky ew
-    
+
     ttk::button $w.f.seek -text [::tr "FICSIssueSeek"] -command {
       ::fics::syncProfileVars $::fics::login
-      
+
       set range ""
       if {$::fics::findopponent(limitrating) } {
         set range "$::fics::findopponent(rating1)-$::fics::findopponent(rating2)"
@@ -492,7 +498,7 @@ namespace eval fics {
     }
     ttk::button $w.f.cancel -text [::tr "Cancel"] -command "destroy $w"
     bind $w <F1> { helpWindow FICSfindOpp}
-    
+
     grid $w.f.seek -column 0 -row 9 -sticky ew
     grid $w.f.cancel -column 1 -row 9 -sticky ew
   }
@@ -501,14 +507,14 @@ namespace eval fics {
   ################################################################################
   proc readchan {} {
     variable logged
-    
+
     if {[eof $::fics::sockchan]} {
       fileevent $::fics::sockchan readable {}
       tk_messageBox -title "FICS" -icon error -type ok -message "Network error reading channel"
       ::fics::close "error"
       return
     }
-    
+
     # switch from read to gets in case a read is done at the middle of a line
     if {! $logged} {
       set line [read $::fics::sockchan]
@@ -521,22 +527,22 @@ namespace eval fics {
       readparse $line
     }
   }
-  
+
   ################################################################################
   # Appends an array to soughtlist if the parameter is correct
   # returns 0 if the line is not parsed and so it is still pending for use
   ################################################################################
   proc parseSoughtLine { l } {
     global ::fics::offers_minelo ::fics::offers_maxelo ::fics::offers_mintime ::fics::offers_maxtime
-    
+
     # it seems that the first offer starts with a prompt
     if {[string match "fics% *" $l]} {
       set l [string range $l 6 end]
     }
-    
+
     if { [ catch { if {[llength $l] < 8} { return 0} } ] } { return 0}
     array set ga {}
-    
+
     set offset 0
     set ga(game) [lindex $l 0]
     if { ! [string is integer $ga(game)] } { return 0}
@@ -544,15 +550,15 @@ namespace eval fics {
     if { [scan $tmp "%d" ga(elo)] != 1} { set ga(elo) $offers_minelo }
     if { $ga(elo) < $offers_minelo } { set ga(elo) $offers_minelo }
     set ga(name) [lindex $l 2]
-    
+
     set tmp [lindex $l 3]
     if { [scan $tmp "%d" ga(time_init)] != 1} { set ga(time_init) $offers_maxtime}
     set tmp [lindex $l 4]
     if { [scan $tmp "%d" ga(time_inc)] != 1} { set ga(time_inc) 0 }
-    
+
     set ga(rated) [lindex $l 5]
     if {$ga(rated) != "rated" && $ga(rated) != "unrated"} { return 0 }
-    
+
     set ga(type) [lindex $l 6]
     if { $ga(type) != "untimed" && $ga(type) != "blitz" && $ga(type) != "standard" && $ga(type) != "lightning" } {
       return 0
@@ -566,7 +572,7 @@ namespace eval fics {
     if { [ catch { set ga(start) [lindex $l [expr 8 + $offset]] } ] } {
       set ga(start) ""
     }
-    
+
     lappend ::fics::soughtlist [array get ga]
     return 1
   }
@@ -576,9 +582,9 @@ namespace eval fics {
   proc readparse {line} {
     variable logged
     variable isGuestLogin
-    
+
     if {$line == "" || $line == "fics% "} {return}
-    
+
     if { $::fics::sought } {
       if {[string match "* ad* displayed." $line]} {
         set ::fics::sought 0
@@ -590,7 +596,7 @@ namespace eval fics {
         return
       }
     }
-    
+
     if {[string match "login: " $line]} {
       writechan $::fics::reallogin
       if { $isGuestLogin} {
@@ -615,12 +621,12 @@ namespace eval fics {
       removeSeek $line
       return
     }
-    
+
     if {[string match "<12>*" $line]} {
       parseStyle12 $line
       return
     }
-    
+
     # puts "readparse->$line"
     updateConsole $line
     if {[string match "Creating: *" $line]} {
@@ -636,23 +642,23 @@ namespace eval fics {
       set white [string trim [string range $line 10 [expr $idx1 -1]] ]
       set idx2 [string first ")" $line]
       set whiteElo [string trim [string range $line [expr $idx1 +1] [expr $idx2 -1]] ]
-      
+
       set idx1 [expr $idx2 +1]
       set idx2 [string first "(" $line $idx1]
       set black [string trim [string range $line $idx1 [expr $idx2 -1]] ]
-      
+
       set idx1 [expr $idx2 +1]
       set idx2 [string first ")" $line $idx1]
       set blackElo [string trim [string range $line $idx1 [expr $idx2 -1]] ]
-      
+
       if { $whiteElo == "++++"} { set whiteElo 0 }
       if { $blackElo == "++++"} { set blackElo 0 }
-      
+
       sc_game tags set -white $white
       sc_game tags set -whiteElo $whiteElo
       sc_game tags set -black $black
       sc_game tags set -blackElo $blackElo
-      
+
       sc_game tags set -event "Fics [lrange $line 5 end]"
       if { [::board::isFlipped .main.board] } {
         if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
@@ -662,9 +668,14 @@ namespace eval fics {
       updateBoard -pgn -animate
       # display the win / draw / loss score
       ::fics::writechan "assess" "noecho"
+      # it's a new game so show again abort, draw, etc requests
+      set ::fics::showabortreq 1
+      set ::fics::showadjournreq 1
+      set ::fics::showdrawreq 1
+      set ::fics::showtakebackreq 1
       return
     }
-    
+
     if {[string match "\{Game *" $line]} {
       set num [lindex [lindex $line 0] 1]
       set res [lindex $line end]
@@ -683,21 +694,21 @@ namespace eval fics {
       }
       return
     }
-    
+
     if { [string match "You are now observing game*" $line] } {
       scan $line "You are now observing game %d." ::fics::observedGame
     }
-    
+
     # Start session
     if {[string match "*Starting FICS session*" $line]} {
-      
+
       # mandatory init commands
       writechan "iset seekremove 1"
       writechan "iset seekinfo 1"
       writechan "style 12"
       writechan "iset nowrap 1"
       writechan "iset nohighlight 1"
-      
+
       # user init commands
       if { $::fics::usedefaultvars } {
         writechan "set seek 1" ; # be informed of "seek" ads when they are made
@@ -709,7 +720,7 @@ namespace eval fics {
       setState normal
       return
     }
-    
+
     if { $::fics::waitForRating == "wait" } {
       if {[catch {set val [lindex $line 0]}]} {
         return
@@ -720,18 +731,18 @@ namespace eval fics {
         }
       }
     }
-    
+
     if { $::fics::waitForMoves != "" } {
       set m1 ""
       set m2 ""
       set line [string trim $line]
-      
+
       # Because some free text may be in the form (".)
       if {[catch {llength $line} err]} {
         puts "Exception $err llength $line"
         return
       }
-      
+
       if {[llength $line ] == 5 && [scan $line "%d. %s (%d:%d) %s (%d:%d)" t1 m1 t2 t3 m2 t4 t5] != 7} {
         return
       }
@@ -742,12 +753,12 @@ namespace eval fics {
       if {$m2 != ""} {
         catch { sc_move addSan $m2 }
       }
-      
+
       if {[sc_pos fen] == $::fics::waitForMoves } {
         set ::fics::waitForMoves ""
       }
     }
-    
+
     if {[string match "Challenge:*" $line]} {
       set ans [tk_dialog .challenge [::tr "FICSChallenge"] $line "" 0 [::tr "FICSAccept"] [::tr "FICSDecline"]]
       if {$ans == 0} {
@@ -756,47 +767,51 @@ namespace eval fics {
         writechan "decline"
       }
     }
-    
+
     # abort request
-    if {[string match "* would like to abort the game;*" $line]} {
-      set ans [tk_messageBox -title [::tr "Abort"] -icon question -type yesno -message "$line\nDo you accept ?" ]
-      if {$ans == yes} {
-        writechan "accept"
-      } else {
-        writechan "decline"
+    # for the abort, etc requests, added the "cancel" option so that during this game
+    # the message box won't open again for the canceled type of request
+    # to avoid "denial of play" attack by the opponent constantly issuing such a request
+    # (because  tk_messageBox  "waits for the user to select one of the buttons")
+    if {[string match "* would like to abort the game;*" $line] && $::fics::showabortreq} {
+      set ans [tk_messageBox -title [::tr "Abort"] -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      switch -- $ans {
+        yes {writechan "accept"}
+        no  {writechan "decline"}
+        cancel {set ::fics::showabortreq 0}
       }
     }
-    
+
     # takeback
-    if {[string match "* would like to take back *" $line]} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesno -message "$line\nDo you accept ?" ]
-      if {$ans == yes} {
-        writechan "accept"
-      } else {
-        writechan "decline"
+    if {[string match "* would like to take back *" $line] && $::fics::showtakebackreq} {
+      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      switch -- $ans {
+        yes {writechan "accept"}
+        no  {writechan "decline"}
+        cancel {set ::fics::showtakebackreq 0}
       }
     }
-    
+
     # draw
-    if {[string match "*offers you a draw*" $line]} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesno -message "$line\nDo you accept ?" ]
-      if {$ans == yes} {
-        writechan "accept"
-      } else {
-        writechan "decline"
+    if {[string match "*offers you a draw*" $line] && $::fics::showdrawreq} {
+      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      switch -- $ans {
+        yes {writechan "accept"}
+        no  {writechan "decline"}
+        cancel {set ::fics::showdrawreq 0}
       }
     }
-    
+
     # adjourn
-    if {[string match "*would like to adjourn the game*" $line]} {
-      set ans [tk_messageBox -title "Abort" -icon question -type yesno -message "$line\nDo you accept ?" ]
-      if {$ans == yes} {
-        writechan "accept"
-      } else {
-        writechan "decline"
+    if {[string match "*would like to adjourn the game*" $line] && $::fics::showadjournreq} {
+      set ans [tk_messageBox -title "Abort" -icon question -type yesnocancel -message "$line\nDo you accept ?" ]
+      switch -- $ans {
+        yes {writechan "accept"}
+        no  {writechan "decline"}
+        cancel {set ::fics::showadjournreq 0}
       }
     }
-    
+
     # guest logging
     if {[string match "Logging you in as*" $line]} {
       set line [string map {"\"" "" ";" ""} $line ]
@@ -806,24 +821,24 @@ namespace eval fics {
     if {[string match "Press return to enter the server as*" $line]} {
       writechan "\n"
     }
-    
+
   }
   ################################################################################
   #  Set the state of user interface related to connection state
   ################################################################################
   proc setState { state } {
     set w .fics
-    
+
     foreach elt [winfo children $w.f.bottom.right] {
       if { $elt != "$w.f.bottom.right.cancel" } {
         $elt configure -state $state
       }
     }
-    
+
     foreach elt [list $w.f.top.fconsole.f2.send $w.f.top.fconsole.f2.cmd ] {
       $elt configure -state $state
     }
-    
+
     if {$state == "normal" } {
       $w.f.top add $w.f.top.foffers
     } else  {
@@ -835,7 +850,7 @@ namespace eval fics {
   ################################################################################
   proc updateConsole {line} {
     set t .fics.f.top.fconsole.f1.console
-    
+
     if { [string match "* seeking *" $line ] } {
       $t insert end "$line\n" seeking
     } elseif { [string match "\{Game *\}" $line ] } {
@@ -849,12 +864,12 @@ namespace eval fics {
     } else  {
       $t insert end "$line\n"
     }
-    
+
     set pos [ lindex [ .fics.f.top.fconsole.f1.ysc get ] 1 ]
     if {$pos == 1.0} {
       $t yview moveto 1
     }
-    
+
   }
   ################################################################################
   #
@@ -862,9 +877,9 @@ namespace eval fics {
   proc removeSeek {line} {
     global ::fics::seeklist
     foreach l $line {
-      
+
       if { $l == "<sr>" } {continue}
-      
+
       # remove seek from seeklist
       for {set i 0} {$i < [llength $seeklist]} {incr i} {
         array set a [lindex $seeklist $i]
@@ -873,7 +888,7 @@ namespace eval fics {
           break
         }
       }
-      
+
       # remove seek from graph
       if { $::fics::graphon } {
         for {set idx 0} { $idx < [llength $::fics::soughtlist]} { incr idx } {
@@ -885,7 +900,7 @@ namespace eval fics {
           }
         }
       }
-      
+
     }
   }
   ################################################################################
@@ -907,10 +922,10 @@ namespace eval fics {
     set verbose_move [lindex $line 27]
     set moveTime [lindex $line 28]
     set moveSan [lindex $line 29]
-    
+
     set ::fics::playing $relation
     set ::fics::observedGame $gameNumber
-    
+
     ::gameclock::setSec 1 [ expr 0 - $whiteRemainingTime ]
     ::gameclock::setSec 2 [ expr 0 - $blackRemainingTime ]
     if {$color == "W"} {
@@ -920,12 +935,12 @@ namespace eval fics {
       ::gameclock::start 2
       ::gameclock::stop 1
     }
-    
+
     set fen ""
     for {set i 1} {$i <=8} { incr i} {
       set l [lindex $line $i]
       set count 0
-      
+
       for { set col 0 } { $col < 8 } { incr col } {
         set c [string index $l $col]
         if { $c == "-"} {
@@ -938,14 +953,14 @@ namespace eval fics {
           set fen "$fen$c"
         }
       }
-      
+
       if {$count != 0} { set fen "$fen$count" }
       if {$i != 8} { set fen "$fen/" }
     }
-    
+
     set fen "$fen [string tolower $color]"
     set f [lindex $line 10]
-    
+
     # en passant
     if { $f == "-1" || $verbose_move == "none"} {
       set enpassant "-"
@@ -963,16 +978,16 @@ namespace eval fics {
         }
       }
     }
-    
+
     set castle ""
     if {[lindex $line 11] == "1"} {set castle "${castle}K"}
     if {[lindex $line 12] == "1"} {set castle "${castle}Q"}
     if {[lindex $line 13] == "1"} {set castle "${castle}k"}
     if {[lindex $line 14] == "1"} {set castle "${castle}q"}
     if {$castle == ""} {set castle "-"}
-    
+
     set fen "$fen $castle $enpassant [lindex $line 15] $moveNumber"
-    
+
     # try to play the move and check if fen corresponds. If not this means the position needs to be set up.
     if {$moveSan != "none" && $::fics::playing != -1} {
       # first check side's coherency
@@ -993,7 +1008,7 @@ namespace eval fics {
         }
       }
     }
-    
+
     if {$fen != [sc_pos fen]} {
       puts "Debug fen \n$fen\n[sc_pos fen]"
       # Create a game in an opened base
@@ -1001,31 +1016,31 @@ namespace eval fics {
         sc_base switch clipbase
       }
       sc_game new
-      
+
       set ::fics::waitForRating "wait"
       writechan "finger $white /s"
       vwaitTimed ::fics::waitForRating 2000 "nowarn"
       if {$::fics::waitForRating == "wait"} { set ::fics::waitForRating "0" }
       sc_game tags set -white $white
       sc_game tags set -whiteElo $::fics::waitForRating
-      
+
       set ::fics::waitForRating "wait"
       writechan "finger $black /s"
       vwaitTimed ::fics::waitForRating 2000 "nowarn"
       if {$::fics::waitForRating == "wait"} { set ::fics::waitForRating "0" }
       sc_game tags set -black $black
       sc_game tags set -blackElo $::fics::waitForRating
-      
+
       set ::fics::waitForRating ""
-      
+
       sc_game tags set -event "Fics game $gameNumber $initialTime/$increment"
-      
+
       # try to get first moves of game
       writechan "moves $gameNumber"
       set ::fics::waitForMoves $fen
       vwaitTimed ::fics::waitForMoves 2000 "nowarn"
       set ::fics::waitForMoves ""
-      
+
       # Did not manage to reconstruct the game, just set its position
       if {$fen != [sc_pos fen]} {
         sc_game startBoard $fen
@@ -1081,26 +1096,26 @@ namespace eval fics {
     global ::fics::width ::fics::height ::fics::off \
         ::fics::offers_minelo ::fics::offers_maxelo ::fics::offers_mintime ::fics::offers_maxtime
     after cancel ::fics::updateOffers
-    
+
     set w .fics.f.top.foffers
     set size 5
     set idx 0
-    
+
     #first erase the canvas
     foreach id [ $w.c find all] { $w.c delete $id }
-    
+
     # draw scales
     $w.c create line $off [expr $height - $off ] $width [expr $height - $off] -fill blue
     $w.c create line $off 0 $off [expr $height - $off] -fill blue
     $w.c create text 1 1 -fill black -anchor nw -text ELO
     $w.c create text [expr $width - 1 ] [expr $height - 1 ] -fill black -anchor se -text [tr Time]
-    
+
     # draw time markers at 5', 15'
     set x [ expr $off + 5 * ($width - $off) / ($offers_maxtime - $offers_mintime)]
     $w.c create line $x 0 $x [expr $height - $off] -fill red
     set x [ expr $off + 15 * ($width - $off) / ($offers_maxtime - $offers_mintime)]
     $w.c create line $x 0 $x [expr $height - $off] -fill red
-    
+
     foreach g $::fics::soughtlist {
       array set l $g
       set fillcolor green
@@ -1118,7 +1133,7 @@ namespace eval fics {
       if { [string match "Guest*" $l(name)] } {
         set fillcolor gray
       }
-      
+
       set x [ expr $off + $tt * ($width - $off) / ($offers_maxtime - $offers_mintime)]
       set y [ expr $height - $off - ( $l(elo) - $offers_minelo ) * ($height - $off) / ($offers_maxelo - $offers_minelo)]
       if { $l(rated) == "rated" } {
@@ -1127,13 +1142,13 @@ namespace eval fics {
         set object "rectangle"
       }
       $w.c create $object [expr $x - $size ] [expr $y - $size ] [expr $x + $size ] [expr $y + $size ] -tag game_$idx -fill $fillcolor
-      
+
       $w.c bind game_$idx <Enter> "::fics::setOfferStatus $idx %x %y"
       $w.c bind game_$idx <Leave> "::fics::setOfferStatus -1 %x %y"
       $w.c bind game_$idx <ButtonPress> "::fics::getOffersGame $idx"
       incr idx
     }
-    
+
   }
   ################################################################################
   # Play the selected game
@@ -1147,26 +1162,26 @@ namespace eval fics {
   ################################################################################
   proc setOfferStatus { idx x y } {
     global ::fics::height ::fics::width
-    
+
     set w .fics.f.top.foffers
     if { $idx != -1 } {
       set gl [lindex $::fics::soughtlist $idx]
       if { $gl == "" } { return }
       array set l [lindex $::fics::soughtlist $idx]
       set m "$l(game) $l(name)($l(elo))\n$l(time_init)/$l(time_inc) $l(rated)\n$l(color) $l(start)"
-      
+
       if {$y < [expr $height / 2]} {
         set anchor "n"
       } else {
         set anchor "s"
       }
-      
+
       if {$x < [expr $width / 2]} {
         append anchor "w"
       } else {
         append anchor "e"
       }
-      
+
       $w.c create text $x $y -tags status -text $m -font font_offers -anchor $anchor -width 150
       $w.c raise game_$idx
     } else {
@@ -1211,15 +1226,15 @@ namespace eval fics {
   #   returns 1 if the player is allowed to enter a move (either playing or using puzzlebot)
   ################################################################################
   proc playerCanMove {} {
-    
+
     if { ! [winfo exists .fics] } { return 1 }
-    
+
     if { [sc_game info white] == "puzzlebot" && [sc_game info white] == "puzzlebot" } {
       return 1
     }
-    
+
     if { $::fics::playing == 1 } { return 1 }
-    
+
     puts "DEBUG : playerCanMove returned 0"
     return 0
   }
@@ -1234,14 +1249,14 @@ namespace eval fics {
       return
     }
     set elt [$win get $l.0 $l.end]
-    
+
     if { $elt ==  "Click or type \[next\] to see next page." } {
       writechan "next"
       return
     }
-    
+
     set found 0
-    
+
     if { [llength $elt] > 4} {
       # validate format
       set game [lindex $elt 0]
@@ -1249,7 +1264,7 @@ namespace eval fics {
       set white [lindex $elt 2]
       set elob [lindex $elt 3]
       set black [lindex $elt 4]
-      
+
       if { [ scan $game "%d" tmp ] != 1 || \
             ( [ scan $elow "%d" tmp ] != 1 && $elow != "++++" ) || \
             ( [ scan $elob "%d" tmp ] != 1 && $elob != "++++" ) } {
@@ -1257,7 +1272,7 @@ namespace eval fics {
         set found 1
       }
     }
-    
+
     # Second chance : try to parse "tell relay listgames" (:104 GMxxxx GMyyyyy * B22)
     if { [llength $elt] == 5 && ! $found } {
       if { [ scan [lindex $elt 0] ":%d" game ] == 1 } {
@@ -1268,12 +1283,12 @@ namespace eval fics {
         set found 1
       }
     }
-    
+
     if { ! $found } {
       puts "$elt not a valid game"
       return
     }
-    
+
     # warn the user before observing a game because it can interfere with a game played or
     # other that would be disturbed by observing a game
     set ans [tk_messageBox -title "Observe game" -icon question -type yesno \
@@ -1282,7 +1297,7 @@ namespace eval fics {
       writechan "unobserve" "echo"
       writechan "observe $game" "echo"
     }
-    
+
   }
   ################################################################################
   # updates the offers view if it is visible
@@ -1290,7 +1305,7 @@ namespace eval fics {
   proc tabchanged {} {
     set nb .fics.f.top
     set w .fics.f.top.foffers
-    
+
     if { [ $nb select ] == $w } {
       updateOffers
       set ::fics::graphon 1
@@ -1306,16 +1321,16 @@ namespace eval fics {
     variable logged
     # stop recursive call
     bind .fics <Destroy> {}
-    
+
     set ::fics::sought 0
     after cancel ::fics::updateOffers
     after cancel ::fics::stayConnected
     set logged 0
-    
+
     if {$mode != "error"} {
       writechan "exit"
     }
-    
+
     set ::fics::playing 0
     set ::fics::observedGame -1
     ::close $::fics::sockchan
