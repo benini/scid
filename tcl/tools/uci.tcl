@@ -168,7 +168,11 @@ namespace eval uci {
                         incr i
                         set next [ lindex $data $i ]
                         set uciInfo(scoremate$n) $next
-                        if { $next < 0} { set uciInfo(tmp_score$n) -32700 } else  { set uciInfo(tmp_score$n) 32700 }
+                        if { $next < 0} {
+                            set uciInfo(tmp_score$n) [expr {-32750 - $next}]
+                        } else  {
+                            set uciInfo(tmp_score$n) [expr {32750 - $next}]
+                        }
                     }
                     # convert the score to white's perspective (not engine's one)
                     if { $analysis(fen$n) == "" } {
@@ -227,7 +231,11 @@ namespace eval uci {
                 set analysis(prev_depth$n) $analysis(depth$n)
                 set analysis(depth$n) $uciInfo(depth$n)
                 set analysis(score$n) $uciInfo(score$n)
-                set analysis(scoremate$n) $uciInfo(scoremate$n)
+                if { $uciInfo(scoremate$n) != "" } {
+                    set analysis(scoremate$n) $uciInfo(scoremate$n)
+                } else {
+                    set analysis(scoremate$n) 0
+                }
                 set analysis(moves$n) $uciInfo(pv$n)
                 set analysis(time$n) [expr {double($uciInfo(time$n)) / 1000.0} ]
                 set analysis(nodes$n) [calculateNodes $uciInfo(nodes$n) ]

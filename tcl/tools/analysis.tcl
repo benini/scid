@@ -2410,7 +2410,7 @@ proc updateAnalysisText {{n 1}} {
     $t delete 0.0 end
     
     if { $analysis(uci$n) } {
-        if { [expr abs($score)] == 327.0 } {
+        if { [expr abs($score)] >= 327.0 } {
             if { [catch { set tmp [format "M%d " $analysis(scoremate$n)]} ] } {
                 set tmp [format "%+.1f " $score]
             }

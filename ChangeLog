@@ -929,6 +929,7 @@ scid-4.3
 	* Annotation
 	    - Added engine thinking time to annotator string
 	    - Stop engine at end of annotation
+	    - UCI engine: Added notion of length of mating line to cp score (shorter is better)
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
