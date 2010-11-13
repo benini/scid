@@ -1243,27 +1243,34 @@ proc scoreToNag {score} {
 # will append arg to current game Annotator tag
 ################################################################################
 proc appendAnnotator { s } {
+    # Get the current collection of extra tags
     set extra [sc_game tags get "Extra"]
-    # find Annotator tag
-    set oldAnn ""
-    set found 0
+
+    set annot 0
+    set other ""
+    set nExtra {}
+    # Walk through the extra tags, just copying the crap we do not need
+    # If we meet the existing annotator tag, add our name to the list
     foreach line $extra {
-        if {$found} {
-            set oldAnn $line
-            break
-        }
-        if {[string match "Annotator" $line]} {
-            set found 1
-            continue
+        if { $annot == 1 } {
+            lappend nExtra "Annotator \"$line, $s\"\n"
+            set annot 2
+        } elseif {[string match "Annotator" $line]} {
+            set annot 1
+        } elseif { $other != "" } {
+            lappend nExtra "$other \"$line\"\n"
+            set other ""
+        } else {
+            set other $line
         }
     }
     
-    if {$oldAnn != ""} {
-        set ann "Annotator \"$oldAnn $s\"\n"
-    } else  {
-        set ann "Annotator \"$s\"\n"
+    # First annotator: Create a tag
+    if { $annot == 0 } {
+        lappend nExtra "Annotator \"$s\"\n"
     }
-    sc_game tags set -extra [ list $ann ]
+    # Put the extra tags back to the game
+    sc_game tags set -extra $nExtra
 }
 ################################################################################
 #

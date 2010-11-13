@@ -992,6 +992,7 @@ scid-4.3
 	  when they see a forced mate (stockfish...)
 	* Header search with ignore colours: colours were obeyed for the results (thanks to Gerd Lohrscheid)
 	* Allow suppression of Abort/Adjourn/Draw/Takeback requests on FICS
+	* Analysis adding annotator tag does not destroy existing extra-tags
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
