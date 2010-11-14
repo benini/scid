@@ -973,6 +973,7 @@ scid-4.3
 	* Add "Open Comment editor" to PGN context menu
 	* Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
 	* Allow suppression of Abort/Adjourn/Draw/Take back requests/offers (thanks to Jose Joao Morais)
+	* Add Bauhaus style piece set (thanks to Sandra Snan)
 - Fixes :
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* FICS console uses fixed font
@@ -992,8 +993,8 @@ scid-4.3
 	* Repair annotation lockup with UCI engines that announce their bestmove before being stopped
 	  when they see a forced mate (stockfish...)
 	* Header search with ignore colours: colours were obeyed for the results (thanks to Gerd Lohrscheid)
-	* Allow suppression of Abort/Adjourn/Draw/Takeback requests on FICS
-	* Analysis adding annotator tag does not destroy existing extra-tags
+	* Allow suppression of Abort/Adjourn/Draw/Takeback requests on FICS (thanks to Jose Joao Morais)
+	* Reorder piece sets alphabetically
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
