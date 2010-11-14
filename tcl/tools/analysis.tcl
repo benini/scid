@@ -1211,33 +1211,28 @@ proc addAnnotation { {n 1} } {
     # Update score graph if it is open:
     if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
 }
+
+# Informant index strings
+array set ana_informantList { 0 "+=" 1 "+/-" 2 "+-" 3 "++-" }
+# Nags. Note the slight inconsistency for the "crushing" symbol (see game.cpp)
+array set ana_nagList  { 0 "=" 1 "+=" 2 "+/-" 3 "+-" 4 "+--" 5 "=" 6 "=+" 7 "-/+" 8 "-+" 9 "--+" }
 ################################################################################
 #
 ################################################################################
 proc scoreToNag {score} {
-    if {$score >= $::informant("+-")} {
-        return "+-"
+    global ana_informantList ana_nagList
+    # Find the score in the informant map
+    set tmp [expr { abs( $score ) }]
+    for { set i 0 } { $i < 4 } { incr i } {
+        if { $tmp < $::informant("$ana_informantList($i)") } {
+            break
+        }
     }
-    if {$score >= $::informant("+/-")} {
-        return "+/-"
+    # Jump into negative counterpart
+    if { $score < 0.0 } {
+        set i [expr {$i + 5}]
     }
-    if {$score >= $::informant("+=")} {
-        return "+="
-    }
-    if { $score >= [expr 0.0 - $::informant("+=") ]} {
-        return "="
-    }
-    if {$score <= [expr 0.0 - $::informant("+-") ]} {
-        return "-+"
-    }
-    if {$score <= [expr 0.0 - $::informant("+/-") ]} {
-        return "-/+"
-    }
-    if {$score <= [expr 0.0 - $::informant("+=") ]} {
-        return "=+"
-    }
-    puts "ERROR scoreToNag returned no NAG code"
-    return ""
+    return $ana_nagList($i)
 }
 ################################################################################
 # will append arg to current game Annotator tag
@@ -1255,11 +1250,11 @@ proc appendAnnotator { s } {
         if { $annot == 1 } {
             lappend nExtra "Annotator \"$line, $s\"\n"
             set annot 2
-        } elseif {[string match "Annotator" $line]} {
-            set annot 1
         } elseif { $other != "" } {
             lappend nExtra "$other \"$line\"\n"
             set other ""
+        } elseif {[string match "Annotator" $line]} {
+            set annot 1
         } else {
             set other $line
         }
