@@ -1878,7 +1878,13 @@ proc configInformant {} {
   foreach i [lsort [array names informant]] {
     label $w.spinF.labelExpl$idx -text [ ::tr "Informant[ string trim $i "\""]" ]
     label $w.spinF.label$idx -text $i
-    spinbox $w.spinF.sp$idx -textvariable informant($i) -width 3 -from 0.0 -to 9.9 -increment 0.1 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+	 # Allow the configuration of "won game" up to "Mate found"
+	 if {$i == "\"++-\""} {
+		 spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+	 } else {
+		 puts stderr 9
+		 spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+	 }
     grid $w.spinF.labelExpl$idx -row $row -column 0 -sticky w
     incr row
     grid $w.spinF.label$idx -row $row -column 0 -sticky w
