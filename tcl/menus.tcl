@@ -1264,11 +1264,17 @@ $m add command -label OptionsFontsSmall -underline 0 -command {
 }
 set helpMessage($m,2) OptionsFontsSmall
 
+$m add command -label OptionsFontsTiny -underline 0 -command {
+  set fontOptions(temp) [FontDialog font_Tiny $fontOptions(Tiny) 1]
+  if {$fontOptions(temp) != ""} { set fontOptions(Tiny) $fontOptions(temp) }
+}
+set helpMessage($m,3) OptionsFontsTiny
+
 $m add command -label OptionsFontsFixed -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Fixed $fontOptions(Fixed) 1]
   if {$fontOptions(temp) != ""} { set fontOptions(Fixed) $fontOptions(temp) }
 }
-set helpMessage($m,3) OptionsFontsFixed
+set helpMessage($m,4) OptionsFontsFixed
 
 # The windows that are not dockable are always configurable for auto start
 set m .menu.options.startup
@@ -1619,7 +1625,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.tools.hardware [tr ToolsConnectHardware$tag $oldLang] ToolsConnectHardware$tag $lang
   }
   
-  foreach tag {Regular Menu Small Fixed} {
+  foreach tag {Regular Menu Small Tiny Fixed} {
     configMenuText .menu.options.fonts [tr OptionsFonts$tag $oldLang] \
         OptionsFonts$tag $lang
   }

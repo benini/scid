@@ -285,6 +285,8 @@ menuText Y OptionsFonts "Fontovi" 0 {Promeni fontove}
 menuText Y OptionsFontsRegular "Obièan" 0 {Promeni obièan font}
 menuText Y OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText Y OptionsFontsSmall "Mali" 0 {Promeni mali font}
+# ====== TODO To be translated ======
+menuText Y OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText Y OptionsFontsFixed "Neproporcionalni" 0 {Promeni neproporcionalni font}
 menuText Y OptionsGInfo "Informacije o Partiji" 0 {Opcije informacija o partiji}
 menuText Y OptionsLanguage "Jezik" 0 {Izaberi jezik}
@@ -2156,6 +2158,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

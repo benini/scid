@@ -287,6 +287,8 @@ menuText W OptionsFonts "Typsnitt" 0 {Ändra typsnitt}
 menuText W OptionsFontsRegular "Normal" 0 {Ändra det normala typsnittet}
 menuText W OptionsFontsMenu "Menu" 0 {Ändra menytypsnittet}
 menuText W OptionsFontsSmall "Liten" 0 {Ändra det lilla typsnittet}
+# ====== TODO To be translated ======
+menuText W OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText W OptionsFontsFixed "Fixerad" 0 {Ändra det fixerade typsnittet}
 menuText W OptionsGInfo "Partiinformation" 0 {Alternativ för partiinformation}
 menuText W OptionsLanguage "Språk" 0 {Välj språk}
@@ -7173,6 +7175,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

@@ -996,6 +996,7 @@ scid-4.3
 	* Allow suppression of Abort/Adjourn/Draw/Takeback requests on FICS (thanks to Jose Joao Morais)
 	* Reorder piece sets alphabetically
 	* Allow the informant value for "won game" to count up to "mate found" (= 327)
+	* Tiny font can now be set from the GUI
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

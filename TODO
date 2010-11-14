@@ -7,13 +7,14 @@
 Go over proc standardShortcuts and define a list that might be usual
 edit keys. Add a funtion that unbinds those keys and get it called in
 windows that offer a general edit field for texts.
+----------------------------------------------------------------------
 
-
-Tiny font can not be set from the GUI
 
 So, truncating games by removing leading moves has at least two bugs:
 1. NAGs are removed.
 2. Optional tags (WhiteElo, BlackElo) are removed.
+
+----------------------------------------------------------------------
 
 Is there a way to set the seed for the random number generator used by Scid?
 Now it appears that each time Scid is restarted, the training mode (togglable
@@ -27,7 +28,40 @@ the same database.
 * Blunder check in tactical game should be for the players moves not
   for phalanx moves.
 
+----------------------------------------------------------------------
+The following depends on the width of the PGN window to be
+reproducable.
 
+Can someone active and the arena of beautification please do something 
+about the messy display of a game (with variations and comments) in the 
+PGN window? My suspicion is that the various (reused!) Write* routines 
+in game.cpp lost a lot of their elegance in favour of some of the nifty 
+game export features that we have (LaTeX, ..., ?).
+
+It is mainly the spacing/newline-ing that irritates me a lot. Sometimes 
+multiple blank lines are inserted, sometimes comments are glued 
+pixel-accurate to the move preceeding or following it.
+
+A few examples:
+
+Non-column style:
+Add a comment to a black move and see how it sits tied up to the white 
+move following it.
+Add a comment to a white move and see how the next black move is 
+(nicely, or wrongly, whatever) rendered at the start of the next line.
+
+Column style:
+Add a variation to a black move: One blank line in between the main move 
+(or comment) and the variation.
+Add a variation to a white move: Two blank lines in between the main 
+move and the variation.
+
+Is there a single combination of display options (let's not be too 
+critical) that has a decent and regular look? I will immediately start 
+using it.
+
+
+----------------------------------------------------------------------
 I'm using scid-4.2.2 and it crashes while annotating the following game
 by Greco:
 ######################

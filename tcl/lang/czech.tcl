@@ -234,6 +234,8 @@ menuText C OptionsFonts "Fonty" 2 {Zmìnit fonty}
 menuText C OptionsFontsRegular "Základní" 0 {Zmìnit základní font}
 menuText C OptionsFontsMenu "Menu" 1 {Zmìnit font pro menu}
 menuText C OptionsFontsSmall "Malé" 0 {Zmìnit malý font}
+# ====== TODO To be translated ======
+menuText C OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText C OptionsFontsFixed "Fixní" 0 {Zmìnit font fixní ¹íøky}
 menuText C OptionsGInfo "Informace o partii" 0 {Volby pro informace o partii}
 menuText C OptionsLanguage "Jazyk" 0 {Vybrat jazyk menu}
@@ -5293,6 +5295,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

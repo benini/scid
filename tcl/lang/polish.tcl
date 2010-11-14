@@ -290,6 +290,8 @@ menuText P OptionsFonts "Czcionka" 0 {Zmieñ font}
 menuText P OptionsFontsRegular "Podstawowa" 0 {Zmieñ podstawow± czcionkê}
 menuText P OptionsFontsMenu "Menu" 0 {Zmieñ czcionkê menu} 
 menuText P OptionsFontsSmall "Ma³a" 0 {Zmieñ ma³± czcionkê}
+# ====== TODO To be translated ======
+menuText P OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText P OptionsFontsFixed "Sta³a" 0 {Zmieñ czcionkê sta³ej szeroko¶ci}
 menuText P OptionsGInfo "Informacje o partii" 0 {Sposób wy¶wietlania informacji o partii}
 menuText P OptionsLanguage "Jêzyk" 0 {Wybierz jêzyk}
@@ -2383,6 +2385,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

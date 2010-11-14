@@ -260,6 +260,8 @@ menuText K OptionsFonts "Fonts" 0 {Canvia les fonts}
 menuText K OptionsFontsRegular "Habitual" 0 {Canvia la font habitual}
 menuText K OptionsFontsMenu "Menú" 0 {Canvia la font del menú}
 menuText K OptionsFontsSmall "Petita" 0 {Canvia la font petita}
+# ====== TODO To be translated ======
+menuText K OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText K OptionsFontsFixed "Fixa" 0 {Canvia la amplada de la font a fixa}
 menuText K OptionsGInfo "Informació de la partida" 0 {Informació de la partida}
 menuText K OptionsLanguage "Llenguatge" 0 {Selecciona el llenguatge del programa}
@@ -1722,6 +1724,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

@@ -247,6 +247,8 @@ menuText F OptionsFonts "Polices" 0 {Changer les polices}
 menuText F OptionsFontsRegular "Normales" 0 {Changer les polices normales}
 menuText F OptionsFontsMenu "Menu" 0 {Changer la police des menus}
 menuText F OptionsFontsSmall "Petites" 0 {Changer les petites polices}
+# ====== TODO To be translated ======
+menuText F OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText F OptionsFontsFixed "Fixe" 0 {Changer les polices de chasse fixe}
 menuText F OptionsGInfo "Informations de la partie" 7 {Options d'information de la partie}
 menuText F OptionsLanguage "Langue" 0 {Sélectionner le menu de choix des langues}
@@ -1861,6 +1863,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

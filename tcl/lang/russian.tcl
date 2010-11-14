@@ -287,6 +287,8 @@ menuText R OptionsFonts "Шрифты" 0 {Изменить шрифты}
 menuText R OptionsFontsRegular "Нормальный" 0 {Изменить нормальные шрифты}
 menuText R OptionsFontsMenu "Меню" 0 {Изменить шрифты меню}
 menuText R OptionsFontsSmall "Малые" 1 {Изменить малые шрифты}
+# ====== TODO To be translated ======
+menuText R OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText R OptionsFontsFixed "Фиксированный" 0 {Изменить фиксированные шрифты}
 menuText R OptionsGInfo "Информация о партии" 0 {Установки информации о партии}
 menuText R OptionsLanguage "Язык" 0 {Меню выбора языка}
@@ -2185,6 +2187,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

@@ -244,6 +244,8 @@ menuText H OptionsFonts "Karakterkészlet" 0 {Karakterkészlet változtatása}
 menuText H OptionsFontsRegular "Szokásos" 0 {A szokásos karakterkészlet változtatása}
 menuText H OptionsFontsMenu "Menü" 0 {A menük karakterkészletének a változtatása}
 menuText H OptionsFontsSmall "Kisbetûs" 0 {A kisbetûs karakterkészlet változtatása}
+# ====== TODO To be translated ======
+menuText H OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText H OptionsFontsFixed "Rögzített" 0 {A rögzített szélességû karakterkészlet változtatása}
 menuText H OptionsGInfo "Játszmainformáció" 0 {Játszmainformáció változtatása}
 menuText H OptionsLanguage "Nyelv" 0 {A menü nyelvének kiválasztása}
@@ -1933,6 +1935,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

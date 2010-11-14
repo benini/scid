@@ -254,6 +254,8 @@ menuText I OptionsFonts "Fonts" 0 {Cambia fonts}
 menuText I OptionsFontsRegular "Regolare" 0 {Cambia il font in 'regular'}
 menuText I OptionsFontsMenu "Menu" 0 {Cambia il font dei menu}
 menuText I OptionsFontsSmall "Piccolo" 0 {Cambia il font 'small'}
+# ====== TODO To be translated ======
+menuText I OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText I OptionsFontsFixed "Fisso" 0 {Cambia il font di larghezza fissa}
 menuText I OptionsGInfo "Informazioni sulla partita" 0 {Opzioni sulle informazioni della partita}
 menuText I OptionsLanguage "Lingua" 0 {Sceglie una nuova lingua di menu}
@@ -2074,6 +2076,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

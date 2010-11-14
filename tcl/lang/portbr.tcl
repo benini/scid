@@ -244,6 +244,8 @@ menuText B OptionsFonts "Fontes" 0 {Muda os fontes}
 menuText B OptionsFontsRegular "Normal" 0 {Fonte Normal}
 menuText B OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText B OptionsFontsSmall "Pequeno" 0 {Fonte pequeno}
+# ====== TODO To be translated ======
+menuText B OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText B OptionsFontsFixed "Fixo" 0 {Fonte de largura fixa}
 menuText B OptionsGInfo "Informacoes do Jogo" 0 {Opcoes de informacao do jogo}
 menuText B OptionsLanguage "Linguagem" 0 {Menu de selecao de linguagem}
@@ -1711,4 +1713,5 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
+
 

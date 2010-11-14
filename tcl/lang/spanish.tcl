@@ -270,6 +270,8 @@ menuText S OptionsFonts "Fuentes" 0 {Cambia las fuentes}
 menuText S OptionsFontsRegular "Habitual" 0 {Cambia la fuente habitual}
 menuText S OptionsFontsMenu "Menú" 0 {Cambia la fuente del menú}
 menuText S OptionsFontsSmall "Pequeña" 0 {Cambia la fuente pequeña}
+# ====== TODO To be translated ======
+menuText S OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText S OptionsFontsFixed "Ancho fijo" 0 {Cambia la fuente de ancho fijo}
 menuText S OptionsGInfo "Información de la partida" 0 {Información de la partida}
 menuText S OptionsLanguage "Idioma" 0 {Selecciona el idioma del programa}
@@ -1705,3 +1707,4 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+

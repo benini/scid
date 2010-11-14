@@ -268,6 +268,7 @@ menuText D OptionsFonts "Schriftarten" 3 {Schriftart wechseln}
 menuText D OptionsFontsRegular "Normal" 0 {Standardzeichensatz}
 menuText D OptionsFontsMenu "Menü" 0 {Schriftart für Menüs}
 menuText D OptionsFontsSmall "Klein" 0 {Kleine Zeichen}
+menuText D OptionsFontsTiny "Winzig" 0 {Kleinster Font}
 menuText D OptionsFontsFixed "Fest" 0 {Schriftart mit fester Breite (nicht-proportional)}
 menuText D OptionsGInfo "Partieinformation" 0 {Optionen für Informationsbereich}
 menuText D OptionsLanguage "Sprache" 0 {Sprache wählen}
@@ -7268,6 +7269,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

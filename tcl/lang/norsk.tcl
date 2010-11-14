@@ -287,6 +287,8 @@ menuText O OptionsFonts "Skrifttyper" 0 {Endre skrifttyper}
 menuText O OptionsFontsRegular "Vanlig" 0 {Endre den vanlige skrifttypen}
 menuText O OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText O OptionsFontsSmall "Liten" 0 {Endre den lille skrifttypen}
+# ====== TODO To be translated ======
+menuText O OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText O OptionsFontsFixed "Fastbredde" 0 {Endre fastbreddeskrifttypen}
 menuText O OptionsGInfo "Partiinformasjon" 0 {Informasjonsinnstillinger}
 menuText O OptionsLanguage "Språk" 0 {Velg menyspråk}
@@ -2156,6 +2158,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

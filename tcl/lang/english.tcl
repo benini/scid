@@ -284,6 +284,7 @@ menuText E OptionsFonts "Fonts" 0 {Change fonts}
 menuText E OptionsFontsRegular "Regular" 0 {Change the regular font}
 menuText E OptionsFontsMenu "Menu" 0 {Change the menu font}
 menuText E OptionsFontsSmall "Small" 0 {Change the small font}
+menuText E OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText E OptionsFontsFixed "Fixed" 0 {Change the fixed-width font}
 menuText E OptionsGInfo "Game Information" 0 {Game information options}
 menuText E OptionsLanguage "Language" 0 {Select menu language}

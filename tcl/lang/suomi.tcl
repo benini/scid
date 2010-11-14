@@ -286,6 +286,8 @@ menuText U OptionsFonts "Fontit" 0 {Muuta fontteja}
 menuText U OptionsFontsRegular "Oletusfontti" 0 {Vaihda oletusfontti}
 menuText U OptionsFontsMenu "Valikko" 0 {Vaihda valikoissa käytetty fontti}
 menuText U OptionsFontsSmall "Pieni" 0 {Vaihda pieni fontti}
+# ====== TODO To be translated ======
+menuText U OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText U OptionsFontsFixed "Tasalevyinen" 0 {Vaihda tasalevyinen fontti}
 menuText U OptionsGInfo "Pelitiedot" 0 {Pelitietoihin liittyvät asetukset}
 menuText U OptionsLanguage "Kieli" 0 {Valitse valikoissa käytettävä kieli}
@@ -1719,3 +1721,4 @@ translate U ChangeIcon {Vaihda kuvake...}
 
 }
 # end of english.tcl
+

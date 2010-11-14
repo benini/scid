@@ -261,6 +261,8 @@ menuText N OptionsFonts "Lettertypes" 0 {Wijzig lettertype}
 menuText N OptionsFontsRegular "Standaard" 0 {Wijzig het standaard lettertype}
 menuText N OptionsFontsMenu "Menu" 0 {Wijzig het menu lettertype}
 menuText N OptionsFontsSmall "Klein" 0 {Wijzig het kleine lettertype}
+# ====== TODO To be translated ======
+menuText N OptionsFontsTiny "Tiny" 0 {Change the tiny font}
 menuText N OptionsFontsFixed "Vaste grootte" 0 {Wijzig dit lettertype}
 menuText N OptionsGInfo "Partij Informatie" 0 {Parij-informatie opties}
 menuText N OptionsLanguage "Kies taal" 5 {Kies taal}
@@ -1797,6 +1799,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
+
 
 
 
