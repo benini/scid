@@ -8260,7 +8260,7 @@ B98n "Sicilian: Najdorf, 8...Qc7"
   1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bg5 e6 7.f4 Be7 8.Qf3 Qc7 *
 B98n "Sicilian: Najdorf, 8...Qc7 9.O-O-O"
   1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bg5 e6 7.f4 Be7 8.Qf3 Qc7
-  9.O-O-O Nc6 *
+  9.O-O-O *
 B98o "Sicilian: Najdorf, 8...Qc7 9.O-O-O b5"
   1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bg5 e6 7.f4 Be7 8.Qf3 Qc7
   9.O-O-O b5 *

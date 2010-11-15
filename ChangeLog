@@ -1005,6 +1005,7 @@ scid-4.3
 	* Allow the informant value for "won game" to count up to "mate found" (= 327)
 	* Tiny font can now be set from the GUI
 	* Input engine parameters were not used properly (ID: 2969395)
+	* Minor flaw in Scid.eco (ID: 2963067;  thanks to Daniel Karlsson)
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
