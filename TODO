@@ -13,6 +13,42 @@ Ctrl-Ins/Shift-Ins/Ctrl-Del etc for comment editor
 
 ----------------------------------------------------------------------
 
+Here are the problems:
+1. Requirement to press 'Store' as mentioned above. It is so easy to
+lose a long comment because you forgot to press the Store button.
+2. No 'Store and Close' shortcut to close comment editor and focus on
+the game again. Needs mouse.
+
+-- store on loosing focus?
+
+3. No easy way to go to the next/previous move (again, requires mouse
+clicking)
+
+-- ctrl-left/right bindings
+
+4. Very complicated way of editing (quite common) pre-move comments
+(mostly at the start of a variation. Now you need to switch to mouse to
+click on subvariation and then: either click on board to focus on it and
+use mouse wheel to go one move back, or switch to keyboard again and
+press Left). It will be nice to have some shortcut for that (Ctrl+Shift
++E is already taken, though).
+
+-- allow for ctrl-a and bindings above
+
+5. TAB does not work in editor (it should switch between NAG and comment
+edit boxes. Again, you have to go for mouse.
+
+-- don't use tab but alt-n?
+
+6. Comment edito box does not fill the space when resizing Comment
+editor (makes it hard to edit longer comments).
+7. No way to hide rarely used Comment editor board/colors/arrows.
+Desktop space is precious when you translate a book and have Scid and
+PDF viewer on your screen. 
+
+-- toggle button + alt-b
+
+----------------------------------------------------------------------
 
 So, truncating games by removing leading moves has at least two bugs:
 1. NAGs are removed.

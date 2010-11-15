@@ -255,6 +255,13 @@ createFont Small
 createFont Tiny
 createFont Fixed
 
+### TODO
+### Sample for figurine fonts see also htext.tcl
+### Not yet working properly
+### font create font_Figurine_ML  -family {FigurineSymbol T1} -size 10
+### font create font_Figurine_Var -family {FigurineSymbol T1} -size 6
+
+
 # Analysis command: to start chess analysis engine.
 set analysisCommand ""
 if {$windowsOS} {

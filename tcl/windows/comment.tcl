@@ -5,6 +5,8 @@ namespace eval ::commenteditor {
   
   namespace export open close update storeComment addNag
   
+  set showboard 1
+
   # List of colors and types used to mark a square
   
   variable  colorList {}  markTypeList {}
@@ -42,6 +44,15 @@ proc makeCommentWin {} {
   }
 }
 
+proc ::commenteditor::toggleboard { } {
+  if {$::commenteditor::showboard == 1} {
+     pack forget .commentWin.markFrame 
+	  set ::commenteditor::showboard 0
+  } else { 
+	  pack .commentWin.markFrame -fill both -expand 1 -padx 1 -anchor n -before .commentWin.nf -side left
+	  set ::commenteditor::showboard 1
+  }
+}
 
 # ::commenteditor::Open --
 #
@@ -73,6 +84,15 @@ proc ::commenteditor::Open {} {
   bindFocusColors $w.cf.text
   bind $w.cf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
   bind $w.cf.text <Alt-KeyRelease-s> { .commentWin.b.store invoke }
+
+  bind $w.cf.text <FocusOut> { ::commenteditor::storeComment }
+  bind $w <Control-a> {::commenteditor::storeComment; sc_var create; updateBoard -pgn}
+  bind $w.cf.text <Control-Left>  {::commenteditor::storeComment; ::move::Back}
+  bind $w.cf.text <Control-Right> {::commenteditor::storeComment; ::move::Forward}
+  # switch to the NAG entry
+  bind $w.cf.text <Alt-n> { focus .commentWin.nf.tf.text }
+
+  bind $w.cf.text <Alt-b> { ::commenteditor::toggleboard }
   
   # NAG frame:
   ttk::frame $w.nf -width 100
@@ -80,6 +100,8 @@ proc ::commenteditor::Open {} {
   ttk::entry $w.nf.tf.text -width 20 -background white
   bindFocusColors $w.nf.tf.text
   bind $w.nf.tf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
+  # switch to the edit frame
+  bind $w.nf.tf.text <Alt-n> { focus .commentWin.cf.text }
   
   set nagbox $w.nf.tf.text
   set nagbuttons $w.nf.b
@@ -140,6 +162,8 @@ proc ::commenteditor::Open {} {
   pack $w.cf.text -side right -expand 1 -fill both
   
   # Main buttons:
+
+  ttk::button $w.b.showboard -image tb_coords -command { ::commenteditor::toggleboard }
   
   dialogbutton $w.b.clear -textvar ::tr(Clear) -command [namespace code [list ClearComments .commentWin]]
   set helpMessage(E,$w.b.clear) {Clear this comment}
@@ -151,7 +175,7 @@ proc ::commenteditor::Open {} {
   dialogbutton $w.b.close -textvar ::tr(Close) -command { focus .; destroy .commentWin}
   set helpMessage(E,$w.b.close) {Close the comment editor window}
   
-  pack $w.b.close $w.b.space $w.b.store $w.b.revert $w.b.clear -side right -padx 1
+  pack $w.b.close $w.b.space $w.b.store $w.b.revert $w.b.clear $w.b.showboard -side right -padx 1
   
   ### Insert-mark frame
   
@@ -163,10 +187,11 @@ proc ::commenteditor::Open {} {
   ::utils::tooltip::Set $mark.header [string trim $::tr(InsertMarkHelp)]
   
   # Subframes for insert board and two button rows:
+
   pack [ttk::frame [set colorButtons $mark.colorButtons]] -side top -pady 1 -anchor n
   pack [ttk::frame [set insertBoard $mark.insertBoard]] -side top -pady 1
   pack [ttk::frame [set typeButtons $mark.typeButtons]] -side top -pady 1 -anchor s
-  
+
   # Left subframe: color (radio)buttons
   foreach color $colorList {
     image create photo markColor_$color -width 18 -height 18

@@ -1992,6 +1992,8 @@ Game::GetPartialMoveList (DString * outStr, uint plyCount)
             CurrentPos->MakeSANString(&(m->moveData),
                                       m->san, SAN_CHECKTEST);
         }
+		  // add one space for indenting to work out right
+        outStr->Append (" ");
         outStr->Append (m->san);
         MoveForward();
     }
@@ -2298,11 +2300,11 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 printMoveNum = true;
             }
         }
-#ifdef WINCE
+// #ifdef WINCE
         int colWidth = 6;
-#else
-        int colWidth = 12;
-#endif
+// #else
+//         int colWidth = 12;
+// #endif
         NumMovesPrinted++;
 
         if (printThisMove) {

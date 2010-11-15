@@ -916,7 +916,13 @@ scid-4.3
 	* Some defaults of Scids empty config
 	* Gamelist: show delete-flag to the very left of the list by default
 	* Replace some buttons in help by proper img tags
-	* Comment editor now opens by clicking the comment in game info area
+	* Comment editor
+		 - now opens by clicking the comment in game info area
+		 - Make board toggable by either alt-b or button
+		 - recognises Ctrl-A for adding a new variation => easy addition for pre move comments
+		 - Ctrl-Left/Ctrl-Right now go one move backward/forward
+		 - Map Alt-N to switch between NAG- and text entry
+		 - Autostore comments as soon as the window looses focus
 	* Bring Best games / tree graph to front if they exist and the button is pressed again
 	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
 	* HTML export

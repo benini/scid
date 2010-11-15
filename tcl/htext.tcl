@@ -200,10 +200,15 @@ proc ::htext::init {w} {
     $w tag configure var -foreground $::pgnColor(Var) -font font_Regular
   } else {
     $w tag configure nag -foreground $::pgnColor(Nag)
-    $w tag configure var -foreground $::pgnColor(Var)
+    $w tag configure/var -foreground $::pgnColor(Var)
+	 ### TODO
+    ### $w tag configure/var -foreground $::pgnColor(Var) -font font_Figurine_Var
+
   }
   $w tag configure ip1 -lmargin1 25 -lmargin2 25
   $w tag configure ip2 -lmargin1 50 -lmargin2 50
+  $w tag configure ip3 -lmargin1 75 -lmargin2 75
+  $w tag configure ip4 -lmargin1 100 -lmargin2 100
 }
 
 proc ::htext::isStartTag {tagName} {
@@ -367,6 +372,10 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         # Check if it is a move tag:
         set moveTag $tagName
         set tagName "m"
+		  ### TODO
+		  ### Does not work for variations as the var-Tag appears before
+		  ### the <m_ tags, therefore this overwrites font sizes
+        ### $w tag configure $moveTag -font font_Figurine_ML
         $w tag bind $moveTag <ButtonRelease-1> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
         # invoking contextual menu in PGN window
         $w tag bind $moveTag <ButtonPress-$::MB3> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
