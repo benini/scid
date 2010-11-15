@@ -184,6 +184,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <ul>
   <li><a MainWindow>Main Window</a></li>
   <li><a Maintenance>Maintenance tools</a></li>
+  <li><a TreeMasks>Masks for Trees</a></li>
   <li><a Searches Material>Material/pattern searches</a></li>
   <li><a Menus>Menus</a></li>
   <li><a GameList Browsing>Merging games</a></li>
@@ -256,6 +257,7 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <li><a TacticsTrainer>Training: Tactics</a></li>
   <li><a FICS Training>Training: FICS lectures</a></li>
   <li><a Tree>Tree window</a></li>
+  <li><a TreeMasks>Masks for Trees</a></li>
   <li><a Moves Trial>Trial mode</a></li>
   <li><a Maintenance Twins>Twin (duplicate) games</a></li>
   </ul>
@@ -2218,67 +2220,6 @@ set helpText(Tree) {<h1>The Tree window</h1>
   opening offers <a OpeningTrainer>Training / Openings</a>.
   </p>
 
-  <h3>Using a Mask file to configure display</h3>
-  <p>
-  An Mask file (.stm) can be defined to change the way statistics are
-  displayed in the Tree window. When a Mask file is opened, Tree
-  window changes. For each line in the Mask are displayed a color
-  marker, a NAG code and a comment. A comment can also be entered for
-  the position, for example to point out a critical position.
-  </p>
-  <p>
-  To add markers to moves, first add the move to the mask by choosing
-  <term>Add to mask</term> from the context menu available by clicking
-  on the line with the right mouse button. After a line was added, it
-  is highlighted in blue within the tree window, and one can select
-  the following markers from the context menu, that will show up left
-  to the line:
-  <ul>
-  <li>a NAG code (!!, !, !?, ?!, ?, ??, ~) </li>
-  <li>up to two graphical markers via the menu items <term>Marker
-  1</term> and <term>Marker 2</term>
-     <ul>
-     <li> <img ::rep::_tb_include> Include line in repertoire</li>
-     <li> <img ::rep::_tb_exclude> Exclude line from repertoire</li>
-     <li> <img ::tree::mask::imageMainLine> Main Line</li>
-     <li> <img tb_bkm> Bookmark</li>
-     <li> <img ::tree::mask::imageWhite> White</li>
-     <li> <img ::tree::mask::imageBlack> Black</li>
-     <li> <img tb_new> New line</li>
-     <li> <img tb_rfilter> To be verified by further analysis</li>
-     <li> <img tb_msearch> To train</li>
-     <li> <img tb_help> Dubious line</li>
-     <li> <img tb_cut> To remove</li>
-     </ul>
-  </li>
-  <li><term>Color</term> A colour mark</li>
-  <li><term>Comment move</term> allows to add a textual comment for
-  the line. This comment is shown  right to the line it is associated,
-  and also pops up in a tooltip window if the mouse is moved over the
-  line.
-  </li>
-  <li><term>Comment position</term> can be used to add a comment for the
-  current position. This comment is shown in the tree window once this
-  move is made.</li>
-  </ul>
-  Don't forget to save the Mask. You will be prompted to do it
-  if you close a Mask that has been modified.
-  </p>
-  <p>
-  A search can be made to retrieve positions that have been annotated for example. to go 
-  to a position, just click on a line in the result panel.
-  </p>
-  <p>
-  The menu <b>display mask</b> will display the current Mask, from the current position, in a tree like representation.
-  Note that not all information are displayed (like comments) and as the Mask is a graph (hence
-  contains loops) it cannot be mapped perfectly to a tree representation, and some lines may be truncated
-  to avoid loops.
-  </p>
-  <p>
-  A mask can be automatically filled with a game containing comments,
-  variations and NAG annotations using the menu <term>Fill with
-  game</term> or <term>Fill with Database</term>.
-  </p>
   
   <h3>Caching for faster results</h3>
   <p>
@@ -2330,10 +2271,204 @@ set helpText(Tree) {<h1>The Tree window</h1>
   adding or replacing a game, or sorting the database.
   </p>
   
-  <p><footer>(Updated: Scid 3.7.4, April 2009)</footer></p>
+  <p><footer>(Updated: Scid 4.3, November 2010)</footer></p>
 }
 
+set helpTitle(TreeMasks) "Masks for Trees"
+set helpText(TreeMasks) {<h1>Masks for Trees</h1>
+  <h3>Basics</h3>
+  <p>
+  The <term>Tree</term> window displays information on all the moves
+  made from the current position in games in the database. See also <a
+  Tree>The Tree window</a>  for more details.
+  </p>
+  <p>
+  To add additional informations beyond pure statistical data a
+  <term>Mask</term> can be defined. One can imagine a
+  <term>Mask</term> as a transparet layer above the current tree, that
+  holds additional data e.g. commentaries for moves or positions, own
+  evaluations and ones own opening repertoir. <term>Masks</term> are
+  stored in a Mask file (.stm) and thus are independent of the
+  databases to be used with. That is, one can define a
+  <term>Mask</term> once and use it with various databases by just
+  loading it from the <term>Tree</term> windows menu.
+  </p>
+  <p>
+  As soon as a <term>Mask</term> file is opened, the displays of
+  the <term>Tree</term> window change. First of all, all moves from
+  the current position that are present in the mask are highlighted.
+  Additionally, NAGs and markers may show up in front of a move or
+  commentaries concerning the move will show up at the end of its
+  line. Finally, the current postition may also hold a comment.
+  </p>
+  <p>
+  <b>Note</b>: The indepencence of <term>Masks</term> from a database
+  make them a very powerfull tool to handle opening repertoirs.
+  Contrary to the traditional way of opening lines, <term>Masks</term>
+  have the advantage to handle transpositions transparently, simply
+  cause they are based on the current positions instead of a line
+  leading to it.
+  </p>
+  <h3>Using a Masks</h3>
+  <p>
+  As <term>Masks</term> operate on the tree view of a given database,
+  first of all the tree view has to be opened either by <menu>Window /
+  Tree window</menu> or the shortcut <b>ctrl-t</b>. For starting out
+  it makes sense to open a larger reference database as this
+  simplifies the addition of moves to a <term>Mask</term>. However,
+  Masks work with every database, even the <term>Clipbase</term>, that
+  is one could also import a collection of games from a PGN file to
+  the Clipbase to set up a <term>Mask</term>.
+  </p>
+  <p>
+  Now, a mask file has to be created or loaded. These files use the
+  extension .stm. To create a new mask file select <menu>Mask /
+  New</menu> from the <term>Tree</term> windows menu. Similarly, an
+  existing mask can be opened using <menu>Mask / Open</menu>. Finally,
+  <menu>Mask / Open recent</menu> is a shortcut to the recently used
+  <term>Mask</term> files. 
+  </p>
+  <p>
+  Once a Mask file is opened new commentary can be added to this
+  specific mask. Note again, that the Mask is independent of database
+  used for its creation. It can later applied to any database of ones
+  liking. For an opening repertoir it might thus make sense to
+  generate two masks, one for the White and one for the Black
+  openings.
+  </p>
+  <p>
+  To add markers or comments to moves, first add the move
+  to the mask by choosing <term>Add to mask</term> from the context
+  menu available by clicking on the line with the right mouse button.
+  After a line was added, it is highlighted in <blue>blue</blue>
+  within the tree window. Similarly, a move can be removed from the
+  mask by <menu>Remove from mask</menu> from the context menu.
+  </p>
+  <p>
+  <b>Note</b>: If the move to be added is not displayed in the tree
+  window Scid offers a list of all possible moves by means of the
+  context menu. As this might be quite a bunch of moves, they are
+  split into several context menu items at the end of the available
+  choices. All are labled by <menu>Add this move to mask</menu> and in
+  case necessary numbered. Just select a move from one of those lists
+  if it does not show up in the tree anyway.
+  <p>
+  After a move was added to the <term>Mask</term> and one can select
+  the following markers from the context menu. These markers will show
+  up left to the move annotated:
+  <ul>
+  <li><term>NAG</term> symbols are the simplest annotation symbol. The
+  menu displays only those nags sensible for a move (not a position)
+  which results in the following symbols possible <term>!!, !, !?, ?!,
+  ?, ??, ~</term>
+  </li>
+  <li>By selecting <menu>Marker 1</menu> and <menu>Marker 2</menu> up
+  to two additional graphical markers can be attached to a move. They
+  are mainly meant to handle opening repertoirs. The available options
+  are:
+     <ul>
+     <li> <img ::rep::_tb_include> Include line in repertoire</li>
+     <li> <img ::rep::_tb_exclude> Exclude line from repertoire</li>
+     <li> <img ::tree::mask::imageMainLine> Main Line</li>
+     <li> <img tb_bkm> Bookmark</li>
+     <li> <img ::tree::mask::imageWhite> White</li>
+     <li> <img ::tree::mask::imageBlack> Black</li>
+     <li> <img tb_new> New line</li>
+     <li> <img tb_rfilter> To be verified by further analysis</li>
+     <li> <img tb_msearch> To train</li>
+     <li> <img tb_help> Dubious line</li>
+     <li> <img tb_cut> To remove</li>
+     </ul>
+	  To remove a marker just select the item <menu>No marker</menu>.
+  </li>
+  <li><term>Color</term> Allows to add a little coloured square in
+  front of the move for ones own highlighting. To remove it again
+  select <menu>White</menu></li>
+  <li><term>Comment move</term> allows to add a textual comment for
+  the line. This comment is shown  right to the line it is
+  associated. Note that only a part of the first line shows up there
+  to give some visual feedback that commentary exists. The whole
+  comment shows up in a tooltip once the mouse is moved over the line
+  in question.
+  </li>
+  <li><term>Comment position</term> can be used to add a comment for the
+  current position. This comment is shown on top of <term>Tree</term>
+  window once the commented position is reached. Note that Scid
+  displays only the first line of the comment to save space in the
+  <term>Tree</term> window. However, if the mouse is moved over that
+  line the whole commentary shows up in a tooltip.
+  </li>
+  </ul>
+  Don't forget to save the Mask! You will be prompted to do it
+  if you close a Mask that has been modified or if a <term>Tree</term>
+  window is closed.
+  </p>
+  <p>
+  To search for commentary, symbols etc. use <menu>Masks /
+  Search</menu>. Here one can select various check boxes that use the
+  selected search option as criterion. After selecting
+  <button>Search</button> a list of all positions found is displayed
+  in <term>FEN</term> notation followed by the move in question and
+  the commentary if any.
+  </p>
+  <p>
+  <menu>Display mask</menu> will display the current Mask in a line
+  style. Stating at the current position all subsequent moves are
+  sorted into some unfoldable tree to give an overview of the current
+  lines of play similar to what is found in many repertoir books.
+  Note that not all information are displayed (e.g. comments are
+  shorted to fit the display). Additionally, as <term>Masks</term>
+  work on positions rather than move sequences they may contain loops
+  (ie. transpositions) which can not be unfolded in a line wise
+  display perfectly. That is, this display may be cut at a certain
+  point.
+  </p>
+  <h3>Conversion to Masks</h3>
+  <p>
+  Setting up a mask can be a tendious taks especially for complex
+  opening repertoirs. However, if such a repertoir is available as a
+  Scid database or a number of PGN games, or lines stored in usual
+  chess games, Scid can use that information to set up suitable
+  <term>Masks</term> automatically.
+  </p>
+  <p>
+  First of all one has to load the information into a Scid database.
+  In case the information is already available as a Scid database this
+  is as easy as opening it. In case a PGN file is use it should be
+  either imported into a Scid database or one can use the
+  <term>Clipbase</term> to import it temporarily. In that case one
+  should make sure that the <term>Clipbase</term> is empty before
+  importing. (<menu>Edit / Empty Clipbase</menu>).
+  </p>
+  <p>
+  The next step is to open the tree for the just opened Scid database.
+  Then a new <term>Mask</term> should be created or an existing one
+  opened. <b>Note</b> that this function may be used to consolidate
+  serveral bases into a single <term>Mask</term>.
+  </p>
+  <p>
+  Now, the <term>Mask</term> can be filled automatically with the game
+  content of the database. In this process, comments within the games
+  will be converted to move comments (appending to those existing
+  eventually) in the <term>Mask</term>. <term>NAG</term> symbols will
+  be added as well. To initiate this process one can chose either
+  <menu>Masks / Fill with game</menu> to fill the <term>Mask</term>
+  with the contents of a single game, or <menu>Fill with
+  Database</menu> to loop over all games in the database.
+  </p>
+  <p>
+  <b>Note</b>: especially filling a <term>Mask</term> with an entire
+  base can be quite time consuming.
+  </p>
+  <p>
+  <b>Note</b>: The <term>mask</term> is filled with all moves till the
+  end of the game including all variations within a game. Therefore,
+  it is sensible to use only bases for this procedure that end the
+  games as soon as the middle game is reached.
+  </p>
 
+  <p><footer>(Updated: Scid 4.3, November 2010)</footer></p>
+}
 
 ####################
 ### Compaction help:

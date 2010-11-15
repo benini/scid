@@ -961,7 +961,6 @@ scid-4.3
 		- For flagged games show up to 4 flag chars or the number of
 		  flags if there are more than 4 flags present.
 	* Allow to change the board without waiting for tree windows to complete search. (Thanks to Fulvio)
-	* Add Ctrl-N shortcut to Edit window to call NAG values help
 	* Rework ID linking code
 		- Tags, resolverurls, icons etc. are read from a config file.
 		  This eases up future extensions of IDs known by Scid
@@ -970,10 +969,15 @@ scid-4.3
 		- PND is still special as it is used to link to various complex
 		  locations like Wikipedia (including NLS) and SeeAlso. This is
 		  still treated internally
-	* Add "Open Comment editor" to PGN context menu
-	* Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
+	* Comment editor
+	  - Add Ctrl-N shortcut to Edit window to call NAG values help
+	  -  Add "Open Comment editor" to PGN context menu
+	  - Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
 	* Allow suppression of Abort/Adjourn/Draw/Take back requests/offers (thanks to Jose Joao Morais)
 	* Add Bauhaus style piece set (thanks to Sandra Snan)
+	* Browse window
+	  - Allow scaling by +/- keys and Ctrl-Mouse wheel
+	  - Use mouse wheel to go through the game
 - Fixes :
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* FICS console uses fixed font

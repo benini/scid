@@ -9,12 +9,19 @@ edit keys. Add a funtion that unbinds those keys and get it called in
 windows that offer a general edit field for texts.
 ----------------------------------------------------------------------
 
+Ctrl-Ins/Shift-Ins/Ctrl-Del etc for comment editor
+
+----------------------------------------------------------------------
+
 
 So, truncating games by removing leading moves has at least two bugs:
 1. NAGs are removed.
 2. Optional tags (WhiteElo, BlackElo) are removed.
 
 ----------------------------------------------------------------------
+
+-- use srand() but should already use system clock?
+
 
 Is there a way to set the seed for the random number generator used by Scid?
 Now it appears that each time Scid is restarted, the training mode (togglable
