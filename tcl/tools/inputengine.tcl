@@ -7,8 +7,8 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.13 2010/03/08 17:39:27 arwagner Exp $
-###    Last change: <Mon, 2010/03/08 18:38:38 arwagner ingata>
+###    $Id: inputengine.tcl,v 1.14 2010/11/15 12:02:53 arwagner Exp $
+###    Last change: <Mon, 2010/11/15 13:00:39 arwagner agamemnon>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL
 ###
@@ -499,10 +499,11 @@ namespace eval ExtHardware {
 #======================================================================
 
 namespace eval inputengine {
+  global ::ExtHardware::port ::ExtHardware::engine ::ExtHardware::param ::ExtHardware::hardware
 
-  set engine     "dgtdrv2.i686";
-  set port       "/dev/ttyUSB0"
-  set param      "la"
+  set engine     $::ExtHardware::engine
+  set port       $::ExtHardware::port
+  set param      $::ExtHardware::param
 
   set InputEngine(pipe)     ""
   set InputEngine(log)      ""
@@ -644,7 +645,10 @@ namespace eval inputengine {
     global ::inputengine::InputEngine ::inputengine::engine \
         ::inputengine::port ::inputengine::param
 
-    set ::inputengine::port $::ExtHardware::port
+	 set ::inputengine::engine     $::ExtHardware::engine
+	 set ::inputengine::port       $::ExtHardware::port
+	 set ::inputengine::param      $::ExtHardware::param
+
     ::ExtHardware::HWbuttonImg tb_eng_connecting
 
     if {[catch {set InputEngine(pipe) [open "| $engine $port $param" "r+"]} result]} {
