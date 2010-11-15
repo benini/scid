@@ -909,6 +909,7 @@ This maintenance release reverts to 32 bits file I/O. Large file handling across
 [xxxx 2010 ]
 scid-4.3
 ==========
+- Mark the Repertoir Editor depecated, guide users to Masks
 - Improvements
 	* documentation for opening trainer (thanks to Dale Hards)
 	* Some of the programs icons based on GNOME Stock Icons in case png-support is available

@@ -572,11 +572,22 @@ proc ::rep::labelAtXY {w x y} {
 #
 proc ::rep::OpenCloseWindow {} {
   set w .repWin
+
+  set DeprecatedTxt "The repertoir editor is deprecated and may be removed in a future version of Scid.\n\nWe feel, that Tree Masks offer much better functionality and versality and strongly encourage transition to them.\nIf you feel Masks can not cover all functions of the repertoir editor and you would like to have it kept, please subscribe to\n\nscid-users@lists.sourceforge.net\n\nfor an open discussion.\n\nDo you want to learn more about Masks?"
+
+
   if {[winfo exists $w]} {
     destroy $w
     return
   }
-  ::rep::makeWindow
+  set result [tk_dialog .roDialog "Scid: Function Deprecated" \
+				$DeprecatedTxt "" 1 $::tr(No) $::tr(Yes)]
+
+  if {$result ==0} {
+     ::rep::makeWindow
+  } else {
+	  helpWindow TreeMasks
+  }
 }
 
 # ::rep::closeWindow
