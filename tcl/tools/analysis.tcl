@@ -2163,12 +2163,24 @@ proc checkEngineIsAlive { {n 1} } {
     
     if {[eof $analysis(pipe$n)]} {
         fileevent $analysis(pipe$n) readable {}
-        catch {close $analysis(pipe$n)}
+        set exit_status 0
+        if {[catch {close $analysis(pipe$n)} standard_error] != 0} {
+            global errorCode
+            if {"CHILDSTATUS" == [lindex $errorCode 0]} {
+                set exit_status [lindex $errorCode 2]
+            }
+        }
         set analysis(pipe$n) ""
-        logEngineNote $n {Engine terminated without warning.}
+        if { $exit_status != 0 } {
+            logEngineNote $n {Engine terminated with exit code $exit_status: "\"$standard_error\""}
+            tk_messageBox -type ok -icon info -parent . -title "Scid" \
+                          -message "The analysis engine terminated with exit code $exit_status: \"$standard_error\""
+        } else {
+            logEngineNote $n {Engine terminated without exit code: "\"$standard_error\""}
+            tk_messageBox -type ok -icon info -parent . -title "Scid" \
+                          -message "The analysis engine terminated without exit code: \"$standard_error\""
+        }
         catch {destroy .analysisWin$n}
-        tk_messageBox -type ok -icon info -parent . -title "Scid" \
-                -message "The analysis engine terminated without warning; it probably crashed or had an internal error."
         return 0
     }
     return 1

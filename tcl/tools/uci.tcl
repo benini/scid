@@ -708,11 +708,23 @@ namespace eval uci {
         global ::uci::uciInfo
         if {[eof $uciInfo(pipe$n)]} {
             fileevent $uciInfo(pipe$n) readable {}
-            catch {close $uciInfo(pipe$n)}
+            set exit_status 0
+            if {[catch {close $uciInfo(pipe$n)} standard_error] != 0} {
+                global errorCode
+                if {"CHILDSTATUS" == [lindex $errorCode 0]} {
+                    set exit_status [lindex $errorCode 2]
+                }
+            }
             set uciInfo(pipe$n) ""
-            logEngineNote $n {Engine terminated without warning.}
-            tk_messageBox -type ok -icon info -parent . -title "Scid" \
-                    -message "The analysis engine terminated without warning; it probably crashed or had an internal error."
+            if { $exit_status != 0 } {
+                logEngineNote $n {Engine terminated with exit code $exit_status: "\"$standard_error\""}
+                tk_messageBox -type ok -icon info -parent . -title "Scid" \
+                              -message "The analysis engine terminated with exit code $exit_status: \"$standard_error\""
+            } else {
+                logEngineNote $n {Engine terminated without exit code: "\"$standard_error\""}
+                tk_messageBox -type ok -icon info -parent . -title "Scid" \
+                              -message "The analysis engine terminated without exist code: \"$standard_error\""
+            }
             return 0
         }
         return 1
