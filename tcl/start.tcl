@@ -110,6 +110,7 @@ foreach ns {
   ::tacgame ::sergame ::opening ::tactics ::calvar ::uci ::fics ::reviewgame ::novag
   ::config ::docking
   ::pinfo
+  ::commenteditor
 } {
   namespace eval $ns {}
 }
@@ -339,6 +340,8 @@ set ::fics::colgameresult  SlateBlue1
 set ::fics::colficspercent khaki1
 set ::fics::colficshelpnext blue
 set ::fics::server_ip "0.0.0.0"
+
+set ::commenteditor::showboard 1
 
 # default resolvers for player info
 set ::pinfo::wikipAPI      "http://de.wikipedia.org/w/api.php?action=query&format=xml"

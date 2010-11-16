@@ -5,8 +5,6 @@ namespace eval ::commenteditor {
   
   namespace export open close update storeComment addNag
   
-  set showboard 1
-
   # List of colors and types used to mark a square
   
   variable  colorList {}  markTypeList {}
@@ -73,7 +71,7 @@ proc ::commenteditor::Open {} {
   setWinLocation $w
   
   set mark [ttk::frame $w.markFrame]
-  pack $mark -side left -fill both -expand 1 -padx 1 -anchor n
+  if {$::commenteditor::showboard == 1} { pack $mark -side left -fill both -expand 1 -padx 1 -anchor n }
   
   # Comment frame:
   ttk::frame $w.cf
