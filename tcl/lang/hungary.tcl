@@ -654,10 +654,11 @@ translate H AnnotateAll {Mindkét fél lépéseihez}
 translate H AnnotateAllMoves {Értékeld az összes lépést}
 translate H AnnotateWhite {Csak világos lépéseihez}
 translate H AnnotateBlack {Csak sötét lépéseihez}
-translate H AnnotateNotBest {Ha a játszmában nem a legjobbat lépték}
 translate H AnnotateBlundersOnly {Ha a tett lépés nyilvánvalóan durva hiba}
 translate H AnnotateBlundersOnlyScoreChange {Az elemzés durva hibának tekinti a lépést, ha az értékelés megváltozása: }
 translate H BlundersThreshold {Küszöb}
+# TODO: Translate
+translate H ScoreAllMoves {Score all moves}
 translate H LowPriority {Alacsony CPU-prioritás}
 translate H ClickHereToSeeMoves {Kattints ide, hogy lásd a lépéseket}
 translate H ConfigureInformant {Értékelõ jelek definiálása}

@@ -683,10 +683,10 @@ translate E AnnotateAll {For moves by both sides}
 translate E AnnotateAllMoves {Annotate all moves}
 translate E AnnotateWhite {For White moves only}
 translate E AnnotateBlack {For Black moves only}
-translate E AnnotateNotBest {When game move is not best move}
 translate E AnnotateBlundersOnly {When game move is a blunder}
 translate E AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
 translate E BlundersThreshold {Threshold}
+translate E ScoreAllMoves {Score all moves}
 translate E LowPriority {Low CPU Priority}
 translate E ClickHereToSeeMoves {Click here to see moves}
 translate E ConfigureInformant {Configure Informant}

@@ -652,10 +652,11 @@ translate B AnnotateAll {Parar movimentos de ambos os lados}
 translate B AnnotateAllMoves {Anotar todos os movimentos}
 translate B AnnotateWhite {Apenas para movimentos das Brancas}
 translate B AnnotateBlack {Apenas para movimentos das Pretas}
-translate B AnnotateNotBest {Quando o movimento do jogo nao for o melhor movimento}
 translate B AnnotateBlundersOnly {Quando o mivimento for um erro crasso}
 translate B AnnotateBlundersOnlyScoreChange {As análises indicam um erro crasso, com mudança de score de/para: }
 translate B BlundersThreshold {Limite}
+# TODO: Translate
+translate B ScoreAllMoves {Score all moves}
 translate B LowPriority {Baixa prioridade da CPU} ;# ***
 translate B ClickHereToSeeMoves {Clique aqui para ver os movimentos}
 translate B ConfigureInformant {Configurar Informante}

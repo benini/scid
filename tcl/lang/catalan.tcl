@@ -678,10 +678,11 @@ translate K AnnotateAll {Per a jugades dels dos bàndols}
 translate K AnnotateAllMoves {Anotar totes les jugades}
 translate K AnnotateWhite {Només per jugades de les Blanques}
 translate K AnnotateBlack {Només per jugades de les Negres}
-translate K AnnotateNotBest {Quan la jugada de la partida no es la millor}
 translate K AnnotateBlundersOnly {Quan la jugada de la partida es un error}
 translate K AnnotateBlundersOnlyScoreChange {Anàlisi informant d'errors, amb canvi de puntuació des de: }
 translate K BlundersThreshold {Marge d'error }
+# TODO: Translate
+translate K ScoreAllMoves {Score all moves}
 translate K LowPriority {Baixa prioritat del processador}
 translate K ClickHereToSeeMoves {Clic aquí per veure les jugades}
 translate K ConfigureInformant {Configurar informacions}

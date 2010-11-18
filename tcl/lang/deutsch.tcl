@@ -675,10 +675,11 @@ translate D AnnotateAll {Für Züge beider Seiten}
 translate D AnnotateAllMoves {Alle Züge kommentieren}
 translate D AnnotateWhite {Nur für Züge von Weiß}
 translate D AnnotateBlack {Nur für Züge von Schwarz}
-translate D AnnotateNotBest {Wenn der Partiezug nicht der beste Zug ist}
 translate D AnnotateBlundersOnly {Wenn der Partiezug ein offensichtlicher Fehler ist}
 translate D AnnotateBlundersOnlyScoreChange {Analyse berichtet Fehler, Bewertungsänderung von/nach: }
 translate D BlundersThreshold {Grenze}
+# TODO: Translate
+translate D ScoreAllMoves {Alle Züge validieren}
 translate D LowPriority {Niedrige CPU-Priorität}
 translate D ClickHereToSeeMoves {Hier klicken um Züge anzuzeigen}
 translate D ConfigureInformant {Informator konfigurieren}

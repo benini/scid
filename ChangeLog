@@ -930,6 +930,13 @@ scid-4.3
 	    - Added engine thinking time to annotator string
 	    - Stop engine at end of annotation
 	    - UCI engine: Added notion of length of mating line to cp score (shorter is better)
+	    - Added annotation at end of variations
+	    - Added depth to variation scores
+	    - Added option to score all moves (also those which are not annotated)
+	    - Removed option to annotate only not-best-moves, as it is no longer usefull now
+	      all-moves does no longer produce lines starting with the played move
+	    - Increased maximum engine thinking time to 999 [sec]
+	    - Removed the blunder signature in the annotation (as we cannot tell how sharp the threshold is)
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
@@ -1003,7 +1010,10 @@ scid-4.3
 	    - Inrush fix, mainly noticeable with batch annotation without using book
 	    - Repair lockup with UCI engines that announce their bestmove before being stopped
 	      when they see a forced mate (stockfish...)
+	    - Repair lockup with UCI engines that refuse to start doing anything useful when they
+	      are started in a mate position (stockfish...)
 	    - Added "crushing" (+-- or --+) as potential score NAG
+	    - More consistency in starting and stopping analysis
 	* Header search with ignore colours: colours were obeyed for the results (thanks to Gerd Lohrscheid)
 	* Allow suppression of Abort/Adjourn/Draw/Takeback requests on FICS (thanks to Jose Joao Morais)
 	* Reorder piece sets alphabetically

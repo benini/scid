@@ -705,10 +705,11 @@ translate S AnnotateAll {Para movimientos de ambos lados}
 translate S AnnotateAllMoves {Anotar todos los movimientos}
 translate S AnnotateWhite {Sólo para movimientos de las blancas}
 translate S AnnotateBlack {Sólo para movimientos de las negras}
-translate S AnnotateNotBest {Cuando el movimiento de la partida no es el mejor}
 translate S AnnotateBlundersOnly {Cuando el movimiento de la partida es un error}
 translate S AnnotateBlundersOnlyScoreChange {Análisis reporta errores, con cambio de puntuación desde: }
 translate S BlundersThreshold {Umbral del error }
+# TODO: Translate
+translate S ScoreAllMoves {Score all moves}
 translate S LowPriority {Baja prioridad del procesador}
 translate S ClickHereToSeeMoves {Pulsa aquí para ver movimientos}
 translate S ConfigureInformant {Configurar informaciones}

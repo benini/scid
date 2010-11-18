@@ -775,13 +775,13 @@ translate W AnnotateAll {För båda sidors drag}
 translate W AnnotateAllMoves {Kommentera alla drag}
 translate W AnnotateWhite {Endast vits drag}
 translate W AnnotateBlack {Endast svarts drag}
-translate W AnnotateNotBest {När partidraget inte är det bästa}
 # ====== TODO To be translated ======
 translate W AnnotateBlundersOnly {När partidraget är en uppenbar blunder}
 # ====== TODO To be translated ======
 translate W AnnotateBlundersOnlyScoreChange {Analysen rapporterar blunder, med värderingsförändringar från/till: }
 # ====== TODO To be translated ======
 translate W BlundersThreshold {Tröskelvärde}
+translate W ScoreAllMoves {Score all moves}
 translate W LowPriority {Kör som lågprioriterad process} 
 # ====== TODO To be translated ======
 translate W ClickHereToSeeMoves {Klicka här för att se drag}

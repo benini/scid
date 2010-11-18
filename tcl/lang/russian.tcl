@@ -777,13 +777,14 @@ translate R AnnotateAll {Для ходов обоих сторон}
 translate R AnnotateAllMoves {Annotate all moves}
 translate R AnnotateWhite {Только для ходов Белых}
 translate R AnnotateBlack {Только для ходов Черных}
-translate R AnnotateNotBest {Когда ход в партии не самый лучший ход}
 # ====== TODO To be translated ======
 translate R AnnotateBlundersOnly {When game move is an obvious blunder}
 # ====== TODO To be translated ======
 translate R AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
 # ====== TODO To be translated ======
 translate R BlundersThreshold {Threshold}
+# TODO: Translate
+translate R ScoreAllMoves {Score all moves}
 translate R LowPriority {Низкий приоритет CPU}
 # ====== TODO To be translated ======
 translate R ClickHereToSeeMoves {Click here to see moves}

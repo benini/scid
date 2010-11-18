@@ -775,13 +775,14 @@ translate O AnnotateAll {For trekk av begge sider}
 translate O AnnotateAllMoves {Annotate all moves}
 translate O AnnotateWhite {Kun for hvite trekk}
 translate O AnnotateBlack {Kun for sorte trekk}
-translate O AnnotateNotBest {Når trekket avviker fra beste linje}
 # ====== TODO To be translated ======
 translate O AnnotateBlundersOnly {When game move is an obvious blunder}
 # ====== TODO To be translated ======
 translate O AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
 # ====== TODO To be translated ======
 translate O BlundersThreshold {Threshold}
+# TODO: Translate
+translate O ScoreAllMoves {Score all moves}
 translate O LowPriority {Low CPU priority} ;# ***
 # ====== TODO To be translated ======
 translate O ClickHereToSeeMoves {Click here to see moves}

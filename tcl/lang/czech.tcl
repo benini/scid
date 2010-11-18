@@ -638,10 +638,11 @@ translate C AnnotateAll {Pro tahy obou stran}
 translate C AnnotateAllMoves {Anotovat v¹echny tahy}
 translate C AnnotateWhite {Pouze pro tahy bílého}
 translate C AnnotateBlack {Pouze pro tahy èerného}
-translate C AnnotateNotBest {Pokud tah v partii není nejlep¹ím tahem}
 translate C AnnotateBlundersOnly {Jestli¾e tah v partii je evidentní hrubá chyba}
 translate C AnnotateBlundersOnlyScoreChange {Analýza ukazuje hrubou chybu, jestli¾e se skóre zmìní z/na: }
 translate C BlundersThreshold {Hranice}
+# TODO: Translate
+translate C ScoreAllMoves {Score all moves}
 translate C LowPriority {Nízká priorita procesoru}
 translate C ClickHereToSeeMoves {Kliknìte sem pro zobrazení tahù}
 translate C ConfigureInformant {Konfigurovat informátor}

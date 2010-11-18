@@ -773,13 +773,14 @@ translate Y AnnotateAll {For moves by both sides} ;# ***
 translate Y AnnotateAllMoves {Annotate all moves}
 translate Y AnnotateWhite {For White moves only} ;# ***
 translate Y AnnotateBlack {For Black moves only} ;# ***
-translate Y AnnotateNotBest {When game move is not best move} ;# ***
 # ====== TODO To be translated ======
 translate Y AnnotateBlundersOnly {When game move is an obvious blunder}
 # ====== TODO To be translated ======
 translate Y AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
 # ====== TODO To be translated ======
 translate Y BlundersThreshold {Threshold}
+# TODO: Translate
+translate Y ScoreAllMoves {Score all moves}
 translate Y LowPriority {Low CPU priority} ;# ***
 # ====== TODO To be translated ======
 translate Y ClickHereToSeeMoves {Click here to see moves}

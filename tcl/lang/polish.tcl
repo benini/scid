@@ -780,13 +780,14 @@ translate P AnnotateAll {Dla obu stron}
 translate P AnnotateAllMoves {Annotate all moves}
 translate P AnnotateWhite {Dla bia³ych}
 translate P AnnotateBlack {Dla czarnych}
-translate P AnnotateNotBest {Tylko dla posuniêæ lepszych ni¿ w partii}
 # ====== TODO To be translated ======
 translate P AnnotateBlundersOnly {When game move is an obvious blunder}
 # ====== TODO To be translated ======
 translate P AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
 # ====== TODO To be translated ======
 translate P BlundersThreshold {Threshold}
+# TODO: Translate
+translate P ScoreAllMoves {Score all moves}
 translate P LowPriority {Niski priorytet CPU} 
 # ====== TODO To be translated ======
 translate P ClickHereToSeeMoves {Click here to see moves}

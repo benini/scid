@@ -25,6 +25,11 @@ set wentOutOfBook 0
 # into the game
 set initialAnalysis 0
 
+# State variable: 1 <=> We will not add a variation to
+# this move, since this cannot be different from the
+# (engine variation to the) main line
+set atStartOfLine 0
+
 set isBatch 0
 set batchEnd 1
 set isBatchOpening 0
@@ -113,6 +118,7 @@ set annotateModeButtonValue 0 ; # feedback of annotate mode
 
 set annotateMoves all
 set annotateBlunders blundersonly
+set scoreAllMoves 0
 
 ################################################################################
 # calculateNodes:
@@ -673,8 +679,17 @@ proc configAnnotation {} {
     global autoplayDelay tempdelay blunderThreshold annotateModeButtonValue
     
     set w .configAnnotation
-    if { [winfo exists $w] } { focus $w ; return }
-    if { ! $annotateModeButtonValue } { ; # end annotation
+    # Do not do anyting if the window exists
+    #
+    if { [winfo exists $w] } {
+        focus $w
+        return
+    }
+    
+    # If the annotation button is pressed while annotation is
+    # running, stop the annotation
+    #
+    if { ! $annotateModeButtonValue } {
         toggleAutoplay
         return
     }
@@ -689,21 +704,24 @@ proc configAnnotation {} {
     pack $f -expand 1
     ttk::label $f.label -text $::tr(AnnotateTime:)
     pack $f.label -side top
-    spinbox $f.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
+    spinbox $f.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1
     pack $f.spDelay -side top -pady 5
     bind $w <Escape> { .configAnnotation.f.buttons.cancel invoke }
     bind $w <Return> { .configAnnotation.f.buttons.ok invoke }
     
     addHorizontalRule $f
-    ttk::label $f.avlabel -text $::tr(AnnotateWhich:)
-    ttk::radiobutton $f.all -text $::tr(AnnotateAll) -variable annotateMoves -value all
-    ttk::radiobutton $f.white -text $::tr(AnnotateWhite) -variable annotateMoves -value white
-    ttk::radiobutton $f.black -text $::tr(AnnotateBlack) -variable annotateMoves -value black
-    ttk::radiobutton $f.allmoves -text $::tr(AnnotateAllMoves) -variable annotateBlunders -value allmoves
-    ttk::radiobutton $f.notbest -text $::tr(AnnotateNotBest) -variable annotateBlunders -value notbest
-    ttk::radiobutton $f.blundersonly -text $::tr(AnnotateBlundersOnly) -variable annotateBlunders -value blundersonly
+    ttk::label        $f.avlabel -text $::tr(AnnotateWhich:)
+    ttk::radiobutton  $f.all     -text $::tr(AnnotateAll)   -variable annotateMoves -value all
+    ttk::radiobutton  $f.white   -text $::tr(AnnotateWhite) -variable annotateMoves -value white
+    ttk::radiobutton  $f.black   -text $::tr(AnnotateBlack) -variable annotateMoves -value black
     pack $f.avlabel -side top
-    pack $f.all $f.white $f.black $f.allmoves $f.notbest $f.blundersonly -side top -fill x -anchor w
+    pack $f.all $f.white $f.black -side top -fill x -anchor w
+
+    addHorizontalRule $f
+    
+    ttk::radiobutton  $f.allmoves     -text $::tr(AnnotateAllMoves)     -variable annotateBlunders -value allmoves
+    ttk::radiobutton  $f.blundersonly -text $::tr(AnnotateBlundersOnly) -variable annotateBlunders -value blundersonly
+    pack $f.allmoves $f.blundersonly -side top -fill x -anchor w
     
     ttk::frame $f.blunderbox
     pack $f.blunderbox -side top -padx 5 -pady 5
@@ -714,11 +732,18 @@ proc configAnnotation {} {
     pack $f.blunderbox.label $f.blunderbox.spBlunder -side left -padx 5 -pady 5
     
     addHorizontalRule $f
-    ttk::checkbutton $f.cbAnnotateVar  -text $::tr(AnnotateVariations) -variable ::isAnnotateVar
-    ttk::checkbutton $f.cbShortAnnotation  -text $::tr(ShortAnnotations) -variable ::isShortAnnotation
-    ttk::checkbutton $f.cbAddScore  -text $::tr(AddScoreToShortAnnotations) -variable ::addScoreToShortAnnotations
-    ttk::checkbutton $f.cbAddAnnotatorTag  -text $::tr(addAnnotatorTag) -variable ::addAnnotatorTag
+    ttk::checkbutton  $f.cbAnnotateVar      -text $::tr(AnnotateVariations)         -variable ::isAnnotateVar
+    ttk::checkbutton  $f.cbShortAnnotation  -text $::tr(ShortAnnotations)           -variable ::isShortAnnotation
+    ttk::checkbutton  $f.cbAddScore         -text $::tr(AddScoreToShortAnnotations) -variable ::addScoreToShortAnnotations
+    ttk::checkbutton  $f.cbAddAnnotatorTag  -text $::tr(addAnnotatorTag)            -variable ::addAnnotatorTag
     pack $f.cbAnnotateVar $f.cbShortAnnotation $f.cbAddScore $f.cbAddAnnotatorTag -fill x -anchor w
+
+    addHorizontalRule $f
+
+    # Checkmark to enable all-move-scoring
+    #
+    ttk::checkbutton  $f.scoreAll -text $::tr(ScoreAllMoves) -variable scoreAllMoves
+    pack $f.scoreAll -fill x -anchor w
     
     # choose a book for analysis
     addHorizontalRule $f
@@ -782,17 +807,17 @@ proc configAnnotation {} {
     pack $f.buttons -side top -fill x
     ttk::button $f.buttons.cancel -text $::tr(Cancel) -command {
         destroy .configAnnotation
-        set annotateMode 0
         set annotateModeButtonValue 0
     }
     ttk::button $f.buttons.ok -text "OK" -command {
         set ::useAnalysisBookName [.configAnnotation.f.comboBooks get]
-        set  ::wentOutOfBook 0
         set ::book::lastBook $::useAnalysisBookName
         
         # tactical positions is selected, must be in multipv mode
         if {$::markTacticalExercises} {
             if { $::analysis(multiPVCount1) < 2} {
+                # TODO: Why not put it at the (apparent) minimum of 2?
+                #
                 set ::analysis(multiPVCount1) 4
                 changePVSize 1
             }
@@ -806,11 +831,8 @@ proc configAnnotation {} {
         #
         stopEngineAnalysis 1
         cancelAutoplay
+        set annotateModeButtonValue 1
         set annotateMode 1
-        if {$::addAnnotatorTag} {
-            set _tmp [expr {$autoplayDelay / 1000}]
-            appendAnnotator "$analysis(name1) ($_tmp sec)"
-        }
         # First do the book analysis (if this is configured)
         # The latter condition is handled by the operation itself
         set ::wentOutOfBook 0
@@ -864,24 +886,24 @@ proc bookAnnotation { {n 1} } {
             set verboseLastBookMove " $::tr(LastBookMove)"
         }
         
-        if {  ! $::onlyMarkExercise } {
-            if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
-                if {$prevbookmoves != ""} {
-                    sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook [::trans $prevbookmoves]"
-                } else  {
-                    sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook"
-                }
+        if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
+            if {$prevbookmoves != ""} {
+                sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook [::trans $prevbookmoves]"
             } else  {
-                sc_pos setComment "[sc_pos getComment]$verboseLastBookMove"
+                sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook"
             }
+        } else  {
+            sc_pos setComment "[sc_pos getComment]$verboseLastBookMove"
         }
         
         # last move was out of book or the last move in book : it needs to be analyzed, so take back
         if { ![catch { sc_move back 1 } ] } {
             resetAnalysis
             updateBoard -pgn
-            set analysis(prevscore$n) $analysis(score$n)
-            set analysis(prevmoves$n) $analysis(moves$n)
+            set analysis(prevscore$n)     $analysis(score$n)
+            set analysis(prevmoves$n)     $analysis(moves$n)
+            set analysis(prevscoremate$n) $analysis(scoremate$n)
+            set analysis(prevdepth$n)     $analysis(depth$n)
             updateBoard -pgn
         }
     }
@@ -892,9 +914,7 @@ proc bookAnnotation { {n 1} } {
 ################################################################################
 proc markExercise { prevscore score nag} {
     
-    if {! $::onlyMarkExercise} {
-        sc_pos addNag $nag
-    }
+    sc_pos addNag $nag
     
     if {!$::markTacticalExercises} { return 0 }
     
@@ -963,9 +983,6 @@ proc markExercise { prevscore score nag} {
     puts "flag T pour [sc_game number] difficulty $difficulty"
     # If the base opened is read only, like a PGN file, avoids an exception
     catch { sc_game flag T [sc_game number] 1 }
-    if { $::onlyMarkExercise} {
-        sc_pos addNag $nag
-    }
     sc_pos setComment "****D${difficulty} [format %.1f $prevscore]->[format %.1f $score] [sc_pos getComment]"
     updateBoard
     
@@ -974,241 +991,323 @@ proc markExercise { prevscore score nag} {
 ################################################################################
 #
 ################################################################################
-# set ::onlyMarkExercise to 1 to only append exercises (****) when annotating games
-set ::onlyMarkExercise 0
-
 proc addAnnotation { {n 1} } {
-    global analysis annotateMoves annotateBlunders annotateMode blunderThreshold
+    global analysis annotateMoves annotateBlunders annotateMode blunderThreshold scoreAllMoves autoplayDelay
     
     # Check if we only need to register an initial
     # assessment of the position
     # If so, we do not generate any annotation yet
+    #
     if { $::initialAnalysis } {
         set ::initialAnalysis 0
         
-        set analysis(prevscore$n) $analysis(score$n)
-        set analysis(prevmoves$n) $analysis(moves$n)
-    
-        # Update score graph if it is open:
-        if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
+        if { $::isBatchOpening && ([sc_pos moveNumber] < $::isBatchOpeningMoves ) } {
+            appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
+        } elseif { $::addAnnotatorTag } {
+            set _tmp [expr {$autoplayDelay / 1000}]
+            appendAnnotator " $analysis(name1) ($_tmp sec)"
+        }
+        
+        set analysis(prevscore$n)     $analysis(score$n)
+        set analysis(prevmoves$n)     $analysis(moves$n)
+        set analysis(prevscoremate$n) $analysis(scoremate$n)
+        set analysis(prevdepth$n)     $analysis(depth$n)
         
         return
     }
-            
-    set exerciseMarked 0
     
+    # Check if we are at the start of a subline
+    # If so, we will not include the engine line as a variation.
+    # Rationale: this line cannot be different from the line for the
+    # main move, that we will include anyway.
+    #
+    set skipEngineLine $::atStartOfLine
+    set ::atStartOfLine 0
+            
     # First look in the book selected
     # TODO: Is this dead code by now?
+    # TODO: Seek for an opportunity to do book analysis on a move by
+    #       move basis, thus allowing variations to be included
+    #
     if { ! $::wentOutOfBook && $::useAnalysisBook } {
         bookAnnotation
         return
     }
     
-    # Cannot add a variation to an empty variation:
-    if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} { return }
-    
-    # Cannot (yet) add a variation at the end of the game or a variation:
-    # TODO: This is silly, and should be repaired
-    if {[sc_pos isAt vend]} { return }
-    
+    # Let's try to assess the situation:
+    # We are here, now that the engine has analyzed the position reached by
+    # our last move. Currently it is the opponent to move:
+    #
     set tomove [sc_pos side]
-    if {$annotateMoves == "white"  &&  $tomove == "white" ||
-        $annotateMoves == "black"  &&  $tomove == "black" } {
-        set analysis(prevscore$n) $analysis(score$n)
-        set analysis(prevmoves$n) $analysis(moves$n)
+
+    # And this is his best line:
+    #
+    set moves $analysis(moves$n)
+    
+    # The best line we could have followed, and the game move we just played instead, are here:
+    #
+    set prevmoves $analysis(prevmoves$n)
+    set gamemove  [sc_game info previousMoveNT]
+    
+    # Bail out if we have a mate
+    #
+    if { [expr { [string index $gamemove end] == "#" }] } {
+        set analysis(prevscore$n)     $analysis(score$n)
+        set analysis(prevmoves$n)     $analysis(moves$n)
+        set analysis(prevscoremate$n) $analysis(scoremate$n)
+        set analysis(prevdepth$n)     $analysis(depth$n)
         return
     }
     
-    # to parse scores if the engine's name contains - or + chars (see sc_game_scores)
-    set engine_name  [string map {"-" " " "+" " "} $analysis(name1)]
-    
-    set text [format "%d:%+.2f" $analysis(depth$n) $analysis(score$n)]
-    set moves $analysis(moves$n)
-    
-    # if next move is what engine guessed, do nothing (except if annotate mode is for all moves)
-    if { $analysis(prevmoves$n) != "" && $annotateBlunders != "allmoves"} {
-        set move2 [sc_game info previousMoveNT]
-        
-        sc_info preMoveCmd {}
-        sc_game push copyfast
-        set move1 [lindex $analysis(prevmoves$n) 0]
-        sc_move back 1
-        sc_move_add $move1 $n
-        set move1 [sc_game info previousMoveNT]
-        sc_game pop
-        sc_info preMoveCmd preMoveCommand
-        
-        if {$move1 == $move2} {
-            set analysis(prevscore$n) $analysis(score$n)
-            set analysis(prevmoves$n) $analysis(moves$n)
-            return
-        }
+    # We will add a closing line at the end of variation or game
+    #
+    set addClosingLine 0
+    if {  [sc_pos isAt vend] } {
+        set addClosingLine 1
     }
+    
     
     # Temporarily clear the pre-move command since we want to add a
     # whole line without Scid updating stuff:
+    #
     sc_info preMoveCmd {}
     
+    # We do not want to insert a best-line variation into the game
+    # if we did play along that line. Even not when annotating all moves.
+    # It simply makes no sense to do so (unless we are debugging the engine!)
+    # Sooner or later the game will deviate anyway; a variation at that point will
+    # do nicely and is probably more accurate as well.
+    #
+    set bestMovePlayed 0
+    if { $prevmoves != "" } {
+        # Following lines of code have only one goal:
+        # Transform an engine move (e.g. "g1f3") into the short notation that we use
+        # for moves in our games ("Nf3"), such that they can be (string) compared.
+        # We create a scratch copy of the game, add the engine move and then ask
+        # the game about the most recent move that was played.
+        # This might not be the most subtle solution...
+        sc_game push copyfast
+        set bestmove [lindex $prevmoves 0]
+        sc_move back 1
+        sc_move_add $bestmove $n
+        set bestmove [sc_game info previousMoveNT]
+        sc_game pop
+        
+        if { $bestmove == $gamemove } {
+            set bestMovePlayed 1
+        }
+    }
+    
+    # Did we miss a mate in one?
+    #
+    set bestMoveIsMate [expr { [string index $bestmove end] == "#" }]
+    
+    # As said, another reason not to include the engine line
+    #
+    set skipEngineLine [expr {$skipEngineLine + $bestMovePlayed}]
+
+    # As to the engine evaluations
+    # This is score the opponent will have if he plays his best move next
+    #
     set score $analysis(score$n)
+    
+    # This is the score we could have had if we had played our best move
+    #
     set prevscore $analysis(prevscore$n)
     
-    set deltamove [expr {$score - $prevscore}]
-    set isBlunder 0
-    if {$annotateBlunders == "blundersonly"} {
-        if { $deltamove < [expr 0.0 - $blunderThreshold] && $tomove == "black" || \
-                    $deltamove > $blunderThreshold && $tomove == "white" } {
-            set isBlunder 1
-        }
-        # if the game is dead, and the score continues to go down, don't add any comment
-        if { $prevscore > $::informant("++-") && $tomove == "white" || \
-                    $prevscore < [expr 0.0 - $::informant("++-") ] && $tomove == "black" } {
-            set isBlunder 0
-        }
-    } elseif {$annotateBlunders == "notbest"} { ; # not best move option
-        if { $deltamove < 0.0 && $tomove == "black" || \
-                    $deltamove > 0.0 && $tomove == "white" } {
-            set isBlunder 1
-        }
+    # Let's help the engine a bit...
+    # It makes no sense to criticise the players for moving insights at
+    # engine end. So we upgrade the old score to the new score if the lines
+    # start with the same move.
+    #
+    if { $bestMovePlayed } {
+        set prevscore $score
     }
     
-    set text [format "%+.2f" $score]
-    if {$annotateBlunders == "allmoves"} {
-        set absdeltamove [expr { abs($deltamove) } ]
-        if { $deltamove < [expr 0.0 - $blunderThreshold] && $tomove == "black" || \
-                    $deltamove > $blunderThreshold && $tomove == "white" } {
-            if {$absdeltamove > $::informant("?!") && $absdeltamove <= $::informant("?")} {
-                if { ! $::onlyMarkExercise } {
-                    sc_pos addNag "?!"
-                }
-            } elseif {$absdeltamove > $::informant("?") && $absdeltamove <= $::informant("??")} {
-                set exerciseMarked [ markExercise $prevscore $score "?" ]
-            } elseif {$absdeltamove > $::informant("??") } {
+    # Note that the engine's judgement is in absolute terms, a negative score
+    # being favorable to black, a positive score favorable to white
+    # Looking primarily for blunders, we are interested in the score decay,
+    # which, for white, is (previous-current)
+    #
+    set deltamove [expr {$prevscore - $score}]
+    # and whether the game was already lost for us
+    #
+    set gameIsLost [expr {$prevscore < (0.0 - $::informant("++-"))}]
+    
+    # Invert this logic for black
+    #
+    if { $tomove == "white" } {
+        set deltamove [expr {0.0 - $deltamove}]
+        set gameIsLost [expr {$prevscore > $::informant("++-")}] 
+    }
+    
+    # Note btw that if the score decay is - unexpectedly - negative, we played
+    # a better move than the engine's best line!
+    # TODO: Seek for opportunities to add positive NAG's (!, !? etc.)
+    
+    # Set an "isBlunder" filter.
+    # Let's mark moves with a decay greater than the threshold.
+    #
+    set isBlunder 0
+    if { $deltamove > $blunderThreshold } {
+        set isBlunder 2
+    } elseif { $deltamove > 0 } {
+        set isBlunder 1
+    }
+    
+    set exerciseMarked 0
+    
+    # to parse scores if the engine's name contains - or + chars (see sc_game_scores)
+    #
+    set engine_name  [string map {"-" " " "+" " "} $analysis(name$n)]
+    
+    # Prepare score strings for the opponent
+    #
+    if { $analysis(scoremate$n) != 0 } {
+        set text [format "%d:M%d" $analysis(depth$n) $analysis(scoremate$n)]
+    } else {
+        set text [format "%d:%+.2f" $analysis(depth$n) $score]
+    }
+    # And for the my (missed?) chance
+    #
+    if { $analysis(prevscoremate$n) != 0 } {
+        set prevtext [format "%d:M%d" $analysis(prevdepth$n) $analysis(prevscoremate$n)]
+    } else {
+        set prevtext [format "%d:%+.2f" $analysis(prevdepth$n) $prevscore]
+    }
+    
+    # Must we annotate our own moves? If no, we bail out unless
+    # - we must add a closing line
+    #
+    if { ( $annotateMoves == "white"  &&  $tomove == "white" ||
+           $annotateMoves == "black"  &&  $tomove == "black"   ) && ! $addClosingLine } {
+        set analysis(prevscore$n)     $analysis(score$n)
+        set analysis(prevmoves$n)     $analysis(moves$n)
+        set analysis(prevscoremate$n) $analysis(scoremate$n)
+        set analysis(prevdepth$n)     $analysis(depth$n)
+        
+        # Add score for this position anyway if this is configured
+        #
+        if { $scoreAllMoves } {
+            sc_pos setComment "[sc_pos getComment] $text"
+        }
+        
+        # Restore the pre-move command
+        #
+        sc_info preMoveCmd preMoveCommand
+    
+        # Update the board
+        #
+        updateBoard -pgn
+    
+        # Update score graph if it is open
+        #
+        if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
+        return
+    }
+    
+
+    # See if we have the threshold filter activated.
+    # If so, take only bad moves until the position is lost anyway
+    #
+    # Or that we must annotate all moves
+    #
+    if { ($annotateBlunders == "blundersonly" && $isBlunder > 1 && ! $gameIsLost) || ($annotateBlunders == "allmoves") } {
+        if { $isBlunder > 0 } {
+            # Add move score nag, and possibly an exercise
+            #
+            set absdeltamove [expr { abs($deltamove) } ]
+            if {       $absdeltamove > $::informant("??") } {
                 set exerciseMarked [ markExercise $prevscore $score "??" ]
-            }
-        }
-        
-        if { ! $::onlyMarkExercise } {
-            if {! $::isShortAnnotation } {
-                sc_pos setComment "[sc_pos getComment] $engine_name: $text"
-            } else {
-                if {$::addScoreToShortAnnotations} {
-                    sc_pos setComment "[sc_pos getComment] $text"
-                }
-            }
-        }
-        
-        if {$::isBatchOpening} {
-            if { [sc_pos moveNumber] < $::isBatchOpeningMoves} {
-                appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
-                updateBoard -pgn
-            }
-        }
-        
-        set nag [ scoreToNag $score ]
-        if {$nag != "" && ! $::onlyMarkExercise } {
-            sc_pos addNag $nag
-        }
-        
-        sc_move back
-        if { $analysis(prevmoves$n) != ""} {
-            sc_var create
-            set moves $analysis(prevmoves$n)
-            sc_move_add $moves $n
-            set nag [ scoreToNag $prevscore ]
-            if { $nag != "" && ! $::onlyMarkExercise } {
-                sc_pos addNag $nag
-            }
-            sc_var exit
-            sc_move forward
-        }
-    } elseif { $isBlunder } {
-        # Add the comment to highlight the blunder
-        set absdeltamove [expr { abs($deltamove) } ]
-        
-        # if the game was won and the score remains high, don't add comment
-        if { $score > $::informant("++-") && $tomove == "black" || \
-                    $score < [expr 0.0 - $::informant("++-") ] && $tomove == "white" } {
-            if {! $::onlyMarkExercise} {
-                set text [format "%+.2f (%+.2f)" $prevscore $score]
-                if {! $::isShortAnnotation } {
-                    sc_pos setComment "[sc_pos getComment] $engine_name: $text"
-                }  else {
-                    if {$::addScoreToShortAnnotations} {
-                        sc_pos setComment "[sc_pos getComment] $text"
-                    }
-                }
-            }
-        } else  {
-            if {$absdeltamove > $::informant("?!") && $absdeltamove <= $::informant("?")} {
-                if { ! $::onlyMarkExercise } {
-                    sc_pos addNag "?!"
-                }
-            } elseif {$absdeltamove > $::informant("?") && $absdeltamove <= $::informant("??")} {
+            } elseif { $absdeltamove > $::informant("?")  } {
                 set exerciseMarked [ markExercise $prevscore $score "?" ]
-            } elseif {$absdeltamove > $::informant("??") } {
-                set exerciseMarked [ markExercise $prevscore $score "??" ]
-            }
-            
-            if { ! $::onlyMarkExercise || $exerciseMarked } {
-                set text [format "%s %+.2f / %+.2f" $::tr(AnnotateBlundersOnlyScoreChange) $prevscore $score]
-                if {! $::isShortAnnotation } {
-                    sc_pos setComment "[sc_pos getComment] $engine_name: $text"
-                } else {
-                    if {$::addScoreToShortAnnotations} {
-                        sc_pos setComment "[sc_pos getComment] [format %+.2f $score]"
-                    }
-                }
-            }
-            
-        }
-        
-        if {$::isBatchOpening} {
-            if { [sc_pos moveNumber] < $::isBatchOpeningMoves} {
-                appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
-                updateBoard -pgn
+            } elseif { $absdeltamove > $::informant("?!") } {
+                sc_pos addNag "?!"
             }
         }
-        
-        if { ! $::onlyMarkExercise || $exerciseMarked } {
             
-            set nag [ scoreToNag $score ]
-            if {$nag != "" && ! $::onlyMarkExercise} {
-                sc_pos addNag $nag
-            }
-            # Rewind, request a diagram
+        # Add score comment and engine name if needed
+        #
+        if { ! $::isShortAnnotation } {
+            sc_pos setComment "[sc_pos getComment] $engine_name: $text"
+        } elseif { $::addScoreToShortAnnotations || $scoreAllMoves } {
+            sc_pos setComment "[sc_pos getComment] $text"
+        }
+            
+        # Add position score nag
+        #
+        sc_pos addNag [scoreToNag $score]
+            
+        # Add the variation
+        #
+        if { $skipEngineLine == 0 } {
             sc_move back
-            sc_pos addNag "D"
-            
-            # Add the variation:
-            if { $analysis(prevmoves$n) != ""} {
+            if { $annotateBlunders == "blundersonly" } {
+                # Add a diagram tag, but avoid doubles
+                #
+                if { [string first "D" "[sc_pos getNags]"] == -1 } {
+                    sc_pos addNag "D"
+                }
+            }
+            if { $prevmoves != ""} {
                 sc_var create
-                set moves $analysis(prevmoves$n)
-                # Add as many moves as possible from the engine analysis:
-                sc_move_add $moves $n
-                set nag [ scoreToNag $prevscore ]
-                if {$nag != "" } {
-                    sc_pos addNag $nag
+                # Add the starting move
+                sc_move_add [lrange $prevmoves 0 0] $n
+                # Add its score
+                if { ! $bestMoveIsMate } {
+                    if { ! $::isShortAnnotation || $::addScoreToShortAnnotations } {
+                        sc_pos setComment "$prevtext"
+                    }
+                }
+                # Add remaining moves
+                sc_move_add [lrange $prevmoves 1 end] $n
+                # Add position NAG, unless the line ends in mate
+                if { $analysis(prevscoremate$n) == 0 } {
+                    sc_pos addNag [scoreToNag $prevscore]
                 }
                 sc_var exit
-                sc_move forward
+            }
+            sc_move forward
+        }
+    } elseif { $scoreAllMoves } { 
+        # Add a score mark anyway
+        #
+        sc_pos setComment "[sc_pos getComment] $text"
+    } 
+        
+    if { $addClosingLine } {
+        sc_move back
+        sc_var create
+        sc_move addSan $gamemove
+        if { $analysis(scoremate$n) == 0 } {
+            if { ! $::isShortAnnotation || $::addScoreToShortAnnotations } {
+                sc_pos setComment "$text"
             }
         }
+        sc_move_add $moves 1
+        if { $analysis(scoremate$n) == 0 } {
+            sc_pos addNag [scoreToNag $score]
+        }
+        sc_var exit
+        # Now up to the end of the game
+        ::move::Forward
     }
     
-    set analysis(prevscore$n) $analysis(score$n)
-    set analysis(prevmoves$n) $analysis(moves$n)
+    set analysis(prevscore$n)     $analysis(score$n)
+    set analysis(prevmoves$n)     $analysis(moves$n)
+    set analysis(prevscoremate$n) $analysis(scoremate$n)
+    set analysis(prevdepth$n)     $analysis(depth$n)
     
-    # Restore the pre-move command:
+    # Restore the pre-move command
+    #
     sc_info preMoveCmd preMoveCommand
     
-    #If an exercise was marked go directly to end of game
-    if { $::onlyMarkExercise && $exerciseMarked } {
-        ::move::End
-    } else  {
-        updateBoard -pgn
-    }
+    # Update the board
+    #
+    updateBoard -pgn
     
-    # Update score graph if it is open:
+    # Update score graph if it is open
+    #
     if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
 }
 
@@ -1272,8 +1371,9 @@ proc appendAnnotator { s } {
 ################################################################################
 proc pushAnalysisData { { lastVar } { n 1 } } {
     global analysis
-    lappend ::stack [list $analysis(prevscore$n) $analysis(score$n) \
-            $analysis(prevmoves$n) $analysis(moves$n) $lastVar ]
+    lappend ::stack [list $analysis(prevscore$n) $analysis(prevscoremate$n) $analysis(prevdepth$n) \
+                          $analysis(score$n)     $analysis(scoremate$n)     $analysis(depth$n) \
+                          $analysis(prevmoves$n) $analysis(moves$n) $lastVar ]
 }
 ################################################################################
 #
@@ -1283,7 +1383,11 @@ proc popAnalysisData { { n 1 } } {
     # the start of analysis is in the middle of a variation
     if {[llength $::stack] == 0} {
         set analysis(prevscore$n) 0
+        set analysis(prevscoremate$n) 0
+        set analysis(prevdepth$n) 0
         set analysis(score$n) 0
+        set analysis(scoremate$n) 0
+        set analysis(depth$n) 0
         set analysis(prevmoves$n) ""
         set analysis(moves$n) ""
         set lastVar 0
@@ -1291,10 +1395,14 @@ proc popAnalysisData { { n 1 } } {
     }
     set tmp [lindex $::stack end]
     set analysis(prevscore$n) [lindex $tmp 0]
-    set analysis(score$n) [lindex $tmp 1]
-    set analysis(prevmoves$n) [lindex $tmp 2]
-    set analysis(moves$n) [lindex $tmp 3]
-    set lastVar [lindex $tmp 4]
+    set analysis(prevscoremate$n) [lindex $tmp 1]
+    set analysis(prevdepth$n) [lindex $tmp 2]
+    set analysis(score$n) [lindex $tmp 3]
+    set analysis(scoremate$n) [lindex $tmp 4]
+    set analysis(depth$n) [lindex $tmp 5]
+    set analysis(prevmoves$n) [lindex $tmp 6]
+    set analysis(moves$n) [lindex $tmp 7]
+    set lastVar [lindex $tmp 8]
     set ::stack [lreplace $::stack end end]
     return $lastVar
 }
@@ -1490,10 +1598,9 @@ proc makeAnalysisMove {{n 1}} {
 #
 proc destroyAnalysisWin {{n 1}} {
     
-    global windowsOS analysis annotateModeButtonValue
+    global windowsOS analysis annotateMode
     
-    if { $annotateModeButtonValue } { ; # end annotation
-        set annotateModeButtonValue 0
+    if { $n == 1 && $annotateMode } {
         toggleAutoplay
     }
     
@@ -1618,7 +1725,11 @@ proc makeAnalysisWin { {n 1} {index -1} } {
         return
     }
     
-    if {$n == 1} { set annotateModeButtonValue 0 }
+    # Set the button in non-annotation state
+    #
+    if { $n == 1 } {
+        set annotateModeButtonValue 0
+    }
     
     resetEngine $n
     
@@ -1924,7 +2035,9 @@ proc changePVSize { n } {
             # Although we go infinite, some engines do a bestmove announcement
             # and go idle when they see a forced mate, before we stop them
             # Let's anticipate this.
-            set analysis(waitForBestMove$n) 1
+            if { [expr { [string index [sc_game info previousMoveNT] end] != "#"}] } {
+                set analysis(waitForBestMove$n) 1
+            }
             sendToEngine $n "go infinite"
         } else  {
             sendToEngine $n "setoption name MultiPV value $analysis(multiPVCount$n)"
@@ -2288,7 +2401,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
     global analysis
     
     if { $n == 1} {
-        if { ($::annotateModeButtonValue || $::finishGameMode) && ! $force } {
+        if { ($::annotateMode || $::finishGameMode) && ! $force } {
             return
         }
     }
@@ -2333,7 +2446,11 @@ proc startAnalyzeMode {{n 1} {force 0}} {
         # Although we go infinite, some engines do a bestmove announcement
         # and go idle when they see a forced mate, before we stop them
         # Let's anticipate this.
-        set analysis(waitForBestMove$n) 1
+        if { [expr { [string index [sc_game info previousMoveNT] end] != "#" }] } {
+            set analysis(waitForBestMove$n) 1
+        } else {
+            set analysis(waitForBestMove$n) 0
+        }
         sendToEngine $n "go infinite"
         set analysis(fen$n) [sc_pos fen]
         set analysis(maxmovenumber$n) 0
@@ -2741,7 +2858,9 @@ proc updateAnalysis {{n 1}} {
         # Although we go infinite, some engines do a bestmove announcement
         # and go idle when they see a forced mate, before we stop them
         # Let's anticipate this.
-        set analysis(waitForBestMove$n) 1
+        if { [expr { [string index [sc_game info previousMoveNT] end] != "#"}] } {
+            set analysis(waitForBestMove$n) 1
+        }
         sendToEngine $n "go infinite"
         set analysis(fen$n) [sc_pos fen]
         set analysis(maxmovenumber$n) 0

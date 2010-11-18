@@ -718,10 +718,11 @@ translate I AnnotateAll {Per mosse di entrambi i colori}
 translate I AnnotateAllMoves {Tutte le mosse}
 translate I AnnotateWhite {Per solo le mosse del Bianco}
 translate I AnnotateBlack {Per solo le mosse del Nero}
-translate I AnnotateNotBest {Quando la mossa della partita non e' la migliore}
 translate I AnnotateBlundersOnly {Quando la mossa è chiaramente un errore}
 translate I AnnotateBlundersOnlyScoreChange {L'analisi riporta come errori, con variazione del punteggio da/a:}
 translate I BlundersThreshold {Limite}
+# TODO: Translate
+translate I ScoreAllMoves {Score all moves}
 translate I LowPriority {Imposta la priorità della CPU a bassa}
 translate I ClickHereToSeeMoves {Clicca qui per vedere le mosse}
 translate I ConfigureInformant {Configura i valori informativi}

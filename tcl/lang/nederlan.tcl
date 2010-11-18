@@ -668,10 +668,11 @@ translate N AnnotateAll {Voor zetten van beide zijden}
 translate N AnnotateAllMoves {Annotateer alle zetten}
 translate N AnnotateWhite {Alleen voor zetten door Wit}
 translate N AnnotateBlack { Alleen voor zetten door Zwart}
-translate N AnnotateNotBest {Als de partijzet niet de beste is.}
-translate N AnnotateBlundersOnly {Als de partijzet een klaarblijjelijke blunder is}
+translate N AnnotateBlundersOnly {Als de partijzet een klaarblijkelijke blunder is}
 translate N AnnotateBlundersOnlyScoreChange {Blunder Analyse rapport, met scorewijziging van/naar: }
 translate N BlundersThreshold {Ondergrens}
+# TODO: Translate
+translate N ScoreAllMoves {Waardeer alle zetten}
 translate N LowPriority {Lage CPU prioriteit} ;
 translate N ClickHereToSeeMoves {Klik hier om de zetten te zien}
 translate N ConfigureInformant {Configureer de Informant}

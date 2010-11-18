@@ -647,10 +647,11 @@ translate F AnnotateAll {Pour les coups des deux cotés}
 translate F AnnotateAllMoves {Annoter tous les coups}
 translate F AnnotateWhite {Pour les coups des blancs seulement}
 translate F AnnotateBlack {Pour les coups des noirs seulement}
-translate F AnnotateNotBest {Quand le coup de la partie n'est pas le meilleur}
 translate F AnnotateBlundersOnly {Quand le coup est une erreur}
 translate F AnnotateBlundersOnlyScoreChange {Coup faible, le score varie de/à: }
 translate F BlundersThreshold {Seuil de l'erreur}
+# TODO: Translate
+translate F ScoreAllMoves {Valider tous les coups}
 translate F LowPriority {Priorité processeur basse}
 translate F ClickHereToSeeMoves {Cliquer ici pour afficher les coups}
 translate F ConfigureInformant {Configurer les valeurs des notations}

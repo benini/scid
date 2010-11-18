@@ -686,10 +686,11 @@ translate U AnnotateAll {molemmille osapuolille}
 translate U AnnotateAllMoves {Kommentoi kaikki siirrot}
 translate U AnnotateWhite {Vain valkealle}
 translate U AnnotateBlack {Vain mustalle}
-translate U AnnotateNotBest {Kun pelisiirto ei ole paras}
 translate U AnnotateBlundersOnly {Kun pelisiirto on virhe (blunder)}
 translate U AnnotateBlundersOnlyScoreChange {Analyysi raportoi virheet, muuuttaen pisteytyksen: }
 translate U BlundersThreshold {Virhekynnys}
+# TODO: Translate
+translate U ScoreAllMoves {Score all moves}
 translate U LowPriority {Matala CPUn käyttöaste}
 translate U ClickHereToSeeMoves {Klikkaa nähdäksesi siirrot}
 translate U ConfigureInformant {Tee Informant-asetukset}
