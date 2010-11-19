@@ -1003,9 +1003,11 @@ proc addAnnotation { {n 1} } {
         
         if { $::isBatchOpening && ([sc_pos moveNumber] < $::isBatchOpeningMoves ) } {
             appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
-        } elseif { $::addAnnotatorTag } {
-            set _tmp [expr {$autoplayDelay / 1000}]
-            appendAnnotator " $analysis(name1) ($_tmp sec)"
+            
+            if { $::addAnnotatorTag } {
+                set _tmp [expr {$autoplayDelay / 1000}]
+                appendAnnotator " $analysis(name1) ($_tmp sec)"
+            }
         }
         
         set analysis(prevscore$n)     $analysis(score$n)
