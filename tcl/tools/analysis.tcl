@@ -1081,6 +1081,7 @@ proc addAnnotation { {n 1} } {
     # do nicely and is probably more accurate as well.
     #
     set bestMovePlayed 0
+    set bestMoveIsMate 0
     if { $prevmoves != "" } {
         # Following lines of code have only one goal:
         # Transform an engine move (e.g. "g1f3") into the short notation that we use
@@ -1098,11 +1099,12 @@ proc addAnnotation { {n 1} } {
         if { $bestmove == $gamemove } {
             set bestMovePlayed 1
         }
+        
+        # Did we miss a mate in one?
+        #
+        set bestMoveIsMate [expr { [string index $bestmove end] == "#" }]
     }
     
-    # Did we miss a mate in one?
-    #
-    set bestMoveIsMate [expr { [string index $bestmove end] == "#" }]
     
     # As said, another reason not to include the engine line
     #
