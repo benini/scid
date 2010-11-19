@@ -56,6 +56,8 @@ proc resetEngine {n} {
     set analysis(seenEval$n) 0          ;# Seen evaluation line yet?
     set analysis(score$n) 0             ;# Current score in centipawns
     set analysis(prevscore$n) 0         ;# Immediately previous score in centipawns
+    set analysis(scoremate$n) 0         ;# Current mating distance (0 if infinite)
+    set analysis(prevscoremate$n) 0     ;# Previous mating distance
     set analysis(prevmoves$n) ""        ;# Immediately previous best line out from engine
     set analysis(nodes$n) 0             ;# Number of (kilo)nodes searched
     set analysis(depth$n) 0             ;# Depth in ply
@@ -1045,10 +1047,15 @@ proc addAnnotation { {n 1} } {
     # And this is his best line:
     #
     set moves $analysis(moves$n)
+    # For non-uci lines, trim space characters in <moveno>.[ *][...]<move> 
+    set moves [regsub -all {\. *} $moves {.}]
     
     # The best line we could have followed, and the game move we just played instead, are here:
     #
     set prevmoves $analysis(prevmoves$n)
+    # For non-uci lines, trim space characters in <moveno>.[ *][...]<move> 
+    set prevmoves [regsub -all {\. *} $prevmoves {.}]
+
     set gamemove  [sc_game info previousMoveNT]
     
     # Bail out if we have a mate
