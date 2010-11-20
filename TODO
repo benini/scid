@@ -4,6 +4,9 @@
 |                                                           |
  ===========================================================
 
+Tooltip for comment over mainboard. (Fluvio)
+
+----------------------------------------------------------------------
 Go over proc standardShortcuts and define a list that might be usual
 edit keys. Add a funtion that unbinds those keys and get it called in
 windows that offer a general edit field for texts.

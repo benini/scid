@@ -678,7 +678,6 @@ translate D AnnotateBlack {Nur für Züge von Schwarz}
 translate D AnnotateBlundersOnly {Wenn der Partiezug ein offensichtlicher Fehler ist}
 translate D AnnotateBlundersOnlyScoreChange {Analyse berichtet Fehler, Bewertungsänderung von/nach: }
 translate D BlundersThreshold {Grenze}
-# TODO: Translate
 translate D ScoreAllMoves {Alle Züge validieren}
 translate D LowPriority {Niedrige CPU-Priorität}
 translate D ClickHereToSeeMoves {Hier klicken um Züge anzuzeigen}
