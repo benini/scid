@@ -884,26 +884,28 @@ proc bookAnnotation { {n 1} } {
         set verboseMoveOutOfBook " $::tr(MoveOutOfBook)"
         set verboseLastBookMove " $::tr(LastBookMove)"
         
+        set theCatch 0
         if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
             if {$prevbookmoves != ""} {
                 sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook [::trans $prevbookmoves]"
             } else  {
                 sc_pos setComment "[sc_pos getComment]$verboseMoveOutOfBook"
             }
+            # last move was out of book: it needs to be analyzed, so take back
+            #
+            set theCatch [catch {sc_move back 1}]
         } else  {
             sc_pos setComment "[sc_pos getComment]$verboseLastBookMove"
         }
         
-        # last move was out of book or the last move in book : it needs to be analyzed, so take back
-        if { ![catch { sc_move back 1 } ] } {
+        if { ! $theCatch } {
             resetAnalysis
             updateBoard -pgn
-            set analysis(prevscore$n)     $analysis(score$n)
-            set analysis(prevmoves$n)     $analysis(moves$n)
-            set analysis(prevscoremate$n) $analysis(scoremate$n)
-            set analysis(prevdepth$n)     $analysis(depth$n)
-            updateBoard -pgn
         }
+        set analysis(prevscore$n)     $analysis(score$n)
+        set analysis(prevmoves$n)     $analysis(moves$n)
+        set analysis(prevscoremate$n) $analysis(scoremate$n)
+        set analysis(prevdepth$n)     $analysis(depth$n)
     }
 }
 ################################################################################
