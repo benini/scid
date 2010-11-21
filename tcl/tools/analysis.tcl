@@ -1215,11 +1215,14 @@ proc addAnnotation { {n 1} } {
     
 
     # See if we have the threshold filter activated.
-    # If so, take only bad moves until the position is lost anyway
+    # If so, take only bad moves and missed mates until the position is lost anyway
     #
     # Or that we must annotate all moves
     #
-    if { ($annotateBlunders == "blundersonly" && $isBlunder > 1 && ! $gameIsLost) || ($annotateBlunders == "allmoves") } {
+    if {  (  $annotateBlunders == "blundersonly"
+          && ($isBlunder > 1 || ($isBlunder > 0 && [expr abs($score)] >= 327.0))
+          && ! $gameIsLost)
+       || ($annotateBlunders == "allmoves") } {
         if { $isBlunder > 0 } {
             # Add move score nag, and possibly an exercise
             #

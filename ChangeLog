@@ -939,6 +939,7 @@ scid-4.3
 	    - Removed the blunder signature in the annotation (as we cannot tell how sharp the threshold is)
 	    - Added variation times in multi-pv mode
 	    - If game just follows book till some book end, last book move does not need analysis.
+	    - Blunder-check annotation spots faster mates, regardless of threshold.
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
