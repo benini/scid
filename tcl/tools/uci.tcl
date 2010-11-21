@@ -169,9 +169,9 @@ namespace eval uci {
                         set next [ lindex $data $i ]
                         set uciInfo(scoremate$n) $next
                         if { $next < 0} {
-                            set uciInfo(tmp_score$n) [expr {-32750 - $next}]
+                            set uciInfo(tmp_score$n) [expr {-32767 - 2 * $next}]
                         } else  {
-                            set uciInfo(tmp_score$n) [expr {32750 - $next}]
+                            set uciInfo(tmp_score$n) [expr {32767 - 2 * $next}]
                         }
                     }
                     # convert the score to white's perspective (not engine's one)
@@ -184,7 +184,12 @@ namespace eval uci {
                         set uciInfo(tmp_score$n) [ expr 0.0 - $uciInfo(tmp_score$n) ]
                         if { $uciInfo(scoremate$n) } {
                             set uciInfo(scoremate$n) [ expr 0 - $uciInfo(scoremate$n) ]
+                            if { $uciInfo(tmp_score$n) < 0 } {
+                                set uciInfo(tmp_score$n) [ expr {$uciInfo(tmp_score$n) - 1.0} ]
+                            }
                         }
+                    } elseif { $uciInfo(scoremate$n) && $uciInfo(tmp_score$n) > 0 } {
+                        set uciInfo(tmp_score$n) [ expr {$uciInfo(tmp_score$n) + 1.0} ]
                     }
                     set uciInfo(tmp_score$n) [expr {double($uciInfo(tmp_score$n)) / 100.0} ]
                     
