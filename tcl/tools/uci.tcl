@@ -39,7 +39,7 @@ namespace eval uci {
         # set uciInfo(pvlist$n) {}
         # set uciInfo(score$n) ""
         set uciInfo(tmp_score$n) ""
-        set uciInfo(scoremate$n) ""
+        set uciInfo(scoremate$n) 0
         set uciInfo(currmove$n) ""
         set uciInfo(currmovenumber$n) 0
         set uciInfo(hashfull$n) 0
@@ -182,7 +182,7 @@ namespace eval uci {
                     }
                     if { $side == "b"} {
                         set uciInfo(tmp_score$n) [ expr 0.0 - $uciInfo(tmp_score$n) ]
-                        if { $uciInfo(scoremate$n) != ""} {
+                        if { $uciInfo(scoremate$n) } {
                             set uciInfo(scoremate$n) [ expr 0 - $uciInfo(scoremate$n) ]
                         }
                     }
@@ -231,11 +231,7 @@ namespace eval uci {
                 set analysis(prev_depth$n) $analysis(depth$n)
                 set analysis(depth$n) $uciInfo(depth$n)
                 set analysis(score$n) $uciInfo(score$n)
-                if { $uciInfo(scoremate$n) != "" } {
-                    set analysis(scoremate$n) $uciInfo(scoremate$n)
-                } else {
-                    set analysis(scoremate$n) 0
-                }
+                set analysis(scoremate$n) $uciInfo(scoremate$n)
                 set analysis(moves$n) $uciInfo(pv$n)
                 set analysis(time$n) [expr {double($uciInfo(time$n)) / 1000.0} ]
                 set analysis(nodes$n) [calculateNodes $uciInfo(nodes$n) ]
@@ -253,12 +249,13 @@ namespace eval uci {
             
             # was if $analyze etc..
             if { $idx < $analysis(multiPVCount$n) } {
+                set tmpTime [expr {double($uciInfo(time$n)) / 1000.0}]
                 if {$idx < [llength $analysis(multiPV$n)]} {
-                    lset analysis(multiPV$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $uciInfo(pv$n)] $uciInfo(scoremate$n)"
-                    lset analysis(multiPVraw$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n)"
+                    lset analysis(multiPV$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $uciInfo(pv$n)] $uciInfo(scoremate$n) $tmpTime"
+                    lset analysis(multiPVraw$n) $idx "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n) $tmpTime"
                 } else  {
-                    lappend analysis(multiPV$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $uciInfo(pv$n)] $uciInfo(scoremate$n)"
-                    lappend analysis(multiPVraw$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n)"
+                    lappend analysis(multiPV$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $uciInfo(pv$n)] $uciInfo(scoremate$n) $tmpTime"
+                    lappend analysis(multiPVraw$n) "$uciInfo(depth$n) $uciInfo(tmp_score$n) [list $pvRaw] $uciInfo(scoremate$n) $tmpTime"
                 }
             }
             

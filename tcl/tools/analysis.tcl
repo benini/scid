@@ -2637,19 +2637,21 @@ proc updateAnalysisText {{n 1}} {
             $h delete 1.0 end
             # First line
             set pv [lindex $analysis(multiPV$n) 0]
-            catch { set newStr [format "%2d %s " [lindex $pv 0] [scoreToMate $score [lindex $pv 2] $n] ] }
+            if { $pv != "" } {
+                catch { set newStr [format "%2d %s " [lindex $pv 0] [scoreToMate $score [lindex $pv 2] $n] ] }
             
-            $h insert end "1 " gray
-            append newStr "[addMoveNumbers $n [::trans [lindex $pv 2]]]\n"
-            $h insert end $newStr blue
+                $h insert end "1 " gray
+                append newStr "[addMoveNumbers $n [::trans [lindex $pv 2]]] [format (%.2f)\n [lindex $pv 4]]"
+                $h insert end $newStr blue
             
-            set lineNumber 1
-            foreach pv $analysis(multiPV$n) {
-                if {$lineNumber == 1} { incr lineNumber ; continue }
-                $h insert end "$lineNumber " gray
-                set score [scoreToMate [lindex $pv 1] [lindex $pv 2] $n]
-                $h insert end [format "%2d %s %s\n" [lindex $pv 0] $score [addMoveNumbers $n [::trans [lindex $pv 2]]] ] indent
-                incr lineNumber
+                set lineNumber 1
+                foreach pv $analysis(multiPV$n) {
+                    if {$lineNumber == 1} { incr lineNumber ; continue }
+                    $h insert end "$lineNumber " gray
+                    set score [scoreToMate [lindex $pv 1] [lindex $pv 2] $n]
+                    $h insert end [format "%2d %s %s (%.2f)\n" [lindex $pv 0] $score [addMoveNumbers $n [::trans [lindex $pv 2]]] [lindex $pv 4]] indent
+                    incr lineNumber
+                }
             }
         }
         ################################################################################

@@ -926,7 +926,7 @@ scid-4.3
 	    - Cursor key navigation works in IE
 	    - Cursor left key navigation works the same way backwards as right works its way forwards, i.e. skipping variations
 	    - Dotted move numbers for black moves in a main line are also applied following a diagram and a variation.
-	* Annotation
+	* Annotation/analysis
 	    - Added engine thinking time to annotator string
 	    - Stop engine at end of annotation
 	    - UCI engine: Added notion of length of mating line to cp score (shorter is better)
@@ -937,6 +937,7 @@ scid-4.3
 	      all-moves does no longer produce lines starting with the played move
 	    - Increased maximum engine thinking time to 999 [sec]
 	    - Removed the blunder signature in the annotation (as we cannot tell how sharp the threshold is)
+	    - Added variation times in multi-pv mode
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess
