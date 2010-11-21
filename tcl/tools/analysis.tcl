@@ -881,12 +881,8 @@ proc bookAnnotation { {n 1} } {
         sc_book close $::analysisBookSlot
         set ::wentOutOfBook 1
         
-        set verboseMoveOutOfBook ""
-        set verboseLastBookMove ""
-        if {! $::isShortAnnotation } {
-            set verboseMoveOutOfBook " $::tr(MoveOutOfBook)"
-            set verboseLastBookMove " $::tr(LastBookMove)"
-        }
+        set verboseMoveOutOfBook " $::tr(MoveOutOfBook)"
+        set verboseLastBookMove " $::tr(LastBookMove)"
         
         if { [ string match -nocase "*[sc_game info previousMoveNT]*" $prevbookmoves ] != 1 } {
             if {$prevbookmoves != ""} {
