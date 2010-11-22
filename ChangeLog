@@ -940,6 +940,8 @@ scid-4.3
 	    - Added variation times in multi-pv mode
 	    - If game just follows book till some book end, last book move does not need analysis.
 	    - Blunder-check annotation spots faster mates, regardless of threshold.
+	    - Annotation adds - in all modes - a '?!' nag if the main move is significantly (informant value)
+	      stronger than the best move the engine expected.
 - New features:
 	* Correspondence Chess:
 		- Allow observation of games on ICCF webchess

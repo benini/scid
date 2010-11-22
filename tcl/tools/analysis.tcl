@@ -1162,6 +1162,8 @@ proc addAnnotation { {n 1} } {
         set isBlunder 1
     }
     
+    set absdeltamove [expr { abs($deltamove) } ]
+    
     set exerciseMarked 0
     
     # to parse scores if the engine's name contains - or + chars (see sc_game_scores)
@@ -1226,7 +1228,6 @@ proc addAnnotation { {n 1} } {
         if { $isBlunder > 0 } {
             # Add move score nag, and possibly an exercise
             #
-            set absdeltamove [expr { abs($deltamove) } ]
             if {       $absdeltamove > $::informant("??") } {
                 set exerciseMarked [ markExercise $prevscore $score "??" ]
             } elseif { $absdeltamove > $::informant("?")  } {
@@ -1234,6 +1235,8 @@ proc addAnnotation { {n 1} } {
             } elseif { $absdeltamove > $::informant("?!") } {
                 sc_pos addNag "?!"
             }
+        } elseif { $absdeltamove > $::informant("!?") } {
+            sc_pos addNag "!?"
         }
             
         # Add score comment and engine name if needed
@@ -1279,11 +1282,16 @@ proc addAnnotation { {n 1} } {
             }
             sc_move forward
         }
-    } elseif { $scoreAllMoves } { 
-        # Add a score mark anyway
-        #
-        sc_pos setComment "[sc_pos getComment] $text"
-    } 
+    } else {
+        if { $isBlunder == 0 && $absdeltamove > $::informant("!?") } {
+            sc_pos addNag "!?"
+        }
+        if { $scoreAllMoves } { 
+            # Add a score mark anyway
+            #
+            sc_pos setComment "[sc_pos getComment] $text"
+        }
+    }
         
     if { $addClosingLine } {
         sc_move back
