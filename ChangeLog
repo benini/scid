@@ -1026,6 +1026,7 @@ scid-4.3
 	* Tiny font can now be set from the GUI
 	* Input engine parameters were not used properly (ID: 2969395)
 	* Minor flaw in Scid.eco (ID: 2963067;  thanks to Daniel Karlsson)
+	* Correction of possible overflow in material signature (ID: 2992119; thanks to Gregor Cramer)
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

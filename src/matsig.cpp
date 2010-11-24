@@ -80,19 +80,22 @@ matsig_isReachable (matSigT mStart, matSigT mTarget, bool promos, bool upromo)
 //      Make a material sig, given an array of material counts as
 //      stored in a Position.
 //
+inline static uint min(uint a, uint b) { return a < b ? a : b; }
+
 matSigT
 matsig_Make (byte * materialCounts)
 {
     register matSigT m = 0;
-    m |= ((uint)materialCounts[WQ]) << SHIFT_WQ;
-    m |= ((uint)materialCounts[WR]) << SHIFT_WR;
-    m |= ((uint)materialCounts[WB]) << SHIFT_WB;
-    m |= ((uint)materialCounts[WN]) << SHIFT_WN;
+    // Avoid overflow, except for pawns
+    m |= ::min(3, static_cast<uint>(materialCounts[WQ])) << SHIFT_WQ;
+    m |= ::min(3, static_cast<uint>(materialCounts[WR])) << SHIFT_WR;
+    m |= ::min(3, static_cast<uint>(materialCounts[WB])) << SHIFT_WB;
+    m |= ::min(3, static_cast<uint>(materialCounts[WN])) << SHIFT_WN;
     m |= ((uint)materialCounts[WP]) << SHIFT_WP;
-    m |= ((uint)materialCounts[BQ]) << SHIFT_BQ;
-    m |= ((uint)materialCounts[BR]) << SHIFT_BR;
-    m |= ((uint)materialCounts[BB]) << SHIFT_BB;
-    m |= ((uint)materialCounts[BN]) << SHIFT_BN;
+    m |= ::min(3, static_cast<uint>(materialCounts[BQ])) << SHIFT_BQ;
+    m |= ::min(3, static_cast<uint>(materialCounts[BR])) << SHIFT_BR;
+    m |= ::min(3, static_cast<uint>(materialCounts[BB])) << SHIFT_BB;
+    m |= ::min(3, static_cast<uint>(materialCounts[BN])) << SHIFT_BN;
     m |= ((uint)materialCounts[BP]) << SHIFT_BP;
     return m;
 }
