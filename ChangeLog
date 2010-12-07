@@ -958,6 +958,7 @@ scid-4.3
 		  those tags are not provided by the games in the Inbox
 		- Rewrite of some parts of the update procedure
 		- Code cleanup and performance improvements
+		- Allow scrolling of the CC gamelist by keyboard (PgUp/PgDn, Up/Down)
 	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
 	* Show WhiteCountry/BlackCountry in game info area
 	* Initial support for bibliographic links in PGN headers:

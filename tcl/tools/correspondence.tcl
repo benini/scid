@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.98 2010/08/02 16:06:14 arwagner Exp $
+### $Id: correspondence.tcl,v 1.99 2010/12/07 17:52:00 arwagner Exp $
 ###
-### Last change: <Sat, 2010/07/31 15:34:10 arwagner ingata>
+### Last change: <Mon, 2010/11/29 19:24:30 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2054,6 +2054,11 @@ namespace eval CorrespondenceChess {
 		# Handle scrolling in the games list by keyboard
 		bind $w <Control-Up>     { ::CorrespondenceChess::PrevGame}
 		bind $w <Control-Down>   { ::CorrespondenceChess::NextGame}
+		bind $w <Up>         { ::CorrespondenceChess::yview scroll -1 units}
+		bind $w <Down>       { ::CorrespondenceChess::yview scroll  1 units}
+		bind $w <Prior>      { ::CorrespondenceChess::yview scroll -1 pages}
+		bind $w <Next>       { ::CorrespondenceChess::yview scroll  1 pages}
+		bind $w <MouseWheel> { ::CorrespondenceChess::yview scroll [expr {- (%D / 120)}] units}
 
 		# Help
 		bind $w <F1>        { helpWindow Correspondence}

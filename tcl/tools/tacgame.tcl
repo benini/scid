@@ -539,7 +539,7 @@ namespace eval tacgame {
     # check that the engine is really Phalanx
 	 # Allowd versions include Phalanx-scid Phalanx-pg and XXIII
 	 # upwards
-	 if { ! $analysisCoach(seen1) && $line != {Phalanx XXII-pg} && $line != {Phalanx XXIII && $line != {Phalanx XXII-scid} } } {
+	 if { ! $analysisCoach(seen1) && $line != {Phalanx XXII-pg} && $line != {Phalanx XXIII} && $line != {Phalanx XXII-scid} } {
 
       after cancel ::tacgame::phalanxGo
       ::tacgame::closeEngine 1
