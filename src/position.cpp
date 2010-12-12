@@ -629,52 +629,68 @@ Position::Clear (void)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::StdStart():
-//      Set up the standard chess starting position.
+//      Set up the standard chess starting position. For performance the data is copied from a 
+//      template.
 //
+static Position *startPositionTemplate = NULL;
+
 void
 Position::StdStart (void)
 {
-    Clear();
-    Material[WK] = Material[BK] = 1;
-    Material[WQ] = Material[BQ] = 1;
-    Material[WR] = Material[BR] = 2;
-    Material[WB] = Material[BB] = 2;
-    Material[WN] = Material[BN] = 2;
-    Material[WP] = Material[BP] = 8;
-    Count[WHITE] = Count[BLACK] = 16;
+    if( this == startPositionTemplate){
+        Clear();
+        Material[WK] = Material[BK] = 1;
+        Material[WQ] = Material[BQ] = 1;
+        Material[WR] = Material[BR] = 2;
+        Material[WB] = Material[BB] = 2;
+        Material[WN] = Material[BN] = 2;
+        Material[WP] = Material[BP] = 8;
+        Count[WHITE] = Count[BLACK] = 16;
 
-    AddToBoard(WK, E1);  List[WHITE][0] = E1;  ListPos[E1] = 0;
-    AddToBoard(BK, E8);  List[BLACK][0] = E8;  ListPos[E8] = 0;
-    AddToBoard(WR, A1);  List[WHITE][1] = A1;  ListPos[A1] = 1;
-    AddToBoard(BR, A8);  List[BLACK][1] = A8;  ListPos[A8] = 1;
-    AddToBoard(WN, B1);  List[WHITE][2] = B1;  ListPos[B1] = 2;
-    AddToBoard(BN, B8);  List[BLACK][2] = B8;  ListPos[B8] = 2;
-    AddToBoard(WB, C1);  List[WHITE][3] = C1;  ListPos[C1] = 3;
-    AddToBoard(BB, C8);  List[BLACK][3] = C8;  ListPos[C8] = 3;
-    AddToBoard(WQ, D1);  List[WHITE][4] = D1;  ListPos[D1] = 4;
-    AddToBoard(BQ, D8);  List[BLACK][4] = D8;  ListPos[D8] = 4;
-    AddToBoard(WB, F1);  List[WHITE][5] = F1;  ListPos[F1] = 5;
-    AddToBoard(BB, F8);  List[BLACK][5] = F8;  ListPos[F8] = 5;
-    AddToBoard(WN, G1);  List[WHITE][6] = G1;  ListPos[G1] = 6;
-    AddToBoard(BN, G8);  List[BLACK][6] = G8;  ListPos[G8] = 6;
-    AddToBoard(WR, H1);  List[WHITE][7] = H1;  ListPos[H1] = 7;
-    AddToBoard(BR, H8);  List[BLACK][7] = H8;  ListPos[H8] = 7;
+        AddToBoard(WK, E1);  List[WHITE][0] = E1;  ListPos[E1] = 0;
+        AddToBoard(BK, E8);  List[BLACK][0] = E8;  ListPos[E8] = 0;
+        AddToBoard(WR, A1);  List[WHITE][1] = A1;  ListPos[A1] = 1;
+        AddToBoard(BR, A8);  List[BLACK][1] = A8;  ListPos[A8] = 1;
+        AddToBoard(WN, B1);  List[WHITE][2] = B1;  ListPos[B1] = 2;
+        AddToBoard(BN, B8);  List[BLACK][2] = B8;  ListPos[B8] = 2;
+        AddToBoard(WB, C1);  List[WHITE][3] = C1;  ListPos[C1] = 3;
+        AddToBoard(BB, C8);  List[BLACK][3] = C8;  ListPos[C8] = 3;
+        AddToBoard(WQ, D1);  List[WHITE][4] = D1;  ListPos[D1] = 4;
+        AddToBoard(BQ, D8);  List[BLACK][4] = D8;  ListPos[D8] = 4;
+        AddToBoard(WB, F1);  List[WHITE][5] = F1;  ListPos[F1] = 5;
+        AddToBoard(BB, F8);  List[BLACK][5] = F8;  ListPos[F8] = 5;
+        AddToBoard(WN, G1);  List[WHITE][6] = G1;  ListPos[G1] = 6;
+        AddToBoard(BN, G8);  List[BLACK][6] = G8;  ListPos[G8] = 6;
+        AddToBoard(WR, H1);  List[WHITE][7] = H1;  ListPos[H1] = 7;
+        AddToBoard(BR, H8);  List[BLACK][7] = H8;  ListPos[H8] = 7;
 
-    for (uint i=0; i < 8; i++) {
-        AddToBoard(WP, A2+i); List[WHITE][i+8] = A2+i; ListPos[A2+i] = i+8;
-        AddToBoard(BP, A7+i); List[BLACK][i+8] = A7+i; ListPos[A7+i] = i+8;
+        for (uint i=0; i < 8; i++) {
+            AddToBoard(WP, A2+i); List[WHITE][i+8] = A2+i; ListPos[A2+i] = i+8;
+            AddToBoard(BP, A7+i); List[BLACK][i+8] = A7+i; ListPos[A7+i] = i+8;
+        }
+
+        Castling = 0;
+        SetCastling (WHITE, QSIDE, true);  SetCastling (WHITE, KSIDE, true);
+        SetCastling (BLACK, QSIDE, true);  SetCastling (BLACK, KSIDE, true);
+        EPTarget = NULL_SQUARE;
+        ToMove = WHITE;
+        PlyCounter = 0;
+        HalfMoveClock = 0;
+        Board [NULL_SQUARE] = END_OF_BOARD;
+        Hash = stdStartHash;
+        PawnHash = stdStartPawnHash;
     }
-
-    Castling = 0;
-    SetCastling (WHITE, QSIDE, true);  SetCastling (WHITE, KSIDE, true);
-    SetCastling (BLACK, QSIDE, true);  SetCastling (BLACK, KSIDE, true);
-    EPTarget = NULL_SQUARE;
-    ToMove = WHITE;
-    PlyCounter = 0;
-    HalfMoveClock = 0;
-    Board [NULL_SQUARE] = END_OF_BOARD;
-    Hash = stdStartHash;
-    PawnHash = stdStartPawnHash;
+    else {
+        if (startPositionTemplate == NULL){
+            startPositionTemplate = new Position();
+            startPositionTemplate->StdStart();
+        }
+        MoveList *mvl = LegalMoves;
+        sanListT *ssl = SANStrings;
+        memcpy (this, startPositionTemplate, sizeof(Position));
+        LegalMoves = mvl;
+        SANStrings = ssl;
+	}
     return;
 }
 
