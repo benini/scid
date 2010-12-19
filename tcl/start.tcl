@@ -874,7 +874,7 @@ proc setMenu { w m} {
 ################################################################################
 proc resizeMainBoard {} {
   # puts "resizeMainBoard [clock clicks -milliseconds]"
-  if { ! $::autoResizeBoard || ! $::docking::USE_DOCKING } { return }
+  if { ! $::docking::USE_DOCKING } { return }
   
   bind .main <Configure> {}
   
@@ -894,9 +894,19 @@ proc resizeMainBoard {} {
     incr height_used [ lindex [ grid bbox $bd 0 0 ] 3 ]
   }
   # game info
-  incr height_used [ lindex [grid bbox .main 0 3] 3]
+  set min_game_info_lines 6
+  set game_info_lines [.main.gameInfo count -displaylines 1.0 end]
+  if { $game_info_lines > 0 } {
+    # probably not very correct, do you know any better way to get this information?
+    set game_info_line_height [expr 1.0 * [.main.gameInfo count -ypixels 1.0 end] / $game_info_lines]
+  } else {
+    # utter approximation
+    set game_info_line_height [expr [font configure font_Regular -size] * 1.5]
+  }
+  set min_game_info_height [expr int($min_game_info_lines * $game_info_line_height + 6)]
+  incr height_used $min_game_info_height
   
-  # staus bar
+  # status bar
   incr height_used [ lindex [grid bbox .main 0 5] 3]
   
   set availh [expr $h - $height_used -10]
@@ -923,20 +933,29 @@ proc resizeMainBoard {} {
   } else  {
     set min $availw
   }
-  
-  # Find the closest available size
-  for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
-    set newSize [lindex $::boardSizes $i]
-    if { $newSize > [ expr $min / 8 ] } {
-      if {$i > 0} {
-        set newSize [lindex $::boardSizes [expr $i -1] ]
+
+  if { $::autoResizeBoard } {
+    # find the closest available size
+    for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
+      set newSize [lindex $::boardSizes $i]
+      if { $newSize > [ expr $min / 8 ] } {
+        if {$i > 0} {
+          set newSize [lindex $::boardSizes [expr $i -1] ]
+        }
+        break
       }
-      break
     }
+    # resize the board
+    ::board::resize2 .main.board $newSize
+    set ::boardSize $newSize
   }
-  
-  ::board::resize2 .main.board $newSize
-  set ::boardSize $newSize
+
+  # adjust game info height
+  set new_game_info_lines [expr int(($min_game_info_height+($availh-$::boardSize*8))/$game_info_line_height)]
+  if { $new_game_info_lines > $min_game_info_lines } {
+    set new_game_info_lines [expr $new_game_info_lines - 1]
+  }
+  .main.gameInfo configure -height $new_game_info_lines
   
   update idletasks
   bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }

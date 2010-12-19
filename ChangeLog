@@ -913,8 +913,10 @@ scid-4.3
 - Improvements
 	* documentation for opening trainer (thanks to Dale Hards)
 	* Some of the programs icons based on GNOME Stock Icons in case png-support is available
+	* Refresh icons for Database switcher (Thanks to Peter Wong and Steven)
 	* Some defaults of Scids empty config
 	* Gamelist: show delete-flag to the very left of the list by default
+	* Taller information field (Thanks ot Milan Zamazal)
 	* Replace some buttons in help by proper img tags
 	* Bring Best games / tree graph to front if they exist and the button is pressed again
 	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
