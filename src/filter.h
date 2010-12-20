@@ -70,6 +70,7 @@ class Filter
 #else
     ~Filter ()          { if (Data != NULL) { delete[] Data; delete[] oldDataTree; } }
 #endif
+	Filter *Clone ();
     void    Init (uint size);
     uint    Size (void)     { return FilterSize; }
     uint    Count (void)    { return FilterCount; }

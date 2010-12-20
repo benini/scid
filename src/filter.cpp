@@ -44,6 +44,15 @@ Filter::Init (uint size) {
     for (uint i=0; i < size; i++) { *pb++ = 1; }
 }
 
+Filter *
+Filter::Clone () 
+{
+	Filter *f = new Filter( Capacity);
+	memcpy( f->Data, Data, Capacity);
+    f->FilterCount = FilterCount;
+	return f;
+}
+
 void
 Filter::Fill (byte value)
 {

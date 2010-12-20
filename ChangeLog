@@ -920,6 +920,7 @@ scid-4.3
 	* Replace some buttons in help by proper img tags
 	* Bring Best games / tree graph to front if they exist and the button is pressed again
 	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
+	* Improve proportions of USCF piece set
 	* HTML export
 	    - Move nags rendered in same font as the move
 	    - Diagram immediately follows the move (order of diagram and comments are swapped), which is a more common scenario
