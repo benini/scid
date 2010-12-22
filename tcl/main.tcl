@@ -342,6 +342,34 @@ image create photo finish_off -data {
     UEh/tDCAAxZ8oEEFCCxghUT/OGlIGkfkwIMUdHDZpJlopnlQQAA7
 }
 
+image create photo comment_avail -data {
+    R0lGODlhEAAQAMZCAAAAAAUDAAgFABkSAxwWBk07FE47FXVTBq58Da98DryFCrmHGMiZNeGvSdmx
+    YduzY+SzT+S0Uc+5i+q3UOu4U+q5Vuu5V+S6Zuu6V+G7bOu7Wu27WOy8W+28Xee9Z+y9Xee+bOi+
+    bOe/bum/bdvHmuzSne3Tne3Tnu/Xp+/XqPDYqPDZqPbjv/bkwPbnx/fnyPfoyfjqzvjqz/nt1vrt
+    1vz26fz26vz37P337P337f779v779/78+P78+f79+v79+/79/P/+/f//////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////yH+
+    EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAeAgH+Cg4SFhn8TGhwaFIeDFyYu
+    My8nHo4hLDU6Pjo1LCOGFSg3PkCmPzcqFoUfMTymQUFAPTIdrDI9QLGxtLaEGCk4P7qyOSsbhiAs
+    Njs/OzYtIo4PJS80MCYOjn8GGREQDQwF238EJAkIAwTbABILCgoHAOQAAgEB8+R/APz6+oEAOw==
+}
+
+
+image create photo comment_unavail -data {
+    R0lGODlhEAAQAMZBAAAAAAEAAAMCAAQDAgUDAAUFAwYFAwYFBAgFAAkIBQwLCA0LBhANBQ8ODA8P
+    DhQSCxkXEFhQMnVTBmJaPmtfOXJnPpFmB3ZwWaV0CIF5XYB/fYWBc46CWbyFCr6GCrmHGJ2PWZ6Q
+    XJmUh6OXbKGZeJ2ajsucNaOhm8+5i9PAlNvMrNLQyeDRnePSleTTmOPVo+XWoeverujet/Dfo+rg
+    u+rhxfLktOnk0+/lvOjl2/XouPXpvvbqv/bqwPbtzvnx1vr14P//////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////yH+
+    EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAdxgH+Cg4SFhoeIggoHAAUHiX8D
+    FzI7LBMAiAAZPkA/PDMRmIYAODkaKycxIaKFADY1NxsiLyCshAAjOj00JS4UtoQFHC0wJBXAhA4Q
+    DwALCQ2JACkmHh4WAZAGKhgYAgzRKB8dHRLItwgEBOatAOuQhIEAOw==
+}
+
+
 #----------------------------------------------------------------------
 if {$png_image_support} {
 	image create photo autoplay_off -data {
@@ -427,17 +455,19 @@ if {$png_image_support} {
 
 
 
+	
+button .main.fbutton.button.comment -image comment_unavail -command {makeCommentWin}
 button .main.fbutton.button.autoplay -image autoplay_off -command toggleAutoplay
 button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
 
-foreach i {start back forward end exitVar addVar autoplay flip coords stm trial intoVar} {
+foreach i {start back forward end exitVar addVar comment autoplay flip coords stm trial intoVar} {
     .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
     bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
     bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
 }
 
 pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
-        .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.space2 \
+        .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.comment .main.fbutton.button.space2 \
         .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
         .main.fbutton.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
@@ -913,6 +943,16 @@ proc updateBoard {args} {
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     if {[winfo exists .noveltyWin]} { updateNoveltyWin }
     
+    set comment [sc_pos getComment]
+    # remove technical comments, notify only human readable ones
+    regsub -all {\[%.*\]} $comment {} comment
+    if {$comment != ""} {
+         .main.fbutton.button.comment configure -image comment_avail -relief flat
+         ::utils::tooltip::Set .main.fbutton.button.comment [sc_pos getComment]
+    } else {
+         .main.fbutton.button.comment configure -image comment_unavail -relief flat
+         ::utils::tooltip::Set .main.fbutton.button.comment ""
+    }
 }
 
 # Set up player photos:

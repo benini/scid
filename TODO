@@ -4,7 +4,12 @@
 |                                                           |
  ===========================================================
 
-Tooltip for comment over mainboard. (Fluvio)
+----------------------------------------------------------------------
+
+1) turn on the "Show Suggested Move" option.
+2) create a new game
+3) start an engine
+4) click on a white pawn with the mouse and move it fast around the 
 
 ----------------------------------------------------------------------
 Go over proc standardShortcuts and define a list that might be usual
@@ -16,40 +21,8 @@ Ctrl-Ins/Shift-Ins/Ctrl-Del etc for comment editor
 
 ----------------------------------------------------------------------
 
-Here are the problems:
-1. Requirement to press 'Store' as mentioned above. It is so easy to
-lose a long comment because you forgot to press the Store button.
-2. No 'Store and Close' shortcut to close comment editor and focus on
-the game again. Needs mouse.
-
--- store on loosing focus?
-
-3. No easy way to go to the next/previous move (again, requires mouse
-clicking)
-
--- ctrl-left/right bindings
-
-4. Very complicated way of editing (quite common) pre-move comments
-(mostly at the start of a variation. Now you need to switch to mouse to
-click on subvariation and then: either click on board to focus on it and
-use mouse wheel to go one move back, or switch to keyboard again and
-press Left). It will be nice to have some shortcut for that (Ctrl+Shift
-+E is already taken, though).
-
--- allow for ctrl-a and bindings above
-
-5. TAB does not work in editor (it should switch between NAG and comment
-edit boxes. Again, you have to go for mouse.
-
--- don't use tab but alt-n?
-
 6. Comment edito box does not fill the space when resizing Comment
 editor (makes it hard to edit longer comments).
-7. No way to hide rarely used Comment editor board/colors/arrows.
-Desktop space is precious when you translate a book and have Scid and
-PDF viewer on your screen. 
-
--- toggle button + alt-b
 
 ----------------------------------------------------------------------
 
@@ -75,93 +48,6 @@ the same database.
   for phalanx moves.
 
 ----------------------------------------------------------------------
-The following depends on the width of the PGN window to be
-reproducable.
-
-Can someone active and the arena of beautification please do something 
-about the messy display of a game (with variations and comments) in the 
-PGN window? My suspicion is that the various (reused!) Write* routines 
-in game.cpp lost a lot of their elegance in favour of some of the nifty 
-game export features that we have (LaTeX, ..., ?).
-
-It is mainly the spacing/newline-ing that irritates me a lot. Sometimes 
-multiple blank lines are inserted, sometimes comments are glued 
-pixel-accurate to the move preceeding or following it.
-
-A few examples:
-
-Non-column style:
-Add a comment to a black move and see how it sits tied up to the white 
-move following it.
-Add a comment to a white move and see how the next black move is 
-(nicely, or wrongly, whatever) rendered at the start of the next line.
-
-Column style:
-Add a variation to a black move: One blank line in between the main move 
-(or comment) and the variation.
-Add a variation to a white move: Two blank lines in between the main 
-move and the variation.
-
-Is there a single combination of display options (let's not be too 
-critical) that has a decent and regular look? I will immediately start 
-using it.
-
-
-----------------------------------------------------------------------
-I'm using scid-4.2.2 and it crashes while annotating the following game
-by Greco:
-######################
-[Event "Miscellaneous Game"]
-[Site "?"]
-[Date "1620.??.??"]
-[EventDate "?"]
-[Round "61"]
-[Result "1-0"]
-[White "Gioachino Greco"]
-[Black "NN"]
-[ECO "C33"]
-[WhiteElo "?"]
-[BlackElo "?"]
-[PlyCount "47"]
-
-1.e4 e5 2.f4 exf4 3.Bc4 Qh4+ 4.Kf1 d6 5.Nf3 Bg4 6.d4 Qh6 7.g3
-Qh3+ 8.Kf2 fxg3+ 9.hxg3 Bxf3 10.Bxf7+ Kd8 11.Qxf3 Qd7 12.Rxh7
-Rxh7 13.Bxg8 Rh2+ 14.Kg1 Rxc2 15.Qxf8+ Qe8 16.Bg5+ Kd7 17.Be6+
-Qxe6 18.Qd8+ Kc6 19.d5+ Qxd5 20.exd5+ Kxd5 21.Nc3+ Ke5 22.Qe8+
-Kd4 23.Qe4+ Kc5 24.Be3# 1-0
-###################################
-
-I invite other people to confirm that this happens always.
-
-I tried 2 different Toga engines one of them being the one included with
-scid (Toga 1.2).
-
-By the way, I was doing some testing so the delay time was 3 seconds but
-I tried also 5 seconds per move.
-
-I have annotated quite a few games and I never got this problem. I
-wonder if this has something to do with Greco.
-
-Cheers
-Ricardo
-
-More details can be found below:
-
-I'm using gentoo and I get this on the terminal that runs scid:
-
-#################################
-~/apps/scid-4.2.2 $ scid
-*** buffer overflow detected ***: /usr/games/bin/tkscid terminated
-======= Backtrace: =========
-/lib/libc.so.6(__fortify_fail+0x48)[0xb7220db8]
-/lib/libc.so.6[0xb721ee00]
-/lib/libc.so.6[0xb721e488]
-/lib/libc.so.6(_IO_default_xsputn+0xa0)[0xb71a4600]
-/lib/libc.so.6(_IO_vfprintf+0x354a)[0xb717a9ca]
-/lib/libc.so.6(__vsprintf_chk+0xa7)[0xb721e537]
-/lib/libc.so.6(__sprintf_chk+0x2d)[0xb721e47d]
-/usr/games/bin/tkscid[0x8087327]
-======= Memory map: ========
  ===========================================================
 |                                                           |
 |                          BUGS                             |

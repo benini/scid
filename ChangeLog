@@ -976,6 +976,7 @@ scid-4.3
 		- For annotated games (NAGs, Comments, Variations) show an A in the list
 		- For flagged games show up to 4 flag chars or the number of
 		  flags if there are more than 4 flags present.
+		- Obeys a filter set by header search
 	* Allow to change the board without waiting for tree windows to complete search. (Thanks to Fulvio)
 	* Rework ID linking code
 		- Tags, resolverurls, icons etc. are read from a config file.
@@ -995,11 +996,23 @@ scid-4.3
 	    - Add Ctrl-N shortcut to Edit window to call NAG values help
 	    - Add "Open Comment editor" to PGN context menu
 	    - Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
+		 - Comment editor can be opend by the small light bulb button in
+		   the toolbar. This button also signifies, if the game already
+		   contains commentary in the current position and if so, shows
+		   them in a tooltip. Technical commentaries (e.g. [%.*] are
+		   ingored.
 	* Allow suppression of Abort/Adjourn/Draw/Take back requests/offers (thanks to Jose Joao Morais)
-	* Add Bauhaus style piece set (thanks to Sandra Snan)
+	* Piece sets
+	  - Bauhaus style piece set (thanks to Sandra Snan)
+	  - Fix scaling issue in USCF set
 	* Browse window
 	  - Allow scaling by +/- keys and Ctrl-Mouse wheel
 	  - Use mouse wheel to go through the game
+	* Header searches now restrict the games displayed in Best Games
+	  and Game list, that is if a header search was performed it's
+	  results are no longer reset by the Tree searches. Tree statistics
+	  however are still calculated for teh full database.
+	  (Thanks to Gerd Lorscheid)
 - Fixes :
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* FICS console uses fixed font

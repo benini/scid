@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.99 2010/12/07 17:52:00 arwagner Exp $
+### $Id: correspondence.tcl,v 1.100 2010/12/22 15:37:00 arwagner Exp $
 ###
-### Last change: <Mon, 2010/11/29 19:24:30 arwagner agamemnon>
+### Last change: <Wed, 2010/12/22 16:35:14 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1673,7 +1673,6 @@ namespace eval CorrespondenceChess {
 				set ::CorrespondenceChess::RelayGames {}
 				foreach game [split $text "\n"] {
 					set game [string trim $game]
-					## if {[string match "*www.iccf-webchess.com/MakeAMove.aspx*" $game]} {}
 					if {[string match "*$stripforid*" $game]} {
 						lappend ::CorrespondenceChess::RelayGames $game
 					}
