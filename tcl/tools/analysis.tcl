@@ -684,6 +684,7 @@ proc configAnnotation {} {
     # Do not do anyting if the window exists
     #
     if { [winfo exists $w] } {
+        raise $w
         focus $w
         return
     }
@@ -828,34 +829,16 @@ proc configAnnotation {} {
         if {$tempdelay < 0.1} { set tempdelay 0.1 }
         set autoplayDelay [expr {int($tempdelay * 1000)}]
         destroy .configAnnotation
-        # Stop analyis if it is running
-        # We do not want initial super-accuracy
-        #
-        stopEngineAnalysis 1
         cancelAutoplay
         set annotateModeButtonValue 1
-        set annotateMode 1
-        # First do the book analysis (if this is configured)
-        # The latter condition is handled by the operation itself
-        set ::wentOutOfBook 0
-        # A hack needed to keep book annotation moving forward
-        # bypassing possible variations (if the variation selection
-        # popup is configured to appear)...
-        set autoplayMode 1
-        bookAnnotation 1
-        set autoplayMode 0
         # Tell the analysis mode that we want an initial assessment of the
         # position. So: no comments yet, please!
         set ::initialAnalysis 1
-        # Start the engine
-        startEngineAnalysis 1 1
         # And start the time slicer
         toggleAutoplay
     }
     pack $f.buttons.cancel $f.buttons.ok -side right -padx 5 -pady 5
     focus $f.spDelay
-    update ; # or grab will fail
-    grab $w
     bind $w <Destroy> { focus . }
 }
 ################################################################################
@@ -1005,7 +988,7 @@ proc addAnnotation { {n 1} } {
             appendAnnotator "opBlunder [sc_pos moveNumber] ([sc_pos side])"
         }
         if { $::addAnnotatorTag } {
-            appendAnnotator " $analysis(name1) ([expr {$autoplayDelay / 1000}] sec)"
+            appendAnnotator "$analysis(name1) ([expr {$autoplayDelay / 1000}] sec)"
         }
         
         set analysis(prevscore$n)     $analysis(score$n)
@@ -1150,7 +1133,6 @@ proc addAnnotation { {n 1} } {
     
     # Note btw that if the score decay is - unexpectedly - negative, we played
     # a better move than the engine's best line!
-    # TODO: Seek for opportunities to add positive NAG's (!, !? etc.)
     
     # Set an "isBlunder" filter.
     # Let's mark moves with a decay greater than the threshold.

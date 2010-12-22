@@ -1684,10 +1684,13 @@ proc toggleAutoplay { } {
     global autoplayMode autoplayDelay
     if {$autoplayMode == 0} {
         set autoplayMode 1
+        # Change the autoplay icon in the main window
+        #
         .main.fbutton.button.autoplay configure -image autoplay_on -relief sunken
-        # Start with an inital delay
-        # It gives the engine time to settle
-        after $autoplayDelay autoplay
+        # Start with some delay
+        # Only to spawn the autoplay on a new thread
+        #
+        after 500 autoplay
     } else {
         cancelAutoplay
     }
@@ -1712,12 +1715,26 @@ proc autoplay {} {
         addAnnotation
     }
     
+    if { $::initialAnalysis } {
+        # Stop analyis if it is running
+        # We do not want initial super-accuracy
+        #
+        stopEngineAnalysis 1
+        set annotateMode 1
+        # First do the book analysis (if this is configured)
+        # The latter condition is handled by the operation itself
+        set ::wentOutOfBook 0
+        bookAnnotation 1
+        # Start the engine
+        startEngineAnalysis 1 1
+    
     # Autoplay comes in two flavours:
     # + It can run through a game, with or witout annotation
     # + It can be annotating just opening sections of games
     # See if such streak ends here and now
     #
-    if { [sc_pos isAt end] || ($annotateMode && $::isBatchOpening && ([sc_pos moveNumber] > $::isBatchOpeningMoves)) } {
+    } elseif { [sc_pos isAt end] || ($annotateMode && $::isBatchOpening && ([sc_pos moveNumber] > $::isBatchOpeningMoves)) } {
+        
         # Stop the engine
         #
         stopEngineAnalysis 1
