@@ -951,7 +951,7 @@ proc updateBoard {args} {
          ::utils::tooltip::Set .main.fbutton.button.comment [sc_pos getComment]
     } else {
          .main.fbutton.button.comment configure -image comment_unavail -relief flat
-         ::utils::tooltip::Set .main.fbutton.button.comment ""
+         ::utils::tooltip::Set .main.fbutton.button.comment " - "
     }
 }
 

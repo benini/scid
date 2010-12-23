@@ -4926,13 +4926,14 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "copy", "count", "first", "frequency",
         "index", "last", "locate", "negate", "next",
         "previous", "remove", "reset", "size",
-        "stats", "textfind", "value", NULL
+        "stats", "textfind", "value", "clear", NULL
     };
     enum {
         FILTER_COPY, FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
         FILTER_INDEX, FILTER_LAST, FILTER_LOCATE, FILTER_NEGATE,
         FILTER_NEXT, FILTER_PREV, FILTER_REMOVE, FILTER_RESET,
-        FILTER_SIZE, FILTER_STATS, FILTER_TEXTFIND, FILTER_VALUE
+        FILTER_SIZE, FILTER_STATS, FILTER_TEXTFIND, FILTER_VALUE, 
+		  FILTER_CLEAR
     };
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -4985,6 +4986,10 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_VALUE:
         return sc_filter_value (cd, ti, argc, argv);
+
+		  // --- clear filter
+    case FILTER_CLEAR:
+        return sc_filter_clear (cd, ti, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_filter", options);
@@ -5402,6 +5407,25 @@ sc_filter_reset (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         delete basePtr->treeFilter;
         basePtr->treeFilter = basePtr->filter;
     }
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_filter_clear:
+//    Takes an optional base number (defaults to current base) and 
+//    clears all filters ie. db filter as well as tree filter
+int
+sc_filter_clear (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    scidBaseT * basePtr = db;
+    if (argc > 2) {
+        int baseNum = strGetInteger (argv[2]);
+        if (baseNum < 1 || baseNum > MAX_BASES) {
+            return errorResult (ti, "Invalid database number.");
+        }
+        basePtr = &(dbList[baseNum - 1]);
+    }
+	 clearFilter(db, db->numGames);
     return TCL_OK;
 }
 

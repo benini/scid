@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.100 2010/12/22 15:37:00 arwagner Exp $
+### $Id: correspondence.tcl,v 1.101 2010/12/23 14:08:18 arwagner Exp $
 ###
-### Last change: <Wed, 2010/12/22 16:35:14 arwagner agamemnon>
+### Last change: <Thu, 2010/12/23 14:55:12 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -2769,12 +2769,21 @@ namespace eval CorrespondenceChess {
 		set sPgnlist {}
 		lappend sPgnlist [string trim $CmailGameName]
 
+
+		# Clear really all filters including potential Tree filters
+		# based on current position.  It is imperative to search the
+		# whole DB regardless of context to find the game that needs to
+		# be updated. Otherwise dupes and unpredictable behaviour will
+		# result.
+		sc_filter clear
+
 		# Search the header for the game retrieved. Use as much info as
 		# possible to get a unique result. In principle $sPgnList should
 		# be enough. However searching indexed fields speeds up things
 		# a lot in case of large DBs. Also: disregard deleted games,
 		# this avoids the necessity to compact a db in case of
 		# accidential duplication of a game.
+		# -filter 2: Ignore previous searches
 		set str [sc_search header \
 					-event $Event    \
 					-site $Site      \
@@ -2782,8 +2791,11 @@ namespace eval CorrespondenceChess {
 					-black $Black    \
 					-pgn $sPgnlist   \
 					-fDelete no      \
+					-filter 2        \
 					-gameNumber [list 1 -1] \
 					]
+
+		CorrespondenceChess::updateConsole "info: search [sc_filter count]"
 
 		::windows::gamelist::Refresh
 		::windows::stats::Refresh

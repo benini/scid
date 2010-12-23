@@ -962,7 +962,6 @@ scid-4.3
 		- Rewrite of some parts of the update procedure
 		- Code cleanup and performance improvements
 		- Allow scrolling of the CC gamelist by keyboard (PgUp/PgDn, Up/Down)
-	* Update board in comment editor with current position while the comment editor is left open. (Joost t' Haart)
 	* Show WhiteCountry/BlackCountry in game info area
 	* Initial support for bibliographic links in PGN headers:
 		- A BibTeX-file either named $scidDataDir/Bookshelf.bib or named and located along with the current database is parsed as bibliographic input
@@ -997,10 +996,12 @@ scid-4.3
 	    - Add "Open Comment editor" to PGN context menu
 	    - Add common NAG symbols to PGN context menu (Thanks to G. Lorscheid)
 		 - Comment editor can be opend by the small light bulb button in
-		   the toolbar. This button also signifies, if the game already
+		   the toolbar. This button also signifies if the game already
 		   contains commentary in the current position and if so, shows
 		   them in a tooltip. Technical commentaries (e.g. [%.*] are
 		   ingored.
+		 - Update board in comment editor with current position while
+		   the comment editor is left open. (Joost t' Haart)
 	* Allow suppression of Abort/Adjourn/Draw/Take back requests/offers (thanks to Jose Joao Morais)
 	* Piece sets
 	  - Bauhaus style piece set (thanks to Sandra Snan)
