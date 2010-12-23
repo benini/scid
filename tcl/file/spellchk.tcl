@@ -101,13 +101,12 @@ proc startCorrecting {} {
     #
     set spellstate correcting
     
-    # Disable all buttons except the cancel button that we
-    # transfer into a stop button
+    # Disable all buttons
     #
     .spellcheckWin.buttons.ambig  configure -state disabled
     .spellcheckWin.buttons.ok     configure -state disabled
-    .spellcheckWin.buttons.cancel configure -text "Stop"
-    bind .spellcheckWin <Alt-s> ".spellcheckWin.buttons.cancel invoke; break"
+    .spellcheckWin.buttons.cancel configure -state disabled
+
     if {$spellcheckType == "Player"} {
         .spellcheckWin.buttons.surnames configure -state disabled
     }

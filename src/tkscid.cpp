@@ -4223,7 +4223,7 @@ sc_compact_games (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         err = newIdx->AddGame (&newNumGames, &ieNew);
         if (err != OK) {
-            errMsg = "Error in compaction operation; compaction cencelled.";
+            errMsg = "Error in compaction operation; compaction cancelled.";
             interrupted = true;
             break;
         }
@@ -10810,8 +10810,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     dateT * endDate = new dateT [nameCount];
 #endif
 
-    bool interrupted = false;
-
     // Set the scroll bar to its initial state
     //
     bool showProgress = startProgressBar();
@@ -10983,22 +10981,13 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         //
         if ( showProgress && (i % threshold) == 1 ) {
           updateProgressBar( ti, i, db->numGames );
-          
-          // Give the user a chance for a safe interrupt
-          //
-          if ( (interrupted = interruptedProgress()) ) {
-              break;
-          }
         }
     }
     
-    if ( ! interrupted )
-    {
-        // Ensure the scroll bar is complete at this point
-        //
-        if ( showProgress )  {
-            updateProgressBar( ti, 1, 1 );
-        }
+    // Ensure the scroll bar is complete at this point
+    //
+    if ( showProgress )  {
+        updateProgressBar( ti, 1, 1 );
     }
 
 #ifdef WINCE
