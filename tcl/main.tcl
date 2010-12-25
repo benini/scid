@@ -942,16 +942,17 @@ proc updateBoard {args} {
     if {[winfo exists .bookWin]} { ::book::refresh }
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     if {[winfo exists .noveltyWin]} { updateNoveltyWin }
-    
+
+	 wm withdraw .tooltip
     set comment [sc_pos getComment]
     # remove technical comments, notify only human readable ones
     regsub -all {\[%.*\]} $comment {} comment
     if {$comment != ""} {
          .main.fbutton.button.comment configure -image comment_avail -relief flat
-         ::utils::tooltip::Set .main.fbutton.button.comment [sc_pos getComment]
+         ::utils::tooltip::Set .main.fbutton.button.comment $comment
     } else {
          .main.fbutton.button.comment configure -image comment_unavail -relief flat
-         ::utils::tooltip::Set .main.fbutton.button.comment " - "
+         ::utils::tooltip::UnSet .main.fbutton.button.comment
     }
 }
 

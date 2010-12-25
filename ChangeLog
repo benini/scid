@@ -1014,6 +1014,9 @@ scid-4.3
 	  results are no longer reset by the Tree searches. Tree statistics
 	  however are still calculated for teh full database.
 	  (Thanks to Gerd Lorscheid)
+	* API Changes:
+		- ::tooltip::UnSet to remove a tooltip + message
+		- sc_filter clean: unset both db and tree filter
 - Fixes :
 	* Fixed a bug in exception handling of Novag Citrine connection
 	* FICS console uses fixed font
@@ -1046,6 +1049,7 @@ scid-4.3
 	* Minor flaw in Scid.eco (ID: 2963067;  thanks to Daniel Karlsson)
 	* Correction of possible overflow in material signature (ID: 2992119; thanks to Gregor Cramer)
 	* Optimisations for tree search (Thanks to G. Lohrscheidt)
+   * Comment eiditor text frame scales properly
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
