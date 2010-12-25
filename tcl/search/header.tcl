@@ -621,6 +621,9 @@ proc search::header {} {
     .sh.status configure -text $str
     set glstart 1
     ::windows::gamelist::Refresh
+	 # also refresh the trees as the filter is working on best games
+	 # list etc.
+	 ::tree::refresh
     
     ::search::loadFirstGame
     

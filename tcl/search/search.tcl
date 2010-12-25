@@ -79,9 +79,11 @@ proc ::search::addFilterOpFrame {w {small 0}} {
   ttk::radiobutton $f.b.and -textvar ::tr(FilterAnd) -variable ::search::filter::operation -value 0 -style $regular 
   ttk::radiobutton $f.b.or -textvar ::tr(FilterOr) -variable ::search::filter::operation -value 1 -style $regular
   ttk::radiobutton $f.b.ignore -textvar ::tr(FilterIgnore) -variable ::search::filter::operation -value 2 -style $regular
+  ## ttk::radiobutton $f.b.search -textvar ::tr(FilterIgnore) -variable ::search::filter::operation -value 3 -style $regular
   pack $f.title -side top
   pack $f.b -anchor center -side top
   pack $f.b.and $f.b.or $f.b.ignore -side left -pady 5 -padx 5
+  ### pack $f.b.and $f.b.or $f.b.ignore $f.b.search -side left -pady 5 -padx 5
 }
 
 
