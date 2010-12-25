@@ -12,19 +12,6 @@
 4) click on a white pawn with the mouse and move it fast around the 
 
 ----------------------------------------------------------------------
-Go over proc standardShortcuts and define a list that might be usual
-edit keys. Add a funtion that unbinds those keys and get it called in
-windows that offer a general edit field for texts.
-----------------------------------------------------------------------
-
-Ctrl-Ins/Shift-Ins/Ctrl-Del etc for comment editor
-
-----------------------------------------------------------------------
-
-6. Comment edito box does not fill the space when resizing Comment
-editor (makes it hard to edit longer comments).
-
-----------------------------------------------------------------------
 
 So, truncating games by removing leading moves has at least two bugs:
 1. NAGs are removed.
