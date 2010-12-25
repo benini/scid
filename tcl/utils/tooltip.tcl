@@ -44,6 +44,19 @@ proc ::utils::tooltip::Set { button msg } {
 
 # ::utils::tooltip::SetTag
 #
+#   remove a tooltip message for a given button
+#
+proc ::utils::tooltip::UnSet { button } {
+  variable message
+  if { [info exists ::utils::tooltip::message($button)] } {
+	  unset message($button)
+	  bind $button <Any-Enter> ""
+	  bind $button <Any-Leave> ""
+  }
+}
+
+# ::utils::tooltip::SetTag
+#
 #   Set the tooltip message for a text with tag <tag> to be <msg>
 #
 proc ::utils::tooltip::SetTag { text_widget msg tag } {
