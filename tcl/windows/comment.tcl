@@ -135,7 +135,7 @@ proc ::commenteditor::Open {} {
   }
   
   ttk::label $w.nf.label -font font_Bold -textvar ::tr(AnnotationSymbols)
-  pack $w.nf -side top -pady 1 -expand 1 -fill both
+  pack $w.nf -side top -pady 1 -expand 0 
   #addHorizontalRule $w
   
   ttk::button $w.nf.tf.clear -textvar ::tr(Clear) -command {
@@ -152,9 +152,9 @@ proc ::commenteditor::Open {} {
   pack $w.nf.b -side top
   
   ttk::frame $w.b
-  pack $w.b -side bottom -ipady 4 -fill both -expand 1 -padx 1
+  pack $w.b -side bottom -ipady 4 -expand 0 -padx 1
   
-  pack $w.cf -side top -expand 1 -fill both
+  pack $w.cf -side top -expand 1 -fill both 
   pack $w.cf.label -side top -pady 2
   pack $w.cf.scroll -side right -fill y
   pack $w.cf.text -side right -expand 1 -fill both
