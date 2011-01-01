@@ -811,6 +811,10 @@ translate C BrilliancyFlag {Velmi silný tah}
 translate C BlunderFlag {Hrubá chyba}
 translate C UserFlag {U¾ivatel}
 translate C PgnContains {PGN obsahuje text}
+# ====== TODO To be translated ======
+translate C Annotator {Annotator}
+# ====== TODO To be translated ======
+translate C Cmnts {Annotated games only}
 
 # Game list window:
 translate C GlistNumber {Èíslo}
@@ -5296,6 +5300,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

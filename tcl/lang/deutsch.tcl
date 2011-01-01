@@ -850,6 +850,8 @@ translate D BrilliancyFlag {Glänzend}
 translate D BlunderFlag {Grober Fehler}
 translate D UserFlag {Benutzer}
 translate D PgnContains {PGN enthält Text}
+translate D Annotator {Kommentator}
+translate D Cmnts {Kommentare}
 
 # Game list window:
 translate D GlistNumber {Nummer}
@@ -7269,6 +7271,8 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
+
 
 
 

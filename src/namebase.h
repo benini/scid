@@ -27,16 +27,17 @@
 // There are three NameBases, one each for player, event and site tags.
 //
 const nameT
-    NAME_PLAYER = 0,  NAME_EVENT = 1,  NAME_SITE = 2, NAME_ROUND = 3,
+    NAME_PLAYER = 0,  NAME_EVENT = 1,  NAME_SITE = 2, NAME_ROUND = 3, NAME_ANNOTATOR = 4,
     NAME_FIRST = 0, NAME_LAST = 3, NAME_INVALID = 99;
 
-const uint NUM_NAME_TYPES = 4;
+const uint NUM_NAME_TYPES = 5;
 
-const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
+const char NAME_TYPE_STRING [NUM_NAME_TYPES][10] = {
     "player",
     "event",
     "site",
-    "round"
+    "round",
+	"annotator"
 };
 
 

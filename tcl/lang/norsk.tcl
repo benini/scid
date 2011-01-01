@@ -968,6 +968,10 @@ translate O BrilliancyFlag {Brillians}
 translate O BlunderFlag {Tabbe}
 translate O UserFlag {Bruker}
 translate O PgnContains {PGN inneholder tekst}
+# ====== TODO To be translated ======
+translate O Annotator {Annotator}
+# ====== TODO To be translated ======
+translate O Cmnts {Annotated games only}
 
 # Game list window:
 translate O GlistNumber {Nummer}
@@ -2159,6 +2163,8 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

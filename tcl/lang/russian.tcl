@@ -971,6 +971,10 @@ translate R BrilliancyFlag {Великолепно}
 translate R BlunderFlag {Ошибка}
 translate R UserFlag {Пользователь}
 translate R PgnContains {Текст PGN}
+# ====== TODO To be translated ======
+translate R Annotator {Annotator}
+# ====== TODO To be translated ======
+translate R Cmnts {Annotated games only}
 
 # Game list window:
 translate R GlistNumber {Номер}
@@ -2188,6 +2192,8 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

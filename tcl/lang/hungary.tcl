@@ -829,6 +829,10 @@ translate H BrilliancyFlag {Csillogás}
 translate H BlunderFlag {Elnézés}
 translate H UserFlag {Felhasználó}
 translate H PgnContains {Szöveg a PGN-ben}
+# ====== TODO To be translated ======
+translate H Annotator {Annotator}
+# ====== TODO To be translated ======
+translate H Cmnts {Annotated games only}
 
 # Game list window:
 translate H GlistNumber {Szám}
@@ -1936,6 +1940,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

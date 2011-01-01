@@ -845,6 +845,10 @@ translate N BrilliancyFlag {Briljant}
 translate N BlunderFlag {Blunder}
 translate N UserFlag {Gebruiker}
 translate N PgnContains {PGN bevat tekst}
+# ====== TODO To be translated ======
+translate N Annotator {Annotator}
+# ====== TODO To be translated ======
+translate N Cmnts {Annotated games only}
 
 # Game list window:
 translate N GlistNumber {Nummer}
@@ -1800,6 +1804,8 @@ translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
+
+
 
 
 

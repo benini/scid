@@ -967,6 +967,10 @@ translate W BrilliancyFlag {Utmärkt parti}
 translate W BlunderFlag {Bortsättningar}
 translate W UserFlag {Användare}
 translate W PgnContains {PGN innehåller text}
+# ====== TODO To be translated ======
+translate W Annotator {Annotator}
+# ====== TODO To be translated ======
+translate W Cmnts {Annotated games only}
 
 # Game list window:
 translate W GlistNumber {Nummer}
@@ -7175,6 +7179,8 @@ set tips(W) {
   }
 }
 #}
+
+
 
 
 

@@ -879,6 +879,10 @@ translate S BrilliancyFlag {Genialidad}
 translate S BlunderFlag {Error}
 translate S UserFlag {Usuario}
 translate S PgnContains {PGN contiene texto}
+# ====== TODO To be translated ======
+translate S Annotator {Annotator}
+# ====== TODO To be translated ======
+translate S Cmnts {Annotated games only}
 
 # Game list window:
 translate S GlistNumber {Número}
@@ -1708,4 +1712,6 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
+
 

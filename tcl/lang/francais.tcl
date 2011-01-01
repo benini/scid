@@ -824,6 +824,10 @@ translate F BrilliancyFlag {Spectaculaire}
 translate F BlunderFlag {Gaffe}
 translate F UserFlag {Utilisateur}
 translate F PgnContains {PGN contenant du texte}
+# ====== TODO To be translated ======
+translate F Annotator {Annotator}
+# ====== TODO To be translated ======
+translate F Cmnts {Annotated games only}
 
 # Game list window:
 translate F GlistNumber {Numéro}
@@ -1864,6 +1868,8 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
+
 
 
 

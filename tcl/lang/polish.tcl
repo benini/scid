@@ -973,6 +973,10 @@ translate P BrilliancyFlag {Nagroda za piêkno¶æ}
 translate P BlunderFlag {Podstawka}
 translate P UserFlag {Inne}
 translate P PgnContains {PGN zawiera tekst}
+# ====== TODO To be translated ======
+translate P Annotator {Annotator}
+# ====== TODO To be translated ======
+translate P Cmnts {Annotated games only}
 
 # Game list window:
 translate P GlistNumber {Numer}
@@ -2386,6 +2390,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

@@ -4,7 +4,7 @@
 
 namespace eval ::search::header {}
 
-set sWhite "";  set sBlack "";  set sEvent ""; set sSite "";  set sRound ""
+set sWhite "";  set sBlack "";  set sEvent ""; set sSite "";  set sRound ""; set sAnnotator ""; set sAnnotated 0;
 set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
 set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
 set sEloDiffMin "-[sc_info limit elo]"; set sEloDiffMax "+[sc_info limit elo]"
@@ -68,7 +68,7 @@ proc checkDates {} {
 }
 
 proc ::search::header::defaults {} {
-  global sWhite sBlack sEvent sSite sRound sDateMin sDateMax sIgnoreCol sSideToMove
+  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol sSideToMove
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax
@@ -77,7 +77,7 @@ proc ::search::header::defaults {} {
   global sPgntext sTitles
   
   set sWhite "";  set sBlack ""
-  set sEvent ""; set sSite "";  set sRound ""
+  set sEvent ""; set sSite "";  set sRound ""; set sAnnotator ""; set sAnnotated 0
   set sWhiteEloMin 0; set sWhiteEloMax [sc_info limit elo]
   set sBlackEloMin 0; set sBlackEloMax [sc_info limit elo]
   set sEloDiffMin "-[sc_info limit elo]"
@@ -106,7 +106,7 @@ set sHeaderFlagFrame 0
 #   Opens the window for searching by header information.
 #
 proc search::header {} {
-  global sWhite sBlack sEvent sSite sRound sDateMin sDateMax sIgnoreCol
+  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sSideToMove
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
@@ -121,7 +121,7 @@ proc search::header {} {
   
   toplevel $w
   wm title $w "Scid: $::tr(HeaderSearch)"
-  foreach frame {cWhite cBlack ignore tw tb eventsite dateround res gl ends eco} {
+  foreach frame {cWhite cBlack ignore tw tb eventsite dateround res ano gl ends eco} {
     ttk::frame $w.$frame
   }
   
@@ -265,6 +265,18 @@ proc search::header {} {
   ttk::radiobutton $w.ends.both -textvar ::tr(Both) -variable sSideToMove -value wb
   pack $w.ends.label $w.ends.white $w.ends.sep1 $w.ends.black $w.ends.sep2 $w.ends.both -side left
   pack $w.ends -side top -fill x
+  
+  addHorizontalRule $w
+  
+  pack .sh.ano -side top -fill x
+  ttk::label $w.ano.a1 -textvar ::tr(Annotations:) -font $bold
+  ttk::label $w.ano.a2 -textvar ::tr(Annotator:) -font $bold
+  ttk::checkbutton $w.ano.an -textvar ::tr(Cmnts:) -variable sAnnotated -offvalue 0 -onvalue 1
+  ttk::entry $w.ano.aname -textvariable sAnnotator -width 20 -font $regular
+  pack $w.ano.a1 $w.ano.an -side left
+  pack $w.ano.aname $w.ano.a2 -side right
+
+  addHorizontalRule $w
   
   ttk::label $w.eco.l1 -textvar ::tr(ECOCode:) -font $bold
   ttk::label $w.eco.l2 -text "-" -font $regular
@@ -452,6 +464,8 @@ proc search::header {} {
             -length [list $sGlMin $sGlMax] \
             -gameNumber [list $sGnumMin $sGnumMax] \
             -flip $sIgnoreCol -filter $filter \
+            -annotated $sAnnotated \
+            -annotator $sAnnotator \
             -fStdStart $sHeaderFlags(StdStart) \
             -fPromotions $sHeaderFlags(Promotions) \
             -fComments $sHeaderFlags(Comments) \
@@ -504,6 +518,8 @@ proc search::header {} {
             -length [list $sGlMin $sGlMax] \
             -gameNumber [list $sGnumMin $sGnumMax] \
             -flip $sIgnoreCol -filter $filter \
+            -annotated $sAnnotated \
+            -annotator $sAnnotator \
             -fStdStart $sHeaderFlags(StdStart) \
             -fPromotions $sHeaderFlags(Promotions) \
             -fComments $sHeaderFlags(Comments) \
@@ -544,6 +560,8 @@ proc search::header {} {
             -length [list $sGlMin $sGlMax] \
             -gameNumber [list $sGnumMin $sGnumMax] \
             -flip $sIgnoreCol -filter $filter \
+            -annotated $sAnnotated \
+            -annotator $sAnnotator \
             -fStdStart $sHeaderFlags(StdStart) \
             -fPromotions $sHeaderFlags(Promotions) \
             -fComments $sHeaderFlags(Comments) \
@@ -586,6 +604,8 @@ proc search::header {} {
           -toMove $sSideToMove \
           -gameNumber [list $sGnumMin $sGnumMax] \
           -flip $sIgnoreCol -filter $::search::filter::operation \
+          -annotated $sAnnotated \
+          -annotator $sAnnotator \
           -fStdStart $sHeaderFlags(StdStart) \
           -fPromotions $sHeaderFlags(Promotions) \
           -fComments $sHeaderFlags(Comments) \
@@ -655,7 +675,7 @@ proc search::header {} {
 }
 
 proc ::search::header::save {} {
-  global sWhite sBlack sEvent sSite sRound sDateMin sDateMax sIgnoreCol
+  global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sGlMin sGlMax
   global sEco sEcoMin sEcoMax sHeaderFlags sSideToMove
@@ -678,7 +698,7 @@ proc ::search::header::save {} {
   puts $searchF "set searchType Header"
   
   # First write the regular variables:
-  foreach i {sWhite sBlack sEvent sSite sRound sDateMin sDateMax sResWin
+  foreach i {sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sResWin
     sResLoss sResDraw sResOther sWhiteEloMin sWhiteEloMax sBlackEloMin
     sBlackEloMax sEcoMin sEcoMax sEloDiffMin sEloDiffMax
     sIgnoreCol sSideToMove sGlMin sGlMax ::search::filter::operation} {

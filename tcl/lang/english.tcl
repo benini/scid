@@ -858,6 +858,8 @@ translate E BrilliancyFlag {Brilliancy}
 translate E BlunderFlag {Blunder}
 translate E UserFlag {User}
 translate E PgnContains {PGN contains text}
+translate E Annotator {Annotator}
+translate E Cmnts {Annotated games only}
 
 # Game list window:
 translate E GlistNumber {Number}

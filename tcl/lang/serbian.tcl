@@ -966,6 +966,10 @@ translate Y BrilliancyFlag {Brilijantnost}
 translate Y BlunderFlag {Gre¹ka}
 translate Y UserFlag {Korisnik}
 translate Y PgnContains {PGN contains text} ;# ***
+# ====== TODO To be translated ======
+translate Y Annotator {Annotator}
+# ====== TODO To be translated ======
+translate Y Cmnts {Annotated games only}
 
 # Game list window:
 translate Y GlistNumber {Broj}
@@ -2159,6 +2163,8 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 

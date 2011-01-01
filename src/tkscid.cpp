@@ -15162,7 +15162,7 @@ matchGameHeader (IndexEntry * ie, NameBase * nb,
                  int diffeloMin, int diffeloMax,
                  ecoT ecoMin, ecoT ecoMax, bool ecoNone,
                  uint halfmovesMin, uint halfmovesMax,
-                 bool wToMove, bool bToMove)
+                 bool wToMove, bool bToMove, bool bAnnotaded)
 {
     // First, check the numeric ranges:
 
@@ -15180,7 +15180,6 @@ matchGameHeader (IndexEntry * ie, NameBase * nb,
         if (! bToMove) { return false; }
     }
     
-
     dateT date = ie->GetDate();
     if (date < dateMin  ||  date > dateMax) { return false; }
 
@@ -15214,6 +15213,9 @@ matchGameHeader (IndexEntry * ie, NameBase * nb,
     // Last, we check the players
     if (mWhite != NULL  &&  !mWhite[ie->GetWhite()]) { return false; }
     if (mBlack != NULL  &&  !mBlack[ie->GetBlack()]) { return false; }
+
+	if (bAnnotaded && !(ie->GetCommentsFlag() || ie->GetVariationsFlag() || ie->GetNagsFlag()))
+		return false;
 
     // If we reach here, this game matches all criteria.
     return true;
@@ -15292,6 +15294,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     char * sEvent = NULL;
     char * sSite  = NULL;
     char * sRound = NULL;
+	char * sAnnotator = NULL;
 
     bool * mWhite = NULL;
     bool * mBlack = NULL;
@@ -15315,7 +15318,9 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     dEloRange[0] = - (int)MAX_ELO;
     dEloRange[1] = MAX_ELO;
 
-    bool * wTitles = NULL;
+	bool bAnnotated = false;
+
+	bool * wTitles = NULL;
     bool * bTitles = NULL;
 
     bool wToMove = true;
@@ -15367,7 +15372,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     char ** sPgnText = NULL;
 
     const char * options[] = {
-        "white", "black", "event", "site", "round",
+        "white", "black", "event", "site", "round", "annotator", "annotated",
         "date", "results", "welo", "belo", "delo",
         "wtitles", "btitles", "toMove",
         "eco", "length", "gameNumber", "flip", "filter",
@@ -15379,7 +15384,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "fCustom4" , "fCustom5" , "fCustom6" , "pgn", NULL
     };
     enum {
-        OPT_WHITE, OPT_BLACK, OPT_EVENT, OPT_SITE, OPT_ROUND,
+        OPT_WHITE, OPT_BLACK, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_ANNOTATOR, OPT_ANNOTATED,
         OPT_DATE, OPT_RESULTS, OPT_WELO, OPT_BELO, OPT_DELO,
         OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
         OPT_ECO, OPT_LENGTH, OPT_GAMENUMBER, OPT_FLIP, OPT_FILTER,
@@ -15422,7 +15427,15 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             sRound = strDuplicate (value);
             break;
 
-        case OPT_DATE:
+		case OPT_ANNOTATOR:
+			sAnnotator = strDuplicate(value);
+			break;
+
+		case OPT_ANNOTATED:
+			bAnnotated = strGetBoolean(value);
+			break;
+
+		case OPT_DATE:
             // Extract two whitespace-separated dates:
             value = strFirstWord (value);
             dateRange[0] = date_EncodeFromString (value);
@@ -15846,7 +15859,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                                  dEloRange[0], dEloRange[1],
                                  ecoRange[0], ecoRange[1], ecoNone,
                                  halfMoveRange[0], halfMoveRange[1],
-                                 wToMove, bToMove)) {
+                                 wToMove, bToMove, bAnnotated)) {
                 match = true;
             }
 
@@ -15861,10 +15874,16 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                                  -dEloRange[1], -dEloRange[0],
                                  ecoRange[0], ecoRange[1], ecoNone,
                                  halfMoveRange[0], halfMoveRange[1],
-                                 bToMove, wToMove)) {
+                                 bToMove, wToMove, bAnnotated)) {
                 match = true;
             }
         }
+
+
+		// Without annotations the search for annotator can be skipped
+		// This elinimates 90% of the effort, if an annotator is queried
+		if( sAnnotator != NULL && *sAnnotator != 0 && !ie->GetCommentsFlag() && !ie->GetVariationsFlag())
+			match = false;
 
         // Now try to match the comment text if applicable:
         // Note that it is not worth using a faster staring search
@@ -15872,30 +15891,56 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // profiling showed most that most of the time is spent
         // generating the PGN representation of each game.
 
-        if (match  &&  pgnTextCount > 0) {
+        if (match  &&  (pgnTextCount > 0 || (sAnnotator != NULL && *sAnnotator != 0))) {
             if (match  &&  db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
                                                 ie->GetLength()) != OK) {
                 match = false;
             }
-            if (match  &&  scratchGame->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
-                match = false;
-            }
-            if (match) {
-                db->tbuf->Empty();
-                db->tbuf->SetWrapColumn (99999);
-                scratchGame->LoadStandardTags (ie, db->nb);
-                scratchGame->ResetPgnStyle ();
-                scratchGame->AddPgnStyle (PGN_STYLE_TAGS);
-                scratchGame->AddPgnStyle (PGN_STYLE_COMMENTS);
-                scratchGame->AddPgnStyle (PGN_STYLE_VARS);
-                scratchGame->AddPgnStyle (PGN_STYLE_SYMBOLS);
-                scratchGame->SetPgnFormat (PGN_FORMAT_Plain);
-                scratchGame->WriteToPGN(db->tbuf);
-                const char * buf = db->tbuf->GetBuffer();
-                for (int m=0; m < pgnTextCount; m++) {
-                   if (match) { match = strContains (buf, sPgnText[m]); }
-                }
-            }
+
+			if(sAnnotator != NULL && *sAnnotator != 0)
+			{
+				// Need the annotator flag, so decode the flags
+				if (match  &&  scratchGame->DecodeTags (db->bbuf, GAME_DECODE_ALL) != OK)
+					match = false;
+				if(match)
+				{
+					match = false;
+		            uint numtags = scratchGame->GetNumExtraTags();
+					tagT *tag = scratchGame->GetExtraTags();
+					for( int i=0; i<numtags; i++, tag++){
+						// Returning all games where the search string matchs with the prefix 
+						// of the annotator string
+						if( !strcmp(tag->tag, "Annotator")){
+							match = strAlphaContains(tag->value, sAnnotator);
+							break;
+						}
+					}
+				}
+				scratchGame->Clear();
+			}
+
+			if(pgnTextCount > 0)
+			{
+				if (match  &&  scratchGame->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+					match = false;
+				}
+				if (match) {
+					db->tbuf->Empty();
+					db->tbuf->SetWrapColumn (99999);
+					scratchGame->LoadStandardTags (ie, db->nb);
+					scratchGame->ResetPgnStyle ();
+					scratchGame->AddPgnStyle (PGN_STYLE_TAGS);
+					scratchGame->AddPgnStyle (PGN_STYLE_COMMENTS);
+					scratchGame->AddPgnStyle (PGN_STYLE_VARS);
+					scratchGame->AddPgnStyle (PGN_STYLE_SYMBOLS);
+					scratchGame->SetPgnFormat (PGN_FORMAT_Plain);
+					scratchGame->WriteToPGN(db->tbuf);
+					const char * buf = db->tbuf->GetBuffer();
+					for (int m=0; m < pgnTextCount; m++) {
+					   if (match) { match = strContains (buf, sPgnText[m]); }
+					}
+				}
+			}
         }
 
         if (match) {
@@ -15915,6 +15960,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (sEvent != NULL) { my_Tcl_Free((char*) sEvent); }
     if (sSite  != NULL) { my_Tcl_Free((char*) sSite);  }
     if (sRound != NULL) { my_Tcl_Free((char*) sRound); }
+	if (sAnnotator != NULL) { my_Tcl_Free((char*) sAnnotator); }
     if (mWhite != NULL) { my_Tcl_Free((char*) mWhite); }
     if (mBlack != NULL) { my_Tcl_Free((char*) mBlack); }
     if (mEvent != NULL) { my_Tcl_Free((char*) mEvent); }
@@ -15928,6 +15974,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (sEvent != NULL) { delete[] sEvent; }
     if (sSite  != NULL) { delete[] sSite;  }
     if (sRound != NULL) { delete[] sRound; }
+	if (sAnnotator != NULL) { delete[] sAnnotator; }
     if (mWhite != NULL) { delete[] mWhite; }
     if (mBlack != NULL) { delete[] mBlack; }
     if (mEvent != NULL) { delete[] mEvent; }

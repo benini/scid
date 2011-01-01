@@ -895,6 +895,10 @@ translate I BrilliancyFlag {Brillantezza}
 translate I BlunderFlag {Svista}
 translate I UserFlag {User}
 translate I PgnContains {PGN contiene testo}
+# ====== TODO To be translated ======
+translate I Annotator {Annotator}
+# ====== TODO To be translated ======
+translate I Cmnts {Annotated games only}
 
 # Game list window:
 translate I GlistNumber {Numero}
@@ -2077,6 +2081,8 @@ set tips(I) {
 
 
 # end of italian.tcl
+
+
 
 
 

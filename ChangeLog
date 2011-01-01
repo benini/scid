@@ -916,7 +916,7 @@ scid-4.3
 	* Refresh icons for Database switcher (Thanks to Peter Wong and Steven)
 	* Some defaults of Scids empty config
 	* Gamelist: show delete-flag to the very left of the list by default
-	* Taller information field (Thanks ot Milan Zamazal)
+	* Taller information field (Thanks ot Milan Zamazal and Gerd Lorscheid)
 	* Replace some buttons in help by proper img tags
 	* Bring Best games / tree graph to front if they exist and the button is pressed again
 	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
@@ -1009,11 +1009,16 @@ scid-4.3
 	* Browse window
 	  - Allow scaling by +/- keys and Ctrl-Mouse wheel
 	  - Use mouse wheel to go through the game
-	* Header searches now restrict the games displayed in Best Games
-	  and Game list, that is if a header search was performed it's
+	* Header searches
+	  - Header searches with open trees now act as a filter, that is
+	  they now restrict the games displayed in Best Games and Game
+	  list. In other words if a header search was performed it's
 	  results are no longer reset by the Tree searches. Tree statistics
-	  however are still calculated for teh full database.
-	  (Thanks to Gerd Lorscheid)
+	  however are still calculated for teh full database.  (Thanks to
+	  Gerd Lorscheid)
+	  - Annotators are now searchable (Thanks to Gerd Lorscheid)
+	  - Easy way to search for all games that are annotated by either
+	  NAGs, comments or variations. (Thanks to Gerd Lorscheid)
 	* API Changes:
 		- ::tooltip::UnSet to remove a tooltip + message
 		- sc_filter clean: unset both db and tree filter

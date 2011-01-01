@@ -240,8 +240,7 @@ menuText U ToolsImportOne "Tuo yksi PGN-peli" 0 \
 menuText U ToolsImportFile "Tuo PGN pelitiedosto" 0 {Tuo yksi tai useampia pelejä sisältävä PGN-tiedosto}
 menuText U ToolsStartEngine1 "Käynnistä moottori 1" 19  {Käynnistä moottori 1}
 menuText U ToolsStartEngine2 "Käynnistä moottori 2" 19  {Käynnistä moottori 2}
-# ====== TODO To be translated ======
-menuText U ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
+menuText U ToolsCaptureBoard "Kuvakaappaus asemasta..." 1  {Tallenna asema kuvana.}
 
 # Play menue
 menuText U Play "Pelaa" 0
@@ -249,8 +248,7 @@ menuText U Play "Pelaa" 0
 # --- Correspondence Chess
 menuText U CorrespondenceChess "Kirjeshakki" 0 {Toiminnot sähköposti- ja Xfcc-pohjaista kirjeshakkia varten}
 menuText U CCConfigure "Asetukset" 0 {Määritä ohjelmat ja tee kirjeshakkiin liittyvät asetukset}
-# ====== TODO To be translated ======
-menuText U CCConfigRelay "Observe games..." 10 {Configure games to be observed}
+menuText U CCConfigRelay "Seuraa pelejä..." 12 {Seurattavien pelien asetukset}
 menuText U CCOpenDB "Avaa tietokanta" 1 {Avaa kirjeshakin oletustietokanta}
 menuText U CCRetrieve "Nouda pelit" 0 {Hae pelit ulkoisella (Xfcc-) avustajalla}
 menuText U CCInbox "Käsittele Saapuneet" 1 {Käsittele kaikki saapuneet tiedostot}
@@ -286,8 +284,7 @@ menuText U OptionsFonts "Fontit" 0 {Muuta fontteja}
 menuText U OptionsFontsRegular "Oletusfontti" 0 {Vaihda oletusfontti}
 menuText U OptionsFontsMenu "Valikko" 0 {Vaihda valikoissa käytetty fontti}
 menuText U OptionsFontsSmall "Pieni" 0 {Vaihda pieni fontti}
-# ====== TODO To be translated ======
-menuText U OptionsFontsTiny "Tiny" 0 {Change the tiny font}
+menuText U OptionsFontsTiny "Hyvin pieni" 0 {CVaihda hyvin pieni fontti}
 menuText U OptionsFontsFixed "Tasalevyinen" 0 {Vaihda tasalevyinen fontti}
 menuText U OptionsGInfo "Pelitiedot" 0 {Pelitietoihin liittyvät asetukset}
 menuText U OptionsLanguage "Kieli" 0 {Valitse valikoissa käytettävä kieli}
@@ -862,6 +859,10 @@ translate U BrilliancyFlag {Loistosiirto}
 translate U BlunderFlag {Virhe (Blunder)}
 translate U UserFlag {Käyttäjä}
 translate U PgnContains {PGN sisältää tekstiä}
+# ====== TODO To be translated ======
+translate U Annotator {Annotator}
+# ====== TODO To be translated ======
+translate U Cmnts {Annotated games only}
 
 # Game list window:
 translate U GlistNumber {Numero}
@@ -1680,10 +1681,8 @@ translate U CCOrderMyTimeTxt {Kelloni}
 translate U CCOrderTimePerMoveTxt {Aikaa per siirto ennen seuraavaa ajantarkastusta}
 translate U CCOrderStartDate {Aloituspvm.}
 translate U CCOrderOppTimeTxt {Vastustajan kello}
-# ====== TODO To be translated ======
-translate U CCDlgConfigRelay {Observe games}
-# ====== TODO To be translated ======
-translate U CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+translate U CCDlgConfigRelay {Seuraa pelejä}
+translate U CCDlgConfigRelayHelp {Siirry sivulle http://www.iccf-webchess.com ja näytä seurattava peli.  Jos näet shakkilaudan, kopioi osoite selaimestasi URL alla olevaan listaan. Vain yksi osoite per rivi!\nEsim: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 # Connect Hardware dialogs
 translate U ExtHWConfigConnection {Ulkoisten laitteiden asetukset}
@@ -1722,4 +1721,5 @@ translate U ChangeIcon {Vaihda kuvake...}
 
 }
 # end of english.tcl
+
 

@@ -323,7 +323,6 @@ private:
     inline moveT *    NewMove();
     inline void       FreeMove (moveT * move);
 
-    errorT     DecodeTags (ByteBuffer * buf, bool storeTags);
     errorT     DecodeVariation (ByteBuffer * buf, byte flags, uint level);
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -574,6 +573,7 @@ public:
     errorT    DecodeStart (ByteBuffer * buf);
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode (ByteBuffer * buf, byte flags);
+    errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
 
     // StoredLine codes:
     static ushort GetStoredLineCount (void);

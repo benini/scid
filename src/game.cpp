@@ -2780,7 +2780,15 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
             eco_ToExtendedString (EcoCode, ecoStr);
             tb->PrintString (ecoStr);
         }
-        tb->PrintString (newline);
+        for (uint i=0; i < NumTags; i++) {
+			if( !strcmp(TagList[i].tag, "Annotator"))
+			{
+				sprintf (temp, " (%s)", TagList[i].value);
+                tb->PrintString (temp);
+			}
+		}
+
+		tb->PrintString (newline);
 
         // Print FEN if non-standard start:
 

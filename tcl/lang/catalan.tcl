@@ -852,6 +852,10 @@ translate K BrilliancyFlag {Genialitat}
 translate K BlunderFlag {Error}
 translate K UserFlag {Usuari}
 translate K PgnContains {PGN conté text}
+# ====== TODO To be translated ======
+translate K Annotator {Annotator}
+# ====== TODO To be translated ======
+translate K Cmnts {Annotated games only}
 
 # Game list window:
 translate K GlistNumber {Número}
@@ -1725,6 +1729,8 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
+
 
 
 
