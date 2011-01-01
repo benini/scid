@@ -893,17 +893,23 @@ proc resizeMainBoard {} {
   if { $::board::_coords($bd) == 0 } {
     incr height_used [ lindex [ grid bbox $bd 0 0 ] 3 ]
   }
+
   # game info
-  set min_game_info_lines 6
-  set game_info_lines [.main.gameInfo count -displaylines 1.0 end]
-  if { $game_info_lines > 0 } {
-    # probably not very correct, do you know any better way to get this information?
-    set game_info_line_height [expr 1.0 * [.main.gameInfo count -ypixels 1.0 end] / $game_info_lines]
-  } else {
-    # utter approximation
-    set game_info_line_height [expr [font configure font_Regular -size] * 1.5]
+  set min_game_info_height 6
+  set game_info_line_height 6
+  set min_game_info_lines 1
+  if {$::showGameInfo} {
+    set min_game_info_lines 6
+    set game_info_lines [.main.gameInfo count -displaylines 1.0 end]
+    if { $game_info_lines > 0 } {
+      # probably not very correct, do you know any better way to get this information?
+      set game_info_line_height [expr 1.0 * [.main.gameInfo count -ypixels 1.0 end] / $game_info_lines]
+    } else {
+      # utter approximation
+      set game_info_line_height [expr [font configure font_Regular -size] * 1.5]
+    }
+    set min_game_info_height [expr int($min_game_info_lines * $game_info_line_height + 6)]
   }
-  set min_game_info_height [expr int($min_game_info_lines * $game_info_line_height + 6)]
   incr height_used $min_game_info_height
   
   # status bar
