@@ -11467,7 +11467,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             bothscore[STATS_ALL][result]++;
             whitecount[STATS_ALL]++;
             totalcount[STATS_ALL]++;
-            if (db->dbFilter->Get(i) > 0) {
+            if (db->dbFilter == NULL || db->dbFilter->Get(i) > 0) {
                 whitescore[STATS_FILTER][result]++;
                 bothscore[STATS_FILTER][result]++;
                 whitecount[STATS_FILTER]++;
@@ -11497,7 +11497,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             bothscore[STATS_ALL][result]++;
             blackcount[STATS_ALL]++;
             totalcount[STATS_ALL]++;
-            if (db->dbFilter->Get(i) > 0) {
+            if (db->dbFilter == NULL || db->dbFilter->Get(i) > 0) {
                 blackscore[STATS_FILTER][result]++;
                 bothscore[STATS_FILTER][result]++;
                 blackcount[STATS_FILTER]++;
