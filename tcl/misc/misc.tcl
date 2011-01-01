@@ -616,7 +616,7 @@ namespace eval html {
     
     fillData
     set players [list "[sc_game tags get White] - [sc_game tags get Black]"]
-    toHtml $::html::data -1 $dirtarget $prefix $players $players \
+    toHtml $::html::data -1 $dirtarget $prefix $players [lindex $players 0] \
         [sc_game tags get "Event"] [sc_game tags get "ECO"] \
         [sc_game info result] [sc_game tags get "Date"]
     exportPGN "[file join $dirtarget $prefix].pgn" "current"
@@ -750,8 +750,7 @@ namespace eval html {
     puts $f "<div class=\"innertube\">"
     puts $f "<div id=\"moves\"><!-- moves go here -->"
     # game header
-    set l [lindex $this_players 0]
-    puts $f "<span class=\"hPlayers\"> [html_entities $l]</span>"
+    puts $f "<span class=\"hPlayers\"> [html_entities $this_players]</span>"
     puts $f "<span class=\"hEvent\"><br /> [html_entities $event]</span>"
     puts $f "<span class=\"hEvent\"><br />\[$date\]</span>"
     puts $f "<span class=\"hAnnot\"><br />\[$eco\]</span>"
