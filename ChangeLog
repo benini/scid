@@ -992,7 +992,7 @@ scid-4.3
 		 - now opens by clicking the comment in game info area
 		 - Make board toggable by either alt-b or button and save its state
 		 - recognises Ctrl-A for adding a new variation => easy addition for pre move comments
-		 - Ctrl-Left/Ctrl-Right now go one move backward/forward
+		 - Alt-Left/Alt-Right now go one move backward/forward
 		 - Map Alt-N to switch between NAG- and text entry
 		 - Autostore comments as soon as the window looses focus
 	    - Add Ctrl-N shortcut to Edit window to call NAG values help
@@ -1057,7 +1057,7 @@ scid-4.3
 	* Minor flaw in Scid.eco (ID: 2963067;  thanks to Daniel Karlsson)
 	* Correction of possible overflow in material signature (ID: 2992119; thanks to Gregor Cramer)
 	* Optimisations for tree search (Thanks to G. Lohrscheidt)
-   * Comment eiditor text frame scales properly
+   * Comment editor text frame scales properly
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)

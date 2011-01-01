@@ -85,8 +85,8 @@ proc ::commenteditor::Open {} {
 
   bind $w.cf.text <FocusOut> { ::commenteditor::storeComment }
   bind $w <Control-a> {::commenteditor::storeComment; sc_var create; updateBoard -pgn}
-  bind $w.cf.text <Control-Left>  {::commenteditor::storeComment; ::move::Back}
-  bind $w.cf.text <Control-Right> {::commenteditor::storeComment; ::move::Forward}
+  bind $w.cf.text <Alt-Left>  {::commenteditor::storeComment; ::move::Back}
+  bind $w.cf.text <Alt-Right> {::commenteditor::storeComment; ::move::Forward}
   # switch to the NAG entry
   bind $w.cf.text <Alt-n> { focus .commentWin.nf.tf.text }
 
