@@ -332,9 +332,10 @@ set helpMessage($m,[incr menuindex]) EditReset
 $m add command -label EditCopy -accelerator "Ctrl+C" -command {
   catch {sc_clipbase copy}
   updateBoard
+ ::pgn::PgnClipboardCopy
 }
-bind $dot_w <Control-c> {catch {sc_clipbase copy}; updateBoard}
-bind $dot_w <Control-Insert> {catch {sc_clipbase copy}; updateBoard}
+bind $dot_w <Control-c> {catch {sc_clipbase copy}; updateBoard; ::pgn::PgnClipboardCopy}
+bind $dot_w <Control-Insert> {catch {sc_clipbase copy}; updateBoard; ::pgn::PgnClipboardCopy}
 set helpMessage($m,[incr menuindex]) EditCopy
 
 $m add command -label EditPaste -accelerator "Ctrl+V" -command {

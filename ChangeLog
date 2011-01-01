@@ -768,6 +768,9 @@ scid-3.7.2
 	* Add SAA/CUA hotkeys for clipboard (Ctrl-Ins, Shift-Ins)
 	* try for www-browser as generic web browser (thanks to Tiurgin)
 	* replace " " in urls for the Windows "start" command by %20 (thanks to Tiurgin)
+	* Ctrl-C/Ctrl-Ins in main window now also copies PGN text of the
+	game to the system clipboard for easy pasting
+	* Ctrl-C/Ctrl-Ins shortcuts for PGN window to copy notation to clipboard
 - Translations:
 	* hungarian updated (thanks to Szőts Gábor)
 	* swedish updated (thanks to Hans Eriksson)

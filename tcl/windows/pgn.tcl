@@ -35,6 +35,24 @@ namespace eval pgn {
       configMenuText $m.helpmenu $idx PgnHelp$tag $lang
     }
   }
+
+  proc PgnClipboardCopy {} {
+      setLanguageTemp E
+      set pgnStr [sc_game pgn -width 75 -indentComments $::pgn::indentComments \
+          -indentVariations $::pgn::indentVars -space $::pgn::moveNumberSpaces]
+      setLanguageTemp $::language
+      
+      set wt .tempFEN
+      
+      if {! [winfo exists $wt]} { text $wt }
+      $wt delete 1.0 end
+      $wt insert end $pgnStr sel
+      clipboard clear
+      clipboard append $pgnStr
+      selection own $wt
+      selection get
+  }
+
   ################################################################################
   #
   ################################################################################
@@ -66,23 +84,9 @@ namespace eval pgn {
       menu $w.menu.$i -tearoff 0
     }
     
-    $w.menu.file add command -label PgnFileCopy -command {
-      
-      setLanguageTemp E
-      set pgnStr [sc_game pgn -width 75 -indentComments $::pgn::indentComments \
-          -indentVariations $::pgn::indentVars -space $::pgn::moveNumberSpaces]
-      setLanguageTemp $::language
-      
-      set wt .tempFEN
-      
-      if {! [winfo exists $wt]} { text $wt }
-      $wt delete 1.0 end
-      $wt insert end $pgnStr sel
-      clipboard clear
-      clipboard append $pgnStr
-      selection own $wt
-      selection get
-    }
+    $w.menu.file add command -label PgnFileCopy -accelerator "Ctrl+C" -command {::pgn::PgnClipboardCopy }
+    bind $w <Control-c> {::pgn::PgnClipboardCopy}
+    bind $w <Control-Insert> {::pgn::PgnClipboardCopy}
     
     $w.menu.file add command -label PgnFilePrint -command {
       set ftype {
