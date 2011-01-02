@@ -223,6 +223,194 @@ pieceValues [8] = {
     0   // Empty
 };
 
+Engine::Engine()   
+{
+    MaxDepth = ENGINE_MAX_PLY;      // A large default search depth
+    SearchTime = 1000;  // Default search time: 1000 ms = one second.
+    MinSearchTime = MaxSearchTime = SearchTime;
+    MinDepthCheckTime = 4; // will not check time until depth is at least of this value
+#ifndef WINCE
+    LogFile = NULL;
+#endif
+    PostInfo = false;
+    Pruning = false;
+    RepStackSize = 0;
+    TranTableSequence = 0;
+    ClearHashTable();
+    ClearPawnTable();
+    RootPos.StdStart();
+    Pos.StdStart();
+    PV[0].length = 0;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Engine::ClearHashTable
+//   Clear the transposition table.
+void
+Engine::ClearHashTable (void)
+{
+    for (uint i = 0; i < TranTableSize; i++) {
+        TranTable[i].flags = SCORE_NONE;
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Engine::ClearPawnTable
+//   Clear the pawn structure hash table.
+void
+Engine::ClearPawnTable (void)
+{
+    for (uint i = 0; i < PawnTableSize; i++) {
+        PawnTable[i].pawnhash = 0;
+    }
+}
+
+inline void
+Engine::SetPVLength (void)
+{
+    if (Ply < ENGINE_MAX_PLY - 1)  {PV[Ply].length = Ply; }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Engine::UpdatePV
+//   Updates the principal variation at the current Ply to
+//   include the specified move.
+inline void
+Engine::UpdatePV (simpleMoveT * sm)
+{
+    if (Ply >= ENGINE_MAX_PLY - 1) { return; }
+    if (InNullMove > 0) { return; }
+    // if (! Pos.IsLegalMove (sm)) { return; }
+
+    PV[Ply].move[Ply] = *sm;
+    for (uint j = Ply + 1; j < PV[Ply + 1].length; j++) {
+        PV[Ply].move[j] = PV[Ply+1].move[j];
+    }
+    PV[Ply].length = PV[Ply+1].length;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Killer moves:
+//   We keep track of two "killer" moves at each ply, moves which
+//   are not captures or promotions (as they get ordered first) but
+//   were good enough to cause a beta cutoff. Killer moves get
+//   ordered after good captures but before non-killer noncaptures,
+//   which are ordered using the history table (see below).
+//
+//   Only noncaptures and non-promotion moves can be killer moves, but
+//   we make an exception for those that have a negative score (meaning
+//   they lose material according to the static exchange evaluator),
+//   since they would otherwise be searched last after all noncaptures.
+
+inline void
+Engine::ClearKillerMoves (void)
+{
+    for (uint i=0; i < ENGINE_MAX_PLY; i++) {
+        KillerMove[i][0].from = NULL_SQUARE;
+        KillerMove[i][1].from = NULL_SQUARE;
+    }
+}
+
+inline void
+Engine::AddKillerMove (simpleMoveT * sm)
+{
+    if (sm->capturedPiece != EMPTY  &&  sm->score >= 0) { return; }
+    if (sm->promote != EMPTY  &&  sm->score >= 0) { return; }
+    simpleMoveT * killer0 = &(KillerMove[Ply][0]);
+    simpleMoveT * killer1 = &(KillerMove[Ply][1]);
+    if (killer0->from == sm->from  &&  killer0->to == sm->to
+          &&  killer0->movingPiece == sm->movingPiece) {
+        return;
+    }
+    *killer1 = *killer0;
+    *killer0 = *sm;
+}
+
+inline bool
+Engine::IsKillerMove (simpleMoveT * sm)
+{
+    simpleMoveT * killer0 = &(KillerMove[Ply][0]);
+    if (killer0->from == sm->from  &&  killer0->to == sm->to
+          &&  killer0->movingPiece == sm->movingPiece) {
+        return true;        
+    }
+    simpleMoveT * killer1 = &(KillerMove[Ply][1]);
+    if (killer1->from == sm->from  &&  killer1->to == sm->to
+          &&  killer1->movingPiece == sm->movingPiece) {
+        return true;        
+    }
+    return false;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// History table:
+//   This is a table of values indexed by moving piece and
+//   target square, indicating the historical success of each move
+//   as measured by the frequency of "good" (better than alpha)
+//   scores. It is used to order non-capture moves after killers.
+
+inline void
+Engine::ClearHistoryValues (void)
+{
+    for (pieceT p = WK; p <= BP; p++) {
+        for (squareT to = A1; to <= H8; to++) {
+            History[p][to] = 0;
+        }
+    }
+}
+
+inline void
+Engine::HalveHistoryValues (void)
+{
+    // Output("# Halving history values\n");
+    for (pieceT p = WK; p <= BP; p++) {
+        for (squareT to = A1; to <= H8; to++) {
+            History[p][to] /= 2;
+        }
+    }
+}
+
+inline void
+Engine::IncHistoryValue (simpleMoveT * sm, int increment)
+{
+    if (sm->capturedPiece != EMPTY  &&  sm->score >= 0) { return; }
+    if (sm->promote != EMPTY  &&  sm->score >= 0) { return; }
+    pieceT p = sm->movingPiece;
+    squareT to = sm->to;
+    ASSERT (p <= BP  &&  to <= H8);
+    History[p][to] += increment;
+    // Halve all history values if this one gets too large, to avoid
+    // non-capture moves getting searched before captures:
+    if (History[p][to] >= ENGINE_MAX_HISTORY) {
+        HalveHistoryValues();
+    }
+}
+
+inline int
+Engine::GetHistoryValue (simpleMoveT * sm)
+{
+    pieceT p = sm->movingPiece;
+    squareT to = sm->to;
+    ASSERT (p <= BP  &&  to <= H8);
+    return History[p][to];
+}
+
+void Engine::SetSearchDepth (uint ply) {
+    if (ply < 1) { ply = 1; }
+    if (ply > ENGINE_MAX_PLY) { ply = ENGINE_MAX_PLY; }
+    MaxDepth = ply;
+}
+
+void Engine::SetSearchTime (uint ms) {
+    MinSearchTime = SearchTime = MaxSearchTime = ms;
+}
+
+void Engine::SetSearchTime (uint min, uint ms, uint max) {
+    MinSearchTime = min;
+    SearchTime = ms;
+    MaxSearchTime = max;
+}
+
 inline int
 Engine::PieceValue (pieceT piece)
 {
@@ -917,44 +1105,6 @@ Engine::IsGettingMatedScore (int score)
     return (score < (-Infinity + (int)ENGINE_MAX_PLY));
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::PlayMove
-//   Play the specified move, not in a search.
-void
-Engine::PlayMove (simpleMoveT * sm) {
-    PushRepeat(&RootPos);
-    RootPos.DoSimpleMove(sm);
-    Pos.DoSimpleMove(sm);
-#ifdef WINCE
-    simpleMoveT * newMove = (simpleMoveT *) my_Tcl_Alloc(sizeof(simpleMoveT));
-#else
-    simpleMoveT * newMove = new simpleMoveT;
-#endif
-    *newMove = *sm;
-    GameMoves[NumGameMoves] = newMove;
-    NumGameMoves++;
-    // Change the transposition table sequence number:
-    TranTableSequence++;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::RetractMove
-//    Take back a move played in the game.
-void
-Engine::RetractMove (void)
-{
-    if (NumGameMoves == 0) { return; }
-    PopRepeat();
-    NumGameMoves--;
-    RootPos.UndoSimpleMove(GameMoves[NumGameMoves]);
-    Pos.UndoSimpleMove(GameMoves[NumGameMoves]);
-#ifdef WINCE
-    my_Tcl_Free((char *)GameMoves);
-#else
-    delete GameMoves[NumGameMoves];
-#endif
-    TranTableSequence--;
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::DoMove
@@ -1071,68 +1221,6 @@ Engine::RepeatedPosition (void)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::SetHashTableKilobytes
-//   Set the transposition table size in kilobytes.
-void
-Engine::SetHashTableKilobytes (uint size)
-{
-    // Compute the number of entries, which must be even:
-    uint bytes = size * 1024;
-    TranTableSize = bytes / sizeof(transTableEntryT);
-    if ((TranTableSize % 2) == 1) { TranTableSize--; }
-#ifdef WINCE
-    if (TranTable != NULL) { my_Tcl_Free((char *) TranTable); }
-    TranTable = (transTableEntryT*)my_Tcl_Alloc(sizeof ( transTableEntryT [TranTableSize]));
-#else
-    if (TranTable != NULL) { delete[] TranTable; }
-    TranTable = new transTableEntryT [TranTableSize];
-#endif
-    ClearHashTable();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::SetPawnTableKilobytes
-//   Set the pawn structure hash table size in kilobytes.
-void
-Engine::SetPawnTableKilobytes (uint size)
-{
-    // Compute the number of entries:
-    uint bytes = size * 1024;
-    PawnTableSize = bytes / sizeof(pawnTableEntryT);
-#ifdef WINCE
-    if (PawnTable != NULL) { my_Tcl_Free((char *) PawnTable); }
-    PawnTable = (pawnTableEntryT*)my_Tcl_Alloc(sizeof (pawnTableEntryT [PawnTableSize]) );
-#else
-    if (PawnTable != NULL) { delete[] PawnTable; }
-    PawnTable = new pawnTableEntryT [PawnTableSize];
-#endif
-    ClearPawnTable();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::ClearHashTable
-//   Clear the transposition table.
-void
-Engine::ClearHashTable (void)
-{
-    for (uint i = 0; i < TranTableSize; i++) {
-        TranTable[i].flags = SCORE_NONE;
-    }
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Engine::ClearPawnTable
-//   Clear the pawn structure hash table.
-void
-Engine::ClearPawnTable (void)
-{
-    for (uint i = 0; i < PawnTableSize; i++) {
-        PawnTable[i].pawnhash = 0;
-    }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // tte_Get/Set functions
 //   Helpers for packing/extracting transposition table entry fields.
 
@@ -1168,8 +1256,6 @@ inline void tte_GetBestMove (transTableEntryT * tte, simpleMoveT * bestMove)
     bestMove->to = bm & 63; bm >>= 6;
     bestMove->from = bm & 63;
 }
-
-static uint ProbeCounts[4] = {0};
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::StoreHash
@@ -1325,16 +1411,6 @@ static uint nFailHighFirstMove = 0;
 void
 Engine::SetPosition (Position * newpos)
 {
-    // Delete old game moves:
-    for (uint i=0; i < NumGameMoves; i++) {
-#ifdef WINCE
-        my_Tcl_Free((char *) GameMoves[i]);
-#else
-        delete GameMoves[i];
-#endif
-    }
-    NumGameMoves = 0;
-
     // Set the position:
     if (newpos == NULL) {
         RootPos.StdStart();
@@ -1482,17 +1558,6 @@ Engine::Think (MoveList * mlist)
         mlist->Sort();
     }
 
-    // Statistics for debugging:
-//    Output ("Hash probes: Exact:%u Upper:%u Lower:%u None:%u\n",
-//            ProbeCounts[SCORE_EXACT], ProbeCounts[SCORE_UPPER],
-//            ProbeCounts[SCORE_LOWER], ProbeCounts[SCORE_NONE]);
-//    Output ("Fail-High first move: %u / %u = %f\n", nFailHighFirstMove, nFailHigh,
-//            (double)nFailHighFirstMove * 100.0 / (double)nFailHigh);
-//    Output ("Pawn hash hits: %u / %u = %f\n", nPawnHashHits, nPawnHashProbes,
-//            (double)nPawnHashHits * 100.0 / (double)nPawnHashProbes);
-//    Output ("Full scores: %u / %u = %f\n", nScoreFull, nScoreCalls,
-//            (double)nScoreFull * 100.0 / (double) nScoreCalls);
-
     return bestScore;
 }
 
@@ -1614,7 +1679,6 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
     simpleMoveT hashmove;
     bool isOnlyMove = 0;
     scoreFlagT hashflag = ProbeHash (depth, &hashscore, &hashmove, &isOnlyMove);
-    ProbeCounts[hashflag]++;
 
     switch (hashflag) {
         case SCORE_NONE:
@@ -2276,13 +2340,8 @@ Engine::PrintPV (uint depth, int score, const char * note)
 {
     if (! PostInfo) { return; }
     uint ms = Elapsed.MilliSecs();
-    if (XBoardMode  &&  ms < 50  &&  Ply < 6) { return; }
 
-    if (XBoardMode) {
-        Output (" %2u %6d %5u %9u  ",  depth, score, ms / 10, NodeCount);
-    } else {
-        Output (" %2u %-3s %+6d %5u %9u  ", depth, note, score, ms, NodeCount);
-    }
+    Output (" %2u %-3s %+6d %5u %9u  ", depth, note, score, ms, NodeCount);
 
     principalVarT * pv = &(PV[0]);
     uint i;
@@ -2337,10 +2396,6 @@ Engine::OutOfTime ()
         IsOutOfTime = (ms > MaxSearchTime);
     } else {
         IsOutOfTime = (ms > SearchTime);
-    }
-
-    if (!IsOutOfTime  &&  CallbackFunction != NULL) {
-        IsOutOfTime = CallbackFunction (this, CallbackData);
     }
 
     return IsOutOfTime;

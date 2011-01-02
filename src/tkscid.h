@@ -529,7 +529,6 @@ int sc_report_select  (TCL_ARGS);
 
 int sc_pos            (TCL_ARGS);
 int sc_pos_addNag     (TCL_ARGS);
-int sc_pos_analyze    (TCL_ARGS);
 int sc_pos_bestSquare (TCL_ARGS);
 int sc_pos_getNags    (TCL_ARGS);
 int sc_pos_hash       (TCL_ARGS);
