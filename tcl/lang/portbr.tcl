@@ -910,6 +910,8 @@ translate B AddEloRatings {Adicionar ratings}
 translate B AutoloadGame {Carregar autom. o jogo numero}
 translate B StripTags {Remover tags PGN} ;# ***
 translate B StripTag {Remover tag} ;# ***
+# ====== TODO To be translated ======
+translate B CheckGames {Check games}
 translate B Cleaner {Limpador}
 translate B CleanerHelp {
 O Limpador do Scid executara todas as acoes de manutencao selecionadas da lista abaixo, no banco corrente.
@@ -1224,6 +1226,14 @@ translate B NameEditSelect {Jogos para editar}
 translate B NameEditReplace {Substituir}
 translate B NameEditWith {com}
 translate B NameEditMatches {Confere: Pressione Ctrl+1 a Ctrl+9 para selecionar}
+# ====== TODO To be translated ======
+translate B CheckGames {Check games}
+# ====== TODO To be translated ======
+translate B CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate B CheckAll {All games}
+# ====== TODO To be translated ======
+translate B CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate B Classify {Classificar}
@@ -1718,6 +1728,7 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
+
 
 
 

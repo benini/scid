@@ -860,23 +860,23 @@ int
 sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "autoload",     "close",        "count",        "create",
-        "current",      "description",  "duplicates",   "ecoStats",
-        "export",       "filename",     "import",       "inUse",
-        "isReadOnly",   "numGames",     "open",         "piecetrack",
-        "slot",         "sort",         "stats",        "switch",
-        "tag",          "tournaments",  "type",         "upgrade",
-        "fixCorrupted",
+        "autoload",     "check",        "close",        "count",
+		"create",       "current",      "description",  "duplicates",
+		"ecoStats",     "export",       "filename",     "import",
+		"inUse",        "isReadOnly",   "numGames",     "open",
+		"piecetrack",   "slot",         "sort",         "stats",
+		"switch",       "tag",          "tournaments",  "type",
+		"upgrade",      "fixCorrupted",
         NULL
     };
     enum {
-        BASE_AUTOLOAD,    BASE_CLOSE,       BASE_COUNT,       BASE_CREATE,
-        BASE_CURRENT,     BASE_DESCRIPTION, BASE_DUPLICATES,  BASE_ECOSTATS,
-        BASE_EXPORT,      BASE_FILENAME,    BASE_IMPORT,      BASE_INUSE,
-        BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,        BASE_PTRACK,
-        BASE_SLOT,        BASE_SORT,        BASE_STATS,       BASE_SWITCH,
-        BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,        BASE_UPGRADE,
-        BASE_FIX_CORRUPTED
+        BASE_AUTOLOAD,    BASE_CHECK,       BASE_CLOSE,       BASE_COUNT,
+		BASE_CREATE,      BASE_CURRENT,     BASE_DESCRIPTION, BASE_DUPLICATES,
+		BASE_ECOSTATS,    BASE_EXPORT,      BASE_FILENAME,    BASE_IMPORT,
+		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
+		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
+		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
+		BASE_UPGRADE,     BASE_FIX_CORRUPTED
     };
     int index = -1;
 
@@ -886,7 +886,10 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_AUTOLOAD:
         return sc_base_autoload (cd, ti, argc, argv);
 
-    case BASE_CLOSE:
+    case BASE_CHECK:
+        return sc_base_check (cd, ti, argc, argv);
+
+	case BASE_CLOSE:
         return sc_base_close (cd, ti, argc, argv);
 
     case BASE_COUNT:
@@ -1516,6 +1519,75 @@ sc_base_description (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     Tcl_AppendResult (ti, db->idx->GetDescription(), NULL);
     return TCL_OK;
 }
+
+
+int
+sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	bool showProgress = startProgressBar();
+    uint update = 5000;  
+    uint updateStart = 5000;
+	IndexEntry *ie = NULL;
+	Game *g = new Game();
+	char gameNumber[16];
+	bool limitToFilter = false;
+
+    if (argc != 3) {
+        return errorResult (ti, "Usage: sc_base check <bool:all_games>");
+    }
+    if (argv[2][0] == 'f')
+        limitToFilter = true;
+
+    if (! db->inUse) {
+        return errorResult (ti, errMsgNotOpen(ti));
+    }
+
+    DString *ErrorBuffer = new DString;
+
+    for (uint gameNum=0; gameNum < db->numGames; gameNum++) {
+
+        if (showProgress) {
+            update--;
+            if (update == 0) {
+                update = updateStart;
+                updateProgressBar (ti, gameNum, db->numGames);
+                if (interruptedProgress()) { break; }
+            }
+        }
+
+        if (limitToFilter  &&  db->filter->Get(gameNum) == 0) { continue; }
+
+        ie = db->idx->FetchEntry (gameNum);
+        if (ie->GetLength() == 0) {
+			sprintf( gameNumber, "%d", gameNum + 1);
+            ErrorBuffer->Append ("Game ", gameNumber, ": Unable to fetch index entry.\n");
+            continue;
+        }
+
+        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
+                                 ie->GetLength()) != OK) {
+			sprintf( gameNumber, "%d", gameNum + 1);
+            ErrorBuffer->Append ("Game ", gameNumber, ": Unable to read game buffer.\n");
+            continue;
+        }
+        uint ply = 0;
+
+		errorT ret = g->Decode (db->bbuf, GAME_DECODE_ALL);
+		if( ret != OK){
+			sprintf( gameNumber, "%d", gameNum + 1);
+            ErrorBuffer->Append ("Game ", gameNumber, ": Unable to decode game.\n");
+            continue;
+        }
+	}
+
+    if (showProgress) { updateProgressBar (ti, 1, 1); }
+
+	if (ErrorBuffer->Length() > 0) {
+        Tcl_AppendElement (ti, ErrorBuffer->Data());
+    } 
+    return (ErrorBuffer->Length() == 0) ? TCL_OK : TCL_ERROR;
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  exportGame:
@@ -5052,6 +5124,11 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Now copy each game from source to target:
     uint count = 0;
     uint targetCount = sourceBase->filter->Count();
+	targetBase->filter->SetCapacity( targetBase->numGames + targetCount);
+	if( targetBase->dbFilter != NULL)
+		targetBase->dbFilter->SetCapacity( targetBase->numGames + targetCount);
+	if( targetBase->treeFilter != NULL)
+		targetBase->treeFilter->SetCapacity( targetBase->numGames + targetCount);
 
     for (uint i=0; i < sourceBase->numGames; i++) {
         if (sourceBase->filter->Get(i) == 0) { continue; }
@@ -5071,12 +5148,9 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                                          ie->GetLength()) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
-        if (scratchGame->Decode (sourceBase->bbuf, GAME_DECODE_ALL) != OK) {
-            return errorResult (ti, "Error decoding game.");
-        }
-        scratchGame->LoadStandardTags (ie, sourceBase->nb);
-        if (sc_savegame (ti, scratchGame, 0, targetBase) != TCL_OK) {
-            return TCL_ERROR;
+
+		if (sc_savegame (ti, sourceBase, sourceBase->bbuf, ie, targetBase) != TCL_OK) {
+			return TCL_ERROR;
         }
     }
 
@@ -8167,6 +8241,129 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     }
     return OK;
 }
+
+
+int
+sc_savegame (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEntry * srcIe, scidBaseT * base)
+{
+    if (! base->inUse) {
+        Tcl_AppendResult (ti, errMsgNotOpen(ti), NULL);
+        return TCL_ERROR;
+    }
+    if (base->fileMode == FMODE_ReadOnly  &&  !(base->memoryOnly)) {
+        Tcl_AppendResult (ti, errMsgReadOnly(ti), NULL);
+        return TCL_ERROR;
+    }
+    if (base == clipbase   &&  base->numGames >= clipbaseMaxGames) {
+        char temp[200];
+        sprintf (temp, "Sorry, the clipbase has a limit of %u games.\n",
+                 clipbaseMaxGames);
+        Tcl_AppendResult (ti, temp, NULL);
+        return TCL_ERROR;
+    }
+
+    base->bbuf->Empty();
+    bool replaceMode = false;
+
+    // Grab a new idx entry, if needed:
+    IndexEntry iE;
+    iE.Init();
+    gameNumberT gNumber = 0;
+
+	memcpy( (void *) &iE, (void *) srcIe, sizeof(IndexEntry));
+
+    // add game without resetting the index, because it has been filled by game->encode above
+    if (base->idx->AddGame (&gNumber, &iE, false) != OK) {
+		Tcl_AppendResult (ti, "Too many games in this database.", NULL);
+		return TCL_ERROR;
+    }
+    base->numGames = base->idx->GetNumGames();
+  
+    base->bbuf->BackToStart();
+
+    // Now try writing the game to the gfile:
+    uint offset = 0;
+    if (base->gfile->AddGame (bbuf, &offset) != OK) {
+        Tcl_AppendResult (ti, "Error writing game file.", NULL);
+        return TCL_ERROR;
+    }
+    iE.SetOffset (offset);
+    iE.SetLength (bbuf->GetByteCount());
+
+    // Now we add the names to the NameBase
+    // If replacing, we decrement the frequency of the old names.
+    const char * s;
+    idNumberT id = 0;
+
+    // WHITE:
+	s = srcIe->GetWhiteName( sourceBase->nb);  if (!s) { s = "?"; }
+    if (base->nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
+        Tcl_AppendResult (ti, "Too many player names.", NULL);
+        return TCL_ERROR;
+    }
+    base->nb->IncFrequency (NAME_PLAYER, id, 1);
+    iE.SetWhite (id);
+
+    // BLACK:
+    s = srcIe->GetBlackName( sourceBase->nb);  if (!s) { s = "?"; }
+    if (base->nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
+        Tcl_AppendResult (ti, "Too many player names.", NULL);
+        return TCL_ERROR;
+    }
+    base->nb->IncFrequency (NAME_PLAYER, id, 1);
+    iE.SetBlack (id);
+
+    // EVENT:
+    s = srcIe->GetEventName( sourceBase->nb);  if (!s) { s = "?"; }
+    if (base->nb->AddName (NAME_EVENT, s, &id) == ERROR_NameBaseFull) {
+        Tcl_AppendResult (ti, "Too many event names.", NULL);
+        return TCL_ERROR;
+    }
+    base->nb->IncFrequency (NAME_EVENT, id, 1);
+    iE.SetEvent (id);
+
+    // SITE:
+    s = srcIe->GetSiteName( sourceBase->nb);  if (!s) { s = "?"; }
+    if (base->nb->AddName (NAME_SITE, s, &id) == ERROR_NameBaseFull) {
+        Tcl_AppendResult (ti, "Too many site names.", NULL);
+        return TCL_ERROR;
+    }
+    base->nb->IncFrequency (NAME_SITE, id, 1);
+    iE.SetSite (id);
+
+    // ROUND:
+    s = srcIe->GetRoundName( sourceBase->nb);  if (!s) { s = "?"; }
+    if (base->nb->AddName (NAME_ROUND, s, &id) == ERROR_NameBaseFull) {
+        Tcl_AppendResult (ti, "Too many round names.", NULL);
+        return TCL_ERROR;
+    }
+    base->nb->IncFrequency (NAME_ROUND, id, 1);
+    iE.SetRound (id);
+
+    // Last of all, we write the new idxEntry, but NOT the index header
+    // or the name file, since there might be more games saved yet and
+    // writing them now would then be a waste of time.
+
+    if (base->idx->WriteEntries (&iE, gNumber, 1) != OK) {
+        Tcl_AppendResult (ti, "Error writing index file.", NULL);
+        return TCL_ERROR;
+    }
+
+    // We need to increase the filter size if a game was added:
+    if (! replaceMode) {
+        base->filter->Append (1);  // Added game is in filter by default.
+        if (base->duplicates != NULL) {
+#ifdef WINCE
+          my_Tcl_Free((char*)base->duplicates);
+#else
+            delete[] base->duplicates;
+#endif
+            base->duplicates = NULL;
+        }
+    }
+    return OK;
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_save:

@@ -1063,6 +1063,8 @@ translate R AddEloRatings {Добавить рейтинги Elo}
 translate R AutoloadGame {Автозагрузка номера партии}
 translate R StripTags {Удалить теги PGN}
 translate R StripTag {Удалить теги}
+# ====== TODO To be translated ======
+translate R CheckGames {Check games}
 translate R Cleaner {Чистильщик}
 translate R CleanerHelp {
 Чистильщик Scid произведен все поддерживаемые действия, которые вы выбрали в списке ниже, над текущей базой данных.
@@ -1428,6 +1430,14 @@ translate R NameEditSelect {Партии для редактирования}
 translate R NameEditReplace {Заменить}
 translate R NameEditWith {с}
 translate R NameEditMatches {Совпадения: Нажмите Ctrl+1 - Ctrl+9 для выбора}
+# ====== TODO To be translated ======
+translate R CheckGames {Check games}
+# ====== TODO To be translated ======
+translate R CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate R CheckAll {All games}
+# ====== TODO To be translated ======
+translate R CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate R Classify {Классифицировать}
@@ -2192,6 +2202,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

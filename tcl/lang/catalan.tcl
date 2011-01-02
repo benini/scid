@@ -937,6 +937,8 @@ translate K AddEloRatings {Afegir classificació Elo}
 translate K AutoloadGame {Autocargar número de partida}
 translate K StripTags {Treure etiquetes PGN}
 translate K StripTag {Treure etiquetes}
+# ====== TODO To be translated ======
+translate K CheckGames {Check games}
 translate K Cleaner {MultiEines}
 translate K CleanerHelp {
 Scid executarà, a l'actual base de dades, totes les accions de manteniment
@@ -1253,6 +1255,14 @@ translate K NameEditSelect {Partides a editar}
 translate K NameEditReplace {Reemplaçar}
 translate K NameEditWith {amb}
 translate K NameEditMatches {Ja hi son: Presionar Ctrl+1 a Ctrl+9 per seleccionar-ne}
+# ====== TODO To be translated ======
+translate K CheckGames {Check games}
+# ====== TODO To be translated ======
+translate K CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate K CheckAll {All games}
+# ====== TODO To be translated ======
+translate K CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate K Classify {Classificar}
@@ -1729,6 +1739,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

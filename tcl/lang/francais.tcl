@@ -911,6 +911,8 @@ translate F AddEloRatings {Ajouter les classements Elo}
 translate F AutoloadGame {Chargement automatique du numéro de partie}
 translate F StripTags {Enlever les marqueurs PGN}
 translate F StripTag {Enlever les marqueurs}
+# ====== TODO To be translated ======
+translate F CheckGames {Check games}
 translate F Cleaner {Nettoyer}
 translate F CleanerHelp {
 Le Nettoyeur Scid va réaliser pour la base en cours toutes les actions de maintenance que vous avez sélectionné à partir de la liste ci-dessous.
@@ -1226,6 +1228,14 @@ translate F NameEditSelect {Parties à éditer}
 translate F NameEditReplace {Remplacer}
 translate F NameEditWith {avec}
 translate F NameEditMatches {Correspondances: Presser Alt+1 à Alt+9 pour sélectionner}
+# ====== TODO To be translated ======
+translate F CheckGames {Check games}
+# ====== TODO To be translated ======
+translate F CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate F CheckAll {All games}
+# ====== TODO To be translated ======
+translate F CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate F Classify {Classer}
@@ -1868,6 +1878,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

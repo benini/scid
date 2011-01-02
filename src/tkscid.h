@@ -404,6 +404,7 @@ int sc_base_filename  (TCL_ARGS);
 int sc_base_inUse     (TCL_ARGS);
 int sc_base_duplicates (TCL_ARGS);
 int sc_base_open      (TCL_ARGS);
+int sc_base_check     (TCL_ARGS);
 int sc_createbase     (Tcl_Interp * ti, const char * filename,
                        scidBaseT * base, bool memoryOnly);
 int sc_base_create    (TCL_ARGS);
@@ -486,6 +487,7 @@ int sc_game_pgn       (TCL_ARGS);
 int sc_game_pop       (TCL_ARGS);
 int sc_game_push      (TCL_ARGS);
 int sc_savegame       (Tcl_Interp *, Game * game, gameNumberT, scidBaseT *);
+int sc_savegame       (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEntry * srcIe, scidBaseT * base);
 int sc_game_save      (TCL_ARGS);
 int sc_game_scores    (TCL_ARGS);
 int sc_game_startBoard (TCL_ARGS);

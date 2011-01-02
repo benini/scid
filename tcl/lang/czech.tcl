@@ -895,6 +895,8 @@ translate C AddEloRatings {Pøidat ELO rating}
 translate C AutoloadGame {Automaticky otevírat partii è.}
 translate C StripTags {Odstranit PGN znaèky}
 translate C StripTag {Odstranit znaèku}
+# ====== TODO To be translated ======
+translate C CheckGames {Check games}
 translate C Cleaner {Èi¹tìní databáze}
 translate C CleanerHelp {
     Èi¹tìním databáze Scid provede u aktuální databáze v¹echny údr¾báøské akce, které zvolíte v seznamu.
@@ -1210,6 +1212,14 @@ translate C NameEditSelect {Partie k editaci}
 translate C NameEditReplace {Nahradit}
 translate C NameEditWith {}
 translate C NameEditMatches {Shoduje se: Stiskni Ctrl+1 a¾ Ctrl+9 pro výbìr}
+# ====== TODO To be translated ======
+translate C CheckGames {Check games}
+# ====== TODO To be translated ======
+translate C CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate C CheckAll {All games}
+# ====== TODO To be translated ======
+translate C CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate C Classify {Klasifikace}
@@ -5300,6 +5310,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

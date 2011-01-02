@@ -79,6 +79,7 @@ class Filter
     byte    Get (uint index);               // Gets the value at index.
     void    Fill (byte value);              // Sets all values.
     void    Append (byte value);            // Appends one value.
+	void    SetCapacity(uint size);
     uint    IndexToFilteredCount (uint index);
     uint    FilteredCountToIndex (uint filteredCount);
     const byte *  GetData () {

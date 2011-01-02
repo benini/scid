@@ -945,6 +945,8 @@ translate U AddEloRatings {Lis‰‰ Elo-luvut}
 translate U AutoloadGame {Lataa automaattisesti peli nro}
 translate U StripTags {Poista PGN-merkinn‰t}
 translate U StripTag {Poista merkint‰}
+# ====== TODO To be translated ======
+translate U CheckGames {Check games}
 translate U Cleaner {Puhdistaja}
 translate U CleanerHelp {
 Scidin Puhdistaja tekee nykyiselle tietokannalle alla olevasta listasta valitsemasi yll‰pitotoimet.
@@ -1263,6 +1265,14 @@ translate U NameEditSelect {Muokattavat pelit}
 translate U NameEditReplace {Korvaa}
 translate U NameEditWith {kanssa}
 translate U NameEditMatches {Osumat: Tee valinta painamalla Ctrl+1 - Ctrl+9}
+# ====== TODO To be translated ======
+translate U CheckGames {Check games}
+# ====== TODO To be translated ======
+translate U CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate U CheckAll {All games}
+# ====== TODO To be translated ======
+translate U CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate U Classify {Luokittele}
@@ -1721,5 +1731,6 @@ translate U ChangeIcon {Vaihda kuvake...}
 
 }
 # end of english.tcl
+
 
 

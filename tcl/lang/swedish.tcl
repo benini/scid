@@ -1059,6 +1059,8 @@ translate W AddEloRatings {Lägg till Elorating}
 translate W AutoloadGame {Ladda partinummer automatiskt}
 translate W StripTags {Avlägsna PGN-taggar}
 translate W StripTag {Avlägsna taggar}
+# ====== TODO To be translated ======
+translate W CheckGames {Check games}
 translate W Cleaner {Snygga till databasen}
 translate W CleanerHelp {
 Databasstädaren i Scid genomför allt det underhåll av databasen du väljer nedan på den aktiva databasen.
@@ -1404,6 +1406,14 @@ translate W NameEditSelect {Partier att redigera}
 translate W NameEditReplace {Ersätt}
 translate W NameEditWith {med}
 translate W NameEditMatches {Matchar: Tryck Ctrl+1 till Ctrl+9 för att välja}
+# ====== TODO To be translated ======
+translate W CheckGames {Check games}
+# ====== TODO To be translated ======
+translate W CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate W CheckAll {All games}
+# ====== TODO To be translated ======
+translate W CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate W Classify {Klassificera}
@@ -7179,6 +7189,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

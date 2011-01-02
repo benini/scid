@@ -1058,6 +1058,8 @@ translate Y AddEloRatings {Dodaj Elo rejtinge}
 translate Y AutoloadGame {Autoload game number} ;# ***
 translate Y StripTags {Strip PGN tags} ;# ***
 translate Y StripTag {Strip tag} ;# ***
+# ====== TODO To be translated ======
+translate Y CheckGames {Check games}
 translate Y Cleaner {Èistaè}
 translate Y CleanerHelp {
 Scid Èistaè æe da primeni sve akcije odr¾avanja koje izaberete iz donje liste, na tekuæu bazu.
@@ -1401,6 +1403,14 @@ translate Y NameEditSelect {Partije za izmenu}
 translate Y NameEditReplace {Zameni}
 translate Y NameEditWith {sa}
 translate Y NameEditMatches {Podudara se: Pritisni Ctrl+1 do Ctrl+9 za izbor}
+# ====== TODO To be translated ======
+translate Y CheckGames {Check games}
+# ====== TODO To be translated ======
+translate Y CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate Y CheckAll {All games}
+# ====== TODO To be translated ======
+translate Y CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate Y Classify {Klasifikuj}
@@ -2163,6 +2173,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

@@ -71,7 +71,22 @@ Filter::Append (byte value)
     ASSERT (FilterSize <= Capacity);
     if (FilterSize == Capacity) {
         // Data array is full, extend it in chunks of 1000:
-        Capacity += 1000;
+		SetCapacity(Capacity + 1000);
+    }
+    Data[FilterSize] = value;
+    FilterSize++;
+    if (value != 0) { FilterCount++; }
+    CachedFilteredCount = 0;
+    CachedIndex = 0;
+}
+
+void
+Filter::SetCapacity(uint size)
+{
+    if (size > Capacity) 
+	{
+        // Data array is full, extend it in chunks of 1000:
+        Capacity = size;
 #ifdef WINCE
         byte * newData = (byte *)my_Tcl_Alloc(sizeof(byte [Capacity]));
 #else
@@ -94,11 +109,6 @@ Filter::Append (byte value)
         oldDataTree = newOldDataTree;
 #endif
     }
-    Data[FilterSize] = value;
-    FilterSize++;
-    if (value != 0) { FilterCount++; }
-    CachedFilteredCount = 0;
-    CachedIndex = 0;
 }
 
 

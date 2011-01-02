@@ -1065,6 +1065,8 @@ translate P AddEloRatings {Dodaj rankingi ELO}
 translate P AutoloadGame {Domy¶lna partia}
 translate P StripTags {Usuñ znaczniki PGN} 
 translate P StripTag {Usuñ znacznik}
+# ====== TODO To be translated ======
+translate P CheckGames {Check games}
 translate P Cleaner {Zestaw zadañ}
 translate P CleanerHelp {
 Zestaw zadañ pozwala wykonaæ od razu kilka operacji porz±dkowania bazy. Operacje wybrane z listy
@@ -1409,6 +1411,14 @@ translate P NameEditSelect {Partie do edycji}
 translate P NameEditReplace {Zast±p}
 translate P NameEditWith {przez}
 translate P NameEditMatches {Pasuj±ce: Ctrl+1 do Ctrl+9 wybiera}
+# ====== TODO To be translated ======
+translate P CheckGames {Check games}
+# ====== TODO To be translated ======
+translate P CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate P CheckAll {All games}
+# ====== TODO To be translated ======
+translate P CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate P Classify {Przyporz±dkowanie ECO}
@@ -2390,6 +2400,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

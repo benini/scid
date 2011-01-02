@@ -981,6 +981,8 @@ translate I AddEloRatings {Aggiungi punteggio Elo}
 translate I AutoloadGame {Numero della partita che si caricher� automaticamente}
 translate I StripTags {Toglie i PGN tags}
 translate I StripTag {Toglie i tag}
+# ====== TODO To be translated ======
+translate I CheckGames {Check games}
 translate I Cleaner {Manutentore Globale}
 translate I CleanerHelp {La finestra Manutentore Globale effettura' tutte le operazioni che verranno selezionate dalla lista sottostante, sul database corrente.
 
@@ -1292,6 +1294,14 @@ translate I NameEditSelect {Partite da editare}
 translate I NameEditReplace {Sostituisci}
 translate I NameEditWith {con}
 translate I NameEditMatches {Corrispondenze: Digita da Ctrl+1 ad Ctrl+9 per scegliere}
+# ====== TODO To be translated ======
+translate I CheckGames {Check games}
+# ====== TODO To be translated ======
+translate I CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate I CheckAll {All games}
+# ====== TODO To be translated ======
+translate I CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate I Classify {Classifica}
@@ -2081,6 +2091,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

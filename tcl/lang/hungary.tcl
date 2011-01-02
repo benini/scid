@@ -916,6 +916,8 @@ translate H AutoloadGame {Játszmasorszám automatikus betöltése}
 #Igaz ez?
 translate H StripTags {PGN-címkék eltüntetése}
 translate H StripTag {Címke eltüntetése}
+# ====== TODO To be translated ======
+translate H CheckGames {Check games}
 translate H Cleaner {Takarító}
 translate H CleanerHelp {
 SCID Takarítója el fogja végezni az aktuális adatbázison az összes olyan gondozási feladatot, amelyet az alábbi listáról kijelölsz.
@@ -1230,6 +1232,14 @@ translate H NameEditSelect {Szerkesztendõ játszmák}
 translate H NameEditReplace {Cserél}
 translate H NameEditWith {Erre}
 translate H NameEditMatches {Egyezések: Ctrl+1...Ctrl+9 választ.}
+# ====== TODO To be translated ======
+translate H CheckGames {Check games}
+# ====== TODO To be translated ======
+translate H CheckGamesWhich {Check games}
+# ====== TODO To be translated ======
+translate H CheckAll {All games}
+# ====== TODO To be translated ======
+translate H CheckSelectFilterGames {Only games in filter}
 
 # Classify window:
 translate H Classify {Osztályoz}
@@ -1940,6 +1950,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 
