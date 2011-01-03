@@ -5488,6 +5488,7 @@ sc_filter_reset (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_filter_clear:
 //    Takes an optional base number (defaults to current base) and 
 //    clears all filters ie. db filter as well as tree filter
+//    To clear only the tree filter use sc_tree clean
 int
 sc_filter_clear (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {

@@ -62,9 +62,7 @@ proc ::tree::make { { baseNumber -1 } } {
   if {$baseNumber == -1} {set baseNumber [sc_base current]}
   
   if {[winfo exists .treeWin$baseNumber]} {
-    # focus .
-    # destroy .treeWin$baseNumber
-    # set treeWin$baseNumber 0
+	 ::tree::closeTree $baseNumber
     return
   }
   
@@ -88,8 +86,8 @@ proc ::tree::make { { baseNumber -1 } } {
   set tree(bestRes$baseNumber) "1-0 0-1 1/2 *"
   trace variable tree(bestRes$baseNumber) w "::tree::doTrace bestRes"
   
-  bind $w <Destroy> " set ::treeWin$baseNumber 0; set tree(locked$baseNumber) 0 "
-  bind $w <F1> { helpWindow Tree }
+  bind $w <Destroy> "set ::treeWin$baseNumber 0; set tree(locked$baseNumber) 0; sc_tree clean $baseNumber; ::windows::gamelist::Refresh; ::windows::stats::Refresh; "
+  bind $w <F1> { helpWindow Tree } 
   bind $w <Escape> "::tree::hideCtxtMenu $baseNumber ; .treeWin$baseNumber.buttons.stop invoke "
   
   # Bind left button to close ctxt menu:
@@ -314,6 +312,9 @@ proc ::tree::closeTree {baseNumber} {
     }
     destroy .treeWin$baseNumber
   }
+  sc_tree clean $baseNumber
+  ::windows::gamelist::Refresh
+  ::windows::stats::Refresh; 
 }
 ################################################################################
 proc ::tree::doTrace { prefix name1 name2 op} {

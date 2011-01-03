@@ -4008,7 +4008,8 @@ Game::DecodeStart (ByteBuffer * buf)
     if (err != OK) { return err; }
 
     // First the tags: just skip them for speed.
-    NumTags = 0;
+    //--// removed due to Gerds Hints
+	 //--// NumTags = 0;
     err = skipTags (buf);
     if (err != OK) { return err; }
 
