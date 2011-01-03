@@ -5690,6 +5690,21 @@ initFilter( scidBaseT * dbase, byte value)
     }
 }
 
+void initDbFilter( scidBaseT * dbase)
+{
+    if( dbase->dbFilter == NULL)
+    {
+        if( dbase->treeFilter == NULL) {
+            dbase->dbFilter = dbase->filter;
+        }
+		else {
+            dbase->dbFilter = new Filter (db->numGames);
+            dbase->treeFilter = db->filter->Clone();
+        }
+    }
+    updateMainFilter(dbase);
+}
+
 void initDbFilter( scidBaseT * dbase, byte value)
 {
     if( dbase->dbFilter == NULL)
@@ -14360,7 +14375,7 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
-    initDbFilter (db, 1);
+    initDbFilter (db);
 
     switch (index) {
     case OPT_BOARD:
@@ -14449,7 +14464,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     flip = strGetBoolean (argv[5]);
 
     if( db->dbFilter == NULL) {
-        initDbFilter (db, 1);
+        initDbFilter (db);
     }
 
     Position * pos = db->game->GetCurrentPos();
