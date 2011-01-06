@@ -107,12 +107,7 @@ private:
     uint            Hash;           // Hash value.
     uint            PawnHash;       // Pawn structure hash value.
 
-//    uint            NumChecks;      // Number of checks.
-//    SquareList      CheckSquares;   // Stores list of pieces checking the king.
-
-    MoveList      * LegalMoves;     // list of legal moves
-    sanListT      * SANStrings;     // SAN list of legal move strs
-
+    MoveList        LegalMoves;     // list of legal moves
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Position:  Private Functions
@@ -164,14 +159,7 @@ public:
 #endif
     Position()   { Init(); }
     Position(const Position& p);
-    ~Position()  {
-                     if (LegalMoves != NULL) { delete LegalMoves; }
-#ifdef WINCE
-                     if (SANStrings != NULL) { my_Tcl_Free((char*) SANStrings); }
-#else
-                     if (SANStrings != NULL) { delete SANStrings; }
-#endif
-                  }
+    ~Position()  {}
 
     void        Init();
     void        Clear();        // No pieces on board
@@ -182,7 +170,7 @@ public:
     // Set and Get attributes -- one-liners
     byte        PieceCount (pieceT p)    { return Material[p]; }
     byte *      GetMaterial ()           { return Material; }
-    void        SetEPTarget (squareT s)  { EPTarget = s; }
+    void        SetEPTarget (squareT s)  { EPTarget = s; LegalMoves.Clear();}
     squareT     GetEPTarget ()           { return EPTarget; }
     bool        GetEPFlag ()             { return (EPTarget != NS); }
     void        SetToMove (colorT c)     { ToMove = c; }
@@ -190,8 +178,6 @@ public:
     void        SetPlyCounter (ushort x) { PlyCounter = x; }
     ushort      GetPlyCounter ()         { return PlyCounter; }
     ushort      GetFullMoveCount ()      { return PlyCounter / 2 + 1; }
-    sanListT *  GetSANStrings ()         { return SANStrings; }
-    MoveList *  GetLegalMoves ()         { return LegalMoves; }
 
     // Methods to get the Board or piece lists -- used in game.cpp to
     // decode moves:
@@ -237,18 +223,10 @@ public:
     bool        GetCastling (colorT c, castleDirT dir);
     inline bool CastlingPossible () { return (Castling ? true : false); }
     byte        GetCastlingFlags () { return Castling; }
-    void        SetCastlingFlags (byte b) { Castling = b; }
+    void        SetCastlingFlags (byte b) { Castling = b; LegalMoves.Clear(); }
 
-    void        SetStrictCastling (bool b) { StrictCastling = b; }
+    void        SetStrictCastling (bool b) { StrictCastling = b; LegalMoves.Clear(); }
     bool        GetStrictCastling (void) { return StrictCastling; }
-
-    // Allocating memory  -- maybe these should be private??
-    void        AllocLegalMoves ();
-    void        AllocSANStrings ();
-
-    // Clearing data structures
-    void        ClearLegalMoves ();
-    void        ClearSANStrings ();
 
     // Hashing
     inline uint HashValue (void) { return Hash; }
@@ -302,7 +280,7 @@ public:
 
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
     void        MakeUCIString (simpleMoveT * sm, char * s);
-    void        CalcSANStrings (sanFlagT flag);
+    void        CalcSANStrings (sanListT *sanList, sanFlagT flag);
 
     errorT      ReadCoordMove (simpleMoveT * m, const char * s, bool reverse);
     errorT      ReadMove (simpleMoveT * m, const char * s, tokenT t);
@@ -376,55 +354,6 @@ Position::GetCastling (colorT c, castleDirT dir)
     if (dir == KSIDE) b += b;
     // Now b == 1 or 2 (white flags), or 4 or 8 (black flags)
     if (Castling & b) { return true; } else { return false; }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::AllocLegalMoves():
-//      Allocate the legal moves list.
-//
-inline void
-Position::AllocLegalMoves ()
-{
-    ASSERT (LegalMoves == NULL);
-    LegalMoves = new MoveList();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::AllocSANStrings():
-//      Allocate the SAN strings list.
-//
-inline void
-Position::AllocSANStrings ()
-{
-    ASSERT (SANStrings == NULL);
-#ifdef WINCE
-    SANStrings = (sanListT*)my_Tcl_Alloc( sizeof(sanListT) );
-#else
-    SANStrings = new sanListT;
-#endif
-    SANStrings->current = false;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ClearLegalMoves():
-//      Reset the legal moves list.
-//
-inline void
-Position::ClearLegalMoves ()
-{
-    if (LegalMoves == NULL) { AllocLegalMoves(); }
-    LegalMoves->Clear();
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::ClearSANStrings():
-//      Reset the SAN moves list.
-//
-inline void
-Position::ClearSANStrings ()
-{
-    if (SANStrings) { SANStrings->current = false; }
-    else            { AllocSANStrings(); }
 }
 
 #endif  // SCID_POSITION_H
