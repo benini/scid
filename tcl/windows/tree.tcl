@@ -1458,7 +1458,8 @@ proc ::tree::mask::open { {filename ""} } {
     set types {
       {{Tree Mask Files}       {.stm}        }
     }
-    set filename [tk_getOpenFile -filetypes $types -defaultextension ".stm"]
+    set filename [tk_getOpenFile -initialdir $::initialDir(stm) -filetypes $types -defaultextension ".stm"]
+	 set ::initialDir(stm) [file dirname $filename]
   }
   
   if {$filename != ""} {

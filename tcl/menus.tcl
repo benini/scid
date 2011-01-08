@@ -1022,7 +1022,7 @@ $m add command -label OptionsSave -command {
     }
     puts $optionF ""
     puts $optionF "set glistFields [list $glistFields]"
-    foreach type {base book html tex tablebase1 tablebase2 tablebase3 tablebase4} {
+    foreach type {base book html tex epd stm pgn report tablebase1 tablebase2 tablebase3 tablebase4} {
       puts $optionF "set initialDir($type) [list $initialDir($type)]"
     }
     puts $optionF ""

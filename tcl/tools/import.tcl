@@ -171,9 +171,10 @@ proc importPgnFile {} {
       { "All files" {"*"} }
     }
   }
-  set fnames [tk_getOpenFile -multiple 1 -filetypes $ftypes -title "Import from PGN files" ]
+  set fnames [tk_getOpenFile -multiple 1 -initialdir $::initialDir(pgn) -filetypes $ftypes -title "Import from PGN files" ]
   if {$fnames == ""} { return }
   
+  set ::initialDir(pgn) [file dirname [lindex $fnames 0]]
   foreach fname $fnames {
     doPgnFileImport $fname "" 1
   }

@@ -376,10 +376,12 @@ set ::uci::uciInfo(binc3) [expr 10 * 1000 ]
 
 # Defaults for initial directories:
 set initialDir(base) "."
+set initialDir(pgn) "."
 set initialDir(book) "."
 set initialDir(epd) "."
 set initialDir(html) "."
 set initialDir(tex)  "."
+set initialDir(stm)  "."
 set initialDir(report) "."
 set initialDir(tablebase1) ""
 set initialDir(tablebase2) ""
