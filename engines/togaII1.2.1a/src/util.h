@@ -23,11 +23,15 @@
 #  define DEBUG FALSE
 #endif
 
-#ifdef _MSC_VER
+#if defined( _MSC_VER ) || defined( __MINGW32__ )
 #  define S64_FORMAT "%I64d"
-#  define U64_FORMAT "%016I64X"
 #else
 #  define S64_FORMAT "%lld"
+#endif
+
+#ifdef _MSC_VER
+#  define U64_FORMAT "%016I64X"
+#else
 #  define U64_FORMAT "%016llX"
 #endif
 
