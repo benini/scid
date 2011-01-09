@@ -380,6 +380,23 @@ StoredLine::GetGame (uint code)
     return storedLineGames [code];
 }
 
+StoredLine::StoredLine(Position* pos) {
+	if (storedLineGames == NULL) {      Init();    }
+
+	for (int line = StoredLine::Count(); line > 0; --line) {
+		Game * lineGame = storedLineGames [line];
+		lineGame->MoveToPly (0);
+		bool never_match = false;
+		if (lineGame->ExactMatch (pos, NULL, &storedLineMoves_[line], &never_match)) {
+			if (storedLineMoves_[line].from != NULL_SQUARE) {
+				storedLineMatches_[line] = lineGame->GetCurrentPly() + 1;
+			}
+		} else
+			if (never_match) storedLineMatches_[line] = -1;
+			else storedLineMatches_[line] = 0;
+	}
+}
+
 //////////////////////////////////////////////////////////////////////
 //  EOF:    stored.cpp
 //////////////////////////////////////////////////////////////////////

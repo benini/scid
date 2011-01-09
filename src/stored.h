@@ -22,6 +22,8 @@ const uint MAX_STORED_LINES = 256;
 class StoredLine {
 
   private:
+	int storedLineMatches_ [MAX_STORED_LINES];
+  	simpleMoveT storedLineMoves_ [MAX_STORED_LINES];
 
     static void Init (void);
 
@@ -45,6 +47,14 @@ class StoredLine {
 
 #endif  
 
+	StoredLine(Position* pos);
+	bool CanMatch(uint ln, uint* ply, simpleMoveT* sm){
+		if (ln == 0 || ln > StoredLine::Count()) return true;
+		if (storedLineMatches_[ln] < 0 ) return false;
+		*ply = storedLineMatches_[ln];
+		if (storedLineMatches_[ln] > 0) *sm = storedLineMoves_[ln];
+		return true;
+	}
     static void FreeStoredLine ();
     static uint Count (void);
     static const char * GetText (uint code);

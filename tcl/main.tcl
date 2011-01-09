@@ -839,29 +839,10 @@ proc updateBoard {args} {
         if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
         if {! [string compare $arg "-animate"]} { set animate 1 }
     }
-    
-    # Remove marked squares informations.
-    # (This must be done _before_ updating the board!)
-    ::board::mark::clear .main.board
-    
+   
     ::board::resize .main.board $boardSize
+    ::board::setmarks .main.board [sc_pos getComment]
     ::board::update .main.board [sc_pos board] $animate
-    ::board::material .main.board
-    
-    # Draw arrows and marks, color squares:
-    
-    foreach {cmd discard} [::board::mark::getEmbeddedCmds [sc_pos getComment]] {
-        set type   [lindex $cmd 0]
-        set square [::board::sq [lindex $cmd 1]]
-        set color  [lindex $cmd end]
-        if {[llength $cmd] < 4} { set cmd [linsert $cmd 2 ""] }
-        set dest   [expr {[string match {[a-h][1-8]} [lindex $cmd 2]] \
-                    ? [::board::sq [lindex $cmd 2]] : [lindex $cmd 2]}]
-        # add mark to board
-        eval ::board::mark::add .main.board $type $square $dest $color
-    }
-    
-    ::board::lastMoveHighlight .main.board
     
     # Update the status of each navigation button:
     if {[sc_pos isAt start]} {
@@ -1232,7 +1213,6 @@ proc togglePhotosSize {} {
 # Globals for mouse-based move input:
 
 set selectedSq -1
-set currentSq -1
 set bestSq -1
 
 set EMPTY 0
@@ -1485,17 +1465,16 @@ proc addSanMove {san {animate ""} {noTraining ""}} {
 #   legal move to or from this square), and colors the squares
 #   to indicate the suggested move.
 #
-proc enterSquare { square } {
-    global highcolor currentSq bestSq bestcolor selectedSq suggestMoves
-    set currentSq $square
+proc enterSquare { square } {	
+    global bestSq bestcolor selectedSq suggestMoves
     if {$selectedSq == -1} {
         set bestSq -1
         if {$suggestMoves} {
             set bestSq [sc_pos bestSquare $square]
-        }
-        if {[expr {$bestSq != -1}]} {
-            ::board::colorSquare .main.board $square $bestcolor
-            ::board::colorSquare .main.board $bestSq $bestcolor
+            if {$bestSq != -1} {
+                ::board::colorSquare .main.board $square $bestcolor
+                ::board::colorSquare .main.board $bestSq $bestcolor        
+            }
         }
     }
 }
@@ -1505,15 +1484,10 @@ proc enterSquare { square } {
 #    Recolors squares to normal (lite/dark) color.
 #
 proc leaveSquare { square } {
-    global currentSq selectedSq bestSq
-    #Klimmek: not needed anymore
-    #  if {$square != $selectedSq} {
-    #    ::board::colorSquare .main.board $square
-    #  }
-    if {$bestSq != -1} {
-        #Klimmek: changed, because Scid "hangs" very often (after 5-7 moves)
-        #    ::board::colorSquare .main.board $bestSq
-        ::board::update .main.board
+    global selectedSq bestSq
+    if {$selectedSq == -1} {
+        ::board::colorSquare .main.board $bestSq
+        ::board::colorSquare .main.board $square  
     }
 }
 
@@ -1577,7 +1551,7 @@ proc releaseSquare { w x y } {
     
     if { [winfo exists .calvarWin] } { return }
     
-    global selectedSq bestSq currentSq
+    global selectedSq bestSq
     
     ::board::setDragSquare $w -1
     set square [::board::getSquare $w $x $y]

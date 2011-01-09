@@ -950,6 +950,8 @@ scid-4.3
 	    - Blunder-check annotation spots faster mates, regardless of threshold.
 	    - Annotation adds - in all modes - a '?!' nag if the main move is significantly (informant value)
 	      stronger than the best move the engine expected.
+		 - Finish game now allows for a shootout between two UCI engines
+			if two engines are opened.
 	* PGN import always opened in Scids bin folder, now use last dir instead and store it.
 	* Mask files folder location gets stored and reused
 - New features:

@@ -1056,7 +1056,7 @@ if {$png_image_support} {
 
 namespace eval ::board {
   
-  namespace export sq san colorSquare isFlipped
+  namespace export sq
   
   # List of square names in order; used by sq procedure.
   variable squareIndex [list a1 b1 c1 d1 e1 f1 g1 h1 a2 b2 c2 d2 e2 f2 g2 h2 \
@@ -1139,7 +1139,6 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
     set y2 [expr {$y1 + $psize }]
     
     $bd create rectangle $x1 $y1 $x2 $y2 -tag sq$i -outline ""
-    ::board::colorSquare $w $i
   }
   
   # Set up coordinate labels:
@@ -1333,47 +1332,19 @@ proc ::board::showMarks {w value} {
 proc ::board::colorSquare {w i {color ""}} {
   if {$i < 0  ||  $i > 63} { return }
   if {$color != ""} {
-    $w.bd delete br$i
-    $w.bd itemconfigure sq$i -fill $color -outline "" ;# -outline $color
-    return
-  }
-  set color [::board::defaultColor $i]
-  $w.bd itemconfigure sq$i -fill $color -outline "" ; #-outline $color
-  #this inserts a textures on a square and restore piece
-  set midpoint [::board::midSquare $w $i]
-  set xc [lindex $midpoint 0]
-  set yc [lindex $midpoint 1]
-  set psize $::board::_size($w)
-  set boc bgd$psize
-  if { ($i + ($i / 8)) % 2 } { set boc bgl$psize }
-  $w.bd delete br$i
-  
-  $w.bd create image $xc $yc -image $boc -tag br$i
-  # otherwise clicking 3 times on an empty square will prevent the binding to work
-  $w.bd lower br$i p$i
-  
-  set piece [string index $::board::_data($w) $i]
-  if { $piece != "." } {
-    set flip $::board::_flip($w)
-    $w.bd delete p$i
-    $w.bd create image $xc $yc -image $::board::letterToPiece($piece)$psize -tag p$i
-  }
-  
-  if {[info exists ::board::_mark($w)]} {
-    set color ""
+    $w.bd itemconfigure br$i -state hidden
+  } else {
+    set color [::board::defaultColor $i]
+    set brstate "normal"
     foreach mark $::board::_mark($w) {
-      set type   [lindex $mark 0]
-      set square [lindex $mark 1]
-      if {$square == $i} {
-        if {$type == "full"} { set color [lindex $mark 3] }
-        if {$type == "DEL"}  { set color "" }
+      if {[lindex $mark 1] == $i && [lindex $mark 0] == "full"} {
+        set color [lindex $mark 3]
+        set brstate "hidden"        
       }
     }
-    if {![string equal $color ""]} {
-      catch {$w.bd itemconfigure sq$i -outline "" -fill $color } ; # -outline $color
-    }
+    $w.bd itemconfigure br$i -state $brstate
   }
-  
+  $w.bd itemconfigure sq$i -fill $color -outline ""  
 }
 
 # ::board::midSquare
@@ -1392,15 +1363,34 @@ proc ::board::midSquare {w sq} {
   return [list $x $y]
 }
 
+
+# ::board::setmarks --
+#
+#	Set the marks for the board:
+#	colored squares, arrows, circles, etc.
+#
+# Arguments:
+#	w	A frame containing a board '$win.bd'.
+#       cmds    Commands to draw the marks
+# Results:
+#	Sets ::board::_mark($w) with all the right formatted commands.
+#       Marks will be drawn by ::board::update
+#	Returns nothing.
+#
+proc ::board::setmarks {w cmds} {
+  set ::board::_mark($w) {}
+  foreach {cmd discard} [mark::getEmbeddedCmds $cmds] {
+    lset cmd 1 [::board::sq [lindex $cmd 1]]
+    set dest [::board::sq [lindex $cmd 2]]
+    if {$dest != -1} {lset cmd 2 $dest}
+    lappend ::board::_mark($w) $cmd
+  }
+}
+
 ### Namespace ::board::mark
 
 namespace eval ::board::mark {
-  
-  namespace export getEmbeddedCmds
-  namespace export add drawAll clear remove
-  
   namespace import [namespace parent]::sq
-  #namespace import [namespace parent]::isFlipped
   
   # Regular expression constants for
   # matching Scid's embedded commands in PGN files.
@@ -1542,24 +1532,6 @@ proc ::board::mark::getEmbeddedCmds {comment} {
   return $result
 }
 
-# ::board::mark::drawAll --
-#
-#	Draws all kind of marks for the board.
-#
-# Arguments:
-#	win	A frame containing a board '$win.bd'.
-# Results:
-#	Reads the current marked square information of the
-#	board and adds (i.e. draws) them to the board.
-#
-proc ::board::mark::drawAll {win} {
-  if {![info exists ::board::_mark($win)]} {return}
-  foreach mark $::board::_mark($win) {
-    # 'mark' is a list: {type arg1 ?arg2? color}
-    eval add $win $mark "false"
-  }
-}
-
 # ::board::mark::remove --
 #
 #	Removes a specified mark.
@@ -1577,27 +1549,6 @@ proc ::board::mark::remove {win args} {
     eval add $win arrow $args nocolor 1
   } else {
     add $win DEL [lindex $args 0] "" nocolor 1
-  }
-}
-
-# ::board::mark::clear --
-#
-#	Clears all marked square information for the board:
-#	colored squares, arrows, circles, etc.
-#
-# Arguments:
-#	win	A frame containing a board '$win.bd'.
-# Results:
-#	Removes all marked squares information, recolors
-#	squares (set to default square colors), but does not
-#	delete the canvas objects drawn on the board.
-#	Returns nothing.
-#
-proc ::board::mark::clear {win} {
-  # Clear all marked square information:
-  set ::board::_mark($win) {}
-  for {set square 0} {$square < 64} {incr square} {
-    ::board::colorSquare $win $square
   }
 }
 
@@ -1709,7 +1660,7 @@ proc ::board::mark::DrawCircle {pathName square color} {
 proc ::board::mark::DrawDisk {pathName square color} {
   # Size of the inner (enclosing) box within the square:
   set size 0.6	;# 0.0 <  $size < 1.0 = size of rectangle
-  
+
   set box [GetBox $pathName $square $size]
   eval $pathName \
       {create oval [lrange $box 0 3]} \
@@ -2022,9 +1973,7 @@ proc  ::board::lastMoveHighlight {w} {
 #   the previous board state appear to be a valid chess move, the
 #   move is animated.
 #
-proc ::board::update {w {board ""} {animate 0}} {
-  global highcolor currentSq bestSq bestcolor selectedSq
-  
+proc ::board::update {w {board ""} {animate 0}} {  
   set oldboard $::board::_data($w)
   if {$board == ""} {
     set board $::board::_data($w)
@@ -2071,7 +2020,18 @@ proc ::board::update {w {board ""} {animate 0}} {
   
   # Redraw marks and arrows if required:
   if {$::board::_showMarks($w)} {
-    ::board::mark::drawAll $w
+    foreach mark $::board::_mark($w) {
+      set type  [lindex $mark 0]
+      if {$type == "full"}    { 
+        ::board::colorSquare $w [lindex $mark 1] [lindex $mark 3]
+      } else {
+        # Find a subroutine to draw the canvas object:
+        set drawingScript "mark::Draw[string totitle $type]"
+        if {[llength [info procs $drawingScript]]} {
+          catch {eval $drawingScript $w.bd [join [lrange $mark 1 3]]}  
+        }
+      }
+    } 
   }
   
   # Redraw last move highlight if mainboard

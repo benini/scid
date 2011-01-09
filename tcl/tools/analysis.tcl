@@ -1561,7 +1561,7 @@ proc addAnalysisToComment {line {n 1}} {
 ################################################################################
 #
 ################################################################################
-proc makeAnalysisMove {{n 1}} {
+proc makeAnalysisMove {{n 1} {comment ""}} {
     set s $::analysis(moves$n)
     set res 1
     while {1} {
@@ -1583,7 +1583,11 @@ proc makeAnalysisMove {{n 1}} {
     if {$action == "cancel"} { return }
     set ::analysis(automoveThinking$n) 0
     if {$action == "var"} { sc_var create }
-    if { [sc_move_add $move $n] } { puts "erreur de sc_move_add" ; set res 0 }
+    if { [sc_move_add $move $n] } { 
+    	set res 0 
+    } else {
+    	sc_pos setComment $comment
+    }
     
     updateBoard -pgn -animate
     ::utils::sound::AnnounceNewMove $move
@@ -1599,6 +1603,8 @@ proc makeAnalysisMove {{n 1}} {
 proc destroyAnalysisWin {{n 1}} {
     
     global windowsOS analysis annotateMode
+    
+    if {$::finishGameMode} { toggleFinishGame }
     
     if { $n == 1 && $annotateMode } {
         toggleAutoplay
@@ -2323,26 +2329,188 @@ proc formatAnalysisMoves {text} {
     
     return $text
 }
+
+set finishGameMode 0
+set finishGameEng1 1
+set finishGameEng2 1
+set finishGameCmd1 "movetime"
+set finishGameCmdVal1 5
+set finishGameCmd2 "movetime"
+set finishGameCmdVal2 5
+set finishGameAnnotate 1
+
 ################################################################################
-# will ask engine to play the game till the end
+# will ask engine(s) to play the game till the end
 ################################################################################
 proc toggleFinishGame { { n 1 } } {
     global analysis
     set b ".analysisWin$n.b1.bFinishGame"
+    if { $::annotateModeButtonValue || $::autoplayMode } { return }
+    if { ! $analysis(uci$n) } {    
+        if { !$analysis(analyzeMode$n) || ! [sc_pos isAt vend] } { return }
     
-    if { $::annotateModeButtonValue || $::autoplayMode || !$analysis(analyzeMode$n) || ! [sc_pos isAt vend] } {
-        return
+        if {!$::finishGameMode} {
+    	    set ::finishGameMode 1
+        	$b configure -image finish_on -relief flat
+            after $::autoplayDelay autoplayFinishGame
+    	} else  {
+        	set ::finishGameMode 0
+            $b configure -image finish_off -relief flat
+            after cancel autoplayFinishGame
+    	}
+    	return
     }
-    
-    if {!$::finishGameMode} {
-        set ::finishGameMode 1
-        $b configure -image finish_on -relief flat
-        after $::autoplayDelay autoplayFinishGame
-    } else  {
+	
+    if {$::finishGameMode} {
         set ::finishGameMode 0
-        $b configure -image finish_off -relief flat
-        after cancel autoplayFinishGame
+        sendToEngine 1 "stop"
+        set analysis(waitForReadyOk1) 0
+        set analysis(waitForBestMove1) 0
+        sendToEngine 2 "stop"
+   		set analysis(waitForReadyOk2) 0
+        set analysis(waitForBestMove2) 0   		
+   		$b configure -image finish_off -relief flat
+   		grab release .analysisWin$n
+   		.analysisWin$n.b1.bStartStop configure -state normal
+        .analysisWin$n.b1.move configure -state normal
+        .analysisWin$n.b1.line configure -state normal
+        .analysisWin$n.b1.alllines configure -state normal
+        .analysisWin$n.b1.annotate configure -state normal
+        .analysisWin$n.b1.automove configure -state normal
+   		return
+	}
+		
+	set w .configFinishGame			
+	toplevel $w -class Dialog -bg [ttk::style lookup . -background]
+	wm resizable $w 0 0
+	::setTitle $w "Scid: $::tr(FinishGame)"
+	    
+	ttk::labelframe $w.wh_f -text "$::tr(White)" -padding 5
+	grid $w.wh_f -column 0 -row 0 -columnspan 2 -sticky we -pady 8
+	label $w.wh_f.p -image wk$::board::_size(.main.board)
+    grid $w.wh_f.p -column 0 -row 0 -rowspan 3	
+	ttk::radiobutton $w.wh_f.e1 -text $analysis(name1) -variable ::finishGameEng1 -value 1 
+	if {[winfo exists .analysisWin2] } {
+		ttk::radiobutton $w.wh_f.e2 -text $analysis(name2) -variable ::finishGameEng1 -value 2 	
+	} else {
+		ttk::radiobutton $w.wh_f.e2 -text $::tr(StartEngine) -variable ::finishGameEng1 -value 2 -state disabled
+	}
+	grid $w.wh_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
+	grid $w.wh_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
+	spinbox $w.wh_f.cv -width 4 -textvariable ::finishGameCmdVal1 -from 1 -to 999
+	ttk::radiobutton $w.wh_f.c1 -text $::tr(seconds) -variable ::finishGameCmd1 -value "movetime"
+	ttk::radiobutton $w.wh_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd1 -value "depth"
+	grid $w.wh_f.cv -column 1 -row 2 -sticky w
+	grid $w.wh_f.c1 -column 2 -row 2 -sticky w
+	grid $w.wh_f.c2 -column 3 -row 2 -sticky w 
+	grid columnconfigure $w.wh_f 2 -weight 1	
+		
+	ttk::labelframe $w.bk_f -text "$::tr(Black)" -padding 5
+	grid $w.bk_f -column 0 -row 1 -columnspan 2 -sticky we -pady 8
+	label $w.bk_f.p -image bk$::board::_size(.main.board)
+    grid $w.bk_f.p -column 0 -row 0 -rowspan 3	
+	ttk::radiobutton $w.bk_f.e1 -text $analysis(name1) -variable ::finishGameEng2 -value 1 
+	if {[winfo exists .analysisWin2] } {
+		ttk::radiobutton $w.bk_f.e2 -text $analysis(name2) -variable ::finishGameEng2 -value 2 	
+	} else {
+		ttk::radiobutton $w.bk_f.e2 -text $::tr(StartEngine) -variable ::finishGameEng2 -value 2 -state disabled
+	}
+	grid $w.bk_f.e1 -column 1 -row 0 -columnspan 3 -sticky w
+	grid $w.bk_f.e2 -column 1 -row 1 -columnspan 3 -sticky w
+	spinbox $w.bk_f.cv -width 4 -textvariable ::finishGameCmdVal2 -from 1 -to 999
+	ttk::radiobutton $w.bk_f.c1 -text $::tr(seconds) -variable ::finishGameCmd2 -value "movetime"
+	ttk::radiobutton $w.bk_f.c2 -text $::tr(FixedDepth) -variable ::finishGameCmd2 -value "depth"
+	grid $w.bk_f.cv -column 1 -row 2 -sticky w
+	grid $w.bk_f.c1 -column 2 -row 2 -sticky w
+	grid $w.bk_f.c2 -column 3 -row 2 -sticky w 
+	grid columnconfigure $w.bk_f 2 -weight 1		
+
+	ttk::checkbutton $w.annotate -text $::tr(Annotate) -variable ::finishGameAnnotate
+	grid $w.annotate -column 0 -row 2 -columnspan 2 -sticky w -padx 5 -pady 8
+
+	ttk::button $w.cancel -text $::tr(Cancel) -command { destroy .configFinishGame }
+    grid $w.cancel -column 0 -row 3
+    ttk::button $w.ok -text "OK" -command {
+    	if {$::finishGameEng1 == $::finishGameEng2} {
+   			set ::finishGameMode 1
+   		} else {
+   			set ::finishGameMode 2
+   		}		      
+	    destroy .configFinishGame		      	
     }
+    grid $w.ok -column 1 -row 3
+	focus $w.ok		
+	bind $w <Escape> { .configFinishGame.cancel invoke }
+    bind $w <Return> { .configFinishGame.ok invoke }
+	bind $w <Destroy> { focus .analysisWin1 }
+	::tk::PlaceWindow $w widget .analysisWin1
+	grab $w
+	bind $w <ButtonPress> { 
+		set w .configFinishGame
+		wm deiconify $w
+		if {%x < 0 || %x > [winfo width $w] || %y < 0 || %y > [winfo height $w] } { ::tk::PlaceWindow $w pointer }
+	}
+	tkwait window $w
+	if {!$::finishGameMode} { return }
+
+	set gocmd(1) "go $::finishGameCmd1 $::finishGameCmdVal1"
+	set gocmd(2) "go $::finishGameCmd2 $::finishGameCmdVal2"
+	if {$::finishGameCmd1 == "movetime" } { append gocmd(1) "000" }
+	if {$::finishGameCmd2 == "movetime" } { append gocmd(2) "000" }
+	if {[sc_pos side] == "white"} {
+		set current_cmd 1
+		set current_engine $::finishGameEng1
+	} else {
+		set current_cmd 2
+		set current_engine $::finishGameEng2
+	}
+
+    stopEngineAnalysis 1
+    stopEngineAnalysis 2
+	$b configure -image finish_on -relief flat
+	.analysisWin$n.b1.bStartStop configure -state disabled
+	.analysisWin$n.b1.move configure -state disabled
+	.analysisWin$n.b1.line configure -state disabled
+	.analysisWin$n.b1.alllines configure -state disabled
+	.analysisWin$n.b1.annotate configure -state disabled
+	.analysisWin$n.b1.automove configure -state disabled
+	grab .analysisWin$n
+   	
+	while { [string index [sc_game info previousMove] end] != "#"} {
+		set analysis(waitForReadyOk$current_engine) 1
+		sendToEngine $current_engine "isready"
+		vwait analysis(waitForReadyOk$current_engine)
+		if {!$::finishGameMode} { break }
+		sendToEngine $current_engine "position fen [sc_pos fen]"
+		sendToEngine $current_engine $gocmd($current_cmd)
+		set analysis(fen$current_engine) [sc_pos fen]
+		set analysis(maxmovenumber$current_engine) 0
+		set analysis(waitForBestMove$current_engine) 1
+		vwait analysis(waitForBestMove$current_engine)
+		if {!$::finishGameMode} { break }
+
+        if { ! [sc_pos isAt vend] } { sc_var create }
+		if {$::finishGameAnnotate} {
+			set moves [ lindex [ lindex $analysis(multiPV$current_engine) 0 ] 2 ]
+			set text [format "%+.2f %s - %s  Depth: %d  Time:%6.2f s" \
+    			$analysis(score$current_engine) \
+    			[addMoveNumbers $current_engine [::trans $moves]] \
+    			$analysis(name$current_engine) \
+    			$analysis(depth$current_engine) \
+    			$analysis(time$current_engine) ]
+    		makeAnalysisMove $current_engine $text
+    	} else {
+            makeAnalysisMove $current_engine
+        }		
+ 
+ 		incr current_cmd
+ 		if {$current_cmd > 2} { set current_cmd 1 } 
+		if {$::finishGameMode == 2} { 
+			incr current_engine 
+   			if {$current_engine > 2 } { set current_engine 1 }
+   		}
+	}
+	if {$::finishGameMode} { toggleFinishGame }
 }
 ################################################################################
 #

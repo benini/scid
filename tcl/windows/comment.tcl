@@ -374,7 +374,7 @@ proc ::commenteditor::InsertMark {board square} {
 proc ::commenteditor::ClearComments {win} {
   ${win}.cf.text delete 0.0 end
   set board ${win}.markFrame.insertBoard.board
-  ::board::mark::clear $board
+  ::board::setmarks $board ""
   ::board::update $board
 }
 
@@ -460,7 +460,7 @@ proc ::commenteditor::Refresh {} {
   set board .commentWin.markFrame.insertBoard.board
   set comment [sc_pos getComment]
   set offset  0
-  ::board::mark::clear $board
+  ::board::setmarks $board $comment
   $text delete 1.0 end
   foreach {mark pos} [::board::mark::getEmbeddedCmds $comment] {
     foreach {type square arg color} $mark {begin end} $pos {break}  ;# set
@@ -476,7 +476,6 @@ proc ::commenteditor::Refresh {} {
     $text insert insert [string range $comment $offset [expr {$begin-1}]]
     $text insert insert [string range $comment $begin $end] $tags
     set offset [expr {$end + 1}]
-    addMark $board $type $square $arg $color 1
   }
   $text insert insert [string range $comment $offset end]
   ::board::update $board [sc_pos board]
