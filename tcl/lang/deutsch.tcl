@@ -1597,8 +1597,7 @@ translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
 translate D FICSdefaultuservars {Standardvariablen verwenden}
 translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
-# ====== TODO To be translated ======
-translate D GameReview {Game review}
+translate D GameReview {Partieanalyse}
 translate D GameReviewTimeExtended {Lange Bedenkzeit}
 translate D GameReviewMargin {Fehlergrenze}
 translate D GameReviewAutoContinue {Bei korrektem Zug Automatisch weiter}
