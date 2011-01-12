@@ -686,8 +686,7 @@ translate U AnnotateBlack {Vain mustalle}
 translate U AnnotateBlundersOnly {Kun pelisiirto on virhe (blunder)}
 translate U AnnotateBlundersOnlyScoreChange {Analyysi raportoi virheet, muuuttaen pisteytyksen: }
 translate U BlundersThreshold {Virhekynnys}
-# TODO: Translate
-translate U ScoreAllMoves {Score all moves}
+translate U ScoreAllMoves {Pisteytä kaikki siirrot}
 translate U LowPriority {Matala CPUn käyttöaste}
 translate U ClickHereToSeeMoves {Klikkaa nähdäksesi siirrot}
 translate U ConfigureInformant {Tee Informant-asetukset}
@@ -859,10 +858,8 @@ translate U BrilliancyFlag {Loistosiirto}
 translate U BlunderFlag {Virhe (Blunder)}
 translate U UserFlag {Käyttäjä}
 translate U PgnContains {PGN sisältää tekstiä}
-# ====== TODO To be translated ======
-translate U Annotator {Annotator}
-# ====== TODO To be translated ======
-translate U Cmnts {Annotated games only}
+translate U Annotator {Annotoija}
+translate U Cmnts {Vain annotoidut pelit}
 
 # Game list window:
 translate U GlistNumber {Numero}
@@ -945,8 +942,7 @@ translate U AddEloRatings {Lisää Elo-luvut}
 translate U AutoloadGame {Lataa automaattisesti peli nro}
 translate U StripTags {Poista PGN-merkinnät}
 translate U StripTag {Poista merkintä}
-# ====== TODO To be translated ======
-translate U CheckGames {Check games}
+translate U CheckGames {Tarkista pelit}
 translate U Cleaner {Puhdistaja}
 translate U CleanerHelp {
 Scidin Puhdistaja tekee nykyiselle tietokannalle alla olevasta listasta valitsemasi ylläpitotoimet.
@@ -1265,14 +1261,10 @@ translate U NameEditSelect {Muokattavat pelit}
 translate U NameEditReplace {Korvaa}
 translate U NameEditWith {kanssa}
 translate U NameEditMatches {Osumat: Tee valinta painamalla Ctrl+1 - Ctrl+9}
-# ====== TODO To be translated ======
-translate U CheckGames {Check games}
-# ====== TODO To be translated ======
-translate U CheckGamesWhich {Check games}
-# ====== TODO To be translated ======
-translate U CheckAll {All games}
-# ====== TODO To be translated ======
-translate U CheckSelectFilterGames {Only games in filter}
+translate U CheckGames {Tarkista pelit}
+translate U CheckGamesWhich {Tarkista pelit}
+translate U CheckAll {Kaikki pelit}
+translate U CheckSelectFilterGames {Vain suodattimen pelit}
 
 # Classify window:
 translate U Classify {Luokittele}
