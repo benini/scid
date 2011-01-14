@@ -209,12 +209,12 @@ menuText B ToolsImportFile "Importa arquivo de jogos PGN..." 7 \
 menuText B ToolsStartEngine1 "Iniciar engine 1" 0  {Inicia engine 1}
 menuText B ToolsStartEngine2 "Iniciar engine 2" 0  {Inicia engine 2}
 # ====== TODO To be translated ======
-menuText B ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
+menuText B ToolsCaptureBoard "Capturar posicao atual..." 5  {Salva uma imagem da posicao atual.}
 menuText B Play "Jogar" 0
 menuText B CorrespondenceChess "Xadrez por correspondência" 0 {Funções para jogar xadrez por correspondência usando eMail e Xfcc}
 menuText B CCConfigure "Configurar..." 0 {Configura ferramentas externas e configuração geral}
 # ====== TODO To be translated ======
-menuText B CCConfigRelay "Observe games..." 10 {Configure games to be observed}
+menuText B CCConfigRelay "Observar jogos..." 10 {Configura jogos para observar}
 menuText B CCOpenDB "Abrir base..." 0 {Abre a base de correspondência padrão}
 menuText B CCRetrieve "Recupera jogos" 0 {Recupera jogos via (Xfcc-)}
 menuText B CCInbox "Processa caixa de entrada" 0 {Processa todos os arquivos na caixa de entrada do Scid}
@@ -245,7 +245,7 @@ menuText B OptionsFontsRegular "Normal" 0 {Fonte Normal}
 menuText B OptionsFontsMenu "Menu" 0 {Change the menu font} ;# ***
 menuText B OptionsFontsSmall "Pequeno" 0 {Fonte pequeno}
 # ====== TODO To be translated ======
-menuText B OptionsFontsTiny "Tiny" 0 {Change the tiny font}
+menuText B OptionsFontsTiny "Pequeno" 0 {Muda o fonte pequeno}
 menuText B OptionsFontsFixed "Fixo" 0 {Fonte de largura fixa}
 menuText B OptionsGInfo "Informacoes do Jogo" 0 {Opcoes de informacao do jogo}
 menuText B OptionsLanguage "Linguagem" 0 {Menu de selecao de linguagem}
@@ -827,9 +827,9 @@ translate B BlunderFlag {Erro!!!}
 translate B UserFlag {Usuario}
 translate B PgnContains {PGN contem texto}
 # ====== TODO To be translated ======
-translate B Annotator {Annotator}
+translate B Annotator {Anotador}
 # ====== TODO To be translated ======
-translate B Cmnts {Annotated games only}
+translate B Cmnts {Apenas jogos anotados}
 
 # Game list window:
 translate B GlistNumber {Numero}
@@ -1224,14 +1224,10 @@ translate B NameEditSelect {Jogos para editar}
 translate B NameEditReplace {Substituir}
 translate B NameEditWith {com}
 translate B NameEditMatches {Confere: Pressione Ctrl+1 a Ctrl+9 para selecionar}
-# ====== TODO To be translated ======
-translate B CheckGames {Check games}
-# ====== TODO To be translated ======
-translate B CheckGamesWhich {Check games}
-# ====== TODO To be translated ======
-translate B CheckAll {All games}
-# ====== TODO To be translated ======
-translate B CheckSelectFilterGames {Only games in filter}
+translate B CheckGames {Marcar jogos}
+translate B CheckGamesWhich {Marcar jogos}
+translate B CheckAll {Todos os jogos}
+translate B CheckSelectFilterGames {Somente jogos filtrados}
 
 # Classify window:
 translate B Classify {Classificar}
@@ -1471,7 +1467,7 @@ translate B ConfigureCalvar {Configuração}
 # ====== TODO To be translated ======
 translate B Reti {Reti}
 # ====== TODO To be translated ======
-translate B English {English}
+translate B English {Inglesa}
 # ====== TODO To be translated ======
 translate B d4Nf6Miscellaneous {1.d4 Nf6 Diversas}
 # ====== TODO To be translated ======
@@ -1479,17 +1475,17 @@ translate B Trompowsky {Trompowsky}
 # ====== TODO To be translated ======
 translate B Budapest {Budapest}
 # ====== TODO To be translated ======
-translate B OldIndian {Old Indian}
+translate B OldIndian {India antiga}
 # ====== TODO To be translated ======
-translate B BenkoGambit {Benko Gambit}
+translate B BenkoGambit {Gambito Benko}
 # ====== TODO To be translated ======
 translate B ModernBenoni {Modern Benoni}
 # ====== TODO To be translated ======
-translate B DutchDefence {Dutch Defence}
+translate B DutchDefence {Defesa Holandesa}
 # ====== TODO To be translated ======
-translate B Scandinavian {Scandinavian}
+translate B Scandinavian {Escandinava}
 # ====== TODO To be translated ======
-translate B AlekhineDefence {Alekhine Defence}
+translate B AlekhineDefence {Defesa Alekhine}
 # ====== TODO To be translated ======
 translate B Pirc {Pirc}
 # ====== TODO To be translated ======
@@ -1497,89 +1493,89 @@ translate B CaroKann {Caro-Kann}
 # ====== TODO To be translated ======
 translate B CaroKannAdvance {Caro-Kann Advance}
 # ====== TODO To be translated ======
-translate B Sicilian {Sicilian}
+translate B Sicilian {Siciliana}
 # ====== TODO To be translated ======
-translate B SicilianAlapin {Sicilian Alapin}
+translate B SicilianAlapin {Siciliana Alapin}
 # ====== TODO To be translated ======
-translate B SicilianClosed {Sicilian Closed}
+translate B SicilianClosed {Siciliana Fechada}
 # ====== TODO To be translated ======
-translate B SicilianRauzer {Sicilian Rauzer}
+translate B SicilianRauzer {Siciliana Rauzer}
 # ====== TODO To be translated ======
-translate B SicilianDragon {Sicilian Dragon}
+translate B SicilianDragon {Siciliana Dragao}
 # ====== TODO To be translated ======
-translate B SicilianScheveningen {Sicilian Scheveningen}
+translate B SicilianScheveningen {Siciliana Scheveningen}
 # ====== TODO To be translated ======
-translate B SicilianNajdorf {Sicilian Najdorf}
+translate B SicilianNajdorf {Siciliana Najdorf}
 # ====== TODO To be translated ======
-translate B OpenGame {Open Game}
+translate B OpenGame {Jogo aberto}
 # ====== TODO To be translated ======
 translate B Vienna {Vienna}
 # ====== TODO To be translated ======
-translate B KingsGambit {King's Gambit}
+translate B KingsGambit {Gambito do Rei}
 # ====== TODO To be translated ======
-translate B RussianGame {Russian Game}
+translate B RussianGame {Russa}
 # ====== TODO To be translated ======
-translate B ItalianTwoKnights {Italian/Two Knights}
+translate B ItalianTwoKnights {Italiana/Dois Cavalos}
 # ====== TODO To be translated ======
-translate B Spanish {Spanish}
+translate B Spanish {Espanhola}
 # ====== TODO To be translated ======
-translate B SpanishExchange {Spanish Exchange}
+translate B SpanishExchange {Espanhola Trocas}
 # ====== TODO To be translated ======
-translate B SpanishOpen {Spanish Open}
+translate B SpanishOpen {Espanhola Aberta}
 # ====== TODO To be translated ======
-translate B SpanishClosed {Spanish Closed}
+translate B SpanishClosed {Espanhola Fechada}
 # ====== TODO To be translated ======
-translate B FrenchDefence {French Defence}
+translate B FrenchDefence {Defesa Francesa}
 # ====== TODO To be translated ======
-translate B FrenchAdvance {French Advance}
+translate B FrenchAdvance {Francesa Avanco}
 # ====== TODO To be translated ======
-translate B FrenchTarrasch {French Tarrasch}
+translate B FrenchTarrasch {Francesa Tarrasch}
 # ====== TODO To be translated ======
-translate B FrenchWinawer {French Winawer}
+translate B FrenchWinawer {Francesa Winawer}
 # ====== TODO To be translated ======
-translate B FrenchExchange {French Exchange}
+translate B FrenchExchange {Francesa Trocas}
 # ====== TODO To be translated ======
-translate B QueensPawn {Queen's Pawn}
+translate B QueensPawn {Peao da Dama}
 # ====== TODO To be translated ======
-translate B Slav {Slav}
+translate B Slav {Eslava}
 # ====== TODO To be translated ======
 translate B QGA {QGA}
 # ====== TODO To be translated ======
 translate B QGD {QGD}
 # ====== TODO To be translated ======
-translate B QGDExchange {QGD Exchange}
+translate B QGDExchange {QGD Trocas}
 # ====== TODO To be translated ======
-translate B SemiSlav {Semi-Slav}
+translate B SemiSlav {Semi-Eslava}
 # ====== TODO To be translated ======
-translate B QGDwithBg5 {QGD with Bg5}
+translate B QGDwithBg5 {QGD com Bg5}
 # ====== TODO To be translated ======
-translate B QGDOrthodox {QGD Orthodox}
+translate B QGDOrthodox {QGD Ortodoxa}
 # ====== TODO To be translated ======
 translate B Grunfeld {Grünfeld}
 # ====== TODO To be translated ======
-translate B GrunfeldExchange {Grünfeld Exchange}
+translate B GrunfeldExchange {Grünfeld Trocas}
 # ====== TODO To be translated ======
-translate B GrunfeldRussian {Grünfeld Russian}
+translate B GrunfeldRussian {Grünfeld Russa}
 # ====== TODO To be translated ======
 translate B Catalan {Catalan}
 # ====== TODO To be translated ======
-translate B CatalanOpen {Catalan Open}
+translate B CatalanOpen {Catalan Aberta}
 # ====== TODO To be translated ======
-translate B CatalanClosed {Catalan Closed}
+translate B CatalanClosed {Catalan Fechada}
 # ====== TODO To be translated ======
-translate B QueensIndian {Queen's Indian}
+translate B QueensIndian {India da Dama}
 # ====== TODO To be translated ======
-translate B NimzoIndian {Nimzo-Indian}
+translate B NimzoIndian {Nimzo-India}
 # ====== TODO To be translated ======
-translate B NimzoIndianClassical {Nimzo-Indian Classical}
+translate B NimzoIndianClassical {Nimzo-India Classica}
 # ====== TODO To be translated ======
-translate B NimzoIndianRubinstein {Nimzo-Indian Rubinstein}
+translate B NimzoIndianRubinstein {Nimzo-India Rubinstein}
 # ====== TODO To be translated ======
-translate B KingsIndian {King's Indian}
+translate B KingsIndian {India do Rei}
 # ====== TODO To be translated ======
-translate B KingsIndianSamisch {King's Indian Sämisch}
+translate B KingsIndianSamisch {India do Rei Sämisch}
 # ====== TODO To be translated ======
-translate B KingsIndianMainLine {King's Indian Main Line}
+translate B KingsIndianMainLine {India do Rei Linha Principal}
 translate B ConfigureFics {Configurar FICS}
 translate B FICSGuest {Login como convidado}
 translate B FICSServerPort {Porta do Servidor}
@@ -1694,9 +1690,9 @@ translate B CCOrderStartDate {Data de Inicio}
 translate B CCOrderOppTimeTxt {Relogio do Oponente}
 
 # ====== TODO To be translated ======
-translate B CCDlgConfigRelay {Observe games}
+translate B CCDlgConfigRelay {Observar jogos}
 # ====== TODO To be translated ======
-translate B CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+translate B CCDlgConfigRelayHelp {Consulta a pagina de jogos em http://www.iccf-webchess.com e mostra o jogo a ser observado.  Se voce enxergar o tabuleiro, copie a URL do seu navegador para a lista abaixo. Apenas uma URL por linha!\nExemplo: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
 
 translate B ExtHWConfigConnection {Configurar hardware externo}
 translate B ExtHWPort {Porta}

@@ -144,8 +144,8 @@ menuText S WindowsPGN "Ventana PGN" 8 \
   {Abre/cierra la ventana de PGN (notación de partida)}
 menuText S WindowsPList "Buscador de jugadores" 2 {Abre/cierra el buscador de jugadores}
 menuText S WindowsTmt "Visor de torneos" 9 {Abre/cierra el visor de torneos}
-menuText S WindowsSwitcher "Intercambiador de bases de datos" 0 \
-  {Abre/cierra la ventana del intercambiador de bases de datos}
+menuText S WindowsSwitcher "Bases de datos" 0 \
+  {Abre/cierra la ventana de bases de datos}
 menuText S WindowsMaint "Ventana de mantenimiento" 11 \
   {Abre/cierra la ventana de mantenimiento}
 menuText S WindowsECO "Buscador ECO" 0 {Abre/cierra la ventana del buscador ECO}
@@ -270,8 +270,7 @@ menuText S OptionsFonts "Fuentes" 0 {Cambia las fuentes}
 menuText S OptionsFontsRegular "Habitual" 0 {Cambia la fuente habitual}
 menuText S OptionsFontsMenu "Menú" 0 {Cambia la fuente del menú}
 menuText S OptionsFontsSmall "Pequeña" 0 {Cambia la fuente pequeña}
-# ====== TODO To be translated ======
-menuText S OptionsFontsTiny "Tiny" 0 {Change the tiny font}
+menuText S OptionsFontsTiny "Tiny" 0 {Cambia la fuente diminuta}
 menuText S OptionsFontsFixed "Ancho fijo" 0 {Cambia la fuente de ancho fijo}
 menuText S OptionsGInfo "Información de la partida" 0 {Información de la partida}
 menuText S OptionsLanguage "Idioma" 0 {Selecciona el idioma del programa}
@@ -708,8 +707,7 @@ translate S AnnotateBlack {Sólo para movimientos de las negras}
 translate S AnnotateBlundersOnly {Cuando el movimiento de la partida es un error}
 translate S AnnotateBlundersOnlyScoreChange {Análisis reporta errores, con cambio de puntuación desde: }
 translate S BlundersThreshold {Umbral del error }
-# TODO: Translate
-translate S ScoreAllMoves {Score all moves}
+translate S ScoreAllMoves {Puntuar todos los movimientos}
 translate S LowPriority {Baja prioridad del procesador}
 translate S ClickHereToSeeMoves {Pulsa aquí para ver movimientos}
 translate S ConfigureInformant {Configurar informaciones}
@@ -879,10 +877,8 @@ translate S BrilliancyFlag {Genialidad}
 translate S BlunderFlag {Error}
 translate S UserFlag {Usuario}
 translate S PgnContains {PGN contiene texto}
-# ====== TODO To be translated ======
-translate S Annotator {Annotator}
-# ====== TODO To be translated ======
-translate S Cmnts {Annotated games only}
+translate S Annotator {Comentarista}
+translate S Cmnts {Sólo partidas comentadas}
 
 # Game list window:
 translate S GlistNumber {Número}
@@ -1279,14 +1275,10 @@ translate S NameEditSelect {Partidas a editar}
 translate S NameEditReplace {Reemplazar}
 translate S NameEditWith {con}
 translate S NameEditMatches {Encuentros: Presionar Ctrl+1 a Ctrl+9 para seleccionarlo}
-# ====== TODO To be translated ======
-translate S CheckGames {Check games}
-# ====== TODO To be translated ======
-translate S CheckGamesWhich {Check games}
-# ====== TODO To be translated ======
-translate S CheckAll {All games}
-# ====== TODO To be translated ======
-translate S CheckSelectFilterGames {Only games in filter}
+translate S CheckGames {Revisar partidas}
+translate S CheckGamesWhich {Revisar partidas}
+translate S CheckAll {Todas las partidas}
+translate S CheckSelectFilterGames {Sólo las partidas del filtro}
 
 # Classify window:
 translate S Classify {Clasificar}
