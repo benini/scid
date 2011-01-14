@@ -937,8 +937,6 @@ translate K AddEloRatings {Afegir classificació Elo}
 translate K AutoloadGame {Autocargar número de partida}
 translate K StripTags {Treure etiquetes PGN}
 translate K StripTag {Treure etiquetes}
-# ====== TODO To be translated ======
-translate K CheckGames {Check games}
 translate K Cleaner {MultiEines}
 translate K CleanerHelp {
 Scid executarà, a l'actual base de dades, totes les accions de manteniment

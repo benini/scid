@@ -1058,8 +1058,6 @@ translate Y AddEloRatings {Dodaj Elo rejtinge}
 translate Y AutoloadGame {Autoload game number} ;# ***
 translate Y StripTags {Strip PGN tags} ;# ***
 translate Y StripTag {Strip tag} ;# ***
-# ====== TODO To be translated ======
-translate Y CheckGames {Check games}
 translate Y Cleaner {Èistaè}
 translate Y CleanerHelp {
 Scid Èistaè æe da primeni sve akcije odr¾avanja koje izaberete iz donje liste, na tekuæu bazu.

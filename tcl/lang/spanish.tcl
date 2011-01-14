@@ -963,8 +963,6 @@ translate S AddEloRatings {Añadir clasificación Elo}
 translate S AutoloadGame {Autocargar número de partida}
 translate S StripTags {Quitar etiquetas PGN}
 translate S StripTag {Quitar etiquetas}
-# ====== TODO To be translated ======
-translate S CheckGames {Check games}
 translate S Cleaner {MultiHerramienta}
 translate S CleanerHelp {
 Scid ejecutará, en la actual base de datos, todas las acciones de mantenimiento

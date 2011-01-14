@@ -1065,8 +1065,6 @@ translate P AddEloRatings {Dodaj rankingi ELO}
 translate P AutoloadGame {Domy¶lna partia}
 translate P StripTags {Usuñ znaczniki PGN} 
 translate P StripTag {Usuñ znacznik}
-# ====== TODO To be translated ======
-translate P CheckGames {Check games}
 translate P Cleaner {Zestaw zadañ}
 translate P CleanerHelp {
 Zestaw zadañ pozwala wykonaæ od razu kilka operacji porz±dkowania bazy. Operacje wybrane z listy

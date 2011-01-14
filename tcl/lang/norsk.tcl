@@ -1060,8 +1060,6 @@ translate O AddEloRatings {Legg til ELO-ratinger}
 translate O AutoloadGame {Start med parti nummer}
 translate O StripTags {Fjern PGN-merker}
 translate O StripTag {Fjern merke}
-# ====== TODO To be translated ======
-translate O CheckGames {Check games}
 translate O Cleaner {Opprydding}
 translate O CleanerHelp {
 Scid-opprydding vil utføre alle handlinger du velger fra listen under på gjeldende database.

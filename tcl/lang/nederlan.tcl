@@ -932,8 +932,6 @@ translate N AddEloRatings {Toevoegen Elo classificatie}
 translate N AutoloadGame {Auto-laden partij nummer}
 translate N StripTags {Verwijder PGN labels}
 translate N StripTag {Verwijder label}
-# ====== TODO To be translated ======
-translate N CheckGames {Check games}
 translate N Cleaner {Reiniger}
 translate N CleanerHelp {
 De Scid Reiniger zal alle onderhoudsactiviteiten die u selecteert uit onderstaande lijst, uitvoeren op de huidige database. 

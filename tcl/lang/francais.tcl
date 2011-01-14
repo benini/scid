@@ -911,8 +911,6 @@ translate F AddEloRatings {Ajouter les classements Elo}
 translate F AutoloadGame {Chargement automatique du numéro de partie}
 translate F StripTags {Enlever les marqueurs PGN}
 translate F StripTag {Enlever les marqueurs}
-# ====== TODO To be translated ======
-translate F CheckGames {Check games}
 translate F Cleaner {Nettoyer}
 translate F CleanerHelp {
 Le Nettoyeur Scid va réaliser pour la base en cours toutes les actions de maintenance que vous avez sélectionné à partir de la liste ci-dessous.

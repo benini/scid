@@ -916,8 +916,6 @@ translate H AutoloadGame {Játszmasorszám automatikus betöltése}
 #Igaz ez?
 translate H StripTags {PGN-címkék eltüntetése}
 translate H StripTag {Címke eltüntetése}
-# ====== TODO To be translated ======
-translate H CheckGames {Check games}
 translate H Cleaner {Takarító}
 translate H CleanerHelp {
 SCID Takarítója el fogja végezni az aktuális adatbázison az összes olyan gondozási feladatot, amelyet az alábbi listáról kijelölsz.

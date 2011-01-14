@@ -895,8 +895,6 @@ translate C AddEloRatings {Pøidat ELO rating}
 translate C AutoloadGame {Automaticky otevírat partii è.}
 translate C StripTags {Odstranit PGN znaèky}
 translate C StripTag {Odstranit znaèku}
-# ====== TODO To be translated ======
-translate C CheckGames {Check games}
 translate C Cleaner {Èi¹tìní databáze}
 translate C CleanerHelp {
     Èi¹tìním databáze Scid provede u aktuální databáze v¹echny údr¾báøské akce, které zvolíte v seznamu.

@@ -1059,8 +1059,6 @@ translate W AddEloRatings {Lägg till Elorating}
 translate W AutoloadGame {Ladda partinummer automatiskt}
 translate W StripTags {Avlägsna PGN-taggar}
 translate W StripTag {Avlägsna taggar}
-# ====== TODO To be translated ======
-translate W CheckGames {Check games}
 translate W Cleaner {Snygga till databasen}
 translate W CleanerHelp {
 Databasstädaren i Scid genomför allt det underhåll av databasen du väljer nedan på den aktiva databasen.

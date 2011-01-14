@@ -981,8 +981,6 @@ translate I AddEloRatings {Aggiungi punteggio Elo}
 translate I AutoloadGame {Numero della partita che si caricher� automaticamente}
 translate I StripTags {Toglie i PGN tags}
 translate I StripTag {Toglie i tag}
-# ====== TODO To be translated ======
-translate I CheckGames {Check games}
 translate I Cleaner {Manutentore Globale}
 translate I CleanerHelp {La finestra Manutentore Globale effettura' tutte le operazioni che verranno selezionate dalla lista sottostante, sul database corrente.
 

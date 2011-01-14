@@ -942,7 +942,6 @@ translate U AddEloRatings {Lis‰‰ Elo-luvut}
 translate U AutoloadGame {Lataa automaattisesti peli nro}
 translate U StripTags {Poista PGN-merkinn‰t}
 translate U StripTag {Poista merkint‰}
-translate U CheckGames {Tarkista pelit}
 translate U Cleaner {Puhdistaja}
 translate U CleanerHelp {
 Scidin Puhdistaja tekee nykyiselle tietokannalle alla olevasta listasta valitsemasi yll‰pitotoimet.
