@@ -125,29 +125,85 @@ const uint HPSIG_SIZE = 9;
 const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
 
 // Bitmask functions for index entry decoding:
-inline byte   u32_high_8 (uint x)   { return (byte)(x >> 24); }
-inline uint   u32_low_24 (uint x)   { return (x & ((1 << 24) - 1)); }
-inline uint   u32_high_12 (uint x)  { return (x >> 20); }
-inline uint   u32_low_20 (uint x)   { return (x & 0xFFFFF); }
-inline byte   u16_high_4 (ushort x) { return (byte)(x >> 12); }
-inline ushort u16_low_12 (ushort x) { return (x & ((1 << 12) - 1)); }
-inline byte   u8_high_4 (byte x)    { return (x >> 4); }
-inline byte   u8_low_4 (byte x)     { return (x & 0x0F); }
-inline byte   u8_high_3 (byte x) { return (x >> 5); }
-inline byte   u8_low_5 (byte x)     { return (x & 31); }
+inline byte u32_high_8( uint x )
+{
+    return (byte)(x >> 24);
+}
 
-inline uint u32_set_high_8 (uint u, byte x)
-    { return (u32_low_24(u) | (((uint)x) << 24)); }
-inline uint u32_set_low_24 (uint u, uint x)
-    { return ((u & 0xFF000000) | x); }
-inline uint u32_set_high_12 (uint u, uint x)
-    { return (u32_low_20(u) | (x << 20)); }
-inline uint u32_set_low_20 (uint u, uint x)
-    { return ((u & 0xFFF00000U) | (x & 0xFFFFF)); }
-inline ushort u16_set_high_4 (ushort u, byte x)
-    { return (u16_low_12(u) | (((ushort)x) << 12)); }
-inline ushort u16_set_low_12 (ushort u, ushort x)
-    { return ((u & 0xF000U) | x); }
+inline uint u32_low_24( uint x )
+{
+    return x & 0x00FFFFFF;
+}
+
+inline uint u32_high_12( uint x )
+{
+    return x >> 20;
+}
+
+inline uint u32_low_20( uint x )
+{
+    return x & 0x000FFFFF;
+}
+
+inline byte u16_high_4( ushort x )
+{
+    return (byte)(x >> 12);
+}
+
+inline ushort u16_low_12( ushort x )
+{
+    return x & 0x0FFF;
+}
+
+inline byte u8_high_4( byte x )
+{
+    return x >> 4;
+}
+
+inline byte u8_low_4( byte x )
+{
+    return x & 0x0F;
+}
+
+inline byte u8_high_3( byte x )
+{
+    return x >> 5;
+}
+
+inline byte u8_low_5( byte x )
+{
+    return x & 0x1F;
+}
+
+inline uint u32_set_high_8( uint u, byte x )
+{
+    return u32_low_24(u) | ((uint)x << 24);
+}
+
+inline uint u32_set_low_24( uint u, uint x )
+{
+    return (u & 0xFF000000) | (x & 0x00FFFFFF);
+}
+
+inline uint u32_set_high_12( uint u, uint x )
+{
+    return u32_low_20(u) | (x << 20);
+}
+
+inline uint u32_set_low_20( uint u, uint x )
+{
+    return (u & 0xFFF00000) | (x & 0x000FFFFF);
+}
+
+inline ushort u16_set_high_4( ushort u, byte x )
+{
+    return u16_low_12(u) | ((ushort)x << 12);
+}
+
+inline ushort u16_set_low_12( ushort u, ushort x )
+{
+    return (u & 0xF000) | (x & 0x0FFF);
+}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
