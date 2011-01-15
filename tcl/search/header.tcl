@@ -643,6 +643,8 @@ proc search::header {} {
     ::windows::gamelist::Refresh
     ::search::loadFirstGame
     
+	 # refresh the tree window, this includes Best Games
+	 ::tree::refresh
     ::windows::stats::Refresh
   }
   

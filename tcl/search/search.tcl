@@ -36,6 +36,7 @@ proc ::search::filter::reset {} {
   sc_filter reset
   set glstart 1
   ::windows::gamelist::Refresh
+  ::tree::refresh
   ::windows::stats::Refresh
   updateMenuStates
 }
@@ -49,6 +50,7 @@ proc ::search::filter::negate {} {
   sc_filter negate
   set glstart 1
   ::windows::gamelist::Refresh
+  ::tree::refresh
   ::windows::stats::Refresh
   updateMenuStates
 }

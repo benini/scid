@@ -97,6 +97,7 @@ proc ::search::board {} {
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sb.status configure -text $str
     set glstart 1
+	 ::tree::refresh
     ::windows::gamelist::Refresh
     set gamesFound [lindex $str 0]
     if { $sBoardSearchRefBase && $gamesFound != 0} {
