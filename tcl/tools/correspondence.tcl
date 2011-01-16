@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.101 2010/12/23 14:08:18 arwagner Exp $
+### $Id: correspondence.tcl,v 1.102 2011/01/16 10:25:44 arwagner Exp $
 ###
-### Last change: <Thu, 2010/12/23 14:55:12 arwagner agamemnon>
+### Last change: <Sun, 2011/01/16 11:26:09 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1611,7 +1611,10 @@ namespace eval CorrespondenceChess {
 	proc doConfigMenus { } {
 		set lang $::language
 
-		if {! [winfo exists .ccWindow]} { return }
+		if {! [winfo exists .ccWindow]} { 
+			raiseWin .ccWindow
+			return
+		}
 
 		set m .ccWindow.menu
 
@@ -2358,7 +2361,10 @@ namespace eval CorrespondenceChess {
 	#----------------------------------------------------------------------
 	proc config {} {
 		set w .correspondenceChessConfig
-		if { [winfo exists $w]} { return }
+		if { [winfo exists $w]} { 
+			raiseWin $w
+			return
+		}
 		toplevel $w
 		wm title $w [::tr "CCDlgConfigureWindowTitle"]
 

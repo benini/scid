@@ -2641,6 +2641,9 @@ Position::ReadLine (const char * line)
 void
 Position::CalcSANStrings (sanListT *sanList, sanFlagT flag)
 {
+	if( LegalMoves.Size() == 0) {
+        GenerateMoves();
+	}
     for (ushort i=0; i < LegalMoves.Size(); i++) {
         MakeSANString (LegalMoves.Get(i), sanList->list[i], flag);
     }
