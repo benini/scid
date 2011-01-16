@@ -4622,12 +4622,12 @@ chess.
    easy extension if other protocols arise.
    </li>
    <li><b>Postal play</b>
-   <b>---TODO---</b>
+   <b>---TODO for 4.4---</b>
    </li>
    <li><b>Observation of games</b> is supported by just adding the URL
    for the PGN file to the list offered by <menu>Play / Correspondence
-   Chess / Observe Game</menu>
-   <b>---TODO---</b>
+   Chess / Observe Game</menu>. For this fucntion to work a connector
+	for the site in question is required. (See below)
    </li>
 </ul>
 <p>
@@ -4823,6 +4823,15 @@ not necessarily contain a proper recipient as eMail addresses are not
 exchanged in server based correspondence chess.
 </p>
 
+<h3>Observing Correspondence Games</h3>
+Observing a game of correspondence chess is technically done by
+retrieving the games PGN notation from the webserver. These games are
+then fead into the usual workflow of the Correspondence Chess funtions
+and show up thre as usual games. For this function to work a file
+named "connector.xml" has to be available in ~/.scid/data. If this
+file does not exist Scid will try to generate one suitable for
+observation of games from ICCF Webchess. Additional servers can be
+added to this file by apending additional server-blocks.	
 
 <h3>Additional features of the Correspondence Chess Window</h3>
 <p>
@@ -4836,7 +4845,7 @@ you want to copy the current game list to the clipboard one can use
 the usual shortcuts Ctrl-Ins (or Ctrl-C).
 </p>
 
-<p><footer>(Updated: Scid 3.7.4, April 2009)</footer></p>
+<p><footer>(Updated: Scid 4.3, Jan 2011)</footer></p>
 }
 
 set helpTitle(CCIcons) "Correspondence Chess Icons and Status Indicators"

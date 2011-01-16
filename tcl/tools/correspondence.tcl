@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.102 2011/01/16 10:25:44 arwagner Exp $
+### $Id: correspondence.tcl,v 1.103 2011/01/16 11:14:46 arwagner Exp $
 ###
-### Last change: <Sun, 2011/01/16 11:26:09 arwagner agamemnon>
+### Last change: <Sun, 2011/01/16 12:14:16 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1693,6 +1693,24 @@ namespace eval CorrespondenceChess {
 	#----------------------------------------------------------------------
 	proc ConfigureRelay { } {
 		global ::CorrespondenceChess::RelayGames
+
+		puts stderr $::CorrespondenceChess::Connector
+		if {![file exists $::CorrespondenceChess::Connector]} {
+				if {[catch {open $::CorrespondenceChess::Connector w} connectF]} {
+
+				} else {
+					puts $connectF "<?xml version\"1.0\" encoding=\"utf-8\"?>"
+					puts $connectF "<connector>";
+					puts $connectF "\t<server>";
+					puts $connectF "\t\t<name>ICCF</name>";
+					puts $connectF "\t\t<stripforid>http://www.iccf-webchess.com/MakeAMove.aspx\?id=</stripforid>";
+					puts $connectF "\t\t<pgnbaseurl>http://www.iccf-webchess.com/GetPGN.aspx?id=</pgnbaseurl>";
+					puts $connectF "\t\t<cmailprefix>game</cmailprefix>";
+					puts $connectF "\t</server>";
+					puts $connectF "</connector>";
+					close $connectF
+				}
+		}
 
 		if {[catch {open $::CorrespondenceChess::Connector r} connectF]} {
 				set Title "Error"
