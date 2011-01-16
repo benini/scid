@@ -4833,6 +4833,16 @@ file does not exist Scid will try to generate one suitable for
 observation of games from ICCF Webchess. Additional servers can be
 added to this file by apending additional server-blocks.	
 
+To observe a game on ICCF Webchess point your webbrowser to the page
+where the notation an the chess board gets displayed. Copy the URL of
+that page to the clipboard and add it to the list displayed by
+choosing <menu>Play / Correspondence Chess / Observe Game</menu>. Use
+a new line for each game to be observed.
+
+Close the dialogue by selecting Ok and refetch the correspondence
+chess games. Now the newly added observed games should show up in the
+Correspondence Chess games list.
+
 <h3>Additional features of the Correspondence Chess Window</h3>
 <p>
 The Correspondence Chess window offers additional functions by means
