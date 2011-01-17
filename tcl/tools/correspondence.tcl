@@ -2,9 +2,9 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.103 2011/01/16 11:14:46 arwagner Exp $
+### $Id: correspondence.tcl,v 1.104 2011/01/17 05:32:50 arwagner Exp $
 ###
-### Last change: <Sun, 2011/01/16 12:14:16 arwagner agamemnon>
+### Last change: <Mon, 2011/01/17 06:32:05 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -1699,7 +1699,7 @@ namespace eval CorrespondenceChess {
 				if {[catch {open $::CorrespondenceChess::Connector w} connectF]} {
 
 				} else {
-					puts $connectF "<?xml version\"1.0\" encoding=\"utf-8\"?>"
+					puts $connectF "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 					puts $connectF "<connector>";
 					puts $connectF "\t<server>";
 					puts $connectF "\t\t<name>ICCF</name>";
