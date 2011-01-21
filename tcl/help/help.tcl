@@ -10,7 +10,7 @@ set helpText(Contents) {<h1>Scid Help Contents</h1>
   <li><a Guide><b>Quick Guide</b> to using Scid</a> <red>(Read this first)</red></li>
   <li><a Hints><b>Hints</b> for getting more out of Scid</a></li>
   <li><a MainWindow>The Scid <b>main window</b></a></li>
-  <li><a Menus>Scid <b>menus</b></a> <red>(updated!)</red></li>
+  <li><a Menus>Scid <b>menus</b></a></li>
   <li><a Moves>Entering <b>chess moves</b></a></li>
   <li><a Searches><b>Searches</b> in Scid</a></li>
   <li><a Clipbase>Using the <b>Clipbase</b> database</a></li>
@@ -40,7 +40,7 @@ set helpText(Contents) {<h1>Scid Help Contents</h1>
   <li><a Tmt><b>Tournament Finder</b> window</a></li>
   <li><a Tree><b>Tree</b> window</a></li>
   <li><a Graphs><b>Graph</b> windows</a></li>
-  <li><a TB>Using <b>Tablebases</b> in Scid</a> <red>(updated!)</red></li>
+  <li><a TB>Using <b>Tablebases</b> in Scid</a></li>
   </ul>
   
   <h4>Other utilities and information</h4>
@@ -52,18 +52,18 @@ set helpText(Contents) {<h1>Scid Help Contents</h1>
   <li><a Maintenance><b>Database maintenance</b> tools</a></li>
   <li><a ECO><b>ECO</b> openings classification</a></li>
   <li><a EPD><b>EPD</b> files</a></li>
-  <li><a Export><b>Exporting</b> games to text files</a> <red>(updated!)</red></li>
+  <li><a Export><b>Exporting</b> games to text files</a></li>
   <li><a Flags>Game <b>Flags</b></a></li>
   <li><a LaTeX>Using <b>LaTeX</b> with Scid</a></li>
-  <li><a Options><b>Options</b> and preferences</a> <red>(updated!)</red></li>
+  <li><a Options><b>Options</b> and preferences</a></li>
   <li><a Sorting><b>Sorting</b> a database</a></li>
-  <li><a Pgnscid><b>Pgnscid</b>: converting PGN files</a></li>
+  <li><a Pgnscid><b>Pgnscid</b>: converting <a PGN>PGN</a> files</a></li>
   <li><a NAGs>Standard <b>NAG</b> annotation values</a></li>
   <li><a Formats>Scid database <b>file formats</b></a></li>
   <li><a Author>Contact information</a></li>
   </ul>
   
-  <p><footer>(Updated: Scid 3.6.23, March 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 ###############
@@ -294,9 +294,9 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   <p>
   Scid uses its own special three-file <a Formats>database format</a>
   which is very compact and fast, but it can convert to and from
-  the standard PGN (Portable Game Notation) format.
+  the standard <a PGN>PGN</a> (Portable Game Notation) format.
   Scids <a PGN>PGN window</a> displays the text of the current game in
-  PGN format.
+  <a PGN>PGN</a> format.
   </p>
   <p>
   You can use Scid to add chess games to a database, using the keyboard or
@@ -305,18 +305,21 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   </p>
   <p>
   You can also use Scid as a <a PGN>PGN</a> file browser, by pasting
-  PGN text into Scids <a Import>Import</a> window or by opening a PGN file
-  in Scid.
-  However, PGN files cannot be edited by Scid (it opens them read-only) and
-  they use more memory and are slower to load, so for large PGN files it
-  is recommended that you create a Scid database from them first with the
-  <a Pgnscid>pgnscid</a> utility.
+  <a PGN>PGN</a> text into Scids <a Import>Import</a> window or by
+  opening a <a PGN>PGN</a> file in Scid.  However, <a PGN>PGN</a>
+  files cannot be edited by Scid (it opens them read-only) and they
+  use more memory and are slower to load, so for large <a PGN>PGN</a>
+  files it is recommended that you create a Scid database from them
+  first with the <a Pgnscid>pgnscid</a> utility.
   </p>
   <p>
-  Windows can be used in docked mode or as independant windows (see flag in the options menu).
-  In docked mode, the most important windows are embedded into a main one. The windows can be reordered
-  by right-clicking on the tab (where the title of the window is) and by dragging tabs from one notebook
-  to another. The menu for each window that has one (marked with a triangle at the left of the tab) is opened by left cliking on the tab.
+  Windows can be used in docked mode or as independant windows (see
+  flag in the options menu).  In docked mode, the most important
+  windows are embedded into a main one. The windows can be reordered
+  by right-clicking on the tab (where the title of the window is) and
+  by dragging tabs from one notebook to another. The menu for each
+  window that has one (marked with a triangle at the left of the tab)
+  is opened by left cliking on the tab.
   </p>
   <p>
   The <a MainWindow>main window</a>
@@ -347,24 +350,23 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
 set helpTitle(Hints) "Scid Hints"
 set helpText(Hints) {<h1>Scid Hints</h1>
   <p>
-  This page contains useful hints in question and answer format to help you
-  use Scid better. If you are new to Scid, please read the
-  <a Guide>quick guide</a> first.
-  Most of the information on this page is available in more detail on the
-  other help pages listed in the <a Index>index</a>.
-  If you think of a useful hint to add to this page, please send it
-  to the <a Author>author of Scid</a>.
+  This page contains useful hints in question and answer format to
+  help you use Scid better. If you are new to Scid, please read the <a
+  Guide>quick guide</a> first.  Most of the information on this page
+  is available in more detail on the other help pages listed in the <a
+  Index>index</a>.  If you think of a useful hint to add to this page,
+  please send it to the <a Author>author of Scid</a>.
   </p>
   
   <h4>Can I get Scid to load a database when it starts?</h4>
   <p>
-  Yes, you can add databases, PGN files or <a EPD>EPD files</a>
+  Yes, you can add databases, <a PGN>PGN</a> files or <a EPD>EPD files</a>
   to the command line. For example:
   <ul>
   <li> <b>scid  mybase  games.pgn.gz</b> </li>
   </ul>
   will load the Scid database <b>mybase</b> and also load the
-  Gzip-compressed PGN file <b>games.pgn.gz</b>.
+  Gzip-compressed <a PGN>PGN</a> file <b>games.pgn.gz</b>.
   </p>
   
   <h4>Is there an easier way to change the board size than using the
@@ -436,10 +438,10 @@ set helpText(Hints) {<h1>Scid Hints</h1>
   See the caching section of the <a Tree>Tree</a> help page for details.
   </p>
   
-  <h4>How can I edit the PGN representation of the game directly?</h4>
+  <h4>How can I edit the <a PGN>PGN</a> representation of the game directly?</h4>
   <p>
   You cannot use the <a PGN>PGN</a> window to edit the current game, but you can
-  still edit its PGN representation using the <a Import>Import game</a> window.
+  still edit its <a PGN>PGN</a> representation using the <a Import>Import game</a> window.
   Just open it (shortcut key: <b>Control+Shift+I</b>) and then press the
   <b>Paste current game</b> button, then edit the game, then press <b>Import</b>.
   </p>
@@ -490,6 +492,10 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <li> <button tb_invar> Move into a variation. [v] </li>
   <li> <button tb_outvar> Move out of the current variation. [z] </li>
   <li> <button tb_addvar> Add a new variation. [Ctrl-A]</li>
+  <li> <button comment_avail> Signifies that the current move has a
+  textual comment attached. This comment is displayed in a tooltip
+  upon mouse hovering on the button. Pressing the button also opens up
+  the <a Comment>Comment editor</a></li>
   <li> <button autoplay_off> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
   <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>.
   [Ctrl-Space] </li>
@@ -520,9 +526,32 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <p>
   The area below the chessboard showing information about the game is
   called the <term>game information area</term>.  Its first three
-  lines show information such as the players, result, date, and site.
-  The fourth line indicates the current position in the game, and what
-  the next move is.
+  lines show information such as the players, their country, result,
+  date, and site.  This information is drawn from the games PGN
+  header. To show country information the fields
+  WhiteCountry/BlackCountry need to be available. The fourth line
+  indicates the current position in the game, and what the next move
+  is.
+  </p>
+  <p>
+  Additionally, flags set for a given game are shown. Here, custom
+  flags only show up by their respecitve number while the standard
+  flags also show their textual meaning.
+  </p>
+  <p>
+  Next to the flags a link called <term>Bib</term> may show up in case the
+  PGN header contains a bibliographic link, ie. a link to the chess
+  literature. This link is to be placed in a special header field
+  called <term>Bib</term> and links the game to a BibTeX database containing
+  the bibliographic information. This linking is done by almost
+  standard LaTeX structure, that is the <term>Bib</term> field
+  contains first the BibTeX key. Additinal information (e.g. page,
+  game number...) may be added by <b>, addinfo</b>. To give more than
+  one bibliogrpahic link several of this entries may be separated by
+  <b> ; </b> (ie. space semicolon space). To resolve the bibliographic
+  reference, Scid first searches a .bib-file named like the database
+  in the database directory. If it can not find such a file it resorts
+  to <b>~/.scid/data/Bookshelf.bib</b>.
   </p>
   <p>
   The fifth line shows the <a ECO>ECO</a> (Encyclopedia of Chess
@@ -578,7 +607,7 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <a Searches Filter>filter</a>.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.3, October 2011)</footer></p>
 }
 
 
@@ -596,6 +625,12 @@ set helpText(Menus) {<h1>Scid menus</h1>
   <li><menu>Finder</menu>: Opens the <a Finder>File Finder</a>.</li>
   <li><menu>Bookmarks</menu>: <a Bookmarks>Bookmarks</a> and bookmark
   functions.</li>
+  <br>
+  <li><menu>Open base as tree</menu>: Opens the tree window for a
+  selected database</li>
+  <li><menu>Open recent base as tree</menu>: Offers a list of recently
+  opened bases to get their tree window.</li>
+  <br>
   <li><menu>Maintenance</menu>: Database <a Maintenance>maintenance</a>
   functions.</li>
   <ul>
@@ -609,9 +644,12 @@ set helpText(Menus) {<h1>Scid menus</h1>
   event site or round name.</li>
   </ul>
   <li><menu>Read-Only</menu>: Makes the current database read-only.</li>
-  <li><menu>Base 1/2/3/4/5</menu>: These commands let you switch between
-  the four available database slots and the <a Clipbase>clipbase</a>
+  <br>
+  <li><menu>Switch to Database</menu>: These commands let you switch between
+  the 8 available database slots and the <a Clipbase>clipbase</a>
   database.</li>
+  <li>1/2/3/4/5/...</li> Offers a list of recently used databases for
+  easy recall.</li>
   <li><menu>Exit</menu>: Exits Scid. </li>
   </ul>
   
@@ -629,19 +667,24 @@ set helpText(Menus) {<h1>Scid menus</h1>
   testing a temporary variation without altering the current game.</li>
   <li><menu>Strip</menu>: Strips all comments or variations from the current
   game.</li>
+  <li><menu>Undo</menu>: Allows to undo up to 10 recent changes.</li>
   <br>
   <li><menu>Empty Clipbase</menu>: Empties the <a Clipbase>clipbase</a>
   so it contains no games.</li>
   <li><menu>Copy this game to clipbase</menu>: Copies the current game
-  to the <a Clipbase>clipbase</a> database.</li>
+  to the <a Clipbase>clipbase</a> database. Additionally, the games
+  curent <term>PGN notation</term> is added to the system clipboard.</li>
   <li><menu>Paste last clipbase game</menu>: Pastes the active game of
   the <a Clipbase>clipbase</a> to be the active game of the current
   database.</li>
   <br>
   <li><menu>Setup start board</menu>: Sets the starting position for the
   current game.</li>
+  <li><menu>Copy position</menu>: Copies the current position as
+  <term>FEN notation</term> to the system clipboard.</li>
   <li><menu>Paste start board</menu>: Sets the start board from the current
-  text selection (clipboard).</li>
+  text selection (clipboard). This selection has to be a valid
+  <term>FEN</term> notation.</li>
   </ul>
   
   <h3><name Game>Game</name></h3>
@@ -665,25 +708,31 @@ set helpText(Menus) {<h1>Scid menus</h1>
   <li><menu>Goto move number</menu>: Goes to the specified move number in
   the current game.</li>
   <li><menu>Find novelty</menu>: Finds the first move of the current game
-  that has not been played before.</li>
+  that has not been played before in the current base.</li>
   </ul>
   
   <h3><name Search>Search</name></h3>
   <ul>
   <li><menu>Reset Filter</menu>: Resets the <a Searches Filter>filter</a>
-  so all games are included.</li>
-  <li><menu>Negate filter</menu>: Inverts the filter to only include
-  games that were excluded.</li>
+  so all games are included. This does not affect a filter created by
+  an eventually opened <a Tree>tree window</a>.</li>
+  <li><menu>Negate filter</menu>: Inverts the filter criteria that are
+  not set by an eventually opened <a Tree>tree window</a>.</li>
   <br>
   <li><menu>Current board</menu>: Searches for the
   <a Searches Board>current board</a> position.</li>
   <li><menu>Header</menu>: Searches by <a Searches Header>header</a>
-  information such as player names.</li>
+  information such as player names. This filter is cummulative to
+  an fiter eventually set by an open <a Tree>tree window</a>.</li>
   <li><menu>Material/Pattern</menu>: Searches by
-  <a Searches Material>material</a> or chessboard patterns</a>.</li>
+  <a Searches Material>material</a> or chessboard patterns</a>. This
+  filter is cummulative to an fiter eventually set by an open <a
+  Tree>tree window</a>.</li>
   <br>
   <li><menu>Using search file</menu>: Searches using
-  <a Searches Settings>settings</a> from a SearchOptions file.</li>
+  <a Searches Settings>settings</a> from a SearchOptions file. This
+  filter is cummulative to an fiter eventually set by an open <a
+  Tree>tree window</a>.</li>
   </ul>
   
   <h3><name Windows>Windows</name></h3>
@@ -706,34 +755,138 @@ set helpText(Menus) {<h1>Scid menus</h1>
   <li><menu>ECO Browser</menu>: Opens/closes the
   <a ECO browser>ECO Browser</a> window.</li>
   <li><menu>Repertoire editor</menu>: Opens/closes the
-  <a Repertoire>repertoire editor</a>.</li>
+  <a Repertoire>repertoire editor</a>. Note: since Scid 4.3 this
+  function is deprecated in favour for <a TreeMasks>Tree Masks</a>.
+  </li>
   <li><menu>Statistics window</menu>: Opens/closes the
   <term>Filter statistics window</term> which gives a win/loss summary
   of the games in the <a Searches Filter>filter.</a></li>
   <li><menu>Tree window</menu>: Opens/closes the <a Tree>tree window</a>.</li>
   <li><menu>Endgame Tablebase window</menu>: Opens/closes the window that
   displays <a TB>tablebase</a> information.</li>
+  <li><menu>Correspondence window</menu>: Opens/closes the window for
+  for handling correspondence chess games.</li>
+  </ul>
+
+  <h3><name Play>Play</name></h3>
+  <ul>
+  <li><menu>Serious game</menu>: Allows to play an installed
+  <term>UCI</term> chess engine in a serious game, ie. in tournament
+  conditions.</li>
+  <li><menu>Tactical game</menu>: Allows to play the Phalanx chess
+  engine at an adjustable level.</li>
+  <li><menu>Play on FICS</menu>: Gives access to the Free Internet
+  Chess Server (FICS) to play games of chess against human opponents
+  or chess engines, observe games, or take part in trainings
+  sessions.</li>
+  <li><menu>Training</menu>: access various trainings modes available
+  in Scid.</li>
+  <li><menu>Correspondence Chess</menu>: access the functions for
+  <a CCSetupDialog>correspondence chess configuration</a> and <a
+  Correspondence>game play</a></li>
+  <ul>
+	  <li><menu>Configure</menu>: allows <a
+	  CCSetupDialog>configuration</a> of the <a
+	  Correspondence>correspondence chess</a> subsystem.
+	  </li>
+	  <li><menu>Observe games</menu>: allows to observe games by
+	  fetching them from a website.
+	  </li>
+	  <li><menu>Open database</menu>: opens the default correspondence
+	  chess database (cf. <a CCSetupDialog>configuration</a>)
+	  </li>
+	  <li><menu>Retrieve games</menu>: Fetch games form a server using
+	  the <a CCXfcc>Xfcc</a> protocol.
+	  </li>
+	  <li><menu>Process inbox</menu>: Processes the correspondence
+	  chess <a CCWorkflow>inbox to work in new games and moves</a> into
+	  the current database. 
+	  </li>
+	  <li><menu>Send move</menu>: Transmitts to a server a move using
+	  the <a CCXfcc>Xfcc</a> protocol.
+	  </li>
+	  <li><menu>Resign</menu>: resigns the current game (requires <a
+	  CCXfcc>Xfcc</a>.)
+	  </li>
+	  <li><menu>Claim draw</menu>: claim a draw in the current game (requires <a
+	  CCXfcc>Xfcc</a>.)
+	  </li>
+	  <li><menu>Offer draw</menu>: offer a draw in the current game
+	  (requires <a CCXfcc>Xfcc</a>.)
+	  </li>
+	  <li><menu>Accept draw</menu>: accept the draw offer from the
+	  opponent (requires <a CCXfcc>Xfcc</a>.)
+	  </li>
+	  <li><menu>Game page</menu>: opens the web page associated with a
+	  <a CCXfcc>Xfcc</a> game.
+	  </li>
+	  <li><menu>New eMail Game</menu>: starts a new eMail based game.
+	  </li>
+	  <li><menu>Mail move</menu>: mails the move to the oponent in an
+	  email based game.
+	  </li>
+  </ul>
   </ul>
   
   <h3><name Tools>Tools</name></h3>
   <ul>
-  <li><menu>Analysis engine</menu>: Starts/stops the chess analysis
+  <li><menu>Analysis engine</menu>: Displays a list of all installed
+  chess engines available for analysis to select and start one of
+  them as analysis engine 1.</li>
+  <li><menu>Analysis engine #2</menu>: Displays a list of all installed
+  chess engines available for analysis to select and start one of
+  them as analysis engine 2.
+  </li>
+  <li><menu>Start engine 1</menu>: Starts/stops the chess analysis
   engine, displaying the evaluation of the current position
   in the <a Analysis>analysis window</a>.</li>
-  <li><menu>Analysis engine #2</menu>: Starts/stops a second analysis
+  <li><menu>Start engine #2</menu>: Starts/stops a second analysis
   engine.</li>
   <li><menu>Crosstable</menu>: Constructs a tournament
   <a Crosstable>crosstable</a> for the current game. </li>
   <li><menu>Email manager</menu>: Opens/closes the <a Email>email manager</a>
   window, for managing email correspondence games.</li>
   <br>
+  <li><menu>Rel. filter graph</menu>: Generates a <a
+  FilterGraph>relative filter graph</a> e.g. to investigate popularity
+  of the current opening by comparison of the current position against
+  the whole database.
+  </li>
+  <li><menu>Abs. filter graph</menu>:  Generates a <a
+  FilterGraph>absolute filter graph</a>
+  </li>
   <li><menu>Opening report</menu>: Generates an
   <a Reports Opening>opening report</a> for the current position.</li>
   <li><menu>Piece Tracker</menu>: Opens the <a PTracker>piece tracker</a>
   window.</li>
+  <li><menu>Book tuning</menu>: allows to adjust the probability
+  values of a moved played in a selectable <a Book>opening book</a>).
+  </li>
+  <li><menu>Connect hardware</menu>: Allows external hardware to be
+  used to enter moves. (E.g.  DGT electronic chessboard, Novag
+  Citrine) 
+  <ul>
+		<li><menu>Configure</menu>: allows  <a HardwareConfig>basic
+		parameters</a> to be set for usage of external hardware
+		</li>
+		<li><menu>Connect Input Engine</menu>: hooks up with hardware
+		that supplies an Input Engine compatible driver (e.g. <url
+		http://dgtdrv.sourceforge.net>dgtdrv website</url>.)
+		</li>
+		<li><menu>Connect Novag Citrine</menu>: hooks up with a Novag
+		Citrine board.
+		</li>
+  </ul>
+  </li>
   <br>
   <li><menu>Player information</menu>: Displays <a PInfo>player information</a>
   for one of the two players of the current game.</li>
+  <ul>
+	<li><menu>White</menu>: use the White player of the current game.</li>
+	<li><menu>Black</menu>: use the Black player of the current game.</li>
+  </ul>
+  <li><menu>Player report</menu>: generates a <a Reports Player>player
+  report</a>
   <li><menu>Rating graph</menu>: Displays the
   <a Graphs Rating>rating graph</a>.</li>
   <li><menu>Score graph</menu>: Displays the
@@ -746,11 +899,11 @@ set helpText(Menus) {<h1>Scid menus</h1>
   search <a Searches Filter>filter</a> to a text file in PGN, HTML or
   LaTeX format. See the <a Export>export</a> help page.</li>
   <br>
-  <li><menu>Import PGN game</menu>: Opens the <a Import>Import window</a>
+  <li><menu>Import <a PGN>PGN</a> game</menu>: Opens the <a Import>Import window</a>
   for entering a game by typing or pasting its text in
   <a PGN>PGN format</a>.</li>
-  <li><menu>Import file of PGN games</menu>: Imports a whole file containing
-  games in PGN format to the current database. Note, that several PGN
+  <li><menu>Import file of <a PGN>PGN</a> games</menu>: Imports a whole file containing
+  games in <a PGN>PGN</a> format to the current database. Note, that several PGN
   files can be selected in this dialogue at once.</li>
   </ul>
   
@@ -759,9 +912,9 @@ set helpText(Menus) {<h1>Scid menus</h1>
   This menu provides entries for setting most of Scid's configurable
   options.
   The <menu>Save options</menu> entry saves the current options to the
-  file "<b>~/.scid/scidrc</b>" (or <b>scid.opt</b> in the
-  directory of the Scid executable programs for Windows users);
-  this file is loaded each time you start up Scid.
+  file "<b>~/.scid/config/options.dat</b>" (or "<b>options.dat</b>" in the
+  sub directory "<b>config</b>" of the Scid executable programs for Windows
+  users); this file is loaded each time you start up Scid.
   </p>
   
   <h3><name Help>Help</name></h3>
@@ -771,7 +924,7 @@ set helpText(Menus) {<h1>Scid menus</h1>
   files Scid loaded when it started.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 
@@ -798,6 +951,11 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   confirmation, use the middle mouse button of the mouse to enter the
   move.
   </p>
+  <p>
+  Depending on <menu>Options / Moves / Highlight last moves</menu> and
+  the settings made there, Scid will mark the last move by a coloured
+  frame around the involved fields.
+  </p>
   
   <h4>Retracting a move</h4>
   <p>
@@ -819,9 +977,9 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
 
   <h4>Marking fields and directions</h4>
   <p>
-  Coloured squares and arrows can be entered directly on the board
+  colored squares and arrows can be entered directly on the board
   without the use of the <a Comment>Comment editor</a> by using the mouse
-  buttons. For coloured squares one can Shift-click on the square in
+  buttons. For colored squares one can Shift-click on the square in
   question. Shift-Left button markes the square in green, the middle
   button in yellow, the right button in red. To draw arrows one can
   Ctrl-click on the source and target squares. The left mouse button
@@ -842,7 +1000,7 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   <p>
   If you are entering a game and suddenly see an incorrect move several
   moves earlier, it is possible to correct it without losing the extra
-  moves you have added. The only way is to edit the PGN representation
+  moves you have added. The only way is to edit the <a PGN>PGN</a> representation
   of the game: open the <a Import>Import</a> window, select "Paste current
   game", correct the incorrect move, then select "Import".
   </p>
@@ -916,9 +1074,14 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   <b>Note</b> Scid uses some of these symbols for automatic
   annotations, also. To this end, these symbols have to be associated
   with a certain pawn value. These pawn values can be set via Options
-  / Game information / Configure Informant values.
+  / Game information / Configure Informant values. Note that since
+  Scid 4.0 many NAGs can be displayed symbolically if your system
+  suports UTF-8 properly. The connection between a NAGs numeric value
+  and its symbolic representation within Scid is given on the page <a
+  NAGs>Standard NAG values</a> which can be accessed e.g. by Ctrl-N
+  from the <a Comment>Comment editor</a>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 
@@ -1047,8 +1210,16 @@ set helpText(Searches) {<h1>Searches in Scid</h1>
   <b>Ignore Colors</b> option.
   </p>
   <p>
+  Additionally, an Annotator may be searched case insensitively. Note
+  that this function requires the <b>Annotator</b> header field to be
+  set properly. The checkbox <menu>annotated games only</menu> acts as
+  a logical OR filter for the flags <b>Comments, Variations,
+  Anotations</b>, that is can be used to select only those games that
+  got any type of annotations.
+  </p>
+  <p>
   Finally, the Header search can be used to find any text
-  (case-sensitive and without wildcards) in the PGN representation of
+  (case-sensitive and without wildcards) in the <a PGN>PGN</a> representation of
   each game.  You may enter up to three text phrases, and they must
   all appear in a game for it to be a match.  This search is very
   useful for searching in the comments or extra tags of a game (such
@@ -1189,6 +1360,20 @@ set helpText(Annotating) {<h1>Annotating games</h1>
   the beginning of the variation, the up arrow can be used
   alternatively.
   </p>
+  <p>
+  Note that in case a game has variations you can also enter the
+  variation by just playing the move of the variation in question. To
+  explicitly add a new variation starting with the same move (e.g. to
+  simplify deeply nested variation trees) press Ctrl-A to explicitly
+  add a variation and only then play the move.
+  </p>
+  <p>
+  Setting Options / Moves / Show arrows for variations may be set to
+  display the existing variations on the main board. This can be
+  especially helpful on computers with small displays (Netbooks)
+  and/or in conjuction with disabling both PGN window and game
+  informaion area (Options / Windows / Show game information).
+  </p>
   
   <h3><name Null>Null moves</name></h3>
   <p>
@@ -1202,8 +1387,8 @@ set helpText(Annotating) {<h1>Annotating games</h1>
   keyboard by typing "<b>--</b>" (two minus signs).
   </p>
   <p>
-  Note that null moves are not a part of the PGN standard, so if you
-  export games with null moves to a PGN file, Scid will provide (among
+  Note that null moves are not a part of the <a PGN>PGN</a> standard, so if you
+  export games with null moves to a <a PGN>PGN</a> file, Scid will provide (among
   other export options) an option to preserve null moves or convert them
   to comments for compatibility with other software.
   See the <a Export>Exporting</a> help page for more details.
@@ -1229,63 +1414,86 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   
   <h3>Annotation symbols</h3>
   <p>
-  Scid uses the <a Author Related>PGN standard</a>
-  for annotation symbols, accepting
-  <a NAGs>NAG (numeric annotation glyph)</a> values for annotations.
-  Some of the most common symbols (such as "!" or "+-") are displayed
-  as symbols, and have a button in the comment editor window for fast
-  entry. For other symbols, you can enter the appropriate
-  numeric NAG value which is a number from 1 to 255.
-  For example, the NAG value 36 means "White has the initiative" and will
-  be displayed as "$36" in the <a PGN>PGN text</a> of the game.
+  Scid uses the <a Author Related>PGN standard</a> for annotation
+  symbols, accepting <a NAGs>NAG (numeric annotation glyph)</a> values
+  for annotations.  Some of the most common symbols (such as "!" or
+  "+-") are displayed as symbols, and have a button in the comment
+  editor window for fast entry. For other symbols, you can enter the
+  appropriate numeric NAG value which is a number from 1 to 255.  For
+  example, the NAG value 36 means "White has the initiative" and will
+  be displayed as "$36" in the <a PGN>PGN text</a> of the game. If
+  your system properly supports UTF-8 character sets many of the NAG
+  symbols can be displayed by their <a NAGs>glphys</a>. 
   </p>
   <p>
   See the help page of <a NAGs>NAG values</a> for NAG values defined
-  by the PGN standard.
+  by the <a PGN>PGN</a> standard. This page can be accessed from the
+  Comment editor by pressing Ctrl-N.
   </p>
   <p>
-  <b>Hint:</b> You can add the common move evaluation symbols (!, ?, !!,
-  ??, !? and ?!) while in the main window, without needing
-  to use the comment editor window, by typing the symbol followed by
-  the [Return] key.
-  This is especially useful if you are <a Moves>entering chess moves</a>
-  using the keyboard.
+  <b>Hint:</b> You can add the common move evaluation symbols (!, ?,
+  !!, ??, !? and ?!) while in the main window, without needing to use
+  the comment editor window, by typing the symbol followed by the
+  [Return] key.  This is especially useful if you are <a
+  Moves>entering chess moves</a> using the keyboard. Also note that
+  the <a PGN>PGN window's</a> context menu offers many of the most
+  common symbols for direct annotation.
   </p>
   
   <h3>Comments</h3>
   <p>
   You can edit comments by typing in the text area provided and using
-  the Clear, Revert and Store buttons.  You do not need to press the
+  the Clear, Revert and Store buttons. You do not need to press the
   Store button to update a comment; it is automatically updated
-  whenever you move to another position in the game.
+  whenever you leave the comment editor window e.g. by activating
+  another window or tab.
+  </p>
+  <p>
+  You can move through the moves of a game directly from within the
+  comment editor by pressing Alt and the left/right cursor keys. To
+  jump from the NAG entry and the free text entry Alt-N may be used
+  for speedy navigation.
   </p>
   <p>
   <b>Hint:</b> To add a comment before the first move in a variation,
   go to the first move and hit the left arrow key once and then insert
-  the comment.
+  the comment. Also note that by pressing Ctrl-A a variation can be
+  added right from within the comment editor. This eases creation
+  of a pre move comment for the first move of a variation.
   </p>
   
   <h3>Coloring squares</h3>
   <p>
-  You can color any square with any color using a special embedded command
+  Colored markers may be added to the chess board by drawing them on
+  the little helper board that can be exapanded left of the comment
+  window. The display of this board is toggled by <button tb_coords>.
+  Scid will remember the state of this board if options are saved.
+  Once the little helper board is expanded, select the marker to use
+  from the buttons below the board, and the color from the color
+  palette above and just click on the square to mark.
+  </p>
+  <p>
+  A square may also be colored by using a special embedded command
   which can appear anywhere in a comment. The command format is:
   </p>
   <ul>
-  <li><b>[%mark square color]</b><li>
+  <li><b>[%draw marker,square,color]</b><li>
   </ul>
   <p>
   where <b>square</b> is a square name like d4 and <b>color</b> is any
   recognized color name (such as red, blue4, darkGreen, lightSteelBlue, etc)
   or RGB code (a <b>#</b> followed by six hexadecimal digits, such as #a0b0c8).
   If the color is omitted, it defaults to <red>red</red>.
+  <b>marker</b< may be full,circle,disk,x,+,-,?,!,= or the numbers
+  1..9.
   </p>
   <p>
   A comment may contain any number of color commands, but each must have
-  in its own <b>[%mark ...]</b> tag.
+  in its own <b>[%draw...]</b> tag.
   For example, the comment text</p>
   <p>
-  Now d6 [%mark d6] is weak and the knight can attack it
-  from b5. [%mark b5 #000070]
+  Now d6 [%draw full,d6,red] is weak and the knight can attack it
+  from b5. [%draw circle,b5,#000070]
   </p>
   <p>
   will color d6 <red>red</red> and b5 with the dark-blue color
@@ -1320,9 +1528,9 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
 
   <p>
   <b>Note</b>
-  Coloured squares and arrows can be entered directly on the board
+  Colored squares and arrows can be entered directly on the board
   without the use of the Comment editor by using the mouse
-  buttons. For coloured squares one can Shift-click on the square in
+  buttons. For colored squares one can Shift-click on the square in
   question. Shift-Left button markes the square in green, the middle
   button in yellow, the right button in red. To draw arrows one can
   Ctrl-click on the source and target squares. The left mouse button
@@ -1330,7 +1538,7 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   button in a red arrow.
   </p>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 ####################
@@ -1481,7 +1689,7 @@ set helpText(Finder) {<h1>The File Finder window</h1>
   <h3>File sizes</h3>
   <p>
   The meaning of a file size displayed by the Finder depends on the file
-  type. For Scid databases and PGN files, it is the number of games. For
+  type. For Scid databases and <a PGN>PGN</a> files, it is the number of games. For
   EPD files, it is the number of positions. For repertoire files, it is
   the number of (include or exclude) lines.
   </p>
@@ -1627,7 +1835,8 @@ set helpText(GameList) {<h1>The Game List window</h1>
   When <term>Browse game</term> is selected, the moves of the selected
   game (without comments or variations) will be displayed in a separate
   window. This is a useful way of previewing another game without
-  affecting the currently loaded game.
+  affecting the currently loaded game. The size of this window may be
+  changes by +/- keys or Ctrl-Mousewheel.
   </p>
   <p>
   The <term>Merge game</term> feature provides a way to include the
@@ -1656,7 +1865,7 @@ set helpText(Import) {<h1>The Import window</h1>
   </p>
   <p>
   The large white frame in the window is where you type or paste
-  the text of the game in PGN format, and the gray frame below it
+  the text of the game in <a PGN>PGN</a> format, and the gray frame below it
   provides feedback of any errors or warnings.
   </p>
   
@@ -1670,7 +1879,7 @@ set helpText(Import) {<h1>The Import window</h1>
   
   <h3>PGN tags in the Import window</h3>
   <p>
-  Scid expects to see PGN header tags such as
+  Scid expects to see <a PGN>PGN</a> header tags such as
   <ul>
   <li> <b>[Result "*"]</b> </li>
   </ul>
@@ -1681,21 +1890,21 @@ set helpText(Import) {<h1>The Import window</h1>
   without any header tags and Scid will import it.
   </p>
   
-  <h3>Using PGN files in Scid</h3>
+  <h3>Using <a PGN>PGN</a> files in Scid</h3>
   <p>
-  If you want to use a PGN format file in Scid but do not
+  If you want to use a <a PGN>PGN</a> format file in Scid but do not
   want to convert it with <a Pgnscid>pgnscid</a> first, there are two
   possible ways.
   </p>
   <p>
   First, you can import the games in the file to an existing database
-  with the <menu>Tools: Import file of PGN games...</menu> menu command.
+  with the <menu>Tools: Import file of <a PGN>PGN</a> games...</menu> menu command.
   </p>
   <p>
-  The alternative is to open the PGN file directly in Scid. However, PGN
+  The alternative is to open the <a PGN>PGN</a> file directly in Scid. However, PGN
   format files are opened read-only and consume more memory than a
   comparable Scid database, so this is only recommended for relatively
-  small PGN files.
+  small <a PGN>PGN</a> files.
   </p>
   
   <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
@@ -1728,20 +1937,20 @@ set helpText(Export) {<h1>Exporting games</h1>
   the game.
   </p>
   
-  <h3><name Null>Null moves in PGN Export</name></h3>
+  <h3><name Null>Null moves in <a PGN>PGN</a> Export</name></h3>
   <p>
   Scid allows <a Annotating Null>null (empty) moves</a> to be stored
   in games, as they can be helpful when annotating games using
-  variations.  However, the PGN standard has no null move concept. So
-  if you export Scid games with null moves to a PGN file, other
+  variations.  However, the <a PGN>PGN</a> standard has no null move concept. So
+  if you export Scid games with null moves to a <a PGN>PGN</a> file, other
   PGN-reading software will not be able to read the null moves.
   </p>
   <p>
   To solve this problem, Scid provides an extra option,
-  <b>Convert null moves to comments</b>, when exporting games in PGN format.
-  If you want to create a PGN file that other software can use, turn this
+  <b>Convert null moves to comments</b>, when exporting games in <a PGN>PGN</a> format.
+  If you want to create a <a PGN>PGN</a> file that other software can use, turn this
   option on and variations containing null moves will be converted to
-  comments. However, if you want to create a PGN file that can be imported
+  comments. However, if you want to create a <a PGN>PGN</a> file that can be imported
   back into Scid later with null moves preserved, leave the option off.
   </p>
   
@@ -1810,20 +2019,20 @@ set helpText(LaTeX) {<h1>Using LaTeX with Scid</h1>
 }
 
 ####################
-### PGN window help:
+### <a PGN>PGN</a> window help:
 
 set helpTitle(PGN) "PGN window"
-set helpText(PGN) {<h1>The PGN window</h1>
+set helpText(PGN) {<h1>The <a PGN>PGN</a> window</h1>
   <p>
-  Scids PGN window displays the contents of the current game in
-  standard PGN representation. In the move text, comments appear {in
+  Scids <a PGN>PGN</a> window displays the contents of the current game in
+  standard <a PGN>PGN</a> representation. In the move text, comments appear {in
      braces} and variations appear (in parentheses).
   </p>
   
   <h3>PGN format</h3>
   <p>
-  PGN (Portable Game Notation) is a common standard for transferring
-  chess games between computer programs.  A PGN game consists of two
+  <a PGN>PGN</a> (Portable Game Notation) is a common standard for transferring
+  chess games between computer programs.  A <a PGN>PGN</a> game consists of two
   sections. The first is the header, which contains tags such as
   <b>[White "Kasparov, Gary"]</b>
   and
@@ -1835,9 +2044,9 @@ set helpText(PGN) {<h1>The PGN window</h1>
   <a NAGs>annotation symbols</a> and <a Comment>comments</a>.
   </p>
   
-  <h3>Actions in the PGN window</h3>
+  <h3>Actions in the <a PGN>PGN</a> window</h3>
   <p>
-  You can use the PGN window to navigate around the game: clicking the
+  You can use the <a PGN>PGN</a> window to navigate around the game: clicking the
   left mouse button on a move will jump to that move. Click the left
   mouse button on a comment will edit it.  The arrow keys and
   (<b>v</b> and <b>z</b> keys for entering or leaving variations) work
@@ -1882,9 +2091,9 @@ set helpText(PGN) {<h1>The PGN window</h1>
 
   <h3>PGN display options</h3>
   <p>
-  The PGN window menus contain options that affect the PGN window display.
+  The <a PGN>PGN</a> window menus contain options that affect the <a PGN>PGN</a> window display.
   Scid can display the game in color or plain text -- see the
-  <menu>Display</menu> menu in the PGN window.
+  <menu>Display</menu> menu in the <a PGN>PGN</a> window.
   The color display is easier to read, and allows you to select moves and
   comments using the mouse, but it is much slower to update. For very long
   games, you may want to select plain text display.
@@ -1894,7 +2103,7 @@ set helpText(PGN) {<h1>The PGN window</h1>
   to display them indented on a separate line for greater visibility.
   </p>
   <p>
-  The PGN display options, and the size of the PGN window, are saved to the
+  The <a PGN>PGN</a> display options, and the size of the <a PGN>PGN</a> window, are saved to the
   options file whenever you <b>Save Options</b> from the <menu>Options</menu>
   menu of the main window.
   </p>
@@ -2084,10 +2293,10 @@ set helpText(Repertoire) {<h1>The Repertoire editor window</h1>
   <h3>Extra hints</h3>
   <p>
   A repertoire file is great for finding new games in your opening systems.
-  For example, each time you get a new PGN file to add to your main database
-  (such as the excellent weekly PGN file from
+  For example, each time you get a new <a PGN>PGN</a> file to add to your main database
+  (such as the excellent weekly <a PGN>PGN</a> file from
   <url http://www.chesscenter.com/twic/>The Week In Chess</url>),
-  just open the PGN file in Scid and do a repertoire search. Then you
+  just open the <a PGN>PGN</a> file in Scid and do a repertoire search. Then you
   can browse the filtered games to see all the games played that are
   in your repertoire.
   </p>
@@ -2171,7 +2380,12 @@ set helpText(Tree) {<h1>The Tree window</h1>
   (Equivalently, one can use the <button b_list> button).  The games
   are listed in order of average rating, and you can restrict the list
   to show games with a particular result and also limit the number of
-  games shown in this list.
+  games shown in this list. Additionally, up to 4 flags of the games
+  in the list show up in the best games list. The special flag
+  <b>A</b> marks a game as <b>Annotated</a>, ie. these games contain
+  either comments, variations or NAGs (or any combination of those).
+  Note that if a header search was ran against the database, the best
+  games list is restricted to the results of this header search.
   </p>
   
   <h3><name Graph>Tree graph window</name></h3>
@@ -2317,7 +2531,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   it makes sense to open a larger reference database as this
   simplifies the addition of moves to a <term>Mask</term>. However,
   Masks work with every database, even the <term>Clipbase</term>, that
-  is one could also import a collection of games from a PGN file to
+  is one could also import a collection of games from a <a PGN>PGN</a> file to
   the Clipbase to set up a <term>Mask</term>.
   </p>
   <p>
@@ -2381,7 +2595,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
      </ul>
 	  To remove a marker just select the item <menu>No marker</menu>.
   </li>
-  <li><term>Color</term> Allows to add a little coloured square in
+  <li><term>Color</term> Allows to add a little colored square in
   front of the move for ones own highlighting. To remove it again
   select <menu>White</menu></li>
   <li><term>Comment move</term> allows to add a textual comment for
@@ -2427,14 +2641,14 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   <p>
   Setting up a mask can be a tendious taks especially for complex
   opening repertoirs. However, if such a repertoir is available as a
-  Scid database or a number of PGN games, or lines stored in usual
+  Scid database or a number of <a PGN>PGN</a> games, or lines stored in usual
   chess games, Scid can use that information to set up suitable
   <term>Masks</term> automatically.
   </p>
   <p>
   First of all one has to load the information into a Scid database.
   In case the information is already available as a Scid database this
-  is as easy as opening it. In case a PGN file is use it should be
+  is as easy as opening it. In case a <a PGN>PGN</a> file is use it should be
   either imported into a Scid database or one can use the
   <term>Clipbase</term> to import it temporarily. In that case one
   should make sure that the <term>Clipbase</term> is empty before
@@ -2533,7 +2747,7 @@ set helpText(Maintenance) {<h1>Database maintenance</h1>
   spellcheck names, <a Compact>compact</a> or <a Sorting>sort</a>
   a database. Note that any operations that are not available
   for the current database (for example, because it may be read-only
-  or a PGN file) will be grayed out.
+  or a <a PGN>PGN</a> file) will be grayed out.
   </p>
   
   <h3><name Twins>Deleting twin games</name></h3>
@@ -2759,6 +2973,15 @@ set helpText(Flags) {<h1>Game Flags</h1>
   <li>Blunder (?)</li>
   <li>User-defined (U)</li>
   </ul>
+
+  <p>
+  Since Scid 4.0 additional 6 custom flags are available for
+  individual use.  These flags are specific for each base and their
+  textual descriptoin can be set via the <a Maintenance>maintenance
+  window</a>. In the games list, game info area and so on they display
+  as the numbers (1) .. (6). For <a Searches Header>header
+  searches</a> they behave exactly like the predefined flags above.
+  </p>
   
   <p>
   A flag can be set for the current game, all filter games, or all
@@ -2774,7 +2997,8 @@ set helpText(Flags) {<h1>Game Flags</h1>
   no significance to Scid, you can use them for any purpose that
   suits your needs. For example, you could use the Kingside (K)
   flag for kingside pawn storms, or kingside heavy piece attacks,
-  or even for endgames with all pawns on the kingside.
+  or even for endgames with all pawns on the kingside. Depending on
+  usage, however a custom flag might be more suitable.
   </p>
   <p>
   Note, that sensible handling of flags can speed up searches
@@ -2788,7 +3012,7 @@ set helpText(Flags) {<h1>Game Flags</h1>
      <li><a Analysis Annotate>Find tactical exercise</a>: sets the (T) flag
   </ul>
   
-  <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 ####################
@@ -2976,7 +3200,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
      gives the time, the engine can spend on analysis before moving on
      to the next move.</li>
      <li><term>Add variations</term>: here, one has the choice if
-     moves for both sides or only one colour should be added, if all
+     moves for both sides or only one color should be added, if all
      moves should get an annotation or only if the game move is not
      the best move according to the engines evaluation. Additionally,
      one can add an annotation only if the game move is a blunder. The
@@ -3245,7 +3469,7 @@ set helpText(Email) {<h1>The Email window</h1>
   
   <p>
   When you send an email message, Scid generates the message with the games
-  in PGN format <b>without</b> any comments, annotations or variations, since
+  in <a PGN>PGN</a> format <b>without</b> any comments, annotations or variations, since
   you would not usually want your opponent to see your analysis.
   You can edit the message before sending it to add conditional moves or
   other text.
@@ -3451,8 +3675,33 @@ set helpText(PInfo) {<h1>The Player Info window</h1>
   Any number printed in red can be clicked with the left mouse button to set
   the <a Searches Filter>filter</a> to the games it represents.
   </p>
+  <p>
+  If a current verison of the ratings file (cf. <url
+  http://scid.sourceforge.net/>Scid website</url>) is online links to
+  additional ressources may be present that will be accessible by the
+  users web browser provided Internet access is available. These infos
+  can be accessed by the following symbols in the player information
+  window (note that not all symbols may be present!):
+  <ul>
+  <li><button fidelnk> Go to the players FIDE profile page</li>
+  <li><button iccflnk> Go to the players ICCF profile page</li>
+  <li><button dsblnk> Go to the players profile at the Deutscher
+  Schachbund.</li>
+  <li><button bcflnk> Go to the players profile at the British Chess
+  Federation.</li>
+  <li><button smlnk> Go to te players profile at SchemingMind.</li>
+  <li><button wikiplnk> Call up the players Wikipedia profile page.
+  Scid will try to use the language set for Scid itself. If no page is
+  available, it will resort to German (for pure technical reasons).</li>
+  <li><button dnblnk> Call up the German national library for books by
+  or about the player.</li>
+  <li><button seealsolnk> An alternative way to access Wikipedia.</li>
+  <li><button viaflnk> Call up player information at the Virtual
+  Autority File (VIAF). This could be used to call up books of/by this
+  player in the contributing national libraries.</li>
+  </ul>
   
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 ####################
@@ -3465,7 +3714,7 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   They are explained below.
   </p>
   
-  <h3><name Filter>Relative and absolute Filter Graph windows</name></h3>
+  <h3><name FilterGraph>Relative and absolute Filter Graph windows</name></h3>
   <p>
   The <term>relative Filter Graph</term> window shows trends by date or by
   Elo rating for the games in the current filter, compared to the
@@ -3697,7 +3946,7 @@ set helpText(Bookmarks) {<h1>Bookmarks</h1>
   position at which it was bookmarked.
   </p>
   <p>
-  Only games in a Scid format database (not a PGN file or the clipbase)
+  Only games in a Scid format database (not a <a PGN>PGN</a> file or the clipbase)
   can be bookmarked.
   </p>
   <p>
@@ -3741,13 +3990,13 @@ set helpText(Cmdline) {<h1>Command-line options</h1>
   <p>
   When you start Scid from a shell or console, there are command-line
   options you can specify. Scid-format databases (with or without a
-  file suffix such as ".si3") and PGN files to be opened can be given,
+  file suffix such as ".si3") and <a PGN>PGN</a> files to be opened can be given,
   for example:
   <ul>
   <li>scid mybase newgames.pgn</li>
   </ul>
   will start Scid and open the Scid database called mybase and the
-  PGN file named newgames.pgn.
+  <a PGN>PGN</a> file named newgames.pgn.
   </p>
   <p>
   There are also optional arguments to control which files Scid should
@@ -3781,7 +4030,7 @@ set helpTitle(Pgnscid) "Pgnscid"
 set helpText(Pgnscid) {<h1>Pgnscid</h1>
   <p>
   <term>Pgnscid</term> is the separate program that you need to use to
-  convert PGN (portable game notation) files into Scid databases.
+  convert <a PGN>PGN</a> (portable game notation) files into Scid databases.
   </p>
   <p>
   To convert a file named <i>myfile.pgn</i>, simply type:
@@ -3803,9 +4052,9 @@ set helpText(Pgnscid) {<h1>Pgnscid</h1>
   <i>mybase.sg3</i> and <i>mybase.sn3</i>.
   </p>
   <p>
-  Note that pgnscid (and scid) can read Gzipped PGN files
+  Note that pgnscid (and scid) can read Gzipped <a PGN>PGN</a> files
   (e.g. <b>mybase.pgn.gz</b>)
-  directly, so if you have a large PGN file compressed with Gzip to save
+  directly, so if you have a large <a PGN>PGN</a> file compressed with Gzip to save
   disk space, you do not have to un-gzip it first.
   </p>
   
@@ -4374,11 +4623,11 @@ set helpText(Author) {<h1>Contact Information</h1>
   
   <li><url http://www.chesscenter.com/twic/>http://www.chesscenter.com/twic/</url> --
   TWIC (the week in chess), an excellent weekly bulletin of international
-  chess games in available in PGN format.</li>
+  chess games in available in <a PGN>PGN</a> format.</li>
   
   <li><url http://scid.sourceforge.net/doc/standard.txt>http://scid.sourceforge.net/doc/standard.txt</url> --
   the <b>PGN Standard</b>, created by Steven J. Edwards in 1994.
-  This text file explains the PGN and EPD formats in detail.</li>
+  This text file explains the <a PGN>PGN</a> and EPD formats in detail.</li>
   </ul>
   
   <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
@@ -4390,7 +4639,7 @@ set helpText(Book) {<h1>Book window</h1>
   <p>
   A list of all book files present in Scid's books directory is
   presented in the drop down list on top of the window. To specify the
-  directory where Scid shoul search for opening books select Options /
+  directory where Scid should search for opening books select Options /
   Books directory from the menu. The active book can be selected
   easily from that list.
   </p>
@@ -4476,7 +4725,7 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   for the opening trainer it is also required to be of proper type.
   That is, if openings for white are to be trained, the database has
   to be of type <term>Openings for White</term> (similar for Black and
-  both colours). The type can be set via the <a Maintenance>Maintenance
+  both colors). The type can be set via the <a Maintenance>Maintenance
   window</a> by selecting the icon or via the database switchers
   context menu.
   </p>
@@ -4556,7 +4805,7 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   possible candidate moves (hidden by default) and also display their
   values by just enabling these functions. If <term>Show
   statistics</term> is enabled, the current statistics is shown in the
-  colour coded fields below the checkbox. Otherwise the overall
+  color coded fields below the checkbox. Otherwise the overall
   statistics can be accessed by the button <term>Show report</term>
   
   <h3>Opening trainer statistics</h3>
@@ -4611,7 +4860,7 @@ chess.
    <li><b>eMail Chess</b> proceeds by sending the current game via eMail
    to your opponet once you made your move. To this end an eMail message
    is created in your prefered email program with the current game
-   attached to it in PGN format. Of course all comments and
+   attached to it in <a PGN>PGN</a> format. Of course all comments and
    variations are stripped off before.
    </li>
    <li><b>Correspondence Chess Servers</b> are supported by means of the
@@ -4621,11 +4870,18 @@ chess.
    Xfcc. The fetch and send tool are implemented as external tools for
    easy extension if other protocols arise.
    </li>
-   <li><b>Postal play</b>
-   <b>---TODO for 4.4---</b>
+   <li><b>Postal play</b>: Scid allos support for postal play by
+	adding a PGN file with the proper header information to it's Inbox
+	directory. If the addtionaly header field <b>Mode</b> is set to
+	<b>Postal</b> those games get their proper icon displayed. Note
+	that also the header fields <b>CmailGamename</b> and <b>Gameid</b>
+	should be present. 
+	---TODO---: Printing of postcards is on the todo, this function
+	will require the additional header fields WhiteAddress/BlackAddress
+	to contain the postal adress of both players.
    </li>
    <li><b>Observation of games</b> is supported by just adding the URL
-   for the PGN file to the list offered by <menu>Play / Correspondence
+   for the <a PGN>PGN</a> file to the list offered by <menu>Play / Correspondence
    Chess / Observe Game</menu>. For this fucntion to work a connector
 	for the site in question is required. (See below)
    </li>
@@ -4676,7 +4932,7 @@ Scid will remid you of doing so. However, do not open more than one
 database of this type as Scid then can not recognise the one to use.
 </p>
 
-<h3>Basic functionality</h3>
+<h3><name CCWorkflow>Basic functionality</name></h3>
 
 <p>
 If everything is set up correctly the usage of the correspondence
@@ -4737,7 +4993,7 @@ automatically store your options.
 <p>
 Depending wether you play correspondence chess via eMail or via a
 chess server the actual retrieval process differs slightly. Generally
-it results in a set of games in PGN format located in Scids Inbox
+it results in a set of games in <a PGN>PGN</a> format located in Scids Inbox
 directory. This offers also the possibility of automatic retrieval via
 external software.
 </p>
@@ -4825,15 +5081,16 @@ exchanged in server based correspondence chess.
 
 <h3>Observing Correspondence Games</h3>
 Observing a game of correspondence chess is technically done by
-retrieving the games PGN notation from the webserver. These games are
-then fead into the usual workflow of the Correspondence Chess funtions
-and show up thre as usual games. For this function to work a file
-named "connector.xml" has to be available in ~/.scid/data. If this
-file does not exist Scid will try to generate one suitable for
-observation of games from ICCF Webchess. Additional servers can be
-added to this file by apending additional server-blocks.	
+retrieving the games <a PGN>PGN</a> notation from the webserver.
+These games are then fead into the usual workflow of the
+Correspondence Chess funtions and show up thre as usual games. For
+this function to work a file named "connector.xml" has to be available
+in ~/.scid/data. If this file does not exist Scid will try to generate
+one suitable for observation of games from ICCF Webchess. Additional
+servers can be added to this file by apending additional
+server-blocks.	
 
-To observe a game on ICCF Webchess point your webbrowser to the page
+To observe a game on ICCF Webchess point your web browser to the page
 where the notation an the chess board gets displayed. Copy the URL of
 that page to the clipboard and add it to the list displayed by
 choosing <menu>Play / Correspondence Chess / Observe Game</menu>. Use
@@ -4891,7 +5148,7 @@ if no interet connection is available.
    <li><img tb_CC_postal> The mode of this game is set to
    <i>postal</i> (ie. real classical correspondence play via postal
    service). Scid will show those games but ignore them in the update
-   process as no PGN game file will exist in postal play.
+   process as no <a PGN>PGN</a> game file will exist in postal play.
    </li>
    <li><img tb_CC_yourmove>
    Its your move.<br>
@@ -4949,7 +5206,7 @@ ICCF server itself never sends any timings.)
 <p>
 In Xfcc games, each opponents country may be displayed by the
 associated flag, if the server provides that information. For eMail
-based games this can be achieved by adding additional PGN tags for
+based games this can be achieved by adding additional <a PGN>PGN</a> tags for
 <i>whiteCountry</i> and <i>blackCountry</i>, each followed by the
 international three letter country code according to ISO 3166-1
 (e.g. "EUR" <img flag_eur>, "USA" <img flag_usa>, "GBR" <img
@@ -4959,6 +5216,11 @@ flag_gbr>, "FRA" <img flag_fra>, "RUS" <img flag_rus>, "CHN"
 <p>
 To show country flags for other types of games (postal, observed) just
 add WhiteCountry/BlackCountry headers ot the games in your database.
+Note that the header values in the Scid database overwrite the values
+supplied in the games of Scids Inbox. That is even for Xfcc games that
+one can add country flags or overwrite the games mode. (The latter is
+required e.g. for mixed games on ICCF where ICCFs Xfcc interface
+also supplies games even if they are played by post.)
 </p>
 
 <p>
@@ -5092,7 +5354,7 @@ In- and Outbox directories.
 <p>
 <b>Note for programmers</b>: the fetch tool is called with the Inbox path as
 parameter. It is thought to work through all server accounts and place
-properly formatted PGN files in the path passed to it. These files
+properly formatted <a PGN>PGN</a> files in the path passed to it. These files
 should contain additional header fields as they are known by the cmail
 tool. (See <a CCeMailChess>Correspondence Chess via eMail</a> for
 information about the fields required.)
@@ -5111,8 +5373,8 @@ eMail offers a very convenient way ot play correspondence chess. The
 standard application in the Un*x world for this till today is xboard
 together with its cmail helper. As it allows for almost automatic
 handling of correspondence chess eMails and additonally does not add
-anything not conforming to PGN it is also the model for Scid to handle
-eMail chess. By just preserving the whole PGN header such games can be
+anything not conforming to <a PGN>PGN</a> it is also the model for Scid to handle
+eMail chess. By just preserving the whole <a PGN>PGN</a> header such games can be
 played with any opponent who has a tool to handle PGN.
 </p>
 
@@ -5122,7 +5384,7 @@ Scid can handle eMail correspondence chess games almost automatically.
 The way how this is done is kept compatible to the cmail utility that
 comes with xboard on Un*x systems. (Having said this implies that you
 can play against an opponent using cmail/xboard.) It works by sending
-the games as whole PGN files too and fro as mail attachements, while
+the games as whole <a PGN>PGN</a> files too and fro as mail attachements, while
 the header contains certain tags that allows them to be recognised and
 sorted together. For this reason the user has to be careful with
 editing of the header fields.  Note that fields with explicit values have
@@ -5187,7 +5449,7 @@ Please avoid other characters.
 <p>
 After the dialog is quit by pressing the <b>[Ok]</b> button a new
 game is appended to the currently loaded correspondence chess database
-and the PGN header is set properly. Just make your move and send it as
+and the <a PGN>PGN</a> header is set properly. Just make your move and send it as
 mentioned below.
 </p>
 
@@ -5198,7 +5460,7 @@ Scid does not handle your mailbox automatically. This would,
 considering the wide range of possible mail setups these days, involve
 a huge amount of code. For this reason Scid relies on your normal
 eMail program which is far more suitable for this purpose than Scid
-can ever be. To get a game into Scid just save the attached PGN file
+can ever be. To get a game into Scid just save the attached <a PGN>PGN</a> file
 to Scid's inbox and process the inbox by either <menu>Retrieve
 Games</menu> or the <button tb_CC_Retrieve> button or
 <menu>Process Inbox</menu>. The difference between the two is that
@@ -5211,7 +5473,7 @@ correspondence chess games.
 <p>
 <b>Note</b> The <menu>Retrieve Games</menu> menu or the <button
 tb_CC_Retrieve> button do <b>not</b> fetch your eMail messages! You
-have to save your PGN files to Scids Inbox by hand. Probably this can
+have to save your <a PGN>PGN</a> files to Scids Inbox by hand. Probably this can
 be automatised by your eMail program (on Un*x systems setting up a
 mime handler is easy enough by means of <term>.mailcap</term>).
 </p>
@@ -5239,18 +5501,18 @@ If a GUI-mailer is used, its usual compose window is opened. The
 address of your opponent is filled in as well as a generic subject
 containing the game id for easy filtering and the bcc address if
 specified in the <a CCSetupDialog>Configuration</a> dialog. The mail
-body is set to contain the FEN of the final position and the list of
-moves made so far. This way the opponent can quickly look up your
-move. Finally, Scid attaches the current game including your move in
-PGN format to the mail message.
+body is set to contain the <term>FEN</term> of the final position and
+the list of moves made so far. This way the opponent can quickly look
+up your move. Finally, Scid attaches the current game including your
+move in <a PGN>PGN</a> format to the mail message.
 </p>
 <p>
 When using a mailx compatible tool no window is opened and the mail is
 sent invisibly by invoking the tool specified in the background. In
-this case the generated mail contains the PGN also in the mail body.
+this case the generated mail contains the <a PGN>PGN</a> also in the mail body.
 </p>
 <p>
-Note that as eMail chess works by sending the whole PGN file you must
+Note that as eMail chess works by sending the whole <a PGN>PGN</a> file you must
 not add more than your half move. Scid does not check here wether
 more than one half move was added to the mainline, simply as Scid does
 not know which move it was, when you sent yours.
@@ -5298,33 +5560,33 @@ startup.)
 <p>
 <b>Inbox (path)</b>:
 In this directory Scid will look for correspondence chess games stored
-in PGN format. These games are used for the synchronisation of the
+in <a PGN>PGN</a> format. These games are used for the synchronisation of the
 correspondence chess database. Generally, Scid does not care how the
-games come to this directory. It will just work through all PGN files
+games come to this directory. It will just work through all <a PGN>PGN</a> files
 located there. This offers the possibility to use some external tools
 to fetch games to this location. Additionally, in eMail chess one
-should just save the PGN files received from the opponent in this
+should just save the <a PGN>PGN</a> files received from the opponent in this
 directory.
 </p>
 <p>
 Scid will not read a mailbox of whatever sort, it just handles
-all PGN files placed in that directory. Also note, that it will
+all <a PGN>PGN</a> files placed in that directory. Also note, that it will
 synchronise games with the current database. However, if a game
 from this directory does not yet exist in the database it is
 treated as new game and appended to the database.
 </p>
 <p>
-For the synchronisation process to work the PGN files must contain
+For the synchronisation process to work the <a PGN>PGN</a> files must contain
 some additional header information that are in perfect agreement with
-the PGN standard. Please have a look at <a CCeMailChess>Correspondence
+the <a PGN>PGN</a> standard. Please have a look at <a CCeMailChess>Correspondence
 Chess via eMail</a> if you want to create your own tool or if you are
 migrating data from some other system.
 </p>
 
 <p>
 <b>Outbox (path)</b>:
-The inverse of the <i>Inbox</i>. Scid places here PGN files of the
-outgoing games. For eMail chess this is essential as the PGN files have
+The inverse of the <i>Inbox</i>. Scid places here <a PGN>PGN</a> files of the
+outgoing games. For eMail chess this is essential as the <a PGN>PGN</a> files have
 to be attached to an eMail message.  For Xfcc, where only the move is
 sent, this would not be necessary, however the Outbox directory offers
 a convenient way to link up to your PDA or for any other usage as the
@@ -5356,7 +5618,7 @@ to be used by them.
 This program is called to retrieve correspondence chess
 games from a correspondence chess server. This helper just has to
 fetch the games from whatever source it likes, generate a proper PGN
-file containing the necessary PGN header. Tools for fetching games
+file containing the necessary <a PGN>PGN</a> header. Tools for fetching games
 from Xfcc-servers exist as external programs and these are the natural
 tools to set up here. For future protocols one could easily generate
 an external fetch tool that handles this protocol. Also automatisation
@@ -5379,15 +5641,33 @@ SendTool Outbox Name GameID MoveCount Move "Comment" resign claimDraw offerDraw 
 </p>
 
 <p>
+<b>Confirm moves</b>: Opens a confirmation dialogue after pressing the
+send button for each move that is send to the server.
+</p>
+
+<p>
+<b>Only games I have the move</b>: Checking this setting will shorten
+the games listed in the Correspondence Chess window to only those
+games where the player is to move.
+</p>
+
+<p>
+<b>Sorting</b>: Allows to sort games by various criteria. This sorting
+takes effect upon the next update of the games list, e.g. by reopening
+the Correspondence Chess window, fetching games or processing the
+Inbox.
+</p>
+
+<p>
 The meaning of the parameters is as follows:
    <ul>
       <li><term>Outbox</term>: The Outbox path set in this dialog. The
-      send tool is meant to generate a correctly formatted PGN file
+      send tool is meant to generate a correctly formatted <a PGN>PGN</a> file
       there.
       </li>
       <li><term>Name</term>: The name of the player to move as stated
-      in the PGN header. For Xfcc this would be the login name. It is
-      identical to the player name in the PGN header.
+      in the <a PGN>PGN</a> header. For Xfcc this would be the login name. It is
+      identical to the player name in the <a PGN>PGN</a> header.
       </li>
       <li><term>MoveCount</term>: The move number to send.
       </li>
@@ -5675,7 +5955,7 @@ set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
   information marking all puzzles as unsolved.
   </p>
   <p>
-  <b>Note</b> it is advisable to close the PGN window and check
+  <b>Note</b> it is advisable to close the <a PGN>PGN</a> window and check
   <term>hide next move</term> in the context menu of the information
   area of Scids main window. Otherwise cheating is pretty simple.
   <p>
@@ -5746,7 +6026,7 @@ set helpText(FindBestMove) {<h1>Training: Find best move</h1>
   the goto end of game button.
   </p>
   <p>
-  For this exercise it is advisable to close the PGN window and set
+  For this exercise it is advisable to close the <a PGN>PGN</a> window and set
   <term>Hide next move</term> from the status areas context menu.
   </p>
   <p><footer>(Updated: Scid 3.6.26, October 2008)</footer></p>
@@ -5840,8 +6120,8 @@ set helpText(FICSfindOpp) {<h1>FICS Find Opponent</h1>
       </li>
       <li><term>Rated game</term> If checked, the game will be rated,
       uncheck it to play a leisure game.</li>
-      <li><term>Colour</term> If set to automatic, its up to the
-      opponent to choose the colour he wants to play, you will accept
+      <li><term>color</term> If set to automatic, its up to the
+      opponent to choose the color he wants to play, you will accept
       either he choses. If you want to play black or white explicitly,
       mark either of those choices.
       </li>
@@ -5930,7 +6210,7 @@ set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
        <li>the initial time / the time increment</li>
        <li>the word "rated" or "unrated" depending on the offer</li>
        <li>the word "[white]" or "[black]" if the opponent wants to
-       play the specified colour only</li>
+       play the specified color only</li>
     </ul>
     To accept an offer just click on the symbol.
   <li><term>Find opponent</term> opens a  <a FICSfindOpp>dialogue</a>
@@ -5982,7 +6262,7 @@ set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
   gamenumber</term>. Scid will then display the current board
   position, the clocks will display the proper values sent by the
   relay and it will fetch all moves of the game so far plus the usual
-  PGN header fields. If a player moves this move is performed in Scid
+  <a PGN>PGN</a> header fields. If a player moves this move is performed in Scid
   as usual. For discussing the game with other observers,
   <term>whisper</term> and <term>kibitz</term> can be used. Please
   refer to the online help of these commands. All these conversations
@@ -6250,7 +6530,7 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    engine. The extend of this information depends on the engine, but
    it should usually give as much as is available about the external
    hardware and the driver itself. Additionally, the external driver
-   will return the current position on the external board as FEN which
+   will return the current position on the external board as <term>FEN</term> which
    is then compared to Scids internal representation. Discrepancies
    show up in the console and issue an alert.
    </p>
@@ -6279,7 +6559,7 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    <h3>Position setup</h3>
    <p>
    The position setup mode is invoked by removing both kings from the
-   board. In this mode the <term>move area</term> is coloured yellow
+   board. In this mode the <term>move area</term> is colored yellow
    and shows the White king and the string <b>Setup</b>.
    </p>
    <p>
@@ -6304,17 +6584,17 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    <ul>
       <li><term>1-0</term> (White win): Set both kings to the squares
       e4 and d5 in any order, ie. to the white centre squares.
-      The move area is coloured in white, showing the white king and
+      The move area is colored in white, showing the white king and
       the result.
       </li>
       <li><term>0-1</term> (Black win): Set both kings to the squares
       e5 and d4 in any order, ie. to the black centre squares.
-      The move area is coloured in gray, showing the black king and
+      The move area is colored in gray, showing the black king and
       the result.
       </li>
       <li><term>1/2-1/2</term> (Draw): Set one king on a white and one
       on a black centre square in any order.
-      The move area is coloured in black and white, showing the result.
+      The move area is colored in black and white, showing the result.
       </li>
    </ul>
    <p>
@@ -6328,7 +6608,7 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    A new game can be stared by entering setup mode (ie. removing both
    kings) and setting up the start position. To notify, that Scid has
    recognised the call for a new game the <term>move area</term> is
-   coloured in blue showing the white king and the string
+   colored in blue showing the white king and the string
    <term>OK</term>.
    </p>
 
@@ -6339,11 +6619,21 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
 set helpTitle(ReviewGame) "Game Review"
 set helpText(ReviewGame) {<h1>Reviewing a game</h1>
    <p>
-   This feature is designed to study a game, which means you should try 
-to guess the moves played during the match. So you first open a game from any Scid's
-base, and enter this function with the command <b>Review game</b> in the <b>Play</b> menu.
-As usually, to play with Black, flip board first (you always play from the bottom of the board).
+	This feature is designed to study a game, which means you should
+	try to guess the moves played during the match. So you first open a
+	game from any Scid's base, and enter this function with the command
+	<b>Review game</b> in the <b>Play</b> menu.  As usually, to play
+	with Black, flip board first (you always play from the bottom of
+	the board).
    </p>
+	<p>
+	For an effective training the following settings should be
+	disabled:
+	<ul>
+		<li>Show last move (Options / Moves / Hightlight last move)</li>
+		<li>Show next move (Options / Game information / Hide next move)</li>
+		<li>PGN window</li>
+	</p>
 The process is the following :
 <ul>
 <li>- engines ponders on the move played during the game</li>
@@ -6351,10 +6641,12 @@ The process is the following :
 <li>- user is then allowed to enter his move</li>
 <li>- engine ponders on the move played by the user</li>
 </ul>
-If the move played by the user is either the move actually played during the game
-or the move chosen by the engine or a move whose score is close to the best move found by the engine
-(using the margin error defined by the user), then the move is considered as a good one. If the user disagrees with 
-the engine he can use the <b>extended time</b> button to get a confirmation of engine's analysis.
+If the move played by the user is either the move actually played
+during the game or the move chosen by the engine or a move whose score
+is close to the best move found by the engine (using the margin error
+defined by the user), then the move is considered as a good one. If
+the user disagrees with the engine he can use the <b>extended time</b>
+button to get a confirmation of engine's analysis.
 <p>
 <b>Notes:</b> 
 <ul>
@@ -6362,7 +6654,7 @@ the engine he can use the <b>extended time</b> button to get a confirmation of e
 <li>- The user always plays from the bottom of the board</li>
 </ul>
 </p>
-  <p><footer>(Updated: Scid 3.7.4, June 2009)</footer></p>
+  <p><footer>(Updated: Scid 4.3, January 2011)</footer></p>
 }
 
 set helpTitle(Metadata) "Dublin Core Metadata"
