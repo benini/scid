@@ -1063,8 +1063,9 @@ scid-4.3
 	* Minor flaw in Scid.eco (ID: 2963067;  thanks to Daniel Karlsson)
 	* Correction of possible overflow in material signature (ID: 2992119; thanks to Gregor Cramer)
 	* Optimisations for tree search (Thanks to G. Lohrscheidt)
-   * Comment editor text frame scales properly
+    * Comment editor text frame scales properly
 	* Some directories did not get stored properly (epd, report)
+	* Entering try mode no longer kills/hides comments in the game.
 - Language updates:
 	* brazilian portugese translation (thanks ot Gilberto de Almeida Peres)
 	* nederland translation (thanks to Leander Laruelle)
