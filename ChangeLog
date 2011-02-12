@@ -846,7 +846,7 @@ Maintenance release of Scid 3.7.2 fixing a bug in search position
 	* game browser : automatically flip board if the main board is flipped
 	* updated Scid icon (thanks to Israel Chauca Fuentes)
 	* First version of VIAF/PND support for hooking up Wikipedia et al.
-	* Correspondence Chess:
+	* Corresponden	ce Chess:
 		- Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 		- Do not show games where the player does not have the move (Xfcc only)
 		- Add GUI to set sort criteria
@@ -912,7 +912,7 @@ This maintenance release reverts to 32 bits file I/O. Large file handling across
 [xxxx 2010 ]
 scid-4.3
 ==========
-- Mark the Repertoir Editor depecated, guide users to Masks
+- Mark the Repertoir Editor deprecated, guide users to Masks
 - Improvements
 	* documentation for opening trainer (thanks to Dale Hards)
 	* Some of the programs icons based on GNOME Stock Icons in case png-support is available
@@ -1072,5 +1072,6 @@ scid-4.3
 	* spanish translation (thanks to Benigno Hernandez)
 	* czech translation (thanks to Milan Zamazal)
 	* NEW: suomi translation (thanks to Timo Pirinen)
+	* NEW: greek translation (thanks to George Fragos; note: this requires fully working utf-8!)
 - Help:
 	* Add UTF-8 NAG-symbols

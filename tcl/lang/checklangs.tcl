@@ -11,6 +11,7 @@ array set codes {
   czech C
   deutsch D
   francais F
+  greek G
   hungary H
   italian I
   nederlan N

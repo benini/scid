@@ -9495,6 +9495,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
       if ( strcmp(argv[2], "sw") == 0) {language = 9;}
       if ( strcmp(argv[2], "ca") == 0) {language = 10;}
       if ( strcmp(argv[2], "fi") == 0) {language = 11;}
+      if ( strcmp(argv[2], "gr") == 0) {language = 12;}
 
     break;
     default:

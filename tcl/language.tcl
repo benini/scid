@@ -28,6 +28,9 @@ set transPieces(N)   { P p K K Q D R T B L N P }
 set untransPieces(N) { p P K K D Q T R L B P N }
 set transPieces(C)   { P P K K Q D R V B S N J }
 set untransPieces(C) { P P K K D Q V R S B J N }
+## TODO Put in the right letters for greek
+set transPieces(G)   { P B K K Q D R T B L N S }
+set untransPieces(G) { B P K K D Q T R L B S N }
 set transPieces(H)   { P G K K Q V R B B F N H }
 set untransPieces(H) { G P K K V Q B R F B H N }
 set transPieces(O)   { P B K K Q D R T B L N S }
@@ -166,17 +169,18 @@ proc setLanguage {{lang ""}} {
   
   if { $::translatePieces } {
     switch $lang {
-      F {sc_info language fr}
-      S {sc_info language es}
-      D {sc_info language de}
-      I {sc_info language it}
-      N {sc_info language ne}
       C {sc_info language cz}
+      D {sc_info language de}
+      F {sc_info language fr}
+      G {sc_info language gr}
       H {sc_info language hu}
-      O {sc_info language no}
-      W {sc_info language sw}
+      I {sc_info language it}
       K {sc_info language ca}
+      N {sc_info language ne}
+      O {sc_info language no}
+      S {sc_info language es}
       U {sc_info language fi}
+      W {sc_info language sw}
       default {sc_info language en}
     }
   } else {
@@ -207,17 +211,18 @@ proc setLanguage {{lang ""}} {
 ################################################################################
 proc setLanguageTemp { lang } {
   switch $lang {
-    F {sc_info language fr}
-    S {sc_info language es}
-    D {sc_info language de}
-    I {sc_info language it}
-    N {sc_info language ne}
     C {sc_info language cz}
+    D {sc_info language de}
+    F {sc_info language fr}
+    G {sc_info language gr}
     H {sc_info language hu}
-    O {sc_info language no}
-    W {sc_info language sw}
+    I {sc_info language it}
     K {sc_info language ca}
+    N {sc_info language ne}
+    O {sc_info language no}
+    S {sc_info language es}
     U {sc_info language fi}
+    W {sc_info language sw}
     default {sc_info language en}
   }
 }

@@ -37,21 +37,23 @@ set var(COMPILE) g++
 set var(CC) gcc
 set var(DEBUG) #-DASSERTIONS
 set var(LANGUAGES) [list \
+  tcl/lang/catalan.tcl \
+  tcl/lang/czech.tcl \
   tcl/lang/deutsch.tcl \
   tcl/lang/francais.tcl \
+  tcl/lang/greek.tcl \
+  tcl/lang/hungary.tcl \
   tcl/lang/italian.tcl \
   tcl/lang/nederlan.tcl \
-  tcl/lang/spanish.tcl \
-  tcl/lang/portbr.tcl \
-  tcl/lang/swedish.tcl \
   tcl/lang/norsk.tcl \
   tcl/lang/polish.tcl \
-  tcl/lang/czech.tcl \
-  tcl/lang/hungary.tcl \
+  tcl/lang/portbr.tcl \
+  tcl/lang/russian.tcl \
   tcl/lang/serbian.tcl \
-  tcl/lang/catalan.tcl \
+  tcl/lang/spanish.tcl \
   tcl/lang/suomi.tcl \
-  tcl/lang/russian.tcl]
+  tcl/lang/swedish.tcl \
+  ]
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
 set var(OPTIMIZE) {-O4 -fno-rtti -fno-exceptions}

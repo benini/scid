@@ -202,7 +202,7 @@ proc ::htext::init {w} {
     $w tag configure nag -foreground $::pgnColor(Nag)
     $w tag configure var -foreground $::pgnColor(Var)
 	 ### TODO
-    ### $w tag configure/var -foreground $::pgnColor(Var) -font font_Figurine_Var
+    ### $w tag configure var -foreground $::pgnColor(Var) -font font_Figurine_Var
 
   }
   $w tag configure ip1 -lmargin1 25 -lmargin2 25
