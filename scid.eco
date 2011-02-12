@@ -15,7 +15,7 @@
 #
 # Copyright (C) 1999-2003  Shane Hudson (sgh@users.sourceforge.net)
 # Created: June 1999.
-# Last update: October 2003.
+# Last update: January 2011.
 # Scid website: http://scid.sourceforge.net/
 
 
@@ -39,7 +39,7 @@ A00k "Van Kruijs"  1.e3 *
 A00l "Van Geet (Dunst) Opening"  1.Nc3 *
 A00l "Van Geet: 1...Nf6"  1.Nc3 Nf6 *
 A00l "Van Geet: 1...Nf6 2.Nf3"  1.Nc3 Nf6 2.Nf3 *
-A00l "Van Geet: Tübingen Gambit"  1.Nc3 Nf6 2.g4 *
+A00l "Van Geet: Tuebingen Gambit"  1.Nc3 Nf6 2.g4 *
 A00l "Van Geet: 1...e5"  1.Nc3 e5 *
 A00l "Van Geet: 1...e5 2.Nf3"  1.Nc3 e5 2.Nf3 *
 A00l "Van Geet: Sicilian Variation"  1.Nc3 c5 *
@@ -70,7 +70,7 @@ A00p "Polish: 1...Nf6"  1.b4 Nf6 *
 A00p "Polish: 1...Nf6 2.Bb2"  1.b4 Nf6 2.Bb2 *
 A00p "Polish: 1...Nf6 2.Bb2 e6"  1.b4 Nf6 2.Bb2 e6 *
 A00p "Polish: 1...c6"  1.b4 c6 *
-A00p "Polish: Schühler Gambit"  1.b4 c6 2.Bb2 a5 3.b5 *
+A00p "Polish: Schuehler Gambit"  1.b4 c6 2.Bb2 a5 3.b5 *
 A00q "Polish: 1...d5"  1.b4 d5 *
 A00q "Polish: 1...d5 2.Bb2"  1.b4 d5 2.Bb2 *
 A00q "Polish: 1...d5 2.Bb2 Bf5"  1.b4 d5 2.Bb2 Bf5 *
@@ -201,7 +201,7 @@ A03 "Bird: Lasker, 3...c5 4.b3"  1.f4 d5 2.Nf3 Nf6 3.e3 c5 4.b3 *
 A03 "Bird: Lasker, 3...g6"  1.f4 d5 2.Nf3 Nf6 3.e3 g6 *
 
 A04 "Reti"  1.Nf3 *
-A04 "Reti: Herrström Gambit"  1.Nf3 g5 *
+A04 "Reti: Herrstrom Gambit"  1.Nf3 g5 *
 A04 "Reti: 1...b6"  1.Nf3 b6 *
 A04 "Reti: 1...b5"  1.Nf3 b5 *
 A04 "Reti: 1...Nc6"  1.Nf3 Nc6 *
@@ -307,7 +307,7 @@ A07 "Reti: KIA"  1.Nf3 d5 2.g3 Bg4 *
 A07 "Reti: KIA, Keres Variation"  1.Nf3 d5 2.g3 Bg4 3.Bg2 Nd7 *
 A07 "Reti: KIA"  1.Nf3 d5 2.g3 Nf6 *
 A07 "Reti: KIA"  1.Nf3 d5 2.g3 Nf6 3.Bg2 *
-A07 "Reti: KIA, Neo-Grünfeld"  1.Nf3 d5 2.g3 Nf6 3.Bg2 g6 *
+A07 "Reti: KIA, Neo-Gruenfeld"  1.Nf3 d5 2.g3 Nf6 3.Bg2 g6 *
 A07 "Reti: KIA"  1.Nf3 d5 2.g3 Nf6 3.Bg2 Bf5 *
 A07 "Reti: KIA"  1.Nf3 d5 2.g3 Nf6 3.Bg2 e6 *
 A07 "Reti: KIA"  1.Nf3 d5 2.g3 Nf6 3.Bg2 c6 *
@@ -388,7 +388,7 @@ A10 "English: 1...g5 2.d4"  1.c4 g5 2.d4 *
 A10 "English: Myers Gambit"  1.c4 g5 2.d4 Bg7 *
 A10 "English: 1...Nc6"  1.c4 Nc6 *
 A10 "English: 1...Nc6 2.Nc3"  1.c4 Nc6 2.Nc3 *
-A10 "English: Jänisch Gambit"  1.c4 b5 *
+A10 "English: Jaenisch Gambit"  1.c4 b5 *
 A10 "English: Vector"  1.c4 d5 *
 A10 "English: 1...b6"  1.c4 b6 *
 A10 "English: 1...b6 2.Nf3"  1.c4 b6 2.Nf3 *
@@ -574,36 +574,36 @@ A16 "English: Anglo-Indian, 2.Nc3 g6 3.g3"
   1.c4 Nf6 2.Nc3 g6 3.g3 Bg7 4.Bg2 O-O 5.Nf3 *
 A16 "English: Anglo-Indian, 2.Nc3 g6 3.g3"
   1.c4 Nf6 2.Nc3 g6 3.g3 Bg7 4.Bg2 O-O 5.Nf3 d6 6.O-O *
-A16 "English: Anglo-Grünfeld"  1.c4 Nf6 2.Nc3 d5 *
-A16 "English: Anglo-Grünfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 *
-A16 "English: Anglo-Grünfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 g6 *
-A16 "English: Anglo-Grünfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 g6 4.Qa4+ *
-A16 "English: Anglo-Grünfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 g6 4.g3 *
-A16 "English: Anglo-Grünfeld, 3.cxd5"  1.c4 Nf6 2.Nc3 d5 3.cxd5 *
-A16 "English: Anglo-Grünfeld, Smyslov Variation"
+A16 "English: Anglo-Gruenfeld"  1.c4 Nf6 2.Nc3 d5 *
+A16 "English: Anglo-Gruenfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 *
+A16 "English: Anglo-Gruenfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 g6 *
+A16 "English: Anglo-Gruenfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 g6 4.Qa4+ *
+A16 "English: Anglo-Gruenfeld"  1.c4 Nf6 2.Nc3 d5 3.Nf3 g6 4.g3 *
+A16 "English: Anglo-Gruenfeld, 3.cxd5"  1.c4 Nf6 2.Nc3 d5 3.cxd5 *
+A16 "English: Anglo-Gruenfeld, Smyslov Variation"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.g3 g6 5.Bg2 Nxc3 *
-A16 "English: Anglo-Grünfeld, Smyslov Variation"
+A16 "English: Anglo-Gruenfeld, Smyslov Variation"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.g3 g6 5.Bg2 Nxc3 6.bxc3 *
-A16 "English: Anglo-Grünfeld, Smyslov Variation"
+A16 "English: Anglo-Gruenfeld, Smyslov Variation"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.g3 g6 5.Bg2 Nxc3 6.bxc3 Bg7 *
-A16 "English: Anglo-Grünfeld, Smyslov, 7.Rb1"
+A16 "English: Anglo-Gruenfeld, Smyslov, 7.Rb1"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.g3 g6 5.Bg2 Nxc3 6.bxc3 Bg7 7.Rb1 *
-A16 "English: Anglo-Grünfeld, Czech Variation"
+A16 "English: Anglo-Gruenfeld, Czech Variation"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.g3 g6 5.Bg2 Nb6 *
-A16 "English: Anglo-Grünfeld, 4.Nf3"  1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 *
-A16 "English: Anglo-Grünfeld, 4.Nf3 g6"
+A16 "English: Anglo-Gruenfeld, 4.Nf3"  1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 *
+A16 "English: Anglo-Gruenfeld, 4.Nf3 g6"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 *
-A16 "English: Anglo-Grünfeld, 4.Nf3 g6 5.g3"
+A16 "English: Anglo-Gruenfeld, 4.Nf3 g6 5.g3"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 5.g3 *
-A16 "English: Anglo-Grünfeld, 4.Nf3 g6 5.g3"
+A16 "English: Anglo-Gruenfeld, 4.Nf3 g6 5.g3"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 5.g3 Bg7 *
-A16 "English: Anglo-Grünfeld, Korchnoi Variation"
+A16 "English: Anglo-Gruenfeld, Korchnoi Variation"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 5.g3 Bg7 6.Bg2 e5 *
-A16 "English: Anglo-Grünfeld, Andersson-Böök Variation"
+A16 "English: Anglo-Gruenfeld, Andersson-Boeoek Variation"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 5.e4 *
-A16 "English: Anglo-Grünfeld, Andersson-Böök, Queenswap"
+A16 "English: Anglo-Gruenfeld, Andersson-Boeoek, Queenswap"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 5.e4 Nxc3 6.dxc3 Qxd1+ 7.Kxd1 *
-A16 "English: Anglo-Grünfeld, 4.Nf3 g6 5.Qa4+"
+A16 "English: Anglo-Gruenfeld, 4.Nf3 g6 5.Qa4+"
   1.c4 Nf6 2.Nc3 d5 3.cxd5 Nxd5 4.Nf3 g6 5.Qa4+ *
 
 A17 "English: Anglo-Indian, 2.Nc3 e6"  1.c4 Nf6 2.Nc3 e6 *
@@ -802,8 +802,8 @@ A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 Nf6 4.Bg2 Bc5 5.e3 *
 A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 Nf6 4.Bg2 Bb4 *
 A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 Nf6 4.Bg2 Bb4 5.Nd5 *
 A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 d6 4.Bg2 *
-A25 "English: Closed, Tröger Defence"  1.c4 e5 2.Nc3 Nc6 3.g3 d6 4.Bg2 Be6 *
-A25 "English: Closed, Tröger, 5.d3"  1.c4 e5 2.Nc3 Nc6 3.g3 d6 4.Bg2 Be6 5.d3 *
+A25 "English: Closed, Troeger Defence"  1.c4 e5 2.Nc3 Nc6 3.g3 d6 4.Bg2 Be6 *
+A25 "English: Closed, Troeger, 5.d3"  1.c4 e5 2.Nc3 Nc6 3.g3 d6 4.Bg2 Be6 5.d3 *
 A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 g6 *
 A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 g6 4.Bg2 *
 A25 "English: Closed"  1.c4 e5 2.Nc3 Nc6 3.g3 g6 4.Bg2 Bg7 *
@@ -1869,7 +1869,7 @@ A45z "Trompowsky: 2...Ne4 3.Bf4 c5 4.f3 Qa5+ 5.c3 Nf6 6.Nd2"
   1.d4 Nf6 2.Bg5 Ne4 3.Bf4 c5 4.f3 Qa5+ 5.c3 Nf6 6.Nd2 *
 
 A46a "Indian: 2.Nf3"  1.d4 Nf6 2.Nf3 *
-A46a "Indian: Döry Defence"  1.d4 Nf6 2.Nf3 Ne4 *
+A46a "Indian: Doery Defence"  1.d4 Nf6 2.Nf3 Ne4 *
 A46b "Indian: 2.Nf3 b5"  1.d4 Nf6 2.Nf3 b5 *
 A46b "Indian: 2.Nf3 b5 3.g3"  1.d4 Nf6 2.Nf3 b5 3.g3 *
 A46c "Neo-Benoni"  1.d4 Nf6 2.Nf3 c5 *
@@ -2641,57 +2641,57 @@ A65i "Benoni: 6.e4 g6 7.Bd3 Bg7 8.Nge2 O-O 9.O-O Na6"
 A65j "Benoni: 6.e4 g6 7.Bd3 Bg7 8.Nge2 O-O 9.O-O a6"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.Bd3 Bg7 8.Nge2 O-O
   9.O-O a6 *
-A65k "Benoni: Sämisch (6.e4 g6 7.f3)"
+A65k "Benoni: Saemisch (6.e4 g6 7.f3)"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 *
-A65k "Benoni: Sämisch, 7...Bg7"
+A65k "Benoni: Saemisch, 7...Bg7"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 *
-A65l "Benoni: Sämisch, 8.Nge2"
+A65l "Benoni: Saemisch, 8.Nge2"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Nge2 *
-A65m "Benoni: Sämisch, 8.Be3"
+A65m "Benoni: Saemisch, 8.Be3"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Be3 *
-A65n "Benoni: Sämisch, 8.Bg5"
+A65n "Benoni: Saemisch, 8.Bg5"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 *
-A65n "Benoni: Sämisch, 8.Bg5 O-O"
+A65n "Benoni: Saemisch, 8.Bg5 O-O"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 O-O *
-A65o "Benoni: Sämisch, 8.Bg5 O-O 9.Nge2"
+A65o "Benoni: Saemisch, 8.Bg5 O-O 9.Nge2"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 O-O
   9.Nge2 *
-A65p "Benoni: Sämisch, 8.Bg5 O-O 9.Qd2"
+A65p "Benoni: Saemisch, 8.Bg5 O-O 9.Qd2"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 O-O
   9.Qd2 *
-A65q "Benoni: Sämisch, 8.Bg5 O-O 9.Qd2 a6"
+A65q "Benoni: Saemisch, 8.Bg5 O-O 9.Qd2 a6"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 O-O
   9.Qd2 a6 *
-A65r "Benoni: Sämisch, 8.Bg5 h6"
+A65r "Benoni: Saemisch, 8.Bg5 h6"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6 *
-A65r "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O"
+A65r "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O *
-A65s "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Nge2"
+A65s "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Nge2"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Nge2 *
-A65t "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2"
+A65t "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 *
-A65u "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 Re8"
+A65u "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 Re8"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 Re8 *
-A65v "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6"
+A65v "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 a6 *
-A65v "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4"
+A65v "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 a6 11.a4 *
-A65w "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 h5"
+A65w "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 h5"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 a6 11.a4 h5 *
-A65x "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 Nbd7"
+A65x "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 Nbd7"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 a6 11.a4 Nbd7 *
-A65y "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 Re8"
+A65y "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 Re8"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 a6 11.a4 Re8 *
-A65y "Benoni: Sämisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 Re8 12.Nge2 Nbd7"
+A65y "Benoni: Saemisch, 8.Bg5 h6 9.Be3 O-O 10.Qd2 a6 11.a4 Re8 12.Nge2 Nbd7"
   1.d4 Nf6 2.c4 c5 3.d5 e6 4.Nc3 exd5 5.cxd5 d6 6.e4 g6 7.f3 Bg7 8.Bg5 h6
   9.Be3 O-O 10.Qd2 a6 11.a4 Re8 12.Nge2 Nbd7 *
 
@@ -3782,7 +3782,7 @@ B01a "Scandinavian (Centre Counter)"  1.e4 d5 *
 B01a "Scandinavian: 2.d3"  1.e4 d5 2.d3 *
 B01a "Scandinavian: 2.e5"  1.e4 d5 2.e5 *
 B01a "Scandinavian: 2.exd5"  1.e4 d5 2.exd5 *
-B01a "Scandinavian: Böhnke Gambit"  1.e4 d5 2.exd5 e5 *
+B01a "Scandinavian: Boehnke Gambit"  1.e4 d5 2.exd5 e5 *
 B01b "Scandinavian: 2...Qxd5"  1.e4 d5 2.exd5 Qxd5 *
 B01b "Scandinavian: 2...Qxd5 3.Nf3"  1.e4 d5 2.exd5 Qxd5 3.Nf3 *
 B01b "Scandinavian: 2...Qxd5 3.Nf3 Nf6"  1.e4 d5 2.exd5 Qxd5 3.Nf3 Nf6 *
@@ -3846,7 +3846,7 @@ B01k "Scandinavian: Lasker Variation"
   1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5 4.d4 Nf6 5.Nf3 Bg4 6.h3 *
 B01l "Scandinavian: 2...Qxd5, 5.Nf3 Bf5"
   1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5 4.d4 Nf6 5.Nf3 Bf5 *
-B01l "Scandinavian: Grünfeld Variation"
+B01l "Scandinavian: Gruenfeld Variation"
   1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5 4.d4 Nf6 5.Nf3 Bf5 6.Ne5 c6 7.g4 *
 B01l "Scandinavian: 2...Qxd5, 5.Nf3 Bf5 6.Bc4"
   1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5 4.d4 Nf6 5.Nf3 Bf5 6.Bc4 *
@@ -4002,15 +4002,15 @@ B02j "Alekhine: Scandinavian, Exchange, 4.Bc4 e6"
 B02k "Alekhine: Scandinavian, Exchange, 4.Bc4 Nb6"
   1.e4 Nf6 2.Nc3 d5 3.exd5 Nxd5 4.Bc4 Nb6 *
 B02l "Alekhine: 2.e5"  1.e4 Nf6 2.e5 *
-B02l "Alekhine: Mokele Mbembe (Bücker) Variation"  1.e4 Nf6 2.e5 Ne4 *
+B02l "Alekhine: Mokele Mbembe (Buecker) Variation"  1.e4 Nf6 2.e5 Ne4 *
 B02l "Alekhine: Brooklyn Defence (Retreat Variation)"  1.e4 Nf6 2.e5 Ng8 *
 B02m "Alekhine: 2.e5 Nd5"  1.e4 Nf6 2.e5 Nd5 *
 B02m "Alekhine: Welling Variation"  1.e4 Nf6 2.e5 Nd5 3.b3 *
 B02n "Alekhine: 3.Bc4"  1.e4 Nf6 2.e5 Nd5 3.Bc4 *
 B02n "Alekhine: Kmoch Variation"  1.e4 Nf6 2.e5 Nd5 3.Bc4 Nb6 4.Bb3 c5 5.d3 *
-B02o "Alekhine: Sämisch Attack"  1.e4 Nf6 2.e5 Nd5 3.Nc3 *
-B02p "Alekhine: Sämisch Attack, 3...Nxc3"  1.e4 Nf6 2.e5 Nd5 3.Nc3 Nxc3 *
-B02q "Alekhine: Sämisch Attack, 3...Nxc3 4.dxc3"
+B02o "Alekhine: Saemisch Attack"  1.e4 Nf6 2.e5 Nd5 3.Nc3 *
+B02p "Alekhine: Saemisch Attack, 3...Nxc3"  1.e4 Nf6 2.e5 Nd5 3.Nc3 Nxc3 *
+B02q "Alekhine: Saemisch Attack, 3...Nxc3 4.dxc3"
   1.e4 Nf6 2.e5 Nd5 3.Nc3 Nxc3 4.dxc3 *
 B02r "Alekhine: Chase Variation"  1.e4 Nf6 2.e5 Nd5 3.c4 *
 B02r "Alekhine: Chase Variation"  1.e4 Nf6 2.e5 Nd5 3.c4 Nb6 *
@@ -5407,42 +5407,42 @@ B32f "Sicilian: Flohr Variation"  1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Qc7 *
 B32g "Sicilian: Flohr, 5.Nb5"  1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Qc7 5.Nb5 *
 B32h "Sicilian: 2..Nc6, Nimzowitsch Variation"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 d5 *
-B32i "Sicilian: Lowenthal"  1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 *
-B32j "Sicilian: Lowenthal, 5.Nb5"
+B32i "Sicilian: Loewenthal"  1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 *
+B32j "Sicilian: Loewenthal, 5.Nb5"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 *
-B32k "Sicilian: Lowenthal, 5...a6"
+B32k "Sicilian: Loewenthal, 5...a6"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 a6 *
-B32l "Sicilian: Lowenthal, 5...a6, Queenswap"
+B32l "Sicilian: Loewenthal, 5...a6, Queenswap"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 a6 6.Nd6+ Bxd6 7.Qxd6 Qf6
   8.Qxf6 *
-B32m "Sicilian: Lowenthal, 5...a6, 8.Qd1"
+B32m "Sicilian: Loewenthal, 5...a6, 8.Qd1"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 a6 6.Nd6+ Bxd6 7.Qxd6 Qf6
   8.Qd1 *
-B32n "Sicilian: Lowenthal, Kalashnikov"
+B32n "Sicilian: Loewenthal, Kalashnikov"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 *
-B32o "Sicilian: Lowenthal, Kalashnikov, 6.a4"
+B32o "Sicilian: Loewenthal, Kalashnikov, 6.a4"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.a4 *
-B32p "Sicilian: Lowenthal, Kalashnikov, 6.N1c3"
+B32p "Sicilian: Loewenthal, Kalashnikov, 6.N1c3"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.N1c3 *
-B32q "Sicilian: Lowenthal, Kalashnikov, 6.N1c3 a6 7.Na3 b5"
+B32q "Sicilian: Loewenthal, Kalashnikov, 6.N1c3 a6 7.Na3 b5"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.N1c3 a6 7.Na3 b5 *
-B32r "Sicilian: Lowenthal, Kalashnikov, 6.N1c3 a6 7.Na3 b5 8.Nd5 Nge7"
+B32r "Sicilian: Loewenthal, Kalashnikov, 6.N1c3 a6 7.Na3 b5 8.Nd5 Nge7"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.N1c3 a6 7.Na3 b5 8.Nd5
   Nge7 *
-B32s "Sicilian: Lowenthal, Kalashnikov, 6.c4"
+B32s "Sicilian: Loewenthal, Kalashnikov, 6.c4"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 *
-B32t "Sicilian: Lowenthal, Kalashnikov, 6.c4 Be7"
+B32t "Sicilian: Loewenthal, Kalashnikov, 6.c4 Be7"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 Be7 *
-B32u "Sicilian: Lowenthal, Kalashnikov, 6.c4 Be7 7.Be2"
+B32u "Sicilian: Loewenthal, Kalashnikov, 6.c4 Be7 7.Be2"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 Be7 7.Be2 *
-B32v "Sicilian: Lowenthal, Kalashnikov, 6.c4 Be7 7.N1c3"
+B32v "Sicilian: Loewenthal, Kalashnikov, 6.c4 Be7 7.N1c3"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 Be7 7.N1c3 *
-B32w "Sicilian: Lowenthal, Kalashnikov, Main Line"
+B32w "Sicilian: Loewenthal, Kalashnikov, Main Line"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 Be7 7.N1c3 a6 8.Na3 Be6 *
-B32x "Sicilian: Lowenthal, Kalashnikov, Main Line, 9.Nc2"
+B32x "Sicilian: Loewenthal, Kalashnikov, Main Line, 9.Nc2"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 Be7 7.N1c3 a6 8.Na3 Be6
   9.Nc2 *
-B32y "Sicilian: Lowenthal, Kalashnikov, Main Line, 9.Be2"
+B32y "Sicilian: Loewenthal, Kalashnikov, Main Line, 9.Be2"
   1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 e5 5.Nb5 d6 6.c4 Be7 7.N1c3 a6 8.Na3 Be6
   9.Be2 *
 
@@ -9069,15 +9069,15 @@ C15g "French: Winawer, 4.Bd3 dxe4 5.Bxe4"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd3 dxe4 5.Bxe4 *
 C15g "French: Winawer, 4.Bd3 dxe4 5.Bxe4 Nf6"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd3 dxe4 5.Bxe4 Nf6 *
-C15h "French: Winawer, Müller-Zhuravlev Gambit"
+C15h "French: Winawer, Mueller-Zhuravlev Gambit"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd2 *
-C15h "French: Winawer, Müller-Zhuravlev Gambit"
+C15h "French: Winawer, Mueller-Zhuravlev Gambit"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd2 dxe4 *
-C15i "French: Winawer, Müller-Zhuravlev Gambit, 5.Qg4"
+C15i "French: Winawer, Mueller-Zhuravlev Gambit, 5.Qg4"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd2 dxe4 5.Qg4 *
-C15i "French: Winawer, Müller-Zhuravlev Gambit, Kunin Variation"
+C15i "French: Winawer, Mueller-Zhuravlev Gambit, Kunin Variation"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd2 dxe4 5.Qg4 Qxd4 *
-C15j "French: Winawer, Müller-Zhuravlev Gambit, 5.Qg4 Nf6"
+C15j "French: Winawer, Mueller-Zhuravlev Gambit, 5.Qg4 Nf6"
   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.Bd2 dxe4 5.Qg4 Nf6 *
 C15k "French: Winawer, 4.a3"   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.a3 *
 C15k "French: Winawer, 4.a3 Bxc3+"   1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.a3 Bxc3+ *
@@ -9089,7 +9089,7 @@ C15l "French: Winawer, Winkelmann-Reimer Gambit (WRG)"
    1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 dxe4 6.f3 *
 C15l "French: Winawer, Winkelmann-Reimer Gambit Accepted"
    1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 dxe4 6.f3 exf3 *
-C15l "French: Winawer, Winkelmann-Reimer, Hübner Defence"
+C15l "French: Winawer, Winkelmann-Reimer, Huebner Defence"
    1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 dxe4 6.f3 e5 *
 C15l "French: Winawer, Winkelmann-Reimer, 6...c5"
    1.e4 e6 2.d4 d5 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 dxe4 6.f3 c5 *
@@ -9336,7 +9336,7 @@ C21 "Centre Game: Kieseritsky Variation"
 C21 "Centre Game: Halasz Gambit"  1.e4 e5 2.d4 exd4 3.f4 *
 C21 "Danish Gambit"  1.e4 e5 2.d4 exd4 3.c3 *
 C21 "Danish Gambit: Svenonius Defence"  1.e4 e5 2.d4 exd4 3.c3 Ne7 *
-C21 "Danish Gambit: Sörensen Defence"  1.e4 e5 2.d4 exd4 3.c3 d5 *
+C21 "Danish Gambit: Sorensen Defence"  1.e4 e5 2.d4 exd4 3.c3 d5 *
 C21 "Danish Gambit: Accepted"  1.e4 e5 2.d4 exd4 3.c3 dxc3 *
 C21 "Danish Gambit: Accepted, 4.Bc4"  1.e4 e5 2.d4 exd4 3.c3 dxc3 4.Bc4 *
 C21 "Danish Gambit: Accepted, 4.Bc4 cxb2 5.Bxb2"
@@ -9368,7 +9368,7 @@ C23 "Bishop's Opening: Lisitsin Variation"
   1.e4 e5 2.Bc4 c6 3.d4 d5 4.exd5 cxd5 5.Bb5+ Bd7 6.Bxd7+ Nxd7 7.dxe5 Nxe5
   8.Ne2 *
 C23 "Bishop's Opening: Calabrese Countergambit"  1.e4 e5 2.Bc4 f5 *
-C23 "Bishop's Opening: Calabrese Countergambit, Jänisch Variation"
+C23 "Bishop's Opening: Calabrese Countergambit, Jaenisch Variation"
   1.e4 e5 2.Bc4 f5 3.d3 *
 C23 "Bishop's Opening: Classical Variation"  1.e4 e5 2.Bc4 Bc5 *
 C23 "Bishop's Opening: 2...Bc5 3.Qe2"  1.e4 e5 2.Bc4 Bc5 3.Qe2 *
@@ -9384,7 +9384,7 @@ C23 "Bishop's Opening: MacDonnell, Four Pawns Gambit"
 C23 "Bishop's Opening: Philidor Variation"  1.e4 e5 2.Bc4 Bc5 3.c3 *
 C23 "Bishop's Opening: del Rio Variation"  1.e4 e5 2.Bc4 Bc5 3.c3 Qg5 *
 C23 "Bishop's Opening: Lewis Countergambit"  1.e4 e5 2.Bc4 Bc5 3.c3 d5 *
-C23 "Bishop's Opening: Lewis Countergambit, Jänisch"
+C23 "Bishop's Opening: Lewis Countergambit, Jaenisch"
   1.e4 e5 2.Bc4 Bc5 3.c3 d5 4.Bxd5 Nf6 5.Qf3 *
 C23 "Bishop's Opening: 2...Bc5 3.c3 Nf6"
   1.e4 e5 2.Bc4 Bc5 3.c3 Nf6 *
@@ -9614,7 +9614,7 @@ C30d "King's Gambit: Wade Variation"  1.e4 e5 2.f4 Nf6 *
 C30e "King's Gambit: Norwald Variation"  1.e4 e5 2.f4 Qf6 *
 C30e "King's Gambit: Norwald Variation, Schubert line"
   1.e4 e5 2.f4 Qf6 3.Nc3 Qxf4 4.d4 *
-C30e "King's Gambit: Norwald Variation, Bücker Gambit"
+C30e "King's Gambit: Norwald Variation, Buecker Gambit"
   1.e4 e5 2.f4 Qf6 3.Nf3 Qxf4 4.Nc3 Bb4 5.Bc4 *
 C30f "King's Gambit: Keene Defence"  1.e4 e5 2.f4 Qh4+ *
 C30f "King's Gambit: Keene Defence, 3.g3 Qe7"  1.e4 e5 2.f4 Qh4+ 3.g3 Qe7 *
@@ -9768,7 +9768,7 @@ C33 "KGA: Bishop's Gambit, Bogoljubow Variation"
   1.e4 e5 2.f4 exf4 3.Bc4 Nf6 4.Nc3 *
 C33 "KGA: Bishop's Gambit, Paulsen Attack"
   1.e4 e5 2.f4 exf4 3.Bc4 Nf6 4.Nc3 Bb4 5.e5 *
-C33 "KGA: Bishop's Gambit, Jänisch Variation"
+C33 "KGA: Bishop's Gambit, Jaenisch Variation"
   1.e4 e5 2.f4 exf4 3.Bc4 Nf6 4.Nc3 c6 *
 
 C34 "KGA: King's Knight Gambit"  1.e4 e5 2.f4 exf4 3.Nf3 *
@@ -9814,7 +9814,7 @@ C36 "KGA: Scandinavian, Botvinnik Variation"
 C37 "KGA: 3.Nf3 g5"  1.e4 e5 2.f4 exf4 3.Nf3 g5 *
 C37 "KGA: Quaade Gambit"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.Nc3 *
 C37 "KGA: Rosentreter Gambit"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.d4 *
-C37 "KGA: Sörensen Gambit"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.d4 g4 5.Ne5 *
+C37 "KGA: Sorensen Gambit"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.d4 g4 5.Ne5 *
 C37 "KGA: 3.Nf3 g5 4.Bc4"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.Bc4 *
 C37 "KGA: Blachly Gambit"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.Bc4 Nc6 *
 C37 "KGA: 3.Nf3 g5 4.Bc4 g4"  1.e4 e5 2.f4 exf4 3.Nf3 g5 4.Bc4 g4 *
@@ -9889,7 +9889,7 @@ C39 "KGA: Kieseritsky, Paulsen Defence"
   1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5 Bg7 *
 C39 "KGA: Kieseritsky, Long Whip Defence"
   1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5 h5 *
-C39 "KGA: Kieseritsky, Long Whip Defence, Jänisch Variation"
+C39 "KGA: Kieseritsky, Long Whip Defence, Jaenisch Variation"
   1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5 h5 6.Bc4 Rh7 7.d4 Bh6 8.Nc3 *
 C39 "KGA: Kieseritsky, Brentano (Campbell) Defence"
   1.e4 e5 2.f4 exf4 3.Nf3 g5 4.h4 g4 5.Ne5 d5 *
@@ -9975,7 +9975,7 @@ C41a "Philidor Defence"  1.e4 e5 2.Nf3 d6 *
 C41b "Philidor: 3.Bc4"  1.e4 e5 2.Nf3 d6 3.Bc4 *
 C41b "Philidor: Steinitz Variation"  1.e4 e5 2.Nf3 d6 3.Bc4 Be7 4.c3 *
 C41b "Philidor: Lopez Countergambit"  1.e4 e5 2.Nf3 d6 3.Bc4 f5 *
-C41b "Philidor: Lopez Countergambit, Jänisch Variation"
+C41b "Philidor: Lopez Countergambit, Jaenisch Variation"
   1.e4 e5 2.Nf3 d6 3.Bc4 f5 4.d4 exd4 5.Ng5 Nh6 6.Nxh7 *
 C41c "Philidor: 3.d4"  1.e4 e5 2.Nf3 d6 3.d4 *
 C41d "Philidor: Philidor Countergambit"  1.e4 e5 2.Nf3 d6 3.d4 f5 *
@@ -10131,9 +10131,9 @@ C42s "Russian Game: Classical, Mason Variation"
   1.e4 e5 2.Nf3 Nf6 3.Nxe5 d6 4.Nf3 Nxe4 5.d4 d5 6.Bd3 Be7 7.O-O O-O *
 C42s "Russian Game: Classical, 6.Bd3 Be7 7.O-O Nc6"
   1.e4 e5 2.Nf3 Nf6 3.Nxe5 d6 4.Nf3 Nxe4 5.d4 d5 6.Bd3 Be7 7.O-O Nc6 *
-C42t "Russian Game: Classical, Jänisch Variation"
+C42t "Russian Game: Classical, Jaenisch Variation"
   1.e4 e5 2.Nf3 Nf6 3.Nxe5 d6 4.Nf3 Nxe4 5.d4 d5 6.Bd3 Be7 7.O-O Nc6 8.c4 *
-C42u "Russian Game: Classical, Jänisch, Main Line"
+C42u "Russian Game: Classical, Jaenisch, Main Line"
   1.e4 e5 2.Nf3 Nf6 3.Nxe5 d6 4.Nf3 Nxe4 5.d4 d5 6.Bd3 Be7 7.O-O Nc6 8.c4 Nb4
   9.Be2 O-O *
 C42v "Russian Game: Classical, Chigorin Variation"
@@ -10683,7 +10683,7 @@ C51 "Evans Gambit: Paulsen Variation"
 C51 "Evans Gambit: Morphy Attack"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Bc5 6.d4 exd4 7.O-O d6
   8.cxd4 Bb6 9.Nc3 *
-C51 "Evans Gambit: Göring Attack"
+C51 "Evans Gambit: Goering Attack"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.b4 Bxb4 5.c3 Bc5 6.d4 exd4 7.O-O d6
   8.cxd4 Bb6 9.Nc3 Na5 10.Bg5 *
 C51 "Evans Gambit: Steinitz Variation"
@@ -10822,13 +10822,13 @@ C54o "Giuoco Piano: Greco Attack"
 C54o "Giuoco Piano: Steinitz Variation"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Nc3 Nxe4
   8.O-O Bxc3 9.bxc3 d5 10.Ba3 *
-C54o "Giuoco Piano: Möller (Therkatz) Attack"
+C54o "Giuoco Piano: Moeller (Therkatz) Attack"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Nc3 Nxe4
   8.O-O Bxc3 9.d5 *
-C54o "Giuoco Piano: Möller-Herzog Variation"
+C54o "Giuoco Piano: Moeller-Herzog Variation"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Nc3 Nxe4
   8.O-O Bxc3 9.d5 Bf6 10.Re1 Ne7 11.Rxe4 d6 12.Bg5 Bxg5 13.Nxg5 O-O 14.Nxh7 *
-C54o "Giuoco Piano: Möller, Bayonet Attack"
+C54o "Giuoco Piano: Moeller, Bayonet Attack"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4 Bb4+ 7.Nc3 Nxe4
   8.O-O Bxc3 9.d5 Bf6 10.Re1 Ne7 11.Rxe4 d6 12.g4 *
 
@@ -11081,7 +11081,7 @@ C59c "Two Knights: Morphy, Main Line 9.Nf3 e4 10.Ne5"
 C59d "Two Knights: Morphy, Steiner Variation"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5 Na5 6.Bb5+ c6 7.dxc6 bxc6
   8.Be2 h6 9.Nf3 e4 10.Ne5 Bc5 *
-C59e "Two Knights: Morphy, Göring Variation"
+C59e "Two Knights: Morphy, Goering Variation"
   1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5 d5 5.exd5 Na5 6.Bb5+ c6 7.dxc6 bxc6
   8.Be2 h6 9.Nf3 e4 10.Ne5 Qc7 *
 C59f "Two Knights: Morphy, Geller Variation"
@@ -11118,7 +11118,7 @@ C59l "Two Knights: Main Line, 11.d4, Honfi Variation"
 C60a "Spanish (Ruy Lopez)"  1.e4 e5 2.Nf3 Nc6 3.Bb5 *
 C60a "Spanish: Spanish Countergambit"  1.e4 e5 2.Nf3 Nc6 3.Bb5 d5 *
 C60b "Spanish: 3...a5"  1.e4 e5 2.Nf3 Nc6 3.Bb5 a5 *
-C60c "Spanish: Nürnberg Variation"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f6 *
+C60c "Spanish: Nuernberg Variation"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f6 *
 C60d "Spanish: Pollock Defence"  1.e4 e5 2.Nf3 Nc6 3.Bb5 Na5 *
 C60e "Spanish: Lucena Defence"  1.e4 e5 2.Nf3 Nc6 3.Bb5 Be7 *
 C60f "Spanish: Vinogradov Variation"  1.e4 e5 2.Nf3 Nc6 3.Bb5 Qe7 *
@@ -11182,7 +11182,7 @@ C62 "Spanish: Old Steinitz, Nimzowitsch Attack"
 C62 "Spanish: Old Steinitz, Semi-Duras Variation"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 d6 4.d4 Bd7 5.c4 *
 
-C63a "Spanish: Schliemann (Jänisch)"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f5 *
+C63a "Spanish: Schliemann (Jaenisch)"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f5 *
 C63a "Spanish: Schliemann, 4.Qe2"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f5 4.Qe2 *
 C63b "Spanish: Schliemann, 4.exf5"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f5 4.exf5 *
 C63c "Spanish: Schliemann, 4.d4"  1.e4 e5 2.Nf3 Nc6 3.Bb5 f5 4.d4 *
@@ -11619,16 +11619,16 @@ C77t "Spanish: Wormald Attack, 5...b5 6.Bb3 Bc5 7.c3"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.Qe2 b5 6.Bb3 Bc5 7.c3 *
 C77u "Spanish: Wormald Attack, 5...b5 6.Bb3 Be7"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.Qe2 b5 6.Bb3 Be7 *
-C77u "Spanish: Wormald Attack, Grünfeld Variation"
+C77u "Spanish: Wormald Attack, Gruenfeld Variation"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.Qe2 b5 6.Bb3 Be7 7.d4 d6 8.c3 Bg4 *
 
 C78a "Spanish: 5.O-O"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O *
-C78b "Spanish: Möller Defence"
+C78b "Spanish: Moeller Defence"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Bc5 *
-C78c "Spanish: Möller Defence, 6.Nxe5"
+C78c "Spanish: Moeller Defence, 6.Nxe5"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Bc5 6.Nxe5 *
-C78d "Spanish: Möller Defence, 6.c3"
+C78d "Spanish: Moeller Defence, 6.c3"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Bc5 6.c3 *
 C78e "Spanish: 5.O-O b5"
   1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O b5 *
@@ -13365,7 +13365,7 @@ D14q "Slav: Exchange, 8.Bb5 Nd7 9.Qa4"
 D15a "Slav: 4.Nc3"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 *
 D15b "Slav: 4.Nc3 Bf5"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 Bf5 *
 D15b "Slav: 4.Nc3 Bf5 5.Qb3"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 Bf5 5.Qb3 *
-D15c "Slav: Süchting Variation"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 Qb6 *
+D15c "Slav: Suechting Variation"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 Qb6 *
 D15d "Slav: Chameleon Variation"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 a6 *
 D15e "Slav: Chameleon, 5.Bg5"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 a6 5.Bg5 *
 D15f "Slav: Chameleon, 5.Ne5"  1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 a6 5.Ne5 *
@@ -13468,7 +13468,7 @@ D17k "Slav: Central, 6.Ne5 e6"
   1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5 6.Ne5 e6 *
 D17k "Slav: Central, 6.Ne5 e6 7.f3"
   1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5 6.Ne5 e6 7.f3 *
-D17l "Slav: Central, Hübner (7...c5)"
+D17l "Slav: Central, Huebner (7...c5)"
   1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5 6.Ne5 e6 7.f3 c5 *
 D17m "Slav: Central, 7.f3 Bb4"
   1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5 6.Ne5 e6 7.f3 Bb4 *
@@ -13585,7 +13585,7 @@ D19f "Slav: Dutch, 8...O-O 9.Qe2 Bg6 10.Ne5 Nbd7, 12.Rd1"
 D19g "Slav: Dutch, 8...O-O 9.Qe2 Ne4"
     1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5 6.e3 e6 7.Bxc4 Bb4
     8.O-O O-O 9.Qe2 Ne4 *
-D19g "Slav: Dutch, Sämisch Variation"
+D19g "Slav: Dutch, Saemisch Variation"
     1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5 6.e3 e6 7.Bxc4 Bb4
     8.O-O O-O 9.Qe2 Ne4 10.g4 *
 D19h "Slav: Dutch, 8...O-O 9.Qe2 Nbd7"
@@ -14431,7 +14431,7 @@ D35a "QGD: Catalan without Nf3"  1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.g3 *
 D35b "QGD: Exchange"  1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 *
 D35b "QGD: Exchange, 4...Nxd5"  1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 Nxd5 *
 D35b "QGD: Exchange"  1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 exd5 *
-D35c "QGD: Exchange, Sämisch Variation"
+D35c "QGD: Exchange, Saemisch Variation"
   1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 exd5 5.Bf4 *
 D35d "QGD: Exchange, 5.Nf3"  1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 exd5 5.Nf3 *
 D35d "QGD: Exchange, 5.Nf3 c6"
@@ -15940,13 +15940,13 @@ D64 "QGD: Orthodox, Rubinstein Attack, 8...h6"
   1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7 7.Rc1 c6 8.Qc2 h6 *
 D64 "QGD: Orthodox, Rubinstein Attack, Carlsbad Variation"
   1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7 7.Rc1 c6 8.Qc2 a6 *
-D64 "QGD: Orthodox, Rubinstein Attack, Grünfeld Variation"
+D64 "QGD: Orthodox, Rubinstein Attack, Gruenfeld Variation"
   1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7 7.Rc1 c6 8.Qc2 a6
   9.a3 *
-D64 "QGD: Orthodox, Rubinstein Attack, Grünfeld Variation, 9...h6"
+D64 "QGD: Orthodox, Rubinstein Attack, Gruenfeld Variation, 9...h6"
   1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7 7.Rc1 c6 8.Qc2 a6
   9.a3 h6 *
-D64 "QGD: Orthodox, Rubinstein Attack, Grünfeld Variation, 9...h6 10.Bh4"
+D64 "QGD: Orthodox, Rubinstein Attack, Gruenfeld Variation, 9...h6 10.Bh4"
   1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.Bg5 Be7 5.e3 O-O 6.Nf3 Nbd7 7.Rc1 c6 8.Qc2 a6
   9.a3 h6 10.Bh4 *
 
@@ -16093,954 +16093,954 @@ D69 "QGD: Orthodox, Classical, 13.dxe5: 15.f4 Qf6 16.e4"
   9.Bxc4 Nd5 10.Bxe7 Qxe7 11.O-O Nxc3 12.Rxc3 e5 13.dxe5 Nxe5 14.Nxe5 Qxe5
   15.f4 Qf6 16.e4 *
 
-D70 "Neo-Grünfeld: 3.Nf3 d5"  1.d4 Nf6 2.c4 g6 3.Nf3 d5 *
-D70 "Neo-Grünfeld: Alekhine's Anti-Grünfeld"  1.d4 Nf6 2.c4 g6 3.f3 d5 *
-D70 "Neo-Grünfeld: Alekhine's, 5.e4 Nb6"
+D70 "Neo-Gruenfeld: 3.Nf3 d5"  1.d4 Nf6 2.c4 g6 3.Nf3 d5 *
+D70 "Neo-Gruenfeld: Alekhine's Anti-Gruenfeld"  1.d4 Nf6 2.c4 g6 3.f3 d5 *
+D70 "Neo-Gruenfeld: Alekhine's, 5.e4 Nb6"
   1.d4 Nf6 2.c4 g6 3.f3 d5 4.cxd5 Nxd5 5.e4 Nb6 *
-D70 "Neo-Grünfeld: Alekhine's, 7.Be3 O-O"
+D70 "Neo-Gruenfeld: Alekhine's, 7.Be3 O-O"
   1.d4 Nf6 2.c4 g6 3.f3 d5 4.cxd5 Nxd5 5.e4 Nb6 6.Nc3 Bg7 7.Be3 O-O *
-D70 "Neo-Grünfeld: 3.g3 d5"  1.d4 Nf6 2.c4 g6 3.g3 d5 *
-D70 "Neo-Grünfeld: 4.cxd5"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.cxd5 *
-D70 "Neo-Grünfeld: 4.Bg2"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 *
-D70 "Neo-Grünfeld: 4.Bg2 c6"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 c6 *
-D70 "Neo-Grünfeld: 4.Bg2 Bg7"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 *
+D70 "Neo-Gruenfeld: 3.g3 d5"  1.d4 Nf6 2.c4 g6 3.g3 d5 *
+D70 "Neo-Gruenfeld: 4.cxd5"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.cxd5 *
+D70 "Neo-Gruenfeld: 4.Bg2"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 *
+D70 "Neo-Gruenfeld: 4.Bg2 c6"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 c6 *
+D70 "Neo-Gruenfeld: 4.Bg2 Bg7"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 *
 
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.Nc3"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.Nc3 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.Nc3 Nxc3"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.Nc3 Nxc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.Nc3 Nxc3 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.Nc3 Nxc3 7.bxc3 c5"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.Nc3 Nxc3 7.bxc3 c5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.Nc3 Nxc3 7.bxc3 c5 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.Nc3 Nb6"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.Nc3 Nb6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.Nc3 Nb6 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb4"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb4 *
-D71 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb4 7.d5"
+D71 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb4 7.d5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb4 7.d5 *
 
-D72 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2"
+D72 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 *
-D72 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 Nc6"
+D72 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 Nc6 *
-D72 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 e5"
+D72 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 e5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 e5 *
-D72 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 c5"
+D72 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 c5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 c5 *
-D72 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 O-O"
+D72 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 O-O"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 O-O *
-D72 "Neo-Grünfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 O-O 8.O-O"
+D72 "Neo-Gruenfeld, 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 O-O 8.O-O"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.cxd5 Nxd5 6.e4 Nb6 7.Ne2 O-O 8.O-O *
 
-D73 "Neo-Grünfeld, 5.Nf3"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 *
-D73 "Neo-Grünfeld, 5.Nf3 c6"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c6 *
-D73 "Neo-Grünfeld, 5.Nf3 c6 6.cxd5"
+D73 "Neo-Gruenfeld, 5.Nf3"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 *
+D73 "Neo-Gruenfeld, 5.Nf3 c6"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c6 *
+D73 "Neo-Gruenfeld, 5.Nf3 c6 6.cxd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c6 6.cxd5 *
-D73 "Neo-Grünfeld, 5.Nf3 c6 6.cxd5 cxd5"
+D73 "Neo-Gruenfeld, 5.Nf3 c6 6.cxd5 cxd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c6 6.cxd5 cxd5 *
-D73 "Neo-Grünfeld, 5.Nf3 c6 6.cxd5 cxd5 7.Nc3"
+D73 "Neo-Gruenfeld, 5.Nf3 c6 6.cxd5 cxd5 7.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c6 6.cxd5 cxd5 7.Nc3 *
-D73 "Neo-Grünfeld, 5.Nf3 c5"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c5 *
-D73 "Neo-Grünfeld, 5.Nf3 dxc4"
+D73 "Neo-Gruenfeld, 5.Nf3 c5"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 c5 *
+D73 "Neo-Gruenfeld, 5.Nf3 dxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 dxc4 *
-D73 "Neo-Grünfeld, 5.Nf3 dxc4 6.Na3"
+D73 "Neo-Gruenfeld, 5.Nf3 dxc4 6.Na3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 dxc4 6.Na3 *
-D73 "Neo-Grünfeld, 5.Nf3 O-O"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O *
-D73 "Neo-Grünfeld, 6.Qb3"
+D73 "Neo-Gruenfeld, 5.Nf3 O-O"  1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O *
+D73 "Neo-Gruenfeld, 6.Qb3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.Qb3 *
-D73 "Neo-Grünfeld, 6.Nc3"
+D73 "Neo-Gruenfeld, 6.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.Nc3 *
-D73 "Neo-Grünfeld, 6.cxd5"
+D73 "Neo-Gruenfeld, 6.cxd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 *
-D73 "Neo-Grünfeld, 6.cxd5 Nxd5 7.e4"
+D73 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.e4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.e4 *
 
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Na6"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Na6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Na6 *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nc6"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nc6 *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c6"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c6 *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5 *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.e4"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.e4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5 8.e4 *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.e4 Nf6"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.e4 Nf6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5 8.e4 Nf6 *
-D74 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.e4 Nf6 9.e5 Nd5"
+D74 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.e4 Nf6 9.e5 Nd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5 8.e4 Nf6
   9.e5 Nd5 *
 
-D75 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.Nc3"
+D75 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5 8.Nc3 *
-D75 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.Nc3 Nxc3"
+D75 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.Nc3 Nxc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5
   8.Nc3 Nxc3 *
-D75 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.Nc3 Nxc3 9.bxc3 cxd4"
+D75 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.Nc3 Nxc3 9.bxc3 cxd4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5
   8.Nc3 Nxc3 9.bxc3 cxd4 *
-D75 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.dxc5"
+D75 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.dxc5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5 8.dxc5 *
-D75 "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O c5 8.dxc5 Na6"
+D75 "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O c5 8.dxc5 Na6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O c5
   8.dxc5 Na6 *
 
-D76a "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6"
+D76a "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6 *
-D76b "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3"
+D76b "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 *
-D76c "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6"
+D76c "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 *
-D76d "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3"
+D76d "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.e3 *
-D76e "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 e5"
+D76e "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 e5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.e3 e5 *
-D76e "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 e5 10.d5"
+D76e "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 e5 10.d5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.e3 e5 10.d5 *
-D76f "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 e5 10.d5 Na5"
+D76f "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 e5 10.d5 Na5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.e3 e5 10.d5 Na5 *
-D76g "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 Re8"
+D76g "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 Re8"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.e3 Re8 *
-D76h "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 Re8 10.d5"
+D76h "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.e3 Re8 10.d5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.e3 Re8 10.d5 *
-D76i "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5"
+D76i "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.d5 *
-D76j "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5"
+D76j "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.d5 Na5 *
-D76k "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5 10.e4"
+D76k "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5 10.e4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.d5 Na5 10.e4 *
-D76k "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5 10.e4 c6"
+D76k "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5 10.e4 c6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.d5 Na5 10.e4 c6 *
-D76l "Neo-Grünfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5 10.e4 c6 11.Bg5"
+D76l "Neo-Gruenfeld, 6.cxd5 Nxd5 7.O-O Nb6 8.Nc3 Nc6 9.d5 Na5 10.e4 c6 11.Bg5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.cxd5 Nxd5 7.O-O Nb6
   8.Nc3 Nc6 9.d5 Na5 10.e4 c6 11.Bg5 *
 
-D77a "Neo-Grünfeld, 6.O-O"
+D77a "Neo-Gruenfeld, 6.O-O"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O *
-D77b "Neo-Grünfeld, 6.O-O e6"
+D77b "Neo-Gruenfeld, 6.O-O e6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O e6 *
-D77c "Neo-Grünfeld, 6.O-O c5"
+D77c "Neo-Gruenfeld, 6.O-O c5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c5 *
-D77c "Neo-Grünfeld, 6.O-O c5 7.dxc5 dxc4"
+D77c "Neo-Gruenfeld, 6.O-O c5 7.dxc5 dxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c5 7.dxc5 dxc4 *
-D77d "Neo-Grünfeld, 6.O-O Nc6"
+D77d "Neo-Gruenfeld, 6.O-O Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O Nc6 *
-D77e "Neo-Grünfeld, 6.O-O dxc4"
+D77e "Neo-Gruenfeld, 6.O-O dxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 *
-D77f "Neo-Grünfeld, 6.O-O dxc4 7.Na3"
+D77f "Neo-Gruenfeld, 6.O-O dxc4 7.Na3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 *
-D77g "Neo-Grünfeld, 6.O-O dxc4 7.Na3 Na6"
+D77g "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 Na6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 Na6 *
-D77h "Neo-Grünfeld, 6.O-O dxc4 7.Na3 c3"
+D77h "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 c3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 c3 *
-D77h "Neo-Grünfeld, 6.O-O dxc4 7.Na3 c3 8.bxc3 c5"
+D77h "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 c3 8.bxc3 c5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 c3 8.bxc3 c5 *
-D77i "Neo-Grünfeld, 6.O-O dxc4 7.Na3 c3 8.bxc3 c5 9.e3"
+D77i "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 c3 8.bxc3 c5 9.e3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 c3 8.bxc3 c5
   9.e3 *
-D77j "Neo-Grünfeld, 6.O-O dxc4 7.Na3 Nc6"
+D77j "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 Nc6 *
-D77j "Neo-Grünfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4"
+D77j "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 Nc6
   8.Nxc4 *
-D77j "Neo-Grünfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4 Be6"
+D77j "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4 Be6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 Nc6
   8.Nxc4 Be6 *
-D77k "Neo-Grünfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4 Be6 9.b3"
+D77k "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4 Be6 9.b3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 Nc6
   8.Nxc4 Be6 9.b3 *
-D77l "Neo-Grünfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4 Be6 9.b3 Bd5"
+D77l "Neo-Gruenfeld, 6.O-O dxc4 7.Na3 Nc6 8.Nxc4 Be6 9.b3 Bd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O dxc4 7.Na3 Nc6
   8.Nxc4 Be6 9.b3 Bd5 *
 
-D78a "Neo-Grünfeld, 6.O-O c6"
+D78a "Neo-Gruenfeld, 6.O-O c6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 *
-D78b "Neo-Grünfeld, 6.O-O c6 7.Na3"
+D78b "Neo-Gruenfeld, 6.O-O c6 7.Na3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Na3 *
-D78c "Neo-Grünfeld, 6.O-O c6 7.Ne5"
+D78c "Neo-Gruenfeld, 6.O-O c6 7.Ne5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Ne5 *
-D78d "Neo-Grünfeld, 6.O-O c6 7.Qa4"
+D78d "Neo-Gruenfeld, 6.O-O c6 7.Qa4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Qa4 *
-D78e "Neo-Grünfeld, 6.O-O c6 7.Nc3"
+D78e "Neo-Gruenfeld, 6.O-O c6 7.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Nc3 *
-D78f "Neo-Grünfeld, 6.O-O c6 7.Nc3 dxc4"
+D78f "Neo-Gruenfeld, 6.O-O c6 7.Nc3 dxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Nc3 dxc4 *
-D78g "Neo-Grünfeld, 6.O-O c6 7.Qb3"
+D78g "Neo-Gruenfeld, 6.O-O c6 7.Qb3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Qb3 *
-D78h "Neo-Grünfeld, 6.O-O c6 7.Qb3 Qb6"
+D78h "Neo-Gruenfeld, 6.O-O c6 7.Qb3 Qb6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Qb3 Qb6 *
-D78i "Neo-Grünfeld, 6.O-O c6 7.Qb3 dxc4"
+D78i "Neo-Gruenfeld, 6.O-O c6 7.Qb3 dxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Qb3 dxc4 *
-D78j "Neo-Grünfeld, 6.O-O c6 7.Qb3 dxc4"
+D78j "Neo-Gruenfeld, 6.O-O c6 7.Qb3 dxc4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Qb3 dxc4 8.Qxc4 *
-D78k "Neo-Grünfeld, 6.O-O c6 7.Nbd2"
+D78k "Neo-Gruenfeld, 6.O-O c6 7.Nbd2"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Nbd2 *
-D78l "Neo-Grünfeld, 6.O-O c6 7.Nbd2 Nbd7"
+D78l "Neo-Gruenfeld, 6.O-O c6 7.Nbd2 Nbd7"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Nbd2 Nbd7 *
-D78m "Neo-Grünfeld, 6.O-O c6 7.Nbd2 Ne4"
+D78m "Neo-Gruenfeld, 6.O-O c6 7.Nbd2 Ne4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Nbd2 Ne4 *
-D78n "Neo-Grünfeld, 6.O-O c6 7.Nbd2 Bf5"
+D78n "Neo-Gruenfeld, 6.O-O c6 7.Nbd2 Bf5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.Nbd2 Bf5 *
-D78o "Neo-Grünfeld, 6.O-O c6 7.b3"
+D78o "Neo-Gruenfeld, 6.O-O c6 7.b3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.b3 *
-D78p "Neo-Grünfeld, 6.O-O c6 7.b3 Bf5"
+D78p "Neo-Gruenfeld, 6.O-O c6 7.b3 Bf5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.b3 Bf5 *
-D78q "Neo-Grünfeld, 6.O-O c6 7.b3 Ne4"
+D78q "Neo-Gruenfeld, 6.O-O c6 7.b3 Ne4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.b3 Ne4 *
 
-D79a "Neo-Grünfeld, 6.O-O c6 7.cxd5"
+D79a "Neo-Gruenfeld, 6.O-O c6 7.cxd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 *
-D79a "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5"
+D79a "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 *
-D79b "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3"
+D79b "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 *
-D79c "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 e6"
+D79c "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 e6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 e6 *
-D79d "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4"
+D79d "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4 *
-D79d "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4 9.Ne5"
+D79d "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4 9.Ne5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4
   9.Ne5 *
-D79e "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4 9.Nxe4"
+D79e "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4 9.Nxe4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 Ne4
   9.Nxe4 *
-D79f "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6"
+D79f "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6 *
-D79g "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6 9.Ne5"
+D79g "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6 9.Ne5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6
   9.Ne5 *
-D79h "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6 9.Ne5 e6"
+D79h "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6 9.Ne5 e6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Nc3 Nc6
   9.Ne5 e6 *
-D79i "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Ne5"
+D79i "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Ne5"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 *
-D79i "Neo-Grünfeld, 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6"
+D79i "Neo-Gruenfeld, 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6 *
-D79j "Neo-Grünfeld, Main Line"
+D79j "Neo-Gruenfeld, Main Line"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 *
-D79k "Neo-Grünfeld, Main Line, 10.f4"
+D79k "Neo-Gruenfeld, Main Line, 10.f4"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 Nfd7 10.f4 *
-D79l "Neo-Grünfeld, Main Line, 10.f4 Nc6"
+D79l "Neo-Gruenfeld, Main Line, 10.f4 Nc6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 Nfd7 10.f4 Nc6 *
-D79m "Neo-Grünfeld, Main Line, 10.f4 Nc6 11.Be3"
+D79m "Neo-Gruenfeld, Main Line, 10.f4 Nc6 11.Be3"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 Nfd7 10.f4 Nc6 11.Be3 *
-D79m "Neo-Grünfeld, Main Line, 10.f4 Nc6 11.Be3 f6"
+D79m "Neo-Gruenfeld, Main Line, 10.f4 Nc6 11.Be3 f6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 Nfd7 10.f4 Nc6 11.Be3 f6 *
-D79n "Neo-Grünfeld, Main Line, 10.f4 Nc6 11.Be3 Nb6"
+D79n "Neo-Gruenfeld, Main Line, 10.f4 Nc6 11.Be3 Nb6"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 Nfd7 10.f4 Nc6 11.Be3 Nb6 *
-D79n "Neo-Grünfeld, Main Line, 10.f4 Nc6 11.Be3 Nb6 12.Bf2"
+D79n "Neo-Gruenfeld, Main Line, 10.f4 Nc6 11.Be3 Nb6 12.Bf2"
   1.d4 Nf6 2.c4 g6 3.g3 d5 4.Bg2 Bg7 5.Nf3 O-O 6.O-O c6 7.cxd5 cxd5 8.Ne5 e6
   9.Nc3 Nfd7 10.f4 Nc6 11.Be3 Nb6 12.Bf2 *
 
-D80 "Grünfeld Defence"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 *
-D80 "Grünfeld: Spike/Gibbon Gambit"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.g4 *
-D80 "Grünfeld: 4.h4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.h4 *
-D80 "Grünfeld: 4.g3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.g3 *
-D80 "Grünfeld: 4.f3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.f3 *
-D80 "Grünfeld: 4.e3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.e3 *
-D80 "Grünfeld: 4.e3 Bg7"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.e3 Bg7 *
-D80 "Grünfeld: 4.e3 Bg7 5.Qb3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.e3 Bg7 5.Qb3 *
-D80 "Grünfeld: Stockholm Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 *
-D80 "Grünfeld: Stockholm, 4...Ne4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 *
-D80 "Grünfeld: Stockholm, 4...Ne4 5.Nxe4"
+D80 "Gruenfeld Defence"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 *
+D80 "Gruenfeld: Spike/Gibbon Gambit"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.g4 *
+D80 "Gruenfeld: 4.h4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.h4 *
+D80 "Gruenfeld: 4.g3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.g3 *
+D80 "Gruenfeld: 4.f3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.f3 *
+D80 "Gruenfeld: 4.e3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.e3 *
+D80 "Gruenfeld: 4.e3 Bg7"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.e3 Bg7 *
+D80 "Gruenfeld: 4.e3 Bg7 5.Qb3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.e3 Bg7 5.Qb3 *
+D80 "Gruenfeld: Stockholm Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 *
+D80 "Gruenfeld: Stockholm, 4...Ne4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 *
+D80 "Gruenfeld: Stockholm, 4...Ne4 5.Nxe4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 5.Nxe4 *
-D80 "Grünfeld: Stockholm, Lundin Variation"
+D80 "Gruenfeld: Stockholm, Lundin Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 5.Nxe4 dxe4 6.Qd2 c5 *
-D80 "Grünfeld: Stockholm, 4...Ne4 5.Bf4"
+D80 "Gruenfeld: Stockholm, 4...Ne4 5.Bf4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 5.Bf4 *
-D80 "Grünfeld: Stockholm, Taimanov Variation"
+D80 "Gruenfeld: Stockholm, Taimanov Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 5.Bh4 *
-D80 "Grünfeld: Stockholm, Taimanov, 5...Nxc3"
+D80 "Gruenfeld: Stockholm, Taimanov, 5...Nxc3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 5.Bh4 Nxc3 *
-D80 "Grünfeld: Stockholm, Taimanov, 5...Nxc3 6.bxc3 Bg7"
+D80 "Gruenfeld: Stockholm, Taimanov, 5...Nxc3 6.bxc3 Bg7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bg5 Ne4 5.Bh4 Nxc3 6.bxc3 Bg7 *
 
-D81 "Grünfeld: Early Russian Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 *
-D81 "Grünfeld: Early Russian Variation"
+D81 "Gruenfeld: Early Russian Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 *
+D81 "Gruenfeld: Early Russian Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 *
-D81 "Grünfeld: Early Russian, 5...Be6"
+D81 "Gruenfeld: Early Russian, 5...Be6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 Be6 *
-D81 "Grünfeld: Early Russian, 5...Be6 6.Qb5+"
+D81 "Gruenfeld: Early Russian, 5...Be6 6.Qb5+"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 Be6 6.Qb5+ *
-D81 "Grünfeld: Early Russian, Adorjan Gambit"
+D81 "Gruenfeld: Early Russian, Adorjan Gambit"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 Be6 6.Qb5+ Bd7 *
-D81 "Grünfeld: Early Russian, 5...Bg7"
+D81 "Gruenfeld: Early Russian, 5...Bg7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 Bg7 *
-D81 "Grünfeld: Early Russian, 5...Bg7 6.e4"
+D81 "Gruenfeld: Early Russian, 5...Bg7 6.e4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 Bg7 6.e4 *
-D81 "Grünfeld: Early Russian, 5...Bg7 6.e4 O-O"
+D81 "Gruenfeld: Early Russian, 5...Bg7 6.e4 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Qb3 dxc4 5.Qxc4 Bg7 6.e4 O-O *
 
-D82 "Grünfeld: 4.Bf4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 *
-D82 "Grünfeld: 4.Bf4 Bg7"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 *
-D82 "Grünfeld: 4.Bf4 Bg7 5.e3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 *
-D82 "Grünfeld: 4.Bf4 Bg7 5.e3 c5"
+D82 "Gruenfeld: 4.Bf4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 *
+D82 "Gruenfeld: 4.Bf4 Bg7"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 *
+D82 "Gruenfeld: 4.Bf4 Bg7 5.e3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 *
+D82 "Gruenfeld: 4.Bf4 Bg7 5.e3 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 c5 *
-D82 "Grünfeld: 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5"
+D82 "Gruenfeld: 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 *
-D82 "Grünfeld: 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 7.Qa4+"
+D82 "Gruenfeld: 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 7.Qa4+"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 7.Qa4+ *
-D82 "Grünfeld: 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 7.Rc1"
+D82 "Gruenfeld: 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 7.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 c5 6.dxc5 Qa5 7.Rc1 *
 
-D83 "Grünfeld: Grünfeld Gambit"
+D83 "Gruenfeld: Gruenfeld Gambit"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O *
-D83 "Grünfeld: Grünfeld Gambit, 6.Qb3"
+D83 "Gruenfeld: Gruenfeld Gambit, 6.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.Qb3 *
-D83 "Grünfeld: Grünfeld Gambit, Capablanca Variation"
+D83 "Gruenfeld: Gruenfeld Gambit, Capablanca Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.Rc1 *
-D83 "Grünfeld: Grünfeld Gambit, Capablanca Variation"
+D83 "Gruenfeld: Gruenfeld Gambit, Capablanca Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.Rc1 c5 *
-D83 "Grünfeld: Grünfeld Gambit, Botvinnik Variation"
+D83 "Gruenfeld: Gruenfeld Gambit, Botvinnik Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.Rc1 c5 7.dxc5 Be6 *
 
-D84 "Grünfeld: Grünfeld Gambit Accepted"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 *
-D84 "Grünfeld: Grünfeld Gambit Accepted"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...b6"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 b6 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...Bf5"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...Bf5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 Bf5 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...Na6"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...Na6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 Na6 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...Na6 9.Bxa6 Qxg2"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...Na6 9.Bxa6 Qxg2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 Na6 9.Bxa6 Qxg2 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...Nc6"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 Nc6 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...Nc6 9.Ne2"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...Nc6 9.Ne2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 Nc6 9.Ne2 *
-D84 "Grünfeld: Grünfeld Gambit Accepted, 8...Nc6 9.Ne2 Bg4"
+D84 "Gruenfeld: Gruenfeld Gambit Accepted, 8...Nc6 9.Ne2 Bg4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Bf4 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Nxd5 Qxd5
   8.Bxc7 Nc6 9.Ne2 Bg4 *
 
-D85a "Grünfeld: Exchange Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 *
-D85a "Grünfeld: Exchange Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 *
-D85a "Grünfeld: Exchange, 5.g3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.g3 *
-D85a "Grünfeld: Exchange, 5.Na4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Na4 *
-D85b "Grünfeld: Exchange, 5.Bd2"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Bd2 *
-D85c "Grünfeld: Exchange, 5.Bd2 Bg7 6.e4 Nb6"
+D85a "Gruenfeld: Exchange Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 *
+D85a "Gruenfeld: Exchange Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 *
+D85a "Gruenfeld: Exchange, 5.g3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.g3 *
+D85a "Gruenfeld: Exchange, 5.Na4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Na4 *
+D85b "Gruenfeld: Exchange, 5.Bd2"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Bd2 *
+D85c "Gruenfeld: Exchange, 5.Bd2 Bg7 6.e4 Nb6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Bd2 Bg7 6.e4 Nb6 *
-D85c "Grünfeld: Exchange, 5.Bd2 Bg7 6.e4 Nb6 7.Be3"
+D85c "Gruenfeld: Exchange, 5.Bd2 Bg7 6.e4 Nb6 7.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.Bd2 Bg7 6.e4 Nb6 7.Be3 *
-D85d "Grünfeld: Exchange, 5.e4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 *
-D85d "Grünfeld: Exchange, 5.e4 Nb6"
+D85d "Gruenfeld: Exchange, 5.e4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 *
+D85d "Gruenfeld: Exchange, 5.e4 Nb6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nb6 *
-D85d "Grünfeld: Exchange, 5.e4 Nxc3"
+D85d "Gruenfeld: Exchange, 5.e4 Nxc3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 *
-D85d "Grünfeld: Exchange, 5.e4 Nxc3 6.bxc3 c5"
+D85d "Gruenfeld: Exchange, 5.e4 Nxc3 6.bxc3 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 c5 *
-D85d "Grünfeld: Exchange, 5.e4 Nxc3 6.bxc3 Bg7"
+D85d "Gruenfeld: Exchange, 5.e4 Nxc3 6.bxc3 Bg7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 *
-D85d "Grünfeld: Exchange, 7.Ba3"
+D85d "Gruenfeld: Exchange, 7.Ba3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Ba3 *
-D85e "Grünfeld: Exchange, 7.Bb5+"
+D85e "Gruenfeld: Exchange, 7.Bb5+"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bb5+ *
-D85e "Grünfeld: Exchange, 7.Bb5+ c6"
+D85e "Gruenfeld: Exchange, 7.Bb5+ c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bb5+ c6 *
-D85e "Grünfeld: Exchange, 7.Bb5+ c6 8.Ba4"
+D85e "Gruenfeld: Exchange, 7.Bb5+ c6 8.Ba4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bb5+ c6
   8.Ba4 *
-D85f "Grünfeld: Exchange, 7.Bb5+ c6 8.Ba4 O-O"
+D85f "Gruenfeld: Exchange, 7.Bb5+ c6 8.Ba4 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bb5+ c6
   8.Ba4 O-O *
-D85g "Grünfeld: Exchange, 7.Be3"
+D85g "Gruenfeld: Exchange, 7.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 *
-D85g "Grünfeld: Exchange, 7.Be3 c5"
+D85g "Gruenfeld: Exchange, 7.Be3 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5 *
-D85g "Grünfeld: Exchange, 7.Be3 c5 8.Qd2"
+D85g "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 *
-D85g "Grünfeld: Exchange, 7.Be3 c5 8.Qd2 O-O"
+D85g "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 O-O *
-D85g "Grünfeld: Exchange, 7.Be3 c5 8.Qd2 O-O 9.Rc1"
+D85g "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2 O-O 9.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 O-O 9.Rc1 *
-D85h "Grünfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5"
+D85h "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 Qa5 *
-D85h "Grünfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5 9.Rc1"
+D85h "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5 9.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 Qa5 9.Rc1 *
-D85h "Grünfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5 9.Rb1"
+D85h "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5 9.Rb1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 Qa5 9.Rb1 *
-D85h "Grünfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5 9.Rb1 b6"
+D85h "Gruenfeld: Exchange, 7.Be3 c5 8.Qd2 Qa5 9.Rb1 b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Be3 c5
   8.Qd2 Qa5 9.Rb1 b6 *
-D85i "Grünfeld: Modern Exchange"
+D85i "Gruenfeld: Modern Exchange"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 *
-D85i "Grünfeld: Modern Exchange, 7...O-O"
+D85i "Gruenfeld: Modern Exchange, 7...O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 O-O *
-D85j "Grünfeld: Modern Exchange, 7...c5"
+D85j "Gruenfeld: Modern Exchange, 7...c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5 *
-D85k "Grünfeld: Modern Exchange, 8.Bb5+"
+D85k "Gruenfeld: Modern Exchange, 8.Bb5+"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Bb5+ *
-D85l "Grünfeld: Modern Exchange, 8.Be2"
+D85l "Gruenfeld: Modern Exchange, 8.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be2 *
-D85l "Grünfeld: Modern Exchange, 8.Be2 O-O"
+D85l "Gruenfeld: Modern Exchange, 8.Be2 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be2 O-O *
-D85l "Grünfeld: Modern Exchange, 8.Be2 O-O 9.O-O"
+D85l "Gruenfeld: Modern Exchange, 8.Be2 O-O 9.O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be2 O-O 9.O-O *
-D85l "Grünfeld: Modern Exchange, 8.Be2 O-O 9.O-O b6"
+D85l "Gruenfeld: Modern Exchange, 8.Be2 O-O 9.O-O b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be2 O-O 9.O-O b6 *
-D85l "Grünfeld: Modern Exchange, 8.Be2 O-O 9.O-O Nc6"
+D85l "Gruenfeld: Modern Exchange, 8.Be2 O-O 9.O-O Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be2 O-O 9.O-O Nc6 *
-D85m "Grünfeld: Modern Exchange, 8.Rb1"
+D85m "Gruenfeld: Modern Exchange, 8.Rb1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 *
-D85m "Grünfeld: Modern Exchange, 8.Rb1 O-O"
+D85m "Gruenfeld: Modern Exchange, 8.Rb1 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O *
-D85m "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2"
+D85m "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 *
-D85m "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Qa5"
+D85m "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 Qa5 *
-D85n "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 b6"
+D85n "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 b6 *
-D85o "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Nc6"
+D85o "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 Nc6 *
-D85p "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Nc6, Main Line"
+D85p "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Nc6, Main Line"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 Nc6 10.d5 Ne5 11.Nxe5 Bxe5 12.Qd2 *
-D85p "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Nc6, Main Line, 12...e6"
+D85p "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 Nc6, Main Line, 12...e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 Nc6 10.d5 Ne5 11.Nxe5 Bxe5 12.Qd2 e6 *
-D85q "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd"
+D85q "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 *
-D85q "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd"
+D85q "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 10.cxd4 *
-D85q "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd Qa5+"
+D85q "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd Qa5+"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 10.cxd4 Qa5+ *
-D85q "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd Qa5+ 11.Qd2"
+D85q "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd Qa5+ 11.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 10.cxd4 Qa5+ 11.Qd2 *
-D85r "Grünfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd Qa5+ 11.Bd2"
+D85r "Gruenfeld: Modern Exchange, 8.Rb1 O-O 9.Be2 cd 10.cd Qa5+ 11.Bd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 10.cxd4 Qa5+ 11.Bd2 *
-D85s "Grünfeld: Modern Exchange, 8.Rb1, 10...Qa5+ 11.Bd2 Qxa2 12.O-O Bg4"
+D85s "Gruenfeld: Modern Exchange, 8.Rb1, 10...Qa5+ 11.Bd2 Qxa2 12.O-O Bg4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 10.cxd4 Qa5+ 11.Bd2 Qxa2 12.O-O Bg4 *
-D85s "Grünfeld: Modern Exchange, 8.Rb1, 10...Qa5+ 11.Bd2 Qxa2 12.O-O Bg4 13.Bg5"
+D85s "Gruenfeld: Modern Exchange, 8.Rb1, 10...Qa5+ 11.Bd2 Qxa2 12.O-O Bg4 13.Bg5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Rb1 O-O 9.Be2 cxd4 10.cxd4 Qa5+ 11.Bd2 Qxa2 12.O-O Bg4 13.Bg5 *
-D85t "Grünfeld: Modern Exchange, 8.Be3"
+D85t "Gruenfeld: Modern Exchange, 8.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 *
-D85t "Grünfeld: Modern Exchange, 8.Be3 Bg4"
+D85t "Gruenfeld: Modern Exchange, 8.Be3 Bg4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 Bg4 *
-D85t "Grünfeld: Modern Exchange, 8.Be3 Nc6"
+D85t "Gruenfeld: Modern Exchange, 8.Be3 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 Nc6 *
-D85u "Grünfeld: Modern Exchange, 8.Be3 Qa5"
+D85u "Gruenfeld: Modern Exchange, 8.Be3 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 Qa5 *
-D85u "Grünfeld: Modern Exchange, 8.Be3 Qa5 9.Qd2"
+D85u "Gruenfeld: Modern Exchange, 8.Be3 Qa5 9.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 Qa5 9.Qd2 *
-D85v "Grünfeld: Modern Exchange, 8.Be3 Qa5 9.Qd2 Nc6 10.Rc1"
+D85v "Gruenfeld: Modern Exchange, 8.Be3 Qa5 9.Qd2 Nc6 10.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 Qa5 9.Qd2 Nc6 10.Rc1 *
-D85w "Grünfeld: Modern Exchange, 8.Be3 O-O"
+D85w "Gruenfeld: Modern Exchange, 8.Be3 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 O-O *
-D85x "Grünfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5"
+D85x "Gruenfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 O-O 9.Rc1 Qa5 *
-D85x "Grünfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5 10.Qd2"
+D85x "Gruenfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5 10.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 O-O 9.Rc1 Qa5 10.Qd2 *
-D85x "Grünfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5 Queenswap, 12.Kxd2"
+D85x "Gruenfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5 Queenswap, 12.Kxd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 O-O 9.Rc1 Qa5 10.Qd2 cxd4 11.cxd4 Qxd2+ 12.Kxd2 *
-D85y "Grünfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5 Queenswap, 12.Nxd2"
+D85y "Gruenfeld: Modern Exchange, 8.Be3 O-O 9.Rc1 Qa5 Queenswap, 12.Nxd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Nf3 c5
   8.Be3 O-O 9.Rc1 Qa5 10.Qd2 cxd4 11.cxd4 Qxd2+ 12.Nxd2 *
 
-D86 "Grünfeld: Classical Exchange"
+D86 "Gruenfeld: Classical Exchange"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 *
-D86 "Grünfeld: Classical Exchange, 7...b6"
+D86 "Gruenfeld: Classical Exchange, 7...b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 b6 *
-D86 "Grünfeld: Classical Exchange, 7...c5"
+D86 "Gruenfeld: Classical Exchange, 7...c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 c5 *
-D86 "Grünfeld: Classical Exchange, 7...O-O"
+D86 "Gruenfeld: Classical Exchange, 7...O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O *
-D86 "Grünfeld: Classical Exchange, 8.Ne2"
+D86 "Gruenfeld: Classical Exchange, 8.Ne2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 *
-D86 "Grünfeld: Classical Exchange, Larsen Variation"
+D86 "Gruenfeld: Classical Exchange, Larsen Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 Qd7 9.O-O b6 *
-D86 "Grünfeld: Classical Exchange, Simagin"
+D86 "Gruenfeld: Classical Exchange, Simagin"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 b6 *
-D86 "Grünfeld: Classical Exchange, Simagin, 9.h4"
+D86 "Gruenfeld: Classical Exchange, Simagin, 9.h4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 b6 9.h4 *
-D86 "Grünfeld: Classical Exchange, Simagin, 9.O-O"
+D86 "Gruenfeld: Classical Exchange, Simagin, 9.O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 b6 9.O-O *
-D86 "Grünfeld: Classical Exchange, Simagin Improved"
+D86 "Gruenfeld: Classical Exchange, Simagin Improved"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 Nc6 *
-D86 "Grünfeld: Classical Exchange, Simagin Improved, 9.Be3"
+D86 "Gruenfeld: Classical Exchange, Simagin Improved, 9.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 Nc6 9.Be3 *
-D86 "Grünfeld: Classical Exchange, Simagin Improved, 9.O-O"
+D86 "Gruenfeld: Classical Exchange, Simagin Improved, 9.O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 Nc6 9.O-O *
-D86 "Grünfeld: Classical Exchange, Simagin Improved, 9.O-O e5"
+D86 "Gruenfeld: Classical Exchange, Simagin Improved, 9.O-O e5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 Nc6 9.O-O e5 *
-D86 "Grünfeld: Classical Exchange, Simagin Improved, 9.O-O b6"
+D86 "Gruenfeld: Classical Exchange, Simagin Improved, 9.O-O b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 Nc6 9.O-O b6 *
 
-D87a "Grünfeld: Classical Exchange, 8...c5"
+D87a "Gruenfeld: Classical Exchange, 8...c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 *
-D87b "Grünfeld: Classical Exchange, 8...c5 9.Be3"
+D87b "Gruenfeld: Classical Exchange, 8...c5 9.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.Be3 *
-D87c "Grünfeld: Classical Exchange, 8...c5 9.Be3 Qa5"
+D87c "Gruenfeld: Classical Exchange, 8...c5 9.Be3 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.Be3 Qa5 *
-D87c "Grünfeld: Classical Exchange, 8...c5 9.Be3 Qa5"
+D87c "Gruenfeld: Classical Exchange, 8...c5 9.Be3 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.Be3 Qa5 10.O-O Nd7 *
-D87d "Grünfeld: Classical Exchange, 8...c5 9.Be3 Nc6"
+D87d "Gruenfeld: Classical Exchange, 8...c5 9.Be3 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.Be3 Nc6 *
-D87e "Grünfeld: Classical Exchange, 9.O-O"
+D87e "Gruenfeld: Classical Exchange, 9.O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O *
-D87f "Grünfeld: Classical Exchange, 9.O-O Nc6"
+D87f "Gruenfeld: Classical Exchange, 9.O-O Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 *
-D87g "Grünfeld: Classical Exchange, 9.O-O Nc6 10.Be3"
+D87g "Gruenfeld: Classical Exchange, 9.O-O Nc6 10.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 *
-D87h "Grünfeld: Classical Exchange, 10.Be3 Qa5"
+D87h "Gruenfeld: Classical Exchange, 10.Be3 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Qa5 *
-D87i "Grünfeld: Classical Exchange, 10.Be3 Na5"
+D87i "Gruenfeld: Classical Exchange, 10.Be3 Na5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Na5 *
-D87j "Grünfeld: Classical Exchange, 10.Be3 Qc7"
+D87j "Gruenfeld: Classical Exchange, 10.Be3 Qc7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Qc7 *
-D87k "Grünfeld: Classical Exchange, 10.Be3 Qc7 11.Rc1 Rd8"
+D87k "Gruenfeld: Classical Exchange, 10.Be3 Qc7 11.Rc1 Rd8"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Qc7 11.Rc1 Rd8 *
-D87l "Grünfeld: Classical Exchange, 10.Be3 Qc7 11.Rc1 Rd8 12.Qd2"
+D87l "Gruenfeld: Classical Exchange, 10.Be3 Qc7 11.Rc1 Rd8 12.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Qc7 11.Rc1 Rd8 12.Qd2 *
-D87m "Grünfeld: Classical Exchange, 10.Be3 Qc7 11.Rc1 Rd8 12.Bf4"
+D87m "Gruenfeld: Classical Exchange, 10.Be3 Qc7 11.Rc1 Rd8 12.Bf4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Qc7 11.Rc1 Rd8 12.Bf4 *
-D87n "Grünfeld: Classical Exchange, 10.Be3 Bg4"
+D87n "Gruenfeld: Classical Exchange, 10.Be3 Bg4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Bg4 *
-D87o "Grünfeld: Classical Exchange, 10.Be3 Bg4 11.f3 Na5 12.Bd5"
+D87o "Gruenfeld: Classical Exchange, 10.Be3 Bg4 11.f3 Na5 12.Bd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Bg4 11.f3 Na5 12.Bd5 *
-D87p "Grünfeld: Classical Exchange, Seville Variation"
+D87p "Gruenfeld: Classical Exchange, Seville Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 Bg4 11.f3 Na5 12.Bxf7+ *
 
-D88 "Grünfeld: Classical Exchange, Main Line"
+D88 "Gruenfeld: Classical Exchange, Main Line"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4 Na5"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4 Na5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Na5 *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4 Na5 12.Bd3"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4 Na5 12.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Na5 12.Bd3 *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4 Bg4"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4 Bg4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4 Bg4 12.f3"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4 Bg4 12.f3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4 Bg4 12.f3 Na5"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4 Bg4 12.f3 Na5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 *
-D88 "Grünfeld: Classical Exchange, Main Line, Neo-Seville"
+D88 "Gruenfeld: Classical Exchange, Main Line, Neo-Seville"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bxf7+ *
-D88 "Grünfeld: Classical Exchange, Main Line, 11.cxd4 Bg4 12.f3 Na5 13.Bd5"
+D88 "Gruenfeld: Classical Exchange, Main Line, 11.cxd4 Bg4 12.f3 Na5 13.Bd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd5 *
 
-D89a "Grünfeld: Classical Exchange, Main Line, 13.Bd3"
+D89a "Gruenfeld: Classical Exchange, Main Line, 13.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 *
-D89b "Grünfeld: Classical Exchange, Main Line, 13.Bd3 Be6"
+D89b "Gruenfeld: Classical Exchange, Main Line, 13.Bd3 Be6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 *
-D89c "Grünfeld: Classical Exchange, Main Line, 13.Bd3 Be6 14.Rc1"
+D89c "Gruenfeld: Classical Exchange, Main Line, 13.Bd3 Be6 14.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.Rc1 *
-D89d "Grünfeld: Classical Exchange, 14.Rc1 Bxa2 15.Qa4 Be6 16.d5 Be7 17.Qb4"
+D89d "Gruenfeld: Classical Exchange, 14.Rc1 Bxa2 15.Qa4 Be6 16.d5 Be7 17.Qb4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.Rc1 Bxa2
   15.Qa4 Be6 16.d5 Bd7 17.Qb4 *
-D89e "Grünfeld: Classical Exchange, 14.Rc1 Bxa2 15.Qa4 with 17.Qb4 b6"
+D89e "Gruenfeld: Classical Exchange, 14.Rc1 Bxa2 15.Qa4 with 17.Qb4 b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.Rc1 Bxa2
   15.Qa4 Be6 16.d5 Bd7 17.Qb4 b6 *
-D89f "Grünfeld: Classical Exchange, 14.Rc1 Bxa2 15.Qa4 with 17.Qb4 e6"
+D89f "Gruenfeld: Classical Exchange, 14.Rc1 Bxa2 15.Qa4 with 17.Qb4 e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.Rc1 Bxa2
   15.Qa4 Be6 16.d5 Bd7 17.Qb4 e6 *
-D89g "Grünfeld: Classical Exchange, Main Line, Sokolsky Variation"
+D89g "Gruenfeld: Classical Exchange, Main Line, Sokolsky Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.d5 *
-D89h "Grünfeld: Classical Exchange, Main Line, Sokolsky, 16.Rb1"
+D89h "Gruenfeld: Classical Exchange, Main Line, Sokolsky, 16.Rb1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.d5 Bxa1
   15.Qxa1 f6 16.Rb1 *
-D89i "Grünfeld: Classical Exchange, Main Line, Sokolsky, 16.Bh6"
+D89i "Gruenfeld: Classical Exchange, Main Line, Sokolsky, 16.Bh6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3 Bg7 7.Bc4 O-O
   8.Ne2 c5 9.O-O Nc6 10.Be3 cxd4 11.cxd4 Bg4 12.f3 Na5 13.Bd3 Be6 14.d5 Bxa1
   15.Qxa1 f6 16.Bh6 *
 
-D90 "Grünfeld: Three Knights Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 *
-D90 "Grünfeld: Schlechter Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 c6 *
-D90 "Grünfeld: Schlechter, 5.Qb3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 c6 5.Qb3 *
-D90 "Grünfeld: Schlechter, Exchange"
+D90 "Gruenfeld: Three Knights Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 *
+D90 "Gruenfeld: Schlechter Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 c6 *
+D90 "Gruenfeld: Schlechter, 5.Qb3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 c6 5.Qb3 *
+D90 "Gruenfeld: Schlechter, Exchange"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 c6 5.cxd5 *
-D90 "Grünfeld: Schlechter, Exchange"
+D90 "Gruenfeld: Schlechter, Exchange"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 c6 5.cxd5 cxd5 *
-D90 "Grünfeld: Three Knights Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 *
-D90 "Grünfeld: Three Knights, 5.g3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.g3 *
-D90 "Grünfeld: Flohr Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qa4+ *
-D90 "Grünfeld: Three Knights Exchange"
+D90 "Gruenfeld: Three Knights Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 *
+D90 "Gruenfeld: Three Knights, 5.g3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.g3 *
+D90 "Gruenfeld: Flohr Variation"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qa4+ *
+D90 "Gruenfeld: Three Knights Exchange"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.cxd5 *
-D90 "Grünfeld: Three Knights Exchange"
+D90 "Gruenfeld: Three Knights Exchange"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.cxd5 Nxd5 *
-D90 "Grünfeld: Three Knights Exchange, Romanishin Variation"
+D90 "Gruenfeld: Three Knights Exchange, Romanishin Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.cxd5 Nxd5 6.Qb3 *
-D90 "Grünfeld: Three Knights Exchange, 6.Bd2"
+D90 "Gruenfeld: Three Knights Exchange, 6.Bd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.cxd5 Nxd5 6.Bd2 *
-D90 "Grünfeld: Three Knights Exchange, 6.Bd2 O-O"
+D90 "Gruenfeld: Three Knights Exchange, 6.Bd2 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.cxd5 Nxd5 6.Bd2 O-O *
-D90 "Grünfeld: Three Knights Exchange, 6.Bd2 O-O 7.Rc1"
+D90 "Gruenfeld: Three Knights Exchange, 6.Bd2 O-O 7.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.cxd5 Nxd5 6.Bd2 O-O 7.Rc1 *
 
-D91a "Grünfeld: 5.Bg5"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 *
-D91a "Grünfeld: 5.Bg5 c6"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 c6 *
-D91b "Grünfeld: 5.Bg5 dxc4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 dxc4 *
-D91c "Grünfeld: 5.Bg5 dxc4 6.e4"
+D91a "Gruenfeld: 5.Bg5"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 *
+D91a "Gruenfeld: 5.Bg5 c6"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 c6 *
+D91b "Gruenfeld: 5.Bg5 dxc4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 dxc4 *
+D91c "Gruenfeld: 5.Bg5 dxc4 6.e4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 dxc4 6.e4 *
-D91d "Grünfeld: 5.Bg5 Ne4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 *
-D91d "Grünfeld: 5.Bg5 Ne4 6.Bf4"
+D91d "Gruenfeld: 5.Bg5 Ne4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 *
+D91d "Gruenfeld: 5.Bg5 Ne4 6.Bf4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.Bf4 *
-D91e "Grünfeld: 5.Bg5 Ne4 6.Bh4"
+D91e "Gruenfeld: 5.Bg5 Ne4 6.Bh4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.Bh4 *
-D91f "Grünfeld: 5.Bg5 Ne4 6.Bh4 Nxc3"
+D91f "Gruenfeld: 5.Bg5 Ne4 6.Bh4 Nxc3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.Bh4 Nxc3 *
-D91g "Grünfeld: 5.Bg5 Ne4 6.Bh4 Nxc3 7.bxc3 dxc4"
+D91g "Gruenfeld: 5.Bg5 Ne4 6.Bh4 Nxc3 7.bxc3 dxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.Bh4 Nxc3 7.bxc3 dxc4 *
-D91h "Grünfeld: 5.Bg5 Ne4 6.cxd5"
+D91h "Gruenfeld: 5.Bg5 Ne4 6.cxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 *
-D91i "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5"
+D91i "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 *
-D91j "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 c6"
+D91j "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 c6 *
-D91k "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6"
+D91k "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 *
-D91l "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2"
+D91l "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2 *
-D91m "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2 exd5"
+D91m "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2 exd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Qd2 exd5 *
-D91n "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2 exd5: 11.h4 h6"
+D91n "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Qd2 exd5: 11.h4 h6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Qd2 exd5 9.Qe3+ Kf8 10.Qf4 Bf6 11.h4 h6 *
-D91o "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3"
+D91o "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 *
-D91p "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3"
+D91p "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 *
-D91q "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O"
+D91q "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O *
-D91r "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Bd3"
+D91r "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O 10.Bd3 *
-D91r "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Bd3"
+D91r "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O 10.Bd3 c6 *
-D91s "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Be2"
+D91s "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O 10.Be2 *
-D91s "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Be2"
+D91s "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O 10.Be2 c6 *
-D91t "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.b4"
+D91t "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.b4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O 10.b4 *
-D91t "Grünfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.b4 c6"
+D91t "Gruenfeld: 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6 8.Nf3 exd5 9.e3 O-O 10.b4 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bg5 Ne4 6.cxd5 Nxg5 7.Nxg5 e6
   8.Nf3 exd5 9.e3 O-O 10.b4 c6 *
 
-D92 "Grünfeld: 5.Bf4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 *
-D92 "Grünfeld: 5.Bf4 c6"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 c6 *
-D92 "Grünfeld: 5.Bf4 O-O"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O *
-D92 "Grünfeld: 5.Bf4 O-O 6.Rc1"
+D92 "Gruenfeld: 5.Bf4"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 *
+D92 "Gruenfeld: 5.Bf4 c6"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 c6 *
+D92 "Gruenfeld: 5.Bf4 O-O"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O *
+D92 "Gruenfeld: 5.Bf4 O-O 6.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.Rc1 *
-D92 "Grünfeld: 5.Bf4 O-O 6.Rc1 dxc4"
+D92 "Gruenfeld: 5.Bf4 O-O 6.Rc1 dxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.Rc1 dxc4 *
-D92 "Grünfeld: 5.Bf4 O-O 6.Rc1 c5"
+D92 "Gruenfeld: 5.Bf4 O-O 6.Rc1 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.Rc1 c5 *
 
-D93 "Grünfeld: 5.Bf4 O-O 6.e3"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c5"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c5 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c5 7.dxc5 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 8.Rc1"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 8.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 8.Rc1 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 8.Rc1 dxc4 9.Bxc4"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 8.Rc1 dxc4 9.Bxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c5 7.dxc5 Qa5 8.Rc1 dxc4
   9.Bxc4 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c6"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c6 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c6 7.Qb3"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c6 7.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c6 7.Qb3 *
-D93 "Grünfeld: 5.Bf4 O-O 6.e3 c6 7.Rc1"
+D93 "Gruenfeld: 5.Bf4 O-O 6.e3 c6 7.Rc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Bf4 O-O 6.e3 c6 7.Rc1 *
 
-D94 "Grünfeld: 5.e3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 *
-D94 "Grünfeld: Slav/Schlecter"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 c6 *
-D94 "Grünfeld: Slav/Schlecter, 6.Bd3"
+D94 "Gruenfeld: 5.e3"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 *
+D94 "Gruenfeld: Slav/Schlecter"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 c6 *
+D94 "Gruenfeld: Slav/Schlecter, 6.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 c6 6.Bd3 *
-D94 "Grünfeld: Slav/Schlecter, 6.Be2"
+D94 "Gruenfeld: Slav/Schlecter, 6.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 c6 6.Be2 *
-D94 "Grünfeld: Slav/Schlecter, 6.Be2 O-O"
+D94 "Gruenfeld: Slav/Schlecter, 6.Be2 O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 c6 6.Be2 O-O *
-D94 "Grünfeld: Slav/Schlecter, 6.Be2 O-O 7.O-O"
+D94 "Gruenfeld: Slav/Schlecter, 6.Be2 O-O 7.O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 c6 6.Be2 O-O 7.O-O *
-D94 "Grünfeld: 5.e3 O-O"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O *
-D94 "Grünfeld: Makogonov Variation"
+D94 "Gruenfeld: 5.e3 O-O"  1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O *
+D94 "Gruenfeld: Makogonov Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.b4 *
-D94 "Grünfeld: Opovcensky Variation"
+D94 "Gruenfeld: Opovcensky Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Bd2 *
-D94 "Grünfeld: 5.e3 O-O 6.Be2"
+D94 "Gruenfeld: 5.e3 O-O 6.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Be2 *
-D94 "Grünfeld: 5.e3 O-O 6.Be2 c5"
+D94 "Gruenfeld: 5.e3 O-O 6.Be2 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Be2 c5 *
-D94 "Grünfeld: 5.e3 O-O 6.Bd3"
+D94 "Gruenfeld: 5.e3 O-O 6.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Bd3 *
-D94 "Grünfeld: 5.e3 O-O 6.Bd3 c6"
+D94 "Gruenfeld: 5.e3 O-O 6.Bd3 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Bd3 c6 *
-D94 "Grünfeld: Smyslov Defence"
+D94 "Gruenfeld: Smyslov Defence"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Bd3 c6 7.O-O Bg4 *
-D94 "Grünfeld: Flohr Defence"
+D94 "Gruenfeld: Flohr Defence"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Bd3 c6 7.O-O Bf5 *
-D94 "Grünfeld: 5.e3 O-O 6.cxd5"
+D94 "Gruenfeld: 5.e3 O-O 6.cxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.cxd5 *
-D94 "Grünfeld: 5.e3 O-O 6.cxd5"
+D94 "Gruenfeld: 5.e3 O-O 6.cxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.cxd5 Nxd5 *
-D94 "Grünfeld: 5.e3 O-O 6.cxd5 Nxd5 7.Bc4"
+D94 "Gruenfeld: 5.e3 O-O 6.cxd5 Nxd5 7.Bc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.cxd5 Nxd5 7.Bc4 *
 
-D95a "Grünfeld: 5.e3 O-O 6.Qb3"
+D95a "Gruenfeld: 5.e3 O-O 6.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 *
-D95b "Grünfeld: 5.e3 O-O 6.Qb3 b6"
+D95b "Gruenfeld: 5.e3 O-O 6.Qb3 b6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 b6 *
-D95c "Grünfeld: 5.e3 O-O 6.Qb3 c6"
+D95c "Gruenfeld: 5.e3 O-O 6.Qb3 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 c6 *
-D95d "Grünfeld: 5.e3 O-O 6.Qb3 c6 7.Bd2"
+D95d "Gruenfeld: 5.e3 O-O 6.Qb3 c6 7.Bd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 c6 7.Bd2 *
-D95e "Grünfeld: 5.e3 O-O 6.Qb3 c6 7.Bd2 e6"
+D95e "Gruenfeld: 5.e3 O-O 6.Qb3 c6 7.Bd2 e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 c6 7.Bd2 e6 *
-D95f "Grünfeld: 5.e3 O-O 6.Qb3 c6 7.Bd2 e6 8.Bd3"
+D95f "Gruenfeld: 5.e3 O-O 6.Qb3 c6 7.Bd2 e6 8.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 c6 7.Bd2 e6 8.Bd3 *
-D95g "Grünfeld: Botvinnik Variation"
+D95g "Gruenfeld: Botvinnik Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 e6 *
-D95h "Grünfeld: Botvinnik, 7.Bd2"
+D95h "Gruenfeld: Botvinnik, 7.Bd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 e6 7.Bd2 *
-D95i "Grünfeld: 5.e3 O-O 6.Qb3 dxc4"
+D95i "Gruenfeld: 5.e3 O-O 6.Qb3 dxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 dxc4 *
-D95i "Grünfeld: 5.e3 O-O 6.Qb3 dxc4 7.Bxc4"
+D95i "Gruenfeld: 5.e3 O-O 6.Qb3 dxc4 7.Bxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 dxc4 7.Bxc4 *
-D95i "Grünfeld: Pachman Variation"
+D95i "Gruenfeld: Pachman Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 dxc4 7.Bxc4 Nbd7 8.Ng5 *
-D95j "Grünfeld: 5.e3 O-O 6.Qb3 dxc4 7.Bxc4 Nc6"
+D95j "Gruenfeld: 5.e3 O-O 6.Qb3 dxc4 7.Bxc4 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.e3 O-O 6.Qb3 dxc4 7.Bxc4 Nc6 *
 
-D96 "Grünfeld: Russian Variation"
+D96 "Gruenfeld: Russian Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 *
-D96 "Grünfeld: Russian, 5...c6"
+D96 "Gruenfeld: Russian, 5...c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 c6 *
-D96 "Grünfeld: Russian, 5...c6 6.Bf4"
+D96 "Gruenfeld: Russian, 5...c6 6.Bf4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 c6 6.Bf4 *
-D96 "Grünfeld: Russian, 5...c6 6.cxd5 cxd5"
+D96 "Gruenfeld: Russian, 5...c6 6.cxd5 cxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 c6 6.cxd5 cxd5 *
-D96 "Grünfeld: Russian, 5...c6 6.cxd5 Nxd5"
+D96 "Gruenfeld: Russian, 5...c6 6.cxd5 Nxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 c6 6.cxd5 Nxd5 *
-D96 "Grünfeld: Russian, 5...dxc4"
+D96 "Gruenfeld: Russian, 5...dxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 *
-D96 "Grünfeld: Russian, 5...dxc4"
+D96 "Gruenfeld: Russian, 5...dxc4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 *
-D96 "Grünfeld: Russian, 6...O-O"
+D96 "Gruenfeld: Russian, 6...O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 a6 *
-D96 "Grünfeld: Russian, 6...a6"
+D96 "Gruenfeld: Russian, 6...a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O *
-D96 "Grünfeld: Russian, 7.Bf4"
+D96 "Gruenfeld: Russian, 7.Bf4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.Bf4 *
-D96 "Grünfeld: Russian, 7.Bf4 c6"
+D96 "Gruenfeld: Russian, 7.Bf4 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.Bf4 c6 *
 
-D97a "Grünfeld: Russian, 7.e4"
+D97a "Gruenfeld: Russian, 7.e4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 *
-D97a "Grünfeld: Russian, 7.e4 Nfd7"
+D97a "Gruenfeld: Russian, 7.e4 Nfd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Nfd7 *
-D97b "Grünfeld: Russian, Levenfish Variation"
+D97b "Gruenfeld: Russian, Levenfish Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 b6 *
-D97c "Grünfeld: Russian, Szabo Variation"
+D97c "Gruenfeld: Russian, Szabo Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 c6 *
-D97c "Grünfeld: Russian, Szabo, 8.Be2"
+D97c "Gruenfeld: Russian, Szabo, 8.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 c6 8.Be2 *
-D97d "Grünfeld: Russian, Alekhine (Hungarian) Variation"
+D97d "Gruenfeld: Russian, Alekhine (Hungarian) Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 *
-D97e "Grünfeld: Russian, Alekhine, 8.Be2"
+D97e "Gruenfeld: Russian, Alekhine, 8.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.Be2 *
-D97f "Grünfeld: Russian, Alekhine, 8.Be2 b5 9.Qb3"
+D97f "Gruenfeld: Russian, Alekhine, 8.Be2 b5 9.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.Be2 b5
   9.Qb3 *
-D97g "Grünfeld: Russian, Alekhine, 8.Qb3"
+D97g "Gruenfeld: Russian, Alekhine, 8.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.Qb3 *
-D97h "Grünfeld: Russian, Alekhine, 8.e5"
+D97h "Gruenfeld: Russian, Alekhine, 8.e5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.e5 *
-D97i "Grünfeld: Russian, Alekhine, 8.e5 b5 9.Qb3"
+D97i "Gruenfeld: Russian, Alekhine, 8.e5 b5 9.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.e5 b5
   9.Qb3 *
-D97j "Grünfeld: Russian, Alekhine, 8.e5 b5 9.Qb3 Nfd7"
+D97j "Gruenfeld: Russian, Alekhine, 8.e5 b5 9.Qb3 Nfd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.e5 b5
   9.Qb3 Nfd7 *
-D97k "Grünfeld: Russian, Alekhine, 8.e5 b5 9.Qb3 Nfd7 10.Be3"
+D97k "Gruenfeld: Russian, Alekhine, 8.e5 b5 9.Qb3 Nfd7 10.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 a6 8.e5 b5
   9.Qb3 Nfd7 10.Be3 *
-D97l "Grünfeld: Russian, Simagin Variation"
+D97l "Gruenfeld: Russian, Simagin Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Nc6 *
-D97l "Grünfeld: Russian, Simagin, 8.Be2"
+D97l "Gruenfeld: Russian, Simagin, 8.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Nc6 8.Be2 *
-D97m "Grünfeld: Russian, Prins Variation"
+D97m "Gruenfeld: Russian, Prins Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Na6 *
-D97n "Grünfeld: Russian, Prins, 8.Bf4"
+D97n "Gruenfeld: Russian, Prins, 8.Bf4"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Na6 8.Bf4 *
-D97o "Grünfeld: Russian, Prins, 8.Be2"
+D97o "Gruenfeld: Russian, Prins, 8.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Na6 8.Be2 *
-D97p "Grünfeld: Russian, Prins, 8.Be2, Main Line"
+D97p "Gruenfeld: Russian, Prins, 8.Be2, Main Line"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Na6 8.Be2 c5
   9.d5 e6 10.O-O exd5 11.exd5 Bf5 *
 
-D98a "Grünfeld: Russian, Smyslov Variation"
+D98a "Gruenfeld: Russian, Smyslov Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4 *
-D98b "Grünfeld: Russian, Smyslov, 8.Be2"
+D98b "Gruenfeld: Russian, Smyslov, 8.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4 8.Be2 *
-D98c "Grünfeld: Russian, Smyslov, 8.Be2 Nc6"
+D98c "Gruenfeld: Russian, Smyslov, 8.Be2 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be2 Nc6 *
-D98d "Grünfeld: Russian, Smyslov, 8.Be2 Nc6 9.d5"
+D98d "Gruenfeld: Russian, Smyslov, 8.Be2 Nc6 9.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be2 Nc6 9.d5 *
-D98e "Grünfeld: Russian, Smyslov, 8.Be3"
+D98e "Gruenfeld: Russian, Smyslov, 8.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4 8.Be3 *
-D98f "Grünfeld: Russian, Smyslov, 8.Be3 Nfd7"
+D98f "Gruenfeld: Russian, Smyslov, 8.Be3 Nfd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 *
-D98g "Grünfeld: Russian, Smyslov, 8.Be3 Nfd7 9.Be2"
+D98g "Gruenfeld: Russian, Smyslov, 8.Be3 Nfd7 9.Be2"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Be2 *
-D98h "Grünfeld: Russian, Smyslov, Keres Variation"
+D98h "Gruenfeld: Russian, Smyslov, Keres Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Be2 Nb6 10.Qd3 Nc6 11.O-O-O *
-D98i "Grünfeld: Russian, Smyslov, 8.Be3 Nfd7 9.O-O-O"
+D98i "Gruenfeld: Russian, Smyslov, 8.Be3 Nfd7 9.O-O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.O-O-O *
-D98j "Grünfeld: Russian, Smyslov, 8.Be3 Nfd7 9.Rd1"
+D98j "Gruenfeld: Russian, Smyslov, 8.Be3 Nfd7 9.Rd1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Rd1 *
-D98k "Grünfeld: Russian, Smyslov, 8.Be3 Nfd7 9.Rd1 Nc6"
+D98k "Gruenfeld: Russian, Smyslov, 8.Be3 Nfd7 9.Rd1 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Rd1 Nc6 *
 
-D99a "Grünfeld: Russian, Smyslov, Main Line"
+D99a "Gruenfeld: Russian, Smyslov, Main Line"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 *
-D99b "Grünfeld: Russian, Smyslov, Yugoslav"
+D99b "Gruenfeld: Russian, Smyslov, Yugoslav"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 c5 *
-D99c "Grünfeld: Russian, Smyslov, Main Line, 9...Nb6"
+D99c "Gruenfeld: Russian, Smyslov, Main Line, 9...Nb6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 Nb6 *
-D99d "Grünfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1"
+D99d "Gruenfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 Nb6 10.Rd1 *
-D99e "Grünfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1 e6"
+D99e "Gruenfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1 e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 Nb6 10.Rd1 e6 *
-D99f "Grünfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1 Nc6"
+D99f "Gruenfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 Nb6 10.Rd1 Nc6 *
-D99g "Grünfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1 Nc6 11.d5 Ne5"
+D99g "Gruenfeld: Russian, Smyslov, Main Line, 9...Nb6 10.Rd1 Nc6 11.d5 Ne5"
   1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.Nf3 Bg7 5.Qb3 dxc4 6.Qxc4 O-O 7.e4 Bg4
   8.Be3 Nfd7 9.Qb3 Nb6 10.Rd1 Nc6 11.d5 Ne5 *
 
@@ -17428,7 +17428,7 @@ E09q "Catalan: Closed, Main Line, 9.e4 Bb7 10.b3 Rc8 11.Bb2 c5"
   9.e4 Bb7 10.b3 Rc8 11.Bb2 c5 *
 
 E10a "Neo-Indian: 3.Nf3"  1.d4 Nf6 2.c4 e6 3.Nf3 *
-E10b "Neo-Indian: Döry Defence"  1.d4 Nf6 2.c4 e6 3.Nf3 Ne4 *
+E10b "Neo-Indian: Doery Defence"  1.d4 Nf6 2.c4 e6 3.Nf3 Ne4 *
 E10c "Neo-Indian: 3.Nf3 Be7"  1.d4 Nf6 2.c4 e6 3.Nf3 Be7 *
 E10d "Neo-Indian: 3.Nf3 a6"  1.d4 Nf6 2.c4 e6 3.Nf3 a6 *
 E10e "Neo-Indian: 3.Nf3 a6 4.Nc3"  1.d4 Nf6 2.c4 e6 3.Nf3 a6 4.Nc3 *
@@ -17476,7 +17476,7 @@ E11f "Bogo-Indian: 4.Nbd2 O-O 5.a3 Bxd2+"
   1.d4 Nf6 2.c4 e6 3.Nf3 Bb4+ 4.Nbd2 O-O 5.a3 Bxd2+ *
 E11f "Bogo-Indian: 4.Nbd2 O-O 5.a3 Be7"
   1.d4 Nf6 2.c4 e6 3.Nf3 Bb4+ 4.Nbd2 O-O 5.a3 Be7 *
-E11f "Bogo-Indian: Grünfeld Variation"
+E11f "Bogo-Indian: Gruenfeld Variation"
   1.d4 Nf6 2.c4 e6 3.Nf3 Bb4+ 4.Nbd2 O-O 5.a3 Be7 6.e4 d5 *
 E11g "Bogo-Indian: 4.Bd2"  1.d4 Nf6 2.c4 e6 3.Nf3 Bb4+ 4.Bd2 *
 E11g "Bogo-Indian: 4.Bd2 Be7"  1.d4 Nf6 2.c4 e6 3.Nf3 Bb4+ 4.Bd2 Be7 *
@@ -18266,109 +18266,109 @@ E23 "Nimzo-Indian: Spielmann, Stahlberg Variation"
 E23 "Nimzo-Indian: Spielmann, Carlsbad Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.Qb3 c5 5.dxc5 Nc6 6.Nf3 Ne4 7.Bd2 Nxd2 *
 
-E24 "Nimzo-Indian: Sämisch"
+E24 "Nimzo-Indian: Saemisch"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 *
-E24 "Nimzo-Indian: Sämisch"
+E24 "Nimzo-Indian: Saemisch"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 *
-E24 "Nimzo-Indian: Sämisch, 5...b6"
+E24 "Nimzo-Indian: Saemisch, 5...b6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 b6 *
-E24 "Nimzo-Indian: Sämisch, 5...b6 6.f3"
+E24 "Nimzo-Indian: Saemisch, 5...b6 6.f3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 b6 6.f3 *
-E24 "Nimzo-Indian: Sämisch, 5...d5"
+E24 "Nimzo-Indian: Saemisch, 5...d5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 d5 *
-E24 "Nimzo-Indian: Sämisch, 5...d5 6.f3"
+E24 "Nimzo-Indian: Saemisch, 5...d5 6.f3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 d5 6.f3 *
-E24 "Nimzo-Indian: Sämisch, 5...c5"
+E24 "Nimzo-Indian: Saemisch, 5...c5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 *
-E24 "Nimzo-Indian: Sämisch, 5...c5 6.f3"
+E24 "Nimzo-Indian: Saemisch, 5...c5 6.f3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 *
-E24 "Nimzo-Indian: Sämisch, 5...c5 6.f3 d5"
+E24 "Nimzo-Indian: Saemisch, 5...c5 6.f3 d5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 *
-E24 "Nimzo-Indian: Sämisch, Botvinnik Variation"
+E24 "Nimzo-Indian: Saemisch, Botvinnik Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.e3 O-O
   8.cxd5 Nxd5 *
 
-E25 "Nimzo-Indian: Sämisch, 5...c5 6.f3 d5 7.cxd5"
+E25 "Nimzo-Indian: Saemisch, 5...c5 6.f3 d5 7.cxd5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 *
-E25 "Nimzo-Indian: Sämisch, 5...c5 6.f3 d5 7.cxd5 Nxd5"
+E25 "Nimzo-Indian: Saemisch, 5...c5 6.f3 d5 7.cxd5 Nxd5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 Nxd5 *
-E25 "Nimzo-Indian: Sämisch, 5...c5 6.f3 d5 7.cxd5 Nxd5 8.Qd3"
+E25 "Nimzo-Indian: Saemisch, 5...c5 6.f3 d5 7.cxd5 Nxd5 8.Qd3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 Nxd5
   8.Qd3 *
-E25 "Nimzo-Indian: Sämisch, Keres Variation"
+E25 "Nimzo-Indian: Saemisch, Keres Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 Nxd5
   8.dxc5 *
-E25 "Nimzo-Indian: Sämisch, Keres, Romanovsky Variation"
+E25 "Nimzo-Indian: Saemisch, Keres, Romanovsky Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 Nxd5
   8.dxc5 f5 *
-E25 "Nimzo-Indian: Sämisch, Keres, Romanovsky, 9.e4"
+E25 "Nimzo-Indian: Saemisch, Keres, Romanovsky, 9.e4"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 Nxd5
   8.dxc5 f5 9.e4 *
-E25 "Nimzo-Indian: Sämisch, Keres, Romanovsky, 9.Nh3"
+E25 "Nimzo-Indian: Saemisch, Keres, Romanovsky, 9.Nh3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.f3 d5 7.cxd5 Nxd5
   8.dxc5 f5 9.Nh3 *
 
-E26 "Nimzo-Indian: Sämisch, 5...c5 6.e3"
+E26 "Nimzo-Indian: Saemisch, 5...c5 6.e3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3 *
-E26 "Nimzo-Indian: Sämisch, 5...c5 6.e3 Qa5"
+E26 "Nimzo-Indian: Saemisch, 5...c5 6.e3 Qa5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3 Qa5 *
-E26 "Nimzo-Indian: Sämisch, 5...c5 6.e3 d6"
+E26 "Nimzo-Indian: Saemisch, 5...c5 6.e3 d6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3 d6 *
-E26 "Nimzo-Indian: Sämisch, O'Kelly Variation"
+E26 "Nimzo-Indian: Saemisch, O'Kelly Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3 b6 *
-E26 "Nimzo-Indian: Sämisch, 5...c5 6.e3 Nc6"
+E26 "Nimzo-Indian: Saemisch, 5...c5 6.e3 Nc6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3 Nc6 *
-E26 "Nimzo-Indian: Sämisch, 5...c5 6.e3 Nc6 7.Bd3"
+E26 "Nimzo-Indian: Saemisch, 5...c5 6.e3 Nc6 7.Bd3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3 Nc6 7.Bd3 *
 
-E27 "Nimzo-Indian: Sämisch, 5...O-O"
+E27 "Nimzo-Indian: Saemisch, 5...O-O"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O *
-E27 "Nimzo-Indian: Sämisch, 5...O-O 6.f3"
+E27 "Nimzo-Indian: Saemisch, 5...O-O 6.f3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.f3 *
-E27 "Nimzo-Indian: Sämisch, 5...O-O 6.f3 d5"
+E27 "Nimzo-Indian: Saemisch, 5...O-O 6.f3 d5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.f3 d5 *
-E27 "Nimzo-Indian: Sämisch, 5...O-O 6.f3 d5 7.e3"
+E27 "Nimzo-Indian: Saemisch, 5...O-O 6.f3 d5 7.e3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.f3 d5 7.e3 *
-E27 "Nimzo-Indian: Sämisch, 5...O-O 6.f3 d5 7.cxd5"
+E27 "Nimzo-Indian: Saemisch, 5...O-O 6.f3 d5 7.cxd5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.f3 d5 7.cxd5 *
 
-E28 "Nimzo-Indian: Sämisch, 5...O-O 6.e3"
+E28 "Nimzo-Indian: Saemisch, 5...O-O 6.e3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 *
-E28 "Nimzo-Indian: Sämisch, 5...O-O 6.e3"
+E28 "Nimzo-Indian: Saemisch, 5...O-O 6.e3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 b6 *
-E28 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5"
+E28 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 *
-E28 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Ne2"
+E28 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Ne2"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Ne2 *
-E28 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3"
+E28 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 *
-E28 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 b6"
+E28 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 b6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 b6 *
 
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6 *
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Nf3"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Nf3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Nf3 *
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 *
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 e5"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 e5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 e5 *
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 d6"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 d6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 d6 *
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 b6"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 b6"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 b6 *
-E29 "Nimzo-Indian: Sämisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 b6 9.e4"
+E29 "Nimzo-Indian: Saemisch, 5...O-O 6.e3 c5 7.Bd3 Nc6 8.Ne2 b6 9.e4"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 b6 9.e4 *
-E29 "Nimzo-Indian: Sämisch, Capablanca Variation"
+E29 "Nimzo-Indian: Saemisch, Capablanca Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 b6 9.e4 Ne8 *
-E29 "Nimzo-Indian: Sämisch, Capablanca, 10.O-O"
+E29 "Nimzo-Indian: Saemisch, Capablanca, 10.O-O"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 O-O 6.e3 c5 7.Bd3 Nc6
   8.Ne2 b6 9.e4 Ne8 10.O-O *
 
@@ -18655,19 +18655,19 @@ E41 "Nimzo-Indian: 4.e3 c5 5.Bd3 Nc6 6.Ne2"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Ne2 *
 E41 "Nimzo-Indian: 4.e3 c5 5.Bd3 Nc6 6.Nf3"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 *
-E41 "Nimzo-Indian: 4.e3 c5, Hübner Variation"
+E41 "Nimzo-Indian: 4.e3 c5, Huebner Variation"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 Bxc3+ 7.bxc3 d6 *
-E41 "Nimzo-Indian: Hübner, 8.e4"
+E41 "Nimzo-Indian: Huebner, 8.e4"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 Bxc3+ 7.bxc3 d6 8.e4 *
-E41 "Nimzo-Indian: Hübner, 8.e4 e5 9.d5 Ne7"
+E41 "Nimzo-Indian: Huebner, 8.e4 e5 9.d5 Ne7"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 Bxc3+ 7.bxc3 d6 8.e4 e5
   9.d5 Ne7 *
-E41 "Nimzo-Indian: Hübner, 8.O-O"
+E41 "Nimzo-Indian: Huebner, 8.O-O"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 Bxc3+ 7.bxc3 d6 8.O-O *
-E41 "Nimzo-Indian: Hübner, 8.O-O e5"
+E41 "Nimzo-Indian: Huebner, 8.O-O e5"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 Bxc3+ 7.bxc3 d6
   8.O-O e5 *
-E41 "Nimzo-Indian: Hübner, 8.O-O e5 9.Nd2"
+E41 "Nimzo-Indian: Huebner, 8.O-O e5 9.Nd2"
   1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 c5 5.Bd3 Nc6 6.Nf3 Bxc3+ 7.bxc3 d6
   8.O-O e5 9.Nd2 *
 
@@ -19857,335 +19857,335 @@ E79f "King's Indian: Four Pawns Attack, Main Line, 9...Bd7 10.O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f4 O-O 6.Be2 c5 7.Nf3 cxd4 8.Nxd4 Nc6
   9.Be3 Bd7 10.O-O *
 
-E80a "King's Indian: Sämisch Variation"
+E80a "King's Indian: Saemisch Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 *
-E80b "King's Indian: Sämisch, 5...Na6"
+E80b "King's Indian: Saemisch, 5...Na6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 Na6 *
-E80c "King's Indian: Sämisch, 5...Nc6"
+E80c "King's Indian: Saemisch, 5...Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 Nc6 *
-E80d "King's Indian: Sämisch, 5...Nbd7"
+E80d "King's Indian: Saemisch, 5...Nbd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 Nbd7 *
-E80e "King's Indian: Sämisch, 5...e5"
+E80e "King's Indian: Saemisch, 5...e5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 e5 *
-E80f "King's Indian: Sämisch, 5...e5 6.Nge2"
+E80f "King's Indian: Saemisch, 5...e5 6.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 e5 6.Nge2 *
-E80g "King's Indian: Sämisch, 5...e5 6.d5"
+E80g "King's Indian: Saemisch, 5...e5 6.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 e5 6.d5 *
-E80h "King's Indian: Sämisch, 5...c5"
+E80h "King's Indian: Saemisch, 5...c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c5 *
-E80i "King's Indian: Sämisch, 5...c5 Queenswap"
+E80i "King's Indian: Saemisch, 5...c5 Queenswap"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c5 6.dxc5 dxc5 7.Qxd8+ Kxd8 *
-E80j "King's Indian: Sämisch, 5...a6"
+E80j "King's Indian: Saemisch, 5...a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 a6 *
-E80k "King's Indian: Sämisch, 5...a6 6.Be3"
+E80k "King's Indian: Saemisch, 5...a6 6.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 a6 6.Be3 *
-E80l "King's Indian: Sämisch, 5...c6"
+E80l "King's Indian: Saemisch, 5...c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c6 *
-E80m "King's Indian: Sämisch, 5...c6 6.Be3"
+E80m "King's Indian: Saemisch, 5...c6 6.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c6 6.Be3 *
-E80n "King's Indian: Sämisch, 5...c6 6.Be3 a6"
+E80n "King's Indian: Saemisch, 5...c6 6.Be3 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c6 6.Be3 a6 *
-E80o "King's Indian: Sämisch, 5...c6 6.Be3 a6 7.a4"
+E80o "King's Indian: Saemisch, 5...c6 6.Be3 a6 7.a4"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c6 6.Be3 a6 7.a4 *
-E80p "King's Indian: Sämisch, 5...c6 6.Be3 a6 7.Bd3"
+E80p "King's Indian: Saemisch, 5...c6 6.Be3 a6 7.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 c6 6.Be3 a6 7.Bd3 *
 
-E81a "King's Indian: Sämisch, 5...O-O"
+E81a "King's Indian: Saemisch, 5...O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O *
-E81b "King's Indian: Sämisch, 5...O-O 6.Nge2"
+E81b "King's Indian: Saemisch, 5...O-O 6.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Nge2 *
-E81c "King's Indian: Sämisch, 5...O-O 6.Nge2 e5"
+E81c "King's Indian: Saemisch, 5...O-O 6.Nge2 e5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Nge2 e5 *
-E81d "King's Indian: Sämisch, 5...O-O 6.Nge2 c5"
+E81d "King's Indian: Saemisch, 5...O-O 6.Nge2 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Nge2 c5 *
-E81d "King's Indian: Sämisch, 5...O-O 6.Nge2 c5 7.d5"
+E81d "King's Indian: Saemisch, 5...O-O 6.Nge2 c5 7.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Nge2 c5 7.d5 *
-E81e "King's Indian: Sämisch, 5...O-O 6.Bg5"
+E81e "King's Indian: Saemisch, 5...O-O 6.Bg5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 *
-E81f "King's Indian: Sämisch, 5...O-O 6.Bg5 Nc6"
+E81f "King's Indian: Saemisch, 5...O-O 6.Bg5 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 Nc6 *
-E81g "King's Indian: Sämisch, 5...O-O 6.Bg5 a6"
+E81g "King's Indian: Saemisch, 5...O-O 6.Bg5 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 a6 *
-E81h "King's Indian: Sämisch, 5...O-O 6.Bg5 c5"
+E81h "King's Indian: Saemisch, 5...O-O 6.Bg5 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 c5 *
-E81h "King's Indian: Sämisch, 5...O-O 6.Bg5 c5 7.d5"
+E81h "King's Indian: Saemisch, 5...O-O 6.Bg5 c5 7.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 c5 7.d5 *
-E81h "King's Indian: Sämisch, 5...O-O 6.Bg5 c5 7.d5 a6"
+E81h "King's Indian: Saemisch, 5...O-O 6.Bg5 c5 7.d5 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 c5 7.d5 a6 *
-E81h "King's Indian: Sämisch, 5...O-O 6.Bg5 c5 7.d5 h6"
+E81h "King's Indian: Saemisch, 5...O-O 6.Bg5 c5 7.d5 h6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 c5 7.d5 h6 *
-E81i "King's Indian: Sämisch, 5...O-O 6.Bg5 c5 7.d5 e6"
+E81i "King's Indian: Saemisch, 5...O-O 6.Bg5 c5 7.d5 e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 c5 7.d5 e6 *
-E81i "King's Indian: Sämisch, 5...O-O 6.Bg5 c5 7.d5 e6 8.Qd2"
+E81i "King's Indian: Saemisch, 5...O-O 6.Bg5 c5 7.d5 e6 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Bg5 c5 7.d5 e6 8.Qd2 *
-E81j "King's Indian: Sämisch, 5...O-O 6.Be3"
+E81j "King's Indian: Saemisch, 5...O-O 6.Be3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 *
-E81k "King's Indian: Sämisch, 5...O-O 6.Be3 a6"
+E81k "King's Indian: Saemisch, 5...O-O 6.Be3 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 a6 *
-E81k "King's Indian: Sämisch, 5...O-O 6.Be3 a6 7.Qd2"
+E81k "King's Indian: Saemisch, 5...O-O 6.Be3 a6 7.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 a6 7.Qd2 *
-E81l "King's Indian: Sämisch, 5...O-O 6.Be3 c6"
+E81l "King's Indian: Saemisch, 5...O-O 6.Be3 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c6 *
-E81l "King's Indian: Sämisch, Byrne Variation"
+E81l "King's Indian: Saemisch, Byrne Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c6 7.Bd3 a6 *
-E81m "King's Indian: Sämisch, 5...O-O 6.Be3 c5"
+E81m "King's Indian: Saemisch, 5...O-O 6.Be3 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 *
-E81m "King's Indian: Sämisch, 5...O-O 6.Be3 c5 7.d5"
+E81m "King's Indian: Saemisch, 5...O-O 6.Be3 c5 7.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.d5 *
-E81n "King's Indian: Sämisch, 5...O-O 6.Be3 c5 7.dxc5"
+E81n "King's Indian: Saemisch, 5...O-O 6.Be3 c5 7.dxc5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.dxc5 *
-E81n "King's Indian: Sämisch, 5...O-O 6.Be3 c5 Queenswap"
+E81n "King's Indian: Saemisch, 5...O-O 6.Be3 c5 Queenswap"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.dxc5 dxc5 8.Qxd8+ *
-E81o "King's Indian: Sämisch, 5...O-O 6.Be3 c5 7.Nge2"
+E81o "King's Indian: Saemisch, 5...O-O 6.Be3 c5 7.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.Nge2 *
-E81o "King's Indian: Sämisch, 5...O-O 6.Be3 c5 7.Nge2 Nc6"
+E81o "King's Indian: Saemisch, 5...O-O 6.Be3 c5 7.Nge2 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.Nge2 Nc6 *
-E81p "King's Indian: Sämisch, 5...O-O 6.Be3 c5 7.Nge2 Nc6 8.d5"
+E81p "King's Indian: Saemisch, 5...O-O 6.Be3 c5 7.Nge2 Nc6 8.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 c5 7.Nge2 Nc6 8.d5 *
-E81q "King's Indian: Sämisch, 5...O-O 6.Be3 Nbd7"
+E81q "King's Indian: Saemisch, 5...O-O 6.Be3 Nbd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nbd7 *
-E81r "King's Indian: Sämisch, 5...O-O 6.Be3 Nbd7 7.Qd2"
+E81r "King's Indian: Saemisch, 5...O-O 6.Be3 Nbd7 7.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nbd7 7.Qd2 *
-E81s "King's Indian: Sämisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5"
+E81s "King's Indian: Saemisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nbd7 7.Qd2 c5 *
-E81s "King's Indian: Sämisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5 8.d5"
+E81s "King's Indian: Saemisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5 8.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nbd7 7.Qd2 c5 8.d5 *
-E81t "King's Indian: Sämisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5 8.Nge2"
+E81t "King's Indian: Saemisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5 8.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nbd7 7.Qd2 c5 8.Nge2 *
-E81t "King's Indian: Sämisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5 8.Nge2 a6"
+E81t "King's Indian: Saemisch, 5...O-O 6.Be3 Nbd7 7.Qd2 c5 8.Nge2 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nbd7 7.Qd2 c5 8.Nge2 a6 *
 
-E82a "King's Indian: Sämisch, Fianchetto"
+E82a "King's Indian: Saemisch, Fianchetto"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 *
-E82b "King's Indian: Sämisch, Fianchetto, 7.Qd2"
+E82b "King's Indian: Saemisch, Fianchetto, 7.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Qd2 *
-E82c "King's Indian: Sämisch, Fianchetto, 7.Qd2 c5 8.d5"
+E82c "King's Indian: Saemisch, Fianchetto, 7.Qd2 c5 8.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Qd2 c5 8.d5 *
-E82d "King's Indian: Sämisch, Fianchetto, Bronstein Variation"
+E82d "King's Indian: Saemisch, Fianchetto, Bronstein Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 *
-E82e "King's Indian: Sämisch, Fianchetto, 7.Bd3 Nfd7"
+E82e "King's Indian: Saemisch, Fianchetto, 7.Bd3 Nfd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 Nfd7 *
-E82f "King's Indian: Sämisch, Fianchetto, 7.Bd3 Bb7"
+E82f "King's Indian: Saemisch, Fianchetto, 7.Bd3 Bb7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 Bb7 *
-E82g "King's Indian: Sämisch, Fianchetto, 7.Bd3 Bb7 8.Nge2"
+E82g "King's Indian: Saemisch, Fianchetto, 7.Bd3 Bb7 8.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 Bb7 8.Nge2 *
-E82g "King's Indian: Sämisch, Fianchetto, 7.Bd3 Bb7 8.Nge2 c5"
+E82g "King's Indian: Saemisch, Fianchetto, 7.Bd3 Bb7 8.Nge2 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 Bb7 8.Nge2 c5 *
-E82g "King's Indian: Sämisch, Fianchetto, 7.Bd3 Bb7 8.Nge2 c5 9.d5 e6"
+E82g "King's Indian: Saemisch, Fianchetto, 7.Bd3 Bb7 8.Nge2 c5 9.d5 e6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 Bb7 8.Nge2 c5
   9.d5 e6 *
-E82h "King's Indian: Sämisch, Fianchetto, 7.Bd3 a6"
+E82h "King's Indian: Saemisch, Fianchetto, 7.Bd3 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 a6 *
-E82i "King's Indian: Sämisch, Fianchetto, 7.Bd3 a6 8.Nge2"
+E82i "King's Indian: Saemisch, Fianchetto, 7.Bd3 a6 8.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 a6 8.Nge2 *
-E82i "King's Indian: Sämisch, Fianchetto, 7.Bd3 a6 8.Nge2 c5"
+E82i "King's Indian: Saemisch, Fianchetto, 7.Bd3 a6 8.Nge2 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 a6 8.Nge2 c5 *
-E82j "King's Indian: Sämisch, Fianchetto, 7.Bd3 a6 8.Nge2 c5 9.d5"
+E82j "King's Indian: Saemisch, Fianchetto, 7.Bd3 a6 8.Nge2 c5 9.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 a6 8.Nge2 c5
   9.d5 *
-E82k "King's Indian: Sämisch, Fianchetto, 7.Bd3 a6 8.Nge2 c5 9.e5"
+E82k "King's Indian: Saemisch, Fianchetto, 7.Bd3 a6 8.Nge2 c5 9.e5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 b6 7.Bd3 a6 8.Nge2 c5
   9.e5 *
 
-E83a "King's Indian: Sämisch, 6...Nc6"
+E83a "King's Indian: Saemisch, 6...Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 *
-E83b "King's Indian: Sämisch, 6...Nc6 7.Qd2"
+E83b "King's Indian: Saemisch, 6...Nc6 7.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Qd2 *
-E83c "King's Indian: Sämisch, 6...Nc6 7.Qd2 a6"
+E83c "King's Indian: Saemisch, 6...Nc6 7.Qd2 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Qd2 a6 *
-E83c "King's Indian: Sämisch, 6...Nc6 7.Qd2 a6 8.O-O-O"
+E83c "King's Indian: Saemisch, 6...Nc6 7.Qd2 a6 8.O-O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Qd2 a6 8.O-O-O *
-E83d "King's Indian: Sämisch, 6...Nc6 7.Nge2"
+E83d "King's Indian: Saemisch, 6...Nc6 7.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 *
-E83e "King's Indian: Sämisch, Ruban Variation"
+E83e "King's Indian: Saemisch, Ruban Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 Rb8 *
-E83e "King's Indian: Sämisch, Ruban, 8.Qd2 Re8"
+E83e "King's Indian: Saemisch, Ruban, 8.Qd2 Re8"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 Rb8 8.Qd2 Re8 *
-E83f "King's Indian: Sämisch, Panno"
+E83f "King's Indian: Saemisch, Panno"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 *
-E83g "King's Indian: Sämisch, Panno, 8.a3"
+E83g "King's Indian: Saemisch, Panno, 8.a3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.a3 *
-E83h "King's Indian: Sämisch, Panno, 8.Nc1"
+E83h "King's Indian: Saemisch, Panno, 8.Nc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Nc1 *
-E83i "King's Indian: Sämisch, Panno, 8.Qd2"
+E83i "King's Indian: Saemisch, Panno, 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 *
-E83j "King's Indian: Sämisch, Panno, 8.Qd2 Re8"
+E83j "King's Indian: Saemisch, Panno, 8.Qd2 Re8"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Re8 *
 
-E84a "King's Indian: Sämisch, Panno Main Line"
+E84a "King's Indian: Saemisch, Panno Main Line"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8 *
-E84b "King's Indian: Sämisch, Panno Main Line, 9.a3"
+E84b "King's Indian: Saemisch, Panno Main Line, 9.a3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.a3 *
-E84c "King's Indian: Sämisch, Panno Main Line, 9.O-O-O"
+E84c "King's Indian: Saemisch, Panno Main Line, 9.O-O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.O-O-O *
-E84d "King's Indian: Sämisch, Panno Main Line, 9.g4"
+E84d "King's Indian: Saemisch, Panno Main Line, 9.g4"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.g4 *
-E84e "King's Indian: Sämisch, Panno Main Line, 9.Rb1"
+E84e "King's Indian: Saemisch, Panno Main Line, 9.Rb1"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Rb1 *
-E84f "King's Indian: Sämisch, Panno Main Line, 9.Bh6"
+E84f "King's Indian: Saemisch, Panno Main Line, 9.Bh6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Bh6 *
-E84g "King's Indian: Sämisch, Panno Main Line, 9.Nc1"
+E84g "King's Indian: Saemisch, Panno Main Line, 9.Nc1"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Nc1 *
-E84g "King's Indian: Sämisch, Panno Main Line, 9.Nc1 e5"
+E84g "King's Indian: Saemisch, Panno Main Line, 9.Nc1 e5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Nc1 e5 *
-E84h "King's Indian: Sämisch, Panno Main Line, 9.Nc1 e5 10.Nb3"
+E84h "King's Indian: Saemisch, Panno Main Line, 9.Nc1 e5 10.Nb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Nc1 e5 10.Nb3 *
-E84i "King's Indian: Sämisch, Panno Main Line, 9.Nc1 e5 10.d5"
+E84i "King's Indian: Saemisch, Panno Main Line, 9.Nc1 e5 10.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Nc1 e5 10.d5 *
-E84j "King's Indian: Sämisch, Panno Main Line, 9.Nc1 e5 10.d5 Nd4 11.Nb3"
+E84j "King's Indian: Saemisch, Panno Main Line, 9.Nc1 e5 10.d5 Nd4 11.Nb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.Nc1 e5 10.d5 Nd4 11.Nb3 *
-E84k "King's Indian: Sämisch, Panno Main Line, 9.h4"
+E84k "King's Indian: Saemisch, Panno Main Line, 9.h4"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.h4 *
-E84l "King's Indian: Sämisch, Panno Main Line, 9.h4 b5"
+E84l "King's Indian: Saemisch, Panno Main Line, 9.h4 b5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.h4 b5 *
-E84m "King's Indian: Sämisch, Panno Main Line, 9.h4 h5"
+E84m "King's Indian: Saemisch, Panno Main Line, 9.h4 h5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.h4 h5 *
-E84n "King's Indian: Sämisch, Panno Main Line, 9.h4 h5 10.O-O-O"
+E84n "King's Indian: Saemisch, Panno Main Line, 9.h4 h5 10.O-O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.h4 h5 10.O-O-O *
-E84o "King's Indian: Sämisch, Panno Main Line, 9.h4 h5 10.O-O-O b5 11.Bh6"
+E84o "King's Indian: Saemisch, Panno Main Line, 9.h4 h5 10.O-O-O b5 11.Bh6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 Nc6 7.Nge2 a6 8.Qd2 Rb8
   9.h4 h5 10.O-O-O b5 11.Bh6 *
 
-E85a "King's Indian: Sämisch, Orthodox Variation"
+E85a "King's Indian: Saemisch, Orthodox Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 *
-E85b "King's Indian: Sämisch, Orthodox, 7.dxe5"
+E85b "King's Indian: Saemisch, Orthodox, 7.dxe5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.dxe5 *
-E85c "King's Indian: Sämisch, Orthodox, Queenswap"
+E85c "King's Indian: Saemisch, Orthodox, Queenswap"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.dxe5 dxe5 8.Qxd8 *
-E85d "King's Indian: Sämisch, Orthodox, 7.Nge2"
+E85d "King's Indian: Saemisch, Orthodox, 7.Nge2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 *
-E85e "King's Indian: Sämisch, Orthodox, 7.Nge2 exd4"
+E85e "King's Indian: Saemisch, Orthodox, 7.Nge2 exd4"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 exd4 *
-E85f "King's Indian: Sämisch, Orthodox, 7.Nge2 Nbd7"
+E85f "King's Indian: Saemisch, Orthodox, 7.Nge2 Nbd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 Nbd7 *
-E85g "King's Indian: Sämisch, Orthodox, 7.Nge2 Nc6"
+E85g "King's Indian: Saemisch, Orthodox, 7.Nge2 Nc6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 Nc6 *
-E85h "King's Indian: Sämisch, Orthodox, 7.Nge2 Nc6 8.d5"
+E85h "King's Indian: Saemisch, Orthodox, 7.Nge2 Nc6 8.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 Nc6 8.d5 *
-E85i "King's Indian: Sämisch, Orthodox, 7.Nge2 Nc6 8.d5 Ne7"
+E85i "King's Indian: Saemisch, Orthodox, 7.Nge2 Nc6 8.d5 Ne7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 Nc6 8.d5 Ne7 *
-E85j "King's Indian: Sämisch, Orthodox, 7.Nge2 Nc6 8.d5 Ne7 9.Qd2"
+E85j "King's Indian: Saemisch, Orthodox, 7.Nge2 Nc6 8.d5 Ne7 9.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 Nc6 8.d5 Ne7
   9.Qd2 *
 
-E86a "King's Indian: Sämisch, Orthodox, 7.Nge2 c6"
+E86a "King's Indian: Saemisch, Orthodox, 7.Nge2 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 *
-E86b "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.d5"
+E86b "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.d5 *
-E86c "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qb3"
+E86c "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qb3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qb3 *
-E86d "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qd2"
+E86d "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qd2 *
-E86e "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7"
+E86e "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qd2 Nbd7 *
-E86f "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.d5"
+E86f "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qd2 Nbd7
   9.d5 *
-E86g "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.O-O-O"
+E86g "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.O-O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qd2 Nbd7
   9.O-O-O *
-E86h "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.O-O-O a6"
+E86h "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.O-O-O a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qd2 Nbd7
   9.O-O-O a6 *
-E86i "King's Indian: Sämisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.O-O-O a6 10.Kb1"
+E86i "King's Indian: Saemisch, Orthodox, 7.Nge2 c6 8.Qd2 Nbd7 9.O-O-O a6 10.Kb1"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.Nge2 c6 8.Qd2 Nbd7
   9.O-O-O a6 10.Kb1 *
 
-E87a "King's Indian: Sämisch, Orthodox, 7.d5"
+E87a "King's Indian: Saemisch, Orthodox, 7.d5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 *
-E87b "King's Indian: Sämisch, Orthodox, 7.d5 a5"
+E87b "King's Indian: Saemisch, Orthodox, 7.d5 a5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 a5 *
-E87c "King's Indian: Sämisch, Orthodox, 7.d5 c5"
+E87c "King's Indian: Saemisch, Orthodox, 7.d5 c5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c5 *
-E87d "King's Indian: Sämisch, Orthodox, 7.d5 Nbd7"
+E87d "King's Indian: Saemisch, Orthodox, 7.d5 Nbd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nbd7 *
-E87e "King's Indian: Sämisch, Orthodox, 7.d5 Nh5"
+E87e "King's Indian: Saemisch, Orthodox, 7.d5 Nh5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 *
-E87f "King's Indian: Sämisch, Orthodox, 7.d5 Nh5 8.Qd2"
+E87f "King's Indian: Saemisch, Orthodox, 7.d5 Nh5 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 *
-E87g "King's Indian: Sämisch, Orthodox, Bronstein Variation"
+E87g "King's Indian: Saemisch, Orthodox, Bronstein Variation"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 Qh4+ *
-E87h "King's Indian: Sämisch, Orthodox, Bronstein, 9.g3"
+E87h "King's Indian: Saemisch, Orthodox, Bronstein, 9.g3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 Qh4+
   9.g3 *
-E87i "King's Indian: Sämisch, Orthodox, Bronstein, 9.Bf2"
+E87i "King's Indian: Saemisch, Orthodox, Bronstein, 9.Bf2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 Qh4+
   9.Bf2 *
-E87j "King's Indian: Sämisch, Orthodox, 7.d5 Nh5 8.Qd2 f5"
+E87j "King's Indian: Saemisch, Orthodox, 7.d5 Nh5 8.Qd2 f5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 f5 *
-E87k "King's Indian: Sämisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O"
+E87k "King's Indian: Saemisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 f5
   9.O-O-O *
-E87l "King's Indian: Sämisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O f4"
+E87l "King's Indian: Saemisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O f4"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 f5
   9.O-O-O f4 *
-E87m "King's Indian: Sämisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O Nd7"
+E87m "King's Indian: Saemisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O Nd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 f5
   9.O-O-O Nd7 *
-E87n "King's Indian: Sämisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O Nd7 10.Bd3"
+E87n "King's Indian: Saemisch, Orthodox, 7.d5 Nh5 8.Qd2 f5 9.O-O-O Nd7 10.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 Nh5 8.Qd2 f5
   9.O-O-O Nd7 10.Bd3 *
 
-E88a "King's Indian: Sämisch, Orthodox, 7.d5 c6"
+E88a "King's Indian: Saemisch, Orthodox, 7.d5 c6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 *
-E88b "King's Indian: Sämisch, Orthodox, 7.d5 c6 8.Qd2"
+E88b "King's Indian: Saemisch, Orthodox, 7.d5 c6 8.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Qd2 *
-E88c "King's Indian: Sämisch, Orthodox, 7.d5 c6 8.Qd2 cxd5"
+E88c "King's Indian: Saemisch, Orthodox, 7.d5 c6 8.Qd2 cxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Qd2 cxd5 *
-E88d "King's Indian: Sämisch, Orthodox, 7.d5 c6 8.Qd2 cxd5 9.cxd5 a6"
+E88d "King's Indian: Saemisch, Orthodox, 7.d5 c6 8.Qd2 cxd5 9.cxd5 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Qd2 cxd5
   9.cxd5 a6 *
-E88e "King's Indian: Sämisch, Orthodox, 7.d5 c6 8.Qd2 cxd5 9.cxd5 a6 10.Bd3"
+E88e "King's Indian: Saemisch, Orthodox, 7.d5 c6 8.Qd2 cxd5 9.cxd5 a6 10.Bd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Qd2 cxd5
   9.cxd5 a6 10.Bd3 *
-E88f "King's Indian: Sämisch, Orthodox, Polugayevsky"
+E88f "King's Indian: Saemisch, Orthodox, Polugayevsky"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Bd3 *
-E88g "King's Indian: Sämisch, Orthodox, Polugayevsky, 8...b5"
+E88g "King's Indian: Saemisch, Orthodox, Polugayevsky, 8...b5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Bd3 b5 *
-E88h "King's Indian: Sämisch, Orthodox, Polugayevsky, 8...cxd5"
+E88h "King's Indian: Saemisch, Orthodox, Polugayevsky, 8...cxd5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Bd3 cxd5 *
-E88i "King's Indian: Sämisch, Orthodox, Polugayevsky, 8...cxd5 9.cxd5 Nh5"
+E88i "King's Indian: Saemisch, Orthodox, Polugayevsky, 8...cxd5 9.cxd5 Nh5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Bd3 cxd5
   9.cxd5 Nh5 *
 
-E89a "King's Indian: Sämisch, Orthodox Main Line"
+E89a "King's Indian: Saemisch, Orthodox Main Line"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5 *
-E89b "King's Indian: Sämisch, Orthodox Main Line, 9...a6"
+E89b "King's Indian: Saemisch, Orthodox Main Line, 9...a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 a6 *
-E89c "King's Indian: Sämisch, Orthodox Main Line, 9...Bd7"
+E89c "King's Indian: Saemisch, Orthodox Main Line, 9...Bd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Bd7 *
-E89d "King's Indian: Sämisch, Orthodox Main Line, 9...Nbd7"
+E89d "King's Indian: Saemisch, Orthodox Main Line, 9...Nbd7"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Nbd7 *
-E89e "King's Indian: Sämisch, Orthodox Main Line, 10.Qd2"
+E89e "King's Indian: Saemisch, Orthodox Main Line, 10.Qd2"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Nbd7 10.Qd2 *
-E89f "King's Indian: Sämisch, Orthodox Main Line, 10.Qd2 a6"
+E89f "King's Indian: Saemisch, Orthodox Main Line, 10.Qd2 a6"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Nbd7 10.Qd2 a6 *
-E89g "King's Indian: Sämisch, Orthodox Main Line, 10.Qd2 a6 11.g4"
+E89g "King's Indian: Saemisch, Orthodox Main Line, 10.Qd2 a6 11.g4"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Nbd7 10.Qd2 a6 11.g4 *
-E89h "King's Indian: Sämisch, Orthodox Main Line, 10.Qd2 a6 11.g4 h5"
+E89h "King's Indian: Saemisch, Orthodox Main Line, 10.Qd2 a6 11.g4 h5"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Nbd7 10.Qd2 a6 11.g4 h5 *
-E89i "King's Indian: Sämisch, Orthodox Main Line, 10.Qd2 a6 11.g4 h5 12.h3"
+E89i "King's Indian: Saemisch, Orthodox Main Line, 10.Qd2 a6 11.g4 h5 12.h3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f3 O-O 6.Be3 e5 7.d5 c6 8.Nge2 cxd5
   9.cxd5 Nbd7 10.Qd2 a6 11.g4 h5 12.h3 *
 
@@ -20816,4 +20816,3 @@ E99 "King's Indian: Mar del Plata, Benko Attack, 11...Nf6"
 E99 "King's Indian: Mar del Plata, Benko Attack, 11...Nf6 12.Nd3"
   1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.Nf3 O-O 6.Be2 e5 7.O-O Nc6 8.d5 Ne7
   9.Ne1 Nd7 10.f3 f5 11.g4 Nf6 12.Nd3 *
-
