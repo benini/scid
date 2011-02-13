@@ -6,7 +6,7 @@
 #    Convert photos from ChessBase Mega Database to scids internal
 #    photo format.
 #
-#    $Id: Mega2Scid.pl,v 1.2 2009/02/23 11:10:10 arwagner Exp $
+#    $Id: Mega2Scid.pl,v 4.3 2011/02/13 18:12:00 arwagner Exp $
 #    Last change: <Mon, 2009/02/23 12:09:05 arwagner ingata>
 #    Author     : Alexander Wagner
 #    Language   : Perl

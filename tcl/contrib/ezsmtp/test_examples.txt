@@ -1,5 +1,5 @@
 # test_examples.txt --
-# $Id: test_examples.txt,v 1.1 2008/06/22 22:19:45 pgeorges Exp $
+# $Id: test_examples.txt,v 4.3 2011/02/13 18:12:01 arwagner Exp $
 #
 # Some sample commands that can be copied/pasted into a Tcl console
 # for testing.  Provides some reasonable examples of the features

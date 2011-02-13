@@ -2,7 +2,7 @@
 ### metadata.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: metadata.tcl,v 1.4 2008/12/26 12:10:03 arwagner Exp $
+### $Id: metadata.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
 ### Last change: <Fri, 2008/12/26 13:08:31 arwagner ingata>
 ###

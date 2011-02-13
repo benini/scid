@@ -2,7 +2,7 @@
 ### bibliography.tcl: part of Scid.
 ### Copyright (C) 2010 Alexander Wagner
 ###
-### $Id: bibliography.tcl,v 1.4 2010/07/14 20:46:00 arwagner Exp $
+### $Id: bibliography.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
 ### Last change: <Tue, 2010/07/13 23:08:01 arwagner ingata>
 ###

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: install.tcl,v 1.1 2008/06/22 22:19:45 pgeorges Exp $ \
+# $Id: install.tcl,v 4.3 2011/02/13 18:12:01 arwagner Exp $ \
 exec tclsh "$0" ${1+"$@"}
 
 # install.tcl --

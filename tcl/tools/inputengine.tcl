@@ -7,7 +7,7 @@
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
 ###
-###    $Id: inputengine.tcl,v 1.14 2010/11/15 12:02:53 arwagner Exp $
+###    $Id: inputengine.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###    Last change: <Mon, 2010/11/15 13:00:39 arwagner agamemnon>
 ###    Author     : Alexander Wagner
 ###    Language   : TCL

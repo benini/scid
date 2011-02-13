@@ -2,7 +2,7 @@
 ### Correspondence.tcl: part of Scid.
 ### Copyright (C) 2008 Alexander Wagner
 ###
-### $Id: correspondence.tcl,v 1.104 2011/01/17 05:32:50 arwagner Exp $
+### $Id: correspondence.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
 ### Last change: <Mon, 2011/01/17 06:32:05 arwagner agamemnon>
 ###
