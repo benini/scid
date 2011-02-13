@@ -166,6 +166,7 @@ proc WikipNLS { LinkList } {
       C {set wplanguage cs}
       D {set wplanguage de}
       F {set wplanguage fr}
+      G {set wplanguage gr}
       H {set wplanguage hu}
       I {set wplanguage it}
       K {set wplanguage ca}
@@ -306,7 +307,13 @@ proc ReplaceIDTags { pinfo } {
   # the following three resolvers hook up with PND and need special
   # treatment as additional functions need to be called
   set wikiplink  "<run openURL $::pinfo::wikipurl/$wplanguage/$pnd; ::windows::stats::Refresh><button wikiplnk -command openURL $::pinfo::wikipurl/$wplanguage/$pnd;><blue>WP</blue></run>"
-  set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk -command ::pinfo::saPND2WP $pnd><blue>SeeAlso</blue></run>"
+
+  # As we have direct linkage to WikiPedia SeeAlso is currently
+  # obsolete. It might become of interest again if it offerse other
+  # services to connect to.
+  ### set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk -command ::pinfo::saPND2WP $pnd><blue>SeeAlso</blue></run>"
+  set seealsolink ""
+
   set dnblink    "<run openURL $::pinfo::dnburl/$pnd; ::windows::stats::Refresh><button dnblnk -command openURL $::pinfo::dnburl/$pnd><blue>DNB</blue></run>"
 
   # Handle all id definitions and link resolvers from the config file
