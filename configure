@@ -217,6 +217,7 @@ proc findTclTkPaths {} {
         /usr/X/lib
         /usr/local/X/lib
         /usr/openwin/lib
+        /usr/lib/x86_64-linux-gnu
     }
 
     if {! [info exists var(TCL_INCLUDE)]} {
