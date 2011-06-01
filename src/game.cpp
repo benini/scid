@@ -1978,7 +1978,6 @@ Game::GetPartialMoveList (DString * outStr, uint plyCount)
 
     SaveState ();
 
-    MoveToPly(0);
     char temp [80];
     for (uint i=0; i < plyCount; i++) {
         if (CurrentMove->marker == END_MARKER) {

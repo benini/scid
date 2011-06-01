@@ -56,7 +56,7 @@ proc ::tree::treeFileSave {base} {
   unbusyCursor .
 }
 ################################################################################
-proc ::tree::make { { baseNumber -1 } } {
+proc ::tree::make { { baseNumber -1 } {locked 0} } {
   global tree treeWin highcolor geometry helpMessage
   
   if {$baseNumber == -1} {set baseNumber [sc_base current]}
@@ -77,7 +77,7 @@ proc ::tree::make { { baseNumber -1 } } {
   set ::treeWin$baseNumber 1
   set tree(training$baseNumber) 0
   set tree(autorefresh$baseNumber) 1
-  set tree(locked$baseNumber) 0
+  set tree(locked$baseNumber) $locked
   set tree(base$baseNumber) $baseNumber
   set tree(status$baseNumber) ""
   set tree(bestMax$baseNumber) 50
@@ -85,8 +85,9 @@ proc ::tree::make { { baseNumber -1 } } {
   trace variable tree(bestMax$baseNumber) w "::tree::doTrace bestMax"
   set tree(bestRes$baseNumber) "1-0 0-1 1/2 *"
   trace variable tree(bestRes$baseNumber) w "::tree::doTrace bestRes"
+  set tree(allgames$baseNumber) 1
   
-  bind $w <Destroy> "set ::treeWin$baseNumber 0; set tree(locked$baseNumber) 0; sc_tree clean $baseNumber; ::windows::gamelist::Refresh; ::windows::stats::Refresh; "
+  bind $w <Destroy> "::tree::closeTree $baseNumber"
   bind $w <F1> { helpWindow Tree } 
   bind $w <Escape> "::tree::hideCtxtMenu $baseNumber ; .treeWin$baseNumber.buttons.stop invoke "
   
@@ -207,29 +208,21 @@ proc ::tree::make { { baseNumber -1 } } {
   $w.f.tl tag configure greenfg -foreground SeaGreen
   $w.f.tl tag configure redfg -foreground red
   
-  canvas $w.progress -width 250 -height 15 -bg white -relief solid -border 1
-  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   selection handle $w.f.tl "::tree::copyToSelection $baseNumber"
   bindMouseWheel $w $w.f.tl
-  
-  bind $w.f.tl <Destroy> {
-    set win "%W"
-    bind $win <Destroy> {}
-    set bn ""
-    scan $win ".treeWin%%d.f.tl" bn
-    ::tree::closeTree $tree(base$bn)
-    set mctxt $win.ctxtMenu
-    if { [winfo exists $mctxt] } {
-      destroy $mctxt
-    }
-  }
-  
+
   bind $w <Configure> "recordWinSize $w"
-  
-  ttk::label $w.status -width 1 -anchor w -font font_Small \
+
+  ttk::frame $w.statusframe
+  pack $w.statusframe -side bottom -fill x
+  grid rowconfigure $w.statusframe 0 -weight 1
+  grid columnconfigure $w.statusframe 0 -weight 1
+  ttk::label $w.status -anchor w -font font_Small \
       -relief sunken -textvar tree(status$baseNumber)
-  pack $w.status -side bottom -fill x
-  pack $w.progress -side bottom
+  grid $w.status -in $w.statusframe -column 0 -row 0 -sticky nsew
+  canvas $w.progress -height 0 -bg white -relief solid -border 1
+  $w.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
+
   pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both
   
@@ -238,17 +231,17 @@ proc ::tree::make { { baseNumber -1 } } {
   # add a button to start/stop tree refresh
   ttk::button $w.buttons.bStartStop -image engine_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
   
-  ttk::checkbutton $w.buttons.lock -textvar ::tr(LockTree) -variable tree(locked$baseNumber) -command "::tree::toggleLock $baseNumber"
+  ttk::checkbutton $w.buttons.allgames -textvar ::tr(allGames) -variable tree(allgames$baseNumber) -command "::tree::refresh $baseNumber"
   ttk::checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
   
-  foreach {b t} { best TreeFileBest graph TreeFileGraph lock TreeOptLock  training TreeOptTraining bStartStop TreeOptStartStop } {
+  foreach {b t} { best TreeFileBest graph TreeFileGraph allgames TreeOptLock  training TreeOptTraining bStartStop TreeOptStartStop } {
     set helpMessage($w.buttons.$b) $t
   }
   
   dialogbutton $w.buttons.stop -textvar ::tr(Stop) -command { sc_progressBar }
-  dialogbutton $w.buttons.close -textvar ::tr(Close) -command "::tree::closeTree $baseNumber ; ::docking::cleanup .treeWin$baseNumber "
+  dialogbutton $w.buttons.close -textvar ::tr(Close) -command "::tree::closeTree $baseNumber"
   
-  pack $w.buttons.best $w.buttons.graph $w.buttons.bStartStop $w.buttons.lock $w.buttons.training \
+  pack $w.buttons.best $w.buttons.graph $w.buttons.bStartStop $w.buttons.allgames $w.buttons.training \
       -side left -padx 3 -pady 2
   packbuttons right $w.buttons.close $w.buttons.stop
   $w.buttons.stop configure -state disabled
@@ -283,11 +276,10 @@ proc ::tree::selectCallback { baseNumber move } {
 # close the corresponding base if it is flagged as locked
 proc ::tree::closeTree {baseNumber} {
   global tree
-  
   ::tree::mask::close
   
   ::tree::hideCtxtMenu $baseNumber
-  .treeWin$baseNumber.buttons.stop invoke
+    #  .treeWin$baseNumber.buttons.stop invoke
   
   trace remove variable tree(bestMax$baseNumber) write "::tree::doTrace bestMax"
   trace remove variable tree(bestRes$baseNumber) write "::tree::doTrace bestRes"
@@ -297,22 +289,17 @@ proc ::tree::closeTree {baseNumber} {
   
   if {$tree(autoSave$baseNumber)} {
     busyCursor .
-    catch { sc_tree write $tree(base$baseNumber) } ; # necessary as it will be triggered twice
+    sc_tree write $tree(base$baseNumber)
     unbusyCursor .
   }
   
-  if {$::tree(locked$baseNumber)} {
-    ::file::Close $baseNumber
-  } else {
-    if {[winfo exists .treeGraph$baseNumber]} {
-      destroy .treeGraph$baseNumber
-    }
-    if {[winfo exists .treeBest$baseNumber]} {
-      destroy .treeBest$baseNumber
-    }
-    destroy .treeWin$baseNumber
-  }
+  if {[winfo exists .treeGraph$baseNumber]} { destroy .treeGraph$baseNumber }
+  ::docking::cleanup .treeBest$baseNumber
+  destroy .treeBest$baseNumber
+  ::docking::cleanup .treeWin$baseNumber
+  destroy .treeWin$baseNumber
   sc_tree clean $baseNumber
+  if {$::tree(locked$baseNumber)} { ::file::Close $baseNumber }
   ::windows::gamelist::Refresh
   ::windows::stats::Refresh; 
 }
@@ -428,44 +415,34 @@ proc ::tree::select { move baseNumber } {
 set tree(refresh) 0
 
 ################################################################################
-proc ::tree::refresh { { baseNumber "" }} {  
-  set stack [lsearch -glob -inline -all [ wm stackorder . ] ".treeWin*"]
-  
+proc ::tree::refresh { { baseNumber "" }} {
+  set tree(refresh) 1
   if {$baseNumber == "" } {
-    sc_tree search -cancel all    
-    
-    set topwindow [lindex [lsearch -glob -inline -all [ wm stackorder . ] ".treeWin*"] end ]
-    set topbase -1
-    if { [ catch { scan $topwindow ".treeWin%d" topbase } ] } {
-    } else {
-      ::tree::dorefresh $topbase
-    }
-    for {set i 1 } {$i <= [sc_base count total]} {incr i} {
-      if { $i == $topbase } { continue }
+    sc_tree search -cancel all
+    for {set i [sc_base count total] } {$i > 0} {incr i -1} {
       if { [::tree::dorefresh $i] == "canceled" } { break }
     }
   } else {
     ::tree::dorefresh $baseNumber
   }
+  set tree(refresh) 0
 }
 
 ################################################################################
 proc ::tree::dorefresh { baseNumber } {
-  
   global tree treeWin glstart
   set w .treeWin$baseNumber
   
   if {![winfo exists $w]} { return }
-  
   if { ! $tree(autorefresh$baseNumber) } { return }
+
+  grid $w.progress -in $w.statusframe -column 0 -row 0 -sticky nsew
   
-  busyCursor .
-  sc_progressBar $w.progress bar 251 16
-  foreach button {best graph training lock close} {
+  sc_progressBar $w.progress bar [$w.progress cget -width] 100
+  foreach button {best graph training allgames close} {
     $w.buttons.$button configure -state disabled
   }
   $w.buttons.stop configure -state normal
-  set tree(refresh) 1
   
   set base $baseNumber
   
@@ -474,20 +451,20 @@ proc ::tree::dorefresh { baseNumber } {
   } else {
     set fastmode 1
   }
+
+  set filtered 0
+  if { $tree(allgames$baseNumber) == 0 } {
+    set filtered 1
+  }
   
-  set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode]
+  set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode -filtered $filtered]
   catch {$w.f.tl itemconfigure 0 -foreground darkBlue}
-  
-  foreach button {best graph training lock close} {
+
+  foreach button {best graph training allgames close} {
     $w.buttons.$button configure -state normal
   }
   $w.buttons.stop configure -state disabled
-  
-  unbusyCursor .
-  set tree(refresh) 0
-  
-  $w.f.tl configure -cursor {}
-  
+
   ::tree::status "" $baseNumber
   set glstart 1
   ::windows::stats::Refresh
@@ -502,22 +479,13 @@ proc ::tree::dorefresh { baseNumber } {
   # ========================================
   if { $tree(fastmode$baseNumber) == 2 } {
     ::tree::status "" $baseNumber
-    sc_progressBar $w.progress bar 251 16
-    set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode 0]
+    sc_progressBar $w.progress bar [$w.progress cget -width] 100
+    set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode -filtered $filtered]
     displayLines $baseNumber $moves
   }
   # ========================================
-  
-  # if the Tree base is not the current one, updates the Tree base to the first game in filter : that way it is possible to
-  # directly generate an opening report for example
-  if {$baseNumber != [sc_base current] } {
-    set current [sc_base current]
-    sc_base switch $baseNumber
-    if { [sc_filter first] != 0 } {
-      sc_game load [sc_filter first]
-    }
-    sc_base switch $current
-  }
+
+  grid forget $w.progress
 }
 
 ################################################################################
@@ -772,8 +740,10 @@ proc ::tree::status { msg baseNumber } {
   set base $baseNumber
   set status "  $::tr(Database) $base: [file tail [sc_base filename $base]]"
   if {$tree(locked$baseNumber)} { append status " ($::tr(TreeLocked))" }
-  append status "   $::tr(Filter)"
-  append status ": [filterText $base]"
+  if {! $tree(allgames$baseNumber)} {
+    append status "   $::tr(Filter)"
+    append status ": [filterText $base]"
+  }
   set tree(status$baseNumber) $status
 }
 

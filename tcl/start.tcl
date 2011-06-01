@@ -829,10 +829,23 @@ proc setTitle { w title } {
 ################################################################################
 proc createToplevel { w } {
   set name [string range $w 1 end]
-  
+  set f .fdock$name
+
+  # Raise window if already exist
+  if { [winfo exists $w] } {
+    if {! $::docking::USE_DOCKING } {
+      tk::PlaceWindow $w
+    } else {
+      if { [::docking::isUndocked $w] } {
+        tk::PlaceWindow $f
+      } else {
+        [::docking::find_tbn $f] select $f
+      }
+    }
+    return "already_exists"
+  }
+
   if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
-    
-    set f .fdock$name
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
     docking::add_tab $f e
@@ -976,6 +989,7 @@ proc toggleGameInfo {} {
   } else  {
     grid forget .main.gameInfoFrame
   }
+  updateGameInfo
   update idletasks
   resizeMainBoard
 }

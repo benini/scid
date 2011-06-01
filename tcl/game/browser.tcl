@@ -3,9 +3,11 @@
 # Game Browser window
 
 namespace eval ::gbrowser {}
-set ::gbrowser::size 35
 
 proc ::gbrowser::new {base gnum {ply -1}} {
+  if {! [info exists ::gbrowser::size] } { set ::gbrowser::size 65 }
+  options.save ::gbrowser::size
+
   set n 0
   while {[winfo exists .gb$n]} { incr n }
   set w .gb$n
@@ -64,14 +66,14 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Right> "::gbrowser::update $n +1"
   bind $w <Up> "::gbrowser::update $n -10"
   bind $w <Down> "::gbrowser::update $n +10"
-  bind $w <Control-Shift-Left>  "::board::resize2 $w.bd -1"
-  bind $w <Control-Shift-Right> "::board::resize2 $w.bd +1"
+  bind $w <minus> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
+  bind $w <Control-Shift-Left> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
+  bind $w <Control-Button-4> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
+  bind $w <plus> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
+  bind $w <Control-Shift-Right> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
+  bind $w <Control-Button-5> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
   bind $w <Button-4> "::gbrowser::update $n -1"
   bind $w <Button-5> "::gbrowser::update $n +1"
-  bind $w <Control-Button-4> "::board::resize2 $w.bd -1"
-  bind $w <Control-Button-5> "::board::resize2 $w.bd +1"
-  bind $w <minus> "::board::resize2 $w.bd -1"
-  bind $w <plus>  "::board::resize2 $w.bd +1"
   
   button $w.b.start -image tb_start -command "::gbrowser::update $n start"
   button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
@@ -166,4 +168,3 @@ proc ::gbrowser::autoplay {n} {
     ::gbrowser::update $n +1
   }
 }
-

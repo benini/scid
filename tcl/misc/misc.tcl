@@ -113,6 +113,10 @@ proc dialogbuttonsmall {w args {style "Small.TButton"} } {
 #   with scrollbars that automatically hide themselves when they are
 #   not needed.
 #   The frame and widget may already exist; they are created if needed.
+#   FBF 2011.03.05:
+#     $frame and $w aspects are not changed if they already exists
+#     scrollbars are created on time 0, otherwise they are not hidden
+#
 #   Usage:
 #      autoscrollframe [-bars none|x|y|both] frame type w args
 #
@@ -135,15 +139,17 @@ proc autoscrollframe {args} {
   set args [lrange $args 3 end]
   
   set retval $frame
-  if {! [winfo exists $frame]} { frame $frame }
-  $frame configure -relief sunken -borderwidth 2
+  if {! [winfo exists $frame]} {
+    frame $frame
+    $frame configure -relief sunken -borderwidth 2
+  }
   if {! [winfo exists $w]} {
     $type $w
+    if {[llength $args] > 0} {
+      eval $w configure $args
+    }
+    $w configure -relief flat -borderwidth 0
   }
-  if {[llength $args] > 0} {
-    eval $w configure $args
-  }
-  $w configure -relief flat -borderwidth 0
   grid $w -in $frame -row 0 -column 0 -sticky news
   set setgrid 0
   catch {set setgrid [$w cget -setgrid]}
@@ -153,7 +159,7 @@ proc autoscrollframe {args} {
     $w configure -yscrollcommand [list _autoscroll $frame.ybar]
     grid $frame.ybar -row 0 -column 1 -sticky ns
     set _autoscroll($frame.ybar) 1
-    set _autoscroll(time:$frame.ybar) [clock clicks -milli]
+    set _autoscroll(time:$frame.ybar) 0
     if {! $setgrid} {
       # bind $frame.ybar <Map> [list _autoscrollMap $frame]
     }
@@ -163,7 +169,7 @@ proc autoscrollframe {args} {
     $w configure -xscrollcommand [list _autoscroll $frame.xbar]
     grid $frame.xbar -row 1 -column 0 -sticky we
     set _autoscroll($frame.xbar) 1
-    set _autoscroll(time:$frame.xbar) [clock clicks -milli]
+    set _autoscroll(time:$frame.xbar) 0
     if {! $setgrid} {
       # bind $frame.xbar <Map> [list _autoscrollMap $frame]
     }
