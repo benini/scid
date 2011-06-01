@@ -57,7 +57,7 @@ namespace eval uci {
     # if analyze = 1 -> analysis mode
     ################################################################################
     proc  processAnalysisInput { { n 1 } { analyze 1 } } {
-        global analysis ::uci::uciInfo ::uci::infoToken ::uci::optionToken
+        global analysis ::uci::uciInfo
         
         if {$analyze} {
             set pipe $analysis(pipe$n)
@@ -82,10 +82,31 @@ namespace eval uci {
                 ::uci::sendToEngine $n "uci"
             }
         }
+
+        after idle "after 1 ::uci::processInput_ $n $analyze"
+        fileevent $pipe readable {}
+    }
+
+    proc processInput_ { {n} {analyze} } {
+        global analysis ::uci::uciInfo ::uci::infoToken ::uci::optionToken
         
+        if {$analyze} {
+            set pipe $analysis(pipe$n)
+            if { ! [ ::checkEngineIsAlive $n ] } { return }
+        } else  {
+            set analysis(fen$n) ""
+            set pipe $uciInfo(pipe$n)
+            if { ! [ ::uci::checkEngineIsAlive $n ] } { return }
+        }
+
         # Get one line from the engine:
         set line [gets $pipe]
-        if {$line == ""} { return }
+        if {$line == ""} {
+            fileevent $pipe readable "::uci::processAnalysisInput $n $analyze"
+            return
+        }
+
+        after idle "after 1 ::uci::processInput_ $n $analyze"
         
         # puts ">> $line"
         
@@ -93,10 +114,7 @@ namespace eval uci {
         # if {[string first "info currmove" $line ] == 0} { return }
         
         logEngine $n "Engine: $line"
-        
-        # keep UI responsive when engine outputs lots of info (garbage ?)
-        update idletasks
-        
+
         if {[string match "bestmove*" $line]} {
             set data [split $line]
             set uciInfo(bestmove$n) [lindex $data 1]
@@ -106,10 +124,8 @@ namespace eval uci {
             } else {
                 set uciInfo(ponder$n) ""
             }
-            if { $analysis(waitForBestMove$n) } {
-                set analysis(waitForBestMove$n) 0
-                return
-            }
+            set analysis(waitForBestMove$n) 0
+            return
         }
         
         if {[string match "id *name *" $line]} {
@@ -130,6 +146,7 @@ namespace eval uci {
         set toBeFormatted 0
         # parse an info line
         if {[string first "info" $line ] == 0} {
+            if {$analysis(waitForReadyOk$n)} { return }
             resetUciInfo $n
             set data [split $line]
             set length [llength $data]
@@ -283,9 +300,7 @@ namespace eval uci {
         
         # the UCI engine answers to <isready> command
         if { $line == "readyok"} {
-            if {$analysis(waitForReadyOk$n)} {
-                set analysis(waitForReadyOk$n) 0
-            }
+            set analysis(waitForReadyOk$n) 0
             return
         }
         

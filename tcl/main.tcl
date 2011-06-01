@@ -832,19 +832,32 @@ proc flipBoardForPlayerNames {namelist {board .main.board}} {
 #    If a parameter "-animate" is specified, board changes are animated.
 #
 proc updateBoard {args} {
-    global boardSize gameInfo
     set pgnNeedsUpdate 0
     set animate 0
     foreach arg $args {
         if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
         if {! [string compare $arg "-animate"]} { set animate 1 }
     }
-   
-    ::board::resize .main.board $boardSize
+
+    if {$pgnNeedsUpdate} { ::pgn::Refresh $pgnNeedsUpdate }
+
+    ::board::resize .main.board $::boardSize
     ::board::setmarks .main.board [sc_pos getComment]
     ::board::update .main.board [sc_pos board] $animate
-    
-    # Update the status of each navigation button:
+
+    after cancel updateNavButtons
+    after cancel notifyPosChange
+
+    update idletasks
+
+    after idle updateNavButtons
+    after idle notifyPosChange
+}
+
+# updateNavButtons:
+#    Update the status of each navigation button
+#
+proc updateNavButtons {} {
     if {[sc_pos isAt start]} {
         .main.fbutton.button.start configure -state disabled
     } else { .main.fbutton.button.start configure -state normal }
@@ -884,12 +897,26 @@ proc updateBoard {args} {
     } else {
         .main.fbutton.button.exitVar configure -state normal
     }
-    
-    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
-        .main.tb.save configure -state disabled
+
+    wm withdraw .tooltip
+    set comment [sc_pos getComment]
+    # remove technical comments, notify only human readable ones
+    regsub -all {\[%.*\]} $comment {} comment
+    if {$comment != ""} {
+         .main.fbutton.button.comment configure -image comment_avail -relief flat
+         ::utils::tooltip::Set .main.fbutton.button.comment $comment
     } else {
-        .main.tb.save configure -state normal
+         .main.fbutton.button.comment configure -image comment_unavail -relief flat
+         ::utils::tooltip::UnSet .main.fbutton.button.comment
     }
+}
+
+# updateGameInfo:
+#    Update the game status window .main.gameInfo
+#
+proc updateGameInfo {} {
+    global gameInfo
+
     .main.gameInfo configure -state normal
     .main.gameInfo delete 0.0 end
     ::htext::display .main.gameInfo [sc_game info -hide $gameInfo(hideNextMove) \
@@ -905,36 +932,33 @@ proc updateBoard {args} {
     }
     .main.gameInfo configure -state disabled
     updatePlayerPhotos
+}
+
+# notifyPosChange:
+#    Notify other windows of current position changes
+#
+proc notifyPosChange {} {
+    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
+        .main.tb.save configure -state disabled
+    } else {
+        .main.tb.save configure -state normal
+    }
+
+    if {$::showGameInfo} { updateGameInfo }
+    updateAnalysis 1
+    updateAnalysis 2
     updateEpdWins
-    if {[winfo exists .analysisWin1]} { updateAnalysis 1 }
-    if {[winfo exists .analysisWin2]} { updateAnalysis 2 }
-    # if {[winfo exists .treeWin]} { ::tree::refresh }
-    ::tree::refresh
-    if {[winfo exists .commentWin]} { ::commenteditor::Refresh }
-    if {[::tb::isopen]} { ::tb::results }
+    ::commenteditor::Refresh
+    ::tb::results
     updateMenuStates
     moveEntry_Clear
     updateStatusBar
-
-    update idletasks
-    
     if {[winfo exists .twinchecker]} { updateTwinChecker }
-    if {[winfo exists .pgnWin]} { ::pgn::Refresh $pgnNeedsUpdate }
+    ::pgn::Refresh
     if {[winfo exists .bookWin]} { ::book::refresh }
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
-    if {[winfo exists .noveltyWin]} { updateNoveltyWin }
-
-	 wm withdraw .tooltip
-    set comment [sc_pos getComment]
-    # remove technical comments, notify only human readable ones
-    regsub -all {\[%.*\]} $comment {} comment
-    if {$comment != ""} {
-         .main.fbutton.button.comment configure -image comment_avail -relief flat
-         ::utils::tooltip::Set .main.fbutton.button.comment $comment
-    } else {
-         .main.fbutton.button.comment configure -image comment_unavail -relief flat
-         ::utils::tooltip::UnSet .main.fbutton.button.comment
-    }
+    updateNoveltyWin
+    ::tree::refresh
 }
 
 # Set up player photos:

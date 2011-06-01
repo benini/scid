@@ -1986,6 +1986,7 @@ OpTable::AddMoveOrder (Game * g)
     uint id = 0;
     int index = -1;
 
+    g->MoveToPly(0);
     DString * dstr = new DString;
     g->GetPartialMoveList (dstr, g->GetCurrentPly());
 

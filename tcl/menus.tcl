@@ -915,6 +915,12 @@ proc setTacticsBasesDir {} {
   }
 }
 
+proc options.save {varname} {
+  if {![info exist ::autosave_opt] || [lsearch -exact $::autosave_opt $varname] == -1} {
+    lappend ::autosave_opt $varname
+  }
+}
+
 $m add separator
 incr menuindex
 
@@ -1063,6 +1069,16 @@ $m add command -label OptionsSave -command {
     # Save tactics (find best move history)
     foreach i [lsort [array names ::tactics::findBestMove_History]] {
         puts $optionF "set ::tactics::findBestMove_History($i) [list $::tactics::findBestMove_History($i)]"
+    }
+
+    # Save var that was added with options.save()
+    if {[info exist ::autosave_opt]} {
+      puts $optionF ""
+      puts $optionF "set ::autosave_opt [list $::autosave_opt]"
+      foreach {var} $::autosave_opt {
+        upvar #0 $var a
+        puts $optionF "set $var [list $a]"
+      }
     }
     
     close $optionF

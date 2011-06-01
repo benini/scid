@@ -220,7 +220,7 @@ proc ::game::LoadNumber {} {
 #
 #   Loads a specified game from the active database.
 #
-proc ::game::Load { selection } {
+proc ::game::Load { selection {ply ""} } {
   # If an invalid game number, just return:
   if {$selection < 1} { return }
   if {$selection > [sc_base numGames]} { return }
@@ -233,6 +233,7 @@ proc ::game::Load { selection } {
   
   setTrialMode 0
   sc_game load $selection
+  if {$ply != ""} { sc_move ply $ply }
   flipBoardForPlayerNames $::myPlayerNames
   updateBoard -pgn
   ::windows::gamelist::Refresh
