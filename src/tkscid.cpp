@@ -10173,14 +10173,14 @@ int
 sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "addNag", "bestSquare", "board", "clearNags",
+        "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isLegal", "isPromotion",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", NULL
     };
     enum {
-        POS_ADDNAG, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
+        POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISLEGAL, POS_ISPROMO,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
@@ -10194,6 +10194,9 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case POS_ADDNAG:
         return sc_pos_addNag (cd, ti, argc, argv);
+
+    case POS_ANALYZE:
+        return sc_pos_analyze (cd, ti, argc, argv);
 
     case POS_BESTSQ:
         return sc_pos_bestSquare (cd, ti, argc, argv);
@@ -10323,6 +10326,80 @@ sc_pos_addNag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_pos_analyze:
+//    Analyzes the current position for the specified number of
+//    milliseconds.
+//    Returns a two-element list containing the score in centipawns
+//    (from the perspective of the side to move) and the best move.
+//    If there are no legal moves, the second element is the empty string.
+int
+sc_pos_analyze (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    const char * usage = "Usage: sc_pos analyze [<option> <value> ...]";
+
+    uint searchTime = 1000;   // Default = 1000 milliseconds
+    uint hashTableKB = 1024;  // Default: one-megabyte hash table.
+    uint pawnTableKB = 32;
+    bool postMode = false;
+    bool pruning = false;
+    uint mindepth = 4; // will not check time until this depth is reached
+    uint searchdepth = 0;
+
+    static const char * options [] = {
+        "-time", "-hashkb", "-pawnkb", "-post", "-pruning", "-mindepth", "-searchdepth", NULL
+    };
+    enum {
+        OPT_TIME, OPT_HASH, OPT_PAWN, OPT_POST, OPT_PRUNING, OPT_MINDEPTH, OPT_SEARCHDEPTH
+    };
+    int arg = 2;
+    while (arg+1 < argc) {
+        const char * option = argv[arg];
+        const char * value = argv[arg+1];
+        arg += 2;
+        int index = strUniqueMatch (option, options);
+        switch (index) {
+            case OPT_TIME:     searchTime = strGetUnsigned(value);  break;
+            case OPT_HASH:     hashTableKB = strGetUnsigned(value); break;
+            case OPT_PAWN:     pawnTableKB = strGetUnsigned(value); break;
+            case OPT_POST:     postMode = strGetBoolean(value);     break;
+            case OPT_PRUNING:  pruning = strGetBoolean(value);      break;
+            case OPT_MINDEPTH: mindepth = strGetUnsigned(value);    break;
+            case OPT_SEARCHDEPTH: searchdepth = strGetUnsigned(value);    break;
+            default:
+                return InvalidCommand (ti, "sc_pos analyze", options);
+        }
+    }
+    if (arg != argc) { return errorResult (ti, usage); }
+
+    // Generate all legal moves:
+    Position * pos = db->game->GetCurrentPos();
+    MoveList mlist;
+    pos->GenerateMoves(&mlist);
+
+    // Start the engine:
+    Engine * engine = new Engine();
+    engine->SetSearchTime (searchTime);
+    engine->SetHashTableKilobytes (hashTableKB);
+    engine->SetPawnTableKilobytes (pawnTableKB);
+    engine->SetMinDepthCheckTime(mindepth);
+    if (searchdepth > 0)
+      engine->SetSearchDepth(searchdepth);
+    engine->SetPosition (pos);
+    engine->SetPostMode (postMode);
+    engine->SetPruning (pruning);
+    int score = engine->Think (&mlist);
+    delete engine;
+    appendIntResult (ti, score);
+    char moveStr[20];
+    moveStr[0] = 0;
+    if (mlist.Size() > 0) {
+        pos->MakeSANString (mlist.Get(0), moveStr, SAN_MATETEST);
+    }
+    Tcl_AppendElement (ti, moveStr);
+    return TCL_OK;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_bestSquare:
