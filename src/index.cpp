@@ -15,6 +15,7 @@
 
 #include "common.h"
 #include "error.h"
+#include "filter.h"
 #include "index.h"
 #include "misc.h"
 #include "date.h"
@@ -806,6 +807,8 @@ Index::Init ()
       strcpy(Header.customFlagDesc[i], "");
     }
     CalcIndexEntrySize();
+    for( int i=0; i<SORTING_CACHE_MAX; i++)
+        sortingCaches[i] = NULL;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -859,6 +862,11 @@ Index::Clear ()
     Header.version = SCID_VERSION;
     Header.autoLoad = 2;
     CalcIndexEntrySize();
+    for( int i=0; i<SORTING_CACHE_MAX; i++)
+        if( sortingCaches[i]) {
+            delete sortingCaches[i];
+            sortingCaches[i] = NULL;
+        }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1040,6 +1048,11 @@ Index::CloseIndexFile ( bool NoHeader )
     errorT result = FilePtr->Close ();
     delete FilePtr;
     FilePtr = NULL;
+    for( int i=0; i<SORTING_CACHE_MAX; i++)
+        if( sortingCaches[i]) {
+            delete sortingCaches[i];
+            sortingCaches[i] = NULL;
+        }
     return result;
 }
 
@@ -1735,6 +1748,205 @@ Index::ParseSortCriteria (const char * inputStr)
 
     SortCriteria [criListLen] = SORT_sentinel;
     return OK;
+}
+
+
+errorT Index::CreateSortingCache( NameBase *nbase, const char *criteria, bool doPreSort, int *handle)
+{
+	int targetCache = -1;
+
+	// If the criterium is empty free the cache and return -1
+	if( strlen( criteria) < 2) {
+		if( *handle != -1 && sortingCaches[*handle] != NULL) {
+			if(sortingCaches[*handle]->GetReferenceCount() == 1) {
+				delete sortingCaches[*handle];
+				sortingCaches[*handle] = NULL;
+			}
+			else {
+				sortingCaches[*handle]->ReleaseCount();
+			}
+		}
+		*handle = -1;
+		return OK;
+	}
+
+	// If the current cache is already ok, keep it
+	if( *handle > -1 && *handle < 8 &&
+		((sortingCaches[*handle]->GetDoPresorting() && sortingCaches[*handle]->GetNumSorted() == GetNumGames()) || !doPreSort) &&
+		sortingCaches[*handle] && sortingCaches[*handle]->MatchCriteria( criteria))
+		return OK;
+
+	// If is another client using a matching cache, use this one
+	for( int i=0; i<8; i++) {
+		if( sortingCaches[i] &&
+			((sortingCaches[i]->GetDoPresorting() && sortingCaches[i]->GetNumSorted() == GetNumGames()) || !doPreSort)  &&
+			sortingCaches[i]->MatchCriteria( criteria)) {
+			targetCache = i;
+			break;
+		}
+	}
+	if( targetCache > 0) {
+		if( *handle > -1) {
+			if(sortingCaches[*handle]->GetReferenceCount() > 1)
+				sortingCaches[*handle]->ReleaseCount();
+			else
+			{
+				delete sortingCaches[*handle];
+				sortingCaches[*handle] = NULL;
+			}
+		}
+		// register for targetCache
+		*handle = targetCache;
+		sortingCaches[targetCache]->AddCount();
+		return OK;
+	}
+
+	// A new cache has to be created
+	if( *handle == -1 ||
+		sortingCaches[*handle] == NULL ||
+		sortingCaches[*handle]->GetReferenceCount() > 1) {
+		if(*handle > -1 && sortingCaches[*handle])
+			sortingCaches[*handle]->ReleaseCount();
+		*handle = -1;
+		uint idx = 0;
+		while( sortingCaches[idx] != 0 && idx < 8)
+			idx++;
+		if( idx == 8) {
+			// TODO: no free handle anymore
+			return ERROR;
+		}
+		sortingCaches[idx] = new SortCache( this, nbase, criteria, doPreSort, true);
+		*handle = idx;
+	}
+	else {
+		sortingCaches[*handle]->Clear( criteria, doPreSort);
+	}
+	return OK;
+}
+
+errorT Index::GetSortingCrit( char *crit, int cache)
+{
+	*crit = 0;
+	if( cache == -1)
+		return OK;
+	SortCache *sc = sortingCaches[cache];
+	if( sc == NULL)
+		return OK;
+	sc->GetSortingCrit( crit);
+	return OK;
+}
+
+errorT Index::DoFullSort(int cache,
+                         int reportFrequency,
+                         void (*progressFn)(void * data, uint progress, uint total),
+                         void * progressData)
+{
+	if( cache == -1)
+		return OK;
+	SortCache *sc = sortingCaches[cache];
+	if( sc == NULL)
+	{
+		// TODO: error message
+		return ERROR;
+	}
+	sc->DoFullSort( reportFrequency, progressFn, progressData);
+	return OK;
+}
+
+errorT Index::GetIndex( int cache, uint idx, Filter *filter, uint *result)
+{
+	*result = NULL;
+	SortCache *sc = sortingCaches[cache];
+	if( sc == NULL)
+	{
+		// TODO: error message
+		return ERROR;
+	}
+	sc->GetIndex( idx, filter, result);
+	return OK;
+}
+
+errorT Index::GetIndex( NameBase *nbase, char *criteria, uint idx, Filter *filter, uint *result)
+{
+	SortCache *sc = new SortCache( this, nbase, criteria, false, true);
+	sc->GetIndex( idx, filter, result);
+	delete sc;
+	return OK;
+}
+
+errorT Index::GetRange( int cache, uint idx, uint count, Filter *filter, uint *result)
+{
+	*result = NULL;
+	SortCache *sc = sortingCaches[cache];
+	if( sc == NULL)
+	{
+		// TODO: error message
+		return ERROR;
+	}
+	sc->GetRange( idx, count, filter, result);
+	return OK;
+}
+
+errorT Index::GetRange( NameBase *nbase, char *criteria, uint idx, uint count, Filter *filter, uint *result)
+{
+	SortCache *sc = new SortCache( this, nbase, criteria, false, true);
+	sc->GetRange( idx, count, filter, result);
+	delete sc;
+	return OK;
+}
+
+void Index::FreeCache( int cache)
+{
+	if( sortingCaches[cache])
+		delete sortingCaches[cache];
+	sortingCaches[cache] = NULL;
+}
+
+errorT Index::IndexUpdated( uint gnum)
+{
+	for( int i=0; i<SORTING_CACHE_MAX; i++)
+		if( sortingCaches[i] != NULL)
+			sortingCaches[i]->CheckForChanges( NULL, gnum);
+	return OK;
+}
+
+void Index::FilterChanged()
+{
+	for( int i=0; i<SORTING_CACHE_MAX; i++)
+		if( sortingCaches[i] != NULL)
+			sortingCaches[i]->FilterChanged();
+}
+
+uint Index::IndexToFilteredCount( uint gnumber, int cache, Filter *filter)
+{
+	return sortingCaches[cache]->IndexToFilteredCount( gnumber, filter);
+}
+
+errorT Index::WriteSortCacheToFile( int handle)
+{
+	SortCache *sc = sortingCaches[handle];
+	if( sc == NULL)
+	{
+		// TODO: error message
+		return ERROR;
+	}
+	return sc->WriteToFile();
+}
+
+errorT Index::ReadSortCacheFromFile( int handle)
+{
+	SortCache *sc = sortingCaches[handle];
+	if( sc == NULL)
+	{
+		// TODO: error message
+		return ERROR;
+	}
+	return sc->ReadFromFile();
+}
+
+bool Index::CanLoad()
+{
+	return SortCache::CanLoad( GetFileName(), GetNumGames());
 }
 
 

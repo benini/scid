@@ -14,7 +14,7 @@
 
 
 #ifndef SCID_FILTER_H
-#define SCID_TREE_H
+#define SCID_FILTER_H
 
 #include "common.h"
 #include "misc.h"
