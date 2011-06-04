@@ -1008,6 +1008,56 @@ translate O GlistAlign {Justering}
 translate O GlistColor {Farge}
 translate O GlistSep {Skilletegn}
 # ====== TODO To be translated ======
+translate O GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate O GsortDate {Date}
+# ====== TODO To be translated ======
+translate O GsortYear {Year}
+# ====== TODO To be translated ======
+translate O GsortEvent {Event}
+# ====== TODO To be translated ======
+translate O GsortSite {Site}
+# ====== TODO To be translated ======
+translate O GsortRound {Round}
+# ====== TODO To be translated ======
+translate O GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate O GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate O GsortECO {ECO}
+# ====== TODO To be translated ======
+translate O GsortResult {Result}
+# ====== TODO To be translated ======
+translate O GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate O GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate O GsortCountry {Country}
+# ====== TODO To be translated ======
+translate O GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate O GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate O GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate O GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate O GsortComments {Comments}
+# ====== TODO To be translated ======
+translate O GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate O GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate O GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate O GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate O GsortAdd {Add}
+# ====== TODO To be translated ======
+translate O GsortStore {Store}
+# ====== TODO To be translated ======
+translate O GsortLoad {Load}
+# ====== TODO To be translated ======
 translate O GlistRemoveThisGameFromFilter  {Remove this game from Filter}
 # ====== TODO To be translated ======
 translate O GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
@@ -2171,6 +2221,8 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
+
 
 
 

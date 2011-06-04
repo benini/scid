@@ -477,7 +477,6 @@ int sc_game_firstMoves (TCL_ARGS);
 int sc_game_flag      (TCL_ARGS);
 int sc_game_import    (TCL_ARGS);
 int sc_game_info      (TCL_ARGS);
-int sc_game_list      (TCL_ARGS);
 int sc_game_load      (TCL_ARGS);
 int sc_game_merge     (TCL_ARGS);
 int sc_game_moves     (TCL_ARGS);
@@ -546,6 +545,14 @@ int sc_pos_probe_board (TCL_ARGS);
 int sc_pos_setComment (TCL_ARGS);
 
 int sc_progressBar    (TCL_ARGS);
+
+int sc_sort           (TCL_ARGS);
+int sc_sort_list      (TCL_ARGS);
+int sc_sort_sort      (TCL_ARGS);
+int sc_sort_crit      (TCL_ARGS);
+int sc_sort_store     (TCL_ARGS);
+int sc_sort_load      (TCL_ARGS);
+int sc_sort_testload  (TCL_ARGS);
 
 int sc_tree           (TCL_ARGS);
 int sc_tree_best      (TCL_ARGS);

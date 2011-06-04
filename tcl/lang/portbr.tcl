@@ -865,6 +865,56 @@ translate B GlistWidth {Largura}
 translate B GlistAlign {Alinhar}
 translate B GlistColor {Cor}
 translate B GlistSep {Separador}
+# ====== TODO To be translated ======
+translate B GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate B GsortDate {Date}
+# ====== TODO To be translated ======
+translate B GsortYear {Year}
+# ====== TODO To be translated ======
+translate B GsortEvent {Event}
+# ====== TODO To be translated ======
+translate B GsortSite {Site}
+# ====== TODO To be translated ======
+translate B GsortRound {Round}
+# ====== TODO To be translated ======
+translate B GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate B GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate B GsortECO {ECO}
+# ====== TODO To be translated ======
+translate B GsortResult {Result}
+# ====== TODO To be translated ======
+translate B GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate B GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate B GsortCountry {Country}
+# ====== TODO To be translated ======
+translate B GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate B GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate B GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate B GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate B GsortComments {Comments}
+# ====== TODO To be translated ======
+translate B GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate B GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate B GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate B GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate B GsortAdd {Add}
+# ====== TODO To be translated ======
+translate B GsortStore {Store}
+# ====== TODO To be translated ======
+translate B GsortLoad {Load}
 translate B GlistRemoveThisGameFromFilter  {Remover este jogo do filtro}
 translate B GlistRemoveGameAndAboveFromFilter  {Remover jogo (e todos antes dele) do filtro}
 translate B GlistRemoveGameAndBelowFromFilter  {Remover jogo (e todos depois dele) do filtro}
@@ -1722,6 +1772,8 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
+
+
 
 
 

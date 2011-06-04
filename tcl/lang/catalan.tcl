@@ -891,6 +891,56 @@ translate K GlistWidth {Amplada}
 translate K GlistAlign {Alinear}
 translate K GlistColor {Color}
 translate K GlistSep {Separador}
+# ====== TODO To be translated ======
+translate K GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate K GsortDate {Date}
+# ====== TODO To be translated ======
+translate K GsortYear {Year}
+# ====== TODO To be translated ======
+translate K GsortEvent {Event}
+# ====== TODO To be translated ======
+translate K GsortSite {Site}
+# ====== TODO To be translated ======
+translate K GsortRound {Round}
+# ====== TODO To be translated ======
+translate K GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate K GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate K GsortECO {ECO}
+# ====== TODO To be translated ======
+translate K GsortResult {Result}
+# ====== TODO To be translated ======
+translate K GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate K GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate K GsortCountry {Country}
+# ====== TODO To be translated ======
+translate K GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate K GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate K GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate K GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate K GsortComments {Comments}
+# ====== TODO To be translated ======
+translate K GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate K GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate K GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate K GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate K GsortAdd {Add}
+# ====== TODO To be translated ======
+translate K GsortStore {Store}
+# ====== TODO To be translated ======
+translate K GsortLoad {Load}
 translate K GlistRemoveThisGameFromFilter  {Treu aquesta partida del Filtre}
 translate K GlistRemoveGameAndAboveFromFilter  {Treu aquesta partida i totes les de sobre del Filtre}
 translate K GlistRemoveGameAndBelowFromFilter  {Treu aquesta partida i totes les de sota del Filtre}
@@ -1737,6 +1787,8 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
+
 
 
 

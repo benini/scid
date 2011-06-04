@@ -850,6 +850,56 @@ translate C GlistWidth {©íøka}
 translate C GlistAlign {Zarovnat}
 translate C GlistColor {Barva}
 translate C GlistSep {Oddìlovaè}
+# ====== TODO To be translated ======
+translate C GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate C GsortDate {Date}
+# ====== TODO To be translated ======
+translate C GsortYear {Year}
+# ====== TODO To be translated ======
+translate C GsortEvent {Event}
+# ====== TODO To be translated ======
+translate C GsortSite {Site}
+# ====== TODO To be translated ======
+translate C GsortRound {Round}
+# ====== TODO To be translated ======
+translate C GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate C GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate C GsortECO {ECO}
+# ====== TODO To be translated ======
+translate C GsortResult {Result}
+# ====== TODO To be translated ======
+translate C GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate C GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate C GsortCountry {Country}
+# ====== TODO To be translated ======
+translate C GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate C GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate C GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate C GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate C GsortComments {Comments}
+# ====== TODO To be translated ======
+translate C GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate C GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate C GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate C GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate C GsortAdd {Add}
+# ====== TODO To be translated ======
+translate C GsortStore {Store}
+# ====== TODO To be translated ======
+translate C GsortLoad {Load}
 translate C GlistRemoveThisGameFromFilter  {Odstranit tuto partii z filtru}
 translate C GlistRemoveGameAndAboveFromFilter  {Odstranit partii (a v¹echny nad ní) z filtru}
 translate C GlistRemoveGameAndBelowFromFilter  {Odstranit partii (a v¹echny pod ní) z filtru}
@@ -5308,6 +5358,8 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
+
 
 
 

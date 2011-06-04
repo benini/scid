@@ -896,6 +896,33 @@ translate E GlistAlign {Align}
 translate E GlistColor {Color}
 translate E GlistSep {Separator}
 
+# base sorting
+translate E GsortSort {Sort...}
+translate E GsortDate {Date}
+translate E GsortYear {Year}
+translate E GsortEvent {Event}
+translate E GsortSite {Site}
+translate E GsortRound {Round}
+translate E GsortWhiteName {White Name}
+translate E GsortBlackName {Black Name}
+translate E GsortECO {ECO}
+translate E GsortResult {Result}
+translate E GsortMoveCount {Move Count}
+translate E GsortAverageElo {Average Elo}
+translate E GsortCountry {Country}
+translate E GsortDeleted {Deleted}
+translate E GsortEventDate {Event Date}
+translate E GsortWhiteElo {White Elo}
+translate E GsortBlackElo {Black Elo}
+translate E GsortComments {Comments}
+translate E GsortVariations {Variations}
+translate E GsortNAGs {NAGs}
+translate E GsortAscending {Ascending}
+translate E GsortDescending {Descending}
+translate E GsortAdd {Add}
+translate E GsortStore {Store}
+translate E GsortLoad {Load}
+
 # menu shown with right mouse button down on game list. 
 translate E GlistRemoveThisGameFromFilter  {Remove this game from Filter}
 translate E GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}

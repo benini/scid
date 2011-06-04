@@ -34,6 +34,33 @@ array set ::windows::gamelist::names {
   S Start
 }
 
+set sortCriteria(real) ""
+set sortCriteria(translated) ""
+
+set critList { "GsortDate" "GsortYear" "GsortEvent" "GsortSite" 
+               "GsortRound" "GsortWhiteName" "GsortBlackName" "GsortECO" 
+			   "GsortResult" "GsortMoveCount" "GsortAverageElo" "GsortCountry" 
+			   "GsortDeleted" "GsortEventDate" "GsortWhiteElo" "GsortBlackElo" 
+               "GsortComments" "GsortVariations" "GsortNAGs" }
+set critShortcuts { "d" "y" "e" "s" 
+                    "n" "w" "b" "o" 
+                    "r" "m" "R" "c" 
+                    "D" "E" "W" "B" 
+                    "C" "V" "A" }
+array set sortingHandles {
+0 -1
+1 -1 
+2 -1 
+3 -1
+4 -1
+5 -1
+6 -1
+7 -1
+8 -1
+9 -1
+}
+
+
 # glistExtra is the window that displays the starting moves of a
 # game when the middle mouse button is pressed in the game list window.
 
@@ -52,11 +79,12 @@ trace variable ::windows::gamelist::goto w {::utils::validate::Regexp {^[0-9]*$}
 
 
 proc ::windows::gamelist::FindText {} {
-  global glstart
+  global glstart sortingHandles
   variable findtext
   busyCursor .glistWin 1
   ::utils::history::AddEntry ::windows::gamelist::findtext $findtext
-  set temp [sc_filter textfind $glstart $findtext]
+  set dbNum [sc_base current]
+  set temp [sc_filter textfind $glstart $findtext $sortingHandles($dbNum)]
   busyCursor .glistWin 0
   if {$temp < 1} { set temp 1 }
   set glstart $temp
@@ -196,7 +224,8 @@ proc ::windows::gamelist::ReOpen {} {
   set helpMessage(E,$w.b.end) {Go to the last page of games}
   
   ttk::button $w.b.current -textvar ::tr(Current) -style Pad0.Small.TButton -command {
-    set glstart [sc_filter locate [sc_game number]]
+    set dbNum [sc_base current]
+    set glstart [sc_filter locate [sc_game number] $sortingHandles($dbNum)]
     if {$glstart < 1} { set glstart 1}
     ::windows::gamelist::Refresh
   }
@@ -224,7 +253,8 @@ proc ::windows::gamelist::ReOpen {} {
   bind $w.b.goto <Home> "$w.b.start invoke; break"
   bind $w.b.goto <End> "$w.b.end invoke; break"
   bind $w.b.goto <Return> {
-    set glstart [sc_filter locate $::windows::gamelist::goto]
+    set dbNum [sc_base current]
+    set glstart [sc_filter locate $::windows::gamelist::goto $sortingHandles($dbNum)]
     if {$glstart < 1} { set glstart 1}
     set ::windows::gamelist::goto ""
     ::windows::gamelist::Refresh
@@ -240,6 +270,7 @@ proc ::windows::gamelist::ReOpen {} {
   ttk::frame $w.b.space -width 0.25c
   ttk::frame $w.b.space2 -width 0.25c
   
+  ttk::button $w.b.sortbutton -textvar ::tr(GsortSort) -style Pad0.Small.TButton -command { makeSortWin }
   ttk::button $w.b.export -textvar ::tr(Save...) -style Pad0.Small.TButton -command openExportGList
   ttk::button $w.b.help -textvar ::tr(Help) -style Pad0.Small.TButton -command { helpWindow GameList }
   ttk::button $w.b.close -textvar ::tr(Close) -style Pad0.Small.TButton -command { focus .; destroy .glistWin }
@@ -247,7 +278,7 @@ proc ::windows::gamelist::ReOpen {} {
   pack $w.b.start $w.b.pgup $w.b.pgdn $w.b.end $w.b.current -side left -padx 1
   pack $w.b.space $w.b.gotolabel $w.b.goto -side left
   pack $w.b.space2 $w.b.findlabel $w.b.find -side left
-  pack $w.b.close $w.b.help $w.b.export -side right -padx 5
+  pack $w.b.close $w.b.help $w.b.export $w.b.sortbutton -side right -padx 5
   
   set ::windows::gamelist::isOpen 1
   bind $w <F1> { helpWindow GameList }
@@ -635,16 +666,17 @@ proc ::windows::gamelist::ToggleFlag {flag} {
 }
 
 proc removeFromFilter {{dir none}} {
-  global glNumber glstart
+  global glNumber glstart sortingHandles
   if {$glNumber < 1} { return }
   if {$glNumber > [sc_base numGames]} { return }
+  set db [ sc_base current]
   if {$dir == "none"} {
-    sc_filter remove $glNumber
+    sc_filter remove 0 $glNumber 
   } elseif {$dir == "up"} {
-    sc_filter remove 1 $glNumber
+    sc_filter remove 1 $glNumber $sortingHandles($db)
     set glstart 1
   } else {
-    sc_filter remove $glNumber 9999999
+    sc_filter remove 2 $glNumber $sortingHandles($db)
   }
   ::windows::stats::Refresh
   ::windows::gamelist::Refresh
@@ -666,23 +698,25 @@ proc ::windows::gamelist::ShowMoves {xcoord ycoord} {
 
 proc ::windows::gamelist::Refresh {} {
   global glistSize glstart
-  global glistFields
+  global glistFields sortingHandles
   updateStatusBar
   if {![winfo exists .glistWin]} { return }
   set totalSize [sc_filter count]
-  set linenum [sc_game list $glstart $glistSize -current]
+  set dbNum [sc_base current]
+  set linenum [sc_sort list $dbNum $glstart $glistSize -current $sortingHandles($dbNum)]
   foreach column $glistFields {
     set code [lindex $column 0]
     set cformat $code
     append cformat "*\n"
     .glistWin.columns.c$code.text config -state normal
     .glistWin.columns.c$code.text delete 1.0 end
-    .glistWin.columns.c$code.text insert end [sc_game list $glstart $glistSize $cformat] align
+    .glistWin.columns.c$code.text insert end [sc_sort list $dbNum $glstart $glistSize $cformat $sortingHandles($dbNum)] align
     if {$linenum > 0} {
       .glistWin.columns.c$code.text tag add current $linenum.0 [expr {$linenum+1}].0
     }
     .glistWin.columns.c$code.text config -state disabled
   }
+
   
   # Now update the window title:
   set str "Scid [tr WindowsGList]: "
@@ -699,6 +733,7 @@ proc ::windows::gamelist::Refresh {} {
     .glistWin.scale configure -to 1
   }
   ::setTitle .glistWin $str
+  configureSortWin
 }
 
 trace variable glexport w updateExportGList
@@ -760,10 +795,11 @@ proc openExportGList {} {
 }
 
 proc updateExportGList {args} {
-  global glexport
+  global glexport sortingHandles
   set w .glexport
   if {! [winfo exists $w]} { return }
-  set text [sc_game list 1 5 "$glexport\n"]
+  set dbNum [sc_base current]
+  set text [sc_sort list $dbNum 1 5 "$glexport\n" $sortingHandles($dbNum)]
   $w.preview configure -state normal
   $w.preview delete 1.0 end
   $w.preview insert end $text
@@ -771,7 +807,7 @@ proc updateExportGList {args} {
 }
 
 proc saveExportGList {} {
-  global glexport
+  global glexport sortingHandles
   set ftypes {{"Text files" {.txt}} {"All files" *}}
   set fname [tk_getSaveFile -filetypes $ftypes -parent .glexport -title "Scid: Save Game List"]
   if {$fname == ""} { return }
@@ -781,7 +817,8 @@ proc saveExportGList {} {
     progressWindow "Scid" "Saving game list..." $::tr(Cancel) sc_progressBar
   }
   busyCursor .
-  set res [catch {sc_game list 1 9999999 "$glexport\n" $fname} err]
+  set dbNum [sc_base current]
+  set res [catch {sc_sort list $dbNum 1 9999999 "$glexport\n" $sortingHandles($dbNum) $fname} err]
   unbusyCursor .
   if {$showProgress} { closeProgressWindow }
   if {$res} {
@@ -792,5 +829,161 @@ proc saveExportGList {} {
   grab release .glexport
   destroy .glexport
   return
+}
+
+proc makeSortWin {} {
+  global sortCriteria critList
+  set w .glSortWin
+  if {[winfo exists $w]} {
+    raiseWin $w
+    return
+  }
+  toplevel $w
+  wm title $w "Scid: Game List Sort"
+  wm resizable $w 0 0
+  pack [ttk::frame $w.f]
+  
+  ttk::label $w.f.torder -textvar ::tr(SortCriteria:) -font font_Bold
+  pack $w.f.torder -side top
+  ttk::label $w.f.order -textvar sortCriteria(translated) -width 40 -background white -relief solid -anchor w
+  pack $w.f.order -side top -fill x -pady 2 -padx 2
+  addHorizontalRule $w.f
+  ttk::label $w.f.tadd -textvar ::tr(AddCriteria:) -font font_Bold
+  pack $w.f.tadd -side top
+
+  addHorizontalRule $w.f
+
+  pack [ttk::frame $w.f.cr] -fill x
+  
+  set locCritList {}
+  foreach cr $critList { lappend locCritList $::tr($cr) } 
+  ttk::combobox $w.f.cr.critcombo -width 20 -values $locCritList
+  $w.f.cr.critcombo set [lindex $locCritList 0]
+  pack $w.f.cr.critcombo -side left
+
+  set locOrderList [::list $::tr(GsortAscending) $::tr(GsortDescending) ]
+  ttk::combobox $w.f.cr.ordercombo -width 12 -values $locOrderList
+  $w.f.cr.ordercombo set $::tr(GsortAscending)
+  pack $w.f.cr.ordercombo -side left
+
+  ttk::button $w.f.cr.add -textvar ::tr(GsortAdd) -command addSortCriteria
+  pack $w.f.cr.add -side right
+  
+  addHorizontalRule $w.f
+
+  pack [ttk::frame $w.f.b1] -fill x
+  ttk::button $w.f.b1.clear -textvar ::tr(Clear) -command clearSortCriteria
+  ttk::button $w.f.b1.sort -textvar ::tr(Sort) -command sortGameList
+  pack $w.f.b1.clear -side left
+  pack $w.f.b1.sort -side right
+
+  pack [ttk::frame $w.f.b2] -side bottom -fill x
+  ttk::button $w.f.b2.store -textvar ::tr(GsortStore) -command storeSortingCache
+  ttk::button $w.f.b2.load -textvar ::tr(GsortLoad) -command loadSortingCache
+  ttk::button $w.f.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
+  pack $w.f.b2.store $w.f.b2.load -side left -padx 5 -pady 2
+  pack $w.f.b2.close -side right
+
+  bind $w <Escape> "$w.f.b.close invoke"
+  configureSortWin
+}
+
+proc configureSortWin {} {
+  global sortCriteria sortingHandles
+  set w .glSortWin
+  if {[winfo exists $w]} {
+    set db [ sc_base current]
+    if {[sc_base inUse $db]} {
+      set handle $sortingHandles($db)
+      if { $handle == -1 || $db == 9 } { $w.f.b2.store configure -state disabled } else { $w.f.b2.store configure -state normal }
+      if { $db == 9 } { $w.f.b2.load configure -state disabled } else {
+  	    set canLoad [ sc_sort testload $db ]
+	    if { $canLoad } { $w.f.b2.load configure -state normal } else { $w.f.b2.load configure -state disabled }
+      }
+      if {$sortCriteria(real) == ""} {$w.f.b1.clear configure -state disabled } else { $w.f.b1.clear configure -state normal }
+	}
+  }
+}
+
+proc clearSortCriteria {} {
+  set ::sortCriteria(real) ""
+  set ::sortCriteria(translated) ""
+  configureSortWin
+}
+
+proc addSortCriteria {args} {
+  global sortCriteria critShortcuts
+
+  set critSelected [.glSortWin.f.cr.critcombo get]
+  set orderSelected [.glSortWin.f.cr.ordercombo current]
+  set shortCrit [lindex $critShortcuts [.glSortWin.f.cr.critcombo current]]
+  set shortOrder "+" 
+  if { $orderSelected == 1 } { set shortOrder "-" }
+
+  if {$sortCriteria(real) == ""} {
+    set sortCriteria(real) "$shortCrit$shortOrder"
+    set sortCriteria(translated) "$critSelected$shortOrder"
+  } else {
+    append sortCriteria(real) "$shortCrit$shortOrder"
+    append sortCriteria(translated) ", $critSelected$shortOrder"
+  }
+  configureSortWin
+}
+
+proc sortGameList {} {
+  global sortCriteria sortingHandles
+  set db [ sc_base current]
+  progressWindow "Scid" [concat "Sorting" "..."]
+  busyCursor .
+  set handle [ sc_sort sort $db $sortCriteria(real) $sortingHandles($db)]
+  unbusyCursor .
+  closeProgressWindow
+  set sortingHandles($db) $handle 
+  ::windows::gamelist::Refresh
+  configureSortWin
+}
+
+proc storeSortingCache {} {
+  global sortingHandles
+  set db [ sc_base current]
+  sc_sort store $db $sortingHandles($db)
+  getSortingCrit
+}
+
+proc loadSortingCache {} {
+  global sortCriteria sortingHandles
+  set db [ sc_base current]
+  set sortingHandles($db) [sc_sort load $db $sortingHandles($db)] 
+  getSortingCrit
+  ::windows::gamelist::Refresh
+  configureSortWin
+}
+
+proc getSortingCrit {} {
+  global sortCriteria sortingHandles critShortcuts critList
+    
+  set db [ sc_base current]
+  set critString [ sc_sort crit $db $sortingHandles($db)]
+  set critStringList [split $critString {} ]
+  set sortCriteria(real) $critString
+  set sortCriteria(translated) ""
+
+  set sep ""
+  foreach c $critStringList {
+	set found 0
+	set p 0
+	foreach l $critShortcuts {
+	if { $l == $c } {
+      set idx [lindex $critList $p]
+      append sortCriteria(translated) $sep $::tr($idx) 
+      set sep ","
+      set found 1
+    }
+    incr p 
+    }
+    if { $found == 0 } {
+      append sortCriteria(translated) $c
+    }
+  }
 }
 

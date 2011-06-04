@@ -895,6 +895,56 @@ translate U GlistWidth {Leveys}
 translate U GlistAlign {Tasaus}
 translate U GlistColor {Väri}
 translate U GlistSep {Erotin}
+# ====== TODO To be translated ======
+translate U GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate U GsortDate {Date}
+# ====== TODO To be translated ======
+translate U GsortYear {Year}
+# ====== TODO To be translated ======
+translate U GsortEvent {Event}
+# ====== TODO To be translated ======
+translate U GsortSite {Site}
+# ====== TODO To be translated ======
+translate U GsortRound {Round}
+# ====== TODO To be translated ======
+translate U GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate U GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate U GsortECO {ECO}
+# ====== TODO To be translated ======
+translate U GsortResult {Result}
+# ====== TODO To be translated ======
+translate U GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate U GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate U GsortCountry {Country}
+# ====== TODO To be translated ======
+translate U GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate U GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate U GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate U GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate U GsortComments {Comments}
+# ====== TODO To be translated ======
+translate U GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate U GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate U GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate U GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate U GsortAdd {Add}
+# ====== TODO To be translated ======
+translate U GsortStore {Store}
+# ====== TODO To be translated ======
+translate U GsortLoad {Load}
 
 # menu shown with right mouse button down on game list. 
 translate U GlistRemoveThisGameFromFilter  {Tämä peli pois suodattimesta}
@@ -1722,6 +1772,8 @@ translate U ChangeIcon {Vaihda kuvake...}
 
 }
 # end of english.tcl
+
+
 
 
 

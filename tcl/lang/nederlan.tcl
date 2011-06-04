@@ -884,6 +884,56 @@ translate N GlistWidth {Breedte}
 translate N GlistAlign {Uitlijnen}
 translate N GlistColor {Kleuren}
 translate N GlistSep {Separator}
+# ====== TODO To be translated ======
+translate N GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate N GsortDate {Date}
+# ====== TODO To be translated ======
+translate N GsortYear {Year}
+# ====== TODO To be translated ======
+translate N GsortEvent {Event}
+# ====== TODO To be translated ======
+translate N GsortSite {Site}
+# ====== TODO To be translated ======
+translate N GsortRound {Round}
+# ====== TODO To be translated ======
+translate N GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate N GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate N GsortECO {ECO}
+# ====== TODO To be translated ======
+translate N GsortResult {Result}
+# ====== TODO To be translated ======
+translate N GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate N GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate N GsortCountry {Country}
+# ====== TODO To be translated ======
+translate N GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate N GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate N GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate N GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate N GsortComments {Comments}
+# ====== TODO To be translated ======
+translate N GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate N GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate N GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate N GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate N GsortAdd {Add}
+# ====== TODO To be translated ======
+translate N GsortStore {Store}
+# ====== TODO To be translated ======
+translate N GsortLoad {Load}
  
 translate N GlistRemoveThisGameFromFilter  {Remove this game from Filter}
  
@@ -1812,6 +1862,8 @@ translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
+
+
 
 
 

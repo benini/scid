@@ -1011,6 +1011,56 @@ translate R GlistAlign {Выравнивание}
 translate R GlistColor {Цвет}
 translate R GlistSep {Разделитель}
 # ====== TODO To be translated ======
+translate R GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate R GsortDate {Date}
+# ====== TODO To be translated ======
+translate R GsortYear {Year}
+# ====== TODO To be translated ======
+translate R GsortEvent {Event}
+# ====== TODO To be translated ======
+translate R GsortSite {Site}
+# ====== TODO To be translated ======
+translate R GsortRound {Round}
+# ====== TODO To be translated ======
+translate R GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate R GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate R GsortECO {ECO}
+# ====== TODO To be translated ======
+translate R GsortResult {Result}
+# ====== TODO To be translated ======
+translate R GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate R GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate R GsortCountry {Country}
+# ====== TODO To be translated ======
+translate R GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate R GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate R GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate R GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate R GsortComments {Comments}
+# ====== TODO To be translated ======
+translate R GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate R GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate R GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate R GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate R GsortAdd {Add}
+# ====== TODO To be translated ======
+translate R GsortStore {Store}
+# ====== TODO To be translated ======
+translate R GsortLoad {Load}
+# ====== TODO To be translated ======
 translate R GlistRemoveThisGameFromFilter  {Remove this game from Filter}
 # ====== TODO To be translated ======
 translate R GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
@@ -2200,6 +2250,8 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
+
 
 
 

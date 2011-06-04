@@ -1013,6 +1013,56 @@ translate P GlistAlign {Wyrównanie}
 translate P GlistColor {Kolor}
 translate P GlistSep {Separator}
 # ====== TODO To be translated ======
+translate P GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate P GsortDate {Date}
+# ====== TODO To be translated ======
+translate P GsortYear {Year}
+# ====== TODO To be translated ======
+translate P GsortEvent {Event}
+# ====== TODO To be translated ======
+translate P GsortSite {Site}
+# ====== TODO To be translated ======
+translate P GsortRound {Round}
+# ====== TODO To be translated ======
+translate P GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate P GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate P GsortECO {ECO}
+# ====== TODO To be translated ======
+translate P GsortResult {Result}
+# ====== TODO To be translated ======
+translate P GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate P GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate P GsortCountry {Country}
+# ====== TODO To be translated ======
+translate P GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate P GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate P GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate P GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate P GsortComments {Comments}
+# ====== TODO To be translated ======
+translate P GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate P GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate P GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate P GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate P GsortAdd {Add}
+# ====== TODO To be translated ======
+translate P GsortStore {Store}
+# ====== TODO To be translated ======
+translate P GsortLoad {Load}
+# ====== TODO To be translated ======
 translate P GlistRemoveThisGameFromFilter  {Remove this game from Filter}
 # ====== TODO To be translated ======
 translate P GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
@@ -2398,6 +2448,8 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
+
 
 
 

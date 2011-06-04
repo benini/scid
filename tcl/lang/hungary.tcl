@@ -868,6 +868,56 @@ translate H GlistWidth {Szélesség}
 translate H GlistAlign {Igazít}
 translate H GlistColor {Szín}
 translate H GlistSep {Elválasztó}
+# ====== TODO To be translated ======
+translate H GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate H GsortDate {Date}
+# ====== TODO To be translated ======
+translate H GsortYear {Year}
+# ====== TODO To be translated ======
+translate H GsortEvent {Event}
+# ====== TODO To be translated ======
+translate H GsortSite {Site}
+# ====== TODO To be translated ======
+translate H GsortRound {Round}
+# ====== TODO To be translated ======
+translate H GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate H GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate H GsortECO {ECO}
+# ====== TODO To be translated ======
+translate H GsortResult {Result}
+# ====== TODO To be translated ======
+translate H GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate H GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate H GsortCountry {Country}
+# ====== TODO To be translated ======
+translate H GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate H GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate H GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate H GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate H GsortComments {Comments}
+# ====== TODO To be translated ======
+translate H GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate H GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate H GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate H GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate H GsortAdd {Add}
+# ====== TODO To be translated ======
+translate H GsortStore {Store}
+# ====== TODO To be translated ======
+translate H GsortLoad {Load}
 translate H GlistRemoveThisGameFromFilter  {Vedd ki ezt a játszmát a szûrõbõl}
 translate H GlistRemoveGameAndAboveFromFilter  {Vedd ki a játszmát és az összes fölötte lévõt a szûrõbõl}
 translate H GlistRemoveGameAndBelowFromFilter  {Vedd ki a játszmát és az összes alatta lévõt a szûrõbõl}
@@ -1948,6 +1998,8 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
+
 
 
 

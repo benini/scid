@@ -488,6 +488,7 @@ scid_InitTclTk (Tcl_Interp * ti)
     CREATE_CMD (ti, "sc_report", sc_report);
     CREATE_CMD (ti, "sc_pos", sc_pos);
     CREATE_CMD (ti, "sc_progressBar", sc_progressBar);
+    CREATE_CMD (ti, "sc_sort", sc_sort);
     CREATE_CMD (ti, "sc_search", sc_search);
     CREATE_CMD (ti, "sc_tree", sc_tree);
     CREATE_CMD (ti, "sc_var", sc_var);
@@ -5360,13 +5361,17 @@ sc_filter_last (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_locate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_filter locate <gameNumber>");
+    if (argc != 4) {
+        return errorResult (ti, "Usage: sc_filter locate gameNumber sortingCache ");
     }
     uint filteredCount = 0;
     if (db->inUse) {
         uint gnumber = strGetUnsigned (argv[2]);
-        filteredCount = db->filter->IndexToFilteredCount(gnumber);
+        uint cache = strGetUnsigned (argv[3]);
+        if( cache == -1)
+            filteredCount = db->filter->IndexToFilteredCount(gnumber);
+        else
+            filteredCount = db->idx->IndexToFilteredCount(gnumber - 1, cache, db->filter) + 1;
     }
     return setUintResult (ti, filteredCount);
 }
@@ -5386,6 +5391,7 @@ sc_filter_negate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             filter->Set (i, filter->Get(i) == 0 ? 1 : 0);
         }
         updateMainFilter (db);
+        db->idx->FilterChanged();
     }
     return TCL_OK;
 }
@@ -5432,21 +5438,46 @@ sc_filter_prev (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_remove (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc != 3  &&  argc != 4) {
-        return errorResult (ti, "Usage: sc_filter remove <from> [<to>]");
+    if (argc != 4  &&  argc != 5) {
+        return errorResult (ti, "Usage: sc_filter remove <0|1|2> <from> [<cache>]");
     }
     if (! db->inUse) { return TCL_OK; }
     if( db->dbFilter == NULL) { initDbFilter (db, 1); }
-    uint from = strGetUnsigned (argv[2]);
-    uint to = from;
-    if (argc == 4) { to = strGetUnsigned (argv[3]); }
-    if (from < 1) { from = 1; }
-    if (to > db->numGames) { to = db->numGames; }
-
-    for (uint gnumber = from; gnumber <= to; gnumber++) {
-        db->dbFilter->Set (gnumber - 1, 0);
-    }
     updateMainFilter (db);
+
+    uint mode = strGetUnsigned (argv[2]);
+    uint from = strGetUnsigned (argv[3]) - 1;
+    int cache = -1;
+
+	if (mode == 0)
+		db->dbFilter->Set (from, 0);
+	else {
+		if (argc == 5) {
+			cache = strGetInteger (argv[4]);
+			if (cache > -1)
+				from = db->idx->IndexToFilteredCount( from, cache, db->filter);
+		}
+        uint to = mode == 1 ? from : db->numGames - 1;
+		from = mode == 1 ? 0 : from;
+		if( cache == -1) {
+			for (uint gnumber = from; gnumber <= to; gnumber++)
+				db->dbFilter->Set (gnumber, 0);
+		}
+		else {
+			uint *fields = new uint[to - from + 1];
+			db->idx->GetRange(cache, from, to - from + 1, db->filter, fields);
+			for (uint gnumber = 0; gnumber <= to - from; gnumber++) {
+				if (fields[gnumber] == IDX_NOT_FOUND)
+					break;
+				else
+					db->dbFilter->Set (fields[gnumber], 0);
+			}
+			delete[] fields;
+		}
+	}
+
+    updateMainFilter (db);
+    db->idx->FilterChanged();
     return TCL_OK;
 }
 
@@ -5480,6 +5511,7 @@ sc_filter_reset (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         delete basePtr->treeFilter;
         basePtr->treeFilter = basePtr->filter;
     }
+    db->idx->FilterChanged();
     return TCL_OK;
 }
 
@@ -5499,7 +5531,8 @@ sc_filter_clear (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         basePtr = &(dbList[baseNum - 1]);
     }
-	 clearFilter(db, db->numGames);
+    clearFilter(db, db->numGames);
+    db->idx->FilterChanged();
     return TCL_OK;
 }
 
@@ -5595,28 +5628,51 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_textfind (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc != 4) {
-        return errorResult (ti, "Usage: sc_filter textfind <startGame> <searchText>");
+    if (argc != 5) {
+        return errorResult (ti, "Usage: sc_filter textfind <startGame> <searchText> <sortingCache>");
     }
     const char * text = argv[3];
     if (db->inUse) {
         NameBase * nb = db->nb;
         uint filteredCount = strGetUnsigned (argv[2]);
-        uint start = db->filter->FilteredCountToIndex (filteredCount) + 1;
+		int sortingCache = strGetInteger (argv[4]);
+		if( sortingCache == -1)
+		{
+			uint start = db->filter->FilteredCountToIndex (filteredCount) + 1;
 
-        while (start < db->numGames) {
-            if (db->filter->Get(start) > 0) {
-                filteredCount++;
-                IndexEntry * ie = db->idx->FetchEntry (start);
-                if ((strContains (ie->GetWhiteName (nb), text))  ||
-                    (strContains (ie->GetBlackName (nb), text))  ||
-                    (strContains (ie->GetEventName (nb), text))  ||
-                    (strContains (ie->GetSiteName (nb), text)))
-                {
-                    return setUintResult (ti, filteredCount);
-                }
-            }
-            start++;
+			while (start < db->numGames) {
+				if (db->filter->Get(start) > 0) {
+					filteredCount++;
+					IndexEntry * ie = db->idx->FetchEntry (start);
+					if ((strContains (ie->GetWhiteName (nb), text))  ||
+						(strContains (ie->GetBlackName (nb), text))  ||
+						(strContains (ie->GetEventName (nb), text))  ||
+						(strContains (ie->GetSiteName (nb), text)))
+					{
+						return setUintResult (ti, filteredCount);
+					}
+				}
+				start++;
+			}
+        }
+		else
+		{
+			uint start = filteredCount;
+			uint idx;
+			while( db->idx->GetIndex( sortingCache, start, db->filter, &idx) == OK)
+			{
+				if (idx == IDX_NOT_FOUND || start >= db->numGames)
+					break;
+				IndexEntry * ie = db->idx->FetchEntry (idx);
+				if ((strContains (ie->GetWhiteName (nb), text))  ||
+					(strContains (ie->GetBlackName (nb), text))  ||
+					(strContains (ie->GetEventName (nb), text))  ||
+					(strContains (ie->GetSiteName (nb), text)))
+				{
+					return setUintResult (ti, start + 1);
+				}
+				start++;
+			}
         }
     }
     return setUintResult (ti, 0);
@@ -5741,18 +5797,18 @@ int
 sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "altered",    "setaltered", "crosstable", "eco",        "find",
-        "firstMoves", "flag",       "import",     "info",
-        "load",       "list",       "merge",      "moves",
+        "altered",    "setaltered", "crosstable", "eco",
+        "find",       "firstMoves", "flag",       "import",
+        "info",        "load",      "merge",      "moves",
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "save",       "scores",
         "startBoard", "strip",      "summary",    "tags",
         "truncate",   "truncatefree", "undo", "undoPoint" , NULL
     };
     enum {
-        GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,        GAME_FIND,
-        GAME_FIRSTMOVES, GAME_FLAG,       GAME_IMPORT,     GAME_INFO,
-        GAME_LOAD,       GAME_LIST,       GAME_MERGE,      GAME_MOVES,
+        GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,
+        GAME_FIND,       GAME_FIRSTMOVES, GAME_FLAG,       GAME_IMPORT,
+        GAME_INFO,       GAME_LOAD,       GAME_MERGE,      GAME_MOVES,
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SAVE,       GAME_SCORES,
         GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,    GAME_TAGS,
@@ -5796,9 +5852,6 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_LOAD:
         return sc_game_load (cd, ti, argc, argv);
-
-    case GAME_LIST:
-        return sc_game_list (cd, ti, argc, argv);
 
     case GAME_MERGE:
         return sc_game_merge (cd, ti, argc, argv);
@@ -7278,112 +7331,6 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_game_list:
-//    Returns a portion of the game list according to the current filter.
-//    Takes start and count, where start is in the range (1..FilterCount).
-//    The next argument is the format string -- see index.cpp for details
-//    of format strings.
-//    If the format string is "-current", then a single integer value
-//    is returned indicating the line number where the current game
-//    occured in the output (where 1 is the first line), or 0 if it
-//    did not occur in the output at all.
-int
-sc_game_list (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    bool showProgress = startProgressBar();
-    if (argc != 5  &&  argc != 6) {
-        return errorResult (ti, "Usage: sc_game list <start> <count> <format> [<file>]");
-    }
-    if (! db->inUse) { return TCL_OK; }
-
-    uint start, count;
-    start = strGetUnsigned (argv[2]);
-    count = strGetUnsigned (argv[3]);
-    if (start < 1  ||  start > db->numGames) { return TCL_OK; }
-    uint fcount = db->filter->Count();
-    if (fcount > count) { fcount = count; }
-#ifdef WINCE
-   /*FILE * */ Tcl_Channel fp = NULL;
-    if (argc == 6) {
-      fp = my_Tcl_OpenFileChannel(NULL, argv[5], "w", 0666);
-//        fp = fopen (argv[5], "w");
-        if (fp == NULL) {
-            Tcl_AppendResult (ti, "Error opening file: ", argv[5], NULL);
-            return TCL_ERROR;
-        }
- my_Tcl_SetChannelOption(NULL, fp, "-encoding", "binary");
- my_Tcl_SetChannelOption(NULL, fp, "-translation", "binary");
-
-#else
-    FILE * fp = NULL;
-    if (argc == 6) {
-        fp = fopen (argv[5], "w");
-        if (fp == NULL) {
-            Tcl_AppendResult (ti, "Error opening file: ", argv[5], NULL);
-            return TCL_ERROR;
-        }
-#endif
-    }
-
-    uint index = db->filter->FilteredCountToIndex(start);
-    IndexEntry * ie;
-    const char * formatStr = argv[4];
-    char temp[1024];
-    int update, updateStart;
-    update = updateStart = 5000;
-    uint linenum = 0;
-    bool returnLineNum = false;
-    if (strEqual (formatStr, "-current")) {
-        returnLineNum = true;
-    }
-
-    while (index < db->numGames  &&  count > 0) {
-        if (db->filter->Get(index)) {
-            if (showProgress) {  // Update the percentage done bar:
-                if (update <= 0) {
-                    update = updateStart;
-#ifdef WINCE
-                    if (fp != NULL) { /*fflush*/my_Tcl_Flush (fp); }
-#else
-                    if (fp != NULL) { fflush (fp); }
-#endif
-                    updateProgressBar (ti, start, fcount);
-                    if (interruptedProgress()) { break; }
-                }
-                update--;
-            }
-            linenum++;
-            if (returnLineNum  &&  (int)index == db->gameNumber) {
-                return setUintResult (ti, linenum);
-            }
-            ie = db->idx->FetchEntry (index);
-            ie->PrintGameInfo (temp, start, index+1, db->nb, formatStr);
-            if (fp == NULL) {
-                Tcl_AppendResult (ti, temp, NULL);
-            } else {
-                //fputs (temp, fp);
-#ifdef WINCE
-                my_Tcl_Write(fp, temp, strlen(temp));
-#else
-                fputs (temp, fp);
-#endif
-            }
-            count--;
-            start++;
-        }
-        index++;
-    }
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-#ifdef WINCE
-    if (fp != NULL) { my_Tcl_Close (NULL,fp); }
-#else
-    if (fp != NULL) { fclose (fp); }
-#endif
-    if (returnLineNum) { return setUintResult (ti, 0); }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_load:
 //    Takes a game number and loads the game
 int
@@ -8433,6 +8380,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Finally, saving a game makes the treeCache out of date:
     db->treeCache->Clear();
     db->backupCache->Clear();
+    db->idx->IndexUpdated( gnum == 0 ? db->gameNumber : gnum - 1);
     if (! db->memoryOnly) { removeFile (db->fileName, TREEFILE_SUFFIX); }
 
     return TCL_OK;
@@ -14275,6 +14223,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     delete output;
     base->treeSearchTime = timer.MilliSecs();
+    base->idx->FilterChanged();
 
     return TCL_OK;
 }
@@ -16291,6 +16240,292 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
              centisecs / 100, decimalPointChar, centisecs % 100);
     Tcl_AppendResult (ti, temp, NULL);
     return TCL_OK;
+}
+
+
+int
+sc_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	static const char * options [] = {
+			"list", "sort",  "load",  "store", "crit", "testload", NULL
+	};
+	enum {
+		SORT_LIST, SORT_SORT, SORT_LOAD,  SORT_STORE, SORT_CRIT, SORT_TESTLOAD
+	};
+	int index = -1;
+	char old_language = 0;
+
+	if (argc > 1) { index = strUniqueMatch (argv[1], options);}
+
+	int ret = OK;
+	switch (index) {
+
+	case SORT_LIST:
+		ret = sc_sort_list (cd, ti, argc, argv);
+		break;
+
+	case SORT_SORT:
+		ret = sc_sort_sort (cd, ti, argc, argv);
+		break;
+
+	case SORT_CRIT:
+		ret = sc_sort_crit (cd, ti, argc, argv);
+		break;
+
+	case SORT_LOAD:
+		ret = sc_sort_load (cd, ti, argc, argv);
+		break;
+
+	case SORT_STORE:
+		ret = sc_sort_store (cd, ti, argc, argv);
+		break;
+
+	case SORT_TESTLOAD:
+		ret = sc_sort_testload (cd, ti, argc, argv);
+		break;
+
+	default:
+		return InvalidCommand (ti, "sc_sort", options);
+	}
+
+	return ret;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_game_list:
+//    Returns a portion of the game list according to the current filter.
+//    Takes start and count, where start is in the range (1..FilterCount).
+//    The next argument is the format string -- see index.cpp for details
+//    of format strings.
+//    If the format string is "-current", then a single integer value
+//    is returned indicating the line number where the current game
+//    occured in the output (where 1 is the first line), or 0 if it
+//    did not occur in the output at all.
+int
+sc_sort_list (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	bool showProgress = startProgressBar();
+	if (argc != 7  &&  argc != 8) {
+		return errorResult (ti, "Usage: sc_sort list <db> <start> <count> <format> <sort> [<file>]");
+	}
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+
+	int handle;
+	uint start, count;
+	start = strGetUnsigned (argv[3]);
+	count = strGetUnsigned (argv[4]);
+	handle = strGetInteger (argv[6]);
+	if (start < 1  ||  start > cdb->numGames) { return TCL_OK; }
+	uint fcount = cdb->filter->Count();
+	if (fcount > count) { fcount = count; }
+#ifdef WINCE
+/*FILE * */ Tcl_Channel fp = NULL;
+if (argc == 7) {
+	fp = my_Tcl_OpenFileChannel(NULL, argv[6], "w", 0666);
+	//        fp = fopen (argv[5], "w");
+	if (fp == NULL) {
+		Tcl_AppendResult (ti, "Error opening file: ", argv[6], NULL);
+		return TCL_ERROR;
+	}
+	my_Tcl_SetChannelOption(NULL, fp, "-encoding", "binary");
+	my_Tcl_SetChannelOption(NULL, fp, "-translation", "binary");
+
+#else
+	FILE * fp = NULL;
+	if (argc == 8) {
+		fp = fopen (argv[7], "w");
+		if (fp == NULL) {
+			Tcl_AppendResult (ti, "Error opening file: ", argv[7], NULL);
+			return TCL_ERROR;
+		}
+#endif
+	}
+
+	IndexEntry * ie;
+	const char * formatStr = argv[5];
+	char temp[1024];
+	int update, updateStart;
+	update = updateStart = 5000;
+	uint linenum = 0;
+	bool returnLineNum = false;
+	if (strEqual (formatStr, "-current")) {
+		returnLineNum = true;
+	}
+
+	if( handle >= 0)
+	{
+		if (returnLineNum) {
+			return setUintResult (ti, 0);
+		}
+		uint *idxList = new uint[fcount];
+		cdb->idx->GetRange( handle, start - 1, fcount, cdb->filter, idxList);
+		while (idxList[linenum] != IDX_NOT_FOUND && idxList[linenum] < cdb->numGames && linenum < fcount) {
+			if (showProgress) {  // Update the percentage done bar:
+				if (update <= 0) {
+					update = updateStart;
+#ifdef WINCE
+					if (fp != NULL) { /*fflush*/my_Tcl_Flush (fp); }
+#else
+					if (fp != NULL) { fflush (fp); }
+#endif
+					updateProgressBar (ti, start, fcount);
+					if (interruptedProgress()) { break; }
+				}
+				update--;
+			}
+			ie = cdb->idx->FetchEntry (idxList[linenum]);
+			ie->PrintGameInfo (temp, start, idxList[linenum]+1, cdb->nb, formatStr);
+			if (fp == NULL) {
+				Tcl_AppendResult (ti, temp, NULL);
+			} else {
+#ifdef WINCE
+				my_Tcl_Write(fp, temp, strlen(temp));
+#else
+				fputs (temp, fp);
+#endif
+			}
+			linenum++;
+		}
+		delete[] idxList;
+	}
+	else
+	{
+		uint index = cdb->filter->FilteredCountToIndex(start);
+		while (index < cdb->numGames  &&  count > 0) {
+			if (cdb->filter->Get(index)) {
+				if (showProgress) {  // Update the percentage done bar:
+					if (update <= 0) {
+						update = updateStart;
+#ifdef WINCE
+						if (fp != NULL) { /*fflush*/my_Tcl_Flush (fp); }
+#else
+						if (fp != NULL) { fflush (fp); }
+#endif
+						updateProgressBar (ti, start, fcount);
+						if (interruptedProgress()) { break; }
+					}
+					update--;
+				}
+				linenum++;
+				if (returnLineNum  &&  (int)index == cdb->gameNumber) {
+					return setUintResult (ti, linenum);
+				}
+				ie = cdb->idx->FetchEntry (index);
+				ie->PrintGameInfo (temp, start, index+1, cdb->nb, formatStr);
+				if (fp == NULL) {
+					Tcl_AppendResult (ti, temp, NULL);
+				} else {
+					//fputs (temp, fp);
+#ifdef WINCE
+					my_Tcl_Write(fp, temp, strlen(temp));
+#else
+					fputs (temp, fp);
+#endif
+				}
+				count--;
+				start++;
+			}
+			index++;
+		}
+	}
+	if (showProgress) { updateProgressBar (ti, 1, 1); }
+#ifdef WINCE
+	if (fp != NULL) { my_Tcl_Close (NULL,fp); }
+#else
+	if (fp != NULL) { fclose (fp); }
+#endif
+	if (returnLineNum) { return setUintResult (ti, 0); }
+	return TCL_OK;
+}
+
+int
+sc_sort_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	bool showProgress = startProgressBar();
+	if (argc != 5) {
+		return errorResult (ti, "Usage: sc_sort sort <db> <criteria> <handle>");
+	}
+
+	int dbNumber = strGetUnsigned (argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+
+	int handle = strGetInteger( argv[4]);
+	cdb->idx->CreateSortingCache( cdb->nb, argv[3], true, &handle);
+	cdb->idx->DoFullSort( handle, 5000, base_progress, (void *) ti);
+	return setIntResult (ti, handle);
+}
+
+int
+sc_sort_crit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	if (argc != 4) {
+		return errorResult (ti, "Usage: sc_sort crit <db> <handle>");
+	}
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+
+	int handle = strGetInteger( argv[3]);
+	char crit[ 2 * INDEX_MaxSortingCriteria + 1];
+	cdb->idx->GetSortingCrit( crit, handle);
+	Tcl_AppendResult (ti, crit, NULL);
+	return TCL_OK;
+}
+
+int
+sc_sort_store (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	if (argc != 4) {
+		return errorResult (ti, "Usage: sc_sort store <db> <handle>");
+	}
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+
+	int handle = strGetInteger( argv[2]);
+	if( handle < 0 || handle > 7)
+		return OK;
+	errorT ret = cdb->idx->WriteSortCacheToFile( handle);
+	return setIntResult (ti, ret);
+}
+
+int
+sc_sort_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	if (argc != 4) {
+		return errorResult (ti, "Usage: sc_sort load <db> <handle>");
+	}
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+
+	int handle = strGetInteger( argv[3]);
+	if(handle == -1)
+		cdb->idx->CreateSortingCache( cdb->nb, "w+", true, &handle);
+	cdb->idx->ReadSortCacheFromFile( handle);
+	return setIntResult (ti, handle);
+}
+
+int
+sc_sort_testload (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	if (argc != 3) {
+		return errorResult (ti, "Usage: sc_sort testload <db>");
+	}
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return 0; }
+
+	setBoolResult (ti, cdb->idx->CanLoad());
+	return OK;
 }
 
 

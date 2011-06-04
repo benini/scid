@@ -887,6 +887,35 @@ translate D GlistWidth {Breite}
 translate D GlistAlign {Ausrichtung}
 translate D GlistColor {Farbe}
 translate D GlistSep {Trennlinie}
+
+# base sorting
+translate D GsortSort {Sortieren...}
+translate D GsortDate {Datum}
+translate D GsortYear {Jahr}
+translate D GsortEvent {Event}
+translate D GsortSite {Ort}
+translate D GsortRound {Runde}
+translate D GsortWhiteName {Name Weiß}
+translate D GsortBlackName {Name Schwarz}
+translate D GsortECO {ECO}
+translate D GsortResult {Ergebnis}
+translate D GsortMoveCount {Zahl der Züge}
+translate D GsortAverageElo {Eloschnitt}
+translate D GsortCountry {Land}
+translate D GsortDeleted {Gelöscht}
+translate D GsortEventDate {Event Datum}
+translate D GsortWhiteElo {ELO Weiß}
+translate D GsortBlackElo {ELO Schwarz}
+translate D GsortComments {Kommentare}
+translate D GsortVariations {Varianten}
+translate D GsortNAGs {NAGs}
+translate D GsortAscending {Aufsteigend}
+translate D GsortDescending {Fallend}
+translate D GsortAdd {Hinzufügen}
+translate D GsortStore {Speichern}
+translate D GsortLoad {Laden}
+
+# menu shown with right mouse button down on game list.
 translate D GlistRemoveThisGameFromFilter  {Partie aus Filter entfernen}
 translate D GlistRemoveGameAndAboveFromFilter  {Partie (und alle oberhalb) aus Filter entfernen}
 translate D GlistRemoveGameAndBelowFromFilter  {Partie (und alle darunter) aus Filter entfernen}

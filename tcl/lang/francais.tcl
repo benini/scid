@@ -863,6 +863,56 @@ translate F GlistWidth {Largeur}
 translate F GlistAlign {Aligner}
 translate F GlistColor {Couleur}
 translate F GlistSep {Séparateur}
+# ====== TODO To be translated ======
+translate F GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate F GsortDate {Date}
+# ====== TODO To be translated ======
+translate F GsortYear {Year}
+# ====== TODO To be translated ======
+translate F GsortEvent {Event}
+# ====== TODO To be translated ======
+translate F GsortSite {Site}
+# ====== TODO To be translated ======
+translate F GsortRound {Round}
+# ====== TODO To be translated ======
+translate F GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate F GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate F GsortECO {ECO}
+# ====== TODO To be translated ======
+translate F GsortResult {Result}
+# ====== TODO To be translated ======
+translate F GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate F GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate F GsortCountry {Country}
+# ====== TODO To be translated ======
+translate F GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate F GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate F GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate F GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate F GsortComments {Comments}
+# ====== TODO To be translated ======
+translate F GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate F GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate F GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate F GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate F GsortAdd {Add}
+# ====== TODO To be translated ======
+translate F GsortStore {Store}
+# ====== TODO To be translated ======
+translate F GsortLoad {Load}
 
 # menu shown with right mouse button down on game list.
 translate F GlistRemoveThisGameFromFilter  {Enlever cette partie du filtre}
@@ -1876,6 +1926,8 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
+
 
 
 

@@ -888,6 +888,57 @@ translate G GlistAlign {Ευθυγραμμιση}
 translate G GlistColor {Χρώμα}
 translate G GlistSep {Διαχωριστής}
 
+# ====== TODO To be translated ======
+translate G GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate G GsortDate {Date}
+# ====== TODO To be translated ======
+translate G GsortYear {Year}
+# ====== TODO To be translated ======
+translate G GsortEvent {Event}
+# ====== TODO To be translated ======
+translate G GsortSite {Site}
+# ====== TODO To be translated ======
+translate G GsortRound {Round}
+# ====== TODO To be translated ======
+translate G GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate G GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate G GsortECO {ECO}
+# ====== TODO To be translated ======
+translate G GsortResult {Result}
+# ====== TODO To be translated ======
+translate G GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate G GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate G GsortCountry {Country}
+# ====== TODO To be translated ======
+translate G GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate G GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate G GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate G GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate G GsortComments {Comments}
+# ====== TODO To be translated ======
+translate G GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate G GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate G GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate G GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate G GsortAdd {Add}
+# ====== TODO To be translated ======
+translate G GsortStore {Store}
+# ====== TODO To be translated ======
+translate G GsortLoad {Load}
+
 # menu shown with right mouse button down on game list. 
 translate G GlistRemoveThisGameFromFilter  {Απομάκρυνση αυτής της παρτίδας από το φίλτρο}
 translate G GlistRemoveGameAndAboveFromFilter  {Απομάκρυνση παρτίδας (και όλων των από πάνω) από το φίλτρο}

@@ -914,6 +914,56 @@ translate S GlistWidth {Anchura}
 translate S GlistAlign {Alinear}
 translate S GlistColor {Color}
 translate S GlistSep {Separador}
+# ====== TODO To be translated ======
+translate S GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate S GsortDate {Date}
+# ====== TODO To be translated ======
+translate S GsortYear {Year}
+# ====== TODO To be translated ======
+translate S GsortEvent {Event}
+# ====== TODO To be translated ======
+translate S GsortSite {Site}
+# ====== TODO To be translated ======
+translate S GsortRound {Round}
+# ====== TODO To be translated ======
+translate S GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate S GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate S GsortECO {ECO}
+# ====== TODO To be translated ======
+translate S GsortResult {Result}
+# ====== TODO To be translated ======
+translate S GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate S GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate S GsortCountry {Country}
+# ====== TODO To be translated ======
+translate S GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate S GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate S GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate S GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate S GsortComments {Comments}
+# ====== TODO To be translated ======
+translate S GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate S GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate S GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate S GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate S GsortAdd {Add}
+# ====== TODO To be translated ======
+translate S GsortStore {Store}
+# ====== TODO To be translated ======
+translate S GsortLoad {Load}
 translate S GlistRemoveThisGameFromFilter  {Quita esta partida del filtro}
 translate S GlistRemoveGameAndAboveFromFilter  {Quita esta partida y todas las de arriba del filtro}
 translate S GlistRemoveGameAndBelowFromFilter  {Quita esta partida y todas las de abajo del filtro}
@@ -1712,6 +1762,8 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
+
 
 
 

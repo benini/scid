@@ -1006,6 +1006,56 @@ translate Y GlistAlign {Align} ;# ***
 translate Y GlistColor {Color} ;# ***
 translate Y GlistSep {Separator} ;# ***
 # ====== TODO To be translated ======
+translate Y GsortSort {Sort...}
+# ====== TODO To be translated ======
+translate Y GsortDate {Date}
+# ====== TODO To be translated ======
+translate Y GsortYear {Year}
+# ====== TODO To be translated ======
+translate Y GsortEvent {Event}
+# ====== TODO To be translated ======
+translate Y GsortSite {Site}
+# ====== TODO To be translated ======
+translate Y GsortRound {Round}
+# ====== TODO To be translated ======
+translate Y GsortWhiteName {White Name}
+# ====== TODO To be translated ======
+translate Y GsortBlackName {Black Name}
+# ====== TODO To be translated ======
+translate Y GsortECO {ECO}
+# ====== TODO To be translated ======
+translate Y GsortResult {Result}
+# ====== TODO To be translated ======
+translate Y GsortMoveCount {Move Count}
+# ====== TODO To be translated ======
+translate Y GsortAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate Y GsortCountry {Country}
+# ====== TODO To be translated ======
+translate Y GsortDeleted {Deleted}
+# ====== TODO To be translated ======
+translate Y GsortEventDate {Event Date}
+# ====== TODO To be translated ======
+translate Y GsortWhiteElo {White Elo}
+# ====== TODO To be translated ======
+translate Y GsortBlackElo {Black Elo}
+# ====== TODO To be translated ======
+translate Y GsortComments {Comments}
+# ====== TODO To be translated ======
+translate Y GsortVariations {Variations}
+# ====== TODO To be translated ======
+translate Y GsortNAGs {NAGs}
+# ====== TODO To be translated ======
+translate Y GsortAscending {Ascending}
+# ====== TODO To be translated ======
+translate Y GsortDescending {Descending}
+# ====== TODO To be translated ======
+translate Y GsortAdd {Add}
+# ====== TODO To be translated ======
+translate Y GsortStore {Store}
+# ====== TODO To be translated ======
+translate Y GsortLoad {Load}
+# ====== TODO To be translated ======
 translate Y GlistRemoveThisGameFromFilter  {Remove this game from Filter}
 # ====== TODO To be translated ======
 translate Y GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
@@ -2171,6 +2221,8 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
+
 
 
 
