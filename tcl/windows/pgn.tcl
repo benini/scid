@@ -386,7 +386,7 @@ namespace eval pgn {
     .pgnWin.text tag configure Current -background $pgnColor(Current)
     .pgnWin.text tag configure NextMove -background $pgnColor(NextMove)
     ::htext::init .pgnWin.text
-    ::htext::updateRate .pgnWin.text 60
+    ::htext::updateRate .pgnWin.text 0
     ::pgn::Refresh 1
   }
   ################################################################################
@@ -398,16 +398,16 @@ namespace eval pgn {
   ################################################################################
   proc Refresh { {pgnNeedsUpdate 0} } {
     if {![winfo exists .pgnWin]} { return }
-    set format plain
-    if {$::pgn::showColor} {set format color}
-    
-    set pgnStr [sc_game pgn -symbols $::pgn::symbolicNags \
-        -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
-        -space $::pgn::moveNumberSpaces -format $format -column $::pgn::columnFormat \
-        -short $::pgn::shortHeader -markCodes $::pgn::stripMarks]
-    
+
     if {$pgnNeedsUpdate} {
       busyCursor .
+      set format plain
+      if {$::pgn::showColor} {set format color}
+      set pgnStr [sc_game pgn -symbols $::pgn::symbolicNags \
+          -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
+          -space $::pgn::moveNumberSpaces -format $format -column $::pgn::columnFormat \
+          -short $::pgn::shortHeader -markCodes $::pgn::stripMarks]
+
       set windowTitle [format $::tr(PgnWindowTitle) [sc_game number]]
       ::setTitle .pgnWin "$windowTitle"
       .pgnWin.text configure -state normal
@@ -426,11 +426,20 @@ namespace eval pgn {
         ::htext::display .pgnWin.text $pgnStr
       } else {
         .pgnWin.text insert 1.0 $pgnStr
+        .pgnWin.text configure -state disabled
       }
       unbusyCursor .
     }
     
     if {$::pgn::showColor} {
+      #TODO: This code is slow.
+      #      Write a faster function to update PgnNextMovePos & PgnLastMovePos
+      sc_game pgn -symbols $::pgn::symbolicNags \
+        -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
+        -space $::pgn::moveNumberSpaces -format color -column $::pgn::columnFormat \
+        -short $::pgn::shortHeader -markCodes $::pgn::stripMarks
+      #########################################
+
       if { $::pgn::boldMainLine } {
         .pgnWin.text configure -font font_Bold
       } else {
@@ -467,8 +476,6 @@ namespace eval pgn {
       
       .pgnWin.text configure -state disabled
     }
-    
-    return
   }
   ################################################################################
   #
