@@ -1001,6 +1001,10 @@ translate R GlistComments {Комментарии}
 translate R GlistAnnos {Аннотации}
 translate R GlistStart {Старт}
 translate R GlistGameNumber {Номер партии}
+# ====== TODO To be translated ======
+translate R GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate R GlistRating {Rating}
 translate R GlistFindText {Найти текст}
 translate R GlistMoveField {Переместить}
 translate R GlistEditField {Конфигурация}
@@ -1008,8 +1012,20 @@ translate R GlistAddField {Добавить}
 translate R GlistDeleteField {Удалить}
 translate R GlistWidth {Ширина}
 translate R GlistAlign {Выравнивание}
+# ====== TODO To be translated ======
+translate R GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate R GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate R GlistAlignC {Align: center}
 translate R GlistColor {Цвет}
 translate R GlistSep {Разделитель}
+# ====== TODO To be translated ======
+translate R GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate R GlistNewSort {New}
+# ====== TODO To be translated ======
+translate R GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate R GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -2250,6 +2266,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

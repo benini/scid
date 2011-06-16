@@ -856,6 +856,104 @@ int sc_msg_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
 #endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_base_sortcache:
+int
+sc_base_sortcache (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	if (argc != 5) {
+		return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
+	}
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+	if (strCompare("create", argv[3]) == 0) {
+		int handle = -1;
+		cdb->idx->CreateSortingCache (cdb->nb, argv[4], false, &handle);
+		//	TODO:
+		//	- Create a std::thread that in background perfom a DoFullSort
+	} else {
+		cdb->idx->FreeCache(argv[4]);
+	}
+	return TCL_OK;
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_base_gameslist:
+int
+sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	if (argc != 6  &&  argc != 7) {
+		return errorResult (ti, "Usage: sc_base gameslist <db> <start> <count> <all|dbfilter|tree> [<sort>]");
+	}
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+	uint start = strGetUnsigned (argv[3]);
+	uint count = strGetUnsigned (argv[4]);
+	Filter* filter = 0;
+	if (strCompare("dbfilter", argv[5]) == 0) filter = cdb->dbFilter;
+	else if (strCompare("tree", argv[5]) == 0) filter = cdb->treeFilter;
+	const char* sort = "g+";
+	if (argc == 7) sort = argv[6];
+	uint* idxList = new uint[count];
+	if (strlen(sort) == 2 && sort[0] == 'N') {
+		uint i=0;
+		if (sort[1] == '+') {
+			for(uint gnum=0; gnum < cdb->idx->GetNumGames() && i < count; gnum++) {
+				if(filter && filter->Get(gnum) == 0) continue;
+				if (start == 0) idxList[i++] = gnum;
+				else start--;
+			}
+		} else {
+			for(uint gnum=cdb->idx->GetNumGames(); gnum > 0 && i < count; gnum--) {
+				if(filter && filter->Get(gnum -1) == 0) continue;
+				if (start == 0) idxList[i++] = gnum -1;
+				else start--;
+			}
+		}
+		if (i != count) idxList[i] = IDX_NOT_FOUND;
+	} else {
+		cdb->idx->GetRange(cdb->nb, sort, start, count, filter, idxList);
+	}
+	for (uint i = 0; i < count; ++i) {
+		uint idx = idxList[i];
+		if (idx == IDX_NOT_FOUND) break;
+
+		uint ply = 0;
+		if (strCompare("tree", argv[5]) == 0) ply = filter->Get(idx) -1;
+
+		std::string info = cdb->idx->FetchInfo (idx, cdb->nb);
+
+		info.append (" \"");
+		IndexEntry * ie = cdb->idx->FetchEntry (idx);
+		if (ply == 0) {
+			info.append(StoredLine::GetText(ie->GetStoredLineCode()));
+		} else {
+			cdb->bbuf->Empty();
+			cdb->gfile->ReadGame (cdb->bbuf, ie->GetOffset(), ie->GetLength() );
+			Game* g = scratchGame;
+			g->Clear();
+			g->Decode (cdb->bbuf, GAME_DECODE_NONE);
+			g->MoveToPly(ply);
+			DString moves;
+			g->GetPartialMoveList (&moves, 20);
+			info.append(moves.Data());
+		}
+		info.append ("\"");
+
+		char idx_ply [20];
+		snprintf(idx_ply, sizeof(idx_ply), "%d_%d", idx +1, ply);
+		Tcl_AppendElement (ti, idx_ply);
+
+		Tcl_AppendElement (ti, info.c_str());
+	}
+
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base: database commands.
 int
 sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
@@ -867,7 +965,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		"inUse",        "isReadOnly",   "numGames",     "open",
 		"piecetrack",   "slot",         "sort",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
-		"upgrade",      "fixCorrupted",
+		"upgrade",      "fixCorrupted", "gameslist", "sortcache",
         NULL
     };
     enum {
@@ -877,7 +975,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
 		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
-		BASE_UPGRADE,     BASE_FIX_CORRUPTED
+		BASE_UPGRADE,     BASE_FIX_CORRUPTED, BASE_GAMESLIST, BASE_SORTCACHE
     };
     int index = -1;
 
@@ -974,6 +1072,12 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_FIX_CORRUPTED:
         return sc_base_fix_corrupted (cd, ti, argc, argv);
+
+    case BASE_GAMESLIST:
+        return sc_base_gameslist (cd, ti, argc, argv);
+
+    case BASE_SORTCACHE:
+        return sc_base_sortcache (cd, ti, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_base", options);
@@ -3023,7 +3127,6 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     return TCL_OK;
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Tourney:
@@ -5077,6 +5180,9 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_count (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    if (argc > 4) {
+        return errorResult (ti, "Usage: sc_filter count <base> [<dbfilter|tree>]");
+    }
     scidBaseT * basePtr = db;
     if (argc > 2) {
         int baseNum = strGetInteger (argv[2]);
@@ -5085,7 +5191,18 @@ sc_filter_count (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         basePtr = &(dbList[baseNum - 1]);
     }
-    return setUintResult (ti, basePtr->inUse ? basePtr->filter->Count() : 0);
+    uint result = 0;
+    if (basePtr->inUse) {
+        Filter* filter = basePtr->filter;
+        if (argc > 3) {
+            if (strCompare("dbfilter", argv[3]) == 0) filter = basePtr->dbFilter;
+            else if (strCompare("tree", argv[3]) == 0) filter = basePtr->treeFilter;
+            else filter = 0;
+        }
+        if (filter == 0) result = basePtr->numGames;
+        else result = filter->Count();
+    }
+    return setUintResult (ti, result);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -841,6 +841,10 @@ translate C GlistComments {Komentáøe}
 translate C GlistAnnos {Anotace}
 translate C GlistStart {Poèáteèní pozice}
 translate C GlistGameNumber {Èíslo partie}
+# ====== TODO To be translated ======
+translate C GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate C GlistRating {Rating}
 translate C GlistFindText {Hledat text}
 translate C GlistMoveField {Pøesunout}
 translate C GlistEditField {Konfigurovat}
@@ -848,8 +852,20 @@ translate C GlistAddField {Pøidat}
 translate C GlistDeleteField {Odebrat}
 translate C GlistWidth {©íøka}
 translate C GlistAlign {Zarovnat}
+# ====== TODO To be translated ======
+translate C GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate C GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate C GlistAlignC {Align: center}
 translate C GlistColor {Barva}
 translate C GlistSep {Oddìlovaè}
+# ====== TODO To be translated ======
+translate C GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate C GlistNewSort {New}
+# ====== TODO To be translated ======
+translate C GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate C GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -5358,6 +5374,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

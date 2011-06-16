@@ -1,4 +1,6 @@
 #include "sortcache.h"
+#include <vector>
+#include <algorithm>
 
 enum {
     SORTING_date, SORTING_year, SORTING_event, SORTING_site, SORTING_round,
@@ -8,6 +10,9 @@ enum {
 	SORTING_gamenumber, SORTING_whiteelo, SORTING_blackelo, 
 	SORTING_commentcount, SORTING_varcount, SORTING_nagcount,
 	SORTING_resultwin, SORTING_resultdraw, SORTING_resultloss,
+	SORTING_rating, SORTING_number,
+//	TODO:
+//	SORTING_flags, SORTING_endmaterial, SORTING_start, SORTING_nextmove,
 	SORTING_sentinel
 };
 
@@ -35,6 +40,13 @@ static const char shortCriteriaNames[][2] =
 	{'1', (char) SORTING_resultwin},
 	{'5', (char) SORTING_resultdraw},
 	{'0', (char) SORTING_resultloss},
+	{'i', (char) SORTING_rating},
+	{'N', (char) SORTING_number},
+//	TODO:
+//	{'f', (char) SORTING_flags},
+//	{'M', (char) SORTING_endmaterial},
+//	{'S', (char) SORTING_start},
+//	{'x', (char) SORTING_nextmove},
 	{ 0, 0}
 };
 
@@ -113,7 +125,7 @@ errorT SortCache::GetIndex( uint idx, Filter *filter, uint *result)
 
 	// Pick up the entry with number idx, ignore those not matching the filter
 	uint numFound = 0;
-	for( int i=0; i<numSorted; i++)
+	for(uint i=0; i<numSorted; i++)
 	{
 		if( filter->Get( fullMap[i]) == 0)
 			continue;
@@ -129,6 +141,7 @@ errorT SortCache::GetIndex( uint idx, Filter *filter, uint *result)
 
 errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result)
 {
+	if (count == 0) return OK;
 	if( doPresorting)
 	{
 		// Do sorting if not already done
@@ -137,8 +150,40 @@ errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result
 	}
 	else
 	{
+		if (numSorted != numGames) {
+			std::vector<uint> v;
+			if (filter) {
+				v.resize(filter->Count());
+				for(uint i=0, gnum=0; gnum < numGames; gnum++) {
+					if(filter->Get(gnum) != 0) v[i++] = gnum;
+				}
+			} else {
+				v.resize(numGames);
+				for (uint i=0; i < numGames; ++i) v[i] = i;
+			}
+
+			if (start >= v.size()) {
+				if (count > 0) *result = IDX_NOT_FOUND;
+				return OK;
+			}
+			uint last = start + count;
+			if (last > v.size()) {
+				last = v.size();
+				result[last - start] = IDX_NOT_FOUND;
+			}
+			uint skip = 0;
+			if (start > 1000) {
+				skip = start;
+				std::nth_element(v.begin(), v.begin() + start, v.end(), Compare_std(this));
+			}
+			std::partial_sort(v.begin() + skip, v.begin() + last, v.end(), Compare_std(this));
+			for (uint j=0, i=start; i < last; ++i) result[j++] = v[i];
+			return OK;
+		}
+		// TODO: sortUpto does not perform a stable_sort
+		// TODO: profile to check if sortUpto can be faster than std::functions
 		// Ensure that the necessary number of entries are sorted
-		sortUpto( start + count, filter);
+		//sortUpto( start + count, filter);
 	}
 
 	uint searchStart = 0;
@@ -184,7 +229,7 @@ void SortCache::sortUpto( uint idx, Filter *filter)
 
 	if( filter)
 	{
-		for( int i=0; i<numSorted; i++)
+		for(uint i=0; i<numSorted; i++)
 			if( filter->Get(fullMap[i]) > 0)
 				done++;
 	}
@@ -284,7 +329,7 @@ uint SortCache::Insert( uint gnum, uint done)
 
 errorT SortCache::GetSortingCrit( char *crit)
 {
-	for (int i=0; i<INDEX_MaxSortingCriteria, SortCriteria[i] != SORTING_sentinel; i++)
+	for (uint i=0; i<INDEX_MaxSortingCriteria && SortCriteria[i] != SORTING_sentinel; i++)
 		for (int j=0; shortCriteriaNames[j][0] != 0; j++)
 			if ( shortCriteriaNames[j][1] == SortCriteria[i])
 			{
@@ -488,6 +533,13 @@ SortCache::FullCompare (uint left, uint right)
 			}
 			break;
 
+		case SORTING_rating:
+			res = (int)ie1->GetRating(nbase) - (int)ie2->GetRating(nbase);
+			break;
+		case SORTING_number:
+			res = (int) left - (int) right;
+			break;
+
 		default:    // Should never happen:
 			ASSERT(0);
 			return 0;
@@ -502,6 +554,13 @@ SortCache::FullCompare (uint left, uint right)
 	// Unreachable:
     ASSERT (0);
     return 0;
+}
+
+inline int
+SortCache::Compare_std::operator() (uint i1, uint i2) const {
+	int c = sc_->Compare(i1, i2);
+	if (c == 0) return i1 < i2;
+	return c < 0;
 }
 
 inline uint SortCache::GetStartHash (const char *strVal)
@@ -552,6 +611,7 @@ uint SortCache::CalcHash (IndexEntry * ie)
 			}
 			case SORTING_date:
 				cacheValue = ie->GetDate();
+				bytesUsed = 3;
 				break;
 			case SORTING_eventdate:
 				cacheValue = ie->GetEventDate();
@@ -622,6 +682,14 @@ uint SortCache::CalcHash (IndexEntry * ie)
 				cacheValue = (ie->GetDeleteFlag() ? 1 : 0);
 				bytesUsed = 1;
 				break;
+			case SORTING_rating:
+				cacheValue = ie->GetRating(nbase);
+				bytesUsed = 1;
+				break;
+			case SORTING_number:
+				//TODO: Hash the game number
+				cacheValue = 0;
+				break;
 		}
 
 		// If reverse search, just reverse the cache value
@@ -677,7 +745,7 @@ uint SortCache::CalcHash (IndexEntry * ie)
 errorT
 SortCache::ParseSortCriteria (const char * inputStr)
 {
-	int numOFArgs = strlen( inputStr) / 2;
+	uint numOFArgs = strlen( inputStr) / 2;
     if (numOFArgs >= (INDEX_MaxSortCriteria - 1)) 
 	{
 	    SortCriteria[numOFArgs] = SORTING_sentinel;
@@ -685,7 +753,7 @@ SortCache::ParseSortCriteria (const char * inputStr)
         return ERROR_Full;
 	}
 
-	for( int i=0; i<numOFArgs; i++)
+	for(uint i=0; i<numOFArgs; i++)
 	{
 		char key = inputStr[2*i];
 		SortCriteria[i] = SORTING_sentinel;
@@ -711,7 +779,7 @@ SortCache::ParseSortCriteria (const char * inputStr)
 		if(hashValues)
 			delete[] hashValues;
 		hashValues = new uint[numGames];
-		for( int i=0; i<numGames; i++)
+		for(uint i=0; i<numGames; i++)
 			hashValues[i] = CalcHash(index->FetchEntry(i));
 	}
 
@@ -755,7 +823,7 @@ SortCache::CheckForChanges ( int *criteria, uint id)
 			hashValues[id] = CalcHash( index->FetchEntry( id));
 
 		int sortedField = -1;
-		for( int i=0; i<numSorted; i++)
+		for(uint i=0; i<numSorted; i++)
 			if( fullMap[i] == id)
 			{
 				sortedField = i;
@@ -763,13 +831,13 @@ SortCache::CheckForChanges ( int *criteria, uint id)
 			}
 		if( sortedField == -1)
 			return OK;
-		bool hasProblem = false;
+//		bool hasProblem = false;
 		Recalc( sortedField);
 	}
 	else
 	{
 		if( hashValues)
-			for( int i=0; i<numGames; i++)
+			for(uint i=0; i<numGames; i++)
 				hashValues[i] = CalcHash( index->FetchEntry( i));
 		numSorted = 0;
 		if( doPresorting)
@@ -860,7 +928,7 @@ errorT SortCache::WriteToFile ()
 		return OK;
 	}
 
-	for( int i=0; i<INDEX_MaxSortingCriteria; i++)
+	for(uint i=0; i<INDEX_MaxSortingCriteria; i++)
 	{
 		writeOneByte( fp, SortCriteria[i]);
 		writeOneByte( fp, SortReverse[i]);
@@ -919,7 +987,7 @@ errorT SortCache::ReadFromFile ()
 	numGames = index->GetNumGames();
 	numSorted = numGames;
 	lastStart = IDX_NOT_FOUND;
-	for( int i=0; i<INDEX_MaxSortingCriteria; i++)
+	for(uint i=0; i<INDEX_MaxSortingCriteria; i++)
 	{
 		SortCriteria[i] = readOneByte( fp);
 		SortReverse[i] = readOneByte( fp);
@@ -957,13 +1025,11 @@ uint SortCache::GetNumSorted()
 
 bool SortCache::MatchCriteria( const char *crit)
 {
-
-	int numOFArgs = strlen( crit) / 2;
+	uint numOFArgs = strlen( crit) / 2;
     if (numOFArgs >= (INDEX_MaxSortCriteria - 1)) 
 		return false;
 
-	int i;
-	for( i=0; i<numOFArgs; i++)
+	for(uint i=0; i<numOFArgs; i++)
 	{
 		char key = crit[2*i];
 		byte v = SORTING_sentinel;

@@ -998,6 +998,10 @@ translate O GlistComments {Kommentarer}
 translate O GlistAnnos {Annotasjoner}
 translate O GlistStart {Start}
 translate O GlistGameNumber {Parti nummer}
+# ====== TODO To be translated ======
+translate O GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate O GlistRating {Rating}
 translate O GlistFindText {Finn tekst}
 translate O GlistMoveField {Trekk}
 translate O GlistEditField {Still inn}
@@ -1005,8 +1009,20 @@ translate O GlistAddField {Legg til}
 translate O GlistDeleteField {Fjern}
 translate O GlistWidth {Bredde}
 translate O GlistAlign {Justering}
+# ====== TODO To be translated ======
+translate O GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate O GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate O GlistAlignC {Align: center}
 translate O GlistColor {Farge}
 translate O GlistSep {Skilletegn}
+# ====== TODO To be translated ======
+translate O GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate O GlistNewSort {New}
+# ====== TODO To be translated ======
+translate O GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate O GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -2221,6 +2237,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

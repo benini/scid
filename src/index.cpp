@@ -807,7 +807,7 @@ Index::Init ()
       strcpy(Header.customFlagDesc[i], "");
     }
     CalcIndexEntrySize();
-    for( int i=0; i<SORTING_CACHE_MAX; i++)
+    for(uint i=0; i<SORTING_CACHE_MAX; i++)
         sortingCaches[i] = NULL;
 }
 
@@ -862,7 +862,7 @@ Index::Clear ()
     Header.version = SCID_VERSION;
     Header.autoLoad = 2;
     CalcIndexEntrySize();
-    for( int i=0; i<SORTING_CACHE_MAX; i++)
+    for(uint i=0; i<SORTING_CACHE_MAX; i++)
         if( sortingCaches[i]) {
             delete sortingCaches[i];
             sortingCaches[i] = NULL;
@@ -1048,7 +1048,7 @@ Index::CloseIndexFile ( bool NoHeader )
     errorT result = FilePtr->Close ();
     delete FilePtr;
     FilePtr = NULL;
-    for( int i=0; i<SORTING_CACHE_MAX; i++)
+    for(uint i=0; i<SORTING_CACHE_MAX; i++)
         if( sortingCaches[i]) {
             delete sortingCaches[i];
             sortingCaches[i] = NULL;
@@ -1753,74 +1753,53 @@ Index::ParseSortCriteria (const char * inputStr)
 
 errorT Index::CreateSortingCache( NameBase *nbase, const char *criteria, bool doPreSort, int *handle)
 {
-	int targetCache = -1;
-
+	ASSERT(*handle < SORTING_CACHE_MAX);
 	// If the criterium is empty free the cache and return -1
 	if( strlen( criteria) < 2) {
-		if( *handle != -1 && sortingCaches[*handle] != NULL) {
-			if(sortingCaches[*handle]->GetReferenceCount() == 1) {
-				delete sortingCaches[*handle];
-				sortingCaches[*handle] = NULL;
-			}
-			else {
-				sortingCaches[*handle]->ReleaseCount();
-			}
-		}
+		FreeCache(*handle);
 		*handle = -1;
 		return OK;
 	}
 
 	// If the current cache is already ok, keep it
-	if( *handle > -1 && *handle < 8 &&
-		((sortingCaches[*handle]->GetDoPresorting() && sortingCaches[*handle]->GetNumSorted() == GetNumGames()) || !doPreSort) &&
-		sortingCaches[*handle] && sortingCaches[*handle]->MatchCriteria( criteria))
-		return OK;
-
-	// If is another client using a matching cache, use this one
-	for( int i=0; i<8; i++) {
-		if( sortingCaches[i] &&
-			((sortingCaches[i]->GetDoPresorting() && sortingCaches[i]->GetNumSorted() == GetNumGames()) || !doPreSort)  &&
-			sortingCaches[i]->MatchCriteria( criteria)) {
-			targetCache = i;
-			break;
+	if( *handle > -1 && sortingCaches[*handle] != NULL) {
+		if (((sortingCaches[*handle]->GetDoPresorting() && sortingCaches[*handle]->GetNumSorted() == GetNumGames()) || !doPreSort) &&
+				sortingCaches[*handle]->MatchCriteria( criteria)) {
+			return OK;
+		} else {
+			// *handle cache is no more useful, free it
+			FreeCache(*handle);
+			*handle = -1;
 		}
 	}
-	if( targetCache > 0) {
-		if( *handle > -1) {
-			if(sortingCaches[*handle]->GetReferenceCount() > 1)
-				sortingCaches[*handle]->ReleaseCount();
-			else
-			{
-				delete sortingCaches[*handle];
-				sortingCaches[*handle] = NULL;
-			}
+
+	// If there is another client using a matching cache, use that one
+	for(uint i=0; i < SORTING_CACHE_MAX; i++) {
+		if (sortingCaches[i] == NULL) continue;
+		bool full_cache = sortingCaches[i]->GetDoPresorting() && sortingCaches[i]->GetNumSorted() == GetNumGames();
+		if ((full_cache || !doPreSort) && sortingCaches[i]->MatchCriteria( criteria)) {
+			*handle = i;
+			if (full_cache) break;
+			// If we found an "hash only" cache go on searching for a better "full" cache
 		}
-		// register for targetCache
-		*handle = targetCache;
-		sortingCaches[targetCache]->AddCount();
-		return OK;
 	}
 
-	// A new cache has to be created
-	if( *handle == -1 ||
-		sortingCaches[*handle] == NULL ||
-		sortingCaches[*handle]->GetReferenceCount() > 1) {
-		if(*handle > -1 && sortingCaches[*handle])
-			sortingCaches[*handle]->ReleaseCount();
-		*handle = -1;
+	if (*handle != -1) {
+		// Use the existing cache
+		sortingCaches[*handle]->AddCount();
+	} else {
+		// A new cache has to be created
 		uint idx = 0;
-		while( sortingCaches[idx] != 0 && idx < 8)
+		while( sortingCaches[idx] != NULL && idx < SORTING_CACHE_MAX)
 			idx++;
-		if( idx == 8) {
+		if( idx == SORTING_CACHE_MAX) {
 			// TODO: no free handle anymore
 			return ERROR;
 		}
 		sortingCaches[idx] = new SortCache( this, nbase, criteria, doPreSort, true);
 		*handle = idx;
 	}
-	else {
-		sortingCaches[*handle]->Clear( criteria, doPreSort);
-	}
+
 	return OK;
 }
 
@@ -1855,7 +1834,7 @@ errorT Index::DoFullSort(int cache,
 
 errorT Index::GetIndex( int cache, uint idx, Filter *filter, uint *result)
 {
-	*result = NULL;
+	*result = 0;
 	SortCache *sc = sortingCaches[cache];
 	if( sc == NULL)
 	{
@@ -1876,7 +1855,7 @@ errorT Index::GetIndex( NameBase *nbase, char *criteria, uint idx, Filter *filte
 
 errorT Index::GetRange( int cache, uint idx, uint count, Filter *filter, uint *result)
 {
-	*result = NULL;
+	*result = 0;
 	SortCache *sc = sortingCaches[cache];
 	if( sc == NULL)
 	{
@@ -1887,24 +1866,53 @@ errorT Index::GetRange( int cache, uint idx, uint count, Filter *filter, uint *r
 	return OK;
 }
 
-errorT Index::GetRange( NameBase *nbase, char *criteria, uint idx, uint count, Filter *filter, uint *result)
+errorT Index::GetRange( NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
 {
-	SortCache *sc = new SortCache( this, nbase, criteria, false, true);
-	sc->GetRange( idx, count, filter, result);
-	delete sc;
+	// Use existing caches if possible
+	int handle = -1;
+	CreateSortingCache( nbase, criteria, false, &handle);
+	if (handle != -1) {
+		sortingCaches[handle]->GetRange(idx, count, filter, result);
+		FreeCache(handle);
+	} else {
+		SortCache *sc = new SortCache( this, nbase, criteria, false, true);
+		sc->GetRange( idx, count, filter, result);
+		delete sc;
+	}
 	return OK;
 }
 
 void Index::FreeCache( int cache)
 {
-	if( sortingCaches[cache])
+	//TODO: Why gcc report "warning: array subscript is below array bounds" ?
+	ASSERT(cache >= 0 && cache < SORTING_CACHE_MAX);
+
+	if (sortingCaches[cache] == NULL) return;
+	if (sortingCaches[cache]->GetReferenceCount() > 1)
+		sortingCaches[cache]->ReleaseCount();
+	else
+	{
 		delete sortingCaches[cache];
-	sortingCaches[cache] = NULL;
+		sortingCaches[cache] = NULL;
+	}
+}
+
+// Search and free a matching not fully sorted cache
+void Index::FreeCache(const char* criteria)
+{
+	for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
+	    if (sortingCaches[i] != NULL)
+		if (!sortingCaches[i]->GetDoPresorting() &&
+				sortingCaches[i]->MatchCriteria(criteria)) {
+			FreeCache (i);
+			break;
+		}
+	}
 }
 
 errorT Index::IndexUpdated( uint gnum)
 {
-	for( int i=0; i<SORTING_CACHE_MAX; i++)
+	for(uint i=0; i<SORTING_CACHE_MAX; i++)
 		if( sortingCaches[i] != NULL)
 			sortingCaches[i]->CheckForChanges( NULL, gnum);
 	return OK;
@@ -1912,7 +1920,7 @@ errorT Index::IndexUpdated( uint gnum)
 
 void Index::FilterChanged()
 {
-	for( int i=0; i<SORTING_CACHE_MAX; i++)
+	for(uint i=0; i<SORTING_CACHE_MAX; i++)
 		if( sortingCaches[i] != NULL)
 			sortingCaches[i]->FilterChanged();
 }
@@ -1947,6 +1955,39 @@ errorT Index::ReadSortCacheFromFile( int handle)
 bool Index::CanLoad()
 {
 	return SortCache::CanLoad( GetFileName(), GetNumGames());
+}
+
+std::string Index::FetchInfo (gameNumberT g, NameBase* nb)
+{
+	IndexEntry* ie = FetchEntry (g);
+	eloT welo = ie->GetWhiteElo();
+	eloT belo = ie->GetBlackElo();
+	if (welo == 0) { welo = nb->GetElo (ie->GetWhite()); }
+	if (belo == 0) { belo = nb->GetElo (ie->GetBlack()); }
+
+	char dateStr [16];
+	date_DecodeToString (ie->GetDate(), dateStr);
+
+	char eventdateStr [16];
+	date_DecodeToString (ie->GetEventDate(), eventdateStr);
+
+	//#TODO: don't use PrintGameInfo
+	/* "GlistDeleted" "GlistFlags" "GlistECO" "GlistEndMaterial" "GlistStart"*/
+	char pgi_buf[1024];
+	ie->PrintGameInfo (pgi_buf, 0,0, nb, "\"D\" \"U\" \"o4\" \"F\" \"S\"");
+
+	char buf[1024];
+	snprintf(buf, sizeof(buf),
+			"\"%d\" \"%s\" \"%d\" \"%s\" \"%d\" \"%s\" \"%d\" \"%s\" \"%s\" \"%s\" "
+			" \"%s\" \"%d\" \"%d\" \"%d\" %s \"%s\" \"%d\" \"%d\" \"%d\"",
+			g +1, RESULT_STR[ie->GetResult()], (ie->GetNumHalfMoves() + 1) / 2,
+			ie->GetWhiteName (nb), welo, ie->GetBlackName (nb), belo,
+			dateStr, ie->GetEventName (nb), ie->GetRoundName(nb),
+			ie->GetSiteName(nb), ie->GetNagCount(), ie->GetCommentCount(),
+			ie->GetVariationCount(), pgi_buf, eventdateStr, ie->GetYear(),
+			(welo + belo)/2, ie->GetRating(nb));
+
+	return buf;
 }
 
 

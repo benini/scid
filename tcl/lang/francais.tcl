@@ -854,6 +854,10 @@ translate F GlistComments {Commentaires}
 translate F GlistAnnos {Annotations}
 translate F GlistStart {Départ}
 translate F GlistGameNumber {Partie numéro}
+# ====== TODO To be translated ======
+translate F GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate F GlistRating {Rating}
 translate F GlistFindText {Rechercher texte}
 translate F GlistMoveField {Coup}
 translate F GlistEditField {Configurer}
@@ -861,8 +865,20 @@ translate F GlistAddField {Ajouter}
 translate F GlistDeleteField {Enlever}
 translate F GlistWidth {Largeur}
 translate F GlistAlign {Aligner}
+# ====== TODO To be translated ======
+translate F GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate F GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate F GlistAlignC {Align: center}
 translate F GlistColor {Couleur}
 translate F GlistSep {Séparateur}
+# ====== TODO To be translated ======
+translate F GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate F GlistNewSort {New}
+# ====== TODO To be translated ======
+translate F GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate F GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -1926,6 +1942,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

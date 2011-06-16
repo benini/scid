@@ -48,6 +48,14 @@ class SortCache
 	errorT Recalc( uint sortedField);
 	uint Insert( uint gnum, uint done);
 
+	class Compare_std {
+	public:
+		Compare_std (SortCache* sc) : sc_(sc) {}
+		inline int operator() (uint i1, uint i2) const;
+	private:
+		SortCache* sc_;
+	};
+
   public:
 
 	SortCache( Index *idx, NameBase * nb, const char *criterium, bool preSort, bool hash);

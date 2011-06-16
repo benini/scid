@@ -1003,6 +1003,10 @@ translate P GlistComments {Komentarze}
 translate P GlistAnnos {Uwagi}
 translate P GlistStart {Pozycja pocz±tkowa}
 translate P GlistGameNumber {Numer partii}
+# ====== TODO To be translated ======
+translate P GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate P GlistRating {Rating}
 translate P GlistFindText {Znajd¼ tekst}
 translate P GlistMoveField {Przesuñ}
 translate P GlistEditField {Konfiguruj}
@@ -1010,8 +1014,20 @@ translate P GlistAddField {Dodaj}
 translate P GlistDeleteField {Usuñ}
 translate P GlistWidth {Szeroko¶æ}
 translate P GlistAlign {Wyrównanie}
+# ====== TODO To be translated ======
+translate P GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate P GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate P GlistAlignC {Align: center}
 translate P GlistColor {Kolor}
 translate P GlistSep {Separator}
+# ====== TODO To be translated ======
+translate P GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate P GlistNewSort {New}
+# ====== TODO To be translated ======
+translate P GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate P GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -2448,6 +2464,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

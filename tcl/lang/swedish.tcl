@@ -997,6 +997,10 @@ translate W GlistComments {Kommentarer}
 translate W GlistAnnos {Noteringar}
 translate W GlistStart {Start}
 translate W GlistGameNumber {Partinummer}
+# ====== TODO To be translated ======
+translate W GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate W GlistRating {Rating}
 translate W GlistFindText {Sök text}
 translate W GlistMoveField {Drag}
 translate W GlistEditField {Konfiguration}
@@ -1004,8 +1008,20 @@ translate W GlistAddField {Lägg till}
 translate W GlistDeleteField {Ta bort}
 translate W GlistWidth {Bredd}
 translate W GlistAlign {Justering}
+# ====== TODO To be translated ======
+translate W GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate W GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate W GlistAlignC {Align: center}
 translate W GlistColor {Färg}
 translate W GlistSep {Separator}
+# ====== TODO To be translated ======
+translate W GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate W GlistNewSort {New}
+# ====== TODO To be translated ======
+translate W GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate W GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -7237,6 +7253,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

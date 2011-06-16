@@ -935,145 +935,19 @@ proc ::tree::prime { baseNumber } {
 #   bpress: the button/menu was selected => bring window to front
 #
 proc ::tree::best { baseNumber {bpress 0}} {
-  global tree
-  set w .treeBest$baseNumber
   if {! [winfo exists .treeWin$baseNumber]} { return }
-  if {! [winfo exists $w]} {
-    toplevel $w
+
+  set w .treeBest$baseNumber
+  if {$bpress && [::createToplevel $w] != "already_exists"} {
     ::setTitle $w "Scid: $::tr(TreeBestGames) $baseNumber: [file tail [sc_base filename $baseNumber]]"
-    setWinLocation $w
-    bind $w <Escape> "destroy $w"
-    bind $w <F1> {helpWindow Tree Best}
-    pack [ttk::frame $w.b] -side bottom -fill x
-    pack [ttk::frame $w.opt] -side bottom -fill x
-    set pane [::utils::pane::Create $w.pane blist bpgn 520 320 0.6]
-    ::utils::pane::SetRange $w.pane 0.3 0.8
-    pack $pane -side top -expand true -fill both
-    ttk::scrollbar $pane.blist.ybar -command "$pane.blist.list yview" -takefocus 0
-    listbox $pane.blist.list -background white -yscrollcommand "$pane.blist.ybar set" -font font_Small
-    pack $pane.blist.ybar -side right -fill y
-    pack $pane.blist.list -side left -fill both -expand yes
-    bind $pane.blist.list <<ListboxSelect>> "::tree::bestPgn $baseNumber"
-    bind $pane.blist.list <Double-Button-1> "::tree::bestBrowse $baseNumber"
-    
-    ttk::scrollbar $pane.bpgn.ybar -command "$pane.bpgn.text yview" -takefocus 0
-    text $pane.bpgn.text -width 50 -height 20 -background gray90 \
-        -cursor top_left_arrow -yscrollcommand "$pane.bpgn.ybar set" -wrap word \
-        -state disabled -font font_Small
-    pack $pane.bpgn.ybar -side right -fill y
-    pack $pane.bpgn.text -side left -fill both -expand yes
-    set t $pane.bpgn.text
-    bind $t <ButtonPress-1> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
-    bind $t <ButtonRelease-1> ::pgn::HideBoard
-    bind $t <ButtonPress-$::MB2> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
-    bind $t <ButtonRelease-$::MB2> ::pgn::HideBoard
-    bind $t <ButtonPress-$::MB3> "::pgn::ShowBoard $pane.bpgn.text 4 %x %y %X %Y"
-    bind $t <ButtonRelease-$::MB3> :::pgn::HideBoard
-    
-    ttk::label $w.opt.lmax -text $::tr(TreeBest:) -font font_Small
-    set m [tk_optionMenu $w.opt.max tree(bestMax$baseNumber) 10 20 50 100 200 500]
-    $m configure -font font_Small
-    $w.opt.max configure -font font_Small
-    ttk::label $w.opt.lres -text " $::tr(Result):" -font font_Small
-    set m [tk_optionMenu $w.opt.res tree(bestRes$baseNumber) \
-        "1-0 0-1 1/2 *" 1-0 0-1 "1-0 0-1" 1/2-1/2]
-    $m configure -font font_Small
-    $w.opt.res configure -font font_Small
-    
-    ttk::button $w.b.browse -text $::tr(BrowseGame) -command "::tree::bestBrowse $baseNumber"
-    ttk::button $w.b.load -text $::tr(LoadGame) -command "::tree::bestLoad $baseNumber"
-    ttk::button $w.b.merge -text $::tr(MergeGame) -command "::tree::bestMerge $baseNumber"
-    ttk::button $w.b.close -text $::tr(Close) -command "destroy $w"
-    foreach i {browse load merge close} { $w.b.$i configure -style Small.TButton }
-    pack $w.b.close $w.b.merge $w.b.load $w.b.browse \
-        -side right -padx 1 -pady 2
-    pack $w.opt.lmax $w.opt.max -side left -padx 0 -pady 2
-    pack $w.opt.lres $w.opt.res -side left -padx 0 -pady 2
     bind $w <Configure> "recordWinSize $w"
-    focus $w.pane.blist.list
-  } elseif {$bpress == 1} {
-       focus $w
-       raise $w
+    glist.create $w "best"
+    createToplevelFinalize $w
   }
-  $w.pane.blist.list delete 0 end
-  set tree(bestList$baseNumber) {}
-  set count 0
-  
-  if {! [sc_base inUse]} { return }
-  
-  foreach {idx line} [sc_tree best $tree(base$baseNumber) $tree(bestMax$baseNumber) $tree(bestRes$baseNumber)] {
-    incr count
-    # listbox widget does not like ' character
-    set line [ string map { "'" "\'" } $line ]
-    $w.pane.blist.list insert end "[format %02d $count]:  $line"
-    lappend tree(bestList$baseNumber) $idx
-  }
-  catch {$w.pane.blist.list selection set 0}
-  ::tree::bestPgn $baseNumber
+
+  glist.update $w $::tree(base$baseNumber) tree
 }
 
-################################################################################
-proc ::tree::bestLoad { baseNumber } {
-  global tree
-  if {[catch {set sel [.treeBest$baseNumber.pane.blist.list curselection]}]} { return }
-  if {[catch {set g [lindex $tree(bestList$baseNumber) $sel]}]} { return }
-  # if {$tree(locked$baseNumber)} { sc_base switch $tree(base$baseNumber) }
-  sc_base switch $tree(base$baseNumber)
-  ::game::Load $g
-}
-
-################################################################################
-proc ::tree::bestMerge { baseNumber } {
-  global tree
-  if {[catch {set sel [.treeBest$baseNumber.pane.blist.list curselection]}]} { return }
-  if {[catch {set gnum [lindex $tree(bestList$baseNumber) $sel]}]} { return }
-  set base $baseNumber
-  if {$tree(locked$baseNumber)} { set base $tree(base$baseNumber) }
-  mergeGame $base $gnum
-}
-
-################################################################################
-proc ::tree::bestBrowse { baseNumber } {
-  global tree
-  if {[catch {set sel [.treeBest$baseNumber.pane.blist.list curselection]}]} { return }
-  if {[catch {set gnum [lindex $tree(bestList$baseNumber) $sel]}]} { return }
-  set base $baseNumber
-  if {$tree(locked$baseNumber)} { set base $tree(base$baseNumber) }
-  ::gbrowser::new $base $gnum
-}
-
-################################################################################
-proc ::tree::bestPgn { baseNumber } {
-  global tree
-  set t .treeBest$baseNumber.pane.bpgn.text
-  $t configure -state normal
-  $t delete 1.0 end
-  if {[catch {set sel [.treeBest$baseNumber.pane.blist.list curselection]}]} { return }
-  if {[catch {set g [lindex $tree(bestList$baseNumber) $sel]}]} { return }
-  
-  set base $baseNumber
-  
-  if {[catch {sc_game summary -base $base -game $g header} header]} { return }
-  if {[catch {sc_game summary -base $base -game $g moves} moves]} { return }
-  if {[catch {sc_filter value $base $g} ply]} { return }
-  $t tag configure header -foreground darkBlue
-  $t tag configure start -foreground darkRed
-  $t insert end $header header
-  $t insert end "\n\n"
-  set m 0
-  set moves [::trans $moves]
-  foreach move $moves {
-    incr m
-    if {$m < $ply} {
-      $t insert end $move start
-    } else {
-      $t insert end $move
-    }
-    $t insert end " "
-  }
-  
-  $t configure -state disabled
-}
 
 ################################################################################
 # ::tree::graph

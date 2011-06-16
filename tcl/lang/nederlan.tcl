@@ -875,6 +875,10 @@ translate N GlistComments {Commentaar}
 translate N GlistAnnos {Annotaties}
 translate N GlistStart {Start}
 translate N GlistGameNumber {Partij nummer}
+# ====== TODO To be translated ======
+translate N GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate N GlistRating {Rating}
 translate N GlistFindText {Tekst vinden}
 translate N GlistMoveField {Zet}
 translate N GlistEditField {Configuratie}
@@ -882,8 +886,20 @@ translate N GlistAddField {Voeg toe}
 translate N GlistDeleteField {Verwijder}
 translate N GlistWidth {Breedte}
 translate N GlistAlign {Uitlijnen}
+# ====== TODO To be translated ======
+translate N GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate N GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate N GlistAlignC {Align: center}
 translate N GlistColor {Kleuren}
 translate N GlistSep {Separator}
+# ====== TODO To be translated ======
+translate N GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate N GlistNewSort {New}
+# ====== TODO To be translated ======
+translate N GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate N GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -1862,6 +1878,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
+
 
 
 

@@ -886,6 +886,10 @@ translate U GlistComments {Kommentit}
 translate U GlistAnnos {Annotaatiot}
 translate U GlistStart {Alk}
 translate U GlistGameNumber {Peli nro}
+# ====== TODO To be translated ======
+translate U GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate U GlistRating {Rating}
 translate U GlistFindText {Etsi teksti}
 translate U GlistMoveField {Siirto}
 translate U GlistEditField {Asetukset}
@@ -893,8 +897,20 @@ translate U GlistAddField {Lis‰‰}
 translate U GlistDeleteField {Poista}
 translate U GlistWidth {Leveys}
 translate U GlistAlign {Tasaus}
+# ====== TODO To be translated ======
+translate U GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate U GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate U GlistAlignC {Align: center}
 translate U GlistColor {V‰ri}
 translate U GlistSep {Erotin}
+# ====== TODO To be translated ======
+translate U GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate U GlistNewSort {New}
+# ====== TODO To be translated ======
+translate U GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate U GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -1772,6 +1788,7 @@ translate U ChangeIcon {Vaihda kuvake...}
 
 }
 # end of english.tcl
+
 
 
 

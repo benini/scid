@@ -996,6 +996,10 @@ translate Y GlistComments {Komentari}
 translate Y GlistAnnos {Napomene}
 translate Y GlistStart {Start} ;# ***
 translate Y GlistGameNumber {Broj partije}
+# ====== TODO To be translated ======
+translate Y GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate Y GlistRating {Rating}
 translate Y GlistFindText {Naði tekst}
 translate Y GlistMoveField {Move} ;# ***
 translate Y GlistEditField {Configure} ;# ***
@@ -1003,8 +1007,20 @@ translate Y GlistAddField {Add} ;# ***
 translate Y GlistDeleteField {Remove} ;# ***
 translate Y GlistWidth {Width} ;# ***
 translate Y GlistAlign {Align} ;# ***
+# ====== TODO To be translated ======
+translate Y GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate Y GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate Y GlistAlignC {Align: center}
 translate Y GlistColor {Color} ;# ***
 translate Y GlistSep {Separator} ;# ***
+# ====== TODO To be translated ======
+translate Y GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate Y GlistNewSort {New}
+# ====== TODO To be translated ======
+translate Y GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate Y GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -2221,6 +2237,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

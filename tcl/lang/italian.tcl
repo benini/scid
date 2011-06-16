@@ -925,6 +925,10 @@ translate I GlistComments {Commenti}
 translate I GlistAnnos {Annotazioni}
 translate I GlistStart {Inizio}
 translate I GlistGameNumber {numero di Partita}
+# ====== TODO To be translated ======
+translate I GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate I GlistRating {Rating}
 translate I GlistFindText {Cerca testo}
 translate I GlistMoveField {Mossa}
 translate I GlistEditField {Configura}
@@ -932,8 +936,20 @@ translate I GlistAddField {Aggiungi}
 translate I GlistDeleteField {Elimina}
 translate I GlistWidth {Larghezza}
 translate I GlistAlign {Allinea}
+# ====== TODO To be translated ======
+translate I GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate I GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate I GlistAlignC {Align: center}
 translate I GlistColor {Colore}
 translate I GlistSep {Separatore}
+# ====== TODO To be translated ======
+translate I GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate I GlistNewSort {New}
+# ====== TODO To be translated ======
+translate I GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate I GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -2139,6 +2155,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

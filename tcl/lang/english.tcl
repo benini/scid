@@ -886,6 +886,8 @@ translate E GlistComments {Comments}
 translate E GlistAnnos {Annotations}
 translate E GlistStart {Start}
 translate E GlistGameNumber {Game number}
+translate E GlistAverageElo {Average Elo}
+translate E GlistRating {Rating}
 translate E GlistFindText {Find text}
 translate E GlistMoveField {Move}
 translate E GlistEditField {Configure}
@@ -893,8 +895,15 @@ translate E GlistAddField {Add}
 translate E GlistDeleteField {Remove}
 translate E GlistWidth {Width}
 translate E GlistAlign {Align}
+translate E GlistAlignL {Align: left}
+translate E GlistAlignR {Align: right}
+translate E GlistAlignC {Align: center}
 translate E GlistColor {Color}
 translate E GlistSep {Separator}
+translate E GlistCurrentSep {-- Current --}
+translate E GlistNewSort {New}
+translate E GlistAddToSort {Add}
+
 
 # base sorting
 translate E GsortSort {Sort...}

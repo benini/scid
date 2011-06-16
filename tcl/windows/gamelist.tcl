@@ -987,3 +987,551 @@ proc getSortingCrit {} {
   }
 }
 
+
+
+##########################################################################
+# June 2011: A new reusable and simplified gamelist widget
+#
+
+# glist.create
+#   Create a gamelist widget
+#   w: parent window of the gamelist widget
+#   layout: a string name that will be assigned to columns layout.
+#           layout will be saved and restored in successive glist.create calls.
+proc glist.create {{w} {layout}} {
+  # Default values
+  if {! [info exists ::glist_ColOrder($layout)] } {
+    set ::glist_ColOrder($layout) {{7} {1} {2} {3} {4} {5} {6} {23} {22} {8} {9} {10} {11} {12} {13} {14} {15} {16} {0}}
+  }
+  if {! [info exists ::glist_ColWidth($layout)] } {
+    set ::glist_ColWidth($layout) {{50} {50} {50} {120} {40} {120} {40} {80} {200} {30} \
+        {200} {30} {20} {20} {20} {20} {35} {50} {30} {100} {40} {40} {50} {140}}
+  }
+  if {! [info exists ::glist_ColAnchor($layout)] } {
+    set ::glist_ColAnchor($layout) {{e} {c} {c} {w} {c} {w} {c} {w} {w} {e} \
+        {w} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {w}}
+  }
+  if {! [info exists ::glist_Sort($w.glist)] } {
+    set ::glist_Sort($w.glist) { {22} {-} {7} {-} }
+  }
+
+  ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
+  $w.glist tag configure current -background lightBlue
+  $w.glist tag configure fsmall -font font_Small
+  menu $w.glist.header_menu
+  menu $w.glist.header_menu.addcol
+  menu $w.glist.header_menu.sort -disabledforeground blue
+  menu $w.glist.game_menu
+  bind $w.glist <Configure> "set ::glistResized($w.glist) 1"
+  bind $w.glist <2> "glist.popupmenu_ %W %x %y %X %Y $layout"
+  bind $w.glist <3> "glist.popupmenu_ %W %x %y %X %Y $layout"
+  bind $w.glist <ButtonRelease-1> "glist.release_ %W %x %y $layout"
+  bind $w.glist <Double-ButtonPress-1> {
+    foreach {idx ply} [split [%W selection] "_"] {}
+    if {[info exist idx]} {
+      sc_base switch $::glistBase(%W)
+      ::game::Load $idx $ply
+    }
+  }
+  bind $w.glist <Destroy> "glist.destroy_ $w.glist"
+
+  set i 0
+  foreach col $::glist_Headers {
+    $w.glist heading $col -text $::tr($col)
+    $w.glist column $col -stretch 0 \
+             -width [lindex $::glist_ColWidth($layout) $i]\
+             -anchor [lindex $::glist_ColAnchor($layout) $i]
+    incr i
+  }
+  $w.glist configure -displaycolumns $::glist_ColOrder($layout)
+
+  autoscrollframe -bars both $w "" $w.glist
+  set ::glistYScroll($w.glist) [$w.glist cget -yscrollcommand]
+  $w.glist configure -yscrollcommand "glist.yscroll_ $w.glist"
+  $w.ybar configure -command "glist.ybar_ $w.glist"
+  bind $w.ybar <ButtonRelease-1> "+glist.ybar_ $w.glist buttonrelease"
+  ttk::bindMouseWheel $w.glist "glist.ybar_ $w.glist"
+
+  # On exit save layout in options.dat
+  options.save ::glist_ColOrder($layout)
+  options.save ::glist_ColWidth($layout)
+  options.save ::glist_ColAnchor($layout)
+  options.save ::glist_Sort($w.glist)
+
+  set ::glistYDrag($w.glist) 0
+  set ::glistLoaded($w.glist) 0.0
+  set ::glistTotal($w.glist) 0.0
+  set ::glistVisibleLn($w.glist) 0
+  set ::glistResized($w) 0
+  glist.sortInit_ $w.glist
+}
+
+# glist.update
+#   Retrieve values from database and update the widget
+#   w: the parent windows of the widget that was passed to glist.create
+#   base: the database from which retrieve values
+#   filter: returns only values in the specified filter
+#         - "all": all the values in the database *** NOT YET IMPLEMENTED ***
+#         - "dbfilter": only values that matches the user defined filters
+#         - "tree": only games from which are calculated the stats in the tree window
+proc glist.update {{w} {base} {filter}} {
+  set w $w.glist
+  if {! [winfo exists $w]} { return }
+
+  set ::glistFilter($w) $filter
+  set ::glistTotal($w) [sc_filter count $base $filter]
+  if {$::glistVisibleLn($w) == 0 && $::glistTotal($w) > 0} {
+    # Guess glistVisibleLn
+    set ::glistVisibleLn($w) 50
+    if {$::glistVisibleLn($w) >= $::glistTotal($w)} {
+      set ::glistVisibleLn($w) [expr $::glistTotal($w) -1]
+    }
+  }
+  glist.update_ $w $base
+}
+
+
+#private:
+set glist_Headers {"GlistNumber" "GlistResult" "GlistLength" "GlistWhite" "GlistWElo"
+                   "GlistBlack" "GlistBElo"  "GlistDate" "GlistEvent" "GlistRound"
+                   "GlistSite" "GlistAnnos" "GlistComments" "GlistVars" "GlistDeleted"
+                   "GlistFlags" "GlistECO" "GlistEndMaterial" "GlistStart" "GlistEDate"
+                   "GlistYear" "GlistAverageElo" "GlistRating" "GlistMoveField" }
+
+set glist_SortShortcuts { "N" "r" "m" "w" "W"
+                    "b" "B" "d" "e" "n"
+                    "s" "A" "C" "V" "D"
+                    "???" "o" "???" "???" "E"
+                    "y" "R" "i" "???" }
+
+proc glist.destroy_ {{w}} {
+  if {[info exists ::glistSortCache($w)]} {
+    sc_base sortcache $::glistBase($w) release $::glistSortCache($w)
+    unset ::glistSortCache($w)
+  }
+  unset ::glistSortStr($w)
+  if {[info exists ::glistBase($w)]} { unset ::glistBase($w) }
+  if {[info exists ::glistFilter($w)]} { unset ::glistFilter($w) }
+  if {[info exists ::glistFirst($w)]} { unset ::glistFirst($w) }
+  unset ::glistVisibleLn($w)
+  unset ::glistLoaded($w)
+  unset ::glistTotal($w)
+  unset ::glistYDrag($w)
+  unset ::glistYScroll($w)
+  unset ::glistResized($w)
+}
+
+proc glist.update_ {{w} {base}} {
+  if {! [info exists ::glistBase($w)] } {
+    #Create a sortcache to speed up sorting
+    sc_base sortcache $base create $::glistSortStr($w)
+  } elseif {$::glistBase($w) != $base || $::glistSortCache($w) != $::glistSortStr($w)} {
+    #Create a new sortcache
+    sc_base sortcache $::glistBase($w) release $::glistSortCache($w)
+    sc_base sortcache $base create $::glistSortStr($w)
+  }
+  set ::glistSortCache($w) $::glistSortStr($w)
+  set ::glistBase($w) $base
+  set ::glistFirst($w) 0.0
+  glist.loadvalues_ $w
+  glist.ybarupdate_ $w
+}
+
+proc glist.loadvalues_ {w} {
+  $w delete [$w children {}]
+  set base $::glistBase($w)
+  if {$base == [sc_base current]} {
+    set current_game [sc_game number]
+  } else {
+    set current_game -1
+  }
+  set i 0
+  busyCursor .
+  foreach {idx line} [sc_base gameslist $base $::glistFirst($w) [expr 1 + $::glistVisibleLn($w)]\
+                                        $::glistFilter($w) $::glistSortStr($w)] {
+    $w insert {} end -id $idx -values $line -tag fsmall
+    foreach {n ply} [split $idx "_"] {
+      if {$n == $current_game} { $w item $idx -tag {fsmall current} }
+    }
+    incr i
+  }
+  set ::glistLoaded($w) $i
+  unbusyCursor .
+}
+
+proc glist.ybar_ {w cmd {n 0} {units ""}} {
+  if { $cmd == "-1" || $cmd == "+1" } {
+    #MouseWheel
+    set n [expr $cmd * $::glistVisibleLn($w) * 0.75]
+    set units "units"
+    set cmd scroll
+  }
+  if { $cmd == "scroll" || $cmd == "moveto"} {
+    if {$cmd == "moveto"} {
+      set ::glistFirst($w) [expr ceil($n * $::glistTotal($w))]
+    } else {
+      if {$units == "pages"} {
+        set ::glistFirst($w) [expr $::glistFirst($w) + $n * ($::glistVisibleLn($w) -1)]
+      } else {
+        set ::glistFirst($w) [expr $::glistFirst($w) + $n]
+      }
+    }
+
+    set d [expr $::glistTotal($w) - $::glistVisibleLn($w) +1]
+    if {$::glistFirst($w) > $d } { set ::glistFirst($w) $d }
+    if { $::glistFirst($w) < 0.0 } { set ::glistFirst($w) 0.0 }
+
+    if { $cmd == "scroll"} {
+      glist.loadvalues_ $w
+    } else {
+      set ::glistYDrag($w) 1
+      set t $w.balloon
+      if {! [winfo exists $t] } {
+        toplevel $t -bd 1 -bg black
+        wm overrideredirect $t 1
+        pack [message $t.txt -aspect 10000 -bg lightyellow -font fixed]
+      }
+      $t.txt configure -text [format "%0.0f (%0.0f%%)" [expr 1 + $::glistFirst($w)]\
+          [expr ($::glistFirst($w) + $::glistVisibleLn($w))*100.0/$::glistTotal($w) ]]
+      set wmx [expr [winfo pointerx .] - [winfo reqwidth $t.txt] - 10]
+      set wmy [winfo pointery .]
+      wm geometry $t \
+        [winfo reqwidth $t.txt]x[winfo reqheight $t.txt]+$wmx+$wmy
+      raise $t
+    }
+    glist.ybarupdate_ $w
+  } elseif { $cmd == "buttonrelease" && $::glistYDrag($w) != 0 } {
+      set ::glistYDrag($w) 0
+      destroy $w.balloon
+      glist.loadvalues_ $w
+      glist.ybarupdate_ $w
+  }
+}
+
+proc glist.ybarupdate_ {w} {
+  if { $::glistLoaded($w) != $::glistTotal($w) } {
+	set first [expr $::glistFirst($w) / $::glistTotal($w)]
+    set last [expr ($::glistFirst($w) + $::glistLoaded($w)) / $::glistTotal($w)]
+    eval $::glistYScroll($w) $first $last
+  }
+}
+
+proc glist.yscroll_ {w first last} {
+  if { $first != 0 } {
+#TODO: MouseWheel problem
+    $w yview moveto 0
+    return
+  }
+
+  if { $::glistLoaded($w) != $::glistTotal($w) } {
+    if { $first != 0 || $last != 1} {
+      set ::glistResized($w) 0
+      if { $last < 1 } { set ::glistVisibleLn($w) [expr floor($last * $::glistLoaded($w) +1)] }
+      glist.ybarupdate_ $w
+    } elseif {$::glistResized($w)} {
+      # Increase glistVisibleLn (recursion)
+      set ::glistVisibleLn($w) [expr $::glistVisibleLn($w) + 1]
+      glist.ybar_ $w scroll
+    }
+  } else { eval $::glistYScroll($w) $first $last }
+}
+
+proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
+# identify region requires at least tk 8.5.9
+# identify row have scrollbar problems
+  if { 0 != [catch {set region [$w identify region $x $y] }] } {
+    if {[$w identify row $x $y] == "" } {
+      set region "heading"
+    } else {
+      set region ""
+    }
+  }
+  if { $region != "heading" } {
+# if {[$w identify region $x $y] != "heading" }
+    event generate $w <ButtonPress-1> -x $x -y $y
+    foreach {idx ply} [split [$w selection] "_"] {}
+    if {[info exist idx]} {
+      $w.game_menu delete 0 end
+      #LOAD/BROWSE/MERGE GAME
+      $w.game_menu add command -label $::tr(LoadGame) \
+         -command "sc_base switch $::glistBase($w); ::game::Load $idx $ply"
+      $w.game_menu add command -label $::tr(BrowseGame) \
+         -command "::gbrowser::new $::glistBase($w) $idx $ply"
+      $w.game_menu add command -label $::tr(MergeGame) \
+         -command "mergeGame $::glistBase($w) $idx"
+
+      #GOTO GAME
+      #$w.game_menu add separator
+      #TODO: add a goto game number
+      if {$::glistBase($w) == [sc_base current]} {
+        #TODO: add a goto current game
+        #DELETE
+        #TODO: Delete games even for "not current" databases
+        #TODO: translate labels
+        #TODO: refresh the other windows after delete/undelete
+        $w.game_menu add separator
+        set deleted [sc_game flag delete $idx]
+        if {$deleted} {
+          $w.game_menu add command -label "Undelete game" -command "sc_game flag delete $idx 0"
+        } else {
+          $w.game_menu add command -label "Delete game" -command "sc_game flag delete $idx 1"
+        }
+      }
+      tk_popup $w.game_menu $abs_x $abs_y
+    }
+  } else {
+    set col [$w identify column $x $y]
+    set col_idx [lsearch -exact $::glist_Headers [$w column $col -id] ]
+    $w.header_menu delete 0 end
+
+    #SORT
+    $w.header_menu.sort delete 0 end
+    if {"???" != [lindex $::glist_SortShortcuts $col_idx]} {
+      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(0)\
+                               -compound right -command [list glist.sortBy_ $w $col_idx +]
+      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(1)\
+                               -compound right -command [list glist.sortBy_ $w $col_idx -]
+      set a1 [llength $::glist_Sort($w)]
+      set a2 [expr $a1 +1]
+      if {[lsearch -exact $::glist_Sort($w) $col_idx ] == -1 && $a1 <= 16} {
+        $w.header_menu.sort add separator
+        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a1)\
+                                -compound right -command [list glist.sortBy_ $w $col_idx + 0]
+        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a2)\
+                                -compound right -command [list glist.sortBy_ $w $col_idx - 0]
+    }
+    $w.header_menu.sort add separator
+    }
+    $w.header_menu.sort add command -label $::tr(GlistCurrentSep) -state disabled
+    set i 0
+    foreach {c dir} $::glist_Sort($w) {
+      set h [lindex $::glist_Headers $c]
+      set arrow_idx [expr $i *2]
+      if {$dir == "-"} { incr arrow_idx }
+      $w.header_menu.sort add command -label $::tr($h) -image ::glist_Arrows($arrow_idx) \
+                                      -compound left -state disabled
+      incr i
+    }
+    $w.header_menu add cascade -label $::tr(Sort) -menu $w.header_menu.sort
+
+    #ADD/REMOVE COLUMN
+    $w.header_menu add separator
+    $w.header_menu.addcol delete 0 end
+    set empty disabled
+    set i 0
+    foreach h $::glist_Headers {
+      if {[lsearch -exact $::glist_ColOrder($layout) $i] == -1} {
+        set empty normal
+        $w.header_menu.addcol add command -label $::tr($h) -command "glist.insertcol_ $w $layout $i $col"
+      }
+      incr i
+    }
+    $w.header_menu add cascade -label $::tr(GlistAddField) -menu $w.header_menu.addcol -state $empty
+    $w.header_menu add command -label $::tr(GlistDeleteField) -command "glist.removecol_ $w $layout $col"
+
+    #CHANGE ALIGNMENT
+    $w.header_menu add separator
+    set cur_a [lindex $::glist_ColAnchor($layout) $col_idx]
+    if {$cur_a != "w"} {
+      $w.header_menu add command -label $::tr(GlistAlignL) \
+                     -command "$w column $col -anchor w; lset ::glist_ColAnchor($layout) $col_idx w"
+    }
+    if {$cur_a != "e"} {
+      $w.header_menu add command -label $::tr(GlistAlignR) \
+                     -command "$w column $col -anchor e; lset ::glist_ColAnchor($layout) $col_idx e"
+    }
+    if {$cur_a != "c"} {
+      $w.header_menu add command -label $::tr(GlistAlignC) \
+                     -command "$w column $col -anchor c; lset ::glist_ColAnchor($layout) $col_idx c"
+    }
+
+    tk_popup $w.header_menu $abs_x $abs_y
+  }
+}
+
+proc glist.sortInit_ {w} {
+  set ::glistSortStr($w) ""
+  set i 0
+  foreach {c dir} $::glist_Sort($w) {
+    set arrow_idx [expr $i *2]
+    if {$dir == "-"} { incr arrow_idx }
+    $w heading $c -image ::glist_Arrows($arrow_idx)
+    append ::glistSortStr($w) [lindex $::glist_SortShortcuts $c] $dir
+    incr i
+  }
+}
+
+proc glist.sortBy_ {w col direction {clear 1}} {
+  foreach {c dir} $::glist_Sort($w) { $w heading $c -image "" }
+  if {$clear} { unset ::glist_Sort($w) }
+  lappend ::glist_Sort($w) $col $direction
+  glist.sortInit_ $w
+  if {[info exist ::glistBase($w)]} { glist.update_ $w $::glistBase($w) }
+}
+
+#Drag and drop and changes in column's layout
+proc glist.insertcol_ {{w} {layout} {col} {after}} {
+  set b [expr [string trimleft $after {#}]]
+  set ::glist_ColOrder($layout) [linsert $::glist_ColOrder($layout) $b $col]
+  $w configure -displaycolumns $::glist_ColOrder($layout)
+}
+
+proc glist.removecol_ {{w} {layout} {col}} {
+  set d [expr [string trimleft $col {#}] -1]
+  set ::glist_ColOrder($layout) [lreplace $::glist_ColOrder($layout) $d $d]
+  $w configure -displaycolumns $::glist_ColOrder($layout)
+}
+
+proc glist.release_ {{w} {x} {y} {layout}} {
+  switch $::ttk::treeview::State(pressMode) {
+    resize {
+      set col_id [$w column $::ttk::treeview::State(resizeColumn) -id]
+      set i [lsearch -exact $::glist_Headers $col_id]
+      if {$i != -1} {
+        lset ::glist_ColWidth($layout) $i [$w column $::ttk::treeview::State(resizeColumn) -width]
+      }
+    }
+    heading {
+      lassign [$w identify $x $y] what
+      if {$what == "heading"} {
+        set new_col [$w identify column $x $y]
+        set from [expr [string trimleft $::ttk::treeview::State(heading) {#}] -1]
+        set to [expr [string trimleft $new_col {#}] -1]
+        set val [lindex $::glist_ColOrder($layout) $from]
+        set ::glist_ColOrder($layout) [lreplace $::glist_ColOrder($layout) $from $from]
+        set ::glist_ColOrder($layout) [linsert $::glist_ColOrder($layout) $to $val]
+        $w configure -displaycolumns $::glist_ColOrder($layout)
+      }
+    }
+  }
+  ttk::treeview::Release $w $x $y
+}
+
+image create bitmap ::glist_Arrows(0) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x10, 0x02,
+       0x38, 0x07, 0x7c, 0x00, 0xfe, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(1) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x03, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0xfe, 0x02,
+       0x7c, 0x07, 0x38, 0x00, 0x10, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(2) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x02, 0x08, 0x01,
+       0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(3) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x02, 0x7f, 0x01,
+       0xbe, 0x07, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(4) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x03, 0x08, 0x04,
+       0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(5) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x03, 0x00, 0x04, 0x00, 0x04, 0x00, 0x03, 0x7f, 0x04,
+       0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(6) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x03, 0x80, 0x02, 0x88, 0x07,
+       0x1c, 0x02, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(7) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x03, 0x80, 0x02, 0xff, 0x07,
+       0x3e, 0x02, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(8) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x07, 0x80, 0x00, 0x80, 0x03, 0x00, 0x04, 0x08, 0x04,
+       0x9c, 0x03, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(9) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x07, 0x80, 0x00, 0x80, 0x03, 0x00, 0x04, 0x7f, 0x04,
+       0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(10) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x07, 0x80, 0x00, 0x80, 0x00, 0x80, 0x03, 0x88, 0x04,
+       0x1c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(11) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x07, 0x80, 0x01, 0x80, 0x00, 0x80, 0x07, 0xff, 0x04,
+       0x3e, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(12) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x07, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x08, 0x02,
+       0x1c, 0x01, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(13) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x80, 0x07, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x7f, 0x02,
+       0x3e, 0x01, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(14) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x04, 0x00, 0x03, 0x88, 0x04,
+       0x9c, 0x07, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(15) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x04, 0x00, 0x03, 0xff, 0x04,
+       0xbe, 0x07, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(16) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x07, 0x00, 0x04, 0x08, 0x06,
+       0x9c, 0x03, 0x3e, 0x00, 0x7f, 0x00, 0x00, 0x00 };
+}
+image create bitmap ::glist_Arrows(17) -foreground blue -data {
+    #define arrows_width 12
+    #define arrows_height 10
+    static unsigned char arrows_bits[] = {
+       0x00, 0x00, 0x00, 0x03, 0x80, 0x04, 0x80, 0x07, 0x00, 0x04, 0x7f, 0x06,
+       0xbe, 0x03, 0x1c, 0x00, 0x08, 0x00, 0x00, 0x00 };
+}
+
+##########################################################################

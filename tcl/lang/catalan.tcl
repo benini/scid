@@ -882,6 +882,10 @@ translate K GlistComments {Comentaris}
 translate K GlistAnnos {Annotacions}
 translate K GlistStart {Inici}
 translate K GlistGameNumber {Número de partida}
+# ====== TODO To be translated ======
+translate K GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate K GlistRating {Rating}
 translate K GlistFindText {Trovar text}
 translate K GlistMoveField {Jugada}
 translate K GlistEditField {Configurar}
@@ -889,8 +893,20 @@ translate K GlistAddField {Afegir}
 translate K GlistDeleteField {Treure}
 translate K GlistWidth {Amplada}
 translate K GlistAlign {Alinear}
+# ====== TODO To be translated ======
+translate K GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate K GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate K GlistAlignC {Align: center}
 translate K GlistColor {Color}
 translate K GlistSep {Separador}
+# ====== TODO To be translated ======
+translate K GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate K GlistNewSort {New}
+# ====== TODO To be translated ======
+translate K GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate K GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -1787,6 +1803,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

@@ -859,6 +859,10 @@ translate H GlistComments {Megjegyzések}
 translate H GlistAnnos {Értékelõ jelek}
 translate H GlistStart {Kezdet}
 translate H GlistGameNumber {A játszma sorszáma}
+# ====== TODO To be translated ======
+translate H GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate H GlistRating {Rating}
 translate H GlistFindText {Szöveg keresése}
 translate H GlistMoveField {Lépés}
 translate H GlistEditField {Konfigurálás}
@@ -866,8 +870,20 @@ translate H GlistAddField {Hozzáad}
 translate H GlistDeleteField {Eltávolít}
 translate H GlistWidth {Szélesség}
 translate H GlistAlign {Igazít}
+# ====== TODO To be translated ======
+translate H GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate H GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate H GlistAlignC {Align: center}
 translate H GlistColor {Szín}
 translate H GlistSep {Elválasztó}
+# ====== TODO To be translated ======
+translate H GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate H GlistNewSort {New}
+# ====== TODO To be translated ======
+translate H GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate H GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -1998,6 +2014,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

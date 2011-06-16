@@ -24,6 +24,7 @@
 #include "date.h"
 #include "mfile.h"
 #include "sortcache.h"
+#include <string>
 
 // Length is encoded as unsigned short
 #define MAX_GAME_LENGTH 131072
@@ -309,6 +310,7 @@ class IndexEntry
     inline byte    GetBlackRatingType () { return u16_high_4 (BlackElo); }
     inline ecoT    GetEcoCode ()  { return EcoCode; }
     inline ushort  GetNumHalfMoves () { return NumHalfMoves; }
+    inline byte    GetRating(NameBase* nb);
 
 //     inline uint GetFlags ()          { return Flags; }
     inline bool GetFlag (uint mask)  {
@@ -739,6 +741,7 @@ class Index
     bool        AllInMemory() { return InMemory; }
 
     inline IndexEntry * FetchEntry (gameNumberT g);
+    std::string FetchInfo (gameNumberT g, NameBase* nb);
 
     gameNumberT GetNumGames ()     { return Header.numGames; }
     errorT      AddGame (gameNumberT * g, IndexEntry * ie, bool initIE = false);
@@ -807,10 +810,11 @@ class Index
     errorT GetIndex( int cache, uint idx, Filter *filter, uint *result);
     errorT GetIndex( NameBase *nbase, char *criteria, uint idx, Filter *filter, uint *result);
     errorT GetRange( int cache, uint idx, uint count, Filter *filter, uint *result);
-    errorT GetRange( NameBase *nbase, char *criteria, uint idx, uint count, Filter *filter, uint *result);
+    errorT GetRange( NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result);
     errorT IndexUpdated( uint gnum);
     uint IndexToFilteredCount( uint gnumber, int cache, Filter *filter);
     void FreeCache( int cache);
+    void FreeCache(const char* criteria);
     void FilterChanged();
     errorT WriteSortCacheToFile (int handle);
     errorT ReadSortCacheFromFile (int handle);
@@ -849,6 +853,39 @@ Index::FetchEntry (gameNumberT g)
     if (InMemory == 0) { ReadEntireFile(); }
     IndexEntry * chunk = Entries[g >> INDEX_ENTRY_CHUNKSHIFT];
     return &(chunk[g & INDEX_ENTRY_CHUNKMASK]);
+}
+
+// inline produce smaller code
+inline byte IndexEntry::GetRating(NameBase* nb) {
+	eloT welo = GetWhiteElo();
+	eloT belo = GetBlackElo();
+	if (welo == 0) { welo = nb->GetElo (GetWhite()); }
+	if (belo == 0) { belo = nb->GetElo (GetBlack()); }
+	int rating = static_cast<int>(welo + belo) / 140;
+
+	// Bonus for comments or Nags
+	if (GetCommentsFlag() > 2 || GetNagCount() > 2) {
+		if (rating < 21) { // Missing elo
+			rating = 40;
+		} else {
+			rating += 6;
+		}
+	}
+
+	// Early draw penalty
+	if (GetResult() == RESULT_Draw) {
+		uint moves = GetNumHalfMoves();
+		if (moves < 80) {
+			rating -= 3;
+			if (moves < 60) {
+				rating -= 2;
+				if (moves < 40) rating -= 2;
+			}
+		}
+	}
+
+	if (rating < 0) return 0;
+	else return static_cast<byte> (rating);
 }
 
 #endif  // #ifdef SCID_INDEX_H

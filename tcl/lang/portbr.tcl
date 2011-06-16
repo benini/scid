@@ -856,6 +856,10 @@ translate B GlistComments {Comentarios}
 translate B GlistAnnos {Anotacoes}
 translate B GlistStart {Iniciar}
 translate B GlistGameNumber {Numero do Jogo}
+# ====== TODO To be translated ======
+translate B GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate B GlistRating {Rating}
 translate B GlistFindText {Encontrar texto}
 translate B GlistMoveField {Mover}
 translate B GlistEditField {Configurar}
@@ -863,8 +867,20 @@ translate B GlistAddField {Adicionar}
 translate B GlistDeleteField {Remover}
 translate B GlistWidth {Largura}
 translate B GlistAlign {Alinhar}
+# ====== TODO To be translated ======
+translate B GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate B GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate B GlistAlignC {Align: center}
 translate B GlistColor {Cor}
 translate B GlistSep {Separador}
+# ====== TODO To be translated ======
+translate B GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate B GlistNewSort {New}
+# ====== TODO To be translated ======
+translate B GlistAddToSort {Add}
 # ====== TODO To be translated ======
 translate B GsortSort {Sort...}
 # ====== TODO To be translated ======
@@ -1772,6 +1788,7 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
+
 
 
 
