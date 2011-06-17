@@ -17,7 +17,7 @@ set ::search::filter::operation 2
 proc filterText {{base 0} {kilo 0}} {
   # Default to current base if no base specified:
   if {$base == 0} { set base [sc_base current] }
-  set filterCount [sc_filter count $base]
+  set filterCount [sc_filter count $base "dbfilter"]
   set gameCount [sc_base numGames $base]
   if {$gameCount == 0} { return $::tr(noGames) }
   if {$gameCount == $filterCount} {

@@ -556,15 +556,20 @@ proc ::windows::switcher::Open {} {
   bind $w <F1> { helpWindow Switcher }
   standardShortcuts $w
 
-  canvas $w.c -width 300 -height 100 -yscrollcommand [list $w.ybar set]
+  canvas $w.c -width 300 -height 50 -yscrollcommand [list $w.ybar set]
   scrollbar $w.ybar -takefocus 0 -command [list $w.c yview]
   label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
 
   grid $w.c -row 0 -column 0 -sticky news
   grid $w.ybar -row 0 -column 1 -sticky ns
-  grid $w.status -row 1 -column 0 -sticky we
-  grid rowconfigure $w 0 -weight 1
+  grid $w.status -row 2 -column 0 -sticky we
+  grid rowconfigure $w 0 -weight 0
   grid columnconfigure $w 0 -weight 1
+
+  ttk::frame $w.f2
+  grid $w.f2 -row 1 -column 0 -columnspan 2 -sticky nswe
+  grid rowconfigure $w 1 -weight 1
+  glist.create $w.f2 "switcher"
 
   #set side left
   #if {$::windows::switcher::vertical} { set side top }
@@ -630,6 +635,10 @@ proc ::windows::switcher::Orientate {} {
   #for {set i 1} {$i <= $numBases} {incr i} {
   #  pack $w.f$i -side $side
   #}
+}
+
+proc ::windows::switcher::updateGList {} {
+  glist.update .baseWin.f2 [sc_base current] "dbfilter"
 }
 
 proc ::windows::switcher::Refresh {} {
@@ -733,4 +742,6 @@ proc ::windows::switcher::Refresh {} {
     grid $w.ybar -row 0 -column 1 -sticky ns
   }
   $w.status configure -text $status
+
+  ::windows::switcher::updateGList
 }

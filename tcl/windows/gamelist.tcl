@@ -696,10 +696,11 @@ proc ::windows::gamelist::ShowMoves {xcoord ycoord} {
   raiseWin .glistExtra
 }
 
-proc ::windows::gamelist::Refresh {} {
+proc ::windows::gamelist::Refresh {{positiononly 0}} {
   global glistSize glstart
   global glistFields sortingHandles
   updateStatusBar
+  if {!$positiononly} { ::windows::switcher::updateGList }
   if {![winfo exists .glistWin]} { return }
   set totalSize [sc_filter count]
   set dbNum [sc_base current]
