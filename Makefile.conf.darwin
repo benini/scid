@@ -148,7 +148,7 @@ EXECS= pgnscid tkscid tcscid scmerge scidlet scidt
 SCIDOBJS= src/misc.o src/index.o src/date.o src/namebase.o src/position.o \
       src/game.o src/gfile.o src/matsig.o src/bytebuf.o src/textbuf.o \
       src/myassert.o src/stralloc.o src/mfile.o src/dstring.o src/pgnparse.o \
-      src/stored.o src/movelist.o \
+      src/stored.o src/movelist.o src/sortcache.o \
 			src/polyglot/attack.o src/polyglot/board.o src/polyglot/book.o \
 			src/polyglot/book_make.o src/polyglot/book_merge.o src/polyglot/colour.o \
       src/polyglot/fen.o src/polyglot/game.o src/polyglot/hash.o \
@@ -248,7 +248,7 @@ install_scid: all_scid
 	install -m 755 -d $(SHAREDIR)/books
 	install -m 666 ./books/* $(SHAREDIR)/books/
 	install -m 755 -d $(SHAREDIR)/bases
-	install -m 666 ./bases/* $(SHAREDIR)/bases/
+	if test -d ./bases; then install -m 666 ./bases/*.* $(SHAREDIR)/bases/ ; fi
 	install -m 755 -d $(SHAREDIR)/html
 	cp -r ./html/* $(SHAREDIR)/html/
 	chmod -R 0777 $(SHAREDIR)/html/*
@@ -539,5 +539,7 @@ src/stored.o: src/stored.cpp src/stored.h src/game.h src/common.h src/tclmy.h \
   src/optable.h src/polyglot.h
 src/movelist.o: src/movelist.cpp src/movelist.h src/common.h src/tclmy.h \
   src/myassert.h src/error.h src/sqmove.h src/misc.h
+src/sortcache.o: src/sortcache.cpp src/sortcache.h src/index.cpp src/index.h \
+  src/filter.cpp src/filter.h
 
 ### End of Makefile
