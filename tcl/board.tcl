@@ -1206,6 +1206,7 @@ proc ::board::size {w} {
 # resizing : should be fixed !
 ################################################################################
 proc ::board::resize2 {w psize} {
+  if {$psize == $::board::_size($w)} { return $psize }
   if { ! [ ::board::isFlipped $w ] } {
     ::board::resize $w $psize
   }  else {
