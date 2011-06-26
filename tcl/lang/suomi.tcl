@@ -886,10 +886,8 @@ translate U GlistComments {Kommentit}
 translate U GlistAnnos {Annotaatiot}
 translate U GlistStart {Alk}
 translate U GlistGameNumber {Peli nro}
-# ====== TODO To be translated ======
-translate U GlistAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate U GlistRating {Rating}
+translate U GlistAverageElo {Keskim. Elo}
+translate U GlistRating {Vahvuusluku}
 translate U GlistFindText {Etsi teksti}
 translate U GlistMoveField {Siirto}
 translate U GlistEditField {Asetukset}
@@ -897,70 +895,39 @@ translate U GlistAddField {Lis‰‰}
 translate U GlistDeleteField {Poista}
 translate U GlistWidth {Leveys}
 translate U GlistAlign {Tasaus}
-# ====== TODO To be translated ======
-translate U GlistAlignL {Align: left}
-# ====== TODO To be translated ======
-translate U GlistAlignR {Align: right}
-# ====== TODO To be translated ======
-translate U GlistAlignC {Align: center}
+translate U GlistAlignL {Tasaa vasen}
+translate U GlistAlignR {Tasaa oikea}
+translate U GlistAlignC {Keskit‰}
 translate U GlistColor {V‰ri}
 translate U GlistSep {Erotin}
-# ====== TODO To be translated ======
-translate U GlistCurrentSep {-- Current --}
-# ====== TODO To be translated ======
-translate U GlistNewSort {New}
-# ====== TODO To be translated ======
-translate U GlistAddToSort {Add}
-# ====== TODO To be translated ======
-translate U GsortSort {Sort...}
-# ====== TODO To be translated ======
-translate U GsortDate {Date}
-# ====== TODO To be translated ======
-translate U GsortYear {Year}
-# ====== TODO To be translated ======
-translate U GsortEvent {Event}
-# ====== TODO To be translated ======
-translate U GsortSite {Site}
-# ====== TODO To be translated ======
-translate U GsortRound {Round}
-# ====== TODO To be translated ======
-translate U GsortWhiteName {White Name}
-# ====== TODO To be translated ======
-translate U GsortBlackName {Black Name}
-# ====== TODO To be translated ======
+translate U GlistCurrentSep {-- Nykyinen --}
+translate U GlistNewSort {Uusi}
+translate U GlistAddToSort {Lis‰‰}
+translate U GsortSort {Lajittele...}
+translate U GsortDate {Pvm.}
+translate U GsortYear {Vuosi}
+translate U GsortEvent {Tapahtuma}
+translate U GsortSite {Paikka}
+translate U GsortRound {Kierros}
+translate U GsortWhiteName {Valkea nimi}
+translate U GsortBlackName {Musta nimi}
 translate U GsortECO {ECO}
-# ====== TODO To be translated ======
-translate U GsortResult {Result}
-# ====== TODO To be translated ======
-translate U GsortMoveCount {Move Count}
-# ====== TODO To be translated ======
-translate U GsortAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate U GsortCountry {Country}
-# ====== TODO To be translated ======
-translate U GsortDeleted {Deleted}
-# ====== TODO To be translated ======
-translate U GsortEventDate {Event Date}
-# ====== TODO To be translated ======
-translate U GsortWhiteElo {White Elo}
-# ====== TODO To be translated ======
-translate U GsortBlackElo {Black Elo}
-# ====== TODO To be translated ======
-translate U GsortComments {Comments}
-# ====== TODO To be translated ======
-translate U GsortVariations {Variations}
-# ====== TODO To be translated ======
-translate U GsortNAGs {NAGs}
-# ====== TODO To be translated ======
-translate U GsortAscending {Ascending}
-# ====== TODO To be translated ======
-translate U GsortDescending {Descending}
-# ====== TODO To be translated ======
-translate U GsortAdd {Add}
-# ====== TODO To be translated ======
-translate U GsortStore {Store}
-# ====== TODO To be translated ======
-translate U GsortLoad {Load}
+translate U GsortResult {Tulos}
+translate U GsortMoveCount {Siirtolkm.}
+translate U GsortAverageElo {Keskim. Elo}
+translate U GsortCountry {Maa}
+translate U GsortDeleted {Poistettu}
+translate U GsortEventDate {Tapahtuman pvm.}
+translate U GsortWhiteElo {Valkea Elo}
+translate U GsortBlackElo {Musta Elo}
+translate U GsortComments {Kommentit}
+translate U GsortVariations {Muunnelmat}
+translate U GsortNAGs {NAG}
+translate U GsortAscending {Nouseva}
+translate U GsortDescending {Laskeva}
+translate U GsortAdd {Lis‰‰}
+translate U GsortStore {Varastoi}
+translate U GsortLoad {Lataa}
 
 # menu shown with right mouse button down on game list. 
 translate U GlistRemoveThisGameFromFilter  {T‰m‰ peli pois suodattimesta}

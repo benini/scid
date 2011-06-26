@@ -878,6 +878,10 @@ translate G GlistComments {Σχόλια}
 translate G GlistAnnos {Υπομηματισμοί}
 translate G GlistStart {Έναρξη}
 translate G GlistGameNumber {Αριθμός παρτίδας}
+# ====== TODO To be translated ======
+translate G GlistAverageElo {Average Elo}
+# ====== TODO To be translated ======
+translate G GlistRating {Rating}
 translate G GlistFindText {Εύρεση κειμένου}
 translate G GlistMoveField {Μετακίνηση}
 translate G GlistEditField {Προσαρμογή}
@@ -885,8 +889,20 @@ translate G GlistAddField {Προσθήκη}
 translate G GlistDeleteField {Απομάκρυνση}
 translate G GlistWidth {Πλάτος}
 translate G GlistAlign {Ευθυγραμμιση}
+# ====== TODO To be translated ======
+translate G GlistAlignL {Align: left}
+# ====== TODO To be translated ======
+translate G GlistAlignR {Align: right}
+# ====== TODO To be translated ======
+translate G GlistAlignC {Align: center}
 translate G GlistColor {Χρώμα}
 translate G GlistSep {Διαχωριστής}
+# ====== TODO To be translated ======
+translate G GlistCurrentSep {-- Current --}
+# ====== TODO To be translated ======
+translate G GlistNewSort {New}
+# ====== TODO To be translated ======
+translate G GlistAddToSort {Add}
 
 # ====== TODO To be translated ======
 translate G GsortSort {Sort...}
@@ -985,7 +1001,324 @@ translate G AddEloRatings {Προσθήκη βαθμολογίας κατά Elo}
 translate G AutoloadGame {Αυτόματη φόρτωση αριθμού παρτίδας}
 translate G StripTags {Απομάκρυνση ετικετών ΡGN}
 translate G StripTag {Απομάκρυνση ετικετών}
-translate G CheckGames {Έλεγχος παρτίδων}
+translate G Cleaner {Καθαρισμός}
+translate G CleanerHelp {
+Ο Καθαρισμός του Scid θα εφαρμόσει στην τρέχουσα βάση δεδομένων όλες τις ενέργειες συντήρησης που επιλέξατε από την λίστα που ακολουθεί.
+
+Οι τρέχουσες ρυθμίσεις της ταξινόμησης κατά ECO και η διαγραφή δίδυμων παρτίδων θα εφαρμοσθούν εφόσον επιλέξατε αυτές τις ενέργειες.
+}
+translate G CleanerConfirm {
+Όταν ο Καθαρισμός ξεκινήσει, δεν μπορείτε να τον σταματήσετε!
+
+Η διαδικασία αυτή ίσως διαρκέσει αρκετό χρόνο αν η βάση δεδομένων είναι μεγάλη, αναλόγως των ενεργειών που έχετε επιλέξει και των ρυθμίσεών τους.
+
+Είστε βέβαιος/αιη ότι θέλετε να ξεκινήσουν οι ενέργειες συντήρησης που επιλέξατε;
+}
+# Twinchecker
+translate G TwinCheckUndelete {to flip; "u" undeletes both)}
+translate G TwinCheckprevPair {Προηγούμενο ζεύγος}
+translate G TwinChecknextPair {Επόμενο ζεύγος}
+translate G TwinChecker {Scid: έλεγχος δίδυμων παρτίδων}
+translate G TwinCheckTournament {Παρτίδες προκριματικού:}
+translate G TwinCheckNoTwin {Δεν υπάρχουν δίδυμα }
+translate G TwinCheckNoTwinfound {Δεν εντοπίστηκαν δίδυμα για την παρτίδα αυτή.\nΓια να δείτε τις δίδυμες παρτίδες χρησιμοποιώντας το παράθυρο αυτό, πρέπει πρώτα να χρησιμοποιήσετε την λειτουργία "Διαγραφή δίδυμων παρτίδων...". }
+translate G TwinCheckTag {Κοινή χρήση ετικετών...}
+translate G TwinCheckFound1 {Το Scid βρήκε $result δίδυμες παρτίδες}
+translate G TwinCheckFound2 { και έθεσε γι' αυτές σημαίες διαγραφής}
+translate G TwinCheckNoDelete {Σε αυτή τη βάση δεδομένων δεν υπάρχουν παρτίδες προς διαγραφή.}
+translate G TwinCriteria1 {Οι ρυθμίσεις σας για την αναζήτηση δίδυμων παρτίδων πιθανόν να προκαλούν το μαρκάρισμα  μη-δίδυμων παρτίδων ως δίδυμες.}
+translate G TwinCriteria2 {Αν έχετε επιλέξει "Όχι" για τις "όμοιες κινήσεις", συνιστούμε να επιλέξετε "Ναι" στις ρυθμίσεις για χρώματα, διοργανώσεις, τοποθεσίες, έτος και μήνες.\nΘέλετε να συνεχίσετε και να διαγραφούν οι δίδυμες;}
+translate G TwinCriteria3 {Συνιστούμε να επιλέξετε "Ναι" τουλάχιστον για δύο ρυθμίσεις "ίδια τοποθεσία", "ίδιος γύρος" και "ίδιο έτος".\nΘέλετε να συνεχίσετε και να διαγραφούν οι δίδυμες;}
+translate G TwinCriteriaConfirm {Scid: Επιβεβαίωση ρυθμίσεων διδύμων}
+translate G TwinChangeTag "Αλλαγή των ακόλουθων ετικετών παρτίδας:\n\n"
+translate G AllocRatingDescription "Η εντολή αυτή θα χρησιμοποιήσει το τρέχον αρχείο ορθογραφικού ελέγχου για να προσθέσει βαθμολογίες Elo σε αυτή την βάση δεδομένων. Αν ο παίκτης/παίκτρια δεν έχει τρέχουσα βαθμολογία αλλά η βαθμολογία του/της την στιγμή της παρτίδας εμφανίζεται στο αρχείο ορθογραφικού ελέγχου, αυτή η βαθμολογία θα προστεθεί."
+translate G RatingOverride "Να αντικατασταθούν οι υπάρχουσες μη-μηδενικές βαθμολογίες;"
+translate G AddRatings "Προσθήκη βαθμολογίας στον/στην:"
+translate G AddedRatings {Τ Scid πρόσθεσε $r βαθμούς Elo σε $g παρτίδες.}
+
+#Bookmark editor
+translate G NewSubmenu "Νέο υπομενού"
+
+# Comment editor:
+translate G AnnotationSymbols  {Σύμβολα υπομνηματισμούς:}
+translate G Comment {Σχόλιο:}
+translate G InsertMark {Εισαγωγή σημαδιού}
+translate G InsertMarkHelp {
+Εισαγωγή/απομάκρυνμση σημαδιού: Επιλέξτε χρώμα, είδος, τετράγωνο.
+Εισαγωγή/απομάκρυνση βέλους: Δεξί πάτημα δύο τετράγνω.
+}
+
+# Nag buttons in comment editor:
+translate G GoodMove {Καλή κίνηση}
+translate G PoorMove {Φτωχή κίνηση}
+translate G ExcellentMove {Εξαίρετη κίνηση}
+translate G Blunder {Σφάλμα}
+translate G InterestingMove {Ενδιαφέρουσα κίνηση}
+translate G DubiousMove {Αμφίβολη κίνηση}
+translate G WhiteDecisiveAdvantage {Τα Λευκά έχουν αποφασιστικό πλεονέκτημα}
+translate G BlackDecisiveAdvantage {Τα Μαύρα έχουν αποφασιστικό πλεονέκτημα}
+translate G WhiteClearAdvantage {Τα Λευκά έχουν σαφές προβάδισμα}
+translate G BlackClearAdvantage {Τα Μαύρα έχουν σαφές προβάδισμα}
+translate G WhiteSlightAdvantage {Τα Λευκά έχουν μικρό πλεονέκτημα}
+translate G BlackSlightAdvantage {Τα Μαύρα έχουν μικρό πλεονέκτημα}
+translate G Equality {Ισότητα}
+translate G Unclear {Ασαφής}
+translate G Diagram {Διάγραμμα}
+
+# Board search:
+translate G BoardSearch {Αναζήτηση σκακιέρας}
+translate G FilterOperation {Χειρισμός για το τρέχον φίλτρο:}
+translate G FilterAnd {AND (Περιορισμός φίλτρου)}
+translate G FilterOr {OR (Προσθήκη στο φίλτρο)}
+translate G FilterIgnore {IGNORE (Επαναφορά φίλτρου)}
+translate G SearchType {Ειδος αναζήτησης:}
+translate G SearchBoardExact {Ακριβής θέση (όλα τα κομμάτια στα ίδια τετράγωνα)}
+translate G SearchBoardPawns {Πιόνια (ίδιο υλικό, όλα τα πιόνια στα ίδια τετράγωνα)}
+translate G SearchBoardFiles {Γραμμή (ίδιο υλικό, όλα τα πιόνια στις ίδιες γραμμές)}
+translate G SearchBoardAny {Οπουδήποτε (ίδιο υλικό, πιόνια και κομμάτια οπουδήποτε)}
+translate G SearchInRefDatabase {Αναζήτηση στην βάση αναφοράς}
+translate G LookInVars {Αναζήτηση στις βαριάντες}
+
+# Material search:
+translate G MaterialSearch {Αναζήτηση υλικού}
+translate G Material {Υλικό}
+translate G Patterns {Διάταξη}
+translate G Zero {Μηδέν}
+translate G Any {Ό,τιδήποτε}
+translate G CurrentBoard {Τρέχουσα σκακιέρα}
+translate G CommonEndings {Κοινά φινάλε}
+translate G CommonPatterns {Κοινές διατάξεις}
+translate G MaterialDiff {Διαφορά υλικού}
+translate G squares {τετράγωνα}
+translate G SameColor {Ιδίου χρώματος}
+translate G OppColor {Αντίθετου χρώματος}
+translate G Either {Οποιοδήποτε}
+translate G MoveNumberRange {Εύρος αριθμού κίνησης}
+translate G MatchForAtLeast {Να ταιριάζουνβ τουλάχιστον}
+translate G HalfMoves {μισές κινήσεις}
+
+# Common endings in material search:
+translate G EndingPawns {Φινάλε πιονιών}
+translate G EndingRookVsPawns {Πύργων εναντίον πιονιών}
+translate G EndingRookPawnVsRook {Πύργος και 1 Πύργος εναντίον πύργου}
+translate G EndingRookPawnsVsRook {Πύργος και πιόνι(α) εναντίον Πύργου}
+translate G EndingRooks {Φινάλε Πύργου εναντίον Πύργου}
+translate G EndingRooksPassedA {Φινάλε Πύργου εναντίον Πύργου με προχωρημένο α-πιόνι}
+translate G EndingRooksDouble {Φινάλε διπλού Πύργου}
+translate G EndingBishops {Φινάλε Αξιωματικού εναντίον Αξιωματικού}
+translate G EndingBishopVsKnight {Φινάλε Αξιωματικού εναντίον Ίππου}
+translate G EndingKnights {Φινάλε Ίππου εναντίον Ίππου}
+translate G EndingQueens {Φινάλε Βασίλισσας εναντίον Βασίλισσας}
+translate G EndingQueenPawnVsQueen {Βασίλισσα και 1 Πιόνι εναντίον Βασίλισσας}
+translate G BishopPairVsKnightPair {Μέσον παρτίδας με δύο Αξιωματικούς εναντίον δυο Αξιωματικών}
+
+# Common patterns in material search:
+translate G PatternWhiteIQP {Λευκό ΑΠΒ}
+translate G PatternWhiteIQPBreakE6 {Λευκό ΑΠΒ: διείσδηση d4-d5 έναντι e6}
+translate G PatternWhiteIQPBreakC6 {Λευκό ΑΠΒ: διείσδησηW d4-d5 έναντι c6}
+translate G PatternBlackIQP {Μαύρο ΑΠΒ}
+translate G PatternWhiteBlackIQP {Λευκό ΑΠΒ εναντίον Μαύρου ΑΠΒ}
+translate G PatternCoupleC3D4 {Ζεύγος Λευκών πιονιών c3+d4}
+translate G PatternHangingC5D5 {Μαύρα κρεμασμένα Πιόνια στα c5 και d5}
+translate G PatternMaroczy {Κέντρο Maroczy (με Πιόνια στα c4 και e4)}
+translate G PatternRookSacC3 {Θυσία Πύργου στο c3}
+translate G PatternKc1Kg8 {O-O-O εναντίον O-O (Kc1 εναντίον Kg8)}
+translate G PatternKg1Kc8 {O-O εναντίον O-O-O (Kg1 εναντίον Kc8)}
+translate G PatternLightFian {Φιανκέττο λευκού τετραγώνου (Αξιωματικός-g2 εναντίον Αξιωματικού-b7)}
+translate G PatternDarkFian {Φιανκέττο μαύρου τετραγώνου (Αξιωματικός-b2 εναντίον Αξιωματικού-g7)}
+translate G PatternFourFian {Τέσσερα Φιανκέττα (Αξιωματικοί στα b2,g2,b7,g7)}
+
+# Game saving:
+translate G Today {Σήμερα}
+translate G ClassifyGame {Ταξινόμηση παρτίδας}
+
+# Setup position:
+translate G EmptyBoard {Κενή σκακιέρα}
+translate G InitialBoard {Αρχική σκακιέρα}
+translate G SideToMove {Πλευρά που παίζει}
+translate G MoveNumber {Αριθμός κίνησης}
+translate G Castling {Ροκέ}
+translate G EnPassantFile {Γραμμή en passant}
+translate G ClearFen {Καθαρισμός FEN}
+translate G PasteFen {Επικόληση FEN}
+
+translate G SaveAndContinue {Αποθήκευση και συνέχιση}
+translate G DiscardChangesAndContinue {Ακύρωση αλλαγών \nκαι συνέχιση}
+translate G GoBack {Προς τα πίσω}
+
+# Replace move dialog:
+translate G ReplaceMove {Αντικατάσταση κίνησης}
+translate G AddNewVar {Προσθήκη νέας βαριάντας}
+translate G NewMainLine {Νέα κύρια γραμμή}
+translate G ReplaceMoveMessage {Υπάρχει ήδη μια κίνηση εδώ.
+
+Μπορείτε να την αντικαταστήσετε ακυρώνοντας όλες τις κινήσεις μετά από αυτήν ή να προσθέσετε την κίνησή σας ως νέα βαριάντα.
+
+(Μπορείτε να αποφύγετε την εμφάνιση αυτού του μηνύματος στο μέλλον απενεργοποιώντας την επιλογή "Ερώτηση πριν την αντικατάσταση κίνησης" από το μενού Επιλογές:Κινήσεις.)}
+
+# Make database read-only dialog:
+translate G ReadOnlyDialog {Αν δηλώσετε αυτή την βάση δεδομένεν μόνον για ανάγνωση, δεν θα επιτρέπονται οι αλλαγές.
+Δεν θα μπορούν να αποθηκευθούν ή να αντικατασταθούν παρτίδες και δεν θα μπορούν να αντικατασταθούν οι σημαίες διαγραφής.
+Κάθε ταξινόμηση ή αποτελέσματα ταξινομημένα κατά ΕCO, θα είναι προσωρινά.
+
+Μπορείτε εύκολα να δηλώσετε την βάση δεδομένων και πάλι ως εγγράψιμη, κλείνοντας και ανοίγοντάς την εκ νέου.
+
+Θέλετε στ' αλήθεια να γίνει αυτή η βάση μόνον για ανάγνωση;}
+
+# Clear game dialog:
+translate G ClearGameDialog {Η παρτίδα αυτή έχει αντικατασταθεί.
+
+Θέλετε στ' αλήθεια να συνεχίσετε και να ακυρώσετε τις αλλαγές που κάνατε σε αυτήν;
+}
+
+# Exit dialog:
+translate G ExitDialog {Θέλετε στ' αλήθεια να βγείτε από το Scid;}
+translate G ExitUnsaved {Οι βάσεις δεδομένων που ακολουθούν έχουν μη αποθηκευμένες αλλαγές παρτίδων. Αν βγείτε τώρα οι αλλαγές αυτές θα χαθούν.}
+
+# Import window:
+translate G PasteCurrentGame {Επικόλληση τρέχουσας παρτίδας}
+translate G ImportHelp1 {Εισάγετε ή επικολλήστε παρτίδα σε μορφη PGN στο παραπάνω πλαίσιο.}
+translate G ImportHelp2 {Εδώ θα εμφανίζεται οποιοδήποτε σφάλμα κατά την εισαγωγή παρτίδας.}
+translate G OverwriteExistingMoves {Αντικατάσταση υπαρχόντων κινήσεων;}
+
+# ECO Browser:
+translate G ECOAllSections {όλες οι ενότητες ECO}
+translate G ECOSection {ενότητας ECO}
+translate G ECOSummary {Περίληψη της}
+translate G ECOFrequency {Συχνότητα υποκωδίκων για}
+
+# Opening Report:
+translate G OprepTitle {Έκθεση ανοίγματος}
+translate G OprepReport {Έκθεση/αναφορά}
+translate G OprepGenerated {Δημιουργήθηκε από τον/την}
+translate G OprepStatsHist {Στατιστικά και Ιστορικό}
+translate G OprepStats {Στατιστικά}
+translate G OprepStatAll {Όλες οι παρτίδες της αναφοράς}
+translate G OprepStatBoth {Βαθμολογήθηκαν}
+translate G OprepStatSince {Από}
+translate G OprepOldest {Παλαιότερες παρτίδες}
+translate G OprepNewest {Νεότερες παρτίδες}
+translate G OprepPopular {Τρέχουσα δημοτικότητα}
+translate G OprepFreqAll {Συχνότητα σε όλα τα χρόνια:   }
+translate G OprepFreq1   {Από το έτος  1 έως σήμερα: }
+translate G OprepFreq5   {Από το έτος  5 έως σήμερα: }
+translate G OprepFreq10  {Από το έτος 10 έως σήμερα: }
+translate G OprepEvery {μια φορά κάθε %u παρτίδες}
+translate G OprepUp {%u%s έτη και άνω}
+translate G OprepDown {%u%s έτη και κάτω}
+translate G OprepSame {χωρίς αλλαγή σε όλα τα έτη}
+translate G OprepMostFrequent {Πιο συχνοί παίκτες}
+translate G OprepMostFrequentOpponents {Πιο συχνοί αντίπαλοι}
+translate G OprepRatingsPerf {Βαθμολογήσεις και επιδόσεις}
+translate G OprepAvgPerf {Μέσες βαθμολογήσεις και επιδόσεις}
+translate G OprepWRating {Βαθμολόγηση Λευκών}
+translate G OprepBRating {Βαθμολόγηση Μαύρων}
+translate G OprepWPerf {Επίδοση Λευκών}
+translate G OprepBPerf {Επίδοση Μαύρων}
+translate G OprepHighRating {Παρτίδες με υψηλότερη μέση βαθμολόγηση}
+translate G OprepTrends {Τάσεις αποτελεσμάτων}
+translate G OprepResults {Μήκη και συχνότητες αποτελεσμάτων}
+translate G OprepLength {Μήκος παρτίδας}
+translate G OprepFrequency {Συχνότητα}
+translate G OprepWWins {Τα Λευκά κερδίζουν: }
+translate G OprepBWins {Τα Μαύρα κερδίζουν: }
+translate G OprepDraws {Ισοπαλίες:      }
+translate G OprepWholeDB {ολόκληρη η βάση δεδομένων}
+translate G OprepShortest {Οι συντομότερες νίκες}
+translate G OprepMovesThemes {Κινήσεις και Θέματα}
+translate G OprepMoveOrders {Σειρές κινήσεων που καταλήγουν στην θέση}
+translate G OprepMoveOrdersOne \
+  {Υπάρχει μόνο μια σειρά κινήσεων που καταλήγει στην θέση αυτή:}
+translate G OprepMoveOrdersAll \
+  {Υπάρχουν %u σειρές κινήσεων που καταλήγουν στην θέση αυτή:}
+translate G OprepMoveOrdersMany \
+  {Υπάρχουν %u σειρές κινήσεων που καταλήγουν στην θέση αυτή. Οι πρώτες %u είναι:}
+translate G OprepMovesFrom {Κινήσεις από την θέση}
+translate G OprepMostFrequentEcoCodes {Συχνότεροι κωδικοί ECO}
+translate G OprepThemes {Θέματα θέσης}
+translate G OprepThemeDescription {Συχνότητα θεμάτων κατά τις πρώτες %u κινήσεις κάθε παρτίδας}
+translate G OprepThemeSameCastling {Ομόπλευρα ροκέ}
+translate G OprepThemeOppCastling {Αντίθετα ροκέ}
+translate G OprepThemeNoCastling {Και οι δυο Βασιλιάδες χωρίς ροκέ}
+translate G OprepThemeKPawnStorm {Επίθεση πιονιών Βασιλιά}
+translate G OprepThemeQueenswap {Ανταλλαγή Βασιλισσών}
+translate G OprepThemeWIQP {Λευκό απομονωμένο πιόνι Βασίλισσας}
+translate G OprepThemeBIQP {Μαύρο απομονωμένο πιόνι Βασίλισσας}
+translate G OprepThemeWP567 {Λευκό πιόνι στην 5/6/7η σειρά}
+translate G OprepThemeBP234 {Μαύρο πιόνι στην 2/3/4η σειρά}
+translate G OprepThemeOpenCDE {Ανοικτή Open c/d/e στήλη}
+translate G OprepTheme1BishopPair {Μόνον η μια πλευρά διαθέτει ζεύγος Αξιωματικών}
+translate G OprepEndgames {Φινάλε}
+translate G OprepReportGames {Αναφορά παρτίδων}
+translate G OprepAllGames    {Όλες οι παρτίδες}
+translate G OprepEndClass {Υλικό στο τέλος κάθε παρτίδας}
+translate G OprepTheoryTable {Πίνακας ανοιγμάτων}
+translate G OprepTableComment {Δημιουργήθηκε από τις %u με την υψηλότερη βαθμολογία.}
+translate G OprepExtraMoves {Επιπλέον κινήσεις στις σημειώσεις του πίνακα ανοιγμάτων}
+translate G OprepMaxGames {Μέγιστος αριθμός παρτίδων στον πίνακα ανοιγμάτων}
+translate G OprepViewHTML {Εμφάνιση HTML}
+translate G OprepViewLaTeX {Εμφάνιση LaTeX}
+
+# Player Report:
+translate G PReportTitle {Έκθεση παίκτη}
+translate G PReportColorWhite {με τα Λευκά κομμάτια}
+translate G PReportColorBlack {με τα Μαύρα κομμάτια}
+translate G PReportMoves {μετά από %s}
+translate G PReportOpenings {Ανοίγματα}
+translate G PReportClipbase {Διαγραφή της προσωρινής μνήμης clipbase και αντιγραφή σε αυτήν των παρτίδων που ταιριάζουν}
+
+# Piece Tracker window:
+translate G TrackerSelectSingle {Το αριστερό πλήκτρο του ποντικιού επιλέγει το κομμάτι αυτό.}
+translate G TrackerSelectPair {Το αριστερό πλήκτρο του ποντικιού επιλέγει το κομμάτι αυτό, το δεξιό πλήκτρο επιλέγει το ταίρι του.}
+translate G TrackerSelectPawn {Το αριστερό πλήκτρο επιλέγει το πιόνι αυτό, το δεξιό πλήκτρο επιλέγει και τα 8 πιόνια.}
+translate G TrackerStat {Στατιστικά}
+translate G TrackerGames {% παρτίδες με κίνηση στο τετράγωνο}
+translate G TrackerTime {% χρόνο σε κάθε τετράγωνο}
+translate G TrackerMoves {Κινήσεις}
+translate G TrackerMovesStart {Εισάγετε τον αριθμό της κίνησης από την οποία θα ξεκινήσει η ανίχνευση.}
+translate G TrackerMovesStop {Εισάγετε τον αριθμό της κίνησης στην οποία θα σταματήσει η ανίχνευση.}
+
+# Game selection dialogs:
+translate G SelectAllGames {Όλες οι παρτίδες της βάσης δεδομένων}
+translate G SelectFilterGames {Μόνο παρτίδες στο φίλτρο}
+translate G SelectTournamentGames {Μόνο παρτίδες του προκριματικού}
+translate G SelectOlderGames {Μόνο παλαιότερες παρτίδες}
+
+# Delete Twins window:
+translate G TwinsNote {Για να είναι δίδυμες, δυο παρτίδες πρέπει να έχουν τουλάχιστον τους ίδιους παίκτες και τα κριτήρια που θα ορίσετε πιο κάτω. Όταν εντοπίζεται κάποιο ζεύγος δίδυμων, η μικρότερης διάρκειας παρτίδα διαγράφεται. Συμβουλή: πρέπει να ελέγχετε την ορθογραφία της βάσης δεδομένων πριν διαγράψετε δίδυμες παρτίδες, διότι βελτιώνει τον εντοπισμό τους.}
+translate G TwinsCriteria {Κριτήρια: Οι δίδυμες παρτίδες πρέπει να διαθέτουν...}
+translate G TwinsWhich {Εξέταση ποιάς παρτίδας}
+translate G TwinsColors {Με παίκτη ιδίου χρώματος;}
+translate G TwinsEvent {Με ίδια διοργάνωση;}
+translate G TwinsSite {Με ίδια τοποθεσία;}
+translate G TwinsRound {Με ίδιο γύρο;}
+translate G TwinsYear {Με ίδιο έτος;}
+translate G TwinsMonth {Με ίδιο μήνα;}
+translate G TwinsDay {Με ίδια ημέρα;}
+translate G TwinsResult {Με ίδιο αποτέλεσμα;}
+translate G TwinsECO {Με ίδιο κωδικό ECO;}
+translate G TwinsMoves {Με ίδιες κινήσεις}
+translate G TwinsPlayers {Σύγκριση ονομάτων παικτών:}
+translate G TwinsPlayersExact {Ταιριάζουν ακριβώς}
+translate G TwinsPlayersPrefix {Μόνο τα 4 πρώτα γράμματα}
+translate G TwinsWhen {Όταν διαγράφονται δίδυμες παρτίδες}
+translate G TwinsSkipShort {Να αγνοούνται όλες οι παρτίδες με μήκος μικρότερο των 5 κινήσεων;}
+translate G TwinsUndelete {Πρώτα να διαγραφούν όλες οι παρτίδες;}
+translate G TwinsSetFilter {Να μπουν φίλτρα σε όλες τις διαγραμμένες δίδυμες παρτίδες;}
+translate G TwinsComments {Πάντοτε διατήρηση των παρτίδων με σχόλια;}
+translate G TwinsVars {Πάντοτε διατήρηση των παρτίδων με βαριάντες;}
+translate G TwinsDeleteWhich {Διαγραφή της παρτίδας:}
+translate G TwinsDeleteShorter {Συντομότερη παρτίδα}
+translate G TwinsDeleteOlder {Ο μικρότερος αριθμός παρτίδας}
+translate G TwinsDeleteNewer {Ο μεγαλύτερος αριθμός παρτίδας}
+translate G TwinsDelete {Διαγραφή παρτίδας}
+
+# Name editor window:
+translate G NameEditType {Τύπος του προς επεξεργασία ονόματος}
+translate G NameEditSelect {Παρτίδες για επεξεργασία}
+translate G NameEditReplace {Αντικατάσταση}
+translate G NameEditWith {με}
+translate G NameEditMatches {Ταιριάσματα: Για επιλογή, πατήστε Ctrl+1 έως Ctrl+9}
 translate G Cleaner {Καθαρισμός}
 translate G CleanerHelp {
 Ο Καθαρισμός του Scid θα εφαρμόσει στην τρέχουσα βάση δεδομένων όλες τις ενέργειες συντήρησης που επιλέξατε από την λίστα που ακολουθεί.
@@ -1775,3 +2108,4 @@ translate G ChangeIcon {Αλλαγή εικονιδίου...}
 
 }
 # end of greek.tcl
+

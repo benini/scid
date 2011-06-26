@@ -878,10 +878,8 @@ translate D GlistComments {Kommentare}
 translate D GlistAnnos {Anmerkungen}
 translate D GlistStart {Stellung}
 translate D GlistGameNumber {Partie Nummer:}
-# ====== TODO To be translated ======
-translate D GlistAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate D GlistRating {Rating}
+translate D GlistAverageElo {ELO Durchschnitt}
+translate D GlistRating {Wertungszahl}
 translate D GlistFindText {Text finden}
 translate D GlistMoveField {Verschieben}
 translate D GlistEditField {Konfigurieren}
@@ -889,20 +887,14 @@ translate D GlistAddField {Hinzufügen}
 translate D GlistDeleteField {Löschen}
 translate D GlistWidth {Breite}
 translate D GlistAlign {Ausrichtung}
-# ====== TODO To be translated ======
-translate D GlistAlignL {Align: left}
-# ====== TODO To be translated ======
-translate D GlistAlignR {Align: right}
-# ====== TODO To be translated ======
-translate D GlistAlignC {Align: center}
+translate D GlistAlignL {Ausrichtung: links}
+translate D GlistAlignR {Ausrichtung: rechts}
+translate D GlistAlignC {Ausrichtung: zentriert}
 translate D GlistColor {Farbe}
 translate D GlistSep {Trennlinie}
-# ====== TODO To be translated ======
-translate D GlistCurrentSep {-- Current --}
-# ====== TODO To be translated ======
-translate D GlistNewSort {New}
-# ====== TODO To be translated ======
-translate D GlistAddToSort {Add}
+translate D GlistCurrentSep {-- Aktuell --}
+translate D GlistNewSort {Neu}
+translate D GlistAddToSort {Hinzufügen}
 
 # base sorting
 translate D GsortSort {Sortieren...}
