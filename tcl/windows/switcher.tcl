@@ -545,8 +545,6 @@ proc ::windows::switcher::Open {} {
   set w .baseWin
   ::createToplevel .baseWin
   
-  bind $w <Configure> "+recordWinSize $w"
-  bind $w <Configure> "+::windows::switcher::Refresh"
   setWinLocation $w
 
   ::setTitle $w "Scid: [tr WindowsSwitcher]"
@@ -611,6 +609,8 @@ proc ::windows::switcher::Open {} {
     #$f.menu add separator
     #$f.menu add command -label $::tr(ChangeOrient) -command ::windows::switcher::Orientate
   }
+  bind $w <Configure> "+recordWinSize $w"
+  bind $w <Configure> "+::windows::switcher::Refresh"
   setWinSize $w
   ::windows::switcher::Refresh
   ::createToplevelFinalize $w
