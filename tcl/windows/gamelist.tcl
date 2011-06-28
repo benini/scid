@@ -1050,7 +1050,7 @@ proc glist.create {{w} {layout}} {
   $w.glist configure -yscrollcommand "glist.yscroll_ $w.glist"
   $w.ybar configure -command "glist.ybar_ $w.glist"
   bind $w.ybar <ButtonRelease-1> "+glist.ybar_ $w.glist buttonrelease"
-  bindMouseWheel $w.glist "glist.ybar_ $w.glist"
+  ttk_bindMouseWheel $w.glist "glist.ybar_ $w.glist"
 
   # On exit save layout in options.dat
   options.save ::glist_ColOrder($layout)
@@ -1162,7 +1162,7 @@ proc glist.loadvalues_ {w} {
 proc glist.ybar_ {w cmd {n 0} {units ""}} {
   if { $cmd == "-1" || $cmd == "+1" } {
     #MouseWheel
-    set n [expr $cmd * $::glistVisibleLn($w) * 0.75]
+    set n [expr $cmd * $::glistVisibleLn($w) * 0.25]
     set units "units"
     set cmd scroll
   }

@@ -42,6 +42,29 @@ proc bindFocusColors {w {inColor lightYellow} {outColor white}} {
 }
 
 
+## FROM TK 8.5.9
+## ttk::bindMouseWheel $bindtag $command...
+#	Adds basic mousewheel support to $bindtag.
+#	$command will be passed one additional argument
+#	specifying the mousewheel direction (-1: up, +1: down).
+#
+
+proc ttk_bindMouseWheel {bindtag callback} {
+    switch -- [tk windowingsystem] {
+	x11 {
+	    bind $bindtag <ButtonPress-4> "$callback -1"
+	    bind $bindtag <ButtonPress-5> "$callback +1"
+	}
+	win32 {
+	    bind $bindtag <MouseWheel> [append callback { [expr {-(%D/120)}]}]
+	}
+	aqua {
+	    bind $bindtag <MouseWheel> [append callback { [expr {-(%D)}]} ]
+	}
+    }
+}
+
+
 # bindMouseWheel:
 #   Given a window and a text frame within that window, binds
 #   the mouse wheel to scroll the text frame vertically.
