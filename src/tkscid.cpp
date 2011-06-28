@@ -895,7 +895,7 @@ sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	Filter* filter = 0;
 	if (strCompare("dbfilter", argv[5]) == 0) filter = cdb->dbFilter;
 	else if (strCompare("tree", argv[5]) == 0) filter = cdb->treeFilter;
-	const char* sort = "g+";
+	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];
 	uint* idxList = new uint[count];
 	if (strlen(sort) == 2 && sort[0] == 'N') {
@@ -922,7 +922,7 @@ sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		if (idx == IDX_NOT_FOUND) break;
 
 		uint ply = 0;
-		if (strCompare("tree", argv[5]) == 0) ply = filter->Get(idx) -1;
+		if (filter && strCompare("tree", argv[5]) == 0) ply = filter->Get(idx) -1;
 
 		std::string info = cdb->idx->FetchInfo (idx, cdb->nb);
 
@@ -16605,7 +16605,7 @@ sc_sort_store (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	scidBaseT *cdb = &(dbList[dbNumber]);
 	if (! cdb->inUse) { return TCL_OK; }
 
-	int handle = strGetInteger( argv[2]);
+	int handle = strGetInteger( argv[3]);
 	if( handle < 0 || handle > 7)
 		return OK;
 	errorT ret = cdb->idx->WriteSortCacheToFile( handle);
