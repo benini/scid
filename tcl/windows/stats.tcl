@@ -87,7 +87,7 @@ proc ::windows::stats::Open {} {
 proc ::windows::stats::Refresh {} {
   variable display
   if {[winfo exists .playerInfoWin]} { ::pinfo::playerInfo }
-  ::windows::gamelist::Refresh 1
+  ::windows::gamelist::Refresh
   ::maint::Refresh
   updateStatusBar
   ::tools::graphs::filter::Refresh

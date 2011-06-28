@@ -469,7 +469,7 @@ proc ::tree::dorefresh { baseNumber } {
   set glstart 1
   ::windows::stats::Refresh
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
-  ::windows::gamelist::Refresh 1
+  ::windows::gamelist::Refresh
   updateTitle
   
   if { $moves == "canceled" } { return "canceled"}
