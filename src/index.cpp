@@ -1884,10 +1884,7 @@ errorT Index::GetRange( NameBase *nbase, const char *criteria, uint idx, uint co
 
 void Index::FreeCache( int cache)
 {
-	//TODO: Why gcc report "warning: array subscript is below array bounds" ?
-	ASSERT(cache >= 0 && cache < SORTING_CACHE_MAX);
-
-	if (sortingCaches[cache] == NULL) return;
+	if (cache < 0 || cache >= SORTING_CACHE_MAX || sortingCaches[cache] == NULL) return;
 	if (sortingCaches[cache]->GetReferenceCount() > 1)
 		sortingCaches[cache]->ReleaseCount();
 	else

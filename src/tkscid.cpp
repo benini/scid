@@ -524,8 +524,8 @@ scid_InitTclTk (Tcl_Interp * ti)
         db->fileMode = FMODE_Both;
         db->inUse = false;
         db->filter = new Filter(0);
-        db->dbFilter = NULL;
-        db->treeFilter = NULL;
+        db->dbFilter = new Filter(0);
+        db->treeFilter = new Filter(0);
         db->numGames = 0;
         db->memoryOnly = false;
         db->duplicates = NULL;
@@ -5241,11 +5241,9 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Now copy each game from source to target:
     uint count = 0;
     uint targetCount = sourceBase->filter->Count();
-	targetBase->filter->SetCapacity( targetBase->numGames + targetCount);
-	if( targetBase->dbFilter != NULL)
-		targetBase->dbFilter->SetCapacity( targetBase->numGames + targetCount);
-	if( targetBase->treeFilter != NULL)
-		targetBase->treeFilter->SetCapacity( targetBase->numGames + targetCount);
+    targetBase->filter->SetCapacity( targetBase->numGames + targetCount);
+    targetBase->dbFilter->SetCapacity( targetBase->numGames + targetCount);
+    targetBase->treeFilter->SetCapacity( targetBase->numGames + targetCount);
 
     for (uint i=0; i < sourceBase->numGames; i++) {
         if (sourceBase->filter->Get(i) == 0) { continue; }
@@ -5501,8 +5499,6 @@ sc_filter_negate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (db->inUse) 
     {
-        if( db->dbFilter == NULL)
-            initDbFilter( db, 1);
         Filter * filter = db->dbFilter;
         for (uint i=0; i < db->numGames; i++) {
             filter->Set (i, filter->Get(i) == 0 ? 1 : 0);
@@ -5559,8 +5555,6 @@ sc_filter_remove (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_filter remove <0|1|2> <from> [<cache>]");
     }
     if (! db->inUse) { return TCL_OK; }
-    if( db->dbFilter == NULL) { initDbFilter (db, 1); }
-    updateMainFilter (db);
 
     uint mode = strGetUnsigned (argv[2]);
     uint from = strGetUnsigned (argv[3]) - 1;
@@ -5613,22 +5607,8 @@ sc_filter_reset (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         basePtr = &(dbList[baseNum - 1]);
     }
-    if( basePtr->dbFilter == NULL) { return TCL_OK; }
-    if( basePtr->treeFilter == NULL) {
-        basePtr->dbFilter = NULL;
-        basePtr->filter->Fill(1);
-	}
-	else
-	{
-        delete basePtr->dbFilter;
-        basePtr->dbFilter = NULL;
-        for( uint i=0; i<basePtr->numGames; i++) {
-            basePtr->filter->Set (i, basePtr->treeFilter->Get(i)); 
-        }
-        delete basePtr->treeFilter;
-        basePtr->treeFilter = basePtr->filter;
-    }
-    db->idx->FilterChanged();
+    basePtr->dbFilter->Fill (1);
+    updateMainFilter (db);
     return TCL_OK;
 }
 
@@ -5838,60 +5818,29 @@ updateMainFilter( scidBaseT * dbase)
 void 
 clearFilter( scidBaseT * dbase, uint size)
 {
-    if(dbase->dbFilter && dbase->dbFilter != dbase->filter)
-        delete dbase->dbFilter;
-    if(dbase->treeFilter && dbase->treeFilter != dbase->filter)
-        delete dbase->treeFilter;
-    if(dbase->filter)
-        delete dbase->filter;
-    dbase->filter = new Filter (size);
-    dbase->treeFilter = NULL;
-    dbase->dbFilter = NULL;
+    dbase->filter->Init(size);
+    dbase->treeFilter->Init(size);
+    dbase->dbFilter->Init(size);
 }
 
 void 
 initFilter( scidBaseT * dbase, byte value)
 {
-    if(dbase->dbFilter && dbase->dbFilter != dbase->filter) {
-        dbase->dbFilter->Fill(value); 
-    }
-    if(dbase->treeFilter && dbase->treeFilter != dbase->filter) {
-        dbase->treeFilter->Fill(value);
-    }
-    if(dbase->filter) {
-        dbase->filter->Fill(value);
-    }
+    dbase->dbFilter->Fill(value);
+    dbase->treeFilter->Fill(value);
+    dbase->filter->Fill(value);
 }
 
 void initDbFilter( scidBaseT * dbase)
 {
-    if( dbase->dbFilter == NULL)
-    {
-        if( dbase->treeFilter == NULL) {
-            dbase->dbFilter = dbase->filter;
-        }
-		else {
-            dbase->dbFilter = new Filter (db->numGames);
-            dbase->treeFilter = db->filter->Clone();
-        }
-    }
-    updateMainFilter(dbase);
+    dbase->dbFilter->Fill(1);
+    dbase->filter->Merge (dbase->treeFilter, dbase->dbFilter);
 }
 
 void initDbFilter( scidBaseT * dbase, byte value)
 {
-    if( dbase->dbFilter == NULL)
-    {
-        if( dbase->treeFilter == NULL) {
-            dbase->dbFilter = dbase->filter;
-        }
-		else {
-            dbase->dbFilter = new Filter (db->numGames);
-            dbase->treeFilter = db->filter->Clone();
-        }
-    }
-    dbase->dbFilter->Fill( value);
-    updateMainFilter(dbase);
+    dbase->dbFilter->Fill(value);
+    dbase->filter->Merge (dbase->treeFilter, dbase->dbFilter);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5900,7 +5849,7 @@ void initDbFilter( scidBaseT * dbase, byte value)
 void
 filter_reset (scidBaseT * base, byte value)
 {
-    if (base->inUse && base->dbFilter) {
+    if (base->inUse) {
         base->dbFilter->Fill (value);
         updateMainFilter( base);
     }
@@ -8304,12 +8253,8 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
     // We need to increase the filter size if a game was added:
     if (! replaceMode) {
         base->filter->Append (1);  // Added game is in filter by default.
-        if(base->dbFilter && base->filter != base->dbFilter) {
-            base->dbFilter->Append (1); 
-        }
-        if(base->treeFilter && base->treeFilter != base->filter) {
-            base->treeFilter->Append (1);
-        }
+        base->dbFilter->Append (1);
+        base->treeFilter->Append (1);
         if (base->duplicates != NULL) {
 #ifdef WINCE
           my_Tcl_Free((char*)base->duplicates);
@@ -8432,6 +8377,8 @@ sc_savegame (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEn
     // We need to increase the filter size if a game was added:
     if (! replaceMode) {
         base->filter->Append (1);  // Added game is in filter by default.
+        base->dbFilter->Append (1);
+        base->treeFilter->Append (1);
         if (base->duplicates != NULL) {
 #ifdef WINCE
           my_Tcl_Free((char*)base->duplicates);
@@ -11696,7 +11643,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             bothscore[STATS_ALL][result]++;
             blackcount[STATS_ALL]++;
             totalcount[STATS_ALL]++;
-            if (db->dbFilter == NULL || db->dbFilter->Get(i) > 0) {
+            if (db->dbFilter->Get(i) > 0) {
                 blackscore[STATS_FILTER][result]++;
                 bothscore[STATS_FILTER][result]++;
                 blackcount[STATS_FILTER]++;
@@ -13575,7 +13522,7 @@ int
 sc_tree_clean (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
-        return errorResult (ti, "Usage: sc_tree move <baseNum> <lineNum>");
+        return errorResult (ti, "Usage: sc_tree move <baseNum>");
     }
 
     scidBaseT * base = db;
@@ -13587,21 +13534,10 @@ sc_tree_clean (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return setResult (ti, errMsgNotOpen(ti));
     }
 
-    if (base->treeFilter && base->treeFilter != base->filter) {
-        delete base->treeFilter;
-    }
-    base->treeFilter = NULL;
+    base->treeFilter->Fill(1);
+    updateMainFilter(base);
 
-    if (base->dbFilter && base->dbFilter != base->filter) {
-        for (uint i=0; i < base->numGames; i++)
-            base->filter->Set (i, base->dbFilter->Get(i));
-        delete base->dbFilter;
-        base->dbFilter = base->filter;
-    }
-    else
-        base->filter->Fill (1);
-
-    return TCL_OK;
+	return TCL_OK;
 }
 
 
@@ -13834,17 +13770,10 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (sortMethod < 0) { return errorResult (ti, usageStr); }
     if (!base->inUse) { return setResult (ti, errMsgNotOpen(ti)); }
-    if( base->treeFilter == NULL) {
-        if( base->dbFilter) {
-            base->dbFilter = base->filter->Clone();
-            base->treeFilter = new Filter( base->numGames);
-        }
-        else
-            base->treeFilter = base->filter;
-    }
-
 
     search_pool.insert(&base);
+    base->treeFilter->Fill(0);
+
     bool showProgress = startProgressBar();
     Timer timer;  // Start timing this search.
     uint skipcount = 0;
@@ -13933,7 +13862,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     			}
     		}
 
-            if (inFilterOnly && base->dbFilter && base->dbFilter->Get(i) == 0) { continue; }
+            if (inFilterOnly && base->dbFilter->Get(i) == 0) { continue; }
 
 #ifndef WINCE
             const byte * oldFilterData = base->treeFilter->GetOldDataTree();
@@ -14449,9 +14378,6 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 inline uint
 startFilterSize (scidBaseT * base, filterOpT filterOp)
 {
-    if( base->dbFilter == NULL)
-        initDbFilter( base, 1);
-
     if (filterOp == FILTEROP_AND) {
         return base->dbFilter->Count();
     }
@@ -14503,10 +14429,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     bool flip = false;
 //     if (argc == 6) { flip = strGetBoolean (argv[5]); }
     flip = strGetBoolean (argv[5]);
-
-    if( db->dbFilter == NULL) {
-        initDbFilter (db);
-    }
 
     Position * pos = db->game->GetCurrentPos();
     

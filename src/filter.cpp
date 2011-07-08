@@ -26,37 +26,60 @@ Filter::Init (uint size) {
     FilterSize = size;
     FilterCount = size;
     Capacity = size;
+    Data = NULL;
+    oldDataTree = NULL;
     CachedFilteredCount = 0;
     CachedIndex = 0;
 
 #ifndef WINCE
     isValidOldDataTree = false;
 #endif
+}
 
+void Filter::Allocate()
+{
+    Free();
+    Capacity = FilterSize > Capacity ? FilterSize : Capacity;
 #ifdef WINCE
     Data = (byte *)my_Tcl_Alloc(sizeof (byte [Capacity]));
 #else
     Data = new byte [Capacity];
     oldDataTree = new byte [Capacity];
 #endif
-    // Set all values in filter to 1 by default:
     byte * pb = Data;
-    for (uint i=0; i < size; i++) { *pb++ = 1; }
+    for (uint i=0; i < FilterSize; i++) { *pb++ = 1; }
 }
 
-Filter *
-Filter::Clone () 
+void Filter::Free()
 {
-	Filter *f = new Filter( Capacity);
-	memcpy( f->Data, Data, Capacity);
-    f->FilterCount = FilterCount;
-	return f;
+    if(Data != NULL) {
+#ifdef WINCE
+        my_Tcl_Free( (char*)Data);
+        Data = NULL;
+#else
+        delete[] Data;
+        Data = NULL;
+    }
+    if(oldDataTree != NULL) {
+        delete[] oldDataTree;
+        oldDataTree = NULL;
+#endif
+    }
 }
 
 void
 Filter::Fill (byte value)
 {
     ASSERT (FilterSize <= Capacity);
+
+    if (value == 1) {
+        if (Data != NULL)
+            Free();
+        FilterCount = FilterSize;
+        return;
+    }
+    if (Data == NULL)
+        Allocate();
     CachedFilteredCount = 0;
     CachedIndex = 0;
     FilterCount = (value != 0) ? FilterSize : 0;
@@ -66,27 +89,69 @@ Filter::Fill (byte value)
 }
 
 void
+Filter::Merge (Filter *src1, Filter *src2)
+{
+    if( src1->GetData() == NULL) {
+        if( src2->GetData() == NULL) {
+            if( Data == NULL)
+                return;
+            else
+            {
+                Free();
+                FilterCount = FilterSize;
+            }
+        }
+        else {
+            if( Data == NULL)
+                Allocate();
+            memcpy( Data, src2->Data, FilterSize);
+            FilterCount = src2->FilterCount;
+        }
+    }
+    else {
+        if( Data == NULL)
+            Allocate();
+        if( src2->GetData() == NULL) {
+            memcpy( Data, src1->Data, FilterSize);
+            FilterCount = src1->FilterCount;
+        }
+        else {
+        for (uint i=0; i < FilterSize; i++)
+            if( src1->Get(i) > 0 && src2->Get(i) > 0)
+                Set( i, src1->Get(i));
+            else
+                Set( i, 0);
+        }
+    }
+}
+
+void
 Filter::Append (byte value)
 {
     ASSERT (FilterSize <= Capacity);
-    if (FilterSize == Capacity) {
-        // Data array is full, extend it in chunks of 1000:
-		SetCapacity(Capacity + 1000);
-    }
-    Data[FilterSize] = value;
     FilterSize++;
     if (value != 0) { FilterCount++; }
     CachedFilteredCount = 0;
     CachedIndex = 0;
+    if( value == 1 && Data == NULL)
+        return;
+    if( value != 1 && Data == NULL)
+        Allocate();
+    else if (FilterSize > Capacity) {
+        // Data array is full, extend it in chunks of 1000:
+        SetCapacity(Capacity + 1000);
+    }
+    Data[FilterSize] = value;
 }
 
 void
 Filter::SetCapacity(uint size)
 {
     if (size > Capacity) 
-	{
+    {
         // Data array is full, extend it in chunks of 1000:
         Capacity = size;
+        if (Data == NULL) return;
 #ifdef WINCE
         byte * newData = (byte *)my_Tcl_Alloc(sizeof(byte [Capacity]));
 #else
@@ -115,6 +180,8 @@ Filter::SetCapacity(uint size)
 uint
 Filter::IndexToFilteredCount (uint index)
 {
+    if (Data == NULL)
+        return index;
     if (index > FilterSize) { return 0; }
     uint filteredCount = 0;
     for (uint i=0; i < index; i++) {
@@ -129,14 +196,19 @@ Filter::FilteredCountToIndex (uint filteredCount)
     if (filteredCount == CachedFilteredCount) { return CachedIndex; }
     if (filteredCount > FilterCount) { return 0; }
     uint index;
-    uint count = filteredCount;
-    for (index=0; index < FilterSize; index++) {
-        if (Data[index] > 0) {
-            count--;
-            if (count == 0) { break; }
+    if(Data == NULL) {
+        index = filteredCount - 1;
+    }
+    else {
+        uint count = filteredCount;
+        for (index=0; index < FilterSize; index++) {
+            if (Data[index] > 0) {
+                count--;
+                if (count == 0) { break; }
+            }
         }
     }
-    if (index == FilterSize) { return 0; }
+    if (index >= FilterSize) { return 0; }
     CachedFilteredCount = filteredCount;
     CachedIndex = index;
     return index;
@@ -148,9 +220,11 @@ Filter::FilteredCountToIndex (uint filteredCount)
 //      Reads the compressed filter from the specified open file.
 //
 void Filter::saveFilterForFastMode(uint ply) {
-  memcpy( (void*) GetOldDataTree(), GetData(), Size() );
-  isValidOldDataTree = true;
-  oldDataTreePly = ply;
+  if (Data != NULL) {
+    memcpy( (void*) GetOldDataTree(), GetData(), Size() );
+    isValidOldDataTree = true;
+    oldDataTreePly = ply;
+  }
 }
 
 #endif
@@ -232,6 +306,11 @@ CompressedFilter::CompressFrom (Filter * filter)
 
     CFilterSize = filter->Size();
     CFilterCount = filter->Count();
+    if(filter->GetData() == NULL) {
+        CompressedLength = 0;
+        CompressedData = NULL;
+        return;
+    }
 #ifdef WINCE
     byte * tempBuf = (byte *) my_Tcl_Alloc(sizeof( byte [CFilterSize + OVERFLOW_BYTES]));
 #else
@@ -268,6 +347,11 @@ CompressedFilter::UncompressTo (Filter * filter)
 {
     // The filter and compressed filter MUST be of the same size:
     if (CFilterSize != filter->Size()) { return ERROR_Corrupt; }
+    if (CompressedLength == 0) {
+        filter->Init(CFilterSize);
+        return OK;
+    }
+
 #ifdef WINCE
     byte * tempBuffer = (byte *)my_Tcl_Alloc(sizeof( byte [CFilterSize]));
 #else
@@ -339,14 +423,18 @@ CompressedFilter::ReadFromFile (FILE * fp)
     CFilterSize = readFourBytes (fp);
     CFilterCount = readFourBytes (fp);
     CompressedLength = readFourBytes (fp);
+    CompressedData = NULL;
+    if(CompressedLength > 0)
+    {
 #ifdef WINCE
-    CompressedData = (byte *)my_Tcl_Alloc(sizeof(byte [CompressedLength]));
+        CompressedData = (byte *)my_Tcl_Alloc(sizeof(byte [CompressedLength]));
 #else
-    CompressedData = new byte [CompressedLength];
+        CompressedData = new byte [CompressedLength];
 #endif
-    byte * pb = CompressedData;
-    for (uint i=0; i < CompressedLength; i++, pb++) {
-        *pb = readOneByte(fp);
+        byte * pb = CompressedData;
+        for (uint i=0; i < CompressedLength; i++, pb++) {
+            *pb = readOneByte(fp);
+        }
     }
     return OK;
 }

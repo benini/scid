@@ -43,6 +43,8 @@ class Filter
 #endif
     uint    CachedFilteredCount;  // These members cache the most recent
     uint    CachedIndex;          // filteteredCount to index translation.
+    void Allocate();
+    void Free();
     
   public:
 #ifdef WINCE
@@ -65,12 +67,8 @@ class Filter
 #endif
     Filter ()           { Init (0); }
     Filter (uint size)  { Init (size); }
-#ifdef WINCE
-    ~Filter ()          { if (Data != NULL) { my_Tcl_Free((char*) Data); } }
-#else
-    ~Filter ()          { if (Data != NULL) { delete[] Data; delete[] oldDataTree; } }
-#endif
-	Filter *Clone ();
+    ~Filter ()          { Free(); }
+
     void    Init (uint size);
     uint    Size (void)     { return FilterSize; }
     uint    Count (void)    { return FilterCount; }
@@ -79,7 +77,8 @@ class Filter
     byte    Get (uint index);               // Gets the value at index.
     void    Fill (byte value);              // Sets all values.
     void    Append (byte value);            // Appends one value.
-	void    SetCapacity(uint size);
+    void    SetCapacity (uint size);
+    void    Merge (Filter *src1, Filter *src2);
     uint    IndexToFilteredCount (uint index);
     uint    FilteredCountToIndex (uint filteredCount);
     const byte *  GetData () {
@@ -100,9 +99,13 @@ Filter::Set (uint index, byte value)
     ASSERT (index < FilterSize);
     CachedFilteredCount = 0;
 
-    // Update the value and count of nonzero values:
-    if (Data[index] != 0) { FilterCount--; }
+    if (Get(index) != 0) { FilterCount--; }
     if (value != 0) { FilterCount++; }
+	if (Data == NULL){
+        if (value == 1)
+	        return;
+		Allocate();
+	}
     Data[index] = value;
 }
 
@@ -110,7 +113,7 @@ inline byte
 Filter::Get (uint index)
 {
     ASSERT (index < FilterSize);
-    return (Data[index]);
+    return ( Data == NULL ? 1 : Data[index]);
 }
 
 
