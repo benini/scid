@@ -856,6 +856,42 @@ int sc_msg_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
 #endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_base_gamelocation:
+// For all game numbers parameter 1 represent the first game
+// If gnumber = 0 and <text> <start_gnum> <forward_dir> are provided perfom a text search
+
+int
+sc_base_gamelocation (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	const char* usage = "Usage: sc_base gamelocation <db> <all|dbfilter|tree> <sort> <gnumber> [<text> <start_gnum> <forward_dir>]";
+	if (argc != 6 && argc != 9) return errorResult (ti, usage);
+
+	int dbNumber = strGetInteger(argv[2]) - 1;
+	scidBaseT *cdb = &(dbList[dbNumber]);
+	if (! cdb->inUse) { return TCL_OK; }
+	Filter* filter = 0;
+	if (strCompare("dbfilter", argv[3]) == 0) filter = cdb->dbFilter;
+	else if (strCompare("tree", argv[3]) == 0) filter = cdb->treeFilter;
+	const char* sort = argv[4];
+	uint gnumber = strGetUnsigned (argv[5]);
+	uint location = 0;
+	if (gnumber == 0) {
+		if (argc != 9) return errorResult (ti, usage);
+		const char* txt = argv[6];
+		uint st = strGetUnsigned (argv[7]);
+		bool fw = strGetBoolean (argv[8]);
+		location = cdb->idx->GetRangeLocation (cdb->nb, sort, filter, txt, st, fw);
+	} else {
+		if (gnumber > cdb->idx->GetNumGames()) return TCL_OK;
+		if (filter && filter->Get(gnumber) == 0) return TCL_OK;
+		location = cdb->idx->GetRangeLocation (cdb->nb, sort, filter, gnumber);
+	}
+	if (location == 0) return TCL_OK; //Not found
+	return setUintResult (ti, location);
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_sortcache:
 int
 sc_base_sortcache (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
@@ -867,10 +903,7 @@ sc_base_sortcache (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	scidBaseT *cdb = &(dbList[dbNumber]);
 	if (! cdb->inUse) { return TCL_OK; }
 	if (strCompare("create", argv[3]) == 0) {
-		int handle = -1;
-		cdb->idx->CreateSortingCache (cdb->nb, argv[4], false, &handle);
-		//	TODO:
-		//	- Create a std::thread that in background perfom a DoFullSort
+		cdb->idx->CreateSortingCache (cdb->nb, argv[4]);
 	} else {
 		cdb->idx->FreeCache(argv[4]);
 	}
@@ -965,7 +998,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		"inUse",        "isReadOnly",   "numGames",     "open",
 		"piecetrack",   "slot",         "sort",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
-		"upgrade",      "fixCorrupted", "gameslist", "sortcache",
+		"upgrade",      "fixCorrupted", "gameslist",    "sortcache",
+		"gamelocation",
         NULL
     };
     enum {
@@ -975,7 +1009,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
 		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
-		BASE_UPGRADE,     BASE_FIX_CORRUPTED, BASE_GAMESLIST, BASE_SORTCACHE
+		BASE_UPGRADE,     BASE_FIX_CORRUPTED, BASE_GAMESLIST, BASE_SORTCACHE,
+		BASE_GAMELOCATION
     };
     int index = -1;
 
@@ -1075,6 +1110,9 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_GAMESLIST:
         return sc_base_gameslist (cd, ti, argc, argv);
+
+    case BASE_GAMELOCATION:
+        return sc_base_gamelocation (cd, ti, argc, argv);
 
     case BASE_SORTCACHE:
         return sc_base_sortcache (cd, ti, argc, argv);
@@ -5482,11 +5520,13 @@ sc_filter_locate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint filteredCount = 0;
     if (db->inUse) {
         uint gnumber = strGetUnsigned (argv[2]);
-        uint cache = strGetUnsigned (argv[3]);
+        int cache = strGetInteger (argv[3]);
         if( cache == -1)
             filteredCount = db->filter->IndexToFilteredCount(gnumber);
-        else
-            filteredCount = db->idx->IndexToFilteredCount(gnumber - 1, cache, db->filter) + 1;
+        else {
+            filteredCount = db->idx->IndexToFilteredCount(gnumber, cache, db->filter);
+            if (filteredCount == 0) filteredCount = 1; //TODO: return a "not found" message
+        }
     }
     return setUintResult (ti, filteredCount);
 }
@@ -5565,8 +5605,10 @@ sc_filter_remove (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	else {
 		if (argc == 5) {
 			cache = strGetInteger (argv[4]);
-			if (cache > -1)
-				from = db->idx->IndexToFilteredCount( from, cache, db->filter);
+			if (cache > -1) {
+				from = db->idx->IndexToFilteredCount( from +1, cache, db->filter);
+				if (from > 0) from--;
+			}
 		}
         uint to = mode == 1 ? from : db->numGames - 1;
 		from = mode == 1 ? 0 : from;
@@ -5756,7 +5798,7 @@ sc_filter_textfind (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 		{
 			uint start = filteredCount;
 			uint idx;
-			while( db->idx->GetIndex( sortingCache, start, db->filter, &idx) == OK)
+			while( db->idx->GetRange( sortingCache, start, 1, db->filter, &idx) == OK)
 			{
 				if (idx == IDX_NOT_FOUND || start >= db->numGames)
 					break;
@@ -16292,7 +16334,6 @@ sc_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		SORT_LIST, SORT_SORT, SORT_LOAD,  SORT_STORE, SORT_CRIT, SORT_TESTLOAD
 	};
 	int index = -1;
-	char old_language = 0;
 
 	if (argc > 1) { index = strUniqueMatch (argv[1], options);}
 
@@ -16483,7 +16524,7 @@ if (argc == 7) {
 int
 sc_sort_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-	bool showProgress = startProgressBar();
+	startProgressBar();
 	if (argc != 5) {
 		return errorResult (ti, "Usage: sc_sort sort <db> <criteria> <handle>");
 	}
@@ -16493,7 +16534,7 @@ sc_sort_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	if (! cdb->inUse) { return TCL_OK; }
 
 	int handle = strGetInteger( argv[4]);
-	cdb->idx->CreateSortingCache( cdb->nb, argv[3], true, &handle);
+	cdb->idx->CreateSortingCache( cdb->nb, argv[3], &handle);
 	cdb->idx->DoFullSort( handle, 5000, base_progress, (void *) ti);
 	return setIntResult (ti, handle);
 }
@@ -16546,9 +16587,7 @@ sc_sort_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	if (! cdb->inUse) { return TCL_OK; }
 
 	int handle = strGetInteger( argv[3]);
-	if(handle == -1)
-		cdb->idx->CreateSortingCache( cdb->nb, "w+", true, &handle);
-	cdb->idx->ReadSortCacheFromFile( handle);
+	cdb->idx->ReadSortCacheFromFile(cdb->nb, &handle);
 	return setIntResult (ti, handle);
 }
 

@@ -647,6 +647,7 @@ class Index
     }
 
     SortCache * sortingCaches[SORTING_CACHE_MAX];
+    bool filter_changed_;
 
     //----------------------------------
     //  Index:  Public Functions
@@ -746,78 +747,65 @@ class Index
     gameNumberT GetNumGames ()     { return Header.numGames; }
     errorT      AddGame (gameNumberT * g, IndexEntry * ie, bool initIE = false);
 
+  public:
+    /* CreateSortingCache
+     * Create a SortCache that requires 4 byte for each game
+     * A SortCache will greatly speedup the GetRange* functions that use the same criteria
+     * nbase:    pointer to the NameBase where to get data from.
+     * criteria: string that identify the sort order, composed by a letter (see sortcache.cpp for a list of valid values)
+     *           and + (ascending) or - (descending).
+     *           For example: "i-d-" means sort by rating desc, date desc
+     * Return:   a pointer to the newly created SortCache
+     *           0 in case of error
+     */
+    SortCache* CreateSortingCache (NameBase *nbase, const char *criteria);
 
-    // Sorting related methods:
-    /*
-    The now possible criteria can be found at the top of sortcache.cpp in the
-    structure " shortCriteriaNames".
-    The access API to the new sorting functionality is part of the index class. 
-    You can either call the presort version (what the game list window does):
-      // Handle for the memory used by sorting. Can be -1 (unused) or 0-7.
-      int handle = -1;
-      // Allocate memory and calculate hash values
-      // Up to eight sort caches per database are allowed in parallel, so this call should not fail.
-      db->idx->CreateSortingCache( db->nb, "w+b-", true, &handle);
-      // Do a full sort with optional progress bar
-      // Note: Without progress bar like here the UI cannot be accessed until the method has finished.
-      db->idx->DoFullSort( handle, 0, NULL, NULL);
-      // Get games in junks of 200.
-      uint reslist[200];
-      db->idx->GetRange( handle, 0, 200, NULL, reslist);
-      db->idx->GetRange( handle, 200, 200, db->filter, reslist);
-      // Free memory used for sorting
-      db->idx->FreeCache( handle);
-      handle = -1;
+    /* FreeCache
+     * Release the memory of a SortCache (previously created by CreateSortingCache)
+     * criteria: string that identify the sort order
+     */
+    void FreeCache(const char* criteria);
 
-    or with incremental cached search:
-      int handle;
-      // Allocate memory and calculate hash values
-      db->idx->CreateSortingCache( db->nb, "R-W-", false, &handle);
-      // Get data
-      uint reslist[200];
-      db->idx->GetRange( handle, 0, 200, db->filter, reslist);
-      db->idx->GetRange( handle, 200, 200, db->filter, reslist);
-      // Free memory
-      b->idx->FreeCache( handle);
+    /* GetRange
+     * Get a list of ordered game indexes sorted by criteria
+     * nbase:    pointer to the NameBase where to get data from.
+     * criteria: string that identify the sort order
+     * idx:      get result after position idx (0 to get the first games)
+     * count:    number of results wanted
+     * filter:   include only the game where filter->Get() > 0
+     * result:   pointer to an array of uint where the sorted list will be stored
+     *           *result* array must have size >= count
+     *           if there aren't enough result to reach count: result[last_result + 1] = IDX_NOT_FOUND
+     */
+    errorT GetRange( NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result);
 
-    or quick and dirty (allocating and deleting in one step):
-      uint reslist[200];
-      db->idx->GetRange( db->nb, "R-W-", 0, 200, db->filter, reslist);
-
-    also possible is:
-      int handle;
-      db->idx->CreateSortingCache( db->nb, "R-W-", false, &handle);
-      uint reslist[200];
-      db->idx->GetRange( handle, 0, 200, db->filter, reslist);
-      // Change the filter
-      // NOTE: This method may return a new handle.
-      db->idx->CreateSortingCache( db->nb, "R+W-", false, &handle);
-      db->idx->GetRange( handle, 0, 200, db->filter, reslist);
-      // Reset the filter to an empty value, this frees memory and returnes -1 as handle
-      db->idx->CreateSortingCache( db->nb, "", false, &handle);
-      // Now retrieve games from unsorted base
-      db->idx->GetRange( handle, 0, 200, db->filter, reslist);
-      // Free cache does nothing, as handle is -1
-      db->idx->FreeCache( handle);
-    */
+    /* GetRangeLocation
+     * Find the location of a game into a sorted Range.
+     * The result of the functions and param gnumber are index by base 1.
+     * I.E. if GetRangeLocation(... gnumber=10 ...) = 40 then GetRange (... idx=39 ...) will return result[0] = 9;
+     * gnumber: index of the game to search
+     * text:    search any game that contains *text* into white name or black name or site name or event name (case insensitive)
+     * start:   start the search after position *start* if forward =true, else search games before *start*
+     * Return:  the position of the searched game (first game = 1)
+     *          0 if not found
+     */
+    uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter, uint gnumber);
+    uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
+	                       const char* text, uint start, bool forward =true);
+    errorT IndexUpdated( uint gnum);
+    void FilterChanged();
 
   public:
-    errorT CreateSortingCache( NameBase *nbase, const char *criteria, bool doPreSort, int *handle);
+    errorT CreateSortingCache( NameBase *nbase, const char *criteria, int *handle);
     errorT DoFullSort(int cache,
                       int reportFrequency,
                       void (*progressFn)(void * data, uint progress, uint total),
                       void * progressData);
-    errorT GetIndex( int cache, uint idx, Filter *filter, uint *result);
-    errorT GetIndex( NameBase *nbase, char *criteria, uint idx, Filter *filter, uint *result);
     errorT GetRange( int cache, uint idx, uint count, Filter *filter, uint *result);
-    errorT GetRange( NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result);
-    errorT IndexUpdated( uint gnum);
     uint IndexToFilteredCount( uint gnumber, int cache, Filter *filter);
     void FreeCache( int cache);
-    void FreeCache(const char* criteria);
-    void FilterChanged();
     errorT WriteSortCacheToFile (int handle);
-    errorT ReadSortCacheFromFile (int handle);
+    errorT ReadSortCacheFromFile(NameBase* nbase, int* handle);
 
     // Old sorting related methods. Should become obsolete
   private:

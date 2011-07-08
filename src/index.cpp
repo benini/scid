@@ -809,6 +809,7 @@ Index::Init ()
     CalcIndexEntrySize();
     for(uint i=0; i<SORTING_CACHE_MAX; i++)
         sortingCaches[i] = NULL;
+    filter_changed_ = true;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1751,7 +1752,130 @@ Index::ParseSortCriteria (const char * inputStr)
 }
 
 
-errorT Index::CreateSortingCache( NameBase *nbase, const char *criteria, bool doPreSort, int *handle)
+//Interface to SortCache
+SortCache* Index::CreateSortingCache (NameBase *nbase, const char *criteria)
+{
+	// If there is another client using a matching cache, use that one
+	for(uint i=0; i < SORTING_CACHE_MAX; i++) {
+		if (sortingCaches[i] == NULL) continue;
+		if (sortingCaches[i]->MatchCriteria(criteria) ) {
+			sortingCaches[i]->AddCount();
+			return sortingCaches[i];
+		}
+	}
+
+	for (uint idx =0; idx < SORTING_CACHE_MAX; idx++) {
+		if (sortingCaches[idx] == NULL) {
+			sortingCaches[idx] = SortCache::Create (this, nbase, criteria);
+			return sortingCaches[idx];
+		}
+	}
+	return 0;
+}
+
+// Search and free a matching cache
+void Index::FreeCache(const char* criteria)
+{
+	for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
+	    if (sortingCaches[i] != NULL && sortingCaches[i]->MatchCriteria(criteria)) {
+			if (0 == sortingCaches[i]->ReleaseCount()) {
+				delete sortingCaches[i];
+				sortingCaches[i] = NULL;
+				break;
+			}
+		}
+	}
+}
+
+errorT Index::GetRange (NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
+{
+	// Use existing caches if possible
+	for(uint i=0; i < SORTING_CACHE_MAX; i++) {
+		if (sortingCaches[i] == NULL) continue;
+		if (sortingCaches[i]->MatchCriteria(criteria) ) {
+			sortingCaches[i]->GetRange(idx, count, filter, result);
+			return OK;
+		}
+	}
+
+	SortCache* sc = SortCache::Create (this, nbase, criteria, false);
+	sc->GetRange(idx, count, filter, result);
+	delete sc;
+	return OK;
+}
+
+uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter, uint gnumber)
+{
+	for(uint i=0; i < SORTING_CACHE_MAX; i++) {
+		if (sortingCaches[i] == NULL) continue;
+		if (sortingCaches[i]->MatchCriteria(criteria) ) {
+			return sortingCaches[i]->IndexToFilteredCount (gnumber, filter);
+		}
+	}
+
+	SortCache* sc = SortCache::Create (this, nbase, criteria, false);
+	uint r = sc->IndexToFilteredCount (gnumber, filter);
+	delete sc;
+	return r;
+}
+
+uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
+                              const char* text, uint start, bool forward)
+{
+	uint i = 0;
+	for(; i < SORTING_CACHE_MAX; i++) {
+		if (sortingCaches[i] == NULL) continue;
+		if (sortingCaches[i]->MatchCriteria(criteria) ) break;
+	}
+	SortCache* sc = 0;
+	if (i != SORTING_CACHE_MAX) sc = sortingCaches[i];
+	else sc = SortCache::Create (this, nbase, criteria, false);
+
+	uint res = start;
+	uint result [100] = {0};
+	for (;;) {
+		if (!forward) { //TODO: Speed up this search, maybe using std::vector.rbegin()
+			if (res == 0) break;
+			else res--;
+			sc->GetRange(res, 1, filter, result);
+			IndexEntry * ie = FetchEntry (result[0]);
+			if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
+			    (strAlphaContains (ie->GetBlackName (nbase), text))  ||
+			    (strAlphaContains (ie->GetEventName (nbase), text))  ||
+			    (strAlphaContains (ie->GetSiteName (nbase), text))) {
+				++res;
+				break;
+			}
+		} else {
+			sc->GetRange(res, 100, filter, result);
+			bool stop = false;
+			for (int j =0; j < 100; ++j, ++res) {
+				if (result[j] == IDX_NOT_FOUND) {
+					res = 0;
+					stop = true;
+					break;
+				}
+				IndexEntry * ie = FetchEntry (result[j]);
+				if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
+				    (strAlphaContains (ie->GetBlackName (nbase), text))  ||
+				    (strAlphaContains (ie->GetEventName (nbase), text))  ||
+				    (strAlphaContains (ie->GetSiteName (nbase), text))) {
+					stop = true;
+					++res;
+					break;
+				}
+			}
+			if (stop) break;
+		}
+	}
+
+	if (i == SORTING_CACHE_MAX) delete sc;
+	return res;
+}
+
+
+// HANDLE BASED FUNCTIONS
+errorT Index::CreateSortingCache( NameBase *nbase, const char *criteria, int *handle)
 {
 	ASSERT(*handle < SORTING_CACHE_MAX);
 	// If the criterium is empty free the cache and return -1
@@ -1763,8 +1887,7 @@ errorT Index::CreateSortingCache( NameBase *nbase, const char *criteria, bool do
 
 	// If the current cache is already ok, keep it
 	if( *handle > -1 && sortingCaches[*handle] != NULL) {
-		if (((sortingCaches[*handle]->GetDoPresorting() && sortingCaches[*handle]->GetNumSorted() == GetNumGames()) || !doPreSort) &&
-				sortingCaches[*handle]->MatchCriteria( criteria)) {
+		if (sortingCaches[*handle]->MatchCriteria( criteria)) {
 			return OK;
 		} else {
 			// *handle cache is no more useful, free it
@@ -1776,30 +1899,25 @@ errorT Index::CreateSortingCache( NameBase *nbase, const char *criteria, bool do
 	// If there is another client using a matching cache, use that one
 	for(uint i=0; i < SORTING_CACHE_MAX; i++) {
 		if (sortingCaches[i] == NULL) continue;
-		bool full_cache = sortingCaches[i]->GetDoPresorting() && sortingCaches[i]->GetNumSorted() == GetNumGames();
-		if ((full_cache || !doPreSort) && sortingCaches[i]->MatchCriteria( criteria)) {
+		if (sortingCaches[i]->MatchCriteria(criteria) ) {
+			sortingCaches[i]->AddCount();
 			*handle = i;
-			if (full_cache) break;
-			// If we found an "hash only" cache go on searching for a better "full" cache
+			return OK;
 		}
 	}
 
-	if (*handle != -1) {
-		// Use the existing cache
-		sortingCaches[*handle]->AddCount();
-	} else {
-		// A new cache has to be created
-		uint idx = 0;
-		while( sortingCaches[idx] != NULL && idx < SORTING_CACHE_MAX)
-			idx++;
-		if( idx == SORTING_CACHE_MAX) {
-			// TODO: no free handle anymore
-			return ERROR;
-		}
-		sortingCaches[idx] = new SortCache( this, nbase, criteria, doPreSort, true);
-		*handle = idx;
+	// A new cache has to be created
+	uint idx = 0;
+	while( sortingCaches[idx] != NULL && idx < SORTING_CACHE_MAX) idx++;
+	if( idx == SORTING_CACHE_MAX) {
+		// TODO: no free handle anymore
+		return ERROR;
 	}
 
+	sortingCaches[idx] = SortCache::Create (this, nbase, criteria, false);
+	if (sortingCaches[idx] == 0) return ERROR;
+
+	*handle = idx;
 	return OK;
 }
 
@@ -1832,29 +1950,31 @@ errorT Index::DoFullSort(int cache,
 	return OK;
 }
 
-errorT Index::GetIndex( int cache, uint idx, Filter *filter, uint *result)
-{
-	*result = 0;
-	SortCache *sc = sortingCaches[cache];
-	if( sc == NULL)
-	{
-		// TODO: error message
-		return ERROR;
-	}
-	sc->GetIndex( idx, filter, result);
-	return OK;
-}
-
-errorT Index::GetIndex( NameBase *nbase, char *criteria, uint idx, Filter *filter, uint *result)
-{
-	SortCache *sc = new SortCache( this, nbase, criteria, false, true);
-	sc->GetIndex( idx, filter, result);
-	delete sc;
-	return OK;
-}
-
 errorT Index::GetRange( int cache, uint idx, uint count, Filter *filter, uint *result)
 {
+// HACK: gamelist window calls GetRange repeatly
+	static uint* hack_cache = 0;
+	static int last_cache = 0;
+	static uint last_idx = 0;
+	static uint last_count = 0;
+	static Filter* last_filter = 0;
+	if (! filter_changed_) {
+		if (cache == last_cache && idx == last_idx && count == last_count && filter == last_filter) {
+			memcpy(result, hack_cache, count * sizeof(uint));
+			return OK;
+		}
+	}
+	if (count > last_count) {
+		if (hack_cache) delete [] hack_cache;
+		hack_cache = new uint[count];
+	}
+	last_cache = cache;
+	last_idx = idx;
+	last_count = count;
+	last_filter = filter;
+	filter_changed_ = false;
+/////////////////////////////////////////////////////////
+
 	*result = 0;
 	SortCache *sc = sortingCaches[cache];
 	if( sc == NULL)
@@ -1863,47 +1983,17 @@ errorT Index::GetRange( int cache, uint idx, uint count, Filter *filter, uint *r
 		return ERROR;
 	}
 	sc->GetRange( idx, count, filter, result);
-	return OK;
-}
-
-errorT Index::GetRange( NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
-{
-	// Use existing caches if possible
-	int handle = -1;
-	CreateSortingCache( nbase, criteria, false, &handle);
-	if (handle != -1) {
-		sortingCaches[handle]->GetRange(idx, count, filter, result);
-		FreeCache(handle);
-	} else {
-		SortCache *sc = new SortCache( this, nbase, criteria, false, true);
-		sc->GetRange( idx, count, filter, result);
-		delete sc;
-	}
+	memcpy(hack_cache, result, count * sizeof(uint));
 	return OK;
 }
 
 void Index::FreeCache( int cache)
 {
 	if (cache < 0 || cache >= SORTING_CACHE_MAX || sortingCaches[cache] == NULL) return;
-	if (sortingCaches[cache]->GetReferenceCount() > 1)
-		sortingCaches[cache]->ReleaseCount();
-	else
+	if (0 == sortingCaches[cache]->ReleaseCount())
 	{
 		delete sortingCaches[cache];
 		sortingCaches[cache] = NULL;
-	}
-}
-
-// Search and free a matching not fully sorted cache
-void Index::FreeCache(const char* criteria)
-{
-	for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
-	    if (sortingCaches[i] != NULL)
-		if (!sortingCaches[i]->GetDoPresorting() &&
-				sortingCaches[i]->MatchCriteria(criteria)) {
-			FreeCache (i);
-			break;
-		}
 	}
 }
 
@@ -1917,6 +2007,7 @@ errorT Index::IndexUpdated( uint gnum)
 
 void Index::FilterChanged()
 {
+	filter_changed_ = true;
 	for(uint i=0; i<SORTING_CACHE_MAX; i++)
 		if( sortingCaches[i] != NULL)
 			sortingCaches[i]->FilterChanged();
@@ -1938,21 +2029,24 @@ errorT Index::WriteSortCacheToFile( int handle)
 	return sc->WriteToFile();
 }
 
-errorT Index::ReadSortCacheFromFile( int handle)
+errorT Index::ReadSortCacheFromFile(NameBase* nbase, int* handle)
 {
-	SortCache *sc = sortingCaches[handle];
-	if( sc == NULL)
-	{
-		// TODO: error message
-		return ERROR;
-	}
-	return sc->ReadFromFile();
+	if (*handle != -1) FreeCache(*handle);
+	for(uint i=0; i<SORTING_CACHE_MAX; i++)
+		if( sortingCaches[i] == NULL) {
+			sortingCaches[i] = SortCache::CreateFromFile(this, nbase);
+			if (sortingCaches[i] == 0) return ERROR;
+			*handle = i;
+			return OK;
+		}
+	return ERROR;
 }
 
 bool Index::CanLoad()
 {
 	return SortCache::CanLoad( GetFileName(), GetNumGames());
 }
+/////////////////////////////////////////////////////////////////////////
 
 std::string Index::FetchInfo (gameNumberT g, NameBase* nb)
 {

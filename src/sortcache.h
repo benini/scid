@@ -3,6 +3,7 @@
 
 #include "filter.h"
 #include "index.h"
+#include <string>
 
 class Index;
 class IndexEntry;
@@ -12,14 +13,30 @@ static const uint IDX_NOT_FOUND = 0xffffffff;
 
 class SortCache
 {
-  private:
+  public:
+	static SortCache* Create(Index* idx, NameBase* nb, const char* criterium, bool multithread =true);
+	~SortCache();
+	char *ErrorMessage() { return ErrorMsg; }
+	errorT GetRange( uint start, uint count, Filter *filter, uint *result);
+	uint IndexToFilteredCount( uint gnumber, Filter *filter);
+	errorT CheckForChanges ( int *criteria, uint id);
+	void FilterChanged();
+	bool MatchCriteria( const std::string& crit) { return crit == criteria; }
+	void DoFullSort(int reportFrequency,
+                    void (*progressFn)(void * data, uint progress, uint total),
+                    void * progressData);
+	int ReleaseCount() { return --refCount; }
+	int AddCount() { return ++refCount; }
 
+	static bool CanLoad( char *fName, uint numGames);
+	errorT WriteToFile ();
+	static SortCache* CreateFromFile(Index* idx, NameBase* nb);
+	errorT GetSortingCrit( char *crit);
+
+  private:
 	Index *index;
-	bool doPresorting;
-	bool doHashing;
 	bool partialHashing;
-	bool keep;
-	uint numSorted;
+	bool sorted_;
 	uint numGames;
     uint *fullMap;
 	uint mapSize;
@@ -30,61 +47,42 @@ class SortCache
     char *ErrorMsg;
 	uint lastStart;
 	uint lastIndex;
-	uint lastCount;
 	Filter *lastFilter;
 	int refCount;
+	std::string criteria;
 
+	SortCache();
+	errorT Init (Index *idx, NameBase * nb, const char *criterium);
 	inline int Compare (uint left, uint right);
 	int FullCompare (uint left, uint right);
-	void sortUpto( uint idx, Filter *filter);
-    errorT ParseSortCriteria (const char *inputStr);
 	void GetSpace( uint size);
 	uint CalcHash (IndexEntry *ie);
-	void HeapSort(int reportFrequency,
-                  void (*progressFn)(void * data, uint progress, uint total),
-                  void * progressData);
 	void Downheap( int v, int n);
 	inline uint GetStartHash (const char *strVal);
-	errorT Recalc( uint sortedField);
+	errorT AddEntry();
 	uint Insert( uint gnum, uint done);
 
 	class Compare_std {
 	public:
 		Compare_std (SortCache* sc) : sc_(sc) {}
-		inline int operator() (uint i1, uint i2) const;
+		inline bool operator() (uint i1, uint i2) const;
 	private:
 		SortCache* sc_;
 	};
 
-  public:
-
-	SortCache( Index *idx, NameBase * nb, const char *criterium, bool preSort, bool hash);
-	~SortCache();
-	void Clear( const char *criterium, bool doPreSort);
-    char *ErrorMessage() { return ErrorMsg; }
-
-	errorT GetSortingCrit( char *crit);
-    void DoFullSort(int reportFrequency,
-                    void (*progressFn)(void * data, uint progress, uint total),
-                    void * progressData);
-
-	errorT GetIndex( uint idx, Filter *filter, uint *result);
-    errorT GetRange( uint start, uint count, Filter *filter, uint *result);
-
-	errorT CheckForChanges ( int *criteria);
-	errorT CheckForChanges ( int *criteria, uint id);
-	errorT AddEntry();
-	uint IndexToFilteredCount( uint gnumber, Filter *filter);
-	void FilterChanged();
-	errorT WriteToFile ();
-	errorT ReadFromFile ();
-	void ReleaseCount();
-	void AddCount();
-	int GetReferenceCount();
-	bool GetDoPresorting();
-	uint GetNumSorted();
-	bool MatchCriteria( const char *crit);
-	static bool CanLoad( char *fName, uint numGames);
+	class Sort_thread {
+	public:
+		Sort_thread (SortCache* sc) : sc_(sc), th_(0), interrupt_(false) {}
+		bool start();
+		void join();
+		void interrupt();
+	private:
+		SortCache* sc_;
+		void* th_;
+		bool interrupt_;
+		void sort(uint numGames);
+	};
+	Sort_thread t_;
 };
 
 #endif
