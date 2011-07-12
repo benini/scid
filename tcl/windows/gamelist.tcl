@@ -1011,8 +1011,11 @@ proc glist.create {{w} {layout}} {
     set ::glist_ColAnchor($layout) {{e} {c} {c} {w} {c} {w} {c} {w} {w} {e} \
         {w} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {c} {w}}
   }
-  if {! [info exists ::glist_Sort($w.glist)] } {
-    set ::glist_Sort($w.glist) { {22} {-} {7} {-} }
+  if {! [info exists ::glist_Sort($layout)] } {
+    set ::glist_Sort($layout) { {22} {-} {7} {-} }
+  }
+  if {! [info exists ::glist_FindBar($layout)] } {
+    set ::glist_FindBar($layout) 1
   }
 
   ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
@@ -1052,18 +1055,42 @@ proc glist.create {{w} {layout}} {
   bind $w.ybar <ButtonRelease-1> "+glist.ybar_ $w.glist buttonrelease"
   ttk_bindMouseWheel $w.glist "glist.ybar_ $w.glist"
 
+  # Find widget
+  ttk::frame $w.find
+  ttk::button $w.find.hide -image tb_close
+  bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; grid forget $w.find"
+  ttk::frame $w.find.n
+  ttk::label $w.find.t_gnum -text $::tr(GlistGameNumber:)
+  entry $w.find.gnum -width 8 -bg white
+  ttk::button $w.find.b_gnum -image tb_next -command "glist.findgame_ $w"
+  bind $w.find.gnum <Return> "$w.find.b_gnum invoke"
+  grid $w.find.t_gnum $w.find.gnum $w.find.b_gnum -in $w.find.n -padx 2
+  ttk::frame $w.find.t
+  ttk::label $w.find.t_text -text $::tr(GlistFindText:)
+  entry $w.find.text -width 20 -bg white
+  ttk::button $w.find.b1_text -image tb_next -command "glist.findgame_ $w 1"
+  bind $w.find.text <Return> "$w.find.b1_text invoke"
+  ttk::button $w.find.b2_text -image tb_prev -command "glist.findgame_ $w 0"
+  grid $w.find.t_text $w.find.text $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
+  grid $w.find.hide
+  grid $w.find.n -row 0 -column 1 -padx 10
+  grid $w.find.t -row 0 -column 2
+  set ::glistFindBar($w.glist) $w.find
+  glist.showfindbar_ $w.glist $layout
+
   # On exit save layout in options.dat
   options.save ::glist_ColOrder($layout)
   options.save ::glist_ColWidth($layout)
   options.save ::glist_ColAnchor($layout)
-  options.save ::glist_Sort($w.glist)
+  options.save ::glist_Sort($layout)
+  options.save ::glist_FindBar($layout)
 
   set ::glistYDrag($w.glist) 0
   set ::glistLoaded($w.glist) 0.0
   set ::glistTotal($w.glist) 0.0
   set ::glistVisibleLn($w.glist) 0
   set ::glistResized($w) 0
-  glist.sortInit_ $w.glist
+  glist.sortInit_ $w.glist $layout
 }
 
 # glist.update
@@ -1119,6 +1146,7 @@ proc glist.destroy_ {{w}} {
   unset ::glistYDrag($w)
   unset ::glistYScroll($w)
   unset ::glistResized($w)
+  unset ::glistFindBar($w)
 }
 
 proc glist.update_ {{w} {base}} {
@@ -1159,8 +1187,230 @@ proc glist.loadvalues_ {w} {
   unbusyCursor .
 }
 
+proc glist.showfindbar_ {{w} {layout}} {
+  if {$::glist_FindBar($layout) == 0} {
+    grid forget $::glistFindBar($w)
+  } else {
+    grid $::glistFindBar($w) -row 2 -columnspan 2 -sticky news
+  }
+}
+
+proc glist.findcurrentgame_ {{w} {gnum}} {
+  set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $gnum]
+  if {$r != ""} {
+    set ::glistFirst($w) [expr $r -1]
+    glist.ybar_ $w scroll
+  }
+}
+
+proc glist.findgame_ {{w_parent} {dir ""}} {
+  busyCursor .
+  set w $w_parent.glist
+  set w_entryN $w_parent.find.gnum
+  set gnum [$w_entryN get]
+  set w_entryT $w_parent.find.text
+  set txt [$w_entryT get]
+  $w_entryN configure -bg white
+  $w_entryT configure -bg white
+
+  if {$dir == ""} {
+    set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $gnum]
+  } else {
+	set gstart [expr int($::glistFirst($w))]
+	if {$dir == "1"} { incr gstart }
+    set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) 0\
+            $txt $gstart $dir]
+  }
+  if {$r == ""} {
+    if {$dir == ""} {
+      $w_entryN configure -bg red
+    } else {
+      $w_entryT configure -bg red
+    }
+  } else {
+    set ::glistFirst($w) [expr $r -1]
+    #glist.ybar can change ::glistFirst($w)
+    set f [expr $r -1]
+    glist.ybar_ $w scroll
+    #Select the founded game
+	#TODO: If there are more than one result in the last page only the first will be selected
+    set f [expr int($f - $::glistFirst($w))]
+    set items [$w children {}]
+    $w selection set [lindex $items $f]
+  }
+  unbusyCursor .
+}
+
+proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
+# identify region requires at least tk 8.5.9
+# identify row have scrollbar problems
+  if { 0 != [catch {set region [$w identify region $x $y] }] } {
+    if {[$w identify row $x $y] == "" } {
+      set region "heading"
+    } else {
+      set region ""
+    }
+  }
+  if { $region != "heading" } {
+# if {[$w identify region $x $y] != "heading" }
+    event generate $w <ButtonPress-1> -x $x -y $y
+    foreach {idx ply} [split [$w selection] "_"] {}
+    if {[info exist idx]} {
+      $w.game_menu delete 0 end
+      #LOAD/BROWSE/MERGE GAME
+      $w.game_menu add command -label $::tr(LoadGame) \
+         -command "sc_base switch $::glistBase($w); ::game::Load $idx $ply"
+      $w.game_menu add command -label $::tr(BrowseGame) \
+         -command "::gbrowser::new $::glistBase($w) $idx $ply"
+      $w.game_menu add command -label $::tr(MergeGame) \
+         -command "mergeGame $::glistBase($w) $idx"
+
+      #GOTO GAME
+      $w.game_menu add separator
+      #TODO: translate label
+      $w.game_menu add checkbutton -variable ::glist_FindBar($layout) \
+                   -label "Find Bar" -command "glist.showfindbar_ $w $layout"
+      if {$::glistBase($w) == [sc_base current] && [sc_game number] != 0} {
+        #TODO: translate label
+        $w.game_menu add command -label "Find current game" -command "glist.findcurrentgame_ $w [sc_game number]"
+      } else {
+        #TODO: translate label
+        $w.game_menu add command -label "Find current game" -state disabled
+      }
+      if {$::glistBase($w) == [sc_base current]} {
+        #DELETE
+        #TODO: Delete games even for "not current" databases
+        #TODO: translate labels
+        #TODO: refresh the other windows after delete/undelete
+        $w.game_menu add separator
+        set deleted [sc_game flag delete $idx]
+        if {$deleted} {
+          $w.game_menu add command -label "Undelete game" -command "sc_game flag delete $idx 0"
+        } else {
+          $w.game_menu add command -label "Delete game" -command "sc_game flag delete $idx 1"
+        }
+      }
+      tk_popup $w.game_menu $abs_x $abs_y
+    }
+  } else {
+    set col [$w identify column $x $y]
+    set col_idx [lsearch -exact $::glist_Headers [$w column $col -id] ]
+    $w.header_menu delete 0 end
+
+    #SORT
+    $w.header_menu.sort delete 0 end
+    if {"???" != [lindex $::glist_SortShortcuts $col_idx]} {
+      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(0)\
+                               -compound right -command [list glist.sortBy_ $w $col_idx + $layout 1]
+      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(1)\
+                               -compound right -command [list glist.sortBy_ $w $col_idx - $layout 1]
+      set a1 [llength $::glist_Sort($layout)]
+      set a2 [expr $a1 +1]
+      if {[lsearch -exact $::glist_Sort($layout) $col_idx ] == -1 && $a1 <= 16} {
+        $w.header_menu.sort add separator
+        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a1)\
+                                -compound right -command [list glist.sortBy_ $w $col_idx + $layout 0]
+        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a2)\
+                                -compound right -command [list glist.sortBy_ $w $col_idx - $layout 0]
+    }
+    $w.header_menu.sort add separator
+    }
+    $w.header_menu.sort add command -label $::tr(GlistCurrentSep) -state disabled
+    set i 0
+    foreach {c dir} $::glist_Sort($layout) {
+      set h [lindex $::glist_Headers $c]
+      set arrow_idx [expr $i *2]
+      if {$dir == "-"} { incr arrow_idx }
+      $w.header_menu.sort add command -label $::tr($h) -image ::glist_Arrows($arrow_idx) \
+                                      -compound left -state disabled
+      incr i
+    }
+    $w.header_menu add cascade -label $::tr(Sort) -menu $w.header_menu.sort
+
+    #CHANGE ALIGNMENT
+    $w.header_menu add separator
+    set cur_a [lindex $::glist_ColAnchor($layout) $col_idx]
+    if {$cur_a != "w"} {
+      $w.header_menu add command -label $::tr(GlistAlignL) \
+                     -command "$w column $col -anchor w; lset ::glist_ColAnchor($layout) $col_idx w"
+    }
+    if {$cur_a != "e"} {
+      $w.header_menu add command -label $::tr(GlistAlignR) \
+                     -command "$w column $col -anchor e; lset ::glist_ColAnchor($layout) $col_idx e"
+    }
+    if {$cur_a != "c"} {
+      $w.header_menu add command -label $::tr(GlistAlignC) \
+                     -command "$w column $col -anchor c; lset ::glist_ColAnchor($layout) $col_idx c"
+    }
+
+    #ADD/REMOVE COLUMN
+    $w.header_menu add separator
+    $w.header_menu.addcol delete 0 end
+    set empty disabled
+    set i 0
+    foreach h $::glist_Headers {
+      if {[lsearch -exact $::glist_ColOrder($layout) $i] == -1} {
+        set empty normal
+        $w.header_menu.addcol add command -label $::tr($h) -command "glist.insertcol_ $w $layout $i $col"
+      }
+      incr i
+    }
+    $w.header_menu add cascade -label $::tr(GlistAddField) -menu $w.header_menu.addcol -state $empty
+    $w.header_menu add command -label $::tr(GlistDeleteField) -command "glist.removecol_ $w $layout $col"
+
+    #BARS
+    $w.header_menu add separator
+    #TODO: translate label
+    $w.header_menu add checkbutton -variable ::glist_FindBar($layout) \
+                   -label "Find Bar" -command "glist.showfindbar_ $w $layout"
+
+    tk_popup $w.header_menu $abs_x $abs_y
+  }
+}
+
+# Sorting
+proc glist.sortInit_ {w {layout}} {
+  set ::glistSortStr($w) ""
+  set i 0
+  foreach {c dir} $::glist_Sort($layout) {
+    set arrow_idx [expr $i *2]
+    if {$dir == "-"} { incr arrow_idx }
+    $w heading $c -image ::glist_Arrows($arrow_idx)
+    append ::glistSortStr($w) [lindex $::glist_SortShortcuts $c] $dir
+    incr i
+  }
+}
+
+proc glist.sortBy_ {w col direction {layout} clear} {
+  foreach {c dir} $::glist_Sort($layout) { $w heading $c -image "" }
+  if {$clear} { unset ::glist_Sort($layout) }
+  lappend ::glist_Sort($layout) $col $direction
+  glist.sortInit_ $w $layout
+  if {[info exist ::glistBase($w)]} { glist.update_ $w $::glistBase($w) }
+}
+
+# Scrollbar
 proc glist.ybar_ {w cmd {n 0} {units ""}} {
   if { $cmd == "-1" || $cmd == "+1" } {
+#TODO: Profile to verify if this speedup is significative
+# if { $cmd == "-1" } {
+#   if {$::glistFirst($w) == 0} { return }
+#   set items [$w children {}]
+#   $w delete [lindex $items 0]
+#   if {$::glistBase($w) == [sc_base current]} {
+#     set current_game [sc_game number]
+#   } else {
+#     set current_game -1
+#   }
+#   set ::glistFirst($w) [expr $::glistFirst($w) -1]
+#   foreach {idx line} [sc_base gameslist $::glistBase($w) $::glistFirst($w) 1\
+#                                        $::glistFilter($w) $::glistSortStr($w)] {
+#     $w insert {} 0 -id $idx -values $line -tag fsmall
+#     foreach {n ply} [split $idx "_"] {
+#       if {$n == $current_game} { $w item $idx -tag {fsmall current} }
+#     }
+#   }
+# }
     #MouseWheel
     set n [expr $cmd * $::glistVisibleLn($w) * 0.25]
     set units "units"
@@ -1210,8 +1460,8 @@ proc glist.ybar_ {w cmd {n 0} {units ""}} {
 
 proc glist.ybarupdate_ {w} {
   if { $::glistLoaded($w) != $::glistTotal($w) } {
-	set first [expr $::glistFirst($w) / $::glistTotal($w)]
-    set last [expr ($::glistFirst($w) + $::glistLoaded($w)) / $::glistTotal($w)]
+    set first [expr double($::glistFirst($w)) / $::glistTotal($w)]
+    set last [expr double($::glistFirst($w) + $::glistLoaded($w)) / $::glistTotal($w)]
     eval $::glistYScroll($w) $first $last
   }
 }
@@ -1234,139 +1484,6 @@ proc glist.yscroll_ {w first last} {
       glist.ybar_ $w scroll
     }
   } else { eval $::glistYScroll($w) $first $last }
-}
-
-proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
-# identify region requires at least tk 8.5.9
-# identify row have scrollbar problems
-  if { 0 != [catch {set region [$w identify region $x $y] }] } {
-    if {[$w identify row $x $y] == "" } {
-      set region "heading"
-    } else {
-      set region ""
-    }
-  }
-  if { $region != "heading" } {
-# if {[$w identify region $x $y] != "heading" }
-    event generate $w <ButtonPress-1> -x $x -y $y
-    foreach {idx ply} [split [$w selection] "_"] {}
-    if {[info exist idx]} {
-      $w.game_menu delete 0 end
-      #LOAD/BROWSE/MERGE GAME
-      $w.game_menu add command -label $::tr(LoadGame) \
-         -command "sc_base switch $::glistBase($w); ::game::Load $idx $ply"
-      $w.game_menu add command -label $::tr(BrowseGame) \
-         -command "::gbrowser::new $::glistBase($w) $idx $ply"
-      $w.game_menu add command -label $::tr(MergeGame) \
-         -command "mergeGame $::glistBase($w) $idx"
-
-      #GOTO GAME
-      #$w.game_menu add separator
-      #TODO: add a goto game number
-      if {$::glistBase($w) == [sc_base current]} {
-        #TODO: add a goto current game
-        #DELETE
-        #TODO: Delete games even for "not current" databases
-        #TODO: translate labels
-        #TODO: refresh the other windows after delete/undelete
-        $w.game_menu add separator
-        set deleted [sc_game flag delete $idx]
-        if {$deleted} {
-          $w.game_menu add command -label "Undelete game" -command "sc_game flag delete $idx 0"
-        } else {
-          $w.game_menu add command -label "Delete game" -command "sc_game flag delete $idx 1"
-        }
-      }
-      tk_popup $w.game_menu $abs_x $abs_y
-    }
-  } else {
-    set col [$w identify column $x $y]
-    set col_idx [lsearch -exact $::glist_Headers [$w column $col -id] ]
-    $w.header_menu delete 0 end
-
-    #SORT
-    $w.header_menu.sort delete 0 end
-    if {"???" != [lindex $::glist_SortShortcuts $col_idx]} {
-      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(0)\
-                               -compound right -command [list glist.sortBy_ $w $col_idx +]
-      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(1)\
-                               -compound right -command [list glist.sortBy_ $w $col_idx -]
-      set a1 [llength $::glist_Sort($w)]
-      set a2 [expr $a1 +1]
-      if {[lsearch -exact $::glist_Sort($w) $col_idx ] == -1 && $a1 <= 16} {
-        $w.header_menu.sort add separator
-        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a1)\
-                                -compound right -command [list glist.sortBy_ $w $col_idx + 0]
-        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a2)\
-                                -compound right -command [list glist.sortBy_ $w $col_idx - 0]
-    }
-    $w.header_menu.sort add separator
-    }
-    $w.header_menu.sort add command -label $::tr(GlistCurrentSep) -state disabled
-    set i 0
-    foreach {c dir} $::glist_Sort($w) {
-      set h [lindex $::glist_Headers $c]
-      set arrow_idx [expr $i *2]
-      if {$dir == "-"} { incr arrow_idx }
-      $w.header_menu.sort add command -label $::tr($h) -image ::glist_Arrows($arrow_idx) \
-                                      -compound left -state disabled
-      incr i
-    }
-    $w.header_menu add cascade -label $::tr(Sort) -menu $w.header_menu.sort
-
-    #ADD/REMOVE COLUMN
-    $w.header_menu add separator
-    $w.header_menu.addcol delete 0 end
-    set empty disabled
-    set i 0
-    foreach h $::glist_Headers {
-      if {[lsearch -exact $::glist_ColOrder($layout) $i] == -1} {
-        set empty normal
-        $w.header_menu.addcol add command -label $::tr($h) -command "glist.insertcol_ $w $layout $i $col"
-      }
-      incr i
-    }
-    $w.header_menu add cascade -label $::tr(GlistAddField) -menu $w.header_menu.addcol -state $empty
-    $w.header_menu add command -label $::tr(GlistDeleteField) -command "glist.removecol_ $w $layout $col"
-
-    #CHANGE ALIGNMENT
-    $w.header_menu add separator
-    set cur_a [lindex $::glist_ColAnchor($layout) $col_idx]
-    if {$cur_a != "w"} {
-      $w.header_menu add command -label $::tr(GlistAlignL) \
-                     -command "$w column $col -anchor w; lset ::glist_ColAnchor($layout) $col_idx w"
-    }
-    if {$cur_a != "e"} {
-      $w.header_menu add command -label $::tr(GlistAlignR) \
-                     -command "$w column $col -anchor e; lset ::glist_ColAnchor($layout) $col_idx e"
-    }
-    if {$cur_a != "c"} {
-      $w.header_menu add command -label $::tr(GlistAlignC) \
-                     -command "$w column $col -anchor c; lset ::glist_ColAnchor($layout) $col_idx c"
-    }
-
-    tk_popup $w.header_menu $abs_x $abs_y
-  }
-}
-
-proc glist.sortInit_ {w} {
-  set ::glistSortStr($w) ""
-  set i 0
-  foreach {c dir} $::glist_Sort($w) {
-    set arrow_idx [expr $i *2]
-    if {$dir == "-"} { incr arrow_idx }
-    $w heading $c -image ::glist_Arrows($arrow_idx)
-    append ::glistSortStr($w) [lindex $::glist_SortShortcuts $c] $dir
-    incr i
-  }
-}
-
-proc glist.sortBy_ {w col direction {clear 1}} {
-  foreach {c dir} $::glist_Sort($w) { $w heading $c -image "" }
-  if {$clear} { unset ::glist_Sort($w) }
-  lappend ::glist_Sort($w) $col $direction
-  glist.sortInit_ $w
-  if {[info exist ::glistBase($w)]} { glist.update_ $w $::glistBase($w) }
 }
 
 #Drag and drop and changes in column's layout
