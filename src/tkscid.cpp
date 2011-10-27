@@ -14742,6 +14742,8 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, temp, NULL);
 #endif
 
+    updateMainFilter( db );
+
     if (searchInRefBase ) {
       currentBase = oldCurrentBase;
       db = &(dbList[currentBase]);
