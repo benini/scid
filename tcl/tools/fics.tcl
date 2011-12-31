@@ -659,7 +659,7 @@ namespace eval fics {
       sc_game tags set -black $black
       sc_game tags set -blackElo $blackElo
 
-      sc_game tags set -event "Fics [lrange $line 5 end]"
+      sc_game tags set -event "FICS [lrange $line 5 end]"
       if { [::board::isFlipped .main.board] } {
         if { [ string match -nocase $white $::fics::reallogin ] } { ::board::flip .main.board }
       } else {
@@ -1033,7 +1033,7 @@ namespace eval fics {
 
       set ::fics::waitForRating ""
 
-      sc_game tags set -event "Fics game $gameNumber $initialTime/$increment"
+      sc_game tags set -event "FICS game $gameNumber $initialTime/$increment"
 
       # try to get first moves of game
       writechan "moves $gameNumber"
