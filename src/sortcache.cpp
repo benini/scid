@@ -2,7 +2,7 @@
 #include <vector>
 #include <algorithm>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 #include <thread>
 
 bool SortCache::Sort_thread::start() {

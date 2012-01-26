@@ -56,7 +56,11 @@ set var(LANGUAGES) [list \
   ]
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
-set var(OPTIMIZE) {-O3 -fno-rtti -fno-exceptions}
+#TODO: Write a more portable script to detect c++11 support
+set var(OPTIMIZE) {-O3 -fno-rtti -fno-exceptions -std=c++0x -pthread}
+if { [catch { exec echo "int main() {}" | g++ -std=c++0x -pthread -x c++ - }] } {
+  set var(OPTIMIZE) {-O3 -fno-rtti -fno-exceptions}
+}
 set var(PROFILE) {}
 set var(SCIDFLAGS) {}
 set var(SHAREDIR) /usr/local/share/scid
