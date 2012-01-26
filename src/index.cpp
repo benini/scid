@@ -2065,12 +2065,12 @@ std::string Index::FetchInfo (gameNumberT g, NameBase* nb)
 	//#TODO: don't use PrintGameInfo
 	/* "GlistDeleted" "GlistFlags" "GlistECO" "GlistEndMaterial" "GlistStart"*/
 	char pgi_buf[1024];
-	ie->PrintGameInfo (pgi_buf, 0,0, nb, "\"D\" \"U\" \"o4\" \"F\" \"S\"");
+	ie->PrintGameInfo (pgi_buf, 0,0, nb, "{D} {U} {o4} {F} {S}");
 
 	char buf[1024];
 	snprintf(buf, sizeof(buf),
-			"\"%d\" \"%s\" \"%d\" \"%s\" \"%d\" \"%s\" \"%d\" \"%s\" \"%s\" \"%s\" "
-			" \"%s\" \"%d\" \"%d\" \"%d\" %s \"%s\" \"%d\" \"%d\" \"%d\"",
+			"{%d} {%s} {%d} {%s} {%d} {%s} {%d} {%s} {%s} {%s} "
+			" {%s} {%d} {%d} {%d} %s {%s} {%d} {%d} {%d}",
 			g +1, RESULT_STR[ie->GetResult()], (ie->GetNumHalfMoves() + 1) / 2,
 			ie->GetWhiteName (nb), welo, ie->GetBlackName (nb), belo,
 			dateStr, ie->GetEventName (nb), ie->GetRoundName(nb),
