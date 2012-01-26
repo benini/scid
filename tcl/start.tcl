@@ -1032,6 +1032,20 @@ set engines(sort) Time
 set engineCoach1 {}
 set engineCoach2 {}
 
+if {$::unixOS} {
+  set iconFileDirs [list \
+      $scidExeDir [file join $scidExeDir "../share/scid"]]
+
+  foreach iconFileDir $iconFileDirs {
+    set scidIconFile [file join $iconFileDir "scid.gif"]
+    if {[file readable $scidIconFile]} {
+      set iconimage [image create photo -file "$scidIconFile"]
+      wm iconphoto . -default $iconimage
+      break
+    }
+  }
+}
+
 # Set up Scid icon in Windows:
 if {$::windowsOS} {
   # Look in each of the following directories for a file named scid.ico:
