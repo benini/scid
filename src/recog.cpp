@@ -1037,7 +1037,7 @@ Recognizer::KRPKR (Position * pos)
 
     // XXX  INCOMPLETE  XXX
     return UNKNOWN;
-
+ /*
     byte * material = pos->GetMaterial();
     pieceT * board = pos->GetBoard();
     squareT wk, bk, wr, wp, br;
@@ -1161,6 +1161,7 @@ Recognizer::KRPKR (Position * pos)
     }
 
     return UNKNOWN;
+    */
 }
 
 //////////////////////////////////////////////////////////////////////

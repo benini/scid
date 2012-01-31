@@ -2218,7 +2218,7 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
             // SHOULD handle 3-way ambiguity!  Looks like it does ok.
             bool ambiguous_fyle = false;
             bool ambiguous_rank = false;
-            char r, f, r2, f2;
+            char r, f, f2;
             f = square_FyleChar(from);
             r = square_RankChar(from);
             MoveList mlist;
@@ -2231,7 +2231,6 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
                 if ((to == m2->to) && (from != from2) && (p2 == p)) {
                     /* we have an ambiguity */
                     f2 = square_FyleChar (from2);
-                    r2 = square_RankChar (from2);
                     if (f == f2) {  // ambiguous fyle, so print rank
                         ambiguous_fyle = true;
                     } else {        // ambiguous rank, so print fyle
