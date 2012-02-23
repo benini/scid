@@ -1713,7 +1713,6 @@ sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             ErrorBuffer->Append ("Game ", gameNumber, ": Unable to read game buffer.\n");
             continue;
         }
-        uint ply = 0;
 
 		errorT ret = g->Decode (db->bbuf, GAME_DECODE_ALL);
 		if( ret != OK){
@@ -5670,8 +5669,8 @@ sc_filter_clear (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         basePtr = &(dbList[baseNum - 1]);
     }
-    clearFilter(db, db->numGames);
-    db->idx->FilterChanged();
+    clearFilter(basePtr, basePtr->numGames);
+    basePtr->idx->FilterChanged();
     return TCL_OK;
 }
 
@@ -16126,7 +16125,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 					match = false;
 		            uint numtags = scratchGame->GetNumExtraTags();
 					tagT *tag = scratchGame->GetExtraTags();
-					for( int i=0; i<numtags; i++, tag++){
+					for(uint i=0; i<numtags; i++, tag++){
 						// Returning all games where the search string matchs with the prefix 
 						// of the annotator string
 						if( !strcmp(tag->tag, "Annotator")){

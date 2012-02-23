@@ -865,11 +865,13 @@ SortCache* SortCache::CreateFromFile(Index* idx, NameBase* nb)
 		s->SortCriteria[i] = readOneByte( fp);
 		s->SortReverse[i] = readOneByte( fp);
 	}
-	fread( s->fullMap, 4, s->numGames, fp);
-	s->sorted_ = true;
-	char buf[100];
-	s->GetSortingCrit(buf);
-	s->criteria = buf;
+	size_t ferr = fread( s->fullMap, 4, s->numGames, fp);
+	if (ferr > 0) { //(ferr != (4 * s->numGames))
+		s->sorted_ = true;
+		char buf[100];
+		s->GetSortingCrit(buf);
+		s->criteria = buf;
+	}
 
 	fclose(fp);
     return s;

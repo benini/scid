@@ -922,17 +922,6 @@ Index::Open (fileModeT fmode, bool old)
     strCopy (fname, Fname);
     strAppend (fname, old ? OLD_INDEX_SUFFIX : INDEX_SUFFIX);
     FileMode = fmode;
-    char * modeStr;
-    switch (fmode) {
-        case FMODE_ReadOnly:
-            modeStr = (char *) "rb"; break;
-        case FMODE_WriteOnly:
-            modeStr = (char *) "wb"; break;
-        case FMODE_Both:
-            modeStr = (char *) "r+b"; break;
-        default:
-            return ERROR_FileMode;
-    }
     FilePtr = new MFile;
 
     if (FilePtr->Open (fname, fmode) != OK) {

@@ -595,9 +595,9 @@ $m add checkbutton -label WindowsTB -variable ::tb::isOpen -command ::tb::Open -
 bind $dot_w <Control-equal> ::tb::Open
 set helpMessage($m,[incr menuindex]) WindowsTB
 
-$m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open -accelerator "F11"
+$m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::open -accelerator "F6"
 set helpMessage($m,[incr menuindex]) WindowsBook
-bind $dot_w <F11>  ::book::open
+bind $dot_w <F6>  ::book::open
 
 $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
     -command ::CorrespondenceChess::CCWindow -accelerator "F12"
@@ -1788,6 +1788,7 @@ proc standardShortcuts {w} {
     bind $w <Control-J> tools::graphs::absfilter::Open
     bind $w <Control-O> ::optable::makeReportWin
     bind $w <Control-K> ::ptrack::make
+    bind $w <F11> { if {[wm attributes . -fullscreen]} { wm attributes . -fullscreen 0} else { wm attributes . -fullscreen 1} }
   }
 
   bind $w <Control-z> {  sc_game undo ; updateBoard -pgn }
@@ -1876,7 +1877,7 @@ proc standardShortcuts {w} {
   bind $w <F3> "::makeAnalysisWin 2 0"
   bind $w <F4> { if {[winfo exists .analysisWin1]} { .analysisWin1.b1.bStartStop invoke } }
   bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
-  bind $w <F11>  ::book::open
+  bind $w <F6>  ::book::open
   bind $w <F12> ::CorrespondenceChess::CCWindow
   bind $w <Control-F12> {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox}
   bind $w <Alt-F12> {::CorrespondenceChess::OpenCorrespondenceDB;  ::CorrespondenceChess::FetchGames}
