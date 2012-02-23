@@ -4,7 +4,7 @@
 ###
 ### $Id: correspondence.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
-### Last change: <Mon, 2011/01/17 06:32:05 arwagner agamemnon>
+### Last change: <Sun, 2011/10/09 13:25:35 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###

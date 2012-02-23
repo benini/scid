@@ -909,7 +909,7 @@ scid-4.2.2
 ==========
 This maintenance release reverts to 32 bits file I/O. Large file handling across many platforms seems a bit hard too achieve ...
 
-[xxxx 2010 ]
+[February 2011 ]
 scid-4.3
 ==========
 - Mark the Repertoir Editor deprecated, guide users to Masks
@@ -1075,3 +1075,12 @@ scid-4.3
 	* NEW: greek translation (thanks to George Fragos; note: this requires fully working utf-8!)
 - Help:
 	* Add UTF-8 NAG-symbols
+
+[xxxx 20yy ]
+scid-4.4
+==========
+
+- Language updates:
+	* swedish translation (thanks to Hans Eriksson)
+
+
