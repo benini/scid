@@ -845,9 +845,7 @@ translate W GlistComments {Kommentarer}
 translate W GlistAnnos {Noteringar}
 translate W GlistStart {Start}
 translate W GlistGameNumber {Partinummer}
-# ====== TODO To be translated ======
-translate W GlistAverageElo {Average Elo}
-# ====== TODO To be translated ======
+translate W GlistAverageElo {Medel-Elo}
 translate W GlistRating {Rating}
 translate W GlistFindText {Sök text}
 translate W GlistMoveField {Drag}
@@ -856,70 +854,39 @@ translate W GlistAddField {Lägg till}
 translate W GlistDeleteField {Ta bort}
 translate W GlistWidth {Bredd}
 translate W GlistAlign {Justering}
-# ====== TODO To be translated ======
-translate W GlistAlignL {Align: left}
-# ====== TODO To be translated ======
-translate W GlistAlignR {Align: right}
-# ====== TODO To be translated ======
-translate W GlistAlignC {Align: center}
+translate W GlistAlignL {Justera: vänster}
+translate W GlistAlignR {Justera: höger}
+translate W GlistAlignC {Justera: centrera}
 translate W GlistColor {Färg}
 translate W GlistSep {Separator}
-# ====== TODO To be translated ======
-translate W GlistCurrentSep {-- Current --}
-# ====== TODO To be translated ======
-translate W GlistNewSort {New}
-# ====== TODO To be translated ======
-translate W GlistAddToSort {Add}
-# ====== TODO To be translated ======
-translate W GsortSort {Sort...}
-# ====== TODO To be translated ======
-translate W GsortDate {Date}
-# ====== TODO To be translated ======
-translate W GsortYear {Year}
-# ====== TODO To be translated ======
-translate W GsortEvent {Event}
-# ====== TODO To be translated ======
-translate W GsortSite {Site}
-# ====== TODO To be translated ======
-translate W GsortRound {Round}
-# ====== TODO To be translated ======
-translate W GsortWhiteName {White Name}
-# ====== TODO To be translated ======
-translate W GsortBlackName {Black Name}
-# ====== TODO To be translated ======
+translate W GlistCurrentSep {-- Aktuell --}
+translate W GlistNewSort {Ny}
+translate W GlistAddToSort {Lägg till}
+translate W GsortSort {Sortera...}
+translate W GsortDate {Datum}
+translate W GsortYear {År}
+translate W GsortEvent {Evenemang}
+translate W GsortSite {Plats}
+translate W GsortRound {Runda}
+translate W GsortWhiteName {Vits namn}
+translate W GsortBlackName {Svarts namn}
 translate W GsortECO {ECO}
-# ====== TODO To be translated ======
-translate W GsortResult {Result}
-# ====== TODO To be translated ======
-translate W GsortMoveCount {Move Count}
-# ====== TODO To be translated ======
-translate W GsortAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate W GsortCountry {Country}
-# ====== TODO To be translated ======
+translate W GsortResult {Resultat}
+translate W GsortMoveCount {Antal drag}
+translate W GsortAverageElo {Medel-Elo}
+translate W GsortCountry {Land}
 translate W GsortDeleted {Deleted}
-# ====== TODO To be translated ======
-translate W GsortEventDate {Event Date}
-# ====== TODO To be translated ======
-translate W GsortWhiteElo {White Elo}
-# ====== TODO To be translated ======
-translate W GsortBlackElo {Black Elo}
-# ====== TODO To be translated ======
-translate W GsortComments {Comments}
-# ====== TODO To be translated ======
-translate W GsortVariations {Variations}
-# ====== TODO To be translated ======
-translate W GsortNAGs {NAGs}
-# ====== TODO To be translated ======
-translate W GsortAscending {Ascending}
-# ====== TODO To be translated ======
-translate W GsortDescending {Descending}
-# ====== TODO To be translated ======
-translate W GsortAdd {Add}
-# ====== TODO To be translated ======
-translate W GsortStore {Store}
-# ====== TODO To be translated ======
-translate W GsortLoad {Load}
+translate W GsortEventDate {Eventdatum}
+translate W GsortWhiteElo {Vits Elo}
+translate W GsortBlackElo {Svarts Elo}
+translate W GsortComments {Kommentarer}
+translate W GsortVariations {Variationer}
+translate W GsortNAGs {Kommentarssymboler}
+translate W GsortAscending {Stigande}
+translate W GsortDescending {Sjunkande}
+translate W GsortAdd {Lägg till}
+translate W GsortStore {Spara}
+translate W GsortLoad {Öppna}
 translate W GlistRemoveThisGameFromFilter  {Ta bort detta parti från Filter}
 translate W GlistRemoveGameAndAboveFromFilter  {Ta bort parti (och alla ovanför det) från Filter}
 translate W GlistRemoveGameAndBelowFromFilter  {Ta bort parti (och alla nedanför det) från Filter}
