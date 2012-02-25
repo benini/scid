@@ -875,8 +875,8 @@ translate W GsortResult {Resultat}
 translate W GsortMoveCount {Antal drag}
 translate W GsortAverageElo {Medel-Elo}
 translate W GsortCountry {Land}
-translate W GsortDeleted {Deleted}
-translate W GsortEventDate {Eventdatum}
+translate W GsortDeleted {Borttagen}
+translate W GsortEventDate {Evenemangsdatum}
 translate W GsortWhiteElo {Vits Elo}
 translate W GsortBlackElo {Svarts Elo}
 translate W GsortComments {Kommentarer}
