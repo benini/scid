@@ -1023,19 +1023,12 @@ proc glist.create {{w} {layout}} {
   $w.glist tag configure fsmall -font font_Small
   menu $w.glist.header_menu
   menu $w.glist.header_menu.addcol
-  menu $w.glist.header_menu.sort -disabledforeground blue
   menu $w.glist.game_menu
   bind $w.glist <Configure> "set ::glistResized($w.glist) 1"
   bind $w.glist <2> "glist.popupmenu_ %W %x %y %X %Y $layout"
   bind $w.glist <3> "glist.popupmenu_ %W %x %y %X %Y $layout"
   bind $w.glist <ButtonRelease-1> "glist.release_ %W %x %y $layout"
-  bind $w.glist <Double-ButtonPress-1> {
-    foreach {idx ply} [split [%W selection] "_"] {}
-    if {[info exist idx]} {
-      sc_base switch $::glistBase(%W)
-      ::game::Load $idx $ply
-    }
-  }
+  bind $w.glist <Double-ButtonRelease-1> "glist.doubleclick_ %W %x %y $layout"
   bind $w.glist <Destroy> "glist.destroy_ $w.glist"
 
   set i 0
@@ -1174,7 +1167,6 @@ proc glist.loadvalues_ {w} {
     set current_game -1
   }
   set i 0
-  busyCursor .
   foreach {idx line} [sc_base gameslist $base $::glistFirst($w) [expr 1 + $::glistVisibleLn($w)]\
                                         $::glistFilter($w) $::glistSortStr($w)] {
     $w insert {} end -id $idx -values $line -tag fsmall
@@ -1184,7 +1176,6 @@ proc glist.loadvalues_ {w} {
     incr i
   }
   set ::glistLoaded($w) $i
-  unbusyCursor .
 }
 
 proc glist.showfindbar_ {{w} {layout}} {
@@ -1204,7 +1195,6 @@ proc glist.findcurrentgame_ {{w} {gnum}} {
 }
 
 proc glist.findgame_ {{w_parent} {dir ""}} {
-  busyCursor .
   set w $w_parent.glist
   set w_entryN $w_parent.find.gnum
   set gnum [$w_entryN get]
@@ -1212,6 +1202,8 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
   set txt [$w_entryT get]
   $w_entryN configure -bg white
   $w_entryT configure -bg white
+  busyCursor .
+  update idletasks
 
   if {$dir == ""} {
     set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $gnum]
@@ -1239,6 +1231,21 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
     $w selection set [lindex $items $f]
   }
   unbusyCursor .
+}
+
+proc glist.doubleclick_ {{w} {x} {y} {layout}} {
+  lassign [$w identify $x $y] what
+  if {$what == "heading"} {
+    foreach {c dir} $::glist_Sort($layout) { $w heading $c -image "" }
+    set ::glist_Sort($layout) {}
+    glist.sortClickHandle_ $w $x $y $layout
+  } else {
+    foreach {idx ply} [split [$w selection] "_"] {}
+    if {[info exist idx]} {
+      sc_base switch $::glistBase($w)
+      ::game::Load $idx $ply
+    }
+  }
 }
 
 proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
@@ -1297,38 +1304,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
     set col_idx [lsearch -exact $::glist_Headers [$w column $col -id] ]
     $w.header_menu delete 0 end
 
-    #SORT
-    $w.header_menu.sort delete 0 end
-    if {"???" != [lindex $::glist_SortShortcuts $col_idx]} {
-      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(0)\
-                               -compound right -command [list glist.sortBy_ $w $col_idx + $layout 1]
-      $w.header_menu.sort add command -label $::tr(GlistNewSort) -image ::glist_Arrows(1)\
-                               -compound right -command [list glist.sortBy_ $w $col_idx - $layout 1]
-      set a1 [llength $::glist_Sort($layout)]
-      set a2 [expr $a1 +1]
-      if {[lsearch -exact $::glist_Sort($layout) $col_idx ] == -1 && $a1 <= 16} {
-        $w.header_menu.sort add separator
-        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a1)\
-                                -compound right -command [list glist.sortBy_ $w $col_idx + $layout 0]
-        $w.header_menu.sort add command -label $::tr(GlistAddToSort) -image ::glist_Arrows($a2)\
-                                -compound right -command [list glist.sortBy_ $w $col_idx - $layout 0]
-    }
-    $w.header_menu.sort add separator
-    }
-    $w.header_menu.sort add command -label $::tr(GlistCurrentSep) -state disabled
-    set i 0
-    foreach {c dir} $::glist_Sort($layout) {
-      set h [lindex $::glist_Headers $c]
-      set arrow_idx [expr $i *2]
-      if {$dir == "-"} { incr arrow_idx }
-      $w.header_menu.sort add command -label $::tr($h) -image ::glist_Arrows($arrow_idx) \
-                                      -compound left -state disabled
-      incr i
-    }
-    $w.header_menu add cascade -label $::tr(Sort) -menu $w.header_menu.sort
-
     #CHANGE ALIGNMENT
-    $w.header_menu add separator
     set cur_a [lindex $::glist_ColAnchor($layout) $col_idx]
     if {$cur_a != "w"} {
       $w.header_menu add command -label $::tr(GlistAlignL) \
@@ -1381,10 +1357,26 @@ proc glist.sortInit_ {w {layout}} {
   }
 }
 
-proc glist.sortBy_ {w col direction {layout} clear} {
-  foreach {c dir} $::glist_Sort($layout) { $w heading $c -image "" }
-  if {$clear} { unset ::glist_Sort($layout) }
-  lappend ::glist_Sort($layout) $col $direction
+proc glist.sortClickHandle_ {{w} {x} {y} {layout}} {
+  set col [$w identify column $x $y]
+  set col_idx [lsearch -exact $::glist_Headers [$w column $col -id] ]
+  if {"???" == [lindex $::glist_SortShortcuts $col_idx]} {
+    # TODO: notify the user that the column cannot be used for sorting
+    return
+  }
+
+  set exists [lsearch -exact $::glist_Sort($layout) $col_idx ]
+  if {$exists == -1} {
+    lappend ::glist_Sort($layout) $col_idx -
+  } else {
+    incr exists
+    if {[lindex $::glist_Sort($layout) $exists ] == "+"} {
+      lset ::glist_Sort($layout) $exists {-}
+    } else {
+      lset ::glist_Sort($layout) $exists {+}
+    }
+  }
+
   glist.sortInit_ $w $layout
   if {[info exist ::glistBase($w)]} { glist.update_ $w $::glistBase($w) }
 }
@@ -1515,9 +1507,13 @@ proc glist.release_ {{w} {x} {y} {layout}} {
         set from [expr [string trimleft $::ttk::treeview::State(heading) {#}] -1]
         set to [expr [string trimleft $new_col {#}] -1]
         set val [lindex $::glist_ColOrder($layout) $from]
-        set ::glist_ColOrder($layout) [lreplace $::glist_ColOrder($layout) $from $from]
-        set ::glist_ColOrder($layout) [linsert $::glist_ColOrder($layout) $to $val]
-        $w configure -displaycolumns $::glist_ColOrder($layout)
+        if {$from != $to} {
+          set ::glist_ColOrder($layout) [lreplace $::glist_ColOrder($layout) $from $from]
+          set ::glist_ColOrder($layout) [linsert $::glist_ColOrder($layout) $to $val]
+          $w configure -displaycolumns $::glist_ColOrder($layout)
+        } else {
+          glist.sortClickHandle_ $w $x $y $layout
+        }
       }
     }
   }
