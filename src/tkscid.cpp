@@ -5872,12 +5872,6 @@ initFilter( scidBaseT * dbase, byte value)
     dbase->filter->Fill(value);
 }
 
-void initDbFilter( scidBaseT * dbase)
-{
-    dbase->dbFilter->Fill(1);
-    dbase->filter->Merge (dbase->treeFilter, dbase->dbFilter);
-}
-
 void initDbFilter( scidBaseT * dbase, byte value)
 {
     dbase->dbFilter->Fill(value);
@@ -14463,7 +14457,6 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
-    initDbFilter (db);
 
     switch (index) {
     case OPT_BOARD:
