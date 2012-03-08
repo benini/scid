@@ -216,28 +216,117 @@ proc ::game::LoadNumber {} {
   focus $w.entry
 }
 
+
+# History of viewed games
+set hgame_i 0
+
+proc ::game::HistoryRemoveDB {db} {
+  set i 0
+  while {[info exist ::hgame_game($i)]} {
+    if {$::hgame_db($i) == $db} {
+      set a $i; set b [expr $i +1]
+      while {[info exist ::hgame_game($b)]} {
+        set ::hgame_db($a) $::hgame_db($b)
+        set ::hgame_game($a) $::hgame_game($b)
+        set ::hgame_ply($a) $::hgame_ply($b)
+        incr a; incr b
+      }
+      unset ::hgame_game($a)
+      if {$i < $::hgame_i} { incr ::hgame_i -1 }
+    } else {
+      incr i
+    }
+  }
+}
+
+proc ::game::HistoryDatabaseSwitch {} {
+  ::game::HistorySavePos_
+  ::game::HistoryAdd_
+}
+
+proc ::game::Hprev_btnstate {} {
+  if {$::hgame_i > 0} { return "normal" }
+  return "disabled"
+}
+
+proc ::game::Hnext_btnstate {} {
+  set i [expr "$::hgame_i + 1"]
+  if {[info exist ::hgame_game($i)]} {return "normal"}
+  return "disabled"
+}
+
+proc ::game::HistorySavePos_ {} {
+  if {[info exist ::hgame_game($::hgame_i)]} {
+    set cur_db [sc_base current]
+    if {$cur_db != $::hgame_db($::hgame_i)} {
+      sc_base switch $::hgame_db($::hgame_i)
+      set ::hgame_ply($::hgame_i) [sc_pos location]
+      sc_base switch $cur_db
+    } else {
+      set ::hgame_ply($::hgame_i) [sc_pos location]
+    }
+  }
+}
+
+proc ::game::HistoryAdd_ {} {
+  if {[info exist ::hgame_game($::hgame_i)]} {
+    if {$::hgame_db($::hgame_i) == [sc_base current] && \
+        $::hgame_game($::hgame_i) == [sc_game number]} {
+      return
+    } else {
+      incr ::hgame_i
+    }
+  }
+  set i $::hgame_i
+  while {[info exist ::hgame_game($i)]} {
+    unset ::hgame_game($i)
+    incr i
+  }
+  set ::hgame_db($::hgame_i) [sc_base current]
+  set ::hgame_game($::hgame_i) [sc_game number]
+  set ::hgame_ply($::hgame_i) [sc_pos location]
+}
+
 # ::game::Load
 #
 #   Loads a specified game from the active database.
 #
 proc ::game::Load { selection {ply ""} } {
+  ::game::HistorySavePos_
+  if {[::game::Load_ $selection $ply]} {
+    ::game::HistoryAdd_
+    ::notify::GameChanged
+  }
+}
+
+proc ::game::LoadHistory {dir} {
+  set check [expr $::hgame_i + $dir]
+  if {$check < 0 || ![info exist ::hgame_game($check)]} {return}
+
+  ::game::HistorySavePos_
+  incr ::hgame_i $dir
+  sc_base switch $::hgame_db($::hgame_i)
+  #If the game is still in memory avoid the ::game::ConfirmDiscard2 call
+  if {$::hgame_game($::hgame_i) != [sc_game number]} {
+    ::game::Load_ $::hgame_game($::hgame_i) $::hgame_ply($::hgame_i)
+  }
+  ::notify::GameChanged
+}
+
+proc ::game::Load_ { selection {ply ""} } {
   # If an invalid game number, just return:
-  if {$selection < 1} { return }
-  if {$selection > [sc_base numGames]} { return }
+  if {$selection < 1} { return 0}
+  if {$selection > [sc_base numGames]} { return 0}
   set confirm [::game::ConfirmDiscard2]
-  if {$confirm == 2} { return }
+  if {$confirm == 2} { return 0}
   if {$confirm == 0} {
     sc_game save [sc_game number]
     # ::gameReplace
   }
-  
   setTrialMode 0
   sc_game load $selection
   if {$ply != ""} { sc_move ply $ply }
-  flipBoardForPlayerNames $::myPlayerNames
-  updateBoard -pgn
-  ::windows::gamelist::Refresh
-  updateTitle
+  return 1
 }
 
 # ::game::LoadMenu
@@ -324,4 +413,42 @@ proc ::game::mergeInBase { srcBase destBase { gnum -1 }} {
   }
   ::file::SwitchToBase $destBase
   mergeGame $srcBase $gnum
+}
+
+
+# FBF: 2012/03/08
+# Grouping intercommunication between windows
+# When complete this should be moved to a new notify.tcl file
+namespace eval ::notify {
+  proc GameChanged {} {
+    flipBoardForPlayerNames $::myPlayerNames
+    updateBoard -pgn
+    ::windows::gamelist::Refresh
+    updateTitle
+  }
+
+  proc PosChanged {} {
+    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
+        .main.tb.save configure -state disabled
+    } else {
+        .main.tb.save configure -state normal
+    }
+
+    if {$::showGameInfo} { updateGameInfo }
+    updateAnalysis 1
+    updateAnalysis 2
+    updateEpdWins
+    ::commenteditor::Refresh
+    ::tb::results
+    updateMenuStates
+    moveEntry_Clear
+    updateStatusBar
+    if {[winfo exists .twinchecker]} { updateTwinChecker }
+    ::pgn::Refresh
+    if {[winfo exists .bookWin]} { ::book::refresh }
+    if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
+    updateNoveltyWin
+    ::tree::refresh
+  }
+
 }

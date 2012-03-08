@@ -459,8 +459,10 @@ if {$png_image_support} {
 button .main.fbutton.button.comment -image comment_unavail -command {makeCommentWin}
 button .main.fbutton.button.autoplay -image autoplay_off -command toggleAutoplay
 button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
+button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
+button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
 
-foreach i {start back forward end exitVar addVar comment autoplay flip coords stm trial intoVar} {
+foreach i {start back forward end exitVar addVar comment autoplay flip coords stm trial intoVar hgame_prev hgame_next} {
     .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
     bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
     bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
@@ -469,7 +471,7 @@ foreach i {start back forward end exitVar addVar comment autoplay flip coords st
 pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
         .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.comment .main.fbutton.button.space2 \
         .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
-        .main.fbutton.button.stm -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+        .main.fbutton.button.stm .main.fbutton.button.hgame_prev .main.fbutton.button.hgame_next -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
 
 ############################################################
@@ -846,12 +848,12 @@ proc updateBoard {args} {
     ::board::update .main.board [sc_pos board] $animate
 
     after cancel updateNavButtons
-    after cancel notifyPosChange
+    after cancel ::notify::PosChanged
 
     update idletasks
 
     after idle updateNavButtons
-    after idle notifyPosChange
+    after idle ::notify::PosChanged
 }
 
 # updateNavButtons:
@@ -909,6 +911,8 @@ proc updateNavButtons {} {
          .main.fbutton.button.comment configure -image comment_unavail -relief flat
          ::utils::tooltip::UnSet .main.fbutton.button.comment
     }
+   .main.fbutton.button.hgame_prev configure -state [::game::Hprev_btnstate]
+   .main.fbutton.button.hgame_next configure -state [::game::Hnext_btnstate]
 }
 
 # updateGameInfo:
@@ -932,33 +936,6 @@ proc updateGameInfo {} {
     }
     .main.gameInfo configure -state disabled
     updatePlayerPhotos
-}
-
-# notifyPosChange:
-#    Notify other windows of current position changes
-#
-proc notifyPosChange {} {
-    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
-        .main.tb.save configure -state disabled
-    } else {
-        .main.tb.save configure -state normal
-    }
-
-    if {$::showGameInfo} { updateGameInfo }
-    updateAnalysis 1
-    updateAnalysis 2
-    updateEpdWins
-    ::commenteditor::Refresh
-    ::tb::results
-    updateMenuStates
-    moveEntry_Clear
-    updateStatusBar
-    if {[winfo exists .twinchecker]} { updateTwinChecker }
-    ::pgn::Refresh
-    if {[winfo exists .bookWin]} { ::book::refresh }
-    if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
-    updateNoveltyWin
-    ::tree::refresh
 }
 
 # Set up player photos:

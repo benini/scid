@@ -1029,6 +1029,35 @@ image create photo tb_trial_on -data {
   GWaEIkWWJ+p9IZeYMnik5oDnQ93OMmWCxVZCF61oJFJwCuZSB81Ao0hIAQA7
 }
 
+image create photo tb_hgame_prev -data {
+R0lGODlhEAAQAMZ1ACBKhyFKhiBLhyFLhiFLiCJLhyNLhSRLhSFMhyFMiCNMhyRMhSRMhiJNiSVN
+hyZNhSVNiSVOiShPiCtQhC1QgipRhzFRgDRUgTlWgDdaijhfljVgmjRlpDZmpT5on0VqnkRtoz9v
+qz9vrEZupEBvrEluokBwrEBxq0FxrElxqEZyrE10pkp1rUt3rk53q1B3q014r0l5s095sEt6s1B6
+r017tIh1WFN8sVZ+s1d/s1iAs5p4RpN6U518Sp18S55+TZ9+Tl2Hu1+Hup9/TmCIuaCAT5eBYKCA
+UKCAUaCBUaGBUWGKvKODVaOEVaOFVqGGW2aOvqWGWGaPv2qRwGuSwWyTwm2Uwm6Uwm+UwqeNZaqR
+aaaciLaddLaedbWfe7ymf7KplMq4lsu4l8u6mMu8nsu9oM69nM6+nc+/ns+/n8+/oNDAn9DAoNHB
+oNHBodHCotLDo9PEpdTFptbIqtfJrP///////////////////////////////////////////yH5
+BAEKAH8ALAAAAAAQABAAAAfFgH+Cg4SDbG1shX8EAIJIX3GHiYQZGgpMR0mQkoM8GB9YDk1HPV9z
+cnFogxYlVFcRALGxD1FFggIrUDVBVVZVv1MGR0d/CS9LMzHKyzNSB8MAI0InJiQiIiEhIihEBj9D
+fw0uMhzl5hwdOg5mZ4IIKTAcKjg59Tk3Dm6Tfw8gLTQQAggcUEACm31bKnhgwUBLlideypB5A2eQ
+GjATNiyYE4cOlx1AlDgZtCaMEQoLxrCJ08XHMGKFbFwQk4aly2GKFN08EggAOw==
+}
+
+image create photo tb_hgame_next -data {
+R0lGODlhEAAQAMZsACBKhyFKhiBLhyFLhiFLiCJLhyNLhSRLhSFMhyFMiCNMhyRMhSRMhiJNiSVN
+hyZNhSVNiSVOiShPiCtQhC1QgipRhzFRgDRUgTlWgDdaijhfljVgmjRlpDZmpT5on0VqnkRtoz9v
+qz9vrEZupEBvrEluokBwrEBxq0FxrElxqEZyrE10pkp1rUt3rk53q1B3q014r0l5s095sEt6s1B6
+r017tIh1WFN8sVZ+s1d/s1iAs5p4RpN6U518Sp18S55+TZ9+Tl2Hu1+Hup9/TmCIuaCAT5eBYKCA
+UKCAUaCBUaGBUWGKvKODVaOEVaOFVqGGW2aOvqWGWGaPv2qRwGuSwWyTwm2Uwm6Uwm+UwqeNZaqR
+aaaciLaddLaedbWfe7ymf7KplMq4lsu4l8u6mMu8nsu9oM69nM6+nc+/ns+/n8+/oNDAn9DAoNHB
+oNHBodHCotLDo9PEpdTFptbIqtfJrNDAoNDAoNDAoNDAoNDAoNDAoNDAoNDAoNDAoNDAoNDAoCH5
+BAEKAH8ALAAAAAAQABAAAAfEgGxtbH+FhoeGgmxxX0iFAASIf4qMSUdMChoZiGhxcnNfPUdNDlgf
+GDyGRVEPAK6uEVdUJRaGR0cGU1W7VlVBNVArAoW3B1IzMcnKM0svCX9DPwZEKCIhISIiJCYnQiMA
+Z2YOOh0c5uccMi4Nk24ONznxOTgqHDApCIVsbBIFAwEAIdBoAeKBIThvyJTx8iSLFgYsPFTYYsiJ
+EiA7uNCJM2fBhglg1Ni65aNLHDZjFlAwEmbNyCMl46QRc8GGpFswJUkKBAA7
+}
+
+
 #----------------------------------------------------------------------
 if {$png_image_support} {
 	image create photo tb_flip -data {

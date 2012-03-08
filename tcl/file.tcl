@@ -288,11 +288,12 @@ proc ::file::Close {{base -1}} {
       return
     }
     sc_base close
+    ::game::HistoryRemoveDB $base
     
-    # If base to close was the current one, reset current game
+    # If base to close was the current one, reset to clipbase
     if { $current == $base } {
       setTrialMode 0
-      sc_game new
+      set current 9
     }
     
     # Close Tree window whenever a base is closed/switched:
@@ -308,6 +309,7 @@ proc ::file::Close {{base -1}} {
 
 proc ::file::SwitchToBase {b} {
   sc_base switch $b
+  ::game::HistoryDatabaseSwitch
   # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }
   updateBoard -pgn
