@@ -4,7 +4,7 @@
 ###
 ### $Id: correspondence.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
-### Last change: <Sun, 2011/10/09 13:25:35 arwagner agamemnon>
+### Last change: <Sat, 2012/05/19 18:39:49 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -510,6 +510,13 @@ namespace eval Xfcc {
 			append xmlmessage "</MakeAMove>"
 		append xmlmessage $::Xfcc::SOAPend
 
+		# if {[catch {open "/tmp/send.xml" w} debug]} {
+		# 	::CorrespondenceChess::updateConsole "info unable to open debug file..."
+		# } else {
+		# 	puts $debug $xmlmessage
+		# }
+		# close $debug
+
 		# send it to the web service note the space before the charset
 		set token [::http::geturl $uri \
 						-type "text/xml; charset=\"utf-8\"" \
@@ -560,6 +567,13 @@ namespace eval Xfcc {
 							$gameid $movecount $move $comment \
 							$resign $acceptdraw $offerdraw $claimdraw]
 				::Xfcc::SOAPError $name $xml
+
+				# if {[catch {open "/tmp/answer.xml" w} debug]} {
+				# 	::CorrespondenceChess::updateConsole "info unable to open debug file..."
+				# } else {
+				# 	puts $debug $xml
+				# }
+				# close $debug
 			}
 		}
 	}
@@ -3814,6 +3828,7 @@ namespace eval CorrespondenceChess {
 			set name      [lindex $IdList 0]
 			set gameid    [lindex $IdList 1]
 			set movecount [sc_pos moveNumber]
+			set ply       [sc_pos location]
 			set move      [sc_game info previousMoveNT]
 			set comment   [sc_pos getComment]
 			set Event     [sc_game tags get Event]
@@ -3839,6 +3854,19 @@ namespace eval CorrespondenceChess {
 			set DlgBoxText "[::tr CCDlgConfirmMoveText]\n\n$name-$gameid:\n\t$movecount. $move\n\t{$comment}"
 			if {$resign == 1} {
 				set DlgBoxText "$DlgBoxText\n\n[::tr CCResign]"
+				# When resigning usually no move is made before.
+				# Therefore, we have to increase the ply by one (faking a
+				# move) and recalculate the resulting move number if White
+				# is to move.
+				# This gives:
+				# 1. e4 <resign> => ply 2 => no ply increment => move
+				# number = 1, move number to send = 1
+				# 1. e4 e5 <resign> => increment ply => ply = 3 => move
+				# number = 1, move number to send = 2
+				if {[sc_pos side] == "white"} {
+					set movecount [expr {$ply / 2 + 1}]	
+					::CorrespondenceChess::updateConsole "info Increment ply $movecount"
+				}
 			} elseif {$acceptDraw == 1} {
 				set DlgBoxText "$DlgBoxText\n\n[::tr CCAcceptDraw]"
 			} elseif {$offerDraw  == 1} {
