@@ -222,11 +222,11 @@ namespace eval fics {
 
     if {$login != ""} {
       set ::fics::reallogin $login
-		# do not reset the password if we log in as guest.
-		# This allows to reset it if we have another UID.
-		if ($login != "guest") {
-			set ::fics::password $passwd
-		}
+      # do not reset the password if we log in as guest.
+      # This allows to reset it if we have another UID.
+      if {$login != "guest"} {
+         set ::fics::password $passwd
+      }
     } else {
       return
     }
