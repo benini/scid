@@ -29,6 +29,7 @@ NameBase::Init ()
 {
     Fname[0] = 0;
     FilePtr = NULL;
+    SortOrder = 0;
     strcpy (Header.magic, NAMEBASE_MAGIC);
     Header.timeStamp = 0;
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {

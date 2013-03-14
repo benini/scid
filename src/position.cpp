@@ -34,7 +34,7 @@ static uint stdStartPawnHash = 0;
 
 Position::Position(const Position& p)
 {
-	memcpy (this, &p, sizeof(Position));
+    memcpy (this, &p, sizeof(Position));
 }
 
 inline void
@@ -314,22 +314,7 @@ Position::GenCastling (MoveList * mlist)
     squareT target, skip, rookSq;
     pieceT rookPiece;
 
-    // Queenside Castling:
-    if (!StrictCastling  ||  GetCastling (ToMove, QSIDE)) {
-        if (ToMove == WHITE) {
-            target = C1; skip = D1; rookSq = A1; rookPiece = WR;
-        } else {
-            target = C8; skip = D8; rookSq = A8; rookPiece = BR;
-        }
-        if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
-                &&  Board[rookSq] == rookPiece
-                &&  Board[target - 1] == EMPTY // B1 or B8 must be empty too!
-                &&  CalcNumChecks (target) == 0
-                &&  CalcNumChecks (skip) == 0
-                &&  ! square_Adjacent (target, enemyKingSq)) {
-            AddLegalMove (mlist, from, target, EMPTY);
-        }
-    }
+    // Try kingside first
 
     // Kingside Castling:
     if (!StrictCastling  ||  GetCastling (ToMove, KSIDE)) {
@@ -340,6 +325,23 @@ Position::GenCastling (MoveList * mlist)
         }
         if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
                 &&  Board[rookSq] == rookPiece
+                &&  CalcNumChecks (target) == 0
+                &&  CalcNumChecks (skip) == 0
+                &&  ! square_Adjacent (target, enemyKingSq)) {
+            AddLegalMove (mlist, from, target, EMPTY);
+        }
+    }
+
+    // Queenside Castling:
+    if (!StrictCastling  ||  GetCastling (ToMove, QSIDE)) {
+        if (ToMove == WHITE) {
+            target = C1; skip = D1; rookSq = A1; rookPiece = WR;
+        } else {
+            target = C8; skip = D8; rookSq = A8; rookPiece = BR;
+        }
+        if (Board[target] == EMPTY  &&  Board[skip] == EMPTY
+                &&  Board[rookSq] == rookPiece
+                &&  Board[target - 1] == EMPTY // B1 or B8 must be empty too!
                 &&  CalcNumChecks (target) == 0
                 &&  CalcNumChecks (skip) == 0
                 &&  ! square_Adjacent (target, enemyKingSq)) {
@@ -570,7 +572,7 @@ Position::Init (void)
     // Setting up a valid board is left to StdStart() or Clear().
     Board [COLOR_SQUARE] = EMPTY;
     Board [NULL_SQUARE] = END_OF_BOARD;
-    LegalMoves.Clear();
+	LegalMoves.Clear();
     StrictCastling = true;
 
     // Make sure all tables used for move generation, hashing,
@@ -607,7 +609,7 @@ Position::Clear (void)
     HalfMoveClock = 0;
     Hash = 0;
     PawnHash = 0;
-    LegalMoves.Clear();
+	LegalMoves.Clear();
     return;
 }
 
@@ -820,11 +822,11 @@ Position::GenerateMoves (MoveList * mlist, pieceT pieceType,
     bool genNonCaptures = (genType & GEN_NON_CAPS);
     bool capturesOnly = !genNonCaptures;
 
-    if (LegalMoves.Size() > 0 && pieceType == EMPTY && genType == GEN_ALL_MOVES) {
-        if(mlist != NULL)
-            memcpy (mlist, &LegalMoves, sizeof(MoveList));
-        return;
-    }
+	if (LegalMoves.Size() > 0 && pieceType == EMPTY && genType == GEN_ALL_MOVES) {
+		if(mlist != NULL)
+			memcpy (mlist, &LegalMoves, sizeof(MoveList));
+		return;
+	}
 
     uint mask = 0;
     if (pieceType != EMPTY) {
@@ -835,9 +837,9 @@ Position::GenerateMoves (MoveList * mlist, pieceT pieceType,
     }
 
     // Use the objects own move list if none was provided:
-    if( mlist == NULL)
-        mlist = &LegalMoves;
-    mlist->Clear();
+	if( mlist == NULL)
+		mlist = &LegalMoves;
+	mlist->Clear();
 
     // Compute which pieces of the side to move are pinned to the king:
     CalcPins();
@@ -904,8 +906,8 @@ Position::GenerateMoves (MoveList * mlist, pieceT pieceType,
         GenKingMoves (mlist, genType, castling);
     }
 
-    if (pieceType == EMPTY && genType == GEN_ALL_MOVES && mlist != NULL)
-        memcpy (&LegalMoves, mlist, sizeof(MoveList));
+	if (pieceType == EMPTY && genType == GEN_ALL_MOVES && mlist != NULL)
+		memcpy (&LegalMoves, mlist, sizeof(MoveList));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1131,6 +1133,8 @@ Position::MatchLegalMove (MoveList * mlist, pieceT mask, squareT target)
 errorT
 Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT promote)
 {
+    pieceT promote2 = promote;
+
     mlist->Clear();
 
     sint diff = (int)square_Fyle(to) - (int)fromFyle;
@@ -1162,7 +1166,11 @@ Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT pr
     // See if the promotion piece is valid:
 
     if (toRank == promoteRank) {
-        if (promote == EMPTY)  { return ERROR_InvalidMove; }
+        // if (promote == EMPTY)  { return ERROR_InvalidMove; }
+        if (promote == EMPTY)  {
+          // autopromote to queen
+          promote2 = (ToMove == WHITE ? WQ : BQ);
+        }
     } else {
         if (promote != EMPTY)  { return ERROR_InvalidMove; }
     }
@@ -1230,7 +1238,7 @@ Position::MatchPawnMove (MoveList * mlist, fyleT fromFyle, squareT to, pieceT pr
     }
 
     if (legal == 1) {
-        AddLegalMove (mlist, from, to, promote);
+        AddLegalMove (mlist, from, to, promote2);
         return OK;
     }
     return ERROR_InvalidMove;
@@ -1854,7 +1862,7 @@ Position::DoSimpleMove (simpleMoveT * sm)
 
     HalfMoveClock++;
     PlyCounter++;
-    LegalMoves.Clear();
+	LegalMoves.Clear();
 
     // Check for a null (empty) move:
     if (isNullMove(sm)) {
@@ -1997,7 +2005,7 @@ Position::UndoSimpleMove (simpleMoveT * m)
     PlyCounter--;
     ToMove = color_Flip(ToMove);
     m->pieceNum = ListPos[to];
-    LegalMoves.Clear();
+	LegalMoves.Clear();
 
     // Check for a null move:
     if (isNullMove(m)) {
@@ -2084,8 +2092,8 @@ Position::RelocatePiece (squareT fromSq, squareT toSq)
 
     // If squares are identical, just return success:
     if (fromSq == toSq) { return OK; }
-    
-    LegalMoves.Clear();
+
+	LegalMoves.Clear();
 
     pieceT piece = Board[fromSq];
     pieceT ptype = piece_Type(piece);
@@ -2250,7 +2258,7 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
     // Now do the check or mate symbol:
     if (flag != SAN_NO_CHECKTEST) {
         // Now we make the move to test for check:
-        MoveList backup = LegalMoves;
+		MoveList backup = LegalMoves;
         DoSimpleMove (m);
         if (CalcNumChecks (GetKingSquare()) > 0) {
             char ch = '+';
@@ -2262,7 +2270,7 @@ Position::MakeSANString (simpleMoveT * m, char * s, sanFlagT flag)
             *c++ = ch;
         }
         UndoSimpleMove (m);
-        LegalMoves = backup;
+		LegalMoves = backup;
     }
     *c = 0;
 }
@@ -2281,7 +2289,14 @@ Position::MakeUCIString (simpleMoveT * m, char * s)
     pieceT  p    = piece_Type (Board[List[ToMove][m->pieceNum]]);
     squareT from = List[ToMove][m->pieceNum];
     squareT to   = m->to;
+
     char * c     = s;
+
+    if (from == to && to != NULL_SQUARE) {
+      // UCI standard for null move
+      strcpy (c,"0000");
+      return;
+    }
 
     *c++ = square_FyleChar(from);
     *c++ = square_RankChar(from);
@@ -2394,6 +2409,7 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT token)
 
     // Pawn moves:
     if (token == TOKEN_Move_Pawn  ||  token == TOKEN_Move_Promote) {
+
         pieceT promo = EMPTY;
         if (token == TOKEN_Move_Promote) {
             // Last char must be Q/R/B/N.
@@ -2406,6 +2422,9 @@ Position::ReadMove (simpleMoveT * m, const char * str, tokenT token)
             }
             slen--;
             if (s[slen-1] == '=') { slen--; }
+
+            // in case of malformed moves
+	    if (slen < 2) return ERROR_InvalidMove;
         } else {
             // Check if it is a coordinates-style move, in which case it
             // could be any piece:
@@ -3266,7 +3285,7 @@ Position::Compare (Position * p)
 void
 Position::CopyFrom (Position * src)
 {
-    memcpy (this, src, sizeof(Position));
+  memcpy (this, src, sizeof(Position));
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3303,7 +3322,7 @@ Position::Random (const char * material)
     pieceT pieces [32];         // List of pieces excluding kings
     uint nPieces[2] = {0, 0};   // Number of pieces per side excluding kings.
     uint total = 0;             // Total number of pieces excluding kings.
-    LegalMoves.Clear();
+	LegalMoves.Clear();
 
     colorT side = WHITE;
 

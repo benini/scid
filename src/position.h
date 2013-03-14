@@ -280,7 +280,7 @@ public:
 
     void        MakeSANString (simpleMoveT * sm, char * s, sanFlagT flag);
     void        MakeUCIString (simpleMoveT * sm, char * s);
-    void        CalcSANStrings (sanListT *sanList, sanFlagT flag);
+	void        CalcSANStrings (sanListT *sanList, sanFlagT flag);
 
     errorT      ReadCoordMove (simpleMoveT * m, const char * s, bool reverse);
     errorT      ReadMove (simpleMoveT * m, const char * s, tokenT t);

@@ -221,6 +221,7 @@ TextBuffer::PrintString (const char * str)
         while (*str != ' '  && *str != '\n'  &&  *str != '\0') {
             *b = *str; b++; str++;
         }
+        // end of word/line/text reached
         *b = 0;
         err = PrintWord (currentWord);
         if (err != OK) { return err; }

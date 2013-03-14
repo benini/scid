@@ -107,7 +107,7 @@ MFile::Seek (uint position)
     }
     if (result == -1) { return ERROR_FileSeek; }
 #else
-    result = fseek (Handle, position, 0);
+        result = fseek (Handle, position, 0);
     }
     if (result != 0) { return ERROR_FileSeek; }
 #endif
@@ -136,13 +136,13 @@ MFile::Open (const char * name, fileModeT fmode)
     char * modeStr = NULL;
     switch (fmode) {
 #ifdef WINCE
-        case FMODE_ReadOnly:   modeStr = (char *) "r"/*"rb"*/;  break;
-        case FMODE_WriteOnly:  modeStr = (char *) "w"/*"wb"*/;  break;
-        case FMODE_Both:       modeStr = (char *) "r+"/*"r+b"*/; break;
+        case FMODE_ReadOnly:   modeStr = "r"/*"rb"*/;  break;
+        case FMODE_WriteOnly:  modeStr = "w"/*"wb"*/;  break;
+        case FMODE_Both:       modeStr = "r+"/*"r+b"*/; break;
 #else
-        case FMODE_ReadOnly:   modeStr = (char *) "rb";  break;
-        case FMODE_WriteOnly:  modeStr = (char *) "wb";  break;
-        case FMODE_Both:       modeStr = (char *) "r+b"; break;
+        case FMODE_ReadOnly:   modeStr = "rb";  break;
+        case FMODE_WriteOnly:  modeStr = "wb";  break;
+        case FMODE_Both:       modeStr = "r+b"; break;
 #endif
         default:               return ERROR_FileMode;
     }
@@ -171,7 +171,7 @@ MFile::Open (const char * name, fileModeT fmode)
         GzBuffer_Avail = 0;
     } else {
 #ifdef WINCE
-        Handle = mySilent_Tcl_OpenFileChannel(NULL, name, modeStr, 0666);//fopen (name, modeStr);
+        Handle = my_Tcl_OpenFileChannel(NULL, name, modeStr, 0666);//fopen (name, modeStr);
         if (Handle == NULL) { return ERROR_FileOpen; }
         my_Tcl_SetChannelOption(NULL, Handle, "-encoding", "binary");
         my_Tcl_SetChannelOption(NULL, Handle, "-translation", "binary");
@@ -205,8 +205,8 @@ MFile::Create (const char * name, fileModeT fmode)
  my_Tcl_SetChannelOption(NULL, Handle, "-encoding", "binary");
  my_Tcl_SetChannelOption(NULL, Handle, "-translation", "binary");
 #else
-        case FMODE_WriteOnly: modeStr = (char *) "wb";  break;
-        case FMODE_Both:      modeStr = (char *) "w+b"; break;
+        case FMODE_WriteOnly: modeStr = "wb";  break;
+        case FMODE_Both:      modeStr = "w+b"; break;
         default:              return ERROR_FileMode;
     }
 

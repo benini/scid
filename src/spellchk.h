@@ -28,6 +28,11 @@ struct bioNoteT {
     bioNoteT * next;
 };
 
+struct spellingT {
+    const char *id;
+    const char *data;
+};
+
 struct spellCheckNodeT
 {
     char * name;        // The possibly incorrect spelling of this name.
@@ -35,6 +40,7 @@ struct spellCheckNodeT
     char * renderName;  // The real (with umlauts, etc) spelling.
     char * comment;     // Extra info, e.g. title/country/elo/date of birth
     spellCheckNodeT * next;
+    spellCheckNodeT * alias;
     eloT * eloData;     // History of FIDE Elo ratings for player.
     bioNoteT * bioData; // Biography data.
     bool correction;    // Indicates whether this node is a correction.

@@ -1241,7 +1241,7 @@ OpTable::PrintText (DString * dstr, const char * title, const char * comment,
     if (score % 2) { dstr->AddChar (DecimalChar); dstr->AddChar ('5'); }
     dstr->Append ("/", TheoryCount, ": ");
     dstr->Append ((TheoryPercent() + 5) / 10, "%)\n");
-    dstr->Append (hrule, "    ");
+    dstr->Append (hrule, "  ");
     for (i=0; i < OPTABLE_COLUMNS; i++) {
         sprintf (cell, " %3u     ", i + ((StartLength + 2) / 2));
         dstr->Append (cell);
@@ -1899,7 +1899,7 @@ OpTable::TopEcoCodes (DString * dstr, uint count)
             }
         }
         if (maxFreq > 0) {
-            char ecoStr[4];
+            char ecoStr[8];
             strCopy (ecoStr, "A00-E99");
             ecoStr[0] = (ecoClass / 10) + 'A';
             ecoStr[1] = (ecoClass % 10) + '0';
@@ -1986,7 +1986,9 @@ OpTable::AddMoveOrder (Game * g)
     uint id = 0;
     int index = -1;
 
-    g->MoveToPly(0);
+    // Breaks Player opening report from current position
+    // g->MoveToPly(0);
+
     DString * dstr = new DString;
     g->GetPartialMoveList (dstr, g->GetCurrentPly());
 

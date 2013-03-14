@@ -38,6 +38,7 @@ class PgnParser
     const char * InBuffer;
     const char * InCurrent;
     uint   LineCounter;
+    uint   GameCounter;
     int    EndChar;
     uint   BytesSeen;
 #ifndef WINCE

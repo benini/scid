@@ -501,8 +501,6 @@ PBook::ReadEcoFile ()
 
     ReadOnly = true;
     LineCount = 1;
-    // An initial position
-    //
     Position std_start;
     std_start.StdStart();
     DString text;
@@ -582,9 +580,7 @@ PBook::ReadEcoFile ()
             }
             prev = ch;
         }
-        // Start from the initial position
-        //
-        Position pos( std_start );
+        Position pos (std_start);
         err = pos.ReadLine (moves.Data());
         if (err != OK) { goto corrupt; }
         text.Append ("moves ", strTrimLeft (moves.Data()), "\n");

@@ -186,6 +186,142 @@ SpellChecker::RenderName (const char * name) {
     return name;
 }
 
+
+// This data has been imported from spelling.ssp comment fields by S.A.
+// use: grep '^#   [[:upper:]][[:upper:]][[:upper:]]  ' spelling.ssp
+
+spellingT titleTable[] = {
+{"gm","Grandmaster"},
+{"im","International Master"},
+{"fm","FIDE Master"},
+{"wgm","Woman Grandmaster"},
+{"wim","Woman International Master"},
+{"wfm","Woman FIDE Master"},
+{"cgm","Correspondence GM"},
+{"cim","Correspondence IM"},
+{"hgm","Honorary Grandmaster"},
+{"comp","Computer"},
+{"",""}
+};
+
+spellingT countryTable[] = {
+{"AHO","Netherlands Antilles"},
+{"AND","Andorra"},
+{"ARG","Argentina"},
+{"ARM","Armenia"},
+{"AUS","Australia"},
+{"AUT","Austria"},
+{"AZE","Azerbaijan"},
+{"BAN","Bangladesh"},
+{"BAR","Barbados"},
+{"BEL","Belgium"},
+{"BER","Bermuda"},
+{"BIH","Bosnia & Herzogovina"},
+{"BLR","Belarus"},
+{"BOL","Bolivia"},
+{"BRA","Brazil"},
+{"BUL","Bulgaria"},
+{"CAN","Canada"},
+{"CHI","Chile"},
+{"CHN","China"},
+{"COL","Columbia"},
+{"CRC","Costa Rica"},
+{"CRO","Croatia"},
+{"CUB","Cuba"},
+{"CZE","Czechoslovakia"},
+{"DEN","Denmark"},
+{"DOM","Dominican Republic"},
+{"ECU","Ecuador"},
+{"EGY","Egypt"},
+{"ENG","England"},
+{"ESA","El Salvador"},
+{"ESP","Spain"},
+{"EST","Estonia"},
+{"FAI","Faroe Islands"},
+{"FIN","Finland"},
+{"FRA","France"},
+{"GCI","Guernsey"},
+{"GEO","Georgia"},
+{"GER","Germany"},
+{"GRE","Greece"},
+{"GRL","Greenland"},
+{"GUA","Guatemala"},
+{"HUN","Hungary"},
+{"HKG","Hong Kong"},
+{"INA","Indonesia"},
+{"IND","India"},
+{"INT","Internet"},
+{"IOM","Isle of Man"},
+{"IRI","Iran"},
+{"IRL","Ireland"},
+{"IRQ","Iraq"},
+{"ISL","Iceland"},
+{"ISR","Israel"},
+{"ITA","Italy"},
+{"JAM","Jamaica"},
+{"JCI","Jersey"},
+{"JPN","Japan"},
+{"KAZ","Kazakhstan"},
+{"KGZ","Kyrgyzstan"},
+{"LAT","Latvia"},
+{"LIB","Lebanon"},
+{"LIE","Liechtenstein"},
+{"LTU","Lithuania"},
+{"LUX","Luxembourg"},
+{"MAR","Morocco"},
+{"MAS","Malaysia"},
+{"MDA","Moldova"},
+{"MEX","Mexico"},
+{"MGL","Mongolia"},
+{"MKD","Macedonia"},
+{"MLT","Malta"},
+{"MNC","Monaco"},
+{"MYA","Myanmar"},
+{"NCA","Nicaragua"},
+{"NCL","New Caledonia"},
+{"NED","Netherlands"},
+{"NGR","Nigeria"},
+{"NOR","Norway"},
+{"NZL","New Zealand"},
+{"PAN","Panama"},
+{"PAR","Paraguay"},
+{"PER","Peru"},
+{"PHI","Philippines"},
+{"PNG","Papua New Guinea"},
+{"POL","Poland"},
+{"POR","Portugal"},
+{"PUR","Puerto Rico"},
+{"QAT","Qatar"},
+{"ROM","Romania"},
+{"RSA","South Africa"},
+{"RUS","Russia"},
+{"SCG","Serbia & Montenegro"},
+{"SCO","Scotland"},
+{"SIN","Singapore"},
+{"SLO","Slovenia"},
+{"SUI","Switzerland"},
+{"SVK","Slovakia"},
+{"SWE","Sweden"},
+{"SYR","Syria"},
+{"TJK","Tajikistan"},
+{"TKM","Turkmenistan"},
+{"TUN","Tunisia"},
+{"TUR","Turkey"},
+{"UAE","United Arab Emirates"},
+{"UKR","Ukraine"},
+{"URU","Uruguay"},
+{"USA","United States of America"},
+{"UZB","Uzbekistan"},
+{"VEN","Venezuela"},
+{"VIE","Vietnam"},
+{"WLS","Wales"},
+{"YEM","Yemen"},
+{"SCG","Yugoslavia - most are now SCG (Serbia and Montenegro)"},
+{"FIJ","Fiji"},
+{"YUG","Yugoslavia"},
+{"",""}
+};
+
 const char *
 SpellChecker::GetComment (const char * name)
 {
@@ -390,6 +526,7 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
             }
         } else if (*name == '@') {
             // Name type line: "@PLAYER", "@SITE", "@EVENT" or "@ROUND"
+            // Hmmm... maybe add a COUNTRY parsing round S.A &&&
             nameType = NameBase::NameTypeFromString (name+1);
             if (! NameBase::IsValidNameType(NameType)) {
                 return ERROR_Corrupt;
@@ -430,6 +567,7 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
                 node->renderName = lastRenderName;
                 byte b = (byte) *strippedName;
                 node->next = Names[b];
+                node->alias = lastCorrectNode;
                 Names[b] = node;
                 IncorrectNameCount++;
             }
@@ -459,6 +597,7 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
             node->bioData = NULL;
             byte b = (byte) *strippedName;
             node->next = Names[b];
+            node->alias = NULL; // node ??
             Names[b] = node;
             CorrectNameCount++;
 
@@ -557,7 +696,10 @@ SpellChecker::GetBioData (const char * name)
         if (strEqual (searchName, node->name)) { break; }
         node = node->next;
     }
-    return note;
+    if (node && node->alias && node->alias->bioData)
+        return node->alias->bioData;
+    else
+        return note;
 }
 
 

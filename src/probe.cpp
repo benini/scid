@@ -237,6 +237,7 @@ scid_TB_Probe (Position * pos, int * score)
         iTb = - iTb;
     }
 
+    // macro that returns true if corresponding TB was found during initializing
     if (! FRegistered (iTb, color)) { return ERROR_NotFound; }
 
     // Now we know the tablebase is registered. Fill in the array of

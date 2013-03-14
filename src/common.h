@@ -21,15 +21,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#if defined (WINCE) || defined (POCKET)
+#ifdef WINCE
 #include <tcl.h>
 #endif
-
+#ifndef POCKETENGINE
 #include "tclmy.h"
 #include "myassert.h"
+#endif
 #include "error.h"
 
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
+#ifndef POCKETENGINE
 // Include the zlib header file if it is being compiled with Scid:
 #ifndef NO_ZLIB
 #  ifdef ZLIB
@@ -38,7 +43,9 @@
 #    include <zlib.h>
 #  endif
 #endif
-
+#else
+#define ASSERT(f)
+#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 
@@ -56,8 +63,8 @@ typedef unsigned short versionT;
 // Version: div by 100 for major number, modulo 100 for minor number
 // so 109 = 1.9, 110 = 1.10, etc.
 
-const versionT SCID_VERSION = 400;     // Current file format version = 4.0
-const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 4.0
+const versionT SCID_VERSION = 400;     // Current file format version = 3.0
+const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 3.0
 
 const char SCID_VERSION_STRING[] = "4.3";     // Current Scid version
 const char SCID_VERSION_DATE[] = "February 2011";
@@ -755,7 +762,7 @@ inline void srandom32(uint seed) {
 
 inline uint random32()
 {
-#if defined (WINCE) || defined (POCKET)
+#ifdef WINCE
     return rand() ^ (rand() << 16) ^ (rand() >> 16);
 #else
 #ifdef WIN32

@@ -24,20 +24,19 @@
 //////////////////////////////////////////////////////////////////////
 //  NameBase:  Constants
 
-// There are three NameBases, one each for player, event and site tags.
-//
+// There are four NameBases, one each for PLAYER, EVENT , SITE and ROUND tags.
+
 const nameT
-    NAME_PLAYER = 0,  NAME_EVENT = 1,  NAME_SITE = 2, NAME_ROUND = 3, NAME_ANNOTATOR = 4,
+    NAME_PLAYER = 0,  NAME_EVENT = 1,  NAME_SITE = 2, NAME_ROUND = 3,
     NAME_FIRST = 0, NAME_LAST = 3, NAME_INVALID = 99;
 
-const uint NUM_NAME_TYPES = 5;
+const uint NUM_NAME_TYPES = 4;
 
-const char NAME_TYPE_STRING [NUM_NAME_TYPES][10] = {
+const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
     "player",
     "event",
     "site",
-    "round",
-	"annotator"
+    "round"
 };
 
 
@@ -110,6 +109,7 @@ typedef nameNodeT * nameNodePtrT;
 class NameBase
 {
   private:
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // NameBase:  Data structures
     fileNameT        Fname;
@@ -137,7 +137,9 @@ class NameBase
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Namebase:  Public methods
+
   public:
+
 #ifdef WINCE
   void* operator new(size_t sz) {
     void* m = my_Tcl_Alloc(sz);
@@ -164,6 +166,7 @@ class NameBase
 
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
+    bool   SortOrder;
     
     void      SetFileName (const char *s) { strcpy (Fname,s); }
     char  *   GetFileName ()          { return Fname; }
@@ -237,7 +240,7 @@ inline char *
 NameBase::GetName (nameT nt, idNumberT id)
 {
     ASSERT (IsValidNameType(nt));
-    if (id >= GetNumNames(nt)) { return (char *)""; }
+    if (id >= GetNumNames(nt)) { return ""; }
     return NameByID[nt][id]->name;
 }
 

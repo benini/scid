@@ -4,7 +4,9 @@
 #ifdef POCKET
   #define PRINT_MEM(x) ;
 #else
-  #include <unistd.h>
+#ifndef _MSC_VER
+   #include <unistd.h>
+#endif
   #define PRINT_MEM(x) { int pid = getpid(); fprintf(stderr, "======== " x "\t"); \
   char cmd[256]; \
   sprintf(cmd, "more /proc/%d/status | grep VmData", pid); \
@@ -36,6 +38,8 @@ extern int logMemory;
 
 #include <tcl.h>
 
+extern Tcl_Interp * currentTclInterp;
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -54,12 +58,10 @@ int my_sc_msg_init(char * eng , char bread);
 
 #endif
 
-#ifdef WINCE
 char *  my_Tcl_Alloc(int size);
 char *  my_Tcl_Realloc(char * ptr, int size);
 char *  my_Tcl_AttemptAlloc(int size);
 void    my_Tcl_Free(char * ptr);
-#endif
 
 Tcl_Channel my_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions);
 Tcl_Channel mySilent_Tcl_OpenFileChannel (Tcl_Interp * interp, CONST char * fileName, CONST char * modeString, int permissions);

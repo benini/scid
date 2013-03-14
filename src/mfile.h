@@ -133,7 +133,7 @@ inline char *
 MFile::GetFileName ()
 {
     if (FileName == NULL) {
-        return (char *)"";
+        return "";
     } else {
         return FileName;
     }

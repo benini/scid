@@ -40,6 +40,7 @@ PgnParser::Reset()
     ErrorFile = NULL;
 #endif
     LineCounter = 0;
+    GameCounter = 0;
     StorePreGameText = true;
     EndOfInputWarnings = true;
     ResultWarnings = true;
@@ -133,14 +134,12 @@ PgnParser::LogError (const char * errMessage, const char * text)
         if (InFile != NULL) {
             fprintf (ErrorFile, "%s:", InFile->GetFileName());
         }
-        fprintf (ErrorFile, "%u: %s%s\n", LineCounter, errMessage, text);
+        fprintf (ErrorFile, "(game %u, line %u) %s%s\n", GameCounter, LineCounter, errMessage, text);
         return;
     }
 #endif
-    if (InFile != NULL) {
-        ErrorBuffer->Append (InFile->GetFileName(), ":");
-    }
-    ErrorBuffer->Append (LineCounter, ": ");
+    ErrorBuffer->Append ("(game ", GameCounter);
+    ErrorBuffer->Append (", line ", LineCounter, ") ");
     ErrorBuffer->Append (errMessage, text, "\n");
 }
 
@@ -618,6 +617,10 @@ PgnParser::GetRestOfPawnMove (char * buffer)
     int ch;
     bool seenDigit = false;
 
+    // allows for using lowercase 'b' for bishop promotion
+    // eg. OliThink uses a7b8b for FEN "1q6/P6k/8/5N1K/8/8/8/8 w - - 0 1"
+    bool pawn2seen = false;
+
     // First, check for "ep" or "e.p." on its own, not a move at all:
     if (*(buffer-1) == 'e') {
         ch = GetChar ();
@@ -648,7 +651,8 @@ PgnParser::GetRestOfPawnMove (char * buffer)
             ADDCHAR (buffer, ch);
             continue;
         }
-        if (ch >= 'a'  &&  ch <= 'h') {
+        if (ch >= 'a'  &&  ch <= 'h' && !pawn2seen) {
+            pawn2seen = true;
             ADDCHAR (buffer, ch);
             continue;
         }
@@ -687,6 +691,13 @@ PgnParser::GetRestOfPawnMove (char * buffer)
         }
         // Convert "K" for promoted piece from King to Knight:
         //if (ch == 'K') { ch = 'N'; }
+        if (ch == 'q' || ch == 'r' || ch == 'b'  ||  ch == 'n') {
+            // Promotion with the "=" sign missing.
+            // Faile and Spike use lower case letters.. Will this break anything else ? S.A.
+            ADDCHAR (buffer, '=');
+            ADDCHAR (buffer, toupper(ch));
+            return TOKEN_Move_Promote;
+        }
         if (ch == 'Q' || ch == 'R' || ch == 'B'  ||  ch == 'N') {
             // Promotion with the "=" sign missing. We insert it.
             ADDCHAR (buffer, '=');
@@ -790,9 +801,10 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
     }
 
     // Now we check for other tokens.......
-    if (ch == ';'  ||  ch == '%') {
-        // LineComment.  "%" should only mark a comment if at the start of
-        // the line, but we allow it anywhere on a line.
+    if (ch == ';'  ||  ch == '%') { // LineComment.
+        // "%" should only mark a comment if at the start of the line, but we allow it anywhere on a line.
+        // S.A - There's a bug here with the parser, but not sure if it's fixable:
+        //       stray ';' before variations and/or comments SPLIT OVER MULTIPLE LINES cause chaos
         GetLine (buf, bufSize-1);
         return TOKEN_LineComment;
     }
@@ -993,6 +1005,11 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
         case TOKEN_Move_Null:
             err = game->GetCurrentPos()->ReadMove (&sm, buffer, token);
 
+            // If king castling failed, maybe it's OO meaning castle queen-side
+            if (err != OK  &&  token == TOKEN_Move_Castle_King) {
+                err = game->GetCurrentPos()->ReadMove (&sm, buffer, TOKEN_Move_Castle_Queen);
+            }
+
             // The most common type of "illegal" move in standard
             // chess is castling when the king or rook have already
             // moved. So if a castling move failed, turn off
@@ -1010,7 +1027,7 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
                 // worked, but still print a warning about it:
                 if (err == OK) {
                     char tempStr[500];
-                    sprintf (tempStr, "(%s) in game %s - %s, %u",
+                    snprintf (tempStr, sizeof(tempStr), "(%s) in game %s - %s, %u",
                              buffer, game->GetWhiteStr(), game->GetBlackStr(),
                              date_GetYear (game->GetDate()));
                     LogError ("Warning: illegal castling ", tempStr);
@@ -1027,9 +1044,9 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
                 if (moveErrorCount <= maxMoveErrorsPerGame) {
                     char tempStr [500];
                     // Add an error comment to the game:
-                    sprintf (tempStr, "Error reading move: %s", buffer);
+                    snprintf (tempStr, sizeof(tempStr), "Error reading move: %s", buffer);
                     game->SetMoveComment (tempStr);
-                    sprintf (tempStr, "Error reading move in game %s - %s, %u: ",
+                    snprintf (tempStr, sizeof(tempStr), "Error reading move in game %s - %s, %u: ",
                              game->GetWhiteStr(), game->GetBlackStr(),
                              date_GetYear (game->GetDate()));
                     LogError (tempStr, buffer);
@@ -1092,12 +1109,13 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
             break;
 
         case TOKEN_Tag:
-            LogError ("Error: PGN Header tag seen inside a game", "");
+            // This is often seen when missing TOKEN_Result
+            LogError ("PGN header '[' seen inside game (result missing ?)", "");
             return ERROR_Game;
 
         case TOKEN_EndOfInput:
             if (EndOfInputWarnings) {
-                LogError ("Warning: End of input reached in a game", "");
+                LogError ("End of input reached in game (result missing ?)", "");
                 return ERROR_Game;
             } else {
                 return OK;
@@ -1125,7 +1143,7 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
         // Use the end-of-game result instead of the header tag result:
         game->SetResult (r);
         if (ResultWarnings) {
-            LogError ("Warning: Result did not match the header result", "");
+            LogError ("Result did not match the header result", "");
         }
     }
     return OK;
@@ -1154,6 +1172,7 @@ PgnParser::ParseGame (Game * game)
     char * preGameTextBuffer = new char [MAX_COMMENT_SIZE];
 #endif
 
+    GameCounter++;
     errorT err = ERROR_NotFound;
     ParseMode = PARSE_Searching;
     tokenT token = GetNextToken (buffer, MAX_COMMENT_SIZE);

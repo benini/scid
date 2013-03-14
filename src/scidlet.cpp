@@ -232,8 +232,8 @@ struct configT {
 };
 
 const configT defaultConfig = {
-    (char *) "scidlet.sbk",  // bookFileName
-    (char *) "scidlet.log",  // logFileName
+    "scidlet.sbk",  // bookFileName
+    "scidlet.log",  // logFileName
     16,    // hashTableMB
     1,     // pawnTableMB
     false, // pruning flag
@@ -407,7 +407,7 @@ makeBook (const char * infile)
         output ("# Error opening file for writing: %s\n", outfile);
         return;
     }
-    writeString (out, (char *)"SBK", 4);
+    writeString (out, "SBK", 4);
     writeFourBytes (out, nPositions);
 
     uint prevPawnHash = 0;

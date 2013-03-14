@@ -41,7 +41,7 @@ void
 usage (void) {
     fprintf(stderr, "Usage: %s newfile oldfile1 [oldfile2 ...]\n", progName);
     fprintf(stderr, "   Or: %s newfile - (will take file names on stdin separated by newlines)\n", progName);
-    fprintf(stderr, "   For example : find . -name '*.si4' | sed s/\\.si4// | scmerge newbase -\n");
+    fprintf(stderr, "   For example : find . -name '*.si3' | sed s/\\.si3// | scmerge newbase -\n");
     exit(1);
 }
 
@@ -190,7 +190,7 @@ main (int argc, char ** argv)
                 if( l <= 1)
                     continue;
                 if( thisFile[l-1] != '\n') {
-                  fprintf(stderr, "File name too long (max: %lu chars)\n", (unsigned long) sizeof(thisFile));
+                    fprintf(stderr, "File name too long (max: %d chars)\n", sizeof(thisFile));
                     exit(1);
                 }
                 thisFile[l-1] = 0; // throw away \n

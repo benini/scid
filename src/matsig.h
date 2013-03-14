@@ -158,8 +158,11 @@ matsig_setCount (matSigT m, pieceT p, uint count)
 {
     // First we clear the old mask for this piece:
     m &= ~(MASK_BY_PIECE[p]);
-    // Avoid overflow, except for pawns
-    if ( p != PAWN && count > 3 ) count = 3;
+
+	 // Avoid overflow.
+	 if (p != PAWN && count > 3)
+		 count = 3;
+
     // Now we OR to add the new value in:
     m |= ((uint) count) << SHIFT_BY_PIECE[p];
     return m;

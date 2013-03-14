@@ -19,18 +19,14 @@
 #include "common.h"
 #include "error.h"
 #include <ctype.h>   // For isspace(), etc
-#include <tcl.h>
 
-#ifndef _CURRENT_TCL_INTERP_
-extern Tcl_Interp * currentTclInterp;
-#define _CURRENT_TCL_INTERP_
-#endif
 
 // Scid initialisation routine: this MUST be called before such things as
 // computing chess moves are done, since it sets up piece movement tables.
 //
 void   scid_Init ();
 
+#ifndef POCKETENGINE
 // ECO string routines
 //
 void eco_ToString (ecoT ecoCode, char * ecoStr, bool extensions = true);
@@ -43,6 +39,7 @@ inline void eco_ToExtendedString (ecoT ecoCode, char * ecoStr) {
 ecoT eco_FromString (const char * ecoStr);
 ecoT eco_LastSubCode (ecoT ecoCode);
 ecoT eco_BasicCode (ecoT ecoCode);
+#endif
 
 // String routines. Some are identical to ANSI standard functions, but
 //      I have included them:
@@ -144,6 +141,7 @@ bool   strIsSurnameOnly (const char * name);
 bool   strAlphaContains (const char * longStr, const char * keyStr);
 
 bool   strContains (const char * longStr, const char * keyStr);
+bool   strCaseContains (const char * longStr, const char * keyStr);
 int    strContainsIndex (const char * longStr, const char * keyStr);
 
 bool   strGetBoolean (const char * str);
@@ -165,11 +163,14 @@ flagT  strGetFlag (const char * str);
 
 squareT strGetSquare (const char * str);
 
+#ifndef POCKETENGINE
 inline uint
 strTrimFileSuffix (char * target) { return strTrimSuffix (target, '.'); }
 
 inline const char *
 strFileSuffix (const char * target) { return strLastChar (target, '.'); }
+
+
 
 int strUniqueExactMatch (const char * keyStr, const char ** strTable,
                          bool exact);
@@ -180,6 +181,7 @@ inline int strUniqueMatch (const char * keyStr, const char ** strTable) {
 inline int strExactMatch (const char * keyStr, const char ** strTable) {
     return strUniqueExactMatch (keyStr, strTable, true);
 }
+#endif
 
 inline bool
 strContainsChar (const char * str, char ch)
@@ -243,6 +245,7 @@ isPowerOf2 (uint x)
     return ((x & (x-1)) == 0);
 }
 
+#ifndef POCKETENGINE
 //////////////////////////////////////////////////////////////////////
 //   FILE I/O Routines.
 
@@ -250,7 +253,7 @@ uint    fileSize (const char * name, const char * suffix);
 uint    rawFileSize (const char * name);
 uint    gzipFileSize (const char * name);
 
-// bool    fileExists (const char * fname, const char * suffix);
+bool    fileExists (const char * fname, const char * suffix);
 errorT  renameFile (const char * oldName, const char * newName,
                     const char * suffix);
 errorT  removeFile (const char * fname, const char * suffix);
@@ -551,6 +554,8 @@ readCompactUint (FILE * fp)
     return v;
 }
 #endif // WINCE
+
+#endif // POCKETENGINE
 
 #endif  // #ifdef SCID_MISC_H
 
