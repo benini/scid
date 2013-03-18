@@ -14,7 +14,12 @@
 #include <cstring>
 
 #include <sys/types.h>
+
+#ifdef _MSC_VER
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #include "io.h"
 #include "util.h"

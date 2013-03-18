@@ -1241,8 +1241,6 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_base_open_failure: if the opening of a base fails,
 // clean up db entry
 void base_open_failure( int oldBaseNum ) {
-  currentBase = oldBaseNum;
-  db = &(dbList[currentBase]);
   db->idx->CloseIndexFile();
   db->idx->Clear();
   db->nb->Clear();
@@ -1251,6 +1249,8 @@ void base_open_failure( int oldBaseNum ) {
   db->gameNumber = -1;
   db->numGames = 0;
   strCopy (db->fileName, "<empty>");
+  currentBase = oldBaseNum;
+  db = &(dbList[currentBase]);
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_open: takes a database name and opens the database.

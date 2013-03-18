@@ -33,7 +33,7 @@
 #include "polyglot.h"
 
 #include "tclmy.h"
-#include <unistd.h>
+
 
 // Include header files for finding directory of executable program
 // in Windows if necessary.
