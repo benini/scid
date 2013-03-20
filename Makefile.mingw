@@ -74,7 +74,7 @@ SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
       src\position.obj src\game.obj src\gfile.obj src\matsig.obj \
       src\bytebuf.obj src\textbuf.obj src\myassert.obj src\stralloc.obj \
       src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj \
-      src\movelist.obj \
+      src\movelist.obj src\sortcache.obj \
       src\polyglot\attack.o src\polyglot\board.o src\polyglot\book.o \
 			src\polyglot\book_make.o src\polyglot\book_merge.o src\polyglot\colour.o \
       src\polyglot\fen.o src\polyglot\game.o src\polyglot\hash.o \
@@ -98,9 +98,7 @@ ZLIBOBJS= src/zlib/adler32.o src/zlib/compress.o src/zlib/crc32.o \
 OBJS= $(SCIDOBJS) $(ZLIBOBJS)
 
 ### LANGUAGES: all the extra language files for scid.
-LANGUAGES = tcl\lang\deutsch.tcl tcl\lang\francais.tcl tcl\lang\italian.tcl tcl\lang\russian.tcl \
-      tcl\lang\nederlan.tcl tcl\lang\spanish.tcl tcl\lang\portbr.tcl tcl\lang\swedish.tcl \
-      tcl\lang\norsk.tcl tcl\lang\polish.tcl tcl\lang\czech.tcl tcl\lang\hungary.tcl tcl\lang\serbian.tcl tcl\lang\catalan.tcl
+LANGUAGES = tcl\lang\catalan.tcl tcl\lang\czech.tcl tcl\lang\deutsch.tcl tcl\lang\francais.tcl tcl\lang\greek.tcl tcl\lang\hungary.tcl tcl\lang\italian.tcl tcl\lang\nederlan.tcl tcl\lang\norsk.tcl tcl\lang\polish.tcl tcl\lang\portbr.tcl tcl\lang\russian.tcl tcl\lang\serbian.tcl tcl\lang\spanish.tcl tcl\lang\suomi.tcl tcl\lang\swedish.tcl
 
 ### TCLS: all the .tcl files that make up "scid".
 TCLS= \
@@ -109,6 +107,7 @@ TCLS= \
   tcl\bitmaps.tcl \
   tcl\language.tcl \
   tcl\utils.tcl \
+  tcl\misc\flags.tcl \
     tcl\utils\date.tcl tcl\utils\font.tcl tcl\utils\graph.tcl tcl\utils\history.tcl \
     tcl\utils\pane.tcl tcl\utils\sound.tcl tcl\utils\string.tcl tcl\utils\tooltip.tcl \
     tcl\utils\validate.tcl tcl\utils\win.tcl \
@@ -135,7 +134,7 @@ TCLS= \
   tcl\help\help.tcl tcl\help\tips.tcl \
   tcl\menus.tcl tcl\board.tcl tcl\move.tcl tcl\main.tcl tcl\tools\correspondence.tcl \
     tcl\lang\english.tcl $(LANGUAGES) \
-  tcl\tools\uci.tcl tcl\end.tcl tcl\tools\tacgame.tcl tcl\tools\sergame.tcl tcl\tools\calvar.tcl tcl\tools\fics.tcl tcl\tools\opening.tcl tcl\tools\tactics.tcl tcl\tools\reviewgame.tcl tcl\utils\metadata.tcl  tcl\tools\inputengine.tcl tcl\tools\novag.tcl tcl\misc\flags.tcl 
+  tcl\tools\uci.tcl tcl\end.tcl tcl\tools\tacgame.tcl tcl\tools\sergame.tcl tcl\tools\calvar.tcl tcl\tools\fics.tcl tcl\tools\opening.tcl tcl\tools\tactics.tcl tcl\tools\reviewgame.tcl tcl\utils\metadata.tcl  tcl\tools\inputengine.tcl tcl\tools\novag.tcl tcl\utils\bibliography.tcl 
 
 
 ########################################
@@ -200,7 +199,7 @@ scid.coff: scid.rc
 
 ### To remove object and executable files: type "make clean"
 clean:
-	-del src\*.obj src\zlib\*.obj $(EXECS) scid.gui
+	-del src\*.obj src\zlib\*.o $(EXECS) scid.gui
 
 
 src\tcscid.obj: src\tkscid.cpp
