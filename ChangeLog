@@ -1076,11 +1076,58 @@ scid-4.3
 - Help:
 	* Add UTF-8 NAG-symbols
 
-[xxxx 20yy ]
+[march 2013 ]
 scid-4.4
 ==========
 
+- New features:
+	* Added two buttons (prev/next) to navigate the history of viewed games
+	* Gamelist can sort games; thanks to "SortCache" by Gerd Lorscheid
+	* New "Best games window" with:
+		- show all the games matching the current position
+		- can sort results using up to 9 sort criteria; thanks to "SortCache" by Gerd Lorscheid
+		- "Find Bar" that can be hidden
+		- automatically computed "game rating"
+		- customizable layout
+	* Tree Window can show statistics for filtered games
+
 - Language updates:
 	* swedish translation (thanks to Hans Eriksson)
+	* german translation
+	* finnish translation (thanks to Timo Pirinen)
 
+- Fixes :
+	* Fix: base_open_failure
+	* Fix: wrong braces. Thanks to ASM
+	* Fix: Debian Bug #661091: unable to resign in xfcc.
+	* Fix: Do not reset the FICS password if we log in as guest
+	* Fix: filter was always reset by a new search (bug#661836)
+	* Fix: F11 to switch fullscreen in docking mode (moved open::book to F6)
+	* Fix: Problems with strings containing " in Index::FetchInfo
+	* Fix: Add icon for linux systems
+	* Fix typoes (Thanks to Nicky Chorley)
+	* Fix: "Board search" -> "Search in reference database" -> no filter set in the database switcher (thanks to Gerd Lorscheid)
+	* Roll-back of sc_pos analyze code, that was accidentally removed just prior to the 4.3 release.
+	* Fix: Filter init (thanks to Gerd Lorscheid)
+	* Fix: fix of ttk::bindMouseWheel in gamelist.tcl for tk < 8.5.9
+	* Fix: in game.cpp delete tags before NumTags = 0 (avoided memory leaks)
+	* Fix: sc_sort_store bug
+	* Fix: seg fault when filter == 0
+	* Fix: avoid unnecessary board flip (thanks to Larry Isaacs)
+	* Fix: crash caused by ::windows::switcher::Open
+	* Fix: "OUT OF ORDER" issue in greek translation
+	* Fix: Pgn window recursion
+	* Fix: Added greek language to script in tcl/lang
+	* Fix: Game::GetPartialMoveList returns moves from the actual game position
+	* Fix: sc_base_open open databases in fast mode by default
+	* Fix: ::file::openBaseAsTree unbusyCursor in case of error
+	* Fix: ::file::openBaseAsTree switch back to current base as soon as possible
+	* Fix: the logic of updateBoard is changed to improve responsiveness
+	* Fix: in autoscrollframe scrollbars are created on time 0, otherwise they are not hidden
+	* Fix: the uci command "isready" is used to improve responsiveness
+	* Fix: dialog box values for "finishGame" are saved in options.dat
+	* Fix: prevent verbose uci engines to create excessive fileevent and stuck scid
+	* Fix: progress bar in tree window is displayed only when necessary (to maximize speed)
+	* Fix: ::gbrowser::size is stored in options.dat
+	* Fix: createToplevel raise the window if it already exists
 

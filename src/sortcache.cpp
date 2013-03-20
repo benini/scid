@@ -51,12 +51,12 @@ void SortCache::Sort_thread::join() {
 }
 
 void SortCache::Sort_thread::sort(uint numGames){
-printf("Debug: background thread started\n");
+// printf("Debug: background thread started\n");
 	for (int v=numGames/2-1; v>=0; v--)	sc_->Downheap(v, numGames);
 	for (uint n = numGames; n > 1; )
 	{
 		if (interrupt_) {
-printf("Debug: background sorting interrupted\n");
+// printf("Debug: background sorting interrupted\n");
 			return;
 		}
 		n--;
@@ -64,7 +64,7 @@ printf("Debug: background sorting interrupted\n");
 		sc_->Downheap(0, n);
     }
 	sc_->sorted_ = true;
-printf("Debug: background sorting finished\n");
+// printf("Debug: background sorting finished\n");
 }
 
 #else
