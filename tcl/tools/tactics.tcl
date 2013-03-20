@@ -9,9 +9,6 @@
 namespace eval tactics {
     
     set infoEngineLabel ""
-    
-    set basePath $::scidBasesDir
-    
     set baseList {}
     set solved "problem solved"
     set failed "problem failed"
@@ -196,7 +193,9 @@ namespace eval tactics {
     # Configuration dialog
     ################################################################################
     proc config {} {
-        global ::tactics::basePath ::tactics::baseList
+        global ::tactics::baseList
+        if {! [file isdirectory $::scidBasesDir]} { setTacticsBasesDir }
+        if {! [file isdirectory $::scidBasesDir]} return
         set basePath $::scidBasesDir
         
         # check if tactics window is already opened. If so, abort serial.

@@ -187,7 +187,10 @@ set boardfile_lite "emptySquare"
 set boardSize 40
 
 # boardStyle: Default board piece set. See bitmaps.tcl for styles.
-set boardStyle Alpha
+set boardStyle Merida1
+if { [catch { package require img::png } ] } {
+  set boardStyle Alpha
+}
 
 # language for help pages and messages:
 set language E
@@ -226,16 +229,11 @@ proc configureFont {name} {
 }
 
 if {$windowsOS} {
-  ## set fontOptions(Regular) [list Arial           10 normal roman]
-  ## set fontOptions(Menu)    [list {MS Sans Serif}  9 normal roman]
-  ## set fontOptions(Small)   [list Arial            9 normal roman]
-  ## set fontOptions(Tiny)    [list Arial            8 normal roman]
-  ## set fontOptions(Fixed)   [list Courier          9 normal roman]
   set fontOptions(Regular) [list system          10 normal roman]
   set fontOptions(Menu)    [list system           9 normal roman]
   set fontOptions(Small)   [list system           9 normal roman]
   set fontOptions(Tiny)    [list system           8 normal roman]
-  set fontOptions(Fixed)   [list systemfixed      9 normal roman]
+  set fontOptions(Fixed)   [list courier          9 normal roman]
 } elseif {$macOS} {
   set fontOptions(Regular) [list system    11 normal roman]
   set fontOptions(Menu)    [list menu      14 normal roman]
@@ -286,7 +284,7 @@ set blackborder "\#ffffff"
 set highcolor   "\#b0d0e0"
 set bestcolor   "\#bebebe"
 set buttoncolor "\#b0c0d0"
-set borderwidth 1
+set borderwidth 0
 
 set ::tactics::analysisTime 3
 set ::tactics::findBestMoveRunning 0
@@ -527,7 +525,8 @@ set askToReplaceMoves 1
 set suggestMoves 1
 
 # Show variations popup window
-set showVarPopup 1
+set showVarPopup 0
+set showVarArrows 1
 
 # Keyboard Move entry options:
 set moveEntry(On) 1

@@ -9,10 +9,6 @@ if {! [file isdirectory $::scidBasesDir] || ! [file isdirectory $::scidBooksDir]
   set scidBooksDir [file nativename [file join $scidShareDir "books"]]
 }
 
-if {! [file isdirectory $::scidBasesDir]} {
-  tk_messageBox -title "Scid" -type ok -icon warning -message "Bases directory not found"
-}
-
 if { ! [file isdirectory $::scidBooksDir]} {
   tk_messageBox -title "Scid" -type ok -icon warning -message "Books directory not found"
 }
