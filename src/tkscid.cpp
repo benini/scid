@@ -6061,36 +6061,40 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     int option = -1;
 
     const char * usageMsg =
-        "Usage: sc_game crosstable plain|html|hypertext|filter|count [name|rating|score] [allplay|swiss] [(+|-)(colors|countries|ratings|titles|groups|breaks|numcolumns)]";
+        "Usage: sc_game crosstable plain|html|hypertext|filter|count [name|rating|score|country] [allplay|swiss] [(+|-)(colors|countries|tallies|ratings|titles|groups|breaks|numcolumns)]";
 
     static const char * extraOptions [] = {
         "allplay", "knockout", "swiss", "auto",
-        "name", "rating", "score",
+        "name", "rating", "score", "country",
         "-ages", "+ages",               // Show player ages
         "-breaks", "+breaks",           // Show tiebreak scores
         "-colors", "+colors",           // Show game colors in Swiss table
         "-countries", "+countries",     // Show current countries
+        "-tallies", "+tallies",
         "-ratings", "+ratings",         // Show Elo ratings
         "-titles", "+titles",           // Show FIDE titles
         "-groups", "+groups",           // Separate players into score groups
         "-deleted", "+deleted",         // Include deleted games in table
         "-numcolumns", "+numcolumns",   // All-play-all numbered columns
         "-gameNumber",
+        "-threewin", "+threewin",       // Give 3 points for win, 1 for draw
         NULL
     };
     enum {
         EOPT_ALLPLAY, EOPT_KNOCKOUT, EOPT_SWISS, EOPT_AUTO,
-        EOPT_SORT_NAME, EOPT_SORT_RATING, EOPT_SORT_SCORE,
+        EOPT_SORT_NAME, EOPT_SORT_RATING, EOPT_SORT_SCORE, EOPT_SORT_COUNTRY,
         EOPT_AGES_OFF, EOPT_AGES_ON,
         EOPT_BREAKS_OFF, EOPT_BREAKS_ON,
         EOPT_COLORS_OFF, EOPT_COLORS_ON,
         EOPT_COUNTRIES_OFF, EOPT_COUNTRIES_ON,
+        EOPT_TALLIES_OFF, EOPT_TALLIES_ON,
         EOPT_RATINGS_OFF, EOPT_RATINGS_ON,
         EOPT_TITLES_OFF, EOPT_TITLES_ON,
         EOPT_GROUPS_OFF, EOPT_GROUPS_ON,
         EOPT_DELETED_OFF, EOPT_DELETED_ON,
         EOPT_NUMCOLUMNS_OFF, EOPT_NUMCOLUMNS_ON,
-        EOPT_GNUMBER
+        EOPT_GNUMBER,
+        EOPT_THREEWIN_OFF, EOPT_THREEWIN_ON
     };
 
     int sort = EOPT_SORT_SCORE;
@@ -6098,6 +6102,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     bool showAges = true;
     bool showColors = true;
     bool showCountries = true;
+    bool showTallies = true;
     bool showRatings = true;
     bool showTitles = true;
     bool showBreaks = false;
@@ -6106,6 +6111,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     bool numColumns = false;  // Numbers for columns in all-play-all table
     uint numTableGames = 0;
     uint gameNumber = 0;
+    bool threewin = false;
 
     if (argc >= 3) { option = strUniqueMatch (argv[2], options); }
     if (option < 0) { return errorResult (ti, usageMsg); }
@@ -6120,6 +6126,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             case EOPT_SORT_NAME:      sort = EOPT_SORT_NAME;   break;
             case EOPT_SORT_RATING:    sort = EOPT_SORT_RATING; break;
             case EOPT_SORT_SCORE:     sort = EOPT_SORT_SCORE;  break;
+            case EOPT_SORT_COUNTRY:   sort = EOPT_SORT_COUNTRY;  break;
             case EOPT_AGES_OFF:       showAges = false;        break;
             case EOPT_AGES_ON:        showAges = true;         break;
             case EOPT_BREAKS_OFF:     showBreaks = false;      break;
@@ -6128,6 +6135,8 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             case EOPT_COLORS_ON:      showColors = true;       break;
             case EOPT_COUNTRIES_OFF:  showCountries = false;   break;
             case EOPT_COUNTRIES_ON:   showCountries = true;    break;
+            case EOPT_TALLIES_OFF:    showTallies = false;     break;
+            case EOPT_TALLIES_ON:     showTallies = true;      break;
             case EOPT_RATINGS_OFF:    showRatings = false;     break;
             case EOPT_RATINGS_ON:     showRatings = true;      break;
             case EOPT_TITLES_OFF:     showTitles = false;      break;
@@ -6145,6 +6154,8 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                 gameNumber = strGetUnsigned (argv[arg+1]);
                 arg++;
                 break;
+            case EOPT_THREEWIN_OFF:  threewin = false ; break;
+            case EOPT_THREEWIN_ON:   threewin = true  ; break;
             default: return errorResult (ti, usageMsg);
         }
     }
@@ -6188,10 +6199,21 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         return TCL_OK;
     }
 
-    // Restrict games in tournament to be current game date +/- 3 months:
-    dateT firstDate = date_AddMonths (g->GetDate(), -3);
-    dateT lastDate = date_AddMonths (g->GetDate(), 3);
+    dateT firstDate;
+    dateT lastDate;
     dateT eventDate = g->GetEventDate();
+
+    // If game date is a year only, then allow any game in this year to match
+    dateT monthDay = date_GetMonthDay (g->GetDate());
+
+    if (monthDay == 0) {
+      firstDate = g->GetDate();
+      lastDate = date_AddMonths (g->GetDate(), 12) - 1;
+    } else {
+      // Restrict games in tournament to be current game date +/- 3 months:
+      firstDate = date_AddMonths (g->GetDate(), -3);
+      lastDate = date_AddMonths (g->GetDate(), 3);
+    }
 
     dateT firstSeenDate = g->GetDate();
     dateT lastSeenDate = g->GetDate();
@@ -6202,9 +6224,13 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
     if (sort == EOPT_SORT_NAME) { ctable->SortByName(); }
     if (sort == EOPT_SORT_RATING) { ctable->SortByElo(); }
+    if (sort == EOPT_SORT_COUNTRY) { ctable->SortByCountry(); }
+
+    ctable->SetThreeWin(threewin);
     ctable->SetSwissColors (showColors);
     ctable->SetAges (showAges);
     ctable->SetCountries (showCountries);
+    ctable->SetTallies (showTallies);
     ctable->SetElos (showRatings);
     ctable->SetTitles (showTitles);
     ctable->SetTiebreaks (showBreaks);
@@ -6236,7 +6262,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         // Ensure we have two different players:
         if (whiteId == blackId) { continue; }
 
-        // If option is OPT_FILTER, adjust the filter and continue:
+        // If option is OPT_FILTER, adjust the filter and continue &&&
         if (option == OPT_FILTER) {
             db->filter->Set (i, 1);
             continue;
@@ -6329,7 +6355,8 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     DString * dstr = new DString;
     if (mode != CROSSTABLE_AllPlayAll) { apaLimit = 0; }
-    ctable->PrintTable (dstr, mode, apaLimit);
+    ctable->PrintTable (dstr, mode, apaLimit, db->gameNumber+1);
+
     Tcl_AppendResult (ti, dstr->Data(), NULL);
     if (option == OPT_LATEX) {
         Tcl_AppendResult (ti, "\n\\end{document}\n", NULL);

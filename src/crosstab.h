@@ -39,7 +39,7 @@ struct clashT
 
 enum crosstableSortT
 {
-    CROSSTABLE_SortName, CROSSTABLE_SortElo, CROSSTABLE_SortScore
+    CROSSTABLE_SortName, CROSSTABLE_SortElo, CROSSTABLE_SortScore, CROSSTABLE_SortCountry
 };
 
 enum crosstableOutputT
@@ -92,6 +92,7 @@ class Crosstable
     bool         ShowTitles;
     bool         ShowElos;
     bool         ShowCountries;
+    bool         ShowTallies;
     bool         ShowAges;
     bool         ShowTiebreaks;
     bool         SwissColors;  // If true, show colors in Swiss tables.
@@ -102,6 +103,7 @@ class Crosstable
 
     crosstableOutputT OutputFormat;
     crosstableSortT SortOption;
+    bool         ThreeWin;
 
     playerDataT * PlayerData [CROSSTABLE_MaxPlayers];
 
@@ -110,6 +112,7 @@ class Crosstable
     bool         PrintTitles;
     bool         PrintRatings;
     bool         PrintCountries;
+    bool         PrintTallies;
     bool         PrintAges;
     bool         PrintTiebreaks;
     const char * StartTable;
@@ -129,6 +132,7 @@ class Crosstable
     uint         PlayerNumWidth;
     uint         SortedIndex [CROSSTABLE_MaxPlayers];
     uint         InvertedIndex [CROSSTABLE_MaxPlayers];
+    uint         CurrentGame;
 
     void   Tiebreaks (crosstableModeT mode);
 
@@ -171,14 +175,18 @@ class Crosstable
     void   SetLaTeXOutput()     { OutputFormat = CROSSTABLE_LaTeX; }
 
     void   SetSortOption (crosstableSortT option) { SortOption = option; }
+    void   SetThreeWin   (bool threewin) { ThreeWin = threewin; }
+
     void   SortByName()  { SortOption = CROSSTABLE_SortName; }
     void   SortByElo()   { SortOption = CROSSTABLE_SortElo; }
     void   SortByScore() { SortOption = CROSSTABLE_SortScore; }
+    void   SortByCountry() { SortOption = CROSSTABLE_SortCountry; }
 
     void   SetAges (bool b) {ShowAges = b; }
     void   SetTitles (bool b) { ShowTitles = b; }
     void   SetElos (bool b) { ShowElos = b; }
     void   SetCountries (bool b) { ShowCountries = b; }
+    void   SetTallies (bool b) { ShowTallies = b; }
     void   SetTiebreaks (bool b) { ShowTiebreaks = b; }
     void   SetSwissColors (bool b) { SwissColors = b; }
     void   SetSeparateScoreGroups (bool b) { SeparateScoreGroups = b; }
@@ -194,7 +202,7 @@ class Crosstable
 
     crosstableModeT BestMode (void);
     eloT   AvgRating();
-    void   PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit);
+    void   PrintTable (DString * dstr, crosstableModeT mode, uint playerLimit, int currentGame);
 
     static uint Performance (uint oppAvg, uint percentage);
     static uint FideCategory (eloT rating);
