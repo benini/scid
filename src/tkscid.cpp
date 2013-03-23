@@ -996,7 +996,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		"piecetrack",   "slot",         "sort",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
 		"upgrade",      "fixCorrupted", "gameslist",    "sortcache",
-		"gamelocation",
+		"gamelocation", "sortup",       "sortdown",
         NULL
     };
     enum {
@@ -1007,7 +1007,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
 		BASE_UPGRADE,     BASE_FIX_CORRUPTED, BASE_GAMESLIST, BASE_SORTCACHE,
-		BASE_GAMELOCATION
+		BASE_GAMELOCATION,BASE_SORTUP,      BASE_SORTDOWN
     };
     int index = -1;
 
@@ -1113,6 +1113,12 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_SORTCACHE:
         return sc_base_sortcache (cd, ti, argc, argv);
+
+    case BASE_SORTUP:
+        return sc_base_sortup (cd, ti, argc, argv);
+
+    case BASE_SORTDOWN:
+        return sc_base_sortdown (cd, ti, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_base", options);
@@ -2348,6 +2354,20 @@ sc_base_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         removeFile (db->fileName, TREEFILE_SUFFIX);
     }
 
+    return TCL_OK;
+}
+
+int
+sc_base_sortup (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    db->nb->SortOrder = 0;
+    return TCL_OK;
+}
+
+int
+sc_base_sortdown (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    db->nb->SortOrder = 1;
     return TCL_OK;
 }
 

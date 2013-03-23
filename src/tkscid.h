@@ -423,6 +423,8 @@ int sc_base_tournaments (TCL_ARGS);
 int sc_base_type      (TCL_ARGS);
 int sc_base_upgrade   (TCL_ARGS);
 int sc_base_fix_corrupted   (TCL_ARGS);
+int sc_base_sortup (TCL_ARGS);
+int sc_base_sortdown (TCL_ARGS);
 
 int sc_epd            (TCL_ARGS);
 int sc_epd_deepest    (Tcl_Interp * ti, int epdID);
