@@ -2327,7 +2327,9 @@ sc_base_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (showProgress) { updateProgressBar (ti, 1, 1); }
-    initFilter (db, 1);
+    db->dbFilter->Fill(1);
+    db->treeFilter->Fill(1);
+    db->filter->Fill(1);
     db->gameNumber = -1;
 
     //Re-order and write the index, showing progress if applicable:
@@ -2889,7 +2891,7 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
     }
 
-	if (setFilterToDups) { initDbFilter( db, 0); }
+	if (setFilterToDups) { filter_reset( db, 0); }
     if (showProgress) { restartProgressBar (ti); }
 
     // Now check each list of same-hash games for duplicates:
@@ -3069,7 +3071,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // If setting filter, clear it now:
-    if (cmd == TAG_FIND) { initDbFilter (db, 0); }
+    if (cmd == TAG_FIND) { filter_reset (db, 0); }
 
     // Process each game in the database:
     uint updateStart = 1000;  // Update progress bar every 1000 filter games.
@@ -5859,20 +5861,6 @@ clearFilter( scidBaseT * dbase, uint size)
     dbase->filter->Init(size);
     dbase->treeFilter->Init(size);
     dbase->dbFilter->Init(size);
-}
-
-void 
-initFilter( scidBaseT * dbase, byte value)
-{
-    dbase->dbFilter->Fill(value);
-    dbase->treeFilter->Fill(value);
-    dbase->filter->Fill(value);
-}
-
-void initDbFilter( scidBaseT * dbase, byte value)
-{
-    dbase->dbFilter->Fill(value);
-    dbase->filter->Merge (dbase->treeFilter, dbase->dbFilter);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -11692,7 +11680,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 #endif
     for (uint month=0; month < monthMax; month++) { eloByMonth[month] = 0; }
 
-    if (setFilter || setOpponent) { initDbFilter (db, 0); }
+    if (setFilter || setOpponent) { filter_reset(db, 0); }
 
     for (uint i=0; i < db->numGames; i++) {
         IndexEntry * ie = db->idx->FetchEntry (i);
@@ -11797,6 +11785,8 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             seenRating = true;
         }
     }
+
+    updateMainFilter(db);
 
     char temp [500];
     uint score, percent;
@@ -13377,7 +13367,7 @@ sc_report_select (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     uint * matches = report->SelectGames (type, number);
     uint * match = matches;
-    initDbFilter (db, 0);
+    db->dbFilter->Fill(0);
     while (*match != 0) {
         uint gnum = *match - 1;
         match++;
@@ -16283,8 +16273,6 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint startFilterCount = startFilterSize (db, filterOp);
 
     Timer timer;
-
-    initDbFilter (db, 1);
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
