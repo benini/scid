@@ -14483,9 +14483,9 @@ int
 sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "board", "header", "material", "repertoire", NULL
+        "board", "moves", "header", "material", "repertoire", NULL
     };
-    enum { OPT_BOARD, OPT_HEADER, OPT_MATERIAL, OPT_REPERTOIRE };
+    enum { OPT_BOARD, OPT_MOVES, OPT_HEADER, OPT_MATERIAL, OPT_REPERTOIRE };
 
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -14498,6 +14498,10 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case OPT_BOARD:
         ret = sc_search_board (cd, ti, argc, argv);
+        break;
+
+    case OPT_MOVES:
+        ret = sc_search_moves (cd, ti, argc, argv);
         break;
 
     case OPT_HEADER:
@@ -14779,6 +14783,143 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     
 return TCL_OK;
+}
+
+// Searches for a move or move combos
+// stevenaaus September 2012
+
+int
+sc_search_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+    const char * usageStr =
+	"Usage: sc_search moves <filterOp> <moves> <checkTest> <sideToMove>";
+    bool showProgress = startProgressBar();
+    char **m_argv;
+    int m_argc;
+
+    if (!db->inUse) {
+        return errorResult (ti, errMsgNotOpen(ti));
+    }
+
+    if (argc != 6) { return errorResult (ti, usageStr); }
+
+    filterOpT filterOp = strGetFilterOp (argv[2]);
+
+    // argv[3] is move list
+    if (Tcl_SplitList (ti, argv[3], &m_argc, (CONST84 char ***) &m_argv) != TCL_OK) {
+	Tcl_AppendResult (ti, "Error splitting movelist.", NULL);
+	return TCL_ERROR;
+    }
+
+    int checkTest = strGetUnsigned (argv[4]);
+
+    bool wToMove = false;
+    if (strFirstChar (argv[5], 'w')  || strFirstChar (argv[5], 'W')) {
+	wToMove = true;
+    }
+    bool bToMove = false;
+    if (strFirstChar (argv[5], 'b')  || strFirstChar (argv[5], 'B')) {
+	bToMove = true;
+    }
+
+    // &&&    if( db->dbFilter == NULL) {
+    //         initDbFilter (db);
+    //             }
+
+    Timer timer;  // Start timing this search.
+
+    uint skipcount = 0;
+    uint updateStart, update;
+    updateStart = update = 5000;  // Update progress bar every 5000 games
+
+    // If filter operation is to reset the filter, reset it:
+    if (filterOp == FILTEROP_RESET) {
+        filter_reset (db, 1);
+        filterOp = FILTEROP_AND;
+    }
+    uint startFilterCount = startFilterSize (db, filterOp);
+
+    // Here is the loop that searches on each game:
+    IndexEntry * ie;
+    Game * g = scratchGame;
+    uint gameNum;
+    uint ply;
+
+    for (gameNum=0; gameNum < db->numGames; gameNum++) {
+        if (showProgress) {  // Update the percentage done bar:
+            update--;
+            if (update == 0) {
+                update = updateStart;
+                updateProgressBar (ti, gameNum, db->numGames);
+                if (interruptedProgress()) { break; }
+            }
+        }
+        // First, apply the filter operation:
+        if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
+            if (db->dbFilter->Get(gameNum) == 0) {
+                skipcount++;
+                continue;
+            }
+        } else /* filterOp==FILTEROP_OR*/ { // Skip any games in the filter:
+            if (db->dbFilter->Get(gameNum) != 0) {
+                skipcount++;
+                continue;
+            } else {
+                // OK, this game is NOT in the filter.
+                // Add it so filterCounts are kept up to date:
+                db->dbFilter->Set (gameNum, 1);
+            }
+        }
+
+        ie = db->idx->FetchEntry (gameNum);
+        if (ie->GetLength() == 0) {
+            // Skip games with no gamefile record:
+            db->dbFilter->Set (gameNum, 0);
+            skipcount++;
+            continue;
+        }
+
+	// todo : search in Vars using 'MoveIntoVariation'
+	// todo : allow user to state max/min ply depth
+
+        // At this point, the game needs to be loaded:
+        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
+                                 ie->GetLength()) != OK) {
+            return errorResult (ti, "Error reading game file.");
+        }
+
+	g->Decode (db->bbuf, GAME_DECODE_NONE);
+
+	if (g->MoveMatch (m_argc, m_argv, 255, wToMove, bToMove, checkTest)) {
+	    // Set its auto-load move number to the matching move:
+	    ply = g->GetCurrentPly() + 2;
+	    if (ply > 255) { ply = 255; }
+	} else {
+            ply = 0;
+        }
+
+        db->dbFilter->Set (gameNum, ply);
+    }
+
+    if (showProgress) { updateProgressBar (ti, 1, 1); }
+
+    // Now print statistics and time for the search:
+    char temp[200];
+    int centisecs = timer.CentiSecs();
+    if (gameNum != db->numGames) {
+        Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
+    }
+    sprintf (temp, "%d / %d  (%d%c%02d s)",
+             db->dbFilter->Count(), startFilterCount,
+             centisecs / 100, decimalPointChar, centisecs % 100);
+    Tcl_AppendResult (ti, temp, NULL);
+#ifdef SHOW_SKIPPED_STATS
+    sprintf(temp, "  Skipped %u games.", skipcount);
+    Tcl_AppendResult (ti, temp, NULL);
+#endif
+    Tcl_Free((char *) m_argv);
+
+    return TCL_OK;
 }
 
 

@@ -165,7 +165,7 @@ uint Game::GetVarNumber() {
 // ===================================================
 
 const char * ratingTypeNames [17] = {
-    "Elo", "Rating", "Rapid", "ICCF", "USCF", "DWZ", "BCF",
+    "Elo", "Rating", "Rapid", "ICCF", "USCF", "DWZ", "ECF",
     // Reserved for future use:
     NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
     // End of array marker:
@@ -1318,6 +1318,7 @@ Game::TruncateAndFree (void)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::TruncateStart():
 //      Truncate all moves leading to current position.
+//      todo: copy comments (in WritePGN?)
 void
 Game::TruncateStart (void)
 {
@@ -2005,6 +2006,70 @@ Game::GetPartialMoveList (DString * outStr, uint plyCount)
     return OK;
 }
 
+// Search a game for matching move(s) 
+// (based on Game::GetPartialMoveList)
+
+bool
+Game::MoveMatch (int m_argc, char **m_argv, uint plyCount, bool wToMove, bool bToMove, int checkTest)
+{
+    MoveToPly(0);
+    for (uint i=0; i < plyCount; i++) {
+        moveT * m;
+        int j;
+
+        // todo: Assert end of game exists
+        if (CurrentMove->marker == END_MARKER) {
+	    return false;
+        }
+
+	if (CurrentPos->GetToMove() == WHITE) {
+            if (!wToMove) goto skipmove;
+        } else {
+            if (!bToMove) goto skipmove;
+        }
+
+        m = CurrentMove;
+        j = 1;
+
+        if (m->san[0] == 0) {
+            CurrentPos->MakeSANString(&(m->moveData), m->san, checkTest);
+        }
+        if (strcmp(m->san, m_argv[0]) == 0) {
+            bool found = 1;
+            // Examine following moves to see all match
+            while (j < m_argc) {
+              if (! m->next) {
+		  found = 0;
+                  break;
+              }
+              if (j == 1) SaveState();
+	      MoveForward();
+	      m = CurrentMove;
+	      if (m->san[0] == 0) {
+		  CurrentPos->MakeSANString(&(m->moveData), m->san, checkTest);
+	      }
+	      if (m_argv[j][0] != '?' && strcmp(m->san, m_argv[j]) != 0) {
+                  j++;
+		  found = 0;
+                  break;
+              } else {
+		  j++;
+              }
+            }
+	    if (j > 1) RestoreState();
+
+            if (found) {
+	      return true;
+           }
+        }
+skipmove:
+        MoveForward();
+    }
+
+    return false;
+}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Game::GetSAN():
 //      Print the SAN representation of the current move to a string.
@@ -2154,6 +2219,8 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
             // Translate "<", ">" in comments:
             tb->AddTranslation ('<', "<lt>");
             tb->AddTranslation ('>', "<gt>");
+            // S.A any issues ?
+            tb->NewlinesToSpaces (0);
             tb->PrintString (s);
             tb->ClearTranslation ('<');
             tb->ClearTranslation ('>');
@@ -2261,7 +2328,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
     }
 
     while (CurrentMove->marker != END_MARKER) {
-        moveT *m         = CurrentMove;
+        moveT *m = CurrentMove;
         bool commentLine = false;
 
         // If the move being printed is the game's "current move" then
@@ -2359,11 +2426,33 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             tb->PrintString (nextColumn);
             tb->ResumeTranslations();
         }
-        // translate pieces
-        strcpy(tempTrans, m->san);
-        transPieces(tempTrans);
-        //tb->PrintWord (m->san);
-        tb->PrintWord (tempTrans);
+		if (IsColorFormat() && (PgnStyle & PGN_STYLE_UNICODE)) {
+			char buf[100];
+			char* q = buf;
+
+			for (char const* p = m->san; *p; ++p) {
+				ASSERT(q - buf < sizeof(buf) - 4);
+
+				switch (*p) {
+					case 'K':	q = strncpy(q, "\xe2\x99\x94", 3) + 3; break;
+					case 'Q':	q = strncpy(q, "\xe2\x99\x95", 3) + 3; break;
+					case 'R':	q = strncpy(q, "\xe2\x99\x96", 3) + 3; break;
+					case 'B':	q = strncpy(q, "\xe2\x99\x97", 3) + 3; break;
+					case 'N':	q = strncpy(q, "\xe2\x99\x98", 3) + 3; break;
+					case 'P':	q = strncpy(q, "\xe2\x99\x99", 3) + 3; break;
+					default:	*q++ = *p; break;
+				}
+
+			}
+			*q = '\0';
+			tb->PrintWord (buf);
+		} else {
+			// translate pieces
+			strcpy(tempTrans, m->san);
+			transPieces(tempTrans);
+			//tb->PrintWord (m->san);
+			tb->PrintWord (tempTrans);
+	    }
         colWidth -= strLength (m->san);
         if (IsColorFormat()) {
             tb->PrintString ("</m>");
@@ -2470,19 +2559,20 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                     }
                 }
 
+/* Code commented to remove extra lines
                 if ((PgnStyle & PGN_STYLE_COLUMN)  &&  VarDepth == 0) {
-// Code commented to remove extra lines
-//                     if (! endedColumn) {
-//                         if (CurrentPos->GetToMove() == WHITE) {
-//                             tb->PauseTranslations ();
-//                             tb->PrintString (nextColumn);
-//                             tb->ResumeTranslations ();
-//                         }
-//                         tb->PrintString (endColumn);
-//                         tb->PrintString (endTable);
-//                         endedColumn = true;
-//                     }
+                       if (! endedColumn) {
+                           if (CurrentPos->GetToMove() == WHITE) {
+                               tb->PauseTranslations ();
+                               tb->PrintString (nextColumn);
+                               tb->ResumeTranslations ();
+                           }
+                           tb->PrintString (endColumn);
+                           tb->PrintString (endTable);
+                           endedColumn = true;
+                       }
                 }
+*/
                 if (IsHtmlFormat()  &&  VarDepth == 0) {
                     tb->PrintString ("</b><dl><dd>");
                 }
@@ -2547,12 +2637,16 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                         tb->PrintString (nextColumn);
                         tb->ResumeTranslations ();
                     }
-                    tb->PrintString (endColumn);
+                    // Doesn't seem wanted!! S.A (see a few lines below)
+                    // tb->PrintString (endColumn);
                     tb->PrintString (endTable);
                     endedColumn = true;
                 }
             }
             if (IsColorFormat()  &&  VarDepth == 0) { tb->PrintString ("<var>"); }
+            // Doesn't indent first var in column mode properly 
+            // if including !(PgnStyle & PGN_STYLE_COLUMN) here.
+            // But as-is, depth 3 vars don't indent in COLUMN mode (bug)
             if ((PgnStyle & PGN_STYLE_INDENT_VARS) && IsColorFormat()) {
                 if ( !commentLine ) {
                     tb->PrintString ("<br>");
@@ -2582,9 +2676,13 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                     }
                 }
                 if (IsColorFormat()) { tb->PrintString ("<blue>"); }
+
+                // Note tabs in column mode don't work after this VarDepth>1 for some reason
+                // this VarDepth check is redundant i think 
                 if (!IsLatexFormat()  ||  VarDepth != 0) {
                     tb->PrintChar ('(');
                 }
+
                 MoveIntoVariation (i);
                 NumMovesPrinted++;
                 tb->PrintSpace();
@@ -2729,6 +2827,7 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
 
         //if (IsHtmlFormat()) { tb->PrintString ("<font size=+1>"); }
         if (IsLatexFormat()) { tb->PrintString ("$\\circ$ "); }
+        if (PgnFormat==PGN_FORMAT_Color) {tb->PrintString ("<tag>"); }
         tb->PrintString (WhiteStr);
         if (WhiteElo > 0) {
             sprintf (temp, "  (%u)", WhiteElo);
@@ -2792,6 +2891,7 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
 		}
 
 		tb->PrintString (newline);
+		if (PgnFormat==PGN_FORMAT_Color) {tb->PrintString ("</tag>"); }
 
         // Print FEN if non-standard start:
 
