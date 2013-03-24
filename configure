@@ -13,7 +13,7 @@
 # tclsh program with a version number in the file name is found, the
 # default program to execute is just tclsh.
 # The backslashes at the end of these lines are needed: \
-tclsh=tclsh8.5;
+# tclsh=tclsh8.5;
 
 # This shell script code did not work for me in Linux so it is
 # commented out for now; the configure script will just run in
@@ -27,8 +27,7 @@ tclsh=tclsh8.5;
 
 # Now execute this script using the best tclsh version found:
 # The backslash at the end of this line is needed: \
-exec $tclsh "$0" ${1+"$@"}
-
+exec tclsh "$0" ${1+"$@"}
 
 # Default values for Makefile settings:
 #
@@ -56,11 +55,8 @@ set var(LANGUAGES) [list \
   ]
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
-#TODO: Write a more portable script to detect c++11 support
-set var(OPTIMIZE) {-O3 -fno-rtti -fno-exceptions -std=c++0x -pthread}
-if { [catch { exec echo "int main() {}" | g++ -std=c++0x -pthread -x c++ - }] } {
-  set var(OPTIMIZE) {-O3 -fno-rtti -fno-exceptions}
-}
+set var(THREADS) {-std=c++0x -pthread}
+set var(OPTIMIZE) {-O3 -fno-rtti -fno-exceptions}
 set var(PROFILE) {}
 set var(SCIDFLAGS) {}
 set var(SHAREDIR) /usr/local/share/scid
@@ -71,9 +67,9 @@ set var(ZLIB) -lz
 set var(MAKEFILE) Makefile.conf
 
 set defaultVar(TCL_INCLUDE) {-I/usr/include}
-set defaultVar(TCL_LIBRARY) {-L/usr/lib -ltcl$(TCL_VERSION) -ldl}
+set defaultVar(TCL_LIBRARY) {-L/usr/lib -ltcl$(TCL_VERSION)}
 set defaultVar(TK_LIBRARY) \
-    {$(TCL_LIBRARY) -ltk$(TCL_VERSION) -L/usr/X11R6/lib -lX11}
+    {$(TCL_LIBRARY) -ltk$(TCL_VERSION) }
 
 
 # findDir:
@@ -137,13 +133,10 @@ proc findTclTkPathsAqua {} {
         set var(TCL_INCLUDE) "-F$fw_path/Tcl.framework -F$fw_path/Tk.framework"
     }
     if {! [info exists var(TCL_LIBRARY)]} {
-        set var(TCL_LIBRARY) {-framework Tcl -ldl}
+        set var(TCL_LIBRARY) {-framework Tcl}
     }
     if {! [info exists var(TK_LIBRARY)]} {
         set var(TK_LIBRARY) {$(TCL_LIBRARY) -framework Tk}
-        #if {! [file exists "$fw_path/Tk.framework/Headers/X11"]} {
-        #   append var(TK_LIBRARY) " -L/usr/X11R6/lib -lX11"
-        #}
     }
     puts "    Location of Tcl/Tk frameworks: $fw_path"
     return 1
@@ -211,19 +204,6 @@ proc findTclTkPaths {} {
         }
     }
 
-    # x11Path: List of common locations of the X11 library files.
-    set x11Path {
-        /usr/lib
-        /usr/X11/lib
-        /usr/X11R6/lib
-        /usr/local/X11/lib
-        /usr/local/X11R6/lib
-        /usr/X/lib
-        /usr/local/X/lib
-        /usr/openwin/lib
-        /usr/lib/x86_64-linux-gnu
-    }
-
     if {! [info exists var(TCL_INCLUDE)]} {
         puts -nonewline {    Location of "tcl.h": }
         set opt(tcl_h) [findDir "tcl.h" $headerPath "TCL_VERSION.*$tclv"]
@@ -281,15 +261,6 @@ proc findTclTkPaths {} {
             set opt(tk_lib_file) "tk\$(TCL_VERSION)"
             puts $opt(tk_lib)
         }
-
-        puts -nonewline {    Location of X11 library: }
-        set opt(x11_lib) [findDir "libX11*" $x11Path]
-        if {$opt(x11_lib) == ""} {
-            puts "not found"
-            set success 0
-        } else {
-            puts $opt(x11_lib)
-        }
     }
 
     # If all files were found, assemble the TCL_INCLUDE, TCL_LIBRARY
@@ -303,7 +274,7 @@ proc findTclTkPaths {} {
             }
         }
         if {! [info exists var(TCL_LIBRARY)]} {
-            set var(TCL_LIBRARY) "-L$opt(tcl_lib) -l$opt(tcl_lib_file) -ldl"
+            set var(TCL_LIBRARY) "-L$opt(tcl_lib) -l$opt(tcl_lib_file)"
         }
         if {! [info exists var(TK_LIBRARY)]} {
             set var(TK_LIBRARY) {$(TCL_LIBRARY)}
@@ -311,10 +282,6 @@ proc findTclTkPaths {} {
                 append var(TK_LIBRARY) " -L$opt(tk_lib)"
             }
             append var(TK_LIBRARY) " -l$opt(tk_lib_file)"
-            if {$opt(x11_lib) != $opt(tcl_lib) && $opt(x11_lib) != $opt(tk_lib)} {
-                append var(TK_LIBRARY) " -L$opt(x11_lib)"
-            }
-            append var(TK_LIBRARY) " -lX11"
         }
     }
     return $success
@@ -457,6 +424,9 @@ proc writeMakefile {{type ""}} {
         puts {The default Makefile was written.}
     } elseif {$success} {
         puts {The Makefile configured for your system was written.}
+        if {$var(THREADS) != ""} {
+            puts {Multi-threading enabled (if you have problems try ./configure THREADS="").}
+        }
         puts {Now just type "make" to compile Scid.}
     } else {
         puts {Not all settings could be determined!}
@@ -485,6 +455,7 @@ proc usage {} {
     puts {  TCL_INCLUDE  Compiler directives for including Tcl.}
     puts {  TCL_LIBRARY  Compiler directives for linking Tcl.}
     puts {  TCL_VERSION  Your Tcl/Tk version. Example: TCL_VERSION="8.3".}
+    puts {  THREADS      Flags for c++11 threads. Default: "-std=c++0x -pthread".}
     puts {  TK_LIBRARY   Compiler directives for linking Tcl/Tk.}
     puts {  WARNINGS     C++ compiler warnings. Default: "-Wall".}
     puts {  MAKEFILE     Makefile configuration file. Default: "Makefile.conf".}
