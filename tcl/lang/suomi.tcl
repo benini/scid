@@ -293,6 +293,8 @@ menuText U OptionsMovesHighlightLastMove "Korosta viimeisin siirto" 0 {Korosta v
 menuText U OptionsMovesHighlightLastMoveDisplay "Näytä" 0 {Näytä viimeisin siirto korostettuna}
 menuText U OptionsMovesHighlightLastMoveWidth "Viiva" 0 {Laudalla näytettävän viivan paksuus}
 menuText U OptionsMovesHighlightLastMoveColor "Väri" 0 {Laudalla näytettävän viivan väri}
+# ====== TODO To be translated ======
+menuText U OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText U OptionsMoves "Siirrot" 0 {Siirtojen syöttämiseen liittyvät asetukset}
 menuText U OptionsMovesAsk "Kysy ennen korvaamista" 0 \
   {Ohjelma kysyy luvan ennen kuin kirjoittaa vanhojen tietojen päälle}

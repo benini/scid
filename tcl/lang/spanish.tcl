@@ -282,6 +282,8 @@ menuText S OptionsMovesHighlightLastMoveDisplay "Mostrar" 0 \
   {Muestra la última jugada iluminada}
 menuText S OptionsMovesHighlightLastMoveWidth "Ancho" 0 {Espesor de la línea}
 menuText S OptionsMovesHighlightLastMoveColor "Color" 0 {Color de línea}
+# ====== TODO To be translated ======
+menuText S OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText S OptionsMoves "Movimientos" 0 {Opciones de la entrada de movimientos}
 menuText S OptionsMovesAsk "Preguntar antes de reemplazar movimientos" 0 \
   {Pregunta antes de sobreescribir cualquier movimiento existente}

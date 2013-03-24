@@ -271,6 +271,8 @@ menuText N OptionsMovesHighlightLastMove "Markeer de laatste zet" 0 {Markeer de 
 menuText N OptionsMovesHighlightLastMoveDisplay "Toon" 0 {Toon de laatste zet markering}
 menuText N OptionsMovesHighlightLastMoveWidth "Breedte" 0 {Variantdikte}
 menuText N OptionsMovesHighlightLastMoveColor "Kleur" 0 {Varinatkleur}
+# ====== TODO To be translated ======
+menuText N OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText N OptionsMoves "Zetten" 0 {Wijzig optie voor zet-invoer}
 menuText N OptionsMovesAsk "Bevestiging voor overschrijven" 0 \
   {Bevestig het overschrijven van bestaande zetten}

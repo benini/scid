@@ -285,6 +285,8 @@ menuText G OptionsMovesHighlightLastMove "Ανάδειξη τελευταίας 
 menuText G OptionsMovesHighlightLastMoveDisplay "Εμφάνιση" 0 {Προβολή της τελευταίας κίνησης με ανάδειξη}
 menuText G OptionsMovesHighlightLastMoveWidth "Πλάτος" 0 {Το πάχος της γραμμής}
 menuText G OptionsMovesHighlightLastMoveColor "Χρώμα" 0 {Το χρώμα τηςη γραμμής}
+# ====== TODO To be translated ======
+menuText G OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText G OptionsMoves "Κινήσεις" 0 {Επιλογές εισαγωγής κίνησης}
 menuText G OptionsMovesAsk "Ερώτηση πριν την αντικατάσταση κινήσεων" 0 \
   {Να ερωτάστε πριν την αντικατάσταση κάθε κίνησης που έγινε}

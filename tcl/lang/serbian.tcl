@@ -300,6 +300,8 @@ menuText Y OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move High
 menuText Y OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText Y OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+# ====== TODO To be translated ======
+menuText Y OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText Y OptionsMoves "Potezi" 0 {Opcije uno¹enja poteza}
 menuText Y OptionsMovesAsk "Pitaj pre zamene poteza" 0 \
   {Pitaj, da li se mo¾e postojeæi zameniti novim potezom}

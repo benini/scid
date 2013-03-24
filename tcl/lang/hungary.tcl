@@ -258,6 +258,8 @@ menuText H OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move High
 menuText H OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText H OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+# ====== TODO To be translated ======
+menuText H OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText H OptionsMoves "Lépések" 0 {Lépések bevitelének beállításai}
 menuText H OptionsMovesAsk "Lépés cseréje elõtt rákérdez." 6 \
   {Mielõtt átírna egy meglevõ lépést, rákérdez.}

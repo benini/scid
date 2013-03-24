@@ -305,6 +305,8 @@ menuText P OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move High
 menuText P OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText P OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+# ====== TODO To be translated ======
+menuText P OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText P OptionsMoves "Posuniêcia" 0 {Wprowadzanie posuniêæ}
 menuText P OptionsMovesAsk "Zapytaj przed zast±pieniem posuniêæ" 0 \
   {Zapytaj przed zast±pieniem aktualnych posuniêæ}

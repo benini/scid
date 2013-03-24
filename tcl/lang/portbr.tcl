@@ -254,6 +254,8 @@ menuText B OptionsMovesHighlightLastMove "Destacar último movimento" 0 {Destaca 
 menuText B OptionsMovesHighlightLastMoveDisplay "Mostrar" 0 {Mostra o destaque do último movimento}
 menuText B OptionsMovesHighlightLastMoveWidth "Espessura" 0 {Espessura da linha}
 menuText B OptionsMovesHighlightLastMoveColor "Cor" 0 {Cor da linha}
+# ====== TODO To be translated ======
+menuText B OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText B OptionsMoves "Movimentos" 0 {Opcoes para entrada dos movimentos}
 menuText B OptionsMovesAsk "Perguntar antes de substituir movimentos" 0 \
   {Pergunta antes de substituir movimentos existentes}

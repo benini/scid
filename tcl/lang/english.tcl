@@ -293,6 +293,7 @@ menuText E OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last
 menuText E OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
 menuText E OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 menuText E OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+menuText E OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText E OptionsMoves "Moves" 0 {Move entry options}
 menuText E OptionsMovesAsk "Ask Before Replacing Moves" 0 \
   {Ask before overwriting any existing moves}

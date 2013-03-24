@@ -268,6 +268,8 @@ menuText I OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move High
 menuText I OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText I OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+# ====== TODO To be translated ======
+menuText I OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText I OptionsMoves "Mosse" 0 {Opzioni di immissione di mosse}
 menuText I OptionsMovesAsk "Conferma prima di sostituire le mosse" 0 \
   {Chiede prima di sovrascrivere ogni mossa esistente}

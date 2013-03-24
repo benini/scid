@@ -1992,6 +1992,8 @@ proc  ::board::lastMoveHighlight {w} {
     set square2 [ ::board::sq [string range $moveuci 2 3 ] ]
     ::board::mark::DrawRectangle $w.bd $square1 $::highlightLastMoveColor $::highlightLastMovePattern
     ::board::mark::DrawRectangle $w.bd $square2 $::highlightLastMoveColor $::highlightLastMovePattern
+    if { ! $::arrowLastMove } {return} 
+    ::board::mark::DrawArrow $w.bd $square1 $square2 $::highlightLastMoveColor
   }
 }
 

@@ -302,6 +302,8 @@ menuText R OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move High
 menuText R OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText R OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+# ====== TODO To be translated ======
+menuText R OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText R OptionsMoves "Ходы" 0 {Установки для ходов}
 menuText R OptionsMovesAsk "Спросить перед заменой ходов" 0 \
   {Спросить перед перезаписью любых ходов}

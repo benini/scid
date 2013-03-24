@@ -944,7 +944,7 @@ $m add command -label OptionsSave -command {
           ecoFile suggestMoves showVarPopup showVarArrows glistSize glexport \
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
-          translatePieces highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
+          translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
           spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
           exportFlags(comments) exportFlags(vars) \
@@ -1176,6 +1176,7 @@ $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor
     updateBoard
   }
 }
+$m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveArrow -variable ::arrowLastMove -command updateBoard
 set helpMessage($m.entry,9) OptionsMovesHighlightLast
 
 $m.entry add checkbutton -label OptionsMovesShowVarArrows \
@@ -1662,7 +1663,7 @@ proc setLanguageMenus {{lang ""}} {
         OptionsMoves$tag $lang
   }
   
-  foreach tag { Color Width Display } {
+  foreach tag { Color Width Display Arrow } {
     configMenuText .menu.options.entry.highlightlastmove [tr OptionsMovesHighlightLastMove$tag $oldLang] OptionsMovesHighlightLastMove$tag $lang
   }
   

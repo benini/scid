@@ -251,6 +251,8 @@ menuText W OptionsMovesHighlightLastMove "Markera senaste draget" 0 {Markera sen
 menuText W OptionsMovesHighlightLastMoveDisplay "Visa" 0 {Visa senaste markerade draget}
 menuText W OptionsMovesHighlightLastMoveWidth "Bredd" 0 {Tjockhet på rad}
 menuText W OptionsMovesHighlightLastMoveColor "Färg" 0 {Färg på rad}
+# ====== TODO To be translated ======
+menuText W OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText W OptionsMoves "Drag" 0 {Alternativ för dragangivelse}
 menuText W OptionsMovesAsk "Fråga före ersätt drag" 0 \
   {Fråga innan du ersätter befintliga drag}

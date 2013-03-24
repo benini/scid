@@ -274,6 +274,8 @@ menuText K OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move High
 menuText K OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
 # ====== TODO To be translated ======
 menuText K OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
+# ====== TODO To be translated ======
+menuText K OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText K OptionsMoves "Jugades" 0 {Opcions d'entrada de jugades}
 menuText K OptionsMovesAsk "Preguntar abans de substituir jugades" 0 \
   {Pregunta abans de sobreescriure qualsevol jugada existent}

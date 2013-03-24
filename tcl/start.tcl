@@ -513,6 +513,7 @@ set locale(numeric) ".,"
 set translatePieces 1
 
 # Hightlight the last move played
+set arrowLastMove 0
 set highlightLastMove 1
 set highlightLastMoveWidth 2
 set highlightLastMoveColor "grey"

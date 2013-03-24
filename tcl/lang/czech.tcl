@@ -244,6 +244,8 @@ menuText C OptionsMovesHighlightLastMove "Zvýrazòovat poslední tah" 0 {Zvýrazòov
 menuText C OptionsMovesHighlightLastMoveDisplay "Ukázat" 0 {Zobrazit zvýraznìný poslední tah}
 menuText C OptionsMovesHighlightLastMoveWidth "©íøka" 0 {Tlou¹»ka èáry}
 menuText C OptionsMovesHighlightLastMoveColor "Barva" 0 {Barva èáry}
+# ====== TODO To be translated ======
+menuText C OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
 menuText C OptionsMoves "Tahy" 0 {Volby pro zadávání tahù}
 menuText C OptionsMovesAsk "Ptát se pøed nahrazením tahù" 0 \
   {Ptát se v¾dy pøed pøepsáním existujícího tahu}
