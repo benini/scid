@@ -1159,8 +1159,10 @@ set helpMessage($m.entry,8) OptionsMovesTranslatePieces
 menu $m.entry.highlightlastmove
 $m.entry add cascade -label OptionsMovesHighlightLastMove -menu  $m.entry.highlightlastmove
 $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveDisplay -variable ::highlightLastMove -command updateBoard
+set helpMessage($m.entry.highlightlastmove,0) OptionsMovesHighlightLastMoveDisplay
 menu $m.entry.highlightlastmove.width
 $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth -menu $m.entry.highlightlastmove.width
+set helpMessage($m.entry.highlightlastmove,1) OptionsMovesHighlightLastMoveWidth
 foreach i {1 2 3 4 5} {
   $m.entry.highlightlastmove.width add radiobutton -label $i -value $i -variable ::highlightLastMoveWidth -command updateBoard
 }
@@ -1176,8 +1178,10 @@ $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor
     updateBoard
   }
 }
+set helpMessage($m.entry.highlightlastmove,2) OptionsMovesHighlightLastMoveColor
 $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveArrow -variable ::arrowLastMove -command updateBoard
-set helpMessage($m.entry,9) OptionsMovesHighlightLast
+set helpMessage($m.entry.highlightlastmove,3) OptionsMovesHighlightLastMoveArrow
+set helpMessage($m.entry,9) OptionsMovesHighlightLastMove
 
 $m.entry add checkbutton -label OptionsMovesShowVarArrows \
     -variable showVarArrows -offvalue 0 -onvalue 1
