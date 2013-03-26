@@ -239,7 +239,7 @@ $m.utils.name add command -label FileMaintNameEvent -command {openSpellCheckWin 
 set helpMessage($m.utils.name,2) FileMaintNameEvent
 
 $m.utils.name add command -label FileMaintNameSite -command {openSpellCheckWin Site}
-set helpMessage($m.utils.name.3) FileMaintNameSite
+set helpMessage($m.utils.name,3) FileMaintNameSite
 
 $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
 set helpMessage($m.utils.name,4) FileMaintNameRound
@@ -601,6 +601,7 @@ bind $dot_w <F6>  ::book::open
 
 $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
     -command ::CorrespondenceChess::CCWindow -accelerator "F12"
+set helpMessage($m,[incr menuindex]) WindowsCorrChess
 bind $dot_w <F12> ::CorrespondenceChess::CCWindow
 
 ### Tools menu:
@@ -669,7 +670,6 @@ set helpMessage($m,[incr menuindex]) ToolsBookTuning
 menu $m.hardware
 $m add cascade -label ToolsConnectHardware -menu $m.hardware
 set helpMessage($m,[incr menuindex]) ToolsConnectHardware
-incr menuindex
 $m.hardware add command -label ToolsConnectHardwareConfigure -command ::ExtHardware::config
 set helpMessage($m.hardware,0) ToolsConnectHardwareConfigure
 $m.hardware add command -label ToolsConnectHardwareInputEngineConnect -command ::inputengine::connectdisconnect
