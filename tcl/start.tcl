@@ -136,8 +136,8 @@ set ::tacgame::chosenOpening 0
 # List of saved layouts : 3 slots available
 array set ::docking::layout_list {}
 # Basic layout : PGN window with main board
-set ::docking::layout_list(1) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
-set ::docking::layout_list(2) {}
+set ::docking::layout_list(1) {{MainWindowGeometry 1024x570+0+26 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 418} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 387} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 239} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal 146} {TNotebook .tb5 .fdockbaseWin} {TNotebook .tb3 .fdockglistWin}}}}}}}}}
+set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
 set ::docking::layout_list(3) {}
 
 ### Tree/mask options:
@@ -413,6 +413,10 @@ for {set b 1} {$b<=[sc_base count total]} {incr b} {
     set winY($i$b) -1
   }
 }
+
+# Default window size:
+set winWidth(.) 1024
+set winHeight(.) 570
 
 # Default PGN window size:
 set winWidth(.pgnWin)  65
@@ -782,7 +786,7 @@ set windowsDock 1
 
 # showGameInfo:
 # The game info panel below the main board
-set showGameInfo 1
+set showGameInfo 0
 
 # autoLoadLayout :
 # Automatic loading of layout # 1 at startup (docked windows mode only)
@@ -1032,7 +1036,7 @@ set engines(sort) Time
 set engineCoach1 {}
 set engineCoach2 {}
 
-if {$::unixOS} {
+# Set up Scid icon
   set iconFileDirs [list \
       $scidExeDir [file join $scidExeDir "../share/scid"]]
 
@@ -1044,21 +1048,7 @@ if {$::unixOS} {
       break
     }
   }
-}
 
-# Set up Scid icon in Windows:
-if {$::windowsOS} {
-  # Look in each of the following directories for a file named scid.ico:
-  set iconFileDirs [list \
-      $scidExeDir $scidUserDir $scidConfigDir [file join $scidExeDir "src"]]
-  
-  foreach iconFileDir $iconFileDirs {
-    set scidIconFile [file join $iconFileDir "scid.ico"]
-    if {[file readable $scidIconFile]} {
-      catch {wm iconbitmap . -default $scidIconFile}
-    }
-  }
-}
 
 # Reversed mouse buttons in mac (::MB2 and ::MB3 are middle and right mouse buttons respectively.):
 if { $macOS } {

@@ -2,8 +2,6 @@
 #define AppVersion '4.4'
 #define AppName    'Scid'
 #define TCLDIR     'C:\Tcl'
-#define OptionalSoftware 'StockFish'
-#define OptionalSoftwareURL 'http://stockfishchess.org/'
 
 [Setup]
 AppName={# AppName}
@@ -29,6 +27,7 @@ PrivilegesRequired=lowest
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
 Name: "associate_pgn"; Description: "&Associate PGN files"; GroupDescription: "Other tasks:"
 Name: "associate_si4"; Description: "&Associate SI4 files"; GroupDescription: "Other tasks:"
+Name: "install_stockfish"; Description: "&Stockfish ( http://stockfishchess.org )"; GroupDescription: "Chess engines:"
 
 [Registry]
 Root: "HKCU"; Subkey: "Software\Classes\.pgn"; Flags: uninsdeletevalue; Tasks: associate_pgn
@@ -41,29 +40,30 @@ Root: "HKCU"; Subkey: "Software\Classes\.si4"; ValueType: string; ValueData: "sc
 Root: "HKCU"; Subkey: "Software\Classes\scid"; Flags: uninsdeletevalue; Tasks: associate_si4
 Root: "HKCU"; Subkey: "Software\Classes\scid\shell\open\command"; ValueType: string; ValueData: """{app}\bin\scid"" ""%1"""; Flags: uninsdeletevalue; Tasks: associate_si4
 
-
 [Files]
-Source: "Release\*";  DestDir: "{app}\bin"; CopyMode: normal;
-Source: "scid.eco";  DestDir: "{app}\bin"; CopyMode: normal;
-Source: "books\*";  DestDir: "{app}\bin\books"; CopyMode: normal; Flags: recursesubdirs
-Source: "engines\*";  DestDir: "{app}\bin\engines"; CopyMode: normal; Flags: recursesubdirs
-Source: "html\*";  DestDir: "{app}\bin\html"; CopyMode: normal; Flags: recursesubdirs
-Source: "sounds\*";  DestDir: "{app}\bin\sounds"; CopyMode: normal; Flags: recursesubdirs
-Source: "bitmaps\*";  DestDir: "{app}\bitmaps"; CopyMode: normal; Flags: recursesubdirs
-Source: "bitmaps2\*";  DestDir: "{app}\bitmaps2"; CopyMode: normal; Flags: recursesubdirs
-Source: "help\*"; DestDir: "{app}\help";  CopyMode: normal; Flags: recursesubdirs
-Source: "COPYING"; DestDir: "{app}";  CopyMode: normal;
-Source: "README"; DestDir: "{app}";  CopyMode: normal;
-Source: "THANKS"; DestDir: "{app}";  CopyMode: normal;
-Source: "CHANGES"; DestDir: "{app}";  CopyMode: normal;
-Source: "{# TCLDIR}\bin\tcl85.dll"; DestDir: "{app}\bin";  CopyMode: normal;
-Source: "{# TCLDIR}\bin\tk85.dll"; DestDir: "{app}\bin";  CopyMode: normal;
-Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8";  CopyMode: normal; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\tcl8.5\*"; DestDir: "{app}\lib\tcl8.5";  CopyMode: normal; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\tk8.5\*"; DestDir: "{app}\lib\tk8.5";  CopyMode: normal; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\teapot\package\win32-ix86\lib\*"; DestDir: "{app}\lib";  CopyMode: normal; Flags: recursesubdirs
+Source: "Release\*"; DestDir: "{app}\bin"
+Source: "scid.eco"; DestDir: "{app}\bin"
+Source: "scid.gif"; DestDir: "{app}\bin"
+Source: "books\*"; DestDir: "{app}\bin\books"; Flags: recursesubdirs
+Source: "stockfish.exe"; DestDir: "{app}\bin\engines"; Tasks: install_stockfish
+Source: "html\*"; DestDir: "{app}\bin\html"; Flags: recursesubdirs
+Source: "sounds\*"; DestDir: "{app}\bin\sounds"; Flags: recursesubdirs
+Source: "bitmaps\*"; DestDir: "{app}\bitmaps"; Flags: recursesubdirs
+Source: "bitmaps2\*"; DestDir: "{app}\bitmaps2"; Flags: recursesubdirs
+Source: "help\*"; DestDir: "{app}\help"; Flags: recursesubdirs
+Source: "COPYING"; DestDir: "{app}"
+Source: "README"; DestDir: "{app}"
+Source: "THANKS"; DestDir: "{app}"
+Source: "CHANGES"; DestDir: "{app}"
+Source: "{# TCLDIR}\bin\tcl85.dll"; DestDir: "{app}\bin"
+Source: "{# TCLDIR}\bin\tk85.dll"; DestDir: "{app}\bin"
+Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8"; Flags: recursesubdirs
+Source: "{# TCLDIR}\lib\tcl8.5\*"; DestDir: "{app}\lib\tcl8.5"; Flags: recursesubdirs
+Source: "{# TCLDIR}\lib\tk8.5\*"; DestDir: "{app}\lib\tk8.5"; Flags: recursesubdirs
+Source: "{# TCLDIR}\lib\teapot\package\win32-ix86\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs
 
-
+[Dirs]
+Name: "{app}\bin\config"
 
 [Icons]
 Name: "{group}\{# AppName}"; Filename: "{app}\bin\scid.exe"; Comment: "{# AppName}!"; WorkingDir: {app}\bin
@@ -74,61 +74,43 @@ Name: "{userdesktop}\{# AppName}"; Filename: "{app}\bin\scid.exe"; Tasks: deskto
 [Run]
 Filename: "{app}\bin\scid.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
-
 [Code]
-
-procedure URLLabelOnClick(Sender: TObject);
+procedure CreateEngineDat();
 var
-  ErrorCode: Integer;
+  fileName : string;
+  lines : TArrayOfString;
+  Index: Integer;
 begin
-  ShellExecAsOriginalUser('open', '{# OptionalSoftwareUrl}', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
-end;
+  fileName := ExpandConstant('{app}\bin\config\engines.dat');
 
-procedure CreateTheWizardPage;
-var
-  Page: TWizardPage;
-  Line1, Line2: TNewStaticText;
-     URLLabel: TNewStaticText;
-     
+  Index := 6
+  if Index <> -1 then
+  begin
+      if WizardForm.TasksList.Checked[Index] then
+      begin
+          SetArrayLength(lines, 13);
+          lines[0]  := '# Analysis engines list file for Scid 4.4 with UCI support'
+          lines[1]  := ''
+          lines[2]  := 'engine {'
+          lines[3]  := '  Name Stockfish'
+          lines[4]  := '  Cmd  ../engines/stockfish.exe'
+          lines[5]  := '  Args {}'
+          lines[6]  := '  Dir  .'
+          lines[7]  := '  Elo  0'
+          lines[8]  := '  Time 0'
+          lines[9]  := '  URL  {}'
+          lines[10] := '  UCI 1'
+          lines[11] := '  UCIoptions {{MultiPV 3}}'
+          lines[12] := '}'
+          SaveStringsToFile(filename,lines,true);
+      end
+  end
+end;
+ 
+procedure CurStepChanged(CurStep: TSetupStep);
 begin
-
-  Page := CreateCustomPage(wpSelectComponents, '{# OptionalSoftware}', '{# OptionalSoftware}');
-
-
-  Line1 := TNewStaticText.Create(Page);
-  Line1.Top :=  ScaleY(8);
-  Line1.Caption := 'Optionally, {# OptionalSoftware} may also be installed.';
-  
-  Line1.AutoSize := True;
-  Line1.Parent := Page.Surface;
-  
-    Line2 := TNewStaticText.Create(Page);
-  Line2.Top :=  Line1.Top + Line1.Height + ScaleY(8);
-  Line2.Caption := 'You can get it free from ';
-  Line2.AutoSize := True;
-  Line2.Parent := Page.Surface;
-
-  URLLabel := TNewStaticText.Create(Page);
-  URLLabel.Caption := '{# OptionalSoftwareUrl}';
-  URLLabel.Cursor := crHand;
-  URLLabel.OnClick := @URLLabelOnClick;
-  URLLabel.Parent := Page.Surface;
-  
-  URLLabel.Font.Style := URLLabel.Font.Style + [fsUnderline];
-  URLLabel.Font.Color := clBlue;
-  URLLabel.Top := Line2.Top;
-  URLLabel.Left := Line2.Left + Line2.Width + ScaleX(1);
-
+  if  CurStep=ssDone then
+    begin
+         CreateEngineDat();
+    end
 end;
-
-
-
-var
-  tclPage: TOutputMsgWizardPage;
-
-procedure InitializeWizard();
-begin
-CreateTheWizardPage;
-
-end;
-

@@ -1735,7 +1735,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
         resetEngine $n
         return
     }
-    
+
     # Set the button in non-annotation state
     #
     if { $n == 1 } {
@@ -1743,6 +1743,19 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     }
     
     resetEngine $n
+
+    if {$index >= [llength $::engines(list)]} {
+        ::createToplevel $w
+        setWinLocation $w
+        setWinSize $w
+        set analysisWin$n 1
+        ::setTitle $w "Analysis: No engine"
+        ttk::frame $w.b1
+        pack $w.b1 -side bottom -fill x
+        button $w.b1.bStartStop -image tb_pause -command ""
+        ::createToplevelFinalize $w
+        return
+    }
     
     # if parameter index is a valid engine then start engine. Only update engine's time
     # when it was chosen in the engines dialog box

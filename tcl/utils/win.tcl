@@ -1003,12 +1003,14 @@ proc ::docking::layout_save { slot } {
   
   # on Windows the geometry is false if the window was maximized (x and y offsets are the ones before the maximization)
   set geometry [wm geometry .]
+  set ::docking::layout_list($slot) [list [list "MainWindowGeometry" $geometry] ]
   if {[wm state .] == "zoomed"} {
     if { [scan $geometry "%dx%d+%d+%d" w h x y] == 4 } {
       set geometry "${w}x${h}+0+0"
+      set ::docking::layout_list($slot) [list [list "MainWindowGeometry" $geometry "zoomed"] ]
     }
   }
-  set ::docking::layout_list($slot) [list [list "MainWindowGeometry" $geometry] ]
+
   lappend ::docking::layout_list($slot) [ layout_save_pw .pw ]
 }
 ################################################################################
@@ -1045,6 +1047,13 @@ proc ::docking::layout_restore_pw { data } {
     if {$type == "MainWindowGeometry"} {
       wm geometry . [lindex $elt 1]
       layout_restore_pw [lindex $data 1]
+      if {[lindex $elt 2]  == "zoomed"} {
+          if { $::tcl_platform(platform) == "unix" } {
+              wm attributes . -zoomed
+          } else {
+              wm state . zoomed
+          }
+      }
       break
     } elseif {$type == "TPanedwindow"} {
       layout_restore_pw [lindex $elt 1]
