@@ -362,6 +362,12 @@ helpMsg K .main.fbutton.button.flip {Girar escaquer  (Tecla ràpida: .)}
 helpMsg K .main.fbutton.button.coords {Posar/treure les coordenades de l'escaquer  (Tecla ràpida: 0)}
 helpMsg K .main.fbutton.button.stm {Activa/Desactiva la icona de Torn de Joc}
 helpMsg K .main.fbutton.button.autoplay {Autojugada dels moviments  (Tecla: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg K .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg K .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg K .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate K Back {Enrera}
@@ -1805,6 +1811,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

@@ -359,6 +359,12 @@ helpMsg I .main.fbutton.button.flip {Ruota la scacchiera (chiave abbreviata: .)}
 helpMsg I .main.fbutton.button.coords {Coordinate on/off  (chiave abbreviata: 0)}
 helpMsg I .main.fbutton.button.stm {Visualizza l'icona di chi ha la mossa (si/no)}
 helpMsg I .main.fbutton.button.autoplay {Mosse automatiche  (chiave: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg I .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg I .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg I .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate I Back {Indietro}
@@ -2157,6 +2163,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

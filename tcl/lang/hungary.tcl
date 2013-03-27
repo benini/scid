@@ -343,6 +343,12 @@ helpMsg H .main.fbutton.button.flip {Tábla elforgatása  (gyorsbillentyû: .)}
 helpMsg H .main.fbutton.button.coords {Koordináták be- vagy kikapcsolása  (gyorsbillentyû: 0)}
 helpMsg H .main.fbutton.button.stm {Be- vagy kikapcsolja a lépésjogot mutató ikont}
 helpMsg H .main.fbutton.button.autoplay {Automatikus visszajátszás  (billentyû: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg H .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg H .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg H .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate H Back {Vissza}
@@ -2016,6 +2022,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

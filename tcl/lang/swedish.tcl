@@ -336,6 +336,12 @@ helpMsg W .main.fbutton.button.flip {Rotera brädet  (kortkommando: .)}
 helpMsg W .main.fbutton.button.coords {Visa (inte) koordinater  (kortkommando: 0)}
 helpMsg W .main.fbutton.button.stm {Visa (inte) vilken sida som är vid draget}
 helpMsg W .main.fbutton.button.autoplay {Autospel  (kortkommando: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg W .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg W .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg W .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate W Back {Tillbaka}
@@ -6703,6 +6709,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

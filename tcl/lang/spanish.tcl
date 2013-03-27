@@ -380,6 +380,12 @@ helpMsg S .main.fbutton.button.flip {Girar tablero  (Tecla rápida: .)}
 helpMsg S .main.fbutton.button.coords {Poner/quitar las coordenadas del tablero  (Tecla rápida: 0)}
 helpMsg S .main.fbutton.button.stm {Activa/desactiva el icono de turno de juego}
 helpMsg S .main.fbutton.button.autoplay {Automovimiento de los movimientos  (Tecla: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg S .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg S .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg S .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate S Back {Atrás}
@@ -1780,6 +1786,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

@@ -375,6 +375,12 @@ helpMsg U .main.fbutton.button.flip {K‰‰nn‰ lauta  (pika: piste)}
 helpMsg U .main.fbutton.button.coords {N‰yt‰/piilota koordinaatit  (pika: 0)}
 helpMsg U .main.fbutton.button.stm {N‰yt‰/piilota siirtovuoron osoitin}
 helpMsg U .main.fbutton.button.autoplay {Siirr‰ automaattisesti  (pika: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg U .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg U .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg U .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate U Back {Palaa}

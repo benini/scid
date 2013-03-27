@@ -340,6 +340,12 @@ helpMsg B .main.fbutton.button.flip {Girar tabuleiro  (tecla de atalho: .)}
 helpMsg B .main.fbutton.button.coords {Liga/desliga coordenadas  (tecla de atalho: 0)}
 helpMsg B .main.fbutton.button.stm {Liga/Desliga o ícone que indica o lado que tem o movimento} ;# ***
 helpMsg B .main.fbutton.button.autoplay {Jogo automatico  (tecla: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg B .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg B .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg B .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate B Back {Voltar}
@@ -1790,6 +1796,7 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
+
 
 
 

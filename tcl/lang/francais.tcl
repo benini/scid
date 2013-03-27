@@ -342,6 +342,12 @@ helpMsg F .main.fbutton.button.flip {Retourner l'échiquier  (Raccourci clavier: 
 helpMsg F .main.fbutton.button.coords {Afficher/Enlever les coordonnées  (Raccourci clavier: 0)}
 helpMsg F .main.fbutton.button.stm {Afficher/Enlever l'icone du joueur ayant le trait}
 helpMsg F .main.fbutton.button.autoplay {Jeu automatique  (Raccourci clavier: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg F .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg F .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg F .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate F Back {Retour}
@@ -1944,6 +1950,7 @@ translate F ChangeIcon {Changer icone...}
 }
 
 # end of francais.tcl
+
 
 
 

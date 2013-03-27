@@ -359,6 +359,12 @@ helpMsg N .main.fbutton.button.flip {Draai bord  (toets: .)}
 helpMsg N .main.fbutton.button.coords {Coordinaten aan/uit  (toets: 0)}
 helpMsg N .main.fbutton.button.stm {Zet zijde-aan-zet ikoon aan ofaf} ;
 helpMsg N .main.fbutton.button.autoplay {Speel zetten automatisch  (toets: Ctrl+Z)}
+# ====== TODO To be translated ======
+helpMsg N .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+# ====== TODO To be translated ======
+helpMsg N .main.fbutton.button.hgame_prev {Go back to previous viewed game}
+# ====== TODO To be translated ======
+helpMsg N .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate N Back {Terug}
@@ -1880,6 +1886,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
+
 
 
 
