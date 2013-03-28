@@ -1090,6 +1090,7 @@ scid-4.4
 		- automatically computed "game rating"
 		- customizable layout
 	* Tree Window can show statistics for filtered games
+    * New option "Include arrow with move highlight", thanks to Mike Curtis
 
 - Language updates:
 	* swedish translation (thanks to Hans Eriksson)
@@ -1097,6 +1098,7 @@ scid-4.4
 	* finnish translation (thanks to Timo Pirinen)
 
 - Fixes :
+	* Fix: screentip fixes thanks to Mike Curtis
 	* Fix: base_open_failure
 	* Fix: wrong braces. Thanks to ASM
 	* Fix: Debian Bug #661091: unable to resign in xfcc.
