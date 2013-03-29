@@ -172,6 +172,8 @@ menuText B ToolsTrainTactics "Táticas"  0 {Exercícios de tática}
 menuText B ToolsTrainCalvar "Cálculo de Variantes"  0 {Treinamento de cálculo de variantes}
 menuText B ToolsTrainFindBestMove "Procurar melhor movimento"  0 {Procura o melhor movimento}
 menuText B ToolsTrainFics "Jogar na internet"  0 {Jogar em  freechess.org}
+# ====== TODO To be translated ======
+menuText B ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText B ToolsBookTuning "Sintonizar Livro" 0 {Sintonizar livro de aberturas}
 menuText B ToolsConnectHardware "Conectar Hardware" 0 {Conectar hardware externo}
 menuText B ToolsConnectHardwareConfigure "Configurar..." 0 {Configurar hardware e conexão externa}
@@ -1796,6 +1798,7 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
+
 
 
 

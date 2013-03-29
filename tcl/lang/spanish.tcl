@@ -185,6 +185,8 @@ menuText S ToolsTrainTactics "Táctica (problemas)"  0 {Resuelve problemas de tác
 menuText S ToolsTrainCalvar "Cálculo de variaciones"  0 {Cálculo de variaciones}
 menuText S ToolsTrainFindBestMove "Encontrar la mejor jugada"  0 {Busca el movimiento mejor}
 menuText S ToolsTrainFics "Jugar en internet..."  0 {Conecta a freechess.org}
+# ====== TODO To be translated ======
+menuText S ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText S ToolsBookTuning "Sintonizar libro de aperturas" 0 {Sintoniza el libro (Book)}
 menuText S ToolsConnectHardware "Conectar hardware" 0 {Conecta hardware externo"}
 menuText S ToolsConnectHardwareConfigure "Configuración..." 1 {Configuración}
@@ -1786,6 +1788,7 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
+
 
 
 

@@ -1764,8 +1764,6 @@ proc makeAnalysisWin { {n 1} {index -1} } {
         catch {
             ::enginelist::setTime $index
         }
-    } else {
-        set index [expr {$n - 1}]
     }
     
     if {$index == ""  ||  $index < 0} {
@@ -3491,6 +3489,24 @@ if {$png_image_support} {
 		/JiAo/Xj+cXZFgBmxS+j0Wjp5mv8DbwBYHRvj9quE3MAAAAielRYdFNvZnR3YXJlAAB42isvL9fL
 		zMsuTk4sSNXLL0oHADbYBlgQU8pcAAAAAElFTkSuQmCC
 	}
+}
+
+image create photo uci -data {
+R0lGODlhGAAYAMZLACBKhzRlpF9fXmpnZ1hthEVxqVtxiU50pGB2j2B3kVR8
+rmN7lVl9q39/f2WErGyFoYGKlXWQroGTqYKXso2YpYSctpCmvpGmvpeltpmt
+w6SttqKuvJ2wyq+vr6exvaG0yJ22zp240qS60LvByMHBwbDG28zMzM/NysDR
+4tjY19zc3NPf6t/f39fi7ePi4ePj4uTj4d/n8Ofm5Ojn5Ovp5+rq6uzq6O3r
+6e3r6u3y9vLx7+7z9vPy8fPz8vD09/T09Pb29fj39vj49/j4+Pn49/n59/n5
++Pr6+fr6+vv7+/7+/v//////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////yH5BAEKAH8A
+LAAAAAAYABgAAAfvgH+Cg4SFhoeCAwOIjIQDJEYNi42MA0E8KZOGEwGNAzZG
+moQBSwedg4qTDTihhqQmHQ6OMzWKLzZHooIBKh2ngw0kOjc2NMatgwFIAb+E
+DSdCRkVGxkSTAUrNhpKKDUbFQA0BQ9qU3jIjBT/llH8DHAEsDA3thAD3AT8K
+Gkm6jAARRFgAEMADCRdK/BkCuGIDiAUABigxlrARgAotKCwIkQCAOyXFKh4C
+kCGGBAIhIhjw+JGiPwAfdkhAkHKlIyUwBIgUBOCCDww0VbK82YOEKAAlckCo
+ObRQqkIAHoRAccFmPXsPHkC8uvAe16+NAgEAOw==
 }
 
 

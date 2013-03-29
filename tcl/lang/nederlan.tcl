@@ -188,6 +188,8 @@ menuText N ToolsTrainTactics "Tactiek "  0 {Los tactische stellingen op }
 menuText N ToolsTrainCalvar "Berekenen van varianten"  0 {Training in het berekenen van varianten}
 menuText N ToolsTrainFindBestMove "Vind de beste zet"  0 {Vind de beste zet}
 menuText N ToolsTrainFics "Speel op het internet"  0 {Speel of freechess.org}
+# ====== TODO To be translated ======
+menuText N ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText N ToolsBookTuning "Openingenboek afstemming " 0 {Openingenboek afstemming}
 menuText N ToolsConnectHardware "Verbind Hardware" 0 {Verbind externe hardware}
 menuText N ToolsConnectHardwareConfigure "Configureer..." 0 {Configureer externe hardware en verbinding}
@@ -1886,6 +1888,7 @@ translate N Undock {Undock}
 translate N ChangeIcon {Verander ikoon...}
 }
 # End of nederlan.tcl
+
 
 
 

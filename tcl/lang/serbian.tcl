@@ -187,6 +187,8 @@ menuText Y ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 # ====== TODO To be translated ======
 menuText Y ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
+menuText Y ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+# ====== TODO To be translated ======
 menuText Y ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
 menuText Y ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
@@ -2245,6 +2247,7 @@ translate Y ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of serbian.tcl
+
 
 
 

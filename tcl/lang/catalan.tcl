@@ -186,6 +186,8 @@ menuText K ToolsTrainTactics "Tàctica"  0 {Resoldre problemes de tàctica}
 menuText K ToolsTrainCalvar "Càlcul de variants"  0 {Càlcul de variants}
 menuText K ToolsTrainFindBestMove "Trobar la millor jugada"  0 {Cerca la millor jugada}
 menuText K ToolsTrainFics "Jugar a Internet"  0 {Jugar a freechess.org}
+# ====== TODO To be translated ======
+menuText K ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText K ToolsBookTuning "Ajustar Llibre d'obertures" 0 {Ajustar Llibre (Book)}
 menuText K ToolsConnectHardware "Connectar maquinari" 0 {Connectar maquinari extern}
 menuText K ToolsConnectHardwareConfigure "Configuració" 1 {Configuració}
@@ -1811,6 +1813,7 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
+
 
 
 

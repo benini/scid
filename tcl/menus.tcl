@@ -473,6 +473,8 @@ $m add command -label ToolsTacticalGame -command ::tacgame::config
 set helpMessage($m,[incr menuindex]) ToolsTacticalGame
 $m add command -label ToolsTrainFics -command ::fics::config
 set helpMessage($m,[incr menuindex]) ToolsTrainFics
+$m add command -label ToolsEngineTournament -command ::compInit
+set helpMessage($m,[incr menuindex]) ToolsEngineTournament
 $m add separator
 incr menuindex
 
@@ -1570,7 +1572,7 @@ proc setLanguageMenus {{lang ""}} {
   
   if {$lang == ""} {set lang $::language}
   
-  foreach tag { ToolsSeriousGame CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsTrainFics} {
+  foreach tag { ToolsSeriousGame CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsTrainFics ToolsEngineTournament} {
     configMenuText .menu.play [tr $tag $oldLang] $tag $lang
   }
   

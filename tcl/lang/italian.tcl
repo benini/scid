@@ -172,6 +172,8 @@ menuText I ToolsTrainTactics "Tattiche"  0 {Risolvi problemi tattici}
 menuText I ToolsTrainCalvar "Calcolo delle varianti"  0 {Allenati sul calcolo delle varianti}
 menuText I ToolsTrainFindBestMove "Trova la mossa migliore"  0 {Trova la mossa migliore}
 menuText I ToolsTrainFics "Gioca su internet"  0 {Gioca su freechess.org}
+# ====== TODO To be translated ======
+menuText I ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText I ToolsBookTuning "Raffina il libro delle aperture" 0 {Raffina il libro delle aperture}
 # ====== TODO To be translated ======
 menuText I ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
@@ -2163,6 +2165,7 @@ set tips(I) {
 
 
 # end of italian.tcl
+
 
 
 

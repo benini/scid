@@ -164,6 +164,8 @@ menuText C ToolsTrainTactics "Taktika"  0 {Øe¹it taktické úkoly}
 menuText C ToolsTrainCalvar "Propoèet variant"  0 {Trénink propoètu variant}
 menuText C ToolsTrainFindBestMove "Nalézt nejlep¹í tah"  0 {Nalézt nejlep¹í tah}
 menuText C ToolsTrainFics "Hrát na internetu"  0 {Hrát na freechess.org}
+# ====== TODO To be translated ======
+menuText C ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText C ToolsBookTuning "Ladìní knihovny zahájení" 0 {Ladìní knihovny zahájení}
 menuText C ToolsConnectHardware "Pøipojit hardware" 0 {Pøipojit externí hardware}
 menuText C ToolsConnectHardwareConfigure "Konfigurovat..." 0 {Konfigurovat externí hardware a pøipojení}
@@ -5382,6 +5384,7 @@ vysvìtluje detailnì formáty PGN a EPD.</li> </ul>
 }
 
 # end of czech.tcl
+
 
 
 

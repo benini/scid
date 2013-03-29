@@ -204,6 +204,7 @@ menuText E ToolsTrainTactics "Tactics"  0 {Solve tactics}
 menuText E ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
 menuText E ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 menuText E ToolsTrainFics "Play on FICS"  0 {Play on freechess.org}
+menuText E ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText E ToolsBookTuning "Book tuning" 0 {Book tuning}
 menuText E ToolsConnectHardware "Connect Hardware" 8 {Connect external hardware}
 menuText E ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}

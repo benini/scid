@@ -193,6 +193,8 @@ menuText P ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 # ====== TODO To be translated ======
 menuText P ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
+menuText P ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+# ====== TODO To be translated ======
 menuText P ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
 menuText P ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
@@ -2472,6 +2474,7 @@ set tips(P) {
 }
 
 # end of polish.tcl
+
 
 
 

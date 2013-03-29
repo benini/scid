@@ -172,6 +172,8 @@ menuText H ToolsTrainTactics "Taktika"  0 {Feladványok megfejtése}
 menuText H ToolsTrainCalvar "Változatszámítás"  0 {Változatszámítás gyakorlása}
 menuText H ToolsTrainFindBestMove "Legjobb lépés"  0 {A legjobb lépés megkeresése}
 menuText H ToolsTrainFics "Internetes játszma"  0 {Játék a freechess.org szerveren}
+# ====== TODO To be translated ======
+menuText H ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText H ToolsBookTuning "Megnyitástár-hangolás" 13 {Megnyitástár-hangolás}
 menuText H ToolsConnectHardware "Hardver csatlakoztatása" 8 {Külsõ hardver csatlakoztatása}
 menuText H ToolsConnectHardwareConfigure "Beállítás" 0 {Külsõ hardver és kapcsolat beállítása}
@@ -2022,6 +2024,7 @@ set tips(H) {
 }
 
 # end of hungary.tcl
+
 
 
 

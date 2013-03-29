@@ -189,6 +189,8 @@ menuText O ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 # ====== TODO To be translated ======
 menuText O ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
+menuText O ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+# ====== TODO To be translated ======
 menuText O ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
 menuText O ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
@@ -2245,6 +2247,7 @@ translate O ChangeIcon {Change icon...}
 
 # Sjekkliste:
 # - Snarveier
+
 
 
 

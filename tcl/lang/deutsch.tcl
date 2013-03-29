@@ -195,6 +195,8 @@ menuText D ToolsTrainTactics "Taktik"  0 {Taktische Stellungen lösen}
 menuText D ToolsTrainCalvar "Varianten berechnen"  0 {Training zum Berechnen von Varianten}
 menuText D ToolsTrainFindBestMove "Besten Zug finden"  0 {Find best move}
 menuText D ToolsTrainFics "Internetpartie (FICS)"  0 {Internetpartie auf freechess.org}
+# ====== TODO To be translated ======
+menuText D ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText D ToolsBookTuning "Buch abstimmen" 0 {Buch abstimmen}
 menuText D ToolsConnectHardware "Hardware verbinden" 0 {Externe Hardware mit Scid verbinden}
 menuText D ToolsConnectHardwareConfigure "Konfigurieren..." 0 {Hardware und Verbindung konfigurieren}
@@ -7319,6 +7321,7 @@ entfernt und alle neu angelegten hinzugefügt. Durch drücken von
 
 
 ### End of file: deutsch.tcl
+
 
 
 

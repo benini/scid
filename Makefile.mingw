@@ -129,7 +129,7 @@ TCLS= \
     tcl\tools\email.tcl \
     tcl\tools\import.tcl \
     tcl\tools\optable.tcl tcl\tools\preport.tcl tcl\tools\pinfo.tcl \
-    tcl\tools\analysis.tcl tcl\tools\wbdetect.tcl \
+    tcl\tools\analysis.tcl tcl\tools\comp.tcl tcl\tools\wbdetect.tcl \
     tcl\tools\reper.tcl tcl\tools\graphs.tcl tcl\tools\tablebase.tcl tcl\tools\ptracker.tcl \
   tcl\help\help.tcl tcl\help\tips.tcl \
   tcl\menus.tcl tcl\board.tcl tcl\move.tcl tcl\main.tcl tcl\tools\correspondence.tcl \

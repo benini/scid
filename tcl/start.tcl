@@ -133,6 +133,21 @@ set ::tacgame::analysisTime 10
 set ::tacgame::openingType new
 set ::tacgame::chosenOpening 0
 
+set comp(timecontrol) pergame
+set comp(seconds) 180
+set comp(minutes) 1
+set comp(incr) 0
+set comp(timeout) 0 ;# disabled by default
+set comp(name) "Engine tournament"
+set comp(rounds) 2
+set comp(showclock) 0
+set comp(debug) 1 ; # print info to console
+set comp(animate) 1
+set comp(firstonly) 0
+set comp(ponder) 0
+set comp(usebook) 0
+set comp(book) {}
+
 # List of saved layouts : 3 slots available
 array set ::docking::layout_list {}
 # Basic layout : PGN window with main board

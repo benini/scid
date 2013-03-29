@@ -173,6 +173,8 @@ menuText W ToolsTrainTactics "Taktik"  0 {Lösa taktik}
 menuText W ToolsTrainCalvar "Variantberäkning"  0 {Variantberäkningsträning}
 menuText W ToolsTrainFindBestMove "Hitta bäst drag"  0 {Hitta bästa draget}
 menuText W ToolsTrainFics "Spela på Internet"  0 {Spela på freechess.org}
+# ====== TODO To be translated ======
+menuText W ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText W ToolsBookTuning "Bokfininställning" 0 {Bokfininställning}
 menuText W ToolsConnectHardware "Anslut Hårdvara" 0 {Anslut extern hårdvara}
 menuText W ToolsConnectHardwareConfigure  "Konfiguration" 0 {Konfiguration}
@@ -6709,6 +6711,7 @@ set tips(W) {
   }
 }
 #}
+
 
 
 

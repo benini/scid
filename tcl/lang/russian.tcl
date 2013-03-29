@@ -190,6 +190,8 @@ menuText R ToolsTrainFindBestMove "Find best move"  0 {Find best move}
 # ====== TODO To be translated ======
 menuText R ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
 # ====== TODO To be translated ======
+menuText R ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+# ====== TODO To be translated ======
 menuText R ToolsBookTuning "Book tuning" 0 {Book tuning}
 # ====== TODO To be translated ======
 menuText R ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
@@ -2274,6 +2276,7 @@ translate R ChangeIcon {Change icon...}
 # ====== TODO To be translated ======
 }
 # end of russian.tcl
+
 
 
 

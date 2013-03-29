@@ -196,6 +196,8 @@ menuText G ToolsTrainTactics "Τακτικές"  0 {Επιλύστε τακτι�
 menuText G ToolsTrainCalvar "Υπολογισμός βαριαντών"  0 {Προπόνηση στον υπολογισμό βαριαντών}
 menuText G ToolsTrainFindBestMove "Εύρεση καλύτερης κίνησης"  0 {Βρείτε την καλύτερη κίνηση}
 menuText G ToolsTrainFics "Παιχνίδι στον FICS"  0 {Παίξτε στο freechess.org}
+# ====== TODO To be translated ======
+menuText G ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
 menuText G ToolsBookTuning "Συντονισμός βιβλίου" 0 {Συντονισμός βιβλίου}
 menuText G ToolsConnectHardware "Σύνδεση περιφερειακού" 8 {Συνδέστε εξωτερικό περιφερειακό}
 menuText G ToolsConnectHardwareConfigure "Ρύθμιση..." 0 {Ρυθμίστε εξωτερικό περιφερειακό και συνδέσεις}
@@ -1798,5 +1800,6 @@ translate G ChangeIcon {Αλλαγή εικονιδίου...}
 
 }
 # end of greek.tcl
+
 
 
