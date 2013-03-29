@@ -74,6 +74,8 @@ menuText N EditTrial "Probeer variatie" 0 \
   {Start/stop probeer modus, om een idee op het bord te testen}
 menuText N EditStrip "Verwijder analyse" 2 {Verwijder commentaar of varianten uit deze partij}
 menuText N EditUndo "Ongedaan" 0 {Maak laatset verandering ongedaan}
+# ====== TODO To be translated ======
+menuText N EditRedo "Redo" 0 {Redo last game change}
 menuText N EditStripComments "Commentaar" 0 \
   {Verwijder alle commentaar en annotaties uit deze partij}
 menuText N EditStripVars "Varianten" 0 {Verwijder alle varianten uit deze partij}

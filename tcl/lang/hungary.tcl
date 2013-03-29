@@ -67,6 +67,8 @@ menuText H EditTrial "Változat kipróbálása" 0 \
 menuText H EditStrip "Lecsupaszít" 2 {Eltávolítja a megjegyzéseket vagy a változatokat ebbõl a játszmából.}
 # ====== TODO To be translated ======
 menuText H EditUndo "Undo" 0 {Undo last game change}
+# ====== TODO To be translated ======
+menuText H EditRedo "Redo" 0 {Redo last game change}
 menuText H EditStripComments "Megjegyzések" 0 \
   {Eltávolítja az összes megjegyzést és elemzést ebbõl a játszmából.}
 menuText H EditStripVars "Változatok" 0 {Eltávolítja az összes változatot ebbõl a játszmából.}

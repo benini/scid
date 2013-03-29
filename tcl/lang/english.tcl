@@ -104,6 +104,7 @@ menuText E EditTrial "Try Variation" 0 \
   {Start/stop trial mode, for testing an idea on the board}
 menuText E EditStrip "Strip" 2 {Strip comments or variations from this game}
 menuText E EditUndo "Undo" 0 {Undo last game change}
+menuText E EditRedo "Redo" 0 {Redo last game change}
 menuText E EditStripComments "Comments" 0 \
   {Strip all comments and annotations from this game}
 menuText E EditStripVars "Variations" 0 {Strip all variations from this game}

@@ -70,6 +70,8 @@ menuText O EditTrial "Prøv variasjon" 0 \
 menuText O EditStrip "Fjern" 0 {Fjern kommentarer eller variasjoner fra partiet}
 # ====== TODO To be translated ======
 menuText O EditUndo "Undo" 0 {Undo last game change}
+# ====== TODO To be translated ======
+menuText O EditRedo "Redo" 0 {Redo last game change}
 menuText O EditStripComments "Kommentarer" 0 \
   {Fjern alle kommentarer og annotasjoner fra dette partiet}
 menuText O EditStripVars "Variasjoner" 0 {Fjern alle variasjoner fra dette partiet}

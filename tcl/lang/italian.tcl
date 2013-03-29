@@ -71,6 +71,8 @@ menuText I EditTrial "Prova una variante" 0 \
 menuText I EditStrip "Pulisci" 2 {Elimina commenti o varianti dalla partita corrente}
 # ====== TODO To be translated ======
 menuText I EditUndo "Undo" 0 {Undo last game change}
+# ====== TODO To be translated ======
+menuText I EditRedo "Redo" 0 {Redo last game change}
 menuText I EditStripComments "Commenti" 0 \
   {Elimina tutti i commenti e le annotazioni dalla parita corrente}
 menuText I EditStripVars "Varianti" 0 {Elimina tutte le varianti dalla partita corrente}

@@ -66,6 +66,8 @@ menuText F EditTrial "Essayer une variante" 0 \
   {Démarrer/Stopper mode d'essai, pour tester une idée sur l'échiquier}
 menuText F EditStrip "Épurer" 2 {Épurer les commentaires ou les variantes de cette partie}
 menuText F EditUndo "Annuler" 0 {Annuler la dernière modification de la partie}
+# ====== TODO To be translated ======
+menuText F EditRedo "Redo" 0 {Redo last game change}
 menuText F EditStripComments "Commentaires" 0 \
   {Épurer cette partie de tous les commentaires et annotations}
 menuText F EditStripVars "Variantes" 0 {Épurer cette partie des variantes}

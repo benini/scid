@@ -305,8 +305,11 @@ set helpMessage($m,[incr menuindex]) EditTrial
 $m add cascade -label EditStrip -menu $m.strip
 set helpMessage($m,[incr menuindex]) EditStrip
 
-$m add command -label EditUndo -accelerator "Ctrl+z" -command {  sc_game undo ; updateBoard -pgn }
+$m add command -label EditUndo -accelerator "Ctrl+z" -command { undoFeature undo }
 set helpMessage($m,[incr menuindex]) EditUndo
+
+$m add command -label EditRedo -accelerator "Ctrl+y" -command { undoFeature redo }
+set helpMessage($m,[incr menuindex]) EditRedo
 
 menu $m.strip
 $m.strip add command -label EditStripComments -command {::game::Strip comments}
@@ -1608,7 +1611,7 @@ proc setLanguageMenus {{lang ""}} {
         FileMaintName$tag $lang
   }
   foreach tag {Add Delete First Main Trial Strip Reset Copy Paste PastePGN Setup Undo
-    CopyBoard PasteBoard} {
+    Redo CopyBoard PasteBoard} {
     configMenuText .menu.edit [tr Edit$tag $oldLang] Edit$tag $lang
   }
   foreach tag {Comments Vars Begin End} {
@@ -1798,7 +1801,8 @@ proc standardShortcuts {w} {
     bind $w <F11> { if {[wm attributes . -fullscreen]} { wm attributes . -fullscreen 0} else { wm attributes . -fullscreen 1} }
   }
 
-  bind $w <Control-z> {  sc_game undo ; updateBoard -pgn }
+  bind $w <Control-z> { undoFeature undo }
+  bind $w <Control-y> { undoFeature redo }
   bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
   bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
   bind $w <exclam><question><Return> "sc_pos addNag !?; updateBoard -pgn"

@@ -66,6 +66,8 @@ menuText C EditTrial "Zkusit variantu" 1 \
     {Spustit/Ukonèit zku¹ební mód pro testování my¹lenky na ¹achovnici}
 menuText C EditStrip "Odstranit" 0 {Odstranit komentáøe nebo varianty z této partie}
 menuText C EditUndo "Vzít zpìt" 0 {Vzít zpìt poslední zmìnu v partii}
+# ====== TODO To be translated ======
+menuText C EditRedo "Redo" 0 {Redo last game change}
 menuText C EditStripComments "Komentáøe" 0 \
   {Odstranit v¹echny poznámky a anotace z této partie}
 menuText C EditStripVars "Varianty" 0 {Odstranit v¹echny varianty z této partie}

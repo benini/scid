@@ -81,7 +81,7 @@ proc ::game::Clear {} {
 #   Strips all comments or variations from a game
 #
 proc ::game::Strip {type} {
-  sc_game undoPoint
+  undoFeature save
   if {[catch {sc_game strip $type} result]} {
     tk_messageBox -parent . -type ok -icon info -title "Scid" -message $result
     return
@@ -93,7 +93,7 @@ proc ::game::Strip {type} {
 # ::game::TruncateBegin
 #
 proc ::game::TruncateBegin {} {
-  sc_game undoPoint
+  undoFeature save
   if {[catch {sc_game truncate -start} result]} {
     tk_messageBox -parent . -type ok -icon info -title "Scid" -message $result
     return
@@ -105,7 +105,7 @@ proc ::game::TruncateBegin {} {
 # ::game::Truncate
 #
 proc ::game::Truncate {} {
-  sc_game undoPoint
+  undoFeature save
   if {[catch {sc_game truncate} result]} {
     tk_messageBox -parent . -type ok -icon info -title "Scid" -message $result
     return

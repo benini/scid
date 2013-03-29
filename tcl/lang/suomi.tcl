@@ -1,4 +1,3 @@
-
 # Text for menu names and status bar help messages in English.
 # Part of Scid (Shane's Chess Information Database).
 #
@@ -38,7 +37,6 @@
 #     letters when your translations are incorporated into Scid.
 #
 # Additions, corrections? Email: sgh@users.sourceforge.net
-
 
 addLanguage U Suomi 1 iso8859-1
 
@@ -104,6 +102,8 @@ menuText U EditTrial "Kokeile muunnelmaa" 0 \
   {Aloita/lopeta tila, jossa voit testata muunnelmiasi laudalla}
 menuText U EditStrip "Poista" 2 {Poista siirtoja, kommentteja tai muunnelmia}
 menuText U EditUndo "Kumoa" 1 {Peruuta viimeisin muutos}
+# ====== TODO To be translated ======
+menuText U EditRedo "Redo" 0 {Redo last game change}
 menuText U EditStripComments "Kommentit" 1 \
   {Poista kaikki kommentit ja arvioinnit pelistä}
 menuText U EditStripVars "Muunnelmat" 3 {Poista kaikki muunnelmat pelistä}

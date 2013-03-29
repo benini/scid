@@ -68,6 +68,8 @@ menuText Y EditTrial "Probaj varijantu" 0 \
 menuText Y EditStrip "Ukloni" 2 {Ukloni komentare ili varijante iz ove partije}
 # ====== TODO To be translated ======
 menuText Y EditUndo "Undo" 0 {Undo last game change}
+# ====== TODO To be translated ======
+menuText Y EditRedo "Redo" 0 {Redo last game change}
 menuText Y EditStripComments "Komentare" 0 \
   {Ukloni sve komentare i napomene iz ove partije}
 menuText Y EditStripVars "Varijante" 0 {Ukloni sve varijante iz ove partije}

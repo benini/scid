@@ -52,14 +52,14 @@ proc moveEntry_Complete {} {
         set action "replace"
         if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
         if {$action == "replace"} {
-            sc_game undoPoint
+            undoFeature save
             sc_move addSan $move
         } elseif {$action == "var"} {
-            sc_game undoPoint
+            undoFeature save
             sc_var create
             sc_move addSan $move
         } elseif {$action == "mainline"} {
-            sc_game undoPoint
+            undoFeature save
             sc_var create
             sc_move addSan $move
             sc_var exit
@@ -860,6 +860,7 @@ proc updateBoard {args} {
 #    Update the status of each navigation button
 #
 proc updateNavButtons {} {
+    global trialMode
     if {[sc_pos isAt start]} {
         .main.fbutton.button.start configure -state disabled
     } else { .main.fbutton.button.start configure -state normal }
@@ -892,6 +893,13 @@ proc updateNavButtons {} {
         .menu.edit entryconfig [tr EditDelete] -state normal
         .menu.edit entryconfig [tr EditFirst] -state normal
         .menu.edit entryconfig [tr EditMain] -state normal
+    }
+    if {$trialMode} {
+        .menu.edit entryconfig [tr EditUndo] -state disabled
+        .menu.edit entryconfig [tr EditRedo] -state disabled
+    } else {
+        .menu.edit entryconfig [tr EditUndo] -state normal
+        .menu.edit entryconfig [tr EditRedo] -state normal
     }
     updateVarMenus
     if {[sc_var level] == 0} {
@@ -1347,7 +1355,7 @@ proc addMove { sq1 sq2 {animate ""}} {
         }
     }
     
-    sc_game undoPoint
+    undoFeature save
     
     set action "replace"
     if {![sc_pos isAt vend]} {
@@ -1446,7 +1454,7 @@ proc addSanMove {san {animate ""} {noTraining ""}} {
         return
     }
     # if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
-    sc_game undoPoint
+    undoFeature save
     sc_move addSan $san
     if {$action == "mainline"} {
         sc_var exit
@@ -1853,4 +1861,17 @@ proc setTrialMode {mode} {
     updateBoard -pgn
 }
 
-
+proc undoFeature {action} {
+    global trialMode
+    if {! $trialMode} {
+        if {$action == "save"} {
+            sc_game undoPoint
+        } elseif {$action == "undo"} {
+            sc_game undo
+            updateBoard -pgn
+        } elseif {$action == "redo"} {
+            sc_game redo
+            updateBoard -pgn
+        }
+    }
+}

@@ -85,6 +85,8 @@ menuText D EditTrial "Variante testen" 9 \
 menuText D EditStrip "Entfernen" 1 \
    {Kommentare oder Varianten aus der Partie entfernen}
 menuText D EditUndo "Rückgängig" 0 {Macht die letzte Änderung rückgängig}
+# ====== TODO To be translated ======
+menuText D EditRedo "Redo" 0 {Redo last game change}
 menuText D EditStripComments "Kommentare" 0 \
   {Alle Kommentare und Kommentarzeichen aus dieser Partie entfernen}
 menuText D EditStripVars "Varianten" 0 \

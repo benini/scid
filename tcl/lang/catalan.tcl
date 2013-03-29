@@ -73,6 +73,8 @@ menuText K EditStrip "Eliminar" 2 \
   {Eliminar comentaris o variants d'aquesta partida}
 # ====== TODO To be translated ======
 menuText K EditUndo "Undo" 0 {Undo last game change}
+# ====== TODO To be translated ======
+menuText K EditRedo "Redo" 0 {Redo last game change}
 menuText K EditStripComments "Comentaris" 0 \
   {Treu tots els comentaris i variants d'aquesta partida}
 menuText K EditStripVars "Variants" 0 {Treu totes les variants d'aquesta partida}

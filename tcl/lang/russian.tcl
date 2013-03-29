@@ -70,6 +70,8 @@ menuText R EditTrial "Попробовать вариант" 0 \
 menuText R EditStrip "Убрать" 1 {Убрать комментарии или варианты из партии}
 # ====== TODO To be translated ======
 menuText R EditUndo "Undo" 0 {Undo last game change}
+# ====== TODO To be translated ======
+menuText R EditRedo "Redo" 0 {Redo last game change}
 menuText R EditStripComments "Комментарии" 0 \
   {Убрать все комментарии и аннотации из этой партии}
 menuText R EditStripVars "Варианты" 0 {Убрать все варианты из этой партии}

@@ -96,6 +96,8 @@ menuText G EditTrial "Έλεγχος βαριάντας" 0 \
   {Έναρξη/διακοπή της λειτουργίας ελέγχου μιας ιδέας στην σκακιέρα}
 menuText G EditStrip "Απομάκρυνση" 2 {Απομακρύνετε τα σχόλια ή τις βαριάντες από αυτή τη παρτίδα}
 menuText G EditUndo "Επαναφορά" 0 {Επαναφέρετε την τελευταία αλλαγή στην παρτίδα}
+# ====== TODO To be translated ======
+menuText G EditRedo "Redo" 0 {Redo last game change}
 menuText G EditStripComments "Σχόλια" 0 \
   {Απομακρύνετε όλα τα σχόλια και τον υπομνηματισμό από αυτή τη παρτίδα}
 menuText G EditStripVars "Βαριάντες" 0 {Απομακρύνετε όλες τις βαριάντες από αυτή τη παρτίδα}
