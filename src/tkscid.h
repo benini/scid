@@ -161,6 +161,9 @@ struct scidBaseT {
     Game *       game;          // the active game for this base.
     Game *       undoGame[UNDO_MAX]; // array of games kept for undos
     int          undoIndex;
+    int          undoMax;
+    int          undoCurrent;   // which undo buffer has the currently saved game
+    bool         undoFull;	// if buffer gets filled, we cant unset gameAltered
     int          gameNumber;    // game number of active game.
     bool         gameAltered;   // true if game is modified
     bool         inUse;         // true if the database is open (in use).
@@ -374,7 +377,7 @@ void filter_reset (scidBaseT * base, byte value);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // manage undo functions
 //
-void sc_game_save_for_undo ();
+void sc_game_undo_point();
 void sc_game_undo_reset();
 
 //////////////////////////////////////////////////////////////////////
