@@ -180,7 +180,7 @@ class NameBase
     errorT    FindExactName      (nameT nt, const char * str, idNumberT * idPtr);
     errorT    AddName            (nameT nt, const char * str, idNumberT * idPtr);
 
-    char *    GetName            (nameT nt, idNumberT id);
+    const char * GetName         (nameT nt, idNumberT id);
     uint      GetFrequency       (nameT nt, idNumberT id);
     void      IncFrequency       (nameT nt, idNumberT id, int increment);
     void      SetFrequency       (nameT nt, idNumberT id, int increment);
@@ -236,7 +236,7 @@ class NameBase
 // Namebase::GetName():
 //      Get a name given the ID number.
 //
-inline char *
+inline const char *
 NameBase::GetName (nameT nt, idNumberT id)
 {
     ASSERT (IsValidNameType(nt));

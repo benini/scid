@@ -125,11 +125,11 @@ class MFile
     uint          ReadThreeBytes ();
     uint          ReadFourBytes ();
 
-    inline char * GetFileName ();
+    inline const char * GetFileName ();
 };
 
 
-inline char *
+inline const char *
 MFile::GetFileName ()
 {
     if (FileName == NULL) {

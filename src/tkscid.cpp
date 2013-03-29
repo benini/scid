@@ -3770,7 +3770,7 @@ sc_base_fix_corrupted (ClientData cd, Tcl_Interp * ti, int argc, const char ** a
         idMapping [nt] = new idNumberT [nb->GetNumNames(nt)];
         idNumberT numNames = nb->GetNumNames (nt);
         for (idNumberT oldID = 0; oldID < numNames; oldID++) {
-            char * name = nb->GetName (nt, oldID);
+            const char * name = nb->GetName (nt, oldID);
             uint frequency = nb->GetFrequency (nt, oldID);
             if (frequency > 0) {
                 uint newID;
@@ -12281,7 +12281,7 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint matches = db->nb->GetFirstMatches (nt, prefix, maxMatches, array);
     for (uint i=0; i < matches; i++) {
         uint freq = db->nb->GetFrequency (nt, array[i]);
-        char * str = db->nb->GetName (nt, array[i]);
+        const char * str = db->nb->GetName (nt, array[i]);
         appendUintElement (ti, freq);
         Tcl_AppendElement (ti, str);
         if (nt == NAME_PLAYER  &&  eloMode) {
@@ -15955,7 +15955,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         mWhite = new bool [numNames];
 #endif
         for (idNumberT i=0; i < numNames; i++) {
-            char * name = db->nb->GetName (NAME_PLAYER, i);
+            const char * name = db->nb->GetName (NAME_PLAYER, i);
             if (wildcard) {
                 mWhite[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -16021,7 +16021,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         mBlack = new bool [numNames];
 #endif
         for (idNumberT i=0; i < numNames; i++) {
-            char * name = db->nb->GetName (NAME_PLAYER, i);
+            const char * name = db->nb->GetName (NAME_PLAYER, i);
             if (wildcard) {
                 mBlack[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -16087,7 +16087,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         mEvent = new bool [numNames];
 #endif
         for (idNumberT i=0; i < numNames; i++) {
-            char * name = db->nb->GetName (NAME_EVENT, i);
+            const char * name = db->nb->GetName (NAME_EVENT, i);
             if (wildcard) {
                 mEvent[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -16113,7 +16113,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         mSite = new bool [numNames];
 #endif
         for (idNumberT i=0; i < numNames; i++) {
-            char * name = db->nb->GetName (NAME_SITE, i);
+            const char * name = db->nb->GetName (NAME_SITE, i);
             if (wildcard) {
                 mSite[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -16139,7 +16139,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         mRound = new bool [numNames];
 #endif
         for (idNumberT i=0; i < numNames; i++) {
-            char * name = db->nb->GetName (NAME_ROUND, i);
+            const char * name = db->nb->GetName (NAME_ROUND, i);
             if (wildcard) {
                 mRound[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {

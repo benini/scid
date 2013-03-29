@@ -216,7 +216,7 @@ compactNameBase (NameBase * nb)
         idMapping [nt] = new idNumberT [nb->GetNumNames(nt)];
         idNumberT numNames = nb->GetNumNames (nt);
         for (idNumberT oldID = 0; oldID < numNames; oldID++) {
-            char * name = nb->GetName (nt, oldID);
+            const char * name = nb->GetName (nt, oldID);
             uint frequency = nb->GetFrequency (nt, oldID);
             if (frequency > 0) {
                 uint newID;
@@ -323,7 +323,7 @@ printNameInfo (NameBase * nb, Index * idx)
 {
     errorT err;
     nameT nt;
-    char *ntStr[4] = {"PLAYER", "EVENT", "SITE", "ROUND"};
+    const char *ntStr[4] = {"PLAYER", "EVENT", "SITE", "ROUND"};
 
     err= nb->ReadNameFile();
     if (err != OK) { fileErr (filename, NAMEBASE_SUFFIX, err); }
@@ -364,8 +364,8 @@ printNameInfo (NameBase * nb, Index * idx)
                 longestID = i;
             }
             if (i > 0) {
-                char *s1 = nb->GetName (nt, currentID);
-                char *s2 = nb->GetName (nt, prevID);
+                const char *s1 = nb->GetName (nt, currentID);
+                const char *s2 = nb->GetName (nt, prevID);
                 prefix += strPrefix (s1,s2);
             }
         }
@@ -634,8 +634,8 @@ main (int argc, char *argv[])
             nb->Iterate (nt, &current);
             length += strLength (nb->GetName (nt, current));
             if (i > 0) {
-                char * s1 = nb->GetName (nt, prev);
-                char * s2 = nb->GetName (nt, current);
+                const char * s1 = nb->GetName (nt, prev);
+                const char * s2 = nb->GetName (nt, current);
                 prefix += strPrefix (s1,s2);
             }
         }

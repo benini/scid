@@ -133,7 +133,7 @@ errorT
 MFile::Open (const char * name, fileModeT fmode)
 {
     ASSERT (Handle == NULL  &&  GzHandle == NULL);
-    char * modeStr = NULL;
+    const char * modeStr = NULL;
     switch (fmode) {
 #ifdef WINCE
         case FMODE_ReadOnly:   modeStr = "r"/*"rb"*/;  break;
@@ -192,7 +192,7 @@ errorT
 MFile::Create (const char * name, fileModeT fmode)
 {
     ASSERT (Handle == NULL  &&  GzHandle == NULL);
-    char * modeStr = NULL;
+    const char * modeStr = NULL;
     switch (fmode) {
 #ifdef WINCE
         case FMODE_WriteOnly: modeStr = "w"/*"wb"*/;  break;

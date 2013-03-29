@@ -221,8 +221,8 @@ setSearchTime (Engine * engine)
 // Configuration options:
 //
 struct configT {
-    char * bookFileName;  // Opening book file name.
-    char * logFileName;   // Log file name.
+    const char * bookFileName;  // Opening book file name.
+    const char * logFileName;   // Log file name.
     uint hashTableMB;     // Transposition table size in megabytes.
     uint pawnTableMB;     // Pawn hash table size in magabytes.
     bool pruning;         // Should the engine do futility pruning?

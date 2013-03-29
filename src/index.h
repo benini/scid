@@ -295,11 +295,11 @@ class IndexEntry
     inline idNumberT GetSite ();
     inline idNumberT GetRound ();
 
-    inline char * GetWhiteName (NameBase * nb);
-    inline char * GetBlackName (NameBase * nb);
-    inline char * GetEventName (NameBase * nb);
-    inline char * GetSiteName (NameBase * nb);
-    inline char * GetRoundName (NameBase * nb);
+    inline const char * GetWhiteName (NameBase * nb);
+    inline const char * GetBlackName (NameBase * nb);
+    inline const char * GetEventName (NameBase * nb);
+    inline const char * GetSiteName (NameBase * nb);
+    inline const char * GetRoundName (NameBase * nb);
 
     inline dateT   GetDate ()     { return u32_low_20(Dates); }
     inline uint    GetYear ()     { return date_GetYear (GetDate()); }
@@ -467,23 +467,23 @@ class IndexEntry
     int Compare (IndexEntry * ie, int * fields, NameBase * nb);
 };
 
-inline char *
+inline const char *
 IndexEntry::GetWhiteName (NameBase * nb)
 { return nb->GetName (NAME_PLAYER, GetWhite()); }
 
-inline char *
+inline const char *
 IndexEntry::GetBlackName (NameBase * nb)
 { return nb->GetName (NAME_PLAYER, GetBlack()); }
 
-inline char *
+inline const char *
 IndexEntry::GetEventName (NameBase * nb)
 { return nb->GetName (NAME_EVENT, GetEvent()); }
 
-inline char *
+inline const char *
 IndexEntry::GetSiteName (NameBase * nb)
 { return nb->GetName (NAME_SITE, GetSite()); }
 
-inline char *
+inline const char *
 IndexEntry::GetRoundName (NameBase * nb)
 { return nb->GetName (NAME_ROUND, GetRound()); }
 
