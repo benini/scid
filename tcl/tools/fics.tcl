@@ -35,6 +35,8 @@ namespace eval fics {
   set showdrawreq 1
   set showtakebackreq 1
 
+  set premoveSq1 -1
+  set premoveSq2 -1
 
   ################################################################################
   #
@@ -90,6 +92,11 @@ namespace eval fics {
     # use default user variables
     ttk::checkbutton $w.f.cbvars -text [::tr "FICSdefaultuservars"] -variable ::fics::usedefaultvars
     grid $w.f.cbvars -column 0 -row $row -sticky w
+    incr row
+
+    # enable premove
+    ttk::checkbutton $w.f.premove -text [::tr "FICSpremove"] -variable ::fics::premoveEnabled
+    grid $w.f.premove -column 0 -row $row -sticky w
     incr row
 
     # Time seal configuration
@@ -530,6 +537,8 @@ namespace eval fics {
       set line [string map {"\a" ""} $line]
       readparse $line
     }
+
+    ::fics::makePremove
   }
 
   ################################################################################
@@ -1227,6 +1236,27 @@ namespace eval fics {
     }
   }
   ################################################################################
+  #  returns 1 if premove is set
+  ################################################################################
+  proc setPremove {sq1 sq2} {
+      if { $::fics::premoveEnabled && $::fics::playing == -1 && $sq2 != -1 } {
+          set ::fics::premoveSq1 $sq1
+          set ::fics::premoveSq2 $sq2
+          ::board::mark::DrawArrow .main.board.bd $sq2 $sq1 $::highlightLastMoveColor
+          return 1
+      }
+      return 0
+  }
+  ################################################################################
+  #  execute FICS premove if possible
+  ################################################################################
+  proc makePremove {} {
+    if { $::fics::premoveEnabled && $::fics::playing == 1 && $::fics::premoveSq1 != -1 } {
+      addMove $::fics::premoveSq1 $::fics::premoveSq2
+      set ::fics::premoveSq1 -1
+    }
+  }
+  ################################################################################
   #   returns 1 if the player is allowed to enter a move (either playing or using puzzlebot)
   ################################################################################
   proc playerCanMove {} {
@@ -1239,6 +1269,11 @@ namespace eval fics {
 
     if { $::fics::playing == 1 } { return 1 }
 
+    if { $::fics::premoveEnabled && $::fics::playing == -1 } { 
+        .main.board.bd delete mark
+        set ::fics::premoveSq1 -1
+        return 1 
+    }
     puts "DEBUG : playerCanMove returned 0"
     return 0
   }

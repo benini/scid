@@ -1665,6 +1665,8 @@ translate G FICSSend {αποστολή}
 translate G FICSConnect {Σύνδεση}
 translate G FICSdefaultuservars {Χρήση αρχικών μεταβλητών}
 translate G FICSObserveconfirm {Θέλετε να παρακολουθήσετε την παρτίδα}
+# ====== TODO To be translated ======
+translate G FICSpremove {Enable premove}
 
 # Game review
 translate G GameReview {Επισκόπηση παρτίδας}

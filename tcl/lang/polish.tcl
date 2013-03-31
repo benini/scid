@@ -2040,6 +2040,8 @@ translate P FICSdefaultuservars {Use default variables}
 # ====== TODO To be translated ======
 translate P FICSObserveconfirm {Do you want to observe game}
 # ====== TODO To be translated ======
+translate P FICSpremove {Enable premove}
+# ====== TODO To be translated ======
 translate P GameReview {Game review}
 # ====== TODO To be translated ======
 translate P GameReviewTimeExtended {Time extended}

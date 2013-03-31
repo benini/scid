@@ -1632,6 +1632,8 @@ translate U FICSSend {lähetä}
 translate U FICSConnect {yhdistä}
 translate U FICSdefaultuservars {Käytä oletusmuuttujia}
 translate U FICSObserveconfirm {Haluatko seurata peliä}
+# ====== TODO To be translated ======
+translate U FICSpremove {Enable premove}
 
 # Game review
 translate U GameReview {Pelin arvioiminen}

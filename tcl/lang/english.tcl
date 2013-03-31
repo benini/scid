@@ -1636,6 +1636,7 @@ translate E FICSSend {send}
 translate E FICSConnect {Connect}
 translate E FICSdefaultuservars {Use default variables}
 translate E FICSObserveconfirm {Do you want to observe game}
+translate E FICSpremove {Enable premove}
 
 # Game review
 translate E GameReview {Game review}

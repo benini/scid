@@ -1646,6 +1646,8 @@ translate D FICSSend {senden}
 translate D FICSConnect {Verbinden}
 translate D FICSdefaultuservars {Standardvariablen verwenden}
 translate D FICSObserveconfirm {Bestätige Beobachtung der Partie}
+# ====== TODO To be translated ======
+translate D FICSpremove {Enable premove}
 translate D GameReview {Partieanalyse}
 translate D GameReviewTimeExtended {Lange Bedenkzeit}
 translate D GameReviewMargin {Fehlergrenze}

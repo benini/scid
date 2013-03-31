@@ -1303,7 +1303,7 @@ proc addNullMove {} {
 #   If the optional parameter is "-animate", the move will be animated.
 #
 proc addMove { sq1 sq2 {animate ""}} {
-    if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
+    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
     
     global EMPTY
     set nullmove 0

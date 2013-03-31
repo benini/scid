@@ -1048,7 +1048,7 @@ $m add command -label OptionsSave -command {
     puts $optionF ""
     
     # save FICS config
-    foreach i { use_timeseal timeseal_exec port_fics port_timeseal login password usedefaultvars \
+    foreach i { use_timeseal timeseal_exec port_fics port_timeseal login password usedefaultvars premoveEnabled \
           consolebg consolefg consoleheight consolewidth colseeking colgame colgameresult colficspercent server_ip } {
       puts $optionF "set ::fics::$i [list [set ::fics::$i]]"
     }

@@ -1589,6 +1589,8 @@ translate W FICSSend {skicka}
 translate W FICSConnect {Anslut}
 translate W FICSdefaultuservars {Använd standardvariabler}
 translate W FICSObserveconfirm {Vill du observera parti} 
+# ====== TODO To be translated ======
+translate W FICSpremove {Enable premove}
 translate W GameReview {Partiöversikt}
 translate W GameReviewTimeExtended {Utökad tid}
 translate W GameReviewMargin {Felmarginal}

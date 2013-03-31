@@ -1778,6 +1778,8 @@ translate N FICSSend {Zend}
 translate N FICSConnect {Verbind}
 translate N FICSdefaultuservars {Gebruik standaard waarden}
 translate N FICSObserveconfirm {Wil je de partij gadeslaan}
+# ====== TODO To be translated ======
+translate N FICSpremove {Enable premove}
 translate N GameReview {Partij herbekijken}
 translate N GameReviewTimeExtended {Tijd overschreden}
 translate N GameReviewMargin {Fout marge}

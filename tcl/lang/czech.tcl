@@ -1631,6 +1631,8 @@ translate C FICSSend {send}
 translate C FICSConnect {Pøipojit}
 translate C FICSdefaultuservars {Pou¾ít výchozí promìnné}
 translate C FICSObserveconfirm {Chcete sledovat partii}
+# ====== TODO To be translated ======
+translate C FICSpremove {Enable premove}
 translate C GameReview {Prohlí¾ení partie}
 translate C GameReviewTimeExtended {Èas prodlou¾en}
 # ====== TODO To be translated ======

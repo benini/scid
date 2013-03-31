@@ -1685,6 +1685,8 @@ translate B FICSSend {enviar}
 translate B FICSConnect {Conectar}
 translate B FICSdefaultuservars {Usar variaveis default}
 translate B FICSObserveconfirm {Voce quer observar o jogo}
+# ====== TODO To be translated ======
+translate B FICSpremove {Enable premove}
 translate B GameReview {Rever jogo}
 translate B GameReviewTimeExtended {Tempo estendido}
 translate B GameReviewMargin {Mergem de erro}
