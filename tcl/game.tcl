@@ -451,4 +451,11 @@ namespace eval ::notify {
     ::tree::refresh
   }
 
+  proc DatabaseChanged {} {
+    ::windows::gamelist::Refresh
+    ::windows::switcher::Refresh
+    ::windows::stats::Refresh
+    updateTitle
+    updateStatusBar
+  }
 }

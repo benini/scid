@@ -204,13 +204,8 @@ proc ::bookmarks::Go {entry} {
     sc_move pgn $ply
     flipBoardForPlayerNames $::myPlayerNames
   }
-  ::windows::gamelist::Refresh
-  ::tree::refresh
-  ::windows::stats::Refresh
-  updateMenuStates
   updateBoard -pgn
-  updateTitle
-  updateStatusBar
+  ::notify::DatabaseChanged
 }
 
 # ::bookmarks::DeleteChildren

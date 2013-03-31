@@ -107,14 +107,10 @@ proc ::file::New {} {
           -title "Scid: Unable to create base" -message $result
     }
   }
-  ::windows::gamelist::Refresh
-  ::tree::refresh
-  ::windows::stats::Refresh
   set ::initialDir(base) [file dirname $fName]
   ::recentFiles::add "$fName.si4"
-  updateMenuStates
-  updateTitle
-  updateStatusBar
+  ::notify::DatabaseChanged
+  updateBoard -pgn
 }
 
 # ::file::Open
@@ -207,14 +203,9 @@ proc ::file::Open {{fName ""}} {
   }
   unbusyCursor .
   set glstart 1
-  ::windows::gamelist::Refresh
-  ::tree::refresh
-  ::windows::stats::Refresh
-  updateMenuStates
   updateBoard -pgn
-  updateTitle
-  updateStatusBar
   updateGameInfoMenu
+  ::notify::DatabaseChanged
 }
 
 # ::file::Upgrade
@@ -302,8 +293,7 @@ proc ::file::Close {{base -1}} {
     ::file::SwitchToBase $current
   }
   updateMenuStates
-  updateStatusBar
-  updateTitle
+  ::notify::DatabaseChanged
 }
 
 
@@ -313,10 +303,7 @@ proc ::file::SwitchToBase {b} {
   # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }
   updateBoard -pgn
-  updateTitle
-  updateMenuStates
-  updateStatusBar
-  ::windows::gamelist::Refresh
+  ::notify::DatabaseChanged
 }
 
 ################################################################################

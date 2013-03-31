@@ -606,11 +606,13 @@ proc copyFilter {frombaseNum tobaseNum} {
     if {$copyErr} {
       tk_messageBox -type ok -icon info -title "Scid" -message $result
     }
+    ::notify::DatabaseChanged
     return
   }
   
   set w [toplevel .fcopyWin]
   wm title $w "Scid: $::tr(CopyGames)"
+  bind $w <Destroy> "::notify::DatabaseChanged"
   label $w.text -text [subst $::tr(CopyConfirm)]
   frame $w.b
   dialogbutton $w.b.go -text $::tr(CopyGames) -command "
@@ -626,7 +628,6 @@ proc copyFilter {frombaseNum tobaseNum} {
   unbusyCursor .
   focus .
   destroy $w
-  updateStatusBar
   "
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
   canvas $w.bar -width 300 -height 20 -bg white -relief solid -border 1
@@ -1386,10 +1387,7 @@ proc gotoNextBase {} {
     if {[sc_base inUse]} { break }
   }
   updateBoard -pgn
-  updateTitle
-  updateMenuStates
-  updateStatusBar
-  ::windows::gamelist::Refresh
+  ::notify::DatabaseChanged
 }
 
 grid columnconfigure .main 0 -weight 1
@@ -1507,7 +1505,6 @@ setLanguage $language
 
 updateTitle
 updateBoard
-updateStatusBar
 update idle
 
 # Try to find tablebases:
@@ -1736,7 +1733,6 @@ if { !$::docking::USE_DOCKING } {
 }
 
 updateBoard
-updateStatusBar
 updateTitle
 updateLocale
 update

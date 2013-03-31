@@ -461,14 +461,9 @@ namespace eval tactics {
         ::gameclock::reset 1
         ::gameclock::start 1
         
+        ::notify::DatabaseChanged
         updateBoard -pgn
         set ::tactics::prevFen [sc_pos fen]
-        ::windows::gamelist::Refresh
-        ::tree::refresh
-        ::windows::stats::Refresh
-        updateMenuStates
-        updateTitle
-        updateStatusBar
         ::tactics::startAnalyze
         ::tactics::mainLoop
     }
@@ -507,12 +502,7 @@ namespace eval tactics {
     proc abnormalContinuation {} {
         ::tactics::stopAnalyze
         ::tactics::resetValues
-        ::windows::gamelist::Refresh
-        ::tree::refresh
-        ::windows::stats::Refresh
-        updateMenuStates
-        updateTitle
-        updateStatusBar
+        ::notify::DatabaseChanged
         updateBoard -pgn
         if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
             ::board::flip .main.board
@@ -689,13 +679,8 @@ namespace eval tactics {
             }
         }
         
-        ::windows::gamelist::Refresh
-        ::tree::refresh
-        ::windows::stats::Refresh
-        updateMenuStates
+        ::notify::DatabaseChanged
         updateBoard -pgn
-        updateTitle
-        updateStatusBar
     }
     ################################################################################
     ## resetValues

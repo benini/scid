@@ -79,13 +79,8 @@ proc ::recentFiles::load {fname} {
     if {$rname == [sc_base filename $i]} {
       sc_base switch $i
       ::recentFiles::add $fname
-      ::windows::gamelist::Refresh
-      ::tree::refresh
-      ::windows::stats::Refresh
-      updateMenuStates
+      ::notify::DatabaseChanged
       updateBoard -pgn
-      updateTitle
-      updateStatusBar
       return
     }
   }

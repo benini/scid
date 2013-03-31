@@ -29,19 +29,74 @@ set icons {
   EgCgs2cATgw5+dw5wLabqFEHAgA7
   }
   {Clipbase}
-  {
-  R0lGODdhIAAgAMIAAP///wAAqgAAAP//AOrq6gAAAAAAAAAAACwAAAAAIAAgAAADwAi63P4Q
-  hKkCs9NKWvVd2KeFUmmCjVeOG3tWqIpxrHvR2Xp7XOT/wKBwISgaj8ik8SEYOJ/QqPTpaE6v
-  2IZ1oOx2tU7BEGgVj39lUGbNbvcA6QphbpwT6vTinBGX2PF3enkCe0RhIH+CgYSDhQp9AYCS
-  ikV8hxWTjIuJllwgmYmalYaeco2nmwSdZn6ooKqkrAGhtKern5S5oqxwlxKvqYG3mLq1wrGI
-  rsWwj76zyruMw63Br9ORy9W8TbzY0cZFCQA7	  
-  }
+{
+R0lGODlhIAAgAOekAGBBE2lGFHBLFnFMFXFMFnJMFXFNFnJNFXJNFnVNFndP
+FlxcXF1dXF5eXl9fX2BgXolgH4thH41iH45jH5BlIJJmIJNnIJVoIJdpIJhq
+IZprIZxsIZ1tIZ9uIaFvIqJxIqNxIqRyIqZzIqh0I6l1I6t2I39/ca13I654
+I4CAfbB5JIGDfrJ7JIGDf7N8JIKEgIKFgLV9JLd+Jbh/JYyGeLqAJYeJhIaK
+hIeKhIeKhYqKfbyBJYiKhIiKhYeLhYeLhpCJeb2CJb2CJpGKeb+DJsGEJouO
+icKFJoyPipaNeo6Oi8SHJsWHJ42Ri46RjMaIJ5GRjZeXipmZjZiYl5ubjqGh
+laOjoKSkmaOjoqSkmqionaqqoKqqoauroKuroqmrqaysoaysoq2toq6uo7a2
+rLa2rbe3rbe3rri4rri4r7m5r7m5sLq6sby8s8PDw8TEw8TExMTFxMXFxMXF
+xcbGvsbGxcbGxsfHxsjIx8nJwtDQz9DQ0NTU1NXV1dXW1NbW1tjY2Nnb2dzc
+297e3uPj4ubm5ejo6Onp6Onp6erq6erq6uvr6uvr6+zs6+zs7O3t7O3t7e7u
+7e7u7u/v7u/v7/Dw7/Dw8PHx8fLy8vPz8/T09Pb29vf39/j4+Pn5+Pn5+fr6
++vv7+/39/f7+/v//////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/////////////////////yH+FUNyZWF0ZWQgd2l0aCBUaGUgR0lNUAAh+QQB
+CgD/ACwAAAAAIAAgAAAI/gD/CRxIUOCCgwgPFlzIcOECKVQiUpGyoKFFgg8Q
+6jDB0YQOhA8u/lNwgIBJkwyqXFkZpWWUlVeqMBBwkkCBBAQRMHnCk+cCNl3A
+CAUjpqiYMW0WBOn5pAgCggR4JulBdUGeNWrSoEFzxkwZMmToLFhBdUiIJwSg
+8uxBqq0DLWHCeJnLpe6WLVkcYGrb4wNatU/YVqqEpUHCwwsaTClUiVQPD38H
+Rl0ieDAhQJgzawYkKFLjHh0iC4x6pPLg06hTT5rkmIPof1GLmE5Ne/WkSI43
+vI5KpDKe38CD3xleJxIkxxp2Pwkym3al1ZGiP3rkOIPyHc1Rr5YUHdIjR40c
+/mNQXsO3cOJ15siRM6gRI8cXlM/IDt34dPCMGC1ybEG5jNn1RXKfe/opoohj
+FSgXQ2XD2VFHenLA8cYbbrhhYCKIiNIDBcq5wJZt3Q1YoCIYImJIKD1MoBwL
+H4b4HYGLkIiIiYYY8kkPEiinAlvRrSdhhRXuMeMhNSLiyI0RKIcCW96B516M
+MtJoCCOSXAJKDxAod0IPo7w4Yok1GqIIJJZoYkkgOGSZlmRPlNCDKDBGSaQh
+iEByw503IHGDD2qqRUIPoYw4ZJGOUIKJD3388YceTmCp3Ag9eHLhjGFSeYkm
+nNygaBxIvODomqM9IUIPm4BZ45hlcgKKJk3w8cUPUy0oYUOfbIbQgyaZYHLJ
+rphoskknoIgiih83GAFDClBYMatyIABB1bPQQpsDDjxQZYMNNNAqkAFFMOXt
+t+DyJIQBBAUwQE3opquuSQMAINK7IgUEADs=
+}
   {PGN format file}
-  {
-  R0lGODdhIAAgAKEAAP////8AAAAA/wAAACwAAAAAIAAgAAACZISPqcvtD6MMlKIajAXbiP9p
-  WMaNpfhsVoWyHQCG5/mKWGqqq3nEgq2z0WqKGmtYInliqMQoE3QQk7vmEiTJaiW+rvcr227B
-  ZLBYXE77zmO1m611v+FceZpet5PxEX2ZDxiIVwAAOw==
-  }
+ {
+R0lGODlhIAAgAOeiADMzM0tLS0xMTE5OTk9PT1BQUFFRUVJSUlNTU1RUVFVV
+VVZWVldXV1hYWFlZWVpaWltbW1xcXH5YHV1dXX9ZH4BaIGBgYIFbIoJdJINe
+JWNjY4RfJ2RkZIRgKGZmZoZiK4ZjLGhoaIhlL2pqamtra21tbW9vb41rN3Bw
+cI1sOHJyco9uPHNzc5BvPI9wP5FwPpFxP3Z2dnd3d5R0Q5J1R3p6epV2RpZ4
+SX19fZh6S5l8TYCAgJp9T4GBgZt+UYODg4SEhJ2BVJ6CVoaGhqCEWYiIiImJ
+iYuLi6OIXoyMjKOJX6SKYY6Ojo+Pj6aNZJCQkKeNZZKSkpOTk6qQapaWlpmZ
+mZycnLGadp6enrijg7qlhrunibGxscW0mse3nsm6ob6+vr+/v8DAwM2+qMHB
+wc7AqcLCws/Bq8PDw8TExMbGxsfHx8jIyNXItd3TxN/Vx9/WyODXydva19va
+2Nzc3N/f3+Dg4OHh4eLi4uji2OPj4+Tk5OXl5ebm5ufn5+jo6Ovo5Onp6erq
+6u/q4+vr6+zs7PDs5e3t7e7u7vLu6O/v7/Dw8PPw6/Hx8fLy8vPy8PPz8/T0
+9PX19ff18vb29vj39Pf39/n39fj4+Pn5+fr59/r6+vv6+Pv7+/z7+vz8/P39
+/f7+/v//////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/////////////////////yH5BAEKAP8ALAAAAAAgACAAAAj+AP8JHEiwoMGD
+CBMqXCjQisOHVqhIaZKkCJAeOGrEUGGCRAgOHBQgtAIKVKhNoUqW/MSyk8tN
+MDPJxCTyIEk6onLq3MlTJx6aI0PRkCABg4gyob6suNBihRdROYi+QSLhRk2D
+VkLNkdCiEogPYyRc4TQICg9RmooKSfvoakGSdSS8MNRBhA8JiXJ6cpNTQhYJ
+cSQAtQkqLtEUbWZI8CQqCFEdoiQwykBEsFuCJO1IgKFzioQ8oiaJwBtZlBai
+mB4gHAJKjoQUoXK+kbDkEhwKEtBK0ARog2AHCH+AckG0i84zJyrYcJI7qhJR
+WwQ3QLjjE56e2HUWEkUIEwOEOD7+6clOXlShwQZriN9zh5AfMmDAhJk/X4x9
+MWgOHcKUAKGMTnvwcUchfwQSiCCEFFKIfog06CAimByAEAsACkggGfTdJwYZ
+HJKRhiKKYFIAQih0wkcfeBxyYIIMgrjIizAuYskACJVgIooqIrggIoq82MiP
+QMooAEIjbNKHH3ocIogZYdjXoRlQmoGGGo40YkkACHlgJBd8KMkij4s04ggk
+kEQSCZmOXImQBkYKkiQhaDhJBpRo1FnnGmeqeZAFmRy5ByJf9ihmmZJQQokk
+kkSip0ET9PnHn3A6SWedaVTKRqKLFuRAJn48CuiCgo4ZSaGWYGLJoZkStAAm
+nUIaJ4dKk65RqqmoYnkQApj04emXYYpK6qmY2moQAbnuumOPvhZqaLAIGXAq
+JZCYasm01FZrrSUGIKTAttwu4O234Ia7AAMAMGTuueieGxAAOw==
+}
   {My games}
   {
   R0lGODlhIAAgAOeOACAgICUlJSoqKi4uLjMzMzY2Njg4ODo6Ojw8PD09PT49
@@ -422,9 +477,6 @@ foreach {icon data} $icons {
   incr i
 }
 
-
-
-
 set numBaseTypeIcons [llength $::windows::switcher::base_types]
 
 set temp_dbtype 0
@@ -461,7 +513,7 @@ proc changeBaseType {baseNum} {
   text $w.t -yscrollcommand "$w.yscroll set" -font font_Regular \
     -height 25 -width 40 -background white -wrap none \
     -cursor top_left_arrow
-  $w.t tag configure selected -background {#ffff80}
+  $w.t tag configure selected -background lightSteelBlue
 
   scrollbar $w.yscroll -command "$w.t yview" -takefocus 0
   pack [frame $w.b] -side bottom -pady 5
@@ -511,78 +563,83 @@ proc changeBaseType {baseNum} {
 
 
 
-proc ::windows::switcher::pressMouseEvent {i} {
-  if {! [winfo exists .baseWin]} {return}
+proc ::windows::switcher::pressMouseEvent {i {w .baseWin}} {
+  if {! [winfo exists $w]} {return}
   foreach win {"" .img .name .ngames} {
-    .baseWin.c.f$i$win configure -cursor exchange
+    $w.c.f$i$win configure -cursor exchange
   }
 }
 
-proc ::windows::switcher::releaseMouseEvent {fromBase x y} {
-  if {! [winfo exists .baseWin]} {return}
+proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
+  if {! [winfo exists $w]} {return}
   foreach win {"" .img .name .ngames} {
-    .baseWin.c.f$fromBase$win configure -cursor {}
+    $w.c.f$fromBase$win configure -cursor {}
   }
   set dropPoint [winfo containing $x $y]
-  if {! [string match ".baseWin.c.f*" $dropPoint]} {return}
-  set toBase [string range $dropPoint 12 12]
-  if {$toBase == $fromBase} {::file::SwitchToBase $toBase} else {
+  if {! [string match "$w.c.f*" $dropPoint]} {return}
+  regexp -all {[0-9]} $dropPoint toBase
+  if {$toBase == $fromBase} {
+    ::file::SwitchToBase $toBase
+  } else {
     copyFilter $fromBase $toBase
   }
 }
 
 set baseWin 0
+set sw_nBases_ [sc_base count total]
+set ::windows::switcher::wins {}
 
-proc ::windows::switcher::Open {} {
+proc ::windows::switcher::Open {{w .baseWin}} {
   global baseWin
-  if {[winfo exists .baseWin]} {
+  if {[::createToplevel $w] == "already_exists"} {
     focus .
-    destroy .baseWin
+    destroy $w
     set baseWin 0
     return
   }
-  set baseWin 1
-  set w .baseWin
-  ::createToplevel .baseWin
   
   setWinLocation $w
-
   ::setTitle $w "Scid: [tr WindowsSwitcher]"
-
-  bind $w <Escape> ::windows::switcher::Open
-  bind $w <Destroy> { set baseWin 0 }
+  bind $w <Escape> "focus .; destroy $w"
+  bind $w <Destroy> "+set baseWin 0"
   bind $w <F1> { helpWindow Switcher }
   standardShortcuts $w
-
-  canvas $w.c -width 300 -height 100 -yscrollcommand [list $w.ybar set]
-  scrollbar $w.ybar -takefocus 0 -command [list $w.c yview]
+  ::windows::switcher::Create $w
   label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
+  grid $w.status -columnspan 2 -sticky we
+  bind $w <Configure> "+recordWinSize $w"
+  #TODO: recursive calls
+  bind $w <Configure> "+::windows::switcher::Refresh"
+  setWinSize $w
+  ::windows::switcher::Refresh
+  ::createToplevelFinalize $w
+}
 
-  grid $w.c -row 0 -column 0 -sticky news
-  grid $w.ybar -row 0 -column 1 -sticky ns
-  grid $w.status -row 1 -column 0 -sticky we
+proc ::windows::switcher::Create {{w}} {
+  lappend ::windows::switcher::wins $w
+  bind $w <Destroy> { set idx [lsearch $::windows::switcher::wins %W]; set ::windows::switcher::wins [lreplace $windows::switcher::wins $idx $idx] }
+
+  ttk::frame $w.border -borderwidth 2 -relief groove
+  grid $w.border -sticky news
   grid rowconfigure $w 0 -weight 1
   grid columnconfigure $w 0 -weight 1
+  autoscrollframe -bars both $w.border canvas $w.c -highlightthickness 0
 
-  #set side left
-  #if {$::windows::switcher::vertical} { set side top }
-  set numBases [sc_base count total]
-
-  for {set i 1} {$i <= $numBases} {incr i} {
-    set f [frame $w.c.f$i -background white -borderwidth 2 -relief ridge]
+  for {set i 1} {$i <= $::sw_nBases_} {incr i} {
+    set f [frame $w.c.f$i -background white -borderwidth 1 -relief raised]
     $w.c create window 0 0 -window $w.c.f$i -anchor nw -tag tag$i
 
     set f $w.c.f$i
-    label $f.img -image dbt0 -relief solid -borderwidth 1
-    label $f.name -width 11 -anchor w -font font_Small
-    label $f.ngames -text "0" -width 11 -anchor e -font font_Tiny
-    grid $f.img -row 0 -column 0 -rowspan 2 -padx 2 -pady 2
-    grid $f.name -row 0 -column 1 -padx 2 -pady 0 -sticky we
-    grid $f.ngames -row 1 -column 1 -padx 2 -pady 0 -sticky we
+    label $f.img -image dbt0
+    label $f.name -width 12 -anchor w -font font_Small
+    label $f.ngames -text "0" -width 12 -anchor e -font font_Tiny
+    grid $f.img -row 0 -column 0 -rowspan 2
+    grid $f.name -row 0 -column 1 -sticky we
+    grid $f.ngames -row 1 -column 1 -sticky we
 
     foreach win {"" .img .name .ngames} {
-      bind $f$win <ButtonPress-1> [list ::windows::switcher::pressMouseEvent $i]
-      bind $f$win <ButtonRelease-1> [list ::windows::switcher::releaseMouseEvent $i %X %Y]
+      bind $f$win <ButtonPress-1> [list ::windows::switcher::pressMouseEvent $i $w]
+      bind $f$win <ButtonRelease-1> [list ::windows::switcher::releaseMouseEvent $i %X %Y $w]
     }
 
     menu $f.menu -tearoff 0
@@ -601,136 +658,99 @@ proc ::windows::switcher::Open {} {
     $f.menu add separator
     $f.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \
       -command ::windows::switcher::Refresh
-    #$f.menu add separator
-    #$f.menu add command -label $::tr(ChangeOrient) -command ::windows::switcher::Orientate
   }
-  bind $w <Configure> "+recordWinSize $w"
-  bind $w <Configure> "+::windows::switcher::Refresh"
-  setWinSize $w
-  ::windows::switcher::Refresh
-  ::createToplevelFinalize $w
 }
 
-proc ::windows::switcher::Orientate {} {
-  #variable vertical
-  #if {$vertical} {
-  #  set vertical 0
-  #  set side left
-  #} else {
-  #  set vertical 1
-  #  set side top
-  #}
-
-  #set w .baseWin
-  #set numBases [sc_base count total]
-
-  #for {set i 1} {$i <= $numBases} {incr i} {
-  #  pack forget $w.f$i
-  #}
-  #for {set i 1} {$i <= $numBases} {incr i} {
-  #  pack $w.f$i -side $side
-  #}
-}
-
-proc ::windows::switcher::Refresh {} {
+proc ::windows::switcher::calcSpace {{w} {selected}} {
   global numBaseTypeIcons
   variable icons
-  set w .baseWin
-
   if {! [winfo exists $w]} { return }
-  set numBases [sc_base count total]
-  set current [sc_base current]
+
+  set n_bases 0
   set clipbase [sc_info clipbase]
+  for {set i 1} {$i <= $::sw_nBases_} {incr i} {
+    if {[sc_base inUse $i]} {
+      incr n_bases
+      set color white
+      if {$i == $selected} { set color lightSteelBlue }
 
-  # Get the canvas width and icon dimensions, to compute the correct
-  # scroll region.
-
-  for {set i 1} {$i <= $numBases} {incr i} {
-    if {$icons} {
-      grid $w.c.f$i.img -row 0 -column 0 -rowspan 2 -padx 2 -pady 2
+      $w.c.f$i configure -background $color
+      if {$icons} {
+        set dbtype [sc_base type $i]
+        if {$dbtype >= $numBaseTypeIcons} { set dbtype 0 }
+        $w.c.f$i.img configure -image dbt$dbtype -background $color
+		grid $w.c.f$i.img -row 0 -column 0 -rowspan 2
+      } else {
+        grid forget $w.c.f$i.img
+      }
+      if {$i == $clipbase} {
+        set name [sc_base filename $i]
+      } else {
+        set name "[file tail [sc_base filename $i]]"
+      }
+      $w.c.f$i.name configure -background $color -text $name
+      $w.c.f$i.ngames configure -background $color -text "[filterText $i 100000]"
+      $w.c itemconfigure tag$i -state normal
     } else {
-      grid forget $w.c.f$i.img
+      $w.c itemconfigure tag$i -state hidden
     }
   }
 
-  set canvasWidth [winfo width $w.c]
   set iconWidth [winfo width $w.c.f$clipbase]
   incr iconWidth 5
   set iconHeight [winfo height $w.c.f$clipbase]
   incr iconHeight 5
 
-  # Compute the number of columns that can fit in the canvas
-  set numColumns [expr {int($canvasWidth / $iconWidth)}]
-  if {$numColumns < 1} { set numColumns 1 }
-  set numDisplayed 0
+  return [list $n_bases $iconWidth $iconHeight]
+}
 
-  set row 0
+proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
+  set numRows 0
   set column 0
   set x 0
   set y 0
-  set status ""
-
-  for {set i 1} {$i <= $numBases} {incr i} {
+  for {set i 1} {$i <= $::sw_nBases_} {incr i} {
     if {[sc_base inUse $i]} {
-      set color white
-      set filename [file nativename [sc_base filename $i]]
-      set n $i
-      # Do we want to call the clipbase base number "C"?
-      # Only if we do it everywhere else for consistency.
-      # if {$i == $clipbase} { set n "C" }
-
-      # Set a different color for the current database.
-      if {$i == $current} {
-        set color lightSteelBlue
-        set status $filename
-        if {[sc_base isReadOnly]} { append status " ($::tr(readonly))" }
-      }
-
-      $w.c.f$i configure -background $color
-      set dbtype [sc_base type $i]
-      if {$dbtype >= $numBaseTypeIcons} { set dbtype 0 }
-      if {$icons} {
-        $w.c.f$i.img configure -image dbt$dbtype -background $color
-      } else {
-        $w.c.f$i.img configure -image ""
-      }
-      if {$i == $clipbase} {
-        set name [sc_base filename $i]
-        $w.c.f$i.name configure -background $color \
-      } else {
-        set name "$n: [file tail [sc_base filename $i]]"
-      }
-      $w.c.f$i.name configure -background $color -text $name
-      $w.c.f$i.ngames configure -background $color \
-        -text "[filterText $i 100000]"
-      $w.c itemconfigure tag$i -state normal
       $w.c coords tag$i [expr $x + 2] [expr $y + 2]
       incr column
       if {$column == $numColumns} {
         set column 0
         set x 0
         incr y $iconHeight
-        incr row
       } else {
+        if { $x == 0} { incr numRows }
         incr x $iconWidth
       }
-      incr numDisplayed
-    } else {
-      $w.c itemconfigure tag$i -state hidden
     }
   }
 
-  set numRows [expr {int( ($numDisplayed + $numColumns - 1) / $numColumns)}]
   if {$numRows < 1} { set numRows 1 }
-  set top 0
-  set left 0
   set right [expr {$numColumns * $iconWidth}]
   set bottom [expr {$numRows * $iconHeight}]
-  $w.c configure -scrollregion [list $left $top $right $bottom]
-  if {[winfo height $w.c] >= $bottom} {
-    grid forget $w.ybar
-  } else {
-    grid $w.ybar -row 0 -column 1 -sticky ns
+  set bgcolor [ttk::style lookup Button.label -background]
+  $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat -background $bgcolor
+}
+
+proc ::windows::switcher::Refresh {} {
+  set n_wins [llength $::windows::switcher::wins]
+  for {set i 0} {$i <= $n_wins} {incr i} {
+    set w [lindex $::windows::switcher::wins $i]
+    if {! [winfo exists $w]} { return }
+    set base [sc_base current]
+    set space [::windows::switcher::calcSpace $w $base]
+    set n_bases [lindex $space 0]
+    set iconWidth [lindex $space 1]
+    set iconHeight [lindex $space 2]
+
+    set canvasWidth [winfo width $w.c]
+    set numColumns [expr {int($canvasWidth / $iconWidth)}]
+    if {$numColumns < 1} { set numColumns 1 }
+    ::windows::switcher::Draw $w $numColumns $iconWidth $iconHeight
+
+    if {[winfo exists $w.status]} {
+      set status [file nativename [sc_base filename [sc_base current] ] ]
+      if {[sc_base isReadOnly]} { append status " ($::tr(readonly))" }
+      $w.status configure -text $status
+    }
   }
-  $w.status configure -text $status
 }

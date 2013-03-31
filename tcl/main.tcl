@@ -164,8 +164,6 @@ proc updateTitle {} {
 #
 proc updateStatusBar {} {
     global statusBar moveEntry
-    ::windows::switcher::Refresh
-    ::maint::Refresh
     set statusBar "  "
     
     if {$moveEntry(Text) != ""} {
