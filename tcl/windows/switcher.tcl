@@ -713,12 +713,12 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
     if {[sc_base inUse $i]} {
       $w.c coords tag$i [expr $x + 2] [expr $y + 2]
       incr column
+      if { $x == 0} { incr numRows }
       if {$column == $numColumns} {
         set column 0
         set x 0
         incr y $iconHeight
       } else {
-        if { $x == 0} { incr numRows }
         incr x $iconWidth
       }
     }
@@ -728,7 +728,7 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
   set right [expr {$numColumns * $iconWidth}]
   set bottom [expr {$numRows * $iconHeight}]
   set bgcolor [ttk::style lookup Button.label -background]
-  $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat -background $bgcolor
+  $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat -background $bgcolor -width $right
 }
 
 proc ::windows::switcher::Refresh {} {

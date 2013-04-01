@@ -917,7 +917,7 @@ int
 sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
 	if (argc != 6  &&  argc != 7) {
-		return errorResult (ti, "Usage: sc_base gameslist <db> <start> <count> <all|dbfilter|tree> [<sort>]");
+		return errorResult (ti, "Usage: sc_base gameslist <db> <start> <count> <all|dbfilter|filter|tree> [<sort>]");
 	}
 
 	int dbNumber = strGetInteger(argv[2]) - 1;
@@ -927,6 +927,7 @@ sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	uint count = strGetUnsigned (argv[4]);
 	Filter* filter = 0;
 	if (strCompare("dbfilter", argv[5]) == 0) filter = cdb->dbFilter;
+	else if (strCompare("filter", argv[5]) == 0) filter = cdb->filter;
 	else if (strCompare("tree", argv[5]) == 0) filter = cdb->treeFilter;
 	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];

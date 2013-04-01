@@ -1,998 +1,187 @@
-
 ########################################################################
 ### Games list window
+# Copyright (C) 2011-2013 Fulvio Benini
+#
+# This file is part of Scid (Shane's Chess Information Database).
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
 
-set ::windows::gamelist::isOpen 0
-set glstart 1
-set glSelection 0
-set glNumber 0
-
-array set ::windows::gamelist::names {
-  g Number
-  f Filtered
-  w White
-  W WElo
-  b Black
-  B BElo
-  e Event
-  s Site
-  n Round
-  d Date
-  y Year
-  E EDate
-  r Result
-  m Length
-  c Country
-  o ECO
-  O Opening
-  F EndMaterial
-  D Deleted
-  U Flags
-  V Vars
-  C Comments
-  A Annos
-  S Start
+#TODO: move icons out of tcl code (image create photo -file)
+image create photo glist_ImgLayout -format gif -data {
+R0lGODlhGAAYAOe9AAd6tAh6tAh7tAh7tQl7tAl8tQ5+thiBtRmCtkyERk2ER02ESU6ESk6ES02FR02FSE6FS0+FS0+FTIGBgYKBgYKCgoODgoODg4SDg4SEhIWEhIWFhIWFhYaGhYaGhoiHh4iHiICifISmgYSngaipqaqrq66urq+vr7CwsLGxsLGxsbKxsY/IOY/IO7KyspDJO7OzsrOzs7SztLWztLW0tLW0tbm7vbq8vr7Awr/Bw6XYTsTDxabYUMLExqfZUcPFx8bFx8XHycbIysjKy8zJy8nLzM/M0szOz87Ozs/Pz9PO1tTO19LP1M/R0tDT1NHT1dHU1dLV1tjT29PW19XX2NXY2dvW3tbY2dfY2d3Y4b/uYNna29na3MDuYcDuYt3b3d/a4tvc3d7b397c3tzd3tzd39zd4N7d3t3e397f4N/g4eHg4OLg5eDh4uHi4+Ti5+Lj5ePj4+Pk5ePk5uTk5Obj6uTk5ufj7OTl5s74bc74bufk7Obl5ujk7OXm58/5bs/5b+fm5+nl7tD7aurm7ubo6efo6ejo6ND8a+vn7+vn8Onp6evp6enq6+nr7Ozr7O3r7Ozs7e7s7ezt7u3u7+7u7u/u7u/v7+/v8PDv7/Dv8fHv7+7w8fDw8PHw8PLw8PHx8PHx8fHx8vPx8vPz8/Pz9PTz8/X09PX19vf19vb29/j29/f39/n3+Pj4+Pj4+fn5+Pn5+fr5+fr6+fr6+vz6+vv7+/v7/P37+/78/f39/v/9/v///v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AEM8YNCgoMGDCA0yeBBCAaI/gCJKnEhR4h9EChboYdHihcePIEO+aMFCz4IFeXTw8MGypcuXPnjoyLMgwSAtXbzo3Mmzp5cuWgYlGPEggoSjEApCWMq0KVMHIt4QUkQ1kaA7WPf02cq16506bEh8AEEWRAk7QGrImMG2rVsZNHZwIBWqLikPhWLYosW3r1++tlxsCGXjho1QHRzFoOXkCZTHkB8/cUJLhYZQOHLgCMVh0uIpVKqIHi2aypTKGUD1+NEDFAdOMGhh2UK7tm0sqD0FERLEEwdRLmZxCUO8uHEus1Jk6DSkyJBOHEq5iEUGjfXr2MnEQpEh05HvmTi1qJqeRo358+jTbMdwqYn7SxleuYDVxo39+/jbwEJx4VKU//Dd4oIrcMhh4IEIwuEKf5Zc4aAlGeiygit+VGjhhRUuaEElXHRYSQa9qOCKISSWaCKJrpxQQSVmlGHGhyG60siMNNY4Y4ortqFGG5VcECIrkQQp5JBBsqJiJXjMgUePvaDgiiaYRCnllJqkOEEolExCSSgVNEkLKmCGKSaYtJgQwwQUpDlBDL0kYcKbcMYZJxIBAQA7
+}
+image create photo glist_ImgBoard -format gif -data {
+R0lGODlhGAAYAOf/ACMkIiYoJTksJG84I3E6JUVFPXI7JXQ8J3FAKHc/KXRBJHlAJXlBK3tCJ3dELIBCLn1EKXxELn5FKYBGK4JILIdHLoJJMoZKKYVKL39MM4dLKotKK4dMMIxLMYhNMXxQP4pOLYlOMo9NNJVMMJBOL4tQNJNPK5FPNlxcVJNQMZhPMpRRMo9TMZtRLptSNZNVNJdUNHlbUZ5UMZtWMZpWNqBVM59VOJZYNlthkXlgTpxYOJ5ZNJ1ZOaRYNalXN55aOqBaNaRZPKBcPKJcN6dbOKxaOahcOZ9fN6NePqldQKVfOapeO6ZgOmNrlqxfPGdrkWlqlqhhPK1gPaxgQ6liPW1tjmFvn69iPnFtiatkPpFrXK5mOnBwkbNlO7JlQa9nQXVxjW5ymHZyjrVnQ3NzlLdoPrJqRJFxYLdpRYxzZoJ1gX12japwSoh3bW56q5x1Zql0TIN5i65zTat2To98bX9/lK55UYeAl7F7U619U7R+Va+AVYqJb7KBULiBWbODWbiGVbeGW5CPh7mJXoGRvLyKWZCSj7yLYL6MW7+NXKCSjZaVjYWVwcGOXZiWmqqZjqebnJ+elqSjiKmll6eok6qnmJOrvMWhj7KmprWqi7CptaustsKqobGvs9CsgcOtqsivpsOxppK85Ky30r64t7+7mbq8ub68wJ7D5bvDy8XEqMjDwqbK7cnIv7DQ7c/Nsc3Mw7nR1tLOrNnVs8TZ2MjX68Xd4svd1tPb5NHe38/g2fbapPDcpMzh4NTi1vXfoPXhqNTm3/jio/Xmpdfp4vvlpvnlrOLo3fXord/p5OrqwODr2Pbpru3ru/jqr/rnyP7qsfjqw/rsseTu6f3trPPvufzus/TvzfLxwOnw5ffxtP3wtfrvzvvyr/7xtvjxyfnztvfzvP/yt/7yvfr0t/3x0Pv1uO716vH14/z2uf7z0fn10vz1zP33uvv3wP/4u/34wfr5yP/5vPT45/76wvv8vf/7vf/7xP37yv/8xf78y/f76vz90v/82f7/0////yH5BAEKAP8ALAAAAAAYABgAAAj+AD01OoRoUKFAgPwE+uOnzx49ePLgsTOnohw2jbhp/FZuxIgWMmqUW7dOHbsiRXwQ6REt2rOMxpAZczbAwIEDCaxp02bNGoQJERo04PVr1yFuMZ05M5BgAQMIOr1ZI0eBwgSrwH79KvQNGTJn0BK8eaTo0TVr4syJ48ABg4YKwIAJ46rUGbVQjkid2mTJ1Dhz6USQEAHCQ7FhxgCNGEAAASdY+85Ny1UnTKcUK96le6e5xAYMgUwMOMBg1b5555L1uiPGyiUY8DhzTkECBCAVTLVgQncuG7HVXJp82nFP3j3OMFKICOQCwYIzkJYdIxbM1h0yUDQNuXcPXr53M2D+vPAjQ8GCD5t86bpFKxaXJzhAJbmHTx8+eDtowPhTTpo1abioEUcca4CBiiiszKLPFVlQ4YQS75AjTh/r9EROJqNggUUVXKDiSiv89FPGF11cwQRn5uihjk7kmBNDKoy4QUgtk0TyCj9mjFHGFVTUw5ke7KAlTjosZJADHWmUwo8kAUwyBhojXtHdO3mUM5VaKcBAww9I6BMiCgC0UQaUXehzHB5BMDABBiHEBk888TBBhRdlCADAIv34o48URgCBhw8NXOUBOOEUis0PP9yABBoFACAIP/pEQcQPdvQQaAUekANONdU0A8MPL2DgACUAGKKKPksMwUOlDDxgAQd2m72TDzxMOJHFFlHIIgkfyuhjxBA2zGHDAg1QsIFs79wzhBFOSCGFPtDqkw8RPMwwR3/dTNWBCCdoeU8+9ekzxRJM/ArtPXCw45825Fyw7QowvAMPd/ccMYQQP9iAT3dw9OefNRRoEAIJmXE2Kw886KDfcfAEBAA7
 }
 
-set sortCriteria(real) ""
-set sortCriteria(translated) ""
-
-set critList { "GsortDate" "GsortYear" "GsortEvent" "GsortSite" 
-               "GsortRound" "GsortWhiteName" "GsortBlackName" "GsortECO" 
-			   "GsortResult" "GsortMoveCount" "GsortAverageElo" "GsortCountry" 
-			   "GsortDeleted" "GsortEventDate" "GsortWhiteElo" "GsortBlackElo" 
-               "GsortComments" "GsortVariations" "GsortNAGs" }
-set critShortcuts { "d" "y" "e" "s" 
-                    "n" "w" "b" "o" 
-                    "r" "m" "R" "c" 
-                    "D" "E" "W" "B" 
-                    "C" "V" "A" }
-array set sortingHandles {
-0 -1
-1 -1 
-2 -1 
-3 -1
-4 -1
-5 -1
-6 -1
-7 -1
-8 -1
-9 -1
-}
-
-
-# glistExtra is the window that displays the starting moves of a
-# game when the middle mouse button is pressed in the game list window.
-
-toplevel .glistExtra
-wm overrideredirect .glistExtra 1
-wm withdraw .glistExtra
-text .glistExtra.text -font font_Small -background lightYellow \
-    -width 40 -height 8 -wrap word -relief solid -borderwidth 1
-pack .glistExtra.text -side top
-
-set glistMaxWidth 30
-
-set ::windows::gamelist::findtext ""
-set ::windows::gamelist::goto ""
-trace variable ::windows::gamelist::goto w {::utils::validate::Regexp {^[0-9]*$}}
-
-
-proc ::windows::gamelist::FindText {} {
-  global glstart sortingHandles
-  variable findtext
-  busyCursor .glistWin 1
-  ::utils::history::AddEntry ::windows::gamelist::findtext $findtext
-  set dbNum [sc_base current]
-  set temp [sc_filter textfind $glstart $findtext $sortingHandles($dbNum)]
-  busyCursor .glistWin 0
-  if {$temp < 1} { set temp 1 }
-  set glstart $temp
-  ::windows::gamelist::Refresh
-}
-
-proc ::windows::gamelist::ReOpen {} {
-  global glstart glistSize highcolor glSelection helpMessage
-  global glistFields glNumber buttoncolor
-  set w .glistWin
-  
-  bind $w <Configure> {}
-  bind $w <Destroy> {}
-  
-  # erase the window
-  foreach c [winfo children $w] {
-    destroy $c
-  }
-  
-  # Pack buttons frame first:
-  pack [ttk::frame $w.b] -side bottom -fill x -expand 1 -ipady 5 ;# -padx 10
-  scale $w.scale -from 1 -length 250 -orient horiz -variable glstart -showvalue 0 -command ::windows::gamelist::SetStart \
-      -bigincrement $glistSize -takefocus 0 -width 10 -troughcolor $buttoncolor
-  pack $w.scale -side bottom -fill x
-  frame $w.columns -takefocus 1 -highlightcolor black ;# -highlightthickness 2
-  pack $w.columns -side top -expand yes -fill both
-  
-  # Make each column in the listing:
-  foreach i $glistFields {
-    set code [lindex $i 0]
-    set width [lindex $i 1]
-    set justify [lindex $i 2]
-    set fgcolor [lindex $i 3]
-    set sep [lindex $i 4]
-    frame $w.columns.c$code
-    
-    if {[info exists ::windows::gamelist::names($code)]} {
-      set name $::windows::gamelist::names($code)
-    }
-    if {[info exists ::tr(Glist$name)]} { set name $::tr(Glist$name) }
-    
-    # Each heading is a label:
-    ttk::label $w.columns.c$code.header -foreground darkBlue -width $width -font font_Small -relief flat -background gray90 \
-        -text $name -anchor w
-    ::utils::tooltip::Set $w.columns.c$code.header $name
-    set helpMessage(E,$w.columns.c$code.header) {Press the left or right mouse button here for a configuration menu}
-    
-    bind $w.columns.c$code.header <Control-ButtonPress-$::MB3> "incrGLwidth $code; break"
-    bind $w.columns.c$code.header <Control-ButtonPress-1> "decrGLwidth $code; break"
-    bind $w.columns.c$code.header <Shift-ButtonPress-$::MB3> "incrGLwidth $code; break"
-    bind $w.columns.c$code.header <Shift-ButtonPress-1> "decrGLwidth $code; break"
-    bind $w.columns.c$code.header <ButtonPress-1> "popupGLconfig $code %x %y %X %Y"
-    bind $w.columns.c$code.header <ButtonPress-$::MB3> "popupGLconfig $code %x %y %X %Y"
-    
-    pack $w.columns.c$code -side left -expand yes -fill both -padx 0
-    
-    pack $w.columns.c$code.header -side top -fill x -padx 2
-    addHorizontalRule $w.columns.c$code 1 flat
-    # -height $glistSize
-    text $w.columns.c$code.text -background white -width $width -height 50 -font font_Small -relief flat -foreground $fgcolor -wrap none -setgrid 1 -cursor top_left_arrow
-    $w.columns.c$code.text tag configure align -justify $justify -foreground $fgcolor
-    $w.columns.c$code.text tag configure highlight -background lightBlue
-    $w.columns.c$code.text tag configure current -background lightYellow2
-    $w.columns.c$code.text tag configure underline -underline true
-    
-    bind $w.columns.c$code.text <Button1-Motion> "break"
-    bind $w.columns.c$code.text <Button2-Motion> "break"
-    bind $w.columns.c$code.text <Double-Button-1> "::windows::gamelist::SetSelection $code %x %y; ::game::Load \$glNumber; break"
-    bind $w.columns.c$code.text <Button-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Highlight \$glSelection; break"
-    bind $w.columns.c$code.text <ButtonRelease-1> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::Dehighlight; break"
-    
-    bind $w.columns.c$code.text <ButtonPress-$::MB3> "popupGLmenu $code %x %y %X %Y"
-    
-    bind $w.columns.c$code.text <ButtonPress-$::MB2> "::windows::gamelist::SetSelection $code %x %y; ::windows::gamelist::ShowMoves %X %Y; break"
-    bind $w.columns.c$code.text <ButtonRelease-$::MB2> "wm withdraw .glistExtra; ::windows::gamelist::Dehighlight; break"
-    
-    pack $w.columns.c$code.text -side top -expand true -fill both
-    if {$sep} { addVerticalRule $w.columns 1 flat }
-  }
-  
-  menu $w.config -tearoff 0
-  $w.config add cascade -label $::tr(GlistMoveField) -menu $w.config.move
-  menu $w.config.move -tearoff 0
-  $w.config add command -label $::tr(GlistEditField...)
-  $w.config add cascade -label $::tr(GlistAddField) -menu $w.config.insert
-  menu $w.config.insert -tearoff 0
-  $w.config add command -label $::tr(GlistDeleteField)
-  
-  menu $w.popup -tearoff 0
-  $w.popup add command -label $::tr(BrowseGame) -command {::gbrowser::new 0 $glNumber}
-  $w.popup add command -label $::tr(LoadGame) -command {::game::Load $glNumber}
-  $w.popup add command -label $::tr(MergeGame) -command mergeGame
-  menu $w.popup.merge
-  for {set i 1} {$i <= [sc_base count total]} {incr i} {
-    if { $i == [sc_base current] || [sc_base isReadOnly] } { continue }
-    if {[sc_base inUse $i]} {
-      set fname [file tail [sc_base filename $i]]
-      $w.popup.merge add command -label "$i $fname" -command "::game::mergeInBase [sc_base current] $i"
-    }
-  }
-  $w.popup add cascade -label $::tr(GlistMergeGameInBase) -menu $w.popup.merge
-  $w.popup add separator
-  $w.popup add command -label $::tr(GlistRemoveThisGameFromFilter) -command removeFromFilter
-  $w.popup add command -label $::tr(GlistRemoveGameAndAboveFromFilter) -command {removeFromFilter up}
-  $w.popup add command -label $::tr(GlistRemoveGameAndBelowFromFilter) -command {removeFromFilter down}
-  #when changing here the menu entry then change index numbers in proc popupGLmenu also
-  $w.popup add separator
-  $w.popup add command -label $::tr(GlistDeleteGame) -command {::windows::gamelist::ToggleFlag delete}
-  $w.popup add command -label $::tr(GlistDeleteAllGames) -command {catch {sc_game flag delete filter 1}; ::windows::gamelist::Refresh}
-  $w.popup add command -label $::tr(GlistUndeleteAllGames) -command {catch {sc_game flag delete filter 0}; ::windows::gamelist::Refresh}
-  
-  ttk::button $w.b.start -image tb_start -style Pad0.Small.TButton -command {set glstart 1; ::windows::gamelist::Refresh}
-  set helpMessage(E,$w.b.start) {Go to the first page of games}
-  
-  ttk::button $w.b.pgup -image tb_prev -style Pad0.Small.TButton -command {
-    set glstart [expr {$glstart - $glistSize}];
-    if {$glstart < 1} { set glstart 1 };
-    ::windows::gamelist::Refresh
-  }
-  set helpMessage(E,$w.b.pgup) {Previous page of games}
-  
-  ttk::button $w.b.pgdn -image tb_next  -style Pad0.Small.TButton -command {
-    set glstart [expr {$glstart + $glistSize}];
-    if {$glstart > [sc_filter count] } {
-      set glstart [sc_filter count]
-    }
-    if {$glstart < 1} { set glstart 1 }
-    ::windows::gamelist::Refresh
-  }
-  set helpMessage(E,$w.b.pgdn) {Next page of games}
-  
-  ttk::button $w.b.end -image tb_end  -style Pad0.Small.TButton -command {
-    set glstart [expr {[sc_filter count] - $glistSize + 1}]
-    if {$glstart < 1} { set glstart 1}
-    ::windows::gamelist::Refresh
-  }
-  set helpMessage(E,$w.b.end) {Go to the last page of games}
-  
-  ttk::button $w.b.current -textvar ::tr(Current) -style Pad0.Small.TButton -command {
-    set dbNum [sc_base current]
-    set glstart [sc_filter locate [sc_game number] $sortingHandles($dbNum)]
-    if {$glstart < 1} { set glstart 1}
-    ::windows::gamelist::Refresh
-  }
-  
-  bind $w <Up> {
-    set glstart [expr {$glstart - 1}]
-    if {$glstart < 1} { set glstart 1 }
-    ::windows::gamelist::Refresh
-  }
-  bind $w <Down> {
-    set glstart [expr {$glstart + 1}]
-    if {$glstart > [sc_filter count] } {
-      set glstart [sc_filter count]
-    }
-    ::windows::gamelist::Refresh
-  }
-  
-  bind $w <Home>  "$w.b.start invoke"
-  bind $w <End>   "$w.b.end invoke"
-  bind $w <Prior> "$w.b.pgup invoke"
-  bind $w <Next>  "$w.b.pgdn invoke"
-  
-  ttk::label $w.b.gotolabel -textvar ::tr(GlistGameNumber:)
-  ttk::entry $w.b.goto -width 8 -textvariable ::windows::gamelist::goto ;# -bg white
-  bind $w.b.goto <Home> "$w.b.start invoke; break"
-  bind $w.b.goto <End> "$w.b.end invoke; break"
-  bind $w.b.goto <Return> {
-    set dbNum [sc_base current]
-    set glstart [sc_filter locate $::windows::gamelist::goto $sortingHandles($dbNum)]
-    if {$glstart < 1} { set glstart 1}
-    set ::windows::gamelist::goto ""
-    ::windows::gamelist::Refresh
-  }
-  
-  ttk::label $w.b.findlabel -textvar ::tr(GlistFindText:)
-  ttk::combobox $w.b.find -width 15 -textvariable ::windows::gamelist::findtext
-  ::utils::history::SetCombobox ::windows::gamelist::findtext $w.b.find
-  bind $w.b.find <Return> ::windows::gamelist::FindText
-  bind $w.b.find <Home> "$w.b.find icursor 0; break"
-  bind $w.b.find <End> "$w.b.find icursor end; break"
-  
-  ttk::frame $w.b.space -width 0.25c
-  ttk::frame $w.b.space2 -width 0.25c
-  
-  ttk::button $w.b.sortbutton -textvar ::tr(GsortSort) -style Pad0.Small.TButton -command { makeSortWin }
-  ttk::button $w.b.export -textvar ::tr(Save...) -style Pad0.Small.TButton -command openExportGList
-  ttk::button $w.b.help -textvar ::tr(Help) -style Pad0.Small.TButton -command { helpWindow GameList }
-  ttk::button $w.b.close -textvar ::tr(Close) -style Pad0.Small.TButton -command { focus .; destroy .glistWin }
-  
-  pack $w.b.start $w.b.pgup $w.b.pgdn $w.b.end $w.b.current -side left -padx 1
-  pack $w.b.space $w.b.gotolabel $w.b.goto -side left
-  pack $w.b.space2 $w.b.findlabel $w.b.find -side left
-  pack $w.b.close $w.b.help $w.b.export $w.b.sortbutton -side right -padx 5
-  
-  set ::windows::gamelist::isOpen 1
-  bind $w <F1> { helpWindow GameList }
-  bind $w <Destroy> { set ::windows::gamelist::isOpen 0 }
-  bind $w <Escape> "$w.b.close invoke"
-  standardShortcuts $w
-  ::createToplevelFinalize $w
-  
-  # MouseWheel bindings:
-  if { $::macOS } {
-    bind $w <MouseWheel> {::windows::gamelist::Scroll [expr {- (%D)}]}
-  } else {
-    bind $w <MouseWheel> {::windows::gamelist::Scroll [expr {- (%D / 120)}]}
-  }
-  if {! $::windowsOS} {
-    bind $w <Button-4> {::windows::gamelist::Scroll -1}
-    bind $w <Button-5> {::windows::gamelist::Scroll 1}
-  }
-  
-  update idletasks
-  bind $w <Configure> { ::docking::handleConfigureEvent ::windows::gamelist::Resize }
-  wm iconname $w "Scid: [tr WindowsGList]"
-  ::windows::gamelist::Refresh
-  focus $w.b.goto
-  setWinLocation $w
-  setWinSize $w
-}
-
-# Binding to reset glistSize when the window is resized:
-# The way this is done is very ugly, but the only way I could
-# find that actually works.
-# Set temp to window geometry (e.g. 80x20+...) and then
-# extract the part between the "x" and the first "+" or "-":
-proc ::windows::gamelist::Resize {} {
-  global glistSize glistFields
-  set w .glistWin
-  bind $w <Configure> {}
-  
-  recordWinSize .glistWin
-  set temp [wm geometry .glistWin]
-  set temp [string range $temp [expr {[string first "x" $temp] + 1}] end]
-  set idx [string first "+" $temp]
-  if {$idx != -1} {
-    set temp [string range $temp 0 [expr {$idx - 1}]]
-  }
-  set idx [string first "-" $temp]
-  if {$idx != -1} {
-    set temp [string range $temp 0 [expr {$idx - 1}]]
-  }
-  
-  # setgrid option does not work in docked mode, so the last line may be partially visible
-  if { $::docking::USE_DOCKING } {
-    catch { incr temp -1 }
-  }
-  
-  if {$temp != $glistSize && $temp > 0} {
-    set glistSize $temp
-    set t $w.columns.cg.text
-    if { $::docking::USE_DOCKING } {
-      # foreach i $glistFields {
-      # set code [lindex $i 0]
-      # .glistWin.columns.c$code.text configure -height $glistSize
-      # }
-    }
-    ::windows::gamelist::Refresh
-  }
-  update idletasks
-  bind $w <Configure> { ::docking::handleConfigureEvent ::windows::gamelist::Resize }
-}
-
-proc ::windows::gamelist::Open {} {
-  global glstart glistSize highcolor glSelection helpMessage
-  global glistFields glNumber buttoncolor
-  if {[winfo exists .glistWin]} {
-    focus .
-    destroy .glistWin
-    set ::windows::gamelist::isOpen 0
-    return
-  }
-  set w .glistWin
-  
-  ::createToplevel $w
-  
-  # Window is only directly resizable vertically:
-  wm resizable $w false true
-  
-  ::windows::gamelist::ReOpen
-}
-
-proc ::windows::gamelist::Scroll {nlines} {
-  global glstart
-  set glstart [expr {$glstart + $nlines}]
-  if {$glstart > [sc_filter count] } {
-    set glstart [sc_filter count]
-  }
-  if {$glstart < 1} { set glstart 1 }
-  ::windows::gamelist::Refresh
-}
-
-proc ::windows::gamelist::SetSelection {code xcoord ycoord} {
-  global glSelection glNumber
-  set glSelection [expr {int([.glistWin.columns.c$code.text index @$xcoord,$ycoord])}]
-  set glNumber [.glistWin.columns.cg.text get $glSelection.0 $glSelection.end]
-}
-
-proc incrGLwidth {code} {
-  global glistSize glistMaxWidth
-  set w .glistWin.columns.c$code
-  set width [$w.header cget -width]
-  if {$width >= $glistMaxWidth} { return }
-  incr width
-  $w.header configure -width $width
-  $w.text configure -width $width
-  updateGLwidths $code $width
-}
-
-proc decrGLwidth {code} {
-  global glistSize
-  set w .glistWin.columns.c$code
-  set width [$w.header cget -width]
-  if {$width <= 1} { return }
-  incr width -1
-  $w.header configure -width $width
-  $w.text configure -width $width
-  updateGLwidths $code $width
-}
-
-proc updateGLwidths {code width} {
-  global glistFields
-  set len [llength $glistFields]
-  for {set i 0} {$i < $len} {incr i} {
-    set column [lindex $glistFields $i]
-    set tcode [lindex $column 0]
-    if {$tcode != $code} { continue }
-    set oldwidth [lindex $column 1]
-    if {$oldwidth != $width} {
-      set column [lreplace $column 1 1 $width]
-      set glistFields [lreplace $glistFields $i $i $column]
-    }
-  }
-}
-
-proc ::windows::gamelist::Dehighlight {} {
-  global glistFields glistSize
-  foreach column $glistFields {
-    set code [lindex $column 0]
-    .glistWin.columns.c$code.text tag remove highlight 1.0 end
-  }
-}
-
-proc ::windows::gamelist::Highlight {linenum} {
-  global glistFields glistSize
-  foreach column $glistFields {
-    set code [lindex $column 0]
-    .glistWin.columns.c$code.text tag remove highlight 1.0 end
-    .glistWin.columns.c$code.text tag add highlight $linenum.0 [expr {$linenum+1}].0
-  }
-}
-
-proc popupGLconfig {code xcoord ycoord xscreen yscreen} {
-  global glistFields glistAllFields
-  set menu .glistWin.config
-  
-  # Move-field submenu:
-  $menu.move delete 0 end
-  $menu.move add command -label "|<<" -command "moveGLfield $code -99"
-  $menu.move add command -label "<" -command "moveGLfield $code -1"
-  $menu.move add command -label ">" -command "moveGLfield $code 1"
-  $menu.move add command -label ">>|" -command "moveGLfield $code 99"
-  
-  # Configure-field command:
-  $menu entryconfig 1 -command "configGLdialog $code"
-  
-  # Insert-field submenu:
-  array set displayed {}
-  foreach column $glistAllFields {
-    set field [lindex $column 0]
-    set displayed($field) 0
-  }
-  foreach column $glistFields {
-    set tcode [lindex $column 0]
-    set displayed($tcode) 1
-  }
-  $menu.insert delete 0 end
-  foreach column $glistAllFields {
-    set tcode [lindex $column 0]
-    if {! $displayed($tcode)} {
-      set name $::windows::gamelist::names($tcode)
-      $menu.insert add command -label $::tr(Glist$name) \
-          -command "insertGLfield $code $tcode"
-    }
-  }
-  
-  # Delete-field command:
-  if {$code == "g"} {
-    $menu entryconfig 3 -state disabled
-  } else {
-    $menu entryconfig 3 -state normal -command "deleteGLfield $code"
-  }
-  # event generate .glistWin <ButtonRelease-$::MB3>
-  $menu post $xscreen [expr {$yscreen + 2}]
-  event generate $menu <ButtonPress-1>
-}
-
-array set glconfig {}
-
-proc configGLdialog {code} {
-  global glistFields glconfig
-  foreach column $glistFields {
-    if {$code == [lindex $column 0]} {
-      set glconfig(width) [lindex $column 1]
-      set glconfig(align) [lindex $column 2]
-      set glconfig(color) [lindex $column 3]
-      set glconfig(sep) [lindex $column 4]
-    }
-  }
-  set w .glconfig
-  if {[winfo exists $w]} { return }
-  toplevel $w
-  wm title $w "Scid"
-  label $w.title -text "$::windows::gamelist::names($code)" -font font_Bold
-  pack $w.title -side top
-  pack [frame $w.g] -side top -fill x
-  label $w.g.width -text $::tr(GlistWidth)
-  set m [tk_optionMenu $w.g.vwidth glconfig(width) 1 2 3 4 5 6 7 8 9 10 \
-      11 12 13 14 15 16 17 18 19 20]
-  $w.g.vwidth configure -width 3
-  $m entryconfigure 10 -columnbreak 1
-  label $w.g.align -text $::tr(GlistAlign)
-  frame $w.g.valign
-  radiobutton $w.g.valign.left -text "<<" -indicatoron 0 \
-      -variable glconfig(align) -value left
-  radiobutton $w.g.valign.right -text ">>" -indicatoron 0 \
-      -variable glconfig(align) -value right
-  pack $w.g.valign.left $w.g.valign.right -side left -padx 1
-  label $w.g.color -text $::tr(GlistColor)
-  frame $w.g.vcolor
-  foreach color {black darkBlue blue darkGreen darkRed red2 gray50} {
-    image create photo color_$color -width 14 -height 16
-    color_$color put $color -to 1 1 12 14
-    radiobutton $w.g.vcolor.$color -image color_$color -indicatoron 0 \
-        -variable glconfig(color) -value $color
-    pack $w.g.vcolor.$color -side left -padx 1
-  }
-  label $w.g.sep -text $::tr(GlistSep)
-  frame $w.g.vsep
-  radiobutton $w.g.vsep.yes -text $::tr(Yes) -indicatoron 0 \
-      -variable glconfig(sep) -value 1
-  radiobutton $w.g.vsep.no -text $::tr(No) -indicatoron 0 \
-      -variable glconfig(sep) -value 0
-  pack $w.g.vsep.yes $w.g.vsep.no -side left -padx 1
-  
-  set row 0
-  foreach t {width align color sep} {
-    grid $w.g.$t -row $row -column 0 -sticky w
-    grid $w.g.v$t -row $row -column 1 -sticky e
-    incr row
-  }
-  
-  addHorizontalRule $w
-  pack [frame $w.b] -side top -fill x
-  button $w.b.ok -text "OK" \
-      -command "catch {grab release $w}; destroy $w; configGLfield $code"
-  button $w.b.cancel -text $::tr(Cancel) \
-      -command "catch {grab release $w}; destroy $w"
-  pack $w.b.cancel $w.b.ok -side right -padx 2 -pady 2
-  wm resizable $w 0 0
-  ::utils::win::Centre $w
-  catch {grab $w}
-}
-
-proc configGLfield {code} {
-  global glistFields glconfig
-  set newcolumn [list $code $glconfig(width) $glconfig(align) \
-      $glconfig(color) $glconfig(sep)]
-  set len [llength $glistFields]
-  for {set i 0} {$i < $len} {incr i} {
-    set column [lindex $glistFields $i]
-    set tcode [lindex $column 0]
-    if {$tcode == $code} {
-      set glistFields [lreplace $glistFields $i $i $newcolumn]
-      break
-    }
-  }
-  # destroy .glistWin
-  ::windows::gamelist::ReOpen
-}
-
-proc moveGLfield {code delta} {
-  global glistFields
-  set len [llength $glistFields]
-  for {set i 0} {$i < $len} {incr i} {
-    set column [lindex $glistFields $i]
-    set tcode [lindex $column 0]
-    if {$tcode == $code} {
-      set glistFields [lreplace $glistFields $i $i]
-      set insert [expr {$i + $delta}]
-      set glistFields [linsert $glistFields $insert $column]
-      break
-    }
-  }
-  # destroy .glistWin
-  ::windows::gamelist::ReOpen
-}
-
-proc insertGLfield {code newcode} {
-  global glistFields glistAllFields
-  set len [llength $glistFields]
-  set newcolumn ""
-  foreach column $glistAllFields {
-    set tcode [lindex $column 0]
-    if {$tcode == $newcode} { set newcolumn $column }
-  }
-  if {$newcolumn == ""} { return }
-  
-  for {set i 0} {$i < $len} {incr i} {
-    set column [lindex $glistFields $i]
-    set tcode [lindex $column 0]
-    if {$tcode == $code} {
-      incr i
-      set glistFields [linsert $glistFields $i $newcolumn]
-      break
-    }
-  }
-  # destroy .glistWin
-  ::windows::gamelist::ReOpen
-}
-
-proc deleteGLfield {code} {
-  global glistFields
-  set len [llength $glistFields]
-  for {set i 0} {$i < $len} {incr i} {
-    set column [lindex $glistFields $i]
-    set tcode [lindex $column 0]
-    if {$tcode != $code} { continue }
-    set glistFields [lreplace $glistFields $i $i]
-  }
-  # destroy .glistWin
-  ::windows::gamelist::ReOpen
-}
-
-proc popupGLmenu {code xcoord ycoord xscreen yscreen} {
-  global glSelection glNumber
-  ::windows::gamelist::SetSelection $code $xcoord $ycoord
-  if {$glNumber < 1} {return}
-  ::windows::gamelist::Highlight $glSelection
-  #Enable/disable last 3 Popupmenupoint: Delete/Undelete (all) Games
-  if {[sc_base isReadOnly]} {
-    .glistWin.popup entryconfig 9 -state disabled
-    .glistWin.popup entryconfig 10 -state disabled
-    .glistWin.popup entryconfig 11 -state disabled
-  } else {
-    .glistWin.popup entryconfig 9 -state normal
-    .glistWin.popup entryconfig 10 -state normal
-    .glistWin.popup entryconfig 11 -state normal
-  }
-  # update the list of opened base for game merging
-  set m .glistWin.popup.merge
-  $m delete 0 end
-  for {set i 1} {$i <= [sc_base count total]} {incr i} {
-    if { $i == [sc_base current] } { continue }
-    if {[sc_base inUse $i]} {
-      set fname [file tail [sc_base filename $i]]
-      $m add command -label "$i $fname" -command "::game::mergeInBase [sc_base current] $i"
-    }
-  }
-  
-  .glistWin.popup post $xscreen [expr {$yscreen + 2}]
-  event generate .glistWin.popup <ButtonPress-1>
-}
-
-proc ::windows::gamelist::SetStart { start } {
-  global glstart
-  set glstart $start
-  ::windows::gamelist::Refresh
-}
-
-proc ::windows::gamelist::ToggleFlag {flag} {
-  global glNumber
-  # If an invalid game number, just return:
-  if {$glNumber < 1} { return }
-  if {$glNumber > [sc_base numGames]} { return }
-  catch {sc_game flag $flag $glNumber invert}
-  ::windows::gamelist::Refresh
-}
-
-proc removeFromFilter {{dir none}} {
-  global glNumber glstart sortingHandles
-  if {$glNumber < 1} { return }
-  if {$glNumber > [sc_base numGames]} { return }
-  set db [ sc_base current]
-  if {$dir == "none"} {
-    sc_filter remove 0 $glNumber 
-  } elseif {$dir == "up"} {
-    sc_filter remove 1 $glNumber $sortingHandles($db)
-    set glstart 1
-  } else {
-    sc_filter remove 2 $glNumber $sortingHandles($db)
-  }
-  ::windows::stats::Refresh
-  ::windows::gamelist::Refresh
-}
-
-proc ::windows::gamelist::ShowMoves {xcoord ycoord} {
-  global glistSelectPly glNumber glSelection
-  # If an invalid game number, just return:
-  if {$glNumber < 1} { return }
-  if {$glNumber > [sc_base numGames]} { return }
-  
-  ::windows::gamelist::Highlight $glSelection
-  .glistExtra.text delete 1.0 end
-  .glistExtra.text insert end [sc_game firstMoves $glNumber $glistSelectPly]
-  wm geometry .glistExtra +$xcoord+$ycoord
-  wm deiconify .glistExtra
-  raiseWin .glistExtra
-}
-
-proc ::windows::gamelist::Refresh {} {
-  global glistSize glstart
-  global glistFields sortingHandles
-  updateStatusBar
-  if {![winfo exists .glistWin]} { return }
-  set totalSize [sc_filter count]
-  set dbNum [sc_base current]
-  set linenum [sc_sort list $dbNum $glstart $glistSize -current $sortingHandles($dbNum)]
-  foreach column $glistFields {
-    set code [lindex $column 0]
-    set cformat $code
-    append cformat "*\n"
-    .glistWin.columns.c$code.text config -state normal
-    .glistWin.columns.c$code.text delete 1.0 end
-    .glistWin.columns.c$code.text insert end [sc_sort list $dbNum $glstart $glistSize $cformat $sortingHandles($dbNum)] align
-    if {$linenum > 0} {
-      .glistWin.columns.c$code.text tag add current $linenum.0 [expr {$linenum+1}].0
-    }
-    .glistWin.columns.c$code.text config -state disabled
-  }
-
-  
-  # Now update the window title:
-  set str "Scid [tr WindowsGList]: "
-  if {$totalSize > 0} {
-    set right [expr {$totalSize + 1 - $glistSize}]
-    if {$right < 1} { set right 1 }
-    .glistWin.scale configure -to $right
-    set glend [expr {$glstart + $glistSize - 1}]
-    if {$glend > $totalSize} { set glend $totalSize}
-    append str [::utils::thousands $glstart] " .. " \
-        [::utils::thousands $glend] " / " [::utils::thousands $totalSize] " " $::tr(games)
-  } else {
-    append str $::tr(noGames)
-    .glistWin.scale configure -to 1
-  }
-  ::setTitle .glistWin $str
-  configureSortWin
-}
-
-trace variable glexport w updateExportGList
-
-proc openExportGList {} {
-  global glexport
-  set w .glexport
-  
-  if {[sc_filter count] < 1} {
-    tk_messageBox -type ok -icon info -title "Scid" \
-        -message "This are no games in the current filter."
-    return
-  }
-  
-  if {[winfo exists $w]} {
-    raiseWin $w
-    updateExportGList
-    return
-  }
-  toplevel $w
-  wm title $w "Scid: Save Game List"
-  
-  label $w.lfmt -text "Format:" -font font_Bold
-  pack $w.lfmt -side top
-  entry $w.fmt -textvar glexport -bg white -fg black -font font_Fixed
-  pack $w.fmt -side top -fill x
-  text $w.tfmt -width 1 -height 5 -font font_Fixed -fg black -wrap none -relief flat
-  pack $w.tfmt -side top -fill x
-  $w.tfmt insert end "w: White            b: Black            "
-  $w.tfmt insert end "W: White Elo        B: Black Elo        \n"
-  $w.tfmt insert end "m: Moves count      r: Result           "
-  $w.tfmt insert end "y: Year             d: Date             \n"
-  $w.tfmt insert end "e: Event            s: Site             "
-  $w.tfmt insert end "n: Round            o: ECO code         \n"
-  $w.tfmt insert end "g: Game number      f: Filtered number  "
-  $w.tfmt insert end "F: Final material   S: Non-std start pos\n"
-  $w.tfmt insert end "D: Deleted flag     U: User flags       "
-  $w.tfmt insert end "C: Comments flag    V: Variations flag  \n"
-  $w.tfmt configure -cursor top_left_arrow -state disabled
-  addHorizontalRule $w
-  label $w.lpreview -text $::tr(Preview:) -font font_Bold
-  pack $w.lpreview -side top
-  text $w.preview -width 80 -height 5 -font font_Fixed -bg gray95 -fg black \
-      -wrap none -setgrid 1 -xscrollcommand "$w.xbar set"
-  scrollbar $w.xbar -orient horizontal -command "$w.preview xview"
-  pack $w.preview -side top -fill x
-  pack $w.xbar -side top -fill x
-  addHorizontalRule $w
-  pack [frame $w.b] -side bottom -fill x
-  button $w.b.default -text "Default" -command {set glexport $glexportDefault}
-  button $w.b.ok -text "OK" -command saveExportGList
-  button $w.b.close -textvar ::tr(Cancel) -command "focus .; grab release $w; destroy $w"
-  pack $w.b.close $w.b.ok -side right -padx 2 -pady 2
-  pack $w.b.default -side left -padx 2 -pady 2
-  wm resizable $w 1 0
-  focus $w.fmt
-  updateExportGList
-  grab $w
-}
-
-proc updateExportGList {args} {
-  global glexport sortingHandles
-  set w .glexport
-  if {! [winfo exists $w]} { return }
-  set dbNum [sc_base current]
-  set text [sc_sort list $dbNum 1 5 "$glexport\n" $sortingHandles($dbNum)]
-  $w.preview configure -state normal
-  $w.preview delete 1.0 end
-  $w.preview insert end $text
-  $w.preview configure -state disabled
-}
-
-proc saveExportGList {} {
-  global glexport sortingHandles
-  set ftypes {{"Text files" {.txt}} {"All files" *}}
-  set fname [tk_getSaveFile -filetypes $ftypes -parent .glexport -title "Scid: Save Game List"]
-  if {$fname == ""} { return }
-  set showProgress 0
-  if {[sc_filter count] >= 20000} { set showProgress 1 }
-  if {$showProgress} {
-    progressWindow "Scid" "Saving game list..." $::tr(Cancel) sc_progressBar
-  }
-  busyCursor .
-  set dbNum [sc_base current]
-  set res [catch {sc_sort list $dbNum 1 9999999 "$glexport\n" $sortingHandles($dbNum) $fname} err]
-  unbusyCursor .
-  if {$showProgress} { closeProgressWindow }
-  if {$res} {
-    tk_messageBox -type ok -icon warning -title "Scid" -message $err
-    return
-  }
-  focus .
-  grab release .glexport
-  destroy .glexport
-  return
-}
-
-proc makeSortWin {} {
-  global sortCriteria critList
-  set w .glSortWin
-  if {[winfo exists $w]} {
-    raiseWin $w
-    return
-  }
-  toplevel $w
-  wm title $w "Scid: Game List Sort"
-  wm resizable $w 0 0
-  pack [ttk::frame $w.f]
-  
-  ttk::label $w.f.torder -textvar ::tr(SortCriteria:) -font font_Bold
-  pack $w.f.torder -side top
-  ttk::label $w.f.order -textvar sortCriteria(translated) -width 40 -background white -relief solid -anchor w
-  pack $w.f.order -side top -fill x -pady 2 -padx 2
-  addHorizontalRule $w.f
-  ttk::label $w.f.tadd -textvar ::tr(AddCriteria:) -font font_Bold
-  pack $w.f.tadd -side top
-
-  addHorizontalRule $w.f
-
-  pack [ttk::frame $w.f.cr] -fill x
-  
-  set locCritList {}
-  foreach cr $critList { lappend locCritList $::tr($cr) } 
-  ttk::combobox $w.f.cr.critcombo -width 20 -values $locCritList
-  $w.f.cr.critcombo set [lindex $locCritList 0]
-  pack $w.f.cr.critcombo -side left
-
-  set locOrderList [::list $::tr(GsortAscending) $::tr(GsortDescending) ]
-  ttk::combobox $w.f.cr.ordercombo -width 12 -values $locOrderList
-  $w.f.cr.ordercombo set $::tr(GsortAscending)
-  pack $w.f.cr.ordercombo -side left
-
-  ttk::button $w.f.cr.add -textvar ::tr(GsortAdd) -command addSortCriteria
-  pack $w.f.cr.add -side right
-  
-  addHorizontalRule $w.f
-
-  pack [ttk::frame $w.f.b1] -fill x
-  ttk::button $w.f.b1.clear -textvar ::tr(Clear) -command clearSortCriteria
-  ttk::button $w.f.b1.sort -textvar ::tr(Sort) -command sortGameList
-  pack $w.f.b1.clear -side left
-  pack $w.f.b1.sort -side right
-
-  pack [ttk::frame $w.f.b2] -side bottom -fill x
-  ttk::button $w.f.b2.store -textvar ::tr(GsortStore) -command storeSortingCache
-  ttk::button $w.f.b2.load -textvar ::tr(GsortLoad) -command loadSortingCache
-  ttk::button $w.f.b2.close -textvar ::tr(Close) -command "focus .; destroy $w"
-  pack $w.f.b2.store $w.f.b2.load -side left -padx 5 -pady 2
-  pack $w.f.b2.close -side right
-
-  bind $w <Escape> "$w.f.b.close invoke"
-  configureSortWin
-}
-
-proc configureSortWin {} {
-  global sortCriteria sortingHandles
-  set w .glSortWin
-  if {[winfo exists $w]} {
-    set db [ sc_base current]
-    if {[sc_base inUse $db]} {
-      set handle $sortingHandles($db)
-      if { $handle == -1 || $db == 9 } { $w.f.b2.store configure -state disabled } else { $w.f.b2.store configure -state normal }
-      if { $db == 9 } { $w.f.b2.load configure -state disabled } else {
-  	    set canLoad [ sc_sort testload $db ]
-	    if { $canLoad } { $w.f.b2.load configure -state normal } else { $w.f.b2.load configure -state disabled }
-      }
-      if {$sortCriteria(real) == ""} {$w.f.b1.clear configure -state disabled } else { $w.f.b1.clear configure -state normal }
+proc ::windows::gamelist::Open {{w .glistWin}} {
+	if {[::createToplevel $w] == "already_exists"} {
+		focus .
+		destroy $w
+		return
 	}
-  }
+
+	if {! [info exists ::glistLayout($w)] } {
+		set ::glistLayout($w) [::glist_Ly::CreateName]
+		lappend ::glist_Layouts $::glistLayout($w)
+	}
+	options.save ::glist_Layouts
+	options.save ::glistLayout($w)
+
+	set ::gamelistBase($w) 0
+	set ::gamelistMenu($w) ""
+	set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
+	set ::gamelistFilter($w) "dbfilter"
+	ttk::frame $w.buttons -padding {5 5 2 5}
+	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
+	ttk::button $w.buttons.filter -image engine_on -command "::windows::gamelist::menu_ $w filter"
+	ttk::button $w.buttons.layout -image glist_ImgLayout -command "::windows::gamelist::menu_ $w layout"
+	ttk::button $w.buttons.boardFilter -image glist_ImgBoard -command "::windows::gamelist::searchpos_ $w"
+	#TODO:
+	#Se diamo la possibilita di avere finestre multiple, con filtri diversi per lo stesso database,
+	#la tree window non sara sufficiente e bisognera visualizzare le statistiche per ogni gamelist window
+	#ttk::button $w.buttons.stats -image b_bargraph
+	grid $w.buttons.database -row 0
+	grid $w.buttons.filter  -row 1
+	grid $w.buttons.layout  -row 2
+	grid $w.buttons.boardFilter  -row 3
+	#grid $w.buttons.stats -row 4
+	# End of $w.buttons frame
+	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 0}
+	glist.create $w.games $::glistLayout($w)
+	grid $w.buttons -row 0 -column 0 -sticky news
+	grid $w.games -row 0 -column 2 -sticky news
+	grid rowconfigure $w 0 -weight 1
+	grid columnconfigure $w 0 -weight 0
+	grid columnconfigure $w 1 -weight 0
+	grid columnconfigure $w 2 -weight 1
+	createToplevelFinalize $w
+
+	ttk::frame $w.database -padding {0 5 6 2}
+	::windows::switcher::Create $w.database
+	#TODO: remove this hack
+	bind $w <Configure> "::windows::switcher::Refresh"
+	###########################
+
+	ttk::frame $w.filter -padding {0 5 6 2}
+	ttk::frame $w.filter.border -borderwidth 2 -relief groove
+	grid $w.filter.border -sticky news
+	grid rowconfigure $w.filter 0 -weight 1
+	grid columnconfigure $w.filter 0 -weight 1
+	ttk::label $w.filter.text -text "TODO:\n-load/save filter\n-multiple filters\n-show cur filter" -font font_Tiny
+	grid $w.filter.text -in $w.filter.border
+
+
+	#TODO: scrollbars
+	ttk::frame $w.layout -padding {0 5 6 2}
+	grid rowconfigure $w.layout 0 -weight 1
+	grid columnconfigure $w.layout 0 -weight 1
+	::glist_Ly::Update $w
+
+
+	::windows::gamelist::Refresh
 }
 
-proc clearSortCriteria {} {
-  set ::sortCriteria(real) ""
-  set ::sortCriteria(translated) ""
-  configureSortWin
+proc ::windows::gamelist::Refresh {{w .glistWin}} {
+	if {! [winfo exists $w]} { return }
+	#TODO: Multiple windows
+	set ::gamelistBase($w) [sc_base current]
+	::setTitle $w "[file tail [sc_base filename $::gamelistBase($w)]] ([filterText $::gamelistBase($w) 100000])"
+	glist.update $w.games $::gamelistBase($w) $::gamelistFilter($w)
 }
 
-proc addSortCriteria {args} {
-  global sortCriteria critShortcuts
-
-  set critSelected [.glSortWin.f.cr.critcombo get]
-  set orderSelected [.glSortWin.f.cr.ordercombo current]
-  set shortCrit [lindex $critShortcuts [.glSortWin.f.cr.critcombo current]]
-  set shortOrder "+" 
-  if { $orderSelected == 1 } { set shortOrder "-" }
-
-  if {$sortCriteria(real) == ""} {
-    set sortCriteria(real) "$shortCrit$shortOrder"
-    set sortCriteria(translated) "$critSelected$shortOrder"
-  } else {
-    append sortCriteria(real) "$shortCrit$shortOrder"
-    append sortCriteria(translated) ", $critSelected$shortOrder"
-  }
-  configureSortWin
+proc ::windows::gamelist::menu_ {{w} {button}} {
+	if {$::gamelistMenu($w) != ""} {
+		$w.buttons.$::gamelistMenu($w) state !pressed
+		grid forget $w.$::gamelistMenu($w)
+	}
+	if {$::gamelistMenu($w) != $button} {
+		$w.buttons.$button state pressed
+		set ::gamelistMenu($w) $button
+		grid $w.$button -row 0 -column 1 -sticky news
+	} else {
+		set ::gamelistMenu($w) ""
+	}
 }
 
-proc sortGameList {} {
-  global sortCriteria sortingHandles
-  set db [ sc_base current]
-  progressWindow "Scid" [concat "Sorting" "..."]
-  busyCursor .
-  set handle [ sc_sort sort $db $sortCriteria(real) $sortingHandles($db)]
-  unbusyCursor .
-  closeProgressWindow
-  set sortingHandles($db) $handle 
-  ::windows::gamelist::Refresh
-  configureSortWin
+proc ::windows::gamelist::searchpos_ {{w}} {
+	if {$::gamelistFilter($w) == "dbfilter"} {
+		if {! [winfo exists .treeWin$::gamelistBase($w)]} { ::tree::make $::gamelistBase($w) }
+		set ::gamelistFilter($w) "filter"
+		$w.buttons.boardFilter state pressed
+	} else {
+		set ::gamelistFilter($w) "dbfilter"
+		$w.buttons.boardFilter state !pressed
+	}
+	::windows::gamelist::Refresh $w
 }
 
-proc storeSortingCache {} {
-  global sortingHandles
-  set db [ sc_base current]
-  sc_sort store $db $sortingHandles($db)
-  getSortingCrit
+namespace eval ::glist_Ly {
+	proc Update {w} {
+		if {[winfo exists $w.layout.b]} { destroy $w.layout.b}
+		ttk::frame $w.layout.b -borderwidth 2 -relief groove -padding 5
+		grid $w.layout.b -sticky news
+		tk::entry $w.layout.b.text_new -textvariable ::gamelistNewLayout($w) -font font_Small
+		tk::button $w.layout.b.new -image tb_new -command "::glist_Ly::New $w"
+		grid $w.layout.b.text_new $w.layout.b.new
+		ttk::frame $w.layout.b.sep -padding { 0 4 0 4 }
+		ttk::separator $w.layout.b.sep.line
+		grid rowconfigure $w.layout.b.sep 0 -weight 1
+		grid columnconfigure $w.layout.b.sep 0 -weight 1
+		grid $w.layout.b.sep.line -sticky news
+		grid $w.layout.b.sep -columnspan 2 -sticky we
+		for {set i 0} {$i < [llength $::glist_Layouts]} {incr i} {
+			set name [lindex $::glist_Layouts $i]
+			tk::button $w.layout.b.layout$i -text $name -font font_Small -width 20 -command "::glist_Ly::Change $w $i"
+			if {$name == $::glistLayout($w)} { $w.layout.b.layout$i configure -bg lightSteelBlue }
+			tk::button $w.layout.b.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del $w $i"
+			grid $w.layout.b.layout$i $w.layout.b.layoutDel$i -sticky we
+		}
+	}
+	proc New {w} {
+		#TODO:
+		#no nomi uguali
+		#copia il layout attuale
+		lappend ::glist_Layouts $::gamelistNewLayout($w)
+		set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
+		::glist_Ly::Change $w end
+	}
+	proc Del {w idx} {
+		#TODO: what to do if user delete the layout of another window?
+		set old_layout [lindex $::glist_Layouts $idx]
+		options.save_cancel ::glist_ColOrder($old_layout)
+		options.save_cancel ::glist_ColWidth($old_layout)
+		options.save_cancel ::glist_ColAnchor($old_layout)
+		options.save_cancel ::glist_Sort($old_layout)
+		options.save_cancel ::glist_FindBar($old_layout)
+  		set ::glist_Layouts [lreplace $::glist_Layouts $idx $idx]
+		::glist_Ly::Update $w
+	}
+	proc Change {w idx} {
+		set ::glistLayout($w) [lindex $::glist_Layouts $idx]
+		::glist_Ly::Update $w
+		if {[winfo exists $w.games]} { destroy $w.games}
+		ttk::frame $w.games -borderwidth 0 -padding {8 5 5 0}
+		grid $w.games -row 0 -column 2 -sticky news		
+		glist.create $w.games $::glistLayout($w)
+		::windows::gamelist::Refresh $w
+	}
+	proc CreateName {} {
+		set i 1
+		set prefix "Layout"
+		if {! [info exists ::glist_Layouts] } { return "$prefix$i" }
+		while {[lsearch $::glist_Layouts "$prefix$i"] != -1} { incr i }
+		return "$prefix$i"
+	}
 }
 
-proc loadSortingCache {} {
-  global sortCriteria sortingHandles
-  set db [ sc_base current]
-  set sortingHandles($db) [sc_sort load $db $sortingHandles($db)] 
-  getSortingCrit
-  ::windows::gamelist::Refresh
-  configureSortWin
-}
 
-proc getSortingCrit {} {
-  global sortCriteria sortingHandles critShortcuts critList
-    
-  set db [ sc_base current]
-  set critString [ sc_sort crit $db $sortingHandles($db)]
-  set critStringList [split $critString {} ]
-  set sortCriteria(real) $critString
-  set sortCriteria(translated) ""
-
-  set sep ""
-  foreach c $critStringList {
-	set found 0
-	set p 0
-	foreach l $critShortcuts {
-	if { $l == $c } {
-      set idx [lindex $critList $p]
-      append sortCriteria(translated) $sep $::tr($idx) 
-      set sep ","
-      set found 1
-    }
-    incr p 
-    }
-    if { $found == 0 } {
-      append sortCriteria(translated) $c
-    }
-  }
-}
 
 
 
 ##########################################################################
 # June 2011: A new reusable and simplified gamelist widget
-#
-
 # glist.create
 #   Create a gamelist widget
 #   w: parent window of the gamelist widget
@@ -1019,7 +208,7 @@ proc glist.create {{w} {layout}} {
   }
 
   ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
-  $w.glist tag configure current -background lightBlue
+  $w.glist tag configure current -background lightSteelBlue
   $w.glist tag configure fsmall -font font_Small
   menu $w.glist.header_menu
   menu $w.glist.header_menu.addcol
@@ -1111,7 +300,9 @@ proc glist.update {{w} {base} {filter}} {
 }
 
 
+##########################################################################
 #private:
+
 set glist_Headers {"GlistNumber" "GlistResult" "GlistLength" "GlistWhite" "GlistWElo"
                    "GlistBlack" "GlistBElo"  "GlistDate" "GlistEvent" "GlistRound"
                    "GlistSite" "GlistAnnos" "GlistComments" "GlistVars" "GlistDeleted"

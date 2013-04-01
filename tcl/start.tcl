@@ -151,7 +151,7 @@ set comp(book) {}
 # List of saved layouts : 3 slots available
 array set ::docking::layout_list {}
 # Basic layout : PGN window with main board
-set ::docking::layout_list(1) {{MainWindowGeometry 1024x570+0+26 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 418} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 387} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 239} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal 146} {TNotebook .tb5 .fdockbaseWin} {TNotebook .tb3 .fdockglistWin}}}}}}}}}
+set ::docking::layout_list(1) {{MainWindowGeometry 1024x542+0+26 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 373} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 202} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin}}}}}}}}}
 set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
 set ::docking::layout_list(3) {}
 

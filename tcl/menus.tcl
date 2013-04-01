@@ -926,6 +926,13 @@ proc options.save {varname} {
   }
 }
 
+proc options.save_cancel {varname} {
+  set idx [lsearch -exact $::autosave_opt $varname]
+  if {$idx != -1} {
+    set ::autosave_opt [lreplace $::autosave_opt $idx $idx]
+  }
+}
+
 $m add separator
 incr menuindex
 
