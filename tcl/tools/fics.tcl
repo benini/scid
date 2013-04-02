@@ -9,6 +9,7 @@ namespace eval fics {
   set seeklist {}
   set observedGame -1
   set playing 0
+  set rated 0
   set waitForRating ""
   set waitForMoves ""
   set silence 1
@@ -679,8 +680,9 @@ namespace eval fics {
         if { [ string match -nocase $black $::fics::reallogin ] } { ::board::flip .main.board }
       }
       updateBoard -pgn -animate
+      set ::fics::rated [string equal [lindex $line 5] "rated"]
       # display the win / draw / loss score
-      ::fics::writechan "assess" "noecho"
+      if { $::fics::rated } { ::fics::writechan "assess" "noecho" }
       # it's a new game so show again abort, draw, etc requests
       set ::fics::showabortreq 1
       set ::fics::showadjournreq 1
