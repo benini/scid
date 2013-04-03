@@ -1476,12 +1476,13 @@ proc updateMenuStates {} {
       $m.file entryconfig [tr FileReadOnly] -state normal
     }
     
-    # Load first/last/random buttons:
+    # Load first/last/random/game number buttons:
     set filtercount [sc_filter count]
     if {$filtercount == 0} {set state disabled} else {set state normal}
     $m.game entryconfig [tr GameFirst] -state $state
     $m.game entryconfig [tr GameLast] -state $state
     $m.game entryconfig [tr GameRandom] -state $state
+    $m.game entryconfig [tr GameNumber] -state $state
     
     # Load previous button:
     if {[sc_filter previous]} {set state normal} else {set state disabled}
@@ -1496,8 +1497,6 @@ proc updateMenuStates {} {
     if {[sc_filter next]} {set state normal} else {set state disabled}
     $m.game entryconfig [tr GameNext] -state $state
     .main.tb.gnext configure -state $state
-    
-    $m.game entryconfig [tr GameNumber] -state normal
     
     # Save add button:
     set state normal
