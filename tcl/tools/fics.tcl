@@ -1265,7 +1265,7 @@ namespace eval fics {
 
     if { ! [winfo exists .fics] } { return 1 }
 
-    if { [sc_game info white] == "puzzlebot" && [sc_game info white] == "puzzlebot" } {
+    if { [sc_game info white] == "puzzlebot" || [sc_game info black] == "puzzlebot" } {
       return 1
     }
 
