@@ -17,7 +17,7 @@ array set ::utils::tooltip::message {}
 #
 toplevel .tooltip
 label .tooltip.text -relief solid -borderwidth 1 -justify left \
-    -background lightYellow -padx 3 -pady 1
+    -background #f5f5f5 -padx 3 -pady 1 -font font_Tiny
 pack .tooltip.text -side left
 wm overrideredirect .tooltip 1
 if { $macOS }  {

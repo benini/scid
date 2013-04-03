@@ -826,16 +826,11 @@ proc setTitle { w title } {
     if { $nb == "" } {
       wm title $w $title
     } else  {
-      # if target is main board, update the global window instead
-      if { $w == ".main" && $title != [ ::tr "Board" ] } {
-        wm title . $title
-      } else  {
-        # in docked mode trim down title to spare space
-        if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
-          set title [string range $title 6 end]
-        }
-        $nb tab $f -text $title
+      # in docked mode trim down title to spare space
+      if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
+        set title [string range $title 6 end]
       }
+      $nb tab $f -text $title
     }
   } else  {
     set wdock ".fdock[string range $w 1 end]"
@@ -1497,17 +1492,7 @@ ConvertOldOptionVariables
 
 # Reconfigure fonts if necessary:
 foreach i {Regular Menu Small Tiny Fixed} {
-  if {$fontOptions($i) == $fontOptions(old$i)} {
-    # Old font format in options file, or no file. Extract new options:
-    set fontOptions($i) {}
-    lappend fontOptions($i) [font actual font_$i -family]
-    lappend fontOptions($i) [font actual font_$i -size]
-    lappend fontOptions($i) [font actual font_$i -weight]
-    lappend fontOptions($i) [font actual font_$i -slant]
-  } else {
-    # New font format in options file:
     configureFont $i
-  }
 }
 
 # Check board size is valid:

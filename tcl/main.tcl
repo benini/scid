@@ -156,7 +156,15 @@ proc updateTitle {} {
     append title "$fname ($::tr(game) "
     append title "[::utils::thousands [sc_game number]] / "
     append title "[::utils::thousands [sc_base numGames]])"
-    ::setTitle .main $title
+    ::setTitle . $title
+    set white [sc_game info white]
+    set black [sc_game info black]
+    if {[string length $white] > 2 &&  [string length $black] > 2} {
+        if {$fname == {[clipbase]} } { set fname clipbase }
+        ::setTitle .main "($fname): $white -- $black"
+    } else {
+        ::setTitle .main $title
+    }
 }
 
 # updateStatusBar:

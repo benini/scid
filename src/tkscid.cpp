@@ -956,7 +956,7 @@ sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		if (idx == IDX_NOT_FOUND) break;
 
 		uint ply = 0;
-		if (filter && strCompare("tree", argv[5]) == 0) ply = filter->Get(idx) -1;
+		if (filter) ply = filter->Get(idx) -1;
 
 		std::string info = cdb->idx->FetchInfo (idx, cdb->nb);
 
@@ -5691,6 +5691,7 @@ sc_filter_reset (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     basePtr->dbFilter->Fill (1);
     updateMainFilter (db);
+    db->idx->FilterChanged();
     return TCL_OK;
 }
 
@@ -6320,7 +6321,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
         // If option is OPT_FILTER, adjust the filter and continue &&&
         if (option == OPT_FILTER) {
-            db->filter->Set (i, 1);
+            db->dbFilter->Set (i, 1);
             continue;
         }
 
@@ -6356,6 +6357,8 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
     if (option == OPT_FILTER) {
         delete ctable;
+        updateMainFilter (db);
+        db->idx->FilterChanged();
         return TCL_OK;
     }
     if (ctable->NumPlayers() < 2) {

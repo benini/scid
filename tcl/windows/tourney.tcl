@@ -335,7 +335,7 @@ proc ::tourney::refresh {{option ""}} {
     if {$np == 2} { set best "$one $white, $two $black" }
 
     $t tag bind g$count <ButtonPress-1> [list ::tourney::select $g]
-    $t tag bind g$count <ButtonPress-$::MB3> [list ::tourney::select $g 1]
+    $t tag bind g$count <ButtonPress-$::MB3> [list ::tourney::select $g]
     $t tag bind g$count <Any-Enter> \
       "$t tag configure g$count -background $hc"
     $t tag bind g$count <Any-Leave> \
@@ -383,7 +383,7 @@ proc ::tourney::check {} {
   }
 }
 
-proc ::tourney::select {gnum {openCrosstable 0}} {
+proc ::tourney::select {gnum} {
   if {[catch {::game::Load $gnum} result]} {
     tk_messageBox -type ok -icon info -title "Scid" -message $result
     return
@@ -391,10 +391,6 @@ proc ::tourney::select {gnum {openCrosstable 0}} {
   flipBoardForPlayerNames $::myPlayerNames
   updateBoard -pgn
   updateTitle
-  if {$openCrosstable} {
-    crosstabWin
-  } else {
-    ::crosstab::RefreshIfOpen
-  }
+  ::crosstab::Open
 }
 

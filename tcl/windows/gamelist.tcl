@@ -42,13 +42,18 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	#Se diamo la possibilita di avere finestre multiple, con filtri diversi per lo stesso database,
 	#la tree window non sara sufficiente e bisognera visualizzare le statistiche per ogni gamelist window
 	#ttk::button $w.buttons.stats -image b_bargraph
+	#TODO: translate
+	::utils::tooltip::Set $w.buttons.database "Show/Hide databases"
+	::utils::tooltip::Set $w.buttons.filter "Change filter"
+	::utils::tooltip::Set $w.buttons.layout "Load/Save/Change sorting criteria and column layout"
+	::utils::tooltip::Set $w.buttons.boardFilter "Show only games that matches the current board position"
 	grid $w.buttons.database -row 0
 	grid $w.buttons.filter  -row 1
 	grid $w.buttons.layout  -row 2
 	grid $w.buttons.boardFilter  -row 3
 	#grid $w.buttons.stats -row 4
 	# End of $w.buttons frame
-	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 0}
+	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games $::glistLayout($w)
 	grid $w.buttons -row 0 -column 0 -sticky news
 	grid $w.games -row 0 -column 2 -sticky news
@@ -64,19 +69,47 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	bind $w <Configure> "::windows::switcher::Refresh"
 	###########################
 
+	set bgcolor [ttk::style lookup Button.label -background]
+
 	ttk::frame $w.filter -padding {0 5 6 2}
-	ttk::frame $w.filter.border -borderwidth 2 -relief groove
-	grid $w.filter.border -sticky news
+	ttk::frame $w.filter.b -borderwidth 2 -relief groove
+	grid $w.filter.b -sticky news
 	grid rowconfigure $w.filter 0 -weight 1
 	grid columnconfigure $w.filter 0 -weight 1
-	ttk::label $w.filter.text -text "TODO:\n-load/save filter\n-multiple filters\n-show cur filter" -font font_Tiny
-	grid $w.filter.text -in $w.filter.border
+	button $w.filter.b.rfilter -image tb_rfilter -command ::search::filter::reset -width 24 -height 24
+	button $w.filter.b.bsearch -image tb_bsearch -command ::search::board -width 24 -height 24
+	button $w.filter.b.hsearch -image tb_hsearch -command ::search::header -width 24 -height 24
+	button $w.filter.b.msearch -image tb_msearch -command ::search::material -width 24 -height 24
+	button $w.filter.b.tmt -image tb_tmt -command ::tourney::toggle -width 40 -height 24
+	button $w.filter.b.crosst -image tb_crosst -command toggleCrosstabWin -width 40 -height 24
+	ttk::frame $w.filter.b.f
+	grid $w.filter.b.rfilter $w.filter.b.bsearch $w.filter.b.hsearch $w.filter.b.msearch \
+		$w.filter.b.tmt $w.filter.b.crosst
+	grid $w.filter.b.f -columnspan 6 -sticky news
+	grid rowconfigure $w.filter.b 1 -weight 1
+	autoscrollframe -bars y $w.filter.b.f canvas $w.filter.b.f.c -highlightthickness 0 -background $bgcolor
+	bind $w.filter.b.f.c <Configure>  {
+		set l [winfo reqwidth %W.f]
+		set h [winfo reqheight %W.f]
+		%W configure -scrollregion [list 0 0 $l $h] -width $l
+	}
+	ttk::frame $w.filter.b.f.c.f
+	$w.filter.b.f.c create window 0 0 -window $w.filter.b.f.c.f -anchor nw
+	ttk::label $w.filter.b.f.c.f.text -text "TODO:\n-load/save filter\n-multiple filters\n-show cur filter" -font font_Tiny
+	grid $w.filter.b.f.c.f.text
 
 
-	#TODO: scrollbars
 	ttk::frame $w.layout -padding {0 5 6 2}
+	ttk::frame $w.layout.b -borderwidth 2 -relief groove
+	grid $w.layout.b -sticky news
 	grid rowconfigure $w.layout 0 -weight 1
 	grid columnconfigure $w.layout 0 -weight 1
+	autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0 -background $bgcolor
+	bind $w.layout.b.c <Configure>  {
+		set l [winfo reqwidth %W.f]
+		set h [winfo reqheight %W.f]
+		%W configure -scrollregion [list 0 0 $l $h] -width $l
+	}
 	::glist_Ly::Update $w
 
 
@@ -119,25 +152,26 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 
 namespace eval ::glist_Ly {
 	proc Update {w} {
-		if {[winfo exists $w.layout.b]} { destroy $w.layout.b}
-		ttk::frame $w.layout.b -borderwidth 2 -relief groove -padding 5
-		grid $w.layout.b -sticky news
-		tk::entry $w.layout.b.text_new -textvariable ::gamelistNewLayout($w) -font font_Small
-		tk::button $w.layout.b.new -image tb_new -command "::glist_Ly::New $w"
-		grid $w.layout.b.text_new $w.layout.b.new
-		ttk::frame $w.layout.b.sep -padding { 0 4 0 4 }
-		ttk::separator $w.layout.b.sep.line
-		grid rowconfigure $w.layout.b.sep 0 -weight 1
-		grid columnconfigure $w.layout.b.sep 0 -weight 1
-		grid $w.layout.b.sep.line -sticky news
-		grid $w.layout.b.sep -columnspan 2 -sticky we
+		if {[winfo exists $w.layout.b.c.f]} { destroy $w.layout.b.c.f}
+		ttk::frame $w.layout.b.c.f -padding 5
+		$w.layout.b.c create window 0 0 -window $w.layout.b.c.f -anchor nw
+		tk::entry $w.layout.b.c.f.text_new -textvariable ::gamelistNewLayout($w) -font font_Small
+		tk::button $w.layout.b.c.f.new -image tb_new -command "::glist_Ly::New $w"
+		grid $w.layout.b.c.f.text_new $w.layout.b.c.f.new
+		ttk::frame $w.layout.b.c.f.sep -padding { 0 4 0 4 }
+		ttk::separator $w.layout.b.c.f.sep.line
+		grid rowconfigure $w.layout.b.c.f.sep 0 -weight 1
+		grid columnconfigure $w.layout.b.c.f.sep 0 -weight 1
+		grid $w.layout.b.c.f.sep.line -sticky news
+		grid $w.layout.b.c.f.sep -columnspan 2 -sticky we
 		for {set i 0} {$i < [llength $::glist_Layouts]} {incr i} {
 			set name [lindex $::glist_Layouts $i]
-			tk::button $w.layout.b.layout$i -text $name -font font_Small -width 20 -command "::glist_Ly::Change $w $i"
-			if {$name == $::glistLayout($w)} { $w.layout.b.layout$i configure -bg lightSteelBlue }
-			tk::button $w.layout.b.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del $w $i"
-			grid $w.layout.b.layout$i $w.layout.b.layoutDel$i -sticky we
+			tk::button $w.layout.b.c.f.layout$i -text $name -font font_Small -width 20 -command "::glist_Ly::Change $w $i"
+			if {$name == $::glistLayout($w)} { $w.layout.b.c.f.layout$i configure -bg lightSteelBlue }
+			tk::button $w.layout.b.c.f.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del $w $i"
+			grid $w.layout.b.c.f.layout$i $w.layout.b.c.f.layoutDel$i -sticky we
 		}
+		$w.layout.b.c configure -width 0
 	}
 	proc New {w} {
 		#TODO:
@@ -393,6 +427,7 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
   set txt [$w_entryT get]
   $w_entryN configure -bg white
   $w_entryT configure -bg white
+  if {($dir == "" && $gnum == "") || ($dir != "" && $txt == "")} { return }
   busyCursor .
   update idletasks
 
@@ -427,9 +462,7 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
 proc glist.doubleclick_ {{w} {x} {y} {layout}} {
   lassign [$w identify $x $y] what
   if {$what == "heading"} {
-    foreach {c dir} $::glist_Sort($layout) { $w heading $c -image "" }
-    set ::glist_Sort($layout) {}
-    glist.sortClickHandle_ $w $x $y $layout
+    glist.sortClickHandle_ $w $x $y $layout 1
   } else {
     foreach {idx ply} [split [$w selection] "_"] {}
     if {[info exist idx]} {
@@ -548,12 +581,16 @@ proc glist.sortInit_ {w {layout}} {
   }
 }
 
-proc glist.sortClickHandle_ {{w} {x} {y} {layout}} {
+proc glist.sortClickHandle_ {{w} {x} {y} {layout} {clear 0}} {
   set col [$w identify column $x $y]
   set col_idx [lsearch -exact $::glist_Headers [$w column $col -id] ]
   if {"???" == [lindex $::glist_SortShortcuts $col_idx]} {
     # TODO: notify the user that the column cannot be used for sorting
     return
+  }
+  if {$clear} {
+    foreach {c dir} $::glist_Sort($layout) { $w heading $c -image "" }
+    set ::glist_Sort($layout) {}
   }
 
   set exists [lsearch -exact $::glist_Sort($layout) $col_idx ]

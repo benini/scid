@@ -61,13 +61,12 @@ proc ::crosstab::RefreshIfOpen {} {
 proc ::crosstab::Open {} {
   global crosstab
   set w .crosstabWin
-  if {[winfo exists $w]} {
+  if {[::createToplevel $w] == "already_exists"} {
     ::crosstab::Refresh
     return
   }
-  
-  toplevel $w
-  wm title $w "Scid: [tr ToolsCross]"
+
+  ::setTitle $w "Scid: [tr ToolsCross]"
   wm minsize $w 50 5
   setWinLocation $w
   
@@ -267,14 +266,14 @@ proc ::crosstab::Open {} {
     destroy .crosstabWin
   }
   button $w.b.setfilter -textvar ::tr(SetFilter) -command {
-    ::search::filter::reset
-    ::search::filter::negate
+    sc_filter reset
+    sc_filter negate
     sc_game crosstable filter
-    ::windows::gamelist::Refresh
+    ::notify::DatabaseChanged
   }
   button $w.b.addfilter -textvar ::tr(AddToFilter) -command {
     sc_game crosstable filter
-    ::windows::gamelist::Refresh
+    ::notify::DatabaseChanged
   }
   pack $w.b.cancel $w.b.update $w.b.type \
       -side right -pady 3 -padx 5
@@ -305,6 +304,7 @@ proc ::crosstab::Open {} {
     bind $w <Button-5> { .crosstabWin.f.text yview scroll  1 units }
   }
   
+  ::createToplevelFinalize $w
   ::crosstab::Refresh
 }
 
