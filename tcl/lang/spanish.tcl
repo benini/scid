@@ -1792,12 +1792,3 @@ translate S ChangeIcon {Cambiar icono...}
 
 }
 # end of spanish.tcl
-
-
-
-
-
-
-
-
-

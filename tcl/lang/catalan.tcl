@@ -1817,35 +1817,3 @@ translate K ChangeIcon {Change icon...}
 
 }
 # end of catalan.tcl
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -114,7 +114,7 @@ proc checkfile {code langfile enc} {
     }
   }
   
-  foreach l [lrange $langData [ expr $lastLine + 1 ] end] {
+  foreach l [lrange $langData [ expr $lastLine + 1 ] end-1] {
     puts $fnew $l
   }
   close $fnew

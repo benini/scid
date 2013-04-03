@@ -1804,6 +1804,3 @@ translate G ChangeIcon {Αλλαγή εικονιδίου...}
 
 }
 # end of greek.tcl
-
-
-

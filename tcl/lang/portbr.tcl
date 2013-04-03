@@ -1802,13 +1802,3 @@ translate B ChangeIcon {Alterar icone...}
 }
 
 # end of portbr.tcl
-
-
-
-
-
-
-
-
-
-

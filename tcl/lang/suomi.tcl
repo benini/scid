@@ -1766,10 +1766,4 @@ translate U Undock {Vapauta lukitus}
 translate U ChangeIcon {Vaihda kuvake...}
 
 }
-# end of english.tcl
-
-
-
-
-
-
+# end of suomi.tcl
