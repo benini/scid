@@ -256,11 +256,11 @@ if {$windowsOS} {
   set fontOptions(Tiny)    [list system     9 normal roman]
   set fontOptions(Fixed)   [list Monaco    10 normal roman]
 } else {
-  set fontOptions(Regular) [list helvetica 11 normal roman]
-  set fontOptions(Menu)    [list helvetica 10 normal roman]
-  set fontOptions(Small)   [list helvetica 10 normal roman]
-  set fontOptions(Tiny)    [list helvetica  9 normal roman]
-  set fontOptions(Fixed)   [list fixed     10 normal roman]
+  set fontOptions(Regular) [list {DejaVu Sans}       10 normal roman]
+  set fontOptions(Menu)    [list {DejaVu Sans}       10 normal roman]
+  set fontOptions(Small)   [list {DejaVu Sans}        9 normal roman]
+  set fontOptions(Tiny)    [list {DejaVu Sans}        8 normal roman]
+  set fontOptions(Fixed)   [list {DejaVu Sans Mono}  10 normal roman]
 }
 
 createFont Regular
