@@ -13730,7 +13730,7 @@ int
 sc_tree_clean (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 3) {
-        return errorResult (ti, "Usage: sc_tree move <baseNum>");
+        return errorResult (ti, "Usage: sc_tree clean <baseNum>");
     }
 
     scidBaseT * base = db;
@@ -13818,7 +13818,8 @@ sc_tree_time (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             base = &(dbList[baseNum - 1]);
         }
     }
-    return base->treeSearchTime;
+
+    return setUintResult (ti, base->treeSearchTime);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
