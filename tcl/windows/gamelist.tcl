@@ -15,6 +15,8 @@ image create photo glist_ImgBoard -format gif -data {
 R0lGODlhGAAYAOf/ACMkIiYoJTksJG84I3E6JUVFPXI7JXQ8J3FAKHc/KXRBJHlAJXlBK3tCJ3dELIBCLn1EKXxELn5FKYBGK4JILIdHLoJJMoZKKYVKL39MM4dLKotKK4dMMIxLMYhNMXxQP4pOLYlOMo9NNJVMMJBOL4tQNJNPK5FPNlxcVJNQMZhPMpRRMo9TMZtRLptSNZNVNJdUNHlbUZ5UMZtWMZpWNqBVM59VOJZYNlthkXlgTpxYOJ5ZNJ1ZOaRYNalXN55aOqBaNaRZPKBcPKJcN6dbOKxaOahcOZ9fN6NePqldQKVfOapeO6ZgOmNrlqxfPGdrkWlqlqhhPK1gPaxgQ6liPW1tjmFvn69iPnFtiatkPpFrXK5mOnBwkbNlO7JlQa9nQXVxjW5ymHZyjrVnQ3NzlLdoPrJqRJFxYLdpRYxzZoJ1gX12japwSoh3bW56q5x1Zql0TIN5i65zTat2To98bX9/lK55UYeAl7F7U619U7R+Va+AVYqJb7KBULiBWbODWbiGVbeGW5CPh7mJXoGRvLyKWZCSj7yLYL6MW7+NXKCSjZaVjYWVwcGOXZiWmqqZjqebnJ+elqSjiKmll6eok6qnmJOrvMWhj7KmprWqi7CptaustsKqobGvs9CsgcOtqsivpsOxppK85Ky30r64t7+7mbq8ub68wJ7D5bvDy8XEqMjDwqbK7cnIv7DQ7c/Nsc3Mw7nR1tLOrNnVs8TZ2MjX68Xd4svd1tPb5NHe38/g2fbapPDcpMzh4NTi1vXfoPXhqNTm3/jio/Xmpdfp4vvlpvnlrOLo3fXord/p5OrqwODr2Pbpru3ru/jqr/rnyP7qsfjqw/rsseTu6f3trPPvufzus/TvzfLxwOnw5ffxtP3wtfrvzvvyr/7xtvjxyfnztvfzvP/yt/7yvfr0t/3x0Pv1uO716vH14/z2uf7z0fn10vz1zP33uvv3wP/4u/34wfr5yP/5vPT45/76wvv8vf/7vf/7xP37yv/8xf78y/f76vz90v/82f7/0////yH5BAEKAP8ALAAAAAAYABgAAAj+AD01OoRoUKFAgPwE+uOnzx49ePLgsTOnohw2jbhp/FZuxIgWMmqUW7dOHbsiRXwQ6REt2rOMxpAZczbAwIEDCaxp02bNGoQJERo04PVr1yFuMZ05M5BgAQMIOr1ZI0eBwgSrwH79KvQNGTJn0BK8eaTo0TVr4syJ48ABg4YKwIAJ46rUGbVQjkid2mTJ1Dhz6USQEAHCQ7FhxgCNGEAAASdY+85Ny1UnTKcUK96le6e5xAYMgUwMOMBg1b5555L1uiPGyiUY8DhzTkECBCAVTLVgQncuG7HVXJp82nFP3j3OMFKICOQCwYIzkJYdIxbM1h0yUDQNuXcPXr53M2D+vPAjQ8GCD5t86bpFKxaXJzhAJbmHTx8+eDtowPhTTpo1abioEUcca4CBiiiszKLPFVlQ4YQS75AjTh/r9EROJqNggUUVXKDiSiv89FPGF11cwQRn5uihjk7kmBNDKoy4QUgtk0TyCj9mjFHGFVTUw5ke7KAlTjosZJADHWmUwo8kAUwyBhojXtHdO3mUM5VaKcBAww9I6BMiCgC0UQaUXehzHB5BMDABBiHEBk888TBBhRdlCADAIv34o48URgCBhw8NXOUBOOEUis0PP9yABBoFACAIP/pEQcQPdvQQaAUekANONdU0A8MPL2DgACUAGKKKPksMwUOlDDxgAQd2m72TDzxMOJHFFlHIIgkfyuhjxBA2zGHDAg1QsIFs79wzhBFOSCGFPtDqkw8RPMwwR3/dTNWBCCdoeU8+9ekzxRJM/ArtPXCw45825Fyw7QowvAMPd/ccMYQQP9iAT3dw9OefNRRoEAIJmXE2Kw886KDfcfAEBAA7
 }
 
+set ::windows::gamelist::wins {}
+
 proc ::windows::gamelist::Open {{w .glistWin}} {
 	if {[::createToplevel $w] == "already_exists"} {
 		focus .
@@ -22,16 +24,8 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 		return
 	}
 
-	if {! [info exists ::glistLayout($w)] } {
-		set ::glistLayout($w) [::glist_Ly::CreateName]
-		lappend ::glist_Layouts $::glistLayout($w)
-	}
-	options.save ::glist_Layouts
-	options.save ::glistLayout($w)
-
 	set ::gamelistBase($w) 0
 	set ::gamelistMenu($w) ""
-	set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
 	set ::gamelistFilter($w) "dbfilter"
 	ttk::frame $w.buttons -padding {5 5 2 5}
 	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
@@ -52,24 +46,10 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	grid $w.buttons.layout  -row 2
 	grid $w.buttons.boardFilter  -row 3
 	#grid $w.buttons.stats -row 4
-	# End of $w.buttons frame
-	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
-	glist.create $w.games $::glistLayout($w)
 	grid $w.buttons -row 0 -column 0 -sticky news
-	grid $w.games -row 0 -column 2 -sticky news
-	grid rowconfigure $w 0 -weight 1
-	grid columnconfigure $w 0 -weight 0
-	grid columnconfigure $w 1 -weight 0
-	grid columnconfigure $w 2 -weight 1
-	createToplevelFinalize $w
 
 	ttk::frame $w.database -padding {0 5 6 2}
 	::windows::switcher::Create $w.database
-	#TODO: remove this hack
-	bind $w <Configure> "::windows::switcher::Refresh"
-	###########################
-
-	set bgcolor [ttk::style lookup Button.label -background]
 
 	ttk::frame $w.filter -padding {0 5 6 2}
 	ttk::frame $w.filter.b -borderwidth 2 -relief groove
@@ -87,6 +67,7 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 		$w.filter.b.tmt $w.filter.b.crosst
 	grid $w.filter.b.f -columnspan 6 -sticky news
 	grid rowconfigure $w.filter.b 1 -weight 1
+	set bgcolor [ttk::style lookup Button.label -background]
 	autoscrollframe -bars y $w.filter.b.f canvas $w.filter.b.f.c -highlightthickness 0 -background $bgcolor
 	bind $w.filter.b.f.c <Configure>  {
 		set l [winfo reqwidth %W.f]
@@ -98,20 +79,22 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	ttk::label $w.filter.b.f.c.f.text -text "TODO:\n-load/save filter\n-multiple filters\n-show cur filter" -font font_Tiny
 	grid $w.filter.b.f.c.f.text
 
-
 	ttk::frame $w.layout -padding {0 5 6 2}
 	ttk::frame $w.layout.b -borderwidth 2 -relief groove
 	grid $w.layout.b -sticky news
 	grid rowconfigure $w.layout 0 -weight 1
 	grid columnconfigure $w.layout 0 -weight 1
-	autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0 -background $bgcolor
-	bind $w.layout.b.c <Configure>  {
-		set l [winfo reqwidth %W.f]
-		set h [winfo reqheight %W.f]
-		%W configure -scrollregion [list 0 0 $l $h] -width $l
-	}
-	::glist_Ly::Update $w
+	::glist_Ly::Create $w
 
+	::windows::gamelist::CreateGList_ $w
+
+	grid rowconfigure $w 0 -weight 1
+	grid columnconfigure $w 0 -weight 0
+	grid columnconfigure $w 1 -weight 0
+	grid columnconfigure $w 2 -weight 1
+	bind $w <Destroy> { set idx [lsearch $::windows::gamelist::wins %W]; set ::windows::gamelist::wins [lreplace $::windows::gamelist::wins $idx $idx] }
+	lappend ::windows::gamelist::wins $w
+	createToplevelFinalize $w
 
 	::windows::gamelist::Refresh
 }
@@ -122,6 +105,13 @@ proc ::windows::gamelist::Refresh {{w .glistWin}} {
 	set ::gamelistBase($w) [sc_base current]
 	::setTitle $w "[file tail [sc_base filename $::gamelistBase($w)]] ([filterText $::gamelistBase($w) 100000])"
 	glist.update $w.games $::gamelistBase($w) $::gamelistFilter($w)
+}
+
+proc ::windows::gamelist::CreateGList_ {{w}} {
+	if {[winfo exists $w.games]} { destroy $w.games}
+	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
+	glist.create $w.games $::glistLayout($w)
+	grid $w.games -row 0 -column 2 -sticky news
 }
 
 proc ::windows::gamelist::menu_ {{w} {button}} {
@@ -151,12 +141,32 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 }
 
 namespace eval ::glist_Ly {
-	proc Update {w} {
+	proc Create {w} {
+		if {! [info exists ::glist_Layouts]} { set ::glist_Layouts [::glist_Ly::CreateName] }
+
+		if {! [info exists ::glistLayout($w)] || [lsearch -exact $::glist_Layouts $::glistLayout($w)] == -1 } {
+			set ::glistLayout($w) [lindex $::glist_Layouts 0]
+		}
+		options.save ::glist_Layouts
+		options.save ::glistLayout($w)
+		set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
+
+		set bgcolor [ttk::style lookup Button.label -background]
+		autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0 -background $bgcolor
+		bind $w.layout.b.c <Configure>  { ::glist_Ly::AdjScrollbar_ %W }
+		::glist_Ly::Update_ $w
+	}
+	proc UpdateAll_ {} {
+		foreach w $::windows::gamelist::wins {
+		    if {[winfo exists $w]} { Update_ $w }
+		}
+	}
+	proc Update_ {w} {
 		if {[winfo exists $w.layout.b.c.f]} { destroy $w.layout.b.c.f}
 		ttk::frame $w.layout.b.c.f -padding 5
 		$w.layout.b.c create window 0 0 -window $w.layout.b.c.f -anchor nw
 		tk::entry $w.layout.b.c.f.text_new -textvariable ::gamelistNewLayout($w) -font font_Small
-		tk::button $w.layout.b.c.f.new -image tb_new -command "::glist_Ly::New $w"
+		tk::button $w.layout.b.c.f.new -image tb_new -command "::glist_Ly::New_ $w"
 		grid $w.layout.b.c.f.text_new $w.layout.b.c.f.new
 		ttk::frame $w.layout.b.c.f.sep -padding { 0 4 0 4 }
 		ttk::separator $w.layout.b.c.f.sep.line
@@ -166,23 +176,29 @@ namespace eval ::glist_Ly {
 		grid $w.layout.b.c.f.sep -columnspan 2 -sticky we
 		for {set i 0} {$i < [llength $::glist_Layouts]} {incr i} {
 			set name [lindex $::glist_Layouts $i]
-			tk::button $w.layout.b.c.f.layout$i -text $name -font font_Small -width 20 -command "::glist_Ly::Change $w $i"
+			tk::button $w.layout.b.c.f.layout$i -text $name -font font_Small -width 20 -command "::glist_Ly::Change_ $w $i"
 			if {$name == $::glistLayout($w)} { $w.layout.b.c.f.layout$i configure -bg lightSteelBlue }
-			tk::button $w.layout.b.c.f.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del $w $i"
+			tk::button $w.layout.b.c.f.layoutDel$i -image tb_CC_delete -command "::glist_Ly::Del_ $w $i"
 			grid $w.layout.b.c.f.layout$i $w.layout.b.c.f.layoutDel$i -sticky we
 		}
-		$w.layout.b.c configure -width 0
+		after idle "::glist_Ly::AdjScrollbar_ $w.layout.b.c"
 	}
-	proc New {w} {
-		#TODO:
-		#no nomi uguali
-		#copia il layout attuale
+	proc New_ {w} {
+		#TODO: no nomi uguali
+		set old_layout $::glistLayout($w)
+		set ::glistLayout($w) $::gamelistNewLayout($w)
 		lappend ::glist_Layouts $::gamelistNewLayout($w)
 		set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
-		::glist_Ly::Change $w end
+		set ::glist_ColOrder($::glistLayout($w)) $::glist_ColOrder($old_layout)
+		set ::glist_ColWidth($::glistLayout($w)) $::glist_ColWidth($old_layout)
+		set ::glist_ColAnchor($::glistLayout($w)) $::glist_ColAnchor($old_layout)
+		set ::glist_Sort($::glistLayout($w)) $::glist_Sort($old_layout)
+		set ::glist_FindBar($::glistLayout($w)) $::glist_FindBar($old_layout)
+		::glist_Ly::UpdateAll_
+		::windows::gamelist::CreateGList_ $w
+		::windows::gamelist::Refresh $w
 	}
-	proc Del {w idx} {
-		#TODO: what to do if user delete the layout of another window?
+	proc Del_ {w idx} {
 		set old_layout [lindex $::glist_Layouts $idx]
 		options.save_cancel ::glist_ColOrder($old_layout)
 		options.save_cancel ::glist_ColWidth($old_layout)
@@ -190,15 +206,12 @@ namespace eval ::glist_Ly {
 		options.save_cancel ::glist_Sort($old_layout)
 		options.save_cancel ::glist_FindBar($old_layout)
   		set ::glist_Layouts [lreplace $::glist_Layouts $idx $idx]
-		::glist_Ly::Update $w
+		::glist_Ly::UpdateAll_
 	}
-	proc Change {w idx} {
+	proc Change_ {w idx} {
 		set ::glistLayout($w) [lindex $::glist_Layouts $idx]
-		::glist_Ly::Update $w
-		if {[winfo exists $w.games]} { destroy $w.games}
-		ttk::frame $w.games -borderwidth 0 -padding {8 5 5 0}
-		grid $w.games -row 0 -column 2 -sticky news		
-		glist.create $w.games $::glistLayout($w)
+		::glist_Ly::Update_ $w
+		::windows::gamelist::CreateGList_ $w
 		::windows::gamelist::Refresh $w
 	}
 	proc CreateName {} {
@@ -207,6 +220,11 @@ namespace eval ::glist_Ly {
 		if {! [info exists ::glist_Layouts] } { return "$prefix$i" }
 		while {[lsearch $::glist_Layouts "$prefix$i"] != -1} { incr i }
 		return "$prefix$i"
+	}
+	proc AdjScrollbar_ {w} {
+		set l [winfo reqwidth $w.f]
+		set h [winfo reqheight $w.f]
+		$w configure -scrollregion [list 0 0 $l $h] -width $l
 	}
 }
 

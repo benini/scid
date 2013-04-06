@@ -3,11 +3,20 @@
 ### Copyright (C) 2000-2004  Shane Hudson.
 
 set icons {
-  {Unknown}
-  {
-  R0lGODdhIAAgAIAAAAAAAP///ywAAAAAIAAgAAACHoyPqcvtD6OctNqLs968+w+G4kiW5omm
-  6sq27gubBQA7
-  }
+{Unknown}
+{
+R0lGODlhIAAgAIQQACYjYUooEzUsWUU5T3JAHWlJGFtPS3FgQ4VwPJR3LZ9/
+KbKUL7ueK9SvGOrAE/rLAP//////////////////////////////////////
+/////////////////////////yH5BAEKABAALAAAAAAgACAAAAX+ICSOZGme
+aKquKtE8MMzMtAOzpBvL9Gw/OBFh8YM5erNYkJCYGWgPxsPRqDYcDhwhsJgt
+DIuXwvCK0rSK7mwgKCsE0x6LUFB72dLH4tCQrwJXVFUzAgJ5AAN2LApFRgwI
+AAJhCYhqKwSNPAsClQwOnAhAKXQ7MTMHAAAHYQ+cBlmjZaVfqWCeCqkIsCd0
+DFVYNg2cAqszkABkoiZbCkgJBpEHvsapfDe8dV4IA6kDV1ML3AMIvle8XMac
+iAk2DgnqiXYMy+jvqmoPDbWecUglBEwYbLo3ow8ndjH6+CMRIABAdQkWdBEG
+AKEpJPMYNgyQCkBDgNwAeMLCY+GIjepLPG7s+JGOggRpJM4osZJlw5AqN+oE
+SMdEAJwCUNrUSbThiY6pRiAtyvRoRxJIaTY1EVUEUgAsAlCtCuFqkBJerXL9
+2nXsWLJoWYQAADs=
+}
   {Temporary database}
   {
   R0lGODlhIAAgAMYaACEhISQkJC0tLTExMTU1NTk5OTo6Oj09PT4+PkJCQkND
@@ -608,17 +617,12 @@ proc ::windows::switcher::Open {{w .baseWin}} {
   label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
   grid $w.status -columnspan 2 -sticky we
   bind $w <Configure> "+recordWinSize $w"
-  #TODO: recursive calls
-  bind $w <Configure> "+::windows::switcher::Refresh"
   setWinSize $w
   ::windows::switcher::Refresh
   ::createToplevelFinalize $w
 }
 
 proc ::windows::switcher::Create {{w}} {
-  lappend ::windows::switcher::wins $w
-  bind $w <Destroy> { set idx [lsearch $::windows::switcher::wins %W]; set ::windows::switcher::wins [lreplace $windows::switcher::wins $idx $idx] }
-
   ttk::frame $w.border -borderwidth 2 -relief groove
   grid $w.border -sticky news
   grid rowconfigure $w 0 -weight 1
@@ -659,6 +663,9 @@ proc ::windows::switcher::Create {{w}} {
     $f.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \
       -command ::windows::switcher::Refresh
   }
+  bind $w <Configure> "+::windows::switcher::Refresh"
+  bind $w <Destroy> { set idx [lsearch $::windows::switcher::wins %W]; set ::windows::switcher::wins [lreplace $::windows::switcher::wins $idx $idx] }
+  lappend ::windows::switcher::wins $w
 }
 
 proc ::windows::switcher::calcSpace {{w} {selected}} {

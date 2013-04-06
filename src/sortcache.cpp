@@ -614,6 +614,7 @@ uint SortCache::CalcHash (IndexEntry * ie)
 				break;
 			case SORTING_number:
 				//TODO: Hash the game number
+				partialHashing = true;
 				cacheValue = 0;
 				break;
 		}
