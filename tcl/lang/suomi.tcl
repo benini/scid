@@ -102,8 +102,7 @@ menuText U EditTrial "Kokeile muunnelmaa" 0 \
   {Aloita/lopeta tila, jossa voit testata muunnelmiasi laudalla}
 menuText U EditStrip "Poista" 2 {Poista siirtoja, kommentteja tai muunnelmia}
 menuText U EditUndo "Kumoa" 1 {Peruuta viimeisin muutos}
-# ====== TODO To be translated ======
-menuText U EditRedo "Redo" 0 {Redo last game change}
+menuText U EditRedo "Tee uudelleen" 0 {Tee uudelleen viimeisin muutos}
 menuText U EditStripComments "Kommentit" 1 \
   {Poista kaikki kommentit ja arvioinnit pelistä}
 menuText U EditStripVars "Muunnelmat" 3 {Poista kaikki muunnelmat pelistä}
@@ -204,8 +203,7 @@ menuText U ToolsTrainTactics "Taktiikkaharjoitukset"  9 {Ratko taktiikoita}
 menuText U ToolsTrainCalvar "Muunnelmien laskeminen"  0 {Harjoittele muunnelmien laskemista}
 menuText U ToolsTrainFindBestMove "Etsi paras siirto"  5 {Etsi aseman paras siirto}
 menuText U ToolsTrainFics "FICS"  0 {Pelaa palvelimella freechess.org}
-# ====== TODO To be translated ======
-menuText U ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
+menuText U ToolsEngineTournament "Shakkimoottoriturnaus"  0 {Turnaus shakkimoottorien kesken}
 menuText U ToolsBookTuning "Viritä avaukset" 0 {Muokkaa avauskirjastoasi}
 menuText U ToolsConnectHardware "Liitä syöttölaite" 8 {Liitä ulkoinen syöttölaite (elektroninen lauta tms.)}
 menuText U ToolsConnectHardwareConfigure "Asetukset..." 0 {Säädä ulkoisen syöttölaitteen asetuksia}
@@ -295,8 +293,7 @@ menuText U OptionsMovesHighlightLastMove "Korosta viimeisin siirto" 0 {Korosta v
 menuText U OptionsMovesHighlightLastMoveDisplay "Näytä" 0 {Näytä viimeisin siirto korostettuna}
 menuText U OptionsMovesHighlightLastMoveWidth "Viiva" 0 {Laudalla näytettävän viivan paksuus}
 menuText U OptionsMovesHighlightLastMoveColor "Väri" 0 {Laudalla näytettävän viivan väri}
-# ====== TODO To be translated ======
-menuText U OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
+menuText U OptionsMovesHighlightLastMoveArrow "Sis. nuoli" 0 {Korostettuun siirtoon sisällytetään nuoli}
 menuText U OptionsMoves "Siirrot" 0 {Siirtojen syöttämiseen liittyvät asetukset}
 menuText U OptionsMovesAsk "Kysy ennen korvaamista" 0 \
   {Ohjelma kysyy luvan ennen kuin kirjoittaa vanhojen tietojen päälle}
@@ -377,12 +374,9 @@ helpMsg U .main.fbutton.button.flip {Käännä lauta  (pika: piste)}
 helpMsg U .main.fbutton.button.coords {Näytä/piilota koordinaatit  (pika: 0)}
 helpMsg U .main.fbutton.button.stm {Näytä/piilota siirtovuoron osoitin}
 helpMsg U .main.fbutton.button.autoplay {Siirrä automaattisesti  (pika: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg U .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-# ====== TODO To be translated ======
-helpMsg U .main.fbutton.button.hgame_prev {Go back to previous viewed game}
-# ====== TODO To be translated ======
-helpMsg U .main.fbutton.button.hgame_next {Go forward to next viewed game}
+helpMsg U .main.fbutton.button.comment {Avaa kommenttieditori (pika: Ctrl+E)}
+helpMsg U .main.fbutton.button.hgame_prev {Edelliseen peliin}
+helpMsg U .main.fbutton.button.hgame_next {Seuraavaan peliin}
 
 # General buttons:
 translate U Back {Palaa}
@@ -1632,8 +1626,7 @@ translate U FICSSend {lähetä}
 translate U FICSConnect {yhdistä}
 translate U FICSdefaultuservars {Käytä oletusmuuttujia}
 translate U FICSObserveconfirm {Haluatko seurata peliä}
-# ====== TODO To be translated ======
-translate U FICSpremove {Enable premove}
+translate U FICSpremove {Ennakkosiirto päälle}
 
 # Game review
 translate U GameReview {Pelin arvioiminen}
