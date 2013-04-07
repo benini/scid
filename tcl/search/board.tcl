@@ -101,7 +101,7 @@ proc ::search::board {} {
     ::windows::gamelist::Refresh
     set gamesFound [lindex $str 0]
     if { $sBoardSearchRefBase && $gamesFound != 0} {
-      ::file::SwitchToBase $base
+      ::file::SwitchToBase $base 0
       ::search::loadFirstGame
     }
     

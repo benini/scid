@@ -204,10 +204,6 @@ proc updateStatusBar {} {
     set fname [file tail $fname]
     if {$fname == ""} { set fname "<none>" }
     append statusBar $fname
-    
-    # Show filter count:
-    append statusBar "   $::tr(Filter)"
-    append statusBar ": [filterText]"
 }
 
 

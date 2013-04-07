@@ -297,9 +297,10 @@ proc ::file::Close {{base -1}} {
 }
 
 
-proc ::file::SwitchToBase {b} {
+proc ::file::SwitchToBase {{b} {saveHistory 1}} {
+  if {[sc_base current] == $b} { return }
   sc_base switch $b
-  ::game::HistoryDatabaseSwitch
+  if {$saveHistory == 1} { ::game::HistoryDatabaseSwitch }
   # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }
   updateBoard -pgn
@@ -382,7 +383,7 @@ proc ::file::openBaseAsTree { { fName "" } } {
   
   unbusyCursor .
   set new_base [sc_base current]
-  ::file::SwitchToBase $current
+  sc_base switch $current
   ::tree::make $new_base 1
 }
 

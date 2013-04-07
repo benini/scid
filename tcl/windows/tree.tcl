@@ -300,7 +300,6 @@ proc ::tree::closeTree {baseNumber} {
   destroy .treeWin$baseNumber
   sc_tree clean $baseNumber
   if {$::tree(locked$baseNumber)} { ::file::Close $baseNumber }
-  ::windows::gamelist::Refresh
   ::windows::stats::Refresh; 
 }
 ################################################################################
@@ -469,7 +468,6 @@ proc ::tree::dorefresh { baseNumber } {
   set glstart 1
   ::windows::stats::Refresh
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
-  ::windows::gamelist::Refresh
   updateTitle
   
   if { $moves == "canceled" } { return "canceled"}

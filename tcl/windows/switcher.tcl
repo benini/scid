@@ -627,7 +627,7 @@ proc ::windows::switcher::Create {{w}} {
   grid $w.border -sticky news
   grid rowconfigure $w 0 -weight 1
   grid columnconfigure $w 0 -weight 1
-  autoscrollframe -bars both $w.border canvas $w.c -highlightthickness 0
+  autoscrollframe -bars y $w.border canvas $w.c -highlightthickness 0
 
   for {set i 1} {$i <= $::sw_nBases_} {incr i} {
     set f [frame $w.c.f$i -background white -borderwidth 1 -relief raised]
@@ -663,9 +663,11 @@ proc ::windows::switcher::Create {{w}} {
     $f.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \
       -command ::windows::switcher::Refresh
   }
-  bind $w <Configure> "+::windows::switcher::Refresh"
+  bind $w <Configure> "+::windows::switcher::Update_ $w"
   bind $w <Destroy> { set idx [lsearch $::windows::switcher::wins %W]; set ::windows::switcher::wins [lreplace $::windows::switcher::wins $idx $idx] }
   lappend ::windows::switcher::wins $w
+
+  after idle "::windows::switcher::Update_ $w"
 }
 
 proc ::windows::switcher::calcSpace {{w} {selected}} {
@@ -735,29 +737,39 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
   set right [expr {$numColumns * $iconWidth}]
   set bottom [expr {$numRows * $iconHeight}]
   set bgcolor [ttk::style lookup Button.label -background]
-  $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat -background $bgcolor -width $right
+  $w.c configure -scrollregion [list 0 0 $right $bottom] -borderwidth 4 -relief flat -background $bgcolor
 }
 
 proc ::windows::switcher::Refresh {} {
-  set n_wins [llength $::windows::switcher::wins]
-  for {set i 0} {$i <= $n_wins} {incr i} {
-    set w [lindex $::windows::switcher::wins $i]
-    if {! [winfo exists $w]} { return }
-    set base [sc_base current]
-    set space [::windows::switcher::calcSpace $w $base]
-    set n_bases [lindex $space 0]
-    set iconWidth [lindex $space 1]
-    set iconHeight [lindex $space 2]
+  foreach w $::windows::switcher::wins {
+    if {[winfo exists $w]} { ::windows::switcher::Update_ $w }
+  }
+}
 
+proc ::windows::switcher::Update_ {w} {
+  set base [sc_base current]
+  set space [::windows::switcher::calcSpace $w $base]
+  set n_bases [lindex $space 0]
+  set iconWidth [lindex $space 1]
+  set iconHeight [lindex $space 2]
+
+  #TODO: write better code to detect if this is the Switcher Window
+  if {[winfo exists $w.status]} {
     set canvasWidth [winfo width $w.c]
     set numColumns [expr {int($canvasWidth / $iconWidth)}]
     if {$numColumns < 1} { set numColumns 1 }
     ::windows::switcher::Draw $w $numColumns $iconWidth $iconHeight
-
-    if {[winfo exists $w.status]} {
-      set status [file nativename [sc_base filename [sc_base current] ] ]
-      if {[sc_base isReadOnly]} { append status " ($::tr(readonly))" }
-      $w.status configure -text $status
+    set status [file nativename [sc_base filename [sc_base current] ] ]
+    if {[sc_base isReadOnly]} { append status " ($::tr(readonly))" }
+    $w.status configure -text $status
+  } else {
+    #TODO: if $w parent is too small do not use 2 columns
+    if {[winfo height $w.c] < [expr $iconHeight * ($n_bases)]} {
+      $w.c configure -width [expr $iconWidth * 2]
+      ::windows::switcher::Draw $w 2 $iconWidth $iconHeight
+    } else {
+      $w.c configure -width $iconWidth
+	  ::windows::switcher::Draw $w 1 $iconWidth $iconHeight
     }
   }
 }

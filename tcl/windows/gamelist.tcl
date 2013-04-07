@@ -9,13 +9,11 @@
 
 #TODO: move icons out of tcl code (image create photo -file)
 image create photo glist_ImgLayout -format gif -data {
-R0lGODlhGAAYAOe9AAd6tAh6tAh7tAh7tQl7tAl8tQ5+thiBtRmCtkyERk2ER02ESU6ESk6ES02FR02FSE6FS0+FS0+FTIGBgYKBgYKCgoODgoODg4SDg4SEhIWEhIWFhIWFhYaGhYaGhoiHh4iHiICifISmgYSngaipqaqrq66urq+vr7CwsLGxsLGxsbKxsY/IOY/IO7KyspDJO7OzsrOzs7SztLWztLW0tLW0tbm7vbq8vr7Awr/Bw6XYTsTDxabYUMLExqfZUcPFx8bFx8XHycbIysjKy8zJy8nLzM/M0szOz87Ozs/Pz9PO1tTO19LP1M/R0tDT1NHT1dHU1dLV1tjT29PW19XX2NXY2dvW3tbY2dfY2d3Y4b/uYNna29na3MDuYcDuYt3b3d/a4tvc3d7b397c3tzd3tzd39zd4N7d3t3e397f4N/g4eHg4OLg5eDh4uHi4+Ti5+Lj5ePj4+Pk5ePk5uTk5Obj6uTk5ufj7OTl5s74bc74bufk7Obl5ujk7OXm58/5bs/5b+fm5+nl7tD7aurm7ubo6efo6ejo6ND8a+vn7+vn8Onp6evp6enq6+nr7Ozr7O3r7Ozs7e7s7ezt7u3u7+7u7u/u7u/v7+/v8PDv7/Dv8fHv7+7w8fDw8PHw8PLw8PHx8PHx8fHx8vPx8vPz8/Pz9PTz8/X09PX19vf19vb29/j29/f39/n3+Pj4+Pj4+fn5+Pn5+fr5+fr6+fr6+vz6+vv7+/v7/P37+/78/f39/v/9/v///v///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AEM8YNCgoMGDCA0yeBBCAaI/gCJKnEhR4h9EChboYdHihcePIEO+aMFCz4IFeXTw8MGypcuXPnjoyLMgwSAtXbzo3Mmzp5cuWgYlGPEggoSjEApCWMq0KVMHIt4QUkQ1kaA7WPf02cq16506bEh8AEEWRAk7QGrImMG2rVsZNHZwIBWqLikPhWLYosW3r1++tlxsCGXjho1QHRzFoOXkCZTHkB8/cUJLhYZQOHLgCMVh0uIpVKqIHi2aypTKGUD1+NEDFAdOMGhh2UK7tm0sqD0FERLEEwdRLmZxCUO8uHEus1Jk6DSkyJBOHEq5iEUGjfXr2MnEQpEh05HvmTi1qJqeRo358+jTbMdwqYn7SxleuYDVxo39+/jbwEJx4VKU//Dd4oIrcMhh4IEIwuEKf5Zc4aAlGeiygit+VGjhhRUuaEElXHRYSQa9qOCKISSWaCKJrpxQQSVmlGHGhyG60siMNNY4Y4ortqFGG5VcECIrkQQp5JBBsqJiJXjMgUePvaDgiiaYRCnllJqkOEEolExCSSgVNEkLKmCGKSaYtJgQwwQUpDlBDL0kYcKbcMYZJxIBAQA7
+R0lGODlhGAAYAKUgAEeFSE+ESIeCgYOFgomHi4Okfayuq7Cyr5HJObeysbWzt7m+wKbYUcLEx8jNz9HW2b7vYNfd39zi5Ofk6c/4a+Xl8OLn6c38Zebs7uvw8/Tu7e/x7fD1+Pj69/X7/f7//P///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKACAALAAAAAAYABgAAAb6wEJgSCwajwHhhcJsOp/Py5CCqFqvWCxlyuh6v2DwFnCBmM/odPoCECLfxvZkUqnT6/a5fl+ZGwQEgQQGEw0KCgmJiouIDQMbkJADFgcdlpeYmAePC50bAxiVD6OkpaMdBwIbCw0Ln6EdprIPqI8Nt58ZohG8vb60mxq3DRoDuh2+yb21Gw7OnxyVysq1Gs4OxdHIEtzd3hGoqtefHpXe593MpOTmFu7v8BLVpMUeCR3w+e/MvZ8flfr0dTDwqN+Afx0wKFzIUOHAR938VWpIEcPDDe8kdtCQoaPHjxouZsCQQSOHkyhTnhy4SYDLAQc+ODBAs6ZNmw6CAAA7
 }
 image create photo glist_ImgBoard -format gif -data {
-R0lGODlhGAAYAOf/ACMkIiYoJTksJG84I3E6JUVFPXI7JXQ8J3FAKHc/KXRBJHlAJXlBK3tCJ3dELIBCLn1EKXxELn5FKYBGK4JILIdHLoJJMoZKKYVKL39MM4dLKotKK4dMMIxLMYhNMXxQP4pOLYlOMo9NNJVMMJBOL4tQNJNPK5FPNlxcVJNQMZhPMpRRMo9TMZtRLptSNZNVNJdUNHlbUZ5UMZtWMZpWNqBVM59VOJZYNlthkXlgTpxYOJ5ZNJ1ZOaRYNalXN55aOqBaNaRZPKBcPKJcN6dbOKxaOahcOZ9fN6NePqldQKVfOapeO6ZgOmNrlqxfPGdrkWlqlqhhPK1gPaxgQ6liPW1tjmFvn69iPnFtiatkPpFrXK5mOnBwkbNlO7JlQa9nQXVxjW5ymHZyjrVnQ3NzlLdoPrJqRJFxYLdpRYxzZoJ1gX12japwSoh3bW56q5x1Zql0TIN5i65zTat2To98bX9/lK55UYeAl7F7U619U7R+Va+AVYqJb7KBULiBWbODWbiGVbeGW5CPh7mJXoGRvLyKWZCSj7yLYL6MW7+NXKCSjZaVjYWVwcGOXZiWmqqZjqebnJ+elqSjiKmll6eok6qnmJOrvMWhj7KmprWqi7CptaustsKqobGvs9CsgcOtqsivpsOxppK85Ky30r64t7+7mbq8ub68wJ7D5bvDy8XEqMjDwqbK7cnIv7DQ7c/Nsc3Mw7nR1tLOrNnVs8TZ2MjX68Xd4svd1tPb5NHe38/g2fbapPDcpMzh4NTi1vXfoPXhqNTm3/jio/Xmpdfp4vvlpvnlrOLo3fXord/p5OrqwODr2Pbpru3ru/jqr/rnyP7qsfjqw/rsseTu6f3trPPvufzus/TvzfLxwOnw5ffxtP3wtfrvzvvyr/7xtvjxyfnztvfzvP/yt/7yvfr0t/3x0Pv1uO716vH14/z2uf7z0fn10vz1zP33uvv3wP/4u/34wfr5yP/5vPT45/76wvv8vf/7vf/7xP37yv/8xf78y/f76vz90v/82f7/0////yH5BAEKAP8ALAAAAAAYABgAAAj+AD01OoRoUKFAgPwE+uOnzx49ePLgsTOnohw2jbhp/FZuxIgWMmqUW7dOHbsiRXwQ6REt2rOMxpAZczbAwIEDCaxp02bNGoQJERo04PVr1yFuMZ05M5BgAQMIOr1ZI0eBwgSrwH79KvQNGTJn0BK8eaTo0TVr4syJ48ABg4YKwIAJ46rUGbVQjkid2mTJ1Dhz6USQEAHCQ7FhxgCNGEAAASdY+85Ny1UnTKcUK96le6e5xAYMgUwMOMBg1b5555L1uiPGyiUY8DhzTkECBCAVTLVgQncuG7HVXJp82nFP3j3OMFKICOQCwYIzkJYdIxbM1h0yUDQNuXcPXr53M2D+vPAjQ8GCD5t86bpFKxaXJzhAJbmHTx8+eDtowPhTTpo1abioEUcca4CBiiiszKLPFVlQ4YQS75AjTh/r9EROJqNggUUVXKDiSiv89FPGF11cwQRn5uihjk7kmBNDKoy4QUgtk0TyCj9mjFHGFVTUw5ke7KAlTjosZJADHWmUwo8kAUwyBhojXtHdO3mUM5VaKcBAww9I6BMiCgC0UQaUXehzHB5BMDABBiHEBk888TBBhRdlCADAIv34o48URgCBhw8NXOUBOOEUis0PP9yABBoFACAIP/pEQcQPdvQQaAUekANONdU0A8MPL2DgACUAGKKKPksMwUOlDDxgAQd2m72TDzxMOJHFFlHIIgkfyuhjxBA2zGHDAg1QsIFs79wzhBFOSCGFPtDqkw8RPMwwR3/dTNWBCCdoeU8+9ekzxRJM/ArtPXCw45825Fyw7QowvAMPd/ccMYQQP9iAT3dw9OefNRRoEAIJmXE2Kw886KDfcfAEBAA7
+R0lGODlhGAAYAKUgACkqJzksJHU+J4BGLIpNM5NQMaFZOGpulq9kPnlweotxYnx3ka13T6x9UriFWYOTvqCZkrGpjqert9Csgb6xrp++4NDNrrXQ7M3UzMfZ3Pflqufw5fz0t/zy0f35wvv5yv///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKACAALAAAAAAYABgAAAb+wIljSCwOGwwGMslkODpQaKFgqEY7n6o2+tR4NYJwmEMmD87nb/crFgzKZvRA3fmCFZB8B04gDPp0dhQQFBQSEhQeZAQFjARqBWIUGBuVGQsHElNwHIwDDpFhFJWWC5gRBYplUwWgYQqjpJcHBxQGiqpTBA4GrxCkG5eYErcexhwGU7xiEhsYGBkZtLW3H9Yeya11HBoZCaamFeIWHwjmCAZlT2URFaa0FRcYHx3n5mUMe2UKGQ8HDxfykLOHAN8HOAUGKFgY4UMEABAIHmugjwyrKtY6JACgwN4HRQx6nSGAy5q9ABCxlKsSEg0BDsY8ZElmAAFKCCZZGhj5EqZDTCoJBTyEMFCnmz9ljBG0EAHnTAMhjxaAg62mOWvXtOTTUKYPo1QyrVnF+JHBB65m+myKWVXLRw9b0f75mrTtFFxBAAA7
 }
-
-set ::windows::gamelist::wins {}
 
 proc ::windows::gamelist::Open {{w .glistWin}} {
 	if {[::createToplevel $w] == "already_exists"} {
@@ -86,7 +84,7 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	grid columnconfigure $w.layout 0 -weight 1
 	::glist_Ly::Create $w
 
-	::windows::gamelist::CreateGList_ $w
+	::windows::gamelist::createGList_ $w
 
 	grid rowconfigure $w 0 -weight 1
 	grid columnconfigure $w 0 -weight 0
@@ -99,19 +97,59 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	::windows::gamelist::Refresh
 }
 
-proc ::windows::gamelist::Refresh {{w .glistWin}} {
-	if {! [winfo exists $w]} { return }
-	#TODO: Multiple windows
-	set ::gamelistBase($w) [sc_base current]
-	::setTitle $w "[file tail [sc_base filename $::gamelistBase($w)]] ([filterText $::gamelistBase($w) 100000])"
-	glist.update $w.games $::gamelistBase($w) $::gamelistFilter($w)
+proc ::windows::gamelist::Refresh {} {
+	foreach w $::windows::gamelist::wins {
+	    if {[winfo exists $w]} {
+			set ::gamelistBase($w) [sc_base current]
+			::windows::gamelist::update_ $w
+		}
+	}
 }
 
-proc ::windows::gamelist::CreateGList_ {{w}} {
+proc ::windows::gamelist::PosChanged {} {
+	foreach w $::windows::gamelist::wins {
+		if {[winfo exists $w] && $::gamelistFilter($w) == "filter"} {
+			if {! [winfo exists .treeWin$::gamelistBase($w)]} {
+				#TODO: Write better code for this
+				if {[winfo exists $w.tmp] } { destroy $w.tmp }
+				canvas $w.tmp
+				sc_progressBar $w.tmp "..." 0 0
+				$w.games.glist tag configure fsmall -foreground #bbbbbb
+				sc_tree search -base $::gamelistBase($w)
+				$w.games.glist tag configure fsmall -foreground black
+			}
+			::windows::gamelist::update_ $w
+		}
+	}
+}
+
+
+#Private:
+set ::windows::gamelist::wins {}
+
+proc ::windows::gamelist::createGList_ {{w}} {
 	if {[winfo exists $w.games]} { destroy $w.games}
 	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games $::glistLayout($w)
 	grid $w.games -row 0 -column 2 -sticky news
+}
+
+proc ::windows::gamelist::update_ {{w}} {
+	set gameCount [sc_base numGames $::gamelistBase($w)]
+	if {$gameCount == 0} {
+		set fr $::tr(noGames)
+	} else {
+		set filterCount [sc_filter count $::gamelistBase($w) $::gamelistFilter($w)]
+		set tmp [::utils::thousands $gameCount 100000]
+		if {$gameCount == $filterCount} {
+			set fr "$::tr(all) / $tmp"
+		} else {
+			set fr "[::utils::thousands $filterCount 100000] / $tmp"
+		}
+	}
+	set fn [file tail [sc_base filename $::gamelistBase($w)]]
+	::setTitle $w "$fn ($fr)"
+	glist.update $w.games $::gamelistBase($w) $::gamelistFilter($w)
 }
 
 proc ::windows::gamelist::menu_ {{w} {button}} {
@@ -137,19 +175,19 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 		set ::gamelistFilter($w) "dbfilter"
 		$w.buttons.boardFilter state !pressed
 	}
-	::windows::gamelist::Refresh $w
+	::windows::gamelist::update_ $w
 }
 
 namespace eval ::glist_Ly {
 	proc Create {w} {
-		if {! [info exists ::glist_Layouts]} { set ::glist_Layouts [::glist_Ly::CreateName] }
+		if {! [info exists ::glist_Layouts]} { set ::glist_Layouts [::glist_Ly::createName_] }
 
 		if {! [info exists ::glistLayout($w)] || [lsearch -exact $::glist_Layouts $::glistLayout($w)] == -1 } {
 			set ::glistLayout($w) [lindex $::glist_Layouts 0]
 		}
 		options.save ::glist_Layouts
 		options.save ::glistLayout($w)
-		set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
+		set ::gamelistNewLayout($w) [::glist_Ly::createName_]
 
 		set bgcolor [ttk::style lookup Button.label -background]
 		autoscrollframe -bars y $w.layout.b canvas $w.layout.b.c -highlightthickness 0 -background $bgcolor
@@ -188,15 +226,15 @@ namespace eval ::glist_Ly {
 		set old_layout $::glistLayout($w)
 		set ::glistLayout($w) $::gamelistNewLayout($w)
 		lappend ::glist_Layouts $::gamelistNewLayout($w)
-		set ::gamelistNewLayout($w) [::glist_Ly::CreateName]
+		set ::gamelistNewLayout($w) [::glist_Ly::createName_]
 		set ::glist_ColOrder($::glistLayout($w)) $::glist_ColOrder($old_layout)
 		set ::glist_ColWidth($::glistLayout($w)) $::glist_ColWidth($old_layout)
 		set ::glist_ColAnchor($::glistLayout($w)) $::glist_ColAnchor($old_layout)
 		set ::glist_Sort($::glistLayout($w)) $::glist_Sort($old_layout)
 		set ::glist_FindBar($::glistLayout($w)) $::glist_FindBar($old_layout)
 		::glist_Ly::UpdateAll_
-		::windows::gamelist::CreateGList_ $w
-		::windows::gamelist::Refresh $w
+		::windows::gamelist::createGList_ $w
+		::windows::gamelist::update_ $w
 	}
 	proc Del_ {w idx} {
 		set old_layout [lindex $::glist_Layouts $idx]
@@ -211,10 +249,10 @@ namespace eval ::glist_Ly {
 	proc Change_ {w idx} {
 		set ::glistLayout($w) [lindex $::glist_Layouts $idx]
 		::glist_Ly::Update_ $w
-		::windows::gamelist::CreateGList_ $w
-		::windows::gamelist::Refresh $w
+		::windows::gamelist::createGList_ $w
+		::windows::gamelist::update_ $w
 	}
-	proc CreateName {} {
+	proc createName_ {} {
 		set i 1
 		set prefix "Layout"
 		if {! [info exists ::glist_Layouts] } { return "$prefix$i" }
@@ -302,9 +340,11 @@ proc glist.create {{w} {layout}} {
   ttk::frame $w.find.t
   ttk::label $w.find.t_text -text $::tr(GlistFindText:)
   entry $w.find.text -width 20 -bg white
-  ttk::button $w.find.b1_text -image tb_next -command "glist.findgame_ $w 1"
+  ttk::button $w.find.b1_text -image tb_next -command \
+    "after cancel glist.findgame_ $w 1; after idle glist.findgame_ $w 1"
   bind $w.find.text <Return> "$w.find.b1_text invoke"
-  ttk::button $w.find.b2_text -image tb_prev -command "glist.findgame_ $w 0"
+  ttk::button $w.find.b2_text -image tb_prev -command \
+    "after cancel glist.findgame_ $w 0; after idle glist.findgame_ $w 0"
   grid $w.find.t_text $w.find.text $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
   grid $w.find.hide
   grid $w.find.n -row 0 -column 1 -padx 10
@@ -319,7 +359,6 @@ proc glist.create {{w} {layout}} {
   options.save ::glist_Sort($layout)
   options.save ::glist_FindBar($layout)
 
-  set ::glistYDrag($w.glist) 0
   set ::glistLoaded($w.glist) 0.0
   set ::glistTotal($w.glist) 0.0
   set ::glistVisibleLn($w.glist) 0
@@ -379,7 +418,6 @@ proc glist.destroy_ {{w}} {
   unset ::glistVisibleLn($w)
   unset ::glistLoaded($w)
   unset ::glistTotal($w)
-  unset ::glistYDrag($w)
   unset ::glistYScroll($w)
   unset ::glistResized($w)
   unset ::glistFindBar($w)
@@ -452,8 +490,14 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
   if {$dir == ""} {
     set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $gnum]
   } else {
-	set gstart [expr int($::glistFirst($w))]
-	if {$dir == "1"} { incr gstart }
+    set gstart [expr int($::glistFirst($w))]
+    foreach {n ply} [split [$w selection] "_"] {
+      if {$n != ""} {
+        set n [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $n]
+        set gstart [expr $n -1]
+      }
+    }
+    if {$dir == "1"} { incr gstart }
     set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) 0\
             $txt $gstart $dir]
   }
@@ -465,16 +509,16 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
     }
   } else {
     set ::glistFirst($w) [expr $r -1]
-    #glist.ybar can change ::glistFirst($w)
-    set f [expr $r -1]
     glist.ybar_ $w scroll
-    #Select the founded game
-	#TODO: If there are more than one result in the last page only the first will be selected
-    set f [expr int($f - $::glistFirst($w))]
-    set items [$w children {}]
-    $w selection set [lindex $items $f]
+    after idle glist.select_ $w $r
   }
   unbusyCursor .
+}
+
+proc glist.select_ {w r} {
+    set f [expr int($r - $::glistFirst($w) -1)]
+    set items [$w children {}]
+    $w selection set [lindex $items $f]
 }
 
 proc glist.doubleclick_ {{w} {x} {y} {layout}} {
@@ -484,7 +528,7 @@ proc glist.doubleclick_ {{w} {x} {y} {layout}} {
   } else {
     foreach {idx ply} [split [$w selection] "_"] {}
     if {[info exist idx]} {
-      sc_base switch $::glistBase($w)
+      ::file::SwitchToBase $::glistBase($w) 0
       ::game::Load $idx $ply
     }
   }
@@ -508,7 +552,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       $w.game_menu delete 0 end
       #LOAD/BROWSE/MERGE GAME
       $w.game_menu add command -label $::tr(LoadGame) \
-         -command "sc_base switch $::glistBase($w); ::game::Load $idx $ply"
+         -command "::file::SwitchToBase $::glistBase($w) 0; ::game::Load $idx $ply"
       $w.game_menu add command -label $::tr(BrowseGame) \
          -command "::gbrowser::new $::glistBase($w) $idx $ply"
       $w.game_menu add command -label $::tr(MergeGame) \
@@ -669,30 +713,9 @@ proc glist.ybar_ {w cmd {n 0} {units ""}} {
     if {$::glistFirst($w) > $d } { set ::glistFirst($w) $d }
     if { $::glistFirst($w) < 0.0 } { set ::glistFirst($w) 0.0 }
 
-    if { $cmd == "scroll"} {
-      glist.loadvalues_ $w
-    } else {
-      set ::glistYDrag($w) 1
-      set t $w.balloon
-      if {! [winfo exists $t] } {
-        toplevel $t -bd 1 -bg black
-        wm overrideredirect $t 1
-        pack [message $t.txt -aspect 10000 -bg lightyellow -font fixed]
-      }
-      $t.txt configure -text [format "%0.0f (%0.0f%%)" [expr 1 + $::glistFirst($w)]\
-          [expr ($::glistFirst($w) + $::glistVisibleLn($w))*100.0/$::glistTotal($w) ]]
-      set wmx [expr [winfo pointerx .] - [winfo reqwidth $t.txt] - 10]
-      set wmy [winfo pointery .]
-      wm geometry $t \
-        [winfo reqwidth $t.txt]x[winfo reqheight $t.txt]+$wmx+$wmy
-      raise $t
-    }
+    after cancel glist.loadvalues_ $w
+    after idle glist.loadvalues_ $w
     glist.ybarupdate_ $w
-  } elseif { $cmd == "buttonrelease" && $::glistYDrag($w) != 0 } {
-      set ::glistYDrag($w) 0
-      destroy $w.balloon
-      glist.loadvalues_ $w
-      glist.ybarupdate_ $w
   }
 }
 

@@ -305,7 +305,7 @@ proc ::game::LoadHistory {dir} {
 
   ::game::HistorySavePos_
   incr ::hgame_i $dir
-  sc_base switch $::hgame_db($::hgame_i)
+  ::file::SwitchToBase $::hgame_db($::hgame_i) 0
   #If the game is still in memory avoid the ::game::ConfirmDiscard2 call
   if {$::hgame_game($::hgame_i) != [sc_game number]} {
     ::game::Load_ $::hgame_game($::hgame_i) $::hgame_ply($::hgame_i)
@@ -343,7 +343,7 @@ proc ::game::LoadMenu {w base gnum x y} {
     $m add command -label $::tr(MergeGame)
   }
   $m entryconfigure 0 -command "::gbrowser::new $base $gnum"
-  $m entryconfigure 1 -command "sc_base switch $base; ::game::Load $gnum"
+  $m entryconfigure 1 -command "::file::SwitchToBase $base 0; ::game::Load $gnum"
   $m entryconfigure 2 -command "mergeGame $base $gnum"
   event generate $w <ButtonRelease-1>
   $m post $x $y
@@ -423,8 +423,8 @@ namespace eval ::notify {
   proc GameChanged {} {
     flipBoardForPlayerNames $::myPlayerNames
     updateBoard -pgn
-    ::windows::gamelist::Refresh
     updateTitle
+    #TODO: Notify gamelist that the current game is changed
   }
 
   proc PosChanged {} {
@@ -449,6 +449,7 @@ namespace eval ::notify {
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     updateNoveltyWin
     ::tree::refresh
+    ::windows::gamelist::PosChanged
   }
 
   proc DatabaseChanged {} {

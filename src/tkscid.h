@@ -469,7 +469,6 @@ int sc_filter_prev    (TCL_ARGS);
 int sc_filter_remove  (TCL_ARGS);
 int sc_filter_reset   (TCL_ARGS);
 int sc_filter_stats   (TCL_ARGS);
-int sc_filter_textfind (TCL_ARGS);
 int sc_filter_value   (TCL_ARGS);
 int sc_filter_clear   (TCL_ARGS);
 
@@ -550,16 +549,7 @@ int sc_pos_setComment (TCL_ARGS);
 
 int sc_progressBar    (TCL_ARGS);
 
-int sc_sort           (TCL_ARGS);
-int sc_sort_list      (TCL_ARGS);
-int sc_sort_sort      (TCL_ARGS);
-int sc_sort_crit      (TCL_ARGS);
-int sc_sort_store     (TCL_ARGS);
-int sc_sort_load      (TCL_ARGS);
-int sc_sort_testload  (TCL_ARGS);
-
 int sc_tree           (TCL_ARGS);
-int sc_tree_best      (TCL_ARGS);
 int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
 int sc_tree_time      (TCL_ARGS);
