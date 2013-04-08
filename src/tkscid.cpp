@@ -6481,7 +6481,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
 
     // Check plyCount is a reasonable value, or set it to current plycount.
-    if (plyCount < 0  ||  plyCount > 80) { plyCount = g->GetCurrentPly(); }
+    if (plyCount < 0) { plyCount = g->GetCurrentPly(); }
     DString * dstr = new DString;
     g->MoveToPly(0);
     g->GetPartialMoveList (dstr, plyCount);

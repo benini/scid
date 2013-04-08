@@ -176,10 +176,6 @@ namespace eval pgn {
       if {[winfo exists .pgnWin.text.ctxtMenu]} { destroy .pgnWin.text.ctxtMenu; focus .pgnWin }
     }
     
-    # Bind middle button to popup a PGN board:
-    bind $w <ButtonPress-$::MB2> "::pgn::ShowBoard .pgnWin.text 5 %x %y %X %Y"
-    bind $w <ButtonRelease-$::MB2> ::pgn::HideBoard
-    
     # Bind right button to popup a contextual menu:
     bind $w <ButtonPress-$::MB3> "::pgn::contextMenu .pgnWin.text 5 %x %y %X %Y"
     
@@ -325,12 +321,9 @@ namespace eval pgn {
   #    game at the current mouse location in the PGN window.
   #
   ################################################################################
-  proc ShowBoard {win startLine x y xc yc} {
-    global lite dark
-    
-    set txt [removeCommentTag $win $startLine [ $win index @$x,$y]]
-    # set bd [sc_pos pgnBoard [::untrans [$win get $startLine.0 @$x,$y]] ]
-    set bd [ sc_pos pgnBoard [::untrans $txt ] ]
+  proc ShowBoard {win moveTag xc yc} {
+    set numMoves [expr {[string range $moveTag 2 end] - 1}]
+    set bd [sc_pos pgnBoard [sc_game firstMoves 0 $numMoves]]
     set w .pgnPopup
     set psize 30
     if {$psize > $::boardSize} { set psize $::boardSize }
