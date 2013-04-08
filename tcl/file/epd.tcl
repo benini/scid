@@ -198,11 +198,8 @@ proc newEpdWin {cmd {fname ""}} {
   
   set m $w.menu.edit.m
   $m add command -label "Cut" -acc "Ctrl+X" -underline 2 -command "tk_textCut $w.text"
-  bind $w <Control-x> "tk_textCut $w.text; break"
   $m add command -label "Copy" -acc "Ctrl+C" -underline 0 -command "tk_textCopy $w.text"
-  bind $w <Control-c> "tk_textCopy $w.text; break"
   $m add command -label "Paste" -acc "Ctrl+V" -underline 0 -command "tk_textPaste $w.text"
-  bind $w <Control-v> "tk_textPaste $w.text; break"
   $m add command -label "Select All" -acc "Ctrl+A" -underline 7 \
       -command "$w.text tag add sel 1.0 end"
   bind $w <Control-a> "$w.text tag add sel 1.0 end; break"
