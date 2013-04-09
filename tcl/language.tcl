@@ -195,6 +195,8 @@ proc setLanguage {{lang ""}} {
   
   # If using Tk, translate all menus:
   if {! [catch {winfo exists .}]} { setLanguageMenus $lang }
+  # update notation window
+  if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
   
   foreach i [array names ::tr] {
     if {[info exists ::translations($lang,$i)]} {
