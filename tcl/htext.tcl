@@ -379,7 +379,6 @@ proc ::htext::display {w helptext {section ""} {fixed 1}} {
         $w tag bind $moveTag <ButtonRelease-1> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
         # Bind middle button to popup a PGN board:
         $w tag bind $moveTag <ButtonPress-$::MB2> "::pgn::ShowBoard .pgnWin.text $moveTag %X %Y"
-        $w tag bind $moveTag <ButtonRelease-$::MB2> ::pgn::HideBoard
         # invoking contextual menu in PGN window
         $w tag bind $moveTag <ButtonPress-$::MB3> "sc_move pgn [string range $moveTag 2 end]; updateBoard"
         $w tag bind $moveTag <Any-Enter> "$w tag configure $moveTag -underline 1
