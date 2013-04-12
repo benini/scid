@@ -458,5 +458,7 @@ namespace eval ::notify {
     ::windows::stats::Refresh
     updateTitle
     updateStatusBar
+    set curr_base [sc_base current]
+    set ::treeWin [winfo exists .treeWin$curr_base]
   }
 }

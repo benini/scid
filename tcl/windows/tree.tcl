@@ -57,15 +57,16 @@ proc ::tree::treeFileSave {base} {
 }
 ################################################################################
 proc ::tree::make { { baseNumber -1 } {locked 0} } {
-  global tree treeWin highcolor geometry helpMessage
+  global tree highcolor geometry helpMessage
   
   if {$baseNumber == -1} {set baseNumber [sc_base current]}
   
   if {[winfo exists .treeWin$baseNumber]} {
-	 ::tree::closeTree $baseNumber
+    ::tree::closeTree $baseNumber
     return
   }
-  
+
+  if {$baseNumber == [sc_base current]} { set ::treeWin 1 }
   set w .treeWin$baseNumber
   
   ::createToplevel .treeWin$baseNumber
@@ -300,7 +301,9 @@ proc ::tree::closeTree {baseNumber} {
   destroy .treeWin$baseNumber
   sc_tree clean $baseNumber
   if {$::tree(locked$baseNumber)} { ::file::Close $baseNumber }
-  ::windows::stats::Refresh; 
+  ::windows::stats::Refresh;
+  set curr_base [sc_base current]
+  set ::treeWin [winfo exists .treeWin$curr_base]
 }
 ################################################################################
 proc ::tree::doTrace { prefix name1 name2 op} {

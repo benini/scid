@@ -1650,10 +1650,8 @@ proc destroyAnalysisWin {{n 1}} {
         catch {close $analysis(log$n)}
         set analysis(log$n) ""
     }
-    set analysis(pipe$n) ""
+    resetEngine $n
     set ::analysisWin$n 0
-    
-    ::docking::cleanup ".analysisWin$n"
 }
 
 # sendToEngine:
@@ -1731,9 +1729,19 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     if {[winfo exists $w]} {
         focus .
         destroy $w
-        set analysisWin$n 0
-        resetEngine $n
         return
+    }
+
+    resetEngine $n
+
+    # Only update engine's time when it was chosen in the engines dialog box
+    if { $index < 0 } {
+        set index [::enginelist::choose]
+        catch {
+            ::enginelist::setTime $index
+        }
+
+        if {$index == "" ||  $index < 0} { return }
     }
 
     # Set the button in non-annotation state
@@ -1741,38 +1749,21 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     if { $n == 1 } {
         set annotateModeButtonValue 0
     }
-    
-    resetEngine $n
+
+
+    ::createToplevel $w
+    ::setTitle $w "Analysis: No engine"
+    setWinLocation $w
+    setWinSize $w
+    ttk::frame $w.b1
+    pack $w.b1 -side bottom -fill x
+    ::createToplevelFinalize $w
+    set analysisWin$n 1
 
     if {$index >= [llength $::engines(list)]} {
-        ::createToplevel $w
-        setWinLocation $w
-        setWinSize $w
-        set analysisWin$n 1
-        ::setTitle $w "Analysis: No engine"
-        ttk::frame $w.b1
-        pack $w.b1 -side bottom -fill x
         button $w.b1.bStartStop -image tb_pause -command ""
-        ::createToplevelFinalize $w
         return
     }
-    
-    # if parameter index is a valid engine then start engine. Only update engine's time
-    # when it was chosen in the engines dialog box
-    if { $index < 0 } {
-        set index [::enginelist::choose]
-        catch {
-            ::enginelist::setTime $index
-        }
-    }
-    
-    if {$index == ""  ||  $index < 0} {
-        set analysisWin$n 0
-        return
-    }
-    
-    # ::enginelist::setTime $index
-    # catch {::enginelist::write}
     
     set analysis(index$n) $index
     set engineData [lindex $::engines(list) $index]
@@ -1794,20 +1785,18 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     }
     
     # Try to execute the analysis program:
-    if {[catch {set analysis(pipe$n) [open "| [list $analysisCommand] $analysisArgs" "r+"]} result]} {
-        if {$oldpwd != ""} { catch {cd $oldpwd} }
+    set open_err [catch {set analysis(pipe$n) [open "| [list $analysisCommand] $analysisArgs" "r+"]}]
+
+    # Return to original dir if necessary:
+    if {$oldpwd != ""} { catch {cd $oldpwd} }
+
+    if {$open_err} {
         tk_messageBox -title "Scid: error starting analysis" \
                 -icon warning -type ok \
                 -message "Unable to start the program:\n$analysisCommand"
-        set analysisWin$n 0
         resetEngine $n
         return
     }
-    
-    set analysisWin$n 1
-    
-    # Return to original dir if necessary:
-    if {$oldpwd != ""} { catch {cd $oldpwd} }
     
     # Open log file if applicable:
     set analysis(log$n) ""
@@ -1833,16 +1822,13 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     #
     # Set up the  analysis window:
     #
-    ::createToplevel $w
-    
+
     if {$n == 1} {
         ::setTitle $w "Analysis: $analysisName"
     } else {
         ::setTitle $w "Analysis $n: $analysisName"
     }
     bind $w <F1> { helpWindow Analysis }
-    setWinLocation $w
-    setWinSize $w
     standardShortcuts $w
     
     ::board::new $w.bd 25
@@ -1850,8 +1836,6 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     set analysis(showBoard$n) 0
     set analysis(showEngineInfo$n) 0
     
-    ttk::frame $w.b1
-    pack $w.b1 -side bottom -fill x
     
     checkbutton $w.b1.automove -image tb_training  -indicatoron false -height 24 -relief raised -command "toggleAutomove $n" -variable analysis(automove$n)
     ::utils::tooltip::Set $w.b1.automove $::tr(Training)
@@ -2287,6 +2271,8 @@ proc processAnalysisInput {{n 1}} {
 ################################################################################
 proc checkEngineIsAlive { {n 1} } {
     global analysis
+
+    if {$analysis(pipe$n) == ""} { return 0 }
     
     if {[eof $analysis(pipe$n)]} {
         fileevent $analysis(pipe$n) readable {}
