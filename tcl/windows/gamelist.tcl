@@ -106,18 +106,18 @@ proc ::windows::gamelist::Refresh {} {
 	}
 }
 
-proc ::windows::gamelist::PosChanged {} {
-	foreach w $::windows::gamelist::wins {
+proc ::windows::gamelist::PosChanged {{wlist ""}} {
+	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
+	foreach w $wlist {
 		if {[winfo exists $w] && $::gamelistFilter($w) == "filter"} {
-			if {! [winfo exists .treeWin$::gamelistBase($w)]} {
-				#TODO: Write better code for this
-				if {[winfo exists $w.tmp] } { destroy $w.tmp }
-				canvas $w.tmp
-				sc_progressBar $w.tmp "..." 0 0
-				$w.games.glist tag configure fsmall -foreground #bbbbbb
-				sc_tree search -base $::gamelistBase($w)
-				$w.games.glist tag configure fsmall -foreground black
-			}
+			#TODO: Write better code for this
+			if {[winfo exists $w.tmp] } { destroy $w.tmp }
+			canvas $w.tmp
+			sc_progressBar $w.tmp "..." 0 0
+			$w.games.glist tag configure fsmall -foreground #bbbbbb
+			sc_tree search -base $::gamelistBase($w)
+			$w.games.glist tag configure fsmall -foreground black
+			#################
 			::windows::gamelist::update_ $w
 		}
 	}
@@ -168,14 +168,14 @@ proc ::windows::gamelist::menu_ {{w} {button}} {
 
 proc ::windows::gamelist::searchpos_ {{w}} {
 	if {$::gamelistFilter($w) == "dbfilter"} {
-		if {! [winfo exists .treeWin$::gamelistBase($w)]} { ::tree::make $::gamelistBase($w) }
 		set ::gamelistFilter($w) "filter"
 		$w.buttons.boardFilter state pressed
+		::windows::gamelist::PosChanged $w
 	} else {
 		set ::gamelistFilter($w) "dbfilter"
 		$w.buttons.boardFilter state !pressed
+		::windows::gamelist::update_ $w
 	}
-	::windows::gamelist::update_ $w
 }
 
 namespace eval ::glist_Ly {
@@ -345,10 +345,15 @@ proc glist.create {{w} {layout}} {
   bind $w.find.text <Return> "$w.find.b1_text invoke"
   ttk::button $w.find.b2_text -image tb_prev -command \
     "after cancel glist.findgame_ $w 0; after idle glist.findgame_ $w 0"
+  #TODO: -from 0 -to 100
+  #TODO: set scale position when normal ybar is used
+  ttk::scale $w.find.scale -command "glist.ybar_ $w.glist moveto"
   grid $w.find.t_text $w.find.text $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
   grid $w.find.hide
   grid $w.find.n -row 0 -column 1 -padx 10
-  grid $w.find.t -row 0 -column 2
+  grid $w.find.t -row 0 -column 2 -padx 6
+  grid $w.find.scale -row 0 -column 3 -sticky ew
+  grid columnconfigure $w.find 3 -weight 1
   set ::glistFindBar($w.glist) $w.find
   glist.showfindbar_ $w.glist $layout
 
@@ -549,6 +554,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
     event generate $w <ButtonPress-1> -x $x -y $y
     foreach {idx ply} [split [$w selection] "_"] {}
     if {[info exist idx]} {
+      if { [winfo exist $w.game_menu.popup] } { destroy $w.game_menu.popup }
       $w.game_menu delete 0 end
       #LOAD/BROWSE/MERGE GAME
       $w.game_menu add command -label $::tr(LoadGame) \
@@ -557,6 +563,15 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
          -command "::gbrowser::new $::glistBase($w) $idx $ply"
       $w.game_menu add command -label $::tr(MergeGame) \
          -command "mergeGame $::glistBase($w) $idx"
+      menu $w.game_menu.popup
+      for {set i 1} {$i <= [sc_base count total]} {incr i} {
+        if { $i == $::glistBase($w) || [sc_base isReadOnly] } { continue }
+        if {[sc_base inUse $i]} {
+          set fname [file tail [sc_base filename $i]]
+          $w.game_menu.popup add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
+        }
+      }
+      $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.popup
 
       #GOTO GAME
       $w.game_menu add separator
