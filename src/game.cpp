@@ -608,7 +608,7 @@ Game::Init()
     PgnStyle = PGN_STYLE_TAGS | PGN_STYLE_VARS | PGN_STYLE_COMMENTS;
     PgnFormat = PGN_FORMAT_Plain;
     HtmlStyle = 0;
-    PgnLastMovePos = PgnNextMovePos = 0;
+    PgnLastMovePos = 0;
 
     Clear();
 }
@@ -2331,13 +2331,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         moveT *m = CurrentMove;
         bool commentLine = false;
 
-        // If the move being printed is the game's "current move" then
-        // set the current PGN position accordingly:
-
-        if (m == oldCurrentMove) {
-            PgnNextMovePos = NumMovesPrinted;
-        }
-
         // Stop the output if a specified stopLocation was given and has
         // been reached:
         if (StopLocation > 0  &&  NumMovesPrinted >= StopLocation) {
@@ -2415,9 +2408,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
             }
             printMoveNum = false;
         }
-
-        if (m == oldCurrentMove->prev) { PgnLastMovePos = NumMovesPrinted; }
-        if (m == oldCurrentMove) { PgnNextMovePos = NumMovesPrinted; }
 
         // Now print the move: only regenerate the SAN string if necessary.
 
@@ -2735,12 +2725,6 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
         }
         MoveForward();
         plyCount++;
-        if (CurrentMove == oldCurrentMove->prev) {
-            PgnLastMovePos = NumMovesPrinted;
-        }
-        if (CurrentMove == oldCurrentMove) {
-            PgnNextMovePos = NumMovesPrinted;
-        }
     }
     if (inComment) { tb->PrintString ("}"); }
     if (IsHtmlFormat()  &&  VarDepth == 0) { tb->PrintString ("</b>"); }
@@ -3001,7 +2985,6 @@ Game::WritePGN (TextBuffer * tb, uint stopLocation)
     moveT * oldCurrentMove = CurrentMove;
     if (stopLocation == 0) { SaveState(); }
     MoveToPly(0);
-    PgnLastMovePos = PgnNextMovePos = 1;
 
     if (IsHtmlFormat()) { tb->PrintString ("<p>"); }
     NumMovesPrinted = 1;
@@ -4198,6 +4181,25 @@ Game::Decode (ByteBuffer * buf, byte flags)
     }
 
     return buf->Status();
+}
+
+bool Game::calcAbsPlyNumber_(moveT *m, moveT *s) {
+	while (m != 0) {
+		PgnLastMovePos++;
+		if (m == s) return true;
+		if (PgnStyle & PGN_STYLE_VARS) {
+			moveT* v = m;
+			for (uint i=0; i < m->numVariations; i++) {
+				v = v->varChild;
+				if (calcAbsPlyNumber_(v->next, s)) {
+					PgnLastMovePos++;
+					return true;
+				}
+			}
+		}
+		m = m->next;
+	}
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////

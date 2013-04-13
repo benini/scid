@@ -309,10 +309,8 @@ private:
     gameFormatT PgnFormat;       // see PGN_FORMAT macros above.
     uint        HtmlStyle;       // HTML diagram style, see
                                  //   DumpHtmlBoard method in position.cpp.
-    uint        PgnLastMovePos;  // The place of the last move in the
-                                 // PGN output, as a byte offset.
-    uint        PgnNextMovePos;  // The place of the next move in the
-                                 // PGN output, as a byte offset.
+    uint        PgnLastMovePos;
+
 #ifdef WINCE
     bool        LowMem; // set to true if the game should use a low memory chuncksize
     moveChunkLowMemT * MoveChunkLowMem;
@@ -325,6 +323,7 @@ private:
     inline void       FreeMove (moveT * move);
 
     errorT     DecodeVariation (ByteBuffer * buf, byte flags, uint level);
+    bool       calcAbsPlyNumber_ (moveT *m, moveT *s);
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Public Functions
@@ -524,9 +523,12 @@ public:
 #else
     errorT    WriteExtraTags (FILE * fp);
 #endif
-    uint      GetPgnOffset (byte nextMoveFlag) {
-        return (nextMoveFlag ? PgnNextMovePos : PgnLastMovePos);
-    }
+
+    uint      GetPgnOffset () {
+                  PgnLastMovePos = 0;
+                  if (!calcAbsPlyNumber_(FirstMove, CurrentMove->prev)) return 1;
+                  return PgnLastMovePos;
+              }
 
     void      ResetPgnStyle (void) { PgnStyle = 0; }
     void      ResetPgnStyle (uint flag) { PgnStyle = flag; }

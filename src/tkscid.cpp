@@ -4293,10 +4293,7 @@ sc_clipbase_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Move to the current position in the clipbase game:
     clipbase->tbuf->Empty();
-    db->game->WriteToPGN (clipbase->tbuf);
-    uint location = db->game->GetPgnOffset (0);
-    clipbase->tbuf->Empty();
-    clipbase->game->MoveToLocationInPGN (clipbase->tbuf, location);
+    clipbase->game->MoveToLocationInPGN (clipbase->tbuf, db->game->GetPgnOffset());
 
     // Now, add the game as the last game in the clipbase:
     db->game->SaveState();
@@ -4324,9 +4321,7 @@ sc_clipbase_paste (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Cannot paste the clipbase game when already in the clipbase:
     if (db == clipbase) { return TCL_OK; }
 
-    db->tbuf->Empty();
-    clipbase->game->WriteToPGN (db->tbuf);
-    uint location = clipbase->game->GetPgnOffset (0);
+    uint location = clipbase->game->GetPgnOffset ();
     db->bbuf->Empty();
     if (clipbase->game->Encode (db->bbuf, NULL) != OK) {
         return errorResult (ti, "Error encoding game.");
@@ -8139,10 +8134,7 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->game->ResetPgnStyle (PGN_STYLE_VARS);
         db->game->SetPgnFormat (PGN_FORMAT_Plain);
         db->tbuf->Empty();
-        db->game->WriteToPGN (db->tbuf);
-        uint location = db->game->GetPgnOffset (0);
-        db->tbuf->Empty();
-        g->MoveToLocationInPGN (db->tbuf, location);
+        g->MoveToLocationInPGN (db->tbuf, db->game->GetPgnOffset ());
     }
 
     db->game = g;
@@ -9403,10 +9395,7 @@ void sc_game_undo_point()
         db->game->ResetPgnStyle (PGN_STYLE_VARS);
         db->game->SetPgnFormat (PGN_FORMAT_Plain);
         db->tbuf->Empty();
-        db->game->WriteToPGN (db->tbuf);
-        uint location = db->game->GetPgnOffset (0);
-        db->tbuf->Empty();
-        g->MoveToLocationInPGN (db->tbuf, location);
+        g->MoveToLocationInPGN (db->tbuf, db->game->GetPgnOffset());
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10283,13 +10272,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_pos_pgnBoard (cd, ti, argc, argv);
 
     case POS_PGNOFFSET:
-        // Optional parameter "next" indicates the next moves offset should
-        // be returned, instead of the offset of the move just played:
-        if (argc > 2  &&  strIsCasePrefix (argv[2], "next")) {
-            setUintResult (ti, db->game->GetPgnOffset(1));
-        } else {
-            setUintResult (ti, db->game->GetPgnOffset(0));
-        }
+        setUintResult (ti, db->game->GetPgnOffset());
         break;
 
     case POS_PROBE:
