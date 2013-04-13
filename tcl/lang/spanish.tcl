@@ -776,7 +776,6 @@ menuText S PgnColorVars "Variaciones..." 0
 menuText S PgnColorBackground "Fondo..." 0
 menuText S PgnColorMain "Línea principal..." 0
 menuText S PgnColorCurrent "Color de fondo del último movimiento..." 1
-menuText S PgnColorNextMove "Color de fondo del siguiente movimiento..." 0
 menuText S PgnHelp "Ayuda" 1
 menuText S PgnHelpPgn "Ayuda de PGN" 9
 menuText S PgnHelpIndex "Índice de la ayuda" 0

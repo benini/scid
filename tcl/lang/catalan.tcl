@@ -751,7 +751,6 @@ menuText K PgnColorVars "Variants..." 0
 menuText K PgnColorBackground "Fons..." 0
 menuText K PgnColorMain "Línia principal..." 0
 menuText K PgnColorCurrent "Color de fons de l'última jugada..." 1
-menuText K PgnColorNextMove "Color de fons de la próxima jugada..." 0
 menuText K PgnHelp "Ajut" 1
 menuText K PgnHelpPgn "Ajut de PGN" 9
 menuText K PgnHelpIndex "Índex de l'ajut" 0

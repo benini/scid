@@ -868,8 +868,6 @@ menuText R PgnColorBackground "Фон..." 0
 menuText R PgnColorMain "Main line..." 0
 # ====== TODO To be translated ======
 menuText R PgnColorCurrent "Current move background..." 1
-# ====== TODO To be translated ======
-menuText R PgnColorNextMove "Next move background..." 0
 menuText R PgnHelp "Помощь" 0
 menuText R PgnHelpPgn "Помощь по PGN" 0
 menuText R PgnHelpIndex "Индекс" 0

@@ -1015,7 +1015,7 @@ $m add command -label OptionsSave -command {
           whiteborder blackborder borderwidth \
           pgnColor(Header) pgnColor(Main) pgnColor(Var) \
           pgnColor(Nag) pgnColor(Comment) pgnColor(Background) \
-          pgnColor(Current) pgnColor(NextMove) } {
+          pgnColor(Current) } {
       puts $optionF "set $i [list [set $i]]"
     }
     puts $optionF ""

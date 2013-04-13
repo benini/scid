@@ -871,8 +871,6 @@ menuText P PgnColorBackground "T³o..." 0
 menuText P PgnColorMain "Main line..." 0
 # ====== TODO To be translated ======
 menuText P PgnColorCurrent "Current move background..." 1
-# ====== TODO To be translated ======
-menuText P PgnColorNextMove "Next move background..." 0
 menuText P PgnHelp "Pomoc" 2
 menuText P PgnHelpPgn "PGN" 0
 menuText P PgnHelpIndex "Spis tre¶ci" 0

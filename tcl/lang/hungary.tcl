@@ -727,7 +727,6 @@ menuText H PgnColorVars "Változatok..." 0
 menuText H PgnColorBackground "Háttér..." 0
 menuText H PgnColorMain "Fõváltozat..." 1
 menuText H PgnColorCurrent "Az aktuális lépés háttérszíne..." 3
-menuText H PgnColorNextMove "A következõ lépés háttérszíne..." 2
 menuText H PgnHelp "Segítség" 0
 menuText H PgnHelpPgn "Segítség PGN-hez" 9
 menuText H PgnHelpIndex "Tartalom" 0

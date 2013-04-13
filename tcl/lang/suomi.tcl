@@ -749,7 +749,6 @@ menuText U PgnColorVars "Muunnelmat..." 0
 menuText U PgnColorBackground "Tausta..." 0
 menuText U PgnColorMain "P‰‰muunnelma..." 0
 menuText U PgnColorCurrent "Nykyisen siirron tausta..." 0
-menuText U PgnColorNextMove "Seuraavan siirron tausta..." 0
 menuText U PgnHelp "Ohje" 0
 menuText U PgnHelpPgn "PGN-ohje" 0
 menuText U PgnHelpIndex "Aakkosellinen" 0

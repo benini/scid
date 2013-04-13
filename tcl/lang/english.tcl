@@ -751,7 +751,6 @@ menuText E PgnColorVars "Variations..." 0
 menuText E PgnColorBackground "Background..." 0
 menuText E PgnColorMain "Main line..." 0
 menuText E PgnColorCurrent "Current move background..." 1
-menuText E PgnColorNextMove "Next move background..." 0
 menuText E PgnHelp "Help" 0
 menuText E PgnHelpPgn "PGN Help" 0
 menuText E PgnHelpIndex "Index" 0

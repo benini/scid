@@ -866,8 +866,6 @@ menuText O PgnColorBackground "Bakgrunn..." 0
 menuText O PgnColorMain "Main line..." 0
 # ====== TODO To be translated ======
 menuText O PgnColorCurrent "Current move background..." 1
-# ====== TODO To be translated ======
-menuText O PgnColorNextMove "Next move background..." 0
 menuText O PgnHelp "Hjelp" 0
 menuText O PgnHelpPgn "PGN-hjelp" 0
 menuText O PgnHelpIndex "Innholdsfortegnelse" 0

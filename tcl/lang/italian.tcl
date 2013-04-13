@@ -793,7 +793,6 @@ menuText I PgnColorVars "Varianti..." 0
 menuText I PgnColorBackground "Sfondo..." 0
 menuText I PgnColorMain "Linea principale..." 0
 menuText I PgnColorCurrent "Sfondo per la mossa attuale..." 1
-menuText I PgnColorNextMove "Sfondo per la mossa successiva..." 0
 menuText I PgnHelp "Aiuto" 0
 menuText I PgnHelpPgn "Aiuto PGN" 0
 menuText I PgnHelpIndex "Indice" 0

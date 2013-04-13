@@ -722,7 +722,6 @@ menuText F PgnColorVars "Variantes..." 0
 menuText F PgnColorBackground "Couleur du fond..." 11
 menuText F PgnColorMain "Main line..." 0
 menuText F PgnColorCurrent "Dernier coup..." 1
-menuText F PgnColorNextMove "Prochain coup..." 0
 menuText F PgnHelp "Aide" 0
 menuText F PgnHelpPgn "Aide PGN" 0
 menuText F PgnHelpIndex "Index" 0

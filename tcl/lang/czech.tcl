@@ -710,7 +710,6 @@ menuText C PgnColorVars "Varianty..." 0
 menuText C PgnColorBackground "Pozadí..." 0
 menuText C PgnColorMain "Hlavní varianta..." 0
 menuText C PgnColorCurrent "Pozadí aktuálního tahu..." 1
-menuText C PgnColorNextMove "Pozadí pøí¹tího tahu..." 0
 menuText C PgnHelp "Nápovìda" 0
 menuText C PgnHelpPgn "Nápovìda - Okno PGN " 16
 menuText C PgnHelpIndex "Index nápovìdy" 0

@@ -864,8 +864,6 @@ menuText Y PgnColorBackground "Pozadina..." 0
 menuText Y PgnColorMain "Main line..." 0
 # ====== TODO To be translated ======
 menuText Y PgnColorCurrent "Current move background..." 1
-# ====== TODO To be translated ======
-menuText Y PgnColorNextMove "Next move background..." 0
 menuText Y PgnHelp "Pomoæ" 1
 menuText Y PgnHelpPgn "PGN pomoæ" 0
 menuText Y PgnHelpIndex "Sadr¾aj" 0

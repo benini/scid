@@ -28,7 +28,7 @@ namespace eval pgn {
     } {
       configMenuText $m.opt $idx PgnOpt$tag $lang
     }
-    foreach idx {0 1 2 3 4 5 6} tag {Header Anno Comments Vars Background Current NextMove } {
+    foreach idx {0 1 2 3 4 5} tag {Header Anno Comments Vars Background Current} {
       configMenuText $m.color $idx PgnColor$tag $lang
     }
     foreach idx {0 1} tag {Pgn Index} {
@@ -146,8 +146,7 @@ namespace eval pgn {
     $w.menu.color add command -label PgnColorBackground \
         -command {::pgn::ChooseColor Background background}
     $w.menu.color add command -label PgnColorCurrent -command {::pgn::ChooseColor Current current}
-    $w.menu.color add command -label PgnColorNextmove -command {::pgn::ChooseColor NextMove nextmove}
-    
+
     $w.menu.helpmenu add command -label PgnHelpPgn \
         -accelerator F1 -command {helpWindow PGN}
     $w.menu.helpmenu add command -label PgnHelpIndex -command {helpWindow Index}
@@ -354,7 +353,6 @@ namespace eval pgn {
     if {![winfo exists .pgnWin]} { return }
     .pgnWin.text configure -background $pgnColor(Background)
     .pgnWin.text tag configure Current -background $pgnColor(Current)
-    .pgnWin.text tag configure NextMove -background $pgnColor(NextMove)
     ::htext::init .pgnWin.text
     ::htext::updateRate .pgnWin.text 0
     ::pgn::Refresh 1
@@ -396,55 +394,21 @@ namespace eval pgn {
         ::htext::display .pgnWin.text $pgnStr
       } else {
         .pgnWin.text insert 1.0 $pgnStr
-        .pgnWin.text configure -state disabled
       }
+      .pgnWin.text configure -state disabled
       unbusyCursor .
     }
-    
-    if {$::pgn::showColor} {
-      #TODO: This code is slow.
-      #      Write a faster function to update PgnNextMovePos & PgnLastMovePos
-      sc_game pgn -symbols $::pgn::symbolicNags \
-        -indentVar $::pgn::indentVars -indentCom $::pgn::indentComments \
-        -space $::pgn::moveNumberSpaces -format color -column $::pgn::columnFormat \
-        -short $::pgn::shortHeader -markCodes $::pgn::stripMarks
-      #########################################
 
-      if { $::pgn::boldMainLine } {
-        .pgnWin.text configure -font font_Bold
-      } else {
-        .pgnWin.text configure -font font_Regular
-      }
-      # Now update Current and NextMove tags:
-      # the calls to "text see" are intended to make the most interesting part of the PGN window visible
+    if {$::pgn::showColor} {
       set offset [sc_pos pgnOffset]
-      .pgnWin.text tag remove NextMove 1.0 end
-      set noffset [sc_pos pgnOffset next]
-      if {$noffset == $offset} {set noffset 0}
-      set moveRange [.pgnWin.text tag nextrange "m_$noffset" 1.0]
-      if {[llength $moveRange] == 2} {
-        .pgnWin.text tag add NextMove [lindex $moveRange 0] [lindex $moveRange 1]
-        scan [lindex $moveRange 0] "%d.%d" l c
-        set c2 [expr $c + [.pgnWin.text cget -width ] ]
-        .pgnWin.text see "[expr $l +3].1"
-        .pgnWin.text see "[expr $l +3].1"
-        .pgnWin.text see "$l.$c2"
-        .pgnWin.text see "$l.$c"
-      }
-      
       .pgnWin.text tag remove Current 1.0 end
       set moveRange [.pgnWin.text tag nextrange "m_$offset" 1.0]
       if {[llength $moveRange] == 2} {
         .pgnWin.text tag add Current [lindex $moveRange 0] [lindex $moveRange 1]
-        scan [lindex $moveRange 0] "%d.%d" l c
-        set c2 [expr $c + 2 * [.pgnWin.text cget -width ] ]
-        .pgnWin.text see "[expr $l +3].1"
-        .pgnWin.text see "[expr $l +3].1"
-        .pgnWin.text see "$l.$c2"
-        .pgnWin.text see "$l.$c"
+        .pgnWin.text see [lindex $moveRange 1]
+      } else {
+        .pgnWin.text yview moveto 0
       }
-      
-      .pgnWin.text configure -state disabled
     }
   }
   ################################################################################

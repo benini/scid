@@ -744,7 +744,6 @@ menuText N PgnColorMain "Main line..." 0
  
 menuText N PgnColorCurrent "Current move background..." 1
  
-menuText N PgnColorNextMove "Next move background..." 0
 menuText N PgnHelp "Help" 0
 menuText N PgnHelpPgn "PGN help" 0
 menuText N PgnHelpIndex "Inhoud" 0

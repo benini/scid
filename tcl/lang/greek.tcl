@@ -749,7 +749,6 @@ menuText G PgnColorVars "Βαριάντες..." 0
 menuText G PgnColorBackground "Υπόβαθρο..." 0
 menuText G PgnColorMain "Κύρια γραμμή..." 0
 menuText G PgnColorCurrent "Υπόβαθρο τρέχουσας κίνησης..." 1
-menuText G PgnColorNextMove "Υπόβαθρο επόμενης κίνησης..." 0
 menuText G PgnHelp "Βοήθεια" 0
 menuText G PgnHelpPgn "Βοήθεια για PGN" 0
 menuText G PgnHelpIndex "Κατάλογος" 0

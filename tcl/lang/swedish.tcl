@@ -716,7 +716,6 @@ menuText W PgnColorVars "Variationer..." 0
 menuText W PgnColorBackground "Bakgrund..." 0
 menuText W PgnColorMain "Huvudvariation..." 0
 menuText W PgnColorCurrent "Aktuellt drag bakgrund..." 1
-menuText W PgnColorNextMove "Nästa drag bakgrund..." 0
 menuText W PgnHelp "Hjälp" 0
 menuText W PgnHelpPgn "PGN-hjälp" 0
 menuText W PgnHelpIndex "Index" 0

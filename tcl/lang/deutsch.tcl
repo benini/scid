@@ -748,7 +748,6 @@ menuText D PgnColorVars "Varianten..." 0
 menuText D PgnColorBackground "Hintergrund..." 0
 menuText D PgnColorMain "Partieverlauf..." 0
 menuText D PgnColorCurrent "Hintergrund aktueller Zug..." 1
-menuText D PgnColorNextMove "Hintergrund nächter Zug..." 0
 menuText D PgnHelp "Hilfe" 0
 menuText D PgnHelpPgn "PGN-Hilfe" 0
 menuText D PgnHelpIndex "Index" 0
