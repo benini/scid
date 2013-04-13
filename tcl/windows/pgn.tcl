@@ -298,7 +298,6 @@ namespace eval pgn {
     set bd [sc_pos board]
     if {[::board::isFlipped .main.board]} {set bd [string reverse [lindex $bd 0]]}
     sc_move pgn $offSet
-    Refresh
 
     set w .pgnPopup
     set psize 30
@@ -339,7 +338,7 @@ namespace eval pgn {
   #
   ################################################################################
   proc HideBoard {} {
-    wm withdraw .pgnPopup
+    if {[winfo exists .pgnPopup]} {wm withdraw .pgnPopup}
   }
   
   ################################################################################
