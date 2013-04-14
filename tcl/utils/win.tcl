@@ -1048,10 +1048,10 @@ proc ::docking::layout_restore_pw { data } {
       wm geometry . [lindex $elt 1]
       layout_restore_pw [lindex $data 1]
       if {[lindex $elt 2]  == "zoomed"} {
-          if { $::tcl_platform(platform) == "unix" } {
-              wm attributes . -zoomed
-          } else {
+          if { $::windowsOS || $::macOS } {
               wm state . zoomed
+          } else {
+              wm attributes . -zoomed
           }
       }
       break
