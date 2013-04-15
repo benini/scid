@@ -25,6 +25,7 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	set ::gamelistBase($w) 0
 	set ::gamelistMenu($w) ""
 	set ::gamelistFilter($w) "dbfilter"
+	standardShortcuts $w
 	ttk::frame $w.buttons -padding {5 5 2 5}
 	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
 	ttk::button $w.buttons.filter -image engine_on -command "::windows::gamelist::menu_ $w filter"
@@ -97,11 +98,17 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	::windows::gamelist::Refresh
 }
 
-proc ::windows::gamelist::Refresh {} {
-	foreach w $::windows::gamelist::wins {
-	    if {[winfo exists $w]} {
+proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
+	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
+	foreach w $wlist {
+		if {[winfo exists $w]} {
 			set ::gamelistBase($w) [sc_base current]
-			::windows::gamelist::update_ $w
+			if {$moveup} {
+				::windows::gamelist::update_ $w
+			} else {
+				#TODO: do not call loadvalues_ directly
+				glist.loadvalues_ $w.games.glist
+			}
 		}
 	}
 }
@@ -308,6 +315,13 @@ proc glist.create {{w} {layout}} {
   bind $w.glist <3> "glist.popupmenu_ %W %x %y %X %Y $layout"
   bind $w.glist <ButtonRelease-1> "glist.release_ %W %x %y $layout"
   bind $w.glist <Double-ButtonRelease-1> "glist.doubleclick_ %W %x %y $layout"
+  bind $w.glist <KeyPress-Up> {movesel_ %W prev -1 0; break}
+  bind $w.glist <KeyPress-Down> {movesel_ %W next +1 end; break}
+  bind $w.glist <KeyPress-Right> {continue}
+  bind $w.glist <KeyPress-Left> {continue}
+  bind $w.glist <KeyPress-Prior> {glist.ybar_ %W scroll -1 pages; break}
+  bind $w.glist <KeyPress-Next> {glist.ybar_ %W scroll 1 pages; break}
+  bind $w.glist <KeyPress-Return> "glist.doubleclick_ %W -1 -1 $layout"
   bind $w.glist <Destroy> "glist.destroy_ $w.glist"
 
   set i 0
@@ -440,11 +454,12 @@ proc glist.update_ {{w} {base}} {
   set ::glistSortCache($w) $::glistSortStr($w)
   set ::glistBase($w) $base
   set ::glistFirst($w) 0.0
-  glist.loadvalues_ $w
+  glist.loadvalues_ $w 0
   glist.ybarupdate_ $w
 }
 
-proc glist.loadvalues_ {w} {
+proc glist.loadvalues_ {{w} {savesel 1}} {
+  if {$savesel} { set sel [$w selection] }
   $w delete [$w children {}]
   set base $::glistBase($w)
   if {$base == [sc_base current]} {
@@ -462,6 +477,7 @@ proc glist.loadvalues_ {w} {
     incr i
   }
   set ::glistLoaded($w) $i
+  if {$savesel} { catch {$w selection set $sel} }
 }
 
 proc glist.showfindbar_ {{w} {layout}} {
@@ -520,10 +536,25 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
   unbusyCursor .
 }
 
-proc glist.select_ {w r} {
-    set f [expr int($r - $::glistFirst($w) -1)]
-    set items [$w children {}]
-    $w selection set [lindex $items $f]
+proc glist.select_ {w {idx 0}} {
+  if {$idx != "end" && $idx > 0} {
+    set idx [expr int($idx - $::glistFirst($w) -1)]
+  }
+  $w selection set [lindex [$w children {}] $idx]
+}
+
+proc movesel_ {{w} {cmd} {scroll} {select}} {
+  set sel [$w selection]
+  if {$sel == ""} { glist.select_ $w; return }
+  set newsel [$w $cmd $sel]
+  if {$newsel == "" || [$w bbox $newsel] == ""} {
+    glist.ybar_ $w scroll $scroll
+  }
+  if {$newsel == ""} {
+    after idle glist.select_ $w $select
+  } else {
+    $w selection set $newsel
+  }
 }
 
 proc glist.doubleclick_ {{w} {x} {y} {layout}} {
@@ -589,13 +620,14 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         #DELETE
         #TODO: Delete games even for "not current" databases
         #TODO: translate labels
-        #TODO: refresh the other windows after delete/undelete
         $w.game_menu add separator
         set deleted [sc_game flag delete $idx]
         if {$deleted} {
-          $w.game_menu add command -label "Undelete game" -command "sc_game flag delete $idx 0"
+          $w.game_menu add command -label "Undelete game" \
+            -command "sc_game flag delete $idx 0; ::windows::gamelist::Refresh 0"
         } else {
-          $w.game_menu add command -label "Delete game" -command "sc_game flag delete $idx 1"
+          $w.game_menu add command -label "Delete game" \
+            -command "sc_game flag delete $idx 1; ::windows::gamelist::Refresh 0"
         }
       }
       tk_popup $w.game_menu $abs_x $abs_y

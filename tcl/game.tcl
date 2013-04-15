@@ -424,7 +424,7 @@ namespace eval ::notify {
     flipBoardForPlayerNames $::myPlayerNames
     updateBoard -pgn
     updateTitle
-    #TODO: Notify gamelist that the current game is changed
+    ::windows::gamelist::Refresh 0
   }
 
   proc PosChanged {} {
