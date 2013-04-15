@@ -32,8 +32,6 @@
 #include "stored.h"
 #include "polyglot.h"
 
-#include "tclmy.h"
-
 
 // Include header files for finding directory of executable program
 // in Windows if necessary.
@@ -64,10 +62,6 @@
 // is "const" if set from tcl.h, otherwise it is nothing:
 #ifndef CONST84
 #  define CONST84
-#endif
-
-#ifdef WINCE
-#include "tclmy.h"
 #endif
 
 // Filter operations:
@@ -391,14 +385,6 @@ void sc_game_undo_reset();
 
 int str_is_prefix  (TCL_ARGS);
 int str_prefix_len (TCL_ARGS);
-#ifdef POCKET
-int sc_msg            (TCL_ARGS);
-int sc_msg_init       (TCL_ARGS);
-int sc_msg_close      (TCL_ARGS);
-int sc_msg_send       (TCL_ARGS);
-int sc_msg_recv       (TCL_ARGS);
-int sc_msg_info       (TCL_ARGS);
-#endif
 int sc_base           (TCL_ARGS);
 int sc_base_autoload  (TCL_ARGS);
 int sc_base_filename  (TCL_ARGS);

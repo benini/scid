@@ -23,12 +23,6 @@
 #include "game.h"
 #include "stored.h"
 
-// #include <string.h>
-// #include <ctype.h>    // for isalpha().
-
-#ifdef POCKET
-#include <windows.h>
-#endif
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -1110,20 +1104,7 @@ Index::ReadEntireFile (int reportFrequency,
 
     uint numChunks = NumChunksRequired();
 
-#ifdef POCKET
-// Check if there is enough memory left with a good margin
-  #define MARGIN 1000000
-  int neededMemory = MARGIN + numChunks * sizeof (IndexEntry [INDEX_ENTRY_CHUNKSIZE]);
-  if ( getPocketAvailPhys() < neededMemory || getPocketAvailVirtual() < neededMemory ) {
-    return !OK;
-  }
-#endif
-#ifdef WINCE
-    Entries = (IndexEntry**)my_Tcl_AttemptAlloc(sizeof( IndexEntryPtr [numChunks]));
-    if ( Entries == NULL ) return !OK;
-#else
     Entries = new IndexEntryPtr [numChunks];
-#endif
 
     uint progressCounter = 0;
     int reportAfter = reportFrequency;
@@ -1133,14 +1114,6 @@ Index::ReadEntireFile (int reportFrequency,
     for (uint chunkCount = 0; chunkCount < numChunks; chunkCount++) {
         Entries[chunkCount] = new IndexEntry [INDEX_ENTRY_CHUNKSIZE];
 
-#ifdef WINCE
-        if (Entries[chunkCount] == NULL) {
-          // free all slots allocated so far
-          for (uint i = 0; i < chunkCount ; i ++) delete[] Entries[i];
-          my_Tcl_Free((char*) Entries);
-          return !OK;
-        }
-#endif
         uint gamesToRead = GetNumGames() - readCount;
         if (gamesToRead > INDEX_ENTRY_CHUNKSIZE) {
             gamesToRead = INDEX_ENTRY_CHUNKSIZE;
@@ -1150,11 +1123,8 @@ Index::ReadEntireFile (int reportFrequency,
             for (uint i = 0; i <= chunkCount; i++) {
                 delete[] Entries[i];
             }
-#ifdef WINCE
-            my_Tcl_Free((char*) Entries);
-#else
             delete[] Entries;
-#endif
+
             Entries = NULL;
             InMemory = false;
             return err;

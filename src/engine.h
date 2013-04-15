@@ -286,9 +286,7 @@ public:
     int Score (void);
     int ScoreMaterial (void);
     principalVarT * GetPV (void) { return &(PV[0]); }
-#ifndef POCKETENGINE
     uint PerfTest (uint depth);
-#endif
     uint ElapsedTime (void) { return Elapsed.MilliSecs(); }
     int Think (MoveList * mlist);
 };

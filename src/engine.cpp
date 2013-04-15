@@ -15,9 +15,6 @@
 #include "attacks.h"
 #include "engine.h"
 #include "recog.h"
-#ifdef POCKETENGINE
-#include "ipc.h"
-#endif
 
 // The Engine class implements the Scid built-in chess engine.
 // See engine.h for details.
@@ -1817,9 +1814,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
             } else {
                 // The hash table move was legal, but not found in the
                 // move list -- Bizzare!
-#ifndef POCKETENGINE
                 Output ("# Yikes! Hash table move not in move list! Bug?\n");
-#endif
             }
         }
     }
@@ -2245,7 +2240,6 @@ Engine::ScoreMoves (MoveList * mlist)
     }
 }
 
-#ifndef POCKETENGINE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::Output
 //    Prints a formatted string (as passed to printf) to standard output
@@ -2253,7 +2247,6 @@ Engine::ScoreMoves (MoveList * mlist)
 void
 Engine::Output (const char * format, ...)
 {
-#ifndef WINCE
     va_list ap;
     va_start (ap, format);
     vprintf (format, ap);
@@ -2261,9 +2254,7 @@ Engine::Output (const char * format, ...)
         vfprintf (LogFile, format, ap);
     }
     va_end (ap);
-#endif
 }
-#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::PrintPV
 //   Print the current depth, score and principal variation.
@@ -2275,28 +2266,16 @@ Engine::PrintPV (uint depth, int score, const char * note)
     if (XBoardMode  &&  ms < 50  &&  Ply < 6) { return; }
 
     if (XBoardMode) {
-#ifndef POCKETENGINE
         Output (" %2u %6d %5u %9u  ",  depth, score, ms / 10, NodeCount);
-#else
-        send_msg (" %2u %6d %5u %9u  ",  depth, score, ms / 10, NodeCount);
-#endif
     } else {
-#ifndef POCKETENGINE
         Output (" %2u %-3s %+6d %5u %9u  ", depth, note, score, ms, NodeCount);
-#else
-        send_msg (" %2u %-3s %+6d %5u %9u  ", depth, note, score, ms, NodeCount);
-#endif
     }
 
     principalVarT * pv = &(PV[0]);
     uint i;
 
     if (Pos.GetToMove() == BLACK) {
-#ifndef POCKETENGINE
         Output ("%u...", Pos.GetFullMoveCount());
-#else
-        send_msg ("%u...", Pos.GetFullMoveCount());
-#endif
     }
 
     // Make and print each PV move:
@@ -2306,39 +2285,19 @@ Engine::PrintPV (uint depth, int score, const char * note)
         // Check for legality, to protect against hash table
         // false hits and bugs in PV updating:
         if (! Pos.IsLegalMove (sm)) {
-#ifndef POCKETENGINE
             Output (" <illegal>");
-#else
-            send_msg (" <illegal>");
-#endif
             break;
         }
-#ifndef POCKETENGINE
         if (i > 0) { Output (" "); }
-#else
-        if (i > 0) { send_msg (" "); }
-#endif
         if (Pos.GetToMove() == WHITE) {
-#ifndef POCKETENGINE
             Output  ("%u.", Pos.GetFullMoveCount());
-#else
-            send_msg ("%u.", Pos.GetFullMoveCount());
-#endif
         }
         char s[10];
         Pos.MakeSANString (sm, s, SAN_MATETEST);
-#ifndef POCKETENGINE
         Output ("%s", s);
-#else
-        send_msg ("%s", s);
-#endif
         Pos.DoSimpleMove (sm);
     }
-#ifndef POCKETENGINE
     Output ("\n");
-#else
-    send_msg ("\n");
-#endif
     // Undo each PV move that was made:
     for (; i > 0; i--) {
         Pos.UndoSimpleMove (&(pv->move[i-1]));
@@ -2373,7 +2332,6 @@ Engine::OutOfTime ()
 
     return IsOutOfTime;
 }
-#ifndef POCKETENGINE
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Engine::PerfTest
 //   Returns the number of leaf node moves when generating, making and
@@ -2393,7 +2351,7 @@ Engine::PerfTest (uint depth)
     }
     return nmoves;
 }
-#endif
+
 //////////////////////////////////////////////////////////////////////
 //  EOF: engine.cpp
 //////////////////////////////////////////////////////////////////////

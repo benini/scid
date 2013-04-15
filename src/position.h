@@ -289,13 +289,8 @@ public:
 
     // Board I/O
     void        MakeLongStr (char * str);
-#if defined (WINCE) || defined (POCKET)
-    void        DumpBoard (/*FILE * */Tcl_Channel fp);
-    void        DumpLists (/*FILE * */Tcl_Channel fp);
-#else
     void        DumpBoard (FILE * fp);
     void        DumpLists (FILE * fp);
-#endif
     errorT      ReadFromLongStr (const char * str);
     errorT      ReadFromCompactStr (const byte * str);
     errorT      ReadFromFEN (const char * s);

@@ -9,7 +9,6 @@
 #include <cstdio>
 #ifdef WINCE
 #include <tcl.h>
-#include "../tclmy.h"
 #endif
 // constants
 

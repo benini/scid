@@ -148,10 +148,8 @@ Position::AssertPos ()
         for (uint i=0; i < Count[c]; i++) {
             if (ListPos[List[c][i]] != i
                   ||  piece_Color(Board[List[c][i]]) != c) {
-#if !defined (WINCE) && !defined (POCKET)
                 DumpBoard (stderr);
                 DumpLists (stderr);
-#endif
                 return ERROR;
             }
             mat[Board[List[c][i]]]++;
@@ -159,10 +157,8 @@ Position::AssertPos ()
     }
     for (uint i=WK; i < BP; i++) {
         if (mat[i] != Material[i]) {
-#if !defined (WINCE) && !defined (POCKET)
             DumpBoard (stderr);
             DumpLists (stderr);
-#endif
             return ERROR;
         }
     }
@@ -2722,61 +2718,6 @@ Position::MakeLongStr (char * str)
     *s = 0;
 }
 
-#if defined (WINCE) || defined (POCKET)
-void
-Position::DumpBoard (/*FILE * */Tcl_Channel fp)
-{
-//     ASSERT (fp != NULL);
-//     squareT s;
-//     char space = ' ';
-//     char cr = '\n';
-//     char c;
-//     for (int i=7; i>=0; i--) {
-//        fputs ("   ", fp);
-//         for (int j=0; j<8; j++) {
-//             s = (i*8) + j;
-//             c = PIECE_CHAR[Board[s]]; my_Tcl_Write(fp, &c, 1);
-//             putc (PIECE_CHAR[Board[s]], fp);
-//             my_Tcl_Write(fp, &space,1);
-//            putc (' ', fp);
-//         }
-//          my_Tcl_Write(fp, &cr,1);
-//         putc ('\n', fp);
-//     }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::DumpLists():
-//      Dump the piece lists to an open file.
-//
-void
-Position::DumpLists (/*FILE * */Tcl_Channel fp)
-{
-//     ASSERT (fp != NULL);
-//      uint i;
-//     char c;
-//     char buf[64];
-//     for (colorT c = WHITE; c <= BLACK; c++) {
-//         for (i=0; i < Count[c]; i++) {
-//             pieceT p = Board[List[c][i]];
-//             fprintf (fp, "%2d:", ListPos[List[c][i]]);
-//             sprintf(buf, "%2d:", ListPos[List[c][i]]);
-//             my_Tcl_Write(fp, buf, -1);
-//             putc (PIECE_CHAR[p], fp);
-//             c = PIECE_CHAR[p]; my_Tcl_Write(fp, &c, 1);
-//             putc (square_FyleChar (List[c][i]), fp);
-//             c = square_FyleChar (List[c][i]); my_Tcl_Write(fp, &c, 1);
-//             putc (square_RankChar (List[c][i]), fp);
-//             c = square_RankChar (List[c][i]); my_Tcl_Write(fp, &c, 1);
-//             putc (' ', fp);
-//             c = ' '; my_Tcl_Write(fp, &c, 1);
-//         }
-//         putc ('\n', fp);
-//           c = '\n'; my_Tcl_Write(fp, &c, 1);
-//     }
-}
-
-#else
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::DumpBoard():
 //      Dump the board to an open file.
@@ -2818,7 +2759,6 @@ Position::DumpLists (FILE * fp)
         putc ('\n', fp);
     }
 }
-#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::ReadFromCompactStr():

@@ -4,7 +4,6 @@
  */
 
 #include "zutil.h"
-#include "../tclmy.h"
 
 struct internal_state      {int dummy;}; /* for buggy compilers */
 

@@ -21,20 +21,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef WINCE
-#include <tcl.h>
-#endif
-#ifndef POCKETENGINE
-#include "tclmy.h"
 #include "myassert.h"
-#endif
 #include "error.h"
 
 #ifdef _MSC_VER
 #define snprintf _snprintf
 #endif
 
-#ifndef POCKETENGINE
 // Include the zlib header file if it is being compiled with Scid:
 #ifndef NO_ZLIB
 #  ifdef ZLIB
@@ -43,20 +36,12 @@
 #    include <zlib.h>
 #  endif
 #endif
-#else
-#define ASSERT(f)
-#endif
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 
 // Buffer sizes
-#ifdef WINCE
-#define BBUF_SIZE 30000
-#define TBUF_SIZE 100000
-#else
 #define BBUF_SIZE 256000 //120000
 #define TBUF_SIZE 1280000 //160000
-#endif
 
 typedef unsigned short versionT;
 
@@ -749,27 +734,19 @@ square_Adjacent (squareT from, squareT to)
 //   and mix the bits around.
 
 inline void srandom32(uint seed) {
-#ifdef WINCE
-    srand (seed);
-#else
 #ifdef WIN32
     srand (seed);
 #else
     srandom (seed);
 #endif
-#endif
 }
 
 inline uint random32()
 {
-#ifdef WINCE
-    return rand() ^ (rand() << 16) ^ (rand() >> 16);
-#else
 #ifdef WIN32
     return rand() ^ (rand() << 16) ^ (rand() >> 16);
 #else
     return random() ^ (random() << 16) ^ (random() >> 16);
-#endif
 #endif
 }
 
