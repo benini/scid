@@ -613,12 +613,12 @@ bind $dot_w <F12> ::CorrespondenceChess::CCWindow
 
 set menuindex -1
 set m .menu.tools
-$m  add checkbutton -label ToolsAnalysis -variable analysisWin1 \
+$m  add command -label ToolsAnalysis \
     -command makeAnalysisWin -accelerator "Ctrl+Shift+A"
 bind $dot_w <Control-A> makeAnalysisWin
 set helpMessage($m,[incr menuindex]) ToolsAnalysis
 
-$m  add checkbutton -label ToolsAnalysis2 -variable analysisWin2 \
+$m  add command -label ToolsAnalysis2 \
     -command "makeAnalysisWin 2" -accelerator "Ctrl+Shift+2"
 bind $dot_w <Control-at> "makeAnalysisWin 2"
 set helpMessage($m,[incr menuindex]) ToolsAnalysis2
