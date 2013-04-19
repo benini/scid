@@ -979,8 +979,8 @@ proc ::tree::graph { baseNumber {bpress 0}} {
     $w configure -menu $w.menu
     $w.menu add cascade -label GraphFile -menu $w.menu.file
     menu $w.menu.file
-    $w.menu.file add command -label GraphFileColor -command "saveGraph color $w.c"
-    $w.menu.file add command -label GraphFileGrey -command "saveGraph gray $w.c"
+    $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
+    $w.menu.file add command -label GraphFileGrey -command "::tools::graphs::Save gray $w.c"
     $w.menu.file add separator
     $w.menu.file add command -label GraphFileClose -command "destroy $w"
     
