@@ -949,6 +949,17 @@ proc ::tree::best { baseNumber {bpress 0}} {
   glist.update $w $::tree(base$baseNumber) tree
 }
 
+################################################################################
+# ::tree::graphRedraw
+#   Redraws the tree graph window.
+#
+proc ::tree::graphRedraw { baseNumber } {
+  .treeGraph$baseNumber.c itemconfigure text -width [expr {[winfo width .treeGraph$baseNumber.c] - 50}]
+  .treeGraph$baseNumber.c coords text [expr {[winfo width .treeGraph$baseNumber.c] / 2}] 10
+  ::utils::graph::configure tree$baseNumber -height [expr {[winfo height .treeGraph$baseNumber.c] - 100}]
+  ::utils::graph::configure tree$baseNumber -width [expr {[winfo width .treeGraph$baseNumber.c] - 50}]
+  ::utils::graph::redraw tree$baseNumber
+}
 
 ################################################################################
 # ::tree::graph
@@ -977,12 +988,7 @@ proc ::tree::graph { baseNumber {bpress 0}} {
     pack $w.c -side top -fill both -expand yes
     $w.c create text 25 10 -tag text -justify center -width 1 -font font_Regular -anchor n
     update
-    bind $w <Configure> " \
-        .treeGraph$baseNumber.c itemconfigure text -width [expr {[winfo width .treeGraph$baseNumber.c] - 50}] ;\
-        .treeGraph$baseNumber.c coords text [expr {[winfo width .treeGraph$baseNumber.c] / 2}] 10 ;\
-        ::utils::graph::configure tree$baseNumber -height [expr {[winfo height .treeGraph$baseNumber.c] - 100}] ;\
-        ::utils::graph::configure tree$baseNumber -width [expr {[winfo width .treeGraph$baseNumber.c] - 50}] ;\
-        ::utils::graph::redraw tree$baseNumber "
+    bind $w <Configure> "::tree::graphRedraw $baseNumber"
     bind $w.c <Button-1> "::tree::graph $baseNumber"
     ::setTitle $w "Scid: Tree Graph $baseNumber: [file tail [sc_base filename $baseNumber]]"
     # wm minsize $w 300 200
