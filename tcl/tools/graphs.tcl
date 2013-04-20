@@ -162,6 +162,18 @@ proc tools::graphs::filter::Open {} {
     return
   }
   toplevel $w
+  menu $w.menu
+  $w configure -menu $w.menu
+  $w.menu add cascade -label GraphFile -menu $w.menu.file
+  configMenuText $w.menu 0 GraphFile $::language
+  menu $w.menu.file
+  $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
+  configMenuText $w.menu.file 0 GraphFileColor $::language
+  $w.menu.file add command -label GraphFileGrey -command "::tools::graphs::Save gray $w.c"
+  configMenuText $w.menu.file 1 GraphFileGrey $::language
+  $w.menu.file add separator
+  $w.menu.file add command -label GraphFileClose -command "destroy $w"
+  configMenuText $w.menu.file 3 GraphFileClose $::language
   wm title $w $::tr(TitleFilterGraph)
   set filterGraph 1
   bind $w <Destroy> {set filterGraph 0}
@@ -627,6 +639,18 @@ proc tools::graphs::absfilter::Open {} {
     return
   }
   toplevel $w
+  menu $w.menu
+  $w configure -menu $w.menu
+  $w.menu add cascade -label GraphFile -menu $w.menu.file
+  configMenuText $w.menu 0 GraphFile $::language
+  menu $w.menu.file
+  $w.menu.file add command -label GraphFileColor -command "::tools::graphs::Save color $w.c"
+  configMenuText $w.menu.file 0 GraphFileColor $::language
+  $w.menu.file add command -label GraphFileGrey -command "::tools::graphs::Save gray $w.c"
+  configMenuText $w.menu.file 1 GraphFileGrey $::language
+  $w.menu.file add separator
+  $w.menu.file add command -label GraphFileClose -command "destroy $w"
+  configMenuText $w.menu.file 3 GraphFileClose $::language  
   wm title $w $::tr(TitleFilterGraph)
   set absfilterGraph 1
   bind $w <Destroy> {set absfilterGraph 0}
