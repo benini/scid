@@ -30,8 +30,8 @@ if { ! [info exists FilterMinElo] } {
   set FilterMaxElo 2800
   set FilterStepElo 100
   set FilterGuessELO 1
-  set FilterMinYear 1995
-  set FilterMaxYear 2007
+  set FilterMaxYear [clock format [clock seconds] -format {%Y}]
+  set FilterMinYear [expr {$FilterMaxYear - 12}]
   set FilterStepYear 1
   set FilterMinMoves 5
   set FilterMaxMoves 80
@@ -75,10 +75,10 @@ proc checkConfigFilterGraph {} {
   if { $FilterStepYear < 1 } { set FilterStepYear 1 }
   if { $FilterMinMoves < 1 } { set FilterMinMoves 5 }
   if { $FilterMinElo < 0 } { set FilterMinElo 2100 }
-  if { $FilterMinYear < 1 } { set FilterMinYear 1995 }
+  if { $FilterMinYear < 1 } { set FilterMinYear [expr {$FilterMaxYear - 12}] }
   if { $FilterMaxMoves < 1 } { set FilterMaxMoves 80 }
   if { $FilterMaxElo < 1 } { set FilterMaxElo 2800 }
-  if { $FilterMaxYear < 1 } { set FilterMaxYear 2007 }
+  if { $FilterMaxYear < 1 } { set FilterMaxYear [clock format [clock seconds] -format {%Y}] }
 }
 
 proc configureFilterGraph {} {
@@ -125,8 +125,8 @@ proc configureFilterGraph {} {
     set FilterMinElo 2100
     set FilterMaxElo 2800
     set FilterStepElo 100
-    set FilterMinYear 1995
-    set FilterMaxYear 2007
+    set FilterMaxYear [clock format [clock seconds] -format {%Y}]
+    set FilterMinYear [expr {$FilterMaxYear - 12}]
     set FilterStepYear 1
     set FilterMinMoves 5
     set FilterMaxMoves 80
