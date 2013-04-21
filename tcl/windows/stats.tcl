@@ -104,7 +104,7 @@ proc ::windows::stats::Refresh {} {
   # Find length of longest left-hand column:
   set alen [expr {[string length $all] + 1}]
   set blen [expr {[string length $both] + 7}]
-  set slen [expr {[string length $since] + 12}]
+  set slen [expr {[string length $since] + 14}]
   set len $alen
   if {$len < $blen} { set len $blen }
   if {$len < $slen} { set len $slen }
