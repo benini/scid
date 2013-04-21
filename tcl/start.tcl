@@ -509,6 +509,12 @@ array set ::windows::stats::display {
   y2008 1
 }
 
+# Enable stats for subsequent years
+for { set year [clock format [clock seconds] -format {%Y}] } \
+{ $year>2008 && ![info exists ::windows::stats::display([subst {y$year}])] } \
+{ incr year -1 } \
+{ set ::windows::stats::display([subst {y$year}]) 1 }
+
 # Default PGN display options:
 set pgnStyle(Tags) 1
 set pgnStyle(Comments) 1
