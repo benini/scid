@@ -1285,7 +1285,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 #ifdef WINCE
     bool fastOpen = true;  // Fast open (no flag counts, etc)
 #else
-    bool fastOpen = true;  // Fast open (no flag counts, etc)
+    bool fastOpen = false;  // Fast open (no flag counts, etc)
 #endif
     const char * usage = "Usage: sc_base open [-readonly] [-fast] <filename>";
 
