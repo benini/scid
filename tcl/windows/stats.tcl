@@ -239,6 +239,12 @@ proc ::windows::stats::Refresh {} {
   $w configure -state normal
   $w delete 1.0 end
   $w insert end $s
+  $w tag configure bgGray -background gray95
+  # Shade every second line to help readability:
+  set lastLineNum [expr {int([$w index end])}]
+  for {set i 2} {$i <= $lastLineNum} {incr i 2} {
+    $w tag add bgGray $i.0 "$i.0 lineend +1c"
+  }
   $w tag configure blue -foreground darkBlue
   $w tag configure red -foreground red
   $w tag add blue 1.0 2.0
