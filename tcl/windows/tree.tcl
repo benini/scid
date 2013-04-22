@@ -203,7 +203,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
       -width $::winWidth(.treeWin) -height $::winHeight(.treeWin) -wrap none -selectbackground lightgrey -selectforeground black \
       -font font_Fixed -foreground black -background white -setgrid 1 -exportselection 1
   #define default tags
-  $w.f.tl tag configure greybg -background #fa1cfa1cfa1c
+  $w.f.tl tag configure greybg -background gray95
   $w.f.tl tag configure whitebg -background white
   $w.f.tl tag configure bluefg -foreground blue
   $w.f.tl tag configure greenfg -foreground SeaGreen
