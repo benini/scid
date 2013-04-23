@@ -1480,7 +1480,7 @@ proc enterSquare { square } {
     global bestSq bestcolor selectedSq suggestMoves
     if {$selectedSq == -1} {
         set bestSq -1
-        if {$suggestMoves} {
+        if {$suggestMoves && [expr {abs($::fics::playing) != 1}]} {
             set bestSq [sc_pos bestSquare $square]
             if {$bestSq != -1} {
                 ::board::colorSquare .main.board $square $bestcolor
@@ -1536,20 +1536,6 @@ proc pressSquare { square } {
         set selectedSq -1
         enterSquare $square
     }
-}
-
-# pressSquare2:
-#   Called when the middle mouse button is pressed on a square. This
-#   makes the suggested best move.
-#
-proc pressSquare2 { square } {
-    if { [winfo exists .fics] } { return } ;# don't use this function with FICS
-    
-    global selectedSq bestSq
-    ::board::colorSquare .main.board $bestSq
-    ::board::colorSquare .main.board $square
-    addMove $square $bestSq -animate
-    enterSquare $square
 }
 
 # releaseSquare:
