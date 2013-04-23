@@ -1526,41 +1526,6 @@ proc addAllVariations {{n 1}} {
 ################################################################################
 #
 ################################################################################
-# TODO fonction obsolète à virer ??
-proc addAnalysisToComment {line {n 1}} {
-    global analysis
-    if {! [winfo exists .analysisWin$n]} { return }
-    
-    # If comment editor window is open, add the score there, otherwise
-    # just add the comment directly:
-    if {[winfo exists .commentWin]} {
-        set tempStr [.commentWin.cf.text get 1.0 "end-1c"]
-    } else {
-        set tempStr [sc_pos getComment]
-    }
-    set score $analysis(score$n)
-    
-    # If line is true, add the whole line, else just add the score:
-    if {$line} {
-        set scoretext [format "%+.2f: %s" $score $analysis(moves$n)]
-    } else {
-        set scoretext [format "%+.2f" $score]
-    }
-    
-    # Strip out old score if it exists at the start of the comment:
-    regsub {^\".*\"} $tempStr "" tempStr
-    set newText "\"$scoretext\"$tempStr"
-    if {[winfo exists .commentWin]} {
-        .commentWin.cf.text delete 1.0 end
-        .commentWin.cf.text insert 1.0 $newText
-    } else {
-        sc_pos setComment $newText
-    }
-    ::pgn::Refresh 1
-}
-################################################################################
-#
-################################################################################
 proc makeAnalysisMove {{n 1} {comment ""}} {
     set s $::analysis(moves$n)
     set res 1
