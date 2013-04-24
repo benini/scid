@@ -1053,13 +1053,7 @@ proc addAnnotation { {n 1} } {
     if {  [sc_pos isAt vend] } {
         set addClosingLine 1
     }
-    
-    
-    # Temporarily clear the pre-move command since we want to add a
-    # whole line without Scid updating stuff:
-    #
-    sc_info preMoveCmd {}
-    
+
     # We do not want to insert a best-line variation into the game
     # if we did play along that line. Even not when annotating all moves.
     # It simply makes no sense to do so (unless we are debugging the engine!)
@@ -1182,11 +1176,7 @@ proc addAnnotation { {n 1} } {
         if { $scoreAllMoves } {
             sc_pos setComment "[sc_pos getComment] $text"
         }
-        
-        # Restore the pre-move command
-        #
-        sc_info preMoveCmd preMoveCommand
-    
+
         # Update the board
         #
         updateBoard -pgn
@@ -1297,11 +1287,7 @@ proc addAnnotation { {n 1} } {
     set analysis(prevmoves$n)     $analysis(moves$n)
     set analysis(prevscoremate$n) $analysis(scoremate$n)
     set analysis(prevdepth$n)     $analysis(depth$n)
-    
-    # Restore the pre-move command
-    #
-    sc_info preMoveCmd preMoveCommand
-    
+
     # Update the board
     #
     updateBoard -pgn
@@ -1421,11 +1407,7 @@ proc addAnalysisVariation {{n 1}} {
     # if we are at the end of the game, we cannot add variation
     # so we add the analysis one move before and append the last game move at the beginning of the analysis
     set addAtEnd [sc_pos isAt vend]
-    
-    # Temporarily clear the pre-move command since we want to add a
-    # whole line without Scid updating stuff:
-    sc_info preMoveCmd {}
-    
+
     set moves $analysis(moves$n)
     if {$analysis(uci$n)} {
         set tmp_moves [ lindex [ lindex $analysis(multiPV$n) 0 ] 2 ]
@@ -1457,10 +1439,7 @@ proc addAnalysisVariation {{n 1}} {
         #forward to the last move
         sc_move forward
     }
-    
-    # Restore the pre-move command:
-    sc_info preMoveCmd preMoveCommand
-    
+
     if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
     
     # Update score graph if it is open:
@@ -1480,11 +1459,7 @@ proc addAllVariations {{n 1}} {
     # if we are at the end of the game, we cannot add variation
     # so we add the analysis one move before and append the last game move at the beginning of the analysis
     set addAtEnd [sc_pos isAt vend]
-    
-    # Temporarily clear the pre-move command since we want to add a
-    # whole line without Scid updating stuff:
-    sc_info preMoveCmd {}
-    
+
     foreach i $analysis(multiPVraw$n) j $analysis(multiPV$n) {
         set moves [lindex $i 2]
         
@@ -1515,10 +1490,7 @@ proc addAllVariations {{n 1}} {
         }
         
     }
-    
-    # Restore the pre-move command:
-    sc_info preMoveCmd preMoveCommand
-    
+
     if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
     # Update score graph if it is open:
     if {[winfo exists .sgraph]} { ::tools::graphs::score::Refresh }
@@ -2920,8 +2892,6 @@ proc updateAnalysisBoard {n moves} {
     if {! $analysis(showBoard$n)} { return }
     
     set bd .analysisWin$n.bd
-    # Temporarily wipe the premove command:
-    sc_info preMoveCmd {}
     # Push a temporary copy of the current game:
     sc_game push copyfast
     
@@ -2931,8 +2901,6 @@ proc updateAnalysisBoard {n moves} {
     
     # Pop the temporary game:
     sc_game pop
-    # Restore pre-move command:
-    sc_info preMoveCmd preMoveCommand
 }
 
 ################################################################################

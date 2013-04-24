@@ -161,7 +161,6 @@ proc ::reviewgame::endTraining {} {
   
   if {$::reviewgame::pushedgame} {
     sc_game pop
-    sc_info preMoveCmd preMoveCommand
   }
   
   after cancel ::reviewgame::mainLoop
@@ -487,7 +486,6 @@ proc ::reviewgame::startAnalyze { analysisTime { move "" } } {
   # we want to ponder on a particular move, hence we need to switch to a temporary position so
   # UCI code can correctly format the variations
   if {$move != ""} {
-    sc_info preMoveCmd {}
     sc_game push copyfast
     set ::reviewgame::pushedgame 1
     # puts "::uci::sc_move_add $move"
@@ -527,7 +525,6 @@ proc ::reviewgame::stopAnalyze { { move "" } } {
   
   if {$move != ""} {
     sc_game pop
-    sc_info preMoveCmd preMoveCommand
   }
 }
 ################################################################################

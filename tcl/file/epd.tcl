@@ -15,15 +15,6 @@ proc storeEpdText {id} {
 ################################################################################
 #
 ################################################################################
-proc storeEpdTexts {} {
-  global maxEpd
-  for {set i 1} {$i <= $maxEpd} {incr i} {
-    if {[winfo exists .epd$i]} { storeEpdText $i }
-  }
-}
-################################################################################
-#
-################################################################################
 proc updateEpdWin {id} {
   set w .epd$id
   $w.text delete 1.0 end
@@ -158,6 +149,7 @@ proc newEpdWin {cmd {fname ""}} {
   text $w.text -background white -font font_Regular -width 60 -height 7 \
       -wrap none -setgrid 1 -yscrollcommand "$w.ybar set" \
       -xscrollcommand "$w.xbar set"
+  bind $w.text <KeyRelease> "storeEpdText $id"
   scrollbar $w.ybar -takefocus 0 -command "$w.text yview"
   scrollbar $w.xbar -orient horizontal -takefocus 0 -command "$w.text xview"
   label $w.status -width 1 -anchor w -font font_Small -relief sunken

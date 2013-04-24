@@ -136,16 +136,6 @@ proc moveEntry_Char {ch} {
     updateStatusBar
 }
 
-# preMoveCommand: called before making a move to store text in the comment
-#   editor window and EPD windows.
-proc preMoveCommand {} {
-    # ::commenteditor::storeComment
-    storeEpdTexts
-}
-
-sc_info preMoveCmd preMoveCommand
-
-
 # updateTitle:
 #   Updates the main Scid window title.
 #
@@ -657,9 +647,7 @@ proc showVars {} {
         updateBoard
         return
     }
-    
-    sc_info preMoveCmd {}
-    
+
     set w .variations
     if {[winfo exists $w]} { return }
     
@@ -702,7 +690,6 @@ proc showVars {} {
     bind .variations <Return> {catch { event generate .variations <Right> } }
     bind .variations <ButtonRelease-1> {catch { event generate .variations <Right> } }
     bind .variations <Right> {
-        sc_info preMoveCmd preMoveCommand
         set cur [.variations.lbVar curselection]
         destroy .variations
         if {$cur == 0} {
@@ -737,9 +724,7 @@ proc showVars {} {
     if { $::docking::USE_DOCKING } {
         bind .variations <Destroy> { focus -force .main }
     }
-    
-    sc_info preMoveCmd preMoveCommand
-    
+
     catch { focus .variations }
     catch { grab $w }
     update
@@ -1366,8 +1351,6 @@ proc addMove { sq1 sq2 {animate ""}} {
     if {$action == "replace"} {
         # nothing
     } elseif {$action == "mainline" || $action == "var"} {
-        # sc_var create stores comments (premovecommand). So avoid comment repetition.
-        # Maybe it would be better to void premovecommand for sc_var create
         if {[winfo exists .commentWin]} {
             ::commenteditor::storeComment
             .commentWin.cf.text delete 0.0 end

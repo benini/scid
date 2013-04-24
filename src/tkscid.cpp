@@ -35,8 +35,6 @@ static SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correctio
 static PBook * repertoire = NULL;
 
 static progressBarT progBar;
-static char * preMoveCommand = NULL;  // Tcl command to execute before any
-                                      // action that changes board state.
 
 static OpTable * reports[2] = {NULL, NULL};
 static const char * reportTypeName[2] = { "opening", "player" };
@@ -88,23 +86,6 @@ InvalidCommand (Tcl_Interp * ti, const char * majorCmd,
     }
     return TCL_ERROR;
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// PreMoveCommand():
-//    Executes the Tcl pre-move command, which can be set by
-//    the Tcl program to automatically store the contents of
-//    the Comment editor window, EPD windows, etc.
-//
-//    Called by any commands that alter the board state.
-void
-PreMoveCommand (Tcl_Interp * ti)
-{
-    if (preMoveCommand[0] == 0) { return; }
-    Tcl_Eval (ti, preMoveCommand);
-    Tcl_ResetResult (ti);
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Progress Bar update routine:
@@ -517,9 +498,6 @@ scid_InitTclTk (Tcl_Interp * ti)
     scratchPos = new Position;
     scratchGame = new Game;
     db = &(dbList[currentBase]);
-
-    // Set preMoveCommand to empty command:
-    preMoveCommand = strDuplicate ("");
 
     return TCL_OK;
 }
@@ -8990,12 +8968,12 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "asserts", "clipbase", "decimal", "fsize", "gzip",
-        "html", "limit", "preMoveCmd", "priority", "ratings",
+        "html", "limit", "priority", "ratings",
         "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
         INFO_ASSERTS, INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
-        INFO_HTML, INFO_LIMIT, INFO_PREMOVECMD, INFO_PRIORITY, INFO_RATINGS,
+        INFO_HTML, INFO_LIMIT, INFO_PRIORITY, INFO_RATINGS,
         INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
     int index = -1;
@@ -9039,17 +9017,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case INFO_LIMIT:
         return sc_info_limit (cd, ti, argc, argv);
-
-    case INFO_PREMOVECMD:
-        if (argc < 3) { return setResult (ti, preMoveCommand); }
-#ifdef WINCE
-        my_Tcl_Free((char*)preMoveCommand);
-#else
-        delete[] preMoveCommand;
-#endif
-
-        preMoveCommand = strDuplicate (argv[2]);
-        break;
 
     case INFO_PRIORITY:
         return sc_info_priority (cd, ti, argc, argv);
@@ -9473,8 +9440,6 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     int index = -1;
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-
-    PreMoveCommand (ti);
 
     switch (index) {
     case MOVE_ADD:
@@ -15702,7 +15667,6 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case VAR_CREATE:
         if (! (db->game->AtVarStart()  &&  db->game->AtVarEnd())) {
-            PreMoveCommand (ti);
             db->game->MoveForward();
             db->game->AddVariation();
             db->gameAltered = true;
@@ -15719,7 +15683,6 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_var_enter (cd, ti, argc, argv);
 
     case VAR_EXIT:
-        PreMoveCommand (ti);
         db->game->MoveExitVariation();
         break;
 
@@ -15839,7 +15802,6 @@ sc_var_enter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "No such variation!");
     }
 
-    PreMoveCommand (ti);
     db->game->MoveIntoVariation (varNumber);
     // Should moving into a variation also automatically play
     // the first variation move? Maybe it should depend on

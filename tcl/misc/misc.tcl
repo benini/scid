@@ -891,12 +891,10 @@ namespace eval html {
   ################################################################################
   # fill data with { idx FEN prev next move nag comment depth }
   proc fillData {} {
-    sc_info preMoveCmd {}
     set ::html::data {}
     set ::html::idx -1
     sc_move start
     parseGame
-    sc_info preMoveCmd preMoveCommand
   }
   
   ################################################################################
