@@ -143,7 +143,6 @@ SortCache::SortCache()
 	mapSize = 0;
 	hashValues = NULL;
 	refCount = 1;
-	lastStart = IDX_NOT_FOUND;
 	ErrorMsg = 0;
 	sorted_ = false;
 }
@@ -262,25 +261,12 @@ errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result
 			for (i = start; i < numGames && j < count; i++) result[j++] = fullMap[i];
 		} else {
 			uint filterCount = 0;
-			if( start >= lastStart && filter == lastFilter)
-			// Speedup: avoid to count the games in filter to reach start
-			// No problem if FilterChanged(): lastStart = IDX_NOT_FOUND;
-			{
-				i = lastIndex;
-				filterCount = lastStart;
-			}
 
 			// Pick up the specified range, ignore those not matching the filter
 			for(; i < numGames && j < count; i++)
 			{
 				if( filter->Get( fullMap[i]) == 0) continue;
 				if( filterCount >= start) result[j++] = fullMap[i];
-				if( filterCount == start)
-				{
-					lastIndex = i;
-					lastStart = start;
-					lastFilter = filter;
-				}
 				filterCount++;
 			}
 		}
@@ -712,11 +698,6 @@ SortCache::CheckForChanges ( int *criteria, uint id)
 	return OK;
 }
 
-void SortCache::FilterChanged()
-{
-	lastStart = IDX_NOT_FOUND;
-}
-
 /*IndexToFilteredCount
 Given a game number find it's position into the sorted list
 gnumber: game number (first game has value 1)
@@ -860,7 +841,6 @@ SortCache* SortCache::CreateFromFile(Index* idx, NameBase* nb)
 	s->nbase = nb;
 	s->numGames = idx->GetNumGames();
 	s->GetSpace(s->numGames);
-	s->lastStart = IDX_NOT_FOUND;
 	for(uint i=0; i<INDEX_MaxSortingCriteria; i++)
 	{
 		s->SortCriteria[i] = readOneByte( fp);

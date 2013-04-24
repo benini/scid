@@ -38,7 +38,6 @@ class SortCache
 	errorT GetRange( uint start, uint count, Filter *filter, uint *result);
 	uint IndexToFilteredCount( uint gnumber, Filter *filter);
 	errorT CheckForChanges ( int *criteria, uint id);
-	void FilterChanged();
 	bool MatchCriteria( const std::string& crit) { return crit == criteria; }
 	void DoFullSort(int reportFrequency,
                     void (*progressFn)(void * data, uint progress, uint total),
@@ -63,9 +62,6 @@ class SortCache
     byte SortCriteria [INDEX_MaxSortingCriteria];
     bool SortReverse [INDEX_MaxSortingCriteria];
     char *ErrorMsg;
-	uint lastStart;
-	uint lastIndex;
-	Filter *lastFilter;
 	int refCount;
 	std::string criteria;
 

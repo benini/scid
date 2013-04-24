@@ -347,7 +347,7 @@ TCLS= \
 OPTIMIZE	= -ZI -Fd$(TMP_DIR)\ -Od
 !message *** Build 'Debug' Version	= yes
 !else
-OPTIMIZE	= -O2 -D__GXX_EXPERIMENTAL_CXX0X__
+OPTIMIZE	= -O2 -D__GXX_EXPERIMENTAL_CXX0X__ /EHsc
 !message *** Build 'Release' Version	= yes
 !if "$(GLOBAL_OPT)" == "1"
 OPTIMIZE	= $(OPTIMIZE) -GL

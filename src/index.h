@@ -793,7 +793,6 @@ class Index
     uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
 	                       const char* text, uint start, bool forward =true);
     errorT IndexUpdated( uint gnum);
-    void FilterChanged();
 
   public:
     errorT CreateSortingCache( NameBase *nbase, const char *criteria, int *handle);
@@ -852,7 +851,7 @@ inline byte IndexEntry::GetRating(NameBase* nb) {
 	int rating = static_cast<int>(welo + belo) / 140;
 
 	// Bonus for comments or Nags
-	if (GetCommentsFlag() > 2 || GetNagCount() > 2) {
+	if (GetCommentCount() > 2 || GetNagCount() > 2) {
 		if (rating < 21) { // Missing elo
 			rating = 40;
 		} else {

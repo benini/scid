@@ -25,6 +25,7 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	set ::gamelistBase($w) 0
 	set ::gamelistMenu($w) ""
 	set ::gamelistFilter($w) "dbfilter"
+	set ::gamelistPosMask($w) 0
 	standardShortcuts $w
 	ttk::frame $w.buttons -padding {5 5 2 5}
 	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
@@ -116,7 +117,7 @@ proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
 proc ::windows::gamelist::PosChanged {{wlist ""}} {
 	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
 	foreach w $wlist {
-		if {[winfo exists $w] && $::gamelistFilter($w) == "filter"} {
+		if {[winfo exists $w] && $::gamelistPosMask($w) != 0} {
 			#TODO: Write better code for this
 			if {[winfo exists $w.tmp] } { destroy $w.tmp }
 			canvas $w.tmp
@@ -174,13 +175,15 @@ proc ::windows::gamelist::menu_ {{w} {button}} {
 }
 
 proc ::windows::gamelist::searchpos_ {{w}} {
-	if {$::gamelistFilter($w) == "dbfilter"} {
-		set ::gamelistFilter($w) "filter"
+	if {$::gamelistPosMask($w) == 0} {
+		set ::gamelistPosMask($w) 1
 		$w.buttons.boardFilter state pressed
+		sc_filter posmask $::gamelistBase($w) dbFilter FEN
 		::windows::gamelist::PosChanged $w
 	} else {
-		set ::gamelistFilter($w) "dbfilter"
+		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
+		sc_filter posmask $::gamelistBase($w) dbFilter
 		::windows::gamelist::update_ $w
 	}
 }

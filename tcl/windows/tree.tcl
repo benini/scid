@@ -27,7 +27,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
     configMenuText $m.sort $idx TreeSort$tag $lang
   }
-  foreach idx {0 1 3 5 6 7} tag {Lock Training Autosave Slowmode Fastmode FastAndSlowmode} {
+  foreach idx {0 1 3} tag {Lock Training Autosave } {
     configMenuText $m.opt $idx TreeOpt$tag $lang
   }
   foreach idx {0 1} tag {Tree Index} {
@@ -182,18 +182,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.menu.opt add separator
   $w.menu.opt add checkbutton -label TreeOptAutosave -variable tree(autoSave$baseNumber)
   set helpMessage($w.menu.opt,3) TreeOptAutosave
-  
-  $w.menu.opt add separator
-  $w.menu.opt add radiobutton -label TreeOptSlowmode -value 0 -variable tree(fastmode$baseNumber) -command "::tree::refresh $baseNumber"
-  set helpMessage($w.menu.opt,5) TreeOptSlowmode
-  
-  $w.menu.opt add radiobutton -label TreeOptFastmode -value 1 -variable tree(fastmode$baseNumber) -command "::tree::refresh $baseNumber"
-  set helpMessage($w.menu.opt,6) TreeOptFastmode
-  
-  $w.menu.opt add radiobutton -label TreeOptFastAndSlowmode -value 2 -variable tree(fastmode$baseNumber) -command "::tree::refresh $baseNumber"
-  set helpMessage($w.menu.opt,7) TreeOptFastAndSlowmode
-  set tree(fastmode$baseNumber) 0
-  
+
   $w.menu.helpmenu add command -label TreeHelpTree -accelerator F1 -command {helpWindow Tree}
   $w.menu.helpmenu add command -label TreeHelpIndex -command {helpWindow Index}
   
@@ -447,19 +436,13 @@ proc ::tree::dorefresh { baseNumber } {
   $w.buttons.stop configure -state normal
   
   set base $baseNumber
-  
-  if { $tree(fastmode$baseNumber) == 0 } {
-    set fastmode 0
-  } else {
-    set fastmode 1
-  }
 
   set filtered 0
   if { $tree(allgames$baseNumber) == 0 } {
     set filtered 1
   }
   
-  set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode -filtered $filtered]
+  set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -filtered $filtered]
   catch {$w.f.tl itemconfigure 0 -foreground darkBlue}
 
   foreach button {best graph training allgames close} {
@@ -476,15 +459,6 @@ proc ::tree::dorefresh { baseNumber } {
   if { $moves == "canceled" } { return "canceled"}
   displayLines $baseNumber $moves  
   if {[winfo exists .treeBest$baseNumber]} { ::tree::best $baseNumber}
-  
-  # ========================================
-  if { $tree(fastmode$baseNumber) == 2 } {
-    ::tree::status "" $baseNumber
-    sc_progressBar $w.progress bar [$w.progress cget -width] 100
-    set moves [sc_tree search -hide $tree(training$baseNumber) -sort $tree(order$baseNumber) -base $base -fastmode $fastmode -filtered $filtered]
-    displayLines $baseNumber $moves
-  }
-  # ========================================
 
   grid forget $w.progress
 }
@@ -902,7 +876,7 @@ proc ::tree::prime { baseNumber } {
     } else {
       changeProgressWindow "$text: start position"
     }
-    sc_tree search -base $base -fastmode 0
+    sc_tree search -base $base
     updateProgressWindow $i $len
     incr i
     if {$::interrupt} {

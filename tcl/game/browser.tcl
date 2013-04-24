@@ -102,10 +102,7 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   wm resizable $w 1 0
   if {$ply < 0} {
     set ply 0
-    if {$gnum > 0} {
-      set ply [sc_filter value $base $gnum]
-      if {$ply > 0} { incr ply -1 }
-    }
+    #TODO: search if game gnum match the current board pos
   }
   ::gbrowser::update $n $ply
   

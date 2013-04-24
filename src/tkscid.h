@@ -80,16 +80,11 @@ const filterOpT FILTEROP_RESET = 2;
 #define PROBE_REPORT 3
 #define PROBE_OPTIMAL 4
 
-#ifdef WINCE
-const uint SCID_TreeCacheSize = 50;
-const uint SCID_BackupCacheSize = 20;
-#else
 // TreeCache size for each open database:
 const uint SCID_TreeCacheSize = 1000; //250
 
 // Secondary (memory only) TreeCache size:
 const uint SCID_BackupCacheSize = 100;
-#endif
 
 // Number of undo levels
 #define UNDO_MAX 10
@@ -136,13 +131,11 @@ struct scidStatsT {
     unsigned long long  sumRatings;
     uint  minRating;
     uint  maxRating;
-#ifndef WINCE
     ecoStatsT ecoCount0 [1];
     ecoStatsT ecoCount1 [5];
     ecoStatsT ecoCount2 [50];
     ecoStatsT ecoCount3 [500];
     ecoStatsT ecoCount4 [500*26];
-#endif
 };
 
 
@@ -177,7 +170,6 @@ struct scidBaseT {
     GFile *      gfile;
     ByteBuffer * bbuf;
     TextBuffer * tbuf;
-    Filter *     filter;
     Filter *     dbFilter;
     Filter *     treeFilter;
     uint *       duplicates;  // For each game: idx of duplicate game + 1,
@@ -341,32 +333,17 @@ void transPieces(char *s);
 inline const char *
 translate (Tcl_Interp * ti, const char * name, const char * defaultText)
 {
-#ifdef WINCE
-    return name;
-#else
     const char * str = Tcl_GetVar2 (ti, "tr", (char *) name, TCL_GLOBAL_ONLY);
     if (str == NULL) { str = defaultText; }
     return str;
-#endif
 }
 
 inline const char *
 translate (Tcl_Interp * ti, const char * name)
 {
-#ifdef WINCE
-    return name;
-#else
     return translate (ti, name, name);
-#endif
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// filter help functions
-//
-void updateMainFilter( scidBaseT * dbase);
-void clearFilter( scidBaseT * dbase, uint size);
-void filter_reset (scidBaseT * base, byte value);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // manage undo functions
@@ -448,14 +425,12 @@ int sc_filter_first   (TCL_ARGS);
 int sc_filter_freq    (TCL_ARGS);
 int sc_filter_index   (TCL_ARGS);
 int sc_filter_last    (TCL_ARGS);
-int sc_filter_locate  (TCL_ARGS);
 int sc_filter_negate  (TCL_ARGS);
 int sc_filter_next    (TCL_ARGS);
 int sc_filter_prev    (TCL_ARGS);
 int sc_filter_remove  (TCL_ARGS);
 int sc_filter_reset   (TCL_ARGS);
 int sc_filter_stats   (TCL_ARGS);
-int sc_filter_value   (TCL_ARGS);
 int sc_filter_clear   (TCL_ARGS);
 
 int sc_game           (TCL_ARGS);
@@ -540,7 +515,6 @@ int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
 int sc_tree_time      (TCL_ARGS);
 int sc_tree_write     (TCL_ARGS);
-int sc_tree_free      (TCL_ARGS);
 int sc_tree_cachesize (TCL_ARGS);
 int sc_tree_cacheinfo (TCL_ARGS);
 int sc_tree_clean     (TCL_ARGS);
@@ -555,7 +529,6 @@ int sc_var_promote    (TCL_ARGS);
 
 int sc_search         (TCL_ARGS);
 int sc_search_board   (TCL_ARGS);
-int sc_search_moves   (TCL_ARGS);
 int sc_search_material (TCL_ARGS);
 int sc_search_header  (TCL_ARGS);
 int sc_search_repertoire (TCL_ARGS);

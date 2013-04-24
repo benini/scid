@@ -2008,14 +2008,6 @@ errorT Index::IndexUpdated( uint gnum)
 	return OK;
 }
 
-void Index::FilterChanged()
-{
-	filter_changed_ = true;
-	for(uint i=0; i<SORTING_CACHE_MAX; i++)
-		if( sortingCaches[i] != NULL)
-			sortingCaches[i]->FilterChanged();
-}
-
 uint Index::IndexToFilteredCount( uint gnumber, int cache, Filter *filter)
 {
 	return sortingCaches[cache]->IndexToFilteredCount( gnumber, filter);

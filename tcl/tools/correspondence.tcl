@@ -2835,9 +2835,6 @@ namespace eval CorrespondenceChess {
 
 		CorrespondenceChess::updateConsole "info: search [sc_filter count]"
 
-		::windows::gamelist::Refresh
-		::windows::stats::Refresh
-
 		# There should be only one result. If so, load it and place the
 		# game pointer to the end of the game ::game::Load also handles
 		# board rotation if Player Names are set up correctly.
@@ -2998,6 +2995,7 @@ namespace eval CorrespondenceChess {
 			tk_messageBox -icon warning -type ok -parent . \
 				-title $Title -message $Error
 		}
+		::notify::DatabaseChanged
 	}
 
 	#----------------------------------------------------------------------

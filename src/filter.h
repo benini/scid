@@ -33,63 +33,31 @@
 class Filter
 {
   private:
-
     uint    FilterSize;     // Number of values in filter.
     uint    FilterCount;    // Number of nonzero values in filter.
     uint    Capacity;       // Number of bytes allocated for Data[].
     byte *  Data;           // The actual filter data.
-#ifndef WINCE
-    byte * oldDataTree; // keeps filter data to speed Tree searches (fastMode) 
-#endif
-    uint    CachedFilteredCount;  // These members cache the most recent
-    uint    CachedIndex;          // filteteredCount to index translation.
+    const Filter* posMask_;
     void Allocate();
     void Free();
+    uint Size() { return FilterSize; }
+    friend class CompressedFilter;
     
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
-    Filter ()           { Init (0); }
-    Filter (uint size)  { Init (size); }
+    Filter (uint size) :Data(NULL), posMask_(NULL)  { Init (size); }
     ~Filter ()          { Free(); }
 
     void    Init (uint size);
-    uint    Size (void)     { return FilterSize; }
-    uint    Count (void)    { return FilterCount; }
-
+    uint    Count ();
     void    Set (uint index, byte value);   // Sets the value at index.
-    byte    Get (uint index);               // Gets the value at index.
+    byte    Get (uint index) const;         // Gets the value at index.
+    byte    GetNoPosMask (uint index) const { return (Data == NULL) ? 1 : Data[index]; }
     void    Fill (byte value);              // Sets all values.
     void    Append (byte value);            // Appends one value.
+    void    Negate ();
     void    SetCapacity (uint size);
-    void    Merge (Filter *src1, Filter *src2);
-    uint    IndexToFilteredCount (uint index);
-    uint    FilteredCountToIndex (uint filteredCount);
-    const byte *  GetData () {
-        return (const byte *) Data; }    // Used by CompressedFilter class.
-#ifndef WINCE
-    // declarations for "fastmode" tree search (should be made private with getters/setters ?)
-    const byte *  GetOldDataTree () {  return (const byte *) oldDataTree; }    // Used by Tree in fast mode
-    bool isValidOldDataTree; // true if the filter was saved from cache or calculated from all games
-    ushort oldDataTreePly;
-    void saveFilterForFastMode(uint ply);
-#endif
+    // TODO: void Filter::PositionMask (const char* FEN);
+    void    PositionMask (const Filter* f) { posMask_ = f; }
 };
 
 
@@ -97,9 +65,7 @@ inline void
 Filter::Set (uint index, byte value)
 {
     ASSERT (index < FilterSize);
-    CachedFilteredCount = 0;
-
-    if (Get(index) != 0) { FilterCount--; }
+    if (GetNoPosMask(index) != 0) { FilterCount--; }
     if (value != 0) { FilterCount++; }
 	if (Data == NULL){
         if (value == 1)
@@ -110,12 +76,13 @@ Filter::Set (uint index, byte value)
 }
 
 inline byte
-Filter::Get (uint index)
+Filter::Get (uint index) const
 {
     ASSERT (index < FilterSize);
-    return ( Data == NULL ? 1 : Data[index]);
+    byte res = (Data == NULL) ? 1 : Data[index];
+    if (res !=0 && posMask_ != NULL) return posMask_->Get(index);
+    return res;
 }
-
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -136,24 +103,6 @@ class CompressedFilter
     byte *  CompressedData;
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     CompressedFilter (void)     { Init(); }
     ~CompressedFilter (void)    { Clear(); }
 
@@ -167,13 +116,8 @@ class CompressedFilter
 
     void CompressFrom (Filter * filter);
     errorT UncompressTo (Filter * filter);
-#ifdef WINCE
-    errorT WriteToFile (/*FILE **/Tcl_Channel  fp);
-    errorT ReadFromFile (/*FILE **/Tcl_Channel  fp);
-#else
     errorT WriteToFile (FILE * fp);
     errorT ReadFromFile (FILE * fp);
-#endif
 };
 
 inline void
@@ -188,11 +132,7 @@ CompressedFilter::Init ()
 inline void
 CompressedFilter::Clear ()
 {
-#ifdef WINCE
-    if (CompressedData != NULL) { my_Tcl_Free((char*) CompressedData); }
-#else
     if (CompressedData != NULL) { delete[] CompressedData; }
-#endif
     Init();
 }
 

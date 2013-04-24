@@ -47,39 +47,22 @@ static char decimalPointChar = '.';
 static uint htmlDiagStyle = 0;
 
 // Default maximum number of games in the clipbase database:
-#ifdef WINCE
-const uint CLIPBASE_MAX_GAMES = 10000;
-#else
 const uint CLIPBASE_MAX_GAMES = 1000000;
-#endif
+
 // Actual current maximum number of games in the clipbase database:
 static uint clipbaseMaxGames = CLIPBASE_MAX_GAMES;
 
 // MAX_BASES is the maximum number of databases that can be open,
 // including the clipbase database.
-#ifdef WINCE
-const int MAX_BASES = 3;
-#else
 const int MAX_BASES = 9;
-#endif
 const int CLIPBASE_NUM = MAX_BASES - 1;
 
 // MAX_EPD is the maximum number of EPD files that can be open.
-#ifdef WINCE
-const int MAX_EPD = 0;
-#else
 const int MAX_EPD = 4;
-#endif
 static PBook * pbooks [MAX_EPD];
 
 // Declare scid_InitTclTk, to initialise the Tcl interpreter:
-#ifdef WINCE
-
-extern "C" int Tkscid_Init (Tcl_Interp * interp);
-
-#else
 int scid_InitTclTk (Tcl_Interp * interp);
-#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // InvalidCommand():
@@ -207,7 +190,6 @@ recalcFlagCounts (scidBaseT * basePtr)
     for (i=0; i < NUM_RESULT_TYPES; i++) {
         stats->nResults[i] = 0;
     }
-#ifndef WINCE
     for (i=0; i < 1; i++) {
         stats->ecoCount0[i].count = 0;
         stats->ecoCount0[i].results[RESULT_White] = 0;
@@ -243,7 +225,6 @@ recalcFlagCounts (scidBaseT * basePtr)
         stats->ecoCount4[i].results[RESULT_Draw] = 0;
         stats->ecoCount4[i].results[RESULT_None] = 0;
     }
-#endif
     // Read stats from index entry of each game:
     for (uint gnum=0; gnum < basePtr->numGames; gnum++) {
         IndexEntry * ie = basePtr->idx->FetchEntry (gnum);
@@ -289,7 +270,6 @@ recalcFlagCounts (scidBaseT * basePtr)
         ecoT eco = ie->GetEcoCode();
         ecoStringT ecoStr;
         eco_ToExtendedString (eco, ecoStr);
-#ifndef WINCE
         uint length = strLength (ecoStr);
         resultT result = ie->GetResult();
         if (length >= 3) {
@@ -311,14 +291,12 @@ recalcFlagCounts (scidBaseT * basePtr)
                 stats->ecoCount4[code].results[result]++;
             }
         }
-#endif
     }
 }
 
 void
 recalcEstimatedRatings (NameBase * nb)
 {
-#ifndef WINCE
     // Update estimated ratings from spellcheck file if available:
     if (spellChecker[NAME_PLAYER] == NULL) { return; }
     for (idNumberT id=0; id < nb->GetNumNames(NAME_PLAYER); id++) {
@@ -333,7 +311,6 @@ recalcEstimatedRatings (NameBase * nb)
             }
         }
     }
-#endif
 }
 
 void
@@ -376,7 +353,6 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
                       "[Interrupted search; results are incomplete]");
 }
 
-#ifndef POCKET
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Main procedure
 //
@@ -425,29 +401,10 @@ main (int argc, char * argv[])
     exit(0);
     return 0;
 }
-#endif // ifndef POCKET
 
-#ifdef WINCE
-int
-Tkscid_Init (Tcl_Interp * ti)
-{
-  //lowPrio(253);
-// ==============================================================
-    int code;
-    if (Tcl_InitStubs(ti, TCL_VERSION, 0) == NULL) {
-      return TCL_ERROR;
-    }
-    code = Tcl_PkgProvide(ti, "Tkscid", "1.0");
-    if (code != TCL_OK) {
-  return code;
-    }
-// ==============================================================
-#else
 int
 scid_InitTclTk (Tcl_Interp * ti)
 {
-  
-#endif
     if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
 #ifndef TCL_ONLY
     if (Tk_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
@@ -467,9 +424,6 @@ scid_InitTclTk (Tcl_Interp * ti)
 
     CREATE_CMD (ti, "strIsPrefix", str_is_prefix);
     CREATE_CMD (ti, "strPrefixLen", str_prefix_len);
-#ifdef POCKET
-    CREATE_CMD (ti, "sc_msg", sc_msg);
-#endif
     CREATE_CMD (ti, "sc_base", sc_base);
     // CREATE_CMD (ti, "sc_book", sc_epd);  // sc_epd used to be sc_book : Pascal Georges : not used any longer, so reused
     CREATE_CMD (ti, "sc_book", sc_book);
@@ -522,7 +476,6 @@ scid_InitTclTk (Tcl_Interp * ti)
         strCopy (db->realFileName, "");
         db->fileMode = FMODE_Both;
         db->inUse = false;
-        db->filter = new Filter(0);
         db->dbFilter = new Filter(0);
         db->treeFilter = new Filter(0);
         db->numGames = 0;
@@ -685,175 +638,6 @@ base_opened (const char * filename)
     return -1;
 }
 
-#ifdef POCKET
-
-typedef long DWORD;
-typedef int BOOL;
-typedef int HANDLE;
-typedef short WORD;
-// typedef unsigned short wchar_t;
-typedef unsigned short WCHAR;
-# define WINAPI
-typedef const WCHAR* LPCWSTR;
-typedef WCHAR* LPWSTR;
-typedef void * LPVOID;
-typedef void * PVOID;
-typedef int * LPDWORD;
-typedef unsigned long ULONG;
-#include "msgqueue.h"
-extern "C" DWORD WINAPI GetLastError(void);
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_msg: msg queue for IPC with engines on PPC.
-static HANDLE hw[2], hr[2];
-// those go here to avoid struct alignment problems (see option -mstructure-size-boundary=n which
-// seems to be a workaround but in fact should not be one)
-int bt = 0;
-int sc_msg (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
-    static const char * options [] = {
-        "init",     "close",        "send",        "recv",
-        "info",      NULL
-    };
-    enum {
-        MSG_INIT,    MSG_CLOSE,       MSG_SEND,       MSG_RECV,   MSG_INFO,
-        BT_INIT,     BT_SEND,         BT_RECV
-    };
-    int index = -1;
-
-    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-
-    switch (index) {
-      case MSG_INIT:
-        return sc_msg_init(cd, ti, argc, argv);
-      case MSG_CLOSE:
-        return sc_msg_close(cd, ti, argc, argv);
-      case MSG_SEND:
-        return sc_msg_send(cd, ti, argc, argv);
-      case MSG_RECV:
-        return sc_msg_recv(cd, ti, argc, argv);
-      case MSG_INFO:
-        return sc_msg_info(cd, ti, argc, argv);
-      default:
-        return InvalidCommand (ti, "sc_msg", options);
-    }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_msg_init:
-// sc_msg_init <1|2> <engine_name> 
-int sc_msg_init (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
-
-  if (argc != 4) {
-    return errorResult (ti, "Usage: sc_msg init <1|2> <engine>");
-  }
-  uint slot = strGetUnsigned(argv[2]) - 1;
-
-  hw[slot] = my_sc_msg_init((char*)argv[3], 0);
-  if (hw[slot] == 0) return errorResult (ti, "CreateMsgQueue w failed");
-  hr[slot] = my_sc_msg_init((char*)argv[3], 1);
-  if (hr[slot] == 0) return errorResult (ti, "CreateMsgQueue r failed");
-  
-  return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_msg_close:
-// 
-int sc_msg_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
-  if (argc != 3) {
-    return errorResult (ti, "Usage: sc_msg close <1|2>");
-  }
-  uint slot = strGetUnsigned(argv[2]) - 1;
-
-  if (!CloseMsgQueue(hw[slot]) || !CloseMsgQueue(hr[slot])) {
-    return errorResult (ti, "CloseMsgQueue error");
-  }
-  return TCL_OK;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_msg_send:
-// 
-int sc_msg_send (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
-
-  if (argc != 4) {
-    return errorResult (ti, "Usage: sc_msg send <1|2> <msg>");
-  }
-  uint slot = strGetUnsigned(argv[2]) - 1;
-
-  if ( ! WriteMsgQueue( hw[slot], (void *) argv[3], strlen(argv[3]), 0, 0) ) {
-    int err = GetLastError();
-    char string[100];
-    sprintf(string , "msg send error %d", err);
-    return errorResult (ti, string);
-  }
-
-  return TCL_OK;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_msg_recv:
-// returns the message read
-int sc_msg_recv (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
-  if (argc != 3) {
-    return errorResult (ti, "Usage: sc_msg recv <1|2>");
-  }
-  uint slot = strGetUnsigned(argv[2]) - 1;
-  char buf[1024];
-  int read;
-  int dwFlags = 0;
-  if ( ! ReadMsgQueue( hr[slot], (LPVOID) buf, 1024, (LPDWORD) &read, 0, (DWORD *) &dwFlags ) )
-    read = 0;
-  buf[read] = '\0';
-  Tcl_AppendResult (ti, buf, NULL);
-  return TCL_OK;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_msg_info <1|2> <read|write> :
-// 
-int sc_msg_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv) {
-  MSGQUEUEINFO qinfo;
-  char buf[1024];
-
-  if (argc != 4) {
-    return errorResult (ti, "Usage: sc_msg info <1|2> <read|write>");
-  }
-  uint slot = strGetUnsigned(argv[2]) - 1;
-
-  HANDLE h = hr[slot];
-
-  static const char * options [] = { "read", "write" };
-  enum { OPT_READ, OPT_WRITE };
-  int optionMode = OPT_READ;
-
-  optionMode = strUniqueMatch (argv[3], options);
-  if (optionMode < OPT_READ) {
-    return errorResult (ti, "Usage: sc_msg info <1|2> [read|write]");
-  }
-
-  if (optionMode == OPT_READ) {
-      h = hr[slot];
-  }
-
-  if (optionMode == OPT_WRITE) {
-      h = hw[slot];
-  }
-
-  qinfo.dwSize = sizeof(MSGQUEUEINFO);
-
-  if (! GetMsgQueueInfo( h,  (LPMSGQUEUEINFO) &qinfo) ) {
-    int err = GetLastError();
-    char string[100];
-    sprintf(string , "-1 -1 -1 -1 %d", err);
-    Tcl_AppendResult (ti, string, NULL);
-    return TCL_OK;
-  }
-
-  sprintf(buf, "%d %d %d %d", (int)qinfo.dwCurrentMessages, (int)qinfo.dwMaxQueueMessages, (int)qinfo.wNumReaders, (int)qinfo.wNumWriters);
-  Tcl_AppendResult (ti, buf, NULL);
-  return TCL_OK;  
-}
-
-#endif
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_gamelocation:
 // For all game numbers parameter 1 represent the first game
@@ -870,7 +654,6 @@ sc_base_gamelocation (ClientData cd, Tcl_Interp * ti, int argc, const char ** ar
 	if (! cdb->inUse) { return TCL_OK; }
 	Filter* filter = 0;
 	if (strCompare("dbfilter", argv[3]) == 0) filter = cdb->dbFilter;
-	else if (strCompare("filter", argv[3]) == 0) filter = cdb->filter;
 	else if (strCompare("tree", argv[3]) == 0) filter = cdb->treeFilter;
 	const char* sort = argv[4];
 	uint gnumber = strGetUnsigned (argv[5]);
@@ -910,14 +693,13 @@ sc_base_sortcache (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	return TCL_OK;
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_gameslist:
 int
 sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
 	if (argc != 6  &&  argc != 7) {
-		return errorResult (ti, "Usage: sc_base gameslist <db> <start> <count> <all|dbfilter|filter|tree> [<sort>]");
+		return errorResult (ti, "Usage: sc_base gameslist <db> <start> <count> <all|dbfilter|tree> [<sort>]");
 	}
 
 	int dbNumber = strGetInteger(argv[2]) - 1;
@@ -927,7 +709,6 @@ sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	uint count = strGetUnsigned (argv[4]);
 	Filter* filter = 0;
 	if (strCompare("dbfilter", argv[5]) == 0) filter = cdb->dbFilter;
-	else if (strCompare("filter", argv[5]) == 0) filter = cdb->filter;
 	else if (strCompare("tree", argv[5]) == 0) filter = cdb->treeFilter;
 	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];
@@ -983,7 +764,6 @@ sc_base_gameslist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 		Tcl_AppendElement (ti, info.c_str());
 	}
-
     return TCL_OK;
 }
 
@@ -1282,11 +1062,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     showProgress = startProgressBar();
 
     bool readOnly = false;  // Open database read-only.
-#ifdef WINCE
-    bool fastOpen = true;  // Fast open (no flag counts, etc)
-#else
     bool fastOpen = false;  // Fast open (no flag counts, etc)
-#endif
     const char * usage = "Usage: sc_base open [-readonly] [-fast] <filename>";
 
     // Check options:
@@ -1313,13 +1089,6 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (base_opened (realFileName) >= 0) {
         return errorResult (ti, "The database you selected is already opened.");
     }
-
-#ifdef POCKET
-// Check if there is enough memory left with a good margin
-  if ( getPocketAvailPhys() < 1000*1024 || getPocketAvailVirtual() < 1000*1024 ) {
-    return errorResult (ti, "Not enough free memory.");
-  }
-#endif
 
     // Find an empty database slot to use:
     int oldBaseNum = currentBase;
@@ -1360,15 +1129,6 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return TCL_ERROR;
     }
 
-#ifdef POCKET
-// check enough memory to open name file
-  int memoryNeeded = db->nb->GetNumNames(NAME_PLAYER) * 100 + 1024*1000;
-  if ( memoryNeeded > getPocketAvailPhys() || memoryNeeded > getPocketAvailVirtual() ) {
-    base_open_failure( oldBaseNum );
-    return errorResult (ti, "Not enough free memory for names.");
-  }
-#endif
-
     if (db->nb->ReadNameFile() != OK) {
         base_open_failure( oldBaseNum );
         return errorResult (ti, "Error opening name file.");
@@ -1386,50 +1146,12 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Error opening game file.");
     }
 
-#ifdef POCKET
-// check enough memory to open index file. Each IndexEntry is 48 bytes, but allocation overhead
-// is at least 8 bytes (see Tcl sources). So take a small margin with 64 bytes per entry.
-  memoryNeeded = db->idx->GetNumGames() * 64 + 1024*1000;
-  if ( memoryNeeded > getPocketAvailPhys() || memoryNeeded > getPocketAvailVirtual() ) {
-        base_open_failure( oldBaseNum );
-        return errorResult (ti, "Not enough free memory for index.");
-  }
-#endif
-
     // Read entire index, showing progress every 20,000 games if applicable:
-#ifdef WINCE
-    if (db->idx->ReadEntireFile (2000, base_progress, (void *) ti) != OK) {
-
-    // If the database is the clipbase, do not close it, just clear it:
-    if (db == clipbase) {
-      sc_clipbase_clear (ti);
-    } else {
-      db->idx->CloseIndexFile();
-      db->idx->Clear();
-      db->nb->Clear();
-      db->gfile->Close();
-      db->idx->SetDescription (errMsgNotOpen(ti));
-	  clearFilter (db, 0); 
-      if (db->duplicates != NULL) {
-        my_Tcl_Free((char*) db->duplicates);
-        db->duplicates = NULL;
-      }
-
-      db->inUse = false;
-      db->gameNumber = -1;
-      db->numGames = 0;
-      recalcFlagCounts (db);
-      strCopy (db->fileName, "<empty>");
-      return errorResult (ti, "Error: base too big");
-      }
-    }
-#else
     if (showProgress) {
         db->idx->ReadEntireFile (20000, base_progress, (void *) ti);
     } else {
       db->idx->ReadEntireFile ();
     }
-#endif
 
     if (db->idx->VerifyFile (db->nb) != OK) {
         db->idx->CloseIndexFile();
@@ -1447,7 +1169,8 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Initialise the filter: all games match at move 1 by default.
-    clearFilter (db, db->numGames); 
+    db->treeFilter->Init(db->numGames);
+    db->dbFilter->Init(db->numGames);
 
     strCopy (db->fileName, filename);
     strCopy (db->realFileName, realFileName);
@@ -1506,7 +1229,8 @@ sc_createbase (Tcl_Interp * ti, const char * filename, scidBaseT * base,
 
     // Initialise the filter:
     base->numGames = base->idx->GetNumGames();
-    clearFilter (base, base->numGames); 
+    base->treeFilter->Init(base->numGames);
+    base->dbFilter->Init(base->numGames);
 
     strCopy (base->fileName, filename);
     base->inUse = true;
@@ -1611,14 +1335,11 @@ sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     basePtr->gfile->Close();
     basePtr->idx->SetDescription (errMsgNotOpen(ti));
 
-    clearFilter (basePtr, 0); 
+    basePtr->treeFilter->Init(0);
+    basePtr->dbFilter->Init(0);
 
     if (basePtr->duplicates != NULL) {
-#ifdef WINCE
-        my_Tcl_Free((char *) basePtr->duplicates);
-#else
         delete[] basePtr->duplicates;
-#endif
         basePtr->duplicates = NULL;
     }
 
@@ -1723,7 +1444,7 @@ sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
 
-        if (limitToFilter  &&  db->filter->Get(gameNum) == 0) { continue; }
+        if (limitToFilter  &&  db->dbFilter->Get(gameNum) == 0) { continue; }
 
         ie = db->idx->FetchEntry (gameNum);
         if (ie->GetLength() == 0) {
@@ -2000,11 +1721,11 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint updateStart, update;
     updateStart = update = 10;  // Update progress bar every 10 games
     uint numSeen = 0;
-    uint numToExport = exportFilter ? db->filter->Count() : 1;
+    uint numToExport = exportFilter ? db->dbFilter->Count() : 1;
     db->tbuf->SetWrapColumn (75);
 
     for (uint i=0; i < db->numGames; i++) {
-        if (db->filter->Get(i)) { // Export this game:
+        if (db->dbFilter->Get(i)) { // Export this game:
             numSeen++;
             if (showProgress) {  // Update the percentage done bar:
                 update--;
@@ -2190,7 +1911,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // If current base is unused, filter is empty, or no track
     // squares specified, then just return a zero-filled list:
 
-    if (! db->inUse  ||  db->filter->Count() == 0  ||  nTrackSquares == 0) {
+    if (! db->inUse  ||  db->dbFilter->Count() == 0  ||  nTrackSquares == 0) {
         for (uint i=0; i < 64; i++) { appendUintElement (ti, 0); }
         return TCL_OK;
     }
@@ -2199,12 +1920,12 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     uint updateStart = 1000;  // Update progress bar every 1000 filter games.
     uint update = updateStart;
-    uint filterCount = db->filter->Count();
+    uint filterCount = db->dbFilter->Count();
     uint filterSeen = 0;
 
     for (uint gnum = 0; gnum < db->numGames; gnum++) {
         // Skip over non-filter games:
-        if (!db->filter->Get(gnum)) { continue; }
+        if (!db->dbFilter->Get(gnum)) { continue; }
 
         // Update progress bar:
         if (showProgress) {
@@ -2357,7 +2078,6 @@ sc_base_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (showProgress) { updateProgressBar (ti, 1, 1); }
     db->dbFilter->Fill(1);
     db->treeFilter->Fill(1);
-    db->filter->Fill(1);
     db->gameNumber = -1;
 
     //Re-order and write the index, showing progress if applicable:
@@ -2914,7 +2634,7 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         IndexEntry * ie = db->idx->FetchEntry (i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
-            &&  (!onlyFilterGames  ||  db->filter->Get(i) > 0)) {
+            &&  (!onlyFilterGames  ||  db->dbFilter->Get(i) > 0)) {
             uint white, black;
             if (criteria.exactNames) {
                 white = ie->GetWhite();
@@ -2933,7 +2653,7 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
     }
 
-	if (setFilterToDups) { filter_reset( db, 0); }
+	if (setFilterToDups) { db->dbFilter->Fill (0); }
     if (showProgress) { restartProgressBar (ti); }
 
     // Now check each list of same-hash games for duplicates:
@@ -3040,15 +2760,9 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     db->idx->WriteHeader();
     recalcFlagCounts (db);
     if (showProgress) { updateProgressBar (ti, 1, 1); }
-#ifdef WINCE
-    my_Tcl_Free((char*)gHashTable);
-    my_Tcl_Free((char*) gNumList);
-#else
+
     delete[] gHashTable;
     delete[] gNumList;
-#endif
-
-	updateMainFilter (db);
 
     return setUintResult (ti, deletedCount);
 }
@@ -3113,7 +2827,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // If setting filter, clear it now:
-    if (cmd == TAG_FIND) { filter_reset (db, 0); }
+    if (cmd == TAG_FIND) { db->dbFilter->Fill (0); }
 
     // Process each game in the database:
     uint updateStart = 1000;  // Update progress bar every 1000 filter games.
@@ -3170,7 +2884,6 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
     }
-
     // Done searching through all games.
 
     // If necessary, update index and name files:
@@ -3200,9 +2913,6 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         delete tagnb;
     }
-
-	updateMainFilter (db);
-
     return TCL_OK;
 }
 
@@ -4251,7 +3961,8 @@ sc_clipbase_clear (Tcl_Interp * ti)
     clipbase->idx->SetType (2);
 
     clipbase->numGames = 0;
-	clearFilter (clipbase, clipbase->numGames);
+    clipbase->treeFilter->Init(0);
+    clipbase->dbFilter->Init(0);
 
     clipbase->inUse = true;
     clipbase->gameNumber = -1;
@@ -4541,7 +4252,8 @@ sc_compact_games (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     db->idx->ReadEntireFile ();
     db->gfile->Open (db->fileName, db->fileMode);
 
-    clearFilter (db, db->idx->GetNumGames());
+    db->dbFilter->Init(db->numGames);
+    db->treeFilter->Init(db->numGames);
     db->gameNumber = -1;
     db->numGames = db->idx->GetNumGames();
     recalcNameFrequencies (db->nb, db->idx);
@@ -4870,7 +4582,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         ecoT oldEcoCode = ie->GetEcoCode();
 
         // Ignore games not in current filter if directed:
-        if (option == ECO_FILTER  &&  db->filter->Get(i) == 0) { continue; }
+        if (option == ECO_FILTER  &&  db->dbFilter->Get(i) == 0) { continue; }
 
         // Ignore games with existing ECO code if directed:
         if (option == ECO_NOCODE  &&  oldEcoCode != 0) { continue; }
@@ -5172,15 +4884,15 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     int index = -1;
     static const char * options [] = {
         "copy", "count", "first", "frequency",
-        "index", "last", "locate", "negate", "next",
+        "index", "last", "negate", "next",
         "previous", "remove", "reset", "size",
-        "stats", "value", "clear", NULL
+        "stats", "clear", "posmask", NULL
     };
     enum {
         FILTER_COPY, FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
-        FILTER_INDEX, FILTER_LAST, FILTER_LOCATE, FILTER_NEGATE,
+        FILTER_INDEX, FILTER_LAST, FILTER_NEGATE,
         FILTER_NEXT, FILTER_PREV, FILTER_REMOVE, FILTER_RESET,
-        FILTER_SIZE, FILTER_STATS, FILTER_VALUE, FILTER_CLEAR
+        FILTER_SIZE, FILTER_STATS, FILTER_CLEAR, FILTER_POSMASK
     };
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -5204,14 +4916,18 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_LAST:
         return sc_filter_last (cd, ti, argc, argv);
 
-    case FILTER_LOCATE:
-        return sc_filter_locate (cd, ti, argc, argv);
-
     case FILTER_NEGATE:
-        return sc_filter_negate (cd, ti, argc, argv);
+        if (db->inUse) db->dbFilter->Negate();
+        break;
 
     case FILTER_NEXT:
         return sc_filter_next (cd, ti, argc, argv);
+
+    case FILTER_POSMASK:
+        //TODO: "Usage: sc_filter posmask <base> filtername FEN"
+        if (argc > 4) db->dbFilter->PositionMask(db->treeFilter);
+        else db->dbFilter->PositionMask(NULL);
+        break;
 
     case FILTER_PREV:
         return sc_filter_prev (cd, ti, argc, argv);
@@ -5227,9 +4943,6 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_STATS:
         return sc_filter_stats (cd, ti, argc, argv);
-
-    case FILTER_VALUE:
-        return sc_filter_value (cd, ti, argc, argv);
 
 		  // --- clear filter
     case FILTER_CLEAR:
@@ -5262,7 +4975,7 @@ sc_filter_count (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     uint result = 0;
     if (basePtr->inUse) {
-        Filter* filter = basePtr->filter;
+        Filter* filter = basePtr->dbFilter;
         if (argc > 3) {
             if (strCompare("dbfilter", argv[3]) == 0) filter = basePtr->dbFilter;
             else if (strCompare("tree", argv[3]) == 0) filter = basePtr->treeFilter;
@@ -5308,13 +5021,13 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Now copy each game from source to target:
     uint count = 0;
-    uint targetCount = sourceBase->filter->Count();
-    targetBase->filter->SetCapacity( targetBase->numGames + targetCount);
+    uint targetCount = sourceBase->dbFilter->Count();
+    //TODO: write faster code and use Init instead of SetCapacity
     targetBase->dbFilter->SetCapacity( targetBase->numGames + targetCount);
     targetBase->treeFilter->SetCapacity( targetBase->numGames + targetCount);
 
     for (uint i=0; i < sourceBase->numGames; i++) {
-        if (sourceBase->filter->Get(i) == 0) { continue; }
+        if (sourceBase->dbFilter->Get(i) == 0) { continue; }
         count++;
         if (showProgress) {  // Update the percentage done bar:
             update--;
@@ -5358,20 +5071,6 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         removeFile (targetBase->fileName, TREEFILE_SUFFIX);
     }
     return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_filter_first:
-//    Returns the game number of the first game in the filter,
-//    or 0 if the filter is empty.
-int
-sc_filter_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    uint first = 0;
-    if (db->filter->Count() != 0) {
-       first = db->filter->FilteredCountToIndex (1) + 1;
-    }
-    return setUintResult (ti, first);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5458,7 +5157,7 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
                 if (bothElo >= minElo  &&  bothElo <= maxElo) {
                     allCount++;
-                    if (db->filter->Get(gnum) != 0) {
+                    if (db->dbFilter->Get(gnum) != 0) {
                         filteredCount++;
                     }
                 }
@@ -5469,7 +5168,7 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (mini < minElo  ||  mini >= maxElo)
                     continue;
                 allCount++;
-                if (db->filter->Get(gnum) != 0) {
+                if (db->dbFilter->Get(gnum) != 0) {
                     filteredCount++;
                 }
             }
@@ -5481,7 +5180,7 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             uint move = ie->GetNumHalfMoves();
             if (move >= minMove  &&  move <= maxMove) {
                 allCount++;
-                if (db->filter->Get(gnum) != 0) {
+                if (db->dbFilter->Get(gnum) != 0) {
                     filteredCount++;
                 }
             }
@@ -5493,7 +5192,7 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             dateT date = ie->GetDate();
             if (date >= startDate  &&  date <= endDate) {
                 allCount++;
-                if (db->filter->Get(gnum) != 0) {
+                if (db->dbFilter->Get(gnum) != 0) {
                     filteredCount++;
                 }
             }
@@ -5504,6 +5203,10 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
+//TODO:
+//This functions do not works because they do not specify the base, the filter and the sort criteria
+//So for the moment we assume base=db, filter=dbFilter and sort=N+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_filter_index:
 //    Returns the game number of the "count"th game in the filter,
@@ -5512,13 +5215,29 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_index (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    uint index = 0;
     uint count = 0;
     if (argc == 3) { count = strGetUnsigned (argv[2]); }
-    if (count >= 1  &&  count <= db->filter->Count()) {
-        index = db->filter->FilteredCountToIndex (count) + 1;
+    if (count >= 1  &&  count <= db->dbFilter->Count()) {
+        for (uint gnum=0; gnum < db->numGames; gnum++) {
+            if (db->dbFilter->Get(gnum) == 0) continue;
+            if (--count == 0) return setUintResult (ti, gnum +1);
+        }
     }
-    return setUintResult (ti, index);
+    return setUintResult (ti, 0);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// sc_filter_first:
+//    Returns the game number of the first game in the filter,
+//    or 0 if the filter is empty.
+int
+sc_filter_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+{
+	for (uint gnum=0; gnum < db->numGames; gnum++) {
+		if (db->dbFilter->Get(gnum) == 0) continue;
+		return setUintResult (ti, gnum +1);
+	}
+	return setUintResult (ti, 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5528,55 +5247,12 @@ sc_filter_index (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_last (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    uint last = 0;
-    uint count = db->filter->Count();
-    if (count != 0) {
-        last = db->filter->FilteredCountToIndex (count) + 1;
-    }
-    return setUintResult (ti, last);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_filter_locate:
-//    Given a game number, returns the count of filtered games up to
-//    and including that game number. Used for jumping to a specified
-//    game number in the game list.
-int
-sc_filter_locate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 4) {
-        return errorResult (ti, "Usage: sc_filter locate gameNumber sortingCache ");
-    }
-    uint filteredCount = 0;
-    if (db->inUse) {
-        uint gnumber = strGetUnsigned (argv[2]);
-        int cache = strGetInteger (argv[3]);
-        if( cache == -1)
-            filteredCount = db->filter->IndexToFilteredCount(gnumber);
-        else {
-            filteredCount = db->idx->IndexToFilteredCount(gnumber, cache, db->filter);
-            if (filteredCount == 0) filteredCount = 1; //TODO: return a "not found" message
-        }
-    }
-    return setUintResult (ti, filteredCount);
-}
-
-//~~~~~~~~~~~~~~~~~~
-// sc_filter_negate:
-//    Negates the filter to only include excluded games.
-int
-sc_filter_negate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (db->inUse) 
-    {
-        Filter * filter = db->dbFilter;
-        for (uint i=0; i < db->numGames; i++) {
-            filter->Set (i, filter->Get(i) == 0 ? 1 : 0);
-        }
-        updateMainFilter (db);
-        db->idx->FilterChanged();
-    }
-    return TCL_OK;
+	long gnum = db->numGames;
+	for (gnum--; gnum >= 0; gnum--) {
+		if (db->dbFilter->Get(gnum) == 0) continue;
+		return setUintResult (ti, gnum +1);
+	}
+	return setUintResult (ti, 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5588,7 +5264,7 @@ sc_filter_next (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (db->inUse) {
         uint nextNumber = db->gameNumber + 1;
         while (nextNumber < db->numGames) {
-            if (db->filter->Get(nextNumber) > 0) {
+            if (db->dbFilter->Get(nextNumber) > 0) {
                 return setUintResult (ti, nextNumber + 1);
             }
             nextNumber++;
@@ -5606,7 +5282,7 @@ sc_filter_prev (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (db->inUse) {
         int prevNumber = db->gameNumber - 1;
         while (prevNumber >= 0) {
-            if (db->filter->Get(prevNumber) > 0) {
+            if (db->dbFilter->Get(prevNumber) > 0) {
                 return setIntResult (ti, prevNumber + 1);
             }
             prevNumber--;
@@ -5621,48 +5297,10 @@ sc_filter_prev (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_remove (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc != 4  &&  argc != 5) {
-        return errorResult (ti, "Usage: sc_filter remove <0|1|2> <from> [<cache>]");
-    }
-    if (! db->inUse) { return TCL_OK; }
-
-    uint mode = strGetUnsigned (argv[2]);
-    uint from = strGetUnsigned (argv[3]) - 1;
-    int cache = -1;
-
-	if (mode == 0)
-		db->dbFilter->Set (from, 0);
-	else {
-		if (argc == 5) {
-			cache = strGetInteger (argv[4]);
-			if (cache > -1) {
-				from = db->idx->IndexToFilteredCount( from +1, cache, db->filter);
-				if (from > 0) from--;
-			}
-		}
-        uint to = mode == 1 ? from : db->numGames - 1;
-		from = mode == 1 ? 0 : from;
-		if( cache == -1) {
-			for (uint gnumber = from; gnumber <= to; gnumber++)
-				db->dbFilter->Set (gnumber, 0);
-		}
-		else {
-			uint *fields = new uint[to - from + 1];
-			db->idx->GetRange(cache, from, to - from + 1, db->filter, fields);
-			for (uint gnumber = 0; gnumber <= to - from; gnumber++) {
-				if (fields[gnumber] == IDX_NOT_FOUND)
-					break;
-				else
-					db->dbFilter->Set (fields[gnumber], 0);
-			}
-			delete[] fields;
-		}
-	}
-
-    updateMainFilter (db);
-    db->idx->FilterChanged();
-    return TCL_OK;
+	return TCL_OK;
 }
+
+//END TODO
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_filter_reset:
@@ -5680,8 +5318,6 @@ sc_filter_reset (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         basePtr = &(dbList[baseNum - 1]);
     }
     basePtr->dbFilter->Fill (1);
-    updateMainFilter (db);
-    db->idx->FilterChanged();
     return TCL_OK;
 }
 
@@ -5701,8 +5337,8 @@ sc_filter_clear (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         basePtr = &(dbList[baseNum - 1]);
     }
-    clearFilter(basePtr, basePtr->numGames);
-    basePtr->idx->FilterChanged();
+    basePtr->dbFilter->Fill(1);
+    basePtr->treeFilter->Fill(1);
     return TCL_OK;
 }
 
@@ -5741,7 +5377,7 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint total = 0;
     for (uint i=0; i < db->numGames; i++) {
         IndexEntry * ie = db->idx->FetchEntry (i);
-        if (db->filter->Get(i)) {
+        if (db->dbFilter->Get(i)) {
             if ( max == 0 ) { //Old Statistic : 
                 if (statType == STATS_ELO  &&
                     (ie->GetWhiteElo() < min  ||  ie->GetBlackElo() < min)) {
@@ -5790,67 +5426,6 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, temp, NULL);
     return TCL_OK;
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_filter_value:
-//    Returns the filter value of the specified base and game.
-int
-sc_filter_value (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    scidBaseT * base = db;
-    uint gnum = base->gameNumber;
-
-    if (argc >= 3) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-            base = &(dbList[baseNum - 1]);
-        }
-    }
-    if (argc >= 4) {
-        gnum = strGetUnsigned (argv[3]);
-    } else {
-        gnum = base->gameNumber + 1;
-    }
-
-    if (!base->inUse  ||  gnum < 1  ||  gnum > base->numGames) {
-        return setUintResult (ti, 0);
-    }
-    gnum--;
-
-    return setUintResult (ti, base->filter->Get (gnum));
-}
-
-void 
-updateMainFilter( scidBaseT * dbase)
-{
-    if(dbase->treeFilter && dbase->treeFilter != dbase->filter)
-        for (uint i=0; i < dbase->numGames; i++)
-            if( dbase->dbFilter->Get(i) > 0 && dbase->treeFilter->Get(i) > 0)
-                dbase->filter->Set( i, dbase->treeFilter->Get(i));
-            else
-                dbase->filter->Set( i, 0);
-}
-
-void 
-clearFilter( scidBaseT * dbase, uint size)
-{
-    dbase->filter->Init(size);
-    dbase->treeFilter->Init(size);
-    dbase->dbFilter->Init(size);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// filter_reset:
-//    Resets the filter of the specified base to include all or no games.
-void
-filter_reset (scidBaseT * base, byte value)
-{
-    if (base->inUse) {
-        base->dbFilter->Fill (value);
-        updateMainFilter( base);
-    }
-}
-
 
 //////////////////////////////////////////////////////////////////////
 ///  GAME functions
@@ -6290,8 +5865,6 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
     if (option == OPT_FILTER) {
         delete ctable;
-        updateMainFilter (db);
-        db->idx->FilterChanged();
         return TCL_OK;
     }
     if (ctable->NumPlayers() < 2) {
@@ -6575,7 +6148,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // Only update this games index if it is in the filter, if
         // the filteredOnly flag is true:
-        if (!filteredOnly  ||  db->filter->Get(gNum) > 0) {
+        if (!filteredOnly  ||  db->dbFilter->Get(gNum) > 0) {
             bool newValue = strGetBoolean (argv[4]);
             bool oldValue = ie->GetFlag (flagType);
             if (strIsPrefix (argv[4], "invert")) {
@@ -7481,8 +7054,8 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, corruptMsg);
     }
 
-    if (db->filter->Get(gnum) > 0) {
-        db->game->MoveToPly(db->filter->Get(gnum) - 1);
+    if (db->dbFilter->Get(gnum) > 0) {
+        db->game->MoveToPly(db->dbFilter->Get(gnum) - 1);
     } else {
         db->game->MoveToPly(0);
     }
@@ -8291,15 +7864,11 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
 
     // We need to increase the filter size if a game was added:
     if (! replaceMode) {
-        base->filter->Append (1);  // Added game is in filter by default.
+        // Added game is in filter by default.
         base->dbFilter->Append (1);
         base->treeFilter->Append (1);
         if (base->duplicates != NULL) {
-#ifdef WINCE
-          my_Tcl_Free((char*)base->duplicates);
-#else
             delete[] base->duplicates;
-#endif
             base->duplicates = NULL;
         }
     }
@@ -8415,15 +7984,11 @@ sc_savegame (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEn
 
     // We need to increase the filter size if a game was added:
     if (! replaceMode) {
-        base->filter->Append (1);  // Added game is in filter by default.
+        // Added game is in filter by default.
         base->dbFilter->Append (1);
         base->treeFilter->Append (1);
         if (base->duplicates != NULL) {
-#ifdef WINCE
-          my_Tcl_Free((char*)base->duplicates);
-#else
             delete[] base->duplicates;
-#endif
             base->duplicates = NULL;
         }
     }
@@ -9426,13 +8991,12 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "asserts", "clipbase", "decimal", "fsize", "gzip",
         "html", "limit", "preMoveCmd", "priority", "ratings",
-        "suffix", "tb", "validDate", "version", "pocket", "pocket_priority", "logmem", "language", NULL
+        "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
         INFO_ASSERTS, INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
         INFO_HTML, INFO_LIMIT, INFO_PREMOVECMD, INFO_PRIORITY, INFO_RATINGS,
-        INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_POCKET,
-        INFO_POCKET_PRIORITY, INFO_LOGMEM, INFO_LANGUAGE
+        INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
     int index = -1;
 
@@ -9519,31 +9083,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else {
             setResult (ti, SCID_VERSION_STRING);
         }
-        break;
-    case INFO_POCKET:
-#ifdef POCKET
-        char buf[1024];
-        getPocketMem(buf);
-        setResult (ti, buf);
-#else
-        setResult (ti, "Not a Pocket");
-#endif
-      break;
-    case INFO_POCKET_PRIORITY:
-#ifdef POCKET
-    unsigned int newprio;
-    newprio = 250;
-    if (argc == 3)
-      newprio = strGetUnsigned(argv[2]);
-    setPriority(newprio);
-#else
-    setResult (ti, "Not a Pocket");
-#endif
-      break;
-    case INFO_LOGMEM:
-#ifdef WINCE
-       logMemory = strGetUnsigned(argv[2]);
-#endif
         break;
     case INFO_LANGUAGE:
       if (argc != 3) {
@@ -11414,7 +10953,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     for (uint i=0; i < db->numGames; i++) {
         // Check if this game is a candidate for editing:
-        if (editSelection == EDIT_FILTER  &&  db->filter->Get (i) == 0) {
+        if (editSelection == EDIT_FILTER  &&  db->dbFilter->Get (i) == 0) {
             continue;
         }
         ie = db->idx->FetchEntry (i);
@@ -11707,7 +11246,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 #endif
     for (uint month=0; month < monthMax; month++) { eloByMonth[month] = 0; }
 
-    if (setFilter || setOpponent) { filter_reset(db, 0); }
+    if (setFilter || setOpponent) db->dbFilter->Fill(0);
 
     for (uint i=0; i < db->numGames; i++) {
         IndexEntry * ie = db->idx->FetchEntry (i);
@@ -11812,8 +11351,6 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             seenRating = true;
         }
     }
-
-    updateMainFilter(db);
 
     char temp [500];
     uint score, percent;
@@ -12563,7 +12100,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (interruptedProgress()) break;
             }
         }
-        if (filterOnly  &&  db->filter->Get(gnum) == 0) { continue; }
+        if (filterOnly  &&  db->dbFilter->Get(gnum) == 0) { continue; }
 
         bool changed = false;
         bool exact = false;
@@ -13337,7 +12874,9 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (interruptedProgress()) { break; }
             }
         }
-        byte ply = db->filter->Get(gnum);
+        //TODO: using treeFilter restore the original behavior;
+        //      however creating a report only for the games in the dbFilter && treeFilter can be better
+        byte ply = db->treeFilter->Get(gnum);
         IndexEntry * ie = db->idx->FetchEntry (gnum);
         if (ply != 0) {
             if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
@@ -13349,10 +12888,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
             scratchGame->LoadStandardTags (ie, db->nb);
             scratchGame->MoveToPly (ply - 1);
-            if (scratchGame->AtEnd()) {
-                ply = 0;
-                db->filter->Set (gnum, 0);
-            }
+            if (scratchGame->AtEnd()) ply = 0;
             if (ply != 0) {
                 uint moveOrderID = report->AddMoveOrder (scratchGame);
                 OpLine * line = new OpLine (scratchGame, ie, gnum+1,
@@ -13402,13 +12938,7 @@ sc_report_select (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         match++;
         db->dbFilter->Set (gnum, ply);
     }
-#ifdef WINCE
-    my_Tcl_Free((char*) matches);
-#else
     delete[] matches;
-#endif
-
-    updateMainFilter (db);
 
     return TCL_OK;
 }
@@ -13421,12 +12951,12 @@ int
 sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "best", "move", "positions", "search", "size", "time",  "write", "free",
+        "best", "move", "positions", "search", "size", "time",  "write",
         "cachesize", "cacheinfo", "clean", NULL
     };
     enum {
         TREE_BEST, TREE_MOVE, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
-        TREE_TIME, TREE_WRITE, TREE_FREE, TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
+        TREE_TIME, TREE_WRITE, TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
     };
 
     int index = -1;
@@ -13454,9 +12984,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case TREE_WRITE:
         return sc_tree_write (cd, ti, argc, argv);
-
-    case TREE_FREE:
-        return sc_tree_free (cd, ti, argc, argv);
 
     case TREE_CACHESIZE:
         return sc_tree_cachesize (cd, ti, argc, argv);
@@ -13488,8 +13015,6 @@ sc_tree_clean (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     base->treeFilter->Fill(1);
-    updateMainFilter(base);
-
 	return TCL_OK;
 }
 
@@ -13655,7 +13180,7 @@ int
 sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * usageStr =
-      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score] [-time <0|1>] [-epd <0|1>] [list <0|1>] [-fastmode <0|1>]";
+      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score] [-time <0|1>] [-epd <0|1>] [list <0|1>]";
 
     // Sort options: these should match the moveSortE enumerated type.
     static const char * sortOptions[] = {
@@ -13663,24 +13188,10 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     };
 
     char tempTrans[10];
-
-// check we have enough memory on Pocket
-#ifdef WINCE
-// sc_tree_search used to cost 2 MB : now just below 1 MB
-  if (! StoredLine::isInitialized()) {
-    char * test = my_Tcl_AttemptAlloc(1500*1024);
-    if (test == NULL)
-      return errorResult (ti, "Not enough free memory.");
-    else
-      my_Tcl_Free(test);
-  }
-#endif
-
     bool hideMoves = false;
     bool showTimeStats = true;
     bool showEpdData = true;
     bool listMode = false;
-    bool fastMode = false;
     bool inFilterOnly = false;
     int sortMethod = SORT_FREQUENCY; // default move order: frequency
 
@@ -13709,8 +13220,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             showEpdData = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-list")) {
             listMode = strGetBoolean (argv[arg+1]);
-        } else if (strIsPrefix (argv[arg], "-fastmode")) {
-            fastMode = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-filtered")) {
             inFilterOnly = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-cancel")) {
@@ -13766,19 +13275,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
             }
         }
-
-
-#ifndef WINCE
-        // we went back before the saved filter data
-        if (base->treeFilter->oldDataTreePly > db->game->GetCurrentPly()) {
-            base->treeFilter->isValidOldDataTree = false;
-        }
-
-        if ( foundInCache && fastMode ) {
-            base->treeFilter->saveFilterForFastMode (db->game->GetCurrentPly());
-        }
-#endif
-
     }
 
     if (!foundInCache) {
@@ -13816,14 +13312,8 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     			}
     		}
 
-            if (inFilterOnly && base->dbFilter->Get(i) == 0) { continue; }
+            if (inFilterOnly && base->dbFilter->GetNoPosMask(i) == 0) { continue; }
 
-#ifndef WINCE
-            const byte * oldFilterData = base->treeFilter->GetOldDataTree();
-            // if the game is not already in the filter, continue
-            if (fastMode && base->treeFilter->isValidOldDataTree )
-                if ( oldFilterData[i] == 0) { continue; }
-#endif
     		IndexEntry* ie = base->idx->FetchEntry (i);
     		if (ie->GetLength() == 0) { skipcount++; continue; }
     		// We do not skip deleted games, so next line is commented out:
@@ -13943,9 +13433,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     	} // end: for
     }
 
-    // Update the normal filter
-    updateMainFilter (base);
-
     DString dstr;
     treeT* tree = &(base->tree);
     treeNodeT* node = tree->node;
@@ -13976,13 +13463,9 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         sortTreeMoves (tree, sortMethod, db->game->GetCurrentPos()->GetToMove());
 
         // If it wasn't in the cache, maybe it belongs there:
-        // But only add to the cache if not in fastmode
-        if (!foundInCache  && !fastMode && !inFilterOnly) {
+        if (!foundInCache  && !inFilterOnly) {
             base->treeCache->Add (db->game->GetCurrentPos(), tree, base->treeFilter);
             base->backupCache->Add (db->game->GetCurrentPos(), tree, base->treeFilter);
-#ifndef WINCE
-            base->treeFilter->saveFilterForFastMode (db->game->GetCurrentPly());
-#endif
         }
     }
 
@@ -14026,9 +13509,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             perf = node->perfSum / node->perfCount;
             uint score = (node->score + 5) / 10;
             if (db->game->GetCurrentPos()->GetToMove() == BLACK) { score = 100 - score; }
-#ifndef WINCE
             perf = Crosstable::Performance (perf, score);
-#endif
         }
         unsigned long long avgYear = 0;
         if (node->yearCount > 0) {
@@ -14149,9 +13630,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             perf = perfSum / perfCount;
             uint score = (totalScore + 5) / 10;
             if (db->game->GetCurrentPos()->GetToMove() == BLACK) { score = 100 - score; }
-#ifndef WINCE
             perf = Crosstable::Performance (perf, score);
-#endif
         }
 
         if (listMode) {
@@ -14223,20 +13702,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     delete output;
     base->treeSearchTime = timer.MilliSecs();
-    base->idx->FilterChanged();
-
     return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_tree_free:
-//    Frees memory allocated for SortedLines
-//    only useful for Pocket PC (1MB of memory to be freed)
-int
-sc_tree_free (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-  StoredLine::FreeStoredLine();
-  return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -14288,9 +13754,9 @@ int
 sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "board", "moves", "header", "material", "repertoire", NULL
+        "board", "header", "material", "repertoire", NULL
     };
-    enum { OPT_BOARD, OPT_MOVES, OPT_HEADER, OPT_MATERIAL, OPT_REPERTOIRE };
+    enum { OPT_BOARD, OPT_HEADER, OPT_MATERIAL, OPT_REPERTOIRE };
 
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -14303,10 +13769,6 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case OPT_BOARD:
         ret = sc_search_board (cd, ti, argc, argv);
-        break;
-
-    case OPT_MOVES:
-        ret = sc_search_moves (cd, ti, argc, argv);
         break;
 
     case OPT_HEADER:
@@ -14324,9 +13786,6 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     default:
         return InvalidCommand (ti, "sc_search", options);
     }
-
-    // Update the normal filter
-    updateMainFilter( db);
 
     return ret;
 }
@@ -14421,7 +13880,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
-        filter_reset (db, 1);
+        db->dbFilter->Fill(1);
         filterOp = FILTEROP_AND;
     }
     uint startFilterCount = startFilterSize (db, filterOp);
@@ -14441,12 +13900,12 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
-            if (db->dbFilter->Get(gameNum) == 0) {
+            if (db->dbFilter->GetNoPosMask(gameNum) == 0) {
                 skipcount++;
                 continue;
             }
         } else /* filterOp==FILTEROP_OR*/ { // Skip any games in the filter:
-            if (db->dbFilter->Get(gameNum) != 0) {
+            if (db->dbFilter->GetNoPosMask(gameNum) != 0) {
                 skipcount++;
                 continue;
             } else {
@@ -14580,8 +14039,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Tcl_AppendResult (ti, temp, NULL);
 #endif
 
-    updateMainFilter( db );
-
     if (searchInRefBase ) {
       currentBase = oldCurrentBase;
       db = &(dbList[currentBase]);
@@ -14589,144 +14046,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     
 return TCL_OK;
 }
-
-// Searches for a move or move combos
-// stevenaaus September 2012
-
-int
-sc_search_moves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usageStr =
-	"Usage: sc_search moves <filterOp> <moves> <checkTest> <sideToMove>";
-    bool showProgress = startProgressBar();
-    char **m_argv;
-    int m_argc;
-
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-
-    if (argc != 6) { return errorResult (ti, usageStr); }
-
-    filterOpT filterOp = strGetFilterOp (argv[2]);
-
-    // argv[3] is move list
-    if (Tcl_SplitList (ti, argv[3], &m_argc, (CONST84 char ***) &m_argv) != TCL_OK) {
-	Tcl_AppendResult (ti, "Error splitting movelist.", NULL);
-	return TCL_ERROR;
-    }
-
-    int checkTest = strGetUnsigned (argv[4]);
-
-    bool wToMove = false;
-    if (strFirstChar (argv[5], 'w')  || strFirstChar (argv[5], 'W')) {
-	wToMove = true;
-    }
-    bool bToMove = false;
-    if (strFirstChar (argv[5], 'b')  || strFirstChar (argv[5], 'B')) {
-	bToMove = true;
-    }
-
-    // &&&    if( db->dbFilter == NULL) {
-    //         initDbFilter (db);
-    //             }
-
-    Timer timer;  // Start timing this search.
-
-    uint skipcount = 0;
-    uint updateStart, update;
-    updateStart = update = 5000;  // Update progress bar every 5000 games
-
-    // If filter operation is to reset the filter, reset it:
-    if (filterOp == FILTEROP_RESET) {
-        filter_reset (db, 1);
-        filterOp = FILTEROP_AND;
-    }
-    uint startFilterCount = startFilterSize (db, filterOp);
-
-    // Here is the loop that searches on each game:
-    IndexEntry * ie;
-    Game * g = scratchGame;
-    uint gameNum;
-    uint ply;
-
-    for (gameNum=0; gameNum < db->numGames; gameNum++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, gameNum, db->numGames);
-                if (interruptedProgress()) { break; }
-            }
-        }
-        // First, apply the filter operation:
-        if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
-            if (db->dbFilter->Get(gameNum) == 0) {
-                skipcount++;
-                continue;
-            }
-        } else /* filterOp==FILTEROP_OR*/ { // Skip any games in the filter:
-            if (db->dbFilter->Get(gameNum) != 0) {
-                skipcount++;
-                continue;
-            } else {
-                // OK, this game is NOT in the filter.
-                // Add it so filterCounts are kept up to date:
-                db->dbFilter->Set (gameNum, 1);
-            }
-        }
-
-        ie = db->idx->FetchEntry (gameNum);
-        if (ie->GetLength() == 0) {
-            // Skip games with no gamefile record:
-            db->dbFilter->Set (gameNum, 0);
-            skipcount++;
-            continue;
-        }
-
-	// todo : search in Vars using 'MoveIntoVariation'
-	// todo : allow user to state max/min ply depth
-
-        // At this point, the game needs to be loaded:
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
-            return errorResult (ti, "Error reading game file.");
-        }
-
-	g->Decode (db->bbuf, GAME_DECODE_NONE);
-
-	if (g->MoveMatch (m_argc, m_argv, 255, wToMove, bToMove, checkTest)) {
-	    // Set its auto-load move number to the matching move:
-	    ply = g->GetCurrentPly() + 2;
-	    if (ply > 255) { ply = 255; }
-	} else {
-            ply = 0;
-        }
-
-        db->dbFilter->Set (gameNum, ply);
-    }
-
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-
-    // Now print statistics and time for the search:
-    char temp[200];
-    int centisecs = timer.CentiSecs();
-    if (gameNum != db->numGames) {
-        Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
-    }
-    sprintf (temp, "%d / %d  (%d%c%02d s)",
-             db->dbFilter->Count(), startFilterCount,
-             centisecs / 100, decimalPointChar, centisecs % 100);
-    Tcl_AppendResult (ti, temp, NULL);
-#ifdef SHOW_SKIPPED_STATS
-    sprintf(temp, "  Skipped %u games.", skipcount);
-    Tcl_AppendResult (ti, temp, NULL);
-#endif
-    Tcl_Free((char *) m_argv);
-
-    return TCL_OK;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // addPattern():
@@ -15052,7 +14371,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
-        filter_reset (db, 1);
+        db->dbFilter->Fill(1);
         filterOp = FILTEROP_AND;
     }
     uint startFilterCount = startFilterSize (db, filterOp);
@@ -15072,12 +14391,12 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
-            if (db->dbFilter->Get(gameNum) == 0) {
+            if (db->dbFilter->GetNoPosMask(gameNum) == 0) {
                 skipcount++;
                 continue;
             }
         } else /* filterOp == FILTEROP_OR*/ { // Skip any games in the filter:
-            if (db->dbFilter->Get(gameNum) != 0) {
+            if (db->dbFilter->GetNoPosMask(gameNum) != 0) {
                 skipcount++;
                 continue;
             }
@@ -15990,7 +15309,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
-        filter_reset (db, 1);
+        db->dbFilter->Fill(1);
         filterOp = FILTEROP_AND;
     }
 
@@ -16008,12 +15327,12 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
-            if (db->dbFilter->Get(i) == 0) {
+            if (db->dbFilter->GetNoPosMask(i) == 0) {
                 skipcount++;
                 continue;
             }
         } else /* filterOp == FILTEROP_OR*/ { // Skip any games in the filter:
-            if (db->dbFilter->Get(i) != 0) {
+            if (db->dbFilter->GetNoPosMask(i) != 0) {
                 skipcount++;
                 continue;
             } else {
@@ -16094,7 +15413,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 			if(sAnnotator != NULL && *sAnnotator != 0)
 			{
 				// Need the annotator flag, so decode the flags
-				if (match  &&  scratchGame->DecodeTags (db->bbuf, GAME_DECODE_ALL) != OK)
+				if (match  &&  scratchGame->DecodeTags (db->bbuf, true) != OK)
 					match = false;
 				if(match)
 				{
@@ -16138,31 +15457,12 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         if (match) {
-            // Game matched, so update the filter value. Only change it
-            // to 1 if it is currently 0:
-            if (db->dbFilter->Get(i) == 0) {
-                db->dbFilter->Set (i, 1);
-            }
+            db->dbFilter->Set (i, 1);
         } else {
             // This game did NOT match:
             db->dbFilter->Set (i, 0);
         }
     }
-#ifdef WINCE
-    if (sWhite != NULL) { my_Tcl_Free((char*) sWhite); }
-    if (sBlack != NULL) { my_Tcl_Free((char*) sBlack); }
-    if (sEvent != NULL) { my_Tcl_Free((char*) sEvent); }
-    if (sSite  != NULL) { my_Tcl_Free((char*) sSite);  }
-    if (sRound != NULL) { my_Tcl_Free((char*) sRound); }
-	if (sAnnotator != NULL) { my_Tcl_Free((char*) sAnnotator); }
-    if (mWhite != NULL) { my_Tcl_Free((char*) mWhite); }
-    if (mBlack != NULL) { my_Tcl_Free((char*) mBlack); }
-    if (mEvent != NULL) { my_Tcl_Free((char*) mEvent); }
-    if (mSite  != NULL) { my_Tcl_Free((char*) mSite);  }
-    if (mRound != NULL) { my_Tcl_Free((char*) mRound); }
-    if (wTitles != NULL) { my_Tcl_Free((char*) wTitles); }
-    if (bTitles != NULL) { my_Tcl_Free((char*) bTitles); }
-#else
     if (sWhite != NULL) { delete[] sWhite; }
     if (sBlack != NULL) { delete[] sBlack; }
     if (sEvent != NULL) { delete[] sEvent; }
@@ -16176,7 +15476,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (mRound != NULL) { delete[] mRound; }
     if (wTitles != NULL) { delete[] wTitles; }
     if (bTitles != NULL) { delete[] bTitles; }
-#endif
 
     Tcl_Free ((char *) sPgnText);
 
@@ -16269,7 +15568,7 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
-        filter_reset (db, 1);
+        db->dbFilter->Fill(1);
         filterOp = FILTEROP_AND;
     }
 
@@ -16285,11 +15584,11 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {
-            if (db->dbFilter->Get(i) == 0) {
+            if (db->dbFilter->GetNoPosMask(i) == 0) {
                 continue;
             }
         } else /* filterOp == FILTEROP_OR*/ {
-            if (db->dbFilter->Get(i) != 0) {
+            if (db->dbFilter->GetNoPosMask(i) != 0) {
                 continue;
             } else {
                 // OK, this game is NOT in the filter.
