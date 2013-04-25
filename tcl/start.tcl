@@ -353,6 +353,7 @@ set ::fics::colficspercent khaki1
 set ::fics::colficshelpnext blue
 set ::fics::server_ip "0.0.0.0"
 set ::fics::premoveEnabled 1
+set ::fics::playing 0
 
 set ::commenteditor::showboard 1
 
