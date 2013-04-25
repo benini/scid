@@ -450,7 +450,7 @@ proc setupBoard {} {
   ttk::button .setup.clear -textvar ::tr(ClearFen) -command {set setupFen ""}
   
   ttk::combobox .setup.status -textvariable setupFen -height 10
-  bind .setup.status <<ComboboxSelected>> setSetupBoardToFen
+  bind .setup.status <<ComboboxSelected>> {setSetupBoardToFen %W $setupFen}
   ::utils::history::SetCombobox setupFen .setup.status
   ::utils::history::SetLimit setupFen 20
   
