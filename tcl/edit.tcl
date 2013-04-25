@@ -65,9 +65,9 @@ proc setSetupBoardToFen {w setupFen} {
   # Called from ".setup.status" FEN combo S.A
   
   # Once the FEN combo box in the Setup board widget is accessed, the original
-  # game poisiotn can still be had, but game history is lost
+  # game position can still be had, but game history is lost
   
-  global setupboardSize setupBd
+  global setupboardSize setupBd toMove castling epFile moveNum
   
   
   if {[catch {sc_game startBoard $setupFen} err]} {
@@ -76,6 +76,10 @@ proc setSetupBoardToFen {w setupFen} {
     # ::utils::history::AddEntry setupFen $setupFen
     set setupBd [sc_pos board]
     setBoard .setup.l.bd $setupBd $setupboardSize
+    set toMove [lindex {White Black} [string equal [lindex $setupFen 1] b]]
+    set castling [lindex $setupFen 2]
+    set epFile [string index [lindex $setupFen 3] 0]
+    set moveNum [lindex $setupFen 5]
   }
 }
 
@@ -349,7 +353,6 @@ proc setupBoard {} {
   ### Piece Buttons
   
   # set pastePiece P
-  # set toMove White
   
   foreach i {p n b r q k} {
     foreach color {w b} value "[string toupper $i] $i" {
@@ -361,6 +364,7 @@ proc setupBoard {} {
   
   ### Side to move frame.
   
+  set toMove [lindex {White Black} [string equal [lindex $origFen 1] b]]
   ttk::frame $sr.tomove
   ttk::label $sr.tomove.label -textvar ::tr(SideToMove:)
   ttk::frame $sr.tomove.buttons
@@ -378,6 +382,7 @@ proc setupBoard {} {
   
   pack [ttk::frame $sr.mid] -padx 5 -pady 5
   
+  set moveNum [lindex $origFen 5]
   ttk::frame $sr.mid.movenum
   ttk::label $sr.mid.movenum.label -textvar ::tr(MoveNumber:)
   ttk::entry $sr.mid.movenum.e -width 3 -background white -textvariable moveNum
@@ -385,6 +390,7 @@ proc setupBoard {} {
   pack $sr.mid.movenum -pady 10 -expand yes -fill x
   pack $sr.mid.movenum.label $sr.mid.movenum.e -side left -anchor w -expand yes -fill x
   
+  set castling [lindex $origFen 2]
   ttk::frame $sr.mid.castle
   ttk::label $sr.mid.castle.label -textvar ::tr(Castling:)
   ttk::combobox $sr.mid.castle.e -width 5 -textvariable castling -values {KQkq K Q k q - KQ kq Kk Kq Kkq Qk Qq Qkq KQk KQq}
@@ -392,10 +398,10 @@ proc setupBoard {} {
   pack $sr.mid.castle -pady 10 -expand yes -fill x
   pack $sr.mid.castle.label $sr.mid.castle.e -side left -anchor w -expand yes -fill x
   
+  set epFile [string index [lindex $origFen 3] 0]
   ttk::frame $sr.mid.ep
   ttk::label $sr.mid.ep.label -textvar ::tr(EnPassantFile:)
   ttk::combobox $sr.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h}
-  set epFile {}
   
   pack $sr.mid.ep -pady 10 -expand yes -fill x
   pack $sr.mid.ep.label $sr.mid.ep.e -side left -anchor w -expand yes -fill x
