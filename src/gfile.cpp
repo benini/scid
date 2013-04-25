@@ -83,23 +83,15 @@ GFile::Close ()
         if (Flush (CurrentBlock) != OK) { return ERROR_FileWrite; }
     }
 
-    errorT result = Handle->Close ();
     delete Handle;
     Handle = NULL;
     FileMode = FMODE_None;
     for (uint i=0; i < CacheSize; i++) {
-#ifdef WINCE
-        my_Tcl_Free( (char*)Cache[i]);
-    }
-    my_Tcl_Free( (char*) Cache);
-#else
         delete Cache[i];
     }
     delete[] Cache;
-#endif
-
     Init();
-    return result;
+    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -156,13 +148,6 @@ GFile::Open (const char * filename, fileModeT fmode, const char * suffix)
         Handle = NULL;
         return ERROR_FileOpen;
     }
-
-    // Set the buffer size for buffered I/O on this file to be
-    // GF_BLOCKSIZE for efficiency.
-    // This seems to make tree or position searches on large databases
-    // a little faster (maybe up to 10%) from my observations.
-
-    Handle->SetBufferSize (GF_BLOCKSIZE);
 
     CurrentBlock->blockNum = -1;
     Offset = 0;

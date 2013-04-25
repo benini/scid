@@ -886,7 +886,7 @@ Index::FreeEntries ()
 void
 Index::Clear ()
 {
-    if (FilePtr != NULL)  { FilePtr->Close();  delete FilePtr; FilePtr = NULL; }
+    if (FilePtr != NULL)  { delete FilePtr; FilePtr = NULL; }
     FileMode = FMODE_Both;
     if (InMemory) { FreeEntries(); }
     Header.numGames  = 0;
@@ -963,7 +963,6 @@ Index::Open (fileModeT fmode, bool old)
 
     FilePtr->ReadNBytes (Header.magic, 8);
     if (strCompare (Header.magic, INDEX_MAGIC) != 0) {
-        FilePtr->Close ();
         delete FilePtr;
         FilePtr = NULL;
         return ERROR_BadMagic;
@@ -990,7 +989,6 @@ Index::Open (fileModeT fmode, bool old)
             result = ERROR_FileVersion; 
         }
         if (result != OK) {
-            FilePtr->Close ();
             delete FilePtr;
             FilePtr = NULL;
         }
@@ -1048,7 +1046,6 @@ Index::CreateMemoryOnly ()
 errorT
 Index::CloseIndexFile ( bool NoHeader )
 {
-
     ASSERT (FilePtr != NULL);   // check FilePtr points to an open file
 
     if (Dirty  &&  FileMode != FMODE_ReadOnly && !NoHeader) {
@@ -1057,16 +1054,10 @@ Index::CloseIndexFile ( bool NoHeader )
     if (InMemory) { FreeEntries(); }
 
     if (EntriesHeap != NULL) {
-#ifdef WINCE
-        my_Tcl_Free((char*) EntriesHeap);
-#else
         delete[] EntriesHeap;
-#endif
-
         EntriesHeap = NULL;
     }
 
-    errorT result = FilePtr->Close ();
     delete FilePtr;
     FilePtr = NULL;
     for(uint i=0; i<SORTING_CACHE_MAX; i++)
@@ -1074,7 +1065,7 @@ Index::CloseIndexFile ( bool NoHeader )
             delete sortingCaches[i];
             sortingCaches[i] = NULL;
         }
-    return result;
+    return OK;
 }
 
 

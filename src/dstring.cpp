@@ -137,29 +137,6 @@ void DString::Append (const char * s1, const char * s2, const char * s3,
                       const char * s4, const char * s5)
 { Append (s1);  Append (s2);  Append (s3);  Append (s4);  Append (s5); }
 
-
-#if 0
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// DString::ReadLine():
-//    Reads a line from an open file into the DString.
-//    Does not copy the end-of-line character into the string,
-//    and filters out ASCII-13 characters that precede a newline
-//    in DOS files.
-void
-DString::ReadLine (MFile * fp)
-{
-    ASSERT (fp != NULL);
-    int ch = fp->ReadOneByte();
-    while (ch != '\n'  &&  ch != EOF) {
-        if (ch != '\r') {
-            AddChar (ch);
-        }
-        ch = fp->ReadOneByte();
-    }
-}
-#endif
-
-
 ///////////////////////////////////////////////////////////////////////////
 //  EOF: dstring.cpp
 ///////////////////////////////////////////////////////////////////////////

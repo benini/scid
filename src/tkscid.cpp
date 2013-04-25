@@ -1792,7 +1792,6 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
         if (sc_savegame (ti, scratchGame, 0, db) != TCL_OK) {
-            pgnFile.Close();
             return errorResult (ti, "Error saving game in database.\n");
         }
         // Update the progress bar:
@@ -1804,7 +1803,6 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     db->gfile->FlushAll();
-    pgnFile.Close();
 
     // Now write the Index file header and the name file:
     if (db->idx->WriteHeader() != OK) {
@@ -9131,23 +9129,13 @@ sc_info_fsize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     const uint maxBytes = 65536;
-#ifdef WINCE
-    char * buffer =  my_Tcl_Alloc(sizeof( char [maxBytes]));
-#else
     char * buffer =  new char [maxBytes];
-#endif
     uint bytes = maxBytes - 1;
     if (bytes > fsize) { bytes = fsize; }
     if (pgnFile.ReadNBytes (buffer, bytes) != OK) {
-        pgnFile.Close();
-#ifdef WINCE
-        my_Tcl_Free((char*) buffer);
-#else
         delete[] buffer;
-#endif
         return errorResult (ti, "Error reading file");
     }
-    pgnFile.Close();
 
     buffer [bytes] = 0;
     const char * s = buffer;

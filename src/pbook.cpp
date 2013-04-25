@@ -588,13 +588,19 @@ PBook::ReadEcoFile ()
             // Position already exists: just ignore it.
         }
     }
-    fp.Close();
     return OK;
 corrupt:
-    fp.Close();
     return ERROR_Corrupt;
 }
 
+void ReadLine (DString* s, MFile * fp)
+{
+    int ch = fp->ReadOneByte();
+    while (ch != '\n'  &&  ch != EOF) {
+        if (ch != '\r') s->AddChar (ch);
+        ch = fp->ReadOneByte();
+    }
+}
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PBook::ReadFile(): read in a file.
 errorT
@@ -614,7 +620,7 @@ PBook::ReadFile ()
     LineCount = 1;
     Position * pos = new Position;
     DString * line = new DString;
-    fp.ReadLine (line);
+    ReadLine(line, &fp);
     DString dstr;
     
     while (! fp.EndOfFile()) {
@@ -623,7 +629,7 @@ PBook::ReadFile ()
             fprintf (stderr, "Error reading line: %u\n", LineCount);
             LineCount++;
             line->Clear();
-            fp.ReadLine (line);
+            ReadLine(line, &fp);
             continue;
             //exit (1);
         }
@@ -663,121 +669,15 @@ PBook::ReadFile ()
         }
         LineCount++;
         line->Clear();
-        fp.ReadLine (line);
+        ReadLine(line, &fp);
     }
     delete pos;
     delete line;
-    fp.Close();
     Altered = false;
     NextIndex = NodeListCount - 1;
     return OK;
 }
-#ifdef WINCE
-errorT
-PBook::WriteFile ()
-{
-    ASSERT (FileName != NULL);
-    bookNodeT * node;
-    //FILE * fp = fopen (FileName, "w");
-    Tcl_Channel fp = my_Tcl_OpenFileChannel(NULL, FileName, "w", 0666);
 
-    if (!fp) { return ERROR_FileOpen; }
-
-      my_Tcl_SetChannelOption(NULL, fp, "-encoding", "binary");
-      my_Tcl_SetChannelOption(NULL, fp, "-translation", "binary");
-
-    Stats_PositionBytes = 0;
-    Stats_CommentBytes = 0;
-
-    Position * pos = new Position;
-    char tempStr [200];
-    for (uint i=0; i < NodeListCount; i++) {
-        node = NodeList[i];
-        if (node == NULL) { continue; }
-        if (pos->ReadFromCompactStr ((const byte *) node->name) != OK) {
-            //fclose (fp);
-            my_Tcl_Close(NULL, fp);
-            delete pos;
-            return ERROR_Corrupt;
-        }
-        pos->SetEPTarget (node->data.enpassant);
-        pos->PrintFEN (tempStr, FEN_CASTLING_EP);
-        //fprintf (fp, "%s", tempStr);
-        my_Tcl_Write(fp, tempStr, strlen(tempStr));
-        Stats_PositionBytes += strLength (tempStr);
-        bool atCodeStart = true;
-        char * s = node->data.comment;
-        char c;
-        while (*s != 0) {
-            if (*s == '\n') {
-                if (! atCodeStart) { /*fputc (';', fp);*/c =';'; my_Tcl_Write(fp, &c, 1); Stats_CommentBytes++; }
-                atCodeStart = true;
-                s++;
-                while (*s == ' ') { s++; }
-            } else {
-                if (atCodeStart) { /*fputc (' ', fp);*/ c =' '; my_Tcl_Write(fp, &c, 1);Stats_CommentBytes++; }
-                atCodeStart = false;
-                // Encode "\" as "\\" and ";" as "\s":
-                char ch = *s;
-                switch (ch) {
-                case '\\':
-                    //fputc ('\\', fp);
-                    //fputc ('\\', fp);
-                    my_Tcl_Write(fp, &ch, 1);
-                    my_Tcl_Write(fp, &ch, 1);
-                    Stats_CommentBytes += 2;
-                    break;
-                case ';':
-                    //fputc ('\\', fp);
-                    //fputc ('s', fp);
-                    c = '\\';
-                    my_Tcl_Write(fp, &c, 1);
-                    c = 's';
-                    my_Tcl_Write(fp, &c, 1);
-                    Stats_CommentBytes += 2;
-                    break;
-                default:
-                    //fputc (ch, fp);
-                    my_Tcl_Write(fp, &ch, 1);
-                    Stats_CommentBytes++;
-                }
-                s++;
-            }
-        }
-        //fputc ('\n', fp);
-        c = '\n';
-        my_Tcl_Write(fp, &c, 1);
-        Stats_CommentBytes++;
-    }
-    //fclose(fp);
-    my_Tcl_Close(NULL, fp);
-    delete pos;
-    Altered = false;
-    return OK;
-}
-
-void
-PBook::DumpStats (/*FILE **/Tcl_Channel fp)
-{
-    char buf[1024];
-    //fprintf (fp, "%d\n", LeastMaterial);
-    sprintf (buf, "%d\n", LeastMaterial);
-    my_Tcl_Write(fp, buf, strlen(buf));
-    for (uint i=LeastMaterial; i <= PBOOK_MAX_MATERIAL; i++) {
-//        fprintf (fp, "%4d %8d (%5.2f%%)   ", i, Stats_Lookups[i],
-//                 (float)Stats_Lookups[i] * 100.0 / Stats_TotalLookups);
-        sprintf (buf, "%4d %8d (%5.2f%%)   ", i, Stats_Lookups[i],
-                 (float)Stats_Lookups[i] * 100.0 / Stats_TotalLookups);
-        my_Tcl_Write(fp, buf, strlen(buf));
-//        fprintf (fp, "%8d (%5.2f%%)\n", Stats_Inserts[i],
-//                 (float)Stats_Inserts[i] * 100.0 / Stats_TotalInserts);
-        sprintf (buf, "%8d (%5.2f%%)\n", Stats_Inserts[i],
-                 (float)Stats_Inserts[i] * 100.0 / Stats_TotalInserts);
-        my_Tcl_Write(fp, buf, strlen(buf));
-    }
-}
-
-#else
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PBook::WriteFile(): writes the entire PBook to a file.
 errorT
@@ -856,7 +756,6 @@ PBook::DumpStats (FILE * fp)
                  (float)Stats_Inserts[i] * 100.0 / Stats_TotalInserts);
     }
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: pbook.cpp

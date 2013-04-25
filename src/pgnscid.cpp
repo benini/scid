@@ -93,7 +93,7 @@ main (int argc, char * argv[])
     if (argsleft != 1  &&  argsleft != 2) { usage (progname); }
 
     char * pgnName = *nextArg;
-    MFile * pgnFile = new MFile;
+    MFile pgnFile;
 
     pgnFileSize = fileSize (pgnName, "");
 
@@ -126,7 +126,7 @@ main (int argc, char * argv[])
         }
     }
 
-    if (pgnFile->Open (pgnName, FMODE_ReadOnly) != OK) {
+    if (pgnFile.Open (pgnName, FMODE_ReadOnly) != OK) {
         fprintf (stderr, "%s: could not open file %s\n", progname, pgnName);
         exit(1);
     }
@@ -151,7 +151,6 @@ main (int argc, char * argv[])
                  progname, baseName, GFILE_SUFFIX);
         fprintf (stderr, "The file may already exist and be read-only, or\n");
         fprintf (stderr, "you may not have permission to create this file.\n");
-        pgnFile->Close();
         exit(1);
     }
 
@@ -168,7 +167,7 @@ main (int argc, char * argv[])
     ByteBuffer *bbuf = new ByteBuffer;
     bbuf->SetBufferSize (BBUF_SIZE); // 32768
 
-    PgnParser pgnParser (pgnFile);
+    PgnParser pgnParser (&pgnFile);
     pgnParser.SetErrorFile (logFile);
     pgnParser.SetPreGameText (option_PreGameComments);
     
@@ -269,7 +268,6 @@ main (int argc, char * argv[])
 #ifdef ASSERTIONS
     printf("%d asserts were tested\n", numAsserts);
 #endif
-    pgnFile->Close();
     return 0;
 }
 

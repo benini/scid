@@ -609,7 +609,6 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
             }
         }
     }
-    fp.Close();
     return OK;
 }
 
