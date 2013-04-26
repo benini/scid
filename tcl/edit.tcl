@@ -61,19 +61,13 @@ proc pasteFEN {} {
 }
 
 proc setSetupBoardToFen {w setupFen} {
-  
   # Called from ".setup.status" FEN combo S.A
-  
-  # Once the FEN combo box in the Setup board widget is accessed, the original
-  # game position can still be had, but game history is lost
-  
   global setupboardSize setupBd toMove castling epFile moveNum
   
-  
+  sc_game push
   if {[catch {sc_game startBoard $setupFen} err]} {
     fenErrorDialog $err
   } else {
-    # ::utils::history::AddEntry setupFen $setupFen
     set setupBd [sc_pos board]
     setBoard .setup.l.bd $setupBd $setupboardSize
     set toMove [lindex {White Black} [string equal [lindex $setupFen 1] b]]
@@ -81,6 +75,7 @@ proc setSetupBoardToFen {w setupFen} {
     set epFile [string index [lindex $setupFen 3] 0]
     set moveNum [lindex $setupFen 5]
   }
+  sc_game pop
 }
 
 ############################################################
