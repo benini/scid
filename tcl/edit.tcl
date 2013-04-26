@@ -225,6 +225,7 @@ proc exitSetupBoard {} {
   # unbind cancel binding
   bind .setup <Destroy> {}
   
+  undoFeature save
   if {[catch {sc_game startBoard $setupFen} err]} {
     fenErrorDialog $err
     bind .setup <Destroy> cancelSetupBoard
@@ -239,22 +240,7 @@ proc exitSetupBoard {} {
 }
 
 proc cancelSetupBoard {} {
-  
-  # When FEN strings are previewed, the gameboard state is changed, but *not*
-  # drawn in the main window. This means that while the game state can be
-  # restored in the event of user hitting "cancel", game history has been lost
-  # This behaviour is necessary to enable FEN previewing.
-  
-  global origFen
-  
   bind .setup <Destroy> {}
-  
-  # restore old gamestate if unchanged
-  
-  if {$origFen != "[sc_pos fen]"} {
-    catch {sc_game startBoard $origFen}
-    updateBoard -pgn
-  }
   destroy .setup
 }
 
