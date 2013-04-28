@@ -389,8 +389,6 @@ int sc_base_tournaments (TCL_ARGS);
 int sc_base_type      (TCL_ARGS);
 int sc_base_upgrade   (TCL_ARGS);
 int sc_base_fix_corrupted   (TCL_ARGS);
-int sc_base_sortup (TCL_ARGS);
-int sc_base_sortdown (TCL_ARGS);
 
 int sc_epd            (TCL_ARGS);
 int sc_epd_deepest    (Tcl_Interp * ti, int epdID);
@@ -407,9 +405,6 @@ int sc_clipbase_copy  (TCL_ARGS);
 int sc_clipbase_paste (TCL_ARGS);
 
 int sc_compact        (TCL_ARGS);
-int sc_compact_games  (TCL_ARGS);
-int sc_compact_names  (TCL_ARGS);
-int sc_compact_stats  (TCL_ARGS);
 
 int sc_eco            (TCL_ARGS);
 int sc_eco_base       (TCL_ARGS);

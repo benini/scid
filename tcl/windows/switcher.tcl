@@ -656,12 +656,16 @@ proc ::windows::switcher::Create {{w}} {
     if {$i == [sc_info clipbase]} { set closeLabel [tr EditReset] }
     $f.menu add command -label $closeLabel \
       -command [list ::file::Close $i]
-    foreach win {"" .img .name .ngames} {
-      bind $f$win <ButtonPress-$::MB3> "tk_popup $f.menu %X %Y"
-    }
+    #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
+    $f.menu add command -label $::tr(CompactDatabase) -command "compactGames $i; compactNames $i"
     $f.menu add separator
     $f.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \
       -command ::windows::switcher::Refresh
+    foreach win {"" .img .name .ngames} {
+      #TODO: disable CompactDatabase for clipbase, read-only bases, and bases already fully compacted
+      #set err [catch {set stats [sc_base compact $base stats names]} msg]
+      bind $f$win <ButtonPress-$::MB3> "tk_popup $f.menu %X %Y"
+    }
   }
   bind $w <Configure> "+::windows::switcher::Update_ $w"
   bind $w <Destroy> { set idx [lsearch $::windows::switcher::wins %W]; set ::windows::switcher::wins [lreplace $::windows::switcher::wins $idx $idx] }

@@ -271,28 +271,27 @@ proc ::file::Close {{base -1}} {
   # Remember the current base:
   set current [sc_base current]
   if {$base < 0} { set base $current }
+  if {![sc_base inUse $base]} { return }
   # Switch to the base which will be closed, and check for changes:
   sc_base switch $base
-  if {[sc_base inUse]} {
-    if {![::game::ConfirmDiscard]} {
-      sc_base switch $current
-      return
-    }
-    sc_base close
-    ::game::HistoryRemoveDB $base
-    
-    # If base to close was the current one, reset to clipbase
-    if { $current == $base } {
-      setTrialMode 0
-      set current 9
-    }
-    
-    # Close Tree window whenever a base is closed/switched:
-    if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
-    # Now switch back to the original base
-    ::file::SwitchToBase $current
+  if {![::game::ConfirmDiscard]} {
+    sc_base switch $current
+    return
   }
-  updateMenuStates
+  sc_base close
+  ::game::HistoryRemoveDB $base
+    
+  # If base to close was the current one, reset to clipbase
+  if { $current == $base } {
+    setTrialMode 0
+    set current 9
+  }
+
+  # Close Tree window whenever a base is closed/switched:
+  if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
+  # Now switch back to the original base
+  ::file::SwitchToBase $current
+  updateBoard -pgn
   ::notify::DatabaseChanged
 }
 

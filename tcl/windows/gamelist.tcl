@@ -430,7 +430,7 @@ set glist_SortShortcuts { "N" "r" "m" "w" "W"
 
 proc glist.destroy_ {{w}} {
   if {[info exists ::glistSortCache($w)]} {
-    sc_base sortcache $::glistBase($w) release $::glistSortCache($w)
+    catch { sc_base sortcache $::glistBase($w) release $::glistSortCache($w) }
     unset ::glistSortCache($w)
   }
   unset ::glistSortStr($w)
@@ -451,7 +451,7 @@ proc glist.update_ {{w} {base}} {
     sc_base sortcache $base create $::glistSortStr($w)
   } elseif {$::glistBase($w) != $base || $::glistSortCache($w) != $::glistSortStr($w)} {
     #Create a new sortcache
-    sc_base sortcache $::glistBase($w) release $::glistSortCache($w)
+    catch { sc_base sortcache $::glistBase($w) release $::glistSortCache($w) }
     sc_base sortcache $base create $::glistSortStr($w)
   }
   set ::glistSortCache($w) $::glistSortStr($w)

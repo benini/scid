@@ -1048,6 +1048,13 @@ Index::CloseIndexFile ( bool NoHeader )
 {
     ASSERT (FilePtr != NULL);   // check FilePtr points to an open file
 
+    for(uint i=0; i<SORTING_CACHE_MAX; i++) {
+        if( sortingCaches[i]) {
+            delete sortingCaches[i];
+            sortingCaches[i] = NULL;
+        }
+    }
+
     if (Dirty  &&  FileMode != FMODE_ReadOnly && !NoHeader) {
         WriteHeader();
     }
@@ -1060,11 +1067,6 @@ Index::CloseIndexFile ( bool NoHeader )
 
     delete FilePtr;
     FilePtr = NULL;
-    for(uint i=0; i<SORTING_CACHE_MAX; i++)
-        if( sortingCaches[i]) {
-            delete sortingCaches[i];
-            sortingCaches[i] = NULL;
-        }
     return OK;
 }
 

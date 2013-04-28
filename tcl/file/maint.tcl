@@ -1130,8 +1130,8 @@ proc makeCompactWin {} {
     incr row
   }
   
-  ttk::button $w.buttons.n -text $::tr(CompactNames) -command compactNames
-  ttk::button $w.buttons.g -text $::tr(CompactGames) -command compactGames
+  ttk::button $w.buttons.n -text $::tr(CompactNames) -command "compactNames; destroy $w"
+  ttk::button $w.buttons.g -text $::tr(CompactGames) -command "compactGames; destroy $w"
   ttk::button $w.buttons.help -text $::tr(Help) -command {helpWindow Compact}
   ttk::button $w.buttons.cancel -text $::tr(Cancel) -command "focus .; grab release $w; destroy $w"
   pack $w.buttons.cancel $w.buttons.help -side right -padx 5 -pady 2
@@ -1139,60 +1139,52 @@ proc makeCompactWin {} {
   grab $w
 }
 
-proc compactNames {} {
-  set w .compactWin
-  set stats [sc_compact stats names]
+proc compactNames {{base -1}} {
+  if {$base < 0} { set base [sc_base current] }
+  set stats [sc_base compact $base stats names]
   if {[lindex $stats 1] == 0  &&  [lindex $stats 3] == 0  && \
         [lindex $stats 5] == 0  &&  [lindex $stats 7] == 0} {
-    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactNames)] -message $::tr(NoUnusedNames)
+    tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactNames)] -message $::tr(NoUnusedNames)
     return
   }
   progressWindow "Scid" [concat $::tr(CompactNames) "..."]
   busyCursor .
-  set err [catch {sc_compact names} result]
+  set err [catch {sc_base compact $base names} result]
   unbusyCursor .
   closeProgressWindow
-  set w .compactWin
   if {$err} {
-    tk_messageBox -type ok -icon warning -parent $w -title "Scid: Error compacting file" -message $result
+    tk_messageBox -type ok -icon warning -parent . -title "Scid: Error compacting file" -message $result
   } else {
-    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactNames)] -message [subst $::tr(NameFileCompacted)]
+    tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactNames)] -message [subst $::tr(NameFileCompacted)]
   }
-  grab release $w
-  destroy $w
-  updateBoard
-  ::windows::gamelist::Refresh
-  ::maint::Refresh
+  updateBoard -pgn
+  ::notify::DatabaseChanged
 }
 
-proc compactGames {} {
-  set w .compactWin
-  set stats [sc_compact stats games]
+proc compactGames {{base -1}} {
+  if {$base < 0} { set base [sc_base current] }
+  set stats [sc_base compact $base stats games]
   if {[lindex $stats 1] == [lindex $stats 3]  && \
         [lindex $stats 0] == [lindex $stats 2]} {
-    tk_messageBox -type ok -icon info -parent $w -title [concat "Scid: " $::tr(CompactGames)] -message $::tr(NoUnusedGames)
+    tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactGames)] -message $::tr(NoUnusedGames)
     return
   }
   progressWindow "Scid" [concat $::tr(CompactGames) "..."] \
       $::tr(Cancel) "sc_progressBar"
   busyCursor .
-  set err [catch {sc_compact games} result]
+  set err [catch {sc_base compact $base games} result]
   unbusyCursor .
   closeProgressWindow
   if {$err} {
-    tk_messageBox -type ok -icon warning -parent $w \
+    tk_messageBox -type ok -icon warning -parent . \
         -title "Scid: Error compacting file" -message $result
   } else {
-    tk_messageBox -type ok -icon info -parent $w \
+    tk_messageBox -type ok -icon info -parent . \
         -title [concat "Scid: " $::tr(CompactGames)] \
         -message [subst $::tr(GameFileCompacted)]
   }
-  grab release $w
-  destroy $w
   updateBoard -pgn
-  ::windows::gamelist::Refresh
-  updateTitle
-  ::maint::Refresh
+  ::notify::DatabaseChanged
 }
 
 set sortCriteria(real) ""
