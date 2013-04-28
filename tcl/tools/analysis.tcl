@@ -1679,6 +1679,8 @@ proc makeAnalysisWin { {n 1} {index -1} } {
         }
 
         if {$index == "" ||  $index < 0} { return }
+    } else {
+        set index [expr {$n - 1}]
     }
 
     # Set the button in non-annotation state
