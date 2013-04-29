@@ -3,7 +3,9 @@
 *.lo
 *.la
 *.so
+*.d
 Makefile
+Makefile.bak
 
 engines/phalanx-scid/phalanx-scid
 engines/togaII1.2.1a/src/.depend

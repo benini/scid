@@ -65,12 +65,17 @@ set var(TCL_VERSION) $tcl_version
 set var(WARNINGS) -Wall
 set var(ZLIB) -lz
 set var(MAKEFILE) Makefile.conf
+set var(INSTALL) {install_scid install_engines}
 
 set defaultVar(TCL_INCLUDE) {-I/usr/include}
 set defaultVar(TCL_LIBRARY) {-L/usr/lib -ltcl$(TCL_VERSION)}
 set defaultVar(TK_LIBRARY) \
     {$(TCL_LIBRARY) -ltk$(TCL_VERSION) }
 
+if {"$::tcl_platform(os)" == "Darwin"} {
+    #Default values for Mac OS X
+    set var(INSTALL) {install_mac}
+}
 
 # findDir:
 #    Returns the first directory in the list "path" that contains a
