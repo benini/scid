@@ -122,9 +122,9 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 			if {[winfo exists $w.tmp] } { destroy $w.tmp }
 			canvas $w.tmp
 			sc_progressBar $w.tmp "..." 0 0
-			$w.games.glist tag configure fsmall -foreground #bbbbbb
+			$w.games.glist tag configure fsmall -foreground #ededed
 			sc_tree search -base $::gamelistBase($w)
-			$w.games.glist tag configure fsmall -foreground black
+			$w.games.glist tag configure fsmall -foreground ""
 			#################
 			::windows::gamelist::update_ $w
 		}
@@ -310,6 +310,7 @@ proc glist.create {{w} {layout}} {
   ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
   $w.glist tag configure current -background lightSteelBlue
   $w.glist tag configure fsmall -font font_Small
+  $w.glist tag configure deleted -foreground #a5a2ac
   menu $w.glist.header_menu
   menu $w.glist.header_menu.addcol
   menu $w.glist.game_menu
@@ -475,7 +476,8 @@ proc glist.loadvalues_ {{w} {savesel 1}} {
                                         $::glistFilter($w) $::glistSortStr($w)] {
     $w insert {} end -id $idx -values $line -tag fsmall
     foreach {n ply} [split $idx "_"] {
-      if {$n == $current_game} { $w item $idx -tag {fsmall current} }
+      if {[sc_base gameflag $base $n get del]} { $w item $idx -tag {fsmall deleted} }
+      if {$n == $current_game} { $w item $idx -tag "[$w item $idx -tag] current" }
     }
     incr i
   }
@@ -619,19 +621,15 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         #TODO: translate label
         $w.game_menu add command -label "Find current game" -state disabled
       }
-      if {$::glistBase($w) == [sc_base current]} {
-        #DELETE
-        #TODO: Delete games even for "not current" databases
+      $w.game_menu add separator
+      if {[sc_base gameflag $::glistBase($w) $idx get del]} {
         #TODO: translate labels
-        $w.game_menu add separator
-        set deleted [sc_game flag delete $idx]
-        if {$deleted} {
-          $w.game_menu add command -label "Undelete game" \
-            -command "sc_game flag delete $idx 0; ::windows::gamelist::Refresh 0"
-        } else {
-          $w.game_menu add command -label "Delete game" \
-            -command "sc_game flag delete $idx 1; ::windows::gamelist::Refresh 0"
-        }
+        $w.game_menu add command -label "Undelete game" \
+          -command "sc_base gameflag $::glistBase($w) $idx unset del; ::windows::gamelist::Refresh 0"
+      } else {
+        #TODO: translate labels
+        $w.game_menu add command -label "Delete game" \
+          -command "sc_base gameflag $::glistBase($w) $idx set del; ::windows::gamelist::Refresh 0"
       }
       tk_popup $w.game_menu $abs_x $abs_y
     }

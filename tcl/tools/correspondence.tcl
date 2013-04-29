@@ -1458,6 +1458,7 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::CorrBase
 
 		if {![file exists $CorrBase]} {
+			set currbase [sc_base current]
 			set fName [file rootname $CorrBase]
 			if {[catch {sc_base create $fName} result]} {
 					tk_messageBox -icon warning -type ok -parent . \
@@ -1466,6 +1467,7 @@ namespace eval CorrespondenceChess {
 			# Type 6 == Correspondence chess
 			sc_base type [sc_base current] 6
 			sc_base close
+			sc_base switch $currbase
 		}
 	}
 

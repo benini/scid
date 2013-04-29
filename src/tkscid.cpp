@@ -622,6 +622,12 @@ scidBaseT* getBase(uint baseId) {
     return res->inUse ? res : 0;
 }
 
+Filter* getFilter(scidBaseT* base, const char* filterName) {
+    if (strCompare("dbfilter", filterName) == 0) return base->dbFilter;
+    if (strCompare("tree", filterName) == 0) return base->treeFilter;
+    return 0;
+}
+
 //TODO: rename this functions to sc_base_compact_*
 int sc_compact_games (scidBaseT* base, Tcl_Interp * ti);
 int sc_compact_names (scidBaseT* base, Tcl_Interp * ti);
@@ -638,9 +644,7 @@ sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** a
 	const char* usage = "Usage: sc_base gamelocation <db> <all|dbfilter|filter|tree> <sort> <gnumber> [<text> <start_gnum> <forward_dir>]";
 	if (argc != 6 && argc != 9) return errorResult (ti, usage);
 
-	Filter* filter = 0;
-	if (strCompare("dbfilter", argv[3]) == 0) filter = cdb->dbFilter;
-	else if (strCompare("tree", argv[3]) == 0) filter = cdb->treeFilter;
+	Filter* filter = getFilter(cdb, argv[3]);
 	const char* sort = argv[4];
 	uint gnumber = strGetUnsigned (argv[5]);
 	uint location = 0;
@@ -669,9 +673,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 	}
 	uint start = strGetUnsigned (argv[3]);
 	uint count = strGetUnsigned (argv[4]);
-	Filter* filter = 0;
-	if (strCompare("dbfilter", argv[5]) == 0) filter = cdb->dbFilter;
-	else if (strCompare("tree", argv[5]) == 0) filter = cdb->treeFilter;
+	Filter* filter = getFilter(cdb, argv[5]);
 	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];
 	uint* idxList = new uint[count];
@@ -742,7 +744,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		"piecetrack",   "slot",         "sort",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
 		"upgrade",      "fixCorrupted", "gameslist",    "sortcache",
-		"gamelocation", "compact",
+		"gamelocation", "compact",      "gameflag",
         NULL
     };
     enum {
@@ -753,7 +755,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
 		BASE_UPGRADE,     BASE_FIX_CORRUPTED, BASE_GAMESLIST, BASE_SORTCACHE,
-		BASE_GAMELOCATION,BASE_COMPACT
+		BASE_GAMELOCATION,BASE_COMPACT,     BASE_GAMEFLAG
     };
     int index = -1;
 
@@ -863,7 +865,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     //New multi-base functions
     if (argc < 3) return errorResult (ti, "Usage: sc_base <cmd> baseId [args]");
-    scidBaseT * dbase = getBase(strGetInteger(argv[2]));
+    scidBaseT * dbase = getBase(strGetUnsigned(argv[2]));
     if (dbase == 0) return errorResult (ti, "Invalid database number.");
 
     switch (index) {
@@ -873,6 +875,34 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (strCompare("names", argv[3]) == 0) return sc_compact_names (dbase, ti);
         if (strCompare("stats", argv[3]) == 0 && argc == 5) return sc_compact_stats (dbase, ti, argv[4]);
         return errorResult (ti, "Usage: sc_base compact baseId [stats] <games|names>");
+
+    case BASE_GAMEFLAG:
+        if (argc == 6) {
+            uint flagType = IndexEntry::CharToFlag (argv[5][0]);
+            uint gNum = strGetUnsigned (argv[3]);
+            Filter* filter = (gNum != 0) ? 0 : getFilter(dbase, argv[3]);
+            int cmd = 0;
+            if (strCompare("get", argv[4]) == 0) cmd = 1;
+            else if (strCompare("set", argv[4]) == 0) cmd = 2;
+            else if (strCompare("unset", argv[4]) == 0) cmd = 3;
+            if (flagType != 0 && cmd != 0 && ((gNum != 0 && gNum <= dbase->numGames) || filter != 0)) {
+                flagType = 1 << flagType;
+                if (gNum != 0) gNum--;
+                for (;gNum < dbase->idx->GetNumGames(); gNum++) {
+                    if (filter && filter->Get(gNum) == 0) continue;
+                    IndexEntry* ie = dbase->idx->FetchEntry (gNum);
+                    if (cmd == 1) return setBoolResult (ti, ie->GetFlag (flagType));
+                    ie->SetFlag (flagType, (cmd == 2));
+                    if (OK != dbase->idx->WriteEntries (ie, gNum, 1)) {
+                        return errorResult (ti, "Error writing index file.");
+                    }
+                    if (filter == 0) break;
+                }
+                recalcFlagCounts (dbase);
+                return TCL_OK;
+            }
+        }
+        return errorResult (ti, "Usage: sc_base gameflag baseId <gameNum|filterName> <get|set|unset> flagType");
 
     case BASE_GAMESLIST:
         return sc_base_gameslist (dbase, ti, argc, argv);
@@ -6004,6 +6034,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     return TCL_OK;
 }
 
+//TODO: obsolete function: replace with "sc_base gameflag"
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_flag:
 //    If there is two args, this returns the specified flag status for the
