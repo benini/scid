@@ -143,7 +143,6 @@ SortCache::SortCache()
 	mapSize = 0;
 	hashValues = NULL;
 	refCount = 1;
-	ErrorMsg = 0;
 	sorted_ = false;
 }
 
@@ -164,10 +163,6 @@ SortCache::~SortCache()
 //      integers denoting sorting criteria.
 //      e.g.: "-Sdate,event,white" --> { SORTING_date, SORTING_event, SORTING_white }
 //      The final element is set to SORTING_sentinel.
-//
-//      If an error occurs, ERROR is returned and ErrorMsg is set to
-//      an appropriate error message.
-//
 errorT SortCache::Init(Index* idx, NameBase* nb, const char* criterium)
 {
 	ASSERT(idx != 0 && nb != 0 && criterium != 0);
@@ -180,7 +175,6 @@ errorT SortCache::Init(Index* idx, NameBase* nb, const char* criterium)
 	if (numOFArgs >= (INDEX_MaxSortCriteria - 1))
 	{
 		SortCriteria[numOFArgs] = SORTING_sentinel;
-		ErrorMsg = strDuplicate ( "Error: Too many fields in sort criteria!");
 		return ERROR_Full;
 	}
 
@@ -199,7 +193,6 @@ errorT SortCache::Init(Index* idx, NameBase* nb, const char* criterium)
 		}
 		if( SortCriteria[i] == SORTING_sentinel)
 		{
-			sprintf (ErrorMsg, "Error: invalid character in sort field list: \"%c\"", key);
 			return ERROR;
 		}
 	}
@@ -273,46 +266,6 @@ errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result
 		if (j < count) result[j] = IDX_NOT_FOUND;
 	}
 	return OK;
-}
-
-void SortCache::DoFullSort(int reportFrequency,
-                           void (*progressFn)(void * data, uint progress, uint total),
-                           void * progressData)
-{
-	if (t_.start()) return;
-	if (!sorted_) {
-		GetSpace(numGames);
-		for (uint i=0; i<numGames; i++) fullMap[i] = i;
-
-//		Was function void HeapSort(reportFrequency, progressFn, progressData);
-		int tmp;
-		for (int v=numGames/2-1; v>=0; v--)	Downheap(v, numGames);
-
-	    int reportAfter = reportFrequency;
-	    uint progressCounter = 0;
-
-		uint n = numGames;
-		while (n>1)
-		{
-			n--;
-			tmp=fullMap[0]; fullMap[0]=fullMap[n]; fullMap[n]=tmp;
-			Downheap(0, n);
-
-	        progressCounter++;
-	        reportAfter--;
-	        if (reportAfter == 0) {
-	            if (progressFn != NULL) {
-	                (*progressFn) (progressData, progressCounter, numGames);
-	            }
-	            reportAfter = reportFrequency;
-	        }
-	    }
-	    if (progressFn != NULL) {
-	        (*progressFn) (progressData, 1, 1);
-	    }
-////////////////////////////////////////////////
-		sorted_ = true;
-	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -689,10 +642,7 @@ SortCache::CheckForChanges ( int *criteria, uint id)
 		if (hashValues == 0) hashValues = new uint[numGames];
 		for(uint i=0; i<numGames; i++)
 			hashValues[i] = CalcHash( index->FetchEntry( i));
-		if (sorted_) {
-			sorted_ = false;
-			if (! t_.start()) DoFullSort(0,0,0);
-		}
+		t_.start();
 	}
 
 	return OK;

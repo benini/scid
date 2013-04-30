@@ -34,7 +34,6 @@ class SortCache
   public:
 	static SortCache* Create(Index* idx, NameBase* nb, const char* criterium, bool multithread =true);
 	~SortCache();
-	char *ErrorMessage() { return ErrorMsg; }
 	errorT GetRange( uint start, uint count, Filter *filter, uint *result);
 	uint IndexToFilteredCount( uint gnumber, Filter *filter);
 	errorT CheckForChanges ( int *criteria, uint id);
@@ -61,7 +60,6 @@ class SortCache
 	NameBase *nbase;
     byte SortCriteria [INDEX_MaxSortingCriteria];
     bool SortReverse [INDEX_MaxSortingCriteria];
-    char *ErrorMsg;
 	int refCount;
 	std::string criteria;
 

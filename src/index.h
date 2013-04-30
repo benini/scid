@@ -794,18 +794,6 @@ class Index
 	                       const char* text, uint start, bool forward =true);
     errorT IndexUpdated( uint gnum);
 
-  public:
-    errorT CreateSortingCache( NameBase *nbase, const char *criteria, int *handle);
-    errorT DoFullSort(int cache,
-                      int reportFrequency,
-                      void (*progressFn)(void * data, uint progress, uint total),
-                      void * progressData);
-    errorT GetRange( int cache, uint idx, uint count, Filter *filter, uint *result);
-    uint IndexToFilteredCount( uint gnumber, int cache, Filter *filter);
-    void FreeCache( int cache);
-    errorT WriteSortCacheToFile (int handle);
-    errorT ReadSortCacheFromFile(NameBase* nbase, int* handle);
-
     // Old sorting related methods. Should become obsolete
   private:
      void       Sort_AdjustHeap (int heapSize, int root, NameBase * nb);

@@ -7849,6 +7849,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
             base->duplicates = NULL;
         }
     }
+    base->idx->IndexUpdated(gNumber);
     return OK;
 }
 
@@ -7969,6 +7970,7 @@ sc_savegame (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEn
             base->duplicates = NULL;
         }
     }
+    base->idx->IndexUpdated(gNumber);
     return OK;
 }
 
