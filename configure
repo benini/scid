@@ -188,6 +188,7 @@ proc findTclTkPaths {} {
         /usr/local/lib
         /usr/X11R6/lib
         /opt/tcltk/lib
+        /usr/lib/x86_64-linux-gnu
     }
     lappend libraryPath "/usr/lib/tcl${tclv}"
     lappend libraryPath "/usr/lib/tk${tclv}"
