@@ -251,6 +251,7 @@ SCID_OBJS = \
 	$(TMP_DIR)\textbuf.obj \
 	$(TMP_DIR)\scid.res \
 	$(TMP_DIR)\sortcache.obj \
+	$(TMP_DIR)\filter.obj \
 	$(TMP_DIR)\polyglot\attack.obj $(TMP_DIR)\polyglot\board.obj $(TMP_DIR)\polyglot\book.obj \
 	$(TMP_DIR)\polyglot\book_make.obj $(TMP_DIR)\polyglot\book_merge.obj $(TMP_DIR)\polyglot\colour.obj \
 	$(TMP_DIR)\polyglot\fen.obj $(TMP_DIR)\polyglot\game.obj $(TMP_DIR)\polyglot\hash.obj \
@@ -266,7 +267,6 @@ SCID_XOBJS = \
 	$(SCID_OBJS) \
 	$(TMP_DIR)\crosstab.obj \
 	$(TMP_DIR)\engine.obj \
-	$(TMP_DIR)\filter.obj \
 	$(TMP_DIR)\optable.obj \
 	$(TMP_DIR)\pbook.obj \
 	$(TMP_DIR)\probe.obj \

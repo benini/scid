@@ -24,6 +24,8 @@ CC = "$(MINGW_BIN)\gcc.exe"
 LINK = "$(MINGW_BIN)\g++.exe"
 RC = "$(MINGW_BIN)\windres.exe"
 
+OUT_DIR = .\Release
+
 TCL_INCLUDE = -I"$(TCL_DIR)\include"
 TCL_LIB = "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
 TK_LIB = "$(TCL_DIR)\lib\tk$(TCL_VERSION).lib" "$(TCL_DIR)\lib\tcl$(TCL_VERSION).lib"
@@ -74,7 +76,7 @@ SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
       src\position.obj src\game.obj src\gfile.obj src\matsig.obj \
       src\bytebuf.obj src\textbuf.obj src\myassert.obj src\stralloc.obj \
       src\mfile.obj src\dstring.obj src\pgnparse.obj src\stored.obj \
-      src\movelist.obj src\sortcache.obj \
+      src\movelist.obj src\sortcache.obj src\filter.obj \
       src\polyglot\attack.o src\polyglot\board.o src\polyglot\book.o \
 			src\polyglot\book_make.o src\polyglot\book_merge.o src\polyglot\colour.o \
       src\polyglot\fen.o src\polyglot\game.o src\polyglot\hash.o \
@@ -140,67 +142,63 @@ TCLS= \
 ########################################
 
 ### Type "make" or "make all" to make all executables:
-all: $(EXECS) scid.gui
+all: setup scid.gui $(EXECS)
+
+setup:
+	@if not exist $(OUT_DIR)\nul mkdir $(OUT_DIR)
+	-copy "$(MINGW_BIN)\libstdc++-6.dll" $(OUT_DIR)
+	-copy "$(MINGW_BIN)\libgcc_s_dw2-1.dll" $(OUT_DIR)
 
 scid.gui: $(TCLS)
-	-del .\scid.gui
-	type $(TCLS) > .\scid.gui
+	-del $(OUT_DIR)\scid.gui
+	type $(TCLS) > $(OUT_DIR)\scid.gui
 
 # escid.gui: scid GUI with English only, no extra language support.
 escid.gui: $(TCLS)
-	-del .\escid.gui
-	type $(TCLS_ENGLISH_ONLY) > .\escid.gui
+	-del $(OUT_DIR)\escid.gui
+	type $(TCLS_ENGLISH_ONLY) > $(OUT_DIR)\escid.gui
 
 scmerge.exe: src\scmerge.obj $(OBJS)
-	$(LINK) -o scmerge.exe src\scmerge.obj $(OBJS) $(TCL_LIB)
+	$(LINK) -o $(OUT_DIR)\scmerge.exe src\scmerge.obj $(OBJS) $(TCL_LIB)
 
 pgnscid.exe: src\pgnscid.obj $(OBJS)
-	$(LINK) -o pgnscid.exe src\pgnscid.obj $(OBJS) $(TCL_LIB)
+	$(LINK) -o $(OUT_DIR)\pgnscid.exe src\pgnscid.obj $(OBJS) $(TCL_LIB)
 
 scidt.exe: src\scidt.obj $(OBJS)
-	$(LINK) -o scidt.exe src\scidt.obj $(OBJS) $(TCL_LIB)
+	$(LINK) -o $(OUT_DIR)\scidt.exe src\scidt.obj $(OBJS) $(TCL_LIB)
 
 scidlet.exe: src\scidlet.obj src\engine.obj src\recog.obj $(OBJS)
-	$(LINK) $(LFLAGS) -o scidlet.exe src\scidlet.obj src\engine.obj src\recog.obj \
+	$(LINK) $(LFLAGS) -o $(OUT_DIR)\scidlet.exe src\scidlet.obj src\engine.obj src\recog.obj \
           src/misc.obj src/position.obj src/movelist.obj src/dstring.obj $(TCL_LIB)
 
-scid.exe: src\scid.obj $(OBJS) src\tree.obj src\filter.obj \
+scid.exe: src\scid.obj $(OBJS) src\tree.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj scid.coff
-	$(LINK) -o scid.exe src\scid.obj $(OBJS) \
-            src\tree.obj src\filter.obj src\pbook.obj \
+	$(LINK) $(LFLAGS) -o $(OUT_DIR)\scid.exe src\scid.obj $(OBJS) \
+            src\tree.obj src\pbook.obj \
             src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj scid.coff \
             $(TK_LIB) -mwindows
 
-tkscid.exe: src\tkscid.obj $(OBJS) src\tree.obj src\filter.obj \
+tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj \
             src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj
-	$(LINK) $(LFLAGS)  -o tkscid.exe src\tkscid.obj $(OBJS) \
-            src\tree.obj src\filter.obj src\pbook.obj \
-            src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj src\engine.obj src\recog.obj \
-            $(TK_LIB)
-
-tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj src\filter.obj \
-            src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj src\engine.obj src\recog.obj
-	$(LINK) $(LFLAGS) -o tcscid.exe src\tcscid.obj $(OBJS) \
-            src\tree.obj src\filter.obj src\pbook.obj \
+	$(LINK) $(LFLAGS) -o $(OUT_DIR)\tcscid.exe src\tcscid.obj $(OBJS) \
+            src\tree.obj src\pbook.obj \
             src\crosstab.obj src\spellchk.obj src\probe.obj \
             src\optable.obj src\engine.obj src\recog.obj \
             $(TCL_LIB)
 
 eco2epd.exe: src\eco2epd.obj src\pbook.obj $(OBJS)
-	$(LINK) -o eco2epd.exe src\eco2epd.obj src\pbook.obj $(OBJS) $(TCL_LIB)
+	$(LINK) -o $(OUT_DIR)\eco2epd.exe src\eco2epd.obj src\pbook.obj $(OBJS) $(TCL_LIB)
 
 scid.coff: scid.rc
 	$(RC) -O coff scid.rc scid.coff
 
 ### To remove object and executable files: type "make clean"
 clean:
-	-del src\*.obj src\zlib\*.o $(EXECS) scid.gui
-
+	-del /F src\*.obj src\zlib\*.o scid.coff
+	-rmdir /S /Q $(OUT_DIR)
 
 src\tcscid.obj: src\tkscid.cpp
 	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -DTCL_ONLY -c src\tkscid.cpp \
