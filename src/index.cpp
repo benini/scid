@@ -8,7 +8,6 @@
 //
 //  Notice:     Copyright (c) 1999-2002  Shane Hudson.  all rights reserved.
 //  Notice:     Copyright (c) 2006-2009  Pascal Georges.  all rights reserved.
-//  Notice:     Copyright (c) 2010-2010  Steven Atkinson.  all rights reserved.
 //
 //  Authors:     Shane Hudson (sgh@users.sourceforge.net)
 //               Pascal Georges
@@ -36,16 +35,14 @@
 static const char * sortCriteriaNames[] = {
     "Date", "Year", "Event", "Site", "Round",
     "White", "Black", "Eco", "Result", "Length",
-    "Rating", "WElo", "BElo", "Country", "Month",
-    "Deleted", "Eventdate", "Variations", "Comments", "Random", NULL
-
+    "Rating", "Country", "Month", "Deleted", "Eventdate", NULL
 };
 
 enum {
     SORT_date, SORT_year, SORT_event, SORT_site, SORT_round,
     SORT_white, SORT_black, SORT_eco, SORT_result, SORT_moveCount,
-    SORT_avgElo, SORT_WElo, SORT_BElo, SORT_country, SORT_month,
-    SORT_deleted, SORT_eventdate, SORT_variations, SORT_comments, SORT_random, SORT_sentinel
+    SORT_avgElo, SORT_country, SORT_month,
+    SORT_deleted, SORT_eventdate, SORT_sentinel
 };
 
 
@@ -122,7 +119,6 @@ IndexEntry::GetEventDate (void)
     dateT edate = u32_high_12 (Dates);
     uint month = date_GetMonth (edate);
     uint day = date_GetDay (edate);
-    // event year seems stored as a 3 bit offset (0 to 7) to game year representing (-4 to +3)
     uint year = date_GetYear(edate) & 7;
     if (year == 0) { return ZERO_DATE; }
     year = dyear + year - 4;
@@ -720,28 +716,13 @@ IndexEntry::Compare (IndexEntry * ie, int * fields, NameBase * nb)
             break;
 
         case SORT_result:
-            // i think we can fudge this here to make draws and no-results sort together
-            rOne = (int)GetResult();
-            rTwo = (int)ie->GetResult();
-            if (rOne == RESULT_None)
-		rOne = RESULT_Draw + 1;
-            if (rTwo == RESULT_None)
-		 rTwo = RESULT_Draw + 1;
-            res = rOne - rTwo;
+            res = (int)GetResult() - (int)ie->GetResult();
             break;
 
         case SORT_avgElo:  // Average Elo rating:
             rOne = (WhiteElo + BlackElo) / 2;
             rTwo = (ie->WhiteElo + ie->BlackElo) / 2;
             res = rTwo - rOne;
-            break;
-
-        case SORT_WElo:  // white Elo rating:
-            res = ie->WhiteElo - WhiteElo;
-            break;
-
-        case SORT_BElo:  // black Elo rating:
-            res = ie->BlackElo - BlackElo;
             break;
 
         case SORT_country:  // Last 3 characters of site field:
@@ -774,30 +755,12 @@ IndexEntry::Compare (IndexEntry * ie, int * fields, NameBase * nb)
             }
             break;
 
-        case SORT_variations:
-            res = (int)ie->GetVariationCount() - (int)GetVariationCount();
-            break;
-
-        case SORT_comments:
-            res = (int)ie->GetCommentCount() - (int)GetCommentCount();
-            break;
-
-        case SORT_random:
-            res = (random32()&2) - 1;
-            break;
-
         default:    // Should never happen:
             ASSERT(0);
             return 0;
         }
 
-        if (res != 0) {
-	    // Is sort order reversed ?
-	    if (nb->SortOrder)
-	      return -res;
-	    else 
-	      return res;
-	}
+        if (res != 0) { return res; }
         fields++;
     }
 
@@ -1694,14 +1657,7 @@ Index::ParseSortCriteria (const char * inputStr)
                     return ERROR_Full;
                 }
                 name [length] = 0;
-
-		// Do some conversions, eg: date->Date welo->WElo
-		// todo : fix up bracketed elos (2380) wtf!,
-		//   and add WElo, BElo to sort widget
                 name[0] = toupper (name[0]);
-		if (*name && !strcmp(name+1,"elo"))
-		  name[1] = toupper (name[1]);
-
                 int index = strUniqueMatch (name, sortCriteriaNames);
                 if (index == -1) {
                     // Invalid criteria name:
