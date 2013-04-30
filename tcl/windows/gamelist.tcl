@@ -590,7 +590,8 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
     event generate $w <ButtonPress-1> -x $x -y $y
     foreach {idx ply} [split [$w selection] "_"] {}
     if {[info exist idx]} {
-      if { [winfo exist $w.game_menu.popup] } { destroy $w.game_menu.popup }
+      if { [winfo exist $w.game_menu.merge] } { destroy $w.game_menu.merge }
+      if { [winfo exist $w.game_menu.copy] } { destroy $w.game_menu.copy }
       $w.game_menu delete 0 end
       #LOAD/BROWSE/MERGE GAME
       $w.game_menu add command -label $::tr(LoadGame) \
@@ -599,15 +600,20 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
          -command "::gbrowser::new $::glistBase($w) $idx $ply"
       $w.game_menu add command -label $::tr(MergeGame) \
          -command "mergeGame $::glistBase($w) $idx"
-      menu $w.game_menu.popup
+      menu $w.game_menu.merge
+      menu $w.game_menu.copy
       for {set i 1} {$i <= [sc_base count total]} {incr i} {
         if { $i == $::glistBase($w) || [sc_base isReadOnly] } { continue }
         if {[sc_base inUse $i]} {
           set fname [file tail [sc_base filename $i]]
-          $w.game_menu.popup add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
+          $w.game_menu.merge add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
+          $w.game_menu.copy add command -label "$i $fname" \
+              -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseChanged 0"
         }
       }
-      $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.popup
+      $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.merge
+      #TODO: translate label
+      $w.game_menu add cascade -label "Copy Game to" -menu $w.game_menu.copy
 
       #GOTO GAME
       $w.game_menu add separator

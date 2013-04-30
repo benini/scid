@@ -744,7 +744,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		"piecetrack",   "slot",         "sort",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
 		"upgrade",      "fixCorrupted", "gameslist",    "sortcache",
-		"gamelocation", "compact",      "gameflag",
+		"gamelocation", "compact",      "gameflag",     "copygames",
         NULL
     };
     enum {
@@ -755,7 +755,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
 		BASE_UPGRADE,     BASE_FIX_CORRUPTED, BASE_GAMESLIST, BASE_SORTCACHE,
-		BASE_GAMELOCATION,BASE_COMPACT,     BASE_GAMEFLAG
+		BASE_GAMELOCATION,BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES
     };
     int index = -1;
 
@@ -875,6 +875,43 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (strCompare("names", argv[3]) == 0) return sc_compact_names (dbase, ti);
         if (strCompare("stats", argv[3]) == 0 && argc == 5) return sc_compact_stats (dbase, ti, argv[4]);
         return errorResult (ti, "Usage: sc_base compact baseId [stats] <games|names>");
+
+
+    case BASE_COPYGAMES:
+        //TODO: filter option and group clean up code (used in many other parts of this file)
+        if (argc == 5) {
+            uint gNum = strGetUnsigned (argv[3]);
+            scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
+            if (targetBase != 0 && gNum != 0 && gNum <= dbase->numGames) {
+                IndexEntry* ie = dbase->idx->FetchEntry (gNum -1);
+                dbase->bbuf->Empty();
+                if (dbase->gfile->ReadGame (dbase->bbuf, ie->GetOffset(), ie->GetLength()) != OK) {
+                    return errorResult (ti, "Error reading game file.");
+                }
+                if (sc_savegame (ti, dbase, dbase->bbuf, ie, targetBase) != TCL_OK) return TCL_ERROR;
+
+                targetBase->gfile->FlushAll();
+
+                // Now write the Index file header and the name file:
+                if (targetBase->idx->WriteHeader() != OK) {
+                    return errorResult (ti, "Error writing index file.");
+                }
+                if (! targetBase->memoryOnly  &&  targetBase->nb->WriteNameFile() != OK) {
+                    return errorResult (ti, "Error writing name file.");
+                }
+
+                // Ensure that the Index is still all in memory:
+                targetBase->idx->ReadEntireFile();
+
+                recalcFlagCounts (targetBase);
+                // The target base treecache is out of date:
+                targetBase->treeCache->Clear();
+                targetBase->backupCache->Clear();
+                if (! targetBase->memoryOnly) removeFile (targetBase->fileName, TREEFILE_SUFFIX);
+                return TCL_OK;
+            }
+        }
+        return errorResult (ti, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_GAMEFLAG:
         if (argc == 6) {

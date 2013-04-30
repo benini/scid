@@ -452,8 +452,8 @@ namespace eval ::notify {
     ::windows::gamelist::PosChanged
   }
 
-  proc DatabaseChanged {} {
-    ::windows::gamelist::Refresh
+  proc DatabaseChanged {{moveUp 1}} {
+    ::windows::gamelist::Refresh $moveUp
     ::windows::switcher::Refresh
     ::windows::stats::Refresh
     updateTitle
