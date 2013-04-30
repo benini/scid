@@ -8438,7 +8438,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         T_EDate, T_EYear, T_EMonth, T_EDay, T_Extra
     };
 
-    const char * usage = "Usage: sc_game tag get [-last] <tagName>";
+    const char * usage = "Usage: sc_game tags get [-last] <tagName>";
     const char * tagName;
     Game * g = db->game;
 
@@ -8562,7 +8562,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     default:  // Not a valid tag name.
-        return InvalidCommand (ti, "sc_game tag get", options);
+        return InvalidCommand (ti, "sc_game tags get", options);
     }
 
     return TCL_OK;
@@ -8654,7 +8654,7 @@ sc_game_tags_set (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
                 break;
             default:
-                return InvalidCommand (ti, "sc_game tag set", options);
+                return InvalidCommand (ti, "sc_game tags set", options);
         }
     }
 
@@ -9255,8 +9255,7 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_info_priority:
-//   On Windows, this gets or sets the priority class of a process.
-//   On Unix, this command does nothing.
+//   This gets or sets the priority class of a process.
 int
 sc_info_priority (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -15932,7 +15931,7 @@ sc_book_positions (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		char moves[200] = "";
 		char boardStr[100];
     if (argc != 3) {
-        return errorResult (ti, "Usage: sc_book oppmoves slot");
+        return errorResult (ti, "Usage: sc_book positions slot");
     }
     uint slot = strGetUnsigned (argv[2]);
 		db->game->GetCurrentPos()->PrintFEN (boardStr, FEN_ALL_FIELDS);
@@ -15960,7 +15959,7 @@ int
 sc_book_movesupdate (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 6) {
-        return errorResult (ti, "Usage: sc_book update <moves> <probs> slot tempfile");
+        return errorResult (ti, "Usage: sc_book movesupdate <moves> <probs> slot tempfile");
     }
     uint slot = strGetUnsigned (argv[4]);
     scid_book_movesupdate( (char*) argv[2], (char*) argv[3], slot, (char*) argv[5] );
