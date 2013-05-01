@@ -75,6 +75,10 @@ set defaultVar(TK_LIBRARY) \
 if {"$::tcl_platform(os)" == "Darwin"} {
     #Default values for Mac OS X
     set var(INSTALL) {install_mac}
+    set var(CC) {clang}
+    set var(COMPILE) {clang++}
+    set var(LINK) {clang++ -std=c++11 -stdlib=libc++}
+    set var(THREADS) {-std=c++11 -stdlib=libc++}
 }
 
 # findDir:
