@@ -21,7 +21,6 @@
 #include "pgnparse.h"
 #include "naglatex.h"
 #include "nagtext.h"
-// #include "tkscid.h"
 
 #include "bytebuf.h"
 #include "textbuf.h"

@@ -52,9 +52,6 @@
 #include <sys/stat.h>
 
 #include <tcl.h>
-#ifndef TCL_ONLY
-#  include <tk.h>
-#endif
 
 // Some character pointer arguments (like "char ***" to Tcl_SplitList)
 // changed const-ness from Tcl/Tk 8.3 to 8.4 and g++ cannot handle

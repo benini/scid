@@ -349,19 +349,12 @@ main (int argc, char * argv[])
     int newArgc = argc;
     char ** newArgv = argv;
 
-#ifdef WIN32
-#  ifdef SOURCE_TCL_FILE
+#ifdef SOURCE_TCL_FILE
     newArgc++;
-#ifdef WINCE
-    newArgv = (char **) my_Tcl_Alloc (sizeof (char *) * newArgc);
-#else
     newArgv = (char **) malloc (sizeof (char *) * newArgc);
-#endif
     newArgv[0] = argv[0];
     for (int i = 1; i < argc; i++) { newArgv[i+1] = argv[i]; }
-
     // Now generate the full path and name of the file to source:
-	
     char sourceFileName [MAX_PATH];
     sourceFileName[0] = 0;
     HMODULE hModule = GetModuleHandle (NULL);
@@ -370,15 +363,8 @@ main (int argc, char * argv[])
     if (end != NULL) { strCopy (end + 1, SOURCE_TCL_FILE); }
     newArgv[1] = sourceFileName;
 #  endif  // ifdef SOURCE_TCL_FILE
-#endif  // ifdef WIN32
 
-#ifndef WINCE
-#ifdef TCL_ONLY
     Tcl_Main (newArgc, newArgv, scid_InitTclTk);
-#else
-    Tk_Main (newArgc, newArgv, scid_InitTclTk);
-#endif
-#endif
     exit(0);
     return 0;
 }
@@ -387,9 +373,6 @@ int
 scid_InitTclTk (Tcl_Interp * ti)
 {
     if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
-#ifndef TCL_ONLY
-    if (Tk_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
-#endif
       
     // Register Scid application-specific commands:
     // CREATE_CMD() is a macro to reduce the clutter of the final two args

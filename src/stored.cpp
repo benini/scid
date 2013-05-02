@@ -325,7 +325,6 @@ StoredLine::GetText (uint code)
     return storedLineText [code];
 }
 
-#include "tkscid.h"
 void
 StoredLine::Init (void)
 {

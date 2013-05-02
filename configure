@@ -164,7 +164,7 @@ proc findTclTkPaths {} {
         return 1
     }
 
-    # headerPath: List of possible locations for tcl.h and tk.h
+    # headerPath: List of possible locations for tcl.h
     set headerPath {
         /usr/include
         /usr/local/tcl/include
@@ -223,15 +223,6 @@ proc findTclTkPaths {} {
         } else {
             puts $opt(tcl_h)
         }
-
-        puts -nonewline {    Location of "tk.h": }
-        set opt(tk_h) [findDir "tk.h" $headerPath "TK_VERSION.*$tclv"]
-        if {$opt(tk_h) == ""} {
-            puts "not found"
-            set success 0
-        } else {
-            puts $opt(tk_h)
-        }
     }
 
     set opt(tcl_lib) ""
@@ -279,9 +270,6 @@ proc findTclTkPaths {} {
     if {$success} {
         if {! [info exists var(TCL_INCLUDE)]} {
             set var(TCL_INCLUDE) "-I$opt(tcl_h)"
-            if {$opt(tcl_h) != $opt(tk_h)} {
-                append var(TCL_INCLUDE) " -I$opt(tk_h)"
-            }
         }
         if {! [info exists var(TCL_LIBRARY)]} {
             set var(TCL_LIBRARY) "-L$opt(tcl_lib) -l$opt(tcl_lib_file)"
