@@ -599,7 +599,7 @@ base_opened (const char * filename)
     return -1;
 }
 
-scidBaseT* getBase(uint baseId) {
+scidBaseT* getBase(int baseId) {
     if (baseId < 1 || baseId > MAX_BASES) return 0;
     scidBaseT* res = &(dbList[baseId - 1]);
     return res->inUse ? res : 0;
@@ -624,7 +624,7 @@ int sc_compact_stats (scidBaseT* base, Tcl_Interp * ti, const char* option);
 int
 sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
 {
-	const char* usage = "Usage: sc_base gamelocation <db> <all|dbfilter|filter|tree> <sort> <gnumber> [<text> <start_gnum> <forward_dir>]";
+	const char* usage = "Usage: sc_base gamelocation baseId filterName sort gnumber [text start_gnum forward_dir]";
 	if (argc != 6 && argc != 9) return errorResult (ti, usage);
 
 	Filter* filter = getFilter(cdb, argv[3]);
@@ -652,7 +652,7 @@ int
 sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
 {
 	if (argc != 6  &&  argc != 7) {
-		return errorResult (ti, "Usage: sc_base gameslist <db> <start> <count> <all|dbfilter|tree> [<sort>]");
+		return errorResult (ti, "Usage: sc_base gameslist baseId start count filterName [sort]");
 	}
 	uint start = strGetUnsigned (argv[3]);
 	uint count = strGetUnsigned (argv[4]);
@@ -918,7 +918,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     }
                     if (filter == 0) break;
                 }
-                recalcFlagCounts (dbase);
+                //TODO: recalcFlagCounts is slow, use only flagType delete
+                //recalcFlagCounts (dbase);
                 return TCL_OK;
             }
         }
@@ -4881,14 +4882,14 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "copy", "count", "first", "frequency",
         "index", "last", "negate", "next",
-        "previous", "remove", "reset", "size",
+        "previous", "reset", "set", "size",
         "stats", "clear", "posmask", NULL
     };
     enum {
         FILTER_COPY, FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
-        FILTER_INDEX, FILTER_LAST, FILTER_NEGATE,
-        FILTER_NEXT, FILTER_PREV, FILTER_REMOVE, FILTER_RESET,
-        FILTER_SIZE, FILTER_STATS, FILTER_CLEAR, FILTER_POSMASK
+        FILTER_INDEX, FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
+        FILTER_PREV, FILTER_RESET, FILTER_SET, FILTER_SIZE,
+        FILTER_STATS, FILTER_CLEAR, FILTER_POSMASK
     };
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -4914,25 +4915,16 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_NEGATE:
         if (db->inUse) db->dbFilter->Negate();
-        break;
+        return TCL_OK;
 
     case FILTER_NEXT:
         return sc_filter_next (cd, ti, argc, argv);
-
-    case FILTER_POSMASK:
-        //TODO: "Usage: sc_filter posmask <base> filtername FEN"
-        if (argc > 4) db->dbFilter->PositionMask(db->treeFilter);
-        else db->dbFilter->PositionMask(NULL);
-        break;
 
     case FILTER_PREV:
         return sc_filter_prev (cd, ti, argc, argv);
 
     case FILTER_RESET:
         return sc_filter_reset (cd, ti, argc, argv);
-
-    case FILTER_REMOVE:
-        return sc_filter_remove (cd, ti, argc, argv);
 
     case FILTER_SIZE:   // Alias for "sc_filter count"
         return sc_filter_count (cd, ti, argc, argv);
@@ -4943,12 +4935,33 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		  // --- clear filter
     case FILTER_CLEAR:
         return sc_filter_clear (cd, ti, argc, argv);
-
-    default:
-        return InvalidCommand (ti, "sc_filter", options);
     }
 
-    return TCL_OK;
+    if (argc < 4) return errorResult (ti, "Usage: sc_filter <cmd> baseId filterName");
+    scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
+    if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
+    Filter* filter = getFilter(dbase, argv[3]);
+    if (filter == NULL) return errorResult (ti, "sc_filter: invalid filterName");
+    switch (index) {
+    case FILTER_POSMASK:
+        //TODO: "Usage: sc_filter posmask <base> filtername FEN"
+        if (argc > 4) filter->PositionMask(db->treeFilter);
+        else filter->PositionMask(NULL);
+        return TCL_OK;
+
+    case FILTER_SET:
+        if (argc == 5) {
+            filter->Fill(strGetUnsigned(argv[4]));
+            return TCL_OK;
+        }
+        uint gNum = strGetUnsigned (argv[5]);
+        if (gNum > 0 && gNum <= dbase->numGames) {
+            filter->Set(gNum -1, strGetUnsigned(argv[4]));
+            return TCL_OK;
+        }
+        return errorResult (ti, "Usage: sc_filter set baseId filterName value [gnumber]");
+    }
+    return InvalidCommand (ti, "sc_filter", options);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5285,15 +5298,6 @@ sc_filter_prev (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
     return setUintResult (ti, 0);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_filter_remove:
-//    Removes the numbered game from the filter.
-int
-sc_filter_remove (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-	return TCL_OK;
 }
 
 //END TODO

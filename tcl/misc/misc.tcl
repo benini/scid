@@ -52,14 +52,14 @@ proc bindFocusColors {w {inColor lightYellow} {outColor white}} {
 proc ttk_bindMouseWheel {bindtag callback} {
     switch -- [tk windowingsystem] {
 	x11 {
-	    bind $bindtag <ButtonPress-4> "$callback -1"
-	    bind $bindtag <ButtonPress-5> "$callback +1"
+	    bind $bindtag <ButtonPress-4> "$callback -1; break"
+	    bind $bindtag <ButtonPress-5> "$callback +1; break"
 	}
 	win32 {
-	    bind $bindtag <MouseWheel> [append callback { [expr {-(%D/120)}]}]
+	    bind $bindtag <MouseWheel> "[append callback { [expr {-(%D/120)}]}]; break"
 	}
 	aqua {
-	    bind $bindtag <MouseWheel> [append callback { [expr {-(%D)}]} ]
+	    bind $bindtag <MouseWheel> "[append callback { [expr {-(%D)}]} ]; break"
 	}
     }
 }
