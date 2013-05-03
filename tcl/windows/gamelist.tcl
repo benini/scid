@@ -15,19 +15,84 @@ image create photo glist_ImgBoard -format gif -data {
 R0lGODlhGAAYAKUgACkqJzksJHU+J4BGLIpNM5NQMaFZOGpulq9kPnlweotxYnx3ka13T6x9UriFWYOTvqCZkrGpjqert9Csgb6xrp++4NDNrrXQ7M3UzMfZ3Pflqufw5fz0t/zy0f35wvv5yv///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKACAALAAAAAAYABgAAAb+wIljSCwOGwwGMslkODpQaKFgqEY7n6o2+tR4NYJwmEMmD87nb/crFgzKZvRA3fmCFZB8B04gDPp0dhQQFBQSEhQeZAQFjARqBWIUGBuVGQsHElNwHIwDDpFhFJWWC5gRBYplUwWgYQqjpJcHBxQGiqpTBA4GrxCkG5eYErcexhwGU7xiEhsYGBkZtLW3H9Yeya11HBoZCaamFeIWHwjmCAZlT2URFaa0FRcYHx3n5mUMe2UKGQ8HDxfykLOHAN8HOAUGKFgY4UMEABAIHmugjwyrKtY6JACgwN4HRQx6nSGAy5q9ABCxlKsSEg0BDsY8ZElmAAFKCCZZGhj5EqZDTCoJBTyEMFCnmz9ljBG0EAHnTAMhjxaAg62mOWvXtOTTUKYPo1QyrVnF+JHBB65m+myKWVXLRw9b0f75mrTtFFxBAAA7
 }
 
-proc ::windows::gamelist::Open {{w .glistWin}} {
+proc ::windows::gamelist::Open {{w .glistWin} {title ""} {layout ""} {base 0} {filter "dbfilter"}} {
 	if {[::createToplevel $w] == "already_exists"} {
 		focus .
 		destroy $w
 		return
 	}
 
-	set ::gamelistBase($w) 0
-	set ::gamelistMenu($w) ""
-	set ::gamelistFilter($w) "dbfilter"
+	if {$title == ""} {
+		set ::gamelistTitle($w) "[tr WindowsGList]:"
+	} else {
+		set ::gamelistTitle($w) $title
+	}
+	if {$layout != ""} { set ::glistLayout($w) $layout }
+	set ::gamelistBase($w) $base
+	set ::gamelistFilter($w) $filter
 	set ::gamelistPosMask($w) 0
+	set ::gamelistMenu($w) ""
 	standardShortcuts $w
+	if {$w == ".glistWin"} { ::windows::gamelist::createMenu_ $w }
+	::windows::gamelist::createGList_ $w
+	grid rowconfigure $w 0 -weight 1
+	grid columnconfigure $w 0 -weight 0
+	grid columnconfigure $w 1 -weight 0
+	grid columnconfigure $w 2 -weight 1
+	bind $w <Destroy> {
+		set idx [lsearch $::windows::gamelist::wins %W]
+		set ::windows::gamelist::wins [lreplace $::windows::gamelist::wins $idx $idx]
+	}
+	lappend ::windows::gamelist::wins $w
+	createToplevelFinalize $w
+	::windows::gamelist::Refresh
+}
 
+proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
+	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
+	foreach w $wlist {
+		if {[winfo exists $w]} {
+			if {$w == ".glistWin"} { #TODO: write better code for this
+				catch {sc_filter posmask $::gamelistBase($w) dbfilter}
+				set ::gamelistBase($w) [sc_base current]
+				if {$::gamelistPosMask($w) == 0} {
+					sc_filter posmask $::gamelistBase($w) dbfilter
+				} else {
+					sc_filter posmask $::gamelistBase($w) dbfilter FEN
+				}
+			}
+			::windows::gamelist::update_ $w $moveup
+		}
+	}
+}
+
+proc ::windows::gamelist::PosChanged {{wlist ""}} {
+	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
+	foreach w $wlist {
+		#TODO: Write better code for this
+		if {![winfo exists $w]} { continue }
+		if {[winfo exists .treeWin$::gamelistBase($w)]} {
+			::windows::gamelist::update_ $w 1
+			continue
+		}
+		if { $::gamelistPosMask($w) != 0 } {
+			catch { destroy $w.tmp }
+			canvas $w.tmp
+			sc_progressBar $w.tmp "..." 0 0
+			$w.games.glist tag configure fsmall -foreground #ededed
+			sc_tree search -base $::gamelistBase($w)
+			$w.games.glist tag configure fsmall -foreground ""
+			::notify::DatabaseChanged
+		}
+		#################
+	}
+}
+
+
+#Private:
+set ::windows::gamelist::wins {}
+
+proc ::windows::gamelist::createMenu_ {w} {
 	ttk::frame $w.buttons -padding {5 5 2 5}
 	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
 	ttk::button $w.buttons.filter -image engine_on -command "::windows::gamelist::menu_ $w filter"
@@ -80,53 +145,10 @@ proc ::windows::gamelist::Open {{w .glistWin}} {
 	grid rowconfigure $w.layout 0 -weight 1
 	grid columnconfigure $w.layout 0 -weight 1
 	::glist_Ly::Create $w
-
-	::windows::gamelist::createGList_ $w
-
-	grid rowconfigure $w 0 -weight 1
-	grid columnconfigure $w 0 -weight 0
-	grid columnconfigure $w 1 -weight 0
-	grid columnconfigure $w 2 -weight 1
-	bind $w <Destroy> { set idx [lsearch $::windows::gamelist::wins %W]; set ::windows::gamelist::wins [lreplace $::windows::gamelist::wins $idx $idx] }
-	lappend ::windows::gamelist::wins $w
-	createToplevelFinalize $w
-
-	::windows::gamelist::Refresh
 }
-
-proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
-	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
-	foreach w $wlist {
-		if {[winfo exists $w]} {
-			set ::gamelistBase($w) [sc_base current]
-			::windows::gamelist::update_ $w $moveup
-		}
-	}
-}
-
-proc ::windows::gamelist::PosChanged {{wlist ""}} {
-	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
-	foreach w $wlist {
-		if {[winfo exists $w] && $::gamelistPosMask($w) != 0} {
-			#TODO: Write better code for this
-			if {[winfo exists $w.tmp] } { destroy $w.tmp }
-			canvas $w.tmp
-			sc_progressBar $w.tmp "..." 0 0
-			$w.games.glist tag configure fsmall -foreground #ededed
-			sc_tree search -base $::gamelistBase($w)
-			$w.games.glist tag configure fsmall -foreground ""
-			#################
-			::notify::DatabaseChanged
-		}
-	}
-}
-
-
-#Private:
-set ::windows::gamelist::wins {}
 
 proc ::windows::gamelist::createGList_ {{w}} {
-	if {[winfo exists $w.games]} { destroy $w.games}
+	if {[winfo exists $w.games]} { destroy $w.games }
 	ttk::frame $w.games -borderwidth 0 -padding {8 5 5 2}
 	glist.create $w.games $::glistLayout($w)
 	grid $w.games -row 0 -column 2 -sticky news
@@ -146,7 +168,7 @@ proc ::windows::gamelist::update_ {{w} {moveUp}} {
 		}
 	}
 	set fn [file tail [sc_base filename $::gamelistBase($w)]]
-	::setTitle $w "$fn ($fr)"
+	::setTitle $w "$::gamelistTitle($w) $fn ($fr)"
 	if {$moveUp} {
 		#Reset double-click behavior
 		set ::glistClickOp($w.games.glist) 0
@@ -178,7 +200,7 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
 		sc_filter posmask $::gamelistBase($w) dbfilter
-		::windows::gamelist::update_ $w 1
+		::notify::DatabaseChanged
 	}
 }
 
@@ -575,8 +597,10 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
       $w_entryT configure -bg red
     }
   } else {
-    set ::glistFirst($w) [expr $r -1]
-    glist.ybar_ $w scroll
+    if {[expr $::glistFirst($w) + $::glistVisibleLn($w)] <= $r} {
+      set ::glistFirst($w) [expr $r -1]
+      glist.ybar_ $w scroll
+    }
     after idle glist.select_ $w $r
   }
   unbusyCursor .

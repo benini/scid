@@ -18,7 +18,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3 4} tag {File Mask Sort Opt Help} {
     configMenuText $m $idx Tree$tag $lang
   }
-  foreach idx {0 1 2 3 4 5 7 8 10 12} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Best Graph Copy Close} {
+  foreach idx {0 1 2 3 4 5 7 9 11} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
   foreach idx {0 1 2 3 4 5 6 7 8 9} tag {New Open OpenRecent Save Close FillWithGame FillWithBase Search Info Display} {
@@ -81,11 +81,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set tree(locked$baseNumber) $locked
   set tree(base$baseNumber) $baseNumber
   set tree(status$baseNumber) ""
-  set tree(bestMax$baseNumber) 50
   set tree(order$baseNumber) "frequency"
-  trace variable tree(bestMax$baseNumber) w "::tree::doTrace bestMax"
-  set tree(bestRes$baseNumber) "1-0 0-1 1/2 *"
-  trace variable tree(bestRes$baseNumber) w "::tree::doTrace bestRes"
   set tree(allgames$baseNumber) 1
   
   bind $w <Destroy> "::tree::closeTree $baseNumber"
@@ -129,17 +125,14 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set helpMessage($w.menu.file,5) TreeFileCacheInfo
   
   $w.menu.file add separator
-  $w.menu.file add command -label TreeFileBest -command "::tree::best $baseNumber 1"
-  set helpMessage($w.menu.file,7) TreeFileBest
-  
   $w.menu.file add command -label TreeFileGraph -command "::tree::graph $baseNumber 1"
-  set helpMessage($w.menu.file,8) TreeFileGraph
+  set helpMessage($w.menu.file,7) TreeFileGraph
   $w.menu.file add separator
   $w.menu.file add command -label TreeFileCopy -command "::tree::menuCopyToSelection $baseNumber"
-  set helpMessage($w.menu.file,10) TreeFileCopy
+  set helpMessage($w.menu.file,9) TreeFileCopy
   $w.menu.file add separator
   $w.menu.file add command -label TreeFileClose -command ".treeWin$baseNumber.buttons.close invoke"
-  set helpMessage($w.menu.file,12) TreeFileClose
+  set helpMessage($w.menu.file,11) TreeFileClose
   
   $w.menu.mask add command -label TreeMaskNew -command "::tree::mask::new"
   set helpMessage($w.menu.mask,0) TreeMaskNew
@@ -216,7 +209,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both
   
-  ttk::button $w.buttons.best -image b_list -style Pad0.Small.TButton -command "::tree::best $baseNumber 1"
+  ttk::button $w.buttons.best -image b_list -style Pad0.Small.TButton -command "::tree::best $baseNumber"
   ttk::button $w.buttons.graph -image b_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber 1"
   # add a button to start/stop tree refresh
   ttk::button $w.buttons.bStartStop -image engine_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
@@ -270,10 +263,7 @@ proc ::tree::closeTree {baseNumber} {
   
   ::tree::hideCtxtMenu $baseNumber
     #  .treeWin$baseNumber.buttons.stop invoke
-  
-  trace remove variable tree(bestMax$baseNumber) write "::tree::doTrace bestMax"
-  trace remove variable tree(bestRes$baseNumber) write "::tree::doTrace bestRes"
-  
+
   set ::geometry(treeWin$baseNumber) [wm geometry .treeWin$baseNumber]
   focus .
   
@@ -284,7 +274,6 @@ proc ::tree::closeTree {baseNumber} {
   }
   
   if {[winfo exists .treeGraph$baseNumber]} { destroy .treeGraph$baseNumber }
-  ::docking::cleanup .treeBest$baseNumber
   destroy .treeBest$baseNumber
   ::docking::cleanup .treeWin$baseNumber
   destroy .treeWin$baseNumber
@@ -293,15 +282,6 @@ proc ::tree::closeTree {baseNumber} {
   ::windows::stats::Refresh;
   set curr_base [sc_base current]
   set ::treeWin [winfo exists .treeWin$curr_base]
-}
-################################################################################
-proc ::tree::doTrace { prefix name1 name2 op} {
-  if {[scan $name2 "$prefix%d" baseNumber] !=1 } {
-    tk_messageBox -parent . -icon error -type ok -title "Fatal Error" \
-        -message "Scan failed in trace code\ndoTrace $prefix $name1 $name2 $op"
-    return
-  }
-  ::tree::best $baseNumber
 }
 ################################################################################
 proc ::tree::toggleTraining { baseNumber } {
@@ -458,7 +438,6 @@ proc ::tree::dorefresh { baseNumber } {
   
   if { $moves == "canceled" } { return "canceled"}
   displayLines $baseNumber $moves  
-  if {[winfo exists .treeBest$baseNumber]} { ::tree::best $baseNumber}
 
   grid forget $w.progress
 }
@@ -906,21 +885,17 @@ proc ::tree::prime { baseNumber } {
 
 ################################################################################
 # ::tree::best
-#   Updates the window of best (highest-rated) tree games.
-#   bpress: the button/menu was selected => bring window to front
+#   Open/Close the window of best (highest-rated) tree games.
 #
-proc ::tree::best { baseNumber {bpress 0}} {
-  if {! [winfo exists .treeWin$baseNumber]} { return }
-
+proc ::tree::best { baseNumber } {
   set w .treeBest$baseNumber
-  if {$bpress && [::createToplevel $w] != "already_exists"} {
-    ::setTitle $w "Scid: $::tr(TreeBestGames) $baseNumber: [file tail [sc_base filename $baseNumber]]"
-    bind $w <Configure> "recordWinSize $w"
-    glist.create $w "best"
-    createToplevelFinalize $w
+  if {[winfo exists $w]} {
+    destroy $w
+  } else {
+    .treeWin$baseNumber.buttons.best state pressed
+    ::windows::gamelist::Open $w "$::tr(TreeBestGames):" "best" $::tree(base$baseNumber) tree
+    bind $w <Destroy> "+.treeWin$baseNumber.buttons.best state !pressed"
   }
-
-  glist.update $w $::tree(base$baseNumber) tree
 }
 
 ################################################################################
