@@ -453,16 +453,11 @@ namespace eval ::notify {
   }
 
   proc DatabaseChanged {{moveUp 1}} {
-    after cancel ::windows::gamelist::Refresh $moveUp
-    after cancel ::windows::switcher::Refresh
-    after cancel ::windows::stats::Refresh
-    after cancel updateTitle
-    after cancel updateStatusBar
-    after idle ::windows::gamelist::Refresh $moveUp
-    after idle ::windows::switcher::Refresh
-    after idle ::windows::stats::Refresh
-    after idle updateTitle
-    after idle updateStatusBar
+    ::windows::gamelist::Refresh $moveUp
+    ::windows::switcher::Refresh
+    ::windows::stats::Refresh
+    updateTitle
+    updateStatusBar
     set curr_base [sc_base current]
     set ::treeWin [winfo exists .treeWin$curr_base]
   }

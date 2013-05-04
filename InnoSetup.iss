@@ -1,5 +1,5 @@
 
-#define AppVersion '4.4'
+#define AppVersion '4.5.1'
 #define AppName    'Scid'
 #define TCLDIR     'C:\Tcl'
 
@@ -9,6 +9,7 @@ AppVerName={# AppName} {# AppVersion}
 AppVersion={# AppVersion}
 AppPublisher=The Scid project
 AppPublisherURL=http://http://scid.sourceforge.net
+UsePreviousAppDir=no
 DefaultDirName={userdocs}\{# AppName}-{# AppVersion}
 DefaultGroupName={# AppName}
 DisableStartupPrompt=yes
@@ -60,7 +61,8 @@ Source: "{# TCLDIR}\bin\tk85.dll"; DestDir: "{app}\bin"
 Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tcl8.5\*"; DestDir: "{app}\lib\tcl8.5"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tk8.5\*"; DestDir: "{app}\lib\tk8.5"; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\teapot\package\win32-ix86\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs
+Source: "{# TCLDIR}\lib\teapot\package\win32-ix86\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs skipifsourcedoesntexist
+Source: "{# TCLDIR}\lib\teapot\package\win32-x86_64\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs skipifsourcedoesntexist
 
 [Dirs]
 Name: "{app}\bin\config"
@@ -70,9 +72,11 @@ Name: "{group}\{# AppName}"; Filename: "{app}\bin\scid.exe"; Comment: "{# AppNam
 Name: "{group}\Uninstall {# AppName}"; Filename: "{uninstallexe}";
 Name: "{userdesktop}\{# AppName}"; Filename: "{app}\bin\scid.exe"; Tasks: desktopicon; Comment: "Desktop {# AppName}!"; WorkingDir: {app}\bin
 
-
 [Run]
-Filename: "{app}\bin\scid.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\scid.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"
+
+[Messages]
+FinishedLabelNoIcons=Setup has finished installing [name] on your computer. Visit our wiki pages ( http://sourceforge.net/p/scid/wiki ) to get additional resources.
 
 [Code]
 procedure CreateEngineDat();
@@ -89,7 +93,7 @@ begin
       if WizardForm.TasksList.Checked[Index] then
       begin
           SetArrayLength(lines, 13);
-          lines[0]  := '# Analysis engines list file for Scid 4.4 with UCI support'
+          lines[0]  := '# Analysis engines list file for Scid'
           lines[1]  := ''
           lines[2]  := 'engine {'
           lines[3]  := '  Name Stockfish'

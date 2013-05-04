@@ -1133,3 +1133,56 @@ scid-4.4
 	* Fix: ::gbrowser::size is stored in options.dat
 	* Fix: createToplevel raise the window if it already exists
 
+[may 2013 ]
+scid-4.5.1
+==========
+- New features:
+	* New "Gamelist window" with:
+		- Dynamic sorting with multiple criterias
+		- Keyboard-friendly (up-down arrow keys to select a game;
+		                     return key to load a game;
+		                     left-right keys to change game position;
+		                     delete key to delete/undelete a game;
+		                     ctrl+delete key to remove a game from filter)
+		- Integrated database switcher
+		- Multiple layouts (columns and sorting)
+		- Current position "mask"
+		- "Find Bar" that can be hidden
+	* Chess engine tournament (comp.tcl imported from scidvspc)
+	* Added horizontal shading for Statistics and Tree Window
+	* New Option: Premove for FICS
+	* New edit command: redo
+
+- Language updates:
+	* finnish translation (thanks to Timo Pirinen)
+
+- Fixes :
+	* Fix: Removed tk.h dependency (update of Mac OS X build process)
+	* Fix: F3 was launching engine #1 instead of engine #2
+	* Fix: Enable Undo Feature for Setup Start Board
+	* Fix: Do not clobber current game while examining historical FEN in Setup Board
+	* Fix: Setup Board, correct settings for side to move, move number, castling, and en passant
+	* Fix: Broken ComboBox for Setup Start Board, selecting FEN history
+	* Fix: init ::fics::playing
+	* Fix: Don't suggest moves while playing on FICS
+	* Fix: ECO Browser displays no information
+	* Fix: Statistics Window, straightened report columns to vertical
+	* Fix: Statistics Window, no stats after 2008
+	* Fix: Filter graphs defaulted to 2007
+	* Fix: Tree graph window, save as postscript
+	* Fix: Redraw tree graph when window is resized.
+	* Fix: engine checkboxes: removed checkboxes for modal config windows using duplicate variables
+	* Fix: Use a more precise OS test in win.tcl.
+	* Fix: Don't hide nonexistant popups. Also, no need to refresh because pgnOffsets are correct
+	* Fix: Avoid scid crash if analysis engine fail on start
+	* Fix: Menu tree window checkbox
+	* Fix: If main board is flipped, popups should also be flipped
+	* Fix: When switching languages, an open notation window should be updated
+	* Fix: popup board for subvariations
+	* Fix: Bug #34, Two different Mini Boards for the same Move
+	* Fix: egtb compile warnings, thanks to Mikhail Kalenkov
+	* Fix: text pasted twice in EPD editor, thanks to Daniel Karlsson
+	* Fix: return value for sc_tree time
+	* Fix: Suppress 'Load Game Number' when no games are present
+	* Fix: Allow White to move against FICS puzzlebot
+	* Fix: Don't assess FICS unrated matches
