@@ -1228,10 +1228,9 @@ proc helpAbout {} {
   append str "Scid: Shane's chess information database\n\n"
   append str "Version $::scidVersion, $::scidVersionDate\n"
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
-  append str "Author: Shane Hudson\n"
-  append str "Author: Pascal Georges\n"
   append str "Copyright (C) 1999-2004 Shane Hudson\n"
   append str "Copyright (C) 2006-2009 Pascal Georges\n"
+  append str "Copyright (C) 2010- The Scid Project\n"
   append str "Scid is licenced under the\n"
   append str "GNU General Public License.\n"
   set asserts [sc_info asserts]
