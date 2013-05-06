@@ -165,8 +165,7 @@ Recognizer::KPK (Position * pos)
     uint wdist = square_Distance (wk, wp);
     uint bdist = square_Distance (bk, wp);
     if (stm == WHITE) { bdist++; }
-    // TODO: check if the "+ 2" below can safely be "+ 1".
-    if (bdist + 2 < wdist) { return DRAW; }
+    if (bdist + 1 < wdist && bdist + wpRank <= RANK_8 + 1) { return DRAW; }
 
     // Black king in front of a rook pawn: safe draw.
     if ((wpFyle == A_FYLE  ||  wpFyle == H_FYLE)  &&  wpFyle == bkFyle) {
@@ -184,9 +183,9 @@ Recognizer::KPK (Position * pos)
 
     // White king two ranks in front of the pawn, on the same file or an
     // adjacent file: win
-    if (wpRank + 2 == wkRank) {
+    if (wpRank + 2 == wkRank && wpFyle != A_FYLE && wpFyle != H_FYLE && wdist < bdist) {
         int fileDiff = (int)wpFyle - (int)wkFyle;
-        if (fileDiff >= -1  &&  fileDiff < 1) {
+        if (fileDiff >= -1  &&  fileDiff <= 1) {
             return (stm == WHITE) ? winValue : lossValue;
         }
     }
