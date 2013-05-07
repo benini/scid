@@ -7,14 +7,6 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation.
 
-#TODO: move icons out of tcl code (image create photo -file)
-image create photo glist_ImgLayout -format gif -data {
-R0lGODlhGAAYAKUgAEeFSE+ESIeCgYOFgomHi4Okfayuq7Cyr5HJObeysbWzt7m+wKbYUcLEx8jNz9HW2b7vYNfd39zi5Ofk6c/4a+Xl8OLn6c38Zebs7uvw8/Tu7e/x7fD1+Pj69/X7/f7//P///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKACAALAAAAAAYABgAAAb6wEJgSCwajwHhhcJsOp/Py5CCqFqvWCxlyuh6v2DwFnCBmM/odPoCECLfxvZkUqnT6/a5fl+ZGwQEgQQGEw0KCgmJiouIDQMbkJADFgcdlpeYmAePC50bAxiVD6OkpaMdBwIbCw0Ln6EdprIPqI8Nt58ZohG8vb60mxq3DRoDuh2+yb21Gw7OnxyVysq1Gs4OxdHIEtzd3hGoqtefHpXe593MpOTmFu7v8BLVpMUeCR3w+e/MvZ8flfr0dTDwqN+Afx0wKFzIUOHAR938VWpIEcPDDe8kdtCQoaPHjxouZsCQQSOHkyhTnhy4SYDLAQc+ODBAs6ZNmw6CAAA7
-}
-image create photo glist_ImgBoard -format gif -data {
-R0lGODlhGAAYAKUgACkqJzksJHU+J4BGLIpNM5NQMaFZOGpulq9kPnlweotxYnx3ka13T6x9UriFWYOTvqCZkrGpjqert9Csgb6xrp++4NDNrrXQ7M3UzMfZ3Pflqufw5fz0t/zy0f35wvv5yv///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKACAALAAAAAAYABgAAAb+wIljSCwOGwwGMslkODpQaKFgqEY7n6o2+tR4NYJwmEMmD87nb/crFgzKZvRA3fmCFZB8B04gDPp0dhQQFBQSEhQeZAQFjARqBWIUGBuVGQsHElNwHIwDDpFhFJWWC5gRBYplUwWgYQqjpJcHBxQGiqpTBA4GrxCkG5eYErcexhwGU7xiEhsYGBkZtLW3H9Yeya11HBoZCaamFeIWHwjmCAZlT2URFaa0FRcYHx3n5mUMe2UKGQ8HDxfykLOHAN8HOAUGKFgY4UMEABAIHmugjwyrKtY6JACgwN4HRQx6nSGAy5q9ABCxlKsSEg0BDsY8ZElmAAFKCCZZGhj5EqZDTCoJBTyEMFCnmz9ljBG0EAHnTAMhjxaAg62mOWvXtOTTUKYPo1QyrVnF+JHBB65m+myKWVXLRw9b0f75mrTtFFxBAAA7
-}
-
 proc ::windows::gamelist::Open {{w .glistWin} {title ""} {layout ""} {base 0} {filter "dbfilter"}} {
 	if {[::createToplevel $w] == "already_exists"} {
 		focus .
@@ -96,8 +88,8 @@ proc ::windows::gamelist::createMenu_ {w} {
 	ttk::frame $w.buttons -padding {5 5 2 5}
 	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
 	ttk::button $w.buttons.filter -image engine_on -command "::windows::gamelist::menu_ $w filter"
-	ttk::button $w.buttons.layout -image glist_ImgLayout -command "::windows::gamelist::menu_ $w layout"
-	ttk::button $w.buttons.boardFilter -image glist_ImgBoard -command "::windows::gamelist::searchpos_ $w"
+	ttk::button $w.buttons.layout -image tb_Layout -command "::windows::gamelist::menu_ $w layout"
+	ttk::button $w.buttons.boardFilter -image tb_BoardMask -command "::windows::gamelist::searchpos_ $w"
 	#TODO:
 	#ttk::button $w.buttons.stats -image b_bargraph
 	#TODO: translate

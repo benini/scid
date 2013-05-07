@@ -298,11 +298,9 @@ LANGUAGES = tcl\lang\catalan.tcl tcl\lang\czech.tcl tcl\lang\deutsch.tcl tcl\lan
 #
 TCLS= \
   tcl\start.tcl \
-  tcl\config.tcl \
   tcl\bitmaps.tcl \
   tcl\language.tcl \
   tcl\utils.tcl \
-  tcl\misc\flags.tcl \
     tcl\utils\date.tcl tcl\utils\font.tcl tcl\utils\graph.tcl tcl\utils\history.tcl \
     tcl\utils\pane.tcl tcl\utils\sound.tcl tcl\utils\string.tcl tcl\utils\tooltip.tcl \
     tcl\utils\validate.tcl tcl\utils\win.tcl \

@@ -42,37 +42,6 @@ namespace eval Bibliography {
 
 	set literature ""
 
-image create photo tb_bibliography -data {
-	R0lGODlhEAAPAMZrAAAAAA4ODg0RFRYdJB0gIyUlJSInLiIsNC4vNC41OzM7Qi89STw8PDpETkFG
-	TEJHS0JHTEVITD1KV0VJTj5MVzFOazJOa0ZLUDJPbElMTjNQbjRRbUtOUTVSbk5OTkVQXDpXdTxY
-	dE5WXT1ZdD9adVZXWUJceFhbX0Rgfk5fcUlgeEVhfU1gcVteYUpielhgaUhkgltiaU5lfFNnfGJl
-	aU1ph2JmaU9riWVpbmFqc1lsgFNtimdqbVJujFNvjV1vg2NvfF1xe15xhGBze1h0knBxc1p2k114
-	lGx5cmB7mHF+d2V/m2aAnG5/kGuFoXSFloKIdHqKm36Pn4+UmYKYsY2gtqChgZ6lr5qqvJ6ruZut
-	v6Sxv66wsqqyuqu6ya+7ybu9wMvMze7WgN3h5Obm6OTn6efo6evt7u7v8O/w8PDx8v//////////
-	/////////////////////////////////////////////////////////////////////////yH+
-	EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQAA8AAAekgH+Cg4SFhQYAiYqKhgFYRzsr
-	IyEkJikAhABeSzdinlAWKhSFBVpGVkMaFWIdKSKYggBbTD0oSp5ILhIZRYMMVUQ1QWIVFRszCSWw
-	AF9OPjAgGMUyCzywfx5USTcoxMUsCg/LV1JRT01CPz86HyfXAC8IExwcEQ4QFzg07zk2XGZk0qA5
-	E2bKtT8EEjUAkmVMGTVgWhwctOhAjC4TDf0RkGhAoUAAOw==
-}
-
-if {$png_image_support} {
-	image create photo tb_bibliography -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAPCAYAAADtc08vAAACYElEQVR42q2TS0hUcRSHv7l3nHFG
-		HXykk4KTmIObbGVpJG1aFSFFVEK7WojkplZBaEGbFolCEUhZSIkRlWXpYiaJsqRMsxoKo8YHSfkY
-		argzdx733rn/FjoSItSiA2dzOOc7L37wn81eXrm1ExB/c0dOfjMgWdYAGlwuV+/Fa/cZfjtJTI2h
-		RCMkEnGEAFmyIEsy2XKS/u52ANm6BtDbddeP7+UHlIjKjRNxQAayudwf5cFIDHd+DuHQdwHsBMw/
-		AQe9Xi/hSAw1nuDA9gSnunQCwQimmWLoQiGPRjUyRJJcpw1gBLCkV5AB49bDpzyfCBL6GUZRFKo8
-		SVoaHAC03lSYWsgkMh80s6U4lV7vvY72tsPpCY7X1dWx8CuOEo2h6zrFeSlaGhzsPr203EGW2FTk
-		ZG5pjuJyDx3tbYcAW3oC0ed/zZPRSeYXQ6iqihJJH08AUOrOY3ZynNqqCjqvXALYBQxLwP76+noC
-		wXnUWBzDMDAMg8dns1aLAYSuYjWTfAlOmSuhYQALIK739ImZxbDF0A00XUfTNMJKFGEuA4xUitDc
-		VwqyZG73dJNhz2zVk4nzAFYAn99n+TTxJuUuKZFtGTIAmqZjmMtntlqtlHk8pAwd4GO6eBXgcDqp
-		rtkm79u7hx21NQhT4HBmIgSkTJOZ6WlevBrjZHMjFkk6J0xzdTW5tGyz85l/IGdifMz9LaSqgc+z
-		Ns1ix70hFyEEDrudqelZBgcHCLx/B0IcWU8DBUATcBUYAn4AonxLtXb0WJNxp9+nA8Lpyj/zL4La
-		uPKixpy8wq60eIpKK/zrJf8GjDkZQZW6Gi0AAAAASUVORK5CYII=
-	}
-}
-
 	#----------------------------------------------------------------------
 	# Take a ref structure and turn it into a simplified version of
 	# ISBD reference output

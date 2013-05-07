@@ -188,6 +188,24 @@ set scidConfigDir [file nativename [file join $scidUserDir "config"]]
 set scidDataDir [file nativename [file join $scidUserDir "data"]]
 set scidLogDir [file nativename [file join $scidUserDir "log"]]
 
+# scidShareDir, scidImgDir, scidBooksDir, scidBasesDir, ecoFile:
+#	Location of Scid resources
+set scidShareDir [file normalize [file join $scidExeDir "../share/scid"]]
+if {! [file isdirectory $::scidShareDir]} {
+  set scidShareDir $::scidExeDir
+}
+set scidImgDir [file nativename [file join $scidShareDir "img"]]
+#Default values, can be overwritten by file option
+set scidBooksDir [file nativename [file join $scidShareDir "books"]]
+set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
+set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
+#####
+# Set up Scid icon
+set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
+if {[file readable $scidIconFile]} {
+  wm iconphoto . -default [image create photo -file "$scidIconFile"]
+}
+
 # boardSizes: a list of the available board sizes.
 set boardSizes [list 25 30 35 40 45 50 55 60 65 70 80]
 set boardSizesOLD [list 21 25 29 33 37 40 45 49 54 58 64 72]
@@ -201,11 +219,8 @@ set boardfile_lite "emptySquare"
 # boardSize: Default board size. See the available board sizes above.
 set boardSize 40
 
-# boardStyle: Default board piece set. See bitmaps.tcl for styles.
+# boardStyle: Default board piece set.
 set boardStyle Merida1
-if { [catch { package require img::png } ] } {
-  set boardStyle Alpha
-}
 
 # language for help pages and messages:
 set language E
@@ -1053,19 +1068,6 @@ set engines(sort) Time
 set engineCoach1 {}
 set engineCoach2 {}
 
-# Set up Scid icon
-  set iconFileDirs [list \
-      $scidExeDir [file join $scidExeDir "../share/scid"]]
-
-  foreach iconFileDir $iconFileDirs {
-    set scidIconFile [file join $iconFileDir "scid.gif"]
-    if {[file readable $scidIconFile]} {
-      set iconimage [image create photo -file "$scidIconFile"]
-      wm iconphoto . -default $iconimage
-      break
-    }
-  }
-
 
 # Reversed mouse buttons in mac (::MB2 and ::MB3 are middle and right mouse buttons respectively.):
 if { $macOS } {
@@ -1446,7 +1448,6 @@ moveOldConfigFiles
 
 set optionsFile [scidConfigFile options]
 
-set ecoFile ""
 
 ################################################################################
 #  Load options file. All default values should be set before this point or new saved values will be overwritten by default ones

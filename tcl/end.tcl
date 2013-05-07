@@ -1,14 +1,6 @@
 # end.tcl: part of Scid.
 # Copyright (C) 2000-2003 Shane Hudson.
 
-# detect the case where, under Linux, Scid is used without prior installation
-# the fallback directory is Scid's exec dir
-if {! [file isdirectory $::scidBasesDir] || ! [file isdirectory $::scidBooksDir]} {
-  set scidShareDir $::scidExeDir
-  set scidBasesDir [file nativename [file join $::scidShareDir "bases"]]
-  set scidBooksDir [file nativename [file join $scidShareDir "books"]]
-}
-
 if { ! [file isdirectory $::scidBooksDir]} {
   tk_messageBox -title "Scid" -type ok -icon warning -message "Books directory not found"
 }
