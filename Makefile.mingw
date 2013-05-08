@@ -146,6 +146,7 @@ setup:
 	@if not exist $(OUT_DIR)\nul mkdir $(OUT_DIR)
 	-copy "$(MINGW_BIN)\libstdc++-6.dll" $(OUT_DIR)
 	-copy "$(MINGW_BIN)\libgcc_s_dw2-1.dll" $(OUT_DIR)
+	xcopy /SY img "$(OUT_DIR)\img\*.*"
 
 scid.gui: $(TCLS)
 	-del $(OUT_DIR)\scid.gui

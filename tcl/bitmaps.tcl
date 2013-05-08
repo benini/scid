@@ -82,14 +82,19 @@ foreach {piecetype} [split [glob -directory img/pieces *] " "] {
 proc setPieceFont {font} {
 	foreach size $::boardSizes {
 		image create photo e$size -height $size -width $size
-		image create photo tempPieces$font$size -file "img/pieces/$font/$font\_$size.gif"
+		set fname [file join $::scidImgDir pieces $font]
+		set fpng [file join $fname $font\_$size.png]
+		set fgif [file join $fname $font\_$size.gif]
+		if {[catch {image create photo tmpPieces -file "$fpng"}]} {
+			image create photo tmpPieces -file "$fgif"
+		}
 		set x 0
 		foreach p {wp wn wb wr wq wk bp bn bb br bq bk} {
 			image create photo $p$size -width $size -height $size
-			$p$size copy tempPieces$font$size -from $x 0 [expr $x + $size - 1] [expr $size - 1]
+			$p$size copy tmpPieces -from $x 0 [expr $x + $size - 1] [expr $size - 1]
 			incr x $size
 		}
-		image delete tempPieces$font$size
+		image delete tmpPieces
 	}
 }
 # Ensure the board style is valid:
@@ -101,7 +106,8 @@ setPieceFont $boardStyle
 
 #Load all img/boards/_filename_.gif
 set textureSquare {}
-foreach {fname} [split [glob -directory $scidImgDir/boards *.gif] " "] {
+set dname [file join $::scidImgDir boards]
+foreach {fname} [split [glob -directory $dname *.gif] " "] {
 	set iname [string range [file tail $fname] 0 end-4]
 	image create photo $iname -file $fname
     if {[string range $iname end-1 end] == "-l"} {
@@ -110,13 +116,15 @@ foreach {fname} [split [glob -directory $scidImgDir/boards *.gif] " "] {
 }
 
 #Load all img/buttons/_filename_.gif
-foreach {fname} [split [glob -directory $scidImgDir/buttons *.gif] " "] {
+set dname [file join $::scidImgDir buttons]
+foreach {fname} [split [glob -directory $dname *.gif] " "] {
 	set iname [string range [file tail $fname] 0 end-4]
 	image create photo $iname -file $fname
 }
 
 #Load all img/flags/_filename_.gif
-foreach {fname} [split [glob -directory $scidImgDir/flags *.gif] " "] {
+set dname [file join $::scidImgDir flags]
+foreach {fname} [split [glob -directory $dname *.gif] " "] {
 	set iname [string range [file tail $fname] 0 end-4]
 	image create photo $iname -file $fname
 }

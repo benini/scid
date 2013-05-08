@@ -44,7 +44,7 @@ Root: "HKCU"; Subkey: "Software\Classes\scid\shell\open\command"; ValueType: str
 [Files]
 Source: "Release\*"; DestDir: "{app}\bin"
 Source: "scid.eco"; DestDir: "{app}\bin"
-Source: "scid.gif"; DestDir: "{app}\bin"
+Source: "img\*"; DestDir: "{app}\bin\img"; Flags: recursesubdirs
 Source: "books\*"; DestDir: "{app}\bin\books"; Flags: recursesubdirs
 Source: "stockfish.exe"; DestDir: "{app}\bin\engines"; Tasks: install_stockfish
 Source: "html\*"; DestDir: "{app}\bin\html"; Flags: recursesubdirs
