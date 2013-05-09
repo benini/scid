@@ -70,7 +70,8 @@ foreach p {wp wn wb wr wq wk bp bn bb br bq bk} {
 
 #Search available piece sets
 set boardStyles {}
-foreach {piecetype} [split [glob -directory img/pieces *] " "] {
+set scidPiecesDir [file nativename [file join $scidImgDir "pieces"]]
+foreach {piecetype} [split [glob -directory $scidPiecesDir *] " "] {
 	if {[file isdirectory $piecetype] == 1} {
 		lappend boardStyles [file tail $piecetype]
 	}
