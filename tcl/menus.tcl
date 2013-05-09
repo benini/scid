@@ -1380,7 +1380,7 @@ proc increaseBoardSize {} {
 }
 
 # Menu for changing Piece set:
-menu $m.pieces
+menu $m.pieces -tearoff 1
 foreach i $boardStyles {
   $m.pieces add radio -label $i \
       -variable boardStyle -value $i \
