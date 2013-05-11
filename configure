@@ -7,25 +7,7 @@
 # installed, and where to find the Tcl/Tk header and library 
 # files), and creates the file "Makefile".
 
-
-# Try to find the most recent version of Tcl/Tk 8.x that is installed,
-# by searching the PATH directories for tclsh8.3, tclsh83, etc.  If no
-# tclsh program with a version number in the file name is found, the
-# default program to execute is just tclsh.
-# The backslashes at the end of these lines are needed: \
-# tclsh=tclsh8.5;
-
-# This shell script code did not work for me in Linux so it is
-# commented out for now; the configure script will just run in
-# tclsh even if there is a more recent version.
-## for tclver in 80 8.0 81 8.1 82 8.2 83 8.3 84 8.4 85 8.5; do \
-##   IFS=:; \
-##  for dir in $PATH; do \
-##    if [ -x $dir/tclsh$tclver ]; then tclsh=$dir/tclsh$tclver; fi; \
-##  done; \
-## done
-
-# Now execute this script using the best tclsh version found:
+# Execute this script using tclsh
 # The backslash at the end of this line is needed: \
 exec tclsh "$0" ${1+"$@"}
 
@@ -67,10 +49,7 @@ set var(ZLIB) -lz
 set var(MAKEFILE) Makefile.conf
 set var(INSTALL) {install_scid install_engines}
 
-set defaultVar(TCL_INCLUDE) {-I/usr/include}
-set defaultVar(TCL_LIBRARY) {-L/usr/lib -ltcl$(TCL_VERSION)}
-set defaultVar(TK_LIBRARY) \
-    {$(TCL_LIBRARY) -ltk$(TCL_VERSION) }
+set defaultVar(TCL_INCLUDE) {/usr/include}
 
 if {"$::tcl_platform(os)" == "Darwin"} {
     #Default values for Mac OS X
@@ -220,13 +199,13 @@ proc findTclTkPaths {} {
         if {$opt(tcl_h) == ""} {
             puts "not found"
             set success 0
+            set opt(tcl_h) "$::defaultVar(TCL_INCLUDE)"
         } else {
             puts $opt(tcl_h)
         }
     }
 
     set opt(tcl_lib) ""
-    set opt(tk_lib) ""
 
     if {! [info exists var(TCL_LIBRARY)]} {
         puts -nonewline "    Location of Tcl $tclv library: "
@@ -236,6 +215,8 @@ proc findTclTkPaths {} {
             if {$opt(tcl_lib) == ""} {
                 puts "not found"
                 set success 0
+                set opt(tcl_lib) "$opt(tcl_h)"
+                set opt(tcl_lib_file) "tcl\$(TCL_VERSION)"
             } else {
                 set opt(tcl_lib_file) "tcl${tclv_nodot}"
                 puts $opt(tcl_lib)
@@ -246,41 +227,11 @@ proc findTclTkPaths {} {
         }
     }
 
-    if {! [info exists var(TK_LIBRARY)]} {
-        puts -nonewline "    Location of Tk $tclv library: "
-        set opt(tk_lib) [findDir "libtk${tclv}.*" $libraryPath]
-        if {$opt(tk_lib) == ""} {
-            set opt(tk_lib) [findDir "libtk${tclv_nodot}.*" $libraryPath]
-            if {$opt(tk_lib) == ""} {
-                puts "not found"
-                set success 0
-            } else {
-                set opt(tk_lib_file) "tk${tclv_nodot}"
-                puts $opt(tk_lib)
-            }
-        } else {
-            set opt(tk_lib_file) "tk\$(TCL_VERSION)"
-            puts $opt(tk_lib)
-        }
+    if {! [info exists var(TCL_INCLUDE)]} {
+        set var(TCL_INCLUDE) "-I$opt(tcl_h)"
     }
-
-    # If all files were found, assemble the TCL_INCLUDE, TCL_LIBRARY
-    # and TK_LIBRARY settings:
-
-    if {$success} {
-        if {! [info exists var(TCL_INCLUDE)]} {
-            set var(TCL_INCLUDE) "-I$opt(tcl_h)"
-        }
-        if {! [info exists var(TCL_LIBRARY)]} {
-            set var(TCL_LIBRARY) "-L$opt(tcl_lib) -l$opt(tcl_lib_file)"
-        }
-        if {! [info exists var(TK_LIBRARY)]} {
-            set var(TK_LIBRARY) {$(TCL_LIBRARY)}
-            if {$opt(tk_lib) != $opt(tcl_lib)} {
-                append var(TK_LIBRARY) " -L$opt(tk_lib)"
-            }
-            append var(TK_LIBRARY) " -l$opt(tk_lib_file)"
-        }
+    if {! [info exists var(TCL_LIBRARY)]} {
+        set var(TCL_LIBRARY) "-L$opt(tcl_lib) -l$opt(tcl_lib_file)"
     }
     return $success
 }
@@ -359,26 +310,8 @@ proc checkZlib {} {
 #    Also creates tcl/config.tcl
 #
 proc writeMakefile {{type ""}} {
-    global var defaultVar
-    set default 0
-    set success 0
-    if {$type == "default"} {
-        set default 1
-        set var(CONFIG_RESULT) \
-            {You have not run "./configure" yet.  The default settings are:}
-    } else {
-        set success [findTclTkPaths]
-        set var(CONFIG_RESULT) \
-            {Sorry, "./configure" was not successful. The default settings are:}
-        if {$success} {
-           set var(CONFIG_RESULT) \
-               {The settings determined by "./configure" are:}
-        }
-    }
-
-    foreach name {TCL_INCLUDE TCL_LIBRARY TK_LIBRARY} {
-        if {! [info exists var($name)]} { set var($name) $defaultVar($name) }
-    }
+    global var
+    set success [findTclTkPaths]
 
     checkZlib
 
@@ -417,10 +350,7 @@ proc writeMakefile {{type ""}} {
     close $to
 
     # Summary info
-
-    if {$default} {
-        puts {The default Makefile was written.}
-    } elseif {$success} {
+    if {$success} {
         puts {The Makefile configured for your system was written.}
         if {$var(THREADS) != ""} {
             puts {Multi-threading enabled (if you have problems try ./configure THREADS="").}
@@ -428,8 +358,7 @@ proc writeMakefile {{type ""}} {
         puts {Now just type "make" to compile Scid.}
     } else {
         puts {Not all settings could be determined!}
-        puts {The default Makefile was written.}
-        puts {You will need to edit it before you can compile Scid.}
+        puts {You may need to edit it before you can compile Scid.}
     }
 }
 
@@ -454,7 +383,6 @@ proc usage {} {
     puts {  TCL_LIBRARY  Compiler directives for linking Tcl.}
     puts {  TCL_VERSION  Your Tcl/Tk version. Example: TCL_VERSION="8.3".}
     puts {  THREADS      Flags for c++11 threads. Default: "-std=c++0x -pthread".}
-    puts {  TK_LIBRARY   Compiler directives for linking Tcl/Tk.}
     puts {  WARNINGS     C++ compiler warnings. Default: "-Wall".}
     puts {  MAKEFILE     Makefile configuration file. Default: "Makefile.conf".}
     puts {}
