@@ -2377,7 +2377,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   The tree window has a File menu command and button for opening the
   <term>Best games</term> window, which shows a list of the
   highest-rated games in the currently displayed tree branch.
-  (Equivalently, one can use the <button b_list> button).  The games
+  (Equivalently, one can use the <button tb_list> button).  The games
   are listed in order of average rating, and you can restrict the list
   to show games with a particular result and also limit the number of
   games shown in this list. Additionally, up to 4 flags of the games
@@ -2391,7 +2391,7 @@ set helpText(Tree) {<h1>The Tree window</h1>
   <h3><name Graph>Tree graph window</name></h3>
   <p>
   The tree window buttons include a button marked <term>Graph</term>
-  (<button b_bargraph>) which produces a graphical display of the
+  (<button tb_bargraph>) which produces a graphical display of the
   relative performance of each move from the current position.  All
   moves that have been played at least 1% of the time, and at least 5
   times, are displayed.  Percentage scores are always from White's

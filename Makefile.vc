@@ -421,7 +421,9 @@ setup:
 	@if not exist $(TMP_DIR)\polyglot\nul \
 		@echo *** Creating directory '$(TMP_DIR)\polyglot'...
 	@if not exist $(TMP_DIR)\polyglot\nul mkdir $(TMP_DIR)\polyglot
-	xcopy /SY img "$(OUT_DIR)\img\*.*"
+	@if not exist $(OUT_DIR)\books\nul \
+		@echo *** Creating directory '$(OUT_DIR)\books'...
+	@if not exist $(OUT_DIR)\books\nul mkdir $(OUT_DIR)\books
 
 scid.gui: $(TCLS)
 	@type $(TCLS) > $(OUT_DIR)\scid.gui

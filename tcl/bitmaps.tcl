@@ -68,14 +68,6 @@ foreach p {wp wn wb wr wq wk bp bn bb br bq bk} {
   incr x 20
 }
 
-#Search available piece sets
-set boardStyles {}
-set scidPiecesDir [file nativename [file join $scidImgDir "pieces"]]
-foreach {piecetype} [split [glob -directory $scidPiecesDir *] " "] {
-	if {[file isdirectory $piecetype] == 1} {
-		lappend boardStyles [file tail $piecetype]
-	}
-}
 # setPieceFont:
 #   Given a piece font name, resets all piece images in all
 #   available board sizes to that font.
@@ -98,35 +90,49 @@ proc setPieceFont {font} {
 		image delete tmpPieces
 	}
 }
-# Ensure the board style is valid:
-if {[lsearch -exact $boardStyles $boardStyle] == -1} {
-	set boardStyle [lindex $boardStyles 0]
-}
-# Set up the board style:
-setPieceFont $boardStyle
 
-#Load all img/boards/_filename_.gif
-set textureSquare {}
-set dname [file join $::scidImgDir boards]
-foreach {fname} [split [glob -directory $dname *.gif] " "] {
-	set iname [string range [file tail $fname] 0 end-4]
-	image create photo $iname -file $fname
-    if {[string range $iname end-1 end] == "-l"} {
-		lappend textureSquare [string range $iname 0 end-2]
+proc InitImg {} {
+	global scidImgDir boardStyle boardStyles
+
+	#Search available piece sets
+	set boardStyles {}
+	set dname [file join $scidImgDir "pieces"]
+	foreach {piecetype} [split [glob -directory $dname *] " "] {
+		if {[file isdirectory $piecetype] == 1} {
+			lappend boardStyles [file tail $piecetype]
+		}
+	}
+	# Ensure the board style is valid:
+	if {[lsearch -exact $boardStyles $boardStyle] == -1} {
+		set boardStyle [lindex $boardStyles 0]
+	}
+	setPieceFont $boardStyle
+
+	#Load all img/boards/_filename_.gif
+	set textureSquare {}
+	set dname [file join $::scidImgDir boards]
+	foreach {fname} [split [glob -directory $dname *.gif] " "] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+		if {[string range $iname end-1 end] == "-l"} {
+			lappend textureSquare [string range $iname 0 end-2]
+		}
+	}
+
+	#Load all img/buttons/_filename_.gif
+	set dname [file join $::scidImgDir buttons]
+	foreach {fname} [split [glob -directory $dname *.gif] " "] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+	}
+
+	#Load all img/flags/_filename_.gif
+	set dname [file join $::scidImgDir flags]
+	foreach {fname} [split [glob -directory $dname *.gif] " "] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
 	}
 }
 
-#Load all img/buttons/_filename_.gif
-set dname [file join $::scidImgDir buttons]
-foreach {fname} [split [glob -directory $dname *.gif] " "] {
-	set iname [string range [file tail $fname] 0 end-4]
-	image create photo $iname -file $fname
-}
-
-#Load all img/flags/_filename_.gif
-set dname [file join $::scidImgDir flags]
-foreach {fname} [split [glob -directory $dname *.gif] " "] {
-	set iname [string range [file tail $fname] 0 end-4]
-	image create photo $iname -file $fname
-}
-
+#TODO: group the start-up code into Init* funcs and move all the Init* calls to the end of end.tcl
+InitImg

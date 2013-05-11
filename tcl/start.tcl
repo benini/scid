@@ -161,45 +161,54 @@ set ::tree::mask::recentMask {}
 #############################################################
 # Customisable variables:
 
-# scidExeDir: contains the directory of the Scid executable program.
-# Used to determine the location of various relative data directories.
-set scidExecutable [info nameofexecutable]
-if {[file type $scidExecutable] == "link"} {
-  set scidExeDir [file dirname [file readlink $scidExecutable]]
-  if {[file pathtype $scidExeDir] == "relative"} {
-    set scidExeDir [file dirname [file join [file dirname $scidExecutable]\
-      [file readlink $scidExecutable]]]
+proc InitDirs {} {
+  global scidExeDir scidUserDir scidConfigDir scidDataDir scidLogDir scidShareDir scidImgDir
+  global scidBooksDir scidBasesDir ecoFile
+
+  # scidExeDir: contains the directory of the Scid executable program.
+  # Used to determine the location of various relative data directories.
+  set scidExecutable [info nameofexecutable]
+  if {[file type $scidExecutable] == "link"} {
+    set scidExeDir [file dirname [file readlink $scidExecutable]]
+    if {[file pathtype $scidExeDir] == "relative"} {
+      set scidExeDir [file dirname [file join [file dirname $scidExecutable]\
+        [file readlink $scidExecutable]]]
+    }
+  } else {
+    set scidExeDir [file dirname $scidExecutable]
+ }
+
+  # scidUserDir: location of user-specific Scid files.
+  # This is "~/.scid" on Unix, and the Scid exectuable dir on Windows.
+  if {$::windowsOS} {
+    set scidUserDir $scidExeDir
+  } else {
+    set scidUserDir [file nativename "~/.scid"]
   }
-} else {
-  set scidExeDir [file dirname $scidExecutable]
-}
 
-# scidUserDir: location of user-specific Scid files.
-# This is "~/.scid" on Unix, and the Scid exectuable dir on Windows.
-if {$windowsOS} {
-  set scidUserDir $scidExeDir
-} else {
-  set scidUserDir [file nativename "~/.scid"]
-}
+  # scidConfigDir, scidDataDir, scidLogDir:
+  #   Location of Scid configuration, data and log files.
+  set scidConfigDir [file nativename [file join $scidUserDir "config"]]
+  set scidDataDir [file nativename [file join $scidUserDir "data"]]
+  set scidLogDir [file nativename [file join $scidUserDir "log"]]
 
-# scidConfigDir, scidDataDir, scidLogDir:
-#   Location of Scid configuration, data and log files.
-set scidConfigDir [file nativename [file join $scidUserDir "config"]]
-set scidDataDir [file nativename [file join $scidUserDir "data"]]
-set scidLogDir [file nativename [file join $scidUserDir "log"]]
-
-# scidShareDir, scidImgDir, scidBooksDir, scidBasesDir, ecoFile:
-#	Location of Scid resources
-set scidShareDir [file normalize [file join $scidExeDir "../share/scid"]]
-if {! [file isdirectory $::scidShareDir]} {
-  set scidShareDir $::scidExeDir
+  # scidShareDir, scidImgDir, scidBooksDir, scidBasesDir, ecoFile:
+  #	Location of Scid resources
+  set scidShareDir [file normalize [file join $scidExeDir "../share/scid"]]
+  if {! [file isdirectory $::scidShareDir]} {
+    set scidShareDir $::scidExeDir
+  }
+  set scidImgDir [file nativename [file join $scidShareDir "img"]]
+  if {! [file isdirectory $scidImgDir]} {
+    set scidImgDir [file join $scidExeDir "../img"]
+  }
+  #Default values, can be overwritten by file option
+  set scidBooksDir [file nativename [file join $scidShareDir "books"]]
+  set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
+  set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
 }
-set scidImgDir [file nativename [file join $scidShareDir "img"]]
-#Default values, can be overwritten by file option
-set scidBooksDir [file nativename [file join $scidShareDir "books"]]
-set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
-set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
-#####
+InitDirs
+
 # Set up Scid icon
 set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
 if {[file readable $scidIconFile]} {

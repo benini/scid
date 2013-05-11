@@ -209,8 +209,8 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   pack [ttk::frame $w.buttons -relief sunken] -side bottom -fill x
   pack $w.f -side top -expand 1 -fill both
   
-  ttk::button $w.buttons.best -image b_list -style Pad0.Small.TButton -command "::tree::best $baseNumber"
-  ttk::button $w.buttons.graph -image b_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber 1"
+  ttk::button $w.buttons.best -image tb_list -style Pad0.Small.TButton -command "::tree::best $baseNumber"
+  ttk::button $w.buttons.graph -image tb_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber 1"
   # add a button to start/stop tree refresh
   ttk::button $w.buttons.bStartStop -image engine_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
   
