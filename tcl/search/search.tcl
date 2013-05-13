@@ -32,10 +32,8 @@ proc filterText {{base 0} {kilo 0}} {
 #   updates relevant windows.
 #
 proc ::search::filter::reset {{base 0}} {
-  global glstart
   if {$base == 0} { set base [sc_base current] }
   sc_filter reset $base
-  set glstart 1
   ::windows::gamelist::Refresh
   ::tree::refresh
   ::windows::stats::Refresh
@@ -47,9 +45,7 @@ proc ::search::filter::reset {{base 0}} {
 #   Negates the filter, to include only excluded games.
 #
 proc ::search::filter::negate {} {
-  global glstart
   sc_filter negate
-  set glstart 1
   ::windows::gamelist::Refresh
   ::tree::refresh
   ::windows::stats::Refresh

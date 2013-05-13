@@ -118,7 +118,6 @@ proc ::file::New {} {
 #    Opens file-open dialog and opens the selected Scid database.
 #
 proc ::file::Open {{fName ""}} {
-  global glstart
   if {[sc_base count free] == 0} {
     tk_messageBox -type ok -icon info -title "Scid" \
         -message "Too many databases are open; close one first"
@@ -202,7 +201,6 @@ proc ::file::Open {{fName ""}} {
     flipBoardForPlayerNames $::myPlayerNames
   }
   unbusyCursor .
-  set glstart 1
   updateBoard -pgn
   updateGameInfoMenu
   ::notify::DatabaseChanged

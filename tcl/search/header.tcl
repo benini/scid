@@ -73,7 +73,7 @@ proc ::search::header::defaults {} {
   global sEloDiffMin sEloDiffMax
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax
   global sGnumMin sGnumMax
-  global sResWin sResLoss sResDraw sResOther glstart
+  global sResWin sResLoss sResDraw sResOther
   global sPgntext sTitles
   
   set sWhite "";  set sBlack ""
@@ -110,7 +110,7 @@ proc search::header {} {
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sSideToMove
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
-  global sResWin sResLoss sResDraw sResOther glstart sPgntext
+  global sResWin sResLoss sResDraw sResOther sPgntext
     
   set w .sh
   if {[winfo exists $w]} {
@@ -639,7 +639,6 @@ proc search::header {} {
     unbusyCursor .
     
     .sh.status configure -text $str
-    set glstart 1
     ::windows::gamelist::Refresh
     ::search::loadFirstGame
     
@@ -677,7 +676,7 @@ proc ::search::header::save {} {
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sGlMin sGlMax
   global sEco sEcoMin sEcoMax sHeaderFlags sSideToMove
-  global sResWin sResLoss sResDraw sResOther glstart sPgntext
+  global sResWin sResLoss sResDraw sResOther sPgntext
   
   set ftype { { "Scid SearchOptions files" {".sso"} } }
   set fName [tk_getSaveFile -initialdir [pwd] -filetypes $ftype -title "Create a SearchOptions file"]

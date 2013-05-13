@@ -1196,7 +1196,6 @@ proc ::rep::search {repwin {type all}} {
     } else {
       set ::rep::_data($::_searchRep:status) "  $::tr(RepSearch): $result"
     }
-    set glstart 1
     ::windows::gamelist::Refresh
     ::windows::stats::Refresh
   }

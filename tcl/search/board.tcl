@@ -11,7 +11,7 @@ set sBoardSearchRefBase 0
 #   Opens the search window for the current board position.
 #
 proc ::search::board {} {
-  global glstart searchInVars sBoardType sBoardIgnoreCols
+  global searchInVars sBoardType sBoardIgnoreCols
   
   set w .sb
   if {[winfo exists $w]} {
@@ -96,7 +96,6 @@ proc ::search::board {} {
     .sb.b.stop configure -state disabled
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sb.status configure -text $str
-    set glstart 1
 	 ::tree::refresh
     ::windows::gamelist::Refresh
     set gamesFound [lindex $str 0]

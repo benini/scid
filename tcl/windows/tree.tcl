@@ -401,7 +401,7 @@ proc ::tree::refresh { { baseNumber "" }} {
 
 ################################################################################
 proc ::tree::dorefresh { baseNumber } {
-  global tree treeWin glstart
+  global tree treeWin
   set w .treeWin$baseNumber
   
   if {![winfo exists $w]} { return }
@@ -431,7 +431,6 @@ proc ::tree::dorefresh { baseNumber } {
   $w.buttons.stop configure -state disabled
 
   ::tree::status "" $baseNumber
-  set glstart 1
   ::windows::stats::Refresh
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
   updateTitle

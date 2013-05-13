@@ -1658,7 +1658,6 @@ while {$argc > 0} {
           ::splash::add "   Header filter file $startbase correctly applied"
         }
       }
-      set glstart 1
       ::windows::gamelist::Refresh
       ::windows::stats::Refresh
     }

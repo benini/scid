@@ -159,7 +159,7 @@ set smDisplayed(Patterns) 0
 #   Opens the window for searching by material or patterns.
 #
 proc ::search::material {} {
-  global glstart dark pMin pMax ignoreColors minMoveNum maxMoveNum
+  global dark pMin pMax ignoreColors minMoveNum maxMoveNum
   global pattPiece pattFyle pattRank pattBool oppBishops nPatterns
   global minHalfMoves smDisplayed
   
@@ -569,7 +569,6 @@ proc ::search::material {} {
     unbusyCursor .
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sm.status configure -text $str
-    set glstart 1
 	 ::tree::refresh
     ::windows::gamelist::Refresh
     
