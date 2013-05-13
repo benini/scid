@@ -105,6 +105,7 @@ proc ::search::board {} {
     }
     
     ::windows::stats::Refresh
+    updateMenuStates
   }
   dialogbutton $w.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.b2.vars $w.b2.flip -side left -pady 2 -padx 5
