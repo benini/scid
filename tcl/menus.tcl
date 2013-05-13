@@ -879,16 +879,15 @@ proc openTableBaseDirs {} {
 }
 proc chooseTableBaseDir {i} {
   global tempDir
-  
-  set ftype { { "Tablebase files" {".emd" ".nbw" ".nbb"} } }
+
   set idir $tempDir(tablebase$i)
   if {$idir == ""} { set idir [pwd] }
   
-  set fullname [tk_getOpenFile -initialdir $idir -filetypes $ftype \
-      -title "Scid: Select a Tablebase file"]
+  set fullname [tk_chooseDirectory -initialdir $idir -mustexist 1 \
+      -title "Scid: Select a Tablebase directory"]
   if {$fullname == ""} { return }
   
-  set tempDir(tablebase$i) [file dirname $fullname]
+  set tempDir(tablebase$i) $fullname
 }
 
 $m add command -label OptionsRecent -command ::recentFiles::configure
