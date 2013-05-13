@@ -648,7 +648,7 @@ proc ::windows::switcher::Create {{w}} {
 
     menu $f.menu -tearoff 0
     $f.menu add command -label [tr SearchReset] \
-      -command "sc_filter reset $i; ::windows::stats::Refresh"
+      -command "::search::filter::reset $i"
     $f.menu add command -label [tr ChangeIcon] -command "changeBaseType $i"
     $f.menu add separator
     $f.menu add command -label [tr FileOpen] -command ::file::Open
