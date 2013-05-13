@@ -653,6 +653,13 @@ proc glist.doubleclick_ {{w} {x} {y} {layout}} {
   }
 }
 
+proc glist.removeFromFilter_ {{w} {idx} {dir}} {
+  set fc [sc_filter count $::glistBase($w) $::glistFilter($w)]
+  sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx $dir$fc $::glistSortStr($w)
+  ::notify::DatabaseChanged 1
+  if {$dir == "+"} { glist.ybar_ $w moveto 1 }
+}
+
 proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
 # identify region requires at least tk 8.5.9
 # identify row have scrollbar problems
@@ -705,6 +712,11 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         #TODO: translate label
         $w.game_menu add command -label "Find current game" -state disabled
       }
+      $w.game_menu add separator
+      $w.game_menu add command -label $::tr(GlistRemoveGameAndAboveFromFilter) \
+        -command "glist.removeFromFilter_ $w $idx -"
+      $w.game_menu add command -label $::tr(GlistRemoveGameAndBelowFromFilter) \
+        -command "glist.removeFromFilter_ $w $idx +"
       $w.game_menu add separator
       #TODO: translate labels
       set dellabel "Delete game"

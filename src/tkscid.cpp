@@ -711,6 +711,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 
 		Tcl_AppendElement (ti, info.c_str());
 	}
+	delete [] idxList;
     return TCL_OK;
 }
 
@@ -4953,13 +4954,35 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc == 5) {
             filter->Fill(strGetUnsigned(argv[4]));
             return TCL_OK;
+        } else {
+            uint gNum = strGetUnsigned (argv[5]);
+            if (gNum > 0 && gNum <= dbase->numGames) {
+                uint val = strGetUnsigned(argv[4]);
+                if (argc == 8) {
+                    uint start = db->idx->GetRangeLocation (db->nb, argv[7], filter, gNum);
+                    int count = strGetInteger (argv[6]);
+                    if (count < 0) {
+                        count = -count;
+                        if (start > count) {
+                            start = start - count -1;
+                        } else {
+                            count = start;
+                            start = 0;
+                        }
+                    }
+                    uint* idxList = new uint[count];
+                    db->idx->GetRange(db->nb, argv[7], start, count, filter, idxList);
+                    for (uint i = 0; i < count; ++i) {
+                        if (idxList[i] == IDX_NOT_FOUND) break;
+                        filter->Set(idxList[i], val);
+                    }
+                    delete [] idxList;
+                }
+                filter->Set(gNum -1, val);
+                return TCL_OK;
+            }
         }
-        uint gNum = strGetUnsigned (argv[5]);
-        if (gNum > 0 && gNum <= dbase->numGames) {
-            filter->Set(gNum -1, strGetUnsigned(argv[4]));
-            return TCL_OK;
-        }
-        return errorResult (ti, "Usage: sc_filter set baseId filterName value [gnumber]");
+        return errorResult (ti, "Usage: sc_filter set baseId filterName value [gnumber] [count sortCrit]");
     }
     return InvalidCommand (ti, "sc_filter", options);
 }
