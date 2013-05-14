@@ -333,7 +333,7 @@ proc ::tools::graphs::filter::Refresh {} {
   
   foreach {start end label} $rlist {
     if {$ftype == "date"} { append end ".12.31" }
-    set r [sc_filter freq $ftype $start $end $FilterGuessELO]
+    set r [sc_filter freq [sc_base current] dbfilter $ftype $start $end $FilterGuessELO]
     set filter [lindex $r 0]
     set all [lindex $r 1]
     if {$all == 0} {
@@ -810,7 +810,7 @@ proc ::tools::graphs::absfilter::Refresh {} {
   set mean 0
   foreach {start end label} $rlist {
     if {$ftype == "date"} { append end ".12.31" }
-    set r [sc_filter freq $ftype $start $end $FilterGuessELO]
+    set r [sc_filter freq [sc_base current] dbfilter $ftype $start $end $FilterGuessELO]
     set absfilter [lindex $r 0]
     set all [lindex $r 1]
     set freq $absfilter

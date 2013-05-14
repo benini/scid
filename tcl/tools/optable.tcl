@@ -595,7 +595,7 @@ proc ::optable::latexifyTree {} {
 }
 
 proc ::optable::setupRatios {} {
-  set r [sc_filter freq date 0000.00.00]
+  set r [sc_filter freq [sc_base current] tree date 0000.00.00]
   if {[lindex $r 0] == 0} {
     set ::optable::_data(ratioAll) 0
   } else {
@@ -604,7 +604,7 @@ proc ::optable::setupRatios {} {
   }
   foreach {start end} {1800 1899  1900 1949  1950 1969  1970 1979
     1980 1989 1990 1999 2000 2009} {
-    set r [sc_filter freq date $start.00.00 $end.12.31]
+    set r [sc_filter freq [sc_base current] tree date $start.00.00 $end.12.31]
     set filter [lindex $r 0]
     set all [lindex $r 1]
     if {$filter == 0} {
@@ -617,7 +617,7 @@ proc ::optable::setupRatios {} {
   foreach y {1 5 10} {
     set year "[expr [::utils::date::today year]-$y]"
     append year ".[::utils::date::today month].[::utils::date::today day]"
-    set r [sc_filter freq date $year]
+    set r [sc_filter freq [sc_base current] tree date $year]
     set filter [lindex $r 0]
     set all [lindex $r 1]
     if {$filter == 0} {

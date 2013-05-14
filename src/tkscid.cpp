@@ -5111,9 +5111,9 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    and how many total database games, meet the specified
 //    date or mean rating range criteria.
 //    Usage:
-//        sc_filter freq date <startdate> [<endDate>]
-//    or  sc_filter freq elo <lowerMeanElo> [<upperMeanElo>]
-//Klimmek: or sc_filter freq moves <lowerhalfMove> <higherhalfMove>
+//        sc_filter freq baseId filterName date <startdate> [<endDate>]
+//    or  sc_filter freq baseId filterName elo <lowerMeanElo> [<upperMeanElo>]
+//Klimmek: or sc_filter freq baseId filterName moves <lowerhalfMove> <higherhalfMove>
 //         add mode to count games with spezified movenumber
 //    where the final parameter defaults to the maximum allowed
 //    date or Elo rating.
@@ -5126,7 +5126,7 @@ int
 sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
-        "Usage: sc_filter freq date|elo|move <startDate|minElo|lowerhalfMove> [<endDate|maxElo|higherhalfMove>][GuessElo]";
+        "Usage: sc_filter freq baseId filterName date|elo|move <startDate|minElo|lowerhalfMove> [<endDate|maxElo|higherhalfMove>] [GuessElo]";
 
     bool eloMode = false;
     bool moveMode = false;
@@ -5134,8 +5134,14 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * options[] = { "date", "elo", "move", NULL };
     enum { OPT_DATE, OPT_ELO, OPT_MOVE };
     int option = -1;
-    if (argc >= 4  &&  argc <= 6) {
-        option = strUniqueMatch (argv[2], options);
+
+    scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
+    if (dbase == NULL) return errorResult (ti, "sc_filter freq: invalid baseId");
+    Filter* filter = getFilter(dbase, argv[3]);
+    if (filter == NULL) return errorResult (ti, "sc_filter freq: invalid filterName");
+
+    if (argc >= 6  &&  argc <= 8) {
+        option = strUniqueMatch (argv[4], options);
     }
     switch (option) {
         case OPT_DATE: eloMode = false; break;
@@ -5144,20 +5150,20 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         default: return errorResult (ti, usage);
     }
 
-    dateT startDate = date_EncodeFromString (argv[3]);
+    dateT startDate = date_EncodeFromString (argv[5]);
     dateT endDate = DATE_MAKE (YEAR_MAX, 12, 31);
-    uint minElo = strGetUnsigned (argv[3]);
+    uint minElo = strGetUnsigned (argv[5]);
     uint maxElo = MAX_ELO;
     uint maxMove, minMove;
 
     minMove = minElo;
     maxMove = minMove + 1;
-    if (argc >= 5) {
-        endDate = date_EncodeFromString (argv[4]);
-        maxMove = maxElo = strGetUnsigned (argv[4]);
+    if (argc >= 7) {
+        endDate = date_EncodeFromString (argv[6]);
+        maxMove = maxElo = strGetUnsigned (argv[6]);
     }
-    if (argc == 6) {
-        guessElo = strGetUnsigned (argv[5]);
+    if (argc == 8) {
+        guessElo = strGetUnsigned (argv[7]);
     }
     //Klimmek: define _NoEloGuess_: Do not guess Elo, else old behavior    
     if ( guessElo ) {
@@ -5166,7 +5172,7 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         maxElo = maxElo + maxElo + 1;
     }
     // Calculate frequencies in the specified date or rating range:
-    if (!db->inUse) {
+    if (!dbase->inUse) {
         appendUintElement (ti, 0);
         appendUintElement (ti, 0);
         return TCL_OK;
@@ -5176,8 +5182,8 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint allCount = 0;
 
     if (eloMode) {
-        for (uint gnum=0; gnum < db->numGames; gnum++) {
-            IndexEntry * ie = db->idx->FetchEntry (gnum);
+        for (uint gnum=0; gnum < dbase->numGames; gnum++) {
+            IndexEntry * ie = dbase->idx->FetchEntry (gnum);
             if ( guessElo ) {
                 uint wElo = ie->GetWhiteElo();
                 uint bElo = ie->GetBlackElo();
@@ -5189,7 +5195,7 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
                 if (bothElo >= minElo  &&  bothElo <= maxElo) {
                     allCount++;
-                    if (db->dbFilter->Get(gnum) != 0) {
+                    if (filter->Get(gnum) != 0) {
                         filteredCount++;
                     }
                 }
@@ -5200,31 +5206,31 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (mini < minElo  ||  mini >= maxElo)
                     continue;
                 allCount++;
-                if (db->dbFilter->Get(gnum) != 0) {
+                if (filter->Get(gnum) != 0) {
                     filteredCount++;
                 }
             }
         }
     } else if ( moveMode ) {
         //Klimmek: count games with x Moves minMove=NumberHalfmove and maxMove Numberhalfmove+1
-        for (uint gnum=0; gnum < db->numGames; gnum++) {
-            IndexEntry * ie = db->idx->FetchEntry (gnum);
+        for (uint gnum=0; gnum < dbase->numGames; gnum++) {
+            IndexEntry * ie = dbase->idx->FetchEntry (gnum);
             uint move = ie->GetNumHalfMoves();
             if (move >= minMove  &&  move <= maxMove) {
                 allCount++;
-                if (db->dbFilter->Get(gnum) != 0) {
+                if (filter->Get(gnum) != 0) {
                     filteredCount++;
                 }
             }
         }
     }
     else { // datemode
-        for (uint gnum=0; gnum < db->numGames; gnum++) {
-            IndexEntry * ie = db->idx->FetchEntry (gnum);
+        for (uint gnum=0; gnum < dbase->numGames; gnum++) {
+            IndexEntry * ie = dbase->idx->FetchEntry (gnum);
             dateT date = ie->GetDate();
             if (date >= startDate  &&  date <= endDate) {
                 allCount++;
-                if (db->dbFilter->Get(gnum) != 0) {
+                if (filter->Get(gnum) != 0) {
                     filteredCount++;
                 }
             }
