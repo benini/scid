@@ -294,9 +294,22 @@ Recognizer::KBNK (Position * pos)
     }
 
     // If the lone king is to move and possible stalemate, unclear result:
-    if (stm == BLACK  &&  square_IsEdgeSquare(bk)
-          &&  square_Distance (wk, bk) == 2) {
+    if (stm == BLACK  &&  square_IsEdgeSquare(bk)) {
         return UNKNOWN;
+    }
+
+    // If the knight is near a corner, it could be trapped, unclear result:
+    if ((square_Distance (wn, A1) < 2  ||  square_Distance (wn, A8) < 2 ||
+         square_Distance (wn, H1) < 2  ||  square_Distance (wn, H8) < 2)
+        && square_Distance (bk, wn) < 4) {
+        return UNKNOWN;
+    }
+
+    // If the lone king can fork the bishop and knight, unclear result:
+    if (stm == BLACK  &&  square_Distance(wb, wn) < 3
+        &&  square_Distance (bk, wb) < 3  &&  square_Distance (bk, wn) < 3 
+        &&  square_Distance (wk, wb) > 1  &&  square_Distance (wk, wn) > 1 ) {
+      return UNKNOWN;
     }
 
     // Find lone king distance from the appropriate corner
