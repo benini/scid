@@ -4905,9 +4905,6 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_FIRST:
         return sc_filter_first (cd, ti, argc, argv);
 
-    case FILTER_FREQ:
-        return sc_filter_freq (cd, ti, argc, argv);
-
     case FILTER_INDEX:
         return sc_filter_index (cd, ti, argc, argv);
 
@@ -4944,6 +4941,9 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Filter* filter = getFilter(dbase, argv[3]);
     if (filter == NULL) return errorResult (ti, "sc_filter: invalid filterName");
     switch (index) {
+    case FILTER_FREQ:
+        return sc_filter_freq (dbase, filter, ti, argc, argv);
+
     case FILTER_POSMASK:
         //TODO: "Usage: sc_filter posmask <base> filtername FEN"
         if (argc > 4) filter->PositionMask(db->treeFilter);
@@ -5123,7 +5123,7 @@ sc_filter_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    the other does not, the other rating will be assumed to be
 //    same as the nonzero rating, up to a maximum of 2200.
 int
-sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage =
         "Usage: sc_filter freq baseId filterName date|elo|move <startDate|minElo|lowerhalfMove> [<endDate|maxElo|higherhalfMove>] [GuessElo]";
@@ -5134,11 +5134,6 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * options[] = { "date", "elo", "move", NULL };
     enum { OPT_DATE, OPT_ELO, OPT_MOVE };
     int option = -1;
-
-    scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
-    if (dbase == NULL) return errorResult (ti, "sc_filter freq: invalid baseId");
-    Filter* filter = getFilter(dbase, argv[3]);
-    if (filter == NULL) return errorResult (ti, "sc_filter freq: invalid filterName");
 
     if (argc >= 6  &&  argc <= 8) {
         option = strUniqueMatch (argv[4], options);
@@ -5172,12 +5167,6 @@ sc_filter_freq (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         maxElo = maxElo + maxElo + 1;
     }
     // Calculate frequencies in the specified date or rating range:
-    if (!dbase->inUse) {
-        appendUintElement (ti, 0);
-        appendUintElement (ti, 0);
-        return TCL_OK;
-    }
-
     uint filteredCount = 0;
     uint allCount = 0;
 

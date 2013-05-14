@@ -96,16 +96,14 @@ proc ::search::board {} {
     .sb.b.stop configure -state disabled
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sb.status configure -text $str
-	 ::tree::refresh
-    ::windows::gamelist::Refresh
     set gamesFound [lindex $str 0]
     if { $sBoardSearchRefBase && $gamesFound != 0} {
       ::file::SwitchToBase $base 0
-      ::search::loadFirstGame
+      #TODO: "sc_filter first" result is unsorted (the lowest gamenumber)
+      ::game::Load [sc_filter first]
+    } else {
+      ::notify::DatabaseChanged
     }
-    
-    ::windows::stats::Refresh
-    updateMenuStates
   }
   dialogbutton $w.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.b2.vars $w.b2.flip -side left -pady 2 -padx 5

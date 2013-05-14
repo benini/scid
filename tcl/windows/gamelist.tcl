@@ -642,8 +642,7 @@ proc glist.doubleclick_ {{w} {x} {y} {layout}} {
           return
         }
         if {$::glistClickOp($w) == 2} {
-          sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx
-          ::notify::DatabaseChanged 0
+          glist.removeFromFilter_ $w $idx
           return
         }
       }
@@ -653,7 +652,12 @@ proc glist.doubleclick_ {{w} {x} {y} {layout}} {
   }
 }
 
-proc glist.removeFromFilter_ {{w} {idx} {dir}} {
+proc glist.removeFromFilter_ {{w} {idx} {dir ""}} {
+  if {$dir == ""} {
+    sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx
+    ::notify::DatabaseChanged 0
+    return
+  }
   set fc [sc_filter count $::glistBase($w) $::glistFilter($w)]
   sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx $dir$fc $::glistSortStr($w)
   ::notify::DatabaseChanged 1
@@ -715,6 +719,8 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       $w.game_menu add separator
       $w.game_menu add command -label $::tr(GlistRemoveGameAndAboveFromFilter) \
         -command "glist.removeFromFilter_ $w $idx -"
+      $w.game_menu add command -label $::tr(GlistRemoveThisGameFromFilter) \
+        -command "glist.removeFromFilter_ $w $idx"
       $w.game_menu add command -label $::tr(GlistRemoveGameAndBelowFromFilter) \
         -command "glist.removeFromFilter_ $w $idx +"
       $w.game_menu add separator
