@@ -1276,7 +1276,6 @@ namespace eval fics {
         set ::fics::premoveSq1 -1
         return 1 
     }
-    puts "DEBUG : playerCanMove returned 0"
     return 0
   }
   ################################################################################

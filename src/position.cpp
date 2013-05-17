@@ -1796,7 +1796,7 @@ Position::IsLegal (void)
 {
     squareT stmKing = GetKingSquare();
     squareT enemyKing = GetEnemyKingSquare();
-    if (square_Adjacent (stmKing, enemyKing)) { printf ("Kings adjacent\n"); return false; }
+    if (square_Adjacent (stmKing, enemyKing)) { return false; }
     if (RankCount (WP, RANK_1) != 0) { return false; }
     if (RankCount (WP, RANK_8) != 0) { return false; }
     if (RankCount (BP, RANK_1) != 0) { return false; }
