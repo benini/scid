@@ -623,7 +623,7 @@ PBook::ReadFile ()
     ReadLine(line, &fp);
     DString dstr;
     
-    while (! fp.EndOfFile()) {
+    while (line->Length() || ! fp.EndOfFile()) {
 
         if (pos->ReadFromFEN (line->Data()) != OK) {
             fprintf (stderr, "Error reading line: %u\n", LineCount);
