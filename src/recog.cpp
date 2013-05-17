@@ -335,18 +335,18 @@ int
 Recognizer::KBPK (Position * pos)
 {
     byte * material = pos->GetMaterial();
-    squareT wk, bk;
+    squareT /* wk, */ bk;
     fyleT wrongFile = A_FYLE;  // Wrong-color bishop rook-pawn file.
     // Set up piece squares so that White has the bishop and pawn(s),
     // and make sure all pawns are on the wrong rook-pawn file:
     if (material[WB] == 1) {
-        wk = pos->GetKingSquare(WHITE);
+        // wk = pos->GetKingSquare(WHITE);
         bk = pos->GetKingSquare(BLACK);
         if (pos->SquareColorCount(WB,WHITE) == 1) { wrongFile = H_FYLE; }
         if (pos->FyleCount(WP, wrongFile) != material[WP]) { return UNKNOWN; }
     } else {
         ASSERT (material[BB] == 1);
-        wk = square_FlipRank(pos->GetKingSquare(BLACK));
+        // wk = square_FlipRank(pos->GetKingSquare(BLACK));
         bk = square_FlipRank(pos->GetKingSquare(WHITE));
         if (pos->SquareColorCount(BB,BLACK) == 1) { wrongFile = H_FYLE; }
         if (pos->FyleCount(BP, wrongFile) != material[BP]) { return UNKNOWN; }
@@ -1047,9 +1047,8 @@ int
 Recognizer::KRPKR (Position * pos)
 {
 
-    // XXX  INCOMPLETE  XXX
-    return UNKNOWN;
-/*
+    // Incomplete but correct
+
     byte * material = pos->GetMaterial();
     pieceT * board = pos->GetBoard();
     squareT wk, bk, wr, wp, br;
@@ -1100,16 +1099,16 @@ Recognizer::KRPKR (Position * pos)
     if (wrRank == brRank  ||  wrFyle == brFyle) { return UNKNOWN; }
 
     // Designate side-to-move king,rook as sk and sr, enemy as ek and er
-    squareT sk, sr, ek, er;
-    int skRank, srRank, ekRank, erRank;
-    int skFyle, srFyle, ekFyle, erFyle;
+    squareT /* sk, sr, er, */ ek;
+    int /* skRank, srRank, */ ekRank, erRank;
+    int /* skFyle, srFyle, */ ekFyle, erFyle;
     if (stm == WHITE) {
-        sk = wk;  sr = wr;  ek = bk;  er = br;
-        skRank = wkRank;  skFyle = wkFyle;  srRank = wrRank;  srFyle = wrFyle;
+        ek = bk; // sk = wk;  sr = wr;  er = br;
+        // skRank = wkRank;  skFyle = wkFyle;  srRank = wrRank;  srFyle = wrFyle;
         ekRank = bkRank;  ekFyle = bkFyle;  erRank = brRank;  erFyle = brFyle;
     } else {
-        sk = bk;  sr = br;  ek = wk;  er = wr;
-        skRank = bkRank;  skFyle = bkFyle;  srRank = brRank;  srFyle = brFyle;
+        ek = wk;  /// sk = bk;  sr = br;  er = wr; 
+        // skRank = bkRank;  skFyle = bkFyle;  srRank = brRank;  srFyle = brFyle;
         ekRank = wkRank;  ekFyle = wkFyle;  erRank = wrRank;  erFyle = wrFyle;
     }
     uint kingDist = square_Distance (wk, bk);
@@ -1138,17 +1137,29 @@ Recognizer::KRPKR (Position * pos)
     if (square_Move (wp, UP_LEFT) == br) { return UNKNOWN; }
     if (square_Move (wp, UP_RIGHT) == br) { return UNKNOWN; }
 
-    // Philidor draw:
-    //   white pawn and king are on 5th rank or lower, on any file;
-    //   black king is on the pawn file and on the 7th/8th rank;
-    //   black rook is anywhere on the 6th rank.
-    //   Drawn for white or black to move.
+    // Philidor and more:
+    //  white pawn and king are on 5th rank or lower, on any file;
+    //  black rook has higher rank than white king and pawn, up to rank 6;
+    //  black king is on pawn file or adjacent, ranked higher than black rook;
+    //  Drawn for white or black to move.
 
-    if (wpRank <= RANK_5  &&  wkRank <= RANK_5  &&  bkFyle == wpFyle
-          &&  bkRank >= RANK_7  &&  brRank == RANK_6) {
+    if (wpRank <= RANK_5  &&  wkRank <= RANK_5
+        &&  brRank <= RANK_6  &&  brRank > wpRank  &&  brRank > wkRank
+        &&  bkRank > brRank  &&  bkRank > RANK_4) {
+
         // Only exception: WK=a1, WP=b2, WR=b1; White may be checkmated.
         if (wk == A1  &&  wp == B2  &&  wr == B1) { return UNKNOWN; }
-        return DRAW;
+
+        // black king on the pawn file
+        if (bkFyle == wpFyle && (brRank == RANK_6 || wrFyle != bkFyle)) {
+          return DRAW; 
+        }
+
+        // black king on adjacent file
+        if ((bkFyle == wpFyle + 1 || bkFyle == wpFyle - 1)
+            &&  brFyle != wpFyle  &&  wrFyle != bkFyle) {
+          return DRAW;
+        }
     }
 
     // Sixth-rank pawn draws:
@@ -1173,7 +1184,6 @@ Recognizer::KRPKR (Position * pos)
     }
 
     return UNKNOWN;
-    */
 }
 
 //////////////////////////////////////////////////////////////////////
