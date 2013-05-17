@@ -178,7 +178,7 @@ proc ::file::Open {{fName ""}} {
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add "$fName.si4"
     }
-  } elseif {[string match "*.epd" [string tolower $fName]]} {
+  } elseif {[string match "*.epd*" [string tolower $fName]]} {
     # EPD file:
     newEpdWin open $fName
   } else {
