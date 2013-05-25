@@ -1807,7 +1807,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     
     if {$n == 1} {
         set ::finishGameMode 0
-        button $w.b1.bFinishGame -image finish_off -command "toggleFinishGame $n" -relief flat
+        button $w.b1.bFinishGame -image tb_finish_off -command "toggleFinishGame $n" -relief flat
         ::utils::tooltip::Set $w.b1.bFinishGame $::tr(FinishGame)
     }
     button $w.b1.showboard -image tb_coords -height 24 -width 24 -command "toggleAnalysisBoard $n"
@@ -2277,11 +2277,11 @@ proc toggleFinishGame { { n 1 } } {
     
         if {!$::finishGameMode} {
     	    set ::finishGameMode 1
-        	$b configure -image finish_on -relief flat
+            $b configure -image tb_finish_on -relief flat
             after $::autoplayDelay autoplayFinishGame
     	} else  {
         	set ::finishGameMode 0
-            $b configure -image finish_off -relief flat
+            $b configure -image tb_finish_off -relief flat
             after cancel autoplayFinishGame
     	}
     	return
@@ -2313,7 +2313,7 @@ proc toggleFinishGame { { n 1 } } {
         sendToEngine 2 "stop"
    		set analysis(waitForReadyOk2) 0
         set analysis(waitForBestMove2) 0   		
-   		$b configure -image finish_off -relief flat
+        $b configure -image tb_finish_off -relief flat
    		grab release .analysisWin$n
    		.analysisWin$n.b1.bStartStop configure -state normal
         .analysisWin$n.b1.move configure -state normal
@@ -2413,7 +2413,7 @@ proc toggleFinishGame { { n 1 } } {
 
     stopEngineAnalysis 1
     stopEngineAnalysis 2
-	$b configure -image finish_on -relief flat
+	$b configure -image tb_finish_on -relief flat
 	.analysisWin$n.b1.bStartStop configure -state disabled
 	.analysisWin$n.b1.move configure -state disabled
 	.analysisWin$n.b1.line configure -state disabled

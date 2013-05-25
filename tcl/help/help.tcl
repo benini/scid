@@ -492,11 +492,11 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   <li> <button tb_invar> Move into a variation. [v] </li>
   <li> <button tb_outvar> Move out of the current variation. [z] </li>
   <li> <button tb_addvar> Add a new variation. [Ctrl-A]</li>
-  <li> <button comment_avail> Signifies that the current move has a
+  <li> <button tb_comment_avail> Signifies that the current move has a
   textual comment attached. This comment is displayed in a tooltip
   upon mouse hovering on the button. Pressing the button also opens up
   the <a Comment>Comment editor</a></li>
-  <li> <button autoplay_off> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
+  <li> <button tb_autoplay_off> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
   <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>.
   [Ctrl-Space] </li>
   <li> <button tb_flip> Rotate the board 180 degrees. [.]</li>
@@ -2326,9 +2326,9 @@ set helpText(Tree) {<h1>The Tree window</h1>
   moves made from the current position in games in the database.
   In tree mode, the tree window is updated automatically whenever the
   main windows board changes. This can be slow for large databases and
-  can therefore be disabled using the <button engine_on>. To visualise
+  can therefore be disabled using the <button tb_search_on>. To visualise
   that a tree is not automatically refreshed this button changes to
-  <button engine_off>.
+  <button tb_search_off>.
   </p>
   <p>To open the <term>Tree</term> window one can either first open a
   database and then choose Windows / Tree Window (Ctrl-T) from the
@@ -3106,8 +3106,8 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   </p>
   <p>
   To finish the current game by the engine ("shoot out" or "demo" mode)
-  one can use the finish game button <button finish_off>. To indicate
-  the shootout mode this button turns to <button finish_on>. This
+  one can use the finish game button <button tb_finish_off>. To indicate
+  the shootout mode this button turns to <button tb_finish_on>. This
   function is only available for the first analysis engine.
   </p>
 

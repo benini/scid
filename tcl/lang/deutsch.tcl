@@ -2443,7 +2443,7 @@ folgende Bedeutung (von links nach rechts):
 <li> <button tb_invar> Gehe in Variante. </li>
 <li> <button tb_outvar> Verlasse die Variante. </li>
 <li> <button tb_addvar> Neue Variante hinzufügen. </li>
-<li> <button autoplay_off> Starte/beende automatisches Vorspielen (siehe unten). </li>
+<li> <button tb_autoplay_off> Starte/beende automatisches Vorspielen (siehe unten). </li>
 <li> <button tb_trial> Starte/beende <a Moves Trial>Testmodus</a>. </li>
 <li> <button tb_flip> Brett drehen. </li>
 <li> <button tb_coords> Zeige/Verdecke/Zeige unten und links/ die Brettkoordinaten. </li>

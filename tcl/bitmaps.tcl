@@ -108,6 +108,15 @@ proc InitImg {} {
 	}
 	setPieceFont $boardStyle
 
+	#Load all img/buttons/_filename_.png
+	set dname [file join $::scidImgDir buttons]
+	foreach {fname} [split [glob -directory $dname *.png] " "] {
+		set iname [string range [file tail $fname] 0 end-4]
+		catch { image create photo $iname -file $fname }
+	}
+
+	set pngimages [image names];
+
 	#Load all img/boards/_filename_.gif
 	set textureSquare {}
 	set dname [file join $::scidImgDir boards]
@@ -123,7 +132,9 @@ proc InitImg {} {
 	set dname [file join $::scidImgDir buttons]
 	foreach {fname} [split [glob -directory $dname *.gif] " "] {
 		set iname [string range [file tail $fname] 0 end-4]
-		image create photo $iname -file $fname
+		if { [lsearch -exact $pngimages $iname] == -1} {
+			image create photo $iname -file $fname
+		}
 	}
 
 	#Load all img/flags/_filename_.gif

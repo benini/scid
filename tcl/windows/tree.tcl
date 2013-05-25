@@ -212,7 +212,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   ttk::button $w.buttons.best -image tb_list -style Pad0.Small.TButton -command "::tree::best $baseNumber"
   ttk::button $w.buttons.graph -image tb_bargraph -style Pad0.Small.TButton -command "::tree::graph $baseNumber 1"
   # add a button to start/stop tree refresh
-  ttk::button $w.buttons.bStartStop -image engine_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
+  ttk::button $w.buttons.bStartStop -image tb_search_on -style Pad0.Small.TButton -command "::tree::toggleRefresh $baseNumber" ;# -relief flat
   
   ttk::checkbutton $w.buttons.allgames -textvar ::tr(allGames) -variable tree(allgames$baseNumber) -command "::tree::refresh $baseNumber"
   ttk::checkbutton $w.buttons.training -textvar ::tr(Training) -variable tree(training$baseNumber) -command "::tree::toggleTraining $baseNumber"
@@ -1052,10 +1052,10 @@ proc ::tree::toggleRefresh { baseNumber } {
   set b .treeWin$baseNumber.buttons.bStartStop
   
   if {$tree(autorefresh$baseNumber)} {
-    $b configure -image engine_off
+    $b configure -image tb_search_off
     set tree(autorefresh$baseNumber) 0
   } else  {
-    $b configure -image engine_on
+    $b configure -image tb_search_on
     set tree(autorefresh$baseNumber) 1
     ::tree::refresh $baseNumber
   }

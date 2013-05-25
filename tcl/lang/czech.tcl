@@ -2197,7 +2197,7 @@ Navigaèní tlaèítka nad ¹achovnicí mají tyto významy, zleva doprava:
 <li> <button tb_invar> Skoè do varianty. </li>
 <li> <button tb_outvar> Opus» aktuální variantu. </li>
 <li> <button tb_addvar> Pøidej variantu k tomuto tahu v partii. </li>
-<li> <button autoplay_off> Spus»/Ukonèi automatické pøehrávání tahù (viz
+<li> <button tb_autoplay_off> Spus»/Ukonèi automatické pøehrávání tahù (viz
  ní¾e). </li>
 <li> <button tb_trial> Spus»/Ukonèi <a Moves Trial>zku¹ební mód</a>. </li>
 <li> <button tb_flip> Otoè ¹achovnici. </li>

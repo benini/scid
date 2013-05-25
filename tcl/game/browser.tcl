@@ -80,7 +80,7 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   button $w.b.forward -image tb_next -command "::gbrowser::update $n +1"
   button $w.b.end -image tb_end -command "::gbrowser::update $n end"
   frame $w.b.gap -width 3
-  button $w.b.autoplay -image autoplay_off -command "::gbrowser::autoplay $n"
+  button $w.b.autoplay -image tb_autoplay_off -command "::gbrowser::autoplay $n"
   frame $w.b.gap2 -width 3
   button $w.b.flip -image tb_flip -command "::gbrowser::flip $n"
   
@@ -157,11 +157,11 @@ proc ::gbrowser::update {n ply} {
 proc ::gbrowser::autoplay {n} {
   if {$::gbrowser::autoplay($n)} {
     set ::gbrowser::autoplay($n) 0
-    .gb$n.b.autoplay configure -image autoplay_off
+    .gb$n.b.autoplay configure -image tb_autoplay_off
     return
   } else {
     set ::gbrowser::autoplay($n) 1
-    .gb$n.b.autoplay configure -image autoplay_on
+    .gb$n.b.autoplay configure -image tb_autoplay_on
     ::gbrowser::update $n +1
   }
 }

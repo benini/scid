@@ -224,232 +224,8 @@ proc toggleSTM {} {
     ::board::stm .main.board
 }
 
-image create photo autoplay_off -data {
-    R0lGODdhFAAUAKEAANnZ2QAAAFFR+wAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
-    IgOG4ugd55oC6+u98iPXSz0r+Enjcf7jtVyoofGoKAAAOw==
-}
-
-image create photo autoplay_on -data {
-    R0lGODdhFAAUAKEAAP//4AAAAPoTQAAAACwAAAAAFAAUAAACMYSPqbvBb4JLsto7D94StowI
-    IgOG4ugd55oC6+u98iPXSz0r+Enjcf7jtVyoofGoKAAAOw==
-}
-
-image create photo engine_on -data {
-    R0lGODlhGAAYAOf4AFFOdGdOTQBk9AVi9ItNEVhVfAVt8FVafwRt91ZbgGhZYVdcgZNTEF1a
-    gVtghV1ih15iiGNjg2ZmhlJrpDB01mdnhxV8+J9iFV1rm2lpimZqkGpqi2trjG1tjm5uj7Fl
-    CnBwkXFxkrZpAXJyk2Z2oDeB6nNzlHR0lXV1lnZ2l3B4pDKI+LBwJTSJ+Xx4lHl5mjaK+nN7
-    p356l397mIB8mYF9mpF8ebx6KECS+4KGoYOHooaKpUmZ/IeLplSW+2KU5omMp8qFK4uOqZmN
-    jXSUz4yPqo2Qq1Ki/tCKKJKSqFOj/9mLGFSk/5+Tk5WVq1+j+5SXs2Ck/JeXrZWYtGGl/ZiY
-    ruGRFFqq/3Sj5JqasGSn/+WUBpycspSfuWet/o2i05+ftqCgt42l0Gqv/2uw/6OiuYyp2aSj
-    up+mu3Sx/YGv8KamvPSgDaqmt+iiJZ6qxG+3/3ez/6unuHC4/3i0/6mpv4mx7JOw4e6mH8Op
-    iKurwXq6/5ez13u7/328/7Guv7KvwKizzrOwwYa9/YDC/6W40Za76+6uQYe//4HD/7ezxIjA
-    /8Kzrpi+7bm1xrq2yIrF/ru3ybO60IvG/7y4yrS70ajA37i8zI7I/7K92LO+2Y/K/7q+zr+8
-    zZbK/rvAz5DO/5HP/6XJ7L/D0pnO//zASZnR/sHF1aTO95rS/8LG1pvT/77K2MfI0p3V/8XJ
-    2cLK36LV/L7N4aPW/crL1aXX/7zQ6cjN3KbY/83N1/TLeKfa/87O2c/Q2qfe/q7b/dDR26jf
-    /9HS3Kng/9LT3avi/8vX5f/Yb7Pl/7Tm/7Xn/7ro/Lvp/b3q/vzhkL/s/8Tt/PnjpMXu/cbv
-    /sfw/8jx//7ti8nz/8n2/cr3/9D1/tzw/dbz/sv5/9H2/9f0/9n1/9T5/9r2/9v3/9L8/efz
-    /9/4/dr7/uH5/tz9/+j5/93//+n6/+L//er7/+j+/f/9xu/8/en//uv///H+//L///n///7/
-    /P///////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JFJgFzCdH
-    fwYqXKgwh5M3sri5s1eOFa1ODBnWCJOkWjVw6tTF2wbrVsaFNYRg8ugNHbpx4LTJonRyIAlM
-    ppA9q8at2rdnzZDlwnjSA5FFoHAla7YTaLJfgUyezFCCDqZauIYpe7bs165Vd4QpOpkCAQIL
-    POjMGePlCp1FntS8EnQSggELMLSM6bNoUZ8xT5RgaaXnZAQKJXy89YQL16o+dJR84SSnJoQf
-    XkgNexYuXLdfnvpIAlPznwYMaoZVI9cOXbpmsQy1Kf1vgQYVw7ylu2dv3jRRVeoAol17RIou
-    tyqhqZJERy8gNqzQbmAix4wkRlz868BhSBA30mlDR8jgwcNABSx0WcMTnrhCAh/YOINnrb17
-    gfBLzQd//z0b/evZdx988tHX33si6BdNHgcORAAbh9yQRYMKBQAAhScFBAA7
-}
-
-image create photo engine_off -data {
-    R0lGODlhGAAYAOfyAOYFO+YGQOgINugJPOcKQVFOdOkOPeAUOWdOTeAUPgBk9AVi9LUpUuEX
-    P+AXRItNEeIZQM8hTVhVfOIaRdgeTAVt8FVafwRt9+IdS+UeQuQeR2hZYVdcgZNTEN4nUFtg
-    hdUrWM8vVuEqTV5iiOEqUmNjg+MtVGZmhlJrpNY2WjB01mdnhxV8+OYwVp9iFd81WV1rm2lp
-    iqtNcd82X2pqi2trjMlCdG1tjm5uj7FlCuQ8Y+Y9X3BwkbZpAb5NhWZ2oDeB6nNzlNxGaHR0
-    ldNKdoZtj3Z2l6hdnHB4pDKI+LBwJTSJ+Xl5mjaK+nN7p356l+ROb4B8mdpWc4F9mpF8ebx6
-    KECS+61wjIKGoYOHoqt1oIaKpUmZ/K12roeLplSW+2KU5omMp8qFK4uOqZmNjXSUz7J+nY2Q
-    q9CKKJKSqNmLGJ+Tk5WVq8eAmV+j+8p+n8SDmpSXs2Ck/GGl/ZiYruGRFNZ/mJqasGSn/+WU
-    Bpycsq+UxJ+ftqCgt42l0L6Uqmqv/9OLpGuw/6OiuaSjuqamvPSgDaqmt+iiJW+3/3ez/72b
-    wXC4/3i0/6mpv4mx7NGYspOw4e6mH8OpiJWv53q6/9absLGuv7KvwKizzrOwwcSnxYa9/YDC
-    /5a76+6uQYHD/4jA/8Kzrpi+7bm1xrq2yIrF/ru3ybO60IvG/7y4yqjA37i8zLK92Nmuw7O+
-    2Y/K/7q+zr+8zZbK/rvAz5DO/5HP/6XJ7MW91r/D0ueyxPzASZnR/sHF1aTO95rS/5vT/8bG
-    3bjM5cfI0p3V/8LK36LV/L7N4crL1aXX/6bY/83N1/TLeM7O2c/Q2qfe/q7b/dDR26jf/9HS
-    3NLT3avi/8vX5f/Yb7Pl/7Tm/7Xn/7vp/eLb5/zhkL/s//njpMXu/cbv/sfw/8jx//7ti8nz
-    /9bz/tH2/9f0/9n1/9v3/+fz/9/4/eH5/un6/+r7///9xu/8/f//////////////////////
-    /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JFHiHDy1S
-    lwYqXKgQCxszL3TEi7cuFzJZDBlO6ZPGDoAD7ty9Q1esWcaFU8aMgiTgALd27dKNO6bq5EAn
-    sHwV03DAgCtz3rxhW4bxJI4ynWxJe9PyRVBs0DKZFChAgMIVQBqlUiYthQADm6BJA+Zp2Z+W
-    B6oONHKhAgs3eBq1zCAoFaWPX3suHOG2iZxGldIKOBJhQloDVa0qLKGiCZdEnWqJEJxXgAab
-    I8AA8iVtnIaqaR2g4mPzXwkYjaQFa1FZyqhDpf9JuPFjMmUNt+IUwlR6QE+0gQLxDIHFWRgq
-    dU4KPhBBBpYsXg/gqEFGDKLkDA+kFbiCRo0IajdFKGFGThL22FSrPshhqBs8cudjo/23fpf7
-    6+j/JRb4wJD98vGdBNpA67X3Xn7bEdiDfd9Mgh5iC/X3SRV35HcSAgVYiF5AADs=
-}
-
-image create photo finish_on -data {
-    R0lGODlhGAAYAOfwAJbK/np6dkJCOh4qQo62+mZmXsrKyoaGgi5Cbtra2qKinhIWSmJiWkpq
-    nlp+utri8p6amiI2UjI+rkJajmJiXiY6VqaiokJiyjpSfuru+iImbl6GxnKe8ra2shIeMiYq
-    eprG/mqS5iYufmqG/j5OugoODioyhkpmzkJWsvL2/jpaxsLK6jpKtkpGRlJyrl6C3mJ6/mKG
-    znqq/jo2Ni4yqhYSCrrC5jpGsgoOMk5qzl6G3vb6/lJSTlp6xjI6lm6a6sbGwjI6mmKK4mJy
-    ylp+2lJuzhoeGjZKdnKC0kpexjY+uuLm9m5uapKOjgYOIk5i3lJm5kpa1tLS0sbS8jI2pnqm
-    +jJCttba8m6G1prK/hISDhIaKr6+viYmHgYGBmaK7qLO/kZawurq9oKy/i42qlpyzmqO8lp2
-    0maO4kJSvnqi7vr6/jY+ss7O6lpWUlJy0lZ61jY6rjpCshYWDoKCfgoWJtLW8nKa8goKDnae
-    9l5+1h4aGm6W6maK4lp61lJiwu7y+io6skJWvm5qaoKq8jI6qoJ+fjo+rg4OFmaG3iIeHlZy
-    2rq6tkpiwv7+/j5Gvnai9gYKDt7e3n5+es7Oyubq9tbW1qLS/s7S7jZCslZyzmqK3i5GcmqK
-    /jZOdhIWEl561nai/k5m0kZWxvb2+j5KtnKe+gYOFhYWFh4uRoq6/qamoj46NnJyapKSjmqO
-    7l5aVjY+qmJ+2mKC2mKG3mqO4nqi9jJCdjY6sgoKEm6W8k5iylZy1kJOuk5mylJqynKa6lZu
-    zjo+vtbS0p7K/vLy+kZWvjY+tk5exsK+vg4KCi46rgoOFmKC3mqS6l5+2jY+rjpGtmaK5jZC
-    tl6Gyurq+lp21nKa9jI6rnai+s7OzlZy0mqO5kJCPmZmYhIWTra2tkpa2jI2qnqm/hISEiYm
-    Ilpy0jpCtrq6ugYKEvb2/j5KulJqznKa7kZWwgICCv//////////////////////////////
-    /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JHEiwoMGD
-    BbUdgNWthTcFkhAaTDbjFCcX1DY0iOBlUAKJAidFcgAADBhbHCDJqOIJFReJFDyoApMFBIgQ
-    OPm0G0etBLqDTeqMuUSMGAEhOmj1QcPNGaQYWoYVTKDsxx1CamoR2ZRhExFaifqEyDbBTUEm
-    nvL0efHsmZ8pjnbIgvOsGa0QMvBQIogKGLdZevxY4/UmhSNSoN74qXsNg6GBUt6FmmWtyIkL
-    F1RocuQoRZkc5kBJi8FqILhU186wwwJoiesH6jgXC+Zr2zNTewauqvCqSBIknIMLtxOmtqka
-    AxkN+ILM3ZArmKKvKMa5mqA0YX7pUjTQEjMzxta1RZtmxUqgP5zFkGBBoteuHgIIlpuVBpqc
-    GyyilVrjqFK0TJlAE4soRxxA0CQIjFJIHNBAI4ENjoiRyTJxiBMFFIsgIkVBnzSCSxwgknFI
-    G9DQEAcVT4wAwy0UGGTBFo+wAWIcZNQIYiGdjICCER8ZFIAT5xzz4YwgYhNOEOQAIZEruYgg
-    jBLHsMHGMcIc800XBoD0jzY8pLPABz6YoAEOc9ChJUEJQNAKAwVM0sGZcMYpp0ABAQA7
-}
-
-image create photo finish_off -data {
-    R0lGODlhGAAYAOeVAAMDAwYGBgkJCQoKCgsLCwwMDA4ODg8PDxERERISEhQUFBUVFRYWFhkZ
-    GRsbGx0dHR8fHyUlJSYmJikpKSwsLC0tLTIyMjMzMzQ0NDc3Nzk5OTs7Oz4+PkBAQEFBQUJC
-    QkNDQ0REREZGRkdHR0hISElJSUpKSktLS0xMTE5OTk9PT1BQUFFRUVJSUlNTU1VVVecQOVZW
-    VldXV1lZWVtbW1xcXF1dXV5eXl9fX2FhYWJiYmNjY2VlZWZmZmdnZ2hoaGlpaWpqamtra21t
-    bW5ubm9vb3BwcHFxcXNzc3R0dHV1dXd3d3h4eHl5eXp6ent7e3x8fH19fX5+fn9/f4CAgIGB
-    gYKCgoODg4SEhIWFhYaGhoiIiImJiYqKiouLi4yMjI2NjY6Ojo+Pj5CQkJOTk5SUlJeXl5iY
-    mJqampubm5ycnJ6enp+fn6KioqOjo6WlpaampqysrLGxsbOzs7a2trq6ur6+vr+/v8DAwMHB
-    wcPDw8TExMbGxsjIyMrKys7OztHR0dLS0tPT09TU1NbW1tjY2Nra2tvb297e3uHh4efn5+rq
-    6uvr6+zs7O7u7vLy8vPz8/b29vn5+fr6+v7+/v//////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////yH5BAEKAP8ALAAAAAAYABgAAAj+AP8JHEiwoMGD
-    Bf9oofFhRI82iBAavJOhQIgiVar0uBBAiCGDMGAMlCLACR4+fNigWfOmzQkGdkISDAlDx4M5
-    fPLcuSOmJxkzbarIBKkgTh89euRswZKFixcwY0ImEFTQEIGQcNZ8idLFUZcoWbSEXDNDRkEi
-    J9SEnDLlSSBKkqg0CZlFzJsBfwgyMAPGCk0lSCJRigQFxpMpV86smDIwEAA2VpgYARKyRhJK
-    IZUMUQKFy5UNA+lQOMOEyJZHikImCkkJ0pEgSaakcTAQToYwRnZoocQbM4zehXDATpNgYJ0J
-    XXjYWHJokHOalBrRmIFjSBkIAwkZCGPDhYoTJkypwPjh+wWLFzF8NPFAUIKVGSRQpGABo8Uk
-    SotCniAxQkgJLQRJ4cENIYhAQkh7UMLICSCEtAMRShwQSEEK8CCCCDCI0EEJgJDAgQgeBBES
-    CDoY5EYD9GWoYQcdXBgCGF6E9JFBToRUwoU4urjDBwnQdBAMBGBwQgklkEBCCUM6EIEfAg01
-    UEh/tDCAAxZ8oEEFCCxghUT/OGlIGkfkwIMUdHDZpJlopnlQQAA7
-}
-
-image create photo comment_avail -data {
-    R0lGODlhEAAQAMZCAAAAAAUDAAgFABkSAxwWBk07FE47FXVTBq58Da98DryFCrmHGMiZNeGvSdmx
-    YduzY+SzT+S0Uc+5i+q3UOu4U+q5Vuu5V+S6Zuu6V+G7bOu7Wu27WOy8W+28Xee9Z+y9Xee+bOi+
-    bOe/bum/bdvHmuzSne3Tne3Tnu/Xp+/XqPDYqPDZqPbjv/bkwPbnx/fnyPfoyfjqzvjqz/nt1vrt
-    1vz26fz26vz37P337P337f779v779/78+P78+f79+v79+/79/P/+/f//////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////yH+
-    EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAeAgH+Cg4SFhn8TGhwaFIeDFyYu
-    My8nHo4hLDU6Pjo1LCOGFSg3PkCmPzcqFoUfMTymQUFAPTIdrDI9QLGxtLaEGCk4P7qyOSsbhiAs
-    Njs/OzYtIo4PJS80MCYOjn8GGREQDQwF238EJAkIAwTbABILCgoHAOQAAgEB8+R/APz6+oEAOw==
-}
-
-
-image create photo comment_unavail -data {
-    R0lGODlhEAAQAMZBAAAAAAEAAAMCAAQDAgUDAAUFAwYFAwYFBAgFAAkIBQwLCA0LBhANBQ8ODA8P
-    DhQSCxkXEFhQMnVTBmJaPmtfOXJnPpFmB3ZwWaV0CIF5XYB/fYWBc46CWbyFCr6GCrmHGJ2PWZ6Q
-    XJmUh6OXbKGZeJ2ajsucNaOhm8+5i9PAlNvMrNLQyeDRnePSleTTmOPVo+XWoeverujet/Dfo+rg
-    u+rhxfLktOnk0+/lvOjl2/XouPXpvvbqv/bqwPbtzvnx1vr14P//////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////yH+
-    EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAdxgH+Cg4SFhoeIggoHAAUHiX8D
-    FzI7LBMAiAAZPkA/PDMRmIYAODkaKycxIaKFADY1NxsiLyCshAAjOj00JS4UtoQFHC0wJBXAhA4Q
-    DwALCQ2JACkmHh4WAZAGKhgYAgzRKB8dHRLItwgEBOatAOuQhIEAOw==
-}
-
-
-#----------------------------------------------------------------------
-if {$png_image_support} {
-	image create photo autoplay_off -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAB3RJ
-		TUUH1wgGEBoIdCRDswAAAfFJREFUOI3Nkj9oE3Ecxd/vcsmludwvDSbNJdczhcIFHbRdUoQMVWJ1
-		FdwciqDGQofQLnZsB0E61HawYokgiGgh/hlEYzvEpCkojWdHDYiXNKRYBxG8RE9zTldKYlB08cEX
-		3vI+PL7fL/CPsu3xQQD7AJgAvv0NQBw5EX8XDu/3Eo7RlH6lUa1Wv/4xQBAEvyz3jk9MTg5slbfO
-		MDamMRQd+hSNRhuqqnZsRCwTiUQOhfvkzczTFVQqZaQfpI1sNvtW7OmZU5QDG263u5RIJPRWAGOZ
-		YDDoAIByRcPaeg7H43H7/Nz8wa4u1+LrTfUyx3Gn8vn84VKpxP0SIEkSBwCsjQXv4lHbrmHn4w65
-		NDVlTyaTJ3O55zdWV5+N8zx/2jRNpQ0QCAQcAMCyLATqARUonE4ndF2H3CszqdRNl1bWzj18dH8Y
-		wJE2gCiKnAWglO4ZD2rbtebYWKI+ODB468L5i+sAXlg5tnUHLGuHh3rg7fZCr9cxO3vFaJpmYWZm
-		Ou33i0UAKiGk0QYIhUIcAFBKYXw3sLx8z3hVLGqjo2dvx2KxPIANQsjn1ivsAiRJcgBAobD2Y/H6
-		tS/DR4/dWVpKPQbwkhDyoTXYsUFmJfPk6sLCXZ/XVyCEvO8UtLT7SKZpjgDwAVABvCGENH8X/j/0
-		E6ShmjXfUKodAAAAAElFTkSuQmCC
-	}
-
-	image create photo autoplay_on -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAAB3RJ
-		TUUH1wgGEBoIdCRDswAAAQ9JREFUOI3VkjFKxEAUhr/3Zsi6mS6NW6wJJKnU0lOIeArFTvEe6mFE
-		PIOiXY4gLGEL29iNxWyGhMi6nfgzj3kD///NGxj4a8mgz4C9HTJfwGd/sH0zn8/Ts/PTj9/ST4/P
-		B13XTQF1XScA93cPiAiCEFYYUkS4ub2mruukaRomgDzPZwAqyuvbC9ZarLFht5ajw+Po+xFQlmXS
-		rleICs65GDYbgBoTfcMnRUBRFEm7XqGquNTFm00P2gCKohgBdDDBDMCoIXWONA3lXCijOvJNJqiq
-		KgEwxsQJVCMf7/3INwEsl8sIWOwv8CEVwpsa+iaALMsswOXVBdvU+3rFn+i9PwEWW9NBrYi87+D7
-		L/oGx9IwzmkU3BMAAAAASUVORK5CYII=
-	}
-
-	image create photo engine_on -data {
-		iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBI
-		WXMAAAsRAAALEQF/ZF+RAAAEoUlEQVRIx7WU328UVRTHv+fOzHbZbru/6Lbd2R/9gQXbgkCXmD5A
-		4oM1xmACWqOEVPBB34klmBpMjBiEwD/QBwgaTdkWxV/RYOIDIY0h2FZLC9J2p7s7K1vY3XaXWLo7
-		M9cHZsmK26ok3uQkk3vnns8553vOBf7nRasdHD9xbDeAXgDdAILmdgzAKIDIkcMDXz0W4PiJY9sA
-		nCYm+uoagkZAlus9rtpagCOdzefiqpq6czvGuKElARw6cnhg7F8DzKgjXl9LdEtneyCWNpTFZSwV
-		NCoCgEXkknMdOUIe1jQxeT2+kJxrBtC7VjZU5nwbgNHWjVsX7G5/cT7NExwwVrnEmjzkz2dUafbm
-		mBdA92qZiGXfp+vl1miN22+JpnmstDmbXHRPz2dkAGgPedQWnyPDASOa5rFmjxysl3PRlDp7GsAz
-		lQCsVBpiom9rZ0dASfPEgygJjBFuzGflwf4eDPb3YHo+IwsCg8AYiBGUNE9s3dwZIEH0meWtDADQ
-		621sMqJpQ+GAwRiBlRwR/mKiwMAEBpExMIEZyl1d8TY0GWbHrVqi7lDA71FyfJoxhrnkontKScsA
-		QEQgeiAVEeGLyzObAaCzeb3aKjszuRVjKRT0P5lSZ7rXAgTr3A5hZlEvMkaYUtLyYH/PwxYodcJg
-		/7MAAA7gzZOX5LagOxNbuJftCjlrAVSvKbIZXdTf4LQuF/RNmmEIAmNERFQicM65wTnXDa7n/ygY
-		n1+Zm9U0nfaEa1br0oeA2J3skidUX11zK5nLaAbGe49+3U5EAAEfDzwPAOj78DuAAxwcdpt1yuBk
-		PNFY485kczkA6bUAo7F4Yke4LRSYXVjJ2K1S3OWyxyVJhJpMP1cCERFamuq/1zUdBV1Hsahh+4ba
-		gBKPpgBcXauLIqmkwnZscHTYrIIoCAJExiAJ7KHIRARGBEkSIYgCBMZQXSWJ25prOm6rUQYgUglQ
-		Psk/yqGNDW5fGwZ/UC9XWSRIFhH5e/cD2cV8OwHw1jmn3E57vFDUUCho6NtZt/NO4iYSyo3bRw4P
-		VBy08kk+pM7fHHU4nAtv9QR2fnZlYdQgaOvd9rivwRW3SCI451gpaLBKTHytu6G7sKRWJ5QbXgD7
-		VhO54mPnb94U3b7lqcCkunz9t9/vx1N5fUlgAhpdoqPNawlsbLR2jE9MJGLR6SYAVdeu/Zyvqqoa
-		/+Tcp7vWBACg9z94b7skSacE0eKTg61GcyhUv97lqAGAu9mlvBKLpxLzt5iuFZIrKytvT05eHz74
-		xuuh8bEJjI9PKJGhkRZzVP4GIFN0BoC9e/Sd3VardS9j7GnGmB8ADMNI6Lp+NZfLXzz50alvAWDf
-		/lcHbTZbbz6Xv993YL/17JlzucjQiONRQMm5YOryqJXAkmmEB0+5BkB7+ZW9Y+Fwl2vm1lxhz0sv
-		Ws6eObccGRqxPSoymQCpggmmrQNgNWEGgAKA4vD5C7sA/BQOd9m+vPiNceBg3zoA9yJDI/ZywD8t
-		DkAHUCwDGOY+Hz5/4XkAl8LhLsuvv0xWbNNyB9y8rJtlYGaGy2YmVCZk6d/M8PkLYQCXiKguMjTy
-		wn8I/vHXn4Y12hGK1zC4AAAAAElFTkSuQmCC
-	}
-
-	image create photo engine_off -data {
-		iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A
-		/wD/oL2nkwAAAAlwSFlzAAALEQAACxEBf2RfkQAAAAd0SU1FB9oCHAwWC50uu5UAAAUJSURBVEjH
-		vVV/TFNXFP7ufe+V0lqgVFt+tBRFJaEwldYpbjMxuODmcJGBIUoQpiZzW7ZJnLrgzP6YkWlkicnm
-		nDrBmSkWUFimc2xZ2I8gMwqoWxSR1haQKgVpEUr7+t7+4JEQtOiWbCc5eS/3vXu+853v3HOB/9hI
-		qA9le3dnA8gDkAEgQVp2AGgCYN2xrfTbfwVQtnf3AgDlhLJxM2ISBEN8vE6jjogARLgHvB5nd7fr
-		fq+DigLfA6Bkx7bSlqcGkLK2auNm2Z5JTTE43IL9wQgG/TwJAICMFbmocBJp1NDEtut/Ou/1dM4E
-		kDcVGzIp86ak5Pn3pkXrA3fcYpcICCE20UQN0Xv7u7nbN1u0ADJCMaET3st18Uk2VbQ+YHeLjkeC
-		EwJCxvIRAcHmFh2q6PiALj7JBqA8FAM6XhpC2bj5qSaD77OPZCkfvrDEcOjtFCoGCcNQMAwFy1Aw
-		lIJSQFe2bt7s7c8/N3qgNGx+WqqBMGycVN6QDPK0sYmCzS3YVW0/6pae2CnLevGuxnBws4kRBcIy
-		DFhmLHjc55tN2em2iOUVGzjFtUatvS9o18YkClLHhQTIMBr0ugfD4uBw8uI+f/0BgV1Rwix7ZVCD
-		sk0ZdY030mob29OEPRuXZC64PZ0tfpfxWysFX/LiPs8oGTQm6HVSOz9irPRMmBEdyXQ8CAZcG/a1
-		V+7ZpNmo+pSTr9hOitn93LymwyoBBOaVPRzNeouIdV+IlRfn8LLS/e3O+8NDZmNUBADlVAAghODs
-		rx02fUyU3Pbs1v55fxxVLxTLZCSrhKSrj3MQeZCUN4j4/Zdi802T/5R5g1t10dHB80Gy2qLClCID
-		cNwfGPQYdUpVZ4/HGwDTukVV6DpyQuEbbasQiSmXkJRc4murFg9bVb6t6mIXKw+/KohEmBOriuwf
-		8HikUx4SoMnh7HJZ5qoNlKGYppQ7tbHRF5SseJf2DwXBDwNBH1jvw6CKQ68xQXchMkrpZFiK9NkR
-		BruzyyWNkJAAVlePnS6cHWlSyBmWUoK8c+9n5i5xGLhFOSx/xcrzV6w8uzCbzU236V+ueW85JYAy
-		jGMXzFSZerttFID1SSf553hjcow6dg7cW9dx+ekdCbKizVzgh2/4s/UqF6VUWJXZF8utzGNHjx4L
-		1Pw116kpP+nv625Hl/1G745tpcumFBlASfedm03a2kP8mtTb4bKC9ZSvq+DPNGhcjUWV52UcC/Gr
-		wqxXR0/GhhWv43IrTyU2Htgy0mVexgJY+ySRIc2SPLT+rpAX5VPhQi0amhMe3nrn62aGZSgIpZ1b
-		Tlz66frcIaH+DGTr8ynf8psSQNjly1caCwrX/vI045qcT4s6yY36cjw6g3/4zY+7ZyUlaaerI1UA
-		0Dcw6LXb7C7ZwV3xyq4OOQkLrztiyrQUv77e2NrShtbWNru1qmbW2Lh6FIBIjCgAunPXB9lyuTyH
-		UrqIUqoHAEEQuoLB4CWPx1u375P95wBgbUH+YYVCkef1eH2FRQXyimPHPdaqmsjJAOPBGUmXyT4O
-		zElOMDZteQB87pqcFovFrO641elf/doqWcWx4yPWqhrFZJGJBMA9xhnJwwHIJTABgB9AoPp07VIA
-		zRaLWVFf951QVFwYDmDIWlUzjf0H97cIIAggMAFAkNbF6tO1LwFosFjMsmtXrz+2TScGEKXNQakM
-		VGI4IjEhE4Qc/7e/+nStBUADIWSGtapmJf4P+xvUwP3l4H0SQwAAAABJRU5ErkJggg==
-	}
-}
-
-#----------------------------------------------------------------------
-
-
-
-	
-button .main.fbutton.button.comment -image comment_unavail -command {makeCommentWin}
-button .main.fbutton.button.autoplay -image autoplay_off -command toggleAutoplay
+button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
+button .main.fbutton.button.autoplay -image tb_autoplay_off -command toggleAutoplay
 button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
 button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
 button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
@@ -900,10 +676,10 @@ proc updateNavButtons {} {
     # remove technical comments, notify only human readable ones
     regsub -all {\[%.*\]} $comment {} comment
     if {$comment != ""} {
-         .main.fbutton.button.comment configure -image comment_avail -relief flat
+         .main.fbutton.button.comment configure -image tb_comment_avail -relief flat
          ::utils::tooltip::Set .main.fbutton.button.comment $comment
     } else {
-         .main.fbutton.button.comment configure -image comment_unavail -relief flat
+         .main.fbutton.button.comment configure -image tb_comment_unavail -relief flat
          ::utils::tooltip::UnSet .main.fbutton.button.comment
     }
    .main.fbutton.button.hgame_prev configure -state [::game::Hprev_btnstate]
@@ -1641,7 +1417,7 @@ proc toggleAutoplay { } {
         set autoplayMode 1
         # Change the autoplay icon in the main window
         #
-        .main.fbutton.button.autoplay configure -image autoplay_on -relief sunken
+        .main.fbutton.button.autoplay configure -image tb_autoplay_on -relief sunken
         # Start with some delay
         # Only to spawn the autoplay on a new thread
         #
@@ -1796,7 +1572,7 @@ proc cancelAutoplay {} {
     set annotateMode 0
     set annotateModeButtonValue 0
     after cancel autoplay
-    .main.fbutton.button.autoplay configure -image autoplay_off -relief flat
+    .main.fbutton.button.autoplay configure -image tb_autoplay_off -relief flat
 }
 ################################################################################
 #
