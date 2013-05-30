@@ -97,7 +97,7 @@ proc InitImg {} {
 	#Search available piece sets
 	set boardStyles {}
 	set dname [file join $scidImgDir "pieces"]
-	foreach {piecetype} [split [glob -directory $dname *] " "] {
+	foreach {piecetype} [glob -directory $dname *] {
 		if {[file isdirectory $piecetype] == 1} {
 			lappend boardStyles [file tail $piecetype]
 		}
@@ -110,7 +110,7 @@ proc InitImg {} {
 
 	#Load all img/buttons/_filename_.png
 	set dname [file join $::scidImgDir buttons]
-	foreach {fname} [split [glob -directory $dname *.png] " "] {
+	foreach {fname} [glob -directory $dname *.png] {
 		set iname [string range [file tail $fname] 0 end-4]
 		catch { image create photo $iname -file $fname }
 	}
@@ -120,7 +120,7 @@ proc InitImg {} {
 	#Load all img/boards/_filename_.gif
 	set textureSquare {}
 	set dname [file join $::scidImgDir boards]
-	foreach {fname} [split [glob -directory $dname *.gif] " "] {
+	foreach {fname} [glob -directory $dname *.gif] {
 		set iname [string range [file tail $fname] 0 end-4]
 		image create photo $iname -file $fname
 		if {[string range $iname end-1 end] == "-l"} {
@@ -130,7 +130,7 @@ proc InitImg {} {
 
 	#Load all img/buttons/_filename_.gif
 	set dname [file join $::scidImgDir buttons]
-	foreach {fname} [split [glob -directory $dname *.gif] " "] {
+	foreach {fname} [glob -directory $dname *.gif] {
 		set iname [string range [file tail $fname] 0 end-4]
 		if { [lsearch -exact $pngimages $iname] == -1} {
 			image create photo $iname -file $fname
@@ -139,7 +139,7 @@ proc InitImg {} {
 
 	#Load all img/flags/_filename_.gif
 	set dname [file join $::scidImgDir flags]
-	foreach {fname} [split [glob -directory $dname *.gif] " "] {
+	foreach {fname} [glob -directory $dname *.gif] {
 		set iname [string range [file tail $fname] 0 end-4]
 		image create photo $iname -file $fname
 	}
