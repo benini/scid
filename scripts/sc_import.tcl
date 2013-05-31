@@ -5,8 +5,8 @@
 #
 # Usage:  sc_import <scid-database> <pgn-files....>
 
-# The next line restarts using tcscid: \
-exec tcscid "$0" "$@"
+# The next line restarts using tkscid: \
+exec tkscid "$0" "$@"
 
 set args [llength $argv]
 if {$args < 1} {

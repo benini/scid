@@ -1,6 +1,6 @@
 #!/bin/sh
 # \
-exec tcscid "$0" "$@"
+exec tkscid "$0" "$@"
 
 # spliteco:
 #   Takes a Scid-format database and produces a number of smaller

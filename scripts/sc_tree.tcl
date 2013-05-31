@@ -1,6 +1,6 @@
 #!/bin/sh
 # \
-exec tcscid "$0" "$@"
+exec tkscid "$0" "$@"
 
 proc usage {} {
   puts stderr {Usage: sc_tree [-eco <eco-file>] [-pgn <output-file>] <database> [moves...]}

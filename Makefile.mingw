@@ -67,7 +67,7 @@ CFLAGS = -DZLIB -DWIN32 $(OPT) $(PROFILE)
 
 
 ### EXECS: all the evecutable programs compiled from C++ files.
-EXECS= pgnscid.exe scidt.exe scid.exe tcscid.exe scmerge.exe eco2epd.exe scidlet.exe
+EXECS= pgnscid.exe scidt.exe scid.exe scmerge.exe eco2epd.exe scidlet.exe
 
 ### SCIDOBJS: not all the .o files that make up scid, just the standard
 ###   files that most of the scid programs use.
@@ -178,15 +178,6 @@ scid.exe: src\scid.obj $(OBJS) src\tree.obj \
             src\optable.obj src\engine.obj src\recog.obj scid.coff \
             $(TK_LIB) -mwindows
 
-tcscid.exe: src\tcscid.obj $(OBJS) src\tree.obj \
-            src\pbook.obj src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj src\engine.obj src\recog.obj
-	$(LINK) $(LFLAGS) -o $(OUT_DIR)\tcscid.exe src\tcscid.obj $(OBJS) \
-            src\tree.obj src\pbook.obj \
-            src\crosstab.obj src\spellchk.obj src\probe.obj \
-            src\optable.obj src\engine.obj src\recog.obj \
-            $(TCL_LIB)
-
 eco2epd.exe: src\eco2epd.obj src\pbook.obj $(OBJS)
 	$(LINK) -o $(OUT_DIR)\eco2epd.exe src\eco2epd.obj src\pbook.obj $(OBJS) $(TCL_LIB)
 
@@ -197,14 +188,6 @@ scid.coff: scid.rc
 clean:
 	-del /F src\*.obj src\zlib\*.o scid.coff
 	-rmdir /S /Q $(OUT_DIR)
-
-src\tcscid.obj: src\tkscid.cpp
-	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -DTCL_ONLY -c src\tkscid.cpp \
-	  -o .\src\tcscid.obj
-
-src\tkscid.obj: src\tkscid.cpp
-	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -c src\tkscid.cpp \
-	  -o .\src\tkscid.obj
 
 src\scid.obj: src\tkscid.cpp
 	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -DSOURCE_TCL_FILE="\"scid.gui\"" \

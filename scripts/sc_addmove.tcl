@@ -7,8 +7,8 @@
 #  This is Tcl code.
 # The "\" at the end of the comment line below is necessary! It means
 #   that the "exec" line is a comment to Tcl but not to /bin/sh.
-# The next line restarts using tcscid, the Scid Tcl interpreter: \
-exec tcscid "$0" "$@"
+# The next line restarts using tkscid, the Scid Tcl interpreter: \
+exec tkscid "$0" "$@"
 
 if {$argc < 3} { 
     puts "Usage: sc_addmove database gameNumber move(s)"

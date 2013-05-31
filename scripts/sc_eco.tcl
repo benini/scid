@@ -5,8 +5,8 @@
 #
 # Usage:  sc_spell <scid-database> <eco-file>
 
-# The next line restarts using tcscid: \
-exec tcscid "$0" "$@"
+# The next line restarts using tkscid: \
+exec tkscid "$0" "$@"
 
 set args [llength $argv]
 if {$args != 2} {

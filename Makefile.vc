@@ -204,9 +204,7 @@ SCID_EXECS = \
 	scid.exe \
 	scidlet.exe \
 	scidt.exe \
-	scmerge.exe \
-	tcscid.exe \
-	tkscid.exe
+	scmerge.exe
 
 ##	ZLIB_OBJS: obj. files in the zlib compression library.
 #
@@ -454,16 +452,6 @@ scid.exe: $(TMP_DIR)\scid.obj $(SCID_XOBJS)
 		/out:$(OUT_DIR)\scid.exe \
 		/subsystem:windows /entry:mainCRTStartup
 
-tcscid.exe: $(TMP_DIR)\tcscid.obj $(SCID_XOBJS)
-	@echo *** tcscid.exe
-	$(LD) $(LDFLAGS) $(TMP_DIR)\tcscid.obj $(SCID_XOBJS) $(TCL_LIB) \
-		/out:$(OUT_DIR)\tcscid.exe
-
-tkscid.exe: $(TMP_DIR)\tkscid.obj $(SCID_XOBJS)
-	@echo *** tkscid.exe
-	$(LD) $(LDFLAGS) $(TMP_DIR)\tkscid.obj $(SCID_XOBJS) $(TK_LIB) \
-		/out:$(OUT_DIR)\tkscid.exe
-
 eco2epd.exe: $(TMP_DIR)\eco2epd.obj $(TMP_DIR)\pbook.obj $(SCID_OBJS)
 	@echo *** eco2epd.exe
 	$(LD) $(LDFLAGS) $(TMP_DIR)\eco2epd.obj $(TMP_DIR)\pbook.obj \
@@ -473,12 +461,6 @@ eco2epd.exe: $(TMP_DIR)\eco2epd.obj $(TMP_DIR)\pbook.obj $(SCID_OBJS)
 #--------------------------------------------------------------------
 # Special case object file targets
 #--------------------------------------------------------------------
-
-$(TMP_DIR)\tcscid.obj: src\tkscid.cpp
-	$(CC) $(CFLAGS) -DTCL_ONLY /Fo$@ $?
-
-$(TMP_DIR)\tkscid.obj: src\tkscid.cpp
-	$(CC) $(CFLAGS) /Fo$@ $?
 
 $(TMP_DIR)\scid.obj: src\tkscid.cpp
 	$(CC) $(CFLAGS) -DSOURCE_TCL_FILE="\"scid.gui\"" /Fo$@ $?
