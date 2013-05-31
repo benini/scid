@@ -239,7 +239,7 @@ menuText E ToolsExpFilterLaTeX "Export Filter to LaTeX File..." 17 \
   {Write all filtered games to a LaTeX file}
 menuText E ToolsImportOne "Import One PGN Game..." 0 \
   {Import a game from PGN text}
-menuText E ToolsImportFile "Import File of PGN Games..." 7 {Import games from a PGN file}
+menuText E ToolsImportFile "Import File(s) of PGN Games..." 7 {Import games from PGN file(s)}
 menuText E ToolsStartEngine1 "Start engine 1" 13  {Start engine 1}
 menuText E ToolsStartEngine2 "Start engine 2" 13  {Start engine 2}
 menuText E ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}

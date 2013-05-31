@@ -214,8 +214,9 @@ proc doPgnFileImport {fname text {multiple 0} } {
   catch {grab $w.buttons.stop}
   bind $w <Escape> "$w.buttons.stop invoke"
   $w.buttons.close configure -state disabled
+  $w.text configure -state normal
   $w.text insert end $text
-  $w.text insert end "Importing PGN games from [file tail $fname]...\n\n"
+  $w.text insert end "Importing PGN games from [file tail $fname]...\n"
   $w.text configure -state disabled
   
   set importPgnErrors ""
@@ -237,7 +238,7 @@ proc doPgnFileImport {fname text {multiple 0} } {
     } else {
       append str ".\nPGN errors/warnings:\n$warnings"
     }
-    $w.text insert end "$str\n"
+    $w.text insert end "$str\n\n"
   }
   
   $w.text configure -state disabled
