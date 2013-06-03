@@ -355,9 +355,9 @@ proc ::tree::doTraining { { n 0 } } {
           sc_pos setComment "[sc_pos getComment] Mask : $txt"
         }
         
-        # if move was on an exclude line, set a warning (img = ::rep::_tb_exclude)
-        if { [::tree::mask::getImage $move_done 0] ==  "::rep::_tb_exclude" || \
-              [::tree::mask::getImage $move_done 1] == "::rep::_tb_exclude"} {
+        # if move was on an exclude line, set a warning (img = tb_cross)
+        if { [::tree::mask::getImage $move_done 0] ==  "tb_cross" || \
+              [::tree::mask::getImage $move_done 1] == "tb_cross"} {
           sc_pos setComment "[sc_pos getComment] Mask : excluded line"
         }
       }
@@ -483,8 +483,8 @@ proc ::tree::displayLines { baseNumber moves } {
   
   # Display the first line
   if { $maskFile != "" } {
-    $w.f.tl image create end -image ::tree::mask::emptyImage -align center
-    $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+    $w.f.tl image create end -image tb_empty -align center
+    $w.f.tl image create end -image tb_empty -align center
     $w.f.tl insert end "    "
     $w.f.tl tag bind tagclick0 <ButtonPress-$::MB3> "::tree::mask::contextMenu $w.f.tl dummy %x %y %X %Y ; break"
   }
@@ -519,8 +519,8 @@ proc ::tree::displayLines { baseNumber moves } {
         # NAG tag
         $w.f.tl insert end [::tree::mask::getNag $move]
       } else  {
-        $w.f.tl image create end -image ::tree::mask::emptyImage -align center
-        $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+        $w.f.tl image create end -image tb_empty -align center
+        $w.f.tl image create end -image tb_empty -align center
         $w.f.tl insert end "    "
       }
     }
@@ -562,8 +562,8 @@ proc ::tree::displayLines { baseNumber moves } {
   # Display the last lines (total)
   for { set i [expr $len - 3 ] } { $i < [expr $len - 1 ] } { incr i } {
     if { $maskFile != "" } {
-      $w.f.tl image create end -image ::tree::mask::emptyImage -align center
-      $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+      $w.f.tl image create end -image tb_empty -align center
+      $w.f.tl image create end -image tb_empty -align center
       $w.f.tl insert end "    "
     }
     $w.f.tl insert end "[lindex $moves $i]\n"
@@ -586,7 +586,7 @@ proc ::tree::displayLines { baseNumber moves } {
       # images
       foreach j {4 5} {
         if {[lindex $m $j] == ""} {
-          $w.f.tl image create end -image ::tree::mask::emptyImage -align center
+          $w.f.tl image create end -image tb_empty -align center
         } else  {
           $w.f.tl image create end -image [lindex $m $j] -align center
         }
@@ -1242,8 +1242,8 @@ namespace eval ::tree::mask {
   set displayMask_showNag 1
   set displayMask_showComment 1
   
-  array set marker2image { Include ::rep::_tb_include Exclude ::rep::_tb_exclude MainLine ::tree::mask::imageMainLine Bookmark tb_bkm \
-        White ::tree::mask::imageWhite Black ::tree::mask::imageBlack \
+  array set marker2image { Include tb_tick Exclude tb_cross MainLine tb_mainline Bookmark tb_bkm \
+        White tb_white Black tb_black \
         NewLine tb_new ToBeVerified tb_rfilter ToTrain tb_msearch Dubious tb_help ToRemove tb_cut }
   set maxRecent 10
 }
@@ -1712,16 +1712,16 @@ proc ::tree::mask::getImage { move nmr } {
   
   set fen $::tree::mask::cacheFenIndex
   if {![info exists mask($fen)]} {
-    return ::tree::mask::emptyImage
+    return tb_empty
   }
   set moves [ lindex $mask($fen) 0 ]
   set idxm [lsearch -regexp $moves "^$move *"]
   if { $idxm == -1} {
-    return ::tree::mask::emptyImage
+    return tb_empty
   }
   set loc [expr 4 + $nmr]
   set img [lindex $moves $idxm $loc]
-  if {$img == ""} { set img ::tree::mask::emptyImage }
+  if {$img == ""} { set img tb_empty }
   return $img
 }
 
@@ -2294,57 +2294,3 @@ proc  ::tree::mask::searchClick {x y win baseNumber} {
 ################################################################################
 #
 ################################################################################
-image create photo ::tree::mask::emptyImage -data {
-  R0lGODdhEQARAIAAAP///////ywAAAAAEQARAAACD4SPqcvtD6OctNqLs96xAAA7
-}
-image create photo ::tree::mask::imageWhite -data {
-  R0lGODlhEQARAMIEAAAAAD8/P39/f7+/v////////////////yH5BAEKAAcALAAAAAARABEA
-  AANBeLrcrkOI8RwYA9QGCNHbAkhgGAieEISq551b60rhmJaV0BHwFgQu3uohC6oeu6AHB0Ep
-  U4KG5AmVAq7YbDS0SQAAOw==
-}
-image create photo ::tree::mask::imageBlack -data {
-  R0lGODlhEQARAMIEAAAAAD8/P39/f7+/v////////////////yH5BAEKAAQALAAAAAARABEA
-  AAM0SLrcrkOI8Ry4oDac9eKeEnCBJ3CXoJ2oqqHdyrnViJYPC+MbjDkDH4bC0PloCiMMGWok
-  AAA7
-}
-image create photo ::tree::mask::imageMainLine -data {
-  R0lGODlhEQARAOfzAAAAAAIAAAMAAAYAAAUFBRIMCw4ODisLBBQUFCUSDiIXFR8fHygoKDg4
-  OE9BFVpQLlxQK2FWL2JWN2FXOGVZMGZaMrs3GWxfNGFhYWdjWcBGK8FGKm9rY8NMMd9CHsRU
-  O3R0cnV0cs9SNcdXPtxQMN9PLnx4b3p6d9xWOHx7echhSslkS4CAf4GAf4KBfuNdP4OCgN9f
-  QYODgYSDgYaFgt9jRsxtWIiIhZCKgeVpTuJrUN9yWNB4ZZOTkJSUkd94X916Y5qVipuVit96
-  YpuWipiXlJeXl5iXl52Xi5mYkeh5YJ2XjJmYl56Yjed7Y5uZl5+ZjZ+Zjpqal5qamZual5+a
-  jqCajpubmaGbj6GbkJycnKGckOeBa6OdkaOdkp6enp+enKOekueDbaSek5+fnqGfnKGgnaGh
-  oKGhodeQfaWjoKSko+qMd+KPfamppqqppquqp6urqqyrqKurq6yrqa2rqa2sqe2kPq+vrrCv
-  rbCvrrGwrrOyr+eejbOysfCpP7Ozs7SzsbSzsrS0steudLW0srW0s7W1s7W1tLW1tba1tLe2
-  tbi3tPOvQrm3tri4trm4uLm5ubq5t/SyRO+0Tbu7ufe1RPK2Tfe1Rb29vO6rm8C/vMDAwMPC
-  vsXEwcnJx8rKyM3LyPbSNs3My83Nzc/OytDOyvjYN9DQz9LRzdHR0dPSzvncONTTz9PT0tPT
-  09XTztbU0PnfOdfV0dfW0dbW1tjW0djW0tnX09nX1PrkOtrZ1dvZ1fvnO9za1tza2Nzb2Nzb
-  2fzpO9zc2t3c2N3c2t7d2fzrPd/e2uDe2t/f3eDf2+Hf2+Hf3OHg3ODg3+Hg3eLh3ePi4OTj
-  4OXj4OXk4eTk5Obl4ufm4+jn5Ofn5+np6evq6Ozr6e3s6u3t6+3t7e/v7vDw7vDw8PHw7vLy
-  8vPy8fTz8vT09Pb19Pb29vj39vj49/n5+Pn5+fr6+fv7+/z8+/7+/v//////////////////
-  /////////////////////////////////yH5BAEKAP8ALAAAAAARABEAAAj7AP8J/JdAwIAD
-  AxMOBPBKnaY+QFbUctdOm7UFCQGomyfmx44Rtea1w7MNUIOF8+ZxqVGjAxpOmdaMQzeHgEAA
-  KZV48GCBTKZMZxzNAADg5jx5OnmiWtfu2S8AvS4ZfccmRw4Vo86dMwcA04Wi/3CyY8ODh40p
-  jxAB0DWBqNFzAFgwAXBkEABKFZ6YAIvznLJP5IoFA3CKAgA7OPjOE4fokCBBAETdAQDCUxDF
-  3PboyUPHAVEXPXZlUYzt2jVqwAAUodJpFS4ofMFBc7bMWCo+m0LxwjULCV9VzJAZI5bLVCxe
-  vm7BEsI3SRgvXbZgsWIlC5QlRDKAVchdYUAAOw==
-}
-
-#----------------------------------------------------------------------
-if {$png_image_support} {
-	image create photo ::tree::mask::imageMainLine -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-		WXMAAAsSAAALEgHS3X78AAAAB3RJTUUH0wkWEisFOaTQ6wAAAB10RVh0Q29tbWVudABDcmVhdGVk
-		IHdpdGggVGhlIEdJTVDvZCVuAAABqklEQVR42oWTz0sbQRTHP6alPy49BBfM0VuuvQiN6G5zlFIP
-		8Q/w0EPBsxbZP6B/gaciVbQklIoNHpdslkAOkUJLdSEHQeKyjI2HQjY1ypodD3a32bWuDx7z3sx7
-		n5n5MgP/TD4AmQH5CCR3+6uRHsZGAaeri1Ey8X6DIAhuFqTEcRw6nQ6qqgIsADsAGRI2aJkMWiYA
-		nufheR79fh/HcSgUClQqFYAv4UkekmKmaUZxEATouo4QAk3TsCxrDxhLBRSLxegKvV6PdruNbR9g
-		WVZY8joVUKvVYnk+n0fXdXwxzeB7lmdze9VUgKZpsTybzXJ1NoO//5ilD8fcq0G9Xo/iUqnE1a9p
-		/P0nLH/+zdbXQ4DnqQBVVZFSoigKl8cvuGg95d3ukLXNb2HJj8x9GiiKwvnPKc7tcd6uC9Y+mhiG
-		EdXcAkyaJxz98WMadI5mWfnksF21EULcuaEEZKPRiD3d+ZdKFJfLZem6rjQMI5yLizgcDul2uwgh
-		yOVyAFTrZ7iuG70HKWVs11sihkXJpmTjfwHNZhPf92Ow0TG0v3A7CVsi/Rsn/Q3ANdGG5Icao+xt
-		AAAAAElFTkSuQmCC
-	}
-}
-#----------------------------------------------------------------------
-

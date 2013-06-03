@@ -236,49 +236,6 @@ proc ::bookmarks::NewSubMenu {w entry} {
 set bookmarks(edit) ""
 set bookmarks(ismenu) 0
 
-# Button images for bookmark editing:
-
-image create photo bookmark_up -data {
-R0lGODdhGAAYAMIAALu7uwAAAMzM/5mZ/2ZmzP///zMzZgAAACwAAAAAGAAYAAADRgi63P4w
-ykmrvTirEPQKwtBpYChmpUmMVVAI5kCsbfGqMy25dpzPLAfvNij+gBCDUokjLJUUQ9OAkRpn
-1Mvz6el6v+AwOAEAOw==
-}
-
-image create photo bookmark_down -data {
-R0lGODdhGAAYAMIAALu7uzMzZv///8zM/5mZ/2ZmzAAAAAAAACwAAAAAGAAYAAADSQi63P4w
-ykmrvRiHzbcWw0AQRfCFY0l1ATiSLGQINCiSRZ4b0UyjOB1PMgvddIXhxABEKinM1C5jkD4v
-1WSGYbhuv+CweExeJAAAOw==
-}
-
-#----------------------------------------------------------------------
-if {$png_image_support} {
-	image create photo bookmark_up -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAABl0RVh0
-		U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAG0SURBVDiNjZHPaxNREMc/s7tpE5ukthET
-		2zTkqWujaNSiIOYmnrpnz/4bvXns+x+8eBOPPfQiiCJ6URDiRfESKoKC1CLa5ue+8ZBUjOxqv/AY
-		5s3wmS8zqCppr76+WfxXXVXxSJGJ7Brw0UT2VloPkAwwkTWIPLm4Wpv3fG/LRPbGkQEmsiVEnl+9
-		dLoYnqnSutbIiyePTWSb/wWYyOZE5Onq2eVypXLSe9vZRYIZrl8J84g8M5ENUwEmsr6IbC0vnQjr
-		9Wrm09efxM7xbmeXbC4nzQtmHpGXJrK1ZAci90uLxZvnGyb7+dsBI6egoArvd/YoFPNeI1xZnEDK
-		UwAT2XuF/LE7l5vn5hCP3Ix/SAVgoTCL73ksVUq+qZ0qI/LCRHYBQOrrm3eBB4ATQTOBL63Wmvdl
-		r8tBt8/+fo+wepx2+8Ow2+97qgD4wCvgdgA8BB7B2O5gGP9wTqeWG8dKbzBwqqwA3/8oDYLO9sbg
-		r0sQO51k4ziMHToe3e9sb/RSz3ioUewmG5CpPEmJgN8OJmE4SgcEaYC5bEAgjoyvxM6hmtSZDNA3
-		r9tJvbNJn6Jp6CPqF7KJv5pbcXAUAAAAAElFTkSuQmCC
-	}
-
-	image create photo bookmark_down -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAABl0RVh0
-		U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAHISURBVDiNpZG/bhNBEMa/XZ8tHDkI23JQ
-		kiJchWiQgDSJBIiGgkM05AmivAEFV6bjeAieAMpcCWUQBYqlSFGgWeeCSUT+3Dk+39r3Z4fizigx
-		d6ZgpdVKszO/b+YbRkT4n6NNBnTDCgGUC/Lrwja9qQAAbO3FI/ASB4cCJwUAeL+1PYpi9e8OACBR
-		hD3nFMFgBD8Y4uHdRRRNyvMBmRJLnzzl6YAklSOkb5woFJmdC4jVODltIUqKO9B0w1oH8G4cKGsc
-		SqkrM0dxgkqlrMlh6OqGNQ7vAHjCiAj687ebs7WZVw/u3alxrQRfhugHEaQM4Q8kGrPX0KpXwRnD
-		YfdX3HGOf4BoWdjmGQcAsfV60/eDD+3d78EojCCHcSaStuH6QwxkhMOfJ0nHOT4B0aqwzbMrHhDR
-		Rs/rb3/bF7JW1cDZHwswV5+B1+urzsGRmxUfjevYZXd1w6oyxr60bjZvLy0tVk49iQonjKSkzkG3
-		B6IVYZv7l01kk+vRDasJxtrzC3PzrVaz5LkXcJzuBYgeC9tsT27hL0AG0cHY10ajfuP83B2A6Kmw
-		zc95a8wFZJD7AD4BeCls82NuEgAQUeG99ezN9Wn/RITfJHoJcxYSI+0AAAAASUVORK5CYII=
-	}
-}
-#----------------------------------------------------------------------
 
 # ::bookmarks::Edit
 #
@@ -318,8 +275,8 @@ proc ::bookmarks::Edit {} {
     -command {::bookmarks::EditNew game}
   if {! [::bookmarks::CanAdd]} { $w.b1.newGame configure -state disabled }
   dialogbutton $w.b1.delete -text $::tr(Delete)  -command ::bookmarks::EditDelete
-  button $w.b2.up -image bookmark_up -command {::bookmarks::EditMove up}
-  button $w.b2.down -image bookmark_down -command {::bookmarks::EditMove down}
+  button $w.b2.up -image tb_up -command {::bookmarks::EditMove up}
+  button $w.b2.down -image tb_down -command {::bookmarks::EditMove down}
   foreach i [list $w.b2.up $w.b2.down] {
     $i configure -padx 0 -pady 0 -borderwidth 1
   }

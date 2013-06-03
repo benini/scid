@@ -204,7 +204,7 @@ proc search::header {} {
   ttk::label $f.l2 -text "-" -font $regular
   ttk::label $f.l3 -text " " -font $regular
   ttk::entry $f.emin -textvariable sDateMin -width 10 -font $regular
-  button $f.eminCal -image ::utils::date::calendar -padx 0 -pady 0 -command {
+  button $f.eminCal -image tb_calendar -padx 0 -pady 0 -command {
     regsub -all {[.]} $sDateMin "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
@@ -212,7 +212,7 @@ proc search::header {} {
     }
   }
   ttk::entry $f.emax -textvariable sDateMax -width 10 -font $regular
-  button $f.emaxCal -image ::utils::date::calendar -padx 0 -pady 0 -command {
+  button $f.emaxCal -image tb_calendar -padx 0 -pady 0 -command {
     regsub -all {[.]} $sDateMax "-" newdate
     set ndate [::utils::date::chooser $newdate]
     if {[llength $ndate] == 3} {
@@ -337,7 +337,7 @@ proc search::header {} {
   
   addHorizontalRule $w
   
-  ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image bluetriangle -compound left -command {
+  ttk::button $w.flagslabel -textvar ::tr(FindGamesWith:) -style Pad0.Small.TButton -image tb_menu -compound left -command {
     if {$sHeaderFlagFrame} {
       set sHeaderFlagFrame 0
       pack forget .sh.flags

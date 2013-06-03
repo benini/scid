@@ -38,35 +38,6 @@ if { ! [info exists FilterMinElo] } {
   set FilterStepMoves 1
 }
 
-image create photo icongraphic -data {
-  R0lGODlhIAAbAPcAAAQCjISGhMTCvExKpKymnOTixCQilNTSzKSixGxubISC
-  tMzKxLSypPT23DQynGRmrBQSlLS2zJSSvFxerNzexMzKzLy2tDw6nHx+tJyW
-  lMTCzFRSpOTi1KyqxPz+3GxutBwelJyavDw+pAwKjIyGhMzGxExOpKympCwq
-  nNTW1Hx+fIyOvNTOxLSyrBQWlLy6zNze1MzOzLy6tDw+nOzq3KyuxPz+5HRy
-  tJyevO4AAJEAAHwAAHDkkgUAApLMkHwBAP8w2P+MIf9Fef8AAG2SgAUCU5KQ
-  0nwAdxUM2AoAAIIAinwAAAAA2AAAIRcAeQAAAFCgeAO55wBPEgAAAFjwh/3m
-  3BcS0QAAd3ig2Gs4IRdFeQAAAAC0SADmmQASdQAAAH6gAAA4AABFAMAAAAA6
-  oACeuQAATwAAAP+MAf/mAP8SAP8AAP8QOv/gBv/RAf93zwDkWAAA6wDMEgAB
-  AAAgIQAANwAARQAAAACS0QACtBeQ0QAAd8ASg+UARhIASAACAGIBkgkAAoIA
-  kHwAAHjUAGvmABcSAAAAANu+BwXfAILRAHx3AADkAL8AAE/MAAABAHggAGsA
-  AAEAFwAAAGqSAAACAACQAAAAAPwYAORVABIAAAAAAADYAADmAAASAAAAAPiD
-  APcqABKCAAB8ABgAKO4AAJEAuXwAAHAAAAUAAJIAAHwAAP8AAP8AAP8AAP8A
-  AG0pGQW3AJKTAHx8AEosGfYAAIC5AHwAAAC+UAA+7ReCEgB8AAD//wD//wD/
-  /wD//3gAAGsAABcAAAAAAAC8BAHm6AASEgAAAAC+HgA+qwCCSwB8AFf45Pb3
-  54ASEnwAAOgYe+buwBKRTgB8AHgAGGu36BeTEgB8AEH/vjv/Pjz/gnf/fBss
-  nbMA6NG5EncAAPC+5eU+/xKC/wB8fywAhADo6AASEgAAAADdLAA/AHiCuf98
-  AOMWvpQ/PtGCgnd8fEkBLGYAANMAuXcAANgxGAAAVYoAAAAAAAwBAAAAAAAA
-  AAAAAEQxzmEwcHMwRyAgACH5BAAAAAAALAAAAAAgABsABwj/AA+wiMHAgw2D
-  CA8qTMhwoUIWAhk4bGhQAoYGEyceiJiR4QoAAEJQdMgCosSRCFOAHOAB5cEF
-  AggU7KhQw4wKH0TQNCjgBAkCFBoIHUq0wYUXQk3gKFr0gIwTM1GumKAQhgMM
-  BxEmFHggakcQNBiKePAgrI2FEFmc7BiB5USQWFsq5OqVIQcQHDKCdAHjLEIW
-  C1qsZdgAhYaOKUKsGNAg4VMVQJkqQLGBKdMbBjoIjXGgRYa6Zx0AGLBTYQUQ
-  ikHEMDmxAYgZK0oj1ADyhUCCDD1MuOGyIQyQqzkmDOGgd8YUMWwIVKv1BVjZ
-  NCEmiNwAAYQYlrNbFvj54IsRNXobZKdrY8No47JvF5wBUmtH9xTTSqQRAoHC
-  +wbx+824fDD8/1k59NABnxlEwX42HHifgvkxeFAByrGgggwMMCBThRVeiKGG
-  GWLYoUAWpMWViCSOaCILJRAQgAAltnjii2mdQEALAQEAOw==
-}
-
 #Check for illegal Values and set to default values
 proc checkConfigFilterGraph {} {
   global FilterMaxMoves FilterMinMoves FilterStepMoves FilterMaxElo FilterMinElo FilterStepElo FilterMaxYear FilterMinYear FilterStepYear
@@ -212,7 +183,7 @@ proc tools::graphs::filter::Open {} {
         -command ::tools::graphs::filter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  button $w.b.setup -image icongraphic -command configureFilterGraph
+  button $w.b.setup -image tb_graph -command configureFilterGraph
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.close $w.b.setup -side right -padx 2 -pady 2
@@ -688,7 +659,7 @@ proc tools::graphs::absfilter::Open {} {
         -command ::tools::graphs::absfilter::Refresh
     pack $w.b.$name -side left -padx 1 -pady 2
   }
-  button $w.b.setup -image icongraphic -command configureFilterGraph
+  button $w.b.setup -image tb_graph -command configureFilterGraph
   dialogbutton $w.b.close -text $::tr(Close) -command "destroy $w"
   pack $w.b.decade $w.b.elo -side left -padx 1 -pady 2
   pack $w.b.close $w.b.setup -side right -padx 2 -pady 2

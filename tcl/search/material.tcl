@@ -4,11 +4,6 @@
 
 namespace eval ::search::material {}
 
-image create photo button_oneplus -data {
-  R0lGODlhFAAUAIAAAAAAAP///yH5BAEKAAEALAAAAAAUABQAAAIpjI+py+0P
-  FwCSzVnlzZaaC3oJNooadyqmun4OGR1wHMxQ2HYgzfd+UgAAOw==
-}
-
 set ignoreColors 0
 set minMoveNum 1
 set maxMoveNum 999
@@ -60,10 +55,10 @@ proc makeBoolMenu {w varName} {
       -relief raised -bd 2 -highlightthickness 0 -anchor w -image ""
   
   menu $w.menu -tearoff 0
-  $w.menu add radiobutton -label Yes -image ::rep::_tick -variable $varName -value Yes \
-      -command "$w configure -image ::rep::_tick"  ;# -hidemargin 1
-  $w.menu add radiobutton -label No -image ::rep::_cross -variable $varName -value No \
-      -command "$w configure -image ::rep::_cross" ;# -hidemargin 1
+  $w.menu add radiobutton -label Yes -image tb_tick -variable $varName -value Yes \
+      -command "$w configure -image tb_tick"  ;# -hidemargin 1
+  $w.menu add radiobutton -label No -image tb_cross -variable $varName -value No \
+      -command "$w configure -image tb_cross" ;# -hidemargin 1
   return $w.menu
 }
 
@@ -93,9 +88,9 @@ proc updatePatternImages {} {
   if {! [winfo exists .sm]} { return }
   for {set i 1} {$i <= $nPatterns} {incr i} {
     if {$pattBool($i) == "Yes"} {
-      .sm.mp.patt.grid.b$i configure -image ::rep::_tick
+      .sm.mp.patt.grid.b$i configure -image tb_tick
     } else {
-      .sm.mp.patt.grid.b$i configure -image ::rep::_cross
+      .sm.mp.patt.grid.b$i configure -image tb_cross
     }
     if {$pattPiece($i) == "?"} {
       .sm.mp.patt.grid.p$i configure -image e20

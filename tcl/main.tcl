@@ -225,7 +225,7 @@ proc toggleSTM {} {
 }
 
 button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
-button .main.fbutton.button.autoplay -image tb_autoplay_off -command toggleAutoplay
+button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
 button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
 button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
 button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
@@ -1417,7 +1417,7 @@ proc toggleAutoplay { } {
         set autoplayMode 1
         # Change the autoplay icon in the main window
         #
-        .main.fbutton.button.autoplay configure -image tb_autoplay_on -relief sunken
+        .main.fbutton.button.autoplay configure -image tb_stop -relief sunken
         # Start with some delay
         # Only to spawn the autoplay on a new thread
         #
@@ -1572,7 +1572,7 @@ proc cancelAutoplay {} {
     set annotateMode 0
     set annotateModeButtonValue 0
     after cancel autoplay
-    .main.fbutton.button.autoplay configure -image tb_autoplay_off -relief flat
+    .main.fbutton.button.autoplay configure -image tb_play -relief flat
 }
 ################################################################################
 #

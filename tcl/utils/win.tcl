@@ -410,10 +410,6 @@ namespace eval ::scrolledframe {
 #     which is published under BSD license
 #
 ################################################################################
-image create photo bluetriangle -data {
-  R0lGODlhCAAIAKECADNBUEFYb////////yH5BAEKAAIALAAAAAAIAAgAAAINlI8pAe2wHjSs
-  JaayKgA7
-}
 
 namespace eval docking {
   # associates notebook to paned window
@@ -971,7 +967,7 @@ proc ::docking::add_tab {path anchor args} {
 proc ::docking::setMenuMark { nb tab} {
   if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || \
         $tab == ".fdockoprepWin" } {
-    $nb tab $tab -image bluetriangle -compound left
+    $nb tab $tab -image tb_menu -compound left
   }
 }
 ################################################################################

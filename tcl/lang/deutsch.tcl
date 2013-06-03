@@ -2443,7 +2443,7 @@ folgende Bedeutung (von links nach rechts):
 <li> <button tb_invar> Gehe in Variante. </li>
 <li> <button tb_outvar> Verlasse die Variante. </li>
 <li> <button tb_addvar> Neue Variante hinzufügen. </li>
-<li> <button tb_autoplay_off> Starte/beende automatisches Vorspielen (siehe unten). </li>
+<li> <button tb_play> Starte/beende automatisches Vorspielen (siehe unten). </li>
 <li> <button tb_trial> Starte/beende <a Moves Trial>Testmodus</a>. </li>
 <li> <button tb_flip> Brett drehen. </li>
 <li> <button tb_coords> Zeige/Verdecke/Zeige unten und links/ die Brettkoordinaten. </li>
@@ -6403,10 +6403,6 @@ Fernschachfunktionen ganz einfach über die folgenden Buttons erreichen
    diesem Zeitpunkt in Scids Posteingang (siehe unten)  mit der aktuell
    geöffneten Fernschachdatenbank synchronisiert.
    </li>
-   <li><button tb_CC_Prev> Geht zur vorigen Partie in Scids Posteingang
-   </li>
-   <li><button tb_CC_Next> Geht zur nächsten Partie in Scids 
-   </li>
    <li><button tb_CC_Send> Schickt Ihren Zug an Ihren Gegner, in dem
    es entweder eine Email in dem von Ihnen bevorzugten Emailprogramm
    erstellt oder den Zug vermittels des Xfcc-Protokolls an einen
@@ -6476,10 +6472,7 @@ Fernschach via Email, während in <a CCXfcc>Fernschach via Schachserver
 <p>
 Nach dem Abholen werden Partien in Scids "clipboard" Datenbank geladen
 und neue Partien und Züge werden der zuvor geöffneten
-Fernschachdatenbank hinzu gefügt.  Der einfachste Weg, diese Partien
-durch zu gehen, ist die Benutzung der beiden Buttons <button
-tb_CC_Prev> und <button tb_CC_Next>, die eben zur vorigen oder
-nächsten Partie springen. Im Unterschied zur Funktion aus dem
+Fernschachdatenbank hinzu gefügt. Im Unterschied zur Funktion aus dem
 <menu>Partie</menu> Menü blättern Sie mit diesen Knöpfen nicht durch
 die gesamte Datenbank, sondern nur durch die Partien aus Scids Posteingang,
 also nur durch die gerade von ihnen gespielten Partien. Die Datenbank

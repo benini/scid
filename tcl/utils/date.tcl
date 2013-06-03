@@ -20,12 +20,6 @@ proc ::utils::date::today {{type all}} {
   }
 }
 
-image create photo ::utils::date::calendar -data {
-R0lGODdhFgAUAMIAANnZ2VFR+wAAAP////oTQP//AAAAAAAAACwAAAAAFgAUAAADTwi63A4h
-yklrVAFruDO0lCCO5NMIw4CqqWAya9ySdG3LbI7He+vrsxthSLiJfitCoUBAzpwDJRNqFBCL
-RqpW1QN6q+DRdrfomsvh2mvtSAAAOw==
-}
-
 # ::utils::date::chooser
 #
 #   Produce a date-selection dialog box.

@@ -2546,7 +2546,7 @@ Navigationsknapparna vid brädet har följande funktioner (från vänster till höger
 <li> <button tb_invar> Gå in i varianten. </li>
 <li> <button tb_outvar> Gå ur varianten. </li>
 <li> <button tb_addvar> Lägg till ny variant. </li>
-<li> <button tb_autoplay_off> Start/stopp för autospelsläge (se nedan). </li>
+<li> <button tb_play> Start/stopp för autospelsläge (se nedan). </li>
 <li> <button tb_trial> Start/stopp för <a Moves Trial>Försöksläge</a>. </li>
 <li> <button tb_flip> Rotera brädet 180 grader. </li>
 <li> <button tb_coords> Visa/dölj koordinater. </li>
@@ -5987,10 +5987,6 @@ schackfunktionerna lätt nås med följande knappar:
    (se nedan) är synkroniserade till den aktuella korrespondensschack-
    databasen.
    </li>
-   <li><button tb_CC_Prev> Går till det förra partiet i Scids Inkorg
-   </li>
-   <li><button tb_CC_Next> Går till nästa parti i Scids Inkorg
-   </li>
    <li><button tb_CC_Send> Skickar ditt drag till motståndaren genom att antingen
    skapa ett nytt eMail-meddelande i dett föredragna email-program eller genom att
    skicka ett drag till en schackserver om Xfcc används.
@@ -6040,9 +6036,7 @@ schackservrar.
 <p>
 Efter att partierna är hämtade laddas de i Scids klippboardsdatabas
 och nya drag läggs till och lagras i den öppnade korrespondensschack-
-databasen. Det mest bekväma sättet att stega igenom partierna är
-genom de två knapparna <button tb_CC_Prev> och <button tb_CC_Next> som
-går till det tidigare partiet och nästföljande parti. Skillnades i
+databasen. Skillnades i
 funktionen från menyn <menu>Partier</menu> är, att dessa två
 knappar scrollar bara mellan partierna i Scids Inkorg som är
 tänkt att vara dina aktuella pågående partier. Givetvis kan

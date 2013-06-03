@@ -425,11 +425,11 @@ proc ::rep::_drawLevel {w v in} {
     set taglist x
     foreach tag $::rep::_data($w:$p/$c:tags) { lappend taglist $tag }
     if {$group} {
-      set icon ::rep::_closedgroup
-      if {$::rep::_data($w:$p/$c:shown)} { set icon ::rep::_opengroup }
+      set icon tb_closedgroup
+      if {$::rep::_data($w:$p/$c:shown)} { set icon tb_opengroup }
     } else {
-      set icon ::rep::_cross
-      if {$::rep::_data($w:$p/$c:include)} { set icon ::rep::_tick }
+      set icon tb_cross
+      if {$::rep::_data($w:$p/$c:include)} { set icon tb_tick }
     }
     set x [expr {$in + 12} ]
     
@@ -716,11 +716,11 @@ proc ::rep::makeWindow {} {
   button $f.save -image tb_save -command "::rep::saveFile $w.f.w.rep"
   button $f.close -image tb_close -command "destroy $w"
   frame $f.space1 -width 12
-  button $f.group -image ::rep::_tb_group \
+  button $f.group -image tb_closedgroup \
       -command "::rep::AddCurrentBoard $w.f.w.rep group"
-  button $f.include -image ::rep::_tb_include \
+  button $f.include -image tb_tick \
       -command "::rep::AddCurrentBoard $w.f.w.rep include"
-  button $f.exclude -image ::rep::_tb_exclude \
+  button $f.exclude -image tb_cross \
       -command "::rep::AddCurrentBoard $w.f.w.rep exclude"
   
   foreach i {new open save close group include exclude} {
@@ -1206,171 +1206,6 @@ proc ::rep::search {repwin {type all}} {
   wm resizable $w 0 0
   grab $w
 }
-
-
-# Images and bitmaps used in heirarchical repertoire view.
-# I found the open and closed folder images used at the sourceforge.net
-# website, but i hope to find or create nicer-looking ones...
-
-image create photo ::rep::_closedgroup -data {
-  R0lGODdhDwANAIQAAP7+/AICBMa6la6ehJaJda6ihPbu6ubcwNbGtN7V2c7Dp97Opc66m8a1
-  lLaniu7q2Xp0cHJuW+7m1LaulKaYfL6zl25mWJ6ObYJ5a1pVTQAAAAAAAAAAAAAAAAAAAAAA
-  ACwAAAAADwANAAAFYSAgjmQ5BmhgkoEwuOoaDARdEGkqBsbR/wZE4qBQBQ6CBUO5EDQcAhwg
-  8GgynVAHxHhYLgWCbCFilDAbYUFhQiFPu4tK2uGgUCzlBRpaqF8IeG8QBBgUGIQRFhYZMTmO
-  OiEAOw==
-}
-
-#image create photo ::rep::_oldgroup -data {
-#R0lGODdhEAAPAMIAAP////j4+Hh4eLi4uPj4AAAAAAAAAAAAACwAAAAAEAAPAAADPAi63BBB
-#SAlrfWIQPYS92SZ2EwUIjiMUJzC+2tpy8CajNX0DdG+zOJ8OyMv9WsYYsMQssQKFqHQ6TVkV
-#CQA7
-#}
-
-image create photo ::rep::_opengroup -data {
-  R0lGODdhDwANAKUAAP7+/O7u7M7OzDo6NN7e3PLy5J6enNbW1K6urH5+fDo2LIZ+bK6qnJaW
-  lGpqbFZSRF5eXG5ubG5mVLaunNLOxObm4HpyZGJiXA4ODBoWFJaOfHZuXI6GdObi3OLi5EpG
-  RJqOfMrKzNrWzPb27Pr69CIiHH52ZJqSfBoaFFpWT4J6ZN7azCoqLGZeVKqqrLq2pO7q5IaG
-  hKKahL6+vFZWVGpmVD4+PJKKdAYGBAAAAAAAAAAAAAAAAAAAAAAAAAAAACwAAAAADwANAAAG
-  kkCAcBgQCAYDwrBgOAAQhoRCsWA0BAaD4wGJQB6SCYVSsVwemIxmseF0PAUA5ONYgDIhhUY0
-  IhESJSYcICcnKAQpKisADSwtIBonGpMZAC4fLyMoJyCdkJMoAB0RGzAZhJKchJUAMS0yKJOy
-  HA8lM0M0JhmFnDU2BkNCBimnIDUPN8HBLCgWCgnAykMHODQCAdJBADs=
-}
-
-image create photo ::rep::_tick -data {
-  R0lGODdhEAAQAKEAAP///wAAAFFR+wAAACwAAAAAEAAQAAACMISPacHtvpQKUSIKsBQiV8V1
-  mIaEFWmYJ8Cl7TGynQpH4XtV9/ThuWepZR5ERtBSAAA7
-}
-
-image create photo ::rep::_cross -data {
-  R0lGODdhEAAQAKEAAP///wAAAPoTQAAAACwAAAAAEAAQAAACL4SPacHtvpQKUSIKsFA7V9EZ
-  YIUBoxliJXqSSeseIKzKXVujyJlbse/JPIYMoKQAADs=
-}
-
-image create photo ::rep::_tb_group -data {
-  R0lGODlhEQARAIQAANnZ2QICBMa6la6ehJaJda6ihPbu6ubcwNbGtN7V2c7Dp97Opc66m8a1
-  lLaniqmpqe7q2Xp0cHJuW+7m1LaulKaYfL6zl25mWJ6ObYJ5a1pVTScznicznicznicznicz
-  niwAAAAAEQARAAAFdiAgjmRpnigQrEE6BsIQt2kwEHdBsCwZGAeg0IBIHBQ01UGwYDQXgoZD
-  sHuIAhDoMzp1RAJWpdMpEHQLEvB18myYBQVKJR0OHJyWt8NRqVzUKmxuUwV8GAR/dQcRBBkV
-  GY0SFxcagCo8mCsPYSKbnp+eLqKjIyEAOw==
-}
-
-image create photo ::rep::_tb_include -data {
-  R0lGODlhEQARAKEAAP///9nZ2QAAAFFR+ywAAAAAEQARAAACOYyPecLtvoCcVIpY8zUizzEA
-  W9B5YDiW1WlhFNtyACjBMTmH9t2ddJWq7XifkMbl4T2WDIXzCVUUAAA7
-}
-
-image create photo ::rep::_tb_exclude -data {
-  R0lGODlhEQARAKEAANnZ2QAAAP////oTQCwAAAAAEQARAAACOoSPecHtvoScVIZY8zVBjvwJ
-  G9AJQ+iFY2mG57RS5wtjE11z8kzF6W/B4FpBXabiO+ZIjyZDAY1KFQUAOw==
-}
-
-#----------------------------------------------------------------------
-if {$png_image_support} {
-	image create photo ::rep::_closedgroup -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAABHElE
-		QVR42s2TTUoDQRCF3wwuXCjRjeBRIp7AM7idreBpPIF4CPeRRDRCCJigSURHSdwY1MXEqnpZ9PSQ
-		SQ/Bn40NRf/Q36tX/QP8p1YHwKWo/wh+SgfsdFvsdFs8PTv5lkic9433jzdcNM8xeX3EeDzCxuY6
-		jo4PAaBR4cxHEuUCfH65R622g+l0UqibGeI4hqi4TWSxnqYj7O8dYM1v3t7axd2wDYCgGcwMRoWp
-		wgpQXdDQvrkslYAs+/zVyRcOEEWgaZDZZwUAoxXu1KQsQBKiXwHoIV/7YoKSgJlCRALQQ86BA0mD
-		2pIAQYjMAnAxG2nQfBycgcwyqEoAVkGVAoOHPq6um84u6Zzk11fVerfD0jxZ8dpWRfLnHzgHi+4c
-		BY9h5BAAAAAASUVORK5CYII=
-	}
-
-	image create photo ::rep::_opengroup -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAACo0lE
-		QVR42pVTS0wTURQ9r9MvUKeD2JaCbQUxgFVREQzGhRsXJibudO3GtZDowqUxxsRE4wdidKMmYnTh
-		xoWK8gnCAokLpLUtGfqhpVNaoJ0HU+iUeW6AkPhBTnI393POTe65wO9oMJkt4WMnTq55PN4cgAbs
-		AA3l1l1iMiUxRVHYzVu3FYPB+O1/hw+UW3kxmZJYoVBgwWCQRWPxZY93nwqgZVtlg8kSSKQkrVAo
-		sGAoxCYmJlg8HmcDQ8Miz/P+vw1yAM6Yy61vo5FIfVWlTSeKIlKzszAajaCUorraWRSnI3t+BgLj
-		6/0qgOIGgZ7TG6/0PHro4a0VJBAIgBACm82GdDoNnufVXJ6WdXVeNXA68ikSiWwqE0JKfr9/Ur9W
-		KtYmpdTa4NfRtaaGOnM4HIYgCOB5HlRZpeHpmOnC+XOmV729AGNgDGAAcosLXEfHqSYOwOdwKHT2
-		aEuLnYBxPM9DVVWsFlU5PZdRD/uaeYPBQGSZwlJWBk3TIKUkjI2Pk57ux8M6APFEIjEzk0xiRdVU
-		h8OBUqkEeakQd9irrPvr64jT6YTD6dxcP5PN4udUlAGY0K/nLj190jO3AlPeyMHh9XrT6cwPV9vx
-		I2ZKKfKyDLvdAQZAklJIZ+bx4N5dAmBkg4CmJenl99HByy67IMlLiuprbnS4XC4wxqAxBk3ToCME
-		8wt5DI6MQUrGXwMY0G05aVd/38fFSf8UnQqHBEEQkM1mAUJA1kMpKBCjM3jxrBsA7gPIclsIigD6
-		YrHYdZWr4Hw+H1nM5cgypaByHhaLBdFIFF+GRvDh/bs7AJ4DAPmDuVqqa91vhMrdNrfHW9be1mre
-		W1Oj05utkKmMG9c6VZpfPAQgvJ29reufePFg6+n+anfdsru+UQPQjh3C8K/iLzfsMM5wz19XAAAA
-		AElFTkSuQmCC
-	}
-
-	image create photo ::rep::_tick -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-		WXMAAAsRAAALEQF/ZF+RAAAAB3RJTUUH0gsWDAwVWfJ8VQAAAhlJREFUeJyVkltIk2Ecxn/7lkvZ
-		aKDCGiMP1FJIyOakUKhQTKhAihEV3WRQF9FBsDu7KSjsQHRTu+jOggyMNulGlpAJaxZMm2m2dLqD
-		pZQDc1vNbW8XfYuPIdWem/eF/3P4Py8v5IerwCDQ1dphz0uoRaUa2NVi+9baYReAT1tsyMug7/DZ
-		K5k7T0eEttiQBm7kEoqAdYCkN1bkzi5vtTZlXr4LCsuhcwL4ABxUEnR7z3TH9caKWaAW0JRbmrOz
-		45XVO0btDo9ov/1c6Eo2ZoC7wBalQamxqi48Gfwqyi3NceAEoDM3tgH4Tt10iocv3ov6I50CCAE2
-		YIPSQA20H73mEE63X5gb21KawsKLwL3NtQ1jPa5xcey6U5SUVQugF6iR6/4RC2Bq+u3Avk3WA6aq
-		7TulUCjckoxFP1+61bPHPx9lcnSEj6/64gjuA2+AmNIAIJX6mRgKRyKna+p3qw3mOmlVVWC27W+S
-		hnwhxl2PWF6Y8wCPgQCQyhpI8imAwKx38MnYhB+1pKKr84La4fazND/D4rQ3A7iAOWBV2V9S3JMi
-		nT7v6e1eSCTTPHAME/g0Rdg3TDK+MgN4gSiQyX1AJVI/lpeC8VjMtl6rZ9HvJTLhJhn/3g/0A1/k
-		bf8KbUGR1m3a1iB0pSYhp54EigHVv8TZWmWoSMjiZ4AV0KxFzq2AvGJMFiaB14AHWPmf9FxU8vvj
-		rJkO8As57sg7EP2vzQAAAABJRU5ErkJggg==
-	}
-
-	image create photo ::rep::_cross -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAC6UlE
-		QVR42p2TS2hcdRSHv/u/907mzp07GJM0sUwgZip0oTEWC1abphaSKMEGIq2IWt0IQUTITheiiMZS
-		UnBTEDeKuLTipggighgDIbE1jal2xvHRRmcyk3k4mft+uZCRKnahv9U5nPP9OOfAkflTuhDimBBC
-		j+N4m/+qdDo9f2zotvhQtt8zDGPhZn2app0QQuRVVf1eVdWRvwoHBnquF8++HH/z9MPx8cHe2DCM
-		V/4J67o+eVd/b/TFC6fi85MHYk1VfgEQAOmEinVlHdd2eHE0x3gm8aphGM914GQyefyOjHbhw8en
-		JGljle1yBY3IAZABGkH42KN9etarlAhsi/HhLG3Hm/7Ri6upVOpyt8y3Hz8xLV9bW2GzbvLpdov1
-		tjcBlAXA/WNHPnp+JR/L3b3EgFff4WRPgrt19Zxpmj+fPzUjXbu0xkp1l3d+qnChZk3EcXwJQOqM
-		mUqlXrpdUxbePrQfr7FDCIQRhMP72Ws3WS1e582rJX8r4L4gCC52OLkT+L6/ZAmluFlrzU7lsgS2
-		hZCgW5Goblc4nS9TsMMzYRh+cONx5RsT3/cvb1luV6nRHHvkyGHcnQqOaSILGO/LsG6HY6akbPi+
-		/92/GiiKMjegSKffnZ+j8fUyLhJxFCFLoEpw+JYkF1vurCnJK77vF/9mIISYP7ine/H9uSeVxtJn
-		bDZtnt0oFQpW0PNQbpDIsegSEkd7dHm56c40HG8TyMsAkiQtnBwaeP2NE9NK/avPKZgui4WKFSSS
-		QyU3KOWrjemJfYNEtkWXBKO9ma5Pyq3RIIrOyQC5VOK9t56azfy+ukTR8jn7QzX4LWBfu91ueJ63
-		WhOquVVvTT44PEhsW/hBwFrbFzXHOyMDRIryTK5V6a95Ia9dLVMJpQccx7nSWc/zvOUSyp5fm62D
-		R4ezlHYtvqzbuzXHXQRAVdWROzPaTlZT65qmzdzsmQzDWLh3b59/T/+tcTqdnuf/SJblESHEFKAD
-		/AFjPUc+w8q9dwAAAABJRU5ErkJggg==
-	}
-
-	image create photo ::rep::_tb_group -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAAAAAAAD5Q7t/AAABHElE
-		QVR42s2TTUoDQRCF3wwuXCjRjeBRIp7AM7idreBpPIF4CPeRRDRCCJigSURHSdwY1MXEqnpZ9PSQ
-		SQ/Bn40NRf/Q36tX/QP8p1YHwKWo/wh+SgfsdFvsdFs8PTv5lkic9433jzdcNM8xeX3EeDzCxuY6
-		jo4PAaBR4cxHEuUCfH65R622g+l0UqibGeI4hqi4TWSxnqYj7O8dYM1v3t7axd2wDYCgGcwMRoWp
-		wgpQXdDQvrkslYAs+/zVyRcOEEWgaZDZZwUAoxXu1KQsQBKiXwHoIV/7YoKSgJlCRALQQ86BA0mD
-		2pIAQYjMAnAxG2nQfBycgcwyqEoAVkGVAoOHPq6um84u6Zzk11fVerfD0jxZ8dpWRfLnHzgHi+4c
-		BY9h5BAAAAAASUVORK5CYII=
-	}
-
-	image create photo ::rep::_tb_include -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI
-		WXMAAAsRAAALEQF/ZF+RAAAAB3RJTUUH0gsWDAwVWfJ8VQAAAhlJREFUeJyVkltIk2Ecxn/7lkvZ
-		aKDCGiMP1FJIyOakUKhQTKhAihEV3WRQF9FBsDu7KSjsQHRTu+jOggyMNulGlpAJaxZMm2m2dLqD
-		pZQDc1vNbW8XfYuPIdWem/eF/3P4Py8v5IerwCDQ1dphz0uoRaUa2NVi+9baYReAT1tsyMug7/DZ
-		K5k7T0eEttiQBm7kEoqAdYCkN1bkzi5vtTZlXr4LCsuhcwL4ABxUEnR7z3TH9caKWaAW0JRbmrOz
-		45XVO0btDo9ov/1c6Eo2ZoC7wBalQamxqi48Gfwqyi3NceAEoDM3tgH4Tt10iocv3ov6I50CCAE2
-		YIPSQA20H73mEE63X5gb21KawsKLwL3NtQ1jPa5xcey6U5SUVQugF6iR6/4RC2Bq+u3Avk3WA6aq
-		7TulUCjckoxFP1+61bPHPx9lcnSEj6/64gjuA2+AmNIAIJX6mRgKRyKna+p3qw3mOmlVVWC27W+S
-		hnwhxl2PWF6Y8wCPgQCQyhpI8imAwKx38MnYhB+1pKKr84La4fazND/D4rQ3A7iAOWBV2V9S3JMi
-		nT7v6e1eSCTTPHAME/g0Rdg3TDK+MgN4gSiQyX1AJVI/lpeC8VjMtl6rZ9HvJTLhJhn/3g/0A1/k
-		bf8KbUGR1m3a1iB0pSYhp54EigHVv8TZWmWoSMjiZ4AV0KxFzq2AvGJMFiaB14AHWPmf9FxU8vvj
-		rJkO8As57sg7EP2vzQAAAABJRU5ErkJggg==
-	}
-
-	image create photo ::rep::_tb_exclude -data {
-		iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAC6UlE
-		QVR42p2TS2hcdRSHv/u/907mzp07GJM0sUwgZip0oTEWC1abphaSKMEGIq2IWt0IQUTITheiiMZS
-		UnBTEDeKuLTipggighgDIbE1jal2xvHRRmcyk3k4mft+uZCRKnahv9U5nPP9OOfAkflTuhDimBBC
-		j+N4m/+qdDo9f2zotvhQtt8zDGPhZn2app0QQuRVVf1eVdWRvwoHBnquF8++HH/z9MPx8cHe2DCM
-		V/4J67o+eVd/b/TFC6fi85MHYk1VfgEQAOmEinVlHdd2eHE0x3gm8aphGM914GQyefyOjHbhw8en
-		JGljle1yBY3IAZABGkH42KN9etarlAhsi/HhLG3Hm/7Ri6upVOpyt8y3Hz8xLV9bW2GzbvLpdov1
-		tjcBlAXA/WNHPnp+JR/L3b3EgFff4WRPgrt19Zxpmj+fPzUjXbu0xkp1l3d+qnChZk3EcXwJQOqM
-		mUqlXrpdUxbePrQfr7FDCIQRhMP72Ws3WS1e582rJX8r4L4gCC52OLkT+L6/ZAmluFlrzU7lsgS2
-		hZCgW5Goblc4nS9TsMMzYRh+cONx5RsT3/cvb1luV6nRHHvkyGHcnQqOaSILGO/LsG6HY6akbPi+
-		/92/GiiKMjegSKffnZ+j8fUyLhJxFCFLoEpw+JYkF1vurCnJK77vF/9mIISYP7ine/H9uSeVxtJn
-		bDZtnt0oFQpW0PNQbpDIsegSEkd7dHm56c40HG8TyMsAkiQtnBwaeP2NE9NK/avPKZgui4WKFSSS
-		QyU3KOWrjemJfYNEtkWXBKO9ma5Pyq3RIIrOyQC5VOK9t56azfy+ukTR8jn7QzX4LWBfu91ueJ63
-		WhOquVVvTT44PEhsW/hBwFrbFzXHOyMDRIryTK5V6a95Ia9dLVMJpQccx7nSWc/zvOUSyp5fm62D
-		R4ezlHYtvqzbuzXHXQRAVdWROzPaTlZT65qmzdzsmQzDWLh3b59/T/+tcTqdnuf/SJblESHEFKAD
-		/AFjPUc+w8q9dwAAAABJRU5ErkJggg==
-	}
-}
-#----------------------------------------------------------------------
-
 
 set maskdata "#define solid_width 9\n#define solid_height 9"
 append maskdata {

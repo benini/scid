@@ -1286,8 +1286,8 @@ proc ::optable::editFavoritesDlg {} {
     $w.f.list insert end "$name \[$moves\]"
   }
   button $w.b.delete -text $::tr(Delete)  -command ::optable::editFavoritesDelete
-  button $w.b.up -image bookmark_up -command {::optable::editFavoritesMove up}
-  button $w.b.down -image bookmark_down -command {::optable::editFavoritesMove down}
+  button $w.b.up -image tb_up -command {::optable::editFavoritesMove up}
+  button $w.b.down -image tb_down -command {::optable::editFavoritesMove down}
   foreach i [list $w.b.up $w.b.down] {
     $i configure -padx 0 -pady 0 -borderwidth 1
   }

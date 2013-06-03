@@ -496,7 +496,7 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   textual comment attached. This comment is displayed in a tooltip
   upon mouse hovering on the button. Pressing the button also opens up
   the <a Comment>Comment editor</a></li>
-  <li> <button tb_autoplay_off> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
+  <li> <button tb_play> Start/stop autoplay mode (see below).  [Ctrl-Z] </li>
   <li> <button tb_trial> Start/stop <a Moves Trial>trial mode</a>.
   [Ctrl-Space] </li>
   <li> <button tb_flip> Rotate the board 180 degrees. [.]</li>
@@ -2581,12 +2581,12 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   are mainly meant to handle opening repertoirs. The available options
   are:
      <ul>
-     <li> <img ::rep::_tb_include> Include line in repertoire</li>
-     <li> <img ::rep::_tb_exclude> Exclude line from repertoire</li>
-     <li> <img ::tree::mask::imageMainLine> Main Line</li>
+     <li> <img tb_tick> Include line in repertoire</li>
+     <li> <img tb_cross> Exclude line from repertoire</li>
+     <li> <img tb_mainline> Main Line</li>
      <li> <img tb_bkm> Bookmark</li>
-     <li> <img ::tree::mask::imageWhite> White</li>
-     <li> <img ::tree::mask::imageBlack> Black</li>
+     <li> <img tb_white> White</li>
+     <li> <img tb_black> Black</li>
      <li> <img tb_new> New line</li>
      <li> <img tb_rfilter> To be verified by further analysis</li>
      <li> <img tb_msearch> To train</li>
@@ -4944,10 +4944,6 @@ chess functions can easily accessed by the following buttons:
    (see below) are synchronised into the current correspondence chess
    database.
    </li>
-   <li><button tb_CC_Prev> Goes to the previous game in Scids Inbox
-   </li>
-   <li><button tb_CC_Next> Goes to the next game in Scids Inbox
-   </li>
    <li><button tb_CC_Send> Sends your move to the opponent by either
    creating a new eMail message in your prefered mail program or by
    sending the move to a chess server in case of Xfcc.
@@ -5014,9 +5010,7 @@ chess servers.
 <p>
 After games are retrieved they are loaded to Scids clipboard database
 and new moves are added and stored in the correspondence chess
-database opened. The most convenient way to step through the games is
-by the two buttons <button tb_CC_Prev> and <button tb_CC_Next> which
-go to the previous and the next game, respectively. The difference to
+database opened. The difference to
 the functions from the <menu>Games</menu> menu is, that these two
 buttons scroll only between the games in Scids Inbox which are
 supposed to be your actually ongoing games. Of course the

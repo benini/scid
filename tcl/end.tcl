@@ -995,7 +995,7 @@ proc gameSave { gnum } {
   ttk::entry $f.dateday -width 3 -textvariable day -justify right
   grid $f.datelabel -row 2 -column 0 -sticky w
   grid $f.dateframe -row 2 -column 1 -columnspan 5 -sticky w
-  ttk::button $f.datechoose -image ::utils::date::calendar -style Pad0.Small.TButton -command {
+  ttk::button $f.datechoose -image tb_calendar -style Pad0.Small.TButton -command {
     set newdate [::utils::date::chooser "$year-$month-$day"]
     if {[llength $newdate] == 3} {
       set year [lindex $newdate 0]
@@ -1024,7 +1024,7 @@ proc gameSave { gnum } {
   ttk::entry $f.edateday -width 3 -textvariable eday -justify right
   grid $f.edatelabel -row 3 -column 0 -sticky w
   grid $f.edateframe -row 3 -column 1 -columnspan 5 -sticky w
-  ttk::button $f.edatechoose -image ::utils::date::calendar -style Pad0.Small.TButton -command {
+  ttk::button $f.edatechoose -image tb_calendar -style Pad0.Small.TButton -command {
     set newdate [::utils::date::chooser "$eyear-$emonth-$eday"]
     if {[llength $newdate] == 3} {
       set eyear [lindex $newdate 0]
