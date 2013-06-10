@@ -7,6 +7,13 @@
 Makefile
 Makefile.bak
 
+*~
+*.swp
+*.swo
+\#*\#
+.\#*
+*.patch
+
 engines/phalanx-scid/phalanx-scid
 engines/togaII1.2.1a/src/.depend
 engines/togaII1.2.1a/src/togaII
