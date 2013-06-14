@@ -30,6 +30,7 @@ namespace eval fics {
   variable logged 0
   variable isGuestLogin 0
   array set profileVars {}
+  array set findopponent {}
 
   set showabortreq 1
   set showadjournreq 1

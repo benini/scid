@@ -193,7 +193,7 @@ proc InitDirs {} {
   set scidLogDir [file nativename [file join $scidUserDir "log"]]
 
   # scidShareDir, scidImgDir, scidBooksDir, scidBasesDir, ecoFile:
-  #	Location of Scid resources
+  # Location of Scid resources
   set scidShareDir [file normalize [file join $scidExeDir "../share/scid"]]
   if {! [file isdirectory $::scidShareDir]} {
     set scidShareDir $::scidExeDir
@@ -207,13 +207,34 @@ proc InitDirs {} {
   set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
   set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
 }
-InitDirs
 
 # Set up Scid icon
-set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
-if {[file readable $scidIconFile]} {
-  wm iconphoto . -default [image create photo -file "$scidIconFile"]
+proc InitIcon {}  {
+  global scidImgDir
+  set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
+  if {[file readable $scidIconFile]} {
+    wm iconphoto . -default [image create photo -file "$scidIconFile"]
+  }
 }
+
+# Toolbar configuration:
+proc InitToolbar {} {
+  global toolbar
+  foreach {tbicon status}  {
+    new 1 open 1 save 1 close 1
+    finder 1 bkm 1 gprev 1 gnext 1
+    cut 0 copy 0 paste 0
+    rfilter 1 bsearch 1 hsearch 1 msearch 1
+    switcher 1 glist 1 pgn 1 tmt 1 maint 1 eco 1 tree 1 crosst 1 engine 1
+  } {
+    set toolbar($tbicon) $status
+  }
+}
+
+InitDirs
+InitIcon
+InitToolbar
+
 
 # boardSizes: a list of the available board sizes.
 set boardSizes [list 25 30 35 40 45 50 55 60 65 70 80]
@@ -234,17 +255,6 @@ set boardStyle Merida1
 # language for help pages and messages:
 set language E
 set oldLang X
-
-# Toolbar configuration:
-foreach {tbicon status}  {
-  new 1 open 1 save 1 close 1
-  finder 1 bkm 1 gprev 1 gnext 1
-  cut 0 copy 0 paste 0
-  rfilter 1 bsearch 1 hsearch 1 msearch 1
-  switcher 1 glist 1 pgn 1 tmt 1 maint 1 eco 1 tree 1 crosst 1 engine 1
-} {
-  set toolbar($tbicon) $status
-}
 
 # boardCoords: 1 to show board Coordinates, 0 to hide them.
 set boardCoords 0
@@ -349,7 +359,6 @@ set pgnColor(Current) lightSteelBlue
 set pgnColor(Background) "\#ffffff"
 
 # Defaults for FICS
-array set findopponent {}
 set ::fics::use_timeseal 1
 set ::fics::timeseal_exec "timeseal"
 set ::fics::port_fics 5000
@@ -438,107 +447,117 @@ set glexport $glexportDefault
 # of a game. E.g., a value of 4 might give: "1.e4 e5 2.Nf3 Nc6".
 set glistSelectPly 80
 
+proc InitWinsDefaultGeometry {} {
+  global winX winY winWidth winHeight
+  global winX_docked winY_docked winWidth_docked winHeight_docked
 
-# Default window locations:
-foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist \
-      .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder \
-      .ecograph .statsWin .glistWin .maintWin .nedit} {
-  set winX($i) -1
-  set winY($i) -1
-}
+  # Default window locations:
+  foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist
+    .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder
+    .ecograph .statsWin .glistWin .maintWin .nedit} {
+    set winX($i) -1
+    set winY($i) -1
+  }
 
-for {set b 1} {$b<=[sc_base count total]} {incr b} {
-  foreach i { .treeWin .treeBest .treeGraph } {
-    set winX($i$b) -1
-    set winY($i$b) -1
+  for {set b 1} {$b <= [sc_base count total]} {incr b} {
+    foreach i { .treeWin .treeBest .treeGraph } {
+        set winX($i$b) -1
+        set winY($i$b) -1
+    }
+  }
+
+  # Default window size:
+  set winWidth(.) 1024
+  set winHeight(.) 570
+
+  # Default PGN window size:
+  set winWidth(.pgnWin)  65
+  set winHeight(.pgnWin) 20
+
+  # Default help window size:
+  set winWidth(.helpWin)  50
+  set winHeight(.helpWin) 32
+
+  # Default stats window size:
+  set winWidth(.statsWin) 60
+  set winHeight(.statsWin) 13
+
+  # Default crosstable window size:
+  set winWidth(.crosstabWin)  65
+  set winHeight(.crosstabWin) 15
+
+  # Default tree window size:
+  set winWidth(.treeWin)  58
+  set winHeight(.treeWin) 20
+
+  # Default comment editor size:
+  set winWidth(.commentWin)  40
+  set winHeight(.commentWin)  6
+
+  # Default spellcheck results window size:
+  set winWidth(.spellcheckWin)  55
+  set winHeight(.spellcheckWin) 25
+
+  # Default player info window size:
+  set winWidth(.playerInfoWin)  45
+  set winHeight(.playerInfoWin) 20
+
+  # Default switcher window size:
+  set winWidth(.baseWin) 310
+  set winHeight(.baseWin) 110
+
+  # Default Correspondence Chess window size:
+  set winWidth(.ccWindow) 10
+  set winHeight(.ccWindow) 20
+
+  # Default size for input engine console:
+  ###---### needs adjustment!
+  set winWidth(.inputengineconsole) 10
+  set winHeight(.inputengineconsole) 20
+
+  # In docked mode, use same default geometry values
+  foreach elt {winX winY winWidth winHeight} {
+    foreach name [array names $elt] {
+      set ${elt}_docked($name) [set ${elt}($name)]
+    }
   }
 }
 
-# Default window size:
-set winWidth(.) 1024
-set winHeight(.) 570
+proc InitStats {} {
+  # Default stats window lines:
+  array set ::windows::stats::display {
+    r2600 1
+    r2500 1
+    r2400 1
+    r2300 1
+    r2200 0
+    r2100 0
+    r2000 0
+    y1900 0
+    y1950 0
+    y1960 0
+    y1970 0
+    y1980 0
+    y1990 0
+    y1995 0
+    y2000 1
+    y2002 1
+    y2004 1
+    y2006 1
+    y2007 1
+    y2008 1
+  }
 
-# Default PGN window size:
-set winWidth(.pgnWin)  65
-set winHeight(.pgnWin) 20
-
-# Default help window size:
-set winWidth(.helpWin)  50
-set winHeight(.helpWin) 32
-
-# Default stats window size:
-set winWidth(.statsWin) 60
-set winHeight(.statsWin) 13
-
-# Default crosstable window size:
-set winWidth(.crosstabWin)  65
-set winHeight(.crosstabWin) 15
-
-# Default tree window size:
-set winWidth(.treeWin)  58
-set winHeight(.treeWin) 20
-
-# Default comment editor size:
-set winWidth(.commentWin)  40
-set winHeight(.commentWin)  6
-
-# Default spellcheck results window size:
-set winWidth(.spellcheckWin)  55
-set winHeight(.spellcheckWin) 25
-
-# Default player info window size:
-set winWidth(.playerInfoWin)  45
-set winHeight(.playerInfoWin) 20
-
-# Default switcher window size:
-set winWidth(.baseWin) 310
-set winHeight(.baseWin) 110
-
-# Default Correspondence Chess window size:
-set winWidth(.ccWindow) 10
-set winHeight(.ccWindow) 20
-
-# Default size for input engine console:
-###---### needs adjustment!
-set winWidth(.inputengineconsole) 10
-set winHeight(.inputengineconsole) 20
-
-# In docked mode, use same default geometry values
-foreach elt {winX winY winWidth winHeight} {
-  foreach name [array names $elt] {
-    set ${elt}_docked($name) [set ${elt}($name)]
+  # Enable stats for subsequent years
+  for { set year [clock format [clock seconds] -format {%Y}] } \
+    { $year>2008 && ![info exists ::windows::stats::display([subst {y$year}])] } \
+    { incr year -1 } {
+    set ::windows::stats::display([subst {y$year}]) 1
   }
 }
 
-# Default stats window lines:
-array set ::windows::stats::display {
-  r2600 1
-  r2500 1
-  r2400 1
-  r2300 1
-  r2200 0
-  r2100 0
-  r2000 0
-  y1900 0
-  y1950 0
-  y1960 0
-  y1970 0
-  y1980 0
-  y1990 0
-  y1995 0
-  y2000 1
-  y2002 1
-  y2004 1
-  y2006 1
-  y2007 1
-  y2008 1
-}
-
-# Enable stats for subsequent years
-for { set year [clock format [clock seconds] -format {%Y}] } \
-{ $year>2008 && ![info exists ::windows::stats::display([subst {y$year}])] } \
-{ incr year -1 } \
-{ set ::windows::stats::display([subst {y$year}]) 1 }
+InitWinsDefaultGeometry
+InitStats
 
 # Default PGN display options:
 set pgnStyle(Tags) 1
