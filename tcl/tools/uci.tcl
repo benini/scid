@@ -407,17 +407,17 @@ namespace eval uci {
         if { [winfo exists $w]} { return }
         toplevel $w
         wm title $w $::tr(ConfigureUCIengine)
-        ::scrolledframe::scrolledframe .uciConfigWin.sf -xscrollcommand {.uciConfigWin.hs set} -yscrollcommand {.uciConfigWin.vs set} \
-                -fill both -width 1000 -height 600
-        ttk::scrollbar .uciConfigWin.vs -command {.uciConfigWin.sf yview}
-        ttk::scrollbar .uciConfigWin.hs -command {.uciConfigWin.sf xview} -orient horizontal
-        grid .uciConfigWin.sf -row 0 -column 0 -sticky nsew
-        grid .uciConfigWin.vs -row 0 -column 1 -sticky ns
-        grid .uciConfigWin.hs -row 1 -column 0 -sticky ew
-        grid rowconfigure .uciConfigWin 0 -weight 1
-        grid columnconfigure .uciConfigWin 0 -weight 1
-        set w .uciConfigWin.sf.scrolled
-        
+
+        autoscrollframe -bars both $w canvas $w.c -highlightthickness 0 -background [ttk::style lookup Button.label -background]
+        bind $w.c <Configure>  {
+            set l [winfo reqwidth %W.f]
+            set h [winfo reqheight %W.f]
+            %W configure -scrollregion [list 0 0 $l $h] -width $l -height $h
+        }
+        grid [ttk::frame $w.c.f]
+        $w.c create window 0 0 -window $w.c.f -anchor nw
+        set w $w.c.f
+
         proc tokeep {opt} {
             foreach tokeep $::uci::optionToKeep {
                 if { [lsearch $opt $tokeep] != -1 } {
