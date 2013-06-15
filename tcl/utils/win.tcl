@@ -1214,5 +1214,3 @@ if {$::docking::USE_DOCKING} {
   
 }
 
-createToplevel .main
-::docking::setTabStatus

@@ -957,7 +957,7 @@ $m add command -label OptionsSave -command {
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
           askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
-          spellCheckFile ::splash::autoclose autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
+          spellCheckFile autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
           exportFlags(column) exportFlags(symbols) \
@@ -1038,7 +1038,6 @@ $m add command -label OptionsSave -command {
       puts $optionF "set fontOptions($i) [list $fontOptions($i)]"
     }
     puts $optionF ""
-    puts $optionF "set glistFields [list $glistFields]"
     foreach type {base book html tex epd stm pgn report tablebase1 tablebase2 tablebase3 tablebase4} {
       puts $optionF "set initialDir($type) [list $initialDir($type)]"
     }
@@ -1409,11 +1408,6 @@ $m add separator
 incr menuindex
 $m add command -label HelpTip -command ::tip::show
 set helpMessage($m,[incr menuindex]) HelpTip
-$m add command -label HelpStartup -command {
-  wm deiconify .splash
-  raiseWin .splash
-}
-set helpMessage($m,[incr menuindex]) HelpStartup
 
 $m add separator
 incr menuindex
@@ -1696,7 +1690,7 @@ proc setLanguageMenus {{lang ""}} {
           OptionsWindows$tag $lang
     }
   }
-  foreach tag {Contents Index Guide Hints Contact Tip Startup About} {
+  foreach tag {Contents Index Guide Hints Contact Tip About} {
     configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang
   }
   

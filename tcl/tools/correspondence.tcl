@@ -939,7 +939,6 @@ namespace eval Xfcc {
 
 	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	# source the options file to overwrite the above setup
-	set scidConfigFiles(xfccstate) "xfccstate.dat"
 	if {[catch {source [scidConfigFile xfccstate]} ]} {
 	} else {
 	  ::splash::add "Xfcc state found and restored."
@@ -3645,8 +3644,6 @@ namespace eval CorrespondenceChess {
 
 	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	# source the options file to overwrite the above setup
-
-	set scidConfigFiles(correspondence) "correspondence.dat"
 	if {[catch {source [scidConfigFile correspondence]} ]} {
 	  #::splash::add "Unable to find the options file: [file tail $optionsFile]"
 	} else {

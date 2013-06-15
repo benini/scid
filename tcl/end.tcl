@@ -1738,7 +1738,7 @@ bind .main.statusbar <Unmap> { showHideAllWindows iconify}
 proc getTopLevel {} {
   
   set topl {}
-  set exclude { ".splash" ".tooltip" ".glistExtra" ".menu" "." ".pgnPopup" }
+  set exclude { ".tooltip" ".glistExtra" ".menu" "." ".pgnPopup" }
   foreach c [winfo children .] {
     if { $c != [winfo toplevel $c] } { continue }
     # Tk report .__tk_filedialog as toplevel window even if the window has been closed
@@ -1828,10 +1828,6 @@ if {0} {
 }
 
 if {$startup(tip)} { ::tip::show }
-
-after 500 {
-  if {$::splash::autoclose} {wm withdraw .splash}
-}
 
 # Opening files by drag & drop on Scid icon on Mac
 if { $macOS } {

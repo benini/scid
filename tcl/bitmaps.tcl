@@ -145,5 +145,16 @@ proc InitImg {} {
 	}
 }
 
+# Set up Scid icon
+proc InitIcon {}  {
+  global scidImgDir
+  set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
+  if {[file readable $scidIconFile]} {
+    wm iconphoto . -default [image create photo -file "$scidIconFile"]
+  }
+}
+
+
 #TODO: group the start-up code into Init* funcs and move all the Init* calls to the end of end.tcl
 InitImg
+InitIcon

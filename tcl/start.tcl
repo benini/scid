@@ -115,51 +115,45 @@ foreach ns {
   namespace eval $ns {}
 }
 
-set ::tacgame::threshold 0.9
-set ::tacgame::blunderwarning false
-set ::tacgame::blunderwarningvalue 0.0
-set ::tacgame::levelMin 1200
-set ::tacgame::levelMax 2200
-set ::tacgame::levelFixed 1500
-set ::tacgame::randomLevel 0
-set ::tacgame::isLimitedAnalysisTime 1
-set ::tacgame::showblunder 1
-set ::tacgame::showblundervalue 1
-set ::tacgame::showblunderfound 1
-set ::tacgame::showmovevalue 1
-set ::tacgame::showevaluation 1
-set ::tacgame::isLimitedAnalysisTime 1
-set ::tacgame::analysisTime 10
-set ::tacgame::openingType new
-set ::tacgame::chosenOpening 0
+proc ::splash::add {text} {
+#TODO: decide if it's better to remove all the spash messages or to write them to a start.log file
+}
 
-set comp(timecontrol) pergame
-set comp(seconds) 180
-set comp(minutes) 1
-set comp(incr) 0
-set comp(timeout) 0 ;# disabled by default
-set comp(name) "Engine tournament"
-set comp(rounds) 2
-set comp(showclock) 0
-set comp(debug) 1 ; # print info to console
-set comp(animate) 1
-set comp(firstonly) 0
-set comp(ponder) 0
-set comp(usebook) 0
-set comp(book) {}
+# moveOldConfigFiles
+#   Moves configuration files from the old (3.4 and earlier) names
+#   to the new file names used since Scid 3.5.
+#
+proc moveOldConfigFiles {} {
+  global scidUserDir scidConfigDir
 
-# List of saved layouts : 3 slots available
-array set ::docking::layout_list {}
-# Basic layout : PGN window with main board
-set ::docking::layout_list(1) {{MainWindowGeometry 1024x542+0+26 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 373} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 202} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin}}}}}}}}}
-set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
-set ::docking::layout_list(3) {}
+  # Since the options file used to be ".scid", rename it:
+  if {[file isfile $scidUserDir]} {
+    file rename -force $scidUserDir "$scidUserDir.old"
+  }
 
-### Tree/mask options:
-set ::tree::mask::recentMask {}
+  # Rename old "~/.scid_sent_emails" if necessary:
+  if {[file isfile [file nativename "~/.scid_sent_emails"]]} {
+    catch {file rename [file nativename "~/.scid_sent_emails"] $email(logfile)}
+  }
 
-#############################################################
-# Customisable variables:
+  foreach {oldname newname} {
+    scidrc options.dat
+    scid.opt options.dat
+    scid.bkm bookmarks.dat
+    scid.rfl recentfiles.dat
+    engines.lis engines.dat
+  } {
+    set oldpath [file nativename [file join $scidUserDir $oldname]]
+    set newpath [file nativename [file join $scidConfigDir $newname]]
+    if {[file readable $oldpath]  &&  ![file readable $newpath]} {
+      if {[catch {file rename $oldpath $newpath} err]} {
+        ::splash::add "Error moving $oldpath to $newpath: $err"
+      } else {
+        ::splash::add "Moved old config file $oldname to $newpath"
+      }
+    }
+  }
+}
 
 proc InitDirs {} {
   global scidExeDir scidUserDir scidConfigDir scidDataDir scidLogDir scidShareDir scidImgDir
@@ -206,15 +200,19 @@ proc InitDirs {} {
   set scidBooksDir [file nativename [file join $scidShareDir "books"]]
   set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
   set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
-}
 
-# Set up Scid icon
-proc InitIcon {}  {
-  global scidImgDir
-  set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
-  if {[file readable $scidIconFile]} {
-    wm iconphoto . -default [image create photo -file "$scidIconFile"]
+  moveOldConfigFiles
+
+  # Create the config, data and log directories if they do not exist:
+  proc makeScidDir {dir} {
+    if {! [file isdirectory $dir]} {
+      file mkdir $dir
+    }
   }
+  makeScidDir $scidUserDir
+  makeScidDir $scidConfigDir
+  makeScidDir $scidDataDir
+  makeScidDir $scidLogDir
 }
 
 # Toolbar configuration:
@@ -231,9 +229,164 @@ proc InitToolbar {} {
   }
 }
 
+proc InitWinsDefaultGeometry {} {
+  global winX winY winWidth winHeight
+  global winX_docked winY_docked winWidth_docked winHeight_docked
+
+  # Default window locations:
+  foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist
+    .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder
+    .ecograph .statsWin .glistWin .maintWin .nedit} {
+    set winX($i) -1
+    set winY($i) -1
+  }
+
+  for {set b 1} {$b <= [sc_base count total]} {incr b} {
+    foreach i { .treeWin .treeBest .treeGraph } {
+        set winX($i$b) -1
+        set winY($i$b) -1
+    }
+  }
+
+  # Default window size:
+  set winWidth(.) 1024
+  set winHeight(.) 570
+
+  # Default PGN window size:
+  set winWidth(.pgnWin)  65
+  set winHeight(.pgnWin) 20
+
+  # Default help window size:
+  set winWidth(.helpWin)  50
+  set winHeight(.helpWin) 32
+
+  # Default stats window size:
+  set winWidth(.statsWin) 60
+  set winHeight(.statsWin) 13
+
+  # Default crosstable window size:
+  set winWidth(.crosstabWin)  65
+  set winHeight(.crosstabWin) 15
+
+  # Default tree window size:
+  set winWidth(.treeWin)  58
+  set winHeight(.treeWin) 20
+
+  # Default comment editor size:
+  set winWidth(.commentWin)  40
+  set winHeight(.commentWin)  6
+
+  # Default spellcheck results window size:
+  set winWidth(.spellcheckWin)  55
+  set winHeight(.spellcheckWin) 25
+
+  # Default player info window size:
+  set winWidth(.playerInfoWin)  45
+  set winHeight(.playerInfoWin) 20
+
+  # Default switcher window size:
+  set winWidth(.baseWin) 310
+  set winHeight(.baseWin) 110
+
+  # Default Correspondence Chess window size:
+  set winWidth(.ccWindow) 10
+  set winHeight(.ccWindow) 20
+
+  # Default size for input engine console:
+  ###---### needs adjustment!
+  set winWidth(.inputengineconsole) 10
+  set winHeight(.inputengineconsole) 20
+
+  # In docked mode, use same default geometry values
+  foreach elt {winX winY winWidth winHeight} {
+    foreach name [array names $elt] {
+      set ${elt}_docked($name) [set ${elt}($name)]
+    }
+  }
+
+  # List of saved layouts : 3 slots available
+  set ::docking::layout_list(1) {{MainWindowGeometry 1024x542+0+26 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 373} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 202} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin}}}}}}}}}
+  set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
+  set ::docking::layout_list(3) {}
+
+}
+
+proc InitStats {} {
+  # Default stats window lines:
+  array set ::windows::stats::display {
+    r2600 1
+    r2500 1
+    r2400 1
+    r2300 1
+    r2200 0
+    r2100 0
+    r2000 0
+    y1900 0
+    y1950 0
+    y1960 0
+    y1970 0
+    y1980 0
+    y1990 0
+    y1995 0
+    y2000 1
+    y2002 1
+    y2004 1
+    y2006 1
+    y2007 1
+    y2008 1
+  }
+
+  # Enable stats for subsequent years
+  for { set year [clock format [clock seconds] -format {%Y}] } \
+    { $year>2008 && ![info exists ::windows::stats::display([subst {y$year}])] } \
+    { incr year -1 } {
+    set ::windows::stats::display([subst {y$year}]) 1
+  }
+}
+
 InitDirs
-InitIcon
+InitWinsDefaultGeometry
 InitToolbar
+InitStats
+
+
+
+set ::tacgame::threshold 0.9
+set ::tacgame::blunderwarning false
+set ::tacgame::blunderwarningvalue 0.0
+set ::tacgame::levelMin 1200
+set ::tacgame::levelMax 2200
+set ::tacgame::levelFixed 1500
+set ::tacgame::randomLevel 0
+set ::tacgame::isLimitedAnalysisTime 1
+set ::tacgame::showblunder 1
+set ::tacgame::showblundervalue 1
+set ::tacgame::showblunderfound 1
+set ::tacgame::showmovevalue 1
+set ::tacgame::showevaluation 1
+set ::tacgame::isLimitedAnalysisTime 1
+set ::tacgame::analysisTime 10
+set ::tacgame::openingType new
+set ::tacgame::chosenOpening 0
+
+set comp(timecontrol) pergame
+set comp(seconds) 180
+set comp(minutes) 1
+set comp(incr) 0
+set comp(timeout) 0 ;# disabled by default
+set comp(name) "Engine tournament"
+set comp(rounds) 2
+set comp(showclock) 0
+set comp(debug) 1 ; # print info to console
+set comp(animate) 1
+set comp(firstonly) 0
+set comp(ponder) 0
+set comp(usebook) 0
+set comp(book) {}
+
+
+### Tree/mask options:
+set ::tree::mask::recentMask {}
 
 
 # boardSizes: a list of the available board sizes.
@@ -447,117 +600,6 @@ set glexport $glexportDefault
 # of a game. E.g., a value of 4 might give: "1.e4 e5 2.Nf3 Nc6".
 set glistSelectPly 80
 
-proc InitWinsDefaultGeometry {} {
-  global winX winY winWidth winHeight
-  global winX_docked winY_docked winWidth_docked winHeight_docked
-
-  # Default window locations:
-  foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist
-    .playerInfoWin .baseWin .treeBest .treeGraph .tourney .finder
-    .ecograph .statsWin .glistWin .maintWin .nedit} {
-    set winX($i) -1
-    set winY($i) -1
-  }
-
-  for {set b 1} {$b <= [sc_base count total]} {incr b} {
-    foreach i { .treeWin .treeBest .treeGraph } {
-        set winX($i$b) -1
-        set winY($i$b) -1
-    }
-  }
-
-  # Default window size:
-  set winWidth(.) 1024
-  set winHeight(.) 570
-
-  # Default PGN window size:
-  set winWidth(.pgnWin)  65
-  set winHeight(.pgnWin) 20
-
-  # Default help window size:
-  set winWidth(.helpWin)  50
-  set winHeight(.helpWin) 32
-
-  # Default stats window size:
-  set winWidth(.statsWin) 60
-  set winHeight(.statsWin) 13
-
-  # Default crosstable window size:
-  set winWidth(.crosstabWin)  65
-  set winHeight(.crosstabWin) 15
-
-  # Default tree window size:
-  set winWidth(.treeWin)  58
-  set winHeight(.treeWin) 20
-
-  # Default comment editor size:
-  set winWidth(.commentWin)  40
-  set winHeight(.commentWin)  6
-
-  # Default spellcheck results window size:
-  set winWidth(.spellcheckWin)  55
-  set winHeight(.spellcheckWin) 25
-
-  # Default player info window size:
-  set winWidth(.playerInfoWin)  45
-  set winHeight(.playerInfoWin) 20
-
-  # Default switcher window size:
-  set winWidth(.baseWin) 310
-  set winHeight(.baseWin) 110
-
-  # Default Correspondence Chess window size:
-  set winWidth(.ccWindow) 10
-  set winHeight(.ccWindow) 20
-
-  # Default size for input engine console:
-  ###---### needs adjustment!
-  set winWidth(.inputengineconsole) 10
-  set winHeight(.inputengineconsole) 20
-
-  # In docked mode, use same default geometry values
-  foreach elt {winX winY winWidth winHeight} {
-    foreach name [array names $elt] {
-      set ${elt}_docked($name) [set ${elt}($name)]
-    }
-  }
-}
-
-proc InitStats {} {
-  # Default stats window lines:
-  array set ::windows::stats::display {
-    r2600 1
-    r2500 1
-    r2400 1
-    r2300 1
-    r2200 0
-    r2100 0
-    r2000 0
-    y1900 0
-    y1950 0
-    y1960 0
-    y1970 0
-    y1980 0
-    y1990 0
-    y1995 0
-    y2000 1
-    y2002 1
-    y2004 1
-    y2006 1
-    y2007 1
-    y2008 1
-  }
-
-  # Enable stats for subsequent years
-  for { set year [clock format [clock seconds] -format {%Y}] } \
-    { $year>2008 && ![info exists ::windows::stats::display([subst {y$year}])] } \
-    { incr year -1 } {
-    set ::windows::stats::display([subst {y$year}]) 1
-  }
-}
-
-InitWinsDefaultGeometry
-InitStats
 
 # Default PGN display options:
 set pgnStyle(Tags) 1
@@ -627,46 +669,6 @@ set startup(crosstable) 0
 set startup(gamelist) 0
 set startup(stats) 0
 set startup(book) 0
-
-# glistFields: Layout of the GameList window fields.
-#    element 0: code (e.g. g for gameNumber, w for White name)
-#    element 1: initial width, in characters
-#    element 2: justification (left or right)
-#    element 3: color
-#    element 4: true if a separator field should follow
-#
-#    Note that the "g" (game number) field MUST appear somewhere,
-#    but the fields can be in any order.
-#    See the comments at the start of the function "PrintGameInfo" in
-#    src/index.cpp for a list of available field codes.
-#
-set glistFields {
-  { D  1 left  darkRed    0 }
-  { g  7 right black      1 }
-  { w 14 left  darkBlue   0 }
-  { W  5 right darkGreen  1 }
-  { b 14 left  darkBlue   0 }
-  { B  5 right darkGreen  1 }
-  { e 10 left  black      0 }
-  { s 10 left  black      0 }
-  { n  2 right black      1 }
-  { d  7 left  darkRed    1 }
-  { r  3 left  blue       0 }
-  { m  3 right black      1 }
-  { o  5 left  darkGreen  0 }
-  { O  6 left  darkGreen  1 }
-  { U  2 left  blue       1 }
-  { V  2 right blue       0 }
-  { C  2 right blue       0 }
-  { A  2 right blue       0 }
-  { S  1 left  darkRed    0 }
-}
-
-set glistDefaultFields $glistFields
-set glistAllFields $glistFields
-lappend glistAllFields { c  3 left  black      0 }
-lappend glistAllFields { E  7 left  darkRed    0 }
-lappend glistAllFields { F  7 left  darkBlue   0 }
 
 # myPlayerNames:
 #   List of player name patterns for which the chessboard should be
@@ -862,92 +864,6 @@ set autoLoadLayout 1
 set autoResizeBoard 1
 
 ################################################################################
-# if undocked window : sets the title of the toplevel window
-# if docked : sets the name of the tab
-# w : name of the toplevel window
-proc setTitle { w title } {
-  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ]} {
-    set f .fdock[ string range $w 1 end ]
-    if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
-      set nb ""
-    }
-    
-    if { $nb == "" } {
-      wm title $w $title
-    } else  {
-      # in docked mode trim down title to spare space
-      if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
-        set title [string range $title 6 end]
-      }
-      $nb tab $f -text $title
-    }
-  } else  {
-    set wdock ".fdock[string range $w 1 end]"
-    if { [winfo exists $wdock ] } { set w $wdock }
-    wm title $w $title
-  }
-  
-}
-################################################################################
-# Creates a toplevel window depending of the docking option
-################################################################################
-proc createToplevel { w } {
-  set name [string range $w 1 end]
-  set f .fdock$name
-
-  # Raise window if already exist
-  if { [winfo exists $w] } {
-    if {! $::docking::USE_DOCKING } {
-      tk::PlaceWindow $w
-    } else {
-      if { [::docking::isUndocked $w] } {
-        tk::PlaceWindow $f
-      } else {
-        [::docking::find_tbn $f] select $f
-      }
-    }
-    return "already_exists"
-  }
-
-  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
-    frame $f  -container 1
-    toplevel .$name -use [ winfo id $f ]
-    docking::add_tab $f e
-    
-    # auto focus exchange between docked windows
-    bind .$name <Enter> {
-      set atTop [lindex [wm stackorder . ] end]
-      if { $atTop == "." && [focus] != ""} {
-        set tl [winfo toplevel %W]
-        if {! [ ::docking::isUndocked $tl ] } { focus -force $tl }
-      }
-    }
-    
-  } else  {
-    toplevel $w
-  }
-  
-}
-
-################################################################################
-# In the case of a window closed without the context menu in docked mode, arrange for the tabs to be cleaned up
-# Alternative way : directly call ::docking::cleanup $w when closing window
-################################################################################
-proc createToplevelFinalize {w} {
-  if { $::docking::USE_DOCKING } {
-    bind $w <Destroy> +[ namespace code "::docking::cleanup $w %W"]
-  }
-}
-
-################################################################################
-# Sets the menu for a new window : in docked mode the menu is displayed by clicking on the tab of the notebook
-################################################################################
-proc setMenu { w m} {
-  if { ! $::docking::USE_DOCKING } {
-    $w configure -menu $m
-  }
-}
-################################################################################
 # In docked mode, resize board automatically
 ################################################################################
 proc resizeMainBoard {} {
@@ -1066,6 +982,10 @@ set email(smproc) "/usr/lib/sendmail"
 set email(server) localhost
 set email(from) ""
 set email(bcc) ""
+# Rename old email log file if necessary:
+if {[file readable $email(oldlogfile)]  &&  ![file readable $email(logfile)]} {
+  catch {file rename $email(oldlogfile) $email(logfile)}
+}
 
 
 ### Audio move announcement options:
@@ -1213,268 +1133,39 @@ if { $macOS } {
   rename tkOpenDocument ::tk::mac::OpenDocument
 }
 
-# Add empty updateStatusBar proc to avoid errors caused by early
-# closing of the splash window:
-#
-proc updateStatusBar {} {}
 
-# Start up splash screen:
-
-set ::splash::autoclose 1
-
-proc ::splash::make {} {
-  wm withdraw .
-  set w [toplevel .splash]
-  wm withdraw $w
-  wm protocol $w WM_DELETE_WINDOW [list wm withdraw $w]
-  wm title $w "Welcome to Scid $::scidVersion"
-  ttk::frame $w.f
-  ttk::frame $w.b
-  text $w.t -height 15 -width 60 -cursor top_left_arrow \
-      -background white -font font_Regular -wrap word \
-      -yscrollcommand [list $w.ybar set] -setgrid 1
-  ttk::scrollbar $w.ybar -command [list $w.t yview]
-  ttk::checkbutton $w.auto -text "Auto-close after startup" -variable ::splash::autoclose -style Small.TCheckbutton ;# -pady 5 -padx 5
-  ttk::button $w.dismiss -text Close -width 8 -command [list wm withdraw $w] -style Small.TButton
-  pack $w.f -side top -expand yes -fill both
-  pack $w.b -side top -fill x
-  pack $w.auto -side left -in .splash.b -pady 2 -ipadx 10 -padx 10
-  pack $w.dismiss -side right -in .splash.b -pady 2 -ipadx 10 -padx 10
-  pack $w.ybar -in $w.f -side right -fill y
-  pack $w.t -in $w.f -side left -fill both -expand yes
-  
-  # Centre the splash window:
-  update idletasks
-  set x [expr {[winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-        - [winfo vrootx .]}]
-  set y [expr {[winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-        - [winfo vrooty .]}]
-  wm geom $w +$x+$y
-
-  # Show the startup window by default
-  wm deiconify $w
-  
-  bind $w <F1> {helpWindow Index}
-  bind $w <Escape> {.splash.dismiss invoke}
-  
-  $w.t tag configure indent -lmargin2 20
-  
-  $w.t image create end -image splash
-  $w.t insert end "Shane's Chess Information Database"
-}
-
-
-# Old Scid logo:
-image create photo splash -format gif -data \
-    "R0lGODdhZgAmAMIAAP///6CBUNHBoQAAcAAAAFK4bgAAAAAAACwAAAAAZgAmAAAD/gi63P4w
-ykkrDThjwTvXmueBmdiRmymggbqirqawMazSt23iuy7KAN7PNyKejB/ki1TDzJTCIjM37VWH
-moFWiw08r1JQU0wlW83YrXrQ/ZrX8NQ5VKbPSzn4th2E6f9sd3JddoR4PYB8LIB/dYeGg2GF
-knB8KokccWBHm0mdS2gCmo8KJn+Da1Cqn1Gjg6Uieo+prKoEt4+Sua4tHbAdp6hqq6Ent8eR
-nKG8Hr+ZssJbRMG9JsfX1YZrosy+ALHQ2dxaNozSLtfITea0pN8ejOLKWex7Kum4NfXDhc7P
-mJAaBdCDDp+8f2oKgOPnjkS9YsHGtcuADxmKSqAGbgvj/gbDvgG5JPITKU1DRWwgCGbEqKyj
-x4/iqJEkZ/IkrpQbV+b05KWPw48L280kYfNmBpU61Sgqtw9eOIRsiBbFmZOqvZY+0dRzOmoM
-xZM/q9JTyjHrpJk5ZToKYDMs2aRXebpMBjXtU0dFCVi9ujcQ1qBMRzXiOSnvLa4Mg9J0B3gK
-tcEZHxk+BgyaYpD93lUuSSecRpVCJh+uS/MyGn8TU3hmFFljB9EENscxnVkxE2ovcX8OBHs0
-Wi6kT2uuO5ZXbqACescm/bA24qYXPwJX/hwm4+rmCJdAnrz3CNa/X5k9DuisJ/BLlNtJjQlI
-lHkhtdNtfZC+1/ig5tZ/L38/GjHz9pWh333z8RegIP7V4oQFDDbo4IMQLpAAADs="
-
-# New Scid logo:
-image create photo splash -format gif -data {
-  R0lGODlhZAAtAOcAAAICAj0+QJGGb04/KaSYf2dRNRElfraid3ddOBoYFcCyk4ZuRjs/XgsX
-  RIpuRY12Usm6kyk+nWZunlJWli4yPj0zIgcPNI2Ba2tkc9bKsU9MaRo4vZaKdHeCvgIJK82+
-  nicuTStDrVhTRCUhHiQ3hQ4eZmZaZgULJpqXl7aqjktFVDtRsRQSDJmOd5l+U3Z6mIKJs21l
-  U9bGnio0YBIqnpKCZiInQx04rUxLR5JvRKqWY5R2SzY/dHpiPRksfqaOXR0+yEZLdDcuIdLC
-  mnZpaxAODBEWKXJeOoiKniNBw5t2R3pwXRwqbLCkjRwiQoJiPLGZb6GHV4R6Z0FSnlxLL8ay
-  jZ6Sejc4REpESMaugxQslBYiUlhXcCouViI4mkBIf46MmigoOA4bWZ5+T2xYN7qtmUc6Jryk
-  eGpwlqCRdhsZINbGonJuZDRBfi8qJTk6Z3dqWi5CnzlX1FJanlpGLR8ygy1Hu83CpVZTVhYk
-  YJp6S1NORb6qhTpKjNLGqQIGIrCefKmGVkxCPDAyOhQeTHFqXqqegqJ6THtyb6J+TZZ6XEJF
-  VhkcMmpePruukjk5V15ejqOCTiUmMrKkhsm6ntLCnqKaiZZxQic1bg4mlGxYRAoKCraaa8a2
-  nNLCoqyOYSQ3kTRGkMG1nzoyLhEjb866laJ+UmJibnppTyIuXlxqsAgPLmJSQYJ+gAwYT05M
-  VBoymaiKWjIuMnJYNSsmIqSSci1JyoZwXNrGpk9CNjw3NEZGRpqCVFhciB0nVDZJnBk6ztbG
-  rp56ShoyjoVpQaqSYsm2j46KinJ6vrKec7Gmgi4/iop5Z2JOMREmjR8ub45qQDA6dA4OHsi6
-  mhASGmhiYL6uh1pVUHpqSo1ySKKCUhUrikZOihAXNnJSMNHGroJ2YhYwpR4iM0NAQFtOPbum
-  gKaeniszU1ZCLMK2lDJKspZ6TQ0ecWheUBomal9bWQ4SLIJ/jhs+03F4oQcSPXBsdGFnmaid
-  iCo6gJaSjn1mRBIaQEA6RDhPvppyQ////yH5BAEKAP8ALAAAAABkAC0AAAj+ALUJ1CbMX7lK
-  nhIqXMgwYSU/36AMnEixojYlh6o03NgwA6VikSyKFDjm0qdSDMeo1KZHyZkPMGPKnCkz2J1k
-  kVTq3Mlzp5IxxmgKpfntw6eeSHlGMvnhjsyQYwj6O8OxqqcPfu5AiRRyZMUx/oRptLqxUrBp
-  xbxaHGPqUqxSCBX6NDi07gezEZPqjYoxqN2hGT782Js0kUmUMv0pVnwoS4bHkCNLfhzsseDF
-  mDNjvpSDc6QPk0OHtgZWs+lLijv7g+JJMqfXr8sdKMentu3buPk44lMOygHYwIML53RGdu7j
-  uFMkS/Z7uHPYZ2Zbu13pDsJgwQ5E0ba9O/fv3UP+btfTuNJfmUPu4vpQzLt78OC5+gsE4bzM
-  SggzWIvlXZvM1gfkFFVUiURS4IHaDDhGJEookcVd+EUooYRXXZXBHToMmOCGGnaYiDbzGTPh
-  iBNWmIExsWgYiUN3eOKHdomMUWAkLihi440z0uiCEsI8eF6FH1xVVDEyFhnjkUbKmGBJgZQy
-  lCcS4oIflK2lk6JO/sXkx4s55cQMJCvYIqaY/cxBhCKmYKAOBg6SFeSbFdqkg1oURaXNJYEY
-  w1EnMHTg558dwCBKBgoMNtAYDmHFJY2Q2CGPPEn8wg03oSQB6QoS9COPCf7w8SScFV710B1E
-  EoYlW6bM5+RMCXXSgQT+tgDzqDzA2GKOH4XqFFJM+WmnyARAPPrLHgUUQIYmrAQRgi1yyGGL
-  BsS8xBCocL4J2gdz0qlNTgItlee0V31QSgr2yComEHYcowAfsXSrUkJ3efLNAdr0sgEwwESQ
-  CxXNGIvALGSw8gWztqiAQDKIhRqkwlC+GVgxLpiqoIx4JlztB5SQC0wScvSTLyJNKBOFSl3B
-  dNWWZ9wSBzAbbBANOs0gQIwDNBPTwyxtJJEEP7NA8aZ5QIoa9F1Z6dDVQFwlfehEeOp518JQ
-  d2LPBkD0E+sNGFiizGACIvo0ykTcsIHYdaCDQDZ6qCSMHtkQU0A0GzziDRQJhxrXwkBiRar+
-  Ui4Q08gRC6y0k2Hfhmr4B1NXbccGXpxCwAEpbivQzy6Ws8QNNySBOQ897MCVQKaYoogDGsDy
-  yCwE1A0XQpXg4hC8UAaWbbfrkDEOFuO4UUDE3UbSVuEOtZ7QGh9IEM4N6mjuRTVab7fTzxAd
-  ELYX6oRwQzjLmOB5Vx8Ko08bKvRct+tlxDMPGvO88AIYCsD7cMRRRYLAKDiMMwIACSCwDvza
-  /K4nlI5AwgvSN498KMAex1NHBMIxDOaJ7GjaAJIMMnAAOMACFnZYQQSup4Vl4IEID1hQgpSg
-  j1k8gW4VokQ+7BEHWHjhC16gAQ1g8Yt4OGJURiNJJI4gi3EwAgD+AGABFYihBJIkIkS4aMI8
-  uAELGcJCC16YAjegaIcQhKMOjtsaT0QVpBetQwVa2EYcfhGKBdIgE1qoQxDaoYj+KQEaDijH
-  wkqBhm1kIhP4qEcNTjEMGmjBj3NIQVZKlRM9IEAILAAi/sxwNheE5HelQMEXQhCCJkbjHdXg
-  Agn8OIw4REALPmgHASbRrom8aQh+oKAL9PGGbWzDC6EgoxeGsQ1nOMMH0TDBA+6kBE8lJB51
-  qOU2NIAIcICjDc7Yhg/isAxEpAMtJNFDMwIQgAQoEgBFGIADhKGSI8YCEF8AxS9AsY1nqKAd
-  hQBHNYLZSRIok3mTGNnzwuUiemVjFo/+MEAySRCHUIRiGcF0hgG2wYBbNCgLCUnBFyJATibs
-  YQkcqAU3DDAMUISCBKdogiiIFBIE6AIHgyjCNfFHBj2Azh+xqAcsmLkNA8xABHAQQBpaEARS
-  LJMEBmBCO7RWyoFkoDKP8QMUOOM2XTiBHaQwgA/4GQp8PMMABmDHDDSRkZ++AB9tqAMpSIEH
-  AaQgHfHABAmWgQ9MVOMejojCDpSwg2mOI5Ej3cQAnuCASyjhEjsIAglC4YOtPiIGLUjBNBTA
-  BXZsYxk4ZQLzkuGCSzjWsRAwRjogkI5ycCIWgTDFDvRBDn6kghRIdcdY24CPbYB2Bsw4wzRS
-  wA3EGmCre7j+QBOs0YQYMOAcFBhHDC5Qi2IEArOaGEcANjFSAGzCDE8waSCgwAwmkAAfr2XH
-  Fdhgha8Slh1MwAcJ2JGHd1ygGMWIhXjFGwX+bEcYfDDPB6qgjDRIoR1Y6AIpxFACUtShDctw
-  BztKwIUoRMEFDMDEM0rADkIIAhsu+G82jkCHAVCBDPrQQxXEBYEW7GEc1hwpC8ghgCZQohS4
-  QAETMIEJUpSgBIMgwwP8GwUclCAPJGBCCbaQi1nEwi8wKYUId+SPZFygFZ24igKaYIULxGAP
-  V9iCGMTAhDZEY74zwMYOssEAEgyYvgPoQTZc4IIdLOBfPSAGNJSgEacoQAoBEOn+NVmgi3Zw
-  QI6tEXEdMFECMbhCFmQgxoJcMA4mY4IJYjCwN7QBl3h5YkkEUUIyGOCOJsSkFAqYRBousIRr
-  PMIVDWACDzAhhn2QIxvQOEcqMEGIJY8CATtQiQvWsY4H7GBHiRBRdWp7v5EWQRcxIIACYJIB
-  FPhi1KW+Mxm2nBMsNCAPf3bFPgbgjSgEJVwfmIgwlAAFBtDjFI5wUrjSkYJJtEAK1/CFK35d
-  gn1ggRj66AITZiCGBrjCCQXIhoxiBJVI+CMjV+EAkt1A3OLKQgq79gQu8rEFX5Aa07KYhQNc
-  EKNxHDsVvnA3s6OAkoV0kxcF4QQDGkCIeuwab54oBQT+FGCIajTg5PRwAjl64AB++GIGW6CH
-  zGWhj3W4KxLrWKswgnIBHOwiAD8sLhBHAI4J99oGhJhBHhpADzcMWxgJGgc9tnCOpe/DDIN2
-  WkwemWgoaGAGhHCCFDrxn5hMAxz0sAA9GqALEfTgEmRwwjl8sQ+Zw2McDlhQIBKhjx7m4BDG
-  aMI7dsFvoV9TFi0wRjAcMY5unAMEdWdEMxygh0CMQRcW2EcqnGCBbkz8f3IZAy/GUBAo4OAc
-  54AHI9jgCIGvYXi4cMQiVmGBVUhiD42oOTH4YYMZ2IDpFoCHG8hBjOB2oxusyIEerNFzWRg+
-  ru1wtAJiwAhCdIEQFrDAKPT+rAdydEPt+2hA8McxC0JDO9qm0AYvDkHtR3QDBL44ATwCAA60
-  eqITKWjBK1bhgVWEAQcxgA0LtwNkMAo2QAHXBw8W4AEWwAjw8AfwMADEQAz+MAlsEABw9XyK
-  pAstIArpwAu5YAT7sA+rsArwMAi5MArScAKrwIIluApqUAG3AHoJsSDp1xI6cAV/IA6yIA7d
-  oHphgAXVgAcU4IBGIA5t1w6t4AJpMwbZUACjIAniwAj85wEe8AcewAhmoAkI8AQ7UAt7EADU
-  oIHXNAJSUAYKEAX6oAtGcAIecAIn8Ad/cAJSCIdueALSAA9qsAQTJhMaMm2csAviIAJ4gAP1
-  cwX+YSALshAGkiALV7AL14BOF3APPwA/6+AABTAOtKAG1CANnpgAtDAAzUAGMiMMVoBkGUiG
-  CVAITeAIP3AJCIAObpAAnkgNaiAEdCAE1GCLCTACtFAB6BBHJpMQG4Jx/nAAhiAAUnALSwAO
-  iAAHMfAO79AO7VANbLAESyAFHKAMojAnXbEDDjALdGAGQiAEbiAEFTAAdBAz2ZADwmAIlaYL
-  IzCP9FiP9agLhWAJKVCJO9ADzUCO5WgGdFAAzYAOZmAGFWAG6IAO8ZYClABt/RM6BXEGnaAM
-  lkAA9wAIBGAFLcABAnABICkAHNACBJACTQEFujIGbFNCzUAFdEAHVFD+AEdADNkwbeilDEYm
-  AnuwkzzZk3sgAiJQDVJgCK44Bo1FDEdAkFRADmQwC/rwBLNQLE2JAAhgCtZQcTUoEMb4Ep2g
-  AMZACZTQlSmgDJPQBJNwlimgABAwDXcQETeXIHowZRM4gdmwA014b9bgCIbQAgLQl375l31Z
-  AyJJAKKgAGkRFTnXNvowMzuQcw9wCQ6ANsIADW9xfmwhEBOJH06BENYyE0OQEHcAESipIAbC
-  LYIjegOhBInQhxDQCcbwmrAZm9NgDBAAAZTgB9PwAwnCLZKjIR/CFekHIpW5EKCzlbzSFApz
-  nFryDclQJ+7yFbxwETsHE5p5B9Z5ndfZFDD+cQcZgBZ2siQk850Jkn6hwxTnpwctoQeKkQXB
-  8HrBkBDv6Qnt2Z7y2Z6vdyE60BJKgJ4Nsp/9ySMA2iB/VwqvlxBbcqAIuiVrUKAZ0AlR0CA7
-  IAwSOm36qXPoqZ9MMZ9r4AeHcAim4KGx4CnYOaIkmp3W8AmHoDYpqhIrqjaJIAxHYgo60Akl
-  WqPY+QHlcCWJcAgTOgYrGiPC0KGHsKOBgDAjGptOkgzgtaRM2qRNKl5ZEJtSagxVUAWwaaWv
-  +QHGoANO2qVOGgXFMKWxaaVYeqXGUAp84KQL4QfZEZHk2T86QZ6hYwp80SYkwjoMwTo2UQzp
-  5zuJ8KeACqh0aierhCMiQ9AiUDIih1odCnEin5AIdGoKifA0D8ElBLIhEYloS8MjPuIU22ky
-  6tUwQVIJ34Ah3SSpgXqZH6INMcKqTQMhnBk0+PE0JqIAKSKpAhE0GZAMUdCqCqJDXTMgDcIH
-  sAMvnAk1yBoM7KEWv9olFXN+Q0OdoJIB6WAoS1IhLUJBvTogUPGrS3MR5REuQIOs8LIw3Lk3
-  eoGp4WkYkYCVQ6MQF/MBwZAr3xkQADs=
-}
-
-::splash::make
-
-proc ::splash::add {text} {
-  if {! [winfo exists .splash]} {return}
-  .splash.t configure -state normal
-  .splash.t insert end "\n$text" indent
-  .splash.t see end
-  .splash.t configure -state disabled
-  update
-}
-
-::splash::add "Copyright (C) 1999-2004 Shane Hudson"
-::splash::add "Copyright (C) 2006-2009 Pascal Georges"
-::splash::add "Copyright (C) 2010-     The Scid Project"
-::splash::add "This is Scid $::scidVersion, released $::scidVersionDate."
-::splash::add "Website: http://scid.sourceforge.net\n"
-
-# Remember old font settings before loading options file:
-set fontOptions(oldRegular) $fontOptions(Regular)
-set fontOptions(oldMenu) $fontOptions(Menu)
-set fontOptions(oldSmall) $fontOptions(Small)
-set fontOptions(oldTiny) $fontOptions(Tiny)
-set fontOptions(oldFixed) $fontOptions(Fixed)
-
-# New configuration file names:
-set scidConfigFiles(options) "options.dat"
-set scidConfigFiles(engines) "engines.dat"
-set scidConfigFiles(engines.bak) "engines.dat"
-set scidConfigFiles(recentfiles) "recent.dat"
-set scidConfigFiles(history) "history.dat"
-set scidConfigFiles(bookmarks) "bookmarks.dat"
-set scidConfigFiles(reports) "reports.dat"
-set scidConfigFiles(optrainer) "optrainer.dat"
-set scidConfigFiles(resolvers) "resolvers.dat"
 
 # scidConfigFile:
 #   Returns the full path and name of a Scid configuration file,
 #   given its configuration type.
 #
 proc scidConfigFile {type} {
-  global scidConfigDir scidConfigFiles
-  if {! [info exists scidConfigFiles($type)]} {
-    return -code error "No such config file type: $type"
-  }
-  return [file nativename [file join $scidConfigDir $scidConfigFiles($type)]]
-}
+  global scidConfigDir
 
-# Create user ".scid" directory in Unix if necessary:
-# Since the options file used to be ".scid", rename it:
-if {! [file isdirectory $scidUserDir]} {
-  if {[file isfile $scidUserDir]} {
-    catch {file rename -force $scidUserDir "$scidUserDir.old"}
-  }
-  if {[catch {file mkdir $scidUserDir} err]} {
-    ::splash::add "Error creating ~/.scid directory: $err"
-  } else {
-    catch {file rename "$scidUserDir.old" $optionsFile}
-  }
-  # Rename old "~/.scid_sent_emails" if necessary:
-  if {[file isfile [file nativename "~/.scid_sent_emails"]]} {
-    catch {file rename [file nativename "~/.scid_sent_emails"] $email(logfile)}
-  }
-}
-
-# Create the config, data and log directories if they do not exist:
-proc makeScidDir {dir} {
-  if {! [file isdirectory $dir]} {
-    if {[catch {file mkdir $dir} err]} {
-      ::splash::add "Error creating directory $dir: $err"
-    } else {
-      ::splash::add "Created directory: $dir"
-    }
-  }
-}
-
-makeScidDir $scidConfigDir
-makeScidDir $scidDataDir
-makeScidDir $scidLogDir
-
-# Rename old email log file if necessary:
-if {[file readable $email(oldlogfile)]  &&  ![file readable $email(logfile)]} {
-  catch {file rename $email(oldlogfile) $email(logfile)}
-}
-
-# moveOldConfigFiles
-#   Moves configuration files from the old (3.4 and earlier) names
-#   to the new file names used since Scid 3.5.
-#
-proc moveOldConfigFiles {} {
-  global scidUserDir scidConfigDir
-  foreach {oldname newname} {
-    scidrc options.dat
-    scid.opt options.dat
-    scid.bkm bookmarks.dat
-    scid.rfl recentfiles.dat
-    engines.lis engines.dat
+  foreach {cfgtype fname} {
+    options "options.dat"
+    engines "engines.dat"
+    engines.bak "engines.dat"
+    recentfiles "recent.dat"
+    history "history.dat"
+    bookmarks "bookmarks.dat"
+    reports "reports.dat"
+    optrainer "optrainer.dat"
+    resolvers "resolvers.dat"
+    xfccstate "xfccstate.dat"
+    correspondence "correspondence.dat"
+    ExtHardware "hardware.dat"
+    treecache "treecache.dat"
   } {
-    set oldpath [file nativename [file join $scidUserDir $oldname]]
-    set newpath [file nativename [file join $scidConfigDir $newname]]
-    if {[file readable $oldpath]  &&  ![file readable $newpath]} {
-      if {[catch {file rename $oldpath $newpath} err]} {
-        ::splash::add "Error moving $oldpath to $newpath: $err"
-      } else {
-        ::splash::add "Moved old config file $oldname to $newpath"
-      }
+    if { $type == $cfgtype } {
+      return [file nativename [file join $scidConfigDir $fname]]
     }
   }
-}
 
-moveOldConfigFiles
+  return -code error "No such config file type: $type"
+}
 
 set optionsFile [scidConfigFile options]
-
 
 ################################################################################
 #  Load options file. All default values should be set before this point or new saved values will be overwritten by default ones
@@ -1501,7 +1192,6 @@ if {$::docking::USE_DOCKING} {
 proc ConvertOldOptionVariables {} {
   
   set oldNewNames {
-    autoCloseSplash ::splash::autoclose
     switcherVertical ::windows::switcher::vertical
     doColorPgn ::pgn::showColor
     pgnIndentVars ::pgn::indentVars

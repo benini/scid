@@ -17,6 +17,94 @@ set pgnWin 0
 set commentWin 0
 set filterGraph 0
 
+################################################################################
+# Creates a toplevel window depending of the docking option
+################################################################################
+proc createToplevel { w } {
+  set name [string range $w 1 end]
+  set f .fdock$name
+
+  # Raise window if already exist
+  if { [winfo exists $w] } {
+    if {! $::docking::USE_DOCKING } {
+      tk::PlaceWindow $w
+    } else {
+      if { [::docking::isUndocked $w] } {
+        tk::PlaceWindow $f
+      } else {
+        [::docking::find_tbn $f] select $f
+      }
+    }
+    return "already_exists"
+  }
+
+  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
+    frame $f  -container 1
+    toplevel .$name -use [ winfo id $f ]
+    docking::add_tab $f e
+
+    # auto focus exchange between docked windows
+    bind .$name <Enter> {
+      set atTop [lindex [wm stackorder . ] end]
+      if { $atTop == "." && [focus] != ""} {
+        set tl [winfo toplevel %W]
+        if {! [ ::docking::isUndocked $tl ] } { focus -force $tl }
+      }
+    }
+
+  } else  {
+    toplevel $w
+  }
+}
+
+################################################################################
+# In the case of a window closed without the context menu in docked mode, arrange for the tabs to be cleaned up
+# Alternative way : directly call ::docking::cleanup $w when closing window
+################################################################################
+proc createToplevelFinalize {w} {
+  if { $::docking::USE_DOCKING } {
+    bind $w <Destroy> +[ namespace code "::docking::cleanup $w %W"]
+  }
+}
+
+################################################################################
+# if undocked window : sets the title of the toplevel window
+# if docked : sets the name of the tab
+# w : name of the toplevel window
+proc setTitle { w title } {
+  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ]} {
+    set f .fdock[ string range $w 1 end ]
+    if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
+      set nb ""
+    }
+
+    if { $nb == "" } {
+      wm title $w $title
+    } else  {
+      # in docked mode trim down title to spare space
+      if { [ string range $title 0 5 ] == "Scid: " &&  [ string length $title ] > 6 } {
+        set title [string range $title 6 end]
+      }
+      $nb tab $f -text $title
+    }
+  } else  {
+    set wdock ".fdock[string range $w 1 end]"
+    if { [winfo exists $wdock ] } { set w $wdock }
+    wm title $w $title
+  }
+
+}
+
+################################################################################
+# Sets the menu for a new window : in docked mode the menu is displayed by clicking on the tab of the notebook
+################################################################################
+proc setMenu { w m} {
+  if { ! $::docking::USE_DOCKING } {
+    $w configure -menu $m
+  }
+}
+
+
 # recordWinSize:
 #   Records window width and height, for saving in options file.
 #
@@ -70,6 +158,7 @@ proc setWinSize {win} {
   }
 }
 
+createToplevel .main
 
 ###
 ### End of file: windows.tcl

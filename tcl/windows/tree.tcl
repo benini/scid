@@ -815,7 +815,6 @@ set tree(standardLines) {
 }
 # if there is a treecache file source it, otherwise use hard coded
 # values above
-set scidConfigFiles(treecache) "treecache.dat"
 catch {source [scidConfigFile treecache]}
 
 ################################################################################
