@@ -1985,12 +1985,12 @@ OpTable::AddMoveOrder (Game * g)
 {
     uint id = 0;
     int index = -1;
-
-    // Breaks Player opening report from current position
-    // g->MoveToPly(0);
+    ushort ply = g->GetCurrentPly();
+ 
+    g->MoveToPly(0);
 
     DString * dstr = new DString;
-    g->GetPartialMoveList (dstr, g->GetCurrentPly());
+    g->GetPartialMoveList (dstr, ply);
 
     // Search for this move order in the current list:
 
