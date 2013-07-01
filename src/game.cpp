@@ -199,6 +199,12 @@ game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format)
         return;
     }
 
+    if (nag >= (sizeof evalNagsRegular / sizeof (const char *))) {
+        if (format == PGN_FORMAT_LaTeX) *str = 0;
+        else snprintf (str, 9, "$%u", nag);
+        return;
+    }
+
     if (asSymbol) {
        if (format == PGN_FORMAT_LaTeX) {
           strcpy (str, evalNagsLatex[nag]);
