@@ -62,7 +62,7 @@ namespace eval fics {
 
     toplevel $w
     ::setTitle $w [::tr "ConfigureFics"]
-    pack [ttk::frame $w.f]
+    grid [ttk::frame $w.f]
 
     ttk::label $w.f.lLogin -text [::tr "CCDlgLoginName"]
     ttk::entry $w.f.login -width 20 -textvariable ::fics::login
@@ -255,7 +255,9 @@ namespace eval fics {
     set w .fics
     ::createToplevel $w
     ::setTitle $w "Free Internet Chess Server $::fics::reallogin"
-    pack [ttk::panedwindow $w.f -orient vertical] -expand 1 -fill both
+    grid [ttk::panedwindow $w.f -orient vertical] -sticky news
+    grid rowconfigure $w 0 -weight 1
+    grid columnconfigure $w 0 -weight 1
 
     ttk::notebook $w.f.top
     ttk::frame $w.f.top.fconsole
@@ -266,8 +268,10 @@ namespace eval fics {
     $w.f.top add $w.f.top.fconsole -sticky nsew -text [::tr "FICSConsole"]
     $w.f.top add $w.f.top.foffers -sticky nsew -text [::tr "FICSOffers"]
 
-    pack $w.f.top.fconsole.f1  -fill both -expand 1
-    pack $w.f.top.fconsole.f2 -fill x
+    grid $w.f.top.fconsole.f1 -sticky news
+    grid $w.f.top.fconsole.f2 -sticky news
+    grid rowconfigure $w.f.top.fconsole 0 -weight 1
+    grid columnconfigure $w.f.top.fconsole 0 -weight 1
     ttk::frame $w.f.bottom
 
     $w.f add $w.f.top -weight 1
@@ -275,19 +279,19 @@ namespace eval fics {
 
     ttk::frame $w.f.bottom.left
     ttk::frame $w.f.bottom.right
-    pack $w.f.bottom.left -side left
-    pack $w.f.bottom.right -side left
+    grid $w.f.bottom.left $w.f.bottom.right -sticky news
 
     # graph
     canvas $w.f.top.foffers.c -background white -width $width -height $height -relief solid
-    pack $w.f.top.foffers.c
+    grid $w.f.top.foffers.c
     bind $w.f.top.foffers <Configure> { ::fics::configureCanvas}
 
     ttk::scrollbar $w.f.top.fconsole.f1.ysc -command { .fics.f.top.fconsole.f1.console yview }
     text $w.f.top.fconsole.f1.console -bg $::fics::consolebg -fg $::fics::consolefg -height $::fics::consoleheight -width $::fics::consolewidth  \
          -font font_Fixed -wrap word -yscrollcommand "$w.f.top.fconsole.f1.ysc set"
-    pack $w.f.top.fconsole.f1.ysc -side left -fill y -side right
-    pack $w.f.top.fconsole.f1.console -side left -fill both -expand 1 -side right
+    grid $w.f.top.fconsole.f1.console $w.f.top.fconsole.f1.ysc -sticky news
+    grid rowconfigure $w.f.top.fconsole.f1 0 -weight 1
+    grid columnconfigure $w.f.top.fconsole.f1 0 -weight 1
 
     #define colors for console
     $w.f.top.fconsole.f1.console tag configure seeking     -foreground $::fics::colseeking
@@ -303,7 +307,8 @@ namespace eval fics {
     bind $w.f.top.fconsole.f2.cmd <Down> { ::fics::cmdHistory down ; break }
     bind $w.f.top.fconsole.f2.cmd <Left> " [bind TEntry <Left>] ; break "
     bind $w.f.top.fconsole.f2.cmd <Right> " [bind TEntry <Right>] ; break "
-    pack $w.f.top.fconsole.f2.cmd $w.f.top.fconsole.f2.send -side left -fill x
+    grid $w.f.top.fconsole.f2.cmd $w.f.top.fconsole.f2.send -sticky news
+    grid columnconfigure $w.f.top.fconsole.f2 0 -weight 1
 
     # clock 1 is white
     ::gameclock::new $w.f.bottom.left 1 100 0
@@ -462,7 +467,7 @@ namespace eval fics {
     }
     toplevel $w
     wm title $w [::tr "FICSFindOpponent"]
-    pack [ttk::frame $w.f]
+    grid [ttk::frame $w.f]
 
     ttk::label $w.f.linit -text [::tr "FICSInitialTime"]
     spinbox $w.f.sbTime1 -background white -width 3 -textvariable ::fics::findopponent(initTime) -from 0 -to 120 -increment 1 -validate all -vcmd { regexp {^[0-9]+$} %P }
