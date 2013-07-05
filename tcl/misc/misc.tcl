@@ -56,7 +56,7 @@ proc bindMouseWheel {bindtag callback} {
 	    bind $bindtag <ButtonPress-5> "$callback +1; break"
 	}
 	win32 {
-	    bind $bindtag <MouseWheel> "[append callback { [expr {-(%D/120)}]}]; break"
+	    bind $bindtag <<MWheel>> "[append callback { [expr {-(%d/120)}]}]; break"
 	}
 	aqua {
 	    bind $bindtag <MouseWheel> "[append callback { [expr {-(%D)}]} ]; break"

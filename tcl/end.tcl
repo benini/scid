@@ -1329,9 +1329,48 @@ bind $dot_w <Up> {
 bind $dot_w <Down> {::move::Forward 10}
 bind $dot_w <Right> ::move::Forward
 bind $dot_w <End> ::move::End
-
 bind $dot_w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
 
+proc MouseWheelRedirector {W X Y D} {
+    # Generate an MWheel virtual event to the window that has the mouse pointer
+    set w [winfo containing -displayof $W $X $Y]
+    # For virtual events we can't use the attribute "-delta" and we get away
+    # without a global variable by using instead "-data" which maps to %d
+    event generate $w <<MWheel>> -data $D -rootx $X -rooty $Y
+}
+
+proc ShiftMouseWheelRedirector {W X Y D} {
+    set w [winfo containing -displayof $W $X $Y]
+    event generate $w <<Shift-MWheel>> -data $D -rootx $X -rooty $Y
+}
+
+# On Windows, redirect mouse wheel events to those windows that have the
+# mouse pointer:
+# - Disable completely MouseWheel handling for all used classes. No class or
+#   window should listen to MouseWheel to avoid double firing
+# - Any window that receives a MouseWheel redirects these events as MWheel
+#   to the window with the mouse pointer
+# - Rebind all classes and windows that handle mouse wheel to MWheel events.
+#   Bind code is from TCL 8.5
+# On Linux and Macs this redirection is not necessary
+
+if { [tk windowingsystem] == "win32" } {
+    # Disable MouseWheel handling
+    set mw_classes [list Text Listbox Treeview]
+    foreach class $mw_classes { bind $class <MouseWheel> {} }
+
+    # Transform MouseWheel events into MWheel
+    bind all <MouseWheel> { MouseWheelRedirector %W %X %Y %D }
+    bind all <Shift-MouseWheel> { ShiftMouseWheelRedirector %W %X %Y %D }
+
+    # Bind classes to MWheel
+    bind Listbox <<MWheel>> { %W yview scroll [expr {-(%d/120) * 4}] units}
+    bind Treeview <<MWheel>> { %W yview scroll [expr {-(%d/120)}] units }
+    bind Text <<MWheel>> {
+	if {%d >= 0} { %W yview scroll [expr {-%d/3}] pixels
+	} else { %W yview scroll [expr {(2-%d)/3}] pixels }
+    }
+}
 
 # Apply standard shortcuts to main window
 # standardShortcuts $dot_w
