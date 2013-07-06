@@ -68,12 +68,9 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Down> "::gbrowser::update $n +10"
   bind $w <minus> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
   bind $w <Control-Shift-Left> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
-  bind $w <Control-Button-4> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
   bind $w <plus> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
   bind $w <Control-Shift-Right> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
-  bind $w <Control-Button-5> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
-  bind $w <Button-4> "::gbrowser::update $n -1"
-  bind $w <Button-5> "::gbrowser::update $n +1"
+  bindMouseWheel $w "::gbrowser::mousewheelHandler $n"
   
   button $w.b.start -image tb_start -command "::gbrowser::update $n start"
   button $w.b.back -image tb_prev -command "::gbrowser::update $n -1"
@@ -108,6 +105,14 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   
   if { [::board::isFlipped .main.board] } {
     ::gbrowser::flip $n
+  }
+}
+
+proc gbrowser::mousewheelHandler {n direction} {
+  if {$direction < 0} {
+    ::gbrowser::update $n -1
+  } else {
+    ::gbrowser::update $n +1
   }
 }
 

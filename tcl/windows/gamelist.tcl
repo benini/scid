@@ -378,7 +378,7 @@ proc glist.create {{w} {layout}} {
   $w.glist configure -yscrollcommand "glist.yscroll_ $w.glist"
   $w.ybar configure -command "glist.ybar_ $w.glist"
   bind $w.ybar <ButtonRelease-1> "+glist.ybar_ $w.glist buttonrelease"
-  ttk_bindMouseWheel $w.glist "glist.ybar_ $w.glist"
+  bindMouseWheel $w.glist "glist.ybar_ $w.glist"
 
   # Find widget
   ttk::frame $w.find

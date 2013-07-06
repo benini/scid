@@ -334,6 +334,15 @@ bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
 # bind .main.gameInfo <ButtonPress-$::MB3> ".main.gameInfo.menu post %X %Y"
 bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
 
+# MouseWheel in main window:
+proc main_mousewheelHandler {direction} {
+    if {$direction < 0} {
+        ::move::Back
+    } else {
+        ::move::Forward
+    }
+}
+bindMouseWheel .main "main_mousewheelHandler"
 
 # setBoard:
 #   Resets the squares of the board according to the board string

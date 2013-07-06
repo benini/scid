@@ -49,7 +49,7 @@ proc bindFocusColors {w {inColor lightYellow} {outColor white}} {
 #	specifying the mousewheel direction (-1: up, +1: down).
 #
 
-proc ttk_bindMouseWheel {bindtag callback} {
+proc bindMouseWheel {bindtag callback} {
     switch -- [tk windowingsystem] {
 	x11 {
 	    bind $bindtag <ButtonPress-4> "$callback -1; break"

@@ -1804,7 +1804,7 @@ namespace eval CorrespondenceChess {
 		bind $w <Down>       { ::CorrespondenceChess::yview scroll  1 units}
 		bind $w <Prior>      { ::CorrespondenceChess::yview scroll -1 pages}
 		bind $w <Next>       { ::CorrespondenceChess::yview scroll  1 pages}
-		bind $w <MouseWheel> { ::CorrespondenceChess::yview scroll [expr {- (%D / 120)}] units}
+		bindMouseWheel $w "::CorrespondenceChess::yview scroll"
 
 		# Help
 		bind $w <F1>        { helpWindow Correspondence}
