@@ -209,7 +209,6 @@ proc ::optable::makeReportWin {args} {
     bind $w <Next> "$w.text yview scroll 1 pages"
     bind $w <Key-Home> "$w.text yview moveto 0"
     bind $w <Key-End> "$w.text yview moveto 0.99"
-    bindMouseWheel $w $w.text
     
     text $w.text -height 30 -width 85 -font font_Small -setgrid 1 \
         -wrap word -bg white -foreground black -yscrollcommand "$w.ybar set" \

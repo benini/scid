@@ -1,4 +1,3 @@
-
 ####################
 # File finder window
 
@@ -87,7 +86,6 @@ proc ::file::finder::Open {} {
     lappend tablist $tabwidth $justify
   }
   $w.t.text configure -tabs $tablist
-  bindMouseWheel $w $w.t.text
   
   checkbutton $w.b.sub -text [tr FinderFileSubdirs] \
       -variable ::file::finder::data(recurse) -onvalue 1 -offvalue 0 \

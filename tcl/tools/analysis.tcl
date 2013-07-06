@@ -1876,7 +1876,6 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     bind $w <Escape> "focus .; destroy $w"
     bind $w <Key-a> "$w.b1.bStartStop invoke"
     wm minsize $w 25 0
-    bindMouseWheel $w $w.hist.text
     
     if {$analysis(uci$n)} {
         fileevent $analysis(pipe$n) readable "::uci::processAnalysisInput $n"

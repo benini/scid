@@ -192,7 +192,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.f.tl tag configure redfg -foreground red
   
   selection handle $w.f.tl "::tree::copyToSelection $baseNumber"
-  bindMouseWheel $w $w.f.tl
 
   bind $w <Configure> "recordWinSize $w"
 

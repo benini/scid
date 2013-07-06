@@ -42,16 +42,6 @@ proc createToplevel { w } {
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
     docking::add_tab $f e
-
-    # auto focus exchange between docked windows
-    bind .$name <Enter> {
-      set atTop [lindex [wm stackorder . ] end]
-      if { $atTop == "." && [focus] != ""} {
-        set tl [winfo toplevel %W]
-        if {! [ ::docking::isUndocked $tl ] } { focus -force $tl }
-      }
-    }
-
   } else  {
     toplevel $w
   }

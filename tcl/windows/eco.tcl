@@ -82,7 +82,6 @@ proc ::windows::eco::Refresh {{code "x"}} {
     bind $w <Prior> {.ecograph.pane.text.text yview scroll -1 pages}
     bind $w <Next>  {.ecograph.pane.text.text yview scroll 1 pages}
     standardShortcuts $w
-    bindMouseWheel $w $w.pane.text.text
 
     bind $graph.c <1> { ::windows::eco::Select %x }
     bind $graph.c <$::MB3> { ::windows::eco::KeyPress "<" }

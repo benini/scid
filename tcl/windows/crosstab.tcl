@@ -297,13 +297,6 @@ proc ::crosstab::Open {} {
   }
   standardShortcuts $w
   
-  # MouseWheel Bindings:
-  bind $w <MouseWheel> { .crosstabWin.f.text yview scroll [expr {- (%D / 120)}] units}
-  if {! $::windowsOS} {
-    bind $w <Button-4> { .crosstabWin.f.text yview scroll -1 units }
-    bind $w <Button-5> { .crosstabWin.f.text yview scroll  1 units }
-  }
-  
   ::createToplevelFinalize $w
   ::crosstab::Refresh
 }

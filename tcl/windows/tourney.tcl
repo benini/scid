@@ -52,7 +52,6 @@ proc ::tourney::Open {} {
   bind $w <Next> "$w.t.text yview scroll 1 pages"
   bind $w <Key-Home> "$w.t.text yview moveto 0"
   bind $w <Key-End> "$w.t.text yview moveto 0.99"
-  bindMouseWheel $w $w.t.text
 
   menu $w.menu
   $w configure -menu $w.menu

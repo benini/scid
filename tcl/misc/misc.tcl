@@ -64,20 +64,6 @@ proc ttk_bindMouseWheel {bindtag callback} {
     }
 }
 
-
-# bindMouseWheel:
-#   Given a window and a text frame within that window, binds
-#   the mouse wheel to scroll the text frame vertically.
-#
-proc bindMouseWheel {win text} {
-  bind $win <MouseWheel> \
-      "$text yview scroll \[expr -(%D / 120)\] units"
-  if {! $::windowsOS} {
-    bind $win <Button-4> [list $text yview scroll -1 units]
-    bind $win <Button-5> [list $text yview scroll  1 units]
-  }
-}
-
 # dialogbuttonframe:
 #   Creates a frame that will be shown at the bottom of a
 #   dialog window. It takes two parameters: the frame widget

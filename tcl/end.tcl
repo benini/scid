@@ -1331,26 +1331,6 @@ bind $dot_w <End> ::move::End
 
 bind $dot_w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
 
-# MouseWheel in main window:
-bind .main <MouseWheel> {
-  if {[expr -%D] < 0} { ::move::Back }
-  if {[expr -%D] > 0} { ::move::Forward }
-}
-bind .main <Shift-MouseWheel> {
-  if {[expr -%D] < 0} { ::move::Back 10 }
-  if {[expr -%D] > 0} { ::move::Forward 10}
-}
-
-if {! $windowsOS} {
-  bind all <Button-4> {event generate [focus -displayof %W] <MouseWheel> -delta 120}
-  bind all <Button-5> {event generate [focus -displayof %W] <MouseWheel> -delta -120}
-  bind all <Shift-Button-4> {event generate [focus -displayof %W] <Shift-MouseWheel> -delta  120}
-  bind all <Shift-Button-5> {event generate [focus -displayof %W] <Shift-MouseWheel> -delta -120}
-  # bind $dot_w <Button-4> ::move::Back
-  # bind $dot_w <Button-5> ::move::Forward
-  # bind $dot_w <Shift-Button-4> {::move::Back 10}
-  # bind $dot_w <Shift-Button-5> {::move::Forward 10}
-}
 
 # Apply standard shortcuts to main window
 # standardShortcuts $dot_w

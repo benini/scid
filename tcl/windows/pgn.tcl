@@ -198,7 +198,6 @@ namespace eval pgn {
       }
     }
     standardShortcuts $w
-    bindMouseWheel $w $w.text
     
     # Add variation navigation bindings:
     bind $w <KeyPress-v> [bind $::dot_w <KeyPress-v>]
