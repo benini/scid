@@ -1310,6 +1310,7 @@ bind .main <Control-Delete> backSquare
 bind .main <BackSpace> moveEntry_Backspace
 bind .main <Delete> moveEntry_Backspace
 bind .main <space> moveEntry_Complete
+bind .main <ButtonRelease> {focus .main}
 
 
 ###  Other Key bindings:
