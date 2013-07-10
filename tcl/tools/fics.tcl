@@ -1301,6 +1301,8 @@ namespace eval fics {
       return
     }
 
+    regsub -all {\s+} $elt " " elt
+    set elt [split $elt " "]
     set found 0
 
     if { [llength $elt] > 4} {
