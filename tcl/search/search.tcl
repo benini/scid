@@ -98,7 +98,6 @@ proc ::search::Config {{state ""}} {
   catch {.sh.b.search configure -state $state }
   catch {.sb.b.search configure -state $state }
   catch {.sm.b3.search configure -state $state }
-  catch {.spprep.b.search configure -state $state }
 }
 
 
