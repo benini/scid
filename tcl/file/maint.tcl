@@ -387,7 +387,8 @@ proc ::maint::Refresh {} {
   
   # Disable buttons if current base is closed or read-only:
   set state disabled
-  if {[sc_base inUse]  &&  ![sc_base isReadOnly]} {
+  set curr_base [sc_base current]
+  if {[sc_base inUse]  &&  ![sc_base isReadOnly $curr_base]} {
     set state normal
   }
   foreach spell {player event site round} {
@@ -1056,9 +1057,10 @@ proc shareTwinTags {g1 g2 {parent .}} {
 proc baseIsCompactable {} {
   # Only a database that is in use, not read-only, and not the
   # clipbase, can be compacted:
+  set curr_base [sc_base current]
   if {! [sc_base inUse]} { return 0 }
-  if {[sc_base isReadOnly]} { return 0 }
-  if {[sc_base current] == [sc_info clipbase]} { return 0 }
+  if {[sc_base isReadOnly $curr_base]} { return 0 }
+  if {$curr_base == [sc_info clipbase]} { return 0 }
   return 1
 }
 
@@ -1330,12 +1332,13 @@ proc sortDatabase {} {
 }
 
 proc makeBaseReadOnly {} {
+  set curr_base [sc_base current]
   if {! [sc_base inUse]} { return }
-  if {[sc_base isReadOnly]} { return }
+  if {[sc_base isReadOnly $curr_base]} { return }
   set result [tk_dialog .roDialog "Scid: [tr FileReadOnly]" \
       $::tr(ReadOnlyDialog) "" 1 $::tr(Yes) $::tr(No)]
   if {$result == 0} {
-    sc_base isReadOnly set
+    sc_base isReadOnly $curr_base set
     updateMenuStates
   }
 }

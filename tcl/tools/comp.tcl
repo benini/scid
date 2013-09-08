@@ -266,7 +266,8 @@ proc compOk {} {
     return
   }
 
-  if {[sc_base isReadOnly]} {
+  set curr_base [sc_base current]
+  if {[sc_base isReadOnly $curr_base]} {
     set answer [tk_messageBox -title Tournanment -icon question -type okcancel \
 	-message {Database is read only. Continue ?} -parent $w]
     if {$answer != "ok"} {return}
@@ -930,7 +931,8 @@ proc compNM {n m k} {
     }
   }
 
-  if {![sc_base isReadOnly]} {
+  set curr_base [sc_base current]
+  if {![sc_base isReadOnly $curr_base]} {
     sc_game save [sc_game number]
     ::windows::gamelist::Refresh
     ::crosstab::Refresh

@@ -20,7 +20,8 @@ if {[catch {sc_base open $basename} result]} {
     puts stderr "Error opening database \"$basename\": $result"
     exit 1
 }
-if {[sc_base isReadOnly]} {
+set curr_db [sc_base current]
+if {[sc_base isReadOnly $curr_db]} {
     puts stderr "Error: database \"$basename\" is read-only."
     exit 1
 }

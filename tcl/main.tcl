@@ -174,17 +174,18 @@ proc updateStatusBar {} {
     
     # Check if translations have not been set up yet:
     if {! [info exists ::tr(Database)]} { return }
+
+    set current [sc_base current]
     
     # Show "%%" if base is read-only, "XX" if game altered, "--" otherwise:
-    if {[sc_base isReadOnly]} {
+    if {[sc_base isReadOnly $current]} {
         append statusBar "%%"
     } elseif {[sc_game altered]} {
         append statusBar "XX"
     } else {
         append statusBar "--"
     }
-    
-    set current [sc_base current]
+
     append statusBar "  $::tr(Database)"
     if {$current != [sc_info clipbase]} {
         append statusBar " $current"

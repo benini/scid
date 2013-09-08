@@ -692,8 +692,8 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       menu $w.game_menu.merge
       menu $w.game_menu.copy
       for {set i 1} {$i <= [sc_base count total]} {incr i} {
-        if { $i == $::glistBase($w) || [sc_base isReadOnly] } { continue }
         if {[sc_base inUse $i]} {
+          if { $i == $::glistBase($w) || [sc_base isReadOnly $i] } { continue }
           set fname [file tail [sc_base filename $i]]
           $w.game_menu.merge add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
           $w.game_menu.copy add command -label "$i $fname" \

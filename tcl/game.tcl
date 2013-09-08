@@ -5,8 +5,9 @@
 #   current game. Returns 1 if they selected yes, 0 otherwise.
 #
 proc ::game::ConfirmDiscard {} {
+  set curr_db [sc_base current]
   if {$::trialMode} { return 1 }
-  if {[sc_base isReadOnly]} { return 1 }
+  if {[sc_base isReadOnly $curr_db ]} { return 1 }
   if {! [sc_game altered]} { return 1 }
   set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" \
       $::tr(ClearGameDialog) "" 0 $::tr(Yes) $::tr(No) ]
@@ -23,8 +24,9 @@ proc ::game::ConfirmDiscard {} {
 # 2 -> cancel action
 #
 proc ::game::ConfirmDiscard2 {} {
+  set curr_db [sc_base current]
   if {$::trialMode} { return 1 }
-  if {[sc_base isReadOnly]} { return 1 }
+  if {[sc_base isReadOnly $curr_db]} { return 1 }
   if {! [sc_game altered]} { return 1 }
   # set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" $::tr(ClearGameDialog) "" 2 \
   # $::tr(SaveAndContinue) $::tr(DiscardChangesAndContinue) $::tr(GoBack) ]
@@ -428,7 +430,8 @@ namespace eval ::notify {
   }
 
   proc PosChanged {} {
-    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly]} {
+    set curr_db [sc_base current]
+    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly $curr_db]} {
         .main.tb.save configure -state disabled
     } else {
         .main.tb.save configure -state normal

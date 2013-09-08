@@ -1458,7 +1458,7 @@ proc updateMenuStates {} {
   
   # Configure File menu entry states::
   if {[sc_base inUse]} {
-    set isReadOnly [sc_base isReadOnly]
+    set isReadOnly [sc_base isReadOnly $::currentSlot]
     $m.file entryconfig [tr FileClose] -state normal
     if {! $isReadOnly} {
       $m.file.utils entryconfig [tr FileMaintDelete] -state normal

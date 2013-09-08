@@ -751,8 +751,8 @@ proc ::windows::switcher::Refresh {} {
 }
 
 proc ::windows::switcher::Update_ {w} {
-  set base [sc_base current]
-  set space [::windows::switcher::calcSpace $w $base]
+  set curr_base [sc_base current]
+  set space [::windows::switcher::calcSpace $w $curr_base]
   set n_bases [lindex $space 0]
   set iconWidth [lindex $space 1]
   set iconHeight [lindex $space 2]
@@ -763,8 +763,8 @@ proc ::windows::switcher::Update_ {w} {
     set numColumns [expr {int($canvasWidth / $iconWidth)}]
     if {$numColumns < 1} { set numColumns 1 }
     ::windows::switcher::Draw $w $numColumns $iconWidth $iconHeight
-    set status [file nativename [sc_base filename [sc_base current] ] ]
-    if {[sc_base isReadOnly]} { append status " ($::tr(readonly))" }
+    set status [file nativename [sc_base filename $curr_base ] ]
+    if {[sc_base isReadOnly $curr_base]} { append status " ($::tr(readonly))" }
     $w.status configure -text $status
   } else {
     #TODO: if $w parent is too small do not use 2 columns

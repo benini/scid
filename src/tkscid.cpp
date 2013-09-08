@@ -786,30 +786,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_INUSE:
         return sc_base_inUse (cd, ti, argc, argv);
 
-    case BASE_ISREADONLY:
-        // sc_base isReadOnly [set] [basenumber]
-        if (argc < 3 || ! strEqual (argv[2], "set")) {
-            return setBoolResult (ti, db->inUse && db->fileMode==FMODE_ReadOnly);
-        } else {
-            scidBaseT* workbase = db;
-            if (argc >= 4) {
-                int baseNum = strGetInteger (argv[3]);
-                if (baseNum < 1 || baseNum > MAX_BASES) return errorResult (ti, "Invalid database number.");
-                workbase = &(dbList[baseNum - 1]);
-            }
-            if (! workbase->inUse) {
-                return errorResult (ti, errMsgNotOpen(ti));
-            }
-            if (workbase->fileMode == FMODE_ReadOnly) {
-                return errorResult (ti, "This database is already read-only.");
-            }
-            if (workbase->idx->SetReadOnly () != OK) {
-                return errorResult (ti, "Unable to make this database read-only.");
-            }
-            workbase->fileMode = FMODE_ReadOnly;
-            return TCL_OK;
-        }
-
     case BASE_NUMGAMES:
         return sc_base_numGames (cd, ti, argc, argv);
 
@@ -940,7 +916,20 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             dbase->idx->FreeCache(argv[4]);
         }
         break;
+
+    case BASE_ISREADONLY:
+        if (argc == 3) return setBoolResult (ti, dbase->inUse && dbase->fileMode==FMODE_ReadOnly);
+        if (argc == 4 && strCompare("set", argv[3]) == 0) {
+            if (dbase->idx->SetReadOnly () != OK) {
+                return errorResult (ti, "Unable to make this database read-only.");
+            }
+            dbase->fileMode = FMODE_ReadOnly;
+            return TCL_OK;
+        }
+        return errorResult (ti, "Usage: sc_base isReadOnly baseId [set]");
+
     }
+
     return TCL_OK;
 }
 

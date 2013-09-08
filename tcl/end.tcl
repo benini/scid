@@ -567,7 +567,7 @@ proc copyFilter {frombaseNum tobaseNum} {
   sc_base switch $tobaseNum
   set targetInUse [sc_base inUse]
   set targetName [file tail [sc_base filename]]
-  set targetReadOnly [sc_base isReadOnly]
+  set targetReadOnly [sc_base isReadOnly $tobaseNum]
   sc_base switch $currentBaseNum
   set err ""
   if {$nGamesToCopy == 0} {
