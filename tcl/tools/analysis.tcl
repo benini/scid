@@ -2392,7 +2392,6 @@ proc toggleFinishGame { { n 1 } } {
 	grab $w
 	bind $w <ButtonPress> { 
 		set w .configFinishGame
-		wm deiconify $w
 		if {%x < 0 || %x > [winfo width $w] || %y < 0 || %y > [winfo height $w] } { ::tk::PlaceWindow $w pointer }
 	}
 	tkwait window $w
