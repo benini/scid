@@ -1021,7 +1021,7 @@ sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 void
 base_progress (void * data, uint count, uint total) {
-    updateProgressBar ((Tcl_Interp *)data, count, total);
+    updateProgressBar ((Tcl_Interp *)data, count, total, true);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
