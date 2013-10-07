@@ -742,7 +742,6 @@ class Index
     bool        AllInMemory() { return InMemory; }
 
     inline IndexEntry * FetchEntry (gameNumberT g);
-    std::string FetchInfo (gameNumberT g, NameBase* nb);
 
     gameNumberT GetNumGames ()     { return Header.numGames; }
     errorT      AddGame (gameNumberT * g, IndexEntry * ie, bool initIE = false);

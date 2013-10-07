@@ -503,11 +503,11 @@ proc glist.loadvalues_ {{w}} {
     set current_game -1
   }
   set i 0
-  foreach {idx line} [sc_base gameslist $base $::glistFirst($w) [expr 1 + $::glistVisibleLn($w)]\
+  foreach {idx line deleted} [sc_base gameslist $base $::glistFirst($w) [expr 1 + $::glistVisibleLn($w)]\
                                         $::glistFilter($w) $::glistSortStr($w)] {
     $w insert {} end -id $idx -values $line -tag fsmall
+    if {$deleted == "D"} { $w item $idx -tag {fsmall deleted} }
     foreach {n ply} [split $idx "_"] {
-      if {[sc_base gameflag $base $n get del]} { $w item $idx -tag {fsmall deleted} }
       if {$n == $current_game} { $w item $idx -tag "[$w item $idx -tag] current" }
     }
     incr i

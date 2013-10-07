@@ -679,6 +679,9 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 	} else {
 		cdb->idx->GetRange(cdb->nb, sort, start, count, filter, idxList);
 	}
+
+	Tcl_Obj** res = new Tcl_Obj* [count *3];
+	uint i_res = 0;
 	for (uint i = 0; i < count; ++i) {
 		uint idx = idxList[i];
 		if (idx == IDX_NOT_FOUND) break;
@@ -686,12 +689,52 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		uint ply = 0;
 		if (filter) ply = filter->Get(idx) -1;
 
-		std::string info = cdb->idx->FetchInfo (idx, cdb->nb);
+		IndexEntry* ie = cdb->idx->FetchEntry (idx);
 
-		info.append (" \"");
-		IndexEntry * ie = cdb->idx->FetchEntry (idx);
+		Tcl_Obj* ginfo[24];
+		ginfo[0] = Tcl_NewIntObj(idx +1);
+		ginfo[1] = Tcl_NewStringObj(RESULT_STR[ie->GetResult()], -1);
+		ginfo[2] = Tcl_NewIntObj((ie->GetNumHalfMoves() + 1) / 2);
+		ginfo[3] = Tcl_NewStringObj(ie->GetWhiteName(cdb->nb), -1);
+		eloT welo = ie->GetWhiteElo();
+		if (welo == 0) welo = cdb->nb->GetElo(ie->GetWhite());
+		ginfo[4] = Tcl_NewIntObj(welo);
+		ginfo[5] = Tcl_NewStringObj(ie->GetBlackName(cdb->nb), -1);
+		eloT belo = ie->GetBlackElo();
+		if (belo == 0) belo = cdb->nb->GetElo (ie->GetBlack());
+		ginfo[6] = Tcl_NewIntObj(belo);
+		char buf_date[16];
+		date_DecodeToString (ie->GetDate(), buf_date);
+		ginfo[7] = Tcl_NewStringObj(buf_date, -1);
+		ginfo[8] = Tcl_NewStringObj(ie->GetEventName(cdb->nb), -1);
+		ginfo[9] = Tcl_NewStringObj(ie->GetRoundName(cdb->nb), -1);
+		ginfo[10] = Tcl_NewStringObj(ie->GetSiteName(cdb->nb), -1);
+		ginfo[11] = Tcl_NewIntObj(ie->GetNagCount());
+		ginfo[12] = Tcl_NewIntObj(ie->GetCommentCount());
+		ginfo[13] = Tcl_NewIntObj(ie->GetVariationCount());
+		char deleted[2] = {0};
+		deleted[0] = (ie->GetDeleteFlag()) ? 'D' : ' ';
+		ginfo[14] = Tcl_NewStringObj(deleted, -1);
+		char flags[16];
+		ie->GetFlagStr (flags, "WBMENPTKQ!?U123456");
+		ginfo[15] = Tcl_NewStringObj(flags, -1);
+		ecoStringT ecoStr;
+		eco_ToExtendedString (ie->GetEcoCode(), ecoStr);
+		ginfo[16] = Tcl_NewStringObj(ecoStr, -1);
+		std::string endMaterial = matsig_makeString(ie->GetFinalMatSig());
+		ginfo[17] = Tcl_NewStringObj(endMaterial.c_str(), -1);
+		char startpos[2] = {0};
+		startpos[0] = (ie->GetStartFlag()) ? 'S' : ' ';
+		ginfo[18] = Tcl_NewStringObj(startpos, -1);
+		char buf_eventdate[16];
+		date_DecodeToString (ie->GetEventDate(), buf_eventdate);
+		ginfo[19] = Tcl_NewStringObj(buf_eventdate, -1);
+		ginfo[20] = Tcl_NewIntObj(ie->GetYear());
+		ginfo[21] = Tcl_NewIntObj((welo + belo)/2);
+		ginfo[22] = Tcl_NewIntObj(ie->GetRating(cdb->nb));
+		DString moves;
 		if (ply == 0) {
-			info.append(StoredLine::GetText(ie->GetStoredLineCode()));
+			ginfo[23] = Tcl_NewStringObj(StoredLine::GetText(ie->GetStoredLineCode()), -1);
 		} else {
 			cdb->bbuf->Empty();
 			cdb->gfile->ReadGame (cdb->bbuf, ie->GetOffset(), ie->GetLength() );
@@ -699,18 +742,18 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 			g->Clear();
 			g->Decode (cdb->bbuf, GAME_DECODE_NONE);
 			g->MoveToPly(ply);
-			DString moves;
 			g->GetPartialMoveList (&moves, 20);
-			info.append(moves.Data());
+			ginfo[23] = Tcl_NewStringObj(moves.Data(), -1);
 		}
-		info.append ("\"");
 
-		char idx_ply [20];
-		snprintf(idx_ply, sizeof(idx_ply), "%d_%d", idx +1, ply);
-		Tcl_AppendElement (ti, idx_ply);
-
-		Tcl_AppendElement (ti, info.c_str());
+		res[i_res++] = Tcl_ObjPrintf("%d_%d", idx +1, ply);
+		res[i_res++] = Tcl_NewListObj(sizeof(ginfo)/sizeof(Tcl_Obj*), ginfo);
+		res[i_res++] = Tcl_NewStringObj(deleted, -1);
 	}
+
+	Tcl_SetObjResult(ti, Tcl_NewListObj(i_res, res));
+
+	delete [] res;
 	delete [] idxList;
     return TCL_OK;
 }

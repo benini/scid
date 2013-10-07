@@ -1832,41 +1832,6 @@ errorT Index::IndexUpdated( uint gnum)
 			sortingCaches[i]->CheckForChanges( NULL, gnum);
 	return OK;
 }
-/////////////////////////////////////////////////////////////////////////
-
-std::string Index::FetchInfo (gameNumberT g, NameBase* nb)
-{
-	IndexEntry* ie = FetchEntry (g);
-	eloT welo = ie->GetWhiteElo();
-	eloT belo = ie->GetBlackElo();
-	if (welo == 0) { welo = nb->GetElo (ie->GetWhite()); }
-	if (belo == 0) { belo = nb->GetElo (ie->GetBlack()); }
-
-	char dateStr [16];
-	date_DecodeToString (ie->GetDate(), dateStr);
-
-	char eventdateStr [16];
-	date_DecodeToString (ie->GetEventDate(), eventdateStr);
-
-	//#TODO: don't use PrintGameInfo
-	/* "GlistDeleted" "GlistFlags" "GlistECO" "GlistEndMaterial" "GlistStart"*/
-	char pgi_buf[1024];
-	ie->PrintGameInfo (pgi_buf, 0,0, nb, "{D} {U} {o4} {F} {S}");
-
-	char buf[1024];
-	snprintf(buf, sizeof(buf),
-			"{%d} {%s} {%d} {%s} {%d} {%s} {%d} {%s} {%s} {%s} "
-			" {%s} {%d} {%d} {%d} %s {%s} {%d} {%d} {%d}",
-			g +1, RESULT_STR[ie->GetResult()], (ie->GetNumHalfMoves() + 1) / 2,
-			ie->GetWhiteName (nb), welo, ie->GetBlackName (nb), belo,
-			dateStr, ie->GetEventName (nb), ie->GetRoundName(nb),
-			ie->GetSiteName(nb), ie->GetNagCount(), ie->GetCommentCount(),
-			ie->GetVariationCount(), pgi_buf, eventdateStr, ie->GetYear(),
-			(welo + belo)/2, ie->GetRating(nb));
-
-	return buf;
-}
-
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: index.cpp

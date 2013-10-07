@@ -23,22 +23,26 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // matsig_makeString(): Make a string representation of a matsig.
-//      Example: "12228.12228" for the starting position.
-void
-matsig_makeString (char * s, matSigT m)
+std::string
+matsig_makeString (matSigT m)
 {
-    *s++ = (char) MATSIG_Count_WQ(m) + '0';
-    *s++ = (char) MATSIG_Count_WR(m) + '0';
-    *s++ = (char) MATSIG_Count_WB(m) + '0';
-    *s++ = (char) MATSIG_Count_WN(m) + '0';
-    *s++ = (char) MATSIG_Count_WP(m) + '0';
-    *s++ = '.';
-    *s++ = (char) MATSIG_Count_BQ(m) + '0';
-    *s++ = (char) MATSIG_Count_BR(m) + '0';
-    *s++ = (char) MATSIG_Count_BB(m) + '0';
-    *s++ = (char) MATSIG_Count_BN(m) + '0';
-    *s++ = (char) MATSIG_Count_BP(m) + '0';
-    *s = 0;
+    std::string s;
+    s.reserve(32);
+    uint i;
+    for (i=0; i < MATSIG_Count_WQ(m); i++) { s+= 'Q'; }
+    for (i=0; i < MATSIG_Count_WR(m); i++) { s+= 'R'; }
+    for (i=0; i < MATSIG_Count_WB(m); i++) { s+= 'B'; }
+    for (i=0; i < MATSIG_Count_WN(m); i++) { s+= 'N'; }
+    uint wp = MATSIG_Count_WP(m);
+    if (wp > 0) s+= (wp + '0');
+    s+= ':';
+    for (i=0; i < MATSIG_Count_BQ(m); i++) { s+= 'Q'; }
+    for (i=0; i < MATSIG_Count_BR(m); i++) { s+= 'R'; }
+    for (i=0; i < MATSIG_Count_BB(m); i++) { s+= 'B'; }
+    for (i=0; i < MATSIG_Count_BN(m); i++) { s+= 'N'; }
+    uint bp = MATSIG_Count_BP(m);
+    if (bp > 0) s+= (bp + '0');
+    return s;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
