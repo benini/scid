@@ -565,7 +565,7 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
   $w_entryN configure -bg white
   $w_entryT configure -bg white
   if {($dir == "" && $gnum == "") || ($dir != "" && $txt == "")} { return }
-  busyCursor .
+  busyCursor $w_parent
   update idletasks
 
   if {$dir == ""} {
@@ -595,7 +595,7 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
     }
     after idle glist.select_ $w $r
   }
-  unbusyCursor .
+  unbusyCursor $w_parent
 }
 
 proc glist.select_ {w {idx 0}} {
@@ -765,6 +765,11 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
     $w.header_menu add cascade -label $::tr(GlistAddField) -menu $w.header_menu.addcol -state $empty
     $w.header_menu add command -label $::tr(GlistDeleteField) -command "glist.removecol_ $w $layout $col"
 
+    #RESET SORT
+    $w.header_menu add separator
+    #TODO: translate label
+    $w.header_menu add command -label "Reset sort" -command "glist.sort_ $w 0 $layout 1"
+
     #BARS
     $w.header_menu add separator
     #TODO: translate label
@@ -795,6 +800,11 @@ proc glist.sortClickHandle_ {{w} {x} {y} {layout} {clear 0}} {
     # TODO: notify the user that the column cannot be used for sorting
     return
   }
+  glist.sort_ $w $col_idx $layout $clear
+}
+
+proc glist.sort_ {{w} {col_idx} {layout} {clear 0}} {
+  if {[lindex $::glist_Sort($layout) 0] == 0 && $col_idx != 0} { set clear 1; }
   if {$clear} {
     foreach {c dir} $::glist_Sort($layout) { $w heading $c -image "" }
     set ::glist_Sort($layout) {}
@@ -811,9 +821,11 @@ proc glist.sortClickHandle_ {{w} {x} {y} {layout} {clear 0}} {
       lset ::glist_Sort($layout) $exists {+}
     }
   }
-
+  busyCursor $w
+  update idletasks
   glist.sortInit_ $w $layout
   if {[info exist ::glistBase($w)]} { glist.update_ $w $::glistBase($w) }
+  unbusyCursor $w
 }
 
 # Scrollbar
