@@ -97,7 +97,7 @@ menuText I EditPasteBoard "Incolla come posizione di partenza" 12 \
 
 # Game menu:
 menuText I Game "Partita" 0
-menuText I GameNew "Annulla partita" 0 \
+menuText I GameNew "Nuova partita" 0 \
   {Torna alla posizione iniziale, rinunciando ai cambiamenti}
 menuText I GameFirst "Carica la prima Partita" 13 {Carica la prima partita del filtro}
 menuText I GamePrev "Carica la precedente Partita" 10 {Carica la precedente partita del filtro}
@@ -1193,7 +1193,7 @@ translate I Castling {Arrocco}
 translate I EnPassantFile {Fila En Passant}
 translate I ClearFen {Annulla FEN}
 translate I PasteFen {Incolla FEN}
-translate I SaveAndContinue {Salava e continua}
+translate I SaveAndContinue {Salva e continua}
 translate I DiscardChangesAndContinue {Scarta le modifiche\ne continua}
 translate I GoBack {Indietro}
 
