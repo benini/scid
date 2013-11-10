@@ -31,13 +31,10 @@ proc filterText {{base 0} {kilo 0}} {
 #   Resets the filter to contain all games. Calls sc_filter reset and
 #   updates relevant windows.
 #
-proc ::search::filter::reset {{base 0}} {
-  if {$base == 0} { set base [sc_base current] }
+proc ::search::filter::reset {{base ""}} {
+  if {$base == ""} { set base [sc_base current] }
   sc_filter reset $base
-  ::windows::gamelist::Refresh
-  ::tree::refresh
-  ::windows::stats::Refresh
-  updateMenuStates
+  ::notify::DatabaseChanged
 }
 
 # ::search::filter::negate
@@ -45,11 +42,8 @@ proc ::search::filter::reset {{base 0}} {
 #   Negates the filter, to include only excluded games.
 #
 proc ::search::filter::negate {} {
-  sc_filter negate
-  ::windows::gamelist::Refresh
-  ::tree::refresh
-  ::windows::stats::Refresh
-  updateMenuStates
+  sc_filter negate [sc_base current] dbfilter
+  ::notify::DatabaseChanged
 }
 
 

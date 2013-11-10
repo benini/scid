@@ -97,14 +97,13 @@ proc resetEngine {n} {
     # UCI engine options in format ( name min max ). This is not engine config but its capabilities
     set analysis(uciOptions$n) {}
     # the number of lines in multiPV. If =1 then act the traditional way
-    set analysis(multiPVCount$n) 4      ;# number of N-best lines
-    set analysis(index$n) 0             ;# the index of engine in engine list
+    set analysis(multiPVCount$n) 1      ;# number of N-best lines
     set analysis(uciok$n) 0             ;# uciok sent by engine in response to uci command
     set analysis(name$n) ""             ;# engine name
     set analysis(processInput$n) 0      ;# the time of the last processed event
     set analysis(waitForBestMove$n) 0
     set analysis(waitForReadyOk$n) 0
-    set analysis(waitForUciOk$n) 0
+    set analysis(onUciOk$n) ""
     set analysis(movesDisplay$n) 1      ;# if false, hide engine lines, only display scores
     set analysis(lastHistory$n) {}      ;# last best line
     set analysis(maxmovenumber$n) 0     ;# the number of moves in this position
@@ -658,17 +657,18 @@ proc ::enginelist::edit {index} {
             destroy .engineEdit
             ::enginelist::sort
             ::enginelist::write
+            raise .enginelist
             focus .enginelist
         }
     }
-    ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w ; focus .enginelist"
+    ttk::button $f.cancel -text $::tr(Cancel) -command "destroy $w; raise .enginelist; focus .enginelist"
     pack $f -side bottom -fill x
     pack $f.cancel $f.ok -side right -padx 2 -pady 2
     ttk::label $f.required -font font_Small -text $::tr(EngineRequired)
     pack $f.required -side left
     
     bind $w <Return> "$f.ok invoke"
-    bind $w <Escape> "destroy $w ; focus .enginelist "
+    bind $w <Escape> "destroy $w; raise .enginelist; focus .enginelist"
     bind $w <F1> { helpWindow Analysis List }
     focus $w.f.eName
     wm resizable $w 1 0
@@ -1660,8 +1660,9 @@ proc logEngineNote {n text} {
 #   Produces the engine list dialog box for choosing an engine,
 #   then opens an analysis window and starts the engine.
 ################################################################################
-proc makeAnalysisWin { {n 1} {index -1} } {
+proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
     global analysisWin$n font_Analysis analysisCommand analysis annotateModeButtonValue
+
     set w ".analysisWin$n"
     if {[winfo exists $w]} {
         focus .
@@ -1674,13 +1675,19 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     # Only update engine's time when it was chosen in the engines dialog box
     if { $index < 0 } {
         set index [::enginelist::choose]
+        if { $index == "" ||  $index < 0 } { return }
         catch {
             ::enginelist::setTime $index
         }
+    }
 
-        if {$index == "" ||  $index < 0} { return }
-    } else {
-        set index [expr {$n - 1}]
+    set n_engines [llength $::engines(list)]
+    if { $index >= $n_engines} {
+        if { $n_engines > 0 } {
+            tk_messageBox -message "Invalid Engine Number: [expr $index +1]"
+            makeAnalysisWin $n -1
+        }
+        return
     }
 
     # Set the button in non-annotation state
@@ -1689,22 +1696,6 @@ proc makeAnalysisWin { {n 1} {index -1} } {
         set annotateModeButtonValue 0
     }
 
-
-    ::createToplevel $w
-    ::setTitle $w "Analysis: No engine"
-    setWinLocation $w
-    setWinSize $w
-    ttk::frame $w.b1
-    pack $w.b1 -side bottom -fill x
-    ::createToplevelFinalize $w
-    set analysisWin$n 1
-
-    if {$index >= [llength $::engines(list)]} {
-        button $w.b1.bStartStop -image tb_pause -command ""
-        return
-    }
-    
-    set analysis(index$n) $index
     set engineData [lindex $::engines(list) $index]
     set analysisName [lindex $engineData 0]
     set analysisCommand [ toAbsPath [lindex $engineData 1] ]
@@ -1718,11 +1709,7 @@ proc makeAnalysisWin { {n 1} {index -1} } {
         set oldpwd [pwd]
         catch {cd $analysisDir}
     }
-    
-    if {! $analysis(uci$n) } {
-        set analysis(multiPVCount$n) 1
-    }
-    
+
     # Try to execute the analysis program:
     set open_err [catch {set analysis(pipe$n) [open "| [list $analysisCommand] $analysisArgs" "r+"]}]
 
@@ -1761,7 +1748,10 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     #
     # Set up the  analysis window:
     #
-
+    ::createToplevel $w
+    set analysisWin$n 1
+    setWinLocation $w
+    setWinSize $w
     if {$n == 1} {
         ::setTitle $w "Analysis: $analysisName"
     } else {
@@ -1775,12 +1765,14 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     set analysis(showBoard$n) 0
     set analysis(showEngineInfo$n) 0
     
-    
+    ttk::frame $w.b1
+    pack $w.b1 -side bottom -fill x
     checkbutton $w.b1.automove -image tb_training  -indicatoron false -height 24 -relief raised -command "toggleAutomove $n" -variable analysis(automove$n)
     ::utils::tooltip::Set $w.b1.automove $::tr(Training)
     
     checkbutton $w.b1.lockengine -image tb_lockengine -indicatoron false -height 24 -width 24 -variable analysis(lockEngine$n) -command "toggleLockEngine $n"
     ::utils::tooltip::Set $w.b1.lockengine $::tr(LockEngine)
+    .analysisWin$n.b1.lockengine configure -relief raised -state disabled
     
     button $w.b1.line -image tb_addvar -height 24 -width 24 -command "addAnalysisVariation $n"
     ::utils::tooltip::Set $w.b1.line $::tr(AddVariation)
@@ -1790,21 +1782,15 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     
     button $w.b1.move -image tb_addmove -command "makeAnalysisMove $n"
     ::utils::tooltip::Set $w.b1.move $::tr(AddMove)
-    
-    if {$analysis(uci$n)} {
-        set state readonly
-    } else  {
-        set state disabled
-    }
-    
-    spinbox $w.b1.multipv -from 1 -to 8 -increment 1 -textvariable analysis(multiPVCount$n) -state $state -width 2 \
+
+    spinbox $w.b1.multipv -from 1 -to 8 -increment 1 -textvariable analysis(multiPVCount$n) -state disabled -width 2 \
             -command "changePVSize $n"
     ::utils::tooltip::Set $w.b1.multipv $::tr(Lines)
     
     # add a button to start/stop engine analysis
-    button $w.b1.bStartStop -image tb_pause -command "toggleEngineAnalysis $n"
-    ::utils::tooltip::Set $w.b1.bStartStop "$::tr(StopEngine) (F[expr 3 + $n])"
-    
+    button $w.b1.bStartStop -image tb_eng_on -command "toggleEngineAnalysis $n"
+    ::utils::tooltip::Set $w.b1.bStartStop "$::tr(StartEngine) (F[expr 3 + $n])"
+
     if {$n == 1} {
         set ::finishGameMode 0
         button $w.b1.bFinishGame -image tb_finish_off -command "toggleFinishGame $n" -relief flat
@@ -1867,61 +1853,30 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     $w.text tag configure small -font font_Small
     $w.hist.text tag configure blue -foreground blue -lmargin2 [font measure font_Fixed "xxxxxxxxxxxx"]
     $w.hist.text tag configure gray -foreground gray
+    if {$autostart != 0} {
     $w.text insert end "Please wait a few seconds for engine initialisation (with some engines, you will not see any analysis \
             until the board changes. So if you see this message, try changing the board \
             by moving backward or forward or making a new move.)" small
+    }
     $w.text configure -state disabled
     bind $w <Destroy> "destroyAnalysisWin $n"
     bind $w <Configure> "recordWinSize $w"
     bind $w <Escape> "focus .; destroy $w"
     bind $w <Key-a> "$w.b1.bStartStop invoke"
     wm minsize $w 25 0
-    
+    ::createToplevelFinalize $w
+
+    set analysis(onUciOk$n) "onUciOk $n $w.b1.multipv $autostart [list [ lindex $engineData 8 ]]"
     if {$analysis(uci$n)} {
         fileevent $analysis(pipe$n) readable "::uci::processAnalysisInput $n"
     } else  {
         fileevent $analysis(pipe$n) readable "processAnalysisInput $n"
     }
     after 1000 "checkAnalysisStarted $n"
-    
-    # finish MultiPV spinbox configuration
-    if {$analysis(uci$n)} {
-        # find UCI engine MultiPV capability
-        while { ! $analysis(uciok$n) } { ;# done after uciok
-            update
-            after 200
-        }
-        set hasMultiPV 0
-        foreach opt $analysis(uciOptions$n) {
-            if { [lindex $opt 0] == "MultiPV" } {
-                set hasMultiPV 1
-                set min [lindex $opt 1]
-                set max [lindex $opt 2]
-                if {$min == ""} { set min 1}
-                if {$max == ""} { set max 8}
-                break
-            }
-        }
-        set current -1
-        set options  [ lindex $engineData 8 ]
-        foreach opt $options {
-            if {[lindex $opt 0] == "MultiPV"} { set current [lindex $opt 1] ; break }
-        }
-        if {$current == -1} { set current 1 }
-        set analysis(multiPVCount$n) $current
-        #    changePVSize $n
-        catch {
-            if { $hasMultiPV } {
-                $w.b1.multipv configure -from $min -to $max -state readonly
-            } else  {
-                $w.b1.multipv configure -from 1 -to 1 -state disabled
-            }
-        }
-    } ;# end of MultiPV spinbox configuration
-    
+
     # We hope the engine is correctly started at that point, so we can send the first analyze command
     # this problem only happens with winboard engine, as we don't know when they are ready
-    if { !$analysis(uci$n) } {
+    if { !$analysis(uci$n) && $autostart != 0 } {
         initialAnalysisStart $n
     }
     # necessary on windows because the UI sometimes starves, also keep latest priority setting
@@ -1936,6 +1891,23 @@ proc makeAnalysisWin { {n 1} {index -1} } {
     }
     
 }
+
+proc onUciOk {{n} {multiPv_spin} {autostart} {uci_options}} {
+    foreach opt $::analysis(uciOptions$n) {
+        if { [lindex $opt 0] == "MultiPV" } {
+            set min [lindex $opt 1]
+            set max [lindex $opt 2]
+            $multiPv_spin configure -from $min -to $max -state normal
+            break
+        }
+    }
+    ::uci::sendUCIoptions $n $uci_options
+
+    if {$autostart} { startEngineAnalysis $n }
+}
+
+
+
 ################################################################################
 #
 ################################################################################
@@ -2069,7 +2041,7 @@ proc initialAnalysisStart {n} {
         after 200 initialAnalysisStart $n
         return
     }
-    after 200 startAnalyzeMode $n 1
+    after 200 startEngineAnalysis $n 1
 }
 ################################################################################
 # processAnalysisInput (only for win/xboard engines)
@@ -2496,7 +2468,7 @@ proc stopEngineAnalysis { {n 1} } {
         set b ".analysisWin$n.b1.bStartStop"
 
         stopAnalyzeMode $n
-        $b configure -image tb_play
+        $b configure -image tb_eng_on
         ::utils::tooltip::Set $b "$::tr(StartEngine)"
         # reset lock mode and disable lock button
         set analysis(lockEngine$n) 0
@@ -2530,23 +2502,7 @@ proc toggleEngineAnalysis { { n 1 } { force 0 } } {
 ################################################################################
 proc startAnalyzeMode {{n 1} {force 0}} {
     global analysis
-    
-    # don't start analysis mode when restoring the default layout in docked mode
-    if { $::docking::USE_DOCKING && $::docking::restore_running } {
-        set b ".analysisWin$n.b1.bStartStop"
-        $b configure -image tb_play
-        ::utils::tooltip::Set $b "$::tr(StartEngine)"
-        # reset lock mode and disable lock button
-        set analysis(lockEngine$n) 0
-        toggleLockEngine $n
-        .analysisWin$n.b1.lockengine configure -relief raised
-        .analysisWin$n.b1.lockengine configure -state disabled
-        set t .analysisWin$n.text
-        $t configure -state normal
-        $t delete 0.0 end
-        return
-    }
-    
+
     # Check that the engine has not already had analyze mode started:
     if {$analysis(analyzeMode$n) && ! $force } { return }
     set analysis(analyzeMode$n) 1

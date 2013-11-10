@@ -32,6 +32,10 @@ proc ::recentFiles::save {{reportError 0}} {
     puts $f "set recentFiles($i) [list [set recentFiles($i)]]"
     puts $f ""
   }
+  if {[info exists ::recentSort]}  {
+    puts $f "set ::recentSort [list $::recentSort]"
+  }
+  ::file::autoLoadBases.save $f
   close $f
 }
 

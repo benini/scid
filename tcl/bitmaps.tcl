@@ -92,7 +92,7 @@ proc setPieceFont {font} {
 }
 
 proc InitImg {} {
-	global scidImgDir boardStyle boardStyles
+	global scidImgDir boardStyle boardStyles textureSquare
 
 	#Search available piece sets
 	set boardStyles {}

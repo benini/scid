@@ -210,37 +210,7 @@ proc toggleCoords {} {
     ::board::coords .main.board
 }
 
-ttk::frame .main.fbutton.button.space3 -width 15
-button .main.fbutton.button.flip -image tb_flip -takefocus 0 \
-        -command "::board::flip .main.board"
 
-button .main.fbutton.button.coords -image tb_coords -takefocus 0 -command toggleCoords
-bind $dot_w <KeyPress-0> toggleCoords
-
-button .main.fbutton.button.stm -image tb_stm -takefocus 0 -command toggleSTM
-
-proc toggleSTM {} {
-    global boardSTM
-    set boardSTM [expr {1 - $boardSTM} ]
-    ::board::stm .main.board
-}
-
-button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
-button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
-button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
-button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
-button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
-
-foreach i {start back forward end exitVar addVar comment autoplay flip coords stm trial intoVar hgame_prev hgame_next} {
-    .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
-    bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
-    bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
-}
-
-pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
-        .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.comment .main.fbutton.button.space2 \
-        .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
-        .main.fbutton.button.stm .main.fbutton.button.hgame_prev .main.fbutton.button.hgame_next -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
 
 ############################################################
@@ -255,86 +225,6 @@ proc toggleShowMaterial {} {
     updateBoard
 }
 
-::board::new .main.board $boardSize "showmat"
-
-#.main.board.bd configure -relief solid -border 2
-::board::showMarks .main.board 1
-if {$boardCoords} {
-    ::board::coords .main.board
-}
-if {$boardSTM} {
-    ::board::stm .main.board
-}
-
-if { ! $::gameInfo(showMaterial) } {
-    grid remove .main.board.mat
-}
-
-# .gameInfo is the game information widget:
-#
-autoscrollframe .main.gameInfoFrame text .main.gameInfo
-.main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
-::htext::init .main.gameInfo
-
-# Right-mouse button menu for gameInfo frame:
-menu .main.gameInfo.menu -tearoff 0
-
-.main.gameInfo.menu add checkbutton -label GInfoHideNext \
-        -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
-        -command { toggleShowMaterial }
-
-.main.gameInfo.menu add checkbutton -label GInfoFEN \
-        -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoMarks \
-        -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoWrap \
-        -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoFullComment \
-        -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoPhotos \
-        -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-        -command {updatePlayerPhotos -force}
-
-.main.gameInfo.menu add separator
-
-.main.gameInfo.menu add radiobutton -label GInfoTBNothing \
-        -variable gameInfo(showTB) -value 0 -command updateBoard
-
-.main.gameInfo.menu add radiobutton -label GInfoTBResult \
-        -variable gameInfo(showTB) -value 1 -command updateBoard
-
-.main.gameInfo.menu add radiobutton -label GInfoTBAll \
-        -variable gameInfo(showTB) -value 2 -command updateBoard
-
-.main.gameInfo.menu add separator
-
-.main.gameInfo.menu add command -label GInfoDelete -command {
-    catch {sc_game flag delete [sc_game number] invert}
-    updateBoard
-    ::windows::gamelist::Refresh
-}
-
-.main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
-menu .main.gameInfo.menu.mark
-foreach flag $maintFlaglist {
-    .main.gameInfo.menu.mark add command -label "" -command "
-    catch {sc_game flag $flag \[sc_game number\] invert}
-    updateBoard
-    ::windows::gamelist::Refresh
-    "
-}
-
-bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
-# alternate code that may work better on MacOS ?
-# bind .main.gameInfo <ButtonPress-$::MB3> ".main.gameInfo.menu post %X %Y"
-bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
-
 # MouseWheel in main window:
 proc main_mousewheelHandler {direction} {
     if {$direction < 0} {
@@ -343,7 +233,6 @@ proc main_mousewheelHandler {direction} {
         ::move::Forward
     }
 }
-bindMouseWheel .main "main_mousewheelHandler"
 
 # setBoard:
 #   Resets the squares of the board according to the board string
@@ -718,13 +607,6 @@ proc updateGameInfo {} {
     .main.gameInfo configure -state disabled
     updatePlayerPhotos
 }
-
-# Set up player photos:
-
-image create photo photoW
-image create photo photoB
-label .main.photoW -background white -image photoW -anchor ne
-label .main.photoB -background white -image photoB -anchor ne
 
 # readPhotoFile executed once at startup for each SPF file. Loads SPI file if it exists.
 # Otherwise it generates index information and tries to write SPI file to disk (if it can be done)
@@ -1632,3 +1514,381 @@ proc undoFeature {action} {
         }
     }
 }
+
+################################################################################
+# In docked mode, resize board automatically
+################################################################################
+proc resizeMainBoard {} {
+  if { ! $::docking::USE_DOCKING } { return }
+
+  if { $::autoResizeBoard } {
+    set availw [ expr [winfo width .main.board] - [winfo reqwidth .main.board] ]
+    set availh [ lindex [grid bbox .main 0 4] 3]
+    if {$availh == 0} { set availh [expr 1 + [winfo height .fdockmain] - [lindex [grid bbox .main] 3] ] }
+
+    set oldSize [::board::size .main.board]
+    if {$availh < $availw} {
+      set maxSize [ expr $oldSize + $availh / 8]
+    } else  {
+      set maxSize [ expr $oldSize + $availw / 8]
+    }
+
+    set newSize [lindex $::boardSizes 0]
+    foreach size $::boardSizes {
+      if {$size > $maxSize} { break; }
+      set newSize $size
+    }
+
+    if {$newSize != $oldSize} {
+      set restore_bind "bind .main <Configure> [bind .main <Configure>]"
+      bind .main <Configure> {}
+      ::board::resize2 .main.board $newSize
+      set ::boardSize [::board::size .main.board]
+      update idletasks
+      after idle "$restore_bind"
+    }
+  }
+}
+################################################################################
+# sets visibility of gameInfo panel at the bottom of main board
+proc toggleGameInfo {} {
+  if {$::showGameInfo} {
+    grid .main.gameInfoFrame -row 3 -column 0 -sticky nsew
+  } else  {
+    grid forget .main.gameInfoFrame
+  }
+  updateGameInfo
+  update idletasks
+}
+################################################################################
+
+#TODO: proc CreateMain
+::board::new .main.board $boardSize "showmat"
+
+#.main.board.bd configure -relief solid -border 2
+::board::showMarks .main.board 1
+if {$boardCoords} {
+    ::board::coords .main.board
+}
+if {$boardSTM} {
+    ::board::stm .main.board
+}
+
+if { ! $::gameInfo(showMaterial) } {
+    grid remove .main.board.mat
+}
+
+# .gameInfo is the game information widget:
+#
+autoscrollframe .main.gameInfoFrame text .main.gameInfo
+.main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
+::htext::init .main.gameInfo
+
+# Right-mouse button menu for gameInfo frame:
+menu .main.gameInfo.menu -tearoff 0
+
+.main.gameInfo.menu add checkbutton -label GInfoHideNext \
+        -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
+
+.main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
+        -command { toggleShowMaterial }
+
+.main.gameInfo.menu add checkbutton -label GInfoFEN \
+        -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
+
+.main.gameInfo.menu add checkbutton -label GInfoMarks \
+        -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
+
+.main.gameInfo.menu add checkbutton -label GInfoWrap \
+        -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
+
+.main.gameInfo.menu add checkbutton -label GInfoFullComment \
+        -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
+
+.main.gameInfo.menu add checkbutton -label GInfoPhotos \
+        -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+        -command {updatePlayerPhotos -force}
+
+.main.gameInfo.menu add separator
+
+.main.gameInfo.menu add radiobutton -label GInfoTBNothing \
+        -variable gameInfo(showTB) -value 0 -command updateBoard
+
+.main.gameInfo.menu add radiobutton -label GInfoTBResult \
+        -variable gameInfo(showTB) -value 1 -command updateBoard
+
+.main.gameInfo.menu add radiobutton -label GInfoTBAll \
+        -variable gameInfo(showTB) -value 2 -command updateBoard
+
+.main.gameInfo.menu add separator
+
+.main.gameInfo.menu add command -label GInfoDelete -command {
+    catch {sc_game flag delete [sc_game number] invert}
+    updateBoard
+    ::windows::gamelist::Refresh
+}
+
+.main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
+menu .main.gameInfo.menu.mark
+foreach flag $maintFlaglist {
+    .main.gameInfo.menu.mark add command -label "" -command "
+    catch {sc_game flag $flag \[sc_game number\] invert}
+    updateBoard
+    ::windows::gamelist::Refresh
+    "
+}
+
+bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
+# alternate code that may work better on MacOS ?
+# bind .main.gameInfo <ButtonPress-$::MB3> ".main.gameInfo.menu post %X %Y"
+bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
+bindMouseWheel .main "main_mousewheelHandler"
+
+# Set up player photos:
+image create photo photoW
+image create photo photoB
+label .main.photoW -background white -image photoW -anchor ne
+label .main.photoB -background white -image photoB -anchor ne
+
+#TODO: properly group toolbar code
+proc toggleSTM {} {
+    global boardSTM
+    set boardSTM [expr {1 - $boardSTM} ]
+    ::board::stm .main.board
+}
+
+ttk::frame .main.fbutton
+ttk::frame .main.fbutton.button -relief raised -border 1
+button .main.fbutton.button.start -image tb_start -command ::move::Start
+button .main.fbutton.button.back -image tb_prev -command ::move::Back
+button .main.fbutton.button.forward -image tb_next -command ::move::Forward
+button .main.fbutton.button.end -image tb_end -command ::move::End
+bind .main.fbutton.button.end <Button-$::MB3> ::tactics::findBestMove
+ttk::frame .main.fbutton.button.space -width 15
+# The go-into-variation button is a menubutton:
+menubutton .main.fbutton.button.intoVar -image tb_invar -menu .main.fbutton.button.intoVar.menu -relief raised
+menu .main.fbutton.button.intoVar.menu -tearoff 0 -font font_Regular
+button .main.fbutton.button.exitVar -image tb_outvar \
+    -command {::move::ExitVar }
+button .main.fbutton.button.addVar -image tb_addvar \
+    -command {sc_var create; updateBoard -pgn -animate}
+ttk::frame .main.fbutton.button.space2 -width 15
+button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
+button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
+button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
+ttk::frame .main.fbutton.button.space3 -width 15
+button .main.fbutton.button.flip -image tb_flip -takefocus 0 \
+        -command "::board::flip .main.board"
+button .main.fbutton.button.coords -image tb_coords -takefocus 0 -command toggleCoords
+bind $dot_w <KeyPress-0> toggleCoords
+button .main.fbutton.button.stm -image tb_stm -takefocus 0 -command toggleSTM
+button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
+button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
+
+foreach i {start back forward end exitVar addVar comment autoplay flip coords stm trial intoVar hgame_prev hgame_next} {
+    .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
+    bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
+    bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
+}
+
+pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
+        .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.comment .main.fbutton.button.space2 \
+        .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
+        .main.fbutton.button.stm .main.fbutton.button.hgame_prev .main.fbutton.button.hgame_next -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+
+set tb .main.tb
+ttk::frame $tb -relief raised -border 1
+button $tb.new -image tb_new -command ::file::New
+button .main.tb.open -image tb_open -command ::file::Open
+button .main.tb.save -image tb_save -command {
+  if {[sc_game number] != 0} {
+    #busyCursor .
+    gameReplace
+    # catch {.save.buttons.save invoke}
+    #unbusyCursor .
+  } else {
+    gameAdd
+  }
+}
+button .main.tb.close -image tb_close -command ::file::Close
+button .main.tb.finder -image tb_finder -command ::file::finder::Open
+menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu
+menu .main.tb.bkm.menu
+bind $dot_w <Control-b> ::bookmarks::PostMenu
+bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
+
+
+ttk::frame .main.tb.space1 -width 12
+button .main.tb.cut -image tb_cut -command ::game::Clear
+button .main.tb.copy -image tb_copy \
+    -command {catch {sc_clipbase copy}; updateBoard}
+button .main.tb.paste -image tb_paste \
+    -command {catch {sc_clipbase paste}; updateBoard -pgn}
+ttk::frame .main.tb.space2 -width 12
+button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
+button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
+ttk::frame .main.tb.space3 -width 12
+button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset
+button .main.tb.bsearch -image tb_bsearch -command ::search::board
+button .main.tb.hsearch -image tb_hsearch -command ::search::header
+button .main.tb.msearch -image tb_msearch -command ::search::material
+ttk::frame .main.tb.space4 -width 12
+button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open
+button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open
+button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose
+button .main.tb.tmt -image tb_tmt -command ::tourney::toggle
+button .main.tb.maint -image tb_maint -command ::maint::OpenClose
+button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose
+button .main.tb.tree -image tb_tree -command ::tree::make
+button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin
+button .main.tb.engine -image tb_engine -command makeAnalysisWin
+button .main.tb.help -image tb_help -command {helpWindow Index}
+
+foreach i {new open save close finder bkm cut copy paste gprev gnext \
+      rfilter bsearch hsearch msearch \
+      switcher glist pgn tmt maint eco tree crosst engine help} {
+  .main.tb.$i configure -takefocus 0 -relief flat -border 1 -anchor n -highlightthickness 0
+  bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
+  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; statusBarRestore %W; break"
+}
+
+#pack .main.tb -side top -fill x -before .button
+
+proc configToolbar {} {
+  set w .tbconfig
+  toplevel $w
+  wm title $w "Scid: [tr OptionsToolbar]"
+
+  array set ::toolbar_temp [array get ::toolbar]
+  pack [ttk::frame $w.f1] -side top -fill x
+  foreach i {new open save close finder bkm} {
+    checkbutton $w.f1.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
+        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    pack $w.f1.$i -side left -ipadx 2 -ipady 2
+  }
+  pack [ttk::frame $w.f2] -side top -fill x
+  foreach i {gprev gnext} {
+    checkbutton $w.f2.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
+        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    pack $w.f2.$i -side left -ipadx 1 -ipady 1
+  }
+  pack [ttk::frame $w.f3] -side top -fill x
+  foreach i {cut copy paste} {
+    checkbutton $w.f3.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
+        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    pack $w.f3.$i -side left -ipadx 1 -ipady 1
+  }
+  pack [ttk::frame $w.f4] -side top -fill x
+  foreach i {rfilter bsearch hsearch msearch} {
+    checkbutton $w.f4.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
+        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    pack $w.f4.$i -side left -ipadx 1 -ipady 1
+  }
+  pack [ttk::frame $w.f5] -side top -fill x
+  foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
+    checkbutton $w.f5.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
+        -variable toolbar_temp($i) -relief solid -borderwidth 1
+    pack $w.f5.$i -side left -ipadx 1 -ipady 1
+  }
+
+  addHorizontalRule $w
+  pack [ttk::frame $w.b] -side bottom -fill x
+  button $w.on -text "+ [::utils::string::Capital $::tr(all)]" -command {
+    foreach i [array names toolbar_temp] { set toolbar_temp($i) 1 }
+  }
+  button $w.off -text "- [::utils::string::Capital $::tr(all)]" -command {
+    foreach i [array names toolbar_temp] { set toolbar_temp($i) 0 }
+  }
+  ttk::button $w.ok -text "OK" -command {
+    array set toolbar [array get toolbar_temp]
+    catch {grab release .tbconfig}
+    destroy .tbconfig
+    redrawToolbar
+  }
+  ttk::button $w.cancel -text $::tr(Cancel) \
+      -command "catch {grab release $w}; destroy $w"
+  pack $w.cancel $w.ok -side right -padx 2
+  pack $w.on $w.off -side left -padx 2
+  catch {grab $w}
+}
+
+proc redrawToolbar {} {
+  global toolbar
+  foreach i [winfo children .main.tb] { pack forget $i }
+  set seenAny 0
+  set seen 0
+  foreach i {new open save close finder bkm} {
+    if {$toolbar($i)} {
+      set seen 1; set seenAny 1
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+    }
+  }
+  if {$seen} { pack .main.tb.space1 -side left }
+  set seen 0
+  foreach i {gprev gnext} {
+    if {$toolbar($i)} {
+      set seen 1; set seenAny 1
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+    }
+  }
+  if {$seen} { pack .main.tb.space2 -side left }
+  set seen 0
+  foreach i {cut copy paste} {
+    if {$toolbar($i)} {
+      set seen 1; set seenAny 1
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+    }
+  }
+  if {$seen} { pack .main.tb.space3 -side left }
+  set seen 0
+  foreach i {rfilter bsearch hsearch msearch} {
+    if {$toolbar($i)} {
+      set seen 1; set seenAny 1
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+    }
+  }
+  if {$seen} { pack .main.tb.space4 -side left }
+  set seen 0
+  foreach i {switcher glist pgn tmt maint eco tree crosst engine} {
+    if {$toolbar($i)} {
+      set seen 1; set seenAny 1
+      pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
+    }
+  }
+  if {$seenAny} {
+    grid .main.tb -row 0 -column 0 -columnspan 3 -sticky we
+  } else {
+    grid forget .main.tb
+  }
+}
+
+proc setToolbar {x} {
+  if {$x} {
+    grid .main.tb -row 0 -column 0 -columnspan 3 -sticky we
+  } else {
+    grid forget .main.tb
+  }
+}
+
+# Set toolbar help status messages:
+foreach {b m} {
+  new FileNew open FileOpen finder FileFinder
+  save GameReplace close FileClose bkm FileBookmarks
+  gprev GamePrev gnext GameNext
+  cut GameNew copy EditCopy paste EditPaste
+  rfilter SearchReset bsearch SearchCurrent
+  hsearch SearchHeader msearch SearchMaterial
+  switcher WindowsSwitcher glist WindowsGList pgn WindowsPGN tmt WindowsTmt
+  maint WindowsMaint eco WindowsECO tree WindowsTree crosst ToolsCross
+  engine ToolsAnalysis
+} {
+  set helpMessage(.main.tb.$b) $m
+  # ::utils::tooltip::Set $tb.$b $m
+}
+set helpMessage(.main.fbutton.button.addVar) EditAdd
+set helpMessage(.main.fbutton.button.trial) EditTrial
+
+
+
+
+##############################

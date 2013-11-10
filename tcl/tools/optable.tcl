@@ -130,6 +130,8 @@ proc ::optable::makeReportWin {args} {
     sc_progressBar $w.c1 bar 401 21 time
     busyCursor .
   }
+
+  sc_search board RESET Exact false 0
   set newTreeData [sc_tree search -time 0 -epd 0]
   if {$showProgress} {
     if {$::optable::_interrupt} {

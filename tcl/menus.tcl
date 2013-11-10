@@ -550,8 +550,7 @@ $m  add checkbutton -label WindowsComment -var commentWin -command makeCommentWi
 bind $dot_w <Control-e> makeCommentWin
 set helpMessage($m,[incr menuindex]) WindowsComment
 
-$m  add checkbutton -label WindowsGList \
-    -variable ::windows::gamelist::isOpen -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
+$m  add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
 bind $dot_w <Control-l> ::windows::gamelist::Open
 set helpMessage($m,[incr menuindex]) WindowsGList
 
@@ -920,7 +919,7 @@ proc setTacticsBasesDir {} {
 }
 
 proc options.save {varname} {
-  if {![info exist ::autosave_opt] || [lsearch -exact $::autosave_opt $varname] == -1} {
+  if {![info exists ::autosave_opt] || [lsearch -exact $::autosave_opt $varname] == -1} {
     lappend ::autosave_opt $varname
   }
 }
@@ -952,11 +951,11 @@ $m add command -label OptionsSave -command {
           ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks \
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat myPlayerNames \
           tree(order) tree(autoSave) optionsAutoSave ::tree::mask::recentMask \
-          ecoFile suggestMoves showVarPopup showVarArrows glistSize glexport \
+          ecoFile suggestMoves showVarPopup showVarArrows \
           blunderThreshold autoplayDelay animateDelay boardCoords boardSTM \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
-          askToReplaceMoves ::windows::switcher::vertical locale(numeric) \
+          askToReplaceMoves locale(numeric) \
           spellCheckFile autoRaise autoIconify windowsDock showGameInfo autoLoadLayout \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
@@ -995,16 +994,6 @@ $m add command -label OptionsSave -command {
     foreach i [lsort [array names winX]] {
       puts $optionF "set winX($i)  [expr $winX($i)]"
       puts $optionF "set winY($i)  [expr $winY($i)]"
-    }
-    puts $optionF ""
-    foreach i [lsort [array names winWidth_docked]] {
-      puts $optionF "set winWidth_docked($i)  [expr $winWidth_docked($i)]"
-      puts $optionF "set winHeight_docked($i) [expr $winHeight_docked($i)]"
-    }
-    puts $optionF ""
-    foreach i [lsort [array names winX_docked]] {
-      puts $optionF "set winX_docked($i)  [expr $winX_docked($i)]"
-      puts $optionF "set winY_docked($i)  [expr $winY_docked($i)]"
     }
     puts $optionF ""
     puts $optionF "set analysisCommand [list $analysisCommand]"
@@ -1082,7 +1071,7 @@ $m add command -label OptionsSave -command {
     }
 
     # Save var that was added with options.save()
-    if {[info exist ::autosave_opt]} {
+    if {[info exists ::autosave_opt]} {
       puts $optionF ""
       puts $optionF "set ::autosave_opt [list $::autosave_opt]"
       foreach {var} $::autosave_opt {
@@ -1493,7 +1482,7 @@ proc updateMenuStates {} {
     
     # Save add button:
     set state normal
-    if {$isReadOnly  ||  $::trialMode} {set state disabled}
+    if { $::trialMode } {set state disabled}
     $m.game entryconfig [tr GameAdd] -state $state
     
     # Save replace button:

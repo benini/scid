@@ -15,7 +15,7 @@ MINGW_BIN = C:\MinGW\bin
 TCL_DIR = C:\Tcl
 
 # Tcl/Tk version: it should be "83" for Tcl/Tk 8.3, etc.
-TCL_VERSION = 85
+TCL_VERSION = 86
 
 
 ### Compiler and linker:

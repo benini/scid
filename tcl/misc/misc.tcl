@@ -405,6 +405,24 @@ proc closeProgressWindow {} {
   grab release $w
   destroy $w
 }
+
+proc CreateSelectDBWidget {{w} {varname} {ref_base ""}} {
+  set listbases {}
+  if {$ref_base == ""} { set ref_base [sc_base current] }
+  set selected 0
+  for {set i 1} {$i <= [sc_base count total]} {incr i} {
+    if {[sc_base inUse $i]} {
+      set fname [file tail [sc_base filename $i]]
+      if {$i == $ref_base} { set selected [llength $listbases] }
+      lappend listbases "$i: $fname"
+    }
+  }
+  ttk::combobox $w.lb -textvariable $varname -values $listbases
+  $w.lb current $selected
+  grid $w.lb -sticky news
+  grid columnconfigure $w 0 -weight 1
+}
+
 ################################################################################
 # clock widget
 ################################################################################

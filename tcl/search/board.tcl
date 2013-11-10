@@ -5,12 +5,11 @@
 set searchInVars 0
 set sBoardIgnoreCols 0
 set sBoardSearchType Exact
-set sBoardSearchRefBase 0
 
 # ::search::board
 #   Opens the search window for the current board position.
 #
-proc ::search::board {} {
+proc ::search::board {{ref_base ""}} {
   global searchInVars sBoardType sBoardIgnoreCols
   
   set w .sb
@@ -26,7 +25,11 @@ proc ::search::board {} {
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.search invoke"
   bind $w <F1> { helpWindow Searches Board }
-  
+
+  pack [ttk::frame $w.refdb] -side top -fill x
+  CreateSelectDBWidget "$w.refdb" "refDatabaseB" "$ref_base"
+  addHorizontalRule $w
+
   ttk::label $w.type -textvar ::tr(SearchType) -font font_Bold -anchor center
   pack $w.type -side top -expand 1 -fill x
   pack [ttk::frame $w.g] -side top -fill x
@@ -39,22 +42,6 @@ proc ::search::board {} {
     grid $w.g.$i -row $row -column 0 -sticky w
     incr row
   }
-  addHorizontalRule $w
-  
-  pack [ttk::frame $w.refdb] -side top -fill x
-  ttk::checkbutton $w.refdb.cb -textvar ::tr(SearchInRefDatabase) -variable sBoardSearchRefBase
-  set listbases {}
-  # populate the combobox
-  for {set i 1} {$i <= [sc_base count total]} {incr i} {
-    if {[sc_base inUse $i]} {
-      set fname [file tail [sc_base filename $i]]
-      lappend listbases "$i $fname"
-    }
-  }
-  ttk::combobox $w.refdb.lb -textvariable refDatabase -values $listbases
-  $w.refdb.lb current 0
-  
-  pack $w.refdb.cb $w.refdb.lb -side left
   addHorizontalRule $w
   
   ::search::addFilterOpFrame $w
@@ -83,27 +70,16 @@ proc ::search::board {} {
     .sb.b.stop configure -state normal
     grab .sb.b.stop
     sc_progressBar .sb.fprogress.progress bar 301 21 time
-    
-    set base ""
-    if { $sBoardSearchRefBase } {
-      set base [lindex $refDatabase 0]
-      set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
-    } else  {
-      set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols ]
-    }
+
+    set base [lindex $refDatabaseB 0]
+    set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
+
     unbusyCursor .
     grab release .sb.b.stop
     .sb.b.stop configure -state disabled
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sb.status configure -text $str
-    set gamesFound [lindex $str 0]
-    if { $sBoardSearchRefBase && $gamesFound != 0} {
-      ::file::SwitchToBase $base 0
-      #TODO: "sc_filter first" result is unsorted (the lowest gamenumber)
-      ::game::Load [sc_filter first]
-    } else {
-      ::notify::DatabaseChanged
-    }
+    ::notify::DatabaseChanged
   }
   dialogbutton $w.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.b2.vars $w.b2.flip -side left -pady 2 -padx 5

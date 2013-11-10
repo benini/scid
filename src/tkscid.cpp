@@ -8,13 +8,26 @@
 //
 //  Notice:     Copyright (c) 1999-2004 Shane Hudson.  All rights reserved.
 //              Copyright (c) 2006-2007 Pascal Georges
+//              Copyright (c) 2013 Benini Fulvio
 //
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
+//  Scid is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation.
+//
+//  Scid is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 //
 //////////////////////////////////////////////////////////////////////
 
 
+
 #include "tkscid.h"
+#include "searchpos.h"
 
 #include <errno.h>
 #include <set>
@@ -148,6 +161,10 @@ interruptedProgress () {
 }
 
 
+//TODO: write a better way to report progress
+Tcl_Interp * ti_;
+void progressPosMask(double perc) { Tcl_Eval(ti_, "update"); }
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // recalcFlagCounts:
 //    Updates all precomputed stats about the database: flag counts,
@@ -155,125 +172,10 @@ interruptedProgress () {
 void
 recalcFlagCounts (scidBaseT * basePtr)
 {
-    scidStatsT * stats = &(basePtr->stats);
-    uint i;
-
-    // Zero out all stats:
-    for (i = 0; i < IDX_NUM_FLAGS; i++) { stats->flagCount[i] = 0; }
-    stats->nRatings = 0;
-    stats->sumRatings = 0;
-    stats->minRating = 0;
-    stats->maxRating = 0;
-    stats->minDate = ZERO_DATE;
-    stats->maxDate = ZERO_DATE;
-    stats->nYears = 0;
-    stats->sumYears = 0;
-    for (i=0; i < NUM_RESULT_TYPES; i++) {
-        stats->nResults[i] = 0;
-    }
-    for (i=0; i < 1; i++) {
-        stats->ecoCount0[i].count = 0;
-        stats->ecoCount0[i].results[RESULT_White] = 0;
-        stats->ecoCount0[i].results[RESULT_Black] = 0;
-        stats->ecoCount0[i].results[RESULT_Draw] = 0;
-        stats->ecoCount0[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 5; i++) {
-        stats->ecoCount1[i].count = 0;
-        stats->ecoCount1[i].results[RESULT_White] = 0;
-        stats->ecoCount1[i].results[RESULT_Black] = 0;
-        stats->ecoCount1[i].results[RESULT_Draw] = 0;
-        stats->ecoCount1[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 50; i++) {
-        stats->ecoCount2[i].count = 0;
-        stats->ecoCount2[i].results[RESULT_White] = 0;
-        stats->ecoCount2[i].results[RESULT_Black] = 0;
-        stats->ecoCount2[i].results[RESULT_Draw] = 0;
-        stats->ecoCount2[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 500; i++) {
-        stats->ecoCount3[i].count = 0;
-        stats->ecoCount3[i].results[RESULT_White] = 0;
-        stats->ecoCount3[i].results[RESULT_Black] = 0;
-        stats->ecoCount3[i].results[RESULT_Draw] = 0;
-        stats->ecoCount3[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 500*26; i++) {
-        stats->ecoCount4[i].count = 0;
-        stats->ecoCount4[i].results[RESULT_White] = 0;
-        stats->ecoCount4[i].results[RESULT_Black] = 0;
-        stats->ecoCount4[i].results[RESULT_Draw] = 0;
-        stats->ecoCount4[i].results[RESULT_None] = 0;
-    }
-    // Read stats from index entry of each game:
-    for (uint gnum=0; gnum < basePtr->numGames; gnum++) {
-        IndexEntry * ie = basePtr->idx->FetchEntry (gnum);
-        stats->nResults[ie->GetResult()]++;
-        eloT elo = ie->GetWhiteElo();
-        if (elo > 0) {
-            stats->nRatings++;
-            stats->sumRatings += elo;
-            if (stats->minRating == 0) { stats->minRating = elo; }
-            if (elo < stats->minRating) { stats->minRating = elo; }
-            if (elo > stats->maxRating) { stats->maxRating = elo; }
-            basePtr->nb->AddElo (ie->GetWhite(), elo);
-        }
-        elo = ie->GetBlackElo();
-        if (elo > 0) {
-            stats->nRatings++;
-            stats->sumRatings += elo;
-            if (stats->minRating == 0) { stats->minRating = elo; }
-            if (elo < stats->minRating) { stats->minRating = elo; }
-            if (elo > stats->maxRating) { stats->maxRating = elo; }
-            basePtr->nb->AddElo (ie->GetBlack(), elo);
-        }
-        dateT date = ie->GetDate();
-        if (gnum == 0) {
-            stats->maxDate = stats->minDate = date;
-        }
-        if (date_GetYear(date) > 0) {
-            if (date < stats->minDate) { stats->minDate = date; }
-            if (date > stats->maxDate) { stats->maxDate = date; }
-            stats->nYears++;
-            stats->sumYears += date_GetYear (date);
-            basePtr->nb->AddDate (ie->GetWhite(), date);
-            basePtr->nb->AddDate (ie->GetBlack(), date);
-        }
-
-        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
-            bool value = ie->GetFlag (1 << flag);
-            if (value) {
-                stats->flagCount[flag]++;
-            }
-        }
-
-        ecoT eco = ie->GetEcoCode();
-        ecoStringT ecoStr;
-        eco_ToExtendedString (eco, ecoStr);
-        uint length = strLength (ecoStr);
-        resultT result = ie->GetResult();
-        if (length >= 3) {
-            uint code = 0;
-            stats->ecoCount0[code].count++;
-            stats->ecoCount0[code].results[result]++;
-            code = ecoStr[0] - 'A';
-            stats->ecoCount1[code].count++;
-            stats->ecoCount1[code].results[result]++;
-            code = (code * 10) + (ecoStr[1] - '0');
-            stats->ecoCount2[code].count++;
-            stats->ecoCount2[code].results[result]++;
-            code = (code * 10) + (ecoStr[2] - '0');
-            stats->ecoCount3[code].count++;
-            stats->ecoCount3[code].results[result]++;
-            if (length >= 4) {
-                code = (code * 26) + (ecoStr[3] - 'a');
-                stats->ecoCount4[code].count++;
-                stats->ecoCount4[code].results[result]++;
-            }
-        }
-    }
+    basePtr->clearStats();
 }
+
+
 
 void
 recalcEstimatedRatings (NameBase * nb)
@@ -373,6 +275,7 @@ int
 scid_InitTclTk (Tcl_Interp * ti)
 {
     if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
+    ti_ = ti;
       
     // Register Scid application-specific commands:
     // CREATE_CMD() is a macro to reduce the clutter of the final two args
@@ -555,6 +458,205 @@ strGetFilterOp (const char * str)
 
 /////////////////////////////////////////////////////////////////////
 ///  DATABASE functions
+template<class TF, class TD>
+const char* scidBaseT::Open (const char* filename, fileModeT mode, TF progressFn, TD progressData) {
+    const char* res = 0;
+
+    idx->SetFileName (filename);
+    nb->SetFileName (filename);
+
+    memoryOnly = false;
+    fileMode = mode;
+    errorT err = idx->OpenIndexFile (fileMode);
+    if (err != OK) {
+        res = "Error opening index file";
+        if (err == ERROR_FileVersion) {
+            res = "Old format Scid file, now out of date.";
+        } else if (err == ERROR_OldScidVersion) {
+            res = "Database version newer than Scid; please upgrade Scid.";
+        }
+    }
+    if (err == OK) {
+        err = nb->ReadNameFile();
+        if (err != OK) res = "Error opening name file.";
+    }
+    if (err == OK) {
+        gfile->Open (filename, fileMode);
+        if (err != OK) res = "Error opening game file.";
+    }
+    if (err == OK) {
+        err = idx->ReadEntireFile (50000, progressFn, progressData);
+        if (err != OK) res = "Error reading index file";
+    }
+    if (err == OK) {
+        err = idx->VerifyFile (nb);
+        //TODO: if the namefile can be fixed, why not fix it right now?
+        if (err != OK) res = "Error: name corruption in index file.\nRun \"scidt -N\" on this database to fix it.";
+    }
+    if (err != OK) {
+        idx->Clear();
+        nb->Clear();
+        gfile->Close();
+        return res;
+    }
+
+    numGames = idx->GetNumGames();
+    strCopy (fileName, filename);
+    strCopy (realFileName, realFileName);
+    inUse = true;
+    gameNumber = -1;
+
+    // Initialise the filter: all games match at move 1 by default.
+    treeFilter->Init(numGames);
+    dbFilter->Init(numGames);
+
+    if (treeCache == NULL) {
+        treeCache = new TreeCache;
+        treeCache->SetCacheSize (SCID_TreeCacheSize);
+        backupCache = new TreeCache;
+        backupCache->SetCacheSize (SCID_BackupCacheSize);
+        backupCache->SetPolicy (TREECACHE_Oldest);
+    }
+
+    treeCache->Clear();
+    backupCache->Clear();
+
+    clearStats();
+
+    // In games with elo == 0 we'll use an estimated ratings from a spellcheck file or from other games
+    recalcEstimatedRatings (nb);
+    for (uint gnum=0; gnum < numGames; gnum++) {
+        IndexEntry * ie = idx->FetchEntry (gnum);
+        eloT elo = ie->GetWhiteElo();
+        if (elo > 0) nb->AddElo (ie->GetWhite(), elo);
+        elo = ie->GetBlackElo();
+        if (elo > 0) nb->AddElo (ie->GetBlack(), elo);
+    }
+
+    return res;
+}
+
+void scidBaseT::computeStats()
+{
+    uint i;
+    // Zero out all stats:
+    for (i = 0; i < IDX_NUM_FLAGS; i++) { stats.flagCount[i] = 0; }
+    stats.nRatings = 0;
+    stats.sumRatings = 0;
+    stats.minRating = 0;
+    stats.maxRating = 0;
+    stats.minDate = ZERO_DATE;
+    stats.maxDate = ZERO_DATE;
+    stats.nYears = 0;
+    stats.sumYears = 0;
+    for (i=0; i < NUM_RESULT_TYPES; i++) {
+        stats.nResults[i] = 0;
+    }
+    for (i=0; i < 1; i++) {
+        stats.ecoCount0[i].count = 0;
+        stats.ecoCount0[i].results[RESULT_White] = 0;
+        stats.ecoCount0[i].results[RESULT_Black] = 0;
+        stats.ecoCount0[i].results[RESULT_Draw] = 0;
+        stats.ecoCount0[i].results[RESULT_None] = 0;
+    }
+    for (i=0; i < 5; i++) {
+        stats.ecoCount1[i].count = 0;
+        stats.ecoCount1[i].results[RESULT_White] = 0;
+        stats.ecoCount1[i].results[RESULT_Black] = 0;
+        stats.ecoCount1[i].results[RESULT_Draw] = 0;
+        stats.ecoCount1[i].results[RESULT_None] = 0;
+    }
+    for (i=0; i < 50; i++) {
+        stats.ecoCount2[i].count = 0;
+        stats.ecoCount2[i].results[RESULT_White] = 0;
+        stats.ecoCount2[i].results[RESULT_Black] = 0;
+        stats.ecoCount2[i].results[RESULT_Draw] = 0;
+        stats.ecoCount2[i].results[RESULT_None] = 0;
+    }
+    for (i=0; i < 500; i++) {
+        stats.ecoCount3[i].count = 0;
+        stats.ecoCount3[i].results[RESULT_White] = 0;
+        stats.ecoCount3[i].results[RESULT_Black] = 0;
+        stats.ecoCount3[i].results[RESULT_Draw] = 0;
+        stats.ecoCount3[i].results[RESULT_None] = 0;
+    }
+    for (i=0; i < 500*26; i++) {
+        stats.ecoCount4[i].count = 0;
+        stats.ecoCount4[i].results[RESULT_White] = 0;
+        stats.ecoCount4[i].results[RESULT_Black] = 0;
+        stats.ecoCount4[i].results[RESULT_Draw] = 0;
+        stats.ecoCount4[i].results[RESULT_None] = 0;
+    }
+    // Read stats from index entry of each game:
+    for (uint gnum=0; gnum < numGames; gnum++) {
+        IndexEntry * ie = idx->FetchEntry (gnum);
+        stats.nResults[ie->GetResult()]++;
+        eloT elo = ie->GetWhiteElo();
+        if (elo > 0) {
+            stats.nRatings++;
+            stats.sumRatings += elo;
+            if (stats.minRating == 0) { stats.minRating = elo; }
+            if (elo < stats.minRating) { stats.minRating = elo; }
+            if (elo > stats.maxRating) { stats.maxRating = elo; }
+            nb->AddElo (ie->GetWhite(), elo);
+        }
+        elo = ie->GetBlackElo();
+        if (elo > 0) {
+            stats.nRatings++;
+            stats.sumRatings += elo;
+            if (stats.minRating == 0) { stats.minRating = elo; }
+            if (elo < stats.minRating) { stats.minRating = elo; }
+            if (elo > stats.maxRating) { stats.maxRating = elo; }
+            nb->AddElo (ie->GetBlack(), elo);
+        }
+        dateT date = ie->GetDate();
+        if (gnum == 0) {
+            stats.maxDate = stats.minDate = date;
+        }
+        if (date_GetYear(date) > 0) {
+            if (date < stats.minDate) { stats.minDate = date; }
+            if (date > stats.maxDate) { stats.maxDate = date; }
+            stats.nYears++;
+            stats.sumYears += date_GetYear (date);
+            nb->AddDate (ie->GetWhite(), date);
+            nb->AddDate (ie->GetBlack(), date);
+        }
+
+        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
+            bool value = ie->GetFlag (1 << flag);
+            if (value) {
+                stats.flagCount[flag]++;
+            }
+        }
+
+        ecoT eco = ie->GetEcoCode();
+        ecoStringT ecoStr;
+        eco_ToExtendedString (eco, ecoStr);
+        uint length = strLength (ecoStr);
+        resultT result = ie->GetResult();
+        if (length >= 3) {
+            uint code = 0;
+            stats.ecoCount0[code].count++;
+            stats.ecoCount0[code].results[result]++;
+            code = ecoStr[0] - 'A';
+            stats.ecoCount1[code].count++;
+            stats.ecoCount1[code].results[result]++;
+            code = (code * 10) + (ecoStr[1] - '0');
+            stats.ecoCount2[code].count++;
+            stats.ecoCount2[code].results[result]++;
+            code = (code * 10) + (ecoStr[2] - '0');
+            stats.ecoCount3[code].count++;
+            stats.ecoCount3[code].results[result]++;
+            if (length >= 4) {
+                code = (code * 26) + (ecoStr[3] - 'a');
+                stats.ecoCount4[code].count++;
+                stats.ecoCount4[code].results[result]++;
+            }
+        }
+    }
+
+    validStats = true;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // base_opened:
@@ -938,8 +1040,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     }
                     if (filter == 0) break;
                 }
-                //TODO: recalcFlagCounts is slow, use only flagType delete
-                //recalcFlagCounts (dbase);
+                dbase->clearStats();
                 return TCL_OK;
             }
         }
@@ -1091,21 +1192,7 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     return setIntResult (ti, base_opened (fname) + 1);
 }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_open_failure: if the opening of a base fails,
-// clean up db entry
-void base_open_failure( int oldBaseNum ) {
-  db->idx->CloseIndexFile();
-  db->idx->Clear();
-  db->nb->Clear();
-  db->gfile->Close();
-  db->inUse = false;
-  db->gameNumber = -1;
-  db->numGames = 0;
-  strCopy (db->fileName, "<empty>");
-  currentBase = oldBaseNum;
-  db = &(dbList[currentBase]);
-}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_open: takes a database name and opens the database.
 //    If either the index file or game file cannot be opened for
@@ -1115,9 +1202,6 @@ void base_open_failure( int oldBaseNum ) {
 int
 sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    bool showProgress = 0;
-    showProgress = startProgressBar();
-
     bool readOnly = false;  // Open database read-only.
     bool fastOpen = false;  // Fast open (no flag counts, etc)
     const char * usage = "Usage: sc_base open [-readonly] [-fast] <filename>";
@@ -1148,104 +1232,18 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Find an empty database slot to use:
-    int oldBaseNum = currentBase;
-    if (db->inUse) {
-        int newBaseNum = findEmptyBase();
-        if (newBaseNum == -1) {
-            return errorResult (ti, "Too many databases are open; close one first.");
-        }
-        currentBase = newBaseNum;
-        db = &(dbList[currentBase]);
-    }
+    int newBaseNum = findEmptyBase();
+    if (newBaseNum == -1) return errorResult (ti, "Too many databases are open; close one first.");
 
-    db->idx->SetFileName (filename);
-    db->nb->SetFileName (filename);
+    startProgressBar();
+    const char* res = dbList[newBaseNum].Open(filename, (readOnly) ? FMODE_ReadOnly : FMODE_Both, base_progress, ti);
+    if (res != 0 && !readOnly) res = dbList[newBaseNum].Open(filename, FMODE_ReadOnly, base_progress, ti);
+    if (res != 0) return errorResult (ti, res);
 
-    db->memoryOnly = false;
-    db->fileMode = FMODE_Both;
-    if (readOnly) { db->fileMode = FMODE_ReadOnly; }
-    errorT err;
-    err = db->idx->OpenIndexFile (db->fileMode);
+    currentBase = newBaseNum;
+    db = &(dbList[newBaseNum]);
 
-    if (err == ERROR_FileOpen  &&  db->fileMode == FMODE_Both) {
-        // Try opening read-only:
-        db->fileMode = FMODE_ReadOnly;
-        err = db->idx->OpenIndexFile (db->fileMode);
-    }
-
-    if (err != OK) {
-        currentBase = oldBaseNum;
-        db = &(dbList[currentBase]);
-        setResult (ti, "Error opening index file");
-        if (err == ERROR_FileVersion) {
-            setResult (ti, "Old format Scid file, now out of date.");
-        }
-        if (err == ERROR_OldScidVersion) {
-            setResult (ti, "Database version newer than Scid; please upgrade Scid.");
-        }
-        return TCL_ERROR;
-    }
-
-    if (db->nb->ReadNameFile() != OK) {
-        base_open_failure( oldBaseNum );
-        return errorResult (ti, "Error opening name file.");
-    }
-
-    err = db->gfile->Open (filename, db->fileMode);
-    if (err == ERROR_FileOpen  &&  db->fileMode == FMODE_Both) {
-        // Try opening read-only:
-        db->fileMode = FMODE_ReadOnly;
-        err = db->gfile->Open (filename, db->fileMode);
-    }
-
-    if (err != OK) {
-        base_open_failure( oldBaseNum );
-        return errorResult (ti, "Error opening game file.");
-    }
-
-    // Read entire index, showing progress every 20,000 games if applicable:
-    if (showProgress) {
-        db->idx->ReadEntireFile (20000, base_progress, (void *) ti);
-    } else {
-      db->idx->ReadEntireFile ();
-    }
-
-    if (db->idx->VerifyFile (db->nb) != OK) {
-        db->idx->CloseIndexFile();
-        return errorResult (ti, "Error: name corruption in index file.\nRun \"scidt -N\" on this database to fix it.");
-    }
-
-    db->numGames = db->idx->GetNumGames();
-
-    // Compute name frequencies, flag counts, etc unless a fast open
-    // was requested:
-    if (! fastOpen) {
-        recalcNameFrequencies (db->nb, db->idx);
-        recalcFlagCounts (db);
-        recalcEstimatedRatings (db->nb);
-    }
-
-    // Initialise the filter: all games match at move 1 by default.
-    db->treeFilter->Init(db->numGames);
-    db->dbFilter->Init(db->numGames);
-
-    strCopy (db->fileName, filename);
-    strCopy (db->realFileName, realFileName);
-    db->inUse = true;
-    db->gameNumber = -1;
-
-    if (db->treeCache == NULL) {
-        db->treeCache = new TreeCache;
-        db->treeCache->SetCacheSize (SCID_TreeCacheSize);
-        db->backupCache = new TreeCache;
-        db->backupCache->SetCacheSize (SCID_BackupCacheSize);
-        db->backupCache->SetPolicy (TREECACHE_Oldest);
-    }
-
-    db->treeCache->Clear();
-    db->backupCache->Clear();
-
-    return setIntResult (ti, currentBase + 1);
+    return setIntResult (ti, newBaseNum + 1);
 }
 
 int
@@ -1407,6 +1405,7 @@ sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     strCopy (basePtr->fileName, "<empty>");
     basePtr->treeCache->Clear();
     basePtr->backupCache->Clear();
+    basePtr->currSearchID++;
     return TCL_OK;
 }
 
@@ -2175,41 +2174,43 @@ sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         basePtr = &(dbList[baseNum - 1]);
     }
 
+    scidStatsT* stats = basePtr->getStats();
+
     if (option == OPT_FLAGS) {
-        appendUintElement (ti, basePtr->stats.flagCount [IDX_FLAG_DELETE]);
-        appendUintElement (ti, basePtr->stats.flagCount [IDX_FLAG_WHITE_OP]);
-        appendUintElement (ti, basePtr->stats.flagCount [IDX_FLAG_BLACK_OP]);
+        appendUintElement (ti, stats->flagCount [IDX_FLAG_DELETE]);
+        appendUintElement (ti, stats->flagCount [IDX_FLAG_WHITE_OP]);
+        appendUintElement (ti, stats->flagCount [IDX_FLAG_BLACK_OP]);
 
     } else if (option == OPT_DATE) {
         // Date information: minimum year, maximum year, and mean year:
-        appendUintElement (ti, date_GetYear (basePtr->stats.minDate));
-        appendUintElement (ti, date_GetYear (basePtr->stats.maxDate));
+        appendUintElement (ti, date_GetYear (stats->minDate));
+        appendUintElement (ti, date_GetYear (stats->maxDate));
         unsigned long long avgYear = 0;
-        if (basePtr->stats.nYears > 0) {
-            avgYear = basePtr->stats.sumYears / basePtr->stats.nYears;
+        if (stats->nYears > 0) {
+            avgYear = stats->sumYears / stats->nYears;
         }
         appendUintElement (ti, avgYear);
 
     } else if (option == OPT_RATING) {
         // Rating information: minimum, maximum, and mean rating:
-        appendUintElement (ti, basePtr->stats.minRating);
-        appendUintElement (ti, basePtr->stats.maxRating);
+        appendUintElement (ti, stats->minRating);
+        appendUintElement (ti, stats->maxRating);
         uint avgRating = 0;
-        if (basePtr->stats.nRatings > 0) {
-            avgRating = basePtr->stats.sumRatings / basePtr->stats.nRatings;
+        if (stats->nRatings > 0) {
+            avgRating = stats->sumRatings / stats->nRatings;
         }
         appendUintElement (ti, avgRating);
 
     } else if (option == OPT_RESULTS) {
         // Result frequencies: 1-0, =-=, 0-1, *
-        appendUintElement (ti, basePtr->stats.nResults[RESULT_White]);
-        appendUintElement (ti, basePtr->stats.nResults[RESULT_Draw]);
-        appendUintElement (ti, basePtr->stats.nResults[RESULT_Black]);
-        appendUintElement (ti, basePtr->stats.nResults[RESULT_None]);
+        appendUintElement (ti, stats->nResults[RESULT_White]);
+        appendUintElement (ti, stats->nResults[RESULT_Draw]);
+        appendUintElement (ti, stats->nResults[RESULT_Black]);
+        appendUintElement (ti, stats->nResults[RESULT_None]);
 
     } else if (strIsPrefix ("flag:", argv[2])) {
         uint flag = IndexEntry::CharToFlag (argv[2][5]);
-        appendUintElement (ti, basePtr->stats.flagCount [flag]);
+        appendUintElement (ti, stats->flagCount [flag]);
 
     } else {
         return InvalidCommand (ti, "sc_base stats", options);
@@ -2224,7 +2225,6 @@ sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-#ifndef WINCE
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_base ecoStats <ECO-prefix>");
     }
@@ -2259,23 +2259,24 @@ sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Invalid ECO prefix");
     }
 
+    scidStatsT* stats = db->getStats();
     ecoStatsT * result = NULL;
     switch (length) {
     case 0:
-        result = &(db->stats.ecoCount0[0]);
+        result = &(stats->ecoCount0[0]);
         break;
     case 1:
-        result = &(db->stats.ecoCount1[index]);
+        result = &(stats->ecoCount1[index]);
         break;
     case 2:
-        result = &(db->stats.ecoCount2[index]);
+        result = &(stats->ecoCount2[index]);
         break;
     case 3:
-        result = &(db->stats.ecoCount3[index]);
+        result = &(stats->ecoCount3[index]);
         break;
     case 4:
     case 5:
-        result = &(db->stats.ecoCount4[index]);
+        result = &(stats->ecoCount4[index]);
         break;
     }
     ASSERT (result != NULL);
@@ -2294,7 +2295,7 @@ sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     } else {
         Tcl_AppendElement (ti, "0.0");
     }
-#endif
+
     return TCL_OK;
 }
 
@@ -4898,7 +4899,6 @@ translateECO (Tcl_Interp * ti, const char * strFrom, DString * dstrTo)
     }
 }
 
-
 //////////////////////////////////////////////////////////////////////
 ///  FILTER functions
 
@@ -4943,10 +4943,6 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_LAST:
         return sc_filter_last (cd, ti, argc, argv);
 
-    case FILTER_NEGATE:
-        if (db->inUse) db->dbFilter->Negate();
-        return TCL_OK;
-
     case FILTER_NEXT:
         return sc_filter_next (cd, ti, argc, argv);
 
@@ -4976,10 +4972,25 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case FILTER_FREQ:
         return sc_filter_freq (dbase, filter, ti, argc, argv);
 
+    case FILTER_NEGATE:
+        filter->Negate();
+        return TCL_OK;
+
     case FILTER_POSMASK:
-        //TODO: "Usage: sc_filter posmask <base> filtername FEN"
-        if (argc > 4) filter->PositionMask(db->treeFilter);
-        else filter->PositionMask(NULL);
+        dbase->currSearchID ++;
+        if (argc > 4) {
+            //TODO: "Usage: sc_filter posmask <base> filtername FEN"
+            //TODO: use Position::ReadFromFEN instead of the current position
+            SearchPos<true> fp(db->game->GetCurrentPos(), progressPosMask);
+            //TODO: use a dedicated filter instead of treeFilter
+            Filter* maskfilter = dbase->treeFilter;
+            if (fp.setFilter(dbase, maskfilter, dbase->currSearchID)) {
+                filter->PositionMask(maskfilter);
+                //TODO: cache the result
+            }
+        } else {
+            filter->PositionMask(NULL);
+        }
         return TCL_OK;
 
     case FILTER_SET:
@@ -8056,53 +8067,54 @@ sc_savegame (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEn
 int
 sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    scidBaseT * dbase = db;
+    if (argc == 4) {
+        dbase = getBase(strGetUnsigned(argv[3]));
+        if (dbase == 0) return errorResult (ti, "Invalid database number.");
+    } else if (argc != 3) {
+        return errorResult (ti, "Usage: sc_game save <gameNumber> [targetbaseId]");
+    }
 
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_game save <gameNumber>");
-    }
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
+    if (dbase->fileMode == FMODE_ReadOnly) {
         return errorResult (ti, errMsgReadOnly(ti));
     }
-    db->bbuf->Empty();
+    dbase->bbuf->Empty();
 
     uint gnum = strGetUnsigned (argv[2]);
-    if (gnum > db->numGames) {
+    if (gnum > dbase->numGames) {
         char tempStr[20];
-        sprintf (tempStr, "%u", db->numGames);
+        sprintf (tempStr, "%u", dbase->numGames);
         Tcl_AppendResult (ti, "Invalid game number; there are only ",
                           tempStr, " games in this database.", NULL);
         return TCL_ERROR;
     }
 
     db->game->SaveState ();
-    if (sc_savegame (ti, db->game, gnum, db) != OK) { return TCL_ERROR; }
-    db->gfile->FlushAll();
+    if (sc_savegame (ti, db->game, gnum, dbase) != OK) { return TCL_ERROR; }
+    dbase->gfile->FlushAll();
     db->game->RestoreState ();
-    if (db->idx->WriteHeader() != OK) {
+    if (dbase->idx->WriteHeader() != OK) {
         return errorResult (ti, "Error writing index file.");
     }
-    if (! db->memoryOnly  &&  db->nb->WriteNameFile() != OK) {
+    if (! dbase->memoryOnly  &&  dbase->nb->WriteNameFile() != OK) {
         return errorResult (ti, "Error writing name file.");
     }
 
-    if (gnum == 0) {
+    if (gnum == 0 && db == dbase) {
         // Saved new game, so set gameNumber to the saved game number:
         db->gameNumber = db->numGames - 1;
     }
     db->gameAltered = false;
 
     // We must ensure that the Index is still all in memory:
-    db->idx->ReadEntireFile();
+    dbase->idx->ReadEntireFile();
 
-    recalcFlagCounts (db);
+    recalcFlagCounts (dbase);
     // Finally, saving a game makes the treeCache out of date:
-    db->treeCache->Clear();
-    db->backupCache->Clear();
-    db->idx->IndexUpdated( gnum == 0 ? db->gameNumber : gnum - 1);
-    if (! db->memoryOnly) { removeFile (db->fileName, TREEFILE_SUFFIX); }
+    dbase->treeCache->Clear();
+    dbase->backupCache->Clear();
+    dbase->idx->IndexUpdated( gnum == 0 ? dbase->numGames -1 : gnum - 1);
+    if (! dbase->memoryOnly) { removeFile (dbase->fileName, TREEFILE_SUFFIX); }
 
     return TCL_OK;
 }
@@ -12654,6 +12666,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "No report has been created yet.");
     }
 
+    scidStatsT* stats = db->getStats();
     switch (index) {
     case OPT_AVGLENGTH:
         if (argc != 4) {
@@ -12730,7 +12743,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else {
             resultT result = strGetResult (argv[3]);
             appendUintElement (ti, report->PercentFreq (result));
-            uint freq = db->stats.nResults[result] * 1000;
+            uint freq = stats->nResults[result] * 1000;
             freq = freq / db->numGames;
             appendUintElement (ti, freq);
         }
@@ -12807,12 +12820,12 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case OPT_SCORE:
         appendUintElement (ti, report->PercentScore());
         {
-            uint percent = db->stats.nResults[RESULT_White] * 2;
-            percent += db->stats.nResults[RESULT_Draw];
+            uint percent = stats->nResults[RESULT_White] * 2;
+            percent += stats->nResults[RESULT_Draw];
             percent = percent * 500;
-            uint sum = (db->stats.nResults[RESULT_White] +
-                                 db->stats.nResults[RESULT_Draw] +
-                                 db->stats.nResults[RESULT_Black]);
+            uint sum = (stats->nResults[RESULT_White] +
+                                 stats->nResults[RESULT_Draw] +
+                                 stats->nResults[RESULT_Black]);
             if (sum != 0)
             	percent = percent / sum;
             	else
@@ -12903,9 +12916,8 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (interruptedProgress()) { break; }
             }
         }
-        //TODO: using treeFilter restore the original behavior;
-        //      however creating a report only for the games in the dbFilter && treeFilter can be better
-        byte ply = db->treeFilter->Get(gnum);
+
+        byte ply = db->dbFilter->Get(gnum);
         IndexEntry * ie = db->idx->FetchEntry (gnum);
         if (ply != 0) {
             if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),

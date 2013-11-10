@@ -105,7 +105,7 @@ set sHeaderFlagFrame 0
 #
 #   Opens the window for searching by header information.
 #
-proc search::header {} {
+proc search::header {{ref_base ""}} {
   global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sSideToMove
@@ -131,6 +131,10 @@ proc search::header {} {
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.search invoke"
   
+  pack [ttk::frame $w.refdb] -side top -fill x
+  CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
+  addHorizontalRule $w
+
   set regular font_Small
   set bold font_SmallBold
   
@@ -419,6 +423,8 @@ proc search::header {} {
       if {$temp != ""} { lappend sPgnlist $temp }
     }
     busyCursor .
+    set curr_base [sc_base current]
+    sc_base switch [lindex $refDatabaseH 0]
     pack .sh.b.stop -side right -padx 5
     grab .sh.b.stop
     sc_progressBar .sh.fprogress.progress bar 301 21 time
@@ -636,15 +642,9 @@ proc search::header {} {
     
     grab release .sh.b.stop
     pack forget .sh.b.stop
+    sc_base switch $curr_base
     unbusyCursor .
-    
-    .sh.status configure -text $str
-    ::windows::gamelist::Refresh
-    ::search::loadFirstGame
-    
-	 # refresh the tree window, this includes Best Games
-	 ::tree::refresh
-    ::windows::stats::Refresh
+    ::notify::DatabaseChanged
   }
   
   ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh} ;# -padx 20

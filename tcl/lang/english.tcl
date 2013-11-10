@@ -944,7 +944,7 @@ translate E GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) f
 translate E GlistDeleteGame {(Un)Delete this game} 
 translate E GlistDeleteAllGames {Delete all games in filter} 
 translate E GlistUndeleteAllGames {Undelete all games in filter}  
-translate E GlistMergeGameInBase {Merge Game in other database}
+translate E GlistMergeGameInBase {Merge Game in}
 
 # Maintenance window:
 translate E DatabaseName {Database Name:}

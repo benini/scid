@@ -53,16 +53,12 @@ Filter::Fill (byte value)
     ASSERT (FilterSize <= Capacity);
 
     if (value == 1) {
-        if (Data != NULL)
-            Free();
+        if (Data != NULL) Free();
         FilterCount = FilterSize;
-        return;
-    }
-    if (Data == NULL)
-        Allocate();
-    FilterCount = (value != 0) ? FilterSize : 0;
-    for (uint i=0; i < FilterSize; i++) {
-        Data[i] = value;
+    } else {
+        if (Data == NULL) Allocate();
+        FilterCount = (value != 0) ? FilterSize : 0;
+        memset(Data, value, FilterSize);
     }
 }
 
@@ -109,11 +105,8 @@ uint Filter::Count () {
 }
 
 void Filter::Negate () {
-	if (Data == NULL) {
-		Fill(0);
-	} else {
-		FilterCount = FilterSize - FilterCount;
-		for (uint i=0; i < FilterSize; i++) Data[i] = (Data[i] == 0) ? 1 : 0;
+	for (uint i=0; i < FilterSize; i++) {
+		Set(i, !Get(i) );
 	}
 }
 

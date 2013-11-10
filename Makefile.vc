@@ -106,7 +106,7 @@ TMP_DIR		= $(OUT_DIR)\Temp
 ##	TCL_VERSION: Tcl/Tk version
 #	This should be "85" for Tcl/Tk 8.5, etc.
 #
-TCL_VERSION	= 85
+TCL_VERSION	= 86
 
 ##	SCID_INCLUDES: included files from Tcl/Tk
 #	This will try to find your Tcl/Tk installation.

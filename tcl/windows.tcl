@@ -20,7 +20,7 @@ set filterGraph 0
 ################################################################################
 # Creates a toplevel window depending of the docking option
 ################################################################################
-proc createToplevel { w } {
+proc createToplevel { {w} {closeto ""} } {
   set name [string range $w 1 end]
   set f .fdock$name
 
@@ -39,9 +39,15 @@ proc createToplevel { w } {
   }
 
   if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
+    set old_dest $::docking::layout_dest_notebook
+    if {$old_dest == "" && $closeto != ""} {
+      set tab [string range $closeto 1 end]
+      set ::docking::layout_dest_notebook [::docking::find_tbn .fdock$tab]
+    }
     frame $f  -container 1
     toplevel .$name -use [ winfo id $f ]
     docking::add_tab $f e
+    set ::docking::layout_dest_notebook $old_dest
   } else  {
     toplevel $w
   }
@@ -99,16 +105,12 @@ proc setMenu { w m} {
 #   Records window width and height, for saving in options file.
 #
 proc recordWinSize {win} {
-  global winWidth winHeight winX winY winX_docked winY_docked winWidth_docked winHeight_docked
+  global winWidth winHeight winX winY
   if {![winfo exists $win]} { return }
+  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $win ]} { return }
   set temp [wm geometry $win]
   
-  if { $::docking::USE_DOCKING } {
-    set suffix "_docked"
-  } else  {
-    set suffix ""
-  }
-  
+  set suffix ""
   set n [scan $temp "%dx%d+%d+%d" width height x y]
   if {$n == 4} {
     set winWidth${suffix}($win) $width
@@ -119,14 +121,8 @@ proc recordWinSize {win} {
 }
 
 proc setWinLocation {win} {
-  global winX winY winX_docked winY_docked
-
-if { $::docking::USE_DOCKING } {
-    set suffix "_docked"
-  } else  {
-    set suffix ""
-  }
-  
+  global winX winY
+  set suffix ""
   if {[info exists winX${suffix}($win)]  &&  [info exists winY${suffix}($win)]  && \
         [set winX${suffix}($win)] >= 0  &&  [set winY${suffix}($win)] >= 0} {
     catch [list wm geometry $win "+[set winX${suffix}($win)]+[set winY${suffix}($win)]"]
@@ -134,20 +130,20 @@ if { $::docking::USE_DOCKING } {
 }
 
 proc setWinSize {win} {
-  global winWidth winHeight winWidth_docked winHeight_docked
-  
-  if { $::docking::USE_DOCKING } {
-    set suffix "_docked"
-  } else  {
-    set suffix ""
-  }
-  
+  global winWidth winHeight
+  set suffix ""
   if {[info exists winWidth${suffix}($win)]  &&  [info exists winHeight${suffix}($win)]  &&  \
         [set winWidth${suffix}($win) ] > 0  &&  [set winHeight${suffix}($win) ] > 0 } {
     catch [list wm geometry $win "[set winWidth${suffix}($win) ]x[set winHeight${suffix}($win) ]"]
   }
 }
 
+# depending on the docking mode, change the definition of window "." (ie main window)
+if {$::docking::USE_DOCKING} {
+  set dot_w "."
+} else  {
+  set dot_w ".main"
+}
 createToplevel .main
 
 ###

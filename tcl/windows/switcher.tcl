@@ -1,6 +1,9 @@
 ###
 ### windows/switcher.tcl: part of Scid
-### Copyright (C) 2000-2004  Shane Hudson.
+### Copyright (C) 2000-2004 Shane Hudson.
+### Copyright (C) 2006-2009 Pascal Georges
+### Copyright (C) 2008-2011 Alexander Wagner
+### Copyright (C) 2013 Fulvio Benini
 
 set icons {
 {Unknown}
@@ -477,6 +480,10 @@ JZCYasm01FZrrSUGIKTAttwu4O234Ia7AAMAMGTuueieGxAAOw==
 
 variable ::windows::switcher::base_types {}
 
+#TODO: remove the no-icons option
+if {! [info exists ::windows::switcher::icons] } { set ::windows::switcher::icons 1 }
+after idle "options.save ::windows::switcher::icons"
+
 # Initialise icons nicely
 
 set i 0
@@ -588,10 +595,46 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
   if {! [string match "$w.c.f*" $dropPoint]} {return}
   regexp -all {[0-9]} $dropPoint toBase
   if {$toBase == $fromBase} {
-    ::file::SwitchToBase $toBase
+    if { [info exists ::sw_LinkedGList_($w)] } {
+      ::windows::gamelist::SetBase $::sw_LinkedGList_($w) "$fromBase"
+      ::windows::switcher::Update_ $w
+    } else {
+      ::file::SwitchToBase $toBase
+    }
   } else {
     copyFilter $fromBase $toBase
   }
+}
+
+proc ::windows::switcher::popupmenu { {w} {abs_x} {abs_y} {baseIdx} } {
+  set clipbaseIdx [sc_info clipbase]
+  set closeLabel [tr FileClose]
+  if { $baseIdx == $clipbaseIdx } { set closeLabel [tr EditReset] }
+
+  $w.menu delete 0 end
+  $w.menu add command -label "Open gamelist" -command "::windows::gamelist::Open $baseIdx"
+  $w.menu add command -label [tr SearchReset] -command "::search::filter::reset $baseIdx"
+  $w.menu add separator
+  $w.menu add command -label [tr FileOpen] -command ::file::Open
+  $w.menu add command -label $closeLabel -command [list ::file::Close $baseIdx]
+  if { $baseIdx != $clipbaseIdx } {
+    #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
+    $w.menu add command -label $::tr(CompactDatabase) -command "compactGames $baseIdx; compactNames $baseIdx"
+    if { [::file::autoLoadBases.find $baseIdx] == "-1" } {
+      set ::sw_DummyCheckbutton 0
+      $w.menu add checkbutton -label "Load at startup" -variable ::sw_DummyCheckbutton \
+        -command "::file::autoLoadBases.add $baseIdx"
+    } else {
+      set ::sw_DummyCheckbutton 1
+      $w.menu add checkbutton -label "Load at startup" -variable ::sw_DummyCheckbutton \
+        -command "::file::autoLoadBases.remove $baseIdx"
+    }
+  }
+  $w.menu add separator
+  $w.menu add command -label [tr ChangeIcon] -command "changeBaseType $baseIdx"
+  $w.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \
+    -command ::windows::switcher::Refresh
+  tk_popup $w.menu $abs_x $abs_y
 }
 
 set baseWin 0
@@ -618,11 +661,17 @@ proc ::windows::switcher::Open {{w .baseWin}} {
   grid $w.status -columnspan 2 -sticky we
   bind $w <Configure> "+recordWinSize $w"
   setWinSize $w
-  ::windows::switcher::Refresh
   ::createToplevelFinalize $w
+  after idle "::windows::switcher::Update_ $w"
 }
 
-proc ::windows::switcher::Create {{w}} {
+proc ::windows::switcher::Create {{w} {gamelist ""}} {
+  if {$gamelist == ""} {
+    catch { unset ::sw_LinkedGList_($w) }
+  } else {
+    set ::sw_LinkedGList_($w) $gamelist
+  }
+
   ttk::frame $w.border -borderwidth 2 -relief groove
   grid $w.border -sticky news
   grid rowconfigure $w 0 -weight 1
@@ -647,24 +696,8 @@ proc ::windows::switcher::Create {{w}} {
     }
 
     menu $f.menu -tearoff 0
-    $f.menu add command -label [tr SearchReset] \
-      -command "::search::filter::reset $i"
-    $f.menu add command -label [tr ChangeIcon] -command "changeBaseType $i"
-    $f.menu add separator
-    $f.menu add command -label [tr FileOpen] -command ::file::Open
-    set closeLabel [tr FileClose]
-    if {$i == [sc_info clipbase]} { set closeLabel [tr EditReset] }
-    $f.menu add command -label $closeLabel \
-      -command [list ::file::Close $i]
-    #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
-    $f.menu add command -label $::tr(CompactDatabase) -command "compactGames $i; compactNames $i"
-    $f.menu add separator
-    $f.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \
-      -command ::windows::switcher::Refresh
     foreach win {"" .img .name .ngames} {
-      #TODO: disable CompactDatabase for clipbase, read-only bases, and bases already fully compacted
-      #set err [catch {set stats [sc_base compact $base stats names]} msg]
-      bind $f$win <ButtonPress-$::MB3> "tk_popup $f.menu %X %Y"
+      bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $f %X %Y $i"
     }
   }
   bind $w <Configure> "+::windows::switcher::Update_ $w"
@@ -751,14 +784,19 @@ proc ::windows::switcher::Refresh {} {
 }
 
 proc ::windows::switcher::Update_ {w} {
-  set curr_base [sc_base current]
+  if {[info exists ::sw_LinkedGList_($w)]} {
+    set curr_base [::windows::gamelist::GetBase $::sw_LinkedGList_($w)]
+  } else {
+    set curr_base [sc_base current]
+    if {![sc_base inUse $curr_base]} { return }
+  }
+
   set space [::windows::switcher::calcSpace $w $curr_base]
   set n_bases [lindex $space 0]
   set iconWidth [lindex $space 1]
   set iconHeight [lindex $space 2]
 
-  #TODO: write better code to detect if this is the Switcher Window
-  if {[winfo exists $w.status]} {
+  if {! [info exists ::sw_LinkedGList_($w)]} {
     set canvasWidth [winfo width $w.c]
     set numColumns [expr {int($canvasWidth / $iconWidth)}]
     if {$numColumns < 1} { set numColumns 1 }

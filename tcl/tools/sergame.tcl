@@ -265,7 +265,8 @@ namespace eval sergame {
     set ::sergame::lFen {}
     
     ::uci::startEngine $::sergame::engineListBox($engine) $n
-    ::uci::sendUCIoptions $n
+    set engineData [lindex $::engines(list) $::sergame::engineListBox($engine)]
+    ::uci::sendUCIoptions $n [ lindex $engineData 8 ]
     
     set ::uci::uciInfo(prevscore$n) 0.0
     set ::uci::uciInfo(score$n) 0.0

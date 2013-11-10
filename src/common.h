@@ -51,8 +51,8 @@ typedef unsigned short versionT;
 const versionT SCID_VERSION = 400;     // Current file format version = 3.0
 const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 3.0
 
-const char SCID_VERSION_STRING[] = "4.5.1";     // Current Scid version
-const char SCID_VERSION_DATE[] = "May 2013";
+const char SCID_VERSION_STRING[] = "4.5.2";     // Current Scid version
+const char SCID_VERSION_DATE[] = "Nov 2013";
 const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
 
 const char TREEFILE_SUFFIX[] = ".stc";

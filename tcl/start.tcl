@@ -2,16 +2,14 @@
 
 # Scid (Shane's Chess Information Database)
 #
-# Copyright (C) 1999-2004  Shane Hudson. All rights reserved.
+# Copyright (C) 1999-2004 Shane Hudson
+# Copyright (C) 2006-2009 Pascal Georges
+# Copyright (C) 2008-2011 Alexander Wagner
+# Copyright (C) 2013 Fulvio Benini
 #
-# This is freely redistributable software; see the file named "COPYING"
-# or "copying.txt" that came with this program.
-#
-
-# Scid's current version is an enhanced version of the original Scid, the author of which is
-# Shane Hudson. His email is sgh@users.sourceforge.net
-# To contact the current maintainer of Scid, email to the Scid users
-# list at scid-users@lists.sourceforge.net
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
 
 #
 # The following few comments are only for Unix versions of Scid:
@@ -36,8 +34,8 @@ exec `dirname $0`/tkscid "$0" "$@"
 ############################################################
 
 # Alter the version if any patches have been made to the Tcl code only:
-set scidVersion "4.5.1"
-set scidVersionDate "May 2013"
+set scidVersion "4.5.2"
+set scidVersionDate "Nov 2013"
 
 package require Tcl 8.5
 package require Tk  8.5
@@ -219,11 +217,11 @@ proc InitDirs {} {
 proc InitToolbar {} {
   global toolbar
   foreach {tbicon status}  {
-    new 1 open 1 save 1 close 1
-    finder 1 bkm 1 gprev 1 gnext 1
+    new 0 open 0 save 0 close 0
+    finder 0 bkm 0 gprev 0 gnext 0
     cut 0 copy 0 paste 0
-    rfilter 1 bsearch 1 hsearch 1 msearch 1
-    switcher 1 glist 1 pgn 1 tmt 1 maint 1 eco 1 tree 1 crosst 1 engine 1
+    rfilter 0 bsearch 0 hsearch 0 msearch 0
+    switcher 0 glist 0 pgn 0 tmt 0 maint 0 eco 0 tree 0 crosst 0 engine 0
   } {
     set toolbar($tbicon) $status
   }
@@ -231,7 +229,6 @@ proc InitToolbar {} {
 
 proc InitWinsDefaultGeometry {} {
   global winX winY winWidth winHeight
-  global winX_docked winY_docked winWidth_docked winHeight_docked
 
   # Default window locations:
   foreach i {. .pgnWin .helpWin .crosstabWin .treeWin .commentWin .glist
@@ -297,15 +294,8 @@ proc InitWinsDefaultGeometry {} {
   set winWidth(.inputengineconsole) 10
   set winHeight(.inputengineconsole) 20
 
-  # In docked mode, use same default geometry values
-  foreach elt {winX winY winWidth winHeight} {
-    foreach name [array names $elt] {
-      set ${elt}_docked($name) [set ${elt}($name)]
-    }
-  }
-
   # List of saved layouts : 3 slots available
-  set ::docking::layout_list(1) {{MainWindowGeometry 1024x542+0+26 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 373} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 202} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin}}}}}}}}}
+  set ::docking::layout_list(1) {{MainWindowGeometry 1024x542+0+0 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 360} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 368} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 196} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin1}}}}}}}}}
   set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
   set ::docking::layout_list(3) {}
 
@@ -390,6 +380,7 @@ set ::tree::mask::recentMask {}
 
 
 # boardSizes: a list of the available board sizes.
+# Some code assume that boardSizes is sorted asc
 set boardSizes [list 25 30 35 40 45 50 55 60 65 70 80]
 set boardSizesOLD [list 21 25 29 33 37 40 45 49 54 58 64 72]
 
@@ -512,7 +503,7 @@ set pgnColor(Current) lightSteelBlue
 set pgnColor(Background) "\#ffffff"
 
 # Defaults for FICS
-set ::fics::use_timeseal 1
+set ::fics::use_timeseal 0
 set ::fics::timeseal_exec "timeseal"
 set ::fics::port_fics 5000
 set ::fics::port_timeseal 5001
@@ -587,19 +578,6 @@ set initialDir(tablebase1) ""
 set initialDir(tablebase2) ""
 set initialDir(tablebase3) ""
 set initialDir(tablebase4) ""
-
-# glistSize: Number of games displayed in the game list window
-set glistSize 15
-
-# glexport: Format for saving Game List to text file.
-set glexportDefault "g6: w13 W4  b13 B4  r3:m2 y4 s11 o4"
-set glexport $glexportDefault
-
-# glistSelectPly: The number of moves to display in a game list entry
-# when that entry is selected with button-2 to shoe the first moves
-# of a game. E.g., a value of 4 might give: "1.e4 e5 2.Nf3 Nc6".
-set glistSelectPly 80
-
 
 # Default PGN display options:
 set pgnStyle(Tags) 1
@@ -815,14 +793,6 @@ foreach type {PGN HTML LaTeX} {
   set exportEndFile($type) $default_exportEndFile($type)
 }
 
-
-# ::windows::switcher::vertical
-#
-#   If 1, Switcher frames are arranged vertically.
-#
-set ::windows::switcher::vertical 0
-set ::windows::switcher::icons 1
-
 # autoRaise: defines whether the "raise" command should be used to raise
 # certain windows (like progress bars) when they become obscured.
 # Some Unix window managers (e.g. some versions of Enlightenment and sawfish,
@@ -862,117 +832,6 @@ set autoLoadLayout 1
 # autoResizeBoard:
 # resize the board to fit the container
 set autoResizeBoard 1
-
-################################################################################
-# In docked mode, resize board automatically
-################################################################################
-proc resizeMainBoard {} {
-  # puts "resizeMainBoard [clock clicks -milliseconds]"
-  if { ! $::docking::USE_DOCKING } { return }
-  
-  bind .main <Configure> {}
-  
-  set w [winfo width .main]
-  set h [winfo height .main]
-  set bd .main.board
-  
-  # calculate available height
-  set height_used 0
-  incr height_used [ lindex [grid bbox .main 0 0] 3]
-  incr height_used [ lindex [grid bbox .main 0 1] 3] ;# buttons
-  # coordinates
-  if { $::board::_coords($bd) == 2 || $::board::_coords($bd) == 0} {
-    incr height_used [ lindex [ grid bbox $bd 0 9 ] 3 ]
-  }
-  if { $::board::_coords($bd) == 0 } {
-    incr height_used [ lindex [ grid bbox $bd 0 0 ] 3 ]
-  }
-
-  # game info
-  set min_game_info_height 6
-  set game_info_line_height 6
-  set min_game_info_lines 1
-  if {$::showGameInfo} {
-    set min_game_info_lines 6
-    set game_info_lines [.main.gameInfo count -displaylines 1.0 end]
-    if { $game_info_lines > 0 } {
-      # probably not very correct, do you know any better way to get this information?
-      set game_info_line_height [expr 1.0 * [.main.gameInfo count -ypixels 1.0 end] / $game_info_lines]
-    } else {
-      # utter approximation
-      set game_info_line_height [expr [font configure font_Regular -size] * 1.5]
-    }
-    set min_game_info_height [expr int($min_game_info_lines * $game_info_line_height + 6)]
-  }
-  incr height_used $min_game_info_height
-  
-  # status bar
-  incr height_used [ lindex [grid bbox .main 0 5] 3]
-  
-  set availh [expr $h - $height_used -10]
-  
-  # calculate available width
-  set width_used 0
-  if { $::board::_coords($bd) == 2 || $::board::_coords($bd) == 0} {
-    incr width_used [ lindex [ grid bbox $bd 0 1 ] 2 ]
-  }
-  if { $::board::_coords($bd) == 0 } {
-    incr width_used [ lindex [ grid bbox $bd 9 1 ] 2 ]
-  }
-  if {$::board::_stm($bd)} {
-    incr width_used [ lindex [ grid bbox $bd 10 1 ] 2 ]
-    incr width_used [ lindex [ grid bbox $bd 11 2 ] 2 ]
-  }
-  if {$::board::_showmat($bd)} {
-    incr width_used [ lindex [ grid bbox $bd 12 1 ] 2 ]
-  }
-  set availw [expr $w - $width_used ]
-  
-  if {$availh < $availw} {
-    set min $availh
-  } else  {
-    set min $availw
-  }
-
-  if { $::autoResizeBoard } {
-    # find the closest available size
-    for {set i 0} {$i < [llength $::boardSizes]} {incr i} {
-      set newSize [lindex $::boardSizes $i]
-      if { $newSize > [ expr $min / 8 ] } {
-        if {$i > 0} {
-          set newSize [lindex $::boardSizes [expr $i -1] ]
-        }
-        break
-      }
-    }
-    # resize the board
-    ::board::resize2 .main.board $newSize
-    set ::boardSize $newSize
-  }
-
-  # adjust game info height
-  set new_game_info_lines [expr int(($min_game_info_height+($availh-$::boardSize*8))/$game_info_line_height)]
-  if { $new_game_info_lines > $min_game_info_lines } {
-    set new_game_info_lines [expr $new_game_info_lines - 1]
-  }
-  .main.gameInfo configure -height $new_game_info_lines
-  
-  update idletasks
-  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
-}
-################################################################################
-# sets visibility of gameInfo panel at the bottom of main board
-proc toggleGameInfo {} {
-  if {$::showGameInfo} {
-    grid .main.gameInfoFrame -row 3 -column 0 -sticky nsew
-  } else  {
-    grid forget .main.gameInfoFrame
-  }
-  updateGameInfo
-  update idletasks
-  resizeMainBoard
-}
-################################################################################
 
 # Email configuration:
 set email(logfile) [file join $scidLogDir "scidmail.log"]
@@ -1178,13 +1037,6 @@ if {[catch {source $optionsFile} ]} {
 
 set ::docking::USE_DOCKING $windowsDock
 
-# depending on the docking mode, change the definition of window "." (ie main window)
-if {$::docking::USE_DOCKING} {
-  set dot_w "."
-} else  {
-  set dot_w ".main"
-}
-
 # Now, if the options file was written by Scid 3.5 or older, it has a lot of
 # yucky variable names in the global namespace. So convert them to the new
 # namespace variables:
@@ -1192,7 +1044,6 @@ if {$::docking::USE_DOCKING} {
 proc ConvertOldOptionVariables {} {
   
   set oldNewNames {
-    switcherVertical ::windows::switcher::vertical
     doColorPgn ::pgn::showColor
     pgnIndentVars ::pgn::indentVars
     pgnIndentComments ::pgn::indentComments

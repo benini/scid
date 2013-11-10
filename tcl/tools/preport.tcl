@@ -150,8 +150,8 @@ proc ::preport::makeReportWin {args} {
     }
     pack $w.b.cancel -side right -pady 5 -padx 2
     
-    foreach i {1 2} name {"Searching database for report games"
-      "Generating report information"} {
+    foreach i {1 2 3} name {"Searching database for report games"
+      "Searching current board" "Generating report information"} {
       label $w.text$i -text "$i. $name"
       pack $w.text$i -side top
       canvas $w.c$i -width 400 -height 20 -bg white -relief solid -border 1
@@ -195,6 +195,15 @@ proc ::preport::makeReportWin {args} {
   
   if {$::preport::_pos == "start"} { sc_game push }
   sc_search board AND Exact false 0
+  if {$showProgress} {
+    if {$::preport::_interrupt} {
+      unbusyCursor .
+      catch {grab release $w.b.cancel}
+      destroy $w
+      return
+    }
+    sc_progressBar $w.c3 bar 401 21 time
+  }
   sc_report player create $::preport(ExtraMoves) $::preport(MaxGames)
   if {$::preport::_pos == "start"} { sc_game pop }
   if {$::preport::_clipbase} {

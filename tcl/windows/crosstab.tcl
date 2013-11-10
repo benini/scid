@@ -60,6 +60,7 @@ proc ::crosstab::RefreshIfOpen {} {
 
 proc ::crosstab::Open {} {
   global crosstab
+  set ::crosstab(dbase) [sc_base current]
   set w .crosstabWin
   if {[::createToplevel $w] == "already_exists"} {
     ::crosstab::Refresh
@@ -265,14 +266,15 @@ proc ::crosstab::Open {} {
     focus .
     destroy .crosstabWin
   }
-  button $w.b.setfilter -textvar ::tr(SetFilter) -command {
-    sc_filter reset
-    sc_filter negate
-    sc_game crosstable filter
-    ::notify::DatabaseChanged
-  }
+  button $w.b.setfilter -textvar ::tr(SetFilter) -command "
+    sc_filter set $::crosstab(dbase) dbfilter 0
+    $w.b.addfilter invoke
+  "
   button $w.b.addfilter -textvar ::tr(AddToFilter) -command {
+    set curr_base [sc_base current]
+    sc_base switch $::crosstab(dbase)
     sc_game crosstable filter
+    sc_base switch $curr_base
     ::notify::DatabaseChanged
   }
   pack $w.b.cancel $w.b.update $w.b.type \

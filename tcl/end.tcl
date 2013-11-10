@@ -948,6 +948,9 @@ proc gameSave { gnum } {
   toplevel $w
   if {$gnum == 0} {
     wm title $w "Scid: [tr GameAdd]"
+    pack [ttk::frame $w.refdb] -side top -fill x
+    CreateSelectDBWidget "$w.refdb" "gameSave_toBase"
+    addHorizontalRule $w
   } else {
     wm title $w "Scid: [tr GameReplace]"
   }
@@ -1183,14 +1186,18 @@ proc gsave { gnum } {
       -whiteElo $whiteElo -whiteRatingType $whiteRType \
       -blackElo $blackElo -blackRatingType $blackRType \
       -eco $eco -eventdate $edate -extra $extraTagsList
-  set res [sc_game save $gnum]
+  if {$gnum != 0} {
+    set res [sc_game save $gnum]
+  } else {
+    set res [sc_game save $gnum $::gameSave_toBase]
+    ::file::SwitchToBase $::gameSave_toBase 0
+    ::game::Load [sc_base numGames]
+  }
   if {$res != ""} {
     tk_messageBox -type ok -icon info -parent .save \
         -title "Scid" -message $res
   }
-  updateBoard -pgn
-  ::windows::gamelist::Refresh
-  updateTitle
+  ::notify::DatabaseChanged
 }
 
 # gameAdd:
@@ -1873,20 +1880,14 @@ if { $::docking::USE_DOCKING } {
   setWinSize $dot_w
   
   # when main board pane is resized, auto-size it
-  bind .main <Configure> { ::docking::handleConfigureEvent ::resizeMainBoard }
+  bind .main <Configure> { ::resizeMainBoard }
   
   # restore default layout (number 1)
-  if { $::autoLoadLayout } {
-    set ::docking::restore_running 1
-    ::docking::layout_restore 1
-    # engines may take time to start. Wait a few seconds before allowing an engine to automatically start analyzing
-    after 2000 { set ::docking::restore_running 0 }
-  }
+  if { $::autoLoadLayout } { ::docking::layout_restore 1 }
   
   standardShortcuts TNotebook
-  ::docking::toggleAutoResizeBoard
 }
 
-# updateMenuStates
+after idle "after 1 ::file::autoLoadBases.load"
 
 ### End of file: end.tcl

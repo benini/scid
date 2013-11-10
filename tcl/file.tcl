@@ -118,6 +118,26 @@ proc ::file::New {} {
 #    Opens file-open dialog and opens the selected Scid database.
 #
 proc ::file::Open {{fName ""}} {
+  set err [::file::Open_ "$fName"]
+  if {$err == 0} {
+    ::game::Load [sc_base autoload] 0
+    ::notify::GameChanged; #if ::game::Load fails (i.e. because the base is empty) the board is not updated
+    ::windows::gamelist::Open $::file::lastOpened "true"
+  }
+  ::notify::DatabaseChanged
+  return $err
+}
+
+proc ::file::openBaseAsTree { { fName "" } } {
+  set current [sc_base current]
+  set err [::file::Open_ "$fName"]
+  if {$err == 0} { ::tree::make $::file::lastOpened 1 }
+  sc_base switch $current
+  ::notify::DatabaseChanged
+  return $err
+}
+
+proc ::file::Open_ {{fName ""} } {
   if {[sc_base count free] == 0} {
     tk_messageBox -type ok -icon info -title "Scid" \
         -message "Too many databases are open; close one first"
@@ -173,7 +193,7 @@ proc ::file::Open {{fName ""}} {
     if {[catch {openBase $fName} result]} {
       set err 1
       tk_messageBox -icon warning -type ok -parent . \
-          -title "Scid: Error opening file" -message $result
+          -title "Scid: Error opening file" -message "$fName \n$result"
     } else {
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add "$fName.si4"
@@ -188,7 +208,7 @@ proc ::file::Open {{fName ""}} {
           [catch {sc_base create $fName true} result]} {
       set err 1
       tk_messageBox -icon warning -type ok -parent . \
-          -title "Scid: Error opening file" -message $result
+          -title "Scid: Error opening file" -message "$fName \n$result"
     } else {
       doPgnFileImport $fName "Opening [file tail $fName] read-only...\n"
       sc_base type [sc_base current] 3
@@ -196,14 +216,9 @@ proc ::file::Open {{fName ""}} {
     }
   }
   
-  if {$err == 0} {
-    catch {sc_game load auto}
-    flipBoardForPlayerNames $::myPlayerNames
-  }
   unbusyCursor .
-  updateBoard -pgn
-  updateGameInfoMenu
-  ::notify::DatabaseChanged
+  if {$err == 0} { set ::file::lastOpened $result }
+  return $err
 }
 
 # ::file::Upgrade
@@ -261,7 +276,6 @@ proc openBase {name} {
   return $result
 }
 
-
 # ::file::Close:
 #   Closes the active base.
 #
@@ -293,7 +307,6 @@ proc ::file::Close {{base -1}} {
   ::notify::DatabaseChanged
 }
 
-
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
   if {[sc_base current] == $b} { return }
   sc_base switch $b
@@ -304,83 +317,35 @@ proc ::file::SwitchToBase {{b} {saveHistory 1}} {
   ::notify::DatabaseChanged
 }
 
-################################################################################
-proc ::file::openBaseAsTree { { fName "" } } {
-  set current [sc_base current]
-  
-  if {[sc_base count free] == 0} {
-    tk_messageBox -type ok -icon info -title "Scid" \
-        -message "Too many databases are open; close one first"
-    return
-  }
-  
-  if {$fName == ""} {
-    if {[sc_info gzip]} {
-      set ftype {
-        { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN" ".pgn.gz"} }
-        { "Scid databases" {".si4" ".si3"} }
-        { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
-      }
-    } else {
-      set ftype {
-        { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
-        { "Scid databases" {".si4" ".si3"} }
-        { "PGN files" {".pgn" ".PGN"} }
-      }
-    }
-    set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
-    if {$fName == ""} { return }
-  }
-  
-  if {[file extension $fName] == ""} {
-    set fName "$fName.si3"
-  }
-  
-  if {[file extension $fName] == ".sor"} {
-    if {[catch {::rep::OpenWithFile $fName} err]} {
-      tk_messageBox -parent . -type ok -icon info -title "Scid" \
-          -message "Unable to open \"$fName\": $err"
-    }
-    return
-  }
-  
-  if {[file extension $fName] == ".si3"} {
-    ::file::Upgrade [file rootname $fName]
-    return
-  }
-  
-  set err 0
-  busyCursor .
-  if {[file extension $fName] == ".si4"} {
-    set fName [file rootname $fName]
-    if {[catch {openBase $fName} result]} {
-      unbusyCursor .
-      set err 1
-      tk_messageBox -icon warning -type ok -parent . -title "Scid: Error opening file" -message $result
-      return
-    } else {
-      set ::initialDir(base) [file dirname $fName]
-      ::recentFiles::add "$fName.si4"
-    }
-  } else {
-    # PGN file:
-    set result "This file is not readable."
-    if {(![file readable $fName])  || \
-          [catch {sc_base create $fName true} result]} {
-      unbusyCursor .
-      set err 1
-      tk_messageBox -icon warning -type ok -parent . -title "Scid: Error opening file" -message $result
-      return
-    } else {
-      doPgnFileImport $fName "Opening [file tail $fName] read-only...\n"
-      sc_base type [sc_base current] 3
-      ::recentFiles::add $fName
+# Databases that will be automatically loaded ad startup
+proc ::file::autoLoadBases.load {} {
+  if {![info exists ::autoLoadBases]} { return }
+  foreach base $::autoLoadBases {
+    if {[::file::Open $base] != 0} {
+      set idx [lsearch -exact $::autoLoadBases $base]
+      if {$idx != -1} { set ::autoLoadBases [lreplace $::autoLoadBases $idx $idx] }
     }
   }
-  
-  unbusyCursor .
-  set new_base [sc_base current]
-  sc_base switch $current
-  ::tree::make $new_base 1
 }
 
+proc ::file::autoLoadBases.save { {channelId} } {
+  if {![info exists ::autoLoadBases]} { return }
+  puts $channelId "set ::autoLoadBases [list $::autoLoadBases]"
+}
+proc ::file::autoLoadBases.find { {baseIdx} } {
+  if {![info exists ::autoLoadBases]} { return -1 }
+  if {[ catch {set base [sc_base filename $baseIdx]} ]} { return -1}
+  return [lsearch -exact $::autoLoadBases $base]
+}
+proc ::file::autoLoadBases.add { {baseIdx} } {
+  if {[ catch {set base [sc_base filename $baseIdx]} ]} { return }
+  lappend ::autoLoadBases $base
+}
+proc ::file::autoLoadBases.remove { {baseIdx} } {
+  if {![info exists ::autoLoadBases]} { return }
+  if {[ catch {set base [sc_base filename $baseIdx]} ]} { return }
+  set idx [lsearch -exact $::autoLoadBases $base]
+  if {$idx != -1} {
+    set ::autoLoadBases [lreplace $::autoLoadBases $idx $idx]
+  }
+}

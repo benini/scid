@@ -154,8 +154,6 @@ struct scidBaseT {
     uint         numGames;
     bool         memoryOnly;
 
-    scidStatsT   stats;         // Counts of flags, average rating, etc.
-
     treeT        tree;
     TreeCache *  treeCache;
     TreeCache *  backupCache;
@@ -171,6 +169,22 @@ struct scidBaseT {
     Filter *     treeFilter;
     uint *       duplicates;  // For each game: idx of duplicate game + 1,
                               // or 0 if there is no duplicate.
+    long currSearchID;
+
+    scidBaseT() { validStats = false; }
+    template <class TF, class TD>
+    const char* Open (const char* filename, fileModeT mode, TF progressFn, TD progressData);
+    scidStatsT* getStats() {
+        if (! validStats) computeStats();
+        return &stats;
+    }
+    void clearStats() { validStats = false; };
+    bool abortedSeach(long searchID) { return currSearchID != searchID; }
+
+private:
+    bool validStats;
+    scidStatsT stats;         // Counts of flags, average rating, etc.
+    void computeStats();
 };
 
 

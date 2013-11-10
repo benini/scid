@@ -1,5 +1,5 @@
 
-#define AppVersion '4.5.1'
+#define AppVersion '4.5.2'
 #define AppName    'Scid'
 #define TCLDIR     'C:\Tcl'
 
@@ -53,16 +53,13 @@ Source: "bitmaps\*"; DestDir: "{app}\bitmaps"; Flags: recursesubdirs
 Source: "bitmaps2\*"; DestDir: "{app}\bitmaps2"; Flags: recursesubdirs
 Source: "help\*"; DestDir: "{app}\help"; Flags: recursesubdirs
 Source: "COPYING"; DestDir: "{app}"
-Source: "README"; DestDir: "{app}"
-Source: "THANKS"; DestDir: "{app}"
-Source: "CHANGES"; DestDir: "{app}"
-Source: "{# TCLDIR}\bin\tcl85.dll"; DestDir: "{app}\bin"
-Source: "{# TCLDIR}\bin\tk85.dll"; DestDir: "{app}\bin"
+Source: "Example.*"; DestDir: "{app}"
 Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8"; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\tcl8.5\*"; DestDir: "{app}\lib\tcl8.5"; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\tk8.5\*"; DestDir: "{app}\lib\tk8.5"; Flags: recursesubdirs
-Source: "{# TCLDIR}\lib\teapot\package\win32-ix86\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs skipifsourcedoesntexist
-Source: "{# TCLDIR}\lib\teapot\package\win32-x86_64\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs skipifsourcedoesntexist
+Source: "{# TCLDIR}\lib\tcl8.6\*"; DestDir: "{app}\lib\tcl8.6"; Flags: recursesubdirs
+Source: "{# TCLDIR}\lib\tk8.6\*"; DestDir: "{app}\lib\tk8.6"; Flags: recursesubdirs
+Source: "{# TCLDIR}\bin\tcl86.dll"; DestDir: "{app}\bin"
+Source: "{# TCLDIR}\bin\tk86.dll"; DestDir: "{app}\bin"; AfterInstall: CreateRecentDat
+Source: "{# TCLDIR}\bin\zlib1.dll"; DestDir: "{app}\bin"; AfterInstall: CreateEngineDat
 
 [Dirs]
 Name: "{app}\bin\config"
@@ -79,6 +76,19 @@ Filename: "{app}\bin\scid.exe"; Flags: nowait postinstall skipifsilent; Descript
 FinishedLabelNoIcons=Setup has finished installing [name] on your computer. Visit our wiki pages ( http://sourceforge.net/p/scid/wiki ) to get additional resources.
 
 [Code]
+
+procedure CreateRecentDat();
+var
+  fileName : string;
+  lines : TArrayOfString;
+begin
+  fileName := ExpandConstant('{app}\bin\config\recent.dat');
+
+  SetArrayLength(lines, 1);
+  lines[0]  := 'set ::autoLoadBases {{' + ExpandConstant('{app}\Example') + '}}'
+  SaveStringsToFile(filename,lines,true);
+end;
+
 procedure CreateEngineDat();
 var
   fileName : string;
@@ -92,11 +102,11 @@ begin
   begin
       if WizardForm.TasksList.Checked[Index] then
       begin
-          SetArrayLength(lines, 13);
+          SetArrayLength(lines, 37);
           lines[0]  := '# Analysis engines list file for Scid'
           lines[1]  := ''
           lines[2]  := 'engine {'
-          lines[3]  := '  Name Stockfish'
+          lines[3]  := '  Name {Stockfish 4}'
           lines[4]  := '  Cmd  ../engines/stockfish.exe'
           lines[5]  := '  Args {}'
           lines[6]  := '  Dir  .'
@@ -104,17 +114,34 @@ begin
           lines[8]  := '  Time 0'
           lines[9]  := '  URL  {}'
           lines[10] := '  UCI 1'
-          lines[11] := '  UCIoptions {{MultiPV 3}}'
+          lines[11] := '  UCIoptions {}'
           lines[12] := '}'
+          lines[13]  := ''
+          lines[14]  := 'engine {'
+          lines[15]  := '  Name {Stockfish 4 - two threads}'
+          lines[16]  := '  Cmd  ../engines/stockfish.exe'
+          lines[17]  := '  Args {}'
+          lines[18]  := '  Dir  .'
+          lines[19]  := '  Elo  0'
+          lines[20]  := '  Time 0'
+          lines[21]  := '  URL  {}'
+          lines[22] := '  UCI 1'
+          lines[23] := '  UCIoptions {{Threads 2}}'
+          lines[24] := '}'
+          lines[25]  := ''
+          lines[26]  := 'engine {'
+          lines[27]  := '  Name {Stockfish 4 - four threads}'
+          lines[28]  := '  Cmd  ../engines/stockfish.exe'
+          lines[29]  := '  Args {}'
+          lines[30]  := '  Dir  .'
+          lines[31]  := '  Elo  0'
+          lines[32]  := '  Time 0'
+          lines[33]  := '  URL  {}'
+          lines[34] := '  UCI 1'
+          lines[35] := '  UCIoptions {{Threads 4}}'
+          lines[36] := '}'
           SaveStringsToFile(filename,lines,true);
       end
   end
-end;
- 
-procedure CurStepChanged(CurStep: TSetupStep);
-begin
-  if  CurStep=ssDone then
-    begin
-         CreateEngineDat();
-    end
-end;
+end; 
+

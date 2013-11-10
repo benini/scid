@@ -153,7 +153,7 @@ set smDisplayed(Patterns) 0
 #
 #   Opens the window for searching by material or patterns.
 #
-proc ::search::material {} {
+proc ::search::material {{ref_base ""}} {
   global dark pMin pMax ignoreColors minMoveNum maxMoveNum
   global pattPiece pattFyle pattRank pattBool oppBishops nPatterns
   global minHalfMoves smDisplayed
@@ -182,7 +182,11 @@ proc ::search::material {} {
   bind $w <F1> { helpWindow Searches Material }
   bind $w <Escape> "$w.b3.cancel invoke"
   bind $w <Return> "$w.b3.search invoke"
-  
+
+  pack [ttk::frame $w.refdb] -side top -fill x
+  CreateSelectDBWidget "$w.refdb" "refDatabaseM" "$ref_base"
+  addHorizontalRule $w
+
   pack [ttk::frame $w.mp] -side top
   pack [ttk::frame $w.mp.material] -side left
   
@@ -535,6 +539,8 @@ proc ::search::material {} {
   
   dialogbutton $f.search -textvar ::tr(Search) -command {
     busyCursor .
+    set curr_base [sc_base current]
+    sc_base switch [lindex $refDatabaseM 0]
     .sm.b3.stop configure -state normal
     grab .sm.b3.stop
     sc_progressBar .sm.fprogress.progress bar 301 21 time
@@ -561,15 +567,9 @@ proc ::search::material {} {
         -patt "$pattBool(10) $pattPiece(10) $pattFyle(10) $pattRank(10)" ]
     grab release .sm.b3.stop
     .sm.b3.stop configure -state disabled
+    sc_base switch $curr_base
     unbusyCursor .
-    #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
-    .sm.status configure -text $str
-	 ::tree::refresh
-    ::windows::gamelist::Refresh
-    
-    ::search::loadFirstGame
-    
-    ::windows::stats::Refresh
+    ::notify::DatabaseChanged
   }
   
   dialogbutton $f.cancel -textvar ::tr(Close) \

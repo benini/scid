@@ -224,10 +224,10 @@ set hgame_i 0
 
 proc ::game::HistoryRemoveDB {db} {
   set i 0
-  while {[info exist ::hgame_game($i)]} {
+  while {[info exists ::hgame_game($i)]} {
     if {$::hgame_db($i) == $db} {
       set a $i; set b [expr $i +1]
-      while {[info exist ::hgame_game($b)]} {
+      while {[info exists ::hgame_game($b)]} {
         set ::hgame_db($a) $::hgame_db($b)
         set ::hgame_game($a) $::hgame_game($b)
         set ::hgame_ply($a) $::hgame_ply($b)
@@ -253,12 +253,12 @@ proc ::game::Hprev_btnstate {} {
 
 proc ::game::Hnext_btnstate {} {
   set i [expr "$::hgame_i + 1"]
-  if {[info exist ::hgame_game($i)]} {return "normal"}
+  if {[info exists ::hgame_game($i)]} {return "normal"}
   return "disabled"
 }
 
 proc ::game::HistorySavePos_ {} {
-  if {[info exist ::hgame_game($::hgame_i)]} {
+  if {[info exists ::hgame_game($::hgame_i)]} {
     set cur_db [sc_base current]
     if {$cur_db != $::hgame_db($::hgame_i)} {
       sc_base switch $::hgame_db($::hgame_i)
@@ -271,7 +271,7 @@ proc ::game::HistorySavePos_ {} {
 }
 
 proc ::game::HistoryAdd_ {} {
-  if {[info exist ::hgame_game($::hgame_i)]} {
+  if {[info exists ::hgame_game($::hgame_i)]} {
     if {$::hgame_db($::hgame_i) == [sc_base current] && \
         $::hgame_game($::hgame_i) == [sc_game number]} {
       return
@@ -280,7 +280,7 @@ proc ::game::HistoryAdd_ {} {
     }
   }
   set i $::hgame_i
-  while {[info exist ::hgame_game($i)]} {
+  while {[info exists ::hgame_game($i)]} {
     unset ::hgame_game($i)
     incr i
   }
@@ -303,7 +303,7 @@ proc ::game::Load { selection {ply ""} } {
 
 proc ::game::LoadHistory {dir} {
   set check [expr $::hgame_i + $dir]
-  if {$check < 0 || ![info exist ::hgame_game($check)]} {return}
+  if {$check < 0 || ![info exists ::hgame_game($check)]} {return}
 
   ::game::HistorySavePos_
   incr ::hgame_i $dir
@@ -451,8 +451,8 @@ namespace eval ::notify {
     if {[winfo exists .bookWin]} { ::book::refresh }
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     updateNoveltyWin
-    ::tree::refresh
     ::windows::gamelist::PosChanged
+    ::tree::refresh
   }
 
   proc DatabaseChanged {{moveUp 1}} {

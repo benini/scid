@@ -20,33 +20,7 @@
 const uint MAX_STORED_LINES = 256;
 
 class StoredLine {
-
-  private:
-	int storedLineMatches_ [MAX_STORED_LINES];
-  	simpleMoveT storedLineMoves_ [MAX_STORED_LINES];
-
-    static void Init (void);
-
-  public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif  
-
+public:
 	StoredLine(Position* pos);
 	bool CanMatch(uint ln, uint* ply, simpleMoveT* sm){
 		if (ln == 0 || ln > StoredLine::Count()) return true;
@@ -55,11 +29,16 @@ class StoredLine {
 		if (storedLineMatches_[ln] > 0) *sm = storedLineMoves_[ln];
 		return true;
 	}
-    static void FreeStoredLine ();
-    static uint Count (void);
-    static const char * GetText (uint code);
-    static Game * GetGame (uint code);
-    static bool isInitialized(void);
+
+	static void FreeStoredLine ();
+	static uint Count (void);
+	static const char * GetText (uint code);
+	static Game * GetGame (uint code);
+
+private:
+	int storedLineMatches_ [MAX_STORED_LINES];
+	simpleMoveT storedLineMoves_ [MAX_STORED_LINES];
+	static void Init (void);
 };
 
 #endif  // #ifndef SCID_STORED_H

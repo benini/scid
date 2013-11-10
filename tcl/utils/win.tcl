@@ -36,38 +36,14 @@ namespace eval docking {
   
   variable tbcnt 0
   array set notebook_name {}
-  
-  # redraw takes some time : skip some events
-  variable lastConfigureEvent 0
-  variable deltaConfigureEvent 400
-  
-  # set to 1 to inhibit autostart of engines when restoring the default layout at startup
-  set restore_running 0
 }
 
-################################################################################
-proc ::docking::handleConfigureEvent { cmd } {
-  variable lastConfigureEvent
-  variable deltaConfigureEvent
-  
-  after cancel "eval $cmd"
-  set t [clock clicks -milliseconds]
-  
-  if {  [expr $t - $lastConfigureEvent ] < $deltaConfigureEvent } {
-    after [ expr $deltaConfigureEvent + $lastConfigureEvent -$t ] "eval $cmd"
-  } else  {
-    set lastConfigureEvent $t
-    eval $cmd
-    # Necessary on MacOs to refresh user interface
-    # update idletasks
-  }
-}
 ################################################################################
 # find notebook, corresponding to path
 proc ::docking::find_tbn {path} {
   variable tbs
   
-  if {$path==""} { return $path }
+  if {$path=="" || ![winfo exists $path]} { return "" }
   # already a managed notebook?
   if {[info exists tbs($path)]} {
     return $path
@@ -450,7 +426,7 @@ proc ::docking::ctx_menu {w} {
   
   menu $mctxt -tearoff 0
   set state "normal"
-  if { [llength [$w tabs]] == "1"} {
+  if { [llength [$w tabs]] <= 1} {
     set state "disabled"
   }
   $mctxt add command -label [ ::tr DockTop ] -state $state -command "::docking::ctx_cmd $w n"
@@ -482,9 +458,10 @@ proc ::docking::toggleAutoResizeBoard {} {
 ################################################################################
 proc ::docking::close {w} {
   set tabid [$w select]
-  $w forget $tabid
-  
-  destroy $tabid
+  if {[winfo exists $tabid]} {
+    $w forget $tabid
+    destroy $tabid
+  }
   _cleanup_tabs $w
   setTabStatus
 }
@@ -494,6 +471,7 @@ proc ::docking::undock {srctab} {
   if {[llength [$srctab tabs]]==1 && [llength [array names tbs]]==1} { return }
   
   set f [$srctab select]
+  if {! [winfo exists $f]} { return }
   
   set name [$srctab tab $f -text]
   set o [$srctab tab $f]
@@ -648,10 +626,7 @@ proc ::docking::layout_save_pw {pw} {
 ################################################################################
 # restores paned windows and internal notebooks
 proc ::docking::layout_restore_pw { data } {
-  
   foreach elt $data {
-    update idletasks
-    
     set type [lindex $elt 0]
     
     if {$type == "MainWindowGeometry"} {
@@ -659,9 +634,9 @@ proc ::docking::layout_restore_pw { data } {
       layout_restore_pw [lindex $data 1]
       if {[lindex $elt 2]  == "zoomed"} {
           if { $::windowsOS || $::macOS } {
-              wm state . zoomed
+              set ::docking::zoom "wm state . zoomed"
           } else {
-              wm attributes . -zoomed
+              set ::docking::zoom "wm attributes . -zoomed"
           }
       }
       break
@@ -723,38 +698,44 @@ proc ::docking::layout_restore_nb { pw name tabs} {
       set tbcnt [ expr $tmp +1]
     }
   }
-  
+
   set tbs($nb) $pw
-  
   $pw add $nb -weight 1
-  
   set ::docking::tbs($nb) $pw
-  
-  set ::docking::layout_dest_notebook $nb
-  
-  foreach d $tabs {
-    
-    if { $d == ".fdockmain" } {
-      $nb add $d -text $::tr(Board)
-      raise $d
+  lappend ::docking::restoring_nb $nb
+  set ::docking::restoring_tabs($nb) $tabs
+}
+
+proc ::docking::restore_tabs {} {
+  set old_dest $::docking::layout_dest_notebook
+  foreach nb $::docking::restoring_nb {
+    foreach d $::docking::restoring_tabs($nb) {
+      set ::docking::layout_dest_notebook $nb
+      if { $d == ".fdockmain" } {
+        $nb add $d -text $::tr(Board)
+        raise $d
+      }
+      if { $d == ".fdockpgnWin" } { ::pgn::OpenClose ; ::pgn::Refresh 1 }
+      if { $d == ".fdockanalysisWin1" } { ::makeAnalysisWin 1 0 0}
+      if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 0}
+      if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
+      if { $d == ".fdockbookWin" } {  ::book::open }
+      if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
+      if { $d == ".fdocktbWin" } { ::tb::Open }
+      if { $d == ".fdockcommentWin" } {  ::commenteditor::Open }
+      if { [string first ".fdockglistWin" $d] != -1 } {::windows::gamelist::Open}
+      if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
+      if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
+
+      update idletasks
     }
-    if { $d == ".fdockpgnWin" } { ::pgn::OpenClose ; ::pgn::Refresh 1 }
-    if { $d == ".fdockanalysisWin1" } { ::makeAnalysisWin 1 0 }
-    if { $d == ".fdockanalysisWin2" } { ::makeAnalysisWin 2 0 }
-    if { $d == ".fdockbaseWin" } {  ::windows::switcher::Open }
-    if { $d == ".fdockbookWin" } {  ::book::open }
-    if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
-    if { $d == ".fdocktbWin" } { ::tb::Open }
-    if { $d == ".fdockcommentWin" } {  ::commenteditor::Open }
-    if { $d == ".fdockglistWin" } {::windows::gamelist::Open}
-    if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
-    if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
   }
-  
-  # force the selection of first tab
-  $nb select [ lindex [ $nb tabs] 0 ]
-  
-  set ::docking::layout_dest_notebook ""
+
+  set ::docking::layout_dest_notebook $old_dest
+  foreach nb $::docking::restoring_nb {
+    set ::docking::restoring_tabs($nb) {}
+  }
+  set ::docking::restoring_nb {}
 }
 
 ################################################################################
@@ -770,10 +751,17 @@ proc ::docking::layout_restore { slot } {
   
   closeAll {.pw}
   set tbcnt 0
+  set ::docking::zoom {}
   array set ::docking::notebook_name {}
   array set ::docking::tbs {}
   set ::docking::sashpos {}
-  
+  if {[info exists ::docking::restoring_nb]} {
+    foreach nb $::docking::restoring_nb {
+      set ::docking::restoring_tabs($nb) {}
+    }
+    set ::docking::restoring_nb {}
+  }
+
   layout_restore_pw $::docking::layout_list($slot)
   restoreGeometry
   
@@ -781,7 +769,8 @@ proc ::docking::layout_restore { slot } {
   setTabStatus
   
   bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
-  
+  eval $::docking::zoom
+  after idle ::docking::restore_tabs
 }
 ################################################################################
 # for every notebook, keeps track of the last selected tab to see if the local menu can be popped up or not

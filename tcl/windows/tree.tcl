@@ -890,7 +890,7 @@ proc ::tree::best { baseNumber } {
     destroy $w
   } else {
     .treeWin$baseNumber.buttons.best state pressed
-    ::windows::gamelist::Open $w "$::tr(TreeBestGames):" "best" $::tree(base$baseNumber) tree
+    ::windows::gamelist::OpenTreeBest $::tree(base$baseNumber) $w
     bind $w <Destroy> "+.treeWin$baseNumber.buttons.best state !pressed"
   }
 }

@@ -285,17 +285,13 @@ namespace eval uci {
         
         # the UCI engine answers to <uci> command
         if { $line == "uciok"} {
-            if {$analysis(waitForUciOk$n)} {
-                set analysis(waitForUciOk$n) 0
-            }
             resetUciInfo $n
-            sendUCIoptions $n
             if {$analyze} {
                 set analysis(uciok$n) 1
-                startAnalyzeMode $n
             } else  {
                 set uciInfo(uciok$n) 1
             }
+            if {$analysis(onUciOk$n) != ""} { {*}$analysis(onUciOk$n) }
         }
         
         # the UCI engine answers to <isready> command
@@ -613,7 +609,7 @@ namespace eval uci {
     proc saveConfig {} {
         global ::uci::optList ::uci::newOptions
         set newOptions {}
-        set w .uciConfigWin.sf.scrolled
+        set w .uciConfigWin.c.f
         set optnbr 0
         
         foreach l $optList {
@@ -650,17 +646,16 @@ namespace eval uci {
     # The engine replied readyok, so it's time to configure it (sends the options to the engine)
     # It seems necessary to ask first if engine is ready
     ################################################################################
-    proc sendUCIoptions { n } {
+    proc sendUCIoptions { n uci_options} {
         global analysis
-        set engineData [ lindex $::engines(list) $analysis(index$n) ]
-        set options [ lindex $engineData 8 ]
-        foreach opt $options {
+        foreach opt $uci_options {
             set name [lindex $opt 0]
             set value [lindex $opt 1]
             set analysis(waitForReadyOk$n) 1
             ::sendToEngine $n "isready"
             vwait analysis(waitForReadyOk$n)
             ::sendToEngine $n "setoption name $name value $value"
+            if { $name == "MultiPV" } { set analysis(multiPVCount$n) $value }
         }
     }
     ################################################################################
@@ -723,6 +718,7 @@ namespace eval uci {
     ################################################################################
     proc checkEngineIsAlive { n } {
         global ::uci::uciInfo
+        if { $uciInfo(pipe$n) == "" } { return 0 }
         if {[eof $uciInfo(pipe$n)]} {
             fileevent $uciInfo(pipe$n) readable {}
             set exit_status 0
