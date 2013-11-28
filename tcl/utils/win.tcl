@@ -165,64 +165,39 @@ proc ::docking::get_class {path} {
 # always keep .pw paned window
 proc ::docking::_cleanup_tabs {srctab} {
   variable tbs
-  
+
   # if srctab is empty, then remove it
   if {[llength [$srctab tabs]]==0} {
     destroy $srctab
     set pw $tbs($srctab)
     unset tbs($srctab)
-    
+
     while {[llength [$pw panes]]==0} {
       set parent [winfo parent $pw]
-      
+
       if {$pw == ".pw"} {
         break
       }
       destroy $pw
       set pw $parent
     }
-    
+
   }
 }
 ################################################################################
 # cleans up a window when it was closed without calling the notebook menu
 proc ::docking::cleanup { w { origin "" } } {
-  variable tbs
-  
-  if { ! $::docking::USE_DOCKING } { return }
-
-  # if the destroy event came from a sub-widget, do nothing. Necessary because if a widget is destroyed, it sends a destroy event to
-  # its containing window
-  if { [ string last "." $origin ] > 0 } {
-    return
-  }
-  
-  set dockw ".fdock[string range $w 1 end]"
-  
-  catch {
-    bind $w <Destroy> {}
-    bind $dockw <Destroy> {}
-  }
-  
-  # Maybe during Scid closing, some race conditions lead to exceptions ? In case, catch this by default
-  catch {
-    foreach nb [array names tbs] {
-      if { [lsearch  [$nb tabs] $dockw ] != -1 } {
-        $nb forget $dockw
-        destroy $dockw
-        ::docking::_cleanup_tabs $nb
-        return
-      }
+  if {$w == $origin || $origin == ""} {
+    set dockw ".fdock[string range $w 1 end]"
+    set tab [::docking::find_tbn $dockw]
+    if {$tab != ""} {
+      $tab forget $dockw
+      ::docking::_cleanup_tabs $tab
+      catch { unset ::docking::notebook_name($dockw) }
+      ::docking::setTabStatus
     }
+    after idle "if {[winfo exists $dockw]} { destroy $dockw }"
   }
-  
-  # Make sure the frame is destroyed
-  if { [winfo exists $dockw]} {
-    destroy $dockw
-  }
-  
-  array unset ::docking::notebook_name $dockw
-  
 }
 ################################################################################
 proc ::docking::isUndocked { w } {
@@ -357,11 +332,15 @@ proc ::docking::setMenuVisibility  { f show } {
 ################################################################################
 proc  ::docking::tabChanged  {path} {
   update
+  #TODO: the update is dangerous!
+  #For example the windows may be destroyed
+  if {! [winfo exists $path] } { return }
   
   # HACK ! Because notebooks may also be used inside internal windows
   if { ! [ info exists ::docking::activeTab($path)] } {
     return
   }
+
   if { [$path select] != $::docking::activeTab($path)} {
     set ::docking::activeTab($path) [$path select]
     set ::docking::changedTab($path) 1
