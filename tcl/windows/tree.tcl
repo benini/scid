@@ -278,7 +278,6 @@ proc ::tree::closeTree {baseNumber} {
   destroy .treeWin$baseNumber
   sc_tree clean $baseNumber
   if {$::tree(locked$baseNumber)} { ::file::Close $baseNumber }
-  ::windows::stats::Refresh;
   set curr_base [sc_base current]
   set ::treeWin [winfo exists .treeWin$curr_base]
 }
