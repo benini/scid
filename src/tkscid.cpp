@@ -1537,11 +1537,7 @@ sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //  exportGame:
 //    Called by sc_base_export() to export a single game.
 void
-#ifdef WINCE
-exportGame (Game * g, /* FILE * */Tcl_Channel exportFile, gameFormatT format, uint pgnStyle)
-#else
 exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
-#endif
 {
     char old_language = language;
  
@@ -1577,11 +1573,7 @@ int
 sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool showProgress = startProgressBar();
-#ifdef WINCE
-    /* FILE * */ Tcl_Channel exportFile = NULL;
-#else
     FILE * exportFile = NULL;
-#endif
     bool exportFilter = false;
     bool appendToFile = false;
     gameFormatT outputFormat = PGN_FORMAT_Plain;
@@ -1683,30 +1675,16 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return InvalidCommand (ti, "sc_base export", options);
         }
     }
-#ifdef WINCE
-    exportFile = my_Tcl_OpenFileChannel(NULL, exportFileName, (appendToFile ? "r+" : "w"), 0666);
-#else
     exportFile = fopen (exportFileName, (appendToFile ? "r+" : "w"));
-#endif
     if (exportFile == NULL) {
         return errorResult (ti, "Error opening file for exporting games.");
     }
-#ifdef WINCE
- my_Tcl_SetChannelOption(NULL, exportFile, "-encoding", "binary");
- my_Tcl_SetChannelOption(NULL, exportFile, "-translation", "binary");
-#endif
     // Write start text or find the place in the file to append games:
     if (appendToFile) {
         if (outputFormat == PGN_FORMAT_Plain) {
-#ifdef WINCE
-            my_Tcl_Seek(exportFile, 0, SEEK_END);
-        } else {
-            /*fseek*/my_Tcl_Seek(exportFile, 0, SEEK_SET);
-#else
             fseek (exportFile, 0, SEEK_END);
         } else {
             fseek (exportFile, 0, SEEK_SET);
-#endif
             const char * endMarker = "";
             if (outputFormat == PGN_FORMAT_HTML) {
                 endMarker = "</body>";
@@ -1716,27 +1694,6 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             char line [1024];
             uint pos = 0;
             while (1) {
-#ifdef WINCE
-                //fgets (line, 1024, exportFile);
-                char c;
-                int i;
-                for (i=0; i<1024; i++) {
-                  if (my_Tcl_Read(exportFile, &c, 1) != 1) break;
-                  line[i] = c;
-                  if (c == '\n') break;
-                }
-                line[i+1] = '\0';
-                if (/*feof*/ my_Tcl_Eof(exportFile)) { break; }
-                const char * s = strTrimLeft (line, " ");
-                if (strIsCasePrefix (endMarker, s)) {
-                    // We have seen the line to stop at, so break out
-                    break;
-                }
-                pos = /*ftell */my_Tcl_Tell(exportFile);
-            }
-            /*fseek */my_Tcl_Seek(exportFile, pos, SEEK_SET);
-
-#else
                 fgets (line, 1024, exportFile);
                 if (feof (exportFile)) { break; }
                 const char * s = strTrimLeft (line, " ");
@@ -1747,29 +1704,9 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 pos = ftell (exportFile);
             }
             fseek (exportFile, pos, SEEK_SET);
-#endif
         }
     } else {
-#ifdef WINCE
-        my_Tcl_Write(exportFile, startText, strlen(startText));
-#else
         fputs (startText, exportFile);
-#endif
-    }
-
-    if (!exportFilter) {
-        // Only export the current game:
-        exportGame (db->game, exportFile, outputFormat, pgnStyle);
-#ifdef WINCE
-        my_Tcl_Write(exportFile, endText, strlen(endText));
-        //fclose (exportFile);
-        my_Tcl_Close(NULL, exportFile);
-#else
-        fputs (endText, exportFile);
-        fclose (exportFile);
-#endif
-        if (showProgress) { updateProgressBar (ti, 1, 1); }
-        return TCL_OK;
     }
 
     Game * g = scratchGame;
@@ -1779,9 +1716,10 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint numSeen = 0;
     uint numToExport = exportFilter ? db->dbFilter->Count() : 1;
     db->tbuf->SetWrapColumn (75);
-
-    for (uint i=0; i < db->numGames; i++) {
-        if (db->dbFilter->Get(i)) { // Export this game:
+    uint i = (exportFilter) ? 0 : db->gameNumber;
+    uint i_last = (exportFilter) ? db->numGames : i +1;
+    for (; i < i_last; i++) {
+        if (!exportFilter || db->dbFilter->Get(i)) { // Export this game:
             numSeen++;
             if (showProgress) {  // Update the percentage done bar:
                 update--;
@@ -1807,15 +1745,8 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             exportGame (g, exportFile, outputFormat, pgnStyle);
         }
     }
-#ifdef WINCE
-    //fputs (endText, exportFile);
-    my_Tcl_Write(exportFile, endText, strlen(endText));
-    //fclose (exportFile);
-    my_Tcl_Close(NULL, exportFile);
-#else
     fputs (endText, exportFile);
     fclose (exportFile);
-#endif
     if (showProgress) { updateProgressBar (ti, 1, 1); }
     return TCL_OK;
 }
