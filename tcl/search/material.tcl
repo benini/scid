@@ -568,6 +568,7 @@ proc ::search::material {{ref_base ""}} {
     grab release .sm.b3.stop
     .sm.b3.stop configure -state disabled
     sc_base switch $curr_base
+    .sm.status configure -text $str
     unbusyCursor .
     ::notify::DatabaseChanged
   }

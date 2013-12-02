@@ -643,6 +643,7 @@ proc search::header {{ref_base ""}} {
     grab release .sh.b.stop
     pack forget .sh.b.stop
     sc_base switch $curr_base
+    .sh.status configure -text $str
     unbusyCursor .
     ::notify::DatabaseChanged
   }
