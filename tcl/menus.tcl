@@ -1764,8 +1764,6 @@ proc checkMenuUnderline {menu} {
 #    Sets up a number of standard shortcut keys for the specified window.
 #
 proc standardShortcuts {w} {
-  if {! [winfo exists $w]} { return }
-  
   # Global shortcuts for docked mode
   if { $::docking::USE_DOCKING } {
     bind $w <F1> {helpWindow Contents}
