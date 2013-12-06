@@ -5,14 +5,6 @@ if { ! [file isdirectory $::scidBooksDir]} {
   tk_messageBox -title "Scid" -type ok -icon warning -message "Books directory not found"
 }
 
-############################################################
-### Main window title, etc:
-
-
-
-############################################################
-### Menu/etc Functions:
-
 
 # findNovelty:
 #   Searches the for first position in the current game not
@@ -1282,62 +1274,6 @@ proc drawArrow {sq color} {
   }
 }
 
-for {set i 0} { $i < 64 } { incr i } {
-  ::board::bind .main.board $i <Enter> "enterSquare $i"
-  ::board::bind .main.board $i <Leave> "leaveSquare $i"
-  ::board::bind .main.board $i <ButtonPress-1> "set ::addVariationWithoutAsking 0 ; pressSquare $i"
-  ::board::bind .main.board $i <ButtonPress-$::MB2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
-  #::board::bind .main.board $i <ButtonPress-$::MB3> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
-  ::board::bind .main.board $i <Control-ButtonPress-1> "drawArrow $i green"
-  ::board::bind .main.board $i <Control-ButtonPress-$::MB2> "drawArrow $i yellow"
-  ::board::bind .main.board $i <Control-ButtonPress-$::MB3> "drawArrow $i red"
-  ::board::bind .main.board $i <Shift-ButtonPress-1> "addMarker $i green"
-  ::board::bind .main.board $i <Shift-ButtonPress-$::MB2> "addMarker $i yellow"
-  ::board::bind .main.board $i <Shift-ButtonPress-$::MB3> "addMarker $i red"
-  ::board::bind .main.board $i <B1-Motion> "::board::dragPiece .main.board %X %Y"
-  ::board::bind .main.board $i <ButtonRelease-1> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-  ::board::bind .main.board $i <ButtonRelease-$::MB2> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-  #::board::bind .main.board $i <ButtonRelease-$::MB3> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-  
-  #::board::bind .main.board $i <ButtonPress-$::MB2> "pressSquare $i"
-  # Pascal Georges : this should be removed because I find it too dangerous for people with cats ??
-  # put it back with Scid 3.6.13, let's see if this leads to problems
-  ::board::bind .main.board $i <ButtonPress-$::MB3> backSquare
-}
-
-foreach i {o q r n k O Q R B N K} {
-  bind .main <$i> "moveEntry_Char [string toupper $i]"
-}
-foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
-  bind .main <Key-$i> "moveEntry_Char $i"
-}
-
-bind .main <Control-BackSpace> backSquare
-bind .main <Control-Delete> backSquare
-bind .main <BackSpace> moveEntry_Backspace
-bind .main <Delete> moveEntry_Backspace
-bind .main <space> moveEntry_Complete
-bind .main <ButtonRelease> {focus .main}
-
-
-###  Other Key bindings:
-# Set via menus.tcl -> standardShortcuts
-
-# Arrow keys, Home and End:
-bind $dot_w <Home> ::move::Start
-bind $dot_w <Left> ::move::Back
-bind $dot_w <Up> {
-  if {[sc_pos isAt vstart]} {
-    .main.fbutton.button.exitVar invoke
-  } else  {
-    ::move::Back 10
-  }
-}
-bind $dot_w <Down> {::move::Forward 10}
-bind $dot_w <Right> ::move::Forward
-bind $dot_w <End> ::move::End
-bind $dot_w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
-
 proc MouseWheelRedirector {W X Y D} {
     # Generate an MWheel virtual event to the window that has the mouse pointer
     set w [winfo containing -displayof $W $X $Y]
@@ -1379,23 +1315,6 @@ if { [tk windowingsystem] == "win32" } {
     }
 }
 
-# Apply standard shortcuts to main window
-# standardShortcuts $dot_w
-standardShortcuts .main
-
-############################################################
-### Packing the main window:
-
-if { $::docking::USE_DOCKING} {
-  ttk::frame .main.space
-  grid .main.space -row 4 -column 0 -columnspan 3 -sticky nsew
-  grid rowconfigure .main 4 -weight 1
-}
-
-label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 -font font_Small
-grid .main.statusbar -row 5 -column 0 -columnspan 3 -sticky we
-bind .main.statusbar <1> gotoNextBase
-
 proc gotoNextBase {} {
   set n [sc_base current]
   set cb [sc_info clipbase]
@@ -1407,35 +1326,6 @@ proc gotoNextBase {} {
   updateBoard -pgn
   ::notify::DatabaseChanged
 }
-
-grid columnconfigure .main 0 -weight 1
-
-# game info widget only gets its requested size
-if { $::docking::USE_DOCKING } {
-  grid rowconfigure .main 3 -weight 0
-} else  {
-  grid rowconfigure .main 3 -weight 1
-}
-
-pack .main.fbutton.button -anchor center
-grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2
-
-grid .main.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
-
-# update Game Info panel visibility after loading options
-toggleGameInfo
-
-# grid .main.gameInfoFrame -row 3 -column 0 -sticky news -padx 2
-
-redrawToolbar
-
-if { ! $::docking::USE_DOCKING } {
-  wm resizable .main 0 1
-}
-
-wm minsize . 0 0
-wm iconname . "Scid"
-
 
 #################
 # Open files and databases:
@@ -1518,13 +1408,6 @@ proc getCommandLineOptions {} {
 
 getCommandLineOptions
 
-
-setLanguage $language
-
-updateTitle
-updateBoard
-update idle
-
 # Try to find tablebases:
 if {$loadAtStart(tb)} {
   if {[sc_info tb]} {
@@ -1577,187 +1460,6 @@ if {$loadAtStart(spell)} {
     ::splash::add "    [lindex $result 0] players, [lindex $result 1] events, [lindex $result 2] sites, [lindex $result 3] rounds."
   }
 }
-
-# fullname:
-#   Given a file name, returns its absolute name.
-#
-proc fullname {fname} {
-  if {[file pathtype $fname] == "absolute"} { return $fname }
-  set old [pwd]
-  if {[catch {cd [file dirname $fname]}]} { return $fname }
-  set fname [file join [pwd] [file tail $fname]]
-  catch {cd $old}
-  return $fname
-}
-
-# Loading a database if specified on the command line:
-# Need to check file type: .epd, .pgn, .pgn.gz, etc
-
-while {$argc > 0} {
-  set startbase [fullname [lindex $argv 0]]
-  if {! [catch {sc_game startBoard $startbase}]} {
-    set argc 0
-    break
-  }
-  if {! [catch {sc_game startBoard [join $argv " "]}]} {
-    set argc 0
-    break
-  }
-  if {[string match "*.epd*" $startbase]} {
-    ::splash::add "Opening EPD file: $startbase..."
-    if {![newEpdWin openSilent $startbase]} {
-      ::splash::add "   Error opening EPD file: $startbase"
-    }
-    set initialDir(epd) [file dirname $startbase]
-  } elseif {[string match "*.sso" $startbase]} {
-    ::splash::add "Opening filter file: $startbase..."
-    if {[catch {uplevel "#0" source $startbase} err]} {
-      ::splash::add "   Error opening $startbase: $err"
-    } else {
-      switch -- $::searchType {
-        "Material" {
-          sc_search material \
-              -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
-              -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \
-              -wb [list $pMin(wb) $pMax(wb)] -bb [list $pMin(bb) $pMax(bb)] \
-              -wn [list $pMin(wn) $pMax(wn)] -bn [list $pMin(bn) $pMax(bn)] \
-              -wm [list $pMin(wm) $pMax(wm)] -bm [list $pMin(bm) $pMax(bm)] \
-              -wp [list $pMin(wp) $pMax(wp)] -bp [list $pMin(bp) $pMax(bp)] \
-              -flip $ignoreColors -filter $::search::filter::operation \
-              -range [list $minMoveNum $maxMoveNum] \
-              -length $minHalfMoves -bishops $oppBishops \
-              -diff [list $minMatDiff $maxMatDiff] \
-              -patt "$pattBool(1) $pattPiece(1) $pattFyle(1) $pattRank(1)" \
-              -patt "$pattBool(2) $pattPiece(2) $pattFyle(2) $pattRank(2)" \
-              -patt "$pattBool(3) $pattPiece(3) $pattFyle(3) $pattRank(3)" \
-              -patt "$pattBool(4) $pattPiece(4) $pattFyle(4) $pattRank(4)" \
-              -patt "$pattBool(5) $pattPiece(5) $pattFyle(5) $pattRank(5)" \
-              -patt "$pattBool(6) $pattPiece(6) $pattFyle(6) $pattRank(6)" \
-              -patt "$pattBool(7) $pattPiece(7) $pattFyle(7) $pattRank(7)" \
-              -patt "$pattBool(8) $pattPiece(8) $pattFyle(8) $pattRank(8)" \
-              -patt "$pattBool(9) $pattPiece(9) $pattFyle(9) $pattRank(9)" \
-              -patt "$pattBool(10) $pattPiece(10) $pattFyle(10) $pattRank(10)"
-          ::splash::add "   Material/Pattern filter file $startbase correctly applied"
-        }
-        "Header"   {
-          set sPgnlist {}
-          foreach i {1 2 3} {
-            set temp [string trim $sPgntext($i)]
-            if {$temp != ""} { lappend sPgnlist $temp }
-          }
-          set wtitles {}
-          set btitles {}
-          foreach i $sTitleList {
-            if $sTitles(w:$i) { lappend wtitles $i }
-            if $sTitles(b:$i) { lappend btitles $i }
-          }
-          sc_search header -white $sWhite -black $sBlack \
-              -event $sEvent -site $sSite -round $sRound \
-              -date [list $sDateMin $sDateMax] \
-              -results [list $sResWin $sResDraw $sResLoss $sResOther] \
-              -welo [list $sWhiteEloMin $sWhiteEloMax] \
-              -belo [list $sBlackEloMin $sBlackEloMax] \
-              -delo [list $sEloDiffMin $sEloDiffMax] \
-              -eco [list $sEcoMin $sEcoMax $sEco] \
-              -length [list $sGlMin $sGlMax] \
-              -toMove $sSideToMove \
-              -gameNumber [list $sGnumMin $sGnumMax] \
-              -flip $sIgnoreCol -filter $::search::filter::operation \
-              -fStdStart $sHeaderFlags(StdStart) \
-              -fPromotions $sHeaderFlags(Promotions) \
-              -fComments $sHeaderFlags(Comments) \
-              -fVariations $sHeaderFlags(Variations) \
-              -fAnnotations $sHeaderFlags(Annotations) \
-              -fDelete $sHeaderFlags(DeleteFlag) \
-              -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-              -fBlackOp $sHeaderFlags(BlackOpFlag) \
-              -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-              -fEndgame $sHeaderFlags(EndgameFlag) \
-              -fNovelty $sHeaderFlags(NoveltyFlag) \
-              -fPawnStruct $sHeaderFlags(PawnFlag) \
-              -fTactics $sHeaderFlags(TacticsFlag) \
-              -fKingside $sHeaderFlags(KsideFlag) \
-              -fQueenside $sHeaderFlags(QsideFlag) \
-              -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-              -fBlunder $sHeaderFlags(BlunderFlag) \
-              -fUser $sHeaderFlags(UserFlag) \
-              -pgn $sPgnlist -wtitles $wtitles -btitles $btitles
-          ::splash::add "   Header filter file $startbase correctly applied"
-        }
-      }
-      ::windows::gamelist::Refresh
-      ::windows::stats::Refresh
-    }
-  } elseif {[string match "*.sor" $startbase]} {
-    ::splash::add "Opening repertoire file: $startbase..."
-    if {[catch {::rep::OpenWithFile $startbase} err]} {
-      ::splash::add "Error opening $startbase: $err"
-    }
-  } else {
-    busyCursor .
-    ::splash::add "Opening database: $startbase ..."
-    set err 0
-    set errMessage ""
-    if {[string match "*.pgn" $startbase] || \
-          [string match "*.PGN" $startbase] || \
-          [string match "*.pgn.gz" $startbase]} {
-      set err [catch {sc_base create $startbase true} errMessage]
-      if {$err == 0} {
-        doPgnFileImport $startbase "\nOpening [file tail $startbase] read-only...\n"
-        sc_base type [sc_base current] 3
-        ::recentFiles::add $startbase
-      }
-    } else {
-      set err [catch { ::file::Open $startbase} errMessage]
-      if {! $err} { ::recentFiles::add "[file rootname $startbase].si4" }
-    }
-    if {$err} {
-      ::splash::add "   Error: could not open database \"$startbase\":\n  $errMessage"
-    } else {
-      ::splash::add "   Database \"$startbase\" opened: [sc_base numGames] games."
-      set initialDir(base) [file dirname $startbase]
-      catch {sc_game load auto}
-      flipBoardForPlayerNames $::myPlayerNames
-    }
-  }
-  unbusyCursor .
-  incr argc -1
-  set argv [lrange $argv 1 end]
-}
-
-::splash::add "\nStartup completed."
-::splash::add "Scid has 44 online help pages; just press F1 for help!\n"
-::splash::add "Also look at the online tutorial\nhttp://scid.sourceforge.net/tutorial/\n"
-setWinLocation $dot_w
-wm deiconify $dot_w
-
-wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
-
-# In docked mode, reopen only the windows that are not dockable
-if { !$::docking::USE_DOCKING } {
-  if {$startup(switcher)} { ::windows::switcher::Open }
-  if {$startup(pgn)} { ::pgn::OpenClose }
-  if {$startup(gamelist)} { ::windows::gamelist::Open }
-  if {$startup(tree)} { ::tree::make }
-  if {$startup(stats)} { ::windows::stats::Open }
-  if {$startup(crosstable)} { crosstabWin }
-  if {$startup(finder)} { ::file::finder::Open }
-  if {$startup(book)} { ::book::open }
-} else  {
-  if {$startup(stats)} { ::windows::stats::Open }
-  if {$startup(crosstable)} { crosstabWin }
-  if {$startup(finder)} { ::file::finder::Open }
-}
-
-updateBoard
-updateTitle
-updateLocale
-update
-bind $dot_w <Configure> "recordWinSize $dot_w"
-
-# Bindings to map/unmap all windows when main window is mapped:
-bind .main.statusbar <Map> { showHideAllWindows deiconify}
-bind .main.statusbar <Unmap> { showHideAllWindows iconify}
 
 ################################################################################
 # returns a list of all toplevel windows, except some that are utilities
@@ -1820,74 +1522,79 @@ proc raiseAllWindows {} {
   }
 }
 
-# Bind double-click in main Scid window to raise all Scid windows:
+setLanguage $language
+updateLocale
+
+CreateMainWin
+
+wm minsize . 0 0
+wm iconname . "Scid"
+setWinLocation $dot_w
+wm deiconify $dot_w
+wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
+bind $dot_w <Configure> "recordWinSize $dot_w"
 bind $dot_w <Double-Button-1> raiseAllWindows
 
-# Hack to extract gif images out of Scid:
-#
-if {0} {
-  proc dumpImages {dir} {
-    package require base64
-    file mkdir $dir
-    set images [image names]
-    foreach i $images {
-      if {[image type $i] == "photo" } {
-        set ext [$i cget -format]
-        if {$ext == ""} {
-          set ext "gif"
-        }
-      } else  {
-        set ext "gif"
-      }
-      set data [string trim [$i cget -data]]
-      if {$data == ""} { continue }
-      if {[catch {set d [::base64::decode $data]}]} { continue }
-      regsub -all {:} $i {_} i
-      set fname [file join $dir $i.$ext]
-      set f [open $fname w]
-      fconfigure $f -translation binary -encoding binary
-      puts -nonewline $f $d
-      close $f
-    }
-  }
-  
-  bind $dot_w <Control-Shift-F7> {puts "dumpImages" ; dumpImages "/tmp/images"}
-}
-
-if {$startup(tip)} { ::tip::show }
-
-# Opening files by drag & drop on Scid icon on Mac
-if { $macOS } {
-  # We opened for a drag & drop request, process it now:
-  set isopenBaseready 1
-  if {$dndargs != 0} {
-    set isopenBaseready 2
-    catch {::tk::mac::OpenDocument $dndargs} errmsg
-    #::splash::add "Opening file(s)...\$dndargs"
-  }
-}
-
-if { !$::docking::USE_DOCKING } {
-  wm withdraw .
-  bind .main <Destroy> { destroy . }
-}
-
 if { $::docking::USE_DOCKING } {
-  setTitle .main [ ::tr "Board" ]
   # restore geometry
   wm minsize $dot_w 360 320
   setWinLocation $dot_w
   setWinSize $dot_w
-  
-  # when main board pane is resized, auto-size it
-  bind .main <Configure> { ::resizeMainBoard }
-  
+
   # restore default layout (number 1)
   if { $::autoLoadLayout } { ::docking::layout_restore 1 }
-  
   standardShortcuts TNotebook
+  standardShortcuts $dot_w
 }
 
-after idle "after 1 ::file::autoLoadBases.load"
+after 1 {
+  toggleGameInfo
+  redrawToolbar
+
+  # In docked mode, reopen only the windows that are not dockable
+  if { !$::docking::USE_DOCKING } {
+    if {$startup(switcher)} { ::windows::switcher::Open }
+    if {$startup(pgn)} { ::pgn::OpenClose }
+    if {$startup(gamelist)} { ::windows::gamelist::Open }
+    if {$startup(tree)} { ::tree::make }
+    if {$startup(crosstable)} { crosstabWin }
+    if {$startup(book)} { ::book::open }
+  }
+  if {$startup(stats)} { ::windows::stats::Open }
+  if {$startup(tip)} { ::tip::show }
+  if {$startup(finder)} { ::file::finder::Open }
+
+  ::resizeMainBoard
+  ::notify::GameChanged
+
+  ::file::autoLoadBases.load
+
+  # fullname:
+  # Given a file name, returns its absolute name.
+  #
+  proc fullname {fname} {
+    if {[file pathtype $fname] == "absolute"} { return $fname }
+    set old [pwd]
+    if {[catch {cd [file dirname $fname]}]} { return $fname }
+    set fname [file join [pwd] [file tail $fname]]
+    catch {cd $old}
+    return $fname
+  }
+  # Loading a database if specified on the command line:
+  foreach cmdbase $::argv {
+    ::file::Open "[fullname $cmdbase]"
+  }
+
+  # Opening files by drag & drop on Scid icon on Mac
+  if { $macOS } {
+    # We opened for a drag & drop request, process it now:
+    set isopenBaseready 1
+    if {$dndargs != 0} {
+      set isopenBaseready 2
+      catch {::tk::mac::OpenDocument $dndargs} errmsg
+    }
+  }
+}
+
 
 ### End of file: end.tcl

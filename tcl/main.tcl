@@ -1562,7 +1562,70 @@ proc toggleGameInfo {} {
 }
 ################################################################################
 
-#TODO: proc CreateMain
+proc CreateMainWin {} {
+  #TODO: move the code for creating the main board here
+
+  setTitle .main [ ::tr "Board" ]
+  standardShortcuts .main
+
+  label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 -font font_Small
+  grid .main.statusbar -row 5 -column 0 -columnspan 3 -sticky we
+
+  for {set i 0} { $i < 64 } { incr i } {
+    ::board::bind .main.board $i <Enter> "enterSquare $i"
+    ::board::bind .main.board $i <Leave> "leaveSquare $i"
+    ::board::bind .main.board $i <ButtonPress-1> "set ::addVariationWithoutAsking 0 ; pressSquare $i"
+    ::board::bind .main.board $i <ButtonPress-$::MB2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
+    ::board::bind .main.board $i <Control-ButtonPress-1> "drawArrow $i green"
+    ::board::bind .main.board $i <Control-ButtonPress-$::MB2> "drawArrow $i yellow"
+    ::board::bind .main.board $i <Control-ButtonPress-$::MB3> "drawArrow $i red"
+    ::board::bind .main.board $i <Shift-ButtonPress-1> "addMarker $i green"
+    ::board::bind .main.board $i <Shift-ButtonPress-$::MB2> "addMarker $i yellow"
+    ::board::bind .main.board $i <Shift-ButtonPress-$::MB3> "addMarker $i red"
+    ::board::bind .main.board $i <B1-Motion> "::board::dragPiece .main.board %X %Y"
+    ::board::bind .main.board $i <ButtonRelease-1> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
+    ::board::bind .main.board $i <ButtonRelease-$::MB2> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
+    ::board::bind .main.board $i <ButtonPress-$::MB3> backSquare
+  }
+
+  foreach i {o q r n k O Q R B N K} {
+    bind .main <$i> "moveEntry_Char [string toupper $i]"
+  }
+  foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
+    bind .main <Key-$i> "moveEntry_Char $i"
+  }
+
+  bind .main <Control-BackSpace> backSquare
+  bind .main <Control-Delete> backSquare
+  bind .main <BackSpace> moveEntry_Backspace
+  bind .main <Delete> moveEntry_Backspace
+  bind .main <space> moveEntry_Complete
+  bind .main <ButtonRelease> {focus .main}
+  bind .main <period> {toggleRotateBoard}
+  bind .main <Configure> { ::resizeMainBoard }
+  bind .main.statusbar <1> gotoNextBase
+  bind .main.statusbar <Map> { showHideAllWindows deiconify}
+  bind .main.statusbar <Unmap> { showHideAllWindows iconify}
+
+  ############################################################
+  ### Packing the main window:
+  if { $::docking::USE_DOCKING} {
+    ttk::frame .main.space
+    grid .main.space -row 4 -column 0 -columnspan 3 -sticky nsew
+    grid rowconfigure .main 3 -weight 0
+    grid rowconfigure .main 4 -weight 1
+  } else  {
+    grid rowconfigure .main 3 -weight 1
+    wm resizable .main 0 1
+    wm withdraw .
+    bind .main <Destroy> { destroy . }
+  }
+  grid columnconfigure .main 0 -weight 1
+  pack .main.fbutton.button -anchor center
+  grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2
+  grid .main.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
+}
+
 ::board::new .main.board $boardSize "showmat"
 
 #.main.board.bd configure -relief solid -border 2
