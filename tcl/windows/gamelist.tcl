@@ -35,12 +35,7 @@ proc ::windows::gamelist::Open { {base ""} {reuse "false"} } {
 		incr i
 	}
 	set w .glistWin$i
-
-	if {[::createToplevel $w $closeto] == "already_exists"} {
-		focus .
-		destroy $w
-		return
-	}
+	::createToplevel $w $closeto
 
 	set ::gamelistTitle($w) "[tr WindowsGList]:"
 	if {$base == ""} { set base [sc_base current] }
@@ -78,7 +73,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 	foreach w $wlist {
 		if {![winfo exists $w]} { continue }
 		if { $::gamelistPosMask($w) != 0 } {
-			sc_filter posmask $::gamelistBase($w) dbfilter FEN
+			sc_filter posmask $::gamelistBase($w) $::gamelistFilter($w) FEN
 			if {[winfo exists $w]} {
 				$w.games.glist tag configure fsmall -foreground ""
 				$w.buttons.boardFilter configure -image tb_BoardMask
@@ -260,7 +255,7 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 	} else {
 		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
-		sc_filter posmask $::gamelistBase($w) dbfilter
+		sc_filter posmask $::gamelistBase($w) $::gamelistFilter($w)
 		$w.games.glist tag configure fsmall -foreground ""
 		$w.buttons.boardFilter configure -image tb_BoardMask
 		::notify::DatabaseChanged
@@ -495,8 +490,6 @@ proc glist.create {{w} {layout}} {
 #   w: the parent windows of the widget that was passed to glist.create
 #   base: the database from which retrieve values
 #   filter: returns only values in the specified filter
-#         - "dbfilter": only values that matches the user defined filters
-#         - "tree": only games from which are calculated the stats in the tree window
 #   moveUp: reset glist to show the first results
 proc glist.update {{w} {base} {filter} {moveUp 1}} {
   set w $w.glist
@@ -788,9 +781,9 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       $w.game_menu add separator
       menu $w.game_menu.filter
       $w.game_menu.filter add command -label [tr SearchReset] \
-        -command "sc_filter set $::glistBase($w) dbfilter 1; ::notify::DatabaseChanged"
+        -command "sc_filter set $::glistBase($w) $::glistFilter($w) 1; ::notify::DatabaseChanged"
       $w.game_menu.filter add command -label [tr SearchNegate] \
-        -command "sc_filter negate $::glistBase($w) dbfilter; ::notify::DatabaseChanged"
+        -command "sc_filter negate $::glistBase($w) $::glistFilter($w); ::notify::DatabaseChanged"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label $::tr(GlistRemoveGameAndAboveFromFilter) \
         -command "glist.removeFromFilter_ $w $idx -"
@@ -799,11 +792,10 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       $w.game_menu.filter add command -label $::tr(GlistRemoveGameAndBelowFromFilter) \
         -command "glist.removeFromFilter_ $w $idx +"
       $w.game_menu.filter add separator
-      #TODO: sc_base gameflag can be slow if the base is big
       $w.game_menu.filter add command -label $::tr(GlistDeleteAllGames) \
-        -command "sc_base gameflag $::glistBase($w) dbfilter set del; ::notify::DatabaseChanged"
+        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) set del; ::notify::DatabaseChanged"
       $w.game_menu.filter add command -label $::tr(GlistUndeleteAllGames) \
-        -command "sc_base gameflag $::glistBase($w) dbfilter unset del; ::notify::DatabaseChanged"
+        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseChanged"
       $w.game_menu add cascade -label $::tr(Filter) -menu $w.game_menu.filter
       $w.game_menu add separator
       #TODO: translate labels
