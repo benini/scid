@@ -54,6 +54,7 @@ Source: "bitmaps2\*"; DestDir: "{app}\bitmaps2"; Flags: recursesubdirs
 Source: "help\*"; DestDir: "{app}\help"; Flags: recursesubdirs
 Source: "COPYING"; DestDir: "{app}"
 Source: "Example.*"; DestDir: "{app}"
+Source: "scidsnd.exe"; DestDir: "{app}\bin"
 Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tcl8.6\*"; DestDir: "{app}\lib\tcl8.6"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tk8.6\*"; DestDir: "{app}\lib\tk8.6"; Flags: recursesubdirs

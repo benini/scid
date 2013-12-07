@@ -1,6 +1,7 @@
 ### sound.tcl
 ### Functions for playing sound files to announce moves.
 ### Part of Scid. Copyright (C) Shane Hudson 2004.
+### Copyright (C) 2013 Fulvio Benini
 ###
 ### Uses the free Tcl/Tk sound package "Snack", which comes with
 ### most Tcl distributions. See http://www.speech.kth.se/snack/
@@ -10,7 +11,8 @@
 
 namespace eval ::utils::sound {}
 
-set ::utils::sound::hasSnackPackage 0
+set ::utils::sound::pipe ""
+set ::utils::sound::hasSound 0
 set ::utils::sound::isPlayingSound 0
 set ::utils::sound::soundQueue {}
 set ::utils::sound::soundFiles [list \
@@ -36,29 +38,30 @@ array set ::utils::sound::soundMap {
 #   Called once at startup to load the Snack package and set up sounds.
 #
 proc ::utils::sound::Setup {} {
-  variable hasSnackPackage
+  variable hasSound
   variable soundFiles
   variable soundFolder
-  
-  ::splash::add "Setting up audio move announcement..."
+
+  set hasSound 1
   if {[catch {package require snack 2.0}]} {
-    set hasSnackPackage 0
-    ::splash::add "    Move speech disabled - Snack sound package not found"
-    return
+    if {$::windowsOS} {
+      catch {
+        set ::utils::sound::pipe [open "| scidsnd.exe" "r+"]
+        fconfigure $::utils::sound::pipe -blocking 0 -buffering line
+        fileevent $::utils::sound::pipe readable {
+          gets $::utils::sound::pipe
+          ::utils::sound::SoundFinished
+        }
+      }
+    }
+    if { $::utils::sound::pipe == "" } { set hasSound 0 }
+  } else {
+    # Set up sounds. Each sound will be empty until a WAV file for it is found.
+    foreach soundFile $soundFiles {
+      ::snack::sound sound_$soundFile
+    }
+    ::utils::sound::ReadFolder
   }
-  
-  ::splash::add "    Move speech enabled - Snack sound package found"
-  set hasSnackPackage 1
-  
-  # Set up sounds. Each sound will be empty until a WAV file for it is found.
-  foreach soundFile $soundFiles {
-    ::snack::sound sound_$soundFile
-  }
-  
-  set numSounds [::utils::sound::ReadFolder]
-  set numSought [llength $soundFiles]
-  ::splash::add "Searching sounds folder for move announcement sounds..."
-  ::splash::add "   Found $numSounds of $numSought sound files in $soundFolder"
 }
 
 
@@ -77,7 +80,9 @@ proc ::utils::sound::ReadFolder {{newFolder ""}} {
   foreach soundFile $soundFiles {
     set f [file join $soundFolder $soundFile.wav]
     if {[file readable $f]} {
-      sound_$soundFile configure -file $f
+      if { $::utils::sound::pipe == "" } {
+        sound_$soundFile configure -file $f
+      }
       incr count
     }
   }
@@ -87,10 +92,10 @@ proc ::utils::sound::ReadFolder {{newFolder ""}} {
 
 
 proc ::utils::sound::AnnounceMove {move} {
-  variable hasSnackPackage
+  variable hasSound
   variable soundMap
   
-  if {! $hasSnackPackage} { return }
+  if {! $hasSound} { return }
   
   if {[string range $move 0 4] == "O-O-O"} { set move q }
   if {[string range $move 0 2] == "O-O"} { set move k }
@@ -134,9 +139,13 @@ proc ::utils::sound::SoundFinished {} {
 
 
 proc ::utils::sound::CancelSounds {} {
-  if {! $::utils::sound::hasSnackPackage} { return }
-  
-  snack::audio stop
+  if {! $::utils::sound::hasSound} { return }
+
+  if { $::utils::sound::pipe != "" } {
+    puts $::utils::sound::pipe "stop"
+  } else {
+    snack::audio stop
+  }
   set ::utils::sound::soundQueue {}
   set ::utils::sound::isPlayingSound 0
 }
@@ -145,7 +154,7 @@ proc ::utils::sound::CancelSounds {} {
 #
 ################################################################################
 proc ::utils::sound::PlaySound {sound} {
-  if {! $::utils::sound::hasSnackPackage} { return }
+  if {! $::utils::sound::hasSound} { return }
   lappend ::utils::sound::soundQueue $sound
   after idle ::utils::sound::CheckSoundQueue
 }
@@ -165,8 +174,14 @@ proc ::utils::sound::CheckSoundQueue {} {
   set next [lindex $soundQueue 0]
   set soundQueue [lrange $soundQueue 1 end]
   set isPlayingSound 1
-  catch { $next play -blocking 0 -command ::utils::sound::SoundFinished }
-  after 5000 ::utils::sound::CancelSounds
+  if { $::utils::sound::pipe != "" } {
+    set next [string range $next 6 end]
+    set f [file join $::utils::sound::soundFolder $next.wav]
+    puts $::utils::sound::pipe "[file nativename $f]"
+  } else {
+    catch { $next play -blocking 0 -command ::utils::sound::SoundFinished }
+    after 5000 ::utils::sound::CancelSounds
+  }
 }
 
 
@@ -189,7 +204,7 @@ proc ::utils::sound::OptionsDialog {} {
   
   
   label $w.status -text ""
-  if {! $::utils::sound::hasSnackPackage} {
+  if {! $::utils::sound::hasSound} {
     $w.status configure -text "Scid could not find the Snack audio package at startup; Sound is disabled."
     pack $w.status -side bottom
   }
@@ -290,7 +305,5 @@ proc ::utils::sound::OptionsDialogOK {} {
   }
 }
 
-
 # Read the sound files at startup:
-
 ::utils::sound::Setup
