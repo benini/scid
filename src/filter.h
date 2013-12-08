@@ -49,6 +49,7 @@ class Filter
 
     void    Init (uint size);
     uint    Count ();
+    bool    isWhole () const { return FilterCount == FilterSize; }
     void    Set (uint index, byte value);   // Sets the value at index.
     byte    Get (uint index) const;         // Gets the value at index.
     byte    GetNoPosMask (uint index) const { return (Data == NULL) ? 1 : Data[index]; }

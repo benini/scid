@@ -733,6 +733,7 @@ class Index
                                                    uint total),
                                 void * progressData);
     inline errorT ReadEntireFile () {
+        if (InMemory) return OK;
         return ReadEntireFile (0, NULL, NULL);
     }
 
@@ -791,6 +792,10 @@ class Index
     uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter, uint gnumber);
     uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
 	                       const char* text, uint start, bool forward =true);
+    /* IndexUpdated
+     * When changes are made to the games (adding or saving a game) the sortcaches need to be updated.
+     * if gnum == IDX_NOT_FOUND the sortcache will be completely rebuild (faster for a large number of updates)
+     */
     errorT IndexUpdated( uint gnum);
 
     // Old sorting related methods. Should become obsolete
@@ -812,7 +817,6 @@ class Index
      errorT     WriteSorted () { return WriteSorted (0, NULL, NULL); }
 
      errorT     ParseSortCriteria (const char * inputStr);
-     errorT GetSortingCrit( char *crit, int handle);
      bool CanLoad();
 };
 

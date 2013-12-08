@@ -174,16 +174,26 @@ struct scidBaseT {
     scidBaseT() { validStats = false; }
     template <class TF, class TD>
     const char* Open (const char* filename, fileModeT mode, TF progressFn, TD progressData);
+    Filter* getFilter(const char* filterName);
+    Filter* getFilter(int idx) {
+        if (idx > 1) return 0;
+        return (idx == 0) ? dbFilter : treeFilter;
+    }
     scidStatsT* getStats() {
         if (! validStats) computeStats();
         return &stats;
     }
+    const char* clearCaches();
     void clearStats() { validStats = false; };
     bool abortedSeach(long searchID) { return currSearchID != searchID; }
+    template<class TF, class TD>
+    const char* addGames(scidBaseT* sourceBase, Filter* filter, TF progressFn, TD progressData);
+    const char* addGame(scidBaseT* sourceBase, uint gNum);
 
 private:
     bool validStats;
     scidStatsT stats;         // Counts of flags, average rating, etc.
+    const char* addGame_(scidBaseT* sourceBase, uint gNum);
     void computeStats();
 };
 
@@ -426,7 +436,6 @@ int sc_eco_translate  (TCL_ARGS);
 
 int sc_filter         (TCL_ARGS);
 int sc_filter_count   (TCL_ARGS);
-int sc_filter_copy    (TCL_ARGS);
 int sc_filter_first   (TCL_ARGS);
 int sc_filter_freq    (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_filter_index   (TCL_ARGS);
@@ -455,7 +464,6 @@ int sc_game_pgn       (TCL_ARGS);
 int sc_game_pop       (TCL_ARGS);
 int sc_game_push      (TCL_ARGS);
 int sc_savegame       (Tcl_Interp *, Game * game, gameNumberT, scidBaseT *);
-int sc_savegame       (Tcl_Interp * ti, scidBaseT * sourceBase, ByteBuffer * bbuf, IndexEntry * srcIe, scidBaseT * base);
 int sc_game_save      (TCL_ARGS);
 int sc_game_scores    (TCL_ARGS);
 int sc_game_startBoard (TCL_ARGS);

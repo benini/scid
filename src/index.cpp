@@ -1829,7 +1829,7 @@ errorT Index::IndexUpdated( uint gnum)
 {
 	for(uint i=0; i<SORTING_CACHE_MAX; i++)
 		if( sortingCaches[i] != NULL)
-			sortingCaches[i]->CheckForChanges( NULL, gnum);
+			sortingCaches[i]->CheckForChanges(gnum);
 	return OK;
 }
 

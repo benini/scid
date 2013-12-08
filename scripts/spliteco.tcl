@@ -114,7 +114,7 @@ proc split {frombase newbasename startECO endECO} {
   sc_filter reset
   sc_search header -eco [list $startECO $endECO]
   set ngames [sc_filter size]
-  if {[catch {sc_filter copy $frombase $tobase} err]} {
+  if {[catch {sc_base copygames $frombase dbfilter $tobase} err]} {
     err "Error copying games to \"$newbasename\": $err"
     exit 1
   }

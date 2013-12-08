@@ -98,6 +98,41 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 	unbusyCursor $w
 }
 
+proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
+	set filter "dbfilter"
+	if {$w != "" && $srcBase == $::gamelistBase($w)} { set filter $::gamelistFilter($w) }
+
+	set fromName [file tail [sc_base filename $srcBase]]
+	set targetName [file tail [sc_base filename $dstBase]]
+	set nGamesToCopy [sc_filter count $srcBase $filter]
+	set targetReadOnly [sc_base isReadOnly $dstBase]
+	set err ""
+	if {$nGamesToCopy == 0} {
+		set err "$::tr(CopyErrSource) $::tr(CopyErrNoGames)."
+	} elseif {$targetReadOnly} {
+		set err "$::tr(CopyErrTarget) ($targetName) $::tr(CopyErrReadOnly)."
+	}
+	if {$err != ""} {
+		tk_messageBox -type ok -icon info -title "Scid" \
+			-message "$::tr(CopyErr) \n\"$fromName\" -> \"$targetName\": \n$err"
+		return
+	}
+	# If copying to the clipbase, do not bother asking for confirmation:
+	if {$dstBase != [sc_info clipbase]} {
+		set confirm [tk_messageBox -type "okcancel" -icon question -title "Scid: $::tr(CopyGames)" \
+			-message [subst $::tr(CopyConfirm)] ]
+		if {$confirm != "ok"} { return }
+	}
+
+	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) "sc_progressBar"
+	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
+	closeProgressWindow
+	if {$copyErr} {
+		tk_messageBox -type ok -icon info -title "Scid" -message $result
+	}
+	::notify::DatabaseChanged
+}
+
 
 #Private:
 set ::windows::gamelist::wins {}

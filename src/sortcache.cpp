@@ -597,32 +597,13 @@ uint SortCache::CalcHash (IndexEntry * ie)
 }
 
 errorT
-SortCache::CheckForChanges ( int *criteria, uint id)
+SortCache::CheckForChanges (uint id)
 {
-	// TODO: Maybe it's better t_.interrupt() and after changes "if (!sorted_) t_.start()"?
-	t_.join();
-	bool matchFound = false;
-	if( id >= numGames)
-		return AddEntry();
-
-	while( criteria && *criteria != SORTING_sentinel)
+	if (id <= numGames)
 	{
-		byte *sc = SortCriteria;
-		while( *sc != SORTING_sentinel)
-			if( *sc == *criteria)
-			{
-				matchFound = true;
-				break;
-			}
-		if( matchFound == true)
-			break;
-	}
+		t_.join();
+		if (id == numGames) return AddEntry();
 
-	if( criteria && !matchFound)
-		return OK;
-
-	if(id != IDX_NOT_FOUND)
-	{
 		if( hashValues)
 			hashValues[id] = CalcHash( index->FetchEntry( id));
 
@@ -630,7 +611,6 @@ SortCache::CheckForChanges ( int *criteria, uint id)
 			for(uint i=0; i<numGames; i++)
 				if( fullMap[i] == id)
 				{
-					uint id = fullMap[i];
 					for(; i<numGames - 1; i++) fullMap[i] = fullMap[i + 1];
 					Insert( id, numGames - 1);
 					break;
@@ -639,9 +619,13 @@ SortCache::CheckForChanges ( int *criteria, uint id)
 	}
 	else
 	{
-		if (hashValues == 0) hashValues = new uint[numGames];
+		t_.interrupt();
+		numGames = index->GetNumGames();
+		if (hashValues != NULL) delete[] hashValues;
+		hashValues = new uint[numGames];
 		for(uint i=0; i<numGames; i++)
 			hashValues[i] = CalcHash( index->FetchEntry( i));
+		sorted_ = false;
 		t_.start();
 	}
 

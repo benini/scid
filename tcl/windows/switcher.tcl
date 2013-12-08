@@ -602,7 +602,9 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
       ::file::SwitchToBase $toBase
     }
   } else {
-    copyFilter $fromBase $toBase
+    set glist ""
+    if { [info exists ::sw_LinkedGList_($w)] } { set glist $::sw_LinkedGList_($w) }
+    ::windows::gamelist::CopyGames $glist $fromBase $toBase
   }
 }
 

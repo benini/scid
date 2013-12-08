@@ -209,7 +209,7 @@ proc ::preport::makeReportWin {args} {
   if {$::preport::_clipbase} {
     if {[sc_base current] != [sc_info clipbase]} {
       sc_clipbase clear
-      sc_filter copy [sc_base current] [sc_info clipbase]
+      ::windows::gamelist::CopyGames "" [sc_base current] [sc_info clipbase]
     }
   }
   if {$showProgress} {
