@@ -1536,7 +1536,6 @@ proc updateMenuStates {} {
   $m.file.utils entryconfig [tr FileMaintCompact] -state $state
   
   ::search::Config
-  ::windows::switcher::Refresh
   ::maint::Refresh
   ::bookmarks::Refresh
 }

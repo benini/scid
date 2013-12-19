@@ -351,7 +351,7 @@ proc ::tools::graphs::filter::Refresh {} {
   ::utils::graph::redraw filter
   $w.c itemconfigure title -text $::tr(GraphFilterTitle)
   $w.c itemconfigure type -text $typeName
-  $w.b.status configure -text "  $::tr(Filter): [filterText]"
+  $w.b.status configure -text "  $::tr(Filter): [::windows::gamelist::filterText]"
   unbusyCursor .
   update
 }
@@ -831,7 +831,7 @@ proc ::tools::graphs::absfilter::Refresh {} {
   ::utils::graph::redraw absfilter
   $w.c itemconfigure title -text $::tr(GraphAbsFilterTitle)
   $w.c itemconfigure type -text $typeName
-  $w.b.status configure -text "  $::tr(Filter): [filterText]"
+  $w.b.status configure -text "  $::tr(Filter): [::windows::gamelist::filterText]"
   unbusyCursor .
   update
 }

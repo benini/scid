@@ -52,7 +52,6 @@ class Filter
     bool    isWhole () const { return FilterCount == FilterSize; }
     void    Set (uint index, byte value);   // Sets the value at index.
     byte    Get (uint index) const;         // Gets the value at index.
-    byte    GetNoPosMask (uint index) const { return (Data == NULL) ? 1 : Data[index]; }
     void    Fill (byte value);              // Sets all values.
     void    Append (byte value);            // Appends one value.
     void    Negate ();
@@ -66,13 +65,13 @@ inline void
 Filter::Set (uint index, byte value)
 {
     ASSERT (index < FilterSize);
-    if (GetNoPosMask(index) != 0) { FilterCount--; }
-    if (value != 0) { FilterCount++; }
 	if (Data == NULL){
         if (value == 1)
 	        return;
 		Allocate();
 	}
+    if (Data[index] != 0) FilterCount--;
+    if (value != 0) FilterCount++;
     Data[index] = value;
 }
 

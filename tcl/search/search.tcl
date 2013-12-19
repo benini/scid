@@ -10,23 +10,6 @@ set searchType 0
 set ::search::filter::operation 2
 
 
-# TODO: Rename to ::search::filter::text
-# filterText: returns text describing state of filter for specified
-#   database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
-#
-proc filterText {{base 0} {kilo 0}} {
-  # Default to current base if no base specified:
-  if {$base == 0} { set base [sc_base current] }
-  set filterCount [sc_filter count $base]
-  set gameCount [sc_base numGames $base]
-  if {$gameCount == 0} { return $::tr(noGames) }
-  if {$gameCount == $filterCount} {
-    return "$::tr(all) / [::utils::thousands $gameCount $kilo]"
-  }
-  return "[::utils::thousands $filterCount $kilo] / [::utils::thousands $gameCount $kilo]"
-}
-
-
 # search::filter::reset
 #   Resets the filter to contain all games. Calls sc_filter reset and
 #   updates relevant windows.

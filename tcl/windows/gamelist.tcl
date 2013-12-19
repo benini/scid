@@ -61,26 +61,68 @@ proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
 	}
 }
 
+proc ::windows::gamelist::PosMaskProgress {} {
+	update
+	if { $::gamelistUpdating != 1 } { break }
+}
+
 proc ::windows::gamelist::PosChanged {{wlist ""}} {
+	if { [info exists ::gamelistUpdating] } {
+		incr ::gamelistUpdating
+		return
+	}
+	set ::gamelistUpdating 1
+
+	set bases {}
 	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
 	foreach w $wlist {
-		if {![winfo exists $w]} { continue }
 		if { $::gamelistPosMask($w) != 0 } {
 			$w.games.glist tag configure fsmall -foreground #bababa
 			$w.buttons.boardFilter configure -image tb_BoardMaskBusy
-		}
-	}
-	foreach w $wlist {
-		if {![winfo exists $w]} { continue }
-		if { $::gamelistPosMask($w) != 0 } {
-			sc_filter posmask $::gamelistBase($w) $::gamelistFilter($w) FEN
-			if {[winfo exists $w]} {
-				$w.games.glist tag configure fsmall -foreground ""
-				$w.buttons.boardFilter configure -image tb_BoardMask
+			if { [lsearch -exact $bases $::gamelistBase($w)] == -1 } {
+				lappend bases $::gamelistBase($w)
 			}
-			::notify::DatabaseChanged
 		}
 	}
+	foreach base $bases {
+		set f [sc_base filter $base create FEN]
+		if { $::gamelistUpdating != 1 } {
+			after idle {
+				unset ::gamelistUpdating
+				::windows::gamelist::PosChanged
+			}
+			return
+		}
+		if {$f != ""} {
+			foreach w $::windows::gamelist::wins {
+				if { $::gamelistBase($w) == $base && $::gamelistPosMask($w) != 0 } {
+					$w.games.glist tag configure fsmall -foreground ""
+					$w.buttons.boardFilter configure -image tb_BoardMask
+					set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w) $f]
+					::windows::gamelist::Refresh 1 $w
+				}
+			}
+		}
+	}
+	unset ::gamelistUpdating
+	notify::DatabaseChanged 0
+}
+
+# Returns text describing state of filter for specified
+# database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
+proc ::windows::gamelist::filterText {{w ""} {base 0}} {
+	if {$base == 0} { set base [sc_base current] }
+	set gameCount [sc_base numGames $base]
+	if {$gameCount == 0} { return $::tr(noGames) }
+	set f "dbfilter"
+	if {$w != "" && $base == $::gamelistBase($w)}  {
+		set f $::gamelistFilter($w)
+	}
+	set filterCount [sc_filter size $base $f]
+	if {$gameCount == $filterCount} {
+		return "$::tr(all) / [::utils::thousands $gameCount 100000]"
+	}
+	return "[::utils::thousands $filterCount 100000] / [::utils::thousands $gameCount 100000]"
 }
 
 proc ::windows::gamelist::GetBase {{w}} {
@@ -94,7 +136,11 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 	set ::gamelistFilter($w) $filter
 	busyCursor $w
 	update idletasks
-	::windows::gamelist::Refresh 1 $w
+	if { $::gamelistPosMask($w) != 0 } {
+		::windows::gamelist::PosChanged $w
+	} else {
+		::windows::gamelist::Refresh 1 $w
+	}
 	unbusyCursor $w
 }
 
@@ -104,7 +150,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 
 	set fromName [file tail [sc_base filename $srcBase]]
 	set targetName [file tail [sc_base filename $dstBase]]
-	set nGamesToCopy [sc_filter count $srcBase $filter]
+	set nGamesToCopy [sc_filter size $srcBase $filter]
 	set targetReadOnly [sc_base isReadOnly $dstBase]
 	set err ""
 	if {$nGamesToCopy == 0} {
@@ -261,18 +307,7 @@ proc ::windows::gamelist::filter_ {{w} {type}} {
 }
 
 proc ::windows::gamelist::update_ {{w} {moveUp}} {
-	set gameCount [sc_base numGames $::gamelistBase($w)]
-	if {$gameCount == 0} {
-		set fr $::tr(noGames)
-	} else {
-		set filterCount [sc_filter count $::gamelistBase($w) $::gamelistFilter($w)]
-		set tmp [::utils::thousands $gameCount 100000]
-		if {$gameCount == $filterCount} {
-			set fr "$::tr(all) / $tmp"
-		} else {
-			set fr "[::utils::thousands $filterCount 100000] / $tmp"
-		}
-	}
+	set fr [::windows::gamelist::filterText $w $::gamelistBase($w)]
 	set fn [file tail [sc_base filename $::gamelistBase($w)]]
 	::setTitle $w "$::gamelistTitle($w) $fn ($fr)"
 	if {$moveUp} {
@@ -290,10 +325,11 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 	} else {
 		set ::gamelistPosMask($w) 0
 		$w.buttons.boardFilter state !pressed
-		sc_filter posmask $::gamelistBase($w) $::gamelistFilter($w)
+		set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
 		$w.games.glist tag configure fsmall -foreground ""
 		$w.buttons.boardFilter configure -image tb_BoardMask
-		::notify::DatabaseChanged
+		::windows::gamelist::Refresh 1 $w
+		notify::DatabaseChanged 0
 	}
 }
 
@@ -531,7 +567,7 @@ proc glist.update {{w} {base} {filter} {moveUp 1}} {
   if {! [winfo exists $w]} { return }
 
   set ::glistFilter($w) $filter
-  set ::glistTotal($w) [sc_filter count $base $filter]
+  set ::glistTotal($w) [sc_filter size $base $filter]
   if {$moveUp == 1} { set ::glistFirst($w) 0.0 }
 
   glist.update_ $w $base
@@ -754,7 +790,7 @@ proc glist.removeFromFilter_ {{w} {idx} {dir ""}} {
     ::notify::DatabaseChanged 0
     return
   }
-  set fc [sc_filter count $::glistBase($w) $::glistFilter($w)]
+  set fc [sc_filter size $::glistBase($w) $::glistFilter($w)]
   sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx $dir$fc $::glistSortStr($w)
   ::notify::DatabaseChanged 1
   if {$dir == "+"} { glist.ybar_ $w moveto 1 }

@@ -693,7 +693,7 @@ proc ::tree::status { msg baseNumber } {
   if {$tree(locked$baseNumber)} { append status " ($::tr(TreeLocked))" }
   if {! $tree(allgames$baseNumber)} {
     append status "   $::tr(Filter)"
-    append status ": [filterText $base]"
+    append status ": [::windows::gamelist::filterText "" $base]"
   }
   set tree(status$baseNumber) $status
 }

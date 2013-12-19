@@ -150,7 +150,7 @@ proc ::game::Reload {} {
 #   Loads a random game from the database.
 #
 proc ::game::LoadRandom {} {
-  set ngames [sc_filter size]
+  set ngames [sc_filter count]
   if {$ngames == 0} { return }
   set r [expr {(int (rand() * $ngames)) + 1} ]
   set gnumber [sc_filter index $r]

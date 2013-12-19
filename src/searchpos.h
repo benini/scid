@@ -297,7 +297,7 @@ private:
 template <const bool progress = false>
 class SearchPos {
 public:
-	SearchPos(Position* pos, void  (*progressFn)(double) = 0) {
+	SearchPos(Position* pos, bool  (*progressFn)(double) = 0) {
 		for (int i=0; i<8; ++i) {
 			nPieces_[WHITE][i] = 0;
 			nPieces_[BLACK][i] = 0;
@@ -340,8 +340,7 @@ public:
 		if (storedLine_) delete storedLine_;
 	}
 
-	bool setFilter(scidBaseT* base, Filter* filter, long searchID) {
-		searchID_ = searchID;
+	bool setFilter(scidBaseT* base, Filter* filter) {
 		if (! isStdStard_) {
 			if (toMove_ == WHITE) return SetFilter<WHITE>(base, filter);
 			return SetFilter<BLACK>(base, filter);
@@ -370,9 +369,8 @@ private:
 	squareT wk_pos_, bk_pos_;
 	matSigT msig_;
 	colorT toMove_;
-	void  (*progressFn_)(double);
+	bool  (*progressFn_)(double);
 	long progressEvery_;
-	long searchID_;
 
 	template <colorT TOMOVE>
 	bool SetFilter (scidBaseT* base, Filter* filter) {
@@ -405,8 +403,7 @@ private:
 
 			if (progress) {
 				if (progressEvery_++ >= 500) {
-					progressFn_ (static_cast<double> (i) / base->numGames);
-					if (base->abortedSeach(searchID_)) return false;
+					if (!progressFn_ (static_cast<double> (i) / base->numGames)) return false;
 					progressEvery_ = 0;
 				}
 			}

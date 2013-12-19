@@ -737,7 +737,12 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
         set name "[file tail [sc_base filename $i]]"
       }
       $w.c.f$i.name configure -background $color -text $name
-      $w.c.f$i.ngames configure -background $color -text "[filterText $i 100000]"
+      if {[info exists ::sw_LinkedGList_($w)]} {
+        set txt [::windows::gamelist::filterText $::sw_LinkedGList_($w) $i]
+      } else {
+        set txt [::windows::gamelist::filterText "" $i]
+      }
+      $w.c.f$i.ngames configure -background $color -text "$txt"
       $w.c itemconfigure tag$i -state normal
     } else {
       $w.c itemconfigure tag$i -state hidden

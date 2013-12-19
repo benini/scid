@@ -169,7 +169,6 @@ struct scidBaseT {
     Filter *     treeFilter;
     uint *       duplicates;  // For each game: idx of duplicate game + 1,
                               // or 0 if there is no duplicate.
-    long currSearchID;
 
     scidBaseT() { validStats = false; }
     template <class TF, class TD>
@@ -185,7 +184,6 @@ struct scidBaseT {
     }
     const char* clearCaches();
     void clearStats() { validStats = false; };
-    bool abortedSeach(long searchID) { return currSearchID != searchID; }
     template<class TF, class TD>
     const char* addGames(scidBaseT* sourceBase, Filter* filter, TF progressFn, TD progressData);
     const char* addGame(scidBaseT* sourceBase, uint gNum);

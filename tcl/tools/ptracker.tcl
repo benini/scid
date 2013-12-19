@@ -55,7 +55,7 @@ proc ::ptrack::select {plist} {
 proc ::ptrack::status {{text ""}} {
   set t .ptracker.status
   if {$text == ""} {
-    $t configure -text "$::tr(Filter): [filterText]"
+    $t configure -text "$::tr(Filter): [::windows::gamelist::filterText]"
   } else {
     $t configure -text $text
   }
