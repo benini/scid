@@ -105,13 +105,14 @@ set sHeaderFlagFrame 0
 #
 #   Opens the window for searching by header information.
 #
-proc search::header {{ref_base ""}} {
+proc search::header {{ref_base ""} {ref_filter ""}} {
   global sWhite sBlack sEvent sSite sRound sAnnotator sAnnotated sDateMin sDateMax sIgnoreCol
   global sWhiteEloMin sWhiteEloMax sBlackEloMin sBlackEloMax
   global sEloDiffMin sEloDiffMax sSideToMove
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
-    
+
+  set ::refFilterH $ref_filter
   set w .sh
   if {[winfo exists $w]} {
     wm deiconify $w
@@ -131,9 +132,13 @@ proc search::header {{ref_base ""}} {
   bind $w <Escape> "$w.b.cancel invoke"
   bind $w <Return> "$w.b.search invoke"
   
-  pack [ttk::frame $w.refdb] -side top -fill x
-  CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
-  addHorizontalRule $w
+  if {$ref_base != ""} {
+    set ::refDatabaseH $ref_base
+  } else {
+    pack [ttk::frame $w.refdb] -side top -fill x
+    CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
+    addHorizontalRule $w
+  }
 
   set regular font_Small
   set bold font_SmallBold
@@ -424,7 +429,7 @@ proc search::header {{ref_base ""}} {
     }
     busyCursor .
     set curr_base [sc_base current]
-    sc_base switch [lindex $refDatabaseH 0]
+    sc_base switch [string index $::refDatabaseH 0]
     pack .sh.b.stop -side right -padx 5
     grab .sh.b.stop
     sc_progressBar .sh.fprogress.progress bar 301 21 time
@@ -598,7 +603,13 @@ proc search::header {{ref_base ""}} {
         set i [expr {$i+1}]
       }
     } else {
-      set str [sc_search header -white $sWhite -black $sBlack \
+      set dbase [string index $::refDatabaseH 0]
+      if { $::refFilterH == "" } {
+        set newGamelistWin 1
+        set ::refFilterH "[sc_base newFilter $dbase]"
+      } else { set newGamelistWin 0 }
+
+      set str [sc_filter search $dbase $::refFilterH header -white $sWhite -black $sBlack \
           -event $sEvent -site $sSite -round $sRound \
           -date [list $sDateMin $sDateMax] \
           -results [list $sResWin $sResDraw $sResLoss $sResOther] \
@@ -638,6 +649,14 @@ proc search::header {{ref_base ""}} {
           -fCustom6 $sHeaderFlags(CustomFlag6) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
           ]
+      if { $newGamelistWin !=0 } {
+        if { [sc_filter size $dbase $::refFilterH] == 0 } {
+          sc_filter release $dbase $::refFilterH
+          set ::refFilterH ""
+        } else {
+          after idle "::windows::gamelist::Open false $dbase $::refFilterH"
+        }
+      }
     }
     
     grab release .sh.b.stop

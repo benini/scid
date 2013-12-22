@@ -610,16 +610,13 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
 
 proc ::windows::switcher::popupmenu { {w} {abs_x} {abs_y} {baseIdx} } {
   set clipbaseIdx [sc_info clipbase]
-  set closeLabel [tr FileClose]
-  if { $baseIdx == $clipbaseIdx } { set closeLabel [tr EditReset] }
-
   $w.menu delete 0 end
-  $w.menu add command -label "Open gamelist" -command "::windows::gamelist::Open $baseIdx"
+  $w.menu add command -label "Open gamelist" -command "::windows::gamelist::Open false $baseIdx"
   $w.menu add command -label [tr SearchReset] -command "::search::filter::reset $baseIdx"
   $w.menu add separator
   $w.menu add command -label [tr FileOpen] -command ::file::Open
-  $w.menu add command -label $closeLabel -command [list ::file::Close $baseIdx]
   if { $baseIdx != $clipbaseIdx } {
+    $w.menu add command -label [tr FileClose] -command [list ::file::Close $baseIdx]
     #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
     $w.menu add command -label $::tr(CompactDatabase) -command "compactGames $baseIdx; compactNames $baseIdx"
     if { [::file::autoLoadBases.find $baseIdx] == "-1" } {
@@ -631,6 +628,8 @@ proc ::windows::switcher::popupmenu { {w} {abs_x} {abs_y} {baseIdx} } {
       $w.menu add checkbutton -label "Load at startup" -variable ::sw_DummyCheckbutton \
         -command "::file::autoLoadBases.remove $baseIdx"
     }
+  } else {
+    $w.menu add command -label [tr EditReset] -command { sc_clipbase clear; ::notify::DatabaseChanged 0 }
   }
   $w.menu add separator
   $w.menu add command -label [tr ChangeIcon] -command "changeBaseType $baseIdx"

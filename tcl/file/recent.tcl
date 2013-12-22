@@ -79,7 +79,7 @@ proc ::recentFiles::load {fname} {
   if {[file extension $rname] == ".si4"} {
     set rname [file rootname $rname]
   }
-  for {set i 1} {$i <= [sc_base count total]} {incr i} {
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
     if {$rname == [sc_base filename $i]} {
       sc_base switch $i
       ::recentFiles::add $fname

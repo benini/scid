@@ -727,15 +727,10 @@ class Index
 
     errorT      ReadEntries (IndexEntry * ie, gameNumberT start, uint count);
     errorT      WriteEntries (IndexEntry * ie, gameNumberT start, uint count);
-    errorT      ReadEntireFile (int reportFrequency,
-                                void (*progressFn)(void * data,
+    errorT      ReadEntireFile (void (*progressFn)(void * data,
                                                    uint progress,
-                                                   uint total),
-                                void * progressData);
-    inline errorT ReadEntireFile () {
-        if (InMemory) return OK;
-        return ReadEntireFile (0, NULL, NULL);
-    }
+                                                   uint total) = 0,
+                                void * progressData = 0);
 
     MFile *     GetMFile() { return FilePtr; }
     

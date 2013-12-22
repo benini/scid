@@ -37,7 +37,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
 
 # ################################################################################
 proc ::tree::ConfigMenus { { lang "" } } {
-  for {set i 1 } {$i <= [sc_base count total]} {incr i} {
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
     ::tree::doConfigMenus $i $lang
   }
 }

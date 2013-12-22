@@ -14,8 +14,7 @@ proc ::file::Exit {}  {
   set unsavedCount 0
   set savedBase [sc_base current]
   set msg ""
-  set nbases [sc_base count total]
-  for {set i 1} {$i < [sc_base count total]} {incr i} {
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
     sc_base switch $i
     if {[sc_base inUse] && [sc_game altered] && ![sc_base isReadOnly $i]} {
       if {$unsavedCount == 0} {
@@ -122,7 +121,7 @@ proc ::file::Open {{fName ""}} {
   if {$err == 0} {
     ::game::Load [sc_base autoload] 0
     ::notify::GameChanged; #if ::game::Load fails (i.e. because the base is empty) the board is not updated
-    ::windows::gamelist::Open $::file::lastOpened "true"
+    ::windows::gamelist::Open "true" $::file::lastOpened
   }
   ::notify::DatabaseChanged
   return $err
@@ -308,6 +307,7 @@ proc ::file::Close {{base -1}} {
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
+  if {![sc_base inUse $b]} { return }
   if {[sc_base current] == $b} { return }
   sc_base switch $b
   if {$saveHistory == 1} { ::game::HistoryDatabaseSwitch }

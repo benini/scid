@@ -1044,30 +1044,22 @@ Index::CloseIndexFile ( bool NoHeader )
 //      Reads in the entire index into memory.
 //
 errorT
-Index::ReadEntireFile (int reportFrequency,
-                       void (*progressFn)(void * data,
+Index::ReadEntireFile (void (*progressFn)(void * data,
                                           uint progress,
                                           uint total),
                        void * progressData)
 {
     ASSERT (FilePtr != NULL);
+    if (InMemory) return OK;
     if (FileMode == FMODE_WriteOnly) { return ERROR_FileMode; }
-    if (InMemory) { // Already in Memory!
-        return OK;
-    }
     errorT err;
     ASSERT (Entries == NULL);
-
     uint numChunks = NumChunksRequired();
-
     Entries = new IndexEntryPtr [numChunks];
-
-    uint progressCounter = 0;
-    int reportAfter = reportFrequency;
-    // Allocate and read in each chunk of entries:
     uint readCount = 0;
-
     for (uint chunkCount = 0; chunkCount < numChunks; chunkCount++) {
+        if (progressFn && chunkCount % 50 == 0) (*progressFn) (progressData, chunkCount, numChunks);
+
         Entries[chunkCount] = new IndexEntry [INDEX_ENTRY_CHUNKSIZE];
 
         uint gamesToRead = GetNumGames() - readCount;
@@ -1086,20 +1078,8 @@ Index::ReadEntireFile (int reportFrequency,
             return err;
         }
         readCount += gamesToRead;
-        progressCounter += INDEX_ENTRY_CHUNKSIZE;
-        reportAfter -= INDEX_ENTRY_CHUNKSIZE;
-
-        if (reportAfter <= 0) {
-            if (progressFn != NULL) {
-                (*progressFn) (progressData, progressCounter, GetNumGames());
-            }
-            reportAfter = reportFrequency;
-        }
-//         printf ("Chunk %u: %u games\n", chunkCount, gamesToRead);
     }
-    if (progressFn != NULL) {
-        (*progressFn) (progressData, 1, 1);
-    }
+    if (progressFn) (*progressFn) (progressData, 1, 1);
     InMemory = true;
     return OK;
 }

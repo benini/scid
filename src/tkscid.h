@@ -4,10 +4,10 @@
 //              Scid extensions to Tcl/Tk interpreter
 //
 //  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.6.4
 //
 //  Notice:     Copyright (c) 1999-2004 Shane Hudson.  All rights reserved.
 //              Copyright (c) 2006-2007 Pascal Georges
+//              Copyright (c) 2013 Benini Fulvio
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -31,6 +31,7 @@
 #include "optable.h"
 #include "stored.h"
 #include "polyglot.h"
+#include <vector>
 
 
 // Include header files for finding directory of executable program
@@ -173,10 +174,16 @@ struct scidBaseT {
     scidBaseT() { validStats = false; }
     template <class TF, class TD>
     const char* Open (const char* filename, fileModeT mode, TF progressFn, TD progressData);
+    void Close (const char* description, bool clipbase = false);
+    std::string newFilter();
+    void deleteFilter(Filter* filter);
     Filter* getFilter(const char* filterName);
-    Filter* getFilter(int idx) {
-        if (idx > 1) return 0;
-        return (idx == 0) ? dbFilter : treeFilter;
+    Filter* getFilter(uint idx) {
+        if (idx == 0) return dbFilter;
+        if (idx == 1) return treeFilter;
+        idx -= 2;
+        if (idx >= filters_.size()) return 0;
+        return filters_[idx].second;
     }
     scidStatsT* getStats() {
         if (! validStats) computeStats();
@@ -189,6 +196,7 @@ struct scidBaseT {
     const char* addGame(scidBaseT* sourceBase, uint gNum);
 
 private:
+    std::vector< std::pair<std::string, Filter*> > filters_;
     bool validStats;
     scidStatsT stats;         // Counts of flags, average rating, etc.
     const char* addGame_(scidBaseT* sourceBase, uint gNum);
@@ -419,7 +427,6 @@ int sc_epd_write      (Tcl_Interp * ti, int epdID);
 // int sc_epd_load      	(Tcl_Interp * ti, int epdID, int from, int to);
 
 int sc_clipbase       (TCL_ARGS);
-int sc_clipbase_clear (Tcl_Interp * ti);
 int sc_clipbase_copy  (TCL_ARGS);
 int sc_clipbase_paste (TCL_ARGS);
 
@@ -542,7 +549,7 @@ int sc_var_promote    (TCL_ARGS);
 int sc_search         (TCL_ARGS);
 int sc_search_board   (TCL_ARGS);
 int sc_search_material (TCL_ARGS);
-int sc_search_header  (TCL_ARGS);
+int sc_search_header  (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filter, int argc, const char ** argv);
 int sc_search_repertoire (TCL_ARGS);
 int sc_search_rep_add (TCL_ARGS);
 int sc_search_rep_go  (TCL_ARGS);

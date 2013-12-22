@@ -305,7 +305,6 @@ proc progressWindow {args} {
   toplevel $w
   pack [ttk::frame $w.f] -expand 1
   
-  wm withdraw $w
   wm resizable $w 0 0
   if {[llength $args] == 2} {
     set title [lindex $args 0]
@@ -339,15 +338,9 @@ proc progressWindow {args} {
   set y [expr {$y / 2} ]
   wm geometry $w +$x+$y
   sc_progressBar $w.f.c bar 401 21 time
-  update idletasks
-  wm deiconify $w
-  raiseWin $w
-  if {$b} {
-    catch { grab $w.f.b.cancel }
-  } else {
-    grab $w
-  }
+  grab $w
   bind $w <Visibility> "raiseWin $w"
+  update
   set ::progressWin_time [clock seconds]
 }
 
@@ -410,7 +403,7 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""}} {
   set listbases {}
   if {$ref_base == ""} { set ref_base [sc_base current] }
   set selected 0
-  for {set i 1} {$i <= [sc_base count total]} {incr i} {
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
     if {[sc_base inUse $i]} {
       set fname [file tail [sc_base filename $i]]
       if {$i == $ref_base} { set selected [llength $listbases] }

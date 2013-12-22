@@ -238,7 +238,7 @@ proc InitWinsDefaultGeometry {} {
     set winY($i) -1
   }
 
-  for {set b 1} {$b <= [sc_base count total]} {incr b} {
+  for {set b [sc_base count total] } {$b > 0} {incr b -1} {
     foreach i { .treeWin .treeBest .treeGraph } {
         set winX($i$b) -1
         set winY($i$b) -1

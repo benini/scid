@@ -35,8 +35,7 @@ proc findNovelty {} {
   
   label $w.title -text $::tr(Database:) -font font_Bold
   pack $w.title -side top
-  set numBases [sc_base count total]
-  for {set i 1} {$i <= $numBases} {incr i} {
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
     radiobutton $w.b$i -text "" -variable noveltyBase -value $i -underline 5
     pack $w.b$i -side top -anchor w -padx 10
   }
@@ -95,9 +94,8 @@ proc findNovelty {} {
 proc updateNoveltyWin {} {
   set w .noveltyWin
   if {! [winfo exists $w]} { return }
-  set numBases [sc_base count total]
   $w.older configure -text "$::tr(SelectOlderGames) (< [sc_game info date])"
-  for {set i 1} {$i <= $numBases} {incr i} {
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
     set name [file tail [sc_base filename $i]]
     set ng [::utils::thousands [sc_base numGames $i]]
     set text "Base $i: $name ($ng $::tr(games))"
@@ -1109,6 +1107,7 @@ proc gsave { gnum } {
     tk_messageBox -type ok -icon info -parent .save \
         -title "Scid" -message $res
   }
+  ::notify::GameChanged
   ::notify::DatabaseChanged
 }
 

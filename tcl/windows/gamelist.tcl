@@ -7,7 +7,7 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation.
 
-proc ::windows::gamelist::Open { {base ""} {reuse "false"} } {
+proc ::windows::gamelist::Open { {reuse "false"} {base ""} {filter "dbfilter"} } {
 	if { $reuse != "false" } {
 		# use a clipbase window
 		foreach glwin $::windows::gamelist::wins {
@@ -20,7 +20,7 @@ proc ::windows::gamelist::Open { {base ""} {reuse "false"} } {
 						::windows::gamelist::createGList_ $glwin
 					}
 				}
-				::windows::gamelist::SetBase $glwin $base
+				::windows::gamelist::SetBase $glwin $base $filter
 				##TODO: this is a hack to raise the gamelist window
 				createToplevel $glwin
 				return
@@ -39,7 +39,7 @@ proc ::windows::gamelist::Open { {base ""} {reuse "false"} } {
 
 	set ::gamelistTitle($w) "[tr WindowsGList]:"
 	if {$base == ""} { set base [sc_base current] }
-	::windows::gamelist::createWin_ $w $base "dbfilter"
+	::windows::gamelist::createWin_ $w $base $filter
 }
 
 proc ::windows::gamelist::OpenTreeBest { {base} {w} } {
@@ -56,7 +56,10 @@ proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
 	if {$wlist == ""} { set wlist $::windows::gamelist::wins }
 	foreach w $wlist {
 		set err [catch {sc_base inUse $::gamelistBase($w)} inUse]
-		if {$err !=0 || $inUse == 0} { set ::gamelistBase($w) [sc_base current] }
+		if {$err !=0 || $inUse == 0} {
+			::windows::gamelist::SetBase $w [sc_base current]
+			continue
+		}
 		::windows::gamelist::update_ $w $moveup
 	}
 }
@@ -85,7 +88,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 		}
 	}
 	foreach base $bases {
-		set f [sc_base filter $base create FEN]
+		set f [sc_base newFilter $base FEN]
 		if { $::gamelistUpdating != 1 } {
 			after idle {
 				unset ::gamelistUpdating
@@ -100,12 +103,12 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 					$w.buttons.boardFilter configure -image tb_BoardMask
 					set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w) $f]
 					::windows::gamelist::Refresh 1 $w
+					notify::DatabaseChanged 0
 				}
 			}
 		}
 	}
 	unset ::gamelistUpdating
-	notify::DatabaseChanged 0
 }
 
 # Returns text describing state of filter for specified
@@ -200,8 +203,11 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 	grid columnconfigure $w 1 -weight 0
 	grid columnconfigure $w 2 -weight 1
 	bind $w <Destroy> {
-		set idx [lsearch -exact $::windows::gamelist::wins %W]
-		set ::windows::gamelist::wins [lreplace $::windows::gamelist::wins $idx $idx]
+		if { [winfo class %W] == "Toplevel" } {
+			set idx [lsearch -exact $::windows::gamelist::wins %W]
+			set ::windows::gamelist::wins [lreplace $::windows::gamelist::wins $idx $idx]
+			sc_filter release $::gamelistBase(%W) $::gamelistFilter(%W)
+		}
 	}
 	setWinLocation $w
 	setWinSize $w
@@ -300,7 +306,7 @@ proc ::windows::gamelist::filter_ {{w} {type}} {
 	} elseif {$type == "b"} {
 		::search::board $::gamelistBase($w)
 	} elseif {$type == "h"} {
-		::search::header $::gamelistBase($w)
+		::search::header $::gamelistBase($w) $::gamelistFilter($w)
 	} elseif {$type == "m"} {
 		::search::material $::gamelistBase($w)
 	}
@@ -824,7 +830,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
          -command "mergeGame $::glistBase($w) $idx"
       menu $w.game_menu.merge
       menu $w.game_menu.copy
-      for {set i 1} {$i <= [sc_base count total]} {incr i} {
+      for {set i [sc_base count total] } {$i > 0} {incr i -1} {
         if {[sc_base inUse $i]} {
           if { $i == $::glistBase($w) || [sc_base isReadOnly $i] } { continue }
           set fname [file tail [sc_base filename $i]]
