@@ -9291,7 +9291,7 @@ sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         case SUFFIX_OPT_INDEX: suffix = INDEX_SUFFIX;    break;
         case SUFFIX_OPT_NAME:  suffix = NAMEBASE_SUFFIX; break;
         case SUFFIX_OPT_TREE:  suffix = TREEFILE_SUFFIX; break;
-        default: return InvalidCommand (ti, "sc_info limit", options);
+        default: return InvalidCommand (ti, "sc_info suffix", options);
     }
 
     return setResult (ti, suffix);
@@ -14946,7 +14946,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             break;
 
         default:
-            return InvalidCommand (ti, "sc_search material", options);
+            return InvalidCommand (ti, "sc_search header", options);
         }
     }
     if (arg != argc) { return errorResult (ti, "Odd number of parameters."); }
