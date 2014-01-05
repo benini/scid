@@ -1686,18 +1686,16 @@ menu .main.gameInfo.menu -tearoff 0
 .main.gameInfo.menu add separator
 
 .main.gameInfo.menu add command -label GInfoDelete -command {
-    catch {sc_game flag delete [sc_game number] invert}
-    updateBoard
-    ::windows::gamelist::Refresh
+    sc_base gameflag [sc_base current] [sc_game number] invert del
+    ::notify::DatabaseChanged 0
 }
 
 .main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
 menu .main.gameInfo.menu.mark
 foreach flag $maintFlaglist {
     .main.gameInfo.menu.mark add command -label "" -command "
-    catch {sc_game flag $flag \[sc_game number\] invert}
-    updateBoard
-    ::windows::gamelist::Refresh
+    sc_base gameflag \[sc_base current\] \[sc_game number\] invert $flag
+    ::notify::DatabaseChanged 0
     "
 }
 

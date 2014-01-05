@@ -171,11 +171,6 @@ proc ::preport::makeReportWin {args} {
     busyCursor .
   }
 
-  # if the report is to be done from the starting position, a full
-  # search of the base has to be ensured. Remove all filters including
-  # tree filters:
-  if {$::preport::_pos == "start"} { sc_filter clear }
-
   set searchArgs {}
   lappend searchArgs -filter RESET
   lappend searchArgs "-$::preport::_color"

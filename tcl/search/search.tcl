@@ -11,13 +11,9 @@ set ::search::filter::operation 2
 
 
 # search::filter::reset
-#   Resets the filter to contain all games. Calls sc_filter reset and
-#   updates relevant windows.
-#
-proc ::search::filter::reset {{base ""}} {
-  if {$base == ""} { set base [sc_base current] }
-  sc_filter reset $base
-  ::notify::DatabaseChanged
+# TODO: remove this function
+proc ::search::filter::reset {} {
+  ::windows::gamelist::FilterReset "" [sc_base current]
 }
 
 # ::search::filter::negate

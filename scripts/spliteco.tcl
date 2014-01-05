@@ -111,7 +111,7 @@ proc split {frombase newbasename startECO endECO} {
     exit 1
   }
   sc_base switch $frombase
-  sc_filter reset
+  sc_filter set $frombase dbfilter 1
   sc_search header -eco [list $startECO $endECO]
   set ngames [sc_filter count]
   if {[catch {sc_base copygames $frombase dbfilter $tobase} err]} {

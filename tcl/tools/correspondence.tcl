@@ -2519,14 +2519,6 @@ namespace eval CorrespondenceChess {
 		set sPgnlist {}
 		lappend sPgnlist [string trim $CmailGameName]
 
-
-		# Clear really all filters including potential Tree filters
-		# based on current position.  It is imperative to search the
-		# whole DB regardless of context to find the game that needs to
-		# be updated. Otherwise dupes and unpredictable behaviour will
-		# result.
-		sc_filter clear
-
 		# Search the header for the game retrieved. Use as much info as
 		# possible to get a unique result. In principle $sPgnList should
 		# be enough. However searching indexed fields speeds up things

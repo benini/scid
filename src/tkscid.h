@@ -440,18 +440,13 @@ int sc_eco_summary    (TCL_ARGS);
 int sc_eco_translate  (TCL_ARGS);
 
 int sc_filter         (TCL_ARGS);
-int sc_filter_count   (TCL_ARGS);
 int sc_filter_first   (TCL_ARGS);
 int sc_filter_freq    (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_filter_index   (TCL_ARGS);
 int sc_filter_last    (TCL_ARGS);
-int sc_filter_negate  (TCL_ARGS);
 int sc_filter_next    (TCL_ARGS);
 int sc_filter_prev    (TCL_ARGS);
-int sc_filter_remove  (TCL_ARGS);
-int sc_filter_reset   (TCL_ARGS);
 int sc_filter_stats   (TCL_ARGS);
-int sc_filter_clear   (TCL_ARGS);
 
 int sc_game           (TCL_ARGS);
 int sc_game_crosstable (TCL_ARGS);

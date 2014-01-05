@@ -46,24 +46,32 @@ proc ::maint::fixCorruptedBase {} {
 #
 proc ::maint::SetGameFlags {flag type value} {
   if {$flag == "mark"} { set flag $::maintFlag }
+  if {$value} {
+    set op "set"
+  } else {
+    set op "unset"
+  }
+  set base [sc_base current]
   switch -- $type {
     "current" {
+      sc_base gameflag $base [sc_game number] $op $flag
+    }
+    "filter" {
       busyCursor .
-      catch {sc_game flag $flag [sc_game number] $value}
+      update idletasks
+      sc_base gameflag $base "dbfilter" $op $flag
       unbusyCursor .
     }
-    "filter" -
     "all" {
       busyCursor .
-      catch {sc_game flag $flag $type $value}
+      update idletasks
+      sc_base gameflag $base "all" $op $flag
       unbusyCursor .
     }
     default { return }
   }
   updateBoard
-  ::windows::gamelist::Refresh
-  ::maint::Refresh
-  ::windows::stats::Refresh
+  ::notify::DatabaseChanged 0
 }
 
 set maintFlag W
@@ -664,9 +672,9 @@ proc doMarkDups {{parent .}} {
   
   busyCursor .
   if {$twinSettings(undelete) == "Yes"} {
-    catch {sc_game flag delete all 0}
+    sc_base gameflag [sc_base current] all unset del
   }
-  
+
   if {[catch {sc_base duplicates -colors $twinSettings(colors) \
           -event $twinSettings(event) -site $twinSettings(site) \
           -round $twinSettings(round) -year $twinSettings(year) \
@@ -1682,8 +1690,7 @@ proc doCleaner {} {
     mtoolAdd $t "$count: $::tr(DeleteTwins)..."
     incr count
     if {$twinSettings(undelete) == "Yes"} {
-      catch {sc_game flag delete all 0}
-      update
+      sc_base gameflag [sc_base current] all unset del
     }
     if {[catch {sc_base duplicates -colors $twinSettings(colors) \
             -event $twinSettings(event) -site $twinSettings(site) \

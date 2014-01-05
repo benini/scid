@@ -111,6 +111,14 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 	unset ::gamelistUpdating
 }
 
+proc ::windows::gamelist::FilterReset {{w} {base}} {
+	set f "dbfilter"
+	if {$w != "" && $base == $::gamelistBase($w)}  { set f $::gamelistFilter($w) }
+	sc_filter set $base $f 1
+	notify::DatabaseChanged
+}
+
+
 # Returns text describing state of filter for specified
 # database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
 proc ::windows::gamelist::filterText {{w ""} {base 0}} {
@@ -135,6 +143,7 @@ proc ::windows::gamelist::GetBase {{w}} {
 
 proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
+	after idle "::windows::gamelist::filterRelease_ $::gamelistBase($w) $::gamelistFilter($w)"
 	set ::gamelistBase($w) $base
 	set ::gamelistFilter($w) $filter
 	busyCursor $w
@@ -206,7 +215,7 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 		if { [winfo class %W] == "Toplevel" } {
 			set idx [lsearch -exact $::windows::gamelist::wins %W]
 			set ::windows::gamelist::wins [lreplace $::windows::gamelist::wins $idx $idx]
-			sc_filter release $::gamelistBase(%W) $::gamelistFilter(%W)
+			::windows::gamelist::filterRelease_ $::gamelistBase(%W) $::gamelistFilter(%W)
 		}
 	}
 	setWinLocation $w
@@ -214,7 +223,7 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 	bind $w <Configure> "recordWinSize $w"
 	createToplevelFinalize $w
 	lappend ::windows::gamelist::wins $w
-	::windows::gamelist::SetBase $w $base $filter
+	::windows::gamelist::Refresh 1 $w
 }
 
 proc ::windows::gamelist::createMenu_ {w} {
@@ -302,7 +311,7 @@ proc ::windows::gamelist::menu_ {{w} {button}} {
 
 proc ::windows::gamelist::filter_ {{w} {type}} {
 	if {$type == "r"} {
-		::search::filter::reset $::gamelistBase($w)
+		::windows::gamelist::FilterReset $w $::gamelistBase($w)
 	} elseif {$type == "b"} {
 		::search::board $::gamelistBase($w)
 	} elseif {$type == "h"} {
@@ -316,6 +325,11 @@ proc ::windows::gamelist::update_ {{w} {moveUp}} {
 	set fr [::windows::gamelist::filterText $w $::gamelistBase($w)]
 	set fn [file tail [sc_base filename $::gamelistBase($w)]]
 	::setTitle $w "$::gamelistTitle($w) $fn ($fr)"
+	if {[sc_filter isWhole $::gamelistBase($w) $::gamelistFilter($w)]} {
+		$w.buttons.filter configure -image tb_search_on
+	} else {
+		$w.buttons.filter configure -image tb_search_off
+	}
 	if {$moveUp} {
 		#Reset double-click behavior
 		set ::glistClickOp($w.games.glist) 0
@@ -337,6 +351,16 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 		::windows::gamelist::Refresh 1 $w
 		notify::DatabaseChanged 0
 	}
+}
+
+proc ::windows::gamelist::filterRelease_ {{base} {filter}} {
+	set used 0
+	foreach win $::windows::gamelist::wins {
+		if { $::gamelistBase($win) == $base && $::gamelistFilter($win) == $filter } {
+			incr used
+		}
+	}
+	if {! $used} { sc_filter release $base $filter }
 }
 
 namespace eval ::glist_Ly {
@@ -758,11 +782,7 @@ proc glist.movesel_ {{w} {cmd} {scroll} {select}} {
 }
 
 proc glist.delflag_ {{w} {idx}} {
-  if {[sc_base gameflag $::glistBase($w) $idx get del]} {
-    sc_base gameflag $::glistBase($w) $idx unset del
-  } else {
-    sc_base gameflag $::glistBase($w) $idx set del
-  }
+  sc_base gameflag $::glistBase($w) $idx invert del
   ::notify::DatabaseChanged 0
 }
 

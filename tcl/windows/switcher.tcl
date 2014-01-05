@@ -596,8 +596,10 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
   regexp -all {[0-9]} $dropPoint toBase
   if {$toBase == $fromBase} {
     if { [info exists ::sw_LinkedGList_($w)] } {
-      ::windows::gamelist::SetBase $::sw_LinkedGList_($w) "$fromBase"
-      ::windows::switcher::Update_ $w
+      if {[::windows::gamelist::GetBase $::sw_LinkedGList_($w)] != "$fromBase"} {
+        ::windows::gamelist::SetBase $::sw_LinkedGList_($w) "$fromBase"
+        ::windows::switcher::Update_ $w
+      }
     } else {
       ::file::SwitchToBase $toBase
     }
@@ -608,11 +610,13 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
   }
 }
 
-proc ::windows::switcher::popupmenu { {w} {abs_x} {abs_y} {baseIdx} } {
+proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx} } {
   set clipbaseIdx [sc_info clipbase]
   $w.menu delete 0 end
   $w.menu add command -label "Open gamelist" -command "::windows::gamelist::Open false $baseIdx"
-  $w.menu add command -label [tr SearchReset] -command "::search::filter::reset $baseIdx"
+  set glist ""
+  if { [info exists ::sw_LinkedGList_($switcherWin)] } { set glist $::sw_LinkedGList_($switcherWin) }
+  $w.menu add command -label [tr SearchReset] -command "::windows::gamelist::FilterReset $glist $baseIdx"
   $w.menu add separator
   $w.menu add command -label [tr FileOpen] -command ::file::Open
   if { $baseIdx != $clipbaseIdx } {
@@ -698,7 +702,7 @@ proc ::windows::switcher::Create {{w} {gamelist ""}} {
 
     menu $f.menu -tearoff 0
     foreach win {"" .img .name .ngames} {
-      bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $f %X %Y $i"
+      bind $f$win <ButtonPress-$::MB3> "::windows::switcher::popupmenu $w $f %X %Y $i"
     }
   }
   bind $w <Configure> "+::windows::switcher::Update_ $w"
