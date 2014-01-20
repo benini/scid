@@ -724,6 +724,7 @@ namespace eval fics {
     if {[string match "*Starting FICS session*" $line]} {
 
       # mandatory init commands
+      writechan "set interface Scid/$::scidVersion ([tk windowingsystem]; $::tcl_platform(os) $::tcl_platform(machine); rv:$::scidVersionDate) Tcl/Tk [info patchlevel]"
       writechan "iset seekremove 1"
       writechan "iset seekinfo 1"
       writechan "style 12"
