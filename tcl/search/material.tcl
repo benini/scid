@@ -4,6 +4,53 @@
 
 namespace eval ::search::material {}
 
+##########
+# Size 20 is only used in Material search window, not for boards.
+# It has two special extra images, wm20 and bm20, which contain a
+# bishop and knight, for indicating a minor piece.
+#
+
+image create photo wm20 -data {
+  R0lGODlhFAAUAMIAAH9/f7+/vz8/PwAAAP///////////////yH5BAEKAAcALAAAAAAUABQA
+  AANweLp8cCG02cSwNB8RSACctgBAR3iDqJDd5wlidBLCHGb1CQzzx+yPDYAWyJ1gixpSwOLM
+  CClFESSRup7RImF42zxP0Vpg0EE6SGjSCqxTKYxHN4RJ6sYETHxVNa3vM2gDQyBoGkNbhIdq
+  FHRBZyAaCQA7}
+
+image create photo bm20 -data {
+  R0lGODlhFAAUAMIAAH9/f7+/vwAAAD8/P////////////////yH5BAEKAAcALAAAAAAUABQA
+  AANneLp8cCG02YQYgupj+5CbEgyYAAQCuJHlNYZo1wHDo7VyOjSAebQxS69R25UCvVlmMXIp
+  TrmhSGgB4S5LzoVQegK+YJtWwLWEFjnzGVL7ftYQMoGQggerZ3CrLealoxomXxJIX1kNCQA7
+}
+
+image create photo p20 -data {
+  R0lGODlh8AAUAMIAAH9/fz8/P7+/vwAAAP///////////////yH5BAEKAAcALAAAAADwABQA
+  AAP+eLrc/jDKSau9OOvNu/8VAIBkJAhl2ohqe5xuCgTBGL/oQaMwJew30KwWhAkGA0Vv8gvk
+  LALRUxJ9BTSAk40qFXWzkKZWCmQit5Uo2GdDW4ZuiFQ9koZ33mxZAjhjBidJFDNIRBgBhRQD
+  Q4t9NH0NP3o1BEgEYjNTDix/SIITfQOIcROIooOFpouekV6PlQMEQ2qaK6QSsZUholGit5GA
+  BJeAuMIixgDCnwrJAbKLsMPNsiY0VxeeyxGhnoZm2cTb4OMrP88C0X3NVWF+2CLaELnCUTRm
+  6CfDtQuUwv7G1xb8iHUkmSV1lZy0GpErSZR9DbJVUOULCUQl3VRdPDL+rtsKRM8MxuqDjlcr
+  FBIflkomK+CdLP8I2Ivg5NIOmxIe5RnygOSzhDKlLGqg01LCGjMhUHQpj1AhmfEYmHIy8JSJ
+  jlZXAHIUDWRBojWcFnK1zZk/bw9oBLt09lcuMcpA7eS0CU8WVyIeMTBHD9ARdMjkjPt14BhF
+  QEkddDuhSm7MqIUrrgJ0ZhSDvJIr+7o14x9dB3z9zTtCE3A+nHxiUpNXsFKgXj+mHPN3pKa/
+  z5cH48LqJJwDVWoT8enYDis4W9k4cjzjliWk0p5ZBn5QcKdvOardXqqXN1nJVjFpxMTNgJw4
+  4zypj3V6kRlxecYl7g0+mZtewcLQ/vYMjTb+U6lh5fXfJtmVNcpOj/xnGzL/kHaeO/AZ1xtN
+  AaY3nHk9dZOHKnH0th43M1D4T2KXzebEbKKVFcoMhDEz1y8cvUjIPo3AU2MmNI0zYGEU2eiJ
+  a3JUqF9PFT6nnnd5GHMdRrScQMeSC3Q23oCdxXaEapAdMI+Sisy1I0YyQslMgOi48iU34AzY
+  yxlQJTfUA1hRoJMXYmJkHESOLIXIl1v+A5mAMgE2IkS9qLUGdDH9gIt0fprAaHQRxHeHeIfV
+  eEc2CuV0Z6TrNVYcVrdEodp0ZY36WVVsPrPYb/HxmVFykfrYyJfLddTeCx15MZ8ovJlEVHx1
+  zoNillrWICgh2zxpeluLfbZVnllK9pefNiiaSopPWLrVD0BZoqnbboOhBexxEQF7bXxuGfdg
+  rlTEJxt9YDh1n0Dj7rOmjhtVmmmG6E2ArlRpapGmYsDa6+2qlwYcxAWHyrHwwxAX1h47EVds
+  8cUYZ6xxBwkAADs=
+}
+
+image create photo e20 -height 20 -width 20
+set x 0
+foreach p {wp wn wb wr wq wk bp bn bb br bq bk} {
+  image create photo ${p}20 -width 20 -height 20
+  ${p}20 copy p20 -from $x 0 [expr $x + 19] 19
+  incr x 20
+}
+
 set ignoreColors 0
 set minMoveNum 1
 set maxMoveNum 999
@@ -570,7 +617,7 @@ proc ::search::material {{ref_base ""}} {
     sc_base switch $curr_base
     .sm.status configure -text $str
     unbusyCursor .
-    ::notify::DatabaseChanged
+    ::notify::DatabaseModified [sc_base current] dbfilter
   }
   
   dialogbutton $f.cancel -textvar ::tr(Close) \
@@ -608,7 +655,7 @@ proc ::search::material::save {} {
         -message "Unable to create SearchOptions file: $fName"
     return
   }
-  puts $searchF "\# SearchOptions File created by Scid [sc_info version]"
+  puts $searchF "\# SearchOptions File created by Scid $::scidVersion"
   puts $searchF "set searchType Material"
   # First write the material counts:
   foreach i {wq bq wr br wb bb wn bn wp bp} {

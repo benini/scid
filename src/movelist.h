@@ -54,13 +54,8 @@ inline bool isNullMove (simpleMoveT * sm)
               &&  piece_Type(sm->movingPiece) == KING);
 }
 
-#ifdef WINCE
-errorT writeSimpleMove (/*FILE **/Tcl_Channel fp, simpleMoveT * sm);
-errorT readSimpleMove (/*FILE **/Tcl_Channel fp, simpleMoveT * sm);
-#else
 errorT writeSimpleMove (FILE * fp, simpleMoveT * sm);
 errorT readSimpleMove (FILE * fp, simpleMoveT * sm);
-#endif
 
 class MoveList
 {
@@ -69,24 +64,6 @@ private:
     simpleMoveT Moves [MAX_LEGAL_MOVES];
 
 public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     MoveList() { ListSize = 0; }
     ~MoveList() {}
 

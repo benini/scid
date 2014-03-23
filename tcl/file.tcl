@@ -108,8 +108,8 @@ proc ::file::New {} {
   }
   set ::initialDir(base) [file dirname $fName]
   ::recentFiles::add "$fName.si4"
+  ::notify::GameChanged
   ::notify::DatabaseChanged
-  updateBoard -pgn
 }
 
 # ::file::Open
@@ -120,9 +120,9 @@ proc ::file::Open {{fName ""}} {
   set err [::file::Open_ "$fName"]
   if {$err == 0} {
     ::game::Load [sc_base autoload] 0
-    ::notify::GameChanged; #if ::game::Load fails (i.e. because the base is empty) the board is not updated
-    ::windows::gamelist::Open "true" $::file::lastOpened
+    ::windows::gamelist::Open $::file::lastOpened
   }
+  ::notify::GameChanged
   ::notify::DatabaseChanged
   return $err
 }
@@ -209,8 +209,9 @@ proc ::file::Open_ {{fName ""} } {
       tk_messageBox -icon warning -type ok -parent . \
           -title "Scid: Error opening file" -message "$fName \n$result"
     } else {
-      doPgnFileImport $fName "Opening [file tail $fName] read-only...\n"
+      importPgnFile [sc_base current] [list "$fName"]
       sc_base type [sc_base current] 3
+      set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add $fName
     }
   }
@@ -302,8 +303,6 @@ proc ::file::Close {{base -1}} {
   if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
   # Now switch back to the original base
   ::file::SwitchToBase $current
-  updateBoard -pgn
-  ::notify::DatabaseChanged
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
@@ -313,7 +312,7 @@ proc ::file::SwitchToBase {{b} {saveHistory 1}} {
   if {$saveHistory == 1} { ::game::HistoryDatabaseSwitch }
   # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }
-  updateBoard -pgn
+  ::notify::GameChanged
   ::notify::DatabaseChanged
 }
 

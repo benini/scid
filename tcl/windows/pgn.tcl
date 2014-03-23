@@ -182,12 +182,6 @@ namespace eval pgn {
     
     # set the same arrow key, etc bindings that the main window has:
     bind $w <F1> { helpWindow PGN }
-    bind $w <Home>  ::move::Start
-    bind $w <Up>    {::move::Back 10}
-    bind $w <Left>  ::move::Back
-    bind $w <Down>  {::move::Forward 10}
-    bind $w <Right> ::move::Forward
-    bind $w <End>   ::move::End
     bind $w <Escape> {
       if {[winfo exists .pgnWin.text.ctxtMenu]} {
         destroy .pgnWin.text.ctxtMenu

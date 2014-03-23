@@ -224,23 +224,7 @@ namespace eval book {
   #
   ################################################################################
   proc makeBookMove { move } {
-    set action "replace"
-    if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
-    if {$action == "replace"} {
-      sc_move addSan $move
-    } elseif {$action == "var"} {
-      sc_var create
-      sc_move addSan $move
-    } elseif {$action == "mainline"} {
-      sc_var create
-      sc_move addSan $move
-      sc_var exit
-      sc_var promote [expr {[sc_var count] - 1}]
-      sc_move forward 1
-    }
-    updateBoard -pgn -animate
-    ::utils::sound::AnnounceNewMove $move
-    if {$action == "replace"} { ::tree::doTraining }
+    addSanMove $move
   }
   ################################################################################
   #

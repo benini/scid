@@ -578,12 +578,6 @@ public:
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode (ByteBuffer * buf, byte flags);
     errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
-
-    // StoredLine codes:
-    static ushort GetStoredLineCount (void);
-    static Game * GetStoredLine (ushort i);
-    static const char * GetStoredLineText (ushort i);
-
 };
 
 

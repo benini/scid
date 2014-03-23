@@ -42,21 +42,12 @@ void
 GFile::Init ()
 {
     Handle = NULL;
-#ifdef WINCE
-    Cache = (gfBlockPtrT*) my_Tcl_Alloc(sizeof( gfBlockPtrT[1] ));
-#else
     Cache = new gfBlockPtrT [1];
-#endif
     CacheSize = 1;
     Offset = 0;
     NumBlocks = 0;
 
-#ifdef WINCE
-    Cache[0] = (gfBlockPtrT) my_Tcl_Alloc(sizeof( gfBlockT ));
-#else
     Cache[0] = new gfBlockT;
-#endif
-
     Cache[0]->blockNum = -1;
     Cache[0]->dirty = 0;
     Cache[0]->length = 0;

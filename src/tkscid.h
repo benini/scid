@@ -31,7 +31,7 @@
 #include "optable.h"
 #include "stored.h"
 #include "polyglot.h"
-#include <vector>
+#include "scidbase.h"
 
 
 // Include header files for finding directory of executable program
@@ -78,14 +78,6 @@ const filterOpT FILTEROP_RESET = 2;
 #define PROBE_REPORT 3
 #define PROBE_OPTIMAL 4
 
-// TreeCache size for each open database:
-const uint SCID_TreeCacheSize = 1000; //250
-
-// Secondary (memory only) TreeCache size:
-const uint SCID_BackupCacheSize = 100;
-
-// Number of undo levels
-#define UNDO_MAX 10
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -113,95 +105,6 @@ struct progressBarT {
 //    database is modified to save time updating the file stats window.
 //
 
-struct ecoStatsT {
-    uint  count;
-    uint  results [NUM_RESULT_TYPES];
-};
-
-struct scidStatsT {
-    uint  flagCount [IDX_NUM_FLAGS];  // Num of games with each flag set.
-    dateT minDate;
-    dateT maxDate;
-    unsigned long long  nYears;
-    unsigned long long  sumYears;
-    uint  nResults [NUM_RESULT_TYPES];
-    uint  nRatings;
-    unsigned long long  sumRatings;
-    uint  minRating;
-    uint  maxRating;
-    ecoStatsT ecoCount0 [1];
-    ecoStatsT ecoCount1 [5];
-    ecoStatsT ecoCount2 [50];
-    ecoStatsT ecoCount3 [500];
-    ecoStatsT ecoCount4 [500*26];
-};
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Scid database structure:
-//
-struct scidBaseT {
-    Index *      idx;           // the Index file in memory for this base.
-    NameBase *   nb;            // the NameBase file in memory.
-    Game *       game;          // the active game for this base.
-    Game *       undoGame[UNDO_MAX]; // array of games kept for undos
-    int          undoIndex;
-    int          undoMax;
-    int          undoCurrent;   // which undo buffer has the currently saved game
-    bool         undoFull;	// if buffer gets filled, we cant unset gameAltered
-    int          gameNumber;    // game number of active game.
-    bool         gameAltered;   // true if game is modified
-    bool         inUse;         // true if the database is open (in use).
-    uint         numGames;
-    bool         memoryOnly;
-
-    treeT        tree;
-    TreeCache *  treeCache;
-    TreeCache *  backupCache;
-    uint         treeSearchTime;
-
-    fileNameT    fileName;      // File name without ".si" suffix
-    fileNameT    realFileName;  // File name including ".si" suffix
-    fileModeT    fileMode;      // Read-only, write-only, or both.
-    GFile *      gfile;
-    ByteBuffer * bbuf;
-    TextBuffer * tbuf;
-    Filter *     dbFilter;
-    Filter *     treeFilter;
-    uint *       duplicates;  // For each game: idx of duplicate game + 1,
-                              // or 0 if there is no duplicate.
-
-    scidBaseT() { validStats = false; }
-    template <class TF, class TD>
-    const char* Open (const char* filename, fileModeT mode, TF progressFn, TD progressData);
-    void Close (const char* description, bool clipbase = false);
-    std::string newFilter();
-    void deleteFilter(Filter* filter);
-    Filter* getFilter(const char* filterName);
-    Filter* getFilter(uint idx) {
-        if (idx == 0) return dbFilter;
-        if (idx == 1) return treeFilter;
-        idx -= 2;
-        if (idx >= filters_.size()) return 0;
-        return filters_[idx].second;
-    }
-    scidStatsT* getStats() {
-        if (! validStats) computeStats();
-        return &stats;
-    }
-    const char* clearCaches();
-    void clearStats() { validStats = false; };
-    template<class TF, class TD>
-    const char* addGames(scidBaseT* sourceBase, Filter* filter, TF progressFn, TD progressData);
-    const char* addGame(scidBaseT* sourceBase, uint gNum);
-
-private:
-    std::vector< std::pair<std::string, Filter*> > filters_;
-    bool validStats;
-    scidStatsT stats;         // Counts of flags, average rating, etc.
-    const char* addGame_(scidBaseT* sourceBase, uint gNum);
-    void computeStats();
-};
 
 
 //////////////////////////////////////////////////////////////////////
@@ -403,7 +306,7 @@ int sc_base_close     (TCL_ARGS);
 int sc_base_count     (TCL_ARGS);
 int sc_base_description (TCL_ARGS);
 int sc_base_export    (TCL_ARGS);
-int sc_base_import    (TCL_ARGS);
+int sc_base_import    (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
 int sc_base_numGames  (TCL_ARGS);
 int sc_base_slot      (TCL_ARGS);
 int sc_base_stats     (TCL_ARGS);
@@ -424,7 +327,6 @@ int sc_epd_next       (Tcl_Interp * ti, int epdID, bool forwards);
 int sc_epd_open       (Tcl_Interp * ti, int argc, const char ** argv, bool create);
 int sc_epd_set        (Tcl_Interp * ti, int epdID, const char * text);
 int sc_epd_write      (Tcl_Interp * ti, int epdID);
-// int sc_epd_load      	(Tcl_Interp * ti, int epdID, int from, int to);
 
 int sc_clipbase       (TCL_ARGS);
 int sc_clipbase_copy  (TCL_ARGS);
@@ -549,13 +451,13 @@ int sc_search_repertoire (TCL_ARGS);
 int sc_search_rep_add (TCL_ARGS);
 int sc_search_rep_go  (TCL_ARGS);
 
-int sc_book  					(TCL_ARGS);
-int sc_book_load  		(TCL_ARGS);
-int sc_book_close  		(TCL_ARGS);
-int sc_book_moves  		(TCL_ARGS);
-int sc_book_positions  		(TCL_ARGS);
-int sc_book_update		(TCL_ARGS);
-int sc_book_movesupdate	(TCL_ARGS);
+int sc_book           (TCL_ARGS);
+int sc_book_load      (TCL_ARGS);
+int sc_book_close     (TCL_ARGS);
+int sc_book_moves     (TCL_ARGS);
+int sc_book_positions (TCL_ARGS);
+int sc_book_update    (TCL_ARGS);
+int sc_book_movesupdate (TCL_ARGS);
 //////////////////////////////////////////////////////////////////////
 /// END of tkscid.h
 //////////////////////////////////////////////////////////////////////

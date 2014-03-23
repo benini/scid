@@ -289,14 +289,13 @@ proc ::tree::toggleTraining { baseNumber } {
     if {! [winfo exists .treeWin$baseNumber] || $i == $baseNumber } { continue }
     set tree(training$i) 0
   }
-  
+
+  set ::tree::trainingBase 0
   if {$tree(training$baseNumber)} {
     set ::tree::trainingBase $baseNumber
-    ::tree::doTraining
-  } else {
-    set ::tree::trainingBase 0
-    ::tree::refresh $baseNumber
+    set ::tree::trainingColor [sc_pos side]
   }
+  ::tree::refresh $baseNumber
 }
 
 ################################################################################
@@ -363,8 +362,7 @@ proc ::tree::doTraining { { n 0 } } {
   }
   
   set move [sc_tree move $::tree::trainingBase random]
-  addSanMove $move -animate -notraining
-  updateBoard -pgn
+  addSanMove $move
 }
 
 ################################################################################
@@ -378,7 +376,7 @@ proc ::tree::select { move baseNumber } {
   
   if {! [winfo exists .treeWin$baseNumber]} { return }
   
-  catch { addSanMove $move -animate }
+  catch { addSanMove $move }
 }
 
 set tree(refresh) 0
@@ -429,14 +427,15 @@ proc ::tree::dorefresh { baseNumber } {
   $w.buttons.stop configure -state disabled
 
   ::tree::status "" $baseNumber
-  ::windows::stats::Refresh
   if {[winfo exists .treeGraph$baseNumber]} { ::tree::graph $baseNumber }
-  updateTitle
   
   if { $moves == "canceled" } { return "canceled"}
   displayLines $baseNumber $moves  
 
   grid forget $w.progress
+  if {$::tree::trainingBase != 0 && $::tree::trainingColor == [sc_pos side]} {
+    ::tree::doTraining
+  }
 }
 
 ################################################################################

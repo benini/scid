@@ -21,8 +21,7 @@ proc ::search::filter::reset {} {
 #   Negates the filter, to include only excluded games.
 #
 proc ::search::filter::negate {} {
-  sc_filter negate [sc_base current] dbfilter
-  ::notify::DatabaseChanged
+  ::windows::gamelist::FilterNegate "" [sc_base current]
 }
 
 

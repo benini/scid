@@ -71,7 +71,7 @@ proc ::maint::SetGameFlags {flag type value} {
     default { return }
   }
   updateBoard
-  ::notify::DatabaseChanged 0
+  ::notify::DatabaseModified [sc_base current]
 }
 
 set maintFlag W
@@ -1167,8 +1167,7 @@ proc compactNames {{base -1}} {
   } else {
     tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactNames)] -message [subst $::tr(NameFileCompacted)]
   }
-  updateBoard -pgn
-  ::notify::DatabaseChanged
+  ::notify::DatabaseModified $base
 }
 
 proc compactGames {{base -1}} {
@@ -1193,8 +1192,7 @@ proc compactGames {{base -1}} {
         -title [concat "Scid: " $::tr(CompactGames)] \
         -message [subst $::tr(GameFileCompacted)]
   }
-  updateBoard -pgn
-  ::notify::DatabaseChanged
+  ::notify::DatabaseModified $base
 }
 
 set sortCriteria(real) ""
@@ -1347,7 +1345,6 @@ proc makeBaseReadOnly {} {
       $::tr(ReadOnlyDialog) "" 1 $::tr(Yes) $::tr(No)]
   if {$result == 0} {
     sc_base isReadOnly $curr_base set
-    updateMenuStates
   }
 }
 

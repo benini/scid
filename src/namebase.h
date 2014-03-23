@@ -21,6 +21,8 @@
 #include "stralloc.h"
 #include "strtree.h"
 
+class SpellChecker;
+
 //////////////////////////////////////////////////////////////////////
 //  NameBase:  Constants
 
@@ -59,7 +61,6 @@ const caseFlagT
 const char NAMEBASE_SUFFIX[] = ".sn4";
 
 const char NAMEBASE_MAGIC[8] = "Scid.sn";
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -114,11 +115,8 @@ class NameBase
     // NameBase:  Data structures
     fileNameT        Fname;
     nameBaseHeaderT  Header;
-#ifdef WINCE
-    Tcl_Channel FilePtr;
-#else
     FILE           * FilePtr;
-#endif
+
     // NameByID[n] is an array of pointers to the nodes for n.
     nameNodeT **     NameByID [NUM_NAME_TYPES];
     uint             ArraySize [NUM_NAME_TYPES]; // size of NameByID arrays
@@ -139,25 +137,6 @@ class NameBase
     //  Namebase:  Public methods
 
   public:
-
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     NameBase()  { Init(); }
     ~NameBase() { Clear(); }
 
@@ -220,11 +199,9 @@ class NameBase
 
     errorT    IncArraySize (nameT nt, idNumberT increment);
 
-#ifdef WINCE
-    uint      DumpAllNames (nameT nt, const char * prefixStr, /*FILE **/Tcl_Channel f);
-#else
     uint      DumpAllNames (nameT nt, const char * prefixStr, FILE * f);
-#endif
+
+    void      recalcEstimatedRatings (SpellChecker* nb);
 };
 
 

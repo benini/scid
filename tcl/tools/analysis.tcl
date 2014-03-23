@@ -212,7 +212,7 @@ proc ::enginelist::write {} {
         return 0
     }
     
-    puts $f "\# Analysis engines list file for Scid [sc_info version] with UCI support"
+    puts $f "\# Analysis engines list file for Scid $::scidVersion with UCI support"
     puts $f ""
     foreach e $engines(list) {
         set name [lindex $e 0]

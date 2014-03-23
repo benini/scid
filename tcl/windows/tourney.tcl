@@ -387,7 +387,6 @@ proc ::tourney::select {gnum} {
     tk_messageBox -type ok -icon info -title "Scid" -message $result
     return
   }
-  flipBoardForPlayerNames $::myPlayerNames
   updateBoard -pgn
   updateTitle
   ::crosstab::Open

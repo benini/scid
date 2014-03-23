@@ -7,7 +7,7 @@
 //
 //  Notice:     Copyright (c) 1999-2004 Shane Hudson.  All rights reserved.
 //              Copyright (c) 2006-2007 Pascal Georges
-//              Copyright (c) 2013 Benini Fulvio
+//              Copyright (c) 2013-2014 Benini Fulvio
 //
 //  Scid is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,9 @@
 
 
 #include "tkscid.h"
+#include "fastgame.h"
 #include "searchpos.h"
+#include "scidbase.h"
 
 #include <errno.h>
 #include <set>
@@ -157,8 +159,8 @@ interruptedProgress () {
     return (progBar.interrupt);
 }
 
-bool reportProgress (Tcl_Interp* ti, uint done, uint total) {
-    updateProgressBar(ti, done, total);
+bool reportProgress (void* ti, uint done, uint total) {
+    updateProgressBar((Tcl_Interp*) ti, done, total);
     return interruptedProgress();
 }
 
@@ -179,25 +181,6 @@ recalcFlagCounts (scidBaseT * basePtr)
 }
 
 
-
-void
-recalcEstimatedRatings (NameBase * nb)
-{
-    // Update estimated ratings from spellcheck file if available:
-    if (spellChecker[NAME_PLAYER] == NULL) { return; }
-    for (idNumberT id=0; id < nb->GetNumNames(NAME_PLAYER); id++) {
-        if (nb->GetElo(id) == 0  &&  nb->GetFrequency(NAME_PLAYER, id) > 0) {
-            const char * name = nb->GetName (NAME_PLAYER, id);
-            if (! strIsSurnameOnly (name)) {
-                const char * text = \
-                    spellChecker[NAME_PLAYER]->GetCommentExact (name);
-                if (text != NULL) {
-                    nb->SetElo (id, SpellChecker::GetPeakRating (text));
-                }
-            }
-        }
-    }
-}
 
 void
 recalcNameFrequencies (NameBase * nb, Index * idx)
@@ -248,13 +231,10 @@ main (int argc, char * argv[])
  
     scid_Init();
 
-    // If SOURCE_TCL_FILE is provided, we need to insert it (with the
-    // directory of the executable file prepended) as the first argument:
-
     int newArgc = argc;
     char ** newArgv = argv;
 
-#ifdef SOURCE_TCL_FILE
+#ifdef WIN32
     newArgc++;
     newArgv = (char **) malloc (sizeof (char *) * newArgc);
     newArgv[0] = argv[0];
@@ -265,9 +245,9 @@ main (int argc, char * argv[])
     HMODULE hModule = GetModuleHandle (NULL);
     GetModuleFileNameA (hModule, sourceFileName, MAX_PATH);
     char * end = strrchr (sourceFileName, '\\');
-    if (end != NULL) { strCopy (end + 1, SOURCE_TCL_FILE); }
+    if (end != NULL) { strCopy (end + 1, "scid.gui"); }
     newArgv[1] = sourceFileName;
-#  endif  // ifdef SOURCE_TCL_FILE
+#endif
 
     Tcl_Main (newArgc, newArgv, scid_InitTclTk);
     exit(0);
@@ -317,11 +297,7 @@ scid_InitTclTk (Tcl_Interp * ti)
     for (int epdID=0; epdID < MAX_EPD; epdID++) { pbooks[epdID] = NULL; }
 
     // Initialise global Scid database variables:
-#ifdef WINCE
-    dbList = (scidBaseT * ) my_Tcl_Alloc( sizeof(scidBaseT [MAX_BASES]));
-#else
     dbList = new scidBaseT [MAX_BASES];
-#endif
 
     for (int base=0; base < MAX_BASES; base++) {
         db = &(dbList[base]);
@@ -376,6 +352,7 @@ scid_InitTclTk (Tcl_Interp * ti)
     clipbase->idx->SetDescription ("Temporary database, not kept on disk.");
     clipbase->inUse = true;
     clipbase->memoryOnly = true;
+    strCopy (clipbase->fileName, "_clipbase_");
 
     clipbase->treeCache = new TreeCache;
     clipbase->treeCache->SetCacheSize (SCID_TreeCacheSize);
@@ -458,433 +435,6 @@ strGetFilterOp (const char * str)
     return FILTEROP_RESET;
 }
 
-
-/////////////////////////////////////////////////////////////////////
-///  DATABASE functions
-///  TODO: move this functions to scidbase.cpp
-template<class TF, class TD>
-const char* scidBaseT::Open (const char* filename, fileModeT mode, TF progressFn, TD progressData) {
-    const char* res = 0;
-    idx->SetFileName (filename);
-    nb->SetFileName (filename);
-
-    memoryOnly = false;
-    fileMode = mode;
-    errorT err = idx->OpenIndexFile (fileMode);
-    if (err != OK) {
-        res = "Error opening index file";
-        if (err == ERROR_FileVersion) {
-            res = "Old format Scid file, now out of date.";
-        } else if (err == ERROR_OldScidVersion) {
-            res = "Database version newer than Scid; please upgrade Scid.";
-        }
-    }
-    if (err == OK) {
-        err = nb->ReadNameFile();
-        if (err != OK) res = "Error opening name file.";
-    }
-    if (err == OK) {
-        gfile->Open (filename, fileMode);
-        if (err != OK) res = "Error opening game file.";
-    }
-    if (err == OK) {
-        err = idx->ReadEntireFile (progressFn, progressData);
-        if (err != OK) res = "Error reading index file";
-    }
-    if (err == OK) {
-        err = idx->VerifyFile (nb);
-        //TODO: if the namefile can be fixed, why not fix it right now?
-        if (err != OK) res = "Error: name corruption in index file.\nRun \"scidt -N\" on this database to fix it.";
-    }
-    if (err != OK) {
-        idx->Clear();
-        nb->Clear();
-        gfile->Close();
-        return res;
-    }
-
-    numGames = idx->GetNumGames();
-    strCopy (fileName, filename);
-    strCopy (realFileName, realFileName);
-    inUse = true;
-    gameNumber = -1;
-
-    // Initialise the filters: all games match at move 1 by default.
-    Filter* f; int i_filters=0;
-    while ( (f = getFilter(i_filters++)) ) f->Init(numGames);
-
-    if (treeCache == NULL) {
-        treeCache = new TreeCache;
-        treeCache->SetCacheSize (SCID_TreeCacheSize);
-        backupCache = new TreeCache;
-        backupCache->SetCacheSize (SCID_BackupCacheSize);
-        backupCache->SetPolicy (TREECACHE_Oldest);
-    }
-
-    treeCache->Clear();
-    backupCache->Clear();
-
-    clearStats();
-
-    // In games with elo == 0 we'll use an estimated ratings from a spellcheck file or from other games
-    recalcEstimatedRatings (nb);
-    for (uint gnum=0; gnum < numGames; gnum++) {
-        IndexEntry * ie = idx->FetchEntry (gnum);
-        eloT elo = ie->GetWhiteElo();
-        if (elo > 0) nb->AddElo (ie->GetWhite(), elo);
-        elo = ie->GetBlackElo();
-        if (elo > 0) nb->AddElo (ie->GetBlack(), elo);
-    }
-
-    return res;
-}
-
-void scidBaseT::Close (const char* description, bool clipbase) {
-    undoMax = -1;
-    undoIndex = -1;
-    undoCurrent = -1;
-    undoFull = false;
-    for (int u = 0; u < UNDO_MAX; u++) {
-        if ( undoGame[u] != NULL ) {
-            delete undoGame[u];
-            undoGame[u] = NULL;
-        }
-    }
-    if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
-
-    game->Clear();
-    idx->CloseIndexFile();
-    nb->Clear();
-    gfile->Close();
-    if (clipbase) {
-        // If the database is the clipbase, re-open it empty
-        gfile->CreateMemoryOnly();
-        idx->CreateMemoryOnly();
-        idx->SetType (2);
-    } else {
-        idx->Clear();
-        idx->SetDescription (description);
-        inUse = false;
-        strCopy (fileName, "<empty>");
-        Filter* f;
-        while ( (f = getFilter(2)) ) deleteFilter(f);
-    }
-
-    Filter* f; int i_filters=0;
-    while ( (f = getFilter(i_filters++)) ) f->Init(0);
-
-    gameNumber = -1;
-    numGames = 0;
-    clearStats();
-    treeCache->Clear();
-    backupCache->Clear();
-}
-
-void scidBaseT::computeStats()
-{
-    uint i;
-    // Zero out all stats:
-    for (i = 0; i < IDX_NUM_FLAGS; i++) { stats.flagCount[i] = 0; }
-    stats.nRatings = 0;
-    stats.sumRatings = 0;
-    stats.minRating = 0;
-    stats.maxRating = 0;
-    stats.minDate = ZERO_DATE;
-    stats.maxDate = ZERO_DATE;
-    stats.nYears = 0;
-    stats.sumYears = 0;
-    for (i=0; i < NUM_RESULT_TYPES; i++) {
-        stats.nResults[i] = 0;
-    }
-    for (i=0; i < 1; i++) {
-        stats.ecoCount0[i].count = 0;
-        stats.ecoCount0[i].results[RESULT_White] = 0;
-        stats.ecoCount0[i].results[RESULT_Black] = 0;
-        stats.ecoCount0[i].results[RESULT_Draw] = 0;
-        stats.ecoCount0[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 5; i++) {
-        stats.ecoCount1[i].count = 0;
-        stats.ecoCount1[i].results[RESULT_White] = 0;
-        stats.ecoCount1[i].results[RESULT_Black] = 0;
-        stats.ecoCount1[i].results[RESULT_Draw] = 0;
-        stats.ecoCount1[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 50; i++) {
-        stats.ecoCount2[i].count = 0;
-        stats.ecoCount2[i].results[RESULT_White] = 0;
-        stats.ecoCount2[i].results[RESULT_Black] = 0;
-        stats.ecoCount2[i].results[RESULT_Draw] = 0;
-        stats.ecoCount2[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 500; i++) {
-        stats.ecoCount3[i].count = 0;
-        stats.ecoCount3[i].results[RESULT_White] = 0;
-        stats.ecoCount3[i].results[RESULT_Black] = 0;
-        stats.ecoCount3[i].results[RESULT_Draw] = 0;
-        stats.ecoCount3[i].results[RESULT_None] = 0;
-    }
-    for (i=0; i < 500*26; i++) {
-        stats.ecoCount4[i].count = 0;
-        stats.ecoCount4[i].results[RESULT_White] = 0;
-        stats.ecoCount4[i].results[RESULT_Black] = 0;
-        stats.ecoCount4[i].results[RESULT_Draw] = 0;
-        stats.ecoCount4[i].results[RESULT_None] = 0;
-    }
-    // Read stats from index entry of each game:
-    for (uint gnum=0; gnum < numGames; gnum++) {
-        IndexEntry * ie = idx->FetchEntry (gnum);
-        stats.nResults[ie->GetResult()]++;
-        eloT elo = ie->GetWhiteElo();
-        if (elo > 0) {
-            stats.nRatings++;
-            stats.sumRatings += elo;
-            if (stats.minRating == 0) { stats.minRating = elo; }
-            if (elo < stats.minRating) { stats.minRating = elo; }
-            if (elo > stats.maxRating) { stats.maxRating = elo; }
-            nb->AddElo (ie->GetWhite(), elo);
-        }
-        elo = ie->GetBlackElo();
-        if (elo > 0) {
-            stats.nRatings++;
-            stats.sumRatings += elo;
-            if (stats.minRating == 0) { stats.minRating = elo; }
-            if (elo < stats.minRating) { stats.minRating = elo; }
-            if (elo > stats.maxRating) { stats.maxRating = elo; }
-            nb->AddElo (ie->GetBlack(), elo);
-        }
-        dateT date = ie->GetDate();
-        if (gnum == 0) {
-            stats.maxDate = stats.minDate = date;
-        }
-        if (date_GetYear(date) > 0) {
-            if (date < stats.minDate) { stats.minDate = date; }
-            if (date > stats.maxDate) { stats.maxDate = date; }
-            stats.nYears++;
-            stats.sumYears += date_GetYear (date);
-            nb->AddDate (ie->GetWhite(), date);
-            nb->AddDate (ie->GetBlack(), date);
-        }
-
-        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
-            bool value = ie->GetFlag (1 << flag);
-            if (value) {
-                stats.flagCount[flag]++;
-            }
-        }
-
-        ecoT eco = ie->GetEcoCode();
-        ecoStringT ecoStr;
-        eco_ToExtendedString (eco, ecoStr);
-        uint length = strLength (ecoStr);
-        resultT result = ie->GetResult();
-        if (length >= 3) {
-            uint code = 0;
-            stats.ecoCount0[code].count++;
-            stats.ecoCount0[code].results[result]++;
-            code = ecoStr[0] - 'A';
-            stats.ecoCount1[code].count++;
-            stats.ecoCount1[code].results[result]++;
-            code = (code * 10) + (ecoStr[1] - '0');
-            stats.ecoCount2[code].count++;
-            stats.ecoCount2[code].results[result]++;
-            code = (code * 10) + (ecoStr[2] - '0');
-            stats.ecoCount3[code].count++;
-            stats.ecoCount3[code].results[result]++;
-            if (length >= 4) {
-                code = (code * 26) + (ecoStr[3] - 'a');
-                stats.ecoCount4[code].count++;
-                stats.ecoCount4[code].results[result]++;
-            }
-        }
-    }
-
-    validStats = true;
-}
-
-const char* scidBaseT::clearCaches()
-{
-    if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
-    clearStats();
-    // The target base treecache is out of date:
-    treeCache->Clear();
-    backupCache->Clear();
-    if (! memoryOnly) removeFile (fileName, TREEFILE_SUFFIX);
-
-    gfile->FlushAll();
-    // Now write the Index file header and the name file:
-    if (idx->WriteHeader() != OK) {
-        return  "Error writing index file.";
-    }
-    if (! memoryOnly  &&  nb->WriteNameFile() != OK) {
-        return "Error writing name file.";
-    }
-    // Ensure that the Index is still all in memory:
-    idx->ReadEntireFile();
-    return 0;
-}
-
-const char* scidBaseT::addGame(scidBaseT* sourceBase, uint gNum)
-{
-    const char* err = addGame_(sourceBase, gNum);
-    if (!err) {
-        idx->IndexUpdated(numGames -1);
-        err = clearCaches();
-    }
-    return err;
-}
-
-template<class TF, class TD>
-const char* scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter, TF progressFn, TD progressData)
-{
-    ASSERT(filter != 0);
-    const char* err = 0;
-    uint iProgress = 0;
-    uint totGames = filter->Count();
-    Filter* f; int i_filters=0;
-    while ( (f = getFilter(i_filters++)) ) f->SetCapacity(numGames + totGames);
-    for (uint gNum = 0;gNum < sourceBase->numGames; gNum++) {
-        if (filter->Get(gNum) == 0) continue;
-        err = addGame_(sourceBase, gNum);
-        if (err) return err;
-        if (iProgress++ % 100 == 0) {
-            bool interrupt = progressFn(progressData, iProgress, totGames);
-            if (interrupt) break;
-        }
-    }
-    if (!err) {
-        idx->IndexUpdated(IDX_NOT_FOUND);
-        err = clearCaches();
-    }
-    return err;
-}
-
-const char* scidBaseT::addGame_(scidBaseT* sourceBase, uint gNum)
-{
-    IndexEntry* srcIe = sourceBase->idx->FetchEntry (gNum);
-    if (sourceBase->gfile->ReadGame (sourceBase->bbuf, srcIe->GetOffset(), srcIe->GetLength()) != OK) {
-        return "Error reading game file.";
-    }
-
-    // Copy the index
-    IndexEntry iE;
-    iE.Init();
-    memcpy( (void *) &iE, (void *) srcIe, sizeof(IndexEntry));
-    // add game without resetting the index, because it has been filled by game->encode above
-    gameNumberT gNumber = 0;
-    if (idx->AddGame (&gNumber, &iE, false) != OK) return "Too many games in this database.";
-    numGames = idx->GetNumGames();
-    // Now try writing the game to the gfile:
-    uint offset = 0;
-    if (gfile->AddGame (sourceBase->bbuf, &offset) != OK) return "Error writing game file.";
-    iE.SetOffset (offset);
-    iE.SetLength (sourceBase->bbuf->GetByteCount());
-
-    // Now we add the names to the NameBase
-    const char * s;
-    idNumberT id = 0;
-
-    // WHITE:
-    s = srcIe->GetWhiteName( sourceBase->nb);  if (!s) { s = "?"; }
-    if (nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
-        return "Too many player names.";
-    }
-    nb->IncFrequency (NAME_PLAYER, id, 1);
-    iE.SetWhite (id);
-
-    // BLACK:
-    s = srcIe->GetBlackName( sourceBase->nb);  if (!s) { s = "?"; }
-    if (nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
-        return "Too many player names.";
-    }
-    nb->IncFrequency (NAME_PLAYER, id, 1);
-    iE.SetBlack (id);
-
-    // EVENT:
-    s = srcIe->GetEventName( sourceBase->nb);  if (!s) { s = "?"; }
-    if (nb->AddName (NAME_EVENT, s, &id) == ERROR_NameBaseFull) {
-        return "Too many event names.";
-    }
-    nb->IncFrequency (NAME_EVENT, id, 1);
-    iE.SetEvent (id);
-
-    // SITE:
-    s = srcIe->GetSiteName( sourceBase->nb);  if (!s) { s = "?"; }
-    if (nb->AddName (NAME_SITE, s, &id) == ERROR_NameBaseFull) {
-        return "Too many site names.";
-    }
-    nb->IncFrequency (NAME_SITE, id, 1);
-    iE.SetSite (id);
-
-    // ROUND:
-    s = srcIe->GetRoundName( sourceBase->nb);  if (!s) { s = "?"; }
-    if (nb->AddName (NAME_ROUND, s, &id) == ERROR_NameBaseFull) {
-        return "Too many round names.";
-    }
-    nb->IncFrequency (NAME_ROUND, id, 1);
-    iE.SetRound (id);
-
-    // Last of all, we write the new idxEntry, but NOT the index header
-    // or the name file, since there might be more games saved yet and
-    // writing them now would then be a waste of time.
-    if (idx->WriteEntries (&iE, gNumber, 1) != OK) {
-        return "Error writing index file.";
-    }
-
-    // Add the new game to filters
-    Filter* f; int i_filters=0;
-    while ( (f = getFilter(i_filters++)) ) f->Append(f->isWhole() ? 1 : 0);
-
-    return 0;
-}
-
-std::string scidBaseT::newFilter()
-{
-    std::string newname = filters_.size() ? filters_.back().first : "a";
-    if (newname[0] == 'z') newname = 'a' + newname;
-    else newname = ++(newname[0]) + newname.substr(1);
-    filters_.push_back(std::make_pair(newname, new Filter(numGames)));
-    return newname;
-}
-
-void scidBaseT::deleteFilter(Filter* filter)
-{
-    for (uint i=0; i < filters_.size(); i++) {
-        if (filters_[i].second == filter) {
-            delete filters_[i].second;
-            filters_.erase(filters_.begin() + i);
-            break;
-        }
-    }
-}
-
-Filter* scidBaseT::getFilter (const char* filterName)
-{
-    Filter* res = 0;
-    Filter* mask = 0;
-    std::string name = filterName;
-    int split = 0;
-    if (filterName[split++] == '+') {
-        while (filterName[split] != '+') {
-            if (filterName[split++] == 0) return 0; // Malformed filterName
-        }
-        name = name.substr(1, split -1);
-        mask = getFilter(filterName + split + 1);
-    }
-
-    if (name == "dbfilter") res = dbFilter;
-    else if (name == "tree") res = treeFilter;
-    else {
-        for (uint i=0; i < filters_.size(); i++) {
-            if (filters_[i].first == name) {
-                res = filters_[i].second;
-                break;
-            }
-        }
-    }
-    if (res) res->PositionMask(mask);
-    return res;
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // base_opened:
@@ -984,25 +534,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];
 	uint* idxList = new uint[count];
-	if (strlen(sort) == 2 && sort[0] == 'N') {
-		uint i=0;
-		if (sort[1] == '+') {
-			for(uint gnum=0; gnum < cdb->idx->GetNumGames() && i < count; gnum++) {
-				if(filter && filter->Get(gnum) == 0) continue;
-				if (start == 0) idxList[i++] = gnum;
-				else start--;
-			}
-		} else {
-			for(uint gnum=cdb->idx->GetNumGames(); gnum > 0 && i < count; gnum--) {
-				if(filter && filter->Get(gnum -1) == 0) continue;
-				if (start == 0) idxList[i++] = gnum -1;
-				else start--;
-			}
-		}
-		if (i != count) idxList[i] = IDX_NOT_FOUND;
-	} else {
-		cdb->idx->GetRange(cdb->nb, sort, start, count, filter, idxList);
-	}
+	cdb->idx->GetRange(cdb->nb, sort, start, count, filter, idxList);
 
 	Tcl_Obj** res = new Tcl_Obj* [count *3];
 	uint i_res = 0;
@@ -1020,12 +552,10 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo[1] = Tcl_NewStringObj(RESULT_STR[ie->GetResult()], -1);
 		ginfo[2] = Tcl_NewIntObj((ie->GetNumHalfMoves() + 1) / 2);
 		ginfo[3] = Tcl_NewStringObj(ie->GetWhiteName(cdb->nb), -1);
-		eloT welo = ie->GetWhiteElo();
-		if (welo == 0) welo = cdb->nb->GetElo(ie->GetWhite());
+		eloT welo = ie->GetWhiteElo(cdb->nb);
 		ginfo[4] = Tcl_NewIntObj(welo);
 		ginfo[5] = Tcl_NewStringObj(ie->GetBlackName(cdb->nb), -1);
-		eloT belo = ie->GetBlackElo();
-		if (belo == 0) belo = cdb->nb->GetElo (ie->GetBlack());
+		eloT belo = ie->GetBlackElo(cdb->nb);
 		ginfo[6] = Tcl_NewIntObj(belo);
 		char buf_date[16];
 		date_DecodeToString (ie->GetDate(), buf_date);
@@ -1056,20 +586,10 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo[20] = Tcl_NewIntObj(ie->GetYear());
 		ginfo[21] = Tcl_NewIntObj((welo + belo)/2);
 		ginfo[22] = Tcl_NewIntObj(ie->GetRating(cdb->nb));
-		DString moves;
-		if (ply == 0) {
-			ginfo[23] = Tcl_NewStringObj(StoredLine::GetText(ie->GetStoredLineCode()), -1);
-		} else {
-			cdb->bbuf->Empty();
-			cdb->gfile->ReadGame (cdb->bbuf, ie->GetOffset(), ie->GetLength() );
-			Game* g = scratchGame;
-			g->Clear();
-			g->Decode (cdb->bbuf, GAME_DECODE_NONE);
-			g->MoveToPly(ply);
-			g->GetPartialMoveList (&moves, 20);
-			ginfo[23] = Tcl_NewStringObj(moves.Data(), -1);
-		}
-
+		cdb->gfile->ReadGame (cdb->bbuf, ie->GetOffset(), ie->GetLength() );
+		FastGame game = FastGame::Create(cdb->bbuf->GetBuffer(), cdb->bbuf->GetBuffer() + cdb->bbuf->GetByteCount());
+		std::string moves = game.getMoveSAN(ply, 10);
+		ginfo[23] = Tcl_NewStringObj(moves.c_str(), -1);
 		res[i_res++] = Tcl_ObjPrintf("%d_%d", idx +1, ply);
 		res[i_res++] = Tcl_NewListObj(sizeof(ginfo)/sizeof(Tcl_Obj*), ginfo);
 		res[i_res++] = Tcl_NewStringObj(deleted, -1);
@@ -1147,9 +667,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_FILENAME:
         return sc_base_filename (cd, ti, argc, argv);
-
-    case BASE_IMPORT:
-        return sc_base_import (cd, ti, argc, argv);
 
     case BASE_INUSE:
         return sc_base_inUse (cd, ti, argc, argv);
@@ -1266,7 +783,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_SORTCACHE:
         if (argc != 5) return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
         if (strCompare("create", argv[3]) == 0) {
-            dbase->idx->CreateSortingCache (dbase->nb, argv[4]);
+            if (argv[4][0] != 'N') dbase->idx->CreateSortingCache (dbase->nb, argv[4]);
         } else {
             dbase->idx->FreeCache(argv[4]);
         }
@@ -1298,6 +815,10 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return TCL_OK;
         }
         return errorResult (ti, "Usage: sc_base newFilter baseId [FEN]");
+
+    case BASE_IMPORT:
+        if (argc != 4) return errorResult (ti, "Usage: sc_base import baseId filename");
+        return sc_base_import (ti, dbase, argv[3]);
 
     }
 
@@ -1430,7 +951,6 @@ int
 sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool readOnly = false;  // Open database read-only.
-    bool fastOpen = false;  // Fast open (no flag counts, etc)
     const char * usage = "Usage: sc_base open [-readonly] [-fast] <filename>";
 
     // Check options:
@@ -1440,7 +960,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     while (baseArg+1 < argc) {
         int index = strUniqueMatch (argv[baseArg], options);
         switch (index) {
-            case OPT_FAST:     fastOpen = true; break;
+            case OPT_FAST: break;
             case OPT_READONLY: readOnly = true; break;
             default: return errorResult (ti, usage);
         }
@@ -1466,6 +986,8 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char* res = dbList[newBaseNum].Open(filename, (readOnly) ? FMODE_ReadOnly : FMODE_Both, base_progress, ti);
     if (res != 0 && !readOnly) res = dbList[newBaseNum].Open(filename, FMODE_ReadOnly, base_progress, ti);
     if (res != 0) return errorResult (ti, res);
+
+    dbList[newBaseNum].recalcEstimatedRatings(spellChecker[NAME_PLAYER]);
 
     currentBase = newBaseNum;
     db = &(dbList[newBaseNum]);
@@ -1950,73 +1472,39 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    games imported, and a string containing an PGN import errors
 //    or warnings.
 int
-sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
 {
-    const char * usage = "Usage: sc_base import file|data <pgnFile|pgnData>";
-    static const char * options[] = { "data", "file", NULL };
-    enum { IMPORT_OPT_DATA, IMPORT_OPT_FILE };
-
-    bool showProgress = startProgressBar();
-
-    if (argc != 4) { return errorResult (ti, usage); }
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
     // Cannot import into a read-only database unless it is memory-only:
-    if (db->fileMode == FMODE_ReadOnly  &&  !(db->memoryOnly)) {
+    if (cdb->fileMode == FMODE_ReadOnly  &&  !(cdb->memoryOnly)) {
         return errorResult (ti, errMsgReadOnly(ti));
     }
 
+    int res = TCL_OK;
+    bool showProgress = startProgressBar();
+
     MFile pgnFile;
-    uint inputLength = 0;
-    PgnParser parser;
-
-    int index = strUniqueMatch (argv[2], options);
-
-    if (index == IMPORT_OPT_FILE) {
-        if (pgnFile.Open (argv[3], FMODE_ReadOnly) != OK) {
-            return errorResult (ti, "Error opening PGN file.");
-        }
-        parser.Reset (&pgnFile);
-        inputLength = fileSize (argv[3], "");
-    } else if (index == IMPORT_OPT_DATA) {
-        parser.Reset ((const char *) argv[3]);
-        inputLength = strLength (argv[3]);
-    } else {
-        return errorResult (ti, usage);
+    if (pgnFile.Open (filename, FMODE_ReadOnly) != OK) {
+        return errorResult (ti,"Error opening PGN file.");
     }
-
+    PgnParser parser;
+    parser.Reset (&pgnFile);
+    uint inputLength = fileSize (filename, "");
     if (inputLength < 1) { inputLength = 1; }
     parser.IgnorePreGameText();
     uint gamesSeen = 0;
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
-        if (sc_savegame (ti, scratchGame, 0, db) != TCL_OK) {
-            return errorResult (ti, "Error saving game in database.\n");
-        }
+        const char* err = cdb->addGame(scratchGame);
+        if (err) return errorResult(ti, err);
         // Update the progress bar:
         gamesSeen++;
         if (showProgress  &&  (gamesSeen % 100) == 0) {
-            if (interruptedProgress()) { break; }
+            if (interruptedProgress()) { res = TCL_BREAK; break; }
             updateProgressBar (ti, parser.BytesUsed(), inputLength);
         }
     }
-
-    db->gfile->FlushAll();
-
-    // Now write the Index file header and the name file:
-    if (db->idx->WriteHeader() != OK) {
-        return errorResult (ti, "Error writing index file.");
-    }
-    if (! db->memoryOnly) {
-        if (db->nb->WriteNameFile() != OK) {
-            return errorResult (ti, "Error writing name file.");
-        }
-    }
-
+    cdb->clearCaches();
     if (showProgress) { updateProgressBar (ti, 1, 1); }
-    recalcFlagCounts (db);
-    if (! db->memoryOnly) { removeFile (db->fileName, TREEFILE_SUFFIX); }
 
     appendUintElement (ti, gamesSeen);
     if (parser.ErrorCount() > 0) {
@@ -2024,7 +1512,7 @@ sc_base_import (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     } else {
         Tcl_AppendElement (ti, "");
     }
-    return TCL_OK;
+    return res;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4095,7 +3583,7 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_clipbase_copy (cd, ti, argc, argv);
 
     case CLIP_CLEAR:
-        clipbase->Close(errMsgNotOpen(ti), true);
+        clipbase->Close(errMsgNotOpen(ti));
         return TCL_OK;
 
     case CLIP_PASTE:
@@ -4111,6 +3599,7 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_clipbase_copy:
 //    Copy the current game to the clipbase database.
+// TODO: DELETE this function
 int
 sc_clipbase_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -4121,40 +3610,12 @@ sc_clipbase_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "You are already in the clipbase database.");
     }
 
-    db->bbuf->Empty();
     db->game->SaveState();
-    if (db->game->Encode (db->bbuf, NULL) != OK) {
-        return errorResult (ti, "Error encoding game.");
-    }
+    const char* err1 = clipbase->addGame(db->game);
     db->game->RestoreState();
-    db->bbuf->BackToStart();
-    clipbase->game->Clear();
-
-    if (clipbase->game->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
-        return errorResult (ti, "Error decoding game.");
-    }
-
-    // Copy the standard tag values to the clipbase game:
-    clipbase->game->CopyStandardTags (db->game);
-
-    // Move to the current position in the clipbase game:
-    clipbase->tbuf->Empty();
-    clipbase->game->MoveToLocationInPGN (clipbase->tbuf, db->game->GetPgnOffset());
-
-    // Now, add the game as the last game in the clipbase:
-    db->game->SaveState();
-    if (sc_savegame (ti, db->game, 0, clipbase) != TCL_OK) {
-        return TCL_ERROR;
-    }
-    db->game->RestoreState();
-
-    // Update the clipbase game number:
-    clipbase->gameNumber = clipbase->numGames - 1;
-
-    // We must ensure that the clipbase Index is still all in memory:
-    clipbase->idx->ReadEntireFile();
-    recalcFlagCounts (clipbase);
-
+    const char* err2 = clipbase->clearCaches();
+    if (err1) return errorResult(ti, err1);
+    if (err2) return errorResult(ti, err2);
     return TCL_OK;
 }
 
@@ -4511,7 +3972,7 @@ sc_compact_names (scidBaseT* base, Tcl_Interp * ti)
     // Recompute player frequencies, ratings, etc:
     recalcNameFrequencies (base->nb, base->idx);
     recalcFlagCounts (base);
-    recalcEstimatedRatings (base->nb);
+    base->nb->recalcEstimatedRatings (spellChecker[NAME_PLAYER]);
 
     return TCL_OK;
 }
@@ -5009,13 +4470,15 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "count", "first", "frequency",
         "index", "last", "negate", "next",
         "previous", "set", "size", "stats",
-        "link", "search", "release", "isWhole", NULL
+        "link", "search", "release", "isWhole",
+        "treestats", "export", NULL
     };
     enum {
         FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
         FILTER_INDEX, FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
         FILTER_PREV, FILTER_SET, FILTER_SIZE, FILTER_STATS,
-        FILTER_LINK, FILTER_SEARCH, FILTER_RELEASE, FILTER_ISWHOLE
+        FILTER_LINK, FILTER_SEARCH, FILTER_RELEASE, FILTER_ISWHOLE,
+        FILTER_TREESTATS, FILTER_EXPORT
     };
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -5077,7 +4540,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (gNum > 0 && gNum <= dbase->numGames) {
                 uint val = strGetUnsigned(argv[4]);
                 if (argc == 8) {
-                    uint start = db->idx->GetRangeLocation (db->nb, argv[7], filter, gNum);
+                    int start = db->idx->GetRangeLocation (db->nb, argv[7], filter, gNum);
                     int count = strGetInteger (argv[6]);
                     if (count < 0) {
                         count = -count;
@@ -5090,7 +4553,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     }
                     uint* idxList = new uint[count];
                     db->idx->GetRange(db->nb, argv[7], start, count, filter, idxList);
-                    for (uint i = 0; i < count; ++i) {
+                    for (int i = 0; i < count; ++i) {
                         if (idxList[i] == IDX_NOT_FOUND) break;
                         filter->Set(idxList[i], val);
                     }
@@ -5118,7 +4581,73 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_ISWHOLE:
         return setBoolResult (ti, filter->isWhole());
-    }
+
+    case FILTER_TREESTATS: {
+            std::vector<scidBaseT::TreeStat> stats = dbase->getTreeStat(filter);
+            Tcl_Obj** res = new Tcl_Obj* [stats.size()];
+            uint i_res = 0;
+            for (uint i=0; i < stats.size(); i++) {
+                Tcl_Obj* ginfo[8];
+                ginfo[0] = Tcl_NewStringObj(stats[i].SAN.c_str(), -1);
+                ginfo[1] = Tcl_NewIntObj(stats[i].ngames);
+                ginfo[2] = Tcl_NewIntObj(stats[i].resultW);
+                ginfo[3] = Tcl_NewIntObj(stats[i].resultD);
+                ginfo[4] = Tcl_NewIntObj(stats[i].resultB);
+                ginfo[5] = Tcl_NewDoubleObj(stats[i].exp);
+                ginfo[6] = Tcl_NewIntObj(stats[i].nexp);
+                if (stats[i].toMove == WHITE) ginfo[7] = Tcl_NewStringObj("W", -1);
+                else ginfo[7] = Tcl_NewStringObj(stats[i].toMove == BLACK ? "B" : " ", -1);
+                res[i_res++] = Tcl_NewListObj(sizeof(ginfo)/sizeof(Tcl_Obj*), ginfo);
+            }
+            Tcl_SetObjResult(ti, Tcl_NewListObj(i_res, res));
+            delete [] res;
+            return TCL_OK;
+        }
+
+    case FILTER_EXPORT:
+        if (argc >= 7 && argc <=9) {
+            FILE* exportFile = fopen (argv[5], "w");
+            if (exportFile == NULL) return errorResult (ti, "Error opening file for exporting games.");
+            Game g;
+            if (strCompare("LaTeX", argv[6]) == 0) {
+                g.SetPgnFormat (PGN_FORMAT_LaTeX);
+                g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS | PGN_STYLE_SHORT_HEADER | PGN_STYLE_SYMBOLS | PGN_STYLE_INDENT_VARS);
+            } else { //Default to PGN
+                g.SetPgnFormat (PGN_FORMAT_Plain);
+                g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS);
+            }
+            if (argc > 7) fprintf(exportFile, "%s", argv[7]);
+            bool showProgress = startProgressBar();
+            const int count = 100;
+            uint idxList[count];
+            bool end = false;
+            for (uint start = 0; !end; start += count) {
+                dbase->idx->GetRange(dbase->nb, argv[4], start, count, filter, idxList);
+                for (int i = 0; i < count; ++i) {
+                    if (idxList[i] == IDX_NOT_FOUND) { end = true; break; }
+                    IndexEntry* ie = dbase->idx->FetchEntry (idxList[i]);
+                    // Skip any corrupt games:
+                    if (dbase->gfile->ReadGame (dbase->bbuf, ie->GetOffset(), ie->GetLength()) != OK) continue;
+                    if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
+                    g.LoadStandardTags (ie, dbase->nb);
+                    dbase->tbuf->Empty();
+                    g.WriteToPGN (dbase->tbuf);
+                    dbase->tbuf->NewLine();
+                    dbase->tbuf->DumpToFile (exportFile);
+                }
+                if (!end && showProgress) {
+                    updateProgressBar (ti, start, filter->Count());
+                    end = interruptedProgress();
+                }
+            }
+            if (argc > 8) fprintf(exportFile, "%s", argv[8]);
+            fclose (exportFile);
+            if (showProgress) { updateProgressBar (ti, 1, 1); }
+            return TCL_OK;
+        }
+        return errorResult (ti, "Usage: sc_filter export baseId filterName sortCrit filename <PGN|LaTeX> [header] [footer]");
+
+	}
     return InvalidCommand (ti, "sc_filter", options);
 }
 
@@ -6579,9 +6108,13 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         } else if (strIsPrefix (argv[arg], "white")) {
             Tcl_AppendResult (ti, db->game->GetWhiteStr(), NULL);
             return TCL_OK;
+        } else if (strIsPrefix (argv[arg], "welo")) {
+            return setIntResult (ti, db->game->GetWhiteElo() );
         } else if (strIsPrefix (argv[arg], "black")) {
             Tcl_AppendResult (ti, db->game->GetBlackStr(), NULL);
             return TCL_OK;
+        } else if (strIsPrefix (argv[arg], "belo")) {
+            return setIntResult (ti, db->game->GetBlackElo() );
         } else if (strIsPrefix (argv[arg], "event")) {
             Tcl_AppendResult (ti, db->game->GetEventStr(), NULL);
             return TCL_OK;
@@ -8931,7 +8464,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case INFO_VERSION:
         if (argc >= 3  &&  strIsPrefix (argv[2], "date")) {
-            setResult (ti, SCID_VERSION_DATE);
+            setResult (ti, __DATE__);
         } else {
             setResult (ti, SCID_VERSION_STRING);
         }
@@ -9564,14 +9097,14 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
-        "isAt", "isLegal", "isPromotion",
+        "isAt", "isLegal", "isPromotion", "movelist",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", "location", NULL
     };
     enum {
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
-        POS_ISAT, POS_ISLEGAL, POS_ISPROMO,
+        POS_ISAT, POS_ISLEGAL, POS_ISPROMO, MOVELIST,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION
     };
@@ -9678,6 +9211,34 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case LOCATION: //TODO: doesn't work for variations
         return setUintResult (ti, db->game->GetCurrentPly());
+
+    case MOVELIST: {
+        Position * pos = db->game->GetCurrentPos();
+        MoveList mlist;
+        pos->GenerateMoves(&mlist);
+        for (uint i = 0; i < mlist.Size(); i++) {
+            pos->DoSimpleMove(mlist.Get(i));
+
+            MoveList mlist1, mlist2;
+            pos->GenerateMoves(&mlist2);
+            pos->SetToMove ((pos->GetToMove() == WHITE) ? BLACK : WHITE);
+            pos->GenerateMoves(&mlist1);
+            mlist.Get(i)->score = mlist1.Size() - mlist2.Size();
+
+            pos->SetToMove ((pos->GetToMove() == WHITE) ? BLACK : WHITE);
+            pos->UndoSimpleMove(mlist.Get(i));
+        }
+        mlist.Sort();
+        char tmp[16];
+        Tcl_Obj** res = new Tcl_Obj* [mlist.Size()];
+        for (uint i = 0; i < mlist.Size(); i++) {
+            pos->MakeSANString(mlist.Get(i), tmp, SAN_CHECKTEST);
+            res[i] = Tcl_NewStringObj(tmp, -1);
+        }
+        Tcl_SetObjResult(ti, Tcl_NewListObj(mlist.Size(), res));
+        delete [] res;
+        return TCL_OK;
+    }
 
     default:
         return InvalidCommand (ti, "sc_pos", options);

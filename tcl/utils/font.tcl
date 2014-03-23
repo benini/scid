@@ -150,7 +150,7 @@ proc FontDialog {font_name {options ""} {fixedOnly 0}} {
   ttk::frame $fr -borderwidth 3 -relief groove
   ttk::label $fr.l_sample -text "Sample" -anchor w
 
-  ttk::label $fr.sample -font $font_name -relief sunken -text "This is some sample text\nAaBbCcDdEeFfGgHhIiJjKkLlMm\n 0123456789. +=-"
+  ttk::label $fr.sample -font $font_name -relief sunken -text "This is some sample text\nAaBbCcDdEeFfGgHhIiJjKkLlMm\n 0123456789. +=-\n\u2654 \u2655 \u2656 \u2657 \u2658"
 
   pack  $fr.l_sample -side top -fill x -pady 4
   pack  $fr.sample -side top -pady 4 -ipadx 10 -ipady 10

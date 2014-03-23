@@ -202,9 +202,8 @@ proc ::bookmarks::Go {entry} {
       -title "Scid" -message "Unable to load game number: $best"
   } else {
     sc_move pgn $ply
-    flipBoardForPlayerNames $::myPlayerNames
   }
-  updateBoard -pgn
+  ::notify::GameChanged
   ::notify::DatabaseChanged
 }
 
@@ -482,7 +481,7 @@ proc ::bookmarks::Save {{reportError 0}} {
     }
     return
   }
-  puts $f "# Scid [sc_info version] bookmarks file\n"
+  puts $f "# Scid $::scidVersion bookmarks file\n"
   foreach i {subMenus data} {
     puts $f "set bookmarks($i) [list [set bookmarks($i)]]"
     puts $f ""

@@ -275,7 +275,7 @@ proc ::crosstab::Open {} {
     sc_base switch $::crosstab(dbase)
     sc_game crosstable filter
     sc_base switch $curr_base
-    ::notify::DatabaseChanged
+    ::notify::DatabaseModified $::crosstab(dbase) dbfilter
   }
   pack $w.b.cancel $w.b.update $w.b.type \
       -side right -pady 3 -padx 5

@@ -53,13 +53,8 @@ ByteBuffer::Empty()
 void
 ByteBuffer::SetBufferSize (uint length)
 {
-#ifdef WINCE
-    if (AllocatedBuffer) { my_Tcl_Free((char*) AllocatedBuffer); }
-    AllocatedBuffer = (byte*)my_Tcl_Alloc(sizeof( byte[length]));
-#else
     if (AllocatedBuffer) { delete[] AllocatedBuffer; }
     AllocatedBuffer = new byte[length];
-#endif
     Buffer = AllocatedBuffer;
     Current = Buffer;
     ReadPos = ByteCount = 0;

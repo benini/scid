@@ -51,8 +51,7 @@ typedef unsigned short versionT;
 const versionT SCID_VERSION = 400;     // Current file format version = 3.0
 const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 3.0
 
-const char SCID_VERSION_STRING[] = "4.5.2";     // Current Scid version
-const char SCID_VERSION_DATE[] = "Nov 2013";
+const char SCID_VERSION_STRING[] = "4.6.0";     // Current Scid version
 const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
 
 const char TREEFILE_SUFFIX[] = ".stc";
@@ -201,7 +200,7 @@ const resultT
     RESULT_Draw  = 3;
 
 const uint RESULT_SCORE[4] = { 1, 2, 0, 1 };
-
+const uint RESULT_SORT[4] = { 1, 3, 0, 2 };
 const char RESULT_CHAR [4]       = { '*',  '1',    '0',    '='       };
 const char RESULT_STR [4][4]     = { "*",  "1-0",  "0-1",  "=-="     };
 const char RESULT_LONGSTR [4][8] = { "*",  "1-0",  "0-1",  "1/2-1/2" };

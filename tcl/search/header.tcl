@@ -440,169 +440,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
       if $sTitles(b:$i) { lappend btitles $i }
     }
     
-    if {($sWhite == "!me") || ($sBlack == "!me")} {
-      set i 0
-      foreach name $::myPlayerNames {
-        
-        set filter 0
-        
-        if {$i == 0} {
-          set filter 2
-        } else {
-          set filter 1
-        }
-        set i [expr {$i+1}]
-        set wname $sWhite
-        set bname $sBlack
-        
-        if {$sWhite == "!me"} {
-          set wname $name
-        }
-        if {$sBlack == "!me"} {
-          set bname $name
-        }
-        set str [sc_search header  \
-            -white $wname           \
-            -black $bname           \
-            -toMove $sSideToMove \
-            -results [list $sResWin $sResDraw $sResLoss $sResOther] \
-            -event $sEvent -site $sSite -round $sRound \
-            -date [list $sDateMin $sDateMax] \
-            -welo [list $sWhiteEloMin $sWhiteEloMax] \
-            -belo [list $sBlackEloMin $sBlackEloMax] \
-            -delo [list $sEloDiffMin $sEloDiffMax] \
-            -eco [list $sEcoMin $sEcoMax $sEco] \
-            -length [list $sGlMin $sGlMax] \
-            -gameNumber [list $sGnumMin $sGnumMax] \
-            -flip $sIgnoreCol -filter $filter \
-            -annotated $sAnnotated \
-            -annotator $sAnnotator \
-            -fStdStart $sHeaderFlags(StdStart) \
-            -fPromotions $sHeaderFlags(Promotions) \
-            -fComments $sHeaderFlags(Comments) \
-            -fVariations $sHeaderFlags(Variations) \
-            -fAnnotations $sHeaderFlags(Annotations) \
-            -fDelete $sHeaderFlags(DeleteFlag) \
-            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-            -fBlackOp $sHeaderFlags(BlackOpFlag) \
-            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-            -fEndgame $sHeaderFlags(EndgameFlag) \
-            -fNovelty $sHeaderFlags(NoveltyFlag) \
-            -fPawnStruct $sHeaderFlags(PawnFlag) \
-            -fTactics $sHeaderFlags(TacticsFlag) \
-            -fKingside $sHeaderFlags(KsideFlag) \
-            -fQueenside $sHeaderFlags(QsideFlag) \
-            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-            -fBlunder $sHeaderFlags(BlunderFlag) \
-            -fUser $sHeaderFlags(UserFlag) \
-            -fCustom1 $sHeaderFlags(CustomFlag1) \
-            -fCustom2 $sHeaderFlags(CustomFlag2) \
-            -fCustom3 $sHeaderFlags(CustomFlag3) \
-            -fCustom4 $sHeaderFlags(CustomFlag4) \
-            -fCustom5 $sHeaderFlags(CustomFlag5) \
-            -fCustom6 $sHeaderFlags(CustomFlag6) \
-            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
-            ]
-      }
-    } elseif {($sWhite == "!mymove") || ($sBlack == "!mymove")} {
-      set i 0
-      foreach name $::myPlayerNames {
-        
-        set filter 0
-        
-        if {$i == 0} {
-          set filter 2
-        } else {
-          set filter 1
-        }
-        
-        set str [sc_search header  \
-            -white $name            \
-            -toMove w               \
-            -results [list 0 0 0 1] \
-            -event $sEvent -site $sSite -round $sRound \
-            -date [list $sDateMin $sDateMax] \
-            -welo [list $sWhiteEloMin $sWhiteEloMax] \
-            -belo [list $sBlackEloMin $sBlackEloMax] \
-            -delo [list $sEloDiffMin $sEloDiffMax] \
-            -eco [list $sEcoMin $sEcoMax $sEco] \
-            -length [list $sGlMin $sGlMax] \
-            -gameNumber [list $sGnumMin $sGnumMax] \
-            -flip $sIgnoreCol -filter $filter \
-            -annotated $sAnnotated \
-            -annotator $sAnnotator \
-            -fStdStart $sHeaderFlags(StdStart) \
-            -fPromotions $sHeaderFlags(Promotions) \
-            -fComments $sHeaderFlags(Comments) \
-            -fVariations $sHeaderFlags(Variations) \
-            -fAnnotations $sHeaderFlags(Annotations) \
-            -fDelete $sHeaderFlags(DeleteFlag) \
-            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-            -fBlackOp $sHeaderFlags(BlackOpFlag) \
-            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-            -fEndgame $sHeaderFlags(EndgameFlag) \
-            -fNovelty $sHeaderFlags(NoveltyFlag) \
-            -fPawnStruct $sHeaderFlags(PawnFlag) \
-            -fTactics $sHeaderFlags(TacticsFlag) \
-            -fKingside $sHeaderFlags(KsideFlag) \
-            -fQueenside $sHeaderFlags(QsideFlag) \
-            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-            -fBlunder $sHeaderFlags(BlunderFlag) \
-            -fUser $sHeaderFlags(UserFlag) \
-            -fCustom1 $sHeaderFlags(CustomFlag1) \
-            -fCustom2 $sHeaderFlags(CustomFlag2) \
-            -fCustom3 $sHeaderFlags(CustomFlag3) \
-            -fCustom4 $sHeaderFlags(CustomFlag4) \
-            -fCustom5 $sHeaderFlags(CustomFlag5) \
-            -fCustom6 $sHeaderFlags(CustomFlag6) \
-            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
-            ]
-        
-        set str [sc_search header  \
-            -black $name            \
-            -toMove b               \
-            -results [list 0 0 0 1] \
-            -event $sEvent -site $sSite -round $sRound \
-            -date [list $sDateMin $sDateMax] \
-            -welo [list $sWhiteEloMin $sWhiteEloMax] \
-            -belo [list $sBlackEloMin $sBlackEloMax] \
-            -delo [list $sEloDiffMin $sEloDiffMax] \
-            -eco [list $sEcoMin $sEcoMax $sEco] \
-            -length [list $sGlMin $sGlMax] \
-            -gameNumber [list $sGnumMin $sGnumMax] \
-            -flip $sIgnoreCol -filter $filter \
-            -annotated $sAnnotated \
-            -annotator $sAnnotator \
-            -fStdStart $sHeaderFlags(StdStart) \
-            -fPromotions $sHeaderFlags(Promotions) \
-            -fComments $sHeaderFlags(Comments) \
-            -fVariations $sHeaderFlags(Variations) \
-            -fAnnotations $sHeaderFlags(Annotations) \
-            -fDelete $sHeaderFlags(DeleteFlag) \
-            -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
-            -fBlackOp $sHeaderFlags(BlackOpFlag) \
-            -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
-            -fEndgame $sHeaderFlags(EndgameFlag) \
-            -fNovelty $sHeaderFlags(NoveltyFlag) \
-            -fPawnStruct $sHeaderFlags(PawnFlag) \
-            -fTactics $sHeaderFlags(TacticsFlag) \
-            -fKingside $sHeaderFlags(KsideFlag) \
-            -fQueenside $sHeaderFlags(QsideFlag) \
-            -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
-            -fBlunder $sHeaderFlags(BlunderFlag) \
-            -fUser $sHeaderFlags(UserFlag) \
-            -fCustom1 $sHeaderFlags(CustomFlag1) \
-            -fCustom2 $sHeaderFlags(CustomFlag2) \
-            -fCustom3 $sHeaderFlags(CustomFlag3) \
-            -fCustom4 $sHeaderFlags(CustomFlag4) \
-            -fCustom5 $sHeaderFlags(CustomFlag5) \
-            -fCustom6 $sHeaderFlags(CustomFlag6) \
-            -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
-            ]
-        
-        set i [expr {$i+1}]
-      }
-    } else {
       set dbase [string index $::refDatabaseH 0]
       if { $::refFilterH == "" } {
         set newGamelistWin 1
@@ -654,17 +491,18 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           sc_filter release $dbase $::refFilterH
           set ::refFilterH ""
         } else {
-          after idle "::windows::gamelist::Open false $dbase $::refFilterH"
+          after idle "::windows::gamelist::Open $dbase $::refFilterH"
         }
+      } else {
+          after idle "::notify::DatabaseModified $dbase $::refFilterH"
       }
-    }
     
     grab release .sh.b.stop
     pack forget .sh.b.stop
     sc_base switch $curr_base
     .sh.status configure -text $str
     unbusyCursor .
-    ::notify::DatabaseChanged
+
   }
   
   ttk::button $w.b.cancel -textvar ::tr(Close) -command {focus .; destroy .sh} ;# -padx 20
@@ -711,7 +549,7 @@ proc ::search::header::save {} {
         -message "Unable to create SearchOptions file: $fName"
     return
   }
-  puts $searchF "\# SearchOptions File created by Scid [sc_info version]"
+  puts $searchF "\# SearchOptions File created by Scid $::scidVersion"
   puts $searchF "set searchType Header"
   
   # First write the regular variables:

@@ -3975,7 +3975,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         if (!NonStandardStart) {
             uint longestMatch = 0;
             uint storedLineCount = StoredLine::Count();
-            for (ushort i = 1; i <= storedLineCount; i++) {
+            for (ushort i = 1; i < storedLineCount; i++) {
                 Game * g = StoredLine::GetGame (i);
                 moveT * gameMove = FirstMove->next;
                 moveT * lineMove = g->FirstMove->next;

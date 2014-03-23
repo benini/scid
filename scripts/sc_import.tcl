@@ -28,7 +28,7 @@ if {[sc_base isReadOnly $curr_db]} {
 
 for {set i 1} {$i < $args} {incr i} {
     set pgnfile [lindex $argv $i]
-    if {[catch {sc_base import file $pgnfile} result]} {
+    if {[catch {sc_base import $curr_db $pgnfile} result]} {
         puts stderr "Error importing \"$pgnfile\": $result"
         exit 1
     }

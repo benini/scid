@@ -193,7 +193,6 @@ proc ::reviewgame::abnormalContinuation {} {
   ::reviewgame::resetValues
   ::windows::gamelist::Refresh
   ::windows::stats::Refresh
-  updateMenuStates
   updateBoard -pgn
   if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
     ::board::flip .main.board

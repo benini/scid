@@ -1514,7 +1514,7 @@ namespace eval CorrespondenceChess {
 					set pgn [encoding convertfrom iso8859-1 [::CorrespondenceChess::getPage $pgnurl ]]
 
 					# split by line endings for insertion of necessary header tags
-					set gamelist [split $pgn {}]
+					set gamelist [split $pgn "\n"]
 
 					set filename [file nativename [file join $::CorrespondenceChess::Inbox "$cmailgamename.pgn"]]
 
@@ -2310,7 +2310,6 @@ namespace eval CorrespondenceChess {
 
 		updateBoard -pgn
 		updateTitle
-		updateMenuStates
 
 		# Call gameSave with argument 0 to append to the current
 		# database. This also gives the Save-dialog for additional user
@@ -2493,13 +2492,8 @@ namespace eval CorrespondenceChess {
 			}
 			set ::initialDir(base) [file dirname $fName]
 		}
-		::windows::gamelist::Refresh
-		::tree::refresh
-		::windows::stats::Refresh
-		updateMenuStates
 		updateBoard -pgn
-		updateTitle
-		updateStatusBar
+		::notify::DatabaseChanged
 
 		::CorrespondenceChess::CheckForCorrDB
 	}
@@ -3021,7 +3015,7 @@ namespace eval CorrespondenceChess {
 			set game 0
 			set gamemoves {}
 			foreach f [glob -nocomplain [file join $inpath *]] {
-				catch {sc_base import file $f}
+				catch {sc_base import [sc_base current] $f}
 				set game [expr {$game + 1}]
 				sc_game load $game
 				sc_move end
@@ -3147,7 +3141,7 @@ namespace eval CorrespondenceChess {
 			# import the games on basis of the sorted list created above
 			foreach f $filelist {
 				set filename "[file join $inpath [lindex $f 0]].pgn"
-				if {[catch {sc_base import file $filename} result]} {
+				if {[catch {sc_base import [sc_base current] $filename} result]} {
 					::CorrespondenceChess::updateConsole "info Error retrieving server response from $filename"
 				} else {
 					# count the games processed successfully

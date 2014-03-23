@@ -323,7 +323,6 @@ namespace eval sergame {
     updateBoard -pgn
     ::windows::gamelist::Refresh
     updateTitle
-    updateMenuStates
     set w ".serGameWin"
     if {[winfo exists $w]} {
       focus .

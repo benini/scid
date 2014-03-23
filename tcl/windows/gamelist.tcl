@@ -1,30 +1,43 @@
 ########################################################################
 ### Games list window
-# Copyright (C) 2011-2013 Fulvio Benini
+# Copyright (C) 2011-2014 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 # Scid is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation.
 
-proc ::windows::gamelist::Open { {reuse "false"} {base ""} {filter "dbfilter"} } {
-	if { $reuse != "false" } {
-		# use a clipbase window
+proc ::windows::gamelist::Open { {base ""} {filter ""} } {
+	if {$base == ""} { set base [sc_base current] }
+	if { $filter == "" } {
+		set filter "dbfilter"
+		set gnum [sc_game number]
 		foreach glwin $::windows::gamelist::wins {
 			set b [::windows::gamelist::GetBase $glwin]
-			if { [sc_base filename $b] == {[clipbase]} && [sc_base numGames $b] == 0 } {
-				if {[info exists ::recentSort]} {
-					set idx [lsearch -exact $::recentSort "[sc_base filename $base]"]
-					if {$idx != -1} {
-						set ::glist_Sort(ly$glwin) [lindex $::recentSort [expr $idx +1]]
-						::windows::gamelist::createGList_ $glwin
-					}
-				}
-				::windows::gamelist::SetBase $glwin $base $filter
-				##TODO: this is a hack to raise the gamelist window
+			#TODO: avoid direct access to private function glist.findcurrentgame_
+			if {$b == $base && ($gnum == 0 || [glist.findcurrentgame_ $glwin.games.glist $gnum] != "")} {
 				createToplevel $glwin
+				focus $glwin.games.glist
 				return
 			}
+			if { [sc_base filename $b] == {[clipbase]} && [sc_base numGames $b] == 0 } {
+				set useClipbase $glwin
+			}
+		}
+		if {[info exists useClipbase]} {
+			set glwin $useClipbase
+			if {[info exists ::recentSort]} {
+				set idx [lsearch -exact $::recentSort "[sc_base filename $base]"]
+				if {$idx != -1} {
+					set ::glist_Sort(ly$glwin) [lindex $::recentSort [expr $idx +1]]
+					::windows::gamelist::createGList_ $glwin
+				}
+			}
+			::windows::gamelist::SetBase $glwin $base $filter
+			##TODO: this is a hack to raise the gamelist window
+			createToplevel $glwin
+			focus $glwin.games.glist
+			return
 		}
 	}
 
@@ -38,8 +51,8 @@ proc ::windows::gamelist::Open { {reuse "false"} {base ""} {filter "dbfilter"} }
 	::createToplevel $w $closeto
 
 	set ::gamelistTitle($w) "[tr WindowsGList]:"
-	if {$base == ""} { set base [sc_base current] }
 	::windows::gamelist::createWin_ $w $base $filter
+	focus $w
 }
 
 proc ::windows::gamelist::OpenTreeBest { {base} {w} } {
@@ -48,6 +61,7 @@ proc ::windows::gamelist::OpenTreeBest { {base} {w} } {
 		destroy $w
 		return
 	}
+	ttk::frame $w.buttons; ttk::button $w.buttons.filter
 	set ::gamelistTitle($w) "[tr TreeBestGames]:"
 	::windows::gamelist::createWin_ $w $base "tree"
 }
@@ -61,6 +75,20 @@ proc ::windows::gamelist::Refresh {{moveup 1} {wlist ""}} {
 			continue
 		}
 		::windows::gamelist::update_ $w $moveup
+	}
+}
+
+proc ::windows::gamelist::DatabaseModified {{dbase} {filter -1}} {
+	set wlist $::windows::gamelist::wins
+	foreach w $wlist {
+		if {$::gamelistBase($w) == $dbase} {
+			if {$filter == -1} {
+				::windows::gamelist::update_ $w 0
+			} elseif {$filter == $::gamelistFilter($w)} {
+				::windows::gamelist::update_ $w 1
+			}
+			::windows::gamelist::updateStats_ $w
+		}
 	}
 }
 
@@ -88,6 +116,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 		}
 	}
 	foreach base $bases {
+		update idletasks
 		set f [sc_base newFilter $base FEN]
 		if { $::gamelistUpdating != 1 } {
 			after idle {
@@ -102,8 +131,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 					$w.games.glist tag configure fsmall -foreground ""
 					$w.buttons.boardFilter configure -image tb_BoardMask
 					set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w) $f]
-					::windows::gamelist::Refresh 1 $w
-					notify::DatabaseChanged 0
+					::notify::DatabaseModified $base $::gamelistFilter($w)
 				}
 			}
 		}
@@ -115,9 +143,15 @@ proc ::windows::gamelist::FilterReset {{w} {base}} {
 	set f "dbfilter"
 	if {$w != "" && $base == $::gamelistBase($w)}  { set f $::gamelistFilter($w) }
 	sc_filter set $base $f 1
-	notify::DatabaseChanged
+	::notify::DatabaseModified $base $f
 }
 
+proc ::windows::gamelist::FilterNegate {{w} {base}} {
+	set f "dbfilter"
+	if {$w != "" && $base == $::gamelistBase($w)}  { set f $::gamelistFilter($w) }
+	sc_filter negate $base $f
+	::notify::DatabaseModified $base $f
+}
 
 # Returns text describing state of filter for specified
 # database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
@@ -151,9 +185,71 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 	if { $::gamelistPosMask($w) != 0 } {
 		::windows::gamelist::PosChanged $w
 	} else {
-		::windows::gamelist::Refresh 1 $w
+		::windows::gamelist::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 	}
 	unbusyCursor $w
+}
+
+#Examples
+# Search the games of the world champion: carlsen
+# Search only the games played as white: w=carlsen
+# Search only the games played as black: b=carlsen
+# Search the games with playes with elo above 2500: 2500
+# Search the games with a white player with elo above 2500: w>2500
+# Search the games with a white player with elo under 2500: w<2500
+# Search the games with a black player with elo above 2500: b>2500
+# Search the games played after a specific year: 2013
+# Search the games where Carlsen played as white against Kramnik
+# w=carlsen
+# b=kramnik
+# Start a new search with an empty search
+#
+proc ::windows::gamelist::Awesome {{w} {txt}} {
+	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
+	if {$::gamelistFilter($w) == "dbfilter" && [sc_filter isWhole $::gamelistBase($w) $::gamelistFilter($w)]} {
+		set ::gamelistFilter($w) "[sc_base newFilter $::gamelistBase($w)]"
+		if { $::gamelistPosMask($w) != 0 } { ::windows::gamelist::PosChanged $w }
+	}
+
+	if {$txt == ""} {
+		# Quick way to reset the filter: search an empty string
+		sc_filter set "$::gamelistBase($w)" "$::gamelistFilter($w)" 1
+	} else {
+		set cmd "sc_filter search $::gamelistBase($w) $::gamelistFilter($w) header "
+		if { [sc_filter size "$::gamelistBase($w)" "$::gamelistFilter($w)"] == 0 } {
+			append cmd " -filter RESET "
+		} else {
+			append cmd " -filter AND "
+		}
+		if {0 == [string compare -nocase -length 2 $txt "w="] } {
+			set op { -white "[string range "$txt" 2 end]" }
+		} elseif {0 == [string compare -nocase -length 2 $txt "w>"] } {
+			set op { -welo [list "[string range "$txt" 2 end]" 3100] }
+		} elseif {0 == [string compare -nocase -length 2 $txt "w<"] } {
+			set op { -welo [list 0 "[string range "$txt" 2 end]" ] }
+		} elseif {0 == [string compare -nocase -length 2 $txt "b="] } {
+			set op { -black "[string range "$txt" 2 end]" }
+		} elseif {0 == [string compare -nocase -length 2 $txt "b>"] } {
+			set op { -belo [list "[string range "$txt" 2 end]" 3100] }
+		} elseif {0 == [string compare -nocase -length 2 $txt "b<"] } {
+			set op { -belo [list 0 "[string range "$txt" 2 end]" ] }
+		} else {
+			if {! [string is integer $txt]} {
+				set op { -white "$txt" -flip yes }
+			} elseif {$txt > 1800 && $txt <= 2030} {
+				set op { -date [list "$txt" 2030] }
+			} elseif {$txt > 2030 && $txt <= 3100} {
+				set op { -welo [list "$txt" 3100] -belo [list "$txt" 3100] }
+			} else {
+				set op { -gameNumber [list "$txt" "$txt"] }
+			}
+		}
+		progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel) "sc_progressBar"
+		set res [eval "$cmd$op"]
+		closeProgressWindow
+		#TODO: tk_messageBox -message [eval "list $op"]
+	}
+	::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 }
 
 proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
@@ -188,7 +284,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 	if {$copyErr} {
 		tk_messageBox -type ok -icon info -title "Scid" -message $result
 	}
-	::notify::DatabaseChanged
+	::notify::DatabaseModified $dstBase
 }
 
 
@@ -221,6 +317,7 @@ proc ::windows::gamelist::createWin_ { {w} {base} {filter} } {
 	setWinLocation $w
 	setWinSize $w
 	bind $w <Configure> "recordWinSize $w"
+	bind $w <Control-l> "::windows::gamelist::Open \$::gamelistBase($w) dbfilter"
 	createToplevelFinalize $w
 	lappend ::windows::gamelist::wins $w
 	::windows::gamelist::Refresh 1 $w
@@ -231,6 +328,7 @@ proc ::windows::gamelist::createMenu_ {w} {
 	ttk::button $w.buttons.database -image tb_CC_book -command "::windows::gamelist::menu_ $w database"
 	ttk::button $w.buttons.filter -image tb_search_on -command "::windows::gamelist::menu_ $w filter"
 	ttk::button $w.buttons.layout -image tb_Layout -command "::windows::gamelist::menu_ $w layout"
+	ttk::button $w.buttons.stats -image tb_Stats -command "::windows::gamelist::menu_ $w stats; ::windows::gamelist::updateStats_ $w"
 	ttk::button $w.buttons.boardFilter -image tb_BoardMask -command "::windows::gamelist::searchpos_ $w"
 	#TODO:
 	#ttk::button $w.buttons.stats -image b_bargraph
@@ -238,12 +336,13 @@ proc ::windows::gamelist::createMenu_ {w} {
 	::utils::tooltip::Set $w.buttons.database "Show/Hide databases"
 	::utils::tooltip::Set $w.buttons.filter "Change filter"
 	::utils::tooltip::Set $w.buttons.layout "Load/Save/Change sorting criteria and column layout"
+	::utils::tooltip::Set $w.buttons.stats "Show/Hide statistics"
 	::utils::tooltip::Set $w.buttons.boardFilter "Show only games that matches the current board position"
 	grid $w.buttons.database -row 0
-	grid $w.buttons.filter  -row 1
-	grid $w.buttons.layout  -row 2
-	grid $w.buttons.boardFilter  -row 3
-	#grid $w.buttons.stats -row 4
+	grid $w.buttons.filter -row 1
+	grid $w.buttons.layout -row 2
+	grid $w.buttons.stats -row 3
+	grid $w.buttons.boardFilter -row 4
 	grid $w.buttons -row 0 -column 0 -sticky news
 
 	ttk::frame $w.database -padding {0 5 6 2}
@@ -286,6 +385,13 @@ proc ::windows::gamelist::createMenu_ {w} {
 	grid rowconfigure $w.layout 0 -weight 1
 	grid columnconfigure $w.layout 0 -weight 1
 	::glist_Ly::Create $w
+
+	ttk::frame $w.stats -padding {0 5 6 2}
+	ttk::frame $w.stats.b -borderwidth 2 -relief groove
+	grid $w.stats.b -sticky news
+	grid rowconfigure $w.stats 0 -weight 1
+	grid columnconfigure $w.stats 0 -weight 1
+	autoscrollframe -bars y $w.stats.b canvas $w.stats.b.c -highlightthickness 0 -background white
 }
 
 proc ::windows::gamelist::createGList_ {{w}} {
@@ -348,8 +454,7 @@ proc ::windows::gamelist::searchpos_ {{w}} {
 		set ::gamelistFilter($w) [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
 		$w.games.glist tag configure fsmall -foreground ""
 		$w.buttons.boardFilter configure -image tb_BoardMask
-		::windows::gamelist::Refresh 1 $w
-		notify::DatabaseChanged 0
+		::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 	}
 }
 
@@ -360,7 +465,134 @@ proc ::windows::gamelist::filterRelease_ {{base} {filter}} {
 			incr used
 		}
 	}
-	if {! $used} { sc_filter release $base $filter }
+	if {! $used} { catch {sc_filter release $base $filter} }
+}
+
+proc ::windows::gamelist::export_ {{w} {sortCrit}} {
+	set ftype {
+	   { {PGN} {.pgn} }
+	   { {LaTeX} {.tex .ltx} }
+	}
+	set fName [tk_getSaveFile -initialdir $::initialDir(base) -filetypes $ftype -typevariable ::gamelistExport -title "Export games" ]
+	# -confirmoverwrite boolean    TODO: If file exists ask to add/overwrite
+	if {$fName == ""} { return }
+	set header ""
+	set footer ""
+	progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
+	busyCursor .
+	if {$::gamelistExport == "LaTeX"} {
+		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) $sortCrit $fName $::gamelistExport $::exportStartFile(LaTeX) $::exportEndFile(LaTeX)
+	} else {
+		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) $sortCrit $fName $::gamelistExport
+	}
+	unbusyCursor .
+	closeProgressWindow
+}
+
+proc ::windows::gamelist::updateStats_ { {w} } {
+	if {$::gamelistMenu($w) != "stats"} { return }
+	set stats {}
+	set stats [sc_filter treestats $::gamelistBase($w) $::gamelistFilter($w)]
+	set lineH [expr { round(1.8 * [font metrics font_Regular -linespace]) }]
+	set rectW [expr { round([font metrics font_Regular -ascent] *0.5) }]
+	set rectB [expr { [font metrics font_Regular -descent] + int($rectW*0.25) }]
+	set rectH [expr { $rectW + $rectB }]
+	incr rectW 4
+	set moveW 0
+	foreach move $stats {
+		set m [font measure font_Regular "..[lindex $move 0]"]
+		set n [font measure font_Italic [lindex $move 1]]
+		set s [expr { $m + $n + int($rectW*2) }]
+		if {$s > $moveW} { set moveW $s }
+	}
+	set barW [expr { $moveW + 6 }]
+	set percW [expr { [font measure font_Small 99%] / 2 }]
+	set winW [expr { $barW + 10 * $percW + 4 }]
+	if {[info exists ::gamelistLastTreeW($w)]} {
+		set diff [expr { $::gamelistLastTreeW($w) - $winW }]
+		if {$diff > -5 && $diff < [expr 4 * $rectW]} {
+			set winW $::gamelistLastTreeW($w)
+			incr barW $diff
+			incr moveW $diff
+		}
+	}
+	set ::gamelistLastTreeW($w) $winW
+	set coeff [expr $percW / 10.0]
+	set line $lineH
+	$w.stats.b.c delete all
+	set i_add 0
+	foreach move $stats {
+		set performance [lindex $move 5]
+		set n_ratedgames [lindex $move 6]
+		set toMove [lindex $move 7]
+		set pColor "#707070"
+		set perfCmd ""
+		if { $n_ratedgames > 5 } {
+			if { $toMove == "B" } { set performance [expr { $performance * -1 }] }
+			set rate [expr { $performance / $n_ratedgames }]
+			if { $rate > 0.1 } { set pColor "#47a148" }
+			if { $rate < -0.1 } { set pColor "#f40000" }
+			#TODO:
+			set perfCmd "tk_messageBox -message \"$rate   ($performance / $n_ratedgames)\" "
+		}
+		$w.stats.b.c create rectangle 4 [expr { $line - $rectH }] $rectW [expr { $line -$rectB }] \
+		    -fill $pColor -outline "" -tag perf$i_add
+		$w.stats.b.c bind perf$i_add <ButtonPress-1> "$perfCmd"
+
+		set moveSAN [lindex $move 0]
+		$w.stats.b.c bind add$i_add <ButtonPress-1> "
+			if {\[addSanMove \{$moveSAN\}\] && \$::gamelistPosMask($w) == 0} {
+				$w.buttons.boardFilter invoke
+			}
+		"
+		if { $toMove == "B" } { set moveSAN "..$moveSAN" }
+		$w.stats.b.c create text [expr int($rectW*1.5)] $line -anchor sw \
+		    -text $moveSAN -fill black -font font_Regular -tag add$i_add
+
+		incr i_add
+		$w.stats.b.c create text $moveW $line -anchor se \
+		    -text [lindex $move 1] -fill #707070 -font font_Italic
+		set barh1 [expr { $line - 2*$rectB }]
+		set barh2 [expr { $line - $rectB }]
+		set n_white [lindex $move 2]
+		set n_draw [lindex $move 3]
+		set n_black [lindex $move 4]
+		set n_tot [expr { $n_white + $n_draw + $n_black }]
+		if {$n_tot != 0} {
+			set p_white [expr { 100.0 * $n_white / $n_tot }]
+			set p_draw [expr { 100.0 * $n_draw / $n_tot }]
+			set p_black [expr { 100.0 - $p_white - $p_draw }]
+			if {$n_tot > 99} {
+				set t_white "[expr { round($p_white) }]%"
+				set t_draw "[expr { round($p_draw) }]%"
+				set t_black "[expr { round($p_black) }]%"
+			} else {
+				set t_white "$n_white "
+				set t_draw "$n_draw "
+				set t_black "$n_black "
+			}
+
+			set win [expr { int($barW + $coeff * $p_white) }]
+			$w.stats.b.c create rectangle $barW  $barh1 $win $barh2  -fill white -outline ""
+			set draw [expr { int($win + $coeff * $p_draw) }]
+			$w.stats.b.c create rectangle $win $barh1 $draw $barh2 -fill #707070 -outline ""
+			set loss [expr { $barW + $percW * 10 }]
+			$w.stats.b.c create rectangle $draw $barh1 $loss $barh2 -fill black -outline ""
+
+			$w.stats.b.c create rectangle $barW $barh1 $loss $barh2
+
+			$w.stats.b.c create text [expr { $barW + $percW * 3 }] $barh1 \
+				-font font_Small -anchor se -fill black -text "$t_white"
+			$w.stats.b.c create text [expr { $barW + $percW * 6 }] $barh1 \
+				-font font_Small -anchor se -fill black -text "$t_draw"
+			$w.stats.b.c create text [expr { $barW + $percW * 9 }] $barh1 \
+				-font font_Small -anchor se -fill black -text "$t_black"
+		}
+
+		incr line $lineH
+	}
+	incr line -$lineH
+	$w.stats.b.c configure -scrollregion [list 0 0 $winW $line] -width $winW
 }
 
 namespace eval ::glist_Ly {
@@ -475,7 +707,7 @@ proc glist.create {{w} {layout}} {
     set ::glist_Sort($layout) { {22} {-} {7} {-} }
   }
   if {! [info exists ::glist_FindBar($layout)] } {
-    set ::glist_FindBar($layout) 1
+    set ::glist_FindBar($layout) 0
   }
 
   ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
@@ -488,6 +720,11 @@ proc glist.create {{w} {layout}} {
   bind $w.glist <Configure> {
     after cancel glist.chkVisibleLn_ %W
     after 100 glist.chkVisibleLn_ %W
+  }
+  if {$::windowsOS} {
+    bind $w.glist <App> "glist.popupmenu_ %W %x %y %X %Y $layout"
+  } else {
+    bind $w.glist <Menu> "glist.popupmenu_ %W %x %y %X %Y $layout"
   }
   bind $w.glist <2> "glist.popupmenu_ %W %x %y %X %Y $layout"
   bind $w.glist <3> "glist.popupmenu_ %W %x %y %X %Y $layout"
@@ -520,7 +757,7 @@ proc glist.create {{w} {layout}} {
     if {[info exists idx]} {
       glist.movesel_ %W next +1 end;
       sc_filter set $::glistBase(%W) $::glistFilter(%W) 0 $idx
-      ::notify::DatabaseChanged 0
+      ::notify::DatabaseModified $::glistBase(%W)
     }
     break
   }
@@ -546,32 +783,30 @@ proc glist.create {{w} {layout}} {
   # Find widget
   ttk::frame $w.find
   ttk::button $w.find.hide -image tb_close
-  bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; grid forget $w.find"
-  ttk::frame $w.find.n
-  ttk::label $w.find.t_gnum -text $::tr(GlistGameNumber:)
-  entry $w.find.gnum -width 8 -bg white
-  ttk::button $w.find.b_gnum -image tb_next -command "glist.findgame_ $w"
-  bind $w.find.gnum <Return> "$w.find.b_gnum invoke"
-  grid $w.find.t_gnum $w.find.gnum $w.find.b_gnum -in $w.find.n -padx 2
+  bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
   ttk::frame $w.find.t
-  ttk::label $w.find.t_text -text $::tr(GlistFindText:)
+  ttk::label $w.find.t_text -text $::tr(Search)
   entry $w.find.text -width 20 -bg white
-  ttk::button $w.find.b1_text -image tb_next -command \
+  ttk::button $w.find.filter -image tb_search16 -command "glist.findgame_ $w awe"
+  ttk::button $w.find.b1_text -image tb_down -command \
     "after cancel glist.findgame_ $w 1; after idle glist.findgame_ $w 1"
-  bind $w.find.text <Return> "$w.find.b1_text invoke"
-  ttk::button $w.find.b2_text -image tb_prev -command \
+  ttk::button $w.find.b2_text -image tb_up -command \
     "after cancel glist.findgame_ $w 0; after idle glist.findgame_ $w 0"
+  bind $w.find.text <Escape> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
+  bind $w.find.text <Return> "$w.find.filter invoke"
+  bind $w.find.text <KeyPress-Down> "$w.find.b1_text invoke; break"
+  bind $w.find.text <KeyPress-Up> "$w.find.b2_text invoke; break"
   #TODO: -from 0 -to 100
   #TODO: set scale position when normal ybar is used
   ttk::scale $w.find.scale -command "glist.ybar_ $w.glist moveto"
-  grid $w.find.t_text $w.find.text $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
+  grid $w.find.t_text $w.find.text $w.find.filter $w.find.b2_text $w.find.b1_text -in $w.find.t -padx 2
   grid $w.find.hide
-  grid $w.find.n -row 0 -column 1 -padx 10
-  grid $w.find.t -row 0 -column 2 -padx 6
+  grid $w.find.t -row 0 -column 1 -padx 6
   grid $w.find.scale -row 0 -column 3 -sticky ew
   grid columnconfigure $w.find 3 -weight 1
   set ::glistFindBar($w.glist) $w.find
   glist.showfindbar_ $w.glist $layout
+  bind [winfo toplevel $w] <Control-f> "set ::glist_FindBar($layout) 1; glist.showfindbar_ $w.glist $layout"
 
   # On exit save layout in options.dat
   options.save ::glist_ColOrder($layout)
@@ -667,6 +902,7 @@ proc glist.loadvalues_ {{w}} {
   set i 0
   foreach {idx line deleted} [sc_base gameslist $base $::glistFirst($w) [expr 1 + $::glistVisibleLn($w)]\
                                         $::glistFilter($w) $::glistSortStr($w)] {
+    if {[lindex $line 1] == "=-="} { set line [lreplace $line 1 1 "\u00BD-\u00BD"] }
     $w insert {} end -id $idx -values $line -tag fsmall
     if {$deleted == "D"} { $w item $idx -tag {fsmall deleted} }
     foreach {n ply} [split $idx "_"] {
@@ -705,8 +941,11 @@ proc glist.chkVisibleLn_ {w} {
 proc glist.showfindbar_ {{w} {layout}} {
   if {$::glist_FindBar($layout) == 0} {
     grid forget $::glistFindBar($w)
+    focus $w
   } else {
     grid $::glistFindBar($w) -row 2 -columnspan 2 -sticky news
+    focus $::glistFindBar($w).text
+    $::glistFindBar($w).text selection range 0 end
   }
 }
 
@@ -716,22 +955,21 @@ proc glist.findcurrentgame_ {{w} {gnum}} {
     set ::glistFirst($w) [expr $r -1]
     glist.ybar_ $w scroll
   }
+  return $r
 }
 
-proc glist.findgame_ {{w_parent} {dir ""}} {
+proc glist.findgame_ {{w_parent} {dir}} {
   set w $w_parent.glist
-  set w_entryN $w_parent.find.gnum
-  set gnum [$w_entryN get]
   set w_entryT $w_parent.find.text
   set txt [$w_entryT get]
-  $w_entryN configure -bg white
   $w_entryT configure -bg white
-  if {($dir == "" && $gnum == "") || ($dir != "" && $txt == "")} { return }
+  if { $dir == "awe" } { return [::windows::gamelist::Awesome [winfo toplevel $w_parent] "$txt"] }
+  if { $txt == "" } { return }
   busyCursor $w_parent
   update idletasks
 
-  if {$dir == ""} {
-    set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $gnum]
+  if { [string is integer $txt] } {
+    set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $txt]
   } else {
     set gstart [expr int($::glistFirst($w))]
     foreach {n ply} [split [$w selection] "_"] {
@@ -751,7 +989,7 @@ proc glist.findgame_ {{w_parent} {dir ""}} {
       $w_entryT configure -bg red
     }
   } else {
-    if {[expr $::glistFirst($w) + $::glistVisibleLn($w)] <= $r} {
+    if {[expr $::glistFirst($w) + $::glistVisibleLn($w)] <= $r || $r < $::glistFirst($w)} {
       set ::glistFirst($w) [expr $r -1]
       glist.ybar_ $w scroll
     }
@@ -783,7 +1021,7 @@ proc glist.movesel_ {{w} {cmd} {scroll} {select}} {
 
 proc glist.delflag_ {{w} {idx}} {
   sc_base gameflag $::glistBase($w) $idx invert del
-  ::notify::DatabaseChanged 0
+  ::notify::DatabaseModified $::glistBase($w)
 }
 
 proc glist.doubleclick_ {{w} {x} {y} {layout}} {
@@ -813,12 +1051,12 @@ proc glist.doubleclick_ {{w} {x} {y} {layout}} {
 proc glist.removeFromFilter_ {{w} {idx} {dir ""}} {
   if {$dir == ""} {
     sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx
-    ::notify::DatabaseChanged 0
+    ::notify::DatabaseModified $::glistBase($w)
     return
   }
   set fc [sc_filter size $::glistBase($w) $::glistFilter($w)]
   sc_filter set $::glistBase($w) $::glistFilter($w) 0 $idx $dir$fc $::glistSortStr($w)
-  ::notify::DatabaseChanged 1
+  ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w) 
   if {$dir == "+"} { glist.ybar_ $w moveto 1 }
 }
 
@@ -856,7 +1094,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
           set fname [file tail [sc_base filename $i]]
           $w.game_menu.merge add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
           $w.game_menu.copy add command -label "$i $fname" \
-              -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseChanged 0"
+              -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseModified $i"
         }
       }
       $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.merge
@@ -877,10 +1115,12 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       }
       $w.game_menu add separator
       menu $w.game_menu.filter
+      $w.game_menu.filter add command -label "Export" -command "::windows::gamelist::export_ [winfo toplevel $w] $::glistSortStr($w)"
+      $w.game_menu.filter add separator
       $w.game_menu.filter add command -label [tr SearchReset] \
-        -command "sc_filter set $::glistBase($w) $::glistFilter($w) 1; ::notify::DatabaseChanged"
+        -command "::windows::gamelist::FilterReset [winfo toplevel $w] $::glistBase($w)"
       $w.game_menu.filter add command -label [tr SearchNegate] \
-        -command "sc_filter negate $::glistBase($w) $::glistFilter($w); ::notify::DatabaseChanged"
+        -command "::windows::gamelist::FilterNegate [winfo toplevel $w] $::glistBase($w)"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label $::tr(GlistRemoveGameAndAboveFromFilter) \
         -command "glist.removeFromFilter_ $w $idx -"
@@ -890,9 +1130,9 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         -command "glist.removeFromFilter_ $w $idx +"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label $::tr(GlistDeleteAllGames) \
-        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) set del; ::notify::DatabaseChanged"
+        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) set del; ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w)"
       $w.game_menu.filter add command -label $::tr(GlistUndeleteAllGames) \
-        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseChanged"
+        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w)"
       $w.game_menu add cascade -label $::tr(Filter) -menu $w.game_menu.filter
       $w.game_menu add separator
       #TODO: translate labels

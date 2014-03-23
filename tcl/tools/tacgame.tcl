@@ -310,7 +310,6 @@ namespace eval tacgame {
     updateBoard -pgn
     ::windows::gamelist::Refresh
     updateTitle
-    updateMenuStates
     
     set w .coachWin
     if {[winfo exists $w]} {

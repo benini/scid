@@ -169,6 +169,7 @@ proc autoscrollframe {args} {
     grid $frame.ybar -row 0 -column 1 -sticky ns
     set _autoscroll($frame.ybar) 1
     set _autoscroll(time:$frame.ybar) 0
+    bindMouseWheel $w "_autoscrollMouseWheel $w $frame.ybar"
     if {! $setgrid} {
       # bind $frame.ybar <Map> [list _autoscrollMap $frame]
     }
@@ -188,6 +189,11 @@ proc autoscrollframe {args} {
   grid rowconfigure $frame 1 -weight 0
   grid columnconfigure $frame 1 -weight 0
   return $retval
+}
+
+proc _autoscrollMouseWheel {{w} {bar} {direction}} {
+  if {$::_autoscroll($bar) == 0} return
+  $w yview scroll $direction units
 }
 
 array set _autoscroll {}
@@ -320,7 +326,8 @@ proc progressWindow {args} {
   wm title $w $title
   ttk::label $w.f.t -text $text
   pack $w.f.t -side top -expand 1 -fill both
-  canvas $w.f.c -width 400 -height 20 -bg white -relief solid -border 1
+
+  canvas $w.f.c -width 400 -height 20 -bg white -relief solid -border 1 -highlightthickness 0
   $w.f.c create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
   $w.f.c create text 395 10 -anchor e -font font_Regular -tags time -fill black -text "0:00 / 0:00"
   pack $w.f.c -side top -pady 10
@@ -330,12 +337,8 @@ proc progressWindow {args} {
     pack $w.f.b.cancel -side right -padx 5 -pady 2
   }
   # Set up geometry for middle of screen:
-  set x [winfo screenwidth $w]
-  set x [expr {$x - 400} ]
-  set x [expr {$x / 2} ]
-  set y [winfo screenheight $w]
-  set y [expr {$y - 20} ]
-  set y [expr {$y / 2} ]
+  set x [expr ([winfo screenwidth $w] - 400) / 2]
+  set y [expr ([winfo screenheight $w] - 40) / 2]
   wm geometry $w +$x+$y
   sc_progressBar $w.f.c bar 401 21 time
   grab $w
@@ -444,6 +447,17 @@ namespace eval gameclock {
   ################################################################################
   proc draw { n } {
     global ::gameclock::data
+
+    #TODO: Hack. For the moment we assume that:
+    # -clock 1 is the white clock on the main board
+    # -clock 2 is the black clock on the main board
+    set sec $data(counter$n)
+    set h [format "%d" [expr abs($sec) / 60 / 60] ]
+    set m [format "%02d" [expr abs($sec) / 60] ]
+    set s [format "%02d" [expr abs($sec) % 60] ]
+    if {$n == 1} { set ::gamePlayers(clockW) "$h:$m:$s" }
+    if {$n == 2} { set ::gamePlayers(clockB) "$h:$m:$s" }
+
     if {! [winfo exists $data(id$n)]} { return }
     $data(id$n) delete aig$n
     
@@ -456,8 +470,7 @@ namespace eval gameclock {
     } else  {
       set size [ expr $h - 15 ]
     }
-    
-    set sec $data(counter$n)
+
     if { $sec > 0 && $data(showfallen$n) } {
       set color "red"
     } else  {

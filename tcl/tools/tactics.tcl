@@ -243,7 +243,6 @@ namespace eval tactics {
             }
         }
         
-        updateMenuStates
         updateStatusBar
         updateTitle
         
@@ -353,7 +352,6 @@ namespace eval tactics {
         ::tactics::stopAnalyze
         after cancel ::tactics::mainLoop
         catch { sc_base close }
-        updateMenuStates
         updateStatusBar
         updateTitle
         set ::askToReplaceMoves $::tactics::askToReplaceMoves_old
@@ -461,8 +459,8 @@ namespace eval tactics {
         ::gameclock::reset 1
         ::gameclock::start 1
         
+        ::notify::GameChanged
         ::notify::DatabaseChanged
-        updateBoard -pgn
         set ::tactics::prevFen [sc_pos fen]
         ::tactics::startAnalyze
         ::tactics::mainLoop
@@ -502,8 +500,8 @@ namespace eval tactics {
     proc abnormalContinuation {} {
         ::tactics::stopAnalyze
         ::tactics::resetValues
+        ::notify::GameChanged
         ::notify::DatabaseChanged
-        updateBoard -pgn
         if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
             ::board::flip .main.board
         }
@@ -678,9 +676,8 @@ namespace eval tactics {
                 return
             }
         }
-        
+        ::notify::GameChanged
         ::notify::DatabaseChanged
-        updateBoard -pgn
     }
     ################################################################################
     ## resetValues

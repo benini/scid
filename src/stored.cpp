@@ -1,21 +1,24 @@
-//////////////////////////////////////////////////////////////////////
-//
-//  FILE:       stored.cpp
-//              StoredLine class methods
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    3.0
-//
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
-//
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
-//
-//////////////////////////////////////////////////////////////////////
+/*
+* Copyright (C) 2000  Shane Hudson
+* Copyright (C) 2014  Fulvio Benini
+
+* This file is part of Scid (Shane's Chess Information Database).
+*
+* Scid is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation.
+*
+* Scid is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "stored.h"
 #include "pgnparse.h"
-#include "timer.h"
-
 
 // Stored line codes: used to speed up tree searches.
 
@@ -32,20 +35,7 @@
 // because of its end material value or pawn configuration, all games with
 // that stored line code can be excluded and skipped without decoding.
 
-
-static const uint nStoredLines = 254;
-static Game ** storedLineGames = NULL;
-
-void StoredLine::FreeStoredLine() {
-  if (storedLineGames == NULL) return;
-  for (uint i = 1; i <= nStoredLines; i++) {
-      delete storedLineGames[i];
-  }
-  delete[] storedLineGames;
-  storedLineGames = NULL;
-}
-
-static const char * storedLineText [nStoredLines + 1] = {
+const char * StoredLine::storedLineText [] = {
     "",  // index zero is unused
     "1.b3",
     "1.c4",
@@ -303,63 +293,41 @@ static const char * storedLineText [nStoredLines + 1] = {
     "1.Nf3 Nf6 2.g3 g6"
 };
 
-uint
-StoredLine::Count (void)
+StoredLine StoredLine::singleton_;
+uint StoredLine::nStoredLines_ = sizeof(storedLineText)/sizeof(const char*);
+Game* StoredLine::storedLineGames[MAX_STORED_LINES] = {0};
+FastMove StoredLine::FirstMove_ [MAX_STORED_LINES];
+
+void StoredLine::Init (void)
 {
-    return nStoredLines;
+	PgnParser parser;
+	char buf [256];
+
+	for (uint i = 1; i < nStoredLines_; i++) {
+		FirstMove_[i] = 0;
+		storedLineGames[i] = new Game;
+		parser.Reset (storedLineText[i]);
+		parser.SetEndOfInputWarnings (false);
+		parser.SetResultWarnings (false);
+		if (parser.ParseMoves (storedLineGames[i], buf, 256) != OK) {
+			// This should never happen:
+			fprintf (stderr, "Fatal error reading stored line %u: %s\n",
+				i, storedLineText[i]);
+			exit (1);
+		}
+		storedLineGames[i]->MoveToPly(0);
+		simpleMoveT* sm = storedLineGames[i]->GetCurrentMove();
+		if (sm == 0) printf("???%d\n",i);
+		FastMoveSetTo (FirstMove_[i], sm->to);
+		FastMoveSetFrom (FirstMove_[i], sm->from, sm->movingPiece);
+		//There are no ambiguity, checks, capture or promotions.
+	}
 }
 
-const char *
-StoredLine::GetText (uint code)
+StoredLine::StoredLine(Position* pos)
+	: freeStoredLines_(false)
 {
-    if (code > nStoredLines) { return ""; }
-    return storedLineText [code];
-}
-
-void
-StoredLine::Init (void)
-{
-    storedLineGames = new Game * [nStoredLines + 1];
-    PgnParser parser;
-    char buf [256];
-
-    for (uint i = 1; i <= nStoredLines; i++) {
-        // Compile with the following loop to test that every stored
-        // line is unique:
-#if 0
-        for (uint j=i+1; j <= nStoredLines; j++) {
-            if (strEqual (storedLineText[i], storedLineText[j])) {
-                fprintf (stderr, "Error: stored lines equal: %u, %u\n", i, j);
-                exit (1);
-            }
-        }
-#endif
-        storedLineGames[i] = new Game;
-        parser.Reset (storedLineText[i]);
-        parser.SetEndOfInputWarnings (false);
-        parser.SetResultWarnings (false);
-        if (parser.ParseMoves (storedLineGames[i], buf, 256) != OK) {
-//             This should never happen:
-            fprintf (stderr, "Fatal error reading stored line %u: %s\n",
-                     i, storedLineText[i]);
-            exit (1);
-        }
-    }
-}
-
-Game *
-StoredLine::GetGame (uint code)
-{
-    if (storedLineGames == NULL) {      Init();    }
-    if (code < 1  ||  code > nStoredLines) { return NULL; }
-
-    return storedLineGames [code];
-}
-
-StoredLine::StoredLine(Position* pos) {
-	if (storedLineGames == NULL) {      Init();    }
-
-	for (int line = StoredLine::Count(); line > 0; --line) {
+	for (uint line = 1; line < nStoredLines_; line++) {
 		Game * lineGame = storedLineGames [line];
 		lineGame->MoveToPly (0);
 		bool never_match = false;
@@ -368,11 +336,15 @@ StoredLine::StoredLine(Position* pos) {
 			if (storedLineMoves_[line].from != NULL_SQUARE) {
 				storedLineMatches_[line] = lineGame->GetCurrentPly() + 1;
 			}
-		} else
+		} else {
 			if (never_match) storedLineMatches_[line] = -1;
+		}
 	}
 }
 
-//////////////////////////////////////////////////////////////////////
-//  EOF:    stored.cpp
-//////////////////////////////////////////////////////////////////////
+StoredLine::~StoredLine() {
+	if (!freeStoredLines_) return;
+	for (uint i = 1; i < nStoredLines_; i++) {
+		if (storedLineGames[i]) delete storedLineGames[i];
+	}
+}

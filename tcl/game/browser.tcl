@@ -22,7 +22,6 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   
   pack [frame $w.b] -side bottom -fill x
   ::board::new $w.bd $::gbrowser::size
-  $w.bd configure -relief solid -borderwidth 1
   pack $w.bd -side left -padx 4 -pady 4
   
   #pack [frame $w.t] -side right -fill both -expand yes

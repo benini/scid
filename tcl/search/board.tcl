@@ -79,7 +79,7 @@ proc ::search::board {{ref_base ""}} {
     .sb.b.stop configure -state disabled
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str
     .sb.status configure -text $str
-    ::notify::DatabaseChanged
+    ::notify::DatabaseModified [sc_base current] dbfilter
   }
   dialogbutton $w.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.b2.vars $w.b2.flip -side left -pady 2 -padx 5

@@ -88,7 +88,6 @@ proc ::windows::stats::Refresh {} {
   variable display
   if {[winfo exists .playerInfoWin]} { ::pinfo::playerInfo }
   ::maint::Refresh
-  updateStatusBar
   ::tools::graphs::filter::Refresh
   #Klimmek. Update Absfilter window
   ::tools::graphs::absfilter::Refresh

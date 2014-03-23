@@ -5,7 +5,7 @@
 # Copyright (C) 1999-2004 Shane Hudson
 # Copyright (C) 2006-2009 Pascal Georges
 # Copyright (C) 2008-2011 Alexander Wagner
-# Copyright (C) 2013 Fulvio Benini
+# Copyright (C) 2013-2014 Fulvio Benini
 #
 # Scid is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,13 +33,23 @@ exec `dirname $0`/tkscid "$0" "$@"
 
 ############################################################
 
-# Alter the version if any patches have been made to the Tcl code only:
-set scidVersion "4.5.2"
-set scidVersionDate "Nov 2013"
-
 package require Tcl 8.5
 package require Tk  8.5
-package require Ttk
+
+set scidVersion [sc_info version]
+set scidVersionDate [sc_info version date]
+set scidVersionExpected "4.6.0"
+
+# Check that on Unix, the version of tkscid matches the version of this
+# script or on Windows, that the scid.exe and scid.gui versions are identical.
+#
+if {[string compare $::scidVersion $::scidVersionExpected]} {
+  wm withdraw .
+  set msg "This is Scid version $::scidVersion, but the scid GUI (tcl/tk code)\n"
+  append msg "has the version number $scidVersionExpected.\n"
+  tk_messageBox -type ok -icon error -title "Scid: Version Error" -message $msg
+  exit 1
+}
 
 # Determine operating system platform: unix, windows or macos
 #
@@ -50,30 +60,101 @@ if {$tcl_platform(platform) == "unix"} { set unixOS 1 }
 set macOS 0
 if {![catch {tk windowingsystem} wsystem] && $wsystem == "aqua"} { set macOS 1 }
 
-# A lot of code assumes tcl_platform is either windows or unix, so
-# lotsa stuff may break if this is not the case.
-#
-if {(! $windowsOS)  &&  (! $unixOS)} {
-  # What to do here? Warn the user...?
-}
+proc InitDirs {} {
+  global scidExeDir scidUserDir scidConfigDir scidDataDir scidLogDir scidShareDir scidImgDir scidTclDir
+  global scidBooksDir scidBasesDir ecoFile
 
-
-# Check that on Unix, the version of tkscid matches the version of this
-# script or on Windows, that the scid.exe and scid.gui versions are identical.
-#
-if {[string compare [sc_info version] $scidVersion]} {
-  wm withdraw .
-  if {$windowsOS} {
-    set msg "This is Scid version [sc_info version], but the scid.gui data\n"
-    append msg "file has the version number $scidVersion.\n"
+  # scidExeDir: contains the directory of the Scid executable program.
+  # Used to determine the location of various relative data directories.
+  set scidExecutable [info nameofexecutable]
+  if {[file type $scidExecutable] == "link"} {
+    set scidExeDir [file dirname [file readlink $scidExecutable]]
+    if {[file pathtype $scidExeDir] == "relative"} {
+      set scidExeDir [file dirname [file join [file dirname $scidExecutable]\
+        [file readlink $scidExecutable]]]
+    }
   } else {
-    set msg "This program,\n\"$argv0\",\nis version $scidVersion,\nbut the "
-    append msg "tkscid program \nit uses is version [sc_info version].\n"
-    append msg "Check that the path to tkscid is correct."
+    set scidExeDir [file dirname $scidExecutable]
   }
-  tk_messageBox -type ok -icon error -title "Scid: Version Error" -message $msg
-  exit 1
+
+  # scidUserDir: location of user-specific Scid files.
+  # This is "~/.scid" on Unix, and the Scid exectuable dir on Windows.
+  if {$::windowsOS} {
+    set scidUserDir $scidExeDir
+  } else {
+    set scidUserDir [file nativename "~/.scid"]
+  }
+
+  # scidConfigDir, scidDataDir, scidLogDir:
+  # Location of Scid configuration, data and log files.
+  set scidConfigDir [file nativename [file join $scidUserDir "config"]]
+  set scidDataDir [file nativename [file join $scidUserDir "data"]]
+  set scidLogDir [file nativename [file join $scidUserDir "log"]]
+
+  # scidShareDir, scidImgDir, scidTclDir, scidBooksDir, scidBasesDir, ecoFile:
+  # Location of Scid resources
+  set scidShareDir [file normalize [file join $scidExeDir "../share/scid"]]
+  if {! [file isdirectory $::scidShareDir]} {
+    set scidShareDir $::scidExeDir
+  }
+  set scidTclDir [file nativename [file join $scidShareDir "tcl"]]
+  if {! [file isdirectory $scidTclDir]} {
+    set scidTclDir [file join $scidExeDir "../tcl"]
+  }
+  set scidImgDir [file nativename [file join $scidShareDir "img"]]
+  if {! [file isdirectory $scidImgDir]} {
+    set scidImgDir [file join $scidExeDir "../img"]
+  }
+  #Default values, can be overwritten by file option
+  set scidBooksDir [file nativename [file join $scidShareDir "books"]]
+  set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
+  set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
+
+  proc moveOldConfigFiles {} {
+    # Moves configuration files from the old (3.4 and earlier) names
+    # to the new file names used since Scid 3.5.
+    global scidUserDir scidConfigDir
+
+    # Since the options file used to be ".scid", rename it:
+    if {[file isfile $scidUserDir]} {
+      file rename -force $scidUserDir "$scidUserDir.old"
+    }
+
+    # Rename old "~/.scid_sent_emails" if necessary:
+    if {[file isfile [file nativename "~/.scid_sent_emails"]]} {
+      catch {file rename [file nativename "~/.scid_sent_emails"] $email(logfile)}
+    }
+
+    foreach {oldname newname} {
+      scidrc options.dat
+      scid.opt options.dat
+      scid.bkm bookmarks.dat
+      scid.rfl recentfiles.dat
+      engines.lis engines.dat
+    } {
+      set oldpath [file nativename [file join $scidUserDir $oldname]]
+      set newpath [file nativename [file join $scidConfigDir $newname]]
+      if {[file readable $oldpath]  &&  ![file readable $newpath]} {
+        if {[catch {file rename $oldpath $newpath} err]} {
+          tk_messageBox -message "Error moving $oldpath to $newpath: $err"
+        }
+      }
+    }
+  }
+  moveOldConfigFiles
+
+  # Create the config, data and log directories if they do not exist:
+  proc makeScidDir {dir} {
+    if {! [file isdirectory $dir]} {
+      file mkdir $dir
+    }
+  }
+  makeScidDir $scidUserDir
+  makeScidDir $scidConfigDir
+  makeScidDir $scidDataDir
+  makeScidDir $scidLogDir
 }
+InitDirs
 
 #############################################################
 #
@@ -114,107 +195,14 @@ foreach ns {
 }
 
 proc ::splash::add {text} {
-#TODO: decide if it's better to remove all the spash messages or to write them to a start.log file
+#TODO: decide what to do with all the spash messages (delete?)
 }
 
-# moveOldConfigFiles
-#   Moves configuration files from the old (3.4 and earlier) names
-#   to the new file names used since Scid 3.5.
-#
-proc moveOldConfigFiles {} {
-  global scidUserDir scidConfigDir
 
-  # Since the options file used to be ".scid", rename it:
-  if {[file isfile $scidUserDir]} {
-    file rename -force $scidUserDir "$scidUserDir.old"
-  }
+####################################################
+# Set default values
 
-  # Rename old "~/.scid_sent_emails" if necessary:
-  if {[file isfile [file nativename "~/.scid_sent_emails"]]} {
-    catch {file rename [file nativename "~/.scid_sent_emails"] $email(logfile)}
-  }
-
-  foreach {oldname newname} {
-    scidrc options.dat
-    scid.opt options.dat
-    scid.bkm bookmarks.dat
-    scid.rfl recentfiles.dat
-    engines.lis engines.dat
-  } {
-    set oldpath [file nativename [file join $scidUserDir $oldname]]
-    set newpath [file nativename [file join $scidConfigDir $newname]]
-    if {[file readable $oldpath]  &&  ![file readable $newpath]} {
-      if {[catch {file rename $oldpath $newpath} err]} {
-        ::splash::add "Error moving $oldpath to $newpath: $err"
-      } else {
-        ::splash::add "Moved old config file $oldname to $newpath"
-      }
-    }
-  }
-}
-
-proc InitDirs {} {
-  global scidExeDir scidUserDir scidConfigDir scidDataDir scidLogDir scidShareDir scidImgDir
-  global scidBooksDir scidBasesDir ecoFile
-
-  # scidExeDir: contains the directory of the Scid executable program.
-  # Used to determine the location of various relative data directories.
-  set scidExecutable [info nameofexecutable]
-  if {[file type $scidExecutable] == "link"} {
-    set scidExeDir [file dirname [file readlink $scidExecutable]]
-    if {[file pathtype $scidExeDir] == "relative"} {
-      set scidExeDir [file dirname [file join [file dirname $scidExecutable]\
-        [file readlink $scidExecutable]]]
-    }
-  } else {
-    set scidExeDir [file dirname $scidExecutable]
- }
-
-  # scidUserDir: location of user-specific Scid files.
-  # This is "~/.scid" on Unix, and the Scid exectuable dir on Windows.
-  if {$::windowsOS} {
-    set scidUserDir $scidExeDir
-  } else {
-    set scidUserDir [file nativename "~/.scid"]
-  }
-
-  # scidConfigDir, scidDataDir, scidLogDir:
-  #   Location of Scid configuration, data and log files.
-  set scidConfigDir [file nativename [file join $scidUserDir "config"]]
-  set scidDataDir [file nativename [file join $scidUserDir "data"]]
-  set scidLogDir [file nativename [file join $scidUserDir "log"]]
-
-  # scidShareDir, scidImgDir, scidBooksDir, scidBasesDir, ecoFile:
-  # Location of Scid resources
-  set scidShareDir [file normalize [file join $scidExeDir "../share/scid"]]
-  if {! [file isdirectory $::scidShareDir]} {
-    set scidShareDir $::scidExeDir
-  }
-  set scidImgDir [file nativename [file join $scidShareDir "img"]]
-  if {! [file isdirectory $scidImgDir]} {
-    set scidImgDir [file join $scidExeDir "../img"]
-  }
-  #Default values, can be overwritten by file option
-  set scidBooksDir [file nativename [file join $scidShareDir "books"]]
-  set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
-  set ecoFile [file nativename [file join $scidShareDir "scid.eco"]]
-
-  moveOldConfigFiles
-
-  # Create the config, data and log directories if they do not exist:
-  proc makeScidDir {dir} {
-    if {! [file isdirectory $dir]} {
-      file mkdir $dir
-    }
-  }
-  makeScidDir $scidUserDir
-  makeScidDir $scidConfigDir
-  makeScidDir $scidDataDir
-  makeScidDir $scidLogDir
-}
-
-# Toolbar configuration:
-proc InitToolbar {} {
+proc InitDefaultToolbar {} {
   global toolbar
   foreach {tbicon status}  {
     new 0 open 0 save 0 close 0
@@ -295,13 +283,14 @@ proc InitWinsDefaultGeometry {} {
   set winHeight(.inputengineconsole) 20
 
   # List of saved layouts : 3 slots available
-  set ::docking::layout_list(1) {{MainWindowGeometry 1024x542+0+0 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 360} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 368} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 196} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin1}}}}}}}}}
+  set ::docking::layout_list(1) {}
   set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
-  set ::docking::layout_list(3) {}
+  set ::docking::layout_list(3) {{MainWindowGeometry 1024x542+0+0 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 360} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 368} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 196} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin1}}}}}}}}}
+  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical {}} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 270} {TNotebook .tb7 {.fdockpgnWin .fdockanalysisWin1}} {TNotebook .tb9 .fdockglistWin1}}}}}}}}}}}
 
 }
 
-proc InitStats {} {
+proc InitDefaultStats {} {
   # Default stats window lines:
   array set ::windows::stats::display {
     r2600 1
@@ -334,12 +323,121 @@ proc InitStats {} {
   }
 }
 
-InitDirs
+proc InitDefaultFonts {} {
+  global fontOptions
+  if {$::windowsOS} {
+    set fontOptions(Regular) [list Tahoma     9 normal roman]
+    set fontOptions(Menu)    [list system     9 normal roman]
+    set fontOptions(Small)   [list Tahoma     8 normal roman]
+    set fontOptions(Tiny)    [list Arial      7 normal roman]
+    set fontOptions(Fixed)   [list courier    9 normal roman]
+  } elseif {$::macOS} {
+    set fontOptions(Regular) [list system    11 normal roman]
+    set fontOptions(Menu)    [list menu      14 normal roman]
+    set fontOptions(Small)   [list system    10 normal roman]
+    set fontOptions(Tiny)    [list system     9 normal roman]
+    set fontOptions(Fixed)   [list Monaco    10 normal roman]
+  } else {
+    set fontOptions(Regular) [list {DejaVu Sans}       10 normal roman]
+    set fontOptions(Menu)    [list {DejaVu Sans}       10 normal roman]
+    set fontOptions(Small)   [list {DejaVu Sans}        9 normal roman]
+    set fontOptions(Tiny)    [list {DejaVu Sans}        8 normal roman]
+    set fontOptions(Fixed)   [list {DejaVu Sans Mono}  10 normal roman]
+  }
+}
+
+InitDefaultFonts
 InitWinsDefaultGeometry
-InitToolbar
-InitStats
+InitDefaultToolbar
+InitDefaultStats
 
 
+#Default textures for lite and dark squares
+set boardfile_dark "LightWood3-d"
+set boardfile_lite "LightWood3-l"
+
+# boardSize: Default board size.
+set boardSize 40
+
+# boardStyle: Default board piece set.
+set boardStyle Merida1
+
+# Colors: dark and lite are square colors
+#     whitecolor/blackcolor are piece colors
+#     highcolor is the color when something is selected.
+#     bestcolor is used to indicate a suggested move square.
+# set dark        "\#70a070"
+# set lite        "\#e0d070"
+set lite "\#f3f3f3"
+set dark "\#7389b6"
+set whitecolor  "\#ffffff"
+set blackcolor  "\#000000"
+set whiteborder "\#000000"
+set blackborder "\#ffffff"
+set highcolor   "\#b0d0e0"
+set bestcolor   "\#bebebe"
+set buttoncolor "\#b0c0d0"
+set borderwidth 0
+
+# boardCoords: 1 to show board Coordinates, 0 to hide them.
+set boardCoords 0
+
+# autoResizeBoard:
+# resize the board to fit the container
+set autoResizeBoard 1
+
+# showGameInfo:
+# The game info panel below the main board
+set showGameInfo 0
+
+# language for help pages and messages:
+set language E
+set oldLang X
+
+# Default theme
+set ::lookTheme "default"
+
+# Auto-save options when exiting:
+set optionsAutoSave 1
+
+#  Numeric locale: first char is decimal, second is thousands.
+#  Example: ".," for "1,234.5" format; ",." for "1.234,5" format.
+set locale(numeric) ".,"
+
+# Ask for piece translations (first letter)
+set translatePieces 1
+
+# Hightlight the last move played
+set arrowLastMove 0
+set highlightLastMove 1
+set highlightLastMoveWidth 2
+set highlightLastMoveColor "grey"
+set highlightLastMovePattern {} ; # this option is not saved
+
+# Ask before replacing existing moves: on by default
+set askToReplaceMoves 1
+
+# Show suggested moves: on by default
+set suggestMoves 1
+
+# Show variations popup window
+set showVarPopup 0
+set showVarArrows 1
+
+# Keyboard Move entry options:
+set moveEntry(On) 1
+set moveEntry(AutoExpand) 0
+set moveEntry(Coord) 1
+
+# windowsDock:
+# if true, most of toplevel windows are dockable and embedded in a main window
+# windows can be moves among tabs (drag and drop) or undocked (right-clicking on tab)
+set windowsDock 1
+
+
+set ::tactics::analysisTime 3
+set ::tactics::findBestMoveRunning 0
+array set ::tactics::findBestMove_History {}
 
 set ::tacgame::threshold 0.9
 set ::tacgame::blunderwarning false
@@ -359,6 +457,14 @@ set ::tacgame::analysisTime 10
 set ::tacgame::openingType new
 set ::tacgame::chosenOpening 0
 
+# Analysis command: to start chess analysis engine.
+set analysisCommand ""
+if {$windowsOS} {
+  set analysisChoices {wcrafty.exe}
+} else {
+  set analysisChoices {crafty}
+}
+
 set comp(timecontrol) pergame
 set comp(seconds) 180
 set comp(minutes) 1
@@ -374,114 +480,14 @@ set comp(ponder) 0
 set comp(usebook) 0
 set comp(book) {}
 
+# Default Tree sort method:
+set tree(order) frequency
+
+# Auto-save tree cache when closing tree window:
+set tree(autoSave) 0
 
 ### Tree/mask options:
 set ::tree::mask::recentMask {}
-
-
-# boardSizes: a list of the available board sizes.
-# Some code assume that boardSizes is sorted asc
-set boardSizes [list 25 30 35 40 45 50 55 60 65 70 80]
-set boardSizesOLD [list 21 25 29 33 37 40 45 49 54 58 64 72]
-
-#load textures for lite and dark squares
-set boardfile_dark "emptySquare"
-set boardfile_lite "emptySquare"
-
-#[file join $scidExeDir "bitmaps" "empty.gif"] ;# wsquare.gif
-
-# boardSize: Default board size. See the available board sizes above.
-set boardSize 40
-
-# boardStyle: Default board piece set.
-set boardStyle Merida1
-
-# language for help pages and messages:
-set language E
-set oldLang X
-
-# boardCoords: 1 to show board Coordinates, 0 to hide them.
-set boardCoords 0
-
-# boardSTM: 1 to show side-to-move icon, 0 to hide it.
-set boardSTM 1
-
-# Default values for fonts:
-proc createFont {name} {
-  set opts $::fontOptions($name)
-  font create font_$name \
-      -family [lindex $opts 0] -size [lindex $opts 1] \
-      -weight [lindex $opts 2] -slant [lindex $opts 3]
-}
-
-proc configureFont {name} {
-  set opts $::fontOptions($name)
-  font configure font_$name \
-      -family [lindex $opts 0] -size [lindex $opts 1] \
-      -weight [lindex $opts 2] -slant [lindex $opts 3]
-}
-
-if {$windowsOS} {
-  set fontOptions(Regular) [list system          10 normal roman]
-  set fontOptions(Menu)    [list system           9 normal roman]
-  set fontOptions(Small)   [list system           9 normal roman]
-  set fontOptions(Tiny)    [list system           8 normal roman]
-  set fontOptions(Fixed)   [list courier          9 normal roman]
-} elseif {$macOS} {
-  set fontOptions(Regular) [list system    11 normal roman]
-  set fontOptions(Menu)    [list menu      14 normal roman]
-  set fontOptions(Small)   [list system    10 normal roman]
-  set fontOptions(Tiny)    [list system     9 normal roman]
-  set fontOptions(Fixed)   [list Monaco    10 normal roman]
-} else {
-  set fontOptions(Regular) [list {DejaVu Sans}       10 normal roman]
-  set fontOptions(Menu)    [list {DejaVu Sans}       10 normal roman]
-  set fontOptions(Small)   [list {DejaVu Sans}        9 normal roman]
-  set fontOptions(Tiny)    [list {DejaVu Sans}        8 normal roman]
-  set fontOptions(Fixed)   [list {DejaVu Sans Mono}  10 normal roman]
-}
-
-createFont Regular
-createFont Menu
-createFont Small
-createFont Tiny
-createFont Fixed
-
-### TODO
-### Sample for figurine fonts see also htext.tcl
-### Not yet working properly
-### font create font_Figurine_ML  -family {FigurineSymbol T1} -size 10
-### font create font_Figurine_Var -family {FigurineSymbol T1} -size 6
-
-
-# Analysis command: to start chess analysis engine.
-set analysisCommand ""
-if {$windowsOS} {
-  set analysisChoices {wcrafty.exe}
-} else {
-  set analysisChoices {crafty}
-}
-
-# Colors: dark and lite are square colors
-#     whitecolor/blackcolor are piece colors
-#     highcolor is the color when something is selected.
-#     bestcolor is used to indicate a suggested move square.
-# set dark        "\#70a070"
-# set lite        "\#e0d070"
-set lite "\#f3f3f3"
-set dark "\#7389b6"
-set whitecolor  "\#ffffff"
-set blackcolor  "\#000000"
-set whiteborder "\#000000"
-set blackborder "\#ffffff"
-set highcolor   "\#b0d0e0"
-set bestcolor   "\#bebebe"
-set buttoncolor "\#b0c0d0"
-set borderwidth 0
-
-set ::tactics::analysisTime 3
-set ::tactics::findBestMoveRunning 0
-array set ::tactics::findBestMove_History {}
     
 # Defaults for the PGN window:
 # if ::pgn::showColor is 1, the PGN text will be colorized.
@@ -584,45 +590,6 @@ set pgnStyle(Tags) 1
 set pgnStyle(Comments) 1
 set pgnStyle(Vars) 1
 
-
-# Default Tree sort method:
-set tree(order) frequency
-
-# Auto-save tree cache when closing tree window:
-set tree(autoSave) 0
-
-# Auto-save options when exiting:
-set optionsAutoSave 1
-
-#  Numeric locale: first char is decimal, second is thousands.
-#  Example: ".," for "1,234.5" format; ",." for "1.234,5" format.
-set locale(numeric) ".,"
-
-# Ask for piece translations (first letter)
-set translatePieces 1
-
-# Hightlight the last move played
-set arrowLastMove 0
-set highlightLastMove 1
-set highlightLastMoveWidth 2
-set highlightLastMoveColor "grey"
-set highlightLastMovePattern {} ; # this option is not saved
-
-# Ask before replacing existing moves: on by default
-set askToReplaceMoves 1
-
-# Show suggested moves: on by default
-set suggestMoves 1
-
-# Show variations popup window
-set showVarPopup 0
-set showVarArrows 1
-
-# Keyboard Move entry options:
-set moveEntry(On) 1
-set moveEntry(AutoExpand) 0
-set moveEntry(Coord) 1
-
 # Autoplay and animation delays in milliseconds:
 set autoplayDelay 5000
 set animateDelay 200
@@ -632,9 +599,6 @@ set blunderThreshold 1.0
 
 # Geometry of windows:
 array set geometry {}
-
-# Default theme
-set ::lookTheme "default"
 
 # startup:
 #   Stores which windows should be opened on startup.
@@ -647,13 +611,6 @@ set startup(crosstable) 0
 set startup(gamelist) 0
 set startup(stats) 0
 set startup(book) 0
-
-# myPlayerNames:
-#   List of player name patterns for which the chessboard should be
-#   flipped each time a game is loaded to show the board from that
-#   players perspective.
-#
-set myPlayerNames {}
 
 
 # Game information area options:
@@ -816,23 +773,6 @@ proc raiseWin {w} {
 
 set autoIconify 1
 
-# windowsDock:
-# if true, most of toplevel windows are dockable and embedded in a main window
-# windows can be moves among tabs (drag and drop) or undocked (right-clicking on tab)
-set windowsDock 1
-
-# showGameInfo:
-# The game info panel below the main board
-set showGameInfo 0
-
-# autoLoadLayout :
-# Automatic loading of layout # 1 at startup (docked windows mode only)
-set autoLoadLayout 1
-
-# autoResizeBoard:
-# resize the board to fit the container
-set autoResizeBoard 1
-
 # Email configuration:
 set email(logfile) [file join $scidLogDir "scidmail.log"]
 set email(oldlogfile) [file join $scidUserDir "scidmail.log"]
@@ -846,9 +786,7 @@ if {[file readable $email(oldlogfile)]  &&  ![file readable $email(logfile)]} {
   catch {file rename $email(oldlogfile) $email(logfile)}
 }
 
-
 ### Audio move announcement options:
-
 set ::utils::sound::soundFolder [file nativename [file join $::scidExeDir sounds]]
 set ::utils::sound::announceNew 0
 set ::utils::sound::announceForward 0
@@ -935,7 +873,6 @@ if { $macOS } {
         tk_messageBox -type ok -icon info -title "Scid" \
             -message "Too many databases are open; close at least one \n\
             before opening more databases"
-        #::splash::add "No slot available."
         return
       }
       # Email File:
@@ -1029,20 +966,13 @@ set optionsFile [scidConfigFile options]
 ################################################################################
 #  Load options file. All default values should be set before this point or new saved values will be overwritten by default ones
 ################################################################################
-if {[catch {source $optionsFile} ]} {
-  #::splash::add "Unable to find the options file: [file tail $optionsFile]"
-} else {
-  ::splash::add "Your options file \"[file tail $optionsFile]\" was found and loaded."
-}
-
-set ::docking::USE_DOCKING $windowsDock
+catch {source $optionsFile}
 
 # Now, if the options file was written by Scid 3.5 or older, it has a lot of
 # yucky variable names in the global namespace. So convert them to the new
 # namespace variables:
 #
 proc ConvertOldOptionVariables {} {
-  
   set oldNewNames {
     doColorPgn ::pgn::showColor
     pgnIndentVars ::pgn::indentVars
@@ -1064,18 +994,38 @@ proc ConvertOldOptionVariables {} {
 
 ConvertOldOptionVariables
 
-
-# Reconfigure fonts if necessary:
-foreach i {Regular Menu Small Tiny Fixed} {
-    configureFont $i
+# Check for old (single-directory) tablebase option:
+if {[info exists initialDir(tablebase)]} {
+  set initialDir(tablebase1) $initialDir(tablebase)
 }
 
-# Check board size is valid:
-set newSize [lindex $boardSizes 0]
-foreach sz $boardSizes {
-  if {$boardSize >= $sz} { set newSize $sz }
+set ::docking::USE_DOCKING $windowsDock
+
+proc createFonts {} {
+  foreach name {Regular Menu Small Tiny Fixed} {
+    set opts $::fontOptions($name)
+    font create font_$name \
+      -family [lindex $opts 0] -size [lindex $opts 1] \
+      -weight [lindex $opts 2] -slant [lindex $opts 3]
+  }
+
+  set fontsize [font configure font_Regular -size]
+  set font [font configure font_Regular -family]
+  font create font_Bold -family $font -size $fontsize -weight bold
+  font create font_BoldItalic -family $font -size $fontsize -weight bold -slant italic
+  font create font_Italic -family $font -size $fontsize -slant italic
+  font create font_H1 -family $font -size [expr {$fontsize + 8} ] -weight bold
+  font create font_H2 -family $font -size [expr {$fontsize + 6} ] -weight bold
+  font create font_H3 -family $font -size [expr {$fontsize + 4} ] -weight bold
+  font create font_H4 -family $font -size [expr {$fontsize + 2} ] -weight bold
+  font create font_H5 -family $font -size [expr {$fontsize + 0} ] -weight bold
+
+  set fontsize [font configure font_Small -size]
+  set font [font configure font_Small -family]
+  font create font_SmallBold -family $font -size $fontsize -weight bold
+  font create font_SmallItalic -family $font -size $fontsize -slant italic
 }
-set boardSize $newSize
+createFonts
 
 # Load theme
 ttk::style theme use $::lookTheme
@@ -1088,6 +1038,7 @@ ttk::style configure TCheckbutton -font font_Regular
 ttk::style configure TMenubutton -font font_Regular
 ttk::style configure TCombobox -font font_Regular
 ttk::style configure TEntry -font font_Regular
+ttk::style configure TNotebook.Tab -font font_Regular
 
 # Style definitions
 ttk::style configure Bold.TCheckbutton -font font_Bold
@@ -1104,50 +1055,162 @@ ttk::style configure SmallBold.TRadiobutton -font font_SmallBold
 
 ttk::style configure pad0.TMenubutton -padding 0 -indicatorwidth 0 -indicatorheight 0  -font font_Small
 
-# Check for old (single-directory) tablebase option:
-if {[info exists initialDir(tablebase)]} {
-  set initialDir(tablebase1) $initialDir(tablebase)
-}
-
 # font_Regular is the default font for widgets:
 option add *Font font_Regular
 
 # Use font_Menu for menu entries:
 option add *Menu*Font font_Menu
-# option add *Menubutton*Font font_Menu
 
-if {$unixOS} {
-  option add Scrollbar*borderWidth 1
+proc InitImg {} {
+	global scidImgDir boardStyle boardStyles textureSquare
+
+	#Set app icon
+	set scidIconFile [file nativename [file join $scidImgDir "scid.gif"]]
+	if {[file readable $scidIconFile]} {
+		wm iconphoto . -default [image create photo -file "$scidIconFile"]
+	}
+
+	#Load all img/buttons/_filename_.gif
+	set dname [file join $::scidImgDir buttons]
+	foreach {fname} [glob -directory $dname *.gif] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+	}
+
+	#Load all img/buttons/_filename_.png
+	set dname [file join $::scidImgDir buttons]
+	foreach {fname} [glob -directory $dname *.png] {
+		set iname [string range [file tail $fname] 0 end-4]
+		catch { image create photo $iname -file $fname }
+	}
+
+	#Load all img/boards/_filename_.gif
+	set textureSquare {}
+	set dname [file join $::scidImgDir boards]
+	foreach {fname} [glob -directory $dname *.gif] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+		if {[string range $iname end-1 end] == "-l"} {
+			lappend textureSquare [string range $iname 0 end-2]
+		}
+	}
+	
+	#Search available piece sets
+	set boardStyles {}
+	set dname [file join $::scidImgDir pieces]
+	foreach {piecetype} [glob -directory $dname *] {
+		if {[file isdirectory $piecetype] == 1} {
+			lappend boardStyles [file tail $piecetype]
+		}
+	}
+
+	#Load all img/flags/_filename_.gif
+	set dname [file join $::scidImgDir flags]
+	foreach {fname} [glob -directory $dname *.gif] {
+		set iname [string range [file tail $fname] 0 end-4]
+		image create photo $iname -file $fname
+	}
 }
-
-# Set the radiobutton and checkbutton background color if desired.
-# I find the maroon color on Unix ugly!
-if {$unixOS} {
-  option add *Radiobutton*selectColor $buttoncolor
-  option add *Checkbutton*selectColor $buttoncolor
-  option add *Menu*selectColor $buttoncolor
-}
-
-set fontsize [font configure font_Regular -size]
-set font [font configure font_Regular -family]
-
-font create font_Bold -family $font -size $fontsize -weight bold
-font create font_BoldItalic -family $font -size $fontsize -weight bold \
-    -slant italic
-font create font_Italic -family $font -size $fontsize -slant italic
-font create font_H1 -family $font -size [expr {$fontsize + 8} ] -weight bold
-font create font_H2 -family $font -size [expr {$fontsize + 6} ] -weight bold
-font create font_H3 -family $font -size [expr {$fontsize + 4} ] -weight bold
-font create font_H4 -family $font -size [expr {$fontsize + 2} ] -weight bold
-font create font_H5 -family $font -size [expr {$fontsize + 0} ] -weight bold
-
-set fontsize [font configure font_Small -size]
-set font [font configure font_Small -family]
-font create font_SmallBold -family $font -size $fontsize -weight bold
-font create font_SmallItalic -family $font -size $fontsize -slant italic
+InitImg
 
 # Start in the clipbase, if no database is loaded at startup.
 sc_base switch clipbase
+
+set tcl_files {
+language.tcl
+utils.tcl
+utils/date.tcl
+utils/font.tcl
+utils/graph.tcl
+utils/history.tcl
+utils/pane.tcl
+utils/sound.tcl
+utils/string.tcl
+utils/tooltip.tcl
+utils/validate.tcl
+utils/win.tcl
+misc/misc.tcl
+htext.tcl
+file.tcl
+file/finder.tcl
+file/bookmark.tcl
+file/recent.tcl
+file/epd.tcl
+file/spellchk.tcl
+file/maint.tcl
+edit.tcl
+game.tcl
+game/browser.tcl
+windows.tcl
+windows/gamelist.tcl
+windows/pgn.tcl
+windows/book.tcl
+windows/comment.tcl
+windows/eco.tcl
+windows/stats.tcl
+windows/tree.tcl
+windows/crosstab.tcl
+windows/pfinder.tcl
+windows/tourney.tcl
+windows/switcher.tcl
+search/search.tcl
+search/board.tcl
+search/header.tcl
+search/material.tcl
+contrib/ezsmtp/ezsmtp.tcl
+tools/email.tcl
+tools/import.tcl
+tools/optable.tcl
+tools/preport.tcl
+tools/pinfo.tcl
+tools/analysis.tcl
+tools/wbdetect.tcl
+tools/reper.tcl
+tools/graphs.tcl
+tools/tablebase.tcl
+tools/ptracker.tcl
+help/help.tcl
+help/tips.tcl
+menus.tcl
+board.tcl
+move.tcl
+main.tcl
+tools/correspondence.tcl
+lang/english.tcl
+lang/catalan.tcl
+lang/czech.tcl
+lang/deutsch.tcl
+lang/francais.tcl
+lang/greek.tcl
+lang/hungary.tcl
+lang/italian.tcl
+lang/nederlan.tcl
+lang/norsk.tcl
+lang/polish.tcl
+lang/portbr.tcl
+lang/russian.tcl
+lang/serbian.tcl
+lang/spanish.tcl
+lang/suomi.tcl
+lang/swedish.tcl
+tools/uci.tcl
+end.tcl
+tools/tacgame.tcl
+tools/sergame.tcl
+tools/calvar.tcl
+tools/fics.tcl
+tools/opening.tcl
+tools/tactics.tcl
+tools/reviewgame.tcl
+utils/metadata.tcl
+tools/inputengine.tcl
+tools/novag.tcl
+utils/bibliography.tcl
+}
+
+foreach f $tcl_files {
+  source [file nativename [file join $::scidTclDir "$f"]]
+}
 
 ###
 ### End of file: start.tcl

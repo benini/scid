@@ -1,5 +1,6 @@
 # board.tcl: part of Scid
 # Copyright (C) 2001-2003 Shane Hudson. All rights reserved.
+# Copyright (C) 2014 Fulvio Benini
 
 # letterToPiece
 #    Array that maps piece letters to their two-character value.
@@ -33,17 +34,56 @@ proc SetBoardTextures {} {
     bgl20 copy $boardfile_lite -from 0 0 20 20
     bgd20 copy $boardfile_dark -from 0 0 20 20
   }
-  
+
+  set textureSize "[image height $boardfile_lite].0"
   foreach size $::boardSizes {
     # create lite and dark squares
     image create photo bgl$size -width $size -height $size
     image create photo bgd$size -width $size -height $size
-    bgl$size copy $boardfile_lite -from 0 0 $size $size
-    bgd$size copy $boardfile_dark -from 0 0 $size $size
+    set z [expr int (ceil ($size / $textureSize))]
+    bgl$size copy $boardfile_lite -zoom $z
+    bgd$size copy $boardfile_dark -zoom $z
   }
 }
 
-SetBoardTextures
+# setPieceFont:
+#   Given a piece font name, resets all piece images in all
+#   available board sizes to that font.
+#
+proc setPieceFont {font} {
+	set ::boardSizes {}
+	set dname [file join $::scidImgDir pieces $font]
+	set fnames [glob -nocomplain -directory $dname *.png]
+	append fnames " " [glob -nocomplain -directory $dname *.gif]
+	foreach {fname} $fnames {
+		if {! [catch {image create photo tmpPieces -file "$fname"}]} {
+			set size [image height tmpPieces]
+			if {[lsearch -exact $::boardSizes $size] == -1} {
+				image create photo e$size -height $size -width $size
+				set x 0
+				foreach p {wp wn wb wr wq wk bp bn bb br bq bk} {
+					image create photo $p$size -width $size -height $size
+					$p$size copy tmpPieces -from $x 0 [expr {$x + $size}] $size
+					incr x $size
+				}
+				lappend ::boardSizes $size
+			}
+			image delete tmpPieces
+		}
+	}
+	if {[llength $::boardSizes] == 0 && $::boardStyle != "Merida"} {
+		set ::boardStyle "Merida"
+		setPieceFont "$::boardStyle"
+		return
+	}
+	set ::boardSizes [lsort -integer $::boardSizes]
+	foreach size $::boardSizes {
+		if {$size >= $::boardSize} { break }
+	}
+	set ::boardSize $size
+	updateBoardSizesMenu
+	SetBoardTextures
+}
 
 # chooseBoardTextures:
 #   Dialog for selecting board textures.
@@ -118,10 +158,13 @@ proc chooseBoardColors {{choice -1}} {
   addHorizontalRule $w
   pack [ttk::frame $w.buttons] -side top -fill x
   
+  foreach psize $::boardSizes {
+    if {$psize >= 40} { break }
+  }
   set column 0
   foreach j {r n b q k p} {
-    ttk::label $bd.w$j -image w${j}40
-    ttk::label $bd.b$j -image b${j}40
+    ttk::label $bd.w$j -image w${j}$psize
+    ttk::label $bd.b$j -image b${j}$psize
     grid $bd.b$j -row 0 -column $column
     grid $bd.w$j -row 1 -column $column
     incr column
@@ -149,25 +192,24 @@ proc chooseBoardColors {{choice -1}} {
     set b $f.b$i
     ttk::radiobutton $b -text "$i:" -variable newborderwidth -value $i
     set c $f.c$i
-    canvas $c -height 40 -width 40 -background black
+    canvas $c -height $psize -width $psize -background black
     $c create rectangle 0 0 [expr {20 - $i}] [expr {20 - $i}] -tag dark
-    $c create rectangle [expr {20 + $i}] [expr {20 + $i}] 40 40 -tag dark
-    $c create rectangle 0 [expr {20 + $i}] [expr 20 - $i] 40 -tag lite
-    $c create rectangle [expr {20 + $i}] 0 40 [expr {20 - $i}] -tag lite
+    $c create rectangle [expr {20 + $i}] [expr {20 + $i}] $psize $psize -tag dark
+    $c create rectangle 0 [expr {20 + $i}] [expr 20 - $i] $psize -tag lite
+    $c create rectangle [expr {20 + $i}] 0 $psize [expr {20 - $i}] -tag lite
     pack $b $c -side left -padx 1
     bind $c <Button-1> "set newborderwidth $i"
   }
   set ::newborderwidth $::borderwidth
   
   set count 0
-  set psize 40
   foreach list $colorSchemes {
     set f $w.preset.p$count
     pack [ttk::frame $f] -side left -padx 5
-    ttk::label $f.blite -image bp40 -background [lindex $list 1]
-    ttk::label $f.bdark -image bp40 -background [lindex $list 2]
-    ttk::label $f.wlite -image wp40 -background [lindex $list 1]
-    ttk::label $f.wdark -image wp40 -background [lindex $list 2]
+    ttk::label $f.blite -image bp$psize -background [lindex $list 1]
+    ttk::label $f.bdark -image bp$psize -background [lindex $list 2]
+    ttk::label $f.wlite -image wp$psize -background [lindex $list 1]
+    ttk::label $f.wdark -image wp$psize -background [lindex $list 2]
     ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardColors $count ; \
         set ::boardfile_dark emptySquare ; \
         set ::boardfile_lite emptySquare ; \
@@ -191,7 +233,6 @@ proc chooseBoardColors {{choice -1}} {
   set count 0
   set row 0
   set col 0
-  set psize 40
   foreach tex $::textureSquare {
     set f $w.texture.p$count
     grid [ ttk::frame $f ] -row $row -column $col -padx 5
@@ -201,10 +242,10 @@ proc chooseBoardColors {{choice -1}} {
     $f.c create image 0 $psize -image ${tex}-d -anchor nw
     $f.c create image $psize $psize -image ${tex}-l -anchor nw
     
-    $f.c create image 0 0 -image bp40 -anchor nw
-    $f.c create image $psize 0 -image wp40 -anchor nw
-    $f.c create image 0 $psize -image wp40 -anchor nw
-    $f.c create image $psize $psize -image bp40 -anchor nw
+    $f.c create image 0 0 -image bp$psize -anchor nw
+    $f.c create image $psize 0 -image wp$psize -anchor nw
+    $f.c create image 0 $psize -image wp$psize -anchor nw
+    $f.c create image $psize $psize -image bp$psize -anchor nw
     ttk::button $f.select -text [expr {$count + 1}] -command "chooseBoardTextures $count"
     bind $f.c <1> "chooseBoardTextures $count"
     pack $f.c $f.select -side top
@@ -273,19 +314,21 @@ proc ::board::san {sqno} {
 
 # ::board::new
 #   Creates a new board in the specified frame.
-#   The psize option should be a piece bitmap size supported
-#   in Scid (see the boardSizes variable in start.tcl).
 #   The showmat parameter adds a frame to display material balance
 #
 proc ::board::new {w {psize 40} {showmat "nomat"} } {
   if {[winfo exists $w]} { return }
-  
+
+  foreach size $::boardSizes {
+    if {$size >= $psize} { break }
+  }
+  set psize $size
+
   set ::board::_size($w) $psize
   set ::board::_border($w) $::borderwidth
   set ::board::_coords($w) 0
   set ::board::_flip($w) 0
   set ::board::_data($w) [sc_pos board]
-  set ::board::_stm($w) 1
   set ::board::_showMarks($w) 0
   set ::board::_mark($w) {}
   set ::board::_drag($w) -1
@@ -296,21 +339,20 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
   
-  
   ttk::frame $w -class Board
   canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background black -borderwidth 0 -highlightthickness 0
   catch { grid anchor $w center }
   
-  grid $w.bd -row 1 -column 3 -rowspan 8 -columnspan 8
+  set startrow 5
+  grid $w.bd -row [expr $startrow +1] -column 3 -rowspan 8 -columnspan 8
   set bd $w.bd
-  
   
   # Create empty board:
   for {set i 0} {$i < 64} {incr i} {
     set xi [expr {$i % 8} ]
     set yi [expr {int($i/8)} ]
-    set x1 [expr {$xi * ($psize + $border) + $border +1 } ]
-    set y1 [expr {(7 - $yi) * ($psize + $border) + $border +1 } ]
+    set x1 [expr {$xi * ($psize + $border) + $border } ]
+    set y1 [expr {(7 - $yi) * ($psize + $border) + $border } ]
     set x2 [expr {$x1 + $psize }]
     set y2 [expr {$y1 + $psize }]
     
@@ -320,42 +362,224 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   # Set up coordinate labels:
   for {set i 1} {$i <= 8} {incr i} {
     ttk::label $w.lrank$i -text [expr {9 - $i}]
-    grid $w.lrank$i -row $i -column 2 -sticky e
+    grid $w.lrank$i -row [expr $startrow + $i] -column 2 -sticky e
     ttk::label $w.rrank$i -text [expr {9 - $i}]
-    grid $w.rrank$i -row $i -column 11 -sticky w
+    grid $w.rrank$i -row [expr $startrow + $i] -column 11 -sticky w
   }
   foreach i {1 2 3 4 5 6 7 8} file {a b c d e f g h} {
     ttk::label $w.tfile$file -text $file
-    grid $w.tfile$file -row 0 -column [expr $i + 2] -sticky s
+    grid $w.tfile$file -row $startrow -column [expr $i + 2] -sticky s
     ttk::label $w.bfile$file -text $file
-    grid $w.bfile$file -row 9 -column [expr $i + 2] -sticky n
+    grid $w.bfile$file -row [expr $startrow + 9] -column [expr $i + 2] -sticky n
   }
   
-  # Set up side-to-move icons:
-  ttk::frame $w.stmgap -width 3
-  ttk::frame $w.stm
-  frame $w.wtm -relief solid -borderwidth 1 -background white
-  frame $w.btm -relief solid -borderwidth 1 -background black
-  grid $w.stmgap -row 1 -column 1
-  grid $w.stm -row 2 -column 0 -rowspan 5 -padx 2
   if {$::board::_showmat($w)} {
-    canvas $w.mat -width 20 -highlightthickness 0
-  }
-  
-  grid $w.wtm -row 8 -column 0
-  grid $w.btm -row 1 -column 0
-  if {$::board::_showmat($w)} {
-    grid $w.mat -row 1 -column 12 -rowspan 8 -pady 5
-  }
-  
-  ::board::stm $w
-  ::board::coords $w
-  ::board::resize $w redraw
-  if {$::board::_showmat($w)} {
+    canvas $w.mat -width 20 -height $bsize -highlightthickness 0
+    grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5
     ::board::material $w
   }
+
+  ::board::coords $w
   ::board::update $w
   return $w
+}
+
+proc ::board::addNamesBar {w {varname}} {
+  set bgcolor #fbfbfb
+  frame $w.playerW -background $bgcolor
+  canvas $w.playerW.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 10 -height 10
+  label $w.playerW.name -textvariable ${varname}(nameW) -background $bgcolor -font font_SmallBold
+  label $w.playerW.elo -textvariable ${varname}(eloW) -background $bgcolor -font font_Small
+  label $w.playerW.clock -textvariable ${varname}(clockW) -background $bgcolor -font font_Small
+  grid $w.playerW.tomove -row 0 -column 0 -sticky w -padx 4
+  grid $w.playerW.name -row 0 -column 1 -sticky w
+  grid $w.playerW.elo -row 0 -column 2 -sticky w
+  grid $w.playerW.clock -row 0 -column 3 -sticky e
+  grid columnconfigure $w.playerW 3 -weight 1
+  grid $w.playerW -row 16 -column 3 -columnspan 8 -sticky news -pady 4
+
+  frame $w.playerB -background $bgcolor
+  canvas $w.playerB.tomove -borderwidth 0 -background $bgcolor -highlightthickness 0 -width 10 -height 10
+  label $w.playerB.name -textvariable ${varname}(nameB) -background $bgcolor -font font_SmallBold
+  label $w.playerB.elo -textvariable ${varname}(eloB) -background $bgcolor -font font_Small
+  label $w.playerB.clock -textvariable ${varname}(clockB) -background $bgcolor -font font_Small
+  grid $w.playerB.tomove -row 0 -column 0 -sticky w -padx 4
+  grid $w.playerB.name -row 0 -column 1 -sticky w
+  grid $w.playerB.elo -row 0 -column 2 -sticky w
+  grid $w.playerB.clock -row 0 -column 3 -sticky e
+  grid columnconfigure $w.playerB 3 -weight 1
+  grid $w.playerB -row 3 -column 3 -columnspan 8 -sticky news -pady 4
+}
+
+proc ::board::addInfoBar {w varname} {
+  ttk::frame $w.bar
+  set $w.bar.info [ttk::frame $w.bar.info]
+  autoscrollframe $w.bar.info text $w.bar.info.t -relief flat -bg [ttk::style lookup Button.label -background] \
+                                                 -font font_Regular -cursor arrow -state disabled
+  $w.bar.info.t tag configure header -font font_Bold
+  $w.bar.info.t tag bind click <Any-Enter> "$w.bar.info.t configure -cursor hand2"
+  $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
+  grid propagate $w.bar.info 0
+  grid $w.bar.info.t -sticky news
+  set bar_tb [::board::newToolBar_ $w $varname]
+  ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
+  ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton -command "::board::toggleInfoBar_ $w"
+  ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
+  grid $w.bar.back -row 0 -column 0 -sticky news
+  grid $w.bar.cmd -in $w.bar -row 0 -column 1 -sticky news -padx 8
+  grid $bar_tb -in $w.bar -row 0 -column 2 -sticky ew
+  grid remove $bar_tb
+  grid $w.bar.info -in $w.bar -row 0 -column 2 -sticky news
+  grid $w.bar.forward -row 0 -column 4 -sticky news
+  grid columnconfigure $w.bar 2 -weight 1
+  grid $w.bar -row 20 -column 3 -columnspan 8 -sticky news -pady 4
+}
+
+proc ::board::setInfo {{w} {msg}} {
+  toggleInfoBar_ $w "tmpRestore"
+  $w.bar.info.t configure -state normal
+  $w.bar.info.t delete 1.0 end
+  $w.bar.info.t insert end "$msg"
+  $w.bar.info.t configure -state disabled
+}
+
+
+proc ::board::setInfoAlert {{w} {header} {msg} {msgcolor} {cmd}} {
+  $w.bar.info.t configure -state normal
+  $w.bar.info.t delete 1.0 end
+  $w.bar.info.t insert end "$header " {header click}
+  $w.bar.info.t insert end "$msg" {color click}
+  $w.bar.info.t configure -state disabled
+  $w.bar.info.t tag configure color -foreground $msgcolor
+  $w.bar.info.t tag bind click <ButtonRelease-1> "
+    if {[winfo exists $cmd]} {
+      after idle \"tk_popup $cmd %X \[expr -10 + %Y - \[winfo reqheight $cmd\] \]\"
+    } else {
+      $cmd
+    }
+  "
+  toggleInfoBar_ $w "tmpInfo"
+}
+
+set ::board::repeatCmd 400
+proc ::board::setButtonCmd {{w} {button} {cmd}} {
+  if {$cmd == ""} {
+    $w.bar.$button configure -state disabled
+  } else {
+    $w.bar.$button configure -state normal
+    ::bind $w.bar.$button <ButtonPress-1> "
+      $cmd
+      set ::board::repeatCmd \[expr int(\$::board::repeatCmd *0.8)\]
+      after \$::board::repeatCmd \"event generate $w.bar.$button <ButtonPress-1>\"
+    "
+    ::bind $w.bar.$button <Any-Leave> "
+      after cancel \"event generate $w.bar.$button <ButtonPress-1>\"
+      set ::board::repeatCmd 400
+    "
+    ::bind $w.bar.$button <ButtonRelease-1> "
+      after cancel \"event generate $w.bar.$button <ButtonPress-1>\"
+      set ::board::repeatCmd 400
+    "
+  }
+}
+
+proc ::board::toggleInfoBar_ {{w} {action "click"}} {
+  set bstate [$w.bar.cmd state]
+  if {$action == "tmpInfo" && $bstate == "pressed"} {
+      grid remove $w.buttons;
+      grid $w.bar.info
+  } elseif {($action == "tmpRestore" && $bstate == "pressed") || \
+            ($action == "click" && "$w.bar.info" == [grid slaves $w.bar -column 2])} {
+      grid remove $w.bar.info;
+      grid $w.buttons
+      $w.bar.cmd state pressed
+  } else {
+      grid remove $w.buttons;
+      grid $w.bar.info
+      $w.bar.cmd state !pressed
+  }
+}
+
+proc ::board::updateToolBar_ {{menu} {varname}} {
+  global "$varname"
+  set i [$menu index end]
+  while {$i >= 0} {
+    set idx -1
+    catch { set idx [lindex [$menu entryconfigure $i -image] 4] }
+    if {[info exists "${varname}($idx)"] } {
+      $menu entryconfigure $i -foreground black -command "eval \$::${varname}($idx)"
+    } else {
+      catch { $menu entryconfigure $i -foreground gray -command "" }
+    }
+    incr i -1
+  }
+}
+
+proc ::board::newToolBar_ {{w} {varname}} {
+  global "$varname"
+  ttk::frame $w.buttons
+
+  set menus { tb_BD_Changes tb_BD_Variations tb_BD_Layout tb_BD_Comment }
+  set i 0
+  foreach b $menus {
+    menu $w.buttons.menu_$b -bg white -font font_Regular -postcommand "::board::updateToolBar_ $w.buttons.menu_$b $varname"
+    ttk::menubutton $w.buttons.$b -style Toolbutton -image $b -menu "$w.buttons.menu_$b" -direction above
+    grid $w.buttons.$b -row 0 -column $i -padx 4
+    incr i
+  }
+
+  set m "$w.buttons.menu_[lindex $menus 0]"
+  $m add command -label "  [tr GameAdd]" -image tb_BD_SaveAs -compound left
+  $m add command -label "  [tr GameReplace]" -image tb_BD_Save -compound left
+  $m add separator
+  $m add command -label "  Undo all" -image tb_BD_Revert -compound left
+  $m add command -label "  Redo" -image tb_BD_Redo -compound left
+  $m add command -label "  Undo" -image tb_BD_Undo -compound left
+
+  set m "$w.buttons.menu_[lindex $menus 1]"
+  $m add command -label "  Delete variant" -image tb_BD_VarDelete -compound left
+  $m add command -label "  Promote variant" -image tb_BD_VarPromote -compound left
+  $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
+  $m add command -label "  Go back to mainline" -image tb_BD_BackToMainline -compound left
+  $m add separator
+  $m add command -label "  Go to start" -image tb_BD_Start -compound left
+  $m add command -label "  Go to end" -image tb_BD_End -compound left
+  $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
+
+  set m "$w.buttons.menu_[lindex $menus 2]"
+  $m add command -label "  Rotate" -image tb_BD_Flip -compound left
+  $m add command -label "  Show/hide coord" -image tb_BD_Coords -compound left
+  $m add command -label "  Full Screen" -image tb_BD_Fullscreen -compound left
+  set ${varname}(tb_BD_Flip) "::board::flip $w"
+  set ${varname}(tb_BD_Coords) "::board::coords $w"
+  set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
+
+  set m "$w.buttons.menu_[lindex $menus 3]"
+  $m add command -label "  Strip all comments" -image tb_BD_VarDelete -compound left
+
+  return $w.buttons
+}
+
+proc ::board::flipNames_ { {w} {white_on_top} } {
+  if {![winfo exist $w.playerW] } { return }
+  if {$white_on_top} {
+    grid $w.playerW -row 3
+    grid $w.playerB -row 16
+  } else {
+    grid configure $w.playerW -row 16
+    grid configure $w.playerB -row 3
+  }
+}
+
+proc ::board::sideToMove_ { {w} {side} } {
+  if {![winfo exist $w.playerW] } { return }
+  if {$side == "w"} {
+    $w.playerB.tomove delete -tag tomove
+	$w.playerW.tomove create rectangle 0 0 100 100 -fill blue -tag tomove
+  } elseif {$side == "b"} {
+    $w.playerW.tomove delete -tag tomove
+    $w.playerB.tomove create rectangle 0 0 100 100 -fill blue -tag tomove
+  }
 }
 
 # ::board::defaultColor
@@ -435,18 +659,10 @@ proc ::board::resize {w psize} {
     set y2 [expr {$y1 + $psize }]
     $w.bd coords sq$i $x1 $y1 $x2 $y2
   }
-  
-  # Resize the side-to-move icons:
-  set stmsize [expr {round($psize / 4) + 5}]
-  $w.stm configure -width $stmsize
-  $w.wtm configure -height $stmsize -width $stmsize
-  $w.btm configure -height $stmsize -width $stmsize
-  
+
   # resize the material canvas
   if {$::board::_showmat($w)} {
-    $w.mat configure -height [expr $psize * 8]
-    $w.mat configure -width 20
-    ::board::material $w
+    $w.mat configure -height $bsize
   }
   
   ::board::update $w
@@ -885,7 +1101,7 @@ proc ::board::mark::DrawArrow {pathName from to color} {
 # ::board::mark::DrawRectangle --
 # Draws a rectangle surrounding the square
 proc ::board::mark::DrawRectangle { pathName square color pattern } {
-  if {$square < 0  ||  $square > 63} { puts "error square = $square" ; return }
+  if {$square < 0  ||  $square > 63} { return }
   set box [::board::mark::GetBox $pathName $square]
   $pathName create rectangle [lindex $box 0] [lindex $box 1] [lindex $box 2] [lindex $box 3] \
       -outline $color -width $::highlightLastMoveWidth -dash $pattern -tag highlightLastMove
@@ -1152,7 +1368,7 @@ proc  ::board::lastMoveHighlight {w} {
 #   the previous board state appear to be a valid chess move, the
 #   move is animated.
 #
-proc ::board::update {w {board ""} {animate 0}} {  
+proc ::board::update {w {board ""} {animate 0}} {
   set oldboard $::board::_data($w)
   if {$board == ""} {
     set board $::board::_data($w)
@@ -1160,8 +1376,7 @@ proc ::board::update {w {board ""} {animate 0}} {
     set ::board::_data($w) $board
   }
   set psize $::board::_size($w)
-  set flip $::board::_flip($w)
-  
+
   # Cancel any current animation:
   after cancel "::board::_animate $w"
   
@@ -1190,12 +1405,7 @@ proc ::board::update {w {board ""} {animate 0}} {
   }
   
   # Update side-to-move icon:
-  grid remove $w.wtm $w.btm
-  if {$::board::_stm($w)} {
-    set side [string index $::board::_data($w) 65]
-    if {$side == "w"} { grid configure $w.wtm }
-    if {$side == "b"} { grid configure $w.btm }
-  }
+  ::board::sideToMove_ $w [string index $::board::_data($w) 65]
   
   # Redraw marks and arrows if required:
   if {$::board::_showMarks($w)} {
@@ -1220,11 +1430,7 @@ proc ::board::update {w {board ""} {animate 0}} {
   
   # Redraw material values
   if {$::board::_showmat($w)} {
-    # grid remove $w.mat
-    if {$::gameInfo(showMaterial)} {
-      # grid configure $w.mat
       ::board::material $w
-    }
   }
   
   # Animate board changes if requested:
@@ -1265,17 +1471,14 @@ proc ::board::flip {w {newstate -1}} {
     foreach file {a b c d e f g h} newvalue {h g f e d c b a} {
       $w.tfile$file configure -text $newvalue
       $w.bfile$file configure -text $newvalue
-      grid configure $w.wtm -row 1
-      grid configure $w.btm -row 8
     }
   } else {
     foreach file {a b c d e f g h} {
       $w.tfile$file configure -text $file
       $w.bfile$file configure -text $file
-      grid configure $w.wtm -row 8
-      grid configure $w.btm -row 1
     }
   }
+  ::board::flipNames_ $w $flip
   ::board::update $w
   return $w
 }
@@ -1347,21 +1550,6 @@ proc ::board::addMaterial {count piece parent rank sum} {
 ################################################################################
 #
 ################################################################################
-
-# ::board::stm
-#   Add or remove the side-to-move icon.
-#
-proc ::board::stm {w} {
-  set stm [expr {1 - $::board::_stm($w)} ]
-  set ::board::_stm($w) $stm
-  if {$stm} {
-    grid configure $w.stmgap
-    grid configure $w.stm
-  } else {
-    grid remove $w.stmgap $w.stm $w.wtm $w.btm
-  }
-  ::board::update $w
-}
 
 # ::board::coords
 #   Add or remove coordinates around the edge of the board.
@@ -1547,10 +1735,7 @@ proc ::board::animate {w oldboard newboard} {
   # Move the animated piece back to its starting point:
   eval $w.bd coords p$to [::board::midSquare $w $from]
   $w.bd raise p$to
-  
-  # Remove side-to-move icon while animating:
-  grid remove $w.wtm $w.btm
-  
+
   # Start the animation:
   set start [clock clicks -milli]
   set ::board::_animate($w,start) $start
@@ -1592,16 +1777,22 @@ proc ::board::_animate {w} {
   after 5 "::board::_animate $w"
 }
 
+proc InitBoard {} {
+  # Ensure that the current board style is valid:
+  if {[lsearch -exact "$::boardStyles" "$::boardStyle"] == -1} {
+    set ::boardStyle [lindex $::boardStyles 0]
+  }
+
+  setPieceFont "$::boardStyle"
+  updatePiecesMenu
+}
+InitBoard
+
 # Capture board screenshot.
 # Based on code from David Easton:
 # http://wiki.tcl.tk/9127
 
-set window_image_support 1
 if { [catch {package require img::window}] } {
-  set window_image_support 0
-}
-
-if {!$png_image_support || !$window_image_support} {
   .menu.tools entryconfig [tr ToolsCaptureBoard] -state disabled
   ::splash::add "Capture Current Board is disabled."
 }
@@ -1660,7 +1851,6 @@ proc boardToFile { format filepath } {
   }
   image delete $image
 }
-
 
 ###
 ### End of file: board.tcl

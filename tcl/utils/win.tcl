@@ -559,15 +559,9 @@ set ::docking::layout_dest_notebook ""
 ################################################################################
 # saves layout (bail out if some windows cannot be restored like FICS)
 proc ::docking::layout_save { slot } {
-  if {[winfo exists .fics]} {
-    tk_messageBox -title Scid -icon question -type ok -message "Cannot save layout with FICS opened"
-    return
-  }
-  if {[winfo exists .oprepWin]} {
-    tk_messageBox -title Scid -icon question -type ok -message "Cannot save layout with opening report opened"
-    return
-  }
-  
+  if {! $::docking::USE_DOCKING} { return }
+  #TODo: Save FICS window
+
   # on Windows the geometry is false if the window was maximized (x and y offsets are the ones before the maximization)
   set geometry [wm geometry .]
   set ::docking::layout_list($slot) [list [list "MainWindowGeometry" $geometry] ]
@@ -590,15 +584,24 @@ proc ::docking::layout_save_pw {pw} {
     lappend sashpos [$pw sashpos $i]
   }
   lappend ret [list $pw [$pw cget -orient ] $sashpos ]
-  
+
   foreach p [$pw panes] {
     if {[get_class $p] == "TNotebook"} {
-      lappend ret [list "TNotebook" $p [$p tabs] ]
+      set wins [$p tabs]
+      set glistWins [lsearch -all $wins ".fdockglistWin*"]
+      set i [llength $glistWins]
+      while {$i > 1} {
+        incr i -1
+        set remove [lindex $glistWins $i]
+        set wins [lreplace $wins $remove $remove]
+      }
+      lappend ret [list "TNotebook" $p $wins ]
     }
     if {[get_class $p] == "TPanedwindow"} {
       lappend ret [ list "TPanedwindow" [layout_save_pw $p] ]
     }
   }
+
   return $ret
 }
 
@@ -612,11 +615,11 @@ proc ::docking::layout_restore_pw { data } {
       wm geometry . [lindex $elt 1]
       layout_restore_pw [lindex $data 1]
       if {[lindex $elt 2]  == "zoomed"} {
-          if { $::windowsOS || $::macOS } {
-              set ::docking::zoom "wm state . zoomed"
-          } else {
-              set ::docking::zoom "wm attributes . -zoomed"
-          }
+        if { $::windowsOS || $::macOS } {
+          wm state . zoomed
+        } else {
+          wm attributes . -zoomed
+        }
       }
       break
     } elseif {$type == "TPanedwindow"} {
@@ -628,7 +631,6 @@ proc ::docking::layout_restore_pw { data } {
       ::docking::layout_restore_nb $pw $name $tabs
       
     } else {
-      
       set pw [lindex $elt 0]
       set orient [lindex $elt 1]
       # we have sash geometry
@@ -651,11 +653,11 @@ proc ::docking::layout_restore_pw { data } {
 ################################################################################
 proc ::docking::restoreGeometry {} {
   foreach elt $::docking::sashpos {
-    update idletasks
     set pw [lindex $elt 0]
     set sash [lindex $elt 1]
     set i 0
     foreach pos $sash {
+      update
       $pw sashpos $i $pos
       incr i
     }
@@ -702,10 +704,11 @@ proc ::docking::restore_tabs {} {
       if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
       if { $d == ".fdocktbWin" } { ::tb::Open }
       if { $d == ".fdockcommentWin" } {  ::commenteditor::Open }
-      if { [string first ".fdockglistWin" $d] != -1 } {::windows::gamelist::Open}
+      if { [string first ".fdockglistWin" $d] != -1 } {::windows::gamelist::Open "" dbfilter}
       if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
       if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
-
+      if { $d == ".fdockoprepWin" } { ::optable::makeReportWin }
+      update
       update idletasks
     }
   }
@@ -723,14 +726,14 @@ proc ::docking::layout_restore { slot } {
   variable tbs
   bind TNotebook <<NotebookTabChanged>> {}
   
-  # if no layout recorded, return
+  # if no layout recorded, retry with the last used
   if { $::docking::layout_list($slot) == {} } {
+    if { $slot != "auto" } { ::docking::layout_restore "auto" }
     return
   }
   
   closeAll {.pw}
   set tbcnt 0
-  set ::docking::zoom {}
   array set ::docking::notebook_name {}
   array set ::docking::tbs {}
   set ::docking::sashpos {}
@@ -742,13 +745,12 @@ proc ::docking::layout_restore { slot } {
   }
 
   layout_restore_pw $::docking::layout_list($slot)
-  restoreGeometry
-  
+  ::docking::restoreGeometry
+
   array set ::docking::activeTab {}
   setTabStatus
   
   bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
-  eval $::docking::zoom
   after idle ::docking::restore_tabs
 }
 ################################################################################

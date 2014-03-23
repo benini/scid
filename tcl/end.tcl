@@ -1098,8 +1098,11 @@ proc gsave { gnum } {
       -eco $eco -eventdate $edate -extra $extraTagsList
   if {$gnum != 0} {
     set res [sc_game save $gnum]
+    ::notify::DatabaseModified [sc_base current]
+    ::notify::GameChanged
   } else {
     set res [sc_game save $gnum $::gameSave_toBase]
+    ::notify::DatabaseModified $::gameSave_toBase
     ::file::SwitchToBase $::gameSave_toBase 0
     ::game::Load [sc_base numGames]
   }
@@ -1107,14 +1110,17 @@ proc gsave { gnum } {
     tk_messageBox -type ok -icon info -parent .save \
         -title "Scid" -message $res
   }
-  ::notify::GameChanged
-  ::notify::DatabaseChanged
 }
 
 # gameAdd:
 #   Calls gameSave with a game number of zero.
 #
 proc gameAdd {} { gameSave 0 }
+
+proc gameAddToClipbase {} {
+  sc_clipbase copy
+  ::notify::DatabaseModified [sc_info clipbase]
+}
 
 # gameReplace:
 #   Calls gameSave with the current game number, which should be nonzero.
@@ -1234,17 +1240,6 @@ if { [tk windowingsystem] == "win32" } {
     }
 }
 
-proc gotoNextBase {} {
-  set n [sc_base current]
-  set cb [sc_info clipbase]
-  while {1} {
-    incr n; if {$n > $cb} { set n 1 }
-    sc_base switch $n
-    if {[sc_base inUse]} { break }
-  }
-  updateBoard -pgn
-  ::notify::DatabaseChanged
-}
 
 #################
 # Open files and databases:
@@ -1444,48 +1439,40 @@ proc raiseAllWindows {} {
 setLanguage $language
 updateLocale
 
-CreateMainWin
+CreateMainWin .main
 
 wm minsize . 0 0
 wm iconname . "Scid"
-setWinLocation $dot_w
+setWinLocation .main
 wm deiconify $dot_w
 wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
+standardShortcuts .
 bind $dot_w <Configure> "recordWinSize $dot_w"
 bind $dot_w <Double-Button-1> raiseAllWindows
 
 if { $::docking::USE_DOCKING } {
-  # restore geometry
-  wm minsize $dot_w 360 320
-  setWinLocation $dot_w
-  setWinSize $dot_w
-
   # restore default layout (number 1)
-  if { $::autoLoadLayout } { ::docking::layout_restore 1 }
+  ::docking::layout_restore 1
+  standardShortcuts TPanedwindow
   standardShortcuts TNotebook
-  standardShortcuts $dot_w
 }
 
+# In docked mode, reopen only the windows that are not dockable
+if { !$::docking::USE_DOCKING } {
+  if {$startup(switcher)} { ::windows::switcher::Open }
+  if {$startup(pgn)} { ::pgn::OpenClose }
+  if {$startup(gamelist)} { ::windows::gamelist::Open }
+  if {$startup(tree)} { ::tree::make }
+  if {$startup(crosstable)} { crosstabWin }
+  if {$startup(book)} { ::book::open }
+}
+if {$startup(stats)} { ::windows::stats::Open }
+if {$startup(tip)} { ::tip::show }
+if {$startup(finder)} { ::file::finder::Open }
+
+update
+update idletasks
 after 1 {
-  toggleGameInfo
-  redrawToolbar
-
-  # In docked mode, reopen only the windows that are not dockable
-  if { !$::docking::USE_DOCKING } {
-    if {$startup(switcher)} { ::windows::switcher::Open }
-    if {$startup(pgn)} { ::pgn::OpenClose }
-    if {$startup(gamelist)} { ::windows::gamelist::Open }
-    if {$startup(tree)} { ::tree::make }
-    if {$startup(crosstable)} { crosstabWin }
-    if {$startup(book)} { ::book::open }
-  }
-  if {$startup(stats)} { ::windows::stats::Open }
-  if {$startup(tip)} { ::tip::show }
-  if {$startup(finder)} { ::file::finder::Open }
-
-  ::resizeMainBoard
-  ::notify::GameChanged
-
   ::file::autoLoadBases.load
 
   # fullname:

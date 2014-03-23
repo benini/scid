@@ -918,7 +918,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
     append r "$tr(ECO): $eco$n"
   }
   
-  append r "$::tr(OprepGenerated) Scid [sc_info version], [::utils::date::today]\n"
+  append r "$::tr(OprepGenerated) Scid $::scidVersion, [::utils::date::today]\n"
   if {$fmt == "latex"} {
     if {$flipPos} {
       append r $::optable::_data(bdLaTeX_flip)

@@ -73,9 +73,7 @@ proc ::game::Clear {} {
   
   setTrialMode 0
   sc_game new
-  updateBoard -pgn
-  updateTitle
-  updateMenuStates
+  ::notify::GameChanged
 }
 
 # ::game::Strip
@@ -156,68 +154,6 @@ proc ::game::LoadRandom {} {
   set gnumber [sc_filter index $r]
   ::game::Load $gnumber
 }
-
-
-# ::game::LoadNumber
-#
-#    Prompts for the number of the game to load.
-#
-set ::game::entryLoadNumber ""
-trace variable ::game::entryLoadNumber w {::utils::validate::Regexp {^[0-9]*$}}
-
-proc ::game::LoadNumber {} {
-  set ::game::entryLoadNumber ""
-  if {![sc_base inUse]} { return }
-  
-  set confirm [::game::ConfirmDiscard2]
-  if {$confirm == 2} { return }
-  if {$confirm == 0} {
-    # ::gameReplace
-    sc_game save [sc_game number]
-  }
-  
-  if {[sc_base numGames] < 1} { return }
-  set w [toplevel .glnumDialog]
-  wm title $w "Scid: [tr GameNumber]"
-  grab $w
-  
-  label $w.label -text $::tr(LoadGameNumber)
-  pack $w.label -side top -pady 5 -padx 5
-  
-  entry $w.entry -background white -width 10 -textvariable ::game::entryLoadNumber
-  bind $w.entry <Escape> { .glnumDialog.buttons.cancel invoke }
-  bind $w.entry <Return> { .glnumDialog.buttons.load invoke }
-  pack $w.entry -side top -pady 5
-  
-  set b [frame $w.buttons]
-  pack $b -side top -fill x
-  dialogbutton $b.load -text "OK" -command {
-    grab release .glnumDialog
-    if {[catch {sc_game load $::game::entryLoadNumber} result]} {
-      tk_messageBox -type ok -icon info -title "Scid" -message $result
-    }
-    focus .
-    destroy .glnumDialog
-    flipBoardForPlayerNames $::myPlayerNames
-    updateBoard -pgn
-    ::windows::gamelist::Refresh
-    updateTitle
-  }
-  dialogbutton $b.cancel -text $::tr(Cancel) -command {
-    focus .
-    grab release .glnumDialog
-    destroy .glnumDialog
-    focus .
-  }
-  packbuttons right $b.cancel $b.load
-  
-  set x [ expr {[winfo width .] / 4 + [winfo rootx .] }]
-  set y [ expr {[winfo height .] / 4 + [winfo rooty .] }]
-  wm geometry $w "+$x+$y"
-  
-  focus $w.entry
-}
-
 
 # History of viewed games
 set hgame_i 0
@@ -422,47 +358,56 @@ proc ::game::mergeInBase { srcBase destBase { gnum -1 }} {
 # Grouping intercommunication between windows
 # When complete this should be moved to a new notify.tcl file
 namespace eval ::notify {
+  # To be called when the current game change or is modified
   proc GameChanged {} {
-    flipBoardForPlayerNames $::myPlayerNames
+    global gamePlayers
+    set gamePlayers(nameW) [sc_game info white]
+    set eloW [sc_game info welo]
+    if {$eloW == 0} { set gamePlayers(eloW) "" } else { set gamePlayers(eloW) "($eloW)" }
+    set ::gamePlayers(clockW) ""
+    set gamePlayers(nameB) [sc_game info black]
+    set eloB [sc_game info belo]
+    if {$eloB == 0} { set gamePlayers(eloB) "" } else { set gamePlayers(eloB) "($eloB)" }
+    set ::gamePlayers(clockB) ""
+
     updateBoard -pgn
     updateTitle
     ::windows::gamelist::Refresh 0
   }
 
+  # To be called when the position of the current game change
   proc PosChanged {} {
-    set curr_db [sc_base current]
-    if {![sc_base inUse]  ||  $::trialMode  ||  [sc_base isReadOnly $curr_db]} {
-        .main.tb.save configure -state disabled
-    } else {
-        .main.tb.save configure -state normal
-    }
-
+    moveEntry_Clear
+    updateStatusBar
+    updateMainToolbar
+    updateTitle
     if {$::showGameInfo} { updateGameInfo }
     updateAnalysis 1
     updateAnalysis 2
+    ::windows::gamelist::PosChanged
     updateEpdWins
     ::commenteditor::Refresh
     ::tb::results
-    updateMenuStates
-    moveEntry_Clear
-    updateStatusBar
     if {[winfo exists .twinchecker]} { updateTwinChecker }
     ::pgn::Refresh
     if {[winfo exists .bookWin]} { ::book::refresh }
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     updateNoveltyWin
-    ::windows::gamelist::PosChanged
     ::tree::refresh
   }
 
-  proc DatabaseChanged {{moveUp 1}} {
-    ::windows::gamelist::Refresh $moveUp
+  # To be called when the current database change or a new base is opened
+  proc DatabaseChanged {} {
     ::windows::switcher::Refresh
     ::windows::stats::Refresh
-    updateTitle
-    updateStatusBar
-    updateMenuStates
     set curr_base [sc_base current]
     set ::treeWin [winfo exists .treeWin$curr_base]
+  }
+
+  # To be called after modifying data in a database
+  proc DatabaseModified {{dbase} {filter -1}} {
+    ::windows::gamelist::DatabaseModified $dbase $filter
+    ::windows::switcher::Refresh
+    ::windows::stats::Refresh
   }
 }

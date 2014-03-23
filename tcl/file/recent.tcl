@@ -26,7 +26,7 @@ proc ::recentFiles::save {{reportError 0}} {
     }
     return
   }
-  puts $f "# Scid [sc_info version] recent files list"
+  puts $f "# Scid $::scidVersion recent files list"
   puts $f ""
   foreach i {limit menu extra data} {
     puts $f "set recentFiles($i) [list [set recentFiles($i)]]"
@@ -83,8 +83,8 @@ proc ::recentFiles::load {fname} {
     if {$rname == [sc_base filename $i]} {
       sc_base switch $i
       ::recentFiles::add $fname
+      ::notify::GameChanged
       ::notify::DatabaseChanged
-      updateBoard -pgn
       return
     }
   }
@@ -216,7 +216,6 @@ proc ::recentFiles::configure {} {
     catch {grab release .recentFilesDlg}
     destroy .recentFilesDlg
     ::recentFiles::save
-    updateMenuStates
   }
   button $w.b.cancel -text $::tr(Cancel) \
       -command "catch {grab release $w}; destroy $w"

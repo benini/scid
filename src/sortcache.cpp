@@ -366,12 +366,12 @@ SortCache::FullCompare (uint left, uint right)
 			break;
 
 		case SORTING_result:
-			res = (int)ie1->GetResult() - (int)ie2->GetResult();
+			res = RESULT_SORT[ie1->GetResult()] - RESULT_SORT[ie2->GetResult()];
 			break;
 
 		case SORTING_avgElo:  // Average Elo rating:
-			rOne = ie1->GetWhiteElo() + ie1->GetBlackElo();
-			rTwo = ie2->GetWhiteElo() + ie2->GetBlackElo();
+			rOne = ie1->GetWhiteElo(nbase) + ie1->GetBlackElo(nbase);
+			rTwo = ie2->GetWhiteElo(nbase) + ie2->GetBlackElo(nbase);
 			res = rOne - rTwo;
 			break;
 
@@ -492,15 +492,15 @@ uint SortCache::CalcHash (IndexEntry * ie)
 				bytesUsed = 1;
 				break;
 			case SORTING_whiteelo:
-				cacheValue = ie->GetWhiteElo();
+				cacheValue = ie->GetWhiteElo(nbase);
 				bytesUsed = 2;
 				break;
 			case SORTING_blackelo:
-				cacheValue = ie->GetBlackElo();
+				cacheValue = ie->GetBlackElo(nbase);
 				bytesUsed = 2;
 				break;
 			case SORTING_avgElo:
-				cacheValue = ie->GetWhiteElo() + ie->GetBlackElo();
+				cacheValue = ie->GetWhiteElo(nbase) + ie->GetBlackElo(nbase);
 				bytesUsed = 2;
 				break;
 			case SORTING_round:
@@ -508,7 +508,7 @@ uint SortCache::CalcHash (IndexEntry * ie)
 				bytesUsed = 1;
 				break;
 			case SORTING_result:
-				cacheValue = ie->GetResult();
+				cacheValue = RESULT_SORT[ie->GetResult()];
 				bytesUsed = 1;
 				break;
 			case SORTING_resultwin:

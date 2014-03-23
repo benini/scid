@@ -280,6 +280,52 @@ class IndexEntry
     inline const char * GetSiteName (NameBase * nb);
     inline const char * GetRoundName (NameBase * nb);
 
+    errorT SetWhiteName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
+        if (res == OK) {
+            nb->IncFrequency (NAME_PLAYER, id, 1);
+            SetWhite (id);
+        }
+        return res;
+    }
+    errorT SetBlackName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
+        if (res == OK) {
+            nb->IncFrequency (NAME_PLAYER, id, 1);
+            SetBlack (id);
+        }
+        return res;
+    }
+    errorT SetEventName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_EVENT, s ? s : "?", &id);
+        if (res == OK) {
+            nb->IncFrequency (NAME_EVENT, id, 1);
+            SetEvent (id);
+        }
+        return res;
+    }
+    errorT SetSiteName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_SITE, s ? s : "?", &id);
+        if (res == OK) {
+            nb->IncFrequency (NAME_SITE, id, 1);
+            SetSite (id);
+        }
+        return res;
+    }
+    errorT SetRoundName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_ROUND, s ? s : "?", &id);
+        if (res == OK) {
+            nb->IncFrequency (NAME_ROUND, id, 1);
+            SetRound (id);
+        }
+        return res;
+    }
+
     inline dateT   GetDate ()     { return u32_low_20(Dates); }
     inline uint    GetYear ()     { return date_GetYear (GetDate()); }
     inline uint    GetMonth ()    { return date_GetMonth (GetDate()); }
@@ -287,7 +333,17 @@ class IndexEntry
     dateT          GetEventDate ();
     inline resultT GetResult ()   { return (VarCounts >> 12); }
     inline eloT    GetWhiteElo () { return u16_low_12(WhiteElo); }
+    inline eloT    GetWhiteElo (NameBase* nb) {
+        eloT r = GetWhiteElo();
+        if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
+        return r;
+    }
     inline eloT    GetBlackElo () { return u16_low_12(BlackElo); }
+    inline eloT    GetBlackElo (NameBase* nb) {
+        eloT r = GetBlackElo();
+        if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
+        return r;
+    }
     inline byte    GetWhiteRatingType () { return u16_high_4 (WhiteElo); }
     inline byte    GetBlackRatingType () { return u16_high_4 (BlackElo); }
     inline ecoT    GetEcoCode ()  { return EcoCode; }

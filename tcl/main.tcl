@@ -1,4 +1,22 @@
-###
+# Copyright (C) 1999-2004 Shane Hudson
+# Copyright (C) 2006-2009 Pascal Georges
+# Copyright (C) 2008-2011 Alexander Wagner
+# Copyright (C) 2013-2014 Fulvio Benini
+#
+# This file is part of Scid (Shane's Chess Information Database).
+#
+# Scid is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation.
+#
+# Scid is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+
 ###
 ### main.tcl: Routines for creating and updating the main window.
 ###
@@ -33,63 +51,13 @@ proc moveEntry_Clear {} {
 
 proc moveEntry_Complete {} {
     global moveEntry
-    
-    if { ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove] } { ;# not player's turn
-        moveEntry_Clear
-        return
-    }
-    
     set len [llength $moveEntry(List)]
     if {$len > 0} {
-        if {$moveEntry(AutoExpand)} {
-            # Play a bell sound to let the user know the move was accepted already,
-            # but only if move announcement is off?
-            # bell
-        }
         set move [lindex $moveEntry(List) 0]
         if {$move == "OK"} { set move "O-O" }
         if {$move == "OQ"} { set move "O-O-O" }
-        set action "replace"
-        if {![sc_pos isAt vend]} { set action [confirmReplaceMove] }
-        if {$action == "replace"} {
-            undoFeature save
-            sc_move addSan $move
-        } elseif {$action == "var"} {
-            undoFeature save
-            sc_var create
-            sc_move addSan $move
-        } elseif {$action == "mainline"} {
-            undoFeature save
-            sc_var create
-            sc_move addSan $move
-            sc_var exit
-            sc_var promote [expr {[sc_var count] - 1}]
-            sc_move forward 1
-        }
-        
-        # Now send the move done to FICS and NOVAG Citrine
-        set promoletter ""
-        set moveuci [sc_game info previousMoveUCI]
-        if { [ string length $moveuci ] == 5 } {
-            set promoletter [ string tolower [ string index $moveuci end ] ]
-        }
-        if { [winfo exists .fics] } {
-            if { [::fics::playerCanMove] } {
-                if { $promoletter != "" } {
-                    ::fics::writechan "promote $promoLetter"
-                }
-                ::fics::writechan [ string range $moveuci 0 3 ]
-            }
-        }
-        
-        if {$::novag::connected} {
-            ::novag::addMove "[ string range $moveuci 0 3 ]$promoLetter"
-        }
-        
         moveEntry_Clear
-        updateBoard -pgn -animate
-        ::utils::sound::AnnounceNewMove $move
-        if {$action == "replace"} { ::tree::doTraining }
+        addSanMove $move
     }
 }
 
@@ -121,7 +89,7 @@ proc moveEntry_Char {ch} {
         
         if {$moveEntry(AutoExpand) > 0  ||
             ![string compare [string tolower $moveEntry(Text)] $move]} {
-            moveEntry_Complete
+            return [moveEntry_Complete]
         }
     } elseif {$len == 2} {
         # Check for the special case where the user has entered a b-pawn
@@ -130,7 +98,7 @@ proc moveEntry_Char {ch} {
         set second [string tolower [lindex $moveEntry(List) 1]]
         if {[string equal $first $second]} {
             set moveEntry(List) [list $moveEntry(Text)]
-            moveEntry_Complete
+            return [moveEntry_Complete]
         }
     }
     updateStatusBar
@@ -151,7 +119,9 @@ proc updateTitle {} {
     set black [sc_game info black]
     if {[string length $white] > 2 &&  [string length $black] > 2} {
         if {$fname == {[clipbase]} } { set fname clipbase }
-        ::setTitle .main "($fname): $white -- $black"
+        set altered ""
+        if {[sc_game altered]} { set altered "*" }
+        ::setTitle .main "($fname$altered): $white -- $black"
     } else {
         ::setTitle .main $title
     }
@@ -161,53 +131,143 @@ proc updateTitle {} {
 #   Updates the main Scid window status bar.
 #
 proc updateStatusBar {} {
-    global statusBar moveEntry
-    set statusBar "  "
-    
-    if {$moveEntry(Text) != ""} {
-        append statusBar "Enter move: \[" $moveEntry(Text) "\]  "
-        foreach thisMove $moveEntry(List) {
-            append statusBar $thisMove " "
-        }
-        return
-    }
-    
     # Check if translations have not been set up yet:
     if {! [info exists ::tr(Database)]} { return }
 
-    set current [sc_base current]
-    
-    # Show "%%" if base is read-only, "XX" if game altered, "--" otherwise:
-    if {[sc_base isReadOnly $current]} {
-        append statusBar "%%"
-    } elseif {[sc_game altered]} {
-        append statusBar "XX"
-    } else {
-        append statusBar "--"
+    if {[info exists ::guessedAddMove]} {
+        set ::gameLastMove [lindex $::guessedAddMove 1]
+        ::board::setInfoAlert .main.board [lindex $::guessedAddMove 0] "\[click to change\]" "blue" ".main.menuaddchoice"
+        unset ::guessedAddMove
+        return
     }
 
-    append statusBar "  $::tr(Database)"
-    if {$current != [sc_info clipbase]} {
-        append statusBar " $current"
+    global moveEntry
+    if {$moveEntry(Text) != ""} {
+        set msg "\[ $moveEntry(Text) \]  "
+        foreach thisMove $moveEntry(List) {
+            append msg "$thisMove "
+        }
+        ::board::setInfoAlert .main.board "Enter Move:" "$msg" "blue" ""
+        return
     }
-    append statusBar ": "
-    set fname [sc_base filename]
-    set fname [file tail $fname]
-    if {$fname == ""} { set fname "<none>" }
-    append statusBar $fname
+
+    set comment [sc_pos getComment]
+    # remove technical comments, notify only human readable ones
+    regsub -all {\[%.*\]} $comment {} comment
+
+    if {$comment != ""} {
+        ::board::setInfoAlert .main.board "Comment:" "$comment" "green" "makeCommentWin"
+        return
+    }
+    
+
+    set statusBar ""
+    set move [sc_game info previousMoveNT]
+    if {$move != ""} {
+      regsub {K} $move "\u2654" move
+      regsub {Q} $move "\u2655" move
+      regsub {R} $move "\u2656" move
+      regsub {B} $move "\u2657" move
+      regsub {N} $move "\u2658" move
+      set number "[sc_pos moveNumber]"
+      if {[sc_pos side] == "white"} {
+        incr number -1
+        append number ".."
+      }
+      append statusBar "Last move"
+      if {[sc_var level] != 0} { append statusBar " (var)" }
+      append statusBar ": $number.$move\n"
+    }
+
+    set result [sc_game info result]
+    if {$result == "=-="} { set result "\u00BD-\u00BD" }
+    append statusBar "[sc_game info date] - [sc_game info event] ($result)"
+    ::board::setInfo .main.board "$statusBar"
 }
+
+proc updateMainToolbar {} {
+
+
+#TODO: properly group toolbar code
+# bind .main.fbutton.button.end <Button-$::MB3> ::tactics::findBestMove
+# button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
+# button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
+# button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
+# button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
+# button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
+
+#can undo
+#can redo
+#uffa
+  if {[sc_pos isAt start]} {
+    ::board::setButtonCmd .main.board back ""
+    catch { unset ::gameInfoBar(tb_BD_Start) }
+  } else {
+    ::board::setButtonCmd .main.board back "::move::Back"
+    set ::gameInfoBar(tb_BD_Start) "::move::Start"
+  }
+  if {[sc_pos isAt end] || [sc_pos isAt vend]} {
+    ::board::setButtonCmd .main.board forward ""
+    catch { unset ::gameInfoBar(tb_BD_End) }
+  } else {
+    ::board::setButtonCmd .main.board forward "::move::Forward"
+    set ::gameInfoBar(tb_BD_End) "::move::End"
+  }
+
+  if {[sc_var level] == 0} {
+    catch { unset ::gameInfoBar(tb_BD_VarDelete) }
+    catch { unset ::gameInfoBar(tb_BD_VarPromote) }
+    catch { unset ::gameInfoBar(tb_BD_VarLeave) }
+    catch { unset ::gameInfoBar(tb_BD_BackToMainline) }
+  } else {
+    set ::gameInfoBar(tb_BD_VarDelete) { set v [sc_var number]; sc_var exit; sc_var delete $v; updateBoard -pgn }
+    set ::gameInfoBar(tb_BD_VarPromote) { set v [sc_var number]; sc_var exit; sc_var promote $v; updateBoard -pgn }
+    set ::gameInfoBar(tb_BD_VarLeave) { ::move::ExitVar }
+    set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
+  }
+
+  if {[sc_game altered] && ![sc_base isReadOnly [sc_base current] ]} {
+    set ::gameInfoBar(tb_BD_Save) "gameReplace"
+  } else {
+    catch { unset ::gameInfoBar(tb_BD_Save) }
+  }
+  set ::gameInfoBar(tb_BD_SaveAs) "gameSave 0"
+
+  if {[sc_game altered]} { #TODO canUndo
+    set ::gameInfoBar(tb_BD_Undo) "undoFeature undo"
+    set ::gameInfoBar(tb_BD_Revert) "::game::Reload"
+  } else {
+    catch { unset ::gameInfoBar(tb_BD_Undo) }
+    catch { unset ::gameInfoBar(tb_BD_Revert) }
+  }
+  if {1} { #TODO canRedo
+    set ::gameInfoBar(tb_BD_Redo) "undoFeature redo"
+  } else {
+    catch { unset ::gameInfoBar(tb_BD_Redo) }
+  }
+
+return
+    updateVarMenus
+
+    wm withdraw .tooltip
+    set comment [sc_pos getComment]
+    # remove technical comments, notify only human readable ones
+    regsub -all {\[%.*\]} $comment {} comment
+    if {$comment != ""} {
+         .main.fbutton.button.comment configure -image tb_comment_avail -relief flat
+         ::utils::tooltip::Set .main.fbutton.button.comment $comment
+    } else {
+         .main.fbutton.button.comment configure -image tb_comment_unavail -relief flat
+         ::utils::tooltip::UnSet .main.fbutton.button.comment
+    }
+   .main.fbutton.button.hgame_prev configure -state [::game::Hprev_btnstate]
+   .main.fbutton.button.hgame_next configure -state [::game::Hnext_btnstate]
+}
+
 
 
 proc toggleRotateBoard {} {
     ::board::flip .main.board
-}
-
-proc toggleCoords {} {
-    global boardCoords
-    set coords [expr {1 + $boardCoords} ]
-    if { $coords > 2 } { set coords 0 }
-    set boardCoords $coords
-    ::board::coords .main.board
 }
 
 
@@ -249,47 +309,6 @@ proc setBoard {board boardStr psize {rotated 0}} {
     }
 }
 
-# updateVarMenus:
-#   Updates the menus for moving into or deleting an existing variation.
-#   Calls sc_var list and sc_var count to get the list of variations.
-#
-proc updateVarMenus {} {
-    set varList [sc_var list]
-    set numVars [sc_var count]
-    .main.fbutton.button.intoVar.menu delete 0 end
-    .menu.edit.del delete 0 end
-    .menu.edit.first delete 0 end
-    .menu.edit.main delete 0 end
-    # PG: add the move of main line
-    if {$numVars > 0} {
-        set move [sc_game info nextMove]
-        if {$move == ""} { set move "($::tr(empty))" }
-        .main.fbutton.button.intoVar.menu add command -label "0: $move" -command "sc_move forward; updateBoard" -underline 0
-    }
-    for {set i 0} {$i < $numVars} {incr i} {
-        set move [lindex $varList $i]
-        set state normal
-        if {$move == ""} {
-            set move "($::tr(empty))"
-            set state disabled
-        }
-        set str "[expr {$i + 1}]: $move"
-        set commandStr "sc_var moveInto $i; updateBoard"
-        if {$i < 9} {
-            .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr \
-                    -underline 0
-        } else {
-            .main.fbutton.button.intoVar.menu add command -label $str -command $commandStr
-        }
-        set commandStr "sc_var delete $i; updateBoard -pgn"
-        .menu.edit.del add command -label $str -command $commandStr
-        set commandStr "sc_var first $i; updateBoard -pgn"
-        .menu.edit.first add command -label $str -command $commandStr
-        set commandStr "sc_var promote $i; updateBoard -pgn"
-        .menu.edit.main add command -label $str -command $commandStr \
-                -state $state
-    }
-}
 ################################################################################
 # added by Pascal Georges
 # returns a list of num moves from main line following current position
@@ -407,91 +426,9 @@ proc showVars {} {
 ################################################################################
 #
 ################################################################################
-# V and Z key bindings: move into/out of a variation.
-#
-bind $dot_w <KeyPress-v> { showVars }
-bind $dot_w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
-
-# editMyPlayerNames
-#   Present the dialog box for editing the list of player
-#   names from whose perspective the board should be shown
-#   whenever a game is loaded.
-#
-proc editMyPlayerNames {} {
-    global myPlayerNames
-    set w .editMyPlayerNames
-    if {[winfo exists $w]} { return }
-    toplevel $w
-    ::setTitle $w "Scid: [tr OptionsBoardNames]"
-    pack [frame $w.b] -side bottom -fill x
-    
-    autoscrollframe $w.desc text $w.desc.text \
-            -foreground black -background gray90 \
-            -width 50 -height 8 -wrap word -cursor top_left_arrow
-    $w.desc.text insert end [string trim $::tr(MyPlayerNamesDescription)]
-    $w.desc.text configure -state disabled
-    pack $w.desc -side top -fill x
-    autoscrollframe $w.f text $w.f.text \
-            -background white -width 50 -height 10 -wrap none
-    foreach name $myPlayerNames {
-        $w.f.text insert end "\n\"$name\""
-    }
-    pack $w.f -side top -fill both -expand yes
-    button $w.b.white -text $::tr(White) -command {
-        .editMyPlayerNames.f.text insert end "\"[sc_game info white]\"\n"
-    }
-    button $w.b.black -text $::tr(Black) -command {
-        .editMyPlayerNames.f.text insert end "\"[sc_game info black]\"\n"
-    }
-    button $w.b.help -text $::tr(Help) \
-            -command {helpWindow Options MyPlayerNames}
-    button $w.b.ok -text OK -command editMyPlayerNamesOK
-    button $w.b.cancel -text $::tr(Cancel) -command "grab release $w; destroy $w"
-    pack $w.b.cancel $w.b.ok -side right -padx 5 -pady 5
-    pack $w.b.white $w.b.black $w.b.help -side left -padx 5 -pady 5
-    grab $w
-}
-
-proc editMyPlayerNamesOK {} {
-    global myPlayerNames
-    set w .editMyPlayerNames
-    set text [string trim [$w.f.text get 1.0 end]]
-    set myPlayerNames {}
-    foreach name [split $text "\n"] {
-        set name [string trim $name]
-        if {[string match "\"*\"" $name]} {
-            set name [string trim $name "\""]
-        }
-        if {$name != ""} { lappend myPlayerNames $name }
-    }
-    grab release $w
-    destroy $w
-}
-
-# flipBoardForPlayerNames
-#   Check if either player in the current game has a name that matches
-#   a pattern in the specified list and if so, flip the board if
-#   necessary to show from that players perspective.
-#
-proc flipBoardForPlayerNames {namelist {board .main.board}} {
-    set white [sc_game info white]
-    set black [sc_game info black]
-    foreach pattern $namelist {
-        if {[string match $pattern $white]} {
-            ::board::flip $board 0
-            return
-        }
-        if {[string match $pattern $black]} {
-            ::board::flip $board 1
-            return
-        }
-    }
-}
 
 # updateBoard:
-#    Updates the main board. Also updates the navigation buttons, disabling
-#    those that have no effect at this point in the game.
-#    Also ensure all menu settings are up to date.
+#    Updates the main board.
 #    If a parameter "-pgn" is specified, the PGN text is also regenerated.
 #    If a parameter "-animate" is specified, board changes are animated.
 #
@@ -509,81 +446,11 @@ proc updateBoard {args} {
     ::board::setmarks .main.board [sc_pos getComment]
     ::board::update .main.board [sc_pos board] $animate
 
-    after cancel updateNavButtons
     after cancel ::notify::PosChanged
-
     update idletasks
-
-    after idle updateNavButtons
     after idle ::notify::PosChanged
 }
 
-# updateNavButtons:
-#    Update the status of each navigation button
-#
-proc updateNavButtons {} {
-    global trialMode
-    if {[sc_pos isAt start]} {
-        .main.fbutton.button.start configure -state disabled
-    } else { .main.fbutton.button.start configure -state normal }
-    if {[sc_pos isAt end]} {
-        .main.fbutton.button.end configure -state disabled
-    } else { .main.fbutton.button.end configure -state normal }
-    if {[sc_pos isAt vstart]} {
-        .main.fbutton.button.back configure -state disabled
-    } else { .main.fbutton.button.back configure -state normal }
-    if {[sc_pos isAt vend]} {
-        .main.fbutton.button.forward configure -state disabled
-    } else { .main.fbutton.button.forward configure -state normal }
-    # Cannot add a variation to an empty line:
-    if {[sc_pos isAt vstart]  &&  [sc_pos isAt vend]} {
-        .menu.edit entryconfig [tr EditAdd] -state disabled
-        .main.fbutton.button.addVar configure -state disabled
-        bind $::dot_w <Control-a> {}
-    } else {
-        .menu.edit entryconfig [tr EditAdd] -state normal
-        .main.fbutton.button.addVar configure -state normal
-        bind $::dot_w <Control-a> {sc_var create; updateBoard -pgn}
-    }
-    if {[sc_var count] == 0} {
-        .main.fbutton.button.intoVar configure -state disabled
-        .menu.edit entryconfig [tr EditDelete] -state disabled
-        .menu.edit entryconfig [tr EditFirst] -state disabled
-        .menu.edit entryconfig [tr EditMain] -state disabled
-    } else {
-        .main.fbutton.button.intoVar configure -state normal
-        .menu.edit entryconfig [tr EditDelete] -state normal
-        .menu.edit entryconfig [tr EditFirst] -state normal
-        .menu.edit entryconfig [tr EditMain] -state normal
-    }
-    if {$trialMode} {
-        .menu.edit entryconfig [tr EditUndo] -state disabled
-        .menu.edit entryconfig [tr EditRedo] -state disabled
-    } else {
-        .menu.edit entryconfig [tr EditUndo] -state normal
-        .menu.edit entryconfig [tr EditRedo] -state normal
-    }
-    updateVarMenus
-    if {[sc_var level] == 0} {
-        .main.fbutton.button.exitVar configure -state disabled
-    } else {
-        .main.fbutton.button.exitVar configure -state normal
-    }
-
-    wm withdraw .tooltip
-    set comment [sc_pos getComment]
-    # remove technical comments, notify only human readable ones
-    regsub -all {\[%.*\]} $comment {} comment
-    if {$comment != ""} {
-         .main.fbutton.button.comment configure -image tb_comment_avail -relief flat
-         ::utils::tooltip::Set .main.fbutton.button.comment $comment
-    } else {
-         .main.fbutton.button.comment configure -image tb_comment_unavail -relief flat
-         ::utils::tooltip::UnSet .main.fbutton.button.comment
-    }
-   .main.fbutton.button.hgame_prev configure -state [::game::Hprev_btnstate]
-   .main.fbutton.button.hgame_next configure -state [::game::Hnext_btnstate]
-}
 
 # updateGameInfo:
 #    Update the game status window .main.gameInfo
@@ -920,21 +787,15 @@ proc getPromoPiece {} {
 #      "var" to add the move as a new variation.
 #      "cancel" to do nothing.
 #
-set addVariationWithoutAsking 0
 
 proc confirmReplaceMove {} {
-    global askToReplaceMoves trialMode
-    
-    # If reviewing a game, enter a var automatically
     if {[winfo exists $::reviewgame::window]} {
         return "var"
     }
-    
-    if {$::addVariationWithoutAsking} { return "var" }
-    
-    if {! $askToReplaceMoves} { return "replace" }
-    if {$trialMode} { return "replace" }
-    
+    if {! $::askToReplaceMoves || $::trialMode} {
+        return "replace"
+    }
+
     option add *Dialog.msg.wrapLength 4i interactive
     catch {tk_dialog .dialog "Scid: $::tr(ReplaceMove)?" \
                 $::tr(ReplaceMoveMessage) "" 0 \
@@ -953,15 +814,7 @@ proc addNullMove {} {
     addMove null null
 }
 
-# addMove:
-#   Adds the move indicated by sq1 and sq2 if it is legal. If the move
-#   is a promotion, getPromoPiece will be called to get the promotion
-#   piece from the user.
-#   If the optional parameter is "-animate", the move will be animated.
-#
-proc addMove { sq1 sq2 {animate ""}} {
-    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
-    
+proc addMove { sq1 sq2 } {
     global EMPTY
     set nullmove 0
     if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
@@ -973,152 +826,135 @@ proc addMove { sq1 sq2 {animate ""}} {
         set k2 [string tolower [string index $board $sq2]]
         if {$k1 == "k"  &&  $k2 == "k"} { set nullmove 1 } else { return }
     }
-    set promo $EMPTY
-    if {[sc_pos isPromotion $sq1 $sq2] == 1} {
-        # sometimes, addMove is triggered twice
-        if { [winfo exists .promoWin] } { return }
-        set promo [getPromoPiece]
-    }
-    
-    set promoLetter ""
-    switch -- $promo {
-        2 { set promoLetter "q"}
-        3 { set promoLetter "r"}
-        4 { set promoLetter "b"}
-        5 { set promoLetter "n"}
-        default {set promoLetter ""}
-    }
-    
-    # Autmatically follow the main line if the next move is the same or enter the relevant variation if it exists
-    if {! $::annotateMode} {
-        set moveUCI [::board::san $sq2][::board::san $sq1]$promoLetter
-        set move [sc_game info nextMoveUCI]
-        if { [ string compare -nocase $moveUCI $move] == 0 } {
-            sc_move forward
-            updateBoard
-            return
-        }
-        set varList [sc_var list UCI]
-        set i 0
-        foreach { move } $varList {
-            if { [ string compare -nocase $moveUCI $move] == 0 } {
-                sc_var moveInto $i
-                updateBoard
-                return
-            }
-            incr i
-        }
-    }
-    
-    undoFeature save
-    
-    set action "replace"
-    if {![sc_pos isAt vend]} {
-        set action [confirmReplaceMove]
-    }
-    if {$action == "replace"} {
-        # nothing
-    } elseif {$action == "mainline" || $action == "var"} {
-        if {[winfo exists .commentWin]} {
-            ::commenteditor::storeComment
-            .commentWin.cf.text delete 0.0 end
-        }
-        sc_var create
-    } else {
-        # Do not add the move at all:
-        return
-    }
-    
     if {$nullmove} {
+        set moveUCI "0000"
+    } else {
+        set moveUCI [::board::san $sq2][::board::san $sq1]
+    }
+    addMoveUCI $moveUCI
+}
+
+proc addSanMove { {san} } {
+    sc_game undoPoint
+    set err [catch {
+        sc_move addSan $san
+        set moveUCI [ sc_game info previousMoveUCI ]
+    }]
+    sc_game undo
+    if {! $err} { addMoveUCI $moveUCI }
+    return $err
+}
+
+# addMoveUCI:
+#   Adds the move indicated if it is legal.
+#   If the move is a promotion, getPromoPiece will be called
+#   to get the promotion piece from the user.
+#   The move will be animated.
+#
+proc addMoveUCI {{moveUCI} {action ""}} {
+    set sq1 [::board::sq [string range $moveUCI 0 1] ]
+    set sq2 [::board::sq [string range $moveUCI 2 3] ]
+    if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
+
+    if { [string length $moveUCI] == 4 && $sq1 != $sq2 && [sc_pos isPromotion $sq1 $sq2] } {
+        switch -- [getPromoPiece] {
+            2 { set promoLetter "q"}
+            3 { set promoLetter "r"}
+            4 { set promoLetter "b"}
+            5 { set promoLetter "n"}
+            default {set promoLetter ""}
+        }
+        append moveUCI $promoLetter
+    }
+
+    if {! $::annotateMode} {
+        if {[::move::Follow $moveUCI]} { return [updateBoard -animate] }
+    }
+
+
+    if {![sc_pos isAt vend]} {
+        if {$action == ""} {
+            set replacedmove ""
+            set n [sc_var count]
+            if {$n == 0} {
+                sc_move forward
+                if {[sc_pos isAt vend]} {
+                    set replacedmove [sc_game info previousMoveNT]
+                }
+                sc_move back
+            } else {
+                set onemovelines {}
+                for {set i 0} {$i < $n} {incr i} {
+                    sc_var moveInto $i
+                    set nextmove [sc_game info next]
+                    if {$nextmove == ""} { lappend onemovelines $i }
+                    sc_var exit
+                }
+
+                if {[llength $onemovelines] == 1} {
+                    sc_var moveInto [lindex $onemovelines 0]
+                    set replacedmove [sc_game info previousMoveNT]
+                    sc_move back
+                }
+            }
+            if {$replacedmove != ""} {
+                set ::guessedAddMove [list "Replaced Move $replacedmove"]
+            } else {
+                set action "var"
+            }
+        }
+
+        switch -- $action {
+            mainline { set ::guessedAddMove [list "New Main Line"]}
+            var      { set ::guessedAddMove [list "New Variation"]}
+            replace  { set ::guessedAddMove [list "Replaced Main Line"]}
+        }
+        lappend ::guessedAddMove $moveUCI
+    }
+
+    undoFeature save
+    if {[winfo exists .commentWin]} {
+        ::commenteditor::storeComment
+        .commentWin.cf.text delete 0.0 end
+    }
+    if {($action == "mainline" || $action == "var") && ![sc_pos isAt vend]} {
+        sc_var create
+    }
+
+    if {$moveUCI == "0000"} {
         sc_move addSan null
     } else {
-        set ::sergame::lastPlayerMoveUci ""
-        if {[winfo exists ".serGameWin"]} {
-            set ::sergame::lastPlayerMoveUci "[::board::san $sq2][::board::san $sq1]$promoLetter"
-        }
-        sc_move add $sq1 $sq2 $promo
-        set san [sc_game info previous]
-        if {$action == "mainline"} {
-            sc_var exit
-            sc_var promote [expr {[sc_var count] - 1}]
-            sc_move forward 1
-        }
-        after idle [list ::utils::sound::AnnounceNewMove $san]
-        
-        if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
+        sc_move addUCI $moveUCI
     }
-    
+    if {$action == "mainline"} {
+        sc_var exit
+        sc_var promote [expr {[sc_var count] - 1}]
+        sc_move forward 1
+    }
+
+    set ::sergame::lastPlayerMoveUci ""
+    if {[winfo exists ".serGameWin"]} {
+        set ::sergame::lastPlayerMoveUci "$moveUCI"
+    }
+
     if {[winfo exists .fics]} {
-        
         if { [::fics::playerCanMove] } {
-            if { $promo != $EMPTY } {
-                ::fics::writechan "promote $promoLetter"
+            if { [string length $moveUCI] == 5 } {
+                set promoletter [ string tolower [ string index $moveuci end ] ]
+                ::fics::writechan "promote $promoletter"
             }
             ::fics::writechan [ string range [sc_game info previousMoveUCI] 0 3 ]
         }
     }
-    
-    if {$::novag::connected} {
-        ::novag::addMove "[::board::san $sq2][::board::san $sq1]$promoLetter"
-    }
-    
-    moveEntry_Clear
-    updateBoard -pgn $animate
-    
-    ::tree::doTraining
-    
-}
 
-# addSanMove
-#   Like addMove above, but takes the move in SAN notation instead of
-#   a pair of squares.
-#
-proc addSanMove {san {animate ""} {noTraining ""}} {
-    
-    if {! $::annotateMode} {
-        set move [sc_game info nextMoveNT]
-        if { [ string compare -nocase $san $move] == 0 } {
-            sc_move forward
-            updateBoard
-            return
-        }
-        set varList [sc_var list]
-        set i 0
-        foreach { move } $varList {
-            if { [ string compare -nocase $san $move] == 0 } {
-                sc_var moveInto $i
-                updateBoard
-                return
-            }
-            incr i
-        }
+    if {$::novag::connected} {
+        ::novag::addMove "$moveUCI"
     }
-    
-    set action "replace"
-    if {![sc_pos isAt vend]} {
-        set action [confirmReplaceMove]
-    }
-    if {$action == "replace"} {
-        # nothing
-    } elseif {$action == "var" || $action == "mainline"} {
-        sc_var create
-    } else {
-        # Do not add the move at all:
-        return
-    }
-    # if {[winfo exists .commentWin]} { .commentWin.cf.text delete 0.0 end }
-    undoFeature save
-    sc_move addSan $san
-    if {$action == "mainline"} {
-        sc_var exit
-        sc_var promote [expr {[sc_var count] - 1}]
-    }
-    moveEntry_Clear
-    updateBoard -pgn $animate
-    ::utils::sound::AnnounceNewMove $san
-    if {$noTraining != "-notraining"} {
-        ::tree::doTraining
-    }
+
+    set san [sc_game info previous]
+    after idle [list ::utils::sound::AnnounceNewMove $san]
+
+    updateBoard -pgn -animate
 }
 
 # enterSquare:
@@ -1182,7 +1018,7 @@ proc pressSquare { square } {
         ::board::colorSquare .main.board $selectedSq
         ::board::colorSquare .main.board $square
         if {$square != $selectedSq} {
-            addMove $square $selectedSq -animate
+            addMove $square $selectedSq
         }
         set selectedSq -1
         enterSquare $square
@@ -1196,7 +1032,6 @@ proc pressSquare { square } {
 #   part of a move.
 #
 proc releaseSquare { w x y } {
-    
     if { [winfo exists .calvarWin] } { return }
     
     global selectedSq bestSq
@@ -1207,7 +1042,7 @@ proc releaseSquare { w x y } {
         set selectedSq -1
         return
     }
-    
+
     if {$square == $selectedSq} {
         if {$::suggestMoves} {
             # User pressed and released on same square, so make the
@@ -1215,7 +1050,7 @@ proc releaseSquare { w x y } {
             set selectedSq -1
             ::board::colorSquare $w $bestSq
             ::board::colorSquare $w $square
-            addMove $square $bestSq -animate
+            addMove $square $bestSq
             enterSquare $square
         } else {
             # Current square is the square user pressed the button on,
@@ -1377,8 +1212,6 @@ proc autoplay {} {
             if { $gameNo < $::batchEnd } {
                 incr gameNo
                 sc_game load $gameNo
-                updateMenuStates
-                updateStatusBar
                 updateTitle
                 updateBoard -pgn
                 # First do book analysis
@@ -1522,6 +1355,7 @@ proc resizeMainBoard {} {
   if { ! $::docking::USE_DOCKING } { return }
 
   if { $::autoResizeBoard } {
+    update idletasks
     set availw [ expr [winfo width .main.board] - [winfo reqwidth .main.board] ]
     set availh [ lindex [grid bbox .main 0 4] 3]
     if {$availh == 0} { set availh [expr 1 + [winfo height .fdockmain] - [lindex [grid bbox .main] 3] ] }
@@ -1562,90 +1396,90 @@ proc toggleGameInfo {} {
 }
 ################################################################################
 
-proc CreateMainWin {} {
-  #TODO: move the code for creating the main board here
+proc CreateMainWin { {w} } {
+  setTitle $w [ ::tr "Board" ]
+  standardShortcuts $w
 
-  setTitle .main [ ::tr "Board" ]
-  standardShortcuts .main
+  ::board::new $w.board $::boardSize
+  ::board::showMarks $w.board 1
+  if {$::boardCoords} { ::board::coords $w.board }
 
-  label .main.statusbar -textvariable statusBar -relief sunken -anchor w -width 1 -font font_Small
-  grid .main.statusbar -row 5 -column 0 -columnspan 3 -sticky we
+  ::board::addNamesBar $w.board gamePlayers
+  ::board::addInfoBar $w.board gameInfoBar
+
+  menu .main.menuaddchoice -bg white -font font_Regular
+  .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
+      -command {undoFeature undo}
+  .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
+      -command {undoFeature undo; addMoveUCI $::gameLastMove replace}
+  .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image tb_BD_NewMainline -compound left \
+      -command {undoFeature undo; addMoveUCI $::gameLastMove mainline}
+  .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image tb_BD_NewVar -compound left \
+      -command {undoFeature undo; addMoveUCI $::gameLastMove var}
+
+  InitToolbar .main.tb
 
   for {set i 0} { $i < 64 } { incr i } {
-    ::board::bind .main.board $i <Enter> "enterSquare $i"
-    ::board::bind .main.board $i <Leave> "leaveSquare $i"
-    ::board::bind .main.board $i <ButtonPress-1> "set ::addVariationWithoutAsking 0 ; pressSquare $i"
-    ::board::bind .main.board $i <ButtonPress-$::MB2> "set ::addVariationWithoutAsking 1 ; pressSquare $i"
-    ::board::bind .main.board $i <Control-ButtonPress-1> "drawArrow $i green"
-    ::board::bind .main.board $i <Control-ButtonPress-$::MB2> "drawArrow $i yellow"
-    ::board::bind .main.board $i <Control-ButtonPress-$::MB3> "drawArrow $i red"
-    ::board::bind .main.board $i <Shift-ButtonPress-1> "addMarker $i green"
-    ::board::bind .main.board $i <Shift-ButtonPress-$::MB2> "addMarker $i yellow"
-    ::board::bind .main.board $i <Shift-ButtonPress-$::MB3> "addMarker $i red"
-    ::board::bind .main.board $i <B1-Motion> "::board::dragPiece .main.board %X %Y"
-    ::board::bind .main.board $i <ButtonRelease-1> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-    ::board::bind .main.board $i <ButtonRelease-$::MB2> "releaseSquare .main.board %X %Y ; set ::addVariationWithoutAsking 0"
-    ::board::bind .main.board $i <ButtonPress-$::MB3> backSquare
+    ::board::bind $w.board $i <Enter> "enterSquare $i"
+    ::board::bind $w.board $i <Leave> "leaveSquare $i"
+    ::board::bind $w.board $i <ButtonPress-1> "pressSquare $i"
+    ::board::bind $w.board $i <Control-ButtonPress-1> "drawArrow $i green"
+    ::board::bind $w.board $i <Control-ButtonPress-$::MB2> "drawArrow $i yellow"
+    ::board::bind $w.board $i <Control-ButtonPress-$::MB3> "drawArrow $i red"
+    ::board::bind $w.board $i <Shift-ButtonPress-1> "addMarker $i green"
+    ::board::bind $w.board $i <Shift-ButtonPress-$::MB2> "addMarker $i yellow"
+    ::board::bind $w.board $i <Shift-ButtonPress-$::MB3> "addMarker $i red"
+    ::board::bind $w.board $i <B1-Motion> "::board::dragPiece $w.board %X %Y"
+    ::board::bind $w.board $i <ButtonRelease-1> "releaseSquare $w.board %X %Y"
+    ::board::bind $w.board $i <ButtonPress-$::MB3> backSquare
   }
 
   foreach i {o q r n k O Q R B N K} {
-    bind .main <$i> "moveEntry_Char [string toupper $i]"
+    bind $w <$i> "moveEntry_Char [string toupper $i]"
   }
   foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
-    bind .main <Key-$i> "moveEntry_Char $i"
+    bind $w <Key-$i> "moveEntry_Char $i"
   }
 
-  bind .main <Control-BackSpace> backSquare
-  bind .main <Control-Delete> backSquare
-  bind .main <BackSpace> moveEntry_Backspace
-  bind .main <Delete> moveEntry_Backspace
-  bind .main <space> moveEntry_Complete
-  bind .main <ButtonRelease> {focus .main}
-  bind .main <period> {toggleRotateBoard}
-  bind .main <Configure> { ::resizeMainBoard }
-  bind .main.statusbar <1> gotoNextBase
-  bind .main.statusbar <Map> { showHideAllWindows deiconify}
-  bind .main.statusbar <Unmap> { showHideAllWindows iconify}
+  bind $w <Control-BackSpace> backSquare
+  bind $w <Control-Delete> backSquare
+  bind $w <BackSpace> moveEntry_Backspace
+  bind $w <Delete> moveEntry_Backspace
+  bind $w <space> moveEntry_Complete
+  bind $w <ButtonRelease> "focus $w"
+  bind $w <Configure> { ::resizeMainBoard }
+  bindMouseWheel $w "main_mousewheelHandler"
 
-  ############################################################
-  ### Packing the main window:
   if { $::docking::USE_DOCKING} {
-    ttk::frame .main.space
-    grid .main.space -row 4 -column 0 -columnspan 3 -sticky nsew
-    grid rowconfigure .main 3 -weight 0
-    grid rowconfigure .main 4 -weight 1
-  } else  {
-    grid rowconfigure .main 3 -weight 1
-    wm resizable .main 0 1
+    ttk::frame $w.space
+    grid $w.space -row 4 -column 0 -columnspan 3 -sticky nsew
+    grid rowconfigure $w 3 -weight 0
+    grid rowconfigure $w 4 -weight 1
+  } else {
+    grid rowconfigure $w 3 -weight 1
+    wm resizable $w 0 1
     wm withdraw .
-    bind .main <Destroy> { destroy . }
+    bind $w <Destroy> { destroy . }
   }
-  grid columnconfigure .main 0 -weight 1
-  pack .main.fbutton.button -anchor center
-  grid .main.fbutton -row 1 -column 0 -sticky we ;# -pady 2 -padx 2
-  grid .main.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
+  grid columnconfigure $w 0 -weight 1
+  grid $w.board -row 2 -column 0 -sticky we ;# -padx 5 -pady 5
+
+  toggleGameInfo
+  updateBoard
 }
 
-::board::new .main.board $boardSize "showmat"
-
-#.main.board.bd configure -relief solid -border 2
-::board::showMarks .main.board 1
-if {$boardCoords} {
-    ::board::coords .main.board
-}
-if {$boardSTM} {
-    ::board::stm .main.board
-}
-
-if { ! $::gameInfo(showMaterial) } {
-    grid remove .main.board.mat
-}
 
 # .gameInfo is the game information widget:
 #
 autoscrollframe .main.gameInfoFrame text .main.gameInfo
 .main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
 ::htext::init .main.gameInfo
+
+# Set up player photos:
+image create photo photoW
+image create photo photoB
+label .main.photoW -background white -image photoW -anchor ne
+label .main.photoB -background white -image photoB -anchor ne
 
 # Right-mouse button menu for gameInfo frame:
 menu .main.gameInfo.menu -tearoff 0
@@ -1687,7 +1521,7 @@ menu .main.gameInfo.menu -tearoff 0
 
 .main.gameInfo.menu add command -label GInfoDelete -command {
     sc_base gameflag [sc_base current] [sc_game number] invert del
-    ::notify::DatabaseChanged 0
+    ::notify::DatabaseModified [sc_base current]
 }
 
 .main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
@@ -1695,7 +1529,7 @@ menu .main.gameInfo.menu.mark
 foreach flag $maintFlaglist {
     .main.gameInfo.menu.mark add command -label "" -command "
     sc_base gameflag \[sc_base current\] \[sc_game number\] invert $flag
-    ::notify::DatabaseChanged 0
+    ::notify::DatabaseModified [sc_base current]
     "
 }
 
@@ -1703,117 +1537,79 @@ bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
 # alternate code that may work better on MacOS ?
 # bind .main.gameInfo <ButtonPress-$::MB3> ".main.gameInfo.menu post %X %Y"
 bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
-bindMouseWheel .main "main_mousewheelHandler"
 
-# Set up player photos:
-image create photo photoW
-image create photo photoB
-label .main.photoW -background white -image photoW -anchor ne
-label .main.photoB -background white -image photoB -anchor ne
+proc InitToolbar {{tb}} {
+	ttk::frame $tb -relief raised -border 1
+	button $tb.new -image tb_new -command ::file::New
+	button .main.tb.open -image tb_open -command ::file::Open
+	button .main.tb.save -image tb_save -command {
+	  if {[sc_game number] != 0} {
+		#busyCursor .
+		gameReplace
+		# catch {.save.buttons.save invoke}
+		#unbusyCursor .
+	  } else {
+		gameAdd
+	  }
+	}
+	button .main.tb.close -image tb_close -command ::file::Close
+	button .main.tb.finder -image tb_finder -command ::file::finder::Open
+	menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu
+	menu .main.tb.bkm.menu
+	bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
 
-#TODO: properly group toolbar code
-proc toggleSTM {} {
-    global boardSTM
-    set boardSTM [expr {1 - $boardSTM} ]
-    ::board::stm .main.board
+	ttk::frame .main.tb.space1 -width 12
+	button .main.tb.cut -image tb_cut -command ::game::Clear
+	button .main.tb.copy -image tb_copy -command ::gameAddToClipbase
+	button .main.tb.paste -image tb_paste \
+		-command {catch {sc_clipbase paste}; updateBoard -pgn}
+	ttk::frame .main.tb.space2 -width 12
+	button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
+	button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
+	ttk::frame .main.tb.space3 -width 12
+	button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset
+	button .main.tb.bsearch -image tb_bsearch -command ::search::board
+	button .main.tb.hsearch -image tb_hsearch -command ::search::header
+	button .main.tb.msearch -image tb_msearch -command ::search::material
+	ttk::frame .main.tb.space4 -width 12
+	button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open
+	button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open
+	button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose
+	button .main.tb.tmt -image tb_tmt -command ::tourney::toggle
+	button .main.tb.maint -image tb_maint -command ::maint::OpenClose
+	button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose
+	button .main.tb.tree -image tb_tree -command ::tree::make
+	button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin
+	button .main.tb.engine -image tb_engine -command makeAnalysisWin
+	button .main.tb.help -image tb_help -command {helpWindow Index}
+
+	foreach i {new open save close finder bkm cut copy paste gprev gnext \
+		  rfilter bsearch hsearch msearch \
+		  switcher glist pgn tmt maint eco tree crosst engine help} {
+	  .main.tb.$i configure -takefocus 0 -relief flat -border 1 -anchor n -highlightthickness 0
+	  bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
+	  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; statusBarRestore %W; break"
+	}
+
+	# Set toolbar help status messages:
+	foreach {b m} {
+	  new FileNew open FileOpen finder FileFinder
+	  save GameReplace close FileClose bkm FileBookmarks
+	  gprev GamePrev gnext GameNext
+	  cut GameNew copy EditCopy paste EditPaste
+	  bsearch SearchCurrent
+	  hsearch SearchHeader msearch SearchMaterial
+	  switcher WindowsSwitcher glist WindowsGList pgn WindowsPGN tmt WindowsTmt
+	  maint WindowsMaint eco WindowsECO tree WindowsTree crosst ToolsCross
+	  engine ToolsAnalysis
+	} {
+	  set helpMessage(.main.tb.$b) $m
+	  # ::utils::tooltip::Set $tb.$b $m
+	}
+	set helpMessage(.main.fbutton.button.addVar) EditAdd
+	set helpMessage(.main.fbutton.button.trial) EditTrial
+	redrawToolbar
 }
-
-ttk::frame .main.fbutton
-ttk::frame .main.fbutton.button -relief raised -border 1
-button .main.fbutton.button.start -image tb_start -command ::move::Start
-button .main.fbutton.button.back -image tb_prev -command ::move::Back
-button .main.fbutton.button.forward -image tb_next -command ::move::Forward
-button .main.fbutton.button.end -image tb_end -command ::move::End
-bind .main.fbutton.button.end <Button-$::MB3> ::tactics::findBestMove
-ttk::frame .main.fbutton.button.space -width 15
-# The go-into-variation button is a menubutton:
-menubutton .main.fbutton.button.intoVar -image tb_invar -menu .main.fbutton.button.intoVar.menu -relief raised
-menu .main.fbutton.button.intoVar.menu -tearoff 0 -font font_Regular
-button .main.fbutton.button.exitVar -image tb_outvar \
-    -command {::move::ExitVar }
-button .main.fbutton.button.addVar -image tb_addvar \
-    -command {sc_var create; updateBoard -pgn -animate}
-ttk::frame .main.fbutton.button.space2 -width 15
-button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
-button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
-button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
-ttk::frame .main.fbutton.button.space3 -width 15
-button .main.fbutton.button.flip -image tb_flip -takefocus 0 \
-        -command "::board::flip .main.board"
-button .main.fbutton.button.coords -image tb_coords -takefocus 0 -command toggleCoords
-bind $dot_w <KeyPress-0> toggleCoords
-button .main.fbutton.button.stm -image tb_stm -takefocus 0 -command toggleSTM
-button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
-button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
-
-foreach i {start back forward end exitVar addVar comment autoplay flip coords stm trial intoVar hgame_prev hgame_next} {
-    .main.fbutton.button.$i configure -takefocus 0 -relief flat -border 1 -highlightthickness 0 -anchor n
-    bind .main.fbutton.button.$i <Any-Enter> "+.main.fbutton.button.$i configure -relief groove"
-    bind .main.fbutton.button.$i <Any-Leave> "+.main.fbutton.button.$i configure -relief flat; statusBarRestore %W; break"
-}
-
-pack .main.fbutton.button.start .main.fbutton.button.back .main.fbutton.button.forward .main.fbutton.button.end \
-        .main.fbutton.button.space .main.fbutton.button.intoVar .main.fbutton.button.exitVar .main.fbutton.button.addVar .main.fbutton.button.comment .main.fbutton.button.space2 \
-        .main.fbutton.button.autoplay .main.fbutton.button.trial .main.fbutton.button.space3 .main.fbutton.button.flip .main.fbutton.button.coords \
-        .main.fbutton.button.stm .main.fbutton.button.hgame_prev .main.fbutton.button.hgame_next -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
-
-set tb .main.tb
-ttk::frame $tb -relief raised -border 1
-button $tb.new -image tb_new -command ::file::New
-button .main.tb.open -image tb_open -command ::file::Open
-button .main.tb.save -image tb_save -command {
-  if {[sc_game number] != 0} {
-    #busyCursor .
-    gameReplace
-    # catch {.save.buttons.save invoke}
-    #unbusyCursor .
-  } else {
-    gameAdd
-  }
-}
-button .main.tb.close -image tb_close -command ::file::Close
-button .main.tb.finder -image tb_finder -command ::file::finder::Open
-menubutton .main.tb.bkm -image tb_bkm -menu .main.tb.bkm.menu
-menu .main.tb.bkm.menu
-bind $dot_w <Control-b> ::bookmarks::PostMenu
-bind .main.tb.bkm <ButtonPress-1> "+.main.tb.bkm configure -relief flat"
-
-
-ttk::frame .main.tb.space1 -width 12
-button .main.tb.cut -image tb_cut -command ::game::Clear
-button .main.tb.copy -image tb_copy \
-    -command {catch {sc_clipbase copy}; updateBoard}
-button .main.tb.paste -image tb_paste \
-    -command {catch {sc_clipbase paste}; updateBoard -pgn}
-ttk::frame .main.tb.space2 -width 12
-button .main.tb.gprev -image tb_gprev -command {::game::LoadNextPrev previous}
-button .main.tb.gnext -image tb_gnext -command {::game::LoadNextPrev next}
-ttk::frame .main.tb.space3 -width 12
-button .main.tb.rfilter -image tb_rfilter -command ::search::filter::reset
-button .main.tb.bsearch -image tb_bsearch -command ::search::board
-button .main.tb.hsearch -image tb_hsearch -command ::search::header
-button .main.tb.msearch -image tb_msearch -command ::search::material
-ttk::frame .main.tb.space4 -width 12
-button .main.tb.switcher -image tb_switcher -command ::windows::switcher::Open
-button .main.tb.glist -image tb_glist -command ::windows::gamelist::Open
-button .main.tb.pgn -image tb_pgn -command ::pgn::OpenClose
-button .main.tb.tmt -image tb_tmt -command ::tourney::toggle
-button .main.tb.maint -image tb_maint -command ::maint::OpenClose
-button .main.tb.eco -image tb_eco -command ::windows::eco::OpenClose
-button .main.tb.tree -image tb_tree -command ::tree::make
-button .main.tb.crosst -image tb_crosst -command toggleCrosstabWin
-button .main.tb.engine -image tb_engine -command makeAnalysisWin
-button .main.tb.help -image tb_help -command {helpWindow Index}
-
-foreach i {new open save close finder bkm cut copy paste gprev gnext \
-      rfilter bsearch hsearch msearch \
-      switcher glist pgn tmt maint eco tree crosst engine help} {
-  .main.tb.$i configure -takefocus 0 -relief flat -border 1 -anchor n -highlightthickness 0
-  bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
-  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; statusBarRestore %W; break"
-}
-
-#pack .main.tb -side top -fill x -before .button
 
 proc configToolbar {} {
   set w .tbconfig
@@ -1840,7 +1636,7 @@ proc configToolbar {} {
     pack $w.f3.$i -side left -ipadx 1 -ipady 1
   }
   pack [ttk::frame $w.f4] -side top -fill x
-  foreach i {rfilter bsearch hsearch msearch} {
+  foreach i {bsearch hsearch msearch} {
     checkbutton $w.f4.$i -indicatoron 1 -image tb_$i -height 20 -width 22 \
         -variable toolbar_temp($i) -relief solid -borderwidth 1
     pack $w.f4.$i -side left -ipadx 1 -ipady 1
@@ -1902,7 +1698,7 @@ proc redrawToolbar {} {
   }
   if {$seen} { pack .main.tb.space3 -side left }
   set seen 0
-  foreach i {rfilter bsearch hsearch msearch} {
+  foreach i {bsearch hsearch msearch} {
     if {$toolbar($i)} {
       set seen 1; set seenAny 1
       pack .main.tb.$i -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
@@ -1930,26 +1726,5 @@ proc setToolbar {x} {
     grid forget .main.tb
   }
 }
-
-# Set toolbar help status messages:
-foreach {b m} {
-  new FileNew open FileOpen finder FileFinder
-  save GameReplace close FileClose bkm FileBookmarks
-  gprev GamePrev gnext GameNext
-  cut GameNew copy EditCopy paste EditPaste
-  rfilter SearchReset bsearch SearchCurrent
-  hsearch SearchHeader msearch SearchMaterial
-  switcher WindowsSwitcher glist WindowsGList pgn WindowsPGN tmt WindowsTmt
-  maint WindowsMaint eco WindowsECO tree WindowsTree crosst ToolsCross
-  engine ToolsAnalysis
-} {
-  set helpMessage(.main.tb.$b) $m
-  # ::utils::tooltip::Set $tb.$b $m
-}
-set helpMessage(.main.fbutton.button.addVar) EditAdd
-set helpMessage(.main.fbutton.button.trial) EditTrial
-
-
-
 
 ##############################

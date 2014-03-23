@@ -599,6 +599,8 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
       if {[::windows::gamelist::GetBase $::sw_LinkedGList_($w)] != "$fromBase"} {
         ::windows::gamelist::SetBase $::sw_LinkedGList_($w) "$fromBase"
         ::windows::switcher::Update_ $w
+      } else {
+        popupmenu $w "$w.c.f$fromBase" $x $y $fromBase
       }
     } else {
       ::file::SwitchToBase $toBase
@@ -613,12 +615,12 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
 proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx} } {
   set clipbaseIdx [sc_info clipbase]
   $w.menu delete 0 end
-  $w.menu add command -label "Open gamelist" -command "::windows::gamelist::Open false $baseIdx"
-  set glist ""
-  if { [info exists ::sw_LinkedGList_($switcherWin)] } { set glist $::sw_LinkedGList_($switcherWin) }
-  $w.menu add command -label [tr SearchReset] -command "::windows::gamelist::FilterReset $glist $baseIdx"
+  $w.menu add command -label "New Game List Window" -command "::windows::gamelist::Open $baseIdx dbfilter"
   $w.menu add separator
   $w.menu add command -label [tr FileOpen] -command ::file::Open
+  if {![sc_base isReadOnly $baseIdx]} {
+    $w.menu add command -label [tr ToolsImportFile] -command "importPgnFile $baseIdx"
+  }
   if { $baseIdx != $clipbaseIdx } {
     $w.menu add command -label [tr FileClose] -command [list ::file::Close $baseIdx]
     #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
@@ -633,8 +635,13 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
         -command "::file::autoLoadBases.remove $baseIdx"
     }
   } else {
-    $w.menu add command -label [tr EditReset] -command { sc_clipbase clear; ::notify::DatabaseChanged 0 }
+    $w.menu add command -label [tr EditReset] -command {
+      sc_clipbase clear
+      ::notify::GameChanged
+      ::notify::DatabaseModified [sc_info clipbase]
+    }
   }
+
   $w.menu add separator
   $w.menu add command -label [tr ChangeIcon] -command "changeBaseType $baseIdx"
   $w.menu add checkbutton -label "Icons" -variable ::windows::switcher::icons \

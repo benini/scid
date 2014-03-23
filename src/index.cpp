@@ -1237,22 +1237,12 @@ Index::AddGame (gameNumberT * g, IndexEntry * ie, bool initIE)
             //printf ("Increasing to %u chunks\n", newNumChunks);
             ASSERT (oldNumChunks + 1 == newNumChunks);
             // We need to enlarge the in-memory array:
-#ifdef WINCE
-            IndexEntryPtr * newEntries = (IndexEntry**)my_Tcl_Alloc(sizeof( IndexEntryPtr [newNumChunks]));
-#else
             IndexEntryPtr * newEntries = new IndexEntryPtr [newNumChunks];
-#endif
             for (uint i=0; i < oldNumChunks; i++) {
                 newEntries[i] = Entries[i];
             }
             newEntries[oldNumChunks] = new IndexEntry [INDEX_ENTRY_CHUNKSIZE];
-            if (Entries != NULL) {
-#ifdef WINCE
-            my_Tcl_Free((char*) Entries);
-#else
-            delete[] Entries;
-#endif
-}
+            if (Entries != NULL) delete[] Entries;
             Entries = newEntries;
         }
         IndexEntry * ieTemp = FetchEntry (*g);
@@ -1261,11 +1251,7 @@ Index::AddGame (gameNumberT * g, IndexEntry * ie, bool initIE)
 
     // Invalidate the EntriesHeap array of sorted entry indexes:
     if (EntriesHeap != NULL) {
-#ifdef WINCE
-            my_Tcl_Free((char*) EntriesHeap);
-#else
-            delete[] EntriesHeap;
-#endif
+        delete[] EntriesHeap;
         EntriesHeap = NULL;
     }
 
@@ -1721,6 +1707,27 @@ void Index::FreeCache(const char* criteria)
 
 errorT Index::GetRange (NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
 {
+	ASSERT(result != 0);
+	ASSERT(criteria != 0 && strlen(criteria) > 1);
+	if (criteria[0] == 'N') {
+		uint i=0;
+		if (criteria[1] == '+') {
+			for(uint gnum=0; gnum < GetNumGames() && i < count; gnum++) {
+				if (filter && filter->Get(gnum) == 0) continue;
+				if (idx == 0) result[i++] = gnum;
+				else idx--;
+			}
+		} else {
+			for(uint gnum=GetNumGames(); gnum > 0 && i < count; gnum--) {
+				if (filter && filter->Get(gnum -1) == 0) continue;
+				if (idx == 0) result[i++] = gnum -1;
+				else idx--;
+			}
+		}
+		if (i != count) result[i] = IDX_NOT_FOUND;
+		return OK;
+	}
+
 	// Use existing caches if possible
 	for(uint i=0; i < SORTING_CACHE_MAX; i++) {
 		if (sortingCaches[i] == NULL) continue;

@@ -1,6 +1,34 @@
 ﻿             Changelog 
             ===========
 
+[xxx 2014]
+scid-4.6.0
+==========
+- New features:
+	* Statistics inside the gamelist window
+	* "Awesome" search bar inside the gamelist window (see gamelist.tcl for usage)
+	* Autosave windows layout1 if it's empty
+	* Redisgn of board status bar and toolbar
+	* Show name, elo and clocks above/below the board
+	* Allow custom size for piece images
+	* Model-View-Controller.
+	  A search have it's own gamelist window that can be sorted in different ways.
+	  This implement the classic Model-View-Controller concept.
+	  A scid database (the model) can have multiple views (filters created with searches).
+	  Each view can have multiple controller (gamelist windows, for example the same list of game can be
+	  presented sorted by date in a gamelist window and sorted by average elo in another gamelist).
+	* Allow sounds on Windows without the tcl SnackAudio package
+
+- Fixes :
+	* Fix: slow pgn import (and let the user choose in which base)
+	* Fix: layout did not restore correctly
+	* Fix: do not override the standard ctrl+c ctrl+v
+
+
+- Removed features:
+	* flipBoardForPlayerNames
+	* Load game number (use the gamelist window instead)
+
 [Novembre 2013]
 scid-4.5.2
 ==========
