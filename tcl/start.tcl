@@ -35,6 +35,7 @@ exec `dirname $0`/tkscid "$0" "$@"
 
 package require Tcl 8.5
 package require Tk  8.5
+catch { package require img::png }
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
