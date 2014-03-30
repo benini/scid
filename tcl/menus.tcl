@@ -1637,7 +1637,6 @@ proc standardShortcuts {w} {
   # Global shortcuts for docked mode
   if { $::docking::USE_DOCKING } {
     bind $w <F1> {helpWindow Contents}
-    bind $w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
     bind $w <Control-N> nameEditor
     bind $w <Control-a> {sc_var create; updateBoard -pgn}
     bind $w <Control-space> { setTrialMode toggle }
@@ -1650,6 +1649,7 @@ proc standardShortcuts {w} {
     bind $w <F11> { if {[wm attributes . -fullscreen]} { wm attributes . -fullscreen 0} else { wm attributes . -fullscreen 1} }
   }
 
+  bind $w <period> {if {!$tree(refresh)} {toggleRotateBoard}}
   bind $w <Control-z> { undoFeature undo }
   bind $w <Control-y> { undoFeature redo }
   bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
