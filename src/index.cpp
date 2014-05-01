@@ -1087,24 +1087,47 @@ Index::ReadEntireFile (void (*progressFn)(void * data,
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Index::VerifyFile():
 //      If the index is all in memory, this checks each entry for
-//      possible corrupt values.
-//      Returns the number of games found with a corrupt value.
+//      possible corrupt namebase values
+//      If (readOnly == false) try to fix the index replacing the corrupt value with "?"
 //
-uint
-Index::VerifyFile (NameBase * nb)
+errorT
+Index::VerifyFile (NameBase * nb, bool readOnly)
 {
     ASSERT (FilePtr != NULL);
-    if (!InMemory) { return OK; }
+    ASSERT (InMemory);
     ASSERT (Entries != NULL);
-    uint count = 0;
 
+    idNumberT maxName [NUM_NAME_TYPES];
+    for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) maxName[nt] = nb->GetNumNames(nt);
+    typedef idNumberT (IndexEntry::*getFunc)(void);
+    getFunc v_get[] = { &IndexEntry::GetWhite, &IndexEntry::GetBlack, &IndexEntry::GetEvent, &IndexEntry::GetSite, &IndexEntry::GetRound};
+    typedef void (IndexEntry::*setFunc)(idNumberT);
+    setFunc v_set[] = { &IndexEntry::SetWhite, &IndexEntry::SetBlack, &IndexEntry::SetEvent, &IndexEntry::SetSite, &IndexEntry::SetRound};
+    nameT v_nameT [] = { NAME_PLAYER, NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND };
+    bool writeNameFile = false;
     for (uint i=0; i < Header.numGames; i++) {
-        IndexEntry * ie = FetchEntry (i);
-        if (ie->Verify(nb) != OK) {
-            count++;
+        bool corrupt = false;
+        IndexEntry* ie = FetchEntry (i);
+
+        for (int f = 0; f < sizeof(v_nameT) / sizeof(nameT); f++) {
+            if ((ie->*v_get[f])() >= maxName[v_nameT[f]]) {
+                if (readOnly) return ERROR_Corrupt;
+                idNumberT unknown = 0;
+                if (nb->FindExactName (v_nameT[f], "?", &unknown) == ERROR_NameNotFound) {
+                    if (nb->AddName (v_nameT[f], "?", &unknown) != OK) return ERROR_Corrupt;
+                    writeNameFile = true;
+                }
+                (ie->*v_set[f])(unknown);
+                corrupt = true;
+            }
         }
+
+        if (corrupt && WriteEntries (ie, i, 1) != OK) return ERROR_Corrupt;
     }
-    return count;
+
+    if (writeNameFile &&  nb->WriteNameFile() != OK) return ERROR_Corrupt;
+
+    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

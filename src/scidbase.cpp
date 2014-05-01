@@ -54,9 +54,8 @@ const char* scidBaseT::Open (const char* filename, fileModeT mode,
         if (err != OK) res = "Error reading index file";
     }
     if (err == OK) {
-        err = idx->VerifyFile (nb);
-        //TODO: if the namefile can be fixed, why not fix it right now?
-        if (err != OK) res = "Error: name corruption in index file.\nRun \"scidt -N\" on this database to fix it.";
+        err = idx->VerifyFile (nb, mode == FMODE_ReadOnly);
+        if (err != OK) res = "Error: name corruption in index file.\n";
     }
     if (err != OK) {
         idx->Clear();

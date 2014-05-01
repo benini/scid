@@ -751,7 +751,7 @@ class Index
 
     MFile *     GetMFile() { return FilePtr; }
     
-    uint        VerifyFile (NameBase * nb);
+    errorT      VerifyFile (NameBase* nb, bool readOnly);
     bool        AllInMemory() { return InMemory; }
 
     inline IndexEntry * FetchEntry (gameNumberT g);
