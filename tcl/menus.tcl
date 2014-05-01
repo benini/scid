@@ -226,10 +226,6 @@ set helpMessage($m.utils.name,3) FileMaintNameSite
 $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
 set helpMessage($m.utils.name,4) FileMaintNameRound
 
-$m.utils add separator
-$m.utils add command -label FileMaintFixBase -command ::maint::fixCorruptedBase
-set helpMessage($m.utils,10) FileMaintFixBase
-
 $m add command -label FileReadOnly -command makeBaseReadOnly
 set helpMessage($m,[incr menuindex]) FileReadOnly
 
@@ -1462,7 +1458,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.file [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {Win Compact Delete Twin Class Sort Name FixBase} {
+  foreach tag {Win Compact Delete Twin Class Sort Name} {
     configMenuText .menu.file.utils [tr FileMaint$tag $oldLang] \
         FileMaint$tag $lang
   }

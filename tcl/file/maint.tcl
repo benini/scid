@@ -8,35 +8,6 @@ namespace eval ::maint {}
 ### TODO: Make sub-namespaces (sort, compact, cleaner, etc)
 
 ################################################################################
-# Equivalent to running scidt -N
-################################################################################
-proc ::maint::fixCorruptedBase {} {
-  set ftype {
-    { "Scid databases" {".si4"} }
-  }
-  set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
-  if {$fName == ""} { return }
-  set fName [file rootname $fName]
-  
-  if {[sc_base slot $fName] != 0} {
-    tk_messageBox -type ok -icon info -title "Scid" -message "$fName is already opened.\nClose it first"
-    return
-  }
-  
-  progressWindow "Scid" [concat $::tr(CompactNames) "..."]
-  busyCursor .
-  set err [catch {sc_base fixCorrupted $fName} result]
-  unbusyCursor .
-  closeProgressWindow
-  if {$err} {
-    tk_messageBox -type ok -icon warning -title "Scid: Error compacting file" -message $result
-  } else {
-    tk_messageBox -type ok -icon info -title "Scid" -message "Base $fName was repaired"
-  }
-  
-}
-
-################################################################################
 # ::maint::SetGameFlags
 #
 #   Updates a flag for the current game, all filtered games, or all games.
