@@ -8274,12 +8274,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case INFO_GZIP:
         // Return true if gzip files can be decoded by Scid.
-#ifdef NO_ZLIB
-        return setBoolResult (ti, false);
-#else
-        return setBoolResult (ti, true);
-#endif
-        break;
+        return setBoolResult (ti, gzable());
 
     case INFO_HTML:
         if (argc >= 3) {

@@ -24,10 +24,11 @@ scid-4.6.0
 	* Fix: layout did not restore correctly
 	* Fix: do not override the standard ctrl+c ctrl+v
 
-
 - Removed features:
 	* flipBoardForPlayerNames
 	* Load game number (use the gamelist window instead)
+	* obsolete executables scidt, pgnscid and eco2epd
+	* obsolete and unsecure src/zlib files
 
 [Novembre 2013]
 scid-4.5.2

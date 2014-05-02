@@ -45,7 +45,7 @@ set var(SHAREDIR) /usr/local/share/scid
 set var(TB) {-DSCID_USE_TB -DT41_INCLUDE}
 set var(TCL_VERSION) $tcl_version
 set var(WARNINGS) -Wall
-set var(ZLIB) -lz
+set var(ZLIB) {}
 set var(MAKEFILE) Makefile.conf
 set var(INSTALL) {install_scid install_engines}
 
@@ -285,22 +285,15 @@ proc systemHasZlib {} {
 #
 proc checkZlib {} {
     global var
-    if {[string first "DZLIB" $var(SCIDFLAGS)] >= 0} {
-        set var(ZLIB) {}
-        set var(OBJS) {$(SCIDOBJS) $(ZLIBOBJS)}
-        return
-    }
     puts -nonewline "    Checking if your system already has zlib installed: "
     flush stdout
     if {[systemHasZlib]} {
         puts "yes."
+        append var(SCIDFLAGS) " -DZLIB"
         set var(ZLIB) {-lz}
-        set var(OBJS) {$(SCIDOBJS)}
     } else {
         puts "no."
-        append var(SCIDFLAGS) " -DZLIB"
         set var(ZLIB) {}
-        set var(OBJS) {$(SCIDOBJS) $(ZLIBOBJS)}
     }
 }
 

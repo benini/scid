@@ -495,10 +495,6 @@ class IndexEntry
     errorT Read (MFile * fp, versionT version);
     errorT Write (MFile * fp, versionT version);
 
-    void PrintGameInfo (char * outStr,
-                        gameNumberT gnFiltered, gameNumberT gnReal,
-                        NameBase * nb, const char * format);
-
     int Compare (IndexEntry * ie, int * fields, NameBase * nb);
 };
 

@@ -173,13 +173,6 @@ MSG =^
 !endif
 TK_LIB		= "$(TCL_DIR)\lib\tk$(TCL_VERSION).lib" $(TCL_LIB)
 
-##	SCID_FLAGS: Scid customization flags.
-#	Use -DZLIB if your system does not have zlib and you need
-#	to include the code in the src/zlib directory.
-#	The default is to use the system zlib library.
-#
-SCID_FLAGS	= -DZLIB
-
 ##	SCID_TB: Tablebase support.
 #	for no tablebase reading capability.
 #		Use:	SCID_TB =
@@ -199,37 +192,14 @@ SCID_TB		= -DSCID_USE_TB -DT41_INCLUDE -Zm101
 #	Note: only "scid.exe" is compiled by default.
 #
 SCID_EXECS = \
-	eco2epd.exe \
-	pgnscid.exe \
 	scid.exe \
 	scidlet.exe \
-	scidt.exe \
 	scmerge.exe
-
-##	ZLIB_OBJS: obj. files in the zlib compression library.
-#
-ZLIB_OBJS = \
-	$(TMP_DIR)\adler32.obj \
-	$(TMP_DIR)\compress.obj \
-	$(TMP_DIR)\crc32.obj \
-	$(TMP_DIR)\gzio.obj \
-	$(TMP_DIR)\uncompr.obj \
-	$(TMP_DIR)\deflate.obj \
-	$(TMP_DIR)\trees.obj \
-	$(TMP_DIR)\zutil.obj \
-	$(TMP_DIR)\inflate.obj \
-	$(TMP_DIR)\infblock.obj \
-	$(TMP_DIR)\inftrees.obj \
-	$(TMP_DIR)\infcodes.obj \
-	$(TMP_DIR)\infutil.obj \
-	$(TMP_DIR)\inffast.obj
-
 
 ##	SCID_OBJS: not all the .obj files that make up Scid, just the standard
 #	files that most of the Scid programs use.
 #
 SCID_OBJS = \
-	$(ZLIB_OBJS) \
 	$(TMP_DIR)\bytebuf.obj \
 	$(TMP_DIR)\date.obj \
 	$(TMP_DIR)\dstring.obj \
@@ -343,7 +313,7 @@ PROFILE		= $(PROFILE) -DWIN32 -DWIN32_LEAN_AND_MEAN
 ##	CFLAGS: C++ compiler flags
 #	-c	:Compile Without linking
 #
-CFLAGS		= $(PROFILE) $(OPTIMIZE) $(WARNINGS) $(SCID_FLAGS) \
+CFLAGS		= $(PROFILE) $(OPTIMIZE) $(WARNINGS) \
 			$(SCID_INCLUDES) -c -nologo
 
 
@@ -398,16 +368,6 @@ scmerge.exe: $(TMP_DIR)\scmerge.obj $(SCID_OBJS)
 	$(LD) $(LDFLAGS) $(TMP_DIR)\scmerge.obj $(SCID_OBJS) \
 		/out:$(OUT_DIR)\scmerge.exe
 
-pgnscid.exe: $(TMP_DIR)\pgnscid.obj $(SCID_OBJS)
-	@echo *** pgnscid.exe
-	$(LD) $(LDFLAGS) $(TMP_DIR)\pgnscid.obj $(SCID_OBJS) \
-		/out:$(OUT_DIR)\pgnscid.exe
-
-scidt.exe: $(TMP_DIR)\scidt.obj $(SCID_OBJS)
-	@echo *** scidt.exe
-	$(LD) $(LDFLAGS) $(TMP_DIR)\scidt.obj $(SCID_OBJS) \
-		/out:$(OUT_DIR)\scidt.exe
-
 scidlet.exe: $(TMP_DIR)\scidlet.obj $(SCID_XOBJS)
 	@echo *** scidlet.exe
 	$(LD) $(LDFLAGS) $(TMP_DIR)\scidlet.obj $(SCID_XOBJS) \
@@ -418,11 +378,6 @@ scid.exe: $(TMP_DIR)\scid.obj $(SCID_XOBJS)
 	$(LD) $(LDFLAGS) $(TMP_DIR)\scid.obj $(SCID_XOBJS) $(TK_LIB) \
 		/out:$(OUT_DIR)\scid.exe \
 		/subsystem:windows /entry:mainCRTStartup
-
-eco2epd.exe: $(TMP_DIR)\eco2epd.obj $(TMP_DIR)\pbook.obj $(SCID_OBJS)
-	@echo *** eco2epd.exe
-	$(LD) $(LDFLAGS) $(TMP_DIR)\eco2epd.obj $(TMP_DIR)\pbook.obj \
-		$(SCID_OBJS) /out:$(OUT_DIR)\eco2epd.exe
 
 
 #--------------------------------------------------------------------
@@ -447,9 +402,6 @@ $(TMP_DIR)\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
 	$(CC) $(CFLAGS) -Fo$(TMP_DIR)\ $<
 
 {src\egtb}.c{$(TMP_DIR)}.obj:
-	$(CC) $(CFLAGS) -Fo$(TMP_DIR)\ $<
-
-{src\zlib}.c{$(TMP_DIR)}.obj:
 	$(CC) $(CFLAGS) -Fo$(TMP_DIR)\ $<
 
 {src\polyglot}.cpp{$(TMP_DIR)\polyglot}.obj:

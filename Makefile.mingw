@@ -57,13 +57,10 @@ PROFILE=
 LFLAGS = $(PROFILE)
 
 ### CPPFLAGS: C++ compiler flags
-CPPFLAGS = -DZLIB -DWIN32 $(OPT) $(CPPOPT) $(PROFILE) $(WARNINGS)
+CPPFLAGS = -DWIN32 $(OPT) $(CPPOPT) $(PROFILE) $(WARNINGS)
 
 ### CPPFLAGSNOWARN: C++ compiler flags without warnings
-CPPFLAGSNOWARN = -DZLIB -DWIN32 $(OPT) $(CPPOPT) $(PROFILE)
-
-### CFLAGS: C (not C++) compiler flags
-CFLAGS = -DZLIB -DWIN32 $(OPT) $(PROFILE)
+CPPFLAGSNOWARN = -DWIN32 $(OPT) $(CPPOPT) $(PROFILE)
 
 ### SCIDOBJS: not all the .o files that make up scid, just the standard
 ###   files that most of the scid programs use.
@@ -83,19 +80,9 @@ SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
       src\polyglot\parse.o src\polyglot\pgn.o src\polyglot\piece.o src\polyglot\random.o \
       src\polyglot\san.o src\polyglot\search.o src\polyglot\square.o src\polyglot\util.o
 
-
-### ZLIBOBJS: object files in the zlib compression library.
-###
-ZLIBOBJS= src/zlib/adler32.o src/zlib/compress.o src/zlib/crc32.o \
-      src/zlib/gzio.o src/zlib/uncompr.o src/zlib/deflate.o src/zlib/trees.o \
-      src/zlib/zutil.o src/zlib/inflate.o src/zlib/infblock.o \
-      src/zlib/inftrees.o src/zlib/infcodes.o src/zlib/infutil.o \
-      src/zlib/inffast.o
-
-
 ### OBJS: all standard object files for scid.
 ###
-OBJS= $(SCIDOBJS) $(ZLIBOBJS)
+OBJS= $(SCIDOBJS)
 
 ### TCLS: all the .tcl files that make up "scid".
 TCLS= tcl\start.tcl
@@ -123,7 +110,7 @@ scid.coff: scid.rc
 
 ### To remove object and executable files: type "make clean"
 clean:
-	-del /F src\*.obj src\zlib\*.o scid.coff
+	-del /F src\*.obj scid.coff
 	-rmdir /S /Q $(OUT_DIR)
 
 src\scid.obj: src\tkscid.cpp
@@ -134,6 +121,3 @@ src\probe.obj: src\probe.cpp src\egtb\tbindex.cpp src\egtb\tbdecode.c
 
 %.obj: %.cpp
 	$(COMPILE) $(CPPFLAGS) $(TCL_INCLUDE) -c $< -o .\$@
-
-%.obj: %.c
-	$(CC) $(CFLAGS) -c $< -o .\$@

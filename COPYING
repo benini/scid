@@ -28,9 +28,8 @@ freely available as source code under the terms of the GPL.
 
 The only files in Scid NOT distributed under the GPL (since they have
 a different author and copyright, but they are freely distributable)
-are the Zlib library (see the src/zlib directory), a Tcl package
-for sending email using SMTP (see the tcl/ezsmtp directory), and
-endgame tablebase decoding source code (see the src/egtb directory).
+are a Tcl package for sending email using SMTP (see the tcl/ezsmtp directory),
+and endgame tablebase decoding source code (see the src/egtb directory).
 
 Please note: although there is no explicit copyright notice in the
 tablebase decoding code, all rights are reserved by its author
