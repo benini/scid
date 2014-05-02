@@ -89,27 +89,22 @@ mergeFile(Index * targetIndex, NameBase * targetNameBase, GFile * targetGFile, c
         uint newID;
         err = targetNameBase->AddName (NAME_PLAYER,
                                        iE.GetWhiteName (sourceNameBase), &newID);
-        targetNameBase->IncFrequency (NAME_PLAYER, newID, 1);
         iE.SetWhite (newID);
 
         err = targetNameBase->AddName (NAME_PLAYER,
                                        iE.GetBlackName (sourceNameBase), &newID);
-        targetNameBase->IncFrequency (NAME_PLAYER, newID, 1);
         iE.SetBlack (newID);
 
         err = targetNameBase->AddName (NAME_EVENT,
                                        iE.GetEventName (sourceNameBase), &newID);
-        targetNameBase->IncFrequency (NAME_EVENT, newID, 1);
         iE.SetEvent (newID);
 
         err = targetNameBase->AddName (NAME_SITE,
                                        iE.GetSiteName (sourceNameBase), &newID);
-        targetNameBase->IncFrequency (NAME_SITE, newID, 1);
         iE.SetSite (newID);
 
         err = targetNameBase->AddName (NAME_ROUND,
                                        iE.GetRoundName (sourceNameBase), &newID);
-        targetNameBase->IncFrequency (NAME_ROUND, newID, 1);
         iE.SetRound (newID);
 
         // Now, we add the game record to the gfile:

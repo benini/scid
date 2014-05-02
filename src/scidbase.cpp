@@ -254,6 +254,24 @@ void scidBaseT::computeStats()
     validStats = true;
 }
 
+void scidBaseT::calcNameFreq (nameT nt) {
+    ASSERT(nameFreq_[nt].size() == 0)
+    nameFreq_[nt].resize(nb->GetNumNames(nt), 0);
+
+    typedef idNumberT (IndexEntry::*getFunc)(void);
+    getFunc v_get[] = { &IndexEntry::GetWhite, &IndexEntry::GetBlack, &IndexEntry::GetEvent, &IndexEntry::GetSite, &IndexEntry::GetRound};
+    nameT v_nameT [] = { NAME_PLAYER, NAME_PLAYER, NAME_EVENT, NAME_SITE, NAME_ROUND };
+    for (uint i=0; i < idx->GetNumGames(); i++) {
+        IndexEntry* ie = idx->FetchEntry (i);
+        for (uint f = 0; f < sizeof(v_nameT) / sizeof(nameT); f++) {
+            if (v_nameT[f] != nt) continue;
+            idNumberT id = (ie->*v_get[f])();
+            if (id >= nameFreq_[nt].size()) continue;
+            nameFreq_[nt][id]++;
+        }
+    }
+}
+
 
 double scidBaseT::TreeStat::expVect_[1600];
 
@@ -297,29 +315,31 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(Filter* filter) {
 	return v2;
 }
 
-const char* scidBaseT::clearCaches()
+const char* scidBaseT::clearCaches(bool writeFiles)
 {
     if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
     clearStats();
+    for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
     // The target base treecache is out of date:
     treeCache->Clear();
     backupCache->Clear();
     if (! memoryOnly) removeFile (fileName, TREEFILE_SUFFIX);
-
-    gfile->FlushAll();
-    // Now write the Index file header and the name file:
-    if (idx->WriteHeader() != OK) {
-        return  "Error writing index file.";
+    if (! memoryOnly && writeFiles) {
+        gfile->FlushAll();
+        // Now write the Index file header and the name file:
+        if (idx->WriteHeader() != OK) {
+            return  "Error writing index file.";
+        }
+        if (nb->WriteNameFile() != OK) {
+            return "Error writing name file.";
+        }
+        // Ensure that the Index is still all in memory:
+        idx->ReadEntireFile();
     }
-    if (! memoryOnly  &&  nb->WriteNameFile() != OK) {
-        return "Error writing name file.";
-    }
-    // Ensure that the Index is still all in memory:
-    idx->ReadEntireFile();
     return 0;
 }
 
-const char* scidBaseT::addGame(Game* game) {
+const char* scidBaseT::addGame(Game* game, bool clearCache) {
     IndexEntry iE;
     iE.Init();
     if (game->Encode (bbuf, &iE) != OK)
@@ -336,15 +356,17 @@ const char* scidBaseT::addGame(Game* game) {
     if (iE.SetRoundName(nb, game->GetRoundStr()) != OK)
         return "Too many round names.";
 
-    return addGame_(&iE, bbuf);
+    const char* err = addGame_(&iE, bbuf);
+    if (!err && clearCache) err = clearCaches();
+    return err;
 }
 
 const char* scidBaseT::addGame(scidBaseT* sourceBase, uint gNum)
 {
     const char* err = addGame_(sourceBase, gNum);
     if (!err) {
-        idx->IndexUpdated(numGames -1);
         err = clearCaches();
+        idx->IndexUpdated(numGames -1);
     }
     return err;
 }
@@ -361,16 +383,16 @@ const char* scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
     for (uint gNum = 0;gNum < sourceBase->numGames; gNum++) {
         if (filter->Get(gNum) == 0) continue;
         err = addGame_(sourceBase, gNum);
-        if (err) return err;
+        if (err) break;
         if (iProgress++ % 100 == 0) {
             bool interrupt = progressFn(progressData, iProgress, totGames);
             if (interrupt) break;
         }
     }
-    if (!err) {
-        idx->IndexUpdated(IDX_NOT_FOUND);
-        err = clearCaches();
-    }
+    if (err == 0) err = clearCaches();
+    else clearCaches();
+    idx->IndexUpdated(IDX_NOT_FOUND);
+
     return err;
 }
 

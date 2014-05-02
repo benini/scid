@@ -23,6 +23,7 @@ scid-4.6.0
 	* Fix: slow pgn import (and let the user choose in which base)
 	* Fix: layout did not restore correctly
 	* Fix: do not override the standard ctrl+c ctrl+v
+	* Fix: calculate NameBase frequencies on demand
 
 - Removed features:
 	* flipBoardForPlayerNames

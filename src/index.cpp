@@ -80,35 +80,6 @@ IndexEntry::Init ()
     }
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// IndexEntry::Verify():
-//      Checks the fields of the IndexEntry to make sure that
-//      name ID values are valid for the specified NameBase, etc.
-//
-//      Returns: OK if all is OK, or ERROR_Corrupt if there is an error.
-//
-errorT
-IndexEntry::Verify (NameBase * nb)
-{
-    bool corrupt = false;
-    if (GetWhite() >= nb->GetNumNames (NAME_PLAYER)) {
-        SetWhite (0);  corrupt = true;
-    }
-    if (GetBlack() >= nb->GetNumNames (NAME_PLAYER)) {
-        SetBlack (0);  corrupt = true;
-    }
-    if (GetEvent() >= nb->GetNumNames (NAME_EVENT)) {
-        SetEvent (0);  corrupt = true;
-    }
-    if (GetSite() >= nb->GetNumNames (NAME_SITE)) {
-        SetSite (0);  corrupt = true;
-    }
-    if (GetRound() >= nb->GetNumNames (NAME_ROUND)) {
-        SetRound (0);  corrupt = true;
-    }
-    return (corrupt ? ERROR_Corrupt : OK);
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // IndexEntry::GetEventDate ():
 //    Returns the EventDate for this game.
@@ -803,7 +774,7 @@ Index::VerifyFile (NameBase * nb, bool readOnly)
         bool corrupt = false;
         IndexEntry* ie = FetchEntry (i);
 
-        for (int f = 0; f < sizeof(v_nameT) / sizeof(nameT); f++) {
+        for (uint f = 0; f < sizeof(v_nameT) / sizeof(nameT); f++) {
             if ((ie->*v_get[f])() >= maxName[v_nameT[f]]) {
                 if (readOnly) return ERROR_Corrupt;
                 idNumberT unknown = 0;

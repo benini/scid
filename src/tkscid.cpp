@@ -180,25 +180,6 @@ recalcFlagCounts (scidBaseT * basePtr)
     basePtr->clearStats();
 }
 
-
-
-void
-recalcNameFrequencies (NameBase * nb, Index * idx)
-{
-    for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
-        nb->ZeroAllFrequencies (nt);
-    }
-    IndexEntry iE;
-    for (uint i=0; i < idx->GetNumGames(); i++) {
-        idx->ReadEntries (&iE, i, 1);
-        nb->IncFrequency (NAME_PLAYER, iE.GetWhite(), 1);
-        nb->IncFrequency (NAME_PLAYER, iE.GetBlack(), 1);
-        nb->IncFrequency (NAME_EVENT, iE.GetEvent(), 1);
-        nb->IncFrequency (NAME_SITE, iE.GetSite(), 1);
-        nb->IncFrequency (NAME_ROUND, iE.GetRound(), 1);
-    }
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Standard error messages:
 //
@@ -328,9 +309,6 @@ scid_InitTclTk (Tcl_Interp * ti)
         db->memoryOnly = false;
         db->duplicates = NULL;
         db->idx->SetDescription (errMsgNotOpen(ti));
-
-        recalcFlagCounts (db);
-
         db->tree.moveCount = db->tree.totalCount = 0;
         db->treeCache = NULL;
 
@@ -1491,7 +1469,7 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
     uint gamesSeen = 0;
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
-        const char* err = cdb->addGame(scratchGame);
+        const char* err = cdb->addGame(scratchGame, false);
         if (err) return errorResult(ti, err);
         // Update the progress bar:
         gamesSeen++;
@@ -2446,8 +2424,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     bool showProgress = startProgressBar();
 
     const char * tag = NULL;  // For "find" or "strip" commands
-    NameBase * tagnb = NULL;  // For "list" command; tags are collected
-                              // as if they were player names.
+    std::vector< std::pair <std::string, uint> > tag_freq;  // For "list" command
 
     if (! db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
@@ -2459,7 +2436,6 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (cmd) {
     case TAG_LIST:
         if (argc != 3) { return errorResult (ti, usage); }
-        tagnb = new NameBase;
         break;
     case TAG_FIND:  // Same extra parameter as TAG_STRIP
     case TAG_STRIP:
@@ -2524,9 +2500,16 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             tagT * taglist = g->GetExtraTags();
             // Increment frequency for each extra tag:
             while (numtags > 0) {
-                idNumberT id;
-                if (tagnb->AddName (NAME_PLAYER, taglist->tag, &id) == OK) {
-                    tagnb->IncFrequency (NAME_PLAYER, id, 1);
+                bool found = false;
+                for (uint i=0; i < tag_freq.size(); i++) {
+                    if (tag_freq[i].first == taglist->tag) {
+                        tag_freq[i].second++;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    tag_freq.push_back(std::make_pair(taglist->tag, 1));
                 }
                 numtags--;
                 taglist++;
@@ -2552,15 +2535,14 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If listing extra tags, generate the list now:
     if (cmd == TAG_LIST) {
-        for (idNumberT id=0; id < tagnb->GetNumNames(NAME_PLAYER); id++) {
-            uint freq = tagnb->GetFrequency(NAME_PLAYER, id);
-            const char * name = tagnb->GetName (NAME_PLAYER, id);
+        for (uint i=0; i < tag_freq.size(); i++) {
+            uint freq = tag_freq[i].second;
+            const char* name = tag_freq[i].first.c_str();
             if (freq > 0  &&  !strEqual (name, "SetUp")) {
                 Tcl_AppendElement (ti, name);
                 appendUintElement (ti, freq);
             }
         }
-        delete tagnb;
     }
     return TCL_OK;
 }
@@ -3467,11 +3449,9 @@ sc_clipbase_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     db->game->SaveState();
-    const char* err1 = clipbase->addGame(db->game);
+    const char* err = clipbase->addGame(db->game, true);
     db->game->RestoreState();
-    const char* err2 = clipbase->clearCaches();
-    if (err1) return errorResult(ti, err1);
-    if (err2) return errorResult(ti, err2);
+    if (err) return errorResult(ti, err);
     return TCL_OK;
 }
 
@@ -3591,7 +3571,6 @@ sc_compact_games (scidBaseT* base, Tcl_Interp * ti)
         return errorResult (ti, "Error creating temporary file; compaction cancelled.");
     }
 
-    bool treeFileOutOfDate = false;
     gameNumberT newNumGames = 0;
     bool interrupted = 0;
     const char * errMsg = "";
@@ -3613,10 +3592,8 @@ sc_compact_games (scidBaseT* base, Tcl_Interp * ti)
             }
         }
         IndexEntry * ieOld = base->idx->FetchEntry (i);
-        if (ieOld->GetDeleteFlag()) {
-            treeFileOutOfDate = true;
-            continue;
-        }
+        if (ieOld->GetDeleteFlag()) continue;
+
         IndexEntry ieNew;
         errorT err;
         base->bbuf->Empty();
@@ -3624,14 +3601,12 @@ sc_compact_games (scidBaseT* base, Tcl_Interp * ti)
                                    ieOld->GetLength());
         if (err != OK) {
             // Just skip corrupt games:
-            treeFileOutOfDate = true;
             continue;
         }
         base->bbuf->BackToStart();
         err = scratchGame->Decode (base->bbuf, GAME_DECODE_NONE);
         if (err != OK) {
             // Just skip corrupt games:
-            treeFileOutOfDate = true;
             continue;
         }
         err = newIdx->AddGame (&newNumGames, &ieNew);
@@ -3709,12 +3684,7 @@ sc_compact_games (scidBaseT* base, Tcl_Interp * ti)
     base->numGames = base->idx->GetNumGames();
     Filter* f; int i_filters=0;
     while ( (f = base->getFilter(i_filters++)) ) f->Init(base->numGames);
-    recalcNameFrequencies (base->nb, base->idx);
-    recalcFlagCounts (base);
-    // Remove the out-of-date treecache file:
-    base->treeCache->Clear();
-    base->backupCache->Clear();
-    removeFile (base->fileName, TREEFILE_SUFFIX);
+    base->clearCaches(false);
 
     return TCL_OK;
 }
@@ -3746,8 +3716,7 @@ sc_compact_names (scidBaseT* base, Tcl_Interp * ti)
         uint numNames = base->nb->GetNumNames (nt);
         if (unusedNames) { break; }
         for (idNumberT id = 0; id < numNames; id++) {
-            uint frequency = base->nb->GetFrequency (nt, id);
-            if (frequency == 0) { unusedNames = true; break; }
+            if (base->getNameFreq(nt, id) == 0) { unusedNames = true; break; }
         }
     }
     if (! unusedNames) {
@@ -3759,8 +3728,7 @@ sc_compact_names (scidBaseT* base, Tcl_Interp * ti)
         idNumberT numNames = nb->GetNumNames (nt);
         idMapping[nt] = new idNumberT [numNames];
         for (idNumberT oldID = 0; oldID < numNames; oldID++) {
-            uint frequency = nb->GetFrequency (nt, oldID);
-            if (frequency > 0) {
+            if (base->getNameFreq(nt, oldID) > 0) {
                 uint newID = 0;
                 const char * name = nb->GetName (nt, oldID);
                 err = nbNew->AddName (nt, name, &newID);
@@ -3768,7 +3736,6 @@ sc_compact_names (scidBaseT* base, Tcl_Interp * ti)
                     errorResult (ti, "Error compacting namebase.");
                     break;
                 }
-                nbNew->IncFrequency (nt, newID, frequency);
                 idMapping[nt][oldID] = newID;
             } else {
                 idMapping[nt][oldID] = 0;
@@ -3826,9 +3793,8 @@ sc_compact_names (scidBaseT* base, Tcl_Interp * ti)
     if (err != OK) { return TCL_ERROR; }
 
     // Recompute player frequencies, ratings, etc:
-    recalcNameFrequencies (base->nb, base->idx);
-    recalcFlagCounts (base);
-    base->nb->recalcEstimatedRatings (spellChecker[NAME_PLAYER]);
+    base->clearCaches();
+    base->recalcEstimatedRatings (spellChecker[NAME_PLAYER]);
 
     return TCL_OK;
 }
@@ -3850,8 +3816,7 @@ sc_compact_stats (scidBaseT* base, Tcl_Interp * ti, const char* option)
             uint numNames = base->nb->GetNumNames (nt);
             uint numUnused = 0;
             for (idNumberT id = 0; id < numNames; id++) {
-                uint frequency = base->nb->GetFrequency (nt, id);
-                if (frequency == 0) { numUnused++; }
+                if (base->getNameFreq(nt, id) == 0) { numUnused++; }
             }
             appendUintElement (ti, numNames);
             appendUintElement (ti, numUnused);
@@ -7170,7 +7135,6 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, "Too many player names.", NULL);
         return TCL_ERROR;
     }
-    base->nb->IncFrequency (NAME_PLAYER, id, 1);
     iE.SetWhite (id);
 
     // BLACK:
@@ -7179,7 +7143,6 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, "Too many player names.", NULL);
         return TCL_ERROR;
     }
-    base->nb->IncFrequency (NAME_PLAYER, id, 1);
     iE.SetBlack (id);
 
     // EVENT:
@@ -7188,7 +7151,6 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, "Too many event names.", NULL);
         return TCL_ERROR;
     }
-    base->nb->IncFrequency (NAME_EVENT, id, 1);
     iE.SetEvent (id);
 
     // SITE:
@@ -7197,7 +7159,6 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, "Too many site names.", NULL);
         return TCL_ERROR;
     }
-    base->nb->IncFrequency (NAME_SITE, id, 1);
     iE.SetSite (id);
 
     // ROUND:
@@ -7206,17 +7167,7 @@ sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
         Tcl_AppendResult (ti, "Too many round names.", NULL);
         return TCL_ERROR;
     }
-    base->nb->IncFrequency (NAME_ROUND, id, 1);
     iE.SetRound (id);
-
-    // If replacing, decrement the frequency of the old names:
-    if (replaceMode) {
-        base->nb->IncFrequency (NAME_PLAYER, oldIE->GetWhite(), -1);
-        base->nb->IncFrequency (NAME_PLAYER, oldIE->GetBlack(), -1);
-        base->nb->IncFrequency (NAME_EVENT,  oldIE->GetEvent(), -1);
-        base->nb->IncFrequency (NAME_SITE,   oldIE->GetSite(),  -1);
-        base->nb->IncFrequency (NAME_ROUND,  oldIE->GetRound(), -1);
-    }
 
     // Flush the gfile so it is up-to-date with other files:
     // This made copying games between databases VERY slow, so it
@@ -7255,6 +7206,7 @@ int
 sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     scidBaseT * dbase = db;
+    Game* currGame = db->game;
     if (argc == 4) {
         dbase = getBase(strGetUnsigned(argv[3]));
         if (dbase == 0) return errorResult (ti, "Invalid database number.");
@@ -7276,32 +7228,18 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return TCL_ERROR;
     }
 
-    db->game->SaveState ();
-    if (sc_savegame (ti, db->game, gnum, dbase) != OK) { return TCL_ERROR; }
-    dbase->gfile->FlushAll();
-    db->game->RestoreState ();
-    if (dbase->idx->WriteHeader() != OK) {
-        return errorResult (ti, "Error writing index file.");
-    }
-    if (! dbase->memoryOnly  &&  dbase->nb->WriteNameFile() != OK) {
-        return errorResult (ti, "Error writing name file.");
-    }
+    currGame->SaveState ();
+    if (sc_savegame (ti, currGame, gnum, dbase) != OK) { return TCL_ERROR; }
+    currGame->RestoreState ();
+
+    const char* err = dbase->clearCaches();
+    if (err) return errorResult (ti, err);
 
     if (gnum == 0 && db == dbase) {
         // Saved new game, so set gameNumber to the saved game number:
         db->gameNumber = db->numGames - 1;
     }
     db->gameAltered = false;
-
-    // We must ensure that the Index is still all in memory:
-    dbase->idx->ReadEntireFile();
-
-    recalcFlagCounts (dbase);
-    // Finally, saving a game makes the treeCache out of date:
-    dbase->treeCache->Clear();
-    dbase->backupCache->Clear();
-    dbase->idx->IndexUpdated( gnum == 0 ? dbase->numGames -1 : gnum - 1);
-    if (! dbase->memoryOnly) { removeFile (dbase->fileName, TREEFILE_SUFFIX); }
 
     return TCL_OK;
 }
@@ -9857,15 +9795,9 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint errorCount = 0;
     uint correctionCount = 0;
     uint nameCount = nb->GetNumNames(nt);
-#ifdef WINCE
-    idNumberT * newIDs = (idNumberT *) my_Tcl_Alloc(sizeof( idNumberT [nameCount]));
-    dateT * startDate = (dateT *) my_Tcl_Alloc(sizeof( dateT [nameCount]));
-    dateT * endDate = (dateT *) my_Tcl_Alloc(sizeof( dateT [nameCount]));
-#else
     idNumberT * newIDs = new idNumberT [nameCount];
     dateT * startDate = new dateT [nameCount];
     dateT * endDate = new dateT [nameCount];
-#endif
 
     // Set the scroll bar to its initial state
     //
@@ -9919,30 +9851,17 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (correctionCount == 0) {
-#ifdef WINCE
-        my_Tcl_Free((char*) newIDs);
-        my_Tcl_Free((char*) startDate);
-        my_Tcl_Free((char*) endDate);
-#else
         delete[] newIDs;
         delete[] startDate;
         delete[] endDate;
-#endif
-
         return setResult (ti, "No valid corrections were found.");
     }
 
     // Write the name file first, for safety:
     if ((!db->memoryOnly)  &&  db->nb->WriteNameFile() != OK) {
-#ifdef WINCE
-        my_Tcl_Free((char*) newIDs);
-        my_Tcl_Free((char*) startDate);
-        my_Tcl_Free((char*) endDate);
-#else
         delete[] newIDs;
         delete[] startDate;
         delete[] endDate;
-#endif
         return errorResult (ti, "Error writing name file.");
     }
 
@@ -10021,15 +9940,9 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Write the new index entry if it has changed:
         if (corrected) {
             if (db->idx->WriteEntries (&newIE, i, 1) != OK) {
-#ifdef WINCE
-              my_Tcl_Free((char*) newIDs);
-              my_Tcl_Free((char*) startDate);
-              my_Tcl_Free((char*) endDate);
-#else
               delete[] newIDs;
               delete[] startDate;
               delete[] endDate;
-#endif
               return errorResult (ti, "Error writing index file.");
             }
         }
@@ -10047,21 +9960,13 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         updateProgressBar( ti, 1, 1 );
     }
 
-#ifdef WINCE
-    my_Tcl_Free((char*) newIDs);
-    my_Tcl_Free((char*) startDate);
-    my_Tcl_Free((char*) endDate);
-#else
     delete[] newIDs;
     delete[] startDate;
     delete[] endDate;
-#endif
 
-    if (db->idx->WriteHeader() != OK) {
-        return errorResult (ti, "Error writing index file.");
-    }
+    const char* err = db->clearCaches();
+    if (err) return errorResult (ti, err);
 
-    recalcNameFrequencies (db->nb, db->idx);
     char temp[100];
     sprintf (temp, "%u %s name%s occurring %u time%s in total were corrected.",
              correctionCount,
@@ -10281,18 +10186,12 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->idx->WriteEntries (&newIE, i, 1) != OK) {
                 return errorResult (ti, "Error writing index file.");
             }
-            if (option != OPT_RATING  &&  option != OPT_DATE
-                    && option != OPT_EVENTDATE) {
-                db->nb->IncFrequency (nt, newID, edits);
-                db->nb->IncFrequency (nt, oldID, -edits);
-            }
             numChanges += edits;
         }
     }
 
-    if (db->idx->WriteHeader() != OK) {
-        return errorResult (ti, "Error writing index file.");
-    }
+    const char* err = db->clearCaches();
+    if (err) return errorResult (ti, err);
 
     char temp[500];
     if (option == OPT_RATING) {
@@ -11035,14 +10934,10 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * prefix = argv[arg++];
     uint maxMatches = strGetUnsigned (argv[arg++]);
     if (maxMatches == 0) { return TCL_OK; }
-#ifdef WINCE
-    idNumberT * array = (idNumberT *) my_Tcl_Alloc(sizeof(idNumberT [maxMatches]));
-#else
     idNumberT * array = new idNumberT [maxMatches];
-#endif
     uint matches = db->nb->GetFirstMatches (nt, prefix, maxMatches, array);
     for (uint i=0; i < matches; i++) {
-        uint freq = db->nb->GetFrequency (nt, array[i]);
+        uint freq = db->getNameFreq(nt, array[i]);
         const char * str = db->nb->GetName (nt, array[i]);
         appendUintElement (ti, freq);
         Tcl_AppendElement (ti, str);
@@ -11050,61 +10945,9 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             appendUintElement (ti, db->nb->GetElo (array[i]));
         }
     }
-#ifdef WINCE
-    my_Tcl_Free((char*) array);
-#else
     delete[] array;
-#endif
 
     return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// comparePlayers:
-//   Called by sc_name_plist to compare two players in the
-//   current database.
-enum playerCompareT {
-    PLAYER_SORT_ELO, PLAYER_SORT_GAMES, PLAYER_SORT_NAME,
-    PLAYER_SORT_OLDEST, PLAYER_SORT_NEWEST, PLAYER_SORT_PHOTO
-};
-int
-comparePlayers (NameBase * nb, idNumberT p1, idNumberT p2, playerCompareT pc)
-{
-    const char * name1 = nb->GetName (NAME_PLAYER, p1);
-    const char * name2 = nb->GetName (NAME_PLAYER, p2);
-    int compare = 0;
-    switch (pc) {
-    case PLAYER_SORT_ELO:
-        compare = nb->GetElo(p2) - nb->GetElo(p1);
-        break;
-    case PLAYER_SORT_GAMES:
-        compare = nb->GetFrequency(NAME_PLAYER, p2)
-            - nb->GetFrequency(NAME_PLAYER, p1);
-        break;
-    case PLAYER_SORT_OLDEST:
-         // Sort by oldest game year in ascending order:
-        compare = date_GetYear(nb->GetFirstDate(p1))
-            - date_GetYear(nb->GetFirstDate(p2));
-        break;
-    case PLAYER_SORT_NEWEST:
-         // Sort by newest game date in descending order:
-        compare = date_GetYear(nb->GetLastDate(p2))
-            - date_GetYear(nb->GetLastDate(p1));
-        break;
-    case PLAYER_SORT_PHOTO:
-        compare = (int)nb->HasPhoto(p2) - (int)nb->HasPhoto(p1);
-        break;
-    default:
-        break;
-    }
-
-    // If equal, resolve by comparing names, first case-insensitive and
-    // then case-sensitively if still tied:
-    if (compare == 0) {
-        compare = strCaseCompare (name1, name2);
-        if (compare == 0) { compare = strCompare (name1, name2); }
-    }
-    return compare;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -11168,28 +11011,67 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (arg != argc) { return errorResult (ti, usage); }
-    playerCompareT pc = PLAYER_SORT_NAME;
     switch (sortMode) {
-        case SORT_ELO:    pc = PLAYER_SORT_ELO;    break;
-        case SORT_GAMES:  pc = PLAYER_SORT_GAMES;  break;
-        case SORT_OLDEST: pc = PLAYER_SORT_OLDEST; break;
-        case SORT_NEWEST: pc = PLAYER_SORT_NEWEST; break;
-        case SORT_NAME:   pc = PLAYER_SORT_NAME;   break;
-        case SORT_PHOTO:  pc = PLAYER_SORT_PHOTO;  break;
+        case SORT_ELO:    break;
+        case SORT_GAMES:  break;
+        case SORT_OLDEST: break;
+        case SORT_NEWEST: break;
+        case SORT_NAME:   break;
+        case SORT_PHOTO:  break;
         default:
             return InvalidCommand (ti, "sc_name plist -sort", sortModes);
     }
-#ifdef WINCE
-    idNumberT * plist = (idNumberT *)my_Tcl_Alloc(sizeof( idNumberT [maxListSize + 1]));
-#else
     idNumberT * plist = new idNumberT [maxListSize + 1];
-#endif
-
     NameBase * nb = db->nb;
     uint nPlayers = nb->GetNumNames(NAME_PLAYER);
+
+    class Compare{
+        scidBaseT* dbase_;
+        int sort_;
+    public:
+        Compare(scidBaseT* dbase, int sortOrder) : dbase_(dbase), sort_(sortOrder) {}
+        int operator() (idNumberT p1, idNumberT p2)
+        {
+            NameBase* nb = dbase_->nb;
+            const char * name1 = nb->GetName (NAME_PLAYER, p1);
+            const char * name2 = nb->GetName (NAME_PLAYER, p2);
+            int compare = 0;
+            switch (sort_) {
+            case SORT_ELO:
+                compare = nb->GetElo(p2) - nb->GetElo(p1);
+                break;
+            case SORT_GAMES:
+                compare = dbase_->getNameFreq(NAME_PLAYER, p2) - dbase_->getNameFreq(NAME_PLAYER, p1);
+                break;
+            case SORT_OLDEST:
+                 // Sort by oldest game year in ascending order:
+                compare = date_GetYear(nb->GetFirstDate(p1))
+                    - date_GetYear(nb->GetFirstDate(p2));
+                break;
+            case SORT_NEWEST:
+                 // Sort by newest game date in descending order:
+                compare = date_GetYear(nb->GetLastDate(p2))
+                    - date_GetYear(nb->GetLastDate(p1));
+                break;
+            case SORT_PHOTO:
+                compare = (int)nb->HasPhoto(p2) - (int)nb->HasPhoto(p1);
+                break;
+            }
+
+            // If equal, resolve by comparing names, first case-insensitive and
+            // then case-sensitively if still tied:
+            if (compare == 0) {
+                compare = strCaseCompare (name1, name2);
+                if (compare == 0) { compare = strCompare (name1, name2); }
+            }
+            return compare;
+        }
+
+    } compare(db, sortMode);
+
     for (uint id = 0; id < nPlayers; id++) {
         const char * name = nb->GetName (NAME_PLAYER, id);
-        uint nGames = nb->GetFrequency (NAME_PLAYER, id);
+        uint nGames = db->getNameFreq (NAME_PLAYER, id);
         eloT elo = nb->GetElo (id);
         if (nGames < minGames  ||  nGames > maxGames) { continue; }
         if (elo < minElo  ||  elo > maxElo) { continue; }
@@ -11204,7 +11086,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         uint insert = listSize;
         for (; insert > 0; insert--) {
-            if (comparePlayers (nb, plist[insert-1], id, pc) < 0) { break; }
+            if (compare(plist[insert-1], id) < 0) { break; }
         }
         if (insert >= maxListSize) { continue; }
         // Move all later IDs in list along one place:
@@ -11216,17 +11098,13 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Generate the list of player data:
-#ifdef WINCE
-    Tcl_DString * ds = (Tcl_DString *) my_Tcl_Alloc( sizeof(Tcl_DString ));
-#else
     Tcl_DString * ds = new Tcl_DString;
-#endif
     Tcl_DStringInit (ds);
 
     for (uint p=0; p < listSize; p++) {
         Tcl_DStringStartSublist (ds);
         char tmp[16];
-        sprintf (tmp, "%u", nb->GetFrequency (NAME_PLAYER,plist[p]));
+        sprintf (tmp, "%u", db->getNameFreq(NAME_PLAYER,plist[p]));
         Tcl_DStringAppendElement(ds, tmp);
         sprintf (tmp, "%u", date_GetYear(nb->GetFirstDate (plist[p])));
         Tcl_DStringAppendElement(ds, tmp);
@@ -11241,13 +11119,8 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     Tcl_DStringResult (ti, ds);
     Tcl_DStringFree (ds);
-#ifdef WINCE
-    my_Tcl_Free((char*)ds);
-    my_Tcl_Free((char*)plist);
-#else
     delete ds;
     delete[] plist;
-#endif
     return TCL_OK;
 }
 
@@ -11275,7 +11148,6 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-#ifndef WINCE
     const char * options[] = {
         "-nomonth", "-update", "-debug", "-test", "-change", "-filter" };
     enum {
@@ -11405,7 +11277,6 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     appendUintElement (ti, numChangedRatings);
     appendUintElement (ti, numChangedGames);
-#endif
     return TCL_OK;
 }
 
@@ -11578,9 +11449,8 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Check every name of the specified type:
 
     nb->IterateStart (nt);
-
     while (nb->Iterate (nt, &id) == OK) {
-        uint frequency = nb->GetFrequency (nt, id);
+        uint frequency = db->getNameFreq(nt, id);
         
         // We have got the next name from the base
         //

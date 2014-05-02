@@ -259,10 +259,7 @@ class IndexEntry
     ~IndexEntry() {}
     void Init();
 
-    errorT Verify (NameBase * nb);
-
     // Get() methods:
-
     inline uint GetLength () {
       return (Length_Low + ((Length_High & 0x80) << 9));
     }
@@ -284,7 +281,6 @@ class IndexEntry
         idNumberT id = 0;
         errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
         if (res == OK) {
-            nb->IncFrequency (NAME_PLAYER, id, 1);
             SetWhite (id);
         }
         return res;
@@ -293,7 +289,6 @@ class IndexEntry
         idNumberT id = 0;
         errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
         if (res == OK) {
-            nb->IncFrequency (NAME_PLAYER, id, 1);
             SetBlack (id);
         }
         return res;
@@ -302,7 +297,6 @@ class IndexEntry
         idNumberT id = 0;
         errorT res = nb->AddName (NAME_EVENT, s ? s : "?", &id);
         if (res == OK) {
-            nb->IncFrequency (NAME_EVENT, id, 1);
             SetEvent (id);
         }
         return res;
@@ -311,7 +305,6 @@ class IndexEntry
         idNumberT id = 0;
         errorT res = nb->AddName (NAME_SITE, s ? s : "?", &id);
         if (res == OK) {
-            nb->IncFrequency (NAME_SITE, id, 1);
             SetSite (id);
         }
         return res;
@@ -320,7 +313,6 @@ class IndexEntry
         idNumberT id = 0;
         errorT res = nb->AddName (NAME_ROUND, s ? s : "?", &id);
         if (res == OK) {
-            nb->IncFrequency (NAME_ROUND, id, 1);
             SetRound (id);
         }
         return res;

@@ -148,12 +148,12 @@ struct scidBaseT {
         if (! validStats) computeStats();
         return &stats;
     }
-    const char* clearCaches();
+    const char* clearCaches(bool writeFiles = true); //TODO: make this function private
     void clearStats() { validStats = false; };
     const char* addGames(scidBaseT* sourceBase, Filter* filter,
                          bool (progressFn)(void*, unsigned int, unsigned int), void* progressData);
     const char* addGame(scidBaseT* sourceBase, uint gNum);
-    const char* addGame(Game* game);
+    const char* addGame(Game* game, bool clearCache);
 
     std::vector<scidBaseT::TreeStat> getTreeStat(Filter* filter);
     void recalcEstimatedRatings(SpellChecker* spellChecker) {
@@ -167,11 +167,19 @@ struct scidBaseT {
             if (elo > 0) nb->AddElo (ie->GetBlack(), elo);
         }
     }
+    uint getNameFreq (nameT nt, idNumberT id) {
+        if (nameFreq_[nt].size() == 0) calcNameFreq(nt);
+        if (id >= nameFreq_[nt].size()) return 0;
+        return nameFreq_[nt][id];
+    }
 
 private:
     std::vector< std::pair<std::string, Filter*> > filters_;
     bool validStats;
     scidStatsT stats;         // Counts of flags, average rating, etc.
+    std::vector <int> nameFreq_ [NUM_NAME_TYPES];
+    void calcNameFreq (nameT nt);
+
     const char* addGame_(scidBaseT* sourceBase, uint gNum);
     const char* addGame_(IndexEntry* iE, ByteBuffer* bbuf);
     void computeStats();
