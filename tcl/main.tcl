@@ -1144,7 +1144,6 @@ proc toggleAutoplay { } {
         set autoplayMode 1
         # Change the autoplay icon in the main window
         #
-        .main.fbutton.button.autoplay configure -image tb_stop -relief sunken
         # Start with some delay
         # Only to spawn the autoplay on a new thread
         #
@@ -1297,7 +1296,6 @@ proc cancelAutoplay {} {
     set annotateMode 0
     set annotateModeButtonValue 0
     after cancel autoplay
-    .main.fbutton.button.autoplay configure -image tb_play -relief flat
 }
 ################################################################################
 #

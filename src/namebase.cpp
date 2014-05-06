@@ -85,10 +85,10 @@ NameBase::WriteHeader ()
     writeThreeBytes (FilePtr, Header.numNames[NAME_ROUND]);
 
     // Compatibility issue: even if maxFrequency is no longer used we still need to write these bytes
-    writeThreeBytes (FilePtr, 1);
-    writeThreeBytes (FilePtr, 1);
-    writeThreeBytes (FilePtr, 1);
-    writeThreeBytes (FilePtr, 1);
+    writeThreeBytes (FilePtr, 255);
+    writeThreeBytes (FilePtr, 255);
+    writeThreeBytes (FilePtr, 255);
+    writeThreeBytes (FilePtr, 255);
     return OK;
 }
 
@@ -281,8 +281,12 @@ NameBase::WriteNameFile ()
                 writeTwoBytes (FilePtr, node->data.id);
             }
 
-            // Compatibility: write 1 frequency count to avoid trouble with older scid versions
-            writeOneByte (FilePtr, 1);
+            // Compatibility: write 255 frequency count to avoid trouble with older scid versions
+            // Known issue: opening a database with an older scid version and:
+            // - save 254 games with the same name to another name the frequency will go to 0
+            // - after that compacting the namefile before the gamefile (with the maintenance window) the name with frequency 0 will be deleted
+            // To avoid problems compact the gamefile before the namefile (default behavior when invoked from switcher/gamelist window)
+            writeOneByte (FilePtr, 255);
 
             byte length = (byte) strLength(node->name);
             byte prefix = 0;
