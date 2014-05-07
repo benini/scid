@@ -1479,6 +1479,7 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
         }
     }
     cdb->clearCaches();
+    cdb->idx->IndexUpdated(IDX_NOT_FOUND);
     if (showProgress) { updateProgressBar (ti, 1, 1); }
 
     appendUintElement (ti, gamesSeen);

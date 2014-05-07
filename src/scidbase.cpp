@@ -357,7 +357,10 @@ const char* scidBaseT::addGame(Game* game, bool clearCache) {
         return "Too many round names.";
 
     const char* err = addGame_(&iE, bbuf);
-    if (!err && clearCache) err = clearCaches();
+    if (!err && clearCache) {
+        err = clearCaches();
+        idx->IndexUpdated(numGames -1);
+	}
     return err;
 }
 
