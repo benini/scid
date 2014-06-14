@@ -1171,8 +1171,7 @@ namespace eval CorrespondenceChess {
 			set currbase [sc_base current]
 			set fName [file rootname $CorrBase]
 			if {[catch {sc_base create $fName} result]} {
-					tk_messageBox -icon warning -type ok -parent . \
-						-title "Scid: Unable to create base" -message $result
+				ERROR::MessageBox "$fName\n"
 			}
 			# Type 6 == Correspondence chess
 			sc_base type [sc_base current] 6

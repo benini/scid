@@ -216,22 +216,20 @@ proc ::maint::OpenClose {} {
   
   ttk::button $w.db.check -style Small.TButton -textvar ::tr(CheckGames...) -command checkAllGames
   ttk::button $w.db.eco -style Small.TButton -textvar ::tr(ReclassifyGames...) -command classifyAllGames
-  ttk::button $w.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command makeCompactWin
-  ttk::button $w.db.sort -style Small.TButton -textvar ::tr(SortDatabase...) -command makeSortWin
+  ttk::button $w.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command compactDB
   ttk::button $w.db.elo -style Small.TButton -textvar ::tr(AddEloRatings...) -command allocateRatings
   ttk::button $w.db.dups -style Small.TButton -textvar ::tr(DeleteTwins...) -command "markTwins $w"
   ttk::button $w.db.cleaner -style Small.TButton -textvar ::tr(Cleaner...) -command cleanerWin
   ttk::button $w.db.autoload -style Small.TButton -textvar ::tr(AutoloadGame...) -command ::maint::SetAutoloadGame
   ttk::button $w.db.strip -style Small.TButton -textvar ::tr(StripTags...) -command stripTags
   
-  foreach i {eco compact sort elo dups cleaner autoload strip} {
+  foreach i {eco compact elo dups cleaner autoload strip} {
     $w.db.$i configure -style Small.TButton
   }
   bind $w <Alt-d> "$w.db.dups invoke"
   
   grid $w.db.eco -row 1 -column 0 -sticky we
   grid $w.db.compact -row 1 -column 1 -sticky we
-  grid $w.db.sort -row 1 -column 2 -sticky we
   grid $w.db.elo -row 2 -column 0 -sticky we
   grid $w.db.dups -row 2 -column 1 -sticky we
   grid $w.db.cleaner -row 2 -column 2 -sticky we
@@ -329,7 +327,6 @@ proc ::maint::ChangeCustomDescription {} {
 
 proc ::maint::Refresh {} {
   global maintFlag maintFlags
-  updateSortWin
   updateClassifyWin
   
   set w .maintWin
@@ -386,7 +383,6 @@ proc ::maint::Refresh {} {
   set state disabled
   if {[sc_base inUse]} { set state normal }
   $w.db.eco configure -state $state
-  $w.db.sort configure -state $state
   $w.db.strip configure -state $state
   
   set state disabled
@@ -1043,282 +1039,35 @@ proc baseIsCompactable {} {
   return 1
 }
 
-# makeCompactWin:
-# Opens the database compaction dialog box.
-#
-proc makeCompactWin {} {
-  if {! [baseIsCompactable]} { return }
-  set w .compactWin
-  toplevel $w
-  wm title $w "Scid: $::tr(CompactDatabase)"
-  wm resizable $w 0 0
-  foreach f {top names games buttons} { ttk::frame $w.$f }
-  pack $w.top -side top -expand 1 -fill both
-  pack $w.names -in $w.top -side left -fill x -anchor n
-  addVerticalRule $w.top 12
-  pack $w.games -in $w.top -side left -fill x -anchor n
-  addHorizontalRule $w
-  pack $w.buttons -side top -fill x
-  
-  for {set i 0} {$i < 3} {incr i} {
-    grid columnconfigure $w.names $i -weight 1
-    grid columnconfigure $w.games $i -weight 1
-  }
-  ttk::label $w.names.title -text $::tr(NameFile) -font font_Bold
-  grid $w.names.title -columnspan 3 -row 0 -column 0 -sticky n
-  ttk::label $w.names.nt -text "  $::tr(Names)"
-  grid $w.names.nt -row 1 -column 1 -sticky e
-  ttk::label $w.names.ut -text "  $::tr(Unused)"
-  grid $w.names.ut -row 1 -column 2 -sticky e
-  ttk::frame $w.names.h -height 1 -relief solid ;# -bg black
-  grid $w.names.h -columnspan 3 -row 2 -column 0 -sticky we
-  set row 3
-  set ndata [sc_compact stats names]
-  set idx 0
-  foreach n {p e s r} name {Players Events Sites Rounds} {
-    ttk::label $w.names.t$n -text "$::tr($name)  "
-    ttk::label $w.names.n$n -text "  [::utils::thousands [lindex $ndata $idx]]"
-    incr idx
-    ttk::label $w.names.u$n -text "  [::utils::thousands [lindex $ndata $idx]]"
-    incr idx
-    grid $w.names.t$n -row $row -column 0 -sticky w
-    grid $w.names.n$n -row $row -column 1 -sticky e
-    grid $w.names.u$n -row $row -column 2 -sticky e
-    incr row
-  }
-  
-  ttk::label $w.games.title -text $::tr(GameFile) -font font_Bold
-  grid $w.games.title -columnspan 3 -row 0 -column 0 -sticky n
-  ttk::label $w.games.gt -text "  [::utils::string::Capital $::tr(games)]"
-  grid $w.games.gt -row 1 -column 1 -sticky e
-  ttk::label $w.games.st -text "  $::tr(SizeKb)"
-  grid $w.games.st -row 1 -column 2 -sticky e
-  ttk::frame $w.games.h -height 1 -relief solid ;# -bg black
-  grid $w.games.h -columnspan 3 -row 2 -column 0 -sticky we
-  set row 3
-  set ndata [sc_compact stats games]
-  set idx 0
-  foreach g {current compact} name {CurrentState AfterCompaction} {
-    ttk::label $w.games.t$g -text "$::tr($name)  "
-    ttk::label $w.games.g$g -text "  [::utils::thousands [lindex $ndata $idx]]"
-    incr idx
-    set kbytes [expr {int(([lindex $ndata $idx] + 512) / 1024)} ]
-    ttk::label $w.games.s$g -text "  [::utils::thousands $kbytes]"
-    incr idx
-    grid $w.games.t$g -row $row -column 0 -sticky w
-    grid $w.games.g$g -row $row -column 1 -sticky e
-    grid $w.games.s$g -row $row -column 2 -sticky e
-    incr row
-  }
-  
-  ttk::button $w.buttons.n -text $::tr(CompactNames) -command "compactNames; destroy $w"
-  ttk::button $w.buttons.g -text $::tr(CompactGames) -command "compactGames; destroy $w"
-  ttk::button $w.buttons.help -text $::tr(Help) -command {helpWindow Compact}
-  ttk::button $w.buttons.cancel -text $::tr(Cancel) -command "focus .; grab release $w; destroy $w"
-  pack $w.buttons.cancel $w.buttons.help -side right -padx 5 -pady 2
-  pack $w.buttons.n $w.buttons.g -side left -padx 5 -pady 2
-  grab $w
-}
-
-proc compactNames {{base -1}} {
+proc compactDB {{base -1}} {
   if {$base < 0} { set base [sc_base current] }
-  set stats [sc_base compact $base stats names]
-  if {[lindex $stats 1] == 0  &&  [lindex $stats 3] == 0  && \
-        [lindex $stats 5] == 0  &&  [lindex $stats 7] == 0} {
-    tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactNames)] -message $::tr(NoUnusedNames)
-    return
+  if {[catch {sc_base compact $base stats} stats]} {
+    return [ERROR::MessageBox "$::tr(CompactDatabase)\n"]
   }
-  progressWindow "Scid" [concat $::tr(CompactNames) "..."]
+  set msg "[sc_base filename $base]\n\n"
+  append msg "Deleted games: [lindex $stats 0]\n"
+  append msg "Unused names: [lindex $stats 1]\n"
+  append msg "Sparse games: [lindex $stats 2]\n"
+  append msg "Missing names (bad idx): [lindex $stats 3]"
+  set confirm [tk_messageBox -type okcancel -icon info -parent . \
+               -title [concat "Scid: " $::tr(CompactDatabase)] \
+               -message "$msg"]
+  if {$confirm != "ok"} { return }
+
+  progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel) "sc_progressBar"
   busyCursor .
-  set err [catch {sc_base compact $base names} result]
+  set err [catch {sc_base compact $base} result]
   unbusyCursor .
   closeProgressWindow
   if {$err} {
-    tk_messageBox -type ok -icon warning -parent . -title "Scid: Error compacting file" -message $result
-  } else {
-    tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactNames)] -message [subst $::tr(NameFileCompacted)]
-  }
-  ::notify::DatabaseModified $base
-}
-
-proc compactGames {{base -1}} {
-  if {$base < 0} { set base [sc_base current] }
-  set stats [sc_base compact $base stats games]
-  if {[lindex $stats 1] == [lindex $stats 3]  && \
-        [lindex $stats 0] == [lindex $stats 2]} {
-    tk_messageBox -type ok -icon info -parent . -title [concat "Scid: " $::tr(CompactGames)] -message $::tr(NoUnusedGames)
-    return
-  }
-  progressWindow "Scid" [concat $::tr(CompactGames) "..."] \
-      $::tr(Cancel) "sc_progressBar"
-  busyCursor .
-  set err [catch {sc_base compact $base games} result]
-  unbusyCursor .
-  closeProgressWindow
-  if {$err} {
-    tk_messageBox -type ok -icon warning -parent . \
-        -title "Scid: Error compacting file" -message $result
+    ERROR::MessageBox "$::tr(CompactDatabase)\n"
   } else {
     tk_messageBox -type ok -icon info -parent . \
-        -title [concat "Scid: " $::tr(CompactGames)] \
+        -title [concat "Scid: " $::tr(CompactDatabase)] \
         -message [subst $::tr(GameFileCompacted)]
   }
   ::notify::DatabaseModified $base
 }
-
-set sortCriteria(real) ""
-set sortCriteria(translated) ""
-
-proc clearSortCriteria {} {
-  set ::sortCriteria(real) ""
-  set ::sortCriteria(translated) ""
-  updateSortWin
-}
-
-proc addSortCriteria {args} {
-  global sortCriteria
-  foreach x $args {
-    if {$sortCriteria(real) == ""} {
-      set sortCriteria(real) $x
-      set sortCriteria(translated) $::tr($x)
-    } else {
-      append sortCriteria(real) ", $x"
-      append sortCriteria(translated) ", $::tr($x)"
-    }
-  }
-  updateSortWin
-}
-
-proc makeSortWin {} {
-  global sortCriteria
-  set w .sortWin
-  if {[winfo exists $w]} {
-    raiseWin $w
-    return
-  }
-  toplevel $w
-  wm title $w "Scid: [tr FileMaintSort]"
-  wm resizable $w 0 0
-  pack [ttk::frame $w.f]
-  
-  ttk::label $w.f.torder -textvar ::tr(SortCriteria:) -font font_Bold
-  pack $w.f.torder -side top
-  ttk::label $w.f.order -textvar sortCriteria(translated) -width 40 -background white \
-      -relief solid -anchor w
-  pack $w.f.order -side top -fill x -pady 2 -padx 2
-  addHorizontalRule $w.f
-  ttk::label $w.f.tadd -textvar ::tr(AddCriteria:) -font font_Bold
-  pack $w.f.tadd -side top
-  pack [ttk::frame $w.f.add] -side top -fill x
-  foreach b {Date Year Month Event Site Country Round Result Length
-    White Black Rating ECO Deleted EventDate} {
-    set n [string tolower $b]
-    ttk::button $w.f.add.$n -textvar ::tr($b) -command "addSortCriteria $b"
-  }
-  grid $w.f.add.date -row 0 -column 0 -sticky we
-  grid $w.f.add.year -row 0 -column 1 -sticky we
-  grid $w.f.add.month -row 0 -column 2 -sticky we
-  grid $w.f.add.event -row 1 -column 0 -sticky we
-  grid $w.f.add.site -row 1 -column 1 -sticky we
-  grid $w.f.add.country -row 1 -column 2 -sticky we
-  grid $w.f.add.round -row 2 -column 0 -sticky we
-  grid $w.f.add.result -row 2 -column 1 -sticky we
-  grid $w.f.add.length -row 2 -column 2 -sticky we
-  grid $w.f.add.white -row 3 -column 0 -sticky we
-  grid $w.f.add.black -row 3 -column 1 -sticky we
-  grid $w.f.add.rating -row 3 -column 2 -sticky we
-  grid $w.f.add.eco -row 4 -column 0 -sticky we
-  grid $w.f.add.deleted -row 4 -column 1 -sticky we
-  grid $w.f.add.eventdate -row 4 -column 2 -sticky we
-  
-  for {set i 0} {$i < 3} {incr i} {
-    grid columnconfigure $w.f.add $i -weight 1
-  }
-  
-  addHorizontalRule $w.f
-  
-  ttk::label $w.f.tcommon -textvar ::tr(CommonSorts:) -font font_Bold
-  pack $w.f.tcommon -side top
-  pack [ttk::frame $w.f.tc] -side top -fill x
-  ttk::button $w.f.tc.ymsedr -text "$::tr(Year), $::tr(Month), $::tr(Site), $::tr(Event), $::tr(Date), $::tr(Round)" -command {
-    clearSortCriteria
-    addSortCriteria Year Month Site Event Date Round
-  }
-  ttk::button $w.f.tc.yedr -text "$::tr(Year), $::tr(Event), $::tr(Date), $::tr(Round)" -command {
-    clearSortCriteria
-    addSortCriteria Year Event Date Round
-  }
-  ttk::button $w.f.tc.er -text "$::tr(ECO), $::tr(Rating)" -command {
-    clearSortCriteria
-    addSortCriteria ECO Rating
-  }
-  grid $w.f.tc.ymsedr -row 0 -column 0 -sticky we
-  grid $w.f.tc.yedr -row 1 -column 0 -sticky we
-  grid $w.f.tc.er -row 2 -column 0 -sticky we
-  grid columnconfigure $w.f.tc 0 -weight 1
-  addHorizontalRule $w.f
-  pack [ttk::frame $w.f.b] -side bottom -fill x
-  ttk::button $w.f.b.clear -textvar ::tr(Clear) -command clearSortCriteria
-  ttk::button $w.f.b.help -textvar ::tr(Help) -command {helpWindow Sorting}
-  ttk::button $w.f.b.sort -textvar ::tr(Sort) -command sortDatabase
-  ttk::button $w.f.b.close -textvar ::tr(Close) \
-      -command "focus .; destroy $w"
-  pack $w.f.b.close $w.f.b.sort -side right -padx 5 -pady 2
-  pack $w.f.b.clear $w.f.b.help -side left -padx 5 -pady 2
-  bind $w <F1> {helpWindow Sorting}
-  bind $w <Escape> "$w.f.b.close invoke"
-  standardShortcuts $w
-  updateSortWin
-}
-
-proc updateSortWin {} {
-  global sortCriteria
-  set w .sortWin
-  if {! [winfo exists $w]} { return }
-  set state disabled
-  if {[sc_base inUse]  &&  $sortCriteria(real) != ""} { set state normal }
-  $w.f.b.sort configure -state $state
-}
-
-proc sortDatabase {} {
-  global sortCriteria
-  set w .sortWin
-  if {! [sc_base inUse]} {
-    tk_messageBox -type ok -icon info -parent $w -title "Scid: Sort results" \
-        -message "This is not an open database; there are no games to sort."
-    return
-  }
-  progressWindow "Scid" "Sorting the database..."
-  busyCursor .
-  set err [catch {sc_base sort $sortCriteria(real) \
-        {changeProgressWindow "Storing results..."} \
-      } result]
-  unbusyCursor .
-  closeProgressWindow
-  if {$err} {
-    tk_messageBox -type ok -icon warning -parent $w \
-        -title "Scid: Sort results" -message $result
-  } else {
-    tk_messageBox -type ok -icon info -parent $w \
-        -title "Scid: Sort results" \
-        -message "The database was successfully sorted."
-  }
-  updateBoard
-  ::windows::gamelist::Refresh
-  ::maint::Refresh
-}
-
-proc makeBaseReadOnly {} {
-  set curr_base [sc_base current]
-  if {! [sc_base inUse]} { return }
-  if {[sc_base isReadOnly $curr_base]} { return }
-  set result [tk_dialog .roDialog "Scid: [tr FileReadOnly]" \
-      $::tr(ReadOnlyDialog) "" 1 $::tr(Yes) $::tr(No)]
-  if {$result == 0} {
-    sc_base isReadOnly $curr_base set
-  }
-}
-
 
 # allocateRatings:
 #   Allocate player ratings to games based on the spellcheck file.
@@ -1511,7 +1260,6 @@ set cleaner(rounds) 1
 set cleaner(eco) 1
 set cleaner(elo) 1
 set cleaner(twins) 1
-set cleaner(cnames) 0
 set cleaner(cgames) 0
 set cleaner(tree) 0
 
@@ -1541,16 +1289,15 @@ proc cleanerWin {} {
   ttk::label $w.f.f.eco -text $::tr(ReclassifyGames)
   ttk::label $w.f.f.elo -text $::tr(AddEloRatings)
   ttk::label $w.f.f.twins -text $::tr(DeleteTwins)
-  ttk::label $w.f.f.cnames -text $::tr(CompactNames)
-  ttk::label $w.f.f.cgames -text $::tr(CompactGames)
+  ttk::label $w.f.f.cgames -text $::tr(CompactDatabase)
   ttk::label $w.f.f.tree -text [tr TreeFileFill]
   
-  foreach i {players events sites rounds eco elo twins cnames cgames tree} {
+  foreach i {players events sites rounds eco elo twins cgames tree} {
     ttk::radiobutton $w.f.f.y$i -variable cleaner($i) -value 1 -text $::tr(Yes)
     ttk::radiobutton $w.f.f.n$i -variable cleaner($i) -value 0 -text $::tr(No)
   }
   set row 0
-  foreach i {players events sites rounds eco elo twins cnames cgames tree} {
+  foreach i {players events sites rounds eco elo twins cgames tree} {
     grid $w.f.f.$i -row $row -column 0 -sticky w
     grid $w.f.f.y$i -row $row -column 1 -sticky w
     grid $w.f.f.n$i -row $row -column 2 -sticky w
@@ -1583,6 +1330,8 @@ proc doCleaner {} {
   global cleaner twinSettings
   global cleaner_maxSpellCorrections
   
+  set dbase [sc_base current]
+
   set answer [tk_dialog .mtoolDialog "Scid" \
       [string trim $::tr(CleanerConfirm)] "" \
       0 $::tr(Yes) $::tr(No)]
@@ -1679,37 +1428,21 @@ proc doCleaner {} {
     $t insert end "   $message.\n"
   }
   
-  if {$cleaner(cnames)} {
-    mtoolAdd $t "$count: $::tr(CompactNames)..."
-    incr count
-    set stats [sc_compact stats names]
-    if {[lindex $stats 1] == 0  &&  [lindex $stats 3] == 0  && \
-          [lindex $stats 5] == 0  &&  [lindex $stats 7] == 0} {
-      $t insert end "   Name file already compacted.\n"
-    } else {
-      set err [catch {sc_compact names} result]
-      if {$err} {
-        $t insert end "   $result\n"
-      } else {
-        $t insert end "   Done.\n"
-      }
-    }
-    $t see end
-  }
-  
   if {$cleaner(cgames)} {
-    mtoolAdd $t "$count: $::tr(CompactGames)..."
+    mtoolAdd $t "$count: $::tr(CompactDatabase)..."
     incr count
-    set stats [sc_compact stats games]
-    if {[lindex $stats 1] == [lindex $stats 3]  && \
-          [lindex $stats 0] == [lindex $stats 2]} {
-      $t insert end "   Game file already compacted.\n"
+    if {[catch {sc_base compact $dbase stats} stats]} {
+      $t insert end "   Error: unable to compacwt the database.\n"
     } else {
-      set err [catch {sc_compact games} result]
-      if {$err} {
-        $t insert end "   $result\n"
+      if {[lindex $stats 0] == 0 && [lindex $stats 1] == 0 && \
+          [lindex $stats 2] == 0 && [lindex $stats 3] == 0} {
+        $t insert end "   Database already compacted.\n"
       } else {
-        $t insert end "   Done.\n"
+        if {[catch {sc_base compact $dbase} result]} {
+          $t insert end "   Error: unable to compact the database.\n"
+        } else {
+          $t insert end "   Done.\n"
+        }
       }
     }
     $t see end

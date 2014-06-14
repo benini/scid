@@ -21,17 +21,10 @@
 #include "pgnparse.h"
 #include "naglatex.h"
 #include "nagtext.h"
-
 #include "bytebuf.h"
 #include "textbuf.h"
 #include "stored.h"
-
-// Include header file for memcpy():
-#ifdef WIN32
-#  include <memory.h>
-#else
-#  include <string.h>
-#endif
+#include <string.h>
 
 // Piece letters translation
 int language = 0; // default to english
@@ -201,7 +194,7 @@ game_printNag (byte nag, char * str, bool asSymbol, gameFormatT format)
 
     if (nag >= (sizeof evalNagsRegular / sizeof (const char *))) {
         if (format == PGN_FORMAT_LaTeX) *str = 0;
-        else snprintf (str, 9, "$%u", nag);
+        else sprintf (str, "$%u", nag);
         return;
     }
 

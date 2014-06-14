@@ -108,24 +108,6 @@ class OpLine
     void Destroy (void);
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif 
     OpLine () { Init(); }
     OpLine (Game * g, IndexEntry * ie, gameNumberT gnum, uint max, uint tm) {
         Init (g, ie, gnum, max, tm);
@@ -193,33 +175,11 @@ class OpTable
     void PrintNotes (DString * dstr, uint format);
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif 
     OpTable (const char * type, Game * g, PBook * ecoBook) {
         Init (type, g, ecoBook);
     }
     OpTable (const char * type, Game * g) { Init (type, g, NULL); }
-#ifdef WINCE
-    ~OpTable() { Clear();  my_Tcl_Free((char*) Type); }
-#else
     ~OpTable() { Clear();  delete[] Type; }
-#endif
     void Init (const char * type, Game * g, PBook * ecoBook);
     void Clear ();
     void ClearNotes ();

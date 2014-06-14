@@ -1,0 +1,786 @@
+/*
+* Copyright (c) 1999-2002  Shane Hudson
+* Copyright (c) 2006-2009  Pascal Georges
+* Copyright (C) 2014  Fulvio Benini
+
+* This file is part of Scid (Shane's Chess Information Database).
+*
+* Scid is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation.
+*
+* Scid is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef SCID_INDEXENTRY_H
+#define SCID_INDEXENTRY_H
+
+#include "common.h"
+#include "matsig.h"
+#include "namebase.h"
+
+// Length is encoded as 17bits uint
+#define MAX_GAME_LENGTH 131072
+
+// HPSIG_SIZE = size of HomePawnData array in an IndexEntry.
+// It is nine bytes: the first byte contains the number of valid entries
+// in the array, and the next 8 bytes contain up to 16 half-byte entries.
+const uint HPSIG_SIZE = 9;
+
+const uint MAX_ELO = 4000; // Since we store Elo Ratings in 12 bits
+
+// IndexEntry Flag types:
+#define  IDX_NUM_FLAGS 22
+
+#define  IDX_FLAG_START         0   // Game has own start position.
+#define  IDX_FLAG_PROMO         1   // Game contains promotion(s).
+#define  IDX_FLAG_UPROMO        2   // Game contains promotion(s).
+#define  IDX_FLAG_DELETE        3   // Game marked for deletion.
+#define  IDX_FLAG_WHITE_OP      4   // White openings flag.
+#define  IDX_FLAG_BLACK_OP      5   // Black openings flag.
+#define  IDX_FLAG_MIDDLEGAME    6   // Middlegames flag.
+#define  IDX_FLAG_ENDGAME       7   // Endgames flag.
+#define  IDX_FLAG_NOVELTY       8   // Novelty flag.
+#define  IDX_FLAG_PAWN          9   // Pawn structure flag.
+#define  IDX_FLAG_TACTICS      10   // Tactics flag.
+#define  IDX_FLAG_KSIDE        11   // Kingside play flag.
+#define  IDX_FLAG_QSIDE        12   // Queenside play flag.
+#define  IDX_FLAG_BRILLIANCY   13   // Brilliancy or good play.
+#define  IDX_FLAG_BLUNDER      14   // Blunder or bad play.
+#define  IDX_FLAG_USER         15   // User-defined flag.
+
+#define  IDX_FLAG_CUSTOM1      16   // Custom flag.
+#define  IDX_FLAG_CUSTOM2      17   // Custom flag.
+#define  IDX_FLAG_CUSTOM3      18   // Custom flag.
+#define  IDX_FLAG_CUSTOM4      19   // Custom flag.
+#define  IDX_FLAG_CUSTOM5      20   // Custom flag.
+#define  IDX_FLAG_CUSTOM6      21   // Custom flag.
+
+
+#define  IDX_MASK_START         (1 << IDX_FLAG_START)
+#define  IDX_MASK_PROMO         (1 << IDX_FLAG_PROMO)
+#define  IDX_MASK_UPROMO        (1 << IDX_FLAG_UPROMO)
+#define  IDX_MASK_DELETE        (1 << IDX_FLAG_DELETE)
+#define  IDX_MASK_WHITE_OP      (1 << IDX_FLAG_WHITE_OP)
+#define  IDX_MASK_BLACK_OP      (1 << IDX_FLAG_BLACK_OP)
+#define  IDX_MASK_MIDDLEGAME    (1 << IDX_FLAG_MIDDLEGAME)
+#define  IDX_MASK_ENDGAME       (1 << IDX_FLAG_ENDGAME)
+#define  IDX_MASK_NOVELTY       (1 << IDX_FLAG_NOVELTY)
+#define  IDX_MASK_PAWN          (1 << IDX_FLAG_PAWN)
+#define  IDX_MASK_TACTICS       (1 << IDX_FLAG_TACTICS)
+#define  IDX_MASK_KSIDE         (1 << IDX_FLAG_KSIDE)
+#define  IDX_MASK_QSIDE         (1 << IDX_FLAG_QSIDE)
+#define  IDX_MASK_BRILLIANCY    (1 << IDX_FLAG_BRILLIANCY)
+#define  IDX_MASK_BLUNDER       (1 << IDX_FLAG_BLUNDER)
+#define  IDX_MASK_USER          (1 << IDX_FLAG_USER)
+
+const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
+
+// Bitmask functions for index entry decoding:
+inline byte u32_high_8( uint x )
+{
+    return (byte)(x >> 24);
+}
+
+inline uint u32_low_24( uint x )
+{
+    return x & 0x00FFFFFF;
+}
+
+inline uint u32_high_12( uint x )
+{
+    return x >> 20;
+}
+
+inline uint u32_low_20( uint x )
+{
+    return x & 0x000FFFFF;
+}
+
+inline byte u16_high_4( ushort x )
+{
+    return (byte)(x >> 12);
+}
+
+inline ushort u16_low_12( ushort x )
+{
+    return x & 0x0FFF;
+}
+
+inline byte u8_high_4( byte x )
+{
+    return x >> 4;
+}
+
+inline byte u8_low_4( byte x )
+{
+    return x & 0x0F;
+}
+
+inline byte u8_high_3( byte x )
+{
+    return x >> 5;
+}
+
+inline byte u8_low_5( byte x )
+{
+    return x & 0x1F;
+}
+
+inline uint u32_set_high_8( uint u, byte x )
+{
+    return u32_low_24(u) | ((uint)x << 24);
+}
+
+inline uint u32_set_low_24( uint u, uint x )
+{
+    return (u & 0xFF000000) | (x & 0x00FFFFFF);
+}
+
+inline uint u32_set_high_12( uint u, uint x )
+{
+    return u32_low_20(u) | (x << 20);
+}
+
+inline uint u32_set_low_20( uint u, uint x )
+{
+    return (u & 0xFFF00000) | (x & 0x000FFFFF);
+}
+
+inline ushort u16_set_high_4( ushort u, byte x )
+{
+    return u16_low_12(u) | ((ushort)x << 12);
+}
+
+inline ushort u16_set_low_12( ushort u, ushort x )
+{
+    return (u & 0xF000) | (x & 0x0FFF);
+}
+
+
+// Total on-disk size per index entry: currently 47 bytes.
+const uint  INDEX_ENTRY_SIZE = 47;
+const uint  OLD_INDEX_ENTRY_SIZE = 46;
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Class IndexEntry: one of these per game in the index file.
+//
+//    It contains more than just the location of the game data in the main
+//    data file.  For fast searching, it also store some other important
+//    values: players, event, site, date, result, eco, gamelength.
+//
+//    It takes 48 bytes, assuming sizeof(uint) == 4 and sizeof(ushort) == 2.
+
+class IndexEntry
+{
+    uint16_t  NumHalfMoves;
+    // Name ID values are packed into 12 bytes, saving 8 bytes over the
+    // simpler method of just storing each as a 4-byte idNumberT.
+    uint16_t  WhiteID_Low;       // Lower 16 bits of White ID.
+    uint16_t  BlackID_Low;       // Lower 16 bits of Black ID.
+    uint16_t  EventID_Low;       // Lower 16 bits of Site.
+    uint16_t  SiteID_Low;        // Lower 16 bits of Site ID.
+    uint16_t  RoundID_Low;       // Lower 16 bits of Round ID.
+    byte      WhiteBlack_High;   // High bits of White, Black.
+    byte      EventSiteRnd_High; // High bits of Event, Site, Round.
+    ecoT      EcoCode;           // ECO code
+    dateT     Dates;             // Date and EventDate fields.
+    eloT      WhiteElo;	         
+    eloT      BlackElo;	         
+    matSigT   FinalMatSig;       // material of the final position in the game,
+                                 // and the StoredLineCode in the top 8 bits.
+    uint16_t  Flags;
+    uint16_t  VarCounts;         // Counters for comments, variations, etc.
+                                 // VarCounts also stores the result.
+			  
+    uint32_t  Offset;            // Start of gamefile record for this game.
+
+    // Length of gamefile record for this game. 17 bits are used so the max length is
+    // 128 ko (131071). So 7 bits are usable for custom flags or other.
+    uint16_t  Length_Low;
+    byte      Length_High;       // LxFFFFFF ( L = length for long games, x = spare, F = custom flags)
+
+    byte      HomePawnData [HPSIG_SIZE];  // homePawnSig data.
+    
+public:
+    void Init();
+    template <class T> errorT Read (T* file, versionT version);
+    template <class T> errorT Write (T* file, versionT version);
+
+
+    uint GetOffset ()  { return Offset; }
+    void SetOffset (uint offset) { Offset = offset; }
+    uint GetLength () { return (Length_Low + ((Length_High & 0x80) << 9)); }
+    void SetLength (uint length) {
+        ASSERT(length >= 0 && length < 131072);
+        Length_Low = (unsigned short) (length & 0xFFFF);
+        // preserve the last 7 bits
+        Length_High = ( Length_High & 0x7F ) | (byte) ( (length >> 16) << 7 );
+    }
+
+
+    // Name Get and Set routines:
+    //   WhiteID and BlackID are 20-bit values, EventID and SiteID are
+    //   19-bit values, and RoundID is an 18-bit value.
+    //
+    //   WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
+    //   BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
+    //   EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
+    //   SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
+    //   RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
+    idNumberT GetWhite () {
+        idNumberT id = (idNumberT) WhiteBlack_High;
+        id = id >> 4;  // High 4 bits = bits 4-7 of WhiteBlack_High.
+        id <<= 16;
+        id |= (idNumberT) WhiteID_Low;
+        return id;
+    }
+    idNumberT GetBlack () {
+        idNumberT id = (idNumberT) WhiteBlack_High;
+        id = id & 0xF;   // High 4 bits = bits 0-3 of WhiteBlack_High.
+        id <<= 16;
+        id |= (idNumberT) BlackID_Low;
+        return id;
+    }
+    idNumberT GetEvent () {
+        uint id = (idNumberT) EventSiteRnd_High;
+        id >>= 5;  // High 3 bits = bits 5-7 of EventSiteRnd_High.
+        id <<= 16;
+        id |= (idNumberT) EventID_Low;
+        return id;
+    }
+    idNumberT GetSite () {
+        uint id = (idNumberT) EventSiteRnd_High;
+        id = (id >> 2) & 7;  // High 3 bits = bits 2-5 of EventSiteRnd_High.
+        id <<= 16;
+        id |= (idNumberT) SiteID_Low;
+        return id;
+    }
+    idNumberT GetRound () {
+        uint id = (idNumberT) EventSiteRnd_High;
+        id &= 3;   // High 2 bits = bits 0-1 of EventSiteRnd_High.
+        id <<= 16;
+        id |= (idNumberT) RoundID_Low;
+        return id;
+    }
+
+    void SetWhite (idNumberT id) {
+        WhiteID_Low = id & 0xFFFF;
+        WhiteBlack_High = WhiteBlack_High & 0x0F;   // Clear bits 4-7.
+        WhiteBlack_High |= ((id >> 16) << 4);       // Set bits 4-7.
+    }
+    void SetBlack (idNumberT id) {
+        BlackID_Low = id & 0xFFFF;
+        WhiteBlack_High = WhiteBlack_High & 0xF0;   // Clear bits 0-3.
+        WhiteBlack_High |= (id >> 16);              // Set bits 0-3.
+    }
+    void SetEvent (idNumberT id) {
+        EventID_Low = id & 0xFFFF;
+        // Clear bits 2-4 of EventSiteRnd_high: 31 = 00011111 binary.
+        EventSiteRnd_High = EventSiteRnd_High & 31;
+        EventSiteRnd_High |= ((id >> 16) << 5);
+    }
+    void SetSite (idNumberT id) {
+        SiteID_Low = id & 0xFFFF;
+        // Clear bits 2-4 of EventSiteRnd_high: 227 = 11100011 binary.
+        EventSiteRnd_High = EventSiteRnd_High & 227;
+        EventSiteRnd_High |= ((id >> 16) << 2);
+    }
+    void SetRound (idNumberT id) {
+        RoundID_Low = id & 0xFFFF;
+        // Clear bits 0-1 of EventSiteRnd_high: 252 = 11111100 binary.
+        EventSiteRnd_High = EventSiteRnd_High & 252;
+        EventSiteRnd_High |= (id >> 16);
+    }
+
+
+    const char* GetWhiteName (NameBase* nb) {
+        return nb->GetName (NAME_PLAYER, GetWhite()); 
+    }
+    const char* GetBlackName (NameBase* nb) {
+        return nb->GetName (NAME_PLAYER, GetBlack());
+    }
+    const char* GetEventName (NameBase* nb) {
+        return nb->GetName (NAME_EVENT, GetEvent());
+    }
+    const char* GetSiteName (NameBase* nb) {
+        return nb->GetName (NAME_SITE, GetSite());
+    }
+    const char* GetRoundName (NameBase* nb) {
+        return nb->GetName (NAME_ROUND, GetRound());
+    }
+
+    errorT SetWhiteName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
+        if (res == OK) SetWhite (id);
+        return res;
+    }
+    errorT SetBlackName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
+        if (res == OK) SetBlack (id);
+        return res;
+    }
+    errorT SetEventName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_EVENT, s ? s : "?", &id);
+        if (res == OK) SetEvent (id);
+        return res;
+    }
+    errorT SetSiteName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_SITE, s ? s : "?", &id);
+        if (res == OK) SetSite (id);
+        return res;
+    }
+    errorT SetRoundName(NameBase* nb, const char* s) {
+        idNumberT id = 0;
+        errorT res = nb->AddName (NAME_ROUND, s ? s : "?", &id);
+        if (res == OK) SetRound (id);
+        return res;
+    }
+
+
+    dateT   GetDate ()     { return u32_low_20(Dates); }
+    uint    GetYear ()     { return date_GetYear (GetDate()); }
+    uint    GetMonth ()    { return date_GetMonth (GetDate()); }
+    uint    GetDay ()      { return date_GetDay (GetDate()); }
+    dateT   GetEventDate () {
+        uint dyear = date_GetYear (GetDate());
+        dateT edate = u32_high_12 (Dates);
+        uint month = date_GetMonth (edate);
+        uint day = date_GetDay (edate);
+        uint year = date_GetYear(edate) & 7;
+        if (year == 0) { return ZERO_DATE; }
+        year = dyear + year - 4;
+        return DATE_MAKE (year, month, day);
+    }
+    resultT GetResult ()   { return (VarCounts >> 12); }
+    eloT    GetWhiteElo () { return u16_low_12(WhiteElo); }
+    eloT    GetWhiteElo (NameBase* nb) {
+        eloT r = GetWhiteElo();
+        if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
+        return r;
+    }
+    eloT    GetBlackElo () { return u16_low_12(BlackElo); }
+    eloT    GetBlackElo (NameBase* nb) {
+        eloT r = GetBlackElo();
+        if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
+        return r;
+    }
+    byte    GetWhiteRatingType () { return u16_high_4 (WhiteElo); }
+    byte    GetBlackRatingType () { return u16_high_4 (BlackElo); }
+    ecoT    GetEcoCode ()  { return EcoCode; }
+    ushort  GetNumHalfMoves () { return NumHalfMoves; }
+    byte    GetRating(NameBase* nb);
+
+    void    SetDate  (dateT date)   {
+        Dates = u32_set_low_20 (Dates, date);
+    }
+    void    SetEventDate (dateT edate) {
+        uint codedDate = date_GetMonth(edate) << 5;
+        codedDate |= date_GetDay (edate);
+        uint eyear = date_GetYear (edate);
+        uint dyear = date_GetYear (GetDate());
+        // Due to a compact encoding format, the EventDate
+        // must be within a few years of the Date.
+        if (eyear < (dyear - 3)  ||  eyear > (dyear + 3)) { eyear = 0; }
+
+        if (eyear == 0) {
+            codedDate = 0; 
+        } else {
+            codedDate |= (((eyear + 4 - dyear) & 7) << 9);
+        }
+        Dates = u32_set_high_12 (Dates, codedDate);
+    }
+    void    SetResult (resultT res) {
+        VarCounts = (VarCounts & 0x0FFF) | (((ushort)res) << 12);
+    }
+    void    SetWhiteElo (eloT elo)  {
+        WhiteElo = u16_set_low_12(WhiteElo, elo);
+    }
+    void    SetBlackElo (eloT elo)  {
+        BlackElo = u16_set_low_12 (BlackElo, elo);
+    }
+    void    SetWhiteRatingType (byte b) {
+        WhiteElo = u16_set_high_4 (WhiteElo, b);
+    }
+    void    SetBlackRatingType (byte b) {
+        BlackElo = u16_set_high_4 (BlackElo, b);
+    }
+    void    SetEcoCode (ecoT eco)   { EcoCode = eco; }
+    void    SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
+
+
+    bool GetFlag (uint mask)  {
+      if (mask & 0xFFFF)
+        return Flags & mask;
+      else
+        return Length_High & ( mask >> 16 ) ;
+    }
+    bool GetStartFlag ()      { return Flags & IDX_MASK_START; }
+    bool GetPromotionsFlag () { return Flags & IDX_MASK_PROMO; }
+    bool GetUnderPromoFlag()  { return Flags & IDX_MASK_UPROMO; }
+    bool GetCommentsFlag ()   { return (GetCommentCount() > 0); }
+    bool GetVariationsFlag () { return (GetVariationCount() > 0); }
+    bool GetNagsFlag ()       { return (GetNagCount() > 0); }
+    bool GetDeleteFlag ()     { return Flags & IDX_MASK_DELETE; }
+    bool GetWhiteOpFlag ()    { return Flags & IDX_MASK_WHITE_OP; }
+    bool GetBlackOpFlag ()    { return Flags & IDX_MASK_BLACK_OP; }
+    bool GetMiddlegameFlag () { return Flags & IDX_MASK_MIDDLEGAME; }
+    bool GetEndgameFlag ()    { return Flags & IDX_MASK_ENDGAME; }
+    bool GetNoveltyFlag ()    { return Flags & IDX_MASK_NOVELTY; }
+    bool GetPawnStructFlag () { return Flags & IDX_MASK_PAWN; }
+    bool GetTacticsFlag ()    { return Flags & IDX_MASK_TACTICS; }
+    bool GetKingsideFlag ()   { return Flags & IDX_MASK_KSIDE; }
+    bool GetQueensideFlag ()  { return Flags & IDX_MASK_QSIDE; }
+    bool GetBrilliancyFlag () { return Flags & IDX_MASK_BRILLIANCY; }
+    bool GetBlunderFlag ()    { return Flags & IDX_MASK_BLUNDER; }
+    bool GetUserFlag ()       { return Flags & IDX_MASK_USER; }
+    // Custom flags are bits numbered from 1 to 6 from left to right
+    bool GetCustomFlag (byte c) {
+      return (Length_High & CUSTOM_FLAG_MASK[c-1]) ;
+    }
+
+    static uint   CharToFlag (char ch);
+    uint   GetFlagStr (char * str, const char * flags);
+    void   SetFlagStr (const char * flags);
+
+    static uint EncodeCount (uint x) {
+        if (x <= 10) { return x; }
+        if (x <= 12) { return 10; }
+        if (x <= 17) { return 11; }  // 11 indicates 15 (13-17)
+        if (x <= 24) { return 12; }  // 12 indicates 20 (18-24)
+        if (x <= 34) { return 13; }  // 13 indicates 30 (25-34)
+        if (x <= 44) { return 14; }  // 14 indicates 40 (35-44)
+        return 15;                   // 15 indicates 50 or more
+    }
+    static uint DecodeCount (uint x) {
+        static uint countCodes[16] = {0,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50};
+        return countCodes[x & 15]; 
+    }
+    uint GetVariationCount () { return DecodeCount(VarCounts & 15); }
+    uint GetCommentCount ()   { return DecodeCount((VarCounts >> 4) & 15); }
+    uint GetNagCount ()       { return DecodeCount((VarCounts >> 8) & 15); }
+
+    matSigT GetFinalMatSig ()   { return u32_low_24 (FinalMatSig); }
+    byte    GetStoredLineCode () { return u32_high_8 (FinalMatSig); }
+    byte *  GetHomePawnData ()  { return HomePawnData; }
+
+
+    void SetFlag (uint flagMask, bool b) {
+        if (flagMask & 0xFFFF) {
+            if (b) { 
+                Flags |= flagMask;
+            } else {
+                Flags &= ~flagMask;
+            }
+        } else {
+            if (b) {
+                Length_High |= (flagMask >> 16);
+            } else {
+                Length_High &= ~ (flagMask >> 16);
+            }
+        }
+    }
+    void SetStartFlag (bool b)      { SetFlag (IDX_MASK_START, b); }
+    void SetPromotionsFlag (bool b) { SetFlag (IDX_MASK_PROMO, b); }
+    void SetUnderPromoFlag (bool b) { SetFlag (IDX_MASK_UPROMO, b); }
+    void SetDeleteFlag (bool b)     { SetFlag (IDX_MASK_DELETE, b); }
+    void SetUserFlag (bool b)       { SetFlag (IDX_MASK_USER, b); }
+    void SetBlackOpFlag (bool b)    { SetFlag (IDX_MASK_BLACK_OP, b); }
+    void SetMiddlegameFlag (bool b) { SetFlag (IDX_MASK_MIDDLEGAME, b); }
+    void SetEndgameFlag (bool b)    { SetFlag (IDX_MASK_ENDGAME, b); }
+    void SetNoveltyFlag (bool b)    { SetFlag (IDX_MASK_NOVELTY, b); }
+    void SetPawnStructFlag (bool b) { SetFlag (IDX_MASK_PAWN, b); }
+    void SetTacticsFlag (bool b)    { SetFlag (IDX_MASK_TACTICS, b); }
+    void SetKingsideFlag (bool b)   { SetFlag (IDX_MASK_KSIDE, b); }
+    void SetQueensideFlag (bool b)  { SetFlag (IDX_MASK_QSIDE, b); }
+    void SetBrilliancyFlag (bool b) { SetFlag (IDX_MASK_BRILLIANCY, b); }
+    void SetBlunderFlag (bool b)    { SetFlag (IDX_MASK_BLUNDER, b); }
+    void SetWhiteOpFlag (bool b)    { SetFlag (IDX_MASK_WHITE_OP, b); }
+
+    void SetVariationCount (uint x) {
+        VarCounts = (VarCounts & 0xFFF0U) | EncodeCount(x);
+    }
+    void SetCommentCount (uint x) {
+        VarCounts = (VarCounts & 0xFF0FU) | (EncodeCount(x) << 4);
+    }
+    void SetNagCount (uint x) {
+        VarCounts = (VarCounts & 0xF0FFU) | (EncodeCount(x) << 8);
+    }
+
+    void SetFinalMatSig (matSigT ms) {
+        FinalMatSig = u32_set_low_24 (FinalMatSig, ms);
+    }
+    void SetStoredLineCode (byte b)    {
+        FinalMatSig = u32_set_high_8 (FinalMatSig, b);
+    }
+
+};
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::Init():
+//        Initialise a single index entry.
+//
+inline void
+IndexEntry::Init ()
+{
+    SetOffset (0);
+    //SetLength (0);
+    Length_Low = 0;
+    Length_High = 0;
+    SetWhite (0);
+    SetBlack (0);
+    SetEvent (0);
+    SetSite (0);
+    SetRound (0);
+    SetDate (ZERO_DATE);
+    SetEventDate (ZERO_DATE);
+    SetResult (RESULT_None);
+    SetEcoCode (ECO_None);
+    SetNumHalfMoves (0);
+    Flags = 0;
+    VarCounts = 0;
+    SetFinalMatSig (MATSIG_Empty);
+    SetStoredLineCode (0);
+    SetWhiteElo (0);
+    SetBlackElo (0);
+    SetWhiteRatingType (0);
+    SetBlackRatingType (0);
+    for (uint i=0; i < HPSIG_SIZE; i++) {
+        HomePawnData[i] = 0;
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::Read():
+//      Reads a single entrys values from an open index file.
+//
+template <class T> errorT
+IndexEntry::Read (T* file, versionT version)
+{
+    // Length of each gamefile record and its offset.
+    Offset = file->ReadFourBytes ();
+    Length_Low = file->ReadTwoBytes ();
+	Length_High = (version < 400) ? 0 : file->ReadOneByte();
+    Flags = file->ReadTwoBytes (); 
+
+    // White and Black player names:
+    WhiteBlack_High = file->ReadOneByte ();
+    WhiteID_Low = file->ReadTwoBytes ();
+    BlackID_Low = file->ReadTwoBytes ();
+
+    // Event, Site and Round names:
+    EventSiteRnd_High = file->ReadOneByte ();
+    EventID_Low = file->ReadTwoBytes ();
+    SiteID_Low = file->ReadTwoBytes ();
+    RoundID_Low = file->ReadTwoBytes ();
+
+    VarCounts = file->ReadTwoBytes();
+    EcoCode = file->ReadTwoBytes ();
+
+    // Date and EventDate are stored in four bytes.
+    Dates = file->ReadFourBytes();
+
+    // The two ELO ratings and rating types take 2 bytes each.
+    WhiteElo = file->ReadTwoBytes ();
+    BlackElo = file->ReadTwoBytes ();
+    if (GetWhiteElo() > MAX_ELO) { SetWhiteElo(MAX_ELO); }
+    if (GetBlackElo() > MAX_ELO) { SetBlackElo(MAX_ELO); }
+
+    FinalMatSig = file->ReadFourBytes ();
+    NumHalfMoves = file->ReadOneByte ();
+
+    // Read the 9-byte homePawnData array:
+    byte * pb = HomePawnData;
+    // The first byte of HomePawnData has high bits of the NumHalfMoves
+    // counter in its top two bits:
+    uint pb0 = file->ReadOneByte();
+    *pb = (pb0 & 63);
+    pb++;
+    NumHalfMoves = NumHalfMoves | ((pb0 >> 6) << 8);
+    for (uint i2 = 1; i2 < HPSIG_SIZE; i2++) {
+        *pb = file->ReadOneByte ();
+        pb++;
+    }
+
+    // Top 2 bits of HomePawnData[0] are for NumHalfMoves:
+    uint numMoves_High = HomePawnData[0];
+    HomePawnData[0] = HomePawnData[0] & 63;
+    numMoves_High >>= 6;
+    numMoves_High <<= 8;
+    NumHalfMoves = NumHalfMoves | numMoves_High;
+
+    return OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::Write():
+//      Writes a single index entry to an open index file.
+//      INDEX_ENTRY_SIZE must be updated
+template <class T> errorT
+IndexEntry::Write (T* file, versionT version)
+{
+    // Cannot write old-version index files:
+    if (version < 400) { return ERROR_FileVersion; }
+
+    version = 0;  // We dont have any version-specific code.
+    
+    file->WriteFourBytes (Offset);
+    
+    file->WriteTwoBytes (Length_Low);
+    file->WriteOneByte (Length_High);
+    file->WriteTwoBytes (Flags);
+
+    file->WriteOneByte (WhiteBlack_High);
+    file->WriteTwoBytes (WhiteID_Low);
+    file->WriteTwoBytes (BlackID_Low);
+
+    file->WriteOneByte (EventSiteRnd_High);
+    file->WriteTwoBytes (EventID_Low);
+    file->WriteTwoBytes (SiteID_Low);
+    file->WriteTwoBytes (RoundID_Low);
+
+    file->WriteTwoBytes (VarCounts);
+    file->WriteTwoBytes (EcoCode);
+    file->WriteFourBytes (Dates);
+
+    // Elo ratings and rating types: 2 bytes each.
+    file->WriteTwoBytes (WhiteElo);
+    file->WriteTwoBytes (BlackElo);
+
+    file->WriteFourBytes (FinalMatSig);
+    file->WriteOneByte (NumHalfMoves & 255); 
+
+    // Write the 9-byte homePawnData array:
+    byte * pb = HomePawnData;
+    // The first byte of HomePawnData has high bits of the NumHalfMoves
+    // counter in its top two bits:
+    byte pb0 = *pb;
+    pb0 = pb0 | ((NumHalfMoves >> 8) << 6);
+    file->WriteOneByte (pb0);
+    pb++;
+    // write 8 bytes
+    for (uint i2 = 1; i2 < HPSIG_SIZE; i2++) {
+        file->WriteOneByte (*pb);
+        pb++;
+    }
+
+    return OK;
+}
+
+inline byte IndexEntry::GetRating(NameBase* nb) {
+    eloT welo = GetWhiteElo();
+    eloT belo = GetBlackElo();
+    if (welo == 0) { welo = nb->GetElo (GetWhite()); }
+    if (belo == 0) { belo = nb->GetElo (GetBlack()); }
+    int rating = static_cast<int>(welo + belo) / 140;
+
+    // Bonus for comments or Nags
+    if (GetCommentCount() > 2 || GetNagCount() > 2) {
+        if (rating < 21) { // Missing elo
+            rating = 40;
+        } else {
+            rating += 6;
+        }
+    }
+
+    // Early draw penalty
+    if (GetResult() == RESULT_Draw) {
+        uint moves = GetNumHalfMoves();
+        if (moves < 80) {
+            rating -= 3;
+            if (moves < 60) {
+                rating -= 2;
+                if (moves < 40) rating -= 2;
+            }
+        }
+    }
+
+    if (rating < 0) return 0;
+    else return static_cast<byte> (rating);
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::CharToFlag():
+//    Returns the flag number corresponding to the given character.
+inline uint
+IndexEntry::CharToFlag (char ch)
+{
+    uint flag = 0;
+    switch (toupper(ch)) {
+        case 'D': flag = IDX_FLAG_DELETE;     break;
+        case 'W': flag = IDX_FLAG_WHITE_OP;   break;
+        case 'B': flag = IDX_FLAG_BLACK_OP;   break;
+        case 'M': flag = IDX_FLAG_MIDDLEGAME; break;
+        case 'E': flag = IDX_FLAG_ENDGAME;    break;
+        case 'N': flag = IDX_FLAG_NOVELTY;    break;
+        case 'P': flag = IDX_FLAG_PAWN;       break;
+        case 'T': flag = IDX_FLAG_TACTICS;    break;
+        case 'K': flag = IDX_FLAG_KSIDE;      break;
+        case 'Q': flag = IDX_FLAG_QSIDE;      break;
+        case '!': flag = IDX_FLAG_BRILLIANCY; break;
+        case '?': flag = IDX_FLAG_BLUNDER;    break;
+        case 'U': flag = IDX_FLAG_USER;       break;
+        case '1': flag = IDX_FLAG_CUSTOM1;    break;
+        case '2': flag = IDX_FLAG_CUSTOM2;    break;
+        case '3': flag = IDX_FLAG_CUSTOM3;    break;
+        case '4': flag = IDX_FLAG_CUSTOM4;    break;
+        case '5': flag = IDX_FLAG_CUSTOM5;    break;
+        case '6': flag = IDX_FLAG_CUSTOM6;    break;
+    }
+    return flag;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::SetFlagStr():
+//    Sets user-settable flags by passing a string containing the
+//    letters of each flag that should be set.
+inline void
+IndexEntry::SetFlagStr (const char * flags)
+{
+    // First, unset all user-settable flags:
+    const char * uflags = "DWBMENPTKQ!?U123456";
+    while (*uflags != 0) {
+        SetFlag (1 << CharToFlag (*uflags), false);
+        uflags++;
+    }
+
+    // Now set flags according to flags string:
+    while (*flags != 0) {
+        SetFlag (1 << CharToFlag(*flags), true);
+        flags++;
+    }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// IndexEntry::GetFlagStr():
+//    Fills in the provided flag string with information on the
+//    user-settable flags set for this game.
+//    Returns the number of specified flags that are turned on.
+inline uint
+IndexEntry::GetFlagStr (char * str, const char * flags)
+{
+    if (flags == NULL) { flags = "DWBMENPTKQ!?U123456"; }
+    uint count = 0;
+    while (*flags != 0) {
+        bool flag = false;
+        flag = GetFlag (1 << CharToFlag (*flags));
+        if (flag) { *str++ = *flags; count++; }
+        flags++;
+    }
+    *str = 0;
+    return count;
+}
+
+#endif

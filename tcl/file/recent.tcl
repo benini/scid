@@ -79,15 +79,6 @@ proc ::recentFiles::load {fname} {
   if {[file extension $rname] == ".si4"} {
     set rname [file rootname $rname]
   }
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
-    if {$rname == [sc_base filename $i]} {
-      sc_base switch $i
-      ::recentFiles::add $fname
-      ::notify::GameChanged
-      ::notify::DatabaseChanged
-      return
-    }
-  }
   ::file::Open $fname
 }
 

@@ -84,22 +84,15 @@ SCIDOBJS= src\misc.obj src\index.obj src\date.obj src\namebase.obj \
 ###
 OBJS= $(SCIDOBJS)
 
-### TCLS: all the .tcl files that make up "scid".
-TCLS= tcl\start.tcl
-
 ########################################
 
 ### Type "make" or "make all" to make all executables:
-all: setup scid.gui scid.exe
+all: setup scid.exe
 
 setup:
 	@if not exist $(OUT_DIR)\nul mkdir $(OUT_DIR)
 	-copy "$(MINGW_BIN)\libstdc++-6.dll" $(OUT_DIR)
 	-copy "$(MINGW_BIN)\libgcc_s_dw2-1.dll" $(OUT_DIR)
-
-scid.gui: $(TCLS)
-	-del $(OUT_DIR)\scid.gui
-	type $(TCLS) > $(OUT_DIR)\scid.gui
 
 scid.exe: src\scid.obj $(OBJS) scid.coff
 	$(LINK) $(LFLAGS) -o $(OUT_DIR)\scid.exe src\scid.obj $(OBJS) scid.coff \

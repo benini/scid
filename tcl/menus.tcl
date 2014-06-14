@@ -188,14 +188,11 @@ set helpMessage($m,[incr menuindex]) FileMaint
 $m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
 set helpMessage($m.utils,0) FileMaintWin
 
-$m.utils add command -label FileMaintCompact -command makeCompactWin
+$m.utils add command -label FileMaintCompact -command compactDB
 set helpMessage($m.utils,1) FileMaintCompact
 
 $m.utils add command -label FileMaintClass -command classifyAllGames
 set helpMessage($m.utils,2) FileMaintClass
-
-$m.utils add command -label FileMaintSort -command makeSortWin
-set helpMessage($m.utils,3) FileMaintSort
 
 $m.utils add separator
 
@@ -225,9 +222,6 @@ set helpMessage($m.utils.name,3) FileMaintNameSite
 
 $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
 set helpMessage($m.utils.name,4) FileMaintNameRound
-
-$m add command -label FileReadOnly -command makeBaseReadOnly
-set helpMessage($m,[incr menuindex]) FileReadOnly
 
 $m add cascade -label FileSwitch -menu $m.switch
 set helpMessage($m,[incr menuindex]) FileSwitch
@@ -280,11 +274,7 @@ set helpMessage($m.strip,3) EditStripEnd
 $m add separator
 incr menuindex
 
-$m add command -label EditReset -command {
-  sc_clipbase clear
-  ::notify::DatabaseModified [sc_info clipbase]
-  if {[sc_base current] == [sc_info clipbase]} { ::notify::GameChanged }
-}
+$m add command -label EditReset -command ::windows::gamelist::ClearClipbase
 set helpMessage($m,[incr menuindex]) EditReset
 
 $m add command -label EditCopy -command ::gameAddToClipbase
@@ -1307,8 +1297,6 @@ proc updateMenuStates {{menuname}} {
         $m.file.utils.name entryconfig [tr FileMaintName$i] -state disabled
       }
 
-      $m.file entryconfig [tr FileReadOnly] -state disabled
-
       # update recent Tree list (open base as Tree)
       set ntreerecent [::recentFiles::treeshow .menu.file.recenttrees]
 
@@ -1333,15 +1321,16 @@ proc updateMenuStates {{menuname}} {
   
   # Configure File menu entry states::
   if {[sc_base inUse]} {
+    set isClipbase [expr "$::currentSlot == [sc_info clipbase]"]
     set isReadOnly [sc_base isReadOnly $::currentSlot]
-    $m.file entryconfig [tr FileClose] -state normal
+    if {$isClipbase} {set state disabled} else {set state normal}
+    $m.file entryconfig [tr FileClose] -state $state
     if {! $isReadOnly} {
       $m.file.utils entryconfig [tr FileMaintDelete] -state normal
       $m.file.utils entryconfig [tr FileMaintName] -state normal
       foreach i {Player Event Site Round} {
         $m.file.utils.name entryconfig [tr FileMaintName$i] -state normal
       }
-      $m.file entryconfig [tr FileReadOnly] -state normal
     }
     
     # Load first/last/random/game number buttons:
@@ -1449,7 +1438,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {New Open Close Finder Bookmarks Maint ReadOnly Switch Exit} {
+  foreach tag {New Open Close Finder Bookmarks Maint Switch Exit} {
     configMenuText .menu.file [tr File$tag $oldLang] File$tag $lang
   }
   
@@ -1458,7 +1447,7 @@ proc setLanguageMenus {{lang ""}} {
     configMenuText .menu.file [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {Win Compact Delete Twin Class Sort Name} {
+  foreach tag {Win Compact Delete Twin Class Name} {
     configMenuText .menu.file.utils [tr FileMaint$tag $oldLang] \
         FileMaint$tag $lang
   }
@@ -1711,7 +1700,6 @@ proc standardShortcuts {w} {
   bind $w <Control-question> ::game::LoadRandom
   
   bind $w <KeyPress-v> { ::showVars }
-  bind $w <KeyPress-z> {.main.fbutton.button.exitVar invoke}
   
   for {set i 1} { $i <= $::totalBaseSlots} {incr i} {
     bind $w "<Control-Key-$i>" "::file::SwitchToBase $i"

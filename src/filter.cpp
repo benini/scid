@@ -13,13 +13,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "filter.h"
-
-// Include header file for memcpy():
-#ifdef WIN32
-#  include <memory.h>
-#else
-#  include <string.h>
-#endif
+#include <string.h>
 
 void
 Filter::Init (uint size) {
@@ -50,8 +44,6 @@ void Filter::Free()
 void
 Filter::Fill (byte value)
 {
-    ASSERT (FilterSize <= Capacity);
-
     if (value == 1) {
         if (Data != NULL) Free();
         FilterCount = FilterSize;
@@ -65,7 +57,6 @@ Filter::Fill (byte value)
 void
 Filter::Append (byte value)
 {
-    ASSERT (FilterSize <= Capacity);
     FilterSize++;
     if (value != 0) { FilterCount++; }
     if( value == 1 && Data == NULL)

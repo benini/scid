@@ -21,52 +21,36 @@
 #include <ctype.h>     // For isspace() function.
 #include <sys/stat.h>  // Needed for fileSize() function.
 
-
-// Table of direction between any two chessboard squares, initialised
-// in scid_Init():
+// Table of direction between any two chessboard squares
 directionT sqDir[66][66];
-
-
-//////////////////////////////////////////////////////////////////////
-//   Scid Initialisation Routine
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// scid_Init():
-//      Must be called before move generation etc is done. Sets up
-//      any uninitialised piece/square/move tables.
-//
-void
-scid_Init ()
+struct sqDir_Init
 {
-    // Check that we only call this once:
-    static int numCalls = 0;
-    if (numCalls > 0) { return; }
-    numCalls++;
-
-    // Initialise the sqDir[][] array of directions between every pair
-    // of squares.
-    squareT i, j;
-    directionT dirArray[] = { UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT,
-                              DOWN_LEFT, DOWN_RIGHT, NULL_DIR };
-    // First, set everything to NULL_DIR:
-    for (i=A1; i <= NS; i++) {
-        for (j=A1; j <= NS; j++) {
-            sqDir[i][j] = NULL_DIR;
-        }
-    }
-    // Now fill in the valid directions:
-    for (i=A1; i <= H8; i++) {
-        directionT * dirptr = dirArray;
-        while (*dirptr != NULL_DIR) {
-            j = square_Move (i, *dirptr);
-            while (j != NS) {
-                sqDir[i][j] = *dirptr;
-                j = square_Move (j, *dirptr);
+    sqDir_Init() {
+        // Initialise the sqDir[][] array of directions between every pair
+        // of squares.
+        squareT i, j;
+        directionT dirArray[] = { UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT,
+                                  DOWN_LEFT, DOWN_RIGHT, NULL_DIR };
+        // First, set everything to NULL_DIR:
+        for (i=A1; i <= NS; i++) {
+            for (j=A1; j <= NS; j++) {
+                sqDir[i][j] = NULL_DIR;
             }
-            dirptr++;
+        }
+        // Now fill in the valid directions:
+        for (i=A1; i <= H8; i++) {
+            directionT * dirptr = dirArray;
+            while (*dirptr != NULL_DIR) {
+                j = square_Move (i, *dirptr);
+                while (j != NS) {
+                    sqDir[i][j] = *dirptr;
+                    j = square_Move (j, *dirptr);
+                }
+                dirptr++;
+            }
         }
     }
-}
+} sqDir_Init_singleton;
 
 //////////////////////////////////////////////////////////////////////
 //   ECO Code Routines
@@ -318,11 +302,8 @@ int strCaseCompare (const char * s1, const char * s2)
 {
     ASSERT (s1 != NULL  &&  s2 != NULL);
     while (1) {
-        if (tolower(*s1) != tolower(*s2)) {
-            return (int) *s1 - (int) *s2;
-        }
-        if (*s1 == 0)
-            break;
+        int d = tolower(*s1) - tolower(*s2);
+        if (d != 0 || *s1 == 0) return d;
         s1++; s2++;
     }
     return 0;
@@ -1248,44 +1229,11 @@ removeFile (const char * name, const char * suffix)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// createFile():
-//      Creates (and immediately closes) an empty file.
-//      Returns OK if successfull, ERROR_FileOpen otherwise.
-errorT
-createFile (const char * name, const char * suffix)
-{
-    fileNameT fname;
-    strCopy (fname, name);
-    strAppend (fname, suffix);
-    FILE * fp = fopen (fname, "w");
-    if (!fp) { return ERROR_FileOpen; }
-    fclose (fp);
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// fileExists():
-//      Returns true if the file exists, false otherwise.
-bool
-fileExists (const char * name, const char * suffix)
-{
-    struct stat statBuf;    // Defined in <sys/stat.h>
-    fileNameT fname;
-    strCopy (fname, name);
-    strAppend (fname, suffix);
-    if (stat (fname, &statBuf) != 0) {
-        return false;
-    }
-    return true;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // writeString(), readString():
 //      Read/write fixed-length strings.
 //      Lengths of zero bytes ARE allowed.
 errorT
-writeString (FILE * fp, char * str, uint length)
+writeString (FILE * fp, const char * str, uint length)
 {
     ASSERT (fp != NULL  &&  str != NULL);
     int result = 0;

@@ -183,24 +183,6 @@ private:
     void AdjustTime (bool easyMove);
 
 public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     Engine()   {
         MaxDepth = ENGINE_MAX_PLY;      // A large default search depth
         SearchTime = 1000;  // Default search time: 1000 ms = one second.

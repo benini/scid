@@ -17,24 +17,6 @@ set var(BINDIR) /usr/local/bin
 set var(COMPILE) g++
 set var(CC) gcc
 set var(DEBUG) #-DASSERTIONS
-set var(LANGUAGES) [list \
-  tcl/lang/catalan.tcl \
-  tcl/lang/czech.tcl \
-  tcl/lang/deutsch.tcl \
-  tcl/lang/francais.tcl \
-  tcl/lang/greek.tcl \
-  tcl/lang/hungary.tcl \
-  tcl/lang/italian.tcl \
-  tcl/lang/nederlan.tcl \
-  tcl/lang/norsk.tcl \
-  tcl/lang/polish.tcl \
-  tcl/lang/portbr.tcl \
-  tcl/lang/russian.tcl \
-  tcl/lang/serbian.tcl \
-  tcl/lang/spanish.tcl \
-  tcl/lang/suomi.tcl \
-  tcl/lang/swedish.tcl \
-  ]
 set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
 set var(THREADS) {-std=c++0x -pthread}
@@ -145,9 +127,9 @@ proc findTclTkPaths {} {
 
     # headerPath: List of possible locations for tcl.h
     set headerPath {
+        /usr/local/include
         /usr/include
         /usr/local/tcl/include
-        /usr/local/include
         /usr/X11/include
         /usr/X11R6/include
         /usr/local/X11/include
@@ -174,13 +156,10 @@ proc findTclTkPaths {} {
         /usr/lib/x86_64-linux-gnu
     }
     lappend libraryPath "/usr/lib/tcl${tclv}"
-    lappend libraryPath "/usr/lib/tk${tclv}"
     lappend libraryPath "/usr/lib/tcl${tclv_nodot}"
-    lappend libraryPath "/usr/lib/tk${tclv_nodot}"
 
     # Try to add tcl_library and auto_path values to libraryPath,
     # in case the user has a non-standard Tcl/Tk library location:
-
     if {[info exists ::tcl_library]} {
         lappend headerPath \
             [file join [file dirname [file dirname $::tcl_library]] include]
@@ -213,10 +192,12 @@ proc findTclTkPaths {} {
         if {$opt(tcl_lib) == ""} {
             set opt(tcl_lib) [findDir "libtcl${tclv_nodot}.*" $libraryPath]
             if {$opt(tcl_lib) == ""} {
+                set opt(tcl_lib) [findDir "tcl${tclv_nodot}.*" $libraryPath]
+            }
+            if {$opt(tcl_lib) == ""} {
                 puts "not found"
                 set success 0
-                set opt(tcl_lib) "$opt(tcl_h)"
-                set opt(tcl_lib_file) "tcl\$(TCL_VERSION)"
+                set opt(tcl_lib_file) "tcl"
             } else {
                 set opt(tcl_lib_file) "tcl${tclv_nodot}"
                 puts $opt(tcl_lib)
@@ -343,11 +324,11 @@ proc writeMakefile {{type ""}} {
     close $to
 
     # Summary info
+    if {$var(THREADS) != ""} {
+        puts {Multi-threading enabled (if you have problems try ./configure THREADS="").}
+    }
     if {$success} {
         puts {The Makefile configured for your system was written.}
-        if {$var(THREADS) != ""} {
-            puts {Multi-threading enabled (if you have problems try ./configure THREADS="").}
-        }
         puts {Now just type "make" to compile Scid.}
     } else {
         puts {Not all settings could be determined!}

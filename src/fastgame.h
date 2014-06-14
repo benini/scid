@@ -20,7 +20,8 @@
 #define FASTGAME_H
 
 #include "common.h"
-#include <stdint.h>
+#include "game.h" //TODO: remove this dependency
+#include <string.h>
 #include <sstream>
 #include <vector>
 
@@ -111,8 +112,8 @@ std::string FastMoveToSAN(const FastMove& move, colorT* toMove = 0) {
 
 class FastGame {
 public:
-	static FastGame Create(byte* v_begin, byte* v_end) {
-		byte* v_it = v_begin;
+	static FastGame Create(const byte* v_begin, const byte* v_end) {
+		const byte* v_it = v_begin;
 		while (v_it < v_end) {
 			byte b = *v_it++;
 			if (b == 0) {
@@ -122,7 +123,7 @@ public:
 					// Position::ReadFromFEN doesn't create a valid Position for
 					// standard starting board FEN (White pawns have wrong list IDX)
 					// static FastGame std_start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-					static FastGame std_start(true);
+					static FastGame std_start;
 					FastGame res(std_start);
 					res.v_it_ = v_it;
 					res.v_end_ = v_end;
@@ -138,9 +139,10 @@ public:
 				v_it += 3;
 			} else { // Skip tags
 				if (b <= MAX_TAG_LEN) v_it += b;
-				if (v_it < v_end) v_it += *v_it++;
+				if (v_it < v_end) v_it += *v_it +1;
 			}
 		}
+
 		return FastGame(""); // Error default to empty buffer and board
 	}
 
@@ -229,15 +231,15 @@ private:
 		squareT sq;
 		pieceT piece;
 	} list[2][16];
-	byte* v_it_;
-	byte* v_end_;
+	const byte* v_it_;
+	const byte* v_end_;
 	uint8_t min_pieces_[2][8];
 	colorT cToMove_;
 
 
-	FastGame(const char* FEN, byte* v_it = 0, byte* v_end = 0)
+	FastGame(const char* FEN, const byte* v_it = 0, const byte* v_end = 0)
 	: v_it_ (v_it), v_end_(v_end) {
-		for (int i=1; i<8; ++i) nPieces_[WHITE][i] = nPieces_[BLACK][i] = 0;
+		memset(nPieces_, 0, sizeof(nPieces_));
 		for (byte i=A1; i <= H8; i++) board_[i] = 0;
 
 		Position StartPos;
@@ -256,13 +258,14 @@ private:
 			}
 			cToMove_ = StartPos.GetToMove();
 		} else {
+			v_it_ = v_end_ = 0;
 			cToMove_ = WHITE;
 			list[WHITE][0].sq = list[BLACK][0].sq = 0;
 		}
-		memset(min_pieces_, 0, 16);
+		memset(min_pieces_, 0, sizeof(min_pieces_));
 	}
 
-	FastGame(bool stdstart_dummy)
+	FastGame()
 	: v_it_ (0), v_end_(0) {
 		for (uint i=0; i < 8; i++) {
 			const byte stdpos_count[] = {16, 1, 1, 2, 2, 2, 8, 0};
@@ -282,7 +285,7 @@ private:
 		}
 		for (byte i=A3; i <= H6; i++) board_[i] = 0;
 		cToMove_ = WHITE;
-		memset(min_pieces_, 0, 16);
+		memset(min_pieces_, 0, sizeof(min_pieces_));
 	};
 
 	template <colorT toMove>

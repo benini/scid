@@ -26,9 +26,6 @@
 class Index;
 class IndexEntry;
 
-static const uint INDEX_MaxSortingCriteria = 16;
-static const uint IDX_NOT_FOUND = 0xffffffff;
-
 class SortCache
 {
   public:
@@ -43,11 +40,6 @@ class SortCache
                     void * progressData);
 	int ReleaseCount() { return --refCount; }
 	int AddCount() { return ++refCount; }
-
-	static bool CanLoad( char *fName, uint numGames);
-	errorT WriteToFile ();
-	static SortCache* CreateFromFile(Index* idx, NameBase* nb);
-	errorT GetSortingCrit( char *crit);
 
   private:
 	Index *index;

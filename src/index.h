@@ -1,33 +1,37 @@
-//////////////////////////////////////////////////////////////////////
-//
-//  FILE:       index.h
-//              Index File Class
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    4.0
-//
-//  Notice:     Copyright (c) 1999-2002  Shane Hudson.  all rights reserved.
-//  Notice:     Copyright (c) 2006-2009  Pascal Georges.  all rights reserved.
-//
-//  Authors:     Shane Hudson (sgh@users.sourceforge.net)
-//               Pascal Georges
-//////////////////////////////////////////////////////////////////////
+/*
+* Copyright (c) 1999-2002  Shane Hudson
+* Copyright (c) 2006-2009  Pascal Georges
+* Copyright (C) 2014  Fulvio Benini
 
+* This file is part of Scid (Shane's Chess Information Database).
+*
+* Scid is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation.
+*
+* Scid is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #ifndef SCID_INDEX_H
 #define SCID_INDEX_H
 
 #include "common.h"
 #include "error.h"
-#include "matsig.h"
-#include "namebase.h"
 #include "date.h"
-#include "mfile.h"
-#include "sortcache.h"
+#include "indexentry.h"
+#include "namebase.h"
+#include "filter.h"
+#include "filebuf.h"
+#include <string.h>
 #include <string>
+#include <vector>
 
-// Length is encoded as unsigned short
-#define MAX_GAME_LENGTH 131072
 
 class SortCache;
 
@@ -47,26 +51,6 @@ const uint  SCID_DESC_LENGTH = 107;
 const uint  CUSTOM_FLAG_DESC_LENGTH = 8;
 const uint  CUSTOM_FLAG_MAX = 6;
 
-const uint  MAX_ELO = 4000;   // Since we store Elo Ratings in 12 bits
-                              // each in the index file.
-
-// Struct indexHeader: one at the start of the index file.
-//
-struct indexHeaderT {
-    char        magic[9];    // 8-byte identifier for Scid index files.
-    versionT    version;     // version number. 2 bytes.
-    uint        baseType;    // Type, e.g. tournament, theory, etc.
-    gameNumberT numGames;    // number of games in file.
-    gameNumberT autoLoad;    // game number to autoload: 0=1st, 1=none, 2=1st,
-                             //   3=2nd, 4=3rd, etc. Note that 0=1st for
-                             //   backwards compatibility: bases with this
-                             //   unset will load game 1.
-    // description is a fixed-length string describing the database.
-    char        description [SCID_DESC_LENGTH + 1];
-    // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
-    char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
-};
-
 // Header on-disk size: magic=8, version=2, numGames=3, baseType=4, autoLoad=3
 // Description length = 111 bytes including trailing '\0'.
 // Custom flag desc length = 9 bytes including trailing '\0'.
@@ -76,562 +60,9 @@ const uint  OLD_INDEX_HEADER_SIZE = INDEX_HEADER_SIZE - (CUSTOM_FLAG_DESC_LENGTH
 
 // INDEX_MaxSortCriteria is the maximum number of fields allowed in
 // a sorting criteria list.
-const uint  INDEX_MaxSortCriteria = 16;
-
-// HPSIG_SIZE = size of HomePawnData array in an IndexEntry.
-// It is nine bytes: the first byte contains the number of valid entries
-// in the array, and the next 8 bytes contain up to 16 half-byte entries.
-
-const uint HPSIG_SIZE = 9;
-
-// IndexEntry Flag types:
-
-#define  IDX_NUM_FLAGS 22
-
-#define  IDX_FLAG_START         0   // Game has own start position.
-#define  IDX_FLAG_PROMO         1   // Game contains promotion(s).
-#define  IDX_FLAG_UPROMO        2   // Game contains promotion(s).
-#define  IDX_FLAG_DELETE        3   // Game marked for deletion.
-#define  IDX_FLAG_WHITE_OP      4   // White openings flag.
-#define  IDX_FLAG_BLACK_OP      5   // Black openings flag.
-#define  IDX_FLAG_MIDDLEGAME    6   // Middlegames flag.
-#define  IDX_FLAG_ENDGAME       7   // Endgames flag.
-#define  IDX_FLAG_NOVELTY       8   // Novelty flag.
-#define  IDX_FLAG_PAWN          9   // Pawn structure flag.
-#define  IDX_FLAG_TACTICS      10   // Tactics flag.
-#define  IDX_FLAG_KSIDE        11   // Kingside play flag.
-#define  IDX_FLAG_QSIDE        12   // Queenside play flag.
-#define  IDX_FLAG_BRILLIANCY   13   // Brilliancy or good play.
-#define  IDX_FLAG_BLUNDER      14   // Blunder or bad play.
-#define  IDX_FLAG_USER         15   // User-defined flag.
-
-#define  IDX_FLAG_CUSTOM1      16   // Custom flag.
-#define  IDX_FLAG_CUSTOM2      17   // Custom flag.
-#define  IDX_FLAG_CUSTOM3      18   // Custom flag.
-#define  IDX_FLAG_CUSTOM4      19   // Custom flag.
-#define  IDX_FLAG_CUSTOM5      20   // Custom flag.
-#define  IDX_FLAG_CUSTOM6      21   // Custom flag.
-
-#define  IDX_MASK_START         (1 << IDX_FLAG_START)
-#define  IDX_MASK_PROMO         (1 << IDX_FLAG_PROMO)
-#define  IDX_MASK_UPROMO        (1 << IDX_FLAG_UPROMO)
-#define  IDX_MASK_DELETE        (1 << IDX_FLAG_DELETE)
-#define  IDX_MASK_WHITE_OP      (1 << IDX_FLAG_WHITE_OP)
-#define  IDX_MASK_BLACK_OP      (1 << IDX_FLAG_BLACK_OP)
-#define  IDX_MASK_MIDDLEGAME    (1 << IDX_FLAG_MIDDLEGAME)
-#define  IDX_MASK_ENDGAME       (1 << IDX_FLAG_ENDGAME)
-#define  IDX_MASK_NOVELTY       (1 << IDX_FLAG_NOVELTY)
-#define  IDX_MASK_PAWN          (1 << IDX_FLAG_PAWN)
-#define  IDX_MASK_TACTICS       (1 << IDX_FLAG_TACTICS)
-#define  IDX_MASK_KSIDE         (1 << IDX_FLAG_KSIDE)
-#define  IDX_MASK_QSIDE         (1 << IDX_FLAG_QSIDE)
-#define  IDX_MASK_BRILLIANCY    (1 << IDX_FLAG_BRILLIANCY)
-#define  IDX_MASK_BLUNDER       (1 << IDX_FLAG_BLUNDER)
-#define  IDX_MASK_USER          (1 << IDX_FLAG_USER)
-
-const byte CUSTOM_FLAG_MASK[] = { 1, 1 << 1, 1 << 2, 1 << 3, 1 << 4, 1 << 5 };
-
-// Bitmask functions for index entry decoding:
-inline byte u32_high_8( uint x )
-{
-    return (byte)(x >> 24);
-}
-
-inline uint u32_low_24( uint x )
-{
-    return x & 0x00FFFFFF;
-}
-
-inline uint u32_high_12( uint x )
-{
-    return x >> 20;
-}
-
-inline uint u32_low_20( uint x )
-{
-    return x & 0x000FFFFF;
-}
-
-inline byte u16_high_4( ushort x )
-{
-    return (byte)(x >> 12);
-}
-
-inline ushort u16_low_12( ushort x )
-{
-    return x & 0x0FFF;
-}
-
-inline byte u8_high_4( byte x )
-{
-    return x >> 4;
-}
-
-inline byte u8_low_4( byte x )
-{
-    return x & 0x0F;
-}
-
-inline byte u8_high_3( byte x )
-{
-    return x >> 5;
-}
-
-inline byte u8_low_5( byte x )
-{
-    return x & 0x1F;
-}
-
-inline uint u32_set_high_8( uint u, byte x )
-{
-    return u32_low_24(u) | ((uint)x << 24);
-}
-
-inline uint u32_set_low_24( uint u, uint x )
-{
-    return (u & 0xFF000000) | (x & 0x00FFFFFF);
-}
-
-inline uint u32_set_high_12( uint u, uint x )
-{
-    return u32_low_20(u) | (x << 20);
-}
-
-inline uint u32_set_low_20( uint u, uint x )
-{
-    return (u & 0xFFF00000) | (x & 0x000FFFFF);
-}
-
-inline ushort u16_set_high_4( ushort u, byte x )
-{
-    return u16_low_12(u) | ((ushort)x << 12);
-}
-
-inline ushort u16_set_low_12( ushort u, ushort x )
-{
-    return (u & 0xF000) | (x & 0x0FFF);
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Class IndexEntry: one of these per game in the index file.
-//
-//    It contains more than just the location of the game data in the main
-//    data file.  For fast searching, it also store some other important
-//    values: players, event, site, date, result, eco, gamelength.
-//
-//    It takes 48 bytes, assuming sizeof(uint) == 4 and sizeof(ushort) == 2.
-
-class IndexEntry
-{
-  private:
-
-    uint           Offset;     // Start of gamefile record for this game.
-
-    // Name ID values are packed into 12 bytes, saving 8 bytes over the
-    // simpler method of just storing each as a 4-byte idNumberT.
-
-    ushort       WhiteID_Low;       // Lower 16 bits of White ID.
-    ushort       BlackID_Low;       // Lower 16 bits of Black ID.
-    ushort       EventID_Low;       // Lower 16 bits of Site.
-    ushort       SiteID_Low;        // Lower 16 bits of Site ID.
-    ushort       RoundID_Low;       // Lower 16 bits of Round ID.
-    byte         WhiteBlack_High;   // High bits of White, Black.
-    byte         EventSiteRnd_High; // High bits of Event, Site, Round.
-    ecoT         EcoCode;     // ECO code
-    dateT        Dates;       // Date and EventDate fields.
-    eloT         WhiteElo;
-    eloT         BlackElo;
-    matSigT      FinalMatSig; // material of the final position in the game,
-                              // and the StoredLineCode in the top 8 bits.
-    ushort       Flags;
-    ushort       VarCounts;   // Counters for comments, variations, etc.
-                              // VarCounts also stores the result.
-    ushort       NumHalfMoves;
-    byte         HomePawnData [HPSIG_SIZE];  // homePawnSig data.
-    // Length of gamefile record for this game. 17 bits are used so the max length is
-    // 128 ko (131071). So 7 bits are usable for custom flags or other.
-    ushort       Length_Low;
-    byte         Length_High; // LxFFFFFF ( L = length for long games, x = spare, F = custom flags)
-    
-  public:
-    IndexEntry() {}
-    ~IndexEntry() {}
-    void Init();
-
-    // Get() methods:
-    inline uint GetLength () {
-      return (Length_Low + ((Length_High & 0x80) << 9));
-    }
-    inline uint GetOffset ()  { return Offset; }
-
-    inline idNumberT GetWhite ();
-    inline idNumberT GetBlack ();
-    inline idNumberT GetEvent ();
-    inline idNumberT GetSite ();
-    inline idNumberT GetRound ();
-
-    inline const char * GetWhiteName (NameBase * nb);
-    inline const char * GetBlackName (NameBase * nb);
-    inline const char * GetEventName (NameBase * nb);
-    inline const char * GetSiteName (NameBase * nb);
-    inline const char * GetRoundName (NameBase * nb);
-
-    errorT SetWhiteName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
-        if (res == OK) {
-            SetWhite (id);
-        }
-        return res;
-    }
-    errorT SetBlackName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_PLAYER, s ? s : "?", &id);
-        if (res == OK) {
-            SetBlack (id);
-        }
-        return res;
-    }
-    errorT SetEventName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_EVENT, s ? s : "?", &id);
-        if (res == OK) {
-            SetEvent (id);
-        }
-        return res;
-    }
-    errorT SetSiteName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_SITE, s ? s : "?", &id);
-        if (res == OK) {
-            SetSite (id);
-        }
-        return res;
-    }
-    errorT SetRoundName(NameBase* nb, const char* s) {
-        idNumberT id = 0;
-        errorT res = nb->AddName (NAME_ROUND, s ? s : "?", &id);
-        if (res == OK) {
-            SetRound (id);
-        }
-        return res;
-    }
-
-    inline dateT   GetDate ()     { return u32_low_20(Dates); }
-    inline uint    GetYear ()     { return date_GetYear (GetDate()); }
-    inline uint    GetMonth ()    { return date_GetMonth (GetDate()); }
-    inline uint    GetDay ()      { return date_GetDay (GetDate()); }
-    dateT          GetEventDate ();
-    inline resultT GetResult ()   { return (VarCounts >> 12); }
-    inline eloT    GetWhiteElo () { return u16_low_12(WhiteElo); }
-    inline eloT    GetWhiteElo (NameBase* nb) {
-        eloT r = GetWhiteElo();
-        if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
-        return r;
-    }
-    inline eloT    GetBlackElo () { return u16_low_12(BlackElo); }
-    inline eloT    GetBlackElo (NameBase* nb) {
-        eloT r = GetBlackElo();
-        if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
-        return r;
-    }
-    inline byte    GetWhiteRatingType () { return u16_high_4 (WhiteElo); }
-    inline byte    GetBlackRatingType () { return u16_high_4 (BlackElo); }
-    inline ecoT    GetEcoCode ()  { return EcoCode; }
-    inline ushort  GetNumHalfMoves () { return NumHalfMoves; }
-    inline byte    GetRating(NameBase* nb);
-
-//     inline uint GetFlags ()          { return Flags; }
-    inline bool GetFlag (uint mask)  {
-      if (mask & 0xFFFF)
-        return Flags & mask;
-      else
-        return Length_High & ( mask >> 16 ) ;
-    }
-    inline bool GetStartFlag ()      { return Flags & IDX_MASK_START; }
-    inline bool GetPromotionsFlag () { return Flags & IDX_MASK_PROMO; }
-    inline bool GetUnderPromoFlag()  { return Flags & IDX_MASK_UPROMO; }
-    inline bool GetCommentsFlag ()   { return (GetCommentCount() > 0); }
-    inline bool GetVariationsFlag () { return (GetVariationCount() > 0); }
-    inline bool GetNagsFlag ()       { return (GetNagCount() > 0); }
-    inline bool GetDeleteFlag ()     { return Flags & IDX_MASK_DELETE; }
-    inline bool GetWhiteOpFlag ()    { return Flags & IDX_MASK_WHITE_OP; }
-    inline bool GetBlackOpFlag ()    { return Flags & IDX_MASK_BLACK_OP; }
-    inline bool GetMiddlegameFlag () { return Flags & IDX_MASK_MIDDLEGAME; }
-    inline bool GetEndgameFlag ()    { return Flags & IDX_MASK_ENDGAME; }
-    inline bool GetNoveltyFlag ()    { return Flags & IDX_MASK_NOVELTY; }
-    inline bool GetPawnStructFlag () { return Flags & IDX_MASK_PAWN; }
-    inline bool GetTacticsFlag ()    { return Flags & IDX_MASK_TACTICS; }
-    inline bool GetKingsideFlag ()   { return Flags & IDX_MASK_KSIDE; }
-    inline bool GetQueensideFlag ()  { return Flags & IDX_MASK_QSIDE; }
-    inline bool GetBrilliancyFlag () { return Flags & IDX_MASK_BRILLIANCY; }
-    inline bool GetBlunderFlag ()    { return Flags & IDX_MASK_BLUNDER; }
-    inline bool GetUserFlag ()       { return Flags & IDX_MASK_USER; }
-    // Custom flags are bits numbered from 1 to 6 from left to right
-    inline bool GetCustomFlag (byte c) {
-      return (Length_High & CUSTOM_FLAG_MASK[c-1]) ;
-    }
-
-    static uint   CharToFlag (char ch);
-    uint   GetFlagStr (char * str, const char * flags);
-    void   SetFlagStr (const char * flags);
-
-    inline static uint EncodeCount (uint x) {
-        if (x <= 10) { return x; }
-        if (x <= 12) { return 10; }
-        if (x <= 17) { return 11; }  // 11 indicates 15 (13-17)
-        if (x <= 24) { return 12; }  // 12 indicates 20 (18-24)
-        if (x <= 34) { return 13; }  // 13 indicates 30 (25-34)
-        if (x <= 44) { return 14; }  // 14 indicates 40 (35-44)
-        return 15;                   // 15 indicates 50 or more
-    }
-    inline static uint DecodeCount (uint x) {
-        static uint countCodes[16] = {0,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50};
-        return countCodes[x & 15]; 
-    }
-    inline uint GetVariationCount () { return DecodeCount(VarCounts & 15); }
-    inline uint GetCommentCount ()   { return DecodeCount((VarCounts >> 4) & 15); }
-    inline uint GetNagCount ()       { return DecodeCount((VarCounts >> 8) & 15); }
-
-    inline matSigT GetFinalMatSig ()   { return u32_low_24 (FinalMatSig); }
-    inline byte    GetStoredLineCode () { return u32_high_8 (FinalMatSig); }
-    inline byte *  GetHomePawnData ()  { return HomePawnData; }
-
-    // Set() Methods:
-
-    inline void SetOffset (uint offset) { Offset = offset; }
-    
-    inline void SetLength (uint length) {
-      ASSERT(length >= 0 && length < 131072);
-      Length_Low = (unsigned short) (length & 0xFFFF);
-      // preserve the last 7 bits
-      Length_High = ( Length_High & 0x7F ) | (byte) ( (length >> 16) << 7 );
-    }
-
-    inline void SetWhite (idNumberT id);
-    inline void SetBlack (idNumberT id);
-    inline void SetEvent (idNumberT id);
-    inline void SetSite  (idNumberT id);
-    inline void SetRound (idNumberT id);
-
-    inline void SetDate  (dateT date)   {
-        Dates = u32_set_low_20 (Dates, date);
-    }
-    void   SetEventDate (dateT date);
-    bool   ValidEventDate (dateT date);
-
-    inline void SetResult (resultT res) {
-        VarCounts = (VarCounts & 0x0FFF) | (((ushort)res) << 12);
-    }
-    inline void SetWhiteElo (eloT elo)  {
-        WhiteElo = u16_set_low_12(WhiteElo, elo);
-    }
-    inline void SetBlackElo (eloT elo)  {
-        BlackElo = u16_set_low_12 (BlackElo, elo);
-    }
-    inline void SetWhiteRatingType (byte b) {
-        WhiteElo = u16_set_high_4 (WhiteElo, b);
-    }
-    inline void SetBlackRatingType (byte b) {
-        BlackElo = u16_set_high_4 (BlackElo, b);
-    }
-    inline void SetEcoCode (ecoT eco)   { EcoCode = eco; }
-    inline void SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
-
-//     inline void SetFlags (uint flags) { Flags = flags; }
-    inline void SetFlag (uint flagMask, bool b) {
-      if (flagMask & 0xFFFF) {
-        if (b) { Flags |= flagMask; } else { Flags &= ~flagMask; }
-      } else {
-        if (b) { Length_High |= (flagMask >> 16); } else { Length_High &= ~ (flagMask >> 16); }
-      }
-    }
-
-    inline void SetStartFlag (bool b)      { SetFlag (IDX_MASK_START, b); }
-    inline void SetPromotionsFlag (bool b) { SetFlag (IDX_MASK_PROMO, b); }
-    inline void SetUnderPromoFlag (bool b) { SetFlag (IDX_MASK_UPROMO, b); }
-    inline void SetDeleteFlag (bool b)     { SetFlag (IDX_MASK_DELETE, b); }
-    inline void SetUserFlag (bool b)       { SetFlag (IDX_MASK_USER, b); }
-    inline void SetBlackOpFlag (bool b)    { SetFlag (IDX_MASK_BLACK_OP, b); }
-    inline void SetMiddlegameFlag (bool b) { SetFlag (IDX_MASK_MIDDLEGAME, b); }
-    inline void SetEndgameFlag (bool b)    { SetFlag (IDX_MASK_ENDGAME, b); }
-    inline void SetNoveltyFlag (bool b)    { SetFlag (IDX_MASK_NOVELTY, b); }
-    inline void SetPawnStructFlag (bool b) { SetFlag (IDX_MASK_PAWN, b); }
-    inline void SetTacticsFlag (bool b)    { SetFlag (IDX_MASK_TACTICS, b); }
-    inline void SetKingsideFlag (bool b)   { SetFlag (IDX_MASK_KSIDE, b); }
-    inline void SetQueensideFlag (bool b)  { SetFlag (IDX_MASK_QSIDE, b); }
-    inline void SetBrilliancyFlag (bool b) { SetFlag (IDX_MASK_BRILLIANCY, b); }
-    inline void SetBlunderFlag (bool b)    { SetFlag (IDX_MASK_BLUNDER, b); }
-    inline void SetWhiteOpFlag (bool b)    { SetFlag (IDX_MASK_WHITE_OP, b); }
-
-    inline void SetVariationCount (uint x) {
-        VarCounts = (VarCounts & 0xFFF0U) | EncodeCount(x);
-    }
-    inline void SetCommentCount (uint x) {
-        VarCounts = (VarCounts & 0xFF0FU) | (EncodeCount(x) << 4);
-    }
-    inline void SetNagCount (uint x) {
-        VarCounts = (VarCounts & 0xF0FFU) | (EncodeCount(x) << 8);
-    }
-
-    inline void SetFinalMatSig (matSigT ms) {
-        FinalMatSig = u32_set_low_24 (FinalMatSig, ms);
-    }
-    inline void SetStoredLineCode (byte b)    {
-        FinalMatSig = u32_set_high_8 (FinalMatSig, b);
-    }
-
-    // Other IndexEntry methods:
-
-    errorT Read (MFile * fp, versionT version);
-    errorT Write (MFile * fp, versionT version);
-
-    int Compare (IndexEntry * ie, int * fields, NameBase * nb);
-};
-
-inline const char *
-IndexEntry::GetWhiteName (NameBase * nb)
-{ return nb->GetName (NAME_PLAYER, GetWhite()); }
-
-inline const char *
-IndexEntry::GetBlackName (NameBase * nb)
-{ return nb->GetName (NAME_PLAYER, GetBlack()); }
-
-inline const char *
-IndexEntry::GetEventName (NameBase * nb)
-{ return nb->GetName (NAME_EVENT, GetEvent()); }
-
-inline const char *
-IndexEntry::GetSiteName (NameBase * nb)
-{ return nb->GetName (NAME_SITE, GetSite()); }
-
-inline const char *
-IndexEntry::GetRoundName (NameBase * nb)
-{ return nb->GetName (NAME_ROUND, GetRound()); }
-
-
-// Name Get and Set routines:
-//
-//   WhiteID and BlackID are 20-bit values, EventID and SiteID are
-//   19-bit values, and RoundID is an 18-bit value.
-//
-//   WhiteID high 4 bits = bits 4-7 of WhiteBlack_High.
-//   BlackID high 4 bits = bits 0-3 of WhiteBlack_High.
-//   EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
-//   SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
-//   RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
-
-inline idNumberT
-IndexEntry::GetWhite ()
-{
-    idNumberT id = (idNumberT) WhiteBlack_High;
-    id = id >> 4;  // High 4 bits = bits 4-7 of WhiteBlack_High.
-    id <<= 16;
-    id |= (idNumberT) WhiteID_Low;
-    return id;
-}
-
-inline void
-IndexEntry::SetWhite (idNumberT id)
-{
-    WhiteID_Low = id & 0xFFFF;
-    WhiteBlack_High = WhiteBlack_High & 0x0F;   // Clear bits 4-7.
-    WhiteBlack_High |= ((id >> 16) << 4);       // Set bits 4-7.
-}
-
-inline idNumberT
-IndexEntry::GetBlack ()
-{
-    idNumberT id = (idNumberT) WhiteBlack_High;
-    id = id & 0xF;   // High 4 bits = bits 0-3 of WhiteBlack_High.
-    id <<= 16;
-    id |= (idNumberT) BlackID_Low;
-    return id;
-}
-
-inline void
-IndexEntry::SetBlack (idNumberT id)
-{
-    BlackID_Low = id & 0xFFFF;
-    WhiteBlack_High = WhiteBlack_High & 0xF0;   // Clear bits 0-3.
-    WhiteBlack_High |= (id >> 16);              // Set bits 0-3.
-}
-
-inline idNumberT
-IndexEntry::GetEvent ()
-{
-    uint id = (idNumberT) EventSiteRnd_High;
-    id >>= 5;  // High 3 bits = bits 5-7 of EventSiteRnd_High.
-    id <<= 16;
-    id |= (idNumberT) EventID_Low;
-    return id;
-}
-
-inline void
-IndexEntry::SetEvent (idNumberT id)
-{
-    EventID_Low = id & 0xFFFF;
-    // Clear bits 2-4 of EventSiteRnd_high: 31 = 00011111 binary.
-    EventSiteRnd_High = EventSiteRnd_High & 31;
-    EventSiteRnd_High |= ((id >> 16) << 5);
-}
-
-inline idNumberT
-IndexEntry::GetSite ()
-{
-    uint id = (idNumberT) EventSiteRnd_High;
-    id = (id >> 2) & 7;  // High 3 bits = bits 2-5 of EventSiteRnd_High.
-    id <<= 16;
-    id |= (idNumberT) SiteID_Low;
-    return id;
-}
-
-inline void
-IndexEntry::SetSite (idNumberT id)
-{
-    SiteID_Low = id & 0xFFFF;
-    // Clear bits 2-4 of EventSiteRnd_high: 227 = 11100011 binary.
-    EventSiteRnd_High = EventSiteRnd_High & 227;
-    EventSiteRnd_High |= ((id >> 16) << 2);
-}
-
-inline idNumberT
-IndexEntry::GetRound ()
-{
-    uint id = (idNumberT) EventSiteRnd_High;
-    id &= 3;   // High 2 bits = bits 0-1 of EventSiteRnd_High.
-    id <<= 16;
-    id |= (idNumberT) RoundID_Low;
-    return id;
-}
-
-inline void
-IndexEntry::SetRound (idNumberT id)
-{
-    RoundID_Low = id & 0xFFFF;
-    // Clear bits 0-1 of EventSiteRnd_high: 252 = 11111100 binary.
-    EventSiteRnd_High = EventSiteRnd_High & 252;
-    EventSiteRnd_High |= (id >> 16);
-}
-
-
-
-// Total on-disk size per index entry: currently 46 bytes.
-const uint  INDEX_ENTRY_SIZE = 47;
-const uint  OLD_INDEX_ENTRY_SIZE = 46;
-
-typedef IndexEntry * IndexEntryPtr;
-
-
-// INDEX_ENTRY_CHUNKSIZE is the number of index entries allocated as
-// one chunk. INDEX_ENTRY_CHUNKSHIFT is the base-2 logarithm of this.
-// The SHIFT and MASK constants are used to avoid mods and divs.
-//
-const uint INDEX_ENTRY_CHUNKSHIFT = 10;   // 2^10 => chunks of 1024 entries.
-const uint INDEX_ENTRY_CHUNKSIZE  = (1 << INDEX_ENTRY_CHUNKSHIFT);
-const uint INDEX_ENTRY_CHUNKMASK = (INDEX_ENTRY_CHUNKSIZE - 1);
 const uint SORTING_CACHE_MAX = 8;
+const uint INDEX_MaxSortingCriteria = 16;
+const uint IDX_NOT_FOUND = 0xffffffff;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -639,115 +70,151 @@ const uint SORTING_CACHE_MAX = 8;
 
 class Index
 {
- private:
-    //----------------------------------
-    //  Index:  Data structures
-    //----------------------------------
+private:
+    struct { // one at the start of the index file.
+        char        magic[9];    // 8-byte identifier for Scid index files.
+        versionT    version;     // version number. 2 bytes.
+        uint        baseType;    // Type, e.g. tournament, theory, etc.
+        gameNumberT numGames;    // number of games in file.
+        gameNumberT autoLoad;    // game number to autoload: 0=1st, 1=none, 2=1st,
+                                 //   3=2nd, 4=3rd, etc. Note that 0=1st for
+                                 //   backwards compatibility: bases with this
+                                 //   unset will load game 1.
+        // description is a fixed-length string describing the database.
+        char        description [SCID_DESC_LENGTH + 1];
+        // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
+        char        customFlagDesc [CUSTOM_FLAG_MAX][CUSTOM_FLAG_DESC_LENGTH+1] ;
+    } Header;
+    bool         Dirty;         // If true, Header needs rewriting to disk.
 
-    fileNameT    Fname;
-    indexHeaderT Header;        // Num games in file, baseType etc.
-
-    MFile      * FilePtr;       // filehandle for opened index file.
-    uint         FilePos;       // current byte position in index file.
+    Filebuf*     FilePtr;       // filehandle for opened index file.
     fileModeT    FileMode;      // Mode: e.g. FILE_WRITEONLY
 
-    bool          InMemory;     // If nonzero, whole file is in memory
-    IndexEntry ** Entries;      // A two-level array of the entire index.
+    SortCache* sortingCaches[SORTING_CACHE_MAX];
+    bool filter_changed_;
+    int badNameIdCount_;
+    uint sequentialWrite_;
 
-    int          Dirty;         // If true, Header needs rewriting to disk.
+    // The complete index will be loaded in memory and can be pretty huge.
+    // To avoid the slow reallocation when adding games we split the data in chunks.
+    // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
+    // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
+    template <uint CHUNKSHIFT>
+    struct entriesT {
+        entriesT() : size_(0) {}
+        ~entriesT() { resize(0); }
+        IndexEntry& operator[] (uint idx) {
+            const uint low_mask = ((1 << CHUNKSHIFT) - 1);
+            return index_[idx >> CHUNKSHIFT][idx & low_mask];
+        }
+        void resize(size_t newsize) {
+            size_ = newsize;
+            size_t sz = index_.size();
+            size_t sz_new = 0;
+            if (newsize > 0) sz_new = 1 + (newsize >> CHUNKSHIFT);
+            for (size_t i=sz_new; i < sz; i++) delete [] index_[i];
+            index_.resize(sz_new);
+            for (size_t i=sz; i < sz_new; i++) {
+                index_[i] = new IndexEntry[1 << CHUNKSHIFT];
+            }
+        }
+        void push_back() {
+            size_t subidx = (size_++) >> CHUNKSHIFT;
+            if (subidx >= index_.size()) resize(size_);
+        }
+    private:
+        std::vector<IndexEntry*> index_;
+        size_t size_;
+    };
+    entriesT<16> entries_; // A two-level array of the entire index.
 
-    char *       ErrorMsg;
 
-    uint         IndexEntrySize;
-
-    // Used for sorting:
-    uint *        EntriesHeap;
-    int           SortCriteria [INDEX_MaxSortCriteria];
-
-    void         FreeEntries();
-    uint NumChunksRequired() {
-        return 1 + (GetNumGames() >> INDEX_ENTRY_CHUNKSHIFT);
+    void Init ();
+    void Clear ();
+    errorT write (IndexEntry* ie, gameNumberT idx);
+    inline uint getIndexEntrySize () {
+        switch (Header.version) {
+            case 300: return OLD_INDEX_ENTRY_SIZE;
+        }
+        //Current version (400)
+        return INDEX_ENTRY_SIZE;
     }
 
-    SortCache * sortingCaches[SORTING_CACHE_MAX];
-    bool filter_changed_;
-
-    //----------------------------------
-    //  Index:  Public Functions
-    //----------------------------------
- public:
+public:
     Index()     { Init(); }
     ~Index()    { Clear(); }
 
-    void        Init ();
-    void        Clear ();
-    void        InitEntries (IndexEntry * ie, uint count);
-
-    // CalcIndexEntrySize: useful if the index entry size needs to grow in
-    // a future version of Scid. Currently, all versions use same size.
-    inline void CalcIndexEntrySize (void) {
-        if (Header.version < 300) {
-            IndexEntrySize = OLD_INDEX_ENTRY_SIZE;
-        } else {
-            IndexEntrySize = INDEX_ENTRY_SIZE;
-        }
+    errorT Open(const char* filename, fileModeT fmode = FMODE_Both, bool old = false);
+    errorT Create(const char* filename);
+    errorT Close() {
+        errorT res = WriteHeader();
+        if (res == OK) Clear();
+        return res;
     }
+    gameNumberT GetNumGames () { return Header.numGames; }
+    int GetBadNameIdCount() { return badNameIdCount_; }
 
-    char *      ErrorMessage() { return ErrorMsg; }
-    void        SetFileName (const char *s)   { strCopy (Fname, s); }
-    char  *     GetFileName ()          { return Fname; }
+    errorT ReadEntireFile (NameBase* nb,
+                           void (*progressFn)(void*, uint, uint) = 0,
+                           void * progressData = 0);
 
-    void        SetType (uint t)   { Header.baseType = t; }
-    uint        GetType ()         { return Header.baseType; }
+    IndexEntry* FetchEntry (gameNumberT g) { return &(entries_[g]); }
 
-    versionT    GetVersion ()             { return Header.version; }
-    void        SetVersion (versionT v)   { Header.version = v; }
-
-    void        SetDescription (const char *s);
-    const char * GetDescription ()  { return Header.description; }
-
-    // fill param str with custom flag description. Number is 1..6
-    void        GetCustomFlagDesc (char * str, byte c) {
-      strcpy(str, Header.customFlagDesc[c-1] );
+    uint        GetType ()        { return Header.baseType; }
+    versionT    GetVersion ()     { return Header.version; }
+    const char* GetDescription () { return Header.description; }
+    void GetCustomFlagDesc (char * str, byte c) {
+        strcpy(str, Header.customFlagDesc[c-1] );
     }
-    
-    void        SetCustomFlagDesc (const char * str, byte c) {
-      strncpy( Header.customFlagDesc[c-1], str, CUSTOM_FLAG_DESC_LENGTH );
-      Header.customFlagDesc[c-1][CUSTOM_FLAG_DESC_LENGTH] = 0;
-      WriteHeader ();
-    }
-    void        SetAutoLoad (gameNumberT gnum) { Header.autoLoad = gnum + 1; }
     gameNumberT GetAutoLoad () {
         return ((Header.autoLoad == 0) ? 1 : (Header.autoLoad - 1));
     }
+
+    // Functions that modify the Header
+    // For performance reasons changes are not immediatly written to index file.
+    // Changes are automatically written to file when the object is destroyed or closed.
+    // However, for maximum security against power loss, crash, etc,
+    // manually call the function WriteHeader()
+    void SetType (uint t) {
+        Header.baseType = t;
+        Dirty = true;
+    }
     
-    errorT      Open (fileModeT, bool old);
-    errorT      OpenIndexFile (fileModeT m) { return Open (m, false); }
-    errorT      OpenOldIndexFile (fileModeT m) { return Open (m, true); }
-    errorT      CreateIndexFile (fileModeT);
-    errorT      CreateMemoryOnly ();
-    errorT      WriteHeader ();
-    errorT      CloseIndexFile (bool NoHeader = false);
-    errorT      SetReadOnly ();
-
-    errorT      ReadEntries (IndexEntry * ie, gameNumberT start, uint count);
-    errorT      WriteEntries (IndexEntry * ie, gameNumberT start, uint count);
-    errorT      ReadEntireFile (void (*progressFn)(void * data,
-                                                   uint progress,
-                                                   uint total) = 0,
-                                void * progressData = 0);
-
-    MFile *     GetMFile() { return FilePtr; }
+    void SetVersion (versionT v) {
+        Header.version = v;
+        Dirty = true;
+    }
     
-    errorT      VerifyFile (NameBase* nb, bool readOnly);
-    bool        AllInMemory() { return InMemory; }
+    void SetDescription (const char* str) {
+        strncpy(Header.description, str, SCID_DESC_LENGTH +1);
+        Dirty = true;
+    }
+    
+    void SetCustomFlagDesc (const char* str, byte c /*Range 1..6*/) {
+        strncpy( Header.customFlagDesc[c-1], str, CUSTOM_FLAG_DESC_LENGTH );
+        Header.customFlagDesc[c-1][CUSTOM_FLAG_DESC_LENGTH] = 0;
+        Dirty = true;
+    }
+    void SetAutoLoad (gameNumberT gnum) {
+        Header.autoLoad = gnum + 1;
+        Dirty = true;
+    }
+    errorT AddGame (IndexEntry* ie) {
+        if (Header.numGames >= MAX_GAMES) {  return ERROR_IndexFull; }
+        entries_.push_back();
+        Dirty = true;
+        return write (ie, Header.numGames++);
+    }
 
-    inline IndexEntry * FetchEntry (gameNumberT g);
+    errorT WriteHeader ();
+    errorT WriteEntries (IndexEntry * ie, gameNumberT idx, bool flush = true) {
+        errorT res = write(ie, idx);
+        if (flush && res == OK && FilePtr != NULL) {
+            res = (FilePtr->pubsync() != -1) ? OK : ERROR_FileWrite;;
+        }
+        return res;
+    }
 
-    gameNumberT GetNumGames ()     { return Header.numGames; }
-    errorT      AddGame (gameNumberT * g, IndexEntry * ie, bool initIE = false);
-
-  public:
     /* CreateSortingCache
      * Create a SortCache that requires 4 byte for each game
      * A SortCache will greatly speedup the GetRange* functions that use the same criteria
@@ -791,80 +258,14 @@ class Index
      */
     uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter, uint gnumber);
     uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
-	                       const char* text, uint start, bool forward =true);
+                           const char* text, uint start, bool forward =true);
     /* IndexUpdated
      * When changes are made to the games (adding or saving a game) the sortcaches need to be updated.
      * if gnum == IDX_NOT_FOUND the sortcache will be completely rebuild (faster for a large number of updates)
      */
     errorT IndexUpdated( uint gnum);
-
-    // Old sorting related methods. Should become obsolete
-  private:
-     void       Sort_AdjustHeap (int heapSize, int root, NameBase * nb);
-     errorT     VerifySort (void);
-  public:
-     errorT     Sort (NameBase * nb, int reportFrequency,
-                      void (*progressFn)(void * data,
-                                         uint progress,
-                                         uint total),
-                      void * progressData);
-
-     errorT     WriteSorted (int reportFrequency,
-                             void (*progressFn)(void * data,
-                                                uint progress,
-                                                uint total),
-                             void * progressData);
-     errorT     WriteSorted () { return WriteSorted (0, NULL, NULL); }
-
-     errorT     ParseSortCriteria (const char * inputStr);
-     bool CanLoad();
 };
 
-
-inline IndexEntry *
-Index::FetchEntry (gameNumberT g)
-{
-    // Returns a ptr to a particular entry, or NULL if file is not
-    // all in memory.
-
-    if (g >= Header.numGames) { ASSERT(0); return NULL; }
-    if (InMemory == 0) { ReadEntireFile(); }
-    IndexEntry * chunk = Entries[g >> INDEX_ENTRY_CHUNKSHIFT];
-    return &(chunk[g & INDEX_ENTRY_CHUNKMASK]);
-}
-
-// inline produce smaller code
-inline byte IndexEntry::GetRating(NameBase* nb) {
-	eloT welo = GetWhiteElo();
-	eloT belo = GetBlackElo();
-	if (welo == 0) { welo = nb->GetElo (GetWhite()); }
-	if (belo == 0) { belo = nb->GetElo (GetBlack()); }
-	int rating = static_cast<int>(welo + belo) / 140;
-
-	// Bonus for comments or Nags
-	if (GetCommentCount() > 2 || GetNagCount() > 2) {
-		if (rating < 21) { // Missing elo
-			rating = 40;
-		} else {
-			rating += 6;
-		}
-	}
-
-	// Early draw penalty
-	if (GetResult() == RESULT_Draw) {
-		uint moves = GetNumHalfMoves();
-		if (moves < 80) {
-			rating -= 3;
-			if (moves < 60) {
-				rating -= 2;
-				if (moves < 40) rating -= 2;
-			}
-		}
-	}
-
-	if (rating < 0) return 0;
-	else return static_cast<byte> (rating);
-}
 
 #endif  // #ifdef SCID_INDEX_H
 

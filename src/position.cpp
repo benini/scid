@@ -573,7 +573,6 @@ Position::Init (void)
 
     // Make sure all tables used for move generation, hashing,
     // square tests, etc have been computed:
-    scid_Init();
     initHashValues();
 }
 
@@ -3251,10 +3250,10 @@ Position::GetSquares (pieceT piece, SquareList * sqlist)
 //    Given a string such as "KRPKR" or "KRP-kr", sets up a
 //    random position with that material configuration.
 inline squareT
-randomSquare (void) { return random32() % 64; }
+randomSquare (void) { return rand() % 64; }
 
 inline squareT
-randomPawnSquare (void) { return (random32() % 48) + A2; }
+randomPawnSquare (void) { return (rand() % 48) + A2; }
 
 errorT
 Position::Random (const char * material)
@@ -3308,7 +3307,7 @@ Position::Random (const char * material)
     // position is found:
     while (1) {
         Clear();
-        ToMove = (random32() % 2) ? WHITE : BLACK;
+        ToMove = (rand() % 2) ? WHITE : BLACK;
         AddPiece (WK, wk);
         AddPiece (BK, bk);
 

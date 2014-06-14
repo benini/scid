@@ -18,10 +18,8 @@
 #include "common.h"
 #include "error.h"
 #include "position.h"
-#include "stralloc.h"
 #include "strtree.h"
 #include "dstring.h"
-
 #include <stdio.h>
 
 #define PBOOK_SUFFIX ".epd"
@@ -54,7 +52,6 @@ class PBook
     uint    NodeListCapacity;
     uint    NodeListCount;
     uint    NextIndex;   // For jumping to next pbook position.
-    StrAllocator * StrAlloc;
     uint SkipCount;      // Number of searches saved by LeastMaterial
                          // comparison.
     uint LeastMaterial;  // The smallest amount of material in any

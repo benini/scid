@@ -55,9 +55,9 @@ public:
 		}
 
 		//Home Pawn Signature
-		uint16_t i = ~static_cast<uint16_t>(pos->GetHPSig());
-		hpSig_ = i;
-		for (ply_count_ = 0; i; ply_count_++) i &= i -1; //popcnt
+		uint16_t hps = ~static_cast<uint16_t>(pos->GetHPSig());
+		hpSig_ = hps;
+		for (ply_count_ = 0; hps != 0; ply_count_++) hps &= hps -1; //popcnt
 
 		//MatSig
 		msig_ = matsig_Make (pos->GetMaterial());
@@ -72,15 +72,21 @@ public:
 
 	bool setFilter(scidBaseT* base, Filter* filter) {
 		if (! isStdStard_) {
-			if (toMove_ == WHITE) return SetFilter<WHITE>(base, filter);
-			return SetFilter<BLACK>(base, filter);
+			int i=0;
+			if (unusualKingPos_) i += 1;
+			if (toMove_ == BLACK) i += 2;
+			switch (i) {
+				case 0: return SetFilter<WHITE, true> (base, filter);
+				case 1: return SetFilter<WHITE, false>(base, filter);
+				case 2: return SetFilter<BLACK, true> (base, filter);
+				case 3: return SetFilter<BLACK, false>(base, filter);
+			}
 		}
 		for (uint i=0; i < base->numGames; i++) {
 			IndexEntry* ie = base->idx->FetchEntry (i);
 			if (! ie->GetStartFlag()) filter->Set (i, 1);
 			else {
-				base->gfile->ReadGame (base->bbuf, ie->GetOffset(),	ie->GetLength());
-				FastGame game = FastGame::Create(base->bbuf->GetBuffer(), base->bbuf->GetBuffer() + base->bbuf->GetByteCount());
+				FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
 				int ply = game.search<WHITE>(board_, nPieces_);
 				filter->Set (i, (ply > 255) ? 255 : ply);
 			}
@@ -102,19 +108,14 @@ private:
 	bool  (*progressFn_)(double);
 	long progressEvery_;
 
-	template <colorT TOMOVE>
-	bool SetFilter (scidBaseT* base, Filter* filter) {
-		if (!unusualKingPos_) return SetFilter<TOMOVE, false>(base, filter);
-		return SetFilter<TOMOVE, true>(base, filter);
-	}
-	template <colorT TOMOVE, bool KINGPOS>
+	template <colorT TOMOVE, bool STOREDLINE>
 	bool SetFilter (scidBaseT* base, Filter* filter) {
 		filter->Fill(0);
 		for (uint i=0; i < base->numGames; i++) {
 			IndexEntry* ie = base->idx->FetchEntry (i);
 			if (! ie->GetStartFlag()) {
 				if (! HPSigCanMatch(ie->GetHomePawnData())) continue;
-				if (! KINGPOS) {
+				if (STOREDLINE) {
 					uint ply = 0;
 					simpleMoveT sm;
 					if (! storedLine_->CanMatch(ie->GetStoredLineCode(), &ply, &sm)) continue;
@@ -126,8 +127,7 @@ private:
 			}
 			if (!matsig_isReachable (msig_, ie->GetFinalMatSig(), ie->GetPromotionsFlag(), ie->GetUnderPromoFlag())) continue;
 
-			base->gfile->ReadGame (base->bbuf, ie->GetOffset(),	ie->GetLength());
-			FastGame game = FastGame::Create(base->bbuf->GetBuffer(), base->bbuf->GetBuffer() + base->bbuf->GetByteCount());
+			FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
 			int ply = game.search<TOMOVE>(board_, nPieces_);
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 

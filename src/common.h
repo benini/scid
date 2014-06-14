@@ -24,9 +24,21 @@
 #include "myassert.h"
 #include "error.h"
 
-#ifdef _MSC_VER
-#define snprintf _snprintf
+
+#if __cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__) || _MSC_VER > 1600
+	#define CPP11_SUPPORT 1
+#else
+	#define CPP11_SUPPORT 0
 #endif
+
+#if defined(_MSC_VER) && _MSC_VER <= 1600
+typedef unsigned __int8   uint8_t;
+typedef unsigned __int16  uint16_t;
+typedef unsigned __int32  uint32_t;
+typedef unsigned __int64  uint64_t;
+#else
+#include <stdint.h>
+#endif // _MSC_VER <= 1600
 
 #ifdef ZLIB
 	#include <zlib.h>
@@ -45,6 +57,7 @@
 	inline int gzseek (gzFile fp, int offset, int where) { return 0; }
 	inline int gzclose (gzFile fp) { return 0; }
 #endif
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CONSTANTS:
 
@@ -57,8 +70,8 @@ typedef unsigned short versionT;
 // Version: div by 100 for major number, modulo 100 for minor number
 // so 109 = 1.9, 110 = 1.10, etc.
 
-const versionT SCID_VERSION = 400;     // Current file format version = 3.0
-const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 3.0
+const versionT SCID_VERSION = 400;     // Current file format version = 4.0
+const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 4.0
 
 const char SCID_VERSION_STRING[] = "4.6.0";     // Current Scid version
 const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
@@ -148,7 +161,9 @@ enum fileModeT {
     FMODE_None = 0,
     FMODE_ReadOnly,
     FMODE_WriteOnly,
-    FMODE_Both
+    FMODE_Both,
+    FMODE_Create,
+    FMODE_Memory
 };
 
 //  Date type: see date.h and date.cpp
@@ -719,27 +734,6 @@ square_Adjacent (squareT from, squareT to)
     int fdist = (int)fromFyle - (int)toFyle;
     if (fdist < -1  ||  fdist > 1) { return false; }
     return true;
-}
-
-// Random values:
-//   To ensure good bit distributions, we take three random values
-//   and mix the bits around.
-
-inline void srandom32(uint seed) {
-#ifdef WIN32
-    srand (seed);
-#else
-    srandom (seed);
-#endif
-}
-
-inline uint random32()
-{
-#ifdef WIN32
-    return rand() ^ (rand() << 16) ^ (rand() >> 16);
-#else
-    return random() ^ (random() << 16) ^ (random() >> 16);
-#endif
 }
 
 #endif  // #ifdef SCID_COMMON_H

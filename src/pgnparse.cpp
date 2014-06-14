@@ -14,6 +14,11 @@
 
 
 #include "pgnparse.h"
+#include <stdio.h>
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+    #define snprintf _snprintf
+#endif
+
 
 const uint MAX_COMMENT_SIZE = 16000;
 

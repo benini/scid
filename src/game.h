@@ -24,6 +24,7 @@
 #include "textbuf.h"
 #include "bytebuf.h"
 #include "matsig.h"
+#include "stralloc.h"
 
 void transPieces(char *s);
 char transPiecesChar(char c);
@@ -328,34 +329,7 @@ private:
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Public Functions
 public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
-
-#ifdef WINCE
-    Game()      { LowMem = false; Init(); }
-// Position costs 1028 bytes : use a global one as this will only be called by sc_tree
-// when LowMem is set
-    Game(bool b)      { LowMem = true; CurrentPos = &staticPosition; Init(); }
-#else
     Game()      { Init(); }
-#endif
-
     ~Game();
 
     void        Clear();

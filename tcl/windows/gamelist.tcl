@@ -281,12 +281,21 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) "sc_progressBar"
 	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
 	closeProgressWindow
-	if {$copyErr} {
-		tk_messageBox -type ok -icon info -title "Scid" -message $result
-	}
+	if {$copyErr} { ERROR::MessageBox "$result"}
 	::notify::DatabaseModified $dstBase
 }
 
+proc ::windows::gamelist::ClearClipbase {} {
+	set clipbase [sc_info clipbase]
+	foreach w $::windows::gamelist::wins {
+		if {$::gamelistBase($w) == $clipbase} {
+			::windows::gamelist::SetBase $w $::gamelistBase($w)
+		}
+	}
+	sc_clipbase clear
+	::notify::DatabaseModified $clipbase
+	if {[sc_base current] == $clipbase} { ::notify::GameChanged }
+}
 
 #Private:
 set ::windows::gamelist::wins {}
@@ -713,6 +722,8 @@ proc glist.create {{w} {layout}} {
   ttk::treeview $w.glist -columns $::glist_Headers -show headings -selectmode browse
   $w.glist tag configure current -background lightSteelBlue
   $w.glist tag configure fsmall -font font_Small
+  set lineH [expr { round(1.4 * [font metrics font_Small -linespace]) }]
+  ttk::style configure Treeview -rowheight $lineH
   $w.glist tag configure deleted -foreground #a5a2ac
   menu $w.glist.header_menu
   menu $w.glist.header_menu.addcol

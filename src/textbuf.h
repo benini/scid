@@ -46,25 +46,6 @@ private:
     //----------------------------------
     //  TextBuffer:  Public Functions
 public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif  
-    
     TextBuffer()    { Init(); }
     ~TextBuffer()   { Free(); }
     
@@ -99,11 +80,7 @@ public:
     errorT   PrintString (const char * str);
     errorT   PrintSpace ();
     errorT   PrintChar (char b);
-#ifdef WINCE
-    errorT   DumpToFile (/* FILE * */ Tcl_Channel fp);
-#else
     errorT   DumpToFile (FILE * fp);
-#endif
 
     errorT   PrintInt (uint i, const char * str);
     inline errorT PrintInt (uint i) { return PrintInt (i, ""); }

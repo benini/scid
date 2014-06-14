@@ -16,13 +16,7 @@
 #include "common.h"
 #include "position.h"
 #include "tree.h"
-
-// Include header file for memcpy():
-#ifdef WIN32
-#  include <memory.h>
-#else
-#  include <string.h>
-#endif
+#include <string.h>
 
 
 // TREEFILE_MAGIC:

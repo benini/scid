@@ -20,12 +20,6 @@
 #include "error.h"
 #include <ctype.h>   // For isspace(), etc
 
-
-// Scid initialisation routine: this MUST be called before such things as
-// computing chess moves are done, since it sets up piece movement tables.
-//
-void   scid_Init ();
-
 // ECO string routines
 //
 void eco_ToString (ecoT ecoCode, char * ecoStr, bool extensions = true);
@@ -64,11 +58,6 @@ int    strCompareRound (const char * sleft, const char * sright);
 inline bool
 strEqual (const char * s1, const char * s2) {
     return (strCompare (s1, s2) == 0);
-}
-
-inline bool
-strCaseEqual (const char * s1, const char * s2) {
-    return (strCaseCompare (s1, s2) == 0);
 }
 
 void   strCopy (char * target, const char * original);
@@ -243,6 +232,7 @@ isPowerOf2 (uint x)
 
 //////////////////////////////////////////////////////////////////////
 //   FILE I/O Routines.
+// TODO: remove this functions
 
 uint    fileSize (const char * name, const char * suffix);
 uint    rawFileSize (const char * name);
@@ -254,7 +244,7 @@ errorT  renameFile (const char * oldName, const char * newName,
 errorT  removeFile (const char * fname, const char * suffix);
 errorT  createFile (const char * fname, const char * suffix);
 
-errorT  writeString (FILE * fp, char * str, uint length);
+errorT  writeString (FILE * fp, const char * str, uint length);
 errorT  readString  (FILE * fp, char * str, uint length);
 
 
@@ -351,41 +341,7 @@ readFourBytes (FILE * fp)
     return v;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// readCompactUint, writeCompactUint:
-//   Read/write an unsigned int using a variable number
-//   of bytes: 1 for 0-127, 2 for 128-16383, etc.
 
-inline errorT
-writeCompactUint (FILE * fp, uint value)
-{
-    ASSERT (fp != NULL);
-    int result;
-    while (true) {
-        if (value < 128) {
-            result = putc (value, fp);
-            break;
-        }
-        putc ((value & 127) | 128, fp);
-        value = value >> 7;
-    }
-    return (result == EOF ? ERROR_FileWrite : OK);
-}
-
-inline uint
-readCompactUint (FILE * fp)
-{
-    ASSERT (fp != NULL);
-    uint v = 0;
-    uint bitIndex = 0;
-    while (true) {
-        uint b = (uint) getc(fp);
-        v = v | ((b & 127) << bitIndex);
-        if (! (b & 128)) { break; }
-        bitIndex += 7;
-    }
-    return v;
-}
 
 #endif  // #ifdef SCID_MISC_H
 

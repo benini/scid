@@ -196,11 +196,7 @@ Crosstable::AddPlayer (idNumberT id, const char * name, eloT elo)
         }
     }
     if (PlayerCount == CROSSTABLE_MaxPlayers) { return ERROR_Full; }
-#ifdef WINCE
-    playerDataT * pdata = (playerDataT *) my_Tcl_Alloc(sizeof( playerDataT));
-#else
     playerDataT * pdata = new playerDataT;
-#endif
 
     PlayerData[PlayerCount] = pdata;
     pdata->id = id;
@@ -273,11 +269,7 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
 
     // The number of prior encounters must be consistent:
     ASSERT (pwhite->clashCount[blackIdx] == pblack->clashCount[whiteIdx]);
-#ifdef WINCE
-    clashT * whiteClash = (clashT *) my_Tcl_Alloc(sizeof( clashT));
-#else
     clashT * whiteClash = new clashT;
-#endif
 
     if (pwhite->firstClash[blackIdx] == NULL) {  // New head of list:
         pwhite->firstClash[blackIdx] = whiteClash;
@@ -287,11 +279,7 @@ Crosstable::AddResult (uint gameNumber, idNumberT white, idNumberT black,
     whiteClash->next = NULL;
     pwhite->lastClash[blackIdx] = whiteClash;
 
-#ifdef WINCE
-    clashT * blackClash = (clashT *) my_Tcl_Alloc(sizeof( clashT));
-#else
     clashT * blackClash = new clashT;
-#endif
     if (pblack->firstClash[whiteIdx] == NULL) { // New head of list:
         pblack->firstClash[whiteIdx] = blackClash;
     } else {

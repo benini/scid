@@ -32,22 +32,6 @@
 #include "stored.h"
 #include "polyglot.h"
 #include "scidbase.h"
-
-
-// Include header files for finding directory of executable program
-// in Windows if necessary.
-// Note: I have no idea what the WIN32_LEAN_AND_MEAN definition when
-// including windows.h does, but lots of other source code I have seen
-// does it -- although "lean Windows" sure is an oxymoron!
-#ifdef WIN32
-#  define WIN32_LEAN_AND_MEAN 1
-#  include <windows.h>
-#  undef WIN32_LEAN_AND_MEAN
-#  include <winbase.h>
-#else
-#  include <sys/resource.h>   // For getpriority() and setpriority().
-#endif
-
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/stat.h>
@@ -99,180 +83,9 @@ struct progressBarT {
 };
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Scid database stats structure:
-//    This is maintained and recalculated each time a game in the
-//    database is modified to save time updating the file stats window.
-//
 
 
 
-//////////////////////////////////////////////////////////////////////
-//
-// Inline routines for setting Tcl result strings:
-//
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setResult():
-//    Inline function to set the Tcl interpreter result to a
-//    constant string.
-inline int
-setResult (Tcl_Interp * ti, const char * str)
-{
-    Tcl_SetResult (ti, (char *) str, TCL_STATIC);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~
-// errorResult():
-//    Same as setResult, but returns TCL_ERROR so callers can simply:
-//        return errorResult (ti, "error message");
-//    instead of:
-//        Tcl_SetResult (ti, "error message");
-//        return TCL_ERROR;
-inline int
-errorResult (Tcl_Interp * ti, const char * str)
-{
-    Tcl_SetResult (ti, (char *) str, TCL_STATIC);
-    return TCL_ERROR;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setBoolResult():
-//    Inline function to set the Tcl interpreter result to a
-//    boolean value.
-inline int
-setBoolResult (Tcl_Interp * ti, bool b)
-{
-    Tcl_SetResult (ti, b ? (char *) "1" : (char *) "0", TCL_STATIC);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setIntResult():
-//    Inline function to set the Tcl interpreter result to a
-//    signed integer value.
-inline int
-setIntResult (Tcl_Interp * ti, int i)
-{
-    char temp [20];
-    sprintf (temp, "%d", i);
-    Tcl_SetResult (ti, temp, TCL_VOLATILE);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setUintResult():
-//    Inline function to set the Tcl interpreter result to an
-//    unsigned integer value.
-inline int
-setUintResult (Tcl_Interp * ti, uint i)
-{
-    char temp [20];
-    sprintf (temp, "%u", i);
-    Tcl_SetResult (ti, temp, TCL_VOLATILE);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// appendIntResult:
-//    Inline function to append the specified signed value to the
-//    Tcl interpreter result.
-inline int
-appendIntResult (Tcl_Interp * ti, int i)
-{
-    char temp [20];
-    sprintf (temp, "%d", i);
-    Tcl_AppendResult (ti, temp, NULL);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// appendUintResult:
-//    Inline function to append the specified unsigned value to the
-//    Tcl interpreter result.
-inline int
-appendUintResult (Tcl_Interp * ti, uint i)
-{
-    char temp [20];
-    sprintf (temp, "%u", i);
-    Tcl_AppendResult (ti, temp, NULL);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// appendUintElement:
-//    Inline function to append the specified unsigned value to the
-//    Tcl interpreter list result.
-inline uint
-appendUintElement (Tcl_Interp * ti, uint i)
-{
-    char temp[20];
-    sprintf (temp, "%u", i);
-    Tcl_AppendElement (ti, temp);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setUintWidthResult():
-//    Inline function to set the Tcl interpreter result to an
-//    unsigned integer value, with zeroes to pad to the desired width.
-inline int
-setUintWidthResult (Tcl_Interp * ti, uint i, uint width)
-{
-    char temp [20];
-    sprintf (temp, "%0*u", width, i);
-    Tcl_SetResult (ti, temp, TCL_VOLATILE);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setCharResult():
-//    Inline function to set the Tcl interpreter result to a character value.
-inline int
-setCharResult (Tcl_Interp * ti, char ch)
-{
-    char tempStr [4];
-    tempStr[0] = ch;
-    tempStr[1] = 0;
-    Tcl_SetResult (ti, tempStr, TCL_VOLATILE);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// appendCharResult:
-//    Inline function to append the specified character value to the
-//    Tcl interpreter result.
-inline int
-appendCharResult (Tcl_Interp * ti, char ch)
-{
-    char tempStr [4];
-    tempStr[0] = ch;
-    tempStr[1] = 0;
-    Tcl_AppendResult (ti, tempStr, NULL);
-    return TCL_OK;
-}
-
-void transPieces(char *s);
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// translate:
-//    Return the translation for a phrase.
-//
-inline const char *
-translate (Tcl_Interp * ti, const char * name, const char * defaultText)
-{
-    const char * str = Tcl_GetVar2 (ti, "tr", (char *) name, TCL_GLOBAL_ONLY);
-    if (str == NULL) { str = defaultText; }
-    return str;
-}
-
-inline const char *
-translate (Tcl_Interp * ti, const char * name)
-{
-    return translate (ti, name, name);
-}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -312,7 +125,6 @@ int sc_base_slot      (TCL_ARGS);
 int sc_base_stats     (TCL_ARGS);
 int sc_base_ecoStats  (TCL_ARGS);
 int sc_base_piecetrack (TCL_ARGS);
-int sc_base_sort      (TCL_ARGS);
 int sc_base_switch    (TCL_ARGS);
 int sc_base_tag       (TCL_ARGS);
 int sc_base_tournaments (TCL_ARGS);
@@ -328,10 +140,7 @@ int sc_epd_set        (Tcl_Interp * ti, int epdID, const char * text);
 int sc_epd_write      (Tcl_Interp * ti, int epdID);
 
 int sc_clipbase       (TCL_ARGS);
-int sc_clipbase_copy  (TCL_ARGS);
 int sc_clipbase_paste (TCL_ARGS);
-
-int sc_compact        (TCL_ARGS);
 
 int sc_eco            (TCL_ARGS);
 int sc_eco_base       (TCL_ARGS);
@@ -364,7 +173,6 @@ int sc_game_new       (TCL_ARGS);
 int sc_game_pgn       (TCL_ARGS);
 int sc_game_pop       (TCL_ARGS);
 int sc_game_push      (TCL_ARGS);
-int sc_savegame       (Tcl_Interp *, Game * game, gameNumberT, scidBaseT *);
 int sc_game_save      (TCL_ARGS);
 int sc_game_scores    (TCL_ARGS);
 int sc_game_startBoard (TCL_ARGS);
@@ -379,7 +187,6 @@ int sc_game_tags_share (TCL_ARGS);
 int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);
 int sc_info_limit     (TCL_ARGS);
-int sc_info_priority  (TCL_ARGS);
 int sc_info_suffix    (TCL_ARGS);
 int sc_info_tb        (TCL_ARGS);
 
@@ -428,7 +235,6 @@ int sc_progressBar    (TCL_ARGS);
 int sc_tree           (TCL_ARGS);
 int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
-int sc_tree_time      (TCL_ARGS);
 int sc_tree_write     (TCL_ARGS);
 int sc_tree_cachesize (TCL_ARGS);
 int sc_tree_cacheinfo (TCL_ARGS);

@@ -26,6 +26,7 @@
 #include "tokens.h"
 #include "game.h"
 #include "dstring.h"
+#include "mfile.h"
 
 #define MAX_UNGETCHARS 16
 static const uint MAX_IGNORED_TAGS = 16;
@@ -81,24 +82,6 @@ class PgnParser
     tokenT GetGameToken (char * buffer, uint bufSize);
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     // Constructors: PgnParser is initialised with a file pointer or
     //    a pointer to a buffer, or it defaults to an empty buffer.
     PgnParser (void) { Init ((const char *) ""); }

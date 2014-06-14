@@ -41,8 +41,7 @@ set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
 set scidVersionExpected "4.6.0"
 
-# Check that on Unix, the version of tkscid matches the version of this
-# script or on Windows, that the scid.exe and scid.gui versions are identical.
+# Check that the version of c++ code matches the version of tcl code
 #
 if {[string compare $::scidVersion $::scidVersionExpected]} {
   wm withdraw .
@@ -100,12 +99,11 @@ proc InitDirs {} {
   }
   set scidTclDir [file nativename [file join $scidShareDir "tcl"]]
   if {! [file isdirectory $scidTclDir]} {
-    set scidTclDir [file join $scidExeDir "../tcl"]
+    set scidTclDir [file dirname [info script]]
+    set scidShareDir [file normalize "$scidTclDir/../"]
   }
   set scidImgDir [file nativename [file join $scidShareDir "img"]]
-  if {! [file isdirectory $scidImgDir]} {
-    set scidImgDir [file join $scidExeDir "../img"]
-  }
+
   #Default values, can be overwritten by file option
   set scidBooksDir [file nativename [file join $scidShareDir "books"]]
   set scidBasesDir [file nativename [file join $scidShareDir "bases"]]
@@ -1194,6 +1192,7 @@ lang/serbian.tcl
 lang/spanish.tcl
 lang/suomi.tcl
 lang/swedish.tcl
+errors.tcl
 tools/uci.tcl
 end.tcl
 tools/tacgame.tcl

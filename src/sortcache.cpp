@@ -20,7 +20,7 @@
 #include <vector>
 #include <algorithm>
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#if CPP11_SUPPORT
 #include <thread>
 
 bool SortCache::Sort_thread::start() {
@@ -51,20 +51,15 @@ void SortCache::Sort_thread::join() {
 }
 
 void SortCache::Sort_thread::sort(uint numGames){
-// printf("Debug: background thread started\n");
 	for (int v=numGames/2-1; v>=0; v--)	sc_->Downheap(v, numGames);
 	for (uint n = numGames; n > 1; )
 	{
-		if (interrupt_) {
-// printf("Debug: background sorting interrupted\n");
-			return;
-		}
+		if (interrupt_) return;
 		n--;
 		int tmp=sc_->fullMap[0]; sc_->fullMap[0]=sc_->fullMap[n]; sc_->fullMap[n]=tmp;
 		sc_->Downheap(0, n);
     }
 	sc_->sorted_ = true;
-// printf("Debug: background sorting finished\n");
 }
 
 #else
@@ -172,7 +167,7 @@ errorT SortCache::Init(Index* idx, NameBase* nb, const char* criterium)
 	numGames = index->GetNumGames();
 
 	uint numOFArgs = strlen( criterium) / 2;
-	if (numOFArgs >= (INDEX_MaxSortCriteria - 1))
+	if (numOFArgs >= (INDEX_MaxSortingCriteria - 1))
 	{
 		SortCriteria[numOFArgs] = SORTING_sentinel;
 		return ERROR_Full;
@@ -417,8 +412,7 @@ SortCache::FullCompare (uint left, uint right)
 			return 0;
 		}
 
-		if (res != 0) 
-			return *reverse ? -res : res;
+		if (res != 0) return (*reverse) ? -res : res;
 		fields++; 
 		reverse++;
 	}
@@ -682,36 +676,7 @@ void SortCache::GetSpace( uint size)
 
 uint SortCache::Insert( uint gnum, uint done)
 {
-	uint insert = done;
-	if( done < 20)
-	{
-		// Only few entries, so do a sequential insert
-		while( insert > 0)
-		{
-			if( Compare( fullMap[insert-1], gnum) > 0)
-				insert--;
-			else
-				break;
-		}
-	}
-	else
-	{
-		// More entries, so do a binary insert
-		uint up = done - 1;
-		uint low = 0;
-		insert = (up + low) / 2;
-		while( low < up)
-		{
-			int res = Compare( fullMap[insert], gnum);
-			if( res == 0)
-				break;
-			if( res < 0)
-				low = insert + 1;
-			else
-				up = insert;
-			insert = (up + low) / 2;
-		}
-	}
+	uint insert = std::lower_bound(fullMap, fullMap + done, gnum, Compare_std(this)) - fullMap;
 
 	for( uint tmp=done; tmp>insert; tmp--)
 		fullMap[tmp] = fullMap[tmp-1];
@@ -754,101 +719,3 @@ errorT SortCache::AddEntry()
 	return OK;
 }
 
-//To be improved: Store/Load functions
-SortCache* SortCache::CreateFromFile(Index* idx, NameBase* nb)
-{
-	FILE *fp;
-	char fileName[256];
-
-	strcpy( fileName, idx->GetFileName());
-	strcpy( fileName + strlen(fileName), ".ssc");
-	fp = fopen( fileName, "rb");
-	if(fp == NULL) return 0;
-
-	fseek( fp, 0, SEEK_END);
-	long size = ftell( fp);
-	fseek( fp, 0, SEEK_SET);
-	if( size != 2*INDEX_MaxSortingCriteria + idx->GetNumGames() * 4) return 0;
-
-	SortCache* s = new SortCache();
-	s->index = idx;
-	s->nbase = nb;
-	s->numGames = idx->GetNumGames();
-	s->GetSpace(s->numGames);
-	for(uint i=0; i<INDEX_MaxSortingCriteria; i++)
-	{
-		s->SortCriteria[i] = readOneByte( fp);
-		s->SortReverse[i] = readOneByte( fp);
-	}
-	size_t ferr = fread( s->fullMap, 4, s->numGames, fp);
-	if (ferr > 0) { //(ferr != (4 * s->numGames))
-		s->sorted_ = true;
-		char buf[100];
-		s->GetSortingCrit(buf);
-		s->criteria = buf;
-	}
-
-	fclose(fp);
-    return s;
-}
-
-errorT SortCache::WriteToFile ()
-{
-	t_.join();
-	FILE *fp;
-	char fileName[256];
-
-	if( !sorted_)
-	{
-		return OK;
-	}
-
-	strcpy( fileName, index->GetFileName());
-	strcpy( fileName + strlen(fileName), ".ssc");
-	fp = fopen( fileName, "wb");
-	if(fp == NULL)
-	{
-		return OK;
-	}
-
-	for(uint i=0; i<INDEX_MaxSortingCriteria; i++)
-	{
-		writeOneByte( fp, SortCriteria[i]);
-		writeOneByte( fp, SortReverse[i]);
-	}
-	fwrite( fullMap, 4, numGames, fp);
-	fclose(fp);
-    return OK;
-}
-
-bool SortCache::CanLoad( char *fName, uint numGames)
-{
-	FILE *fp;
-	char fileName[256];
-
-	strcpy( fileName, fName);
-	strcpy( fileName + strlen(fileName), ".ssc");
-	fp = fopen( fileName, "rb");
-	if(fp == NULL)
-		return false;
-	fseek( fp, 0, SEEK_END); 
-	long size = ftell( fp);
-	fseek( fp, 0, SEEK_SET);
-	fclose( fp);
-	return( size == 2*INDEX_MaxSortingCriteria + numGames * 4);
-}
-
-errorT SortCache::GetSortingCrit( char *crit)
-{
-	for (uint i=0; i<INDEX_MaxSortingCriteria && SortCriteria[i] != SORTING_sentinel; i++)
-		for (int j=0; shortCriteriaNames[j][0] != 0; j++)
-			if ( shortCriteriaNames[j][1] == SortCriteria[i])
-			{
-				*crit = shortCriteriaNames[j][0];
-				crit++;
-				*crit = SortReverse[i] ? '-' : '+';
-				crit++;
-			}
-	*crit = 0;
-	return OK;
-}

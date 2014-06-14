@@ -21,7 +21,7 @@
 
 // Matsigs are 32-bit unsigned ints.  We only use 24 bits of this.
 
-typedef  uint  matSigT;
+typedef uint32_t matSigT;
 
 // From most significant bits down to least, the matsig layout is:
 // Bits 22-33:  WQ    Bits 10-11:  BQ

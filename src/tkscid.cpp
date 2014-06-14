@@ -29,8 +29,8 @@
 #include "fastgame.h"
 #include "searchpos.h"
 #include "scidbase.h"
-
-#include <errno.h>
+#include "stdlib.h"
+#include "time.h"
 #include <set>
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,8 +71,178 @@ const int CLIPBASE_NUM = MAX_BASES - 1;
 const int MAX_EPD = 4;
 static PBook * pbooks [MAX_EPD];
 
-// Declare scid_InitTclTk, to initialise the Tcl interpreter:
-int scid_InitTclTk (Tcl_Interp * interp);
+
+
+//////////////////////////////////////////////////////////////////////
+//
+// Inline routines for setting Tcl result strings:
+//
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// setResult():
+//    Inline function to set the Tcl interpreter result to a
+//    constant string.
+inline int
+setResult (Tcl_Interp * ti, const char * str)
+{
+    Tcl_SetResult (ti, (char *) str, TCL_STATIC);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// setBoolResult():
+//    Inline function to set the Tcl interpreter result to a
+//    boolean value.
+inline int
+setBoolResult (Tcl_Interp * ti, bool b)
+{
+    Tcl_SetResult (ti, b ? (char *) "1" : (char *) "0", TCL_STATIC);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// setIntResult():
+//    Inline function to set the Tcl interpreter result to a
+//    signed integer value.
+inline int
+setIntResult (Tcl_Interp * ti, int i)
+{
+    char temp [20];
+    sprintf (temp, "%d", i);
+    Tcl_SetResult (ti, temp, TCL_VOLATILE);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// setUintResult():
+//    Inline function to set the Tcl interpreter result to an
+//    unsigned integer value.
+inline int
+setUintResult (Tcl_Interp * ti, uint i)
+{
+    char temp [20];
+    sprintf (temp, "%u", i);
+    Tcl_SetResult (ti, temp, TCL_VOLATILE);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// appendIntResult:
+//    Inline function to append the specified signed value to the
+//    Tcl interpreter result.
+inline int
+appendIntResult (Tcl_Interp * ti, int i)
+{
+    char temp [20];
+    sprintf (temp, "%d", i);
+    Tcl_AppendResult (ti, temp, NULL);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// appendUintResult:
+//    Inline function to append the specified unsigned value to the
+//    Tcl interpreter result.
+inline int
+appendUintResult (Tcl_Interp * ti, uint i)
+{
+    char temp [20];
+    sprintf (temp, "%u", i);
+    Tcl_AppendResult (ti, temp, NULL);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// appendUintElement:
+//    Inline function to append the specified unsigned value to the
+//    Tcl interpreter list result.
+inline uint
+appendUintElement (Tcl_Interp * ti, uint i)
+{
+    char temp[20];
+    sprintf (temp, "%u", i);
+    Tcl_AppendElement (ti, temp);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// setUintWidthResult():
+//    Inline function to set the Tcl interpreter result to an
+//    unsigned integer value, with zeroes to pad to the desired width.
+inline int
+setUintWidthResult (Tcl_Interp * ti, uint i, uint width)
+{
+    char temp [20];
+    sprintf (temp, "%0*u", width, i);
+    Tcl_SetResult (ti, temp, TCL_VOLATILE);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// setCharResult():
+//    Inline function to set the Tcl interpreter result to a character value.
+inline int
+setCharResult (Tcl_Interp * ti, char ch)
+{
+    char tempStr [4];
+    tempStr[0] = ch;
+    tempStr[1] = 0;
+    Tcl_SetResult (ti, tempStr, TCL_VOLATILE);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// appendCharResult:
+//    Inline function to append the specified character value to the
+//    Tcl interpreter result.
+inline int
+appendCharResult (Tcl_Interp * ti, char ch)
+{
+    char tempStr [4];
+    tempStr[0] = ch;
+    tempStr[1] = 0;
+    Tcl_AppendResult (ti, tempStr, NULL);
+    return TCL_OK;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// translate:
+//    Return the translation for a phrase.
+//
+inline const char *
+translate (Tcl_Interp * ti, const char * name, const char * defaultText)
+{
+    const char * str = Tcl_GetVar2 (ti, "tr", (char *) name, TCL_GLOBAL_ONLY);
+    if (str == NULL) { str = defaultText; }
+    return str;
+}
+
+inline const char *
+translate (Tcl_Interp * ti, const char * name)
+{
+    return translate (ti, name, name);
+}
+
+int TclResult (Tcl_Interp * ti, errorT err, const char* res = 0) {
+    if (res != 0) Tcl_SetResult (ti, (char *) res, TCL_STATIC);
+    if (err == OK) return OK;
+    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
+    return TCL_ERROR;
+}
+
+//~~~~~~~~~~~~~~~~~~
+// errorResult():
+//    Same as setResult, but returns TCL_ERROR so callers can simply:
+//        return errorResult (ti, "error message");
+//    instead of:
+//        Tcl_SetResult (ti, "error message");
+//        return TCL_ERROR;
+inline int
+errorResult (Tcl_Interp * ti, const char * str)
+{
+    Tcl_SetResult (ti, (char *) str, TCL_STATIC);
+    return TCL_ERROR;
+}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // InvalidCommand():
@@ -98,6 +268,9 @@ InvalidCommand (Tcl_Interp * ti, const char * majorCmd,
     }
     return TCL_ERROR;
 }
+
+/************ End of Tcl result routines ***********/
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Progress Bar update routine:
@@ -203,37 +376,7 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
                       "[Interrupted search; results are incomplete]");
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Main procedure
-//
-int
-main (int argc, char * argv[])
-{
- 
-    scid_Init();
 
-    int newArgc = argc;
-    char ** newArgv = argv;
-
-#ifdef WIN32
-    newArgc++;
-    newArgv = (char **) malloc (sizeof (char *) * newArgc);
-    newArgv[0] = argv[0];
-    for (int i = 1; i < argc; i++) { newArgv[i+1] = argv[i]; }
-    // Now generate the full path and name of the file to source:
-    char sourceFileName [MAX_PATH];
-    sourceFileName[0] = 0;
-    HMODULE hModule = GetModuleHandle (NULL);
-    GetModuleFileNameA (hModule, sourceFileName, MAX_PATH);
-    char * end = strrchr (sourceFileName, '\\');
-    if (end != NULL) { strCopy (end + 1, "scid.gui"); }
-    newArgv[1] = sourceFileName;
-#endif
-
-    Tcl_Main (newArgc, newArgv, scid_InitTclTk);
-    exit(0);
-    return 0;
-}
 
 int
 scid_InitTclTk (Tcl_Interp * ti)
@@ -252,15 +395,12 @@ scid_InitTclTk (Tcl_Interp * ti)
     
     ////////////////////
     /// Scid-specific Tcl/Tk commands:
-
     CREATE_CMD (ti, "strIsPrefix", str_is_prefix);
     CREATE_CMD (ti, "strPrefixLen", str_prefix_len);
     CREATE_CMD (ti, "sc_base", sc_base);
-    // CREATE_CMD (ti, "sc_book", sc_epd);  // sc_epd used to be sc_book : Pascal Georges : not used any longer, so reused
     CREATE_CMD (ti, "sc_book", sc_book);
     CREATE_CMD (ti, "sc_epd", sc_epd);
     CREATE_CMD (ti, "sc_clipbase", sc_clipbase);
-    CREATE_CMD (ti, "sc_compact", sc_compact);
     CREATE_CMD (ti, "sc_eco", sc_eco);
     CREATE_CMD (ti, "sc_filter", sc_filter);
     CREATE_CMD (ti, "sc_game", sc_game);
@@ -279,41 +419,10 @@ scid_InitTclTk (Tcl_Interp * ti)
 
     // Initialise global Scid database variables:
     dbList = new scidBaseT [MAX_BASES];
-
-    for (int base=0; base < MAX_BASES; base++) {
-        db = &(dbList[base]);
-        db->idx = new Index;
-        db->nb = new NameBase;
-        db->game = new Game;
-        for (int u = 0; u < UNDO_MAX; u++)
-          db->undoGame[u] = NULL;
-        db->undoMax = -1;
-        db->undoIndex = -1;
-        db->undoCurrent = -1;
-        db->undoFull = false;
-        db->gameNumber = -1;
-        db->gameAltered = false;
-        db->gfile = new GFile;
-        // TODO: Bases should be able to share common buffers!!!
-        db->bbuf = new ByteBuffer;
-        db->bbuf->SetBufferSize (BBUF_SIZE);
-        db->tbuf = new TextBuffer;
-        db->tbuf->SetBufferSize (TBUF_SIZE);
-        strCopy (db->fileName, "");
-        strCopy (db->realFileName, "");
-        db->fileMode = FMODE_Both;
-        db->inUse = false;
-        db->dbFilter = new Filter(0);
-        db->treeFilter = new Filter(0);
-        db->numGames = 0;
-        db->memoryOnly = false;
-        db->duplicates = NULL;
-        db->idx->SetDescription (errMsgNotOpen(ti));
-        db->tree.moveCount = db->tree.totalCount = 0;
-        db->treeCache = NULL;
-
-        db->treeSearchTime = 0;
-    }
+    // Initialise the clipbase database:
+    clipbase = &(dbList[CLIPBASE_NUM]);
+    clipbase->Open();
+    clipbase->idx->SetType (2);
 
     // Initialise the progress bar:
     progBar.state = false;
@@ -321,22 +430,6 @@ scid_InitTclTk (Tcl_Interp * ti)
     progBar.canvName = strDuplicate ("");
     progBar.rectName = strDuplicate ("");
     progBar.timeName = strDuplicate ("");
-
-    // Initialise the clipbase database:
-    clipbase = &(dbList[CLIPBASE_NUM]);
-    clipbase->gfile->CreateMemoryOnly();
-    clipbase->idx->CreateMemoryOnly();
-    clipbase->idx->SetType (2);
-    clipbase->idx->SetDescription ("Temporary database, not kept on disk.");
-    clipbase->inUse = true;
-    clipbase->memoryOnly = true;
-    strCopy (clipbase->fileName, "_clipbase_");
-
-    clipbase->treeCache = new TreeCache;
-    clipbase->treeCache->SetCacheSize (SCID_TreeCacheSize);
-    clipbase->backupCache = new TreeCache;
-    clipbase->backupCache->SetCacheSize (SCID_BackupCacheSize);
-    clipbase->backupCache->SetPolicy (TREECACHE_Oldest);
 
     currentBase = 0;
     scratchPos = new Position;
@@ -346,6 +439,38 @@ scid_InitTclTk (Tcl_Interp * ti)
     return TCL_OK;
 }
 
+void scid_ExitTclTk (void*) {
+    if (dbList != NULL) delete [] dbList;
+    if (scratchPos != NULL) delete scratchPos;
+    if (scratchGame != NULL) delete scratchGame;
+};
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Main procedure
+//
+int
+main (int argc, char * argv[])
+{
+    srand (time(NULL));
+    Tcl_FindExecutable(argv[0]);
+    Tcl_CreateExitHandler(&scid_ExitTclTk, 0);
+    if (argc == 1) {
+        char sourceFileName [1024];
+        char* newArgv[] = { argv[0], sourceFileName };
+        ASSERT(strlen(Tcl_GetNameOfExecutable()) < 1000);
+        strcpy(sourceFileName, Tcl_GetNameOfExecutable());
+        char* end = strrchr (sourceFileName, '/');
+        strcpy (end + 1, "tcl/start.tcl");
+        if (0 != Tcl_Access(sourceFileName, 4)) {
+            strcpy (end + 1, "../tcl/start.tcl");
+        }
+        Tcl_Main(sizeof newArgv/sizeof newArgv[0], newArgv, scid_InitTclTk);
+    } else {
+        Tcl_Main (argc, argv, scid_InitTclTk);
+    }
+
+    return 0;
+}
 
 /////////////////////////////////////////////////////////////////////
 //  MISC functions
@@ -422,7 +547,7 @@ int
 base_opened (const char * filename)
 {
     for (int i=0; i < CLIPBASE_NUM; i++) {
-        if (dbList[i].inUse  &&  strEqual (dbList[i].realFileName, filename)) {
+        if (dbList[i].inUse  &&  strEqual (dbList[i].fileName, filename)) {
             return i;
         }
     }
@@ -437,9 +562,9 @@ base_opened (const char * filename)
     if (tail == NULL) { tail = filename; } else { tail++; }
     for (int j=0; j < CLIPBASE_NUM; j++) {
         if (! dbList[j].inUse) { continue; }
-        const char * ftail = strLastChar (dbList[j].realFileName, '/');
+        const char * ftail = strLastChar (dbList[j].fileName, '/');
         if (ftail == NULL) {
-            ftail = dbList[j].realFileName;
+            ftail = dbList[j].fileName;
         } else {
             ftail++;
         }
@@ -462,11 +587,6 @@ scidBaseT* getBase(int baseId) {
     scidBaseT* res = &(dbList[baseId - 1]);
     return res->inUse ? res : 0;
 }
-
-//TODO: rename this functions to sc_base_compact_*
-int sc_compact_games (scidBaseT* base, Tcl_Interp * ti);
-int sc_compact_names (scidBaseT* base, Tcl_Interp * ti);
-int sc_compact_stats (scidBaseT* base, Tcl_Interp * ti, const char* option);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_gamelocation:
@@ -564,8 +684,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo[20] = Tcl_NewIntObj(ie->GetYear());
 		ginfo[21] = Tcl_NewIntObj((welo + belo)/2);
 		ginfo[22] = Tcl_NewIntObj(ie->GetRating(cdb->nb));
-		cdb->gfile->ReadGame (cdb->bbuf, ie->GetOffset(), ie->GetLength() );
-		FastGame game = FastGame::Create(cdb->bbuf->GetBuffer(), cdb->bbuf->GetBuffer() + cdb->bbuf->GetByteCount());
+		FastGame game = cdb->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
 		std::string moves = game.getMoveSAN(ply, 10);
 		ginfo[23] = Tcl_NewStringObj(moves.c_str(), -1);
 		res[i_res++] = Tcl_ObjPrintf("%d_%d", idx +1, ply);
@@ -590,7 +709,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		"create",       "current",      "description",  "duplicates",
 		"ecoStats",     "export",       "filename",     "import",
 		"inUse",        "isReadOnly",   "numGames",     "open",
-		"piecetrack",   "slot",         "sort",         "stats",
+		"piecetrack",   "slot",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
 		"upgrade",      "gameslist",    "sortcache",    "gamelocation",
 		"compact",      "gameflag",     "copygames",    "newFilter",
@@ -601,7 +720,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		BASE_CREATE,      BASE_CURRENT,     BASE_DESCRIPTION, BASE_DUPLICATES,
 		BASE_ECOSTATS,    BASE_EXPORT,      BASE_FILENAME,    BASE_IMPORT,
 		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
-		BASE_PTRACK,      BASE_SLOT,        BASE_SORT,        BASE_STATS,
+		BASE_PTRACK,      BASE_SLOT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
 		BASE_UPGRADE,     BASE_GAMESLIST,   BASE_SORTCACHE,   BASE_GAMELOCATION,
 		BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES,   BASE_NEWFILTER
@@ -660,9 +779,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_SLOT:
         return sc_base_slot (cd, ti, argc, argv);
 
-    case BASE_SORT:
-        return sc_base_sort (cd, ti, argc, argv);
-
     case BASE_STATS:
         return sc_base_stats (cd, ti, argc, argv);
 
@@ -690,31 +806,39 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case BASE_COMPACT:
-        if (dbase->memoryOnly) return errorResult (ti, "This is a memory-only database, it cannot be compacted.");
-        if (strCompare("games", argv[3]) == 0) return sc_compact_games (dbase, ti);
-        if (strCompare("names", argv[3]) == 0) return sc_compact_names (dbase, ti);
-        if (strCompare("stats", argv[3]) == 0 && argc == 5) return sc_compact_stats (dbase, ti, argv[4]);
+        if (dbase->memoryOnly) return TclResult(ti, ERROR_FileReadOnly);
+        if (argc == 3) {
+            startProgressBar();
+            return TclResult(ti, dbase->compact(spellChecker[NAME_PLAYER], reportProgress, ti));
+        } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
+            uint n_deleted, n_unused, n_sparse, n_badNameId;
+            errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
+            appendUintElement(ti, n_deleted);
+            appendUintElement(ti, n_unused);
+            appendUintElement(ti, n_sparse);
+            appendUintElement(ti, n_badNameId);
+            return TclResult(ti, res);
+        }
         return errorResult (ti, "Usage: sc_base compact baseId [stats] <games|names>");
 
     case BASE_COPYGAMES:
         if (argc == 5) {
             scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
-            if (targetBase == 0) return errorResult (ti, "sc_base copygames error: wrong targetBaseId");
+            if (targetBase == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
             if (targetBase->fileMode == FMODE_ReadOnly) return errorResult(ti, errMsgReadOnly(ti));
-            const char* err = 0;
+            errorT err = OK;
             Filter* filter = dbase->getFilter(argv[3]);
             if (filter) {
                 startProgressBar();
                 err = targetBase->addGames(dbase, filter, reportProgress, ti);
             } else {
                 uint gNum = strGetUnsigned (argv[3]);
-                if (gNum == 0) return errorResult (ti, "sc_base copygames error: wrong <gameNum|filterName>");
+                if (gNum == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
                 err = targetBase->addGame(dbase, gNum -1);
             }
-            if (err) return errorResult (ti, err);
-            return TCL_OK;
+            return TclResult(ti, err);
         }
-        return errorResult (ti, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
+        return TclResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_GAMEFLAG:
         if (argc == 6) {
@@ -737,13 +861,12 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     bool set = (cmd == 2);
                     if (cmd == 4) set = ! ie->GetFlag (flagType);
                     ie->SetFlag (flagType, set);
-                    //TODO: write a faster function than WriteEntries
-                    if (OK != dbase->idx->WriteEntries (ie, gNum, 1)) {
+                    if (OK != dbase->idx->WriteEntries (ie, gNum, false)) {
                         return errorResult (ti, "Error writing index file.");
                     }
                     if (filter == 0 && !all) break;
                 }
-                dbase->clearStats();
+                dbase->clearCaches();
                 return TCL_OK;
             }
         }
@@ -766,14 +889,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_ISREADONLY:
         if (argc == 3) return setBoolResult (ti, dbase->inUse && dbase->fileMode==FMODE_ReadOnly);
-        if (argc == 4 && strCompare("set", argv[3]) == 0) {
-            if (dbase->idx->SetReadOnly () != OK) {
-                return errorResult (ti, "Unable to make this database read-only.");
-            }
-            dbase->fileMode = FMODE_ReadOnly;
-            return TCL_OK;
-        }
-        return errorResult (ti, "Usage: sc_base isReadOnly baseId [set]");
+        return errorResult (ti, "Usage: sc_base isReadOnly baseId");
 
     case BASE_NEWFILTER:
         if (argc == 3) {
@@ -921,7 +1037,6 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    If either the index file or game file cannot be opened for
 //    reading and writing, then the database is opened read-only
 //    and will not be alterable.
-#include "gfile.h"
 int
 sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -946,10 +1061,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const char * filename = argv[baseArg];
 
     // Check that this base is not already opened:
-    fileNameT realFileName;
-    strCopy (realFileName, filename);
-    strAppend (realFileName, INDEX_SUFFIX);
-    if (base_opened (realFileName) >= 0) {
+    if (base_opened (filename) >= 0) {
         return errorResult (ti, "The database you selected is already opened.");
     }
 
@@ -958,76 +1070,26 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (newBaseNum == -1) return errorResult (ti, "Too many databases are open; close one first.");
 
     startProgressBar();
-    const char* res = dbList[newBaseNum].Open(filename, (readOnly) ? FMODE_ReadOnly : FMODE_Both, base_progress, ti);
-    if (res != 0 && !readOnly) res = dbList[newBaseNum].Open(filename, FMODE_ReadOnly, base_progress, ti);
-    if (res != 0) return errorResult (ti, res);
-
-    dbList[newBaseNum].recalcEstimatedRatings(spellChecker[NAME_PLAYER]);
+    errorT err = dbList[newBaseNum].Open(readOnly ? FMODE_ReadOnly : FMODE_Both,
+                                         filename, false,
+                                         spellChecker[NAME_PLAYER],
+                                         base_progress, ti);
+    if (err == ERROR_NameDataLoss) {
+        setIntResult (ti, newBaseNum + 1);
+        return TclResult(ti, err);
+    }
+    if (err != OK && !readOnly) {
+        err = dbList[newBaseNum].Open(FMODE_ReadOnly,
+                                      filename, false,
+                                      spellChecker[NAME_PLAYER],
+                                      base_progress, ti);
+    }
+    if (err != OK) return TclResult (ti, err);
 
     currentBase = newBaseNum;
     db = &(dbList[newBaseNum]);
 
     return setIntResult (ti, newBaseNum + 1);
-}
-
-int
-sc_createbase (Tcl_Interp * ti, const char * filename, scidBaseT * base,
-               bool memoryOnly)
-{
-    if (base->inUse) { return TCL_ERROR; }
-
-    base->idx->SetFileName (filename);
-    base->idx->SetDescription ("");
-    base->nb->Clear();
-    base->nb->SetFileName (filename);
-    base->fileMode = FMODE_Both;
-    base->memoryOnly = false;
-
-    if (memoryOnly) {
-        base->memoryOnly = true;
-        base->gfile->CreateMemoryOnly();
-        base->idx->CreateMemoryOnly();
-        base->idx->SetDescription (errMsgReadOnly(ti));
-        base->fileMode = FMODE_ReadOnly;
-
-    } else {
-        if (base->idx->CreateIndexFile (FMODE_Both) != OK) {
-            return errorResult (ti, "Error creating index file.");
-        }
-
-        base->idx->WriteHeader();
-        if (base->nb->WriteNameFile() != OK) {
-            return errorResult (ti, "Error creating name file.");
-        }
-        base->idx->ReadEntireFile();
-
-        if (base->gfile->Create (filename, FMODE_Both) != OK) {
-            return errorResult (ti, "Error creating game file.");
-        }
-    }
-
-    // Initialise the filters:
-    base->numGames = base->idx->GetNumGames();
-    Filter* f; int i_filters=0;
-    while ( (f = base->getFilter(i_filters++)) ) f->Init(base->numGames);
-
-    strCopy (base->fileName, filename);
-    base->inUse = true;
-    base->gameNumber = -1;
-    if (base->treeCache == NULL) {
-        base->treeCache = new TreeCache;
-        base->treeCache->SetCacheSize (SCID_TreeCacheSize);
-        base->backupCache = new TreeCache;
-        base->backupCache->SetCacheSize (SCID_BackupCacheSize);
-        base->backupCache->SetPolicy (TREECACHE_Oldest);
-    }
-    base->treeCache->Clear();
-    base->backupCache->Clear();
-    recalcFlagCounts (base);
-
-    // Ensure an old treefile is not still around:
-    if (!memoryOnly) { removeFile (base->fileName, TREEFILE_SUFFIX); }
-    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1060,17 +1122,11 @@ sc_base_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     scidBaseT * baseptr = &(dbList[newBaseNum]);
-    if (sc_createbase (ti, argv[2], baseptr, memoryOnly) != TCL_OK) {
-        return TCL_ERROR;
-    }
+    errorT err = baseptr->Open((memoryOnly) ? FMODE_Memory : FMODE_Both, argv[2]);
+    if (err != OK) return TclResult (ti, err);
+
     currentBase = newBaseNum;
     db = baseptr;
-
-    // strCopy (db->fileName, argv[2]);
-    // (in sc_base_open, this only differs by *not* having the si4 extension)
-
-    // setting realFileName for pgn files also has the effect that they (now) can't be deleted if open.
-    strCopy (db->realFileName, argv[2]);
 
     return setIntResult (ti, newBaseNum + 1);
 }
@@ -1093,7 +1149,8 @@ sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (!basePtr->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
-    basePtr->Close(errMsgNotOpen(ti));
+    if (basePtr == clipbase) return errorResult (ti, "Cannot close clipbase.");
+    basePtr->Close();
     return TCL_OK;
 }
 
@@ -1469,8 +1526,8 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
     uint gamesSeen = 0;
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
-        const char* err = cdb->addGame(scratchGame, false);
-        if (err) return errorResult(ti, err);
+        errorT err = cdb->saveGame(scratchGame, false);
+        if (err != OK) return TclResult(ti, err);
         // Update the progress bar:
         gamesSeen++;
         if (showProgress  &&  (gamesSeen % 100) == 0) {
@@ -1479,7 +1536,6 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
         }
     }
     cdb->clearCaches();
-    cdb->idx->IndexUpdated(IDX_NOT_FOUND);
     if (showProgress) { updateProgressBar (ti, 1, 1); }
 
     appendUintElement (ti, gamesSeen);
@@ -1689,57 +1745,6 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_sort:
-//    Sorts the games in a database.
-int
-sc_base_sort (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    bool showProgress = startProgressBar();
-
-    if (argc <= 3) {
-        return errorResult (ti, "Usage: sc_base sort <criteria>");
-    }
-    if (db->idx->ParseSortCriteria (argv[2]) != OK) {
-        return errorResult (ti, "Invalid sorting criteria.");
-    }
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->numGames < 2) {
-        return errorResult (ti, "This database has less than two games.");
-    }
-
-    if (showProgress) {
-        db->idx->Sort (db->nb, 5000, base_progress, (void *) ti);
-    } else {
-        db->idx->Sort (db->nb, 0, NULL, NULL);
-    }
-
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-    Filter* f; int i_filters=0;
-    while ( (f = db->getFilter(i_filters++)) ) f->Fill(1);
-    db->gameNumber = -1;
-
-    //Re-order and write the index, showing progress if applicable:
-    if (argc >= 4  &&  showProgress) {
-        Tcl_Eval (ti, (char *) argv[3]);
-        restartProgressBar (ti);
-        db->idx->WriteSorted (20000, base_progress, (void *) ti);
-        updateProgressBar (ti, 1, 1);
-    } else {
-        db->idx->WriteSorted ();
-    }
-    // The tree cache will now be out of date:
-    db->treeCache->Clear();
-    db->backupCache->Clear();
-    if ((! db->memoryOnly)  &&  (db->fileMode == FMODE_Both)) {
-        removeFile (db->fileName, TREEFILE_SUFFIX);
-    }
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_stats:
 //    Return statistics about the current database.
 int
@@ -1760,7 +1765,7 @@ sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         basePtr = &(dbList[baseNum - 1]);
     }
 
-    scidStatsT* stats = basePtr->getStats();
+    scidBaseT::Stats* stats = basePtr->getStats();
 
     if (option == OPT_FLAGS) {
         appendUintElement (ti, stats->flagCount [IDX_FLAG_DELETE]);
@@ -1771,7 +1776,7 @@ sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Date information: minimum year, maximum year, and mean year:
         appendUintElement (ti, date_GetYear (stats->minDate));
         appendUintElement (ti, date_GetYear (stats->maxDate));
-        unsigned long long avgYear = 0;
+        uint64_t avgYear = 0;
         if (stats->nYears > 0) {
             avgYear = stats->sumYears / stats->nYears;
         }
@@ -1845,8 +1850,8 @@ sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Invalid ECO prefix");
     }
 
-    scidStatsT* stats = db->getStats();
-    ecoStatsT * result = NULL;
+    scidBaseT::Stats* stats = db->getStats();
+    scidBaseT::Stats::Eco * result = NULL;
     switch (length) {
     case 0:
         result = &(stats->ecoCount0[0]);
@@ -2370,9 +2375,9 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                                 copiedRatings = true;
                             }
                         }
-                        db->idx->WriteEntries (ieDelete, gnumDelete, 1);
+                        db->idx->WriteEntries (ieDelete, gnumDelete);
                         if (copiedRatings) {
-                            db->idx->WriteEntries (ieKeep, gnumKeep, 1);
+                            db->idx->WriteEntries (ieKeep, gnumKeep);
                         }
                         if (setFilterToDups) {
                             db->dbFilter->Set (gnumDelete, 1);
@@ -2492,7 +2497,8 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 // The tag was found and stripped. Re-save the game,
                 // remembering to load its standard tags first:
                 g->LoadStandardTags (ie, db->nb);
-                 if (sc_savegame (ti, g, gnum+1, db) != OK) { return TCL_ERROR; }
+                errorT res = db->saveGame(g, false, gnum);
+                if (res != OK) return TclResult(ti, res);
                 nEditedGames++;
             }
         } else {
@@ -2520,17 +2526,8 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Done searching through all games.
 
     // If necessary, update index and name files:
-    if (cmd == TAG_STRIP  &&  nEditedGames > 0) {
-        db->gfile->FlushAll();
-        if (db->idx->WriteHeader() != OK) {
-            return errorResult (ti, "Error writing index file.");
-        }
-        if (! db->memoryOnly  &&  db->nb->WriteNameFile() != OK) {
-            return errorResult (ti, "Error writing name file.");
-        }
-    }
-
     if (cmd == TAG_STRIP) {
+        if (nEditedGames > 0) db->clearCaches();
         setUintResult (ti, nEditedGames);
     }
 
@@ -2572,31 +2569,14 @@ class Tourney
     uint      NumGames;
     uint      NumPlayers;
     tourneyPlayerT * PlayerList;
-    unsigned long long      EloSum;
-    unsigned long long      EloCount;
+    uint64_t  EloSum;
+    uint64_t  EloCount;
     gameNumberT FirstGame;
     Tourney  * Next;
 
     Tourney(IndexEntry * ie, NameBase * nb);
     ~Tourney();
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
 
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     void AddGame (IndexEntry * ie, gameNumberT g);
     void Dump (Tcl_DString * ds);
     uint MeanElo() {
@@ -2990,62 +2970,27 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_base upgrade <old-database>");
     }
     const char * fname = argv[2];
-    Index * oldIndex = new Index;
-    Index * newIndex = new Index;
+    Index oldIndex;
+    Index newIndex;
 
-    oldIndex->SetFileName (fname);
-    newIndex->SetFileName (fname);
-
-    if (newIndex->OpenIndexFile(FMODE_ReadOnly) == OK) {
-        newIndex->CloseIndexFile();
-        delete oldIndex;  
-        delete newIndex; 
+    if (newIndex.Open(fname, FMODE_ReadOnly) == OK) {
         return errorResult (ti, "An upgraded version of this database already exists.");
     }
 
-    if (oldIndex->OpenOldIndexFile (FMODE_ReadOnly) != OK) {
-        delete oldIndex;  
-        delete newIndex; 
+    if (oldIndex.Open(fname, FMODE_ReadOnly, true) != OK) {
         return errorResult (ti, "Error opening the old database.");
     }
 
-    if (newIndex->CreateIndexFile (FMODE_WriteOnly) != OK) {
-        oldIndex->CloseIndexFile();
-        delete oldIndex;
-        delete newIndex;
+    if (newIndex.Create(fname) != OK) {
         return errorResult (ti, "Error creating the new dataabse.");
     }
 
-    MFile * oldMFile = oldIndex->GetMFile();
-    MFile * newMFile = newIndex->GetMFile();
-
-    char buf[256];
-    // First copy the header with new version number
-
-    oldMFile->Seek(0);
-    newMFile->Seek(0);
-    
-    oldMFile->ReadNBytes( buf, 8);
-    newMFile->WriteNBytes(buf, 8);
-
-    oldMFile->ReadTwoBytes();
-    newMFile->WriteTwoBytes(SCID_VERSION);
-
-    oldMFile->ReadNBytes(buf, 4 + 3 + 3 + SCID_DESC_LENGTH + 1);
-    newMFile->WriteNBytes(buf, 4 + 3 + 3 + SCID_DESC_LENGTH + 1);
-
-    // write the descriptions of the custom flags added with v4 version of base
-    memset( buf, 0, 256 );
-    newMFile->WriteNBytes( buf, CUSTOM_FLAG_MAX * ( CUSTOM_FLAG_DESC_LENGTH+1 ) );
-
     // Now copy each index entry
-    uint i;
-    uint numGames = oldIndex->GetNumGames();
+    uint numGames = oldIndex.GetNumGames();
     errorT err = OK;
     uint updateStart = 250;
     uint update = updateStart;
-    
-    for (i=0; i < numGames; i++) {
+    for (uint i=0; i < numGames && err == OK; i++) {
         if (showProgress) {
             update--;
             if (update == 0) {
@@ -3054,39 +2999,20 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 updateProgressBar (ti, i, numGames);
             }
         }
-        
-        oldMFile->ReadNBytes(buf, 4 + 2);
-        newMFile->WriteNBytes(buf, 4 + 2);
-        
-        // insert one byte for Length_High and user bits
-        newMFile->WriteNBytes( "\0", 1 );
-
-        oldMFile->ReadNBytes(buf, 40 );
-        newMFile->WriteNBytes(buf, 40 );
-        
+        IndexEntry* ie = oldIndex.FetchEntry(i);
+        err = newIndex.AddGame(ie);
     }
 
-    oldIndex->CloseIndexFile();
-    newIndex->CloseIndexFile(true); // don't write again the header
-
-    if (err == OK  &&  !interruptedProgress()) {
-        if (err != OK) { setResult (ti, "Error writing name file"); }
-    }
-
-    delete oldIndex;  
-    delete newIndex;  
-
-    if (interruptedProgress()) {
-        removeFile (fname, INDEX_SUFFIX);
-        return errorResult (ti, "Upgrading was cancelled.");
-    }
-
-    if (err != OK) {
-        removeFile (fname, INDEX_SUFFIX);
-        return TCL_ERROR;
-    }
+    oldIndex.Close();
+    errorT finalWrite = newIndex.Close();
 
     if (showProgress) { updateProgressBar (ti, 1, 1); }
+
+    if (interruptedProgress() || err != OK || finalWrite != OK) {
+        removeFile (fname, INDEX_SUFFIX);
+        if (interruptedProgress()) return errorResult (ti, "Upgrading was cancelled.");
+        return errorResult (ti, "Error writing name file");
+    }
 
     return TCL_OK;
 }
@@ -3408,21 +3334,20 @@ int
 sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "copy", "clear", "paste", NULL
+        "clear", "paste", NULL
     };
     enum {
-        CLIP_COPY, CLIP_CLEAR, CLIP_PASTE
+        CLIP_CLEAR, CLIP_PASTE
     };
     int index = -1;
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     switch (index) {
-    case CLIP_COPY:
-        return sc_clipbase_copy (cd, ti, argc, argv);
-
     case CLIP_CLEAR:
-        clipbase->Close(errMsgNotOpen(ti));
+        clipbase->Close();
+        clipbase->Open();
+        clipbase->idx->SetType (2);
         return TCL_OK;
 
     case CLIP_PASTE:
@@ -3432,27 +3357,6 @@ sc_clipbase (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return InvalidCommand (ti, "sc_clipbase", options);
     }
 
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_clipbase_copy:
-//    Copy the current game to the clipbase database.
-// TODO: DELETE this function
-int
-sc_clipbase_copy (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (! clipbase->inUse) {
-        return errorResult (ti, "The clipbase is not open.");
-    }
-    if (db == clipbase) {
-        return errorResult (ti, "You are already in the clipbase database.");
-    }
-
-    db->game->SaveState();
-    const char* err = clipbase->addGame(db->game, true);
-    db->game->RestoreState();
-    if (err) return errorResult(ti, err);
     return TCL_OK;
 }
 
@@ -3486,372 +3390,6 @@ sc_clipbase_paste (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     db->tbuf->Empty();
     db->game->MoveToLocationInPGN (db->tbuf, location);
 
-    return TCL_OK;
-}
-
-//////////////////////////////////////////////////////////////////////
-// DATABASE COMPACTION
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_compact:
-//   Database compaction functions.
-//TODO: Delete this function (replaced by sc_base compact baseId <games|names|stats>)
-int
-sc_compact (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    static const char * options [] = {
-        "games", "names", "stats", NULL
-    };
-    enum {
-        COMPACT_GAMES, COMPACT_NAMES, COMPACT_STATS
-    };
-    int index = -1;
-
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->memoryOnly) {
-        return errorResult (ti, "This is a memory-only database, it cannot be compacted.");
-    }
-
-    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-
-    switch (index) {
-    case COMPACT_GAMES:
-        return sc_compact_games (db, ti);
-
-    case COMPACT_NAMES:
-        return sc_compact_names (db, ti);
-
-    case COMPACT_STATS:
-        if (argc != 3) return errorResult (ti, "Usage: sc_compact stats games|names");
-        return sc_compact_stats (db, ti, argv[2]);
-
-    default:
-        return InvalidCommand (ti, "sc_compact", options);
-    }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_compact_games:
-//    Compact the game file and index file of a database so all
-//    deleted games are removed, the order of game file records
-//    matches the index file order, and the game file is the
-//    smallest possible size.
-int
-sc_compact_games (scidBaseT* base, Tcl_Interp * ti)
-{
-    bool showProgress = startProgressBar();
-
-    if (base->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
-    // First, create new temporary index and game file:
-
-    fileNameT newName;
-    strCopy (newName, base->fileName);
-    strAppend (newName, "TEMP");
-
-    Index * newIdx = new Index;
-    GFile * newGfile = new GFile;
-    newIdx->SetFileName (newName);
-
-#define CLEANUP \
-    delete newIdx; delete newGfile; \
-    removeFile (newName, INDEX_SUFFIX); \
-    removeFile (newName, GFILE_SUFFIX)
-
-    if (newIdx->CreateIndexFile (FMODE_WriteOnly) != OK) {
-        CLEANUP;
-        return errorResult (ti, "Error creating temporary file; compaction cancelled");
-    }
-    if (newGfile->Create (newName, FMODE_WriteOnly) != OK) {
-        CLEANUP;
-        return errorResult (ti, "Error creating temporary file; compaction cancelled.");
-    }
-
-    gameNumberT newNumGames = 0;
-    bool interrupted = 0;
-    const char * errMsg = "";
-    const char * errWrite = "Error writing temporary file; compaction cancelled.";
-
-    uint updateStart, update;
-    updateStart = update = 500;  // Update progress bar every 500 games
-    for (uint i=0; i < base->numGames; i++) {
-        if (showProgress) {
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, i, base->numGames);
-                if (interruptedProgress()) {
-                    errMsg = "User interruption; compaction cancelled.";
-                    interrupted = true;
-                    break;
-                }
-            }
-        }
-        IndexEntry * ieOld = base->idx->FetchEntry (i);
-        if (ieOld->GetDeleteFlag()) continue;
-
-        IndexEntry ieNew;
-        errorT err;
-        base->bbuf->Empty();
-        err = base->gfile->ReadGame (base->bbuf, ieOld->GetOffset(),
-                                   ieOld->GetLength());
-        if (err != OK) {
-            // Just skip corrupt games:
-            continue;
-        }
-        base->bbuf->BackToStart();
-        err = scratchGame->Decode (base->bbuf, GAME_DECODE_NONE);
-        if (err != OK) {
-            // Just skip corrupt games:
-            continue;
-        }
-        err = newIdx->AddGame (&newNumGames, &ieNew);
-        if (err != OK) {
-            errMsg = "Error in compaction operation; compaction cancelled.";
-            interrupted = true;
-            break;
-        }
-        ieNew = *ieOld;
-        base->bbuf->BackToStart();
-        uint offset = 0;
-        err = newGfile->AddGame (base->bbuf, &offset);
-        if (err != OK) {
-            errMsg = errWrite;
-            interrupted = true;
-            break;
-        }
-        ieNew.SetOffset (offset);
-
-        // In 3.2, the maximum value for the game length in half-moves
-        // stored in the Index was raised from 255 (8 bits) to over
-        // 1000 (10 bits). So if the game and index values do not match,
-        // update the index value now:
-        if (scratchGame->GetNumHalfMoves() != ieNew.GetNumHalfMoves()) {
-            ieNew.SetNumHalfMoves (scratchGame->GetNumHalfMoves());
-        }
-
-        err = newIdx->WriteEntries (&ieNew, newNumGames, 1);
-        if (err != OK) {
-            errMsg = errWrite;
-            interrupted = true;
-            break;
-        }
-    }
-
-    if (interrupted) {
-        CLEANUP;
-        return errorResult (ti, errMsg);
-    }
-
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-
-    newIdx->SetType (base->idx->GetType());
-    newIdx->SetDescription (base->idx->GetDescription());
-    
-    // Copy custom flags description
-    char newDesc[ CUSTOM_FLAG_DESC_LENGTH + 1 ];
-    for ( byte b = 1 ; b <= CUSTOM_FLAG_MAX ; b++ ) {
-      base->idx->GetCustomFlagDesc( newDesc , b );
-      newIdx->SetCustomFlagDesc( newDesc , b );
-    }
-
-    newIdx->SetAutoLoad (base->idx->GetAutoLoad());
-    if (newIdx->CloseIndexFile() != OK  ||  newGfile->Close() != OK) {
-        CLEANUP;
-        errMsg = errWrite;
-        return errorResult (ti, errMsg);
-    }
-
-    // Success: remove old index and game files, and the old filter:
-
-    base->idx->CloseIndexFile();
-    base->gfile->Close();
-    removeFile (base->fileName, INDEX_SUFFIX);
-    removeFile (base->fileName, GFILE_SUFFIX);
-    renameFile (newName, base->fileName, INDEX_SUFFIX);
-    renameFile (newName, base->fileName, GFILE_SUFFIX);
-    delete newIdx;
-    delete newGfile;
-    base->idx->SetFileName (base->fileName);
-    base->idx->OpenIndexFile (base->fileMode);
-    base->idx->ReadEntireFile ();
-    base->gfile->Open (base->fileName, base->fileMode);
-    base->gameNumber = -1;
-    base->numGames = base->idx->GetNumGames();
-    Filter* f; int i_filters=0;
-    while ( (f = base->getFilter(i_filters++)) ) f->Init(base->numGames);
-    base->clearCaches(false);
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_compact_names:
-//    Compact the name file of a database so it has no unused names.
-//    This also requires rewriting the index file, since name ID
-//    numbers will change.
-//    if nb parameter is NULL, it is provided to fix a corrupted base
-int
-sc_compact_names (scidBaseT* base, Tcl_Interp * ti)
-{
-    errorT err = OK;
-    NameBase * nb = base->nb;
-    idNumberT * idMapping [NUM_NAME_TYPES] = {NULL};
-    bool showProgress = startProgressBar();
-
-    if (base->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
-    NameBase * nbNew = new NameBase;
-    nameT nt;
-
-    // First, check if any names are unused:
-    bool unusedNames = false;
-    for (nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
-        uint numNames = base->nb->GetNumNames (nt);
-        if (unusedNames) { break; }
-        for (idNumberT id = 0; id < numNames; id++) {
-            if (base->getNameFreq(nt, id) == 0) { unusedNames = true; break; }
-        }
-    }
-    if (! unusedNames) {
-        if (showProgress) { updateProgressBar (ti, 1, 1); }
-        return TCL_OK;
-    }
-
-    for (nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
-        idNumberT numNames = nb->GetNumNames (nt);
-        idMapping[nt] = new idNumberT [numNames];
-        for (idNumberT oldID = 0; oldID < numNames; oldID++) {
-            if (base->getNameFreq(nt, oldID) > 0) {
-                uint newID = 0;
-                const char * name = nb->GetName (nt, oldID);
-                err = nbNew->AddName (nt, name, &newID);
-                if (err != OK) {
-                    errorResult (ti, "Error compacting namebase.");
-                    break;
-                }
-                idMapping[nt][oldID] = newID;
-            } else {
-                idMapping[nt][oldID] = 0;
-            }
-            if (err != OK) { break; }
-        }
-        if (err != OK) { break; }
-    }
-
-    // Now correct the name ID numbers in all index entries:
-    if (err == OK) {
-        uint updateStart, update;
-        updateStart = update = 5000;  // Update progress bar every 5000 games
-        for (uint i=0; i < base->numGames; i++) {
-            if (showProgress) {
-                update--;
-                if (update == 0) {
-                    update = updateStart;
-                    updateProgressBar (ti, i, base->numGames);
-                    if (interruptedProgress()) break;
-                }
-            }
-            IndexEntry * ie = base->idx->FetchEntry (i);
-            IndexEntry ieNew = *ie;
-            ieNew.SetWhite (idMapping [NAME_PLAYER][ie->GetWhite()]);
-            ieNew.SetBlack (idMapping [NAME_PLAYER][ie->GetBlack()]);
-            ieNew.SetEvent (idMapping [NAME_EVENT] [ie->GetEvent()]);
-            ieNew.SetSite  (idMapping [NAME_SITE]  [ie->GetSite()]);
-            ieNew.SetRound (idMapping [NAME_ROUND] [ie->GetRound()]);
-            err = base->idx->WriteEntries (&ieNew, i, 1);
-            if (err != OK) {
-                errorResult (ti, "Error writing index file.");
-                break;
-            }
-        }
-    }
-
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-
-    // Now replace the old namebase and write the namebase file:
-    if (err == OK) {
-        nbNew->SetFileName (base->fileName);
-        err = nbNew->WriteNameFile();
-        if (err != OK) {
-            errorResult (ti, "Error writing name file.");
-        }
-        delete base->nb;
-        base->nb = nbNew;
-    }
-
-    for (nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
-        delete[] idMapping[nt];
-    }
-
-    if (err != OK) { return TCL_ERROR; }
-
-    // Recompute player frequencies, ratings, etc:
-    base->clearCaches();
-    base->recalcEstimatedRatings (spellChecker[NAME_PLAYER]);
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_compact_stats:
-//    Returns information on compaction of the name or game file.
-//    "sc_compact stats games" returns a 4-element list with the
-//    current number of games, game file size (in kb), compacted
-//    number of games, and compacted game file size (in kb).
-//    "sc_compact stats names" returns an 8-element list: the number
-//    of names (and then number of unused names) for each of the
-//    player, event, site and round name types.
-int
-sc_compact_stats (scidBaseT* base, Tcl_Interp * ti, const char* option)
-{
-    if (option[0] == 'n') {
-        for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-            uint numNames = base->nb->GetNumNames (nt);
-            uint numUnused = 0;
-            for (idNumberT id = 0; id < numNames; id++) {
-                if (base->getNameFreq(nt, id) == 0) { numUnused++; }
-            }
-            appendUintElement (ti, numNames);
-            appendUintElement (ti, numUnused);
-        }
-    } else {
-        // Game file compaction:
-
-        uint nFullBlocks = 0;
-        uint lastBlockBytes = 0;
-        uint gameCount = 0;
-
-        for (uint i=0; i < base->numGames; i++) {
-            IndexEntry * ie = base->idx->FetchEntry (i);
-            if (! ie->GetDeleteFlag()) {
-                gameCount++;
-                // Can this game fit in the current block?
-                uint length = ie->GetLength();
-                if (lastBlockBytes + length <= GF_BLOCKSIZE) {
-                    lastBlockBytes += length;
-                } else {
-                    nFullBlocks++;
-                    lastBlockBytes = length;
-                }
-            }
-        }
-
-        uint oldBytes = base->gfile->GetFileSize();
-        uint newBytes = nFullBlocks * GF_BLOCKSIZE + lastBlockBytes;
-
-        appendUintElement (ti, base->numGames);
-        appendUintElement (ti, oldBytes);
-        appendUintElement (ti, gameCount);
-        appendUintElement (ti, newBytes);
-    }
     return TCL_OK;
 }
 
@@ -4054,7 +3592,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         if (db->fileMode != FMODE_ReadOnly
                 &&  ie->GetEcoCode() != oldEcoCode) {
-            if (db->idx->WriteEntries (ie, i, 1) != OK) {
+            if (db->idx->WriteEntries (ie, i) != OK) {
                 return errorResult (ti, "Error writing index file.");
             }
         }
@@ -5492,7 +5030,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (oldValue != newValue) {
                 IndexEntry iE = *ie;
                 iE.SetFlag (flagType, newValue);
-                db->idx->WriteEntries (&iE, gNum, 1);
+                db->idx->WriteEntries (&iE, gNum);
             }
     }
     recalcFlagCounts (db);
@@ -7054,152 +6592,6 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_savegame:
-//    Called by sc_game_save and by clipbase functions to save
-//    a new game or replacement game to a database.
-//    Any errors are appended to the Tcl interpreter result.
-int
-sc_savegame (Tcl_Interp * ti, Game * game, gameNumberT gnum, scidBaseT * base)
-{
-    if (! base->inUse) {
-        Tcl_AppendResult (ti, errMsgNotOpen(ti), NULL);
-        return TCL_ERROR;
-    }
-    if (base->fileMode == FMODE_ReadOnly  &&  !(base->memoryOnly)) {
-        Tcl_AppendResult (ti, errMsgReadOnly(ti), NULL);
-        return TCL_ERROR;
-    }
-    if (base == clipbase   &&  base->numGames >= clipbaseMaxGames) {
-        char temp[200];
-        sprintf (temp, "Sorry, the clipbase has a limit of %u games.\n",
-                 clipbaseMaxGames);
-        Tcl_AppendResult (ti, temp, NULL);
-        return TCL_ERROR;
-    }
-
-    base->bbuf->Empty();
-    bool replaceMode = false;
-    gameNumberT gNumber = 0;
-    if (gnum > 0) {
-        gNumber = gnum - 1;  // Number games from zero.
-        replaceMode = true;
-    }
-
-    // Grab a new idx entry, if needed:
-    IndexEntry * oldIE = NULL;
-    IndexEntry iE;
-    iE.Init();
-
-    
-    if (game->Encode (base->bbuf, &iE) != OK) {
-      Tcl_AppendResult (ti, "Error encoding game.", NULL);
-      return TCL_ERROR;
-    }
-
-    // game->Encode computes flags, so we have to re-set flags if replace mode
-    if (replaceMode) {
-        oldIE = base->idx->FetchEntry (gNumber);
-        // Remember previous user-settable flags:
-        for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
-            char flags [32];
-            oldIE->GetFlagStr (flags, NULL);
-            iE.SetFlagStr (flags);
-        }
-    } else {
-      // add game without resetting the index, because it has been filled by game->encode above
-      if (base->idx->AddGame (&gNumber, &iE, false) != OK) {
-        Tcl_AppendResult (ti, "Too many games in this database.", NULL);
-        return TCL_ERROR;
-      }
-      base->numGames = base->idx->GetNumGames();
-    }
-    
-    base->bbuf->BackToStart();
-
-    // Now try writing the game to the gfile:
-    uint offset = 0;
-    if (base->gfile->AddGame (base->bbuf, &offset) != OK) {
-        Tcl_AppendResult (ti, "Error writing game file.", NULL);
-        return TCL_ERROR;
-    }
-    iE.SetOffset (offset);
-    iE.SetLength (base->bbuf->GetByteCount());
-
-    // Now we add the names to the NameBase
-    // If replacing, we decrement the frequency of the old names.
-    const char * s;
-    idNumberT id = 0;
-
-    // WHITE:
-    s = game->GetWhiteStr();  if (!s) { s = "?"; }
-    if (base->nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
-        Tcl_AppendResult (ti, "Too many player names.", NULL);
-        return TCL_ERROR;
-    }
-    iE.SetWhite (id);
-
-    // BLACK:
-    s = game->GetBlackStr();  if (!s) { s = "?"; }
-    if (base->nb->AddName (NAME_PLAYER, s, &id) == ERROR_NameBaseFull) {
-        Tcl_AppendResult (ti, "Too many player names.", NULL);
-        return TCL_ERROR;
-    }
-    iE.SetBlack (id);
-
-    // EVENT:
-    s = game->GetEventStr();  if (!s) { s = "?"; }
-    if (base->nb->AddName (NAME_EVENT, s, &id) == ERROR_NameBaseFull) {
-        Tcl_AppendResult (ti, "Too many event names.", NULL);
-        return TCL_ERROR;
-    }
-    iE.SetEvent (id);
-
-    // SITE:
-    s = game->GetSiteStr();  if (!s) { s = "?"; }
-    if (base->nb->AddName (NAME_SITE, s, &id) == ERROR_NameBaseFull) {
-        Tcl_AppendResult (ti, "Too many site names.", NULL);
-        return TCL_ERROR;
-    }
-    iE.SetSite (id);
-
-    // ROUND:
-    s = game->GetRoundStr();  if (!s) { s = "?"; }
-    if (base->nb->AddName (NAME_ROUND, s, &id) == ERROR_NameBaseFull) {
-        Tcl_AppendResult (ti, "Too many round names.", NULL);
-        return TCL_ERROR;
-    }
-    iE.SetRound (id);
-
-    // Flush the gfile so it is up-to-date with other files:
-    // This made copying games between databases VERY slow, so it
-    // is now done elsewhere OUTSIDE a loop that copies many
-    // games, such as in sc_filter_copy().
-    //base->gfile->FlushAll();
-
-    // Last of all, we write the new idxEntry, but NOT the index header
-    // or the name file, since there might be more games saved yet and
-    // writing them now would then be a waste of time.
-
-    if (base->idx->WriteEntries (&iE, gNumber, 1) != OK) {
-        Tcl_AppendResult (ti, "Error writing index file.", NULL);
-        return TCL_ERROR;
-    }
-
-    // We need to increase the filter size if a game was added:
-    if (! replaceMode) {
-        // Added game is in filter by default.
-        base->dbFilter->Append (1);
-        base->treeFilter->Append (1);
-        if (base->duplicates != NULL) {
-            delete[] base->duplicates;
-            base->duplicates = NULL;
-        }
-    }
-    base->idx->IndexUpdated(gNumber);
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_save:
 //    Saves the current game. If the parameter is 0, a NEW
 //    game is added; otherwise, that game number is REPLACED.
@@ -7215,34 +6607,20 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_game save <gameNumber> [targetbaseId]");
     }
 
-    if (dbase->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-    dbase->bbuf->Empty();
-
-    uint gnum = strGetUnsigned (argv[2]);
-    if (gnum > dbase->numGames) {
-        char tempStr[20];
-        sprintf (tempStr, "%u", dbase->numGames);
-        Tcl_AppendResult (ti, "Invalid game number; there are only ",
-                          tempStr, " games in this database.", NULL);
-        return TCL_ERROR;
-    }
-
     currGame->SaveState ();
-    if (sc_savegame (ti, currGame, gnum, dbase) != OK) { return TCL_ERROR; }
+    uint gnum = strGetUnsigned (argv[2]);
+    int idx = static_cast<int> (gnum);
+    errorT res = dbase->saveGame(currGame, true, idx -1);
     currGame->RestoreState ();
-
-    const char* err = dbase->clearCaches();
-    if (err) return errorResult (ti, err);
-
-    if (gnum == 0 && db == dbase) {
-        // Saved new game, so set gameNumber to the saved game number:
-        db->gameNumber = db->numGames - 1;
+    if (res == OK) {
+        if (gnum == 0 && db == dbase) {
+            // Saved new game, so set gameNumber to the saved game number:
+            db->gameNumber = db->numGames - 1;
+        }
+        db->gameAltered = false;
     }
-    db->gameAltered = false;
 
-    return TCL_OK;
+    return TclResult(ti, res);;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8094,10 +7472,10 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Write changes to the index file:
     if (updateMode) {
         if (updated1) {
-            db->idx->WriteEntries (&ie1, gn1 - 1, 1);
+            db->idx->WriteEntries (&ie1, gn1 - 1);
         }
         if (updated2) {
-            db->idx->WriteEntries (&ie2, gn2 - 1, 1);
+            db->idx->WriteEntries (&ie2, gn2 - 1);
         }
         if (updated1  ||  updated2) {
             db->idx->WriteHeader();
@@ -8181,12 +7559,12 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "asserts", "clipbase", "decimal", "fsize", "gzip",
-        "html", "limit", "priority", "ratings",
+        "html", "limit", "ratings",
         "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
         INFO_ASSERTS, INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
-        INFO_HTML, INFO_LIMIT, INFO_PRIORITY, INFO_RATINGS,
+        INFO_HTML, INFO_LIMIT, INFO_RATINGS,
         INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
     int index = -1;
@@ -8225,9 +7603,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case INFO_LIMIT:
         return sc_info_limit (cd, ti, argc, argv);
-
-    case INFO_PRIORITY:
-        return sc_info_priority (cd, ti, argc, argv);
 
     case INFO_RATINGS:   // List of all recognised rating types.
         {
@@ -8398,12 +7773,12 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "clipbase", "elo",       "epd",    "events",
         "games",    "nags",      "players", "rounds",
-        "sites",    "treeCache", "year",    NULL
+        "sites",    "year",    NULL
     };
     enum {
         LIM_CLIPBASE, LIM_ELO,       LIM_EPD,     LIM_EVENTS,
         LIM_GAMES,    LIM_NAGS,      LIM_PLAYERS, LIM_ROUNDS,
-        LIM_SITES,    LIM_TREECACHE, LIM_YEAR
+        LIM_SITES,    LIM_YEAR
     };
     int index = -1;
     int result = 0;
@@ -8447,10 +7822,6 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         result = NAME_MAX_ID [NAME_SITE];
         break;
 
-    case LIM_TREECACHE:
-        result = SCID_TreeCacheSize;
-        break;
-
     case LIM_YEAR:
         result = YEAR_MAX;
         break;
@@ -8460,79 +7831,6 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     return setIntResult (ti, result);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_info_priority:
-//   This gets or sets the priority class of a process.
-int
-sc_info_priority (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-#ifndef WINCE
-#ifdef WIN32
-    const char * usage = "Usage: sc_info priority <pid> [normal|idle]";
-    if (argc < 3  ||  argc > 4) { return errorResult (ti, usage); }
-
-    int pid = strGetInteger(argv[2]);
-
-    if (argc == 4) {
-        // For saftey, only normal and idle classes can be set:
-        bool idlePriority = false;
-        switch (argv[3][0]) {
-            case 'i': idlePriority = true;  break;
-            case 'n': idlePriority = false; break;
-            default: return errorResult (ti, usage);
-        }
-
-        // Try to obtain a process handle for setting the priority class:
-        HANDLE hProcess = OpenProcess (PROCESS_SET_INFORMATION, false, pid);
-        if (hProcess == NULL) {
-            return errorResult (ti, "Unable to set process priority.");
-        }
-
-        // Set the process class to NORMAL or IDLE:
-        SetPriorityClass (hProcess,
-                idlePriority ? IDLE_PRIORITY_CLASS : NORMAL_PRIORITY_CLASS);
-        CloseHandle (hProcess);
-    }
-    // Now return the process priority:
-    HANDLE hProcess = OpenProcess (PROCESS_QUERY_INFORMATION, false, pid);
-    if (hProcess == NULL) {
-        return errorResult (ti, "Unable to get process priority.");
-    }
-    uint priorityClass = GetPriorityClass (hProcess);
-    CloseHandle (hProcess);
-
-    // Convert the priority class number to a name:
-    const char * priorityName = "";
-    switch (priorityClass) {
-        case NORMAL_PRIORITY_CLASS: priorityName = "normal"; break;
-        case IDLE_PRIORITY_CLASS:   priorityName = "idle";   break;
-        case HIGH_PRIORITY_CLASS:   priorityName = "high";   break;
-        default:  priorityName = "unknown";
-    }
-    Tcl_AppendResult (ti, priorityName, NULL);
-
-#else  // #ifdef WIN32
-
-    const char * usage = "Usage: sc_info priority <pid> [<priority>]";
-    if (argc < 3  ||  argc > 4) { return errorResult (ti, usage); }
-
-    int pid = strGetInteger(argv[2]);
-
-    if (argc == 4) {
-        // Try to assign a new priority:
-        int newpriority = strGetInteger(argv[3]);
-        if (setpriority (PRIO_PROCESS, pid, newpriority) != 0) {
-            return errorResult (ti, "Unable to set process priority.");
-        }
-    }
-    // Now return the process priority:
-    int priority = getpriority (PRIO_PROCESS, pid);
-    appendIntResult (ti, priority);
-#endif  // #ifdef WIN32
-#endif
-    return TCL_OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9858,14 +9156,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return setResult (ti, "No valid corrections were found.");
     }
 
-    // Write the name file first, for safety:
-    if ((!db->memoryOnly)  &&  db->nb->WriteNameFile() != OK) {
-        delete[] newIDs;
-        delete[] startDate;
-        delete[] endDate;
-        return errorResult (ti, "Error writing name file.");
-    }
-
     // Now go through the index making each necessary change:
     IndexEntry * ie;
     IndexEntry newIE;
@@ -9940,7 +9230,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // Write the new index entry if it has changed:
         if (corrected) {
-            if (db->idx->WriteEntries (&newIE, i, 1) != OK) {
+            if (db->idx->WriteEntries (&newIE, i) != OK) {
               delete[] newIDs;
               delete[] startDate;
               delete[] endDate;
@@ -9965,8 +9255,8 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     delete[] startDate;
     delete[] endDate;
 
-    const char* err = db->clearCaches();
-    if (err) return errorResult (ti, err);
+    errorT err = db->clearCaches();
+    if (err != OK) return errorResult (ti, "Error writing database files.");
 
     char temp[100];
     sprintf (temp, "%u %s name%s occurring %u time%s in total were corrected.",
@@ -10090,11 +9380,6 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (db->nb->AddName (nt, newName, &newID) == ERROR_NameBaseFull) {
             return errorResult (ti, "Name file is full; cannot add name.");
         }
-
-        // Write the namebase to disk, if this is not a memory-only database:
-        if (! db->memoryOnly  &&  db->nb->WriteNameFile() != OK) {
-            return errorResult (ti, "Error writing name file.");
-        }
     }
 
     // Now iterate through the index file making any necessary changes:
@@ -10184,15 +9469,15 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // Write this entry if any edits were made:
         if (edits != 0) {
-            if (db->idx->WriteEntries (&newIE, i, 1) != OK) {
+            if (db->idx->WriteEntries (&newIE, i) != OK) {
                 return errorResult (ti, "Error writing index file.");
             }
             numChanges += edits;
         }
     }
 
-    const char* err = db->clearCaches();
-    if (err) return errorResult (ti, err);
+    errorT err = db->clearCaches();
+    if (err != OK) return errorResult (ti, "Error writing database files.");
 
     char temp[500];
     if (option == OPT_RATING) {
@@ -10981,10 +10266,10 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Valid sort types:
     static const char * sortModes [] = {
-        "elo", "games", "oldest", "newest", "name", "photo", NULL
+        "elo", "games", "oldest", "newest", "name", NULL
     };
     enum {
-        SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME, SORT_PHOTO
+        SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME
     };
 
     int sortMode = SORT_NAME;
@@ -11012,16 +10297,8 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (arg != argc) { return errorResult (ti, usage); }
-    switch (sortMode) {
-        case SORT_ELO:    break;
-        case SORT_GAMES:  break;
-        case SORT_OLDEST: break;
-        case SORT_NEWEST: break;
-        case SORT_NAME:   break;
-        case SORT_PHOTO:  break;
-        default:
-            return InvalidCommand (ti, "sc_name plist -sort", sortModes);
-    }
+    if (sortMode == -1) return InvalidCommand (ti, "sc_name plist -sort", sortModes);
+
     idNumberT * plist = new idNumberT [maxListSize + 1];
     NameBase * nb = db->nb;
     uint nPlayers = nb->GetNumNames(NAME_PLAYER);
@@ -11029,13 +10306,12 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     class Compare{
         scidBaseT* dbase_;
         int sort_;
+        enum { SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME };
     public:
         Compare(scidBaseT* dbase, int sortOrder) : dbase_(dbase), sort_(sortOrder) {}
         int operator() (idNumberT p1, idNumberT p2)
         {
             NameBase* nb = dbase_->nb;
-            const char * name1 = nb->GetName (NAME_PLAYER, p1);
-            const char * name2 = nb->GetName (NAME_PLAYER, p2);
             int compare = 0;
             switch (sort_) {
             case SORT_ELO:
@@ -11054,14 +10330,13 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 compare = date_GetYear(nb->GetLastDate(p2))
                     - date_GetYear(nb->GetLastDate(p1));
                 break;
-            case SORT_PHOTO:
-                compare = (int)nb->HasPhoto(p2) - (int)nb->HasPhoto(p1);
-                break;
             }
 
             // If equal, resolve by comparing names, first case-insensitive and
             // then case-sensitively if still tied:
             if (compare == 0) {
+                const char* name1 = nb->GetName (NAME_PLAYER, p1);
+                const char* name2 = nb->GetName (NAME_PLAYER, p2);
                 compare = strCaseCompare (name1, name2);
                 if (compare == 0) { compare = strCompare (name1, name2); }
             }
@@ -11077,11 +10352,6 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (nGames < minGames  ||  nGames > maxGames) { continue; }
         if (elo < minElo  ||  elo > maxElo) { continue; }
         if (! strIsCasePrefix (namePrefix, name)) { continue; }
-
-        // Check if this player has a photo:
-        //if (Tcl_GetVar2 (ti, "photo", (char *)name, TCL_GLOBAL_ONLY) != NULL) {
-        //    nb->SetHasPhoto (id, true);
-        //}
 
         // Insert this player into the ordered array if necessary:
 
@@ -11113,8 +10383,6 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         Tcl_DStringAppendElement(ds, tmp);
         sprintf (tmp, "%u", nb->GetElo (plist[p]));
         Tcl_DStringAppendElement(ds, tmp);
-        //strCopy (tmp, nb->HasPhoto(plist[p]) ? "1" : "0");
-        //Tcl_DStringAppendElement(ds, tmp);
         Tcl_DStringAppendElement(ds, nb->GetName (NAME_PLAYER,plist[p]));
         Tcl_DStringEndSublist (ds);
     }
@@ -11270,7 +10538,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     newIE.SetBlackElo (newBlack);
                     newIE.SetBlackRatingType (RATING_Elo);
                 }
-                if (db->idx->WriteEntries (&newIE, gnum, 1) != OK) {
+                if (db->idx->WriteEntries (&newIE, gnum) != OK) {
                     return errorResult (ti, "Error writing index file.");
                 }
             }
@@ -11432,7 +10700,6 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     char tempStr[1024];
     char tempName [1024];
     const char * prevCorrection = "";
-    idNumberT id = 0;
     uint correctionCount = 0;
     
     // Counters to monitor the crawl through the name base
@@ -11449,20 +10716,18 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     // Check every name of the specified type:
 
-    nb->IterateStart (nt);
-    while (nb->Iterate (nt, &id) == OK) {
-        uint frequency = db->getNameFreq(nt, id);
-        
+    for (NameBase::iterator it = nb->begin(nt); it != nb->end(nt); it++) {
         // We have got the next name from the base
-        //
         thisName++;
-        
+
+        idNumberT id = (*it).second;
         const char * name = nb->GetName (nt, id);
         const char * origName = name;
 
         int offset = 0;
         const char * replace;
 
+        uint frequency = db->getNameFreq(nt, id);
         // Do not bother trying to correct unused names:
         if (frequency == 0) { goto bar; }
 
@@ -11741,7 +11006,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "No report has been created yet.");
     }
 
-    scidStatsT* stats = db->getStats();
+    scidBaseT::Stats* stats = db->getStats();
     switch (index) {
     case OPT_AVGLENGTH:
         if (argc != 4) {
@@ -12067,12 +11332,12 @@ int
 sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "best", "move", "positions", "search", "size", "time",  "write",
-        "cachesize", "cacheinfo", "clean", NULL
+        "best", "move", "positions", "search", "size",
+        "write", "cachesize", "cacheinfo", "clean", NULL
     };
     enum {
         TREE_BEST, TREE_MOVE, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
-        TREE_TIME, TREE_WRITE, TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
+        TREE_WRITE, TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
     };
 
     int index = -1;
@@ -12094,9 +11359,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case TREE_SIZE:
         return setUintResult (ti, db->treeCache->Size());
-
-    case TREE_TIME:
-        return sc_tree_time (cd, ti, argc, argv);
 
     case TREE_WRITE:
         return sc_tree_write (cd, ti, argc, argv);
@@ -12161,7 +11423,7 @@ sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argv[3][0] == 'r'  &&  strIsPrefix (argv[3], "random")) {
         uint total = base->tree.totalCount;
         if (total == 0) { return TCL_OK; }
-        uint r = random32() % total;
+        uint r = rand() % total;
         uint sum = 0;
         for (uint i=0; i < base->tree.moveCount; i++) {
             sum += base->tree.node[i].total;
@@ -12188,24 +11450,6 @@ sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     Tcl_AppendResult (ti, node->san, NULL);
     return TCL_OK;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_tree_time:
-//    Returns the elapsed time in millliseconds for the last tree search.
-int
-sc_tree_time (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    scidBaseT * base = db;
-    if (argc == 3) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-            base = &(dbList[baseNum - 1]);
-        }
-    }
-
-    return setUintResult (ti, base->treeSearchTime);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -12419,12 +11663,10 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     				update = updateStart;
     				updateProgressBar (ti, i, base->numGames);
     				if (interruptedProgress()) {
-    					Tcl_SetResult (ti, (char*) errMsgSearchInterrupted(ti), TCL_STATIC);
-    					return TCL_OK;
+					return setResult (ti, errMsgSearchInterrupted(ti));
     				}
     				if (search_pool.count(&base) == 0) {
-    					Tcl_SetResult (ti, "canceled", TCL_STATIC);
-    					return TCL_OK;
+					return setResult (ti, "canceled");
     				}
     			}
     		}
@@ -12628,7 +11870,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (db->game->GetCurrentPos()->GetToMove() == BLACK) { score = 100 - score; }
             perf = Crosstable::Performance (perf, score);
         }
-        unsigned long long avgYear = 0;
+        uint avgYear = 0;
         if (node->yearCount > 0) {
             avgYear = (node->yearSum + (node->yearCount/2)) / node->yearCount;
         }
@@ -12681,7 +11923,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (avgYear == 0) {
             strCopy (temp, listMode ? " {}" : "      ");
         } else {
-            sprintf (temp, "  %4llu", avgYear);
+            sprintf (temp, "  %4u", avgYear);
         }
         output->Append (temp);
         uint pctDraws = node->freq[RESULT_Draw] * 1000 / node->total;
@@ -12718,12 +11960,12 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (tree->moveCount > 0) {
         int totalScore = 0;
-        unsigned long long eloSum = 0;
-        unsigned long long eloCount = 0;
-        unsigned long long perfSum = 0;
-        unsigned long long perfCount = 0;
-        unsigned long long yearCount = 0;
-        unsigned long long yearSum = 0;
+        uint64_t eloSum = 0;
+        uint64_t eloCount = 0;
+        uint64_t perfSum = 0;
+        uint64_t perfCount = 0;
+        uint64_t yearCount = 0;
+        uint64_t yearSum = 0;
         uint nDraws = 0;
         node = tree->node;
         for (uint count=0; count < tree->moveCount; count++, node++) {
@@ -12738,7 +11980,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             nDraws += node->freq[RESULT_Draw];
         }
         totalScore = totalScore * 500 / tree->totalCount;
-        unsigned long long avgElo = 0;
+        uint avgElo = 0;
         if (eloCount >= 10) {
             avgElo = eloSum / eloCount;
         }
@@ -12770,7 +12012,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (avgElo == 0) {
             output->Append (listMode ? " {}" : "      ");
         } else {
-            sprintf (temp, "  %4llu", avgElo);
+            sprintf (temp, "  %4u", avgElo);
             output->Append (temp);
         }
         if (perf == 0) {
@@ -12782,7 +12024,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (yearCount == 0) {
             output->Append (listMode ? " {}" : "      ");
         } else {
-            sprintf (temp, "  %4llu", (yearSum + (yearCount/2)) / yearCount);
+            sprintf (temp, "  %4u", static_cast<uint>((yearSum + (yearCount/2)) / yearCount));
             output->Append (temp);
         }
         uint pctDraws = nDraws * 1000 / tree->totalCount;
@@ -12818,7 +12060,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     	Tcl_AppendResult (ti, output->Data(), NULL);
     }
     delete output;
-    base->treeSearchTime = timer.MilliSecs();
     return TCL_OK;
 }
 

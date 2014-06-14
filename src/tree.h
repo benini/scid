@@ -52,8 +52,8 @@ struct treeNodeT {
     uint        eloSum;     // Sum of Elos.
     uint        perfCount;  // Count of games with an opponent Elo.
     uint        perfSum;    // Sum of opponent Elos.
-    unsigned long long        yearCount;  // Count of games with year != 0.
-    unsigned long long        yearSum;    // Sum of years.
+    uint64_t    yearCount;  // Count of games with year != 0.
+    uint64_t    yearSum;    // Sum of years.
 };
 
 void initTreeNode (treeNodeT * tnode);
@@ -115,24 +115,6 @@ class TreeCache {
 
     void   AddTree (uint index, Position * pos, treeT * tree, Filter * filter);
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif  
     TreeCache() { Init(); }
     ~TreeCache() { Delete(); }
 

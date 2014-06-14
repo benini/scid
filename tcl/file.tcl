@@ -102,8 +102,7 @@ proc ::file::New {} {
   } else {
     set fName [file rootname $fName]
     if {[catch {sc_base create $fName} result]} {
-      tk_messageBox -icon warning -type ok -parent . \
-          -title "Scid: Unable to create base" -message $result
+      ERROR::MessageBox "$fName\n"
     }
   }
   set ::initialDir(base) [file dirname $fName]
@@ -121,9 +120,9 @@ proc ::file::Open {{fName ""}} {
   if {$err == 0} {
     ::game::Load [sc_base autoload] 0
     ::windows::gamelist::Open $::file::lastOpened
+    ::notify::GameChanged
+    ::notify::DatabaseChanged
   }
-  ::notify::GameChanged
-  ::notify::DatabaseChanged
   return $err
 }
 
@@ -140,74 +139,70 @@ proc ::file::Open_ {{fName ""} } {
   if {[sc_base count free] == 0} {
     tk_messageBox -type ok -icon info -title "Scid" \
         -message "Too many databases are open; close one first"
-    return
+    return 1
   }
-  
-  if {[sc_info gzip]} {
-    set ftype {
-      { "All Scid files" {".si4" ".si3" ".pgn" ".pgn.gz" ".epd" ".epd.gz" ".sor"} }
-      { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN" ".pgn.gz"} }
-      { "Scid databases" {".si4" ".si3"} }
-      { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
-      { "EPD files" {".epd" ".EPD" ".epd.gz"} }
-      { "Repertoire files" {".sor"} }
-    }
-  } else {
-    set ftype {
-      { "All Scid files" {".si4" ".si3" ".pgn" ".epd" ".sor"} }
-      { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
-      { "Scid databases" {".si4" ".si3"} }
-      { "PGN files" {".pgn" ".PGN"} }
-      { "EPD files" {".epd" ".EPD"} }
-      { "Repertoire files" {".sor"} }
-    }
-  }
-  
+
   if {$fName == ""} {
-    set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
-    if {$fName == ""} { return }
-  }
-  
-  if {[file extension $fName] == ""} {
-    set fName "$fName.si4"
-  }
-  
-  if {[file extension $fName] == ".sor"} {
-    if {[catch {::rep::OpenWithFile $fName} err]} {
-      tk_messageBox -parent . -type ok -icon info -title "Scid" \
-          -message "Unable to open \"$fName\": $err"
+    if {[sc_info gzip]} {
+      set ftype {
+        { "All Scid files" {".si4" ".si3" ".pgn" ".pgn.gz" ".epd" ".epd.gz" ".sor"} }
+        { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN" ".pgn.gz"} }
+        { "Scid databases" {".si4" ".si3"} }
+        { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
+        { "EPD files" {".epd" ".EPD" ".epd.gz"} }
+        { "Repertoire files" {".sor"} }
+      }
+    } else {
+      set ftype {
+        { "All Scid files" {".si4" ".si3" ".pgn" ".epd" ".sor"} }
+        { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
+        { "Scid databases" {".si4" ".si3"} }
+        { "PGN files" {".pgn" ".PGN"} }
+        { "EPD files" {".epd" ".EPD"} }
+        { "Repertoire files" {".sor"} }
+      }
     }
-    return
-  }
   
-  if {[file extension $fName] == ".si3"} {
-    ::file::Upgrade [file rootname $fName]
-    return
+    set fName [tk_getOpenFile -initialdir $::initialDir(base) -filetypes $ftype -title "Open a Scid file"]
+    if {$fName == ""} { return 2}
   }
-  
+
+  if {[file extension $fName] == ".si4"} { set fName [file rootname $fName] }
+  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
+    if {$fName == [sc_base filename $i]} {
+      tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
+      return 1
+    }
+  }
+
   set err 0
   busyCursor .
-  if {[file extension $fName] == ".si4"} {
+  if {[file extension $fName] == "" || [file extension $fName] == ".si4"} {
     set fName [file rootname $fName]
     if {[catch {openBase $fName} result]} {
-      set err 1
-      tk_messageBox -icon warning -type ok -parent . \
-          -title "Scid: Error opening file" -message "$fName \n$result"
+      if { $::errorCode != $::ERROR::NameDataLoss } { set err 1 }
+      ERROR::MessageBox "$fName\n"
     } else {
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add "$fName.si4"
+    }
+  } elseif {[file extension $fName] == ".si3"} {
+    ::file::Upgrade [file rootname $fName]
+  } elseif {[file extension $fName] == ".sor"} {
+    if {[catch {::rep::OpenWithFile $fName} err]} {
+      tk_messageBox -parent . -type ok -icon info -title "Scid" \
+          -message "Unable to open \"$fName\": $err"
+      set err 1
     }
   } elseif {[string match "*.epd*" [string tolower $fName]]} {
     # EPD file:
     newEpdWin open $fName
   } else {
     # PGN file:
-    set result "This file is not readable."
     if {(![file readable $fName])  || \
           [catch {sc_base create $fName true} result]} {
+      ERROR::MessageBox "$fName\n"
       set err 1
-      tk_messageBox -icon warning -type ok -parent . \
-          -title "Scid: Error opening file" -message "$fName \n$result"
     } else {
       importPgnFile [sc_base current] [list "$fName"]
       sc_base type [sc_base current] 3
@@ -272,7 +267,7 @@ proc openBase {name} {
   }
   set err [catch {sc_base open $name} result]
   if {$showProgress} { closeProgressWindow }
-  if {$err} { return -code error $result }
+  if {$err} { return -code error -errorcode $::errorCode $result }
   return $result
 }
 

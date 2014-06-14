@@ -624,7 +624,7 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
   if { $baseIdx != $clipbaseIdx } {
     $w.menu add command -label [tr FileClose] -command [list ::file::Close $baseIdx]
     #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
-    $w.menu add command -label $::tr(CompactDatabase) -command "compactGames $baseIdx; compactNames $baseIdx"
+    $w.menu add command -label $::tr(CompactDatabase) -command "compactDB $baseIdx"
     if { [::file::autoLoadBases.find $baseIdx] == "-1" } {
       set ::sw_DummyCheckbutton 0
       $w.menu add checkbutton -label "Load at startup" -variable ::sw_DummyCheckbutton \
@@ -635,11 +635,7 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
         -command "::file::autoLoadBases.remove $baseIdx"
     }
   } else {
-    $w.menu add command -label [tr EditReset] -command {
-      sc_clipbase clear
-      ::notify::GameChanged
-      ::notify::DatabaseModified [sc_info clipbase]
-    }
+    $w.menu add command -label [tr EditReset] -command ::windows::gamelist::ClearClipbase
   }
 
   $w.menu add separator

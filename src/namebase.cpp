@@ -1,249 +1,133 @@
-//////////////////////////////////////////////////////////////////////
-//
-//  FILE:       namebase.cpp
-//              NameBase class methods
-//
-//  Part of:    Scid (Shane's Chess Information Database)
-//  Version:    2.3
-//
-//  Notice:     Copyright (c) 2001  Shane Hudson.  All rights reserved.
-//
-//  Author:     Shane Hudson (sgh@users.sourceforge.net)
-//
-//////////////////////////////////////////////////////////////////////
+/*
+* Copyright (c) 2001  Shane Hudson.
+* Copyright (C) 2014  Fulvio Benini
+
+* This file is part of Scid (Shane's Chess Information Database).
+*
+* Scid is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation.
+*
+* Scid is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Scid.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "common.h"
 #include "error.h"
 #include "namebase.h"
 #include "misc.h"
+#include "filebuf.h"
 #include "spellchk.h"
 
-#include <stdio.h>
-#include <string.h>
+const char NAMEBASE_MAGIC[8] = "Scid.sn";
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::Init(): initialise the namebase.
-//
-void
-NameBase::Init ()
-{
-    Fname[0] = 0;
-    FilePtr = NULL;
-    strcpy (Header.magic, NAMEBASE_MAGIC);
-    Header.timeStamp = 0;
+NameBase::~NameBase() {
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-        Header.numNames[n] = 0;
-        Header.numBytes[n] = 0;
-        Header.maxFrequency[n] = 0;
-        NameByID[n] = NULL;
-        Tree[n] = new StrTree<nameDataT>;
-        ArraySize[n] = 0;
+        for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
     }
-    // Set the string allocator:
-    StrAlloc = new StrAllocator();
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::Clear():
-//      Clear the namebase and free up memory.
-//
-void
-NameBase::Clear ()
+void NameBase::Init ()
 {
-    if (FilePtr != NULL) { CloseNameFile(); }
-    Fname[0] = 0;
-    Header.timeStamp = 0;
-
-    // Delete all dynamically allocated space for this namebase:
-    delete StrAlloc;
+    Fname_[0] = 0;
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
-        delete[] NameByID[n];
-        delete Tree[n];
+        for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
+        names_[n].resize(0);
+        idx_[n].clear();
     }
-    Init();
+    eloV_.resize(0);
+    firstDateV_.resize(0);
+    lastDateV_.resize(0);
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::WriteHeader():
-//      Write the header to the open namebase file.
-//
-errorT
-NameBase::WriteHeader ()
+errorT NameBase::Create(const char* filename)
 {
-    ASSERT (FilePtr != NULL);
-
-    // Ensure we are at the start of the file:
-    fseek (FilePtr, 0, SEEK_SET);
-    writeString (FilePtr, Header.magic, 8);
-    writeFourBytes (FilePtr, Header.timeStamp);
-    writeThreeBytes (FilePtr, Header.numNames[NAME_PLAYER]);
-    writeThreeBytes (FilePtr, Header.numNames[NAME_EVENT]);
-    writeThreeBytes (FilePtr, Header.numNames[NAME_SITE]);
-    writeThreeBytes (FilePtr, Header.numNames[NAME_ROUND]);
-
-    // Compatibility issue: even if maxFrequency is no longer used we still need to write these bytes
-    writeThreeBytes (FilePtr, 255);
-    writeThreeBytes (FilePtr, 255);
-    writeThreeBytes (FilePtr, 255);
-    writeThreeBytes (FilePtr, 255);
-    return OK;
+    SetFileName(filename);
+    std::vector<int> v[NUM_NAME_TYPES];
+    return WriteNameFile(v);
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::OpenNameFile():
-//      Opens namebase file for reading and reads the header.
-//
-errorT
-NameBase::OpenNameFile (const char * suffix)
-{
-    ASSERT (FilePtr == NULL); // Shouldn't already point to an open file.
-
-    fileNameT fname;
-    strcpy (fname, Fname);
-    strcat (fname, suffix);
-    if ((FilePtr = fopen (fname, "rb")) == NULL) {
-        return ERROR_FileOpen;
-    }
-
-    readString (FilePtr, Header.magic, 8);
-    if (strcmp (Header.magic, NAMEBASE_MAGIC) != 0) {
-        fclose (FilePtr);
-        FilePtr = NULL;
-        return ERROR_BadMagic;
-    }
-
-    Header.timeStamp = readFourBytes (FilePtr);
-    Header.numNames[NAME_PLAYER] = readThreeBytes (FilePtr);
-    Header.numNames[NAME_EVENT] = readThreeBytes (FilePtr);
-    Header.numNames[NAME_SITE] = readThreeBytes (FilePtr);
-    Header.numNames[NAME_ROUND] = readThreeBytes (FilePtr);
-    Header.maxFrequency[NAME_PLAYER] = readThreeBytes (FilePtr);
-    Header.maxFrequency[NAME_EVENT] = readThreeBytes (FilePtr);
-    Header.maxFrequency[NAME_SITE] = readThreeBytes (FilePtr);
-    Header.maxFrequency[NAME_ROUND] = readThreeBytes (FilePtr);
-    return OK;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::CloseNameFile():
-//      Closes an open namebase file.
-//
-errorT
-NameBase::CloseNameFile ()
-{
-    ASSERT (FilePtr != NULL);   // check FilePtr points to an open file
-    fclose (FilePtr);
-    FilePtr = NULL;
-    return OK;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // NameBase::ReadNameFile():
 //      Reads the entire name file into memory.
 //
 errorT
-NameBase::ReadNameFile (const char * suffix)
+NameBase::ReadEntireFile (const char* filename)
 {
-    // The arrays should be clear when ReadNameFile() is called.
-    ASSERT (ArraySize[NAME_PLAYER] == 0  &&  ArraySize[NAME_EVENT] == 0
-        &&  ArraySize[NAME_SITE] == 0    &&  ArraySize[NAME_ROUND] == 0);
+    SetFileName(filename);
+    Filebuf file;
+    if (file.Open(Fname_, FMODE_ReadOnly) != OK) return ERROR_FileOpen;
 
-    const idNumberT incr = 10;  // extra entries at end of each array
-    errorT err = OpenNameFile (suffix);
-    if (err != OK) {
-        return err;
-    }
+    char Header_magic[8]; // magic identifier must be "Scid.sn"
+    file.ReadNBytes(Header_magic, 8);
+    if (strcmp (Header_magic, NAMEBASE_MAGIC) != 0) return ERROR_BadMagic;
 
-    // Allocate array space. We add space for INCR empty entries at the
-    // end of each array for possible added names, for efficiency.
-    //
-    err = IncArraySize(NAME_PLAYER, Header.numNames[NAME_PLAYER] + incr);
-    if (err != OK)  { return err; }
-    err = IncArraySize(NAME_EVENT, Header.numNames[NAME_EVENT] + incr);
-    if (err != OK)  { return err; }
-    err = IncArraySize(NAME_SITE, Header.numNames[NAME_SITE] + incr);
-    if (err != OK)  { return err; }
-    err = IncArraySize(NAME_ROUND, Header.numNames[NAME_ROUND] + incr);
-    if (err != OK)  { return err; }
+    // *** Compatibility ***
+    // Even if timeStamp is not used we still need to read the bytes
+    file.ReadFourBytes();
+    // *** Compatibility ***
+    idNumberT Header_numNames[NUM_NAME_TYPES];
+    Header_numNames[NAME_PLAYER] = file.ReadThreeBytes();
+    Header_numNames[NAME_EVENT] = file.ReadThreeBytes();
+    Header_numNames[NAME_SITE] = file.ReadThreeBytes();
+    Header_numNames[NAME_ROUND] = file.ReadThreeBytes();
+    uint Header_maxFrequency[NUM_NAME_TYPES];
+    Header_maxFrequency[NAME_PLAYER] = file.ReadThreeBytes();
+    Header_maxFrequency[NAME_EVENT] = file.ReadThreeBytes();
+    Header_maxFrequency[NAME_SITE] = file.ReadThreeBytes();
+    Header_maxFrequency[NAME_ROUND] = file.ReadThreeBytes();
 
+    eloV_.resize(Header_numNames[NAME_PLAYER], 0);
+    firstDateV_.resize(Header_numNames[NAME_PLAYER], ZERO_DATE);
+    lastDateV_.resize(Header_numNames[NAME_PLAYER], ZERO_DATE);
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
+        names_[nt].resize(Header_numNames[nt]);
         idNumberT id;
-        Header.numBytes[nt] = 0;
-        nameNodeT * node = NULL;
-        nameNodeT * prevNode = NULL;
-
-        for (idNumberT i = 0; i < Header.numNames[nt]; i++) {
-            if (Header.numNames[nt] >= 65536) {
-                id = readThreeBytes(FilePtr);
-                Header.numBytes[nt] += 3;
+        char prevName[1024] = {0};
+        for (idNumberT i = 0; i < Header_numNames[nt]; i++) {
+            if (Header_numNames[nt] >= 65536) {
+                id = file.ReadThreeBytes();
             } else {
-                id = readTwoBytes(FilePtr);
-                Header.numBytes[nt] += 2;
+                id = file.ReadTwoBytes();
             }
+            if (id >= Header_numNames[nt]) return ERROR_Corrupt;
 
+            // *** Compatibility ***
+            // Even if frequency is no longer used we still need to read the bytes
             // Frequencies can be stored in 1, 2 or 3 bytes:
-            // Compatibility: Even if maxFrequency is no longer used we still need to read the bytes in older namebases
-            if (Header.maxFrequency[nt] >= 65536) {
-                readThreeBytes(FilePtr);
-                Header.numBytes[nt] += 3;
-            } else if (Header.maxFrequency[nt] >= 256) {
-                readTwoBytes(FilePtr);
-                Header.numBytes[nt] += 2;
+            if (Header_maxFrequency[nt] >= 65536) {
+                file.ReadThreeBytes();
+            } else if (Header_maxFrequency[nt] >= 256) {
+                file.ReadTwoBytes();
             } else {  // Frequencies all <= 255: fit in one byte
-                readOneByte(FilePtr);
-                Header.numBytes[nt] += 1;
+                file.ReadOneByte();
             }
+            // *** Compatibility ***
 
-            // Read the name string. All strings EXCEPT the first are
-            // front-coded.
-            uint length = (uint) readOneByte(FilePtr);
-            Header.numBytes[nt]++;
-            uint prefix = 0;
-            char name [256];
-            char * nameStr = name;
-            if (i > 0) {
-                prefix = (uint) readOneByte(FilePtr);
-                Header.numBytes[nt]++;
-                char * prevNameStr = prevNode->name;
-                for (uint temp=0; temp < prefix; temp++) {
-                    // Copy the prefix from the previous string;
-                    *nameStr++ = *prevNameStr++;
-                }
-            }
-            readString (FilePtr, nameStr, (length - prefix));
-            nameStr += length - prefix;
-            Header.numBytes[nt] += length - prefix;
-            *nameStr = 0;  // Add trailing '\0'.
-            // Now add to the StrTree:
-            if (Tree[nt]->AddLast (name, &node) != OK) {
-                fclose (FilePtr);
-                return ERROR_Corrupt;
-            }
-            node->data.id = id;
-            node->data.maxElo = 0;
-            node->data.firstDate = ZERO_DATE;
-            node->data.lastDate = ZERO_DATE;
-            node->data.country[0] = 0;
-            node->data.hasPhoto = false;
-            prevNode = node;
-            NameByID[nt][id] = node;
+            // Read the name string.
+            // All strings EXCEPT the first are front-coded.
+            uint length = file.ReadOneByte();
+            uint prefix = (i > 0) ? file.ReadOneByte() : 0;
+            if (prefix > length) return ERROR_Corrupt;
+            char* name = new char[length +1];
+            memcpy(name, prevName, prefix);
+            uint nr = file.ReadNBytes(name + prefix, (length - prefix));
+            if (nr != (length - prefix)) return ERROR_FileRead;
+            name[length] = 0;
+            strcpy(prevName, name);
+
+            names_[nt][id] = name;
+            idx_[nt].insert(idx_[nt].end(), std::make_pair(name, id));
         }
-
-        ASSERT (Header.numNames[nt] == Tree[nt]->Size());
-        Tree[nt]->Rebalance();
     }
 
-    fclose (FilePtr);
-    FilePtr = NULL;
     return OK;
 }
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // NameBase::WriteNameFile(): Write the entire in-memory index to disk.
@@ -251,77 +135,101 @@ NameBase::ReadNameFile (const char * suffix)
 //      the strings are front-coded to save space.
 //
 errorT
-NameBase::WriteNameFile ()
+NameBase::WriteNameFile (const std::vector<int>* freq)
 {
-    ASSERT (FilePtr == NULL);  // Should not already have an open file.
+    Filebuf file;
+    if (file.Open(Fname_, FMODE_WriteOnly) != OK) return ERROR_FileOpen;
 
-    fileNameT fname;
-    strcpy (fname, Fname);
-    strcat (fname, NAMEBASE_SUFFIX);
-    if ((FilePtr = fopen (fname, "wb")) == NULL) {
-        return ERROR_FileOpen;
+    file.WriteNBytes(NAMEBASE_MAGIC, 8);
+
+    // *** Compatibility ***
+    // Even if timeStamp is not used we still need to write the bytes
+    file.WriteFourBytes(0);
+    // *** Compatibility ***
+
+    file.WriteThreeBytes(names_[NAME_PLAYER].size());
+    file.WriteThreeBytes(names_[NAME_EVENT].size());
+    file.WriteThreeBytes(names_[NAME_SITE].size());
+    file.WriteThreeBytes(names_[NAME_ROUND].size());
+
+    // *** Compatibility ***
+    // even if maxFrequency is no longer used we still need to write these bytes
+    int maxFreq[NUM_NAME_TYPES] = {0};
+    for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
+        for (size_t i=0; i < freq[n].size(); i++) {
+            if (freq[n][i] > maxFreq[n]) maxFreq[n] = freq[n][i];
+        }
+        file.WriteThreeBytes(maxFreq[n]);
     }
-
-    WriteHeader ();
+    // *** Compatibility ***
 
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
-        nameNodeT * node = NULL;
-        nameNodeT * prevNode = NULL;
-        Tree[nt]->IterateStart();
-
-        for (idNumberT i = 0; i < Header.numNames[nt]; i++) {
-            prevNode = node;
-            node = Tree[nt]->Iterate();
-            ASSERT (node != NULL);
+        char prevName[1024] = {0};
+        size_t numNames = names_[nt].size();
+        for (iterator it = idx_[nt].begin(); it != idx_[nt].end(); it++) {
+            const char* name = (*it).first;
+            idNumberT id = (*it).second;
 
             // write idNumber in 2 bytes if possible, otherwise 3.
-            if (Header.numNames[nt] >= 65536) {
-                writeThreeBytes (FilePtr, node->data.id);
+            if (numNames >= 65536) {
+                file.WriteThreeBytes(id);
             } else {
-                writeTwoBytes (FilePtr, node->data.id);
+                file.WriteTwoBytes(id);
             }
 
-            // Compatibility: write 255 frequency count to avoid trouble with older scid versions
-            // Known issue: opening a database with an older scid version and:
-            // - save 254 games with the same name to another name the frequency will go to 0
-            // - after that compacting the namefile before the gamefile (with the maintenance window) the name with frequency 0 will be deleted
-            // To avoid problems compact the gamefile before the namefile (default behavior when invoked from switcher/gamelist window)
-            writeOneByte (FilePtr, 255);
+            // *** Compatibility ***
+            // even if frequency is no longer used we still need to write these bytes
+            if (maxFreq[nt] >= 65536) {
+                file.WriteThreeBytes(freq[nt][id]);
+            } else if (maxFreq[nt] >= 256) {
+                file.WriteTwoBytes(freq[nt][id]);
+            } else {
+                file.WriteOneByte(freq[nt][id]);
+            }
+            // *** Compatibility ***
 
-            byte length = (byte) strLength(node->name);
+            byte length = strlen(name);
+            file.WriteOneByte(length);
             byte prefix = 0;
-            writeOneByte (FilePtr, length);
-            if (i > 0) {
-                prefix = (byte) strPrefix (node->name, prevNode->name);
-                writeOneByte (FilePtr, prefix);
+            if (it != idx_[nt].begin()) {
+                prefix = (byte) strPrefix (name, prevName);
+                file.WriteOneByte(prefix);
             }
-            writeString (FilePtr, &(node->name[prefix]), (length - prefix));
+            file.WriteNBytes(name + prefix, (length - prefix));
+            strcpy(prevName, name);
         }
     }
-    fclose (FilePtr);
-    FilePtr = NULL;
     return OK;
 }
 
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::IncArraySize():
-//      Increment the size of a NameByID array.
+// NameBase::AddName(): Add a name to a namebase.
+// If it already exists, OK is returned.
 //
 errorT
-NameBase::IncArraySize (nameT nt, idNumberT increment)
+NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
 {
-    ASSERT (IsValidNameType(nt));
-    idNumberT newSize = ArraySize[nt] + increment;
-    nameNodeT ** newID = new nameNodePtrT [newSize];
-    if (ArraySize[nt] > 0) {  // copy old arrays into new then delete old
-        for (uint i = 0; i < ArraySize[nt]; i++) {
-            newID[i] = NameByID[nt][i];
+    ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
+
+    iterator it = idx_[nt].find(str);
+    if (it != idx_[nt].end()) {
+        *idPtr = (*it).second;
+    } else {
+        if (names_[nt].size() >= NAME_MAX_ID[nt]) {
+            return ERROR_NameBaseFull;   // Too many names already.
         }
-        delete[] NameByID[nt];
+
+        char* name = new char[strlen(str) +1];
+        strcpy(name, str);
+        *idPtr = names_[nt].size();
+        names_[nt].push_back(name);
+        idx_[nt][name] = *idPtr;
+        if (nt == NAME_PLAYER) {
+            eloV_.push_back(0);
+            firstDateV_.push_back(ZERO_DATE);
+            lastDateV_.push_back(ZERO_DATE);
+        }
     }
-    NameByID[nt] = newID;
-    ArraySize[nt] = newSize;
     return OK;
 }
 
@@ -331,62 +239,17 @@ NameBase::IncArraySize (nameT nt, idNumberT increment)
 //      Returns OK or ERROR_NotFound.
 //
 errorT
-NameBase::FindExactName (nameT nt, const char * str, idNumberT * idPtr)
+NameBase::FindExactName (nameT nt, const char* str, idNumberT* idPtr)
 {
     ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
-    nameNodeT * node = Tree[nt]->Lookup (str);
-    if (node == NULL) {
-        return ERROR_NameNotFound;
-    } else {
-        *idPtr = node->data.id;
+
+    iterator it = idx_[nt].find(str);
+    if (it != idx_[nt].end()) {
+        *idPtr = (*it).second;
         return OK;
     }
+    return ERROR_NameNotFound;
 }
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::AddName(): Add a name to a namebase. If it already
-//      exists, OK is returned.
-//
-errorT
-NameBase::AddName (nameT nt, const char * str, idNumberT * idPtr)
-{
-    ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
-    errorT err;
-    if (Header.numNames[nt] >= NAME_MAX_ID[nt]) {
-        return ERROR_NameBaseFull;   // Too many names already.
-    }
-    const idNumberT NAMEBASE_INC = 1000;
-
-    if (Header.numNames[nt] == ArraySize[nt]) {
-        // We have to increment our arrays for this nametype.
-        if ((err = IncArraySize(nt, NAMEBASE_INC)) != OK) {
-            return err;  // allocation error increasing array size.
-        }
-    }
-
-    nameNodeT * node = NULL;
-    err = Tree[nt]->Insert (str, &node);
-    if (err != ERROR_Exists) {
-        // Set data for the new node:
-        node->data.id = Header.numNames[nt];
-        node->data.maxElo = 0;
-        node->data.firstDate = ZERO_DATE;
-        node->data.lastDate = ZERO_DATE;
-        node->data.country[0] = 0;
-        node->data.hasPhoto = false;
-        NameByID[nt][node->data.id] = node;
-        Header.numNames[nt]++;
-    }
-    *idPtr = node->data.id;
-
-    // Rebalance tree if it is too far out of balance:
-    if (Tree[nt]->Height() > 30) {
-        Tree[nt]->Rebalance();
-    }
-    return OK;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // NameBase::GetMatches(): Get the first few matches of a name prefix.
@@ -399,28 +262,18 @@ NameBase::GetFirstMatches (nameT nt, const char * str, uint maxMatches,
                            idNumberT * array)
 {
     ASSERT (IsValidNameType(nt)  &&  str != NULL);
+
+    size_t len = strlen(str);
     uint matches = 0;
-    if (maxMatches > 0) {
-        nameNodePtrT * nodeArray = new nameNodePtrT [maxMatches];
-        matches = Tree[nt]->GetFirstMatches (str, maxMatches, nodeArray);
-        for (uint i=0; i < matches; i++) {
-            array[i] = nodeArray[i]->data.id;
-        }
-        delete[] nodeArray;
+    iterator it = idx_[nt].lower_bound(str);
+    for (; matches < maxMatches && it != idx_[nt].end(); matches++) {
+        const char* s = (*it).first;
+        if (strlen(s) < len || strncmp(s, str, len) != 0) break;
+        array[matches] = (*it++).second;
     }
+
     return matches;
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// NameBase::TreeHeight(): Return the height of a name tree.
-//
-uint
-NameBase::TreeHeight (nameT nt)
-{
-    ASSERT (IsValidNameType(nt));
-    return Tree[nt]->Height();
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // NameBase::NameTypeFromString
@@ -452,7 +305,7 @@ void NameBase::recalcEstimatedRatings (SpellChecker* spellChecker)
             if (! strIsSurnameOnly (name)) {
                 const char * text = spellChecker->GetCommentExact (name);
                 if (text != NULL) {
-                    SetElo (id, SpellChecker::GetPeakRating (text));
+                    AddElo (id, SpellChecker::GetPeakRating (text));
                 }
             }
         }

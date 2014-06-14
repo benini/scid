@@ -31,6 +31,12 @@
 #  undef WIN32_LEAN_AND_MEAN
 #endif
 
+
+
+bool strCaseEqual (const char * s1, const char * s2) {
+    return (strCaseCompare (s1, s2) == 0);
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // unfinishedCommand
 //    Stores a command input line not yet processed.
@@ -342,6 +348,42 @@ compareBookEntries (const void * v1, const void * v2)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// readCompactUint, writeCompactUint:
+//   Read/write an unsigned int using a variable number
+//   of bytes: 1 for 0-127, 2 for 128-16383, etc.
+
+inline errorT
+writeCompactUint (FILE * fp, uint value)
+{
+    ASSERT (fp != NULL);
+    int result;
+    while (true) {
+        if (value < 128) {
+            result = putc (value, fp);
+            break;
+        }
+        putc ((value & 127) | 128, fp);
+        value = value >> 7;
+    }
+    return (result == EOF ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readCompactUint (FILE * fp)
+{
+    ASSERT (fp != NULL);
+    uint v = 0;
+    uint bitIndex = 0;
+    while (true) {
+        uint b = (uint) getc(fp);
+        v = v | ((b & 127) << bitIndex);
+        if (! (b & 128)) { break; }
+        bitIndex += 7;
+    }
+    return v;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // makeBook
 //   Creates Scidlet opening book (SBK) file from a text file.
 //   Does not affect the current opening book data in memory.
@@ -474,7 +516,6 @@ readBook (const char * filename)
         nBookEntries++;
     }
     fclose (fp);
-    srandom32 (time(NULL));
     return nBookEntries;
 }
 
@@ -521,7 +562,7 @@ lookupBook (Position * pos, MoveList * mlist)
     int bookmove = -1;
     if (sumfreq > 0) {
         // Select a move at random based on its fequency:
-        uint r = random32() % sumfreq;
+        uint r = rand() % sumfreq;
         sumfreq = 0;
         for (uint j=0; j < mlist->Size(); j++) {
             sumfreq += freq[j];
@@ -978,6 +1019,8 @@ makeReply (Engine * engine, MoveList * mlist, int score)
 int
 main (int argc, char ** argv)
 {
+    srand(time(NULL));
+
     setbuf (stdin, NULL);
     setbuf (stdout, NULL);
 

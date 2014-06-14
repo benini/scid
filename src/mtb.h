@@ -80,35 +80,13 @@ class ResultGrid
     }
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     ResultGrid (uint bitsPerResult)
     {
         ASSERT (isValidBitsPerResult(bitsPerResult));
         BitsPerResult = bitsPerResult;
         HasBeenPacked = false;
         NumResultBytes = NumResults * BitsPerResult / 8;
-#ifdef WINCE
-        Data = (byte*) my_Tcl_Alloc(sizeof( byte[NumResultBytes]));
-#else
         Data = new byte[NumResultBytes];
-#endif
         PackedData = NULL;
         ClearStats();
     }
@@ -127,13 +105,8 @@ class ResultGrid
 
     ~ResultGrid()
     {
-#ifdef WINCE
-        if (Data != NULL) { my_Tcl_Free((char*) Data); }
-        if (HasBeenPacked) { my_Tcl_Free((char*) PackedData); }
-#else
         if (Data != NULL) { delete[] Data; }
         if (HasBeenPacked) { delete[] PackedData; }
-#endif
     }
 
     uint GetBitsPerResult() { return BitsPerResult; }
@@ -346,24 +319,6 @@ class MTB
     mtbEntryT ** Table;
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif
     MTB (const char * name, uint bitsPerResult, uint minCapacity)
     {
         Name = strDuplicate(name);
@@ -375,11 +330,7 @@ class MTB
             CapacityBits++;
         }
         BucketMask = Capacity - 1;
-#ifdef WINCE
-        Table = (mtbEntryPtr*) my_Tcl_Alloc(sizeof( mtbEntryPtr [Capacity]));
-#else
         Table = new mtbEntryPtr [Capacity];
-#endif
         for (uint i=0; i < Capacity; i++) {
             Table[i] = NULL;
         }
@@ -387,14 +338,8 @@ class MTB
 
     ~MTB()
     {
-#ifdef WINCE
-        my_Tcl_Free( Name );
-        my_Tcl_Free( (char*) Table);
-#else
         delete Name;
         delete[] Table;
-#endif
-
     }
 
     const char * GetName()
