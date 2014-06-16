@@ -1301,17 +1301,13 @@ proc updateMenuStates {{menuname}} {
       set ntreerecent [::recentFiles::treeshow .menu.file.recenttrees]
 
       # Remove and reinsert the Recent files list and Exit command:
-      set idx 13
-      $m.file delete $idx end
-      set nrecent [::recentFiles::show $m.file]
+      set idx1 [expr {[$m.file index [tr FileSwitch]] +2}]
+      set idx2 [expr {[$m.file index [tr FileExit]] -1}]
+      $m.file delete $idx1 $idx2
+      set nrecent [::recentFiles::show $m.file $idx1]
       if {$nrecent > 0} {
-        $m.file add separator
+        $m.file insert [$m.file index [tr FileExit]] separator
       }
-      set idx [$m.file index end]
-      incr idx
-      $m.file add command -label [tr FileExit] -accelerator "Ctrl+Q" \
-          -command ::file::Exit
-      set helpMessage($m.file,$idx) FileExit
 
       set state disabled
       if {[baseIsCompactable]} { set state normal }

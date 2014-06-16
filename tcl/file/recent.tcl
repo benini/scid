@@ -101,10 +101,8 @@ proc ::recentFiles::treeshow {menu} {
 #   Adds the recent files to the end of the specified menu.
 #   Returns the number of menu entries added.
 #
-proc ::recentFiles::show {menu} {
+proc ::recentFiles::show {menu idx} {
   global recentFiles
-  set idx [$menu index end]
-  incr idx
   set rlist $recentFiles(data)
   set nfiles [llength $rlist]
   set nExtraFiles [expr {$nfiles - $recentFiles(menu)} ]
@@ -124,7 +122,7 @@ proc ::recentFiles::show {menu} {
     set underline -1
     if {$num <= 9} { set underline 0 }
     if {$num == 10} { set underline 1 }
-    $menu add command -label "$num: $mname" -underline $underline \
+    $menu insert $idx command -label "$num: $mname" -underline $underline \
         -command [list ::recentFiles::load $fname]
     set ::helpMessage($menu,$idx) "  [file nativename $fname]"
     incr idx
@@ -136,7 +134,7 @@ proc ::recentFiles::show {menu} {
   # Now add the extra submenu of files:
   catch {destroy $menu.recentFiles}
   menu $menu.recentFiles
-  $menu add cascade -label "..." -underline 0 -menu $menu.recentFiles
+  $menu insert $idx cascade -label "..." -underline 0 -menu $menu.recentFiles
   set i $nfiles
   for {set extra 0} {$extra < $nExtraFiles} {incr extra} {
     set fname [lindex $rlist $i]
