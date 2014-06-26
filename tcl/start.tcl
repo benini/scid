@@ -35,7 +35,7 @@ exec `dirname $0`/tkscid "$0" "$@"
 
 package require Tcl 8.5
 package require Tk  8.5
-catch { package require img::png }
+if {$tcl_version == 8.5} { package require img::png }
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
@@ -1080,7 +1080,7 @@ proc InitImg {} {
 	set dname [file join $::scidImgDir buttons]
 	foreach {fname} [glob -directory $dname *.png] {
 		set iname [string range [file tail $fname] 0 end-4]
-		catch { image create photo $iname -file $fname }
+		image create photo $iname -format png -file $fname
 	}
 
 	#Load all img/boards/_filename_.gif

@@ -407,6 +407,12 @@ set tclv $var(TCL_VERSION)
 set tclv_nodot [expr round($tclv * 10)]
 
 puts "    Tcl/Tk version: $tclv"
+if {$tcl_version == 8.5} {
+  if {[catch {package require img::png}]} {
+    puts "    Error: no tkimg library. Please install the libtk-img package."
+    exit 0
+  }
+}
 puts "    Your operating system is: $tcl_platform(os) $tcl_platform(osVersion)"
 
 writeMakefile
