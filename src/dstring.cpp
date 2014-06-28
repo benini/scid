@@ -15,7 +15,6 @@
 
 #include "dstring.h"
 #include "misc.h"
-#include "mfile.h"
 
 void
 DString::Init (uint capacity)

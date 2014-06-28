@@ -14,7 +14,7 @@
 
 #include "engine.h"
 #include "recog.h"
-
+#include "sqmove.h"
 
 // The Recognizer class provides score bound information for chess
 // endgames.

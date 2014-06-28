@@ -18,6 +18,7 @@
 
 #include "common.h"
 #include "error.h"
+#include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
 
 // ECO string routines

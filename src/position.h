@@ -17,12 +17,15 @@
 #define SCID_POSITION_H
 
 #include "common.h"
-#include "dstring.h"
 #include "misc.h"
 #include "movelist.h"
-#include "sqlist.h"
-#include "sqset.h"
 #include "tokens.h"
+#include <stdio.h>
+
+class DString;
+class SquareSet;
+class SquareList;
+
 
 //////////////////////////////////////////////////////////////////////
 //  Position:  Constants

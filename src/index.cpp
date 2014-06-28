@@ -19,7 +19,7 @@
 */
 
 #include "index.h"
-#include "stored.h"
+#include "namebase.h"
 #include "sortcache.h"
 #include <string.h>
 

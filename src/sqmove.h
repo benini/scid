@@ -167,6 +167,27 @@ sqLast[66][11] = {
    { /* NS */  NS, NS, NS, NS, NS, NS, NS, NS, NS, NS, NS   }
 };
 
+// square_Move(): Return the new square resulting from moving in
+//      direction d from x.
+  inline squareT
+square_Move(squareT sq, directionT dir)
+{
+    return sqMove[sq][dir];
+}
+
+// square_Last():
+//   Return the last square reached by moving as far as possible in
+//   the direction d from the square sq. If sq is a valid on-board
+//   square and d is a valid direction, the result will always be
+//   a valid on-board square; the result will be the same as the
+//   input square if moving in the specified direction would end
+//   up off the board.
+  inline squareT
+square_Last (squareT sq, directionT dir)
+{
+    return sqLast[sq][dir];
+}
+
 #endif
 
 //////////////////////////////////////////////////////////////////////

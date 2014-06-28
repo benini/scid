@@ -18,7 +18,7 @@
 
 #include "common.h"
 #include "date.h"
-#include "index.h"
+#include "indexentry.h"
 #include "position.h"
 #include "namebase.h"
 #include "textbuf.h"

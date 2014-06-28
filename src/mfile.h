@@ -25,6 +25,7 @@
 
 #include "common.h"
 #include "error.h"
+#include <stdio.h>
 
 enum mfileT {
     MFILE_REGULAR = 0, MFILE_MEMORY, MFILE_GZIP, MFILE_ZIP, MFILE_SEQREAD

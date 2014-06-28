@@ -21,12 +21,11 @@
 #ifndef SCID_GFILE_H
 #define SCID_GFILE_H
 
-#include <stdio.h>
-
 #include "common.h"
 #include "bytebuf.h"
-#include "mfile.h"
 #include "fastgame.h"
+
+class MFile;
 
 // The GFile max block size is 128 kilobytes because IndexEntry::Length is a 17 bits uint
 #define GF_BLOCKSIZE  131072
@@ -70,7 +69,7 @@ private:
 
 public:
     GFile()  { Init(); }
-    ~GFile() { FlushAll(); if (Handle != NULL) delete Handle; }
+    ~GFile();
 
     errorT   Create (const char * filename, fileModeT fmode);
     errorT   CreateMemoryOnly ();

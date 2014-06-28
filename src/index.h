@@ -25,14 +25,13 @@
 #include "error.h"
 #include "date.h"
 #include "indexentry.h"
-#include "namebase.h"
 #include "filter.h"
 #include "filebuf.h"
 #include <string.h>
 #include <string>
 #include <vector>
 
-
+class NameBase;
 class SortCache;
 
 //////////////////////////////////////////////////////////////////////

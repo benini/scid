@@ -19,7 +19,6 @@
 
 #include "misc.h"
 #include "stralloc.h"
-#include "namebase.h"
 
 const uint SPELL_HASH_SIZE = 4096;
 

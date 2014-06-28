@@ -16,15 +16,6 @@
 #ifndef SCID_COMMON_H
 #define SCID_COMMON_H
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// HEADER FILES:
-
-#include <stdio.h>
-#include <stdlib.h>
-#include "myassert.h"
-#include "error.h"
-
-
 #if __cplusplus >= 201103L || defined(__GXX_EXPERIMENTAL_CXX0X__) || _MSC_VER > 1600
 	#define CPP11_SUPPORT 1
 #else
@@ -80,6 +71,33 @@ const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";
 const char ZIP_SUFFIX[] = ".zip";
 const char PGN_SUFFIX[] = ".pgn";
+
+
+//////////////////////////////////////////////////////////////////////
+// ASSERT macro: asserts an expression. Differs from the standard
+//    assert in that it does NOT print the expression (this is a waste,
+//    if an assert fails you can go to the code to see why) and that
+//    it MUST be a statement, not part of a larger expression.
+//    Adapted from the book "Writing Solid Code".
+
+extern int numAsserts;
+
+#ifdef ASSERTIONS
+
+    void _MyAssert(char *, unsigned);
+
+    #define ASSERT(f)               \
+        numAsserts++;               \
+        if (f)                      \
+            {}                      \
+        else                        \
+            _MyAssert(__FILE__, __LINE__)
+
+#else   // #ifndef ASSERTIONS
+
+    #define ASSERT(f) 
+
+#endif  // #ifdef ASSERTIONS
 
 
 // Bit Manipulations
@@ -646,33 +664,6 @@ direction_Delta (directionT dir)
 //    For example, sqDir[A1][B2] == UP_RIGHT, and sqDir[A1][C2] == NULL_DIR.
 //    It is initialised with the function scid_Init() in misc.cpp
 extern directionT  sqDir[66][66];
-
-// sqMove[66][11]: a table of the square resulting from a move in a
-//    certain direction from a square.
-//    For example, sqMove[A1][UP] == A2; sqMove[A1][DOWN] == NULL_SQUARE.
-#include "sqmove.h"
-
-// square_Move(): Return the new square resulting from moving in
-//      direction d from x.
-  inline squareT
-square_Move(squareT sq, directionT dir)
-{
-    return sqMove[sq][dir];
-}
-
-// square_Last():
-//   Return the last square reached by moving as far as possible in
-//   the direction d from the square sq. If sq is a valid on-board
-//   square and d is a valid direction, the result will always be
-//   a valid on-board square; the result will be the same as the
-//   input square if moving in the specified direction would end
-//   up off the board.
-  inline squareT
-square_Last (squareT sq, directionT dir)
-{
-    return sqLast[sq][dir];
-}
-
 
 // The starting Board
 //

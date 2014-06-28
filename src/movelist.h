@@ -16,8 +16,9 @@
 #ifndef SCID_MOVELIST_H
 #define SCID_MOVELIST_H
 
+#include "error.h"
 #include "common.h"
-
+#include <stdio.h>
 
 //////////////////////////////////////////////////////////////////////
 //  MoveList:  Constants

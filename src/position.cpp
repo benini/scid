@@ -19,10 +19,10 @@
 #include "sqlist.h"
 #include "sqset.h"
 #include "hash.h"
-
-#include <stdio.h>
-#include <ctype.h>
+#include "sqmove.h"
+#include "dstring.h"
 #include <string.h>
+#include <stdlib.h>
 
 static uint hashVal [16][64];
 static uint stdStartHash = 0;

@@ -17,14 +17,9 @@
 * along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
-#include <string.h>
-
-#include "common.h"
-#include "error.h"
 #include "gfile.h"
+#include "mfile.h"
 #include "misc.h"
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GFile::Init(): Initialise the GFile.
@@ -41,6 +36,11 @@ GFile::Init ()
     CurrentBlock.blockNum = -1;
     CurrentBlock.dirty = false;
     CurrentBlock.length = 0;
+}
+
+GFile::~GFile() {
+    FlushAll();
+    if (Handle != NULL) delete Handle;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

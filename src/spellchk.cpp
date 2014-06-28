@@ -15,6 +15,7 @@
 #ifndef WINCE
 
 #include "spellchk.h"
+#include "namebase.h"
 #include "date.h"
 #include "mfile.h"
 #include <ctype.h>

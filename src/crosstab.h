@@ -21,7 +21,6 @@
 #include "date.h"
 #include "dstring.h"
 #include "error.h"
-#include "namebase.h"
 #include "spellchk.h"
 
 const uint CROSSTABLE_MaxPlayers = 500;  // Max. number of players.

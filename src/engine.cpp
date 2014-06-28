@@ -15,6 +15,8 @@
 #include "attacks.h"
 #include "engine.h"
 #include "recog.h"
+#include "sqmove.h"
+#include "sqlist.h"
 
 // The Engine class implements the Scid built-in chess engine.
 // See engine.h for details.
