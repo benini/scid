@@ -40,7 +40,7 @@ typedef unsigned __int64  uint64_t;
 	// zlib function call with #ifndef conditions.
 	inline bool gzable() { return false; }
 	typedef void * gzFile;
-	inline gzFile gzopen (const char * name, const char * mode) { return NULL; }
+	inline gzFile gzopen (const char * name, const char * mode) { return 0; }
 	inline int gzputc (gzFile fp, int c) { return c; }
 	inline int gzgetc (gzFile fp) { return -1; }
 	inline int gzread (gzFile fp, unsigned char* buffer, int length) { return 0; }
