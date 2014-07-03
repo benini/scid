@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2013  Fulvio Benini
+* Copyright (C) 2013-2014  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -24,34 +24,34 @@
 #include "fastgame.h"
 
 
-template <const bool progress = false>
 class SearchPos {
 public:
-	SearchPos(Position* pos, bool  (*progressFn)(double) = 0) {
+	SearchPos(Position* pos, bool (*progressFn)(double)) {
 		for (int i=0; i<8; ++i) {
 			nPieces_[WHITE][i] = 0;
 			nPieces_[BLACK][i] = 0;
 		}
 		pieceT* board = pos->GetBoard();
+		squareT wkSq = 0;
+		squareT bkSq = 0;
 		for (int i = 0; i < 64; ++i) {
 			board_[i] = board[i];
 			if (board[i] != EMPTY) {
 				++nPieces_[piece_Color(board[i])][0];
 				++nPieces_[piece_Color(board[i])][piece_Type(board[i])];
-				if (board[i] == WK) wk_pos_ = i;
-				else if (board[i] == BK) bk_pos_ = i;
+				if (board[i] == WK) wkSq = i;
+				else if (board[i] == BK) bkSq = i;
 			}
 		}
 		toMove_ = pos->GetToMove();
 		isStdStard_ = pos->IsStdStart();
 
-		if (wk_pos_ != E1 && wk_pos_ != G1 && wk_pos_ != C1 &&
-			bk_pos_ != E8 && bk_pos_ != G8 && bk_pos_ != C1) {
+		if (wkSq != E1 && wkSq != G1 && bkSq != E8 && bkSq != G8) {
 			unusualKingPos_ = true;
 			storedLine_ = 0;
 		} else {
 			unusualKingPos_ = false;
-			storedLine_ = new StoredLine(pos);
+			storedLine_ = new StoredLine(board, toMove_);
 		}
 
 		//Home Pawn Signature
@@ -63,7 +63,6 @@ public:
 		msig_ = matsig_Make (pos->GetMaterial());
 
 		progressFn_ = progressFn;
-		progressEvery_ = 0;
 	}
 
 	~SearchPos() {
@@ -98,32 +97,30 @@ private:
 	uint8_t nPieces_[2][8];
 	byte board_[64];
 	StoredLine* storedLine_;
+	bool (*progressFn_)(double);
 	uint hpSig_;
 	uint ply_count_;
 	bool isStdStard_;
 	bool unusualKingPos_;
-	squareT wk_pos_, bk_pos_;
 	matSigT msig_;
 	colorT toMove_;
-	bool  (*progressFn_)(double);
-	long progressEvery_;
 
 	template <colorT TOMOVE, bool STOREDLINE>
 	bool SetFilter (scidBaseT* base, Filter* filter) {
 		filter->Fill(0);
+		long progress = 0;
 		for (uint i=0; i < base->numGames; i++) {
 			IndexEntry* ie = base->idx->FetchEntry (i);
 			if (! ie->GetStartFlag()) {
-				if (! HPSigCanMatch(ie->GetHomePawnData())) continue;
 				if (STOREDLINE) {
-					uint ply = 0;
-					simpleMoveT sm;
-					if (! storedLine_->CanMatch(ie->GetStoredLineCode(), &ply, &sm)) continue;
-					if (ply != 0) {
-						filter->Set (i, (byte) ply);
+					int ply = storedLine_->match(ie->GetStoredLineCode());
+					if (ply >= 0) {
+						filter->Set (i, static_cast<byte> (ply +1));
 						continue;
 					}
+					if (ply < -1) continue;
 				}
+				if (! HPSigCanMatch(ie->GetHomePawnData())) continue;
 			}
 			if (!matsig_isReachable (msig_, ie->GetFinalMatSig(), ie->GetPromotionsFlag(), ie->GetUnderPromoFlag())) continue;
 
@@ -131,11 +128,8 @@ private:
 			int ply = game.search<TOMOVE>(board_, nPieces_);
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 
-			if (progress) {
-				if (progressEvery_++ >= 100) {
-					if (!progressFn_ (static_cast<double> (i) / base->numGames)) return false;
-					progressEvery_ = 0;
-				}
+			if ((progress++ % 100) == 0) {
+				if (!progressFn_ (static_cast<double> (i) / base->numGames)) return false;
 			}
 		}
 		return true;

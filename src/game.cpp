@@ -3967,22 +3967,19 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         ushort storedLineCode = 0;
         if (!NonStandardStart) {
             uint longestMatch = 0;
-            uint storedLineCount = StoredLine::Count();
-            for (ushort i = 1; i < storedLineCount; i++) {
-                Game * g = StoredLine::GetGame (i);
-                moveT * gameMove = FirstMove->next;
-                moveT * lineMove = g->FirstMove->next;
+            for (uint i = 1; i < StoredLine::count(); i++) {
+                moveT* gameMove = FirstMove->next;
                 uint matchLength = 0;
-                while (lineMove->marker != END_MARKER) {
+                FullMove m = StoredLine::getMove(i, matchLength);
+                while (!m.isNull()) {
                     if (gameMove->marker == END_MARKER
-                        ||  gameMove->moveData.from != lineMove->moveData.from
-                        ||  gameMove->moveData.to != lineMove->moveData.to)
+                        ||  gameMove->moveData.from != m.getFrom()
+                        ||  gameMove->moveData.to != m.getTo())
                     {
                         matchLength = 0; break;
                     }
                     gameMove = gameMove->next;
-                    lineMove = lineMove->next;
-                    matchLength++;
+                    m = StoredLine::getMove(i, ++matchLength);
                 }
                 if (matchLength > longestMatch) {
                     longestMatch = matchLength;

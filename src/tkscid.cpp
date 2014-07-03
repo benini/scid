@@ -897,7 +897,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return TCL_OK;
         } else if (argc == 4) {
             //TODO: Use argv[4] (FEN) instead of current Position
-            SearchPos<true> fp(db->game->GetCurrentPos(), progressPosMask);
+            SearchPos fp(db->game->GetCurrentPos(), progressPosMask);
             //TODO: use a dedicated filter instead of treeFilter
             Filter* maskfilter = dbase->treeFilter;
             if (fp.setFilter(dbase, maskfilter)) {
@@ -11653,7 +11653,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         uint update = 1;
 
     	// 3. Set up the stored line code matches:
-    	StoredLine stored_line(pos);
+    	StoredLine stored_line(pos->GetBoard(), pos->GetToMove());
 
     	// 4. Search through each game:
     	for (uint i=0; i < base->numGames; i++) {
@@ -11679,16 +11679,21 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     		// if (ie->GetDeleteFlag()) { skipcount++; continue; }
 
     		bool foundMatch = false;
-    		uint ply = 0;
 
-    		// Check the stored line result for this game:
-    		if (! stored_line.CanMatch(ie->GetStoredLineCode(), &ply, &sm)) {
-    			skipcount++;
-    			continue;
-    		}
-            if (ply > 0) {
-                foundMatch = true;
-            } else {
+            // Check the stored line result for this game:
+            int ply = stored_line.match(ie->GetStoredLineCode());
+            if (ply < -1) { skipcount++; continue; }
+            if (ply >= 0) {
+                FullMove m = StoredLine::getMove(ie->GetStoredLineCode(), ply);
+                if (!m.isNull()) {
+                    sm.from = m.getFrom();
+                    sm.to = m.getTo();
+                    sm.promote = EMPTY;
+                    ply += 1;
+                    foundMatch = true;
+                }
+            }
+            if (!foundMatch) {
                 pieceT * bd = pos->GetBoard();
                 bool isStartPos =
                     (bd[A1]==WR  &&  bd[B1]==WN  &&  bd[C1]==WB  &&  bd[D1]==WQ  &&

@@ -20,94 +20,11 @@
 #define FASTGAME_H
 
 #include "common.h"
+#include "fullmove.h"
 #include "game.h" //TODO: remove this dependency
 #include <string.h>
 #include <sstream>
 #include <vector>
-
-
-namespace {
-// FastMove:
-// bits   0..5  to
-// bits  6..11  from
-// bits 12..17  captured square
-// bits 18..20  captured pieceT
-// bits 21..23  pieceT after the move (different in case of promotions)
-// bits 24..26  moving pieceT
-// bit      27  black to move
-// bit      28  ambiguous move, insert from fyle
-// bit      29  ambiguous move, insert from rank
-// bit      30  check
-
-typedef uint32_t FastMove;
-
-squareT FastMoveGetTo   (const FastMove& move) { return move & 0x3F; }
-squareT FastMoveGetFrom (const FastMove& move) { return (move >> 6) & 0x3F; }
-pieceT  FastMoveGetCapturedSq (const FastMove& move) { return (move >> 12) & 0x3F; }
-pieceT  FastMoveGetCaptured (const FastMove& move) { return (move >> 18) & 0x07; }
-pieceT  FastMoveGetPiece(const FastMove& move) { return (move >> 24) & 0x07; }
-colorT  FastMoveGetColor(const FastMove& move) { return (move >> 27 & 1) ? BLACK : WHITE; }
-
-void FastMoveSetTo(FastMove& move, squareT to) { move |= to & 0x3F;; }
-void FastMoveSetFrom(FastMove& move, squareT from, pieceT piece) { move |= ((from & 0x3F) << 6)  + ((piece & 0x07) << 21) + ((piece & 0x07) << 24); }
-void FastMoveSetCapture(FastMove& move, squareT sq, pieceT piece) { move |= ((sq & 0x3F) << 12)  + ((piece & 0x07) << 18); }
-void FastMoveSetPromotion(FastMove& move, pieceT piece) { move &= ~(0x07 << 21); move |= (piece & 0x07) << 21; }
-void FastMoveSetBlackToMove(FastMove& move) { move |= 1 << 27; }
-void FastMoveSetAmbiguous(FastMove& move, const FastMove& move2) {
-	if ((move & 0x700003F) == (move2 & 0x700003F)) {
-		int from = FastMoveGetFrom(move);
-		int from2 = FastMoveGetFrom(move2);
-		if ((from % 8) != (from2 % 8)) move |= 1 << 28;
-		else move |= 1 << 29;
-	}
-}
-void FastMoveSetCheck(FastMove& move) { move |= 1 << 30; }
-
-std::string FastMoveToSAN(const FastMove& move, colorT* toMove = 0) {
-	std::string res;
-	res.reserve(10);
-	if (toMove) *toMove = FastMoveGetColor(move);
-	squareT to = FastMoveGetTo(move);
-	squareT from = FastMoveGetFrom(move);
-	bool fromFyle = (move >> 28) & 1;
-	bool fromRank = (move >> 29) & 1;
-	bool check = (move >> 30) & 1;
-	bool capture = FastMoveGetCaptured(move);
-	pieceT piece = FastMoveGetPiece(move);
-	pieceT piece_after = (move >> 21) & 0x07;
-
-	switch (piece) {
-	case BISHOP: res += "B"; break;
-	case KNIGHT: res += "N"; break;
-	case ROOK: res += "R"; break;
-	case QUEEN: res += "Q"; break;
-	case KING:
-		if (to - from == 2) return "O-O";
-		if (from - to == 2) return "O-O-O";
-		if (to == 0 && from == 0) return "--";
-		res += "K";
-		break;
-	default: // Default to PAWN
-		if (capture) res += 'a' + (from % 8);
-	}
-	if (fromFyle) res += 'a' + (from % 8);
-	if (fromRank) res += '1' + (from / 8);
-	if (capture) res += "x";
-	res += 'a' + (to % 8);
-	res += '1' + (to / 8);
-	if (piece_after != piece) {
-		switch (piece_after) {
-		case BISHOP: res += "=B"; break;
-		case KNIGHT: res += "=N"; break;
-		case ROOK: res += "=R"; break;
-		case QUEEN: res += "=Q"; break;
-		}
-	}
-	if (check) res += "+";
-	return res;
-}
-
-} //End of FastMove
 
 
 class FastGame {
@@ -146,8 +63,8 @@ public:
 		return FastGame(""); // Error default to empty buffer and board
 	}
 
-	FastMove getMove(int startPly) {
-		FastMove move;
+	FullMove getMove(int startPly) {
+		FullMove move;
 		for (int ply=0; ply <= startPly; ply++, cToMove_ = 1 - cToMove_) {
 			if (cToMove_ == WHITE) {
 				if (! DecodeNextMove <WHITE>(&move)) break;
@@ -156,20 +73,18 @@ public:
 			}
 
 			if (ply == startPly) {
-				if (cToMove_ == BLACK) FastMoveSetBlackToMove(move);
-				if (isCheck(cToMove_)) FastMoveSetCheck(move);
-				checkAmbiguity(move);
+				fillSANInfo(move);
 				cToMove_ = 1 - cToMove_;
 				return move;
 			}
 		}
-		return 0;
+		return FullMove();
 	}
 
 	std::string getMoveSAN(int startPly, int count) {
 		std::stringstream res;
 		for (int ply=0; ply < startPly + count; ply++, cToMove_ = 1 - cToMove_) {
-			FastMove move;
+			FullMove move;
 			if (cToMove_ == WHITE) {
 				if (! DecodeNextMove <WHITE>(&move)) break;
 				if (ply < startPly) continue;
@@ -181,9 +96,8 @@ public:
 				if (ply == startPly) res << (1 + ply/2) << "...";
 				else res << " ";
 			}
-			if (isCheck(cToMove_)) FastMoveSetCheck(move);
-			checkAmbiguity(move);
-			res << FastMoveToSAN(move);
+			fillSANInfo(move);
+			res << move.getSAN();
 		}
 		return res.str();
 	}
@@ -289,17 +203,15 @@ private:
 	};
 
 	template <colorT toMove>
-	inline bool doPly(byte v, FastMove* lastMove = 0) {
+	inline bool doPly(byte v, FullMove* lastMove = 0) {
 		const colorT enemy = 1 - toMove;
 		uint idx_piece_moving = v >> 4;
 		uint move = v & 0x0F;
 		P_LIST* moving_piece = & list[toMove][idx_piece_moving];
 		squareT from = moving_piece->sq;
 		squareT to;
-		if (lastMove) {
-			*lastMove = 0;
-			FastMoveSetFrom(*lastMove, from, moving_piece->piece);
-		}
+		pieceT promo = 0;
+		if (lastMove) lastMove->clear();
 		switch (moving_piece->piece) {
 			case BISHOP: to = 0x3F & decodeBishop(from, move); break;
 			case KNIGHT: to = 0x3F & decodeKnight(from, move); break;
@@ -311,16 +223,11 @@ private:
 				break;
 			case KING:
 				if (move > 8) { // Castle
-					if (lastMove) FastMoveSetTo(*lastMove, move == 10 ? from + 2 : from - 2);
-					return handleCastle<toMove> (move == 10);
+					return handleCastle<toMove> (move == 10, lastMove);
 				} else if (move != 0) { // Normal move
 					static const int sqdiff[] = { 0, -9, -8, -7, -1, 1, 7, 8, 9};
 					to = 0x3F & (from + sqdiff[move]);
 				} else { // NULL MOVE
-					if (lastMove) {
-						*lastMove = 0;
-						FastMoveSetFrom(*lastMove, 0, moving_piece->piece);
-					}
 					return true;
 				}
 				break;
@@ -342,23 +249,31 @@ private:
 						}
 						break;
 					default: { //Promotion
-						static const pieceT promoPieceFromVal [16] = { EMPTY,EMPTY,EMPTY,QUEEN,QUEEN,QUEEN,
-							ROOK,ROOK,ROOK,BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,EMPTY};
-						if (lastMove) FastMoveSetPromotion(*lastMove, promoPieceFromVal[move]);
-						moving_piece->piece = promoPieceFromVal[move];
-						nPieces_[toMove][PAWN]--;
-						nPieces_[toMove][moving_piece->piece]++;
+						static const pieceT promoPieceFromVal [16] = {
+							EMPTY,EMPTY,EMPTY,QUEEN,QUEEN,QUEEN, ROOK,ROOK,ROOK,
+							BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,EMPTY
+						};
+						promo = promoPieceFromVal[move];
 					}
 				}
 			}
 		}
-		if (lastMove) FastMoveSetTo(*lastMove, to);
+		if (lastMove) lastMove->set(toMove, moving_piece->piece, from, to, promo);
+
 		uint capt_idx = board_[to];
 		board_[to] = idx_piece_moving;
 		board_[from] = 0;
 		moving_piece->sq = to;
+		if (promo != 0) {
+			moving_piece->piece = promo;
+			nPieces_[toMove][PAWN]--;
+			nPieces_[toMove][moving_piece->piece]++;
+		}
 		if (capt_idx != 0) {
-			if (lastMove) FastMoveSetCapture(*lastMove, list[enemy][capt_idx].sq, list[enemy][capt_idx].piece);
+			if (lastMove) {
+				squareT capt_sq = list[enemy][capt_idx].sq;
+				lastMove->setCapture(list[enemy][capt_idx].piece, capt_sq != to);
+			}
 			if (--nPieces_[enemy][0] < min_pieces_[enemy][0]) return false;
 			--nPieces_[enemy][list[enemy][capt_idx].piece];
 			if (nPieces_[enemy][PAWN] < min_pieces_[enemy][PAWN]) return false;
@@ -370,7 +285,7 @@ private:
 		return true;
 	}
 	template <colorT toMove>
-	inline bool handleCastle(bool king_side) {
+	inline bool handleCastle(bool king_side, FullMove* lastMove) {
 		uint black = (toMove == WHITE) ? 0 : 56;
 		const uint king_idx = 0;
 		squareT king_to, rook_from, rook_to;
@@ -383,11 +298,14 @@ private:
 			rook_from = black + A1;
 			rook_to = black + D1;
 		}
+		if (lastMove) {
+			lastMove->setCastle(toMove, list[toMove][king_idx].sq, rook_from);
+		}
+		list[toMove][king_idx].sq = king_to;
 		byte rook_idx = board_[rook_from];
 		list[toMove][rook_idx].sq = rook_to;
 		board_[rook_to] = rook_idx;
 		board_[rook_from] = 0;
-		list[toMove][king_idx].sq = king_to;
 		board_[king_to] = king_idx;
 		// board_[king_from] = 0; //Is not necessary because King_idx == 0
 		// ClearCastlingRights;
@@ -412,7 +330,7 @@ private:
 	enum { ENCODE_FIRST = 11, ENCODE_LAST = 15 };
 
 	template <colorT toMove>
-	inline bool DecodeNextMove(FastMove* lastMove = 0) {
+	inline bool DecodeNextMove(FullMove* lastMove = 0) {
 		while (v_it_ < v_end_) {
 			byte b = *v_it_++;
 			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<toMove>(b, lastMove);
@@ -460,7 +378,7 @@ private:
 			}
 		}
 
-		static int walk[] = { +1, +7, +9, -1, -7, -9, +8, -8 };
+		static int walk[] = { +1, +1, +8, -8, -7, -9, +7, +9 };
 		for (uint i=0; i < sizeof(walk)/sizeof(int); i++) {
 			if (kingSq % 8 == 0 && walk[i] % 8 < 0) continue;
 			if (kingSq % 8 == 7 && walk[i] % 8 > 0) continue;
@@ -492,14 +410,14 @@ private:
 		return checkers.size() != 0;
 	}	
 
-	void checkAmbiguity(FastMove& move) const {
-		pieceT piece = FastMoveGetPiece(move);
-		colorT allies = FastMoveGetColor(move);
-		if (piece == PAWN || piece == KING || piece == BISHOP || nPieces_[allies][piece] <= 1) return;
+	void fillSANInfo(FullMove& move) const {
+		pieceT piece = move.getPiece();
+		colorT allies = move.getColor();
 		std::vector<squareT> pinned;
-		isCheck(1 - allies, &pinned);
+		if (isCheck(allies, &pinned)) move.setCheck();
+		if (piece == PAWN || piece == KING || piece == BISHOP || nPieces_[allies][piece] <= 1) return;
 		for (uint8_t i=1; i < nPieces_[allies][0]; i++) { //i=1 because King_idx == 0
-			if (list[allies][i].piece == piece && list[allies][i].sq != FastMoveGetFrom(move)) {
+			if (list[allies][i].piece == piece && list[allies][i].sq != move.getFrom()) {
 				bool moveable = true;
 				for (uint j=0; j < pinned.size(); j++) {
 					if (list[allies][i].sq == pinned[j]) moveable = false;
@@ -510,24 +428,21 @@ private:
 				for (int j=0; j < nPieces_[WHITE][0]; j++) board[list[WHITE][j].sq] = list[WHITE][j].piece;
 				for (int j=0; j < nPieces_[BLACK][0]; j++) board[list[BLACK][j].sq] = list[BLACK][j].piece | (1 << 3);
 				//Undo the last move
-				board[FastMoveGetFrom(move)] = FastMoveGetPiece(move) | (allies << 3);
-				board[FastMoveGetTo(move)] = 0;
-				pieceT captured = FastMoveGetCaptured(move);
-				if (captured) board[FastMoveGetCapturedSq(move)] = captured | (allies << 3);
+				board[move.getFrom()] = move.getPiece() | (allies << 3);
+				board[move.getTo()] = 0;
+				pieceT captured = move.getCaptured();
+				if (captured) board[move.getCaptSq()] = captured | (allies << 3);
 				//Generate the moves and check for ambiguity
-				std::vector<FastMove> m = generateMoves(board, list[allies][i].sq);
-				for (uint j=0; j < m.size(); j++) FastMoveSetAmbiguous(move, m[j]);
+				std::vector<FullMove> m = generateMoves(board, list[allies][i].sq);
+				for (uint j=0; j < m.size(); j++) move.setAmbiguous(m[j]);
 			}
 		}
 	}
 
-	std::vector<FastMove> generateMoves(const pieceT* board, squareT from) const {
-		std::vector<FastMove> res;
+	std::vector<FullMove> generateMoves(const pieceT* board, squareT from) const {
+		std::vector<FullMove> res;
 		pieceT piece = piece_Type(board[from]);
 		colorT enemy = 1 - piece_Color(board[from]);
-		FastMove m = 0;
-		FastMoveSetFrom(m, from, piece);
-		if (enemy == WHITE) FastMoveSetBlackToMove(m);
 		switch (piece) {
 			case KNIGHT: {
 				static int knight[] = { -17, -15, -10, -6, 6, 10, 15, 17 };
@@ -535,9 +450,9 @@ private:
 					int sq = from + knight[i];
 					if (sq < 0 || sq > 63) continue;
 					if (board[sq] != 0 && piece_Color(board[sq]) != enemy) continue;
-					FastMove tmp = m;
-					FastMoveSetTo(tmp, sq);
-					if (board[sq] != 0) FastMoveSetCapture(tmp, sq, piece_Type(board[sq]));
+					FullMove tmp;
+					tmp.set(1 - enemy, piece, from, sq);
+					if (board[sq] != 0) tmp.setCapture(piece_Type(board[sq]), false);
 					res.push_back(tmp);
 				}
 				break;
@@ -549,7 +464,6 @@ private:
 		}
 		return res;
 	}
-
 };
 
 

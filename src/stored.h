@@ -1,5 +1,4 @@
 /*
-* Copyright (C) 2000  Shane Hudson
 * Copyright (C) 2014  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
@@ -20,49 +19,32 @@
 #ifndef SCID_STORED_H
 #define SCID_STORED_H
 
-#include "game.h"
-#include "fastgame.h"
-
-const uint MAX_STORED_LINES = 256;
+#include "fullmove.h"
+const uint STORED_LINES = 255;
 
 class StoredLine {
 public:
-	StoredLine(Position* pos);
-	~StoredLine();
-	bool CanMatch(uint ln, uint* ply, simpleMoveT* sm){
-		if (ln == 0 || ln >= nStoredLines_) return true;
-		if (storedLineMatches_[ln] < 0 ) return false;
-		*ply = storedLineMatches_[ln];
-		if (storedLineMatches_[ln] > 0) *sm = storedLineMoves_[ln];
-		return true;
+	StoredLine(pieceT* board, colorT toMove);
+	//Result:
+	//-2 : the game cannot reach the searched position
+	//-1 : the game can reach the searched position
+	//>=0: the game reach the searched position at the returned ply
+	int match(uint code) {
+		if ((code > 0) && (code < STORED_LINES)) return matches_[code];
+		return -1;
 	}
 
-	static uint Count (void) { return nStoredLines_; }
-	static const char* GetText (uint code) {
-		if (code < 1  ||  code >= nStoredLines_) { return NULL; }
-		return StoredLine::storedLineText [code];
-	}
-	static Game* GetGame (uint code) {
-		if (code < 1  ||  code >= nStoredLines_) { return NULL; }
-		return storedLineGames [code];
-	}
-	static FastMove GetFirstMove (uint code) {
-		if (code < 1  ||  code >= nStoredLines_) { return 0; }
-		return FirstMove_[code];
+	static uint count () { return STORED_LINES; }
+	static FullMove getMove (uint code, uint ply = 0) {
+		if ((code < STORED_LINES) && (Moves_[code] + ply) < Moves_[code +1]) {
+			return Moves_[code][ply];
+		}
+		return FullMove();
 	}
 
 private:
-	StoredLine() : freeStoredLines_(true) { Init(); }
-	bool freeStoredLines_;
-	int storedLineMatches_ [MAX_STORED_LINES];
-	simpleMoveT storedLineMoves_ [MAX_STORED_LINES];
-
-	static void Init (void);
-	static StoredLine singleton_;
-	static const char* storedLineText[];
-	static uint nStoredLines_;
-	static Game* storedLineGames[MAX_STORED_LINES];
-	static FastMove FirstMove_ [MAX_STORED_LINES];
+	int matches_ [STORED_LINES];
+	static FullMove* Moves_ [STORED_LINES +1];
 };
 
 #endif  // #ifndef SCID_STORED_H

@@ -488,24 +488,17 @@ scidBaseT::TreeStat::TreeStat()
 }
 
 std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(Filter* filter) {
-//	TODO: make this function faster
-	std::vector<FastMove> v1;
+	std::vector<FullMove> v1;
 	v1.reserve(50);
 	std::vector<scidBaseT::TreeStat> v2;
 	v2.reserve(50);
-
 	for(uint gnum=0; gnum < numGames; gnum++) {
 		if(filter->Get(gnum) == 0) continue;
 		uint ply = filter->Get(gnum) - 1;
 		IndexEntry* ie = idx->FetchEntry (gnum);
-		FastMove move = 0;
-		if (ply == 0) {
-			move = StoredLine::GetFirstMove(ie->GetStoredLineCode());
-		}
-		if (move == 0) {
-			bbuf->Empty();
-			gfile->ReadGame (bbuf, ie->GetOffset(), ie->GetLength() );
-			move = FastGame::Create(bbuf->GetBuffer(), bbuf->GetBuffer() + bbuf->GetByteCount()).getMove(ply);
+		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
+		if (move.isNull()) {
+			move = gfile->ReadGame(ie->GetOffset(), ie->GetLength()).getMove(ply);
 		}
 		uint i=0;
 		while (i < v1.size() && v1[i] != move) i++;
@@ -517,11 +510,10 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(Filter* filter) {
 	}
 
 	for (uint i=0; i < v1.size(); i++) {
-		v2[i].SAN = (v1[i] == 0) ? "[end]" : FastMoveToSAN(v1[i], &(v2[i].toMove));
+		v2[i].SAN = (v1[i].isNull()) ? "[end]" : v1[i].getSAN(&(v2[i].toMove));
 	}
 
 	std::sort(v2.begin(), v2.end());
-
 	return v2;
 }
 
