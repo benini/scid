@@ -1170,6 +1170,7 @@ tools/tablebase.tcl
 tools/ptracker.tcl
 help/help.tcl
 help/tips.tcl
+keyboard.tcl
 menus.tcl
 board.tcl
 move.tcl

@@ -81,6 +81,7 @@ proc ::move::End {} {
 }
 
 proc ::move::ExitVar {} {
+	if {[sc_var level] == 0 } { return 0; }
 	sc_var exit;
 	updateBoard
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
