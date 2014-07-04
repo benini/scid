@@ -312,12 +312,10 @@ private:
                                  //   DumpHtmlBoard method in position.cpp.
     uint        PgnLastMovePos;
 
-#ifdef WINCE
-    bool        LowMem; // set to true if the game should use a low memory chuncksize
-    moveChunkLowMemT * MoveChunkLowMem;
-#endif
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Private Functions
+    Game(const Game&);
+    Game& operator=(const Game&);
 
     void       AllocateMoreMoves ();
     inline moveT *    NewMove();
@@ -326,8 +324,6 @@ private:
     errorT     DecodeVariation (ByteBuffer * buf, byte flags, uint level);
     bool       calcAbsPlyNumber_ (moveT *m, moveT *s);
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //  Game:  Public Functions
 public:
     Game()      { Init(); }
     ~Game();

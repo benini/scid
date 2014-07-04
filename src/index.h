@@ -127,7 +127,8 @@ private:
     };
     entriesT<16> entries_; // A two-level array of the entire index.
 
-
+    Index(const Index&);
+    Index& operator=(const Index&);
     void Init ();
     void Clear ();
     errorT write (IndexEntry* ie, gameNumberT idx);

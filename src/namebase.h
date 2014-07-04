@@ -72,6 +72,9 @@ class NameBase
         }
     };
     std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
+
+    NameBase(const NameBase&);
+    NameBase& operator=(const NameBase&);
     void Init();
     void SetFileName (const char *s) { strcpy(Fname_,s); strcat(Fname_, NAMEBASE_SUFFIX); }
 

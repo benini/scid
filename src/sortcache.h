@@ -36,8 +36,8 @@ class SortCache
 	errorT CheckForChanges ( uint id);
 	bool MatchCriteria( const std::string& crit) { return crit == criteria; }
 	void DoFullSort(int reportFrequency,
-                    void (*progressFn)(void * data, uint progress, uint total),
-                    void * progressData);
+	                void (*progressFn)(void * data, uint progress, uint total),
+	                void * progressData);
 	int ReleaseCount() { return --refCount; }
 	int AddCount() { return ++refCount; }
 
@@ -46,16 +46,18 @@ class SortCache
 	bool partialHashing;
 	bool sorted_;
 	uint numGames;
-    uint *fullMap;
+	uint *fullMap;
 	uint mapSize;
-    uint *hashValues;
+	uint *hashValues;
 	NameBase *nbase;
-    byte SortCriteria [INDEX_MaxSortingCriteria];
-    bool SortReverse [INDEX_MaxSortingCriteria];
+	byte SortCriteria [INDEX_MaxSortingCriteria];
+	bool SortReverse [INDEX_MaxSortingCriteria];
 	int refCount;
 	std::string criteria;
 
 	SortCache();
+	SortCache(const SortCache&);
+	SortCache& operator=(const SortCache&);
 	errorT Init (Index *idx, NameBase * nb, const char *criterium);
 	inline int Compare (uint left, uint right);
 	int FullCompare (uint left, uint right);

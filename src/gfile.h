@@ -39,7 +39,6 @@ private:
     MFile *   Handle;
     fileModeT FileMode;
     uint      Offset;
-
     int NumBlocks;
     int LastBlockSize;
     struct gfBlockT
@@ -50,10 +49,11 @@ private:
         byte  data [GF_BLOCKSIZE];
     }  CurrentBlock;
 
+    GFile(const GFile&);
+    GFile& operator=(const GFile&);
     void Init ();
     errorT Fetch (gfBlockT * blk, int blockNum);
     errorT Flush (gfBlockT * blk);
-
     const byte* read_ (uint offset, uint length)
     {
         int blockNum = (offset / GF_BLOCKSIZE);
@@ -65,7 +65,6 @@ private:
 
         return CurrentBlock.data + (offset % GF_BLOCKSIZE);
     }
-
 
 public:
     GFile()  { Init(); }

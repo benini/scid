@@ -38,6 +38,9 @@ class Filter
     uint    Capacity;       // Number of bytes allocated for Data[].
     byte *  Data;           // The actual filter data.
     const Filter* posMask_;
+
+    Filter(const Filter&);
+    Filter& operator=(const Filter&);
     void Allocate();
     void Free();
     uint Size() { return FilterSize; }
@@ -45,7 +48,7 @@ class Filter
     
   public:
     Filter (uint size) :Data(NULL), posMask_(NULL)  { Init (size); }
-    ~Filter ()          { Free(); }
+    ~Filter() { Free(); }
 
     void    Init (uint size);
     uint    Count ();

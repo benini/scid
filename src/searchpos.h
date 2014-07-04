@@ -105,6 +105,8 @@ private:
 	matSigT msig_;
 	colorT toMove_;
 
+	SearchPos(const SearchPos&);
+	SearchPos& operator=(const SearchPos&);
 	template <colorT TOMOVE, bool STOREDLINE>
 	bool SetFilter (scidBaseT* base, Filter* filter) {
 		filter->Fill(0);

@@ -167,6 +167,8 @@ private:
 	Stats stats;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
 
+	scidBaseT(const scidBaseT&);
+	scidBaseT& operator=(const scidBaseT&);
 	void Init();
 	void clear();
 	errorT addGame_ (scidBaseT* sourceBase, uint gNum);
