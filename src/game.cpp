@@ -3539,7 +3539,7 @@ decodeMove (ByteBuffer * buf, simpleMoveT * sm, byte val, Position * pos)
 
     pieceT * board = pos->GetBoard();
     sm->movingPiece = board[sm->from];
-
+    sm->capturedPiece = EMPTY;
     sm->promote = EMPTY;
 
     errorT err = OK;

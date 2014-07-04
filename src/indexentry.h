@@ -535,28 +535,27 @@ public:
 inline void
 IndexEntry::Init ()
 {
-    SetOffset (0);
-    //SetLength (0);
+    NumHalfMoves = 0;
+    WhiteID_Low = 0;
+    BlackID_Low = 0;
+    EventID_Low = 0;
+    SiteID_Low = 0;
+    RoundID_Low = 0;
+    WhiteBlack_High = 0;
+    EventSiteRnd_High = 0;
+    WhiteElo = 0;
+    BlackElo = 0;
+    FinalMatSig = 0;
+    Flags = 0;
+    VarCounts = 0;
     Length_Low = 0;
     Length_High = 0;
-    SetWhite (0);
-    SetBlack (0);
-    SetEvent (0);
-    SetSite (0);
-    SetRound (0);
+    Offset = 0;
     SetDate (ZERO_DATE);
     SetEventDate (ZERO_DATE);
     SetResult (RESULT_None);
     SetEcoCode (ECO_None);
-    SetNumHalfMoves (0);
-    Flags = 0;
-    VarCounts = 0;
     SetFinalMatSig (MATSIG_Empty);
-    SetStoredLineCode (0);
-    SetWhiteElo (0);
-    SetBlackElo (0);
-    SetWhiteRatingType (0);
-    SetBlackRatingType (0);
     for (uint i=0; i < HPSIG_SIZE; i++) {
         HomePawnData[i] = 0;
     }
