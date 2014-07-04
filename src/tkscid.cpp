@@ -12077,14 +12077,8 @@ sc_tree_cachesize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 4) {
     return errorResult (ti, "Usage: sc_tree cachesize <base> <size>");
   }
-  scidBaseT * base = NULL;
-  int baseNum = strGetInteger (argv[2]);
-  if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-   base = &(dbList[baseNum - 1]);
-  }
-  uint size = strGetUnsigned(argv[3]);
-  if (base->inUse)
-    base->treeCache->CacheResize(size);
+  scidBaseT* base = getBase(strGetInteger(argv[2]));
+  if (base) base->treeCache->CacheResize(strGetUnsigned(argv[3]));
   return TCL_OK;
 }
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -12096,12 +12090,8 @@ sc_tree_cacheinfo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 3) {
     return errorResult (ti, "Usage: sc_tree cacheinfo <base>");
   }
-  scidBaseT * base = NULL;
-  int baseNum = strGetInteger (argv[2]);
-  if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-   base = &(dbList[baseNum - 1]);
-  }
-  if (base->inUse) {
+  scidBaseT* base = getBase(strGetInteger(argv[2]));
+  if (base) {
     appendUintElement (ti, base->treeCache->UsedSize());
     appendUintElement (ti, base->treeCache->Size());
   } else {

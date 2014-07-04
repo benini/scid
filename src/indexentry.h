@@ -543,14 +543,16 @@ IndexEntry::Init ()
     RoundID_Low = 0;
     WhiteBlack_High = 0;
     EventSiteRnd_High = 0;
+    EcoCode = 0;
+    Dates = 0;
     WhiteElo = 0;
     BlackElo = 0;
     FinalMatSig = 0;
     Flags = 0;
     VarCounts = 0;
+    Offset = 0;
     Length_Low = 0;
     Length_High = 0;
-    Offset = 0;
     SetDate (ZERO_DATE);
     SetEventDate (ZERO_DATE);
     SetResult (RESULT_None);
