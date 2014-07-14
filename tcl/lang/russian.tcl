@@ -405,10 +405,6 @@ helpMsg R .main.fbutton.button.stm {Включить/выключить иконку очередности хода}
 helpMsg R .main.fbutton.button.autoplay {Автоматическое выполнение ходов  (клавиши: Ctrl+Z)}
 # ====== TODO To be translated ======
 helpMsg R .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-# ====== TODO To be translated ======
-helpMsg R .main.fbutton.button.hgame_prev {Go back to previous viewed game}
-# ====== TODO To be translated ======
-helpMsg R .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate R Back {Назад}

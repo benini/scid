@@ -193,12 +193,7 @@ proc updateMainToolbar {} {
 # button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
 # button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
 # button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
-# button .main.fbutton.button.hgame_prev -image tb_hgame_prev -command {::game::LoadHistory -1}
-# button .main.fbutton.button.hgame_next -image tb_hgame_next -command {::game::LoadHistory 1}
 
-#can undo
-#can redo
-#uffa
   if {[sc_pos isAt start]} {
     ::board::setButtonCmd .main.board back ""
     catch { unset ::gameInfoBar(tb_BD_Start) }
@@ -246,6 +241,17 @@ proc updateMainToolbar {} {
     catch { unset ::gameInfoBar(tb_BD_Redo) }
   }
 
+  if {[::game::Hprev_btnstate] == "normal"} {
+    set ::gameInfoBar(tb_BD_HPrev) "::game::LoadHistory -1"
+  } else {
+    catch { unset ::gameInfoBar(tb_BD_HPrev) }
+  }
+  if {[::game::Hnext_btnstate] == "normal"} {
+    set ::gameInfoBar(tb_BD_HNext) "::game::LoadHistory +1"
+  } else {
+    catch { unset ::gameInfoBar(tb_BD_HNext) }
+  }
+
 return
     updateVarMenus
 
@@ -260,8 +266,6 @@ return
          .main.fbutton.button.comment configure -image tb_comment_unavail -relief flat
          ::utils::tooltip::UnSet .main.fbutton.button.comment
     }
-   .main.fbutton.button.hgame_prev configure -state [::game::Hprev_btnstate]
-   .main.fbutton.button.hgame_next configure -state [::game::Hnext_btnstate]
 }
 
 
@@ -1409,11 +1413,11 @@ proc CreateMainWin { {w} } {
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
       -command {undoFeature undo}
   .main.menuaddchoice add command -label " $::tr(ReplaceMove)" -image tb_BD_Replace -compound left \
-      -command {undoFeature undo; addMoveUCI $::gameLastMove replace}
+      -command {sc_game undo; addMoveUCI $::gameLastMove replace}
   .main.menuaddchoice add command -label " $::tr(NewMainLine)" -image tb_BD_NewMainline -compound left \
-      -command {undoFeature undo; addMoveUCI $::gameLastMove mainline}
+      -command {sc_game undo; addMoveUCI $::gameLastMove mainline}
   .main.menuaddchoice add command -label " $::tr(AddNewVar)" -image tb_BD_NewVar -compound left \
-      -command {undoFeature undo; addMoveUCI $::gameLastMove var}
+      -command {sc_game undo; addMoveUCI $::gameLastMove var}
 
   InitToolbar .main.tb
 

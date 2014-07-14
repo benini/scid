@@ -294,7 +294,7 @@ set helpMessage($m,[incr menuindex]) EditPastePGN
 $m add separator
 incr menuindex
 
-$m add command -label EditSetup -accelerator "Ctrl+Shift+S" -command setupBoard
+$m add command -label EditSetup -accelerator "S" -command setupBoard
 set helpMessage($m,[incr menuindex]) EditSetup
 
 $m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" -command copyFEN
@@ -331,11 +331,11 @@ set helpMessage($m,[incr menuindex]) GameRandom
 $m add separator
 incr menuindex
 
-$m add command -label GameReplace -command gameReplace -accelerator "Ctrl+R"
+$m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
 bind $dot_w <Control-r> { .menu.game invoke [tr GameReplace] }
 set helpMessage($m,[incr menuindex]) GameReplace
 
-$m  add command -label GameAdd -command gameAdd  -accelerator "Ctrl+S"
+$m  add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
 bind $dot_w <Control-s> gameAdd
 set helpMessage($m,[incr menuindex]) GameAdd
 

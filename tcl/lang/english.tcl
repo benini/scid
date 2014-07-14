@@ -377,8 +377,6 @@ helpMsg E .main.fbutton.button.coords {Turn board coordinates on or off  (key: 0
 helpMsg E .main.fbutton.button.stm {Turn the side-to-move icon on or off}
 helpMsg E .main.fbutton.button.autoplay {Autoplay moves  (key: Ctrl+Z)}
 helpMsg E .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-helpMsg E .main.fbutton.button.hgame_prev {Go back to previous viewed game}
-helpMsg E .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate E Back {Back}

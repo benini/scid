@@ -61,10 +61,10 @@ proc keyboardShortcuts {w} {
 	bind $w <F11> { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen]] }
 
 	# Rotate the chess board
-	bind $w <period> { if {!$tree(refresh)} {toggleRotateBoard} }
+	bind $w <period> { if {[winfo class %W] != "Entry" && !$tree(refresh)} {toggleRotateBoard} }
 
 	# Open "Setup Board" dialog
-	bind $w <s> { ::setupBoard }
+	bind $w <s> { if {[winfo class %W] != "Entry" } {::setupBoard} }
 
 	# Add null move (also "king take king" move)
 	bind $w <minus><minus> { addMove null null }

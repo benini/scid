@@ -421,10 +421,10 @@ proc ::board::addInfoBar {w varname} {
   $w.bar.info.t tag bind click <Any-Leave> "$w.bar.info.t configure -cursor {}"
   grid propagate $w.bar.info 0
   grid $w.bar.info.t -sticky news
-  set bar_tb [::board::newToolBar_ $w $varname]
   ttk::button $w.bar.back -image tb_BD_Back -style Toolbutton
   ttk::button $w.bar.cmd -image tb_BD_ShowToolbar -style Toolbutton -command "::board::toggleInfoBar_ $w"
   ttk::button $w.bar.forward -image tb_BD_Forward -style Toolbutton
+  set bar_tb [::board::newToolBar_ $w $varname]
   grid $w.bar.back -row 0 -column 0 -sticky news
   grid $w.bar.cmd -in $w.bar -row 0 -column 1 -sticky news -padx 8
   grid $bar_tb -in $w.bar -row 0 -column 2 -sticky ew
@@ -500,7 +500,7 @@ proc ::board::toggleInfoBar_ {{w} {action "click"}} {
   }
 }
 
-proc ::board::updateToolBar_ {{menu} {varname}} {
+proc ::board::updateToolBar_ {{menu} {varname} {mb ""} } {
   global "$varname"
   set i [$menu index end]
   while {$i >= 0} {
@@ -513,11 +513,34 @@ proc ::board::updateToolBar_ {{menu} {varname}} {
     }
     incr i -1
   }
+  if {$mb != ""} {
+    set x [winfo rootx $mb]
+    set y [winfo rooty $mb]
+    set bh [winfo height $mb]
+    set mh [winfo reqheight $menu]
+    if {$y >= $mh} { incr y -$mh } { incr y $bh }
+    tk_popup $menu $x $y
+  }
 }
 
 proc ::board::newToolBar_ {{w} {varname}} {
   global "$varname"
   ttk::frame $w.buttons
+
+  set m [menu $w.buttons.menu_back -bg white -font font_Regular]
+  $m add command -label "  Go back to mainline" -image tb_BD_BackToMainline -compound left
+  $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
+  $m add command -label "  Go to start" -image tb_BD_Start -compound left -accelerator "<home>"
+  $m add separator
+  $m add command -label "  Previous game" -image tb_BD_HPrev -compound left -accelerator "<alt-left>"
+  ::bind $w.bar.back <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
+
+  set m [menu $w.buttons.menu_forw -bg white -font font_Regular]
+  $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
+  $m add command -label "  Go to end" -image tb_BD_End -compound left -accelerator "<end>"
+  $m add separator
+  $m add command -label "  Next game" -image tb_BD_HNext -compound left -accelerator "<alt-right>"
+  ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
   set menus { tb_BD_Changes tb_BD_Variations tb_BD_Layout tb_BD_Comment }
   set i 0

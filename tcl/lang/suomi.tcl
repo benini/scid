@@ -375,8 +375,6 @@ helpMsg U .main.fbutton.button.coords {Näytä/piilota koordinaatit  (pika: 0)}
 helpMsg U .main.fbutton.button.stm {Näytä/piilota siirtovuoron osoitin}
 helpMsg U .main.fbutton.button.autoplay {Siirrä automaattisesti  (pika: Ctrl+Z)}
 helpMsg U .main.fbutton.button.comment {Avaa kommenttieditori (pika: Ctrl+E)}
-helpMsg U .main.fbutton.button.hgame_prev {Edelliseen peliin}
-helpMsg U .main.fbutton.button.hgame_next {Seuraavaan peliin}
 
 # General buttons:
 translate U Back {Palaa}

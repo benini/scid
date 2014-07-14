@@ -335,10 +335,6 @@ helpMsg C .main.fbutton.button.stm {Zapnout/Vypnout zobrazování ikony strany, kt
 helpMsg C .main.fbutton.button.autoplay {Automatické pøehrávání tahù  (klávesa: Ctrl+Z)}
 # ====== TODO To be translated ======
 helpMsg C .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-# ====== TODO To be translated ======
-helpMsg C .main.fbutton.button.hgame_prev {Go back to previous viewed game}
-# ====== TODO To be translated ======
-helpMsg C .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate C Back {Zpìt}

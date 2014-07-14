@@ -349,10 +349,6 @@ helpMsg H .main.fbutton.button.stm {Be- vagy kikapcsolja a lépésjogot mutató iko
 helpMsg H .main.fbutton.button.autoplay {Automatikus visszajátszás  (billentyû: Ctrl+Z)}
 # ====== TODO To be translated ======
 helpMsg H .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-# ====== TODO To be translated ======
-helpMsg H .main.fbutton.button.hgame_prev {Go back to previous viewed game}
-# ====== TODO To be translated ======
-helpMsg H .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate H Back {Vissza}

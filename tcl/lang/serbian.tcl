@@ -403,10 +403,6 @@ helpMsg Y .main.fbutton.button.stm {Turn the side-to-move icon on or off} ;# ***
 helpMsg Y .main.fbutton.button.autoplay {Automatski menjaj poteze  (taster: Ctrl+Z)}
 # ====== TODO To be translated ======
 helpMsg Y .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-# ====== TODO To be translated ======
-helpMsg Y .main.fbutton.button.hgame_prev {Go back to previous viewed game}
-# ====== TODO To be translated ======
-helpMsg Y .main.fbutton.button.hgame_next {Go forward to next viewed game}
 
 # General buttons:
 translate Y Back {Nazad}
