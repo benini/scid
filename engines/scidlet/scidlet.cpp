@@ -15,7 +15,7 @@
 // This program is a WinBoard-compatible wrapper for the simple
 // chess engine built into Scid.
 
-#include "engine.h"
+#include "../../src/engine.h"
 
 #include <stdarg.h>
 #include <stdlib.h>

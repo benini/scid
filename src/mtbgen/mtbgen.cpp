@@ -17,13 +17,13 @@
 // compressed in-memory tablebases used by the Scidlet chess program.
 // It produces the file mtbdata.h. See mtb.h and recog.cpp for details.
 
-#include "common.h"
-#include "myassert.h"
-#include "mtb.h"
-#include "position.h"
-#include "probe.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "../common.h"
+#include "../error.h"
+#include "../mtb.h"
+#include "../position.h"
+#include "../probe.h"
 
 static const char * SLASHES =
     "//////////////////////////////////////////////////////////////////////";

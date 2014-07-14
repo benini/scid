@@ -15,9 +15,7 @@ exec tclsh "$0" ${1+"$@"}
 #
 set var(BINDIR) /usr/local/bin
 set var(COMPILE) g++
-set var(CC) gcc
 set var(DEBUG) #-DASSERTIONS
-set var(LINK) g++
 set var(OBJS) {$(SCIDOBJS)}
 set var(THREADS) {-std=c++0x -pthread}
 set var(OPTIMIZE) {-O3 -march=native -fno-rtti -fno-exceptions}
@@ -36,7 +34,6 @@ set defaultVar(TCL_INCLUDE) {/usr/include}
 if {"$::tcl_platform(os)" == "Darwin"} {
     #Default values for Mac OS X
     set var(INSTALL) {install_mac}
-    set var(CC) {clang}
     set var(COMPILE) {clang++}
     set var(LINK) {clang++ -std=c++11 -stdlib=libc++}
     set var(THREADS) {-std=c++11 -stdlib=libc++}
@@ -105,10 +102,7 @@ proc findTclTkPathsAqua {} {
     if {! [info exists var(TCL_LIBRARY)]} {
         set var(TCL_LIBRARY) {-framework Tcl}
     }
-    if {! [info exists var(TK_LIBRARY)]} {
-        set var(TK_LIBRARY) {$(TCL_LIBRARY) -framework Tk}
-    }
-    puts "    Location of Tcl/Tk frameworks: $fw_path"
+    puts "    Location of Tcl/Tk Aqua frameworks: $fw_path"
     return 1
 }
 
@@ -222,7 +216,6 @@ proc findTclTkPaths {} {
 #    Script used to test if the system has zlib installed.
 #
 set testzlib {#!/bin/sh
-CC=gcc
 cat <<EOF > testzlib.c
 #include <zlib.h>
 int main()
@@ -233,7 +226,7 @@ int main()
 }
 EOF
 
-$CC -o testzlib testzlib.c -lz
+$var(COMPILE) -o testzlib testzlib.c -lz
 if [ -f testzlib ]; then
     exit 0
 else
@@ -344,7 +337,6 @@ proc usage {} {
     puts {Valid options are:}
     puts {  BINDIR       The location for scid executables for "make install".}
     puts {  COMPILE      Your C++ compiler. Default: "g++".}
-    puts {  CC           Your C compiler. Default: "gcc".}
     puts {  DEBUG        Debugging flags. Use DEBUG="-DASSERTIONS" for assertions.}
     puts {  LANGUAGES    Multi-language support. Use LANGUAGES="" for English only.}
     puts {  LINK         Your C++ linker. Default: "g++".}
@@ -392,6 +384,8 @@ foreach arg $argv {
         }
     }
 }
+
+if {![info exists var(LINK)]} { set var(LINK) "$var(COMPILE)" }
 
 if {$default} {
     writeMakefile default
