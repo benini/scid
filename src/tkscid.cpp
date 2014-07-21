@@ -2158,13 +2158,6 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     uint deletedCount = 0;
     const uint GLIST_HASH_SIZE = 32768;
-#ifdef WINCE
-    gNumListPtrT * gHashTable = (gNumListPtrT *)my_Tcl_Alloc(sizeof(gNumListPtrT [GLIST_HASH_SIZE]));
-    gNumListT * gNumList = (gNumListT * )my_Tcl_Alloc(sizeof( gNumListT [db->numGames]));
-#else
-    gNumListPtrT * gHashTable = new gNumListPtrT [GLIST_HASH_SIZE];
-    gNumListT * gNumList = new gNumListT [db->numGames];
-#endif
 
     dupCriteriaT criteria;
     criteria.exactNames  = false;
@@ -2246,13 +2239,12 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
     }
 
+    gNumListPtrT * gHashTable = new gNumListPtrT [GLIST_HASH_SIZE];
+    gNumListT * gNumList = new gNumListT [db->numGames];
+
     // Setup duplicates array:
     if (db->duplicates == NULL) {
-#ifdef WINCE
-        db->duplicates = (uint*)my_Tcl_Alloc(sizeof( uint [db->numGames]));
-#else
         db->duplicates = new uint [db->numGames];
-#endif
     }
     for (uint d=0; d < db->numGames; d++) {
         db->duplicates[d] = 0;
