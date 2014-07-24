@@ -29,7 +29,7 @@ class IndexEntry;
 class SortCache
 {
   public:
-	static SortCache* Create(Index* idx, NameBase* nb, const char* criterium, bool multithread =true);
+	static SortCache* Create(const Index* idx, NameBase* nb, const char* criterium, bool multithread =true);
 	~SortCache();
 	errorT GetRange( uint start, uint count, Filter *filter, uint *result);
 	uint IndexToFilteredCount( uint gnumber, Filter *filter);
@@ -42,7 +42,7 @@ class SortCache
 	int AddCount() { return ++refCount; }
 
   private:
-	Index *index;
+	const Index *index;
 	bool partialHashing;
 	bool sorted_;
 	uint numGames;
@@ -58,11 +58,11 @@ class SortCache
 	SortCache();
 	SortCache(const SortCache&);
 	SortCache& operator=(const SortCache&);
-	errorT Init (Index *idx, NameBase * nb, const char *criterium);
+	errorT Init (const Index *idx, NameBase * nb, const char *criterium);
 	inline int Compare (uint left, uint right);
 	int FullCompare (uint left, uint right);
 	void GetSpace( uint size);
-	uint CalcHash (IndexEntry *ie);
+	uint CalcHash (const IndexEntry *ie);
 	void Downheap( int v, int n);
 	inline uint GetStartHash (const char *strVal);
 	errorT AddEntry();

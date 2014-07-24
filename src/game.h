@@ -464,13 +464,13 @@ public:
     tagT *   GetExtraTags ()         { return TagList; }
     void     ClearExtraTags ();
 
-    uint     MakeHomePawnList (byte * pbPawnList);
+    void     MakeHomePawnList (byte * pbPawnList);
 
     // Searching
     compareT CompareCurrentPos (Position * p);
 
     void      CopyStandardTags (Game * fromGame);
-    errorT    LoadStandardTags (IndexEntry * ie, NameBase * nb);
+    errorT    LoadStandardTags (const IndexEntry* ie, const NameBase* nb);
     void      ClearStandardTags ();
 
     // PGN conversion

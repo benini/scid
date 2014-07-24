@@ -213,10 +213,10 @@ Index::WriteHeader ()
     return OK;
 }
 
-errorT Index::write (IndexEntry* ie, uint idx)
+errorT Index::write (const IndexEntry* ie, uint idx)
 {
-    IndexEntry* ieTemp = FetchEntry(idx);
-    *ieTemp = *ie;
+    IndexEntry* copyToMemory = FetchEntry(idx);
+    *copyToMemory = *ie;
     if (FilePtr == NULL) return OK;
 
     if (FileMode == FMODE_ReadOnly) { return ERROR_FileMode; }
@@ -336,7 +336,7 @@ uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *fil
             if (res == 0) break;
             else res--;
             sc->GetRange(res, 1, filter, result);
-            IndexEntry * ie = FetchEntry (result[0]);
+            const IndexEntry* ie = GetEntry (result[0]);
             if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
                 (strAlphaContains (ie->GetBlackName (nbase), text))  ||
                 (strAlphaContains (ie->GetEventName (nbase), text))  ||
@@ -353,7 +353,7 @@ uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *fil
                     stop = true;
                     break;
                 }
-                IndexEntry * ie = FetchEntry (result[j]);
+                const IndexEntry* ie = GetEntry (result[j]);
                 if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
                     (strAlphaContains (ie->GetBlackName (nbase), text))  ||
                     (strAlphaContains (ie->GetEventName (nbase), text))  ||

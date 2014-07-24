@@ -643,7 +643,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		uint ply = 0;
 		if (filter) ply = filter->Get(idx) -1;
 
-		IndexEntry* ie = cdb->idx->FetchEntry (idx);
+		const IndexEntry* ie = cdb->getIndexEntry(idx);
 
 		Tcl_Obj* ginfo[24];
 		ginfo[0] = Tcl_NewIntObj(idx +1);
@@ -1455,7 +1455,6 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     Game * g = scratchGame;
-    IndexEntry * ie;
     uint updateStart, update;
     updateStart = update = 10;  // Update progress bar every 10 games
     uint numSeen = 0;
@@ -1476,7 +1475,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
 
             // Print the game, skipping any corrupt games:
-            ie = db->idx->FetchEntry (i);
+            const IndexEntry* ie = db->getIndexEntry(i);
             if (ie->GetLength() == 0) { continue; }
             db->bbuf->Empty();
             if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
@@ -1634,7 +1633,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             }
         }
 
-        IndexEntry * ie = db->idx->FetchEntry (gnum);
+        const IndexEntry* ie = db->getIndexEntry(gnum);
 
         // Skip games with non-standard start or no moves:
         if (ie->GetStartFlag()) { continue; }
@@ -2004,7 +2003,7 @@ hashName (const char * name, uint n)
 }
 
 bool
-gamesHaveSameMoves (scidBaseT * base, IndexEntry * ieA, IndexEntry * ieB)
+gamesHaveSameMoves (scidBaseT * base, const IndexEntry * ieA, const IndexEntry * ieB)
 {
     const uint MAX_SAME_MOVES = 120;  // Only check up to 60 moves each side.
     simpleMoveT movesA [MAX_SAME_MOVES];
@@ -2015,7 +2014,7 @@ gamesHaveSameMoves (scidBaseT * base, IndexEntry * ieA, IndexEntry * ieB)
     uint lenB = ieB->GetNumHalfMoves();
     if (lenB < lenA) {  // Swap the order of the two games:
         uint temp = lenA; lenA = lenB; lenB = temp;
-        IndexEntry * ie = ieA; ieA = ieB; ieB = ie;
+        const IndexEntry * ie = ieA; ieA = ieB; ieB = ie;
     }
 
     // Now load up to MAX_SAME_MOVES of the first game:
@@ -2067,7 +2066,7 @@ gamesHaveSameMoves (scidBaseT * base, IndexEntry * ieA, IndexEntry * ieB)
 
 bool
 checkDuplicate (scidBaseT * base,
-                IndexEntry * ie1, IndexEntry * ie2,
+                const IndexEntry * ie1, const IndexEntry * ie2,
                 gNumListT * g1, gNumListT * g2,
                 dupCriteriaT * cr)
 {
@@ -2256,7 +2255,7 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     for (uint h=0; h < GLIST_HASH_SIZE; h++) { gHashTable[h] = NULL; }
     for (uint i=0; i < db->numGames; i++) {
-        IndexEntry * ie = db->idx->FetchEntry (i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
             &&  (!onlyFilterGames  ||  db->dbFilter->Get(i) > 0)) {
@@ -2469,7 +2468,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
 
-        IndexEntry * ie = db->idx->FetchEntry (gnum);
+        const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ie->GetLength() == 0) { continue; }
         db->bbuf->Empty();
         if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
@@ -2566,10 +2565,10 @@ class Tourney
     gameNumberT FirstGame;
     Tourney  * Next;
 
-    Tourney(IndexEntry * ie, NameBase * nb);
+    Tourney(const IndexEntry* ie, NameBase * nb);
     ~Tourney();
 
-    void AddGame (IndexEntry * ie, gameNumberT g);
+    void AddGame (const IndexEntry* ie, gameNumberT g);
     void Dump (Tcl_DString * ds);
     uint MeanElo() {
         return (EloCount == 0 ? 0 : (EloSum + EloCount/2) / EloCount);
@@ -2578,7 +2577,7 @@ class Tourney
 };
 typedef Tourney * tourneyPtrT;
 
-Tourney::Tourney (IndexEntry * ie, NameBase * nb)
+Tourney::Tourney (const IndexEntry* ie, NameBase * nb)
 {
     SiteID = ie->GetSite();
     EventID = ie->GetEvent();
@@ -2608,7 +2607,7 @@ Tourney::~Tourney()
 }
 
 void
-Tourney::AddGame (IndexEntry * ie, gameNumberT g)
+Tourney::AddGame (const IndexEntry* ie, gameNumberT g)
 {
     idNumberT whiteID = ie->GetWhite();
     idNumberT blackID = ie->GetBlack();
@@ -2880,7 +2879,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 
     // Now look through all games:
     for (i=0; i < db->numGames; i++) {
-        IndexEntry * ie = db->idx->FetchEntry (i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         dateT date = ie->GetDate();
         if (date < minDate) { continue; }
         if (date > maxDate) { continue; }
@@ -2991,8 +2990,7 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 updateProgressBar (ti, i, numGames);
             }
         }
-        IndexEntry* ie = oldIndex.FetchEntry(i);
-        err = newIndex.AddGame(ie);
+        err = newIndex.AddGame(oldIndex.GetEntry(i));
     }
 
     oldIndex.Close();
@@ -3977,7 +3975,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 dbase->idx->GetRange(dbase->nb, argv[4], start, count, filter, idxList);
                 for (int i = 0; i < count; ++i) {
                     if (idxList[i] == IDX_NOT_FOUND) { end = true; break; }
-                    IndexEntry* ie = dbase->idx->FetchEntry (idxList[i]);
+                    const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
                     // Skip any corrupt games:
                     if (dbase->gfile->ReadGame (dbase->bbuf, ie->GetOffset(), ie->GetLength()) != OK) continue;
                     if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
@@ -4070,7 +4068,7 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
 
     if (eloMode) {
         for (uint gnum=0; gnum < dbase->numGames; gnum++) {
-            IndexEntry * ie = dbase->idx->FetchEntry (gnum);
+            const IndexEntry* ie = dbase->getIndexEntry(gnum);
             if ( guessElo ) {
                 uint wElo = ie->GetWhiteElo();
                 uint bElo = ie->GetBlackElo();
@@ -4101,7 +4099,7 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
     } else if ( moveMode ) {
         //Klimmek: count games with x Moves minMove=NumberHalfmove and maxMove Numberhalfmove+1
         for (uint gnum=0; gnum < dbase->numGames; gnum++) {
-            IndexEntry * ie = dbase->idx->FetchEntry (gnum);
+            const IndexEntry* ie = dbase->getIndexEntry(gnum);
             uint move = ie->GetNumHalfMoves();
             if (move >= minMove  &&  move <= maxMove) {
                 allCount++;
@@ -4113,7 +4111,7 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
     }
     else { // datemode
         for (uint gnum=0; gnum < dbase->numGames; gnum++) {
-            IndexEntry * ie = dbase->idx->FetchEntry (gnum);
+            const IndexEntry* ie = dbase->getIndexEntry(gnum);
             dateT date = ie->GetDate();
             if (date >= startDate  &&  date <= endDate) {
                 allCount++;
@@ -4253,7 +4251,7 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint total = 0;
     Filter* filter = db->getFilter("dbfilter");
     for (uint i=0; i < db->numGames; i++) {
-        IndexEntry * ie = db->idx->FetchEntry (i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         if (filter->Get(i)) {
             if ( max == 0 ) { //Old Statistic : 
                 if (statType == STATS_ELO  &&
@@ -4474,7 +4472,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Event and Site, and a Date within the specified range or
 //    have the specified non-zero EventDate.
 static inline bool
-isCrosstableGame (IndexEntry * ie, idNumberT siteID, idNumberT eventID,
+isCrosstableGame (const IndexEntry* ie, idNumberT siteID, idNumberT eventID,
                   dateT startDate, dateT endDate, dateT eventDate)
 {
     if (ie->GetSite() != siteID  ||  ie->GetEvent() != eventID) {
@@ -4619,7 +4617,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         if (gameNumber > db->numGames) {
             return setResult (ti, "Invalid game number");
         }
-        IndexEntry * ie = db->idx->FetchEntry (gameNumber - 1);
+        const IndexEntry* ie = db->getIndexEntry(gameNumber - 1);
         if (ie->GetLength() == 0) {
             return errorResult (ti, "Error: empty game file record.");
         }
@@ -4690,7 +4688,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Find all games that should be listed in the crosstable:
     bool tableFullMessage = false;
     for (uint i=0; i < db->numGames; i++) {
-        IndexEntry * ie = db->idx->FetchEntry (i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         if (ie->GetDeleteFlag()  &&  !useDeletedGames) { continue; }
         if (! isCrosstableGame (ie, siteId, eventId, firstDate, lastDate,
                                 eventDate)) {
@@ -4847,7 +4845,7 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // First, check if the specified game number matches all fields:
     if (db->numGames > gnum) {
         uint score = 0;
-        IndexEntry * ie = db->idx->FetchEntry (gnum);
+        const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ie->GetWhite() == white) { score++; }
         if (ie->GetBlack() == black) { score++; }
         if (ie->GetSite() == site) { score++; }
@@ -4863,7 +4861,7 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     for (uint i=0; i < db->numGames; i++) {
         uint score = 0;
-        IndexEntry * ie = db->idx->FetchEntry (i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         if (ie->GetWhite() == white) { score++; }
         if (ie->GetBlack() == black) { score++; }
         if (ie->GetSite() == site) { score++; }
@@ -4909,7 +4907,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         g = db->game;
     } else {
         db->bbuf->Empty();
-        IndexEntry * ie = db->idx->FetchEntry (gNum - 1);
+        const IndexEntry* ie = db->getIndexEntry(gNum - 1);
         if (ie->GetLength() == 0) {
             return setResult (ti, "(This game has no move data)");
         }
@@ -5604,7 +5602,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (db->gameNumber >= 0) {
         // Check if this game is deleted or has other user-settable flags:
-        IndexEntry * ie = db->idx->FetchEntry(db->gameNumber);
+        const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
         if (ie->GetDeleteFlag()) {
             Tcl_AppendResult (ti, "   <gray>(",
                               translate (ti, "deleted"), ")</gray>", NULL);
@@ -5912,7 +5910,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     gnum--;
     const char * corruptMsg = "Sorry, this game appears to be corrupt.";
 
-    IndexEntry * ie = db->idx->FetchEntry (gnum);
+    const IndexEntry* ie = db->getIndexEntry(gnum);
 
     if (db->gfile->ReadGame (db->bbuf,ie->GetOffset(),ie->GetLength()) != OK) {
         return errorResult (ti, corruptMsg);
@@ -5975,7 +5973,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Load the merge game:
 
-    IndexEntry * ie = base->idx->FetchEntry (gnum);
+    const IndexEntry* ie = base->getIndexEntry(gnum);
     base->bbuf->Empty();
     if (base->gfile->ReadGame (base->bbuf, ie->GetOffset(),
                                ie->GetLength()) != OK) {
@@ -6295,7 +6293,6 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         matSigT msig = matsig_Make (pos->GetMaterial());
         uint hpSig = pos->GetHPSig();
-        IndexEntry * ie;
         Game * g = scratchGame;
         foundMatch = false;
 
@@ -6312,7 +6309,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if ((uint)current == gameNum) { continue; }
             }
 
-            ie = base->idx->FetchEntry (gameNum);
+            const IndexEntry* ie = base->getIndexEntry(gameNum);
             if (ie->GetLength() == 0) { continue; }
 
             // Ignore games with non-standard start:
@@ -6456,7 +6453,7 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (value < 1  ||  value > base->numGames) {
                 return setResult (ti, "Invalid game number");
             }
-            IndexEntry * ie = base->idx->FetchEntry (value - 1);
+            const IndexEntry* ie = base->getIndexEntry(value - 1);
             if (ie->GetLength() == 0) {
                 return errorResult (ti, "Error: empty game file record.");
             }
@@ -6878,7 +6875,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return errorResult (ti, "Invalid game number.");
         }
         gnum--;
-        IndexEntry * ie = base->idx->FetchEntry (gnum);
+        const IndexEntry* ie = base->getIndexEntry(gnum);
         base->bbuf->Empty();
         if (base->gfile->ReadGame (base->bbuf, ie->GetOffset(),
                                    ie->GetLength()) != OK) {
@@ -7035,7 +7032,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         tagName = argv[4];
         if (db->numGames > 0) {
             g = scratchGame;
-            IndexEntry * ie = db->idx->FetchEntry (db->numGames - 1);
+            const IndexEntry* ie = db->getIndexEntry(db->numGames - 1);
             if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
                                      ie->GetLength()) != OK) {
                 return errorResult (ti, "Error reading game file.");
@@ -7254,7 +7251,7 @@ int
 sc_game_tags_reload (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (!db->inUse  ||   db->gameNumber < 0) { return TCL_OK; }
-    IndexEntry * ie = db->idx->FetchEntry (db->gameNumber);
+    const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
     db->game->LoadStandardTags (ie, db->nb);
     return TCL_OK;
 }
@@ -7301,8 +7298,8 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     if (!db->inUse  ||  db->fileMode == FMODE_ReadOnly) { return TCL_OK; }
 
     // Make a local copy of each index entry:
-    IndexEntry ie1 = *(db->idx->FetchEntry (gn1 - 1));
-    IndexEntry ie2 = *(db->idx->FetchEntry (gn2 - 1));
+    IndexEntry ie1 = *(db->getIndexEntry(gn1 - 1));
+    IndexEntry ie2 = *(db->getIndexEntry(gn2 - 1));
     bool updated1 = false;
     bool updated2 = false;
 
@@ -9149,11 +9146,11 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Now go through the index making each necessary change:
-    IndexEntry * ie;
+    const IndexEntry* ie;
     IndexEntry newIE;
     uint instanceCount = 0;
     for (uint i=0; i < db->numGames; i++) {
-        ie = db->idx->FetchEntry (i);
+        ie = db->getIndexEntry(i);
         newIE = *ie;
         bool corrected = false;
         idNumberT oldID, newID;
@@ -9375,7 +9372,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Now iterate through the index file making any necessary changes:
-    IndexEntry * ie;
+    const IndexEntry* ie;
     IndexEntry newIE;
     uint numChanges = 0;
 
@@ -9384,7 +9381,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (editSelection == EDIT_FILTER  &&  db->dbFilter->Get (i) == 0) {
             continue;
         }
-        ie = db->idx->FetchEntry (i);
+        ie = db->getIndexEntry(i);
         if (editSelection == EDIT_CTABLE
             && !isCrosstableGame (ie, siteId, eventId, firstDate, lastDate,
                                   eventDate)) {
@@ -9671,7 +9668,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (setFilter || setOpponent) db->dbFilter->Fill(0);
 
     for (uint i=0; i < db->numGames; i++) {
-        IndexEntry * ie = db->idx->FetchEntry (i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         eloT elo = 0;
         ecoT ecoCode = ie->GetEcoCode();
         int ecoClass = -1;
@@ -10484,7 +10481,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         bool exact = false;
         eloT newWhite = 0;
         eloT newBlack = 0;
-        IndexEntry * ie = db->idx->FetchEntry (gnum);
+        const IndexEntry* ie = db->getIndexEntry(gnum);
         dateT date = ie->GetDate();
         if (date_GetMonth(date) == 0  &&  !doGamesWithNoMonth) { continue; }
         eloT oldWhite = ie->GetWhiteElo();
@@ -10951,7 +10948,7 @@ avgGameLength (resultT result)
     uint sum = 0;
     uint count = 0;
     for (uint i=0; i < db->numGames; i++) {
-        IndexEntry * ie = db->idx->FetchEntry(i);
+        const IndexEntry* ie = db->getIndexEntry(i);
         if (result == ie->GetResult()) {
             count++;
             sum += ((ie->GetNumHalfMoves() + 1) / 2);
@@ -11250,7 +11247,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         byte ply = db->dbFilter->Get(gnum);
-        IndexEntry * ie = db->idx->FetchEntry (gnum);
+        const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ply != 0) {
             if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
                                      ie->GetLength()) != OK) {
@@ -11665,7 +11662,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
             if (inFilterOnly && filter->Get(i) == 0) { continue; }
 
-    		IndexEntry* ie = base->idx->FetchEntry (i);
+    		const IndexEntry* ie = base->getIndexEntry(i);
     		if (ie->GetLength() == 0) { skipcount++; continue; }
     		// We do not skip deleted games, so next line is commented out:
     		// if (ie->GetDeleteFlag()) { skipcount++; continue; }
@@ -12232,7 +12229,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint startFilterCount = startFilterSize (db, filterOp);
 
     // Here is the loop that searches on each game:
-    IndexEntry * ie;
     Game * g = scratchGame;
     uint gameNum;
     for (gameNum=0; gameNum < db->numGames; gameNum++) {
@@ -12261,7 +12257,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
 
-        ie = db->idx->FetchEntry (gameNum);
+        const IndexEntry* ie = db->getIndexEntry(gameNum);
         if (ie->GetLength() == 0) {
             // Skip games with no gamefile record:
             filter->Set (gameNum, 0);
@@ -12711,7 +12707,6 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     uint skipcount = 0;
     char temp [250];
     Game * g = scratchGame;
-    IndexEntry * ie;
     uint updateStart, update;
     updateStart = update = 1000;  // Update progress bar every 1000 games
     Filter* filter = db->getFilter("dbfilter");
@@ -12752,7 +12747,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             filter->Set (gameNum, 1);
         }
 
-        ie = db->idx->FetchEntry (gameNum);
+        const IndexEntry* ie = db->getIndexEntry(gameNum);
         if (ie->GetLength() == 0) {  // Skip games with no gamefile record
             filter->Set (gameNum, 0);
             skipcount++;
@@ -12874,7 +12869,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 //    specified index flag restrictions, for example, excluding
 //    deleted games or games without comments.
 bool
-matchGameFlags (IndexEntry * ie, flagT fStdStart, flagT fPromos,
+matchGameFlags (const IndexEntry* ie, flagT fStdStart, flagT fPromos,
                 flagT fComments, flagT fVars, flagT fNags, flagT fDelete,
                 flagT fWhiteOp, flagT fBlackOp, flagT fMiddle,
                 flagT fEndgame, flagT fNovelty, flagT fPawn,
@@ -13014,7 +13009,7 @@ matchGameFlags (IndexEntry * ie, flagT fStdStart, flagT fPromos,
 //    Called by sc_search_header to test a particular game against the
 //    header search criteria.
 bool
-matchGameHeader (IndexEntry * ie, NameBase * nb,
+matchGameHeader (const IndexEntry* ie, NameBase * nb,
                  bool * mWhite, bool * mBlack,
                  bool * mEvent, bool * mSite, bool *mRound,
                  dateT dateMin, dateT dateMax, bool * results,
@@ -13614,7 +13609,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
     uint skipcount = 0;
     uint startFilterCount = startFilterSize (base, filterOp);
     char temp[250];
-    IndexEntry * ie;
+    const IndexEntry* ie;
     uint updateStart, update;
     updateStart = update = 5000;  // Update progress bar every 5000 games
 
@@ -13660,7 +13655,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             continue;
         }
 
-        ie = base->idx->FetchEntry (i);
+        ie = base->getIndexEntry(i);
         if (ie->GetLength() == 0) {  // Skip games with no gamefile record
             filter->Set (i, 0);
             skipcount++;
@@ -13869,7 +13864,7 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     bool showProgress = startProgressBar();
     Game * g = scratchGame;
-    IndexEntry * ie;
+    const IndexEntry* ie;
     uint updateStart, update;
     updateStart = update = 1000;  // Update progress bar every 1000 games
     errorT err = OK;
@@ -13908,7 +13903,7 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         }
 
-        ie = db->idx->FetchEntry (i);
+        ie = db->getIndexEntry(i);
         if (ie->GetLength() == 0) {
             filter->Set (i, 0);
             continue;

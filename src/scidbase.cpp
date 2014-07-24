@@ -215,7 +215,7 @@ errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
 }
 
 errorT scidBaseT::addGame_(scidBaseT* sourceBase, uint gNum) {
-	IndexEntry* srcIe = sourceBase->idx->FetchEntry (gNum);
+	const IndexEntry* srcIe = sourceBase->getIndexEntry(gNum);
 	errorT err = sourceBase->gfile->ReadGame(sourceBase->bbuf, srcIe->GetOffset(), srcIe->GetLength());
 	if (err != OK) return err;
 
@@ -272,7 +272,7 @@ errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, int oldIdx) {
 	// or the name file, since there might be more games saved yet and
 	// writing them now would then be a waste of time.
 	if (oldIdx >= 0) {
-		IndexEntry* ieOld = idx->FetchEntry(oldIdx);
+		const IndexEntry* ieOld = getIndexEntry(oldIdx);
 		// Remember previous user-settable flags:
 		for (uint flag = IDX_FLAG_DELETE; flag < IDX_NUM_FLAGS; flag++) {
 			iE->SetFlag(1 << flag, ieOld->GetFlag(1 << flag));
@@ -344,7 +344,7 @@ void scidBaseT::calcNameFreq () {
 	}
 
 	for (size_t i=0; i < idx->GetNumGames(); i++) {
-		IndexEntry* ie = idx->FetchEntry (i);
+		const IndexEntry* ie = getIndexEntry (i);
 		nameFreq_[NAME_PLAYER][ie->GetWhite()] += 1;
 		nameFreq_[NAME_PLAYER][ie->GetBlack()] += 1;
 		nameFreq_[NAME_EVENT][ie->GetEvent()] += 1;
@@ -407,7 +407,7 @@ scidBaseT::Stats* scidBaseT::getStats() {
 	}
 	// Read stats from index entry of each game:
 	for (uint gnum=0; gnum < numGames; gnum++) {
-		IndexEntry * ie = idx->FetchEntry (gnum);
+		const IndexEntry* ie = getIndexEntry(gnum);
 		stats.nResults[ie->GetResult()]++;
 		eloT elo = ie->GetWhiteElo();
 		if (elo > 0) {
@@ -495,7 +495,7 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(Filter* filter) {
 	for(uint gnum=0; gnum < numGames; gnum++) {
 		if(filter->Get(gnum) == 0) continue;
 		uint ply = filter->Get(gnum) - 1;
-		IndexEntry* ie = idx->FetchEntry (gnum);
+		const IndexEntry* ie = getIndexEntry (gnum);
 		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
 		if (move.isNull()) {
 			move = gfile->ReadGame(ie->GetOffset(), ie->GetLength()).getMove(ply);
@@ -530,7 +530,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 	*n_sparse = 0;
 	*n_deleted = 0;
 	for (size_t i=0; i < idx->GetNumGames(); i++) {
-		IndexEntry* ie = idx->FetchEntry (i);
+		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { *n_deleted += 1; continue; }
 
 		uint offset = ie->GetOffset();
@@ -564,7 +564,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk,
 	sort_t sort;
 	uint n_deleted = 0;
 	for (size_t i=0; i < idx->GetNumGames(); i++) {
-		IndexEntry* ie = idx->FetchEntry (i);
+		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { n_deleted++; continue; }
 		uint stLine = ie->GetStoredLineCode();
 		sort.push_back(std::make_pair(stLine, i));

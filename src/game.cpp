@@ -1357,8 +1357,7 @@ Game::TruncateStart (void)
 //    game that will be stored in the index file and used to speed
 //    up searches (material at end of game, etc) is up to date.
 
-uint
-Game::MakeHomePawnList (byte * pbPawnList)
+void Game::MakeHomePawnList (byte * pbPawnList)
 {
     // Use a temporary dummy array if none was provided:
     byte tempPawnList [9];
@@ -1366,24 +1365,14 @@ Game::MakeHomePawnList (byte * pbPawnList)
         pbPawnList = tempPawnList;
     }
 
-    // If nonstandard start, we do not make the list:
-    if (NonStandardStart) {
-        pbPawnList[0] = 0; return 0;
-    }
+    // We zero out the list first:
+    for (int i = 0; i < 9; i++) pbPawnList[i] = 0;
 
     uint count = 0;
-    uint hpOld, hpNew;
     uint halfByte = 0;
     errorT err = OK;
-    byte * pbList = pbPawnList;
-    hpOld = HPSIG_StdStart;    // All 16 pawns are on their home squares.
-
-    // We zero out the list first:
-    for (count = 0; count < 9; count++) {
-        *pbList = 0; pbList++;
-    }
-    count = 0;
-    pbList = pbPawnList; pbList++;
+    uint hpOld = HPSIG_StdStart;    // All 16 pawns are on their home squares.
+    byte* pbList = pbPawnList +1;
 
     NumHalfMoves = 0;
     PromotionsFlag = false;
@@ -1391,8 +1380,8 @@ Game::MakeHomePawnList (byte * pbPawnList)
     MoveToPly(0);
 
     while (err == OK) {
-        hpNew = CurrentPos->GetHPSig();
-        if (hpNew != hpOld) {
+        uint hpNew = CurrentPos->GetHPSig();
+        if (hpNew != hpOld && !NonStandardStart) {
             byte changeValue = (byte) (log2 (hpOld - hpNew));
             if (halfByte == 0) {
                 *pbList = (changeValue << 4);  halfByte = 1;
@@ -1417,7 +1406,6 @@ Game::MakeHomePawnList (byte * pbPawnList)
 
     // First byte in pawnlist array stores the count:
     pbPawnList[0] = (byte) count;
-    return count;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3055,7 +3043,7 @@ Game::CopyStandardTags (Game * fromGame)
 //      player/site/event/round names.
 //
 errorT
-Game::LoadStandardTags (IndexEntry * ie, NameBase * nb)
+Game::LoadStandardTags (const IndexEntry* ie, const NameBase* nb)
 {
     ASSERT (ie != NULL  &&  nb != NULL);
     SetEventStr (ie->GetEventName (nb));

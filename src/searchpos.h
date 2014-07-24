@@ -82,7 +82,7 @@ public:
 			}
 		}
 		for (uint i=0; i < base->numGames; i++) {
-			IndexEntry* ie = base->idx->FetchEntry (i);
+			const IndexEntry* ie = base->getIndexEntry (i);
 			if (! ie->GetStartFlag()) filter->Set (i, 1);
 			else {
 				FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
@@ -112,7 +112,7 @@ private:
 		filter->Fill(0);
 		long progress = 0;
 		for (uint i=0; i < base->numGames; i++) {
-			IndexEntry* ie = base->idx->FetchEntry (i);
+			const IndexEntry* ie = base->getIndexEntry(i);
 			if (! ie->GetStartFlag()) {
 				if (STOREDLINE) {
 					int ply = storedLine_->match(ie->GetStoredLineCode());

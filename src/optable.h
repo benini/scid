@@ -103,13 +103,13 @@ class OpLine
     uint        EgTheme;
 
     void Init (void);
-    void Init (Game * g, IndexEntry * ie, gameNumberT gameNum,
+    void Init (Game * g, const IndexEntry * ie, gameNumberT gameNum,
                uint maxExtraMoves, uint maxThemeMoveNumber);
     void Destroy (void);
 
   public:
     OpLine () { Init(); }
-    OpLine (Game * g, IndexEntry * ie, gameNumberT gnum, uint max, uint tm) {
+    OpLine (Game * g, const IndexEntry * ie, gameNumberT gnum, uint max, uint tm) {
         Init (g, ie, gnum, max, tm);
     }
     ~OpLine() { }

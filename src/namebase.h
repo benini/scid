@@ -91,10 +91,10 @@ public:
     errorT    ReadEntireFile (const char* filename);
     errorT    WriteNameFile (const std::vector<int>* freq);
 
-    const char* GetName (nameT nt, idNumberT id) { return names_[nt][id]; }
-    eloT GetElo (idNumberT id) { return eloV_[id]; }
-    dateT GetFirstDate (idNumberT id) { return firstDateV_[id]; }
-    dateT GetLastDate (idNumberT id) { return lastDateV_[id]; }
+    const char* GetName (nameT nt, idNumberT id) const { return names_[nt][id]; }
+    eloT GetElo (idNumberT id) const { return eloV_[id]; }
+    dateT GetFirstDate (idNumberT id) const { return firstDateV_[id]; }
+    dateT GetLastDate (idNumberT id) const { return lastDateV_[id]; }
 
     errorT AddName (nameT nt, const char * str, idNumberT * idPtr);
     void AddElo (idNumberT id, eloT elo) { if (elo > eloV_[id]) eloV_[id] = elo; }

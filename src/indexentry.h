@@ -212,12 +212,12 @@ class IndexEntry
 public:
     void Init();
     template <class T> errorT Read (T* file, versionT version);
-    template <class T> errorT Write (T* file, versionT version);
+    template <class T> errorT Write (T* file, versionT version) const;
 
 
-    uint GetOffset ()  { return Offset; }
+    uint GetOffset () const { return Offset; }
     void SetOffset (uint offset) { Offset = offset; }
-    uint GetLength () { return (Length_Low + ((Length_High & 0x80) << 9)); }
+    uint GetLength () const { return (Length_Low + ((Length_High & 0x80) << 9)); }
     void SetLength (uint length) {
         ASSERT(length >= 0 && length < 131072);
         Length_Low = (unsigned short) (length & 0xFFFF);
@@ -235,35 +235,35 @@ public:
     //   EventID high 3 bits = bits 5-7 of EventSiteRnd_high.
     //   SiteID  high 3 bits = bits 2-4 of EventSiteRnd_high.
     //   RoundID high 2 bits = bits 0-1 of EventSiteRnd_high.
-    idNumberT GetWhite () {
+    idNumberT GetWhite () const {
         idNumberT id = (idNumberT) WhiteBlack_High;
         id = id >> 4;  // High 4 bits = bits 4-7 of WhiteBlack_High.
         id <<= 16;
         id |= (idNumberT) WhiteID_Low;
         return id;
     }
-    idNumberT GetBlack () {
+    idNumberT GetBlack () const {
         idNumberT id = (idNumberT) WhiteBlack_High;
         id = id & 0xF;   // High 4 bits = bits 0-3 of WhiteBlack_High.
         id <<= 16;
         id |= (idNumberT) BlackID_Low;
         return id;
     }
-    idNumberT GetEvent () {
+    idNumberT GetEvent () const {
         uint id = (idNumberT) EventSiteRnd_High;
         id >>= 5;  // High 3 bits = bits 5-7 of EventSiteRnd_High.
         id <<= 16;
         id |= (idNumberT) EventID_Low;
         return id;
     }
-    idNumberT GetSite () {
+    idNumberT GetSite () const {
         uint id = (idNumberT) EventSiteRnd_High;
         id = (id >> 2) & 7;  // High 3 bits = bits 2-5 of EventSiteRnd_High.
         id <<= 16;
         id |= (idNumberT) SiteID_Low;
         return id;
     }
-    idNumberT GetRound () {
+    idNumberT GetRound () const {
         uint id = (idNumberT) EventSiteRnd_High;
         id &= 3;   // High 2 bits = bits 0-1 of EventSiteRnd_High.
         id <<= 16;
@@ -301,19 +301,19 @@ public:
     }
 
 
-    const char* GetWhiteName (NameBase* nb) {
+    const char* GetWhiteName (const NameBase* nb) const {
         return nb->GetName (NAME_PLAYER, GetWhite()); 
     }
-    const char* GetBlackName (NameBase* nb) {
+    const char* GetBlackName (const NameBase* nb) const {
         return nb->GetName (NAME_PLAYER, GetBlack());
     }
-    const char* GetEventName (NameBase* nb) {
+    const char* GetEventName (const NameBase* nb) const {
         return nb->GetName (NAME_EVENT, GetEvent());
     }
-    const char* GetSiteName (NameBase* nb) {
+    const char* GetSiteName (const NameBase* nb) const {
         return nb->GetName (NAME_SITE, GetSite());
     }
-    const char* GetRoundName (NameBase* nb) {
+    const char* GetRoundName (const NameBase* nb) const {
         return nb->GetName (NAME_ROUND, GetRound());
     }
 
@@ -349,11 +349,11 @@ public:
     }
 
 
-    dateT   GetDate ()     { return u32_low_20(Dates); }
-    uint    GetYear ()     { return date_GetYear (GetDate()); }
-    uint    GetMonth ()    { return date_GetMonth (GetDate()); }
-    uint    GetDay ()      { return date_GetDay (GetDate()); }
-    dateT   GetEventDate () {
+    dateT GetDate () const { return u32_low_20(Dates); }
+    uint  GetYear () const { return date_GetYear (GetDate()); }
+    uint  GetMonth() const { return date_GetMonth (GetDate()); }
+    uint  GetDay ()  const { return date_GetDay (GetDate()); }
+    dateT GetEventDate () const {
         uint dyear = date_GetYear (GetDate());
         dateT edate = u32_high_12 (Dates);
         uint month = date_GetMonth (edate);
@@ -363,29 +363,29 @@ public:
         year = dyear + year - 4;
         return DATE_MAKE (year, month, day);
     }
-    resultT GetResult ()   { return (VarCounts >> 12); }
-    eloT    GetWhiteElo () { return u16_low_12(WhiteElo); }
-    eloT    GetWhiteElo (NameBase* nb) {
+    resultT GetResult () const { return (VarCounts >> 12); }
+    eloT GetWhiteElo () const { return u16_low_12(WhiteElo); }
+    eloT GetWhiteElo (NameBase* nb)  const {
         eloT r = GetWhiteElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
         return r;
     }
-    eloT    GetBlackElo () { return u16_low_12(BlackElo); }
-    eloT    GetBlackElo (NameBase* nb) {
+    eloT GetBlackElo () const { return u16_low_12(BlackElo); }
+    eloT GetBlackElo (NameBase* nb) const {
         eloT r = GetBlackElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
         return r;
     }
-    byte    GetWhiteRatingType () { return u16_high_4 (WhiteElo); }
-    byte    GetBlackRatingType () { return u16_high_4 (BlackElo); }
-    ecoT    GetEcoCode ()  { return EcoCode; }
-    ushort  GetNumHalfMoves () { return NumHalfMoves; }
-    byte    GetRating(NameBase* nb);
+    byte   GetWhiteRatingType () const { return u16_high_4 (WhiteElo); }
+    byte   GetBlackRatingType () const { return u16_high_4 (BlackElo); }
+    ecoT   GetEcoCode () const { return EcoCode; }
+    ushort GetNumHalfMoves () const { return NumHalfMoves; }
+    byte   GetRating(NameBase* nb) const;
 
-    void    SetDate  (dateT date)   {
+    void SetDate  (dateT date)   {
         Dates = u32_set_low_20 (Dates, date);
     }
-    void    SetEventDate (dateT edate) {
+    void SetEventDate (dateT edate) {
         uint codedDate = date_GetMonth(edate) << 5;
         codedDate |= date_GetDay (edate);
         uint eyear = date_GetYear (edate);
@@ -401,58 +401,58 @@ public:
         }
         Dates = u32_set_high_12 (Dates, codedDate);
     }
-    void    SetResult (resultT res) {
+    void SetResult (resultT res) {
         VarCounts = (VarCounts & 0x0FFF) | (((ushort)res) << 12);
     }
-    void    SetWhiteElo (eloT elo)  {
+    void SetWhiteElo (eloT elo)  {
         WhiteElo = u16_set_low_12(WhiteElo, elo);
     }
-    void    SetBlackElo (eloT elo)  {
+    void SetBlackElo (eloT elo)  {
         BlackElo = u16_set_low_12 (BlackElo, elo);
     }
-    void    SetWhiteRatingType (byte b) {
+    void SetWhiteRatingType (byte b) {
         WhiteElo = u16_set_high_4 (WhiteElo, b);
     }
-    void    SetBlackRatingType (byte b) {
+    void SetBlackRatingType (byte b) {
         BlackElo = u16_set_high_4 (BlackElo, b);
     }
-    void    SetEcoCode (ecoT eco)   { EcoCode = eco; }
-    void    SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
+    void SetEcoCode (ecoT eco)   { EcoCode = eco; }
+    void SetNumHalfMoves (ushort b)  { NumHalfMoves = b; }
 
 
-    bool GetFlag (uint mask)  {
+    bool GetFlag (uint mask) const {
       if (mask & 0xFFFF)
         return Flags & mask;
       else
         return Length_High & ( mask >> 16 ) ;
     }
-    bool GetStartFlag ()      { return Flags & IDX_MASK_START; }
-    bool GetPromotionsFlag () { return Flags & IDX_MASK_PROMO; }
-    bool GetUnderPromoFlag()  { return Flags & IDX_MASK_UPROMO; }
-    bool GetCommentsFlag ()   { return (GetCommentCount() > 0); }
-    bool GetVariationsFlag () { return (GetVariationCount() > 0); }
-    bool GetNagsFlag ()       { return (GetNagCount() > 0); }
-    bool GetDeleteFlag ()     { return Flags & IDX_MASK_DELETE; }
-    bool GetWhiteOpFlag ()    { return Flags & IDX_MASK_WHITE_OP; }
-    bool GetBlackOpFlag ()    { return Flags & IDX_MASK_BLACK_OP; }
-    bool GetMiddlegameFlag () { return Flags & IDX_MASK_MIDDLEGAME; }
-    bool GetEndgameFlag ()    { return Flags & IDX_MASK_ENDGAME; }
-    bool GetNoveltyFlag ()    { return Flags & IDX_MASK_NOVELTY; }
-    bool GetPawnStructFlag () { return Flags & IDX_MASK_PAWN; }
-    bool GetTacticsFlag ()    { return Flags & IDX_MASK_TACTICS; }
-    bool GetKingsideFlag ()   { return Flags & IDX_MASK_KSIDE; }
-    bool GetQueensideFlag ()  { return Flags & IDX_MASK_QSIDE; }
-    bool GetBrilliancyFlag () { return Flags & IDX_MASK_BRILLIANCY; }
-    bool GetBlunderFlag ()    { return Flags & IDX_MASK_BLUNDER; }
-    bool GetUserFlag ()       { return Flags & IDX_MASK_USER; }
+    bool GetStartFlag () const      { return Flags & IDX_MASK_START; }
+    bool GetPromotionsFlag () const { return Flags & IDX_MASK_PROMO; }
+    bool GetUnderPromoFlag() const  { return Flags & IDX_MASK_UPROMO; }
+    bool GetCommentsFlag () const   { return (GetCommentCount() > 0); }
+    bool GetVariationsFlag () const { return (GetVariationCount() > 0); }
+    bool GetNagsFlag () const       { return (GetNagCount() > 0); }
+    bool GetDeleteFlag () const     { return Flags & IDX_MASK_DELETE; }
+    bool GetWhiteOpFlag () const    { return Flags & IDX_MASK_WHITE_OP; }
+    bool GetBlackOpFlag () const    { return Flags & IDX_MASK_BLACK_OP; }
+    bool GetMiddlegameFlag () const { return Flags & IDX_MASK_MIDDLEGAME; }
+    bool GetEndgameFlag () const    { return Flags & IDX_MASK_ENDGAME; }
+    bool GetNoveltyFlag () const    { return Flags & IDX_MASK_NOVELTY; }
+    bool GetPawnStructFlag () const { return Flags & IDX_MASK_PAWN; }
+    bool GetTacticsFlag () const    { return Flags & IDX_MASK_TACTICS; }
+    bool GetKingsideFlag () const   { return Flags & IDX_MASK_KSIDE; }
+    bool GetQueensideFlag () const  { return Flags & IDX_MASK_QSIDE; }
+    bool GetBrilliancyFlag () const { return Flags & IDX_MASK_BRILLIANCY; }
+    bool GetBlunderFlag () const    { return Flags & IDX_MASK_BLUNDER; }
+    bool GetUserFlag () const       { return Flags & IDX_MASK_USER; }
     // Custom flags are bits numbered from 1 to 6 from left to right
-    bool GetCustomFlag (byte c) {
+    bool GetCustomFlag (byte c) const {
       return (Length_High & CUSTOM_FLAG_MASK[c-1]) ;
     }
 
-    static uint   CharToFlag (char ch);
-    uint   GetFlagStr (char * str, const char * flags);
-    void   SetFlagStr (const char * flags);
+    static uint CharToFlag (char ch);
+    uint GetFlagStr (char * str, const char * flags) const;
+    void SetFlagStr (const char * flags);
 
     static uint EncodeCount (uint x) {
         if (x <= 10) { return x; }
@@ -467,13 +467,14 @@ public:
         static uint countCodes[16] = {0,1,2,3,4,5,6,7,8,9,10,15,20,30,40,50};
         return countCodes[x & 15]; 
     }
-    uint GetVariationCount () { return DecodeCount(VarCounts & 15); }
-    uint GetCommentCount ()   { return DecodeCount((VarCounts >> 4) & 15); }
-    uint GetNagCount ()       { return DecodeCount((VarCounts >> 8) & 15); }
+    uint GetVariationCount () const { return DecodeCount(VarCounts & 15); }
+    uint GetCommentCount () const   { return DecodeCount((VarCounts >> 4) & 15); }
+    uint GetNagCount () const       { return DecodeCount((VarCounts >> 8) & 15); }
 
-    matSigT GetFinalMatSig ()   { return u32_low_24 (FinalMatSig); }
-    byte    GetStoredLineCode () { return u32_high_8 (FinalMatSig); }
-    byte *  GetHomePawnData ()  { return HomePawnData; }
+    matSigT GetFinalMatSig () const { return u32_low_24 (FinalMatSig); }
+    byte GetStoredLineCode () const { return u32_high_8 (FinalMatSig); }
+    const byte* GetHomePawnData () const { return HomePawnData; }
+    byte* GetHomePawnData () { return HomePawnData; }
 
 
     void SetFlag (uint flagMask, bool b) {
@@ -630,7 +631,7 @@ IndexEntry::Read (T* file, versionT version)
 //      Writes a single index entry to an open index file.
 //      INDEX_ENTRY_SIZE must be updated
 template <class T> errorT
-IndexEntry::Write (T* file, versionT version)
+IndexEntry::Write (T* file, versionT version) const
 {
     // Cannot write old-version index files:
     if (version < 400) { return ERROR_FileVersion; }
@@ -664,7 +665,7 @@ IndexEntry::Write (T* file, versionT version)
     file->WriteOneByte (NumHalfMoves & 255); 
 
     // Write the 9-byte homePawnData array:
-    byte * pb = HomePawnData;
+    const byte* pb = HomePawnData;
     // The first byte of HomePawnData has high bits of the NumHalfMoves
     // counter in its top two bits:
     byte pb0 = *pb;
@@ -680,7 +681,7 @@ IndexEntry::Write (T* file, versionT version)
     return OK;
 }
 
-inline byte IndexEntry::GetRating(NameBase* nb) {
+inline byte IndexEntry::GetRating(NameBase* nb) const {
     eloT welo = GetWhiteElo();
     eloT belo = GetBlackElo();
     if (welo == 0) { welo = nb->GetElo (GetWhite()); }
@@ -770,7 +771,7 @@ IndexEntry::SetFlagStr (const char * flags)
 //    user-settable flags set for this game.
 //    Returns the number of specified flags that are turned on.
 inline uint
-IndexEntry::GetFlagStr (char * str, const char * flags)
+IndexEntry::GetFlagStr (char * str, const char * flags) const
 {
     if (flags == NULL) { flags = "DWBMENPTKQ!?U123456"; }
     uint count = 0;

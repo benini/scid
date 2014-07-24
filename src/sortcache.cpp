@@ -119,7 +119,7 @@ static const char shortCriteriaNames[][2] =
 	{ 0, 0}
 };
 
-SortCache* SortCache::Create(Index* idx, NameBase* nb, const char* criterium, bool multithread)
+SortCache* SortCache::Create(const Index* idx, NameBase* nb, const char* criterium, bool multithread)
 {
 	SortCache* s = new SortCache();
 	if (OK == s->Init(idx, nb, criterium)) {
@@ -158,7 +158,7 @@ SortCache::~SortCache()
 //      integers denoting sorting criteria.
 //      e.g.: "-Sdate,event,white" --> { SORTING_date, SORTING_event, SORTING_white }
 //      The final element is set to SORTING_sentinel.
-errorT SortCache::Init(Index* idx, NameBase* nb, const char* criterium)
+errorT SortCache::Init(const Index* idx, NameBase* nb, const char* criterium)
 {
 	ASSERT(idx != 0 && nb != 0 && criterium != 0);
 	index = idx;
@@ -195,7 +195,7 @@ errorT SortCache::Init(Index* idx, NameBase* nb, const char* criterium)
 
 	hashValues = new uint[numGames];
 	for(uint i=0; i<numGames; i++)
-		hashValues[i] = CalcHash(index->FetchEntry(i));
+		hashValues[i] = CalcHash(index->GetEntry(i));
 
 	return OK;
 }
@@ -303,8 +303,8 @@ SortCache::FullCompare (uint left, uint right)
 	byte *fields = SortCriteria;
 	bool *reverse = SortReverse;
 
-	IndexEntry *ie1 = index->FetchEntry(left); 
-	IndexEntry *ie2 = index->FetchEntry(right); 
+	const IndexEntry *ie1 = index->GetEntry(left);
+	const IndexEntry *ie2 = index->GetEntry(right);
 
 	while (1) {
 		switch (*fields) {
@@ -435,7 +435,7 @@ inline uint SortCache::GetStartHash (const char *strVal)
 	return result;
 }
 
-uint SortCache::CalcHash (IndexEntry * ie)
+uint SortCache::CalcHash (const IndexEntry* ie)
 {
 	uint retValue = 0;
 	int i = 0;
@@ -599,7 +599,7 @@ SortCache::CheckForChanges (uint id)
 		if (id == numGames) return AddEntry();
 
 		if( hashValues)
-			hashValues[id] = CalcHash( index->FetchEntry( id));
+			hashValues[id] = CalcHash( index->GetEntry( id));
 
 		if (sorted_) {
 			for(uint i=0; i<numGames; i++)
@@ -618,7 +618,7 @@ SortCache::CheckForChanges (uint id)
 		if (hashValues != NULL) delete[] hashValues;
 		hashValues = new uint[numGames];
 		for(uint i=0; i<numGames; i++)
-			hashValues[i] = CalcHash( index->FetchEntry( i));
+			hashValues[i] = CalcHash( index->GetEntry( i));
 		sorted_ = false;
 		t_.start();
 	}
@@ -708,7 +708,7 @@ errorT SortCache::AddEntry()
 		hashValues = new uint[numGames + 1];
 		memcpy( hashValues, oldMap, numGames * 4);
 		delete[] oldMap;
-		hashValues[numGames] = CalcHash( index->FetchEntry( numGames));
+		hashValues[numGames] = CalcHash( index->GetEntry( numGames));
 	}
 	if (sorted_)
 	{

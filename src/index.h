@@ -131,8 +131,8 @@ private:
     Index& operator=(const Index&);
     void Init ();
     void Clear ();
-    errorT write (IndexEntry* ie, gameNumberT idx);
-    inline uint getIndexEntrySize () {
+    errorT write (const IndexEntry* ie, gameNumberT idx);
+    uint getIndexEntrySize () {
         switch (Header.version) {
             case 300: return OLD_INDEX_ENTRY_SIZE;
         }
@@ -151,22 +151,25 @@ public:
         if (res == OK) Clear();
         return res;
     }
-    gameNumberT GetNumGames () { return Header.numGames; }
-    int GetBadNameIdCount() { return badNameIdCount_; }
+    gameNumberT GetNumGames () const { return Header.numGames; }
+    int GetBadNameIdCount() const { return badNameIdCount_; }
 
     errorT ReadEntireFile (NameBase* nb,
                            void (*progressFn)(void*, uint, uint) = 0,
                            void * progressData = 0);
 
     IndexEntry* FetchEntry (gameNumberT g) { return &(entries_[g]); }
+    const IndexEntry* GetEntry (gameNumberT g) const {
+        return const_cast<Index*>(this)->FetchEntry(g);
+    }
 
-    uint        GetType ()        { return Header.baseType; }
-    versionT    GetVersion ()     { return Header.version; }
-    const char* GetDescription () { return Header.description; }
-    void GetCustomFlagDesc (char * str, byte c) {
+    uint        GetType () const { return Header.baseType; }
+    versionT    GetVersion () const { return Header.version; }
+    const char* GetDescription () const { return Header.description; }
+    void GetCustomFlagDesc (char * str, byte c) const {
         strcpy(str, Header.customFlagDesc[c-1] );
     }
-    gameNumberT GetAutoLoad () {
+    gameNumberT GetAutoLoad () const {
         return ((Header.autoLoad == 0) ? 1 : (Header.autoLoad - 1));
     }
 
@@ -199,7 +202,7 @@ public:
         Header.autoLoad = gnum + 1;
         Dirty = true;
     }
-    errorT AddGame (IndexEntry* ie) {
+    errorT AddGame (const IndexEntry* ie) {
         if (Header.numGames >= MAX_GAMES) {  return ERROR_IndexFull; }
         entries_.push_back();
         Dirty = true;
@@ -207,7 +210,7 @@ public:
     }
 
     errorT WriteHeader ();
-    errorT WriteEntries (IndexEntry * ie, gameNumberT idx, bool flush = true) {
+    errorT WriteEntries (const IndexEntry* ie, gameNumberT idx, bool flush = true) {
         errorT res = write(ie, idx);
         if (flush && res == OK && FilePtr != NULL) {
             res = (FilePtr->pubsync() != -1) ? OK : ERROR_FileWrite;;

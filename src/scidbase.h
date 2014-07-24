@@ -104,10 +104,12 @@ struct scidBaseT {
 		return filters_[idx].second;
 	}
 
+	const IndexEntry* getIndexEntry(gameNumberT g) const { return idx->FetchEntry(g);	}
+
 	errorT addGames(scidBaseT* sourceBase,
-	                     Filter* filter,
-	                     bool (progressFn)(void*, unsigned int, unsigned int),
-	                     void* progressData);
+	                Filter* filter,
+	                bool (progressFn)(void*, unsigned int, unsigned int),
+	                void* progressData);
 	errorT addGame(scidBaseT* sourceBase, uint gNum);
 	errorT saveGame(Game* game, bool clearCache, int idx = -1);
 
