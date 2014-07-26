@@ -48,8 +48,16 @@ if {"$::tcl_platform(os)" == "Darwin"} {
 #    found is returned.
 #
 proc findDir {f path {exp ""}} {
+    set subpath {}
+    foreach d $path {
+        lappend subpath "$d"
+        foreach subdir [glob -nocomplain -type {d  r} -directory "$d" *] {
+            lappend subpath "$subdir"
+        }
+    }
+
     set best ""
-    foreach dir $path {
+    foreach dir $subpath {
         set p [file join $dir $f]
         if {![catch {glob $p}]} {
           if {$best == ""} { set best $p }
@@ -130,14 +138,6 @@ proc findTclTkPaths {} {
         /opt/tcltk/include
         /usr/X11R/include
     }
-    lappend headerPath "/usr/local/include/tcl${tclv}"
-    lappend headerPath "/usr/local/include/tk${tclv}"
-    lappend headerPath "/usr/local/include/tcl${tclv_nodot}"
-    lappend headerPath "/usr/local/include/tk${tclv_nodot}"
-    lappend headerPath "/usr/include/tcl${tclv}"
-    lappend headerPath "/usr/include/tk${tclv}"
-    lappend headerPath "/usr/include/tcl${tclv_nodot}"
-    lappend headerPath "/usr/include/tk${tclv_nodot}"
 
     # libraryPath: List of possible locations of Tcl/Tk library.
     set libraryPath {
@@ -147,10 +147,7 @@ proc findTclTkPaths {} {
         /usr/local/lib
         /usr/X11R6/lib
         /opt/tcltk/lib
-        /usr/lib/x86_64-linux-gnu
     }
-    lappend libraryPath "/usr/lib/tcl${tclv}"
-    lappend libraryPath "/usr/lib/tcl${tclv_nodot}"
 
     # Try to add tcl_library and auto_path values to libraryPath,
     # in case the user has a non-standard Tcl/Tk library location:
