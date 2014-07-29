@@ -8174,14 +8174,14 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     static const char * options [] = {
         "addNag", "analyze", "bestSquare", "board", "clearNags",
         "fen", "getComment", "getNags", "hash", "html",
-        "isAt", "isLegal", "isPromotion", "movelist",
+        "isAt", "isCheck", "isLegal", "isPromotion", "movelist",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
         "probe", "setComment", "side", "tex", "moves", "location", NULL
     };
     enum {
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
-        POS_ISAT, POS_ISLEGAL, POS_ISPROMO, MOVELIST,
+        POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO, MOVELIST,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
         POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION
     };
@@ -8235,6 +8235,9 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case POS_ISAT:
         return sc_pos_isAt (cd, ti, argc, argv);
+
+    case POS_ISCHECK:
+        return setBoolResult (ti, db->game->GetCurrentPos()->IsKingInCheck());
 
     case POS_ISLEGAL:
         return sc_pos_isLegal (cd, ti, argc, argv);

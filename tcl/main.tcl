@@ -831,6 +831,7 @@ proc addMove { sq1 sq2 } {
         if {$k1 == "k"  &&  $k2 == "k"} { set nullmove 1 } else { return }
     }
     if {$nullmove} {
+        if {[sc_pos isCheck]} { return }
         set moveUCI "0000"
     } else {
         set moveUCI [::board::san $sq2][::board::san $sq1]
