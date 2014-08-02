@@ -1672,13 +1672,16 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
 
     resetEngine $n
 
-    # Only update engine's time when it was chosen in the engines dialog box
     if { $index < 0 } {
+        # engine selection dialog
         set index [::enginelist::choose]
         if { $index == "" ||  $index < 0 } { return }
         catch {
             ::enginelist::setTime $index
         }
+    } else {
+        # F2, F3
+        set index [expr {$n - 1}]
     }
 
     set n_engines [llength $::engines(list)]
