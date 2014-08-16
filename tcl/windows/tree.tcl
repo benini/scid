@@ -529,7 +529,7 @@ proc ::tree::displayLines { baseNumber moves } {
       $w.f.tl insert end "$line" [list whitebg $tagfg tagtooltip$i]
     }
     if {$colorScore != ""} {
-      $w.f.tl tag add $colorScore end-30c end-26c
+      $w.f.tl tag add $colorScore end-31c end-26c
     }
     if {$move != "" && $move != "---" && $move != "\[end\]" && $i != [expr $len -2] && $i != 0} {
       $w.f.tl tag bind tagclick$i <Button-1> "[list ::tree::selectCallback $baseNumber $move ] ; break"
