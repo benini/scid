@@ -3640,6 +3640,9 @@ namespace eval CorrespondenceChess {
 		set XfccInternal -1
 	} else {
 		::http::config -useragent $::Xfcc::useragent
+		if {![catch { package require tls }]} {
+			http::register https 443 ::tls::socket
+		}
 	}
 
 	if {[catch {package require tdom}]} {
