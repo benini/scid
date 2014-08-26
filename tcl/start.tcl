@@ -1210,7 +1210,12 @@ utils/bibliography.tcl
 }
 
 foreach f $tcl_files {
-  source [file nativename [file join $::scidTclDir "$f"]]
+  if {"$f" == "lang/greek.tcl" || "$f" == "lang/russian.tcl"} {
+    #TODO: temporary hack for utf-8 files
+    source -encoding utf-8 [file nativename [file join $::scidTclDir "$f"]]
+  } else {
+    source [file nativename [file join $::scidTclDir "$f"]]
+  }
 }
 
 ###
