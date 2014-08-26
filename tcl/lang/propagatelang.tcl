@@ -23,7 +23,7 @@ array set encodings {
   norsk iso8859-1
   polish iso8859-2
   portbr iso8859-1
-  russian iso8859-5
+  russian utf-8
   serbian iso8859-2
   spanish iso8859-1
   swedish iso8859-1

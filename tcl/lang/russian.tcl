@@ -1,2276 +1,1738 @@
 ### russian.tcl:
 #  Russian language support for Scid.
 #  Contributed by Alex Sedykh.
+#  Contributed by Sergey Nikolaevich Koyankin (koyankin(at)yandex.ru).
 #  Untranslated messages are marked with a "***" comment.
 #  Untranslated help page sections are in <NEW>...</NEW> tags.
 
-addLanguage R Russian 1 iso8859-5
+addLanguage R Russian 1 utf-8
 
 proc setLanguage_R {} {
 
 # File menu:
-menuText R File "Файл" 0
-menuText R FileNew "Новый..." 0 {Создать новую базу данных Scid}
-menuText R FileOpen "Открыть..." 0 {Открыть базу данных Scid}
-menuText R FileClose "Закрыть" 0 {Закрыть активную базу данных Scid}
-menuText R FileFinder "Поиск" 0 {Открыть окно поиска файла}
-menuText R FileBookmarks "Закладки" 2 {Меню закладок (комбинация: Ctrl+B)}
-menuText R FileBookmarksAdd "Добавить закладку" 0 \
-  {Отметить партию или позицию в текущей базе данных}
-menuText R FileBookmarksFile "Архивировать закладка" 0 \
-  {Архивировать закладку для текущей партии или позиции}
-menuText R FileBookmarksEdit "Редактировать закладки..." 0 \
-  {Редактировать меню закладок}
-menuText R FileBookmarksList "Показать папки как простой список" 0 \
-  {Показать папки закладок, как обычный список, а не подменю}
-menuText R FileBookmarksSub "Показать папки как подменю" 1 \
-  {Показать папки закладок как подменю, а не простой список}
-menuText R FileMaint "Поддержка" 2 {Инструменты поддержки базы данных Scid}
-menuText R FileMaintWin "Окно поддержки" 0 \
-  {Открыть/закрыть окно поддержки базы данных Scid}
-menuText R FileMaintCompact "Сжать базу данных..." 0 \
-  {Сжать файлы базы данных, выкинуть удаленные партии и неиспользуемые имена}
-menuText R FileMaintClass "ECO-Классификация партии..." 0 \
-  {Перерасчитать коды ECO для всех партий}
-menuText R FileMaintSort "Сортировать базу данных..." 2 \
-  {Сортировать все партии в базе данных}
-menuText R FileMaintDelete "Удалить партии-двойники..." 0 \
-  {Найти партии-двойники и пометить их для удаления}
-menuText R FileMaintTwin "Окно проверки двойников" 14 \
-  {Открыть/обновить окно проверки двойников}
-menuText R FileMaintName "Правописание имен" 0 {Редактирование имен и инструменты правописания}
-menuText R FileMaintNameEditor "Редактор имен" 0 \
-  {Открыть/закрыть окно редактора имен}
-menuText R FileMaintNamePlayer "Проверка имен игроков..." 9 \
-  {Проверка имен игроков с помощью файла правописания}
-menuText R FileMaintNameEvent "Проверка названий турниров..." 18 \
-  {Проверка названий турниров с помощью файла правописания}
-menuText R FileMaintNameSite "Проверка названий мест..." 18 \
-  {Проверка названий мест с помощью файла правописания}
-menuText R FileMaintNameRound "Проверка названий раундов..." 20 \
-  {Проверка названий раундов с помощью файла правописания}
-menuText R FileReadOnly "Только для чтения..." 0 \
-  {Трактовать текущую базу данных как только для чтения, предотвращать изменения}
-menuText R FileSwitch "Переключить базу данных" 6 \
-  {Переключить на другую открытую базу данных}
-menuText R FileExit "Выход" 0 {Выход из Scid}
-# ====== TODO To be translated ======
-menuText R FileMaintFixBase "Fix corrupted base" 0 {Try to fix a corrupted base}
+menuText R File "Р¤Р°Р№Р»" 0
+menuText R FileNew "РќРѕРІС‹Р№..." 0 {РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… Scid}
+menuText R FileOpen "РћС‚РєСЂС‹С‚СЊ..." 0 {РћС‚РєСЂС‹С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… Scid}
+menuText R FileClose "Р—Р°РєСЂС‹С‚СЊ" 0 {Р—Р°РєСЂС‹С‚СЊ Р°РєС‚РёРІРЅСѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… Scid}
+menuText R FileFinder "РџРѕРёСЃРє" 0 {РћС‚РєСЂС‹С‚СЊ РѕРєРЅРѕ РїРѕРёСЃРєР° С„Р°Р№Р»Р°}
+menuText R FileBookmarks "Р—Р°РєР»Р°РґРєРё" 2 {РњРµРЅСЋ Р·Р°РєР»Р°РґРѕРє (РєРѕРјР±РёРЅР°С†РёСЏ: Ctrl+B)}
+menuText R FileBookmarksAdd "Р”РѕР±Р°РІРёС‚СЊ Р·Р°РєР»Р°РґРєСѓ" 0 \
+  {РћС‚РјРµС‚РёС‚СЊ РїР°СЂС‚РёСЋ РёР»Рё РїРѕР·РёС†РёСЋ РІ С‚РµРєСѓС‰РµР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С…}
+menuText R FileBookmarksFile "РђСЂС…РёРІРёСЂРѕРІР°С‚СЊ Р·Р°РєР»Р°РґРєСѓ" 0 \
+  {РђСЂС…РёРІРёСЂРѕРІР°С‚СЊ Р·Р°РєР»Р°РґРєСѓ РґР»СЏ С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРё РёР»Рё РїРѕР·РёС†РёРё}
+menuText R FileBookmarksEdit "Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ Р·Р°РєР»Р°РґРєРё..." 0 \
+  {Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РјРµРЅСЋ Р·Р°РєР»Р°РґРѕРє}
+menuText R FileBookmarksList "РџРѕРєР°Р·Р°С‚СЊ РїР°РїРєРё РєР°Рє РїСЂРѕСЃС‚РѕР№ СЃРїРёСЃРѕРє" 0 \
+  {РџРѕРєР°Р·Р°С‚СЊ РїР°РїРєРё Р·Р°РєР»Р°РґРѕРє, РєР°Рє РѕР±С‹С‡РЅС‹Р№ СЃРїРёСЃРѕРє, Р° РЅРµ РїРѕРґРјРµРЅСЋ}
+menuText R FileBookmarksSub "РџРѕРєР°Р·Р°С‚СЊ РїР°РїРєРё РєР°Рє РїРѕРґРјРµРЅСЋ" 1 \
+  {РџРѕРєР°Р·Р°С‚СЊ РїР°РїРєРё Р·Р°РєР»Р°РґРѕРє РєР°Рє РїРѕРґРјРµРЅСЋ, Р° РЅРµ РїСЂРѕСЃС‚РѕР№ СЃРїРёСЃРѕРє}
+menuText R FileMaint "РћР±СЃР»СѓР¶РёРІР°РЅРёРµ" 2 {РРЅСЃС‚СЂСѓРјРµРЅС‚С‹ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… Scid}
+menuText R FileMaintWin "РћРєРЅРѕ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ" 0 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… Scid}
+menuText R FileMaintCompact "РЎР¶Р°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…..." 0 \
+  {РЎР¶Р°С‚СЊ С„Р°Р№Р»С‹ Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РІС‹РєРёРЅСѓС‚СЊ СѓРґР°Р»С‘РЅРЅС‹Рµ РїР°СЂС‚РёРё Рё РЅРµРёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РёРјРµРЅР°}
+menuText R FileMaintClass "ECO-РєР»Р°СЃСЃРёС„РёРєР°С†РёСЏ РїР°СЂС‚РёРё..." 0 \
+  {РџРµСЂРµСЃС‡РёС‚Р°С‚СЊ РєРѕРґС‹ ECO РґР»СЏ РІСЃРµС… РїР°СЂС‚РёР№}
+menuText R FileMaintSort "РЎРѕСЂС‚РёСЂРѕРІР°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…..." 2 \
+  {РЎРѕСЂС‚РёСЂРѕРІР°С‚СЊ РІСЃРµ РїР°СЂС‚РёРё РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…}
+menuText R FileMaintDelete "РЈРґР°Р»РёС‚СЊ РїР°СЂС‚РёРё-РґРІРѕР№РЅРёРєРё..." 0 \
+  {РќР°Р№С‚Рё РїР°СЂС‚РёРё-РґРІРѕР№РЅРёРєРё Рё РїРѕРјРµС‚РёС‚СЊ РёС… РґР»СЏ СѓРґР°Р»РµРЅРёСЏ}
+menuText R FileMaintTwin "РћРєРЅРѕ РїСЂРѕРІРµСЂРєРё РґРІРѕР№РЅРёРєРѕРІ" 14 \
+  {РћС‚РєСЂС‹С‚СЊ/РѕР±РЅРѕРІРёС‚СЊ РѕРєРЅРѕ РїСЂРѕРІРµСЂРєРё РґРІРѕР№РЅРёРєРѕРІ}
+menuText R FileMaintName "РџСЂР°РІРѕРїРёСЃР°РЅРёРµ РёРјС‘РЅ" 0 {Р РµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ РёРјС‘РЅ Рё РёРЅСЃС‚СЂСѓРјРµРЅС‚С‹ РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+menuText R FileMaintNameEditor "Р РµРґР°РєС‚РѕСЂ РёРјС‘РЅ" 0 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ СЂРµРґР°РєС‚РѕСЂР° РёРјС‘РЅ}
+menuText R FileMaintNamePlayer "РџСЂРѕРІРµСЂРєР° РёРјС‘РЅ РёРіСЂРѕРєРѕРІ..." 9 \
+  {РџСЂРѕРІРµСЂРєР° РёРјС‘РЅ РёРіСЂРѕРєРѕРІ СЃ РїРѕРјРѕС‰СЊСЋ С„Р°Р№Р»Р° РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+menuText R FileMaintNameEvent "РџСЂРѕРІРµСЂРєР° РЅР°Р·РІР°РЅРёР№ С‚СѓСЂРЅРёСЂРѕРІ..." 18 \
+  {РџСЂРѕРІРµСЂРєР° РЅР°Р·РІР°РЅРёР№ С‚СѓСЂРЅРёСЂРѕРІ СЃ РїРѕРјРѕС‰СЊСЋ С„Р°Р№Р»Р° РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+menuText R FileMaintNameSite "РџСЂРѕРІРµСЂРєР° РЅР°Р·РІР°РЅРёР№ РјРµСЃС‚..." 18 \
+  {РџСЂРѕРІРµСЂРєР° РЅР°Р·РІР°РЅРёР№ РјРµСЃС‚ СЃ РїРѕРјРѕС‰СЊСЋ С„Р°Р№Р»Р° РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+menuText R FileMaintNameRound "РџСЂРѕРІРµСЂРєР° РЅР°Р·РІР°РЅРёР№ СЂР°СѓРЅРґРѕРІ..." 20 \
+  {РџСЂРѕРІРµСЂРєР° РЅР°Р·РІР°РЅРёР№ СЂР°СѓРЅРґРѕРІ СЃ РїРѕРјРѕС‰СЊСЋ С„Р°Р№Р»Р° РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+menuText R FileReadOnly "РўРѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ..." 0 \
+  {РўСЂР°РєС‚РѕРІР°С‚СЊ С‚РµРєСѓС‰СѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РєР°Рє "С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ", РїСЂРµРґРѕС‚РІСЂР°С‰Р°СЏ РёР·РјРµРЅРµРЅРёСЏ}
+menuText R FileSwitch "РџРµСЂРµРєР»СЋС‡РёС‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…" 6 \
+  {РџРµСЂРµРєР»СЋС‡РёС‚СЊ РЅР° РґСЂСѓРіСѓСЋ РѕС‚РєСЂС‹С‚СѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…}
+menuText R FileExit "Р’С‹С…РѕРґ" 0 {Р’С‹С…РѕРґ РёР· Scid}
+menuText R FileMaintFixBase "РСЃРїСЂР°РІРёС‚СЊ РїРѕРІСЂРµР¶РґС‘РЅРЅСѓСЋ Р±Р°Р·Сѓ" 0 {РџРѕРїС‹С‚Р°С‚СЊСЃСЏ РёСЃРїСЂР°РІРёС‚СЊ РїРѕРІСЂРµР¶РґС‘РЅРЅСѓСЋ Р±Р°Р·Сѓ}
 
 # Edit menu:
-menuText R Edit "Редактирование" 0
-menuText R EditAdd "Добавить вариант" 0 {Добавить вариант к этому ходу партии}
-menuText R EditDelete "Удалить вариант" 0 {Удалить вариант для этого хода}
-menuText R EditFirst "Сделать вариант первым" 0 \
-  {Продвинуть вариант на первое место в списке}
-menuText R EditMain "Заменить основную линию вариантом" 0 \
-  {Сделать вариант основной линией партии}
-menuText R EditTrial "Попробовать вариант" 0 \
-  {Запустить/закончить пробный режим, для проверки идеи на доске}
-menuText R EditStrip "Убрать" 1 {Убрать комментарии или варианты из партии}
-# ====== TODO To be translated ======
-menuText R EditUndo "Undo" 0 {Undo last game change}
-# ====== TODO To be translated ======
-menuText R EditRedo "Redo" 0 {Redo last game change}
-menuText R EditStripComments "Комментарии" 0 \
-  {Убрать все комментарии и аннотации из этой партии}
-menuText R EditStripVars "Варианты" 0 {Убрать все варианты из этой партии}
-menuText R EditStripBegin "Moves from the beginning" 1 \
-  {Strip moves from the beginning of the game}
-menuText R EditStripEnd "Moves to the end" 0 \
-  {Strip moves to the end of the game}
-menuText R EditReset "Очистить " 0 \
-  {Полностью очистить буферную базу}
-menuText R EditCopy "Скопировать эту партию в буферную базу" 1 \
-  {Скопировать эту партию в буферную базу}
-menuText R EditPaste "Вставить последнюю партию из буферной базы" 0 \
-  {Вставить активную партию из буферной базы здесь}
-# ====== TODO To be translated ======
-menuText R EditPastePGN "Paste Clipboard text as PGN game..." 18 \
-  {Interpret the clipboard text as a game in PGN notation and paste it here}
-menuText R EditSetup "Установить позицию..." 2 \
-  {Установить стартовую позицию для этой партии}
-menuText R EditCopyBoard "Копировать позицию" 4 \
-  {Копировать текущую позицию в нотации FEN в выбранный текст (буфер)}
-menuText R EditPasteBoard "Вставить стартовую позицию" 3 \
-  {Вставить стартовую позицию из текущего выбранного текста (буфера)}
+menuText R Edit "РџСЂР°РІРєР°" 0
+menuText R EditAdd "Р”РѕР±Р°РІРёС‚СЊ РІР°СЂРёР°РЅС‚" 0 {Р”РѕР±Р°РІРёС‚СЊ РІР°СЂРёР°РЅС‚ Рє СЌС‚РѕРјСѓ С…РѕРґСѓ РїР°СЂС‚РёРё}
+menuText R EditDelete "РЈРґР°Р»РёС‚СЊ РІР°СЂРёР°РЅС‚" 0 {РЈРґР°Р»РёС‚СЊ РІР°СЂРёР°РЅС‚ РґР»СЏ СЌС‚РѕРіРѕ С…РѕРґР°}
+menuText R EditFirst "РЎРґРµР»Р°С‚СЊ РІР°СЂРёР°РЅС‚ РїРµСЂРІС‹Рј" 0 \
+  {РџСЂРѕРґРІРёРЅСѓС‚СЊ РІР°СЂРёР°РЅС‚ РЅР° РїРµСЂРІРѕРµ РјРµСЃС‚Рѕ РІ СЃРїРёСЃРєРµ}
+menuText R EditMain "Р—Р°РјРµРЅРёС‚СЊ РіР»Р°РІРЅС‹Р№ РїР»Р°РЅ РІР°СЂРёР°РЅС‚РѕРј" 0 \
+  {РЎРґРµР»Р°С‚СЊ РІР°СЂРёР°РЅС‚ РѕСЃРЅРѕРІРЅС‹Рј РїР»Р°РЅРѕРј РїР°СЂС‚РёРё}
+menuText R EditTrial "РџРѕРїСЂРѕР±РѕРІР°С‚СЊ РІР°СЂРёР°РЅС‚" 0 \
+  {Р—Р°РїСѓСЃС‚РёС‚СЊ/Р·Р°РєРѕРЅС‡РёС‚СЊ РїСЂРѕР±РЅС‹Р№ СЂРµР¶РёРј, РґР»СЏ РїСЂРѕРІРµСЂРєРё РёРґРµРё РЅР° РґРѕСЃРєРµ}
+menuText R EditStrip "РЈР±СЂР°С‚СЊ" 1 {РЈР±СЂР°С‚СЊ РєРѕРјРјРµРЅС‚Р°СЂРёРё РёР»Рё РІР°СЂРёР°РЅС‚С‹ РёР· РїР°СЂС‚РёРё}
+menuText R EditUndo "РћС‚РјРµРЅРёС‚СЊ" 0 {РћС‚РјРµРЅРёС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ РїРѕСЃР»РµРґРЅРµР№ РїР°СЂС‚РёРё}
+menuText R EditRedo "Р’РµСЂРЅСѓС‚СЊ" 0 {Р’РµСЂРЅСѓС‚СЊ РёР·РјРµРЅРµРЅРёСЏ РІ РїРѕСЃР»РµРґРЅРµР№ РїР°СЂС‚РёРё}
+menuText R EditStripComments "РљРѕРјРјРµРЅС‚Р°СЂРёРё" 0 \
+  {РЈР±СЂР°С‚СЊ РІСЃРµ РєРѕРјРјРµРЅС‚Р°СЂРёРё Рё Р°РЅРЅРѕС‚Р°С†РёРё РёР· СЌС‚РѕР№ РїР°СЂС‚РёРё}
+menuText R EditStripVars "Р’Р°СЂРёР°РЅС‚С‹" 0 {РЈР±СЂР°С‚СЊ РІСЃРµ РІР°СЂРёР°РЅС‚С‹ РёР· СЌС‚РѕР№ РїР°СЂС‚РёРё}
+menuText R EditStripBegin "Р”РІРёРіР°С‚СЊСЃСЏ РѕС‚ РЅР°С‡Р°Р»Р°" 1 \
+  {Р’С‹СЂРµР·Р°РµС‚ С…РѕРґС‹ РѕС‚ РЅР°С‡Р°Р»Р° РїР°СЂС‚РёРё}
+menuText R EditStripEnd "Р”РІРёРіР°С‚СЊСЃСЏ Рє РєРѕРЅС†Сѓ" 0 \
+  {Р’С‹СЂРµР·Р°РµС‚ С…РѕРґС‹ Рє РєРѕРЅС†Сѓ РїР°СЂС‚РёРё}
+menuText R EditReset "РћС‡РёСЃС‚РёС‚СЊ " 0 \
+  {РџРѕР»РЅРѕСЃС‚СЊСЋ РѕС‡РёСЃС‚РёС‚СЊ Р±СѓС„РµСЂРЅСѓСЋ Р±Р°Р·Сѓ}
+menuText R EditCopy "РЎРєРѕРїРёСЂРѕРІР°С‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ РІ Р±СѓС„РµСЂРЅСѓСЋ Р±Р°Р·Сѓ" 1 \
+  {РЎРєРѕРїРёСЂРѕРІР°С‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ РІ Р±СѓС„РµСЂРЅСѓСЋ Р±Р°Р·Сѓ}
+menuText R EditPaste "Р’СЃС‚Р°РІРёС‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ РїР°СЂС‚РёСЋ РёР· Р±СѓС„РµСЂРЅРѕР№ Р±Р°Р·С‹" 0 \
+  {Р’СЃС‚Р°РІРёС‚СЊ Р°РєС‚РёРІРЅСѓСЋ РїР°СЂС‚РёСЋ РёР· Р±СѓС„РµСЂРЅРѕР№ Р±Р°Р·С‹ Р·РґРµСЃСЊ}
+menuText R EditPastePGN "Р’СЃС‚Р°РІРёС‚СЊ С‚РµРєСЃС‚ РёР· Р±СѓС„РµСЂР° РѕР±РјРµРЅР° РєР°Рє PGN РїР°СЂС‚РёСЋ..." 18 \
+  {РРЅС‚РµСЂРїРµС‚РёСЂРѕРІР°С‚СЊ С‚РµРєСЃС‚ РІ Р±СѓС„РµСЂРµ РѕР±РјРµРЅР° РєР°Рє РїР°СЂС‚РёСЋ РІ PGN РЅРѕС‚Р°С†РёРё Рё РІСЃС‚Р°РІРёС‚СЊ СЃСЋРґР°}
+menuText R EditSetup "РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ..." 2 \
+  {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СЃС‚Р°СЂС‚РѕРІСѓСЋ РїРѕР·РёС†РёСЋ РґР»СЏ СЌС‚РѕР№ РїР°СЂС‚РёРё}
+menuText R EditCopyBoard "РљРѕРїРёСЂРѕРІР°С‚СЊ РїРѕР·РёС†РёСЋ" 4 \
+  {РљРѕРїРёСЂРѕРІР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РІ РЅРѕС‚Р°С†РёРё FEN РІ РІС‹Р±СЂР°РЅРЅС‹Р№ С‚РµРєСЃС‚ (Р±СѓС„РµСЂ РѕР±РјРµРЅР°)}
+menuText R EditPasteBoard "Р’СЃС‚Р°РІРёС‚СЊ РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ" 3 \
+  {Р’СЃС‚Р°РІРёС‚СЊ РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ РёР· С‚РµРєСѓС‰РµРіРѕ РІС‹Р±СЂР°РЅРЅРѕРіРѕ С‚РµРєСЃС‚Р° (Р±СѓС„РµСЂР° РѕР±РјРµРЅР°)}
 
 # Game menu:
-menuText R Game "Партия" 0
-menuText R GameNew "Новая партия" 0 \
-  {Установить партию в начальное положение, отбросив все изменения}
-menuText R GameFirst "Загрузить первую партию" 0 {Загрузить первую отфильтрованную партию}
-menuText R GamePrev "Загрузить предыдущую партию" 1 {Загрузить предыдущую отфильтрованную партию}
-menuText R GameReload "Перезагрузить текущую партию" 1 \
-  {Перезагрузить эту партию, сбросив все сделанные изменения}
-menuText R GameNext "Загрузить следующую партию" 2 {Загрузить следующую отфильтрованную партию}
-menuText R GameLast "Загрузить последнюю партию" 3 {Загрузить последнюю отфильтрованную партию}
-menuText R GameRandom "Загрузить случайную партию" 4 {Загрузить случайную отфильтрованную партию}
-menuText R GameNumber "Загрузить партию номер..." 6 \
-  {Загрузить партию, набрав ее номер}
-menuText R GameReplace "Сохранить: Заменить партию..." 0 \
-  {Сохранить эту партию, заменив старую версию}
-menuText R GameAdd "Сохранить: Добавить новую партию..." 2 \
-  {Сохранить эту партию, как новую в базу данных}
-menuText R GameDeepest "Определить дебют" 0 \
-  {Найти самую позднюю позицию партии, имеющуюся в книге ECO}
-menuText R GameGotoMove "Перейти к ходу номер..." 5 \
-  {Перейти к определенному ходу текущей партии}
-menuText R GameNovelty "Найти новинку..." 2 \
-  {Найти первый ход в этой партии, который раньше не применялся}
+menuText R Game "РџР°СЂС‚РёСЏ" 0
+menuText R GameNew "РќРѕРІР°СЏ РїР°СЂС‚РёСЏ" 0 \
+  {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РїР°СЂС‚РёСЋ РІ РЅР°С‡Р°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ, РѕС‚Р±СЂРѕСЃРёРІ РІСЃРµ РёР·РјРµРЅРµРЅРёСЏ}
+menuText R GameFirst "Р—Р°РіСЂСѓР·РёС‚СЊ РїРµСЂРІСѓСЋ РїР°СЂС‚РёСЋ" 0 {Р—Р°РіСЂСѓР·РёС‚СЊ РїРµСЂРІСѓСЋ С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ РїР°СЂС‚РёСЋ}
+menuText R GamePrev "Р—Р°РіСЂСѓР·РёС‚СЊ РїСЂРµРґС‹РґСѓС‰СѓСЋ РїР°СЂС‚РёСЋ" 1 {Р—Р°РіСЂСѓР·РёС‚СЊ РїСЂРµРґС‹РґСѓС‰СѓСЋ С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ РїР°СЂС‚РёСЋ}
+menuText R GameReload "РџРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ" 1 \
+  {РџРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ, СЃР±СЂРѕСЃРёРІ РІСЃРµ СЃРґРµР»Р°РЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ}
+menuText R GameNext "Р—Р°РіСЂСѓР·РёС‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ РїР°СЂС‚РёСЋ" 2 {Р—Р°РіСЂСѓР·РёС‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ РїР°СЂС‚РёСЋ}
+menuText R GameLast "Р—Р°РіСЂСѓР·РёС‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ РїР°СЂС‚РёСЋ" 3 {Р—Р°РіСЂСѓР·РёС‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ РїР°СЂС‚РёСЋ}
+menuText R GameRandom "Р—Р°РіСЂСѓР·РёС‚СЊ СЃР»СѓС‡Р°Р№РЅСѓСЋ РїР°СЂС‚РёСЋ" 4 {Р—Р°РіСЂСѓР·РёС‚СЊ СЃР»СѓС‡Р°Р№РЅСѓСЋ С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ РїР°СЂС‚РёСЋ}
+menuText R GameNumber "Р—Р°РіСЂСѓР·РёС‚СЊ РїР°СЂС‚РёСЋ РЅРѕРјРµСЂ..." 6 \
+  {Р—Р°РіСЂСѓР·РёС‚СЊ РїР°СЂС‚РёСЋ, РІРІРµРґСЏ РµС‘ РЅРѕРјРµСЂ}
+menuText R GameReplace "РЎРѕС…СЂР°РЅРёС‚СЊ: Р·Р°РјРµРЅРёС‚СЊ РїР°СЂС‚РёСЋ..." 0 \
+  {РЎРѕС…СЂР°РЅРёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ, Р·Р°РјРµРЅРёРІ СЃС‚Р°СЂСѓСЋ РІРµСЂСЃРёСЋ}
+menuText R GameAdd "РЎРѕС…СЂР°РЅРёС‚СЊ: РґРѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ РїР°СЂС‚РёСЋ..." 2 \
+  {РЎРѕС…СЂР°РЅРёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…, РєР°Рє РЅРѕРІСѓСЋ}
+menuText R GameDeepest "РћРїСЂРµРґРµР»РёС‚СЊ РґРµР±СЋС‚" 0 \
+  {РќР°Р№С‚Рё СЃР°РјСѓСЋ РїРѕР·РґРЅСЋСЋ РїРѕР·РёС†РёСЋ РїР°СЂС‚РёРё, РёРјРµСЋС‰СѓСЋСЃСЏ РІ РєРЅРёРіРµ ECO}
+menuText R GameGotoMove "РџРµСЂРµР№С‚Рё Рє С…РѕРґСѓ РЅРѕРјРµСЂ..." 5 \
+  {РџРµСЂРµР№С‚Рё Рє РѕРїСЂРµРґРµР»С‘РЅРЅРѕРјСѓ С…РѕРґСѓ С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРё}
+menuText R GameNovelty "РќР°Р№С‚Рё РЅРѕРІРёРЅРєСѓ..." 2 \
+  {РќР°Р№С‚Рё РїРµСЂРІС‹Р№ С…РѕРґ РІ СЌС‚РѕР№ РїР°СЂС‚РёРё, РєРѕС‚РѕСЂС‹Р№ СЂР°РЅСЊС€Рµ РЅРµ РїСЂРёРјРµРЅСЏР»СЃСЏ}
 
 # Search Menu:
-menuText R Search "Поиск" 0
-menuText R SearchReset "Сбросить фильтр" 0 {Сбросить фильтр, теперь все партии включены}
-menuText R SearchNegate "Обратить фильтр" 0 {Обратить фильтр,  включить только исключенные партии}
-menuText R SearchCurrent "Текущая позиция..." 0 {Поиск текущей позиции}
-menuText R SearchHeader "Заголовок..." 0 {Поиск по заголовку (игрок, турнир, и т.д.)}
-menuText R SearchMaterial "Материал/Образ..." 0 {Поиск по материалу или образцам позиции}
-menuText R SearchUsing "Используя файл поиска..." 0 {Поиск с использованием файла с установками поиска}
+menuText R Search "РџРѕРёСЃРє" 1
+menuText R SearchReset "РЎР±СЂРѕСЃРёС‚СЊ С„РёР»СЊС‚СЂ" 0 {РЎР±СЂРѕСЃРёС‚СЊ С„РёР»СЊС‚СЂ, С‚РµРїРµСЂСЊ РІСЃРµ РїР°СЂС‚РёРё РІРєР»СЋС‡РµРЅС‹}
+menuText R SearchNegate "РРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ С„РёР»СЊС‚СЂ" 0 {РћР±СЂР°С‚РёС‚СЊ С„РёР»СЊС‚СЂ, РІРєР»СЋС‡РёС‚СЊ С‚РѕР»СЊРєРѕ РёСЃРєР»СЋС‡С‘РЅРЅС‹Рµ РїР°СЂС‚РёРё}
+menuText R SearchCurrent "РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ..." 0 {РџРѕРёСЃРє С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё}
+menuText R SearchHeader "Р—Р°РіРѕР»РѕРІРѕРє..." 0 {РџРѕРёСЃРє РїРѕ Р·Р°РіРѕР»РѕРІРєСѓ (РёРіСЂРѕРє, С‚СѓСЂРЅРёСЂ, Рё С‚. Рґ.)}
+menuText R SearchMaterial "РњР°С‚РµСЂРёР°Р»/Р·Р°РіРѕС‚РѕРІРєР°..." 0 {РџРѕРёСЃРє РїРѕ РјР°С‚РµСЂРёР°Р»Сѓ РёР»Рё РѕР±СЂР°Р·С†Р°Рј РїРѕР·РёС†РёРё}
+menuText R SearchUsing "РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С„Р°Р№Р» РїРѕРёСЃРєР°..." 0 {РџРѕРёСЃРє СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј С„Р°Р№Р»Р° СЃ СѓСЃС‚Р°РЅРѕРІРєР°РјРё РїРѕРёСЃРєР°}
 
 # Windows menu:
-menuText R Windows "Окна" 0
-menuText R WindowsComment "Редактор комментариев" 0 {Открыть/закрыть редактор комментариев}
-menuText R WindowsGList "Список партий" 0 {Открыть/закрыть окно списка партий}
-menuText R WindowsPGN "Окно PGN" 0 \
-  {Открыть/закрыть окно PGN (нотация партии)}
-menuText R WindowsPList "Поиск игрока" 2 {Открыть/закрыть окно поиска игрока}
-menuText R WindowsTmt "Поиск турниров" 0 {Открыть/закрыть окно поиска турниров}
-menuText R WindowsSwitcher "Переключатель баз данных" 1 \
-  {Открыть/закрыть окно переключателя баз данных}
-menuText R WindowsMaint "Окно поддержки" 1 \
-  {Открыть/закрыть окно поддержки}
-menuText R WindowsECO "Просмотр ECO" 4 {Открыть/закрыть окно просмотра ECO}
-menuText R WindowsRepertoire "Редактор репертуара" 2 \
-  {Открыть/закрыть окно редактора репертуара дебютов}
-menuText R WindowsStats "Окно статистики" 2 \
-  {Открыть/закрыть окно фильтрованной статистики}
-menuText R WindowsTree "Окно дерева" 10 {Открыть/закрыть окно дерева}
-menuText R WindowsTB "Окно таблиц эндшпиля" 10 \
-  {Открыть/закрыть окно таблиц эндшпиля}
-# ====== TODO To be translated ======
-menuText R WindowsBook "Book Window" 0 {Open/close the Book window}
-# ====== TODO To be translated ======
-menuText R WindowsCorrChess "Correspondence Window" 0 {Open/close the Correspondence window}
+menuText R Windows "РћРєРЅР°" 0
+menuText R WindowsComment "Р РµРґР°РєС‚РѕСЂ РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ СЂРµРґР°РєС‚РѕСЂ РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ}
+menuText R WindowsGList "РЎРїРёСЃРѕРє РїР°СЂС‚РёР№" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ СЃРїРёСЃРєР° РїР°СЂС‚РёР№}
+menuText R WindowsPGN "РћРєРЅРѕ PGN" 0 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ PGN (РЅРѕС‚Р°С†РёРё РїР°СЂС‚РёРё)}
+menuText R WindowsPList "РџРѕРёСЃРє РёРіСЂРѕРєР°" 2 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РїРѕРёСЃРєР° РёРіСЂРѕРєР°}
+menuText R WindowsTmt "РџРѕРёСЃРє С‚СѓСЂРЅРёСЂР°" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РїРѕРёСЃРєР° С‚СѓСЂРЅРёСЂРѕРІ}
+menuText R WindowsSwitcher "Р’С‹Р±РѕСЂ Р±Р°Р·С‹ РґР°РЅРЅС‹С…" 1 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РїРµСЂРµРєР»СЋС‡Р°С‚РµР»СЏ Р±Р°Р· РґР°РЅРЅС‹С…}
+menuText R WindowsMaint "РћРєРЅРѕ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ" 1 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РѕР±СЃР»СѓР¶РёРІР°РЅРёСЏ}
+menuText R WindowsECO "РџСЂРѕСЃРјРѕС‚СЂС‰РёРє ECO" 4 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РїСЂРѕСЃРјРѕС‚СЂР° ECO}
+menuText R WindowsRepertoire "Р РµРґР°РєС‚РѕСЂ СЂРµРїРµСЂС‚СѓР°СЂР°" 2 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ СЂРµРґР°РєС‚РѕСЂР° СЂРµРїРµСЂС‚СѓР°СЂР° РґРµР±СЋС‚РѕРІ}
+menuText R WindowsStats "РћРєРЅРѕ СЃС‚Р°С‚РёСЃС‚РёРєРё" 2 \
+  {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ С„РёР»СЊС‚СЂРѕРІР°РЅРЅРѕР№ СЃС‚Р°С‚РёСЃС‚РёРєРё}
+menuText R WindowsTree "РћРєРЅРѕ РґРµСЂРµРІР°" 10 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РґРµСЂРµРІР°}
+menuText R WindowsTB "РћРєРЅРѕ С‚Р°Р±Р»РёС† СЌРЅРґС€РїРёР»СЏ" 10 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ С‚Р°Р±Р»РёС† СЌРЅРґС€РїРёР»СЏ}
+menuText R WindowsBook "РћРєРЅРѕ РєРЅРёРіРё" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РєРЅРёРіРё}
+menuText R WindowsCorrChess "РћРєРЅРѕ РїРµСЂРµРїРёСЃРєРё" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РїРµСЂРµРїРёСЃРєРё}
 
 # Tools menu:
-menuText R Tools "Инструменты" 0
-menuText R ToolsAnalysis "Анализирующий движок..." 0 \
-  {Запустить/остановить шахматный анализирующий движок}
-menuText R ToolsAnalysis2 "Анализирующий движок №2..." 22 \
-  {Запустить/остановить второй шахматный анализирующий движок}
-menuText R ToolsCross "Турнирная таблица" 0 {Показать турнирную таблицу для этой партии}
-menuText R ToolsEmail "Менеджер писем" 0 \
-  {Открыть/закрыть окно шахматного менеджера писем}
-menuText R ToolsFilterGraph "Фильтрованная диаграмма" 0 \
-  {Открыть/закрыть окно фильтрованной диаграммы}
-# ====== TODO To be translated ======
-menuText R ToolsAbsFilterGraph "Abs. Filter Graph" 7 {Open/close the filter graph window for absolute values}
-menuText R ToolsOpReport "Дебютный отчет" 0 \
-  {Сгенерировать дебютный отчет для текущей позиции}
-# ====== TODO To be translated ======
-menuText R ToolsOpenBaseAsTree "Open base as tree" 0   {Open a base and use it in Tree window}
-# ====== TODO To be translated ======
-menuText R ToolsOpenRecentBaseAsTree "Open recent base as tree" 0   {Open a recent base and use it in Tree window}
-menuText R ToolsTracker "Положение фигуры"  4 {Открыть окно положения фигуры}
-# ====== TODO To be translated ======
-menuText R ToolsTraining "Training"  0 {Training tools (tactics, openings,...) }
-# ====== TODO To be translated ======
-menuText R ToolsTacticalGame "Tactical game"  0 {Play a game with tactics}
-# ====== TODO To be translated ======
-menuText R ToolsSeriousGame "Serious game"  0 {Play a serious game}
-# ====== TODO To be translated ======
-menuText R ToolsTrainOpenings "Openings"  0 {Train with a repertoire}
-# ====== TODO To be translated ======
-menuText R ToolsTrainReviewGame "Review game"  0 {Guess moves played in a game}
-# ====== TODO To be translated ======
-menuText R ToolsTrainTactics "Tactics"  0 {Solve tactics}
-# ====== TODO To be translated ======
-menuText R ToolsTrainCalvar "Calculation of variations"  0 {Calculation of variations training}
-# ====== TODO To be translated ======
-menuText R ToolsTrainFindBestMove "Find best move"  0 {Find best move}
-# ====== TODO To be translated ======
-menuText R ToolsTrainFics "Play on internet"  0 {Play on freechess.org}
-# ====== TODO To be translated ======
-menuText R ToolsEngineTournament "Engine tournament"  0 {Start a tournament between chess engines}
-# ====== TODO To be translated ======
-menuText R ToolsBookTuning "Book tuning" 0 {Book tuning}
-# ====== TODO To be translated ======
-menuText R ToolsConnectHardware "Connect Hardware" 0 {Connect external hardware}
-# ====== TODO To be translated ======
-menuText R ToolsConnectHardwareConfigure "Configure..." 0 {Configure external hardware and connection}
-# ====== TODO To be translated ======
-menuText R ToolsConnectHardwareNovagCitrineConnect "Connect Novag Citrine" 0 {Connect Novag Citrine}
-# ====== TODO To be translated ======
-menuText R ToolsConnectHardwareInputEngineConnect "Connect Input Engine" 0 {Connect Input Engine (e.g. DGT)}
-menuText R ToolsPInfo "Информация об игроке"  1 \
-  {Открыть/обновить окно информации об игроке}
-menuText R ToolsPlayerReport "Player Report..." 3 \
+menuText R Tools "РРЅСЃС‚СЂСѓРјРµРЅС‚С‹" 2
+menuText R ToolsAnalysis "РђРЅР°Р»РёС‚РёС‡РµСЃРєРёР№ РґРІРёР¶РѕРє в„–1..." 0 \
+  {Р—Р°РїСѓСЃС‚РёС‚СЊ/РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРІС‹Р№ Р°РЅР°Р»РёС‚РёС‡РµСЃРєРёР№ С€Р°С…РјР°С‚РЅС‹Р№ РґРІРёР¶РѕРє}
+menuText R ToolsAnalysis2 "РђРЅР°Р»РёС‚РёС‡РµСЃРєРёР№ РґРІРёР¶РѕРє в„–2..." 22 \
+  {Р—Р°РїСѓСЃС‚РёС‚СЊ/РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‚РѕСЂРѕР№ Р°РЅР°Р»РёС‚РёС‡РµСЃРєРёР№ С€Р°С…РјР°С‚РЅС‹Р№ РґРІРёР¶РѕРє}
+menuText R ToolsCross "РўСѓСЂРЅРёСЂРЅР°СЏ С‚Р°Р±Р»РёС†Р°" 0 {РџРѕРєР°Р·Р°С‚СЊ С‚СѓСЂРЅРёСЂРЅСѓСЋ С‚Р°Р±Р»РёС†Сѓ РґР»СЏ СЌС‚РѕР№ РїР°СЂС‚РёРё}
+menuText R ToolsEmail "РњРµРЅРµРґР¶РµСЂ РїРёСЃРµРј" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ С€Р°С…РјР°С‚РЅРѕРіРѕ РјРµРЅРµРґР¶РµСЂР° РїРёСЃРµРј}
+menuText R ToolsFilterGraph "Р”РёР°РіСЂР°РјРјР° С„РёР»СЊС‚СЂР°" 0 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ С„РёР»СЊС‚СЂРѕРІР°РЅРЅРѕР№ РґРёР°РіСЂР°РјРјС‹}
+menuText R ToolsAbsFilterGraph "Р”РёР°РіСЂР°РјРјР° С„РёР»СЊС‚СЂР° Р°Р±СЃРѕР»СЋС‚РЅС‹С… Р·РЅР°С‡РµРЅРёР№" 7 {РћС‚РєСЂС‹С‚СЊ/Р·Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РґРёР°РіСЂР°РјРјС‹ С„РёР»СЊС‚СЂР° Р°Р±СЃРѕР»СЋС‚РЅС‹С… Р·РЅР°С‡РµРЅРёР№}
+menuText R ToolsOpReport "Р”РµР±СЋС‚РЅС‹Р№ РѕС‚С‡С‘С‚" 0 {Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ РґРµР±СЋС‚РЅС‹Р№ РѕС‚С‡С‘С‚ РґР»СЏ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё}
+menuText R ToolsOpenBaseAsTree "РћС‚РєСЂС‹С‚СЊ Р±Р°Р·Сѓ РІ РІРёРґРµ РґРµСЂРµРІР°" 0 {РћС‚РєСЂС‹РІР°РµС‚ Р±Р°Р·Сѓ Рё РёСЃРїРѕР»СЊР·СѓРµС‚ РµС‘ РІ РґСЂРµРІРѕРІРёРґРЅРѕРј РѕРєРЅРµ}
+menuText R ToolsOpenRecentBaseAsTree "РћС‚РєСЂС‹С‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ Р±Р°Р·Сѓ РєР°Рє РґРµСЂРµРІРѕ" 0   {РћС‚РєСЂС‹РІР°РµС‚ РїРѕСЃР»РµРґРЅСЋСЋ Р±Р°Р·Сѓ Рё РёСЃРїРѕР»СЊР·СѓРµС‚ РµС‘ РІ РґСЂРµРІРѕРІРёРґРЅРѕРј РѕРєРЅРµ}
+menuText R ToolsTracker "РџРѕР»РѕР¶РµРЅРёРµ С„РёРіСѓСЂС‹"  4 {РћС‚РєСЂС‹С‚СЊ РѕРєРЅРѕ РїРѕР»РѕР¶РµРЅРёСЏ С„РёРіСѓСЂС‹}
+menuText R ToolsTraining "РћР±СѓС‡РµРЅРёРµ"  0 {РћР±СѓС‡Р°СЋС‰РёРµ РёРЅСЃС‚СЂСѓРјРµРЅС‚С‹ (С‚Р°РєС‚РёРєР°, РґРµР±СЋС‚С‹, ...)}
+menuText R ToolsTacticalGame "РўР°РєС‚РёС‡РµСЃРєРёРµ РїР°СЂС‚РёРё"  0 {РРіСЂР°С‚СЊ С‚Р°РєС‚РёС‡РµСЃРєРёРµ РїР°СЂС‚РёРё}
+menuText R ToolsSeriousGame "РЎРµСЂСЊС‘Р·РЅР°СЏ РёРіСЂР°"  0 {РРіСЂР°С‚СЊ СЃРµСЂСЊС‘Р·РЅСѓСЋ РїР°СЂС‚РёСЋ}
+menuText R ToolsTrainOpenings "Р”РµР±СЋС‚С‹"  0 {РўСЂРµРЅРёСЂРѕРІРєРё СЃ СЂРµРїРµСЂС‚СѓР°СЂРѕРј}
+menuText R ToolsTrainReviewGame "РћР±Р·РѕСЂ РїР°СЂС‚РёРё"  0 {РћР±РґСѓРјС‹РІР°РЅРёРµ СЃРґРµР»Р°РЅРЅС‹С… С…РѕРґРѕРІ}
+menuText R ToolsTrainTactics "РўР°РєС‚РёРєР°"  0 {Р РµС€Р°С‚СЊ С‚Р°РєС‚РёС‡РµСЃРєРёРµ Р·Р°РґР°С‡Рё}
+menuText R ToolsTrainCalvar "Р Р°СЃС‡С‘С‚ РІР°СЂРёР°РЅС‚РѕРІ"  0 {РўСЂРµРЅРёСЂРѕРІРєР° СЂР°СЃС‡С‘С‚Р° РІР°СЂРёР°РЅС‚РѕРІ}
+menuText R ToolsTrainFindBestMove "РџРѕРёСЃРє Р»СѓС‡С€РµРіРѕ С…РѕРґР°"  0 {РСЃРєР°С‚СЊ Р»СѓС‡С€РёР№ С…РѕРґ}
+menuText R ToolsTrainFics "РРіСЂР°С‚СЊ РЅР° FICS"  0 {РРіСЂР° РЅР° СЃРµСЂРІРµСЂРµ freechess.org}
+menuText R ToolsEngineTournament "РўСѓСЂРЅРёСЂ РґРІРёР¶РєРѕРІ"  0 {РќР°С‡Р°С‚СЊ С‚СѓСЂРЅРёСЂ РјРµР¶РґСѓ С€Р°С…РјР°С‚РЅС‹РјРё РґРІРёР¶РєР°РјРё}
+menuText R ToolsBookTuning "РќР°СЃС‚СЂРѕР№РєР° РєРЅРёРіРё" 0 {РќР°СЃС‚СЂРѕР№РєР° РєРЅРёРіРё}
+menuText R ToolsConnectHardware "РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЋ" 0 {РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє РІРЅРµС€РЅРµРјСѓ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЋ}
+menuText R ToolsConnectHardwareConfigure "РќР°СЃС‚СЂРѕР№РєР°..." 0 {РќР°СЃС‚СЂРѕР№РєР° РІРЅРµС€РЅРµРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ Рё РїРѕРґРєР»СЋС‡РµРЅРёСЏ}
+menuText R ToolsConnectHardwareNovagCitrineConnect "РЎРѕРµРґРёРЅРµРЅРёРµ СЃ РєРѕРјРїСЊСЋС‚РµСЂРѕРј Novag Citrine" 0 {РЎРѕРµРґРёРЅРµРЅРёРµ СЃ РєРѕРјРїСЊСЋС‚РµСЂРѕРј Novag Citrine}
+menuText R ToolsConnectHardwareInputEngineConnect "РЎРѕРµРґРёРЅРµРЅРёРµ СЃ РІС…РѕРґСЏС‰РёРј РґРІРёР¶РєРѕРј" 0 {РЎРѕРµРґРёРЅРµРЅРёРµ Scid СЃ РІС…РѕРґСЏС‰РёРј РґРІРёР¶РєРѕРј (РЅР°РїСЂРёРјРµСЂ, РґРѕСЃРєР° DGT)}
+
+menuText R ToolsPInfo "РРЅС„РѕСЂРјР°С†РёСЏ РѕР± РёРіСЂРѕРєРµ"  1 \
+  {РћС‚РєСЂС‹С‚СЊ/РѕР±РЅРѕРІРёС‚СЊ РѕРєРЅРѕ РёРЅС„РѕСЂРјР°С†РёРё РѕР± РёРіСЂРѕРєРµ}
+menuText R ToolsPlayerReport "РћС‚С‡С‘С‚ РѕР± РёРіСЂРѕРєРµ..." 3 \
   {Generate a player report}
-menuText R ToolsRating "Диаграмма рейтинга" 1 \
-  {Диаграмма истории рейтинга для игроков текущей партии}
-menuText R ToolsScore "Диаграмма счета" 2 {Показать окно диаграммы счета}
-menuText R ToolsExpCurrent "Экспорт текущей партии" 0 \
-  {Записать текущую партию в текстовый файл}
-menuText R ToolsExpCurrentPGN "Экспорт партии в файл PGN..." 0 \
-  {Записать текущую партию в файл PGN}
-menuText R ToolsExpCurrentHTML "Экспорт партии в файл HTML..." 1 \
-  {Записать текущую партию в файл HTML}
-# ====== TODO To be translated ======
-menuText R ToolsExpCurrentHTMLJS "Export Game to HTML and JavaScript File..." 15 {Write current game to a HTML and JavaScript file}  
-menuText R ToolsExpCurrentLaTeX "Экспорт партии в файл LaTeX..." 2 \
-  {Записать текущую партию в файл LaTeX}
-menuText R ToolsExpFilter "Экспорт всех отфильтрованных партий" 11 \
-  {Записать все отфильтрованные партии в текстовый файл}
-menuText R ToolsExpFilterPGN "Экспорт отфильтрованных партий в файл PGN..." 1 \
-  {Записать все отфильтрованные партии в файл PGN}
-menuText R ToolsExpFilterHTML "Экспорт отфильтрованных партий в файл HTML..." 2 \
-  {Записать все отфильтрованные партии в файл HTML}
-# ====== TODO To be translated ======
-menuText R ToolsExpFilterHTMLJS "Export Filter to HTML and JavaScript File..." 17 {Write all filtered games to a HTML and JavaScript file}  
-menuText R ToolsExpFilterLaTeX "Экспорт отфильтрованных партий в файл LaTeX..." 3 \
-  {Записать все отфильтрованные партии в файл LaTeX}
-menuText R ToolsImportOne "Импорт одной партии PGN..." 0 \
-  {Импорт партии из текстового файла PGN}
-menuText R ToolsImportFile "Импорт файла партий PGN..." 9 \
-  {Импорт партий из файла PGN}
-# ====== TODO To be translated ======
-menuText R ToolsStartEngine1 "Start engine 1" 0  {Start engine 1}
-# ====== TODO To be translated ======
-menuText R ToolsStartEngine2 "Start engine 2" 0  {Start engine 2}
-# ====== TODO To be translated ======
-menuText R ToolsCaptureBoard "Capture Current Board..." 0  {Save the current board as an image.}
-# ====== TODO To be translated ======
-menuText R Play "Play" 0
-# ====== TODO To be translated ======
-menuText R CorrespondenceChess "Correspondence Chess" 0 {Functions for eMail and Xfcc based correspondence chess}
-# ====== TODO To be translated ======
-menuText R CCConfigure "Configure..." 0 {Configure external tools and general setup}
-# ====== TODO To be translated ======
-menuText R CCConfigRelay "Configure observations..." 10 {Configure games to be observed}
-# ====== TODO To be translated ======
-menuText R CCOpenDB "Open Database..." 0 {Open the default Correspondence database}
-# ====== TODO To be translated ======
-menuText R CCRetrieve "Retrieve Games" 0 {Retrieve games via external (Xfcc-)helper}
-# ====== TODO To be translated ======
-menuText R CCInbox "Process Inobx" 0 {Process all files in scids Inbox}
-# ====== TODO To be translated ======
-menuText R CCSend "Send Move" 0 {Send your move via eMail or external (Xfcc-)helper}
-# ====== TODO To be translated ======
-menuText R CCResign "Resign" 0 {Resign (not via eMail)}
-# ====== TODO To be translated ======
-menuText R CCClaimDraw "Claim Draw" 0 {Send move and claim a draw (not via eMail)}
-# ====== TODO To be translated ======
-menuText R CCOfferDraw "Offer Draw" 0 {Send move and offer a draw (not via eMail)}
-# ====== TODO To be translated ======
-menuText R CCAcceptDraw "Accept Draw" 0 {Accept a draw offer (not via eMail)}
-# ====== TODO To be translated ======
-menuText R CCNewMailGame "New eMail Game..." 0 {Start a new eMail game}
-# ====== TODO To be translated ======
-menuText R CCMailMove "Mail Move..." 0 {Send the move via eMail to the opponent}
-# ====== TODO To be translated ======
-menuText R CCGamePage "Game Page..." 0 {Call up the game via the web browser}
-# ====== TODO To be translated ======
-menuText R CCEditCopy "Copy Gamelist to Clipbase" 0 {Copy the games as CSV list to clipbase}
+menuText R ToolsRating "Р”РёР°РіСЂР°РјРјР° СЂРµР№С‚РёРЅРіР°" 1 \
+  {Р”РёР°РіСЂР°РјРјР° РёСЃС‚РѕСЂРёРё СЂРµР№С‚РёРЅРіР° РґР»СЏ РёРіСЂРѕРєРѕРІ С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРё}
+menuText R ToolsScore "Р”РёР°РіСЂР°РјРјР° СЃС‡С‘С‚Р°" 2 {РџРѕРєР°Р·Р°С‚СЊ РѕРєРЅРѕ РґРёР°РіСЂР°РјРјС‹ СЃС‡С‘С‚Р°}
+menuText R ToolsExpCurrent "Р­РєСЃРїРѕСЂС‚ С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРё" 0 \
+  {Р—Р°РїРёСЃР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ РІ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р»}
+menuText R ToolsExpCurrentPGN "Р­РєСЃРїРѕСЂС‚ РїР°СЂС‚РёРё РІ С„Р°Р№Р» PGN..." 0 \
+  {Р—Р°РїРёСЃР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ РІ С„Р°Р№Р» PGN}
+menuText R ToolsExpCurrentHTML "Р­РєСЃРїРѕСЂС‚ РїР°СЂС‚РёРё РІ С„Р°Р№Р» HTML..." 0 \
+  {Р—Р°РїРёСЃР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ РІ С„Р°Р№Р» HTML}
+menuText R ToolsExpCurrentHTMLJS "Р­РєСЃРїРѕСЂС‚ РїР°СЂС‚РёРё РІ HTML Рё JavaScript С„Р°Р№Р»..." 0 {Р—Р°РїРёСЃР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ HTML Рё JavaScript С„Р°Р№Р»}
+menuText R ToolsExpCurrentLaTeX "Р­РєСЃРїРѕСЂС‚ РїР°СЂС‚РёРё РІ С„Р°Р№Р» LaTeX..." 0 \
+  {Р—Р°РїРёСЃР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ РІ С„Р°Р№Р» LaTeX}
+menuText R ToolsExpFilter "Р­РєСЃРїРѕСЂС‚ РІСЃРµС… С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№" 11 \
+  {Р—Р°РїРёСЃР°С‚СЊ РІСЃРµ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё РІ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р»}
+menuText R ToolsExpFilterPGN "Р­РєСЃРїРѕСЂС‚ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№ РІ С„Р°Р№Р» PGN..." 0 \
+  {Р—Р°РїРёСЃР°С‚СЊ РІСЃРµ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё РІ С„Р°Р№Р» PGN}
+menuText R ToolsExpFilterHTML "Р­РєСЃРїРѕСЂС‚ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№ РІ С„Р°Р№Р» HTML..." 0 \
+  {Р—Р°РїРёСЃР°С‚СЊ РІСЃРµ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё РІ С„Р°Р№Р» HTML}
+menuText R ToolsExpFilterHTMLJS "Р­РєСЃРїРѕСЂС‚ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№ РІ HTML Рё JavaScript С„Р°Р№Р»..." 17 {Р—Р°РїРёСЃС‹РІР°РµС‚ РІСЃРµ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё РІ HTML Рё JavaScript С„Р°Р№Р»}
+menuText R ToolsExpFilterLaTeX "Р­РєСЃРїРѕСЂС‚ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№ РІ С„Р°Р№Р» LaTeX..." 3 \
+  {Р—Р°РїРёСЃР°С‚СЊ РІСЃРµ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё РІ С„Р°Р№Р» LaTeX}
+menuText R ToolsImportOne "РРјРїРѕСЂС‚ РѕРґРЅРѕР№ РїР°СЂС‚РёРё PGN..." 0 \
+  {РРјРїРѕСЂС‚ РїР°СЂС‚РёРё РёР· С‚РµРєСЃС‚РѕРІРѕРіРѕ С„Р°Р№Р»Р° PGN}
+menuText R ToolsImportFile "РРјРїРѕСЂС‚ С„Р°Р№Р»Р° РїР°СЂС‚РёР№ PGN..." 9 {РРјРїРѕСЂС‚ РїР°СЂС‚РёР№ РёР· С„Р°Р№Р»Р° PGN}
+menuText R ToolsStartEngine1 "Р—Р°РїСѓСЃС‚РёС‚СЊ РґРІРёР¶РѕРє 1" 0  {Р—Р°РїСѓСЃРєР°РµС‚ РґРІРёР¶РѕРє 1}
+menuText R ToolsStartEngine2 "Р—Р°РїСѓСЃС‚РёС‚СЊ РґРІРёР¶РѕРє 2" 0  {Р—Р°РїСѓСЃРєР°РµС‚ РґРІРёР¶РѕРє 2}
+menuText R ToolsCaptureBoard "Р¤РёРєСЃРёСЂРѕРІР°С‚СЊ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ..." 0  {РЎРѕС…СЂР°РЅРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РєР°Рє РёР·РѕР±СЂР°Р¶РµРЅРёРµ.}
+
+# Play menue
+menuText R Play "РРіСЂР°С‚СЊ" 1
+
+# --- Correspondence Chess
+menuText R CorrespondenceChess "РЁР°С…РјР°С‚С‹ РїРѕ РїРµСЂРµРїРёСЃРєРµ" 0 {Р¤СѓРЅРєС†РёРё РґР»СЏ РёРіСЂС‹ РІ С€Р°С…РјР°С‚С‹ РїРѕ РїРµСЂРµРїРёСЃРєРµ С‡РµСЂРµР· СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ Рё Xfcc}
+menuText R CCConfigure "РќР°СЃС‚СЂРѕР№РєР°..." 0 {РќР°СЃС‚СЂРѕР№РєРё РІРЅРµС€РЅРёС… РёРЅСЃС‚СЂСѓРјРµРЅС‚РѕРІ Рё РѕСЃРЅРѕРІРЅС‹Рµ СѓСЃС‚Р°РЅРѕРІРєРё}
+menuText R CCConfigRelay "РќР°СЃС‚СЂРѕР№РєР° СЃР»РµР¶РµРЅРёСЏ.." 10 {РќР°СЃС‚СЂРѕРёС‚СЊ РїР°СЂС‚РёРё РґР»СЏ РЅР°Р±Р»СЋРґРµРЅРёСЏ}
+menuText R CCOpenDB "РћС‚РєСЂС‹С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…..." 0 {РћС‚РєСЂС‹С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РїРµСЂРµРїРёСЃРєРё РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ}
+menuText R CCRetrieve "РџРѕР»СѓС‡РёС‚СЊ РїР°СЂС‚РёРё" 0 {РџРѕР»СѓС‡РёС‚СЊ РїР°СЂС‚РёРё С‡РµСЂРµР· РІРЅРµС€РЅРёР№ (Xfcc-)РїРѕРјРѕС‰РЅРёРє}
+menuText R CCInbox "РћР±СЂР°Р±РѕС‚Р°С‚СЊ Р’С…РѕРґСЏС‰РёРµ" 0 {РћР±СЂР°Р±РѕС‚Р°С‚СЊ РІСЃРµ С„Р°Р№Р»С‹ РІ РїР°РїРєРµ Р’С…РѕРґСЏС‰РёРµ}
+menuText R CCSend "РџРѕСЃР»Р°С‚СЊ С…РѕРґ" 0 {РџРѕСЃР»Р°С‚СЊ РІР°С€ С…РѕРґ С‡РµСЂРµР· СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ РёР»Рё РІРЅРµС€РЅРёР№ (Xfcc-)РїРѕРјРѕС‰РЅРёРє}
+
+menuText R CCResign "РЎРґР°С‚СЊСЃСЏ" 0 {РЎРґР°С‚СЊСЃСЏ (РЅРµ С‡РµСЂРµР· СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ)}
+menuText R CCClaimDraw "РўСЂРµР±РѕРІР°С‚СЊ РЅРёС‡СЊСЋ" 0 {РџРѕСЃР»Р°С‚СЊ С…РѕРґ Рё РїРѕС‚СЂРµР±РѕРІР°С‚СЊ РЅРёС‡СЊСЋ (РЅРµ С‡РµСЂРµР· СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ)}
+menuText R CCOfferDraw "РџСЂРµРґР»РѕР¶РёС‚СЊ РЅРёС‡СЊСЋ" 0 {РџРѕСЃР»Р°С‚СЊ С…РѕРґ Рё РїСЂРµРґР»РѕР¶РёС‚СЊ РЅРёС‡СЊСЋ (РЅРµ С‡РµСЂРµР· СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ)}
+menuText R CCAcceptDraw "РџСЂРёРЅСЏС‚СЊ РЅРёС‡СЊСЋ" 0 {РџСЂРёРЅСЏС‚СЊ Р·Р°РїСЂРѕСЃ Рѕ РЅРёС‡СЊРµР№ (РЅРµ С‡РµСЂРµР· СЌР»РµРєС‚СЂРѕРЅРЅСѓСЋ РїРѕС‡С‚Сѓ)}
+
+menuText R CCNewMailGame "РќРѕРІР°СЏ РїР°СЂС‚РёСЏ РїРѕ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚Рµ..." 0 {РќР°С‡РёРЅР°РµС‚ РЅРѕРІСѓСЋ РїР°СЂС‚РёСЋ РїРѕ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚Рµ}
+menuText R CCMailMove "РџРёСЃСЊРјРѕ СЃ С…РѕРґРѕРј..." 0 {РџРѕСЃР»Р°С‚СЊ СЃРѕРїРµСЂРЅРёРєСѓ РїРёСЃСЊРјРѕ СЃ С…РѕРґРѕРј РїРѕ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚Рµ}
+menuText R CCGamePage "РЎС‚СЂР°РЅРёС†Р° РїР°СЂС‚РёРё..." 0 {РџРѕР·РІР°С‚СЊ РІ РїР°СЂС‚РёСЋ С‡РµСЂРµР· РІРµР±-Р±СЂР°СѓР·РµСЂ}
+
+# menu in cc window:
+menuText R CCEditCopy "РљРѕРїРёСЂРѕРІР°С‚СЊ СЃРїРёСЃРѕРє РїР°СЂС‚РёР№ РІ Р±СѓС„РµСЂРЅСѓСЋ Р±Р°Р·Сѓ" 0 {РљРѕРїРёСЂСѓРµС‚ РїР°СЂС‚РёРё РєР°Рє CSV СЃРїРёСЃРѕРє РІ Р±СѓС„РµСЂРЅСѓСЋ Р±Р°Р·Сѓ}
+
+#  B    GHiJKL    Q  TUV XYZ
 
 # Options menu:
-menuText R Options "Установки" 0
-menuText R OptionsBoard "Chessboard" 0 {Chess board appearance options}
-menuText R OptionsBoardSize "Размер доски" 0 {Изменить размер доски}
-menuText R OptionsBoardPieces "Стиль фигур" 0 {Изменить стиль фигур}
-menuText R OptionsBoardColors "Цвета..." 0 {Изменить цвета доски}
-# ====== TODO To be translated ======
-menuText R OptionsBoardGraphics "Squares..." 0 {Select textures for squares}
-# ====== TODO To be translated ======
-translate R OptionsBGW {Select texture for squares}
-# ====== TODO To be translated ======
-translate R OptionsBoardGraphicsText {Select graphic files for white and black squares:}
-menuText R OptionsBoardNames "My Player Names..." 0 {Edit my player names}
-menuText R OptionsExport "Экспорт" 0 {Изменить установки экспорта}
-menuText R OptionsFonts "Шрифты" 0 {Изменить шрифты}
-menuText R OptionsFontsRegular "Нормальный" 0 {Изменить нормальные шрифты}
-menuText R OptionsFontsMenu "Меню" 0 {Изменить шрифты меню}
-menuText R OptionsFontsSmall "Малые" 1 {Изменить малые шрифты}
-# ====== TODO To be translated ======
-menuText R OptionsFontsTiny "Tiny" 0 {Change the tiny font}
-menuText R OptionsFontsFixed "Фиксированный" 0 {Изменить фиксированные шрифты}
-menuText R OptionsGInfo "Информация о партии" 0 {Установки информации о партии}
-menuText R OptionsLanguage "Язык" 0 {Меню выбора языка}
-# ====== TODO To be translated ======
-menuText R OptionsMovesTranslatePieces "Translate pieces" 0 {Translate first letter of pieces}
-# ====== TODO To be translated ======
-menuText R OptionsMovesHighlightLastMove "Highlight last move" 0 {Highlight last move}
-# ====== TODO To be translated ======
-menuText R OptionsMovesHighlightLastMoveDisplay "Show" 0 {Display last move Highlight}
-# ====== TODO To be translated ======
-menuText R OptionsMovesHighlightLastMoveWidth "Width" 0 {Thickness of line}
-# ====== TODO To be translated ======
-menuText R OptionsMovesHighlightLastMoveColor "Color" 0 {Color of line}
-# ====== TODO To be translated ======
-menuText R OptionsMovesHighlightLastMoveArrow "include Arrow" 0 {Include Arrow with Highlight}
-menuText R OptionsMoves "Ходы" 0 {Установки для ходов}
-menuText R OptionsMovesAsk "Спросить перед заменой ходов" 0 \
-  {Спросить перед перезаписью любых ходов}
-menuText R OptionsMovesAnimate "Время анимации" 1 \
-  {Установить количество времени, используемое для анимации ходов}
-menuText R OptionsMovesDelay "Временная задержка автоигры..." 0 \
-  {Установить время задержки для режима автоигры}
-menuText R OptionsMovesCoord "Координаты ходов" 1 \
-  {Принять стиль записи ходов с координатами ("g1f3")}
-menuText R OptionsMovesSuggest "Показать советуемые ходы" 0 \
-  {Включить/выключить советы о ходе}
-# ====== TODO To be translated ======
-menuText R OptionsShowVarPopup "Show variations window" 0 {Turn on/off the display of a variations window}  
-# ====== TODO To be translated ======
-menuText R OptionsMovesSpace "Add spaces after move number" 0 {Add spaces after move number}  
-menuText R OptionsMovesKey "Клавиатурное завершение" 0 \
-  {Включить/выключить автозавершение клавиатурных ходов}
-# ====== TODO To be translated ======
-menuText R OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
-menuText R OptionsNumbers "Числовой формат" 0 {Выбрать числовой формат}
-menuText R OptionsStartup "Запуск" 0 {Выбрать окна, открывающиеся при запуске}
-# ====== TODO To be translated ======
-menuText R OptionsTheme "Theme" 0 {Change look of interface}
-menuText R OptionsWindows "Окна" 0 {Установки окон}
-menuText R OptionsWindowsIconify "Авто-иконизация" 0 \
-  {Иконизировать все окна, когда иконизируется основное окно}
-menuText R OptionsWindowsRaise "Авто-выдвижение" 1 \
-  {Выдвигатьть определенные окна (например, полосу прогресса) всякий раз, когда они скрыты}
-# ====== TODO To be translated ======
-menuText R OptionsSounds "Sounds..." 2 {Configure move announcement sounds}
-# ====== TODO To be translated ======
-menuText R OptionsWindowsDock "Dock windows" 0 {Dock windows}
-# ====== TODO To be translated ======
-menuText R OptionsWindowsSaveLayout "Save layout" 0 {Save layout}
-# ====== TODO To be translated ======
-menuText R OptionsWindowsRestoreLayout "Restore layout" 0 {Restore layout}
-# ====== TODO To be translated ======
-menuText R OptionsWindowsShowGameInfo "Show game info" 0 {Show game info}
-# ====== TODO To be translated ======
-menuText R OptionsWindowsAutoLoadLayout "Auto load first layout" 0 {Auto load first layout at startup}
-menuText R OptionsToolbar "Инструментальная панель" 0 {Конфигурация инструментальной панели основного окна}
-menuText R OptionsECO "Загрузить файл ECO..." 2 { Загрузить файл классификации ECO}
-menuText R OptionsSpell "Загрузить файл проверки правописания..." 4 \
-  {Загрузить Scid файл проверки правописания}
-menuText R OptionsTable "Директория таблиц..." 15 \
-  {Выбрать файл таблицы; все таблицы в этой директории будут использованы}
-menuText R OptionsRecent "Недавно используемые файлы..." 2 \
-  {Изменить количество недавно используемых файлов в меню Файл}
-# ====== TODO To be translated ======
-menuText R OptionsBooksDir "Books directory..." 0 {Sets the opening books directory}
-# ====== TODO To be translated ======
-menuText R OptionsTacticsBasesDir "Bases directory..." 0 {Sets the tactics (training) bases directory}
-menuText R OptionsSave "Сохранить установки" 0 \
-  "Сохранить все установки в файл $::optionsFile"
-menuText R OptionsAutoSave "Автосохранение установок при выходе" 0 \
-  {Автосохранение всех установок при выходе из программы}
+menuText R Options "РќР°СЃС‚СЂРѕР№РєРё" 0
+menuText R OptionsBoard "РЁР°С…РјР°С‚РЅР°СЏ РґРѕСЃРєР°" 0 {РќР°СЃС‚СЂРѕР№РєРё РІРЅРµС€РЅРµРіРѕ РІРёРґР° С€Р°С…РјР°С‚РЅРѕР№ РґРѕСЃРєРё}
+menuText R OptionsBoardSize "Р Р°Р·РјРµСЂ РґРѕСЃРєРё" 0 {РР·РјРµРЅРёС‚СЊ СЂР°Р·РјРµСЂ РґРѕСЃРєРё}
+menuText R OptionsBoardPieces "РЎС‚РёР»СЊ С„РёРіСѓСЂ" 0 {РР·РјРµРЅРёС‚СЊ СЃС‚РёР»СЊ С„РёРіСѓСЂ}
+menuText R OptionsBoardColors "Р¦РІРµС‚Р°..." 0 {РР·РјРµРЅРёС‚СЊ С†РІРµС‚Р° РґРѕСЃРєРё}
+#Klimmek
+menuText R OptionsBoardGraphics "РџРѕР»Рµ..." 0 {Р’С‹Р±РѕСЂ С‚РµРєСЃС‚СѓСЂ РґР»СЏ РїРѕР»РµР№}
+translate R OptionsBGW {Р’С‹Р±РѕСЂ С‚РµРєСЃС‚СѓСЂ РґР»СЏ РїРѕР»РµР№}
+translate R OptionsBoardGraphicsText {Р’С‹Р±РѕСЂ РіСЂР°С„РёС‡РµСЃРєРёС… С„Р°Р№Р»РѕРІ РґР»СЏ Р±РµР»С‹С… Рё С‡С‘СЂРЅС‹С… РїРѕР»РµР№:}
+menuText R OptionsBoardNames "РРјСЏ РјРѕРµРіРѕ РёРіСЂРѕРєР°..." 0 {Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РёРјСЏ РјРѕРµРіРѕ РёРіСЂРѕРєР°}
+menuText R OptionsExport "Р­РєСЃРїРѕСЂС‚" 0 {РР·РјРµРЅРёС‚СЊ СѓСЃС‚Р°РЅРѕРІРєРё СЌРєСЃРїРѕСЂС‚Р°}
+menuText R OptionsFonts "РЁСЂРёС„С‚С‹" 0 {РР·РјРµРЅРёС‚СЊ С€СЂРёС„С‚С‹}
+menuText R OptionsFontsRegular "РћР±С‹С‡РЅС‹Рµ" 0 {РР·РјРµРЅРёС‚СЊ РѕР±С‹С‡РЅС‹Рµ С€СЂРёС„С‚С‹}
+menuText R OptionsFontsMenu "РњРµРЅСЋ" 0 {РР·РјРµРЅРёС‚СЊ С€СЂРёС„С‚С‹ РјРµРЅСЋ}
+menuText R OptionsFontsSmall "РњР°Р»С‹Рµ" 1 {РР·РјРµРЅРёС‚СЊ РјР°Р»С‹Рµ С€СЂРёС„С‚С‹}
+menuText R OptionsFontsTiny "РљСЂРѕС€РµС‡РЅС‹Рµ" 0 {РР·РјРµРЅРёС‚СЊ РєСЂРѕС€РµС‡РЅС‹Рµ С€СЂРёС„С‚С‹}
+menuText R OptionsFontsFixed "РњРѕРЅРѕС€РёСЂРёРЅРЅС‹Рµ" 0 {РР·РјРµРЅРёС‚СЊ РјРѕРЅРѕС€РёСЂРёРЅРЅС‹Рµ С€СЂРёС„С‚С‹}
+menuText R OptionsGInfo "РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїР°СЂС‚РёРё" 0 {РќР°СЃС‚СЂРѕР№РєРё РёРЅС„РѕСЂРјР°С†РёРё Рѕ РїР°СЂС‚РёРё}
+menuText R OptionsLanguage "РЇР·С‹Рє" 0 {РњРµРЅСЋ РІС‹Р±РѕСЂР° СЏР·С‹РєР°}
+menuText R OptionsMovesTranslatePieces "РџРµСЂРµРІРѕРґ С„РёРіСѓСЂ" 0 {РџРµСЂРµРІРµСЃС‚Рё РїРµСЂРІС‹Р№ СЃРёРјРІРѕР» С„РёРіСѓСЂС‹}
+menuText R OptionsMovesHighlightLastMove "РџРѕРґСЃРІРµС‚РёС‚СЊ РїРѕСЃР»РµРґРЅРёР№ С…РѕРґ" 0 {РџРѕРґСЃРІРµС‚РёС‚СЊ РїРѕСЃР»РµРґРЅРёР№ С…РѕРґ}
+menuText R OptionsMovesHighlightLastMoveDisplay "РџРѕРєР°Р·Р°С‚СЊ" 0 {РџРѕРєР°Р·Р°С‚СЊ  РїРѕСЃР»РµРґРЅРёРµ РїРѕРґСЃРІРµС‡РµРЅРЅС‹Рµ С…РѕРґС‹}
+menuText R OptionsMovesHighlightLastMoveWidth "РўРѕР»С‰РёРЅР°" 0 {РўРѕР»С‰РёРЅР° Р»РёРЅРёРё}
+menuText R OptionsMovesHighlightLastMoveColor "Р¦РІРµС‚" 0 {Р¦РІРµС‚ Р»РёРЅРёРё}
+menuText R OptionsMovesHighlightLastMoveArrow "Р’РєР»СЋС‡РёС‚СЊ СЃС‚СЂРµР»РєРё" 0 {Р’РєР»СЋС‡РёС‚СЊ СЃС‚СЂРµР»РєРё СЃ РїРѕРґСЃРІРµС‚РєРѕР№}
+menuText R OptionsMoves "РҐРѕРґС‹" 0 {РЈСЃС‚Р°РЅРѕРІРєРё РґР»СЏ С…РѕРґРѕРІ}
+menuText R OptionsMovesAsk "РЎРїСЂРѕСЃРёС‚СЊ РїРµСЂРµРґ Р·Р°РјРµРЅРѕР№ С…РѕРґРѕРІ" 0 \
+  {РЎРїСЂРѕСЃРёС‚СЊ РїРµСЂРµРґ РїРµСЂРµР·Р°РїРёСЃСЊСЋ Р»СЋР±С‹С… С…РѕРґРѕРІ}
+menuText R OptionsMovesAnimate "Р’СЂРµРјСЏ Р°РЅРёРјР°С†РёРё" 1 \
+  {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІСЂРµРјРµРЅРё, РёСЃРїРѕР»СЊР·СѓРµРјРѕРµ РґР»СЏ Р°РЅРёРјР°С†РёРё С…РѕРґРѕРІ}
+menuText R OptionsMovesDelay "Р’СЂРµРјРµРЅРЅР°СЏ Р·Р°РґРµСЂР¶РєР° Р°РІС‚Рѕ-РёРіСЂС‹..." 0 \
+  {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµРјСЏ Р·Р°РґРµСЂР¶РєРё РґР»СЏ СЂРµР¶РёРјР° Р°РІС‚Рѕ-РёРіСЂС‹}
+menuText R OptionsMovesCoord "РљРѕРѕСЂРґРёРЅР°С‚С‹ С…РѕРґРѕРІ" 1 \
+  {РџСЂРёРЅСЏС‚СЊ СЃС‚РёР»СЊ Р·Р°РїРёСЃРё С…РѕРґРѕРІ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё ("g1f3")}
+menuText R OptionsMovesSuggest "РџРѕРєР°Р·Р°С‚СЊ СЂРµРєРѕРјРµРЅРґСѓРµРјС‹Рµ С…РѕРґС‹" 0 \
+  {Р’РєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ СЃРѕРІРµС‚СѓРµРјС‹Рµ С…РѕРґС‹}
+menuText R OptionsShowVarPopup "РџРѕРєР°Р·Р°С‚СЊ РѕРєРЅРѕ РІР°СЂРёР°РЅС‚РѕРІ" 0 {Р’РєР»СЋС‡Р°РµС‚/РІС‹РєР»СЋС‡Р°РµС‚ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РѕРєРЅР° РІР°СЂРёР°РЅС‚РѕРІ}
+menuText R OptionsMovesSpace "Р”РѕР±Р°РІР»СЏС‚СЊ РїСЂРѕР±РµР»С‹ РїРѕСЃР»Рµ РЅРѕРјРµСЂР° С…РѕРґР°" 0 {Р”РѕР±Р°РІР»СЏС‚СЊ РїСЂРѕР±РµР»С‹ РїРѕСЃР»Рµ РЅРѕРјРµСЂР° С…РѕРґР°}
+menuText R OptionsMovesKey "РљР»Р°РІРёР°С‚СѓСЂРЅРѕРµ Р·Р°РІРµСЂС€РµРЅРёРµ" 0 \
+  {Р’РєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ Р°РІС‚РѕР·Р°РІРµСЂС€РµРЅРёРµ РєР»Р°РІРёР°С‚СѓСЂРЅС‹С… С…РѕРґРѕРІ}
+menuText R OptionsMovesShowVarArrows "РџРѕРєР°Р·С‹РІР°С‚СЊ СЃС‚СЂРµР»РєРё РІ РІР°СЂРёР°РЅС‚Р°С…" 0 {Р’РєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ СЃС‚СЂРµР»РѕРє С…РѕРґРѕРІ РІ РІР°СЂРёР°РЅС‚Р°С…}
+menuText R OptionsNumbers "Р§РёСЃР»РѕРІРѕР№ С„РѕСЂРјР°С‚" 0 {Р’С‹Р±СЂР°С‚СЊ С‡РёСЃР»РѕРІРѕР№ С„РѕСЂРјР°С‚}
+menuText R OptionsStartup "Р—Р°РїСѓСЃРє" 0 {Р’С‹Р±СЂР°С‚СЊ РѕРєРЅР°, РѕС‚РєСЂС‹РІР°СЋС‰РёРµСЃСЏ РїСЂРё Р·Р°РїСѓСЃРєРµ}
+menuText R OptionsTheme "РўРµРјС‹" 0 {РЎРјРµРЅР° РІРЅРµС€РЅРµРіРѕ РІРёРґР° РёРЅС‚РµСЂС„РµР№СЃР°}
+menuText R OptionsWindows "РћРєРЅР°" 0 {РЈСЃС‚Р°РЅРѕРІРєРё РѕРєРѕРЅ}
+menuText R OptionsWindowsIconify "РђРІС‚Рѕ-СѓРјРµРЅСЊС€РµРЅРёРµ" 0 \
+  {РЈРјРµРЅСЊС€Р°С‚СЊ РІСЃРµ РѕРєРЅР°, РєРѕРіРґР° СѓРјРµРЅСЊС€Р°РµС‚СЃСЏ РѕСЃРЅРѕРІРЅРѕРµ РѕРєРЅРѕ}
+menuText R OptionsWindowsRaise "РђРІС‚Рѕ-РІС‹РґРІРёР¶РµРЅРёРµ" 1 \
+  {Р’С‹РґРІРёРіР°С‚СЊ РѕРїСЂРµРґРµР»С‘РЅРЅС‹Рµ РѕРєРЅР° (РЅР°РїСЂРёРјРµСЂ, РїРѕР»РѕСЃСѓ РїСЂРѕРіСЂРµСЃСЃР°) РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РѕРЅРё СЃРєСЂС‹С‚С‹}
+menuText R OptionsSounds "Р—РІСѓРєРё..." 2 {РќР°СЃС‚СЂРѕР№РєРё Р·РІСѓРєР° РѕРїРѕРІРµС‰РµРЅРёСЏ Рѕ С…РѕРґРµ}
+menuText R OptionsWindowsDock "Р—Р°РєСЂРµРїРёС‚СЊ РѕРєРЅР°" 0 {Р—Р°РєСЂРµРїРёС‚СЊ РѕРєРЅР°}
+menuText R OptionsWindowsSaveLayout "РЎРѕС…СЂР°РЅРёС‚СЊ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ" 0 {РЎРѕС…СЂР°РЅРёС‚СЊ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ}
+menuText R OptionsWindowsRestoreLayout "Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ" 0 {Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ}
+menuText R OptionsWindowsShowGameInfo "РџРѕРєР°Р·Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїР°СЂС‚РёРё" 0 {РџРѕРєР°Р·Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїР°СЂС‚РёРё}
+menuText R OptionsWindowsAutoLoadLayout "РђРІС‚РѕР·Р°РіСЂСѓР·РєР° РїРµСЂРІРѕРіРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ" 0 {РђРІС‚РѕР·Р°РіСЂСѓР·РєР° РїРµСЂРІРѕРіРѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРёСЏ РЅР° СЃС‚Р°СЂС‚Рµ}
+menuText R OptionsToolbar "РРЅСЃС‚СЂСѓРјРµРЅС‚Р°Р»СЊРЅР°СЏ РїР°РЅРµР»СЊ" 0 {РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ РёРЅСЃС‚СЂСѓРјРµРЅС‚Р°Р»СЊРЅРѕР№ РїР°РЅРµР»Рё РѕСЃРЅРѕРІРЅРѕРіРѕ РѕРєРЅР°}
+menuText R OptionsECO "Р—Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р» ECO..." 2 {Р—Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р» РєР»Р°СЃСЃРёС„РёРєР°С†РёРё ECO}
+menuText R OptionsSpell "Р—Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р» РїСЂРѕРІРµСЂРєРё РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ..." 4 {Р—Р°РіСЂСѓР·РёС‚СЊ РІ Scid С„Р°Р№Р» РїСЂРѕРІРµСЂРєРё РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+menuText R OptionsTable "Р”РёСЂРµРєС‚РѕСЂРёСЏ С‚Р°Р±Р»РёС†..." 15 \
+  {Р’С‹Р±СЂР°С‚СЊ С„Р°Р№Р» С‚Р°Р±Р»РёС†С‹; РІСЃРµ С‚Р°Р±Р»РёС†С‹ РІ СЌС‚РѕР№ РґРёСЂРµРєС‚РѕСЂРёРё Р±СѓРґСѓС‚ РёСЃРїРѕР»СЊР·РѕРІР°РЅС‹}
+menuText R OptionsRecent "РќРµРґР°РІРЅРѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ С„Р°Р№Р»С‹..." 2 \
+  {РР·РјРµРЅРёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РЅРµРґР°РІРЅРѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… С„Р°Р№Р»РѕРІ РІ РјРµРЅСЋ "Р¤Р°Р№Р»"}
+menuText R OptionsBooksDir "Р”РёСЂРµРєС‚РѕСЂРёСЏ РєРЅРёРі..." 0 {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РґРёСЂРµРєС‚РѕСЂРёСЋ РєРЅРёРі РґРµР±СЋС‚РѕРІ}
+menuText R OptionsTacticsBasesDir "Р”РёСЂРµРєС‚РѕСЂРёСЏ Р±Р°Р·..." 0 {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РґРёСЂРµРєС‚РѕСЂРёСЋ Р±Р°Р· С‚Р°РєС‚РёРє (С‚СЂРµРЅРёСЂРѕРІРѕРє)}
+menuText R OptionsSave "РЎРѕС…СЂР°РЅРёС‚СЊ СѓСЃС‚Р°РЅРѕРІРєРё" 0 "РЎРѕС…СЂР°РЅРёС‚СЊ РІСЃРµ СѓСЃС‚Р°РЅРѕРІРєРё РІ С„Р°Р№Р» $::optionsFile"
+menuText R OptionsAutoSave "РђРІС‚РѕСЃРѕС…СЂР°РЅРµРЅРёРµ СѓСЃС‚Р°РЅРѕРІРѕРє РїСЂРё РІС‹С…РѕРґРµ" 0 \
+  {РђРІС‚РѕСЃРѕС…СЂР°РЅРµРЅРёРµ РІСЃРµС… СѓСЃС‚Р°РЅРѕРІРѕРє РїСЂРё РІС‹С…РѕРґРµ РёР· РїСЂРѕРіСЂР°РјРјС‹}
 
 # Help menu:
-menuText R Help "Помощь" 0
-menuText R HelpContents "Contents" 0 {Show the help contents page}
-menuText R HelpIndex "Индекс" 0 {Показать индесную страницу помощи}
-menuText R HelpGuide "Быстрый тур" 0 {Показать страницу быстрого тура помощи}
-menuText R HelpHints "Советы" 0 {Показать страницу советов}
-menuText R HelpContact "Контактная информация" 0 {Показать контактную информацию}
-menuText R HelpTip "Подсказка дня" 2 {Показать полезную подсказку}
-menuText R HelpStartup "Окно запуска" 1 {Показать окно запуска}
-menuText R HelpAbout "О Scid" 0 {Информация о Scid}
+menuText R Help "РџРѕРјРѕС‰СЊ" 2
+menuText R HelpContents "РЎРѕРґРµСЂР¶Р°РЅРёРµ" 0 {РџРѕРєР°Р·Р°С‚СЊ СЃС‚СЂР°РЅРёС†Сѓ РєРѕРЅС‚РµРєСЃС‚РЅРѕР№ РїРѕРјРѕС‰Рё}
+menuText R HelpIndex "РЎРѕРґРµСЂР¶Р°РЅРёРµ" 0 {РџРѕРєР°Р·Р°С‚СЊ СЃРѕРґРµСЂР¶Р°РЅРёРµ РїРѕРјРѕС‰Рё}
+menuText R HelpGuide "Р‘С‹СЃС‚СЂР°СЏ СЃРїСЂР°РІРєР°" 0 {РџРѕРєР°Р·Р°С‚СЊ СЃС‚СЂР°РЅРёС†Сѓ Р±С‹СЃС‚СЂРѕР№ СЃРїСЂР°РІРєРё}
+menuText R HelpHints "РЎРѕРІРµС‚С‹" 1 {РџРѕРєР°Р·Р°С‚СЊ СЃС‚СЂР°РЅРёС†Сѓ СЃРѕРІРµС‚РѕРІ}
+menuText R HelpContact "РљРѕРЅС‚Р°РєС‚РЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ" 0 {РџРѕРєР°Р·Р°С‚СЊ РєРѕРЅС‚Р°РєС‚РЅСѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ}
+menuText R HelpTip "РџРѕРґСЃРєР°Р·РєР° РґРЅСЏ" 0 {РџРѕРєР°Р·Р°С‚СЊ РїРѕР»РµР·РЅСѓСЋ РїРѕРґСЃРєР°Р·РєСѓ}
+menuText R HelpStartup "РћРєРЅРѕ Р·Р°РїСѓСЃРєР°" 2 {РџРѕРєР°Р·Р°С‚СЊ РѕРєРЅРѕ Р·Р°РїСѓСЃРєР°}
+menuText R HelpAbout "Рћ Scid" 2 {РРЅС„РѕСЂРјР°С†РёСЏ Рѕ Scid}
 
 # Game info box popup menu:
-menuText R GInfoHideNext "Спрятать следующий ход" 0
-menuText R GInfoMaterial "Показать материальную оценку" 0
-menuText R GInfoFEN "Показать FEN" 1
-menuText R GInfoMarks "Показать цветом поля и стрелки" 3
-menuText R GInfoWrap "Завернуть длинные строки" 0
-menuText R GInfoFullComment "Показать полные комментарии" 7
-menuText R GInfoPhotos "Показать фото" 9
-menuText R GInfoTBNothing "Табличные базы: ничего" 0
-menuText R GInfoTBResult "Табличные базы: только результат" 5
-menuText R GInfoTBAll "Табличные базы: результат и лучшие ходы" 7
-menuText R GInfoDelete "(Восстановить)Удалить эту партию" 1
-menuText R GInfoMark "(Снять отметку)Отметить эту партию" 2
-# ====== TODO To be translated ======
-menuText R GInfoInformant "Configure informant values" 0
+menuText R GInfoHideNext "РЎРїСЂСЏС‚Р°С‚СЊ СЃР»РµРґСѓСЋС‰РёР№ С…РѕРґ" 0
+menuText R GInfoMaterial "РџРѕРєР°Р·Р°С‚СЊ РѕС†РµРЅРєСѓ РјР°С‚РµСЂРёР°Р»Р°" 0
+menuText R GInfoFEN "РџРѕРєР°Р·Р°С‚СЊ FEN" 1
+menuText R GInfoMarks "РџРѕРєР°Р·Р°С‚СЊ С†РІРµС‚РѕРј РїРѕР»СЏ Рё СЃС‚СЂРµР»РєРё" 2
+menuText R GInfoWrap "Р—Р°РІРµСЂРЅСѓС‚СЊ РґР»РёРЅРЅС‹Рµ СЃС‚СЂРѕРєРё" 0
+menuText R GInfoFullComment "РџРѕРєР°Р·Р°С‚СЊ РїРѕР»РЅС‹Рµ РєРѕРјРјРµРЅС‚Р°СЂРёРё" 3
+menuText R GInfoPhotos "РџРѕРєР°Р·Р°С‚СЊ С„РѕС‚Рѕ" 4
+menuText R GInfoTBNothing "РўР°Р±Р»РёС‡РЅС‹Рµ Р±Р°Р·С‹: РЅРёС‡РµРіРѕ" 0
+menuText R GInfoTBResult "РўР°Р±Р»РёС‡РЅС‹Рµ Р±Р°Р·С‹: С‚РѕР»СЊРєРѕ СЂРµР·СѓР»СЊС‚Р°С‚" 3
+menuText R GInfoTBAll "РўР°Р±Р»РёС‡РЅС‹Рµ Р±Р°Р·С‹: СЂРµР·СѓР»СЊС‚Р°С‚ Рё Р»СѓС‡С€РёРµ С…РѕРґС‹" 4
+menuText R GInfoDelete "(Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ) СѓРґР°Р»РёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ" 1
+menuText R GInfoMark "(РЎРЅСЏС‚СЊ РѕС‚РјРµС‚РєСѓ) РѕС‚РјРµС‚РёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ" 1
+menuText R GInfoInformant "РќР°СЃС‚СЂРѕР№РєР° Р·РЅР°С‡РµРЅРёР№ РїРѕРґСЃРєР°Р·С‡РёРєР°" 0
 
 # Main window buttons:
-helpMsg R .main.fbutton.button.start {Перейти к началу партии  (клавиша: Home)}
-helpMsg R .main.fbutton.button.end {Перейти к концу партии  (клавиша: End)}
-helpMsg R .main.fbutton.button.back {Один ход назад  (клавиша: LeftArrow)}
-helpMsg R .main.fbutton.button.forward {Один ход вперед (клавиша: RightArrow)}
-helpMsg R .main.fbutton.button.intoVar {Перейти к варианту  (клавиша: v)}
-helpMsg R .main.fbutton.button.exitVar {Выйти из текущего варианта (клавиша: z)}
-helpMsg R .main.fbutton.button.flip {Перевернуть доску (клавиша: .)}
-helpMsg R .main.fbutton.button.coords {Включить/выключить координаты  (клавиша: 0)}
-helpMsg R .main.fbutton.button.stm {Включить/выключить иконку очередности хода}
-helpMsg R .main.fbutton.button.autoplay {Автоматическое выполнение ходов  (клавиши: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg R .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
+helpMsg R .main.fbutton.button.start {РџРµСЂРµР№С‚Рё Рє РЅР°С‡Р°Р»Сѓ РїР°СЂС‚РёРё  (РєР»Р°РІРёС€Р°: Home)}
+helpMsg R .main.fbutton.button.end {РџРµСЂРµР№С‚Рё Рє РєРѕРЅС†Сѓ РїР°СЂС‚РёРё  (РєР»Р°РІРёС€Р°: End)}
+helpMsg R .main.fbutton.button.back {РћРґРёРЅ С…РѕРґ РЅР°Р·Р°Рґ  (РєР»Р°РІРёС€Р°: LeftArrow)}
+helpMsg R .main.fbutton.button.forward {РћРґРёРЅ С…РѕРґ РІРїРµСЂС‘Рґ (РєР»Р°РІРёС€Р°: RightArrow)}
+helpMsg R .main.fbutton.button.intoVar {РџРµСЂРµР№С‚Рё Рє РІР°СЂРёР°РЅС‚Сѓ  (РєР»Р°РІРёС€Р°: v)}
+helpMsg R .main.fbutton.button.exitVar {Р’С‹Р№С‚Рё РёР· С‚РµРєСѓС‰РµРіРѕ РІР°СЂРёР°РЅС‚Р° (РєР»Р°РІРёС€Р°: z)}
+helpMsg R .main.fbutton.button.flip {РџРµСЂРµРІРµСЂРЅСѓС‚СЊ РґРѕСЃРєСѓ (РєР»Р°РІРёС€Р°: .)}
+helpMsg R .main.fbutton.button.coords {Р’РєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹  (РєР»Р°РІРёС€Р°: 0)}
+helpMsg R .main.fbutton.button.stm {Р’РєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ РёРєРѕРЅРєСѓ РѕС‡РµСЂРµРґРЅРѕСЃС‚Рё С…РѕРґР°}
+helpMsg R .main.fbutton.button.autoplay {РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРѕРµ РІС‹РїРѕР»РЅРµРЅРёРµ С…РѕРґРѕРІ  (РєР»Р°РІРёС€Рё: Ctrl+Z)}
+helpMsg R .main.fbutton.button.comment {РћС‚РєСЂС‹С‚СЊ СЂРµРґР°РєС‚РѕСЂ РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ (РєР»Р°РІРёС€Рё: Ctrl+E)}
 
 # General buttons:
-translate R Back {Назад}
-translate R Browse {Browse}
-translate R Cancel {Отменить}
-# ====== TODO To be translated ======
-translate R Continue {Continue}
-translate R Clear {Очистить}
-translate R Close {Закрыть}
-translate R Contents {Contents}
-translate R Defaults {По умолчанию}
-translate R Delete {Удалить}
-translate R Graph {График}
-translate R Help {Помощь}
-translate R Import {Импорт}
-translate R Index {Индекс}
-translate R LoadGame {Загрузить партию}
-translate R BrowseGame {Просмотреть партию}
-translate R MergeGame {Соединить партию}
-# ====== TODO To be translated ======
-translate R MergeGames {Merge Games}
-translate R Preview {Предварительный просмотр}
-translate R Revert {Возвратиться}
-translate R Save {Сохранить}
-translate R Search {Искать}
-translate R Stop {Остановить}
-translate R Store {Отложить}
-translate R Update {Обновить}
-translate R ChangeOrient {Изменить ориентацию окна}
-# ====== TODO To be translated ======
-translate R ShowIcons {Show Icons}
-translate R None {Нет}
-translate R First {Первый}
-translate R Current {Текущий}
-translate R Last {Последний}
+translate R Back {РќР°Р·Р°Рґ}
+translate R Browse {РџСЂРѕСЃРјРѕС‚СЂ}
+translate R Cancel {РћС‚РјРµРЅР°}
+translate R Continue {РџСЂРѕРґРѕР»Р¶РёС‚СЊ}
+translate R Clear {РћС‚С‡РёСЃС‚РёС‚СЊ}
+translate R Close {Р—Р°РєСЂС‹С‚СЊ}
+translate R Contents {РЎРѕРґРµСЂР¶Р°РЅРёРµ}
+translate R Defaults {РџРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ}
+translate R Delete {РЈРґР°Р»РёС‚СЊ}
+translate R Graph {Р“СЂР°С„РёРє}
+translate R Help {РџРѕРјРѕС‰СЊ}
+translate R Import {РРјРїРѕСЂС‚}
+translate R Index {РРЅРґРµРєСЃ}
+translate R LoadGame {Р—Р°РіСЂСѓР·РєР° РїР°СЂС‚РёРё}
+translate R BrowseGame {РџСЂРѕСЃРјРѕС‚СЂ РїР°СЂС‚РёРё}
+translate R MergeGame {РћР±СЉРµРґРёРЅРµРЅРёРµ РїР°СЂС‚РёР№}
+translate R MergeGames {РћР±СЉРµРґРёРЅРµРЅРёРµ РїР°СЂС‚РёР№}
+translate R Preview {РџСЂРµРґРІР°СЂРёС‚РµР»СЊРЅС‹Р№ РїСЂРѕСЃРјРѕС‚СЂ}
+translate R Revert {Р’РѕР·РІСЂР°С‚РёС‚СЊСЃСЏ}
+translate R Save {РЎРѕС…СЂР°РЅРёС‚СЊ}
+translate R Search {РџРѕРёСЃРє}
+translate R Stop {РЎС‚РѕРї}
+translate R Store {РЎРѕС…СЂР°РЅРёС‚СЊ}
+translate R Update {РћР±РЅРѕРІРёС‚СЊ}
+translate R ChangeOrient {РР·РјРµРЅРёС‚СЊ РѕСЂРёРµРЅС‚Р°С†РёСЋ РѕРєРЅР°}
+translate R ShowIcons {РџРѕРєР°Р·Р°С‚СЊ РёРєРѕРЅРєРё}
+translate R None {РќРёРєР°РєРѕР№}
+translate R First {РџРµСЂРІС‹Р№}
+translate R Current {РўРµРєСѓС‰РёР№}
+translate R Last {РџРѕСЃР»РµРґРЅРёР№}
 
 # General messages:
-translate R game {партия}
-translate R games {партий}
-translate R move {ход}
-translate R moves {ходов}
-translate R all {все}
-translate R Yes {Да}
-translate R No {Нет}
-translate R Both {Оба}
-translate R King {Король}
-translate R Queen {Ферзь}
-translate R Rook {Ладья}
-translate R Bishop {Слон}
-translate R Knight {Конь}
-translate R Pawn {Пешка}
-translate R White {Белые}
-translate R Black {Черные}
-translate R Player {Игрок}
-translate R Rating {Рейтинг}
-translate R RatingDiff {Разница рейтингов (Белые - Черные)}
-translate R AverageRating {Средний рейтинг}
-translate R Event {Турнир}
-translate R Site {Место}
-translate R Country {Страна}
-translate R IgnoreColors {Игнорировать цвета}
-translate R Date {Дата}
-translate R EventDate {Дата турнира}
-translate R Decade {Декада}
-translate R Year {Год}
-translate R Month {Месяц}
-translate R Months {Январь Февраль Март Апрель Май Июнь Июль Август Сентябрь Октябрь Ноябрь Декабрь}
-translate R Days {Вск Пон Втр Срд Чтв Птн Суб}
-translate R YearToToday {Текущий год}
-translate R Result {Результат}
-translate R Round {Раунд}
-translate R Length {Длина}
-translate R ECOCode {код ECO}
+translate R game {РїР°СЂС‚РёСЏ}
+translate R games {РїР°СЂС‚РёРё}
+translate R move {С…РѕРґ}
+translate R moves {С…РѕРґС‹}
+translate R all {РІСЃС‘}
+translate R Yes {Р”Р°}
+translate R No {РќРµС‚}
+translate R Both {РћР±Р°}
+translate R King {РљРѕСЂРѕР»СЊ}
+translate R Queen {Р¤РµСЂР·СЊ}
+translate R Rook {Р›Р°РґСЊСЏ}
+translate R Bishop {РЎР»РѕРЅ}
+translate R Knight {РљРѕРЅСЊ}
+translate R Pawn {РџРµС€РєР°}
+translate R White {Р‘РµР»С‹Рµ}
+translate R Black {Р§С‘СЂРЅС‹Рµ}
+translate R Player {РРіСЂРѕРє}
+translate R Rating {Р РµР№С‚РёРЅРі}
+translate R RatingDiff {Р Р°Р·РЅРёС†Р° СЂРµР№С‚РёРЅРіРѕРІ (Р‘РµР»С‹Рµ - Р§С‘СЂРЅС‹Рµ)}
+translate R AverageRating {РЎСЂРµРґРЅРёР№ СЂРµР№С‚РёРЅРі}
+translate R Event {РЎРѕР±С‹С‚РёРµ}
+translate R Site {РњРµСЃС‚Рѕ}
+translate R Country {РЎС‚СЂР°РЅР°}
+translate R IgnoreColors {РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ С†РІРµС‚Р°}
+translate R Date {Р”Р°С‚Р°}
+translate R EventDate {Р”Р°С‚Р° С‚СѓСЂРЅРёСЂР°}
+translate R Decade {Р”РµРєР°РґР°}
+translate R Year {Р“РѕРґ}
+translate R Month {РњРµСЃСЏС†}
+translate R Months {РЇРЅРІР°СЂСЊ Р¤РµРІСЂР°Р»СЊ РњР°СЂС‚ РђРїСЂРµР»СЊ РњР°Р№ РСЋРЅСЊ РСЋР»СЊ РђРІРіСѓСЃС‚ РЎРµРЅС‚СЏР±СЂСЊ РћРєС‚СЏР±СЂСЊ РќРѕСЏР±СЂСЊ Р”РµРєР°Р±СЂСЊ}
+translate R Days {Р’СЃ РџРЅ Р’С‚ РЎСЂ Р§С‚ РџС‚ РЎР±}
+translate R YearToToday {РўРµРєСѓС‰РёР№ РіРѕРґ}
+translate R Result {Р РµР·СѓР»СЊС‚Р°С‚}
+translate R Round {Р Р°СѓРЅРґ}
+translate R Length {Р”Р»РёРЅР°}
+translate R ECOCode {РљРѕРґ ECO}
 translate R ECO {ECO}
-translate R Deleted {Удалена}
-translate R SearchResults {Поиск результатов}
-translate R OpeningTheDatabase {Открытие базы данных}
-translate R Database {База данных}
-translate R Filter {Фильтр}
-translate R noGames {нет партий}
-translate R allGames {все партии}
-translate R empty {пусто}
-translate R clipbase {буфербаза}
-translate R score {счет}
-translate R StartPos {Стартовая позиция}
-translate R Total {Всего}
-# ====== TODO To be translated ======
-translate R readonly {read-only}
+translate R Deleted {РЈРґР°Р»РµРЅР°}
+translate R SearchResults {РџРѕРёСЃРє СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ}
+translate R OpeningTheDatabase {РћС‚РєСЂС‹С‚РёРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…}
+translate R Database {Р‘Р°Р·Р° РґР°РЅРЅС‹С…}
+translate R Filter {Р¤РёР»СЊС‚СЂ}
+translate R noGames {РќРµС‚ РїР°СЂС‚РёР№}
+translate R allGames {Р’СЃРµ РїР°СЂС‚РёРё}
+translate R empty {РїСѓСЃС‚Рѕ}
+translate R clipbase {Р±СѓС„РµСЂРЅР°СЏ Р±Р°Р·Р°}
+translate R score {СЃС‡С‘С‚}
+translate R StartPos {РЎС‚Р°СЂС‚РѕРІР°СЏ РїРѕР·РёС†РёСЏ}
+translate R Total {Р’СЃРµРіРѕ}
+translate R readonly {РўРѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ}
 
 # Standard error messages:
-translate R ErrNotOpen {Эта база данных не открыта.}
-translate R ErrReadOnly {Эта база данных только для чтения; она не может быть изменена.}
-translate R ErrSearchInterrupted {Поиск был прерван; результаты не полные.}
+translate R ErrNotOpen {Р­С‚Р° Р±Р°Р·Р° РґР°РЅРЅС‹С… РЅРµ РѕС‚РєСЂС‹С‚Р°.}
+translate R ErrReadOnly {Р­С‚Р° Р±Р°Р·Р° РґР°РЅРЅС‹С… С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ; РѕРЅР° РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РёР·РјРµРЅРµРЅР°.}
+translate R ErrSearchInterrupted {РџРѕРёСЃРє Р±С‹Р» РїСЂРµСЂРІР°РЅ; СЂРµР·СѓР»СЊС‚Р°С‚С‹ РЅРµРїРѕР»РЅС‹Рµ.}
 
 # Game information:
-translate R twin {двойник}
-translate R deleted {удалена}
-translate R comment {комментарий}
-translate R hidden {скрытый}
-translate R LastMove {Последный ход}
-translate R NextMove {Следующий}
-translate R GameStart {Начало партии}
-translate R LineStart {Начало строки}
-translate R GameEnd {Конец партии}
-translate R LineEnd {Конец строки}
+translate R twin {РґРІРѕР№РЅРёРє}
+translate R deleted {СѓРґР°Р»РµРЅР°}
+translate R comment {РєРѕРјРјРµРЅС‚Р°СЂРёР№}
+translate R hidden {СЃРєСЂС‹С‚С‹Р№}
+translate R LastMove {РџРѕСЃР»РµРґРЅРёР№ С…РѕРґ}
+translate R NextMove {РЎР»РµРґСѓСЋС‰РёР№}
+translate R GameStart {РќР°С‡Р°Р»Рѕ РїР°СЂС‚РёРё}
+translate R LineStart {РќР°С‡Р°Р»Рѕ РїР»Р°РЅР°}
+translate R GameEnd {РљРѕРЅРµС† РїР°СЂС‚РёРё}
+translate R LineEnd {РљРѕРЅРµС† РїР»Р°РЅР°}
 
 # Player information:
-translate R PInfoAll {Результаты <b>всех</b> партий}
-translate R PInfoFilter {Результаты <b>отфильтрованных</b> партий}
-translate R PInfoAgainst {Результаты против}
-translate R PInfoMostWhite {Наиболее частые дебюты за Белых}
-translate R PInfoMostBlack {Наиболее частые дебюты за Черных}
-translate R PInfoRating {История рейтинга}
-translate R PInfoBio {Биография}
-translate R PInfoEditRatings {Edit Ratings}
+translate R PInfoAll {Р РµР·СѓР»СЊС‚Р°С‚С‹ <b>РІСЃРµС…</b> РїР°СЂС‚РёР№}
+translate R PInfoFilter {Р РµР·СѓР»СЊС‚Р°С‚С‹ <b>С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С…</b> РїР°СЂС‚РёР№}
+translate R PInfoAgainst {Р РµР·СѓР»СЊС‚Р°С‚С‹ РїСЂРѕС‚РёРІ}
+translate R PInfoMostWhite {РќР°РёР±РѕР»РµРµ С‡Р°СЃС‚С‹Рµ РґРµР±СЋС‚С‹ Р·Р° Р±РµР»С‹С…}
+translate R PInfoMostBlack {РќР°РёР±РѕР»РµРµ С‡Р°СЃС‚С‹Рµ РґРµР±СЋС‚С‹ Р·Р° С‡С‘СЂРЅС‹С…}
+translate R PInfoRating {РСЃС‚РѕСЂРёСЏ СЂРµР№С‚РёРЅРіР°}
+translate R PInfoBio {Р‘РёРѕРіСЂР°С„РёСЏ}
+translate R PInfoEditRatings {Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ СЂРµР№С‚РёРЅРіРё}
 
 # Tablebase information:
-translate R Draw {Ничья}
-translate R stalemate {Пат}
-translate R withAllMoves {со всеми ходами}
-translate R withAllButOneMove {со всеми кроме одного хода}
-translate R with {с}
-translate R only {только}
-translate R lose {проиграно}
-translate R loses {проиграли}
-translate R allOthersLose {все остальные проиграны}
-translate R matesIn {мат за}
-translate R hasCheckmated {заматован}
-translate R longest {самый длинный}
-translate R WinningMoves {Выгрышные ходы}
-translate R DrawingMoves {Ничейные ходы}
-translate R LosingMoves {Проигрышные ходы}
-translate R UnknownMoves {Ходы, приводящие к неизвестному результату}
+translate R Draw {РќРёС‡СЊСЏ}
+translate R stalemate {РїР°С‚}
+translate R withAllMoves {СЃРѕ РІСЃРµРјРё С…РѕРґР°РјРё}
+translate R withAllButOneMove {СЃРѕ РІСЃРµРјРё, РєСЂРѕРјРµ РѕРґРЅРѕРіРѕ С…РѕРґР°}
+translate R with {СЃ}
+translate R only {С‚РѕР»СЊРєРѕ}
+translate R lose {РїСЂРѕРёРіСЂР°РЅРѕ}
+translate R loses {РїСЂРѕРёРіСЂР°Р»Рё}
+translate R allOthersLose {РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ РїСЂРѕРёРіСЂР°РЅС‹}
+translate R matesIn {РјР°С‚ Р·Р°}
+translate R hasCheckmated {С€Р°С… Рё РјР°С‚}
+translate R longest {СЃР°РјС‹Р№ РґР»РёРЅРЅС‹Р№}
+translate R WinningMoves {Р’С‹РёРіСЂС‹С€РЅС‹Рµ С…РѕРґС‹}
+translate R DrawingMoves {РќРёС‡РµР№РЅС‹Рµ С…РѕРґС‹}
+translate R LosingMoves {РџСЂРѕРёРіСЂС‹С€РЅС‹Рµ С…РѕРґС‹}
+translate R UnknownMoves {РҐРѕРґС‹, РїСЂРёРІРѕРґСЏС‰РёРµ Рє РЅРµРёР·РІРµСЃС‚РЅРѕРјСѓ СЂРµР·СѓР»СЊС‚Р°С‚Сѓ}
 
 # Tip of the day:
-translate R Tip {Совет}
-translate R TipAtStartup {Совет при загрузке}
+translate R Tip {РЎРѕРІРµС‚}
+translate R TipAtStartup {РЎРѕРІРµС‚ РїСЂРё Р·Р°РіСЂСѓР·РєРµ}
 
 # Tree window menus:
-menuText R TreeFile "Файл" 0
-# ====== TODO To be translated ======
-menuText R TreeFileFillWithBase "Fill Cache with base" 0 {Fill the cache file with all games in current base}
-# ====== TODO To be translated ======
-menuText R TreeFileFillWithGame "Fill Cache with game" 0 {Fill the cache file with current game in current base}
-# ====== TODO To be translated ======
-menuText R TreeFileSetCacheSize "Cache size" 0 {Set the cache size}
-# ====== TODO To be translated ======
-menuText R TreeFileCacheInfo "Cache info" 0 {Get info on cache usage}
-menuText R TreeFileSave "Сохранить кэш файл" 0 {Сохранить кэш файл дерева (.stc)}
-menuText R TreeFileFill "Заполнить кэш файл" 0 \
-  {Запольнить кэш файл с общими дебютными позициями}
-menuText R TreeFileBest "Список лучших партий" 1 {Показать дерево списка лучших партий}
-menuText R TreeFileGraph "Окно графика" 0 {Показать график для ветви этого дерева}
-menuText R TreeFileCopy "Скопировать текст дерева в буфер" 1 \
-  {Скопировать статистику дерева в буфер}
-menuText R TreeFileClose "Закрыть окно дерева" 4 {Закрыть окно дерева}
-# ====== TODO To be translated ======
-menuText R TreeMask "Mask" 0
-# ====== TODO To be translated ======
-menuText R TreeMaskNew "New" 0 {New mask}
-# ====== TODO To be translated ======
-menuText R TreeMaskOpen "Open" 0 {Open mask}
-# ====== TODO To be translated ======
-menuText R TreeMaskOpenRecent "Open recent" 0 {Open recent mask}
-# ====== TODO To be translated ======
-menuText R TreeMaskSave "Save" 0 {Save mask}
-# ====== TODO To be translated ======
-menuText R TreeMaskClose "Close" 0 {Close mask}
-# ====== TODO To be translated ======
-menuText R TreeMaskFillWithGame "Fill with game" 0 {Fill mask with game}
-# ====== TODO To be translated ======
-menuText R TreeMaskFillWithBase "Fill with base" 0 {Fill mask with all games in base}
-# ====== TODO To be translated ======
-menuText R TreeMaskInfo "Info" 0 {Show statistics for current mask}
-# ====== TODO To be translated ======
-menuText R TreeMaskDisplay "Display mask map" 0 {Show mask data in a tree form}
-# ====== TODO To be translated ======
-menuText R TreeMaskSearch "Search" 0 {Search in current mask}
-menuText R TreeSort "Сортировка" 0
-menuText R TreeSortAlpha "Алфавитная" 0
-menuText R TreeSortECO "По коду ECO" 3
-menuText R TreeSortFreq "По частоте" 3
-menuText R TreeSortScore "По результату" 3
-menuText R TreeOpt "Установки" 0
-# ====== TODO To be translated ======
-menuText R TreeOptSlowmode "slow mode" 0 {Slow mode for updates (high accuracy)}
-# ====== TODO To be translated ======
-menuText R TreeOptFastmode "Fast mode" 0 {Fast mode for updates (no move transposition)}
-# ====== TODO To be translated ======
-menuText R TreeOptFastAndSlowmode "Fast and slow mode" 0 {Fast mode then slow mode for updates}
-# ====== TODO To be translated ======
-menuText R TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
-menuText R TreeOptLock "Блокировать" 0 {(Раз)блокировать дерево для текущей базы}
-menuText R TreeOptTraining "Тренировка" 0 {Включить/выключить режим тренировки}
-menuText R TreeOptAutosave "Автосохранение файла кеша" 0 \
-  {Автосохранение файла кеша, когда закрывается окно дерева}
-menuText R TreeHelp "Помощь" 0
-menuText R TreeHelpTree "Помощь по дереву" 0
-menuText R TreeHelpIndex "Индекс помощи" 0
-translate R SaveCache {Сохранить кэш}
-translate R Training {Тренировка}
-translate R LockTree {Блокировка}
-translate R TreeLocked {заблокировано}
-translate R TreeBest {Лучший}
-translate R TreeBestGames {Дерево лучших партий}
+menuText R TreeFile "Р¤Р°Р№Р»" 0
+menuText R TreeFileFillWithBase "Р—Р°РїРѕР»РЅРёС‚СЊ РєРµС€ Р±Р°Р·РѕР№" 0 {Р—Р°РїРѕР»РЅРёС‚СЊ С„Р°Р№Р» РєРµС€Р° РІСЃРµРјРё РїР°СЂС‚РёСЏРјРё РёР· С‚РµРєСѓС‰РµР№ Р±Р°Р·С‹}
+menuText R TreeFileFillWithGame "Р—Р°РїРѕР»РЅРёС‚СЊ РєРµС€ РїР°СЂС‚РёРµР№" 0 {Р—Р°РїРѕР»РЅРёС‚СЊ С„Р°Р№Р» РєРµС€Р° С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРµР№ РёР· С‚РµРєСѓС‰РµР№ Р±Р°Р·С‹}
+menuText R TreeFileSetCacheSize "Р Р°Р·РјРµСЂ РєРµС€Р°" 0 {РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·РјРµСЂ РєРµС€Р°}
+menuText R TreeFileCacheInfo "РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєРµС€Рµ" 0 {РџРѕР»СѓС‡Р°РµС‚ РёРЅС„РѕСЂРјР°С†РёСЋ РѕР± РёСЃРїРѕР»СЊР·СѓРµРјРѕРј РєРµС€Рµ}
+menuText R TreeFileSave "РЎРѕС…СЂР°РЅРёС‚СЊ С„Р°Р№Р» РєРµС€Р°" 0 {РЎРѕС…СЂР°РЅРёС‚СЊ С„Р°Р№Р» РєРµС€Р° РґРµСЂРµРІР° (.stc)}
+menuText R TreeFileFill "Р—Р°РїРѕР»РЅРёС‚СЊ С„Р°Р№Р» РєРµС€Р°" 0 \
+  {Р—Р°РїРѕР»РЅРёС‚СЊ С„Р°Р№Р» РєРµС€Р° РѕР±С‰РёРјРё РґРµР±СЋС‚РЅС‹РјРё РїРѕР·РёС†РёСЏРјРё}
+menuText R TreeFileBest "РЎРїРёСЃРѕРє Р»СѓС‡С€РёС… РїР°СЂС‚РёР№" 1 {РџРѕРєР°Р·Р°С‚СЊ РґРµСЂРµРІРѕ СЃРїРёСЃРєР° Р»СѓС‡С€РёС… РїР°СЂС‚РёР№}
+menuText R TreeFileGraph "РћРєРЅРѕ РґРёР°РіСЂР°РјРјС‹" 0 {РџРѕРєР°Р·Р°С‚СЊ РґРёР°РіСЂР°РјРјСѓ РґР»СЏ РІРµС‚РІРё СЌС‚РѕРіРѕ РґРµСЂРµРІР°}
+menuText R TreeFileCopy "РЎРєРѕРїРёСЂРѕРІР°С‚СЊ С‚РµРєСЃС‚ РґРµСЂРµРІР° РІ Р±СѓС„РµСЂ" 1 \
+  {РЎРєРѕРїРёСЂРѕРІР°С‚СЊ СЃС‚Р°С‚РёСЃС‚РёРєСѓ РґРµСЂРµРІР° РІ Р±СѓС„РµСЂ}
+menuText R TreeFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РґРµСЂРµРІР°" 4 {Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РґРµСЂРµРІР°}
+menuText R TreeMask "РњР°СЃРєР°" 0
+menuText R TreeMaskNew "РќРѕРІР°СЏ" 0 {РќРѕРІР°СЏ РјР°СЃРєР°}
+menuText R TreeMaskOpen "РћС‚РєСЂС‹С‚СЊ" 0 {РћС‚РєСЂС‹С‚СЊ РјР°СЃРєСѓ}
+menuText R TreeMaskOpenRecent "РћС‚РєСЂС‹С‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ" 0 {РћС‚РєСЂС‹С‚СЊ РїРѕСЃР»РµРґРЅСЋСЋ РјР°СЃРєСѓ}
+menuText R TreeMaskSave "РЎРѕС…СЂР°РЅРёС‚СЊ" 0 {РЎРѕС…СЂР°РЅРёС‚СЊ РјР°СЃРєСѓ}
+menuText R TreeMaskClose "Р—Р°РєСЂС‹С‚СЊ" 0 {Р—Р°РєСЂС‹С‚СЊ РјР°СЃРєСѓ}
+menuText R TreeMaskFillWithGame "РќР°РїРѕР»РЅРёС‚СЊ РїР°СЂС‚РёРµР№" 0 {РќР°РїРѕР»РЅСЏРµС‚ РјР°СЃРєСѓ РїР°СЂС‚РёРµР№}
+menuText R TreeMaskFillWithBase "РќР°РїРѕР»РЅРёС‚СЊ Р±Р°Р·РѕР№" 0 {РќР°РїРѕР»РЅСЏРµС‚ РјР°СЃРєСѓ РІСЃРµРјРё РїР°СЂС‚РёСЏРјРё РёР· Р±Р°Р·С‹}
+menuText R TreeMaskInfo "РРЅС„РѕСЂРјР°С†РёСЏ" 0 {РџРѕРєР°Р·Р°С‚СЊ СЃС‚Р°С‚РёСЃС‚РёРєСѓ С‚РµРєСѓС‰РµР№ РјР°СЃРєРё}
+menuText R TreeMaskDisplay "РџРѕРєР°Р·Р°С‚СЊ РєР°СЂС‚Сѓ РјР°СЃРєРё" 0 {РџРѕРєР°Р·С‹РІР°РµС‚ РґР°РЅРЅС‹Рµ РјР°СЃРєРё РІ РґСЂРµРІРѕРІРёРґРЅРѕР№ С„РѕСЂРјРµ}
+menuText R TreeMaskSearch "РџРѕРёСЃРє" 0 {РџРѕРёСЃРє РІ С‚РµРєСѓС‰РµР№ РјР°СЃРєРµ}
+menuText R TreeSort "РЎРѕСЂС‚РёСЂРѕРІРєР°" 0
+menuText R TreeSortAlpha "РђР»С„Р°РІРёС‚РЅР°СЏ" 0
+menuText R TreeSortECO "РџРѕ РєРѕРґСѓ ECO" 3
+menuText R TreeSortFreq "РџРѕ С‡Р°СЃС‚РѕС‚Рµ" 3
+menuText R TreeSortScore "РџРѕ СЂРµР·СѓР»СЊС‚Р°С‚Сѓ" 3
+menuText R TreeOpt "РЈСЃС‚Р°РЅРѕРІРєРё" 0
+menuText R TreeOptSlowmode "РњРµРґР»РµРЅРЅС‹Р№ СЂРµР¶РёРј" 0 {РњРµРґР»РµРЅРЅС‹Р№ СЂРµР¶РёРј РѕР±РЅРѕРІР»РµРЅРёР№ (Р±РѕР»СЊС€Р°СЏ С‚РѕС‡РЅРѕСЃС‚СЊ)}
+menuText R TreeOptFastmode "Р‘С‹СЃС‚СЂС‹Р№ СЂРµР¶РёРј" 0 {Р‘С‹СЃС‚СЂС‹Р№ СЂРµР¶РёРј РѕР±РЅРѕРІР»РµРЅРёР№ (Р±РµР· РїРµСЂРµСЃС‚Р°РЅРѕРІРєРё С…РѕРґРѕРІ)}
+menuText R TreeOptFastAndSlowmode "Р‘С‹СЃС‚СЂС‹Р№ Рё РјРµРґР»РµРЅРЅС‹Р№ СЂРµР¶РёРј" 0 {Р‘С‹СЃС‚СЂС‹Р№, Р° РїРѕС‚РѕРј РјРµРґР»РµРЅРЅС‹Р№ СЂРµР¶РёРј РѕР±РЅРѕРІР»РµРЅРёР№}
+menuText R TreeOptStartStop "РђРІС‚Рѕ-РѕР±РЅРѕРІР»РµРЅРёРµ" 0 {РџРµСЂРµРєР»СЋС‡Р°РµС‚ Р°РІС‚Рѕ-РѕР±РЅРѕРІР»РµРЅРёРµ РІ РѕРєРЅРµ РґРµСЂРµРІР°}
+menuText R TreeOptLock "Р‘Р»РѕРєРёСЂРѕРІР°С‚СЊ" 0 {(Р Р°Р·)Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ РґРµСЂРµРІРѕ РґР»СЏ С‚РµРєСѓС‰РµР№ Р±Р°Р·С‹}
+menuText R TreeOptTraining "РўСЂРµРЅРёСЂРѕРІРєР°" 0 {Р’РєР»СЋС‡РёС‚СЊ/РІС‹РєР»СЋС‡РёС‚СЊ СЂРµР¶РёРј С‚СЂРµРЅРёСЂРѕРІРєРё}
+menuText R TreeOptAutosave "РђРІС‚Рѕ-СЃРѕС…СЂР°РЅРµРЅРёРµ С„Р°Р№Р»Р° РєРµС€Р°" 0 \
+  {РђРІС‚РѕСЃРѕС…СЂР°РЅРµРЅРёРµ С„Р°Р№Р»Р° РєРµС€Р°, РєРѕРіРґР° Р·Р°РєСЂС‹РІР°РµС‚СЃСЏ РѕРєРЅРѕ РґРµСЂРµРІР°}
+menuText R TreeHelp "РџРѕРјРѕС‰СЊ" 0
+menuText R TreeHelpTree "РџРѕРјРѕС‰СЊ РїРѕ РґРµСЂРµРІСѓ" 0
+menuText R TreeHelpIndex "РРЅРґРµРєСЃ РїРѕРјРѕС‰Рё" 0
+translate R SaveCache {РЎРѕС…СЂР°РЅРёС‚СЊ РєРµС€}
+translate R Training {РўСЂРµРЅРёСЂРѕРІРєР°}
+translate R LockTree {Р‘Р»РѕРєРёСЂРѕРІРєР°}
+translate R TreeLocked {Р—Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРѕ}
+translate R TreeBest {Р›СѓС‡С€РёР№}
+translate R TreeBestGames {Р”РµСЂРµРІРѕ Р»СѓС‡С€РёС… РїР°СЂС‚РёР№}
 # Note: the next message is the tree window title row. After editing it,
 # check the tree window to make sure it lines up with the actual columns.
 translate R TreeTitleRow \
-  {    Ход    ECO       Частота     Счет   СрElo Прзв СрГод  %Ничьих}
-translate R TreeTotal {TOTAL}
-# ====== TODO To be translated ======
-translate R DoYouWantToSaveFirst {Do you want to save first}
-# ====== TODO To be translated ======
-translate R AddToMask {Add to Mask}
-# ====== TODO To be translated ======
-translate R RemoveFromMask {Remove from Mask}
-# ====== TODO To be translated ======
-translate R AddThisMoveToMask {Add this move to Mask}
-# ====== TODO To be translated ======
-translate R SearchMask {Search in Mask}
-# ====== TODO To be translated ======
-translate R DisplayMask {Display Mask}
-# ====== TODO To be translated ======
-translate R Nag {Nag code}
-# ====== TODO To be translated ======
-translate R Marker {Marker}
-# ====== TODO To be translated ======
-translate R Include {Include}
-# ====== TODO To be translated ======
-translate R Exclude {Exclude}
-# ====== TODO To be translated ======
-translate R MainLine {Main line}
-# ====== TODO To be translated ======
-translate R Bookmark {Bookmark}
-# ====== TODO To be translated ======
-translate R NewLine {New line}
-# ====== TODO To be translated ======
-translate R ToBeVerified {To be verified}
-# ====== TODO To be translated ======
-translate R ToTrain {To train}
-# ====== TODO To be translated ======
-translate R Dubious {Dubious}
-# ====== TODO To be translated ======
-translate R ToRemove {To remove}
-# ====== TODO To be translated ======
-translate R NoMarker {No marker}
-# ====== TODO To be translated ======
-translate R ColorMarker {Color}
-# ====== TODO To be translated ======
-translate R WhiteMark {White}
-# ====== TODO To be translated ======
-translate R GreenMark {Green}
-# ====== TODO To be translated ======
-translate R YellowMark {Yellow}
-# ====== TODO To be translated ======
-translate R BlueMark {Blue}
-# ====== TODO To be translated ======
-translate R RedMark {Red}
-# ====== TODO To be translated ======
-translate R CommentMove {Comment move}
-# ====== TODO To be translated ======
-translate R CommentPosition {Comment position}
-# ====== TODO To be translated ======
-translate R AddMoveToMaskFirst {Add move to mask first}
-# ====== TODO To be translated ======
-translate R OpenAMaskFileFirst {Open a mask file first}
-# ====== TODO To be translated ======
-translate R Positions {Positions}
-# ====== TODO To be translated ======
-translate R Moves {Moves}
+  {    РҐРѕРґ    ECO       Р§Р°СЃС‚РѕС‚Р°     РЎС‡С‘С‚   РЎСЂР­Р»Рѕ РџСЂР·РІ РЎСЂР“РѕРґ  %РЅРёС‡СЊРёС…}
+translate R TreeTotal {РРўРћР“}
+translate R DoYouWantToSaveFirst {Р’С‹ С…РѕС‚РёС‚Рµ СЃРѕС…СЂР°РЅРёС‚СЊ РїРµСЂРІС‹Рј}
+translate R AddToMask {Р”РѕР±Р°РІРёС‚СЊ РІ РјР°СЃРєСѓ}
+translate R RemoveFromMask {РЈРґР°Р»РёС‚СЊ РёР· РјР°СЃРєРё}
+translate R AddThisMoveToMask {Р”РѕР±Р°РІРёС‚СЊ СЌС‚РѕС‚ С…РѕРґ РІ РјР°СЃРєСѓ}
+translate R SearchMask {РџРѕРёСЃРє РІ РјР°СЃРєРµ}
+translate R DisplayMask {РџРѕРєР°Р·Р°С‚СЊ РјР°СЃРєСѓ}
+translate R Nag {Nag РєРѕРґ}
+translate R Marker {РњРµС‚РєР°}
+translate R Include {Р’РєР»СЋС‡Р°С‚СЊ}
+translate R Exclude {РСЃРєР»СЋС‡Р°С‚СЊ}
+translate R MainLine {Р“Р»Р°РІРЅС‹Р№ РїР»Р°РЅ}
+translate R Bookmark {Р—Р°РєР»Р°РґРєР°}
+translate R NewLine {РќРѕРІР°СЏ СЃС‚СЂРѕРєР°}
+translate R ToBeVerified {РџСЂРѕРІРµСЂСЏС‚СЊ}
+translate R ToTrain {Р”Р»СЏ С‚СЂРµРЅРёСЂРѕРІРєРё}
+translate R Dubious {РЎРѕРјРЅРёС‚РµР»СЊРЅС‹Рµ}
+translate R ToRemove {Р”Р»СЏ СѓРґР°Р»РµРЅРёСЏ}
+translate R NoMarker {Р‘РµР· РјР°СЂРєРµСЂРѕРІ}
+translate R ColorMarker {Р¦РІРµС‚}
+translate R WhiteMark {Р‘РµР»С‹Р№}
+translate R GreenMark {Р—РµР»С‘РЅС‹Р№}
+translate R YellowMark {Р–С‘Р»С‚С‹Р№}
+translate R BlueMark {Р“РѕР»СѓР±РѕР№}
+translate R RedMark {РљСЂР°СЃРЅС‹Р№}
+translate R CommentMove {РљРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ С…РѕРґ}
+translate R CommentPosition {РљРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РїРѕР·РёС†РёСЋ}
+translate R AddMoveToMaskFirst {Р”РѕР±Р°РІРёС‚СЊ С…РѕРґ РІ РјР°СЃРєСѓ РїРµСЂРІС‹Рј}
+translate R OpenAMaskFileFirst {РћС‚РєСЂС‹С‚СЊ РїРµСЂРІС‹Р№ С„Р°Р№Р» РјР°СЃРєРё}
+translate R Positions {РџРѕР·РёС†РёРё}
+translate R Moves {РҐРѕРґС‹}
 
 # Finder window:
-menuText R FinderFile "Файл" 0
-menuText R FinderFileSubdirs "Смотреть в поддиректориях" 0
-menuText R FinderFileClose "Закрыть поиск файлов" 0
-menuText R FinderSort "Сортировка" 0
-menuText R FinderSortType "Тип" 0
-menuText R FinderSortSize "Размер" 0
-menuText R FinderSortMod "Модифицированно" 0
-menuText R FinderSortName "Имя" 0
-menuText R FinderSortPath "Путь" 0
-menuText R FinderTypes "Типы" 0
-menuText R FinderTypesScid "База данных Scid" 0
-menuText R FinderTypesOld "Старый формат базы данных Scid" 0
-menuText R FinderTypesPGN "Файлы PGN" 0
-menuText R FinderTypesEPD "Файлы EPD" 1
-menuText R FinderTypesRep "Файлы репертуара" 6
-menuText R FinderHelp "Помощь" 0
-menuText R FinderHelpFinder "Помощь по поиску файлов" 0
-menuText R FinderHelpIndex "Индекс помощи" 0
-translate R FileFinder {Поиск файлов}
-translate R FinderDir {Директория}
-translate R FinderDirs {Директории}
-translate R FinderFiles {Файлы}
-translate R FinderUpDir {вверх}
-# ====== TODO To be translated ======
-translate R FinderCtxOpen {Open}
-# ====== TODO To be translated ======
-translate R FinderCtxBackup {Backup}
-# ====== TODO To be translated ======
-translate R FinderCtxCopy {Copy}
-# ====== TODO To be translated ======
-translate R FinderCtxMove {Move}
-# ====== TODO To be translated ======
-translate R FinderCtxDelete {Delete}
+menuText R FinderFile "Р¤Р°Р№Р»" 0
+menuText R FinderFileSubdirs "РЎРјРѕС‚СЂРµС‚СЊ РІ РїРѕРґРґРёСЂРµРєС‚РѕСЂРёСЏС…" 0
+menuText R FinderFileClose "Р—Р°РєСЂС‹С‚СЊ РїРѕРёСЃРє С„Р°Р№Р»РѕРІ" 0
+menuText R FinderSort "РЎРѕСЂС‚РёСЂРѕРІРєР°" 0
+menuText R FinderSortType "РўРёРї" 0
+menuText R FinderSortSize "Р Р°Р·РјРµСЂ" 0
+menuText R FinderSortMod "РњРѕРґРёС„РёС†РёСЂРѕРІР°РЅРѕ" 0
+menuText R FinderSortName "РРјСЏ" 0
+menuText R FinderSortPath "РџСѓС‚СЊ" 0
+menuText R FinderTypes "РўРёРїС‹" 0
+menuText R FinderTypesScid "Р‘Р°Р·Р° РґР°РЅРЅС‹С… Scid" 0
+menuText R FinderTypesOld "РЎС‚Р°СЂС‹Р№ С„РѕСЂРјР°С‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С… Scid" 0
+menuText R FinderTypesPGN "Р¤Р°Р№Р»С‹ PGN" 0
+menuText R FinderTypesEPD "Р¤Р°Р№Р»С‹ EPD" 1
+menuText R FinderTypesRep "Р¤Р°Р№Р»С‹ СЂРµРїРµСЂС‚СѓР°СЂР°" 6
+menuText R FinderHelp "РџРѕРјРѕС‰СЊ" 0
+menuText R FinderHelpFinder "РџРѕРјРѕС‰СЊ РїРѕ РїРѕРёСЃРєСѓ С„Р°Р№Р»РѕРІ" 0
+menuText R FinderHelpIndex "РРЅРґРµРєСЃ РїРѕРјРѕС‰Рё" 0
+translate R FileFinder {РџРѕРёСЃРє С„Р°Р№Р»РѕРІ}
+translate R FinderDir {Р”РёСЂРµРєС‚РѕСЂРёСЏ}
+translate R FinderDirs {Р”РёСЂРµРєС‚РѕСЂРёРё}
+translate R FinderFiles {Р¤Р°Р№Р»С‹}
+translate R FinderUpDir {РІРІРµСЂС…}
+translate R FinderCtxOpen {РћС‚РєСЂС‹С‚СЊ}
+translate R FinderCtxBackup {Р”СѓР±Р»РёСЂРѕРІР°С‚СЊ}
+translate R FinderCtxCopy {РљРѕРїРёСЂРѕРІР°С‚СЊ}
+translate R FinderCtxMove {РџРµСЂРµРґРІРёРЅСѓС‚СЊ}
+translate R FinderCtxDelete {РЈРґР°Р»РёС‚СЊ}
 
 # Player finder:
-menuText R PListFile "Файл" 0
-menuText R PListFileUpdate "Обновить" 0
-menuText R PListFileClose "Закрыть поиск игрока" 0
-menuText R PListSort "Сортировка" 0
-menuText R PListSortName "Имя" 0
-menuText R PListSortElo "Elo" 0
-menuText R PListSortGames "Партии" 0
-menuText R PListSortOldest "Старейшая" 1
-menuText R PListSortNewest "Новейшая" 0
+menuText R PListFile "Р¤Р°Р№Р»" 0
+menuText R PListFileUpdate "РћР±РЅРѕРІРёС‚СЊ" 0
+menuText R PListFileClose "Р—Р°РєСЂС‹С‚СЊ РїРѕРёСЃРє РёРіСЂРѕРєР°" 0
+menuText R PListSort "РЎРѕСЂС‚РёСЂРѕРІРєР°" 0
+menuText R PListSortName "РРјСЏ" 0
+menuText R PListSortElo "Р РµР№С‚РёРЅРі Р­Р»Рѕ" 0
+menuText R PListSortGames "РџР°СЂС‚РёРё" 0
+menuText R PListSortOldest "РЎС‚Р°СЂРµР№С€Р°СЏ" 1
+menuText R PListSortNewest "РќРѕРІРµР№С€Р°СЏ" 0
 
 # Tournament finder:
-menuText R TmtFile "Файл" 0
-menuText R TmtFileUpdate "Обновить" 0
-menuText R TmtFileClose "Закрыть поиск турнира" 0
-menuText R TmtSort "Сортировка" 0
-menuText R TmtSortDate "Дата" 0
-menuText R TmtSortPlayers "Игроки" 0
-menuText R TmtSortGames "Партии" 0
-menuText R TmtSortElo "Elo" 0
-menuText R TmtSortSite "Место" 0
-menuText R TmtSortEvent "Турнир" 0
-menuText R TmtSortWinner "Победитель" 2
-translate R TmtLimit "Ограниченный список"
-translate R TmtMeanElo "Наименьшее значение Elo"
-translate R TmtNone "Ни одного турнира не найдено."
+menuText R TmtFile "Р¤Р°Р№Р»" 0
+menuText R TmtFileUpdate "РћР±РЅРѕРІРёС‚СЊ" 0
+menuText R TmtFileClose "Р—Р°РєСЂС‹С‚СЊ РїРѕРёСЃРє С‚СѓСЂРЅРёСЂР°" 0
+menuText R TmtSort "РЎРѕСЂС‚РёСЂРѕРІРєР°" 0
+menuText R TmtSortDate "Р”Р°С‚Р°" 0
+menuText R TmtSortPlayers "РРіСЂРѕРєРё" 0
+menuText R TmtSortGames "РџР°СЂС‚РёРё" 0
+menuText R TmtSortElo "Р РµР№С‚РёРЅРі Р­Р»Рѕ" 0
+menuText R TmtSortSite "РњРµСЃС‚Рѕ" 0
+menuText R TmtSortEvent "РўСѓСЂРЅРёСЂ" 0
+menuText R TmtSortWinner "РџРѕР±РµРґРёС‚РµР»СЊ" 2
+translate R TmtLimit "Р“СЂР°РЅРёС†С‹ СЃРїРёСЃРєР°"
+translate R TmtMeanElo "РќР°РёРјРµРЅСЊС€РµРµ Р·РЅР°С‡РµРЅРёРµ СЂРµР№С‚РёРЅРіР° Р­Р»Рѕ"
+translate R TmtNone "РќРё РѕРґРЅРѕРіРѕ С‚СѓСЂРЅРёСЂР° РЅРµ РЅР°Р№РґРµРЅРѕ."
 
 # Graph windows:
-menuText R GraphFile "Файл" 0
-menuText R GraphFileColor "Сохранить как цветной PostScript..." 14
-menuText R GraphFileGrey "Сохранить как черно-белый PostScript..." 14
-menuText R GraphFileClose "Закрыть окно" 6
-menuText R GraphOptions "Установки" 0
-menuText R GraphOptionsWhite "Белые" 0
-menuText R GraphOptionsBlack "Черные" 0
-menuText R GraphOptionsBoth "Оба" 0
-menuText R GraphOptionsPInfo "Игрок - информация об игроке" 0
-translate R GraphFilterTitle "Фильтр графики: частота на 1000 партий"
-# ====== TODO To be translated ======
-translate R GraphAbsFilterTitle "Filter Graph: frequency of the games"
-# ====== TODO To be translated ======
-translate R ConfigureFilter {Configure X-Axes for Year, Rating and Moves}
-# ====== TODO To be translated ======
-translate R FilterEstimate "Estimate"
-# ====== TODO To be translated ======
-translate R TitleFilterGraph "Scid: Filter Graph"
+menuText R GraphFile "Р¤Р°Р№Р»" 0
+menuText R GraphFileColor "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє С†РІРµС‚РЅРѕР№ PostScript..." 14
+menuText R GraphFileGrey "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє С‡С‘СЂРЅРѕ-Р±РµР»С‹Р№ PostScript..." 14
+menuText R GraphFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ" 6
+menuText R GraphOptions "РџР°СЂР°РјРµС‚СЂС‹" 0
+menuText R GraphOptionsWhite "Р‘РµР»С‹Рµ" 0
+menuText R GraphOptionsBlack "Р§С‘СЂРЅС‹Рµ" 0
+menuText R GraphOptionsBoth "РћР±Р°" 0
+menuText R GraphOptionsPInfo "РРіСЂРѕРє - РёРЅС„РѕСЂРјР°С†РёСЏ РѕР± РёРіСЂРѕРєРµ" 0
+translate R GraphFilterTitle "Р”РёР°РіСЂР°РјРјР° С„РёР»СЊС‚СЂР°: С‡Р°СЃС‚РѕС‚Р° РЅР° 1000 РїР°СЂС‚РёР№"
+translate R GraphAbsFilterTitle "Р”РёР°РіСЂР°РјРјР° С„РёР»СЊС‚СЂР°: С‡Р°СЃС‚РѕС‚Р° РЅР° РІСЃРµ РїР°СЂС‚РёРё"
+translate R ConfigureFilter {РќР°СЃС‚СЂРѕР№РєР° РѕСЃРё РҐ РїРѕ РіРѕРґР°Рј, СЂРµР№С‚РёРЅРіСѓ Рё С…РѕРґР°Рј}
+translate R FilterEstimate "РћС†РµРЅРєР°"
+translate R TitleFilterGraph "Scid: Р”РёР°РіСЂР°РјРјР° С„РёР»СЊС‚СЂР°"
 
 # Analysis window:
-translate R AddVariation {Добавить вариант}
-# ====== TODO To be translated ======
-translate R AddAllVariations {Add All Variations}
-translate R AddMove {Добавить ход}
-translate R Annotate {Аннотация}
-# ====== TODO To be translated ======
-translate R ShowAnalysisBoard {Show analysis board}
-# ====== TODO To be translated ======
-translate R ShowInfo {Show engine info}
-# ====== TODO To be translated ======
-translate R FinishGame {Finish game}
-# ====== TODO To be translated ======
-translate R StopEngine {Stop engine}
-# ====== TODO To be translated ======
-translate R StartEngine {Start engine}
-# ====== TODO To be translated ======
-translate R LockEngine {Lock engine to current position}
-translate R AnalysisCommand {Команда анализа}
-translate R PreviousChoices {Предыдущие выборы}
-translate R AnnotateTime {Установить время между ходами в секундах}
-translate R AnnotateWhich {Добавить варианты}
-translate R AnnotateAll {Для ходов обоих сторон}
-# ====== TODO To be translated ======
-translate R AnnotateAllMoves {Annotate all moves}
-translate R AnnotateWhite {Только для ходов Белых}
-translate R AnnotateBlack {Только для ходов Черных}
-# ====== TODO To be translated ======
-translate R AnnotateBlundersOnly {When game move is an obvious blunder}
-# ====== TODO To be translated ======
-translate R AnnotateBlundersOnlyScoreChange {Analysis reports blunder, with score change from/to: }
-# ====== TODO To be translated ======
-translate R BlundersThreshold {Threshold}
-# TODO: Translate
-translate R ScoreAllMoves {Score all moves}
-translate R LowPriority {Низкий приоритет CPU}
-# ====== TODO To be translated ======
-translate R ClickHereToSeeMoves {Click here to see moves}
-# ====== TODO To be translated ======
-translate R ConfigureInformant {Configure Informant}
-# ====== TODO To be translated ======
-translate R Informant!? {Interesting move}
-# ====== TODO To be translated ======
-translate R Informant? {Poor move}
-# ====== TODO To be translated ======
-translate R Informant?? {Blunder}
-# ====== TODO To be translated ======
-translate R Informant?! {Dubious move}
-# ====== TODO To be translated ======
-translate R Informant+= {White has a slight advantage}
-# ====== TODO To be translated ======
-translate R Informant+/- {White has a moderate advantage}
-# ====== TODO To be translated ======
-translate R Informant+- {White has a decisive advantage}
-# ====== TODO To be translated ======
-translate R Informant++- {The game is considered won}
-# ====== TODO To be translated ======
-translate R Book {Book}
-# ====== TODO To be translated ======
-translate R OtherBookMoves {Opponent's book}
-# ====== TODO To be translated ======
-translate R OtherBookMovesTooltip {Moves to which the opponent has a reply}
+translate R AddVariation {Р”РѕР±Р°РІРёС‚СЊ РІР°СЂРёР°РЅС‚}
+translate R AddAllVariations {Р”РѕР±Р°РІРёС‚СЊ РІСЃРµ РІР°СЂРёР°РЅС‚С‹}
+translate R AddMove {Р”РѕР±Р°РІРёС‚СЊ С…РѕРґ}
+translate R Annotate {РђРЅРЅРѕС‚Р°С†РёСЏ}
+translate R ShowAnalysisBoard {РџРѕРєР°Р·Р°С‚СЊ РґРѕСЃРєСѓ Р°РЅР°Р»РёР·Р°}
+translate R ShowInfo {РџРѕРєР°Р·Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РґРІРёР¶РєР°}
+translate R FinishGame {Р—Р°РІРµСЂС€РёС‚СЊ РїР°СЂС‚РёСЋ}
+translate R StopEngine {РћСЃС‚Р°РЅРѕРІРёС‚СЊ РґРІРёР¶РѕРє}
+translate R StartEngine {Р—Р°РїСѓСЃС‚РёС‚СЊ РґРІРёР¶РѕРє}
+translate R LockEngine {Р—Р°РєСЂРµРїРёС‚СЊ РґРІРёР¶РѕРє РІ СЌС‚РѕР№ РїРѕР·РёС†РёРё}
+translate R AnalysisCommand {РљРѕРјР°РЅРґР° Р°РЅР°Р»РёР·Р°}
+translate R PreviousChoices {РџСЂРµРґС‹РґСѓС‰РёРµ РІС‹Р±РѕСЂС‹}
+translate R AnnotateTime {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЂРµРјСЏ РјРµР¶РґСѓ С…РѕРґР°РјРё РІ СЃРµРєСѓРЅРґР°С…}
+translate R AnnotateWhich {Р”РѕР±Р°РІРёС‚СЊ РІР°СЂРёР°РЅС‚С‹}
+translate R AnnotateAll {Р”Р»СЏ С…РѕРґРѕРІ РѕР±РѕРёС… СЃС‚РѕСЂРѕРЅ}
+translate R AnnotateAllMoves {РљРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РІСЃРµ С…РѕРґС‹}
+translate R AnnotateWhite {РўРѕР»СЊРєРѕ РґР»СЏ С…РѕРґРѕРІ Р±РµР»С‹С…}
+translate R AnnotateBlack {РўРѕР»СЊРєРѕ РґР»СЏ С…РѕРґРѕРІ С‡С‘СЂРЅС‹С…}
+translate R AnnotateBlundersOnly {РљРѕРіРґР° С…РѕРґ РІ РїР°СЂС‚РёРё - СЌС‚Рѕ РѕС‡РµРІРёРґРЅР°СЏ РѕС€РёР±РєР°}
+translate R AnnotateBlundersOnlyScoreChange {РђРЅР°Р»РёР· РѕС‚С‡С‘С‚Р° РѕС€РёР±РѕРє, РєРѕС‚РѕСЂС‹Рµ РёР·РјРµРЅСЏР»Рё СЃС‡С‘С‚ РѕС‚/РґРѕ:}
+translate R BlundersThreshold {РџРѕСЂРѕРі}
+translate R ScoreAllMoves {РџРµСЂРµСЃС‡РёС‚Р°С‚СЊ РІСЃРµ С…РѕРґС‹}
+translate R LowPriority {РќРёР·РєРёР№ РїСЂРёРѕСЂРёС‚РµС‚ CPU}
+translate R ClickHereToSeeMoves {РљР»РёРєРЅСѓС‚СЊ СЃСЋРґР°, С‡С‚РѕР±С‹ СѓРІРёРґРµС‚СЊ С…РѕРґС‹}
+translate R ConfigureInformant {РќР°СЃС‚СЂРѕР№РєР° РїРѕРґСЃРєР°Р·С‡РёРєР°}
+translate R Informant!? {РҐРѕРґ РїРѕРґСЃРєР°Р·С‡РёРєР°}
+translate R Informant? {РџР»РѕС…РѕР№ С…РѕРґ}
+translate R Informant?? {Р“СЂСѓР±Р°СЏ РѕС€РёР±РєР°}
+translate R Informant?! {РЎРѕРјРЅРёС‚РµР»СЊРЅС‹Р№ С…РѕРґ}
+translate R Informant+= {РЈ Р±РµР»С‹С… РЅРµР±РѕР»СЊС€РѕРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R Informant+/- {РЈ Р±РµР»С‹С… СѓРјРµСЂРµРЅРЅРѕРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R Informant+- {РЈ Р±РµР»С‹С… СЂРµС€Р°СЋС‰РµРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R Informant++- {РџР°СЂС‚РёСЏ СЃС‡РёС‚Р°РµС‚СЃСЏ РІС‹РёРіСЂР°РЅРЅРѕР№}
+
+# Book window
+translate R Book {РљРЅРёРіР°}
+translate R OtherBookMoves {РљРЅРёРіР° СЃРѕРїРµСЂРЅРёРєР°}
+translate R OtherBookMovesTooltip {РҐРѕРґС‹, Рє РєРѕС‚РѕСЂС‹Рј РїСЂРѕС‚РёРІРЅРёРє РёРјРµРµС‚ РѕС‚РІРµС‚}
 
 # Analysis Engine open dialog:
-translate R EngineList {Список анализирующих движков}
-translate R EngineName {Название}
-translate R EngineCmd {Команда}
-translate R EngineArgs {Параметры}
-translate R EngineDir {Директория}
-translate R EngineElo {Elo}
-translate R EngineTime {Дата}
-translate R EngineNew {Новый}
-translate R EngineEdit {Редактор}
-translate R EngineRequired {Поля, отмеченные жирным шрифтом, заполнять обязательно, остальные по желанию}
+translate R EngineList {РЎРїРёСЃРѕРє Р°РЅР°Р»РёР·РёСЂСѓСЋС‰РёС… РґРІРёР¶РєРѕРІ}
+translate R EngineName {РќР°Р·РІР°РЅРёРµ}
+translate R EngineCmd {РљРѕРјР°РЅРґР°}
+translate R EngineArgs {РџР°СЂР°РјРµС‚СЂС‹}
+translate R EngineDir {Р”РёСЂРµРєС‚РѕСЂРёСЏ}
+translate R EngineElo {Р­Р»Рѕ}
+translate R EngineTime {Р”Р°С‚Р°}
+translate R EngineNew {РќРѕРІС‹Р№}
+translate R EngineEdit {Р РµРґР°РєС‚РѕСЂ}
+translate R EngineRequired {РџРѕР»СЏ, РѕС‚РјРµС‡РµРЅРЅС‹Рµ Р¶РёСЂРЅС‹Рј С€СЂРёС„С‚РѕРј, Р·Р°РїРѕР»РЅСЏС‚СЊ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ, РѕСЃС‚Р°Р»СЊРЅС‹Рµ - РїРѕ Р¶РµР»Р°РЅРёСЋ}
 
 # Stats window menus:
-menuText R StatsFile "Файл" 0
-menuText R StatsFilePrint "Печатать в файл..." 0
-menuText R StatsFileClose "Закрыть окно" 0
-menuText R StatsOpt "Установки" 0
+menuText R StatsFile "Р¤Р°Р№Р»" 0
+menuText R StatsFilePrint "РџРµС‡Р°С‚Р°С‚СЊ РІ С„Р°Р№Р»..." 0
+menuText R StatsFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ" 0
+menuText R StatsOpt "РЈСЃС‚Р°РЅРѕРІРєРё" 0
 
 # PGN window menus:
-menuText R PgnFile "Файл" 0
-menuText R PgnFileCopy "Copy Game to Clipboard" 0
-menuText R PgnFilePrint "Печатать в файл..." 0
-menuText R PgnFileClose "Закрыть окно PGN" 0
-menuText R PgnOpt "Отображение" 0
-menuText R PgnOptColor "Цветное отображение" 0
-menuText R PgnOptShort "Короткий (трехстрочный) заголовок" 0
-menuText R PgnOptSymbols "Символическая аннотация" 0
-menuText R PgnOptIndentC "Комментарии с отступом" 2
-menuText R PgnOptIndentV "Варианты с отступом" 0
-menuText R PgnOptColumn "В колонку (один ход на строчку)" 4
-menuText R PgnOptSpace "Пробел после номера хода" 0
-menuText R PgnOptStripMarks "Удалить коды цветных полей/стрелок" 0
-menuText R PgnOptBoldMainLine "Use Bold Text for Main Line Moves" 4
-menuText R PgnColor "Цвета" 0
-menuText R PgnColorHeader "Заголовок..." 0
-menuText R PgnColorAnno "Аннотация..." 0
-menuText R PgnColorComments "Комментарии..." 0
-menuText R PgnColorVars "Варианты..." 0
-menuText R PgnColorBackground "Фон..." 0
-# ====== TODO To be translated ======
-menuText R PgnColorMain "Main line..." 0
-# ====== TODO To be translated ======
-menuText R PgnColorCurrent "Current move background..." 1
-menuText R PgnHelp "Помощь" 0
-menuText R PgnHelpPgn "Помощь по PGN" 0
-menuText R PgnHelpIndex "Индекс" 0
-translate R PgnWindowTitle {Game Notation - game %u}
+menuText R PgnFile "Р¤Р°Р№Р»" 0
+menuText R PgnFileCopy "РЎРєРѕРїРёСЂРѕРІР°С‚СЊ РёРіСЂСѓ РІ Р±СѓС„РµСЂ РѕР±РјРµРЅР°" 0
+menuText R PgnFilePrint "РџРµС‡Р°С‚Р°С‚СЊ РІ С„Р°Р№Р»..." 0
+menuText R PgnFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ PGN" 0
+menuText R PgnOpt "РћС‚РѕР±СЂР°Р¶РµРЅРёРµ" 0
+menuText R PgnOptColor "Р¦РІРµС‚РЅРѕРµ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ" 0
+menuText R PgnOptShort "РљРѕСЂРѕС‚РєРёР№ (С‚СЂС‘С…СЃС‚СЂРѕС‡РЅС‹Р№) Р·Р°РіРѕР»РѕРІРѕРє" 0
+menuText R PgnOptSymbols "РЎРёРјРІРѕР»СЊРЅР°СЏ Р°РЅРЅРѕС‚Р°С†РёСЏ" 0
+menuText R PgnOptIndentC "РљРѕРјРјРµРЅС‚Р°СЂРёРё СЃ РѕС‚СЃС‚СѓРїРѕРј" 2
+menuText R PgnOptIndentV "Р’Р°СЂРёР°РЅС‚С‹ СЃ РѕС‚СЃС‚СѓРїРѕРј" 0
+menuText R PgnOptColumn "Р’ РєРѕР»РѕРЅРєСѓ (РѕРґРёРЅ С…РѕРґ РЅР° СЃС‚СЂРѕРєСѓ)" 4
+menuText R PgnOptSpace "РџСЂРѕР±РµР» РїРѕСЃР»Рµ РЅРѕРјРµСЂР° С…РѕРґР°" 0
+menuText R PgnOptStripMarks "РЈРґР°Р»РёС‚СЊ РєРѕРґС‹ С†РІРµС‚РЅС‹С… РїРѕР»РµР№/СЃС‚СЂРµР»РѕРє" 0
+menuText R PgnOptBoldMainLine "РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р¶РёСЂРЅС‹Р№ С€СЂРёС„С‚ РґР»СЏ С…РѕРґРѕРІ РіР»Р°РІРЅРѕРіРѕ РїР»Р°РЅР°" 4
+menuText R PgnColor "Р¦РІРµС‚Р°" 0
+menuText R PgnColorHeader "Р—Р°РіРѕР»РѕРІРѕРє..." 0
+menuText R PgnColorAnno "РђРЅРЅРѕС‚Р°С†РёСЏ..." 0
+menuText R PgnColorComments "РљРѕРјРјРµРЅС‚Р°СЂРёРё..." 0
+menuText R PgnColorVars "Р’Р°СЂРёР°РЅС‚С‹..." 0
+menuText R PgnColorBackground "Р¤РѕРЅ..." 0
+menuText R PgnColorMain "Р“Р»Р°РІРЅС‹Р№ РїР»Р°РЅ..." 0
+menuText R PgnColorCurrent "Р¤РѕРЅ С‚РµРєСѓС‰РµРіРѕ С…РѕРґР°..." 1
+menuText R PgnHelp "РџРѕРјРѕС‰СЊ" 0
+menuText R PgnHelpPgn "РџРѕРјРѕС‰СЊ РїРѕ PGN" 0
+menuText R PgnHelpIndex "РРЅРґРµРєСЃ" 0
+translate R PgnWindowTitle {РќРѕС‚Р°С†РёСЏ - РїР°СЂС‚РёСЏ %u}
 
 # Crosstable window menus:
-menuText R CrosstabFile "Файл" 0
-menuText R CrosstabFileText "Печатать в текстовый файл..." 11
-menuText R CrosstabFileHtml "Печатать в HTML файл..." 11
-menuText R CrosstabFileLaTeX "Печатать в LaTeX файл..." 11
-menuText R CrosstabFileClose "Закрыть окно турнирной таблицы" 0
-menuText R CrosstabEdit "Редактор" 0
-menuText R CrosstabEditEvent "Турнир" 0
-menuText R CrosstabEditSite "Место" 0
-menuText R CrosstabEditDate "Дата" 0
-menuText R CrosstabOpt "Отображение" 0
-menuText R CrosstabOptAll "Все против всех" 0
-menuText R CrosstabOptSwiss "Швейцарская система" 0
-menuText R CrosstabOptKnockout "На вылет" 0
-menuText R CrosstabOptAuto "Авто" 0
-menuText R CrosstabOptAges "Возвраст в годах" 2
-menuText R CrosstabOptNats "Национальность" 2
-menuText R CrosstabOptRatings "Рейтинг" 0
-menuText R CrosstabOptTitles "Титул" 0
-menuText R CrosstabOptBreaks "Счет тай-бреков" 0
-menuText R CrosstabOptDeleted "Включить удаленные партии" 1
-menuText R CrosstabOptColors "Цвета (только для швейцарской системы)" 0
-menuText R CrosstabOptColumnNumbers "Цифровые колонки (Только для всех против всех)" 2
-menuText R CrosstabOptGroup "Групповой счет" 0
-menuText R CrosstabSort "Сортировка" 0
-menuText R CrosstabSortName "Имя" 0
-menuText R CrosstabSortRating "Рейтинг" 0
-menuText R CrosstabSortScore "Счет" 0
-menuText R CrosstabColor "Цвет" 0
-menuText R CrosstabColorPlain "Обычный текст" 0
-menuText R CrosstabColorHyper "Гипертекст" 0
-menuText R CrosstabHelp "Помощь" 0
-menuText R CrosstabHelpCross "Помощь по турнирной таблице" 0
-menuText R CrosstabHelpIndex "Индекс помощи" 0
-translate R SetFilter {Установить фильтр}
-translate R AddToFilter {Добавить к фильтру}
-translate R Swiss {Швейцарская система}
-translate R Category {Категория}
+menuText R CrosstabFile "Р¤Р°Р№Р»" 0
+menuText R CrosstabFileText "РџРµС‡Р°С‚Р°С‚СЊ РІ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р»..." 11
+menuText R CrosstabFileHtml "РџРµС‡Р°С‚Р°С‚СЊ РІ HTML С„Р°Р№Р»..." 11
+menuText R CrosstabFileLaTeX "РџРµС‡Р°С‚Р°С‚СЊ РІ LaTeX С„Р°Р№Р»..." 11
+menuText R CrosstabFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ С‚СѓСЂРЅРёСЂРЅРѕР№ С‚Р°Р±Р»РёС†С‹" 0
+menuText R CrosstabEdit "Р РµРґР°РєС‚РѕСЂ" 0
+menuText R CrosstabEditEvent "РўСѓСЂРЅРёСЂ" 0
+menuText R CrosstabEditSite "РњРµСЃС‚Рѕ" 0
+menuText R CrosstabEditDate "Р”Р°С‚Р°" 0
+menuText R CrosstabOpt "РћС‚РѕР±СЂР°Р¶РµРЅРёРµ" 0
+menuText R CrosstabOptAll "Р’СЃРµ РїСЂРѕС‚РёРІ РІСЃРµС…" 0
+menuText R CrosstabOptSwiss "РЁРІРµР№С†Р°СЂСЃРєР°СЏ СЃРёСЃС‚РµРјР°" 0
+menuText R CrosstabOptKnockout "РќР° РІС‹Р»РµС‚" 0
+menuText R CrosstabOptAuto "РђРІС‚Рѕ" 0
+menuText R CrosstabOptAges "Р’РѕР·СЂР°СЃС‚ РІ РіРѕРґР°С…" 2
+menuText R CrosstabOptNats "РќР°С†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ" 2
+menuText R CrosstabOptRatings "Р РµР№С‚РёРЅРі" 0
+menuText R CrosstabOptTitles "РўРёС‚СѓР»" 0
+menuText R CrosstabOptBreaks "РЎС‡С‘С‚ С‚Р°Р№-Р±СЂРµР№РєРѕРІ" 0
+menuText R CrosstabOptDeleted "Р’РєР»СЋС‡РёС‚СЊ СѓРґР°Р»С‘РЅРЅС‹Рµ РїР°СЂС‚РёРё" 1
+menuText R CrosstabOptColors "Р¦РІРµС‚Р° (С‚РѕР»СЊРєРѕ РґР»СЏ С€РІРµР№С†Р°СЂСЃРєРѕР№ СЃРёСЃС‚РµРјС‹)" 0
+menuText R CrosstabOptColumnNumbers "Р¦РёС„СЂРѕРІС‹Рµ РєРѕР»РѕРЅРєРё (С‚РѕР»СЊРєРѕ РґР»СЏ РІСЃРµС… РїСЂРѕС‚РёРІ РІСЃРµС…)" 2
+menuText R CrosstabOptGroup "Р“СЂСѓРїРїРѕРІРѕР№ СЃС‡С‘С‚" 0
+menuText R CrosstabSort "РЎРѕСЂС‚РёСЂРѕРІРєР°" 0
+menuText R CrosstabSortName "РРјСЏ" 0
+menuText R CrosstabSortRating "Р РµР№С‚РёРЅРі" 0
+menuText R CrosstabSortScore "РЎС‡С‘С‚" 0
+menuText R CrosstabColor "Р¦РІРµС‚" 0
+menuText R CrosstabColorPlain "РћР±С‹С‡РЅС‹Р№ С‚РµРєСЃС‚" 0
+menuText R CrosstabColorHyper "Р“РёРїРµСЂС‚РµРєСЃС‚" 0
+menuText R CrosstabHelp "РџРѕРјРѕС‰СЊ" 0
+menuText R CrosstabHelpCross "РџРѕРјРѕС‰СЊ РїРѕ С‚СѓСЂРЅРёСЂРЅРѕР№ С‚Р°Р±Р»РёС†Рµ" 0
+menuText R CrosstabHelpIndex "РРЅРґРµРєСЃ РїРѕРјРѕС‰Рё" 0
+translate R SetFilter {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С„РёР»СЊС‚СЂ}
+translate R AddToFilter {Р”РѕР±Р°РІРёС‚СЊ Рє С„РёР»СЊС‚СЂСѓ}
+translate R Swiss {РЁРІРµР№С†Р°СЂСЃРєР°СЏ СЃРёСЃС‚РµРјР°}
+translate R Category {РљР°С‚РµРіРѕСЂРёСЏ}
 
 # Opening report window menus:
-menuText R OprepFile "Файл" 0
-menuText R OprepFileText "Печатать в текстовый файл..." 11
-menuText R OprepFileHtml "Печатать в HTML файл..." 11
-menuText R OprepFileLaTeX "Печатать в LaTeX файл..." 11
-menuText R OprepFileOptions "Установки..." 0
-menuText R OprepFileClose "Закрыть окно дебытов" 0
-menuText R OprepFavorites "Favorites" 1
-menuText R OprepFavoritesAdd "Add Report..." 0
-menuText R OprepFavoritesEdit "Edit Report Favorites..." 0
-menuText R OprepFavoritesGenerate "Generate Reports..." 0
-menuText R OprepHelp "Помощь" 0
-menuText R OprepHelpReport "Помощь по дебютным отчетам" 0
-menuText R OprepHelpIndex "Индекс помощи" 0
+menuText R OprepFile "Р¤Р°Р№Р»" 0
+menuText R OprepFileText "РџРµС‡Р°С‚Р°С‚СЊ РІ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р»..." 11
+menuText R OprepFileHtml "РџРµС‡Р°С‚Р°С‚СЊ РІ HTML С„Р°Р№Р»..." 11
+menuText R OprepFileLaTeX "РџРµС‡Р°С‚Р°С‚СЊ РІ LaTeX С„Р°Р№Р»..." 11
+menuText R OprepFileOptions "РЈСЃС‚Р°РЅРѕРІРєРё..." 0
+menuText R OprepFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ РґРµР±СЋС‚РѕРІ" 0
+menuText R OprepFavorites "РР·Р±СЂР°РЅРЅС‹Рµ" 1
+menuText R OprepFavoritesAdd "Р”РѕР±Р°РІРёС‚СЊ РѕС‚С‡С‘С‚..." 0
+menuText R OprepFavoritesEdit "Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ РѕС‚С‡С‘С‚ РїРѕ РёР·Р±СЂР°РЅРЅС‹Рј..." 0
+menuText R OprepFavoritesGenerate "РЎРѕР·РґР°С‚СЊ РѕС‚С‡С‘С‚С‹..." 0
+menuText R OprepHelp "РџРѕРјРѕС‰СЊ" 0
+menuText R OprepHelpReport "РџРѕРјРѕС‰СЊ РїРѕ РґРµР±СЋС‚РЅС‹Рј РѕС‚С‡С‘С‚Р°Рј" 0
+menuText R OprepHelpIndex "РРЅРґРµРєСЃ РїРѕРјРѕС‰Рё" 0
 
 # Repertoire editor:
-menuText R RepFile "Файл" 0
-menuText R RepFileNew "Новый" 0
-menuText R RepFileOpen "Открыть..." 0
-menuText R RepFileSave "Сохранить.." 0
-menuText R RepFileSaveAs "Сохранить как..." 2
-menuText R RepFileClose "Закрыть окно" 0
-menuText R RepEdit "Редактор" 0
-menuText R RepEditGroup "Добавить группу" 9
-menuText R RepEditInclude "Добавить включенные строки" 9
-menuText R RepEditExclude "Добавить исключенные строки" 9
-menuText R RepView "Вид" 0
-menuText R RepViewExpand "Развернуть все группы" 0
-menuText R RepViewCollapse "Сжать все группы" 0
-menuText R RepSearch "Поиск" 0
-menuText R RepSearchAll "Все репертуары..." 0
-menuText R RepSearchDisplayed "Показанные строки только..." 0
-menuText R RepHelp "Помощь" 4
-menuText R RepHelpRep "Помощь по репертуару" 0
-menuText R RepHelpIndex "Индекс помощи" 0
-translate R RepSearch "Поиск репертуара"
-translate R RepIncludedLines "включенные строки"
-translate R RepExcludedLines "исключенный строки"
-translate R RepCloseDialog {В этом репертуаре не сохранены изменения.
+menuText R RepFile "Р¤Р°Р№Р»" 0
+menuText R RepFileNew "РќРѕРІС‹Р№" 0
+menuText R RepFileOpen "РћС‚РєСЂС‹С‚СЊ..." 0
+menuText R RepFileSave "РЎРѕС…СЂР°РЅРёС‚СЊ.." 0
+menuText R RepFileSaveAs "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє..." 2
+menuText R RepFileClose "Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ" 0
+menuText R RepEdit "Р РµРґР°РєС‚РѕСЂ" 0
+menuText R RepEditGroup "Р”РѕР±Р°РІРёС‚СЊ РіСЂСѓРїРїСѓ" 9
+menuText R RepEditInclude "Р”РѕР±Р°РІРёС‚СЊ РІРєР»СЋС‡С‘РЅРЅС‹Рµ СЃС‚СЂРѕРєРё" 9
+menuText R RepEditExclude "Р”РѕР±Р°РІРёС‚СЊ РёСЃРєР»СЋС‡С‘РЅРЅС‹Рµ СЃС‚СЂРѕРєРё" 9
+menuText R RepView "Р’РёРґ" 0
+menuText R RepViewExpand "Р Р°Р·РІРµСЂРЅСѓС‚СЊ РІСЃРµ РіСЂСѓРїРїС‹" 0
+menuText R RepViewCollapse "РЎР¶Р°С‚СЊ РІСЃРµ РіСЂСѓРїРїС‹" 0
+menuText R RepSearch "РџРѕРёСЃРє" 0
+menuText R RepSearchAll "Р’СЃРµ СЂРµРїРµСЂС‚СѓР°СЂС‹..." 0
+menuText R RepSearchDisplayed "РџРѕРєР°Р·Р°РЅРЅС‹Рµ СЃС‚СЂРѕРєРё С‚РѕР»СЊРєРѕ..." 0
+menuText R RepHelp "РџРѕРјРѕС‰СЊ" 4
+menuText R RepHelpRep "РџРѕРјРѕС‰СЊ РїРѕ СЂРµРїРµСЂС‚СѓР°СЂСѓ" 0
+menuText R RepHelpIndex "РРЅРґРµРєСЃ РїРѕРјРѕС‰Рё" 0
+translate R RepSearch "РџРѕРёСЃРє СЂРµРїРµСЂС‚СѓР°СЂР°"
+translate R RepIncludedLines "Р’РєР»СЋС‡С‘РЅРЅС‹Рµ СЃС‚СЂРѕРєРё"
+translate R RepExcludedLines "РСЃРєР»СЋС‡С‘РЅРЅС‹Р№ СЃС‚СЂРѕРєРё"
+translate R RepCloseDialog {Р’ СЌС‚РѕРј СЂРµРїРµСЂС‚СѓР°СЂРµ РёР·РјРµРЅРµРЅРёСЏ РЅРµ СЃРѕС…СЂР°РЅРµРЅС‹.
 
-Вы действительно хотите продолжить не сохранив все изменения, которые вы сделали?
+Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ РїСЂРѕРґРѕР»Р¶РёС‚СЊ РЅРµ СЃРѕС…СЂР°РЅРёРІ РІСЃРµ РёР·РјРµРЅРµРЅРёСЏ, РєРѕС‚РѕСЂС‹Рµ СЃРґРµР»Р°Р»Рё?
 }
 
 # Header search:
-translate R HeaderSearch {Поиск по заголовку}
-# ====== TODO To be translated ======
-translate R EndSideToMove {Side to move at end of game}
-translate R GamesWithNoECO {Партии без ECO?}
-translate R GameLength {Длина партии}
-translate R FindGamesWith {Найти партии с флагами}
-translate R StdStart {Нестандартное начало}
-translate R Promotions {Продвижения}
-translate R Comments {Комментарии}
-translate R Variations {Вариации}
-translate R Annotations {Аннотации}
-translate R DeleteFlag {Удалить флаг}
-translate R WhiteOpFlag {Дебют белых}
-translate R BlackOpFlag {Дебют черных}
-translate R MiddlegameFlag {Мительшпиль}
-translate R EndgameFlag {Эндшпиль}
-translate R NoveltyFlag {Новинка}
-translate R PawnFlag {Пешечная структура}
-translate R TacticsFlag {Тактика}
-translate R QsideFlag {Игра на ферзевом фланге}
-translate R KsideFlag {Игра на королевском фланге}
-translate R BrilliancyFlag {Великолепно}
-translate R BlunderFlag {Ошибка}
-translate R UserFlag {Пользователь}
-translate R PgnContains {Текст PGN}
-# ====== TODO To be translated ======
-translate R Annotator {Annotator}
-# ====== TODO To be translated ======
-translate R Cmnts {Annotated games only}
+translate R HeaderSearch {РџРѕРёСЃРє РїРѕ Р·Р°РіРѕР»РѕРІРєСѓ}
+translate R EndSideToMove {РџРµСЂРµР±СЂР°С‚СЊСЃСЏ РЅР° С‚Сѓ СЃС‚РѕСЂРѕРЅСѓ РІ РєРѕРЅС†Рµ РёРіСЂС‹}
+translate R GamesWithNoECO {РџР°СЂС‚РёРё Р±РµР· ECO?}
+translate R GameLength {Р”Р»РёРЅР° РїР°СЂС‚РёРё}
+translate R FindGamesWith {РќР°Р№С‚Рё РїР°СЂС‚РёРё СЃ С„Р»Р°РіР°РјРё}
+translate R StdStart {РќРµСЃС‚Р°РЅРґР°СЂС‚РЅС‹Р№ РґРµР±СЋС‚}
+translate R Promotions {РџСЂРѕРґРІРёР¶РµРЅРёСЏ}
+translate R Comments {РљРѕРјРјРµРЅС‚Р°СЂРёРё}
+translate R Variations {Р’Р°СЂРёР°С†РёРё}
+translate R Annotations {РђРЅРЅРѕС‚Р°С†РёРё}
+translate R DeleteFlag {РЈРґР°Р»РёС‚СЊ С„Р»Р°Рі}
+translate R WhiteOpFlag {Р”РµР±СЋС‚ Р±РµР»С‹С…}
+translate R BlackOpFlag {Р”РµР±СЋС‚ С‡С‘СЂРЅС‹С…}
+translate R MiddlegameFlag {РњРёС‚С‚РµР»СЊС€РїРёР»СЊ}
+translate R EndgameFlag {Р­РЅРґС€РїРёР»СЊ}
+translate R NoveltyFlag {РќРѕРІРёРЅРєР°}
+translate R PawnFlag {РџРµС€РµС‡РЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР°}
+translate R TacticsFlag {РўР°РєС‚РёРєР°}
+translate R QsideFlag {РРіСЂР° РЅР° С„РµСЂР·РµРІРѕРј С„Р»Р°РЅРіРµ}
+translate R KsideFlag {РРіСЂР° РЅР° РєРѕСЂРѕР»РµРІСЃРєРѕРј С„Р»Р°РЅРіРµ}
+translate R BrilliancyFlag {Р’РµР»РёРєРѕР»РµРїРЅРѕ}
+translate R BlunderFlag {РћС€РёР±РєР°}
+translate R UserFlag {РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ}
+translate R PgnContains {РўРµРєСЃС‚ PGN}
+translate R Annotator {РљРѕРјРјРµРЅС‚Р°С‚РѕСЂ}
+translate R Cmnts {РўРѕР»СЊРєРѕ РєРѕРјРјРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
 
 # Game list window:
-translate R GlistNumber {Номер}
-translate R GlistWhite {Белые}
-translate R GlistBlack {Черные}
-translate R GlistWElo {Б-Elo}
-translate R GlistBElo {Ч-Elo}
-translate R GlistEvent {Турнир}
-translate R GlistSite {Место}
-translate R GlistRound {Раунд}
-translate R GlistDate {Дата}
-translate R GlistYear {Год}
-translate R GlistEDate {Дата турнира}
-translate R GlistResult {Результат}
-translate R GlistLength {Длина}
-translate R GlistCountry {Страна}
+translate R GlistNumber {РќРѕРјРµСЂ}
+translate R GlistWhite {Р‘РµР»С‹Рµ}
+translate R GlistBlack {Р§С‘СЂРЅС‹Рµ}
+translate R GlistWElo {Р‘-Р­Р»Рѕ}
+translate R GlistBElo {Р§-Р­Р»Рѕ}
+translate R GlistEvent {РўСѓСЂРЅРёСЂ}
+translate R GlistSite {РњРµСЃС‚Рѕ}
+translate R GlistRound {Р Р°СѓРЅРґ}
+translate R GlistDate {Р”Р°С‚Р°}
+translate R GlistYear {Р“РѕРґ}
+translate R GlistEDate {Р”Р°С‚Р° С‚СѓСЂРЅРёСЂР°}
+translate R GlistResult {Р РµР·СѓР»СЊС‚Р°С‚}
+translate R GlistLength {Р”Р»РёРЅР°}
+translate R GlistCountry {РЎС‚СЂР°РЅР°}
 translate R GlistECO {ECO}
-translate R GlistOpening {Дебют}
-translate R GlistEndMaterial {Конечный материал}
-translate R GlistDeleted {Удаленные}
-translate R GlistFlags {Флаги}
-translate R GlistVars {Варианты}
-translate R GlistComments {Комментарии}
-translate R GlistAnnos {Аннотации}
-translate R GlistStart {Старт}
-translate R GlistGameNumber {Номер партии}
-# ====== TODO To be translated ======
-translate R GlistAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate R GlistRating {Rating}
-translate R GlistFindText {Найти текст}
-translate R GlistMoveField {Переместить}
-translate R GlistEditField {Конфигурация}
-translate R GlistAddField {Добавить}
-translate R GlistDeleteField {Удалить}
-translate R GlistWidth {Ширина}
-translate R GlistAlign {Выравнивание}
-# ====== TODO To be translated ======
-translate R GlistAlignL {Align: left}
-# ====== TODO To be translated ======
-translate R GlistAlignR {Align: right}
-# ====== TODO To be translated ======
-translate R GlistAlignC {Align: center}
-translate R GlistColor {Цвет}
-translate R GlistSep {Разделитель}
-# ====== TODO To be translated ======
-translate R GlistCurrentSep {-- Current --}
-# ====== TODO To be translated ======
-translate R GlistNewSort {New}
-# ====== TODO To be translated ======
-translate R GlistAddToSort {Add}
-# ====== TODO To be translated ======
-translate R GsortSort {Sort...}
-# ====== TODO To be translated ======
-translate R GsortDate {Date}
-# ====== TODO To be translated ======
-translate R GsortYear {Year}
-# ====== TODO To be translated ======
-translate R GsortEvent {Event}
-# ====== TODO To be translated ======
-translate R GsortSite {Site}
-# ====== TODO To be translated ======
-translate R GsortRound {Round}
-# ====== TODO To be translated ======
-translate R GsortWhiteName {White Name}
-# ====== TODO To be translated ======
-translate R GsortBlackName {Black Name}
-# ====== TODO To be translated ======
+translate R GlistOpening {Р”РµР±СЋС‚}
+translate R GlistEndMaterial {РљРѕРЅРµС‡РЅС‹Р№ РјР°С‚РµСЂРёР°Р»}
+translate R GlistDeleted {РЈРґР°Р»С‘РЅРЅС‹Рµ}
+translate R GlistFlags {Р¤Р»Р°РіРё}
+translate R GlistVars {Р’Р°СЂРёР°РЅС‚С‹}
+translate R GlistComments {РљРѕРјРјРµРЅС‚Р°СЂРёРё}
+translate R GlistAnnos {РђРЅРЅРѕС‚Р°С†РёРё}
+translate R GlistStart {РЎС‚Р°СЂС‚}
+translate R GlistGameNumber {РќРѕРјРµСЂ РїР°СЂС‚РёРё}
+translate R GlistAverageElo {РЎСЂРµРґРЅРёР№ СЂРµР№С‚РёРЅРі Р­Р»Рѕ}
+translate R GlistRating {Р РµР№С‚РёРЅРі}
+translate R GlistFindText {РќР°Р№С‚Рё С‚РµРєСЃС‚}
+translate R GlistMoveField {РҐРѕРґС‹}
+translate R GlistEditField {РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ}
+translate R GlistAddField {Р”РѕР±Р°РІРёС‚СЊ}
+translate R GlistDeleteField {РЈРґР°Р»РёС‚СЊ}
+translate R GlistWidth {РЁРёСЂРёРЅР°}
+translate R GlistAlign {Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ}
+translate R GlistAlignL {Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ: СЃР»РµРІР°}
+translate R GlistAlignR {Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ: СЃРїСЂР°РІР°}
+translate R GlistAlignC {Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ: РїРѕ С†РµРЅС‚СЂСѓ}
+translate R GlistColor {Р¦РІРµС‚}
+translate R GlistSep {Р Р°Р·РґРµР»РёС‚РµР»СЊ}
+translate R GlistCurrentSep {-- РўРµРєСѓС‰РёР№ --}
+translate R GlistNewSort {РќРѕРІС‹Р№}
+translate R GlistAddToSort {Р”РѕР±Р°РІРёС‚СЊ}
+
+
+# base sorting
+translate R GsortSort {РЎРѕСЂС‚РёСЂРѕРІРєР°...}
+translate R GsortDate {Р”Р°С‚Р°}
+translate R GsortYear {Р“РѕРґ}
+translate R GsortEvent {РЎРѕР±С‹С‚РёРµ}
+translate R GsortSite {РњРµСЃС‚РѕРїРѕР»РѕР¶РµРЅРёРµ}
+translate R GsortRound {Р Р°СѓРЅРґ}
+translate R GsortWhiteName {РРјСЏ Р±РµР»РѕРіРѕ РёРіСЂРѕРєР°}
+translate R GsortBlackName {РРјСЏ С‡С‘СЂРЅРѕРіРѕ РёРіСЂРѕРєР°}
 translate R GsortECO {ECO}
-# ====== TODO To be translated ======
-translate R GsortResult {Result}
-# ====== TODO To be translated ======
-translate R GsortMoveCount {Move Count}
-# ====== TODO To be translated ======
-translate R GsortAverageElo {Average Elo}
-# ====== TODO To be translated ======
-translate R GsortCountry {Country}
-# ====== TODO To be translated ======
-translate R GsortDeleted {Deleted}
-# ====== TODO To be translated ======
-translate R GsortEventDate {Event Date}
-# ====== TODO To be translated ======
-translate R GsortWhiteElo {White Elo}
-# ====== TODO To be translated ======
-translate R GsortBlackElo {Black Elo}
-# ====== TODO To be translated ======
-translate R GsortComments {Comments}
-# ====== TODO To be translated ======
-translate R GsortVariations {Variations}
-# ====== TODO To be translated ======
-translate R GsortNAGs {NAGs}
-# ====== TODO To be translated ======
-translate R GsortAscending {Ascending}
-# ====== TODO To be translated ======
-translate R GsortDescending {Descending}
-# ====== TODO To be translated ======
-translate R GsortAdd {Add}
-# ====== TODO To be translated ======
-translate R GsortStore {Store}
-# ====== TODO To be translated ======
-translate R GsortLoad {Load}
-# ====== TODO To be translated ======
-translate R GlistRemoveThisGameFromFilter  {Remove this game from Filter}
-# ====== TODO To be translated ======
-translate R GlistRemoveGameAndAboveFromFilter  {Remove game (and all above it) from Filter}
-# ====== TODO To be translated ======
-translate R GlistRemoveGameAndBelowFromFilter  {Remove game (and all below it) from Filter}
-# ====== TODO To be translated ======
-translate R GlistDeleteGame {(Un)Delete this game} 
-# ====== TODO To be translated ======
-translate R GlistDeleteAllGames {Delete all games in filter} 
-# ====== TODO To be translated ======
-translate R GlistUndeleteAllGames {Undelete all games in filter} 
-# ====== TODO To be translated ======
-translate R GlistMergeGameInBase {Merge Game in other base} 
+translate R GsortResult {Р РµР·СѓР»СЊС‚Р°С‚}
+translate R GsortMoveCount {Р§РёСЃР»Рѕ С…РѕРґРѕРІ}
+translate R GsortAverageElo {РЎСЂРµРґРЅРёР№ СЂРµР№С‚РёРЅРі Р­Р»Рѕ}
+translate R GsortCountry {РЎС‚СЂР°РЅР°}
+translate R GsortDeleted {РЈРґР°Р»С‘РЅРЅС‹Рµ}
+translate R GsortEventDate {Р”Р°С‚Р° С‚СѓСЂРЅРёСЂР°}
+translate R GsortWhiteElo {Р РµР№С‚РёРЅРі Р±РµР»РѕРіРѕ РёРіСЂРѕРєР°}
+translate R GsortBlackElo {Р РµР№С‚РёРЅРі С‡С‘СЂРЅРѕРіРѕ РёРіСЂРѕРєР°}
+translate R GsortComments {РљРѕРјРјРµРЅС‚Р°СЂРёРё}
+translate R GsortVariations {Р’Р°СЂРёР°РЅС‚С‹}
+translate R GsortNAGs {NAG'Рё}
+translate R GsortAscending {Р’РѕСЃС…РѕРґСЏС‰РёРµ}
+translate R GsortDescending {РќРёСЃС…РѕРґСЏС‰РёРµ}
+translate R GsortAdd {Р”РѕР±Р°РІРёС‚СЊ}
+translate R GsortStore {РЎРѕС…СЂР°РЅРёС‚СЊ}
+translate R GsortLoad {Р—Р°РіСЂСѓР·РёС‚СЊ}
+
+# menu shown with right mouse button down on game list.
+translate R GlistRemoveThisGameFromFilter  {РЈРґР°Р»РёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ РёР· С„РёР»СЊС‚СЂР°}
+translate R GlistRemoveGameAndAboveFromFilter  {РЈРґР°Р»РёС‚СЊ РїР°СЂС‚РёСЋ (Рё РІСЃРµ РґСЂСѓРіРёРµ РІС‹С€Рµ РЅРµС‘) РёР· С„РёР»СЊС‚СЂР°}
+translate R GlistRemoveGameAndBelowFromFilter  {РЈРґР°Р»РёС‚СЊ РїР°СЂС‚РёСЋ (Рё РІСЃРµ РґСЂСѓРіРёРµ РЅРёР¶Рµ РЅРµС‘) РёР· С„РёР»СЊС‚СЂР°}
+translate R GlistDeleteGame {(Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ) СѓРґР°Р»РёС‚СЊ СЌС‚Сѓ РїР°СЂС‚РёСЋ}
+translate R GlistDeleteAllGames {РЈРґР°Р»РёС‚СЊ РІСЃРµ РїР°СЂС‚РёРё РёР· С„РёР»СЊС‚СЂР°}
+translate R GlistUndeleteAllGames {Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЃРµ РїР°СЂС‚РёРё РІ С„РёР»СЊС‚СЂРµ}
+translate R GlistMergeGameInBase {РћР±СЉРµРґРёРЅРёС‚СЊ РїР°СЂС‚РёСЋ РёР· РґСЂСѓРіРѕР№ Р±Р°Р·С‹}
 
 # Maintenance window:
-translate R DatabaseName {Название базы данных:}
-translate R TypeIcon {Тип иконки:}
-translate R NumOfGames {Партии:}
-translate R NumDeletedGames {Удаленные партии:}
-translate R NumFilterGames {Партии в фильтре:}
-translate R YearRange {Диапазон годов:}
-translate R RatingRange {Диапазон рейтинга:}
-translate R Description {Описание}
-translate R Flag {Флаг}
-# ====== TODO To be translated ======
-translate R CustomFlags {Custom flags}
-translate R DeleteCurrent {Удалить текущую партию}
-translate R DeleteFilter {Удалить отфильтрованные партии}
-translate R DeleteAll {Удалить все партии}
-translate R UndeleteCurrent {Восстановить текущую партию}
-translate R UndeleteFilter {Восстановить отфильтрованные партии}
-translate R UndeleteAll {Восстановить все партии}
-translate R DeleteTwins {Удалить двойные партии}
-translate R MarkCurrent {Отметить текущую партию}
-translate R MarkFilter {Отметить отфильтрованные партии}
-translate R MarkAll {Отметить все партии}
-translate R UnmarkCurrent {Снять отметку с текущей партии}
-translate R UnmarkFilter {Снять отметку с отфильтрованных партий}
-translate R UnmarkAll {Снять отметку со всех партий}
-translate R Spellchecking {Проверка правописания}
-translate R Players {Игроки}
-translate R Events {Турниры}
-translate R Sites {Место}
-translate R Rounds {Раунды}
-translate R DatabaseOps {Операции с базой данных}
-translate R ReclassifyGames {Партии с класифицированным ECO}
-translate R CompactDatabase {Сжатая база данных}
-translate R SortDatabase {Сортированная база данных}
-translate R AddEloRatings {Добавить рейтинги Elo}
-translate R AutoloadGame {Автозагрузка номера партии}
-translate R StripTags {Удалить теги PGN}
-translate R StripTag {Удалить теги}
-translate R Cleaner {Чистильщик}
+translate R DatabaseName {РќР°Р·РІР°РЅРёРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…:}
+translate R TypeIcon {РўРёРї РёРєРѕРЅРєРё:}
+translate R NumOfGames {РџР°СЂС‚РёРё:}
+translate R NumDeletedGames {РЈРґР°Р»РµРЅРЅС‹Рµ РїР°СЂС‚РёРё:}
+translate R NumFilterGames {РџР°СЂС‚РёРё РІ С„РёР»СЊС‚СЂРµ:}
+translate R YearRange {Р”РёР°РїР°Р·РѕРЅ РіРѕРґРѕРІ:}
+translate R RatingRange {Р”РёР°РїР°Р·РѕРЅ СЂРµР№С‚РёРЅРіР°:}
+translate R Description {РћРїРёСЃР°РЅРёРµ}
+translate R Flag {Р¤Р»Р°Рі}
+translate R CustomFlags {РќРµСЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С„Р»Р°РіРё}
+translate R DeleteCurrent {РЈРґР°Р»РёС‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ}
+translate R DeleteFilter {РЈРґР°Р»РёС‚СЊ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R DeleteAll {РЈРґР°Р»РёС‚СЊ РІСЃРµ РїР°СЂС‚РёРё}
+translate R UndeleteCurrent {Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ}
+translate R UndeleteFilter {Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R UndeleteAll {Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЃРµ РїР°СЂС‚РёРё}
+translate R DeleteTwins {РЈРґР°Р»РёС‚СЊ РґРІРѕР№РЅС‹Рµ РїР°СЂС‚РёРё}
+translate R MarkCurrent {РћС‚РјРµС‚РёС‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ}
+translate R MarkFilter {РћС‚РјРµС‚РёС‚СЊ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R MarkAll {РћС‚РјРµС‚РёС‚СЊ РІСЃРµ РїР°СЂС‚РёРё}
+translate R UnmarkCurrent {РЎРЅСЏС‚СЊ РѕС‚РјРµС‚РєСѓ СЃ С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРё}
+translate R UnmarkFilter {РЎРЅСЏС‚СЊ РѕС‚РјРµС‚РєСѓ СЃ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№}
+translate R UnmarkAll {РЎРЅСЏС‚СЊ РѕС‚РјРµС‚РєСѓ СЃРѕ РІСЃРµС… РїР°СЂС‚РёР№}
+translate R Spellchecking {РџСЂРѕРІРµСЂРєР° РїСЂР°РІРѕРїРёСЃР°РЅРёСЏ}
+translate R Players {РРіСЂРѕРєРё}
+translate R Events {РўСѓСЂРЅРёСЂС‹}
+translate R Sites {РњРµСЃС‚Рѕ}
+translate R Rounds {Р Р°СѓРЅРґС‹}
+translate R DatabaseOps {РћРїРµСЂР°С†РёРё СЃ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С…}
+translate R ReclassifyGames {РџР°СЂС‚РёРё СЃ РєР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°РЅРЅС‹Рј ECO}
+translate R CompactDatabase {РЎР¶Р°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…}
+translate R SortDatabase {РЎРѕСЂС‚РёСЂРѕРІР°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С…}
+translate R AddEloRatings {Р”РѕР±Р°РІРёС‚СЊ СЂРµР№С‚РёРЅРіРё Р­Р»Рѕ}
+translate R AutoloadGame {РђРІС‚РѕР·Р°РіСЂСѓР·РєР° РЅРѕРјРµСЂР° РїР°СЂС‚РёРё}
+translate R StripTags {РЈРґР°Р»РёС‚СЊ С‚РµРіРё PGN}
+translate R StripTag {РЈРґР°Р»РёС‚СЊ С‚РµРіРё}
+translate R Cleaner {Р§РёСЃС‚РёР»СЊС‰РёРє}
 translate R CleanerHelp {
-Чистильщик Scid произведен все поддерживаемые действия, которые вы выбрали в списке ниже, над текущей базой данных.
+Р§РёСЃС‚РёР»СЊС‰РёРє Scid РїСЂРѕРёР·РІРµРґС‘С‚ РЅР°Рґ С‚РµРєСѓС‰РµР№ Р±Р°Р·РѕР№ РґР°РЅРЅС‹С… РІСЃРµ РѕР±СЃР»СѓР¶РёРІР°СЋС‰РёРµ РґРµР№СЃС‚РІРёСЏ, РєРѕС‚РѕСЂС‹Рµ РІС‹ РІС‹Р±СЂР°Р»Рё РІ СЃРїРёСЃРєРµ РЅРёР¶Рµ.
 
-Текущие установки классификации ECO и двойные диалоги удаления будут применены, если вы выберите эти функции.
+РўРµРєСѓС‰РёРµ СѓСЃС‚Р°РЅРѕРІРєРё РєР»Р°СЃСЃРёС„РёРєР°С†РёРё ECO Рё РґРІРѕР№РЅС‹Рµ РґРёР°Р»РѕРіРё СѓРґР°Р»РµРЅРёСЏ Р±СѓРґСѓС‚ РїСЂРёРјРµРЅРµРЅС‹, РµСЃР»Рё РІС‹ РІС‹Р±РµСЂРёС‚Рµ СЌС‚Рё С„СѓРЅРєС†РёРё.
 }
 translate R CleanerConfirm {
-Если поддержка чистильщика стартовала, она не может быть прервана!
+Р•СЃР»Рё СЂРµР¶РёРј С‡РёСЃС‚РёР»СЊС‰РёРєР° СЃС‚Р°СЂС‚РѕРІР°Р», РѕРЅ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРµСЂРІР°РЅ!
 
-Это может занять много времени на большой базе данных, в зависимости от функций, которые вы выбрали и их текущих установок.
+Р­С‚Рѕ РјРѕР¶РµС‚ Р·Р°РЅСЏС‚СЊ РјРЅРѕРіРѕ РІСЂРµРјРµРЅРё РЅР° Р±РѕР»СЊС€РѕР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С…, РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С„СѓРЅРєС†РёР№, РєРѕС‚РѕСЂС‹Рµ РІС‹ РІС‹Р±СЂР°Р»Рё, Рё РёС… С‚РµРєСѓС‰РёС… СѓСЃС‚Р°РЅРѕРІРѕРє.
 
-Вы уверены, что хотите начать поддержку функций, которые вы выбрали?
+Р’С‹ СѓРІРµСЂРµРЅС‹, С‡С‚Рѕ С…РѕС‚РёС‚Рµ РЅР°С‡Р°С‚СЊ РѕР±СЃР»СѓР¶РёРІР°РЅРёРµ С„СѓРЅРєС†РёР№, РєРѕС‚РѕСЂС‹Рµ РІС‹ РІС‹Р±СЂР°Р»Рё?
 }
-# ====== TODO To be translated ======
-translate R TwinCheckUndelete {to flip; "u" undeletes both)}
-# ====== TODO To be translated ======
-translate R TwinCheckprevPair {Previous pair}
-# ====== TODO To be translated ======
-translate R TwinChecknextPair {Next pair}
-# ====== TODO To be translated ======
-translate R TwinChecker {Scid: Twin game checker}
-# ====== TODO To be translated ======
-translate R TwinCheckTournament {Games in tournament:}
-# ====== TODO To be translated ======
-translate R TwinCheckNoTwin {No twin  }
-# ====== TODO To be translated ======
-translate R TwinCheckNoTwinfound {No twin was detected for this game.\nTo show twins using this window, you must first use the "Delete twin games..." function. }
-# ====== TODO To be translated ======
-translate R TwinCheckTag {Share tags...}
-# ====== TODO To be translated ======
-translate R TwinCheckFound1 {Scid found $result twin games}
-# ====== TODO To be translated ======
-translate R TwinCheckFound2 { and set their delete flags}
-# ====== TODO To be translated ======
-translate R TwinCheckNoDelete {There are no games in this database to delete.}
-# ====== TODO To be translated ======
-translate R TwinCriteria1 { Your settings for finding twin games are potentially likely to\ncause non-twin games with similar moves to be marked as twins.}
-# ====== TODO To be translated ======
-translate R TwinCriteria2 {It is recommended that if you select "No" for "same moves", you should select "Yes" for the colors, event, site, round, year and month settings.\nDo you want to continue and delete twins anyway? }
-# ====== TODO To be translated ======
-translate R TwinCriteria3 {It is recommended that you specify "Yes" for at least two of the "same site", "same round" and "same year" settings.\nDo you want to continue and delete twins anyway?}
-# ====== TODO To be translated ======
-translate R TwinCriteriaConfirm {Scid: Confirm twin settings}
-# ====== TODO To be translated ======
-translate R TwinChangeTag "Change the following game tags:\n\n"
-# ====== TODO To be translated ======
-translate R AllocRatingDescription "This command will use the current spellcheck file to add Elo ratings to games in this database. Wherever a player has no currrent rating but his/her rating at the time of the game is listed in the spellcheck file, that rating will be added."
-# ====== TODO To be translated ======
-translate R RatingOverride "Overwrite existing non-zero ratings?"
-# ====== TODO To be translated ======
-translate R AddRatings "Add ratings to:"
-# ====== TODO To be translated ======
-translate R AddedRatings {Scid added $r Elo ratings in $g games.}
-# ====== TODO To be translated ======
-translate R NewSubmenu "New submenu"
+# Twinchecker
+translate R TwinCheckUndelete {СЃР±СЂРѕСЃРёС‚СЊ; "u" РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РѕР±Р°)}
+translate R TwinCheckprevPair {РџСЂРµРґС‹РґСѓС‰Р°СЏ РїР°СЂР°}
+translate R TwinChecknextPair {РЎР»РµРґСѓСЋС‰Р°СЏ РїР°СЂР°}
+translate R TwinChecker {Scid: РљРѕРЅС‚СЂРѕР»С‘СЂ РїР°СЂС‚РёР№-РґСѓР±Р»РёРєР°С‚РѕРІ}
+translate R TwinCheckTournament {РџР°СЂС‚РёР№ РІ С‚СѓСЂРЅРёСЂРµ:}
+translate R TwinCheckNoTwin {РќРµС‚ РґСѓР±Р»РёРєР°С‚РѕРІ}
+translate R TwinCheckNoTwinfound {Р”Р»СЏ СЌС‚РѕР№ РїР°СЂС‚РёРё РЅРµ РЅР°Р№РґРµРЅРѕ РґСѓР±Р»РёРєР°С‚РѕРІ.\nР”Р»СЏ РїРѕРєР°Р·Р° РґСѓР±Р»РёРєР°С‚РѕРІ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј СЌС‚РѕРіРѕ РѕРєРЅР°, РІС‹ РґРѕР»Р¶РЅС‹ РІРЅР°С‡Р°Р»Рµ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С„СѓРЅРєС†РёСЋ "РЈРґР°Р»РёС‚СЊ РїР°СЂС‚РёРё-РґСѓР±Р»РёРєР°С‚С‹...".}
+translate R TwinCheckTag {Р Р°СЃРїСЂРµРґРµР»С‘РЅРЅС‹Рµ РїСЂРёР·РЅР°РєРё...}
+translate R TwinCheckFound1 {Scid РЅР°С€С‘Р» $result РїР°СЂС‚РёР№-РґСѓР±Р»РёРєР°С‚РѕРІ}
+translate R TwinCheckFound2 { Рё СѓСЃС‚Р°РЅРѕРІРёР» РґР»СЏ РЅРёС… С„Р»Р°РіРё РґР»СЏ СѓРґР°Р»РµРЅРёСЏ}
+translate R TwinCheckNoDelete {Р’ СЌС‚РѕР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С… РЅРµС‚ РїР°СЂС‚РёР№ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ.}
+translate R TwinCriteria1 { Р’Р°С€Рё РЅР°СЃС‚СЂРѕР№РєРё РґР»СЏ РїРѕРёСЃРєР° РґСѓР±Р»РёРєР°С‚РѕРІ РјРѕРіСѓС‚ РїРѕС‚РµРЅС†РёР°Р»СЊРЅРѕ РїСЂРёРІРµСЃС‚Рё\nРє С‚РѕРјСѓ, С‡С‚Рѕ СЂР°Р·РЅС‹Рµ РїР°СЂС‚РёРё СЃ РїРѕС…РѕР¶РёРјРё С…РѕРґР°РјРё РјРѕРіСѓС‚ Р±С‹С‚СЊ РїРѕРјРµС‡РµРЅС‹, РєР°Рє РґСѓР±Р»РёРєР°С‚С‹.}
+translate R TwinCriteria2 {Р РµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РІ С‚РѕРј СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° РІС‹ РІС‹Р±РёСЂР°РµС‚Рµ "РќРµС‚" РґР»СЏ "РѕРґРёРЅР°РєРѕРІС‹С… С…РѕРґРѕРІ", РІС‹ РґРѕР»Р¶РЅС‹ РІС‹Р±СЂР°С‚СЊ "Р”Р°" РґР»СЏ РЅР°СЃС‚СЂРѕРµРє С†РІРµС‚РѕРІ, С‚СѓСЂРЅРёСЂРѕРІ, РјРµСЃС‚РѕРїРѕР»РѕР¶РµРЅРёР№, СЂР°СѓРЅРґРѕРІ, РіРѕРґРѕРІ Рё РјРµСЃСЏС†РµРІ.\nРҐРѕС‚РёС‚Рµ Р»Рё РІС‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ Рё СѓРґР°Р»РёС‚СЊ РґСѓР±Р»РёРєР°С‚С‹ РІ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ?}
+translate R TwinCriteria3 {Р РµРєРѕРјРµРЅРґСѓРµС‚СЃСЏ РІ С‚РѕРј СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° РІС‹ РІС‹Р±РёСЂР°РµС‚Рµ "Р”Р°" РјРёРЅРёРјСѓРј РґР»СЏ РґРІСѓС… РЅР°СЃС‚СЂРѕРµРє "С‚РѕР¶Рµ РјРµСЃС‚РѕРїРѕР»РѕР¶РµРЅРёРµ", "С‚РѕС‚ Р¶Рµ СЂР°СѓРЅРґ" Рё "С‚РѕС‚ Р¶Рµ РіРѕРґ".\nРҐРѕС‚РёС‚Рµ Р»Рё РІС‹ РїСЂРѕРґРѕР»Р¶РёС‚СЊ Рё СѓРґР°Р»РёС‚СЊ РґСѓР±Р»РёРєР°С‚С‹ РІ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ?}
+translate R TwinCriteriaConfirm {Scid: РџРѕРґС‚РІРµСЂРґРёС‚СЊ РЅР°СЃС‚СЂРѕР№РєРё РїР°СЂС‚РёР№-РґСѓР±Р»РёРєР°С‚РѕРІ}
+translate R TwinChangeTag "РР·РјРµРЅРµРЅРёРµ С‚РµРіРѕРІ СЃР»РµРґСѓСЋС‰РёС… РїР°СЂС‚РёР№:\n\n"
+translate R AllocRatingDescription "Р­С‚Р° РєРѕРјР°РЅРґР° РёСЃРїРѕР»СЊР·СѓРµС‚ С‚РµРєСѓС‰РёР№ С„Р°Р№Р» РєРѕСЂСЂРµРєС†РёРё РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ СЂРµР№С‚РёРЅРіР° Р­Р»Рѕ Рє РїР°СЂС‚РёСЏРј РІ СЌС‚РѕР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С…. Р’РµР·РґРµ, РіРґРµ РёРіСЂРѕРє РЅРµ РёРјРµР» С‚РµРєСѓС‰РёР№ СЂРµР№С‚РёРЅРі С…РѕС‚СЏ РµРіРѕ/РµС‘ СЂРµР№С‚РёРЅРі РІ С‚РѕР№ РїР°СЂС‚РёРё РѕРїРёСЃР°РЅ РІ С„Р°Р№Р»Рµ РєРѕСЂСЂРµРєС†РёРё, СЂРµР№С‚РёРЅРі Р±СѓРґРµС‚ РґРѕР±Р°РІР»РµРЅ."
+translate R RatingOverride "РџРµСЂРµР·Р°РїРёСЃР°С‚СЊ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РЅРµРЅСѓР»РµРІС‹Рµ СЂРµР№С‚РёРЅРіРё?"
+translate R AddRatings "Р”РѕР±Р°РІРёС‚СЊ СЂРµР№С‚РёРЅРі РІ:"
+translate R AddedRatings {Scid РґРѕР±Р°РІРёР» $r СЂРµР№С‚РёРЅРіРѕРІ Р­Р»Рѕ РІ $g РїР°СЂС‚РёР№.}
+
+#Bookmark editor
+translate R NewSubmenu "РќРѕРІРѕРµ РІР»РѕР¶РµРЅРЅРѕРµ РјРµРЅСЋ"
 
 # Comment editor:
-translate R AnnotationSymbols  {Символы аннотации:}
-translate R Comment {Комментарии:}
-translate R InsertMark {Вставить закладку}
+translate R AnnotationSymbols  {РЎРёРјРІРѕР»С‹ Р°РЅРЅРѕС‚Р°С†РёРё:}
+translate R Comment {РљРѕРјРјРµРЅС‚Р°СЂРёРё:}
+translate R InsertMark {Р’СЃС‚Р°РІРёС‚СЊ Р·Р°РєР»Р°РґРєСѓ}
 translate R InsertMarkHelp {
-Insert/remove mark: Select color, type, square.
-Insert/remove arrow: Right-click two squares.
+Р’СЃС‚Р°РІРёС‚СЊ/СѓРґР°Р»РёС‚СЊ РјРµС‚РєСѓ: Р’С‹Р±РѕСЂ С†РІРµС‚Р°, С‚РёРїР°, РїРѕР»СЏ.
+Р’СЃС‚Р°РІРёС‚СЊ/СѓРґР°Р»РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ: РџСЂР°РІС‹Р№ РєР»РёРє РїРѕ РґРІСѓРј РїРѕР»СЏРј.
 }
 
 # Nag buttons in comment editor:
-translate R GoodMove {Good move}
-translate R PoorMove {Poor move}
-translate R ExcellentMove {Excellent move}
-# ====== TODO To be translated ======
-translate R Blunder {Blunder}
-translate R InterestingMove {Interesting move}
-translate R DubiousMove {Dubious move}
-translate R WhiteDecisiveAdvantage {White has a decisive advantage}
-translate R BlackDecisiveAdvantage {White has a decisive advantage}
-translate R WhiteClearAdvantage {White has a clear advantage}
-translate R BlackClearAdvantage {White has a clear advantage}
-translate R WhiteSlightAdvantage {White has a slight advantage}
-translate R BlackSlightAdvantage {White has a slight advantage}
-translate R Equality {Equality}
-translate R Unclear {Unclear}
-translate R Diagram {Diagram}
+translate R GoodMove {РҐРѕСЂРѕС€РёР№ С…РѕРґ}
+translate R PoorMove {РџР»РѕС…РѕР№ С…РѕРґ}
+translate R ExcellentMove {РћС‚Р»РёС‡РЅС‹Р№ С…РѕРґ}
+translate R Blunder {Р“СЂСѓР±Р°СЏ РѕС€РёР±РєР°}
+translate R InterestingMove {РРЅС‚РµСЂРµСЃРЅС‹Р№ С…РѕРґ}
+translate R DubiousMove {РЎРѕРјРЅРёС‚РµР»СЊРЅС‹Р№ С…РѕРґ}
+translate R WhiteDecisiveAdvantage {Р‘РµР»С‹Рµ РёРјРµСЋС‚ СЂРµС€Р°СЋС‰РµРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R BlackDecisiveAdvantage {Р§С‘СЂРЅС‹Рµ РёРјРµСЋС‚ СЂРµС€Р°СЋС‰РµРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R WhiteClearAdvantage {Р‘РµР»С‹Рµ РёРјРµСЋС‚ С‡РёСЃС‚РѕРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R BlackClearAdvantage {Р§С‘СЂРЅРѕРµ РёРјРµСЋС‚ С‡РёСЃС‚РѕРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R WhiteSlightAdvantage {Р‘РµР»С‹Рµ РёРјРµСЋС‚ РјР°Р»РѕРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R BlackSlightAdvantage {Р§С‘СЂРЅС‹Рµ РёРјРµСЋС‚ РјР°Р»РѕРµ РїСЂРµРёРјСѓС‰РµСЃС‚РІРѕ}
+translate R Equality {Р Р°РІРµРЅСЃС‚РІРѕ}
+translate R Unclear {РќРµРїРѕРЅСЏС‚РЅРѕ}
+translate R Diagram {Р”РёР°РіСЂР°РјРјР°}
 
 # Board search:
-translate R BoardSearch {Поиск позиции}
-translate R FilterOperation {Действия над текущем фильтром:}
-translate R FilterAnd {AND (Ограничивающий фильтр)}
-translate R FilterOr {OR (Добавить к фильтру)}
-translate R FilterIgnore {IGNORE (Сбросить фильтр)}
-translate R SearchType {Тип поиска:}
-translate R SearchBoardExact {Точная позиция (все фигуры на тех же полях)}
-translate R SearchBoardPawns {Пешки (тот же материал, все пешки на тех же полях)}
-translate R SearchBoardFiles {Ряды (тот же материал, все пешки на тех же рядах)}
-translate R SearchBoardAny {Любая (тот же материал, пешки и фигуры в любом месте)}
-# ====== TODO To be translated ======
-translate R SearchInRefDatabase { Search in base }
-translate R LookInVars {Посмотреть в вариантах}
+translate R BoardSearch {РџРѕРёСЃРє РїРѕР·РёС†РёРё}
+translate R FilterOperation {Р”РµР№СЃС‚РІРёСЏ РЅР°Рґ С‚РµРєСѓС‰РёРј С„РёР»СЊС‚СЂРѕРј:}
+translate R FilterAnd {Р (РѕРіСЂР°РЅРёС‡РёРІР°СЋС‰РёР№ С„РёР»СЊС‚СЂ)}
+translate R FilterOr {РР›Р (РґРѕР±Р°РІРёС‚СЊ Рє С„РёР»СЊС‚СЂСѓ)}
+translate R FilterIgnore {РР“РќРћР РР РћР’РђРўР¬ (СЃР±СЂРѕСЃРёС‚СЊ С„РёР»СЊС‚СЂ)}
+translate R SearchType {РўРёРї РїРѕРёСЃРєР°:}
+translate R SearchBoardExact {РўРѕС‡РЅР°СЏ РїРѕР·РёС†РёСЏ (РІСЃРµ С„РёРіСѓСЂС‹ РЅР° С‚РµС… Р¶Рµ РїРѕР»СЏС…)}
+translate R SearchBoardPawns {РџРµС€РєРё (С‚РѕС‚ Р¶Рµ РјР°С‚РµСЂРёР°Р», РІСЃРµ РїРµС€РєРё РЅР° С‚РµС… Р¶Рµ РїРѕР»СЏС…)}
+translate R SearchBoardFiles {Р СЏРґС‹ (С‚РѕС‚ Р¶Рµ РјР°С‚РµСЂРёР°Р», РІСЃРµ РїРµС€РєРё РЅР° С‚РµС… Р¶Рµ СЂСЏРґР°С…)}
+translate R SearchBoardAny {Р›СЋР±Р°СЏ (С‚РѕС‚ Р¶Рµ РјР°С‚РµСЂРёР°Р», РїРµС€РєРё Рё С„РёРіСѓСЂС‹ РІ Р»СЋР±РѕРј РјРµСЃС‚Рµ)}
+translate R SearchInRefDatabase { РџРѕРёСЃРє РІ Р±Р°Р·Рµ }
+translate R LookInVars {РџРѕСЃРјРѕС‚СЂРµС‚СЊ РІ РІР°СЂРёР°РЅС‚Р°С…}
 
 # Material search:
-translate R MaterialSearch {Поиск материала}
-translate R Material {Материал}
-translate R Patterns {Образцы}
-translate R Zero {Ноль}
-translate R Any {Любой}
-translate R CurrentBoard {Текущая позиция}
-translate R CommonEndings {Общие эндшпили}
-translate R CommonPatterns {Общие образцы}
-translate R MaterialDiff {материальная разница}
-translate R squares {поля}
-translate R SameColor {Тот же цвет}
-translate R OppColor {Противоположный цвет}
-translate R Either {Или}
-translate R MoveNumberRange {Диапазон номеров ходов}
-translate R MatchForAtLeast {Совпадает по крайней мере}
-translate R HalfMoves {полуходов}
-# ====== TODO To be translated ======
-translate R EndingPawns {Pawn endings}
-# ====== TODO To be translated ======
-translate R EndingRookVsPawns {Rook vs. Pawn(s)}
-# ====== TODO To be translated ======
-translate R EndingRookPawnVsRook {Rook and 1 Pawn vs. Rook}
-# ====== TODO To be translated ======
-translate R EndingRookPawnsVsRook {Rook and Pawn(s) vs. Rook}
-# ====== TODO To be translated ======
-translate R EndingRooks {Rook vs. Rook endings}
-# ====== TODO To be translated ======
-translate R EndingRooksPassedA {Rook vs. Rook endings with a passed a-pawn}
-# ====== TODO To be translated ======
-translate R EndingRooksDouble {Double Rook endings}
-# ====== TODO To be translated ======
-translate R EndingBishops {Bishop vs. Bishop endings}
-# ====== TODO To be translated ======
-translate R EndingBishopVsKnight {Bishop vs. Knight endings}
-# ====== TODO To be translated ======
-translate R EndingKnights {Knight vs. Knight endings}
-# ====== TODO To be translated ======
-translate R EndingQueens {Queen vs. Queen endings}
-# ====== TODO To be translated ======
-translate R EndingQueenPawnVsQueen {Queen and 1 Pawn vs. Queen}
-# ====== TODO To be translated ======
-translate R BishopPairVsKnightPair {Two Bishops vs. Two Knights middlegame}
-# ====== TODO To be translated ======
-translate R PatternWhiteIQP {White IQP}
-# ====== TODO To be translated ======
-translate R PatternWhiteIQPBreakE6 {White IQP: d4-d5 break vs. e6}
-# ====== TODO To be translated ======
-translate R PatternWhiteIQPBreakC6 {White IQP: d4-d5 break vs. c6}
-# ====== TODO To be translated ======
-translate R PatternBlackIQP {Black IQP}
-# ====== TODO To be translated ======
-translate R PatternWhiteBlackIQP {White IQP vs. Black IQP}
-# ====== TODO To be translated ======
-translate R PatternCoupleC3D4 {White c3+d4 Isolated Pawn Couple}
-# ====== TODO To be translated ======
-translate R PatternHangingC5D5 {Black Hanging Pawns on c5 and d5}
-# ====== TODO To be translated ======
-translate R PatternMaroczy {Maroczy Center (with Pawns on c4 and e4)}
-# ====== TODO To be translated ======
-translate R PatternRookSacC3 {Rook Sacrifice on c3}
-# ====== TODO To be translated ======
-translate R PatternKc1Kg8 {O-O-O vs. O-O (Kc1 vs. Kg8)}
-# ====== TODO To be translated ======
-translate R PatternKg1Kc8 {O-O vs. O-O-O (Kg1 vs. Kc8)}
-# ====== TODO To be translated ======
-translate R PatternLightFian {Light-Square Fianchettos (Bishop-g2 vs. Bishop-b7)}
-# ====== TODO To be translated ======
-translate R PatternDarkFian {Dark-Square Fianchettos (Bishop-b2 vs. Bishop-g7)}
-# ====== TODO To be translated ======
-translate R PatternFourFian {Four Fianchettos (Bishops on b2,g2,b7,g7)}
+translate R MaterialSearch {РџРѕРёСЃРє РјР°С‚РµСЂРёР°Р»Р°}
+translate R Material {РњР°С‚РµСЂРёР°Р»}
+translate R Patterns {РћР±СЂР°Р·С†С‹}
+translate R Zero {РќРѕР»СЊ}
+translate R Any {Р›СЋР±РѕР№}
+translate R CurrentBoard {РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ}
+translate R CommonEndings {РџСЂРѕСЃС‚С‹Рµ СЌРЅРґС€РїРёР»Рё}
+translate R CommonPatterns {РџСЂРѕСЃС‚С‹Рµ РѕР±СЂР°Р·С†С‹}
+translate R MaterialDiff {РњР°С‚РµСЂРёР°Р»СЊРЅР°СЏ СЂР°Р·РЅРёС†Р°}
+translate R squares {РїРѕР»СЏ}
+translate R SameColor {РўРѕС‚ Р¶Рµ С†РІРµС‚}
+translate R OppColor {РџСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅС‹Р№ С†РІРµС‚}
+translate R Either {РР»Рё}
+translate R MoveNumberRange {Р”РёР°РїР°Р·РѕРЅ РЅРѕРјРµСЂРѕРІ С…РѕРґРѕРІ}
+translate R MatchForAtLeast {РЎРѕРІРїР°РґР°РµС‚ РїРѕ РєСЂР°Р№РЅРµР№ РјРµСЂРµ}
+translate R HalfMoves {РїРѕР»СѓС…РѕРґРѕРІ}
+
+# Common endings in material search:
+translate R EndingPawns {РџРµС€РµС‡РЅС‹Рµ СЌРЅРґС€РїРёР»Рё}
+translate R EndingRookVsPawns {Р›Р°РґСЊСЏ РїСЂРѕС‚РёРІ РїРµС€РєРё}
+translate R EndingRookPawnVsRook {Р›Р°РґСЊСЏ Рё РѕРґРЅР° РїРµС€РєР° РїСЂРѕС‚РёРІ Р»Р°РґСЊРё}
+translate R EndingRookPawnsVsRook {Р›Р°РґСЊСЏ Рё РїРµС€РєРё РїСЂРѕС‚РёРІ Р»Р°РґСЊРё}
+translate R EndingRooks {Р›Р°РґРµР№РЅС‹Рµ СЌРЅРґС€РїРёР»Рё}
+translate R EndingRooksPassedA {Р­РЅРґС€РїРёР»Рё "Р›Р°РґСЊСЏ РїСЂРѕС‚РёРІ Р»Р°РґСЊРё СЃ РїСЂРѕС…РѕРґРЅРѕР№ РїРµС€РєРѕР№"}
+translate R EndingRooksDouble {Р­РЅРґС€РїРёР»Рё СЃ РґРІСѓРјСЏ Р»Р°РґСЊСЏРјРё}
+translate R EndingBishops {Р­РЅРґС€РїРёР»Рё "РЎР»РѕРЅ РїСЂРѕС‚РёРІ СЃР»РѕРЅР°"}
+translate R EndingBishopVsKnight {Р­РЅРґС€РїРёР»Рё "РЎР»РѕРЅ РїСЂРѕС‚РёРІ РєРѕРЅСЏ"}
+translate R EndingKnights {Р­РЅРґС€РїРёР»Рё "РљРѕРЅСЊ РїСЂРѕС‚РёРІ РєРѕРЅСЏ"}
+translate R EndingQueens {Р¤РµСЂР·С‘РІС‹Рµ СЌРЅРґС€РїРёР»Рё}
+translate R EndingQueenPawnVsQueen {Р¤РµСЂР·СЊ Рё РѕРґРЅР° РїРµС€РєР° РїСЂРѕС‚РёРІ С„РµСЂР·СЏ}
+translate R BishopPairVsKnightPair {РњРёС‚С‚РµР»СЊС€РїРёР»СЊ "Р”РІР° СЃР»РѕРЅР° РїСЂРѕС‚РёРІ РґРІСѓС… РєРѕРЅРµР№"}
+
+# Common patterns in material search:
+translate R PatternWhiteIQP {Р‘РµР»С‹Рµ IQP}
+translate R PatternWhiteIQPBreakE6 {Р‘РµР»С‹Рµ IQP: d4-d5 РїСЂРѕСЂС‹РІ РїСЂРѕС‚РёРІ e6}
+translate R PatternWhiteIQPBreakC6 {Р‘РµР»С‹Рµ IQP: d4-d5 РїСЂРѕСЂС‹РІ РїСЂРѕС‚РёРІ c6}
+translate R PatternBlackIQP {Р§С‘СЂРЅС‹Рµ IQP}
+translate R PatternWhiteBlackIQP {Р‘РµР»С‹Рµ IQP РїСЂРѕС‚РёРІ С‡С‘СЂРЅС‹С… IQP}
+translate R PatternCoupleC3D4 {Р‘РµР»С‹Рµ c3+d4 СѓРґРµСЂР¶РёРІР°СЋС‚ РЅРµСЃРєРѕР»СЊРєРѕ РїРµС€РµРє}
+translate R PatternHangingC5D5 {Р§С‘СЂРЅС‹Рµ РїРѕРґРІРµС€РёРІР°СЋС‚ РїРµС€РєРё РЅР° c5 Рё d5}
+translate R PatternMaroczy {Р¦РµРЅС‚СЂ РњР°СЂРѕС†Рё (СЃ РїРµС€РєР°РјРё РЅР° c4 Рё e4)}
+translate R PatternRookSacC3 {Р–РµСЂС‚РІР° Р»Р°РґСЊРё РЅР° c3}
+translate R PatternKc1Kg8 {Р РѕРєРёСЂРѕРІРєР° O-O-O РїСЂРѕС‚РёРІ O-O (Kc1 РїСЂРѕС‚РёРІ Kg8)}
+translate R PatternKg1Kc8 {Р РѕРєРёСЂРѕРІРєР° O-O РїСЂРѕС‚РёРІ O-O-O (Kg1 РїСЂРѕС‚РёРІ Kc8)}
+translate R PatternLightFian {Р¤РёР°РЅРєРµС‚С‚РёСЂРѕРІР°РЅРёРµ РЅР° Р±РµР»С‹С… РїРѕР»СЏС… (СЃР»РѕРЅ g2 РїСЂРѕС‚РёРІ СЃР»РѕРЅР° b7)}
+translate R PatternDarkFian {Р¤РёР°РЅРєРµС‚С‚РёСЂРѕРІР°РЅРёРµ РЅР° С‡С‘СЂРЅС‹С… РїРѕР»СЏС… (СЃР»РѕРЅ b2 РїСЂРѕС‚РёРІ СЃР»РѕРЅР° g7)}
+translate R PatternFourFian {Р§РµС‚С‹СЂРµ С„РёР°РЅРєРµС‚С‚РёСЂРѕРІР°РЅРёСЏ (СЃР»РѕРЅС‹ РЅР° b2, g2, b7, g7)}
 
 # Game saving:
-translate R Today {Сегодня}
-translate R ClassifyGame {Классифицированная партия}
+translate R Today {РЎРµРіРѕРґРЅСЏ}
+translate R ClassifyGame {РљР»Р°СЃСЃРёС„РёРєР°С†РёРѕРЅРЅР°СЏ РёРіСЂР°}
 
 # Setup position:
-translate R EmptyBoard {Пустая доска}
-translate R InitialBoard {Начальная позиция}
-translate R SideToMove {Очередь хода}
-translate R MoveNumber {Номер хода}
-translate R Castling {Рокировка}
-translate R EnPassantFile {Мимоходный файл}
-translate R ClearFen {Очистить FEN}
-translate R PasteFen {Вставить FEN}
-# ====== TODO To be translated ======
-translate R SaveAndContinue {Save and continue}
-# ====== TODO To be translated ======
-translate R DiscardChangesAndContinue {Discard changes\nand continue}
-# ====== TODO To be translated ======
-translate R GoBack {Go back}
+translate R EmptyBoard {РџСѓСЃС‚Р°СЏ РґРѕСЃРєР°}
+translate R InitialBoard {РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ}
+translate R SideToMove {РћС‡РµСЂРµРґСЊ С…РѕРґР°}
+translate R MoveNumber {РќРѕРјРµСЂ С…РѕРґР°}
+translate R Castling {Р РѕРєРёСЂРѕРІРєР°}
+translate R EnPassantFile {Р¤Р°Р№Р» РїСЂРѕС…РѕРґРѕРІ}
+translate R ClearFen {РћС‡РёСЃС‚РёС‚СЊ FEN}
+translate R PasteFen {Р’СЃС‚Р°РІРёС‚СЊ FEN}
+
+translate R SaveAndContinue {РЎРѕС…СЂР°РЅРёС‚СЊ Рё РїСЂРѕРґРѕР»Р¶РёС‚СЊ}
+translate R DiscardChangesAndContinue {РћС‚РєР°Р·Р°С‚СЊСЃСЏ РѕС‚ РёР·РјРµРЅРµРЅРёР№\nРё РїСЂРѕРґРѕР»Р¶РёС‚СЊ}
+translate R GoBack {РћС‚РєР°Р·Р°С‚СЊСЃСЏ РѕС‚ С…РѕРґР°}
 
 # Replace move dialog:
-translate R ReplaceMove {Заменить ход}
-translate R AddNewVar {Добавить новый вариант}
-# ====== TODO To be translated ======
-translate R NewMainLine {New Main Line}
-translate R ReplaceMoveMessage {Здесь уже есть ход.
+translate R ReplaceMove {Р—Р°РјРµРЅРёС‚СЊ С…РѕРґ}
+translate R AddNewVar {Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ РІР°СЂРёР°РЅС‚}
+translate R NewMainLine {РќРѕРІС‹Р№ РіР»Р°РІРЅС‹Р№ РїР»Р°РЅ}
+translate R ReplaceMoveMessage {Р—РґРµСЃСЊ СѓР¶Рµ РµСЃС‚СЊ С…РѕРґ.
 
-Вы можете заменить его, уничтожив все ходы после него, или добавить ваш ход, как новый вариант.
+Р’С‹ РјРѕР¶РµС‚Рµ Р·Р°РјРµРЅРёС‚СЊ РµРіРѕ, СѓРЅРёС‡С‚РѕР¶РёРІ РІСЃРµ С…РѕРґС‹ РїРѕСЃР»Рµ РЅРµРіРѕ, РёР»Рё РґРѕР±Р°РІРёС‚СЊ РІР°С€ С…РѕРґ, РєР°Рє РЅРѕРІС‹Р№ РІР°СЂРёР°РЅС‚.
 
-(Вы можете избежать появления этого сообщения в будущем, выключив установку "Спросить перед заменной ходов" в меню Установки:Меню ходов.)}
+(Р’С‹ РјРѕР¶РµС‚Рµ РёР·Р±РµР¶Р°С‚СЊ РїРѕСЏРІР»РµРЅРёСЏ СЌС‚РѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ РІ Р±СѓРґСѓС‰РµРј, РІС‹РєР»СЋС‡РёРІ СѓСЃС‚Р°РЅРѕРІРєСѓ "РЎРїСЂРѕСЃРёС‚СЊ РїРµСЂРµРґ Р·Р°РјРµРЅРѕР№ С…РѕРґРѕРІ" РІ РјРµРЅСЋ "РќР°СЃС‚СЂРѕР№РєРё: РњРµРЅСЋ С…РѕРґРѕРІ".)}
 
 # Make database read-only dialog:
-translate R ReadOnlyDialog {Если вы сделаете эту базу данных только для чтения, не будет позволено никаких изменений.
-Партии не могут быть изменены или заменены, и удаленные флаги не могут быть изменены.
-Результаты любой сортировки и классификации ECO будут временными.
+translate R ReadOnlyDialog {Р•СЃР»Рё РІС‹ СЃРґРµР»Р°РµС‚Рµ СЌС‚Сѓ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ, С‚Рѕ РЅРµ Р±СѓРґРµС‚ РїРѕР·РІРѕР»РµРЅРѕ РЅРёРєР°РєРёС… РёР·РјРµРЅРµРЅРёР№.
+РџР°СЂС‚РёРё РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РёР·РјРµРЅРµРЅС‹ РёР»Рё Р·Р°РјРµРЅРµРЅС‹, СѓРґР°Р»С‘РЅРЅС‹Рµ С„Р»Р°РіРё РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РёР·РјРµРЅРµРЅС‹.
+Р РµР·СѓР»СЊС‚Р°С‚С‹ Р»СЋР±РѕР№ СЃРѕСЂС‚РёСЂРѕРІРєРё Рё РєР»Р°СЃСЃРёС„РёРєР°С†РёРё ECO Р±СѓРґСѓС‚ РІСЂРµРјРµРЅРЅС‹РјРё.
 
-Вы можете легко сделать базу данных модифицируемой с помощью закрытия и перезагрузки.
+Р’С‹ РјРѕР¶РµС‚Рµ Р»РµРіРєРѕ СЃРґРµР»Р°С‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… РјРѕРґРёС„РёС†РёСЂСѓРµРјРѕР№ СЃ РїРѕРјРѕС‰СЊСЋ Р·Р°РєСЂС‹С‚РёСЏ Рё РїРµСЂРµР·Р°РіСЂСѓР·РєРё.
 
-Вы действительно желаете сделать эту базу данных только для чтения?}
+Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ Р¶РµР»Р°РµС‚Рµ СЃРґРµР»Р°С‚СЊ СЌС‚Сѓ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ?}
 
 # Clear game dialog:
-translate R ClearGameDialog {Эта партия была изменена.
+translate R ClearGameDialog {Р­С‚Р° РїР°СЂС‚РёСЏ Р±С‹Р»Р° РёР·РјРµРЅРµРЅР°.
 
-Вы действительно желаете продолжить, отменив все сделанные изменения?
+Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ Р¶РµР»Р°РµС‚Рµ РїСЂРѕРґРѕР»Р¶РёС‚СЊ, РѕС‚РјРµРЅРёРІ РІСЃРµ СЃРґРµР»Р°РЅРЅС‹Рµ РёР·РјРµРЅРµРЅРёСЏ?
 }
 
 # Exit dialog:
-translate R ExitDialog {Вы действительно хотите выйти из Scid?}
-translate R ExitUnsaved {Следующая база данных имеет не сохраненные измененные партии. Если вы выйдите сейчас, изменения будут утеряны.}
+translate R ExitDialog {Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ РІС‹Р№С‚Рё РёР· Scid?}
+translate R ExitUnsaved {РЎР»РµРґСѓСЋС‰Р°СЏ Р±Р°Р·Р° РґР°РЅРЅС‹С… РёРјРµРµС‚ РЅРµ СЃРѕС…СЂР°РЅРµРЅРЅС‹Рµ РёР·РјРµРЅС‘РЅРЅС‹Рµ РїР°СЂС‚РёРё. Р•СЃР»Рё РІС‹ РІС‹Р№РґРёС‚Рµ СЃРµР№С‡Р°СЃ, РёР·РјРµРЅРµРЅРёСЏ Р±СѓРґСѓС‚ СѓС‚РµСЂСЏРЅС‹.}
 
 # Import window:
-translate R PasteCurrentGame {Вставить текущую партию}
-translate R ImportHelp1 {Ввести или вставить партию в формате PGN в область выше.}
-translate R ImportHelp2 {Все ошибки импортирования партии будут показаны здесь.}
-# ====== TODO To be translated ======
-translate R OverwriteExistingMoves {Overwrite existing moves ?}
+translate R PasteCurrentGame {Р’СЃС‚Р°РІРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РїР°СЂС‚РёСЋ}
+translate R ImportHelp1 {Р’РІРµСЃС‚Рё РёР»Рё РІСЃС‚Р°РІРёС‚СЊ РїР°СЂС‚РёСЋ РІ С„РѕСЂРјР°С‚Рµ PGN РІ РѕР±Р»Р°СЃС‚СЊ РІС‹С€Рµ.}
+translate R ImportHelp2 {Р’СЃРµ РѕС€РёР±РєРё РёРјРїРѕСЂС‚РёСЂРѕРІР°РЅРёСЏ РїР°СЂС‚РёРё Р±СѓРґСѓС‚ РїРѕРєР°Р·Р°РЅС‹ Р·РґРµСЃСЊ.}
+translate R OverwriteExistingMoves {РџРµСЂРµР·Р°РїРёСЃР°С‚СЊ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С…РѕРґ?}
 
 # ECO Browser:
-translate R ECOAllSections {все секции ECO}
-translate R ECOSection {секция ECO}
-translate R ECOSummary {Всего для}
-translate R ECOFrequency {Частота подкодов для}
+translate R ECOAllSections {РІСЃРµС… СЃРµРєС†РёР№ ECO}
+translate R ECOSection {РЎРµРєС†РёСЏ ECO}
+translate R ECOSummary {РЎСѓРјРјР°СЂРЅРѕ РґР»СЏ}
+translate R ECOFrequency {Р§Р°СЃС‚РѕС‚Р° СЃСѓР±-РєРѕРґРѕРІ РґР»СЏ}
 
 # Opening Report:
-translate R OprepTitle {Дебютный отчет}
-translate R OprepReport {Отчет}
-translate R OprepGenerated {Сгенерированный}
-translate R OprepStatsHist {Статистика и история}
-translate R OprepStats {Статистика}
-translate R OprepStatAll {Все отчетные партии}
-translate R OprepStatBoth {Оба с рейтингом}
-translate R OprepStatSince {С}
-translate R OprepOldest {Старейшие партии}
-translate R OprepNewest {Новейшие партии}
-translate R OprepPopular {Текущие популярные}
-translate R OprepFreqAll {Частота во все года:   }
-translate R OprepFreq1   {В последний год: }
-translate R OprepFreq5   {В последнии пять лет: }
-translate R OprepFreq10  {В последнии десять лет: }
-translate R OprepEvery {один раз каждые %u партий}
-translate R OprepUp {выше - %u%s из всех лет}
-translate R OprepDown {ниже - %u%s из всех лет}
-translate R OprepSame {нет изменений против всех годов}
-translate R OprepMostFrequent {Наиболее часто у игроков}
-translate R OprepMostFrequentOpponents {Most frequent opponents}
-translate R OprepRatingsPerf {Рейтинги и производительность}
-translate R OprepAvgPerf {Средние рейтинги и производительность}
-translate R OprepWRating {Рейтинг белых}
-translate R OprepBRating {Рейтинг черных}
-translate R OprepWPerf {Производительность белых}
-translate R OprepBPerf {Производительность черных}
-translate R OprepHighRating {Партии с наибольшим среднем рейтингом}
-translate R OprepTrends {Результирующие тенденции}
-translate R OprepResults {Результирующие длины и частоты}
-translate R OprepLength {Длина партии}
-translate R OprepFrequency {Частота}
-translate R OprepWWins {Белые выиграли: }
-translate R OprepBWins {Черные выиграли: }
-translate R OprepDraws {Ничьи:      }
-translate R OprepWholeDB {вся база данных}
-translate R OprepShortest {Самые короткие победы}
-translate R OprepMovesThemes {Ходы и темы}
-translate R OprepMoveOrders {Порядок ходов  для достижения отчетной позиции}
+translate R OprepTitle {РћС‚РєСЂС‹С‚СЊ РѕС‚С‡С‘С‚}
+translate R OprepReport {РћС‚С‡С‘С‚}
+translate R OprepGenerated {Р“РµРЅРµСЂРёСЂРѕРІР°РЅРЅС‹Р№}
+translate R OprepStatsHist {РЎС‚Р°С‚РёСЃС‚РёРєР° Рё РёСЃС‚РѕСЂРёСЏ}
+translate R OprepStats {РЎС‚Р°С‚РёСЃС‚РёРєР°}
+translate R OprepStatAll {Р’СЃРµ РѕС‚С‡С‘С‚РЅС‹Рµ РїР°СЂС‚РёРё}
+translate R OprepStatBoth {РћР±Р° СЃ СЂРµР№С‚РёРЅРіРѕРј}
+translate R OprepStatSince {РЎ}
+translate R OprepOldest {РЎС‚Р°СЂРµР№С€РёРµ РїР°СЂС‚РёРё}
+translate R OprepNewest {РќРѕРІРµР№С€РёРµ РїР°СЂС‚РёРё}
+translate R OprepPopular {РўРµРєСѓС‰РёРµ РїРѕРїСѓР»СЏСЂРЅС‹Рµ}
+translate R OprepFreqAll {Р§Р°СЃС‚РѕС‚Р° Р·Р° РІСЃРµ РіРѕРґР°: }
+translate R OprepFreq1   {Р’ РїРѕСЃР»РµРґРЅРёР№ РіРѕРґ: }
+translate R OprepFreq5   {Р’ РїРѕСЃР»РµРґРЅРёРµ РїСЏС‚СЊ Р»РµС‚: }
+translate R OprepFreq10  {Р’ РїРѕСЃР»РµРґРЅРёРµ РґРµСЃСЏС‚СЊ Р»РµС‚: }
+translate R OprepEvery {РѕРґРёРЅ СЂР°Р· РєР°Р¶РґС‹Рµ %u РїР°СЂС‚РёР№}
+translate R OprepUp {РІС‹С€Рµ - %u%s РёР· РІСЃРµС… Р»РµС‚}
+translate R OprepDown {РЅРёР¶Рµ - %u%s РёР· РІСЃРµС… Р»РµС‚}
+translate R OprepSame {РЅРµС‚ РёР·РјРµРЅРµРЅРёР№ Р·Р° РІСЃРµ РіРѕРґР°}
+translate R OprepMostFrequent {РќР°РёР±РѕР»РµРµ С‡Р°СЃС‚С‹Рµ РёРіСЂРѕРєРё}
+translate R OprepMostFrequentOpponents {РќР°РёР±РѕР»РµРµ С‡Р°СЃС‚С‹Рµ СЃРѕРїРµСЂРЅРёРєРё}
+translate R OprepRatingsPerf {Р РµР№С‚РёРЅРіРё Рё РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚СЊ}
+translate R OprepAvgPerf {РЎСЂРµРґРЅРёРµ СЂРµР№С‚РёРЅРіРё Рё РїСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚СЊ}
+translate R OprepWRating {Р РµР№С‚РёРЅРі Р±РµР»С‹С…}
+translate R OprepBRating {Р РµР№С‚РёРЅРі С‡С‘СЂРЅС‹С…}
+translate R OprepWPerf {РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚СЊ Р±РµР»С‹С…}
+translate R OprepBPerf {РџСЂРѕРёР·РІРѕРґРёС‚РµР»СЊРЅРѕСЃС‚СЊ С‡С‘СЂРЅС‹С…}
+translate R OprepHighRating {РџР°СЂС‚РёРё СЃ РЅР°РёР±РѕР»СЊС€РёРј СЃСЂРµРґРЅРµРј СЂРµР№С‚РёРЅРіРѕРј}
+translate R OprepTrends {Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёРµ С‚РµРЅРґРµРЅС†РёРё}
+translate R OprepResults {Р РµР·СѓР»СЊС‚РёСЂСѓСЋС‰РёРµ РґР»РёРЅС‹ Рё С‡Р°СЃС‚РѕС‚С‹}
+translate R OprepLength {Р”Р»РёРЅР° РїР°СЂС‚РёРё}
+translate R OprepFrequency {Р§Р°СЃС‚РѕС‚Р°}
+translate R OprepWWins {Р‘РµР»С‹Рµ РІС‹РёРіСЂР°Р»Рё: }
+translate R OprepBWins {Р§С‘СЂРЅС‹Рµ РІС‹РёРіСЂР°Р»Рё: }
+translate R OprepDraws {РќРёС‡СЊРё:      }
+translate R OprepWholeDB {Р’СЃСЏ Р±Р°Р·Р° РґР°РЅРЅС‹С…}
+translate R OprepShortest {РЎР°РјС‹Рµ РєРѕСЂРѕС‚РєРёРµ РїРѕР±РµРґС‹}
+translate R OprepMovesThemes {РҐРѕРґС‹ Рё С‚РµРјС‹}
+translate R OprepMoveOrders {РџРѕСЂСЏРґРѕРє С…РѕРґРѕРІ РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёСЏ РѕС‚С‡С‘С‚РЅРѕР№ РїРѕР·РёС†РёРё}
 translate R OprepMoveOrdersOne \
-  {Найден только один порядок ходов для достижения отчетной позиции:}
+  {РќР°Р№РґРµРЅ С‚РѕР»СЊРєРѕ РѕРґРёРЅ РїРѕСЂСЏРґРѕРє С…РѕРґРѕРІ РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёСЏ РѕС‚С‡С‘С‚РЅРѕР№ РїРѕР·РёС†РёРё:}
 translate R OprepMoveOrdersAll \
-  {Найдено %u порядков ходов  для достижения отчетной позиции:}
+  {РќР°Р№РґРµРЅРѕ %u РїРѕСЂСЏРґРєРѕРІ С…РѕРґРѕРІ РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёСЏ РѕС‚С‡С‘С‚РЅРѕР№ РїРѕР·РёС†РёРё:}
 translate R OprepMoveOrdersMany \
-  {Найдено %u порядков ходов  для достижения отчетной позиции. Верхнии %u:}
-translate R OprepMovesFrom {Ходы из отчетной позиции}
-translate R OprepMostFrequentEcoCodes {Most frequent ECO codes}
-translate R OprepThemes {Позиционные темы}
-translate R OprepThemeDescription {Frequency of themes in the first %u moves of each game}
-translate R OprepThemeSameCastling {Односторонняя рокировка}
-translate R OprepThemeOppCastling {Противосторонняя рокировка}
-translate R OprepThemeNoCastling {Оба короля не рокированы}
-translate R OprepThemeKPawnStorm {Штурм королевскими пешками}
-translate R OprepThemeQueenswap {Ферзевой размен}
-translate R OprepThemeWIQP {White Isolated Queen Pawn}
-translate R OprepThemeBIQP {Black Isolated Queen Pawn}
-translate R OprepThemeWP567 {Белые пешки на 5/6/7 горизонтали}
-translate R OprepThemeBP234 {Черные пешки на 2/3/4 горизонтали}
-translate R OprepThemeOpenCDE {Открыты c/d/e вертикали}
-translate R OprepTheme1BishopPair {Только одна сторона имеет слоновую пару}
-translate R OprepEndgames {Эндшпили}
-translate R OprepReportGames {Отчетные партии}
-translate R OprepAllGames    {Все партии}
-translate R OprepEndClass {Материал в конце каждой партии}
-translate R OprepTheoryTable {Теоретическая таблица}
-translate R OprepTableComment {Сгенерировано из %u высокорейтинговых партий.}
-translate R OprepExtraMoves {Внешние заметки к ходам в теоретической таблице}
-translate R OprepMaxGames {Максимум партий в теоретической таблице}
-translate R OprepViewHTML {View HTML}
-translate R OprepViewLaTeX {View LaTeX}
+  {РќР°Р№РґРµРЅРѕ %u РїРѕСЂСЏРґРєРѕРІ С…РѕРґРѕРІ РґР»СЏ РґРѕСЃС‚РёР¶РµРЅРёСЏ РѕС‚С‡С‘С‚РЅРѕР№ РїРѕР·РёС†РёРё. Р’РµСЂС…РЅРёРµ %u:}
+translate R OprepMovesFrom {РҐРѕРґС‹ РёР· РѕС‚С‡С‘С‚РЅРѕР№ РїРѕР·РёС†РёРё}
+translate R OprepMostFrequentEcoCodes {РќР°РёР±РѕР»РµРµ С‡Р°СЃС‚С‹Рµ ECO РєРѕРґС‹}
+translate R OprepThemes {РџРѕР·РёС†РёРѕРЅРЅС‹Рµ С‚РµРјС‹}
+translate R OprepThemeDescription {Р§Р°СЃС‚РѕС‚Р° С‚РµРјС‹ РІ РїРµСЂРІС‹С… %u С…РѕРґР°С… РєР°Р¶РґРѕР№ РїР°СЂС‚РёРё}
+translate R OprepThemeSameCastling {РћРґРЅРѕСЃС‚РѕСЂРѕРЅРЅСЏСЏ СЂРѕРєРёСЂРѕРІРєР°}
+translate R OprepThemeOppCastling {РџСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅР°СЏ СЂРѕРєРёСЂРѕРІРєР°}
+translate R OprepThemeNoCastling {РћР±Р° РєРѕСЂРѕР»СЏ РЅРµ СЂРѕРєРёСЂРѕРІР°РЅС‹}
+translate R OprepThemeKPawnStorm {РЁС‚СѓСЂРј РєРѕСЂРѕР»РµРІСЃРєРёРјРё РїРµС€РєР°РјРё}
+translate R OprepThemeQueenswap {Р¤РµСЂР·РµРІРѕР№ СЂР°Р·РјРµРЅ}
+translate R OprepThemeWIQP {Р‘РµР»С‹Рµ РёР·РѕР»РёСЂРѕРІР°РЅРЅС‹ РєРѕСЂРѕР»РµРІСЃРєРѕР№ РїРµС€РєРѕР№}
+translate R OprepThemeBIQP {Р§С‘СЂРЅС‹Рµ РёР·РѕР»РёСЂРѕРІР°РЅРЅС‹ РєРѕСЂРѕР»РµРІСЃРєРѕР№ РїРµС€РєРѕР№}
+translate R OprepThemeWP567 {Р‘РµР»С‹Рµ РїРµС€РєРё РЅР° 5/6/7 РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё}
+translate R OprepThemeBP234 {Р§С‘СЂРЅС‹Рµ РїРµС€РєРё РЅР° 2/3/4 РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё}
+translate R OprepThemeOpenCDE {РћС‚РєСЂС‹С‚С‹ c/d/e РІРµСЂС‚РёРєР°Р»Рё}
+translate R OprepTheme1BishopPair {РўРѕР»СЊРєРѕ РѕРґРЅР° СЃС‚РѕСЂРѕРЅР° РёРјРµРµС‚ СЃР»РѕРЅРѕРІСѓСЋ РїР°СЂСѓ}
+translate R OprepEndgames {Р­РЅРґС€РїРёР»Рё}
+translate R OprepReportGames {РћС‚С‡С‘С‚РЅС‹Рµ РїР°СЂС‚РёРё}
+translate R OprepAllGames    {Р’СЃРµ РїР°СЂС‚РёРё}
+translate R OprepEndClass {РњР°С‚РµСЂРёР°Р» РІ РєРѕРЅС†Рµ РєР°Р¶РґРѕР№ РїР°СЂС‚РёРё}
+translate R OprepTheoryTable {РўРµРѕСЂРµС‚РёС‡РµСЃРєР°СЏ С‚Р°Р±Р»РёС†Р°}
+translate R OprepTableComment {Р“РµРЅРµСЂРёСЂРѕРІР°РЅРѕ РёР· %u РІС‹СЃРѕРєРѕСЂРµР№С‚РёРЅРіРѕРІС‹С… РїР°СЂС‚РёР№.}
+translate R OprepExtraMoves {Р’РЅРµС€РЅРёРµ Р·Р°РјРµС‚РєРё Рє С…РѕРґР°Рј РІ С‚РµРѕСЂРµС‚РёС‡РµСЃРєРѕР№ С‚Р°Р±Р»РёС†Рµ}
+translate R OprepMaxGames {РњР°РєСЃРёРјСѓРј РїР°СЂС‚РёР№ РІ С‚РµРѕСЂРµС‚РёС‡РµСЃРєРѕР№ С‚Р°Р±Р»РёС†Рµ}
+translate R OprepViewHTML {РџСЂРѕСЃРјРѕС‚СЂ HTML}
+translate R OprepViewLaTeX {РџСЂРѕСЃРјРѕС‚СЂ LaTeX}
 
 # Player Report:
-translate R PReportTitle {Player Report}
-translate R PReportColorWhite {with the White pieces}
-translate R PReportColorBlack {with the Black pieces}
-translate R PReportMoves {after %s}
-translate R PReportOpenings {Openings}
-translate R PReportClipbase {Empty clipbase and copy matching games to it}
+translate R PReportTitle {РћС‚С‡С‘С‚ РїРѕ РёРіСЂРѕРєСѓ}
+translate R PReportColorWhite {СЃ Р‘РµР»С‹РјРё С„РёРіСѓСЂР°РјРё}
+translate R PReportColorBlack {СЃ Р§С‘СЂРЅС‹РјРё С„РёРіСѓСЂР°РјРё}
+translate R PReportMoves {РїРѕСЃР»Рµ %s}
+translate R PReportOpenings {Р”РµР±СЋС‚С‹}
+translate R PReportClipbase {РћС‚С‡РёСЃС‚РёС‚СЊ Р±СѓС„РµСЂРЅСѓСЋ Р±Р°Р·Сѓ Рё СЃРєРѕРїРёСЂРѕРІР°С‚СЊ РІ РЅРµС‘ РёРіСЂС‹ РјР°С‚С‡Р°}
 
 # Piece Tracker window:
-translate R TrackerSelectSingle {Левая кнопка мышки выбирает эту фигуру.}
-translate R TrackerSelectPair {Левая кнопка мышки выбирает эту фигуру; правая выбирает все одинаковые фигуры.}
-translate R TrackerSelectPawn {Левая кнопка мышки выбирает эту фигуру; правая выбирает все 8 пешек.}
-translate R TrackerStat {Статистика}
-translate R TrackerGames {% партий с ходами на это поле}
-translate R TrackerTime {% времени на каждом поле}
-translate R TrackerMoves {Ходы}
-translate R TrackerMovesStart {Введите номер хода, с которого трассировка начинается.}
-translate R TrackerMovesStop {Введите номер хода, которым трассировка заканчивается.}
+translate R TrackerSelectSingle {Р›РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€РєРё РІС‹Р±РёСЂР°РµС‚ СЌС‚Сѓ С„РёРіСѓСЂСѓ.}
+translate R TrackerSelectPair {Р›РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€РєРё РІС‹Р±РёСЂР°РµС‚ СЌС‚Сѓ С„РёРіСѓСЂСѓ; РїСЂР°РІР°СЏ РІС‹Р±РёСЂР°РµС‚ РІСЃРµ РѕРґРёРЅР°РєРѕРІС‹Рµ С„РёРіСѓСЂС‹.}
+translate R TrackerSelectPawn {Р›РµРІР°СЏ РєРЅРѕРїРєР° РјС‹С€РєРё РІС‹Р±РёСЂР°РµС‚ СЌС‚Сѓ С„РёРіСѓСЂСѓ; РїСЂР°РІР°СЏ РІС‹Р±РёСЂР°РµС‚ РІСЃРµ 8 РїРµС€РµРє.}
+translate R TrackerStat {РЎС‚Р°С‚РёСЃС‚РёРєР°}
+translate R TrackerGames {% РїР°СЂС‚РёР№ СЃ С…РѕРґР°РјРё РЅР° СЌС‚РѕРј РїРѕР»Рµ}
+translate R TrackerTime {% РІСЂРµРјРµРЅРё РЅР° РєР°Р¶РґРѕРј РїРѕР»Рµ}
+translate R TrackerMoves {РҐРѕРґС‹}
+translate R TrackerMovesStart {Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ С…РѕРґР°, СЃ РєРѕС‚РѕСЂРѕРіРѕ РЅР°С‡РёРЅР°РµС‚СЃСЏ С‚СЂР°СЃСЃРёСЂРѕРІРєР°.}
+translate R TrackerMovesStop {Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ С…РѕРґР°, РєРѕС‚РѕСЂС‹Рј Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ С‚СЂР°СЃСЃРёСЂРѕРІРєР°.}
 
 # Game selection dialogs:
-translate R SelectAllGames {Все партии в базе данных}
-translate R SelectFilterGames {Только отфильтрованные партии}
-translate R SelectTournamentGames {Только партии текущего турнира}
-translate R SelectOlderGames {Только партии старше}
+translate R SelectAllGames {Р’СЃРµ РїР°СЂС‚РёРё РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…}
+translate R SelectFilterGames {РўРѕР»СЊРєРѕ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R SelectTournamentGames {РўРѕР»СЊРєРѕ РїР°СЂС‚РёРё С‚РµРєСѓС‰РµРіРѕ С‚СѓСЂРЅРёСЂР°}
+translate R SelectOlderGames {РўРѕР»СЊРєРѕ РїР°СЂС‚РёРё СЃС‚Р°СЂС€Рµ}
 
 # Delete Twins window:
-translate R TwinsNote {Чтобы быть двойником, две партии должны как минимум иметь тех же игроков, и критерии, которые вы установите ниже. Когда пара двойников найдена, более короткая партия удаляется. Подсказка: перед поиском двойников лучше проверить правописание, это облегчит поиск двойников. }
-translate R TwinsCriteria {Критерий: Двойники должны иметь...}
-translate R TwinsWhich {Проверка какие партии}
-translate R TwinsColors {Игрок играет тем же цветом?}
-translate R TwinsEvent {Тот же турнир?}
-translate R TwinsSite {То же место?}
-translate R TwinsRound {Тот же раунд?}
-translate R TwinsYear {Тот же год?}
-translate R TwinsMonth {Тот же месяц?}
-translate R TwinsDay {Тот же день?}
-translate R TwinsResult {Тот же результат?}
-translate R TwinsECO {Тот же код ECO?}
-translate R TwinsMoves {Те же ходы?}
-translate R TwinsPlayers {Сравнить имена игроков:}
-translate R TwinsPlayersExact {Полное совпадение}
-translate R TwinsPlayersPrefix {Только первые 4 буквы}
-translate R TwinsWhen {Когда удалены двойные партии}
-translate R TwinsSkipShort {Игнорировать все партии, где меньше 5 ходов?}
-translate R TwinsUndelete {Восстановить все партии сначала?}
-translate R TwinsSetFilter {Установить фильтр для всех удаленых двойников?}
-translate R TwinsComments {Всегда держать партии с комментариями?}
-translate R TwinsVars {Всегда держать партии с вариантами?}
-translate R TwinsDeleteWhich {Удалить какую партию:}
-translate R TwinsDeleteShorter {Более короткая партия}
-translate R TwinsDeleteOlder {Меньший номер партии}
-translate R TwinsDeleteNewer {Больший номер партии}
-translate R TwinsDelete {Удалить партии}
+translate R TwinsNote {Р§С‚РѕР±С‹ Р±С‹С‚СЊ РґСѓР±Р»РёРєР°С‚Р°РјРё, РґРІРµ РїР°СЂС‚РёРё РґРѕР»Р¶РЅС‹ РєР°Рє РјРёРЅРёРјСѓРј РёРјРµС‚СЊ С‚РµС… Р¶Рµ РёРіСЂРѕРєРѕРІ, Рё РєСЂРёС‚РµСЂРёРё, РєРѕС‚РѕСЂС‹Рµ РІС‹ СѓСЃС‚Р°РЅРѕРІРёС‚Рµ РЅРёР¶Рµ. РљРѕРіРґР° РїР°СЂР° РґСѓР±Р»РёРєР°С‚РѕРІ РЅР°Р№РґРµРЅР°, Р±РѕР»РµРµ РєРѕСЂРѕС‚РєР°СЏ РїР°СЂС‚РёСЏ СѓРґР°Р»СЏРµС‚СЃСЏ. РџРѕРґСЃРєР°Р·РєР°: РїРµСЂРµРґ РїРѕРёСЃРєРѕРј РґСѓР±Р»РёРєР°С‚РѕРІ Р»СѓС‡С€Рµ РїСЂРѕРІРµСЂРёС‚СЊ РїСЂР°РІРѕРїРёСЃР°РЅРёРµ, СЌС‚Рѕ РѕР±Р»РµРіС‡РёС‚ РїРѕРёСЃРє.}
+translate R TwinsCriteria {РљСЂРёС‚РµСЂРёР№: РґСѓР±Р»РёРєР°С‚С‹ РґРѕР»Р¶РЅС‹ РёРјРµС‚СЊ...}
+translate R TwinsWhich {РџСЂРѕРІРµСЂРєР° РєР°РєРёРµ РїР°СЂС‚РёРё}
+translate R TwinsColors {РРіСЂРѕРє РёРіСЂР°РµС‚ С‚РµРј Р¶Рµ С†РІРµС‚РѕРј?}
+translate R TwinsEvent {РўРѕС‚ Р¶Рµ С‚СѓСЂРЅРёСЂ?}
+translate R TwinsSite {РўРѕ Р¶Рµ РјРµСЃС‚Рѕ?}
+translate R TwinsRound {РўРѕС‚ Р¶Рµ СЂР°СѓРЅРґ?}
+translate R TwinsYear {РўРѕС‚ Р¶Рµ РіРѕРґ?}
+translate R TwinsMonth {РўРѕС‚ Р¶Рµ РјРµСЃСЏС†?}
+translate R TwinsDay {РўРѕС‚ Р¶Рµ РґРµРЅСЊ?}
+translate R TwinsResult {РўРѕС‚ Р¶Рµ СЂРµР·СѓР»СЊС‚Р°С‚?}
+translate R TwinsECO {РўРѕС‚ Р¶Рµ РєРѕРґ ECO?}
+translate R TwinsMoves {РўРµ Р¶Рµ С…РѕРґС‹?}
+translate R TwinsPlayers {РЎСЂР°РІРЅРёС‚СЊ РёРјРµРЅР° РёРіСЂРѕРєРѕРІ:}
+translate R TwinsPlayersExact {РџРѕР»РЅРѕРµ СЃРѕРІРїР°РґРµРЅРёРµ}
+translate R TwinsPlayersPrefix {РўРѕР»СЊРєРѕ РїРµСЂРІС‹Рµ 4 Р±СѓРєРІС‹}
+translate R TwinsWhen {РљРѕРіРґР° СѓРґР°Р»РµРЅС‹ РґРІРѕР№РЅС‹Рµ РїР°СЂС‚РёРё}
+translate R TwinsSkipShort {РРіРЅРѕСЂРёСЂРѕРІР°С‚СЊ РІСЃРµ РїР°СЂС‚РёРё, РіРґРµ РјРµРЅСЊС€Рµ 5 С…РѕРґРѕРІ?}
+translate R TwinsUndelete {Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ РІСЃРµ РїР°СЂС‚РёРё СЃРЅР°С‡Р°Р»Р°?}
+translate R TwinsSetFilter {РЈСЃС‚Р°РЅРѕРІРёС‚СЊ С„РёР»СЊС‚СЂ РґР»СЏ РІСЃРµС… СѓРґР°Р»С‘РЅРЅС‹С… РґСѓР±Р»РёРєР°С‚РѕРІ?}
+translate R TwinsComments {Р’СЃРµРіРґР° РґРµСЂР¶Р°С‚СЊ РїР°СЂС‚РёРё СЃ РєРѕРјРјРµРЅС‚Р°СЂРёСЏРјРё?}
+translate R TwinsVars {Р’СЃРµРіРґР° РґРµСЂР¶Р°С‚СЊ РїР°СЂС‚РёРё СЃ РІР°СЂРёР°РЅС‚Р°РјРё?}
+translate R TwinsDeleteWhich {РЈРґР°Р»РёС‚СЊ РєР°РєСѓСЋ РїР°СЂС‚РёСЋ:}
+translate R TwinsDeleteShorter {Р‘РѕР»РµРµ РєРѕСЂРѕС‚РєР°СЏ РїР°СЂС‚РёСЏ}
+translate R TwinsDeleteOlder {РњРµРЅСЊС€РёР№ РЅРѕРјРµСЂ РїР°СЂС‚РёРё}
+translate R TwinsDeleteNewer {Р‘РѕР»СЊС€РёР№ РЅРѕРјРµСЂ РїР°СЂС‚РёРё}
+translate R TwinsDelete {РЈРґР°Р»РёС‚СЊ РїР°СЂС‚РёРё}
 
 # Name editor window:
-translate R NameEditType {Тип имени для редактирования}
-translate R NameEditSelect {Партии для редактирования}
-translate R NameEditReplace {Заменить}
-translate R NameEditWith {с}
-translate R NameEditMatches {Совпадения: Нажмите Ctrl+1 - Ctrl+9 для выбора}
-# ====== TODO To be translated ======
-translate R CheckGames {Check games}
-# ====== TODO To be translated ======
-translate R CheckGamesWhich {Check games}
-# ====== TODO To be translated ======
-translate R CheckAll {All games}
-# ====== TODO To be translated ======
-translate R CheckSelectFilterGames {Only games in filter}
+translate R NameEditType {РўРёРї РёРјРµРЅРё РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ}
+translate R NameEditSelect {РџР°СЂС‚РёРё РґР»СЏ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ}
+translate R NameEditReplace {Р—Р°РјРµРЅРёС‚СЊ}
+translate R NameEditWith {СЃ}
+translate R NameEditMatches {РЎРѕРІРїР°РґРµРЅРёСЏ: РЅР°Р¶РјРёС‚Рµ Ctrl+1 - Ctrl+9 РґР»СЏ РІС‹Р±РѕСЂР°}
+
+# Check games window:
+translate R CheckGames {РџСЂРѕРІРµСЂРµРЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R CheckGamesWhich {РџСЂРѕРІРµСЂРµРЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R CheckAll {Р’СЃРµ РїР°СЂС‚РёРё}
+translate R CheckSelectFilterGames {РўРѕР»СЊРєРѕ С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
 
 # Classify window:
-translate R Classify {Классифицировать}
-translate R ClassifyWhich {Партии с классифицироваными ECO}
-translate R ClassifyAll {Все партии (переписать старые ECO)}
-translate R ClassifyYear {Все партии, сыгранные за последний год}
-translate R ClassifyMonth {Все партии, сыгранные за последний месяц}
-translate R ClassifyNew {Только партии без кода ECO}
-translate R ClassifyCodes {Коды ECO для использования}
-translate R ClassifyBasic {Только основные коды ("B12", ...)}
-translate R ClassifyExtended {Scid расширения ("B12j", ...)}
+translate R Classify {РљР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°С‚СЊ}
+translate R ClassifyWhich {РџР°СЂС‚РёРё СЃ РєР»Р°СЃСЃРёС„РёС†РёСЂРѕРІР°РЅРЅС‹РјРё ECO}
+translate R ClassifyAll {Р’СЃРµ РїР°СЂС‚РёРё (РїРµСЂРµРїРёСЃР°С‚СЊ СЃС‚Р°СЂС‹Рµ ECO)}
+translate R ClassifyYear {Р’СЃРµ РїР°СЂС‚РёРё, СЃС‹РіСЂР°РЅРЅС‹Рµ Р·Р° РїРѕСЃР»РµРґРЅРёР№ РіРѕРґ}
+translate R ClassifyMonth {Р’СЃРµ РїР°СЂС‚РёРё, СЃС‹РіСЂР°РЅРЅС‹Рµ Р·Р° РїРѕСЃР»РµРґРЅРёР№ РјРµСЃСЏС†}
+translate R ClassifyNew {РўРѕР»СЊРєРѕ РїР°СЂС‚РёРё Р±РµР· РєРѕРґР° ECO}
+translate R ClassifyCodes {РљРѕРґС‹ ECO РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ}
+translate R ClassifyBasic {РўРѕР»СЊРєРѕ РѕСЃРЅРѕРІРЅС‹Рµ РєРѕРґС‹ ("B12", ...)}
+translate R ClassifyExtended {Р Р°СЃС€РёСЂРµРЅРёСЏ Scid ("B12j", ...)}
 
 # Compaction:
-translate R NameFile {Файл имен}
-translate R GameFile {Файл партий}
-translate R Names {Имена}
-translate R Unused {Не использовано}
-translate R SizeKb {Размер (kb)}
-translate R CurrentState {Текущее состояние}
-translate R AfterCompaction {После сжатия}
-translate R CompactNames {Сжатый файл имен}
-translate R CompactGames {Сжатый файл партий}
-# ====== TODO To be translated ======
-translate R NoUnusedNames "There are no unused names, so the name file is already fully compacted."
-# ====== TODO To be translated ======
-translate R NoUnusedGames "The game file is already fully compacted."
-# ====== TODO To be translated ======
-translate R NameFileCompacted {The name file for the database "[file tail [sc_base filename]]" was compacted.}
-# ====== TODO To be translated ======
-translate R GameFileCompacted {The game file for the database "[file tail [sc_base filename]]" was compacted.}
+translate R NameFile {Р¤Р°Р№Р» РёРјС‘РЅ}
+translate R GameFile {Р¤Р°Р№Р» РїР°СЂС‚РёР№}
+translate R Names {РРјРµРЅР°}
+translate R Unused {РќРµ РёСЃРїРѕР»СЊР·РѕРІР°РЅРѕ}
+translate R SizeKb {Р Р°Р·РјРµСЂ (РљРёР‘)}
+translate R CurrentState {РўРµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ}
+translate R AfterCompaction {РџРѕСЃР»Рµ СЃР¶Р°С‚РёСЏ}
+translate R CompactNames {РЎР¶Р°С‚С‹Р№ С„Р°Р№Р» РёРјС‘РЅ}
+translate R CompactGames {РЎР¶Р°С‚С‹Р№ С„Р°Р№Р» РїР°СЂС‚РёР№}
+translate R NoUnusedNames "РќРµС‚ РЅРµРёСЃРїРѕР»СЊР·СѓРµРјС‹С… РёРјС‘РЅ, РїРѕСЌС‚РѕРјСѓ РёРјСЏ С„Р°Р№Р»Р° СѓР¶Рµ СЃР¶Р°С‚Рѕ РїРѕР»РЅРѕСЃС‚СЊСЋ."
+translate R NoUnusedGames "Р¤Р°Р№Р» РїР°СЂС‚РёРё СѓР¶Рµ РїРѕР»РЅРѕСЃС‚СЊСЋ СЃР¶Р°С‚."
+translate R NameFileCompacted {РРјСЏ С„Р°Р№Р»Р° РґР»СЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… "[file tail [sc_base filename]]" Р±С‹Р»Рѕ СЃР¶Р°С‚Рѕ.}
+translate R GameFileCompacted {РРјСЏ РїР°СЂС‚РёРё РґР»СЏ Р±Р°Р·С‹ РґР°РЅРЅС‹С… "[file tail [sc_base filename]]" Р±С‹Р»Рѕ СЃР¶Р°С‚Рѕ.}
 
 # Sorting:
-translate R SortCriteria {Критерий}
-translate R AddCriteria {Добавить критерий}
-translate R CommonSorts {Общие сортировки}
-translate R Sort {Сортировка}
+translate R SortCriteria {РљСЂРёС‚РµСЂРёР№}
+translate R AddCriteria {Р”РѕР±Р°РІРёС‚СЊ РєСЂРёС‚РµСЂРёР№}
+translate R CommonSorts {РћР±С‰РёРµ СЃРѕСЂС‚РёСЂРѕРІРєРё}
+translate R Sort {РЎРѕСЂС‚РёСЂРѕРІРєР°}
 
 # Exporting:
-translate R AddToExistingFile {Добавить партии в существующий файл?}
-translate R ExportComments {Экспортировать комментарии?}
-translate R ExportVariations {Экспортировать варианты?}
-translate R IndentComments {Комментарии с отступом?}
-translate R IndentVariations {Варианты с отступом?}
-translate R ExportColumnStyle {В колонку (один ход на строку)?}
-translate R ExportSymbolStyle {Стиль символической аннатации:}
-translate R ExportStripMarks {Удалить маркированные коды полей/стрелок из комментариев?}
+translate R AddToExistingFile {Р”РѕР±Р°РІРёС‚СЊ РїР°СЂС‚РёРё РІ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С„Р°Р№Р»?}
+translate R ExportComments {Р­РєСЃРїРѕСЂС‚РёСЂРѕРІР°С‚СЊ РєРѕРјРјРµРЅС‚Р°СЂРёРё?}
+translate R ExportVariations {Р­РєСЃРїРѕСЂС‚РёСЂРѕРІР°С‚СЊ РІР°СЂРёР°РЅС‚С‹?}
+translate R IndentComments {РљРѕРјРјРµРЅС‚Р°СЂРёРё СЃ РѕС‚СЃС‚СѓРїРѕРј?}
+translate R IndentVariations {Р’Р°СЂРёР°РЅС‚С‹ СЃ РѕС‚СЃС‚СѓРїРѕРј?}
+translate R ExportColumnStyle {Р’ РєРѕР»РѕРЅРєСѓ (РѕРґРёРЅ С…РѕРґ РЅР° СЃС‚СЂРѕРєСѓ)?}
+translate R ExportSymbolStyle {РЎС‚РёР»СЊ СЃРёРјРІРѕР»СЊРЅРѕР№ Р°РЅРЅРѕС‚Р°С†РёРё:}
+translate R ExportStripMarks {РЈРґР°Р»РёС‚СЊ РјР°СЂРєРёСЂРѕРІР°РЅРЅС‹Рµ РєРѕРґС‹ РїРѕР»РµР№/СЃС‚СЂРµР»РѕРє РёР· РєРѕРјРјРµРЅС‚Р°СЂРёРµРІ?}
 
 # Goto game/move dialogs:
-translate R LoadGameNumber {Введите номер партии для загрузки:}
-translate R GotoMoveNumber {Перейти к ходу номер:}
+translate R LoadGameNumber {Р’РІРµРґРёС‚Рµ РЅРѕРјРµСЂ РїР°СЂС‚РёРё РґР»СЏ Р·Р°РіСЂСѓР·РєРё:}
+translate R GotoMoveNumber {РџРµСЂРµР№С‚Рё Рє С…РѕРґСѓ РЅРѕРјРµСЂ:}
 
 # Copy games dialog:
-translate R CopyGames {Скопировать партии}
+translate R CopyGames {РЎРєРѕРїРёСЂРѕРІР°С‚СЊ РїР°СЂС‚РёРё}
 translate R CopyConfirm {
- Вы действительно желаете скопировать
- [::utils::thousands $nGamesToCopy] отфильтрованных партий
- из базы данных "$fromName"
- в базу данных "$targetName"?
+ Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ Р¶РµР»Р°РµС‚Рµ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ
+ [::utils::thousands $nGamesToCopy] С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹С… РїР°СЂС‚РёР№
+ РёР· Р±Р°Р·С‹ РґР°РЅРЅС‹С… "$fromName"
+ РІ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… "$targetName"?
 }
-translate R CopyErr {Не могу скопировать партии}
-translate R CopyErrSource {исходная база данных}
-translate R CopyErrTarget {целевая база данных}
-translate R CopyErrNoGames {has no games in its filter}
-translate R CopyErrReadOnly {только для чтения}
-translate R CopyErrNotOpen {не открыта}
+translate R CopyErr {РќРµ РјРѕРіСѓ СЃРєРѕРїРёСЂРѕРІР°С‚СЊ РїР°СЂС‚РёРё}
+translate R CopyErrSource {РёСЃС…РѕРґРЅР°СЏ Р±Р°Р·Р° РґР°РЅРЅС‹С…}
+translate R CopyErrTarget {С†РµР»РµРІР°СЏ Р±Р°Р·Р° РґР°РЅРЅС‹С…}
+translate R CopyErrNoGames {РЅРµС‚ РїР°СЂС‚РёР№ РїСЂРё С‚Р°РєРѕРј С„РёР»СЊС‚СЂРµ}
+translate R CopyErrReadOnly {С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ}
+translate R CopyErrNotOpen {РЅРµ РѕС‚РєСЂС‹С‚Р°}
 
 # Colors:
-translate R LightSquares {Светлые поля}
-translate R DarkSquares {Темные поля}
-translate R SelectedSquares {Выбранные поля}
-translate R SuggestedSquares {Поля подсказанных ходов}
-translate R WhitePieces {Белые фигуры}
-translate R BlackPieces {Черные фигуры}
-translate R WhiteBorder {Белые границы}
-translate R BlackBorder {Черные границы}
+translate R LightSquares {РЎРІРµС‚Р»С‹Рµ РїРѕР»СЏ}
+translate R DarkSquares {РўС‘РјРЅС‹Рµ РїРѕР»СЏ}
+translate R SelectedSquares {Р’С‹Р±СЂР°РЅРЅС‹Рµ РїРѕР»СЏ}
+translate R SuggestedSquares {РџРѕР»СЏ РїРѕРґСЃРєР°Р·Р°РЅРЅС‹С… С…РѕРґРѕРІ}
+translate R WhitePieces {Р‘РµР»С‹Рµ С„РёРіСѓСЂС‹}
+translate R BlackPieces {Р§С‘СЂРЅС‹Рµ С„РёРіСѓСЂС‹}
+translate R WhiteBorder {Р‘РµР»С‹Рµ РіСЂР°РЅРёС†С‹}
+translate R BlackBorder {Р§С‘СЂРЅС‹Рµ РіСЂР°РЅРёС†С‹}
 
 # Novelty window:
-translate R FindNovelty {Найти новинку}
-translate R Novelty {Новинка}
-translate R NoveltyInterrupt {Поиск новинки прерван}
-translate R NoveltyNone {В этой партии новинок не найдено}
-translate R NoveltyHelp {Scid найдет первый ход в текущей партии, который приведет к позиции, отсутствующей в текущей базе данных и дебютной книге.}
-# ====== TODO To be translated ======
-translate R SoundsFolder {Sound Files Folder}
-# ====== TODO To be translated ======
-translate R SoundsFolderHelp {The folder should contain the files King.wav, a.wav, 1.wav, etc}
-# ====== TODO To be translated ======
-translate R SoundsAnnounceOptions {Move Announcement Options}
-# ====== TODO To be translated ======
-translate R SoundsAnnounceNew {Announce new moves as they are made}
-# ====== TODO To be translated ======
-translate R SoundsAnnounceForward {Announce moves when moving forward one move}
-# ====== TODO To be translated ======
-translate R SoundsAnnounceBack {Announce when retracting or moving back one move}
+translate R FindNovelty {РќР°Р№С‚Рё РЅРѕРІРёРЅРєСѓ}
+translate R Novelty {РќРѕРІРёРЅРєР°}
+translate R NoveltyInterrupt {РџРѕРёСЃРє РЅРѕРІРёРЅРєРё РїСЂРµСЂРІР°РЅ}
+translate R NoveltyNone {Р’ СЌС‚РѕР№ РїР°СЂС‚РёРё РЅРѕРІРёРЅРѕРє РЅРµ РЅР°Р№РґРµРЅРѕ}
+translate R NoveltyHelp {
+Scid РЅР°Р№РґС‘С‚ РїРµСЂРІС‹Р№ С…РѕРґ РІ С‚РµРєСѓС‰РµР№ РїР°СЂС‚РёРё, РєРѕС‚РѕСЂС‹Р№ РїСЂРёРІРµРґС‘С‚ Рє РїРѕР·РёС†РёРё, РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РµР№ РІ С‚РµРєСѓС‰РµР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С… Рё РґРµР±СЋС‚РЅРѕР№ РєРЅРёРіРµ.
+}
+
+# Sounds configuration:
+translate R SoundsFolder {Р”РёСЂРµРєС‚РѕСЂРёСЏ Р·РІСѓРєРѕРІС‹С… С„Р°Р№Р»РѕРІ}
+translate R SoundsFolderHelp {РљР°С‚Р°Р»РѕРі РґРѕР»Р¶РµРЅ СЃРѕРґРµСЂР¶Р°С‚СЊ С„Р°Р№Р»С‹ King.wav, a.wav, 1.wav Рё С‚. Рї.}
+translate R SoundsAnnounceOptions {РћРїС†РёРё СѓРІРµРґРѕРјР»РµРЅРёСЏ Рѕ С…РѕРґРµ}
+translate R SoundsAnnounceNew {РЈРІРµРґРѕРјР»СЏС‚СЊ Рѕ РЅРѕРІС‹С… С…РѕРґР°С…, РєРѕРіРґР° РѕРЅРё СЃРґРµР»Р°РЅС‹}
+translate R SoundsAnnounceForward {РЈРІРµРґРѕРјР»СЏС‚СЊ Рѕ С…РѕРґРµ, РєРѕРіРґР° СЃРґРµР»Р°РЅ РѕРґРёРЅ С…РѕРґ РІРїРµСЂС‘Рґ}
+translate R SoundsAnnounceBack {РЈРІРµРґРѕРјР»СЏС‚СЊ Рѕ СЃРѕРєСЂР°С‰РµРЅРёРё РёР»Рё РѕС‚РјРµРЅРµ РѕРґРЅРѕРіРѕ С…РѕРґР°}
 
 # Upgrading databases:
-translate R Upgrading {Обновленный}
+translate R Upgrading {РњРѕРґРµСЂРЅРёР·Р°С†РёСЏ}
 translate R ConfirmOpenNew {
-Это старый формат (Scid 2) базы данных, который не может быть открыт в Scid 3, но формат новой версии (Scid 3) уже может быть создан.
+Р­С‚Рѕ СЃС‚Р°СЂС‹Р№ С„РѕСЂРјР°С‚ (Scid 3) Р±Р°Р·С‹ РґР°РЅРЅС‹С…, РєРѕС‚РѕСЂС‹Р№ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚РєСЂС‹С‚ РІ Scid 4, РЅРѕ РІРµСЂСЃРёСЏ РІ РЅРѕРІРѕРј С„РѕСЂРјР°С‚Рµ (Scid 4) СѓР¶Рµ СЃРѕР·РґР°РЅР°.
 
-Вы желаете открыть версию нового формата базы данных?
+Р’С‹ Р¶РµР»Р°РµС‚Рµ РѕС‚РєСЂС‹С‚СЊ РІРµСЂСЃРёСЋ РЅРѕРІРѕРіРѕ С„РѕСЂРјР°С‚Р° Р±Р°Р·С‹ РґР°РЅРЅС‹С…?
 }
 translate R ConfirmUpgrade {
-Это старый формат (Scid 2) базы данных. Новый формат базы данных должен быть создан перед тем как использовать его в Scid 3.
+Р­С‚Рѕ СЃС‚Р°СЂС‹Р№ С„РѕСЂРјР°С‚ (Scid 3) Р±Р°Р·С‹ РґР°РЅРЅС‹С…. РќРѕРІС‹Р№ С„РѕСЂРјР°С‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ СЃРѕР·РґР°РЅ РїРµСЂРµРґ С‚РµРј, РєР°Рє РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РµРіРѕ РІ Scid 4.
 
-Обновление создаст новый формат базы данных; это не изменит и не удалит оригинальные файлы.
+РћР±РЅРѕРІР»РµРЅРёРµ СЃРѕР·РґР°СЃС‚ РЅРѕРІС‹Р№ С„РѕСЂРјР°С‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С…; СЌС‚Рѕ РЅРµ РёР·РјРµРЅРёС‚ Рё РЅРµ СѓРґР°Р»РёС‚ РѕСЂРёРіРёРЅР°Р»СЊРЅС‹Рµ С„Р°Р№Р»С‹.
 
-Это может занять время, но это делается только один раз. Вы можете отзаться, если это занимает слишком много времени.
+Р­С‚Рѕ РјРѕР¶РµС‚ Р·Р°РЅСЏС‚СЊ РІСЂРµРјСЏ, РЅРѕ СЌС‚Рѕ РґРµР»Р°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РѕРґРёРЅ СЂР°Р·. Р’С‹ РјРѕР¶РµС‚Рµ РѕС‚РєР°Р·Р°С‚СЊСЃСЏ, РµСЃР»Рё СЌС‚Рѕ Р·Р°РЅРёРјР°РµС‚ СЃР»РёС€РєРѕРј РјРЅРѕРіРѕ РІСЂРµРјРµРЅРё.
 
-Вы желаете обновить базу данных сейчас?
+Р’С‹ Р¶РµР»Р°РµС‚Рµ РѕР±РЅРѕРІРёС‚СЊ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… СЃРµР№С‡Р°СЃ?
 }
 
 # Recent files options:
-translate R RecentFilesMenu {Число недавно загруженных файлов в файловом меню}
-translate R RecentFilesExtra {Число недавно загруженных файлов во внешнем подменю}
+translate R RecentFilesMenu {Р§РёСЃР»Рѕ РЅРµРґР°РІРЅРѕ Р·Р°РіСЂСѓР¶РµРЅРЅС‹С… С„Р°Р№Р»РѕРІ РІ С„Р°Р№Р»РѕРІРѕРј РјРµРЅСЋ}
+translate R RecentFilesExtra {Р§РёСЃР»Рѕ РЅРµРґР°РІРЅРѕ Р·Р°РіСЂСѓР¶РµРЅРЅС‹С… С„Р°Р№Р»РѕРІ РІРѕ РІРЅРµС€РЅРµРј РїРѕРґРјРµРЅСЋ}
 
 # My Player Names options:
 translate R MyPlayerNamesDescription {
-Enter a list of preferred player names below, one name per line. Wildcards (e.g. "?" for any single character, "*" for any sequence of characters) are permitted.
+Р’РІРµСЃС‚Рё СЃРїРёСЃРѕРє РїСЂРёРІРёР»РµРіРёСЂРѕРІР°РЅРЅС‹С… РёРјС‘РЅ РёРіСЂРѕРєРѕРІ РЅРёР¶Рµ, РїРѕ РѕРґРЅРѕРјСѓ РёРјРµРЅРё РЅР° СЃС‚СЂРѕРєСѓ. РњР°СЃРєРё СЂР°Р·СЂРµС€РµРЅС‹ (РЅР°РїСЂРёРјРµСЂ, "?" РґР»СЏ Р»СЋР±РѕРіРѕ РµРґРёРЅРёС‡РЅРѕРіРѕ СЃРёРјРІРѕР»Р°, "*" РґР»СЏ Р»СЋР±РѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё СЃРёРјРІРѕР»РѕРІ)
 
-Every time a game with a player in the list is loaded, the main window chessboard will be rotated if necessary to show the game from that players perspective.
+РљР°Р¶РґС‹Р№ СЂР°Р·, РєРѕРіРґР° РїР°СЂС‚РёСЏ СЃ РёРіСЂРѕРєРѕРј РІ СЃРїРёСЃРєРµ Р·Р°РіСЂСѓР¶РµРЅР°, РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ С€Р°С…РјР°С‚РЅРѕР№ РґРѕСЃРєРё Р±СѓРґРµС‚ РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїРѕРІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ, С‡С‚РѕР±С‹ РїРѕРєР°Р·Р°С‚СЊ РїР°СЂС‚РёСЋ РѕС‚ РїРµСЂСЃРїРµРєС‚РёРІС‹ РёРіСЂРѕРєР°.
 }
-# ====== TODO To be translated ======
-translate R showblunderexists {show blunder exists}
-# ====== TODO To be translated ======
-translate R showblundervalue {show blunder value}
-# ====== TODO To be translated ======
-translate R showscore {show score}
-# ====== TODO To be translated ======
-translate R coachgame {coach game}
-# ====== TODO To be translated ======
-translate R configurecoachgame {configure coach game}
-# ====== TODO To be translated ======
-translate R configuregame {Game configuration}
-# ====== TODO To be translated ======
-translate R Phalanxengine {Phalanx engine}
-# ====== TODO To be translated ======
-translate R Coachengine {Coach engine}
-# ====== TODO To be translated ======
-translate R difficulty {difficulty}
-# ====== TODO To be translated ======
-translate R hard {hard}
-# ====== TODO To be translated ======
-translate R easy {easy}
-# ====== TODO To be translated ======
-translate R Playwith {Play with}
-# ====== TODO To be translated ======
-translate R white {white}
-# ====== TODO To be translated ======
-translate R black {black}
-# ====== TODO To be translated ======
-translate R both {both}
-# ====== TODO To be translated ======
-translate R Play {Play}
-# ====== TODO To be translated ======
-translate R Noblunder {No blunder}
-# ====== TODO To be translated ======
-translate R blunder {blunder}
-# ====== TODO To be translated ======
-translate R Noinfo {-- No info --}
-# ====== TODO To be translated ======
-translate R PhalanxOrTogaMissing {Phalanx or Toga not found}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate R moveblunderthreshold {move is a blunder if loss is greater than}
-# ====== TODO To be translated ======
-translate R limitanalysis {limit engine analysis time}
-# ====== TODO To be translated ======
-translate R seconds {seconds}
-# ====== TODO To be translated ======
-translate R Abort {Abort}
-# ====== TODO To be translated ======
-translate R Resume {Resume}
-# ====== TODO To be translated ======
-translate R OutOfOpening {Out of opening}
-# ====== TODO To be translated ======
-translate R NotFollowedLine {You did not follow the line}
-# ====== TODO To be translated ======
-translate R DoYouWantContinue {Do you want yo continue ?}
-# ====== TODO To be translated ======
-translate R CoachIsWatching {Coach is watching}
-# ====== TODO To be translated ======
-translate R Ponder {Permanent thinking}
-# ====== TODO To be translated ======
-translate R LimitELO {Limit ELO strength}
-# ====== TODO To be translated ======
-translate R DubiousMovePlayedTakeBack {Dubious move played, do you want to take back ?}
-# ====== TODO To be translated ======
-translate R WeakMovePlayedTakeBack {Weak move played, do you want to take back ?}
-# ====== TODO To be translated ======
-translate R BadMovePlayedTakeBack {Bad move played, do you want to take back ?}
-# ====== TODO To be translated ======
-translate R Iresign {I resign}
-# ====== TODO To be translated ======
-translate R yourmoveisnotgood {your move is not good}
-# ====== TODO To be translated ======
-translate R EndOfVar {End of variation}
-# ====== TODO To be translated ======
-translate R Openingtrainer {Opening trainer}
-# ====== TODO To be translated ======
-translate R DisplayCM {Display candidate moves}
-# ====== TODO To be translated ======
-translate R DisplayCMValue {Display candidate moves value}
-# ====== TODO To be translated ======
-translate R DisplayOpeningStats {Show statistics}
-# ====== TODO To be translated ======
-translate R ShowReport {Show report}
-# ====== TODO To be translated ======
-translate R NumberOfGoodMovesPlayed {good moves played}
-# ====== TODO To be translated ======
-translate R NumberOfDubiousMovesPlayed {dubious moves played}
-# ====== TODO To be translated ======
-translate R NumberOfMovesPlayedNotInRepertoire {moves played not in repertoire}
-# ====== TODO To be translated ======
-translate R NumberOfTimesPositionEncountered {times position encountered}
-# ====== TODO To be translated ======
-translate R PlayerBestMove  {Allow only best moves}
-# ====== TODO To be translated ======
-translate R OpponentBestMove {Opponent plays best moves}
-# ====== TODO To be translated ======
-translate R OnlyFlaggedLines {Only flagged lines}
-# ====== TODO To be translated ======
-translate R resetStats {Reset statistics}
-# ====== TODO To be translated ======
-translate R Repertoiretrainingconfiguration {Repertoire training configuration}
-# ====== TODO To be translated ======
-translate R Loadingrepertoire {Loading repertoire}
-# ====== TODO To be translated ======
-translate R Movesloaded {Moves loaded}
-# ====== TODO To be translated ======
-translate R Repertoirenotfound {Repertoire not found}
-# ====== TODO To be translated ======
-translate R Openfirstrepertoirewithtype {Open first a repertoire database with icon/type set to the right side}
-# ====== TODO To be translated ======
-translate R Movenotinrepertoire {Move not in repertoire}
-# ====== TODO To be translated ======
-translate R PositionsInRepertoire {Positions in repertoire}
-# ====== TODO To be translated ======
-translate R PositionsNotPlayed {Positions not played}
-# ====== TODO To be translated ======
-translate R PositionsPlayed {Positions played}
-# ====== TODO To be translated ======
-translate R Success {Success}
-# ====== TODO To be translated ======
-translate R DubiousMoves {Dubious moves}
-# ====== TODO To be translated ======
-translate R OutOfRepertoire {OutOfRepertoire}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate R ConfigureTactics {Configure tactics}
-# ====== TODO To be translated ======
-translate R ResetScores {Reset scores}
-# ====== TODO To be translated ======
-translate R LoadingBase {Loading base}
-# ====== TODO To be translated ======
-translate R Tactics {Tactics}
-# ====== TODO To be translated ======
-translate R ShowSolution {Show solution}
-# ====== TODO To be translated ======
-translate R NextExercise {Next exercise}
-# ====== TODO To be translated ======
-translate R PrevExercise {previous exercise}
-# ====== TODO To be translated ======
-translate R StopTraining {Stop training}
-# ====== TODO To be translated ======
-translate R Next {Next}
-# ====== TODO To be translated ======
-translate R ResettingScore {Resetting score}
-# ====== TODO To be translated ======
-translate R LoadingGame {Loading game}
-# ====== TODO To be translated ======
-translate R MateFound {Mate found}
-# ====== TODO To be translated ======
-translate R BestSolutionNotFound {Best solution NOT found !}
-# ====== TODO To be translated ======
-translate R MateNotFound {Mate not found}
-# ====== TODO To be translated ======
-translate R ShorterMateExists {Shorter mate exists}
-# ====== TODO To be translated ======
-translate R ScorePlayed {Score played}
-# ====== TODO To be translated ======
-translate R Expected {expected}
-# ====== TODO To be translated ======
-translate R ChooseTrainingBase {Choose training base}
-# ====== TODO To be translated ======
-translate R Thinking {Thinking}
-# ====== TODO To be translated ======
-translate R AnalyzeDone {Analyze done}
-# ====== TODO To be translated ======
-translate R WinWonGame {Win won game}
-# ====== TODO To be translated ======
-translate R Lines {Lines}
-# ====== TODO To be translated ======
-translate R ConfigureUCIengine {Configure UCI engine}
-# ====== TODO To be translated ======
-translate R SpecificOpening {Specific opening}
-# ====== TODO To be translated ======
-translate R StartNewGame {Start new game}
-# ====== TODO To be translated ======
-translate R FixedLevel {Fixed level}
-# ====== TODO To be translated ======
-translate R Opening {Opening}
-# ====== TODO To be translated ======
-translate R RandomLevel {Random level}
-# ====== TODO To be translated ======
-translate R StartFromCurrentPosition {Start from current position}
-# ====== TODO To be translated ======
-translate R FixedDepth {Fixed depth}
-# ====== TODO To be translated ======
-translate R Nodes {Nodes} 
-# ====== TODO To be translated ======
-translate R Depth {Depth}
-# ====== TODO To be translated ======
-translate R Time {Time} 
-# ====== TODO To be translated ======
-translate R SecondsPerMove {Seconds per move}
-# ====== TODO To be translated ======
-translate R Engine {Engine}
-# ====== TODO To be translated ======
-translate R TimeMode {Time mode}
-# ====== TODO To be translated ======
-translate R TimeBonus {Time + bonus}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate R TimeMin {min}
-# ====== TODO To be translated ======
-translate R TimeSec {sec}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate R AllExercisesDone {All exercises done}
-# ====== TODO To be translated ======
-translate R MoveOutOfBook {Move out of book}
-# ====== TODO To be translated ======
-translate R LastBookMove {Last book move}
-# ====== TODO To be translated ======
-translate R AnnotateSeveralGames {Annotate several games\nfrom current to :}
-# ====== TODO To be translated ======
-translate R FindOpeningErrors {Find opening errors}
-# ====== TODO To be translated ======
-translate R MarkTacticalExercises {Mark tactical exercises}
-# ====== TODO To be translated ======
-translate R UseBook {Use book}
-# ====== TODO To be translated ======
-translate R MultiPV {Multiple variations}
-# ====== TODO To be translated ======
-translate R Hash {Hash memory}
-# ====== TODO To be translated ======
-translate R OwnBook {Use engine book}
-# ====== TODO To be translated ======
-translate R BookFile {Opening book}
-# ====== TODO To be translated ======
-translate R AnnotateVariations {Annotate variations}
-# ====== TODO To be translated ======
-translate R ShortAnnotations {Short annotations}
-# ====== TODO To be translated ======
-translate R addAnnotatorTag {Add annotator tag}
-# ====== TODO To be translated ======
-translate R AddScoreToShortAnnotations {Add score to short annotations}
-# ====== TODO To be translated ======
-translate R Export {Export}
-# ====== TODO To be translated ======
-translate R BookPartiallyLoaded {Book partially loaded}
-# ====== TODO To be translated ======
-translate R Calvar {Calculation of variations}
-# ====== TODO To be translated ======
-translate R ConfigureCalvar {Configuration}
-# ====== TODO To be translated ======
-# ====== TODO To be translated ======
-translate R Reti {Reti}
-# ====== TODO To be translated ======
-translate R English {English}
-# ====== TODO To be translated ======
-translate R d4Nf6Miscellaneous {1.d4 Nf6 Miscellaneous}
-# ====== TODO To be translated ======
-translate R Trompowsky {Trompowsky}
-# ====== TODO To be translated ======
-translate R Budapest {Budapest}
-# ====== TODO To be translated ======
-translate R OldIndian {Old Indian}
-# ====== TODO To be translated ======
-translate R BenkoGambit {Benko Gambit}
-# ====== TODO To be translated ======
-translate R ModernBenoni {Modern Benoni}
-# ====== TODO To be translated ======
-translate R DutchDefence {Dutch Defence}
-# ====== TODO To be translated ======
-translate R Scandinavian {Scandinavian}
-# ====== TODO To be translated ======
-translate R AlekhineDefence {Alekhine Defence}
-# ====== TODO To be translated ======
-translate R Pirc {Pirc}
-# ====== TODO To be translated ======
-translate R CaroKann {Caro-Kann}
-# ====== TODO To be translated ======
-translate R CaroKannAdvance {Caro-Kann Advance}
-# ====== TODO To be translated ======
-translate R Sicilian {Sicilian}
-# ====== TODO To be translated ======
-translate R SicilianAlapin {Sicilian Alapin}
-# ====== TODO To be translated ======
-translate R SicilianClosed {Sicilian Closed}
-# ====== TODO To be translated ======
-translate R SicilianRauzer {Sicilian Rauzer}
-# ====== TODO To be translated ======
-translate R SicilianDragon {Sicilian Dragon}
-# ====== TODO To be translated ======
-translate R SicilianScheveningen {Sicilian Scheveningen}
-# ====== TODO To be translated ======
-translate R SicilianNajdorf {Sicilian Najdorf}
-# ====== TODO To be translated ======
-translate R OpenGame {Open Game}
-# ====== TODO To be translated ======
-translate R Vienna {Vienna}
-# ====== TODO To be translated ======
-translate R KingsGambit {King's Gambit}
-# ====== TODO To be translated ======
-translate R RussianGame {Russian Game}
-# ====== TODO To be translated ======
-translate R ItalianTwoKnights {Italian/Two Knights}
-# ====== TODO To be translated ======
-translate R Spanish {Spanish}
-# ====== TODO To be translated ======
-translate R SpanishExchange {Spanish Exchange}
-# ====== TODO To be translated ======
-translate R SpanishOpen {Spanish Open}
-# ====== TODO To be translated ======
-translate R SpanishClosed {Spanish Closed}
-# ====== TODO To be translated ======
-translate R FrenchDefence {French Defence}
-# ====== TODO To be translated ======
-translate R FrenchAdvance {French Advance}
-# ====== TODO To be translated ======
-translate R FrenchTarrasch {French Tarrasch}
-# ====== TODO To be translated ======
-translate R FrenchWinawer {French Winawer}
-# ====== TODO To be translated ======
-translate R FrenchExchange {French Exchange}
-# ====== TODO To be translated ======
-translate R QueensPawn {Queen's Pawn}
-# ====== TODO To be translated ======
-translate R Slav {Slav}
-# ====== TODO To be translated ======
-translate R QGA {QGA}
-# ====== TODO To be translated ======
-translate R QGD {QGD}
-# ====== TODO To be translated ======
-translate R QGDExchange {QGD Exchange}
-# ====== TODO To be translated ======
-translate R SemiSlav {Semi-Slav}
-# ====== TODO To be translated ======
-translate R QGDwithBg5 {QGD with Bg5}
-# ====== TODO To be translated ======
-translate R QGDOrthodox {QGD Orthodox}
-# ====== TODO To be translated ======
-translate R Grunfeld {Gr?nfeld}
-# ====== TODO To be translated ======
-translate R GrunfeldExchange {Gr?nfeld Exchange}
-# ====== TODO To be translated ======
-translate R GrunfeldRussian {Gr?nfeld Russian}
-# ====== TODO To be translated ======
-translate R Catalan {Catalan}
-# ====== TODO To be translated ======
-translate R CatalanOpen {Catalan Open}
-# ====== TODO To be translated ======
-translate R CatalanClosed {Catalan Closed}
-# ====== TODO To be translated ======
-translate R QueensIndian {Queen's Indian}
-# ====== TODO To be translated ======
-translate R NimzoIndian {Nimzo-Indian}
-# ====== TODO To be translated ======
-translate R NimzoIndianClassical {Nimzo-Indian Classical}
-# ====== TODO To be translated ======
-translate R NimzoIndianRubinstein {Nimzo-Indian Rubinstein}
-# ====== TODO To be translated ======
-translate R KingsIndian {King's Indian}
-# ====== TODO To be translated ======
-translate R KingsIndianSamisch {King's Indian S?misch}
-# ====== TODO To be translated ======
-translate R KingsIndianMainLine {King's Indian Main Line}
-# ====== TODO To be translated ======
-translate R ConfigureFics {Configure FICS}
-# ====== TODO To be translated ======
-translate R FICSGuest {Login as Guest}
-# ====== TODO To be translated ======
-translate R FICSServerPort {Server port}
-# ====== TODO To be translated ======
-translate R FICSServerAddress {IP Address}
-# ====== TODO To be translated ======
-translate R FICSRefresh {Refresh}
-# ====== TODO To be translated ======
-translate R FICSTimesealPort {Timeseal port}
-# ====== TODO To be translated ======
-translate R FICSSilence {Silence}
-# ====== TODO To be translated ======
-translate R FICSOffers {Offers}
-# ====== TODO To be translated ======
-translate R FICSConsole {Console}
-# ====== TODO To be translated ======
-translate R FICSGames {Games}
-# ====== TODO To be translated ======
-translate R FICSUnobserve {Stop observing game}
-# ====== TODO To be translated ======
-translate R FICSProfile {Display your history and profile}
-# ====== TODO To be translated ======
-translate R FICSRelayedGames {Relayed games}
-# ====== TODO To be translated ======
-translate R FICSFindOpponent {Find opponent}
-# ====== TODO To be translated ======
-translate R FICSTakeback {Takeback}
-# ====== TODO To be translated ======
-translate R FICSTakeback2 {Takeback 2}
-# ====== TODO To be translated ======
-translate R FICSInitTime {Initial time (min)}
-# ====== TODO To be translated ======
-translate R FICSIncrement {Increment (sec)}
-# ====== TODO To be translated ======
-translate R FICSRatedGame {Rated Game}
-# ====== TODO To be translated ======
-translate R FICSAutoColour {automatic}
-# ====== TODO To be translated ======
-translate R FICSManualConfirm {confirm manually}
-# ====== TODO To be translated ======
-translate R FICSFilterFormula {Filter with formula}
-# ====== TODO To be translated ======
-translate R FICSIssueSeek {Issue seek}
-# ====== TODO To be translated ======
-translate R FICSChallenge {Challenge}
-# ====== TODO To be translated ======
-translate R FICSAccept {accept}
-# ====== TODO To be translated ======
-translate R FICSDecline {decline}
-# ====== TODO To be translated ======
-translate R FICSColour {Colour}
-# ====== TODO To be translated ======
-translate R FICSSend {send}
-# ====== TODO To be translated ======
-translate R FICSConnect {Connect}
-# ====== TODO To be translated ======
-translate R FICSdefaultuservars {Use default variables}
-# ====== TODO To be translated ======
-translate R FICSObserveconfirm {Do you want to observe game}
-# ====== TODO To be translated ======
-translate R FICSpremove {Enable premove}
-# ====== TODO To be translated ======
-translate R GameReview {Game review}
-# ====== TODO To be translated ======
-translate R GameReviewTimeExtended {Time extended}
-# ====== TODO To be translated ======
-translate R GameReviewMargin {Error margin}
-# ====== TODO To be translated ======
-translate R GameReviewAutoContinue {Auto continue when move is correct}
-# ====== TODO To be translated ======
-translate R GameReviewReCalculate {Use extended time}
-# ====== TODO To be translated ======
-translate R GameReviewAnalyzingMovePlayedDuringTheGame {Analyzing move played during the game}
-# ====== TODO To be translated ======
-translate R GameReviewAnalyzingThePosition {Analyzing the position}
-# ====== TODO To be translated ======
-translate R GameReviewEnterYourMove {Enter your move}
-# ====== TODO To be translated ======
-translate R GameReviewCheckingYourMove {Checking your move}
-# ====== TODO To be translated ======
-translate R GameReviewYourMoveWasAnalyzed {Your move was analyzed}
-# ====== TODO To be translated ======
-translate R GameReviewYouPlayedSameMove {You played the same move as in match}
-# ====== TODO To be translated ======
-translate R GameReviewScoreOfYourMove {Score of your move}
-# ====== TODO To be translated ======
-translate R GameReviewGameMoveScore {Game move's score}
-# ====== TODO To be translated ======
-translate R GameReviewEngineScore {Engine's score}
-# ====== TODO To be translated ======
-translate R GameReviewYouPlayedLikeTheEngine {You played like the engine}
-# ====== TODO To be translated ======
-translate R GameReviewNotEngineMoveButGoodMove {Not the engine move, but is also a good move}
-# ====== TODO To be translated ======
-translate R GameReviewMoveNotGood {This move is not good, score is}
-# ====== TODO To be translated ======
-translate R GameReviewMovesPlayedLike {Moves played like}
-# ====== TODO To be translated ======
-translate R GameReviewMovesPlayedEngine {Moves played like engine}
-# ====== TODO To be translated ======
-translate R CCDlgConfigureWindowTitle {Configure Correspondence Chess}
-# ====== TODO To be translated ======
-translate R CCDlgCGeneraloptions {General Options}
-# ====== TODO To be translated ======
-translate R CCDlgDefaultDB {Default Database:}
-# ====== TODO To be translated ======
-translate R CCDlgInbox {Inbox (path):}
-# ====== TODO To be translated ======
-translate R CCDlgOutbox {Outbox (path):}
-# ====== TODO To be translated ======
-translate R CCDlgXfcc {Xfcc Configuration:}
-# ====== TODO To be translated ======
-translate R CCDlgExternalProtocol {External Protocol Handler (e.g. Xfcc)}
-# ====== TODO To be translated ======
-translate R CCDlgFetchTool {Fetch Tool:}
-# ====== TODO To be translated ======
-translate R CCDlgSendTool {Send Tool:}
-# ====== TODO To be translated ======
-translate R CCDlgEmailCommunication {eMail Communication}
-# ====== TODO To be translated ======
-translate R CCDlgMailPrg {Mail program:}
-# ====== TODO To be translated ======
-translate R CCDlgBCCAddr {(B)CC Address:}
-# ====== TODO To be translated ======
-translate R CCDlgMailerMode {Mode:}
-# ====== TODO To be translated ======
-translate R CCDlgThunderbirdEg {e.g. Thunderbird, Mozilla Mail, Icedove...}
-# ====== TODO To be translated ======
-translate R CCDlgMailUrlEg {e.g. Evolution}
-# ====== TODO To be translated ======
-translate R CCDlgClawsEg {e.g Sylpheed Claws}
-# ====== TODO To be translated ======
-translate R CCDlgmailxEg {e.g. mailx, mutt, nail...}
-# ====== TODO To be translated ======
-translate R CCDlgAttachementPar {Attachment parameter:}
-# ====== TODO To be translated ======
-translate R CCDlgInternalXfcc {Use internal Xfcc support}
-# ====== TODO To be translated ======
-translate R CCDlgConfirmXfcc {Confirm moves}
-# ====== TODO To be translated ======
-translate R CCDlgSubjectPar {Subject parameter:}
-# ====== TODO To be translated ======
-translate R CCDlgDeleteBoxes {Empty In-/Outbox}
-# ====== TODO To be translated ======
-translate R CCDlgDeleteBoxesText {Do you really want to empty your In- and Outbox folders for Correspondence Chess? This requires a new sync to show the last state of your games}
-# ====== TODO To be translated ======
-translate R CCDlgConfirmMove {Confirm move}
-# ====== TODO To be translated ======
-translate R CCDlgConfirmMoveText {If you confirm, the following move and comment will be sent to the server:}
-# ====== TODO To be translated ======
-translate R CCDlgDBGameToLong {Inconsistent Mainline}
-# ====== TODO To be translated ======
-translate R CCDlgDBGameToLongError {The mainline in your database is longer than the game in your Inbox. If the Inbox contains current games, i.e. right after a sync, some moves were added to the mainline in the database erroneously.\nIn this case please shorten the mainline to (at max) move\n}
-# ====== TODO To be translated ======
-translate R CCDlgStartEmail {Start new eMail game}
-# ====== TODO To be translated ======
-translate R CCDlgYourName {Your Name:}
-# ====== TODO To be translated ======
-translate R CCDlgYourMail {Your eMail Address:}
-# ====== TODO To be translated ======
-translate R CCDlgOpponentName {Opponents Name:}
-# ====== TODO To be translated ======
-translate R CCDlgOpponentMail {Opponents eMail Address:}
-# ====== TODO To be translated ======
-translate R CCDlgGameID {Game ID (unique):}
-# ====== TODO To be translated ======
-translate R CCDlgTitNoOutbox {Scid: Correspondence Chess Outbox}
-# ====== TODO To be translated ======
-translate R CCDlgTitNoInbox {Scid: Correspondence Chess Inbox}
-# ====== TODO To be translated ======
-translate R CCDlgTitNoGames {Scid: No Correspondence Chess Games}
-# ====== TODO To be translated ======
-translate R CCErrInboxDir {Correspondence Chess inbox directory:}
-# ====== TODO To be translated ======
-translate R CCErrOutboxDir {Correspondence Chess outbox directory:}
-# ====== TODO To be translated ======
-translate R CCErrDirNotUsable {does not exist or is not accessible!\nPlease check and correct the settings.}
-# ====== TODO To be translated ======
-translate R CCErrNoGames {does not contain any games!\nPlease fetch them first.}
-# ====== TODO To be translated ======
-translate R CCDlgTitNoCCDB {Scid: No Correspondence Database}
-# ====== TODO To be translated ======
-translate R CCErrNoCCDB {No Database of type 'Correspondence' is opened. Please open one before using correspondence chess functions.}
-# ====== TODO To be translated ======
-translate R CCFetchBtn {Fetch games from the server and process the Inbox}
-# ====== TODO To be translated ======
-translate R CCPrevBtn {Goto previous game}
-# ====== TODO To be translated ======
-translate R CCNextBtn {Goto next game}
-# ====== TODO To be translated ======
-translate R CCSendBtn {Send move}
-# ====== TODO To be translated ======
-translate R CCEmptyBtn {Empty In- and Outbox}
-# ====== TODO To be translated ======
-translate R CCHelpBtn {Help on icons and status indicators.\nFor general Help press F1!}
-# ====== TODO To be translated ======
-translate R CCDlgServerName {Server Name:}
-# ====== TODO To be translated ======
-translate R CCDlgLoginName  {Login Name:}
-# ====== TODO To be translated ======
-translate R CCDlgPassword   {Password:}
-# ====== TODO To be translated ======
-translate R CCDlgURL        {Xfcc-URL:}
-# ====== TODO To be translated ======
-translate R CCDlgRatingType {Rating Type:}
-# ====== TODO To be translated ======
-translate R CCDlgDuplicateGame {Non-unique game ID}
-# ====== TODO To be translated ======
-translate R CCDlgDuplicateGameError {This game exists more than once in your database. Please delete all duplicates and compact your game file (File/Maintenance/Compact Database).}
-# ====== TODO To be translated ======
-translate R CCDlgSortOption {Sorting:}
-# ====== TODO To be translated ======
-translate R CCDlgListOnlyOwnMove {Only games I have the move}
-# ====== TODO To be translated ======
-translate R CCOrderClassicTxt {Site, Event, Round, Result, White, Black}
-# ====== TODO To be translated ======
-translate R CCOrderMyTimeTxt {My Clock}
-# ====== TODO To be translated ======
-translate R CCOrderTimePerMoveTxt {Time per move till next time control}
-# ====== TODO To be translated ======
-translate R CCOrderStartDate {Start date}
-# ====== TODO To be translated ======
-translate R CCOrderOppTimeTxt {Opponents Clock}
-# ====== TODO To be translated ======
-translate R CCDlgConfigRelay {Configure ICCF observations}
-# ====== TODO To be translated ======
-translate R CCDlgConfigRelayHelp {Go to the games page on http://www.iccf-webchess.com and display the game to be observed.  If you see the chessboard copy the URL from your browser to the list below. One URL per line only!\nExample: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
-# ====== TODO To be translated ======
-translate R ExtHWConfigConnection {Configure external hardware}
-# ====== TODO To be translated ======
-translate R ExtHWPort {Port}
-# ====== TODO To be translated ======
-translate R ExtHWEngineCmd {Engine command}
-# ====== TODO To be translated ======
-translate R ExtHWEngineParam {Engine parameter}
-# ====== TODO To be translated ======
-translate R ExtHWShowButton {Show button}
-# ====== TODO To be translated ======
-translate R ExtHWHardware {Hardware}
-# ====== TODO To be translated ======
-translate R ExtHWNovag {Novag Citrine}
-# ====== TODO To be translated ======
-translate R ExtHWInputEngine {Input Engine}
-# ====== TODO To be translated ======
-translate R ExtHWNoBoard {No board}
-# ====== TODO To be translated ======
-translate R NovagReferee {Referee}
-# ====== TODO To be translated ======
-translate R IEConsole {Input Engine Console}
-# ====== TODO To be translated ======
-translate R IESending {Moves sent for}
-# ====== TODO To be translated ======
-translate R IESynchronise {Synchronise}
-# ====== TODO To be translated ======
-translate R IERotate  {Rotate}
-# ====== TODO To be translated ======
-translate R IEUnableToStart {Unable to start Input Engine:}
-# ====== TODO To be translated ======
-translate R DoneWithPosition {Done with position}
-# ====== TODO To be translated ======
-translate R Board {Board}
-# ====== TODO To be translated ======
-translate R showGameInfo {Show game info}
-# ====== TODO To be translated ======
-translate R autoResizeBoard {Automatic resize of board}
-# ====== TODO To be translated ======
-translate R DockTop {Move to top}
-# ====== TODO To be translated ======
-translate R DockBottom {Move to bottom}
-# ====== TODO To be translated ======
-translate R DockLeft {Move to left}
-# ====== TODO To be translated ======
-translate R DockRight {Move to right}
-# ====== TODO To be translated ======
-translate R Undock {Undock}
-# ====== TODO To be translated ======
-translate R ChangeIcon {Change icon...}
-# ====== TODO To be translated ======
+
+#Coach
+translate R showblunderexists {РїРѕРєР°Р·Р°С‚СЊ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ РѕС€РёР±РєРё}
+translate R showblundervalue {РїРѕРєР°Р·Р°С‚СЊ РІРµСЃ РѕС€РёР±РѕРє}
+translate R showscore {РїРѕРєР°Р·Р°С‚СЊ СЃС‡С‘С‚}
+translate R coachgame {С‚СЂРµРЅРёСЂРѕРІРѕС‡РЅР°СЏ РїР°СЂС‚РёСЏ}
+translate R configurecoachgame {РќР°СЃС‚СЂРѕРёС‚СЊ С‚СЂРµРЅРёСЂРѕРІРѕС‡РЅСѓСЋ РїР°СЂС‚РёСЋ}
+translate R configuregame {РќР°СЃС‚СЂРѕР№РєР° РїР°СЂС‚РёРё}
+translate R Phalanxengine {Р”РІРёР¶РѕРє Phalanx}
+translate R Coachengine {Р”РІРёР¶РѕРє С‚СЂРµРЅРµСЂР°}
+translate R difficulty {РЎР»РѕР¶РЅРѕСЃС‚СЊ}
+translate R hard {РІС‹СЃРѕРєР°СЏ}
+translate R easy {РЅРёР·РєР°СЏ}
+translate R Playwith {РРіСЂР°С‚СЊ СЃ}
+translate R white {Р±РµР»С‹Рµ}
+translate R black {С‡С‘СЂРЅС‹Рµ}
+translate R both {РѕР±Р°}
+translate R Play {РРіСЂР°С‚СЊ}
+translate R Noblunder {Р‘РµР· РѕС€РёР±РѕРє}
+translate R blunder {РѕС€РёР±РєР°}
+translate R Noinfo {-- РќРµС‚ РёРЅС„РѕСЂРјР°С†РёРё --}
+translate R PhalanxOrTogaMissing {Phalanx РёР»Рё Toga РЅРµ РЅР°Р№РґРµРЅС‹}
+translate R moveblunderthreshold {С…РѕРґ РѕС€РёР±РѕС‡РµРЅ, РµСЃР»Рё РїРѕС‚РµСЂСЏРЅРѕ Р±РѕР»РµРµ С‡РµРј}
+translate R limitanalysis {РїСЂРµРґРµР»СЊРЅРѕРµ РІСЂРµРјСЏ Р°РЅР°Р»РёР·Р° РґРІРёР¶РєР°}
+translate R seconds {СЃРµРєСѓРЅРґ}
+translate R Abort {РџСЂРµСЂРІР°С‚СЊ}
+translate R Resume {РџСЂРѕРґРѕР»Р¶РёС‚СЊ}
+translate R OutOfOpening {Р’С‹С…РѕРґ РёР· РґРµР±СЋС‚Р°}
+translate R NotFollowedLine {Р’С‹ РЅРµ СЃР»РµРґСѓРµС‚Рµ Р·Р°РґР°РЅРЅРѕРјСѓ РїР»Р°РЅСѓ}
+translate R DoYouWantContinue {Р’С‹ С…РѕС‚РёС‚Рµ РїСЂРѕРґРѕР»Р¶РёС‚СЊ?}
+translate R CoachIsWatching {РўСЂРµРЅРµСЂ РЅР°Р±Р»СЋРґР°РµС‚}
+translate R Ponder {РџРѕСЃС‚РѕСЏРЅРЅРѕРµ СЂР°Р·РјС‹С€Р»РµРЅРёРµ}
+translate R LimitELO {РџСЂРµРґРµР» СЂРµР№С‚РёРЅРіР° Р­Р»Рѕ}
+translate R DubiousMovePlayedTakeBack {РЎРґРµР»Р°РЅ СЃРѕРјРЅРёС‚РµР»СЊРЅС‹Р№ С…РѕРґ, РІС‹ С…РѕС‚РёС‚Рµ РµРіРѕ РѕС‚РјРµРЅРёС‚СЊ?}
+translate R WeakMovePlayedTakeBack {РЎРґРµР»Р°РЅ СЃР»Р°Р±С‹Р№ С…РѕРґ, РІС‹ С…РѕС‚РёС‚Рµ РµРіРѕ РѕС‚РјРµРЅРёС‚СЊ?}
+translate R BadMovePlayedTakeBack {РЎС‹РіСЂР°РЅ РїР»РѕС…РѕР№ С…РѕРґ, РІС‹ С…РѕС‚РёС‚Рµ РµРіРѕ РѕС‚РјРµРЅРёС‚СЊ?}
+translate R Iresign {РЇ СЃРґР°СЋСЃСЊ}
+translate R yourmoveisnotgood {РІР°С€ С…РѕРґ РЅРµ С…РѕСЂРѕС€РёР№}
+translate R EndOfVar {РљРѕРЅРµС† РІР°СЂРёР°РЅС‚РѕРІ}
+translate R Openingtrainer {РўСЂРµРЅРµСЂ РґРµР±СЋС‚Р°}
+translate R DisplayCM {РџРѕРєР°Р·Р°С‚СЊ РІРѕР·РјРѕР¶РЅС‹Р№ С…РѕРґ}
+translate R DisplayCMValue {РџРѕРєР°Р·Р°С‚СЊ РІРµСЃ РІРѕР·РјРѕР¶РЅРѕРіРѕ С…РѕРґР°}
+translate R DisplayOpeningStats {РџРѕРєР°Р·Р°С‚СЊ СЃС‚Р°С‚РёСЃС‚РёРєСѓ}
+translate R ShowReport {РџРѕРєР°Р·Р°С‚СЊ РѕС‚С‡С‘С‚}
+translate R NumberOfGoodMovesPlayed {СЃРґРµР»Р°РЅС‹ С…РѕСЂРѕС€РёРµ С…РѕРґС‹}
+translate R NumberOfDubiousMovesPlayed {СЃРґРµР»Р°РЅС‹ СЃРѕРјРЅРёС‚РµР»СЊРЅС‹Рµ С…РѕРґС‹}
+translate R NumberOfMovesPlayedNotInRepertoire {СЃРґРµР»Р°РЅРЅС‹Рµ С…РѕРґС‹ РЅРµ РёР· СЂРµРїРµСЂС‚СѓР°СЂР°}
+translate R NumberOfTimesPositionEncountered {СЂР°Р· РїРѕР·РёС†РёСЏ РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ}
+translate R PlayerBestMove  {РџРѕР·РІРѕР»СЏС‚СЊ С‚РѕР»СЊРєРѕ Р»СѓС‡С€РёРµ С…РѕРґС‹}
+translate R OpponentBestMove {РџСЂРѕС‚РёРІРЅРёРє РёРіСЂР°РµС‚ С‚РѕР»СЊРєРѕ Р»СѓС‡С€РёРµ С…РѕРґС‹}
+translate R OnlyFlaggedLines {РўРѕР»СЊРєРѕ РїРѕРјРµС‡РµРЅРЅС‹Рµ СЃС‚СЂРѕРєРё}
+translate R resetStats {РЎР±СЂРѕСЃРёС‚СЊ СЃС‚Р°С‚РёСЃС‚РёРєСѓ}
+translate R Repertoiretrainingconfiguration {РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ С‚СЂРµРЅРёСЂРѕРІРѕС‡РЅРѕРіРѕ СЂРµРїРµСЂС‚СѓР°СЂР°}
+translate R Loadingrepertoire {Р—Р°РіСЂСѓР·РєР° СЂРµРїРµСЂС‚СѓР°СЂР°}
+translate R Movesloaded {РҐРѕРґС‹ Р·Р°РіСЂСѓР¶РµРЅС‹}
+translate R Repertoirenotfound {Р РµРїРµСЂС‚СѓР°СЂ РЅРµ РЅР°Р№РґРµРЅ}
+translate R Openfirstrepertoirewithtype {РћС‚РєСЂС‹С‚СЊ РїРµСЂРІСѓСЋ Р±Р°Р·Сѓ РґР°РЅРЅС‹С… СЂРµРїРµСЂС‚СѓР°СЂР° СЃ РёРєРѕРЅРєРѕР№/РЅР°Р±РѕСЂРѕРј РєР»Р°СЃСЃРѕРІ РЅР° РїСЂР°РІРѕР№ РїР°РЅРµР»Рё}
+translate R Movenotinrepertoire {РҐРѕРґ РЅРµ РёР· СЂРµРїРµСЂС‚СѓР°СЂР°}
+translate R PositionsInRepertoire {РџРѕР·РёС†РёСЏ РІ СЂРµРїРµСЂС‚СѓР°СЂРµ}
+translate R PositionsNotPlayed {РџРѕР·РёС†РёСЏ РЅРµ РёРіСЂР°Р»Р°СЃСЊ}
+translate R PositionsPlayed {РџРѕР·РёС†РёСЏ РёРіСЂР°Р»Р°СЃСЊ}
+translate R Success {РЈСЃРїРµС…}
+translate R DubiousMoves {РЎРѕРјРЅРёС‚РµР»СЊРЅС‹Рµ С…РѕРґС‹}
+translate R OutOfRepertoire {Р’С‹С…РѕРґ РёР· СЂРµРїРµСЂС‚СѓР°СЂР°}
+translate R ConfigureTactics {РќР°СЃС‚СЂРѕР№РєР° С‚Р°РєС‚РёРєРё}
+translate R ResetScores {РЎР±СЂРѕСЃ СЃС‡С‘С‚Р°}
+translate R LoadingBase {Р—Р°РіСЂСѓР·РєР° Р±Р°Р·С‹}
+translate R Tactics {РўР°РєС‚РёРєР°}
+translate R ShowSolution {РџРѕРєР°Р·Р°С‚СЊ СЂРµС€РµРЅРёРµ}
+translate R NextExercise {РЎР»РµРґСѓСЋС‰РµРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ}
+translate R PrevExercise {РџСЂРµРґС‹РґСѓС‰РµРµ СѓРїСЂР°Р¶РЅРµРЅРёРµ}
+translate R StopTraining {РћСЃС‚Р°РЅРѕРІРёС‚СЊ С‚СЂРµРЅРёСЂРѕРІРєСѓ}
+translate R Next {РЎР»РµРґСѓСЋС‰РёР№}
+translate R ResettingScore {РЎР±СЂРѕСЃРёС‚СЊ СЃС‡С‘С‚}
+translate R LoadingGame {Р—Р°РіСЂСѓР·РєР° РїР°СЂС‚РёРё}
+translate R MateFound {РџРѕРёСЃРє РјР°С‚Р°}
+translate R BestSolutionNotFound {Р›СѓС‡С€РµРµ СЂРµС€РµРЅРёРµ РќР• РЅР°Р№РґРµРЅРѕ!}
+translate R MateNotFound {РњР°С‚ РЅРµ РЅР°Р№РґРµРЅ}
+translate R ShorterMateExists {РљСЂРѕС‚С‡Р°Р№С€РёР№ РјР°С‚ СЃСѓС‰РµСЃС‚РІСѓРµС‚}
+translate R ScorePlayed {РЈРїСЂР°Р¶РЅРµРЅРёРµ СЃС‹РіСЂР°РЅРѕ}
+translate R Expected {РѕР¶РёРґР°РµРјС‹Р№}
+translate R ChooseTrainingBase {Р’С‹Р±РѕСЂ С‚СЂРµРЅРёСЂРѕРІРѕС‡РЅРѕР№ Р±Р°Р·С‹}
+translate R Thinking {Р Р°Р·РјС‹С€Р»РµРЅРёРµ}
+translate R AnalyzeDone {РђРЅР°Р»РёР· Р·Р°РєРѕРЅС‡РµРЅ}
+translate R WinWonGame {РџРѕР±РµРґР° РІ РІС‹РёРіСЂС‹С€РЅРѕР№ РїР°СЂС‚РёРё}
+translate R Lines {РџР»Р°РЅС‹}
+translate R ConfigureUCIengine {РќР°СЃС‚СЂРѕР№РєР° UCI РґРІРёР¶РєР°}
+translate R SpecificOpening {РћСЃРѕР±С‹Р№ РґРµР±СЋС‚}
+translate R StartNewGame {РќР°С‡Р°С‚СЊ РЅРѕРІСѓСЋ РїР°СЂС‚РёСЋ}
+translate R FixedLevel {Р¤РёРєСЃРёСЂРѕРІР°РЅРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ}
+translate R Opening {Р”РµР±СЋС‚}
+translate R RandomLevel {РЎР»СѓС‡Р°Р№РЅС‹Р№ СѓСЂРѕРІРµРЅСЊ}
+translate R StartFromCurrentPosition {РќР°С‡Р°С‚СЊ СЃ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё}
+translate R FixedDepth {Р¤РёРєСЃРёСЂРѕРІР°РЅРЅР°СЏ РіР»СѓР±РёРЅР°}
+translate R Nodes {РЈР·Р»С‹}
+translate R Depth {Р“Р»СѓР±РёРЅР°}
+translate R Time {Р’СЂРµРјСЏ}
+translate R SecondsPerMove {РЎРµРєСѓРЅРґ РЅР° С…РѕРґ}
+translate R Engine {Р”РІРёР¶РѕРє}
+translate R TimeMode {Р РµР¶РёРј РІСЂРµРјРµРЅРё}
+translate R TimeBonus {Р’СЂРµРјСЏ + РїСЂРµРјРёСЏ}
+translate R TimeMin {РњРёРЅ}
+translate R TimeSec {СЃ}
+translate R AllExercisesDone {Р’СЃРµ Р·Р°РґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅС‹}
+translate R MoveOutOfBook {Р”РІРёРіР°С‚СЊСЃСЏ РЅРµ РїРѕ РєРЅРёРіРµ}
+translate R LastBookMove {РҐРѕРґ РёР· РїРѕСЃР»РµРґРЅРµР№ РєРЅРёРіРё}
+translate R AnnotateSeveralGames {РђРЅРЅРѕС‚РёСЂРѕРІР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ РїР°СЂС‚РёР№\nРѕС‚ С‚РµРєСѓС‰РµР№ РґРѕ:}
+translate R FindOpeningErrors {РџРѕРёСЃРє РѕС€РёР±РѕРє РґРµР±СЋС‚Р°}
+translate R MarkTacticalExercises {РџРѕРјРµС‚РёС‚СЊ С‚Р°РєС‚РёС‡РµСЃРєРёРµ Р·Р°РґР°РЅРёСЏ}
+translate R UseBook {РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РєРЅРёРіСѓ}
+translate R MultiPV {РњРЅРѕР¶РµСЃС‚РІРѕ РІР°СЂРёР°РЅС‚РѕРІ}
+translate R Hash {РҐРµС€РёСЂРѕРІР°С‚СЊ РїР°РјСЏС‚СЊ}
+translate R OwnBook {РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РєРЅРёРіСѓ РґРІРёР¶РєР°}
+translate R BookFile {РћС‚РєСЂС‹С‚С‹Рµ РєРЅРёРіРё}
+translate R AnnotateVariations {РљРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ РІР°СЂРёР°РЅС‚С‹}
+translate R ShortAnnotations {РџРѕРєР°Р·Р°С‚СЊ РєРѕРјРјРµРЅС‚Р°СЂРёРё}
+translate R addAnnotatorTag {Р”РѕР±Р°РІРёС‚СЊ С‚РµРі Р°РЅРЅРѕС‚РёСЂСѓСЋС‰РµРіРѕ}
+translate R AddScoreToShortAnnotations {Р”РѕР±Р°РІРёС‚СЊ СЃС‡С‘С‚ РІ РєРѕСЂРѕС‚РєРёРµ Р°РЅРЅРѕС‚Р°С†РёРё}
+translate R Export {Р­РєСЃРїРѕСЂС‚}
+translate R BookPartiallyLoaded {РљРЅРёРіР° С‡Р°СЃС‚РёС‡РЅРѕ Р·Р°РіСЂСѓР¶РµРЅР°}
+translate R Calvar {Р Р°СЃС‡С‘С‚ РІР°СЂРёР°РЅС‚РѕРІ}
+translate R ConfigureCalvar {РќР°СЃС‚СЂРѕР№РєРё}
+# Opening names used in tacgame.tcl
+translate R Reti {Р”РµР±СЋС‚ Р РµС‚Рё}
+translate R English {РђРЅРіР»РёР№СЃРєРѕРµ РЅР°С‡Р°Р»Рѕ}
+translate R d4Nf6Miscellaneous {Р Р°Р·Р»РёС‡РЅС‹Рµ 1.d4 Nf6}
+translate R Trompowsky {РђС‚Р°РєР° РўСЂРѕРјРїРѕРІСЃРєРѕРіРѕ}
+translate R Budapest {Р‘СѓРґР°РїРµС€С‚СЃРєРёР№ РіР°РјР±РёС‚}
+translate R OldIndian {РЎС‚Р°СЂРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R BenkoGambit {Р“Р°РјР±РёС‚ Р‘РµРЅРєРѕ}
+translate R ModernBenoni {Р—Р°С‰РёС‚Р° РњРѕРґРµСЂРЅ-Р‘РµРЅРѕРЅРё}
+translate R DutchDefence {Р“РѕР»Р»Р°РЅРґСЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R Scandinavian {РЎРєР°РЅРґРёРЅР°РІСЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R AlekhineDefence {Р—Р°С‰РёС‚Р° РђР»С‘С…РёРЅР°}
+translate R Pirc {Р—Р°С‰РёС‚Р° РџРёСЂС†Р°-РЈС„РёРјС†РµРІР°}
+translate R CaroKann {Р—Р°С‰РёС‚Р° РљР°СЂРѕ-РљР°РЅРЅ}
+translate R CaroKannAdvance {Р Р°СЃС€РёСЂРµРЅРЅР°СЏ Р·Р°С‰РёС‚Р° РљР°СЂРѕ-РљР°РЅРЅ}
+translate R Sicilian {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R SicilianAlapin {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р’Р°СЂРёР°РЅС‚ РђР»Р°РїРёРЅР°}
+translate R SicilianClosed {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р—Р°РєСЂС‹С‚С‹Р№ РІР°СЂРёР°РЅС‚}
+translate R SicilianRauzer {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°, РђС‚Р°РєР° Р Р°СѓР·РµСЂР°}
+translate R SicilianDragon {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р’Р°СЂРёР°РЅС‚ РґСЂР°РєРѕРЅР°}
+translate R SicilianScheveningen {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°, РЁРµРІРµРЅРёРЅРіРµРЅСЃРєРёР№ РІР°СЂРёР°РЅС‚}
+translate R SicilianNajdorf {РЎРёС†РёР»РёР°РЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р’Р°СЂРёР°РЅС‚ РќР°Р№РґРѕСЂС„Р°}
+translate R OpenGame {РћС‚РєСЂС‹С‚Р°СЏ РїР°СЂС‚РёСЏ}
+translate R Vienna {Р’РµРЅСЃРєР°СЏ РїР°СЂС‚РёСЏ}
+translate R KingsGambit {РљРѕСЂРѕР»РµРІСЃРєРёР№ РіР°РјР±РёС‚}
+translate R RussianGame {Р СѓСЃСЃРєР°СЏ РїР°СЂС‚РёСЏ}
+translate R ItalianTwoKnights {РС‚Р°Р»СЊСЏРЅСЃРєР°СЏ РїР°СЂС‚РёСЏ/Р”РІР° РєРѕРЅСЏ}
+translate R Spanish {РСЃРїР°РЅСЃРєР°СЏ РїР°СЂС‚РёРё}
+translate R SpanishExchange {РСЃРїР°РЅСЃРєР°СЏ РїР°СЂС‚РёСЏ, Р Р°Р·РјРµРЅРЅС‹Р№ РІР°СЂРёР°РЅС‚}
+translate R SpanishOpen {РСЃРїР°РЅСЃРєР°СЏ РїР°СЂС‚РёСЏ, РћС‚РєСЂС‹С‚С‹Р№ РІР°СЂРёР°РЅС‚}
+translate R SpanishClosed {РСЃРїР°РЅСЃРєР°СЏ РїР°СЂС‚РёСЏ, Р—Р°РєСЂС‹С‚С‹Р№ РІР°СЂРёР°РЅС‚}
+translate R FrenchDefence {Р¤СЂР°РЅС†СѓР·СЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R FrenchAdvance {Р¤СЂР°РЅС†СѓР·СЃРєР°СЏ Р·Р°С‰РёС‚Р°, РџСЂРѕРґРІРёРЅСѓС‚С‹Р№ РІР°СЂРёР°РЅС‚}
+translate R FrenchTarrasch {Р¤СЂР°РЅС†СѓР·СЃРєР°СЏ Р·Р°С‰РёС‚Р°, РЎРёСЃС‚РµРјР° РўР°СЂСЂР°С€Р°}
+translate R FrenchWinawer {Р¤СЂР°РЅС†СѓР·СЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р’Р°СЂРёР°РЅС‚ Р’РёРЅР°РІРµСЂР°}
+translate R FrenchExchange {Р¤СЂР°РЅС†СѓР·СЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р Р°Р·РјРµРЅРЅС‹Р№ РІР°СЂРёР°РЅС‚}
+translate R QueensPawn {Р”РµР±СЋС‚ С„РµСЂР·РµРІС‹С… РїРµС€РµРє}
+translate R Slav {РЎР»Р°РІСЏРЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R QGA {РџСЂРёРЅСЏС‚С‹Р№ С„РµСЂР·РµРІС‹Р№ РіР°РјР±РёС‚}
+translate R QGD {РћС‚РєР°Р·Р°РЅРЅС‹Р№ С„РµСЂР·РµРІС‹Р№ РіР°РјР±РёС‚}
+translate R QGDExchange {РћС‚РєР°Р·Р°РЅРЅС‹Р№ С„РµСЂР·РµРІС‹Р№ РіР°РјР±РёС‚, Р Р°Р·РјРµРЅРЅР°СЏ СЃРёСЃС‚РµРјР°}
+translate R SemiSlav {РћС‚РєР°Р·Р°РЅРЅС‹Р№ С„РµСЂР·РµРІС‹Р№ РіР°РјР±РёС‚, РЎР»Р°РІСЏРЅСЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R QGDwithBg5 {РћС‚РєР°Р·Р°РЅРЅС‹Р№ С„РµСЂР·РµРІС‹Р№ РіР°РјР±РёС‚ СЃ Bg5}
+translate R QGDOrthodox {РћС‚РєР°Р·Р°РЅРЅС‹Р№ С„РµСЂР·РµРІС‹Р№ РіР°РјР±РёС‚, РћСЂС‚РѕРґРѕРєСЃР°Р»СЊРЅР°СЏ Р·Р°С‰РёС‚Р°}
+translate R Grunfeld {Р“СЂСЋРЅС„РµР»СЊРґ}
+translate R GrunfeldExchange {Р Р°Р·РјРµРЅ Р“СЂСЋРЅС„РµР»СЊРґР°}
+translate R GrunfeldRussian {Р’Р°СЂРёР°РЅС‚ Р“СЂСЋРЅС„РµР»СЊРґР° СЂСѓСЃСЃРєРѕР№ РїР°СЂС‚РёРё}
+translate R Catalan {РљР°С‚Р°Р»РѕРЅСЃРєРѕРµ РЅР°С‡Р°Р»Рѕ}
+translate R CatalanOpen {РљР°С‚Р°Р»РѕРЅСЃРєРѕРµ РЅР°С‡Р°Р»Рѕ, РћС‚РєСЂС‹С‚С‹Р№ РІР°СЂРёР°РЅС‚}
+translate R CatalanClosed {РљР°С‚Р°Р»РѕРЅСЃРєРѕРµ РЅР°С‡Р°Р»Рѕ, РћС‚РєСЂС‹С‚С‹Р№ РІР°СЂРёР°РЅС‚}
+translate R QueensIndian {РќРѕРІРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R NimzoIndian {РќРѕРІРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°, Р’Р°СЂРёР°РЅС‚ РќРёРјС†РѕРІРёС‡Р°}
+translate R NimzoIndianClassical {РќРѕРІРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°, РљР»Р°СЃСЃРёС‡РµСЃРєРёР№ РІР°СЂРёР°РЅС‚ РќРёРјС†РѕРІРёС‡Р°}
+translate R NimzoIndianRubinstein {РќРѕРІРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°, РЎРёСЃС‚РµРјР° Р СѓР±РёРЅС€С‚РµР№РЅР°}
+translate R KingsIndian {РЎС‚Р°СЂРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°}
+translate R KingsIndianSamisch {РЎС‚Р°СЂРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°, РЎРёСЃС‚РµРјР° Р—РµРјРёС€Р°}
+translate R KingsIndianMainLine {РЎС‚Р°СЂРѕРёРЅРґРёР№СЃРєР°СЏ Р·Р°С‰РёС‚Р°, РЁС‚С‹РєРѕРІРѕР№ СѓРґР°СЂ}
+
+# FICS
+translate R ConfigureFics {РќР°СЃС‚СЂРѕР№РєРё FICS}
+translate R FICSGuest {Р“РѕСЃС‚РµРІРѕР№ РІС…РѕРґ}
+translate R FICSServerPort {РџРѕСЂС‚ СЃРµСЂРІРµСЂР°}
+translate R FICSServerAddress {IP Р°РґСЂРµСЃ}
+translate R FICSRefresh {РћР±РЅРѕРІРёС‚СЊ}
+translate R FICSTimesealPort {Р¤СѓРЅРєС†РёСЏ Timeseal}
+translate R FICSSilence {Р¤РёР»СЊС‚СЂ РєРѕРЅСЃРѕР»Рё}
+translate R FICSOffers {РџСЂРµРґР»РѕР¶РµРЅРёСЏ}
+translate R FICSConsole {РљРѕРЅСЃРѕР»СЊ}
+translate R FICSGames {РџР°СЂС‚РёРё}
+translate R FICSUnobserve {РћСЃС‚Р°РЅРѕРІРёС‚СЊ РїСЂРѕСЃРјРѕС‚СЂ РїР°СЂС‚РёРё}
+translate R FICSProfile {РџСЂРѕСЃРјРѕС‚СЂРµС‚СЊ РІР°С€Сѓ РёСЃС‚РѕСЂРёСЋ Рё РїР°СЂР°РјРµС‚СЂС‹ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ}
+translate R FICSRelayedGames {РџРµСЂРµРґР°РЅРЅС‹Рµ РїР°СЂС‚РёРё}
+translate R FICSFindOpponent {РџРѕРёСЃРє СЃРѕРїРµСЂРЅРёРєР°}
+translate R FICSTakeback {РћС‚РјРµРЅРёС‚СЊ 1 С…РѕРґ}
+translate R FICSTakeback2 {РћС‚РјРµРЅРёС‚СЊ 2 С…РѕРґР°}
+translate R FICSInitTime {РќР°С‡Р°Р»СЊРЅРѕРµ РІСЂРµРјСЏ (РјРёРЅ)}
+translate R FICSIncrement {РџСЂРёСЂР°С‰РµРЅРёРµ (СЃ)}
+translate R FICSRatedGame {Р РµР№С‚РёРЅРіРѕРІР°СЏ РїР°СЂС‚РёСЏ}
+translate R FICSAutoColour {Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё}
+translate R FICSManualConfirm {РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ РІСЂСѓС‡РЅСѓСЋ}
+translate R FICSFilterFormula {Р¤РёР»СЊС‚СЂРѕРІР°С‚СЊ РїРѕ С„РѕСЂРјСѓР»Рµ}
+translate R FICSIssueSeek {Р’С‹РґР°С‚СЊ РїРѕРёСЃРє}
+translate R FICSChallenge {Р’С‹Р·РѕРІ}
+translate R FICSAccept {РїСЂРёРЅСЏС‚СЊ}
+translate R FICSDecline {РѕС‚РєР»РѕРЅРёС‚СЊ}
+translate R FICSColour {Р¦РІРµС‚Р°}
+translate R FICSSend {РїРѕСЃР»Р°С‚СЊ}
+translate R FICSConnect {РЎРѕРµРґРёРЅРµРЅРёРµ}
+translate R FICSdefaultuservars {РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ}
+translate R FICSObserveconfirm {Р’С‹ С…РѕС‚РёС‚Рµ РЅР°Р±Р»СЋРґР°С‚СЊ Р·Р° РїР°СЂС‚РёРµР№?}
+translate R FICSpremove {Р Р°Р·СЂРµС€РёС‚СЊ РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅС‹Р№ С…РѕРґ}
+
+# Game review
+translate R GameReview {РћР±Р·РѕСЂ РїР°СЂС‚РёРё}
+translate R GameReviewTimeExtended {РџСЂРѕРґР»С‘РЅРЅРѕРµ РІСЂРµРјСЏ}
+translate R GameReviewMargin {РџРѕР»Рµ РѕС€РёР±РѕРє}
+translate R GameReviewAutoContinue {РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё РїСЂРѕРґРѕР»Р¶Р°С‚СЊ, РєРѕРіРґР° С…РѕРґ РєРѕСЂСЂРµРєС‚РЅС‹Р№}
+translate R GameReviewReCalculate {РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ СЂР°СЃС€РёСЂРµРЅРЅРѕРµ РІСЂРµРјСЏ}
+translate R GameReviewAnalyzingMovePlayedDuringTheGame {РђРЅР°Р»РёР· СЃРґРµР»Р°РЅРЅС‹С… РІРѕ РІСЂРµРјСЏ РїР°СЂС‚РёРё С…РѕРґРѕРІ}
+translate R GameReviewAnalyzingThePosition {РђРЅР°Р»РёР· РїРѕР·РёС†РёРё}
+translate R GameReviewEnterYourMove {Р’РІРµРґРёС‚Рµ РІР°С€ С…РѕРґ}
+translate R GameReviewCheckingYourMove {РџСЂРѕРІРµСЂРєР° РІР°С€РµРіРѕ С…РѕРґР°}
+translate R GameReviewYourMoveWasAnalyzed {Р’Р°С€ С…РѕРґ РїСЂРѕР°РЅР°Р»РёР·РёСЂРѕРІР°РЅ}
+translate R GameReviewYouPlayedSameMove {Р­С‚РѕС‚ С…РѕРґ РІС‹ СѓР¶Рµ СЃРѕРІРµСЂС€Р°Р»Рё РІ РјР°С‚С‡Рµ}
+translate R GameReviewScoreOfYourMove {РЎС‡С‘С‚ РІР°С€РµРіРѕ С…РѕРґР°}
+translate R GameReviewGameMoveScore {РЎС‡С‘С‚ С…РѕРґР° РёРіСЂС‹}
+translate R GameReviewEngineScore {РЎС‡С‘С‚ РґРІРёР¶РєР°}
+translate R GameReviewYouPlayedLikeTheEngine {Р’С‹ СЃС‹РіСЂР°Р»Рё РєР°Рє Рё РґРІРёР¶РѕРє}
+translate R GameReviewNotEngineMoveButGoodMove {РҐРѕРґ РЅРµ РєР°Рє Сѓ РґРІРёР¶РєР°, РЅРѕ РІСЃС‘ СЂР°РІРЅРѕ С…РѕСЂРѕС€РёР№}
+translate R GameReviewMoveNotGood {РџСЂРµРґСѓРїСЂРµР¶РґР°СЋ, СЌС‚РѕС‚ С…РѕРґ РЅРµ С…РѕСЂРѕС€РёР№}
+translate R GameReviewMovesPlayedLike {РҐРѕРґС‹ СЃРґРµР»Р°РЅС‹ РєР°Рє}
+translate R GameReviewMovesPlayedEngine {РҐРѕРґС‹ СЃРґРµР»Р°РЅС‹ РєР°Рє Сѓ РґРІРёР¶РєР°}
+
+# Correspondence Chess Dialogs:
+translate R CCDlgConfigureWindowTitle {РќР°СЃС‚СЂРѕР№РєР° С€Р°С…РјР°С‚ РїРѕ РїРµСЂРµРїРёСЃРєРµ}
+translate R CCDlgCGeneraloptions {РћСЃРЅРѕРІРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё}
+translate R CCDlgDefaultDB {Р‘Р°Р·Р° РґР°РЅРЅС‹С… РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ:}
+translate R CCDlgInbox {Р’С…РѕРґСЏС‰РёРµ (РїСѓС‚СЊ):}
+translate R CCDlgOutbox {РСЃС…РѕРґСЏС‰РёРµ (РїСѓС‚СЊ):}
+translate R CCDlgXfcc {РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ Xfcc:}
+translate R CCDlgExternalProtocol {Р”СЂР°Р№РІРµСЂ РІРЅРµС€РЅРµРіРѕ РїСЂРѕС‚РѕРєРѕР»Р° (РЅР°РїСЂРёРјРµСЂ, Xfcc)}
+translate R CCDlgFetchTool {РРЅСЃС‚СЂСѓРјРµРЅС‚ РґР»СЏ РїСЂРёС‘РјР° РїР°СЂС‚РёР№:}
+translate R CCDlgSendTool {РРЅСЃС‚СЂСѓРјРµРЅС‚ РґР»СЏ РѕС‚РїСЂР°РІРєРё РїР°СЂС‚РёР№:}
+translate R CCDlgEmailCommunication {РџРµСЂРµРґР°С‡Р° РїРѕ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚Рµ}
+translate R CCDlgMailPrg {РџРѕС‡С‚РѕРІР°СЏ РїСЂРѕРіСЂР°РјРјР°:}
+translate R CCDlgBCCAddr {РђРґСЂРµСЃ (B)CC:}
+translate R CCDlgMailerMode {Р РµР¶РёРј:}
+translate R CCDlgThunderbirdEg {РЅР°РїСЂРёРјРµСЂ, Thunderbird, Mozilla Mail, Icedove...}
+translate R CCDlgMailUrlEg {РЅР°РїСЂРёРјРµСЂ, Evolution}
+translate R CCDlgClawsEg {РЅР°РїСЂРёРјРµСЂ, Sylpheed Claws}
+translate R CCDlgmailxEg {РЅР°РїСЂРёРјРµСЂ, mailx, mutt, nail...}
+translate R CCDlgAttachementPar {РџР°СЂР°РјРµС‚СЂ РІР»РѕР¶РµРЅРёСЏ:}
+translate R CCDlgInternalXfcc {РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІСЃС‚СЂРѕРµРЅРЅСѓСЋ РїРѕРґРґРµСЂР¶РєСѓ Xfcc}
+translate R CCDlgConfirmXfcc {РџРѕРґС‚РІРµСЂРґРёС‚СЊ С…РѕРґС‹}
+translate R CCDlgSubjectPar {РџР°СЂР°РјРµС‚СЂ С‚РµРјС‹:}
+translate R CCDlgDeleteBoxes {РћС‡РёСЃС‚РёС‚СЊ Р’С…РѕРґСЏС‰РёРµ/РСЃС…РѕРґСЏС‰РёРµ}
+translate R CCDlgDeleteBoxesText {Р’С‹ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅРѕ С…РѕС‚РёС‚Рµ РѕС‡РёСЃС‚РёС‚СЊ РІР°С€Рё РїР°РїРєРё СЃ Р’С…РѕРґСЏС‰РёРјРё Рё РСЃС…РѕРґСЏС‰РёРјРё РґР»СЏ РїР°СЂС‚РёР№ РІ С€Р°С…РјР°С‚С‹ РїРѕ РїРµСЂРµРїРёСЃРєРµ? Р­С‚Рѕ РїРѕС‚СЂРµР±СѓРµС‚ РЅРѕРІРѕР№ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РґР»СЏ РїРѕРєР°Р·Р° РїРѕСЃР»РµРґРЅРµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РІР°С€РёС… РїР°СЂС‚РёР№}
+translate R CCDlgConfirmMove {РџРѕРґС‚РІРµСЂРґРёС‚СЊ С…РѕРґ}
+translate R CCDlgConfirmMoveText {Р•СЃР»Рё РІС‹ РїРѕРґС‚РІРµСЂР¶РґР°РµС‚Рµ, С‚Рѕ СЃР»РµРґСѓСЋС‰РёР№ С…РѕРґ Рё РєРѕРјРјРµРЅС‚Р°СЂРёР№ Р±СѓРґСѓС‚ РїРѕСЃР»Р°РЅС‹ РЅР° СЃРµСЂРІРµСЂ:}
+translate R CCDlgDBGameToLong {РџСЂРѕС‚РёРІРѕСЂРµС‡РёРІС‹Р№ РіР»Р°РІРЅС‹Р№ РїР»Р°РЅ}
+translate R CCDlgDBGameToLongError {Р“Р»Р°РІРЅС‹Р№ РїР»Р°РЅ РІ РІР°С€РµР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С… РґР»РёРЅРЅРµРµ, С‡РµРј РІ РїР°СЂС‚РёРё РІ РїР°РїРєРµ Р’С…РѕРґСЏС‰РёС…. Р•СЃР»Рё Р’С…РѕРґСЏС‰РёРµ СЃРѕРґРµСЂР¶Р°С‚ С‚РµРєСѓС‰РёРµ РїР°СЂС‚РёРё, С‚Рѕ РµСЃС‚СЊ РѕРЅРё СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё, С‚Рѕ РЅРµРєРѕС‚РѕСЂС‹Рµ С…РѕРґС‹ Р±С‹Р»Рё РґРѕР±Р°РІР»РµРЅС‹ РІ РіР»Р°РІРЅС‹Р№ РїР»Р°РЅ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РѕС€РёР±РѕС‡РЅРѕ.\n
+
+Р’ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, СѓРєРѕСЂРѕС‚РёС‚Рµ РіР»Р°РІРЅСѓСЋ РІРµС‚РІСЊ РјР°РєСЃРёРјР°Р»СЊРЅРѕ РґРѕ С…РѕРґР°
+}
+
+
+translate R CCDlgStartEmail {РќР°С‡Р°С‚СЊ РЅРѕРІСѓСЋ РїР°СЂС‚РёСЋ РїРѕ РїРѕС‡С‚Рµ}
+translate R CCDlgYourName {Р’Р°С€Рµ РёРјСЏ:}
+translate R CCDlgYourMail {Р’Р°С€ Р°РґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹:}
+translate R CCDlgOpponentName {РРјСЏ СЃРѕРїРµСЂРЅРёРєР°:}
+translate R CCDlgOpponentMail {РђРґСЂРµСЃ СЌР»РµРєС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹ СЃРѕРїРµСЂРЅРёРєР°:}
+translate R CCDlgGameID {РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ РїР°СЂС‚РёРё (СѓРЅРёРєР°Р»СЊРЅС‹Р№):}
+
+translate R CCDlgTitNoOutbox {Scid: РСЃС…РѕРґСЏС‰РёРµ С€Р°С…РјР°С‚ РїРѕ РїРµСЂРµРїРёСЃРєРµ}
+translate R CCDlgTitNoInbox {Scid: Р’С…РѕРґСЏС‰РёРµ С€Р°С…РјР°С‚ РїРѕ РїРµСЂРµРїРёСЃРєРµ}
+translate R CCDlgTitNoGames {Scid: РќРµС‚ РїР°СЂС‚РёР№ РІ С€Р°С…РјР°С‚С‹ РїРѕ РїРµСЂРµРїРёСЃРєРµ}
+translate R CCErrInboxDir {РџР°РїРєР° Р’С…РѕРґСЏС‰РёРµ РїР°СЂС‚РёР№ РІ С€Р°С…РјР°С‚С‹ РїРѕ РїРµСЂРµРїРёСЃРєРµ:}
+translate R CCErrOutboxDir {РџР°РїРєР° РСЃС…РѕРґСЏС‰РёРµ РїР°СЂС‚РёР№ РІ С€Р°С…РјР°С‚С‹ РїРѕ РїРµСЂРµРїРёСЃРєРµ:}
+translate R CCErrDirNotUsable {РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ РёР»Рё РЅРµРґРѕСЃС‚СѓРїРЅРѕ!\nРџСЂРѕРІРµСЂСЊС‚Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РЅР°СЃС‚СЂРѕРµРє.}
+translate R CCErrNoGames {РЅРµ СЃРѕРґРµСЂР¶РёС‚ РЅРё РѕРґРЅРѕР№ РїР°СЂС‚РёРё!\nР’РЅР°С‡Р°Р»Рµ, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, Р·Р°РіСЂСѓР·РёС‚Рµ РёС….}
+
+translate R CCDlgTitNoCCDB {Scid: РќРµС‚ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РїРµСЂРµРїРёСЃРєРё}
+translate R CCErrNoCCDB {РўРёРї РѕС‚РєСЂС‹С‚РѕР№ Р±Р°Р·С‹ РґР°РЅРЅС‹С… РЅРµ 'РџРµСЂРµРїРёСЃРєР°'. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РѕС‚РєСЂРѕР№С‚Рµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰СѓСЋ Р±Р°Р·Сѓ РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ С„СѓРЅРєС†РёР№ РїРµСЂРµРїРёСЃРєРё.}
+
+translate R CCFetchBtn {РџРѕР»СѓС‡РёС‚СЊ РїР°СЂС‚РёРё СЃ СЃРµСЂРІРµСЂР° Рё РѕР±СЂР°Р±РѕС‚Р°С‚СЊ РїР°РїРєСѓ Р’С…РѕРґСЏС‰РёРµ}
+translate R CCPrevBtn {РџРµСЂРµР№С‚Рё Рє РїСЂРµРґС‹РґСѓС‰РµР№ РїР°СЂС‚РёРё}
+translate R CCNextBtn {РџРµСЂРµР№С‚Рё Рє СЃР»РµРґСѓСЋС‰РµР№ РїР°СЂС‚РёРё}
+translate R CCSendBtn {РџРѕСЃР»Р°С‚СЊ С…РѕРґ}
+translate R CCEmptyBtn {РћС‚С‡РёСЃС‚РёС‚СЊ РїР°РїРєРё Р’С…РѕРґСЏС‰РёС… Рё РСЃС…РѕРґСЏС‰РёС…}
+translate R CCHelpBtn {РџРѕРјРѕС‰СЊ РЅР° РёРєРѕРЅРєР°С… Рё СЃС‚Р°С‚СѓСЃРЅС‹С… РёРЅРґРёРєР°С‚РѕСЂР°С….\nР”Р»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РїРѕРјРѕС‰Рё РЅР°Р¶РјРёС‚Рµ F1!}
+
+translate R CCDlgServerName {РРјСЏ СЃРµСЂРІРµСЂР°:}
+translate R CCDlgLoginName  {Р›РѕРіРёРЅ:}
+translate R CCDlgPassword   {РџР°СЂРѕР»СЊ:}
+translate R CCDlgURL        {РђРґСЂРµСЃ Xfcc:}
+translate R CCDlgRatingType {РўРёРї СЂРµР№С‚РёРЅРіР°:}
+
+translate R CCDlgDuplicateGame {РќРµ СѓРЅРёРєР°Р»СЊРЅС‹Р№ ID РїР°СЂС‚РёРё}
+translate R CCDlgDuplicateGameError {Р­С‚Р° РїР°СЂС‚РёСЏ СЃРѕРґРµСЂР¶РёС‚СЃСЏ Р±РѕР»РµРµ С‡РµРј РѕРґРёРЅ СЂР°Р· РІ РІР°С€РµР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С…. РџРѕР¶Р°Р»СѓР№СЃС‚Р°, СѓРґР°Р»РёС‚Рµ РґСѓР±Р»РёРєР°С‚С‹ Рё СѓРїРѕСЂСЏРґРѕС‡РёС‚Рµ С„Р°Р№Р» РІР°С€РёС… РїР°СЂС‚РёР№ (Р¤Р°Р№Р»/РћР±СЃР»СѓР¶РёРІР°РЅРёРµ/РЈРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…).}
+
+translate R CCDlgSortOption {РЎРѕСЂС‚РёСЂРѕРІРєР°:}
+translate R CCDlgListOnlyOwnMove {РўРѕР»СЊРєРѕ РїР°СЂС‚РёРё, РІ РєРѕС‚РѕСЂС‹С… СЏ С…РѕРґРёР»}
+translate R CCOrderClassicTxt {РњРµСЃС‚РЅРѕСЃС‚СЊ, РЎРѕР±С‹С‚РёРµ, Р Р°СѓРЅРґ, Р РµР·СѓР»СЊС‚Р°С‚, Р‘РµР»С‹Рµ, Р§С‘СЂРЅС‹Рµ}
+translate R CCOrderMyTimeTxt {РњРѕРё С‡Р°СЃС‹}
+translate R CCOrderTimePerMoveTxt {Р’СЂРµРјСЏ РЅР° С…РѕРґ РґРѕ СЃР»РµРґСѓСЋС‰РµРіРѕ РєРѕРЅС‚СЂРѕР»СЏ РІСЂРµРјРµРЅРё}
+translate R CCOrderStartDate {РќР°С‡Р°Р»СЊРЅР°СЏ РґР°С‚Р°}
+translate R CCOrderOppTimeTxt {Р§Р°СЃС‹ СЃРѕРїРµСЂРЅРёРєР°}
+
+translate R CCDlgConfigRelay {РќР°СЃС‚СЂРѕР№РєР° РЅР°Р±Р»СЋРґРµРЅРёСЏ ICCF}
+translate R CCDlgConfigRelayHelp {РџРµСЂРµР№С‚Рё РЅР° СЃС‚СЂР°РЅРёС†Сѓ РїР°СЂС‚РёРё http://www.iccf-webchess.com Рё РїРѕРєР°Р·Р°С‚СЊ РЅР°Р±Р»СЋРґР°РµРјСѓСЋ РїР°СЂС‚РёСЋ. Р•СЃР»Рё РІС‹ РІРёРґРёС‚Рµ С€Р°С…РјР°С‚РЅСѓСЋ РґРѕСЃРєСѓ, С‚Рѕ СЃРєРѕРїРёСЂСѓРµР№С‚Рµ URL РёР· РІР°С€РµРіРѕ Р±СЂР°СѓР·РµСЂР° РІ СЃРїРёСЃРѕРє РЅРёР¶Рµ. РўРѕР»СЊРєРѕ РѕРґРёРЅ URL РІ СЃС‚СЂРѕРєСѓ!\nРќР°РїСЂРёРјРµСЂ: http://www.iccf-webchess.com/MakeAMove.aspx?id=266452}
+
+# Connect Hardware dialogs
+translate R ExtHWConfigConnection {РќР°СЃС‚СЂРѕР№РєР° РІРЅРµС€РЅРµРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ}
+translate R ExtHWPort {РџРѕСЂС‚}
+translate R ExtHWEngineCmd {РљРѕРјР°РЅРґР° РґРІРёР¶РєР°}
+translate R ExtHWEngineParam {РџР°СЂР°РјРµС‚СЂС‹ РґРІРёР¶РєР°}
+translate R ExtHWShowButton {РџРѕРєР°Р·}
+translate R ExtHWHardware {РћР±РѕСЂСѓРґРѕРІР°РЅРёРµ}
+translate R ExtHWNovag {РЁР°С…РјР°С‚РЅС‹Р№ РєРѕРјРїСЊСЋС‚РµСЂ Novag Citrine}
+translate R ExtHWInputEngine {Р’С…РѕРґРЅРѕР№ РґРІРёР¶РѕРє}
+translate R ExtHWNoBoard {РќРµС‚ РґРѕСЃРєРё}
+translate R NovagReferee {РЎСѓРґСЊСЏ}
+
+# Input Engine dialogs
+translate R IEConsole {РљРѕРЅСЃРѕР»СЊ РІС…РѕРґРЅРѕРіРѕ РґРІРёР¶РєР°}
+translate R IESending {РџРѕСЃР»Р°С‚СЊ С…РѕРґС‹ РІ}
+translate R IESynchronise {РЎРёРЅС…СЂРѕРЅРёР·РёСЂРѕРІР°С‚СЊ}
+translate R IERotate  {Р’СЂР°С‰Р°С‚СЊ}
+translate R IEUnableToStart {РќРµРІРѕР·РјРѕР¶РЅРѕ Р·Р°РїСѓСЃС‚РёС‚СЊ РІС…РѕРґРЅРѕР№ РґРІРёР¶РѕРє:}
+
+
+# Calculation of Variations
+translate R DoneWithPosition {Р—Р°РєРѕРЅС‡РµРЅРѕ СЃ РїРѕР·РёС†РёРµР№}
+
+translate R Board {Р”РѕСЃРєР°}
+translate R showGameInfo {РџРѕРєР°Р·Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїР°СЂС‚РёРё}
+translate R autoResizeBoard {РђРІС‚РѕРјР°С‚РёС‡РµСЃРєРё РёР·РјРµРЅСЏС‚СЊ СЂР°Р·РјРµСЂ РґРѕСЃРєРё}
+translate R DockTop {Р”РІРёРіР°С‚СЊСЃСЏ РІРІРµСЂС…}
+translate R DockBottom {Р”РІРёРіР°С‚СЊСЃСЏ РІРЅРёР·}
+translate R DockLeft {Р”РІРёРіР°С‚СЊСЃСЏ РІР»РµРІРѕ}
+translate R DockRight {Р”РІРёРіР°С‚СЊСЃСЏ РІРїСЂР°РІРѕ}
+translate R Undock {Р Р°СЃСЃС‚С‹РєРѕРІР°С‚СЊ}
+
+# Switcher window
+translate R ChangeIcon {РЎРјРµРЅРёС‚СЊ РёРєРѕРЅРєСѓ...}
+
 }
 # end of russian.tcl
