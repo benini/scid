@@ -165,27 +165,13 @@ isNullMove (moveT * m)
 // in chunks, and keep a linked list of the chunks allocated.
 // Freed moves can be added to the FreeList, but it is not essential to
 // do so, since all space for moves is deleted when the game is cleared.
-
-#ifdef WINCE
-  #define MOVE_CHUNKSIZE 60    // Save memory (especially for Tree). What is the impact on memory fragmentation ?
-#else
-  #define MOVE_CHUNKSIZE 100    // Allocate space for 100 moves at a time.
-#endif
+#define MOVE_CHUNKSIZE 100    // Allocate space for 100 moves at a time.
 
 struct moveChunkT {
     moveT moves [MOVE_CHUNKSIZE];
     uint numFree;
     moveChunkT * next;
 };
-
-#ifdef WINCE
-#define MOVE_CHUNKSIZE_LOWMEM 25
-struct moveChunkLowMemT {
-    moveT moves [MOVE_CHUNKSIZE_LOWMEM];
-    uint numFree;
-    moveChunkLowMemT * next;
-};
-#endif
 
 struct tagT
 {
@@ -298,7 +284,7 @@ private:
     StrAllocator * StrAlloc;   // For fast compact allocation of memory
                                // for comments.
 
-    NameBase *  NBase;      // needed for referencing id numbers.
+    const NameBase* NBase;      // needed for referencing id numbers.
 
     tagT        TagList [	MAX_TAGS];
     uint        NumTags;
@@ -351,9 +337,6 @@ public:
 //    byte        GetCommentsFlag ()          { return CommentsFlag; }
     bool        HasPromotions ()            { return PromotionsFlag; }
     bool        HasUnderPromotions ()       { return UnderPromosFlag; }
-
-    void        SetNameBase (NameBase * nb) { NBase = nb; }
-    NameBase *  GetNameBase ()              { return NBase; }
 
     void        SetStartPos (Position * pos);
     errorT      SetStartFen (const char * fenStr);
@@ -488,11 +471,7 @@ public:
     errorT    WritePGN (TextBuffer * tb, uint stopLocation);
     errorT    WriteToPGN (TextBuffer * tb);
     errorT    MoveToLocationInPGN (TextBuffer * tb, uint stopLocation);
-#ifdef WINCE
-    errorT    WriteExtraTags (/*FILE **/Tcl_Channel fp);
-#else
     errorT    WriteExtraTags (FILE * fp);
-#endif
 
     uint      GetPgnOffset () {
                   PgnLastMovePos = 0;

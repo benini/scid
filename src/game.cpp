@@ -70,59 +70,28 @@ char transPiecesChar(char c) {
   return ret;
 }
 // ============ PG : destructor that frees all memory ===============
-    Game::~Game() {
-
-#ifdef WINCE
-     if (!LowMem) {
-        while (MoveChunk->next != NULL) {
-            moveChunkT * tempChunk = MoveChunk->next;
-            my_Tcl_Free((char *)MoveChunk);
-            MoveChunk = tempChunk;
-          }
-          my_Tcl_Free((char*)MoveChunk);
-     } else {
-        while (MoveChunkLowMem->next != NULL) {
-          moveChunkLowMemT * tempChunk = MoveChunkLowMem->next;
-          my_Tcl_Free((char *)MoveChunkLowMem);
-          MoveChunkLowMem = tempChunk;
-        }
-        my_Tcl_Free((char*)MoveChunkLowMem);
-     }
-#else
+Game::~Game() {
     while (MoveChunk->next != NULL) {
         moveChunkT * tempChunk = MoveChunk->next;
         delete MoveChunk;
         MoveChunk = tempChunk;
-      }
-    delete MoveChunk;
-#endif
-
-#ifdef WINCE
-        if (WhiteStr) { my_Tcl_Free( WhiteStr); }
-        if (BlackStr) { my_Tcl_Free( BlackStr); }
-        if (EventStr) { my_Tcl_Free( EventStr); }
-        if (SiteStr)  { my_Tcl_Free( SiteStr);  }
-        if (RoundStr) { my_Tcl_Free( RoundStr); }
-#else
-        if (WhiteStr) { delete[] WhiteStr; }
-        if (BlackStr) { delete[] BlackStr; }
-        if (EventStr) { delete[] EventStr; }
-        if (SiteStr)  { delete[] SiteStr;  }
-        if (RoundStr) { delete[] RoundStr; }
-#endif
-        // Delete the comment string allocator object:
-        delete StrAlloc;
-#ifdef WINCE
-        if (!LowMem) delete CurrentPos;
-#else
-        // Delete the Current position:
-        delete CurrentPos;
-#endif
-        // Delete the saved position:
-        if (SavedPos) { delete SavedPos; }
-        // Delete the start position:
-        if (StartPos) { delete StartPos; }
     }
+    delete MoveChunk;
+
+    if (BlackStr) { delete[] BlackStr; }
+    if (EventStr) { delete[] EventStr; }
+    if (SiteStr)  { delete[] SiteStr;  }
+    if (RoundStr) { delete[] RoundStr; }
+
+    // Delete the comment string allocator object:
+    delete StrAlloc;
+    // Delete the Current position:
+    delete CurrentPos;
+    // Delete the saved position:
+    if (SavedPos) { delete SavedPos; }
+    // Delete the start position:
+    if (StartPos) { delete StartPos; }
+}
 
 // =================================================
 // PG : returns the variation number of current move
@@ -501,24 +470,10 @@ Game::RestoreState ()
 void
 Game::AllocateMoreMoves ()
 {
-#ifdef WINCE
-    if (!LowMem) {
-      moveChunkT * newChunk = (moveChunkT *) my_Tcl_Alloc(sizeof(moveChunkT));
-      newChunk->numFree = MOVE_CHUNKSIZE;
-      newChunk->next = MoveChunk;
-      MoveChunk = newChunk;
-    } else {
-      moveChunkLowMemT * newChunk = (moveChunkLowMemT *) my_Tcl_Alloc(sizeof(moveChunkLowMemT));
-      newChunk->numFree = MOVE_CHUNKSIZE_LOWMEM;
-      newChunk->next = MoveChunkLowMem;
-      MoveChunkLowMem = newChunk;
-    }
-#else
     moveChunkT * newChunk = new moveChunkT;
     newChunk->numFree = MOVE_CHUNKSIZE;
     newChunk->next = MoveChunk;
     MoveChunk = newChunk;
-#endif
 }
 
 inline moveT *
@@ -530,27 +485,11 @@ Game::NewMove ()
         return tempMove;
     }
 
-#ifdef WINCE
-    if (!LowMem) {
-      if (MoveChunk == NULL  ||  MoveChunk->numFree == 0) {
-        AllocateMoreMoves();
-      }
-      MoveChunk->numFree--;
-      return &(MoveChunk->moves[MoveChunk->numFree]);
-    } else {
-      if (MoveChunkLowMem == NULL  ||  MoveChunkLowMem->numFree == 0) {
-          AllocateMoreMoves();
-      }
-      MoveChunkLowMem->numFree--;
-      return &(MoveChunkLowMem->moves[MoveChunkLowMem->numFree]);
-    }
-#else
     if (MoveChunk == NULL  ||  MoveChunk->numFree == 0) {
         AllocateMoreMoves();
     }
     MoveChunk->numFree--;
     return &(MoveChunk->moves[MoveChunk->numFree]);
-#endif
 }
 
 // Freeing a move: it is added to the free list so it can be reused.
@@ -568,18 +507,11 @@ void
 Game::Init()
 {
     // Allocate initial chunk of moves:
-#ifdef WINCE
-    MoveChunkLowMem = NULL;
-#endif
     MoveChunk = NULL;
     AllocateMoreMoves();
     StartPos = NULL;
-#ifdef WINCE
-    if (!LowMem)
-      CurrentPos = new Position;
-#else
     CurrentPos = new Position;
-#endif
+
     KeepDecodedMoves = true;
     SavedPos = NULL;
     SavedMove = NULL;
@@ -617,13 +549,8 @@ void
 Game::ClearExtraTags ()
 {
     for (uint i=0; i < NumTags; i++) {
-#ifdef WINCE
-        my_Tcl_Free((char*)TagList[i].tag);
-        my_Tcl_Free((char*)TagList[i].value);
-#else
         delete[] TagList[i].tag;
         delete[] TagList[i].value;
-#endif
     }
     NumTags = 0;
 }
@@ -642,30 +569,12 @@ Game::ClearMoves ()
     PromotionsFlag = false;
     UnderPromosFlag = false;
     // Delete any chunks of moves except the first:
-#ifdef WINCE
-    if (!LowMem) {
-    while (MoveChunk->next != NULL) {
-        moveChunkT * tempChunk = MoveChunk->next;
-        my_Tcl_Free((char*) MoveChunk);
-        MoveChunk = tempChunk;
-      }
-    MoveChunk->numFree = MOVE_CHUNKSIZE;
-    } else {
-    while (MoveChunkLowMem->next != NULL) {
-        moveChunkLowMemT * tempChunk = MoveChunkLowMem->next;
-        my_Tcl_Free((char*) MoveChunkLowMem);
-        MoveChunkLowMem = tempChunk;
-      }
-    MoveChunkLowMem->numFree = MOVE_CHUNKSIZE_LOWMEM;
-    }
-#else
     while (MoveChunk->next != NULL) {
         moveChunkT * tempChunk = MoveChunk->next;
         delete MoveChunk;
         MoveChunk = tempChunk;
     }
     MoveChunk->numFree = MOVE_CHUNKSIZE;
-#endif
 
     FreeList = NULL;
 
@@ -805,11 +714,7 @@ Game::AddPgnTag (const char * tag, const char * value)
     // First, try to replace an existing tag:
     for (uint i=0; i < NumTags; i++) {
         if (strEqual (tag, TagList[i].tag)) {
-#ifdef WINCE
-            my_Tcl_Free((char*) TagList[i].value);
-#else
             delete[] TagList[i].value;
-#endif
             TagList[i].value = strDuplicate (value);
             return;
         }
@@ -846,13 +751,8 @@ Game::RemoveExtraTag (const char * tag)
     for (uint i=0; i < NumTags; i++) {
         if (strEqual (tag, TagList[i].tag)) {
             // Found the specified tag, so delete it:
-#ifdef WINCE
-            my_Tcl_Free((char*) TagList[i].tag);
-            my_Tcl_Free((char*) TagList[i].value);
-#else
             delete[] TagList[i].tag;
             delete[] TagList[i].value;
-#endif
             NumTags--;
             for (uint j = i; j < NumTags; j++) {
                 TagList[j].tag = TagList[j+1].tag;
@@ -2167,11 +2067,7 @@ Game::CommentEmpty ( const char * comment)
       }
       ret = empty;
 
-  #ifdef WINCE
-      my_Tcl_Free((char*) s);
-  #else
       delete[] s;
-  #endif
     }
 
     return ret;
@@ -2220,11 +2116,7 @@ Game::WriteComment (TextBuffer * tb, const char * preStr,
     }
 
     if (PgnStyle & PGN_STYLE_STRIP_MARKS) {
-#ifdef WINCE
-        my_Tcl_Free((char*) s);
-#else
         delete[] s;
-#endif
     }
 }
 
@@ -2349,11 +2241,7 @@ Game::WriteMoveList (TextBuffer *tb, uint plyCount,
                 printMoveNum = true;
             }
         }
-// #ifdef WINCE
         int colWidth = 6;
-// #else
-//         int colWidth = 12;
-// #endif
         NumMovesPrinted++;
 
         if (printThisMove) {
@@ -3081,11 +2969,7 @@ Game::GetAverageElo ()
 static inline void
 setString (char ** toPtr, const char * from)
 {
-#ifdef WINCE
-    if (*toPtr) { my_Tcl_Free( *toPtr); }
-#else
     if (*toPtr) { delete[] *toPtr; }
-#endif
     *toPtr = strDuplicate (from);
 }
 
@@ -3106,19 +2990,11 @@ void Game::SetRoundStr (const char * str)  { setString ( &RoundStr, str); }
 void
 Game::ClearStandardTags ()
 {
-#ifdef WINCE
-    if (WhiteStr) { my_Tcl_Free( WhiteStr); } WhiteStr = strDuplicate ("?");
-    if (BlackStr) { my_Tcl_Free( BlackStr); } BlackStr = strDuplicate ("?");
-    if (EventStr) { my_Tcl_Free( EventStr); } EventStr = strDuplicate ("?");
-    if (SiteStr)  { my_Tcl_Free( SiteStr);  } SiteStr  = strDuplicate ("?");
-    if (RoundStr) { my_Tcl_Free( RoundStr); } RoundStr = strDuplicate ("?");
-#else
     if (WhiteStr) { delete[] WhiteStr; } WhiteStr = strDuplicate ("?");
     if (BlackStr) { delete[] BlackStr; } BlackStr = strDuplicate ("?");
     if (EventStr) { delete[] EventStr; } EventStr = strDuplicate ("?");
     if (SiteStr)  { delete[] SiteStr;  } SiteStr  = strDuplicate ("?");
     if (RoundStr) { delete[] RoundStr; } RoundStr = strDuplicate ("?");
-#endif
     Date = ZERO_DATE;
     EventDate = ZERO_DATE;
     EcoCode = 0;
@@ -3133,19 +3009,6 @@ Game::ClearStandardTags ()
 // Game::WriteExtraTags():
 //      Print the nonstandard tags in PGN notation to a file.
 //
-#ifdef WINCE
-errorT
-Game::WriteExtraTags (/*FILE **/ Tcl_Channel fp)
-{
-    char buf [1024];
-    for (uint i=0; i < NumTags; i++) {
-        sprintf (buf, "[%s \"%s\"]\n", TagList[i].tag, TagList[i].value);
-        my_Tcl_Write(fp, buf, strlen(buf) );
-        //fprintf (fp, "[%s \"%s\"]\n", TagList[i].tag, TagList[i].value);
-    }
-    return OK;
-}
-#else
 errorT
 Game::WriteExtraTags (FILE * fp)
 {
@@ -3155,7 +3018,6 @@ Game::WriteExtraTags (FILE * fp)
     }
     return OK;
 }
-#endif
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // makeMoveByte(): inline routine used for encoding most moves.
