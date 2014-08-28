@@ -105,6 +105,7 @@ struct scidBaseT {
 	}
 
 	const IndexEntry* getIndexEntry(gameNumberT g) const { return idx->FetchEntry(g);	}
+	const NameBase* getNameBase() const { return nb; }
 
 	errorT addGames(scidBaseT* sourceBase,
 	                Filter* filter,

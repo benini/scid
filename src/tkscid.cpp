@@ -608,11 +608,11 @@ sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** a
 		const char* txt = argv[6];
 		uint st = strGetUnsigned (argv[7]);
 		bool fw = strGetBoolean (argv[8]);
-		location = cdb->idx->GetRangeLocation (cdb->nb, sort, filter, txt, st, fw);
+		location = cdb->idx->GetRangeLocation (cdb->getNameBase(), sort, filter, txt, st, fw);
 	} else {
 		if (gnumber > cdb->idx->GetNumGames()) return TCL_OK;
 		if (filter && filter->Get(gnumber -1) == 0) return TCL_OK;
-		location = cdb->idx->GetRangeLocation (cdb->nb, sort, filter, gnumber);
+		location = cdb->idx->GetRangeLocation (cdb->getNameBase(), sort, filter, gnumber);
 	}
 	if (location == 0) return TCL_OK; //Not found
 	return setUintResult (ti, location);
@@ -632,7 +632,8 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];
 	uint* idxList = new uint[count];
-	cdb->idx->GetRange(cdb->nb, sort, start, count, filter, idxList);
+	const NameBase* nb = cdb->getNameBase();
+	cdb->idx->GetRange(nb, sort, start, count, filter, idxList);
 
 	Tcl_Obj** res = new Tcl_Obj* [count *3];
 	uint i_res = 0;
@@ -649,18 +650,18 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo[0] = Tcl_NewIntObj(idx +1);
 		ginfo[1] = Tcl_NewStringObj(RESULT_STR[ie->GetResult()], -1);
 		ginfo[2] = Tcl_NewIntObj((ie->GetNumHalfMoves() + 1) / 2);
-		ginfo[3] = Tcl_NewStringObj(ie->GetWhiteName(cdb->nb), -1);
-		eloT welo = ie->GetWhiteElo(cdb->nb);
+		ginfo[3] = Tcl_NewStringObj(ie->GetWhiteName(nb), -1);
+		eloT welo = ie->GetWhiteElo(nb);
 		ginfo[4] = Tcl_NewIntObj(welo);
-		ginfo[5] = Tcl_NewStringObj(ie->GetBlackName(cdb->nb), -1);
-		eloT belo = ie->GetBlackElo(cdb->nb);
+		ginfo[5] = Tcl_NewStringObj(ie->GetBlackName(nb), -1);
+		eloT belo = ie->GetBlackElo(nb);
 		ginfo[6] = Tcl_NewIntObj(belo);
 		char buf_date[16];
 		date_DecodeToString (ie->GetDate(), buf_date);
 		ginfo[7] = Tcl_NewStringObj(buf_date, -1);
-		ginfo[8] = Tcl_NewStringObj(ie->GetEventName(cdb->nb), -1);
-		ginfo[9] = Tcl_NewStringObj(ie->GetRoundName(cdb->nb), -1);
-		ginfo[10] = Tcl_NewStringObj(ie->GetSiteName(cdb->nb), -1);
+		ginfo[8] = Tcl_NewStringObj(ie->GetEventName(nb), -1);
+		ginfo[9] = Tcl_NewStringObj(ie->GetRoundName(nb), -1);
+		ginfo[10] = Tcl_NewStringObj(ie->GetSiteName(nb), -1);
 		ginfo[11] = Tcl_NewIntObj(ie->GetNagCount());
 		ginfo[12] = Tcl_NewIntObj(ie->GetCommentCount());
 		ginfo[13] = Tcl_NewIntObj(ie->GetVariationCount());
@@ -683,7 +684,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo[19] = Tcl_NewStringObj(buf_eventdate, -1);
 		ginfo[20] = Tcl_NewIntObj(ie->GetYear());
 		ginfo[21] = Tcl_NewIntObj((welo + belo)/2);
-		ginfo[22] = Tcl_NewIntObj(ie->GetRating(cdb->nb));
+		ginfo[22] = Tcl_NewIntObj(ie->GetRating(nb));
 		FastGame game = cdb->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
 		std::string moves = game.getMoveSAN(ply, 10);
 		ginfo[23] = Tcl_NewStringObj(moves.c_str(), -1);
@@ -881,7 +882,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_SORTCACHE:
         if (argc != 5) return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
         if (strCompare("create", argv[3]) == 0) {
-            if (argv[4][0] != 'N') dbase->idx->CreateSortingCache (dbase->nb, argv[4]);
+            if (argv[4][0] != 'N') dbase->idx->CreateSortingCache (dbase->getNameBase(), argv[4]);
         } else {
             dbase->idx->FreeCache(argv[4]);
         }
@@ -3890,7 +3891,8 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (gNum > 0 && gNum <= dbase->numGames) {
                 uint val = strGetUnsigned(argv[4]);
                 if (argc == 8) {
-                    int start = db->idx->GetRangeLocation (db->nb, argv[7], filter, gNum);
+                    const NameBase* nb = dbase->getNameBase();
+                    int start = dbase->idx->GetRangeLocation (nb, argv[7], filter, gNum);
                     int count = strGetInteger (argv[6]);
                     if (count < 0) {
                         count = -count;
@@ -3902,7 +3904,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                         }
                     }
                     uint* idxList = new uint[count];
-                    db->idx->GetRange(db->nb, argv[7], start, count, filter, idxList);
+                    dbase->idx->GetRange(nb, argv[7], start, count, filter, idxList);
                     for (int i = 0; i < count; ++i) {
                         if (idxList[i] == IDX_NOT_FOUND) break;
                         filter->Set(idxList[i], val);
@@ -3972,14 +3974,15 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             uint idxList[count];
             bool end = false;
             for (uint start = 0; !end; start += count) {
-                dbase->idx->GetRange(dbase->nb, argv[4], start, count, filter, idxList);
+                const NameBase* nb = dbase->getNameBase();
+                dbase->idx->GetRange(nb, argv[4], start, count, filter, idxList);
                 for (int i = 0; i < count; ++i) {
                     if (idxList[i] == IDX_NOT_FOUND) { end = true; break; }
                     const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
                     // Skip any corrupt games:
                     if (dbase->gfile->ReadGame (dbase->bbuf, ie->GetOffset(), ie->GetLength()) != OK) continue;
                     if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
-                    g.LoadStandardTags (ie, dbase->nb);
+                    g.LoadStandardTags (ie, nb);
                     dbase->tbuf->Empty();
                     g.WriteToPGN (dbase->tbuf);
                     dbase->tbuf->NewLine();

@@ -20,7 +20,6 @@
 #include "scidbase.h"
 #include "fastgame.h"
 #include "stored.h"
-#include "math.h"
 #include <algorithm>
 
 void scidBaseT::Init() {

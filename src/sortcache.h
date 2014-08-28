@@ -29,7 +29,7 @@ class IndexEntry;
 class SortCache
 {
   public:
-	static SortCache* Create(const Index* idx, NameBase* nb, const char* criterium, bool multithread =true);
+	static SortCache* Create(const Index* idx, const NameBase* nb, const char* criterium, bool multithread =true);
 	~SortCache();
 	errorT GetRange( uint start, uint count, Filter *filter, uint *result);
 	uint IndexToFilteredCount( uint gnumber, Filter *filter);
@@ -49,7 +49,7 @@ class SortCache
 	uint *fullMap;
 	uint mapSize;
 	uint *hashValues;
-	NameBase *nbase;
+	const NameBase *nbase;
 	byte SortCriteria [INDEX_MaxSortingCriteria];
 	bool SortReverse [INDEX_MaxSortingCriteria];
 	int refCount;
@@ -58,7 +58,7 @@ class SortCache
 	SortCache();
 	SortCache(const SortCache&);
 	SortCache& operator=(const SortCache&);
-	errorT Init (const Index *idx, NameBase * nb, const char *criterium);
+	errorT Init (const Index *idx, const NameBase * nb, const char *criterium);
 	inline int Compare (uint left, uint right);
 	int FullCompare (uint left, uint right);
 	void GetSpace( uint size);

@@ -228,7 +228,7 @@ public:
      * Return:   a pointer to the newly created SortCache
      *           0 in case of error
      */
-    SortCache* CreateSortingCache (NameBase *nbase, const char *criteria);
+    SortCache* CreateSortingCache (const NameBase* nbase, const char* criteria);
 
     /* FreeCache
      * Release the memory of a SortCache (previously created by CreateSortingCache)
@@ -247,7 +247,7 @@ public:
      *           *result* array must have size >= count
      *           if there aren't enough result to reach count: result[last_result + 1] = IDX_NOT_FOUND
      */
-    errorT GetRange( NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result);
+    errorT GetRange(const NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result);
 
     /* GetRangeLocation
      * Find the location of a game into a sorted Range.
@@ -259,8 +259,8 @@ public:
      * Return:  the position of the searched game (first game = 1)
      *          0 if not found
      */
-    uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter, uint gnumber);
-    uint GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
+    uint GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber);
+    uint GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter,
                            const char* text, uint start, bool forward =true);
     /* IndexUpdated
      * When changes are made to the games (adding or saving a game) the sortcaches need to be updated.

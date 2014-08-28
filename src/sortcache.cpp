@@ -119,7 +119,7 @@ static const char shortCriteriaNames[][2] =
 	{ 0, 0}
 };
 
-SortCache* SortCache::Create(const Index* idx, NameBase* nb, const char* criterium, bool multithread)
+SortCache* SortCache::Create(const Index* idx, const NameBase* nb, const char* criterium, bool multithread)
 {
 	SortCache* s = new SortCache();
 	if (OK == s->Init(idx, nb, criterium)) {
@@ -158,7 +158,7 @@ SortCache::~SortCache()
 //      integers denoting sorting criteria.
 //      e.g.: "-Sdate,event,white" --> { SORTING_date, SORTING_event, SORTING_white }
 //      The final element is set to SORTING_sentinel.
-errorT SortCache::Init(const Index* idx, NameBase* nb, const char* criterium)
+errorT SortCache::Init(const Index* idx, const NameBase* nb, const char* criterium)
 {
 	ASSERT(idx != 0 && nb != 0 && criterium != 0);
 	index = idx;

@@ -365,13 +365,13 @@ public:
     }
     resultT GetResult () const { return (VarCounts >> 12); }
     eloT GetWhiteElo () const { return u16_low_12(WhiteElo); }
-    eloT GetWhiteElo (NameBase* nb)  const {
+    eloT GetWhiteElo (const NameBase* nb)  const {
         eloT r = GetWhiteElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetWhite());
         return r;
     }
     eloT GetBlackElo () const { return u16_low_12(BlackElo); }
-    eloT GetBlackElo (NameBase* nb) const {
+    eloT GetBlackElo (const NameBase* nb) const {
         eloT r = GetBlackElo();
         if (r == 0 && nb != 0) return nb->GetElo (GetBlack());
         return r;
@@ -380,7 +380,7 @@ public:
     byte   GetBlackRatingType () const { return u16_high_4 (BlackElo); }
     ecoT   GetEcoCode () const { return EcoCode; }
     ushort GetNumHalfMoves () const { return NumHalfMoves; }
-    byte   GetRating(NameBase* nb) const;
+    byte   GetRating(const NameBase* nb) const;
 
     void SetDate  (dateT date)   {
         Dates = u32_set_low_20 (Dates, date);
@@ -681,7 +681,7 @@ IndexEntry::Write (T* file, versionT version) const
     return OK;
 }
 
-inline byte IndexEntry::GetRating(NameBase* nb) const {
+inline byte IndexEntry::GetRating(const NameBase* nb) const {
     eloT welo = GetWhiteElo();
     eloT belo = GetBlackElo();
     if (welo == 0) { welo = nb->GetElo (GetWhite()); }

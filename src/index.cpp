@@ -230,7 +230,7 @@ errorT Index::write (const IndexEntry* ie, uint idx)
 
 
 /************* Interface to SortCache *******************/
-SortCache* Index::CreateSortingCache (NameBase *nbase, const char *criteria)
+SortCache* Index::CreateSortingCache (const NameBase *nbase, const char *criteria)
 {
     // If there is another client using a matching cache, use that one
     for(uint i=0; i < SORTING_CACHE_MAX; i++) {
@@ -264,7 +264,7 @@ void Index::FreeCache(const char* criteria)
     }
 }
 
-errorT Index::GetRange (NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
+errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
 {
     ASSERT(result != 0);
     ASSERT(criteria != 0 && strlen(criteria) > 1);
@@ -302,7 +302,7 @@ errorT Index::GetRange (NameBase *nbase, const char *criteria, uint idx, uint co
     return OK;
 }
 
-uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter, uint gnumber)
+uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber)
 {
     for(uint i=0; i < SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i] == NULL) continue;
@@ -317,7 +317,7 @@ uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *fil
     return r;
 }
 
-uint Index::GetRangeLocation (NameBase *nbase, const char *criteria, Filter *filter,
+uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter,
                               const char* text, uint start, bool forward)
 {
     uint i = 0;
