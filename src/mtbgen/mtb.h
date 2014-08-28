@@ -45,10 +45,9 @@
 #ifndef SCID_MTB_H
 #define SCID_MTB_H
 
-#include "common.h"
 #include "bytepack.h"
-#include "hash.h"
-#include "misc.h"
+#include "../hash.h"
+#include "../misc.h"
 
 static BytePacker * bytePacker = new BytePacker();
 

@@ -15,8 +15,6 @@
 #ifndef SCID_BYTEPACK_H
 #define SCID_BYTEPACK_H
 
-#include "common.h"
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // BytePacker
 //   This class implements a simple fast byte-oriented LZ77 (sliding

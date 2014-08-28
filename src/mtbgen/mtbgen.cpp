@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include "../common.h"
 #include "../error.h"
-#include "../mtb.h"
+#include "mtb.h"
 #include "../position.h"
 #include "../probe.h"
 
