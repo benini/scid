@@ -854,21 +854,22 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             else if (strCompare("invert", argv[4]) == 0) cmd = 4;
             if (flagType != 0 && cmd != 0 && (all || (gNum != 0 && gNum <= dbase->numGames) || filter != 0)) {
                 flagType = 1 << flagType;
-                if (gNum != 0) gNum--;
-                for (;gNum < dbase->idx->GetNumGames(); gNum++) {
-                    if (filter && filter->Get(gNum) == 0) continue;
-                    IndexEntry* ie = dbase->idx->FetchEntry (gNum);
-                    if (cmd == 1) return setBoolResult (ti, ie->GetFlag (flagType));
-                    bool set = (cmd == 2);
-                    if (cmd == 4) set = ! ie->GetFlag (flagType);
-                    ie->SetFlag (flagType, set);
-                    if (OK != dbase->idx->WriteEntries (ie, gNum, false)) {
-                        return errorResult (ti, "Error writing index file.");
+                bool value = (cmd == 2);
+                if (gNum != 0) {
+                    gNum--;
+                    switch (cmd) {
+                    case 1: return setBoolResult(ti, dbase->getFlag(flagType, gNum));
+                    case 2:
+                    case 3: return TclResult(ti, dbase->setFlag(value, flagType, gNum));
+                    case 4: return TclResult(ti, dbase->invertFlag(flagType, gNum));
                     }
-                    if (filter == 0 && !all) break;
+                } else {
+                    switch (cmd) {
+                    case 2:
+                    case 3: return TclResult(ti, dbase->setFlag(value, flagType, filter));
+                    case 4: return TclResult(ti, dbase->invertFlag(flagType, filter));
+                    }
                 }
-                dbase->clearCaches();
-                return TCL_OK;
             }
         }
         return errorResult (ti, "Usage: sc_base gameflag baseId <gameNum|filterName|all> <get|set|unset|invert> flagType");

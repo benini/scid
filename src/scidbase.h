@@ -114,6 +114,40 @@ struct scidBaseT {
 	errorT addGame(scidBaseT* sourceBase, uint gNum);
 	errorT saveGame(Game* game, bool clearCache, int idx = -1);
 
+	bool getFlag(uint flag, uint gNum) {
+		return idx->FetchEntry(gNum)->GetFlag (flag);
+	}
+	errorT setFlag(bool value, uint flag, uint gNum, bool clear = true){
+		ASSERT(gNum < idx->GetNumGames());
+		IndexEntry* ie = idx->FetchEntry (gNum);
+		ie->SetFlag (flag, value);
+		errorT res = idx->WriteEntries (ie, gNum, false);
+		if (res != OK) return res;
+		if (clear) res = clearCaches();
+		return res;
+	}
+	errorT setFlag(bool value, uint flag, Filter* filter = 0) {
+		errorT res = OK;
+		for (uint gNum = 0; gNum < idx->GetNumGames(); gNum++) {
+			if (filter && filter->Get(gNum) == 0) continue;
+			res = setFlag(value, flag, gNum, false);
+			if (res != OK) return res;
+		}
+		return clearCaches();
+	}
+	errorT invertFlag(uint flag, uint gNum, bool clear = true) {
+		return setFlag(! getFlag(flag, gNum), flag, gNum, clear);
+	}
+	errorT invertFlag(uint flag, Filter* filter = 0) {
+		errorT res = OK;
+		for (uint gNum = 0; gNum < idx->GetNumGames(); gNum++) {
+			if (filter && filter->Get(gNum) == 0) continue;
+			res = invertFlag(flag, gNum, false);
+			if (res != OK) return res;
+		}
+		return clearCaches();
+	}
+
 	Stats* getStats();
 	std::vector<scidBaseT::TreeStat> getTreeStat(Filter* filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
@@ -137,7 +171,7 @@ struct scidBaseT {
 	    - gNum: id of the game changed (IDX_NOT_FOUND update all the games)
 	*/
 	errorT clearCaches(uint gNum = IDX_NOT_FOUND, bool writeFiles = true);
-	void clearStats() { validStats = false; };
+	void clearStats() { validStats_ = false; };
 
 	Index* idx;       // the Index file in memory for this base.
 	NameBase*nb;      // the NameBase file in memory.
@@ -166,7 +200,7 @@ struct scidBaseT {
 
 private:
 	std::vector< std::pair<std::string, Filter*> > filters_;
-	bool validStats;
+	bool validStats_;
 	Stats stats;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
 

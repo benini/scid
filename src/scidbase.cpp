@@ -21,6 +21,7 @@
 #include "fastgame.h"
 #include "stored.h"
 #include <algorithm>
+#include <math.h>
 
 void scidBaseT::Init() {
 	idx = new Index;
@@ -49,7 +50,7 @@ void scidBaseT::Init() {
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
 	duplicates = NULL;
-	validStats = false;
+	validStats_ = false;
 }
 
 scidBaseT::~scidBaseT() {
@@ -92,7 +93,7 @@ errorT scidBaseT::Close () {
 }
 
 void scidBaseT::clear() {
-	validStats = false;
+	validStats_ = false;
 	undoMax = undoIndex = undoCurrent = -1;
 	undoFull = false;
 	for (int i = 0; i < UNDO_MAX; i++) {
@@ -353,7 +354,7 @@ void scidBaseT::calcNameFreq () {
 }
 
 scidBaseT::Stats* scidBaseT::getStats() {
-	if (validStats) return &stats;
+	if (validStats_) return &stats;
 
 	uint i;
 	// Zero out all stats:
@@ -472,7 +473,7 @@ scidBaseT::Stats* scidBaseT::getStats() {
 		}
 	}
 
-	validStats = true;
+	validStats_ = true;
 	return &stats;
 }
 
