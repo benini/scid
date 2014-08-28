@@ -130,7 +130,7 @@ private:
     Index(const Index&);
     Index& operator=(const Index&);
     void Init ();
-    void Clear ();
+    errorT Clear ();
     errorT write (const IndexEntry* ie, gameNumberT idx);
     uint getIndexEntrySize () {
         switch (Header.version) {
@@ -146,11 +146,8 @@ public:
 
     errorT Open(const char* filename, fileModeT fmode = FMODE_Both, bool old = false);
     errorT Create(const char* filename);
-    errorT Close() {
-        errorT res = WriteHeader();
-        if (res == OK) Clear();
-        return res;
-    }
+    errorT Close() { return Clear(); }
+
     gameNumberT GetNumGames () const { return Header.numGames; }
     int GetBadNameIdCount() const { return badNameIdCount_; }
 

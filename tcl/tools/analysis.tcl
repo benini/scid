@@ -965,7 +965,7 @@ proc markExercise { prevscore score nag} {
     
     puts "flag T pour [sc_game number] difficulty $difficulty"
     # If the base opened is read only, like a PGN file, avoids an exception
-    catch { sc_game flag T [sc_game number] 1 }
+    catch { sc_base gameflag [sc_base current] [sc_game number] set T }
     sc_pos setComment "****D${difficulty} [format %.1f $prevscore]->[format %.1f $score] [sc_pos getComment]"
     updateBoard
     

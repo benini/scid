@@ -230,18 +230,8 @@ int TclResult (Tcl_Interp * ti, errorT err, const char* res = 0) {
     return TCL_ERROR;
 }
 
-//~~~~~~~~~~~~~~~~~~
-// errorResult():
-//    Same as setResult, but returns TCL_ERROR so callers can simply:
-//        return errorResult (ti, "error message");
-//    instead of:
-//        Tcl_SetResult (ti, "error message");
-//        return TCL_ERROR;
-inline int
-errorResult (Tcl_Interp * ti, const char * str)
-{
-    Tcl_SetResult (ti, (char *) str, TCL_STATIC);
-    return TCL_ERROR;
+inline int errorResult (Tcl_Interp * ti, const char * errorMsg) {
+    return TclResult (ti, ERROR, errorMsg);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4941,16 +4931,16 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_flag:
 //    If there is two args, this returns the specified flag status for the
-//    specified game. If there are three args, the 2nd arg (0 or 1 or invert)
-//    sets the specified flag for the game.
+//    specified game.
 //    Flags that can be specified: delete, user, ...
 //    Extra calling methods:
-//      sc_game flag <flag> all <0|1|invert> operates on all games.
+//      sc_game flag <flag> gameNum
 //      sc_game flag <flag> description 
+//      sc_game flag <flag> setdescription newDescription
 int
 sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    const char * usage = "Usage: sc_game flag <flag> <gameNum> [0|1]";
+    const char * usage = "Usage: sc_game flag <flag> <gameNum|description|setdescription newdesc>";
     if (argc < 3  ||  argc > 5) {
         return errorResult (ti, usage);
     }
@@ -4958,11 +4948,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return setResult (ti, errMsgNotOpen(ti));
     }
 
-    uint startGnum = 0;
-    uint endGnum = db->numGames;
-    uint flagType = 0;
-
-    flagType = 1 << IndexEntry::CharToFlag (argv[2][0]);
+    uint flagType = 1 << IndexEntry::CharToFlag (argv[2][0]);
 
     if (strEqual (argv[3], "description")) {
         // Returns the description associated with a Custom flag
@@ -4987,11 +4973,6 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->idx->SetCustomFlagDesc( argv[4], num);
         return TCL_OK;
       }
-    } else if (strEqual (argv[3], "all")) {
-        // Delete or undelete all games: the flag value must be specified.
-        if (argc != 5) {
-            return errorResult (ti, usage);
-        }
     } else {
         uint gNum = strGetUnsigned (argv[3]);
         // We ignore a request to (un)delete game number zero, but if the
@@ -5005,29 +4986,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             IndexEntry * ie = db->idx->FetchEntry (gNum);
             return setBoolResult (ti, ie->GetFlag (flagType));
         }
-        startGnum = gNum;
-        endGnum = gNum + 1;
     }
-
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
-    for (uint gNum = startGnum; gNum < endGnum; gNum++) {
-        IndexEntry * ie = db->idx->FetchEntry (gNum);
-            bool newValue = strGetBoolean (argv[4]);
-            bool oldValue = ie->GetFlag (flagType);
-            if (strIsPrefix (argv[4], "invert")) {
-                // User wants to toggle the state of this game:
-                newValue = !(ie->GetFlag (flagType));
-            }
-            if (oldValue != newValue) {
-                IndexEntry iE = *ie;
-                iE.SetFlag (flagType, newValue);
-                db->idx->WriteEntries (&iE, gNum);
-            }
-    }
-    recalcFlagCounts (db);
 
     return TCL_OK;
 }

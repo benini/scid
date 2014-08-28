@@ -562,7 +562,7 @@ proc markTwins {{parent .}} {
   dialogbuttonsmall $w.f.b.go [ list -text $::tr(TwinsDelete) -command {
     if {[twinCriteriaOK .twinSettings]} {
       grab release .twinSettings
-      sc_progressBar .twinSettings.progress bar 301 21 time
+      sc_progressBar .twinSettings.f.progress bar 301 21 time
       set result [doMarkDups .twinSettings]
       focus .
       destroy .twinSettings
@@ -913,8 +913,8 @@ proc updateTwinChecker {} {
   $w.f.left.title.label configure -text [concat $::tr(game) " $gn:  "]
   
   if {$gn > 0} {
-    set twincheck(left) [sc_game flag delete $gn]
-    $w.f.left.title.d configure -command "sc_game flag delete $gn invert; updateBoard"
+    set twincheck(left) [sc_base gameflag [sc_base current] $gn get del]
+    $w.f.left.title.d configure -command "sc_base gameflag \[sc_base current\] $gn invert del; ::notify::GameChanged"
     $w.f.left.title.d configure -state normal
     set tmt [sc_game crosstable count +deleted]
     $w.f.left.tmt configure -text [concat $::tr(TwinCheckTournament) $tmt]
@@ -923,9 +923,9 @@ proc updateTwinChecker {} {
     $w.f.left.tmt configure -text ""
   }
   if {$dup > 0} {
-    set twincheck(right) [sc_game flag delete $dup]
+    set twincheck(right) [sc_base gameflag [sc_base current] $dup get del]
     $w.f.right.title.label configure -text [concat $::tr(game) " $dup:  "]
-    $w.f.right.title.d configure -command "sc_game flag delete $dup invert; updateBoard"
+    $w.f.right.title.d configure -command "sc_base gameflag \[sc_base current\] $dup invert del; ::notify::GameChanged"
     $w.f.right.title.d configure -state normal
     set tmt [sc_game crosstable count -game $dup +deleted]
     $w.f.right.tmt configure -text [concat $::tr(TwinCheckTournament) $tmt]

@@ -42,14 +42,16 @@ void Index::Init ()
     entries_.resize(0);
 }
 
-void Index::Clear ()
+errorT Index::Clear ()
 {
-    if (Dirty && FileMode == FMODE_Both) WriteHeader();
+    errorT res = OK;
+    if (Dirty && FileMode == FMODE_Both) res = WriteHeader();
     if (FilePtr != NULL)  delete FilePtr;
     for(uint i=0; i<SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i]) delete sortingCaches[i];
     }
     Init();
+    return res;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -208,7 +210,7 @@ Index::WriteHeader ()
     for (uint i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
         n += FilePtr->WriteNBytes (Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
     }
-    if (n != 182 || FilePtr->pubsync() == -1) return ERROR_FileWrite;
+    if (n != INDEX_HEADER_SIZE || FilePtr->pubsync() == -1) return ERROR_FileWrite;
     Dirty = false;
     return OK;
 }

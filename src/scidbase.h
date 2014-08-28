@@ -117,35 +117,36 @@ struct scidBaseT {
 	bool getFlag(uint flag, uint gNum) {
 		return idx->FetchEntry(gNum)->GetFlag (flag);
 	}
-	errorT setFlag(bool value, uint flag, uint gNum, bool clear = true){
+	errorT setFlag(bool value, uint flag, uint gNum){
 		ASSERT(gNum < idx->GetNumGames());
 		IndexEntry* ie = idx->FetchEntry (gNum);
 		ie->SetFlag (flag, value);
 		errorT res = idx->WriteEntries (ie, gNum, false);
-		if (res != OK) return res;
-		if (clear) res = clearCaches();
+		validStats_ = false;
+		// TODO: necessary for only sortcaches with SORTING_deleted (and SORTING_flags when implemented)
+		// idx->IndexUpdated(gNum);
 		return res;
 	}
 	errorT setFlag(bool value, uint flag, Filter* filter = 0) {
 		errorT res = OK;
 		for (uint gNum = 0; gNum < idx->GetNumGames(); gNum++) {
 			if (filter && filter->Get(gNum) == 0) continue;
-			res = setFlag(value, flag, gNum, false);
+			res = setFlag(value, flag, gNum);
 			if (res != OK) return res;
 		}
-		return clearCaches();
+		return res;
 	}
-	errorT invertFlag(uint flag, uint gNum, bool clear = true) {
-		return setFlag(! getFlag(flag, gNum), flag, gNum, clear);
+	errorT invertFlag(uint flag, uint gNum) {
+		return setFlag(! getFlag(flag, gNum), flag, gNum);
 	}
 	errorT invertFlag(uint flag, Filter* filter = 0) {
 		errorT res = OK;
 		for (uint gNum = 0; gNum < idx->GetNumGames(); gNum++) {
 			if (filter && filter->Get(gNum) == 0) continue;
-			res = invertFlag(flag, gNum, false);
+			res = invertFlag(flag, gNum);
 			if (res != OK) return res;
 		}
-		return clearCaches();
+		return res;
 	}
 
 	Stats* getStats();
