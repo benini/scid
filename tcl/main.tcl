@@ -228,14 +228,14 @@ proc updateMainToolbar {} {
   }
   set ::gameInfoBar(tb_BD_SaveAs) "gameSave 0"
 
-  if {[sc_game altered]} { #TODO canUndo
+  if {[sc_game undo size] > 0} {
     set ::gameInfoBar(tb_BD_Undo) "undoFeature undo"
     set ::gameInfoBar(tb_BD_Revert) "::game::Reload"
   } else {
     catch { unset ::gameInfoBar(tb_BD_Undo) }
     catch { unset ::gameInfoBar(tb_BD_Revert) }
   }
-  if {1} { #TODO canRedo
+  if {[sc_game redo size] > 0} {
     set ::gameInfoBar(tb_BD_Redo) "undoFeature redo"
   } else {
     catch { unset ::gameInfoBar(tb_BD_Redo) }
@@ -840,12 +840,7 @@ proc addMove { sq1 sq2 } {
 }
 
 proc addSanMove { {san} } {
-    sc_game undoPoint
-    set err [catch {
-        sc_move addSan $san
-        set moveUCI [ sc_game info previousMoveUCI ]
-    }]
-    sc_game undo
+    set err [catch { sc_game SANtoUCI $san } moveUCI ]
     if {! $err} { addMoveUCI $moveUCI }
     return $err
 }
@@ -887,20 +882,6 @@ proc addMoveUCI {{moveUCI} {action ""}} {
                     set replacedmove [sc_game info previousMoveNT]
                 }
                 sc_move back
-            } else {
-                set onemovelines {}
-                for {set i 0} {$i < $n} {incr i} {
-                    sc_var moveInto $i
-                    set nextmove [sc_game info next]
-                    if {$nextmove == ""} { lappend onemovelines $i }
-                    sc_var exit
-                }
-
-                if {[llength $onemovelines] == 1} {
-                    sc_var moveInto [lindex $onemovelines 0]
-                    set replacedmove [sc_game info previousMoveNT]
-                    sc_move back
-                }
             }
             if {$replacedmove != ""} {
                 set ::guessedAddMove [list "Replaced Move $replacedmove"]
@@ -1337,16 +1318,15 @@ proc setTrialMode {mode} {
 }
 
 proc undoFeature {action} {
-    global trialMode
-    if {! $trialMode} {
+    if {! $::trialMode} {
         if {$action == "save"} {
             sc_game undoPoint
         } elseif {$action == "undo"} {
             sc_game undo
-            updateBoard -pgn
+            notify::GameChanged
         } elseif {$action == "redo"} {
             sc_game redo
-            updateBoard -pgn
+            notify::GameChanged
         }
     }
 }

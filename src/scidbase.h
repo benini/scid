@@ -22,11 +22,11 @@
 #include "index.h"
 #include "namebase.h"
 #include "gfile.h"
+#include "undoredo.h"
 #include "game.h"
 #include "tree.h"
 #include <vector>
-// Number of undo levels
-#define UNDO_MAX 20
+
 class SpellChecker;
 
 struct scidBaseT {
@@ -123,7 +123,7 @@ struct scidBaseT {
 		ie->SetFlag (flag, value);
 		errorT res = idx->WriteEntries (ie, gNum, false);
 		validStats_ = false;
-		// TODO: necessary for only sortcaches with SORTING_deleted (and SORTING_flags when implemented)
+		// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
 		// idx->IndexUpdated(gNum);
 		return res;
 	}
@@ -177,14 +177,6 @@ struct scidBaseT {
 	Index* idx;       // the Index file in memory for this base.
 	NameBase*nb;      // the NameBase file in memory.
 	GFile* gfile;
-	Game* game;       // the active game for this base.
-	Game* undoGame[UNDO_MAX]; // array of games kept for undos
-	int undoIndex;
-	int undoMax;
-	int undoCurrent;  // which undo buffer has the currently saved game
-	bool undoFull;    // if buffer gets filled, we cant unset gameAltered
-	int gameNumber;   // game number of active game.
-	bool gameAltered; // true if game is modified
 	bool inUse;       // true if the database is open (in use).
 	uint numGames;
 	bool memoryOnly;
@@ -198,6 +190,12 @@ struct scidBaseT {
 	Filter* dbFilter;
 	Filter* treeFilter;
 	uint* duplicates; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
+
+	//TODO: this vars do not belong to scidBaseT class
+	Game* game;       // the active game for this base.
+	int gameNumber;   // game number of active game.
+	bool gameAltered; // true if game is modified
+	UndoRedo<Game, 30> gameAlterations;
 
 private:
 	std::vector< std::pair<std::string, Filter*> > filters_;

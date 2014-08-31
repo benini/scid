@@ -263,7 +263,7 @@ proc ::game::Load_ { selection {ply ""} } {
   }
   setTrialMode 0
   sc_game load $selection
-  if {$ply != ""} { sc_move ply $ply }
+  if {$ply != ""} { eval "sc_move ply $ply" }
   return 1
 }
 

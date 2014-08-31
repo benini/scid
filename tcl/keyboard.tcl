@@ -87,7 +87,7 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-m> ::maint::OpenClose
 	bind $w <Control-p> ::pgn::OpenClose
 	bind $w <Control-t> ::tree::make
-	bind $w <Control-y> ::windows::eco::OpenClose
+	bind $w <Control-E> ::windows::eco::OpenClose
 	bind $w <Control-K> ::ptrack::make
 	bind $w <Control-O> ::optable::makeReportWin
 	bind $w <Control-P> ::plist::toggle

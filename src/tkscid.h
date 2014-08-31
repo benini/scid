@@ -83,17 +83,6 @@ struct progressBarT {
 };
 
 
-
-
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// manage undo functions
-//
-void sc_game_undo_point();
-void sc_game_undo_reset();
-
 //////////////////////////////////////////////////////////////////////
 // Declarations for Scid application-specific Tcl commands
 //

@@ -1101,10 +1101,11 @@ proc gsave { gnum } {
     ::notify::DatabaseModified [sc_base current]
     ::notify::GameChanged
   } else {
+    set ply [sc_pos location]
     set res [sc_game save $gnum $::gameSave_toBase]
     ::notify::DatabaseModified $::gameSave_toBase
     ::file::SwitchToBase $::gameSave_toBase 0
-    ::game::Load [sc_base numGames]
+    ::game::Load [sc_base numGames] $ply
   }
   if {$res != ""} {
     tk_messageBox -type ok -icon info -parent .save \

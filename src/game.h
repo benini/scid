@@ -25,6 +25,7 @@
 #include "bytebuf.h"
 #include "matsig.h"
 #include "stralloc.h"
+#include <vector>
 
 void transPieces(char *s);
 char transPiecesChar(char c);
@@ -382,6 +383,7 @@ public:
         CurrentMove->prev->nags[0] = 0;
     }
 
+    void     MoveTo (const std::vector<int>& v);
     void     MoveToPly (ushort hmNumber);
     errorT   MoveForward ();
     errorT   MoveBackup ();
@@ -527,6 +529,9 @@ public:
     errorT    DecodeNextMove (ByteBuffer * buf, simpleMoveT * sm);
     errorT    Decode (ByteBuffer * buf, byte flags);
     errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
+
+    std::vector<int> Game::GetCurrentLocation();
+    Game* clone();
 };
 
 

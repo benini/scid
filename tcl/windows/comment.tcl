@@ -407,6 +407,7 @@ proc ::commenteditor::ButtonReleased {board button x_root y_root} {
 #
 proc ::commenteditor::storeComment {} {
   if {![winfo exists .commentWin]} { return }
+  undoFeature save
   set nag [sc_pos getNags]
   if {$nag == "0"} { set nag "" }
   if { $nag != [.commentWin.nf.tf.text get] } {

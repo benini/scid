@@ -225,7 +225,32 @@ translate (Tcl_Interp * ti, const char * name)
 
 int TclResult (Tcl_Interp * ti, errorT err, const char* res = 0) {
     if (res != 0) Tcl_SetResult (ti, (char *) res, TCL_STATIC);
-    if (err == OK) return OK;
+    if (err == OK) return TCL_OK;
+    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
+    return TCL_ERROR;
+}
+int TclResult (Tcl_Interp * ti, errorT err, const std::string& res) {
+    Tcl_SetObjResult(ti, Tcl_NewStringObj(res.c_str(), -1));
+    if (err == OK) return TCL_OK;
+    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
+    return TCL_ERROR;
+}
+int TclResult (Tcl_Interp * ti, errorT err, int res) {
+    Tcl_SetObjResult(ti, Tcl_NewIntObj(res));
+    if (err == OK) return TCL_OK;
+    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
+    return TCL_ERROR;
+}
+int TclResult (Tcl_Interp * ti, errorT err, const std::vector<int>& v) {
+    if (v.size() > 0) {
+        Tcl_Obj** res = new Tcl_Obj*[v.size()];
+        for (uint i=0; i < v.size(); i++) {
+            res[i] = Tcl_NewIntObj(v[i]);
+        }
+        Tcl_SetObjResult(ti, Tcl_NewListObj(v.size(), res));
+        delete [] res;
+    }
+    if (err == OK) return TCL_OK;
     Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
     return TCL_ERROR;
 }
@@ -4307,18 +4332,20 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "find",       "firstMoves", "flag",       "import",
         "info",        "load",      "merge",      "moves",
         "new",        "novelty",    "number",     "pgn",
-        "pop",        "push",       "save",       "scores",
-        "startBoard", "strip",      "summary",    "tags",
-        "truncate",   "truncatefree", "undo", "undoPoint" , "redo", NULL
+        "pop",        "push",       "SANtoUCI",   "save",
+        "scores",     "startBoard", "strip",      "summary",
+        "tags",       "truncate",   "truncatefree",
+        "undo",       "undoPoint" , "redo",       NULL
     };
     enum {
         GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,
         GAME_FIND,       GAME_FIRSTMOVES, GAME_FLAG,       GAME_IMPORT,
         GAME_INFO,       GAME_LOAD,       GAME_MERGE,      GAME_MOVES,
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
-        GAME_POP,        GAME_PUSH,       GAME_SAVE,       GAME_SCORES,
-        GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,    GAME_TAGS,
-        GAME_TRUNCATE, GAME_TRUNCATEANDFREE, GAME_UNDO, GAME_UNDO_POINT , GAME_REDO
+        GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
+        GAME_SCORES,     GAME_STARTBOARD, GAME_STRIP,      GAME_SUMMARY,
+        GAME_TAGS,       GAME_TRUNCATE,   GAME_TRUNCATEANDFREE,
+        GAME_UNDO,       GAME_UNDO_POINT, GAME_REDO
     };
     int index = -1;
     char old_language = 0;
@@ -4366,7 +4393,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_game_moves (cd, ti, argc, argv);
 
     case GAME_NEW:
-        sc_game_undo_reset();
+        db->gameAlterations.clear();
         return sc_game_new (cd, ti, argc, argv);
 
     case GAME_NOVELTY:
@@ -4383,6 +4410,23 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_PUSH:
         return sc_game_push (cd, ti, argc, argv);
+
+    case GAME_SANTOUCI:
+        if (argc == 3) {
+            Game* g = db->game->clone();
+            PgnParser parser;
+            parser.Reset (argv[2]);
+            parser.SetEndOfInputWarnings (false);
+            parser.SetResultWarnings (false);
+            char buf [1000];
+            errorT err = parser.ParseMoves (g, buf, 1000);
+            if (parser.ErrorCount() > 0) err = ERROR_InvalidMove;
+            buf[0] = 0;
+            if (err == OK) g->GetPrevMoveUCI(buf);
+            delete g;
+            return TclResult(ti, err, std::string(buf));
+        }
+        return errorResult(ti, "usage sc_game SANtoUCI move");
 
     case GAME_SAVE:
         return sc_game_save (cd, ti, argc, argv);
@@ -4425,31 +4469,21 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             language = old_language;
         break;
     case GAME_UNDO:
-        if (db->undoIndex > -1) {
-            Game* g = db->game;
-            // Save this game for later redo
-            db->game = db->undoGame[db->undoIndex];
-            db->undoGame[db->undoIndex] = g;
-            db->undoIndex--;
-            db->gameAltered = (db->undoIndex != db->undoCurrent) || db->undoFull ;
+        if (argc > 2 && strCompare("size", argv[2]) == 0) {
+            return TclResult(ti, OK, db->gameAlterations.undoSize());
         }
+        db->gameAlterations.undo(db->game);
         break;
 
     case GAME_UNDO_POINT:
-        sc_game_undo_point();
+        db->gameAlterations.store(db->game);
         break;
 
     case GAME_REDO:
-        if (db->undoIndex < db->undoMax) {
-	    db->undoIndex++;
-            // swap current game and undoGame[db->undoIndex]
-	    Game* g = db->undoGame[db->undoIndex];
-	    db->undoGame[db->undoIndex] = db->game;
-
-	    // db->gameAltered = true; //g->GetAltered();
-	    db->gameAltered = (db->undoIndex != db->undoCurrent) || db->undoFull ;
-	    db->game = g;
+        if (argc > 2 && strCompare("size", argv[2]) == 0) {
+            return TclResult(ti, OK, db->gameAlterations.redoSize());
         }
+        db->gameAlterations.redo(db->game);
         break;
 
     default:
@@ -5849,7 +5883,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_game load <gameNumber>");
     }
 
-    sc_game_undo_reset();
+    db->gameAlterations.clear();
     
     db->bbuf->Empty();
     uint gnum = strGetUnsigned (argv[2]);
@@ -6947,7 +6981,6 @@ sc_game_tags (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
         case OPT_GET:    return sc_game_tags_get (cd, ti, argc, argv);
         case OPT_SET:
-          sc_game_undo_point();
           return sc_game_tags_set (cd, ti, argc, argv);
         case OPT_RELOAD: return sc_game_tags_reload (cd, ti, argc, argv);
         case OPT_SHARE:  return sc_game_tags_share (cd, ti, argc, argv);
@@ -7436,70 +7469,6 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     return TCL_OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_game_undo_point:
-// save current game state
-void sc_game_undo_point()
-{
-        // Delete any undo checkpoints getting discarded
-        int i = db->undoIndex + 1;
-        while (i <= db->undoMax) {
-            delete db->undoGame[i];
-            db->undoGame[i] = NULL;
-            i++;
-        }
-
-        db->undoIndex++;
-
-        if ( db->undoIndex >= UNDO_MAX ) {
-            // BUFFER FULL
-            delete db->undoGame[0];
-	        for (i = 0 ; i < UNDO_MAX-1 ; i++) {
-		        db->undoGame[i] = db->undoGame[i+1];
-	        }
-	        db->undoIndex = UNDO_MAX-1;
-	        db->undoMax = UNDO_MAX-1;
-
-	        // decrement undoCurrent and check if full
-	        if (db->undoCurrent-- < -1) {
-	            db->undoFull = true;
-	            db->undoCurrent = -1;
-            }
-        }
-
-        db->undoMax = db->undoIndex;
-
-        Game* g = new Game;
-        db->undoGame[db->undoIndex] = g;
-
-        db->game->SaveState();
-        db->game->Encode (db->bbuf, NULL);
-        db->game->RestoreState();
-        db->bbuf->BackToStart();
-        g->Decode (db->bbuf, GAME_DECODE_ALL);
-        g->CopyStandardTags (db->game);
-        db->game->ResetPgnStyle (PGN_STYLE_VARS);
-        db->game->SetPgnFormat (PGN_FORMAT_Plain);
-        db->tbuf->Empty();
-        g->MoveToLocationInPGN (db->tbuf, db->game->GetPgnOffset());
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_game_undo_reset:
-//    resets data used for undos (for example after loading another game)
-void sc_game_undo_reset() {
-  db->undoMax = -1;
-  db->undoIndex = -1;
-  db->undoCurrent = -1;
-  db->undoFull = false;
-  for (int i = 0 ; i < UNDO_MAX ; i++) {
-    if (db->undoGame[i] != NULL) {
-      delete db->undoGame[i];
-      db->undoGame[i] = NULL;
-    }
-  }
-}
-
 //////////////////////////////////////////////////////////////////////
 ///  INFO functions
 
@@ -7918,14 +7887,15 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_move_pgn (cd, ti, argc, argv);
 
     case MOVE_PLY:
-        if (argc != 3) {
-            return errorResult (ti, "Usage: sc_move ply <plynumber>");
+        if (argc >= 3) {
+            std::vector<int> v;
+            for(uint i=2; i < argc; i++) {
+                v.push_back(strGetInteger(argv[i]));
+            }
+            db->game->MoveTo(v);
+            return TCL_OK;
         }
-        {
-            uint ply = strGetUnsigned (argv[2]);
-            db->game->MoveToPly (ply);
-        }
-        break;
+        return errorResult (ti, "Usage: sc_move ply <plynumber>");
 
     case MOVE_START:
         db->game->MoveToPly (0);
@@ -8233,7 +8203,6 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_pos_probe (cd, ti, argc, argv);
 
     case POS_SETCOMMENT:
-        sc_game_undo_point();
         return sc_pos_setComment (cd, ti, argc, argv);
 
     case POS_SIDE:
@@ -8252,8 +8221,8 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         break;
 
-    case LOCATION: //TODO: doesn't work for variations
-        return setUintResult (ti, db->game->GetCurrentPly());
+    case LOCATION:
+        return TclResult (ti, OK, db->game->GetCurrentLocation());
 
     case MOVELIST: {
         Position * pos = db->game->GetCurrentPos();

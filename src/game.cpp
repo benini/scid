@@ -855,7 +855,19 @@ Game::MoveToPly (ushort hmNumber)
     for (ushort i=0; i < hmNumber; i++) {
         if (CurrentMove->marker != END_MARKER) { MoveForward(); }
     }
-    return;
+}
+
+void Game::MoveTo (const std::vector<int>& v)
+{
+    if (v.size() == 0) return;
+    MoveToPly(v.back());
+    for (uint i = v.size() -1; i > 0; i--) {
+        if ((i % 2) == 1) {
+            for (uint j=0; j < v[i -1]; j++) MoveForward();
+        } else {
+            MoveIntoVariation(v[i -1]);
+        }
+    }
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2005,16 +2017,14 @@ Game::GetPrevMoveUCI (char * str)
 {
     ASSERT (str != NULL);
     moveT * m = CurrentMove->prev;
-
     if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
         str[0] = 0;
         return;
     }
-//     if (m->san[0] == 0) {
-        MoveBackup();
-        CurrentPos->MakeUCIString (&(m->moveData), str);
-        MoveForward();
-//     }
+    SaveState();
+    MoveBackup();
+    CurrentPos->MakeUCIString (&(m->moveData), str);
+    RestoreState();
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2024,16 +2034,13 @@ Game::GetPrevMoveUCI (char * str)
 void
 Game::GetNextMoveUCI (char * str)
 {
-  ASSERT (str != NULL);
-  moveT * m = CurrentMove;
-
-  if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
-    str[0] = 0;
-    return;
-  }
-  //MoveBackup();
-  CurrentPos->MakeUCIString (&(m->moveData), str);
-  //MoveForward();
+    ASSERT (str != NULL);
+    moveT * m = CurrentMove;
+    if (m->marker == START_MARKER  ||  m->marker == END_MARKER) {
+      str[0] = 0;
+      return;
+    }
+    CurrentPos->MakeUCIString (&(m->moveData), str);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4045,6 +4052,41 @@ bool Game::calcAbsPlyNumber_(moveT *m, moveT *s) {
 		m = m->next;
 	}
 	return false;
+}
+
+std::vector<int> Game::GetCurrentLocation() {
+    std::vector <int> res;
+    uint n = 0;
+    for (moveT* i = CurrentMove->prev; i != 0; i = i->prev) {
+        if (i->varParent != 0) {
+            if (n != 0) {
+                res.push_back(n);
+                int varNum = 1;
+                for (moveT* j = i;  j->varChild != 0; j = j->varChild) varNum++;
+                res.push_back(i->varParent->numVariations - varNum);
+                n = 0;
+            }
+            i = i->varParent;
+            continue;
+        }
+        if (i->marker == NO_MARKER) n++;
+    }
+    res.push_back(n);
+    return res;
+}
+
+Game* Game::clone() {
+    ByteBuffer bbuf;
+    bbuf.SetBufferSize (BBUF_SIZE);
+    Game* g = new Game();
+    SaveState();
+    Encode (&bbuf, NULL);
+    RestoreState();
+    bbuf.BackToStart();
+    g->Decode (&bbuf, GAME_DECODE_ALL);
+    g->CopyStandardTags (this);
+    g->MoveTo(GetCurrentLocation());
+    return g;
 }
 
 //////////////////////////////////////////////////////////////////////

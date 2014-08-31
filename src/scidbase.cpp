@@ -27,11 +27,6 @@ void scidBaseT::Init() {
 	idx = new Index;
 	nb = new NameBase;
 	game = new Game;
-	for (int u = 0; u < UNDO_MAX; u++) undoGame[u] = NULL;
-	undoMax = -1;
-	undoIndex = -1;
-	undoCurrent = -1;
-	undoFull = false;
 	gameNumber = -1;
 	gameAltered = false;
 	inUse = false;
@@ -54,9 +49,6 @@ void scidBaseT::Init() {
 }
 
 scidBaseT::~scidBaseT() {
-	for (int u = 0; u < UNDO_MAX; u++) {
-		if ( undoGame[u] != NULL ) delete undoGame[u];
-	}
 	if (duplicates != NULL) delete[] duplicates;
 	if (idx != NULL) delete idx;
 	if (nb != NULL) delete nb;
@@ -94,11 +86,6 @@ errorT scidBaseT::Close () {
 
 void scidBaseT::clear() {
 	validStats_ = false;
-	undoMax = undoIndex = undoCurrent = -1;
-	undoFull = false;
-	for (int i = 0; i < UNDO_MAX; i++) {
-		if (undoGame[i] != NULL ) { delete undoGame[i]; undoGame[i] = NULL; }
-	}
 	if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
 	treeCache->Clear();
 	backupCache->Clear();
