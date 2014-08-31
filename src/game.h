@@ -530,7 +530,7 @@ public:
     errorT    Decode (ByteBuffer * buf, byte flags);
     errorT    DecodeTags (ByteBuffer * buf, bool storeTags);
 
-    std::vector<int> Game::GetCurrentLocation();
+    std::vector<int> GetCurrentLocation();
     Game* clone();
 };
 

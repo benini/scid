@@ -36,7 +36,7 @@ class UndoRedo {
 		}
 	}
 	void clear(contT& cont) {
-		contT::iterator it = cont.begin();
+		typename contT::iterator it = cont.begin();
 		for (; it != cont.end(); it++) delete *it;
 		cont.clear();
 	}
