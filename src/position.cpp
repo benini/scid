@@ -1720,52 +1720,6 @@ Position::Mobility (pieceT p, colorT color, squareT from)
     return mobility;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Position::SmallestDefender()
-//    Returns the type of the lowest-valued piece of the specified
-//    color that could capture to the specified square. Pins to the
-//    king are ignored. Checks pieces in the order Pawn, Knight,
-//    Bishop, Rook, Queen then King. If the specified square is
-//    undefended, EMPTY is returned.
-//
-pieceT
-Position::SmallestDefender (colorT color, squareT target)
-{
-    SquareList defenderSquares;
-    pieceT defenders [16];
-    uint numDefenders = CalcAttacks (color, target, &defenderSquares);
-
-    // If the square is undefended, just return EMPTY:
-    if (numDefenders == 0) { return EMPTY; }
-
-    uint i;
-    for (i=0; i < numDefenders; i++) {
-       defenders[i] = Board[defenderSquares.Get(i)];
-    }
-    // Look for pawns first:
-    for (i=0; i < numDefenders; i++) {
-        if (piece_Type (defenders[i]) == PAWN) { return PAWN; }
-    }
-    // Look for knights then bishops:
-    for (i=0; i < numDefenders; i++) {
-        if (piece_Type (defenders[i]) == KNIGHT) { return KNIGHT; }
-    }
-    for (i=0; i < numDefenders; i++) {
-        if (piece_Type (defenders[i]) == BISHOP) { return BISHOP; }
-    }
-    // Look for rooks then queens:
-    for (i=0; i < numDefenders; i++) {
-        if (piece_Type (defenders[i]) == ROOK) { return ROOK; }
-    }
-    for (i=0; i < numDefenders; i++) {
-        if (piece_Type (defenders[i]) == QUEEN) { return QUEEN; }
-    }
-
-    // If we get here, it must be defended only by the king:
-    ASSERT (numDefenders == 1  &&  piece_Type(defenders[i]) == KING);
-    return KING;
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::IsKingInMate():
 //      Quick check if king is in mate.

@@ -248,7 +248,6 @@ public:
                 }
 
     uint        Mobility (pieceT p, colorT color, squareT from);
-    pieceT      SmallestDefender (colorT color, squareT target);
     bool        IsKingInCheck () { return (CalcNumChecks() > 0); }
     bool        IsKingInCheckDir (directionT dir);
     bool        IsKingInCheck (simpleMoveT * sm);
