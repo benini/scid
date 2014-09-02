@@ -6624,7 +6624,7 @@ set helpText(ReviewGame) {<h1>Reviewing a game</h1>
 	For an effective training the following settings should be
 	disabled:
 	<ul>
-		<li>Show last move (Options / Moves / Hightlight last move)</li>
+		<li>Show last move (Options / Moves / Highlight last move)</li>
 		<li>Show next move (Options / Game information / Hide next move)</li>
 		<li>PGN window</li>
 	</p>

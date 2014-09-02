@@ -21,7 +21,7 @@ For probing code to compile, you have to declare the following types before
 You have to define the following macro:
     - NEW         - if you want to use my new, more compact tablebase format;
                     otherwise SJE's schema will be used.
-    - XX          - 'invalid' square - used to specify impossibilty of
+    - XX          - 'invalid' square - used to specify impossibility of
                     en-passant capture. Must be any 'square' value except
                     0..63.
     - T41_INCLUDE - if you want to probe any 5-man 4+1 table (e.g. KPPPK);
@@ -79,7 +79,7 @@ Following functions and macro are exported:
 
 IInitializeTb (char *path) - initialize data structures, parse specified
 directories and register all tablebases that are there. Path consists of
-several directory names seperated by commas, semicolons, or (at non-Windows
+several directory names separated by commas, semicolons, or (at non-Windows
 systems) by colons. Directories are searched in the specified order.
 Function returns # of pieces in the "largest" tablebase it found - e.g. 5 if
 it found KRPKR, 4 if it found KBNK, 3 if it found KRK, 0 if no tablebases
@@ -116,8 +116,8 @@ try to find needed value in TB cache; in the worst case it have to read chunk
 of a file from disk.
 
 IDescFindFromCounters (int *) - that function returns TB #. It takes as an
-input the 10-element integer array - it's zeroth element is number of white
-pawns on the board, first - number of white knights, ..., nineth - number of
+input the 10-element integer array - its zeroth element is number of white
+pawns on the board, first - number of white knights, ..., ninth - number of
 black queens. It returns zero if no such TB registered, TB #, if TB found,
 or negative TB # if you asked for TB with 'wrong' colors, e.g. KPKRP.
 WARNING: that function will return non-zero even if only one of the pair of
