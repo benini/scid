@@ -859,7 +859,7 @@ proc gameSave { gnum } {
   if {$gnum == 0} {
     wm title $w "Scid: [tr GameAdd]"
     pack [ttk::frame $w.refdb] -side top -fill x
-    CreateSelectDBWidget "$w.refdb" "gameSave_toBase"
+    CreateSelectDBWidget "$w.refdb" "gameSave_toBase" [sc_base current] 0
     addHorizontalRule $w
   } else {
     wm title $w "Scid: [tr GameReplace]"
@@ -1097,20 +1097,17 @@ proc gsave { gnum } {
       -blackElo $blackElo -blackRatingType $blackRType \
       -eco $eco -eventdate $edate -extra $extraTagsList
   if {$gnum != 0} {
-    set res [sc_game save $gnum]
+    set err [catch {sc_game save $gnum}]
     ::notify::DatabaseModified [sc_base current]
     ::notify::GameChanged
   } else {
     set ply [sc_pos location]
-    set res [sc_game save $gnum $::gameSave_toBase]
+    set err [catch {sc_game save $gnum $::gameSave_toBase}]
     ::notify::DatabaseModified $::gameSave_toBase
     ::file::SwitchToBase $::gameSave_toBase 0
     ::game::Load [sc_base numGames] $ply
   }
-  if {$res != ""} {
-    tk_messageBox -type ok -icon info -parent .save \
-        -title "Scid" -message $res
-  }
+  if {$err} { ERROR::MessageBox }
 }
 
 # gameAdd:

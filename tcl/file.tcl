@@ -118,7 +118,7 @@ proc ::file::New {} {
 proc ::file::Open {{fName ""}} {
   set err [::file::Open_ "$fName"]
   if {$err == 0} {
-    ::game::Load [sc_base autoload] 0
+    ::game::Load [sc_base autoload [sc_base current] ] 0
     ::windows::gamelist::Open $::file::lastOpened
     ::notify::GameChanged
     ::notify::DatabaseChanged

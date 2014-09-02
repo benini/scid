@@ -49,6 +49,6 @@ foreach nameType {player event site round} {
 }
 
 puts "Checking for duplicate games..."
-set result [sc_base duplicates]
+set result [sc_base duplicates [sc_base current] ]
 puts "  Found $result duplicate games."
 sc_base close

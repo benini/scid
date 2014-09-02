@@ -747,9 +747,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (index == -1) return InvalidCommand (ti, "sc_base", options);
 
     switch (index) {
-    case BASE_AUTOLOAD:
-        return sc_base_autoload (cd, ti, argc, argv);
-
     case BASE_CHECK:
         return sc_base_check (cd, ti, argc, argv);
 
@@ -767,9 +764,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_DESCRIPTION:
         return sc_base_description (cd, ti, argc, argv);
-
-    case BASE_DUPLICATES:
-        return sc_base_duplicates (cd, ti, argc, argv);
 
     case BASE_ECOSTATS:
         return sc_base_ecoStats (cd, ti, argc, argv);
@@ -821,40 +815,15 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (dbase == 0) return errorResult (ti, "Invalid database number.");
 
     switch (index) {
-    case BASE_COMPACT:
-        if (dbase->memoryOnly) return TclResult(ti, ERROR_FileReadOnly);
+    case BASE_AUTOLOAD:
         if (argc == 3) {
-            startProgressBar();
-            return TclResult(ti, dbase->compact(spellChecker[NAME_PLAYER], reportProgress, ti));
-        } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
-            uint n_deleted, n_unused, n_sparse, n_badNameId;
-            errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
-            appendUintElement(ti, n_deleted);
-            appendUintElement(ti, n_unused);
-            appendUintElement(ti, n_sparse);
-            appendUintElement(ti, n_badNameId);
-            return TclResult(ti, res);
+            return TclResult (ti, OK, dbase->idx->GetAutoLoad());
         }
-        return errorResult (ti, "Usage: sc_base compact baseId [stats] <games|names>");
-
-    case BASE_COPYGAMES:
-        if (argc == 5) {
-            scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
-            if (targetBase == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
-            if (targetBase->fileMode == FMODE_ReadOnly) return errorResult(ti, errMsgReadOnly(ti));
-            errorT err = OK;
-            Filter* filter = dbase->getFilter(argv[3]);
-            if (filter) {
-                startProgressBar();
-                err = targetBase->addGames(dbase, filter, reportProgress, ti);
-            } else {
-                uint gNum = strGetUnsigned (argv[3]);
-                if (gNum == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
-                err = targetBase->addGame(dbase, gNum -1);
-            }
-            return TclResult(ti, err);
+        if (dbase->isReadOnly()) {
+            return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
         }
-        return TclResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
+        db->idx->SetAutoLoad (strGetUnsigned (argv[3]));
+        return TclResult(ti, db->idx->WriteHeader());
 
     case BASE_GAMEFLAG:
         if (argc == 6) {
@@ -895,18 +864,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_GAMELOCATION:
         return sc_base_gamelocation (dbase, ti, argc, argv);
 
-    case BASE_SORTCACHE:
-        if (argc != 5) return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
-        if (strCompare("create", argv[3]) == 0) {
-            if (argv[4][0] != 'N') dbase->idx->CreateSortingCache (dbase->getNameBase(), argv[4]);
-        } else {
-            dbase->idx->FreeCache(argv[4]);
-        }
-        return TCL_OK;
-
     case BASE_ISREADONLY:
-        if (argc == 3) return setBoolResult (ti, dbase->inUse && dbase->fileMode==FMODE_ReadOnly);
-        return errorResult (ti, "Usage: sc_base isReadOnly baseId");
+        return TclResult(ti, OK, dbase->isReadOnly());
 
     case BASE_NEWFILTER:
         if (argc == 3) {
@@ -924,37 +883,69 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         return errorResult (ti, "Usage: sc_base newFilter baseId [FEN]");
 
+    case BASE_SORTCACHE:
+        if (argc != 5) return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
+        if (strCompare("create", argv[3]) == 0) {
+            if (argv[4][0] != 'N') dbase->idx->CreateSortingCache (dbase->getNameBase(), argv[4]);
+        } else {
+            dbase->idx->FreeCache(argv[4]);
+        }
+        return TCL_OK;
+
+    }
+
+    //TODO: Group all the functions that modifies the database
+    if (dbase->isReadOnly()) {
+        return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+    }
+
+    switch (index) {
+    case BASE_COMPACT:
+        if (dbase->memoryOnly) {
+            return TclResult(ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        }
+        if (argc == 3) {
+            startProgressBar();
+            return TclResult(ti, dbase->compact(spellChecker[NAME_PLAYER], reportProgress, ti));
+        } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
+            uint n_deleted, n_unused, n_sparse, n_badNameId;
+            errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
+            appendUintElement(ti, n_deleted);
+            appendUintElement(ti, n_unused);
+            appendUintElement(ti, n_sparse);
+            appendUintElement(ti, n_badNameId);
+            return TclResult(ti, res);
+        }
+        return TclResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
+
+    case BASE_COPYGAMES:
+        if (argc == 5) {
+            scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
+            if (targetBase == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
+            errorT err = OK;
+            Filter* filter = dbase->getFilter(argv[3]);
+            if (filter) {
+                startProgressBar();
+                err = targetBase->addGames(dbase, filter, reportProgress, ti);
+            } else {
+                uint gNum = strGetUnsigned (argv[3]);
+                if (gNum == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
+                err = targetBase->addGame(dbase, gNum -1);
+            }
+            return TclResult(ti, err);
+        }
+        return TclResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
+
+    case BASE_DUPLICATES:
+        return sc_base_duplicates (dbase, cd, ti, argc, argv);
+
     case BASE_IMPORT:
         if (argc != 4) return errorResult (ti, "Usage: sc_base import baseId filename");
         return sc_base_import (ti, dbase, argv[3]);
 
     }
 
-    return errorResult (ti, "Error: invalid sc_base command");
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_autoload:
-//   Sets or returns the autoload number of the database, which
-//   is the game to load when opening the base.
-int
-sc_base_autoload (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc == 2) {
-        return setUintResult (ti, db->idx->GetAutoLoad());
-    }
-
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
-    uint gnum = strGetUnsigned (argv[2]);
-    db->idx->SetAutoLoad (gnum);
-    db->idx->WriteHeader();
-    return TCL_OK;
+    return InvalidCommand (ti, "sc_base", options);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1217,8 +1208,8 @@ sc_base_description (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     if (! db->inUse) {
         return setResult (ti, errMsgNotOpen(ti));
     }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return setResult (ti, errMsgReadOnly(ti));
+    if (db->isReadOnly()) {
+        return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
     }
     // Edit the description and return it:
     db->idx->SetDescription (argv[2]);
@@ -1522,11 +1513,6 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
 {
-    // Cannot import into a read-only database unless it is memory-only:
-    if (cdb->fileMode == FMODE_ReadOnly  &&  !(cdb->memoryOnly)) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
     int res = TCL_OK;
     bool showProgress = startProgressBar();
 
@@ -1958,7 +1944,7 @@ sc_base_type (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     uint basetype = strGetUnsigned (argv[3]);
     basePtr->idx->SetType (basetype);
-    if ((basePtr->fileMode != FMODE_ReadOnly) && (! basePtr->memoryOnly)) {
+    if ((! basePtr->isReadOnly()) && (! basePtr->memoryOnly)) {
         // Update the index header on disk:
         basePtr->idx->WriteHeader();
     }
@@ -2158,19 +2144,8 @@ checkDuplicate (scidBaseT * base,
 }
 
 int
-sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    bool showProgress = startProgressBar();
-
-    if ((argc % 2) != 0) {
-        return errorResult (ti, "Usage: sc_base duplicates [-option value ...]");
-    }
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
 
     uint deletedCount = 0;
     const uint GLIST_HASH_SIZE = 32768;
@@ -2216,7 +2191,7 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         OPT_COPYRATINGS, OPT_DELETE
     };
 
-    for (int arg = 2; arg < argc; arg += 2) {
+    for (int arg = 3; arg < argc; arg += 2) {
         const char * optStr = argv[arg];
         const char * valueStr = argv[arg + 1];
         bool b = strGetBoolean (valueStr);
@@ -2254,16 +2229,17 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                 return InvalidCommand (ti, "sc_base duplicates", options);
         }
     }
+    bool showProgress = startProgressBar();
 
     gNumListPtrT * gHashTable = new gNumListPtrT [GLIST_HASH_SIZE];
-    gNumListT * gNumList = new gNumListT [db->numGames];
+    gNumListT * gNumList = new gNumListT [dbase->numGames];
 
     // Setup duplicates array:
-    if (db->duplicates == NULL) {
-        db->duplicates = new uint [db->numGames];
+    if (dbase->duplicates == NULL) {
+        dbase->duplicates = new uint [dbase->numGames];
     }
-    for (uint d=0; d < db->numGames; d++) {
-        db->duplicates[d] = 0;
+    for (uint d=0; d < dbase->numGames; d++) {
+        dbase->duplicates[d] = 0;
     }
 
     // We use a hashtable to limit duplicate game comparisons; each game
@@ -2271,18 +2247,18 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Set up the linked-list hashtable of games with same hashed names:
 
     for (uint h=0; h < GLIST_HASH_SIZE; h++) { gHashTable[h] = NULL; }
-    for (uint i=0; i < db->numGames; i++) {
-        const IndexEntry* ie = db->getIndexEntry(i);
+    for (uint i=0; i < dbase->numGames; i++) {
+        const IndexEntry* ie = dbase->getIndexEntry(i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
-            &&  (!onlyFilterGames  ||  db->dbFilter->Get(i) > 0)) {
+            &&  (!onlyFilterGames  ||  dbase->dbFilter->Get(i) > 0)) {
             uint white, black;
             if (criteria.exactNames) {
                 white = ie->GetWhite();
                 black = ie->GetBlack();
             } else {
-                white = hashName (ie->GetWhiteName(db->nb), 4);
-                black = hashName (ie->GetBlackName(db->nb), 4);
+                white = hashName (ie->GetWhiteName(dbase->nb), 4);
+                black = hashName (ie->GetBlackName(dbase->nb), 4);
             }
             uint hash = (white + black) % GLIST_HASH_SIZE;
             gNumListT * node = &(gNumList[i]);
@@ -2294,7 +2270,7 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
     }
 
-	if (setFilterToDups) { db->dbFilter->Fill (0); }
+	if (setFilterToDups) { dbase->dbFilter->Fill (0); }
     if (showProgress) { restartProgressBar (ti); }
 
     // Now check each list of same-hash games for duplicates:
@@ -2307,16 +2283,16 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         gNumListT * head = gHashTable[hash];
 
         while (head != NULL) {
-            IndexEntry * ieHead = db->idx->FetchEntry (head->gNumber);
+            IndexEntry * ieHead = dbase->idx->FetchEntry (head->gNumber);
             gNumListT * compare = head->next;
 
             while (compare != NULL) {
 
-                IndexEntry * ieComp = db->idx->FetchEntry (compare->gNumber);
+                IndexEntry * ieComp = dbase->idx->FetchEntry (compare->gNumber);
 
-                if (checkDuplicate (db, ieHead, ieComp, head, compare, &criteria)) {
-                    db->duplicates[head->gNumber] = compare->gNumber + 1;
-                    db->duplicates[compare->gNumber] = head->gNumber + 1;
+                if (checkDuplicate (dbase, ieHead, ieComp, head, compare, &criteria)) {
+                    dbase->duplicates[head->gNumber] = compare->gNumber + 1;
+                    dbase->duplicates[compare->gNumber] = head->gNumber + 1;
 
                     // Found a duplicate! Decide which one to delete:
 
@@ -2383,12 +2359,12 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                                 copiedRatings = true;
                             }
                         }
-                        db->idx->WriteEntries (ieDelete, gnumDelete);
+                        dbase->idx->WriteEntries (ieDelete, gnumDelete);
                         if (copiedRatings) {
-                            db->idx->WriteEntries (ieKeep, gnumKeep);
+                            dbase->idx->WriteEntries (ieKeep, gnumKeep);
                         }
                         if (setFilterToDups) {
-                            db->dbFilter->Set (gnumDelete, 1);
+                            dbase->dbFilter->Set (gnumDelete, 1);
                         }
                     }
                 }
@@ -2398,8 +2374,8 @@ sc_base_duplicates (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         }
     }
 
-    db->idx->WriteHeader();
-    recalcFlagCounts (db);
+    dbase->idx->WriteHeader();
+    dbase->clearStats();
     if (showProgress) { updateProgressBar (ti, 1, 1); }
 
     delete[] gHashTable;
@@ -2461,7 +2437,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     };
 
     // If stripping a tag, make sure we have a writable database:
-    if (cmd == TAG_STRIP  &&  db->fileMode == FMODE_ReadOnly) {
+    if (cmd == TAG_STRIP  &&  db->isReadOnly()) {
         return errorResult (ti, errMsgReadOnly(ti));
     }
 
@@ -3597,7 +3573,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // nothing needs to be written to the index file.
         // Write the updated entry if necessary:
 
-        if (db->fileMode != FMODE_ReadOnly
+        if (! db->isReadOnly()
                 &&  ie->GetEcoCode() != oldEcoCode) {
             if (db->idx->WriteEntries (ie, i) != OK) {
                 return errorResult (ti, "Error writing index file.");
@@ -3606,7 +3582,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Update the index file header:
-    if (db->fileMode != FMODE_ReadOnly) {
+    if (! db->isReadOnly()) {
         if (db->idx->WriteHeader() != OK) {
             return errorResult (ti, "Error writing index file.");
         }
@@ -7291,7 +7267,7 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     if (gn2 > db->numGames) { return TCL_OK; }
 
     // Do nothing if the base is not writable:
-    if (!db->inUse  ||  db->fileMode == FMODE_ReadOnly) { return TCL_OK; }
+    if (!db->inUse  ||  db->isReadOnly()) { return TCL_OK; }
 
     // Make a local copy of each index entry:
     IndexEntry ie1 = *(db->getIndexEntry(gn1 - 1));
@@ -8953,13 +8929,11 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
+    if (!db->inUse) {
+        return TclResult (ti, ERROR_FileNotOpen, errMsgNotOpen(ti));
+    }
+
     switch (index) {
-    case OPT_CORRECT:
-        return sc_name_correct (cd, ti, argc, argv);
-
-    case OPT_EDIT:
-        return sc_name_edit (cd, ti, argc, argv);
-
     case OPT_INFO:
         return sc_name_info (cd, ti, argc, argv);
 
@@ -8969,17 +8943,29 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case OPT_PLIST:
         return sc_name_plist (cd, ti, argc, argv);
 
-    case OPT_RATINGS:
-        return sc_name_ratings (cd, ti, argc, argv);
-
     case OPT_READ:
         return sc_name_read (cd, ti, argc, argv);
 
-    case OPT_SPELLCHECK:
-        return sc_name_spellcheck (cd, ti, argc, argv);
-
     case OPT_RETRIEVENAME:
         return sc_name_retrievename (cd, ti, argc, argv);
+    }
+
+    if (db->isReadOnly()) {
+        return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+    }
+
+    switch (index) {
+    case OPT_CORRECT:
+        return sc_name_correct (cd, ti, argc, argv);
+
+    case OPT_EDIT:
+        return sc_name_edit (cd, ti, argc, argv);
+
+    case OPT_RATINGS:
+        return sc_name_ratings (cd, ti, argc, argv);
+
+    case OPT_SPELLCHECK:
+        return sc_name_spellcheck (cd, ti, argc, argv);
 
     default:
         return InvalidCommand (ti, "sc_name", options);
@@ -9001,13 +8987,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti,
                 "Usage: sc_name correct p|e|s|r <corrections>");
     }
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
     NameBase * nb = db->nb;
     const char * str = argv[3];
     char oldName [512];
@@ -9207,14 +9186,6 @@ int
 sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_name edit <type> <oldName> <newName>";
-
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
-
     const char * options[] = {
         "player", "event", "site", "round", "rating",
         "date", "edate", NULL
@@ -9420,20 +9391,15 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_name_retrievename (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-#ifndef WINCE
     const char * usageStr = "Usage: sc_name retrievename <player>";
     SpellChecker * spChecker = spellChecker[NAME_PLAYER];
 
     if (argc != 3 ) { return errorResult (ti, usageStr); }
     const char * playerName = argv[argc-1];
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
     if (spChecker != NULL) {
         const char * note = spChecker->Correct (playerName);
         Tcl_AppendResult (ti, (note == NULL)? playerName : note, NULL);
     }
-#endif
     return TCL_OK;
 }
 
@@ -9452,9 +9418,6 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint startYear = 1900;
 
     if (argc != 3  &&  argc != 4) { return errorResult (ti, usageStr); }
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
 
     bool ratingsOnly = false;
     bool htextOutput = false;
@@ -10137,10 +10100,6 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, usage);
     }
 
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-
     const char * prefix = argv[arg++];
     uint maxMatches = strGetUnsigned (argv[arg++]);
     if (maxMatches == 0) { return TCL_OK; }
@@ -10176,7 +10135,6 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint maxListSize = db->nb->GetNumNames(NAME_PLAYER);
     uint listSize = 0;
 
-    if (! db->inUse) { return errorResult (ti, errMsgNotOpen(ti)); }
     if (db->numGames == 0) { return TCL_OK; }
 
     static const char * options [] = {
@@ -10375,12 +10333,6 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint numChangedGames = 0;
     SpellChecker * sp = spellChecker[NAME_PLAYER];
 
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
     if (sp == NULL) {
         Tcl_AppendResult (ti, "A spellcheck file has not been loaded.\n\n",
                           "You can load one from the Options menu.", NULL);
@@ -10483,7 +10435,6 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-#ifndef WINCE
     if (argc == 2) {
         for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
             uint numNames = 0;
@@ -10516,7 +10467,6 @@ sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         spellChecker[nt] = temp_spellChecker;
         appendUintElement (ti, spellChecker[nt]->NumCorrectNames());
     }
-#endif
     return TCL_OK;
 }
 
@@ -10555,7 +10505,6 @@ strPromoteSurname (char * target, const char * source)
 int
 sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-#ifndef WINCE
     nameT nt = NAME_INVALID;
     uint maxCorrections = 20000;
     bool doSurnames = false;
@@ -10607,12 +10556,6 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         return errorResult (ti, usage);
     }
 
-    if (!db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->fileMode == FMODE_ReadOnly) {
-        return errorResult (ti, errMsgReadOnly(ti));
-    }
     if (spellChecker[nt] == NULL) {
         Tcl_AppendResult (ti, "A spellcheck file has not been loaded.\n\n",
                           "You can load one from the Options menu.", NULL);
@@ -10868,7 +10811,6 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     }
     Tcl_AppendResult (ti, "\n", dstr->Data(), NULL);
     delete dstr;
-#endif
     return TCL_OK;
 }
 

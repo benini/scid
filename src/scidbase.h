@@ -104,6 +104,7 @@ struct scidBaseT {
 		return filters_[idx].second;
 	}
 
+	int isReadOnly() { return (fileMode==FMODE_ReadOnly) ? 1 : 0; }
 	const IndexEntry* getIndexEntry(gameNumberT g) const { return idx->FetchEntry(g);	}
 	const NameBase* getNameBase() const { return nb; }
 
@@ -184,7 +185,6 @@ struct scidBaseT {
 	TreeCache* treeCache;
 	TreeCache* backupCache;
 	fileNameT fileName; // File name without ".si" suffix
-	fileModeT fileMode; // Read-only, write-only, or both.
 	ByteBuffer* bbuf;
 	TextBuffer* tbuf;
 	Filter* dbFilter;
@@ -198,6 +198,7 @@ struct scidBaseT {
 	UndoRedo<Game, 30> gameAlterations;
 
 private:
+	fileModeT fileMode; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
 	bool validStats_;
 	Stats stats;

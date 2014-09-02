@@ -408,7 +408,7 @@ proc ::maint::SetAutoloadGame {} {
   if {[winfo exists $w]} { return }
   toplevel $w
   wm title $w "Scid"
-  set autoloadGame [sc_base autoload]
+  set autoloadGame [sc_base autoload [sc_base current] ]
   
   pack [ttk::frame $w.f] -side top -fill x -expand 1
   ttk::label $w.f.label -text $::tr(AutoloadGame:)
@@ -429,7 +429,7 @@ proc ::maint::SetAutoloadGame {} {
   
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text OK -command \
-      "sc_base autoload \$autoloadGame; catch {grab release $w}; destroy $w"
+      "sc_base autoload \[sc_base current\] \$autoloadGame; catch {grab release $w}; destroy $w"
   ttk::button $w.b.cancel -text $::tr(Cancel) -command \
       "catch {grab release $w}; destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 2
@@ -642,7 +642,8 @@ proc doMarkDups {{parent .}} {
     sc_base gameflag [sc_base current] all unset del
   }
 
-  if {[catch {sc_base duplicates -colors $twinSettings(colors) \
+  if {[catch {sc_base duplicates [sc_base current] \
+          -colors $twinSettings(colors) \
           -event $twinSettings(event) -site $twinSettings(site) \
           -round $twinSettings(round) -year $twinSettings(year) \
           -month $twinSettings(month) -day $twinSettings(day) \
@@ -1409,7 +1410,8 @@ proc doCleaner {} {
     if {$twinSettings(undelete) == "Yes"} {
       sc_base gameflag [sc_base current] all unset del
     }
-    if {[catch {sc_base duplicates -colors $twinSettings(colors) \
+    if {[catch {sc_base duplicates [sc_base current] \
+            -colors $twinSettings(colors) \
             -event $twinSettings(event) -site $twinSettings(site) \
             -round $twinSettings(round) -year $twinSettings(year) \
             -month $twinSettings(month) -day $twinSettings(day) \

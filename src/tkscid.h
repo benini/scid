@@ -95,10 +95,9 @@ struct progressBarT {
 int str_is_prefix  (TCL_ARGS);
 int str_prefix_len (TCL_ARGS);
 int sc_base           (TCL_ARGS);
-int sc_base_autoload  (TCL_ARGS);
 int sc_base_filename  (TCL_ARGS);
 int sc_base_inUse     (TCL_ARGS);
-int sc_base_duplicates (TCL_ARGS);
+int sc_base_duplicates (scidBaseT* dbase, TCL_ARGS);
 int sc_base_open      (TCL_ARGS);
 int sc_base_check     (TCL_ARGS);
 int sc_createbase     (Tcl_Interp * ti, const char * filename,

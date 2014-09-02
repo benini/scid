@@ -176,6 +176,7 @@ errorT scidBaseT::Open (fileModeT mode,
 }
 
 errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
+	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 	errorT errAddGame = addGame_(sourceBase, gNum);
 	errorT errClear = clearCaches(numGames -1);
 	return (errAddGame == OK) ? errClear : errAddGame;
@@ -183,6 +184,7 @@ errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
 
 errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
                            bool (progressFn)(void*, unsigned int, unsigned int), void* progressData) {
+	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 	errorT err = OK;
 	uint iProgress = 0;
 	uint totGames = filter->Count();
