@@ -840,7 +840,7 @@ $m add command -label OptionsSave -command {
           blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \
           translatePieces arrowLastMove highlightLastMove highlightLastMoveWidth highlightLastMoveColor \
-          askToReplaceMoves locale(numeric) \
+          glossOfDanger askToReplaceMoves locale(numeric) \
           spellCheckFile autoRaise autoIconify windowsDock showGameInfo \
           exportFlags(comments) exportFlags(vars) \
           exportFlags(indentc) exportFlags(indentv) \
@@ -1071,6 +1071,10 @@ set helpMessage($m.entry,9) OptionsMovesHighlightLastMove
 $m.entry add checkbutton -label OptionsMovesShowVarArrows \
     -variable showVarArrows -offvalue 0 -onvalue 1
 set helpMessage($m.entry,10) OptionsMovesShowVarArrows
+
+$m.entry add checkbutton -label OptionsMovesGlossOfDanger \
+    -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
+set helpMessage($m.entry,11) OptionsMovesGlossOfDanger
 
 proc updateLocale {} {
   global locale
@@ -1506,7 +1510,7 @@ proc setLanguageMenus {{lang ""}} {
         GInfo$tag $lang
   }
   configMenuText .menu.options.entry [tr OptionsShowVarPopup $oldLang] OptionsShowVarPopup $lang
-  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove ShowVarArrows } {
+  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove ShowVarArrows GlossOfDanger } {
     configMenuText .menu.options.entry [tr OptionsMoves$tag $oldLang] \
         OptionsMoves$tag $lang
   }

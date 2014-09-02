@@ -307,6 +307,8 @@ menuText S OptionsMovesKey "Teclado inteligente" 0 \
   {Activa/desactiva la función de autocompletado inteligente de movimientos con teclado}
 menuText S OptionsMovesShowVarArrows "Mostrar flechas para las variaciones" 0 \
   {Activa/desactiva mostrar flechas para las variaciones}
+# ====== TODO To be translated ======
+menuText S OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText S OptionsNumbers "Formato de números" 11 \
   {Selecciona el formato de números}
 menuText S OptionsStartup "Inicio" 3 \

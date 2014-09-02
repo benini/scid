@@ -297,6 +297,8 @@ menuText K OptionsMovesKey "Teclat Intel·ligent" 0 \
 {Activa/desactiva la funció d'autocompletat intel·ligent de jugades amb teclat}
 # ====== TODO To be translated ======
 menuText K OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+# ====== TODO To be translated ======
+menuText K OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText K OptionsNumbers "Format de números" 11 {Selecciona el format de números}
 menuText K OptionsStartup "Inici" 3 {Seleccionar les finestres que s'obren al començar}
 menuText K OptionsTheme "Tema" 0 {Canviar l'aspecte del programari}

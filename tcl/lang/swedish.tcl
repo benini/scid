@@ -273,6 +273,8 @@ menuText W OptionsMovesSpace "Lägg till mellanslag efter dragnummer" 0 {Lägg til
 menuText W OptionsMovesKey "Tangentkomplettering" 0 \
   {Starta/ stäng av dragkomplettering vid tangentinmatning}
 menuText W OptionsMovesShowVarArrows "Visa pilar för variationer" 0 {Växlar på/av pilar som visar drag i variationer}
+# ====== TODO To be translated ======
+menuText W OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText W OptionsNumbers "Talformat" 3 {Välj hur tal visas}
 menuText W OptionsStartup "Start" 3 {Välj vilka fönster som ska öppnas vid start}
 menuText W OptionsTheme "Tema" 0 {Ändra utseende på gränssnitt}

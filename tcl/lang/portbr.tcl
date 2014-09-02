@@ -276,6 +276,8 @@ menuText B OptionsMovesSpace "Adicionar espaços após o número do movimento" 0 {A
 menuText B OptionsMovesKey "Auto completar" 0 \
   {Liga/desliga auto completar a partir do que for digitado}
 menuText B OptionsMovesShowVarArrows "Mostrar Setas para variantes" 0 {Liga/Desliga as setas que mostram movimentos em variantes}
+# ====== TODO To be translated ======
+menuText B OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText B OptionsNumbers "Formato de Numeros" 0 {Selecione o formato usado para numeros}
 menuText B OptionsStartup "Iniciar" 1 \
   {Seleciona janelas que serao abertas ao iniciar o programa}

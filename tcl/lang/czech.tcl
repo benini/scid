@@ -266,6 +266,8 @@ menuText C OptionsMovesSpace "Pøidat mezeru za èíslo tahu" 0 {Pøidat mezeru za è
 menuText C OptionsMovesKey "Klávesnicové doplòování" 13 \
   {Zapnout/vypnout automatické doplòování tahù zadávaných klávesnicí}
 menuText C OptionsMovesShowVarArrows "Zobrazit ¹ipky pro varianty" 0 {Zapnout/vypnout zobrazování ¹ipek ukazujících tahy variant}
+# ====== TODO To be translated ======
+menuText C OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText C OptionsNumbers "Formát èísel" 0 {Zvolit formát èísel}
 menuText C OptionsStartup "Pøi spu¹tìní" 4 {Zvolit okna, která se otevøou pøi spu¹tìní}
 menuText C OptionsTheme "Téma" 0 {Zmìnit vzhled u¾ivatelského rozhraní}

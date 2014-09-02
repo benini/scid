@@ -752,6 +752,12 @@ proc ::board::colorSquare {w i {color ""}} {
   } else {
     set color [::board::defaultColor $i]
     set brstate "normal"
+    if { $::glossOfDanger } {
+      array set attacks [sc_pos attacks]
+      if {[info exists attacks($i)]} {
+        set color $attacks($i)
+      }
+    }
     foreach mark $::board::_mark($w) {
       if {[lindex $mark 1] == $i && [lindex $mark 0] == "full"} {
         set color [lindex $mark 3]
@@ -1430,6 +1436,13 @@ proc ::board::update {w {board ""} {animate 0}} {
   # Update side-to-move icon:
   ::board::sideToMove_ $w [string index $::board::_data($w) 65]
   
+  # Gloss Of Danger:
+  if { $::glossOfDanger } {
+    foreach {sq col} [sc_pos attacks] {
+      ::board::colorSquare $w $sq $col
+    }
+  }
+
   # Redraw marks and arrows if required:
   if {$::board::_showMarks($w)} {
     foreach mark $::board::_mark($w) {

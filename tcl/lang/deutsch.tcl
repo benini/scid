@@ -299,6 +299,8 @@ menuText D OptionsMovesSpace "Leerzeichen nach Zugnummer einfügen" 0 {Leerzeiche
 menuText D OptionsMovesKey "Autom. Zugergänzung" 10 \
   {Automatische Zugergänzung ein-/ausschalten}
 menuText D OptionsMovesShowVarArrows "Pfeile für Varianten anzeigen" 0 {Zeige Pfeile in Varianten an: ja/nein}
+# ====== TODO To be translated ======
+menuText D OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText D OptionsNumbers "Zahlenformat" 5 {Zahlenformat wählen}
 menuText D OptionsStartup "Autostart" 1 {Fenster zum Öffnen bei Start auswählen}
 menuText D OptionsTheme "Design" 0 {Verändert das Aussehen der Oberfläche}

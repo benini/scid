@@ -290,6 +290,8 @@ menuText I OptionsMovesSpace "Aggiungi Spazi dopo Mossa" 0 {Agginuge spazi dopo 
 menuText I OptionsMovesKey "Completamento da tastiera" 0 \
   {Attiva/Disattiva l'autocompletamento di mosse da tastiera}
 menuText I OptionsMovesShowVarArrows "Mostra Frecce x Varianti" 0 {Attiva/Disattiva le freccie indicanti le mosse delle varianti}
+# ====== TODO To be translated ======
+menuText I OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText I OptionsNumbers "Formato del numero" 13 {Seglie il formato del numero}
 menuText I OptionsStartup "Apertura all'avvio" 3 {Sceglie le finestre da aprire all'avvio}
 # ====== TODO To be translated ======

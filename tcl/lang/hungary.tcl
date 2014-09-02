@@ -281,6 +281,8 @@ menuText H OptionsMovesKey "Billentyû-kiegészítés" 0 \
   {Be/kikapcsolja a billentyûzettel részlegesen bevitt lépések automatikus kiegészítését.}
 # ====== TODO To be translated ======
 menuText H OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+# ====== TODO To be translated ======
+menuText H OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText H OptionsNumbers "Számformátum" 1 {Számformátum kiválasztása}
 menuText H OptionsStartup "Indítás" 0 {Az indításkor kinyitandó ablakok kiválasztása}
 menuText H OptionsTheme "Téma" 0 {A program megjelenésének megváltoztatása}

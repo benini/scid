@@ -279,6 +279,8 @@ menuText F OptionsMovesSpace "Ajouter un espace après le numéro du coup" 0 {Espa
 menuText F OptionsMovesKey "Complétion clavier" 0 \
   {Activer/Désactiver le mode de complétion du clavier}
 menuText F OptionsMovesShowVarArrows "Montrer flêches pour les variations" 0 {Montrer des flêches pour les variations existantes}
+# ====== TODO To be translated ======
+menuText F OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText F OptionsNumbers "Format numérique" 7 {Sélectionner le format des nombres}
 menuText F OptionsStartup "Démarrage" 3 {Sélectionner les fenêtres à ouvrir au démarrage}
 menuText F OptionsTheme "Apparence" 0 {Change l'apparence de l'interface}

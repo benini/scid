@@ -325,6 +325,8 @@ menuText Y OptionsMovesKey "Dopunjavanje poteza" 0 \
   {Ukljuèi/iskljuèi dopunjavanje poteza zadatih tastaturom}
 # ====== TODO To be translated ======
 menuText Y OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+# ====== TODO To be translated ======
+menuText Y OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText Y OptionsNumbers "Format brojeva" 0 {Izaberi format brojeva}
 menuText Y OptionsStartup "Startup" 3 {Select windows to open at startup} ;# ***
 # ====== TODO To be translated ======

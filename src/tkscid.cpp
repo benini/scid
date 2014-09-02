@@ -8085,14 +8085,16 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "fen", "getComment", "getNags", "hash", "html",
         "isAt", "isCheck", "isLegal", "isPromotion", "movelist",
         "matchMoves", "moveNumber", "pgnBoard", "pgnOffset",
-        "probe", "setComment", "side", "tex", "moves", "location", NULL
+        "probe", "setComment", "side", "tex", "moves", "location",
+        "attacks", NULL
     };
     enum {
         POS_ADDNAG, POS_ANALYZE, POS_BESTSQ, POS_BOARD, POS_CLEARNAGS,
         POS_FEN, POS_GETCOMMENT, POS_GETNAGS, POS_HASH, POS_HTML,
         POS_ISAT, POS_ISCHECK, POS_ISLEGAL, POS_ISPROMO, MOVELIST,
         POS_MATCHMOVES, POS_MOVENUM, POS_PGNBOARD, POS_PGNOFFSET,
-        POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION
+        POS_PROBE, POS_SETCOMMENT, POS_SIDE, POS_TEX, POS_MOVES, LOCATION,
+        POS_ATTACKS
     };
 
     char boardStr[200];
@@ -8227,6 +8229,27 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         delete [] res;
         return TCL_OK;
     }
+
+    case POS_ATTACKS:
+        {
+            Position *pos = db->game->GetCurrentPos();
+            for (colorT c = WHITE; c <= BLACK; c++) {
+                for (uint i = 0; i < pos->GetCount(c); i++) {
+                    squareT sq = pos->GetList(c)[i];
+                    uint att = pos->CalcAttacks(color_Flip(c), sq, NULL);
+                    if (att) {
+                        uint def = 0;
+                        if (sq != pos->GetKingSquare(c))
+                            def = pos->CalcAttacks(c, sq, NULL);
+                        appendUintElement(ti, sq);
+                        if (def > att) Tcl_AppendElement(ti, "green");
+                        else if (att > def) Tcl_AppendElement(ti, "red");
+                        else Tcl_AppendElement(ti, "yellow");
+                    }
+                }
+            }
+        }
+        break;
 
     default:
         return InvalidCommand (ti, "sc_pos", options);

@@ -310,6 +310,8 @@ menuText U OptionsMovesSpace "Välilyönti siirtoihin" 0 {Lisää välilyönti siirron
 menuText U OptionsMovesKey "Automaattinen täydennys" 0 \
   {Kytek siirtojen automaattinen täydennys päälle/päältä}
 menuText U OptionsMovesShowVarArrows "Muunnelmat nuolin" 0 {Näytä/älä näytä muunnelmia nuolilla laudalla}
+# ====== TODO To be translated ======
+menuText U OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText U OptionsNumbers "Numerointi" 0 {Numeroformaatit, 1-3 desimaalipisteellä, 4-6 -pilkulla}
 menuText U OptionsStartup "Käynnistys" 0 {Valitse lisäikkunat, jotka avataan ohjelmaa käynnistettäessä}
 menuText U OptionsTheme "Teema" 0 {Valitse käyttöliittymän teema}

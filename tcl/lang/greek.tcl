@@ -307,6 +307,8 @@ menuText G OptionsMovesSpace "Προσθήκη διαστημάτων μετά �
 menuText G OptionsMovesKey "Ολοκλήρωση πληκτρολογίου" 0 \
   {Ενεργοποίηση/απενεργοποίηση της αυτόματης ολοκλήρωσης κινήσεων μέσω πληκτρολογίου}
 menuText G OptionsMovesShowVarArrows "Εμφάνιση βέλους για βαριάντα" 0 {Ενεργοποίηση/απενεργοποίηση του βέλους που δείχνει τις κινήσεις των βαριαντών}
+# ====== TODO To be translated ======
+menuText G OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText G OptionsNumbers "Μορφή αριθμών" 0 {Επιλέξτε τη μορφή των αριθμών}
 menuText G OptionsStartup "Εκκίνηση" 3 {Επιλέξτε τα παράθυρα που θα ανοίγουν κατά την εκκίνηση του Scid}
 menuText G OptionsTheme "Θέμα" 0 {Αλλάξτε την όψη του προγράμματος}

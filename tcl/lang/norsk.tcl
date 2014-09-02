@@ -327,6 +327,8 @@ menuText O OptionsMovesKey "Autofullfør" 0 \
   {Slå av/på autofullføriring av tastaturtrekk}
 # ====== TODO To be translated ======
 menuText O OptionsMovesShowVarArrows "Show Arrows for Variations" 0 {Turn on/off arrows showing moves in variations}
+# ====== TODO To be translated ======
+menuText O OptionsMovesGlossOfDanger "Color Coded Gloss of Danger" 0 {Turn on/off color coded gloss of danger}
 menuText O OptionsNumbers "Tallformat" 0 {Angi tallformat}
 menuText O OptionsStartup "Oppstart" 0 {Angi vinduer som skal åpne ved oppstart}
 # ====== TODO To be translated ======
