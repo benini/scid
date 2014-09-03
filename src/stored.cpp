@@ -573,7 +573,7 @@ public:
 	}
 	bool neverMatch(const Board& m) const {
 		// Pawns allows to exclude some games:
-		int p[3][8] = {0};
+		int p[3][8] = {{0}};
 		for (int i=0; i < 64; i++) {
 			pieceT a = b_[i];
 			pieceT b = m.b_[i];

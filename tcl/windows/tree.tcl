@@ -1023,7 +1023,7 @@ proc ::tree::graph { baseNumber {bpress 0}} {
   
   ::utils::graph::redraw tree$baseNumber
   set moves ""
-  catch {set moves [sc_game firstMoves 0 -1]}
+  catch {set moves [sc_game firstMoves -1]}
   if {[string length $moves] == 0} { set moves $::tr(StartPos) }
   set title "$moves ([::utils::thousands $totalGames] $::tr(games))"
   $w.c itemconfigure text -text $title

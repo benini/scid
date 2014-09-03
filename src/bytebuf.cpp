@@ -291,8 +291,8 @@ ByteBuffer::CopyFrom (byte * source, uint length, uint offset)
     ASSERT (BufferSize >= length+offset);
     Current = Buffer;
     ReadPos = 0;
-    register byte * from, * to;
-    register uint i = length;
+    byte * from, * to;
+    uint i = length;
     from = source; to = Buffer+offset;
     while (i) {
         *to++ = *from++;

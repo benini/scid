@@ -4887,54 +4887,26 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_firstMoves:
 //    get the first few moves of the specified game as  a text line.
-//    A game number 0 indicates to use the current active game.
-//    E.g., "sc_game firstMoves 0 4" might return "1.e4 e5 2.Nf3 Nf6"
+//    E.g., "sc_game firstMoves 4" might return "1.e4 e5 2.Nf3 Nf6"
 int
 sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc != 4) {
-        return errorResult (ti, "Usage: sc_game firstMoves <gameNum> <numMoves>");
+    if (argc != 3) {
+        return errorResult (ti, "Usage: sc_game firstMoves <numMoves>");
     }
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
 
-    uint gNum = strGetUnsigned (argv[2]);
-    if (gNum < 0  ||  gNum > db->numGames) {
-        return errorResult (ti, "Invalid game number.");
-    }
-
-    int plyCount = strGetInteger (argv[3]);
-    Game * g = scratchGame;
-
-    if (gNum == 0) {
-        g = db->game;
-    } else {
-        db->bbuf->Empty();
-        const IndexEntry* ie = db->getIndexEntry(gNum - 1);
-        if (ie->GetLength() == 0) {
-            return setResult (ti, "(This game has no move data)");
-        }
-
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
-            return errorResult (ti, "Error reading game.");
-        }
-
-        g->Clear();
-        if (g->Decode (db->bbuf, GAME_DECODE_NONE) != OK) {
-            return errorResult (ti, "Error decoding game.");
-        }
-    }
-
+    int plyCount = strGetInteger (argv[2]);
     // Check plyCount is a reasonable value, or set it to current plycount.
-    if (plyCount < 0) { plyCount = g->GetCurrentPly(); }
-    DString * dstr = new DString;
-    g->MoveToPly(0);
-    g->GetPartialMoveList (dstr, plyCount);
-    Tcl_AppendResult (ti, dstr->Data(), NULL);
-    delete dstr;
-    return TCL_OK;
+    if (plyCount < 0) { plyCount = db->game->GetCurrentPly(); }
+    db->game->SaveState();
+    db->game->MoveToPly(0);
+    DString dstr;
+    db->game->GetPartialMoveList (&dstr, plyCount);
+    db->game->RestoreState();
+    return TclResult(ti, OK, std::string(dstr.Data()));
 }
 
 //TODO: obsolete function: replace with "sc_base gameflag"
@@ -7865,7 +7837,7 @@ sc_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case MOVE_PLY:
         if (argc >= 3) {
             std::vector<int> v;
-            for(uint i=2; i < argc; i++) {
+            for(int i=2; i < argc; i++) {
                 v.push_back(strGetInteger(argv[i]));
             }
             db->game->MoveTo(v);

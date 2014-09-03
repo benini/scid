@@ -314,7 +314,7 @@ public:
 inline void
 Position::SetCastling (colorT c, castleDirT dir, bool flag)
 {
-    register byte b = (c==WHITE ? 1 : 4);
+    byte b = (c==WHITE ? 1 : 4);
     if (dir == KSIDE) b += b;
     // Now b = 1 or 2 (white flags), or 4 or 8 (black flags)
     if (flag) { Castling |= b; } else { Castling &= (255-b); }
@@ -328,7 +328,7 @@ Position::SetCastling (colorT c, castleDirT dir, bool flag)
 inline bool
 Position::GetCastling (colorT c, castleDirT dir)
 {
-    register byte b = (c==WHITE ? 1 : 4);
+    byte b = (c==WHITE ? 1 : 4);
     if (dir == KSIDE) b += b;
     // Now b == 1 or 2 (white flags), or 4 or 8 (black flags)
     if (Castling & b) { return true; } else { return false; }

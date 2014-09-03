@@ -127,7 +127,7 @@ proc importMoveListTrans {line} {
   set doImport 0
   
   if { $::askToReplaceMoves } {
-    if {[llength [sc_game firstMoves 0 1]] == 0} {
+    if {[llength [sc_game firstMoves 1]] == 0} {
       set doImport 1
     } elseif {[tk_messageBox -message [::tr "OverwriteExistingMoves"] -type yesno -icon question ] == yes} {
       set doImport 1

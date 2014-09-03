@@ -889,7 +889,7 @@ PgnParser::GetGameToken (char * buffer, uint bufSize)
 static inline char *
 firstNonBlank (char * s)
 {
-    register char *x = s;
+    char *x = s;
     while (*x) {
         if (! charIsSpace(*x))  { return x; }
         x++;

@@ -89,7 +89,7 @@ inline static uint min(uint a, uint b) { return a < b ? a : b; }
 matSigT
 matsig_Make (byte * materialCounts)
 {
-    register matSigT m = 0;
+    matSigT m = 0;
     m |= ::min(3, static_cast<uint>(materialCounts[WQ])) << SHIFT_WQ;
     m |= ::min(3, static_cast<uint>(materialCounts[WR])) << SHIFT_WR;
     m |= ::min(3, static_cast<uint>(materialCounts[WB])) << SHIFT_WB;

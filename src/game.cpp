@@ -863,7 +863,7 @@ void Game::MoveTo (const std::vector<int>& v)
     MoveToPly(v.back());
     for (uint i = v.size() -1; i > 0; i--) {
         if ((i % 2) == 1) {
-            for (uint j=0; j < v[i -1]; j++) MoveForward();
+            for (int j=0; j < v[i -1]; j++) MoveForward();
         } else {
             MoveIntoVariation(v[i -1]);
         }
@@ -1328,8 +1328,8 @@ inline int
 calcHomePawnMask (pieceT pawn, pieceT * board)
 {
     ASSERT (pawn == WP  ||  pawn == BP);
-    register pieceT * bd = &(board[ (pawn == WP ? H2 : H7) ]);
-    register int result = 0;
+    pieceT * bd = &(board[ (pawn == WP ? H2 : H7) ]);
+    int result = 0;
     if (*bd == pawn) { result |= 128; }  bd--;   // H-fyle pawn
     if (*bd == pawn) { result |=  64; }  bd--;   // G-fyle pawn
     if (*bd == pawn) { result |=  32; }  bd--;   // F-fyle pawn
@@ -1347,7 +1347,7 @@ calcHomePawnMask (pieceT pawn, pieceT * board)
 inline uint
 updateHomePawnMask (uint oldMask, fyleT f)
 {
-    register uint newMask = oldMask;
+    uint newMask = oldMask;
     newMask &= ~((uint) 1 << f);
     return newMask;
 }
