@@ -234,7 +234,6 @@ int sc_var_delete_free(TCL_ARGS);
 int sc_var_enter      (TCL_ARGS);
 int sc_var_first      (TCL_ARGS);
 int sc_var_list       (TCL_ARGS);
-int sc_var_promote    (TCL_ARGS);
 
 int sc_search         (TCL_ARGS);
 int sc_search_board   (TCL_ARGS);

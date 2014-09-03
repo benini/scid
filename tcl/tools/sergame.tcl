@@ -475,8 +475,7 @@ namespace eval sergame {
           } elseif {$action == "mainline"} {
             sc_var create
             if {[catch {sc_move addSan $move}]} {}
-            sc_var exit
-            sc_var promote [expr {[sc_var count] - 1}]
+            sc_var promote
             sc_move forward 1
           }
           

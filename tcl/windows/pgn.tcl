@@ -246,7 +246,7 @@ namespace eval pgn {
 	
     $mctxt add command -label [tr EditDelete] -state $state -command "::pgn::deleteVar [sc_var number]"
     $mctxt add command -label [tr EditFirst] -state $state -command "::pgn::firstVar [sc_var number]"
-    $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar [sc_var number]"
+    $mctxt add command -label [tr EditMain] -state $state -command "::pgn::mainVar"
     $mctxt add separator
     $mctxt add command -label "[tr EditStrip]:[tr EditStripBegin]" -command {::game::TruncateBegin}
     $mctxt add command -label "[tr EditStrip]:[tr EditStripEnd]" -command {::game::Truncate}
@@ -263,6 +263,7 @@ namespace eval pgn {
   }
 
   proc deleteVar { var } {
+    undoFeature save
     sc_var exit
     sc_var delete $var
     updateBoard -pgn
@@ -274,9 +275,9 @@ namespace eval pgn {
     updateBoard -pgn
   }
   
-  proc mainVar { var } {
-    sc_var exit
-    sc_var promote $var
+  proc mainVar {} {
+    undoFeature save
+    sc_var promote
     updateBoard -pgn
   }
   ################################################################################

@@ -368,8 +368,8 @@ public:
     errorT   DeleteVariation (uint varNumber);
     errorT   DeleteVariationAndFree (uint varNumber);
     errorT   FirstVariation (uint varNumber);
-    errorT   MainVariation (uint varNumber);
-		uint 		 GetVarNumber();
+    errorT   MainVariation ();
+    uint     GetVarNumber();
 
     void     SetMoveComment (const char * comment);
     char *   GetMoveComment () { return CurrentMove->prev->comment; }

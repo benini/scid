@@ -1052,11 +1052,12 @@ Game::FirstVariation (uint varNumber)
 //    This function was implemented by Manuel Hoelss, with a few fixes
 //    added by myself (Shane Hudson).
 errorT
-Game::MainVariation (uint varNumber)
+Game::MainVariation ()
 {
-    if (varNumber >= CurrentMove->numVariations) {
-        return ERROR_NoVariation;
-    }
+    std::vector<int> v = GetCurrentLocation();
+    if (v.size() < 3) return ERROR_NoVariation;
+    MoveTo(std::vector<int>(v.begin() +2 , v.end()));
+    int varNumber = v[1];
 
     moveT * parent = CurrentMove;
     moveT * firstVar = CurrentMove->varChild;
@@ -1113,10 +1114,9 @@ Game::MainVariation (uint varNumber)
     // game, pawn promotions, will be wrong if the variation was
     // promoted to an actual game move, so call MakeHomePawnList()
     // so go through the game moves and ensure it is correct.
-    SaveState ();
     MakeHomePawnList (NULL);
-    RestoreState ();
-
+    v[2] += v[0];
+    MoveTo(std::vector<int>(v.begin() +2 , v.end()));
     return OK;
 }
 

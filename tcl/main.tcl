@@ -215,8 +215,8 @@ proc updateMainToolbar {} {
     catch { unset ::gameInfoBar(tb_BD_VarLeave) }
     catch { unset ::gameInfoBar(tb_BD_BackToMainline) }
   } else {
-    set ::gameInfoBar(tb_BD_VarDelete) { set v [sc_var number]; sc_var exit; sc_var delete $v; updateBoard -pgn }
-    set ::gameInfoBar(tb_BD_VarPromote) { set v [sc_var number]; sc_var exit; sc_var promote $v; updateBoard -pgn }
+    set ::gameInfoBar(tb_BD_VarDelete) { ::pgn::deleteVar [sc_var number] }
+    set ::gameInfoBar(tb_BD_VarPromote) { ::pgn::mainVar }
     set ::gameInfoBar(tb_BD_VarLeave) { ::move::ExitVar }
     set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
   }
@@ -913,8 +913,7 @@ proc addMoveUCI {{moveUCI} {action ""}} {
         sc_move addUCI $moveUCI
     }
     if {$action == "mainline"} {
-        sc_var exit
-        sc_var promote [expr {[sc_var count] - 1}]
+        sc_var promote
         sc_move forward 1
     }
 

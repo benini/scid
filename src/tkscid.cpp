@@ -13912,7 +13912,8 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_var_enter (cd, ti, argc, argv);
 
     case VAR_PROMOTE:
-        return sc_var_promote (cd, ti, argc, argv);
+        db->gameAltered = true;
+        return TclResult(ti, db->game->MainVariation ());
 
     default:
         return InvalidCommand (ti, "sc_var", options);
@@ -14025,25 +14026,6 @@ sc_var_enter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     return TCL_OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_var_main:
-//    Promotes the specified variation of the current to be the
-//    mainline.
-int
-sc_var_promote (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_var promote <number>");
-    }
-
-    uint varNumber = strGetUnsigned (argv[2]);
-    if (varNumber >= db->game->GetNumVariations()) {
-        return errorResult (ti, "No such variation!");
-    }
-    db->game->MainVariation (varNumber);
-    db->gameAltered = true;
-    return TCL_OK;
-}
 //////////////////////////////////////////////////////////////////////
 ///  BOOK functions
 
