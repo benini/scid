@@ -237,6 +237,7 @@ public:
     errorT      MatchKingMove (MoveList * mlist, squareT target);
 
     uint        CalcAttacks (colorT toMove, squareT kingSq, SquareList * squares);
+    int         TreeCalcAttacks (colorT toMove, squareT target);
     uint        CalcNumChecks () {
                     return CalcAttacks (1-ToMove, GetKingSquare(), NULL);
                 }

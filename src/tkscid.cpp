@@ -8204,19 +8204,17 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case POS_ATTACKS:
         {
-            Position *pos = db->game->GetCurrentPos();
+            Position pos(*db->game->GetCurrentPos());
             for (colorT c = WHITE; c <= BLACK; c++) {
-                for (uint i = 0; i < pos->GetCount(c); i++) {
-                    squareT sq = pos->GetList(c)[i];
-                    uint att = pos->CalcAttacks(color_Flip(c), sq, NULL);
+                for (uint i = 0; i < pos.GetCount(c); i++) {
+                    squareT sq = pos.GetList(c)[i];
+                    pos.SetToMove(color_Flip(c));
+                    int att = pos.TreeCalcAttacks(color_Flip(c), sq);
                     if (att) {
-                        uint def = 0;
-                        if (sq != pos->GetKingSquare(c))
-                            def = pos->CalcAttacks(c, sq, NULL);
-                        appendUintElement(ti, sq);
-                        if (def > att) Tcl_AppendElement(ti, "green");
-                        else if (att > def) Tcl_AppendElement(ti, "red");
-                        else Tcl_AppendElement(ti, "yellow");
+                      appendUintElement(ti, sq);
+                      if (att > 1) Tcl_AppendElement(ti, "green");
+                      else if (att > 0) Tcl_AppendElement(ti, "yellow");
+                      else Tcl_AppendElement(ti, "red");
                     }
                 }
             }
