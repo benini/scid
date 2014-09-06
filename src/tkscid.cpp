@@ -700,7 +700,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo[20] = Tcl_NewIntObj(ie->GetYear());
 		ginfo[21] = Tcl_NewIntObj((welo + belo)/2);
 		ginfo[22] = Tcl_NewIntObj(ie->GetRating(nb));
-		FastGame game = cdb->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
+		FastGame game = cdb->getGame(ie);
 		std::string moves = game.getMoveSAN(ply, 10);
 		ginfo[23] = Tcl_NewStringObj(moves.c_str(), -1);
 		res[i_res++] = Tcl_ObjPrintf("%d_%d", idx +1, ply);
@@ -1262,8 +1262,7 @@ sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             continue;
         }
 
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
 			sprintf( gameNumber, "%d", gameNum + 1);
             ErrorBuffer->Append ("Game ", gameNumber, ": Unable to read game buffer.\n");
             continue;
@@ -1486,8 +1485,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             const IndexEntry* ie = db->getIndexEntry(i);
             if (ie->GetLength() == 0) { continue; }
             db->bbuf->Empty();
-            if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                     ie->GetLength()) != OK) {
+            if (db->getGame(ie, db->bbuf) != OK) {
                 continue;
             }
             if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
@@ -1652,8 +1650,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         for (uint sq=0; sq < 64; sq++) { track[sq] = trackSquare[sq]; }
 
         Game * g = scratchGame;
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
         db->bbuf->BackToStart();
@@ -2023,8 +2020,7 @@ gamesHaveSameMoves (scidBaseT * base, const IndexEntry * ieA, const IndexEntry *
     // Now load up to MAX_SAME_MOVES of the first game:
     Game * g = scratchGame;
 
-    if (base->gfile->ReadGame (base->bbuf, ieA->GetOffset(),
-                               ieA->GetLength()) != OK) {
+    if (base->getGame(ieA, base->bbuf) != OK) {
         return false;
     }
     base->bbuf->BackToStart();
@@ -2042,8 +2038,7 @@ gamesHaveSameMoves (scidBaseT * base, const IndexEntry * ieA, const IndexEntry *
 
     // Now read the same number of moves in the longer game, stopping when
     // a different move is found:
-    if (base->gfile->ReadGame (base->bbuf, ieB->GetOffset(),
-                               ieB->GetLength()) != OK) {
+    if (base->getGame(ieB, base->bbuf) != OK) {
         return false;
     }
     base->bbuf->BackToStart();
@@ -2464,8 +2459,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ie->GetLength() == 0) { continue; }
         db->bbuf->Empty();
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
         if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
@@ -3518,8 +3512,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Ignore games before starting date if directed:
         if (option == ECO_DATE  &&  ie->GetDate() < startDate) { continue; }
 
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
         db->bbuf->BackToStart();
@@ -3972,7 +3965,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     if (idxList[i] == IDX_NOT_FOUND) { end = true; break; }
                     const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
                     // Skip any corrupt games:
-                    if (dbase->gfile->ReadGame (dbase->bbuf, ie->GetOffset(), ie->GetLength()) != OK) continue;
+                    if (dbase->getGame(ie, dbase->bbuf) != OK) continue;
                     if (g.Decode (dbase->bbuf, GAME_DECODE_ALL) != OK) continue;
                     g.LoadStandardTags (ie, nb);
                     dbase->tbuf->Empty();
@@ -4625,8 +4618,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         if (ie->GetLength() == 0) {
             return errorResult (ti, "Error: empty game file record.");
         }
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                   ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
         if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
@@ -5857,7 +5849,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     const IndexEntry* ie = db->getIndexEntry(gnum);
 
-    if (db->gfile->ReadGame (db->bbuf,ie->GetOffset(),ie->GetLength()) != OK) {
+    if (db->getGame(ie, db->bbuf) != OK) {
         return errorResult (ti, corruptMsg);
     }
     if (db->game->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
@@ -5920,8 +5912,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     const IndexEntry* ie = base->getIndexEntry(gnum);
     base->bbuf->Empty();
-    if (base->gfile->ReadGame (base->bbuf, ie->GetOffset(),
-                               ie->GetLength()) != OK) {
+    if (base->getGame(ie, base->bbuf) != OK) {
         return errorResult (ti, "Error loading game.");
     }
     Game * merge = scratchGame;
@@ -6280,8 +6271,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 continue;
             }
 
-            if (base->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                     ie->GetLength()) != OK) {
+            if (base->getGame(ie, db->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
             if (g->ExactMatch (pos, db->bbuf, NULL)) {
@@ -6402,8 +6392,7 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (ie->GetLength() == 0) {
                 return errorResult (ti, "Error: empty game file record.");
             }
-            if (base->gfile->ReadGame (base->bbuf, ie->GetOffset(),
-                                     ie->GetLength()) != OK) {
+            if (base->getGame(ie, base->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
             if (g->Decode (base->bbuf, GAME_DECODE_ALL) != OK) {
@@ -6822,8 +6811,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         gnum--;
         const IndexEntry* ie = base->getIndexEntry(gnum);
         base->bbuf->Empty();
-        if (base->gfile->ReadGame (base->bbuf, ie->GetOffset(),
-                                   ie->GetLength()) != OK) {
+        if (base->getGame(ie, base->bbuf) != OK) {
             return errorResult (ti, "Error loading game.");
         }
         g->Clear();
@@ -6977,8 +6965,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (db->numGames > 0) {
             g = scratchGame;
             const IndexEntry* ie = db->getIndexEntry(db->numGames - 1);
-            if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                     ie->GetLength()) != OK) {
+            if (db->getGame(ie, db->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
             if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
@@ -11119,8 +11106,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         byte ply = db->dbFilter->Get(gnum);
         const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ply != 0) {
-            if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                     ie->GetLength()) != OK) {
+            if (db->getGame(ie, db->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
             if (scratchGame->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
@@ -11584,7 +11570,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     continue;
                 }
 
-                if (base->gfile->ReadGame (base->bbuf, ie->GetOffset(), ie->GetLength()) != OK) {
+                if (base->getGame(ie, base->bbuf) != OK) {
                     search_pool.erase(&base);
                     return errorResult (ti, "Error reading game file.");
     			}
@@ -12184,8 +12170,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         // At this point, the game needs to be loaded:
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             return errorResult (ti, "Error reading game file.");
         }
         uint ply = 0;
@@ -12679,8 +12664,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
         // Now, the game must be loaded and searched:
 
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             continue;
         }
 
@@ -13581,8 +13565,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
         // generating the PGN representation of each game.
 
         if (match  &&  (pgnTextCount > 0 || (sAnnotator != NULL && *sAnnotator != 0))) {
-            if (match  &&  base->gfile->ReadGame (base->bbuf, ie->GetOffset(),
-                                                ie->GetLength()) != OK) {
+            if (match  &&  (base->getGame(ie, base->bbuf) != OK)) {
                 match = false;
             }
 
@@ -13779,8 +13762,7 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             continue;
         }
 
-        if (db->gfile->ReadGame (db->bbuf, ie->GetOffset(),
-                                 ie->GetLength()) != OK) {
+        if (db->getGame(ie, db->bbuf) != OK) {
             filter->Set (i, 0);
             continue;
         }

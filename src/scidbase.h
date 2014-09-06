@@ -107,6 +107,12 @@ struct scidBaseT {
 	int isReadOnly() { return (fileMode==FMODE_ReadOnly) ? 1 : 0; }
 	const IndexEntry* getIndexEntry(gameNumberT g) const { return idx->FetchEntry(g);	}
 	const NameBase* getNameBase() const { return nb; }
+	FastGame getGame(const IndexEntry* ie) const {
+		return gfile->ReadGame(ie->GetOffset(), ie->GetLength());
+	}
+	errorT getGame(const IndexEntry* ie, ByteBuffer* bb) const {
+		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
+	}
 
 	errorT addGames(scidBaseT* sourceBase,
 	                Filter* filter,
@@ -177,7 +183,6 @@ struct scidBaseT {
 
 	Index* idx;       // the Index file in memory for this base.
 	NameBase*nb;      // the NameBase file in memory.
-	GFile* gfile;
 	bool inUse;       // true if the database is open (in use).
 	uint numGames;
 	bool memoryOnly;
@@ -198,6 +203,7 @@ struct scidBaseT {
 	UndoRedo<Game, 30> gameAlterations;
 
 private:
+	GFile* gfile;
 	fileModeT fileMode; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
 	bool validStats_;

@@ -85,7 +85,7 @@ public:
 			const IndexEntry* ie = base->getIndexEntry (i);
 			if (! ie->GetStartFlag()) filter->Set (i, 1);
 			else {
-				FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
+				FastGame game = base->getGame(ie);
 				int ply = game.search<WHITE>(board_, nPieces_);
 				filter->Set (i, (ply > 255) ? 255 : ply);
 			}
@@ -126,8 +126,7 @@ private:
 			}
 			if (!matsig_isReachable (msig_, ie->GetFinalMatSig(), ie->GetPromotionsFlag(), ie->GetUnderPromoFlag())) continue;
 
-			FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
-			int ply = game.search<TOMOVE>(board_, nPieces_);
+			int ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 
 			if ((progress++ % 100) == 0) {
