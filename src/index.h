@@ -102,7 +102,7 @@ private:
     struct entriesT {
         entriesT() : size_(0) {}
         ~entriesT() { resize(0); }
-        IndexEntry& operator[] (uint idx) {
+        IndexEntry& operator[] (uint idx) const {
             const uint low_mask = ((1 << CHUNKSHIFT) - 1);
             return index_[idx >> CHUNKSHIFT][idx & low_mask];
         }
@@ -156,9 +156,7 @@ public:
                            void * progressData = 0);
 
     IndexEntry* FetchEntry (gameNumberT g) { return &(entries_[g]); }
-    const IndexEntry* GetEntry (gameNumberT g) const {
-        return const_cast<Index*>(this)->FetchEntry(g);
-    }
+    const IndexEntry* GetEntry (gameNumberT g) const { return &(entries_[g]); }
 
     uint        GetType () const { return Header.baseType; }
     versionT    GetVersion () const { return Header.version; }

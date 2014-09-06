@@ -81,7 +81,7 @@ public:
 				case 3: return SetFilter<BLACK, false>(base, filter);
 			}
 		}
-		for (uint i=0; i < base->numGames; i++) {
+		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry (i);
 			if (! ie->GetStartFlag()) filter->Set (i, 1);
 			else {
@@ -111,7 +111,7 @@ private:
 	bool SetFilter (scidBaseT* base, Filter* filter) {
 		filter->Fill(0);
 		long progress = 0;
-		for (uint i=0; i < base->numGames; i++) {
+		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry(i);
 			if (! ie->GetStartFlag()) {
 				if (STOREDLINE) {
@@ -130,7 +130,7 @@ private:
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 
 			if ((progress++ % 100) == 0) {
-				if (!progressFn_ (static_cast<double> (i) / base->numGames)) return false;
+				if (!progressFn_ (static_cast<double> (i) / n)) return false;
 			}
 		}
 		return true;

@@ -30,7 +30,6 @@ void scidBaseT::Init() {
 	gameNumber = -1;
 	gameAltered = false;
 	inUse = false;
-	numGames = 0;
 	memoryOnly = false;
 	tree.moveCount = tree.totalCount = 0;
 	treeCache = NULL;
@@ -74,7 +73,6 @@ errorT scidBaseT::Close () {
 	inUse = false;
 	fileName[0] = 0;
 	gameNumber = -1;
-	numGames = 0;
 	gameAltered = false;
 	strCopy (fileName, "<empty>");
 	dbFilter->Init(0);
@@ -152,13 +150,12 @@ errorT scidBaseT::Open (fileModeT mode,
 		return err;
 	}
 
-	numGames = idx->GetNumGames();
 	strCopy (fileName, filename);
 	gameNumber = -1;
 
 	// Initialise the filters: all games match at move 1 by default.
 	Filter* f; int i_filters=0;
-	while ( (f = getFilter(i_filters++)) ) f->Init(numGames);
+	while ( (f = getFilter(i_filters++)) ) f->Init(numGames());
 
 	if (treeCache == NULL) {
 		// TreeCache size for each open database:
@@ -177,9 +174,10 @@ errorT scidBaseT::Open (fileModeT mode,
 
 errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
-	errorT errAddGame = addGame_(sourceBase, gNum);
-	errorT errClear = clearCaches(numGames -1);
-	return (errAddGame == OK) ? errClear : errAddGame;
+	errorT err = addGame_(sourceBase, gNum);
+	if (err != OK) return err;
+	ASSERT(numGames() > 0);
+	return clearCaches(numGames() -1);
 }
 
 errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
@@ -189,8 +187,8 @@ errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
 	uint iProgress = 0;
 	uint totGames = filter->Count();
 	Filter* f; int i_filters=0;
-	while ( (f = getFilter(i_filters++)) ) f->SetCapacity(numGames + totGames);
-	for (uint gNum = 0;gNum < sourceBase->numGames; gNum++) {
+	while ( (f = getFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
+	for (uint gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
 		if (filter->Get(gNum) == 0) continue;
 		err = addGame_(sourceBase, gNum);
 		if (err != OK) break;
@@ -238,12 +236,14 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, int idx) {
 	if (iE.SetRoundName(nb, game->GetRoundStr()) != OK) return ERROR_NameBaseFull;
 
 	errorT errSave = saveGame_(&iE, bbuf, idx);
-	errorT errClear = OK;
-	if (clearCache) {
-		if (idx < 0) idx = static_cast<int> (numGames -1);
-		errClear = clearCaches(idx);
+	if (errSave == OK && clearCache) {
+		if (idx < 0) {
+			ASSERT(numGames() > 0);
+			idx = static_cast<int> (numGames() -1);
+		}
+		return clearCaches(idx);
 	}
-	return (errSave == OK) ? errClear : errSave;
+	return errSave;
 }
 
 errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, int oldIdx) {
@@ -271,7 +271,6 @@ errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, int oldIdx) {
 	} else {
 		errorT err = idx->AddGame(iE);
 		if (err != OK) return err;
-		numGames = idx->GetNumGames();
 
 		// Add the new game to filters
 		Filter* f; int i_filters=0;
@@ -285,7 +284,7 @@ std::string scidBaseT::newFilter() {
 	std::string newname = filters_.size() ? filters_.back().first : "a";
 	if (newname[0] == 'z') newname = 'a' + newname;
 	else newname = ++(newname[0]) + newname.substr(1);
-	filters_.push_back(std::make_pair(newname, new Filter(numGames)));
+	filters_.push_back(std::make_pair(newname, new Filter(numGames())));
 	return newname;
 }
 
@@ -332,7 +331,7 @@ void scidBaseT::calcNameFreq () {
 		nameFreq_[n].resize(nb->GetNumNames(n), 0);
 	}
 
-	for (size_t i=0; i < idx->GetNumGames(); i++) {
+	for (uint i=0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		nameFreq_[NAME_PLAYER][ie->GetWhite()] += 1;
 		nameFreq_[NAME_PLAYER][ie->GetBlack()] += 1;
@@ -395,7 +394,7 @@ scidBaseT::Stats* scidBaseT::getStats() {
 		stats.ecoCount4[i].results[RESULT_None] = 0;
 	}
 	// Read stats from index entry of each game:
-	for (uint gnum=0; gnum < numGames; gnum++) {
+	for (uint gnum=0, n = numGames(); gnum < n; gnum++) {
 		const IndexEntry* ie = getIndexEntry(gnum);
 		stats.nResults[ie->GetResult()]++;
 		eloT elo = ie->GetWhiteElo();
@@ -481,7 +480,7 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(Filter* filter) {
 	v1.reserve(50);
 	std::vector<scidBaseT::TreeStat> v2;
 	v2.reserve(50);
-	for(uint gnum=0; gnum < numGames; gnum++) {
+	for(uint gnum=0, n = numGames(); gnum < n; gnum++) {
 		if(filter->Get(gnum) == 0) continue;
 		uint ply = filter->Get(gnum) - 1;
 		const IndexEntry* ie = getIndexEntry (gnum);
@@ -518,7 +517,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 	uint last_offset = 0;
 	*n_sparse = 0;
 	*n_deleted = 0;
-	for (size_t i=0; i < idx->GetNumGames(); i++) {
+	for (uint i=0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { *n_deleted += 1; continue; }
 
@@ -552,7 +551,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk,
 	typedef std::vector< std::pair<byte, size_t> > sort_t;
 	sort_t sort;
 	uint n_deleted = 0;
-	for (size_t i=0; i < idx->GetNumGames(); i++) {
+	for (uint i=0, n= numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { n_deleted++; continue; }
 		uint stLine = ie->GetStoredLineCode();
@@ -619,7 +618,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk,
 	renameFile (tmpfile.c_str(), filename.c_str(), GFILE_SUFFIX);
 	Open(FMODE_Both, filename.c_str(), false, spellChk);
 	for (size_t i = 0; i <filters.size(); i++) {
-		filters_.push_back(std::make_pair(filters[i], new Filter(numGames)));
+		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
 	}
 	return OK;
 }

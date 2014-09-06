@@ -1067,7 +1067,7 @@ Game::MainVariation ()
         // Move the selected variation to the front, as in FirstVariation()
 
         // Remove the numbered variation from the linked list:
-        for (uint i=0; i < varNumber; i++) {
+        for (int i=0; i < varNumber; i++) {
             ASSERT (m->varParent == CurrentMove && m->marker == START_MARKER);
             parent = m;
             m = m->varChild;

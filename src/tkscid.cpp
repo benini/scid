@@ -625,7 +625,7 @@ sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** a
 		bool fw = strGetBoolean (argv[8]);
 		location = cdb->idx->GetRangeLocation (cdb->getNameBase(), sort, filter, txt, st, fw);
 	} else {
-		if (gnumber > cdb->idx->GetNumGames()) return TCL_OK;
+		if (gnumber > cdb->numGames()) return TCL_OK;
 		if (filter && filter->Get(gnumber -1) == 0) return TCL_OK;
 		location = cdb->idx->GetRangeLocation (cdb->getNameBase(), sort, filter, gnumber);
 	}
@@ -836,7 +836,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             else if (strCompare("set", argv[4]) == 0) cmd = 2;
             else if (strCompare("unset", argv[4]) == 0) cmd = 3;
             else if (strCompare("invert", argv[4]) == 0) cmd = 4;
-            if (flagType != 0 && cmd != 0 && (all || (gNum != 0 && gNum <= dbase->numGames) || filter != 0)) {
+            if (flagType != 0 && cmd != 0 && (all || (gNum != 0 && gNum <= dbase->numGames()) || filter != 0)) {
                 flagType = 1 << flagType;
                 bool value = (cmd == 2);
                 if (gNum != 0) {
@@ -962,7 +962,7 @@ sc_base_numGames (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         basePtr = &(dbList[baseNum - 1]);
     }
-    return setUintResult (ti, basePtr->inUse ? basePtr->numGames : 0);
+    return setUintResult (ti, basePtr->inUse ? basePtr->numGames() : 0);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1225,7 +1225,6 @@ sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 	bool showProgress = startProgressBar();
     uint update = 5000;  
     uint updateStart = 5000;
-	IndexEntry *ie = NULL;
 	Game *g = new Game();
 	char gameNumber[16];
 	bool limitToFilter = false;
@@ -1242,20 +1241,20 @@ sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     DString *ErrorBuffer = new DString;
 
-    for (uint gameNum=0; gameNum < db->numGames; gameNum++) {
+    for (uint gameNum = 0, n = db->numGames(); gameNum < n; gameNum++) {
 
         if (showProgress) {
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, gameNum, db->numGames);
+                updateProgressBar (ti, gameNum, n);
                 if (interruptedProgress()) { break; }
             }
         }
 
         if (limitToFilter  &&  db->dbFilter->Get(gameNum) == 0) { continue; }
 
-        ie = db->idx->FetchEntry (gameNum);
+        const IndexEntry* ie = db->getIndexEntry(gameNum);
         if (ie->GetLength() == 0) {
 			sprintf( gameNumber, "%d", gameNum + 1);
             ErrorBuffer->Append ("Game ", gameNumber, ": Unable to fetch index entry.\n");
@@ -1468,7 +1467,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint numToExport = exportFilter ? db->dbFilter->Count() : 1;
     db->tbuf->SetWrapColumn (75);
     uint i = (exportFilter) ? 0 : db->gameNumber;
-    uint i_last = (exportFilter) ? db->numGames : i +1;
+    uint i_last = (exportFilter) ? db->numGames() : i +1;
     for (; i < i_last; i++) {
         if (!exportFilter || db->dbFilter->Get(i)) { // Export this game:
             numSeen++;
@@ -1619,7 +1618,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     uint filterCount = db->dbFilter->Count();
     uint filterSeen = 0;
 
-    for (uint gnum = 0; gnum < db->numGames; gnum++) {
+    for (uint gnum = 0, n = db->numGames(); gnum < n; gnum++) {
         // Skip over non-filter games:
         if (!db->dbFilter->Get(gnum)) { continue; }
 
@@ -1729,7 +1728,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                 }
             }
         } // while (plyCount < maxPly)
-    } // for (uint gnum = 0; gnum < db->numGames; gnum++)
+    } // foreach game
 
     if (showProgress) { updateProgressBar (ti, 1, 1); }
 
@@ -2227,13 +2226,13 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
     bool showProgress = startProgressBar();
 
     gNumListPtrT * gHashTable = new gNumListPtrT [GLIST_HASH_SIZE];
-    gNumListT * gNumList = new gNumListT [dbase->numGames];
+    gNumListT * gNumList = new gNumListT [dbase->numGames()];
 
     // Setup duplicates array:
     if (dbase->duplicates == NULL) {
-        dbase->duplicates = new uint [dbase->numGames];
+        dbase->duplicates = new uint [dbase->numGames()];
     }
-    for (uint d=0; d < dbase->numGames; d++) {
+    for (uint d=0; d < dbase->numGames(); d++) {
         dbase->duplicates[d] = 0;
     }
 
@@ -2242,7 +2241,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
     // Set up the linked-list hashtable of games with same hashed names:
 
     for (uint h=0; h < GLIST_HASH_SIZE; h++) { gHashTable[h] = NULL; }
-    for (uint i=0; i < dbase->numGames; i++) {
+    for (uint i=0, n = dbase->numGames(); i < n; i++) {
         const IndexEntry* ie = dbase->getIndexEntry(i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
@@ -2445,14 +2444,14 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Game * g = scratchGame;
     uint nEditedGames = 0;
 
-    for (uint gnum = 0; gnum < db->numGames; gnum++) {
+    for (uint gnum = 0, n = db->numGames(); gnum < n; gnum++) {
         // Update progress bar:
         if (showProgress) {
             update--;
             if (update == 0) {
                 update = updateStart;
                 if (interruptedProgress()) { break; }
-                updateProgressBar (ti, gnum, db->numGames);
+                updateProgressBar (ti, gnum, n);
             }
         }
 
@@ -2745,7 +2744,6 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 {
     const char * usage = "Usage: sc_base tournaments [-<option> <value> ...]";
 
-    uint i;
     uint numTourneys = 0;
     uint maxTourneys = 100;
     uint minMeanElo = 0;
@@ -2764,7 +2762,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     if (! db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
-    if (db->numGames == 0) {
+    if (db->numGames() == 0) {
         return errorResult (ti, "The current database has no games.");
     }
 
@@ -2806,20 +2804,12 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 
     uint numSites = db->nb->GetNumNames (NAME_SITE);
 
-#ifdef WINCE
-    bool * useSite = (bool *)my_Tcl_Alloc(sizeof( bool [numSites]));
-    for (i=0; i < numSites; i++) { useSite[i] = true; }
-
-    const uint TOURNEY_HASH_SIZE = 32768;
-    tourneyPtrT * hashTable = (tourneyPtrT * ) my_Tcl_Alloc(sizeof( tourneyPtrT [TOURNEY_HASH_SIZE]));
-#else
     bool * useSite = new bool [numSites];
-    for (i=0; i < numSites; i++) { useSite[i] = true; }
+    for (uint i=0; i < numSites; i++) { useSite[i] = true; }
 
     const uint TOURNEY_HASH_SIZE = 32768;
     tourneyPtrT * hashTable = new tourneyPtrT [TOURNEY_HASH_SIZE];
-#endif
-    for (i=0; i < TOURNEY_HASH_SIZE; i++) { hashTable[i] = NULL; }
+    for (uint i=0; i < TOURNEY_HASH_SIZE; i++) { hashTable[i] = NULL; }
 
     // If the country is "---", ignore it:
     if (country != NULL  &&  strEqual (country, "---")) {
@@ -2827,7 +2817,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     }
     // Find all sites in the selected country, if any:
     if (country != NULL  &&  country[0] != 0) {
-        for (i=0; i < numSites; i++) {
+        for (uint i=0; i < numSites; i++) {
             const char * site = db->nb->GetName (NAME_SITE, i);
             uint len = strLength (site);
             if (len > 3) { site += len - 3; }
@@ -2837,7 +2827,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 
     // Restrict search to sites containing the given site string:
     if (siteStr != NULL  &&  siteStr[0] != 0) {
-        for (i=0; i < numSites; i++) {
+        for (uint i=0; i < numSites; i++) {
             if (! useSite[i]) { continue; }
             const char * site = db->nb->GetName (NAME_SITE, i);
             if (! strAlphaContains (site, siteStr)) {
@@ -2850,12 +2840,8 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     bool * useEvent = NULL;
     if (eventStr != NULL  &&  eventStr[0] != 0) {
         uint numEvents = db->nb->GetNumNames (NAME_EVENT);
-#ifdef WINCE
-        useEvent = (bool*) my_Tcl_Alloc(sizeof(bool [numEvents]));
-#else
         useEvent = new bool [numEvents];
-#endif
-        for (i=0; i < numEvents; i++) {
+        for (uint i=0; i < numEvents; i++) {
             useEvent[i] = true;
             const char * event = db->nb->GetName (NAME_EVENT, i);
             if (! strAlphaContains (event, eventStr)) {
@@ -2865,7 +2851,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     }
 
     // Now look through all games:
-    for (i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         dateT date = ie->GetDate();
         if (date < minDate) { continue; }
@@ -2902,7 +2888,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     Tcl_DStringInit (&ds);
     uint numPrinted = 0;
     if (playerStr != NULL  &&  playerStr[0] == 0) { playerStr = NULL; }
-    for (i=0; i < TOURNEY_HASH_SIZE; i++) {
+    for (uint i=0; i < TOURNEY_HASH_SIZE; i++) {
         Tourney * tp = hashTable[i];
         while (tp != NULL) {
             Tourney * next = tp->Next;
@@ -2920,15 +2906,9 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
             tp = next;
         }
     }
-#ifdef WINCE
-    my_Tcl_Free((char*) useSite);
-    if (useEvent != NULL) { my_Tcl_Free((char*) useEvent); }
-    my_Tcl_Free((char*) hashTable);
-#else
     delete[] useSite;
     if (useEvent != NULL) { delete[] useEvent; }
     delete[] hashTable;
-#endif
 
     Tcl_DStringResult (ti, &ds);
     Tcl_DStringFree (&ds);
@@ -3489,12 +3469,12 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Timer timer;  // Time the classification operation.
 
     // Read each game:
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, i, db->numGames);
+                updateProgressBar (ti, i, n);
                 if (interruptedProgress()) break;
             }
         }
@@ -3804,14 +3784,14 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     int index = -1;
     static const char * options [] = {
         "count", "first", "frequency",
-        "index", "last", "negate", "next",
+        "last", "negate", "next",
         "previous", "set", "size", "stats",
         "link", "search", "release", "isWhole",
         "treestats", "export", NULL
     };
     enum {
         FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
-        FILTER_INDEX, FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
+        FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
         FILTER_PREV, FILTER_SET, FILTER_SIZE, FILTER_STATS,
         FILTER_LINK, FILTER_SEARCH, FILTER_RELEASE, FILTER_ISWHOLE,
         FILTER_TREESTATS, FILTER_EXPORT
@@ -3826,9 +3806,6 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_FIRST:
         return sc_filter_first (cd, ti, argc, argv);
-
-    case FILTER_INDEX:
-        return sc_filter_index (cd, ti, argc, argv);
 
     case FILTER_LAST:
         return sc_filter_last (cd, ti, argc, argv);
@@ -3873,7 +3850,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return TCL_OK;
         } else {
             uint gNum = strGetUnsigned (argv[5]);
-            if (gNum > 0 && gNum <= dbase->numGames) {
+            if (gNum > 0 && gNum <= dbase->numGames()) {
                 uint val = strGetUnsigned(argv[4]);
                 if (argc == 8) {
                     const NameBase* nb = dbase->getNameBase();
@@ -4055,7 +4032,7 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
     uint allCount = 0;
 
     if (eloMode) {
-        for (uint gnum=0; gnum < dbase->numGames; gnum++) {
+        for (uint gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
             const IndexEntry* ie = dbase->getIndexEntry(gnum);
             if ( guessElo ) {
                 uint wElo = ie->GetWhiteElo();
@@ -4086,7 +4063,7 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
         }
     } else if ( moveMode ) {
         //Klimmek: count games with x Moves minMove=NumberHalfmove and maxMove Numberhalfmove+1
-        for (uint gnum=0; gnum < dbase->numGames; gnum++) {
+        for (uint gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
             const IndexEntry* ie = dbase->getIndexEntry(gnum);
             uint move = ie->GetNumHalfMoves();
             if (move >= minMove  &&  move <= maxMove) {
@@ -4098,7 +4075,7 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
         }
     }
     else { // datemode
-        for (uint gnum=0; gnum < dbase->numGames; gnum++) {
+        for (uint gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
             const IndexEntry* ie = dbase->getIndexEntry(gnum);
             dateT date = ie->GetDate();
             if (date >= startDate  &&  date <= endDate) {
@@ -4119,32 +4096,13 @@ sc_filter_freq (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, con
 //So for the moment we assume base=db, filter=dbFilter and sort=N+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_filter_index:
-//    Returns the game number of the "count"th game in the filter,
-//    or 0 if the filter is empty or "count" is greater than the
-//    current filter size.
-int
-sc_filter_index (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    uint count = 0;
-    if (argc == 3) { count = strGetUnsigned (argv[2]); }
-    if (count >= 1  &&  count <= db->dbFilter->Count()) {
-        for (uint gnum=0; gnum < db->numGames; gnum++) {
-            if (db->dbFilter->Get(gnum) == 0) continue;
-            if (--count == 0) return setUintResult (ti, gnum +1);
-        }
-    }
-    return setUintResult (ti, 0);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_filter_first:
 //    Returns the game number of the first game in the filter,
 //    or 0 if the filter is empty.
 int
 sc_filter_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-	for (uint gnum=0; gnum < db->numGames; gnum++) {
+	for (uint gnum=0; gnum < db->numGames(); gnum++) {
 		if (db->dbFilter->Get(gnum) == 0) continue;
 		return setUintResult (ti, gnum +1);
 	}
@@ -4158,7 +4116,7 @@ sc_filter_first (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_filter_last (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-	long gnum = db->numGames;
+	long gnum = db->numGames();
 	for (gnum--; gnum >= 0; gnum--) {
 		if (db->dbFilter->Get(gnum) == 0) continue;
 		return setUintResult (ti, gnum +1);
@@ -4174,7 +4132,7 @@ sc_filter_next (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (db->inUse) {
         uint nextNumber = db->gameNumber + 1;
-        while (nextNumber < db->numGames) {
+        while (nextNumber < db->numGames()) {
             if (db->dbFilter->Get(nextNumber) > 0) {
                 return setUintResult (ti, nextNumber + 1);
             }
@@ -4238,7 +4196,7 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint results[4] = {0, 0, 0, 0};
     uint total = 0;
     Filter* filter = db->getFilter("dbfilter");
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         if (filter->Get(i)) {
             if ( max == 0 ) { //Old Statistic : 
@@ -4611,7 +4569,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     if (gameNumber > 0) {
         g = scratchGame;
         g->Clear();
-        if (gameNumber > db->numGames) {
+        if (gameNumber > db->numGames()) {
             return setResult (ti, "Invalid game number");
         }
         const IndexEntry* ie = db->getIndexEntry(gameNumber - 1);
@@ -4683,7 +4641,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     // Find all games that should be listed in the crosstable:
     bool tableFullMessage = false;
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         if (ie->GetDeleteFlag()  &&  !useDeletedGames) { continue; }
         if (! isCrosstableGame (ie, siteId, eventId, firstDate, lastDate,
@@ -4839,7 +4797,7 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // So the best possible score is 6.
 
     // First, check if the specified game number matches all fields:
-    if (db->numGames > gnum) {
+    if (db->numGames() > gnum) {
         uint score = 0;
         const IndexEntry* ie = db->getIndexEntry(gnum);
         if (ie->GetWhite() == white) { score++; }
@@ -4855,7 +4813,7 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint bestNum = 0;
     uint bestScore = 0;
 
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         uint score = 0;
         const IndexEntry* ie = db->getIndexEntry(i);
         if (ie->GetWhite() == white) { score++; }
@@ -4952,7 +4910,7 @@ sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // We ignore a request to (un)delete game number zero, but if the
         // specified number exceeds the number of games, return an error:
         if (gNum == 0) { return TCL_OK; }
-        if (gNum > db->numGames) {
+        if (gNum > db->numGames()) {
             return errorResult (ti, "Invalid game number.");
         }
         gNum--;   // Set numbering to be from 0, rather than 1.
@@ -5835,11 +5793,11 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             db->game->Clear();
             return TCL_OK;
         }
-        if (gnum > db->numGames) { gnum = db->numGames; }
+        if (gnum > db->numGames()) { gnum = db->numGames(); }
     }
 
     // Check the game number is valid::
-    if (gnum < 1  ||  gnum > db->numGames) {
+    if (gnum < 1  ||  gnum > db->numGames()) {
         return errorResult (ti, "Invalid game number.");
     }
 
@@ -5891,7 +5849,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (! base->inUse) {
         return errorResult (ti, "The selected database is not open.");
     }
-    if (gnum < 1  ||  gnum > base->numGames) {
+    if (gnum < 1  ||  gnum > base->numGames()) {
         return errorResult (ti, "Invalid game number.");
     }
     // Number games from 0 internally:
@@ -6232,7 +6190,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         Game * g = scratchGame;
         foundMatch = false;
 
-        for (uint gameNum=0; gameNum < base->numGames; gameNum++) {
+        for (uint gameNum=0, n = base->numGames(); gameNum < n; gameNum++) {
             // Check for interruption every 64k games:
             if (updateLabel != NULL  &&  ((gameNum & 65535) == 65535)) {
                 Tcl_Eval (ti, "update");
@@ -6385,7 +6343,7 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
             g = scratchGame;
             g->Clear();
-            if (value < 1  ||  value > base->numGames) {
+            if (value < 1  ||  value > base->numGames()) {
                 return setResult (ti, "Invalid game number");
             }
             const IndexEntry* ie = base->getIndexEntry(value - 1);
@@ -6538,7 +6496,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (res == OK) {
         if (gnum == 0 && db == dbase) {
             // Saved new game, so set gameNumber to the saved game number:
-            db->gameNumber = db->numGames - 1;
+            db->gameNumber = db->numGames() - 1;
         }
         db->gameAltered = false;
     }
@@ -6805,7 +6763,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (! base->inUse) {
             return errorResult (ti, "This database is not in use.");
         }
-        if (gnum > base->numGames) {
+        if (gnum > base->numGames()) {
             return errorResult (ti, "Invalid game number.");
         }
         gnum--;
@@ -6962,9 +6920,9 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc == 5) {
         if (!strEqual (argv[3], "-last")) { return errorResult (ti, usage); }
         tagName = argv[4];
-        if (db->numGames > 0) {
+        if (db->numGames() > 0) {
             g = scratchGame;
-            const IndexEntry* ie = db->getIndexEntry(db->numGames - 1);
+            const IndexEntry* ie = db->getIndexEntry(db->numGames() - 1);
             if (db->getGame(ie, db->bbuf) != OK) {
                 return errorResult (ti, "Error reading game file.");
             }
@@ -7222,8 +7180,8 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     if (gn1 == 0) { return TCL_OK; }
     if (gn2 == 0) { return TCL_OK; }
     if (gn1 == gn2) { return TCL_OK; }
-    if (gn1 > db->numGames) { return TCL_OK; }
-    if (gn2 > db->numGames) { return TCL_OK; }
+    if (gn1 > db->numGames()) { return TCL_OK; }
+    if (gn2 > db->numGames()) { return TCL_OK; }
 
     // Do nothing if the base is not writable:
     if (!db->inUse  ||  db->isReadOnly()) { return TCL_OK; }
@@ -8987,7 +8945,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     
     // Scroll bar threshold (about 200 steps)
     //
-    uint threshold = (db->numGames / 200) + 1;
+    uint threshold = (db->numGames() / 200) + 1;
 
     for (idNumberT id=0; id < nameCount; id++) {
         newIDs[id] = id;
@@ -9043,7 +9001,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     const IndexEntry* ie;
     IndexEntry newIE;
     uint instanceCount = 0;
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         ie = db->getIndexEntry(i);
         newIE = *ie;
         bool corrected = false;
@@ -9124,7 +9082,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // Update the scroll bar
         //
         if ( showProgress && (i % threshold) == 1 ) {
-          updateProgressBar( ti, i, db->numGames );
+          updateProgressBar( ti, i, n);
         }
     }
     
@@ -9262,7 +9220,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     IndexEntry newIE;
     uint numChanges = 0;
 
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         // Check if this game is a candidate for editing:
         if (editSelection == EDIT_FILTER  &&  db->dbFilter->Get (i) == 0) {
             continue;
@@ -9545,7 +9503,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (setFilter || setOpponent) db->dbFilter->Fill(0);
 
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         eloT elo = 0;
         ecoT ecoCode = ie->GetEcoCode();
@@ -10109,13 +10067,13 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     const char * namePrefix = "";
     uint minGames = 0;
-    uint maxGames = db->numGames;
+    uint maxGames = db->numGames();
     uint minElo = 0;
     uint maxElo = MAX_ELO;
     uint maxListSize = db->nb->GetNumNames(NAME_PLAYER);
     uint listSize = 0;
 
-    if (db->numGames == 0) { return TCL_OK; }
+    if (db->numGames() == 0) { return TCL_OK; }
 
     static const char * options [] = {
         "-name", "-minElo", "-maxElo", "-minGames", "-maxGames",
@@ -10333,12 +10291,12 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint updateStart = 1000;
     uint update = updateStart;
 
-    for (uint gnum=0; gnum < db->numGames; gnum++) {
+    for (uint gnum=0, n = db->numGames(); gnum < n; gnum++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, gnum, db->numGames);
+                updateProgressBar (ti, gnum, n);
                 if (interruptedProgress()) break;
             }
         }
@@ -10804,7 +10762,7 @@ avgGameLength (resultT result)
 {
     uint sum = 0;
     uint count = 0;
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         if (result == ie->GetResult()) {
             count++;
@@ -10930,7 +10888,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             resultT result = strGetResult (argv[3]);
             appendUintElement (ti, report->PercentFreq (result));
             uint freq = stats->nResults[result] * 1000;
-            freq = freq / db->numGames;
+            freq = freq / db->numGames();
             appendUintElement (ti, freq);
         }
         break;
@@ -11093,12 +11051,12 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint updateStart, update;
     updateStart = update = 2000;  // Update progress bar every 2000 games
 
-    for (uint gnum=0; gnum < db->numGames; gnum++) {
+    for (uint gnum=0, n = db->numGames(); gnum < n; gnum++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, gnum, db->numGames);
+                updateProgressBar (ti, gnum, n);
                 if (interruptedProgress()) { break; }
             }
         }
@@ -11458,7 +11416,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         cachedTreeT * pct = base->treeCache->Lookup (db->game->GetCurrentPos());
         if (pct != NULL) {
             // It was in the cache! Use it to save time:
-            if (pct->cfilter->Size() == base->numGames) {
+            if (pct->cfilter->Size() == base->numGames()) {
                 if (pct->cfilter->UncompressTo (base->treeFilter) == OK) {
                     base->tree = pct->tree;
                     foundInCache = true;
@@ -11473,7 +11431,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             pct = base->backupCache->Lookup (db->game->GetCurrentPos());
             if (pct != NULL) {
                 // It was in the backup cache! Use it to save time:
-                if (pct->cfilter->Size() == base->numGames) {
+                if (pct->cfilter->Size() == base->numGames()) {
                     if (pct->cfilter->UncompressTo (base->treeFilter) == OK) {
                         base->tree = pct->tree;
                         foundInCache = true;
@@ -11501,12 +11459,12 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     	StoredLine stored_line(pos->GetBoard(), pos->GetToMove());
 
     	// 4. Search through each game:
-    	for (uint i=0; i < base->numGames; i++) {
+    	for (uint i=0, n = base->numGames(); i < n; i++) {
     		if (showProgress) {  // Update the percentage done slider:
     			update--;
     			if (update == 0) {
     				update = updateStart;
-    				updateProgressBar (ti, i, base->numGames);
+    				updateProgressBar (ti, i, n);
     				if (interruptedProgress()) {
 					return setResult (ti, errMsgSearchInterrupted(ti));
     				}
@@ -11995,7 +11953,7 @@ startFilterSize (scidBaseT * base, filterOpT filterOp)
     if (filterOp == FILTEROP_AND) {
         return base->dbFilter->Count();
     }
-    return base->numGames;
+    return base->numGames();
 }
 
 
@@ -12086,13 +12044,13 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Here is the loop that searches on each game:
     Game * g = scratchGame;
-    uint gameNum;
-    for (gameNum=0; gameNum < db->numGames; gameNum++) {
+    uint gameNum = 0, n = db->numGames();
+    for (; gameNum < n; gameNum++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, gameNum, db->numGames);
+                updateProgressBar (ti, gameNum, n);
                 if (interruptedProgress()) { break; }
             }
         }
@@ -12224,7 +12182,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Now print statistics and time for the search:
     char temp[200];
     int centisecs = timer.CentiSecs();
-    if (gameNum != db->numGames) {
+    if (gameNum != db->numGames()) {
         Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
     sprintf (temp, "%d / %d  (%d%c%02d s)",
@@ -12574,13 +12532,13 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     uint startFilterCount = startFilterSize (db, filterOp);
 
     // Here is the loop that searches on each game:
-    uint gameNum;
-    for (gameNum = 0; gameNum < db->numGames; gameNum++) {
+    uint gameNum = 0, n = db->numGames();
+    for (; gameNum < db->numGames(); gameNum++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, gameNum, db->numGames);
+                updateProgressBar (ti, gameNum, n);
                 if (interruptedProgress()) {
                     break;
                 }
@@ -12701,7 +12659,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     int centisecs = timer.CentiSecs();
 
-    if (gameNum != db->numGames) {
+    if (gameNum != db->numGames()) {
         Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
     sprintf (temp, "%d / %d  (%d%c%02d s)",
@@ -13446,14 +13404,14 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
     // Note that a negative number means a count from the end,
     // so -1 = last game, -2 = second to last, etc.
     // Convert any negative values to positive:
-    if (gameNumRange[0] < 0) { gameNumRange[0] += base->numGames + 1; }
-    if (gameNumRange[1] < 0) { gameNumRange[1] += base->numGames + 1; }
+    if (gameNumRange[0] < 0) { gameNumRange[0] += base->numGames() + 1; }
+    if (gameNumRange[1] < 0) { gameNumRange[1] += base->numGames() + 1; }
     if (gameNumRange[0] < 0) { gameNumRange[0] = 0; }
     if (gameNumRange[1] < 0) { gameNumRange[1] = 0; }
     uint gameNumMin = (uint) gameNumRange[0];
     uint gameNumMax = (uint) gameNumRange[1];
-    if (gameNumMin > base->numGames) { gameNumMin = base->numGames; }
-    if (gameNumMax > base->numGames) { gameNumMax = base->numGames; }
+    if (gameNumMin > base->numGames()) { gameNumMin = base->numGames(); }
+    if (gameNumMax > base->numGames()) { gameNumMax = base->numGames(); }
     // Swap them if necessary so min <= max:
     if (gameNumMin > gameNumMax) {
         uint temp = gameNumMin; gameNumMin = gameNumMax; gameNumMax = temp;
@@ -13474,12 +13432,12 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
     }
 
     // Here is the loop that searches on each game:
-    for (uint i=0; i < base->numGames; i++) {
+    for (uint i=0, n = base->numGames(); i < n; i++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, i, base->numGames);
+                updateProgressBar (ti, i, n);
                 if (interruptedProgress()) {
                     break;
                 }
@@ -13732,12 +13690,12 @@ sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Read each game:
-    for (uint i=0; i < db->numGames; i++) {
+    for (uint i=0, n = db->numGames(); i < n; i++) {
         if (showProgress) {  // Update the percentage done bar:
             update--;
             if (update == 0) {
                 update = updateStart;
-                updateProgressBar (ti, i, db->numGames);
+                updateProgressBar (ti, i, n);
                 if (interruptedProgress()) break;
             }
         }

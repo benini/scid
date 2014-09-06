@@ -104,9 +104,15 @@ struct scidBaseT {
 		return filters_[idx].second;
 	}
 
-	int isReadOnly() { return (fileMode==FMODE_ReadOnly) ? 1 : 0; }
-	const IndexEntry* getIndexEntry(gameNumberT g) const { return idx->FetchEntry(g);	}
-	const NameBase* getNameBase() const { return nb; }
+	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly) ? 1 : 0; }
+	uint numGames() const { return idx->GetNumGames(); }
+
+	const IndexEntry* getIndexEntry(gameNumberT g) const {
+		return idx->GetEntry(g);
+	}
+	const NameBase* getNameBase() const {
+		return nb;
+	}
 	FastGame getGame(const IndexEntry* ie) const {
 		return gfile->ReadGame(ie->GetOffset(), ie->GetLength());
 	}
@@ -121,8 +127,8 @@ struct scidBaseT {
 	errorT addGame(scidBaseT* sourceBase, uint gNum);
 	errorT saveGame(Game* game, bool clearCache, int idx = -1);
 
-	bool getFlag(uint flag, uint gNum) {
-		return idx->FetchEntry(gNum)->GetFlag (flag);
+	bool getFlag(uint flag, uint gNum) const {
+		return idx->GetEntry(gNum)->GetFlag (flag);
 	}
 	errorT setFlag(bool value, uint flag, uint gNum){
 		ASSERT(gNum < idx->GetNumGames());
@@ -136,7 +142,7 @@ struct scidBaseT {
 	}
 	errorT setFlag(bool value, uint flag, Filter* filter = 0) {
 		errorT res = OK;
-		for (uint gNum = 0; gNum < idx->GetNumGames(); gNum++) {
+		for (uint gNum = 0, n = numGames(); gNum < n; gNum++) {
 			if (filter && filter->Get(gNum) == 0) continue;
 			res = setFlag(value, flag, gNum);
 			if (res != OK) return res;
@@ -148,7 +154,7 @@ struct scidBaseT {
 	}
 	errorT invertFlag(uint flag, Filter* filter = 0) {
 		errorT res = OK;
-		for (uint gNum = 0; gNum < idx->GetNumGames(); gNum++) {
+		for (uint gNum = 0, n = numGames(); gNum < n; gNum++) {
 			if (filter && filter->Get(gNum) == 0) continue;
 			res = invertFlag(flag, gNum);
 			if (res != OK) return res;
@@ -184,7 +190,6 @@ struct scidBaseT {
 	Index* idx;       // the Index file in memory for this base.
 	NameBase*nb;      // the NameBase file in memory.
 	bool inUse;       // true if the database is open (in use).
-	uint numGames;
 	bool memoryOnly;
 	treeT tree;
 	TreeCache* treeCache;
