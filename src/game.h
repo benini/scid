@@ -24,8 +24,8 @@
 #include "textbuf.h"
 #include "bytebuf.h"
 #include "matsig.h"
-#include "stralloc.h"
 #include <vector>
+#include <string>
 
 void transPieces(char *s);
 char transPiecesChar(char c);
@@ -140,11 +140,12 @@ struct patternT
 
 // The moveT structure stores all necessary information for one move:
 //
-struct moveT
+class moveT
 {
+    friend class Game;
     simpleMoveT  moveData;      // piece moving, target square etc
     char         san[10];           // SAN representation of move
-    char       * comment;
+    std::string  comment;
     moveT      * prev;
     moveT      * next;
     moveT      * varChild;
@@ -153,13 +154,10 @@ struct moveT
     byte         numVariations;
     byte         nagCount;
     byte         nags[MAX_NAGS];
+
+    bool isNull () const { return isNullMove(&moveData); }
 };
 
-inline bool
-isNullMove (moveT * m)
-{
-    return isNullMove(&(m->moveData));
-}
 
 
 // Since we want allocation and freeing of moves to be FAST, we allocate
@@ -234,7 +232,6 @@ private:
 
     gameNumberT GameNumber;     // first game in file is game 0
     bool        NonStandardStart;      // 1 if non-standard start.
-    char *      FenString;      // fen string if non-standard start.
     colorT      ToMove;         // side to move in starting position
     ushort      NumHalfMoves;
     ushort      CurrentPlyCount;
@@ -253,11 +250,11 @@ private:
     moveChunkT * MoveChunk;
     moveT *     FreeList;
 
-    char *      EventStr;
-    char *      SiteStr;
-    char *      WhiteStr;
-    char *      BlackStr;
-    char *      RoundStr;
+    std::string EventStr;
+    std::string SiteStr;
+    std::string WhiteStr;
+    std::string BlackStr;
+    std::string RoundStr;
     dateT       Date;
     dateT       EventDate;
     resultT     Result;
@@ -281,9 +278,6 @@ private:
     moveT *     SavedMove;
     ushort      SavedPlyCount;
     uint        SavedVarDepth;
-
-    StrAllocator * StrAlloc;   // For fast compact allocation of memory
-                               // for comments.
 
     const NameBase* NBase;      // needed for referencing id numbers.
 
@@ -310,6 +304,12 @@ private:
 
     errorT     DecodeVariation (ByteBuffer * buf, byte flags, uint level);
     bool       calcAbsPlyNumber_ (moveT *m, moveT *s);
+
+    static void encodeMove (ByteBuffer * buf, moveT * m);
+    static errorT encodeVariation (ByteBuffer * buf, moveT * m, 
+                                   uint * subVarCount, uint * nagCount, uint depth);
+    static errorT encodeComments (ByteBuffer * buf, moveT * m, uint * commentCounter);
+    static errorT decodeComments (ByteBuffer * buf, moveT * m);
 
 public:
     Game()      { Init(); }
@@ -372,7 +372,7 @@ public:
     uint     GetVarNumber();
 
     void     SetMoveComment (const char * comment);
-    char *   GetMoveComment () { return CurrentMove->prev->comment; }
+    const char* GetMoveComment () { return CurrentMove->prev->comment.c_str(); }
 
     inline errorT AddNag (byte nag);
     inline errorT RemoveNag (bool isMoveNag);
@@ -409,11 +409,11 @@ public:
 
     void     TruncateStart ();
 
-    void     SetEventStr (const char * str);
-    void     SetSiteStr (const char * str);
-    void     SetWhiteStr (const char * str);
-    void     SetBlackStr (const char * str);
-    void     SetRoundStr (const char * str);
+    void     SetEventStr (const char * str) { EventStr = str; }
+    void     SetSiteStr  (const char * str) { SiteStr  = str; }
+    void     SetWhiteStr (const char * str) { WhiteStr = str; }
+    void     SetBlackStr (const char * str) { BlackStr = str; }
+    void     SetRoundStr (const char * str) { RoundStr = str; }
     void     SetDate (dateT date)    { Date = date; }
     void     SetEventDate (dateT date)  { EventDate = date; }
     void     SetResult (resultT res) { Result = res; }
@@ -424,11 +424,11 @@ public:
     void     SetWhiteRatingType (byte b) { WhiteRatingType = b; }
     void     SetBlackRatingType (byte b) { BlackRatingType = b; }
     void     SetEco (ecoT eco)       { EcoCode = eco; }
-    char *   GetEventStr ()          { return EventStr; }
-    char *   GetSiteStr ()           { return SiteStr;  }
-    char *   GetWhiteStr ()          { return WhiteStr; }
-    char *   GetBlackStr ()          { return BlackStr; }
-    char *   GetRoundStr ()          { return RoundStr; }
+    const char* GetEventStr ()       { return EventStr.c_str(); }
+    const char* GetSiteStr ()        { return SiteStr.c_str();  }
+    const char* GetWhiteStr ()       { return WhiteStr.c_str(); }
+    const char* GetBlackStr ()       { return BlackStr.c_str(); }
+    const char* GetRoundStr ()       { return RoundStr.c_str(); }
     dateT    GetDate ()              { return Date; }
     dateT    GetEventDate ()         { return EventDate; }
     resultT  GetResult ()            { return Result; }
@@ -542,7 +542,7 @@ Game::InitMove (moveT * m)
     m->prev = m->next = m->varParent = m->varChild = NULL;
     m->numVariations = 0;
     //m->varLevel = 0;
-    m->comment = NULL;
+    m->comment.clear();
     m->nagCount = 0;
     m->nags[0] = 0;
     m->marker = NO_MARKER;

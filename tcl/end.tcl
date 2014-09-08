@@ -157,6 +157,7 @@ proc mergeGame {{base 0} {gnum 0}} {
       -font $small -command updateMergeGame
   pack $w.b.all -side left
   dialogbutton $w.b.ok -text "OK" -command {
+    undoFeature save
     sc_game merge $merge(base) $merge(gnum) $merge(ply)
     catch {grab release .mergeDialog}
     destroy .mergeDialog

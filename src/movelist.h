@@ -49,7 +49,7 @@ struct simpleMoveT
     int      score;          // used for alpha/beta ordering.
 };
 
-inline bool isNullMove (simpleMoveT * sm)
+inline bool isNullMove (const simpleMoveT* sm)
 {
     return (sm->from == sm->to  &&  sm->from != NULL_SQUARE
               &&  piece_Type(sm->movingPiece) == KING);

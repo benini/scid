@@ -112,7 +112,7 @@ class OpLine
     OpLine (Game * g, const IndexEntry * ie, gameNumberT gnum, uint max, uint tm) {
         Init (g, ie, gnum, max, tm);
     }
-    ~OpLine() { }
+    ~OpLine() { Destroy(); }
     void SetPositionalThemes (Position * pos);
     void Insert (OpLine * subline);
     void SetMoveOrderID (uint id) { MoveOrderID = id; }

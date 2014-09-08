@@ -6445,26 +6445,9 @@ sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         copyfast = true;
     }
 
-    Game * g = new Game;
+    Game* g = (copy) ? db->game->clone() : new Game;
     g->SetNextGame (db->game);
     db->game->SetAltered (db->gameAltered);
-
-    if (copy) {
-        db->game->SaveState();
-        db->game->Encode (db->bbuf, NULL);
-        db->game->RestoreState();
-        db->bbuf->BackToStart();
-        if (copyfast) 
-          g->Decode (db->bbuf, GAME_DECODE_NONE);
-        else
-          g->Decode (db->bbuf, GAME_DECODE_ALL);
-        g->CopyStandardTags (db->game);
-        db->game->ResetPgnStyle (PGN_STYLE_VARS);
-        db->game->SetPgnFormat (PGN_FORMAT_Plain);
-        db->tbuf->Empty();
-        g->MoveToLocationInPGN (db->tbuf, db->game->GetPgnOffset ());
-    }
-
     db->game = g;
     db->gameAltered = false;
 
@@ -11076,8 +11059,11 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 uint moveOrderID = report->AddMoveOrder (scratchGame);
                 OpLine * line = new OpLine (scratchGame, ie, gnum+1,
                                             maxExtraMoves, maxThemeMoveNumber);
-                report->Add (line);
-                line->SetMoveOrderID (moveOrderID);
+                if (report->Add (line)) {
+                    line->SetMoveOrderID (moveOrderID);
+                } else {
+                    delete line;
+                }
             }
         }
         report->AddEndMaterial (ie->GetFinalMatSig(), (ply != 0));
