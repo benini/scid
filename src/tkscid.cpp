@@ -4850,12 +4850,11 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     int plyCount = strGetInteger (argv[2]);
     // Check plyCount is a reasonable value, or set it to current plycount.
-    if (plyCount < 0) { plyCount = db->game->GetCurrentPly(); }
-    db->game->SaveState();
-    db->game->MoveToPly(0);
+    if (plyCount < 0)  plyCount = db->game->GetCurrentPly();
+    if (plyCount == 0) plyCount = 1;
+
     DString dstr;
     db->game->GetPartialMoveList (&dstr, plyCount);
-    db->game->RestoreState();
     return TclResult(ti, OK, std::string(dstr.Data()));
 }
 

@@ -1985,12 +1985,8 @@ OpTable::AddMoveOrder (Game * g)
 {
     uint id = 0;
     int index = -1;
-    ushort ply = g->GetCurrentPly();
- 
-    g->MoveToPly(0);
-
     DString * dstr = new DString;
-    g->GetPartialMoveList (dstr, ply);
+    g->GetPartialMoveList (dstr, g->GetCurrentPly());
 
     // Search for this move order in the current list:
 
