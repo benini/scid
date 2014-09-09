@@ -4,7 +4,7 @@
 ###
 ### $Id: correspondence.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
-### Last change: <Tue, 2014/09/09 16:22:41 arwagner agamemnon>
+### Last change: <Tue, 2014/09/09 16:43:30 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -54,19 +54,18 @@ namespace eval Xfcc {
 	set xfccrcfile ""
 
 	# Set up a proper user agent
-	# Something like 
+	# Something like
 	#    Scid/3.7 (x11; Linux i686; rv:Devel 2009) Tcl/Tk 8.5.2
 	set useragent "Scid/$::scidVersion ([tk windowingsystem]; $::tcl_platform(os) $::tcl_platform(machine); rv:$scidVersionDate) Tcl/Tk [info patchlevel]"
-	
+
 	#----------------------------------------------------------------------
 	# Replace XML entities by their normal characters
 	#----------------------------------------------------------------------
 	proc xmldecrypt {chdata} {
-
 		foreach from {{\&amp;} {\&lt;} {\&gt;} {\&quot;} {\&apos;}}   \
 			to {{\&} < > {"} {'}} {                                     ;# '"
 				regsub -all $from $chdata $to chdata
-		 }   
+		 }
 		 return $chdata
 	}
 
@@ -74,14 +73,12 @@ namespace eval Xfcc {
 	# Replace normal characters by their XML entities
 	#----------------------------------------------------------------------
 	proc xmlencrypt {chdata} {
-
 		foreach from {{\&} < > {"} {'}} \
 				to {{\&amp;} {\&lt;} {\&gt;} {\&quot;} {\&apos;}} {    ;# '"
 				regsub -all $from $chdata $to chdata
-		 }   
+		 }
 		 return $chdata
 	}
-
 
 	#----------------------------------------------------------------------
 	# Configure Xfcc by means of rewriting the .xfccrc in xml
@@ -131,13 +128,13 @@ namespace eval Xfcc {
 			::Xfcc::ReadConfig $xfccrcfile
 		}
 	}
-	
+
 	#----------------------------------------------------------------------
 	# Delete the currently selected server entry
 	#----------------------------------------------------------------------
 	proc DeleteServer {} {
-		# mark a deleted server by # allows the user to manually
-		# undelete by removing the # again before hitting ok.
+		# mark a deleted server by '#' allows the user to manually
+		# undelete again by removing the '#' before hitting ok.
 		set ::Xfcc::Server   "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,0)"
 		set ::Xfcc::Username "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,2)"
 		set ::Xfcc::Password "# $::Xfcc::xfccsrv($::Xfcc::Oldnum,3)"
@@ -150,7 +147,6 @@ namespace eval Xfcc {
 	# Add a new, empty server entry to xfccsrv array
 	#----------------------------------------------------------------------
 	proc AddServer {} {
-
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,0) $::Xfcc::Server
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,2) $::Xfcc::Username
 		set ::Xfcc::xfccsrv($::Xfcc::Oldnum,3) $::Xfcc::Password
@@ -167,15 +163,15 @@ namespace eval Xfcc {
  		set ::Xfcc::xfccsrv($size,3) "SeCrEt!"
  		set ::Xfcc::xfccsrv($size,4) "Rating"
  		set ::Xfcc::xfccsrv($size,1) "http://"
- 
+
  		set ::Xfcc::Server    $::Xfcc::xfccsrv($size,0)
  		set ::Xfcc::Username  $::Xfcc::xfccsrv($size,2)
  		set ::Xfcc::Password  $::Xfcc::xfccsrv($size,3)
  		set ::Xfcc::Rating    $::Xfcc::xfccsrv($size,4)
  		set ::Xfcc::URI       $::Xfcc::xfccsrv($size,1)
- 
+
  		lappend ::Xfcc::lsrvname [list $::Xfcc::xfccsrv($size,0)]
- 
+
  		set ::Xfcc::Oldnum    $size
 	}
 
@@ -183,7 +179,6 @@ namespace eval Xfcc {
 	# Store the current values to the xfccsrv-array
 	#----------------------------------------------------------------------
 	proc xfccsrvstore {} {
-
 		set number [ .configXfccSrv.xfccSrvList curselection ]
 		if {!($number > 0)} {
 			set number 0
@@ -542,10 +537,10 @@ namespace eval Xfcc {
 
 		foreach srv $aNodes {
 			set server   [$srv selectNodes {string(name)}]
-			set uri      [$srv selectNodes {string(uri)}] 
+			set uri      [$srv selectNodes {string(uri)}]
 			set username [$srv selectNodes {string(user)}]
 			set password [$srv selectNodes {string(pass)}]
-			
+
 			if {$name == $server} {
 				::CorrespondenceChess::updateConsole "info Processing $gameid for $username\@$name..."
 				::CorrespondenceChess::updateConsole "info Sending $movecount\. $move \{$comment\}"
@@ -588,7 +583,6 @@ namespace eval Xfcc {
 	# Scid
 	#----------------------------------------------------------------------
 	proc WritePGN {path name rating xml} {
-
 		# The following removes the SOAP-Envelope. tDOM does not seem to
 		# like it for whatever reason, but it's not needed anyway.
 		regsub -all {.*<GetMyGamesResult>} $xml {<GetMyGamesResult>} xml
@@ -934,7 +928,6 @@ namespace eval Xfcc {
 			}
 		}
 		close $stateF
-
 	}
 
 	#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -958,7 +951,7 @@ namespace eval CorrespondenceChess {
 
 	# wether the console is already open or not
 	set isOpen   0
-	
+
 	# default Database
 	set CorrBase        [file nativename [file join $scidDataDir "Correspondence.si4"]]
 
@@ -994,7 +987,7 @@ namespace eval CorrespondenceChess {
 	# Show only games where the player has the move?
 	set ListOnlyOwnMove      0
 	# set sortoptlist        [list "Site, Event, Round, Result, White, Black" "My Time" "Time per Move" "Opponent Time"]
-	
+
 	# Sort criteria to use
 	set CCOrderClassic       0
 	set CCOrderMyTime        1
@@ -1136,7 +1129,7 @@ namespace eval CorrespondenceChess {
 			}
 		}
 	}
-	
+
 	#----------------------------------------------------------------------
 	# Check for the default DB, create it if it does not exist.
 	#----------------------------------------------------------------------
@@ -1312,7 +1305,7 @@ namespace eval CorrespondenceChess {
 	proc doConfigMenus { } {
 		set lang $::language
 
-		if {! [winfo exists .ccWindow]} { 
+		if {! [winfo exists .ccWindow]} {
 			raiseWin .ccWindow
 			return
 		}
@@ -1380,7 +1373,7 @@ namespace eval CorrespondenceChess {
 					if {[string match "*$stripforid*" $game]} {
 						lappend ::CorrespondenceChess::RelayGames $game
 					}
-				} 
+				}
 			}
 			close $connectF
 		}
@@ -1555,7 +1548,7 @@ namespace eval CorrespondenceChess {
 	# for the ongoing game.
 	#----------------------------------------------------------------------
 	proc EnableEngineAnalysis {on} {
-	
+
 		if {$on == 0} {
 			set m .menu.tools
 			$m entryconfigure 0 -state disabled
@@ -1568,7 +1561,7 @@ namespace eval CorrespondenceChess {
 							.fics .metadataWindow .crosstabWin .ecograph \
 							.glistWin .plist .statsWin .baseWin .tourney \
 							.pgnWin .main .nedit .ccWindow } {
-			
+
 				if {[winfo exists $w]} {
 					bind $w <Control-A> {}
 					bind $w <Control-Shift-2> {}
@@ -1588,7 +1581,7 @@ namespace eval CorrespondenceChess {
 							.fics .metadataWindow .crosstabWin .ecograph \
 							.glistWin .plist .statsWin .baseWin .tourney \
 							.pgnWin .main .nedit .ccWindow } {
-			
+
 				if {[winfo exists $w]} {
 					bind $w <Control-A> makeAnalysisWin
 					bind $w <Control-Shift-2> "makeAnalysisWin 2"
@@ -1721,11 +1714,11 @@ namespace eval CorrespondenceChess {
  		grid $w.top.retrieveCC  -stick ewns  -column  0 -row 0
  		grid $w.top.openDB      -stick ew    -column  0 -row 1 -columnspan 2
  		grid $w.top.inbox       -stick ew    -column  0 -row 2 -columnspan 2
- 
+
  		grid $w.top.sendCC      -stick ewns  -column  1 -row 0
 
 		grid $w.top.console                  -column  4 -row 0 -columnspan 8
-		grid $w.top.ysc         -stick ns    -column 13 -row 0 
+		grid $w.top.ysc         -stick ns    -column 13 -row 0
 		grid $w.top.help        -stick nsew  -column 14 -row 0 -columnspan 2
 
 		grid $w.top.delinbox    -stick ewns  -column  5 -row 1 -rowspan 2
@@ -2012,7 +2005,7 @@ namespace eval CorrespondenceChess {
 	# Visually highlight line $::CorrespondenceChess::num
 	#----------------------------------------------------------------------
 	proc SetHighlightedLine {} {
-		global ::CorrespondenceChess::num 
+		global ::CorrespondenceChess::num
 		set gamecount $::CorrespondenceChess::glgames
 
 		# remove old highlighting
@@ -2022,7 +2015,7 @@ namespace eval CorrespondenceChess {
 
 		# highlight current games line
 		foreach col {id toMove event site white black clockW clockB var feature} {
-			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.$col tag add highlight $num.0 [expr {$num+1}].0
 			.ccWindow.bottom.$col tag configure highlight -background lightYellow2 -font font_Bold
 		}
 		updateConsole "info: switched to game $num/$gamecount"
@@ -2032,7 +2025,7 @@ namespace eval CorrespondenceChess {
 	# Set the global $num to the row the user clicked upon
 	#----------------------------------------------------------------------
 	proc SetSelection {xcoord ycoord} {
-		global ::CorrespondenceChess::num 
+		global ::CorrespondenceChess::num
 		set gamecount $::CorrespondenceChess::glgames
 
 		set num [expr {int([.ccWindow.bottom.id index @$xcoord,$ycoord]) + $::CorrespondenceChess::glccstart - 1 }]
@@ -2080,7 +2073,7 @@ namespace eval CorrespondenceChess {
 	#----------------------------------------------------------------------
 	proc config {} {
 		set w .correspondenceChessConfig
-		if { [winfo exists $w]} { 
+		if { [winfo exists $w]} {
 			raiseWin $w
 			return
 		}
@@ -2475,7 +2468,7 @@ namespace eval CorrespondenceChess {
 
 	#----------------------------------------------------------------------
 	# Search for a game by Event, Site, White, Black and CmailGameName
-	# This has to result in only one game matching the criteria. 
+	# This has to result in only one game matching the criteria.
 	# No problem with cmail and Xfcc as GameIDs are unique.
 	#----------------------------------------------------------------------
 	proc SearchGame {Event Site White Black CmailGameName result refresh} {
@@ -2673,7 +2666,7 @@ namespace eval CorrespondenceChess {
 
 	#----------------------------------------------------------------------
 	# If a Correspondence DB is loaded, switch to the clipbase and
-	# use the game with the given id to find headers. 
+	# use the game with the given id to find headers.
 	# PGN file and jump to the game number given. Then extract the
 	# header tags and call "SearchGame" to display the game in question
 	# to the user.
@@ -2917,7 +2910,7 @@ namespace eval CorrespondenceChess {
 				::CorrespondenceChess::RelayGames $g
 			}
 			# process what was just retrieved
-			::CorrespondenceChess::ReadInbox 
+			::CorrespondenceChess::ReadInbox
 		}
 		unbusyCursor .
 	}
@@ -3139,14 +3132,14 @@ namespace eval CorrespondenceChess {
 
 
 			if {$glgames > 0} {
-				# work through all games processed and fill in the gamelist 
+				# work through all games processed and fill in the gamelist
 				# in the console window
 
 				for {set game $glccstart} {$game < [expr {$games+1}]} {incr game} {
 
 					set clockW "no update"; set clockB "no update";
 					set var "";             set noDB "";
-					set noBK "";            set noTB ""; 
+					set noBK "";            set noTB "";
 					set noENG "";           set mess ""
 					set TC "";              set drawoffer "false";
 					set wc "";              set bc "";
@@ -3466,7 +3459,7 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::Outbox
 		global ::CorrespondenceChess::XfccSendcmd
 		global ::CorrespondenceChess::CorrSlot
-		global ::CorrespondenceChess::XfccConfirm 
+		global ::CorrespondenceChess::XfccConfirm
 		global ::CorrespondenceChess::num
 
 		busyCursor .
@@ -3519,7 +3512,7 @@ namespace eval CorrespondenceChess {
 			# yellow while sending in progress,
 			# green if the move was sent in the
 			# current session (ie. without update)
-			.ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0 
+			.ccWindow.bottom.id tag add hlsent$CmailGameName $num.0 [expr {$num+1}].0
 			.ccWindow.bottom.id tag configure hlsent$CmailGameName -background yellow -font font_Bold
 
 			set DlgBoxText "[::tr CCDlgConfirmMoveText]\n\n$name-$gameid:\n\t$movecount. $move\n\t{$comment}"
@@ -3535,7 +3528,7 @@ namespace eval CorrespondenceChess {
 				# 1. e4 e5 <resign> => increment ply => ply = 3 => move
 				# number = 1, move number to send = 2
 				if {[sc_pos side] == "white"} {
-					set movecount [expr {$ply / 2 + 1}]	
+					set movecount [expr {$ply / 2 + 1}]
 					::CorrespondenceChess::updateConsole "info Increment ply $movecount"
 				}
 			} elseif {$acceptDraw == 1} {
