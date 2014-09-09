@@ -4,7 +4,7 @@
 ###
 ### $Id: correspondence.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
-### Last change: <Sat, 2012/05/19 18:39:49 arwagner agamemnon>
+### Last change: <Tue, 2014/09/09 16:22:41 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -952,27 +952,6 @@ namespace eval Xfcc {
 #
 #======================================================================
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #----------------------------------------------------------------------
 # Correspnodence Chess functions
 namespace eval CorrespondenceChess {
@@ -1048,7 +1027,6 @@ namespace eval CorrespondenceChess {
 	set glccstart        1
 	set glgames          0
 
-
 	#----------------------------------------------------------------------
 	# Fetch a file via http
 	#----------------------------------------------------------------------
@@ -1066,10 +1044,8 @@ namespace eval CorrespondenceChess {
 	#----------------------------------------------------------------------
 	proc chooseFile {i filespecs} {
 		set idir [pwd]
-
 		set fullname [tk_getOpenFile -initialdir $idir -title "Scid Correspondence Chess: Select $i"]
 		if {$fullname == ""} { return }
-	  
 		return $fullname
 	}
 
@@ -2479,7 +2455,7 @@ namespace eval CorrespondenceChess {
 		## set fName [file rootname $CorrBase]
 		set fName $CorrBase
 
-		if {[catch {::file::Open $fName} result]} {
+		if {[catch {::file::Open_ $fName} result]} {
 			set err 1
 			tk_messageBox -icon warning -type ok -parent . \
 				-title "Scid: Error opening file" -message $result
