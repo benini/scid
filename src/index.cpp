@@ -232,7 +232,7 @@ errorT Index::write (const IndexEntry* ie, uint idx)
 
 
 /************* Interface to SortCache *******************/
-SortCache* Index::CreateSortingCache (const NameBase *nbase, const char *criteria)
+SortCache* Index::CreateSortingCache (const NameBase *nbase, const char *criteria) const
 {
     // If there is another client using a matching cache, use that one
     for(uint i=0; i < SORTING_CACHE_MAX; i++) {
@@ -253,7 +253,7 @@ SortCache* Index::CreateSortingCache (const NameBase *nbase, const char *criteri
 }
 
 // Search and free a matching cache
-void Index::FreeCache(const char* criteria)
+void Index::FreeCache(const char* criteria) const
 {
     for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
         if (sortingCaches[i] != NULL && sortingCaches[i]->MatchCriteria(criteria)) {
@@ -266,7 +266,7 @@ void Index::FreeCache(const char* criteria)
     }
 }
 
-errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result)
+errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result) const
 {
     ASSERT(result != 0);
     ASSERT(criteria != 0 && strlen(criteria) > 1);
@@ -304,7 +304,7 @@ errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, u
     return OK;
 }
 
-uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber)
+uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber) const
 {
     for(uint i=0; i < SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i] == NULL) continue;
@@ -320,7 +320,7 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filte
 }
 
 uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter,
-                              const char* text, uint start, bool forward)
+                              const char* text, uint start, bool forward) const
 {
     uint i = 0;
     for(; i < SORTING_CACHE_MAX; i++) {
@@ -373,7 +373,7 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filte
     return res;
 }
 
-errorT Index::IndexUpdated( uint gnum)
+errorT Index::IndexUpdated( uint gnum) const
 {
     for(uint i=0; i<SORTING_CACHE_MAX; i++)
         if( sortingCaches[i] != NULL)

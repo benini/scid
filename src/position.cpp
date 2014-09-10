@@ -1403,6 +1403,35 @@ Position::GenCheckEvasions (MoveList * mlist, pieceT mask, genMovesT genType,
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Position::TreeCalcAttacks():
+//      Calculate attack score for a side on a square,
+//      using a recursive tree search.
+int
+Position::TreeCalcAttacks(colorT side, squareT target)
+{
+  int maxScore = -2;
+  uint moveCount = 0, zeroCount = 0;
+  MoveList moveList;
+  GenerateCaptures(&moveList);
+  for (uint i=0; i < moveList.Size(); i++) {
+    simpleMoveT *smPtr = moveList.Get(i);
+    if (smPtr->to == target) {
+      if (piece_IsKing(Board[target])) return -1;
+      moveCount++;
+      DoSimpleMove(smPtr);
+      int score = TreeCalcAttacks(color_Flip(side), target);
+      UndoSimpleMove(smPtr);
+      if (!score && ++zeroCount > 1) return -2;
+      if (score > maxScore) maxScore = score;
+    }
+  }
+
+ if (!moveCount) return 0;
+ if (!maxScore) return -1;
+ return -maxScore;
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Position::CalcAttacks():
 //      Calculate the number of attacks by a side on a square.
 //      This function also puts a list of the attacking piece squares

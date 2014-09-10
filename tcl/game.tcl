@@ -148,11 +148,13 @@ proc ::game::Reload {} {
 #   Loads a random game from the database.
 #
 proc ::game::LoadRandom {} {
-  set ngames [sc_filter count]
+  set db [sc_base current]
+  set filter "dbfilter"
+  set ngames [sc_filter size $db $filter]
   if {$ngames == 0} { return }
-  set r [expr {(int (rand() * $ngames)) + 1} ]
-  set gnumber [sc_filter index $r]
-  ::game::Load $gnumber
+  set r [expr {(int (rand() * $ngames))} ]
+  set gnumber [sc_base gameslist $db $r 1 $filter N+]
+  ::game::Load [split [lindex $gnumber 0] "_"]
 }
 
 # History of viewed games

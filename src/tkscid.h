@@ -140,7 +140,6 @@ int sc_eco_translate  (TCL_ARGS);
 int sc_filter         (TCL_ARGS);
 int sc_filter_first   (TCL_ARGS);
 int sc_filter_freq    (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_filter_index   (TCL_ARGS);
 int sc_filter_last    (TCL_ARGS);
 int sc_filter_next    (TCL_ARGS);
 int sc_filter_prev    (TCL_ARGS);

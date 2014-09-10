@@ -81,11 +81,11 @@ public:
 				case 3: return SetFilter<BLACK, false>(base, filter);
 			}
 		}
-		for (uint i=0; i < base->numGames; i++) {
+		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry (i);
 			if (! ie->GetStartFlag()) filter->Set (i, 1);
 			else {
-				FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
+				FastGame game = base->getGame(ie);
 				int ply = game.search<WHITE>(board_, nPieces_);
 				filter->Set (i, (ply > 255) ? 255 : ply);
 			}
@@ -111,7 +111,7 @@ private:
 	bool SetFilter (scidBaseT* base, Filter* filter) {
 		filter->Fill(0);
 		long progress = 0;
-		for (uint i=0; i < base->numGames; i++) {
+		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry(i);
 			if (! ie->GetStartFlag()) {
 				if (STOREDLINE) {
@@ -126,12 +126,11 @@ private:
 			}
 			if (!matsig_isReachable (msig_, ie->GetFinalMatSig(), ie->GetPromotionsFlag(), ie->GetUnderPromoFlag())) continue;
 
-			FastGame game = base->gfile->ReadGame (ie->GetOffset(),	ie->GetLength());
-			int ply = game.search<TOMOVE>(board_, nPieces_);
+			int ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 
 			if ((progress++ % 100) == 0) {
-				if (!progressFn_ (static_cast<double> (i) / base->numGames)) return false;
+				if (!progressFn_ (static_cast<double> (i) / n)) return false;
 			}
 		}
 		return true;

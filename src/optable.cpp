@@ -185,15 +185,9 @@ OpLine::Init (Game * g, const IndexEntry * ie, gameNumberT gameNum,
 void
 OpLine::Destroy (void)
 {
-#ifdef WINCE
-    my_Tcl_Free((char*) White);
-    my_Tcl_Free((char*) Black);
-    my_Tcl_Free((char*)  Site);
-#else
     delete[] White;
     delete[] Black;
     delete[] Site;
-#endif
 }
 
 
@@ -671,8 +665,8 @@ OpTable::Add (OpLine * line)
     FilterCount++;
 
     // Stop here if this line is excluded from the theory table:
-    if (WTM  && strEqual (line->Move[0], ExcludeMove)) { return OK; }
-    if (!WTM  &&  strEqual (line->Move[1], ExcludeMove)) { return OK; }
+    if (WTM  && strEqual (line->Move[0], ExcludeMove)) { return false; }
+    if (!WTM  &&  strEqual (line->Move[1], ExcludeMove)) { return false; }
 
     TheoryCount++;
     TheoryResults[line->Result]++;
@@ -680,7 +674,7 @@ OpTable::Add (OpLine * line)
         Line[NumLines] = line;
         NumLines++;
         if (NumTableLines < MaxTableLines) { NumTableLines++; }
-        return OK;
+        return true;
     }
 
     // The table is full, so if this line is to be added, it must
@@ -696,7 +690,6 @@ OpTable::Add (OpLine * line)
         }
     }
     if (evictIndex < 0) {
-        delete line;
         return false;
     }
     delete Line[evictIndex];
@@ -1985,17 +1978,13 @@ OpTable::AddMoveOrder (Game * g)
 {
     uint id = 0;
     int index = -1;
-    ushort ply = g->GetCurrentPly();
- 
-    g->MoveToPly(0);
-
-    DString * dstr = new DString;
-    g->GetPartialMoveList (dstr, ply);
+    DString dstr;
+    g->GetPartialMoveList (&dstr, g->GetCurrentPly());
 
     // Search for this move order in the current list:
 
     for (uint i=0; i < NumMoveOrders; i++) {
-        if (strEqual (dstr->Data(), MoveOrder[i].moves)) {
+        if (strEqual (dstr.Data(), MoveOrder[i].moves)) {
             index = i;
             MoveOrder[i].count++;
             id = MoveOrder[i].id;
@@ -2008,14 +1997,12 @@ OpTable::AddMoveOrder (Game * g)
     if (index < 0) {
         if (NumMoveOrders == OPTABLE_MAX_LINES) { return 0; }
         MoveOrder[NumMoveOrders].count = 1;
-        MoveOrder[NumMoveOrders].moves = strDuplicate (dstr->Data());
+        MoveOrder[NumMoveOrders].moves = strDuplicate (dstr.Data());
         MoveOrder[NumMoveOrders].id = NumMoveOrders + 1;
         id = MoveOrder[NumMoveOrders].id;
         index = NumMoveOrders;
         NumMoveOrders++;
     }
-
-    delete dstr;
 
     // Keep the array in sorted order, to avoid needing to sort it later:
     // The list is sorted by count (highest first), with tied counts
