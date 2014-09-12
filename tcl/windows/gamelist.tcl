@@ -1141,9 +1141,9 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
         -command "glist.removeFromFilter_ $w $idx +"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label $::tr(GlistDeleteAllGames) \
-        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) set del; ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w)"
+        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) set del; ::notify::DatabaseModified $::glistBase($w)"
       $w.game_menu.filter add command -label $::tr(GlistUndeleteAllGames) \
-        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseModified $::glistBase($w) $::glistFilter($w)"
+        -command "sc_base gameflag $::glistBase($w) $::glistFilter($w) unset del; ::notify::DatabaseModified $::glistBase($w)"
       $w.game_menu add cascade -label $::tr(Filter) -menu $w.game_menu.filter
       $w.game_menu add separator
       #TODO: translate labels
