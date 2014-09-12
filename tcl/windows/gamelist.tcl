@@ -796,7 +796,7 @@ proc glist.create {{w} {layout}} {
 
   # Find widget
   ttk::frame $w.find
-  ttk::button $w.find.hide -image tb_close
+  ttk::label $w.find.hide -image "tb_close hover tb_close_hover"
   bind $w.find.hide <ButtonPress-1> "set ::glist_FindBar($layout) 0; glist.showfindbar_ $w.glist $layout"
   ttk::frame $w.find.t
   ttk::label $w.find.t_text -text $::tr(Search)
@@ -977,7 +977,11 @@ proc glist.findgame_ {{w_parent} {dir}} {
   set w_entryT $w_parent.find.text
   set txt [$w_entryT get]
   $w_entryT configure -bg white
-  if { $dir == "awe" } { return [::windows::gamelist::Awesome [winfo toplevel $w_parent] "$txt"] }
+  if { $dir == "awe" } {
+    ::windows::gamelist::Awesome [winfo toplevel $w_parent] "$txt"
+    $w_entryT selection range 0 end
+    return
+  }
   if { $txt == "" } { return }
   busyCursor $w_parent
   update idletasks
