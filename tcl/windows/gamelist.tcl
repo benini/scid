@@ -153,6 +153,30 @@ proc ::windows::gamelist::FilterNegate {{w} {base}} {
 	::notify::DatabaseModified $base $f
 }
 
+proc ::windows::gamelist::FilterExport {{w}} {
+	set ftype {
+	   { {PGN} {.pgn} }
+	   { {LaTeX} {.tex .ltx} }
+	}
+	set fName [tk_getSaveFile -initialdir $::initialDir(base) \
+	                          -filetypes $ftype \
+	                          -typevariable ::gamelistExport \
+	                          -title [tr ToolsExpFilter] ]
+	if {$fName == ""} { return }
+	progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
+	busyCursor .
+	if {$::gamelistExport == "LaTeX"} {
+		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
+		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport \
+		                 $::exportStartFile(LaTeX) $::exportEndFile(LaTeX)
+	} else {
+		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
+		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport
+	}
+	unbusyCursor .
+	closeProgressWindow
+}
+
 # Returns text describing state of filter for specified
 # database, e.g. "no games" or "all / 400" or "1,043 / 2,057"
 proc ::windows::gamelist::filterText {{w ""} {base 0}} {
@@ -475,27 +499,6 @@ proc ::windows::gamelist::filterRelease_ {{base} {filter}} {
 		}
 	}
 	if {! $used} { catch {sc_filter release $base $filter} }
-}
-
-proc ::windows::gamelist::export_ {{w} {sortCrit}} {
-	set ftype {
-	   { {PGN} {.pgn} }
-	   { {LaTeX} {.tex .ltx} }
-	}
-	set fName [tk_getSaveFile -initialdir $::initialDir(base) -filetypes $ftype -typevariable ::gamelistExport -title "Export games" ]
-	# -confirmoverwrite boolean    TODO: If file exists ask to add/overwrite
-	if {$fName == ""} { return }
-	set header ""
-	set footer ""
-	progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
-	busyCursor .
-	if {$::gamelistExport == "LaTeX"} {
-		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) $sortCrit $fName $::gamelistExport $::exportStartFile(LaTeX) $::exportEndFile(LaTeX)
-	} else {
-		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) $sortCrit $fName $::gamelistExport
-	}
-	unbusyCursor .
-	closeProgressWindow
 }
 
 proc ::windows::gamelist::updateStats_ { {w} } {
@@ -1126,7 +1129,7 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
       }
       $w.game_menu add separator
       menu $w.game_menu.filter
-      $w.game_menu.filter add command -label "Export" -command "::windows::gamelist::export_ [winfo toplevel $w] $::glistSortStr($w)"
+      $w.game_menu.filter add command -label "Export" -command "::windows::gamelist::FilterExport [winfo toplevel $w]"
       $w.game_menu.filter add separator
       $w.game_menu.filter add command -label [tr SearchReset] \
         -command "::windows::gamelist::FilterReset [winfo toplevel $w] $::glistBase($w)"

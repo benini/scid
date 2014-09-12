@@ -621,6 +621,11 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
   if {![sc_base isReadOnly $baseIdx]} {
     $w.menu add command -label [tr ToolsImportFile] -command "importPgnFile $baseIdx"
   }
+  if { [info exists ::sw_LinkedGList_($switcherWin)] && \
+       [::windows::gamelist::GetBase $::sw_LinkedGList_($switcherWin)] == "$baseIdx"} {
+    $w.menu add command -label "[tr ToolsExpFilter]" -command \
+        "::windows::gamelist::FilterExport $::sw_LinkedGList_($switcherWin)"
+  }
   if { $baseIdx != $clipbaseIdx } {
     $w.menu add command -label [tr FileClose] -command [list ::file::Close $baseIdx]
     #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
