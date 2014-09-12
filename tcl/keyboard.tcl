@@ -137,14 +137,7 @@ proc keyboardShortcuts {w} {
 		bind $w "<Control-Key-$i>" "::file::SwitchToBase $i"
 	}
 
-	bind $w <Up> {
-		if {[sc_pos isAt vstart]} {
-			.main.fbutton.button.exitVar invoke
-		} else	{
-			::move::Back 10
-		}
-		break
-	}
+	bind $w <Up> { ::move::Back 10;	break }
 	bind $w <Down>	{::move::Forward 10; break}
 
 	bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
