@@ -440,7 +440,7 @@ namespace eval Xfcc {
 	}
 
 	#----------------------------------------------------------------------
-	# Recieve games via XFCC from the web service at uri using username
+	# Receive games via XFCC from the web service at uri using username
 	# and password provided
 	#----------------------------------------------------------------------
 	proc Receive {uri username password} {

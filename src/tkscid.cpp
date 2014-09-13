@@ -2392,7 +2392,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
 //            of elements is a tag name and its frequency,
 //            for all non-standard tags stored as Extra
 //            tags in the game file of the database.
-//      strip <tag>: Remove all occurences of the
+//      strip <tag>: Remove all occurrences of the
 //                   specified tag from the database.
 int
 sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
@@ -8520,7 +8520,7 @@ sc_pos_isLegal (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_matchMoves: Return the list of legal moves matching
-//     a specified prefix. Note that any occurence of "x", "=", "+",
+//     a specified prefix. Note that any occurrence of "x", "=", "+",
 //     or "#" is removed from the move text of each move, and the
 //     castling moves are "OK" and "OQ" for king and queen-side
 //     castling respectively, so that no move is a prefix of

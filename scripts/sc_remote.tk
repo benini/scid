@@ -200,7 +200,7 @@ proc getScidList {} {
 # indeed a contactable Scid.  First the name is matched against the
 # pattern "scid*", then a send is tried with the "sc_info version"
 # command.  Finally, a variable (scidExeDir) which is set within the 
-# scid script is tested for existance. If all three of these tests
+# scid script is tested for existence. If all three of these tests
 # succeed we assume we have a Scid.
 #
 proc validScidInterp { scid } {
@@ -296,7 +296,7 @@ proc isBusy { interp } {
     return [expr { "watch" == "[send $interp . cget -cursor]" }]
 }
 #
-# ldelete removes all occurences of an item from a list
+# ldelete removes all occurrences of an item from a list
 #
 proc ldelete { li el } {
     upvar $li l

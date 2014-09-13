@@ -1214,7 +1214,7 @@ proc stripTags {} {
 
 proc doStripTags {{parent .}} {
   global stripTagChoice
-  set msg "Do you really want to remove all occurences of the PGN tag"
+  set msg "Do you really want to remove all occurrences of the PGN tag"
   append msg " \"$stripTagChoice\" from this database?"
   set result [tk_messageBox -title "Scid" -parent $parent \
       -icon question -type yesno -message $msg]

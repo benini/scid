@@ -464,7 +464,7 @@ strLastChar (const char * target, char matchChar)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strStrip():
-//      Removes all occurances of the specified char from the string.
+//      Removes all occurrences of the specified char from the string.
 void
 strStrip (char * str, char ch)
 {
@@ -530,7 +530,7 @@ strTrimRight (char * target, const char * trimChars)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strTrimSuffix():
 //      Trims the provided string in-place, at the last
-//      occurance of the provided suffix character.
+//      occurrence of the provided suffix character.
 //      Returns the number of characters trimmed.
 //      E.g., strTrimSuffix ("file.txt", '.') would leave the
 //      string as "file" and return 4.
@@ -851,7 +851,7 @@ strIsSurnameOnly (const char * name)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strContains():
-//      Returns true if longStr contains an occurence of keyStr,
+//      Returns true if longStr contains an occurrence of keyStr,
 //      case-sensitive and NOT ignoring any characters such as spaces.
 bool
 strContains (const char * longStr, const char * keyStr)
@@ -865,7 +865,7 @@ strContains (const char * longStr, const char * keyStr)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strCaseContains():
-//      Returns true if longStr contains an occurence of keyStr,
+//      Returns true if longStr contains an occurrence of keyStr,
 //      case-insensitive and NOT ignoring any characters such as spaces.
 bool
 strCaseContains (const char * longStr, const char * keyStr)
@@ -879,7 +879,7 @@ strCaseContains (const char * longStr, const char * keyStr)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strContainsIndex():
-//      Returns the first index if longStr contains an occurence of keyStr,
+//      Returns the first index if longStr contains an occurrence of keyStr,
 //      case-sensitive and NOT ignoring any characters such as spaces.
 //      Returns -1 if longStr does not contain keyStr
 int
@@ -896,7 +896,7 @@ strContainsIndex (const char * longStr, const char * keyStr)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strAlphaContains():
-//      Returns true if longStr contains an occurence of keyStr,
+//      Returns true if longStr contains an occurrence of keyStr,
 //      case-insensitive and ignoring spaces.
 //      Example: strAlphaContains ("Smith, John", "th,j") == true.
 //

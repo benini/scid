@@ -313,7 +313,7 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   first with the <a Pgnscid>pgnscid</a> utility.
   </p>
   <p>
-  Windows can be used in docked mode or as independant windows (see
+  Windows can be used in docked mode or as independent windows (see
   flag in the options menu).  In docked mode, the most important
   windows are embedded into a main one. The windows can be reordered
   by right-clicking on the tab (where the title of the window is) and
@@ -2497,7 +2497,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   Tree>The Tree window</a>  for more details.
   </p>
   <p>
-  To add additional informations beyond pure statistical data a
+  To add additional information beyond pure statistical data a
   <term>Mask</term> can be defined. One can imagine a
   <term>Mask</term> as a transparet layer above the current tree, that
   holds additional data e.g. commentaries for moves or positions, own
@@ -2863,7 +2863,7 @@ set helpText(Maintenance) {<h1>Database maintenance</h1>
   <h3>Repair a base</h3>
   <p>
   In the rare cases that a Scid database is corrupted one might try to
-  repair it using File / Maintanance / Repair base. For this to work,
+  repair it using File / Maintenance / Repair base. For this to work,
   the base in question must not be opened (which is not possible in
   most cases anyway). Scid will then try its best to get the database
   back in a consistent and usable state.
@@ -3031,7 +3031,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   window just hit <term>ESC</term>.
   </p>
   <p>
-  The principle informations of the current analysis are shown on
+  The principal information of the current analysis is shown on
   top of the window. The first number signifies the evaluation value
   in pawn units.  The score shown in the analysis window is always
   from the perspective of White, so a negative score indicates Black
@@ -4859,7 +4859,7 @@ chess.
 <ul>
    <li><b>eMail Chess</b> proceeds by sending the current game via eMail
    to your opponet once you made your move. To this end an eMail message
-   is created in your prefered email program with the current game
+   is created in your preferred email program with the current game
    attached to it in <a PGN>PGN</a> format. Of course all comments and
    variations are stripped off before.
    </li>
@@ -4870,9 +4870,9 @@ chess.
    Xfcc. The fetch and send tool are implemented as external tools for
    easy extension if other protocols arise.
    </li>
-   <li><b>Postal play</b>: Scid allos support for postal play by
-	adding a PGN file with the proper header information to it's Inbox
-	directory. If the addtionaly header field <b>Mode</b> is set to
+   <li><b>Postal play</b>: Scid allows support for postal play by
+	adding a PGN file with the proper header information to its Inbox
+	directory. If the additional header field <b>Mode</b> is set to
 	<b>Postal</b> those games get their proper icon displayed. Note
 	that also the header fields <b>CmailGamename</b> and <b>Gameid</b>
 	should be present. 
@@ -4945,7 +4945,7 @@ chess functions can easily accessed by the following buttons:
    database.
    </li>
    <li><button tb_CC_Send> Sends your move to the opponent by either
-   creating a new eMail message in your prefered mail program or by
+   creating a new eMail message in your preferred mail program or by
    sending the move to a chess server in case of Xfcc.
    </li>
    <li><button tb_CC_delete> empties your In- and Outbox directories.
@@ -5101,7 +5101,7 @@ of its own menu, which is identical to Play / Correspondence Chess. It
 is also possible to use the usual scrolling features of Scid, like
 jumping to the next (previous) game by Ctrl-Down (Ctrl-Up). Hovering
 with the mouse over certain fields in the game list will also give
-additional informations as far as they are provided by the server. If
+additional information as provided by the server. If
 you want to copy the current game list to the clipboard one can use
 the usual shortcuts Ctrl-Ins (or Ctrl-C).
 </p>
@@ -5700,7 +5700,7 @@ Note: This tool is <b>not</b> called for eMail chess!
 
 <p>
 <b>Mail program</b>:
-This gives the path to your prefered eMail program. This program is
+This gives the path to your preferred eMail program. This program is
 called for eMail chess to compose the message to the opponent.
 </p>
 
@@ -6656,7 +6656,7 @@ set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
    <p>
    The <url "http://dublincore.org">Dublin Core</a> metadata element
    defines a standardised and widelay used way to exchange
-   informations about electronic ressources (metadata, ie. data about
+   information about electronic ressources (metadata, ie. data about
    data). Dublin Core was defined in 2003 by ISO Standard 15836, and
    NISO Standard Z39.85-2007.
    </p>
@@ -6667,7 +6667,7 @@ set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
    the Web), the date of a database and so on.
    </p>
    <p>
-   These informations can be viewed or appended to a database by
+   This information can be viewed or appended to a database by
    choosing <term>Database information</term>. A new window will open
    up that shows the individual Dublin Core items and allows to edit
    them.

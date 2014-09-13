@@ -4156,7 +4156,7 @@ extern "C" int TB_FASTCALL L_TbtProbeTable
 //
 //	Global initialization
 
-int FCheckExistance
+int FCheckExistence
 	(
 	char	*pszPath,
 	int		iTb,
@@ -4385,12 +4385,12 @@ extern "C" int IInitializeTb
 		szTemp[i] = '\0';
 		for (iTb = 1; iTb < cTb; iTb ++)
 			{
-			if (FCheckExistance (szTemp, iTb, x_colorWhite))
+			if (FCheckExistence (szTemp, iTb, x_colorWhite))
 				{
 				if (iTb > iMaxTb)
 					iMaxTb = iTb;
 				}
-			if (FCheckExistance (szTemp, iTb, x_colorBlack))
+			if (FCheckExistence (szTemp, iTb, x_colorBlack))
 				{
 				if (iTb > iMaxTb)
 					iMaxTb = iTb;

@@ -627,7 +627,7 @@ SortCache::CheckForChanges (uint id)
 }
 
 /*IndexToFilteredCount
-Given a game number find it's position into the sorted list
+Given a game number find its position in the sorted list
 gnumber: game number (first game has value 1)
 filter: restrict search to filtered games
 return: 0 if gnumber is not found

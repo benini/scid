@@ -2,7 +2,7 @@
 ### Repertoire editor functions for Scid.
 ### Copyright (C) 2001-2002 Shane Hudson.
 
-# The heirarchical view used to display a repertoire in Scid was
+# The hierarchical view used to display a repertoire in Scid was
 # originally based on the  public domain Tcl/Tk tree widget written by
 # D. Richard Hipp (available at: http://www.hwaci.com/sw/tk/tree.html)
 # but the Scid code is completely rewritten and significantly improved.
@@ -228,7 +228,7 @@ proc ::rep::updateWinTitle {w} {
 
 # ::rep::regroup
 #   Calls ::rep::_extract to produce a set of commands for rebuilding
-#   the repertoire heirarchy, then clears and rebuilds it.
+#   the repertoire hierarchy, then clears and rebuilds it.
 #   Used to reorganise the repertoire whenever a group is added or
 #   removed.
 proc ::rep::regroup {w} {
@@ -386,7 +386,7 @@ proc ::rep::_numChildLines {w v} {
 }
 
 # ::rep::_draw
-#   Draws the repertoire heirarchy.
+#   Draws the repertoire hierarchy.
 #
 proc ::rep::_draw {w} {
   catch {unset ::rep::_data($w:drawPending)}
@@ -400,7 +400,7 @@ proc ::rep::_draw {w} {
 }
 
 # ::rep::_drawLevel
-#   Draws a single level of the heirarchy, indented by $in pixels.
+#   Draws a single level of the hierarchy, indented by $in pixels.
 #
 proc ::rep::_drawLevel {w v in} {
   set p $v
@@ -543,7 +543,7 @@ proc ::rep::_drawSelection w {
 }
 
 # ::rep::_drawWhenIdle
-#   Schedule a redraw event of the repertoire heirarchy.
+#   Schedule a redraw event of the repertoire hierarchy.
 #
 proc ::rep::_drawWhenIdle w {
   if {![info exists ::rep::_data($w:drawPending)]} {
@@ -841,7 +841,7 @@ proc ::rep::doubleClick {w label} {
 }
 
 # ::rep::_extract
-#   Traverses the repertoire heirarchy, producing a list of
+#   Traverses the repertoire hierarchy, producing a list of
 #   commands needed to reconstruct the entire repertoire.
 #   If a line or group is marked deleted, it is not included in
 #   the list. If a group is marked pruned, its children are not
@@ -877,7 +877,7 @@ proc ::rep::_extract {w v returnList} {
 }
 
 # ::rep::_searchLines
-#   Traverses the repertoire heirarchy, producing a list of
+#   Traverses the repertoire hierarchy, producing a list of
 #   lines to be searched. If type is "all", all lines in the
 #   repertoire will appear. Otherwise, type should be "displayed"
 #   and only currently displayed lines will appear.

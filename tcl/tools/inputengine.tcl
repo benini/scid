@@ -755,7 +755,7 @@ namespace eval inputengine {
                .inputengineconsole.wClock configure -text "$wMin:$wSec (EXT)"
             }
 
-            ###---### Is this enough to set game clocks for all possible occurences?
+            ###---### Is this enough to set game clocks for all possible occurrences?
             catch { ::gameclock::setSec 1 [expr -1*$::inputengine::WhiteClock] }
           } \
           "Time Black:" {
@@ -774,7 +774,7 @@ namespace eval inputengine {
                .inputengineconsole.bClock configure -text "$bMin:$bSec (EXT)"
             }
 
-            ###---### Is this enough to set game clocks for all possible occurences?
+            ###---### Is this enough to set game clocks for all possible occurrences?
             catch { ::gameclock::setSec 2 [expr -1*$::inputengine::BlackClock] }
           } \
           "Wrong move performed:" {
