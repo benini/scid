@@ -386,8 +386,8 @@ proc ::commenteditor::ClearComments {win} {
 # Arguments:
 #	board	The frame variable of the board.
 #	button	The number (%b) of the button that was released.
-#	x_root	The x-coodinate (%X) from the event.
-#	y_root	The y-coodinate (%Y) from the event.
+#	x_root	The x-coordinate (%X) from the event.
+#	y_root	The y-coordinate (%Y) from the event.
 # Results:
 #
 proc ::commenteditor::ButtonReleased {board button x_root y_root} {

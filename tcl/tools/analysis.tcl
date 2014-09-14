@@ -1,3 +1,4 @@
+
 ###
 ### analysis.tcl: part of Scid.
 ### Copyright (C) 1999-2003  Shane Hudson.
@@ -681,7 +682,7 @@ proc configAnnotation {} {
     global autoplayDelay tempdelay blunderThreshold annotateModeButtonValue
     
     set w .configAnnotation
-    # Do not do anyting if the window exists
+    # Do not do anything if the window exists
     #
     if { [winfo exists $w] } {
         raise $w
@@ -1648,7 +1649,7 @@ proc logEngine {n text} {
 }
 
 # logEngineNote:
-#   Add a note to the engine comminucation log file.
+#   Add a note to the engine communication log file.
 #
 proc logEngineNote {n text} {
     logEngine $n "NOTE  : $text"

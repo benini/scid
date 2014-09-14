@@ -78,7 +78,7 @@ proc InitDirs {} {
   }
 
   # scidUserDir: location of user-specific Scid files.
-  # This is "~/.scid" on Unix, and the Scid exectuable dir on Windows.
+  # This is "~/.scid" on Unix, and the Scid executable dir on Windows.
   if {$::windowsOS} {
     set scidUserDir $scidExeDir
   } else {
@@ -194,7 +194,7 @@ foreach ns {
 }
 
 proc ::splash::add {text} {
-#TODO: decide what to do with all the spash messages (delete?)
+#TODO: decide what to do with all the splash messages (delete?)
 }
 
 
@@ -860,7 +860,7 @@ if { $macOS } {
       return
     }
     
-    # Un-nest argumens again if Scid opened on drag & drop
+    # Un-nest arguments again if Scid opened on drag & drop
     if {$isopenBaseready == 2} {
       # Un-nest arguments:
       set args [join $args]

@@ -131,9 +131,9 @@ proc ::windows::stats::Refresh {} {
   append s "     1-0     =-=     0-1 [::utils::string::PadRight $score 8]\n"
   append s "------------------------------------------------------------------------"
   append s "\n [::utils::string::Pad $all $len]" [sc_filter stats all]
-#Klimmek: New Statistic: Count the games in intervalls "start elo  - end elo"
-#         if elo is deselected in option menu, then enlarge the intervall to next selectet elo.
-#Klimmek: New Statistic: Count the games in intervalls
+#Klimmek: New Statistic: Count the games in intervals "start elo  - end elo"
+#         if elo is deselected in option menu, then enlarge the interval to next selected elo.
+#Klimmek: New Statistic: Count the games in intervals
   if {$ratings} {
     append s "\n"
     set j 0
@@ -165,19 +165,19 @@ proc ::windows::stats::Refresh {} {
 	}
 	set nelo [string range [lindex $rlist $l] 1 end]
 	if { $nelo == "" } { set nelo 0 }  
-#count all games where player whith lowest Elo is in the specific range      
+#count all games where player with lowest Elo is in the specific range      
         set stat "min. Elo $nelo-$elo"
         append s "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo $elo]
         set stat "max. Elo $nelo-$elo"
-#count all games where player whith highest Elo is in the specific range      
+#count all games where player with highest Elo is in the specific range      
 # +10000 workaround to trigger max elo in filter function
 	append sm "\n [::utils::string::Pad $stat $len]"   [sc_filter stats elo $nelo [expr {$elo + 10000}]]
       }
     }
   }
   append s $sm
-#Klimmek: New Statistic: Count the games in intervalls "from year - to year"
-#         if year is deselected in option menu, then enlarge the intervall to next selectet year.
+#Klimmek: New Statistic: Count the games in intervals "from year - to year"
+#         if year is deselected in option menu, then enlarge the interval to next selected year.
   if {$years} {
     append s "\n"
     set j 0  

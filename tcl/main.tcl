@@ -1158,7 +1158,7 @@ proc autoplay {} {
     }
     
     if { $::initialAnalysis } {
-        # Stop analyis if it is running
+        # Stop analysis if it is running
         # We do not want initial super-accuracy
         #
         stopEngineAnalysis 1
@@ -1171,7 +1171,7 @@ proc autoplay {} {
         startEngineAnalysis 1 1
     
     # Autoplay comes in two flavours:
-    # + It can run through a game, with or witout annotation
+    # + It can run through a game, with or without annotation
     # + It can be annotating just opening sections of games
     # See if such streak ends here and now
     #

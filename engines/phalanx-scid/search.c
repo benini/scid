@@ -348,7 +348,7 @@ if( Counter < 20 || Bookout < 4 || Flag.analyze )
 	{
 		/* PV[0][0] = m[b]; */
 		Bookout = 0;
-		PV[0][1].from = 0;   /* dont start pondering */
+		PV[0][1].from = 0;   /* don't start pondering */
 		m[b].value = 0;
 		do_move(m+b);
 		return m[b];

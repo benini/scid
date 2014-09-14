@@ -99,7 +99,7 @@ proc packbuttons {side args} {
 
 # dialogbutton:
 #   Creates a button that will be shown in a dialog box, so it
-#   is given a minumin width.
+#   is given a minimum width.
 #
 proc dialogbutton {w args} {
   set retval [eval ttk::button $w $args] ;# -style TButton

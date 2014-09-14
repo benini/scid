@@ -19,7 +19,7 @@ namespace eval ::utils::graph {}
 #  -ytick:     distance between y-axis ticks, in graph units.
 #  -xlabels, -ylabels: lists of {value,label} pairs to print on each axis.
 #              If a list has no pairs, values are printed at each tick.
-#  -xmin, -xmax, -ymin, -ymax:  miminum/maximum graph units to plot.
+#  -xmin, -xmax, -ymin, -ymax:  minimum/maximum graph units to plot.
 #  -canvas:    canvas to plot the graph in.
 #  -vline, -hline: list of vertical/horizontal lines to plot. Each
 #              element is a list of four items: {color width type value}

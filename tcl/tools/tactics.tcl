@@ -585,7 +585,7 @@ namespace eval tactics {
     # Returns "" if the user played the best line, otherwise an explanation about the missed move :
     # - guessed the same next move as engine
     # - mate found in the minimal number of moves
-    # - combinaison's score is close enough (within 0.5 point)
+    # - combination's score is close enough (within 0.5 point)
     ################################################################################
     proc foundBestLine {} {
         global ::tactics::analysisEngine ::tactics::prevScore ::tactics::prevLine ::tactics::nextEngineMove ::tactics::matePending

@@ -6,7 +6,7 @@ namespace eval pinfo {
 set playerInfoName ""
 
 # the following icons are used as buttons with PND as input, this has
-# to be handled specially and they involve some technicallities. All
+# to be handled specially and they involve some technicalities. All
 # other icons and link resolvers come from the config file
 image create photo wikiplnk -data {
    R0lGODlhEAAQAIQQAAQCBBkYGSgoKDw6PEhHSFdYV2lqaXp7eoSDhJiYmKmoqbm6ucjHyNjZ2Ono
@@ -159,7 +159,7 @@ proc WikipNLS { LinkList } {
    set lang     $::language
    set langlink [lindex $LinkList 3]
 
-   # translate Scids internal single letter language representation by
+   # translate Scid's internal single letter language representation by
    # a more common two letter one; the same is used by WP
    switch $lang {
       B {set wplanguage pt}
@@ -309,7 +309,7 @@ proc ReplaceIDTags { pinfo } {
   set wikiplink  "<run openURL $::pinfo::wikipurl/$wplanguage/$pnd; ::windows::stats::Refresh><button wikiplnk -command openURL $::pinfo::wikipurl/$wplanguage/$pnd;><blue>WP</blue></run>"
 
   # As we have direct linkage to WikiPedia SeeAlso is currently
-  # obsolete. It might become of interest again if it offerse other
+  # obsolete. It might become of interest again if it offers other
   # services to connect to.
   ### set seealsolink  "<run ::pinfo::saPND2WP $pnd; ::windows::stats::Refresh><button seealsolnk -command ::pinfo::saPND2WP $pnd><blue>SeeAlso</blue></run>"
   set seealsolink ""

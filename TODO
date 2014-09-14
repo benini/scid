@@ -72,11 +72,11 @@ something of a programmer, I might turn my hand to making it possible.
 - Allow to save the list from the tournament finder. Drop restriction
   to 1000 games for this save.
 
-- In spell checker: give more information in case of ambigious names.
+- In spell checker: give more information in case of ambiguous names.
   E.g. first line of SSP-file or %Bio lines will help to sort things
   out.
 
-- Spell check, ambigious names: In case of multiple hits, drop limit
+- Spell check, ambiguous names: In case of multiple hits, drop limit
   of the first 10, more should be allowed here.
 
 - Add more complete header to browse game.

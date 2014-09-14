@@ -636,7 +636,7 @@ IndexEntry::Write (T* file, versionT version) const
     // Cannot write old-version index files:
     if (version < 400) { return ERROR_FileVersion; }
 
-    version = 0;  // We dont have any version-specific code.
+    version = 0;  // We don't have any version-specific code.
     
     file->WriteFourBytes (Offset);
     

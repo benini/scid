@@ -1,3 +1,4 @@
+
 ###
 ### fics.tcl: part of Scid.
 ### Copyright (C) 2007  Pascal Georges
@@ -141,7 +142,7 @@ namespace eval fics {
     bind $w <Escape> "$w.f.cancel invoke"
     bind $w <F1> { helpWindow FICSLogin}
 
-    # Get IP adress of server (as Timeseal needs IP adress)
+    # Get IP address of server (as Timeseal needs IP address)
     if { $::fics::server_ip == "0.0.0.0" } {
       getIP
     }

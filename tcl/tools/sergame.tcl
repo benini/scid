@@ -642,7 +642,7 @@ namespace eval sergame {
   }
   ################################################################################
   #   add current position for 3fold repetition detection and returns 1 if
-  # the position is a repetion
+  # the position is a repetition
   ################################################################################
   proc repetition {} {
     set elt [lrange [split [sc_pos fen]] 0 2]

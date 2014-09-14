@@ -2,7 +2,7 @@
 ###    inputengine.tcl
 ###
 ###    This file adds input eninge protocol support to scid chess
-###    database. It adds menue with subitems to the tools-menue and
+###    database. It adds menu with subitems to the tools-menu and
 ###    additionally a button to enable the engine from within the GUI.
 ###    This module is selfcontained and can just be linked into the Scid
 ###    database upon built.
@@ -416,7 +416,7 @@ namespace eval inputengine {
     global ::inputengine::InputEngine
     set pipe $::inputengine::InputEngine(pipe)
 
-    # Configure the pipe and intitiate the engine
+    # Configure the pipe and initiate the engine
     set pipe $::inputengine::InputEngine(pipe)
     fconfigure $pipe -buffering full -blocking 0
     # register the eventhandler
@@ -529,7 +529,7 @@ namespace eval inputengine {
 
     set line     [string trim [gets $pipe] ]
 
-    # Close the pipe in case the engine was stoped
+    # Close the pipe in case the engine was stopped
     if [eof $pipe] {
       catch {close $pipe}
       ::inputengine::resetEngine
@@ -543,7 +543,7 @@ namespace eval inputengine {
           set s1 [string range $m 0 1]
           set s2 [string range $m 2 end]
           if {$s1 == "0-"} {
-            # casteling must not be rewritten
+            # castling must not be rewritten
             set m "$s1$s2"
           } else {
             set m "$s1-$s2"
@@ -582,7 +582,7 @@ namespace eval inputengine {
           } \
           "string Chessboard found and initialised*" {
             # switch to xboard mode and disable move
-            # announcments by the driver engine
+            # announcements by the driver engine
             ::inputengine::sendToEngine "xboard"
             ::inputengine::sendToEngine "announce"
           } \
@@ -603,7 +603,7 @@ namespace eval inputengine {
             set fenstr [string range $event 4 end]
             set fenstr [string trim $fenstr]
             if { $::inputengine::InputEngine(init) == 0 }  {
-              # Initialise scids representation with the FEN
+              # Initialise scid's representation with the FEN
               # delivered by the external board.
               catch {sc_game startBoard $fenstr}
               updateBoard -pgn
@@ -778,8 +778,8 @@ namespace eval inputengine {
             catch { ::gameclock::setSec 2 [expr -1*$::inputengine::BlackClock] }
           } \
           "Wrong move performed:" {
-             # This event can only be used if there is a possiblity to
-             # send the last move to the input engine for it ot cross
+             # This event can only be used if there is a possibility to
+             # send the last move to the input engine for it to cross
              # check. This however is not easy in Scid, therefore
              # compare FEN.
              #

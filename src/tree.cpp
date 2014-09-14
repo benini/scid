@@ -96,7 +96,7 @@ TreeCache::SetCacheSize (uint size)
     CacheSize = size;
     NumInUse = 0;
     MostRecentIndex = 0;
-    // Clear all the filters and nodes so they dont contain garbage:
+    // Clear all the filters and nodes so they don't contain garbage:
     for (uint i=0; i < size; i++) {
         cachedTreeT * ctree = &(Cache[i]);
         ctree->cfilter = NULL;
@@ -128,7 +128,7 @@ TreeCache::CacheResize (uint size)
 #endif
 
     CacheSize = size;
-    // Clear all the filters and nodes so they dont contain garbage:
+    // Clear all the filters and nodes so they don't contain garbage:
     for (uint i=0; i < size; i++) {
         cachedTreeT * ctree = &(Cache[i]);
         ctree->cfilter = NULL;

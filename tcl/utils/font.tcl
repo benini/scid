@@ -2,7 +2,7 @@
 ### utils/font.tcl: part of Scid.
 #
 # The following procs implement a font selection dialog. I found the code
-# at codearchive.com (I dont think there was an author listed for it) and
+# at codearchive.com (I don't think there was an author listed for it) and
 # simplified it for use with Scid.
 
 # FontDialog:

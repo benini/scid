@@ -17,7 +17,7 @@ Correspondence Chess
 <h1>Correspondence Chess</h1>
 
 To use the correspondence chess features described here a database of
-the type "Correspondence" has to be opend before calling any menu
+the type "Correspondence" has to be opened before calling any menu
 items or buttons. Otherwise scid will issue an error message
 complaining that none is open. However, do not open more than one
 database fo this type as scid then can not recognise the one to use.
@@ -28,13 +28,13 @@ database fo this type as scid then can not recognise the one to use.
 database that holds the games and some helpers external to scid that
 handle the "non-chess-parts". To access the configuration dialog
 choose <b><font color="#007000">[Play / Correspondence Chess /
-Configure]</font></b> from the menue. A dialog will open presenting
+Configure]</font></b> from the menu. A dialog will open presenting
 the follwoing choices:
 <ul>
    <li><i>Default Database</i>: From the 
-   <b><font color="#007000">Correspondence Chess</font></b> menue one
+   <b><font color="#007000">Correspondence Chess</font></b> menu one
    can choose <b><font color="#007000">Open Database</font></b>. The
-   database opend is set in this entry. The advantage of this method
+   database opened is set in this entry. The advantage of this method
    is, that this database does not show up in the <i>recent
       databases</i> lists.
    </li>
@@ -74,7 +74,7 @@ the follwoing choices:
    </p>
    </li>
    <li><i>Send Tool</i>: This is the inverse of the fetch tool,
-   primarily also ment for Xfcc support or any future protocol that
+   primarily also meant for Xfcc support or any future protocol that
    might come up. The send tool, however, is called from scid with
    several parameters:
    <pre>
@@ -97,16 +97,16 @@ the follwoing choices:
       comments are treated as comments to the opponent. Note that the
       comment is quoted, so multiline comments should be possible.
       </li>
-      <li>resign: 0 or 1, specifying wether the user wants to
+      <li>resign: 0 or 1, specifying whether the user wants to
       resign.
       </li>
-      <li>claimDraw: 0 or 1, specifying wether the user wants to
+      <li>claimDraw: 0 or 1, specifying whether the user wants to
       claim a draw.
       </li>
-      <li>offerDraw: 0 or 1, specifying wether the user wants to
+      <li>offerDraw: 0 or 1, specifying whether the user wants to
       offer a draw.
       </li>
-      <li>acceptDraw: 0 or 1, specifying wether the user wants to
+      <li>acceptDraw: 0 or 1, specifying whether the user wants to
       accept a draw offered by the opponent.
       </li>
    </ul>
@@ -133,7 +133,7 @@ the follwoing choices:
    command line application on almost any platform as an easy to set
    up version. In case none of the conventions work with your
    preferred client or this client can not handle mails with
-   attachements by calls from the command line, installing mailx would
+   attachments by calls from the command line, installing mailx would
    be an option.
    </p>
    <p>Hint 2: mutt uses the systems mail transport (aka
@@ -141,8 +141,8 @@ the follwoing choices:
    to set up tools mutt is a perfect option.
    </p>
    </li>
-   <li><i>Attachement parameter</i>: This parameter is used to specify
-   an attachement. It is <b>only</b> used in mailx mode.
+   <li><i>Attachment parameter</i>: This parameter is used to specify
+   an attachment. It is <b>only</b> used in mailx mode.
    </li>
    <li><i>Subject parameter</i>: This parameter is used to specify the
    subject of the mail message. It is <b>only</b> used in mailx mode.
@@ -151,13 +151,13 @@ the follwoing choices:
 
 <h3>Stepping through games</h3>
 <p>
-After games are retrieved they are loaded to scids clipboard database.
+After games are retrieved they are loaded to scid's clipboard database.
 By the two arrow icons in the button bar one can step through all
 games in the Inbox easily in either direction. This is not dependent
-wether the games are eMail games or use another protocol like Xfcc.
+whether the games are eMail games or use another protocol like Xfcc.
 Alternatively one can select <b><font color="#007000">Next
 Game</font></b> or <b><font color="#007000">Previous Game</font></b>
-form the menue.
+form the menu.
 </p>
 <p>
 Note that if you set up your player names correctly scid will rotate
@@ -173,7 +173,7 @@ comes with xboard on Un*x systems. (Having said this implies that you
 can play against an opponent using cmail/xboard.) It works by sending
 the games as whole PGN files too and fro while the header contains
 certain tags that allows them to be recognised and sorted together.
-For this reason the user has to be carefull with editing the header
+For this reason the user has to be careful with editing the header
 fields.  Note that fields with explicit values have to be set to
 exactly this value for eMail chess. Starting a game with scid will do
 this automatically, but you <b>must not</b> overwrite them!
@@ -200,7 +200,7 @@ Essential header fields are:
    <p>
    While scid could use some database index this is not possible
    for non-DB-based tools. For this reason this parameter is user
-   suppied. It must be unique! The easiest way is something of the
+   supplied. It must be unique! The easiest way is something of the
    form xx-yy-yyyymmdd where xx is a shortcut for the white player, yy
    one for the black player, and yyyymmdd the current date.
    </p>
@@ -234,7 +234,7 @@ and the headers are set properly. Just make your move and send it.
 <p>
 scid does not handle your mailbox automatically as this would,
 considering the wide range of possible mail setups these days, involve
-a huge ammount of code. For this reason just use your normal mail
+a huge amount of code. For this reason just use your normal mail
 program that will retrieve your eMail anyway. To get a game into scid
 just save the attached PGN file to scid's inbox and process the inbox
 by either <b><font color="#007000">Retrieve Games</font></b> (the same
@@ -250,21 +250,21 @@ Inbox also with games from another source (say Xfcc).
 
 <p>
 After making your move send it by either the <b><font
-color="#007000">Mail Move</font></b> item from the menue or the
+color="#007000">Mail Move</font></b> item from the menu or the
 right envelope icon with a small arrow pointing upwards. The latter
 will scid have to recognise the game as eMail correspondence and send
 it by mail.
 </p>
 <p>
-Of course scid strips the the game bare of any comments and variatoins
+Of course scid strips the the game bare of any comments and variations
 before sending it to the opponent. If a GUI-mailer is used, the usual
-compose window is opend. It is prefilled with a properly attached PGN
-file from scids Outbox. The address of your opponent is filled in as
+compose window is opened. It is prefilled with a properly attached PGN
+file from scid's Outbox. The address of your opponent is filled in as
 well as a generic subject containing the game id for easy filtering
 and the bcc address if specified. The mail body is set to contain the
 FEN of the final position and a list of moves that lead to this
 position. This way the opponent can quickly look up your move without
-processing the attachement. Of course the mail body can be edited.
+processing the attachment. Of course the mail body can be edited.
 </p>
 <p>
 When using mailx compatible tools no window is opened and the mail is
@@ -273,7 +273,7 @@ this case the generated mail contains the PGN also in the mail body.
 </p>
 <p>
 Note that as eMail chess works by sending the whole PGN file you must
-not add more than your half move. Scid does not checking here wether
+not add more than your half move. Scid does not checking here whether
 more then one hlaf move was added to the mainline, simply as scid does
 not know which move it is, when you send yours.
 </p>
@@ -303,7 +303,7 @@ Notes:
    <li>If scid does not find a correspondence chess database it will
    silently quit and do nothing
    </li>
-   <li>If the database does not hold the games that are fetchted from
+   <li>If the database does not hold the games that are fetched from
    the server they are treated as new games and added to the database
    </li>
    <li>scid will use the first database of type "Correspondence Chess"
@@ -315,14 +315,14 @@ Notes:
 Xfcc always retrieves all games hosted on a specified server at once.
 To retrieve the games just press the "retrieve games" icon or select
 <b><font color="#007000">Retrieve Games</font></b> from the <b><font
-color="#007000">[Correspondence Chess]</font></b> menue. As a
+color="#007000">[Correspondence Chess]</font></b> menu. As a
 server connection is required to fetch new games be sure that the
 system has network access. Additionally it may take some time to
 retrieve the answer.
 </p>
 <p>Note that the Fetch tool is called without any parameter. It is
 thought to work through all your Xfcc-accounts and place properly
-formatted PGN files in scids inbox.
+formatted PGN files in scid's inbox.
 </p>
 <p>
 Once the games are retrieved their counterpart is searched within the
@@ -344,7 +344,7 @@ are treated as new games and appended to the database.
 All analysis features can be used for Xfcc games. Adding variations,
 annotations etc. can be added just like in normal game analysis. Once
 finished scid will take the last half move added to the game and
-treat it as the current move to send. No checking wether only half a
+treat it as the current move to send. No checking whether only half a
 move was made or which side to move is done here, hence, only one half
 move to the mainline must be added! Additionally scid sends the last
 comment added to the game to the server as a message for the opponent.

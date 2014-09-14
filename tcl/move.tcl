@@ -135,7 +135,7 @@ proc ::move::Forward {{count 1}} {
 }
 
 #Follow the main line or enter a variation
-#Return 0 for main line, 1 for 1st variotion, etc...
+#Return 0 for main line, 1 for 1st variation, etc...
 proc ::move::Follow {{moveUCI}} {
 	if {$moveUCI != "null"} {
 		set moveUCI2 "[string range $moveUCI 2 3][string range $moveUCI 0 1][string range $moveUCI 4 end]"

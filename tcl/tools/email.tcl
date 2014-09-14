@@ -343,7 +343,7 @@ trace variable emailData_glist w {::utils::validate::Regexp {^[0-9\ ]*$}}
 set emailCount 0
 
 # emailMessageEditor:
-#    Contsructs the email message to the opponent and
+#    Constructs the email message to the opponent and
 #    creates the editor window for editing and sending the message.
 #
 proc emailMessageEditor {idx name addr subj gamelist sig} {

@@ -146,7 +146,7 @@ namespace eval metadata {
 			set ::metadata::datahash(dc:accrualperiodicity)   ""
 			set ::metadata::datahash(dc:accrualpolidy)        ""
 
-			# hook up with scids geometry manager
+			# hook up with scid's geometry manager
 			setWinLocation $w
 			setWinSize $w
 			bind $w <Configure> "recordWinSize $w"

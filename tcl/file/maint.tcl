@@ -597,7 +597,7 @@ proc markTwins {{parent .}} {
 # twinCriteriaOK:
 #   Check that the user specified at least three of the the same site,
 #   same round, and same year settings, since otherwise it is quite
-#   likely that actual games with simlar moves will be marked as twins:
+#   likely that actual games with similar moves will be marked as twins:
 #
 proc twinCriteriaOK {{parent .}} {
   global twinSettings

@@ -579,7 +579,7 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 		for( int j=0; j < used; j++)
 			retValue *= 256;
 		retValue += cacheValue;
-		// Update the availabe cache
+		// Update the available cache
 		totalBytesUsed += bytesUsed;
 		i++;
 	}

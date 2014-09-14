@@ -408,7 +408,7 @@ tmove * sandex( char *inp, tmove *m, int n )
 
 /**
 *** Is the string represented move ("Pe2-e4") same as the tmove move?
-*** This correctly parses almost anything but not SAN - we dont have
+*** This correctly parses almost anything but not SAN - we don't have
 *** full move list.
 **/
 int checkmove( char *s, tmove *m )

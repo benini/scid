@@ -917,7 +917,7 @@ proc ::board::mark::getEmbeddedCmds {comment} {
   for {set start 0} {[eval $locateScript]} {incr start} {
     foreach {first last} $indices {}	;# just a multi-assign
     foreach re [list $ScidCmdRegex $StdCmdRegex $CBSquareRegex $CBArrowRegex] {
-      # Assing matching subexpressions to variables:
+      # Passing matching subexpressions to variables:
       if {![regexp -expanded $re [string range $comment $first $last] \
             match type arg1 arg2 color]} {
         continue
@@ -1209,7 +1209,7 @@ proc ::board::mark::DrawTux {pathName square discard} {
 #		  0.0 = no shrink, i.e. just return midpoint coordinates,
 #		  1.0 = start and end at edge (unless adjacent squares).
 # Results:
-#	Returns a list of coodinates {x1 y1 x2 y2} for drawing
+#	Returns a list of coordinates {x1 y1 x2 y2} for drawing
 #	an arrow "from" --> "to".
 #
 proc ::board::mark::GetArrowCoords {board from to {shrink 0.6}} {
@@ -1230,7 +1230,7 @@ proc ::board::mark::GetArrowCoords {board from to {shrink 0.6}} {
     return [list $x0 $y0 $x1 $y1]
   }
   
-  # Solve equation: "midpoint + (lamda * vector) = edge point":
+  # Solve equation: "midpoint + (lambda * vector) = edge point":
   if {abs($dX) > abs($dY)} {
     set edge [expr {($dX > 0) ? [lindex $fromXY 2] : [lindex $fromXY 0]}]
     set lambda [expr {($edge - $x0) / $dX}]
@@ -1313,7 +1313,7 @@ proc ::board::setDragSquare {w sq} {
 
 # ::board::dragPiece
 #   Drags the piece of the drag-square (as set above) to
-#   the specified global (root-window) screen cooordinates.
+#   the specified global (root-window) screen coordinates.
 #
 proc ::board::dragPiece {w x y} {
   set sq $::board::_drag($w)
@@ -1393,7 +1393,7 @@ proc  ::board::lastMoveHighlight {w} {
 #   Update the board given a 64-character board string as returned
 #   by the "sc_pos board" command. If the board string is empty, it
 #   defaults to the previous value for this board.
-#   If the optional paramater "animate" is 1 and the changes from
+#   If the optional parameter "animate" is 1 and the changes from
 #   the previous board state appear to be a valid chess move, the
 #   move is animated.
 #

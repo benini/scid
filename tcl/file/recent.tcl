@@ -50,7 +50,7 @@ proc ::recentFiles::add {fname} {
   
   set rlist $recentFiles(data)
   
-  # Remove file ot be added from its current place in the
+  # Remove file to be added from its current place in the
   # list, if it is there:
   while {1} {
     set idx [lsearch -exact $rlist $fname]
@@ -71,7 +71,7 @@ proc ::recentFiles::add {fname} {
 }
 
 # ::recentFiles::load
-#   Loads the selected recent file, or swtches to its database slot
+#   Loads the selected recent file, or switches to its database slot
 #   if it is already open.
 #
 proc ::recentFiles::load {fname} {

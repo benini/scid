@@ -3,7 +3,7 @@
 #
 #    Mega2Scid.pl
 #
-#    Convert photos from ChessBase Mega Database to scids internal
+#    Convert photos from ChessBase Mega Database to scid's internal
 #    photo format.
 #
 #    $Id: Mega2Scid.pl,v 4.3 2011/02/13 18:12:00 arwagner Exp $

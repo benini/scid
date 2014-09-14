@@ -1206,7 +1206,7 @@ proc ::optable::addFavoriteDlg {} {
   wm title $w "Scid: Add Opening Report Favorite"
   label $w.name -text "Enter a name for the opening report of this position:"
   pack $w.name -side top
-  # label $w.name2 -text "(Use letters, digits, spaces and undercores only)"
+  # label $w.name2 -text "(Use letters, digits, spaces and underscores only)"
   # pack $w.name2 -side top
   entry $w.e -width 40
   pack $w.e -side top -fill x -padx 2

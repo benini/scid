@@ -72,7 +72,7 @@ proc configureFilterGraph {} {
     label $w.filter.label$i -text $::tr($n): -font font_Bold
     grid $w.filter.label$i -row $row -column $col -sticky w
     incr col
-    foreach {j k} { FilterMin "  " FilterMax " - " FilterStep "  Intervall:"} {
+    foreach {j k} { FilterMin "  " FilterMax " - " FilterStep "  Interval:"} {
       label $w.filter.label$j$i -text $k
       entry $w.filter.i$j$i -textvariable $j$i -justify right -width 5 -validate all -vcmd { regexp {^[0-9]{0,4}$} %P }
       grid $w.filter.label$j$i -row $row -column $col -sticky w

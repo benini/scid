@@ -667,7 +667,7 @@ proc ::docking::restoreGeometry {} {
 # restores a notebook in a pre-existing panedwindow
 # panewindow -> pw
 # widget name -> name
-# data to make tabs -> data (list of names wich can be used to trigger the correct windows)
+# data to make tabs -> data (list of names which can be used to trigger the correct windows)
 proc ::docking::layout_restore_nb { pw name tabs} {
   variable tbcnt
   variable tbs

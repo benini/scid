@@ -4208,8 +4208,8 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     &&  date_GetYear(ie->GetDate()) < min) {
                     continue;
                 }
-            } else { //Klimmek:  new statistic: evaluation in intervalls
-                //count all games where player whith highest Elo is in the specific range      
+            } else { //Klimmek:  new statistic: evaluation in intervals
+                //count all games where player with highest Elo is in the specific range      
                 if (statType == STATS_ELO ) {
                     if (inv_max) {
                         uint maxi = ie->GetWhiteElo();
@@ -4218,7 +4218,7 @@ sc_filter_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                             continue;
                     }
                     else {
-                //count all games where player whith lowest Elo is in the specific range      
+                //count all games where player with lowest Elo is in the specific range      
                         uint mini = ie->GetWhiteElo();
                         if ( mini > ie->GetBlackElo() ) mini = ie->GetBlackElo();
                         if (mini < min  ||  mini >= max)
@@ -6522,7 +6522,7 @@ addScoreToList (Tcl_Interp * ti, int moveCounter, const char * comment,
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_game_scores:
 //    Returns a Tcl list of the numeric scores of each move, as found
-//    in the commment for each move.
+//    in the comment for each move.
 //    A score is a number with the format
 //        "+digits.digits" or
 //        "-digits.digits"

@@ -221,7 +221,7 @@ int i;
 ***
 ***  Evaluation is done in two passes:
 ***  1) Extract knowledge (see typedef tknow), prepare mirrored board.
-***  2) Use knowledge.  Thanks to mirroring board in first pass, we dont
+***  2) Use knowledge.  Thanks to mirroring board in first pass, we don't
 ***     have to write evaluation of specific things twice (for white and
 ***     black separately).  This might also make better use of internal
 ***     cache on small machines.

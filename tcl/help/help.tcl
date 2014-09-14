@@ -295,7 +295,7 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   Scid uses its own special three-file <a Formats>database format</a>
   which is very compact and fast, but it can convert to and from
   the standard <a PGN>PGN</a> (Portable Game Notation) format.
-  Scids <a PGN>PGN window</a> displays the text of the current game in
+  Scid's <a PGN>PGN window</a> displays the text of the current game in
   <a PGN>PGN</a> format.
   </p>
   <p>
@@ -305,7 +305,7 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   </p>
   <p>
   You can also use Scid as a <a PGN>PGN</a> file browser, by pasting
-  <a PGN>PGN</a> text into Scids <a Import>Import</a> window or by
+  <a PGN>PGN</a> text into Scid's <a Import>Import</a> window or by
   opening a <a PGN>PGN</a> file in Scid.  However, <a PGN>PGN</a>
   files cannot be edited by Scid (it opens them read-only) and they
   use more memory and are slower to load, so for large <a PGN>PGN</a>
@@ -319,7 +319,7 @@ set helpText(Guide) {<h1>Quick Guide to using Scid</h1>
   by right-clicking on the tab (where the title of the window is) and
   by dragging tabs from one notebook to another. The menu for each
   window that has one (marked with a triangle at the left of the tab)
-  is opened by left cliking on the tab.
+  is opened by left clicking on the tab.
   </p>
   <p>
   The <a MainWindow>main window</a>
@@ -535,7 +535,7 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   </p>
   <p>
   Additionally, flags set for a given game are shown. Here, custom
-  flags only show up by their respecitve number while the standard
+  flags only show up by their respective number while the standard
   flags also show their textual meaning.
   </p>
   <p>
@@ -545,9 +545,9 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   called <term>Bib</term> and links the game to a BibTeX database containing
   the bibliographic information. This linking is done by almost
   standard LaTeX structure, that is the <term>Bib</term> field
-  contains first the BibTeX key. Additinal information (e.g. page,
+  contains first the BibTeX key. Additional information (e.g. page,
   game number...) may be added by <b>, addinfo</b>. To give more than
-  one bibliogrpahic link several of this entries may be separated by
+  one bibliographic link several of this entries may be separated by
   <b> ; </b> (ie. space semicolon space). To resolve the bibliographic
   reference, Scid first searches a .bib-file named like the database
   in the database directory. If it can not find such a file it resorts
@@ -559,7 +559,7 @@ set helpText(MainWindow) {<h1>Scid main window</h1>
   the ECO file being used.
   </p>
   <p>
-  If Scid can find a suitable photo file (either in ~/.scid or Scids
+  If Scid can find a suitable photo file (either in ~/.scid or Scid's
   share directory within the photos folder) and photos for the players
   exist, also these photos show up in the information area. (Suitable
   photo files can be downloaded from the <url
@@ -722,16 +722,16 @@ set helpText(Menus) {<h1>Scid menus</h1>
   <li><menu>Current board</menu>: Searches for the
   <a Searches Board>current board</a> position.</li>
   <li><menu>Header</menu>: Searches by <a Searches Header>header</a>
-  information such as player names. This filter is cummulative to
+  information such as player names. This filter is cumulative to
   an fiter eventually set by an open <a Tree>tree window</a>.</li>
   <li><menu>Material/Pattern</menu>: Searches by
   <a Searches Material>material</a> or chessboard patterns</a>. This
-  filter is cummulative to an fiter eventually set by an open <a
+  filter is cumulative to an fiter eventually set by an open <a
   Tree>tree window</a>.</li>
   <br>
   <li><menu>Using search file</menu>: Searches using
   <a Searches Settings>settings</a> from a SearchOptions file. This
-  filter is cummulative to an fiter eventually set by an open <a
+  filter is cumulative to an fiter eventually set by an open <a
   Tree>tree window</a>.</li>
   </ul>
   
@@ -822,7 +822,7 @@ set helpText(Menus) {<h1>Scid menus</h1>
 	  </li>
 	  <li><menu>New eMail Game</menu>: starts a new eMail based game.
 	  </li>
-	  <li><menu>Mail move</menu>: mails the move to the oponent in an
+	  <li><menu>Mail move</menu>: mails the move to the opponent in an
 	  email based game.
 	  </li>
   </ul>
@@ -980,7 +980,7 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   colored squares and arrows can be entered directly on the board
   without the use of the <a Comment>Comment editor</a> by using the mouse
   buttons. For colored squares one can Shift-click on the square in
-  question. Shift-Left button markes the square in green, the middle
+  question. Shift-Left button marks the square in green, the middle
   button in yellow, the right button in red. To draw arrows one can
   Ctrl-click on the source and target squares. The left mouse button
   again results in a green, the middle in a yellow and the right mouse
@@ -1076,7 +1076,7 @@ set helpText(Moves) {<h1>Entering chess moves</h1>
   with a certain pawn value. These pawn values can be set via Options
   / Game information / Configure Informant values. Note that since
   Scid 4.0 many NAGs can be displayed symbolically if your system
-  suports UTF-8 properly. The connection between a NAGs numeric value
+  supports UTF-8 properly. The connection between a NAGs numeric value
   and its symbolic representation within Scid is given on the page <a
   NAGs>Standard NAG values</a> which can be accessed e.g. by Ctrl-N
   from the <a Comment>Comment editor</a>
@@ -1214,7 +1214,7 @@ set helpText(Searches) {<h1>Searches in Scid</h1>
   that this function requires the <b>Annotator</b> header field to be
   set properly. The checkbox <menu>annotated games only</menu> acts as
   a logical OR filter for the flags <b>Comments, Variations,
-  Anotations</b>, that is can be used to select only those games that
+  Annotations</b>, that is can be used to select only those games that
   got any type of annotations.
   </p>
   <p>
@@ -1316,7 +1316,7 @@ set helpText(Annotating) {<h1>Annotating games</h1>
   Scid lets you add notes to games. There are three types of
   annotation you can add after a move: symbols, a comment, and
   variations. This section describes manual annotations, see the <a
-  Analysis Annotating>Analyis</a> for engine supported analysis.
+  Analysis Annotating>Analysis</a> for engine supported analysis.
   </p>
   
   <h3>Symbols and comments</h3>
@@ -1371,8 +1371,8 @@ set helpText(Annotating) {<h1>Annotating games</h1>
   Setting Options / Moves / Show arrows for variations may be set to
   display the existing variations on the main board. This can be
   especially helpful on computers with small displays (Netbooks)
-  and/or in conjuction with disabling both PGN window and game
-  informaion area (Options / Windows / Show game information).
+  and/or in conjunction with disabling both PGN window and game
+  information area (Options / Windows / Show game information).
   </p>
   
   <h3><name Null>Null moves</name></h3>
@@ -1465,7 +1465,7 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   <h3>Coloring squares</h3>
   <p>
   Colored markers may be added to the chess board by drawing them on
-  the little helper board that can be exapanded left of the comment
+  the little helper board that can be expanded left of the comment
   window. The display of this board is toggled by <button tb_coords>.
   Scid will remember the state of this board if options are saved.
   Once the little helper board is expanded, select the marker to use
@@ -1531,7 +1531,7 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   Colored squares and arrows can be entered directly on the board
   without the use of the Comment editor by using the mouse
   buttons. For colored squares one can Shift-click on the square in
-  question. Shift-Left button markes the square in green, the middle
+  question. Shift-Left button marks the square in green, the middle
   button in yellow, the right button in red. To draw arrows one can
   Ctrl-click on the source and target squares. The left mouse button
   again results in a green, the middle in a yellow and the right mouse
@@ -1860,7 +1860,7 @@ set helpText(GameList) {<h1>The Game List window</h1>
 set helpTitle(Import) "Import window"
 set helpText(Import) {<h1>The Import window</h1>
   <p>
-  Scids Import window provides an easy way for you to paste a game
+  Scid's Import window provides an easy way for you to paste a game
   in <a PGN>PGN format</a> into Scid from some other application or window.
   </p>
   <p>
@@ -2024,7 +2024,7 @@ set helpText(LaTeX) {<h1>Using LaTeX with Scid</h1>
 set helpTitle(PGN) "PGN window"
 set helpText(PGN) {<h1>The <a PGN>PGN</a> window</h1>
   <p>
-  Scids <a PGN>PGN</a> window displays the contents of the current game in
+  Scid's <a PGN>PGN</a> window displays the contents of the current game in
   standard <a PGN>PGN</a> representation. In the move text, comments appear {in
      braces} and variations appear (in parentheses).
   </p>
@@ -2499,9 +2499,9 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   <p>
   To add additional information beyond pure statistical data a
   <term>Mask</term> can be defined. One can imagine a
-  <term>Mask</term> as a transparet layer above the current tree, that
+  <term>Mask</term> as a transparent layer above the current tree, that
   holds additional data e.g. commentaries for moves or positions, own
-  evaluations and ones own opening repertoir. <term>Masks</term> are
+  evaluations and ones own opening repertoire. <term>Masks</term> are
   stored in a Mask file (.stm) and thus are independent of the
   databases to be used with. That is, one can define a
   <term>Mask</term> once and use it with various databases by just
@@ -2513,11 +2513,11 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   the current position that are present in the mask are highlighted.
   Additionally, NAGs and markers may show up in front of a move or
   commentaries concerning the move will show up at the end of its
-  line. Finally, the current postition may also hold a comment.
+  line. Finally, the current position may also hold a comment.
   </p>
   <p>
-  <b>Note</b>: The indepencence of <term>Masks</term> from a database
-  make them a very powerfull tool to handle opening repertoirs.
+  <b>Note</b>: The independence of <term>Masks</term> from a database
+  make them a very powerful tool to handle opening repertoires.
   Contrary to the traditional way of opening lines, <term>Masks</term>
   have the advantage to handle transpositions transparently, simply
   cause they are based on the current positions instead of a line
@@ -2546,7 +2546,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   Once a Mask file is opened new commentary can be added to this
   specific mask. Note again, that the Mask is independent of database
   used for its creation. It can later applied to any database of ones
-  liking. For an opening repertoir it might thus make sense to
+  liking. For an opening repertoire it might thus make sense to
   generate two masks, one for the White and one for the Black
   openings.
   </p>
@@ -2563,7 +2563,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   window Scid offers a list of all possible moves by means of the
   context menu. As this might be quite a bunch of moves, they are
   split into several context menu items at the end of the available
-  choices. All are labled by <menu>Add this move to mask</menu> and in
+  choices. All are labeled by <menu>Add this move to mask</menu> and in
   case necessary numbered. Just select a move from one of those lists
   if it does not show up in the tree anyway.
   <p>
@@ -2578,7 +2578,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   </li>
   <li>By selecting <menu>Marker 1</menu> and <menu>Marker 2</menu> up
   to two additional graphical markers can be attached to a move. They
-  are mainly meant to handle opening repertoirs. The available options
+  are mainly meant to handle opening repertoires. The available options
   are:
      <ul>
      <li> <img tb_tick> Include line in repertoire</li>
@@ -2629,7 +2629,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   <menu>Display mask</menu> will display the current Mask in a line
   style. Stating at the current position all subsequent moves are
   sorted into some unfoldable tree to give an overview of the current
-  lines of play similar to what is found in many repertoir books.
+  lines of play similar to what is found in many repertoire books.
   Note that not all information are displayed (e.g. comments are
   shorted to fit the display). Additionally, as <term>Masks</term>
   work on positions rather than move sequences they may contain loops
@@ -2639,8 +2639,8 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   </p>
   <h3>Conversion to Masks</h3>
   <p>
-  Setting up a mask can be a tendious taks especially for complex
-  opening repertoirs. However, if such a repertoir is available as a
+  Setting up a mask can be a tedious task especially for complex
+  opening repertoires. However, if such a repertoire is available as a
   Scid database or a number of <a PGN>PGN</a> games, or lines stored in usual
   chess games, Scid can use that information to set up suitable
   <term>Masks</term> automatically.
@@ -2658,7 +2658,7 @@ set helpText(TreeMasks) {<h1>Masks for Trees</h1>
   The next step is to open the tree for the just opened Scid database.
   Then a new <term>Mask</term> should be created or an existing one
   opened. <b>Note</b> that this function may be used to consolidate
-  serveral bases into a single <term>Mask</term>.
+  several bases into a single <term>Mask</term>.
   </p>
   <p>
   Now, the <term>Mask</term> can be filled automatically with the game
@@ -2977,7 +2977,7 @@ set helpText(Flags) {<h1>Game Flags</h1>
   <p>
   Since Scid 4.0 additional 6 custom flags are available for
   individual use.  These flags are specific for each base and their
-  textual descriptoin can be set via the <a Maintenance>maintenance
+  textual description can be set via the <a Maintenance>maintenance
   window</a>. In the games list, game info area and so on they display
   as the numbers (1) .. (6). For <a Searches Header>header
   searches</a> they behave exactly like the predefined flags above.
@@ -3093,7 +3093,7 @@ set helpText(Analysis) {<h1>The Analysis window</h1>
   restart the whole analysis again, forgetting all results that where
   achieved in an earlier run. Only few engines are able to reuse the
   results they have calculated till the analysis was stopped. For the
-  first analysis engine toggeling start/stop engine is mapped to the
+  first analysis engine toggling start/stop engine is mapped to the
   hotkey <term>F4</term> while for the second engine <term>F5</term>
   can be used.
   </p>
@@ -3449,7 +3449,7 @@ set helpText(EPD) {<h1>EPD files</h1>
 set helpTitle(Email) "Email window"
 set helpText(Email) {<h1>The Email window</h1>
   <p>
-  Scids email manager window provides a way for you to manage correspondence
+  Scid's email manager window provides a way for you to manage correspondence
   chess games played by email.
   If you do not play email chess, this will be of no interest to you.
   But if you play correspondence chess by email, you can send your email
@@ -3676,9 +3676,9 @@ set helpText(PInfo) {<h1>The Player Info window</h1>
   the <a Searches Filter>filter</a> to the games it represents.
   </p>
   <p>
-  If a current verison of the ratings file (cf. <url
+  If a current version of the ratings file (cf. <url
   http://scid.sourceforge.net/>Scid website</url>) is online links to
-  additional ressources may be present that will be accessible by the
+  additional resources may be present that will be accessible by the
   users web browser provided Internet access is available. These infos
   can be accessed by the following symbols in the player information
   window (note that not all symbols may be present!):
@@ -3729,12 +3729,12 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   <p>
   The second Filter graph window is the <term>absolute Filter
   Graph</term> window. This graph shows the absolute quantity of games
-  in the filter according the selecte criteria. It is possible to select
+  in the filter according the selected criteria. It is possible to select
   the criteria: Decade, Year, Rating and Moves.<br>
   The small button near the Close-Button opens the dialog to configure
   the graph. You can select the range (from, to) and the size of
-  intervall for the x-axes. The "decade"-criteria can't be configured,
-  use Year insteed. If "Estimate" selected a missing rating will be
+  interval for the x-axes. The "decade"-criteria can't be configured,
+  use Year instead. If "Estimate" selected a missing rating will be
   estimate like described below. In other case no estimation is done
   and missing ratings are count as zero. This matches the Min. Elo
   evaluation in the statistic-window. Use "Update" to start a new
@@ -3742,7 +3742,7 @@ set helpText(Graphs) {<h1>Graph windows</h1>
   </p>
   <p>
   Please note: The calculation can be need some time on large ranges and
-  small intervalls, in addition the readability degreases. 
+  small intervals, in addition the readability decreases. 
   </p>
   <p>
   When plotting the Filter graph by rating, Scid uses the average (mean)
@@ -3866,14 +3866,14 @@ set helpText(TB) {<h1>Tablebases</h1>
   The summary includes the frequency (how many games per million reach a
   position with this material, computed from a database of more than
   600,000 master-level games), a longest mate for either side, and the
-  number of mutual (or "reciprocal") zugzwangs. A mutual zugwang is a
+  number of mutual (or "reciprocal") zugzwangs. A mutual zugzwang is a
   position where white to move draws and black to move loses, or where
   white to move loses and black to move draws, or where whoever moves
   loses.
   </p>
   <p>
   For some tablebases with mutual zugzwangs, the summary also includes
-  a list of all of the zugwang positions or a selection of them. A full
+  a list of all of the zugzwang positions or a selection of them. A full
   list for every tablebase is not feasible since some tablebases have
   thousands of mutual zugzwangs.
   </p>
@@ -4674,7 +4674,7 @@ set helpTitle(TacticalGame) "Tactical Game Window"
 set helpText(TacticalGame) {<h1>Tactical game window</h1>
   <p>
   Play a tactical game against an engine simulating an opponent with a
-  given ELO rating.  The opponent is played by Phalanx and the coach
+  given Elo rating.  The opponent is played by Phalanx and the coach
   by Toga II. The right engines are automatically selected by their
   names, and should be correctly configured (this is the default when
   Scid is installed).
@@ -4686,7 +4686,7 @@ set helpText(TacticalGame) {<h1>Tactical game window</h1>
   <p>
   The following parameters must be configured :
   <ul>
-  <li><term>Fixed level</term>: sets a fixed ELO rating for the opponent</li>
+  <li><term>Fixed level</term>: sets a fixed Elo rating for the opponent</li>
   <li><term>Random level</term>: chooses a random level between the
   minimum and maximum level specified by the left and right slider
   respectively.
@@ -4730,7 +4730,7 @@ set helpText(OpeningTrainer) {<h1>Opening Trainer</h1>
   context menu.
   </p>
   <p>
-  <h2>Creating a repertoir base</h2>
+  <h2>Creating a repertoire base</h2>
   Before running the opening trainer, please be aware that the entire
   repertoire database will be loaded into the trainer. For this
   reason, it is good to use a smaller database. It is a good idea to
@@ -4858,7 +4858,7 @@ chess.
 </p>
 <ul>
    <li><b>eMail Chess</b> proceeds by sending the current game via eMail
-   to your opponet once you made your move. To this end an eMail message
+   to your opponent once you made your move. To this end an eMail message
    is created in your preferred email program with the current game
    attached to it in <a PGN>PGN</a> format. Of course all comments and
    variations are stripped off before.
@@ -4878,11 +4878,11 @@ chess.
 	should be present. 
 	---TODO---: Printing of postcards is on the todo, this function
 	will require the additional header fields WhiteAddress/BlackAddress
-	to contain the postal adress of both players.
+	to contain the postal address of both players.
    </li>
    <li><b>Observation of games</b> is supported by just adding the URL
    for the <a PGN>PGN</a> file to the list offered by <menu>Play / Correspondence
-   Chess / Observe Game</menu>. For this fucntion to work a connector
+   Chess / Observe Game</menu>. For this function to work a connector
 	for the site in question is required. (See below)
    </li>
 </ul>
@@ -4907,11 +4907,11 @@ Please see below for further details.
 </p>
 
 <p>
-This window contains the neccessary buttons to navigate through
+This window contains the necessary buttons to navigate through
 ongoing games, shortcut keys to fetch games by means of the Xfcc
 protocol and sync in eMail based games as well as a console stating
 which messages where sent or retrieved. Additionally this window
-conatins a list of ongoing games retrieved from your Inbox directory.
+contains a list of ongoing games retrieved from your Inbox directory.
 </p>
 
 <p>
@@ -4928,7 +4928,7 @@ first synchronisation as new games and append them to this database.
 
 <p>
 If no database of the type "Correspondence chess" is currently opened
-Scid will remid you of doing so. However, do not open more than one
+Scid will remind you of doing so. However, do not open more than one
 database of this type as Scid then can not recognise the one to use.
 </p>
 
@@ -4940,7 +4940,7 @@ chess functions can easily accessed by the following buttons:
 <ul>
    <li><button tb_CC_Retrieve> Retrieve the correspondence chess games.
    To this end the external fetch tool is called and all games retrieved
-   via that way as well as all other games that are stored in Scids Inbox
+   via that way as well as all other games that are stored in Scid's Inbox
    (see below) are synchronised into the current correspondence chess
    database.
    </li>
@@ -4959,7 +4959,7 @@ chess functions can easily accessed by the following buttons:
    current Scid session. The tool tip for this icon shows date and
    time of the last refresh.
    </li>
-   <li><img tb_CC_pluginactive> indicates, that Correpsondence Chess
+   <li><img tb_CC_pluginactive> indicates, that Correspondence Chess
    plugin(s) were loaded and activated upon startup.
    </li>
 </ul>
@@ -4987,14 +4987,14 @@ automatically store your options.
 
 <h3>Retrieving the games</h3>
 <p>
-Depending wether you play correspondence chess via eMail or via a
+Depending whether you play correspondence chess via eMail or via a
 chess server the actual retrieval process differs slightly. Generally
-it results in a set of games in <a PGN>PGN</a> format located in Scids Inbox
+it results in a set of games in <a PGN>PGN</a> format located in Scid's Inbox
 directory. This offers also the possibility of automatic retrieval via
 external software.
 </p>
 <p>
-Once the games are in Scids Inbox invoking <menu>Process Inbox</menu>
+Once the games are in Scid's Inbox invoking <menu>Process Inbox</menu>
 from the menu will work though the Inbox and add new moves to the
 games already in the database. Additionally it will add games not
 found in the current correspondence chess database as new games.
@@ -5008,11 +5008,11 @@ chess servers.
 
 <h3>Stepping through games</h3>
 <p>
-After games are retrieved they are loaded to Scids clipboard database
+After games are retrieved they are loaded to Scid's clipboard database
 and new moves are added and stored in the correspondence chess
 database opened. The difference to
 the functions from the <menu>Games</menu> menu is, that these two
-buttons scroll only between the games in Scids Inbox which are
+buttons scroll only between the games in Scid's Inbox which are
 supposed to be your actually ongoing games. Of course the
 Correspondence Chess database might contain much more games, but
 normally you do not want to go through all these to find out what your
@@ -5024,7 +5024,7 @@ are not indexed by Scid. Hence, storing your correspondence chess
 games in a huge reference database might not be advisable as the
 search times may be quite long. If you play a lot and your own
 database gets quite large, search times can be reduced by moving
-finished games to an archive database, or by just createing a new
+finished games to an archive database, or by just creating a new
 database for the ongoing games. Scid will treat all games not existing
 in the correspondence chess database already as new games and add them
 automatically. Hence, it is sufficient to open an empty database of
@@ -5032,8 +5032,8 @@ type "Correspondence chess" and call <menu>Process Inbox</menu> to
 import all currently ongoing games.
 </p>
 <p>
-Equivalent to the two buttons mentinoned are the items <menu>Previous
-Game</menu> and <menu>Next Game</menu> from the <menu>Correpondence
+Equivalent to the two buttons mentioned are the items <menu>Previous
+Game</menu> and <menu>Next Game</menu> from the <menu>Correspondence
 Chess</menu> menu.
 </p>
 <p>
@@ -5052,13 +5052,13 @@ Options MyPlayerNames>My Player Names</a> for details.
 All analysis features can be used for correspondence chess games.
 Variations, annotations etc. can be added just like in normal game
 analysis. Once finished, Scid will take the last half move added to
-the game and treat it as the current move to send. No checking wether
+the game and treat it as the current move to send. No checking whether
 only one half a move was added or which side to move is done here,
 hence, only one half move to the mainline must be added!  In case a
 chess server is used Scid also sends the last comment added to the
-server which might be usefull for communication with the opponent. In
+server which might be useful for communication with the opponent. In
 eMail chess this can be done by the normal mail message, so there all
-commments are stripped off.
+comments are stripped off.
 </p>
 <p>
 Pressing the Send button <button tb_CC_Send> will have Scid to
@@ -5076,12 +5076,12 @@ exchanged in server based correspondence chess.
 <h3>Observing Correspondence Games</h3>
 Observing a game of correspondence chess is technically done by
 retrieving the games <a PGN>PGN</a> notation from the webserver.
-These games are then fead into the usual workflow of the
-Correspondence Chess funtions and show up thre as usual games. For
+These games are then fed into the usual workflow of the
+Correspondence Chess functions and show up thre as usual games. For
 this function to work a file named "connector.xml" has to be available
 in ~/.scid/data. If this file does not exist Scid will try to generate
 one suitable for observation of games from ICCF Webchess. Additional
-servers can be added to this file by apending additional
+servers can be added to this file by appending additional
 server-blocks.	
 
 To observe a game on ICCF Webchess point your web browser to the page
@@ -5129,7 +5129,7 @@ if no interet connection is available.
    current Scid session. The tool tip for this icon shows date and
    time of the last refresh.
    </li>
-   <li><img tb_CC_pluginactive> indicates, that Correpsondence Chess
+   <li><img tb_CC_pluginactive> indicates, that Correspondence Chess
    plugin(s) were loaded and activated upon startup.
    </li>
    <li><img tb_CC_envelope> This is an eMail based game. In those
@@ -5148,7 +5148,7 @@ if no interet connection is available.
    Its your move.<br>
    <b>Note 1:</b> this status is only updated if you
    synchronise your games with the server, that is, it always refers
-   to the servers status at last syncronisation.
+   to the servers status at last synchronisation.
    <br>
    <b>Note 2:</b>Hovering over this icon with the mouse will display
    the opponents last move.
@@ -5156,7 +5156,7 @@ if no interet connection is available.
    <li><img tb_CC_oppmove>
    Its the opponents move. Note: this status is only updated if you
    synchronise your games with the server, that is, it always refers
-   to the servers status at last syncronisation.
+   to the servers status at last synchronisation.
    </li>
    <li><img tb_CC_draw>
    Peace was agreed by a draw.
@@ -5173,13 +5173,13 @@ if no interet connection is available.
    </li>
    <li><img tb_CC_engine>
    Chess Engines are allowed for this game. Sometimes these games are
-   also refered to as "Advanced Chess".
+   also referred to as "Advanced Chess".
    </li>
    <li><img tb_CC_outoftime>
    Your opponent ran out of time. You may claim a win on time.
    </li>
    <li><img tb_CC_message>
-   Your oppenent sent a message along with his last move. Check the
+   Your opponent sent a message along with his last move. Check the
    game notation.
    </li>
 </ul>
@@ -5189,7 +5189,7 @@ the setup was already retrieved via Xfcc the id, event and site
 columns text show up in <gray><b>dark gray</b></gray>.
 </p>
 <p>
-<b>Note 2:</b> Hovering over the site comlumn will show the whole site
+<b>Note 2:</b> Hovering over the site column will show the whole site
 tag, hovering over the event column will show the whole event tag and
 the time control if it was sent along with the game. If no time
 control was sent, Scid will denote it as <i>10 / 50d (?)</i>, that is,
@@ -5209,9 +5209,9 @@ flag_gbr>, "FRA" <img flag_fra>, "RUS" <img flag_rus>, "CHN"
 </p>
 <p>
 To show country flags for other types of games (postal, observed) just
-add WhiteCountry/BlackCountry headers ot the games in your database.
+add WhiteCountry/BlackCountry headers to the games in your database.
 Note that the header values in the Scid database overwrite the values
-supplied in the games of Scids Inbox. That is even for Xfcc games that
+supplied in the games of Scid's Inbox. That is even for Xfcc games that
 one can add country flags or overwrite the games mode. (The latter is
 required e.g. for mixed games on ICCF where ICCFs Xfcc interface
 also supplies games even if they are played by post.)
@@ -5235,7 +5235,7 @@ set helpText(CCXfcc) {<h1>Correspondence Chess Servers</h1>
 There exist several correspondence chess servers throughout the
 internet. Generally, they are used by means of a web browser, so no
 specific software is required. However many of them also offer an
-interface to specialised chess software via a protocoll called Xfcc.
+interface to specialised chess software via a protocol called Xfcc.
 The integration of Xfcc is done in Scid via external helper tools set
 in the <a CCSetupDialog>Configuration</a> dialog for correspondence
 chess.
@@ -5263,7 +5263,7 @@ Notes:
    <li>If Scid does not find a correspondence chess database it will
    inform you to open one.
    </li>
-   <li>If the database does not hold the games that are fetchted from
+   <li>If the database does not hold the games that are fetched from
    the server they are treated as new games and added to the database
    automatically.
    </li>
@@ -5280,7 +5280,7 @@ tb_CC_Retrieve> icon or select <menu>Retrieve Games</menu> from the
 required to fetch new games be sure that the system has network
 access. Scid will call the fetch tool configured in the <a
 CCSetupDialog>Configuration</a> dialog which will place the games in
-PGN format in Scids inbox. It may take some time to retrieve the
+PGN format in Scid's inbox. It may take some time to retrieve the
 answer, so be patient. After the games are retrieved the
 correspondence chess database is updated accordingly.
 </p>
@@ -5304,7 +5304,7 @@ use variations!
 </p>
 <p>
 Xfcc base games offer extensive status display within the games list.
-This information, however, is only available if Scids internal Xfcc
+This information, however, is only available if Scid's internal Xfcc
 support is used.  The following icon are for visual display:
 <ul>
    <li><img tb_CC_draw> A draw was agreed with the last move.
@@ -5323,13 +5323,13 @@ support is used.  The following icon are for visual display:
    </li>
 </ul>
 <p>
-Additonally Scid will display the clock for both parties <b>at the
+Additionally Scid will display the clock for both parties <b>at the
 time of sync</b> as well as the chess variant played. Note however
 that Scid currently only supports standard chess.
 </p>
 <p>
 Note: only if the proper icon (book, database, tablebase, engine)
-is dispalyed, the useage of these tools is allowed. It is forbidden
+is displayed, the usage of these tools is allowed. It is forbidden
 otherwise. Be fair and respect these rules.
 </p>
 <p>
@@ -5363,10 +5363,10 @@ set helpTitle(CCeMailChess) "Correspondence Chess via eMail"
 set helpText(CCeMailChess) {<h1>Correspondence Chess via eMail</h1>
 
 <p>
-eMail offers a very convenient way ot play correspondence chess. The
+eMail offers a very convenient way to play correspondence chess. The
 standard application in the Un*x world for this till today is xboard
 together with its cmail helper. As it allows for almost automatic
-handling of correspondence chess eMails and additonally does not add
+handling of correspondence chess eMails and additionally does not add
 anything not conforming to <a PGN>PGN</a> it is also the model for Scid to handle
 eMail chess. By just preserving the whole <a PGN>PGN</a> header such games can be
 played with any opponent who has a tool to handle PGN.
@@ -5378,7 +5378,7 @@ Scid can handle eMail correspondence chess games almost automatically.
 The way how this is done is kept compatible to the cmail utility that
 comes with xboard on Un*x systems. (Having said this implies that you
 can play against an opponent using cmail/xboard.) It works by sending
-the games as whole <a PGN>PGN</a> files too and fro as mail attachements, while
+the games as whole <a PGN>PGN</a> files too and fro as mail attachments, while
 the header contains certain tags that allows them to be recognised and
 sorted together. For this reason the user has to be careful with
 editing of the header fields.  Note that fields with explicit values have
@@ -5408,7 +5408,7 @@ Essential header fields are:
    <p>
    While Scid could use some database index this is not possible for
    non-DB-based tools like cmail. For this reason the
-   <term>CmailGameName</term> parameter is user suppied. It must be
+   <term>CmailGameName</term> parameter is user supplied. It must be
    unique! The easiest way is something of the form
    <term>xx-yy-yyyymmdd</term> where xx is a shortcut for the white
    player, yy one for the black player, and yyyymmdd the current date.
@@ -5467,7 +5467,7 @@ correspondence chess games.
 <p>
 <b>Note</b> The <menu>Retrieve Games</menu> menu or the <button
 tb_CC_Retrieve> button do <b>not</b> fetch your eMail messages! You
-have to save your <a PGN>PGN</a> files to Scids Inbox by hand. Probably this can
+have to save your <a PGN>PGN</a> files to Scid's Inbox by hand. Probably this can
 be automatised by your eMail program (on Un*x systems setting up a
 mime handler is easy enough by means of <term>.mailcap</term>).
 </p>
@@ -5507,7 +5507,7 @@ this case the generated mail contains the <a PGN>PGN</a> also in the mail body.
 </p>
 <p>
 Note that as eMail chess works by sending the whole <a PGN>PGN</a> file you must
-not add more than your half move. Scid does not check here wether
+not add more than your half move. Scid does not check here whether
 more than one half move was added to the mainline, simply as Scid does
 not know which move it was, when you sent yours.
 </p>
@@ -5529,10 +5529,10 @@ configuration file automatically once the dialog is closed via the
 
 <p><b>Note</b> that Scid will use the defaults until this setup dialog
 is called and quit by selecting the <term>OK</term> button. The
-default values are never stored in Scids internal config file until
+default values are never stored in Scid's internal config file until
 then. Additionally, if Scid can not find a valid config, it will try
 to set up the correspondence chess functions automatically. By default
-it will store all data in the <term>data</term> subdir of Scids
+it will store all data in the <term>data</term> subdir of Scid's
 configuration. Here also a valid DB as well as the necessary
 In/Outboxes are created.
 </p>
@@ -5625,7 +5625,7 @@ messages!
 
 <p>
 <b>Send Tool</b>: 
-This is the inverse of the fetch tool, primarily also ment for Xfcc
+This is the inverse of the fetch tool, primarily also meant for Xfcc
 support or any future protocol that might come up. The send tool,
 however, is called from Scid with several parameters where the call
 looks like:
@@ -5672,21 +5672,21 @@ The meaning of the parameters is as follows:
       treated as comments to the opponent. Note that the comment is
       quoted, so multiline comments should be possible.
       </li>
-      <li><term>resign</term>: 0 or 1, specifying wether the user
+      <li><term>resign</term>: 0 or 1, specifying whether the user
       wants to resign. Set to 1 if the user invokes
       <menu>Resign</menu> from the <menu>Correspondence Chess</menu>
       menu.
       </li>
-      <li><term>claimDraw</term>: 0 or 1, specifying wether the user
+      <li><term>claimDraw</term>: 0 or 1, specifying whether the user
       wants to claim a draw. Set to 1 if the user invokes
       <menu>Claim Draw</menu> from the <menu>Correspondence Chess</menu>
       menu.
       </li>
-      <li><term>offerDraw</term>: 0 or 1, specifying wether the user
+      <li><term>offerDraw</term>: 0 or 1, specifying whether the user
       wants to offer a draw. Set to 1 if the user invokes <menu>Offer
       Draw</menu> from the <menu>Correspondence Chess</menu> menu.
       </li>
-      <li><term>acceptDraw</term>: 0 or 1, specifying wether the user
+      <li><term>acceptDraw</term>: 0 or 1, specifying whether the user
       wants to accept a draw offered by the opponent. Set to 1 if the
       user invokes <menu>Accept Draw</menu> from the
       <menu>Correspondence Chess</menu>
@@ -5720,14 +5720,14 @@ examples of programs that use them, are listed here. The mailprogram
 will be called with the convention selected. In case it is not known
 which convention is used one of those offered might match and do the
 trick. Note however that quite a number of mail programs are not
-capable of sending attachements when called from another program. In
+capable of sending attachments when called from another program. In
 this case you will have to either change your mail client or add the
-attachement placed in Scids Outbox by hand.
+attachment placed in Scid's Outbox by hand.
 </p>
 <p>Hint: mailx or one of its many clones should be available as a
 command line application on almost any platform as an easy to set up
 tool. In case none of the conventions work with your preferred
-client or this client can not handle mails with attachements by calls
+client or this client can not handle mails with attachments by calls
 from the command line, installing mailx would be an option.
 </p>
 <p>Hint: mutt uses the systems mail transport (aka
@@ -5738,8 +5738,8 @@ setup it should be the most painless way to handle eMail chess.
 Linux world.)
 </p>
 <p>
-<b>Attachement parameter</b>: 
-This parameter is used to specify an attachement. It is <b>only</b>
+<b>Attachment parameter</b>: 
+This parameter is used to specify an attachment. It is <b>only</b>
 used in <term>mailx</term> mode.
 </p>
 <p>
@@ -5774,7 +5774,7 @@ and "-" as well as "_" in this name.
 </li>
 <li><term>Password</term>: defines the password used for login. The
 same rules apply as for the Login name. <b>Note</b> Scid currently
-stores your passwords on the hardisc in unencrypted form. For this
+stores your passwords on the hard disk in unencrypted form. For this
 reason keep the directory safe.
 </li>
 <li><term>URL</term>: This is the base URL for the Xfcc interface of the
@@ -5865,7 +5865,7 @@ set helpText(SeriousGame) {<h1>Serious game window</h1>
      purposes.
      <p>
      <b>Note</b>: some, especially commercial, engines also offer to
-     weaken their strength in ELO units. Most likely this will offer a
+     weaken their strength in Elo units. Most likely this will offer a
      more suitable algorithm than limiting the search depth. In Scid,
      such games are also offered as <a TacticalGame>Tactical games</a>
      against the free Phalanx engine.
@@ -5951,7 +5951,7 @@ set helpText(TacticsTrainer) {<h1>Training: Tactics</h1>
   <p>
   <b>Note</b> it is advisable to close the <a PGN>PGN</a> window and check
   <term>hide next move</term> in the context menu of the information
-  area of Scids main window. Otherwise cheating is pretty simple.
+  area of Scid's main window. Otherwise cheating is pretty simple.
   <p>
   To get a solution for the puzzles in a base the positions are
   analysed by the Toga chess engine (included with Scid). The
@@ -6049,14 +6049,14 @@ set helpText(FICSLogin) {<h1>FICS Login</h1>
   parameters are required:
   <ul>
       <li><term>Login:</term> This is your login name on the FICS
-      server. Its value is stored in Scids configuration for later
+      server. Its value is stored in Scid's configuration for later
       reuse.</li>
       <li><term>Password:</term> specifies your password for login.
       <b>Note</b> that this password is displayed when you type,
       allowing everybody to read it. Additionally, this password is
-      stored in plain text within Scids configuration. If you are
+      stored in plain text within Scid's configuration. If you are
       using a publicly accessible system please make sure to assign
-      proper rights to Scids config directory.
+      proper rights to Scid's config directory.
       </li>
       <li><term>Time seal</term> if checked, all connections to the
       FICS server are routed through the <term>timeseal</term>
@@ -6075,7 +6075,7 @@ set helpText(FICSLogin) {<h1>FICS Login</h1>
       <term>timeseal</term> program is listening. The default is 5001
       and should be ok for almost all needs.</li>
    </ul>
-   All these settings are stored with Scids configuration and
+   All these settings are stored with Scid's configuration and
    therefore have to be entered only once.
    </p>
   <p>
@@ -6179,7 +6179,7 @@ set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
     </ul>
     </li>
     <li><term>Offers</term> will show a graphical display of the
-    current game offers. The y-axis shows the ELO rating of the
+    current game offers. The y-axis shows the Elo rating of the
     opponent (the higher his level, the further up the offer appears),
     while x-axis of the graph shows the timing of of the games (the
     further to the right, the slower the game). The first red line
@@ -6248,7 +6248,7 @@ set helpText(FICS) {<h1>FICS: Play on the Internet</h1>
   on the server and discuss them with other users on FICS. To find out
   what games are currently relayed (if any) one can ask the relay for
   a list by <term>relay listgames</term>. As FICS expects the terminal
-  to have 80 chars width it might be necessary to resize Scids FICS
+  to have 80 chars width it might be necessary to resize Scid's FICS
   window to get a nice table. The entries in the table are, first the
   game number, colon, than the opponents, the result of the game (*
   signifying an ongoing game as usual) and the <a ECO>ECO code</a> of
@@ -6428,7 +6428,7 @@ set helpText(HardwareConfig) {<h1>Connecting External Hardware</h1>
      </li>
   </ul>
   <p>
-  Hitting <term>OK</term> will store the setup in Scids configuration
+  Hitting <term>OK</term> will store the setup in Scid's configuration
   and immediately start the driver selected.
   </p>
   <p>
@@ -6445,7 +6445,7 @@ set helpText(HardwareConfig) {<h1>Connecting External Hardware</h1>
 set helpTitle(HardwareStatus) "Status of External Hardware"
 set helpText(HardwareStatus) {<h1>Status of External Hardware</h1>
    <p>
-   This button is located on the right of Scids toolbar. Depending on
+   This button is located on the right of Scid's toolbar. Depending on
    the status of the external hardware it shows different icons:
    </p>
    <ul>
@@ -6497,14 +6497,14 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    of no interest to the user, but it may provide helpful hints in
    case of malfunction. All commands sent by Scid are prepended by an
    arrow to the right, all answers retrieved from the driver engine by
-   an arrow to the left.  Below the console, the actual invokation of
+   an arrow to the left.  Below the console, the actual invocation of
    the driver by Scid shows up for information.
    </p>
    <p>
    <term>Moves sent for</term> allows to limit the moves sent by the
    external hardware. For game input the board should of course send
    the moves for both sides. For actually playing a game however, the
-   moves made by the opponent should be ingnored, as Scid would
+   moves made by the opponent should be ignored, as Scid would
    otherwise notify them as "illegal moves".
    </p>
    <p>
@@ -6525,7 +6525,7 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    it should usually give as much as is available about the external
    hardware and the driver itself. Additionally, the external driver
    will return the current position on the external board as <term>FEN</term> which
-   is then compared to Scids internal representation. Discrepancies
+   is then compared to Scid's internal representation. Discrepancies
    show up in the console and issue an alert.
    </p>
    <p>
@@ -6558,7 +6558,7 @@ set helpText(InputEngine) {<h1>Input Engine driver console</h1>
    </p>
    <p>
    In setup mode any valid position can be set up on the external
-   board, however Scids internal representation is not updated till
+   board, however Scid's internal representation is not updated till
    finished.
    </p>
    <p>
@@ -6655,8 +6655,8 @@ set helpTitle(Metadata) "Dublin Core Metadata"
 set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
    <p>
    The <url "http://dublincore.org">Dublin Core</a> metadata element
-   defines a standardised and widelay used way to exchange
-   information about electronic ressources (metadata, ie. data about
+   defines a standardised and widely used way to exchange
+   information about electronic resources (metadata, ie. data about
    data). Dublin Core was defined in 2003 by ISO Standard 15836, and
    NISO Standard Z39.85-2007.
    </p>
@@ -6682,7 +6682,8 @@ set helpText(Metadata) {<h1>Dublin Core Metadata</h1>
    <p>
    After choosing <term>OK</term> Scid stores the metadata to the
    <term>sme</term> file for usage with Scid. Additionally, an
-   <term>XML</term> file is genereated containing exactly the same
+
+   <term>XML</term> file is generated containing exactly the same
    metadata, but in XML format for easy data exchange.
    </p>
    <p>

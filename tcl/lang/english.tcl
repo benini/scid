@@ -244,7 +244,7 @@ menuText E ToolsStartEngine1 "Start engine 1" 13  {Start engine 1}
 menuText E ToolsStartEngine2 "Start engine 2" 13  {Start engine 2}
 menuText E ToolsCaptureBoard "Capture Current Board..." 5  {Save the current board as an image.}
 
-# Play menue
+# Play menu
 menuText E Play "Play" 0
 
 # --- Correspondence Chess

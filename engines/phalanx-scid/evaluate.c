@@ -75,10 +75,10 @@ for( i=(*n)-1; i>=0 && (*n)>4; i-- )
 	else
 	p -= 10;
 
-	/* dont see long moves, especially diagonal ones */
+	/* don't see long moves, especially diagonal ones */
 	p += dist[120*m[i].from+m[i].to].taxi * 2;
 
-	/* dont see some knight moves */
+	/* don't see some knight moves */
 	if( piece(m[i].in1) == KNIGHT )
 	p += 10;
 
@@ -528,7 +528,7 @@ if( Depth>0 || check )
 
 #ifdef PAWNSTRIKE_EXTENSIONS
 	if( piece(G[Counter-1].m.in1) == PAWN )
-	if(result>lastiter-50 && result>-250) /* winning anyway: dont extend */
+	if(result>lastiter-50 && result>-250) /* winning anyway: don't extend */
 	{
 		/* Look at the targets of previous enemy move.
 		 * If it seems to be dangerous, extend all safe
@@ -562,7 +562,7 @@ if( Depth>0 || check )
 
 		if( t1 || t2 )
 		{
-			/* find all safe captures of the agressor */
+			/* find all safe captures of the aggressor */
 			for( i=0; i!=n; i++ ) if( m[i].to == squ )
 			if( piece(m[i].in1) == PAWN
 			 || ! attacktest( squ, enemy(Color) ) )
@@ -599,7 +599,7 @@ if( Depth>0 || check )
 
 #ifdef PAWNPUSH_EXTENSIONS
 	if( Totmat < 4000 )
-	if(result<lastiter+50 && result<250)  /* winning anyway: dont extend */
+	if(result<lastiter+50 && result<250)  /* winning anyway: don't extend */
 	{
 		int i;
 		for( i=0; i!=n; i++ )
@@ -734,7 +734,7 @@ else
 
 #ifdef RECAPTURE_EXTENSIONS
 	if( G[Counter-1].m.in2 )
-	if( result<lastiter+50 && result<250 )   /* winning anyway: dont */
+	if( result<lastiter+50 && result<250 )   /* winning anyway: don't */
 	{
 		int i, t=G[Counter-1].m.to;
 		int v1 = Values[ G[Counter-1].m.in1 >> 4 ];

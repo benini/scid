@@ -1,3 +1,4 @@
+
 ### history.tcl
 ### Text entry history functions for Scid.
 ### Copyright (C) 2004 Shane Hudson.
@@ -113,7 +114,7 @@ proc ::utils::history::GetCombobox {key} {
 # ::utils::history::SetCombobox
 #
 #   Associates the specified widget (which must be a megawidget created
-#   with ::combobox::combobox, see contrib/combobox.tcl) with the specifiec
+#   with ::combobox::combobox, see contrib/combobox.tcl) with the specific
 #   history key. Whenever the list for this history key is modified, the
 #   combobox widget will be updated.
 #

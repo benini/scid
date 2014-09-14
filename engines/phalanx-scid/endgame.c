@@ -1,3 +1,4 @@
+
 #include "phalanx.h"
 
 
@@ -59,7 +60,7 @@ if( wp<A6 )
 }
 
 /**
-***  We still dont know :-(
+***  We still don't know :-(
 ***  Lets try to return something reasonable.
 **/
 {

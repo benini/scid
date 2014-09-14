@@ -149,7 +149,7 @@ proc updatePatternImages {} {
 
 # ::search::material::zero
 #
-#   Called to clear all material minumum/maximum values to zero.
+#   Called to clear all material minimum/maximum values to zero.
 #
 proc ::search::material::zero {} {
   global pMin pMax

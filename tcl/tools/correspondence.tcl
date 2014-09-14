@@ -20,7 +20,7 @@
 namespace eval Xfcc {
 
 	#----------------------------------------------------------------------
-	# Header and footer of the SOAP-messages. Linebreaking is imporant
+	# Header and footer of the SOAP-messages. Linebreaking is important
 	#
 	set SOAPstart {<?xml version="1.0" encoding="utf-8"?>
 	<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -296,10 +296,10 @@ namespace eval Xfcc {
 	proc ReadConfig {xfccrcfile} {
 		global xfccrc
 
-		::CorrespondenceChess::updateConsole "info This is Scids internal Xfcc-interface"
+		::CorrespondenceChess::updateConsole "info This is Scid's internal Xfcc-interface"
 		::CorrespondenceChess::updateConsole "info Using $xfccrcfile..."
 		if {[catch {open $xfccrcfile r} optionF]} {
-			::CorrespondenceChess::updateConsole "info ERROR: Unable ot open config file $xfccrcfile";
+			::CorrespondenceChess::updateConsole "info ERROR: Unable to open config file $xfccrcfile";
 		} else {
 			set xfccrc [read $optionF]
 
@@ -464,7 +464,7 @@ namespace eval Xfcc {
 
 		###---###
 		# if {[catch {open "/tmp/xfcc.xml" w} dbg]} {
-		# 	::CorrespondenceChess::updateConsole "info ERROR: Unable ot open debug file";
+		# 	::CorrespondenceChess::updateConsole "info ERROR: Unable to open debug file";
 		# } else {
 		# 	puts $dbg $xmlresult
 		# }
@@ -679,8 +679,8 @@ namespace eval Xfcc {
 					::CorrespondenceChess::updateConsole "info $name-$id was cancelled...";
 			} elseif {($variant == "chess") || ($variant == "") || ($variant == "randompieces") || ($variant == "upsidedown") || ($variant == "loosers") ||  ($variant == "nocastle")} {
 				### --- Istvan --- ###
-				### Racing Kings is not possible due to unambigious moves
-				### that are ambigious if check is allowed
+				### Racing Kings is not possible due to unambiguous moves
+				### that are ambiguous if check is allowed
 				### ($variant == "racingkings") ||
 				### --- Istvan --- ###
 
@@ -759,7 +759,7 @@ namespace eval Xfcc {
 					}
 
 					# Add the game-id as comment before starting the game.
-					# This might be helpfull on certain mobile devices, that
+					# This might be helpful on certain mobile devices, that
 					# can not deal with extensive header information, e.g.
 					# OpenChess on PalmOS.
 					puts $pgnF "{$name-$id}"
@@ -775,7 +775,7 @@ namespace eval Xfcc {
 							puts $pgnF "\}"
 						}
 					}
-					# If a game has finished and a message is sent allways
+					# If a game has finished and a message is sent always
 					# add it here.
 					if {($Result != "Ongoing") && ($mess != "")} {
 						puts -nonewline $pgnF "\{"
@@ -801,13 +801,13 @@ namespace eval Xfcc {
 						puts $pgnF "1/2-1/2\n";
 					} \
 					"WhiteDefaulted" {
-						puts $pgnF "\{White Defaultet\} 0-1\n";
+						puts $pgnF "\{White Defaulted\} 0-1\n";
 					}\
 					"BlackDefaulted" {
-						puts $pgnF "\{Black Defaultet\} 1-0\n";
+						puts $pgnF "\{Black Defaulted\} 1-0\n";
 					}\
 					"BothDefaulted" {
-						puts $pgnF "\{Both Defaultet\} 1/2-1/2\n";
+						puts $pgnF "\{Both Defaulted\} 1/2-1/2\n";
 					}
 					close $pgnF
 				}
@@ -941,7 +941,7 @@ namespace eval Xfcc {
 
 #======================================================================
 #
-# Correspondence chess menues, dialogs and functions
+# Correspondence chess menus, dialogs and functions
 #
 #======================================================================
 
@@ -949,7 +949,7 @@ namespace eval Xfcc {
 # Correspnodence Chess functions
 namespace eval CorrespondenceChess {
 
-	# wether the console is already open or not
+	# whether the console is already open or not
 	set isOpen   0
 
 	# default Database
@@ -998,7 +998,7 @@ namespace eval CorrespondenceChess {
 	# Which to use
 	set ListOrder          $CCOrderClassic
 
-	# email-programm capable of SMTP auth and attachements
+	# email-programm capable of SMTP auth and attachments
 	set mailer           "/usr/bin/nail"
 	# mail a bcc of the outgoing mails to this address
 	set bccaddr          ""
@@ -1150,7 +1150,7 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
-	# Check for In-/Outbox directories and create them if not avaiable
+	# Check for In-/Outbox directories and create them if not available
 	#----------------------------------------------------------------------
 	proc checkInOutbox {} {
 		global scidDataDir ::CorrespondenceChess::Inbox ::CorrespondenceChess::Outbox
@@ -1276,8 +1276,8 @@ namespace eval CorrespondenceChess {
 
 	#----------------------------------------------------------------------
 	# yset / yview: enable synchronous scrolling of the CC game list, ie.
-	# all text widgets involved scroll simultaneously by the same ammount
-	# in the vertial direction.
+	# all text widgets involved scroll simultaneously by the same amount
+	# in the vertical direction.
 	#----------------------------------------------------------------------
 	proc yset {args} {
 		set w .ccWindow
@@ -1447,7 +1447,7 @@ namespace eval CorrespondenceChess {
 
 	#----------------------------------------------------------------------
 	# Fetch PGN file of games to be relayed and put them with the
-	# proper header tags into Scids inbox for display
+	# proper header tags into Scid's inbox for display
 	# As parameter use the MakeAMove-URL from ICCF.
 	# Currently only relaying from ICCF is supported.
 	#----------------------------------------------------------------------
@@ -1455,7 +1455,7 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::Inbox
 
 		if {[catch {open $::CorrespondenceChess::Connector r} connectF]} {
-			::CorrespondenceChess::updateConsole "info ERROR: Unable ot open connector $::CorrespondenceChess::Connector";
+			::CorrespondenceChess::updateConsole "info ERROR: Unable to open connector $::CorrespondenceChess::Connector";
 		} else {
 
 			set connectxml [read $connectF]
@@ -1607,7 +1607,7 @@ namespace eval CorrespondenceChess {
 	# status. Xfcc offers quite some information here whereas eMail
 	# relies mostly on the user.
 	# Additionally this window contains the buttons for easy navigation
-	# and in case of Xfcc the special moves availabe (resign etc.)
+	# and in case of Xfcc the special moves available (resign etc.)
 	#----------------------------------------------------------------------
 	proc CCWindow {} {
 		global scidDataDir helpMessage
@@ -1624,7 +1624,7 @@ namespace eval CorrespondenceChess {
 		::createToplevel $w
 		::setTitle $w [::tr "CorrespondenceChess"]
 
-		# hook up with scids geometry manager
+		# hook up with scid's geometry manager
 		setWinLocation $w
 		setWinSize $w
 
@@ -1732,7 +1732,7 @@ namespace eval CorrespondenceChess {
 		grid $w.top.acceptDraw  -stick ew    -column  9 -row 2
 
 		# build the table in the bottom frame. This table of text widgets has to
-		# scroll syncronously!
+		# scroll synchronously!
 		ttk::scrollbar $w.bottom.ysc      -command ::CorrespondenceChess::yview
 
 		set height $::winHeight($w)
@@ -1806,7 +1806,7 @@ namespace eval CorrespondenceChess {
 		#----------------------------------------------------------------------
 		# Layout for the gamelist: Xfcc offers more information about
 		# the ongoing game then eMail, hence more is presented to the
-		# user. ToMove and featrues use icons for easy reading.
+		# user. ToMove and features use icons for easy reading.
 		# Xfcc:
 		# ID | ToMove? | White | Black | Event | Site | ClockW | ClockB # | Var | features
 		# eMail:
@@ -1845,7 +1845,7 @@ namespace eval CorrespondenceChess {
 		::utils::tooltip::SetTag $w.bottom.id "$id" id$id
 
 		# ToMove may contain a mixture of text for game results plus
-		# several icons displayin the current game status.
+		# several icons displaying the current game status.
 		if { (($clockW == " 0d  0: 0") || ($clockB == " 0d  0: 0")) && (($toMove == "yes") || ($toMove == "no")) } {
 				$w.bottom.toMove image create end -align center -image tb_CC_outoftime
 		}
@@ -1972,8 +1972,8 @@ namespace eval CorrespondenceChess {
 		# easily, then lock the entry field from changes by the user.
 		# SetSelection just sets the global $num to the actual row the
 		# user clicked. This has to be a global variable and it has to
-		# be passed to the ProcessServerResult mascaraded to prevent
-		# from interpretation. See also Scids gamelist.
+		# be passed to the ProcessServerResult masqueraded to prevent
+		# from interpretation. See also Scid's gamelist.
 		foreach tag {id toMove event site white black clockW clockB var feature} {
 			bind $w.bottom.$tag <Button-1> {
 				::CorrespondenceChess::SetSelection %x %y
@@ -2069,7 +2069,7 @@ namespace eval CorrespondenceChess {
 
 	#----------------------------------------------------------------------
 	# Opens a config dialog to set the default parameters. Currently
-	# they are not stored to scids setup though.
+	# they are not stored to scid's setup though.
 	#----------------------------------------------------------------------
 	proc config {} {
 		set w .correspondenceChessConfig
@@ -2242,7 +2242,7 @@ namespace eval CorrespondenceChess {
 
 		# the following header tags have to be in this form for cmail to
 		# recognise the mail as an eMail correspondence game.
-		# Additonally scid searched for some of them to retrieve mail
+		# Additionally scid searched for some of them to retrieve mail
 		# addresses automagically and also to recognise this game as
 		# eMail and not Xfcc.
 		set Event         "Email correspondence game"
@@ -2302,7 +2302,7 @@ namespace eval CorrespondenceChess {
 	proc newEMailGame {} {
 		global ::CorrespondenceChess::CorrSlot
 
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		# Only proceed if a correspondence DB is already loaded
 		if {$CorrSlot > -1} {
@@ -2386,7 +2386,7 @@ namespace eval CorrespondenceChess {
 	}
 
 	#----------------------------------------------------------------------
-	# Check wether a Correspondence Database is loaded. Note that the
+	# Check whether a Correspondence Database is loaded. Note that the
 	# first one found is used as reference DB for game processing.
 	#----------------------------------------------------------------------
 	proc CheckForCorrDB {} {
@@ -2675,7 +2675,7 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::CorrSlot
 		global emailData
 
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		# Only proceed if a correspondence DB is already loaded
 		if {$CorrSlot > -1} {
@@ -2813,7 +2813,7 @@ namespace eval CorrespondenceChess {
 
 			# eMail/postal games: manual handling for resign and draw is
 			# needed, no standard way/protocol exists => disable the
-			# buttons and menue entries accordingly
+			# buttons and menu entries accordingly
 			.ccWindow.top.resign     configure -state disabled
 			.ccWindow.top.claimDraw  configure -state disabled
 			.ccWindow.top.offerDraw  configure -state disabled
@@ -2849,7 +2849,7 @@ namespace eval CorrespondenceChess {
 		set gamecount $::CorrespondenceChess::glgames
 
 		busyCursor .
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
 			if {$num > 1} {
@@ -2870,7 +2870,7 @@ namespace eval CorrespondenceChess {
 		set gamecount $::CorrespondenceChess::glgames
 
 		busyCursor .
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		if {$CorrSlot > -1} {
 			if {$num < $gamecount} {
@@ -2889,7 +2889,7 @@ namespace eval CorrespondenceChess {
 		global ::CorrespondenceChess::Inbox ::CorrespondenceChess::XfccFetchcmd ::CorrespondenceChess::CorrSlot
 		busyCursor .
 
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 		# Only proceed if a correspondence DB is already loaded
 		if {$CorrSlot > -1} {
@@ -2969,13 +2969,13 @@ namespace eval CorrespondenceChess {
 			set inpath  "$Inbox/"
 		}
 
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 
 		set games 0
 		if {$CorrSlot > -1} {
 
-			# extract the number of the last move using Scids internal
+			# extract the number of the last move using Scid's internal
 			# PGN parser as comments etc. might appear, and this number
 			# is not given via Xfcc. Similar for the event date.
 			sc_clipbase clear
@@ -3312,7 +3312,7 @@ namespace eval CorrespondenceChess {
 	#----------------------------------------------------------------------
 	# Send the move to the opponent via eMail
 	# This requires an external MTA that is capable of sending a pgn file
-	# as attachement (content-type: application/x-chess-pgn). This can be
+	# as attachment (content-type: application/x-chess-pgn). This can be
 	# accomplished by nail with proper /etc/mime.types (default on debian).
 	# Additionally the program has to handle SMTP-Auth in all its flavours
 	# to be of any use in present days.
@@ -3332,7 +3332,7 @@ namespace eval CorrespondenceChess {
 
 		busyCursor .
 
-		# Regardless how the user opend this DB, find it! ;)
+		# Regardless how the user opened this DB, find it! ;)
 		::CorrespondenceChess::CheckForCorrDB
 
 		if {$CorrSlot > -1} {
@@ -3410,7 +3410,7 @@ namespace eval CorrespondenceChess {
 			#            (rfc 2368). This calling convention is supported by
 			#            evolution
 			# -claws   : Claws mailer, seems to be almost mailurl, but needs
-			#            a parameter for attachements
+			#            a parameter for attachments
 			switch -regexp -- $::CorrespondenceChess::mailermode \
 			"mailx" {
 				set callstring "$mailer $subject \"$title\" -b $bccaddr $attache \"$pgnfile\" $to <\"$pgnfile\""
