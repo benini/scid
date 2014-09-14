@@ -2146,7 +2146,7 @@ proc ::tree::mask::searchMask { baseNumber } {
   grid $w.f1.poscommentl -column 5 -row 0
   grid $w.f1.poscomment -column 5 -row 1
   
-  ttk::button $w.f1.search -text [tr "Search"] -command " ::tree::mask::perfomSearch $baseNumber "
+  ttk::button $w.f1.search -text [tr "Search"] -command " ::tree::mask::performSearch $baseNumber "
   grid $w.f1.search -column 6 -row 0 -rowspan 2
   
   # display search result
@@ -2166,7 +2166,7 @@ proc ::tree::mask::searchMask { baseNumber } {
 ################################################################################
 #
 ################################################################################
-proc  ::tree::mask::perfomSearch  { baseNumber } {
+proc  ::tree::mask::performSearch  { baseNumber } {
   global ::tree::mask::mask
   set t .searchmask.f2.text
   # contains the search result (FEN)

@@ -81,7 +81,7 @@ MoveList::SelectBySquare (squareT sq)
             // Skip this move, it does not match.
             continue;
         }
-        // Copy this move to an earlier index if necesary:
+        // Copy this move to an earlier index if necessary:
         if (i != index) {
             Moves[index] = *sm;
         }

@@ -116,7 +116,7 @@ typedef	int	piece;
 #define	L_bev_limaxx	(-L_tbbe_ssL - 1)	/* mated in 32766 moves */
 #define	L_bev_miminx	(-L_tbbe_ssL - 2)	/* mate in 32767 moves */
 
-// Convertion from 8-bit to 16-bit score
+// Conversion from 8-bit to 16-bit score
 // UNDONE: Maybe implement via lookup table?
 
 #define	S_to_L(tbt)\
@@ -253,7 +253,7 @@ static void* PvMalloc
 
 #define	INF	4000
 
-// Enumaration: valid positions with 2 kings on board; white king restricted to
+// Enumeration: valid positions with 2 kings on board; white king restricted to
 // a1-d1-d4 triangle; also, if it's at a1-d4 half-diagonal, then black king
 // must be in a1-h1-h8 triangle
 
@@ -837,7 +837,7 @@ static const bool rgfInLargeTriangle[64] =
 
 // Calculate index - a lot of functions...
 
-// Enumaration tables
+// Enumeration tables
 
 static BYTE		*rgprgsqPiece[6];	// Enumeration for each piece (0 - black pawn)
 									// For each position of the King, all legal squares
@@ -846,7 +846,7 @@ static BYTE		rgcLegal[6][64];	// # of enumerated positions for each piece and ea
 									// location of enemy king
 
 // Enumerations - indexed by [piece] and [kings enumeration].
-// In each table for each [piece] and [king enumeration] we store # of preceeding positions.
+// In each table for each [piece] and [king enumeration] we store # of preceding positions.
 
 static ULONG	*rgprgulSinglePawnless[6];
 static ULONG	*rgprgulPairPawnless[6][6];
@@ -1082,7 +1082,7 @@ static void VInitTriple
 
 #endif
 
-// Initialize all enumaration tables
+// Initialize all enumeration tables
 
 static bool fEnumerationInitted = false;
 
@@ -1246,7 +1246,7 @@ public:
 		// Can we remove one extra square?
 		if ((piw1>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw1][sqbk*64+sqwk]))
 			ind -= (sqw1 > sqwk);
-		// Add enumerated square to the # of the preceeding positions
+		// Add enumerated square to the # of the preceding positions
 		return ind + (fPawns ? rgprgulSinglePawnPresent[piw1][ulKings] : rgprgulSinglePawnless[piw1][ulKings]);
 		}
 	};
@@ -1302,24 +1302,24 @@ public:
 				ind1 -= (sqw1 > sqwk);
 				ind2 -= (sqw2 > sqwk);
 				}
-			// Add enumerated squares to the # of the preceeding positions
+			// Add enumerated squares to the # of the preceding positions
 			return	ind2*(ind2-1)/2 + ind1 +
 					(fPawns ? rgprgulPairPawnPresent[piw1][piw2][ulKings] : rgprgulPairPawnless[piw1][piw2][ulKings]);
 			}
 		else
 			{
-			// Can we remove WK square from 1st piece enumaration?
+			// Can we remove WK square from 1st piece enumeration?
 			if ((piw1>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw1][sqbk*64+sqwk]))
 				ind1 -= (sqw1 > sqwk);
 			// Get # of enumerated positions of 2nd piece
 			cInd2 = rgcLegal[piw2][sqbk];
-			// Can we remove WK square from 2nd piece enumaration?
+			// Can we remove WK square from 2nd piece enumeration?
 			if ((piw2>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw2][sqbk*64+sqwk]))
 				{
 				cInd2 --;
 				ind2 -= (sqw2 > sqwk);
 				}
-			// Add enumerated square to the # of the preceeding positions
+			// Add enumerated square to the # of the preceding positions
 			return cInd2*ind1 + ind2 + (fPawns ? rgprgulPairPawnPresent[piw1][piw2][ulKings] : rgprgulPairPawnless[piw1][piw2][ulKings]);
 			}
 		}
@@ -1394,7 +1394,7 @@ public:
 				ind2 -= (sqw2 > sqwk);
 				ind3 -= (sqw3 > sqwk);
 				}
-			// Add enumerated squares to the # of the preceeding positions
+			// Add enumerated squares to the # of the preceding positions
 			return	ind3*(ind3-1)*(ind3-2)/6 + ind2*(ind2-1)/2 + ind1 +
 					(fPawns ? rgprgulTriplePawnPresent[piw1][piw2][piw3][ulKings] :
 							  rgprgulTriplePawnless[piw1][piw2][piw3][ulKings]);
@@ -1409,13 +1409,13 @@ public:
 				}
 			// Get # of enumerated positions of 3rd piece
 			cInd3 = rgcLegal[piw3][sqbk];
-			// Can we remove WK square from 3rd piece enumaration?
+			// Can we remove WK square from 3rd piece enumeration?
 			if ((piw3>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw3][sqbk*64+sqwk]))
 				{
 				cInd3 --;
 				ind3 -= (sqw3 > sqwk);
 				}
-			// Add enumerated squares to the # of the preceeding positions
+			// Add enumerated squares to the # of the preceding positions
 			return	(ind2*(ind2-1)/2 + ind1)*cInd3 + ind3 +
 					(fPawns ? rgprgulTriplePawnPresent[piw1][piw2][piw3][ulKings] :
 							  rgprgulTriplePawnless[piw1][piw2][piw3][ulKings]);
@@ -1430,25 +1430,25 @@ public:
 				}
 			// Get # of enumerated positions of 1st piece
 			cInd1 = rgcLegal[piw1][sqbk];
-			// Can we remove WK square from 3rd piece enumaration?
+			// Can we remove WK square from 3rd piece enumeration?
 			if ((piw1>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw1][sqbk*64+sqwk]))
 				{
 				cInd1 --;
 				ind1 -= (sqw1 > sqwk);
 				}
-			// Add enumerated squares to the # of the preceeding positions
+			// Add enumerated squares to the # of the preceding positions
 			return	(ind3*(ind3-1)/2 + ind2)*cInd1 + ind1 +
 					(fPawns ? rgprgulTriplePawnPresent[piw1][piw2][piw3][ulKings] :
 							  rgprgulTriplePawnless[piw1][piw2][piw3][ulKings]);
 			}
 		else
 			{
-			// Can we remove WK square from 1st piece enumaration?
+			// Can we remove WK square from 1st piece enumeration?
 			if ((piw1>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw1][sqbk*64+sqwk]))
 				ind1 -= (sqw1 > sqwk);
 			// Get # of enumerated positions of 2nd piece
 			cInd2 = rgcLegal[piw2][sqbk];
-			// Can we remove WK square from 2nd piece enumaration?
+			// Can we remove WK square from 2nd piece enumeration?
 			if ((piw2>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw2][sqbk*64+sqwk]))
 				{
 				cInd2 --;
@@ -1456,13 +1456,13 @@ public:
 				}
 			// Get # of enumerated positions of 3rd piece
 			cInd3 = rgcLegal[piw3][sqbk];
-			// Can we remove WK square from 3rd piece enumaration?
+			// Can we remove WK square from 3rd piece enumeration?
 			if ((piw3>x_pieceKnight) || ((BYTE)-1 != rgprgsqPiece[piw3][sqbk*64+sqwk]))
 				{
 				cInd3 --;
 				ind3 -= (sqw3 > sqwk);
 				}
-			// Add enumerated square to the # of the preceeding positions
+			// Add enumerated square to the # of the preceding positions
 			return	cInd3*(cInd2*ind1 + ind2) + ind3 +
 					(fPawns ? rgprgulTriplePawnPresent[piw1][piw2][piw3][ulKings] :
 							  rgprgulTriplePawnless[piw1][piw2][piw3][ulKings]);
@@ -3380,7 +3380,7 @@ int	IDescFindByName
 
 static CUTbReference *PutbrCreateSubtable
 	(
-	int	cPieces,	//	IN | # of pieces ramaining on board
+	int	cPieces,	//	IN | # of pieces remaining on board
 	int	iDepth		//	IN | Recursion depth (# of piece classes left)
 	)
 	{

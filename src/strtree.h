@@ -361,7 +361,7 @@ StrTree<C>::MakeSubTree (int size, uint depth)
 // StrTree::MakeTree(): Converts from list to tree structure.
 //      Pre: First is 1st node, right pointer of each node points to
 //           next node in the list.
-//      Post: Each Root[b] is the root of a prefectly balanced tree of
+//      Post: Each Root[b] is the root of a perfectly balanced tree of
 //            all the nodes with string starting with the character 'b'.
 //
 template <class C>

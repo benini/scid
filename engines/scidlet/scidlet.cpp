@@ -126,7 +126,7 @@ output (const char * format, ...)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // timeControlT
-//   Used to keep track of time conrtol information.
+//   Used to keep track of time control information.
 //
 struct timeControlT {
     uint movesPerControl;
@@ -230,7 +230,7 @@ struct configT {
     const char * bookFileName;  // Opening book file name.
     const char * logFileName;   // Log file name.
     uint hashTableMB;     // Transposition table size in megabytes.
-    uint pawnTableMB;     // Pawn hash table size in magabytes.
+    uint pawnTableMB;     // Pawn hash table size in megabytes.
     bool pruning;         // Should the engine do futility pruning?
     bool resign;          // Should the engine consider resigning?
     bool draw;            // Should the engine offer and accept draws?
@@ -533,7 +533,7 @@ lookupBook (Position * pos, MoveList * mlist)
     // If past move 30, do not bother checking the opening book:
     if (pos->GetFullMoveCount() > 30) { return -1; }
 
-    // Set up an array of freqencies per move, allocating
+    // Set up an array of frequencies per move, allocating
     // from the heap if the list is unusually long:
     uint sumfreq = 0;
     const uint maxMoves = 100;
@@ -561,7 +561,7 @@ lookupBook (Position * pos, MoveList * mlist)
 
     int bookmove = -1;
     if (sumfreq > 0) {
-        // Select a move at random based on its fequency:
+        // Select a move at random based on its frequency:
         uint r = rand() % sumfreq;
         sumfreq = 0;
         for (uint j=0; j < mlist->Size(); j++) {
@@ -970,7 +970,7 @@ makeReply (Engine * engine, MoveList * mlist, int score)
             mode.drawnScores++;
             // Offer a draw every 4 moves when the last few scores
             // have all been zero (drawn), but only if the material
-            // score is equal or worse for us, since the oppponent
+            // score is equal or worse for us, since the opponent
             // should prove they can draw if behind on material.
             if (config.draw  &&  mode.drawnScores >= 4) {
                 int mscore = engine->ScoreMaterial();

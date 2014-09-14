@@ -780,7 +780,7 @@ namespace eval uci {
     }
     ################################################################################
     # UCI moves use long notation
-    # returns 1 if an error occured when entering a move
+    # returns 1 if an error occurred when entering a move
     ################################################################################
     proc sc_move_add { moves } {
         

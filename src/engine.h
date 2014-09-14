@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////////
 //
 //  FILE:       engine.h
@@ -65,7 +66,7 @@ struct transTableEntryT {
     uint    pawnhash;          // Pawn hash value, for extra safety check.
     short   score;             // Evaluation score.
     ushort  bestMove;          // Best move from/to/promote values.
-    byte    depth;             // Depth of evaulation.
+    byte    depth;             // Depth of evaluation.
     byte    flags;             // Score type, side to move and castling flags.
     byte    sequence;          // Sequence number, for detecting old entries.
     squareT enpassant;         // En passant target square.

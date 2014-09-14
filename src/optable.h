@@ -67,7 +67,7 @@ const uint OPTABLE_All = 1;
 
 struct moveOrderT {
     uint id;       // Move Order id number
-    uint count;    // Number of times this order has occured
+    uint count;    // Number of times this order has occurred
     char * moves;  // String containing the moves in SAN notation
 };
 

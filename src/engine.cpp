@@ -1356,7 +1356,7 @@ Engine::SetPosition (Position * newpos)
     // Clear the PV:
     PV[0].length = 0;
 
-    // Change the tranposition table sequence number so existing
+    // Change the transposition table sequence number so existing
     // entries can be detected as old ones:
     TranTableSequence++;
 }
@@ -1567,7 +1567,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
 {
     SetPVLength();
 
-    // If there is no remaining depth, return a qiuescent evaluation:
+    // If there is no remaining depth, return a quiescent evaluation:
     if (depth <= 0) { return Quiesce (alpha, beta); }
 
     // Check that the absolute depth limit is not exceeded:
@@ -1815,7 +1815,7 @@ Engine::Search (int depth, int alpha, int beta, bool tryNullMove)
                 mlist.SwapWithFirst (hashIndex);
             } else {
                 // The hash table move was legal, but not found in the
-                // move list -- Bizzare!
+                // move list -- Bizarre!
                 Output ("# Yikes! Hash table move not in move list! Bug?\n");
             }
         }

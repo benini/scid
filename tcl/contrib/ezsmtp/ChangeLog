@@ -38,7 +38,7 @@
   Finally figured out how to read multi-line responses without using 
   non-blocking I/O and the unix behavior of [read $socket].  RFC 821 
   appendix E clearly states how multi-line responses are supposed to
-  work (last line has three digits followed by space, preceeding lines
+  work (last line has three digits followed by space, preceding lines
   have a dash instead of a space).  Getting rid of non-blocking I/O 
   crap got the code back down under 1000 lines...  :-)
 

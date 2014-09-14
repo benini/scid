@@ -673,7 +673,7 @@ set helpText(Menus) {<h1>Scid menus</h1>
   so it contains no games.</li>
   <li><menu>Copy this game to clipbase</menu>: Copies the current game
   to the <a Clipbase>clipbase</a> database. Additionally, the games
-  curent <term>PGN notation</term> is added to the system clipboard.</li>
+  current <term>PGN notation</term> is added to the system clipboard.</li>
   <li><menu>Paste last clipbase game</menu>: Pastes the active game of
   the <a Clipbase>clipbase</a> to be the active game of the current
   database.</li>
@@ -723,15 +723,15 @@ set helpText(Menus) {<h1>Scid menus</h1>
   <a Searches Board>current board</a> position.</li>
   <li><menu>Header</menu>: Searches by <a Searches Header>header</a>
   information such as player names. This filter is cumulative to
-  an fiter eventually set by an open <a Tree>tree window</a>.</li>
+  a filter eventually set by an open <a Tree>tree window</a>.</li>
   <li><menu>Material/Pattern</menu>: Searches by
   <a Searches Material>material</a> or chessboard patterns</a>. This
-  filter is cumulative to an fiter eventually set by an open <a
+  filter is cumulative to a filter eventually set by an open <a
   Tree>tree window</a>.</li>
   <br>
   <li><menu>Using search file</menu>: Searches using
   <a Searches Settings>settings</a> from a SearchOptions file. This
-  filter is cumulative to an fiter eventually set by an open <a
+  filter is cumulative to a filter eventually set by an open <a
   Tree>tree window</a>.</li>
   </ul>
   
@@ -802,7 +802,7 @@ set helpText(Menus) {<h1>Scid menus</h1>
 	  chess <a CCWorkflow>inbox to work in new games and moves</a> into
 	  the current database. 
 	  </li>
-	  <li><menu>Send move</menu>: Transmitts to a server a move using
+	  <li><menu>Send move</menu>: Transmits to a server a move using
 	  the <a CCXfcc>Xfcc</a> protocol.
 	  </li>
 	  <li><menu>Resign</menu>: resigns the current game (requires <a
@@ -1423,7 +1423,7 @@ set helpText(Comment) {<h1>The Comment Editor window</h1>
   example, the NAG value 36 means "White has the initiative" and will
   be displayed as "$36" in the <a PGN>PGN text</a> of the game. If
   your system properly supports UTF-8 character sets many of the NAG
-  symbols can be displayed by their <a NAGs>glphys</a>. 
+  symbols can be displayed by their <a NAGs>glyphs</a>. 
   </p>
   <p>
   See the help page of <a NAGs>NAG values</a> for NAG values defined
@@ -3697,7 +3697,7 @@ set helpText(PInfo) {<h1>The Player Info window</h1>
   or about the player.</li>
   <li><button seealsolnk> An alternative way to access Wikipedia.</li>
   <li><button viaflnk> Call up player information at the Virtual
-  Autority File (VIAF). This could be used to call up books of/by this
+  Authority File (VIAF). This could be used to call up books of/by this
   player in the contributing national libraries.</li>
   </ul>
   

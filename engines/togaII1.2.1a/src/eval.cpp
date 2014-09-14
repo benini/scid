@@ -1959,7 +1959,7 @@ static bool draw_kbpkb(const int list[], int turn) {
 
    ASSERT(*list==SquareNone);
 
-   // opposit colour?
+   // opposite colour?
 
    if (SQUARE_COLOUR(wb) == SQUARE_COLOUR(bb)) return false; // TODO
 

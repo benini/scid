@@ -606,7 +606,7 @@ scidBaseT* getBase(int baseId) {
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_gamelocation:
 // For all game numbers parameter 1 represent the first game
-// If gnumber = 0 and <text> <start_gnum> <forward_dir> are provided perfom a text search
+// If gnumber = 0 and <text> <start_gnum> <forward_dir> are provided perform a text search
 
 int
 sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
@@ -1961,7 +1961,7 @@ sc_base_type (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    lists are the same (for the length of the shorter change list) which
 //    is an approximation but is *much* faster to check.
 //
-//    All the data needed for detecting dupicates is in the Index file,
+//    All the data needed for detecting duplicates is in the Index file,
 //    so no games need to be decoded.
 
 struct gNumListT {
@@ -3417,7 +3417,7 @@ sc_eco (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_eco_base:
 //    Reclassifies all games in the current base by ECO code.
 //
-//    The first parameter inidicates if all games (not only those
+//    The first parameter indicates if all games (not only those
 //    with no existing ECO code) should be classified.
 //       "0" or "nocode": only games with no ECO code.
 //       "1" or "all": classify all games.
@@ -3575,7 +3575,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_eco_game:
-//    Returns ECO code for the curent game. If the optional
+//    Returns ECO code for the current game. If the optional
 //    parameter <ply> is passed, it returns the ply depth of the
 //    deepest match instead of the ECO code.
 int
@@ -3975,7 +3975,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //        sc_filter freq baseId filterName date <startdate> [<endDate>]
 //    or  sc_filter freq baseId filterName elo <lowerMeanElo> [<upperMeanElo>]
 //Klimmek: or sc_filter freq baseId filterName moves <lowerhalfMove> <higherhalfMove>
-//         add mode to count games with spezified movenumber
+//         add mode to count games with specified movenumber
 //    where the final parameter defaults to the maximum allowed
 //    date or Elo rating.
 //    Note for rating queries: only the rating values in the game
@@ -6594,7 +6594,7 @@ sc_game_scores (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Sets the starting position from a FEN string.
 //    If there is no FEN string argument, a boolean value is
 //    returned indicating whether the current game starts with
-//    a setup positon.
+//    a setup position.
 int
 sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -8396,12 +8396,12 @@ sc_pos_hash (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_pos_html:
-//    Returns an HTML table represtentation of the board.
+//    Returns an HTML table representation of the board.
 //    There are two styles: 0 (the default), which has
 //    40x40 squares and images in a "bitmaps" subdirectory;
 //    and style 1 which has 36x35 squares and images in
 //    a "bitmaps2" directory.
-//    The directory can be overriden with the "-path" command.
+//    The directory can be overridden with the "-path" command.
 int
 sc_pos_html (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -9098,7 +9098,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    the edited name will change.
 //    A rating, date or eventdate can also be edited.
 //
-//    1st arg: player|event|site| ound|rating|edate
+//    1st arg: player|event|site|round|rating|date|edate
 //    2nd arg: "all" / "filter" / "crosstable" (which games to edit)
 //    3rd arg: name to edit.
 //    4th arg: new name -- it might already exist in the namebase.
@@ -13376,7 +13376,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
         }
     }
 
-    // Swap rating difference values if necesary:
+    // Swap rating difference values if necessary:
     if (dEloRange[0] > dEloRange[1]) {
         int x = dEloRange[0]; dEloRange[0] = dEloRange[1]; dEloRange[1] = x;
     }
@@ -13497,7 +13497,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
 
 
 		// Without annotations the search for annotator can be skipped
-		// This elinimates 90% of the effort, if an annotator is queried
+		// This eliminates 90% of the effort, if an annotator is queried
 		if( sAnnotator != NULL && *sAnnotator != 0 && !ie->GetCommentsFlag() && !ie->GetVariationsFlag())
 			match = false;
 
@@ -13523,7 +13523,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
 		            uint numtags = scratchGame->GetNumExtraTags();
 					tagT *tag = scratchGame->GetExtraTags();
 					for(uint i=0; i<numtags; i++, tag++){
-						// Returning all games where the search string matchs with the prefix 
+						// Returning all games where the search string matches with the prefix 
 						// of the annotator string
 						if( !strcmp(tag->tag, "Annotator")){
 							match = strAlphaContains(tag->value, sAnnotator);

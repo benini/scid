@@ -125,7 +125,7 @@ const uint OVERFLOW_BYTES = 8;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // CompressedFilter::Verify():
 //      Return OK only if the compressed filter is identical to
-//      the regular filter passed as the paramter.
+//      the regular filter passed as the parameter.
 //
 errorT
 CompressedFilter::Verify (Filter * filter)

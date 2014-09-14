@@ -750,7 +750,7 @@ strSingleSpace (char * str)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // strIsAllWhitespace():
-//    Returns true if the string contains only whitespace charaters.
+//    Returns true if the string contains only whitespace characters.
 bool
 strIsAllWhitespace (const char * str)
 {

@@ -566,7 +566,7 @@ IndexEntry::Init ()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // IndexEntry::Read():
-//      Reads a single entrys values from an open index file.
+//      Reads a single entry's values from an open index file.
 //
 template <class T> errorT
 IndexEntry::Read (T* file, versionT version)

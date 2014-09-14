@@ -471,7 +471,7 @@ getNameAndComment (char * line, char ** name, char ** comment)
         }
     }
 
-    // Strip leading spaces and trailling newline, tab and space chars:
+    // Strip leading spaces and trailing newline, tab and space chars:
     s = line;
     s = (char *) strTrimLeft(s);
     strTrimRight (s);

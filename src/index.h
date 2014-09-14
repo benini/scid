@@ -169,7 +169,7 @@ public:
     }
 
     // Functions that modify the Header
-    // For performance reasons changes are not immediatly written to index file.
+    // For performance reasons changes are not immediately written to index file.
     // Changes are automatically written to file when the object is destroyed or closed.
     // However, for maximum security against power loss, crash, etc,
     // manually call the function WriteHeader()

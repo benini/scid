@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////////
 //
 //  FILE:       misc.h
@@ -36,7 +37,7 @@ ecoT eco_BasicCode (ecoT ecoCode);
 
 // String routines. Some are identical to ANSI standard functions, but
 //      I have included them:
-//      (a) to keep nice consistent naming comventions, e.g. strCopy.
+//      (a) to keep nice consistent naming conventions, e.g. strCopy.
 //      (b) so stats can easily be kept by modifying the functions.
 //      (c) so some can be made inline for speed if necessary.
 //

@@ -210,7 +210,7 @@ const char * evalNagsRegular [] =
    "$189",            // $189
    "ǁ",               // $190 etc.
    "⡁",               // $191 doubled pawn
-   "⚯",               // $192 spearated pawn
+   "⚯",               // $192 separated pawn
    "⚮",               // $193 connected pawn
    "$194",            // $194
    "$195",            // $195

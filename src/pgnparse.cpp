@@ -185,7 +185,7 @@ PgnParser::GetLine (char * buffer, uint bufSize)
 // standardDutchName(): standardises various combinations of upper
 //       and lower case "v" and "d" in the common Dutch name
 //       prefixes "van der", "van de" and "van den" to a capital
-//       V and small d, for consisitency to avoid multiple names.
+//       V and small d, for consistency to avoid multiple names.
 //
 static void
 standardDutchName (char * s)
@@ -243,7 +243,7 @@ standardPlayerName (char * source)
     }
     *to = 0;
 
-    // Now trim any trailling spaces, tabs :
+    // Now trim any trailing spaces, tabs :
     strTrimRight (source, " \t");
 
     // Now standardise the capital letters of Dutch/etc prefix names:

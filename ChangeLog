@@ -8,7 +8,7 @@ scid-4.6.0
 	* Statistics inside the gamelist window
 	* "Awesome" search bar inside the gamelist window (see gamelist.tcl for usage)
 	* Autosave windows layout1 if it's empty
-	* Redisgn of board status bar and toolbar
+	* Redesign of board status bar and toolbar
 	* Show name, elo and clocks above/below the board
 	* Allow custom size for piece images
 	* Model-View-Controller.
@@ -73,7 +73,7 @@ scid-4.5.1
 ==========
 - New features:
 	* New "Gamelist window" with:
-		- Dynamic sorting with multiple criterias
+		- Dynamic sorting with multiple criteria
 		- Keyboard-friendly (up-down arrow keys to select a game;
 		                     return key to load a game;
 		                     left-right keys to change game position;
@@ -191,7 +191,7 @@ scid-4.3
 	* Taller information field (Thanks to Milan Zamazal and Gerd Lorscheid)
 	* Replace some buttons in help by proper img tags
 	* Bring Best games / tree graph to front if they exist and the button is pressed again
-	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it confliced with undo
+	* Toggle autoplay mode was mapped to Ctrl-z instead of Ctrl-Z so it conflicted with undo
 	* Speed improvement for game copy operation
 	* New checking option for games consistency
 	* Improve proportions of USCF piece set
@@ -247,7 +247,7 @@ scid-4.3
 		  open a new window with bibliographic reference; <addinfo> e.g. No.27 p.85.
 		- if Bib-header exists a new link shows up in game info area
 		- To handle the bibliographic database 3rd party tools can be
-		  used. A valuabe free, open source  solution might be
+		  used. A valuable free, open source solution might be
 		  http://jabref.sf.net (or any other bibliography tool for BibTeX)
 	* Best games list:
 		- For annotated games (NAGs, Comments, Variations) show an A in the list
@@ -265,7 +265,7 @@ scid-4.3
 		  still treated internally
 	* Comment editor
 		 - now opens by clicking the comment in game info area
-		 - Make board toggable by either alt-b or button and save its state
+		 - Make board togglable by either alt-b or button and save its state
 		 - recognises Ctrl-A for adding a new variation => easy addition for pre move comments
 		 - Alt-Left/Alt-Right now go one move backward/forward
 		 - Map Alt-N to switch between NAG- and text entry
@@ -277,7 +277,7 @@ scid-4.3
 		   the toolbar. This button also signifies if the game already
 		   contains commentary in the current position and if so, shows
 		   them in a tooltip. Technical commentaries (e.g. [%.*] are
-		   ingored.
+		   ignored.
 		 - Update board in comment editor with current position while
 		   the comment editor is left open. (Joost t' Haart)
 	* Allow suppression of Abort/Adjourn/Draw/Take back requests/offers (thanks to Jose Joao Morais)
@@ -292,7 +292,7 @@ scid-4.3
 	  they now restrict the games displayed in Best Games and Game
 	  list. In other words if a header search was performed its
 	  results are no longer reset by the Tree searches. Tree statistics
-	  however are still calculated for teh full database.  (Thanks to
+	  however are still calculated for the full database.  (Thanks to
 	  Gerd Lorscheid)
 	  - Annotators are now searchable (Thanks to Gerd Lorscheid)
 	  - Easy way to search for all games that are annotated by either
@@ -353,7 +353,7 @@ scid-4.2
 - Features :
 ------------
 - Training -> Find best move : make it more user friendly :
-	* The next moves are automaticaly hidden in PGN window and in game info window
+	* The next moves are automatically hidden in PGN window and in game info window
 	* Added buttons above the board to show solution, go to next / previous exercise
 	* Leave the training mode by unchecking the menu entry
 - updated swedish translation (thanks to Hans Eriksson)
@@ -387,7 +387,7 @@ scid-4.1
 - entering comments for last move of a line was broken
 - setting the blunder flag from maintenance window was broken ("?" was considered part of a regular expression)
 - when compacting a game file, custom flags description was lost
-- custom flags description are now commited to index file as soon as they are modified
+- custom flags description are now committed to index file as soon as they are modified
 - Informant values were overwritten by default values at startup
 - UCI engines : send "go infinite" instead of "go infinite ponder" because it is not handled correctly by some engines and "go infinite" seems sufficient
 - fixed a bug when USCF piece set was selected and the library tkimg not installed (under Linux)
@@ -416,7 +416,7 @@ scid-4.1
 		- IP address of FICS server is cached (faster login)
 		- in case of a network error, quit FICS without popping tons of error messages
 	* Sound : when another application uses the sound device and once it is released, forces Scid to reset pending sounds hence be able to use sounds again (this has the drawback of limiting maximum sound length to 5 seconds)
-	* Move annoucement : if pieces are translated, announces moves using english sounds (as only english annoucements are supported)
+	* Move announcement : if pieces are translated, announces moves using english sounds (as only english announcements are supported)
 	* Tree window : fixed game loading from browse game window (when the Tree was not locked)
 	* fixed status bar detailing some menu entries
 	* fixed context menu in notebook tabs for FICS window
@@ -441,7 +441,7 @@ scid-4.1
 		- 6 new user customizable flags
 		- any base opened in version 3 will be automatically converted to new format in a few seconds (.si3 file is converted to .si4 and then removed, .sg3 and sn3 files are renamed respectively to .sg4 and .sn4)
 	* NAG support : add symbolic NAGs using UTF-8 symbols
-	* Search position : if the search is done in a refrerence base (not the current one), don't switch to it if the result returns no game
+	* Search position : if the search is done in a reference base (not the current one), don't switch to it if the result returns no game
 	* Tree mask : 
 		- added a sub-menu for searching positions in a mask depending upon various criteria (comments, NAG, color, etc.)
 		- added a sub-menu for displaying the Mask content in a tree form
@@ -456,7 +456,7 @@ scid-4.1
 	* game browser : automatically flip board if the main board is flipped
 	* updated Scid icon (thanks to Israel Chauca Fuentes)
 	* First version of VIAF/PND support for hooking up Wikipedia et al.
-	* Corresponden	ce Chess:
+	* Correspondence Chess:
 		- Sorting of the gamelist  by various criteria like own clock, opponent clock (Xfcc only)
 		- Do not show games where the player does not have the move (Xfcc only)
 		- Add GUI to set sort criteria
@@ -574,7 +574,7 @@ scid-3.7
   * Show last move in tooltip for the "to move" icon (suggested by Dhanish)
   * move delete in/outbox button furter away from Process Inbox (suggested by Dhanish)
   * Yes/No dialogue before cleaning the in/outbox (suggested by Dhanish)
-  * All paths required use $scidDataDir/$scidConfigDir variable if possible. This allows more seemless usage from an USB drive on Windows where the drive letters change all the time.
+  * All paths required use $scidDataDir/$scidConfigDir variable if possible. This allows more seamless usage from an USB drive on Windows where the drive letters change all the time.
   * Improve GUI for non-unique game IDs.
   * Deleted games are now ignored in search of a sync-target.
   * Fix: offline state file kept growing infinitely
@@ -589,7 +589,7 @@ scid-3.7
     (remove it needs restart)
 - Novag Citrine
   * Remove own config (replaced by unified dialogue)
-  * Use unified "Connect Hardware" dialoge and parameters thereof
+  * Use unified "Connect Hardware" dialogue and parameters thereof
   * Use "hardware connect" button
   * Set button images according to current state
 - Input Engine Support:
@@ -660,7 +660,7 @@ scid-3.7
 - Added piece translations for hungarian, swedish and norvegian languages
 - Serious and tactical games : fixed repetition detection
 - Changed the way SPF files (data players) are loaded. This spares some memory and Scid's start up is a little bit faster. New script in scripts directory : scf2spi.tcl (thanks to Mikhail Kalenkov)
-- Players' name standarization : strictly follow PGN requests by leaving a period after an initial (standardPlayerName in pgnparse.cpp)
+- Players' name standardization : strictly follow PGN requests by leaving a period after an initial (standardPlayerName in pgnparse.cpp)
 - Unix version : changed the way the tkscid path is searched to use scid's directory (thanks to Joost´t Hart)
 
 
@@ -769,7 +769,7 @@ scid-3.6.25
 - Fixed the help messages for some tools menus, probably wrong due to a new menu item added in 3.6.24 version (changed the code so that now it's not needed to change all menu indexes for help messages whenever a new menu is added).
 - Finder : added a contextual menu (right mouse button to copy, move, delete and backup bases).
 - updated swedish translation (thanks to Hans Eriksson)
-- Added the scanning of filter files (.sso) from the command line (i.e. scid mydb myfilter, scid opens immediatly with mydb filtered by myfilter file)
+- Added the scanning of filter files (.sso) from the command line (i.e. scid mydb myfilter, scid opens immediately with mydb filtered by myfilter file)
 - Tuned the startup communication between scid and engines
 - Rybka 3 supported despite a small bug in its command line parser
 - Scid-engine log files: maxsize to 5000 lines (was 500) and flush on every put (to aid problem detection when an engine crashes)
@@ -810,7 +810,7 @@ scid-3.6.24
 - when searching games with ECO code, games with no ECO code are not included by default
 - ECO lines are translated in search by header dialog
 - removed the frame showing material balance except for the main board
-- Added move annoucements when playing on Internet (a simple move is always played when the opponent moves)
+- Added move announcements when playing on Internet (a simple move is always played when the opponent moves)
 - FICS play : the graph of game offers is added (inspired by JIN), and Time seal is supported (timeseal exec must be installed). When observing a game, previous played moves are retrieved from server.
 - reworked Merida and Fantasy piece sets so that there is no aliasing problem (requires package Img, which should be present everywhere)
 - Fixed a bug (many years old) in Twin games detection : the parameter "Always keep games with variations" was hidden, hence always ON, preventing deletion of twins  
@@ -823,7 +823,7 @@ scid-3.6.24
    * changed sizes of photos of players when clicking on them 
    * fixed "coach is watching" that would not detect user's blunders
    * show variations window improved
-   * up arrow leaves current variation if at start of variation (like z shorcut)
+   * up arrow leaves current variation if at start of variation (like z shortcut)
    * Fix XML decoding issue for CC (special chars like ' & < > " etc.)
    * Fixed a bug in opening trainer (due to pieces translation)
    * Fixed a bug in scmerge
@@ -909,10 +909,10 @@ scid-3.6.19
 - A Tree window can be opened for each base through the command tools-> open base as tree. So now the meaning of "locked" for a tree window has changed. This used to mean display information of *this* base in the Tree window, but now it means, if the Tree window is locked, that closing the Tree implies closing the associated base. This seems natural because using "open base as tree" means the user wants to get a kind of "book/tree" and not really a base. So it makes sense to link base's fate to tree's one. Moreover, as a Tree window, a Graph window and a Best Games window, etc. can be opened for each base, more than 30 windows can be opened related to Trees, so the closing of a Tree window has to clean up things.
 When several Tree windows are opened the top most is refreshed first, then others.
 - Memory leaks fixed (particularly in Game class)
-- New API : sc_tree free to release memory used by Tree windows (sc_tree search). This sould only be used for systems with low memory constraints.
-- New API : sc_game truncatefree : when truncating a game, moves are freed. This sould only be used for systems with low memory constraints.
+- New API : sc_tree free to release memory used by Tree windows (sc_tree search). This should only be used for systems with low memory constraints.
+- New API : sc_game truncatefree : when truncating a game, moves are freed. This should only be used for systems with low memory constraints.
 - New API : sc_info logmem : useful with checkmemlog.tcl script to detect memory leaks.
-- New API : sc_var deletefree : when deleting a variation, moves are freed. This sould only be used for systems with low memory constraints.
+- New API : sc_var deletefree : when deleting a variation, moves are freed. This should only be used for systems with low memory constraints.
 - modified scmerge so it can take an unlimited number of input files (each separated by a carriage return) (thanks to Marcin Kasperski). Example usage :
    find . -name '*.si3' | sed s/\\.si3// | scmerge newbase -
 This is necessary because shell command lines have a size limit.
@@ -971,10 +971,10 @@ scid-3.6.15
 - increased BBUF_SIZE so that the import of very particular games (played on internet), with extraordinary long comments (whispers) will no longer fail (of course those buffers are static and it is always possible to make games with comments so long (1 MB) that the import will still end with an error)
 - tournament crosstable : a game was considered in a tournament when its date was between +/- 3 months form current game's date : the value is increased to 12 months as some tournaments last more than 3 months (computer matches, correspondence games, etc)
 - updated swedish translation [thanks to Hans Eriksson]
-- Improvements in UCI engine output : the conversion between long notation to short algebric notation is done in C code, instead of the old Tcl way, which could not really handle SAN, that is Nb1c3 is now correctly displayed as Nc3 (code reuse from Scid Pocket).
+- Improvements in UCI engine output : the conversion between long notation to short algebraic notation is done in C code, instead of the old Tcl way, which could not really handle SAN, that is Nb1c3 is now correctly displayed as Nc3 (code reuse from Scid Pocket).
 - added new Scid API : "sc_game setaltered [0|1]"
 - tweaked GF_BLOCKSIZE and buffers handling so that a base generated with blocks of any size is compatible with bases with a block size of 32 kB (in order to ease Pocket PC compatibility). The drawback is that it can lead to very small overhead (buffer is copied and not shared for less than 1% of games read, but this is counterbalanced by a rarer dirty bit for blocks).
-- Pocket PC code is merged with Scid one (use of #define WINCE), except Toga's code which is still in two separate branches (this sould be changed when I have found out if Toga should remain a separate process on Pocket PC or be a thread invoked in Tcl interpreter inside a DLL).
+- Pocket PC code is merged with Scid one (use of #define WINCE), except Toga's code which is still in two separate branches (this should be changed when I have found out if Toga should remain a separate process on Pocket PC or be a thread invoked in Tcl interpreter inside a DLL).
 
 scid-3.6.16
 -----------
@@ -1132,7 +1132,7 @@ scid-3.6.10
 scid-3.6.1-pg.11
 ----------------
 - Bug fix : correctly restore askToReplaceMoves value when exiting Scid without closing tactical exercises window (file.tcl)
-- put all proc and vars in isolated namespaces for tactics.tcl, tacgame.tcl and opening.tcl (may prevent some side effects, even if none occured)
+- put all proc and vars in isolated namespaces for tactics.tcl, tacgame.tcl and opening.tcl (may prevent some side effects, even if none occurred)
 - translated opening lines for tactical games (currently only translated to French in tcl/lang)
 - added a config file Makefile.conf.darwin (rename it to Makefile.conf before running configure) to compile Crafty under Mac OS X (not tested)
 - added extra checks in tactics in order to determine if a move is the best
@@ -1146,14 +1146,14 @@ scid-3.6.1-pg.12
 scid-3.6.1-pg.13
 ----------------
 - added partial UCI support (tested only with Toga 1.2.1)
-- added MultiPV support for UCI engines, and only UCI (inapropriate for xboard engines)
+- added MultiPV support for UCI engines, and only UCI (inappropriate for xboard engines)
 - optimized the analysis board(don't enter moves when hidden)
 
 scid-3.6.1-pg.14
 ----------------
 - fixed a bug when an analysis window is destroyed (tried to flush an already closed pipe)
 - simplified tactical games configuration (the first encountered Phalanx and Crafty engines are used)
-- added an utility script removetoken.tcl to help maintain and clean up langage files
+- added an utility script removetoken.tcl to help maintain and clean up language files
 
 scid-3.6.1-pg.15
 ----------------
@@ -1248,7 +1248,7 @@ scid-3.6.1-pg.7
 - removed a bug : move back would not allow to go back to start position (side effect of recursive var handling introduced in pg.4)
 - when navigating through a game, automatically display variations. It is now possible to navigate through a game with variations only with arrow keys, which is far easier and more efficient.
 - fixed a bug in ECO browser (Xunmap)
-- fixed the bug occuring after a board resize when the board was flipped (dirty workaround : see resize2 proc)
+- fixed the bug occurring after a board resize when the board was flipped (dirty workaround : see resize2 proc)
 
 scid-3.6.1-pg.8
 ---------------
@@ -1716,7 +1716,7 @@ Version 2.7: (October 2001)
 
  m.  Opening report: now even more configurable options.
 
- n.  PGN importing: now accepts (and ignores) en-passent indicators,
+ n.  PGN importing: now accepts (and ignores) en-passant indicators,
      as in "exd6ep", "exd6 ep", "exd6e.p.", and "exd6 e.p.".
      Also now accepts a non-breaking space character (ASCII code 160)
      as whitespace.
@@ -2389,7 +2389,7 @@ Version 1.4: (March 2000)
         in v1.3 were not working with Crafty on some computers.
 
  **  Crosstable window now displays average Elo rating and corresponding
-        FIDE tournament category, and also shows the rating perfomance
+        FIDE tournament category, and also shows the rating performance
         for each player that played five or more games in the tournament.
         It can also now handle up to 64 players in a tournament.
         Every second line is now shaded gray for easier reading.

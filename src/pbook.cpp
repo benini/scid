@@ -230,7 +230,7 @@ PBook::Find (Position * pos, const char ** ptrComment)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // PBook::FindOpcode():
-//    Finds a positition and extracts the requested opcode.
+//    Finds a position and extracts the requested opcode.
 errorT
 PBook::FindOpcode (Position * pos, const char * opcode, DString * target)
 {

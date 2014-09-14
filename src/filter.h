@@ -27,7 +27,7 @@
 //    indicating whether that game is included in the filter or not.
 //    A value of 0 indicates the game is excluded, or 1-255 indicates
 //    the game is included, and what position to show when the game
-//    is loaded: 1 means ths start position, 2 means the position after
+//    is loaded: 1 means the start position, 2 means the position after
 //    Whites first move, etc.
 
 class Filter
