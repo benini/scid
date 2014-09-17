@@ -430,7 +430,7 @@ extern int N_moves[8], RB_dirs[8];
 extern int Values[7];            /* piece values */
 extern unsigned short P[120];      /* power table */
 
-extern tmove PV[MAXPLY][MAXPLY];   /* principal variantion */
+extern tmove PV[MAXPLY][MAXPLY];   /* principal variation */
 extern tmove Pondermove;
 
 /* Hashing codes */

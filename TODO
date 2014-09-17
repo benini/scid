@@ -32,7 +32,7 @@ the same database.
 * In docked mode board rotation breaks piece animation for autoplay
 * Check for bases/books dir not upon startup but once the related
   function is called for the first time.
-* Opening Trainger picks up tye of DB only after restart of Scid(?)
+* Opening Trainer picks up type of DB only after restart of Scid(?)
 * Blunder check in tactical game should be for the players moves not
   for phalanx moves.
 

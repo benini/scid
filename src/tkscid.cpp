@@ -3431,7 +3431,7 @@ int
 sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     if (argc != 4) {
-        return errorResult (ti, "Usage: sc_eco <bool:all_games> <bool:extensions>");
+        return errorResult (ti, "Usage: sc_eco base <bool:all_games> <bool:extensions>");
     }
     if (!ecoBook) { return errorResult (ti, "No ECO Book is loaded."); }
     if (! db->inUse) {

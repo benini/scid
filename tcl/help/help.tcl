@@ -5077,7 +5077,7 @@ exchanged in server based correspondence chess.
 Observing a game of correspondence chess is technically done by
 retrieving the games <a PGN>PGN</a> notation from the webserver.
 These games are then fed into the usual workflow of the
-Correspondence Chess functions and show up thre as usual games. For
+Correspondence Chess functions and show up there as usual games. For
 this function to work a file named "connector.xml" has to be available
 in ~/.scid/data. If this file does not exist Scid will try to generate
 one suitable for observation of games from ICCF Webchess. Additional
