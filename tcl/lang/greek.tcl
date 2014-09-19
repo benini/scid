@@ -1747,6 +1747,8 @@ translate G CCHelpBtn {Βοήθεια για τα εικονίδια και το
 translate G CCDlgServerName {ΌΝομα διακομηστή:}
 translate G CCDlgLoginName  {Όνομα σύνδεσης:}
 translate G CCDlgPassword   {Κωδικός:}
+# ====== TODO To be translated ======
+translate G CCDlgShowPassword {Show password}
 translate G CCDlgURL        {Xfcc-URL:}
 translate G CCDlgRatingType {Τύπως αξιολόγησης:}
 

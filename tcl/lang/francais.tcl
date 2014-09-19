@@ -1706,6 +1706,8 @@ translate F CCHelpBtn {Aide sur les icônes et indicateurs.\nPour plus d'aide app
 translate F CCDlgServerName {Nom serveur:}
 translate F CCDlgLoginName  {Login:}
 translate F CCDlgPassword   {Mot de passe:}
+# ====== TODO To be translated ======
+translate F CCDlgShowPassword {Show password}
 translate F CCDlgURL        {Xfcc-URL:}
 translate F CCDlgRatingType {Type classement:}
 translate F CCDlgDuplicateGame {Identifiant de partie non-unique}

@@ -1748,6 +1748,8 @@ translate S CCHelpBtn {Ayuda en iconos e indicadores de estatus. \n Para ayuda g
 translate S CCDlgServerName {Nombre del servidor:}
 translate S CCDlgLoginName  {Nombre de registro:}
 translate S CCDlgPassword   {Contraseña:}
+# ====== TODO To be translated ======
+translate S CCDlgShowPassword {Show password}
 translate S CCDlgURL        {Xfcc-URL:}
 translate S CCDlgRatingType {Tipo de puntuación (Rating):}
 translate S CCDlgDuplicateGame {El ID de la partida no es único}

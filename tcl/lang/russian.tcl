@@ -1684,6 +1684,8 @@ translate R CCHelpBtn {Помощь на иконках и статусных и
 translate R CCDlgServerName {Имя сервера:}
 translate R CCDlgLoginName  {Логин:}
 translate R CCDlgPassword   {Пароль:}
+# ====== TODO To be translated ======
+translate R CCDlgShowPassword {Show password}
 translate R CCDlgURL        {Адрес Xfcc:}
 translate R CCDlgRatingType {Тип рейтинга:}
 

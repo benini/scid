@@ -1706,6 +1706,8 @@ translate U CCHelpBtn {Apua kuvakkeiden ja statussanomien tulkintaan.\nYleisempä
 translate U CCDlgServerName {Serverin nimi:}
 translate U CCDlgLoginName  {Käyttäjätunnus:}
 translate U CCDlgPassword   {Salasana:}
+# ====== TODO To be translated ======
+translate U CCDlgShowPassword {Show password}
 translate U CCDlgURL        {Xfcc-URL:}
 translate U CCDlgRatingType {Vahvuuslukutyyppi:}
 

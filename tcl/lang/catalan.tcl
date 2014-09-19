@@ -1761,6 +1761,8 @@ translate K CCHelpBtn {Ajut a icones e indicadors d'estatus. \n Per ajut general
 translate K CCDlgServerName {Nom del servidor:}
 translate K CCDlgLoginName  {Nom de registre:}
 translate K CCDlgPassword   {Contrasenya:}
+# ====== TODO To be translated ======
+translate K CCDlgShowPassword {Show password}
 translate K CCDlgURL        {Xfcc-URL:}
 translate K CCDlgRatingType {Tipus de puntuació (Rating):}
 translate K CCDlgDuplicateGame {ID de partida no únic}

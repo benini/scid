@@ -2165,6 +2165,8 @@ translate O CCDlgLoginName  {Login Name:}
 # ====== TODO To be translated ======
 translate O CCDlgPassword   {Password:}
 # ====== TODO To be translated ======
+translate O CCDlgShowPassword {Show password}
+# ====== TODO To be translated ======
 translate O CCDlgURL        {Xfcc-URL:}
 # ====== TODO To be translated ======
 translate O CCDlgRatingType {Rating Type:}

@@ -60,6 +60,7 @@ namespace eval fics {
     }
 
     set logged 0
+    set ::fics::showPass 0
 
     toplevel $w
     ::setTitle $w [::tr "ConfigureFics"]
@@ -68,7 +69,15 @@ namespace eval fics {
     ttk::label $w.f.lLogin -text [::tr "CCDlgLoginName"]
     ttk::entry $w.f.login -width 20 -textvariable ::fics::login
     ttk::label $w.f.lPwd -text [::tr "CCDlgPassword"]
-    ttk::entry $w.f.passwd -width 20 -textvariable ::fics::password
+    ttk::entry $w.f.passwd -width 20 -textvariable ::fics::password -show *
+    ttk::checkbutton $w.f.showPass -text [::tr "CCDlgShowPassword"] -variable ::fics::showPass -command {
+      if {$::fics::showPass} {
+        .ficsConfig.f.passwd configure -show {}
+      } else {
+        .ficsConfig.f.passwd configure -show *
+      }
+    }
+
     ttk::button $w.f.connect -text [::tr "FICSConnect"] -state disabled -command {
       ::fics::connect [.ficsConfig.f.login get] [.ficsConfig.f.passwd get]
       destroy .ficsConfig
@@ -85,6 +94,8 @@ namespace eval fics {
     incr row
     grid $w.f.lPwd -column 0 -row $row
     grid $w.f.passwd -column 1 -row $row
+    incr row
+    grid $w.f.showPass -column 0 -row $row
     incr row
 
     # horizontal line

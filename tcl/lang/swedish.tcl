@@ -1658,6 +1658,8 @@ translate W CCHelpBtn {Hjälp med ikoner och statusindikatorer.\nFör generell Hjä
 translate W CCDlgServerName {Servernamn:}
 translate W CCDlgLoginName  {Inloggningsnamn:}
 translate W CCDlgPassword   {Lösenord:}
+# ====== TODO To be translated ======
+translate W CCDlgShowPassword {Show password}
 translate W CCDlgURL        {Xfcc-URL:}
 translate W CCDlgRatingType {Ratingtyp:}
 translate W CCDlgDuplicateGame {Icke unikt parti-ID}

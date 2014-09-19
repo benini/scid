@@ -1702,6 +1702,8 @@ translate C CCHelpBtn {Nápovìda k ikonám a stavovým indikátorùm.\nPro obecnou ná
 translate C CCDlgServerName {Jméno serveru:}
 translate C CCDlgLoginName  {Pøihla¹ovací jméno:}
 translate C CCDlgPassword   {Heslo:}
+# ====== TODO To be translated ======
+translate C CCDlgShowPassword {Show password}
 translate C CCDlgURL        {URL Xfcc:}
 translate C CCDlgRatingType {Typ ratingu:}
 translate C CCDlgDuplicateGame {Nejednoznaèný identifikátor partie}

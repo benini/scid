@@ -223,6 +223,7 @@ namespace eval Xfcc {
 		set ::Xfcc::Password  $::Xfcc::xfccsrv($::Xfcc::Oldnum,3)
 		set ::Xfcc::Rating    $::Xfcc::xfccsrv($::Xfcc::Oldnum,4)
 		set ::Xfcc::URI       $::Xfcc::xfccsrv($::Xfcc::Oldnum,1)
+		set ::Xfcc::showPass  0
 
 		# create the window and buttons
 		toplevel $w
@@ -244,12 +245,19 @@ namespace eval Xfcc {
 		ttk::label  $w.lxfccSrv   -text [::tr CCDlgServerName]
 		ttk::label  $w.lxfccUid   -text [::tr CCDlgLoginName]
 		ttk::label  $w.lxfccPas   -text [::tr CCDlgPassword]
+		ttk::checkbutton $w.showPass -text [::tr CCDlgShowPassword] -variable ::Xfcc::showPass -command {
+			if {$::Xfcc::showPass} {
+				.configXfccSrv.xfccPas configure -show {}
+			} else {
+				.configXfccSrv.xfccPas configure -show *
+			}
+		}
 		ttk::label  $w.lxfccURI   -text [::tr CCDlgURL]
 		ttk::label  $w.lxfccrtype -text [::tr CCDlgRatingType]
 
 		ttk::entry  .configXfccSrv.xfccSrv  -width 60 -textvariable ::Xfcc::Server
 		ttk::entry  .configXfccSrv.xfccUid  -width 60 -textvariable ::Xfcc::Username
-		ttk::entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password
+		ttk::entry  .configXfccSrv.xfccPas  -width 60 -textvariable ::Xfcc::Password -show *
 		ttk::entry  .configXfccSrv.xfccURI  -width 60 -textvariable ::Xfcc::URI
 
 		if {$::tcl_version >= 8.5} {
@@ -270,14 +278,15 @@ namespace eval Xfcc {
 		grid $w.lxfccSrv     -sticky e -columnspan 2 -column  0 -row [expr {$number + 1}]
 		grid $w.lxfccUid     -sticky e -columnspan 2 -column  0 -row [expr {$number + 2}]
 		grid $w.lxfccPas     -sticky e -columnspan 2 -column  0 -row [expr {$number + 3}]
-		grid $w.lxfccURI     -sticky e -columnspan 2 -column  0 -row [expr {$number + 4}]
-		grid $w.lxfccrtype   -sticky e -columnspan 2 -column  0 -row [expr {$number + 5}]
+		grid $w.showPass     -sticky e -columnspan 2 -column  0 -row [expr {$number + 4}]
+		grid $w.lxfccURI     -sticky e -columnspan 2 -column  0 -row [expr {$number + 5}]
+		grid $w.lxfccrtype   -sticky e -columnspan 2 -column  0 -row [expr {$number + 6}]
 
 		grid $w.xfccSrv      -sticky w -columnspan 4 -column  2 -row [expr {$number + 1}]
 		grid $w.xfccUid      -sticky w -columnspan 4 -column  2 -row [expr {$number + 2}]
 		grid $w.xfccPas      -sticky w -columnspan 4 -column  2 -row [expr {$number + 3}]
-		grid $w.xfccURI      -sticky w -columnspan 4 -column  2 -row [expr {$number + 4}]
-		grid $w.xfccrtype    -sticky w -columnspan 4 -column  2 -row [expr {$number + 5}]
+		grid $w.xfccURI      -sticky w -columnspan 4 -column  2 -row [expr {$number + 5}]
+		grid $w.xfccrtype    -sticky w -columnspan 4 -column  2 -row [expr {$number + 6}]
 
 		# Add the buttons to the window
 		grid $w.bOk     -column 2 -row [expr {$number + 6}]

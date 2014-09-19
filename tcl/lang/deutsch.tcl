@@ -1718,6 +1718,8 @@ translate D CCHelpBtn {Hilfe zu den Icons und Statusindikatoren\nFür allgemeine 
 translate D CCDlgServerName {Server Name:}
 translate D CCDlgLoginName  {Login Name:}
 translate D CCDlgPassword   {Paßwort:}
+# ====== TODO To be translated ======
+translate D CCDlgShowPassword {Show password}
 translate D CCDlgURL        {Xfcc-URL:}
 translate D CCDlgRatingType {Wertungszahl:}
 translate D CCDlgDuplicateGame {Nichteindeutige Partie}

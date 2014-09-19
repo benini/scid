@@ -1,4 +1,5 @@
 
+
 # Text for menu names and status bar help messages in English.
 # Part of Scid (Shane's Chess Information Database).
 #
@@ -1718,6 +1719,7 @@ translate E CCHelpBtn {Help on icons and status indicators.\nFor general Help pr
 translate E CCDlgServerName {Server Name:}
 translate E CCDlgLoginName  {Login Name:}
 translate E CCDlgPassword   {Password:}
+translate E CCDlgShowPassword {Show password}
 translate E CCDlgURL        {Xfcc-URL:}
 translate E CCDlgRatingType {Rating Type:}
 

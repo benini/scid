@@ -1847,6 +1847,8 @@ translate N CCHelpBtn {Hulp over iconen en status indicatoren.\nVoor algemen hul
 translate N CCDlgServerName {Server Naam:}
 translate N CCDlgLoginName  {Login Naam:}
 translate N CCDlgPassword   {Paswoord:}
+# ====== TODO To be translated ======
+translate N CCDlgShowPassword {Show password}
 translate N CCDlgURL        {Xfcc-URL:}
 translate N CCDlgRatingType {Klassering Type:}
 translate N CCDlgDuplicateGame {Niet-unieke partij ID}

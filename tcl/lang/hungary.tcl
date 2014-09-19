@@ -1743,6 +1743,8 @@ translate H CCHelpBtn {Segítség ikonokhoz és állapotjelzõkhöz\nÁltalános segítsé
 translate H CCDlgServerName {Szervernév:}
 translate H CCDlgLoginName  {Bejelentkezõ név:}
 translate H CCDlgPassword   {Jelszó:}
+# ====== TODO To be translated ======
+translate H CCDlgShowPassword {Show password}
 translate H CCDlgURL        {Xfcc-URL:}
 translate H CCDlgRatingType {Értékszám típusa:}
 translate H CCDlgDuplicateGame {Nem egyedi játszmaazonosító}
