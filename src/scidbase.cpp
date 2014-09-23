@@ -30,7 +30,6 @@ void scidBaseT::Init() {
 	gameNumber = -1;
 	gameAltered = false;
 	inUse = false;
-	memoryOnly = false;
 	tree.moveCount = tree.totalCount = 0;
 	treeCache = NULL;
 	backupCache = NULL;
@@ -117,7 +116,6 @@ errorT scidBaseT::Open (fileModeT mode,
 
 	inUse = true;
 	fileMode = mode;
-	memoryOnly = (fileMode == FMODE_Memory);
 	errorT err = OK;
 
 	if (fileMode == FMODE_Memory) {

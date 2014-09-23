@@ -901,9 +901,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     switch (index) {
     case BASE_COMPACT:
-        if (dbase->memoryOnly) {
-            return TclResult(ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
-        }
         if (argc == 3) {
             startProgressBar();
             return TclResult(ti, dbase->compact(spellChecker[NAME_PLAYER], reportProgress, ti));
@@ -1940,7 +1937,7 @@ sc_base_type (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     uint basetype = strGetUnsigned (argv[3]);
     basePtr->idx->SetType (basetype);
-    if ((! basePtr->isReadOnly()) && (! basePtr->memoryOnly)) {
+    if (! basePtr->isReadOnly()) {
         // Update the index header on disk:
         basePtr->idx->WriteHeader();
     }
@@ -11257,10 +11254,6 @@ sc_tree_write (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (!base->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (base->memoryOnly) {
-        // Memory-only file, so ignore.
-        return TCL_OK;
     }
 
     if (base->treeCache->WriteFile (base->fileName) != OK) {
