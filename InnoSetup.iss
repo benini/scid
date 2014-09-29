@@ -59,6 +59,8 @@ Source: "scidsnd.exe"; DestDir: "{app}\bin"
 Source: "{# TCLDIR}\lib\tcl8\*"; DestDir: "{app}\lib\tcl8"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tcl8.6\*"; DestDir: "{app}\lib\tcl8.6"; Flags: recursesubdirs
 Source: "{# TCLDIR}\lib\tk8.6\*"; DestDir: "{app}\lib\tk8.6"; Flags: recursesubdirs
+Source: "{# TCLDIR}\lib\teapot\package\win32-ix86\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs skipifsourcedoesntexist
+Source: "{# TCLDIR}\lib\teapot\package\win32-x86_64\lib\*"; DestDir: "{app}\lib"; Flags: recursesubdirs skipifsourcedoesntexist
 Source: "{# TCLDIR}\bin\tcl86.dll"; DestDir: "{app}\bin"
 Source: "{# TCLDIR}\bin\tk86.dll"; DestDir: "{app}\bin"; AfterInstall: CreateRecentDat
 Source: "{# TCLDIR}\bin\zlib1.dll"; DestDir: "{app}\bin"; AfterInstall: CreateEngineDat
