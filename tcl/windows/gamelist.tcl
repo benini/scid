@@ -230,7 +230,8 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 #
 proc ::windows::gamelist::Awesome {{w} {txt}} {
 	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
-	if {$::gamelistFilter($w) == "dbfilter" && [sc_filter isWhole $::gamelistBase($w) $::gamelistFilter($w)]} {
+	if {[sc_filter isWhole $::gamelistBase($w) $::gamelistFilter($w)]} {
+		catch {sc_filter release $base $::gamelistFilter($w)}
 		set ::gamelistFilter($w) "[sc_base newFilter $::gamelistBase($w)]"
 		if { $::gamelistPosMask($w) != 0 } { ::windows::gamelist::PosChanged $w }
 	}
