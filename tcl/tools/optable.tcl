@@ -132,7 +132,7 @@ proc ::optable::makeReportWin {args} {
   }
 
   sc_search board RESET Exact false 0
-  set newTreeData [sc_tree search -time 0 -epd 0]
+  set newTreeData [sc_tree search -time 0]
   if {$showProgress} {
     if {$::optable::_interrupt} {
       unbusyCursor .
@@ -534,7 +534,7 @@ proc ::optable::saveReport {fmt} {
 }
 
 proc ::optable::create {} {
-  set ::optable::_data(tree) [sc_tree search -time 0 -epd 0]
+  set ::optable::_data(tree) [sc_tree search -time 0]
   ::optable::latexifyTree
   set ::optable::_data(bdLaTeX) [sc_pos tex]
   set ::optable::_data(bdHTML) [sc_pos html]

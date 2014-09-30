@@ -909,7 +909,7 @@ $m add command -label OptionsSave -command {
       puts $optionF "set fontOptions($i) [list $fontOptions($i)]"
     }
     puts $optionF ""
-    foreach type {base book html tex epd stm pgn report tablebase1 tablebase2 tablebase3 tablebase4} {
+    foreach type {base book html tex stm pgn report tablebase1 tablebase2 tablebase3 tablebase4} {
       puts $optionF "set initialDir($type) [list $initialDir($type)]"
     }
     puts $optionF ""

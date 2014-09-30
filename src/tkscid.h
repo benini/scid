@@ -119,14 +119,6 @@ int sc_base_tournaments (TCL_ARGS);
 int sc_base_type      (TCL_ARGS);
 int sc_base_upgrade   (TCL_ARGS);
 
-int sc_epd            (TCL_ARGS);
-int sc_epd_deepest    (Tcl_Interp * ti, int epdID);
-int sc_epd_moves      (Tcl_Interp * ti, int epdID);
-int sc_epd_next       (Tcl_Interp * ti, int epdID, bool forwards);
-int sc_epd_open       (Tcl_Interp * ti, int argc, const char ** argv, bool create);
-int sc_epd_set        (Tcl_Interp * ti, int epdID, const char * text);
-int sc_epd_write      (Tcl_Interp * ti, int epdID);
-
 int sc_clipbase       (TCL_ARGS);
 int sc_clipbase_paste (TCL_ARGS);
 

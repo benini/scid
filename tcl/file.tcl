@@ -145,7 +145,7 @@ proc ::file::Open_ {{fName ""} } {
   if {$fName == ""} {
     if {[sc_info gzip]} {
       set ftype {
-        { "All Scid files" {".si4" ".si3" ".pgn" ".pgn.gz" ".epd" ".epd.gz" ".sor"} }
+        { "All Scid files" {".si4" ".si3" ".pgn" ".pgn.gz" ".epd" ".epd.gz"} }
         { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN" ".pgn.gz"} }
         { "Scid databases" {".si4" ".si3"} }
         { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
@@ -153,7 +153,7 @@ proc ::file::Open_ {{fName ""} } {
       }
     } else {
       set ftype {
-        { "All Scid files" {".si4" ".si3" ".pgn" ".epd" ".sor"} }
+        { "All Scid files" {".si4" ".si3" ".pgn" ".epd"} }
         { "Scid databases, PGN files" {".si4" ".si3" ".pgn" ".PGN"} }
         { "Scid databases" {".si4" ".si3"} }
         { "PGN files" {".pgn" ".PGN"} }
@@ -186,11 +186,8 @@ proc ::file::Open_ {{fName ""} } {
     }
   } elseif {[file extension $fName] == ".si3"} {
     ::file::Upgrade [file rootname $fName]
-  } elseif {[string match "*.epd*" [string tolower $fName]]} {
-    # EPD file:
-    newEpdWin open $fName
   } else {
-    # PGN file:
+    # PGN or EPD file:
     if {(![file readable $fName])  || \
           [catch {sc_base create $fName true} result]} {
       ERROR::MessageBox "$fName\n"

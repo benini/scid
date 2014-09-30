@@ -66,11 +66,6 @@ static uint clipbaseMaxGames = CLIPBASE_MAX_GAMES;
 const int MAX_BASES = 9;
 const int CLIPBASE_NUM = MAX_BASES - 1;
 
-// MAX_EPD is the maximum number of EPD files that can be open.
-const int MAX_EPD = 4;
-static PBook * pbooks [MAX_EPD];
-
-
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -413,7 +408,6 @@ scid_InitTclTk (Tcl_Interp * ti)
     CREATE_CMD (ti, "strPrefixLen", str_prefix_len);
     CREATE_CMD (ti, "sc_base", sc_base);
     CREATE_CMD (ti, "sc_book", sc_book);
-    CREATE_CMD (ti, "sc_epd", sc_epd);
     CREATE_CMD (ti, "sc_clipbase", sc_clipbase);
     CREATE_CMD (ti, "sc_eco", sc_eco);
     CREATE_CMD (ti, "sc_filter", sc_filter);
@@ -427,9 +421,6 @@ scid_InitTclTk (Tcl_Interp * ti)
     CREATE_CMD (ti, "sc_search", sc_search);
     CREATE_CMD (ti, "sc_tree", sc_tree);
     CREATE_CMD (ti, "sc_var", sc_var);
-
-    // Initialise array of EPD slots:
-    for (int epdID=0; epdID < MAX_EPD; epdID++) { pbooks[epdID] = NULL; }
 
     // Initialise global Scid database variables:
     dbList = new scidBaseT [MAX_BASES];
@@ -2969,312 +2960,6 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     return TCL_OK;
 }
-
-//////////////////////////////////////////////////////////////////////
-/// EPD functions
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_epd:
-//    Scid EPD (position) file functions.
-int
-sc_epd (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    static const char * options [] = {
-        "altered",  "available",  "close",  "create",
-        "deepest",  "get",  "load",  "moves",
-        "name",     "next",       "open",   "prev",
-        "readonly", "set",        "size",   "strip",
-        "write",
-        NULL
-    };
-    enum {
-        EPD_ALTERED,  EPD_AVAILABLE,  EPD_CLOSE,  EPD_CREATE,
-        EPD_DEEPEST,  EPD_GET,        EPD_LOAD,   EPD_MOVES,
-        EPD_NAME,     EPD_NEXT,       EPD_OPEN,   EPD_PREV,
-        EPD_READONLY, EPD_SET,        EPD_SIZE,   EPD_STRIP,
-        EPD_WRITE
-    };
-    int index = -1;
-
-    if (argc > 1) { index = strUniqueMatch (argv[1], options); }
-
-    if (index < 0) {
-        return InvalidCommand (ti, "sc_epd", options);
-    }
-
-    // Check for epd subcommands that do not require an epdID parameter:
-    // these are "available", "open" and "create".
-    if (index == EPD_AVAILABLE) {
-        uint avail = 0;
-        for (int i=0; i < MAX_EPD; i++) {
-            if (pbooks[i] == NULL) { avail++; }
-        }
-        return setUintResult (ti, avail);
-    }
-    if (index == EPD_OPEN) {
-        return sc_epd_open (ti, argc, argv, false);
-    }
-    if (index == EPD_CREATE) {
-        return sc_epd_open (ti, argc, argv, true);
-    }
-
-    // Parse the epdID parameter:
-    int epdID = -1;
-    if (argc >= 3) { epdID = strGetInteger (argv[2]) - 1; }
-    if (epdID < 0  ||  epdID >= MAX_EPD  ||  pbooks[epdID] == NULL) {
-        Tcl_AppendResult (ti, "Error: sc_epd ", options[index],
-                          ": invalid EPD ID number", NULL);
-        return TCL_ERROR;
-    }
-
-    switch (index) {
-    case EPD_ALTERED:
-        return setBoolResult (ti, pbooks[epdID]->IsAltered());
-
-    case EPD_CLOSE:  // Closes EPD file without saving:
-        delete pbooks[epdID];
-        pbooks[epdID] = NULL;
-        break;
-
-    case EPD_DEEPEST:
-        return sc_epd_deepest (ti, epdID);
-
-    case EPD_GET:   // Retrieves the text for the current position:
-        {
-            const char * text;
-            if (pbooks[epdID]->Find (db->game->GetCurrentPos(), &text) == OK) {
-                Tcl_AppendResult (ti, (char *) text, NULL);
-            }
-        }
-        break;
-    case EPD_LOAD:   // Load the EPD position number N: (added by Pascal Georges)
-        {
-        	if (argc != 5) {
-            return errorResult (ti, "Usage: sc_epd load <epdID> <from> <to>");
-        	}
-        	int from = strGetInteger (argv[3]);
-        	int to = strGetInteger (argv[4]);
-        	int forwards = 1;
-        	if (to < from) {
-        		forwards = 0;
-        		int tmp = to;
-        		to = from;
-        		from = tmp; 
-        	}
-        	if ( to < 1 || to > (int) pbooks[epdID]->Size() ||
-        			 from < 1 || from > (int) pbooks[epdID]->Size() )
-        		return errorResult (ti, "Bad EPD number");
-        	ASSERT (pbooks[epdID] != NULL);
-    			PBook * pb = pbooks[epdID];
-    			for (int i=from; i<to; i++) {
-    				scratchPos->CopyFrom (db->game->GetCurrentPos());
-    				if (pb->FindNext (scratchPos, forwards) == OK) {
-        			db->game->Clear();
-        			db->gameNumber = -1;
-        			db->game->SetStartPos (scratchPos);
-        			db->gameAltered = true;
-    				}
-    			}
-    			return TCL_OK;
-        }
-        break;
-    case EPD_MOVES:
-        return sc_epd_moves (ti, epdID);
-
-    case EPD_NAME:
-        Tcl_AppendResult (ti, pbooks[epdID]->GetFileName(), NULL);
-        break;
-
-    case EPD_NEXT:
-        return sc_epd_next (ti, epdID, true);
-
-    case EPD_PREV:
-        return sc_epd_next (ti, epdID, false);
-
-    case EPD_READONLY:
-        return setBoolResult (ti, pbooks[epdID]->IsReadOnly());
-
-    case EPD_SET:   // Sets the text for the current position:
-        if (argc != 4) {
-            return errorResult (ti, "Usage: sc_epd set <epdID> <text>");
-        }
-        return sc_epd_set (ti, epdID, argv[3]);
-
-    case EPD_SIZE:
-        return setUintResult (ti, pbooks[epdID]->Size());
-
-    case EPD_STRIP:
-        if (argc != 4) {
-            return errorResult (ti, "Usage: sc_epd strip <epdID> <epdcode>");
-        }
-        return setUintResult (ti, pbooks[epdID]->StripOpcode (argv[3]));
-
-    case EPD_WRITE:
-        return sc_epd_write (ti, epdID);
-
-    default:
-        ASSERT(0);  // Unreachable!
-    }
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_epd_deepest:
-//    Returns the deepest ply in the current game (main moves only,
-//    not variations) that matches a position in this EPD file.
-int
-sc_epd_deepest (Tcl_Interp * ti, int epdID)
-{
-    ASSERT (pbooks[epdID] != NULL);
-    PBook * pb = pbooks[epdID];
-    uint ply = 0;
-    const char * text;
-
-    db->game->SaveState();
-    db->game->MoveToPly (0);
-    do {
-        if (pb->Find (db->game->GetCurrentPos(), &text) == OK) {
-            ply = db->game->GetCurrentPly();
-        }
-    } while (db->game->MoveForward() == OK);
-    db->game->RestoreState ();
-    return setUintResult (ti, ply);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_epd_moves:
-//    Returns the list of all legal moves (in standard algebraic
-//    notation) from the current position that have text in this EPD file.
-int
-sc_epd_moves (Tcl_Interp * ti, int epdID)
-{
-    ASSERT (pbooks[epdID] != NULL);
-    PBook * pb = pbooks[epdID];
-    const char * text;
-    Position * gamePos = db->game->GetCurrentPos();
-
-    scratchPos->CopyFrom (gamePos);
-    MoveList moveList;
-    gamePos->GenerateMoves (&moveList);
-    sanListT sanList;
-    gamePos->CalcSANStrings(&sanList, SAN_CHECKTEST);
-
-    for (uint i=0; i < moveList.Size(); i++) {
-        simpleMoveT * smPtr = moveList.Get(i);
-        scratchPos->DoSimpleMove (smPtr);
-        if (pb->Find (scratchPos, &text) == OK) {
-            Tcl_AppendElement (ti, sanList.list[i]);
-        }
-        scratchPos->UndoSimpleMove (smPtr);
-    }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_epd_next:
-//    Clears the current game and sets its start position to
-//    be that of the next position found in the EPD list (in the order
-//    they are stored in the file).
-int
-sc_epd_next (Tcl_Interp * ti, int epdID, bool forwards)
-{
-    ASSERT (pbooks[epdID] != NULL);
-    PBook * pb = pbooks[epdID];
-    scratchPos->CopyFrom (db->game->GetCurrentPos());
-    if (pb->FindNext (scratchPos, forwards) == OK) {
-        db->game->Clear();
-        db->gameNumber = -1;
-        db->game->SetStartPos (scratchPos);
-        db->gameAltered = true;
-    }
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_epd_open:
-//    Open an EPD file for editing.
-//    If the last parameter (create) is true, the file is created.
-int
-sc_epd_open (Tcl_Interp * ti, int argc, const char ** argv, bool create)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_epd create|open <filename>");
-    }
-
-    const char * filename = argv[2];
-
-    // Check that this EPD file is not already open:
-    if ((strlen(filename) + strlen(PBOOK_SUFFIX)) >= sizeof(fileNameT)) {
-        return errorResult (ti, "Error: file name too long.");
-    }
-    fileNameT fullname;
-    strCopy (fullname, filename);
-    strAppend (fullname, PBOOK_SUFFIX);
-    int epdID;
-    for (epdID = 0; epdID < MAX_EPD; epdID++) {
-        if (pbooks[epdID] != NULL  &&
-                strEqual (fullname, pbooks[epdID]->GetFileName())) {
-            return errorResult (ti, "The EPD file you selected is already open.");
-        }
-    }
-
-    // Find a free EPD file slot:
-    int freeID = -1;
-    for (epdID = 0; epdID < MAX_EPD; epdID++) {
-        if (pbooks[epdID] == NULL) { freeID = epdID; break; }
-    }
-    if (freeID == -1) {
-        return errorResult (ti, "Too many EPD files are open; close one first.");
-    }
-
-    PBook * pb = new PBook;
-    pbooks[freeID] = pb;
-    pb->SetFileName (filename);
-
-    errorT err = create ? pb->WriteFile() : pb->ReadFile();
-    if (err != OK) {
-        delete pb;
-        pbooks[freeID] = NULL;
-        Tcl_AppendResult (ti, "Unable to ", (create ? "create" : "open"),
-                          " EPD file: ", filename, PBOOK_SUFFIX, NULL);
-        return TCL_ERROR;
-    }
-    return setIntResult (ti, freeID + 1);
-}
-
-int
-sc_epd_set (Tcl_Interp * ti, int epdID, const char * text)
-{
-    PBook * pb = pbooks[epdID];
-    Position * pos = db->game->GetCurrentPos();
-    ASSERT (pb != NULL);
-    const char * oldText;
-    errorT result = pb->Find (pos, &oldText);
-
-    // If empty string, delete this position if necessary:
-    if (text[0] == 0) {
-        if (result == OK) { pb->Delete (pos); }
-        return TCL_OK;
-    }
-    // Only set the text if it differs from the existing text:
-    if (result != OK  ||  !strEqual (oldText, text)) {
-        pb->Insert (pos, text);
-    }
-    return TCL_OK;
-}
-
-int
-sc_epd_write (Tcl_Interp * ti, int epdID)
-{
-    ASSERT (pbooks[epdID] != NULL);
-    PBook * pb = pbooks[epdID];
-    if (pb->WriteFile() != OK) {
-        return errorResult (ti, "Error writing EPD file.");
-    }
-    return TCL_OK;
-}
-
 
 //////////////////////////////////////////////////////////////////////
 /// CLIPBASE functions
@@ -7563,12 +7248,12 @@ int
 sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "clipbase", "elo",       "epd",    "events",
+        "clipbase", "elo",       "events",
         "games",    "nags",      "players", "rounds",
         "sites",    "year",    NULL
     };
     enum {
-        LIM_CLIPBASE, LIM_ELO,       LIM_EPD,     LIM_EVENTS,
+        LIM_CLIPBASE, LIM_ELO,       LIM_EVENTS,
         LIM_GAMES,    LIM_NAGS,      LIM_PLAYERS, LIM_ROUNDS,
         LIM_SITES,    LIM_YEAR
     };
@@ -7584,10 +7269,6 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case LIM_ELO:
         result = MAX_ELO;
-        break;
-
-    case LIM_EPD:
-        result = MAX_EPD;
         break;
 
     case LIM_EVENTS:
@@ -11320,7 +11001,7 @@ int
 sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * usageStr =
-      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score] [-time <0|1>] [-epd <0|1>] [list <0|1>]";
+      "Usage: sc_tree search [-hideMoves <0|1>] [-sort alpha|eco|frequency|score] [-time <0|1>]";
 
     // Sort options: these should match the moveSortE enumerated type.
     static const char * sortOptions[] = {
@@ -11330,8 +11011,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     char tempTrans[10];
     bool hideMoves = false;
     bool showTimeStats = true;
-    bool showEpdData = true;
-    bool listMode = false;
+    const bool listMode = false;
     bool inFilterOnly = false;
     int sortMethod = SORT_FREQUENCY; // default move order: frequency
 
@@ -11356,10 +11036,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             }
         } else if (strIsPrefix (argv[arg], "-time")) {
             showTimeStats = strGetBoolean (argv[arg+1]);
-        } else if (strIsPrefix (argv[arg], "-epd")) {
-            showEpdData = strGetBoolean (argv[arg+1]);
-        } else if (strIsPrefix (argv[arg], "-list")) {
-            listMode = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-filtered")) {
             inFilterOnly = strGetBoolean (argv[arg+1]);
         } else if (strIsPrefix (argv[arg], "-cancel")) {
@@ -11623,20 +11299,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             "    Move   ECO       Frequency    Score  AvElo Perf AvYear %Draws";
         titleRow = translate (ti, "TreeTitleRow", titleRow);
         output->Append (titleRow);
-        if (showEpdData) {
-            for (int epdID = 0; epdID < MAX_EPD; epdID++) {
-                if (pbooks[epdID] != NULL) {
-                    const char * name = pbooks[epdID]->GetFileName();
-                    const char * lastSlash = strrchr (name, '/');
-                    if (lastSlash != NULL) { name = lastSlash + 1; }
-                    strCopy (temp, name);
-                    strTrimFileSuffix (temp);
-                    strPad (temp, temp, 5, ' ');
-                    output->Append ("  ");
-                    output->Append (temp);
-                }
-            }
-        }
     }
 
     // Now we print the list into the return string:
@@ -11714,26 +11376,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         uint pctDraws = node->freq[RESULT_Draw] * 1000 / node->total;
         sprintf (temp, "  %3d%%", (pctDraws + 5) / 10);
         output->Append (temp);
-
-        if (showEpdData && !listMode) {
-            for (int epdID = 0; epdID < MAX_EPD; epdID++) {
-                PBook * pb = pbooks[epdID];
-                if (pb != NULL) {
-                    scratchPos->CopyFrom (base->game->GetCurrentPos());
-                    if (node->sm.from != NULL_SQUARE) {
-                        scratchPos->DoSimpleMove (&(node->sm));
-                    }
-                    const char * s = "";
-                    dstr.Clear();
-                    if (pb->FindSummary (scratchPos, &dstr) == OK) {
-                        s = dstr.Data();
-                    }
-                    strPad (temp, s, 5, ' ');
-                    output->Append ("   ");
-                    output->Append (temp);
-                }
-            }
-        }
 
         if (listMode) {
             Tcl_AppendElement (ti, (char *) output->Data());

@@ -387,7 +387,6 @@ namespace eval ::notify {
     updateAnalysis 1
     updateAnalysis 2
     ::windows::gamelist::PosChanged
-    updateEpdWins
     ::commenteditor::Refresh
     ::tb::results
     if {[winfo exists .twinchecker]} { updateTwinChecker }

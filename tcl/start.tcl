@@ -577,7 +577,6 @@ set ::uci::uciInfo(binc3) [expr 10 * 1000 ]
 set initialDir(base) "."
 set initialDir(pgn) "."
 set initialDir(book) "."
-set initialDir(epd) "."
 set initialDir(html) "."
 set initialDir(tex)  "."
 set initialDir(stm)  "."
@@ -1137,7 +1136,6 @@ file.tcl
 file/finder.tcl
 file/bookmark.tcl
 file/recent.tcl
-file/epd.tcl
 file/spellchk.tcl
 file/maint.tcl
 edit.tcl
