@@ -138,8 +138,6 @@ menuText B WindowsSwitcher "Intercambio de bases de dados" 0 \
 menuText B WindowsMaint "Manutencao" 0 \
   {Abre/fecha a janela de manutencao}
 menuText B WindowsECO "Listagem ECO" 0 {Abre/fecha a janela de listagem de codigo ECO}
-menuText B WindowsRepertoire "Editor de Repertorio" 0 \
-  {Abre/fecha a janela do editor de repertorio}
 menuText B WindowsStats "Estatisticas" 0 \
   {Abre/fecha a janela de estatisticas}
 menuText B WindowsTree "Arvore" 0 {Abre/fecha a janela da Arvore de pesquisa}
@@ -781,34 +779,6 @@ menuText B OprepFavoritesGenerate "Gerar Relatórios..." 0 ;# ***
 menuText B OprepHelp "Ajuda" 0
 menuText B OprepHelpReport "Ajuda para Relatorio de abertura" 0
 menuText B OprepHelpIndex "Indice da Ajuda" 0
-
-# Repertoire editor:
-menuText B RepFile "Arquivo" 0
-menuText B RepFileNew "Novo" 0
-menuText B RepFileOpen "Abrir..." 0
-menuText B RepFileSave "Salvar..." 0
-menuText B RepFileSaveAs "Salvar como..." 5
-menuText B RepFileClose "Fechar janela" 0
-menuText B RepEdit "Editar" 0
-menuText B RepEditGroup "Adicionar grupo" 4
-menuText B RepEditInclude "Adicionar linha incluida" 4
-menuText B RepEditExclude "Adicionar linha excluida" 4
-menuText B RepView "Visao" 0
-menuText B RepViewExpand "Expandir todos os grupos" 0
-menuText B RepViewCollapse "Contrair todos os grupos" 0
-menuText B RepSearch "Pesquisa" 0
-menuText B RepSearchAll "Tudo do repertorio..." 0
-menuText B RepSearchDisplayed "Apenas linhas exibidas..." 0
-menuText B RepHelp "Ajuda" 0
-menuText B RepHelpRep "Ajuda de Repertorio" 0
-menuText B RepHelpIndex "Indice da Ajuda" 0
-translate B RepSearch "Pesquisa no repertorio"
-translate B RepIncludedLines "linhas incluidas"
-translate B RepExcludedLines "linhas excluidas"
-translate B RepCloseDialog {Este repertorio sofreu alteracoes.
-
-Voce realmente quer continuar e descartar as alteracoes que foram feitas?
-}
 
 # Header search:
 translate B HeaderSearch {Busca por cabecalho}

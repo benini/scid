@@ -171,8 +171,6 @@ menuText U WindowsSwitcher "Tietokannan vaihto" 0 \
 menuText U WindowsMaint "Yll‰pito" 0 \
   {Avaa/sulje yll‰pitoikkuna}
 menuText U WindowsECO "ECO-selain" 1 {Avaa/sulje ECO-avauskirjaston selain}
-menuText U WindowsRepertoire "Repertuaari" 0 \
-  {Avaa/sulje oman avausrepertuaarisi muokkain}
 menuText U WindowsStats "Tilastot" 6 \
   {Avaa/sulje tilastoikkuna}
 menuText U WindowsTree "Puun‰kym‰" 3 {Avaa/sulje puun‰kym‰}
@@ -807,34 +805,6 @@ menuText U OprepFavoritesGenerate "Luo raportteja..." 4
 menuText U OprepHelp "Ohje" 2
 menuText U OprepHelpReport "Avausraportin ohje" 0
 menuText U OprepHelpIndex "Aakkosellinen ohje" 0
-
-# Repertoire editor:
-menuText U RepFile "Tiedosto" 0
-menuText U RepFileNew "Uusi" 0
-menuText U RepFileOpen "Avaa..." 0
-menuText U RepFileSave "Tallenna..." 2
-menuText U RepFileSaveAs "Tallenna nimell‰..." 4
-menuText U RepFileClose "Sulje ikkuna" 0
-menuText U RepEdit "Muokkaa" 0
-menuText U RepEditGroup "Lis‰‰ ryhm‰" 3
-menuText U RepEditInclude "Lis‰‰ mukaan otettava linja" 0
-menuText U RepEditExclude "Lis‰‰ poistettava linja" 0
-menuText U RepView "N‰yt‰" 0
-menuText U RepViewExpand "Laajenna kaikki ryhm‰t" 0
-menuText U RepViewCollapse "Pienenn‰ kaikki ryhm‰t" 0
-menuText U RepSearch "Haku" 0
-menuText U RepSearchAll "Kaikkialta..." 0
-menuText U RepSearchDisplayed "Vain n‰ytetyist‰ riveist‰..." 0
-menuText U RepHelp "Ohje" 3
-menuText U RepHelpRep "Repertuaarin ohje" 0
-menuText U RepHelpIndex "aakkosellinen ohje" 0
-translate U RepSearch "Repertuaarihaku"
-translate U RepIncludedLines "mukaan otettavat linjat"
-translate U RepExcludedLines "poistettavat linjat"
-translate U RepCloseDialog {T‰ss‰ repertuaarissa on tallentamattomia muutoksia.
-
-Haluatko jatkaa ja hyl‰t‰ tekem‰si mutokset?
-}
 
 # Header search:
 translate U HeaderSearch {Haku otsikkotiedoista}

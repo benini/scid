@@ -237,13 +237,6 @@ set tips(E) {
     before opening it, use the <a Finder>file finder</a> to open it.
   }
   {
-    A <a Repertoire>repertoire</a> file is a great way to keep track of
-    your favourite opening lines, and also find games where those lines
-    were played. Once you have your openings stored in a repertoire file,
-    you can do a repertoire search every time you get a new file of
-    games and browse the games that feature your favourite openings.
-  }
-  {
     An <a OpReport>opening report</a> is great for learning more about
     a particular position. You can see how well it scores, whether it
     leads to frequent short draws, and common positional themes.

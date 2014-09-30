@@ -150,7 +150,6 @@ proc ::file::Open_ {{fName ""} } {
         { "Scid databases" {".si4" ".si3"} }
         { "PGN files" {".pgn" ".PGN" ".pgn.gz"} }
         { "EPD files" {".epd" ".EPD" ".epd.gz"} }
-        { "Repertoire files" {".sor"} }
       }
     } else {
       set ftype {
@@ -159,7 +158,6 @@ proc ::file::Open_ {{fName ""} } {
         { "Scid databases" {".si4" ".si3"} }
         { "PGN files" {".pgn" ".PGN"} }
         { "EPD files" {".epd" ".EPD"} }
-        { "Repertoire files" {".sor"} }
       }
     }
   
@@ -188,12 +186,6 @@ proc ::file::Open_ {{fName ""} } {
     }
   } elseif {[file extension $fName] == ".si3"} {
     ::file::Upgrade [file rootname $fName]
-  } elseif {[file extension $fName] == ".sor"} {
-    if {[catch {::rep::OpenWithFile $fName} err]} {
-      tk_messageBox -parent . -type ok -icon info -title "Scid" \
-          -message "Unable to open \"$fName\": $err"
-      set err 1
-    }
   } elseif {[string match "*.epd*" [string tolower $fName]]} {
     # EPD file:
     newEpdWin open $fName

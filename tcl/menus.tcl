@@ -485,9 +485,6 @@ incr menuindex
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
 set helpMessage($m,[incr menuindex]) WindowsECO
 
-$m add checkbutton -label WindowsRepertoire -variable ::rep::Win -accelerator "Ctrl+Shift+R" -command ::rep::OpenCloseWindow
-set helpMessage($m,[incr menuindex]) WindowsRepertoire
-
 $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accelerator "Ctrl+I" -command ::windows::stats::Open
 set helpMessage($m,[incr menuindex]) WindowsStats
 
@@ -1470,7 +1467,7 @@ proc setLanguageMenus {{lang ""}} {
   foreach tag {Material Current Header Using} {
     configMenuText .menu.search [tr Search$tag $oldLang] Search$tag $lang
   }
-  foreach tag {Comment GList PGN PList Tmt Switcher Maint ECO Repertoire Stats Tree TB Book CorrChess } {
+  foreach tag {Comment GList PGN PList Tmt Switcher Maint ECO Stats Tree TB Book CorrChess } {
     configMenuText .menu.windows [tr Windows$tag $oldLang] Windows$tag $lang
   }
   foreach tag {Analysis Analysis2 Cross Email FilterGraph AbsFilterGraph OpReport Tracker

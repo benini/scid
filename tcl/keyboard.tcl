@@ -101,7 +101,6 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-K> ::ptrack::make
 	bind $w <Control-O> ::optable::makeReportWin
 	bind $w <Control-P> ::plist::toggle
-	bind $w <Control-R> ::rep::OpenCloseWindow
 	bind $w <Control-T> ::tourney::toggle
 	bind $w <Control-X> crosstabWin
 

@@ -174,8 +174,6 @@ menuText E WindowsSwitcher "Database switcher" 0 \
 menuText E WindowsMaint "Maintenance Window" 0 \
   {Open/close the Maintenance window}
 menuText E WindowsECO "ECO Browser" 0 {Open/close the ECO Browser window}
-menuText E WindowsRepertoire "Repertoire Editor" 0 \
-  {Open/close the opening repertoire editor}
 menuText E WindowsStats "Statistics Window" 0 \
   {Open/close the filter statistics window}
 menuText E WindowsTree "Tree Window" 0 {Open/close the Tree window}
@@ -809,34 +807,6 @@ menuText E OprepFavoritesGenerate "Generate Reports..." 0
 menuText E OprepHelp "Help" 0
 menuText E OprepHelpReport "Opening Report Help" 0
 menuText E OprepHelpIndex "Help Index" 0
-
-# Repertoire editor:
-menuText E RepFile "File" 0
-menuText E RepFileNew "New" 0
-menuText E RepFileOpen "Open..." 0
-menuText E RepFileSave "Save..." 0
-menuText E RepFileSaveAs "Save As..." 5
-menuText E RepFileClose "Close Window" 0
-menuText E RepEdit "Edit" 0
-menuText E RepEditGroup "Add Group" 4
-menuText E RepEditInclude "Add Include Line" 4
-menuText E RepEditExclude "Add Exclude Line" 4
-menuText E RepView "View" 0
-menuText E RepViewExpand "Expand All Groups" 0
-menuText E RepViewCollapse "Collapse All Groups" 0
-menuText E RepSearch "Search" 0
-menuText E RepSearchAll "All of Repertoire..." 0
-menuText E RepSearchDisplayed "Displayed Lines Only..." 0
-menuText E RepHelp "Help" 0
-menuText E RepHelpRep "Repertoire Help" 0
-menuText E RepHelpIndex "Help Index" 0
-translate E RepSearch "Repertoire Search"
-translate E RepIncludedLines "included lines"
-translate E RepExcludedLines "excluded lines"
-translate E RepCloseDialog {This repertoire has unsaved changes.
-
-Do you really want to continue and discard the changes you have made?
-}
 
 # Header search:
 translate E HeaderSearch {Header Search}

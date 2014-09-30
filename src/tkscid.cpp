@@ -44,7 +44,6 @@ static Position * scratchPos = NULL;   // temporary "scratch" position.
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static PBook * ecoBook = NULL;         // eco classification pbook.
 static SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correction.
-static PBook * repertoire = NULL;
 
 static progressBarT progBar;
 
@@ -11888,9 +11887,9 @@ int
 sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "board", "header", "material", "repertoire", NULL
+        "board", "header", "material", NULL
     };
-    enum { OPT_BOARD, OPT_HEADER, OPT_MATERIAL, OPT_REPERTOIRE };
+    enum { OPT_BOARD, OPT_HEADER, OPT_MATERIAL };
 
     int index = -1;
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -11911,10 +11910,6 @@ sc_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case OPT_MATERIAL:
         ret = sc_search_material (cd, ti, argc, argv);
-        break;
-
-    case OPT_REPERTOIRE:
-        ret = sc_search_repertoire (cd, ti, argc, argv);
         break;
 
     default:
@@ -13588,183 +13583,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
     Tcl_AppendResult (ti, temp, NULL);
 #endif
 
-    return TCL_OK;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_search_repertoire:
-//    Searches according to an opening repertoire.
-int
-sc_search_repertoire (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    static const char * options [] = { "add", "clear", "go", NULL };
-    enum { REP_ADD, REP_CLEAR, REP_GO };
-
-    int index = -1;
-    if (argc > 2) { index = strUniqueMatch (argv[2], options); }
-
-    switch (index) {
-    case REP_ADD:
-        return sc_search_rep_add (cd, ti, argc, argv);
-
-    case REP_CLEAR:
-        if (repertoire != NULL) { delete repertoire; repertoire = NULL; }
-        break;
-
-    case REP_GO:
-        return sc_search_rep_go (cd, ti, argc, argv);
-
-    default:
-        return InvalidCommand (ti, "sc_search repertoire", options);
-    }
-
-    return TCL_OK;
-}
-
-int
-sc_search_rep_add (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage =
-        "Usage: sc_search repertoire add <include:boolean>";
-    if (argc != 4) { return errorResult (ti, usage); }
-    bool include = strGetBoolean (argv[3]);
-
-    if (repertoire == NULL) { repertoire = new PBook; }
-    const char * opcode = include ? "rep 1\n" : "rep 0\n";
-    repertoire->Insert (db->game->GetCurrentPos(), opcode);
-    return TCL_OK;
-}
-
-int
-sc_search_rep_go (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 4) {
-        return errorResult (ti, "Usage: sc_search repertoire go <filterOp>");
-    }
-    if (repertoire == NULL) {
-        return errorResult (ti, "The repertoire has no lines.");
-    }
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-
-    filterOpT filterOp = strGetFilterOp (argv[3]);
-
-    bool showProgress = startProgressBar();
-    Game * g = scratchGame;
-    const IndexEntry* ie;
-    uint updateStart, update;
-    updateStart = update = 1000;  // Update progress bar every 1000 games
-    errorT err = OK;
-    uint startFilterCount = startFilterSize (db, filterOp);
-    Filter* filter = db->getFilter("dbfilter");
-    Timer timer;
-
-    // If filter operation is to reset the filter, reset it:
-    if (filterOp == FILTEROP_RESET) {
-        filter->Fill(1);
-        filterOp = FILTEROP_AND;
-    }
-
-    // Read each game:
-    for (uint i=0, n = db->numGames(); i < n; i++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, i, n);
-                if (interruptedProgress()) break;
-            }
-        }
-        // First, apply the filter operation:
-        if (filterOp == FILTEROP_AND) {
-            if (filter->Get(i) == 0) {
-                continue;
-            }
-        } else /* filterOp == FILTEROP_OR*/ {
-            if (filter->Get(i) != 0) {
-                continue;
-            } else {
-                // OK, this game is NOT in the filter.
-                // Add it so filterCounts are kept up to date:
-                filter->Set (i, 1);
-            }
-        }
-
-        ie = db->getIndexEntry(i);
-        if (ie->GetLength() == 0) {
-            filter->Set (i, 0);
-            continue;
-        }
-
-        if (db->getGame(ie, db->bbuf) != OK) {
-            filter->Set (i, 0);
-            continue;
-        }
-        db->bbuf->BackToStart();
-        g->Clear();
-        if (g->DecodeStart (db->bbuf) != OK) {
-            filter->Set (i, 0);
-            continue;
-        }
-
-        // First, read in the game -- with a limit of 40 moves per
-        // side, since a match after move 40 is very unlikely and
-        // we can save time by setting a limit. Also, stop when the
-        // material left in on the board is less than that of the
-        // book position with the least material, since no further
-        // positions in the game could possibly match.
-
-        uint maxPly = 80;
-        uint leastMaterial = repertoire->FewestPieces();
-        uint material;
-
-        do {
-            err = g->DecodeNextMove (db->bbuf, NULL);
-            maxPly--;
-            material = g->GetCurrentPos()->TotalMaterial();
-        } while (err == OK  &&  maxPly > 0  &&  material >= leastMaterial);
-
-        // Now, move back through the game to the start searching for a
-        // match in the repertoire. Stop at the first match found since it
-        // is the deepest.
-
-        DString commentStr;
-        bool found = false;
-
-        do {
-            if (repertoire->FindOpcode (g->GetCurrentPos(), "rep",
-                                        &commentStr) == OK) {
-                found = true;
-                break;
-            }
-            err = g->MoveBackup();
-        } while (err == OK);
-
-        if (found) {
-            char c = *(commentStr.Data());
-            if (c != '1') { found = false; }
-        }
-
-        if (found) {
-            // Game matched, so update the filter value:
-            filter->Set (i, (byte)(g->GetCurrentPly() + 1));
-        } else {
-            // This game did NOT match:
-            filter->Set (i, 0);
-        }
-    }
-
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-
-    int centisecs = timer.CentiSecs();
-    char temp[200];
-    sprintf (temp, "%d match%s out of %d in %d%c%02ds",
-             filter->Count(), filter->Count() == 1 ? "" : "es",
-             startFilterCount,
-             centisecs / 100, decimalPointChar, centisecs % 100);
-    Tcl_AppendResult (ti, temp, NULL);
     return TCL_OK;
 }
 

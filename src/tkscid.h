@@ -238,7 +238,6 @@ int sc_search         (TCL_ARGS);
 int sc_search_board   (TCL_ARGS);
 int sc_search_material (TCL_ARGS);
 int sc_search_header  (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filter, int argc, const char ** argv);
-int sc_search_repertoire (TCL_ARGS);
 int sc_search_rep_add (TCL_ARGS);
 int sc_search_rep_go  (TCL_ARGS);
 

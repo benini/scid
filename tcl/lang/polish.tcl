@@ -144,8 +144,6 @@ menuText P WindowsMaint "Zarz±dzanie baz±" 0 \
   {Otwórz/zamknij okno zarz±dzania baz±}
 menuText P WindowsECO "Przegl±darka kodów debiutowych" 0 \
   {Otwórz/zamknij przegl±darkê kodów debiutowych}
-menuText P WindowsRepertoire "Repertuar debiutowy" 0 \
-  {Otwórz/zamknij okno repertuaru debiutowego}
 menuText P WindowsStats "Statystyka" 0 \
   {Otwórz/zamknij statystykê}
 menuText P WindowsTree "Drzewo wariantów" 0 {Otwórz/zamknij drzewo wariantów}
@@ -927,34 +925,6 @@ menuText P OprepFavoritesGenerate "Twórz raporty..." 0
 menuText P OprepHelp "Pomoc" 2
 menuText P OprepHelpReport "Pomoc raportu debiutowego" 0
 menuText P OprepHelpIndex "Spis tre¶ci" 0
-
-# Repertoire editor:
-menuText P RepFile "Plik" 0
-menuText P RepFileNew "Nowy" 0
-menuText P RepFileOpen "Otwórz..." 0
-menuText P RepFileSave "Zapisz" 0
-menuText P RepFileSaveAs "Zapisz jako..." 7
-menuText P RepFileClose "Zamknij" 3
-menuText P RepEdit "Edytuj" 0
-menuText P RepEditGroup "Dodaj grupê" 6
-menuText P RepEditInclude "W³±cz wariant" 0
-menuText P RepEditExclude "Wy³±cz wariant" 1
-menuText P RepView "Widok" 0
-menuText P RepViewExpand "Rozwiñ wszystkie grupy" 0
-menuText P RepViewCollapse "Zwiñ wszystkie grupy" 0
-menuText P RepSearch "Szukaj" 0
-menuText P RepSearchAll "Wszystkie warianty..." 0
-menuText P RepSearchDisplayed "Tylko widoczne warianty..." 0
-menuText P RepHelp "Pomoc" 2
-menuText P RepHelpRep "Repertuar debiutowy" 0
-menuText P RepHelpIndex "Spis tre¶ci" 0
-translate P RepSearch "Poszukiwanie wariantów"
-translate P RepIncludedLines "w³±czone warianty"
-translate P RepExcludedLines "wy³±czone warianty"
-translate P RepCloseDialog {Ten repertuar ma niezapisane zmiany.
-
-Na pewno zamkn±æ repertuar, rezygnuj±c z wszelkich zmian?
-}
 
 # Header search:
 translate P HeaderSearch {Wyszukiwanie wg nag³ówka}

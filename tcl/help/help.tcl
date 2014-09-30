@@ -35,7 +35,6 @@ set helpText(Contents) {<h1>Scid Help Contents</h1>
   <li><a PTracker><b>Piece Tracker</b></a></li>
   <li><a PList><b>Player Finder</b> window</a></li>
   <li><a PInfo><b>Player Info</b> window</a></li>
-  <li><a Repertoire><b>Repertoire editor</b> window</a></li>
   <li><a TacticalGame><b>Tactical game</b> window</a></li>
   <li><a Tmt><b>Tournament Finder</b> window</a></li>
   <li><a Tree><b>Tree</b> window</a></li>
@@ -205,7 +204,6 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>O</h3>
   <ul>
   <li><a ECO>Opening classification (ECO)</a></li>
-  <li><a Repertoire>Opening repertoires</a></li>
   <li><a Reports Opening>Opening report</a> window</li>
   <li><a OpeningTrainer>Training: Openings</a></li>
   <li><a Options>Options</a></li>
@@ -232,7 +230,6 @@ set helpText(Index) {<h1>Scid Help Topic Index</h1>
   <h3>R</h3>
   <ul>
   <li><a Graphs Rating>Rating graph</a></li>
-  <li><a Repertoire>Repertoire editor</a></li>
   </ul>
   
   <h3>S</h3>
@@ -754,10 +751,6 @@ set helpText(Menus) {<h1>Scid menus</h1>
   <br>
   <li><menu>ECO Browser</menu>: Opens/closes the
   <a ECO browser>ECO Browser</a> window.</li>
-  <li><menu>Repertoire editor</menu>: Opens/closes the
-  <a Repertoire>repertoire editor</a>. Note: since Scid 4.3 this
-  function is deprecated in favour for <a TreeMasks>Tree Masks</a>.
-  </li>
   <li><menu>Statistics window</menu>: Opens/closes the
   <term>Filter statistics window</term> which gives a win/loss summary
   of the games in the <a Searches Filter>filter.</a></li>
@@ -2191,126 +2184,6 @@ set helpText(PTracker) {<h1>The Piece Tracker window</h1>
   certain player with one color. The Piece Tracker can then be used to
   discover how likely the player is to fianchetto bishops, castle
   queenside, or set up a d5 or e5 pawn wedge, for example.
-  </p>
-  
-  <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>
-}
-
-
-####################
-### Repertoire editor help:
-
-set helpTitle(Repertoire) "Repertoire editor"
-set helpText(Repertoire) {<h1>The Repertoire editor window</h1>
-  <p>
-  The Repertoire editor lets you create, view, edit and <term>repertoire</term>
-  files. A repertoire (.sor) file is a list of the opening positions you want to
-  reach or try to avoid, and you can use it to manage your chess opening
-  preferences and also to search databases in Scid.
-  </p>
-  
-  <h3>Repertoire groups and lines</h3>
-  <p>
-  A repertoire contains two types of elements: <term>groups</term> and
-  <term>lines</term>. Groups are not actually part of your repertoire; they
-  are only used to structure it the same way directories give structure to the
-  files on a computer disk.
-  </p>
-  <p>
-  Lines in a repertoire come in two types: <term>include</term> lines which
-  represent opening positions you are interested in and try to reach,
-  and <term>exclude</term> lines which are those you have no interest in
-  playing and try to avoid.
-  For example, if you play the QGA (1.d4 d5 2.c4 dxc4) as Black and you play
-  all moves after 3.e4 <i>except</i> 3...Nf6, you would have
-  1.d4 d5 2.c4 dxc4 3.e4 as an include line and 1.d4 d5 2.c4 dxc4 3.e4 Nf6 as
-  an exclude line.
-  </p>
-  
-  <h3>Comments and notes</h3>
-  <p>
-  Each group or line can have comments attached to it. There are two types:
-  short (single-line) comments appear (in red) in the repertoire hierarchy
-  next to the moves of a group or line, while a long (multiple-line) comment
-  is only shown when the group or line is selected.
-  </p>
-  
-  <h3>Using the repertoire editor window</h3>
-  <p>
-  The <b>left</b> side of the window shows the repertoire hierarchy. You can
-  click on folder icons to expand and collapse groups, and click on the
-  moves of a group or line to select it and see its comments.
-  Include lines are shown with a blue tick icon, and exclude lines have
-  a red cross.
-  </p>
-  <p>
-  If a line or group has a short comment, it is shown after the moves. If it
-  has a long comment, this is indicated with <b><red>**</red></b> after the
-  moves. Groups have a number in parentheses after their moves showing the
-  number of (include and exclude) lines they contain.
-  </p>
-  <p>
-  Clicking the right mouse button on a group or line produces a menu
-  of functions for it, such as deleting it or changing its state.
-  </p>
-  <p>
-  The <b>right</b> side of the window contains three frames. The first frame
-  is a list of the moves in the currently selected line or group. You can click
-  the left mouse button on this to paste the moves in the
-  <a Import>Import</a> window, which is useful for setting the current game
-  to start with a line in the repertoire.
-  The second frame contains the short comment for the line or group, and
-  the third frame contains its long comment.
-  </p>
-  
-  <h3>Adding groups and lines to the repertoire</h3>
-  <p>
-  To add a line or group to the window, just make its moves on the
-  chessboard in the main window, then use the <menu>Edit</menu> menu
-  in the repertoire editor to add it as a group, include line or exclude line.
-  </p>
-  <p>
-  To delete a group or line, click the right mouse button on it and select
-  the appropriate command from the menu that appears.
-  </p>
-  
-  <h3><name Search>Searching databases using repertoire files</name></h3>
-  <p>
-  The repertoire editor <menu>Search</menu> menu lets you search the
-  current database using the repertoire. Each game will be searched for
-  the positions in the repertoire and will only match the search if
-  the <i>deepest</i> repertoire position found is for an <i>include</i> line.
-  </p>
-  <p>
-  You can choose to search using the whole repertoire, or just the displayed
-  lines. Searching by displayed lines only is useful when you only want to
-  use some of the repertoire. For example, a repertoire might have two main
-  groups at the top level, one for 1.e4 and one for 1.d4. If you are only
-  interested in the 1.e4 lines, simply collapse the 1.d4 group and then
-  search by displayed lines only.
-  </p>
-  
-  <h3>Extra hints</h3>
-  <p>
-  A repertoire file is great for finding new games in your opening systems.
-  For example, each time you get a new <a PGN>PGN</a> file to add to your main database
-  (such as the excellent weekly <a PGN>PGN</a> file from
-  <url http://www.chesscenter.com/twic/>The Week In Chess</url>),
-  just open the <a PGN>PGN</a> file in Scid and do a repertoire search. Then you
-  can browse the filtered games to see all the games played that are
-  in your repertoire.
-  </p>
-  <p>
-  You may want to keep two repertoire files: one for Black and one for
-  White, so you can search with each file separately.
-  </p>
-  <p>
-  A repertoire file can be opened from the command line, for example: <br>
-  <b>scid mybase white.sor</b>
-  </p>
-  <p>
-  You can edit a repertoire (.sor) file in any text editor, but be careful
-  to preserve its format or it may not be loadable or searchable in Scid.
   </p>
   
   <p><footer>(Updated: Scid 3.6.2, December 2006)</footer></p>

@@ -151,8 +151,6 @@ menuText K WindowsSwitcher "Bescanviador de bases de dades" 0 \
 menuText K WindowsMaint "Finestra de manteniment" 11 \
   {Obre/tanca la finestra de manteniment}
 menuText K WindowsECO "Cercador ECO" 0 {Obre/tanca la finestra del cercador ECO}
-menuText K WindowsRepertoire "Editor del repertori" 10 \
-  {Obrir/tancar l'editor del repertori d'obertures}
 menuText K WindowsStats "Finestra d'estadístiques" 12 \
   {Obre/tanca la finestra d'estadístiques del filtre}
 menuText K WindowsTree "Finestra de l'Àrbre d'Obertures" 6 {Obre/tanca la finestra de l'Àrbre d'Obertures (Book)}
@@ -807,34 +805,6 @@ menuText K OprepFavoritesGenerate "Generar informe..." 0
 menuText K OprepHelp "Ajut" 1
 menuText K OprepHelpReport "Ajut de l'informe de l'obertura" 11
 menuText K OprepHelpIndex "Índex de l'ajut" 0
-
-# Repertoire editor:
-menuText K RepFile "Arxiu" 0
-menuText K RepFileNew "Nova" 0
-menuText K RepFileOpen "Obrir..." 0
-menuText K RepFileSave "Salvar..." 0
-menuText K RepFileSaveAs "Salvar com..." 1
-menuText K RepFileClose "Tancar finestra" 0
-menuText K RepEdit "Editar" 0
-menuText K RepEditGroup "Afegir grup" 7
-menuText K RepEditInclude "Afegir línia inclossa" 13
-menuText K RepEditExclude "Afegir línia exclossa" 13
-menuText K RepView "Veure" 0
-menuText K RepViewExpand "Expandir tots els grups" 0
-menuText K RepViewCollapse "Collapsar tots els grups" 0
-menuText K RepSearch "Cercar" 0
-menuText K RepSearchAll "Tot el repertori..." 0
-menuText K RepSearchDisplayed "Només les línies mostrades..." 16
-menuText K RepHelp "Ajut" 1
-menuText K RepHelpRep "Ajut del repertori" 10
-menuText K RepHelpIndex "Índex de l'ajut" 0
-translate K RepSearch "Recerca del repertori"
-translate K RepIncludedLines "Línies inclosses"
-translate K RepExcludedLines "Línies exclosses"
-translate K RepCloseDialog {Aquest repertori te canvis no enregistrats.
-
-¿Realment vols continuar i descartar els canvis que has fet?
-}
 
 # Header search:
 translate K HeaderSearch {Recerca per encapçalament}

@@ -1167,7 +1167,6 @@ tools/preport.tcl
 tools/pinfo.tcl
 tools/analysis.tcl
 tools/wbdetect.tcl
-tools/reper.tcl
 tools/graphs.tcl
 tools/tablebase.tcl
 tools/ptracker.tcl

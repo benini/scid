@@ -138,8 +138,6 @@ menuText Y WindowsSwitcher "Biraè baza" 0 \
 menuText Y WindowsMaint "Prozor odr¾avanja" 0 \
   {Otvori/zatvori prozor odr¾avanja}
 menuText Y WindowsECO "E©O prikazivaè" 0 {Otvori/zatvori E©O prikazivaè}
-menuText Y WindowsRepertoire "Editor repertoara otvaranja" 0 \
-  {Otvori/zatvori editor repertoara otvaranja}
 menuText Y WindowsStats "Statistièki prozor" 0 \
   {Otvori/zatvori prozor statistika filtera}
 menuText Y WindowsTree "Stablo varijanata" 0 {Otvori/zatvori stablo varijanata}
@@ -920,34 +918,6 @@ menuText Y OprepFavoritesGenerate "Generate Reports..." 0 ;# ***
 menuText Y OprepHelp "Pomoæ" 0
 menuText Y OprepHelpReport "Pomoæ - Izve¹taj o otvaranjima" 0
 menuText Y OprepHelpIndex "Sadr¾aj pomoæi" 0
-
-# Repertoire editor:
-menuText Y RepFile "File" 0
-menuText Y RepFileNew "Novi" 0
-menuText Y RepFileOpen "Otvori..." 0
-menuText Y RepFileSave "Saèuvaj..." 0
-menuText Y RepFileSaveAs "Saèuvaj kao..." 9
-menuText Y RepFileClose "Zatvori prozor" 0
-menuText Y RepEdit "Izmena" 0
-menuText Y RepEditGroup "Dodaj grupu" 6
-menuText Y RepEditInclude "Dodaj ukljuèenu liniju" 6
-menuText Y RepEditExclude "Dodaj iskljuèenu liniju" 6
-menuText Y RepView "Prikaz" 0
-menuText Y RepViewExpand "Razgranaj sve grupe" 0
-menuText Y RepViewCollapse "Sa¾mi sve grupe" 0
-menuText Y RepSearch "Pretra¾i" 3
-menuText Y RepSearchAll "Ceo repertoar..." 0
-menuText Y RepSearchDisplayed "Samo prikazane linije..." 0
-menuText Y RepHelp "Pomoæ" 1
-menuText Y RepHelpRep "Pomoæ - repertoar" 0
-menuText Y RepHelpIndex "Sadr¾aj pomoæi" 0
-translate Y RepSearch "Pretraga repertoara"
-translate Y RepIncludedLines "ukljuèene linije"
-translate Y RepExcludedLines "iskljuèene linije"
-translate Y RepCloseDialog {Ovaj repertoar ima nesaèuvane izmene.
-
-Da li zaista ¾elite da nastavite i odbacite izmene koje ste napravili?
-}
 
 # Header search:
 translate Y HeaderSearch {Pretraga zaglavlja}

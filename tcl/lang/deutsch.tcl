@@ -162,7 +162,6 @@ menuText D WindowsSwitcher "Datenbank-Umschalter" 0 \
   {Datenbank-Umschalter öffnen/schließen}
 menuText D WindowsMaint "Wartungsfenster" 0 {(Datenbank-)Wartungsfenster öffnen/schließen}
 menuText D WindowsECO "ECO-Auswertung" 0 {ECO-Auswertung öffnen/schließen}
-menuText D WindowsRepertoire "Repertoire-Editor" 0 {Eröffnungsrepertoire-Editor öffnen/schließen}
 menuText D WindowsStats "Statistik" 4 {Filterstatistik öffnen/schließen}
 menuText D WindowsTree "Zugbaum" 0 {Zugbaum öffnen/schließen}
 menuText D WindowsTB "Endspieltabellen..." 1 {Endspieltabellen öffnen/schließen}
@@ -805,34 +804,6 @@ menuText D OprepFavoritesGenerate "Berichte erzeugen..." 9
 menuText D OprepHelp "Hilfe" 0
 menuText D OprepHelpReport "Eröffnungsbericht-Hilfe" 0
 menuText D OprepHelpIndex "Index" 0
-
-# Repertoire editor:
-menuText D RepFile "Datei" 0
-menuText D RepFileNew "Neu" 0
-menuText D RepFileOpen "Öffnen..." 0
-menuText D RepFileSave "Speichern..." 0
-menuText D RepFileSaveAs "Speichern unter..." 10
-menuText D RepFileClose "Schließen" 1
-menuText D RepEdit "Bearbeiten" 0
-menuText D RepEditGroup "Gruppe hinzufügen" 0
-menuText D RepEditInclude "Variante einschließen" 9
-menuText D RepEditExclude "Variante ausschließen" 9
-menuText D RepView "Ansicht" 0
-menuText D RepViewExpand "Alle Gruppen aufklappen" 13
-menuText D RepViewCollapse "Alle Gruppen zuklappen" 13
-menuText D RepSearch "Suchen" 0
-menuText D RepSearchAll "Im gesamten Repertoire..." 0
-menuText D RepSearchDisplayed "Nur in der aktuellen Variante..." 0
-menuText D RepHelp "Hilfe" 0
-menuText D RepHelpRep "Repertoire Hilfe" 0
-menuText D RepHelpIndex "Index" 0
-translate D RepSearch "Repertoire Suche"
-translate D RepIncludedLines "Eingeschlossene Varianten"
-translate D RepExcludedLines "Ausgeschlossene Varianten"
-translate D RepCloseDialog {Dieses Repertoire hat ungesicherte Änderungen.
-
-Wollen Sie wirklich fortfahren und die Änderungen verwerfen?
-}
 
 # Header search:
 translate D HeaderSearch {Partiedatensuche}

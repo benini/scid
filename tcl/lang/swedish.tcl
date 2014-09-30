@@ -139,8 +139,6 @@ menuText W WindowsSwitcher "Databasväxlaren" 0 \
 menuText W WindowsMaint "Verktygsfönster" 0 \
   {Öppna/ stäng verktygsfönstret}
 menuText W WindowsECO "ECO fönster" 0 {Öppna/ stäng ECO bläddraren}
-menuText W WindowsRepertoire "Repetoareditor" 0 \
-  {Öppna/ stäng spelöppningsfönstret}
 menuText W WindowsStats "Statistikfönster" 0 \
   {Öppna/ stäng statistikfönstret}
 menuText W WindowsTree "Trädfönster" 2 {Öppna/ stäng variantträdets fönster}
@@ -772,34 +770,6 @@ menuText W OprepFavoritesGenerate "Skapa rapport..." 0
 menuText W OprepHelp "Hjälp" 0
 menuText W OprepHelpReport "Hjälp för öppningsrapporter" 0
 menuText W OprepHelpIndex "Hjälpindex" 0
-
-# Repertoire editor:
-menuText W RepFile "Fil" 0
-menuText W RepFileNew "Ny" 0
-menuText W RepFileOpen "Öppna..." 0
-menuText W RepFileSave "Spara..." 0
-menuText W RepFileSaveAs "Spara som..." 5
-menuText W RepFileClose "Stäng fönster" 0
-menuText W RepEdit "Redigera" 0
-menuText W RepEditGroup "Lägg till grupp" 4
-menuText W RepEditInclude "Lägg till inkluderad variation" 4
-menuText W RepEditExclude "Lägg till exkluderad variation" 4
-menuText W RepView "Visa" 0
-menuText W RepViewExpand "Expandera alla grupper" 0
-menuText W RepViewCollapse "Implodera alla grupper" 0
-menuText W RepSearch "Sök" 0
-menuText W RepSearchAll "Hela öppningsrepetoaren..." 0
-menuText W RepSearchDisplayed "Endast visade variationer..." 0
-menuText W RepHelp "Hjälp" 0
-menuText W RepHelpRep "Hjälp för spelöppningsrepetoar" 0
-menuText W RepHelpIndex "Hjälpindex" 0
-translate W RepSearch "Sök i spelöppningsrepetoar"
-translate W RepIncludedLines "inkluderade variationer"
-translate W RepExcludedLines "exkluderade variationer"
-translate W RepCloseDialog {Du har osparade ändringar i repetoaren.
-
-Vill du verkligen fortsätta och förlora dina förändringar?
-}
 
 # Header search:
 translate W HeaderSearch {Sök i partihuvud}

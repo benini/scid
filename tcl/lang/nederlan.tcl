@@ -154,7 +154,6 @@ menuText N WindowsSwitcher  "Database wisselen" 0 \
 menuText N WindowsMaint "Onderhoudsvenster" 5 \
   {Open/sluit het onderhoudsvenster}
 menuText N WindowsECO "ECO Browser" 0 {Open/sluit het ECO browser venster}
-menuText N WindowsRepertoire "Repertoire editor" 0 {Open/sluit de openingsrepertoir editor}
 menuText N WindowsStats "Statistiek" 0 \
   {Open/sluit het filter statieken-venster}
 menuText N WindowsTree "Openingoverzicht" 0 {Open/sluit het Openingsoverzichtvenster}
@@ -800,34 +799,6 @@ menuText N OprepFavoritesGenerate "Genereer Rapporten..." 0 ;
 menuText N OprepHelp "Help" 0
 menuText N OprepHelpReport "Help (openingsrapport)" 0
 menuText N OprepHelpIndex "Inhoud" 0
-
-# Repertoire editor:
-menuText N RepFile "Bestand" 0
-menuText N RepFileNew "Nieuw" 0
-menuText N RepFileOpen "Openen..." 0
-menuText N RepFileSave "Bewaren..." 0
-menuText N RepFileSaveAs "Bewaren als..." 5
-menuText N RepFileClose "Sluit venster" 2
-menuText N RepEdit "Bewerken" 0
-menuText N RepEditGroup "Toevoegen Groep" 4
-menuText N RepEditInclude "Toevoegen inclusief variant" 4
-menuText N RepEditExclude "Toevoegen exclusief variant" 4
-menuText N RepView "Bekijken" 0
-menuText N RepViewExpand "Uitklappen alle groepen" 0
-menuText N RepViewCollapse "Inklappen alle groepen" 0
-menuText N RepSearch "Selecteren" 0
-menuText N RepSearchAll "Alles van repertorium..." 0
-menuText N RepSearchDisplayed "Alleen weergegeven varianten..." 0
-menuText N RepHelp "Help" 0
-menuText N RepHelpRep "Repertorium help" 0
-menuText N RepHelpIndex "Inhoud" 0
-translate N RepSearch "Zoeken repertorium"
-translate N RepIncludedLines "inclusief varianten"
-translate N RepExcludedLines "exclusief varianten"
-translate N RepCloseDialog {Dit repetorium heeft onopgeslagen wijzigingen.
-
-Wilt u echt doorgaan en de wijzigingen niet Bewaren?
-}
 
 # Header search:
 translate N HeaderSearch {Zoek naar kop}

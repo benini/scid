@@ -140,8 +140,6 @@ menuText O WindowsSwitcher "Databasebytter" 0 \
 menuText O WindowsMaint "Vedlikeholdsvindu" 0 \
   {Åpne/lukk vedlikeholdsvinduet}
 menuText O WindowsECO "ECO-oversikt" 0 {Åpne/lukk ECO-oversikten}
-menuText O WindowsRepertoire "Repertoirvindu" 0 \
-  {Åpne/lukk åpningsreportoiret}
 menuText O WindowsStats "Statistikkvindu" 0 \
   {Åpne/lukk statistikk for filteret}
 menuText O WindowsTree "Trevindu" 0 {Åpne/lukk trevinduet}
@@ -922,34 +920,6 @@ menuText O OprepFavoritesGenerate "Generate Reports..." 0 ;# ***
 menuText O OprepHelp "Hjelp" 0
 menuText O OprepHelpReport "Åpningsrapport hjelp" 0
 menuText O OprepHelpIndex "Innholdsfortegnelse" 0
-
-# Repertoire editor:
-menuText O RepFile "Fil" 0
-menuText O RepFileNew "Ny" 0
-menuText O RepFileOpen "Åpne..." 0
-menuText O RepFileSave "Lagre..." 0
-menuText O RepFileSaveAs "Lagre som..." 0
-menuText O RepFileClose "Lukk vindu" 0
-menuText O RepEdit "Rediger" 0
-menuText O RepEditGroup "Legg til gruppe" 0
-menuText O RepEditInclude "Inkluder" 0
-menuText O RepEditExclude "Ekskluder" 0
-menuText O RepView "Vis" 0
-menuText O RepViewExpand "Utvid alle grupper" 0
-menuText O RepViewCollapse "Trekk sammen alle grupper" 0
-menuText O RepSearch "Søk" 0
-menuText O RepSearchAll "Alle i reportoir..." 0
-menuText O RepSearchDisplayed "Kun viste linjer..." 0
-menuText O RepHelp "Hjelp" 0
-menuText O RepHelpRep "Repertoir hjelp" 0
-menuText O RepHelpIndex "Innholdsfortegnelse" 0
-translate O RepSearch "Repertoirsøk"
-translate O RepIncludedLines "inkluderte linjer"
-translate O RepExcludedLines "ekskluderte linjer"
-translate O RepCloseDialog {Gjeldende reportoir har ulagrede endringer.
-
-Vil du virkelig fortsette og miste disse endringene?
-}
 
 # Header search:
 translate O HeaderSearch {Headersøk}

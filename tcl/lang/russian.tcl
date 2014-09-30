@@ -138,8 +138,6 @@ menuText R WindowsSwitcher "Выбор базы данных" 1 \
 menuText R WindowsMaint "Окно обслуживания" 1 \
   {Открыть/закрыть окно обслуживания}
 menuText R WindowsECO "Просмотрщик ECO" 4 {Открыть/закрыть окно просмотра ECO}
-menuText R WindowsRepertoire "Редактор репертуара" 2 \
-  {Открыть/закрыть окно редактора репертуара дебютов}
 menuText R WindowsStats "Окно статистики" 2 \
   {Открыть/закрыть окно фильтрованной статистики}
 menuText R WindowsTree "Окно дерева" 10 {Открыть/закрыть окно дерева}
@@ -774,34 +772,6 @@ menuText R OprepFavoritesGenerate "Создать отчёты..." 0
 menuText R OprepHelp "Помощь" 0
 menuText R OprepHelpReport "Помощь по дебютным отчётам" 0
 menuText R OprepHelpIndex "Индекс помощи" 0
-
-# Repertoire editor:
-menuText R RepFile "Файл" 0
-menuText R RepFileNew "Новый" 0
-menuText R RepFileOpen "Открыть..." 0
-menuText R RepFileSave "Сохранить.." 0
-menuText R RepFileSaveAs "Сохранить как..." 2
-menuText R RepFileClose "Закрыть окно" 0
-menuText R RepEdit "Редактор" 0
-menuText R RepEditGroup "Добавить группу" 9
-menuText R RepEditInclude "Добавить включённые строки" 9
-menuText R RepEditExclude "Добавить исключённые строки" 9
-menuText R RepView "Вид" 0
-menuText R RepViewExpand "Развернуть все группы" 0
-menuText R RepViewCollapse "Сжать все группы" 0
-menuText R RepSearch "Поиск" 0
-menuText R RepSearchAll "Все репертуары..." 0
-menuText R RepSearchDisplayed "Показанные строки только..." 0
-menuText R RepHelp "Помощь" 4
-menuText R RepHelpRep "Помощь по репертуару" 0
-menuText R RepHelpIndex "Индекс помощи" 0
-translate R RepSearch "Поиск репертуара"
-translate R RepIncludedLines "Включённые строки"
-translate R RepExcludedLines "Исключённый строки"
-translate R RepCloseDialog {В этом репертуаре изменения не сохранены.
-
-Вы действительно хотите продолжить не сохранив все изменения, которые сделали?
-}
 
 # Header search:
 translate R HeaderSearch {Поиск по заголовку}

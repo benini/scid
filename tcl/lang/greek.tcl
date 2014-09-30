@@ -166,8 +166,6 @@ menuText G WindowsSwitcher "Εναλλαγή βάσης δεδομένωνDataba
 menuText G WindowsMaint "Παράθυρο συντήρησης" 0 \
   {Άνοιγμα/κλείσιμο του παραθύρου συντήρησης}
 menuText G WindowsECO "Φυλλομετρητής ECO" 0 {Άνοιγμα/κλείσιμο του παραθύρου του φυλλομετρητή ECO}
-menuText G WindowsRepertoire "Συντάκτης ρεπερτορίου" 0 \
-  {Άνοιγμα κλείσιμο του συντάκτη ρεπερτορίου}
 menuText G WindowsStats "Παράθυρο στατιστικών" 0 \
   {Άνοιγμα/κλείσιμο του παραθύρου φιλτραρίσματος στατιστικών}
 menuText G WindowsTree "Παράθυρο δένδρου" 0 {Άνοιγμα/κλείσιμο του παραθύρου δένδρου}
@@ -805,34 +803,6 @@ menuText G OprepFavoritesGenerate "Δημιουργία αναφορών..." 0
 menuText G OprepHelp "Βοήθεια" 0
 menuText G OprepHelpReport "Άνοιγμα της βοήθειας για αναφορές" 0
 menuText G OprepHelpIndex "Κατάλογος βοήθειας" 0
-
-# Repertoire editor:
-menuText G RepFile "Αρχείο" 0
-menuText G RepFileNew "Νέο" 0
-menuText G RepFileOpen "Άνοιγμα..." 0
-menuText G RepFileSave "Αποθήκευση..." 0
-menuText G RepFileSaveAs "Αποθήκευση ως..." 5
-menuText G RepFileClose "Κλείσιμο παραθύρου" 0
-menuText G RepEdit "Επεξεργασία" 0
-menuText G RepEditGroup "Προσθήκη ομάδας" 4
-menuText G RepEditInclude "Προσθήκη Περιέχεται Γραμμή" 4
-menuText G RepEditExclude "Προσθήκη Εξαιρείται Γραμμή" 4
-menuText G RepView "Εμφάνιση" 0
-menuText G RepViewExpand "Ανάπτυξη όλων των ομάδων" 0
-menuText G RepViewCollapse "Σύμπτηξη όλων των ομάδων" 0
-menuText G RepSearch "Αναζήτηση" 0
-menuText G RepSearchAll "Όλο το ρεπερτόριο..." 0
-menuText G RepSearchDisplayed "Μόνον γραμμές που εμφανίζονται..." 0
-menuText G RepHelp "Βοήθεια" 0
-menuText G RepHelpRep "Βοήθεια ρεπερτορίου" 0
-menuText G RepHelpIndex "Κατάλογος βοήθειας" 0
-translate G RepSearch "Αναζήτηση ρεπερτορίου"
-translate G RepIncludedLines "γραμμές που περιλαμβάνονται"
-translate G RepExcludedLines "γραμμές που εξαιρούνται"
-translate G RepCloseDialog {This repertoire has unsaved changes.
-
-Do you really want to continue and discard the changes you have made?
-}
 
 # Header search:
 translate G HeaderSearch {Αναζήτηση κεφαλίδας}

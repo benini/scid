@@ -137,8 +137,6 @@ menuText H WindowsSwitcher "Adatbázisváltó" 0 \
 menuText H WindowsMaint "Adatbázisgondozó" 9 \
   {Kinyitja/becsukja az adatbázisgondozó ablakot.}
 menuText H WindowsECO "ECO-böngészõ" 0 {Kinyitja/becsukja az ECO-böngészõ ablakot.}
-menuText H WindowsRepertoire "Repertoárszerkesztõ" 0 \
-  {Megnyitja/bezárja a megnyitási repertoárszerkesztõt.}
 menuText H WindowsStats "Statisztika" 0 \
   {Kinyitja/becsukja a szûrési statisztika ablakát.}
 menuText H WindowsTree "Faszerkezet" 0 {Kinyitja/becsukja a faszerkezet-ablakot.}
@@ -783,35 +781,6 @@ menuText H OprepFavoritesGenerate "Összefoglaló készítése..." 0
 menuText H OprepHelp "Segítség" 0
 menuText H OprepHelpReport "Segítség a megnyitási összefoglalóhoz" 0
 menuText H OprepHelpIndex "Tárgymutató" 0
-
-# Repertoire editor:
-menuText H RepFile "Fájl" 0
-menuText H RepFileNew "Új" 0
-menuText H RepFileOpen "Megnyitás..." 3
-menuText H RepFileSave "Mentés..." 0
-menuText H RepFileSaveAs "Mentés másként..." 5
-menuText H RepFileClose "Ablak bezárása" 8
-menuText H RepEdit "Szerkesztés" 1
-menuText H RepEditGroup "Csoport hozzáadása" 0
-menuText H RepEditInclude "Beveendõ elágazás" 0
-menuText H RepEditExclude "Kizárandó elágazás" 0
-menuText H RepView "Nézet" 0
-menuText H RepViewExpand "Az összes csoportot kibontja" 20
-menuText H RepViewCollapse "Az összes csoportot összehúzza" 20
-menuText H RepSearch "Keresés" 0
-menuText H RepSearchAll "Az egész repertoárban..." 3
-menuText H RepSearchDisplayed "Csak a megjelenített elágazásokban..." 0
-#Ez igen gyanús!
-menuText H RepHelp "Segítség" 0
-menuText H RepHelpRep "Segítség a repertoárhoz" 0
-menuText H RepHelpIndex "Tartalom" 0
-translate H RepSearch "Keresés a repertoárban"
-translate H RepIncludedLines "beveendõ elágazások"
-translate H RepExcludedLines "kizárandó elágazások"
-translate H RepCloseDialog {Ebben a repertoárban elmentetlen változtatások vannak.
-
-Tényleg folytatni akarod, és elvetni a létrehozott változtatásokat?
-}
 
 # Header search:
 translate H HeaderSearch {Keresés fejléc alapján}

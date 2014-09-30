@@ -138,8 +138,6 @@ menuText I WindowsTmt "Trova torneo" 2 {Apre/chiude la finestra per la ricerca d
 menuText I WindowsSwitcher "Selezione di Database" 11 {Apre/chiude la finestra per la selezione di un Database}
 menuText I WindowsMaint "Finestra di gestione" 12 {Apre/chiude la finestra per la gestione di un Database}
 menuText I WindowsECO "Navigazione ECO" 12 {Apre/chiude la finestra di navigazione ECO}
-menuText I WindowsRepertoire "Editor di repertorio" 10 \
-  {Apre/chiude l'editor di repertorio di apertura}
 menuText I WindowsStats "Finestra di statistica" 12 {Apre/chiude la finestra di filtro statistico}
 menuText I WindowsTree "Finestra di albero" 12 {Apre/chiude la finestra di albero}
 menuText I WindowsTB "Finestra di Tablebase di finale" 12 \
@@ -850,34 +848,6 @@ menuText I OprepFavoritesGenerate "Genera Reports..." 0
 menuText I OprepHelp "Aiuto" 0
 menuText I OprepHelpReport "Aiuto sul rapporto di apertura" 0
 menuText I OprepHelpIndex "Indice di Aiuto" 0
-
-# Repertoire editor:
-menuText I RepFile "File" 0
-menuText I RepFileNew "Nuovo" 0
-menuText I RepFileOpen "Apri..." 0
-menuText I RepFileSave "Salva..." 0
-menuText I RepFileSaveAs "Salva con nome..." 3
-menuText I RepFileClose "Close window" 0
-menuText I RepEdit "Edita" 0
-menuText I RepEditGroup "Aggiunge il gruppo" 12
-menuText I RepEditInclude "Aggiunge la variante inclusa" 21
-menuText I RepEditExclude "Aggiunge la variante esclusa" 21
-menuText I RepView "Visualizza" 0
-menuText I RepViewExpand "Espande tutti i gruppi" 0
-menuText I RepViewCollapse "Collassa tutti i gruppi" 0
-menuText I RepSearch "Cerca" 0
-menuText I RepSearchAll "Tutto del repertorio..." 0
-menuText I RepSearchDisplayed "Visualizza solo varianti..." 0
-menuText I RepHelp "Aiuto" 0
-menuText I RepHelpRep "Aiuto del repertorio" 0
-menuText I RepHelpIndex "Indice di Aiuto" 0
-translate I RepSearch "Ricerca nel repertorio"
-translate I RepIncludedLines "varianti incluse"
-translate I RepExcludedLines "varianti escluse"
-translate I RepCloseDialog {Questo repertorio non e' stato salvato.
-
-Vuoi veramente continuare ed eliminare le modifiche effettuate?
-}
 
 # Header search:
 translate I HeaderSearch {Ricerca per Intestazione}

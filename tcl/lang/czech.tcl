@@ -133,7 +133,6 @@ menuText C WindowsTmt "Vyhledávaè turnajù" 11 {Otevøít/zavøít okno vyhledávaèe t
 menuText C WindowsSwitcher "Výbìr databáze" 0 {Otevøít/zavøít okno pro výbìr databází}
 menuText C WindowsMaint "Okno údr¾by" 6 {Otevøít/zavøít okno údr¾by}
 menuText C WindowsECO "ECO prohlí¾eè" 1 {Otevøít/zavøít okno ECO prohlí¾eèe}
-menuText C WindowsRepertoire "Editor repertoáru" 7 {Otevøít/zavøít editor repertoáru zahájení}
 menuText C WindowsStats "Statistické okno" 0 {Otevøít/zavøít statistické okno filtru}
 menuText C WindowsTree "Stromové okno" 4 {Otevøít/zavøít stromové okno}
 menuText C WindowsTB "Okno tabulky koncovek" 13 {Otevøít/zavøít okno tabulek koncovek}
@@ -766,34 +765,6 @@ menuText C OprepFavoritesGenerate "Generovat profil..." 0
 menuText C OprepHelp "Nápovìda" 0
 menuText C OprepHelpReport "Nápovìda - Profil zahájení" 11
 menuText C OprepHelpIndex "Index nápovìdy" 11
-
-# Repertoire editor:
-menuText C RepFile "Soubor" 0
-menuText C RepFileNew "Nový" 0
-menuText C RepFileOpen "Otevøít..." 0
-menuText C RepFileSave "Ulo¾it..." 0
-menuText C RepFileSaveAs "Ulo¾it jako..." 7
-menuText C RepFileClose "Zavøít okno" 0
-menuText C RepEdit "Editace" 0
-menuText C RepEditGroup "Pøidat skupinu" 0
-menuText C RepEditInclude "Zahrnout variantu" 0
-menuText C RepEditExclude "Vylouèit variantu" 0
-menuText C RepView "Zobrazit" 0
-menuText C RepViewExpand "Rozbalit v¹echny skupiny" 0
-menuText C RepViewCollapse "Sbalit v¹echny skupiny" 0
-menuText C RepSearch "Hledat" 0
-menuText C RepSearchAll "Ve¹kerý repertoár..." 0
-menuText C RepSearchDisplayed "Pouze zobrazené varianty..." 0
-menuText C RepHelp "Nápovìda" 0
-menuText C RepHelpRep "Nápovìda - Repertoár" 11
-menuText C RepHelpIndex "Index nápovìdy" 0
-translate C RepSearch "Repertoárové vyhledávání"
-translate C RepIncludedLines "zahrnuté varianty"
-translate C RepExcludedLines "vylouèené varianty"
-translate C RepCloseDialog {Tento repertoár obsahuje neulo¾ené zmìny.
-
-Opravdu chcete pokraèovat a zru¹it v¹echny zmìny, které jste uèinili?
-}
 
 # Header search:
 translate C HeaderSearch {Hledat podle hlavièky}

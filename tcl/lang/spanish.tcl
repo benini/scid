@@ -151,8 +151,6 @@ menuText S WindowsSwitcher "Bases de datos" 0 \
 menuText S WindowsMaint "Ventana de mantenimiento" 11 \
   {Abre/cierra la ventana de mantenimiento}
 menuText S WindowsECO "Buscador ECO" 0 {Abre/cierra la ventana del buscador ECO}
-menuText S WindowsRepertoire "Editor de repertorio" 10 \
-  {Abrir/cerrar el editor de repertorio de aperturas}
 menuText S WindowsStats "Ventana de estadísticas" 12 \
   {Abre/cierra la ventana de estadísticas del filtro}
 menuText S WindowsTree "Ventana de árbol de aperturas" 6 {Abre/cierra la ventana de árbol de aperturas (Book)}
@@ -832,34 +830,6 @@ menuText S OprepFavoritesGenerate "Generar informe..." 0
 menuText S OprepHelp "Ayuda" 1
 menuText S OprepHelpReport "Ayuda del informe de la apertura" 11
 menuText S OprepHelpIndex "Índice de la ayuda" 0
-
-# Repertoire editor:
-menuText S RepFile "Archivo" 0
-menuText S RepFileNew "Nuevo" 0
-menuText S RepFileOpen "Abrir..." 0
-menuText S RepFileSave "Guardar..." 0
-menuText S RepFileSaveAs "Guardar como..." 1
-menuText S RepFileClose "Cerrar ventana" 0
-menuText S RepEdit "Editar" 0
-menuText S RepEditGroup "Añadir grupo" 7
-menuText S RepEditInclude "Añadir línea incluida" 13
-menuText S RepEditExclude "Añadir línea excluida" 13
-menuText S RepView "Ver" 0
-menuText S RepViewExpand "Expandir todos los grupos" 0
-menuText S RepViewCollapse "Colapsar todos los grupos" 0
-menuText S RepSearch "Buscar" 0
-menuText S RepSearchAll "Todo el repertorio..." 0
-menuText S RepSearchDisplayed "Sólo las líneas mostradas..." 16
-menuText S RepHelp "Ayuda" 1
-menuText S RepHelpRep "Ayuda del repertorio" 10
-menuText S RepHelpIndex "Índice de la ayuda" 0
-translate S RepSearch "Búsqueda del repertorio"
-translate S RepIncludedLines "Líneas incluidas"
-translate S RepExcludedLines "Líneas excluidas"
-translate S RepCloseDialog {Este repertorio tiene cambios no guardados.
-
-¿Realmente quieres continuar y descartar los cambios que has hecho?
-}
 
 # Header search:
 translate S HeaderSearch {Búsqueda por encabezamiento}
