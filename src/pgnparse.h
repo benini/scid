@@ -42,9 +42,7 @@ class PgnParser
     uint   GameCounter;
     int    EndChar;
     uint   BytesSeen;
-#ifndef WINCE
     FILE * ErrorFile;
-#endif
     DString * ErrorBuffer;
     uint   NumErrors;
 
@@ -65,6 +63,7 @@ class PgnParser
     inline void   UnGetChar (int ch);
 
     void   Init();
+    void   Init (const char * inbuffer);
     void   Reset();
     void   LogError (const char * errMessage, const char * text);
     void   GetLine (char * buffer, uint bufSize);
@@ -85,11 +84,8 @@ class PgnParser
     // Constructors: PgnParser is initialised with a file pointer or
     //    a pointer to a buffer, or it defaults to an empty buffer.
     PgnParser (void) { Init ((const char *) ""); }
-    PgnParser (MFile * infile) { Init (infile); }
     PgnParser (const char * inbuffer) { Init (inbuffer); }
     ~PgnParser() { delete ErrorBuffer; ClearIgnoredTags(); }
-    void   Init (MFile * infile);
-    void   Init (const char * inbuffer);
 
     void   Reset (MFile * infile);
     void   Reset (const char * inbuffer);
@@ -98,9 +94,7 @@ class PgnParser
     uint   ErrorCount() { return NumErrors; }
     const char * ErrorMessages() { return ErrorBuffer->Data(); }
     void   ClearErrors();
-#ifndef WINCE
     void   SetErrorFile (FILE * fp) { ErrorFile = fp; }
-#endif
     void   KeepPreGameText() { StorePreGameText = true; }
     void   IgnorePreGameText() { StorePreGameText = false; }
     void   SetPreGameText (bool b) { StorePreGameText = b; }

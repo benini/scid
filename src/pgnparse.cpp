@@ -41,9 +41,7 @@ PgnParser::Reset()
     UnGetCount = 0;
     NumErrors = 0;
     BytesSeen = 0;
-#ifndef WINCE
     ErrorFile = NULL;
-#endif
     LineCounter = 0;
     GameCounter = 0;
     StorePreGameText = true;
@@ -51,15 +49,6 @@ PgnParser::Reset()
     ResultWarnings = true;
     NewlinesToSpaces = true;
     NumIgnoredTags = 0;
-}
-
-void
-PgnParser::Init (MFile * infile)
-{
-    Init();
-    InFile = infile;
-    InBuffer = InCurrent = NULL;
-    EndChar = EOF;
 }
 
 void
@@ -102,11 +91,7 @@ void
 PgnParser::ClearIgnoredTags ()
 {
     for (uint i = 0; i < NumIgnoredTags; i++) {
-#ifdef WINCE
-        my_Tcl_Free( IgnoredTags[i] );
-#else
         delete[] IgnoredTags[i];
-#endif
     }
     NumIgnoredTags = 0;
 }
@@ -961,15 +946,9 @@ PgnParser::GetNextToken (char * buffer, uint bufSize)
 errorT
 PgnParser::ParseMoves (Game * game)
 {
-#ifdef WINCE
-    char * buffer = my_Tcl_Alloc(sizeof( char [MAX_COMMENT_SIZE]));
-    errorT err = ParseMoves (game, buffer, MAX_COMMENT_SIZE);
-    my_Tcl_Free( buffer );
-#else
     char * buffer = new char [MAX_COMMENT_SIZE];
     errorT err = ParseMoves (game, buffer, MAX_COMMENT_SIZE);
     delete[] buffer;
-#endif
     return err;
 }
    
@@ -1154,17 +1133,10 @@ PgnParser::ParseMoves (Game * game, char * buffer, uint bufSize)
 errorT
 PgnParser::ParseGame (Game * game)
 {
-#ifdef WINCE
-    char * buffer = my_Tcl_Alloc(sizeof( char [MAX_COMMENT_SIZE]));
-    uint preGameTextLength = 0;
-
-    char * preGameTextBuffer = my_Tcl_Alloc(sizeof(char [MAX_COMMENT_SIZE]));
-#else
     char * buffer = new char [MAX_COMMENT_SIZE];
     uint preGameTextLength = 0;
 
     char * preGameTextBuffer = new char [MAX_COMMENT_SIZE];
-#endif
 
     GameCounter++;
     errorT err = ERROR_NotFound;
@@ -1189,6 +1161,27 @@ PgnParser::ParseGame (Game * game)
             }
 
         } else if (token == TOKEN_LineComment) {
+            static Position epd;
+            if (epd.ReadFromFEN(buffer) == OK) {
+                //EPD line
+                game->Clear();
+                game->SetStartFen(buffer);
+                uint spaces = 0;
+                const char* buffer_end = buffer + MAX_COMMENT_SIZE;
+                for (const char* i = buffer; *i != 0 && i != buffer_end; i++) {
+                    if (*i == ' ') {
+                        spaces++;
+                        continue;
+                    }
+                    if (spaces >= 4) {
+                        game->SetMoveComment(i);
+                        break;
+                    }
+                }
+                ParseMode = PARSE_Game;
+                err = OK;
+                break;
+            }
             // Add the line to the pre-game text if necessary:
             if (preGameTextLength > 0  ||  buffer[0] != 0) {
                 uint len = strLength (buffer);
@@ -1216,13 +1209,9 @@ PgnParser::ParseGame (Game * game)
 
         token = GetNextToken (buffer, MAX_COMMENT_SIZE);
     }
-#ifdef WINCE
-    my_Tcl_Free( buffer );
-    my_Tcl_Free( preGameTextBuffer );
-#else
     delete[] buffer;
     delete[] preGameTextBuffer;
-#endif
+
     if (ParseMode == PARSE_Header) {
         if (EndOfInputWarnings) {
             LogError ("Warning: End of input in PGN header tags section", "");
