@@ -44,7 +44,7 @@ public:
 
 private:
 	int matches_ [STORED_LINES];
-	static FullMove* Moves_ [STORED_LINES +1];
+	static const FullMove* Moves_ [STORED_LINES +1];
 };
 
 #endif  // #ifndef SCID_STORED_H

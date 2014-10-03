@@ -17,6 +17,7 @@
 */
 
 #include "stored.h"
+#include <cstring>
 
 // Stored line codes: used to speed up tree searches.
 
@@ -34,9 +35,54 @@
 // that stored line code can be excluded and skipped without decoding.
 
 namespace {
+	
+class Board {
+	pieceT b_[64];
+
+public:
+	Board(const pieceT* b) {
+		for (int i=0; i < 64; i++) b_[i] = b[i];
+	}
+	void doMove(FullMove m) {
+		//No promo, no null moves, no queenside castle
+		if (! m.isCastle()) {
+			b_[m.getFrom()] = EMPTY;
+			b_[m.getTo()] = piece_Make(m.getColor(), m.getPiece());
+		} else {
+			b_[m.getFrom()] = EMPTY;
+			b_[m.getTo()] = EMPTY;
+			int black = (m.getColor() == BLACK) ? 56 : 0;
+			b_[black + G1] = piece_Make(m.getColor(), KING);
+			b_[black + F1] = piece_Make(m.getColor(), ROOK);
+		}
+	}
+	bool operator==(const Board& b) const {
+		return (memcmp(b_, b.b_, sizeof b_) == 0);
+	}
+	bool neverMatch(const Board& m) const {
+		// Pawns allows to exclude some games:
+		int p[3][8] = {{0}};
+		for (int i=0; i < 64; i++) {
+			pieceT a = b_[i];
+			pieceT b = m.b_[i];
+			// 1) because a pawn will never go back to home position
+			if (b == WP && a != WP && (i/8) == 1) return true;
+			if (b == BP && a != BP && (i/8) == 6) return true;
+			p[piece_Color(a)][piece_Type(a)] += 1;
+			p[piece_Color(b)][piece_Type(b)] -= 1;
+		}
+		int df[2] = {0};
+		for (pieceT i=QUEEN; i < PAWN; i++) {
+			if (p[WHITE][i] < 0) df[WHITE] -= p[WHITE][i];
+			if (p[BLACK][i] < 0) df[BLACK] -= p[BLACK][i];
+		}
+		// 2) because only extra pawns can be promoted to create other pieces.
+		if (p[WHITE][PAWN] < df[WHITE] || p[BLACK][PAWN] < df[BLACK]) return true;
+		return false;
+	}
+};
 
 FullMove fm[] = {
- // index zero is unused
  // "1.b3"
  0x6000251,
  // "1.c4"
@@ -546,57 +592,11 @@ FullMove fm[] = {
  // "1.Nf3 Nf6 2.g3 g6"
  0x5000195, 0xd000fad, 0x6000396, 0xe000dae
 };
-
-class Board {
-	pieceT b_[64];
-
-public:
-	Board(const pieceT* b) {
-		for (int i=0; i < 64; i++) b_[i] = b[i];
-	}
-	void doMove(FullMove m) {
-		//No promo, no null moves, no queenside castle
-		if (! m.isCastle()) {
-			b_[m.getFrom()] = EMPTY;
-			b_[m.getTo()] = piece_Make(m.getColor(), m.getPiece());
-		} else {
-			b_[m.getFrom()] = EMPTY;
-			b_[m.getTo()] = EMPTY;
-			int black = (m.getColor() == BLACK) ? 56 : 0;
-			b_[black + G1] = piece_Make(m.getColor(), KING);
-			b_[black + F1] = piece_Make(m.getColor(), ROOK);
-		}
-	}
-	bool operator==(const Board& m) const {
-		for (int i=0; i<64; i++) if (b_[i] != m.b_[i]) return false;
-		return true;
-	}
-	bool neverMatch(const Board& m) const {
-		// Pawns allows to exclude some games:
-		int p[3][8] = {{0}};
-		for (int i=0; i < 64; i++) {
-			pieceT a = b_[i];
-			pieceT b = m.b_[i];
-			// 1) because a pawn will never go back to home position
-			if (b == WP && a != WP && (i/8) == 1) return true;
-			if (b == BP && a != BP && (i/8) == 6) return true;
-			p[piece_Color(a)][piece_Type(a)] += 1;
-			p[piece_Color(b)][piece_Type(b)] -= 1;
-		}
-		int df[2] = {0};
-		for (pieceT i=QUEEN; i < PAWN; i++) {
-			if (p[WHITE][i] < 0) df[WHITE] -= p[WHITE][i];
-			if (p[BLACK][i] < 0) df[BLACK] -= p[BLACK][i];
-		}
-		// 2) because only extra pawns can be promoted to create other pieces.
-		if (p[WHITE][PAWN] < df[WHITE] || p[BLACK][PAWN] < df[BLACK]) return true;
-		return false;
-	}
-};
 } // End of anonymous namespace
 
-
-FullMove* StoredLine::Moves_ [STORED_LINES +1] = {
+const FullMove* StoredLine::Moves_ [STORED_LINES +1] = {
+// index zero is unused
+// last index ( Moves_[STORED_LINES] ) is used to detect the end of the array
 fm +   0, fm +   0, fm +   1, fm +   2, fm +   4, fm +   7, fm +   9, fm +  12,
 fm +  16, fm +  18, fm +  21, fm +  23, fm +  25, fm +  28, fm +  32, fm +  36,
 fm +  37, fm +  39, fm +  42, fm +  46, fm +  51, fm +  57, fm +  64, fm +  69,
@@ -636,13 +636,14 @@ StoredLine::StoredLine(pieceT* board, colorT toMove)
 	Board search(board);
 	for (uint line = 1; line < STORED_LINES; line++) {
 		Board b(START_BOARD);
+		const FullMove* end = Moves_[line +1];
 		for (int ply=0; ply < 99; ply++) {
-			if (b == search && ((ply %2) == toMove)) {
+			if (((ply %2) == toMove) && b == search) {
 				matches_[line] = ply;
 				break;
 			}
-			FullMove* m = Moves_[line] + ply;
-			if (m == Moves_[line +1]) {
+			const FullMove* m = Moves_[line] + ply;
+			if (m == end) {
 				matches_[line] = b.neverMatch(search) ? -2 : -1;
 				break;
 			}
