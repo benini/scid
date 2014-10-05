@@ -202,7 +202,7 @@ proc ::docking::cleanup { w { origin "" } } {
 ################################################################################
 proc ::docking::isUndocked { w } {
   set w ".fdock[string range $w 1 end]"
-  return [info exists ::docking::notebook_name($w)]
+  return [expr { [winfo exists $w] && [winfo toplevel $w] == $w }]
 }
 ################################################################################
 proc ::docking::move_tab {srctab dsttab} {

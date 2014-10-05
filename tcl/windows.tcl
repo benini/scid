@@ -38,7 +38,7 @@ proc createToplevel { {w} {closeto ""} } {
     return "already_exists"
   }
 
-  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ] } {
+  if { $::docking::USE_DOCKING } {
     set old_dest $::docking::layout_dest_notebook
     if {$old_dest == "" && $closeto != ""} {
       set tab [string range $closeto 1 end]
@@ -68,7 +68,6 @@ proc createToplevelFinalize {w} {
 # if docked : sets the name of the tab
 # w : name of the toplevel window
 proc setTitle { w title } {
-  if { $::docking::USE_DOCKING && ! [ ::docking::isUndocked $w ]} {
     set f .fdock[ string range $w 1 end ]
     if { [catch {set nb [ ::docking::find_tbn $f ]} ]} {
       set nb ""
@@ -83,12 +82,6 @@ proc setTitle { w title } {
       }
       $nb tab $f -text $title
     }
-  } else  {
-    set wdock ".fdock[string range $w 1 end]"
-    if { [winfo exists $wdock ] } { set w $wdock }
-    wm title $w $title
-  }
-
 }
 
 ################################################################################
