@@ -15,9 +15,16 @@
 # along with Scid.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace eval ERROR {
+  proc getErrorMsg {} {
+    if {! [info exists ::ERROR::msg($::errorCode)] } {
+      set ::ERROR::msg($::errorCode) "Unknown error: $::errorCode"
+    }
+    return $::ERROR::msg($::errorCode)
+  }
+
   proc MessageBox { {extra ""} {title "ERROR"} } {
     tk_messageBox -icon warning -type ok -parent . \
-	  -title "$title" -message "$extra\n$::ERROR::msg($::errorCode)"
+      -title "$title" -message "$extra\n[getErrorMsg]"
   }
 
   set UserCancel         2

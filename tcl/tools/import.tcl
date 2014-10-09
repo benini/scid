@@ -199,7 +199,7 @@ proc importPgnFile {{base} {fnames ""}} {
     $w.text configure -state normal
     if {$err == 1} {
       set autoclose 0
-      $w.text insert end "$::ERROR::msg($::errorCode)\n$result\n\n"
+      $w.text insert end "[ERROR::getErrorMsg]\n$result\n\n"
     } else {
       set nImported [lindex $result 0]
       set warnings [lindex $result 1]
