@@ -51,6 +51,7 @@ const errorT
     ERROR_NameBaseEmpty  = 204,  ERROR_Empty = 204,
     ERROR_NoMatchFound   = 205,
     ERROR_NameDataLoss   = 206,
+    ERROR_NameTooLong    = 207,
 
     ERROR_IndexFull      = 251,
 

@@ -188,6 +188,7 @@ NameBase::WriteNameFile (const std::vector<int>* freq)
             }
             // *** Compatibility ***
 
+            ASSERT(strlen(name) < 256);
             byte length = strlen(name);
             file.WriteOneByte(length);
             byte prefix = 0;
@@ -215,11 +216,19 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
     if (it != idx_[nt].end()) {
         *idPtr = (*it).second;
     } else {
-        if (names_[nt].size() >= NAME_MAX_ID[nt]) {
-            return ERROR_NameBaseFull;   // Too many names already.
+        const size_t strLen = strlen(str);
+        if (Fname_[0] != 0) { // .sn4 file limits
+            static const uint NAME_MAX_ID [NUM_NAME_TYPES] = { 
+                1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
+                 524287, /* Event names:  Maximum of 2^19 -1 =   524,287 */
+                 524287, /* Site names:   Maximum of 2^19 -1 =   524,287 */
+                 262143  /* Round names:  Maximum of 2^18 -1 =   262,143 */
+            };
+            if (names_[nt].size() >= NAME_MAX_ID[nt]) return ERROR_Full; // Too many names already.
+            if (strLen > 255) return ERROR_NameTooLong; // Max 255 chars
         }
 
-        char* name = new char[strlen(str) +1];
+        char* name = new char[strLen +1];
         strcpy(name, str);
         *idPtr = names_[nt].size();
         names_[nt].push_back(name);

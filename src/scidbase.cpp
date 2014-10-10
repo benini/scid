@@ -205,16 +205,11 @@ errorT scidBaseT::addGame_(scidBaseT* sourceBase, uint gNum) {
 	if (err != OK) return err;
 
 	IndexEntry iE = *srcIe;
-	if (iE.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb)) != OK)
-		return ERROR_NameBaseFull;
-	if (iE.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb)) != OK)
-		return ERROR_NameBaseFull;
-	if (iE.SetEventName(nb, srcIe->GetEventName(sourceBase->nb)) != OK)
-		return ERROR_NameBaseFull;
-	if (iE.SetSiteName(nb, srcIe->GetSiteName(sourceBase->nb)) != OK)
-		return ERROR_NameBaseFull;
-	if (iE.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb)) != OK)
-		return ERROR_NameBaseFull;
+	if ((err = iE.SetWhiteName(nb, srcIe->GetWhiteName(sourceBase->nb))) != OK) return err;
+	if ((err = iE.SetBlackName(nb, srcIe->GetBlackName(sourceBase->nb))) != OK) return err;
+	if ((err = iE.SetEventName(nb, srcIe->GetEventName(sourceBase->nb))) != OK) return err;
+	if ((err = iE.SetSiteName (nb, srcIe->GetSiteName(sourceBase->nb) )) != OK) return err;
+	if ((err = iE.SetRoundName(nb, srcIe->GetRoundName(sourceBase->nb))) != OK) return err;
 
 	return saveGame_(&iE, sourceBase->bbuf);
 }
@@ -227,11 +222,11 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, int idx) {
 	errorT err = game->Encode (bbuf, &iE);
 	if (err != OK) return err;
 
-	if (iE.SetWhiteName(nb, game->GetWhiteStr()) != OK) return ERROR_NameBaseFull;
-	if (iE.SetBlackName(nb, game->GetBlackStr()) != OK) return ERROR_NameBaseFull;
-	if (iE.SetEventName(nb, game->GetEventStr()) != OK) return ERROR_NameBaseFull;
-	if (iE.SetSiteName(nb, game->GetSiteStr()) != OK) return ERROR_NameBaseFull;
-	if (iE.SetRoundName(nb, game->GetRoundStr()) != OK) return ERROR_NameBaseFull;
+	if ((err = iE.SetWhiteName(nb, game->GetWhiteStr())) != OK) return err;
+	if ((err = iE.SetBlackName(nb, game->GetBlackStr())) != OK) return err;
+	if ((err = iE.SetEventName(nb, game->GetEventStr())) != OK) return err;
+	if ((err = iE.SetSiteName (nb, game->GetSiteStr() )) != OK) return err;
+	if ((err = iE.SetRoundName(nb, game->GetRoundStr())) != OK) return err;
 
 	errorT errSave = saveGame_(&iE, bbuf, idx);
 	if (errSave == OK && clearCache) {

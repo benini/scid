@@ -44,16 +44,6 @@ const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
     "round"
 };
 
-
-// The NAME_MAX_ID[] array stores the maximum number of names allowed
-// in a database for each name type.
-const uint NAME_MAX_ID [NUM_NAME_TYPES] = { 
-    1048575,    /* Player names: Maximum of 2^20 -1 = 1,048,575 */
-     524287,    /* Event names:  Maximum of 2^19 -1 =   524,287 */
-     524287,    /* Site names:   Maximum of 2^19 -1 =   524,287 */
-     262143     /* Round names:  Maximum of 2^18 -1 =   262,143 */
-};
-
 const char NAMEBASE_SUFFIX[] = ".sn4";
 
 //////////////////////////////////////////////////////////////////////

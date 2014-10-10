@@ -7248,14 +7248,10 @@ int
 sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "clipbase", "elo",       "events",
-        "games",    "nags",      "players", "rounds",
-        "sites",    "year",    NULL
+        "clipbase", "elo", "games", "nags", "year", NULL
     };
     enum {
-        LIM_CLIPBASE, LIM_ELO,       LIM_EVENTS,
-        LIM_GAMES,    LIM_NAGS,      LIM_PLAYERS, LIM_ROUNDS,
-        LIM_SITES,    LIM_YEAR
+        LIM_CLIPBASE, LIM_ELO, LIM_GAMES, LIM_NAGS, LIM_YEAR
     };
     int index = -1;
     int result = 0;
@@ -7271,28 +7267,12 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         result = MAX_ELO;
         break;
 
-    case LIM_EVENTS:
-        result = NAME_MAX_ID [NAME_EVENT];
-        break;
-
     case LIM_GAMES:
         result = MAX_GAMES;
         break;
 
     case LIM_NAGS:
         result = MAX_NAGS;
-        break;
-
-    case LIM_PLAYERS:
-        result = NAME_MAX_ID [NAME_PLAYER];
-        break;
-
-    case LIM_ROUNDS:
-        result = NAME_MAX_ID [NAME_ROUND];
-        break;
-
-    case LIM_SITES:
-        result = NAME_MAX_ID [NAME_SITE];
         break;
 
     case LIM_YEAR:

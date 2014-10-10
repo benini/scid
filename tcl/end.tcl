@@ -1055,9 +1055,13 @@ proc gameSave { gnum } {
   }
   dialogbutton .save.buttons.save -textvar ::tr(Save) -underline 0 -command {
     set extraTags [.save.extra.text get 1.0 end-1c]
-    gsave $gsaveNum;
-    destroy .save
+    if { [gsave $gsaveNum] } {
+      destroy .save
+    } else {
+      ERROR::MessageBox
+    }
   }
+  # bind .save <Alt-s> { .save.buttons.save invoke; break }
   
   dialogbutton .save.buttons.cancel -textvar ::tr(Cancel) -command {destroy .save}
   pack .save.buttons -side bottom -ipady 10 -fill both -expand 1
@@ -1066,13 +1070,6 @@ proc gameSave { gnum } {
   }
   packbuttons right .save.buttons.cancel .save.buttons.save
   
-  bind .save <Alt-s> {
-    set extraTags [.save.extra.text get 1.0 end-1c]
-    gsave $gsaveNum;
-    focus .
-    destroy .save
-    break
-  }
   bind .save <Escape> { focus .; destroy .save; }
   ::utils::win::Centre .save
   focus .save.g.entryevent
@@ -1098,17 +1095,17 @@ proc gsave { gnum } {
       -blackElo $blackElo -blackRatingType $blackRType \
       -eco $eco -eventdate $edate -extra $extraTagsList
   if {$gnum != 0} {
-    set err [catch {sc_game save $gnum}]
+    if { [catch {sc_game save $gnum}] } { return 0 }
     ::notify::DatabaseModified [sc_base current]
     ::notify::GameChanged
   } else {
     set ply [sc_pos location]
-    set err [catch {sc_game save $gnum $::gameSave_toBase}]
+    if { [catch {sc_game save $gnum $::gameSave_toBase}] } { return 0 }
     ::notify::DatabaseModified $::gameSave_toBase
     ::file::SwitchToBase $::gameSave_toBase 0
     ::game::Load [sc_base numGames] $ply
   }
-  if {$err} { ERROR::MessageBox }
+  return 1
 }
 
 # gameAdd:

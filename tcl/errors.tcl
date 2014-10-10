@@ -53,6 +53,7 @@ namespace eval ERROR {
   set Empty            204
   set NoMatchFound     205
   set NameDataLoss     206
+  set NameTooLong      207
   set IndexFull        251
   set InvalidFEN       301
   set InvalidMove      302
@@ -102,4 +103,6 @@ after idle {
     $::tr(ErrReadOnly)
   set ::ERROR::msg($::ERROR::NameDataLoss) \
     "Some names (player, event, site or round) are missing and have been replaced by \"?\"\nCompact the database to make the changes permanent."
+  set ::ERROR::msg($::ERROR::NameTooLong) \
+    "The entered values are too long"
 }
