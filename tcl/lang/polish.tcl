@@ -396,21 +396,6 @@ menuText P GInfoMark "W³±cz/wy³±cz zaznaczenie tej partii" 0
 # ====== TODO To be translated ======
 menuText P GInfoInformant "Configure informant values" 0
 
-# Main window buttons:
-helpMsg P .main.fbutton.button.start {Id¼ do pocz±tku partii (klawisz: Home)}
-helpMsg P .main.fbutton.button.end {Id¼ na koniec partii  (klawisz: End)}
-helpMsg P .main.fbutton.button.back {Cofnij o jedno posuniêcie  (klawisz: strza³ka w lewo)}
-helpMsg P .main.fbutton.button.forward {Jedno posuniêcie do przodu (klawisz: strza³ka w prawo)}
-helpMsg P .main.fbutton.button.intoVar {Wejd¼ w wariant (klawisz skrótu: v)}
-helpMsg P .main.fbutton.button.exitVar {Opu¶æ wariant (klawisz skrótu: z)}
-helpMsg P .main.fbutton.button.flip {Obróæ szachownicê  (klawisz skrótu: .)}
-helpMsg P .main.fbutton.button.coords {Prze³±cz wy¶wietlanie opisu szachownicy  (klawisz skrótu: 0)}
-helpMsg P .main.fbutton.button.stm {Prze³±cz wy¶wietlanie ikony koloru strony na posuniêciu} 
-helpMsg P .main.fbutton.button.autoplay \
-  {Automatyczne przestawianie bierek (klawisz skrótu: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg P .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate P Back {Z powrotem}
 translate P Browse {Przegl±daj}

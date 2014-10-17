@@ -200,7 +200,7 @@ Index::WriteHeader ()
     if (FilePtr->Seek (0) != OK) return ERROR_FileWrite;
 
     sequentialWrite_ = 0;
-    int n = 0;
+    uint n = 0;
     n += FilePtr->WriteNBytes (Header.magic, 8);
     n += FilePtr->WriteTwoBytes (Header.version);
     n += FilePtr->WriteFourBytes (Header.baseType);

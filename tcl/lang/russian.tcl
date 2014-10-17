@@ -330,19 +330,6 @@ menuText R GInfoDelete "(Восстановить) удалить эту пар�
 menuText R GInfoMark "(Снять отметку) отметить эту партию" 1
 menuText R GInfoInformant "Настройка значений подсказчика" 0
 
-# Main window buttons:
-helpMsg R .main.fbutton.button.start {Перейти к началу партии  (клавиша: Home)}
-helpMsg R .main.fbutton.button.end {Перейти к концу партии  (клавиша: End)}
-helpMsg R .main.fbutton.button.back {Один ход назад  (клавиша: LeftArrow)}
-helpMsg R .main.fbutton.button.forward {Один ход вперёд (клавиша: RightArrow)}
-helpMsg R .main.fbutton.button.intoVar {Перейти к варианту  (клавиша: v)}
-helpMsg R .main.fbutton.button.exitVar {Выйти из текущего варианта (клавиша: z)}
-helpMsg R .main.fbutton.button.flip {Перевернуть доску (клавиша: .)}
-helpMsg R .main.fbutton.button.coords {Включить/выключить координаты  (клавиша: 0)}
-helpMsg R .main.fbutton.button.stm {Включить/выключить иконку очередности хода}
-helpMsg R .main.fbutton.button.autoplay {Автоматическое выполнение ходов  (клавиши: Ctrl+Z)}
-helpMsg R .main.fbutton.button.comment {Открыть редактор комментариев (клавиши: Ctrl+E)}
-
 # General buttons:
 translate R Back {Назад}
 translate R Browse {Просмотр}

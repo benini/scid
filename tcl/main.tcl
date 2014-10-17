@@ -186,14 +186,6 @@ proc updateStatusBar {} {
 }
 
 proc updateMainToolbar {} {
-
-
-#TODO: properly group toolbar code
-# bind .main.fbutton.button.end <Button-$::MB3> ::tactics::findBestMove
-# button .main.fbutton.button.comment -image tb_comment_unavail -command {makeCommentWin}
-# button .main.fbutton.button.autoplay -image tb_play -command toggleAutoplay
-# button .main.fbutton.button.trial -image tb_trial -command {setTrialMode toggle}
-
   if {[sc_pos isAt start]} {
     ::board::setButtonCmd .main.board back ""
     catch { unset ::gameInfoBar(tb_BD_Start) }
@@ -251,21 +243,6 @@ proc updateMainToolbar {} {
   } else {
     catch { unset ::gameInfoBar(tb_BD_HNext) }
   }
-
-return
-    updateVarMenus
-
-    wm withdraw .tooltip
-    set comment [sc_pos getComment]
-    # remove technical comments, notify only human readable ones
-    regsub -all {\[%.*\]} $comment {} comment
-    if {$comment != ""} {
-         .main.fbutton.button.comment configure -image tb_comment_avail -relief flat
-         ::utils::tooltip::Set .main.fbutton.button.comment $comment
-    } else {
-         .main.fbutton.button.comment configure -image tb_comment_unavail -relief flat
-         ::utils::tooltip::UnSet .main.fbutton.button.comment
-    }
 }
 
 
@@ -783,6 +760,7 @@ proc getPromoPiece {} {
     return $::result
 }
 
+# TODO: remove this
 # confirmReplaceMove:
 #   Asks the user what to do when adding a move when a move already
 #   exists.
@@ -796,7 +774,7 @@ proc confirmReplaceMove {} {
     if {[winfo exists $::reviewgame::window]} {
         return "var"
     }
-    if {! $::askToReplaceMoves || $::trialMode} {
+    if {! $::askToReplaceMoves} {
         return "replace"
     }
 
@@ -804,13 +782,11 @@ proc confirmReplaceMove {} {
     catch {tk_dialog .dialog "Scid: $::tr(ReplaceMove)?" \
                 $::tr(ReplaceMoveMessage) "" 0 \
                 $::tr(ReplaceMove) $::tr(NewMainLine) \
-                $::tr(AddNewVar) [tr EditTrial] \
-                $::tr(Cancel)} answer
+                $::tr(AddNewVar) $::tr(Cancel)} answer
     option add *Dialog.msg.wrapLength 3i interactive
     if {$answer == 0} { return "replace" }
     if {$answer == 1} { return "mainline" }
     if {$answer == 2} { return "var" }
-    if {$answer == 3} { setTrialMode 1; return "replace" }
     return "cancel"
 }
 
@@ -1294,39 +1270,15 @@ bind $dot_w <Return> {
 
 bind $dot_w <Escape> cancelAutoplay
 
-set trialMode 0
-
-proc setTrialMode {mode} {
-    global trialMode
-    if {$mode == "toggle"} {
-        set mode [expr {1 - $trialMode}]
-    }
-    if {$mode == $trialMode} { return }
-    if {$mode == "update"} { set mode $trialMode }
-    
-    if {$mode == 1} {
-        set trialMode 1
-        sc_game push copy
-        .main.fbutton.button.trial configure -image tb_trial_on
-    } else {
-        set trialMode 0
-        sc_game pop
-        .main.fbutton.button.trial configure -image tb_trial
-    }
-    updateBoard -pgn
-}
-
 proc undoFeature {action} {
-    if {! $::trialMode} {
-        if {$action == "save"} {
-            sc_game undoPoint
-        } elseif {$action == "undo"} {
-            sc_game undo
-            notify::GameChanged
-        } elseif {$action == "redo"} {
-            sc_game redo
-            notify::GameChanged
-        }
+    if {$action == "save"} {
+        sc_game undoPoint
+    } elseif {$action == "undo"} {
+        sc_game undo
+        notify::GameChanged
+    } elseif {$action == "redo"} {
+        sc_game redo
+        notify::GameChanged
     }
 }
 
@@ -1588,8 +1540,6 @@ proc InitToolbar {{tb}} {
 	  set helpMessage(.main.tb.$b) $m
 	  # ::utils::tooltip::Set $tb.$b $m
 	}
-	set helpMessage(.main.fbutton.button.addVar) EditAdd
-	set helpMessage(.main.fbutton.button.trial) EditTrial
 	redrawToolbar
 }
 

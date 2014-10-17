@@ -329,20 +329,6 @@ menuText W GInfoDelete "Återta/Radera detta parti" 0
 menuText W GInfoMark "(Av-)Markera detta parti" 5
 menuText W GInfoInformant "Konfigurera Informant-parametrar" 0
 
-# Main window buttons:
-helpMsg W .main.fbutton.button.start {Gå till början av partiet  (kortkommando: Home)}
-helpMsg W .main.fbutton.button.end {Gå till slutet av partiet  (kortkommando: End)}
-helpMsg W .main.fbutton.button.back {Backa ett drag (kortkommando: Vänsterpil)}
-helpMsg W .main.fbutton.button.forward {Gå fram ett drag  (kortkommando: Högerpil)}
-helpMsg W .main.fbutton.button.intoVar {Gå in i variant (kortkommando: v)}
-helpMsg W .main.fbutton.button.exitVar {Gå ur variant  (kortkommando: z)}
-helpMsg W .main.fbutton.button.flip {Rotera brädet  (kortkommando: .)}
-helpMsg W .main.fbutton.button.coords {Visa (inte) koordinater  (kortkommando: 0)}
-helpMsg W .main.fbutton.button.stm {Visa (inte) vilken sida som är vid draget}
-helpMsg W .main.fbutton.button.autoplay {Autospel  (kortkommando: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg W .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate W Back {Tillbaka}
 translate W Browse {Bläddra}

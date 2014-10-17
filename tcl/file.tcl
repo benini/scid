@@ -278,10 +278,7 @@ proc ::file::Close {{base -1}} {
   ::game::HistoryRemoveDB $base
     
   # If base to close was the current one, reset to clipbase
-  if { $current == $base } {
-    setTrialMode 0
-    set current 9
-  }
+  if { $current == $base } { set current 9 }
 
   # Close Tree window whenever a base is closed/switched:
   if {[winfo exists .treeWin$base]} { destroy .treeWin$base }

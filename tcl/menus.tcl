@@ -1353,12 +1353,11 @@ proc updateMenuStates {{menuname}} {
     
     # Save add button:
     set state normal
-    if { $::trialMode } {set state disabled}
     $m.game entryconfig [tr GameAdd] -state $state
     
     # Save replace button:
     set state normal
-    if {[sc_game number] == 0  ||  $isReadOnly  ||  $::trialMode} {
+    if {[sc_game number] == 0  ||  $isReadOnly } {
       set state disabled
     }
     $m.game entryconfig [tr GameReplace] -state $state
@@ -1621,7 +1620,6 @@ proc standardShortcuts {w} {
     bind $w <F1> {helpWindow Contents}
     bind $w <Control-N> nameEditor
     bind $w <Control-a> {sc_var create; updateBoard -pgn}
-    bind $w <Control-space> { setTrialMode toggle }
     bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
     bind $w <Control-u> ::game::GotoMoveNumber
     bind $w <Control-Y> findNovelty

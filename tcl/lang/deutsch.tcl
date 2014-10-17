@@ -355,20 +355,6 @@ menuText D GInfoDelete "(Ent)Lösche diese Partie" 5
 menuText D GInfoMark "(Un)Markiere diese Partie" 4
 menuText D GInfoInformant "Informatorwerte konfigurieren" 0
 
-# Main window buttons:
-helpMsg D .main.fbutton.button.start {Gehe zum Partieanfang  (Taste: Pos 1)}
-helpMsg D .main.fbutton.button.end {Gehe zum Partieende  (Taste: Ende)}
-helpMsg D .main.fbutton.button.back {Gehe einen Zug zurück  (Taste: LinksPfeil)}
-helpMsg D .main.fbutton.button.forward {Gehe einen Zug vor  (Taste: RechtsPfeil)}
-helpMsg D .main.fbutton.button.intoVar {Gehe in Variante  (Taste: v)}
-helpMsg D .main.fbutton.button.exitVar {Verlasse Variante  (Taste: z)}
-helpMsg D .main.fbutton.button.flip {Brett drehen  (Taste: .)}
-helpMsg D .main.fbutton.button.coords {Brettkoordinaten AN oder AUS  (Taste: 0)}
-helpMsg D .main.fbutton.button.stm {Anzeige "Wer ist am Zug" an oder aus}
-helpMsg D .main.fbutton.button.autoplay {Automatisches Vorspielen  (Taste: Strg+Z)}
-# ====== TODO To be translated ======
-helpMsg D .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate D Back {Zurück}
 translate D Browse {Blättern}

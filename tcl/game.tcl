@@ -6,7 +6,6 @@
 #
 proc ::game::ConfirmDiscard {} {
   set curr_db [sc_base current]
-  if {$::trialMode} { return 1 }
   if {[sc_base isReadOnly $curr_db ]} { return 1 }
   if {! [sc_game altered]} { return 1 }
   set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" \
@@ -25,7 +24,6 @@ proc ::game::ConfirmDiscard {} {
 #
 proc ::game::ConfirmDiscard2 {} {
   set curr_db [sc_base current]
-  if {$::trialMode} { return 1 }
   if {[sc_base isReadOnly $curr_db]} { return 1 }
   if {! [sc_game altered]} { return 1 }
   # set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" $::tr(ClearGameDialog) "" 2 \
@@ -71,7 +69,6 @@ proc ::game::Clear {} {
     # ::gameReplace
   }
   
-  setTrialMode 0
   sc_game new
   ::notify::GameChanged
 }
@@ -263,7 +260,6 @@ proc ::game::Load_ { selection {ply ""} } {
     sc_game save [sc_game number]
     # ::gameReplace
   }
-  setTrialMode 0
   sc_game load $selection
   if {$ply != ""} { eval "sc_move ply $ply" }
   return 1

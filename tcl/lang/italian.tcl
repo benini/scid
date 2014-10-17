@@ -352,20 +352,6 @@ menuText I GInfoDelete "Recupera/Cancella questa partita" 9
 menuText I GInfoMark "Smarca/Marca questa partita" 7
 menuText I GInfoInformant "Configura i valori informativi" 0
 
-# Main window buttons:
-helpMsg I .main.fbutton.button.start {Va all'inizio della partita  (chiave: Home)}
-helpMsg I .main.fbutton.button.end {Va alla fine della partita  (chiave: End)}
-helpMsg I .main.fbutton.button.back {Indietro di una mossa (chiave: LeftArrow)}
-helpMsg I .main.fbutton.button.forward {Avanti di una mossa (chiave: RightArrow)}
-helpMsg I .main.fbutton.button.intoVar {Entra in una variante  (chiave abbreviata: v)}
-helpMsg I .main.fbutton.button.exitVar {Lascia la variante attuale  (chiave abbreviata: z)}
-helpMsg I .main.fbutton.button.flip {Ruota la scacchiera (chiave abbreviata: .)}
-helpMsg I .main.fbutton.button.coords {Coordinate on/off  (chiave abbreviata: 0)}
-helpMsg I .main.fbutton.button.stm {Visualizza l'icona di chi ha la mossa (si/no)}
-helpMsg I .main.fbutton.button.autoplay {Mosse automatiche  (chiave: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg I .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate I Back {Indietro}
 translate I Browse {Browse}

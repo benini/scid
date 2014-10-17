@@ -363,19 +363,6 @@ menuText U GInfoDelete "Poista peli (kumoa)" 3
 menuText U GInfoMark "Merkitse peli (kumoa)" 3
 menuText U GInfoInformant "Informant-asetukset" 5
 
-# Main window buttons:
-helpMsg U .main.fbutton.button.start {Pelin alkuun  (pika: Home)}
-helpMsg U .main.fbutton.button.end {Pelin loppuun  (pika: End)}
-helpMsg U .main.fbutton.button.back {Takaisin yksi siirto  (pika: Vasen nuoli)}
-helpMsg U .main.fbutton.button.forward {Eteenp‰in yksi siirto  (pika: Oikea nuoli)}
-helpMsg U .main.fbutton.button.intoVar {Siirry muunnelmaan  (pika: v)}
-helpMsg U .main.fbutton.button.exitVar {Poistu muunnelmasta  (pika: z)}
-helpMsg U .main.fbutton.button.flip {K‰‰nn‰ lauta  (pika: piste)}
-helpMsg U .main.fbutton.button.coords {N‰yt‰/piilota koordinaatit  (pika: 0)}
-helpMsg U .main.fbutton.button.stm {N‰yt‰/piilota siirtovuoron osoitin}
-helpMsg U .main.fbutton.button.autoplay {Siirr‰ automaattisesti  (pika: Ctrl+Z)}
-helpMsg U .main.fbutton.button.comment {Avaa kommenttieditori (pika: Ctrl+E)}
-
 # General buttons:
 translate U Back {Palaa}
 translate U Browse {Selaa}

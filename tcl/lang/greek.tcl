@@ -360,20 +360,6 @@ menuText G GInfoDelete "Διαγραφή/ανάκτηση αυτής της πα
 menuText G GInfoMark "(Μη-)Σημείωση αυτής της παρτίδας" 4
 menuText G GInfoInformant "Ρύθμιση τιμών πληροφορίας" 0
 
-# Main window buttons:
-helpMsg G .main.fbutton.button.start {Μετάβαση στην αρχή της παρτίδας (πλήκτρο: Home)}
-helpMsg G .main.fbutton.button.end {Μετάβαση στο τέλος της παρτίδας (πλήκτρο: End)}
-helpMsg G .main.fbutton.button.back {Μετάβαση μια κίνηση πίσω (πλήκτρο: LeftArrow)}
-helpMsg G .main.fbutton.button.forward {Μετάβαση μια κίνηση εμπρός (πλήκτρο: RightArrow)}
-helpMsg G .main.fbutton.button.intoVar {Μετάβαση σε βαριάντα (πλήκτρο: v)}
-helpMsg G .main.fbutton.button.exitVar {Έξοδος από την τρέχουσα βαριάντα (πλήκτρο: z)}
-helpMsg G .main.fbutton.button.flip {Περιστροφή σκακιέρας (πλήκτρο: .)}
-helpMsg G .main.fbutton.button.coords {Εμφάνιση/απόκρυψη συντεταγμένων σκακιέρας (πλήκτρο: 0)}
-helpMsg G .main.fbutton.button.stm {Εμφάνιση/απόκρυψη του εικονιδίου της πλευράς που είναι να παίξη}
-helpMsg G .main.fbutton.button.autoplay {Αυτόματο παίξιμο κινήσεων (πλήκτρο: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg G .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate G Back {Πίσω}
 translate G Browse {Αναζήτηση}

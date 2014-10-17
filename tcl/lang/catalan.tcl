@@ -355,20 +355,6 @@ menuText K GInfoDelete "(No)Esborrar aquesta partida" 4
 menuText K GInfoMark "(No)Marcar aquesta partida" 4
 menuText K GInfoInformant "Configurar valors d'informació" 0
 
-# Main window buttons:
-helpMsg K .main.fbutton.button.start {Anar al començament de la partida  (Tecla: Inici)}
-helpMsg K .main.fbutton.button.end {Anar al final de la partida  (Tecla: Fi)}
-helpMsg K .main.fbutton.button.back {Anar enrera una jugada  (Tecla: Fletxa esquerra)}
-helpMsg K .main.fbutton.button.forward {Anar endavant una jugada  (Tecla: Fletxa dreta)}
-helpMsg K .main.fbutton.button.intoVar {Moure's a dins d'una variant  (Tecla ràpida: v)}
-helpMsg K .main.fbutton.button.exitVar {Sortir de la variant actual  (Tecla ràpida: z)}
-helpMsg K .main.fbutton.button.flip {Girar escaquer  (Tecla ràpida: .)}
-helpMsg K .main.fbutton.button.coords {Posar/treure les coordenades de l'escaquer  (Tecla ràpida: 0)}
-helpMsg K .main.fbutton.button.stm {Activa/Desactiva la icona de Torn de Joc}
-helpMsg K .main.fbutton.button.autoplay {Autojugada dels moviments  (Tecla: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg K .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate K Back {Enrera}
 translate K Browse {Mirar}

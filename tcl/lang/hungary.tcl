@@ -336,20 +336,6 @@ menuText H GInfoDelete "Törli/helyreállítja ezt a játszmát." 0
 menuText H GInfoMark "Megjelöli ezt a játszmát/megszünteti a jelölést." 0
 menuText H GInfoInformant "Tájékoztató értékek határainak beállítása" 0
 
-# Main window buttons:
-helpMsg H .main.fbutton.button.start {Ugrás a játszma elejére  (billentyû: Home)}
-helpMsg H .main.fbutton.button.end {Ugrás a játszma végére  (billentyû: End)}
-helpMsg H .main.fbutton.button.back {Vissza egy lépéssel  (billentyû: balra mutató nyíl)}
-helpMsg H .main.fbutton.button.forward {Elõre egy lépéssel  (billentyû: jobbra mutató nyíl)}
-helpMsg H .main.fbutton.button.intoVar {Belép egy változatba  (gyorsbillentyû: v).}
-helpMsg H .main.fbutton.button.exitVar {Kilép az aktuális változatból  (gyorsbillentyû: z).}
-helpMsg H .main.fbutton.button.flip {Tábla elforgatása  (gyorsbillentyû: .)}
-helpMsg H .main.fbutton.button.coords {Koordináták be- vagy kikapcsolása  (gyorsbillentyû: 0)}
-helpMsg H .main.fbutton.button.stm {Be- vagy kikapcsolja a lépésjogot mutató ikont}
-helpMsg H .main.fbutton.button.autoplay {Automatikus visszajátszás  (billentyû: Ctrl+Z)}
-# ====== TODO To be translated ======
-helpMsg H .main.fbutton.button.comment {Open comment editor (key: Ctrl+E)}
-
 # General buttons:
 translate H Back {Vissza}
 translate H Browse {Tallóz}
