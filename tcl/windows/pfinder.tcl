@@ -49,7 +49,7 @@ proc ::plist::Open {} {
   bind $w <Escape> "$w.b.close invoke"
   bind $w <Return> ::plist::refresh
   bind $w <Destroy> { set plistWin 0 }
-  standardShortcuts $w
+  keyboardShortcuts $w
   bind $w <Up> "$w.t.text yview scroll -1 units"
   bind $w <Down> "$w.t.text yview scroll 1 units"
   bind $w <Prior> "$w.t.text yview scroll -1 pages"

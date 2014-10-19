@@ -243,7 +243,7 @@ proc ::maint::OpenClose {} {
   
   bind $w <Alt-h> "$w.buttons.help invoke"
   bind $w <Alt-c> "destroy $w; break"
-  standardShortcuts $w
+  keyboardShortcuts $w
   ::maint::Refresh
 }
 

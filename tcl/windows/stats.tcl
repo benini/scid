@@ -77,7 +77,7 @@ proc ::windows::stats::Open {} {
   bind $w <Destroy> {
     set ::windows::stats::isOpen 0
   }
-  standardShortcuts $w
+  keyboardShortcuts $w
 #Klimmek: enable Resize vertical
   wm resizable $w 0 1
   ::windows::stats::ConfigMenus

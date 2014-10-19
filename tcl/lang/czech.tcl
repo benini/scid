@@ -2,8 +2,6 @@
 # Contributed by Pavel Hanák, Vlastimil Babula and Milan Zamazal.
 # Untranslated messages are marked with a "***" comment.
 
-addLanguage C Czech 0 iso-8859-2
-
 proc setLanguage_C {} {
 
 # File menu:

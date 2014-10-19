@@ -125,12 +125,6 @@ if { $macOS } {
 
 }
 
-if { $::docking::USE_DOCKING } {
-  . configure -menu .menu
-} else  {
-  .main configure -menu .menu
-}
-
 foreach menuname { file edit game search windows play tools options helpmenu } {
   menu .menu.$menuname -postcommand "updateMenuStates $menuname"
 }
@@ -239,7 +233,6 @@ for {set i 1} { $i <= $totalBaseSlots} {incr i} {
   if {$i == $clipbaseSlot} {
     set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to the clipbase database"
   }
-  bind $dot_w "<Control-Key-$i>" [list ::file::SwitchToBase $i]
 }
 
 $m add separator
@@ -284,8 +277,6 @@ $m add command -label EditPaste -command {
   sc_clipbase paste
   ::notify::DatabaseModified [sc_info clipbase]
 }
-bind $dot_w <Control-v> {catch {sc_clipbase paste}; updateBoard -pgn}
-bind $dot_w <Shift-Insert> {catch {sc_clipbase paste}; updateBoard -pgn}
 set helpMessage($m,[incr menuindex]) EditPaste
 
 $m add command -label EditPastePGN -command importClipboardGame
@@ -332,11 +323,9 @@ $m add separator
 incr menuindex
 
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
-bind $dot_w <Control-r> { .menu.game invoke [tr GameReplace] }
 set helpMessage($m,[incr menuindex]) GameReplace
 
 $m  add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
-bind $dot_w <Control-s> gameAdd
 set helpMessage($m,[incr menuindex]) GameAdd
 
 $m add separator
@@ -346,15 +335,12 @@ $m add command -label GameDeepest -accelerator "Ctrl+Shift+D" -command {
   sc_move ply [sc_eco game ply]
   updateBoard
 }
-bind $dot_w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
 set helpMessage($m,[incr menuindex]) GameDeepest
 
 $m add command -label GameGotoMove -accelerator "Ctrl+U" -command ::game::GotoMoveNumber
 set helpMessage($m,[incr menuindex]) GameGotoMove
-bind $dot_w <Control-u> ::game::GotoMoveNumber
 
 $m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" -command findNovelty
-bind $dot_w <Control-Y> findNovelty
 set helpMessage($m,[incr menuindex]) GameNovelty
 
 
@@ -453,12 +439,9 @@ set helpMessage($m.correspondence,16) CCMailMove
 set menuindex -1
 set m .menu.windows
 $m  add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
-
-bind $dot_w <Control-e> makeCommentWin
 set helpMessage($m,[incr menuindex]) WindowsComment
 
 $m  add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
-bind $dot_w <Control-l> ::windows::gamelist::Open
 set helpMessage($m,[incr menuindex]) WindowsGList
 
 $m  add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
@@ -535,12 +518,10 @@ set helpMessage($m,[incr menuindex]) ToolsEmail
 
 $m add checkbutton -label ToolsFilterGraph \
     -accelerator "Ctrl+Shift+G" -variable filterGraph -command tools::graphs::filter::Open
-bind $dot_w <Control-G> tools::graphs::filter::Open
 set helpMessage($m,[incr menuindex]) ToolsFilterGraph
 
 $m add checkbutton -label ToolsAbsFilterGraph \
     -accelerator "Ctrl+Shift+J" -variable absfilterGraph -command tools::graphs::absfilter::Open
-bind $dot_w <Control-J> tools::graphs::absfilter::Open
 set helpMessage($m,[incr menuindex]) ToolsAbsFilterGraph
 
 $m add command -label ToolsOpReport \
@@ -1129,6 +1110,11 @@ foreach i [ttk::style theme names] {
 }
 
 menu .menu.options.language
+foreach l $::languages {
+  .menu.options.language add radiobutton -label $::langName($l) \
+      -underline $::langUnderline($l) -variable language -value $l \
+      -command setLanguage
+}
 
 set m .menu.options.fonts
 menu $m
@@ -1272,8 +1258,6 @@ incr menuindex
 $m  add command -label HelpAbout -command helpAbout
 set helpMessage($m,[incr menuindex]) HelpAbout
 
-bind $dot_w <F1> {helpWindow Contents}
-
 ##################################################
 
 # updateMenuStates:
@@ -1411,10 +1395,10 @@ proc configMenuText {menu entry tag lang} {
   }
 }
 
-proc setLanguageMenus {{lang ""}} {
+proc setLanguageMenus {} {
   global menuLabel menuUnder oldLang
-  
-  if {$lang == ""} {set lang $::language}
+  if {![info exists oldLang]} { set oldLang X }
+  set lang $::language
   
   foreach tag { ToolsSeriousGame CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsTrainFics} {
     configMenuText .menu.play [tr $tag $oldLang] $tag $lang
@@ -1540,14 +1524,14 @@ proc setLanguageMenus {{lang ""}} {
     }
   }
   
-  
-  foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
-        TBNothing TBResult TBAll Delete Mark} {
-    configMenuText .main.gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
+  catch {
+    foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
+          TBNothing TBResult TBAll Delete Mark} {
+      configMenuText .main.gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
+    }
+    updateGameInfoMenu
   }
-  
-  updateGameInfoMenu
-  
+
   ::pgn::ConfigMenus
   ::windows::stats::ConfigMenus
   ::tree::ConfigMenus
@@ -1566,6 +1550,8 @@ proc setLanguageMenus {{lang ""}} {
       }
     }
   }
+
+  set oldLang $::language
 }
 ################################################################################
 # updates the contextual game info menu.
@@ -1611,24 +1597,6 @@ proc checkMenuUnderline {menu} {
   return $duplicates
 }
 
-# standardShortcuts:
-#    Sets up a number of standard shortcut keys for the specified window.
-#
-proc standardShortcuts {w} {
-  # Global shortcuts for docked mode
-  if { $::docking::USE_DOCKING } {
-    bind $w <F1> {helpWindow Contents}
-    bind $w <Control-N> nameEditor
-    bind $w <Control-a> {sc_var create; updateBoard -pgn}
-    bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
-    bind $w <Control-u> ::game::GotoMoveNumber
-    bind $w <Control-Y> findNovelty
-    bind $w <Control-F> ::search::filter::negate
-    bind $w <Control-G> tools::graphs::filter::Open
-    bind $w <Control-J> tools::graphs::absfilter::Open
-  }
-  keyboardShortcuts $w
-}
 ################################################################################
 #
 ################################################################################
@@ -1669,6 +1637,8 @@ proc configInformant {} {
   pack $w.spinF $w.close
   bind $w <Configure> "recordWinSize $w"
 }
+
+setLanguageMenus
 
 ### End of file: menus.tcl
 

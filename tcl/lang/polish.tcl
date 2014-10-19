@@ -1,8 +1,6 @@
 ### Polish menus for Scid.
 # Contributed by Michal Rudolf and Adam Umiastowski.
 
-addLanguage P Polish 0 iso8859-2
-
 proc setLanguage_P {} {
 
 menuText P File "Plik" 0

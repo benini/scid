@@ -91,7 +91,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   # Bind left button to close ctxt menu:
   bind $w <ButtonPress-1> "::tree::hideCtxtMenu $baseNumber"
   
-  standardShortcuts $w
+  keyboardShortcuts $w
   
   menu $w.menu
   ::setMenu $w $w.menu
@@ -936,7 +936,7 @@ proc ::tree::graph { baseNumber {bpress 0}} {
     bind $w.c <Button-1> "::tree::graph $baseNumber"
     ::setTitle $w "Scid: Tree Graph $baseNumber: [file tail [sc_base filename $baseNumber]]"
     # wm minsize $w 300 200
-    standardShortcuts $w
+    keyboardShortcuts $w
     ::tree::configGraphMenus "" $baseNumber
   } elseif {$bpress == 1} {
     focus $w

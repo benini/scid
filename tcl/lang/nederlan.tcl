@@ -5,9 +5,6 @@
 #  Changes by Leander Laruelle.
 # Untranslated messages are marked with a "***" comment.
 
-
-addLanguage N Nederlands 0 ;#iso8859-1
-
 proc setLanguage_N {} {
 
 # File menu:

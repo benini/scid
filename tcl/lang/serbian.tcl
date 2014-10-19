@@ -2,8 +2,6 @@
 # Serbian menus for Scid.
 # Contributed by Milos Pejovic.
 
-addLanguage Y Serbian 2 iso8859-2
-
 proc setLanguage_Y {} {
 
 # File menu:

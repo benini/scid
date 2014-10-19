@@ -83,6 +83,11 @@ proc keyboardShortcuts {w} {
 	# TODO: <v> is not intuitive: <space> or <up> <down> may be better
 	bind $w <KeyPress-v> { ::showVars }
 
+	# Change current database
+	set totalBaseSlots [sc_base count total]
+	for {set i 1} { $i <= $totalBaseSlots} {incr i} {
+		bind $w <Control-Key-$i> {::file::SwitchToBase $i}
+	}
 
 	#TODO: to be checked
 	bind $w <F6>	::book::open
@@ -112,6 +117,7 @@ proc keyboardShortcuts {w} {
 	bind $w <F5> { if {[winfo exists .analysisWin2]} { .analysisWin2.b1.bStartStop invoke } }
 	bind $w <Control-A> makeAnalysisWin
 	bind $w <Control-Shift-2>	"makeAnalysisWin 2"
+	bind $w <Control-a> {sc_var create; updateBoard -pgn}
 
 
 	#TODO: are these shortcuts useful?
@@ -122,8 +128,17 @@ proc keyboardShortcuts {w} {
 
 	bind $w <Control-C> ::copyFEN
 	bind $w <Control-V> ::pasteFEN
+	bind $w <Control-v> {catch {sc_clipbase paste}; updateBoard -pgn}
+	bind $w <Shift-Insert> {catch {sc_clipbase paste}; updateBoard -pgn}
 	bind $w <Control-E> ::tools::email
 	bind $w <Control-I> importPgnGame
+	bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}
+	bind $w <Control-G> tools::graphs::filter::Open
+	bind $w <Control-J> tools::graphs::absfilter::Open
+	bind $w <Control-u> ::game::GotoMoveNumber
+	bind $w <Control-Y> findNovelty
+	bind $w <F1> {helpWindow Contents}
+	bind $w <Control-N> nameEditor
 
 	bind $w <Control-slash> ::file::finder::Open
 	bind $w <Control-Shift-Up> {::game::LoadNextPrev first}

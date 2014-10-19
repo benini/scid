@@ -524,7 +524,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   pack $w.status -side bottom -fill x
   # update
   wm resizable $w 0 0
-  # standardShortcuts $w
   ::search::Config
   focus $w.cWhite.e
 }

@@ -40,9 +40,6 @@
 #
 # Additions, corrections? Email: sgh@users.sourceforge.net
 
-
-addLanguage E English 0
-
 proc setLanguage_E {} {
 
 # File menu:
@@ -1546,9 +1543,9 @@ translate E QGDExchange {QGD Exchange}
 translate E SemiSlav {Semi-Slav}
 translate E QGDwithBg5 {QGD with Bg5}
 translate E QGDOrthodox {QGD Orthodox}
-translate E Grunfeld {GrÃ¼nfeld}
-translate E GrunfeldExchange {GrÃ¼nfeld Exchange}
-translate E GrunfeldRussian {GrÃ¼nfeld Russian}
+translate E Grunfeld {Grünfeld}
+translate E GrunfeldExchange {Grünfeld Exchange}
+translate E GrunfeldRussian {Grünfeld Russian}
 translate E Catalan {Catalan}
 translate E CatalanOpen {Catalan Open}
 translate E CatalanClosed {Catalan Closed}
@@ -1557,7 +1554,7 @@ translate E NimzoIndian {Nimzo-Indian}
 translate E NimzoIndianClassical {Nimzo-Indian Classical}
 translate E NimzoIndianRubinstein {Nimzo-Indian Rubinstein}
 translate E KingsIndian {King's Indian}
-translate E KingsIndianSamisch {King's Indian SÃ¤misch}
+translate E KingsIndianSamisch {King's Indian Sämisch}
 translate E KingsIndianMainLine {King's Indian Main Line}
 
 # FICS

@@ -1638,7 +1638,7 @@ namespace eval CorrespondenceChess {
 		setWinSize $w
 
 		# enable the standard shortcuts
-		standardShortcuts $w
+		keyboardShortcuts $w
 
 		::CorrespondenceChess::EnableEngineAnalysis 0
 

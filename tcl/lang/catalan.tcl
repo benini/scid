@@ -4,9 +4,6 @@
 # Date: 2009-04-07
 # Version: 1
 
-
-addLanguage K Català 2 
-
 proc setLanguage_K {} {
 
 # File menu:

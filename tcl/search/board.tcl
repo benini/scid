@@ -88,7 +88,6 @@ proc ::search::board {{ref_base ""}} {
   ttk::label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
   wm resizable $w 0 0
-  # standardShortcuts $w
   ::search::Config
   focus $w.b.search
 }

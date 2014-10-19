@@ -35,7 +35,7 @@ exec `dirname $0`/tkscid "$0" "$@"
 
 package require Tcl 8.5
 package require Tk  8.5
-if {$tcl_version == 8.5} { package require img::png }
+if {$tcl_version == 8.5} { catch {package require img::png} }
 
 set scidVersion [sc_info version]
 set scidVersionDate [sc_info version date]
@@ -391,7 +391,6 @@ set showGameInfo 0
 
 # language for help pages and messages:
 set language E
-set oldLang X
 
 # Default theme
 set ::lookTheme "default"
@@ -1114,11 +1113,15 @@ proc InitImg {} {
 }
 InitImg
 
+# Set numeric format
+sc_info decimal $::locale(numeric)
+
 # Start in the clipbase, if no database is loaded at startup.
 sc_base switch clipbase
 
 set tcl_files {
 language.tcl
+errors.tcl
 utils.tcl
 utils/date.tcl
 utils/font.tcl
@@ -1176,24 +1179,6 @@ board.tcl
 move.tcl
 main.tcl
 tools/correspondence.tcl
-lang/english.tcl
-lang/catalan.tcl
-lang/czech.tcl
-lang/deutsch.tcl
-lang/francais.tcl
-lang/greek.tcl
-lang/hungary.tcl
-lang/italian.tcl
-lang/nederlan.tcl
-lang/norsk.tcl
-lang/polish.tcl
-lang/portbr.tcl
-lang/russian.tcl
-lang/serbian.tcl
-lang/spanish.tcl
-lang/suomi.tcl
-lang/swedish.tcl
-errors.tcl
 tools/uci.tcl
 end.tcl
 tools/tacgame.tcl
@@ -1210,12 +1195,7 @@ utils/bibliography.tcl
 }
 
 foreach f $tcl_files {
-  if {"$f" == "lang/greek.tcl" || "$f" == "lang/russian.tcl"} {
-    #TODO: temporary hack for utf-8 files
-    source -encoding utf-8 [file nativename [file join $::scidTclDir "$f"]]
-  } else {
     source [file nativename [file join $::scidTclDir "$f"]]
-  }
 }
 
 ###

@@ -131,14 +131,6 @@ proc setWinSize {win} {
   }
 }
 
-# depending on the docking mode, change the definition of window "." (ie main window)
-if {$::docking::USE_DOCKING} {
-  set dot_w "."
-} else  {
-  set dot_w ".main"
-}
-createToplevel .main
-
 ###
 ### End of file: windows.tcl
 ###

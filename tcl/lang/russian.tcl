@@ -5,8 +5,6 @@
 #  Untranslated messages are marked with a "***" comment.
 #  Untranslated help page sections are in <NEW>...</NEW> tags.
 
-addLanguage R Russian 1 utf-8
-
 proc setLanguage_R {} {
 
 # File menu:

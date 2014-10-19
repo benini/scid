@@ -191,11 +191,7 @@ namespace eval pgn {
         destroy .pgnWin
       }
     }
-    standardShortcuts $w
-    
-    # Add variation navigation bindings:
-    bind $w <KeyPress-v> [bind $::dot_w <KeyPress-v>]
-    bind $w <KeyPress-z> [bind $::dot_w <KeyPress-z>]
+    keyboardShortcuts $w
     
     $w.text tag add Current 0.0 0.0
     ::pgn::ResetColors

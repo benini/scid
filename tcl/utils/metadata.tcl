@@ -160,7 +160,7 @@ namespace eval metadata {
 			button $w.bCancel -text [::tr "Cancel"] -command "destroy $w"
 
 			# enable the standard shortcuts
-			standardShortcuts $w
+			keyboardShortcuts $w
 
 			set textcolour "black"
 			if {[catch {source $metadatafile} ]} {

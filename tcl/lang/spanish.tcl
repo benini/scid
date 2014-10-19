@@ -6,8 +6,6 @@
 # Updated by Pedro Reina.
 # Untranslated messages are marked with a "***" comment.
 
-addLanguage S Español 1 ;#iso8859-1
-
 proc setLanguage_S {} {
 
 # File menu:

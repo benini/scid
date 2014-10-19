@@ -4,8 +4,6 @@
 # Translations contributed by:
 # Gilles Maire, Vincent Serisier, Joel Rivat, and Pascal Heisel.
 
-addLanguage F Francais 0 iso8859-1
-
 proc setLanguage_F {} {
 
 # File menu:

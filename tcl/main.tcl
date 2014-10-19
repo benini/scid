@@ -34,15 +34,6 @@
 set moveEntry(Text) ""
 set moveEntry(List) {}
 
-# Bind Alt+letter key to nothing, to stop Alt+letter from
-# matching the move entry bindings, so Alt+letter ONLY invokes
-# the menus:
-foreach key {a b c d e f g h i j k l m n o p q r s t u v w x y z} {
-    bind $dot_w <Alt-$key> {
-        # nothing
-    }
-}
-
 proc moveEntry_Clear {} {
     global moveEntry
     set moveEntry(Text) ""
@@ -1262,14 +1253,6 @@ proc cancelAutoplay {} {
 #
 ################################################################################
 
-bind $dot_w <Return> {
-    if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
-        .analysisWin1.b1.move invoke
-    }
-}
-
-bind $dot_w <Escape> cancelAutoplay
-
 proc undoFeature {action} {
     if {$action == "save"} {
         sc_game undoPoint
@@ -1330,9 +1313,9 @@ proc toggleGameInfo {} {
 }
 ################################################################################
 
-proc CreateMainWin { {w} } {
+proc CreateMainBoard { {w} } {
   setTitle $w [ ::tr "Board" ]
-  standardShortcuts $w
+  keyboardShortcuts $w
 
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board 1
@@ -1370,9 +1353,12 @@ proc CreateMainWin { {w} } {
 
   foreach i {o q r n k O Q R B N K} {
     bind $w <$i> "moveEntry_Char [string toupper $i]"
+    bind $w <Alt-$i> { continue }
+
   }
   foreach i {a b c d e f g h 1 2 3 4 5 6 7 8} {
     bind $w <Key-$i> "moveEntry_Char $i"
+    bind $w <Alt-$i> { continue }
   }
 
   bind $w <Control-BackSpace> backSquare
@@ -1381,7 +1367,14 @@ proc CreateMainWin { {w} } {
   bind $w <Delete> moveEntry_Backspace
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
-  bind $w <Configure> { ::resizeMainBoard }
+  bind $w <Configure> {+::resizeMainBoard }
+  bind $w <Escape> { cancelAutoplay }
+  bind $w <Return> { #TODO: improve this
+    if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
+        .analysisWin1.b1.move invoke
+    }
+  }
+
   bindMouseWheel $w "main_mousewheelHandler"
 
   if { $::docking::USE_DOCKING} {
@@ -1402,75 +1395,73 @@ proc CreateMainWin { {w} } {
   updateBoard
 }
 
+proc CreateGameInfo {} {
+  # .gameInfo is the game information widget:
+  #
+  autoscrollframe .main.gameInfoFrame text .main.gameInfo
+  .main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
+  ::htext::init .main.gameInfo
+  
+  # Set up player photos:
+  image create photo photoW
+  image create photo photoB
+  label .main.photoW -background white -image photoW -anchor ne
+  label .main.photoB -background white -image photoB -anchor ne
+  
+  # Right-mouse button menu for gameInfo frame:
+  menu .main.gameInfo.menu -tearoff 0
+  
+  .main.gameInfo.menu add checkbutton -label GInfoHideNext \
+          -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
+  
+  .main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
+          -command { toggleShowMaterial }
+  
+  .main.gameInfo.menu add checkbutton -label GInfoFEN \
+          -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
+  
+  .main.gameInfo.menu add checkbutton -label GInfoMarks \
+          -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
+  
+  .main.gameInfo.menu add checkbutton -label GInfoWrap \
+          -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
+  
+  .main.gameInfo.menu add checkbutton -label GInfoFullComment \
+          -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
+  
+  .main.gameInfo.menu add checkbutton -label GInfoPhotos \
+          -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
+          -command {updatePlayerPhotos -force}
+  
+  .main.gameInfo.menu add separator
+  
+  .main.gameInfo.menu add radiobutton -label GInfoTBNothing \
+          -variable gameInfo(showTB) -value 0 -command updateBoard
+  
+  .main.gameInfo.menu add radiobutton -label GInfoTBResult \
+          -variable gameInfo(showTB) -value 1 -command updateBoard
+  
+  .main.gameInfo.menu add radiobutton -label GInfoTBAll \
+          -variable gameInfo(showTB) -value 2 -command updateBoard
+  
+  .main.gameInfo.menu add separator
+  
+  .main.gameInfo.menu add command -label GInfoDelete -command {
+      sc_base gameflag [sc_base current] [sc_game number] invert del
+      ::notify::DatabaseModified [sc_base current]
+  }
+  
+  .main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
+  menu .main.gameInfo.menu.mark
+  foreach flag $::maintFlaglist {
+      .main.gameInfo.menu.mark add command -label "" -command "
+      sc_base gameflag \[sc_base current\] \[sc_game number\] invert $flag
+      ::notify::DatabaseModified [sc_base current]
+      "
+  }
 
-# .gameInfo is the game information widget:
-#
-autoscrollframe .main.gameInfoFrame text .main.gameInfo
-.main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
-::htext::init .main.gameInfo
-
-# Set up player photos:
-image create photo photoW
-image create photo photoB
-label .main.photoW -background white -image photoW -anchor ne
-label .main.photoB -background white -image photoB -anchor ne
-
-# Right-mouse button menu for gameInfo frame:
-menu .main.gameInfo.menu -tearoff 0
-
-.main.gameInfo.menu add checkbutton -label GInfoHideNext \
-        -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoMaterial -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 \
-        -command { toggleShowMaterial }
-
-.main.gameInfo.menu add checkbutton -label GInfoFEN \
-        -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoMarks \
-        -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoWrap \
-        -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoFullComment \
-        -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
-
-.main.gameInfo.menu add checkbutton -label GInfoPhotos \
-        -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-        -command {updatePlayerPhotos -force}
-
-.main.gameInfo.menu add separator
-
-.main.gameInfo.menu add radiobutton -label GInfoTBNothing \
-        -variable gameInfo(showTB) -value 0 -command updateBoard
-
-.main.gameInfo.menu add radiobutton -label GInfoTBResult \
-        -variable gameInfo(showTB) -value 1 -command updateBoard
-
-.main.gameInfo.menu add radiobutton -label GInfoTBAll \
-        -variable gameInfo(showTB) -value 2 -command updateBoard
-
-.main.gameInfo.menu add separator
-
-.main.gameInfo.menu add command -label GInfoDelete -command {
-    sc_base gameflag [sc_base current] [sc_game number] invert del
-    ::notify::DatabaseModified [sc_base current]
+  bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
 }
-
-.main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
-menu .main.gameInfo.menu.mark
-foreach flag $maintFlaglist {
-    .main.gameInfo.menu.mark add command -label "" -command "
-    sc_base gameflag \[sc_base current\] \[sc_game number\] invert $flag
-    ::notify::DatabaseModified [sc_base current]
-    "
-}
-
-bind .main.gameInfo <ButtonPress-$::MB3> "tk_popup .main.gameInfo.menu %X %Y"
-# alternate code that may work better on MacOS ?
-# bind .main.gameInfo <ButtonPress-$::MB3> ".main.gameInfo.menu post %X %Y"
-bind $dot_w <F9> "tk_popup .main.gameInfo.menu %X %Y"
 
 proc InitToolbar {{tb}} {
 	ttk::frame $tb -relief raised -border 1

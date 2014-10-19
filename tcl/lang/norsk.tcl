@@ -4,8 +4,6 @@
 # Edited for Scid 3.2.beta4
 # Thanks to Martin Skjöldebrand, swedish.tcl was of great help to me.
 
-addLanguage O Norsk 1 ;#iso8859-1
-
 proc setLanguage_O {} {
 
 # File menu:

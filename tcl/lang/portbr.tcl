@@ -2,8 +2,6 @@
 # Scid in Brazilian Portuguese.
 # Translated by Gilberto de Almeida Peres.
 
-addLanguage B {Brazil Portuguese} 0 ;#iso8859-1
-
 proc setLanguage_B {} {
 
 # File menu:

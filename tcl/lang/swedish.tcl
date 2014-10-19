@@ -4,8 +4,6 @@
 # Contributed by Martin Skjöldebrand, martin@skjoldebrand.org
 # Thanks to: Hans Eriksson, for looking over the translation file
 
-addLanguage W Swedish 1 ;#iso8859-1
-
 proc setLanguage_W {} {
 
 # File menu:

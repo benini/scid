@@ -65,13 +65,12 @@ proc untrans { msg } {
 ################################################################################
 #
 ################################################################################
-proc addLanguage {letter name underline {encodingSystem ""}} {
-  global langEncoding languages
-  .menu.options.language add radiobutton -label $name \
-      -underline $underline -variable language -value $letter \
-      -command setLanguage
+proc addLanguage {letter name underline encodingSystem filename} {
+  lappend ::languages $letter
+  set ::langName($letter) $name
+  set ::langUnderline($letter) $underline
   set ::langEncoding($letter) $encodingSystem
-  lappend languages $letter
+  set ::langSourceFile($letter) $filename
 }
 ################################################################################
 # menuText:
@@ -144,10 +143,9 @@ proc tr {tag {lang ""}} {
 ################################################################################
 #
 ################################################################################
-proc setLanguage {{lang ""}} {
-  global menuLabel menuUnder oldLang
-  
-  if {$lang == ""} {set lang $::language}
+proc setLanguage {} {
+  global menuLabel menuUnder
+  set lang $::language
   
   if { $::translatePieces } {
     switch $lang {
@@ -169,10 +167,18 @@ proc setLanguage {{lang ""}} {
     sc_info language en
   }
   
-  if {[catch {setLanguage_$lang} err]} { puts "Error: $err" }
-  
+  if {[catch {
+    if {[info exists ::langSourceFile($lang)]} {
+      source -encoding $::langEncoding($lang) [file nativename [file join "$::scidTclDir" "lang/$::langSourceFile($lang)"]]
+      unset ::langSourceFile($lang)
+    }
+    setLanguage_$lang
+  } err ]} {
+    tk_messageBox -message "Error loading $lang language: $err"
+  }
+
   # If using Tk, translate all menus:
-  if {! [catch {winfo exists .}]} { setLanguageMenus $lang }
+  if {[winfo exists .menu]} { setLanguageMenus }
   # update notation window
   if {[winfo exists .pgnWin]} { ::pgn::Refresh 1 }
   
@@ -183,7 +189,6 @@ proc setLanguage {{lang ""}} {
       set ::tr($i) $::translations(E,$i)
     }
   }
-  set oldLang $lang
 }
 ################################################################################
 # Will switch language only for Scid backoffice, no UI
@@ -207,5 +212,24 @@ proc setLanguageTemp { lang } {
   }
 }
 
-### End of file: lang.tcl
+addLanguage E English 0 iso8859-1 english.tcl
+addLanguage K Català 2 iso8859-1 catalan.tcl
+addLanguage C Czech 0 iso8859-1 czech.tcl
+addLanguage D Deutsch 0 iso8859-1 deutsch.tcl
+addLanguage F Francais 0 iso8859-1 francais.tcl
+addLanguage G Greek 0 utf-8 greek.tcl
+addLanguage H Hungarian 0 iso8859-1 hungary.tcl
+addLanguage I Italian 0 iso8859-1 italian.tcl
+addLanguage N Nederlands 0 iso8859-1 nederlan.tcl
+addLanguage O Norsk 1 iso8859-1 norsk.tcl
+addLanguage P Polish 0 iso8859-1 polish.tcl
+addLanguage B {Brazil Portuguese} 0 iso8859-1 portbr.tcl
+addLanguage R Russian 1 utf-8 russian.tcl
+addLanguage Y Serbian 2 iso8859-1 serbian.tcl
+addLanguage S Español 1 iso8859-1 spanish.tcl
+addLanguage U Suomi 1 iso8859-1 suomi.tcl
+addLanguage W Swedish 1 iso8859-1 swedish.tcl
 
+setLanguage
+
+### End of file: lang.tcl

@@ -31,9 +31,6 @@
 # του Scid και της μετάφρασής του στα Ελληνικά, να επικοινωνήσετε με τον μεταφραστή του παρόντος
 # κειμένου στη διεύθυνση tripalatos@gmail.com για κάθε σφάλμα ή παράλειψη!
 
-
-addLanguage G Greek 0 utf-8
-
 proc setLanguage_G {} {
 
 # File menu:

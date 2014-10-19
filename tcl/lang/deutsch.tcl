@@ -17,8 +17,6 @@
 #     to underline, counting from zero as the first letter. Two menu entries
 #     that appear in the same menu should have a different underlined letter.
 
-addLanguage D Deutsch 0 iso8859-1
-
 proc setLanguage_D {} {
 
 # File menu:

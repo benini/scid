@@ -5,8 +5,6 @@
 # Updated by Michele Rinesi on 19/02/2004.
 # Untranslated messages are marked with a "***" comment.
 
-addLanguage I Italian 0 ; # iso8859-1
-
 proc setLanguage_I {} {
 
 # File menu:
@@ -211,7 +209,7 @@ menuText I ToolsExpFilterLaTeX "Esporta filtro in un file LaTeX..." 17 \
 menuText I ToolsImportOne "Importa una partita in formato PGN..." 0 \
   {Importa una partita da testo PGN}
 menuText I ToolsImportFile "Importa file(s) di partite PGN..." 11 \
-  {Importa le partite da uno o piÃ¹ file PGN}
+  {Importa le partite da uno o più file PGN}
 menuText I ToolsStartEngine1 "Avvia il motore 1" 0  {Avvia il primo motore per l'analisi della posizione}
 menuText I ToolsStartEngine2 "Avvia il motore 2" 0  {Avvia il secondo motore per l'analisi della posizione}
 # ====== TODO To be translated ======
@@ -437,8 +435,8 @@ translate I Total {Totale}
 translate I readonly {sola-lettura}
 
 # Standard error messages:
-translate I ErrNotOpen {Questo database non ï¿½ aperto.}
-translate I ErrReadOnly {Questo database ï¿½ a sola lettura; non puo' essere modificato.}
+translate I ErrNotOpen {Questo database non è aperto.}
+translate I ErrReadOnly {Questo database è a sola lettura; non puo' essere modificato.}
 translate I ErrSearchInterrupted {Ricerca interrotta; il risultato e' incompleto.}
 
 # Game information:
@@ -530,9 +528,9 @@ menuText I TreeSortECO "codice ECO" 0
 menuText I TreeSortFreq "Frequenza" 0
 menuText I TreeSortScore "Punti" 0
 menuText I TreeOpt "Opzioni" 0
-menuText I TreeOptSlowmode "ModalitÃ  lenta" 0 {ModalitÃ  lenta per l'aggiornamento (piÃ¹ precisa)}
-menuText I TreeOptFastmode "ModalitÃ  veloce" 0 {ModalitÃ  veloce per l'aggiornamento (nessuna trasposizione di mosse)}
-menuText I TreeOptFastAndSlowmode "ModalitÃ  lenta e veloce" 0 {ModalitÃ  lenta e veloce per l'aggiornamento}
+menuText I TreeOptSlowmode "Modalità lenta" 0 {Modalità lenta per l'aggiornamento (più precisa)}
+menuText I TreeOptFastmode "Modalità veloce" 0 {Modalità veloce per l'aggiornamento (nessuna trasposizione di mosse)}
+menuText I TreeOptFastAndSlowmode "Modalità lenta e veloce" 0 {Modalità lenta e veloce per l'aggiornamento}
 # ====== TODO To be translated ======
 menuText I TreeOptStartStop "Auto refreshing" 0 {Toggles automatic refreshing of the tree window}
 menuText I TreeOptLock "Blocca" 0 {Blocca/sblocca l'albero al database corrente}
@@ -657,8 +655,8 @@ menuText I PListSort "Ordina" 0
 menuText I PListSortName "Nome" 0
 menuText I PListSortElo "Elo" 0
 menuText I PListSortGames "Partite" 0
-menuText I PListSortOldest "Piï¿½ vecchie" 0
-menuText I PListSortNewest "Piï¿½ recenti" 0
+menuText I PListSortOldest "Più vecchie" 0
+menuText I PListSortNewest "Più recenti" 0
 
 # Tournament finder:
 menuText I TmtFile "File" 0
@@ -712,12 +710,12 @@ translate I AnnotateAll {Per mosse di entrambi i colori}
 translate I AnnotateAllMoves {Tutte le mosse}
 translate I AnnotateWhite {Per solo le mosse del Bianco}
 translate I AnnotateBlack {Per solo le mosse del Nero}
-translate I AnnotateBlundersOnly {Quando la mossa Ã¨ chiaramente un errore}
+translate I AnnotateBlundersOnly {Quando la mossa è chiaramente un errore}
 translate I AnnotateBlundersOnlyScoreChange {L'analisi riporta come errori, con variazione del punteggio da/a:}
 translate I BlundersThreshold {Limite}
 # TODO: Translate
 translate I ScoreAllMoves {Score all moves}
-translate I LowPriority {Imposta la prioritÃ  della CPU a bassa}
+translate I LowPriority {Imposta la priorità della CPU a bassa}
 translate I ClickHereToSeeMoves {Clicca qui per vedere le mosse}
 translate I ConfigureInformant {Configura i valori informativi}
 translate I Informant!? {Mossa interessante}
@@ -727,7 +725,7 @@ translate I Informant?! {Mossa dubbia}
 translate I Informant+= {Il bianco ha un leggero vantaggio}
 translate I Informant+/- {Il bianco ha un moderato vantaggio}
 translate I Informant+- {Il bianco ha un vantaggio decisivo}
-translate I Informant++- {La partita Ã¨ considerata vinta}
+translate I Informant++- {La partita è considerata vinta}
 translate I Book {Libro}
 # ====== TODO To be translated ======
 translate I OtherBookMoves {Opponent's book}
@@ -1009,7 +1007,7 @@ translate I ReclassifyGames {Partite classificate ECO}
 translate I CompactDatabase {Compatta database}
 translate I SortDatabase {Ordina database}
 translate I AddEloRatings {Aggiungi punteggio Elo}
-translate I AutoloadGame {Numero della partita che si caricherï¿½ automaticamente}
+translate I AutoloadGame {Numero della partita che si caricherà automaticamente}
 translate I StripTags {Toglie i PGN tags}
 translate I StripTag {Toglie i tag}
 translate I Cleaner {Manutentore Globale}
@@ -1028,17 +1026,17 @@ translate I TwinChecknextPair {Coppia seguente}
 translate I TwinChecker {Scid: Controllo partite doppie}
 translate I TwinCheckTournament {Partite nel torneo:}
 translate I TwinCheckNoTwin {Nessuna partita doppia}
-translate I TwinCheckNoTwinfound {Nessun doppio Ã¨ stato trovato per questa partita.\nPer mostrare i doppi con questa finestra, devi prima usare la funzione "Cancella le partite doppie".}
+translate I TwinCheckNoTwinfound {Nessun doppio è stato trovato per questa partita.\nPer mostrare i doppi con questa finestra, devi prima usare la funzione "Cancella le partite doppie".}
 translate I TwinCheckTag {Condividi i tags...}
 translate I TwinCheckFound1 {Scid ha trovato $result partite doppie}
 translate I TwinCheckFound2 { e ha impostato il loro stato a cancellato}
 translate I TwinCheckNoDelete {Non ci sono partite da cancellare nel database.}
 translate I TwinCriteria1 {Le impostazioni per trovare le partite doppie possono portare a determinare come doppie partite diverse con mosse simili.}
-translate I TwinCriteria2 {Si consiglia di selezionare "No" per "Stesse Mosse", e "SÃ¬" per colori, evento, luogo, turno, anno e mese.\nVuoi procedere e cancellare le partite doppie comunque?}
-translate I TwinCriteria3 {Si consiglia di selezionare "SÃ¬" per almeno due tra "stesso luogo", "stesso turno" and "stesso anno".\nVuoi procedere e cancellare le partite doppie comunque?}
+translate I TwinCriteria2 {Si consiglia di selezionare "No" per "Stesse Mosse", e "Sì" per colori, evento, luogo, turno, anno e mese.\nVuoi procedere e cancellare le partite doppie comunque?}
+translate I TwinCriteria3 {Si consiglia di selezionare "Sì" per almeno due tra "stesso luogo", "stesso turno" and "stesso anno".\nVuoi procedere e cancellare le partite doppie comunque?}
 translate I TwinCriteriaConfirm {Scid: Conferma le impostazioni per el partite doppie}
 translate I TwinChangeTag "Cambia i seguenti tags della partita:\n\n"
-translate I AllocRatingDescription "Questo comando usa l'attuale controllore ortografico per aggiungere i punteggi Elo alle partite in questo database. Se un giocatore non ha un punteggio ma il suo punteggio al momento della partita Ã¨ presente nel controllore ortografico, quel punteggio sarÃ  aggiunto."
+translate I AllocRatingDescription "Questo comando usa l'attuale controllore ortografico per aggiungere i punteggi Elo alle partite in questo database. Se un giocatore non ha un punteggio ma il suo punteggio al momento della partita è presente nel controllore ortografico, quel punteggio sarà aggiunto."
 translate I RatingOverride "Sovrascrivi i punteggi diversi da zero?"
 translate I AddRatings "Aggiungi i punteggi a:"
 translate I AddedRatings {Scid ha aggiunto $r punteggi Elo in $g partite.}
@@ -1060,13 +1058,13 @@ translate I ExcellentMove {Mossa ottima}
 translate I Blunder {Svista}
 translate I InterestingMove {Mossa interessante}
 translate I DubiousMove {Mossa dubbia}
-translate I WhiteDecisiveAdvantage {Il Bianco ï¿½ in vantaggio decisivo}
-translate I BlackDecisiveAdvantage {Il Nero ï¿½ in vantaggio decisivo}
+translate I WhiteDecisiveAdvantage {Il Bianco è in vantaggio decisivo}
+translate I BlackDecisiveAdvantage {Il Nero è in vantaggio decisivo}
 translate I WhiteClearAdvantage {Il Bianco sta meglio}
 translate I BlackClearAdvantage {Il Nero sta meglio}
 translate I WhiteSlightAdvantage {Il Bianco sta leggermente meglio}
 translate I BlackSlightAdvantage {Il Nero sta leggermente meglio}
-translate I Equality {Paritï¿½}
+translate I Equality {Parità}
 translate I Unclear {Incerta}
 translate I Diagram {Diagramma}
 
@@ -1212,7 +1210,7 @@ translate I OprepUp {su %u%s da tutti gli anni}
 translate I OprepDown {giu' %u%s da tutti gli anni}
 translate I OprepSame {nessuna variazione da tutti gli anni}
 translate I OprepMostFrequent {Giocatori piu' frequenti}
-translate I OprepMostFrequentOpponents {Avversari piï¿½ frequenti}
+translate I OprepMostFrequentOpponents {Avversari più frequenti}
 translate I OprepRatingsPerf {Punteggi e Performance}
 translate I OprepAvgPerf {Punteggi medi e performance}
 translate I OprepWRating {Punteggio del Bianco}
@@ -1238,7 +1236,7 @@ translate I OprepMoveOrdersAll \
 translate I OprepMoveOrdersMany \
   {C'erano %u ordini di mossa che raggiungevano questa posizione. Le prime %u sono:}
 translate I OprepMovesFrom {Mosse dalla posizione del rapporto}
-translate I OprepMostFrequentEcoCodes {Codici ECO piï¿½ frequenti}
+translate I OprepMostFrequentEcoCodes {Codici ECO più frequenti}
 translate I OprepThemes {Temi Posizionali}
 translate I OprepThemeDescription {Frequenza dei Temi nelle prime %u mosse di ogni partita}
 translate I OprepThemeSameCastling {Arrocco dallo stesso lato}
@@ -1312,7 +1310,7 @@ translate I TwinsSetFilter {Definisci il filtro a tutte le partite doppie cancel
 translate I TwinsComments {Mantieni sempre le partite con commenti?}
 translate I TwinsVars {Mantieni sempre le partite con varianti?}
 translate I TwinsDeleteWhich {Quale partita cancellare:}
-translate I TwinsDeleteShorter {La partita piï¿½ corta}
+translate I TwinsDeleteShorter {La partita più corta}
 translate I TwinsDeleteOlder {La partita inserita prima nel database}
 translate I TwinsDeleteNewer {La partita inserita dopo nel database}
 translate I TwinsDelete {Cancella partite}
@@ -1353,10 +1351,10 @@ translate I CurrentState {Stato Attuale}
 translate I AfterCompaction {Dopo la compattazione}
 translate I CompactNames {Compatta il file di nomi}
 translate I CompactGames {Compatta il file di partite}
-translate I NoUnusedNames "Non ci sono nomi inutilizzati, il file dei nomi Ã¨ giÃ  compresso."
-translate I NoUnusedGames "Il file delle partite Ã¨ giÃ  compresso."
-translate I NameFileCompacted {Il file dei nomi del database "[file tail [sc_base filename]]" Ã¨ stato compresso.}
-translate I GameFileCompacted {Il file delle partite del database "[file tail [sc_base filename]]" Ã¨ stato compresso.}
+translate I NoUnusedNames "Non ci sono nomi inutilizzati, il file dei nomi è già compresso."
+translate I NoUnusedGames "Il file delle partite è già compresso."
+translate I NameFileCompacted {Il file dei nomi del database "[file tail [sc_base filename]]" è stato compresso.}
+translate I GameFileCompacted {Il file delle partite del database "[file tail [sc_base filename]]" è stato compresso.}
 
 # Sorting:
 translate I SortCriteria {Criteri}
@@ -1445,7 +1443,7 @@ translate I RecentFilesExtra {Numero di file recentemente utilizzati nel submenu
 translate I MyPlayerNamesDescription {
 Inserisci sotto una lista di giocatori preferiti, un nome per linea. Wildcards (e.g. "?" per ogni singolo carattere, "*" per ogni sequenza di caratteri) sono accettati.
 
-Ogni volta che viene caricata una partita con un giocatore nella lista, la finestra principale della scacchiera se necessario ruoterÃ  e vi proporrÃ  la partita dal punto di vista di quel giocatore.
+Ogni volta che viene caricata una partita con un giocatore nella lista, la finestra principale della scacchiera se necessario ruoterà e vi proporrà la partita dal punto di vista di quel giocatore.
 }
 translate I showblunderexists {mostra gli errori}
 translate I showblundervalue {mostra il valore dell'errore}
@@ -1455,7 +1453,7 @@ translate I configurecoachgame {configura la partita con maestro}
 translate I configuregame {Configurazione della partita}
 translate I Phalanxengine {Motore Phalanx}
 translate I Coachengine {Motore per il maestro}
-translate I difficulty {difficoltÃ }
+translate I difficulty {difficoltà}
 translate I hard {difficile}
 translate I easy {facile}
 translate I Playwith {Gioca con}
@@ -1468,7 +1466,7 @@ translate I blunder {errore}
 translate I Noinfo {-- Nessuna info --}
 # ====== TODO To be translated ======
 translate I PhalanxOrTogaMissing {Phalanx or Toga not found}
-translate I moveblunderthreshold {la mossa Ã¨ un errore se la perdita Ã¨ maggiore di}
+translate I moveblunderthreshold {la mossa è un errore se la perdita è maggiore di}
 translate I limitanalysis {limita il tempo di analisi del motore}
 translate I seconds {secondi}
 translate I Abort {Annulla}
@@ -1477,7 +1475,7 @@ translate I Resume {Resume}
 translate I OutOfOpening {Fuori dall'apertura}
 translate I NotFollowedLine {Non hai seguito la linea}
 translate I DoYouWantContinue {Vuoi continuare?}
-translate I CoachIsWatching {Il maestro stÃ  osservando}
+translate I CoachIsWatching {Il maestro stà osservando}
 translate I Ponder {Analisi permanente}
 # ====== TODO To be translated ======
 translate I LimitELO {Limit ELO strength}
@@ -1485,7 +1483,7 @@ translate I DubiousMovePlayedTakeBack {Mossa dubbia, vuoi rifare?}
 translate I WeakMovePlayedTakeBack {Mossa debole, vuoi rifare?}
 translate I BadMovePlayedTakeBack {Mossa cattiva, vuoi rifare?}
 translate I Iresign {Abbandono}
-translate I yourmoveisnotgood {La tua mossa non Ã¨ buona}
+translate I yourmoveisnotgood {La tua mossa non è buona}
 translate I EndOfVar {Fine della variante}
 translate I Openingtrainer {Allenatore delle aperture}
 translate I DisplayCM {Mostra le mosse candidate}
@@ -1531,9 +1529,9 @@ translate I Next {Seguente}
 translate I ResettingScore {Azzero il punteggio}
 translate I LoadingGame {Leggo la partita}
 translate I MateFound {Scacco matto trovato}
-translate I BestSolutionNotFound {La migliore soluzione NON Ã¨ stata trovata!}
+translate I BestSolutionNotFound {La migliore soluzione NON è stata trovata!}
 translate I MateNotFound {Scacco matto non trovato}
-translate I ShorterMateExists {Essite uno scacco matto piÃ¹ breve}
+translate I ShorterMateExists {Essite uno scacco matto più breve}
 translate I ScorePlayed {Punteggio giocato}
 translate I Expected {atteso}
 translate I ChooseTrainingBase {Scegli il database di allenamento}
@@ -1551,9 +1549,9 @@ translate I FixedLevel {Fixed level}
 translate I Opening {Opening}
 translate I RandomLevel {Livello casuale}
 translate I StartFromCurrentPosition {Parti dalla posizione attuale}
-translate I FixedDepth {ProfonditÃ  fissa}
+translate I FixedDepth {Profondità fissa}
 translate I Nodes {Nodi}
-translate I Depth {ProfonditÃ }
+translate I Depth {Profondità}
 translate I Time {Tempo}
 translate I SecondsPerMove {Secondi per mossa}
 # ====== TODO To be translated ======
@@ -1569,7 +1567,7 @@ translate I TimeSec {sec}
 translate I AllExercisesDone {Tutti gli esercizi eseguiti}
 translate I MoveOutOfBook {Mossa fuori dal libro}
 translate I LastBookMove {Ultima mossa del libro}
-translate I AnnotateSeveralGames {Annota piÃ¹ partite\ndall'attuale a:}
+translate I AnnotateSeveralGames {Annota più partite\ndall'attuale a:}
 translate I FindOpeningErrors {Trova errori dell'apertura}
 # ====== TODO To be translated ======
 translate I MarkTacticalExercises {Mark tactical exercises}
@@ -1789,10 +1787,10 @@ translate I CCDlgTitNoInbox {Scid: Posta in arrivo del gioco per corrispondenza}
 translate I CCDlgTitNoGames {Scid: Nessuna partita per il gioco per corrispondenza}
 translate I CCErrInboxDir {Directory della posta in arrivo:}
 translate I CCErrOutboxDir {Directory della posta in uscita:}
-translate I CCErrDirNotUsable {non esiste o non Ã¨ accessibile\nControlla e correggi le impostazioni.}
+translate I CCErrDirNotUsable {non esiste o non è accessibile\nControlla e correggi le impostazioni.}
 translate I CCErrNoGames {non contiene partite!\nEffettua prima una scansione.}
 translate I CCDlgTitNoCCDB {Scid: Nessun database per il gioco per corrispondenza}
-translate I CCErrNoCCDB {Non Ã¨ aperto nessun database di tipo "gioco per corrispondenza". Aprine uno usando le funzioni per il gioco per corrispondenza.}
+translate I CCErrNoCCDB {Non è aperto nessun database di tipo "gioco per corrispondenza". Aprine uno usando le funzioni per il gioco per corrispondenza.}
 # ====== TODO To be translated ======
 translate I CCFetchBtn {Fetch games from the server and process the Inbox}
 # ====== TODO To be translated ======
@@ -1906,7 +1904,7 @@ set tips(I) {
     premerlo in ogni finestra per vedere se c'e' e quali funzionalita' permette.
   }
   {
-    SCID ti consente piu' di una modalitï¿½ per inserire le mosse, scegli
+    SCID ti consente piu' di una modalità per inserire le mosse, scegli
     quale preferisci. Puoi utilizzare il mouse (con o senza il suggerimento
     della mossa) o la tastiera (con o senza il completamento della mossa).
     Leggi la pagina di help <a Moves>inserire le mosse</a> per maggiori dettagli. 

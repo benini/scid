@@ -392,7 +392,7 @@ proc playerInfo {{player ""}} {
     bind $w <Escape> "focus .; destroy $w"
     bind $w <F1> {helpWindow PInfo}
     bind $w <Configure> "recordWinSize $w"
-    standardShortcuts $w
+    keyboardShortcuts $w
   }
   set player [trimEngineName $player]
   if {[info exists spffile($player)]} {

@@ -1435,29 +1435,26 @@ proc raiseAllWindows {} {
   }
 }
 
-setLanguage $language
-updateLocale
-
-CreateMainWin .main
-
-wm minsize . 0 0
-wm iconname . "Scid"
-setWinLocation .main
-wm deiconify $dot_w
-wm protocol $dot_w WM_DELETE_WINDOW { ::file::Exit }
-standardShortcuts .
-bind $dot_w <Configure> "recordWinSize $dot_w"
-bind $dot_w <Double-Button-1> raiseAllWindows
-
-if { $::docking::USE_DOCKING } {
-  # restore default layout (number 1)
-  ::docking::layout_restore 1
-  standardShortcuts TPanedwindow
-  standardShortcuts TNotebook
+proc CreateMainWin { mainWin } {
+  createToplevel .main
+  wm minsize $mainWin 0 0
+  wm iconname $mainWin "Scid"
+  wm protocol $mainWin WM_DELETE_WINDOW { ::file::Exit }
+  $mainWin configure -menu .menu
+  keyboardShortcuts $mainWin
+  setWinLocation $mainWin
+  bind $mainWin <Configure> "recordWinSize $mainWin"
+  CreateGameInfo
+  CreateMainBoard .main
 }
 
-# In docked mode, reopen only the windows that are not dockable
-if { !$::docking::USE_DOCKING } {
+if { $::docking::USE_DOCKING } {
+  CreateMainWin .
+  ::docking::layout_restore 1
+  keyboardShortcuts TPanedwindow
+  keyboardShortcuts TNotebook
+} else {
+  CreateMainWin .main
   if {$startup(switcher)} { ::windows::switcher::Open }
   if {$startup(pgn)} { ::pgn::OpenClose }
   if {$startup(gamelist)} { ::windows::gamelist::Open }

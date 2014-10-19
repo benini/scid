@@ -38,8 +38,6 @@
 #
 # Additions, corrections? Email: sgh@users.sourceforge.net
 
-addLanguage U Suomi 1 iso8859-1
-
 proc setLanguage_U {} {
 
 # File menu:
