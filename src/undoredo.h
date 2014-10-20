@@ -45,8 +45,8 @@ public:
 	~UndoRedo() { clear(); }
 
 	void clear() { clear(undo_); clear(redo_); }
-	void undo(T*& current) { return doUndoRedo(undo_, redo_, current); }
-	void redo(T*& current) { return doUndoRedo(redo_, undo_, current); }
+	void undo(T*& current) { doUndoRedo(undo_, redo_, current); }
+	void redo(T*& current) { doUndoRedo(redo_, undo_, current); }
 	uint undoSize() { return undo_.size(); }
 	uint redoSize() { return redo_.size(); }
 	void store (T* current) {

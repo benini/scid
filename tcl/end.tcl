@@ -1441,7 +1441,6 @@ proc CreateMainWin { mainWin } {
   wm iconname $mainWin "Scid"
   wm protocol $mainWin WM_DELETE_WINDOW { ::file::Exit }
   $mainWin configure -menu .menu
-  keyboardShortcuts $mainWin
   setWinLocation $mainWin
   bind $mainWin <Configure> "recordWinSize $mainWin"
   CreateGameInfo

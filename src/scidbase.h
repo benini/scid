@@ -104,7 +104,7 @@ struct scidBaseT {
 		return filters_[idx].second;
 	}
 
-	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly) ? 1 : 0; }
+	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
 	uint numGames() const { return idx->GetNumGames(); }
 
 	const IndexEntry* getIndexEntry(gameNumberT g) const {
