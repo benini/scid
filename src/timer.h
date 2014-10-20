@@ -27,11 +27,11 @@ class Timer {
 public:
    Timer() { Reset(); }
    void Reset() { start_ = std::chrono::system_clock::now(); }
-   int MilliSecs (void) const {
+   long long MilliSecs (void) const {
 		auto t = std::chrono::system_clock::now();
 		return std::chrono::duration_cast<std::chrono::milliseconds>(t - start_).count();
    }
-   int CentiSecs () const { return MilliSecs() / 10; }
+   long long CentiSecs () const { return MilliSecs() / 10; }
 };
 
 template <class S>

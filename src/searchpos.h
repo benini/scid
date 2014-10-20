@@ -34,7 +34,7 @@ public:
 		pieceT* board = pos->GetBoard();
 		squareT wkSq = 0;
 		squareT bkSq = 0;
-		for (int i = 0; i < 64; ++i) {
+		for (squareT i = 0; i < 64; ++i) {
 			board_[i] = board[i];
 			if (board[i] != EMPTY) {
 				++nPieces_[piece_Color(board[i])][0];

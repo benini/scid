@@ -74,7 +74,7 @@ public:
 		bool fromFyle = (m_ >> 28) & 1;
 		bool fromRank = (m_ >> 29) & 1;
 		bool check    = (m_ >> 30) & 1;
-		bool capture  = getCaptured();
+		bool capture  = (getCaptured() != 0);
 
 		switch (getPiece()) {
 		case BISHOP: res += "B"; break;

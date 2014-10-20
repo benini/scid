@@ -159,7 +159,7 @@ private:
 		Position StartPos;
 		errorT err = StartPos.ReadFromFEN (FEN);
 		if (err == OK) {
-			for (int c=0; c<2; c++) {
+			for (byte c=0; c<2; c++) {
 				nPieces_[c][0] = StartPos.GetCount(c);
 				for (uint i=0; i< StartPos.GetCount(c); ++i) {
 					squareT sq = StartPos.GetList(c)[i];
@@ -181,7 +181,7 @@ private:
 
 	FastGame()
 	: v_it_ (0), v_end_(0) {
-		for (uint i=0; i < 8; i++) {
+		for (byte i=0; i < 8; i++) {
 			const byte stdpos_count[] = {16, 1, 1, 2, 2, 2, 8, 0};
 			const byte stdpos_sq[] = {E1, A1, B1, C1, D1, F1, G1, H1};
 			const byte stdpos[] = {KING, ROOK, KNIGHT, BISHOP, QUEEN, BISHOP, KNIGHT, ROOK};
@@ -205,8 +205,8 @@ private:
 	template <colorT toMove>
 	inline bool doPly(byte v, FullMove* lastMove = 0) {
 		const colorT enemy = 1 - toMove;
-		uint idx_piece_moving = v >> 4;
-		uint move = v & 0x0F;
+		byte idx_piece_moving = v >> 4;
+		byte move = v & 0x0F;
 		P_LIST* moving_piece = & list[toMove][idx_piece_moving];
 		squareT from = moving_piece->sq;
 		squareT to;
@@ -260,7 +260,7 @@ private:
 		}
 		if (lastMove) lastMove->set(toMove, moving_piece->piece, from, to, promo);
 
-		uint capt_idx = board_[to];
+		byte capt_idx = board_[to];
 		board_[to] = idx_piece_moving;
 		board_[from] = 0;
 		moving_piece->sq = to;
@@ -286,7 +286,7 @@ private:
 	}
 	template <colorT toMove>
 	inline bool handleCastle(bool king_side, FullMove* lastMove) {
-		uint black = (toMove == WHITE) ? 0 : 56;
+		squareT black = (toMove == WHITE) ? 0 : 56;
 		const uint king_idx = 0;
 		squareT king_to, rook_from, rook_to;
 		if (king_side) { // King Side
@@ -319,6 +319,7 @@ private:
 	}
 	static inline squareT decodeKnight (squareT from, byte val) {
 		static const int sqdiff[] = { 0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0 };
+		ASSERT((from + sqdiff[val]) > 0);
 		return from + sqdiff[val];
 	}
 	static inline squareT decodeRook (squareT from, byte val) {

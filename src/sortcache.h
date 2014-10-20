@@ -23,6 +23,13 @@
 #include "index.h"
 #include <string>
 
+#ifdef CPP11_SUPPORT
+#include <atomic>
+typedef std::atomic<bool> atomic_bool;
+#else
+typedef bool atomic_bool;
+#endif
+
 class Index;
 class IndexEntry;
 
@@ -44,7 +51,7 @@ class SortCache
   private:
 	const Index *index;
 	bool partialHashing;
-	bool sorted_;
+	atomic_bool sorted_;
 	uint numGames;
 	uint *fullMap;
 	uint mapSize;
@@ -85,7 +92,7 @@ class SortCache
 	private:
 		SortCache* sc_;
 		void* th_;
-		bool interrupt_;
+		atomic_bool interrupt_;
 		void sort(uint numGames);
 	};
 	Sort_thread t_;

@@ -51,7 +51,10 @@ void SortCache::Sort_thread::join() {
 }
 
 void SortCache::Sort_thread::sort(uint numGames){
-	for (int v=numGames/2-1; v>=0; v--)	sc_->Downheap(v, numGames);
+	for (int v=numGames/2-1; v>=0; v--)	{
+		if (interrupt_) return;
+		sc_->Downheap(v, numGames);
+	}
 	for (uint n = numGames; n > 1; )
 	{
 		if (interrupt_) return;
@@ -166,14 +169,14 @@ errorT SortCache::Init(const Index* idx, const NameBase* nb, const char* criteri
 	criteria = criterium;
 	numGames = index->GetNumGames();
 
-	uint numOFArgs = strlen( criterium) / 2;
+	size_t numOFArgs = strlen( criterium) / 2;
 	if (numOFArgs >= (INDEX_MaxSortingCriteria - 1))
 	{
 		SortCriteria[numOFArgs] = SORTING_sentinel;
 		return ERROR_Full;
 	}
 
-	for(uint i=0; i<numOFArgs; i++)
+	for(size_t i=0; i<numOFArgs; i++)
 	{
 		char key = criterium[2*i];
 		SortCriteria[i] = SORTING_sentinel;

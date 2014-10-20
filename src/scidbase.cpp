@@ -541,7 +541,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk,
 	if (fileMode != FMODE_Both) return ERROR_FileMode;
 
 	//1) Create the list of games to be copied
-	typedef std::vector< std::pair<byte, size_t> > sort_t;
+	typedef std::vector< std::pair<byte, uint> > sort_t;
 	sort_t sort;
 	uint n_deleted = 0;
 	for (uint i=0, n= numGames(); i < n; i++) {
