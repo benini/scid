@@ -23,7 +23,7 @@
 #include "index.h"
 #include <string>
 
-#ifdef CPP11_SUPPORT
+#if CPP11_SUPPORT
 #include <atomic>
 typedef std::atomic<bool> atomic_bool;
 #else
