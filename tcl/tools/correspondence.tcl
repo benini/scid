@@ -4,7 +4,7 @@
 ###
 ### $Id: correspondence.tcl,v 4.3 2011/02/13 18:12:02 arwagner Exp $
 ###
-### Last change: <Tue, 2014/09/09 16:43:30 arwagner agamemnon>
+### Last change: <Mon, 2014/10/27 19:29:26 arwagner agamemnon>
 ###
 ### Add correspondence chess via eMail or external protocol to scid
 ###
@@ -3619,6 +3619,7 @@ namespace eval CorrespondenceChess {
 	} else {
 		::http::config -useragent $::Xfcc::useragent
 		if {![catch { package require tls }]} {
+			::tls::init -ssl3 false -ssl2 false -tls1 true
 			http::register https 443 ::tls::socket
 		}
 	}
