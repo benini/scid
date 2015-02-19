@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2013-2014  Fulvio Benini
+* Copyright (C) 2013-2015  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -21,13 +21,225 @@
 
 #include "common.h"
 #include "fullmove.h"
-#include "game.h" //TODO: remove this dependency
+#include "position.h"
 #include <string.h>
+#include <cstdlib>
 #include <sstream>
-#include <vector>
+
+
+class FastBoard {
+	byte board_[64];
+	uint8_t nPieces_[2][8];
+	struct P_LIST {
+		squareT sq;
+		pieceT piece;
+	} list[2][16];
+
+public:
+	FastBoard() {}
+	FastBoard(/*const*/ Position& pos) { Init(pos); }
+
+	void Init() {
+		static FastBoard StdStart(Position(true));
+		*this = StdStart;
+	}
+
+	void Init(/*const*/ Position& pos) {
+		memset(nPieces_, 0, sizeof(nPieces_));
+		memset(board_, 0, sizeof(board_));
+		for (byte c=0; c<2; c++) {
+			nPieces_[c][0] = pos.GetCount(c);
+			for (uint i=0, n = nPieces_[c][0]; i < n; ++i) {
+				squareT sq = pos.GetList(c)[i];
+				pieceT piece = piece_Type(pos.GetBoard()[sq]);
+				list[c][i].sq = sq;
+				list[c][i].piece = piece;
+				board_[sq] = i;
+				nPieces_[c][piece] += 1;
+			}
+		}
+	}
+
+	bool isEqual(const pieceT* board, const byte* nPiecesW, const byte* nPiecesB) const {
+		const uint64_t* w = reinterpret_cast<const uint64_t*>(nPieces_[WHITE]);
+		const uint64_t* b = reinterpret_cast<const uint64_t*>(nPieces_[BLACK]);
+		const uint64_t* Sw = reinterpret_cast<const uint64_t*>(nPiecesW);
+		const uint64_t* Sb = reinterpret_cast<const uint64_t*>(nPiecesB);
+		if (*w != *Sw || *b != *Sb) return false;
+		for (int i=0, n = nPieces_[WHITE][0]; i < n; i++) {
+			const P_LIST* p = & list[WHITE][i];
+			if (board[p->sq] != piece_Make(WHITE, p->piece)) return false;
+		}
+		for (int i=0, n = nPieces_[BLACK][0]; i < n; i++) {
+			const P_LIST* p = & list[BLACK][i];
+			if (board[p->sq] != piece_Make(BLACK, p->piece)) return false;
+		}
+		return true;
+	}
+
+	template <colorT color>
+	squareT getSquare(byte idx) const {
+		return list[color][idx].sq;
+	}
+
+	template <colorT color>
+	pieceT getPiece(byte idx) const {
+		return list[color][idx].piece;
+	}
+
+	template <colorT color>
+	uint8_t getCount(pieceT p = 0) const {
+		ASSERT(p < 8);
+		return nPieces_[color][p];
+	}
+
+	template <colorT color>
+	void castle(squareT king_to, squareT rook_from, squareT rook_to) {
+		const byte king_idx = 0;
+		const byte rook_idx = board_[rook_from];
+		list[color][rook_idx].sq = rook_to;
+		list[color][king_idx].sq = king_to;
+		board_[rook_to] = rook_idx;
+		board_[rook_from] = 0;
+		board_[king_to] = king_idx;
+		// board_[king_from] = 0; //Is not necessary because King_idx == 0
+	}
+
+	template <colorT color>
+	pieceT move(byte idx, squareT to, pieceT promo) {
+		if (promo != 0) {
+			list[color][idx].piece = promo;
+			nPieces_[color][PAWN] -= 1;
+			nPieces_[color][promo] += 1;
+		}
+		board_[ list[color][idx].sq ] = 0;
+		list[color][idx].sq = to;
+		return remove< 1 - color >(to, idx);
+	}
+
+	template <colorT color>
+	pieceT remove (squareT sq, byte newIdx = 0) {
+		const byte oldIdx = board_[sq];
+		board_[sq] = newIdx;
+		if (oldIdx == 0) return 0;
+
+		pieceT res = list[color][oldIdx].piece;
+		nPieces_[color][res] -= 1;
+		nPieces_[color][0] -= 1;
+		if (oldIdx != nPieces_[color][0]) {
+			list[color][oldIdx] = list[color][ nPieces_[color][0] ];
+			ASSERT(list[color][oldIdx].sq != sq);
+			board_[ list[color][oldIdx].sq ] = oldIdx;
+		}
+		return res;
+	}
+
+	void fillSANInfo(FullMove& lastmove) const {
+		pieceT piece = lastmove.getPiece();
+		colorT col = lastmove.getColor();
+		if (isCheck(col)) lastmove.setCheck();
+		if (piece == PAWN || nPieces_[col][piece] <= 1) return;
+		squareT to = lastmove.getTo();
+		for (size_t i=1, n = nPieces_[col][0]; i < n; i++) { //i=1 because King_idx == 0
+			if (list[col][i].piece == piece) {
+				squareT from = list[col][i].sq;
+				if (from != to && !FastBoard::invalidMove(piece, list[col][i].sq, to)) {
+					FullMove tmp;
+					tmp.reset(col, piece, from, to);
+					/*TODO:
+					- Check for obstacles (including lastmove.getFrom() square);
+					- Check for pinned piece (do not leave the king in check)
+					*/
+					lastmove.setAmbiguous(tmp);
+				}
+			}
+		}
+	}
+
+private:
+	template <bool once>
+	inline pieceT getNeighbor(int col, int row, int col_off, int row_off) const {
+		ASSERT(col_off != 0 || row_off !=0);
+		do {
+			col += col_off;
+			row += row_off;
+			if (row < 0 || row > 7 || col < 0 || col > 7) break;
+			uint8_t sq = col + row*8;
+			uint8_t idx = board_[sq];
+			if (idx != 0) {
+				if (idx < nPieces_[WHITE][0] && list[WHITE][idx].sq == sq) 
+					return piece_Make(WHITE, list[WHITE][idx].piece);
+
+				return piece_Make(BLACK, list[BLACK][idx].piece);
+			}
+		} while (!once);
+
+		return END_OF_BOARD;
+	}
+
+	bool isCheck(colorT enemy) const {
+		const int kingSq = list[1- enemy][0].sq;
+		const int kingCol = kingSq % 8;
+		const int kingRow = kingSq / 8;
+
+		const pieceT pQ = piece_Make(enemy, QUEEN);
+		const pieceT pB = piece_Make(enemy, BISHOP);
+		static const int bishop[] = { +1, +1,  +1, -1,  -1, -1,  -1, +1 };
+		for (size_t i=0, n = sizeof(bishop)/sizeof(int); i < n; i+= 2) {
+			const pieceT p = getNeighbor<false>(kingCol, kingRow, bishop[i], bishop[i+1]);
+			if (p == pB || p == pQ) return true;
+		}
+
+		const pieceT pR = piece_Make(enemy, ROOK);
+		static const int rook[] = { +1, 0,  -1, 0,  0, +1,  0, -1 };
+		for (size_t i=0, n = sizeof(rook)/sizeof(int); i < n; i+= 2) {
+			const pieceT p = getNeighbor<false>(kingCol, kingRow, rook[i], rook[i+1]);
+			if (p == pR || p == pQ) return true;
+		}
+
+		const pieceT pN = piece_Make(enemy, KNIGHT);
+		static const int knight[] = { +1, +2,  +1, -2,  -1, +2,  -1, -2,  +2, +1,  +2, -1,  -2, +1,  -2, -1 };
+		for (size_t i=0, n = sizeof(knight)/sizeof(int); i < n; i+= 2) {
+			const pieceT p = getNeighbor<true>(kingCol, kingRow, knight[i], knight[i+1]);
+			if (p == pN) return true;
+		}
+
+		const pieceT pP = piece_Make(enemy, PAWN);
+		const int p_row = (enemy == BLACK) ? 1 : -1;
+		if (pN == getNeighbor<true>(kingCol, kingRow, +1, p_row)) return true;
+		if (pN == getNeighbor<true>(kingCol, kingRow, -1, p_row)) return true;
+
+		return false;
+	}
+
+	static bool invalidMove(pieceT p, squareT from, squareT to) {
+		const int fromCol = from % 8;
+		const int fromRow = from / 8;
+		const int toCol = to % 8;
+		const int toRow = to / 8;
+		const int dCol = std::abs(fromCol - toCol);
+		const int dRow = std::abs(fromRow - toRow);
+
+		if (dCol == dRow) { //Diagonal
+			if (dCol != 0 && (p == BISHOP || p == QUEEN)) return false;
+		} else if (dCol == 0 || dRow == 0) { //Linear
+			if (p == ROOK || p == QUEEN) return false;
+		} else if (p == KNIGHT) {
+			if ((dCol == 1 || dCol == 2) && (dRow == 1 || dRow == 2)) return false;
+		}
+		return true;
+	}
+
+};
+
 
 
 class FastGame {
+	FastBoard board_;
+	const byte* v_it_;
+	const byte* v_end_;
+	colorT cToMove_;
+
 public:
 	static FastGame Create(const byte* v_begin, const byte* v_end) {
 		const byte* v_it = v_begin;
@@ -37,43 +249,39 @@ public:
 				if (v_it >= v_end) break; // Error
 				byte haveFEN = *v_it++ & 1;
 				if (haveFEN == 0) {
-					// Position::ReadFromFEN doesn't create a valid Position for
-					// standard starting board FEN (White pawns have wrong list IDX)
-					// static FastGame std_start("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-					static FastGame std_start;
-					FastGame res(std_start);
-					res.v_it_ = v_it;
-					res.v_end_ = v_end;
-					return res;
+					return FastGame(v_it, v_end);
 				} else {
 					const char* FENstring = (char*) v_it;
 					while (v_it < v_end) {
-						if (*v_it++ == 0) return FastGame (FENstring, v_it, v_end);
+						if (*v_it++ == 0) return FastGame(FENstring, v_it, v_end);
 					}
 					break; // FEN error
 				}
 			} else if (b == 255) { // Skip special 3-byte binary encoding of EventDate
 				v_it += 3;
 			} else { // Skip tags
+				enum { MAX_TAG_LEN = 240 };
 				if (b <= MAX_TAG_LEN) v_it += b;
 				if (v_it < v_end) v_it += *v_it +1;
 			}
 		}
 
-		return FastGame(""); // Error default to empty buffer and board
+		return FastGame(0,0); // Error default to StdStart and empty buffer
 	}
 
-	FullMove getMove(int startPly) {
+	FullMove getMove(int ply_to_skip) {
 		FullMove move;
-		for (int ply=0; ply <= startPly; ply++, cToMove_ = 1 - cToMove_) {
+		uint8_t dummy[2][8] = {0};
+
+		for (int ply=0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
 			if (cToMove_ == WHITE) {
-				if (! DecodeNextMove <WHITE>(&move)) break;
+				if (! DecodeNextMove <WHITE>(move, dummy)) break;
 			} else {
-				if (! DecodeNextMove <BLACK>(&move)) break;
+				if (! DecodeNextMove <BLACK>(move, dummy)) break;
 			}
 
-			if (ply == startPly) {
-				fillSANInfo(move);
+			if (ply == ply_to_skip) {
+				board_.fillSANInfo(move);
 				cToMove_ = 1 - cToMove_;
 				return move;
 			}
@@ -81,22 +289,23 @@ public:
 		return FullMove();
 	}
 
-	std::string getMoveSAN(int startPly, int count) {
+	std::string getMoveSAN(int ply_to_skip, int count) {
 		std::stringstream res;
-		for (int ply=0; ply < startPly + count; ply++, cToMove_ = 1 - cToMove_) {
+		uint8_t dummy[2][8] = {0};
+		for (int ply=0; ply < ply_to_skip + count; ply++, cToMove_ = 1 - cToMove_) {
 			FullMove move;
 			if (cToMove_ == WHITE) {
-				if (! DecodeNextMove <WHITE>(&move)) break;
-				if (ply < startPly) continue;
-				if (ply > startPly) res << "  ";
+				if (! DecodeNextMove <WHITE>(move, dummy)) break;
+				if (ply < ply_to_skip) continue;
+				if (ply > ply_to_skip) res << "  ";
 				res << (1 + ply/2) << ".";
 			} else {
-				if (! DecodeNextMove <BLACK>(&move)) break;
-				if (ply < startPly) continue;
-				if (ply == startPly) res << (1 + ply/2) << "...";
+				if (! DecodeNextMove <BLACK>(move, dummy)) break;
+				if (ply < ply_to_skip) continue;
+				if (ply == ply_to_skip) res << (1 + ply/2) << "...";
 				else res << " ";
 			}
-			fillSANInfo(move);
+			board_.fillSANInfo(move);
 			res << move.getSAN();
 		}
 		return res.str();
@@ -105,236 +314,47 @@ public:
 	template <colorT toMove, class NP>
 	int search(const byte* board, NP nPieces) {
 		int ply = 1;
-		memcpy(min_pieces_, nPieces, 16);
+		struct {
+			void reset(colorT, pieceT, squareT, squareT to, pieceT = 0) {}
+			void resetCastle(colorT, squareT, squareT) {}
+			void setCapture(pieceT, bool) {}
+		} dummy;
 
 		if (cToMove_ != toMove) {
-			if (! DecodeNextMove < (1 - toMove) > ()) return 0;
+			if (! DecodeNextMove<1 - toMove>(dummy, nPieces)) return 0;
 			ply += 1;
 		}
 		for (;;) {
-			// Seem to be faster than memcmp
-			const uint64_t* w = reinterpret_cast<uint64_t*>(nPieces_[WHITE]);
-			const uint64_t* b = reinterpret_cast<uint64_t*>(nPieces_[BLACK]);
-			const uint64_t* Sw = reinterpret_cast<uint64_t*>(nPieces[WHITE]);
-			const uint64_t* Sb = reinterpret_cast<uint64_t*>(nPieces[BLACK]);
-			if (*w == *Sw && *b == *Sb) {
-				bool match = true;
-				for (int i=0; i<nPieces_[WHITE][0]; ++i) {
-					P_LIST* p = & list[WHITE][i];
-					if (board[p->sq] != piece_Make(WHITE, p->piece)) { match = false; break; }
-				}
-				if (match) {
-					for (int i=0; i<nPieces_[BLACK][0]; ++i) {
-						P_LIST* p = & list[BLACK][i];
-						if (board[p->sq] != piece_Make(BLACK, p->piece)) { match = false; break; }
-					}
-				}
-				if (match) return ply; //Exact board found
-			}
-			if (! DecodeNextMove < (toMove) > ()) return 0;
-			if (! DecodeNextMove < (1 - toMove) > ()) return 0;
+			if (board_.isEqual(board, nPieces[WHITE], nPieces[BLACK])) return ply;
+			if (! DecodeNextMove<toMove>(dummy, nPieces)) return 0;
+			if (! DecodeNextMove<1 - toMove>(dummy, nPieces)) return 0;
 			ply += 2;
 		}
 		return 0;
 	}
 
 private:
-	uint8_t nPieces_[2][8];
-	byte board_[64];
-	struct P_LIST {
-		squareT sq;
-		pieceT piece;
-	} list[2][16];
-	const byte* v_it_;
-	const byte* v_end_;
-	uint8_t min_pieces_[2][8];
-	colorT cToMove_;
+	FastGame(const byte* v_it, const byte* v_end)
+	: v_it_ (v_it), v_end_(v_end), cToMove_(WHITE) {
+		board_.Init();
+	}
 
-
-	FastGame(const char* FEN, const byte* v_it = 0, const byte* v_end = 0)
+	FastGame(const char* FEN, const byte* v_it, const byte* v_end)
 	: v_it_ (v_it), v_end_(v_end) {
-		memset(nPieces_, 0, sizeof(nPieces_));
-		for (byte i=A1; i <= H8; i++) board_[i] = 0;
-
 		Position StartPos;
-		errorT err = StartPos.ReadFromFEN (FEN);
-		if (err == OK) {
-			for (byte c=0; c<2; c++) {
-				nPieces_[c][0] = StartPos.GetCount(c);
-				for (uint i=0; i< StartPos.GetCount(c); ++i) {
-					squareT sq = StartPos.GetList(c)[i];
-					pieceT piece = piece_Type(StartPos.GetBoard()[sq]);
-					list[c][i].sq = sq;
-					list[c][i].piece = piece;
-					board_[sq] = i;
-					nPieces_[c][piece] += 1;
-				}
-			}
-			cToMove_ = StartPos.GetToMove();
-		} else {
-			v_it_ = v_end_ = 0;
-			cToMove_ = WHITE;
-			list[WHITE][0].sq = list[BLACK][0].sq = 0;
-		}
-		memset(min_pieces_, 0, sizeof(min_pieces_));
+		if (FEN == 0 || StartPos.ReadFromFEN(FEN) != OK) StartPos.StdStart();
+		board_.Init(StartPos);
+		cToMove_ = StartPos.GetToMove();
 	}
 
-	FastGame()
-	: v_it_ (0), v_end_(0) {
-		for (byte i=0; i < 8; i++) {
-			const byte stdpos_count[] = {16, 1, 1, 2, 2, 2, 8, 0};
-			const byte stdpos_sq[] = {E1, A1, B1, C1, D1, F1, G1, H1};
-			const byte stdpos[] = {KING, ROOK, KNIGHT, BISHOP, QUEEN, BISHOP, KNIGHT, ROOK};
+	template <colorT toMove, typename P1, typename P2>
+	inline bool DecodeNextMove(P1& p1, const P2& p2) {
+		enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER, ENCODE_END_GAME };
+		enum { ENCODE_FIRST = 11, ENCODE_LAST = 15 };
 
-			nPieces_[WHITE][i] = nPieces_[BLACK][i] = stdpos_count[i];
-			list[WHITE][i].sq = stdpos_sq[i];
-			list[BLACK][i].sq = stdpos_sq[i] + 56;
-			list[WHITE][i].piece = list[BLACK][i].piece = stdpos[i];
-			board_[list[WHITE][i].sq] = board_[list[BLACK][i].sq] = i;
-
-			list[WHITE][i+8].piece = list[BLACK][i+8].piece = PAWN;
-			board_[A2+i] = board_[A7+i] = i+8;
-			list[WHITE][i+8].sq = A2+i;
-			list[BLACK][i+8].sq = A7+i;
-		}
-		for (byte i=A3; i <= H6; i++) board_[i] = 0;
-		cToMove_ = WHITE;
-		memset(min_pieces_, 0, sizeof(min_pieces_));
-	};
-
-	template <colorT toMove>
-	inline bool doPly(byte v, FullMove* lastMove = 0) {
-		const colorT enemy = 1 - toMove;
-		byte idx_piece_moving = v >> 4;
-		byte move = v & 0x0F;
-		P_LIST* moving_piece = & list[toMove][idx_piece_moving];
-		squareT from = moving_piece->sq;
-		squareT to;
-		pieceT promo = 0;
-		if (lastMove) lastMove->clear();
-		switch (moving_piece->piece) {
-			case BISHOP: to = 0x3F & decodeBishop(from, move); break;
-			case KNIGHT: to = 0x3F & decodeKnight(from, move); break;
-			case ROOK: to = decodeRook(from, move); break;
-			case QUEEN:
-				if (move != square_Fyle(from)) to = decodeRook(from, move);
-				else if (v_it_ < v_end_) to = 0x3F & (*v_it_++ - 64); //2 byte move
-				else return false;
-				break;
-			case KING:
-				if (move > 8) { // Castle
-					return handleCastle<toMove> (move == 10, lastMove);
-				} else if (move != 0) { // Normal move
-					static const int sqdiff[] = { 0, -9, -8, -7, -1, 1, 7, 8, 9};
-					to = 0x3F & (from + sqdiff[move]);
-				} else { // NULL MOVE
-					return true;
-				}
-				break;
-			default: {// Default to PAWN
-				static const int toSquareDiff [16] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
-				to = 0x3F;
-				to &= (toMove == WHITE) ? from + toSquareDiff[move] : from - toSquareDiff[move];
-				switch (move) {
-					case 15:
-					case 1:
-						break;
-					case 0:
-					case 2:
-						if (board_[to] == 0) { //en passant
-							squareT captured = 0x3F;
-							captured &= (toMove == WHITE) ? to - 8 : to + 8;
-							board_[to] = board_[captured];
-							board_[captured] = 0;
-						}
-						break;
-					default: { //Promotion
-						static const pieceT promoPieceFromVal [16] = {
-							EMPTY,EMPTY,EMPTY,QUEEN,QUEEN,QUEEN, ROOK,ROOK,ROOK,
-							BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,EMPTY
-						};
-						promo = promoPieceFromVal[move];
-					}
-				}
-			}
-		}
-		if (lastMove) lastMove->set(toMove, moving_piece->piece, from, to, promo);
-
-		byte capt_idx = board_[to];
-		board_[to] = idx_piece_moving;
-		board_[from] = 0;
-		moving_piece->sq = to;
-		if (promo != 0) {
-			moving_piece->piece = promo;
-			nPieces_[toMove][PAWN]--;
-			nPieces_[toMove][moving_piece->piece]++;
-		}
-		if (capt_idx != 0) {
-			if (lastMove) {
-				squareT capt_sq = list[enemy][capt_idx].sq;
-				lastMove->setCapture(list[enemy][capt_idx].piece, capt_sq != to);
-			}
-			if (--nPieces_[enemy][0] < min_pieces_[enemy][0]) return false;
-			--nPieces_[enemy][list[enemy][capt_idx].piece];
-			if (nPieces_[enemy][PAWN] < min_pieces_[enemy][PAWN]) return false;
-			if (capt_idx != nPieces_[enemy][0]) {
-				list[enemy][capt_idx] = list[enemy][nPieces_[enemy][0]];
-				board_[list[enemy][capt_idx].sq] = capt_idx;
-			}
-		}
-		return true;
-	}
-	template <colorT toMove>
-	inline bool handleCastle(bool king_side, FullMove* lastMove) {
-		squareT black = (toMove == WHITE) ? 0 : 56;
-		const uint king_idx = 0;
-		squareT king_to, rook_from, rook_to;
-		if (king_side) { // King Side
-			king_to = black + G1;
-			rook_from = black + H1;
-			rook_to = black + F1;
-		} else { // Queen Side
-			king_to = black + C1;
-			rook_from = black + A1;
-			rook_to = black + D1;
-		}
-		if (lastMove) {
-			lastMove->setCastle(toMove, list[toMove][king_idx].sq, rook_from);
-		}
-		list[toMove][king_idx].sq = king_to;
-		byte rook_idx = board_[rook_from];
-		list[toMove][rook_idx].sq = rook_to;
-		board_[rook_to] = rook_idx;
-		board_[rook_from] = 0;
-		board_[king_to] = king_idx;
-		// board_[king_from] = 0; //Is not necessary because King_idx == 0
-		// ClearCastlingRights;
-		return true;
-	}
-	static inline squareT decodeBishop (squareT from, byte val) {
-		byte fyle = (val & 7);
-		int fylediff = (int)fyle - (int)square_Fyle(from);
-		if (val >= 8) return from - 7 * fylediff;
-		else return from + 9 * fylediff;
-	}
-	static inline squareT decodeKnight (squareT from, byte val) {
-		static const int sqdiff[] = { 0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0 };
-		ASSERT((from + sqdiff[val]) > 0);
-		return from + sqdiff[val];
-	}
-	static inline squareT decodeRook (squareT from, byte val) {
-		if (val >= 8) return square_Make (square_Fyle(from), (val - 8));
-		else return square_Make (val, square_Rank(from));
-	}
-
-	enum { ENCODE_NAG = 11, ENCODE_COMMENT, ENCODE_START_MARKER, ENCODE_END_MARKER, ENCODE_END_GAME };
-	enum { ENCODE_FIRST = 11, ENCODE_LAST = 15 };
-
-	template <colorT toMove>
-	inline bool DecodeNextMove(FullMove* lastMove = 0) {
 		while (v_it_ < v_end_) {
 			byte b = *v_it_++;
-			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<toMove>(b, lastMove);
+			if (b < ENCODE_FIRST || b > ENCODE_LAST) return doPly<toMove>(b, p1, p2);
 			if (b == ENCODE_END_GAME || b == ENCODE_END_MARKER) return false;
 			if (b == ENCODE_NAG) {v_it_++; continue; }
 			if (b == ENCODE_START_MARKER) {
@@ -353,118 +373,104 @@ private:
 		return false;
 	}
 
-//TODO: improve this functions
-	bool isCheck(colorT enemy, std::vector<squareT>* pinned =0) const {
-		std::vector<squareT> checkers;
-		colorT allies = 1 - enemy;
-		int kingSq = list[allies][0].sq;
-
-		static int pawn[] = { +7, +9, -7, -9 };
-		for (uint i=0; i < 2; i++) {
-			int sq = kingSq + pawn[i + (allies == WHITE ? 0: 2)];
-			if (sq < 0 || sq > 63 || board_[sq] == 0) continue;
-			byte idx = board_[sq];
-			if (idx < nPieces_[enemy][0] && list[enemy][idx].sq == sq && list[enemy][idx].piece == PAWN) {
-				checkers.push_back(sq);
-			}
-		}
-
-		static int knight[] = { -17, -15, -10, -6, 6, 10, 15, 17 };
-		for (uint i=0; i < sizeof(knight)/sizeof(int); i++) {
-			int sq = kingSq + knight[i];
-			if (sq < 0 || sq > 63 || board_[sq] == 0) continue;
-			byte idx = board_[sq];
-			if (idx < nPieces_[enemy][0] && list[enemy][idx].sq == sq && list[enemy][idx].piece == KNIGHT) {
-				checkers.push_back(sq);
-			}
-		}
-
-		static int walk[] = { +1, +1, +8, -8, -7, -9, +7, +9 };
-		for (uint i=0; i < sizeof(walk)/sizeof(int); i++) {
-			if (kingSq % 8 == 0 && walk[i] % 8 < 0) continue;
-			if (kingSq % 8 == 7 && walk[i] % 8 > 0) continue;
-			int pin = -1;
-			for (int sq = kingSq + walk[i]; sq >= 0 && sq < 64; sq += walk[i]) {
-				if (board_[sq] == 0) {
-					if (sq % 8 == 0 || sq % 8 == 7) break;
-					continue;
+	template <colorT toMove, typename P1, typename P2>
+	inline bool doPly(byte v, P1& lastMove, const P2& minPieces) {
+		byte idx_piece_moving = v >> 4;
+		byte move = v & 0x0F;
+		pieceT moving_piece = board_.getPiece<toMove>(idx_piece_moving);
+		squareT from = board_.getSquare<toMove>(idx_piece_moving);
+		squareT to;
+		pieceT promo = 0;
+		bool enPassant = false;
+		switch (moving_piece) {
+			case PAWN: 	 to = decodePawn<toMove>(from, move, promo, enPassant); break;
+			case BISHOP: to = decodeBishop(from, move); break;
+			case KNIGHT: to = decodeKnight(from, move); break;
+			case ROOK:   to = decodeRook(from, move); break;
+			case QUEEN:
+				if (move != square_Fyle(from)) to = decodeRook(from, move);
+				else if (v_it_ < v_end_) to = decodeQueen2byte(*v_it_++);
+				else return false;
+				break;
+			default: // Default to KING
+				if (move == 0) { // NULL MOVE
+					lastMove.reset(toMove, KING, 0, 0);
+					return true;
 				}
-				byte idx = board_[sq];
-				if (idx < nPieces_[allies][0] && list[allies][idx].sq == sq) {
-					if (sq % 8 == 0 || sq % 8 == 7) break;
-					if (pin != -1) break;
-					pin = sq;
-					continue;
-				}
-
-				pieceT enemyP = list[enemy][idx].piece;
-				if (enemyP == QUEEN || (enemyP == BISHOP && i > 3) || (enemyP == ROOK && i < 4)) {
-					if (pin != -1) {
-						if (pinned) pinned->push_back(pin);
-					} else {
-						checkers.push_back(sq);
+				if (move > 8) { // CASTLE
+					const squareT black = (toMove == WHITE) ? 0 : 56;
+					squareT king_to, rook_from, rook_to;
+					if (move == 10) { // King Side
+						king_to = black + G1;
+						rook_from = black + H1;
+						rook_to = black + F1;
+					} else { // Queen Side
+						king_to = black + C1;
+						rook_from = black + A1;
+						rook_to = black + D1;
 					}
+					const byte king_idx = 0;
+					lastMove.resetCastle(toMove, board_.getSquare<toMove>(king_idx), rook_from);
+					board_.castle<toMove>(king_to, rook_from, rook_to);
+					// ClearCastlingRights;
+					return true;
 				}
-				break;
-			}
+				to = decodeKing(from, move);
 		}
-		return checkers.size() != 0;
-	}	
 
-	void fillSANInfo(FullMove& move) const {
-		pieceT piece = move.getPiece();
-		colorT allies = move.getColor();
-		std::vector<squareT> pinned;
-		if (isCheck(allies, &pinned)) move.setCheck();
-		if (piece == PAWN || piece == KING || piece == BISHOP || nPieces_[allies][piece] <= 1) return;
-		for (uint8_t i=1; i < nPieces_[allies][0]; i++) { //i=1 because King_idx == 0
-			if (list[allies][i].piece == piece && list[allies][i].sq != move.getFrom()) {
-				bool moveable = true;
-				for (uint j=0; j < pinned.size(); j++) {
-					if (list[allies][i].sq == pinned[j]) moveable = false;
-				}
-				if (!moveable) continue;
-				//Build the current board
-				pieceT board[64];
-				for (int j=0; j < nPieces_[WHITE][0]; j++) board[list[WHITE][j].sq] = list[WHITE][j].piece;
-				for (int j=0; j < nPieces_[BLACK][0]; j++) board[list[BLACK][j].sq] = list[BLACK][j].piece | (1 << 3);
-				//Undo the last move
-				board[move.getFrom()] = move.getPiece() | (allies << 3);
-				board[move.getTo()] = 0;
-				pieceT captured = move.getCaptured();
-				if (captured) board[move.getCaptSq()] = captured | (allies << 3);
-				//Generate the moves and check for ambiguity
-				std::vector<FullMove> m = generateMoves(board, list[allies][i].sq);
-				for (uint j=0; j < m.size(); j++) move.setAmbiguous(m[j]);
-			}
+		lastMove.reset(toMove, moving_piece, from, to, promo);
+		const colorT enemy = 1 - toMove;
+		pieceT captured = board_.move<toMove> (idx_piece_moving, to, promo);
+		if (captured == 0) {
+			if (!enPassant) return true;
+			captured = PAWN;
+			squareT sq = (toMove == WHITE) ? to - 8 : to + 8;
+			board_.remove<enemy>(0x3F & sq);
 		}
+		lastMove.setCapture(captured, enPassant);
+
+		return (board_.getCount<enemy>() >= minPieces[enemy][0]) &&
+		       (board_.getCount<enemy>(PAWN) + board_.getCount<enemy>(captured)) >=
+		       (minPieces[enemy][PAWN] + minPieces[enemy][captured]);
 	}
 
-	std::vector<FullMove> generateMoves(const pieceT* board, squareT from) const {
-		std::vector<FullMove> res;
-		pieceT piece = piece_Type(board[from]);
-		colorT enemy = 1 - piece_Color(board[from]);
-		switch (piece) {
-			case KNIGHT: {
-				static int knight[] = { -17, -15, -10, -6, 6, 10, 15, 17 };
-				for (uint i=0; i < sizeof(knight)/sizeof(int); i++) {
-					int sq = from + knight[i];
-					if (sq < 0 || sq > 63) continue;
-					if (board[sq] != 0 && piece_Color(board[sq]) != enemy) continue;
-					FullMove tmp;
-					tmp.set(1 - enemy, piece, from, sq);
-					if (board[sq] != 0) tmp.setCapture(piece_Type(board[sq]), false);
-					res.push_back(tmp);
-				}
-				break;
-			}
-			case ROOK: { //TODO
-				break;
-			}
-
-		}
-		return res;
+	static inline squareT decodeKing (squareT from, byte val) {
+		ASSERT (val <= 8);
+		static const char sqdiff[] = { 0, -9, -8, -7, -1, 1, 7, 8, 9};
+		return 0x3F & (from + sqdiff[val]);
 	}
+	static inline squareT decodeQueen2byte (byte val) {
+		return 0x3F & (val - 64);
+	}
+	static inline squareT decodeBishop (squareT from, byte val) {
+		byte fyle = (val & 7);
+		int fylediff = (int)fyle - (int)square_Fyle(from);
+		if (val >= 8) return 0x3F & (from - 7 * fylediff);
+		else return 0x3F & (from + 9 * fylediff);
+	}
+	static inline squareT decodeKnight (squareT from, byte val) {
+		ASSERT (val <= 16);
+		static const char sqdiff[] = { 0, -17, -15, -10, -6, 6, 10, 15, 17, 0, 0, 0, 0, 0, 0, 0 };
+		return 0x3F & (from + sqdiff[val]);
+	}
+	static inline squareT decodeRook (squareT from, byte val) {
+		ASSERT (val <= 16);
+		if (val >= 8) return square_Make (square_Fyle(from), (val - 8));
+		else return square_Make (val, square_Rank(from));
+	}
+	template <colorT color>
+	static inline squareT decodePawn (squareT from, byte val, pieceT& promo, bool& enPassant) {
+		ASSERT (val <= 16);
+		static const char sqdiff [] = { 7,8,9, 7,8,9, 7,8,9, 7,8,9, 7,8,9, 16 };
+		static const pieceT promoPieceFromVal [] = {
+			0,0,0,QUEEN,QUEEN,QUEEN, ROOK,ROOK,ROOK, BISHOP,BISHOP,BISHOP,KNIGHT,KNIGHT,KNIGHT,0
+		};
+		promo = promoPieceFromVal[val];
+		enPassant = (val == 0 || val == 2);
+		if (color == WHITE) return 0x3F & (from + sqdiff[val]);
+		else return 0x3F & (from - sqdiff[val]);
+	}
+
 };
 
 

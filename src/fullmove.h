@@ -102,14 +102,13 @@ public:
 		return res;
 	}
 
-	void clear() { m_ = 0; };
-	void set(colorT c, pieceT p, squareT from, squareT to, pieceT promo = 0) {
-		m_ |= to | (from << 6) | (p << 24) | (c << 27);
+	void reset(colorT c, pieceT p, squareT from, squareT to, pieceT promo = 0) {
+		m_ = to | (from << 6) | (p << 24) | (c << 27);
 		if (promo > 2) m_ |= ((promo -2) << 12) | (1 << 14);
 	}
-	void setCastle(colorT c, squareT kingSq, squareT rookSq) {
+	void resetCastle(colorT c, squareT kingSq, squareT rookSq) {
 		//Encoding as king to rook allow undoing of chess360 moves
-		m_ |= rookSq | (kingSq << 6) | (3 << 14) | (KING << 24) | (c << 27);
+		m_ = rookSq | (kingSq << 6) | (3 << 14) | (KING << 24) | (c << 27);
 	}
 	void setCapture(pieceT piece, bool enPassant) {
 		m_ |= ((piece & 0x07) << 21);

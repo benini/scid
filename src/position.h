@@ -142,6 +142,7 @@ private:
     //  Position:  Public Functions
 public:
     Position()   { Init(); }
+    explicit Position(bool std_start) { StdStart(); }
     Position(const Position& p);
     ~Position()  {}
 
