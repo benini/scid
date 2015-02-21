@@ -33,13 +33,7 @@ proc ::commenteditor::addNag {nag} {
 }
 
 proc makeCommentWin {} {
-  if {[winfo exists .commentWin]} {
-    # ::commenteditor::close
-    focus .
-    destroy .commentWin
-  } else {
-    ::commenteditor::Open
-  }
+  ::commenteditor::Open 1
 }
 
 proc ::commenteditor::toggleboard { } {
@@ -54,22 +48,24 @@ proc ::commenteditor::toggleboard { } {
 
 # ::commenteditor::Open --
 #
-proc ::commenteditor::Open {} {
+proc ::commenteditor::Open {{toggle 0}} {
   global commentWin highcolor helpMessage
   variable colorList
   variable markTypeList
   variable State
-  
-  set commentWin 1
-  set State(isOpen) 1
-  if {[winfo exists .commentWin]} {
-    focus .commentWin.cf.text
+
+  set w .commentWin
+  if {[::createToplevel $w] == "already_exists"} {
+    if {$toggle != 0} {
+      ::commenteditor::storeComment
+      destroy $w
+    }
     return
   }
-  set w .commentWin
-  ::createToplevel $w
+  set commentWin 1
+  set State(isOpen) 1
   setWinLocation $w
-  
+  keyboardShortcuts $w
   set mark [ttk::frame $w.markFrame]
   if {$::commenteditor::showboard == 1} { pack $mark -side left -fill both -expand 1 -padx 1 -anchor n }
   
@@ -80,8 +76,6 @@ proc ::commenteditor::Open {} {
   ttk::scrollbar $w.cf.scroll -command ".commentWin.cf.text yview"
   ttk::label $w.cf.label -font font_Bold -textvar ::tr(Comment)
   bindFocusColors $w.cf.text
-  bind $w.cf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
-  bind $w.cf.text <Alt-KeyRelease-s> { .commentWin.b.store invoke }
 
   bind $w.cf.text <FocusOut> { ::commenteditor::storeComment }
   bind $w <Control-a> {::commenteditor::storeComment; sc_var create; updateBoard -pgn}
@@ -97,7 +91,6 @@ proc ::commenteditor::Open {} {
   ttk::frame $w.nf.tf
   ttk::entry $w.nf.tf.text -width 20 -background white
   bindFocusColors $w.nf.tf.text
-  bind $w.nf.tf.text <Alt-KeyRelease-c> { .commentWin.b.close invoke }
   # switch to the edit frame
   bind $w.nf.tf.text <Alt-n> { focus .commentWin.cf.text }
   

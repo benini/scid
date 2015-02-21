@@ -242,7 +242,6 @@ proc ::maint::OpenClose {} {
   packbuttons right $w.buttons.close $w.buttons.help
   
   bind $w <Alt-h> "$w.buttons.help invoke"
-  bind $w <Alt-c> "destroy $w; break"
   keyboardShortcuts $w
   ::maint::Refresh
 }

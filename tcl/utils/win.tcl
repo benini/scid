@@ -197,6 +197,7 @@ proc ::docking::cleanup { w { origin "" } } {
       ::docking::setTabStatus
     }
     after idle "if {[winfo exists $dockw]} { destroy $dockw }"
+    focus .main
   }
 }
 ################################################################################
