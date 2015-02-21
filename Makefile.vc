@@ -193,12 +193,11 @@ SCID_OBJS = \
 	$(TMP_DIR)\tree.obj \
 	$(TMP_DIR)\filter.obj \
 	$(TMP_DIR)\polyglot\attack.obj $(TMP_DIR)\polyglot\board.obj $(TMP_DIR)\polyglot\book.obj \
-	$(TMP_DIR)\polyglot\book_make.obj $(TMP_DIR)\polyglot\book_merge.obj $(TMP_DIR)\polyglot\colour.obj \
-	$(TMP_DIR)\polyglot\fen.obj $(TMP_DIR)\polyglot\game.obj $(TMP_DIR)\polyglot\hash.obj \
-	$(TMP_DIR)\polyglot\io.obj $(TMP_DIR)\polyglot\line.obj $(TMP_DIR)\polyglot\list.obj $(TMP_DIR)\polyglot\main.obj $(TMP_DIR)\polyglot\move.obj \
+	$(TMP_DIR)\polyglot\colour.obj $(TMP_DIR)\polyglot\fen.obj $(TMP_DIR)\polyglot\hash.obj \
+	$(TMP_DIR)\polyglot\list.obj $(TMP_DIR)\polyglot\main.obj $(TMP_DIR)\polyglot\move.obj \
 	$(TMP_DIR)\polyglot\move_do.obj $(TMP_DIR)\polyglot\move_gen.obj $(TMP_DIR)\polyglot\move_legal.obj $(TMP_DIR)\polyglot\option.obj \
-	$(TMP_DIR)\polyglot\parse.obj $(TMP_DIR)\polyglot\pgn.obj $(TMP_DIR)\polyglot\piece.obj $(TMP_DIR)\polyglot\random.obj \
-	$(TMP_DIR)\polyglot\san.obj $(TMP_DIR)\polyglot\search.obj $(TMP_DIR)\polyglot\square.obj $(TMP_DIR)\polyglot\util.obj
+	$(TMP_DIR)\polyglot\piece.obj $(TMP_DIR)\polyglot\random.obj \
+	$(TMP_DIR)\polyglot\san.obj $(TMP_DIR)\polyglot\square.obj $(TMP_DIR)\polyglot\util.obj
 
 
 ##	SCID_XOBJS: all the extra .obj files that make up Scid.
