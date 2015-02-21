@@ -43,6 +43,7 @@ void scidBaseT::Init() {
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
 	duplicates = NULL;
+	stats_ = NULL;
 	validStats_ = false;
 }
 
@@ -56,6 +57,7 @@ scidBaseT::~scidBaseT() {
 	if (gfile != NULL) delete gfile;
 	if (bbuf != NULL) delete bbuf;
 	if (tbuf != NULL) delete tbuf;
+	if (stats_ != NULL) delete stats_;
 	if (dbFilter != NULL) delete dbFilter;
 	if (treeFilter != NULL) delete treeFilter;
 	for (uint i=0; i < filters_.size(); i++) {
@@ -334,89 +336,90 @@ void scidBaseT::calcNameFreq () {
 	}
 }
 
-scidBaseT::Stats* scidBaseT::getStats() {
-	if (validStats_) return &stats;
+const scidBaseT::Stats* scidBaseT::getStats() const {
+	if (validStats_) return stats_;
+	if (stats_ == NULL) stats_ = new scidBaseT::Stats;
 
 	uint i;
 	// Zero out all stats:
-	for (i = 0; i < IDX_NUM_FLAGS; i++) { stats.flagCount[i] = 0; }
-	stats.nRatings = 0;
-	stats.sumRatings = 0;
-	stats.minRating = 0;
-	stats.maxRating = 0;
-	stats.minDate = ZERO_DATE;
-	stats.maxDate = ZERO_DATE;
-	stats.nYears = 0;
-	stats.sumYears = 0;
+	for (i = 0; i < IDX_NUM_FLAGS; i++) { stats_->flagCount[i] = 0; }
+	stats_->nRatings = 0;
+	stats_->sumRatings = 0;
+	stats_->minRating = 0;
+	stats_->maxRating = 0;
+	stats_->minDate = ZERO_DATE;
+	stats_->maxDate = ZERO_DATE;
+	stats_->nYears = 0;
+	stats_->sumYears = 0;
 	for (i=0; i < NUM_RESULT_TYPES; i++) {
-		stats.nResults[i] = 0;
+		stats_->nResults[i] = 0;
 	}
 	for (i=0; i < 1; i++) {
-		stats.ecoCount0[i].count = 0;
-		stats.ecoCount0[i].results[RESULT_White] = 0;
-		stats.ecoCount0[i].results[RESULT_Black] = 0;
-		stats.ecoCount0[i].results[RESULT_Draw] = 0;
-		stats.ecoCount0[i].results[RESULT_None] = 0;
+		stats_->ecoCount0[i].count = 0;
+		stats_->ecoCount0[i].results[RESULT_White] = 0;
+		stats_->ecoCount0[i].results[RESULT_Black] = 0;
+		stats_->ecoCount0[i].results[RESULT_Draw] = 0;
+		stats_->ecoCount0[i].results[RESULT_None] = 0;
 	}
 	for (i=0; i < 5; i++) {
-		stats.ecoCount1[i].count = 0;
-		stats.ecoCount1[i].results[RESULT_White] = 0;
-		stats.ecoCount1[i].results[RESULT_Black] = 0;
-		stats.ecoCount1[i].results[RESULT_Draw] = 0;
-		stats.ecoCount1[i].results[RESULT_None] = 0;
+		stats_->ecoCount1[i].count = 0;
+		stats_->ecoCount1[i].results[RESULT_White] = 0;
+		stats_->ecoCount1[i].results[RESULT_Black] = 0;
+		stats_->ecoCount1[i].results[RESULT_Draw] = 0;
+		stats_->ecoCount1[i].results[RESULT_None] = 0;
 	}
 	for (i=0; i < 50; i++) {
-		stats.ecoCount2[i].count = 0;
-		stats.ecoCount2[i].results[RESULT_White] = 0;
-		stats.ecoCount2[i].results[RESULT_Black] = 0;
-		stats.ecoCount2[i].results[RESULT_Draw] = 0;
-		stats.ecoCount2[i].results[RESULT_None] = 0;
+		stats_->ecoCount2[i].count = 0;
+		stats_->ecoCount2[i].results[RESULT_White] = 0;
+		stats_->ecoCount2[i].results[RESULT_Black] = 0;
+		stats_->ecoCount2[i].results[RESULT_Draw] = 0;
+		stats_->ecoCount2[i].results[RESULT_None] = 0;
 	}
 	for (i=0; i < 500; i++) {
-		stats.ecoCount3[i].count = 0;
-		stats.ecoCount3[i].results[RESULT_White] = 0;
-		stats.ecoCount3[i].results[RESULT_Black] = 0;
-		stats.ecoCount3[i].results[RESULT_Draw] = 0;
-		stats.ecoCount3[i].results[RESULT_None] = 0;
+		stats_->ecoCount3[i].count = 0;
+		stats_->ecoCount3[i].results[RESULT_White] = 0;
+		stats_->ecoCount3[i].results[RESULT_Black] = 0;
+		stats_->ecoCount3[i].results[RESULT_Draw] = 0;
+		stats_->ecoCount3[i].results[RESULT_None] = 0;
 	}
 	for (i=0; i < 500*26; i++) {
-		stats.ecoCount4[i].count = 0;
-		stats.ecoCount4[i].results[RESULT_White] = 0;
-		stats.ecoCount4[i].results[RESULT_Black] = 0;
-		stats.ecoCount4[i].results[RESULT_Draw] = 0;
-		stats.ecoCount4[i].results[RESULT_None] = 0;
+		stats_->ecoCount4[i].count = 0;
+		stats_->ecoCount4[i].results[RESULT_White] = 0;
+		stats_->ecoCount4[i].results[RESULT_Black] = 0;
+		stats_->ecoCount4[i].results[RESULT_Draw] = 0;
+		stats_->ecoCount4[i].results[RESULT_None] = 0;
 	}
 	// Read stats from index entry of each game:
 	for (uint gnum=0, n = numGames(); gnum < n; gnum++) {
 		const IndexEntry* ie = getIndexEntry(gnum);
-		stats.nResults[ie->GetResult()]++;
+		stats_->nResults[ie->GetResult()]++;
 		eloT elo = ie->GetWhiteElo();
 		if (elo > 0) {
-			stats.nRatings++;
-			stats.sumRatings += elo;
-			if (stats.minRating == 0) { stats.minRating = elo; }
-			if (elo < stats.minRating) { stats.minRating = elo; }
-			if (elo > stats.maxRating) { stats.maxRating = elo; }
+			stats_->nRatings++;
+			stats_->sumRatings += elo;
+			if (stats_->minRating == 0) { stats_->minRating = elo; }
+			if (elo < stats_->minRating) { stats_->minRating = elo; }
+			if (elo > stats_->maxRating) { stats_->maxRating = elo; }
 			nb->AddElo (ie->GetWhite(), elo);
 		}
 		elo = ie->GetBlackElo();
 		if (elo > 0) {
-			stats.nRatings++;
-			stats.sumRatings += elo;
-			if (stats.minRating == 0) { stats.minRating = elo; }
-			if (elo < stats.minRating) { stats.minRating = elo; }
-			if (elo > stats.maxRating) { stats.maxRating = elo; }
+			stats_->nRatings++;
+			stats_->sumRatings += elo;
+			if (stats_->minRating == 0) { stats_->minRating = elo; }
+			if (elo < stats_->minRating) { stats_->minRating = elo; }
+			if (elo > stats_->maxRating) { stats_->maxRating = elo; }
 			nb->AddElo (ie->GetBlack(), elo);
 		}
 		dateT date = ie->GetDate();
 		if (gnum == 0) {
-			stats.maxDate = stats.minDate = date;
+			stats_->maxDate = stats_->minDate = date;
 		}
 		if (date_GetYear(date) > 0) {
-			if (date < stats.minDate) { stats.minDate = date; }
-			if (date > stats.maxDate) { stats.maxDate = date; }
-			stats.nYears++;
-			stats.sumYears += date_GetYear (date);
+			if (date < stats_->minDate) { stats_->minDate = date; }
+			if (date > stats_->maxDate) { stats_->maxDate = date; }
+			stats_->nYears++;
+			stats_->sumYears += date_GetYear (date);
 			nb->AddDate (ie->GetWhite(), date);
 			nb->AddDate (ie->GetBlack(), date);
 		}
@@ -424,7 +427,7 @@ scidBaseT::Stats* scidBaseT::getStats() {
 		for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {
 			bool value = ie->GetFlag (1 << flag);
 			if (value) {
-				stats.flagCount[flag]++;
+				stats_->flagCount[flag]++;
 			}
 		}
 
@@ -435,27 +438,27 @@ scidBaseT::Stats* scidBaseT::getStats() {
 		resultT result = ie->GetResult();
 		if (length >= 3) {
 			uint code = 0;
-			stats.ecoCount0[code].count++;
-			stats.ecoCount0[code].results[result]++;
+			stats_->ecoCount0[code].count++;
+			stats_->ecoCount0[code].results[result]++;
 			code = ecoStr[0] - 'A';
-			stats.ecoCount1[code].count++;
-			stats.ecoCount1[code].results[result]++;
+			stats_->ecoCount1[code].count++;
+			stats_->ecoCount1[code].results[result]++;
 			code = (code * 10) + (ecoStr[1] - '0');
-			stats.ecoCount2[code].count++;
-			stats.ecoCount2[code].results[result]++;
+			stats_->ecoCount2[code].count++;
+			stats_->ecoCount2[code].results[result]++;
 			code = (code * 10) + (ecoStr[2] - '0');
-			stats.ecoCount3[code].count++;
-			stats.ecoCount3[code].results[result]++;
+			stats_->ecoCount3[code].count++;
+			stats_->ecoCount3[code].results[result]++;
 			if (length >= 4) {
 				code = (code * 26) + (ecoStr[3] - 'a');
-				stats.ecoCount4[code].count++;
-				stats.ecoCount4[code].results[result]++;
+				stats_->ecoCount4[code].count++;
+				stats_->ecoCount4[code].results[result]++;
 			}
 		}
 	}
 
 	validStats_ = true;
-	return &stats;
+	return stats_;
 }
 
 double scidBaseT::TreeStat::expVect_[1600];

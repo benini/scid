@@ -1750,7 +1750,7 @@ sc_base_stats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         basePtr = &(dbList[baseNum - 1]);
     }
 
-    scidBaseT::Stats* stats = basePtr->getStats();
+    const scidBaseT::Stats* stats = basePtr->getStats();
 
     if (option == OPT_FLAGS) {
         appendUintElement (ti, stats->flagCount [IDX_FLAG_DELETE]);
@@ -1835,8 +1835,8 @@ sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Invalid ECO prefix");
     }
 
-    scidBaseT::Stats* stats = db->getStats();
-    scidBaseT::Stats::Eco * result = NULL;
+    const scidBaseT::Stats* stats = db->getStats();
+    const scidBaseT::Stats::Eco * result = NULL;
     switch (length) {
     case 0:
         result = &(stats->ecoCount0[0]);
@@ -10449,7 +10449,7 @@ sc_report (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "No report has been created yet.");
     }
 
-    scidBaseT::Stats* stats = db->getStats();
+    const scidBaseT::Stats* stats = db->getStats();
     switch (index) {
     case OPT_AVGLENGTH:
         if (argc != 4) {

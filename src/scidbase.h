@@ -162,7 +162,7 @@ struct scidBaseT {
 		return res;
 	}
 
-	Stats* getStats();
+	const Stats* getStats() const;
 	std::vector<scidBaseT::TreeStat> getTreeStat(Filter* filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0) calcNameFreq();
@@ -210,8 +210,8 @@ private:
 	GFile* gfile;
 	fileModeT fileMode; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
-	bool validStats_;
-	Stats stats;
+	mutable bool validStats_;
+	mutable Stats* stats_;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
 
 	scidBaseT(const scidBaseT&);
