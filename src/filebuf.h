@@ -46,7 +46,7 @@ public:
 	uint ReadTwoBytes () { return read<2>(); }
 	uint ReadThreeBytes () { return read<3>(); }
 	uint ReadFourBytes () { return read<4>(); }
-	uint ReadNBytes (char* str, uint count) { return sgetn(str, count); }
+	uint ReadNBytes (char* str, uint count) { return (uint) sgetn(str, count); }
 	uint ReadLine (char* str, uint maxLength) {
 		uint res = 1;
 		while (res < maxLength) {
@@ -61,14 +61,14 @@ public:
 	}
 
 	//Returns the number of characters successfully written
-	int WriteOneByte (byte value) { return (sputc(value) == value) ? 1 : 0; }
-	int WriteTwoBytes (uint value) { return write<2>(value); }
-	int WriteThreeBytes (uint value) { return write<3>(value); }
-	int WriteFourBytes (uint value) { return write<4>(value); }
-	int WriteNBytes (const char* str, uint count) { return sputn(str, count); }
+	uint WriteOneByte (byte value) { return (sputc(value) == value) ? 1 : 0; }
+	uint WriteTwoBytes (uint value) { return write<2>(value); }
+	uint WriteThreeBytes (uint value) { return write<3>(value); }
+	uint WriteFourBytes (uint value) { return write<4>(value); }
+	uint WriteNBytes (const char* str, uint count) { return (uint) sputn(str, count); }
 
 private:
-	template <int nBytes> uint read() {
+	template <uint nBytes> uint read() {
 		uint res = 0;
 		if (nBytes > 3) res += ReadOneByte() << 24;
 		if (nBytes > 2) res += ReadOneByte() << 16;
@@ -76,7 +76,7 @@ private:
 		return res + ReadOneByte();
 	}
 
-	template <int nBytes> uint write(uint v) {
+	template <uint nBytes> uint write(uint v) {
 		uint res = 0;
 		if (nBytes > 3) res += WriteOneByte((v >> 24) & 255);
 		if (nBytes > 2) res += WriteOneByte((v >> 16) & 255);

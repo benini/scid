@@ -3762,7 +3762,7 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
         ie->SetNumHalfMoves (NumHalfMoves);
 
         // Find the longest matching stored line for this game:
-        ushort storedLineCode = 0;
+        uint storedLineCode = 0;
         if (!NonStandardStart) {
             uint longestMatch = 0;
             for (uint i = 1; i < StoredLine::count(); i++) {
@@ -3785,7 +3785,8 @@ Game::Encode (ByteBuffer * buf, IndexEntry * ie)
                 }
             }
         }
-        ie->SetStoredLineCode (storedLineCode);
+        ASSERT(storedLineCode == static_cast<byte>(storedLineCode));
+        ie->SetStoredLineCode(static_cast<byte>(storedLineCode));
     }
     
     // as each game entry length is coded on 17 bits, and game must fit in a block
