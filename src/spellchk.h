@@ -12,13 +12,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef WINCE
-
 #ifndef SCID_SPELLCHK_H
 #define SCID_SPELLCHK_H
 
 #include "misc.h"
-#include "stralloc.h"
+#include <string>
 
 const uint SPELL_HASH_SIZE = 4096;
 
@@ -34,16 +32,38 @@ struct spellingT {
 
 struct spellCheckNodeT
 {
-    char * name;        // The possibly incorrect spelling of this name.
-    char * correctName; // The correct spelling of this name.
-    char * renderName;  // The real (with umlauts, etc) spelling.
-    char * comment;     // Extra info, e.g. title/country/elo/date of birth
+    explicit spellCheckNodeT(const char* Name, 
+                             const char* CorrectName = 0,
+                             const char* Comment = 0) {
+        if (Name != 0) {
+            buf[0] = Name;
+            name = buf[0].c_str();
+        }
+        if (CorrectName != 0) {
+            buf[1] = CorrectName;
+            correctName = buf[1].c_str();
+        }
+        if (Comment != 0) {
+            buf[2] = Comment;
+            comment = buf[2].c_str();
+        }
+    }
+    const char * name;        // The possibly incorrect spelling of this name.
+    const char * correctName; // The correct spelling of this name.
+    const char * renderName;  // The real (with umlauts, etc) spelling.
+    const char * comment;     // Extra info, e.g. title/country/elo/date of birth
     spellCheckNodeT * next;
     spellCheckNodeT * alias;
     eloT * eloData;     // History of FIDE Elo ratings for player.
     bioNoteT * bioData; // Biography data.
     bool correction;    // Indicates whether this node is a correction.
     spellCheckNodeT * nextHash;
+
+private:
+	std::string buf[3];
+
+	spellCheckNodeT(const spellCheckNodeT&);
+	spellCheckNodeT& operator=(const spellCheckNodeT&);
 };
 
 struct presuffixNodeT
@@ -56,15 +76,12 @@ struct presuffixNodeT
 
 class SpellChecker
 {
-
   private:
     uint CorrectNameCount;
     uint IncorrectNameCount;
     nameT NameType;
     char * ExcludeChars;
     bool EloDataSeen;
-
-    StrAllocator * StrAlloc;
 
     spellCheckNodeT * Names [256];
     spellCheckNodeT * HashNames [SPELL_HASH_SIZE];
@@ -77,25 +94,6 @@ class SpellChecker
     void Destroy (void);
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif  
-
     SpellChecker ()  { Init(); }
     ~SpellChecker () { Destroy(); }
     void Clear (void);
@@ -138,7 +136,6 @@ class SpellChecker
 
 #endif  // SCID_SPELLCHK_H
 
-#endif // WINCE
 //////////////////////////////////////////////////////////////////////
 //  EOF: spellchk.h
 //////////////////////////////////////////////////////////////////////

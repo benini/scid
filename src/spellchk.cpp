@@ -12,8 +12,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef WINCE
-
 #include "spellchk.h"
 #include "namebase.h"
 #include "date.h"
@@ -41,7 +39,6 @@ void
 SpellChecker::Init (void)
 {
     ExcludeChars = strDuplicate ("");
-    StrAlloc = new StrAllocator;
     EloDataSeen = false;
     CorrectNameCount = 0;
     IncorrectNameCount = 0;
@@ -62,84 +59,45 @@ SpellChecker::Clear (void)
 void
 SpellChecker::Destroy (void)
 {
-#ifdef WINCE
-    my_Tcl_Free( ExcludeChars );
-#else
     delete[] ExcludeChars;
-#endif
-    delete StrAlloc;
-    StrAlloc = NULL;
     for (uint i=0; i < 256; i++) {
         spellCheckNodeT * node = Names[i];
         while (node != NULL) {
             spellCheckNodeT * next = node->next;
             if (node->eloData != NULL) {
-#ifdef WINCE
-                my_Tcl_Free((char*) node->eloData);
-            }
-            if (node->renderName != NULL) { my_Tcl_Free((char*) node->renderName); }
-#else
                 delete[] node->eloData;
             }
             if (node->renderName != NULL) { delete[] node->renderName; }
-#endif
+
             while (node->bioData != NULL) {
                 bioNoteT * next = node->bioData->next;
-#ifdef WINCE
-                my_Tcl_Free((char*)  node->bioData->text);
-                my_Tcl_Free((char*) node->bioData);
-#else
                 delete[] node->bioData->text;
                 delete[] node->bioData;
-#endif
-
                 node->bioData = next;
             }
-#ifdef WINCE
-                my_Tcl_Free((char*)  node);
-#else
             delete node;
-#endif
             node = next;
         }
     }
     while (Prefixes != NULL) {
         presuffixNodeT * next = Prefixes->next;
-#ifdef WINCE
-        my_Tcl_Free((char*)  Prefixes->name);
-        my_Tcl_Free((char*)  Prefixes->correctName);
-        my_Tcl_Free((char*)  Prefixes);
-#else
         delete[] Prefixes->name;
         delete[] Prefixes->correctName;
         delete Prefixes;
-#endif
         Prefixes = next;
     }
     while (Suffixes != NULL) {
         presuffixNodeT * next = Suffixes->next;
-#ifdef WINCE
-        my_Tcl_Free((char*)  Suffixes->name);
-        my_Tcl_Free((char*)  Suffixes->correctName);
-        my_Tcl_Free((char*)  Suffixes);
-#else
         delete[] Suffixes->name;
         delete[] Suffixes->correctName;
         delete Suffixes;
-#endif
         Suffixes = next;
     }
     while (Infixes != NULL) {
         presuffixNodeT * next = Infixes->next;
-#ifdef WINCE
-        my_Tcl_Free((char*) Infixes->name);
-        my_Tcl_Free((char*)  Infixes->correctName);
-        my_Tcl_Free((char*)  Infixes);
-#else
         delete[] Infixes->name;
         delete[] Infixes->correctName;
         delete Infixes;
-#endif
         Infixes = next;
     }
 }
@@ -147,11 +105,7 @@ SpellChecker::Destroy (void)
 void
 SpellChecker::SetExcludeChars (const char * str)
 {
-#ifdef WINCE
-    my_Tcl_Free((char*) ExcludeChars);
-#else
     delete[] ExcludeChars;
-#endif
     ExcludeChars = strDuplicate (str);
 }
 
@@ -161,11 +115,7 @@ SpellChecker::SetRenderName (spellCheckNodeT * node, const char * name)
     ASSERT (node != NULL  &&  name != NULL);
     // Skip over any initial spaces:
     while (*name == ' ') { name++; }
-#ifdef WINCE
-    if (node->renderName != NULL) { my_Tcl_Free((char*) node->renderName); }
-#else
     if (node->renderName != NULL) { delete[] node->renderName; }
-#endif
     node->renderName = strDuplicate (name);
 }
 
@@ -485,10 +435,10 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
     char line [1024];
     char strippedName [1024];
     spellCheckNodeT * lastCorrectNode = NULL;
-    char * prevCorrectName = NULL;
-    char * lastCorrectName = NULL;
-    char * lastRenderName = NULL;
-    char * lastComment = NULL;
+    const char * prevCorrectName = NULL;
+    const char * lastCorrectName = NULL;
+    const char * lastRenderName = NULL;
+    const char * lastComment = NULL;
     nameT nameType = NAME_INVALID;
 
     MFile fp;
@@ -527,7 +477,6 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
             }
         } else if (*name == '@') {
             // Name type line: "@PLAYER", "@SITE", "@EVENT" or "@ROUND"
-            // Hmmm... maybe add a COUNTRY parsing round S.A &&&
             nameType = NameBase::NameTypeFromString (name+1);
             if (! NameBase::IsValidNameType(NameType)) {
                 return ERROR_Corrupt;
@@ -552,13 +501,8 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
             name++;
             while (*name == ' ') { name++; }
             if (lastCorrectName != NULL) {
-#ifdef WINCE
-                spellCheckNodeT * node = (spellCheckNodeT *)my_Tcl_Alloc(sizeof( spellCheckNodeT));
-#else
-                spellCheckNodeT * node = new spellCheckNodeT;
-#endif
                 strCopyExclude (strippedName, name, ExcludeChars);
-                node->name = StrAlloc->Duplicate (strippedName);
+                spellCheckNodeT * node = new spellCheckNodeT(strippedName);
                 node->correctName = lastCorrectName;
                 node->comment = lastComment;
                 node->correction = true;
@@ -574,16 +518,8 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
             }
         } else if (nameType == NameType) {
             // Correctly spelt name; add to the list:
-#ifdef WINCE
-                spellCheckNodeT * node = (spellCheckNodeT *)my_Tcl_Alloc(sizeof( spellCheckNodeT));
-#else
-            spellCheckNodeT * node = new spellCheckNodeT;
-#endif
-
             strCopyExclude (strippedName, name, ExcludeChars);
-            node->correctName = StrAlloc->Duplicate (name);
-            node->name = StrAlloc->Duplicate (strippedName);
-            node->comment = StrAlloc->Duplicate (comment);
+            spellCheckNodeT * node = new spellCheckNodeT(strippedName, name, comment);
             node->renderName = NULL;
             node->correction = false;
             uint hash = spellHash(name) % SPELL_HASH_SIZE;
@@ -637,11 +573,7 @@ SpellChecker::AddPrefixSuffix (char * str)
     if (q4 == NULL) { return ERROR; }
     *q2 = 0;
     *q4 = 0;
-#ifdef WINCE
-    presuffixNodeT * node = (presuffixNodeT *) my_Tcl_Alloc(sizeof( presuffixNodeT));
-#else
     presuffixNodeT * node = new presuffixNodeT;
-#endif
     if (strIsPrefix ("%Suffix", str)) {
         node->next = Suffixes;
         Suffixes = node;
@@ -664,11 +596,7 @@ void
 SpellChecker::AddBioData (spellCheckNodeT * node, const char * str)
 {
     ASSERT (node != NULL  &&  str != NULL);
-#ifdef WINCE
-    bioNoteT * note = (bioNoteT *) my_Tcl_Alloc(sizeof(bioNoteT));
-#else
     bioNoteT * note = new bioNoteT;
-#endif
     note->text = strDuplicate (str);
     note->next = NULL;
     if (node->bioData == NULL) {
@@ -779,11 +707,7 @@ SpellChecker::AddEloData (spellCheckNodeT * node, const char * str)
 {
     ASSERT (node != NULL  &&  str != NULL);
     if (node->eloData == NULL) {
-#ifdef WINCE
-        node->eloData = (eloT*)my_Tcl_Alloc(sizeof( eloT [ELO_ARRAY_SIZE]));
-#else
         node->eloData = new eloT [ELO_ARRAY_SIZE];
-#endif
         for (uint i=0; i < ELO_ARRAY_SIZE; i++) {
             node->eloData[i] = 0;
         }
@@ -1043,7 +967,6 @@ SpellChecker::GetDeathdate (const char * comment)
     return date_EncodeFromString (s);
 }
 
-#endif
 //////////////////////////////////////////////////////////////////////
 //  EOF: spellchk.cpp
 //////////////////////////////////////////////////////////////////////
