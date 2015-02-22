@@ -18,7 +18,6 @@
 
 #include "common.h"
 #include "scidbase.h"
-#include "fastgame.h"
 #include "stored.h"
 #include <algorithm>
 #include <math.h>

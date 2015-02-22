@@ -37,14 +37,15 @@ class FastBoard {
 
 public:
 	FastBoard() {}
-	FastBoard(/*const*/ Position& pos) { Init(pos); }
+	FastBoard(Position& pos) { Init(pos); }
 
 	void Init() {
-		static FastBoard StdStart(Position(true));
+		static Position StdStartPos(true);
+		static FastBoard StdStart(StdStartPos);
 		*this = StdStart;
 	}
 
-	void Init(/*const*/ Position& pos) {
+	void Init(Position& pos) {
 		memset(nPieces_, 0, sizeof(nPieces_));
 		memset(board_, 0, sizeof(board_));
 		for (byte c=0; c<2; c++) {
@@ -206,8 +207,8 @@ private:
 
 		const pieceT pP = piece_Make(enemy, PAWN);
 		const int p_row = (enemy == BLACK) ? 1 : -1;
-		if (pN == getNeighbor<true>(kingCol, kingRow, +1, p_row)) return true;
-		if (pN == getNeighbor<true>(kingCol, kingRow, -1, p_row)) return true;
+		if (pP == getNeighbor<true>(kingCol, kingRow, +1, p_row)) return true;
+		if (pP == getNeighbor<true>(kingCol, kingRow, -1, p_row)) return true;
 
 		return false;
 	}
@@ -271,7 +272,7 @@ public:
 
 	FullMove getMove(int ply_to_skip) {
 		FullMove move;
-		uint8_t dummy[2][8] = {0};
+		Dummy dummy;
 
 		for (int ply=0; ply <= ply_to_skip; ply++, cToMove_ = 1 - cToMove_) {
 			if (cToMove_ == WHITE) {
@@ -291,7 +292,7 @@ public:
 
 	std::string getMoveSAN(int ply_to_skip, int count) {
 		std::stringstream res;
-		uint8_t dummy[2][8] = {0};
+		Dummy dummy;
 		for (int ply=0; ply < ply_to_skip + count; ply++, cToMove_ = 1 - cToMove_) {
 			FullMove move;
 			if (cToMove_ == WHITE) {
@@ -311,23 +312,20 @@ public:
 		return res.str();
 	}
 
-	template <colorT toMove, class NP>
-	int search(const byte* board, NP nPieces) {
+	template <colorT toMove>
+	int search(const byte* board, const uint8_t (&nPieces) [2][8]) {
 		int ply = 1;
-		struct {
-			void reset(colorT, pieceT, squareT, squareT to, pieceT = 0) {}
-			void resetCastle(colorT, squareT, squareT) {}
-			void setCapture(pieceT, bool) {}
-		} dummy;
+		Dummy dummy;
+		MinPieces minP(nPieces);
 
 		if (cToMove_ != toMove) {
-			if (! DecodeNextMove<1 - toMove>(dummy, nPieces)) return 0;
+			if (! DecodeNextMove<1 - toMove>(dummy, minP)) return 0;
 			ply += 1;
 		}
 		for (;;) {
 			if (board_.isEqual(board, nPieces[WHITE], nPieces[BLACK])) return ply;
-			if (! DecodeNextMove<toMove>(dummy, nPieces)) return 0;
-			if (! DecodeNextMove<1 - toMove>(dummy, nPieces)) return 0;
+			if (! DecodeNextMove<toMove>(dummy, minP)) return 0;
+			if (! DecodeNextMove<1 - toMove>(dummy, minP)) return 0;
 			ply += 2;
 		}
 		return 0;
@@ -429,9 +427,8 @@ private:
 		}
 		lastMove.setCapture(captured, enPassant);
 
-		return (board_.getCount<enemy>() >= minPieces[enemy][0]) &&
-		       (board_.getCount<enemy>(PAWN) + board_.getCount<enemy>(captured)) >=
-		       (minPieces[enemy][PAWN] + minPieces[enemy][captured]);
+		return minPieces(enemy, captured, board_.getCount<enemy>(),
+			board_.getCount<enemy>(PAWN) + board_.getCount<enemy>(captured));
 	}
 
 	static inline squareT decodeKing (squareT from, byte val) {
@@ -470,6 +467,22 @@ private:
 		if (color == WHITE) return 0x3F & (from + sqdiff[val]);
 		else return 0x3F & (from - sqdiff[val]);
 	}
+
+	struct Dummy {
+		void reset(colorT, pieceT, squareT, squareT to, pieceT = 0) {}
+		void resetCastle(colorT, squareT, squareT) {}
+		void setCapture(pieceT, bool) {}
+		bool operator()(colorT, pieceT, uint8_t, uint8_t) const { return true; }
+	};
+
+	class MinPieces{
+		const uint8_t (&m_)[2][8];
+	public:
+		MinPieces(const uint8_t (&m)[2][8]) : m_(m) {}
+		bool operator()(colorT col, pieceT p, uint8_t tot, uint8_t p_count) const {
+			return (tot >= m_[col][0] && p_count >= (m_[col][PAWN] + m_[col][p]));
+		}
+	};
 
 };
 
