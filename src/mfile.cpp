@@ -201,26 +201,6 @@ MFile::ReadNBytes (char * str, uint length)
 }
 
 errorT
-MFile::ReadLine (char * str, uint maxLength)
-{
-    ASSERT (FileMode != FMODE_WriteOnly);
-    if (Type != MFILE_REGULAR) {
-        while (1) {
-            if (maxLength == 0) { break; }
-            maxLength--;
-            char ch = ReadOneByte ();
-            *str++ = ch;
-            if (ch == '\n') { break; }
-        }
-        *str = 0;
-    } else {
-        fgets (str, (int) maxLength, Handle);
-        Location = ftell (Handle);
-    }
-    return OK;
-}
-
-errorT
 MFile::WriteTwoBytes (uint value)
 {
     ASSERT (FileMode != FMODE_ReadOnly);

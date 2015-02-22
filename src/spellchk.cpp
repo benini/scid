@@ -15,7 +15,7 @@
 #include "spellchk.h"
 #include "namebase.h"
 #include "date.h"
-#include "mfile.h"
+#include "filebuf.h"
 #include <ctype.h>
 
 inline uint
@@ -441,13 +441,10 @@ SpellChecker::ReadSpellCheckFile (const char * filename, bool checkPlayerOrder)
     const char * lastComment = NULL;
     nameT nameType = NAME_INVALID;
 
-    MFile fp;
+    Filebuf fp;
     if (fp.Open (filename, FMODE_ReadOnly) != OK) { return ERROR_FileOpen; }
 
-    while (1) {
-        fp.ReadLine (line, 1024);
-        if (fp.EndOfFile()) { break; }
-
+    while (fp.ReadLine (line, 1024) != 0) {
         char * name = NULL;
         char * comment = NULL;
         getNameAndComment (line, &name, &comment);

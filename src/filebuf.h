@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2014  Fulvio Benini
+* Copyright (C) 2014-2015  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -47,6 +47,18 @@ public:
 	uint ReadThreeBytes () { return read<3>(); }
 	uint ReadFourBytes () { return read<4>(); }
 	uint ReadNBytes (char* str, uint count) { return sgetn(str, count); }
+	uint ReadLine (char* str, uint maxLength) {
+		uint res = 1;
+		while (res < maxLength) {
+			int ch = sbumpc();
+			if (ch == EOF) break;
+			res += 1;
+			*str++ = ch & 255;
+			if (ch == '\n') { break; }
+		}
+		*str = 0;
+		return res -1;
+	}
 
 	//Returns the number of characters successfully written
 	int WriteOneByte (byte value) { return (sputc(value) == value) ? 1 : 0; }

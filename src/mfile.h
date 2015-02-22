@@ -74,7 +74,6 @@ class MFile
 
     errorT        WriteNBytes (const char * str, uint length);
     errorT        ReadNBytes (char * str, uint length);
-    errorT        ReadLine (char * str, uint maxLength);
     inline errorT WriteOneByte (byte value);
     errorT        WriteTwoBytes (uint value);
     errorT        WriteThreeBytes (uint value);
