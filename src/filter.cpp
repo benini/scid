@@ -212,51 +212,6 @@ CompressedFilter::UncompressTo (Filter * filter)
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// CompressedFilter::WriteToFile():
-//      Writes the compressed filter to the specified open file.
-//
-errorT
-CompressedFilter::WriteToFile (FILE * fp)
-{
-    ASSERT (fp != NULL);
-
-    writeFourBytes (fp, CFilterSize);
-    writeFourBytes (fp, CFilterCount);
-    writeFourBytes (fp, CompressedLength);
-    byte * pb = CompressedData;
-    for (uint i=0; i < CompressedLength; i++, pb++) {
-        writeOneByte (fp, *pb);
-    }
-    return OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// CompressedFilter::ReadFromFile():
-//      Reads the compressed filter from the specified open file.
-//
-errorT
-CompressedFilter::ReadFromFile (FILE * fp)
-{
-    ASSERT (fp != NULL);
-    if (CompressedData) { delete[] CompressedData; }
-
-    CFilterSize = readFourBytes (fp);
-    CFilterCount = readFourBytes (fp);
-    CompressedLength = readFourBytes (fp);
-    CompressedData = NULL;
-    if(CompressedLength > 0)
-    {
-        CompressedData = new byte [CompressedLength];
-        byte * pb = CompressedData;
-        for (uint i=0; i < CompressedLength; i++, pb++) {
-            *pb = readOneByte(fp);
-        }
-    }
-    return OK;
-}
-
-
 const byte FLAG_Packed = 1;     // Indicates buffer is stored packed.
 const byte FLAG_Copied = 0;     // Indicates buffer is stored uncompressed.
 

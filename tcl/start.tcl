@@ -484,9 +484,6 @@ set comp(book) {}
 # Default Tree sort method:
 set tree(order) frequency
 
-# Auto-save tree cache when closing tree window:
-set tree(autoSave) 0
-
 ### Tree/mask options:
 set ::tree::mask::recentMask {}
     

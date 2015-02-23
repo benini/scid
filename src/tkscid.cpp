@@ -10778,11 +10778,11 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "best", "move", "positions", "search", "size",
-        "write", "cachesize", "cacheinfo", "clean", NULL
+        "cachesize", "cacheinfo", "clean", NULL
     };
     enum {
         TREE_BEST, TREE_MOVE, TREE_POSITIONS, TREE_SEARCH, TREE_SIZE,
-        TREE_WRITE, TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
+        TREE_CACHESIZE, TREE_CACHEINFO, TREE_CLEAN
     };
 
     int index = -1;
@@ -10804,9 +10804,6 @@ sc_tree (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case TREE_SIZE:
         return setUintResult (ti, db->treeCache->Size());
-
-    case TREE_WRITE:
-        return sc_tree_write (cd, ti, argc, argv);
 
     case TREE_CACHESIZE:
         return sc_tree_cachesize (cd, ti, argc, argv);
@@ -10895,31 +10892,6 @@ sc_tree_move (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     Tcl_AppendResult (ti, node->san, NULL);
     return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_tree_write:
-//    Writes the tree cache file for the specified database, which
-//    defaults to the current base.
-int
-sc_tree_write (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    scidBaseT * base = db;
-    if (argc == 3) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-            base = &(dbList[baseNum - 1]);
-        }
-    }
-
-    if (!base->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-
-    if (base->treeCache->WriteFile (base->fileName) != OK) {
-        return errorResult (ti, "Error writing Scid tree cache file.");
-    }
-    return setUintResult (ti, fileSize (base->fileName, TREEFILE_SUFFIX));
 }
 
 // Enumeration of possible move-sorting methods for tree mode:
@@ -11042,9 +11014,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     bool foundInCache = false;
     // #TODO: cache even filtered searches (requires a filter hash)
     if (! inFilterOnly) {
-        // Check if there is a TreeCache file to open:
-        base->treeCache->ReadFile (base->fileName);
-
         // Lookup the cache before searching:
         cachedTreeT * pct = base->treeCache->Lookup (db->game->GetCurrentPos());
         if (pct != NULL) {

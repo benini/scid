@@ -47,15 +47,6 @@ proc ::tree::menuCopyToSelection { baseNumber } {
   clipboard append [ .treeWin$baseNumber.f.tl get 1.0 end ]
 }
 ################################################################################
-proc ::tree::treeFileSave {base} {
-  busyCursor .
-  update
-  if {[catch {sc_tree write $base} result]} {
-    tk_messageBox -type ok -icon warning -title "Scid: Error writing file" -message $result
-  }
-  unbusyCursor .
-}
-################################################################################
 proc ::tree::make { { baseNumber -1 } {locked 0} } {
   global tree highcolor geometry helpMessage
   
@@ -104,10 +95,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     menu $w.menu.$i -tearoff 0
   }
   
-  $w.menu.file add command -label TreeFileSave -command "::tree::treeFileSave $baseNumber"
-  set helpMessage($w.menu.file,0) TreeFileSave
-  $w.menu.file add command -label TreeFileFill -command "::tree::prime $baseNumber"
-  set helpMessage($w.menu.file,1) TreeFileFill
   $w.menu.file add command -label TreeFileFillWithBase -command "::tree::primeWithBase"
   set helpMessage($w.menu.file,2) TreeFileFillWithBase
   $w.menu.file add command -label TreeFileFillWithGame -command "::tree::primeWithGame"
@@ -173,8 +160,6 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set helpMessage($w.menu.opt,1) TreeOptTraining
   
   $w.menu.opt add separator
-  $w.menu.opt add checkbutton -label TreeOptAutosave -variable tree(autoSave$baseNumber)
-  set helpMessage($w.menu.opt,3) TreeOptAutosave
 
   $w.menu.helpmenu add command -label TreeHelpTree -accelerator F1 -command {helpWindow Tree}
   $w.menu.helpmenu add command -label TreeHelpIndex -command {helpWindow Index}
@@ -265,12 +250,6 @@ proc ::tree::closeTree {baseNumber} {
 
   set ::geometry(treeWin$baseNumber) [wm geometry .treeWin$baseNumber]
   focus .
-  
-  if {$tree(autoSave$baseNumber)} {
-    busyCursor .
-    sc_tree write $tree(base$baseNumber)
-    unbusyCursor .
-  }
   
   if {[winfo exists .treeGraph$baseNumber]} { destroy .treeGraph$baseNumber }
   destroy .treeBest$baseNumber
@@ -814,69 +793,6 @@ set tree(standardLines) {
 # values above
 catch {source [scidConfigFile treecache]}
 
-################################################################################
-# ::tree::prime
-#   Primes the tree for this database, filling it with a number of
-#   common opening positions.
-#
-proc ::tree::prime { baseNumber } {
-  global tree
-  if {! [winfo exists .treeWin$baseNumber]} { return }
-  
-  set base $baseNumber
-  if {$tree(locked$baseNumber)} { set base $tree(base$baseNumber) }
-  if {! [sc_base inUse]} { return }
-  set fname [sc_base filename $base]
-  if {[string index $fname 0] == "\["  ||  [file extension $fname] == ".pgn"} {
-    tk_messageBox -parent .treeWin$baseNumber -icon info -type ok -title "Scid" \
-        -message "Sorry, only Scid-format database files can have a tree cache file."
-    return
-  }
-  
-  set ::interrupt 0
-  progressWindow "Scid: [tr TreeFileFill]" "" $::tr(Cancel) {set ::interrupt 1}
-  resetProgressWindow
-  leftJustifyProgressWindow
-  busyCursor .
-  sc_game push
-  set i 1
-  set len [llength $tree(standardLines)]
-  foreach line $tree(standardLines) {
-    sc_game new
-    set text [format "%3d/\%3d" $i $len]
-    if {[llength $line] > 0}  {
-      sc_move addSan $line
-      changeProgressWindow "$text: $line"
-    } else {
-      changeProgressWindow "$text: start position"
-    }
-    sc_tree search -base $base
-    updateProgressWindow $i $len
-    incr i
-    if {$::interrupt} {
-      closeProgressWindow
-      set ::interrupt 0
-      sc_game pop
-      unbusyCursor .
-      ::tree::refresh $baseNumber
-      return
-    }
-  }
-  closeProgressWindow
-  if {[catch {sc_tree write $base} result]} {
-    #tk_messageBox -type ok -icon warning -title "Scid: Error writing file" -message $result
-  } else {
-    #set a "$fname.stc: [sc_tree positions] positions, "
-    #append a "$result bytes: "
-    #set pergame [expr double($result) / double([sc_base numGames])]
-    #append a [format "%.2f" $pergame]
-    #append a " bytes per game"
-    #tk_messageBox -type ok -parent .treeWin -title "Scid" -message $a
-  }
-  sc_game pop
-  unbusyCursor .
-  ::tree::refresh $baseNumber
-}
 
 ################################################################################
 # ::tree::best

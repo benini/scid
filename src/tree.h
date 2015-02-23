@@ -132,9 +132,6 @@ class TreeCache {
     cachedTreeT * Lookup (Position * pos);
     int  LookupIndex (Position * pos);
     bool Add (Position * pos, treeT * tree, Filter * filter);
-
-    errorT WriteFile (const char * fname);
-    errorT ReadFile (const char * fname);
 };
 
 #endif

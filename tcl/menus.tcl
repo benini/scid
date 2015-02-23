@@ -813,7 +813,7 @@ $m add command -label OptionsSave -command {
           ::pgn::indentVars ::pgn::indentComments \
           ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks \
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat \
-          tree(order) tree(autoSave) optionsAutoSave ::tree::mask::recentMask \
+          tree(order) optionsAutoSave ::tree::mask::recentMask \
           ecoFile suggestMoves showVarPopup showVarArrows \
           blunderThreshold autoplayDelay animateDelay boardCoords \
           moveEntry(AutoExpand) moveEntry(Coord) \

@@ -119,8 +119,6 @@ class CompressedFilter
 
     void CompressFrom (Filter * filter);
     errorT UncompressTo (Filter * filter);
-    errorT WriteToFile (FILE * fp);
-    errorT ReadFromFile (FILE * fp);
 };
 
 inline void

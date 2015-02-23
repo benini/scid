@@ -214,7 +214,6 @@ int sc_progressBar    (TCL_ARGS);
 int sc_tree           (TCL_ARGS);
 int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
-int sc_tree_write     (TCL_ARGS);
 int sc_tree_cachesize (TCL_ARGS);
 int sc_tree_cacheinfo (TCL_ARGS);
 int sc_tree_clean     (TCL_ARGS);

@@ -143,56 +143,6 @@ MoveList::IsSorted (void)
     return true;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// writeSimpleMove, readSimpleMove:
-//    I/O for simpleMoveT structs.
-//
-errorT
-writeSimpleMove (FILE * fp, simpleMoveT * sm)
-{
-    errorT err;
-    writeOneByte (fp, sm->pieceNum);
-    writeOneByte (fp, sm->movingPiece);
-
-    writeOneByte (fp, sm->from);
-    writeOneByte (fp, sm->to);
-
-    writeOneByte (fp, sm->capturedNum);
-    writeOneByte (fp, sm->capturedPiece);
-
-    writeOneByte (fp, sm->promote);
-    writeOneByte (fp, 0);     // Obsolete unused value
-
-    writeOneByte (fp, sm->capturedSquare);
-    writeOneByte (fp, sm->castleFlags);
-
-    writeOneByte (fp, sm->epSquare);
-    err = writeTwoBytes (fp, sm->oldHalfMoveClock);
-    return err;
-}
-
-errorT
-readSimpleMove (FILE * fp, simpleMoveT * sm)
-{
-    sm->pieceNum = readOneByte (fp);
-    sm->movingPiece = readOneByte (fp);
-
-    sm->from = readOneByte (fp);
-    sm->to = readOneByte (fp);
-
-    sm->capturedNum = readOneByte (fp);
-    sm->capturedPiece = readOneByte (fp);
-
-    sm->promote = readOneByte (fp);
-    readOneByte (fp);   // Obsolete unused value
-
-    sm->capturedSquare = readOneByte (fp);
-    sm->castleFlags = readOneByte (fp);
-
-    sm->epSquare = readOneByte (fp);
-    sm->oldHalfMoveClock = readTwoBytes (fp);
-    return OK;
-}
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: movelist.cpp

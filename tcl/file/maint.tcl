@@ -1261,7 +1261,6 @@ set cleaner(eco) 1
 set cleaner(elo) 1
 set cleaner(twins) 1
 set cleaner(cgames) 0
-set cleaner(tree) 0
 
 proc cleanerWin {} {
   set w .mtoolWin
@@ -1290,14 +1289,13 @@ proc cleanerWin {} {
   ttk::label $w.f.f.elo -text $::tr(AddEloRatings)
   ttk::label $w.f.f.twins -text $::tr(DeleteTwins)
   ttk::label $w.f.f.cgames -text $::tr(CompactDatabase)
-  ttk::label $w.f.f.tree -text [tr TreeFileFill]
   
-  foreach i {players events sites rounds eco elo twins cgames tree} {
+  foreach i {players events sites rounds eco elo twins cgames} {
     ttk::radiobutton $w.f.f.y$i -variable cleaner($i) -value 1 -text $::tr(Yes)
     ttk::radiobutton $w.f.f.n$i -variable cleaner($i) -value 0 -text $::tr(No)
   }
   set row 0
-  foreach i {players events sites rounds eco elo twins cgames tree} {
+  foreach i {players events sites rounds eco elo twins cgames} {
     grid $w.f.f.$i -row $row -column 0 -sticky w
     grid $w.f.f.y$i -row $row -column 1 -sticky w
     grid $w.f.f.n$i -row $row -column 2 -sticky w
@@ -1447,25 +1445,6 @@ proc doCleaner {} {
       }
     }
     $t see end
-  }
-  
-  if {$cleaner(tree)} {
-    mtoolAdd $t "$count: [tr TreeFileFill]..."
-    incr count
-    sc_game push
-    set base [sc_base current]
-    set len [llength $::tree(standardLines)]
-    foreach line $::tree(standardLines) {
-      sc_game new
-      if {[llength $line] > 0}  {
-        foreach move $line {sc_move addSan $move}
-      }
-      sc_tree search -base $base
-      update
-    }
-    catch {sc_tree write $base} result
-    sc_game pop
-    $t insert end "   Done.\n"
   }
   
   mtoolAdd $t "Done."
