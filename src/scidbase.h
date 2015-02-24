@@ -205,7 +205,7 @@ struct scidBaseT {
 	void clearStats() { validStats_ = false; };
 
 	Index* idx;       // the Index file in memory for this base.
-	NameBase*nb;      // the NameBase file in memory.
+	NameBase* nb;      // the NameBase file in memory.
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
 	TreeCache* treeCache;

@@ -248,7 +248,7 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
 //      Returns OK or ERROR_NotFound.
 //
 errorT
-NameBase::FindExactName (nameT nt, const char* str, idNumberT* idPtr)
+NameBase::FindExactName (nameT nt, const char* str, idNumberT* idPtr) const
 {
     ASSERT (IsValidNameType(nt)  &&  str != NULL  &&  idPtr != NULL);
 
@@ -268,7 +268,7 @@ NameBase::FindExactName (nameT nt, const char* str, idNumberT* idPtr)
 //
 uint
 NameBase::GetFirstMatches (nameT nt, const char * str, uint maxMatches,
-                           idNumberT * array)
+                           idNumberT * array) const
 {
     ASSERT (IsValidNameType(nt)  &&  str != NULL);
 

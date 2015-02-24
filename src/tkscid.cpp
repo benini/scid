@@ -1477,7 +1477,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
                 continue;
             }
-            g->LoadStandardTags (ie, db->nb);
+            g->LoadStandardTags (ie, db->getNameBase());
             exportGame (g, exportFile, outputFormat, pgnStyle);
         }
     }
@@ -2238,8 +2238,8 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
                 white = ie->GetWhite();
                 black = ie->GetBlack();
             } else {
-                white = hashName (ie->GetWhiteName(dbase->nb), 4);
-                black = hashName (ie->GetBlackName(dbase->nb), 4);
+                white = hashName (ie->GetWhiteName(dbase->getNameBase()), 4);
+                black = hashName (ie->GetBlackName(dbase->getNameBase()), 4);
             }
             uint hash = (white + black) % GLIST_HASH_SIZE;
             gNumListT * node = &(gNumList[i]);
@@ -2460,7 +2460,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (g->RemoveExtraTag (tag)) {
                 // The tag was found and stripped. Re-save the game,
                 // remembering to load its standard tags first:
-                g->LoadStandardTags (ie, db->nb);
+                g->LoadStandardTags (ie, db->getNameBase());
                 errorT res = db->saveGame(g, false, gnum);
                 if (res != OK) return TclResult(ti, res);
                 nEditedGames++;
@@ -2525,7 +2525,7 @@ class Tourney
   public:
     idNumberT SiteID;
     idNumberT EventID;
-    NameBase * NB;
+    const NameBase * NB;
     dateT     StartDate;
     dateT     EndDate;
     dateT     MinDate;
@@ -2538,7 +2538,7 @@ class Tourney
     gameNumberT FirstGame;
     Tourney  * Next;
 
-    Tourney(const IndexEntry* ie, NameBase * nb);
+    Tourney(const IndexEntry* ie, const NameBase * nb);
     ~Tourney();
 
     void AddGame (const IndexEntry* ie, gameNumberT g);
@@ -2550,7 +2550,7 @@ class Tourney
 };
 typedef Tourney * tourneyPtrT;
 
-Tourney::Tourney (const IndexEntry* ie, NameBase * nb)
+Tourney::Tourney (const IndexEntry* ie, const NameBase * nb)
 {
     SiteID = ie->GetSite();
     EventID = ie->GetEvent();
@@ -2789,7 +2789,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     }
     if (arg != argc) { return errorResult (ti, usage); }
 
-    uint numSites = db->nb->GetNumNames (NAME_SITE);
+    uint numSites = db->getNameBase()->GetNumNames (NAME_SITE);
 
     bool * useSite = new bool [numSites];
     for (uint i=0; i < numSites; i++) { useSite[i] = true; }
@@ -2805,7 +2805,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     // Find all sites in the selected country, if any:
     if (country != NULL  &&  country[0] != 0) {
         for (uint i=0; i < numSites; i++) {
-            const char * site = db->nb->GetName (NAME_SITE, i);
+            const char * site = db->getNameBase()->GetName (NAME_SITE, i);
             uint len = strLength (site);
             if (len > 3) { site += len - 3; }
             if (! strEqual (site, country)) { useSite[i] = false; }
@@ -2816,7 +2816,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     if (siteStr != NULL  &&  siteStr[0] != 0) {
         for (uint i=0; i < numSites; i++) {
             if (! useSite[i]) { continue; }
-            const char * site = db->nb->GetName (NAME_SITE, i);
+            const char * site = db->getNameBase()->GetName (NAME_SITE, i);
             if (! strAlphaContains (site, siteStr)) {
                 useSite[i] = false;
             }
@@ -2826,11 +2826,11 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
     // Restrict search to events containing the given event string:
     bool * useEvent = NULL;
     if (eventStr != NULL  &&  eventStr[0] != 0) {
-        uint numEvents = db->nb->GetNumNames (NAME_EVENT);
+        uint numEvents = db->getNameBase()->GetNumNames (NAME_EVENT);
         useEvent = new bool [numEvents];
         for (uint i=0; i < numEvents; i++) {
             useEvent[i] = true;
-            const char * event = db->nb->GetName (NAME_EVENT, i);
+            const char * event = db->getNameBase()->GetName (NAME_EVENT, i);
             if (! strAlphaContains (event, eventStr)) {
                 useEvent[i] = false;
             }
@@ -2864,7 +2864,7 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
         // if (numTourneys >= maxTourneys) { continue; }
 
         // Have to add a new tourney:
-        tp = new Tourney (ie, db->nb);
+        tp = new Tourney (ie, db->getNameBase());
         tp->AddGame (ie, i);
         tp->Next = hashTable[hash];
         hashTable[hash] = tp;
@@ -4262,14 +4262,14 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
             return errorResult (ti, "Error decoding game.");
             }
-        g->LoadStandardTags (ie, db->nb);
+        g->LoadStandardTags (ie, db->getNameBase());
     }
 
     idNumberT eventId = 0, siteId = 0;
-    if (db->nb->FindExactName (NAME_EVENT, g->GetEventStr(), &eventId) != OK) {
+    if (db->getNameBase()->FindExactName (NAME_EVENT, g->GetEventStr(), &eventId) != OK) {
         return TCL_OK;
     }
-    if (db->nb->FindExactName (NAME_SITE, g->GetSiteStr(), &siteId) != OK) {
+    if (db->getNameBase()->FindExactName (NAME_SITE, g->GetSiteStr(), &siteId) != OK) {
         return TCL_OK;
     }
 
@@ -4329,9 +4329,9 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             continue;
         }
         idNumberT whiteId = ie->GetWhite();
-        const char * whiteName = db->nb->GetName (NAME_PLAYER, whiteId);
+        const char * whiteName = db->getNameBase()->GetName (NAME_PLAYER, whiteId);
         idNumberT blackId = ie->GetBlack();
-        const char * blackName = db->nb->GetName (NAME_PLAYER, blackId);
+        const char * blackName = db->getNameBase()->GetName (NAME_PLAYER, blackId);
 
         // Ensure we have two different players:
         if (whiteId == blackId) { continue; }
@@ -4359,7 +4359,7 @@ sc_game_crosstable (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             continue;
         }
 
-        uint round = strGetUnsigned (db->nb->GetName (NAME_ROUND, ie->GetRound()));
+        uint round = strGetUnsigned (db->getNameBase()->GetName (NAME_ROUND, ie->GetRound()));
         dateT date = ie->GetDate();
         resultT result = ie->GetResult();
         ctable->AddResult (i+1, whiteId, blackId, result, round, date);
@@ -4468,10 +4468,10 @@ sc_game_find (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     idNumberT white, black, site, round;
     white = black = site = round = 0;
-    db->nb->FindExactName (NAME_PLAYER, whiteStr, &white);
-    db->nb->FindExactName (NAME_PLAYER, blackStr, &black);
-    db->nb->FindExactName (NAME_SITE, siteStr, &site);
-    db->nb->FindExactName (NAME_ROUND, roundStr, &round);
+    db->getNameBase()->FindExactName (NAME_PLAYER, whiteStr, &white);
+    db->getNameBase()->FindExactName (NAME_PLAYER, blackStr, &black);
+    db->getNameBase()->FindExactName (NAME_SITE, siteStr, &site);
+    db->getNameBase()->FindExactName (NAME_ROUND, roundStr, &round);
 
     // We give each game a "score" which is 1 for each matching field.
     // So the best possible score is 6.
@@ -5499,7 +5499,7 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->game->MoveToPly(0);
     }
 
-    db->game->LoadStandardTags (ie, db->nb);
+    db->game->LoadStandardTags (ie, db->getNameBase());
     db->gameNumber = gnum;
     db->gameAltered = false;
     return OK;
@@ -5557,7 +5557,7 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (merge->Decode (base->bbuf, GAME_DECODE_NONE) != OK) {
         return errorResult (ti, "Error decoding game.");
     }
-    merge->LoadStandardTags (ie, base->nb);
+    merge->LoadStandardTags (ie, base->getNameBase());
     if (merge->HasNonStandardStart()) {
         return errorResult (ti, "The merge game has a non-standard start position.");
     }
@@ -5632,16 +5632,16 @@ sc_game_merge (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (ply < merge->GetNumHalfMoves()) {
         dstr->Append ("(", (merge->GetNumHalfMoves()+1) / 2, ")");
     }
-    dstr->Append (" ", ie->GetWhiteName (base->nb));
+    dstr->Append (" ", ie->GetWhiteName (base->getNameBase()));
     eloT elo = ie->GetWhiteElo();
     if (elo > 0) { dstr->Append (" (", elo, ")"); }
     dstr->Append (" - ");
-    dstr->Append (ie->GetBlackName (base->nb));
+    dstr->Append (ie->GetBlackName (base->getNameBase()));
     elo = ie->GetBlackElo();
     if (elo > 0) { dstr->Append (" (", elo, ")"); }
-    dstr->Append (" / ", ie->GetEventName (base->nb));
-    dstr->Append (" (", ie->GetRoundName (base->nb), ")");
-    dstr->Append (", ", ie->GetSiteName (base->nb));
+    dstr->Append (" / ", ie->GetEventName (base->getNameBase()));
+    dstr->Append (" (", ie->GetRoundName (base->getNameBase()), ")");
+    dstr->Append (", ", ie->GetSiteName (base->getNameBase()));
     dstr->Append (" ", ie->GetYear());
     db->game->SetMoveComment ((char *) dstr->Data());
     delete dstr;
@@ -6035,7 +6035,7 @@ sc_game_pgn (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (g->Decode (base->bbuf, GAME_DECODE_ALL) != OK) {
                 return errorResult (ti, "Error decoding game.");
             }
-            g->LoadStandardTags (ie, base->nb);
+            g->LoadStandardTags (ie, base->getNameBase());
 
         } else if (index == OPT_FORMAT) {
             // The option value should be "plain", "html" or "latex".
@@ -6438,7 +6438,7 @@ sc_game_summary (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (g->Decode (base->bbuf, GAME_DECODE_NONE) != OK) {
             return errorResult (ti, "Error decoding game.");
         }
-        g->LoadStandardTags (ie, base->nb);
+        g->LoadStandardTags (ie, base->getNameBase());
     }
 
     // Return header summary if requested:
@@ -6591,7 +6591,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
                 return errorResult (ti, "Error decoding game.");
             }
-            g->LoadStandardTags (ie, db->nb);
+            g->LoadStandardTags (ie, db->getNameBase());
         }
     }
     const char * s;
@@ -6803,7 +6803,7 @@ sc_game_tags_reload (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 {
     if (!db->inUse  ||   db->gameNumber < 0) { return TCL_OK; }
     const IndexEntry* ie = db->getIndexEntry(db->gameNumber);
-    db->game->LoadStandardTags (ie, db->nb);
+    db->game->LoadStandardTags (ie, db->getNameBase());
     return TCL_OK;
 }
 
@@ -6894,8 +6894,8 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Check if an event name can be updated:
     idNumberT event1 = ie1.GetEvent();
     idNumberT event2 = ie2.GetEvent();
-    const char * eventStr1 = ie1.GetEventName (db->nb);
-    const char * eventStr2 = ie2.GetEventName (db->nb);
+    const char * eventStr1 = ie1.GetEventName (db->getNameBase());
+    const char * eventStr2 = ie2.GetEventName (db->getNameBase());
     bool event1empty = strEqual (eventStr1, "")  ||  strEqual (eventStr1, "?");
     bool event2empty = strEqual (eventStr2, "")  ||  strEqual (eventStr2, "?");
     if (event1empty  && !event2empty) {
@@ -6926,8 +6926,8 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Check if a round name can be updated:
     idNumberT round1 = ie1.GetRound();
     idNumberT round2 = ie2.GetRound();
-    const char * roundStr1 = ie1.GetRoundName (db->nb);
-    const char * roundStr2 = ie2.GetRoundName (db->nb);
+    const char * roundStr1 = ie1.GetRoundName (db->getNameBase());
+    const char * roundStr2 = ie2.GetRoundName (db->getNameBase());
     bool round1empty = strEqual (roundStr1, "")  ||  strEqual (roundStr1, "?");
     bool round2empty = strEqual (roundStr2, "")  ||  strEqual (roundStr2, "?");
     if (round1empty  && !round2empty) {
@@ -8821,7 +8821,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Find the existing name in the namebase:
     idNumberT oldID = 0;
     if (option != OPT_DATE  &&  option != OPT_EVENTDATE) {
-        if (db->nb->FindExactName (nt, oldName, &oldID) != OK) {
+        if (db->getNameBase()->FindExactName (nt, oldName, &oldID) != OK) {
             Tcl_AppendResult (ti, "Sorry, the ", NAME_TYPE_STRING[nt],
                               " name \"", oldName, "\" does not exist.", NULL);
             return TCL_ERROR;
@@ -8833,10 +8833,10 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     dateT firstDate = 0, lastDate = 0, eventDate = 0;
     if (editSelection == EDIT_CTABLE) {
         Game * g = db->game;
-        if (db->nb->FindExactName (NAME_EVENT, g->GetEventStr(), &eventId) != OK) {
+        if (db->getNameBase()->FindExactName (NAME_EVENT, g->GetEventStr(), &eventId) != OK) {
             return errorResult (ti, "There are no crosstable games.");
         }
-        if (db->nb->FindExactName (NAME_SITE, g->GetSiteStr(), &siteId) != OK) {
+        if (db->getNameBase()->FindExactName (NAME_SITE, g->GetSiteStr(), &siteId) != OK) {
             return errorResult (ti, "There are no crosstable games.");
         }
 
@@ -9080,7 +9080,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Try to find player name in this database:
     idNumberT id = 0;
-    if (db->nb->FindExactName (NAME_PLAYER, playerName, &id) != OK) {
+    if (db->getNameBase()->FindExactName (NAME_PLAYER, playerName, &id) != OK) {
         if (! ratingsOnly) {
             Tcl_AppendResult (ti, "The name \"", playerName,
                               "\" does not exist in this database.", NULL);
@@ -9098,7 +9098,7 @@ sc_name_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (opponent != NULL) {
-        if (db->nb->FindExactName (NAME_PLAYER, opponent, &opponentId) != OK) {
+        if (db->getNameBase()->FindExactName (NAME_PLAYER, opponent, &opponentId) != OK) {
             opponent = NULL;
         }
     }
@@ -9680,14 +9680,14 @@ sc_name_match (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint maxMatches = strGetUnsigned (argv[arg++]);
     if (maxMatches == 0) { return TCL_OK; }
     idNumberT * array = new idNumberT [maxMatches];
-    uint matches = db->nb->GetFirstMatches (nt, prefix, maxMatches, array);
+    uint matches = db->getNameBase()->GetFirstMatches (nt, prefix, maxMatches, array);
     for (uint i=0; i < matches; i++) {
         uint freq = db->getNameFreq(nt, array[i]);
-        const char * str = db->nb->GetName (nt, array[i]);
+        const char * str = db->getNameBase()->GetName (nt, array[i]);
         appendUintElement (ti, freq);
         Tcl_AppendElement (ti, str);
         if (nt == NAME_PLAYER  &&  eloMode) {
-            appendUintElement (ti, db->nb->GetElo (array[i]));
+            appendUintElement (ti, db->getNameBase()->GetElo (array[i]));
         }
     }
     delete[] array;
@@ -9708,7 +9708,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint maxGames = db->numGames();
     uint minElo = 0;
     uint maxElo = MAX_ELO;
-    uint maxListSize = db->nb->GetNumNames(NAME_PLAYER);
+    uint maxListSize = db->getNameBase()->GetNumNames(NAME_PLAYER);
     uint listSize = 0;
 
     if (db->numGames() == 0) { return TCL_OK; }
@@ -9758,7 +9758,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (sortMode == -1) return InvalidCommand (ti, "sc_name plist -sort", sortModes);
 
     idNumberT * plist = new idNumberT [maxListSize + 1];
-    NameBase * nb = db->nb;
+    const NameBase * nb = db->getNameBase();
     uint nPlayers = nb->GetNumNames(NAME_PLAYER);
 
     class Compare{
@@ -9769,7 +9769,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         Compare(scidBaseT* dbase, int sortOrder) : dbase_(dbase), sort_(sortOrder) {}
         int operator() (idNumberT p1, idNumberT p2)
         {
-            NameBase* nb = dbase_->nb;
+            const NameBase* nb = dbase_->getNameBase();
             int compare = 0;
             switch (sort_) {
             case SORT_ELO:
@@ -9950,7 +9950,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         eloT oldWhite = ie->GetWhiteElo();
         if (overwrite  &&  oldWhite != 0) { exact = true; }
         if (overwrite  ||  oldWhite == 0) {
-            const char * name = ie->GetWhiteName (db->nb);
+            const char * name = ie->GetWhiteName (db->getNameBase());
             eloT rating = sp->GetElo (name, date, exact);
             if (rating != 0) {
                 if (printEachChange) {
@@ -9966,7 +9966,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         exact = false;
         if (overwrite  &&  oldBlack != 0) { exact = true; }
         if (overwrite  ||  oldBlack == 0) {
-            const char * name = ie->GetBlackName (db->nb);
+            const char * name = ie->GetBlackName (db->getNameBase());
             eloT rating = sp->GetElo (name, date, exact);
             if (rating != 0) {
                 if (printEachChange) {
@@ -10708,7 +10708,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (scratchGame->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
                 return errorResult (ti, "Error decoding game.");
             }
-            scratchGame->LoadStandardTags (ie, db->nb);
+            scratchGame->LoadStandardTags (ie, db->getNameBase());
             scratchGame->MoveToPly (ply - 1);
             if (scratchGame->AtEnd()) ply = 0;
             if (ply != 0) {
@@ -12384,7 +12384,7 @@ matchGameFlags (const IndexEntry* ie, flagT fStdStart, flagT fPromos,
 //    Called by sc_search_header to test a particular game against the
 //    header search criteria.
 bool
-matchGameHeader (const IndexEntry* ie, NameBase * nb,
+matchGameHeader (const IndexEntry* ie, const NameBase * nb,
                  bool * mWhite, bool * mBlack,
                  bool * mEvent, bool * mSite, bool *mRound,
                  dateT dateMin, dateT dateMax, bool * results,
@@ -12786,10 +12786,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             search++;
         }
         // Search players for match on White name:
-        idNumberT numNames = base->nb->GetNumNames(NAME_PLAYER);
+        idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
         mWhite = new bool [numNames];
         for (idNumberT i=0; i < numNames; i++) {
-            const char * name = base->nb->GetName (NAME_PLAYER, i);
+            const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
             if (wildcard) {
                 mWhite[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -12804,14 +12804,14 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
         }
         if (! allTitlesOn) {
             idNumberT i;
-            idNumberT numNames = base->nb->GetNumNames(NAME_PLAYER);
+            idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
             if (mWhite == NULL) {
                 mWhite = new bool [numNames];
                 for (i=0; i < numNames; i++) { mWhite[i] = true; }
             }
             for (i=0; i < numNames; i++) {
                 if (! mWhite[i]) { continue; }
-                const char * name = base->nb->GetName (NAME_PLAYER, i);
+                const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
                 const char * text =
                     spellChecker[NAME_PLAYER]->GetCommentExact (name);
                 const char * title = SpellChecker::GetTitle (text);
@@ -12842,10 +12842,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             search++;
         }
         // Search players for match on Black name:
-        idNumberT numNames = base->nb->GetNumNames(NAME_PLAYER);
+        idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
         mBlack = new bool [numNames];
         for (idNumberT i=0; i < numNames; i++) {
-            const char * name = base->nb->GetName (NAME_PLAYER, i);
+            const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
             if (wildcard) {
                 mBlack[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -12860,14 +12860,14 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
         }
         if (! allTitlesOn) {
             idNumberT i;
-            idNumberT numNames = base->nb->GetNumNames(NAME_PLAYER);
+            idNumberT numNames = base->getNameBase()->GetNumNames(NAME_PLAYER);
             if (mBlack == NULL) {
                 mBlack = new bool [numNames];
                 for (i=0; i < numNames; i++) { mBlack[i] = true; }
             }
             for (i=0; i < numNames; i++) {
                 if (! mBlack[i]) { continue; }
-                const char * name = base->nb->GetName (NAME_PLAYER, i);
+                const char * name = base->getNameBase()->GetName (NAME_PLAYER, i);
                 const char * text =
                     spellChecker[NAME_PLAYER]->GetCommentExact (name);
                 const char * title = SpellChecker::GetTitle (text);
@@ -12898,10 +12898,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             search++;
         }
         // Search players for match on Event name:
-        idNumberT numNames = base->nb->GetNumNames(NAME_EVENT);
+        idNumberT numNames = base->getNameBase()->GetNumNames(NAME_EVENT);
         mEvent = new bool [numNames];
         for (idNumberT i=0; i < numNames; i++) {
-            const char * name = base->nb->GetName (NAME_EVENT, i);
+            const char * name = base->getNameBase()->GetName (NAME_EVENT, i);
             if (wildcard) {
                 mEvent[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -12920,10 +12920,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             search++;
         }
         // Search players for match on Site name:
-        idNumberT numNames = base->nb->GetNumNames(NAME_SITE);
+        idNumberT numNames = base->getNameBase()->GetNumNames(NAME_SITE);
         mSite = new bool [numNames];
         for (idNumberT i=0; i < numNames; i++) {
-            const char * name = base->nb->GetName (NAME_SITE, i);
+            const char * name = base->getNameBase()->GetName (NAME_SITE, i);
             if (wildcard) {
                 mSite[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -12942,10 +12942,10 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             search++;
         }
         // Search players for match on Event name:
-        idNumberT numNames = base->nb->GetNumNames(NAME_ROUND);
+        idNumberT numNames = base->getNameBase()->GetNumNames(NAME_ROUND);
         mRound = new bool [numNames];
         for (idNumberT i=0; i < numNames; i++) {
-            const char * name = base->nb->GetName (NAME_ROUND, i);
+            const char * name = base->getNameBase()->GetName (NAME_ROUND, i);
             if (wildcard) {
                 mRound[i] = (Tcl_StringMatch (name, search) ? true : false);
             } else {
@@ -13045,7 +13045,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
                             fQside, fBrilliancy, fBlunder, fUser,
                             fCustom1, fCustom2, fCustom3, fCustom4, fCustom5, fCustom6
                            )) {
-            if (matchGameHeader (ie, base->nb, mWhite, mBlack,
+            if (matchGameHeader (ie, base->getNameBase(), mWhite, mBlack,
                                  mEvent, mSite, mRound,
                                  dateRange[0], dateRange[1], results,
                                  wEloRange[0], wEloRange[1],
@@ -13060,7 +13060,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
             // Try with inverted players/ratings/results if ignoring colors:
 
             if (!match  &&  ignoreColors  &&
-                matchGameHeader (ie, base->nb, mBlack, mWhite,
+                matchGameHeader (ie, base->getNameBase(), mBlack, mWhite,
                                  mEvent, mSite, mRound,
                                  dateRange[0], dateRange[1], results,
                                  bEloRange[0], bEloRange[1],
@@ -13120,7 +13120,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
 				if (match) {
 					base->tbuf->Empty();
 					base->tbuf->SetWrapColumn (99999);
-					scratchGame->LoadStandardTags (ie, base->nb);
+					scratchGame->LoadStandardTags (ie, base->getNameBase());
 					scratchGame->ResetPgnStyle ();
 					scratchGame->AddPgnStyle (PGN_STYLE_TAGS);
 					scratchGame->AddPgnStyle (PGN_STYLE_COMMENTS);

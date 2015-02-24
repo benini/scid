@@ -94,11 +94,11 @@ public:
         if (date > lastDateV_[id]) lastDateV_[id] = date;
     }
 
-    errorT    FindExactName   (nameT nt, const char * str, idNumberT * idPtr);
+    errorT    FindExactName   (nameT nt, const char * str, idNumberT * idPtr) const;
     uint      GetFirstMatches (nameT nt, const char * str, uint maxMatches,
-                               idNumberT * array);
+                               idNumberT * array) const;
 
-    idNumberT GetNumNames (nameT n)  { return names_[n].size(); }
+    idNumberT GetNumNames (nameT n) const  { return names_[n].size(); }
 
     typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
     iterator begin(nameT nt) { return idx_[nt].begin(); }
