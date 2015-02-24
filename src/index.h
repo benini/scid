@@ -223,13 +223,13 @@ public:
      * Return:   a pointer to the newly created SortCache
      *           0 in case of error
      */
-    SortCache* CreateSortingCache (const NameBase* nbase, const char* criteria) const;
+    SortCache* CreateSortCache (const NameBase* nbase, const char* criteria) const;
 
     /* FreeCache
      * Release the memory of a SortCache (previously created by CreateSortingCache)
      * criteria: string that identify the sort order
      */
-    void FreeCache(const char* criteria) const;
+    void FreeSortCache(const char* criteria) const;
 
     /* GetRange
      * Get a list of ordered game indexes sorted by criteria
@@ -256,7 +256,7 @@ public:
      */
     uint GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber) const;
     uint GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter,
-                           const char* text, uint start, bool forward =true) const;
+                           const char* text, uint start, bool forward) const;
     /* IndexUpdated
      * When changes are made to the games (adding or saving a game) the sortcaches need to be updated.
      * if gnum == IDX_NOT_FOUND the sortcache will be completely rebuild (faster for a large number of updates)

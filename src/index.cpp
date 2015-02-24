@@ -232,7 +232,7 @@ errorT Index::write (const IndexEntry* ie, uint idx)
 
 
 /************* Interface to SortCache *******************/
-SortCache* Index::CreateSortingCache (const NameBase *nbase, const char *criteria) const
+SortCache* Index::CreateSortCache (const NameBase *nbase, const char *criteria) const
 {
     // If there is another client using a matching cache, use that one
     for(uint i=0; i < SORTING_CACHE_MAX; i++) {
@@ -253,7 +253,7 @@ SortCache* Index::CreateSortingCache (const NameBase *nbase, const char *criteri
 }
 
 // Search and free a matching cache
-void Index::FreeCache(const char* criteria) const
+void Index::FreeSortCache(const char* criteria) const
 {
     for (uint i=0; i < SORTING_CACHE_MAX; ++i) {
         if (sortingCaches[i] != NULL && sortingCaches[i]->MatchCriteria(criteria)) {

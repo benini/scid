@@ -179,6 +179,22 @@ struct scidBaseT {
 	               bool (progressFn)(void*, unsigned int, unsigned int),
 	               void* progressData);
 
+	SortCache* CreateSortCache(const char* criteria) const {
+		return idx->CreateSortCache(nb, criteria);
+	}
+	void FreeSortCache(const char* criteria) const {
+		return idx->FreeSortCache(criteria);
+	}
+	errorT GetRange(const char *criteria, uint idx, uint count, Filter *filter, uint *result) const {
+		return this->idx->GetRange(nb, criteria, idx, count, filter, result);
+	}
+	uint GetRangeLocation(const char *criteria, Filter *filter, uint gnumber) const {
+		return idx->GetRangeLocation(nb, criteria, filter, gnumber);
+	}
+	uint GetRangeLocation(const char *criteria, Filter *filter,	const char* text, uint start, bool forward) const {
+		return idx->GetRangeLocation(nb, criteria, filter, text, start, forward);
+	}
+
 	//TODO: private:
 	/* clearCaches:
 	    After changing one or more games this function MUST be called

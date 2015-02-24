@@ -613,11 +613,11 @@ sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** a
 		const char* txt = argv[6];
 		uint st = strGetUnsigned (argv[7]);
 		bool fw = strGetBoolean (argv[8]);
-		location = cdb->idx->GetRangeLocation (cdb->getNameBase(), sort, filter, txt, st, fw);
+		location = cdb->GetRangeLocation (sort, filter, txt, st, fw);
 	} else {
 		if (gnumber > cdb->numGames()) return TCL_OK;
 		if (filter && filter->Get(gnumber -1) == 0) return TCL_OK;
-		location = cdb->idx->GetRangeLocation (cdb->getNameBase(), sort, filter, gnumber);
+		location = cdb->GetRangeLocation (sort, filter, gnumber);
 	}
 	if (location == 0) return TCL_OK; //Not found
 	return setUintResult (ti, location);
@@ -638,7 +638,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 	if (argc == 7) sort = argv[6];
 	uint* idxList = new uint[count];
 	const NameBase* nb = cdb->getNameBase();
-	cdb->idx->GetRange(nb, sort, start, count, filter, idxList);
+	cdb->GetRange(sort, start, count, filter, idxList);
 
 	Tcl_Obj** res = new Tcl_Obj* [count *3];
 	uint i_res = 0;
@@ -876,9 +876,9 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_SORTCACHE:
         if (argc != 5) return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
         if (strCompare("create", argv[3]) == 0) {
-            if (argv[4][0] != 'N') dbase->idx->CreateSortingCache (dbase->getNameBase(), argv[4]);
+            if (argv[4][0] != 'N') dbase->CreateSortCache(argv[4]);
         } else {
-            dbase->idx->FreeCache(argv[4]);
+            dbase->FreeSortCache(argv[4]);
         }
         return TCL_OK;
 
@@ -3534,8 +3534,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             if (gNum > 0 && gNum <= dbase->numGames()) {
                 uint val = strGetUnsigned(argv[4]);
                 if (argc == 8) {
-                    const NameBase* nb = dbase->getNameBase();
-                    int start = dbase->idx->GetRangeLocation (nb, argv[7], filter, gNum);
+                    int start = dbase->GetRangeLocation (argv[7], filter, gNum);
                     int count = strGetInteger (argv[6]);
                     if (count < 0) {
                         count = -count;
@@ -3547,7 +3546,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                         }
                     }
                     uint* idxList = new uint[count];
-                    dbase->idx->GetRange(nb, argv[7], start, count, filter, idxList);
+                    dbase->GetRange(argv[7], start, count, filter, idxList);
                     for (int i = 0; i < count; ++i) {
                         if (idxList[i] == IDX_NOT_FOUND) break;
                         filter->Set(idxList[i], val);
@@ -3618,7 +3617,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             bool end = false;
             for (uint start = 0; !end; start += count) {
                 const NameBase* nb = dbase->getNameBase();
-                dbase->idx->GetRange(nb, argv[4], start, count, filter, idxList);
+                dbase->GetRange(argv[4], start, count, filter, idxList);
                 for (int i = 0; i < count; ++i) {
                     if (idxList[i] == IDX_NOT_FOUND) { end = true; break; }
                     const IndexEntry* ie = dbase->getIndexEntry(idxList[i]);
