@@ -552,7 +552,7 @@ int
 base_opened (const char * filename)
 {
     for (int i=0; i < CLIPBASE_NUM; i++) {
-        if (dbList[i].inUse  &&  strEqual (dbList[i].fileName, filename)) {
+        if (dbList[i].inUse  &&  strEqual (dbList[i].getFileName(), filename)) {
             return i;
         }
     }
@@ -567,9 +567,9 @@ base_opened (const char * filename)
     if (tail == NULL) { tail = filename; } else { tail++; }
     for (int j=0; j < CLIPBASE_NUM; j++) {
         if (! dbList[j].inUse) { continue; }
-        const char * ftail = strLastChar (dbList[j].fileName, '/');
+        const char * ftail = strLastChar (dbList[j].getFileName(), '/');
         if (ftail == NULL) {
-            ftail = dbList[j].fileName;
+            ftail = dbList[j].getFileName();
         } else {
             ftail++;
         }
@@ -972,7 +972,7 @@ sc_base_filename (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     } else if (basePtr == clipbase) {
         Tcl_AppendResult (ti, "[", translate (ti, "clipbase"), "]", NULL);
     } else {
-        Tcl_AppendResult (ti, basePtr->fileName, NULL);
+        Tcl_AppendResult (ti, basePtr->getFileName(), NULL);
     }
 
     return TCL_OK;
