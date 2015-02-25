@@ -562,10 +562,12 @@ proc markTwins {{parent .}} {
     if {[twinCriteriaOK .twinSettings]} {
       grab release .twinSettings
       sc_progressBar .twinSettings.f.progress bar 301 21 time
+      .twinSettings.f.b.cancel configure -command "sc_progressBar"
       set result [doMarkDups .twinSettings]
       focus .
       destroy .twinSettings
       if {$result > 0} {
+        ::notify::DatabaseChanged
         set gn [sc_filter first]
         ::game::Load $gn
         updateTwinChecker

@@ -32,6 +32,7 @@
 #include "stdlib.h"
 #include "time.h"
 #include <set>
+#include <algorithm>
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Global variables:
@@ -924,7 +925,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return TclResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_DUPLICATES:
-        return sc_base_duplicates (dbase, cd, ti, argc, argv);
+        return TclResult(ti, OK, sc_base_duplicates (dbase, cd, ti, argc, argv));
 
     case BASE_IMPORT:
         if (argc != 4) return errorResult (ti, "Usage: sc_base import baseId filename");
@@ -1944,20 +1945,12 @@ sc_base_type (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //
 //    Furthermore, the moves of one game should, after truncating, be the
 //    same as the moves of the other game, for them to be duplicates.
-//    We do not check this, but do check that their home pawn change
-//    lists are the same (for the length of the shorter change list) which
-//    is an approximation but is *much* faster to check.
-//
-//    All the data needed for detecting duplicates is in the Index file,
-//    so no games need to be decoded.
 
 struct gNumListT {
+    uint64_t hash;
     uint gNumber;
-    uint white;
-    uint black;
-    gNumListT * next;
+    bool operator<(const gNumListT& a) const { return hash < a.hash; }
 };
-typedef gNumListT * gNumListPtrT;
 
 struct dupCriteriaT {
     bool exactNames;
@@ -1975,99 +1968,23 @@ struct dupCriteriaT {
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // hashName:
-//    Returns a hash value based on the first n letters of a string.
-uint
-hashName (const char * name, uint n)
+//    Returns a hash value based on the first 4 letters of a string.
+uint32_t hashName (const char* name)
 {
-    uint h = 0;
-    while (n > 0  &&  *name != 0) {
-        h = (h << 7) + (*name);
-        name++;
-        n--;
+    uint32_t res = 0;
+    for (uint i=0; i < 4 && *name != 0; i++) {
+        res += tolower(*name++);
+        res <<= 8;
     }
-    return h;
-}
-
-bool
-gamesHaveSameMoves (scidBaseT * base, const IndexEntry * ieA, const IndexEntry * ieB)
-{
-    const uint MAX_SAME_MOVES = 120;  // Only check up to 60 moves each side.
-    simpleMoveT movesA [MAX_SAME_MOVES];
-    simpleMoveT movesB [MAX_SAME_MOVES];
-
-    // Start with the shorter game first:
-    uint lenA = ieA->GetNumHalfMoves();
-    uint lenB = ieB->GetNumHalfMoves();
-    if (lenB < lenA) {  // Swap the order of the two games:
-        uint temp = lenA; lenA = lenB; lenB = temp;
-        const IndexEntry * ie = ieA; ieA = ieB; ieB = ie;
-    }
-
-    // Now load up to MAX_SAME_MOVES of the first game:
-    Game * g = scratchGame;
-
-    if (base->getGame(ieA, base->bbuf) != OK) {
-        return false;
-    }
-    base->bbuf->BackToStart();
-    g->Clear();
-    if (g->DecodeStart (base->bbuf) != OK) {
-        return false;
-    }
-    simpleMoveT * smA = &(movesA[0]);
-    uint countA = 0;
-    while (countA < MAX_SAME_MOVES) {
-        if (g->DecodeNextMove (base->bbuf, smA) != OK) { break; }
-        countA++;
-        smA++;
-    }
-
-    // Now read the same number of moves in the longer game, stopping when
-    // a different move is found:
-    if (base->getGame(ieB, base->bbuf) != OK) {
-        return false;
-    }
-    base->bbuf->BackToStart();
-    g->Clear();
-    if (g->DecodeStart (base->bbuf) != OK) {
-        return false;
-    }
-    smA = &(movesA[0]);
-    simpleMoveT * smB = &(movesB[0]);
-    uint countB = 0;
-    while (countB < countA) {
-        if (g->DecodeNextMove (base->bbuf, smB) != OK) { return false; }
-        if (smA->from != smB->from  ||  smA->to != smB->to  ||
-            smA->promote != smB->promote) { return false; }
-        countB++;
-        smA++;
-        smB++;
-    }
-    // If we reach here, the games are identical for all moves in the
-    // shorter game.
-    return true;
+    return res;
 }
 
 bool
 checkDuplicate (scidBaseT * base,
                 const IndexEntry * ie1, const IndexEntry * ie2,
-                gNumListT * g1, gNumListT * g2,
                 dupCriteriaT * cr)
 {
     if (ie1->GetDeleteFlag()  ||  ie2->GetDeleteFlag()) { return false; }
-    if (cr->sameColors) {
-        if (g1->white != g2->white) { return false; }
-        if (g1->black != g2->black) { return false; }
-    } else {
-        bool colorsOK = false;
-        uint w1 = g1->white;
-        uint b1 = g1->black;
-        uint w2 = g2->white;
-        uint b2 = g2->black;
-        if (w1 == w2  &&  b1 == b2) { colorsOK = true; }
-        if (w1 == b2  &&  b1 == w2) { colorsOK = true; }
-        if (! colorsOK) { return false; }
-    }
     if (cr->sameEvent) {
         if (ie1->GetEvent() != ie2->GetEvent()) { return false; }
     }
@@ -2096,6 +2013,15 @@ checkDuplicate (scidBaseT * base,
         eco_ToBasicString (ie2->GetEcoCode(), b);
         if (a[0] != b[0]  ||  a[1] != b[1]  ||  a[2] != b[2]) { return false; }
     }
+    if (cr->exactNames) {
+        const NameBase* nb = base->getNameBase();
+        const std::string w1 = ie1->GetWhiteName(nb);
+        const std::string b1 = ie1->GetBlackName(nb);
+        const std::string w2 = ie2->GetWhiteName(nb);
+        const std::string b2 = ie2->GetBlackName(nb);
+        if (w1 != w2 && w1 != b2) return false;
+        if (b1 != b2 && b1 != w2) return false;
+    }
 
     // There are a lot of "place-holding" games in some database, that have
     // just one (usually wrong) move and a result, that are then replaced by
@@ -2119,18 +2045,17 @@ checkDuplicate (scidBaseT * base,
         const byte * hpData2 = ie2->GetHomePawnData();
         if (! hpSig_Prefix (hpData1, hpData2)) { return false; }
         // Now we have to check the actual moves of the games:
-        return gamesHaveSameMoves (base, ie1, ie2);
+        uint length = std::min(ie1->GetNumHalfMoves(), ie2->GetNumHalfMoves());
+        std::string a = base->getGame(ie1).getMoveSAN(0, length);
+        std::string b = base->getGame(ie2).getMoveSAN(0, length);
+        return (a == b);
     }
     return true;
 }
 
-int
+uint
 sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-
-    uint deletedCount = 0;
-    const uint GLIST_HASH_SIZE = 32768;
-
     dupCriteriaT criteria;
     criteria.exactNames  = false;
     criteria.sameColors  = true;
@@ -2211,67 +2136,56 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
         }
     }
     bool showProgress = startProgressBar();
-
-    gNumListPtrT * gHashTable = new gNumListPtrT [GLIST_HASH_SIZE];
-    gNumListT * gNumList = new gNumListT [dbase->numGames()];
+    uint deletedCount = 0;
+    const uint numGames = dbase->numGames();
 
     // Setup duplicates array:
     if (dbase->duplicates == NULL) {
-        dbase->duplicates = new uint [dbase->numGames()];
+        dbase->duplicates = new uint [numGames];
     }
-    for (uint d=0; d < dbase->numGames(); d++) {
+    for (uint d=0; d < numGames; d++) {
         dbase->duplicates[d] = 0;
     }
 
     // We use a hashtable to limit duplicate game comparisons; each game
     // is only compared to others that hash to the same value.
-    // Set up the linked-list hashtable of games with same hashed names:
-
-    for (uint h=0; h < GLIST_HASH_SIZE; h++) { gHashTable[h] = NULL; }
-    for (uint i=0, n = dbase->numGames(); i < n; i++) {
+    std::vector<gNumListT> hash(numGames);
+    size_t n_hash = 0;
+    for (uint i=0; i < numGames; i++) {
         const IndexEntry* ie = dbase->getIndexEntry(i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
             &&  (!onlyFilterGames  ||  dbase->dbFilter->Get(i) > 0)) {
-            uint white, black;
-            if (criteria.exactNames) {
-                white = ie->GetWhite();
-                black = ie->GetBlack();
-            } else {
-                white = hashName (ie->GetWhiteName(dbase->getNameBase()), 4);
-                black = hashName (ie->GetBlackName(dbase->getNameBase()), 4);
-            }
-            uint hash = (white + black) % GLIST_HASH_SIZE;
-            gNumListT * node = &(gNumList[i]);
-            node->white = white;
-            node->black = black;
+
+            gNumListT* node = &(hash[n_hash++]);
+            node->hash = hashName(ie->GetWhiteName(dbase->getNameBase()));
+            if (criteria.sameColors) node->hash <<= 32;
+            node->hash += hashName(ie->GetBlackName(dbase->getNameBase()));
             node->gNumber = i;
-            node->next = gHashTable[hash];
-            gHashTable[hash] = node;
         }
     }
+    hash.resize(n_hash);
+    std::sort(hash.begin(), hash.end());
 
-	if (setFilterToDups) { dbase->dbFilter->Fill (0); }
+    if (setFilterToDups) { dbase->dbFilter->Fill (0); }
     if (showProgress) { restartProgressBar (ti); }
 
-    // Now check each list of same-hash games for duplicates:
-
-    for (uint hash=0; hash < GLIST_HASH_SIZE; hash++) {
-        if (showProgress  &&  ((hash & 255) == 0)) {
+    // Now check same-hash games for duplicates:
+    for (size_t i=0; i < n_hash; i++) {
+        if (showProgress  &&  (i % 1000) == 0) {
             if (interruptedProgress()) { break; }
-            updateProgressBar (ti, hash, GLIST_HASH_SIZE);
+            updateProgressBar (ti, i, numGames);
         }
-        gNumListT * head = gHashTable[hash];
+        gNumListT* head = &(hash[i]);
+        IndexEntry* ieHead = dbase->idx->FetchEntry (head->gNumber);
 
-        while (head != NULL) {
-            IndexEntry * ieHead = dbase->idx->FetchEntry (head->gNumber);
-            gNumListT * compare = head->next;
+        for (size_t comp=i+1; comp < n_hash; comp++) {
+            gNumListT* compare = &(hash[comp]);
+            if (compare->hash != head->hash) break;
 
-            while (compare != NULL) {
+            IndexEntry * ieComp = dbase->idx->FetchEntry (compare->gNumber);
 
-                IndexEntry * ieComp = dbase->idx->FetchEntry (compare->gNumber);
-
-                if (checkDuplicate (dbase, ieHead, ieComp, head, compare, &criteria)) {
+            if (checkDuplicate (dbase, ieHead, ieComp, &criteria)) {
                     dbase->duplicates[head->gNumber] = compare->gNumber + 1;
                     dbase->duplicates[compare->gNumber] = head->gNumber + 1;
 
@@ -2301,8 +2215,10 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
                         deleteHead = (head->gNumber > compare->gNumber);
                     } else {
                         ASSERT (deleteStrategy == DELETE_SHORTER);
-                        deleteHead = (ieHead->GetNumHalfMoves() <
-                                      ieComp->GetNumHalfMoves());
+                        uint a = ieHead->GetNumHalfMoves();
+                        uint b = ieComp->GetNumHalfMoves();
+                        deleteHead = (a <= b);
+                        if (a == b && headImmune) deleteHead = false;
                     }
 
                     if (deleteHead) {
@@ -2348,10 +2264,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
                             dbase->dbFilter->Set (gnumDelete, 1);
                         }
                     }
-                }
-                compare = compare->next;
             }
-            head = head->next;
         }
     }
 
@@ -2359,10 +2272,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
     dbase->clearStats();
     if (showProgress) { updateProgressBar (ti, 1, 1); }
 
-    delete[] gHashTable;
-    delete[] gNumList;
-
-    return setUintResult (ti, deletedCount);
+    return deletedCount;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
