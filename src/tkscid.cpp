@@ -10138,7 +10138,7 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         return TCL_ERROR;
     }
 
-    NameBase * nb = db->nb;
+    const NameBase* nb = db->getNameBase();
     DString * dstr = new DString;
     char tempStr[1024];
     char tempName [1024];
@@ -10146,24 +10146,16 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     uint correctionCount = 0;
     
     // Counters to monitor the crawl through the name base
-    //
-    uint maxName  = nb->GetNumNames( nt );
-    uint thisName = 0;
+    idNumberT maxName = nb->GetNumNames( nt );
     
     // Thresholds for progress-bar updating
     // We try to make about 200 steps, which should allow
     // an update at least every second, even for a big name base.
-    //
     uint nameThres = (maxName / 200)        + 1;
     uint corrThres = (maxCorrections / 200) + 1;
 
     // Check every name of the specified type:
-
-    for (NameBase::iterator it = nb->begin(nt); it != nb->end(nt); it++) {
-        // We have got the next name from the base
-        thisName++;
-
-        idNumberT id = (*it).second;
+    for (idNumberT id = 0; id < maxName; id++) {
         const char * name = nb->GetName (nt, id);
         const char * origName = name;
 
@@ -10322,7 +10314,7 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         if ( showProgress ) {
             // Update filter to avoid hyperactivity
             //
-            bool filter = (thisName        % nameThres == 1)
+            bool filter = (id        % nameThres == 1)
                        || (correctionCount % corrThres == 1);
         
             // Try to be clever here: If we go for maxCorrections only, we do not know if and when
@@ -10330,11 +10322,11 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
             // or the actual correction counter, whichever is closer to its finish.
             //
             if ( filter ) {
-                if ( (double)correctionCount / (double)maxCorrections > (double)thisName / (double)maxName ) {
+                if ( (double)correctionCount / (double)maxCorrections > (double)id / (double)maxName ) {
                     updateProgressBar( ti, correctionCount, maxCorrections );
                 }
                 else {
-                    updateProgressBar( ti, thisName, maxName );
+                    updateProgressBar( ti, id, maxName );
                 }
 
                 // Allow the user to break in at this point

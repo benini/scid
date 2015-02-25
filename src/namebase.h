@@ -62,6 +62,7 @@ class NameBase
         }
     };
     std::map<const char*, idNumberT, idxCmp> idx_[NUM_NAME_TYPES];
+    typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
 
     NameBase(const NameBase&);
     NameBase& operator=(const NameBase&);
@@ -99,10 +100,6 @@ public:
                                idNumberT * array) const;
 
     idNumberT GetNumNames (nameT n) const  { return names_[n].size(); }
-
-    typedef std::map<const char*, idNumberT, idxCmp>::const_iterator iterator;
-    iterator begin(nameT nt) { return idx_[nt].begin(); }
-    iterator end(nameT nt) { return idx_[nt].end(); }
 };
 
 #endif  // #ifdef SCID_NAMEBASE_H
