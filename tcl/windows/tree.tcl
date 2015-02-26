@@ -18,7 +18,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3 4} tag {File Mask Sort Opt Help} {
     configMenuText $m $idx Tree$tag $lang
   }
-  foreach idx {0 1 2 3 4 5 7 9 11} tag {Save Fill FillWithBase FillWithGame SetCacheSize CacheInfo Graph Copy Close} {
+  foreach idx {0 1 2 3 5 7 9} tag {FillWithBase FillWithGame SetCacheSize CacheInfo Graph Copy Close} {
     configMenuText $m.file $idx TreeFile$tag $lang
   }
   foreach idx {0 1 2 3 4 5 6 7 8 9} tag {New Open OpenRecent Save Close FillWithGame FillWithBase Search Info Display} {
@@ -27,7 +27,7 @@ proc ::tree::doConfigMenus { baseNumber  { lang "" } } {
   foreach idx {0 1 2 3} tag {Alpha ECO Freq Score } {
     configMenuText $m.sort $idx TreeSort$tag $lang
   }
-  foreach idx {0 1 3} tag {Lock Training Autosave } {
+  foreach idx {0 1} tag {Lock Training } {
     configMenuText $m.opt $idx TreeOpt$tag $lang
   }
   foreach idx {0 1} tag {Tree Index} {
@@ -96,9 +96,9 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   }
   
   $w.menu.file add command -label TreeFileFillWithBase -command "::tree::primeWithBase"
-  set helpMessage($w.menu.file,2) TreeFileFillWithBase
+  set helpMessage($w.menu.file,0) TreeFileFillWithBase
   $w.menu.file add command -label TreeFileFillWithGame -command "::tree::primeWithGame"
-  set helpMessage($w.menu.file,3) TreeFileFillWithGame
+  set helpMessage($w.menu.file,1) TreeFileFillWithGame
   
   menu $w.menu.file.size
   foreach i { 250 500 1000 2000 5000 10000 } {
@@ -106,20 +106,20 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   }
   
   $w.menu.file add cascade -menu $w.menu.file.size -label TreeFileSetCacheSize
-  set helpMessage($w.menu.file,4) TreeFileSetCacheSize
+  set helpMessage($w.menu.file,2) TreeFileSetCacheSize
   
   $w.menu.file add command -label TreeFileCacheInfo -command "::tree::getCacheInfo $baseNumber"
-  set helpMessage($w.menu.file,5) TreeFileCacheInfo
+  set helpMessage($w.menu.file,3) TreeFileCacheInfo
   
   $w.menu.file add separator
   $w.menu.file add command -label TreeFileGraph -command "::tree::graph $baseNumber 1"
-  set helpMessage($w.menu.file,7) TreeFileGraph
+  set helpMessage($w.menu.file,5) TreeFileGraph
   $w.menu.file add separator
   $w.menu.file add command -label TreeFileCopy -command "::tree::menuCopyToSelection $baseNumber"
-  set helpMessage($w.menu.file,9) TreeFileCopy
+  set helpMessage($w.menu.file,7) TreeFileCopy
   $w.menu.file add separator
   $w.menu.file add command -label TreeFileClose -command ".treeWin$baseNumber.buttons.close invoke"
-  set helpMessage($w.menu.file,11) TreeFileClose
+  set helpMessage($w.menu.file,9) TreeFileClose
   
   $w.menu.mask add command -label TreeMaskNew -command "::tree::mask::new"
   set helpMessage($w.menu.mask,0) TreeMaskNew

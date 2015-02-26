@@ -184,7 +184,6 @@ SCID_OBJS = \
 	$(TMP_DIR)\pgnparse.obj \
 	$(TMP_DIR)\position.obj \
 	$(TMP_DIR)\stored.obj \
-	$(TMP_DIR)\stralloc.obj \
 	$(TMP_DIR)\textbuf.obj \
 	$(TMP_DIR)\scid.res \
 	$(TMP_DIR)\sortcache.obj \
