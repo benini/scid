@@ -63,7 +63,7 @@ proc keyboardShortcuts {w} {
 	# Rotate the chess board
 	bind $w <period> {
 		set wclass [winfo class %W]
-		if {![string match "*Entry" $wclass] && !$tree(refresh)} {
+		if {![regexp ".*(Entry|Text)" $wclass]} {
 			toggleRotateBoard
 		}
 	}
@@ -71,7 +71,7 @@ proc keyboardShortcuts {w} {
 	# Open "Setup Board" dialog
 	bind $w <s> {
 		set wclass [winfo class %W]
-		if {![string match "*Entry" $wclass]} {
+		if {![regexp ".*(Entry|Text)" $wclass]} {
 			::setupBoard
 		}
 	}
