@@ -209,7 +209,6 @@ struct scidBaseT {
 	bool inUse;       // true if the database is open (in use).
 	treeT tree;
 	TreeCache* treeCache;
-	TreeCache* backupCache;
 	ByteBuffer* bbuf;
 	TextBuffer* tbuf;
 	Filter* dbFilter;

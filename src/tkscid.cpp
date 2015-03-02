@@ -10926,22 +10926,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 }
             }
         }
-
-
-        // Lookup the backup cache which is useful for storing recent nodes
-        // when the main disk-file cache is full:
-        if (! foundInCache) {
-            pct = base->backupCache->Lookup (db->game->GetCurrentPos());
-            if (pct != NULL) {
-                // It was in the backup cache! Use it to save time:
-                if (pct->cfilter->Size() == base->numGames()) {
-                    if (pct->cfilter->UncompressTo (base->treeFilter) == OK) {
-                        base->tree = pct->tree;
-                        foundInCache = true;
-                    }
-                }
-            }
-        }
     }
 
     if (!foundInCache) {
@@ -11135,7 +11119,6 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // If it wasn't in the cache, maybe it belongs there:
         if (!foundInCache  && !inFilterOnly) {
             base->treeCache->Add (db->game->GetCurrentPos(), tree, base->treeFilter);
-            base->backupCache->Add (db->game->GetCurrentPos(), tree, base->treeFilter);
         }
     }
 

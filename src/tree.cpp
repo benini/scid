@@ -18,15 +18,6 @@
 #include "tree.h"
 #include <string.h>
 
-
-// TREEFILE_MAGIC:
-//    The four-byte identifier at the start of a tree-cache file.
-//    This value is updated whenever a non-backward-compatible
-//    change is made to the tree file format.
-//    Last change: version 2.4.
-const uint TREEFILE_MAGIC = ('s' << 24) | ('t' << 16) | ('c' << 8) | 24;
-
-
 void
 initTreeNode (treeNodeT * tnode)
 {

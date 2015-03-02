@@ -31,7 +31,6 @@ void scidBaseT::Init() {
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
 	treeCache = NULL;
-	backupCache = NULL;
 	fileName[0] = 0;
 	fileMode = FMODE_Both;
 	gfile = new GFile;
@@ -52,7 +51,6 @@ scidBaseT::~scidBaseT() {
 	if (nb != NULL) delete nb;
 	if (game != NULL) delete game;
 	if (treeCache != NULL) delete treeCache;
-	if (backupCache != NULL) delete backupCache;
 	if (gfile != NULL) delete gfile;
 	if (bbuf != NULL) delete bbuf;
 	if (tbuf != NULL) delete tbuf;
@@ -86,7 +84,6 @@ void scidBaseT::clear() {
 	validStats_ = false;
 	if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
 	treeCache->Clear();
-	backupCache->Clear();
 	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
 }
 
@@ -159,13 +156,8 @@ errorT scidBaseT::Open (fileModeT mode,
 	if (treeCache == NULL) {
 		// TreeCache size for each open database:
 		const uint SCID_TreeCacheSize = 1000;
-		// Secondary (memory only) TreeCache size:
-		const uint SCID_BackupCacheSize = 100;
 		treeCache = new TreeCache;
 		treeCache->SetCacheSize (SCID_TreeCacheSize);
-		backupCache = new TreeCache;
-		backupCache->SetCacheSize (SCID_BackupCacheSize);
-		backupCache->SetPolicy (TREECACHE_Oldest);
 	}
 
 	return err;
