@@ -388,13 +388,6 @@ errMsgNotOpen (Tcl_Interp * ti)
 }
 
 const char *
-errMsgReadOnly (Tcl_Interp * ti)
-{
-    return translate (ti, "ErrReadOnly",
-                      "This database is read-only; it cannot be altered.");
-}
-
-const char *
 errMsgSearchInterrupted (Tcl_Interp * ti)
 {
     return translate (ti, "ErrSearchInterrupted",
@@ -825,11 +818,28 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc == 3) {
             return okResult (ti, dbase->idx->GetAutoLoad());
         }
-        if (dbase->isReadOnly()) {
-            return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
-        }
+        if (dbase->isReadOnly()) return errorResult (ti, ERROR_FileReadOnly);
         db->idx->SetAutoLoad (strGetUnsigned (argv[3]));
         return TclResult(ti, db->idx->WriteHeader());
+
+    case BASE_COPYGAMES:
+        if (argc == 5) {
+            scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
+            if (targetBase == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
+            if (targetBase->isReadOnly()) return errorResult (ti, ERROR_FileReadOnly);
+            errorT err = OK;
+            Filter* filter = dbase->getFilter(argv[3]);
+            if (filter) {
+                startProgressBar();
+                err = targetBase->addGames(dbase, filter, reportProgress, ti);
+            } else {
+                uint gNum = strGetUnsigned (argv[3]);
+                if (gNum == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
+                err = targetBase->addGame(dbase, gNum -1);
+            }
+            return TclResult(ti, err);
+        }
+        return errorResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_GAMEFLAG:
         if (argc == 6) {
@@ -902,7 +912,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     //TODO: Group all the functions that modifies the database
     if (dbase->isReadOnly()) {
-        return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly);
     }
 
     switch (index) {
@@ -920,24 +930,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return TclResult(ti, res);
         }
         return errorResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
-
-    case BASE_COPYGAMES:
-        if (argc == 5) {
-            scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
-            if (targetBase == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
-            errorT err = OK;
-            Filter* filter = dbase->getFilter(argv[3]);
-            if (filter) {
-                startProgressBar();
-                err = targetBase->addGames(dbase, filter, reportProgress, ti);
-            } else {
-                uint gNum = strGetUnsigned (argv[3]);
-                if (gNum == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
-                err = targetBase->addGame(dbase, gNum -1);
-            }
-            return TclResult(ti, err);
-        }
-        return errorResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_DUPLICATES:
         return okResult(ti, sc_base_duplicates (dbase, cd, ti, argc, argv));
@@ -1212,7 +1204,7 @@ sc_base_description (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
         return setResult (ti, errMsgNotOpen(ti));
     }
     if (db->isReadOnly()) {
-        return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly);
     }
     // Edit the description and return it:
     db->idx->SetDescription (argv[2]);
@@ -2344,7 +2336,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // If stripping a tag, make sure we have a writable database:
     if (cmd == TAG_STRIP  &&  db->isReadOnly()) {
-        return errorResult (ti, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly);
     }
 
     // If setting filter, clear it now:
@@ -3040,9 +3032,8 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return errorResult (ti, "Usage: sc_eco base <bool:all_games> <bool:extensions>");
     }
     if (!ecoBook) { return errorResult (ti, "No ECO Book is loaded."); }
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
+    if (! db->inUse) return errorResult (ti, ERROR_FileNotOpen);
+    if (db->isReadOnly()) return errorResult (ti, ERROR_FileReadOnly);
 
     int option = -1;
     enum {ECO_NOCODE, ECO_ALL, ECO_DATE, ECO_FILTER};
@@ -3087,20 +3078,16 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         ie = db->idx->FetchEntry (i);
         if (ie->GetLength() == 0) { continue; }
 
-        ecoT oldEcoCode = ie->GetEcoCode();
-
         // Ignore games not in current filter if directed:
         if (option == ECO_FILTER  &&  db->dbFilter->Get(i) == 0) { continue; }
 
         // Ignore games with existing ECO code if directed:
-        if (option == ECO_NOCODE  &&  oldEcoCode != 0) { continue; }
+        if (option == ECO_NOCODE  &&  ie->GetEcoCode() != 0) { continue; }
 
         // Ignore games before starting date if directed:
         if (option == ECO_DATE  &&  ie->GetDate() < startDate) { continue; }
 
-        if (db->getGame(ie, db->bbuf) != OK) {
-            continue;
-        }
+        if (db->getGame(ie, db->bbuf) != OK) { continue; }
         db->bbuf->BackToStart();
         g->Clear();
         if (g->DecodeStart (db->bbuf) != OK) { continue; }
@@ -3127,48 +3114,32 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         // is the deepest.
 
         DString commentStr;
-        bool found = false;
+        ecoT ecoCode = ECO_None;
 
         do {
             if (ecoBook->FindOpcode (g->GetCurrentPos(), "eco",
                                      &commentStr) == OK) {
-                found = true;
+                ecoCode = eco_FromString (commentStr.Data());
+                if (! extendedCodes) {
+                    ecoCode = eco_BasicCode (ecoCode);
+                }
                 break;
             }
             err = g->MoveBackup();
         } while (err == OK);
 
-        ecoT ecoCode = ECO_None;
-        if (found) {
-            ecoCode = eco_FromString (commentStr.Data());
-            if (! extendedCodes) {
-                ecoCode = eco_BasicCode (ecoCode);
-            }
-        }
-        ie->SetEcoCode (ecoCode);
-        countClassified++;
-
-        // If the database is read-only or the ECO code has not changed,
-        // nothing needs to be written to the index file.
-        // Write the updated entry if necessary:
-
-        if (! db->isReadOnly()
-                &&  ie->GetEcoCode() != oldEcoCode) {
-            if (db->idx->WriteEntries (ie, i) != OK) {
-                return errorResult (ti, "Error writing index file.");
-            }
+        if (ie->GetEcoCode() != ecoCode) {
+            ie->SetEcoCode (ecoCode);
+            err = db->idx->WriteEntries (ie, i);
+            if (err != OK) return errorResult(ti, err);
+            countClassified++;
         }
     }
+    if (showProgress) { updateProgressBar (ti, 1, 1); }
 
     // Update the index file header:
-    if (! db->isReadOnly()) {
-        if (db->idx->WriteHeader() != OK) {
-            return errorResult (ti, "Error writing index file.");
-        }
-    }
-
-    recalcFlagCounts (db);
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    err = db->clearCaches();
+    if (err != OK) return errorResult(ti, err);
 
     int centisecs = timer.CentiSecs();
     char tempStr [100];
@@ -8456,7 +8427,7 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (db->isReadOnly()) {
-        return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly);
     }
 
     switch (index) {

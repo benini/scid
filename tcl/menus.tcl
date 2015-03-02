@@ -1275,12 +1275,10 @@ proc updateMenuStates {{menuname}} {
         set fname [file tail [sc_base filename $i]]
         $m.file.switch entryconfig [expr {$i - 1} ] -label "Base $i: $fname"
       }
-      foreach i {Compact Delete} {
+      foreach i {Compact Delete Class Twin} {
         $m.file.utils entryconfig [tr FileMaint$i] -state disabled
       }
-      foreach i {Player Event Site Round} {
-        $m.file.utils.name entryconfig [tr FileMaintName$i] -state disabled
-      }
+      $m.file.utils entryconfig [tr FileMaintName] -state disabled
 
       # update recent Tree list (open base as Tree)
       set ntreerecent [::recentFiles::treeshow .menu.file.recenttrees]
@@ -1309,9 +1307,8 @@ proc updateMenuStates {{menuname}} {
     if {! $isReadOnly} {
       $m.file.utils entryconfig [tr FileMaintDelete] -state normal
       $m.file.utils entryconfig [tr FileMaintName] -state normal
-      foreach i {Player Event Site Round} {
-        $m.file.utils.name entryconfig [tr FileMaintName$i] -state normal
-      }
+      $m.file.utils entryconfig [tr FileMaintClass] -state normal
+      $m.file.utils entryconfig [tr FileMaintTwin] -state normal
     }
     
     # Load first/last/random/game number buttons:

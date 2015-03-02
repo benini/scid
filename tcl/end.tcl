@@ -801,8 +801,7 @@ proc nameEditor {} {
       set err [catch {sc_name edit $editNameType $editNameSelect $editName $editNameNew} result]
     }
     if {$err} {
-      tk_messageBox -type ok -icon info -parent .nedit -title "Scid" \
-          -message $result
+      ERROR::MessageBox
     } else {
       .nedit.status configure -text $result
     }

@@ -376,11 +376,9 @@ proc ::maint::Refresh {} {
   $w.db.dups configure -state $state
   $w.title.vicon configure -state $state
   $w.title.desc.edit configure -state $state
+  $w.title.cust.edit configure -state $state
   $w.db.elo configure -state $state
   $w.db.autoload configure -state $state
-  
-  set state disabled
-  if {[sc_base inUse]} { set state normal }
   $w.db.eco configure -state $state
   $w.db.strip configure -state $state
   
@@ -640,7 +638,11 @@ proc doMarkDups {{parent .}} {
   
   busyCursor .
   if {$twinSettings(undelete) == "Yes"} {
-    sc_base gameflag [sc_base current] all unset del
+    if {[catch {sc_base gameflag [sc_base current] all unset del}]} {
+      unbusyCursor .
+      ERROR::MessageBox
+      return 0
+    }
   }
 
   if {[catch {sc_base duplicates [sc_base current] \
@@ -657,8 +659,7 @@ proc doMarkDups {{parent .}} {
           -variations $twinSettings(variations) \
           -delete $twinSettings(delete)} result]} {
     unbusyCursor .
-    tk_messageBox -type ok -parent $parent -icon info \
-        -title "Scid" -message $result
+    ERROR::MessageBox
     set result 0
   } else {
     unbusyCursor .
@@ -798,7 +799,7 @@ proc makeClassifyWin {} {
     if {[catch  {sc_eco base $classifyOption(AllGames) $classifyOption(ExtendedCodes)} result]} {
       grab release .classify.f.b.cancel
       unbusyCursor .
-      tk_messageBox -parent .classify -type ok -icon info -title "Scid" -message $result
+      ERROR::MessageBox
     } else {
       grab release .classify.f.b.cancel
       unbusyCursor .
@@ -1226,14 +1227,16 @@ proc doStripTags {{parent .}} {
   set err [catch {sc_base tag strip $stripTagChoice} result]
   unbusyCursor .
   closeProgressWindow
-  set count 0
-  if {! $err} {
-    set count $result
-    set result "Removed $result instances of \"$stripTagChoice\"."
-    append result "\n\n"
-    append result "To save space and maintain database efficiency, it is a "
-    append result "good idea to compact the game file after removing tags."
+  if {$err} {
+    ERROR::MessageBox
+    return 0
   }
+  set count 0
+  set count $result
+  set result "Removed $result instances of \"$stripTagChoice\"."
+  append result "\n\n"
+  append result "To save space and maintain database efficiency, it is a "
+  append result "good idea to compact the game file after removing tags."
   tk_messageBox -title "Scid" -parent $parent -type ok -icon info \
       -message $result
   return $count
