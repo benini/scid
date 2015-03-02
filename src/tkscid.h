@@ -15,39 +15,10 @@
 
 
 #include "common.h"
-#include "index.h"
-#include "position.h"
-#include "engine.h"
-#include "game.h"
-#include "gfile.h"
-#include "namebase.h"
-#include "tree.h"
-#include "pbook.h"
-#include "pgnparse.h"
-#include "timer.h"
-#include "crosstab.h"
-#include "spellchk.h"
-#include "probe.h"
-#include "optable.h"
-#include "stored.h"
-#include "polyglot.h"
 #include "scidbase.h"
-#include <stdio.h>
-#include <ctype.h>
-#include <sys/stat.h>
-
 #include <tcl.h>
 
-// Some character pointer arguments (like "char ***" to Tcl_SplitList)
-// changed const-ness from Tcl/Tk 8.3 to 8.4 and g++ cannot handle
-// implicit (char ***) <-> (const char ***) conversions, so CONST84
-// is "const" if set from tcl.h, otherwise it is nothing:
-#ifndef CONST84
-#  define CONST84
-#endif
-
 // Filter operations:
-
 typedef uint filterOpT;
 const filterOpT FILTEROP_AND = 0;
 const filterOpT FILTEROP_OR = 1;
@@ -55,41 +26,14 @@ const filterOpT FILTEROP_RESET = 2;
 
 
 // Tablebase probe modes:
-
 #define PROBE_NONE 0
 #define PROBE_RESULT 1
 #define PROBE_SUMMARY 2
 #define PROBE_REPORT 3
 #define PROBE_OPTIMAL 4
 
-
-//////////////////////////////////////////////////////////////////////
-//
-// Data structures for Scid Tcl/Tk extensions:
-//
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Progress Bar struct:
-//
-struct progressBarT {
-    bool state;
-    int  height;
-    int  width;
-    bool interrupt;
-    Timer timer;
-    char * canvName;
-    char * rectName;
-    char * timeName;
-};
-
-
-//////////////////////////////////////////////////////////////////////
-// Declarations for Scid application-specific Tcl commands
-//
-
 // Macro TCL_ARGS expands to the argument-type list that any
 // Tcl command function takes.
-
 #define TCL_ARGS  ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
 int str_is_prefix  (TCL_ARGS);

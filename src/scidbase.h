@@ -25,6 +25,7 @@
 #include "undoredo.h"
 #include "game.h"
 #include "tree.h"
+#include "stored.h"
 #include <vector>
 
 class SpellChecker;

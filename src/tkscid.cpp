@@ -26,13 +26,26 @@
 
 
 #include "tkscid.h"
-#include "fastgame.h"
 #include "searchpos.h"
 #include "scidbase.h"
-#include "stdlib.h"
-#include "time.h"
+#include "position.h"
+#include "engine.h"
+#include "game.h"
+#include "tree.h"
+#include "pbook.h"
+#include "pgnparse.h"
+#include "timer.h"
+#include "crosstab.h"
+#include "spellchk.h"
+#include "probe.h"
+#include "optable.h"
+#include "stored.h"
+#include "polyglot.h"
+#include <sys/stat.h>
+#include <stdlib.h>
 #include <set>
 #include <algorithm>
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Global variables:
@@ -46,6 +59,17 @@ static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static PBook * ecoBook = NULL;         // eco classification pbook.
 static SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correction.
 
+
+struct progressBarT {
+    bool state;
+    int  height;
+    int  width;
+    bool interrupt;
+    Timer timer;
+    char * canvName;
+    char * rectName;
+    char * timeName;
+};
 static progressBarT progBar;
 
 static OpTable * reports[2] = {NULL, NULL};
