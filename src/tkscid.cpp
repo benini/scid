@@ -174,19 +174,6 @@ setUintWidthResult (Tcl_Interp * ti, uint i, uint width)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// setCharResult():
-//    Inline function to set the Tcl interpreter result to a character value.
-inline int
-setCharResult (Tcl_Interp * ti, char ch)
-{
-    char tempStr [4];
-    tempStr[0] = ch;
-    tempStr[1] = 0;
-    Tcl_SetResult (ti, tempStr, TCL_VOLATILE);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // appendCharResult:
 //    Inline function to append the specified character value to the
 //    Tcl interpreter result.
@@ -218,25 +205,25 @@ translate (Tcl_Interp * ti, const char * name)
     return translate (ti, name, name);
 }
 
-int TclResult (Tcl_Interp * ti, errorT err, const char* res = 0) {
-    if (res != 0) Tcl_SetResult (ti, (char *) res, TCL_STATIC);
+int TclResult (Tcl_Interp* ti, errorT err) {
     if (err == OK) return TCL_OK;
     Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
     return TCL_ERROR;
 }
-int TclResult (Tcl_Interp * ti, errorT err, const std::string& res) {
+int okResult (Tcl_Interp* ti, const char* res) {
+    ASSERT(res != 0);
+    Tcl_SetResult (ti, (char *) res, TCL_STATIC);
+    return TCL_OK;
+}
+int okResult (Tcl_Interp* ti, const std::string& res) {
     Tcl_SetObjResult(ti, Tcl_NewStringObj(res.c_str(), -1));
-    if (err == OK) return TCL_OK;
-    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
-    return TCL_ERROR;
+    return TCL_OK;
 }
-int TclResult (Tcl_Interp * ti, errorT err, int res) {
+int okResult (Tcl_Interp* ti, int res) {
     Tcl_SetObjResult(ti, Tcl_NewIntObj(res));
-    if (err == OK) return TCL_OK;
-    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
-    return TCL_ERROR;
+    return TCL_OK;
 }
-int TclResult (Tcl_Interp * ti, errorT err, const std::vector<int>& v) {
+int okResult (Tcl_Interp * ti, const std::vector<int>& v) {
     if (v.size() > 0) {
         Tcl_Obj** res = new Tcl_Obj*[v.size()];
         for (uint i=0; i < v.size(); i++) {
@@ -245,13 +232,17 @@ int TclResult (Tcl_Interp * ti, errorT err, const std::vector<int>& v) {
         Tcl_SetObjResult(ti, Tcl_NewListObj(v.size(), res));
         delete [] res;
     }
-    if (err == OK) return TCL_OK;
+    return TCL_OK;
+}
+
+inline int errorResult (Tcl_Interp * ti, errorT err, const char* errorMsg = 0) {
+    if (errorMsg != 0) Tcl_SetResult (ti, (char*) errorMsg, TCL_STATIC);
+    ASSERT(err != OK);
     Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
     return TCL_ERROR;
 }
-
-inline int errorResult (Tcl_Interp * ti, const char * errorMsg) {
-    return TclResult (ti, ERROR, errorMsg);
+inline int errorResult (Tcl_Interp * ti, const char* errorMsg) {
+    return errorResult(ti, ERROR_BadArg, errorMsg);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -808,10 +799,10 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case BASE_AUTOLOAD:
         if (argc == 3) {
-            return TclResult (ti, OK, dbase->idx->GetAutoLoad());
+            return okResult (ti, dbase->idx->GetAutoLoad());
         }
         if (dbase->isReadOnly()) {
-            return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+            return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
         }
         db->idx->SetAutoLoad (strGetUnsigned (argv[3]));
         return TclResult(ti, db->idx->WriteHeader());
@@ -856,7 +847,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_base_gamelocation (dbase, ti, argc, argv);
 
     case BASE_ISREADONLY:
-        return TclResult(ti, OK, dbase->isReadOnly());
+        return okResult(ti, dbase->isReadOnly());
 
     case BASE_NEWFILTER:
         if (argc == 3) {
@@ -887,7 +878,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     //TODO: Group all the functions that modifies the database
     if (dbase->isReadOnly()) {
-        return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
     }
 
     switch (index) {
@@ -904,12 +895,12 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             appendUintElement(ti, n_badNameId);
             return TclResult(ti, res);
         }
-        return TclResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
+        return errorResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
 
     case BASE_COPYGAMES:
         if (argc == 5) {
             scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
-            if (targetBase == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
+            if (targetBase == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
             errorT err = OK;
             Filter* filter = dbase->getFilter(argv[3]);
             if (filter) {
@@ -917,15 +908,15 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 err = targetBase->addGames(dbase, filter, reportProgress, ti);
             } else {
                 uint gNum = strGetUnsigned (argv[3]);
-                if (gNum == 0) return TclResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
+                if (gNum == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
                 err = targetBase->addGame(dbase, gNum -1);
             }
             return TclResult(ti, err);
         }
-        return TclResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
+        return errorResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_DUPLICATES:
-        return TclResult(ti, OK, sc_base_duplicates (dbase, cd, ti, argc, argv));
+        return okResult(ti, sc_base_duplicates (dbase, cd, ti, argc, argv));
 
     case BASE_IMPORT:
         if (argc != 4) return errorResult (ti, "Usage: sc_base import baseId filename");
@@ -1197,7 +1188,7 @@ sc_base_description (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
         return setResult (ti, errMsgNotOpen(ti));
     }
     if (db->isReadOnly()) {
-        return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
     }
     // Edit the description and return it:
     db->idx->SetDescription (argv[2]);
@@ -3938,10 +3929,14 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             char buf [1000];
             errorT err = parser.ParseMoves (g, buf, 1000);
             if (parser.ErrorCount() > 0) err = ERROR_InvalidMove;
+            if (err != OK) {
+                delete g;
+                return errorResult(ti, err);
+            }
             buf[0] = 0;
-            if (err == OK) g->GetPrevMoveUCI(buf);
+            g->GetPrevMoveUCI(buf);
             delete g;
-            return TclResult(ti, err, std::string(buf));
+            return okResult(ti, std::string(buf));
         }
         return errorResult(ti, "usage sc_game SANtoUCI move");
 
@@ -3987,7 +3982,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
     case GAME_UNDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
-            return TclResult(ti, OK, db->gameAlterations.undoSize());
+            return okResult(ti, db->gameAlterations.undoSize());
         }
         db->gameAlterations.undo(db->game);
         break;
@@ -3998,7 +3993,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_REDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
-            return TclResult(ti, OK, db->gameAlterations.redoSize());
+            return okResult(ti, db->gameAlterations.redoSize());
         }
         db->gameAlterations.redo(db->game);
         break;
@@ -4445,7 +4440,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     DString dstr;
     db->game->GetPartialMoveList (&dstr, plyCount);
-    return TclResult(ti, OK, std::string(dstr.Data()));
+    return okResult(ti, std::string(dstr.Data()));
 }
 
 //TODO: obsolete function: replace with "sc_base gameflag"
@@ -6551,7 +6546,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     case T_Result:
-        return setCharResult (ti, RESULT_CHAR[g->GetResult()]);
+        return okResult(ti, std::string(1, RESULT_CHAR[g->GetResult()]));
 
     case T_WhiteElo:
         return setUintResult (ti, g->GetWhiteElo());
@@ -6968,7 +6963,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc >= 3) {
             decimalPointChar = argv[2][0];
         } else {
-            return setCharResult (ti, decimalPointChar);
+            return okResult(ti, std::string(1, decimalPointChar));
         }
         break;
 
@@ -7665,7 +7660,7 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     case LOCATION:
-        return TclResult (ti, OK, db->game->GetCurrentLocation());
+        return okResult (ti, db->game->GetCurrentLocation());
 
     case MOVELIST: {
         Position * pos = db->game->GetCurrentPos();
@@ -8416,7 +8411,7 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     if (!db->inUse) {
-        return TclResult (ti, ERROR_FileNotOpen, errMsgNotOpen(ti));
+        return errorResult (ti, ERROR_FileNotOpen, errMsgNotOpen(ti));
     }
 
     switch (index) {
@@ -8437,7 +8432,7 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (db->isReadOnly()) {
-        return TclResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
+        return errorResult (ti, ERROR_FileReadOnly, errMsgReadOnly(ti));
     }
 
     switch (index) {
