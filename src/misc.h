@@ -18,9 +18,20 @@
 #define SCID_MISC_H
 
 #include "common.h"
-#include "error.h"
+#include <string>
 #include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
+
+#if CPP11_SUPPORT
+using std::to_string;
+#else
+#include <sstream>
+inline std::string to_string(int val) {
+	std::ostringstream res;
+	res << std::dec << val;
+	return res.str();
+}
+#endif
 
 // ECO string routines
 //

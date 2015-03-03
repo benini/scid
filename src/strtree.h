@@ -56,11 +56,11 @@
 #ifndef SCID_STRTREE_H
 #define SCID_STRTREE_H
 
+#include "common.h"
+#include "misc.h"
 #include <stdio.h>
 #include <string.h>
 
-#include "error.h"
-#include "misc.h"
 
 
 // nodeT template: a StrTree node.

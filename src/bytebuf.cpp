@@ -13,7 +13,6 @@
 //////////////////////////////////////////////////////////////////////
 
 
-#include "error.h"
 #include "bytebuf.h"
 #include <stdio.h>
 #include <string.h>

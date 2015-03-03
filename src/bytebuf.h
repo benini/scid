@@ -20,7 +20,6 @@
 #ifndef SCID_BYTEBUF_H
 #define SCID_BYTEBUF_H
 
-#include "error.h"
 #include "common.h"
 #include <stdio.h>
 

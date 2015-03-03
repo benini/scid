@@ -609,3 +609,25 @@ errorT scidBaseT::compact(SpellChecker* spellChk,
 	}
 	return OK;
 }
+
+errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) const {
+	if (tagname == "description") {
+		*res = idx->GetDescription();
+	} else if (tagname == "autoload") {
+		*res = to_string(idx->GetAutoLoad());
+	} else {
+		return ERROR_BadArg;
+	}
+	return OK;
+}
+
+errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value) {
+	if (tagname == "description") {
+		idx->SetDescription(new_value);
+	} else if (tagname == "autoload") {
+		idx->SetAutoLoad(strGetUnsigned(new_value));
+	} else {
+		return ERROR_BadArg;
+	}
+	return idx->WriteHeader();
+}

@@ -22,12 +22,10 @@
 #define SCID_INDEX_H
 
 #include "common.h"
-#include "error.h"
 #include "date.h"
 #include "indexentry.h"
 #include "filter.h"
 #include "filebuf.h"
-#include <string.h>
 #include <string>
 #include <vector>
 

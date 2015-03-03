@@ -16,7 +16,6 @@
 #define SCID_PBOOK_H
 
 #include "common.h"
-#include "error.h"
 #include "position.h"
 #include "strtree.h"
 #include "dstring.h"

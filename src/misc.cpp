@@ -13,7 +13,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "common.h"
-#include "error.h"
 #include "misc.h"
 #include "sqmove.h"
 #include <stdlib.h>

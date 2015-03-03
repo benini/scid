@@ -31,6 +31,8 @@ typedef unsigned __int64  uint64_t;
 #include <stdint.h>
 #endif // _MSC_VER <= 1600
 
+#include "error.h"
+
 #ifdef ZLIB
 	#include <zlib.h>
 	inline bool gzable() { return true; }

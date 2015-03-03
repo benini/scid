@@ -18,7 +18,6 @@
 */
 
 #include "common.h"
-#include "error.h"
 #include "namebase.h"
 #include "misc.h"
 #include "filebuf.h"

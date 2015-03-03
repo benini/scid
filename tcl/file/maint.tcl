@@ -253,11 +253,14 @@ proc ::maint::ChangeBaseDescription {} {
   wm title $w "Scid: $::tr(Description): [file tail [sc_base filename]]"
   set font font_Small
   ttk::entry $w.entry -width 50 ;# -relief sunken -background white
-  $w.entry insert end [sc_base description]
+  set ::curr_db [sc_base current]
+  $w.entry insert end [sc_base extra $::curr_db description]
   pack $w.entry -side top -pady 4
   ttk::frame $w.b
   ttk::button $w.b.ok -text OK -command {
-    catch {sc_base description [.bdesc.entry get]}
+    if { [catch {sc_base extra $::curr_db description [.bdesc.entry get]}] } {
+      ERROR::MessageBox
+    }
     grab release .bdesc
     destroy .bdesc
     ::maint::Refresh
@@ -330,6 +333,7 @@ proc ::maint::Refresh {} {
   
   set w .maintWin
   if {![winfo exists $w]} { return }
+  set ::curr_db [sc_base current]
   set ng [sc_base numGames]
   set deleted [sc_base stats flag:D]
   set marked [sc_base stats "flag:$maintFlag"]
@@ -358,7 +362,7 @@ proc ::maint::Refresh {} {
   
   $w.mark.title configure -text $flagname
   $w.title.mark configure -text $flagname
-  $w.title.desc.text configure -text [sc_base description]
+  $w.title.desc.text configure -text [sc_base extra $::curr_db description]
   
   # Disable buttons if current base is closed or read-only:
   set state disabled
@@ -405,7 +409,8 @@ proc ::maint::SetAutoloadGame {} {
   if {[winfo exists $w]} { return }
   toplevel $w
   wm title $w "Scid"
-  set autoloadGame [sc_base autoload [sc_base current] ]
+  set ::curr_db [sc_base current]
+  set autoloadGame [sc_base extra $::curr_db autoload]
   
   pack [ttk::frame $w.f] -side top -fill x -expand 1
   ttk::label $w.f.label -text $::tr(AutoloadGame:)
@@ -426,7 +431,7 @@ proc ::maint::SetAutoloadGame {} {
   
   pack [ttk::frame $w.b] -side top -fill x
   ttk::button $w.b.ok -text OK -command \
-      "sc_base autoload \[sc_base current\] \$autoloadGame; catch {grab release $w}; destroy $w"
+      "sc_base extra $::curr_db autoload \$autoloadGame; catch {grab release $w}; destroy $w"
   ttk::button $w.b.cancel -text $::tr(Cancel) -command \
       "catch {grab release $w}; destroy $w"
   pack $w.b.cancel $w.b.ok -side right -padx 2

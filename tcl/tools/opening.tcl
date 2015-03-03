@@ -106,7 +106,7 @@ namespace eval opening {
     
     set prevBase [sc_base current]
     if {$prevBase != $repBase} { sc_base switch $repBase }
-    loadRep "$repBase - [sc_base filename $repBase]" "[sc_base description]"
+    loadRep "$repBase - [sc_base filename $repBase]" "[sc_base extra $repBase description]"
     if {$prevBase != $repBase} {
       sc_base switch $prevBase
     } else  {

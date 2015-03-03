@@ -49,7 +49,6 @@ int sc_createbase     (Tcl_Interp * ti, const char * filename,
 int sc_base_create    (TCL_ARGS);
 int sc_base_close     (TCL_ARGS);
 int sc_base_count     (TCL_ARGS);
-int sc_base_description (TCL_ARGS);
 int sc_base_export    (TCL_ARGS);
 int sc_base_import    (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
 int sc_base_numGames  (TCL_ARGS);

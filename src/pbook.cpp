@@ -18,7 +18,6 @@
 
 
 #include "common.h"
-#include "error.h"
 #include "pbook.h"
 #include "misc.h"
 #include "mfile.h"

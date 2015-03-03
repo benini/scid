@@ -108,6 +108,8 @@ struct scidBaseT {
 	const char* getFileName() const { return fileName; }
 	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
 	uint numGames() const { return idx->GetNumGames(); }
+	errorT getExtraInfo(const std::string& tagname, std::string* res) const;
+	errorT setExtraInfo(const std::string& tagname, const char* new_value);
 
 	const IndexEntry* getIndexEntry(gameNumberT g) const {
 		return idx->GetEntry(g);

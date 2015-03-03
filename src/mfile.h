@@ -24,7 +24,6 @@
 #define SCID_MFILE_H
 
 #include "common.h"
-#include "error.h"
 #include <stdio.h>
 
 enum mfileT {

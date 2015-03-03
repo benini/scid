@@ -236,7 +236,8 @@ namespace eval tactics {
                 sc_game load $g
                 if {[sc_game tags get "Site"] == $::tactics::solved} { incr solvedCount }
             }
-            lappend baseList "$file" "[sc_base description] ($solvedCount/[sc_base numGames])"
+            set ::curr_db [sc_base current]
+            lappend baseList "$file" "[sc_base extra $::curr_db description] ($solvedCount/[sc_base numGames])"
             if {! $wasOpened } {
                 sc_base switch $prevBase
                 sc_base close [sc_base slot $file]

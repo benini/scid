@@ -22,7 +22,7 @@
 #include "common.h"
 #include "fullmove.h"
 #include "position.h"
-#include <string.h>
+#include <string>
 #include <cstdlib>
 #include <sstream>
 

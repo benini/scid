@@ -23,7 +23,6 @@
 #include "common.h"
 #include "date.h"
 #include "misc.h"
-#include <string.h>
 #include <vector>
 #include <map>
 

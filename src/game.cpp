@@ -14,7 +14,6 @@
 
 
 #include "common.h"
-#include "error.h"
 #include "game.h"
 #include "gfile.h"
 #include "position.h"

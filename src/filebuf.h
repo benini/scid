@@ -21,7 +21,6 @@
 #define FILEBUF_H
 
 #include "common.h"
-#include "error.h"
 #include <fstream>
 
 class Filebuf : public std::filebuf

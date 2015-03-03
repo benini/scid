@@ -17,7 +17,6 @@
 #define SCID_TEXTBUF_H
 
 #include "common.h"
-#include "error.h"
 #include <stdio.h>
 
 class TextBuffer

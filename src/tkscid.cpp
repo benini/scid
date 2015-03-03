@@ -720,25 +720,27 @@ int
 sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "autoload",     "check",        "close",        "count",
-		"create",       "current",      "description",  "duplicates",
+		"check",        "close",        "count",
+		"create",       "current",      "duplicates",
 		"ecoStats",     "export",       "filename",     "import",
 		"inUse",        "isReadOnly",   "numGames",     "open",
 		"piecetrack",   "slot",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
 		"upgrade",      "gameslist",    "sortcache",    "gamelocation",
 		"compact",      "gameflag",     "copygames",    "newFilter",
+		"extra",
 		NULL
     };
     enum {
-        BASE_AUTOLOAD,    BASE_CHECK,       BASE_CLOSE,       BASE_COUNT,
-		BASE_CREATE,      BASE_CURRENT,     BASE_DESCRIPTION, BASE_DUPLICATES,
+		BASE_CHECK,       BASE_CLOSE,       BASE_COUNT,
+		BASE_CREATE,      BASE_CURRENT,     BASE_DUPLICATES,
 		BASE_ECOSTATS,    BASE_EXPORT,      BASE_FILENAME,    BASE_IMPORT,
 		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
 		BASE_PTRACK,      BASE_SLOT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
 		BASE_UPGRADE,     BASE_GAMESLIST,   BASE_SORTCACHE,   BASE_GAMELOCATION,
-		BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES,   BASE_NEWFILTER
+		BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES,   BASE_NEWFILTER,
+		BASE_EXTRA
     };
     int index = -1;
 
@@ -760,9 +762,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case BASE_CURRENT:
         return setIntResult (ti, currentBase + 1);
-
-    case BASE_DESCRIPTION:
-        return sc_base_description (cd, ti, argc, argv);
 
     case BASE_ECOSTATS:
         return sc_base_ecoStats (cd, ti, argc, argv);
@@ -814,13 +813,16 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (dbase == 0) return errorResult (ti, "Invalid database number.");
 
     switch (index) {
-    case BASE_AUTOLOAD:
-        if (argc == 3) {
-            return okResult (ti, dbase->idx->GetAutoLoad());
+    case BASE_EXTRA:
+        if (argc == 4) {
+            std::string res;
+            errorT err = dbase->getExtraInfo(argv[3], &res);
+            if (err != OK) return errorResult(ti, err);
+            return okResult(ti, res);
+        } else if (argc == 5) {
+            return TclResult(ti, dbase->setExtraInfo(argv[3], argv[4]));
         }
-        if (dbase->isReadOnly()) return errorResult (ti, ERROR_FileReadOnly);
-        db->idx->SetAutoLoad (strGetUnsigned (argv[3]));
-        return TclResult(ti, db->idx->WriteHeader());
+        return errorResult (ti, "Usage: sc_base extra baseId tagname [new_value]");
 
     case BASE_COPYGAMES:
         if (argc == 5) {
@@ -1185,34 +1187,6 @@ sc_base_count (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     return setIntResult (ti, optionMode == OPT_USED ? numUsed : numFree);
 }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_description:
-//   Sets or gets the description for the database.
-int
-sc_base_description (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc < 2  ||  argc > 3) {
-        return errorResult (ti, "Usage: sc_base description [<text>]");
-    }
-    if (argc == 2) {
-        // Get description:
-        Tcl_AppendResult (ti, db->idx->GetDescription(), NULL);
-        return TCL_OK;
-    }
-    if (! db->inUse) {
-        return setResult (ti, errMsgNotOpen(ti));
-    }
-    if (db->isReadOnly()) {
-        return errorResult (ti, ERROR_FileReadOnly);
-    }
-    // Edit the description and return it:
-    db->idx->SetDescription (argv[2]);
-    db->idx->WriteHeader ();
-    Tcl_AppendResult (ti, db->idx->GetDescription(), NULL);
-    return TCL_OK;
-}
-
 
 int
 sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
