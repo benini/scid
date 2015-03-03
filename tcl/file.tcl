@@ -271,7 +271,12 @@ proc ::file::Close {{base -1}} {
   if {![sc_base inUse $base]} { return }
   # Switch to the base which will be closed, and check for changes:
   sc_base switch $base
-  if {![::game::ConfirmDiscard]} {
+  set confirm [::game::ConfirmDiscard2]
+  if {$confirm == 0} {
+    sc_game save [sc_game number]
+    # ::gameReplace
+  }
+  if {$confirm == 2} {
     sc_base switch $current
     return
   }

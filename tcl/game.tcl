@@ -1,19 +1,4 @@
 
-# ::game::ConfirmDiscard
-#
-#   Prompts the user if they want to discard the changes to the
-#   current game. Returns 1 if they selected yes, 0 otherwise.
-#
-proc ::game::ConfirmDiscard {} {
-  set curr_db [sc_base current]
-  if {[sc_base isReadOnly $curr_db ]} { return 1 }
-  if {! [sc_game altered]} { return 1 }
-  set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" \
-      $::tr(ClearGameDialog) "" 0 $::tr(Yes) $::tr(No) ]
-  if {$answer == 1} { return  0 }
-  return 1
-}
-
 # ::game::ConfirmDiscard2
 # Clearer buttons than ConfirmDiscard
 #   Prompts the user if they want to discard the changes to the
@@ -24,14 +9,12 @@ proc ::game::ConfirmDiscard {} {
 #
 proc ::game::ConfirmDiscard2 {} {
   set curr_db [sc_base current]
-  if {[sc_base isReadOnly $curr_db]} { return 1 }
   if {! [sc_game altered]} { return 1 }
-  # set answer [ tk_dialog .cgDialog "Scid: [tr GameNew]" $::tr(ClearGameDialog) "" 2 \
-  # $::tr(SaveAndContinue) $::tr(DiscardChangesAndContinue) $::tr(GoBack) ]
   
   set w .confirmDiscard
   toplevel $w
-  wm title $w "Scid: [tr GameNew]"
+  set fn [file tail [sc_base filename $::curr_db]]
+  wm title $w "Scid: $fn ($::tr(game) [sc_game number])"
   set ::game::answer 2
   frame $w.top
   frame $w.bottom
