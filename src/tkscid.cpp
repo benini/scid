@@ -41,6 +41,7 @@
 #include "optable.h"
 #include "stored.h"
 #include "polyglot.h"
+#include <time.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <set>
@@ -751,9 +752,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_CHECK:
         return sc_base_check (cd, ti, argc, argv);
 
-	case BASE_CLOSE:
-        return sc_base_close (cd, ti, argc, argv);
-
     case BASE_COUNT:
         return sc_base_count (cd, ti, argc, argv);
 
@@ -813,6 +811,10 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (dbase == 0) return errorResult (ti, "Invalid database number.");
 
     switch (index) {
+    case BASE_CLOSE:
+        if (dbase == clipbase) return errorResult (ti, "Cannot close clipbase.");
+        return TclResult(ti, dbase->Close());
+
     case BASE_EXTRA:
         if (argc == 4) {
             std::string res;
@@ -1128,35 +1130,12 @@ sc_base_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     scidBaseT * baseptr = &(dbList[newBaseNum]);
     errorT err = baseptr->Open((memoryOnly) ? FMODE_Memory : FMODE_Both, argv[2]);
-    if (err != OK) return TclResult (ti, err);
+    if (err != OK) return errorResult(ti, err);
 
     currentBase = newBaseNum;
     db = baseptr;
 
-    return setIntResult (ti, newBaseNum + 1);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_close:
-//    Closes the current or specified database.
-int
-sc_base_close (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    scidBaseT * basePtr = db;
-    if (argc > 2) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum < 1 || baseNum > MAX_BASES) {
-            return errorResult (ti, "Invalid database number.");
-        }
-        basePtr = &(dbList[baseNum - 1]);
-    }
-
-    if (!basePtr->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-    if (basePtr == clipbase) return errorResult (ti, "Cannot close clipbase.");
-    basePtr->Close();
-    return TCL_OK;
+    return okResult(ti, newBaseNum + 1);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

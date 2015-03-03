@@ -1148,12 +1148,12 @@ namespace eval CorrespondenceChess {
 		if {![file exists $CorrBase]} {
 			set currbase [sc_base current]
 			set fName [file rootname $CorrBase]
-			if {[catch {sc_base create $fName} result]} {
+			if {[catch {sc_base create $fName} newbase]} {
 				ERROR::MessageBox "$fName\n"
 			}
 			# Type 6 == Correspondence chess
-			sc_base type [sc_base current] 6
-			sc_base close
+			sc_base type $newbase 6
+			sc_base close $newbase
 			sc_base switch $currbase
 		}
 	}

@@ -352,7 +352,7 @@ namespace eval tactics {
         set w .tacticsWin
         ::tactics::stopAnalyze
         after cancel ::tactics::mainLoop
-        catch { sc_base close }
+        catch { sc_base close [sc_base current] }
         updateStatusBar
         updateTitle
         set ::askToReplaceMoves $::tactics::askToReplaceMoves_old
@@ -414,7 +414,7 @@ namespace eval tactics {
         }
         closeProgressWindow
         if { ! $wasOpened } {
-            sc_base close
+            sc_base close [sc_base current]
         }
         # update listbox
         set w ".configTactics"

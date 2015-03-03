@@ -35,4 +35,4 @@ if {[sc_base isReadOnly $curr_db]} {
 
 puts "Classifying games..."
 puts [sc_eco base 1 1]
-sc_base close
+sc_base close $curr_db

@@ -43,4 +43,4 @@ for {set i 1} {$i < $args} {incr i} {
     }
 }
 
-sc_base close
+sc_base close $curr_db
