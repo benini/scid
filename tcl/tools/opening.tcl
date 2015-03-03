@@ -91,7 +91,7 @@ namespace eval opening {
     set typeWB [lsearch $base_types {Openings for either color} ]
     
     for {set x 1} {$x <= [ expr [sc_base count]-1 ]} {incr x} {
-      set type [sc_base type $x]
+      set type [sc_base extra $x type]
       if {$type == $typeW && $repColor == "w" || $type == $typeB && $repColor == "b" || $type == $typeWB && $repColor == "wb"} {
         set repBase  $x
         break

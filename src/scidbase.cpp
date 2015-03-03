@@ -615,6 +615,8 @@ errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) con
 		*res = idx->GetDescription();
 	} else if (tagname == "autoload") {
 		*res = to_string(idx->GetAutoLoad());
+	} else if (tagname == "type") {
+		*res = to_string(idx->GetType());
 	} else {
 		return ERROR_BadArg;
 	}
@@ -626,6 +628,8 @@ errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value
 		idx->SetDescription(new_value);
 	} else if (tagname == "autoload") {
 		idx->SetAutoLoad(strGetUnsigned(new_value));
+	} else if (tagname == "type") {
+		idx->SetType(strGetUnsigned(new_value));
 	} else {
 		return ERROR_BadArg;
 	}

@@ -520,7 +520,7 @@ proc clickBaseType {x y} {
 proc changeBaseType {baseNum} {
   global temp_dbtype ::windows::switcher::base_types numBaseTypeIcons
   if {$baseNum > [sc_base count total]} { return }
-  set temp_dbtype [sc_base type $baseNum]
+  set temp_dbtype [sc_base extra $baseNum type]
   if {$temp_dbtype >= $numBaseTypeIcons} { set temp_dbtype 0 }
   toplevel .btypeWin
   set w .btypeWin
@@ -537,7 +537,7 @@ proc changeBaseType {baseNum} {
   pack $w.t -side left -fill both -expand yes
 
   dialogbutton $w.b.set -text "OK" -command \
-    "catch {sc_base type $baseNum \$temp_dbtype}; ::windows::switcher::Refresh; ::maint::Refresh;
+    "catch {sc_base extra $baseNum type \$temp_dbtype}; ::windows::switcher::Refresh; ::maint::Refresh;
      focus .; destroy $w"
 
   dialogbutton $w.b.cancel -text $::tr(Cancel) -command "focus .; destroy $w"
@@ -735,7 +735,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
 
       $w.c.f$i configure -background $color
       if {$icons} {
-        set dbtype [sc_base type $i]
+        set dbtype [sc_base extra $i type]
         if {$dbtype >= $numBaseTypeIcons} { set dbtype 0 }
         $w.c.f$i.img configure -image dbt$dbtype -background $color
 		grid $w.c.f$i.img -row 0 -column 0 -rowspan 2

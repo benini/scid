@@ -1152,7 +1152,7 @@ namespace eval CorrespondenceChess {
 				ERROR::MessageBox "$fName\n"
 			}
 			# Type 6 == Correspondence chess
-			sc_base type $newbase 6
+			sc_base extra $newbase type 6
 			sc_base close $newbase
 			sc_base switch $currbase
 		}
@@ -2432,7 +2432,7 @@ namespace eval CorrespondenceChess {
 
 			set typeCorr [lsearch $base_types {Correspondence chess} ]
 			for {set x 1} {$x <= [ expr [sc_base count]-1 ]} {incr x} {
-					set type [sc_base type $x]
+					set type [sc_base extra $x type]
 					if {$type == $typeCorr} {
 						.ccWindow.top.openDB configure -state disabled
 						set CorrSlot $x

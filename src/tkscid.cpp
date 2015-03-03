@@ -794,9 +794,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     case BASE_TOURNAMENTS:
         return sc_base_tournaments (cd, ti, argc, argv);
 
-    case BASE_TYPE:
-        return sc_base_type (cd, ti, argc, argv);
-
     case BASE_UPGRADE:
         return sc_base_upgrade (cd, ti, argc, argv);
 
@@ -1787,43 +1784,6 @@ sc_base_switch (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     currentBase = baseNum - 1;
     db = &(dbList[currentBase]);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_type:
-//    Get or set the "type" of the database: clipbase, temporary, openings,
-//    tournament, etc.
-//    The type can be set for a read-only or memory-only database, but the
-//    change will only be temporary since the index will not be altered
-//    on-disk.
-int
-sc_base_type (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3  &&  argc != 4) {
-        return errorResult (ti, "Usage: sc_base type <number> [<type>]");
-    }
-
-    int baseNum = strGetInteger (argv[2]);
-    if (baseNum < 1 || baseNum > MAX_BASES) {
-        return errorResult (ti, "Invalid database number.");
-    }
-    scidBaseT * basePtr = &(dbList[baseNum - 1]);
-
-    if (argc == 3) {
-        return setUintResult (ti, basePtr->idx->GetType());
-    }
-
-    if (! basePtr->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-
-    uint basetype = strGetUnsigned (argv[3]);
-    basePtr->idx->SetType (basetype);
-    if (! basePtr->isReadOnly()) {
-        // Update the index header on disk:
-        basePtr->idx->WriteHeader();
-    }
     return TCL_OK;
 }
 

@@ -194,8 +194,9 @@ proc ::file::Open_ {{fName ""} } {
       ERROR::MessageBox "$fName\n"
       set err 1
     } else {
-      importPgnFile [sc_base current] [list "$fName"]
-      sc_base type [sc_base current] 3
+      set ::curr_db [sc_base current]
+      importPgnFile $::curr_db [list "$fName"]
+      sc_base extra $::curr_db type 3
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add $fName
     }

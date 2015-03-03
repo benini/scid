@@ -339,7 +339,7 @@ proc ::maint::Refresh {} {
   set dates [sc_base stats date]
   set ratings [sc_base stats ratings]
   $w.title.vgames configure -text [::utils::thousands $ng]
-  $w.title.vicon configure -image dbt[sc_base type [sc_base current]]
+  $w.title.vicon configure -image dbt[sc_base extra $::curr_db type]
   $w.title.vname configure -text [file tail [sc_base filename]]
   $w.title.vdelete configure -text [::utils::percentFormat $deleted $ng]
   $w.title.vmark configure -text [::utils::percentFormat $marked $ng]
