@@ -43,7 +43,6 @@ int sc_base_filename  (TCL_ARGS);
 int sc_base_inUse     (TCL_ARGS);
 uint sc_base_duplicates (scidBaseT* dbase, TCL_ARGS);
 int sc_base_open      (TCL_ARGS);
-int sc_base_check     (TCL_ARGS);
 int sc_createbase     (Tcl_Interp * ti, const char * filename,
                        scidBaseT * base, bool memoryOnly);
 int sc_base_create    (TCL_ARGS);

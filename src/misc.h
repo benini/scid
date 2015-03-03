@@ -19,6 +19,7 @@
 
 #include "common.h"
 #include <string>
+#include <string.h>
 #include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
 

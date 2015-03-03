@@ -721,7 +721,7 @@ int
 sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-		"check",        "close",        "count",
+		"close",        "count",
 		"create",       "current",      "duplicates",
 		"ecoStats",     "export",       "filename",     "import",
 		"inUse",        "isReadOnly",   "numGames",     "open",
@@ -733,7 +733,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 		NULL
     };
     enum {
-		BASE_CHECK,       BASE_CLOSE,       BASE_COUNT,
+		BASE_CLOSE,       BASE_COUNT,
 		BASE_CREATE,      BASE_CURRENT,     BASE_DUPLICATES,
 		BASE_ECOSTATS,    BASE_EXPORT,      BASE_FILENAME,    BASE_IMPORT,
 		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
@@ -749,9 +749,6 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (index == -1) return InvalidCommand (ti, "sc_base", options);
 
     switch (index) {
-    case BASE_CHECK:
-        return sc_base_check (cd, ti, argc, argv);
-
     case BASE_COUNT:
         return sc_base_count (cd, ti, argc, argv);
 
@@ -1166,71 +1163,6 @@ sc_base_count (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     return setIntResult (ti, optionMode == OPT_USED ? numUsed : numFree);
 }
-
-int
-sc_base_check (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-	bool showProgress = startProgressBar();
-    uint update = 5000;  
-    uint updateStart = 5000;
-	Game *g = new Game();
-	char gameNumber[16];
-	bool limitToFilter = false;
-
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_base check <bool:all_games>");
-    }
-    if (argv[2][0] == 'f')
-        limitToFilter = true;
-
-    if (! db->inUse) {
-        return errorResult (ti, errMsgNotOpen(ti));
-    }
-
-    DString *ErrorBuffer = new DString;
-
-    for (uint gameNum = 0, n = db->numGames(); gameNum < n; gameNum++) {
-
-        if (showProgress) {
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, gameNum, n);
-                if (interruptedProgress()) { break; }
-            }
-        }
-
-        if (limitToFilter  &&  db->dbFilter->Get(gameNum) == 0) { continue; }
-
-        const IndexEntry* ie = db->getIndexEntry(gameNum);
-        if (ie->GetLength() == 0) {
-			sprintf( gameNumber, "%d", gameNum + 1);
-            ErrorBuffer->Append ("Game ", gameNumber, ": Unable to fetch index entry.\n");
-            continue;
-        }
-
-        if (db->getGame(ie, db->bbuf) != OK) {
-			sprintf( gameNumber, "%d", gameNum + 1);
-            ErrorBuffer->Append ("Game ", gameNumber, ": Unable to read game buffer.\n");
-            continue;
-        }
-
-		errorT ret = g->Decode (db->bbuf, GAME_DECODE_ALL);
-		if( ret != OK){
-			sprintf( gameNumber, "%d", gameNum + 1);
-            ErrorBuffer->Append ("Game ", gameNumber, ": Unable to decode game.\n");
-            continue;
-        }
-	}
-
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-
-	if (ErrorBuffer->Length() > 0) {
-        Tcl_AppendElement (ti, ErrorBuffer->Data());
-    } 
-    return (ErrorBuffer->Length() == 0) ? TCL_OK : TCL_ERROR;
-}
-
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //  exportGame:

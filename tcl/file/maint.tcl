@@ -214,7 +214,6 @@ proc ::maint::OpenClose {} {
   ttk::label $w.db.title -textvar ::tr(DatabaseOps) -font $bold
   grid $w.db.title -columnspan 3 -row 0 -column 0 -sticky n
   
-  ttk::button $w.db.check -style Small.TButton -textvar ::tr(CheckGames...) -command checkAllGames
   ttk::button $w.db.eco -style Small.TButton -textvar ::tr(ReclassifyGames...) -command classifyAllGames
   ttk::button $w.db.compact -style Small.TButton -textvar ::tr(CompactDatabase...) -command compactDB
   ttk::button $w.db.elo -style Small.TButton -textvar ::tr(AddEloRatings...) -command allocateRatings
@@ -235,7 +234,6 @@ proc ::maint::OpenClose {} {
   grid $w.db.cleaner -row 2 -column 2 -sticky we
   grid $w.db.autoload -row 3 -column 0 -sticky we
   grid $w.db.strip -row 3 -column 1 -sticky we
-  grid $w.db.check -row 3 -column 2 -sticky we
   
   dialogbutton $w.buttons.help -textvar ::tr(Help) -command {helpWindow Maintenance}
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "destroy $w"
@@ -676,68 +674,6 @@ proc doMarkDups {{parent .}} {
   }
   ::maint::Refresh
   return $result
-}
-
-
-set checkOption(AllGames) all
-
-# CheckAllGames
-#  Decodes all games and tries to find errors
-proc checkAllGames {} {
-  set w .checkGames
-  if {[winfo exists $w]} {
-    raiseWin $w
-    return
-  }
-  toplevel $w
-  wm title $w "Scid: [tr FileMaintClass]"
-  
-  pack [ttk::frame $w.f] -expand 1
-  
-  ttk::label $w.f.label -font font_Bold -textvar ::tr(CheckGamesWhich)
-  ttk::frame $w.f.g
-  ttk::radiobutton $w.f.g.all -textvar ::tr(CheckAll) -variable checkOption(AllGames) -value all
-  ttk::radiobutton $w.f.g.filter -textvar ::tr(CheckSelectFilterGames) -variable checkOption(AllGames) -value filter
-  set row 0
-  foreach f {all filter} {
-    grid $w.f.g.$f -row $row -column 0 -sticky w
-    incr row
-  }
-  
-  ttk::frame $w.f.b
-  ttk::button $w.f.b.go -textvar ::tr(CheckGames) -command {
-    busyCursor .
-    .checkGames.f.b.cancel configure -command "sc_progressBar"
-    .checkGames.f.b.cancel configure -textvar ::tr(Stop)
-    sc_progressBar .checkGames.f.progress bar 301 21 time
-    grab .checkGames.f.b.cancel
-    if {[catch  {sc_base check $checkOption(AllGames)} result]} {
-      grab release .checkGames.f.b.cancel
-      unbusyCursor .
-      tk_messageBox -parent .checkGames -type ok -icon info -title "Scid" -message $result
-    } else {
-      grab release .checkGames.f.b.cancel
-      unbusyCursor .
-    }
-    .checkGames.f.b.cancel configure -command {focus .; destroy .checkGames}
-    .checkGames.f.b.cancel configure -textvar ::tr(Close)
-    ::windows::gamelist::Refresh
-  }
-  ttk::button $w.f.b.cancel -textvar ::tr(Close) -command "focus .; destroy $w"
-  canvas $w.f.progress -width 300 -height 20 -bg white -relief solid -border 1
-  $w.f.progress create rectangle 0 0 0 0 -fill blue -outline blue -tags bar
-  $w.f.progress create text 295 10 -anchor e -font font_Regular -tags time \
-      -fill black -text "0:00 / 0:00"
-  
-  pack $w.f.label $w.f.g -side top -pady 5
-  addHorizontalRule $w.f
-  pack $w.f.b -side top -pady 5 -fill x
-  pack $w.f.progress -side bottom -padx 2 -pady 2
-  pack $w.f.b.cancel $w.f.b.go -side right -pady 10 -padx 10
-  wm resizable $w 0 0
-  bind $w <F1> {helpWindow ECO}
-  bind $w <Escape> "$w.b.cancel invoke"
-  updateClassifyWin
 }
 
 
