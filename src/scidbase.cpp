@@ -171,8 +171,7 @@ errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
 	return clearCaches(numGames() -1);
 }
 
-errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
-                           bool (progressFn)(void*, unsigned int, unsigned int), void* progressData) {
+errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter, const Progress& progress) {
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 	errorT err = OK;
 	uint iProgress = 0;
@@ -184,8 +183,7 @@ errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter,
 		err = addGame_(sourceBase, gNum);
 		if (err != OK) break;
 		if (iProgress++ % 10000 == 0) {
-			bool interrupt = progressFn(progressData, iProgress, totGames);
-			if (interrupt) break;
+			if (!progress.report(iProgress, totGames)) break;
 		}
 	}
 	errorT errClear = clearCaches();
@@ -528,10 +526,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 	return OK;
 }
 
-errorT scidBaseT::compact(SpellChecker* spellChk,
-                          bool (progressFn)(void*, unsigned int, unsigned int),
-                          void* progressData) {
-
+errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	if (fileMode != FMODE_Both) return ERROR_FileMode;
 
 	//1) Create the list of games to be copied
@@ -571,8 +566,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk,
 		err_AddGame = tmp.addGame_(this, (*it).second);
 		if (err_AddGame != OK) break;
 		if (iProgress++ % 10000 == 0) {
-			bool interrupt = progressFn(progressData, iProgress, sort.size());
-			if (interrupt) {
+			if (!progress.report(iProgress, sort.size())) {
 				err_UserCancel = true;
 				break;
 			}

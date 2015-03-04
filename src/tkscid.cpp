@@ -358,16 +358,23 @@ interruptedProgress () {
     return (progBar.interrupt);
 }
 
-bool reportProgress (void* ti, uint done, uint total) {
+bool tcl_progressReport (void* ti, uint done, uint total) {
     updateProgressBar((Tcl_Interp*) ti, done, total);
-    return interruptedProgress();
+    return !interruptedProgress();
 }
 
-//TODO: write a better way to report progress
-Tcl_Interp * ti_;
-bool progressPosMask(double perc) {
-	return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
+bool tcl_progressPosMask(void* ti, uint, uint) {
+	return TCL_OK == Tcl_EvalEx((Tcl_Interp*) ti, "::windows::gamelist::PosMaskProgress", -1, 0);
 }
+
+Progress UI_CreateProgress(void* data) {
+	startProgressBar();
+	return Progress(data, tcl_progressReport);
+}
+Progress UI_CreateProgressPosMask(void* data) {
+	return Progress(data, tcl_progressPosMask);
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // recalcFlagCounts:
@@ -401,7 +408,6 @@ int
 scid_InitTclTk (Tcl_Interp * ti)
 {
     if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
-    ti_ = ti;
       
     // Register Scid application-specific commands:
     // CREATE_CMD() is a macro to reduce the clutter of the final two args
@@ -829,8 +835,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             errorT err = OK;
             Filter* filter = dbase->getFilter(argv[3]);
             if (filter) {
-                startProgressBar();
-                err = targetBase->addGames(dbase, filter, reportProgress, ti);
+                err = targetBase->addGames(dbase, filter, UI_CreateProgress(ti));
             } else {
                 uint gNum = strGetUnsigned (argv[3]);
                 if (gNum == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
@@ -888,7 +893,7 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return TCL_OK;
         } else if (argc == 4) {
             //TODO: Use argv[4] (FEN) instead of current Position
-            SearchPos fp(db->game->GetCurrentPos(), progressPosMask);
+            SearchPos fp(db->game->GetCurrentPos(), UI_CreateProgressPosMask(ti));
             //TODO: use a dedicated filter instead of treeFilter
             Filter* maskfilter = dbase->treeFilter;
             if (fp.setFilter(dbase, maskfilter)) {
@@ -917,8 +922,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     switch (index) {
     case BASE_COMPACT:
         if (argc == 3) {
-            startProgressBar();
-            return TclResult(ti, dbase->compact(spellChecker[NAME_PLAYER], reportProgress, ti));
+            errorT res = dbase->compact(spellChecker[NAME_PLAYER], UI_CreateProgress(ti));
+            return TclResult(ti, res);
         } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
             uint n_deleted, n_unused, n_sparse, n_badNameId;
             errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);

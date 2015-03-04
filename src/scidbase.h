@@ -26,6 +26,7 @@
 #include "game.h"
 #include "tree.h"
 #include "stored.h"
+#include "timer.h"
 #include <vector>
 
 class SpellChecker;
@@ -124,10 +125,7 @@ struct scidBaseT {
 		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
 	}
 
-	errorT addGames(scidBaseT* sourceBase,
-	                Filter* filter,
-	                bool (progressFn)(void*, unsigned int, unsigned int),
-	                void* progressData);
+	errorT addGames(scidBaseT* sourceBase, Filter* filter, const Progress& progress);
 	errorT addGame(scidBaseT* sourceBase, uint gNum);
 	errorT saveGame(Game* game, bool clearCache, int idx = -1);
 
@@ -178,9 +176,7 @@ struct scidBaseT {
 	                      uint* n_unused,
 	                      uint* n_sparse,
 	                      uint* n_badNameId);
-	errorT compact(SpellChecker* spellChk,
-	               bool (progressFn)(void*, unsigned int, unsigned int),
-	               void* progressData);
+	errorT compact(SpellChecker* spellChk, const Progress& progress);
 
 	SortCache* CreateSortCache(const char* criteria) const {
 		return idx->CreateSortCache(nb, criteria);

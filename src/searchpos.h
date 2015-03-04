@@ -22,11 +22,12 @@
 #include "common.h"
 #include "position.h"
 #include "fastgame.h"
-
+#include "timer.h"
 
 class SearchPos {
 public:
-	SearchPos(Position* pos, bool (*progressFn)(double)) {
+	SearchPos(Position* pos, const Progress& progress)
+	: progress_(progress) {
 		for (int i=0; i<8; ++i) {
 			nPieces_[WHITE][i] = 0;
 			nPieces_[BLACK][i] = 0;
@@ -61,8 +62,6 @@ public:
 
 		//MatSig
 		msig_ = matsig_Make (pos->GetMaterial());
-
-		progressFn_ = progressFn;
 	}
 
 	~SearchPos() {
@@ -97,7 +96,7 @@ private:
 	uint8_t nPieces_[2][8];
 	byte board_[64];
 	StoredLine* storedLine_;
-	bool (*progressFn_)(double);
+	const Progress& progress_;
 	uint hpSig_;
 	uint ply_count_;
 	bool isStdStard_;
@@ -130,7 +129,7 @@ private:
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 
 			if ((progress++ % 100) == 0) {
-				if (!progressFn_ (static_cast<double> (i) / n)) return false;
+				if (!progress_.report(i, n)) return false;
 			}
 		}
 		return true;

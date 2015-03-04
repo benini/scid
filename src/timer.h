@@ -87,4 +87,31 @@ inline void Timer::set(long* sec, long* millisec) {
 #endif //_MSC_VER
 
 #endif //CPP11_SUPPORT
+
+
+class Progress {
+	void* data_;
+	bool (*f_) (void*, uint, uint);
+	bool (*fTimed_) (void*, uint, uint, uint, uint);
+	Timer* timer_;
+public:
+	Progress(void* data, bool (*f) (void*, uint, uint))
+	: data_(data), f_(f), fTimed_(0), timer_(0) {
+	}
+	Progress(void* data, bool (*f) (void*, uint, uint, uint, uint))
+	: data_(data), fTimed_(f), f_(0) {
+		timer_ = new Timer();
+	}
+	~Progress() {
+		if (timer_) delete timer_;
+	}
+	bool report(uint done, uint total) const {
+		if (f_) return f_(data_, done, total);
+		uint64_t elapsed = timer_->MilliSecs();
+		return fTimed_(data_, done, total, elapsed, elapsed * done / total);
+	}
+};
+
+
+
 #endif //SCID_TIMER_H
