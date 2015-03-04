@@ -90,26 +90,25 @@ inline void Timer::set(long* sec, long* millisec) {
 
 
 class Progress {
-	void* data_;
-	bool (*f_) (void*, uint, uint);
-	bool (*fTimed_) (void*, uint, uint, uint, uint);
-	Timer* timer_;
 public:
-	Progress(void* data, bool (*f) (void*, uint, uint))
-	: data_(data), f_(f), fTimed_(0), timer_(0) {
+	Progress(bool timed) {
+		timer_ = (timed) ? new Timer() : 0;
 	}
-	Progress(void* data, bool (*f) (void*, uint, uint, uint, uint))
-	: data_(data), fTimed_(f), f_(0) {
-		timer_ = new Timer();
-	}
-	~Progress() {
+	virtual ~Progress() {
 		if (timer_) delete timer_;
 	}
-	bool report(uint done, uint total) const {
-		if (f_) return f_(data_, done, total);
+	virtual bool report(uint done, uint total) const {
+		if (timer_ == 0) return report_(done, total, 0,0);
 		uint64_t elapsed = timer_->MilliSecs();
-		return fTimed_(data_, done, total, elapsed, elapsed * done / total);
+		return report_(done, total, elapsed /1000, elapsed * total / done /1000);
 	}
+protected:
+	virtual bool report_(uint done, uint total, uint secElapsed, uint secEstimated) const = 0;
+
+private:
+	Progress(const Progress&);
+	Progress& operator=(const Progress&);
+	Timer* timer_;
 };
 
 

@@ -26,8 +26,7 @@
 
 class SearchPos {
 public:
-	SearchPos(Position* pos, const Progress& progress)
-	: progress_(progress) {
+	SearchPos(Position* pos) {
 		for (int i=0; i<8; ++i) {
 			nPieces_[WHITE][i] = 0;
 			nPieces_[BLACK][i] = 0;
@@ -68,16 +67,16 @@ public:
 		if (storedLine_) delete storedLine_;
 	}
 
-	bool setFilter(scidBaseT* base, Filter* filter) {
+	bool setFilter(scidBaseT* base, Filter* filter, const Progress& progress) {
 		if (! isStdStard_) {
 			int i=0;
 			if (unusualKingPos_) i += 1;
 			if (toMove_ == BLACK) i += 2;
 			switch (i) {
-				case 0: return SetFilter<WHITE, true> (base, filter);
-				case 1: return SetFilter<WHITE, false>(base, filter);
-				case 2: return SetFilter<BLACK, true> (base, filter);
-				case 3: return SetFilter<BLACK, false>(base, filter);
+				case 0: return SetFilter<WHITE, true> (base, filter, progress);
+				case 1: return SetFilter<WHITE, false>(base, filter, progress);
+				case 2: return SetFilter<BLACK, true> (base, filter, progress);
+				case 3: return SetFilter<BLACK, false>(base, filter, progress);
 			}
 		}
 		for (uint i = 0, n = base->numGames(); i < n; i++) {
@@ -96,7 +95,6 @@ private:
 	uint8_t nPieces_[2][8];
 	byte board_[64];
 	StoredLine* storedLine_;
-	const Progress& progress_;
 	uint hpSig_;
 	uint ply_count_;
 	bool isStdStard_;
@@ -107,7 +105,7 @@ private:
 	SearchPos(const SearchPos&);
 	SearchPos& operator=(const SearchPos&);
 	template <colorT TOMOVE, bool STOREDLINE>
-	bool SetFilter (scidBaseT* base, Filter* filter) {
+	bool SetFilter (scidBaseT* base, Filter* filter, const Progress& prg) {
 		filter->Fill(0);
 		long progress = 0;
 		for (uint i = 0, n = base->numGames(); i < n; i++) {
@@ -128,8 +126,8 @@ private:
 			int ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
 			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
 
-			if ((progress++ % 100) == 0) {
-				if (!progress_.report(i, n)) return false;
+			if ((progress++ % 200) == 0) {
+				if (!prg.report(i, n)) return false;
 			}
 		}
 		return true;

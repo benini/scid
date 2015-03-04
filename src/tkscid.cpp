@@ -358,21 +358,63 @@ interruptedProgress () {
     return (progBar.interrupt);
 }
 
-bool tcl_progressReport (void* ti, uint done, uint total) {
-    updateProgressBar((Tcl_Interp*) ti, done, total);
-    return !interruptedProgress();
-}
+// A goood Progress interface is not easy:
+// 1) It would be nice to pass the name of a tcl callback function to UI_CreateProgress
+// 2) It would be nice to be able to run multiple progressbars
+// 3) It would be nice to have automatic clean up
+// As an intermediate step i'll use a var that is incremented by sc_base functions
+// and reset to 0 by sc_scrollbar
+// This way if tcl code do not called sc_scrollbar just before the command invoking UI_CreateProgress
+// the tcl_Progress::report_ function will do nothing
+// Tcl code can be written like this:
+/*
+	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) ""
+	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
+	closeProgressWindow
+*/
+// to show a window with a progress bar and a cancel button, or like this
+/*
+	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
+*/
+// (no progress window)
+static uint64_t tcl_ProgressHack = 1;
 
-bool tcl_progressPosMask(void* ti, uint, uint) {
-	return TCL_OK == Tcl_EvalEx((Tcl_Interp*) ti, "::windows::gamelist::PosMaskProgress", -1, 0);
-}
+class tcl_Progress : public Progress {
+	Tcl_Interp* ti_;
+	bool dummy_;
+public:
+	tcl_Progress(Tcl_Interp* ti, bool dummy)
+	: Progress(!dummy), ti_(ti), dummy_(dummy) {}
+	virtual ~tcl_Progress() {}
+protected:
+	virtual bool report_(uint done, uint total, uint secElapsed, uint secEstimated) const {
+		if (dummy_) return true;
 
-Progress UI_CreateProgress(void* data) {
-	startProgressBar();
-	return Progress(data, tcl_progressReport);
+		std::ostringstream tmp;
+		tmp << "::progressCallBack";
+		tmp << " " << done << " " << total << " " << secElapsed << " " << secEstimated;
+		return TCL_OK == Tcl_EvalEx(ti_, tmp.str().c_str(), -1, 0);
+	}
+};
+
+class tcl_ProgressPosMask : public Progress {
+	Tcl_Interp* ti_;
+public:
+	tcl_ProgressPosMask(Tcl_Interp* ti)
+	: Progress(false), ti_(ti) {}
+	virtual ~tcl_ProgressPosMask() {}
+protected:
+	virtual bool report_(uint done, uint total, uint msElapsed, uint msExpected) const {
+		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
+	}
+};
+
+
+tcl_Progress UI_CreateProgress(void* data) {
+	return tcl_Progress((Tcl_Interp*) data, tcl_ProgressHack != 1);
 }
-Progress UI_CreateProgressPosMask(void* data) {
-	return Progress(data, tcl_progressPosMask);
+tcl_ProgressPosMask UI_CreateProgressPosMask(void* data) {
+	return tcl_ProgressPosMask((Tcl_Interp*) data);
 }
 
 
@@ -754,6 +796,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
     if (index == -1) return InvalidCommand (ti, "sc_base", options);
 
+    tcl_ProgressHack++;
+
     switch (index) {
     case BASE_COUNT:
         return sc_base_count (cd, ti, argc, argv);
@@ -893,10 +937,10 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return TCL_OK;
         } else if (argc == 4) {
             //TODO: Use argv[4] (FEN) instead of current Position
-            SearchPos fp(db->game->GetCurrentPos(), UI_CreateProgressPosMask(ti));
+            SearchPos fp(db->game->GetCurrentPos());
             //TODO: use a dedicated filter instead of treeFilter
             Filter* maskfilter = dbase->treeFilter;
-            if (fp.setFilter(dbase, maskfilter)) {
+            if (fp.setFilter(dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
                 Tcl_SetObjResult(ti, Tcl_NewStringObj("tree", -1));
             }
             return TCL_OK;
@@ -8185,6 +8229,8 @@ sc_pos_setComment (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_progressBar (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
+    tcl_ProgressHack = 0;
+
     switch (argc) {
     case 5:
     case 6:

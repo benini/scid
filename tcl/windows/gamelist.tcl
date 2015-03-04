@@ -303,7 +303,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 		if {$confirm != "ok"} { return }
 	}
 
-	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) "sc_progressBar"
+	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) ""
 	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
 	closeProgressWindow
 	if {$copyErr} { ERROR::MessageBox "$result"}

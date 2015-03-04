@@ -333,7 +333,7 @@ proc progressWindow {args} {
   pack $w.f.c -side top -pady 10
   if {$b} {
     pack [ttk::frame $w.f.b] -side bottom -fill x
-    ttk::button $w.f.b.cancel -text $button -command $command
+    ttk::button $w.f.b.cancel -text $button -command "$command; destroy $w"
     pack $w.f.b.cancel -side right -padx 5 -pady 2
   }
   # Set up geometry for middle of screen:
@@ -345,6 +345,23 @@ proc progressWindow {args} {
   bind $w <Visibility> "raiseWin $w"
   update
   set ::progressWin_time [clock seconds]
+}
+
+proc progressCallBack {done total elapsed estimated} {
+  set w .progressWin
+  if {! [winfo exists $w]} { break }
+
+  set width 401
+  if {$total > 0} {
+    set width [expr {int(double($width) * double($done) / double($total))}]
+  }
+  $w.f.c coords bar 0 0 $width 21
+
+  set t [format "%d:%02d / %d:%02d" \
+      [expr {$elapsed / 60}] [expr {$elapsed % 60}] \
+      [expr {$estimated / 60}] [expr {$estimated % 60}]]
+  $w.f.c itemconfigure time -text $t
+  update
 }
 
 proc leftJustifyProgressWindow {} {

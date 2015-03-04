@@ -998,10 +998,8 @@ proc compactDB {{base -1}} {
                -message "$msg"]
   if {$confirm != "ok"} { return }
 
-  progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel) "sc_progressBar"
-  busyCursor .
+  progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel) ""
   set err [catch {sc_base compact $base} result]
-  unbusyCursor .
   closeProgressWindow
   if {$err} {
     ERROR::MessageBox "$::tr(CompactDatabase)\n"
