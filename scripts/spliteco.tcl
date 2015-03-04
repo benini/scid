@@ -36,7 +36,7 @@ proc main {} {
     set basename [file rootname $basename]
   }
   # Try to open the database:
-  if {[catch {sc_base open -fast -readonly $basename} frombase]} {
+  if {[catch {sc_base open $basename} frombase]} {
     err "Error opening database \"$basename\": $frombase"
     exit 1
   }

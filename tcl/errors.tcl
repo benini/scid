@@ -43,7 +43,6 @@ namespace eval ERROR {
   set MallocFailed     151
   set CorruptData      152
   set Corrupt          152
-  set NameBaseFull     201
   set Full             201
   set NameNotFound     202
   set NotFound         202
@@ -101,6 +100,8 @@ after idle {
     "Old format Scid file, now out of date."
   set ::ERROR::msg($::ERROR::FileReadOnly) \
     $::tr(ErrReadOnly)
+  set ::ERROR::msg($::ERROR::Full) \
+    "Error: insufficient space"
   set ::ERROR::msg($::ERROR::NameDataLoss) \
     "Some names (player, event, site or round) are missing and have been replaced by \"?\"\nCompact the database to make the changes permanent."
   set ::ERROR::msg($::ERROR::NameTooLong) \

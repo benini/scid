@@ -774,7 +774,8 @@ sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return sc_base_numGames (cd, ti, argc, argv);
 
     case BASE_OPEN:
-        return sc_base_open (cd, ti, argc, argv);
+        if (argc != 3) return errorResult (ti, "Usage: sc_base open filename");
+        return sc_base_open (ti, argv[2]);
 
     case BASE_PTRACK:
         return sc_base_piecetrack (cd, ti, argc, argv);
@@ -1039,28 +1040,8 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    reading and writing, then the database is opened read-only
 //    and will not be alterable.
 int
-sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base_open (Tcl_Interp * ti, const char* filename)
 {
-    bool readOnly = false;  // Open database read-only.
-    const char * usage = "Usage: sc_base open [-readonly] [-fast] <filename>";
-
-    // Check options:
-    const char * options[] = { "-fast", "-readonly", NULL };
-    enum { OPT_FAST, OPT_READONLY };
-    int baseArg = 2;
-    while (baseArg+1 < argc) {
-        int index = strUniqueMatch (argv[baseArg], options);
-        switch (index) {
-            case OPT_FAST: break;
-            case OPT_READONLY: readOnly = true; break;
-            default: return errorResult (ti, usage);
-        }
-        baseArg++;
-    }
-    if (baseArg+1 != argc) { return errorResult (ti, usage); }
-
-    const char * filename = argv[baseArg];
-
     // Check that this base is not already opened:
     if (base_opened (filename) >= 0) {
         return errorResult (ti, "The database you selected is already opened.");
@@ -1068,10 +1049,10 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     // Find an empty database slot to use:
     int newBaseNum = findEmptyBase();
-    if (newBaseNum == -1) return errorResult (ti, "Too many databases are open; close one first.");
+    if (newBaseNum == -1) return errorResult (ti, ERROR_Full);
 
     startProgressBar();
-    errorT err = dbList[newBaseNum].Open(readOnly ? FMODE_ReadOnly : FMODE_Both,
+    errorT err = dbList[newBaseNum].Open(FMODE_Both,
                                          filename, false,
                                          spellChecker[NAME_PLAYER],
                                          base_progress, ti);
@@ -1079,7 +1060,7 @@ sc_base_open (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         setIntResult (ti, newBaseNum + 1);
         return TclResult(ti, err);
     }
-    if (err != OK && !readOnly) {
+    if (err != OK) {
         err = dbList[newBaseNum].Open(FMODE_ReadOnly,
                                       filename, false,
                                       spellChecker[NAME_PLAYER],
@@ -1114,13 +1095,8 @@ sc_base_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     // Find another slot if current slot is used:
-    int newBaseNum = currentBase;
-    if (db->inUse) {
-        newBaseNum = findEmptyBase();
-        if (newBaseNum == -1) {
-            return errorResult (ti, "You have too many open databases; close one first.");
-        }
-    }
+    int newBaseNum = findEmptyBase();
+    if (newBaseNum == -1) return errorResult (ti, ERROR_Full);
 
     scidBaseT * baseptr = &(dbList[newBaseNum]);
     errorT err = baseptr->Open((memoryOnly) ? FMODE_Memory : FMODE_Both, argv[2]);
@@ -8593,9 +8569,8 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Add the new name to the namebase:
     idNumberT newID = 0;
     if (option != OPT_RATING  &&  option != OPT_DATE  &&  option != OPT_EVENTDATE) {
-        if (db->nb->AddName (nt, newName, &newID) == ERROR_NameBaseFull) {
-            return errorResult (ti, "Name file is full; cannot add name.");
-        }
+        errorT errAddName = db->nb->AddName (nt, newName, &newID);
+        if (errAddName != OK) return errorResult (ti, errAddName);
     }
 
     // Now iterate through the index file making any necessary changes:

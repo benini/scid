@@ -213,18 +213,16 @@ namespace eval tactics {
         wm title $w $::tr(ConfigureTactics)
         setWinLocation $w
         
-        if {[sc_base count free] == 0} {
-            tk_messageBox -type ok -icon info -title "Scid" -message "Too many databases are open; close one first"
-            return
-        }
-        
         set prevBase [sc_base current]
         # go through all bases and take descriptions
         set baseList {}
         set fileList [  lsort -dictionary [ glob -nocomplain -directory $basePath *.si4 ] ]
         foreach file  $fileList {
             if {[sc_base slot $file] == 0} {
-                sc_base open [file rootname $file]
+                if { [catch { sc_base open [file rootname $file] }] } {
+                    ERROR::MessageBox
+                    return
+                }
                 set wasOpened 0
             } else  {
                 sc_base switch [sc_base slot $file]
@@ -381,18 +379,13 @@ namespace eval tactics {
         set base [file rootname $name]
         
         set wasOpened 0
-        
-        if {[sc_base count free] == 0} {
-            tk_messageBox -type ok -icon info -title "Scid" -message "Too many databases are opened\nClose one first"
-            return
-        }
         # check if the base is already opened
         if {[sc_base slot $name] != 0} {
             sc_base switch [sc_base slot $name]
             set wasOpened 1
         } else  {
             if { [catch { sc_base open $base }] } {
-                tk_messageBox -type ok -icon warning -title "Scid" -message "Unable to open base"
+                ERROR::MessageBox
                 return
             }
         }
@@ -663,17 +656,12 @@ namespace eval tactics {
     # Loads a base bundled with Scid (in ./bases directory)
     ################################################################################
     proc loadBase { name } {
-        
-        if {[sc_base count free] == 0} {
-            tk_messageBox -type ok -icon info -title "Scid" -message "Too many databases are open; close one first"
-            return
-        }
         # check if the base is already opened
         if {[sc_base slot $name] != 0} {
             sc_base switch [sc_base slot $name]
         } else  {
             if { [catch { sc_base open $name }] } {
-                tk_messageBox -type ok -icon warning -title "Scid" -message "Unable to open base"
+                ERROR::MessageBox
                 return
             }
         }

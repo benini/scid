@@ -44,8 +44,8 @@ const errorT
     ERROR_MallocFailed   = 151,
     ERROR_CorruptData    = 152,   ERROR_Corrupt = 152,
 
-    // NameBase, Index errors
-    ERROR_NameBaseFull   = 201,  ERROR_Full = 201,
+    // Database errors
+    ERROR_Full = 201,
     ERROR_NameNotFound   = 202,  ERROR_NotFound = 202,
     ERROR_NameExists     = 203,  ERROR_Exists = 203,
     ERROR_NameBaseEmpty  = 204,  ERROR_Empty = 204,

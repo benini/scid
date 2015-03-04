@@ -15,7 +15,7 @@ if {$argc != 1} {
 }
 
 set baseName [file rootname [ lindex $argv 0 ]]
-if {[catch { sc_base open -fast -readonly $baseName } err]} {
+if {[catch { sc_base open $baseName } err]} {
     puts "Error: could not open database: $err"
     exit 1
 }

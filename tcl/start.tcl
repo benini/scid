@@ -865,13 +865,6 @@ if { $macOS } {
     set dndisbusy 1
     set errmsg ""
     foreach file $args {
-      # Check for available slots:
-      if {[sc_base count free] == 0} {
-        tk_messageBox -type ok -icon info -title "Scid" \
-            -message "Too many databases are open; close at least one \n\
-            before opening more databases"
-        return
-      }
       # Email File:
       if {[file extension $file] == ".sem"} {
         #::tools::email

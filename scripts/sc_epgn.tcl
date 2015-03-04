@@ -17,7 +17,7 @@ if {$argc < 2} {
 }
 
 set baseName [ lindex $argv 0 ]
-if [catch { sc_base open -readonly $baseName }] {
+if [catch { sc_base open $baseName }] {
     puts "Error: could not open database"
     exit 1
 }

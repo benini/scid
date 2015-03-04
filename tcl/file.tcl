@@ -77,33 +77,23 @@ proc ::file::ExitFast {} {
 #   Opens file-save dialog and creates a new database.
 #
 proc ::file::New {} {
-  if {[sc_base count free] == 0} {
-    tk_messageBox -title "Scid" -type ok -icon info \
-        -message "Too many databases open; close one first"
-    return
-  }
   set ftype {
-    { "Scid databases, EPD files" {".si4" ".epd"} }
     { "Scid databases" {".si4"} }
-    { "EPD files" {".epd"} }
   }
   
-  if { [ file exists $::initialDir(base) ] } {
-    set fName [tk_getSaveFile -initialdir $::initialDir(base) -filetypes $ftype -title "Create a Scid database"]
-  } else  {
-    set fName [tk_getSaveFile -filetypes $ftype -title "Create a Scid database"]
-  }
+  set fName [tk_getSaveFile \
+             -initialdir $::initialDir(base) \
+             -filetypes $ftype \
+             -defaultextension ".si4" \
+             -title "Create a Scid database"]
   
-  if {$fName == ""} {
-    # do nothing
-  } elseif {[file extension $fName] == ".epd"} {
-    newEpdWin create $fName
-    return
-  } else {
+  if {$fName == ""} { return }
+  if {[file extension $fName] == ".si4"} {
     set fName [file rootname $fName]
-    if {[catch {sc_base create $fName} result]} {
-      ERROR::MessageBox "$fName\n"
-    }
+  }
+  if {[catch {sc_base create $fName} result]} {
+    ERROR::MessageBox "$fName\n"
+    return
   }
   set ::initialDir(base) [file dirname $fName]
   ::recentFiles::add "$fName.si4"
@@ -137,12 +127,6 @@ proc ::file::openBaseAsTree { { fName "" } } {
 }
 
 proc ::file::Open_ {{fName ""} } {
-  if {[sc_base count free] == 0} {
-    tk_messageBox -type ok -icon info -title "Scid" \
-        -message "Too many databases are open; close one first"
-    return 1
-  }
-
   if {$fName == ""} {
     if {[sc_info gzip]} {
       set ftype {
@@ -166,9 +150,10 @@ proc ::file::Open_ {{fName ""} } {
     if {$fName == ""} { return 2}
   }
 
-  if {[file extension $fName] == ".si4"} { set fName [file rootname $fName] }
+  set tmpName $fName
+  if {[file extension $tmpName] == ".si4"} { set tmpName [file rootname $tmpName] }
   for {set i [sc_base count total] } {$i > 0} {incr i -1} {
-    if {$fName == [sc_base filename $i]} {
+    if {$tmpName == [sc_base filename $i]} {
       tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
       return 1
     }
@@ -189,14 +174,12 @@ proc ::file::Open_ {{fName ""} } {
     ::file::Upgrade [file rootname $fName]
   } else {
     # PGN or EPD file:
-    if {(![file readable $fName])  || \
-          [catch {sc_base create $fName true} result]} {
+    if {[catch {sc_base create $fName true} result]} {
       ERROR::MessageBox "$fName\n"
       set err 1
     } else {
-      set ::curr_db [sc_base current]
-      importPgnFile $::curr_db [list "$fName"]
-      sc_base extra $::curr_db type 3
+      importPgnFile $result [list "$fName"]
+      sc_base extra $result type 3
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add $fName
     }
