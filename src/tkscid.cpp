@@ -1102,11 +1102,11 @@ sc_base_open (Tcl_Interp * ti, const char* filename)
     int newBaseNum = findEmptyBase();
     if (newBaseNum == -1) return errorResult (ti, ERROR_Full);
 
-    startProgressBar();
+    const Progress& progress = UI_CreateProgress(ti);
     errorT err = dbList[newBaseNum].Open(FMODE_Both,
                                          filename, false,
                                          spellChecker[NAME_PLAYER],
-                                         base_progress, ti);
+                                         &progress);
     if (err == ERROR_NameDataLoss) {
         setIntResult (ti, newBaseNum + 1);
         return TclResult(ti, err);
@@ -1115,7 +1115,7 @@ sc_base_open (Tcl_Interp * ti, const char* filename)
         err = dbList[newBaseNum].Open(FMODE_ReadOnly,
                                       filename, false,
                                       spellChecker[NAME_PLAYER],
-                                      base_progress, ti);
+                                      &progress);
     }
     if (err != OK) return TclResult (ti, err);
 
@@ -2698,53 +2698,47 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 int
 sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    bool showProgress = startProgressBar();
-
     if (argc != 3) {
         return errorResult (ti, "Usage: sc_base upgrade <old-database>");
     }
     const char * fname = argv[2];
-    Index oldIndex;
-    Index newIndex;
 
-    if (newIndex.Open(fname, FMODE_ReadOnly) == OK) {
+    Index tmp;
+    if (tmp.Open(fname, FMODE_ReadOnly) == OK) {
         return errorResult (ti, "An upgraded version of this database already exists.");
     }
 
-    if (oldIndex.Open(fname, FMODE_ReadOnly, true) != OK) {
-        return errorResult (ti, "Error opening the old database.");
-    }
+    errorT err = OK;
+    Index oldIndex;
+    err = oldIndex.Open(fname, FMODE_ReadOnly, true);
+    if (err != OK) return errorResult (ti, err);
 
-    if (newIndex.Create(fname) != OK) {
-        return errorResult (ti, "Error creating the new dataabse.");
-    }
+    Index newIndex;
+    err = newIndex.Create(fname);
+    if (err != OK) return errorResult (ti, err);
 
     // Now copy each index entry
-    uint numGames = oldIndex.GetNumGames();
-    errorT err = OK;
-    uint updateStart = 250;
-    uint update = updateStart;
-    for (uint i=0; i < numGames && err == OK; i++) {
-        if (showProgress) {
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                if (interruptedProgress()) { break; }
-                updateProgressBar (ti, i, numGames);
+    const Progress& progress = UI_CreateProgress(ti);
+    for (uint i=0, n = oldIndex.GetNumGames(); i < n; i++) {
+        if (i % 250 == 0) {
+            if (!progress.report(i, n)) {
+                err = ERROR_UserCancel;
+                break;
             }
         }
         err = newIndex.AddGame(oldIndex.GetEntry(i));
+        if (err != OK) break;
     }
 
     oldIndex.Close();
     errorT finalWrite = newIndex.Close();
 
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1, 1);
 
-    if (interruptedProgress() || err != OK || finalWrite != OK) {
+    if (err != OK || finalWrite != OK) {
         removeFile (fname, INDEX_SUFFIX);
-        if (interruptedProgress()) return errorResult (ti, "Upgrading was cancelled.");
-        return errorResult (ti, "Error writing name file");
+        if (err != OK) return errorResult (ti, err);
+        return errorResult (ti, finalWrite);
     }
 
     return TCL_OK;

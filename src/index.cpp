@@ -140,9 +140,7 @@ Index::Open (const char* filename, fileModeT fmode, bool old)
 //      Reads in the entire index into memory.
 //
 errorT
-Index::ReadEntireFile (NameBase* nb,
-                       void (*progressFn)(void*, uint, uint),
-                       void * progressData)
+Index::ReadEntireFile (NameBase* nb, const Progress* progress)
 {
     ASSERT (FilePtr != NULL);
     if (FileMode == FMODE_WriteOnly) { return ERROR_FileMode; }
@@ -155,8 +153,8 @@ Index::ReadEntireFile (NameBase* nb,
 
     uint n = 0;
     for (gameNumberT i=0; i < Header.numGames; i++) {
-        if (progressFn && (i % 10000) == 0) {
-            (*progressFn) (progressData, i, Header.numGames);
+        if (progress && (i % 10000) == 0) {
+            if (!progress->report(i, Header.numGames)) break;
         }
 
         IndexEntry* ie = FetchEntry(i);
@@ -184,7 +182,7 @@ Index::ReadEntireFile (NameBase* nb,
         eloT eloB = ie->GetBlackElo();
         if (eloB > 0) nb->AddElo (ie->GetBlack(), eloB);
     }
-    if (progressFn) (*progressFn) (progressData, 1, 1);
+    if (progress) progress->report(1,1);
     badNameIdCount_ = n;
     return (n == 0) ? OK : ERROR_NameDataLoss;
 }

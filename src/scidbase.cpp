@@ -107,8 +107,7 @@ errorT scidBaseT::Open (fileModeT mode,
                         const char* filename,
                         bool create,
                         SpellChecker* spell,
-                        void (progressFn)(void*, unsigned int, unsigned int),
-                        void* progressData) {
+                        const Progress* progress) {
 	if (inUse) return ERROR_FileInUse;
 	if (filename == 0) filename = "";
 
@@ -135,7 +134,7 @@ errorT scidBaseT::Open (fileModeT mode,
 			if (err == OK) err = nb->ReadEntireFile(filename);
 			if (err == OK) nb->recalcEstimatedRatings (spell);
 			if (err == OK) err = gfile->Open (filename, fileMode);
-			if (err == OK) err = idx->ReadEntireFile (nb, progressFn, progressData);
+			if (err == OK) err = idx->ReadEntireFile (nb, progress);
 		}
 	}
 	if (err != OK && err != ERROR_NameDataLoss) {

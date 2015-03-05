@@ -206,12 +206,8 @@ proc ::file::Upgrade {name} {
   set msg [string trim $::tr(ConfirmUpgrade)]
   set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
   if {$res == "no"} { return }
-  progressWindow "Scid" "$::tr(Upgrading): [file tail $name]..."\
-      $::tr(Cancel) "sc_progressBar"
-  busyCursor .
-  update
+  progressWindow "Scid" "$::tr(Upgrading): [file tail $name]..." $::tr(Cancel) ""
   set err [catch {sc_base upgrade $name} res]
-  unbusyCursor .
   closeProgressWindow
   if {$err} {
     tk_messageBox -title "Scid" -type ok -icon warning \
