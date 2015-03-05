@@ -382,17 +382,20 @@ static uint64_t tcl_ProgressHack = 1;
 class tcl_Progress : public Progress {
 	Tcl_Interp* ti_;
 	bool dummy_;
+	Timer timer_;
+
 public:
-	tcl_Progress(Tcl_Interp* ti, bool dummy)
-	: Progress(!dummy), ti_(ti), dummy_(dummy) {}
+	tcl_Progress(Tcl_Interp* ti, bool dummy) : ti_(ti), dummy_(dummy) {}
 	virtual ~tcl_Progress() {}
-protected:
-	virtual bool report_(uint done, uint total, uint secElapsed, uint secEstimated) const {
+
+	virtual bool report(uint done, uint total) const {
 		if (dummy_) return true;
 
+		uint64_t elapsed = timer_.MilliSecs();
+		uint64_t estimated = (done == 0) ? 0 : elapsed * total / done;
 		std::ostringstream tmp;
 		tmp << "::progressCallBack";
-		tmp << " " << done << " " << total << " " << secElapsed << " " << secEstimated;
+		tmp << " " << done << " " << total << " " << elapsed / 1000 << " " << estimated / 1000;
 		return TCL_OK == Tcl_EvalEx(ti_, tmp.str().c_str(), -1, 0);
 	}
 };
@@ -400,11 +403,10 @@ protected:
 class tcl_ProgressPosMask : public Progress {
 	Tcl_Interp* ti_;
 public:
-	tcl_ProgressPosMask(Tcl_Interp* ti)
-	: Progress(false), ti_(ti) {}
+	tcl_ProgressPosMask(Tcl_Interp* ti) : ti_(ti) {}
 	virtual ~tcl_ProgressPosMask() {}
-protected:
-	virtual bool report_(uint done, uint total, uint msElapsed, uint msExpected) const {
+
+	virtual bool report(uint done, uint total) const {
 		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
 	}
 };

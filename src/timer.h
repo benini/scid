@@ -88,27 +88,14 @@ inline void Timer::set(long* sec, long* millisec) {
 
 #endif //CPP11_SUPPORT
 
-
 class Progress {
 public:
-	Progress(bool timed) {
-		timer_ = (timed) ? new Timer() : 0;
-	}
-	virtual ~Progress() {
-		if (timer_) delete timer_;
-	}
-	virtual bool report(uint done, uint total) const {
-		if (timer_ == 0) return report_(done, total, 0,0);
-		uint64_t elapsed = timer_->MilliSecs();
-		return report_(done, total, elapsed /1000, elapsed * total / done /1000);
-	}
-protected:
-	virtual bool report_(uint done, uint total, uint secElapsed, uint secEstimated) const = 0;
-
-private:
+	Progress() {}
+	virtual ~Progress() {}
 	Progress(const Progress&);
 	Progress& operator=(const Progress&);
-	Timer* timer_;
+
+	virtual bool report(uint done, uint total) const = 0;
 };
 
 
