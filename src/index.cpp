@@ -154,7 +154,7 @@ Index::ReadEntireFile (NameBase* nb, const Progress* progress)
     uint n = 0;
     for (gameNumberT i=0; i < Header.numGames; i++) {
         if (progress && (i % 10000) == 0) {
-            if (!progress->report(i, Header.numGames)) break;
+            if (!progress->report(i, Header.numGames)) return ERROR_UserCancel;
         }
 
         IndexEntry* ie = FetchEntry(i);

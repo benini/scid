@@ -1526,7 +1526,6 @@ proc setLanguageMenus {} {
           TBNothing TBResult TBAll Delete Mark} {
       configMenuText .main.gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
     }
-    updateGameInfoMenu
   }
 
   ::pgn::ConfigMenus
@@ -1550,23 +1549,7 @@ proc setLanguageMenus {} {
 
   set oldLang $::language
 }
-################################################################################
-# updates the contextual game info menu.
-# used when custom flags description change
-################################################################################
-proc updateGameInfoMenu {} {
-  set i 0
-  foreach flag $::maintFlaglist {
-    if {$i < 12} {
-      .main.gameInfo.menu.mark entryconfigure $i -label "$::tr($::maintFlags($flag)) ($flag)"
-    } else  {
-      set tmp [sc_game flag $flag description]
-      if {$tmp == "" } { set tmp $::maintFlags($flag) }
-      .main.gameInfo.menu.mark entryconfigure $i -label "$tmp ($flag)"
-    }
-    incr i
-  }
-}
+
 ################################################################################
 # checkMenuUnderline:
 #  Given a menu widget, returns a list of all the underline
@@ -1634,8 +1617,6 @@ proc configInformant {} {
   pack $w.spinF $w.close
   bind $w <Configure> "recordWinSize $w"
 }
-
-setLanguageMenus
 
 ### End of file: menus.tcl
 

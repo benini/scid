@@ -158,8 +158,9 @@ public:
     uint        GetType () const { return Header.baseType; }
     versionT    GetVersion () const { return Header.version; }
     const char* GetDescription () const { return Header.description; }
-    void GetCustomFlagDesc (char * str, byte c) const {
-        strcpy(str, Header.customFlagDesc[c-1] );
+    const char* GetCustomFlagDesc (byte c) const {
+        if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return 0;
+        return Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
     }
     gameNumberT GetAutoLoad () const {
         return ((Header.autoLoad == 0) ? 1 : (Header.autoLoad - 1));
@@ -185,9 +186,11 @@ public:
         Dirty = true;
     }
     
-    void SetCustomFlagDesc (const char* str, byte c /*Range 1..6*/) {
-        strncpy( Header.customFlagDesc[c-1], str, CUSTOM_FLAG_DESC_LENGTH );
-        Header.customFlagDesc[c-1][CUSTOM_FLAG_DESC_LENGTH] = 0;
+    void SetCustomFlagDesc (byte c, const char* str) {
+        if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return;
+        char* flagDesc = Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
+        strncpy(flagDesc, str, CUSTOM_FLAG_DESC_LENGTH);
+        flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
         Dirty = true;
     }
     void SetAutoLoad (gameNumberT gnum) {

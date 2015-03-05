@@ -122,8 +122,9 @@ proc ::maint::OpenClose {} {
   # Custom flags
   ttk::frame $w.title.cust
   ttk::label $w.title.cust.lab -text "[::tr CustomFlags]:" -font font_SmallBold
+  set ::curr_db [sc_base current]
   for {set i 1} { $i < 7} { incr i} {
-    set desc [sc_game flag $i description]
+    set desc [sc_base extra $::curr_db flag$i]
     ttk::label $w.title.cust.text$i -width 8 -font $font -relief sunken -anchor w -text $desc
   }
   
@@ -169,7 +170,7 @@ proc ::maint::OpenClose {} {
     if {$i < 12} {
       $w.mark.title.m add command -label "$::tr($maintFlags($flag)) ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
     } else  {
-      set tmp [sc_game flag $flag description]
+      set tmp [sc_base extra $::curr_db flag$flag]
       if {$tmp == "" } { set tmp $maintFlags($flag) }
       $w.mark.title.m add command -label "$tmp ($flag)" -command "set maintFlag $flag; ::maint::Refresh"
     }
@@ -281,10 +282,11 @@ proc ::maint::ChangeCustomDescription {} {
   ttk::label $w.a.lb -text [::tr CustomFlags]
   grid $w.a.lb -column 0 -row 0 -columnspan 12
   set col 0
+  set ::curr_db [sc_base current]
   for {set i 1} {$i <7} {incr i} {
     ttk::label $w.a.lab$i -text "$i:"
     ttk::entry $w.a.e$i -width 8
-    set desc [sc_game flag $i description]
+    set desc [sc_base extra $::curr_db flag$i]
     $w.a.e$i insert end $desc
     grid $w.a.lab$i -column $col -row 1
     incr col
@@ -295,7 +297,7 @@ proc ::maint::ChangeCustomDescription {} {
   ttk::button $w.b.ok -text OK -command {
     for {set i 1} {$i <7} {incr i} {
       set desc [.bcustom.a.e$i get]
-      sc_game flag $i setdescription $desc
+      sc_base extra $::curr_db flag$i $desc
     }
     grab release .bcustom
     destroy .bcustom
@@ -303,16 +305,14 @@ proc ::maint::ChangeCustomDescription {} {
     # update the drop down menu of maint window and the menu of GameInfo window
     for {set idx 12} {$idx < 18} {incr idx} {
       set flag [ lindex $::maintFlaglist $idx]
-      set tmp [sc_game flag $flag description]
+      set tmp [sc_base extra $::curr_db flag$flag]
       if {$tmp == "" } { set tmp $::maintFlags($flag) }
       .maintWin.mark.title.m entryconfigure $idx -label "$tmp ($flag)"
     }
     
-    updateGameInfoMenu
-    
     # update the custom flags labels
     for {set i 1} { $i < 7} { incr i} {
-      set desc [sc_game flag $i description]
+      set desc [sc_base extra $::curr_db flag$i]
       .maintWin.title.cust.text$i configure -text $desc
     }
     # ::maint::Refresh
@@ -350,7 +350,7 @@ proc ::maint::Refresh {} {
       -text "[lindex $ratings 0]-[lindex $ratings 1] ([lindex $ratings 2])"
   
   if { [lsearch -exact { 1 2 3 4 5 6 } $maintFlag ] != -1 } {
-    set tmp [sc_game flag $maintFlag description]
+    set tmp [sc_base extra $::curr_db flag$maintFlag]
     if {$tmp == "" } { set tmp $maintFlags($maintFlag) }
   } else  {
     set tmp $::tr($maintFlags($maintFlag))

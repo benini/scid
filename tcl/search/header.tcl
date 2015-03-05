@@ -381,12 +381,13 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     if {$count == 12} { set col 10; set row 0 }
   }
   
+  set ::curr_db [sc_base current]
   set count 1
   set col 0
   set row 7
   foreach var $::sHeaderCustomFlagList {
     
-    set lb [sc_game flag $count description]
+    set lb [sc_base extra $::curr_db flag$count]
     if { $lb == ""  } {  set lb $var  }
     
     set lab [ttk::label $w.flags.l$var -text $lb -font font_Small]

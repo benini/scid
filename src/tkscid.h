@@ -81,7 +81,6 @@ int sc_game           (TCL_ARGS);
 int sc_game_crosstable (TCL_ARGS);
 int sc_game_find      (TCL_ARGS);
 int sc_game_firstMoves (TCL_ARGS);
-int sc_game_flag      (TCL_ARGS);
 int sc_game_import    (TCL_ARGS);
 int sc_game_info      (TCL_ARGS);
 int sc_game_load      (TCL_ARGS);

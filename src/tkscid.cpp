@@ -2720,7 +2720,7 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     // Now copy each index entry
     const Progress& progress = UI_CreateProgress(ti);
     for (uint i=0, n = oldIndex.GetNumGames(); i < n; i++) {
-        if (i % 250 == 0) {
+        if ((i % 250) == 0) {
             if (!progress.report(i, n)) {
                 err = ERROR_UserCancel;
                 break;
@@ -3698,7 +3698,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "altered",    "setaltered", "crosstable", "eco",
-        "find",       "firstMoves", "flag",       "import",
+        "find",       "firstMoves", "import",
         "info",        "load",      "merge",      "moves",
         "new",        "novelty",    "number",     "pgn",
         "pop",        "push",       "SANtoUCI",   "save",
@@ -3708,7 +3708,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     };
     enum {
         GAME_ALTERED,    GAME_SET_ALTERED, GAME_CROSSTABLE, GAME_ECO,
-        GAME_FIND,       GAME_FIRSTMOVES, GAME_FLAG,       GAME_IMPORT,
+        GAME_FIND,       GAME_FIRSTMOVES, GAME_IMPORT,
         GAME_INFO,       GAME_LOAD,       GAME_MERGE,      GAME_MOVES,
         GAME_NEW,        GAME_NOVELTY,    GAME_NUMBER,     GAME_PGN,
         GAME_POP,        GAME_PUSH,       GAME_SANTOUCI,   GAME_SAVE,
@@ -3742,9 +3742,6 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_FIRSTMOVES:
         return sc_game_firstMoves (cd, ti, argc, argv);
-
-    case GAME_FLAG:
-        return sc_game_flag (cd, ti, argc, argv);
 
     case GAME_IMPORT:
         return sc_game_import (cd, ti, argc, argv);
@@ -4302,70 +4299,6 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     DString dstr;
     db->game->GetPartialMoveList (&dstr, plyCount);
     return okResult(ti, std::string(dstr.Data()));
-}
-
-//TODO: obsolete function: replace with "sc_base gameflag"
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_game_flag:
-//    If there is two args, this returns the specified flag status for the
-//    specified game.
-//    Flags that can be specified: delete, user, ...
-//    Extra calling methods:
-//      sc_game flag <flag> gameNum
-//      sc_game flag <flag> description 
-//      sc_game flag <flag> setdescription newDescription
-int
-sc_game_flag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    const char * usage = "Usage: sc_game flag <flag> <gameNum|description|setdescription newdesc>";
-    if (argc < 3  ||  argc > 5) {
-        return errorResult (ti, usage);
-    }
-    if (!db->inUse) {
-        return setResult (ti, errMsgNotOpen(ti));
-    }
-
-    uint flagType = 1 << IndexEntry::CharToFlag (argv[2][0]);
-
-    if (strEqual (argv[3], "description")) {
-        // Returns the description associated with a Custom flag
-      if (argc != 4) {
-        return errorResult (ti, usage);
-      } else {
-        char desc[CUSTOM_FLAG_DESC_LENGTH+1];
-        uint num = IndexEntry::CharToFlag (argv[2][0]) - 15;
-        if (num < 1 || num > CUSTOM_FLAG_MAX )
-          return errorResult (ti, "Custom flag number out of range");
-        db->idx->GetCustomFlagDesc(desc, num);
-        Tcl_AppendResult (ti, desc, NULL);
-        return TCL_OK;
-      }
-    } else if (strEqual (argv[3], "setdescription")) {
-      if (argc != 5) {
-        return errorResult (ti, usage);
-      } else {
-        uint num = IndexEntry::CharToFlag (argv[2][0]) - 15;
-        if (num < 1 || num > CUSTOM_FLAG_MAX )
-          return errorResult (ti, "Custom flag number out of range");
-        db->idx->SetCustomFlagDesc( argv[4], num);
-        return TCL_OK;
-      }
-    } else {
-        uint gNum = strGetUnsigned (argv[3]);
-        // We ignore a request to (un)delete game number zero, but if the
-        // specified number exceeds the number of games, return an error:
-        if (gNum == 0) { return TCL_OK; }
-        if (gNum > db->numGames()) {
-            return errorResult (ti, "Invalid game number.");
-        }
-        gNum--;   // Set numbering to be from 0, rather than 1.
-        if (argc == 4) {  // Get current flag value:
-            IndexEntry * ie = db->idx->FetchEntry (gNum);
-            return setBoolResult (ti, ie->GetFlag (flagType));
-        }
-    }
-
-    return TCL_OK;
 }
 
 int

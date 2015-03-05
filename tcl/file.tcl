@@ -207,11 +207,10 @@ proc ::file::Upgrade {name} {
   set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
   if {$res == "no"} { return }
   progressWindow "Scid" "$::tr(Upgrading): [file tail $name]..." $::tr(Cancel) ""
-  set err [catch {sc_base upgrade $name} res]
+  set err [catch {sc_base upgrade $name}]
   closeProgressWindow
   if {$err} {
-    tk_messageBox -title "Scid" -type ok -icon warning \
-        -message "Unable to upgrade the database:\n$res"
+    ERROR::MessageBox
     return
   } else  {
     # rename game and name files, delete old .si3

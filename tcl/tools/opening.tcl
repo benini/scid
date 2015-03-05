@@ -148,10 +148,11 @@ namespace eval opening {
     set allLinesFenList {}
     set allLinesHashList {}
     
+    set ::curr_db [sc_base current]
     progressWindow "Scid" "$::tr(Loadingrepertoire)..." $::tr(Cancel) "::opening::sc_progressBar"
     for {set g 1} { $g <= [sc_base numGames]} { incr g} {
       if {$cancelLoadRepertoire} { break  }
-      if {$onlyFlaggedLines && ![sc_game flag "WhiteOpFlag" $g] && ![sc_game flag "BlackOpFlag" $g]} {
+      if {$onlyFlaggedLines && ![sc_base gameflag $::curr_db $g get W] && ![sc_base gameflag $::curr_db $g get B]} {
         continue
       }
       set fenMovesEvalList {}

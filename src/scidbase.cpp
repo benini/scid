@@ -551,10 +551,9 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	tmp.idx->SetType (idx->GetType());
 	tmp.idx->SetDescription (idx->GetDescription());
 	tmp.idx->SetAutoLoad (idx->GetAutoLoad());
-	char newDesc[ CUSTOM_FLAG_DESC_LENGTH + 1 ];
-	for (byte b = 1 ; b <= CUSTOM_FLAG_MAX ; b++ ) {
-		idx->GetCustomFlagDesc (newDesc, b);
-		tmp.idx->SetCustomFlagDesc (newDesc, b);
+	for (byte b = IDX_FLAG_CUSTOM1; b < IDX_FLAG_CUSTOM1 + CUSTOM_FLAG_MAX ; b++ ) {
+		const char* flagDesc = idx->GetCustomFlagDesc(b);
+		tmp.idx->SetCustomFlagDesc(b, flagDesc);
 	}
 
 	//4) Copy the games
@@ -610,6 +609,12 @@ errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) con
 		*res = to_string(idx->GetAutoLoad());
 	} else if (tagname == "type") {
 		*res = to_string(idx->GetType());
+	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
+		uint flagType = IndexEntry::CharToFlag(tagname[4]);
+		if (flagType == 0) return ERROR_BadArg;
+		const char* desc = idx->GetCustomFlagDesc(flagType);;
+		if (desc == 0) return ERROR_BadArg;
+		*res = desc;
 	} else {
 		return ERROR_BadArg;
 	}
@@ -623,6 +628,11 @@ errorT scidBaseT::setExtraInfo(const std::string& tagname, const char* new_value
 		idx->SetAutoLoad(strGetUnsigned(new_value));
 	} else if (tagname == "type") {
 		idx->SetType(strGetUnsigned(new_value));
+	} else if (tagname.length() == 5 && tagname.find("flag") == 0) {
+		uint flagType = IndexEntry::CharToFlag(tagname[4]);
+		if (flagType == 0) return ERROR_BadArg;
+		if (idx->GetCustomFlagDesc(flagType) == 0) return ERROR_BadArg;
+		idx->SetCustomFlagDesc(flagType, new_value);
 	} else {
 		return ERROR_BadArg;
 	}

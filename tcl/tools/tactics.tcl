@@ -55,8 +55,10 @@ namespace eval tactics {
         }
         
         # Try to find in current game, from current pos (exit vars first)
-        catch { ;# if gamenumber == 0, sc_game flag T returns no boolean
-            if {[sc_game flag T [sc_game number]]} {
+        set ::curr_db [sc_base current]
+        set ::curr_game [sc_game number]
+        catch {
+            if {[sc_base gameflag $::curr_db $::curr_game get T]} {
                 while {[sc_var level] != 0} { sc_var exit }
                 if {[llength [gotoNextTacticMarker] ] != 0} {
                     set found 1
@@ -73,8 +75,8 @@ namespace eval tactics {
                 set end 1
             }
             for {set g $start } { [expr $sens * $g ] <= [ expr $sens * $end ] } { incr g $sens} {
+                if {![sc_base gameflag $::curr_db $g get T]} { continue }
                 sc_game load $g
-                if {![sc_game flag T $g]} { continue }
                 # go through all moves and look for tactical markers ****
                 if {[llength [gotoNextTacticMarker] ] != 0} {
                     set found 1
