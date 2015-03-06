@@ -855,6 +855,7 @@ proc gameSave { gnum } {
   
   # Make a new toplevel that contains the game save dialog:
   set w .save
+  if {[winfo exists $w]} { return }
   toplevel $w
   if {$gnum == 0} {
     wm title $w "Scid: [tr GameAdd]"
