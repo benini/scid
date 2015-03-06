@@ -25,6 +25,7 @@
 
 
 
+#include "ui_tcltk.h"
 #include "tkscid.h"
 #include "searchpos.h"
 #include "scidbase.h"
@@ -91,6 +92,20 @@ static uint clipbaseMaxGames = CLIPBASE_MAX_GAMES;
 // including the clipbase database.
 const int MAX_BASES = 9;
 const int CLIPBASE_NUM = MAX_BASES - 1;
+
+// Filter operations:
+typedef uint filterOpT;
+const filterOpT FILTEROP_AND = 0;
+const filterOpT FILTEROP_OR = 1;
+const filterOpT FILTEROP_RESET = 2;
+
+// Tablebase probe modes:
+#define PROBE_NONE 0
+#define PROBE_RESULT 1
+#define PROBE_SUMMARY 2
+#define PROBE_REPORT 3
+#define PROBE_OPTIMAL 4
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -419,17 +434,6 @@ tcl_ProgressPosMask UI_CreateProgressPosMask(void* data) {
 	return tcl_ProgressPosMask((Tcl_Interp*) data);
 }
 
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// recalcFlagCounts:
-//    Updates all precomputed stats about the database: flag counts,
-//    average rating, date range, etc.
-void
-recalcFlagCounts (scidBaseT * basePtr)
-{
-    basePtr->clearStats();
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Standard error messages:
 //
@@ -448,40 +452,20 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
 
 
 
+void scid_Exit (void*) {
+    if (dbList != NULL) delete [] dbList;
+    if (scratchPos != NULL) delete scratchPos;
+    if (scratchGame != NULL) delete scratchGame;
+};
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Main procedure
+//
 int
-scid_InitTclTk (Tcl_Interp * ti)
+main (int argc, char * argv[])
 {
-    if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
-      
-    // Register Scid application-specific commands:
-    // CREATE_CMD() is a macro to reduce the clutter of the final two args
-    // to Tcl_CreateCommand().
-
-#define CREATE_CMD(ip,name,cmd) \
- Tcl_CreateCommand ((ip), (name), (Tcl_CmdProc *)(cmd), \
- (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL)
-
+    srand (time(NULL));
     
-    ////////////////////
-    /// Scid-specific Tcl/Tk commands:
-    CREATE_CMD (ti, "strIsPrefix", str_is_prefix);
-    CREATE_CMD (ti, "strPrefixLen", str_prefix_len);
-    CREATE_CMD (ti, "sc_base", sc_base);
-    CREATE_CMD (ti, "sc_book", sc_book);
-    CREATE_CMD (ti, "sc_clipbase", sc_clipbase);
-    CREATE_CMD (ti, "sc_eco", sc_eco);
-    CREATE_CMD (ti, "sc_filter", sc_filter);
-    CREATE_CMD (ti, "sc_game", sc_game);
-    CREATE_CMD (ti, "sc_info", sc_info);
-    CREATE_CMD (ti, "sc_move", sc_move);
-    CREATE_CMD (ti, "sc_name", sc_name);
-    CREATE_CMD (ti, "sc_report", sc_report);
-    CREATE_CMD (ti, "sc_pos", sc_pos);
-    CREATE_CMD (ti, "sc_progressBar", sc_progressBar);
-    CREATE_CMD (ti, "sc_search", sc_search);
-    CREATE_CMD (ti, "sc_tree", sc_tree);
-    CREATE_CMD (ti, "sc_var", sc_var);
-
     // Initialise global Scid database variables:
     dbList = new scidBaseT [MAX_BASES];
     // Initialise the clipbase database:
@@ -501,40 +485,7 @@ scid_InitTclTk (Tcl_Interp * ti)
     scratchGame = new Game;
     db = &(dbList[currentBase]);
 
-    return TCL_OK;
-}
-
-void scid_ExitTclTk (void*) {
-    if (dbList != NULL) delete [] dbList;
-    if (scratchPos != NULL) delete scratchPos;
-    if (scratchGame != NULL) delete scratchGame;
-};
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Main procedure
-//
-int
-main (int argc, char * argv[])
-{
-    srand (time(NULL));
-    Tcl_FindExecutable(argv[0]);
-    Tcl_CreateExitHandler(&scid_ExitTclTk, 0);
-    if (argc == 1) {
-        char sourceFileName [1024];
-        char* newArgv[] = { argv[0], sourceFileName };
-        ASSERT(strlen(Tcl_GetNameOfExecutable()) < 1000);
-        strcpy(sourceFileName, Tcl_GetNameOfExecutable());
-        char* end = strrchr (sourceFileName, '/');
-        strcpy (end + 1, "tcl/start.tcl");
-        if (0 != Tcl_Access(sourceFileName, 4)) {
-            strcpy (end + 1, "../tcl/start.tcl");
-        }
-        Tcl_Main(sizeof newArgv/sizeof newArgv[0], newArgv, scid_InitTclTk);
-    } else {
-        Tcl_Main (argc, argv, scid_InitTclTk);
-    }
-
-    return 0;
+    return UI_Main(argc, argv, scid_Exit);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -768,7 +719,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base: database commands.
 int
-sc_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
+sc_base (UI_type1 cd, UI_type2 ti, int argc, const char ** argv)
 {
     static const char * options [] = {
 		"close",        "count",

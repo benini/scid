@@ -16,29 +16,12 @@
 
 #include "common.h"
 #include "scidbase.h"
-#include <tcl.h>
 
-// Filter operations:
-typedef uint filterOpT;
-const filterOpT FILTEROP_AND = 0;
-const filterOpT FILTEROP_OR = 1;
-const filterOpT FILTEROP_RESET = 2;
-
-
-// Tablebase probe modes:
-#define PROBE_NONE 0
-#define PROBE_RESULT 1
-#define PROBE_SUMMARY 2
-#define PROBE_REPORT 3
-#define PROBE_OPTIMAL 4
 
 // Macro TCL_ARGS expands to the argument-type list that any
 // Tcl command function takes.
 #define TCL_ARGS  ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
-int str_is_prefix  (TCL_ARGS);
-int str_prefix_len (TCL_ARGS);
-int sc_base           (TCL_ARGS);
 int sc_base_filename  (TCL_ARGS);
 int sc_base_inUse     (TCL_ARGS);
 uint sc_base_duplicates (scidBaseT* dbase, TCL_ARGS);
@@ -59,17 +42,14 @@ int sc_base_tag       (TCL_ARGS);
 int sc_base_tournaments (TCL_ARGS);
 int sc_base_upgrade   (TCL_ARGS);
 
-int sc_clipbase       (TCL_ARGS);
 int sc_clipbase_paste (TCL_ARGS);
 
-int sc_eco            (TCL_ARGS);
 int sc_eco_base       (TCL_ARGS);
 int sc_eco_game       (TCL_ARGS);
 int sc_eco_read       (TCL_ARGS);
 int sc_eco_summary    (TCL_ARGS);
 int sc_eco_translate  (TCL_ARGS);
 
-int sc_filter         (TCL_ARGS);
 int sc_filter_first   (TCL_ARGS);
 int sc_filter_freq    (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_filter_last    (TCL_ARGS);
@@ -77,7 +57,6 @@ int sc_filter_next    (TCL_ARGS);
 int sc_filter_prev    (TCL_ARGS);
 int sc_filter_stats   (TCL_ARGS);
 
-int sc_game           (TCL_ARGS);
 int sc_game_crosstable (TCL_ARGS);
 int sc_game_find      (TCL_ARGS);
 int sc_game_firstMoves (TCL_ARGS);
@@ -102,13 +81,11 @@ int sc_game_tags_set  (TCL_ARGS);
 int sc_game_tags_reload (TCL_ARGS);
 int sc_game_tags_share (TCL_ARGS);
 
-int sc_info           (TCL_ARGS);
 int sc_info_fsize     (TCL_ARGS);
 int sc_info_limit     (TCL_ARGS);
 int sc_info_suffix    (TCL_ARGS);
 int sc_info_tb        (TCL_ARGS);
 
-int sc_move           (TCL_ARGS);
 int sc_move_add       (TCL_ARGS);
 int sc_move_addSan    (TCL_ARGS);
 int sc_move_addUCI    (TCL_ARGS);
@@ -116,7 +93,6 @@ int sc_move_back      (TCL_ARGS);
 int sc_move_forward   (TCL_ARGS);
 int sc_move_pgn       (TCL_ARGS);
 
-int sc_name           (TCL_ARGS);
 int sc_name_correct   (TCL_ARGS);
 int sc_name_edit      (TCL_ARGS);
 int sc_name_info      (TCL_ARGS);
@@ -127,11 +103,9 @@ int sc_name_read      (TCL_ARGS);
 int sc_name_spellcheck (TCL_ARGS);
 int sc_name_retrievename   (TCL_ARGS);
 
-int sc_report         (TCL_ARGS);
 int sc_report_create  (TCL_ARGS);
 int sc_report_select  (TCL_ARGS);
 
-int sc_pos            (TCL_ARGS);
 int sc_pos_addNag     (TCL_ARGS);
 int sc_pos_analyze    (TCL_ARGS);
 int sc_pos_bestSquare (TCL_ARGS);
@@ -150,28 +124,24 @@ int sc_pos_setComment (TCL_ARGS);
 
 int sc_progressBar    (TCL_ARGS);
 
-int sc_tree           (TCL_ARGS);
 int sc_tree_move      (TCL_ARGS);
 int sc_tree_search    (TCL_ARGS);
 int sc_tree_cachesize (TCL_ARGS);
 int sc_tree_cacheinfo (TCL_ARGS);
 int sc_tree_clean     (TCL_ARGS);
 
-int sc_var            (TCL_ARGS);
 int sc_var_delete     (TCL_ARGS);
 int sc_var_delete_free(TCL_ARGS);
 int sc_var_enter      (TCL_ARGS);
 int sc_var_first      (TCL_ARGS);
 int sc_var_list       (TCL_ARGS);
 
-int sc_search         (TCL_ARGS);
 int sc_search_board   (TCL_ARGS);
 int sc_search_material (TCL_ARGS);
 int sc_search_header  (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filter, int argc, const char ** argv);
 int sc_search_rep_add (TCL_ARGS);
 int sc_search_rep_go  (TCL_ARGS);
 
-int sc_book           (TCL_ARGS);
 int sc_book_load      (TCL_ARGS);
 int sc_book_close     (TCL_ARGS);
 int sc_book_moves     (TCL_ARGS);
