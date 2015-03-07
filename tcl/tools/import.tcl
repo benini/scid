@@ -174,7 +174,7 @@ proc importPgnFile {{base} {fnames ""}} {
     -fill black -text "0:00 / 0:00"
 
   frame $w.buttons
-  button $w.buttons.stop -textvar ::tr(Stop) -command {sc_progressBar}
+  button $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel}
   button $w.buttons.close -textvar ::tr(Close) -command "focus .; destroy $w"
   pack $w.buttons.close $w.buttons.stop -side right -ipadx 5 -padx 5 -pady 2
     
@@ -192,9 +192,9 @@ proc importPgnFile {{base} {fnames ""}} {
 
   busyCursor .
   foreach fname $fnames {
-    sc_progressBar $w.progress bar 401 21 time
     $w.text insert end "Importing from [file tail $fname]...\n"
     $w.text configure -state disabled
+    progressBarSet $w.progress 401 21
     set err [catch {sc_base import $base $fname} result]
     $w.text configure -state normal
     if {$err == 1} {

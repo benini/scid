@@ -124,31 +124,27 @@ proc updateSpellCheckWin {type} {
     global spellcheckType spell_maxCorrections spellcheckSurnames
     global spellcheckAmbiguous
 
-    busyCursor .
     .spellcheckWin.text.text delete 1.0 end
     .spellcheckWin.text.text insert end "Scid is finding spelling corrections.\nPlease wait..."
 
     # Enable the progress bar
     #
-    sc_progressBar .spellcheckWin.progress bar 451 21 time
 
     startScanning
 
     update idletasks
-    if {[catch {sc_name spellcheck -max $spell_maxCorrections \
+    progressBarSet .spellcheckWin.progress 451 21
+    set err [catch {sc_name spellcheck -max $spell_maxCorrections \
                                    -surnames $spellcheckSurnames \
-                                   -ambiguous $spellcheckAmbiguous $type} result]} {
-        stopScanning
-        unbusyCursor .
-        tk_messageBox -type ok -icon info -title "Scid: Spellcheck results" \
-                      -parent $parent -message $result
+                                   -ambiguous $spellcheckAmbiguous $type} result]
+    stopScanning
+    if {$err} {
+        ERROR::MessageBox "" "Scid: Spellcheck results"
         return
     }
-    stopScanning
 
     .spellcheckWin.text.text delete 1.0 end
     .spellcheckWin.text.text insert end $result
-    unbusyCursor .
 }
 
 
@@ -227,11 +223,10 @@ proc openSpellCheckWin {type {parent .}} {
 
         # Enable the progress bar
         #
-        sc_progressBar .spellcheckWin.progress bar 451 21 time
-
         update idletasks
         set spell_result ""
         startCorrecting
+        progressBarSet .spellcheckWin.progress 451 21
         set result [catch {sc_name correct $spellcheckType $spelltext} spell_result]
         set messageIcon info
         if {$result} { set messageIcon error }
@@ -252,7 +247,7 @@ proc openSpellCheckWin {type {parent .}} {
     #
     ttk::button $f.cancel -text "Cancel" -underline 0 -command {
         if {$spellstate == "scanning" || $spellstate == "correcting"} {
-            sc_progressBar
+            progressBarCancel
         } else {
             focus .
             destroy .spellcheckWin

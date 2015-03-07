@@ -107,7 +107,7 @@ proc ::optable::makeReportWin {args} {
     set ::optable::_interrupt 0
     button $w.b.cancel -text $::tr(Cancel) -command {
       set ::optable::_interrupt 1
-      sc_progressBar
+      progressBarCancel
     }
     pack $w.b.cancel -side right -pady 5 -padx 2
     
@@ -127,24 +127,21 @@ proc ::optable::makeReportWin {args} {
     wm geometry $w +$x+$y
     wm deiconify $w
     grab $w.b.cancel
-    sc_progressBar $w.c1 bar 401 21 time
-    busyCursor .
+    progressBarSet $w.c1 401 21
   }
 
   sc_search board RESET Exact false 0
   set newTreeData [sc_tree search -time 0]
   if {$showProgress} {
     if {$::optable::_interrupt} {
-      unbusyCursor .
       grab release $w.b.cancel
       destroy $w
       return
     }
-    sc_progressBar $w.c2 bar 401 21 time
+    progressBarSet $w.c2 401 21
   }
   sc_report opening create $::optable(ExtraMoves) $::optable(MaxGames) $::optable::_data(exclude)
   if {$showProgress} {
-    unbusyCursor .
     grab release $w.b.cancel
     destroy $w
     if {$::optable::_interrupt} { return }

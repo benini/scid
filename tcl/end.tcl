@@ -54,34 +54,28 @@ proc findNovelty {} {
   label $w.status -text "" -width 1 -font font_Small -relief sunken -anchor w
   pack $w.status -side bottom -fill x
   pack [frame $w.b] -side top -fill x
-  dialogbutton $w.b.stop -textvar ::tr(Stop) -state disabled \
-      -command sc_progressBar
   dialogbutton $w.b.go -text $::tr(FindNovelty) -command {
-    .noveltyWin.b.stop configure -state normal
-    .noveltyWin.b.go configure -state disabled
-    .noveltyWin.b.close configure -state disabled
-    busyCursor .
-    .noveltyWin.status configure -text " ... "
-    update
-    grab .noveltyWin.b.stop
+    destroy .noveltyWin
+    progressWindow "Scid" "$::tr(FindNovelty)" $::tr(Cancel)
     if {$noveltyOlder} {
-      set err [catch {sc_game novelty -older -updatelabel .noveltyWin.status $noveltyBase} result]
+      set err [catch {sc_game novelty -older $noveltyBase} result]
     } else {
-      set err [catch {sc_game novelty -updatelabel .noveltyWin.status $noveltyBase} result]
+      set err [catch {sc_game novelty $noveltyBase} result]
     }
-    grab release .noveltyWin.b.stop
-    if {! $err} { set result "$::tr(Novelty): $result" }
-    unbusyCursor .
-    .noveltyWin.b.stop configure -state disabled
-    .noveltyWin.b.go configure -state normal
-    .noveltyWin.b.close configure -state normal
-    .noveltyWin.status configure -text $result
-    updateBoard
+    closeProgressWindow
+    if {$err} {
+      ERROR::MessageBox
+    } else {
+      if {$result < 0} {
+        tk_messageBox -message "[tr NoveltyNone]"
+	  }
+    }
+    updateBoard -pgn
   }
   dialogbutton $w.b.close -textvar ::tr(Close) -command {
     catch {destroy .noveltyWin}
   }
-  packbuttons right $w.b.close $w.b.go $w.b.stop
+  packbuttons right $w.b.close $w.b.go
   wm resizable $w 0 0
   focus $w.b.go
   bind $w <KeyPress-1> "$w.b1 invoke"
@@ -531,9 +525,8 @@ proc exportGames {selection exportType} {
   set fName [$getfile -initialdir $idir -filetypes $ftype -defaultextension $default -title $title]
   if {$fName == ""} { return }
   if {$exportFilter} {
-    progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
+    progressWindow "Scid" "Exporting games..." $::tr(Cancel)
   }
-  busyCursor .
   sc_base export $selection $exportType $fName -append $exportFlags(append) \
       -starttext $exportStartFile($exportType) \
       -endtext $exportEndFile($exportType) \
@@ -542,7 +535,6 @@ proc exportGames {selection exportType} {
       -indentC $exportFlags(indentc) -indentV $exportFlags(indentv) \
       -column $exportFlags(column) -noMarkCodes $exportFlags(stripMarks) \
       -convertNullMoves $exportFlags(convertNullMoves)
-  unbusyCursor .
   if {$exportFilter} {
     closeProgressWindow
   }

@@ -3131,12 +3131,7 @@ namespace eval CorrespondenceChess {
 			# For Classic sorting: sort the clipbase, this is easier
 			# to implement than individual sorting upon import.
 			if {$::CorrespondenceChess::ListOrder == $::CorrespondenceChess::CCOrderClassic} {
-				set sortCriteria "Site, Event, Round, Result, White, Black"
-				progressWindow "Scid" "Sorting the database..."
-				set err [catch {sc_base sort $sortCriteria \
-										{changeProgressWindow "Sorting..."} \
-									 } result]
-				closeProgressWindow
+				tk_messageBox -message "oops, 300+ lines functions are not maintainable"
 			}
 
 

@@ -20,35 +20,53 @@
 #define SCID_UI_TCLTK_H
 
 #include "misc.h"
+#include "timer.h"
 #include <tcl.h>
+#include <sstream>
 
 
-typedef ClientData  UI_type1;
+typedef int         UI_typeRes;
+typedef ClientData  UI_typeExtra;
 typedef Tcl_Interp* UI_type2;
 
 // From UI to c++
-int str_is_prefix  (UI_type1, UI_type2, int argc, const char ** argv);
-int str_prefix_len (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_base        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_book        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_clipbase    (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_eco         (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_filter      (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_game        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_info        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_move        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_name        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_report      (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_pos         (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_progressBar (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_search      (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_tree        (UI_type1, UI_type2, int argc, const char ** argv);
-int sc_var         (UI_type1, UI_type2, int argc, const char ** argv);
+UI_typeRes str_is_prefix  (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes str_prefix_len (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_base        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_book        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_clipbase    (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_eco         (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_filter      (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_game        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_info        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_move        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_name        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_report      (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_pos         (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_search      (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_tree        (UI_typeExtra, UI_type2, int argc, const char ** argv);
+UI_typeRes sc_var         (UI_typeExtra, UI_type2, int argc, const char ** argv);
 //////////////////////////////////////////////////////////////////////
 
 // From c++ to UI
 int UI_Main (int argc, char* argv[], void (*exit) (void*));
-//Progress UI_CreateProgress(UI_type1, UI_type2);
+Progress UI_CreateProgress(UI_type2);
+
+class UI_Result {
+	UI_type2 ti_;
+	errorT res_;
+public:
+	UI_Result(UI_type2 ti, errorT res) : ti_(ti), res_(res) {}
+	operator UI_typeRes() const {
+		if (res_ == OK) return TCL_OK;
+		Tcl_SetObjErrorCode(ti_, Tcl_NewIntObj(res_));
+		return TCL_ERROR;
+	}
+	UI_Result& operator() (errorT res) { 
+		res_ = res;
+		return *this;
+	}
+};
 //////////////////////////////////////////////////////////////////////
 
 
@@ -75,7 +93,6 @@ int scid_InitTclTk (Tcl_Interp * ti)
 	CREATE_CMD (ti, "sc_name", sc_name);
 	CREATE_CMD (ti, "sc_report", sc_report);
 	CREATE_CMD (ti, "sc_pos", sc_pos);
-	CREATE_CMD (ti, "sc_progressBar", sc_progressBar);
 	CREATE_CMD (ti, "sc_search", sc_search);
 	CREATE_CMD (ti, "sc_tree", sc_tree);
 	CREATE_CMD (ti, "sc_var", sc_var);
@@ -103,5 +120,48 @@ inline int UI_Main (int argc, char* argv[], void (*exit) (void*)) {
 
 	return 0;
 }
+
+
+
+class tcl_Progress : public ProgressImp {
+	Tcl_Interp* ti_;
+	Timer timer_;
+
+public:
+	tcl_Progress(Tcl_Interp* ti) : ti_(ti) {}
+	virtual ~tcl_Progress() {}
+
+	virtual bool report(uint done, uint total) {
+		uint64_t elapsed = timer_.MilliSecs();
+		uint64_t estimated = (done == 0) ? 0 : elapsed * total / done;
+		std::ostringstream tmp;
+		tmp << "::progressCallBack";
+		tmp << " " << done << " " << total << " " << elapsed / 1000 << " " << estimated / 1000;
+		return TCL_OK == Tcl_EvalEx(ti_, tmp.str().c_str(), -1, 0);
+	}
+};
+
+class tcl_ProgressPosMask : public ProgressImp {
+	Tcl_Interp* ti_;
+public:
+	tcl_ProgressPosMask(Tcl_Interp* ti) : ti_(ti) {}
+	virtual ~tcl_ProgressPosMask() {}
+
+	virtual bool report(uint done, uint total) {
+		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
+	}
+};
+
+
+inline Progress UI_CreateProgress(UI_type2 data) {
+	int err = Tcl_EvalEx(data, "::progressCallBack init", -1, 0);
+	if (err != TCL_OK) return Progress();
+	return Progress(new tcl_Progress(data));
+}
+
+Progress UI_CreateProgressPosMask(UI_type2 data) {
+	return Progress(new tcl_ProgressPosMask(data));
+}
+
 
 #endif

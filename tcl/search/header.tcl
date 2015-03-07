@@ -416,7 +416,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   pack $w.b -side top -fill both
   ttk::button $w.b.defaults -textvar ::tr(Defaults) -command ::search::header::defaults ;# -padx 20
   ttk::button $w.b.save -textvar ::tr(Save...) -command ::search::header::save ;# -padx 20
-  ttk::button $w.b.stop -textvar ::tr(Stop) -command sc_progressBar
+  ttk::button $w.b.stop -textvar ::tr(Stop) -command progressBarCancel
   ttk::button $w.b.search -textvar ::tr(Search) -command {
     ::utils::history::AddEntry HeaderSearchWhite $sWhite
     ::utils::history::AddEntry HeaderSearchBlack $sBlack
@@ -433,7 +433,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     sc_base switch [string index $::refDatabaseH 0]
     pack .sh.b.stop -side right -padx 5
     grab .sh.b.stop
-    sc_progressBar .sh.fprogress.progress bar 301 21 time
     set wtitles {}
     set btitles {}
     foreach i $sTitleList {
@@ -446,6 +445,8 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
         set newGamelistWin 1
         set ::refFilterH "[sc_base newFilter $dbase]"
       } else { set newGamelistWin 0 }
+
+      progressBarSet .sh.fprogress.progress 301 21
 
       set str [sc_filter search $dbase $::refFilterH header -white $sWhite -black $sBlack \
           -event $sEvent -site $sSite -round $sRound \

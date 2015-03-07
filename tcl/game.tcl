@@ -8,11 +8,11 @@
 # 2 -> cancel action
 #
 proc ::game::ConfirmDiscard2 {} {
-  set curr_db [sc_base current]
   if {! [sc_game altered]} { return 1 }
   
   set w .confirmDiscard
   toplevel $w
+  set ::curr_db [sc_base current]
   set fn [file tail [sc_base filename $::curr_db]]
   wm title $w "Scid: $fn ($::tr(game) [sc_game number])"
   set ::game::answer 2

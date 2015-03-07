@@ -562,8 +562,7 @@ proc markTwins {{parent .}} {
   dialogbuttonsmall $w.f.b.go [ list -text $::tr(TwinsDelete) -command {
     if {[twinCriteriaOK .twinSettings]} {
       grab release .twinSettings
-      sc_progressBar .twinSettings.f.progress bar 301 21 time
-      .twinSettings.f.b.cancel configure -command "sc_progressBar"
+      .twinSettings.f.b.cancel configure -command "progressBarCancel"
       set result [doMarkDups .twinSettings]
       focus .
       destroy .twinSettings
@@ -639,7 +638,6 @@ proc twinCriteriaOK {{parent .}} {
 proc doMarkDups {{parent .}} {
   global twinSettings
   
-  busyCursor .
   if {$twinSettings(undelete) == "Yes"} {
     if {[catch {sc_base gameflag [sc_base current] all unset del}]} {
       unbusyCursor .
@@ -648,6 +646,7 @@ proc doMarkDups {{parent .}} {
     }
   }
 
+  progressBarSet $parent.f.progress 301 21
   if {[catch {sc_base duplicates [sc_base current] \
           -colors $twinSettings(colors) \
           -event $twinSettings(event) -site $twinSettings(site) \
@@ -661,11 +660,9 @@ proc doMarkDups {{parent .}} {
           -comments $twinSettings(comments) \
           -variations $twinSettings(variations) \
           -delete $twinSettings(delete)} result]} {
-    unbusyCursor .
     ERROR::MessageBox
     set result 0
   } else {
-    unbusyCursor .
     set message [subst $::tr(TwinCheckFound1)]
     if {$result > 0} {append message $::tr(TwinCheckFound2)}
     append message "."
@@ -732,18 +729,15 @@ proc makeClassifyWin {} {
   
   ttk::frame $w.f.b
   ttk::button $w.f.b.go -textvar ::tr(Classify) -command {
-    busyCursor .
-    .classify.f.b.cancel configure -command "sc_progressBar"
+    .classify.f.b.cancel configure -command "progressBarCancel"
     .classify.f.b.cancel configure -textvar ::tr(Stop)
-    sc_progressBar .classify.f.progress bar 301 21 time
+    progressBarSet .classify.f.progress 301 21
     grab .classify.f.b.cancel
     if {[catch  {sc_eco base $classifyOption(AllGames) $classifyOption(ExtendedCodes)} result]} {
       grab release .classify.f.b.cancel
-      unbusyCursor .
       ERROR::MessageBox
     } else {
       grab release .classify.f.b.cancel
-      unbusyCursor .
     }
     .classify.f.b.cancel configure -command {focus .; destroy .classify}
     .classify.f.b.cancel configure -textvar ::tr(Close)
@@ -998,7 +992,7 @@ proc compactDB {{base -1}} {
                -message "$msg"]
   if {$confirm != "ok"} { return }
 
-  progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel) ""
+  progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel)
   set err [catch {sc_base compact $base} result]
   closeProgressWindow
   if {$err} {
@@ -1060,20 +1054,17 @@ proc doAllocateRatings {} {
     tk_messageBox -type ok -icon info -parent . -title "Scid" -message $result
     return
   }
-  progressWindow "Scid" "Adding Elo ratings..."
-  busyCursor .
-  if {[catch {sc_name ratings -change $addRatings(overwrite) -filter $addRatings(filter)} result]} {
-    closeProgressWindow
-    tk_messageBox -type ok -icon warning -parent . \
-        -title "Scid" -message $result
+  progressWindow "Scid" "Adding Elo ratings..." $::tr(Cancel)
+  set err [catch {sc_name ratings -change $addRatings(overwrite) -filter $addRatings(filter)} result]
+  closeProgressWindow
+  if {$err} {
+    ERROR::MessageBox
   } else {
-    closeProgressWindow
     set r [::utils::thousands [lindex $result 0]]
     set g [::utils::thousands [lindex $result 1]]
     tk_messageBox -type ok -icon info -parent . \
         -title "Scid" -message [subst $::tr(AddedRatings)]
   }
-  unbusyCursor .
 }
 
 
@@ -1092,16 +1083,11 @@ proc stripTags {} {
   set stripTagList {}
   
   # Find extra PGN tags:
-  set ::interrupt 0
-  progressWindow "Scid" "Searching for extra PGN tags..." \
-      $::tr(Cancel) "set ::interrupt 1; sc_progressBar"
-  busyCursor .
+  progressWindow "Scid" "Searching for extra PGN tags..." $::tr(Cancel)
   set err [catch {sc_base tag list} result]
-  unbusyCursor .
   closeProgressWindow
-  if {$::interrupt} { return }
   if {$err} {
-    tk_messageBox -title "Scid" -icon warning -type ok -message $result
+    ERROR::MessageBox
     return
   }
   
@@ -1160,11 +1146,8 @@ proc doStripTags {{parent .}} {
   set result [tk_messageBox -title "Scid" -parent $parent \
       -icon question -type yesno -message $msg]
   if {$result == "no"} { return 0 }
-  progressWindow "Scid" "Removing the PGN tag $stripTagChoice..." \
-      $::tr(Cancel) "sc_progressBar"
-  busyCursor .
+  progressWindow "Scid" "Removing the PGN tag $stripTagChoice..." $::tr(Cancel)
   set err [catch {sc_base tag strip $stripTagChoice} result]
-  unbusyCursor .
   closeProgressWindow
   if {$err} {
     ERROR::MessageBox
@@ -1183,11 +1166,8 @@ proc doStripTags {{parent .}} {
 
 proc findStripTags {} {
   global stripTagChoice
-  progressWindow "Scid" "Finding games with the PGN tag $stripTagChoice..." \
-      $::tr(Cancel) "sc_progressBar"
-  busyCursor .
+  progressWindow "Scid" "Finding games with the PGN tag $stripTagChoice..." $::tr(Cancel) 
   set err [catch {sc_base tag find $stripTagChoice} result]
-  unbusyCursor .
   closeProgressWindow
   ::windows::stats::Refresh
 }

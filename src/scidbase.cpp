@@ -107,7 +107,7 @@ errorT scidBaseT::Open (fileModeT mode,
                         const char* filename,
                         bool create,
                         SpellChecker* spell,
-                        const Progress* progress) {
+                        const Progress& progress) {
 	if (inUse) return ERROR_FileInUse;
 	if (filename == 0) filename = "";
 

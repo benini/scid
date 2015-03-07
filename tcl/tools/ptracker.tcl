@@ -290,7 +290,7 @@ proc ::ptrack::make {} {
   bind $f.to <FocusOut> +::ptrack::status
 
   set f $w.t.buttons
-  button $f.stop -text $::tr(Stop) -command sc_progressBar -state disabled
+  button $f.stop -text $::tr(Stop) -command progressBarCancel -state disabled
   button $f.update -text $::tr(Update) -command ::ptrack::refresh
   button $f.close -text $::tr(Close) -command "destroy $w"
   pack $f.close $f.update $f.stop -side right -padx 3 -pady 5
@@ -316,7 +316,6 @@ proc ::ptrack::refresh {{type "all"}} {
     return
   }
 
-  busyCursor .
   $w.t.buttons.update configure -state disabled
   $w.t.buttons.close configure -state disabled
   $w.t.buttons.stop configure -state normal
@@ -329,17 +328,19 @@ proc ::ptrack::refresh {{type "all"}} {
   set timeMode 0
   if {$::ptrack::mode == "-time"} { set timeMode 1 }
 
-  sc_progressBar $w.progress bar 401 21 time
-  set data [eval sc_base piecetrack $::ptrack::mode \
+  progressBarSet $w.progress 401 21
+  set err [catch { sc_base piecetrack $::ptrack::mode \
               $::ptrack::moves(start) $::ptrack::moves(end) \
-              $::ptrack::select]
-  set ::ptrack::data $data
+              $::ptrack::select} ::ptrack::data]
 
   catch {grab release $w.t.buttons.stop}
   $w.t.buttons.stop configure -state disabled
   $w.t.buttons.update configure -state normal
   $w.t.buttons.close configure -state normal
-  unbusyCursor .
+
+  if {$err} {
+    return
+  }
 
   set dfilter [sc_filter count]
   if {$timeMode} {
@@ -350,13 +351,13 @@ proc ::ptrack::refresh {{type "all"}} {
 
   set max 1
   for {set i 0} {$i < 64} {incr i} {
-    set freq [lindex $data $i]
+    set freq [lindex $::ptrack::data $i]
     if {$freq > $max} {set max $freq}
   }
 
   set ::ptrack::shade {}
   for {set i 0} {$i < 64} {incr i} {
-    set freq [lindex $data $i]
+    set freq [lindex $::ptrack::data $i]
     set x [expr {$freq * 100.0 / $max} ]
     set color [::ptrack::color $x]
     lappend ::ptrack::shade $x
@@ -371,7 +372,7 @@ proc ::ptrack::refresh {{type "all"}} {
     set best -1
     set idx -1
     for {set i 0} {$i < 64} {incr i} {
-      set n [lindex $data $i]
+      set n [lindex $::ptrack::data $i]
       if {$n > $best  &&  ![info exists printed($i)]} {
         set idx $i
         set best $n

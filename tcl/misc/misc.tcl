@@ -316,11 +316,15 @@ proc progressWindow {args} {
     set title [lindex $args 0]
     set text [lindex $args 1]
     set b 0
-  } elseif {[llength $args] == 4} {
+  } elseif {[llength $args] == 3 || [llength $args] == 4} {
     set title [lindex $args 0]
     set text [lindex $args 1]
     set button [lindex $args 2]
-    set command [lindex $args 3]
+    if {[llength $args] == 3} {
+      set command "progressBarCancel"
+    } else {
+      set command [lindex $args 3]
+    }
     set b 1
   } else { return }
   wm title $w $title
@@ -333,34 +337,54 @@ proc progressWindow {args} {
   pack $w.f.c -side top -pady 10
   if {$b} {
     pack [ttk::frame $w.f.b] -side bottom -fill x
-    ttk::button $w.f.b.cancel -text $button -command "$command; destroy $w"
+    ttk::button $w.f.b.cancel -text $button -command "$command"
     pack $w.f.b.cancel -side right -padx 5 -pady 2
   }
   # Set up geometry for middle of screen:
   set x [expr ([winfo screenwidth $w] - 400) / 2]
   set y [expr ([winfo screenheight $w] - 40) / 2]
   wm geometry $w +$x+$y
-  sc_progressBar $w.f.c bar 401 21 time
   grab $w
   bind $w <Visibility> "raiseWin $w"
   update
   set ::progressWin_time [clock seconds]
+  progressBarSet $w.f.c 401 21
 }
 
-proc progressCallBack {done total elapsed estimated} {
-  set w .progressWin
-  if {! [winfo exists $w]} { break }
+proc progressBarSet { canvasname width height } {
+  set ::progressCanvas(name) $canvasname
+  set ::progressCanvas(w) $width
+  set ::progressCanvas(h) $height
+  set ::progressCanvas(cancel) 0
+  set ::progressCanvas(init) 1
+  after idle { unset ::progressCanvas(init) }
+}
 
-  set width 401
+proc progressBarCancel { } {
+  set ::progressCanvas(cancel) 1
+}
+
+
+proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
+  if {$done == "init"} {
+    return $::progressCanvas(init)
+  }
+
+  if {! [winfo exists $::progressCanvas(name)] || $::progressCanvas(cancel)} {
+    #Interrupted
+    break
+  }
+
+  set width $::progressCanvas(w)
   if {$total > 0} {
     set width [expr {int(double($width) * double($done) / double($total))}]
   }
-  $w.f.c coords bar 0 0 $width 21
+  $::progressCanvas(name) coords bar 0 0 $width $::progressCanvas(h)
 
   set t [format "%d:%02d / %d:%02d" \
       [expr {$elapsed / 60}] [expr {$elapsed % 60}] \
       [expr {$estimated / 60}] [expr {$estimated % 60}]]
-  $w.f.c itemconfigure time -text $t
+  $::progressCanvas(name) itemconfigure time -text $t
   update
 }
 
@@ -612,8 +636,7 @@ namespace eval html {
     catch {file copy -force [file join $sourcedir scid.js] $dirtarget}
     catch {file copy -force [file join $sourcedir scid.css] $dirtarget}
     # writeIndex "[file join $dirtarget $prefix].html" $prefix
-    progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
-    busyCursor .
+    progressWindow "Scid" "Exporting games..."
     set savedGameNum [sc_game number]
     set gn [sc_filter first]
     set players {}
@@ -644,7 +667,6 @@ namespace eval html {
     }
     
     closeProgressWindow
-    unbusyCursor .
     exportPGN "[file join $dirtarget $prefix].pgn" "filter"
     sc_game load $savedGameNum
   }
@@ -1068,12 +1090,10 @@ namespace eval html {
   ################################################################################
   proc exportPGN { fName selection } {
     if {$selection == "filter"} {
-      progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
+      progressWindow "Scid" "Exporting games..." $::tr(Cancel)
     }
-    busyCursor .
     sc_base export $selection "PGN" $fName -append 0 -starttext "" -endtext "" -comments 1 -variations 1 \
         -space 1 -symbols 1 -indentC 0 -indentV 0 -column 0 -noMarkCodes 1 -convertNullMoves 1
-    unbusyCursor .
     if {$selection == "filter"} {
       closeProgressWindow
     }

@@ -62,19 +62,16 @@ proc ::search::board {{ref_base ""}} {
   ttk::checkbutton $w.b2.vars -textvar ::tr(LookInVars) -onvalue 1 -offvalue 0 -variable searchInVars
   ttk::checkbutton $w.b2.flip -textvar ::tr(IgnoreColors) -onvalue 1 -offvalue 0 -variable sBoardIgnoreCols
   
-  dialogbutton $w.b.stop -textvar ::tr(Stop) -command sc_progressBar
+  dialogbutton $w.b.stop -textvar ::tr(Stop) -command progressBarCancel
   $w.b.stop configure -state disabled
   
   dialogbutton $w.b.search -textvar ::tr(Search) -command {
-    busyCursor .
     .sb.b.stop configure -state normal
     grab .sb.b.stop
-    sc_progressBar .sb.fprogress.progress bar 301 21 time
-
     set base [lindex $refDatabaseB 0]
+    progressBarSet .sb.fprogress.progress 301 21
     set str [sc_search board $::search::filter::operation $sBoardSearchType $searchInVars $sBoardIgnoreCols $base]
 
-    unbusyCursor .
     grab release .sb.b.stop
     .sb.b.stop configure -state disabled
     #tk_messageBox -type ok -title $::tr(SearchResults) -message $str

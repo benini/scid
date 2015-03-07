@@ -163,8 +163,7 @@ proc ::windows::gamelist::FilterExport {{w}} {
 	                          -typevariable ::gamelistExport \
 	                          -title [tr ToolsExpFilter] ]
 	if {$fName == ""} { return }
-	progressWindow "Scid" "Exporting games..." $::tr(Cancel) "sc_progressBar"
-	busyCursor .
+	progressWindow "Scid" "Exporting games..." $::tr(Cancel)
 	if {$::gamelistExport == "LaTeX"} {
 		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
 		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport \
@@ -173,7 +172,6 @@ proc ::windows::gamelist::FilterExport {{w}} {
 		sc_filter export $::gamelistBase($w) $::gamelistFilter($w) \
 		                 $::glistSortStr($w.games.glist) $fName $::gamelistExport
 	}
-	unbusyCursor .
 	closeProgressWindow
 }
 
@@ -269,7 +267,7 @@ proc ::windows::gamelist::Awesome {{w} {txt}} {
 				set op { -gameNumber [list "$txt" "$txt"] }
 			}
 		}
-		progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel) "sc_progressBar"
+		progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel)
 		set res [eval "$cmd$op"]
 		closeProgressWindow
 		#TODO: tk_messageBox -message [eval "list $op"]
@@ -303,7 +301,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 		if {$confirm != "ok"} { return }
 	}
 
-	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) ""
+	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel)
 	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
 	closeProgressWindow
 	if {$copyErr} { ERROR::MessageBox "$result"}

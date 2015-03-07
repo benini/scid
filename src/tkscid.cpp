@@ -60,20 +60,6 @@ static Position * scratchPos = NULL;   // temporary "scratch" position.
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static PBook * ecoBook = NULL;         // eco classification pbook.
 static SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correction.
-
-
-struct progressBarT {
-    bool state;
-    int  height;
-    int  width;
-    bool interrupt;
-    Timer timer;
-    char * canvName;
-    char * rectName;
-    char * timeName;
-};
-static progressBarT progBar;
-
 static OpTable * reports[2] = {NULL, NULL};
 static const char * reportTypeName[2] = { "opening", "player" };
 static const uint REPORT_OPENING = 0;
@@ -314,127 +300,6 @@ InvalidCommand (Tcl_Interp * ti, const char * majorCmd,
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Progress Bar update routine:
-//
-static void
-updateProgressBar (Tcl_Interp * ti, uint done, uint total, bool update_idletasks_only = false)
-{
-    char tempStr [250];
-    uint width = progBar.width;
-    if (total > 0) {
-        double w = (double)width * (double)done / (double)total;
-        width = (int) w;
-    }
-    sprintf (tempStr, "%s coords %s 0 0 %u %u", progBar.canvName,
-             progBar.rectName, width + 1, progBar.height + 1);
-    Tcl_Eval (ti, tempStr);
-    if (progBar.timeName[0] != 0) {
-        int elapsed = progBar.timer.CentiSecs();
-        int estimated = elapsed;
-        if (done != 0) {
-            // Estimated total time = elapsed * total / done, but we do
-            // the calculation using double-precision floating point because
-            // if total and elapsed are large, we can get overflow.
-            double d = (double)elapsed * (double)total / (double)done;
-            estimated = (int) d;
-        }
-        elapsed /= 100;
-        estimated /= 100;
-        sprintf (tempStr, "%s itemconfigure %s -text \"%d:%02d / %d:%02d\"",
-                 progBar.canvName, progBar.timeName,
-                 elapsed / 60, elapsed % 60, estimated / 60, estimated % 60);
-        Tcl_Eval (ti, tempStr);
-    }
-    if (update_idletasks_only)
-        Tcl_Eval (ti, "update idletasks");
-    else
-    	Tcl_Eval (ti, "update");
-}
-
-static bool
-startProgressBar (void)
-{
-    progBar.interrupt = false;
-    if (progBar.state == false) { return false; }
-    progBar.state = false;
-    progBar.timer.Reset();
-    return true;
-}
-
-static void
-restartProgressBar (Tcl_Interp * ti)
-{
-    progBar.timer.Reset();
-    updateProgressBar (ti, 0, 1);
-}
-
-static inline bool
-interruptedProgress () {
-    return (progBar.interrupt);
-}
-
-// A goood Progress interface is not easy:
-// 1) It would be nice to pass the name of a tcl callback function to UI_CreateProgress
-// 2) It would be nice to be able to run multiple progressbars
-// 3) It would be nice to have automatic clean up
-// As an intermediate step i'll use a var that is incremented by sc_base functions
-// and reset to 0 by sc_scrollbar
-// This way if tcl code do not called sc_scrollbar just before the command invoking UI_CreateProgress
-// the tcl_Progress::report_ function will do nothing
-// Tcl code can be written like this:
-/*
-	progressWindow "Scid" "$::tr(CopyGames)..." $::tr(Cancel) ""
-	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
-	closeProgressWindow
-*/
-// to show a window with a progress bar and a cancel button, or like this
-/*
-	set copyErr [catch {sc_base copygames $srcBase $filter $dstBase} result]
-*/
-// (no progress window)
-static uint64_t tcl_ProgressHack = 1;
-
-class tcl_Progress : public Progress {
-	Tcl_Interp* ti_;
-	bool dummy_;
-	Timer timer_;
-
-public:
-	tcl_Progress(Tcl_Interp* ti, bool dummy) : ti_(ti), dummy_(dummy) {}
-	virtual ~tcl_Progress() {}
-
-	virtual bool report(uint done, uint total) const {
-		if (dummy_) return true;
-
-		uint64_t elapsed = timer_.MilliSecs();
-		uint64_t estimated = (done == 0) ? 0 : elapsed * total / done;
-		std::ostringstream tmp;
-		tmp << "::progressCallBack";
-		tmp << " " << done << " " << total << " " << elapsed / 1000 << " " << estimated / 1000;
-		return TCL_OK == Tcl_EvalEx(ti_, tmp.str().c_str(), -1, 0);
-	}
-};
-
-class tcl_ProgressPosMask : public Progress {
-	Tcl_Interp* ti_;
-public:
-	tcl_ProgressPosMask(Tcl_Interp* ti) : ti_(ti) {}
-	virtual ~tcl_ProgressPosMask() {}
-
-	virtual bool report(uint done, uint total) const {
-		return TCL_OK == Tcl_EvalEx(ti_, "::windows::gamelist::PosMaskProgress", -1, 0);
-	}
-};
-
-
-tcl_Progress UI_CreateProgress(void* data) {
-	return tcl_Progress((Tcl_Interp*) data, tcl_ProgressHack != 1);
-}
-tcl_ProgressPosMask UI_CreateProgressPosMask(void* data) {
-	return tcl_ProgressPosMask((Tcl_Interp*) data);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Standard error messages:
 //
 const char *
@@ -467,23 +332,15 @@ main (int argc, char * argv[])
     srand (time(NULL));
     
     // Initialise global Scid database variables:
+    scratchPos = new Position;
+    scratchGame = new Game;
     dbList = new scidBaseT [MAX_BASES];
+    currentBase = 0;
+    db = &(dbList[currentBase]);
     // Initialise the clipbase database:
     clipbase = &(dbList[CLIPBASE_NUM]);
     clipbase->Open();
     clipbase->idx->SetType (2);
-
-    // Initialise the progress bar:
-    progBar.state = false;
-    progBar.interrupt = false;
-    progBar.canvName = strDuplicate ("");
-    progBar.rectName = strDuplicate ("");
-    progBar.timeName = strDuplicate ("");
-
-    currentBase = 0;
-    scratchPos = new Position;
-    scratchGame = new Game;
-    db = &(dbList[currentBase]);
 
     return UI_Main(argc, argv, scid_Exit);
 }
@@ -718,8 +575,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base: database commands.
-int
-sc_base (UI_type1 cd, UI_type2 ti, int argc, const char ** argv)
+UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 {
     static const char * options [] = {
 		"close",        "count",
@@ -748,8 +604,6 @@ sc_base (UI_type1 cd, UI_type2 ti, int argc, const char ** argv)
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
     if (index == -1) return InvalidCommand (ti, "sc_base", options);
-
-    tcl_ProgressHack++;
 
     switch (index) {
     case BASE_COUNT:
@@ -920,7 +774,7 @@ sc_base (UI_type1 cd, UI_type2 ti, int argc, const char ** argv)
     case BASE_COMPACT:
         if (argc == 3) {
             errorT res = dbase->compact(spellChecker[NAME_PLAYER], UI_CreateProgress(ti));
-            return TclResult(ti, res);
+            return UI_Result(ti, res);
         } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
             uint n_deleted, n_unused, n_sparse, n_badNameId;
             errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
@@ -1006,11 +860,6 @@ sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 
-void
-base_progress (void * data, uint count, uint total) {
-    updateProgressBar ((Tcl_Interp *)data, count, total, true);
-}
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_slot: takes a database (.si3 or .pgn file) name and returns
 //    the slot number it is using if it is already opened, or 0 if
@@ -1053,11 +902,11 @@ sc_base_open (Tcl_Interp * ti, const char* filename)
     int newBaseNum = findEmptyBase();
     if (newBaseNum == -1) return errorResult (ti, ERROR_Full);
 
-    const Progress& progress = UI_CreateProgress(ti);
+    Progress progress = UI_CreateProgress(ti);
     errorT err = dbList[newBaseNum].Open(FMODE_Both,
                                          filename, false,
                                          spellChecker[NAME_PLAYER],
-                                         &progress);
+                                         progress);
     if (err == ERROR_NameDataLoss) {
         setIntResult (ti, newBaseNum + 1);
         return TclResult(ti, err);
@@ -1066,7 +915,7 @@ sc_base_open (Tcl_Interp * ti, const char* filename)
         err = dbList[newBaseNum].Open(FMODE_ReadOnly,
                                       filename, false,
                                       spellChecker[NAME_PLAYER],
-                                      &progress);
+                                      progress);
     }
     if (err != OK) return TclResult (ti, err);
 
@@ -1178,7 +1027,6 @@ exportGame (Game * g, FILE * exportFile, gameFormatT format, uint pgnStyle)
 int
 sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    bool showProgress = startProgressBar();
     FILE * exportFile = NULL;
     bool exportFilter = false;
     bool appendToFile = false;
@@ -1315,9 +1163,8 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         fputs (startText, exportFile);
     }
 
+    Progress progress = UI_CreateProgress(ti);
     Game * g = scratchGame;
-    uint updateStart, update;
-    updateStart = update = 10;  // Update progress bar every 10 games
     uint numSeen = 0;
     uint numToExport = exportFilter ? db->dbFilter->Count() : 1;
     db->tbuf->SetWrapColumn (75);
@@ -1325,14 +1172,8 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint i_last = (exportFilter) ? db->numGames() : i +1;
     for (; i < i_last; i++) {
         if (!exportFilter || db->dbFilter->Get(i)) { // Export this game:
-            numSeen++;
-            if (showProgress) {  // Update the percentage done bar:
-                update--;
-                if (update == 0) {
-                    update = updateStart;
-                    updateProgressBar (ti, numSeen, numToExport);
-                    if (interruptedProgress()) { break; }
-                }
+            if (numSeen++ % 100) {  // Update the percentage done bar:
+                if (!progress.report(numSeen, numToExport)) break;
             }
 
             // Print the game, skipping any corrupt games:
@@ -1351,7 +1192,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     fputs (endText, exportFile);
     fclose (exportFile);
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1, 1);
     return TCL_OK;
 }
 
@@ -1365,8 +1206,7 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
 {
-    int res = TCL_OK;
-    bool showProgress = startProgressBar();
+    errorT res = OK;
 
     MFile pgnFile;
     if (pgnFile.Open (filename, FMODE_ReadOnly) != OK) {
@@ -1378,19 +1218,21 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
     if (inputLength < 1) { inputLength = 1; }
     parser.IgnorePreGameText();
     uint gamesSeen = 0;
+    Progress progress = UI_CreateProgress(ti);
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
         errorT err = cdb->saveGame(scratchGame, false);
         if (err != OK) return TclResult(ti, err);
         // Update the progress bar:
-        gamesSeen++;
-        if (showProgress  &&  (gamesSeen % 100) == 0) {
-            if (interruptedProgress()) { res = TCL_BREAK; break; }
-            updateProgressBar (ti, parser.BytesUsed(), inputLength);
+        if ((gamesSeen++ % 100) == 0) {
+            if (!progress.report(parser.BytesUsed(), inputLength)) {
+                res = ERROR_UserCancel;
+                break;
+            }
         }
     }
     cdb->clearCaches();
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1,1);
 
     appendUintElement (ti, gamesSeen);
     if (parser.ErrorCount() > 0) {
@@ -1398,7 +1240,7 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
     } else {
         Tcl_AppendElement (ti, "");
     }
-    return res;
+    return TclResult(ti, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1409,8 +1251,6 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
 int
 sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    bool showProgress = startProgressBar();
-
     const char * usage =
         "Usage: sc_base piecetrack [-g|-t] <minMoves> <maxMoves> <startSquare ...>";
 
@@ -1468,8 +1308,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     // Examine every filter game and track the selected pieces:
 
-    uint updateStart = 1000;  // Update progress bar every 1000 filter games.
-    uint update = updateStart;
+    Progress progress = UI_CreateProgress(ti);
     uint filterCount = db->dbFilter->Count();
     uint filterSeen = 0;
 
@@ -1478,13 +1317,9 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         if (!db->dbFilter->Get(gnum)) { continue; }
 
         // Update progress bar:
-        if (showProgress) {
-            update--;
-            filterSeen++;
-            if (update == 0) {
-                update = updateStart;
-                if (interruptedProgress()) { break; }
-                updateProgressBar (ti, filterSeen, filterCount);
+        if ((filterSeen++ % 1000) == 0) {
+            if (!progress.report(filterSeen, filterCount)) {
+                return UI_Result(ti, ERROR_UserCancel);
             }
         }
 
@@ -1585,7 +1420,7 @@ sc_base_piecetrack (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         } // while (plyCount < maxPly)
     } // foreach game
 
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1, 1);
 
     // Now return the 64-integer list: if in time-on-square mode,
     // the value for each square is the number of plies when a
@@ -1965,7 +1800,6 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
                 return InvalidCommand (ti, "sc_base duplicates", options);
         }
     }
-    bool showProgress = startProgressBar();
     uint deletedCount = 0;
     const uint numGames = dbase->numGames();
 
@@ -1998,13 +1832,12 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
     std::sort(hash.begin(), hash.end());
 
     if (setFilterToDups) { dbase->dbFilter->Fill (0); }
-    if (showProgress) { restartProgressBar (ti); }
+    Progress progress = UI_CreateProgress(ti);
 
     // Now check same-hash games for duplicates:
     for (size_t i=0; i < n_hash; i++) {
-        if (showProgress  &&  (i % 1000) == 0) {
-            if (interruptedProgress()) { break; }
-            updateProgressBar (ti, i, numGames);
+        if ((i % 1000) == 0) {
+            if (!progress.report(i, numGames)) break;
         }
         gNumListT* head = &(hash[i]);
         IndexEntry* ieHead = dbase->idx->FetchEntry (head->gNumber);
@@ -2100,7 +1933,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
 
     dbase->idx->WriteHeader();
     dbase->clearStats();
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1,1);
 
     return deletedCount;
 }
@@ -2131,8 +1964,6 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     enum {
         TAG_FIND, TAG_LIST, TAG_STRIP
     };
-
-    bool showProgress = startProgressBar();
 
     const char * tag = NULL;  // For "find" or "strip" commands
     std::vector< std::pair <std::string, uint> > tag_freq;  // For "list" command
@@ -2166,20 +1997,13 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (cmd == TAG_FIND) { db->dbFilter->Fill (0); }
 
     // Process each game in the database:
-    uint updateStart = 1000;  // Update progress bar every 1000 filter games.
-    uint update = updateStart;
+    Progress progress = UI_CreateProgress(ti);
     Game * g = scratchGame;
     uint nEditedGames = 0;
 
     for (uint gnum = 0, n = db->numGames(); gnum < n; gnum++) {
-        // Update progress bar:
-        if (showProgress) {
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                if (interruptedProgress()) { break; }
-                updateProgressBar (ti, gnum, n);
-            }
+        if ((gnum % 1000) == 0) {
+            if (!progress.report(gnum, n)) break;
         }
 
         const IndexEntry* ie = db->getIndexEntry(gnum);
@@ -2669,7 +2493,7 @@ sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (err != OK) return errorResult (ti, err);
 
     // Now copy each index entry
-    const Progress& progress = UI_CreateProgress(ti);
+    Progress progress = UI_CreateProgress(ti);
     for (uint i=0, n = oldIndex.GetNumGames(); i < n; i++) {
         if ((i % 250) == 0) {
             if (!progress.report(i, n)) {
@@ -2868,29 +2692,21 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     bool extendedCodes = strGetBoolean(argv[3]);
-    bool showProgress = startProgressBar();
     Game * g = scratchGame;
     IndexEntry * ie;
-    uint updateStart, update;
-    updateStart = update = 1000;  // Update progress bar every 1000 games
     errorT err = OK;
     uint countClassified = 0;  // Count of games classified.
     dateT startDate = ZERO_DATE;
     if (option == ECO_DATE) {
         startDate = date_EncodeFromString (&(argv[2][5]));
     }
-
+    Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Time the classification operation.
 
     // Read each game:
     for (uint i=0, n = db->numGames(); i < n; i++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, i, n);
-                if (interruptedProgress()) break;
-            }
+        if ((i % 1000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(i, n)) break;
         }
         ie = db->idx->FetchEntry (i);
         if (ie->GetLength() == 0) { continue; }
@@ -2952,7 +2768,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             countClassified++;
         }
     }
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1,1);
 
     // Update the index file header:
     err = db->clearCaches();
@@ -3324,7 +3140,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 g.ResetPgnStyle (PGN_STYLE_TAGS | PGN_STYLE_COMMENTS | PGN_STYLE_VARS);
             }
             if (argc > 7) fprintf(exportFile, "%s", argv[7]);
-            bool showProgress = startProgressBar();
+            Progress progress = UI_CreateProgress(ti);
             const int count = 100;
             uint idxList[count];
             bool end = false;
@@ -3343,14 +3159,13 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     dbase->tbuf->NewLine();
                     dbase->tbuf->DumpToFile (exportFile);
                 }
-                if (!end && showProgress) {
-                    updateProgressBar (ti, start, filter->Count());
-                    end = interruptedProgress();
+                if (!end) {
+                    end = ! progress.report(start, filter->Count());
                 }
             }
             if (argc > 8) fprintf(exportFile, "%s", argv[8]);
             fclose (exportFile);
-            if (showProgress) { updateProgressBar (ti, 1, 1); }
+            progress.report(1,1);
             return TCL_OK;
         }
         return errorResult (ti, "Usage: sc_filter export baseId filterName sortCrit filename <PGN|LaTeX> [header] [footer]");
@@ -5410,182 +5225,65 @@ sc_game_new (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    scidBaseT * base = db;
-    int current = db->gameNumber;
-    const char * updateLabel = NULL;
-    const char * interruptedStr =
-        translate (ti, "NoveltyInterrupt", "Novelty search interrupted");
-    const char * noNoveltyStr =
-        translate (ti, "NoveltyNone", "No novelty was found for this game");
-
     const char * usage =
-        "Usage: sc_game novelty [-older|-all] [-updatelabel <label>] [base]";
+        "Usage: sc_game novelty [-older] base";
 
     bool olderGamesOnly = false;
-    dateT currentDate = db->game->GetDate();
 
     int baseArg = 2;
-
-    if (argc >= baseArg
-        &&  argv[baseArg][0] == '-'  &&  argv[baseArg][1] == 'a'
-        &&  strIsPrefix (argv[baseArg], "-all")) {
-        olderGamesOnly = false;
-        baseArg++;
-    }
     if (argc >= baseArg
         &&  argv[baseArg][0] == '-'  &&  argv[baseArg][1] == 'o'
         &&  strIsPrefix (argv[baseArg], "-older")) {
         olderGamesOnly = true;
         baseArg++;
     }
-    if (argc >= baseArg+2  &&
-        argv[baseArg][0] == '-'  &&  argv[baseArg][1] == 'u'  &&
-        strIsPrefix (argv[baseArg], "-updatelabel")) {
-        updateLabel = argv [baseArg+1];
-        baseArg += 2;
-    }
-    if (argc < baseArg  ||  argc > baseArg+1) {
-        return errorResult (ti, usage);
-    }
-    if (argc == baseArg+1) {
-        int baseNum = strGetInteger (argv[baseArg]);
-        if (baseNum >= 1  &&  baseNum <= MAX_BASES) {
-            base = &(dbList[baseNum - 1]);
-        }
-    }
-
-    if (! base->inUse) {
-        return errorResult (ti, "The selected database is not open.");
-    }
-
-    if (db->game->HasNonStandardStart()) {
-        return errorResult (ti, "This game has a non-standard start position.");
-    }
-
-    if (updateLabel != NULL) {
-        progBar.interrupt = false;
-    }
+    if (argc < baseArg  ||  argc > baseArg+1) return errorResult(ti, usage);
+    scidBaseT* base = getBase(strGetInteger (argv[baseArg]));
+    if (base == 0) return UI_Result(ti, ERROR_BadArg);
 
     // First, move to the deepest ECO position in the game.
     // This code is adapted from sc_eco_game().
-    db->game->MoveToPly (0);
+    Game* g = base->game;
     if (ecoBook) {
+        while (g->MoveForward() == OK) {}
         DString ecoStr;
-        do {} while (db->game->MoveForward() == OK);
-        do {
-            if (ecoBook->FindOpcode (db->game->GetCurrentPos(), "eco",
-                                     &ecoStr) == OK) {
-                break;
-            }
-            if (updateLabel != NULL) {
-                char text [250];
-                sprintf (text, "%s configure -text {Finding last opening position ...}",
-                         updateLabel);
-                Tcl_Eval (ti, text);
-                Tcl_Eval (ti, "update");
-                if (interruptedProgress()) {
-                    return errorResult (ti, interruptedStr);
-                }
-            }
-        } while (db->game->MoveBackup() == OK);
+        while (ecoBook->FindOpcode (g->GetCurrentPos(), "eco", &ecoStr) != OK) {
+            if (g->MoveBackup() != OK) break;
+        }
     }
 
     // Now keep doing an exact position search (ignoring the current
     // game) and skipping to the next game position whenever a match
     // is found, until a position not in any database game is reached:
-
-    bool foundMatch = true;
-    while (1) {
-        // Loop searching on each game:
-        Position * pos = db->game->GetCurrentPos();
-
-        if (updateLabel != NULL) {
-            char text [250];
-            char san [16];
-            db->game->GetSAN (san);
-            Tcl_AppendResult (ti, san, NULL);
-            sprintf (text, "%s configure -text {Trying: %u%s%s ...}",
-                     updateLabel, pos->GetFullMoveCount(),
-                     pos->GetToMove() == WHITE ? "." : "...", san);
-            Tcl_Eval (ti, text);
-            Tcl_Eval (ti, "update");
-            if (interruptedProgress()) {
-                return errorResult (ti, interruptedStr);
-            }
-        }
-
-        matSigT msig = matsig_Make (pos->GetMaterial());
-        uint hpSig = pos->GetHPSig();
-        Game * g = scratchGame;
-        foundMatch = false;
-
-        for (uint gameNum=0, n = base->numGames(); gameNum < n; gameNum++) {
-            // Check for interruption every 64k games:
-            if (updateLabel != NULL  &&  ((gameNum & 65535) == 65535)) {
-                Tcl_Eval (ti, "update");
-                if (interruptedProgress()) {
-                    return errorResult (ti, interruptedStr);
-                }
-            }
-            // Ignore the current game:
-            if (db == base  &&  current >= 0) {
-                if ((uint)current == gameNum) { continue; }
-            }
-
-            const IndexEntry* ie = base->getIndexEntry(gameNum);
-            if (ie->GetLength() == 0) { continue; }
-
-            // Ignore games with non-standard start:
-            if (ie->GetStartFlag()) { continue; }
+    Progress progress = UI_CreateProgress(ti);
+    Filter* filter = base->getFilter(base->newFilter().c_str());
+    dateT currentDate = g->GetDate();
+    while (g->MoveForward() == OK) {
+        SearchPos(g->GetCurrentPos()).setFilter(base, filter, Progress());
+        int count = 0;
+        for (uint i=0, n = base->numGames(); i < n; i++) {
+            if (filter->Get(i) == 0) continue;
 
             // Ignore newer games if requested:
-            if (olderGamesOnly  &&  ie->GetDate() >= currentDate) {
-                continue;
+            if (olderGamesOnly) {
+                if (base->getIndexEntry(i)->GetDate() >= currentDate) continue;
             }
+            if (count++ != 0) break;
+        }
 
-            // Check home pawn signature optimisation:
-            if (hpSig != 0xFFFF) {
-                const byte * hpData = ie->GetHomePawnData();
-                if (! hpSig_PossibleMatch (hpSig, hpData)) {
-                    continue;
-                }
-            }
+        if (count <= 1) { // Novelty found
+            base->deleteFilter(filter);
+            return okResult(ti, g->GetCurrentPly());
+        }
 
-            // Check material signature optimisation:
-            if (!matsig_isReachable (msig, ie->GetFinalMatSig(),
-                                     ie->GetPromotionsFlag(),
-                                     ie->GetUnderPromoFlag())) {
-                continue;
-            }
-
-            if (base->getGame(ie, db->bbuf) != OK) {
-                return errorResult (ti, "Error reading game file.");
-            }
-            if (g->ExactMatch (pos, db->bbuf, NULL)) {
-                foundMatch = true;
-                break;
-            }
-        } // for-loop
-
-        // Now, if foundMatch is false, we have our novelty position:
-        if (! foundMatch) { break; }
-
-        // Otherwise, go to the next game position and try again:
-        if (db->game->MoveForward() != OK) { break; }
+        if (!progress.report(g->GetCurrentPly() +1, g->GetNumHalfMoves())) {
+            base->deleteFilter(filter);
+            return UI_Result(ti, ERROR_UserCancel);
+        }
     }
 
-    if (foundMatch) {
-        return errorResult (ti, noNoveltyStr);
-    }
-
-    db->game->MoveBackup();
-    Position * pos = db->game->GetCurrentPos();
-    appendUintResult (ti, pos->GetFullMoveCount());
-    Tcl_AppendResult (ti, pos->GetToMove() == WHITE ? "." : "...", NULL);
-    char san [16];
-    db->game->GetSAN (san);
-    Tcl_AppendResult (ti, san, NULL);
-    return TCL_OK;
+    base->deleteFilter(filter);
+    return okResult(ti, -1);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8094,51 +7792,6 @@ sc_pos_setComment (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_progressBar:
-//    Sets the progress bar. This is typically called once before each
-//    search or other slow action that can display a progress bar.
-//    It takes either zero (to clear the progress bar) or four
-//    arguments: the canvas name, the rectangle object name, the width,
-//    and the height. It can also take an optional fifth argument, for the
-//    elapsed time text object name in the canvas.
-//
-//    Actions that update the progress bar set the state to zero when they
-//    complete, so the action of setting a progress bar ONLY lasts for
-//    the next Scid function that uses it.
-int
-sc_progressBar (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    tcl_ProgressHack = 0;
-
-    switch (argc) {
-    case 5:
-    case 6:
-        progBar.state = true;
-        progBar.interrupt = false;
-        delete[] progBar.canvName;
-        delete[] progBar.rectName;
-        delete[] progBar.timeName;
-        progBar.canvName = strDuplicate (argv[1]);
-        progBar.rectName = strDuplicate (argv[2]);
-        progBar.width = strGetInteger (argv[3]);
-        progBar.height = strGetInteger (argv[4]);
-        progBar.timeName = strDuplicate (argc > 5 ? argv[5] : "");
-        break;
-
-    case 1:  // No arguments, just reset progress bar:
-        progBar.state = false;
-        progBar.interrupt = true;
-        break;
-
-    default:
-        return errorResult (ti,
-                "Usage: sc_progressBar [canvas tagName width height]");
-    }
-    return TCL_OK;
-}
-
-
 //////////////////////////////////////////////////////////////////////
 //   NAME commands
 int
@@ -8229,14 +7882,6 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     dateT * startDate = new dateT [nameCount];
     dateT * endDate = new dateT [nameCount];
 
-    // Set the scroll bar to its initial state
-    //
-    bool showProgress = startProgressBar();
-    
-    // Scroll bar threshold (about 200 steps)
-    //
-    uint threshold = (db->numGames() / 200) + 1;
-
     for (idNumberT id=0; id < nameCount; id++) {
         newIDs[id] = id;
         startDate[id] = ZERO_DATE;
@@ -8287,6 +7932,9 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         return setResult (ti, "No valid corrections were found.");
     }
 
+    Progress progress = UI_CreateProgress(ti);
+    // Scroll bar threshold (about 200 steps)
+    uint threshold = (db->numGames() / 200) + 1;
     // Now go through the index making each necessary change:
     const IndexEntry* ie;
     IndexEntry newIE;
@@ -8371,16 +8019,11 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         
         // Update the scroll bar
         //
-        if ( showProgress && (i % threshold) == 1 ) {
-          updateProgressBar( ti, i, n);
-        }
+        if ((i % threshold) == 0 ) progress.report(i,n);
     }
     
     // Ensure the scroll bar is complete at this point
-    //
-    if ( showProgress )  {
-        updateProgressBar( ti, 1, 1 );
-    }
+    progress.report(1,1);
 
     delete[] newIDs;
     delete[] startDate;
@@ -9532,7 +9175,6 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         OPT_NOMONTH, OPT_UPDATE, OPT_DEBUG, OPT_TEST, OPT_CHANGE, OPT_FILTER
     };
 
-    bool showProgress = startProgressBar();
     bool doGamesWithNoMonth = true;
     bool updateIndexFile = true;
     bool printEachChange = false;
@@ -9577,17 +9219,11 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     if (testOnly) { return TCL_OK; }
 
-    uint updateStart = 1000;
-    uint update = updateStart;
+    Progress progress = UI_CreateProgress(ti);
 
     for (uint gnum=0, n = db->numGames(); gnum < n; gnum++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, gnum, n);
-                if (interruptedProgress()) break;
-            }
+        if ((gnum % 1000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(gnum, n)) break;
         }
         if (filterOnly  &&  db->dbFilter->Get(gnum) == 0) { continue; }
 
@@ -9745,12 +9381,6 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         OPT_MAX, OPT_SURNAMES, OPT_AMBIGUOUS
     };
     
-    bool interrupted = false;
-    
-    // Set the progress bar to its intial state
-    //
-    bool showProgress = startProgressBar();
-
     int arg = 2;
     while (arg+1 < argc) {
         const char * option = argv[arg];
@@ -9802,6 +9432,7 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Thresholds for progress-bar updating
     // We try to make about 200 steps, which should allow
     // an update at least every second, even for a big name base.
+    Progress progress = UI_CreateProgress(ti);
     uint nameThres = (maxName / 200)        + 1;
     uint corrThres = (maxCorrections / 200) + 1;
 
@@ -9959,48 +9590,23 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         
         // Update the progress bar
         //
-        
         bar:
-        
-        if ( showProgress ) {
-            // Update filter to avoid hyperactivity
-            //
-            bool filter = (id        % nameThres == 1)
-                       || (correctionCount % corrThres == 1);
-        
             // Try to be clever here: If we go for maxCorrections only, we do not know if and when
             // they will be found. So we base our progress indicator on either the name base crawl
             // or the actual correction counter, whichever is closer to its finish.
-            //
-            if ( filter ) {
+            if ((id % nameThres) == 1 || (correctionCount % corrThres) == 1 ) {
                 if ( (double)correctionCount / (double)maxCorrections > (double)id / (double)maxName ) {
-                    updateProgressBar( ti, correctionCount, maxCorrections );
+                    if (!progress.report(correctionCount, maxCorrections)) break;
                 }
                 else {
-                    updateProgressBar( ti, id, maxName );
-                }
-
-                // Allow the user to break in at this point
-                //
-                if ( (interrupted = interruptedProgress()) )  {
-                    break;
+                    if (!progress.report(id, maxName)) break;
                 }
             }
-        }
 
         // Bail out once we have found maxCorrections
         //
         if ( correctionCount >= maxCorrections ) {
             break;
-        }
-    }
-
-    // Ensure a truely full bar at this point, but only do so if
-    // the user chose to run the thing till the very end.
-    //    
-    if ( ! interrupted )  {
-        if ( showProgress ) {
-            updateProgressBar (ti, 1, 1);
         }
     }
 
@@ -10318,7 +9924,6 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc > 5) { excludeMove = argv[5]; }
     if (excludeMove[0] == '-') { excludeMove = ""; }
 
-    bool showProgress = startProgressBar();
     if (reports[reportType] != NULL) {
         delete reports[reportType];
     }
@@ -10329,17 +9934,11 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     report->SetDecimalChar (decimalPointChar);
     report->SetMaxThemeMoveNumber (maxThemeMoveNumber);
 
-    uint updateStart, update;
-    updateStart = update = 2000;  // Update progress bar every 2000 games
+    Progress progress = UI_CreateProgress(ti);
 
     for (uint gnum=0, n = db->numGames(); gnum < n; gnum++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, gnum, n);
-                if (interruptedProgress()) { break; }
-            }
+        if ((gnum % 2000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(gnum, n)) break;
         }
 
         byte ply = db->dbFilter->Get(gnum);
@@ -10367,7 +9966,7 @@ sc_report_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         report->AddEndMaterial (ie->GetFinalMatSig(), (ply != 0));
     }
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1,1);
 
     return TCL_OK;
 }
@@ -10648,7 +10247,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     base->treeFilter->Fill(0);
     Filter* filter = base->getFilter("dbfilter");
 
-    bool showProgress = startProgressBar();
+    Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
     uint skipcount = 0;
 
@@ -10680,27 +10279,17 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         simpleMoveT sm;
         base->treeFilter->Fill (0); // Reset the filter to be empty
         skipcount = 0;
-        uint updateStart = 5000;  // Update progress bar every 5000 games
-        uint update = 1;
 
     	// 3. Set up the stored line code matches:
     	StoredLine stored_line(pos->GetBoard(), pos->GetToMove());
 
     	// 4. Search through each game:
     	for (uint i=0, n = base->numGames(); i < n; i++) {
-    		if (showProgress) {  // Update the percentage done slider:
-    			update--;
-    			if (update == 0) {
-    				update = updateStart;
-    				updateProgressBar (ti, i, n);
-    				if (interruptedProgress()) {
-					return setResult (ti, errMsgSearchInterrupted(ti));
-    				}
-    				if (search_pool.count(&base) == 0) {
-					return setResult (ti, "canceled");
-    				}
-    			}
-    		}
+            if ((i % 5000) == 0) {  // Update the percentage done slider:
+                if (!progress.report(i,n) || search_pool.count(&base) == 0) {
+                    return setResult (ti, "canceled");
+                }
+            }
 
             if (inFilterOnly && filter->Get(i) == 0) { continue; }
 
@@ -10863,7 +10452,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
 
-    if (showProgress) { updateProgressBar (ti, 1, 1, true); }
+    progress.report(1,1);
     search_pool.erase(&base);
 
     DString * output = new DString;
@@ -11156,7 +10745,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usageStr =
         "Usage: sc_search board <filterOp> <searchType> <searchInVars> <flip> [<base>]";
-    bool showProgress = startProgressBar();
     if (!db->inUse) {
         return errorResult (ti, errMsgNotOpen(ti));
     }
@@ -11203,6 +10791,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
       db = &(dbList[currentBase]);
     }
     
+    Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
     Position * posFlip =  NULL;
     matSigT msig = matsig_Make (pos->GetMaterial());
@@ -11221,8 +10810,6 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     Filter* filter = db->getFilter("dbfilter");
     uint skipcount = 0;
-    uint updateStart, update;
-    updateStart = update = 5000;  // Update progress bar every 5000 games
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
@@ -11235,13 +10822,8 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Game * g = scratchGame;
     uint gameNum = 0, n = db->numGames();
     for (; gameNum < n; gameNum++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, gameNum, n);
-                if (interruptedProgress()) { break; }
-            }
+        if ((gameNum % 5000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(gameNum, n)) break;
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
@@ -11365,7 +10947,7 @@ sc_search_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         filter->Set (gameNum, ply);
     }
 
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1,1);
     if (flip) { delete posFlip; }
 
     // Now print statistics and time for the search:
@@ -11522,7 +11104,6 @@ parsePattern (const char * str, patternT * patt)
 int
 sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    bool showProgress = startProgressBar();
     if (! db->inUse) {
         return errorResult (ti, "Not an open database.");
     }
@@ -11704,13 +11285,12 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     msig = matsig_Make (max);
     msigFlipped = MATSIG_FlipColor(msig);
 
+    Progress progress = UI_CreateProgress(ti);
     Timer timer;  // Start timing this search.
 
     uint skipcount = 0;
     char temp [250];
     Game * g = scratchGame;
-    uint updateStart, update;
-    updateStart = update = 1000;  // Update progress bar every 1000 games
     Filter* filter = db->getFilter("dbfilter");
 
     // If filter operation is to reset the filter, reset it:
@@ -11723,15 +11303,8 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Here is the loop that searches on each game:
     uint gameNum = 0, n = db->numGames();
     for (; gameNum < db->numGames(); gameNum++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, gameNum, n);
-                if (interruptedProgress()) {
-                    break;
-                }
-            }
+        if ((gameNum % 1000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(gameNum, n)) break;
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
@@ -11844,7 +11417,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     freePatternList (patt);
     freePatternList (flippedPatt);
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
+    progress.report(1,1);
 
     int centisecs = timer.CentiSecs();
 
@@ -12140,8 +11713,6 @@ parseTitles (const char * str)
 int
 sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filter, int argc, const char ** argv)
 {
-    bool showProgress = startProgressBar();
-
     char * sWhite = NULL;
     char * sBlack = NULL;
     char * sEvent = NULL;
@@ -12611,8 +12182,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
     uint startFilterCount = startFilterSize (base, filterOp);
     char temp[250];
     const IndexEntry* ie;
-    uint updateStart, update;
-    updateStart = update = 5000;  // Update progress bar every 5000 games
+    Progress progress = UI_CreateProgress(ti);
 
     // If filter operation is to reset the filter, reset it:
     if (filterOp == FILTEROP_RESET) {
@@ -12622,15 +12192,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
 
     // Here is the loop that searches on each game:
     for (uint i=0, n = base->numGames(); i < n; i++) {
-        if (showProgress) {  // Update the percentage done bar:
-            update--;
-            if (update == 0) {
-                update = updateStart;
-                updateProgressBar (ti, i, n);
-                if (interruptedProgress()) {
-                    break;
-                }
-            }
+        if ((i % 5000) == 0) {  // Update the percentage done bar:
+            if (!progress.report(i,n)) break;
         }
         // First, apply the filter operation:
         if (filterOp == FILTEROP_AND) {  // Skip any games not in the filter:
@@ -12785,10 +12348,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filte
 
     Tcl_Free ((char *) sPgnText);
 
-    if (showProgress) { updateProgressBar (ti, 1, 1); }
-    if (interruptedProgress()) {
-        Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
-    }
+    progress.report(1,1);
+
     int centisecs = timer.CentiSecs();
     sprintf (temp, "%d / %d  (%d%c%02d s)",
              filter->Count(), startFilterCount,

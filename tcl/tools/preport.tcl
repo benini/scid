@@ -146,7 +146,7 @@ proc ::preport::makeReportWin {args} {
     set ::preport::_interrupt 0
     button $w.b.cancel -text $::tr(Cancel) -command {
       set ::preport::_interrupt 1
-      sc_progressBar
+      progressBarCancel
     }
     pack $w.b.cancel -side right -pady 5 -padx 2
     
@@ -167,8 +167,7 @@ proc ::preport::makeReportWin {args} {
     wm geometry $w +$x+$y
     wm deiconify $w
     grab $w.b.cancel
-    sc_progressBar $w.c1 bar 401 21 time
-    busyCursor .
+    progressBarSet $w.c1 401 21
   }
 
   set searchArgs {}
@@ -178,12 +177,11 @@ proc ::preport::makeReportWin {args} {
   eval sc_search header $searchArgs
   if {$showProgress} {
     if {$::preport::_interrupt} {
-      unbusyCursor .
       catch {grab release $w.b.cancel}
       destroy $w
       return
     }
-    sc_progressBar $w.c2 bar 401 21 time
+    progressBarSet $w.c2 401 21
   }
   
   ::utils::history::AddEntry ::preport::_player $::preport::_player
@@ -197,7 +195,7 @@ proc ::preport::makeReportWin {args} {
       destroy $w
       return
     }
-    sc_progressBar $w.c3 bar 401 21 time
+    progressBarSet $w.c3 401 21
   }
   sc_report player create $::preport(ExtraMoves) $::preport(MaxGames)
   if {$::preport::_pos == "start"} { sc_game pop }
@@ -208,7 +206,6 @@ proc ::preport::makeReportWin {args} {
     }
   }
   if {$showProgress} {
-    unbusyCursor .
     catch {grab release $w.b.cancel}
     destroy $w
     if {$::preport::_interrupt} { return }

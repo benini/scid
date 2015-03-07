@@ -205,7 +205,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     set helpMessage($w.buttons.$b) $t
   }
   
-  dialogbutton $w.buttons.stop -textvar ::tr(Stop) -command { sc_progressBar }
+  dialogbutton $w.buttons.stop -textvar ::tr(Stop) -command { progressBarCancel }
   dialogbutton $w.buttons.close -textvar ::tr(Close) -command "::tree::closeTree $baseNumber"
   
   pack $w.buttons.best $w.buttons.graph $w.buttons.bStartStop $w.buttons.allgames $w.buttons.training \
@@ -384,7 +384,7 @@ proc ::tree::dorefresh { baseNumber } {
 
   grid $w.progress -in $w.statusframe -column 0 -row 0 -sticky nsew
   
-  sc_progressBar $w.progress bar [$w.progress cget -width] 100
+  progressBarSet $w.progress [$w.progress cget -width] 100
   foreach button {best graph training allgames close} {
     $w.buttons.$button configure -state disabled
   }

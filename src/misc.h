@@ -23,6 +23,28 @@
 #include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
 
+
+class ProgressImp {
+public:
+	virtual ~ProgressImp() {}
+	virtual bool report(uint done, uint total) = 0;
+};
+
+class Progress {
+	ProgressImp* f_;
+public:
+	Progress(ProgressImp* f = 0) : f_(f) {}
+	Progress(const Progress&);
+	Progress& operator=(const Progress&);
+	~Progress() { if (f_) delete f_;}
+
+	bool report(uint done, uint total) const {
+		if (f_) return f_->report(done, total);
+		return true;
+	}
+};
+
+
 #if CPP11_SUPPORT
 using std::to_string;
 #else
@@ -33,6 +55,7 @@ inline std::string to_string(int val) {
 	return res.str();
 }
 #endif
+
 
 // ECO string routines
 //

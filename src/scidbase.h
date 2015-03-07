@@ -91,7 +91,7 @@ struct scidBaseT {
 	             const char* filename = "",
 	             bool create = true,
 	             SpellChecker* spell = 0,
-	             const Progress* progress = 0);
+	             const Progress& progress = Progress());
 	errorT Close ();
 
 	std::string newFilter();

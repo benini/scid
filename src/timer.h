@@ -88,16 +88,4 @@ inline void Timer::set(long* sec, long* millisec) {
 
 #endif //CPP11_SUPPORT
 
-class Progress {
-public:
-	Progress() {}
-	virtual ~Progress() {}
-	Progress(const Progress&);
-	Progress& operator=(const Progress&);
-
-	virtual bool report(uint done, uint total) const = 0;
-};
-
-
-
 #endif //SCID_TIMER_H

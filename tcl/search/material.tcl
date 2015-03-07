@@ -581,7 +581,7 @@ proc ::search::material {{ref_base ""}} {
   
   dialogbutton $f.save -textvar ::tr(Save...) -command ::search::material::save
   
-  dialogbutton $f.stop -textvar ::tr(Stop) -command sc_progressBar
+  dialogbutton $f.stop -textvar ::tr(Stop) -command progressBarCancel
   $f.stop configure -state disabled
   
   dialogbutton $f.search -textvar ::tr(Search) -command {
@@ -590,7 +590,7 @@ proc ::search::material {{ref_base ""}} {
     sc_base switch [lindex $refDatabaseM 0]
     .sm.b3.stop configure -state normal
     grab .sm.b3.stop
-    sc_progressBar .sm.fprogress.progress bar 301 21 time
+    progressBarSet .sm.fprogress.progress 301 21
     set str [sc_search material \
         -wq [list $pMin(wq) $pMax(wq)] -bq [list $pMin(bq) $pMax(bq)] \
         -wr [list $pMin(wr) $pMax(wr)] -br [list $pMin(br) $pMax(br)] \

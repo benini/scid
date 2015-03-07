@@ -150,7 +150,7 @@ public:
     gameNumberT GetNumGames () const { return Header.numGames; }
     int GetBadNameIdCount() const { return badNameIdCount_; }
 
-    errorT ReadEntireFile (NameBase* nb, const Progress* progress = 0);
+    errorT ReadEntireFile (NameBase* nb, const Progress& progress);
 
     IndexEntry* FetchEntry (gameNumberT g) { return &(entries_[g]); }
     const IndexEntry* GetEntry (gameNumberT g) const { return &(entries_[g]); }
