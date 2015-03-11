@@ -14,17 +14,45 @@
 
 proc keyboardShortcuts {w} {
 	# Go back one move
-	bind $w <Left>	{ ::move::Back; break }
+	bind $w <Left> {
+		eval [excludeTextWidget %W]
+		::move::Back;
+		break
+	}
 
 	# Go forward one move
-	bind $w <Right> { ::move::Forward; break }
+	bind $w <Right> {
+		eval [excludeTextWidget %W]
+		::move::Forward
+		break
+	}
+
+	bind $w <Up> {
+		eval [excludeTextWidget %W]
+		::move::Back 10
+		break
+	}
+
+	bind $w <Down> {
+		eval [excludeTextWidget %W]
+		::move::Forward 10
+		break
+	}
 
 	# Exit Variation/Go to game start
-	bind $w <Home>	{ if {[::move::ExitVar] != 0} { break } }
-	bind $w <Home>	{+::move::Start }
+	bind $w <Home> {
+		eval [excludeTextWidget %W]
+		if {[::move::ExitVar] != 0} { break }
+		::move::Start
+		break
+	}
 
 	# Go to game end
-	bind $w <End>	 { ::move::End; break}
+	bind $w <End> {
+		eval [excludeTextWidget %W]
+		::move::End
+		break
+	}
 
 	# Go to previous game
 	bind $w <Alt-Left>	{ ::game::LoadHistory -1; break }
@@ -62,26 +90,26 @@ proc keyboardShortcuts {w} {
 
 	# Rotate the chess board
 	bind $w <period> {
-		set wclass [winfo class %W]
-		if {![regexp ".*(Entry|Text)" $wclass]} {
-			toggleRotateBoard
-		}
+		eval [excludeTextWidget %W]
+		toggleRotateBoard
+		break
 	}
 
 	# Open "Setup Board" dialog
 	bind $w <s> {
-		set wclass [winfo class %W]
-		if {![regexp ".*(Entry|Text)" $wclass]} {
-			::setupBoard
-		}
+		eval [excludeTextWidget %W]
+		::setupBoard
+		break
 	}
 
-	# Add null move (also "king take king" move)
-	bind $w <minus><minus> { addMove null null }
 
 	# Open the enter/create variation dialog
 	# TODO: <v> is not intuitive: <space> or <up> <down> may be better
-	bind $w <KeyPress-v> { ::showVars }
+	bind $w <KeyPress-v> {
+		eval [excludeTextWidget %W]
+		::showVars
+		break
+	}
 
 	# Change current database
 	set totalBaseSlots [sc_base count total]
@@ -151,8 +179,9 @@ proc keyboardShortcuts {w} {
 		bind $w "<Control-Key-$i>" "::file::SwitchToBase $i"
 	}
 
-	bind $w <Up> { ::move::Back 10;	break }
-	bind $w <Down>	{::move::Forward 10; break}
+	#TODO: this bind should not be global
+	# Add null move (also "king take king" move)
+	bind $w <minus><minus> { addMove null null }
 
 	bind $w <exclam><Return> "sc_pos addNag !; updateBoard -pgn"
 	bind $w <exclam><exclam><Return> "sc_pos addNag !!; updateBoard -pgn"
@@ -171,3 +200,8 @@ proc keyboardShortcuts {w} {
 	bind $w <asciitilde><equal><Return> "sc_pos addNag ~=; updateBoard -pgn"
 }
 
+proc excludeTextWidget {w} {
+	if { [regexp ".*(Entry|Text)" [winfo class $w] ] } {
+		return "continue"
+	}
+}
