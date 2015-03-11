@@ -163,8 +163,11 @@ proc ::file::Open_ {{fName ""} } {
   busyCursor .
   if {[file extension $fName] == "" || [file extension $fName] == ".si4"} {
     set fName [file rootname $fName]
-    if {[catch {openBase $fName} result]} {
-      if { $::errorCode != $::ERROR::NameDataLoss } { set err 1 }
+    progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail $fName]..."
+    set err [catch {sc_base open $fName} result]
+    closeProgressWindow
+    if {$err} {
+      if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
       ERROR::MessageBox "$fName\n"
     } else {
       set ::initialDir(base) [file dirname $fName]
@@ -219,19 +222,6 @@ proc ::file::Upgrade {name} {
     file delete "$name.si3"
   }
   ::file::Open "$name.si4"
-}
-
-# openBase:
-#    Opens a Scid database, showing a progress bar in a separate window
-#    if the database is around 1 Mb or larger in size.
-#   ::file::Open should be used if the base is not already in si4 format
-proc openBase {name} {
-  set gfile "[file rootname $name].sg4"
-  progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail $name]..."
-  set err [catch {sc_base open $name} result]
-  closeProgressWindow
-  if {$err} { return -code error -errorcode $::errorCode $result }
-  return $result
 }
 
 # ::file::Close:

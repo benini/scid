@@ -350,7 +350,9 @@ proc progressWindow {args} {
   set ::progressWin_time [clock seconds]
   progressBarSet $w.f.c 401 21
 
-  after 200 "catch {wm deiconify $w}"
+  set ::progressCanvas(show) "catch {wm deiconify $w}; set ::progressCanvas(show) {}"
+  after cancel { eval $::progressCanvas(show) }
+  after    500 { eval $::progressCanvas(show) }
 }
 
 proc progressBarSet { canvasname width height } {
@@ -359,6 +361,7 @@ proc progressBarSet { canvasname width height } {
   set ::progressCanvas(h) $height
   set ::progressCanvas(cancel) 0
   set ::progressCanvas(init) 1
+  set ::progressCanvas(show) {}
   after idle { unset ::progressCanvas(init) }
 }
 
@@ -376,6 +379,8 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
     #Interrupted
     break
   }
+
+  if {$estimated > 1} { eval $::progressCanvas(show) }
 
   set width $::progressCanvas(w)
   if {$total > 0} {
