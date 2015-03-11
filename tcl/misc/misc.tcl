@@ -345,10 +345,12 @@ proc progressWindow {args} {
   set y [expr ([winfo screenheight $w] - 40) / 2]
   wm geometry $w +$x+$y
   grab $w
-  bind $w <Visibility> "raiseWin $w"
-  update
+  wm withdraw $w
+
   set ::progressWin_time [clock seconds]
   progressBarSet $w.f.c 401 21
+
+  after 200 "catch {wm deiconify $w}"
 }
 
 proc progressBarSet { canvasname width height } {
@@ -435,10 +437,8 @@ proc updateProgressWindow {done total} {
 
 proc closeProgressWindow {} {
   set w .progressWin
-  if {! [winfo exists $w]} {
-    # puts stderr "Hmm, no progress window -- bug?"
-    return
-  }
+  if {! [winfo exists $w]} { return }
+
   grab release $w
   destroy $w
 }

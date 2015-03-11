@@ -226,16 +226,10 @@ proc ::file::Upgrade {name} {
 #    if the database is around 1 Mb or larger in size.
 #   ::file::Open should be used if the base is not already in si4 format
 proc openBase {name} {
-  set bsize 0
   set gfile "[file rootname $name].sg4"
-  if {! [catch {file size $gfile} err]} { set bsize $err }
-  set showProgress 0
-  if {$bsize > 1000000} { set showProgress 1 }
-  if {$showProgress} {
-    progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail $name]..."
-  }
+  progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail $name]..."
   set err [catch {sc_base open $name} result]
-  if {$showProgress} { closeProgressWindow }
+  closeProgressWindow
   if {$err} { return -code error -errorcode $::errorCode $result }
   return $result
 }
