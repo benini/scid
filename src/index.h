@@ -86,7 +86,7 @@ private:
     bool         Dirty;         // If true, Header needs rewriting to disk.
 
     Filebuf*     FilePtr;       // filehandle for opened index file.
-    fileModeT    FileMode;      // Mode: e.g. FILE_WRITEONLY
+    fileModeT    fileMode_;     // Mode: e.g. FILE_WRITEONLY
 
     mutable SortCache* sortingCaches[SORTING_CACHE_MAX];
     bool filter_changed_;
@@ -131,19 +131,12 @@ private:
     void Init ();
     errorT Clear ();
     errorT write (const IndexEntry* ie, gameNumberT idx);
-    uint getIndexEntrySize () {
-        switch (Header.version) {
-            case 300: return OLD_INDEX_ENTRY_SIZE;
-        }
-        //Current version (400)
-        return INDEX_ENTRY_SIZE;
-    }
 
 public:
     Index()     { Init(); }
     ~Index()    { Clear(); }
 
-    errorT Open(const char* filename, fileModeT fmode = FMODE_Both, bool old = false);
+    errorT Open(const char* filename, fileModeT fmode = FMODE_Both);
     errorT Create(const char* filename);
     errorT Close() { return Clear(); }
 

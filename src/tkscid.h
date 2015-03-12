@@ -40,7 +40,6 @@ int sc_base_piecetrack (TCL_ARGS);
 int sc_base_switch    (TCL_ARGS);
 int sc_base_tag       (TCL_ARGS);
 int sc_base_tournaments (TCL_ARGS);
-int sc_base_upgrade   (TCL_ARGS);
 
 int sc_clipbase_paste (TCL_ARGS);
 

@@ -584,7 +584,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 		"inUse",        "isReadOnly",   "numGames",     "open",
 		"piecetrack",   "slot",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
-		"upgrade",      "gameslist",    "sortcache",    "gamelocation",
+		"gameslist",    "sortcache",    "gamelocation",
 		"compact",      "gameflag",     "copygames",    "newFilter",
 		"extra",
 		NULL
@@ -596,7 +596,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 		BASE_INUSE,       BASE_ISREADONLY,  BASE_NUMGAMES,    BASE_OPEN,
 		BASE_PTRACK,      BASE_SLOT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
-		BASE_UPGRADE,     BASE_GAMESLIST,   BASE_SORTCACHE,   BASE_GAMELOCATION,
+		BASE_GAMESLIST,   BASE_SORTCACHE,   BASE_GAMELOCATION,
 		BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES,   BASE_NEWFILTER,
 		BASE_EXTRA
     };
@@ -652,9 +652,6 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
     case BASE_TOURNAMENTS:
         return sc_base_tournaments (cd, ti, argc, argv);
 
-    case BASE_UPGRADE:
-        return sc_base_upgrade (cd, ti, argc, argv);
-
     }
 
     //New multi-base functions
@@ -677,6 +674,21 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
             return TclResult(ti, dbase->setExtraInfo(argv[3], argv[4]));
         }
         return errorResult (ti, "Usage: sc_base extra baseId tagname [new_value]");
+
+    case BASE_COMPACT:
+        if (argc == 3) {
+            errorT res = dbase->compact(spellChecker[NAME_PLAYER], UI_CreateProgress(ti));
+            return UI_Result(ti, res);
+        } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
+            uint n_deleted, n_unused, n_sparse, n_badNameId;
+            errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
+            appendUintElement(ti, n_deleted);
+            appendUintElement(ti, n_unused);
+            appendUintElement(ti, n_sparse);
+            appendUintElement(ti, n_badNameId);
+            return TclResult(ti, res);
+        }
+        return errorResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
 
     case BASE_COPYGAMES:
         if (argc == 5) {
@@ -771,21 +783,6 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
     }
 
     switch (index) {
-    case BASE_COMPACT:
-        if (argc == 3) {
-            errorT res = dbase->compact(spellChecker[NAME_PLAYER], UI_CreateProgress(ti));
-            return UI_Result(ti, res);
-        } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
-            uint n_deleted, n_unused, n_sparse, n_badNameId;
-            errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
-            appendUintElement(ti, n_deleted);
-            appendUintElement(ti, n_unused);
-            appendUintElement(ti, n_sparse);
-            appendUintElement(ti, n_badNameId);
-            return TclResult(ti, res);
-        }
-        return errorResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
-
     case BASE_DUPLICATES:
         return okResult(ti, sc_base_duplicates (dbase, cd, ti, argc, argv));
 
@@ -907,22 +904,18 @@ sc_base_open (Tcl_Interp * ti, const char* filename)
                                          filename, false,
                                          spellChecker[NAME_PLAYER],
                                          progress);
-    if (err == ERROR_NameDataLoss) {
-        setIntResult (ti, newBaseNum + 1);
-        return TclResult(ti, err);
-    }
-    if (err != OK) {
+    if (err != OK && err != ERROR_NameDataLoss) {
         err = dbList[newBaseNum].Open(FMODE_ReadOnly,
                                       filename, false,
                                       spellChecker[NAME_PLAYER],
                                       progress);
     }
-    if (err != OK) return TclResult (ti, err);
-
-    currentBase = newBaseNum;
-    db = &(dbList[newBaseNum]);
-
-    return setIntResult (ti, newBaseNum + 1);
+    if (err == OK || err == ERROR_NameDataLoss) {
+        currentBase = newBaseNum;
+        db = &(dbList[newBaseNum]);
+        setIntResult (ti, newBaseNum + 1);
+    }
+    return UI_Result(ti, err);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2463,59 +2456,6 @@ sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** arg
 
     Tcl_DStringResult (ti, &ds);
     Tcl_DStringFree (&ds);
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_upgrade:
-//    Upgrades an old (version 3.x, suffix .si3) Scid database
-//    to version 4 (suffix .si4).
-int
-sc_base_upgrade (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_base upgrade <old-database>");
-    }
-    const char * fname = argv[2];
-
-    Index tmp;
-    if (tmp.Open(fname, FMODE_ReadOnly) == OK) {
-        return errorResult (ti, "An upgraded version of this database already exists.");
-    }
-
-    errorT err = OK;
-    Index oldIndex;
-    err = oldIndex.Open(fname, FMODE_ReadOnly, true);
-    if (err != OK) return errorResult (ti, err);
-
-    Index newIndex;
-    err = newIndex.Create(fname);
-    if (err != OK) return errorResult (ti, err);
-
-    // Now copy each index entry
-    Progress progress = UI_CreateProgress(ti);
-    for (uint i=0, n = oldIndex.GetNumGames(); i < n; i++) {
-        if ((i % 250) == 0) {
-            if (!progress.report(i, n)) {
-                err = ERROR_UserCancel;
-                break;
-            }
-        }
-        err = newIndex.AddGame(oldIndex.GetEntry(i));
-        if (err != OK) break;
-    }
-
-    oldIndex.Close();
-    errorT finalWrite = newIndex.Close();
-
-    progress.report(1, 1);
-
-    if (err != OK || finalWrite != OK) {
-        removeFile (fname, INDEX_SUFFIX);
-        if (err != OK) return errorResult (ti, err);
-        return errorResult (ti, finalWrite);
-    }
-
     return TCL_OK;
 }
 
@@ -6641,10 +6581,10 @@ int
 sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "game", "index", "name", "treecache", NULL
+        "game", "index", "name", NULL
     };
     enum {
-        SUFFIX_OPT_GAME, SUFFIX_OPT_INDEX, SUFFIX_OPT_NAME, SUFFIX_OPT_TREE
+        SUFFIX_OPT_GAME, SUFFIX_OPT_INDEX, SUFFIX_OPT_NAME
     };
     int index = -1;
 
@@ -6656,7 +6596,6 @@ sc_info_suffix (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         case SUFFIX_OPT_GAME:  suffix = GFILE_SUFFIX;    break;
         case SUFFIX_OPT_INDEX: suffix = INDEX_SUFFIX;    break;
         case SUFFIX_OPT_NAME:  suffix = NAMEBASE_SUFFIX; break;
-        case SUFFIX_OPT_TREE:  suffix = TREEFILE_SUFFIX; break;
         default: return InvalidCommand (ti, "sc_info suffix", options);
     }
 

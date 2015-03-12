@@ -64,12 +64,11 @@ typedef unsigned short versionT;
 // so 109 = 1.9, 110 = 1.10, etc.
 
 const versionT SCID_VERSION = 400;     // Current file format version = 4.0
-const versionT SCID_OLDEST_VERSION = 400; // Oldest compatible format: 4.0
+const versionT SCID_OLDEST_VERSION = 300; // Oldest readable file format: 3.0
 
 const char SCID_VERSION_STRING[] = "4.6.0";     // Current Scid version
 const char SCID_WEBSITE[] = "http://scid.sourceforge.net/";
 
-const char TREEFILE_SUFFIX[] = ".stc";
 const char GZIP_SUFFIX[] = ".gz";
 const char ZIP_SUFFIX[] = ".zip";
 const char PGN_SUFFIX[] = ".pgn";

@@ -108,9 +108,9 @@ proc ::file::New {} {
 proc ::file::Open {{fName ""}} {
   set err [::file::Open_ "$fName"]
   if {$err == 0} {
-    set ::curr_db [sc_base current]
+    set ::curr_db $::file::lastOpened
     ::game::Load [sc_base extra $::curr_db autoload] 0
-    ::windows::gamelist::Open $::file::lastOpened
+    ::windows::gamelist::Open $::curr_db
     ::notify::GameChanged
     ::notify::DatabaseChanged
   }
@@ -160,11 +160,10 @@ proc ::file::Open_ {{fName ""} } {
   }
 
   set err 0
-  busyCursor .
   if {[file extension $fName] == "" || [file extension $fName] == ".si4"} {
     set fName [file rootname $fName]
     progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail $fName]..."
-    set err [catch {sc_base open $fName} result]
+    set err [catch {sc_base open $fName} ::file::lastOpened]
     closeProgressWindow
     if {$err} {
       if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
@@ -174,22 +173,20 @@ proc ::file::Open_ {{fName ""} } {
       ::recentFiles::add "$fName.si4"
     }
   } elseif {[file extension $fName] == ".si3"} {
-    ::file::Upgrade [file rootname $fName]
+    set err [::file::Upgrade [file rootname $fName] ]
   } else {
     # PGN or EPD file:
-    if {[catch {sc_base create $fName true} result]} {
+    if {[catch {sc_base create $fName true} ::file::lastOpened]} {
       ERROR::MessageBox "$fName\n"
       set err 1
     } else {
-      importPgnFile $result [list "$fName"]
-      sc_base extra $result type 3
+      importPgnFile $::file::lastOpened [list "$fName"]
+      sc_base extra $::file::lastOpened type 3
       set ::initialDir(base) [file dirname $fName]
       ::recentFiles::add $fName
     }
   }
   
-  unbusyCursor .
-  if {$err == 0} { set ::file::lastOpened $result }
   return $err
 }
 
@@ -202,26 +199,42 @@ proc ::file::Upgrade {name} {
     set msg [string trim $::tr(ConfirmOpenNew)]
     set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
     if {$res == "no"} { return }
-    ::file::Open "$name.si4"
-    return
+    return [::file::Open_ "$name.si4"]
   }
   
   set msg [string trim $::tr(ConfirmUpgrade)]
   set res [tk_messageBox -title "Scid" -type yesno -icon info -message $msg]
   if {$res == "no"} { return }
-  progressWindow "Scid" "$::tr(Upgrading): [file tail $name]..." $::tr(Cancel)
-  set err [catch {sc_base upgrade $name}]
-  closeProgressWindow
+
+  set err [catch {
+    file copy "$name.sg3"  "$name.sg4"
+    file copy "$name.sn3"  "$name.sn4"
+    file copy "$name.si3"  "$name.si4" }]
   if {$err} {
-    ERROR::MessageBox
-    return
-  } else  {
-    # rename game and name files, delete old .si3
-    file rename "$name.sg3"  "$name.sg4"
-    file rename "$name.sn3"  "$name.sn4"
-    file delete "$name.si3"
+    ERROR::MessageBox "$name\n"
+    return 1
   }
-  ::file::Open "$name.si4"
+
+  progressWindow "Scid" "$::tr(Opening): [file tail $name]..." $::tr(Cancel)
+  set err [catch {sc_base open $name} ::file::lastOpened]
+  closeProgressWindow
+  if {$::errorCode == $::ERROR::NameDataLoss} {
+    ERROR::MessageBox "$name\n"
+    set err 0
+  }
+  if {$err} {
+    ERROR::MessageBox "$name\n"
+    catch {
+      file delete "$name.sg4"
+      file delete "$name.sn4"
+      file delete "$name.si4" }]
+  } else {
+    progressWindow "Scid" [concat $::tr(CompactDatabase) "..."] $::tr(Cancel)
+    set err_compact [catch {sc_base compact $::file::lastOpened}]
+    closeProgressWindow
+    if {$err_compact} { ERROR::MessageBox }
+  }
+  return $err
 }
 
 # ::file::Close:

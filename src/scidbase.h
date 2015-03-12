@@ -105,7 +105,7 @@ struct scidBaseT {
 		return filters_[idx].second;
 	}
 
-	const char* getFileName() const { return fileName; }
+	const char* getFileName() const { return fileName_.c_str(); }
 	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
 	uint numGames() const { return idx->GetNumGames(); }
 	errorT getExtraInfo(const std::string& tagname, std::string* res) const;
@@ -221,9 +221,9 @@ struct scidBaseT {
 
 private:
 	GFile* gfile;
+	std::string fileName_; // File name without ".si" suffix
 	fileModeT fileMode; // Read-only, write-only, or both.
 	std::vector< std::pair<std::string, Filter*> > filters_;
-	fileNameT fileName; // File name without ".si" suffix
 	mutable bool validStats_;
 	mutable Stats* stats_;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];

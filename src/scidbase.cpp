@@ -31,7 +31,6 @@ void scidBaseT::Init() {
 	inUse = false;
 	tree.moveCount = tree.totalCount = 0;
 	treeCache = NULL;
-	fileName[0] = 0;
 	fileMode = FMODE_Both;
 	gfile = new GFile;
 	bbuf = new ByteBuffer;
@@ -69,10 +68,9 @@ errorT scidBaseT::Close () {
 	nb->Clear();
 	errorT errGFile = gfile->Close();
 	inUse = false;
-	fileName[0] = 0;
+	fileName_ = "<empty>";
 	gameNumber = -1;
 	gameAltered = false;
-	strCopy (fileName, "<empty>");
 	dbFilter->Init(0);
 	treeFilter->Init(0);
 	Filter* f;
@@ -83,13 +81,12 @@ errorT scidBaseT::Close () {
 void scidBaseT::clear() {
 	validStats_ = false;
 	if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
-	treeCache->Clear();
+	if (treeCache != NULL) treeCache->Clear();
 	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
 }
 
 errorT scidBaseT::clearCaches(uint gNum, bool writeFiles) {
 	clear();
-	if (fileMode != FMODE_Memory) removeFile (fileName, TREEFILE_SUFFIX);
 	if (fileMode != FMODE_Memory && writeFiles) {
 		gfile->FlushAll();
 		calcNameFreq();
@@ -125,10 +122,6 @@ errorT scidBaseT::Open (fileModeT mode,
 			if (err == OK) err = idx->WriteHeader();
 			if (err == OK) err = nb->Create(filename);
 			if (err == OK) err = gfile->Create (filename, FMODE_Both);
-			if (err == OK) {
-				// Ensure an old treefile is not still around:
-				removeFile (filename, TREEFILE_SUFFIX);
-			}
 		} else {
 			err = idx->Open(filename, fileMode);
 			if (err == OK) err = nb->ReadEntireFile(filename);
@@ -145,13 +138,15 @@ errorT scidBaseT::Open (fileModeT mode,
 		return err;
 	}
 
-	strCopy (fileName, filename);
+	fileName_ = filename;
 	gameNumber = -1;
 
 	// Initialise the filters: all games match at move 1 by default.
 	Filter* f; int i_filters=0;
 	while ( (f = getFilter(i_filters++)) ) f->Init(numGames());
 
+	// Ensure an old treefile is not still around:
+	std::remove((fileName_ + ".stc").c_str());
 	if (treeCache == NULL) {
 		// TreeCache size for each open database:
 		const uint SCID_TreeCacheSize = 1000;
@@ -526,7 +521,10 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 }
 
 errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
-	if (fileMode != FMODE_Both) return ERROR_FileMode;
+	if (fileMode != FMODE_Both) {
+		//Older scid version to be upgraded are opened read only
+		if (idx->GetVersion() == SCID_VERSION) return ERROR_FileMode;
+	}
 
 	//1) Create the list of games to be copied
 	typedef std::vector< std::pair<byte, uint> > sort_t;
@@ -541,7 +539,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	std::stable_sort(sort.begin(), sort.end());
 
 	//2) Create a new temporary database
-	std::string filename = fileName;
+	std::string filename = fileName_;
 	std::string tmpfile = filename + "__TEMP__";
 	scidBaseT tmp;
 	errorT err_Create = tmp.Open(FMODE_Both, tmpfile.c_str());
@@ -578,28 +576,32 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 
 	//6) Error: cleanup and report
 	if (err_NbWrite != OK || err_Close != OK || err_UserCancel || err_AddGame != OK) {
-		removeFile (tmpfile.c_str(), INDEX_SUFFIX);
-		removeFile (tmpfile.c_str(), NAMEBASE_SUFFIX);
-		removeFile (tmpfile.c_str(), GFILE_SUFFIX);
+		std::remove((tmpfile + INDEX_SUFFIX).c_str());
+		std::remove((tmpfile + NAMEBASE_SUFFIX).c_str());
+		std::remove((tmpfile + GFILE_SUFFIX).c_str());
 		if (err_UserCancel) return ERROR_UserCancel;
 		return (err_Close != OK) ? err_Close : ((err_NbWrite != OK) ? err_NbWrite : err_AddGame);
 	}
 
-	//7) Success: Reset the filters and replace the old database
+	//7) Reset the filters and remove the old database
 	std::vector<std::string> filters(filters_.size());
 	for (size_t i = 0; i < filters_.size(); i++) filters[i] = filters_[i].first;
 	Close();
-	removeFile (filename.c_str(), INDEX_SUFFIX);
-	removeFile (filename.c_str(), NAMEBASE_SUFFIX);
-	removeFile (filename.c_str(), GFILE_SUFFIX);
+	int err_remove = 0;
+	err_remove |= std::remove((filename + INDEX_SUFFIX).c_str());
+	err_remove |= std::remove((filename + NAMEBASE_SUFFIX).c_str());
+	err_remove |= std::remove((filename + GFILE_SUFFIX).c_str());
+	if (err_remove != 0) return ERROR_FileWrite;
+
+	//8) Success: rename the files and open the new database
 	renameFile (tmpfile.c_str(), filename.c_str(), INDEX_SUFFIX);
 	renameFile (tmpfile.c_str(), filename.c_str(), NAMEBASE_SUFFIX);
 	renameFile (tmpfile.c_str(), filename.c_str(), GFILE_SUFFIX);
-	Open(FMODE_Both, filename.c_str(), false, spellChk);
+	errorT res = Open(FMODE_Both, filename.c_str(), false, spellChk);
 	for (size_t i = 0; i <filters.size(); i++) {
 		filters_.push_back(std::make_pair(filters[i], new Filter(numGames())));
 	}
-	return OK;
+	return res;
 }
 
 errorT scidBaseT::getExtraInfo(const std::string& tagname, std::string* res) const {

@@ -34,7 +34,7 @@ void Index::Init ()
     memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
     Dirty = false;
     FilePtr = NULL;
-    FileMode = FMODE_Memory;
+    fileMode_ = FMODE_Memory;
     for(uint i=0; i < SORTING_CACHE_MAX; i++) sortingCaches[i] = NULL;
     filter_changed_ = true;
     badNameIdCount_ = 0;
@@ -45,7 +45,7 @@ void Index::Init ()
 errorT Index::Clear ()
 {
     errorT res = OK;
-    if (Dirty && FileMode == FMODE_Both) res = WriteHeader();
+    if (Dirty && fileMode_ == FMODE_Both) res = WriteHeader();
     if (FilePtr != NULL)  delete FilePtr;
     for(uint i=0; i<SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i]) delete sortingCaches[i];
@@ -70,7 +70,7 @@ Index::Create(const char* filename)
         //Check that the file does not exists
         if (FilePtr->Open(fname, FMODE_ReadOnly) != OK && 
             FilePtr->Open(fname, FMODE_Create) == OK) {
-            FileMode = FMODE_Both;
+            fileMode_ = FMODE_Both;
             return WriteHeader();
         } else {
             delete FilePtr;
@@ -86,16 +86,14 @@ Index::Create(const char* filename)
 //      Open an index file and read the header.
 //
 errorT
-Index::Open (const char* filename, fileModeT fmode, bool old)
+Index::Open (const char* filename, fileModeT fmode)
 {
     Clear();
-    fileNameT fname;
-    strCopy (fname, filename);
-    strAppend (fname, old ? OLD_INDEX_SUFFIX : INDEX_SUFFIX);
-    FileMode = fmode;
     FilePtr = new Filebuf;
+    std::string fname = filename;
+    fname += INDEX_SUFFIX;
 
-    if (FilePtr->Open (fname, fmode) != OK) {
+    if (FilePtr->Open (fname.c_str(), fmode) != OK) {
         delete FilePtr;
         FilePtr = NULL;
         return ERROR_FileOpen;
@@ -109,30 +107,30 @@ Index::Open (const char* filename, fileModeT fmode, bool old)
     }
 
     Header.version = FilePtr->ReadTwoBytes ();
+    if (Header.version < SCID_OLDEST_VERSION || Header.version > SCID_VERSION) {
+        delete FilePtr;
+        FilePtr = NULL;
+        return ERROR_FileVersion;
+    }
+    if (Header.version != SCID_VERSION && fmode != FMODE_ReadOnly) {
+        //Old versions must be opened readonly
+        delete FilePtr;
+        FilePtr = NULL;
+        return ERROR_FileMode;
+    }
+
     Header.baseType = FilePtr->ReadFourBytes ();
     Header.numGames = FilePtr->ReadThreeBytes ();
     Header.autoLoad = FilePtr->ReadThreeBytes ();
     FilePtr->ReadNBytes (Header.description, SCID_DESC_LENGTH + 1);
-    for (uint i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
-      FilePtr->ReadNBytes (Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
-    }
-
-    // Check that the version of the file is valid: it must be
-    // SCID_OLDEST_VERSION or higher, but not higher than the
-    // current Scid version number.
-    errorT result = OK;
-    if (!old) {
-        if (Header.version > SCID_VERSION) { result = ERROR_OldScidVersion; }
-        if (Header.version < SCID_OLDEST_VERSION) { 
-            result = ERROR_FileVersion; 
+    if (Header.version >= 400) {
+        for (uint i = 0 ; i < CUSTOM_FLAG_MAX ; i++ ) {
+            FilePtr->ReadNBytes (Header.customFlagDesc[i], CUSTOM_FLAG_DESC_LENGTH + 1);
         }
-        if (result != OK) {
-            delete FilePtr;
-            FilePtr = NULL;
-        }
-    }
+    } 
 
-    return result;
+    fileMode_ = fmode;
+    return OK;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,7 +141,7 @@ errorT
 Index::ReadEntireFile (NameBase* nb, const Progress& progress)
 {
     ASSERT (FilePtr != NULL);
-    if (FileMode == FMODE_WriteOnly) { return ERROR_FileMode; }
+    if (fileMode_ == FMODE_WriteOnly) { return ERROR_FileMode; }
     entries_.resize(Header.numGames);
 
     idNumberT maxIdx[NUM_NAME_TYPES];
@@ -219,9 +217,9 @@ errorT Index::write (const IndexEntry* ie, uint idx)
     *copyToMemory = *ie;
     if (FilePtr == NULL) return OK;
 
-    if (FileMode == FMODE_ReadOnly) { return ERROR_FileMode; }
+    if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }
     if ((sequentialWrite_ == 0) || (idx != sequentialWrite_ + 1)) {
-        FilePtr->Seek(getIndexEntrySize() * idx + INDEX_HEADER_SIZE);
+        FilePtr->Seek(INDEX_ENTRY_SIZE * idx + INDEX_HEADER_SIZE);
     }
     errorT res = ie->Write (FilePtr, Header.version);
     sequentialWrite_ = (res == OK) ? idx : 0;
