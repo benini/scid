@@ -37,31 +37,57 @@ class Filter
     uint    FilterCount;    // Number of nonzero values in filter.
     uint    Capacity;       // Number of bytes allocated for Data[].
     byte *  Data;           // The actual filter data.
-    const Filter* posMask_;
 
     Filter(const Filter&);
     Filter& operator=(const Filter&);
     void Allocate();
     void Free();
-    uint Size() { return FilterSize; }
     friend class CompressedFilter;
     
   public:
-    Filter (uint size) :Data(NULL), posMask_(NULL)  { Init (size); }
+    Filter (uint size) :Data(NULL) { Init (size); }
     ~Filter() { Free(); }
 
     void    Init (uint size);
-    uint    Count ();
+    uint    Size() const { return FilterSize; }
+    uint    Count () const { return FilterCount; }
     bool    isWhole () const { return FilterCount == FilterSize; }
     void    Set (uint index, byte value);   // Sets the value at index.
     byte    Get (uint index) const;         // Gets the value at index.
     void    Fill (byte value);              // Sets all values.
     void    Append (byte value);            // Appends one value.
-    void    Negate ();
     void    SetCapacity (uint size);
-    // TODO: void Filter::PositionMask (const char* FEN);
-    void    PositionMask (const Filter* f) { posMask_ = f; }
 };
+
+class HFilter {
+    Filter* f_;
+    const Filter* mask_;
+
+public:
+    explicit HFilter(Filter* f = NULL, const Filter* mask = NULL) : f_(f), mask_(mask) {}
+
+    bool operator! () const { return f_ == NULL; }
+    bool operator* () const { return f_ != NULL; }
+    bool isWhole() const { return f_->isWhole(); }
+    uint count() const {
+        uint res = f_->Count();
+        if (mask_ == NULL) return res;
+        if (res == f_->Size()) return mask_->Count();
+        for (uint i=0, n = f_->Size(); i < n; i++) {
+            if (f_->Get(i) != 0 && mask_->Get(i) == 0) --res;
+        }
+        return res;
+    }
+    byte get(uint index) const {
+        byte res = f_->Get(index);
+        if (res != 0 && mask_ != NULL) return mask_->Get(index);
+        return res;
+    }
+
+    void set (uint index, byte value) { return f_->Set(index, value); }
+    void fill (byte value) { return f_->Fill(value); }
+};
+
 
 
 inline void
@@ -83,7 +109,6 @@ Filter::Get (uint index) const
 {
     ASSERT (index < FilterSize);
     byte res = (Data == NULL) ? 1 : Data[index];
-    if (res !=0 && posMask_ != NULL) return posMask_->Get(index);
     return res;
 }
 

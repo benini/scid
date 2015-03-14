@@ -112,7 +112,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   global sEco sEcoMin sEcoMax sHeaderFlags sGlMin sGlMax sTitleList sTitles
   global sResWin sResLoss sResDraw sResOther sPgntext
 
-  set ::refFilterH $ref_filter
   set w .sh
   if {[winfo exists $w]} {
     wm deiconify $w
@@ -134,10 +133,12 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
   
   if {$ref_base != ""} {
     set ::refDatabaseH $ref_base
+    set ::refFilterH $ref_filter
   } else {
     pack [ttk::frame $w.refdb] -side top -fill x
     CreateSelectDBWidget "$w.refdb" "refDatabaseH" "$ref_base"
     addHorizontalRule $w
+    set ::refFilterH ""
   }
 
   set regular font_Small
@@ -428,9 +429,6 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
       set temp [string trim $sPgntext($i)]
       if {$temp != ""} { lappend sPgnlist $temp }
     }
-    busyCursor .
-    set curr_base [sc_base current]
-    sc_base switch [string index $::refDatabaseH 0]
     pack .sh.b.stop -side right -padx 5
     grab .sh.b.stop
     set wtitles {}
@@ -440,26 +438,38 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
       if $sTitles(b:$i) { lappend btitles $i }
     }
     
-      set dbase [string index $::refDatabaseH 0]
-      if { $::refFilterH == "" } {
-        set newGamelistWin 1
-        set ::refFilterH "[sc_base newFilter $dbase]"
-      } else { set newGamelistWin 0 }
+    set dbase [string index $::refDatabaseH 0]
+    if {$::refFilterH == ""} {
+        set filter "dbfilter"
+    } else {
+        set filter [sc_filter link $dbase $::refFilterH]
+    }
 
-      progressBarSet .sh.fprogress.progress 301 21
+    if {$sEco == "Yes"} {
+        set noEco "-eco|"
+    } else {
+        set noEco "-eco!"
+    }
 
-      set str [sc_filter search $dbase $::refFilterH header -white $sWhite -black $sBlack \
+    if {$::search::filter::operation != "2" } {
+        set fOrig [sc_base newFilter $dbase]
+        sc_filter copy $dbase $fOrig $filter
+    }
+
+    progressBarSet .sh.fprogress.progress 301 21
+    set err [catch { sc_filter search $dbase $filter header \
+          -filter RESET \
+          -white $sWhite -black $sBlack \
           -event $sEvent -site $sSite -round $sRound \
           -date [list $sDateMin $sDateMax] \
           -results [list $sResWin $sResDraw $sResLoss $sResOther] \
           -welo [list $sWhiteEloMin $sWhiteEloMax] \
           -belo [list $sBlackEloMin $sBlackEloMax] \
           -delo [list $sEloDiffMin $sEloDiffMax] \
-          -eco [list $sEcoMin $sEcoMax $sEco] \
+          -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
           -length [list $sGlMin $sGlMax] \
           -toMove $sSideToMove \
           -gameNumber [list $sGnumMin $sGnumMax] \
-          -flip $sIgnoreCol -filter $::search::filter::operation \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -fStdStart $sHeaderFlags(StdStart) \
@@ -487,23 +497,76 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -fCustom5 $sHeaderFlags(CustomFlag5) \
           -fCustom6 $sHeaderFlags(CustomFlag6) \
           -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
-          ]
-      if { $newGamelistWin !=0 } {
-        if { [sc_filter size $dbase $::refFilterH] == 0 } {
-          sc_filter release $dbase $::refFilterH
-          set ::refFilterH ""
-        } else {
-          after idle "::windows::gamelist::Open $dbase $::refFilterH"
+    }]
+
+    if {!$err && $sIgnoreCol == "Yes"} {
+        set fIgnore [sc_base newFilter $dbase]
+        set deloMin [ expr { $sEloDiffMax * -1 }]
+        set deloMax [ expr { $sEloDiffMin * -1 }]
+        progressBarSet .sh.fprogress.progress 301 21
+        catch { sc_filter search $dbase $fIgnore header \
+          -filter RESET \
+          -white $sBlack -black $sWhite \
+          -event $sEvent -site $sSite -round $sRound \
+          -date [list $sDateMin $sDateMax] \
+          -results [list $sResWin $sResDraw $sResLoss $sResOther] \
+          -welo [list $sBlackEloMin $sBlackEloMax] \
+          -belo [list $sWhiteEloMin $sWhiteEloMax] \
+          -delo [list $deloMin $deloMax] \
+          -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
+          -length [list $sGlMin $sGlMax] \
+          -toMove $sSideToMove \
+          -gameNumber [list $sGnumMin $sGnumMax] \
+          -annotated $sAnnotated \
+          -annotator $sAnnotator \
+          -fStdStart $sHeaderFlags(StdStart) \
+          -fPromotions $sHeaderFlags(Promotions) \
+          -fComments $sHeaderFlags(Comments) \
+          -fVariations $sHeaderFlags(Variations) \
+          -fAnnotations $sHeaderFlags(Annotations) \
+          -fDelete $sHeaderFlags(DeleteFlag) \
+          -fWhiteOp $sHeaderFlags(WhiteOpFlag) \
+          -fBlackOp $sHeaderFlags(BlackOpFlag) \
+          -fMiddlegame $sHeaderFlags(MiddlegameFlag) \
+          -fEndgame $sHeaderFlags(EndgameFlag) \
+          -fNovelty $sHeaderFlags(NoveltyFlag) \
+          -fPawnStruct $sHeaderFlags(PawnFlag) \
+          -fTactics $sHeaderFlags(TacticsFlag) \
+          -fKingside $sHeaderFlags(KsideFlag) \
+          -fQueenside $sHeaderFlags(QsideFlag) \
+          -fBrilliancy $sHeaderFlags(BrilliancyFlag) \
+          -fBlunder $sHeaderFlags(BlunderFlag) \
+          -fUser $sHeaderFlags(UserFlag) \
+          -fCustom1 $sHeaderFlags(CustomFlag1) \
+          -fCustom2 $sHeaderFlags(CustomFlag2) \
+          -fCustom3 $sHeaderFlags(CustomFlag3) \
+          -fCustom4 $sHeaderFlags(CustomFlag4) \
+          -fCustom5 $sHeaderFlags(CustomFlag5) \
+          -fCustom6 $sHeaderFlags(CustomFlag6) \
+          -pgn $sPgnlist -wtitles $wtitles -btitles $btitles \
         }
-      } else {
-          after idle "::notify::DatabaseModified $dbase $::refFilterH"
-      }
+
+        sc_filter or $dbase $filter $fIgnore
+        sc_filter release $dbase $fIgnore
+    }
+
+    if {[info exists fOrig]} {
+        if {$::search::filter::operation == "0" } {
+            sc_filter and $dbase $filter $fOrig
+        } else {
+            sc_filter or $dbase $filter $fOrig
+        }
+        sc_filter release $dbase $fOrig
+        unset fOrig
+    }
+
+    set str "[sc_filter count $dbase $filter] / [sc_base numGames $dbase]"
+
+    after idle "::notify::DatabaseModified $dbase $filter"
     
     grab release .sh.b.stop
     pack forget .sh.b.stop
-    sc_base switch $curr_base
     .sh.status configure -text $str
-    unbusyCursor .
 
   }
   

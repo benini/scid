@@ -73,8 +73,8 @@ errorT scidBaseT::Close () {
 	gameAltered = false;
 	dbFilter->Init(0);
 	treeFilter->Init(0);
-	Filter* f;
-	while ( (f = getFilter(2)) ) deleteFilter(f);
+	for (size_t i=0, n = filters_.size(); i < n; i++) delete filters_[i].second;
+	filters_.clear();
 	return (errIdx != OK) ? errIdx : errGFile;
 }
 
@@ -143,7 +143,7 @@ errorT scidBaseT::Open (fileModeT mode,
 
 	// Initialise the filters: all games match at move 1 by default.
 	Filter* f; int i_filters=0;
-	while ( (f = getFilter(i_filters++)) ) f->Init(numGames());
+	while ( (f = fetchFilter(i_filters++)) ) f->Init(numGames());
 
 	// Ensure an old treefile is not still around:
 	std::remove((fileName_ + ".stc").c_str());
@@ -165,15 +165,16 @@ errorT scidBaseT::addGame(scidBaseT* sourceBase, uint gNum) {
 	return clearCaches(numGames() -1);
 }
 
-errorT scidBaseT::addGames(scidBaseT* sourceBase, Filter* filter, const Progress& progress) {
+errorT scidBaseT::addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress) {
+	ASSERT(*filter);
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 	errorT err = OK;
 	uint iProgress = 0;
-	uint totGames = filter->Count();
+	uint totGames = filter.count();
 	Filter* f; int i_filters=0;
-	while ( (f = getFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
+	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
 	for (uint gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
-		if (filter->Get(gNum) == 0) continue;
+		if (filter.get(gNum) == 0) continue;
 		err = addGame_(sourceBase, gNum);
 		if (err != OK) break;
 		if (iProgress++ % 10000 == 0) {
@@ -252,23 +253,23 @@ errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, int oldIdx) {
 
 		// Add the new game to filters
 		Filter* f; int i_filters=0;
-		while ( (f = getFilter(i_filters++)) ) f->Append(f->isWhole() ? 1 : 0);
+		while ( (f = fetchFilter(i_filters++)) ) f->Append(f->isWhole() ? 1 : 0);
 	}
 
 	return OK;
 }
 
 std::string scidBaseT::newFilter() {
-	std::string newname = filters_.size() ? filters_.back().first : "a";
+	std::string newname = (filters_.size() == 0) ? "a_" : filters_.back().first;
 	if (newname[0] == 'z') newname = 'a' + newname;
 	else newname = ++(newname[0]) + newname.substr(1);
 	filters_.push_back(std::make_pair(newname, new Filter(numGames())));
 	return newname;
 }
 
-void scidBaseT::deleteFilter(Filter* filter) {
+void scidBaseT::deleteFilter(const char* filterName) {
 	for (uint i=0; i < filters_.size(); i++) {
-		if (filters_[i].second == filter) {
+		if (filters_[i].first == filterName) {
 			delete filters_[i].second;
 			filters_.erase(filters_.begin() + i);
 			break;
@@ -276,32 +277,20 @@ void scidBaseT::deleteFilter(Filter* filter) {
 	}
 }
 
-Filter* scidBaseT::getFilter (const char* filterName) {
-	Filter* res = 0;
-	Filter* mask = 0;
+HFilter scidBaseT::getFilter (const char* filterName) {
+	const Filter* mask = 0;
 	std::string name = filterName;
 	int split = 0;
 	if (filterName[split++] == '+') {
 		while (filterName[split] != '+') {
-			if (filterName[split++] == 0) return 0; // Malformed filterName
+			if (filterName[split++] == 0) return HFilter(); // Malformed filterName
 		}
 		name = name.substr(1, split -1);
-		mask = getFilter(filterName + split + 1);
+		mask = fetchFilter(filterName + split + 1);
 	}
-
-	if (name == "dbfilter") res = dbFilter;
-	else if (name == "tree") res = treeFilter;
-	else {
-		for (uint i=0; i < filters_.size(); i++) {
-			if (filters_[i].first == name) {
-				res = filters_[i].second;
-				break;
-			}
-		}
-	}
-	if (res) res->PositionMask(mask);
-	return res;
+	return HFilter(fetchFilter(name), mask);
 }
+
 
 void scidBaseT::calcNameFreq () {
 	for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
@@ -454,14 +443,15 @@ scidBaseT::TreeStat::TreeStat()
 	}
 }
 
-std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(Filter* filter) {
+std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
+	ASSERT(*filter);
 	std::vector<FullMove> v1;
 	v1.reserve(50);
 	std::vector<scidBaseT::TreeStat> v2;
 	v2.reserve(50);
 	for(uint gnum=0, n = numGames(); gnum < n; gnum++) {
-		if(filter->Get(gnum) == 0) continue;
-		uint ply = filter->Get(gnum) - 1;
+		if(filter.get(gnum) == 0) continue;
+		uint ply = filter.get(gnum) - 1;
 		const IndexEntry* ie = getIndexEntry (gnum);
 		FullMove move = StoredLine::getMove(ie->GetStoredLineCode(), ply);
 		if (move.isNull()) {

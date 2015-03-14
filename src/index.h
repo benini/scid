@@ -235,7 +235,7 @@ public:
      *           *result* array must have size >= count
      *           if there aren't enough result to reach count: result[last_result + 1] = IDX_NOT_FOUND
      */
-    errorT GetRange(const NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result) const;
+    errorT GetRange(const NameBase *nbase, const char *criteria, uint idx, uint count, const HFilter& filter, uint *result) const;
 
     /* GetRangeLocation
      * Find the location of a game into a sorted Range.
@@ -247,8 +247,8 @@ public:
      * Return:  the position of the searched game (first game = 1)
      *          0 if not found
      */
-    uint GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber) const;
-    uint GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter,
+    uint GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter, uint gnumber) const;
+    uint GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter,
                            const char* text, uint start, bool forward) const;
     /* IndexUpdated
      * When changes are made to the games (adding or saving a game) the sortcaches need to be updated.

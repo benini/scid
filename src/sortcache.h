@@ -38,8 +38,8 @@ class SortCache
   public:
 	static SortCache* Create(const Index* idx, const NameBase* nb, const char* criterium, bool multithread =true);
 	~SortCache();
-	errorT GetRange( uint start, uint count, Filter *filter, uint *result);
-	uint IndexToFilteredCount( uint gnumber, Filter *filter);
+	errorT GetRange( uint start, uint count, const HFilter& filter, uint *result);
+	uint IndexToFilteredCount( uint gnumber, const HFilter& filter);
 	errorT CheckForChanges ( uint id);
 	bool MatchCriteria( const std::string& crit) { return crit == criteria; }
 	void DoFullSort(int reportFrequency,

@@ -130,7 +130,7 @@ proc ::game::Reload {} {
 proc ::game::LoadRandom {} {
   set db [sc_base current]
   set filter "dbfilter"
-  set ngames [sc_filter size $db $filter]
+  set ngames [sc_filter count $db $filter]
   if {$ngames == 0} { return }
   set r [expr {(int (rand() * $ngames))} ]
   set gnumber [sc_base gameslist $db $r 1 $filter N+]

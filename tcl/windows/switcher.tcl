@@ -615,7 +615,7 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
 proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx} } {
   set clipbaseIdx [sc_info clipbase]
   $w.menu delete 0 end
-  $w.menu add command -label "New Game List Window" -command "::windows::gamelist::Open $baseIdx dbfilter"
+  $w.menu add command -label "New Game List Window" -command "::windows::gamelist::Open $baseIdx"
   $w.menu add separator
   $w.menu add command -label [tr FileOpen] -command ::file::Open
   if {![sc_base isReadOnly $baseIdx]} {

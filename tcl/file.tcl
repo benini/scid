@@ -159,31 +159,32 @@ proc ::file::Open_ {{fName ""} } {
     }
   }
 
+  set ext [string tolower [file extension "$fName"] ]
   set err 0
-  if {[file extension $fName] == "" || [file extension $fName] == ".si4"} {
-    set fName [file rootname $fName]
-    progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail $fName]..."
-    set err [catch {sc_base open $fName} ::file::lastOpened]
-    closeProgressWindow
-    if {$err} {
-      if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
-      ERROR::MessageBox "$fName\n"
-    } else {
-      set ::initialDir(base) [file dirname $fName]
-      ::recentFiles::add "$fName.si4"
-    }
-  } elseif {[file extension $fName] == ".si3"} {
-    set err [::file::Upgrade [file rootname $fName] ]
-  } else {
+  if {"$ext" == ".si3"} {
+    set err [::file::Upgrade [file rootname "$fName"] ]
+  } elseif {"$ext" == ".pgn" || "$ext" == ".epd"} {
     # PGN or EPD file:
-    if {[catch {sc_base create $fName true} ::file::lastOpened]} {
+    if {[catch {sc_base create "$fName" true} ::file::lastOpened]} {
       ERROR::MessageBox "$fName\n"
       set err 1
     } else {
       importPgnFile $::file::lastOpened [list "$fName"]
       sc_base extra $::file::lastOpened type 3
-      set ::initialDir(base) [file dirname $fName]
-      ::recentFiles::add $fName
+      set ::initialDir(base) [file dirname "$fName"]
+      ::recentFiles::add "$fName"
+    }
+  } else {
+    if {"$ext" == ".si4"} { set fName [file rootname "$fName"] }
+    progressWindow "Scid" "$::tr(OpeningTheDatabase): [file tail "$fName"]..."
+    set err [catch {sc_base open "$fName"} ::file::lastOpened]
+    closeProgressWindow
+    if {$err} {
+      if { $::errorCode == $::ERROR::NameDataLoss } { set err 0 }
+      ERROR::MessageBox "$fName\n"
+    } else {
+      set ::initialDir(base) [file dirname "$fName"]
+      ::recentFiles::add "$fName.si4"
     }
   }
   

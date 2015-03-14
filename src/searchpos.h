@@ -67,7 +67,7 @@ public:
 		if (storedLine_) delete storedLine_;
 	}
 
-	bool setFilter(scidBaseT* base, Filter* filter, const Progress& progress) {
+	bool setFilter(scidBaseT* base, HFilter& filter, const Progress& progress) {
 		if (! isStdStard_) {
 			int i=0;
 			if (unusualKingPos_) i += 1;
@@ -81,11 +81,11 @@ public:
 		}
 		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry (i);
-			if (! ie->GetStartFlag()) filter->Set (i, 1);
+			if (! ie->GetStartFlag()) filter.set (i, 1);
 			else {
 				FastGame game = base->getGame(ie);
 				int ply = game.search<WHITE>(board_, nPieces_);
-				filter->Set (i, (ply > 255) ? 255 : ply);
+				filter.set (i, (ply > 255) ? 255 : ply);
 			}
 		}
 		return true;
@@ -105,8 +105,8 @@ private:
 	SearchPos(const SearchPos&);
 	SearchPos& operator=(const SearchPos&);
 	template <colorT TOMOVE, bool STOREDLINE>
-	bool SetFilter (scidBaseT* base, Filter* filter, const Progress& prg) {
-		filter->Fill(0);
+	bool SetFilter (scidBaseT* base, HFilter& filter, const Progress& prg) {
+		filter.fill(0);
 		long progress = 0;
 		for (uint i = 0, n = base->numGames(); i < n; i++) {
 			const IndexEntry* ie = base->getIndexEntry(i);
@@ -114,7 +114,7 @@ private:
 				if (STOREDLINE) {
 					int ply = storedLine_->match(ie->GetStoredLineCode());
 					if (ply >= 0) {
-						filter->Set (i, static_cast<byte> (ply +1));
+						filter.set (i, static_cast<byte> (ply +1));
 						continue;
 					}
 					if (ply < -1) continue;
@@ -124,7 +124,7 @@ private:
 			if (!matsig_isReachable (msig_, ie->GetFinalMatSig(), ie->GetPromotionsFlag(), ie->GetUnderPromoFlag())) continue;
 
 			int ply = base->getGame(ie).search<TOMOVE>(board_, nPieces_);
-			if (ply != 0) filter->Set(i, (ply > 255) ? 255 : ply);
+			if (ply != 0) filter.set(i, (ply > 255) ? 255 : ply);
 
 			if ((progress++ % 200) == 0) {
 				if (!prg.report(i, n)) return false;

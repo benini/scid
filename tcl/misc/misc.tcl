@@ -308,6 +308,7 @@ proc addVerticalRule {w {xpadding 5} {relief sunken}} {
 proc progressWindow {args} {
   set w .progressWin
   if {[winfo exists $w]} { return }
+  set ::progressWin_focus [focus]
   toplevel $w
   pack [ttk::frame $w.f] -expand 1
   
@@ -446,6 +447,7 @@ proc closeProgressWindow {} {
 
   grab release $w
   destroy $w
+  after idle "catch {focus $::progressWin_focus}"
 }
 
 proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {

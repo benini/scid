@@ -262,7 +262,7 @@ void Index::FreeSortCache(const char* criteria) const
     }
 }
 
-errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, uint count, Filter *filter, uint *result) const
+errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, uint count, const HFilter& filter, uint *result) const
 {
     ASSERT(result != 0);
     ASSERT(criteria != 0 && strlen(criteria) > 1);
@@ -270,13 +270,13 @@ errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, u
         uint i=0;
         if (criteria[1] == '+') {
             for(uint gnum=0; gnum < GetNumGames() && i < count; gnum++) {
-                if (filter && filter->Get(gnum) == 0) continue;
+                if (*filter && filter.get(gnum) == 0) continue;
                 if (idx == 0) result[i++] = gnum;
                 else idx--;
             }
         } else {
             for(uint gnum=GetNumGames(); gnum > 0 && i < count; gnum--) {
-                if (filter && filter->Get(gnum -1) == 0) continue;
+                if (*filter && filter.get(gnum -1) == 0) continue;
                 if (idx == 0) result[i++] = gnum -1;
                 else idx--;
             }
@@ -300,7 +300,7 @@ errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, u
     return OK;
 }
 
-uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter, uint gnumber) const
+uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter, uint gnumber) const
 {
     for(uint i=0; i < SORTING_CACHE_MAX; i++) {
         if (sortingCaches[i] == NULL) continue;
@@ -315,7 +315,7 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filte
     return r;
 }
 
-uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, Filter *filter,
+uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const HFilter& filter,
                               const char* text, uint start, bool forward) const
 {
     uint i = 0;

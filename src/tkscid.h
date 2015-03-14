@@ -50,7 +50,7 @@ int sc_eco_summary    (TCL_ARGS);
 int sc_eco_translate  (TCL_ARGS);
 
 int sc_filter_first   (TCL_ARGS);
-int sc_filter_freq    (scidBaseT* dbase, Filter* filter, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_filter_freq    (scidBaseT* dbase, const HFilter& filter, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_filter_last    (TCL_ARGS);
 int sc_filter_next    (TCL_ARGS);
 int sc_filter_prev    (TCL_ARGS);
@@ -133,9 +133,10 @@ int sc_var_enter      (TCL_ARGS);
 int sc_var_first      (TCL_ARGS);
 int sc_var_list       (TCL_ARGS);
 
+errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** argv, const Progress& progress);
 int sc_search_board   (TCL_ARGS);
 int sc_search_material (TCL_ARGS);
-int sc_search_header  (ClientData cd, Tcl_Interp * ti, scidBaseT* base, Filter* filter, int argc, const char ** argv);
+int sc_search_header  (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filter, int argc, const char ** argv);
 int sc_search_rep_add (TCL_ARGS);
 int sc_search_rep_go  (TCL_ARGS);
 

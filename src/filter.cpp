@@ -84,21 +84,6 @@ Filter::SetCapacity(uint size)
     }
 }
 
-uint Filter::Count () {
-	if (posMask_ == NULL) return FilterCount;
-	if (Data == NULL) return posMask_->FilterCount;
-	uint res = FilterCount;
-	for (uint i=0; i < FilterSize; i++) {
-		if (Data[i] != 0 && posMask_->Get(i) == 0) --res;
-	}
-	return res;
-}
-
-void Filter::Negate () {
-	for (uint i=0; i < FilterSize; i++) {
-		Set(i, !Get(i) );
-	}
-}
 
 //////////////////////////////////////////////////////////////////////
 //

@@ -191,6 +191,7 @@ SCID_OBJS = \
 	$(TMP_DIR)\spellchk.obj \
 	$(TMP_DIR)\tree.obj \
 	$(TMP_DIR)\filter.obj \
+	$(TMP_DIR)\searchindex.obj \
 	$(TMP_DIR)\polyglot\attack.obj $(TMP_DIR)\polyglot\board.obj $(TMP_DIR)\polyglot\book.obj \
 	$(TMP_DIR)\polyglot\colour.obj $(TMP_DIR)\polyglot\fen.obj $(TMP_DIR)\polyglot\hash.obj \
 	$(TMP_DIR)\polyglot\list.obj $(TMP_DIR)\polyglot\main.obj $(TMP_DIR)\polyglot\move.obj \

@@ -95,15 +95,8 @@ struct scidBaseT {
 	errorT Close ();
 
 	std::string newFilter();
-	void deleteFilter(Filter* filter);
-	Filter* getFilter(const char* filterName);
-	Filter* getFilter(uint idx) {
-		if (idx == 0) return dbFilter;
-		if (idx == 1) return treeFilter;
-		idx -= 2;
-		if (idx >= filters_.size()) return 0;
-		return filters_[idx].second;
-	}
+	void deleteFilter(const char* filterName);
+	HFilter getFilter(const char* filterName);
 
 	const char* getFileName() const { return fileName_.c_str(); }
 	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
@@ -124,7 +117,7 @@ struct scidBaseT {
 		return gfile->ReadGame(bb, ie->GetOffset(), ie->GetLength());
 	}
 
-	errorT addGames(scidBaseT* sourceBase, Filter* filter, const Progress& progress);
+	errorT addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress);
 	errorT addGame(scidBaseT* sourceBase, uint gNum);
 	errorT saveGame(Game* game, bool clearCache, int idx = -1);
 
@@ -141,10 +134,10 @@ struct scidBaseT {
 		// idx->IndexUpdated(gNum);
 		return res;
 	}
-	errorT setFlag(bool value, uint flag, Filter* filter = 0) {
+	errorT setFlag(bool value, uint flag, const HFilter& filter) {
 		errorT res = OK;
 		for (uint gNum = 0, n = numGames(); gNum < n; gNum++) {
-			if (filter && filter->Get(gNum) == 0) continue;
+			if (*filter && filter.get(gNum) == 0) continue;
 			res = setFlag(value, flag, gNum);
 			if (res != OK) return res;
 		}
@@ -153,10 +146,10 @@ struct scidBaseT {
 	errorT invertFlag(uint flag, uint gNum) {
 		return setFlag(! getFlag(flag, gNum), flag, gNum);
 	}
-	errorT invertFlag(uint flag, Filter* filter = 0) {
+	errorT invertFlag(uint flag, const HFilter& filter) {
 		errorT res = OK;
 		for (uint gNum = 0, n = numGames(); gNum < n; gNum++) {
-			if (filter && filter->Get(gNum) == 0) continue;
+			if (*filter && filter.get(gNum) == 0) continue;
 			res = invertFlag(flag, gNum);
 			if (res != OK) return res;
 		}
@@ -164,7 +157,7 @@ struct scidBaseT {
 	}
 
 	const Stats* getStats() const;
-	std::vector<scidBaseT::TreeStat> getTreeStat(Filter* filter);
+	std::vector<scidBaseT::TreeStat> getTreeStat(const HFilter& filter);
 	uint getNameFreq (nameT nt, idNumberT id) {
 		if (nameFreq_[nt].size() == 0) calcNameFreq();
 		if (id >= nameFreq_[nt].size()) return 0;
@@ -183,13 +176,13 @@ struct scidBaseT {
 	void FreeSortCache(const char* criteria) const {
 		return idx->FreeSortCache(criteria);
 	}
-	errorT GetRange(const char *criteria, uint idx, uint count, Filter *filter, uint *result) const {
+	errorT GetRange(const char *criteria, uint idx, uint count, const HFilter& filter, uint *result) const {
 		return this->idx->GetRange(nb, criteria, idx, count, filter, result);
 	}
-	uint GetRangeLocation(const char *criteria, Filter *filter, uint gnumber) const {
+	uint GetRangeLocation(const char *criteria, const HFilter& filter, uint gnumber) const {
 		return idx->GetRangeLocation(nb, criteria, filter, gnumber);
 	}
-	uint GetRangeLocation(const char *criteria, Filter *filter,	const char* text, uint start, bool forward) const {
+	uint GetRangeLocation(const char *criteria, const HFilter& filter, const char* text, uint start, bool forward) const {
 		return idx->GetRangeLocation(nb, criteria, filter, text, start, forward);
 	}
 
@@ -235,6 +228,28 @@ private:
 	errorT addGame_ (scidBaseT* sourceBase, uint gNum);
 	errorT saveGame_(IndexEntry* iE, ByteBuffer* bbuf,  int oldIdx = -1);
 	void calcNameFreq ();
+
+	Filter* fetchFilter(uint idx) {
+		if (idx == 0) return dbFilter;
+		if (idx == 1) return treeFilter;
+		idx -= 2;
+		if (idx >= filters_.size()) return 0;
+		return filters_[idx].second;
+	}
+	Filter* fetchFilter(const std::string& name) {
+		Filter* res = 0;
+		if (name == "dbfilter") res = dbFilter;
+		else if (name == "tree") res = treeFilter;
+		else {
+			for (uint i=0; i < filters_.size(); i++) {
+				if (filters_[i].first == name) {
+					res = filters_[i].second;
+					break;
+				}
+			}
+		}
+		return res;
+	}
 };
 
 #endif

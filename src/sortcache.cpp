@@ -203,18 +203,18 @@ errorT SortCache::Init(const Index* idx, const NameBase* nb, const char* criteri
 	return OK;
 }
 
-errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result)
+errorT SortCache::GetRange( uint start, uint count, const HFilter& filter, uint *result)
 {
 	if (count == 0) return OK;
 	if (start >= numGames) { *result = IDX_NOT_FOUND; return OK; }
-	bool full_filter = (filter == 0 || filter->Count() == numGames);
+	bool use_filter = (*filter && filter.count() != numGames);
 
 	if (!sorted_) { // Not fully sorted
 		std::vector<uint> v;
-		if (!full_filter) {
-			v.resize(filter->Count());
+		if (use_filter) {
+			v.resize(filter.count());
 			for(uint i=0, gnum=0; gnum < numGames; gnum++) {
-				if(filter->Get(gnum) != 0) v[i++] = gnum;
+				if(filter.get(gnum) != 0) v[i++] = gnum;
 			}
 		} else {
 			v.resize(numGames);
@@ -247,7 +247,7 @@ errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result
 		}
 
 		uint i = 0, j = 0;
-		if (full_filter) {
+		if (!use_filter) {
 			//Speedup unfiltered search
 			for (i = start; i < numGames && j < count; i++) result[j++] = fullMap[i];
 		} else {
@@ -256,7 +256,7 @@ errorT SortCache::GetRange( uint start, uint count, Filter *filter, uint *result
 			// Pick up the specified range, ignore those not matching the filter
 			for(; i < numGames && j < count; i++)
 			{
-				if( filter->Get( fullMap[i]) == 0) continue;
+				if( filter.get( fullMap[i]) == 0) continue;
 				if( filterCount >= start) result[j++] = fullMap[i];
 				filterCount++;
 			}
@@ -636,21 +636,21 @@ filter: restrict search to filtered games
 return: 0 if gnumber is not found
         the position into the sorted list (first position has value 1)
 */
-uint SortCache::IndexToFilteredCount( uint gnumber, Filter *filter)
+uint SortCache::IndexToFilteredCount( uint gnumber, const HFilter& filter)
 {
 	if (gnumber == 0) return 0;
 	if (gnumber > numGames) return 0;
 	gnumber--;
-	if (filter && filter->Get(gnumber) == 0) return 0;
+	if (*filter && filter.get(gnumber) == 0) return 0;
 	uint filterCount = 1;
 	if (!sorted_) {
 		for (uint gnum=0; gnum < numGames; gnum++) {
-			if (filter && filter->Get(gnum) == 0) continue;
+			if (*filter && filter.get(gnum) == 0) continue;
 			if (Compare(gnum, gnumber) <0) ++filterCount;
 		}
 	} else {
 		for( uint i=0; i<numGames; i++)
-			if( filter && filter->Get( fullMap[i]))
+			if (*filter && filter.get( fullMap[i]))
 			{
 				if( fullMap[i] == gnumber) break;
 				filterCount++;

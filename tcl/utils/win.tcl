@@ -705,7 +705,7 @@ proc ::docking::restore_tabs {} {
       if { $d == ".fdockecograph" } {  ::windows::eco::OpenClose }
       if { $d == ".fdocktbWin" } { ::tb::Open }
       if { $d == ".fdockcommentWin" } {  ::commenteditor::Open }
-      if { [string first ".fdockglistWin" $d] != -1 } {::windows::gamelist::Open "" dbfilter}
+      if { [string first ".fdockglistWin" $d] != -1 } { ::windows::gamelist::Open }
       if { $d == ".fdockccWindow" } {::CorrespondenceChess::CCWindow}
       if { [ scan $d ".fdocktreeWin%d" base ] == 1 } { ::tree::make $base}
       if { $d == ".fdockoprepWin" } { ::optable::makeReportWin }
