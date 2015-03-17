@@ -150,7 +150,7 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
     }
 
     uint n = 0;
-    for (gamenumT i=0, n = Header.numGames; i < n; i++) {
+    for (gamenumT i=0; i < Header.numGames; i++) {
         if ((i % 10000) == 0) {
             if (!progress.report(i, Header.numGames)) return ERROR_UserCancel;
         }

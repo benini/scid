@@ -111,7 +111,7 @@ public:
 	SearchIndexRangeDate(const scidBaseT* base,
 	                     const char* range,
 	                     dateT (IndexEntry::* f) () const)
-	: SearchIndexRange(base, f) {
+	: SearchIndexRange<dateT>(base, f) {
 		// Extract two whitespace-separated dates:
 		const char* v = strFirstWord(range);
 		min_ = date_EncodeFromString (v);
@@ -125,7 +125,7 @@ public:
 	SearchIndexRangeEco(const scidBaseT* base,
 	                    const char* range,
 	                    ecoT (IndexEntry::* f) () const)
-	: SearchIndexRange(base, f) {
+	: SearchIndexRange<ecoT>(base, f) {
 		// Extract two whitespace-separated ECO codes:
 		const char* v = strFirstWord(range);
 		min_ = eco_FromString(v);
@@ -140,7 +140,7 @@ public:
 class SearchIndexRangeGamenum : public SearchIndexRange<void> {
 public:
 	SearchIndexRangeGamenum(const scidBaseT* base, const char* range)
-	: SearchIndexRange(base, range, 0) {
+	: SearchIndexRange<void>(base, range, 0) {
 		// Set up game number range:
 		// Note that a negative number means a count from the end,
 		// so -1 = last game, -2 = second to last, etc.
@@ -169,7 +169,7 @@ public:
 	                    const char* range,
 	                    eloT (IndexEntry::* f1) (const NameBase*) const,
 	                    eloT (IndexEntry::* f2) (const NameBase*) const = 0)
-	: SearchIndexRange(base, range, 0), fElo1_(f1), fElo2_(f2) {
+	: SearchIndexRange<eloT>(base, range, 0), fElo1_(f1), fElo2_(f2) {
 		nb_ = base_->getNameBase();
 	}
 
