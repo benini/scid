@@ -104,7 +104,7 @@ OpLine::Init (void)
 }
 
 void
-OpLine::Init (Game * g, const IndexEntry * ie, gameNumberT gameNum,
+OpLine::Init (Game * g, const IndexEntry * ie, gamenumT gameNum,
               uint maxExtraMoves, uint maxThemeMoveNumber)
 {
     White = strDuplicate (g->GetWhiteStr());

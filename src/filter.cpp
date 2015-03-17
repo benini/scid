@@ -70,7 +70,7 @@ Filter::Append (byte value)
 }
 
 void
-Filter::SetCapacity(uint size)
+Filter::SetCapacity(gamenumT size)
 {
     if (size > Capacity) 
     {

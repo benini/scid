@@ -230,7 +230,6 @@ private:
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //  Game:  Data structures
 
-    gameNumberT GameNumber;     // first game in file is game 0
     bool        NonStandardStart;      // 1 if non-standard start.
     colorT      ToMove;         // side to move in starting position
     ushort      NumHalfMoves;
@@ -321,8 +320,6 @@ public:
     void        Init();
 
     // Set and Get attributes -- one-line (inline) methods
-    void         SetNumber (gameNumberT num) { GameNumber = num; }
-    gameNumberT  GetNumber ()                { return GameNumber; }
     void        SetNumHalfMoves (ushort x)  { NumHalfMoves = x; }
     ushort      GetNumHalfMoves ()          { return NumHalfMoves; }
     ushort      GetCurrentPly()             { return CurrentPlyCount; }

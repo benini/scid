@@ -33,10 +33,10 @@
 class Filter
 {
   private:
-    uint    FilterSize;     // Number of values in filter.
-    uint    FilterCount;    // Number of nonzero values in filter.
-    uint    Capacity;       // Number of bytes allocated for Data[].
-    byte *  Data;           // The actual filter data.
+    gamenumT FilterSize;     // Number of values in filter.
+    gamenumT FilterCount;    // Number of nonzero values in filter.
+    gamenumT Capacity;       // Number of values allocated for Data[].
+    byte *   Data;           // The actual filter data.
 
     Filter(const Filter&);
     Filter& operator=(const Filter&);
@@ -45,18 +45,18 @@ class Filter
     friend class CompressedFilter;
     
   public:
-    Filter (uint size) :Data(NULL) { Init (size); }
+    Filter (gamenumT size) :Data(NULL) { Init (size); }
     ~Filter() { Free(); }
 
-    void    Init (uint size);
+    void    Init (gamenumT size);
     uint    Size() const { return FilterSize; }
     uint    Count () const { return FilterCount; }
     bool    isWhole () const { return FilterCount == FilterSize; }
-    void    Set (uint index, byte value);   // Sets the value at index.
-    byte    Get (uint index) const;         // Gets the value at index.
-    void    Fill (byte value);              // Sets all values.
-    void    Append (byte value);            // Appends one value.
-    void    SetCapacity (uint size);
+    void    Set (gamenumT index, byte value); // Sets the value at index.
+    byte    Get (gamenumT index) const;       // Gets the value at index.
+    void    Fill (byte value);                // Sets all values.
+    void    Append (byte value);              // Appends one value.
+    void    SetCapacity (gamenumT size);
 };
 
 class HFilter {
@@ -78,13 +78,13 @@ public:
         }
         return res;
     }
-    byte get(uint index) const {
+    byte get(gamenumT index) const {
         byte res = f_->Get(index);
         if (res != 0 && mask_ != NULL) return mask_->Get(index);
         return res;
     }
 
-    void set (uint index, byte value) { return f_->Set(index, value); }
+    void set (gamenumT index, byte value) { return f_->Set(index, value); }
     void fill (byte value) { return f_->Fill(value); }
 };
 

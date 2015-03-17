@@ -85,7 +85,7 @@ void scidBaseT::clear() {
 	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
 }
 
-errorT scidBaseT::clearCaches(uint gNum, bool writeFiles) {
+errorT scidBaseT::clearCaches(gamenumT gNum, bool writeFiles) {
 	clear();
 	if (fileMode != FMODE_Memory && writeFiles) {
 		gfile->FlushAll();
@@ -173,7 +173,7 @@ errorT scidBaseT::addGames(scidBaseT* sourceBase, const HFilter& filter, const P
 	uint totGames = filter.count();
 	Filter* f; int i_filters=0;
 	while ( (f = fetchFilter(i_filters++)) ) f->SetCapacity(numGames() + totGames);
-	for (uint gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
+	for (gamenumT gNum = 0, n = sourceBase->numGames(); gNum < n; gNum++) {
 		if (filter.get(gNum) == 0) continue;
 		err = addGame_(sourceBase, gNum);
 		if (err != OK) break;
@@ -200,7 +200,7 @@ errorT scidBaseT::addGame_(scidBaseT* sourceBase, uint gNum) {
 	return saveGame_(&iE, sourceBase->bbuf);
 }
 
-errorT scidBaseT::saveGame(Game* game, bool clearCache, int idx) {
+errorT scidBaseT::saveGame(Game* game, bool clearCache, gamenumT gnum) {
 	if (fileMode == FMODE_ReadOnly) return ERROR_FileReadOnly;
 
 	IndexEntry iE;
@@ -214,18 +214,18 @@ errorT scidBaseT::saveGame(Game* game, bool clearCache, int idx) {
 	if ((err = iE.SetSiteName (nb, game->GetSiteStr() )) != OK) return err;
 	if ((err = iE.SetRoundName(nb, game->GetRoundStr())) != OK) return err;
 
-	errorT errSave = saveGame_(&iE, bbuf, idx);
+	errorT errSave = saveGame_(&iE, bbuf, gnum);
 	if (errSave == OK && clearCache) {
-		if (idx < 0) {
+		if (gnum >= numGames()) {
 			ASSERT(numGames() > 0);
-			idx = static_cast<int> (numGames() -1);
+			gnum = numGames() -1;
 		}
-		return clearCaches(idx);
+		return clearCaches(gnum);
 	}
 	return errSave;
 }
 
-errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, int oldIdx) {
+errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx) {
 	// Now try writing the game to the gfile:
 	uint offset = 0;
 	errorT errGFile = gfile->AddGame (bytebuf, &offset);
@@ -239,7 +239,7 @@ errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, int oldIdx) {
 	// Last of all, we write the new idxEntry, but NOT the index header
 	// or the name file, since there might be more games saved yet and
 	// writing them now would then be a waste of time.
-	if (oldIdx >= 0) {
+	if (oldIdx >= 0 && oldIdx < numGames()) {
 		const IndexEntry* ieOld = getIndexEntry(oldIdx);
 		// Remember previous user-settable flags:
 		for (uint flag = IDX_FLAG_DELETE; flag < IDX_NUM_FLAGS; flag++) {
@@ -298,7 +298,7 @@ void scidBaseT::calcNameFreq () {
 		nameFreq_[n].resize(nb->GetNumNames(n), 0);
 	}
 
-	for (uint i=0, n = numGames(); i < n; i++) {
+	for (gamenumT i=0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		nameFreq_[NAME_PLAYER][ie->GetWhite()] += 1;
 		nameFreq_[NAME_PLAYER][ie->GetBlack()] += 1;
@@ -362,7 +362,7 @@ const scidBaseT::Stats* scidBaseT::getStats() const {
 		stats_->ecoCount4[i].results[RESULT_None] = 0;
 	}
 	// Read stats from index entry of each game:
-	for (uint gnum=0, n = numGames(); gnum < n; gnum++) {
+	for (gamenumT gnum=0, n = numGames(); gnum < n; gnum++) {
 		const IndexEntry* ie = getIndexEntry(gnum);
 		stats_->nResults[ie->GetResult()]++;
 		eloT elo = ie->GetWhiteElo();
@@ -449,7 +449,7 @@ std::vector<scidBaseT::TreeStat> scidBaseT::getTreeStat(const HFilter& filter) {
 	v1.reserve(50);
 	std::vector<scidBaseT::TreeStat> v2;
 	v2.reserve(50);
-	for(uint gnum=0, n = numGames(); gnum < n; gnum++) {
+	for(gamenumT gnum=0, n = numGames(); gnum < n; gnum++) {
 		if(filter.get(gnum) == 0) continue;
 		uint ply = filter.get(gnum) - 1;
 		const IndexEntry* ie = getIndexEntry (gnum);
@@ -486,7 +486,7 @@ errorT scidBaseT::getCompactStat(uint* n_deleted,
 	uint last_offset = 0;
 	*n_sparse = 0;
 	*n_deleted = 0;
-	for (uint i=0, n = numGames(); i < n; i++) {
+	for (gamenumT i=0, n = numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { *n_deleted += 1; continue; }
 
@@ -520,7 +520,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	typedef std::vector< std::pair<byte, uint> > sort_t;
 	sort_t sort;
 	uint n_deleted = 0;
-	for (uint i=0, n= numGames(); i < n; i++) {
+	for (gamenumT i=0, n= numGames(); i < n; i++) {
 		const IndexEntry* ie = getIndexEntry (i);
 		if (ie->GetDeleteFlag()) { n_deleted++; continue; }
 		uint stLine = ie->GetStoredLineCode();

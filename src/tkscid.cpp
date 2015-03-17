@@ -728,7 +728,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
                     case 4: return TclResult(ti, dbase->invertFlag(flagType, filter));
                     }
                 } else {
-                    uint gNum = strGetUnsigned(argv[3]);
+                    gamenumT gNum = strGetUnsigned(argv[3]);
                     if (gNum > 0 && gNum <= dbase->numGames()) {
                         gNum--;
                         switch (cmd) {
@@ -1796,13 +1796,13 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
         }
     }
     uint deletedCount = 0;
-    const uint numGames = dbase->numGames();
+    const gamenumT numGames = dbase->numGames();
 
     // Setup duplicates array:
     if (dbase->duplicates == NULL) {
         dbase->duplicates = new uint [numGames];
     }
-    for (uint d=0; d < numGames; d++) {
+    for (gamenumT d=0; d < numGames; d++) {
         dbase->duplicates[d] = 0;
     }
 
@@ -1810,7 +1810,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
     // is only compared to others that hash to the same value.
     std::vector<gNumListT> hash(numGames);
     size_t n_hash = 0;
-    for (uint i=0; i < numGames; i++) {
+    for (gamenumT i=0; i < numGames; i++) {
         const IndexEntry* ie = dbase->getIndexEntry(i);
         if (! ie->GetDeleteFlag()  /* &&  !ie->GetStartFlag() */
             &&  (!skipShortGames  ||  ie->GetNumHalfMoves() >= 10)
@@ -1853,7 +1853,7 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
                     bool compImmune = false;
                     bool doDeletion = false;
                     bool copiedRatings = false;
-                    gameNumberT gnumKeep, gnumDelete;
+                    gamenumT gnumKeep, gnumDelete;
                     IndexEntry * ieDelete, * ieKeep;
 
                     if (keepAllCommentedGames) {
@@ -1996,7 +1996,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     Game * g = scratchGame;
     uint nEditedGames = 0;
 
-    for (uint gnum = 0, n = db->numGames(); gnum < n; gnum++) {
+    for (gamenumT gnum = 0, n = db->numGames(); gnum < n; gnum++) {
         if ((gnum % 1000) == 0) {
             if (!progress.report(gnum, n)) break;
         }
@@ -2094,13 +2094,13 @@ class Tourney
     tourneyPlayerT * PlayerList;
     uint64_t  EloSum;
     uint64_t  EloCount;
-    gameNumberT FirstGame;
+    gamenumT FirstGame;
     Tourney  * Next;
 
     Tourney(const IndexEntry* ie, const NameBase * nb);
     ~Tourney();
 
-    void AddGame (const IndexEntry* ie, gameNumberT g);
+    void AddGame (const IndexEntry* ie, gamenumT g);
     void Dump (Tcl_DString * ds);
     uint MeanElo() {
         return (EloCount == 0 ? 0 : (EloSum + EloCount/2) / EloCount);
@@ -2139,7 +2139,7 @@ Tourney::~Tourney()
 }
 
 void
-Tourney::AddGame (const IndexEntry* ie, gameNumberT g)
+Tourney::AddGame (const IndexEntry* ie, gamenumT g)
 {
     idNumberT whiteID = ie->GetWhite();
     idNumberT blackID = ie->GetBlack();
@@ -5482,12 +5482,13 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     currGame->SaveState ();
-    uint gnum = strGetUnsigned (argv[2]);
-    int idx = static_cast<int> (gnum);
-    errorT res = dbase->saveGame(currGame, true, idx -1);
+    gamenumT gnum = strGetUnsigned (argv[2]);
+    if (gnum <= 0) gnum = IDX_NOT_FOUND;
+    else gnum--;
+    errorT res = dbase->saveGame(currGame, true, gnum);
     currGame->RestoreState ();
     if (res == OK) {
-        if (gnum == 0 && db == dbase) {
+        if (gnum == IDX_NOT_FOUND && db == dbase) {
             // Saved new game, so set gameNumber to the saved game number:
             db->gameNumber = db->numGames() - 1;
         }
@@ -9631,7 +9632,7 @@ avgGameLength (resultT result)
 {
     uint sum = 0;
     uint count = 0;
-    for (uint i=0, n = db->numGames(); i < n; i++) {
+    for (gamenumT i=0, n = db->numGames(); i < n; i++) {
         const IndexEntry* ie = db->getIndexEntry(i);
         if (result == ie->GetResult()) {
             count++;
@@ -11285,8 +11286,8 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     uint startFilterCount = startFilterSize (db, filterOp);
 
     // Here is the loop that searches on each game:
-    uint gameNum = 0, n = db->numGames();
-    for (; gameNum < db->numGames(); gameNum++) {
+    gamenumT gameNum = 0, n = db->numGames();
+    for (; gameNum < n; gameNum++) {
         if ((gameNum % 1000) == 0) {  // Update the percentage done bar:
             if (!progress.report(gameNum, n)) break;
         }
@@ -11405,7 +11406,7 @@ sc_search_material (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     int centisecs = timer.CentiSecs();
 
-    if (gameNum != db->numGames()) {
+    if (gameNum != n) {
         Tcl_AppendResult (ti, errMsgSearchInterrupted(ti), "  ", NULL);
     }
     sprintf (temp, "%d / %d  (%d%c%02d s)",
@@ -11873,8 +11874,6 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
             }
         }
     }
-
-    char temp[250];
 
     // Here is the loop that searches on each game:
     for (uint i=0, n = base->numGames(); i < n; i++) {

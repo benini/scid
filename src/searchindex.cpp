@@ -65,7 +65,7 @@ public:
 		}
 	}
 
-	bool operator() (gameNumberT gnum) {
+	bool operator() (gamenumT gnum) {
 		bool res = mask_[(base_->getIndexEntry(gnum)->*f1_)()];
 		if (!res && f2_ != 0) {
 			return mask_[(base_->getIndexEntry(gnum)->*f2_)()];
@@ -99,7 +99,7 @@ public:
 		if (min_ > max_) std::swap(min_, max_);
 	}
 
-	bool operator() (gameNumberT gnum) {
+	bool operator() (gamenumT gnum) {
 		long v = (base_->getIndexEntry(gnum)->*f_)();
 		if (v < min_ || v > max_) return false;
 		return true;
@@ -151,8 +151,9 @@ public:
 		if (min_ > max_) std::swap(min_, max_);
 	}
 
-	bool operator() (gameNumberT gnum) {
-		if (gnum < min_ || gnum > max_) return false;
+	bool operator() (gamenumT gnum) {
+		if (static_cast<long>(gnum) < min_ ||
+			static_cast<long>(gnum) > max_) return false;
 		return true;
 	}
 };
@@ -172,7 +173,7 @@ public:
 		nb_ = base_->getNameBase();
 	}
 
-	bool operator() (gameNumberT gnum) {
+	bool operator() (gamenumT gnum) {
 		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)(nb_);
 		long v2 = min_;
 		if (fElo2_ != 0) v2 = (base_->getIndexEntry(gnum)->*fElo2_)(nb_);
@@ -189,7 +190,7 @@ public:
 	                        eloT (IndexEntry::* f2) (const NameBase*) const)
 	: SearchIndexRangeElo(base, range, f1, f2) {}
 
-	bool operator() (gameNumberT gnum) {
+	bool operator() (gamenumT gnum) {
 		long v1 = (base_->getIndexEntry(gnum)->*fElo1_)(nb_);
 		long v2 = (base_->getIndexEntry(gnum)->*fElo2_)(nb_);
 		long v = v1 - v2;
@@ -299,9 +300,10 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 	}
 
 	// 2) Create the list of games
-	std::vector<idNumberT> glist;
+	typedef std::vector<gamenumT>::iterator iter;
+	std::vector<gamenumT> glist;
 	glist.reserve(base->numGames());
-	for (idNumberT i = 0, n=base->numGames(); i < n; i++) {
+	for (gamenumT i = 0, n=base->numGames(); i < n; i++) {
 		byte v = filter.get(i);
 		if (filterOp == FILTEROP_AND) {
 			if (v != 0) glist.push_back(i);
@@ -316,7 +318,6 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 	if (!progress.report(++report_i, report_tot)) return ERROR_UserCancel;
 
 	// 3) Search
-	typedef std::vector<idNumberT>::iterator iter;
 	iter it_begin = glist.begin();
 	iter it_end = glist.end();
 	iter it_res = glist.end();

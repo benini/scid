@@ -191,7 +191,7 @@ typedef uint    dateT;
 
 //  Game Information types
 
-typedef uint            gameNumberT;      // Used in Index class
+typedef uint            gamenumT;
 typedef ushort          eloT;
 typedef ushort          ecoT;
 typedef char            ecoStringT [6];   /* "A00j1" */

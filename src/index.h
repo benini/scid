@@ -39,7 +39,7 @@ class SortCache;
 const char         INDEX_SUFFIX[]     = ".si4";
 const char         OLD_INDEX_SUFFIX[] = ".si3";
 const char         INDEX_MAGIC[8]     = "Scid.si";
-const gameNumberT  MAX_GAMES          = 16777214;
+const gamenumT     MAX_GAMES          = 16777214;
 // max. number of games is 2^(3*8)-1-1,
 // The "2^(3*8)-1" as si4 only uses three bytes to store this integer,
 // The second "-1" because GetAutoLoad uses 0 to mean "no autoload"
@@ -73,8 +73,8 @@ private:
         char        magic[9];    // 8-byte identifier for Scid index files.
         versionT    version;     // version number. 2 bytes.
         uint        baseType;    // Type, e.g. tournament, theory, etc.
-        gameNumberT numGames;    // number of games in file.
-        gameNumberT autoLoad;    // game number to autoload: 0=1st, 1=none, 2=1st,
+        gamenumT    numGames;    // number of games in file.
+        gamenumT    autoLoad;    // game number to autoload: 0=1st, 1=none, 2=1st,
                                  //   3=2nd, 4=3rd, etc. Note that 0=1st for
                                  //   backwards compatibility: bases with this
                                  //   unset will load game 1.
@@ -130,7 +130,7 @@ private:
     Index& operator=(const Index&);
     void Init ();
     errorT Clear ();
-    errorT write (const IndexEntry* ie, gameNumberT idx);
+    errorT write (const IndexEntry* ie, gamenumT idx);
 
 public:
     Index()     { Init(); }
@@ -140,13 +140,13 @@ public:
     errorT Create(const char* filename);
     errorT Close() { return Clear(); }
 
-    gameNumberT GetNumGames () const { return Header.numGames; }
+    gamenumT GetNumGames () const { return Header.numGames; }
     int GetBadNameIdCount() const { return badNameIdCount_; }
 
     errorT ReadEntireFile (NameBase* nb, const Progress& progress);
 
-    IndexEntry* FetchEntry (gameNumberT g) { return &(entries_[g]); }
-    const IndexEntry* GetEntry (gameNumberT g) const { return &(entries_[g]); }
+    IndexEntry* FetchEntry (gamenumT g) { return &(entries_[g]); }
+    const IndexEntry* GetEntry (gamenumT g) const { return &(entries_[g]); }
 
     uint        GetType () const { return Header.baseType; }
     versionT    GetVersion () const { return Header.version; }
@@ -155,7 +155,7 @@ public:
         if (c < IDX_FLAG_CUSTOM1 || c > IDX_FLAG_CUSTOM6) return 0;
         return Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
     }
-    gameNumberT GetAutoLoad () const {
+    gamenumT GetAutoLoad () const {
         return ((Header.autoLoad == 0) ? 1 : (Header.autoLoad - 1));
     }
 
@@ -186,7 +186,7 @@ public:
         flagDesc[CUSTOM_FLAG_DESC_LENGTH] = 0;
         Dirty = true;
     }
-    void SetAutoLoad (gameNumberT gnum) {
+    void SetAutoLoad (gamenumT gnum) {
         Header.autoLoad = gnum + 1;
         Dirty = true;
     }
@@ -198,7 +198,7 @@ public:
     }
 
     errorT WriteHeader ();
-    errorT WriteEntries (const IndexEntry* ie, gameNumberT idx, bool flush = true) {
+    errorT WriteEntries (const IndexEntry* ie, gamenumT idx, bool flush = true) {
         errorT res = write(ie, idx);
         if (flush && res == OK && FilePtr != NULL) {
             res = (FilePtr->pubsync() != -1) ? OK : ERROR_FileWrite;;

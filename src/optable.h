@@ -78,7 +78,7 @@ class OpLine
     char *      White;
     char *      Black;
     char *      Site;
-    gameNumberT GameNumber;
+    gamenumT    GameNumber;
     idNumberT   WhiteID;
     idNumberT   BlackID;
     eloT        WhiteElo;   // Actual White rating (no estimate)
@@ -103,13 +103,13 @@ class OpLine
     uint        EgTheme;
 
     void Init (void);
-    void Init (Game * g, const IndexEntry * ie, gameNumberT gameNum,
+    void Init (Game * g, const IndexEntry * ie, gamenumT gameNum,
                uint maxExtraMoves, uint maxThemeMoveNumber);
     void Destroy (void);
 
   public:
     OpLine () { Init(); }
-    OpLine (Game * g, const IndexEntry * ie, gameNumberT gnum, uint max, uint tm) {
+    OpLine (Game * g, const IndexEntry * ie, gamenumT gnum, uint max, uint tm) {
         Init (g, ie, gnum, max, tm);
     }
     ~OpLine() { Destroy(); }

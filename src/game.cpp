@@ -598,8 +598,6 @@ Game::Clear()
     HtmlStyle = 0;
     PgnLastMovePos = 0;
 
-    GameNumber = 0;
-
     // CommentsFlag = NagsFlag = VarsFlag = 0;
     PromotionsFlag = false;
     UnderPromosFlag = false;

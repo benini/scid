@@ -150,7 +150,7 @@ Index::ReadEntireFile (NameBase* nb, const Progress& progress)
     }
 
     uint n = 0;
-    for (gameNumberT i=0; i < Header.numGames; i++) {
+    for (gamenumT i=0, n = Header.numGames; i < n; i++) {
         if ((i % 10000) == 0) {
             if (!progress.report(i, Header.numGames)) return ERROR_UserCancel;
         }
@@ -211,7 +211,7 @@ Index::WriteHeader ()
     return OK;
 }
 
-errorT Index::write (const IndexEntry* ie, uint idx)
+errorT Index::write (const IndexEntry* ie, gamenumT idx)
 {
     IndexEntry* copyToMemory = FetchEntry(idx);
     *copyToMemory = *ie;
@@ -269,13 +269,13 @@ errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, u
     if (criteria[0] == 'N') {
         uint i=0;
         if (criteria[1] == '+') {
-            for(uint gnum=0; gnum < GetNumGames() && i < count; gnum++) {
+            for(gamenumT gnum=0; gnum < GetNumGames() && i < count; gnum++) {
                 if (*filter && filter.get(gnum) == 0) continue;
                 if (idx == 0) result[i++] = gnum;
                 else idx--;
             }
         } else {
-            for(uint gnum=GetNumGames(); gnum > 0 && i < count; gnum--) {
+            for(gamenumT gnum=GetNumGames(); gnum > 0 && i < count; gnum--) {
                 if (*filter && filter.get(gnum -1) == 0) continue;
                 if (idx == 0) result[i++] = gnum -1;
                 else idx--;

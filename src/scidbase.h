@@ -100,11 +100,11 @@ struct scidBaseT {
 
 	const char* getFileName() const { return fileName_.c_str(); }
 	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
-	uint numGames() const { return idx->GetNumGames(); }
+	gamenumT numGames() const { return idx->GetNumGames(); }
 	errorT getExtraInfo(const std::string& tagname, std::string* res) const;
 	errorT setExtraInfo(const std::string& tagname, const char* new_value);
 
-	const IndexEntry* getIndexEntry(gameNumberT g) const {
+	const IndexEntry* getIndexEntry(gamenumT g) const {
 		return idx->GetEntry(g);
 	}
 	const NameBase* getNameBase() const {
@@ -119,7 +119,7 @@ struct scidBaseT {
 
 	errorT addGames(scidBaseT* sourceBase, const HFilter& filter, const Progress& progress);
 	errorT addGame(scidBaseT* sourceBase, uint gNum);
-	errorT saveGame(Game* game, bool clearCache, int idx = -1);
+	errorT saveGame(Game* game, bool clearCache, gamenumT idx = IDX_NOT_FOUND);
 
 	bool getFlag(uint flag, uint gNum) const {
 		return idx->GetEntry(gNum)->GetFlag (flag);
@@ -136,7 +136,7 @@ struct scidBaseT {
 	}
 	errorT setFlag(bool value, uint flag, const HFilter& filter) {
 		errorT res = OK;
-		for (uint gNum = 0, n = numGames(); gNum < n; gNum++) {
+		for (gamenumT gNum = 0, n = numGames(); gNum < n; gNum++) {
 			if (*filter && filter.get(gNum) == 0) continue;
 			res = setFlag(value, flag, gNum);
 			if (res != OK) return res;
@@ -148,9 +148,9 @@ struct scidBaseT {
 	}
 	errorT invertFlag(uint flag, const HFilter& filter) {
 		errorT res = OK;
-		for (uint gNum = 0, n = numGames(); gNum < n; gNum++) {
-			if (*filter && filter.get(gNum) == 0) continue;
-			res = invertFlag(flag, gNum);
+		for (gamenumT i = 0, n = numGames(); i < n; i++) {
+			if (*filter && filter.get(i) == 0) continue;
+			res = invertFlag(flag, i);
 			if (res != OK) return res;
 		}
 		return res;
@@ -192,7 +192,7 @@ struct scidBaseT {
 	    (to update all the caches and write the namebase file and index header)
 	    - gNum: id of the game changed (IDX_NOT_FOUND update all the games)
 	*/
-	errorT clearCaches(uint gNum = IDX_NOT_FOUND, bool writeFiles = true);
+	errorT clearCaches(gamenumT gNum = IDX_NOT_FOUND, bool writeFiles = true);
 	void clearStats() { validStats_ = false; };
 
 	Index* idx;       // the Index file in memory for this base.
@@ -226,7 +226,7 @@ private:
 	void Init();
 	void clear();
 	errorT addGame_ (scidBaseT* sourceBase, uint gNum);
-	errorT saveGame_(IndexEntry* iE, ByteBuffer* bbuf,  int oldIdx = -1);
+	errorT saveGame_(IndexEntry* iE, ByteBuffer* bbuf,  gamenumT oldIdx = IDX_NOT_FOUND);
 	void calcNameFreq ();
 
 	Filter* fetchFilter(uint idx) {
