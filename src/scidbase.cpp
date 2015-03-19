@@ -239,7 +239,7 @@ errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx
 	// Last of all, we write the new idxEntry, but NOT the index header
 	// or the name file, since there might be more games saved yet and
 	// writing them now would then be a waste of time.
-	if (oldIdx >= 0 && oldIdx < numGames()) {
+	if (oldIdx < numGames()) {
 		const IndexEntry* ieOld = getIndexEntry(oldIdx);
 		// Remember previous user-settable flags:
 		for (uint flag = IDX_FLAG_DELETE; flag < IDX_NUM_FLAGS; flag++) {

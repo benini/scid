@@ -203,7 +203,6 @@ public:
 
 typedef uint filterOpT;
 const filterOpT FILTEROP_AND = 0;
-const filterOpT FILTEROP_OR = 1;
 const filterOpT FILTEROP_RESET = 2;
 extern filterOpT strGetFilterOp (const char * str);
 

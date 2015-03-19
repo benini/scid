@@ -59,7 +59,7 @@ class UI_List {
 	Tcl_Obj* small_buffer_[6];
 
 public:
-	explicit UI_List(int max_size);
+	explicit UI_List(size_t max_size);
 	~UI_List();
 
 	friend class TclObjMaker;
@@ -191,8 +191,8 @@ public:
 	~TclObjMaker() { ASSERT(obj_ == 0); }
 };
 
-inline UI_List::UI_List(int max_size)
-: i_(0), list_(small_buffer_) {
+inline UI_List::UI_List(size_t max_size)
+: list_(small_buffer_), i_(0) {
 	if (max_size > (sizeof(small_buffer_)/sizeof(small_buffer_[0]))) {
 		list_ = new Tcl_Obj*[max_size];
 	}
