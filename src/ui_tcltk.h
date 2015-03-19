@@ -23,6 +23,7 @@
 #include "timer.h"
 #include <tcl.h>
 #include <sstream>
+class TclObjMaker;
 
 
 typedef int         UI_typeRes;
@@ -52,21 +53,22 @@ UI_typeRes sc_var         (UI_typeExtra, UI_type2, int argc, const char ** argv)
 int UI_Main (int argc, char* argv[], void (*exit) (void*));
 Progress UI_CreateProgress(UI_type2);
 
-class UI_Result {
-	UI_type2 ti_;
-	errorT res_;
+class UI_List {
+	Tcl_Obj** list_;
+	int i_;
+	Tcl_Obj* small_buffer_[6];
+
 public:
-	UI_Result(UI_type2 ti, errorT res) : ti_(ti), res_(res) {}
-	operator UI_typeRes() const {
-		if (res_ == OK) return TCL_OK;
-		Tcl_SetObjErrorCode(ti_, Tcl_NewIntObj(res_));
-		return TCL_ERROR;
-	}
-	UI_Result& operator() (errorT res) { 
-		res_ = res;
-		return *this;
-	}
+	explicit UI_List(int max_size);
+	~UI_List();
+
+	friend class TclObjMaker;
+	void push_back(const TclObjMaker& v);
+	void clear();
 };
+
+UI_typeRes UI_Result(UI_type2 ti, errorT res);
+UI_typeRes UI_Result(UI_type2 ti, errorT res, const TclObjMaker& value);
 //////////////////////////////////////////////////////////////////////
 
 
@@ -152,7 +154,6 @@ public:
 	}
 };
 
-
 inline Progress UI_CreateProgress(UI_type2 data) {
 	int err = Tcl_EvalEx(data, "::progressCallBack init", -1, 0);
 	if (err != TCL_OK) return Progress();
@@ -163,5 +164,58 @@ Progress UI_CreateProgressPosMask(UI_type2 data) {
 	return Progress(new tcl_ProgressPosMask(data));
 }
 
+
+// This object is not intended to be used directly, i.e. TclObjMaker a("bad");
+// ASSERT are placed to catch Tcl_Obj leaking
+class TclObjMaker {
+	Tcl_Obj* obj_;
+
+public:
+	TclObjMaker(int v) { obj_ = Tcl_NewIntObj(v); }
+	TclObjMaker(const char* s) { obj_ = Tcl_NewStringObj(s, -1); }
+	TclObjMaker(const std::string& s) { obj_ = Tcl_NewStringObj(s.c_str(), s.length()); }
+	TclObjMaker(const UI_List& l) {
+		obj_ = Tcl_NewListObj(l.i_, l.list_);
+		ASSERT((const_cast<UI_List&>(l).i_ = 0) == 0);
+	}
+
+	Tcl_Obj* get() const {
+		ASSERT(obj_ != 0);
+		Tcl_Obj* res = obj_;
+		ASSERT((const_cast<Tcl_Obj*>(obj_) = 0) == 0);
+		return res;
+	}
+
+	~TclObjMaker() { ASSERT(obj_ == 0); }
+};
+
+inline UI_List::UI_List(int max_size)
+: i_(0), list_(small_buffer_) {
+	if (max_size > (sizeof(small_buffer_)/sizeof(small_buffer_[0]))) {
+		list_ = new Tcl_Obj*[max_size];
+	}
+}
+inline UI_List::~UI_List() {
+	ASSERT (i_ == 0);
+	if (list_ != small_buffer_) delete [] list_;
+}
+inline void UI_List::push_back(const TclObjMaker& v) {
+	list_[i_++] = v.get();
+}
+inline void UI_List::clear() {
+	ASSERT (i_ == 0);
+	i_ = 0;
+}
+
+inline UI_typeRes UI_Result(UI_type2 ti, errorT res) {
+	if (res == OK) return TCL_OK;
+	Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(res));
+	return TCL_ERROR;
+}
+
+inline UI_typeRes UI_Result(UI_type2 ti, errorT res, const TclObjMaker& value) {
+	Tcl_SetObjResult(ti, value.get());
+	return UI_Result(ti, res);
+}
 
 #endif

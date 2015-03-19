@@ -505,11 +505,11 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 	const char* sort = "N+";
 	if (argc == 7) sort = argv[6];
 	uint* idxList = new uint[count];
-	const NameBase* nb = cdb->getNameBase();
 	cdb->GetRange(sort, start, count, filter, idxList);
 
-	Tcl_Obj** res = new Tcl_Obj* [count *3];
-	uint i_res = 0;
+	UI_List res (count * 3);
+	UI_List ginfo(24);
+	const NameBase* nb = cdb->getNameBase();
 	for (uint i = 0; i < count; ++i) {
 		uint idx = idxList[i];
 		if (idx == IDX_NOT_FOUND) break;
@@ -519,58 +519,55 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 
 		const IndexEntry* ie = cdb->getIndexEntry(idx);
 
-		Tcl_Obj* ginfo[24];
-		ginfo[0] = Tcl_NewIntObj(idx +1);
-		ginfo[1] = Tcl_NewStringObj(RESULT_STR[ie->GetResult()], -1);
-		ginfo[2] = Tcl_NewIntObj((ie->GetNumHalfMoves() + 1) / 2);
-		ginfo[3] = Tcl_NewStringObj(ie->GetWhiteName(nb), -1);
+		ginfo.clear();
+		ginfo.push_back(idx +1);
+		ginfo.push_back(RESULT_STR[ie->GetResult()]);
+		ginfo.push_back((ie->GetNumHalfMoves() + 1) / 2);
+		ginfo.push_back(ie->GetWhiteName(nb));
 		eloT welo = ie->GetWhiteElo(nb);
-		ginfo[4] = Tcl_NewIntObj(welo);
-		ginfo[5] = Tcl_NewStringObj(ie->GetBlackName(nb), -1);
+		ginfo.push_back(welo);
+		ginfo.push_back(ie->GetBlackName(nb));
 		eloT belo = ie->GetBlackElo(nb);
-		ginfo[6] = Tcl_NewIntObj(belo);
+		ginfo.push_back(belo);
 		char buf_date[16];
 		date_DecodeToString (ie->GetDate(), buf_date);
-		ginfo[7] = Tcl_NewStringObj(buf_date, -1);
-		ginfo[8] = Tcl_NewStringObj(ie->GetEventName(nb), -1);
-		ginfo[9] = Tcl_NewStringObj(ie->GetRoundName(nb), -1);
-		ginfo[10] = Tcl_NewStringObj(ie->GetSiteName(nb), -1);
-		ginfo[11] = Tcl_NewIntObj(ie->GetNagCount());
-		ginfo[12] = Tcl_NewIntObj(ie->GetCommentCount());
-		ginfo[13] = Tcl_NewIntObj(ie->GetVariationCount());
+		ginfo.push_back(buf_date);
+		ginfo.push_back(ie->GetEventName(nb));
+		ginfo.push_back(ie->GetRoundName(nb));
+		ginfo.push_back(ie->GetSiteName(nb));
+		ginfo.push_back(ie->GetNagCount());
+		ginfo.push_back(ie->GetCommentCount());
+		ginfo.push_back(ie->GetVariationCount());
 		char deleted[2] = {0};
 		deleted[0] = (ie->GetDeleteFlag()) ? 'D' : ' ';
-		ginfo[14] = Tcl_NewStringObj(deleted, -1);
+		ginfo.push_back(deleted);
 		char flags[16];
 		ie->GetFlagStr (flags, "WBMENPTKQ!?U123456");
-		ginfo[15] = Tcl_NewStringObj(flags, -1);
+		ginfo.push_back(flags);
 		ecoStringT ecoStr;
 		eco_ToExtendedString (ie->GetEcoCode(), ecoStr);
-		ginfo[16] = Tcl_NewStringObj(ecoStr, -1);
+		ginfo.push_back(ecoStr);
 		std::string endMaterial = matsig_makeString(ie->GetFinalMatSig());
-		ginfo[17] = Tcl_NewStringObj(endMaterial.c_str(), -1);
+		ginfo.push_back(endMaterial);
 		char startpos[2] = {0};
 		startpos[0] = (ie->GetStartFlag()) ? 'S' : ' ';
-		ginfo[18] = Tcl_NewStringObj(startpos, -1);
+		ginfo.push_back(startpos);
 		char buf_eventdate[16];
 		date_DecodeToString (ie->GetEventDate(), buf_eventdate);
-		ginfo[19] = Tcl_NewStringObj(buf_eventdate, -1);
-		ginfo[20] = Tcl_NewIntObj(ie->GetYear());
-		ginfo[21] = Tcl_NewIntObj((welo + belo)/2);
-		ginfo[22] = Tcl_NewIntObj(ie->GetRating(nb));
+		ginfo.push_back(buf_eventdate);
+		ginfo.push_back(ie->GetYear());
+		ginfo.push_back((welo + belo)/2);
+		ginfo.push_back(ie->GetRating(nb));
 		FastGame game = cdb->getGame(ie);
-		std::string moves = game.getMoveSAN(ply, 10);
-		ginfo[23] = Tcl_NewStringObj(moves.c_str(), -1);
-		res[i_res++] = Tcl_ObjPrintf("%d_%d", idx +1, ply);
-		res[i_res++] = Tcl_NewListObj(sizeof(ginfo)/sizeof(Tcl_Obj*), ginfo);
-		res[i_res++] = Tcl_NewStringObj(deleted, -1);
+		ginfo.push_back(game.getMoveSAN(ply, 10));
+
+		res.push_back(to_string(idx+1) + "_" + to_string(ply));
+		res.push_back(ginfo);
+		res.push_back(deleted);
 	}
 
-	Tcl_SetObjResult(ti, Tcl_NewListObj(i_res, res));
-
-	delete [] res;
 	delete [] idxList;
-    return TCL_OK;
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -668,8 +665,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         if (argc == 4) {
             std::string res;
             errorT err = dbase->getExtraInfo(argv[3], &res);
-            if (err != OK) return errorResult(ti, err);
-            return okResult(ti, res);
+            return UI_Result(ti, err, res);
         } else if (argc == 5) {
             return TclResult(ti, dbase->setExtraInfo(argv[3], argv[4]));
         }
@@ -682,13 +678,14 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         } else if (argc == 4 && strCompare("stats", argv[3]) == 0) {
             uint n_deleted, n_unused, n_sparse, n_badNameId;
             errorT res = dbase->getCompactStat(&n_deleted, &n_unused, &n_sparse, &n_badNameId);
-            appendUintElement(ti, n_deleted);
-            appendUintElement(ti, n_unused);
-            appendUintElement(ti, n_sparse);
-            appendUintElement(ti, n_badNameId);
-            return TclResult(ti, res);
+            UI_List val(4);
+            val.push_back(n_deleted);
+            val.push_back(n_unused);
+            val.push_back(n_sparse);
+            val.push_back(n_badNameId);
+            return UI_Result(ti, res, val);
         }
-        return errorResult(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_base compact baseId [stats] <games|names>");
 
     case BASE_COPYGAMES:
         if (argc == 5) {
