@@ -325,7 +325,7 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const
     }
     SortCache* sc = 0;
     if (i != SORTING_CACHE_MAX) sc = sortingCaches[i];
-    else sc = SortCache::Create (this, nbase, criteria, false);
+    else sc = SortCache::Create (this, nbase, criteria);
 
     uint res = start;
     uint result [100] = {0};

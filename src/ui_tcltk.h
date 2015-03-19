@@ -72,7 +72,9 @@ UI_typeRes UI_Result(UI_type2 ti, errorT res, const TclObjMaker& value);
 //////////////////////////////////////////////////////////////////////
 
 
-int scid_InitTclTk (Tcl_Interp * ti)
+
+
+inline int scid_InitTclTk (Tcl_Interp * ti)
 {
 	if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
 
@@ -160,7 +162,7 @@ inline Progress UI_CreateProgress(UI_type2 data) {
 	return Progress(new tcl_Progress(data));
 }
 
-Progress UI_CreateProgressPosMask(UI_type2 data) {
+inline Progress UI_CreateProgressPosMask(UI_type2 data) {
 	return Progress(new tcl_ProgressPosMask(data));
 }
 
