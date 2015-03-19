@@ -470,25 +470,23 @@ int
 sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
 {
 	const char* usage = "Usage: sc_base gamelocation baseId filterName sort gnumber [text start_gnum forward_dir]";
-	if (argc != 6 && argc != 9) return errorResult (ti, usage);
+	if (argc != 6 && argc != 9) return UI_Result(ti, ERROR_BadArg, usage);
 
 	const HFilter filter = cdb->getFilter(argv[3]);
 	const char* sort = argv[4];
 	uint gnumber = strGetUnsigned (argv[5]);
 	uint location = 0;
 	if (gnumber == 0) {
-		if (argc != 9) return errorResult (ti, usage);
+		if (argc != 9) return UI_Result(ti, ERROR_BadArg, usage);
 		const char* txt = argv[6];
 		uint st = strGetUnsigned (argv[7]);
 		bool fw = strGetBoolean (argv[8]);
 		location = cdb->GetRangeLocation (sort, filter, txt, st, fw);
 	} else {
-		if (gnumber > cdb->numGames()) return TCL_OK;
-		if (*filter && filter.get(gnumber -1) == 0) return TCL_OK;
 		location = cdb->GetRangeLocation (sort, filter, gnumber);
 	}
-	if (location == 0) return TCL_OK; //Not found
-	return setUintResult (ti, location);
+	if (location == 0) return UI_Result(ti, OK); //Not found
+	return UI_Result(ti, OK, location);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -497,7 +495,7 @@ int
 sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
 {
 	if (argc != 6  &&  argc != 7) {
-		return errorResult (ti, "Usage: sc_base gameslist baseId start count filterName [sort]");
+		return UI_Result(ti, ERROR_BadArg, "Usage: sc_base gameslist baseId start count filterName [sort]");
 	}
 	uint start = strGetUnsigned (argv[3]);
 	uint count = strGetUnsigned (argv[4]);
@@ -628,7 +626,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         return sc_base_numGames (cd, ti, argc, argv);
 
     case BASE_OPEN:
-        if (argc != 3) return errorResult (ti, "Usage: sc_base open filename");
+        if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base open filename");
         return sc_base_open (ti, argv[2]);
 
     case BASE_PTRACK:
@@ -652,14 +650,14 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
     }
 
     //New multi-base functions
-    if (argc < 3) return errorResult (ti, "Usage: sc_base <cmd> baseId [args]");
-    scidBaseT * dbase = getBase(strGetUnsigned(argv[2]));
-    if (dbase == 0) return errorResult (ti, "Invalid database number.");
+    if (argc < 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd> baseId [args]");
+    scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
+    if (dbase == 0) return UI_Result(ti, ERROR_BadArg, "Invalid database number.");
 
     switch (index) {
     case BASE_CLOSE:
-        if (dbase == clipbase) return errorResult (ti, "Cannot close clipbase.");
-        return TclResult(ti, dbase->Close());
+        if (dbase == clipbase) return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
+        return UI_Result(ti, dbase->Close());
 
     case BASE_EXTRA:
         if (argc == 4) {
@@ -667,9 +665,9 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
             errorT err = dbase->getExtraInfo(argv[3], &res);
             return UI_Result(ti, err, res);
         } else if (argc == 5) {
-            return TclResult(ti, dbase->setExtraInfo(argv[3], argv[4]));
+            return UI_Result(ti, dbase->setExtraInfo(argv[3], argv[4]));
         }
-        return errorResult (ti, "Usage: sc_base extra baseId tagname [new_value]");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_base extra baseId tagname [new_value]");
 
     case BASE_COMPACT:
         if (argc == 3) {
@@ -690,20 +688,20 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
     case BASE_COPYGAMES:
         if (argc == 5) {
             scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
-            if (targetBase == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
-            if (targetBase->isReadOnly()) return errorResult (ti, ERROR_FileReadOnly);
+            if (targetBase == 0) return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
+            if (targetBase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
             errorT err = OK;
             const HFilter filter = dbase->getFilter(argv[3]);
             if (*filter) {
                 err = targetBase->addGames(dbase, filter, UI_CreateProgress(ti));
             } else {
                 uint gNum = strGetUnsigned (argv[3]);
-                if (gNum == 0) return errorResult(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
+                if (gNum == 0) return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong <gameNum|filterName>");
                 err = targetBase->addGame(dbase, gNum -1);
             }
-            return TclResult(ti, err);
+            return UI_Result(ti, err);
         }
-        return errorResult(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId");
 
     case BASE_GAMEFLAG:
         if (argc == 6) {
@@ -721,24 +719,24 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
                 if (*filter || (std::string("all") == argv[3])) {
                     switch (cmd) {
                     case 2:
-                    case 3: return TclResult(ti, dbase->setFlag(value, flagType, filter));
-                    case 4: return TclResult(ti, dbase->invertFlag(flagType, filter));
+                    case 3: return UI_Result(ti, dbase->setFlag(value, flagType, filter));
+                    case 4: return UI_Result(ti, dbase->invertFlag(flagType, filter));
                     }
                 } else {
                     gamenumT gNum = strGetUnsigned(argv[3]);
                     if (gNum > 0 && gNum <= dbase->numGames()) {
                         gNum--;
                         switch (cmd) {
-                        case 1: return setBoolResult(ti, dbase->getFlag(flagType, gNum));
+                        case 1: return UI_Result(ti, OK, dbase->getFlag(flagType, gNum));
                         case 2:
-                        case 3: return TclResult(ti, dbase->setFlag(value, flagType, gNum));
-                        case 4: return TclResult(ti, dbase->invertFlag(flagType, gNum));
+                        case 3: return UI_Result(ti, dbase->setFlag(value, flagType, gNum));
+                        case 4: return UI_Result(ti, dbase->invertFlag(flagType, gNum));
                         }
                     }
                 }
             }
         }
-        return errorResult (ti, "Usage: sc_base gameflag baseId <gameNum|filterName|all> <get|set|unset|invert> flagType");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_base gameflag baseId <gameNum|filterName|all> <get|set|unset|invert> flagType");
 
     case BASE_GAMESLIST:
         return sc_base_gameslist (dbase, ti, argc, argv);
@@ -747,46 +745,46 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         return sc_base_gamelocation (dbase, ti, argc, argv);
 
     case BASE_ISREADONLY:
-        return okResult(ti, dbase->isReadOnly());
+        return UI_Result(ti, OK, dbase->isReadOnly());
 
     case BASE_NEWFILTER:
         if (argc == 3) {
-            Tcl_SetObjResult(ti, Tcl_NewStringObj(dbase->newFilter().c_str(), -1));
-            return TCL_OK;
+            UI_Result(ti, OK, dbase->newFilter());
         } else if (argc == 4) {
             //TODO: Use argv[4] (FEN) instead of current Position
             SearchPos fp(db->game->GetCurrentPos());
             //TODO: use a dedicated filter instead of treeFilter
             HFilter maskfilter = HFilter(dbase->treeFilter);
+            std::string val;
             if (fp.setFilter(dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
-                Tcl_SetObjResult(ti, Tcl_NewStringObj("tree", -1));
+                val = "tree";
             }
-            return TCL_OK;
+            return UI_Result(ti, OK, val);
         }
-        return errorResult (ti, "Usage: sc_base newFilter baseId [FEN]");
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_base newFilter baseId [FEN]");
 
     case BASE_SORTCACHE:
-        if (argc != 5) return errorResult (ti, "Usage: sc_base sortcache <db> <create|release> <sort>");
+        if (argc != 5) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base sortcache <db> <create|release> <sort>");
         if (strCompare("create", argv[3]) == 0) {
             if (argv[4][0] != 'N') dbase->CreateSortCache(argv[4]);
         } else {
             dbase->FreeSortCache(argv[4]);
         }
-        return TCL_OK;
+        return UI_Result(ti, OK);
 
     }
 
     //TODO: Group all the functions that modifies the database
     if (dbase->isReadOnly()) {
-        return errorResult (ti, ERROR_FileReadOnly);
+        return UI_Result(ti, ERROR_FileReadOnly);
     }
 
     switch (index) {
     case BASE_DUPLICATES:
-        return okResult(ti, sc_base_duplicates (dbase, cd, ti, argc, argv));
+        return UI_Result(ti, OK, sc_base_duplicates (dbase, cd, ti, argc, argv));
 
     case BASE_IMPORT:
-        if (argc != 4) return errorResult (ti, "Usage: sc_base import baseId filename");
+        if (argc != 4) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base import baseId filename");
         return sc_base_import (ti, dbase, argv[3]);
 
     }
