@@ -452,7 +452,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     }
 
     if {$::search::filter::operation != "2" } {
-        set fOrig [sc_base newFilter $dbase]
+        set fOrig [sc_filter new $dbase]
         sc_filter copy $dbase $fOrig $filter
     }
 
@@ -500,7 +500,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
     }]
 
     if {!$err && $sIgnoreCol == "Yes"} {
-        set fIgnore [sc_base newFilter $dbase]
+        set fIgnore [sc_filter new $dbase]
         set deloMin [ expr { $sEloDiffMax * -1 }]
         set deloMax [ expr { $sEloDiffMin * -1 }]
         progressBarSet .sh.fprogress.progress 301 21
@@ -562,7 +562,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
 
     set str "[sc_filter count $dbase $filter] / [sc_base numGames $dbase]"
 
-    after idle "::notify::DatabaseModified $dbase $filter"
+    after idle "::notify::DatabaseModified $dbase"
     
     grab release .sh.b.stop
     pack forget .sh.b.stop

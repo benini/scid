@@ -2603,14 +2603,14 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         "last", "negate", "next",
         "previous", "set", "stats",
         "link", "search", "release", "isWhole",
-        "treestats", "export", "copy", "and", "or", NULL
+        "treestats", "export", "copy", "and", "or", "new", NULL
     };
     enum {
         FILTER_COUNT, FILTER_FIRST, FILTER_FREQ,
         FILTER_LAST, FILTER_NEGATE, FILTER_NEXT,
         FILTER_PREV, FILTER_SET, FILTER_STATS,
         FILTER_LINK, FILTER_SEARCH, FILTER_RELEASE, FILTER_ISWHOLE,
-        FILTER_TREESTATS, FILTER_EXPORT, FILTER_COPY, FILTER_AND, FILTER_OR
+        FILTER_TREESTATS, FILTER_EXPORT, FILTER_COPY, FILTER_AND, FILTER_OR, FILTER_NEW
     };
 
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
@@ -2621,6 +2621,25 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             return setUintResult(ti, db->getFilter("dbfilter").count());
         }
         break;
+
+    case FILTER_NEW:
+        if (argc == 3 || argc == 4) {
+            scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
+            if (dbase == NULL) return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
+            if (argc == 4) {
+                //TODO: Use argv[4] (FEN) instead of current Position
+                SearchPos fp(db->game->GetCurrentPos());
+                //TODO: use a dedicated filter instead of treeFilter
+                HFilter maskfilter = HFilter(dbase->treeFilter);
+                std::string val;
+                if (fp.setFilter(dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
+                    val = "tree";
+                }
+                return UI_Result(ti, OK, val);
+            }
+            return UI_Result(ti, OK, dbase->newFilter());
+        }
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_filter new baseId [FEN]");
 
     case FILTER_FIRST:
         return sc_filter_first (cd, ti, argc, argv);

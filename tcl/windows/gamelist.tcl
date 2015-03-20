@@ -14,7 +14,7 @@ proc ::windows::gamelist::Open { {base ""} {filter ""} } {
 		foreach glwin $::windows::gamelist::wins {
 			set b [::windows::gamelist::GetBase $glwin]
 			if {$b == $base && $::gamelistFilter($glwin) == "dbfilter"} {
-				set filter [sc_base newFilter $base]
+				set filter [sc_filter new $base]
 			}
 		}
 	}
@@ -115,7 +115,7 @@ proc ::windows::gamelist::PosChanged {{wlist ""}} {
 	foreach base $bases {
 		update idletasks
 		#TODO: [sc_filter release $base $f]
-		set f [sc_base newFilter $base FEN]
+		set f [sc_filter new $base FEN]
 		if { $::gamelistUpdating != 1 } {
 			after idle {
 				unset ::gamelistUpdating

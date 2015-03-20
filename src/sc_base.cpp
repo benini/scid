@@ -32,36 +32,39 @@ extern scidBaseT* clipbase;
 extern int currentBase;
 extern SpellChecker* spellChecker[NUM_NAME_TYPES];
 
-//TODO: move this function here from tkscid.cpp
-int sc_base_filename    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_inUse       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-uint sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_open        (Tcl_Interp* ti, const char * filename);
-int sc_createbase       (Tcl_Interp* ti, const char * filename, scidBaseT * base, bool memoryOnly);
-int sc_base_create      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_count       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_export      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_import      (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
-int sc_base_numGames    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_slot        (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_stats       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_ecoStats    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_piecetrack  (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_switch      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_tag         (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_gamelocation:
-// For all game numbers parameter 1 represent the first game
-// If gnumber = 0 and <text> <start_gnum> <forward_dir> are provided perform a text search
-int
-sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
+
+// To access the databases the UI use this "sc_base" functions
+// To hide database internal complexity to UI this functions should only parse arguments and call other functions/objects
+// Optional parameter are indicated using [value_opt]
+// Alternative values are indicated using <value_a|value_b|value_c>
+// BaseId is the handle used to select the database to work on
+// "dbfilter" is the name of the default filter of database
+// Games are numbered starting from "1"
+// Example:
+//     sc_base open "filename" -> on success returns a baseId handle to the opened database
+//     sc_base gameslist baseId "1" "10" "dbfilter" "N+"
+//     -> returns the list of the first 10 games of the database
+
+
+
+
+
+
+
+
+// Search the position of a gamenum or text in the sorted gamelist of a database
+// Use gnumber = 0 and the params <text> <start_gnum> <forward_dir> to perform a text search
+// text are matched with white name, black name, event or site name
+// forward_dir = <true|false>
+// Returns the position of the first match
+// Returns "" if not found
+UI_typeRes sc_base_gamelocation (scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
 {
-	const char* usage = "Usage: sc_base gamelocation baseId filterName sort gnumber [text start_gnum forward_dir]";
-	if (argc != 6 && argc != 9) return UI_Result(ti, ERROR_BadArg, usage);
+	const char* usage = "Usage: sc_base gamelocation baseId filterName sortCrit <gnumber | 0 text start_gnum forward_dir>";
+	if (argc < 6) return UI_Result(ti, ERROR_BadArg, usage);
 
-	const HFilter filter = cdb->getFilter(argv[3]);
+	const HFilter filter = dbase->getFilter(argv[3]);
 	const char* sort = argv[4];
 	uint gnumber = strGetUnsigned (argv[5]);
 	uint location = 0;
@@ -70,33 +73,34 @@ sc_base_gamelocation (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** a
 		const char* txt = argv[6];
 		uint st = strGetUnsigned (argv[7]);
 		bool fw = strGetBoolean (argv[8]);
-		location = cdb->GetRangeLocation (sort, filter, txt, st, fw);
+		location = dbase->GetRangeLocation (sort, filter, txt, st, fw);
 	} else {
-		location = cdb->GetRangeLocation (sort, filter, gnumber);
+		location = dbase->GetRangeLocation (sort, filter, gnumber);
 	}
 	if (location == 0) return UI_Result(ti, OK); //Not found
 	return UI_Result(ti, OK, location);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_gameslist:
-int
-sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv)
+// Returns the sorted list of games of a database
+UI_typeRes sc_base_gameslist (scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
 {
-	if (argc != 6  &&  argc != 7) {
-		return UI_Result(ti, ERROR_BadArg, "Usage: sc_base gameslist baseId start count filterName [sort]");
-	}
+	const char* usage = "Usage: sc_base gameslist baseId start count filterName sortCrit";
+	if (argc != 7) return UI_Result(ti, ERROR_BadArg, usage);
+
 	uint start = strGetUnsigned (argv[3]);
 	uint count = strGetUnsigned (argv[4]);
-	const HFilter filter = cdb->getFilter(argv[5]);
-	const char* sort = "N+";
-	if (argc == 7) sort = argv[6];
+	const HFilter filter = dbase->getFilter(argv[5]);
+	const char* sort = argv[6];
 	uint* idxList = new uint[count];
-	cdb->GetRange(sort, start, count, filter, idxList);
+	errorT err = dbase->GetRange(sort, start, count, filter, idxList);
+	if (err != OK) {
+		delete [] idxList;
+		return UI_Result(ti, err);
+	}
 
 	UI_List res (count * 3);
 	UI_List ginfo(24);
-	const NameBase* nb = cdb->getNameBase();
+	const NameBase* nb = dbase->getNameBase();
 	for (uint i = 0; i < count; ++i) {
 		uint idx = idxList[i];
 		if (idx == IDX_NOT_FOUND) break;
@@ -104,7 +108,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		uint ply = 0;
 		if (*filter) ply = filter.get(idx) -1;
 
-		const IndexEntry* ie = cdb->getIndexEntry(idx);
+		const IndexEntry* ie = dbase->getIndexEntry(idx);
 
 		ginfo.clear();
 		ginfo.push_back(idx +1);
@@ -145,7 +149,7 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
 		ginfo.push_back(ie->GetYear());
 		ginfo.push_back((welo + belo)/2);
 		ginfo.push_back(ie->GetRating(nb));
-		FastGame game = cdb->getGame(ie);
+		FastGame game = dbase->getGame(ie);
 		ginfo.push_back(game.getMoveSAN(ply, 10));
 
 		res.push_back(to_string(idx+1) + "_" + to_string(ply));
@@ -157,8 +161,26 @@ sc_base_gameslist (scidBaseT* cdb, Tcl_Interp * ti, int argc, const char ** argv
     return UI_Result(ti, OK, res);
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base: database commands.
+//TODO: move this function here from tkscid.cpp
+int sc_base_filename    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_inUse       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+uint sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_open        (Tcl_Interp* ti, const char * filename);
+int sc_createbase       (Tcl_Interp* ti, const char * filename, scidBaseT * base, bool memoryOnly);
+int sc_base_create      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_count       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_export      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_import      (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
+int sc_base_numGames    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_slot        (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_stats       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_ecoStats    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_piecetrack  (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_switch      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_tag         (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+int sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
+
+
 UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 {
     static const char * options [] = {
@@ -169,7 +191,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 		"piecetrack",   "slot",         "stats",
 		"switch",       "tag",          "tournaments",  "type",
 		"gameslist",    "sortcache",    "gamelocation",
-		"compact",      "gameflag",     "copygames",    "newFilter",
+		"compact",      "gameflag",     "copygames",
 		"extra",
 		NULL
     };
@@ -181,7 +203,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 		BASE_PTRACK,      BASE_SLOT,        BASE_STATS,
 		BASE_SWITCH,      BASE_TAG,         BASE_TOURNAMENTS, BASE_TYPE,
 		BASE_GAMESLIST,   BASE_SORTCACHE,   BASE_GAMELOCATION,
-		BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES,   BASE_NEWFILTER,
+		BASE_COMPACT,     BASE_GAMEFLAG,    BASE_COPYGAMES,
 		BASE_EXTRA
     };
     int index = -1;
@@ -335,22 +357,6 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 
     case BASE_ISREADONLY:
         return UI_Result(ti, OK, dbase->isReadOnly());
-
-    case BASE_NEWFILTER:
-        if (argc == 3) {
-            UI_Result(ti, OK, dbase->newFilter());
-        } else if (argc == 4) {
-            //TODO: Use argv[4] (FEN) instead of current Position
-            SearchPos fp(getBase(currentBase)->game->GetCurrentPos());
-            //TODO: use a dedicated filter instead of treeFilter
-            HFilter maskfilter = HFilter(dbase->treeFilter);
-            std::string val;
-            if (fp.setFilter(dbase, maskfilter, UI_CreateProgressPosMask(ti))) {
-                val = "tree";
-            }
-            return UI_Result(ti, OK, val);
-        }
-        return UI_Result(ti, ERROR_BadArg, "Usage: sc_base newFilter baseId [FEN]");
 
     case BASE_SORTCACHE:
         if (argc != 5) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base sortcache <db> <create|release> <sort>");

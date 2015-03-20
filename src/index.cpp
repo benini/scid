@@ -295,6 +295,7 @@ errorT Index::GetRange (const NameBase *nbase, const char *criteria, uint idx, u
     }
 
     SortCache* sc = SortCache::Create (this, nbase, criteria, false);
+    if (sc == 0) return ERROR;
     sc->GetRange(idx, count, filter, result);
     delete sc;
     return OK;
