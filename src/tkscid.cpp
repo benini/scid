@@ -6049,12 +6049,12 @@ int
 sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "asserts", "clipbase", "decimal", "fsize", "gzip",
+        "clipbase", "decimal", "fsize", "gzip",
         "html", "limit", "ratings",
         "suffix", "tb", "validDate", "version", "language", NULL
     };
     enum {
-        INFO_ASSERTS, INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
+        INFO_CLIPBASE, INFO_DECIMAL, INFO_FSIZE, INFO_GZIP,
         INFO_HTML, INFO_LIMIT, INFO_RATINGS,
         INFO_SUFFIX, INFO_TB, INFO_VALIDDATE, INFO_VERSION, INFO_LANGUAGE
     };
@@ -6063,9 +6063,6 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc > 1) { index = strUniqueMatch (argv[1], options); }
 
     switch (index) {
-    case INFO_ASSERTS:
-        return setUintResult (ti, numAsserts);
-
     case INFO_CLIPBASE:
         return setUintResult (ti, CLIPBASE_NUM + 1);
 

@@ -81,18 +81,10 @@ const char PGN_SUFFIX[] = ".pgn";
 //    it MUST be a statement, not part of a larger expression.
 //    Adapted from the book "Writing Solid Code".
 
-extern int numAsserts;
 
 #ifdef ASSERTIONS
-
-    void _MyAssert(char *, unsigned);
-
-    #define ASSERT(f)               \
-        numAsserts++;               \
-        if (f)                      \
-            {}                      \
-        else                        \
-            _MyAssert(__FILE__, __LINE__)
+#include <assert.h>
+    #define ASSERT(f) assert(f)
 
 #else   // #ifndef ASSERTIONS
 

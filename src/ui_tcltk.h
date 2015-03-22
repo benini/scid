@@ -184,7 +184,7 @@ public:
 	Tcl_Obj* get() const {
 		ASSERT(obj_ != 0);
 		Tcl_Obj* res = obj_;
-		ASSERT((const_cast<Tcl_Obj*>(obj_) = 0) == 0);
+		ASSERT((const_cast<TclObjMaker*>(this)->obj_ = 0) == 0);
 		return res;
 	}
 

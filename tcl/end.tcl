@@ -1140,10 +1140,7 @@ proc helpAbout {} {
   append str "Copyright (C) 2010- The Scid Project\n"
   append str "Scid is licenced under the\n"
   append str "GNU General Public License.\n"
-  set asserts [sc_info asserts]
-  if {$asserts > 0} {
-    append str "\n\n[::utils::thousands $asserts] asserts tested."
-  }
+
   tk_messageBox -title "About Scid" -message $str -type ok
 }
 
