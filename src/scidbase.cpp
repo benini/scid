@@ -33,8 +33,7 @@ void scidBaseT::Init() {
 	treeCache = NULL;
 	fileMode = FMODE_Both;
 	gfile = new GFile;
-	bbuf = new ByteBuffer;
-	bbuf->SetBufferSize (BBUF_SIZE);
+	bbuf = new ByteBuffer(BBUF_SIZE);
 	tbuf = new TextBuffer;
 	tbuf->SetBufferSize (TBUF_SIZE);
 	dbFilter = new Filter(0);

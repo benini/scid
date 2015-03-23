@@ -22,10 +22,10 @@
 #include "position.h"
 #include "namebase.h"
 #include "textbuf.h"
-#include "bytebuf.h"
 #include "matsig.h"
 #include <vector>
 #include <string>
+class ByteBuffer;
 
 void transPieces(char *s);
 char transPiecesChar(char c);

@@ -4015,8 +4015,7 @@ std::vector<int> Game::GetCurrentLocation() {
 }
 
 Game* Game::clone() {
-    ByteBuffer bbuf;
-    bbuf.SetBufferSize (BBUF_SIZE);
+    ByteBuffer bbuf(BBUF_SIZE);
     Game* g = new Game();
     SaveState();
     Encode (&bbuf, NULL);

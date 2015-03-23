@@ -14,22 +14,6 @@
 
 
 #include "bytebuf.h"
-#include <stdio.h>
-#include <string.h>
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::Init():
-//      Initialises the ByteBuffer.
-//
-void
-ByteBuffer::Init()
-{
-    BufferSize = ReadPos = ByteCount = 0;
-    Buffer = Current = NULL;
-    AllocatedBuffer = NULL;
-    ExternalBuffer = NULL;
-    Err = OK;
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ByteBuffer::Empty():
@@ -43,21 +27,6 @@ ByteBuffer::Empty()
     Buffer = AllocatedBuffer;
     Current = Buffer;
     Err = OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::SetBufferSize():
-//      Sets the ByteBuffer's allocated buffer size.
-//
-void
-ByteBuffer::SetBufferSize (uint length)
-{
-    if (AllocatedBuffer) { delete[] AllocatedBuffer; }
-    AllocatedBuffer = new byte[length];
-    Buffer = AllocatedBuffer;
-    Current = Buffer;
-    ReadPos = ByteCount = 0;
-    BufferSize = length;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -89,64 +58,6 @@ ByteBuffer::ProvideExternal (byte * data, uint length)
     Err = OK;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::RemoveExternal():
-//      Removes the external buffer previously provided.
-//
-void
-ByteBuffer::RemoveExternal ()
-{
-    Empty();
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::Get2Bytes(), Put2Bytes(),
-//      Get3Bytes(), Put3Bytes(), Get4Bytes(), Put4Bytes():
-
-uint
-ByteBuffer::Get2Bytes ()
-{
-
-    ASSERT(Current != NULL);
-    if (ReadPos + 2 > ByteCount) { Err = ERROR_BufferRead; return 0; }
-    uint val;
-    val = *Current;  Current++;
-    val = val << 8;
-    val += *Current;  Current++;
-    ReadPos += 2;
-    return val;
-}
-
-void
-ByteBuffer::Put2Bytes (uint value)
-{
-    ASSERT(Current != NULL);
-    *Current = ((value >> 8) & 255);  Current++;
-    *Current = (value & 255);  Current++;
-    ByteCount += 2;
-}
-
-void
-ByteBuffer::Put3Bytes (uint value)
-{
-    ASSERT(Current != NULL);
-    *Current = (value & 255); Current++;
-    *Current = ((value >> 8) & 255); Current++;
-    *Current = ((value >> 16) & 255); Current++;
-    ByteCount += 3;
-}
-
-void
-ByteBuffer::Put4Bytes (uint value)
-{
-    ASSERT(Current != NULL);
-    *Current = (value & 255); Current++;
-    *Current = ((value >> 8) & 255); Current++;
-    *Current = ((value >> 16) & 255); Current++;
-    *Current = ((value >> 24) & 255); Current++;
-    ByteCount += 4;
-}
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // ByteBuffer::Skip():
@@ -237,133 +148,6 @@ ByteBuffer::PutTerminatedString (const char * str)
     *Current = 0; Current++; ByteCount++;
 }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::CopyTo():
-//      Write the buffer to an area of memory.
-void
-ByteBuffer::CopyTo (byte * target)
-{
-    ASSERT (Current != NULL  &&  target != NULL);
-//     register byte * from, * to;
-//     register uint i = ByteCount;
-//     from = Buffer;
-//     to = target;
-    memcpy( target , Buffer, ByteCount);
-    
-//     while (i) {
-//         *to++ = *from++;
-//         i--;
-//     }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::CopyFrom():
-//      Read the buffer from an area of memory.
-void
-ByteBuffer::CopyFrom (byte * source, uint length)
-{
-    ASSERT (Current != NULL  &&  source != NULL);
-    ASSERT (BufferSize >= length);
-    Current = Buffer;
-    ReadPos = 0;
-//     register byte * from, * to;
-//     register uint i = length;
-//     from = source; to = Buffer;
-    
-    memcpy( Buffer , source, ByteCount);
-//     while (i) {
-//         *to++ = *from++;
-//         i--;
-//     }
-    ByteCount = length;
-    Err = OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::CopyFrom():
-//      Read the buffer from an area of memory.
-// offset is the place where to start copying data
-void
-ByteBuffer::CopyFrom (byte * source, uint length, uint offset)
-{
-    ASSERT (Current != NULL  &&  source != NULL);
-    ASSERT (BufferSize >= length+offset);
-    Current = Buffer;
-    ReadPos = 0;
-    byte * from, * to;
-    uint i = length;
-    from = source; to = Buffer+offset;
-    while (i) {
-        *to++ = *from++;
-        i--;
-    }
-    ByteCount = length+offset;
-    Err = OK;
-}
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::DumpToFile():
-//      Writes the buffer to an open file.
-//
-#ifdef WINCE
-void
-ByteBuffer::DumpToFile (/*FILE * */Tcl_Channel fp)
-{
-    ASSERT (Current != NULL  &&  fp != NULL);
-    byte *b = Buffer;
-    my_Tcl_Write(fp, (char *)b, ByteCount);
-    /*for (uint count = 0; count < ByteCount; count++) {
-        putc (*b, fp);
-        b++;
-    }*/
-}
-#else
-void
-ByteBuffer::DumpToFile (FILE * fp)
-{
-    ASSERT (Current != NULL  &&  fp != NULL);
-    byte *b = Buffer;
-    for (uint count = 0; count < ByteCount; count++) {
-        putc (*b, fp);
-        b++;
-    }
-}
-#endif
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// ByteBuffer::ReadFromFile():
-//      Reads the buffer from an open file, overwriting the existing
-//      contents of the buffer.
-//
-#ifdef WINCE
-void
-ByteBuffer::ReadFromFile (/*FILE * */Tcl_Channel fp, uint length)
-{
-    ASSERT (Current != NULL  &&  fp != NULL);
-    Err = OK;
-    Current = Buffer;
-    //byte * b = Current;
-    ReadPos = 0; ByteCount = 0;
-    my_Tcl_Read(fp, (char * )Buffer, length);
-    /*for (uint count = 0; count < length; count++) {
-        *b = getc (fp);
-        b++; ByteCount++;
-    }*/
-}
-#else
-void
-ByteBuffer::ReadFromFile (FILE * fp, uint length)
-{
-    ASSERT (Current != NULL  &&  fp != NULL);
-    Err = OK;
-    Current = Buffer;
-    byte * b = Current;
-    ReadPos = 0; ByteCount = 0;
-    for (uint count = 0; count < length; count++) {
-        *b = getc (fp);
-        b++; ByteCount++;
-    }
-}
-#endif
 //////////////////////////////////////////////////////////////////////
 //  EOF: bytebuf.cpp
 //////////////////////////////////////////////////////////////////////
