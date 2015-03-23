@@ -97,11 +97,11 @@ private:
     // To avoid the slow reallocation when adding games we split the data in chunks.
     // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
-    template <uint CHUNKSHIFT>
-    struct entriesT {
-        entriesT() : size_(0) {}
-        ~entriesT() { resize(0); }
-        IndexEntry& operator[] (uint idx) const {
+    template <class T, uint CHUNKSHIFT>
+    struct VectorBig {
+        VectorBig() : size_(0) {}
+        ~VectorBig() { resize(0); }
+        T& operator[] (uint idx) const {
             const uint low_mask = ((1 << CHUNKSHIFT) - 1);
             return index_[idx >> CHUNKSHIFT][idx & low_mask];
         }
@@ -113,7 +113,7 @@ private:
             for (size_t i=sz_new; i < sz; i++) delete [] index_[i];
             index_.resize(sz_new);
             for (size_t i=sz; i < sz_new; i++) {
-                index_[i] = new IndexEntry[1 << CHUNKSHIFT];
+                index_[i] = new T[1 << CHUNKSHIFT];
             }
         }
         void push_back() {
@@ -121,10 +121,10 @@ private:
             if (subidx >= index_.size()) resize(size_);
         }
     private:
-        std::vector<IndexEntry*> index_;
+        std::vector<T*> index_;
         size_t size_;
     };
-    entriesT<16> entries_; // A two-level array of the entire index.
+    VectorBig<IndexEntry, 16> entries_; // A two-level array of the entire index.
 
     Index(const Index&);
     Index& operator=(const Index&);

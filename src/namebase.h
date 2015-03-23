@@ -26,8 +26,6 @@
 #include <vector>
 #include <map>
 
-class SpellChecker;
-
 
 // There are four NameBases, one each for PLAYER, EVENT , SITE and ROUND tags.
 const nameT
@@ -75,7 +73,6 @@ public:
     NameBase()  { Init(); }
     ~NameBase();
     void Clear() { Init(); }
-    void recalcEstimatedRatings (SpellChecker* nb);
 
     errorT    Create (const char* filename);
     errorT    ReadEntireFile (const char* filename);

@@ -2772,24 +2772,23 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_TREESTATS: {
             std::vector<scidBaseT::TreeStat> stats = dbase->getTreeStat(filter);
-            Tcl_Obj** res = new Tcl_Obj* [stats.size()];
-            uint i_res = 0;
+            UI_List res (stats.size());
+            UI_List ginfo(8);
             for (uint i=0; i < stats.size(); i++) {
-                Tcl_Obj* ginfo[8];
-                ginfo[0] = Tcl_NewStringObj(stats[i].SAN.c_str(), -1);
-                ginfo[1] = Tcl_NewIntObj(stats[i].ngames);
-                ginfo[2] = Tcl_NewIntObj(stats[i].resultW);
-                ginfo[3] = Tcl_NewIntObj(stats[i].resultD);
-                ginfo[4] = Tcl_NewIntObj(stats[i].resultB);
-                ginfo[5] = Tcl_NewDoubleObj(stats[i].exp);
-                ginfo[6] = Tcl_NewIntObj(stats[i].nexp);
-                if (stats[i].toMove == WHITE) ginfo[7] = Tcl_NewStringObj("W", -1);
-                else ginfo[7] = Tcl_NewStringObj(stats[i].toMove == BLACK ? "B" : " ", -1);
-                res[i_res++] = Tcl_NewListObj(sizeof(ginfo)/sizeof(Tcl_Obj*), ginfo);
+                ginfo.clear();
+                ginfo.push_back(stats[i].SAN);
+                ginfo.push_back(stats[i].ngames);
+                ginfo.push_back(stats[i].resultW);
+                ginfo.push_back(stats[i].resultD);
+                ginfo.push_back(stats[i].resultB);
+                ginfo.push_back(stats[i].exp);
+                ginfo.push_back(stats[i].nexp);
+                if (stats[i].toMove == WHITE) ginfo.push_back("W");
+                else ginfo.push_back(stats[i].toMove == BLACK ? "B" : " ");
+
+                res.push_back(ginfo);
             }
-            Tcl_SetObjResult(ti, Tcl_NewListObj(i_res, res));
-            delete [] res;
-            return TCL_OK;
+            return UI_Result(ti, OK, res);
         }
 
     case FILTER_EXPORT:
@@ -7462,8 +7461,8 @@ sc_name (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "correct", "edit", "info", "match", "plist",
-        "ratings", "read", "spellcheck", "retrievename"
-        "taglist", NULL
+        "ratings", "read", "spellcheck", "retrievename",
+        NULL
     };
     enum {
         OPT_CORRECT, OPT_EDIT, OPT_INFO, OPT_MATCH, OPT_PLIST,
@@ -8961,39 +8960,45 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 int
 sc_name_read (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
-    if (argc == 2) {
-        for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
-            uint numNames = 0;
-            if (spellChecker[nt] != NULL) {
-                numNames = spellChecker[nt]->NumCorrectNames();
-            }
-            appendUintElement (ti, numNames);
-        }
-        return TCL_OK;
-    }
-
     if (argc > 5) {
-        return errorResult (ti, "Usage: sc_name read <spellcheck-file> [-checkPlayerOrder <bool>]");
-    }
-    const char * filename = argv[2];
-    bool checkPlayerOrder = false;
-    if (argc == 5) {
-        checkPlayerOrder = strGetBoolean (argv[4]);
+        return UI_Result(ti, ERROR_BadArg, "Usage: sc_name read <spellcheck-file> [-checkPlayerOrder <bool>]");
     }
 
-    for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) {
-        SpellChecker * temp_spellChecker = new SpellChecker;
-        temp_spellChecker->SetNameType (nt);
-        if (temp_spellChecker->ReadSpellCheckFile (filename, checkPlayerOrder) != OK) {
-            delete temp_spellChecker;
-            Tcl_ResetResult (ti);
-            return errorResult (ti, "Error reading name spellcheck file.");
+    const nameT n = 1 + NAME_LAST - NAME_FIRST;
+    uint corrected[n] = {0};
+    if (argc == 2) {
+        for (nameT i = 0; i < n; i++) {
+            if (spellChecker[i] != NULL) {
+                corrected[i] = spellChecker[i]->NumCorrectNames();
+            }
         }
-        if (spellChecker[nt] != NULL) { delete spellChecker[nt]; }
-        spellChecker[nt] = temp_spellChecker;
-        appendUintElement (ti, spellChecker[nt]->NumCorrectNames());
-    }
-    return TCL_OK;
+    } else {
+        const char * filename = argv[2];
+        bool checkPlayerOrder = false;
+        if (argc == 5) {
+            checkPlayerOrder = strGetBoolean (argv[4]);
+        }
+	    
+        Progress progress = UI_CreateProgress(ti);
+        for (nameT i = 0; i < n; i++) {
+            SpellChecker * temp_spellChecker = new SpellChecker;
+            temp_spellChecker->SetNameType(NAME_FIRST +i);
+            errorT err = temp_spellChecker->ReadSpellCheckFile(filename, checkPlayerOrder);
+            if (err != OK) {
+                delete temp_spellChecker;
+                return UI_Result(ti, err, "Error reading name spellcheck file.");
+            }
+            if (spellChecker[i] != NULL) { delete spellChecker[i]; }
+            spellChecker[i] = temp_spellChecker;
+            corrected[i] = spellChecker[i]->NumCorrectNames();
+            progress.report(i +1, n);
+        }
+	}
+
+    UI_List res(n);
+    for (nameT i = 0; i < n; i++) res.push_back(corrected[i]);
+
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

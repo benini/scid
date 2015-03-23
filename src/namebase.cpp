@@ -21,7 +21,6 @@
 #include "namebase.h"
 #include "misc.h"
 #include "filebuf.h"
-#include "spellchk.h"
 
 const char NAMEBASE_MAGIC[8] = "Scid.sn";
 
@@ -302,24 +301,6 @@ NameBase::NameTypeFromString (const char * str)
     if (strIsAlphaPrefix ("round", str))  { return NAME_ROUND;  }
     return NAME_INVALID;
 }
-
-// Update estimated ratings from spellcheck file if available:
-void NameBase::recalcEstimatedRatings (SpellChecker* spellChecker)
-{
-    if (spellChecker == 0) { return; }
-    for (idNumberT id=0; id < GetNumNames(NAME_PLAYER); id++) {
-        if (GetElo(id) == 0) {
-            const char * name = GetName (NAME_PLAYER, id);
-            if (! strIsSurnameOnly (name)) {
-                const char * text = spellChecker->GetCommentExact (name);
-                if (text != NULL) {
-                    AddElo (id, SpellChecker::GetPeakRating (text));
-                }
-            }
-        }
-    }
-}
-
 
 //////////////////////////////////////////////////////////////////////
 //  EOF: namebase.cpp

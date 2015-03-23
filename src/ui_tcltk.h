@@ -173,7 +173,10 @@ class TclObjMaker {
 	Tcl_Obj* obj_;
 
 public:
-	TclObjMaker(int v) { obj_ = Tcl_NewIntObj(v); }
+	TclObjMaker(bool v)   { obj_ = Tcl_NewBooleanObj(v); }
+	TclObjMaker(int v)    { obj_ = Tcl_NewIntObj(v); }
+	TclObjMaker(uint v)   { obj_ = Tcl_NewIntObj(static_cast<int>(v)); }
+	TclObjMaker(double v) { obj_ = Tcl_NewDoubleObj(v); }
 	TclObjMaker(const char* s) { obj_ = Tcl_NewStringObj(s, -1); }
 	TclObjMaker(const std::string& s) { obj_ = Tcl_NewStringObj(s.c_str(), s.length()); }
 	TclObjMaker(const UI_List& l) {
@@ -208,6 +211,7 @@ inline void UI_List::clear() {
 	ASSERT (i_ == 0);
 	i_ = 0;
 }
+
 
 inline UI_typeRes UI_Result(UI_type2 ti, errorT res) {
 	if (res == OK) return TCL_OK;

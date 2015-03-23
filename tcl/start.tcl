@@ -325,7 +325,7 @@ proc InitDefaultStats {} {
 proc InitDefaultFonts {} {
   global fontOptions
   if {$::windowsOS} {
-    set fontOptions(Regular) [list Tahoma     9 normal roman]
+    set fontOptions(Regular) [list Tahoma    10 normal roman]
     set fontOptions(Menu)    [list system     9 normal roman]
     set fontOptions(Small)   [list Tahoma     8 normal roman]
     set fontOptions(Tiny)    [list Arial      7 normal roman]

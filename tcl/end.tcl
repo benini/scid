@@ -1352,17 +1352,6 @@ if {$loadAtStart(eco)} {
   }
 }
 
-###
-# Try to load the spellcheck file:
-if {$loadAtStart(spell)} {
-  if {[catch {sc_name read $spellCheckFile} result]} {
-    #::splash::add "Unable to load the default spellcheck file: $spellCheckFile"
-  } else {
-    ::splash::add "Spellcheck file \"[file tail $spellCheckFile]\" loaded:"
-    ::splash::add "    [lindex $result 0] players, [lindex $result 1] events, [lindex $result 2] sites, [lindex $result 3] rounds."
-  }
-}
-
 ################################################################################
 # returns a list of all toplevel windows, except some that are utilities
 ################################################################################
@@ -1458,6 +1447,16 @@ setLanguageMenus
 
 update
 update idletasks
+
+
+# Try to load the spellcheck file:
+if {$loadAtStart(spell)} {
+  progressWindow "Scid" [concat $::tr(Spellchecking) "..."]
+  set err [catch {sc_name read $spellCheckFile} result]
+  closeProgressWindow
+}
+
+
 after 1 {
   ::file::autoLoadBases.load
 

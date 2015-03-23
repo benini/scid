@@ -19,6 +19,7 @@
 #include "common.h"
 #include "scidbase.h"
 #include "stored.h"
+#include "spellchk.h"
 #include <algorithm>
 #include <math.h>
 
@@ -124,7 +125,19 @@ errorT scidBaseT::Open (fileModeT mode,
 		} else {
 			err = idx->Open(filename, fileMode);
 			if (err == OK) err = nb->ReadEntireFile(filename);
-			if (err == OK) nb->recalcEstimatedRatings (spell);
+			if (err == OK && spell != 0) {
+				for (idNumberT id=0, n = nb->GetNumNames(NAME_PLAYER); id < n; id++) {
+					if ((id % 1000) == 0) progress.report(id +1, n);
+					if (nb->GetElo(id) != 0) continue;
+					const char* name = nb->GetName (NAME_PLAYER, id);
+					if (! strIsSurnameOnly (name)) {
+						const char* text = spell->GetCommentExact (name);
+						if (text != NULL) {
+							nb->AddElo (id, SpellChecker::GetPeakRating (text));
+						}
+					}
+				}
+			}
 			if (err == OK) err = gfile->Open (filename, fileMode);
 			if (err == OK) err = idx->ReadEntireFile (nb, progress);
 		}

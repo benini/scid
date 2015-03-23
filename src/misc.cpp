@@ -837,7 +837,7 @@ strIsSurnameOnly (const char * name)
     uint capcount = 0;
     const char * s = name;
     while (*s != 0) {
-        char c = *s;
+        unsigned char c = *s;
         if (! isalpha(c)) { return false; }
         if (isupper(c)) {
             capcount++;
