@@ -383,6 +383,32 @@ readCompactUint (FILE * fp)
     return v;
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// writeFourBytes(), readFourBytes()
+
+inline errorT
+writeFourBytes (FILE * fp, uint value)
+{
+    ASSERT(fp != NULL);
+    int result;
+    uint v = (value >> 24) & 255;   putc(v, fp);
+    v = (value >> 16) & 255;        putc(v, fp);
+    v = (value >>  8) & 255;        putc(v, fp);
+    v = value & 255;                result = putc(v, fp);
+    return (result == EOF ? ERROR_FileWrite : OK);
+}
+
+inline uint
+readFourBytes (FILE * fp)
+{
+    ASSERT(fp != NULL);
+    uint v = getc(fp);
+    v = v << 8;    v += (uint) getc(fp);
+    v = v << 8;    v += (uint) getc(fp);
+    v = v << 8;    v += (uint) getc(fp);
+    return v;
+}
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // makeBook
 //   Creates Scidlet opening book (SBK) file from a text file.
