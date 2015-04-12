@@ -11382,7 +11382,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
         "white", "black", "player", "event", "site", "round", "annotator", "annotated",
         "date", "results", "elo", "welo", "belo", "delo",
         "wtitles", "btitles", "toMove",
-        "eco", "length", "gameNumber", "filter",
+        "eco", "length", "gnum", "filter",
         "fStdStart", "fPromotions", "fComments", "fVariations",
         "fAnnotations", "fDelete", "fWhiteOpening", "fBlackOpening",
         "fMiddlegame", "fEndgame", "fNovelty", "fPawnStructure",

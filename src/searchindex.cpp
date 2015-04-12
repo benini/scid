@@ -115,7 +115,8 @@ public:
 		// Extract two whitespace-separated dates:
 		const char* v = strFirstWord(range);
 		min_ = date_EncodeFromString (v);
-		max_ = date_EncodeFromString (strNextWord(v));
+		const char* next = strNextWord(v);
+		max_ = (*next == 0) ? min_ : date_EncodeFromString (next);
 		if (min_ > max_) std::swap(min_, max_);
 	}
 };
@@ -129,7 +130,8 @@ public:
 		// Extract two whitespace-separated ECO codes:
 		const char* v = strFirstWord(range);
 		min_ = eco_FromString(v);
-		max_ = eco_FromString(strNextWord(v));
+		const char* next = strNextWord(v);
+		max_ = (*next == 0) ? min_ : eco_FromString(next);
 		if (min_ > max_) std::swap(min_, max_);
 		// Set eco maximum to be the largest subcode, for example,
 		// "B07" -> "B07z4" to make sure subcodes are included in the range:
@@ -230,7 +232,7 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 		"white", "black", "player", "event", "site", "round", "annotator", "annotated",
 		"date", "results", "elo", "welo", "belo", "delo",
 		"wtitles", "btitles", "toMove",
-		"eco", "length", "gameNumber", "filter",
+		"eco", "length", "gnum", "filter",
 		"fStdStart", "fPromotions", "fComments", "fVariations",
 		"fAnnotations", "fDelete", "fWhiteOpening", "fBlackOpening",
 		"fMiddlegame", "fEndgame", "fNovelty", "fPawnStructure",

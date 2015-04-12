@@ -469,7 +469,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
           -length [list $sGlMin $sGlMax] \
           -toMove $sSideToMove \
-          -gameNumber [list $sGnumMin $sGnumMax] \
+          -gnum [list $sGnumMin $sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -fStdStart $sHeaderFlags(StdStart) \
@@ -516,7 +516,7 @@ proc search::header {{ref_base ""} {ref_filter ""}} {
           -eco [list $sEcoMin $sEcoMax] $noEco [list 0 0] \
           -length [list $sGlMin $sGlMax] \
           -toMove $sSideToMove \
-          -gameNumber [list $sGnumMin $sGnumMax] \
+          -gnum [list $sGnumMin $sGnumMax] \
           -annotated $sAnnotated \
           -annotator $sAnnotator \
           -fStdStart $sHeaderFlags(StdStart) \

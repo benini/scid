@@ -2505,7 +2505,7 @@ namespace eval CorrespondenceChess {
 					-pgn $sPgnlist   \
 					-fDelete no      \
 					-filter 2        \
-					-gameNumber [list 1 -1] \
+					-gnum [list 1 -1] \
 					]
 
 		CorrespondenceChess::updateConsole "info: search [sc_filter count]"

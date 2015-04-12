@@ -211,18 +211,23 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 }
 
 #Examples
-# Search the games of the world champion: carlsen
-# Search only the games played as white: w=carlsen
-# Search only the games played as black: b=carlsen
-# Search the games with playes with elo above 2500: 2500
-# Search the games with a white player with elo above 2500: w>2500
-# Search the games with a white player with elo under 2500: w<2500
-# Search the games with a black player with elo above 2500: b>2500
-# Search the games played after a specific year: 2013
-# Search the games where Carlsen played as white against Kramnik
-# w=carlsen
-# b=kramnik
-# Start a new search with an empty search
+# Search the games played by Carlsen: carlsen
+# Search the games played by Magnus Carlsen: carlsen,magnus
+# Search the games _not_ played by Carlsen: !carlsen
+# Search only the games played as white: white carlsen
+# Search only the games played as black: black carlsen
+# Search games with players with elo above 2500: >2500
+# Search games with a white player with elo above 2500: welo >2500
+# Search games with a white player with elo under 2500: welo <2500
+# Search games with a black player with elo between 2100-2500: belo 2100-2500
+# Search games with a specific ECO: A00-A99
+# Search games with ECO A00-B99 or D00-D99: A00-D99 !C00-C99
+# Search games played after a specific year: >2013
+# Search games played in a specific period: 2012.09.01-2013.05.31
+# Search game number 2000: gnum 2000
+# Search games where Carlsen played as white against Kramnik: white carlsen kramnik
+# Search a specific game: carlsen kramnik 2013.06.13
+# Start a new search with an empty string
 #
 proc ::windows::gamelist::Awesome {{w} {txt}} {
 	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
@@ -234,42 +239,135 @@ proc ::windows::gamelist::Awesome {{w} {txt}} {
 		set filter [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
 		set cmd "sc_filter search $::gamelistBase($w) $filter header "
 		if { [sc_filter count "$::gamelistBase($w)" "$::gamelistFilter($w)"] == 0 } {
-			append cmd " -filter RESET "
+			append cmd " -filter RESET"
 		} else {
-			append cmd " -filter AND "
+			append cmd " -filter AND"
 		}
-		if {0 == [string compare -nocase -length 2 $txt "w="] } {
-			set op { -white "[string range "$txt" 2 end]" }
-		} elseif {0 == [string compare -nocase -length 2 $txt "w>"] } {
-			set op { -welo [list "[string range "$txt" 2 end]" 3100] }
-		} elseif {0 == [string compare -nocase -length 2 $txt "w<"] } {
-			set op { -welo [list 0 "[string range "$txt" 2 end]" ] }
-		} elseif {0 == [string compare -nocase -length 2 $txt "b="] } {
-			set op { -black "[string range "$txt" 2 end]" }
-		} elseif {0 == [string compare -nocase -length 2 $txt "b>"] } {
-			set op { -belo [list "[string range "$txt" 2 end]" 3100] }
-		} elseif {0 == [string compare -nocase -length 2 $txt "b<"] } {
-			set op { -belo [list 0 "[string range "$txt" 2 end]" ] }
-		} else {
-			if {! [string is integer $txt]} {
-				if {0 == [string compare -nocase -length 1 $txt "-"] } {
-					set op $txt
-				} else {
-					set op { -player "$txt" }
-				}
-			} elseif {$txt > 1800 && $txt <= 2030} {
-				set op { -date [list "$txt" 2030] }
-			} elseif {$txt > 2030 && $txt <= 3100} {
-				set op { -welo [list "$txt" 3100] -belo [list "$txt" 3100] }
-			} else {
-				set op { -gameNumber [list "$txt" "$txt"] }
-			}
-		}
+
 		progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel)
-		set res [eval "$cmd$op"]
+		set res [eval "$cmd [AweParse $txt]"]
 		closeProgressWindow
 	}
 	::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
+}
+
+proc ::windows::gamelist::AweInit {} {
+	global awe_guess awe_min awe_max
+	set awe_guess {}
+	set awe_min(-gnum) {0}
+	set awe_max(-gnum) {999999999}
+	set awe_min(-welo) {0}
+	set awe_max(-welo) {3999}
+	set awe_min(-belo) {0}
+	set awe_max(-belo) {3999}
+	set awe_min(-elo)  {0}
+	set awe_max(-elo)  {3999}
+	set awe_min(-eco)  {A00}
+	set awe_max(-eco)  {E99z4}
+	set awe_min(-date) {0000.00.00}
+	set awe_max(-date) {2047.12.31}
+
+	set ranged {}
+	# date: YYYY.MM.GG
+	lappend ranged [list "-date" \
+	  {(?:\d\d\d\d\.(?:0[0-9]|1[0-2])\.(?:[012][0-9]|3[01]))} \
+	]
+	# date: 4digits between 1801 2099, excluding 1900 and 2000
+	lappend ranged [list "-date" \
+	  {(?:1[89](?!00)\d\d|20(?!00)\d\d)} \
+	]
+	# elo: 4digits between 1000 3999 or 0
+	lappend ranged [list "-elo" \
+	  {(?:(?:[123]\d\d\d)|0)} \
+	]
+	# game number: all digits
+	lappend ranged [list "-gnum" \
+	  {(?:\d+)} \
+	]
+	# eco: a letter [A-E] plus 2digits and optional scid subcode
+	lappend ranged [list "-eco" \
+	  {(?:[A-E]\d\d(?:[a-z](?:[1-4])?)?)} \
+	]
+
+	foreach guess $ranged {
+		set prefix {^(?:(.*?)\s+)??(}
+		set suffix {)(?:\s+(.*))?$}
+
+		set r {[<>!]?}
+		append r [lindex $guess 1]
+		lappend awe_guess [list [lindex $guess 0] "$prefix$r$suffix"]
+
+		set r {[!]?}
+		append r [lindex $guess 1]
+		append r {(?:-}
+		append r [lindex $guess 1]
+		append r {)?}
+		lappend awe_guess [list [lindex $guess 0] "$prefix$r$suffix"]
+	}
+
+	#default
+	lappend awe_guess [list "-player" \
+	  {^(?:(.*?)\s+)??([!]?[_,[:alnum:]]+)(?:\s+(.*))?$} \
+	]
+}
+
+proc ::windows::gamelist::AweGuess {{txt}} {
+	global awe_guess
+	if {![info exists awe_guess]} { AweInit }
+	
+	# Search for explicit params
+	set param(0) ""
+	set val(0) ""
+	set extra(0) "$txt"
+	for {set np 1} {
+	  [regexp \
+	    {^(?:(.*?)\s+)??(gnum|white|black|welo|belo|elo|eco|date|event|site)\s+(.+?)(?:\s+(.*))?$} \
+	    $extra([expr $np -1]) -> extra([expr $np -1]) param($np) val($np) extra($np) \
+	  ]
+	} {incr np} {}
+	
+	#Guess extras
+	set res {}
+	for {set i 0} {$i < $np} { incr i} {
+		if {$param($i) != ""} {
+			lappend res [list "-$param($i)" $val($i)]
+		}
+		if {$extra($i) == ""} { continue }
+		foreach guess $awe_guess {
+			if {[regexp [lindex $guess 1] $extra($i) -> prefix value suffix]} {
+				lappend res [list [lindex $guess 0] $value]
+				set param($np) ""
+				set extra($np) $prefix
+				incr np
+				set param($np) ""
+				set extra($np) $suffix
+				incr np
+				break
+			}
+		}
+	}
+
+	return $res
+}
+
+proc ::windows::gamelist::AweParse {{txt}} {
+	global awe_min awe_max
+	set res {}
+	foreach op [AweGuess $txt] {
+		set param [lindex $op 0]
+		set value [lindex $op 1]
+		catch {
+			regsub {^<} $value "$awe_min($param) " value
+			regsub {^>} $value "$awe_max($param) " value
+			regsub {(\w*?\d+)-(\w*?\d+)} $value {\1 \2} value
+		}
+		if {[regsub {^!} $value {} value]} {
+			append param "!"
+		}
+		lappend res [list $param $value]
+	}
+
+	return [join $res]
 }
 
 proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
