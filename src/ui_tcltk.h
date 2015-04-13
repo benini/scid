@@ -23,6 +23,7 @@
 #include "timer.h"
 #include <tcl.h>
 #include <sstream>
+#include <limits>
 class TclObjMaker;
 
 
@@ -175,7 +176,10 @@ class TclObjMaker {
 public:
 	TclObjMaker(bool v)   { obj_ = Tcl_NewBooleanObj(v); }
 	TclObjMaker(int v)    { obj_ = Tcl_NewIntObj(v); }
-	TclObjMaker(uint v)   { obj_ = Tcl_NewIntObj(static_cast<int>(v)); }
+	TclObjMaker(uint v)   {
+		ASSERT(v < static_cast<uint>(std::numeric_limits<int>::max()));
+		obj_ = Tcl_NewIntObj(static_cast<int>(v));
+	}
 	TclObjMaker(double v) { obj_ = Tcl_NewDoubleObj(v); }
 	TclObjMaker(const char* s) { obj_ = Tcl_NewStringObj(s, -1); }
 	TclObjMaker(const std::string& s) { obj_ = Tcl_NewStringObj(s.c_str(), s.length()); }

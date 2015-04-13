@@ -231,36 +231,6 @@ translate (Tcl_Interp * ti, const char * name)
     return translate (ti, name, name);
 }
 
-int TclResult (Tcl_Interp* ti, errorT err) {
-    if (err == OK) return TCL_OK;
-    Tcl_SetObjErrorCode(ti, Tcl_NewIntObj(err));
-    return TCL_ERROR;
-}
-int okResult (Tcl_Interp* ti, const char* res) {
-    ASSERT(res != 0);
-    Tcl_SetResult (ti, (char *) res, TCL_STATIC);
-    return TCL_OK;
-}
-int okResult (Tcl_Interp* ti, const std::string& res) {
-    Tcl_SetObjResult(ti, Tcl_NewStringObj(res.c_str(), -1));
-    return TCL_OK;
-}
-int okResult (Tcl_Interp* ti, int res) {
-    Tcl_SetObjResult(ti, Tcl_NewIntObj(res));
-    return TCL_OK;
-}
-int okResult (Tcl_Interp * ti, const std::vector<int>& v) {
-    if (v.size() > 0) {
-        Tcl_Obj** res = new Tcl_Obj*[v.size()];
-        for (uint i=0; i < v.size(); i++) {
-            res[i] = Tcl_NewIntObj(v[i]);
-        }
-        Tcl_SetObjResult(ti, Tcl_NewListObj(v.size(), res));
-        delete [] res;
-    }
-    return TCL_OK;
-}
-
 inline int errorResult (Tcl_Interp * ti, errorT err, const char* errorMsg = 0) {
     if (errorMsg != 0) Tcl_SetResult (ti, (char*) errorMsg, TCL_STATIC);
     ASSERT(err != OK);
@@ -615,7 +585,7 @@ sc_base_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     currentBase = newBaseNum;
     db = baseptr;
 
-    return okResult(ti, newBaseNum + 1);
+    return UI_Result(ti, OK, newBaseNum + 1);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -881,7 +851,7 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
 
     while (parser.ParseGame (scratchGame) != ERROR_NotFound) {
         errorT err = cdb->saveGame(scratchGame, false);
-        if (err != OK) return TclResult(ti, err);
+        if (err != OK) return UI_Result(ti, err);
         // Update the progress bar:
         if ((gamesSeen++ % 100) == 0) {
             if (!progress.report(parser.BytesUsed(), inputLength)) {
@@ -899,7 +869,7 @@ sc_base_import (Tcl_Interp* ti, scidBaseT* cdb, const char * filename)
     } else {
         Tcl_AppendElement (ti, "");
     }
-    return TclResult(ti, res);
+    return UI_Result(ti, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1685,7 +1655,7 @@ sc_base_tag (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 // remembering to load its standard tags first:
                 g->LoadStandardTags (ie, db->getNameBase());
                 errorT res = db->saveGame(g, false, gnum);
-                if (res != OK) return TclResult(ti, res);
+                if (res != OK) return UI_Result(ti, res);
                 nEditedGames++;
             }
         } else {
@@ -2716,7 +2686,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             const HFilter maskfilter = dbase->getFilter(argv[4]);
             if (*maskfilter) res = '+' + res + "+" + argv[4];
         }
-        return okResult(ti, res);
+        return UI_Result(ti, OK, res);
         }
 
     case FILTER_SET:
@@ -3224,7 +3194,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             buf[0] = 0;
             g->GetPrevMoveUCI(buf);
             delete g;
-            return okResult(ti, std::string(buf));
+            return UI_Result(ti, OK, std::string(buf));
         }
         return errorResult(ti, "usage sc_game SANtoUCI move");
 
@@ -3270,7 +3240,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
     case GAME_UNDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
-            return okResult(ti, db->gameAlterations.undoSize());
+            return UI_Result(ti, OK, (uint) db->gameAlterations.undoSize());
         }
         db->gameAlterations.undo(db->game);
         break;
@@ -3281,7 +3251,7 @@ sc_game (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case GAME_REDO:
         if (argc > 2 && strCompare("size", argv[2]) == 0) {
-            return okResult(ti, db->gameAlterations.redoSize());
+            return UI_Result(ti, OK, (uint) db->gameAlterations.redoSize());
         }
         db->gameAlterations.redo(db->game);
         break;
@@ -3728,7 +3698,7 @@ sc_game_firstMoves (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
     DString dstr;
     db->game->GetPartialMoveList (&dstr, plyCount);
-    return okResult(ti, std::string(dstr.Data()));
+    return UI_Result(ti, OK, std::string(dstr.Data()));
 }
 
 int
@@ -4938,7 +4908,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         if (count <= 1) { // Novelty found
             base->deleteFilter(filtername.c_str());
-            return okResult(ti, g->GetCurrentPly());
+            return UI_Result(ti, OK, g->GetCurrentPly());
         }
 
         if (!progress.report(g->GetCurrentPly() +1, g->GetNumHalfMoves())) {
@@ -4948,7 +4918,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     base->deleteFilter(filtername.c_str());
-    return okResult(ti, -1);
+    return UI_Result(ti, OK, -1);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5177,7 +5147,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         db->gameAltered = false;
     }
 
-    return TclResult(ti, res);;
+    return UI_Result(ti, res);;
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5655,7 +5625,7 @@ sc_game_tags_get (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         break;
 
     case T_Result:
-        return okResult(ti, std::string(1, RESULT_CHAR[g->GetResult()]));
+        return UI_Result(ti, OK, std::string(1, RESULT_CHAR[g->GetResult()]));
 
     case T_WhiteElo:
         return setUintResult (ti, g->GetWhiteElo());
@@ -6069,7 +6039,7 @@ sc_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc >= 3) {
             decimalPointChar = argv[2][0];
         } else {
-            return okResult(ti, std::string(1, decimalPointChar));
+            return UI_Result(ti, OK, std::string(1, decimalPointChar));
         }
         break;
 
@@ -6764,8 +6734,12 @@ sc_pos (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
         break;
 
-    case LOCATION:
-        return okResult (ti, db->game->GetCurrentLocation());
+    case LOCATION: {
+        std::vector<int> v = db->game->GetCurrentLocation();
+        UI_List res(v.size());
+        for (size_t i=0, n=v.size(); i < n; i++) res.push_back(v[i]);
+        return UI_Result(ti, OK, res);
+    }
 
     case MOVELIST: {
         Position * pos = db->game->GetCurrentPos();
@@ -11728,7 +11702,7 @@ sc_var (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case VAR_PROMOTE:
         db->gameAltered = true;
-        return TclResult(ti, db->game->MainVariation ());
+        return UI_Result(ti, db->game->MainVariation ());
 
     default:
         return InvalidCommand (ti, "sc_var", options);
