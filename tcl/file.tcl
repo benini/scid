@@ -15,8 +15,9 @@ proc ::file::Exit {}  {
   set savedBase [sc_base current]
   set msg ""
   for {set i [sc_base count total] } {$i > 0} {incr i -1} {
+    if {![sc_base inUse $i]} { continue }
     sc_base switch $i
-    if {[sc_base inUse] && [sc_game altered] && ![sc_base isReadOnly $i]} {
+    if {[sc_game altered] && ![sc_base isReadOnly $i]} {
       if {$unsavedCount == 0} {
         append msg $::tr(ExitUnsaved)
         append msg "\n\n"

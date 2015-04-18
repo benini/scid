@@ -156,8 +156,6 @@ proc keyboardShortcuts {w} {
 
 	bind $w <Control-C> ::copyFEN
 	bind $w <Control-V> ::pasteFEN
-	bind $w <Control-v> {catch {sc_clipbase paste}; updateBoard -pgn}
-	bind $w <Shift-Insert> {catch {sc_clipbase paste}; updateBoard -pgn}
 	bind $w <Control-E> ::tools::email
 	bind $w <Control-I> importPgnGame
 	bind $w <Control-D> {sc_move ply [sc_eco game ply]; updateBoard}

@@ -973,7 +973,7 @@ proc baseIsCompactable {} {
   set curr_base [sc_base current]
   if {! [sc_base inUse]} { return 0 }
   if {[sc_base isReadOnly $curr_base]} { return 0 }
-  if {$curr_base == [sc_info clipbase]} { return 0 }
+  if {$curr_base == $::clipbase_db} { return 0 }
   return 1
 }
 

@@ -2533,7 +2533,7 @@ namespace eval CorrespondenceChess {
 			set side   [sc_pos side]
 
 			# Number of moves in the new game in Clipbase
-			sc_base switch "clipbase"
+			sc_base switch $::clipbase_db
 			sc_move end
 			set mnClip [sc_pos moveNumber]
 
@@ -2571,7 +2571,7 @@ namespace eval CorrespondenceChess {
 					set basecomment  ""
 					set comment      ""
 
-					sc_base switch "clipbase"
+					sc_base switch $::clipbase_db
 
 					# move to the beginning of the new part
 					sc_move start
@@ -2688,7 +2688,7 @@ namespace eval CorrespondenceChess {
 		::CorrespondenceChess::CheckForCorrDB
 		# Only proceed if a correspondence DB is already loaded
 		if {$CorrSlot > -1} {
-			sc_base switch "clipbase"
+			sc_base switch $::clipbase_db
 			sc_game load $game
 
 			# get the header
@@ -2988,7 +2988,7 @@ namespace eval CorrespondenceChess {
 			# PGN parser as comments etc. might appear, and this number
 			# is not given via Xfcc. Similar for the event date.
 			sc_clipbase clear
-			sc_base switch "clipbase"
+			sc_base switch $::clipbase_db"
 			set game 0
 			set gamemoves {}
 			foreach f [glob -nocomplain [file join $inpath *]] {
@@ -3103,7 +3103,7 @@ namespace eval CorrespondenceChess {
 
 			::CorrespondenceChess::emptyGamelist
 			sc_clipbase clear
-			sc_base switch "clipbase"
+			sc_base switch $::clipbase_db
 
 			# Loop over all files and add all game files that are not
 			# Xfcc (ie. eMail chess)
@@ -3149,7 +3149,7 @@ namespace eval CorrespondenceChess {
 					set wc "";              set bc "";
 					set YM " ? ";
 
-					sc_base switch "clipbase"
+					sc_base switch $::clipbase_db
 					sc_game load $game
 					# get the header
 					set Event  [sc_game tags get Event]

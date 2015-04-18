@@ -22,24 +22,6 @@
 // Tcl command function takes.
 #define TCL_ARGS  ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 
-int sc_base_filename  (TCL_ARGS);
-int sc_base_inUse     (TCL_ARGS);
-uint sc_base_duplicates (scidBaseT* dbase, TCL_ARGS);
-int sc_base_open      (Tcl_Interp* ti, const char * filename);
-int sc_createbase     (Tcl_Interp * ti, const char * filename,
-                       scidBaseT * base, bool memoryOnly);
-int sc_base_create    (TCL_ARGS);
-int sc_base_count     (TCL_ARGS);
-int sc_base_export    (TCL_ARGS);
-int sc_base_import    (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
-int sc_base_numGames  (TCL_ARGS);
-int sc_base_slot      (TCL_ARGS);
-int sc_base_stats     (TCL_ARGS);
-int sc_base_ecoStats  (TCL_ARGS);
-int sc_base_piecetrack (TCL_ARGS);
-int sc_base_switch    (TCL_ARGS);
-int sc_base_tag       (TCL_ARGS);
-int sc_base_tournaments (TCL_ARGS);
 
 int sc_clipbase_paste (TCL_ARGS);
 

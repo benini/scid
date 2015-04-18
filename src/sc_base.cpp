@@ -42,6 +42,7 @@
 
 int base_opened (const char * filename);
 scidBaseT* getBase(int baseId);
+void switchCurrentBase(scidBaseT* dbase);
 int InvalidCommand (Tcl_Interp * ti, const char * majorCmd, const char ** minorCmds);
 
 //TODO: avoid using global vars
@@ -315,6 +316,22 @@ UI_typeRes sc_base_sortcache(scidBaseT* dbase, UI_type2 ti, int argc, const char
 	return UI_Result(ti, OK);
 }
 
+
+/**
+ * sc_base_switch() - change the current database and the current game
+ *
+ * DEPRECATED
+ * Unfortunately SCID used to have only one database, one game, one filter, etc...
+ * This function changes the current database and consequently the current game 
+ * (sc_game functions works on the current game)
+ */
+UI_typeRes sc_base_switch (scidBaseT* dbase, UI_type2 ti)
+{
+	switchCurrentBase(dbase);
+	return UI_Result(ti, OK);
+}
+
+
 //TODO: move this function here from tkscid.cpp
 int sc_base_filename    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_inUse       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
@@ -330,7 +347,6 @@ int sc_base_slot        (ClientData cd, Tcl_Interp * ti, int argc, const char **
 int sc_base_stats       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_ecoStats    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_piecetrack  (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_switch      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_tag         (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_tournaments (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 
@@ -399,9 +415,6 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 	case BASE_STATS:
 		return sc_base_stats (cd, ti, argc, argv);
 
-	case BASE_SWITCH:
-		return sc_base_switch (cd, ti, argc, argv);
-
 	case BASE_TAG:
 		return sc_base_tag (cd, ti, argc, argv);
 
@@ -451,6 +464,9 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 
 	case BASE_SORTCACHE:
 		return sc_base_sortcache(dbase, ti, argc, argv);
+
+	case BASE_SWITCH:
+		return sc_base_switch (dbase, ti);
 
 	}
 

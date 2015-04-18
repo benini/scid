@@ -390,7 +390,7 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 		return
 	}
 	# If copying to the clipbase, do not bother asking for confirmation:
-	if {$dstBase != [sc_info clipbase]} {
+	if {$dstBase != $::clipbase_db} {
 		set confirm [tk_messageBox -type "okcancel" -icon question -title "Scid: $::tr(CopyGames)" \
 			-message [subst $::tr(CopyConfirm)] ]
 		if {$confirm != "ok"} { return }
@@ -404,15 +404,14 @@ proc ::windows::gamelist::CopyGames {{w} {srcBase} {dstBase}} {
 }
 
 proc ::windows::gamelist::ClearClipbase {} {
-	set clipbase [sc_info clipbase]
 	foreach w $::windows::gamelist::wins {
-		if {$::gamelistBase($w) == $clipbase} {
+		if {$::gamelistBase($w) == $::clipbase_db} {
 			::windows::gamelist::SetBase $w $::gamelistBase($w)
 		}
 	}
 	sc_clipbase clear
-	::notify::DatabaseModified $clipbase
-	if {[sc_base current] == $clipbase} { ::notify::GameChanged }
+	::notify::DatabaseModified $::clipbase_db
+	if {[sc_base current] == $::clipbase_db} { ::notify::GameChanged }
 }
 
 #Private:

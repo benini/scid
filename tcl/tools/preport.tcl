@@ -104,7 +104,7 @@ proc ::preport::preportDlg {args} {
   }
   packbuttons right $w.b.cancel $w.b.ok
   packbuttons left $w.b.help
-  if {[sc_base current] == [sc_info clipbase]} {
+  if {[sc_base current] == $::clipbase_db} {
     $w.g.clipbase configure -state disabled
   }
   bind $w <Return> [list $w.b.ok invoke]
@@ -200,9 +200,9 @@ proc ::preport::makeReportWin {args} {
   sc_report player create $::preport(ExtraMoves) $::preport(MaxGames)
   if {$::preport::_pos == "start"} { sc_game pop }
   if {$::preport::_clipbase} {
-    if {[sc_base current] != [sc_info clipbase]} {
+    if {[sc_base current] != $::clipbase_db} {
       sc_clipbase clear
-      ::windows::gamelist::CopyGames "" [sc_base current] [sc_info clipbase]
+      ::windows::gamelist::CopyGames "" [sc_base current] $::clipbase_db
     }
   }
   if {$showProgress} {

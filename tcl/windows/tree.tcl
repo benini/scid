@@ -1839,7 +1839,7 @@ proc ::tree::mask::updateDisplayMask {} {
   set fen [toShortFen [sc_pos fen] ]
   # use clipbase to enter a dummy game
   set currentbase [sc_base current]
-  sc_base switch clipbase
+  sc_base switch $::clipbase_db
   sc_game push copyfast
   
   if {[catch {sc_game startBoard $fen} err]} {
@@ -2179,7 +2179,7 @@ proc  ::tree::mask::searchClick {x y win baseNumber} {
   set fen [ lrange $elt 0 3 ]
   
   # load the position in a temporary game (in clipbase), update the Trees then switch to Tree's base
-  sc_base switch clipbase
+  sc_base switch $::clipbase_db
   sc_game push copyfast
   
   if {[catch {sc_game startBoard $fen} err]} {

@@ -1106,11 +1106,10 @@ proc gsave { gnum } {
 proc gameAdd {} { gameSave 0 }
 
 proc gameAddToClipbase {} {
-  set dbase [sc_info clipbase]
-  if {[catch {sc_game save 0 $dbase}]} {
+  if {[catch {sc_game save 0 $::clipbase_db}]} {
     ERROR::MessageBox
   }
-  ::notify::DatabaseModified $dbase
+  ::notify::DatabaseModified $::clipbase_db
 }
 
 # gameReplace:

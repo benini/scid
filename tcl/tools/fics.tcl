@@ -667,7 +667,7 @@ namespace eval fics {
       ::utils::sound::PlaySound sound_move
       # Create a game in an opened base
       if {![sc_base inUse]} {
-        sc_base switch clipbase
+        sc_base switch $::clipbase_db
       }
       sc_game new
       set idx1 [string first "(" $line]
@@ -1047,7 +1047,7 @@ namespace eval fics {
       puts "Debug fen \n$fen\n[sc_pos fen]"
       # Create a game in an opened base
       if {![sc_base inUse]} {
-        sc_base switch clipbase
+        sc_base switch $::clipbase_db
       }
       sc_game new
 

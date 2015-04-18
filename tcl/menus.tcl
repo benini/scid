@@ -222,7 +222,6 @@ set helpMessage($m,[incr menuindex]) FileSwitch
 menu $m.switch
 
 set totalBaseSlots [sc_base count total]
-set clipbaseSlot [sc_info clipbase]
 set currentSlot [sc_base current]
 
 for {set i 1} { $i <= $totalBaseSlots} {incr i} {
@@ -230,7 +229,7 @@ for {set i 1} { $i <= $totalBaseSlots} {incr i} {
       -label "Base $i: <none>" \
       -underline 5 -accelerator "Ctrl+$i" -command [list ::file::SwitchToBase $i]
   set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to base slot $i"
-  if {$i == $clipbaseSlot} {
+  if {$i == $::clipbase_db} {
     set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to the clipbase database"
   }
 }
@@ -275,7 +274,7 @@ set helpMessage($m,[incr menuindex]) EditCopy
 
 $m add command -label EditPaste -command {
   sc_clipbase paste
-  ::notify::DatabaseModified [sc_info clipbase]
+  ::notify::GameChanged
 }
 set helpMessage($m,[incr menuindex]) EditPaste
 
@@ -1295,7 +1294,7 @@ proc updateMenuStates {{menuname}} {
   
   # Configure File menu entry states::
   if {[sc_base inUse]} {
-    set isClipbase [expr "$::currentSlot == [sc_info clipbase]"]
+    set isClipbase [expr "$::currentSlot == $::clipbase_db"]
     set isReadOnly [sc_base isReadOnly $::currentSlot]
     if {$isClipbase} {set state disabled} else {set state normal}
     $m.file entryconfig [tr FileClose] -state $state

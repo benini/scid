@@ -431,6 +431,17 @@ scidBaseT* getBase(int baseId) {
     return res->inUse ? res : 0;
 }
 
+void switchCurrentBase(scidBaseT* dbase) {
+    for (int i=0; i < MAX_BASES; i++) {
+        if ((dbList + i) == dbase) {
+            currentBase = i;
+            db = dbase;
+            break;
+        }
+    }
+}
+
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_numGames:
 //   Takes optional database number and returns number of games.
@@ -1204,28 +1215,6 @@ sc_base_ecoStats (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         Tcl_AppendElement (ti, "0.0");
     }
 
-    return TCL_OK;
-}
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_switch:
-//    Switch to a different database slot.
-int
-sc_base_switch (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    if (argc != 3) {
-        return errorResult (ti, "Usage: sc_base switch <number>");
-    }
-    int baseNum = strGetInteger (argv[2]);
-    if (tolower(argv[2][0]) == 'c'  &&  strIsCasePrefix (argv[2], "clipbase")) {
-        baseNum = CLIPBASE_NUM + 1;
-    }
-    if (baseNum < 1  ||  baseNum > MAX_BASES) {
-        return errorResult (ti, "sc_base switch: Invalid base number.");
-    }
-    currentBase = baseNum - 1;
-    db = &(dbList[currentBase]);
     return TCL_OK;
 }
 

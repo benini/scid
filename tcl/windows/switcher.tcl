@@ -613,7 +613,6 @@ proc ::windows::switcher::releaseMouseEvent {fromBase x y {w .baseWin}} {
 }
 
 proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx} } {
-  set clipbaseIdx [sc_info clipbase]
   $w.menu delete 0 end
   $w.menu add command -label "New Game List Window" -command "::windows::gamelist::Open $baseIdx"
   $w.menu add separator
@@ -626,7 +625,7 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
     $w.menu add command -label "[tr ToolsExpFilter]" -command \
         "::windows::gamelist::FilterExport $::sw_LinkedGList_($switcherWin)"
   }
-  if { $baseIdx != $clipbaseIdx } {
+  if { $baseIdx != $::clipbase_db } {
     $w.menu add command -label [tr FileClose] -command [list ::file::Close $baseIdx]
     #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
     $w.menu add command -label $::tr(CompactDatabase) -command "compactDB $baseIdx"
@@ -726,7 +725,6 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
   if {! [winfo exists $w]} { return }
 
   set n_bases 0
-  set clipbase [sc_info clipbase]
   for {set i 1} {$i <= $::sw_nBases_} {incr i} {
     if {[sc_base inUse $i]} {
       incr n_bases
@@ -742,7 +740,7 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
       } else {
         grid forget $w.c.f$i.img
       }
-      if {$i == $clipbase} {
+      if {$i == $::clipbase_db} {
         set name [sc_base filename $i]
       } else {
         set name "[file tail [sc_base filename $i]]"
@@ -760,9 +758,9 @@ proc ::windows::switcher::calcSpace {{w} {selected}} {
     }
   }
 
-  set iconWidth [winfo width $w.c.f$clipbase]
+  set iconWidth [winfo width $w.c.f$::clipbase_db]
   incr iconWidth 5
-  set iconHeight [winfo height $w.c.f$clipbase]
+  set iconHeight [winfo height $w.c.f$::clipbase_db]
   incr iconHeight 5
 
   return [list $n_bases $iconWidth $iconHeight]

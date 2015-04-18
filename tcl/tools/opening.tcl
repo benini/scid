@@ -110,7 +110,7 @@ namespace eval opening {
     if {$prevBase != $repBase} {
       sc_base switch $prevBase
     } else  {
-      sc_base switch clipbase
+      sc_base switch $::clipbase_db
     }
     
     if { $::opening::movesLoaded == 0 } {
@@ -119,7 +119,7 @@ namespace eval opening {
     
     if { ! [sc_base inUse $prevBase] } {
       # switch to clipboard base if the current base is empty
-      sc_base switch clipbase
+      sc_base switch $::clipbase_db
     }
     
     # add a blank game for training in current base, if the current base is opened

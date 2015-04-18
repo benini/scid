@@ -1107,7 +1107,8 @@ InitImg
 sc_info decimal $::locale(numeric)
 
 # Start in the clipbase, if no database is loaded at startup.
-sc_base switch clipbase
+set ::clipbase_db [sc_info clipbase]
+sc_base switch $::clipbase_db
 
 set tcl_files {
 language.tcl
