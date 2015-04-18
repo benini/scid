@@ -9172,14 +9172,9 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                 count += spellChecker[nt]->Corrections( tempStr, &(corrections[count]), maxAmbiguous - count);
                 // The above step can cause duplicated corrections, so
                 // remove them:
-                for (uint i=1; i < count; i++) {
-                    if (strEqual (corrections[i], corrections[i-1])) {
-                        for (uint j=i+1; j < count; j++) {
-                            corrections[j-1] = corrections[j];
-                        }
-                        count--;
-                    }
-                }
+                count = std::distance(corrections,
+                    std::unique(corrections, corrections + count, strEqual)
+                );
             }
 
             // Handle ambiguous corrections, if wanted

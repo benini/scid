@@ -22,7 +22,7 @@
 #include "common.h"
 #include "position.h"
 #include "fastgame.h"
-#include "timer.h"
+
 
 class SearchPos {
 public:

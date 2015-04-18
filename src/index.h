@@ -26,7 +26,6 @@
 #include "indexentry.h"
 #include "filter.h"
 #include "filebuf.h"
-#include "timer.h"
 #include <string>
 #include <vector>
 

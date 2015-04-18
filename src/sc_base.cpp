@@ -37,7 +37,6 @@
 #include "common.h"
 #include "misc.h"
 #include "scidbase.h"
-#include "searchpos.h"
 #include <string>
 #include <cstring>
 

@@ -26,7 +26,6 @@
 #include "game.h"
 #include "tree.h"
 #include "stored.h"
-#include "timer.h"
 #include <vector>
 
 class SpellChecker;
