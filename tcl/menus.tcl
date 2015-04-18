@@ -279,6 +279,9 @@ $m add command -label EditPaste -command {
 }
 set helpMessage($m,[incr menuindex]) EditPaste
 
+$m add command -label PgnFileCopy -command ::pgn::PgnClipboardCopy
+set helpMessage($m,[incr menuindex]) PgnFileCopy
+
 $m add command -label EditPastePGN -command importClipboardGame
 set helpMessage($m,[incr menuindex]) EditPastePGN
 
@@ -1428,6 +1431,7 @@ proc setLanguageMenus {} {
     Redo CopyBoard PasteBoard} {
     configMenuText .menu.edit [tr Edit$tag $oldLang] Edit$tag $lang
   }
+  configMenuText .menu.edit [tr PgnFileCopy $oldLang] PgnFileCopy $lang
   foreach tag {Comments Vars Begin End} {
     configMenuText .menu.edit.strip [tr EditStrip$tag $oldLang] \
         EditStrip$tag $lang

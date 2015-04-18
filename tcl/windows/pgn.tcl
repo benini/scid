@@ -84,9 +84,7 @@ namespace eval pgn {
       menu $w.menu.$i -tearoff 0
     }
     
-    $w.menu.file add command -label PgnFileCopy -accelerator "Ctrl+C" -command {::pgn::PgnClipboardCopy }
-    bind $w <Control-c> {::pgn::PgnClipboardCopy}
-    bind $w <Control-Insert> {::pgn::PgnClipboardCopy}
+    $w.menu.file add command -label PgnFileCopy -command {::pgn::PgnClipboardCopy }
     
     $w.menu.file add command -label PgnFilePrint -command {
       set ftype {
