@@ -24,7 +24,7 @@
 #include <tcl.h>
 #include <sstream>
 #include <limits>
-class TclObjMaker;
+namespace UI_impl { class ObjMaker; }
 
 
 typedef int         UI_typeRes;
@@ -50,10 +50,55 @@ UI_typeRes sc_tree        (UI_typeExtra, UI_type2, int argc, const char ** argv)
 UI_typeRes sc_var         (UI_typeExtra, UI_type2, int argc, const char ** argv);
 //////////////////////////////////////////////////////////////////////
 
-// From c++ to UI
+
+//////////////////////////////////////////////////////////////////////
+// UI_ interface: provide a way for c++ code to communicate with UI
+
+/**
+ * UI_Main() - Init the UI
+ * @exit:      clean up function to be called when closing UI
+ */
 int UI_Main (int argc, char* argv[], void (*exit) (void*));
+
+
+/**
+ * UI_CreateProgress() - create a Progress object
+ *
+ * Progress objects are used for operation that make take a long time.
+ * c++ code call Progress::report to tell the UI the percentage of work done
+ * and an estimated time to complete the operation.
+ * Progress::report will return false if the UI wants to interrupt the operation
+ */
 Progress UI_CreateProgress(UI_type2);
 
+
+/**
+ * UI_Result() - pass the result of an operation from c++ to UI
+ * @res:   OK for success or an error code (error.h)
+ * @value: a value (or a list of values, see UI_List) to pass to UI
+ *
+ * Typical usage:
+ * UI_Result(ti, OK);
+ * UI_Result(ti, OK, "string value");
+ * UI_Result(ti, OK, 5);
+ */
+UI_typeRes UI_Result(UI_type2 ti, errorT res);
+UI_typeRes UI_Result(UI_type2 ti, errorT res, const UI_impl::ObjMaker& value);
+
+
+/**
+ * class UI_List - create a list of values to be sent to UI
+ * @max_size:   currently there is no automatic reallocation in push_back()
+ *              so the constructor must know the max number of values that
+ *              will be stored in the list
+ *
+ * An heterogeneous container used to pass values from c++ to UI
+ * Typical usage:
+ * UI_List uiList(2);
+ * uiList.push_back("string value");
+ * uiList.push_back(5);
+ * UI_Result(ti, OK, uiList)
+ */
 class UI_List {
 	Tcl_Obj** list_;
 	int i_;
@@ -63,69 +108,39 @@ public:
 	explicit UI_List(size_t max_size);
 	~UI_List();
 
-	friend class TclObjMaker;
-	void push_back(const TclObjMaker& v);
+	friend class UI_impl::ObjMaker;
+	void push_back(const UI_impl::ObjMaker& v);
 	void clear();
 };
-
-UI_typeRes UI_Result(UI_type2 ti, errorT res);
-UI_typeRes UI_Result(UI_type2 ti, errorT res, const TclObjMaker& value);
 //////////////////////////////////////////////////////////////////////
 
 
+namespace UI_impl {
 
 
-inline int scid_InitTclTk (Tcl_Interp * ti)
+inline int initTclTk (Tcl_Interp * ti)
 {
 	if (Tcl_Init (ti) == TCL_ERROR) { return TCL_ERROR; }
 
-#define CREATE_CMD(ip,name,cmd) \
- Tcl_CreateCommand ((ip), (name), (Tcl_CmdProc *)(cmd), \
- (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL)
-
-	////////////////////
-	/// Scid-specific Tcl/Tk commands:
-	CREATE_CMD (ti, "strIsPrefix", str_is_prefix);
-	CREATE_CMD (ti, "strPrefixLen", str_prefix_len);
-	CREATE_CMD (ti, "sc_base", sc_base);
-	CREATE_CMD (ti, "sc_book", sc_book);
-	CREATE_CMD (ti, "sc_clipbase", sc_clipbase);
-	CREATE_CMD (ti, "sc_eco", sc_eco);
-	CREATE_CMD (ti, "sc_filter", sc_filter);
-	CREATE_CMD (ti, "sc_game", sc_game);
-	CREATE_CMD (ti, "sc_info", sc_info);
-	CREATE_CMD (ti, "sc_move", sc_move);
-	CREATE_CMD (ti, "sc_name", sc_name);
-	CREATE_CMD (ti, "sc_report", sc_report);
-	CREATE_CMD (ti, "sc_pos", sc_pos);
-	CREATE_CMD (ti, "sc_search", sc_search);
-	CREATE_CMD (ti, "sc_tree", sc_tree);
-	CREATE_CMD (ti, "sc_var", sc_var);
+	Tcl_CreateCommand(ti, "strIsPrefix" , str_is_prefix , 0, NULL);
+	Tcl_CreateCommand(ti, "strPrefixLen", str_prefix_len, 0, NULL);
+	Tcl_CreateCommand(ti, "sc_base"     , sc_base       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_book"     , sc_book       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_clipbase" , sc_clipbase   , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_eco"      , sc_eco        , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_filter"   , sc_filter     , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_game"     , sc_game       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_info"     , sc_info       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_move"     , sc_move       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_name"     , sc_name       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_report"   , sc_report     , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_pos"      , sc_pos        , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_search"   , sc_search     , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_tree"     , sc_tree       , 0, NULL);
+	Tcl_CreateCommand(ti, "sc_var"      , sc_var        , 0, NULL);
 
 	return TCL_OK;
 }
-
-inline int UI_Main (int argc, char* argv[], void (*exit) (void*)) {
-	Tcl_FindExecutable(argv[0]);
-	Tcl_CreateExitHandler(exit, 0);
-	if (argc == 1) {
-		char sourceFileName [1024];
-		char* newArgv[] = { argv[0], sourceFileName };
-		ASSERT(strlen(Tcl_GetNameOfExecutable()) < 1000);
-		strcpy(sourceFileName, Tcl_GetNameOfExecutable());
-		char* end = strrchr (sourceFileName, '/');
-		strcpy (end + 1, "tcl/start.tcl");
-		if (0 != Tcl_Access(sourceFileName, 4)) {
-			strcpy (end + 1, "../tcl/start.tcl");
-		}
-		Tcl_Main(sizeof newArgv/sizeof newArgv[0], newArgv, scid_InitTclTk);
-	} else {
-		Tcl_Main (argc, argv, scid_InitTclTk);
-	}
-
-	return 0;
-}
-
 
 
 class tcl_Progress : public ProgressImp {
@@ -148,6 +163,7 @@ public:
 
 class tcl_ProgressPosMask : public ProgressImp {
 	Tcl_Interp* ti_;
+
 public:
 	tcl_ProgressPosMask(Tcl_Interp* ti) : ti_(ti) {}
 	virtual ~tcl_ProgressPosMask() {}
@@ -157,33 +173,24 @@ public:
 	}
 };
 
-inline Progress UI_CreateProgress(UI_type2 data) {
-	int err = Tcl_EvalEx(data, "::progressCallBack init", -1, 0);
-	if (err != TCL_OK) return Progress();
-	return Progress(new tcl_Progress(data));
-}
 
-inline Progress UI_CreateProgressPosMask(UI_type2 data) {
-	return Progress(new tcl_ProgressPosMask(data));
-}
-
-
-// This object is not intended to be used directly, i.e. TclObjMaker a("bad");
-// ASSERT are placed to catch Tcl_Obj leaking
-class TclObjMaker {
+class ObjMaker {
 	Tcl_Obj* obj_;
 
 public:
-	TclObjMaker(bool v)   { obj_ = Tcl_NewBooleanObj(v); }
-	TclObjMaker(int v)    { obj_ = Tcl_NewIntObj(v); }
-	TclObjMaker(uint v)   {
+	// This class is not intended to be used directly, i.e. ObjMaker a("bad");
+	// ASSERTs are placed to catch Tcl_Obj leaking
+
+	ObjMaker(bool v)   { obj_ = Tcl_NewBooleanObj(v); }
+	ObjMaker(int v)    { obj_ = Tcl_NewIntObj(v); }
+	ObjMaker(uint v)   {
 		ASSERT(v < static_cast<uint>(std::numeric_limits<int>::max()));
 		obj_ = Tcl_NewIntObj(static_cast<int>(v));
 	}
-	TclObjMaker(double v) { obj_ = Tcl_NewDoubleObj(v); }
-	TclObjMaker(const char* s) { obj_ = Tcl_NewStringObj(s, -1); }
-	TclObjMaker(const std::string& s) { obj_ = Tcl_NewStringObj(s.c_str(), s.length()); }
-	TclObjMaker(const UI_List& l) {
+	ObjMaker(double v) { obj_ = Tcl_NewDoubleObj(v); }
+	ObjMaker(const char* s) { obj_ = Tcl_NewStringObj(s, -1); }
+	ObjMaker(const std::string& s) { obj_ = Tcl_NewStringObj(s.c_str(), s.length()); }
+	ObjMaker(const UI_List& l) {
 		obj_ = Tcl_NewListObj(l.i_, l.list_);
 		ASSERT((const_cast<UI_List&>(l).i_ = 0) == 0);
 	}
@@ -191,29 +198,47 @@ public:
 	Tcl_Obj* get() const {
 		ASSERT(obj_ != 0);
 		Tcl_Obj* res = obj_;
-		ASSERT((const_cast<TclObjMaker*>(this)->obj_ = 0) == 0);
+		ASSERT((const_cast<ObjMaker*>(this)->obj_ = 0) == 0);
 		return res;
 	}
 
-	~TclObjMaker() { ASSERT(obj_ == 0); }
+	~ObjMaker() { ASSERT(obj_ == 0); }
 };
 
-inline UI_List::UI_List(size_t max_size)
-: list_(small_buffer_), i_(0) {
-	if (max_size > (sizeof(small_buffer_)/sizeof(small_buffer_[0]))) {
-		list_ = new Tcl_Obj*[max_size];
+
+} //End of UI_impl namespace
+
+
+inline int UI_Main (int argc, char* argv[], void (*exit) (void*)) {
+	Tcl_FindExecutable(argv[0]);
+	Tcl_CreateExitHandler(exit, 0);
+	if (argc == 1) {
+		char sourceFileName [1024];
+		char* newArgv[] = { argv[0], sourceFileName };
+		ASSERT(strlen(Tcl_GetNameOfExecutable()) < 1000);
+		strcpy(sourceFileName, Tcl_GetNameOfExecutable());
+		char* end = strrchr (sourceFileName, '/');
+		strcpy (end + 1, "tcl/start.tcl");
+		if (0 != Tcl_Access(sourceFileName, 4)) {
+			strcpy (end + 1, "../tcl/start.tcl");
+		}
+		Tcl_Main(sizeof newArgv/sizeof newArgv[0], newArgv, UI_impl::initTclTk);
+	} else {
+		Tcl_Main (argc, argv, UI_impl::initTclTk);
 	}
+
+	return 0;
 }
-inline UI_List::~UI_List() {
-	ASSERT (i_ == 0);
-	if (list_ != small_buffer_) delete [] list_;
+
+
+inline Progress UI_CreateProgress(UI_type2 data) {
+	int err = Tcl_EvalEx(data, "::progressCallBack init", -1, 0);
+	if (err != TCL_OK) return Progress();
+	return Progress(new UI_impl::tcl_Progress(data));
 }
-inline void UI_List::push_back(const TclObjMaker& v) {
-	list_[i_++] = v.get();
-}
-inline void UI_List::clear() {
-	ASSERT (i_ == 0);
-	i_ = 0;
+
+inline Progress UI_CreateProgressPosMask(UI_type2 data) {
+	return Progress(new UI_impl::tcl_ProgressPosMask(data));
 }
 
 
@@ -223,9 +248,32 @@ inline UI_typeRes UI_Result(UI_type2 ti, errorT res) {
 	return TCL_ERROR;
 }
 
-inline UI_typeRes UI_Result(UI_type2 ti, errorT res, const TclObjMaker& value) {
+inline UI_typeRes UI_Result(UI_type2 ti, errorT res, const UI_impl::ObjMaker& value) {
 	Tcl_SetObjResult(ti, value.get());
 	return UI_Result(ti, res);
 }
+
+
+inline UI_List::UI_List(size_t max_size)
+: list_(small_buffer_), i_(0) {
+	if (max_size > (sizeof(small_buffer_)/sizeof(small_buffer_[0]))) {
+		list_ = new Tcl_Obj*[max_size];
+	}
+}
+
+inline UI_List::~UI_List() {
+	ASSERT (i_ == 0);
+	if (list_ != small_buffer_) delete [] list_;
+}
+
+inline void UI_List::push_back(const UI_impl::ObjMaker& v) {
+	list_[i_++] = v.get();
+}
+
+inline void UI_List::clear() {
+	ASSERT (i_ == 0);
+	i_ = 0;
+}
+
 
 #endif
