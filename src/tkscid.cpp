@@ -320,20 +320,6 @@ main (int argc, char * argv[])
 /////////////////////////////////////////////////////////////////////
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// findEmptyBase:
-//    returns a number from 0 to MAX_BASES - 1 if an empty
-//    database slot exists; or returns -1 if a maximum number of bases
-//    are already in use.
-int
-findEmptyBase (void)
-{
-    for (int i=0; i < MAX_BASES; i++) {
-        if (! dbList[i].inUse) { return i; }
-    }
-    return -1;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // str_is_prefix:
 //    Provides a fast Tcl command "strIsPrefix" for checking if the
 //    first string provided is a prefix of the second string, without
@@ -429,6 +415,13 @@ scidBaseT* getBase(int baseId) {
     if (baseId < 1 || baseId > MAX_BASES) return 0;
     scidBaseT* res = &(dbList[baseId - 1]);
     return res->inUse ? res : 0;
+}
+
+scidBaseT* DBasePool_findEmpty() {
+    for (int i=0; i < MAX_BASES; i++) {
+        if (! dbList[i].inUse) { return &(dbList[i]); }
+    }
+    return 0;
 }
 
 void switchCurrentBase(scidBaseT* dbase) {
@@ -527,76 +520,6 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     return setIntResult (ti, base_opened (fname) + 1);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_open: takes a database name and opens the database.
-//    If either the index file or game file cannot be opened for
-//    reading and writing, then the database is opened read-only
-//    and will not be alterable.
-int
-sc_base_open (Tcl_Interp * ti, const char* filename)
-{
-    // Check that this base is not already opened:
-    if (base_opened (filename) >= 0) {
-        return errorResult (ti, "The database you selected is already opened.");
-    }
-
-    // Find an empty database slot to use:
-    int newBaseNum = findEmptyBase();
-    if (newBaseNum == -1) return errorResult (ti, ERROR_Full);
-
-    Progress progress = UI_CreateProgress(ti);
-    errorT err = dbList[newBaseNum].Open(FMODE_Both,
-                                         filename, false,
-                                         spellChecker[NAME_PLAYER],
-                                         progress);
-    if (err != OK && err != ERROR_NameDataLoss) {
-        err = dbList[newBaseNum].Open(FMODE_ReadOnly,
-                                      filename, false,
-                                      spellChecker[NAME_PLAYER],
-                                      progress);
-    }
-    if (err == OK || err == ERROR_NameDataLoss) {
-        currentBase = newBaseNum;
-        db = &(dbList[newBaseNum]);
-        setIntResult (ti, newBaseNum + 1);
-    }
-    return UI_Result(ti, err);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_create:
-//    Creates a new empty database.
-int
-sc_base_create (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    // argc should be 3 or 4, e.g. "sc_base create <myfile> [<boolean>]"
-    if (argc != 3  &&  argc != 4) {
-        return errorResult (ti, "No file selected");
-    }
-    bool memoryOnly = false;
-    if (argc == 4) {
-        memoryOnly = strGetBoolean (argv[3]);
-    }
-
-    // Check that this base is not already opened:
-    if (base_opened (argv[2]) >= 0) {
-        return errorResult (ti, "The database you selected is already opened; close it first.");
-    }
-
-    // Find another slot if current slot is used:
-    int newBaseNum = findEmptyBase();
-    if (newBaseNum == -1) return errorResult (ti, ERROR_Full);
-
-    scidBaseT * baseptr = &(dbList[newBaseNum]);
-    errorT err = baseptr->Open((memoryOnly) ? FMODE_Memory : FMODE_Both, argv[2]);
-    if (err != OK) return errorResult(ti, err);
-
-    currentBase = newBaseNum;
-    db = baseptr;
-
-    return UI_Result(ti, OK, newBaseNum + 1);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~

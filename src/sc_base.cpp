@@ -41,6 +41,7 @@
 #include <cstring>
 
 int base_opened (const char * filename);
+scidBaseT* DBasePool_findEmpty();
 scidBaseT* getBase(int baseId);
 void switchCurrentBase(scidBaseT* dbase);
 int InvalidCommand (Tcl_Interp * ti, const char * majorCmd, const char ** minorCmds);
@@ -297,6 +298,41 @@ UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char
 	return UI_Result(ti, OK, res);
 }
 
+/**
+ * sc_base_open() - open/create a SCID database
+ * @filename:    the filename of the database to open/create
+ * @create:      if true create a new database
+ * @fMode:       open the database read-only|read-write|in_memory
+ *
+ * Only database in native SCID format che be opened directly with this function.
+ * Other formats (like pgn for example) call sc_base_open with @fMode == FMODE_MEMORY
+ * and @create == true and then import the games into the memory database.
+ * If @create == false and the file cannot be opened for writing, the database will
+ * be opened read-only.
+ */
+UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false, fileModeT fMode = FMODE_Both)
+{
+	if (base_opened(filename) >= 0) return UI_Result(ti, ERROR_FileInUse);
+
+	scidBaseT* dbase = DBasePool_findEmpty();
+	if (dbase == 0) return UI_Result(ti, ERROR_Full);
+
+	Progress progress = UI_CreateProgress(ti);
+	errorT err = dbase->Open(fMode, filename, create,
+	                         spellChecker[NAME_PLAYER], progress);
+
+	if (err != OK && err != ERROR_NameDataLoss && !create) {
+		err = dbase->Open(FMODE_ReadOnly, filename, false,
+	                      spellChecker[NAME_PLAYER], progress);
+	}
+	progress.report(1,1);
+
+	if (err != OK && err != ERROR_NameDataLoss) return UI_Result(ti, err);
+
+	switchCurrentBase(dbase);
+	return UI_Result(ti, err, currentBase + 1);
+}
+
 
 /**
  * sc_base_sortcache() - create/release a sortcache
@@ -336,9 +372,6 @@ UI_typeRes sc_base_switch (scidBaseT* dbase, UI_type2 ti)
 int sc_base_filename    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_inUse       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 uint sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
-int sc_base_open        (Tcl_Interp* ti, const char * filename);
-int sc_createbase       (Tcl_Interp* ti, const char * filename, scidBaseT * base, bool memoryOnly);
-int sc_base_create      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_count       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_export      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_import      (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
@@ -355,8 +388,8 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 {
     static const char * options [] = {
         "close",           "compact",         "copygames",       "count",
-        "create",          "current",         "duplicates",      "ecoStats",
-        "export",          "extra",           "filename",        
+        "create",          "creatememory",    "current",         "duplicates",
+        "ecoStats",        "export",          "extra",           "filename",        
         "gameflag",        "gamelocation",    "gameslist",       "import",
         "inUse",           "isReadOnly",      "numGames",        "open",
         "piecetrack",      "slot",            "sortcache",       "stats",
@@ -365,8 +398,8 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
     };
     enum {
         BASE_CLOSE,        BASE_COMPACT,      BASE_COPYGAMES,    BASE_COUNT,
-        BASE_CREATE,       BASE_CURRENT,      BASE_DUPLICATES,   BASE_ECOSTATS,
-        BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
+        BASE_CREATE,       BASE_CREATEMEMORY, BASE_CURRENT,      BASE_DUPLICATES,
+        BASE_ECOSTATS,     BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
         BASE_GAMEFLAG,     BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_IMPORT,
         BASE_INUSE,        BASE_ISREADONLY,   BASE_NUMGAMES,     BASE_OPEN,
         BASE_PTRACK,       BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
@@ -382,7 +415,12 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 		return sc_base_count (cd, ti, argc, argv);
 
 	case BASE_CREATE:
-		return sc_base_create (cd, ti, argc, argv);
+		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base create filename");
+		return sc_base_open(ti, argv[2], true, FMODE_Both);
+
+	case BASE_CREATEMEMORY:
+		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base creatememory filename");
+		return sc_base_open(ti, argv[2], true, FMODE_Memory);
 
 	case BASE_CURRENT:
 		return UI_Result(ti, OK, currentBase + 1);

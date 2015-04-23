@@ -166,7 +166,7 @@ proc ::file::Open_ {{fName ""} } {
     set err [::file::Upgrade [file rootname "$fName"] ]
   } elseif {"$ext" == ".pgn" || "$ext" == ".epd"} {
     # PGN or EPD file:
-    if {[catch {sc_base create "$fName" true} ::file::lastOpened]} {
+    if {[catch {sc_base creatememory "$fName"} ::file::lastOpened]} {
       ERROR::MessageBox "$fName\n"
       set err 1
     } else {
