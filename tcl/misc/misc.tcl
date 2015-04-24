@@ -447,7 +447,8 @@ proc closeProgressWindow {} {
 
   grab release $w
   destroy $w
-  after idle "catch {focus $::progressWin_focus}"
+  update idletasks
+  catch {focus $::progressWin_focus}
 }
 
 proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {

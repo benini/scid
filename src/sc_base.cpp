@@ -323,7 +323,7 @@ UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false,
 
 	if (err != OK && err != ERROR_NameDataLoss && !create) {
 		err = dbase->Open(FMODE_ReadOnly, filename, false,
-	                      spellChecker[NAME_PLAYER], progress);
+		                  spellChecker[NAME_PLAYER], progress);
 	}
 	progress.report(1,1);
 
@@ -389,7 +389,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
     static const char * options [] = {
         "close",           "compact",         "copygames",       "count",
         "create",          "creatememory",    "current",         "duplicates",
-        "ecoStats",        "export",          "extra",           "filename",        
+        "ecoStats",        "export",          "extra",           "filename",
         "gameflag",        "gamelocation",    "gameslist",       "import",
         "inUse",           "isReadOnly",      "numGames",        "open",
         "piecetrack",      "slot",            "sortcache",       "stats",

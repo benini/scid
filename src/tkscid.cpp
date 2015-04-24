@@ -380,34 +380,6 @@ base_opened (const char * filename)
             return i;
         }
     }
-
-    // OK, An exact same file name was not found, but we may have compared
-    // absolute path (e.g. from a File Open dialog) with a relative one
-    // (e.g. from a command-line argument).
-    // To check further, return true if two names have the same tail
-    // (part after the last "/"), device and inode number:
-
-    const char * tail = strLastChar (filename, '/');
-    if (tail == NULL) { tail = filename; } else { tail++; }
-    for (int j=0; j < CLIPBASE_NUM; j++) {
-        if (! dbList[j].inUse) { continue; }
-        const char * ftail = strLastChar (dbList[j].getFileName(), '/');
-        if (ftail == NULL) {
-            ftail = dbList[j].getFileName();
-        } else {
-            ftail++;
-        }
-
-        if (strEqual (ftail, tail)) {
-            struct stat s1;
-            struct stat s2;
-            if (stat (ftail, &s1) != 0) { continue; }
-            if (stat (tail, &s2) != 0) { continue; }
-            if (s1.st_dev == s2.st_dev  &&  s1.st_ino == s2.st_ino) {
-                return j;
-            }
-        }
-    }
     return -1;
 }
 
