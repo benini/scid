@@ -40,11 +40,7 @@ PBook::SetHashFlag (Position * pos) {
     uint index = hash >> 3;
     uint mask = 1 << (hash & 7);
     if (HashFlags == NULL) {
-#ifdef WINCE
-        HashFlags = (byte *)my_Tcl_Alloc(sizeof( byte [PBOOK_HASH_BYTES]));
-#else
         HashFlags = new byte [PBOOK_HASH_BYTES];
-#endif
         for (uint i=0; i < PBOOK_HASH_BYTES >> 3; i++) { HashFlags[i] = 0; }
     }
     HashFlags[index] |= mask;
@@ -67,19 +63,11 @@ PBook::AddNodeToList (bookNodeT * node)
     ASSERT (NodeListCount <= NodeListCapacity);
     if (NodeListCount >= NodeListCapacity) {
         NodeListCapacity += NodeListCapacity;
-#ifdef WINCE
-        bookNodePtrT * newlist = (bookNodePtrT *)my_Tcl_Alloc(sizeof( bookNodePtrT [NodeListCapacity]));
-#else
         bookNodePtrT * newlist = new bookNodePtrT [NodeListCapacity];
-#endif
         for (uint i=0; i < NodeListCount; i++) {
             newlist[i] = NodeList[i];
         }
-#ifdef WINCE
-        my_Tcl_Free((char*) NodeList);
-#else
         delete[] NodeList;
-#endif
         NodeList = newlist;
     }
     NodeList[NodeListCount] = node;
@@ -107,11 +95,7 @@ PBook::Init ()
     Stats_TotalLookups = 0;
     Stats_TotalInserts = 0;
     NodeListCapacity = 1000;
-#ifdef WINCE
-    NodeList = (bookNodeT**)my_Tcl_Alloc(sizeof(bookNodePtrT [NodeListCapacity]));
-#else
     NodeList = new bookNodePtrT [NodeListCapacity];
-#endif
     NodeListCount = 0;
     HashFlags = NULL;
 }
@@ -125,31 +109,19 @@ PBook::Clear ()
     for (uint i=0; i <= PBOOK_MAX_MATERIAL; i++) {
         Tree[i]->IterateStart();
         while ((node = Tree[i]->Iterate()) != NULL) {
-#ifdef WINCE
-            my_Tcl_Free((char*) node->data.comment);
-#else
             delete[] node->data.comment;
-#endif
         }
         delete Tree[i];
         Tree[i] = new StrTree<bookDataT>;
     }
     NodeListCount = 0;
-#ifdef WINCE
-    if (FileName) { my_Tcl_Free( FileName ); }
-#else
     if (FileName) { delete[] FileName; }
-#endif
     FileName = NULL;
     NextIndex = 0;
     LeastMaterial = PBOOK_MAX_MATERIAL;
     Stats_PositionBytes = 0;
     Stats_CommentBytes = 0;
-#ifdef WINCE
-    my_Tcl_Free((char*) HashFlags);
-#else
     delete[] HashFlags;
-#endif
 
     HashFlags = NULL;
 }
@@ -157,11 +129,7 @@ PBook::Clear ()
 void
 PBook::SetFileName (const char * fname)
 {
-#ifdef WINCE
-    if (FileName) { my_Tcl_Free( FileName ); }
-#else
     if (FileName) { delete[] FileName; }
-#endif
     if (!fname) { FileName = NULL; return; }
 
     // Allocate space for the filename string:
@@ -341,12 +309,7 @@ PBook::Insert (Position * pos, const char * comment)
     pos->PrintCompactStr (cboard);
     err = Tree[material]->Insert (cboard, &node);
     if (err != OK) {  // Already exists; we overwrite the old data.
-#ifdef WINCE
-        my_Tcl_Free((char*) node->data.comment);
-#else
         delete[] node->data.comment;
-#endif
-
     } else {
         SetHashFlag (pos);
         AddNodeToList (node);
@@ -377,13 +340,8 @@ PBook::Delete (Position * pos)
 
     NodeList[node->data.id] = NULL;
     // Delete the comment string:
-#ifdef WINCE
-        my_Tcl_Free((char*) node->data.comment);
-        my_Tcl_Free((char*) node);
-#else
-        delete[] node->data.comment;
-        delete node;
-#endif
+    delete[] node->data.comment;
+    delete node;
 
     Altered = true;
     return OK;
@@ -431,11 +389,7 @@ PBook::EcoSummary (const char * ecoPrefix, DString * dstr)
 uint
 PBook::StripOpcode (const char * opcode)
 {
-#ifdef WINCE
-    char * searchCode = my_Tcl_Alloc(sizeof( char [strLength(opcode) + 2]));
-#else
     char * searchCode = new char [strLength(opcode) + 2];
-#endif
     strCopy (searchCode, opcode);
     strAppend (searchCode, " ");
     DString dstr;
@@ -471,19 +425,12 @@ PBook::StripOpcode (const char * opcode)
             while (*s != 0  &&  *s != '\n') { s++; }
             if (*s == '\n') { s++; }
             while (*s != 0) { dstr.AddChar (*s);  s++; }
-#ifdef WINCE
-        my_Tcl_Free((char*) node->data.comment);
-#else
-        delete[] node->data.comment;
-#endif
+
+            delete[] node->data.comment;
             node->data.comment = strDuplicate (dstr.Data());
         }
     }
-#ifdef WINCE
-        my_Tcl_Free((char*)searchCode);
-#else
     delete[] searchCode;
-#endif
     return countFound;
 }
 

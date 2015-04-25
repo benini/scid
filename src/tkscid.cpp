@@ -52,15 +52,12 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Global variables:
 
-int currentBase = 0;
-scidBaseT * clipbase = NULL;    // clipbase database.
-SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correction.
-static scidBaseT * db = NULL;          // current database.
 static scidBaseT * dbList = NULL;      // array of database slots.
-static Position * scratchPos = NULL;   // temporary "scratch" position.
 static Game * scratchGame = NULL;      // "scratch" game for searches, etc.
 static PBook * ecoBook = NULL;         // eco classification pbook.
 static OpTable * reports[2] = {NULL, NULL};
+static SpellChecker * spellChecker [NUM_NAME_TYPES] = {NULL};  // Name correction.
+
 static const char * reportTypeName[2] = { "opening", "player" };
 static const uint REPORT_OPENING = 0;
 static const uint REPORT_PLAYER = 1;
@@ -68,11 +65,12 @@ static const uint REPORT_PLAYER = 1;
 static char decimalPointChar = '.';
 static uint htmlDiagStyle = 0;
 
-// Default maximum number of games in the clipbase database:
-const uint CLIPBASE_MAX_GAMES = 1000000;
+//Current database
+int currentBase = 0;
+static scidBaseT* db = NULL;
 
-// Actual current maximum number of games in the clipbase database:
-static uint clipbaseMaxGames = CLIPBASE_MAX_GAMES;
+//Clipbase database
+static scidBaseT* clipbase = NULL;
 
 // MAX_BASES is the maximum number of databases that can be open,
 // including the clipbase database.
@@ -289,8 +287,14 @@ errMsgSearchInterrupted (Tcl_Interp * ti)
 
 void scid_Exit (void*) {
     if (dbList != NULL) delete [] dbList;
-    if (scratchPos != NULL) delete scratchPos;
     if (scratchGame != NULL) delete scratchGame;
+    if (ecoBook != NULL) delete ecoBook;
+    for (size_t i=0, n = sizeof(reports)/sizeof(reports[0]); i<n; i++) {
+        if (reports[i] != NULL) delete reports[i];
+    }
+    for (size_t i=0, n = sizeof(spellChecker)/sizeof(spellChecker[0]); i<n; i++) {
+        if (spellChecker[i] != NULL) delete spellChecker[i];
+    }
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -302,14 +306,13 @@ main (int argc, char * argv[])
     srand (time(NULL));
     
     // Initialise global Scid database variables:
-    scratchPos = new Position;
     scratchGame = new Game;
     dbList = new scidBaseT [MAX_BASES];
     currentBase = 0;
     db = &(dbList[currentBase]);
     // Initialise the clipbase database:
     clipbase = &(dbList[CLIPBASE_NUM]);
-    clipbase->Open();
+    clipbase->Open(FMODE_Memory, "<clipbase>");
     clipbase->idx->SetType (2);
 
     return UI_Main(argc, argv, scid_Exit);
@@ -404,6 +407,10 @@ void switchCurrentBase(scidBaseT* dbase) {
             break;
         }
     }
+}
+
+SpellChecker* SpellChecker_get(nameT n) {
+    return spellChecker[n];
 }
 
 
@@ -3667,15 +3674,15 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
     gamePos->CalcSANStrings (&sanList, SAN_CHECKTEST);
 
     if (showSummary  ||  fullReport  ||  optimalMoves) {
-        scratchPos->CopyFrom (gamePos);
+        Position scratchPos = *gamePos;
 
         for (uint i=0; i < moveList.Size(); i++) {
             simpleMoveT * smPtr = moveList.Get(i);
-            scratchPos->DoSimpleMove (smPtr);
+            scratchPos.DoSimpleMove (smPtr);
             moveFound[i] = false;
             movePrinted[i] = false;
             int newScore = 0;
-            if (scid_TB_Probe (scratchPos, &newScore) == OK) {
+            if (scid_TB_Probe (&scratchPos, &newScore) == OK) {
                 moveFound[i] = true;
                 moveScore[i] = newScore;
                 if (newScore < 0) {
@@ -3688,7 +3695,7 @@ probe_tablebase (Tcl_Interp * ti, int mode, DString * dstr)
             } else {
                 unknownCount++;
             }
-            scratchPos->UndoSimpleMove (smPtr);
+            scratchPos.UndoSimpleMove (smPtr);
         }
     }
 
@@ -5152,26 +5159,27 @@ sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
         return errorResult (ti, "Usage: sc_game startBoard <fenString>");
     }
     const char * str = argv[2];
+    Position scratchPos;
     if (strIsPrefix ("random:", str)) {
         // A "FEN" string that starts with "random:" is interpreted as a
         // material configuration, and a random position with this
         // set of material is generated. For example, "random:krpkr"
         // generates a random legal Rook+Pawn-vs-Rook position.
-        if (scratchPos->Random (str+7) != OK) {
+        if (scratchPos.Random (str+7) != OK) {
             return errorResult (ti, "Invalid material string.");
         }
     } else {
-        if (scratchPos->ReadFromFEN (str) != OK) {
-            if (scratchPos->ReadFromLongStr (str) != OK) {
+        if (scratchPos.ReadFromFEN (str) != OK) {
+            if (scratchPos.ReadFromLongStr (str) != OK) {
                 return errorResult (ti, "Invalid FEN string.");
             }
         }
         // ReadFromFEN checks that there is one king of each side, but it
         // does not check that the position is actually legal:
-        if (! scratchPos->IsLegal()) {
+        if (! scratchPos.IsLegal()) {
             // Illegal position! Find out why to return a useful error:
-           squareT wk = scratchPos->GetKingSquare (WHITE);
-           squareT bk = scratchPos->GetKingSquare (BLACK);
+           squareT wk = scratchPos.GetKingSquare (WHITE);
+           squareT bk = scratchPos.GetKingSquare (BLACK);
            if (square_Adjacent (wk, bk)) {
                return errorResult (ti, "Illegal position: adjacent kings.");
            }
@@ -5179,7 +5187,7 @@ sc_game_startBoard (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
            return errorResult (ti, "Illegal position: enemy king in check.");
         }
     }
-    db->game->SetStartPos (scratchPos);
+    db->game->SetStartPos(&scratchPos);
     db->gameAltered = true;
     return TCL_OK;
 }
@@ -6112,10 +6120,10 @@ int
 sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     static const char * options [] = {
-        "clipbase", "elo", "games", "nags", "year", NULL
+        "elo", "games", "nags", "year", NULL
     };
     enum {
-        LIM_CLIPBASE, LIM_ELO, LIM_GAMES, LIM_NAGS, LIM_YEAR
+        LIM_ELO, LIM_GAMES, LIM_NAGS, LIM_YEAR
     };
     int index = -1;
     int result = 0;
@@ -6123,10 +6131,6 @@ sc_info_limit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (argc == 3) { index = strUniqueMatch (argv[2], options); }
 
     switch (index) {
-    case LIM_CLIPBASE:
-        result = clipbaseMaxGames;
-        break;
-
     case LIM_ELO:
         result = MAX_ELO;
         break;
@@ -7240,9 +7244,6 @@ sc_pos_probe_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
 {
     const char * usage = "Usage: sc_pos probe board <square>";
 
-    Position * pos = scratchPos;
-    pos->CopyFrom (db->game->GetCurrentPos());
-
     if (argc != 4) { return errorResult (ti, usage); }
 
     // Try to read the square parameter as algebraic ("h8") or numeric (63):
@@ -7256,16 +7257,17 @@ sc_pos_probe_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
          return errorResult (ti, usage);
     }
 
-    const pieceT * board = pos->GetBoard();
+    Position pos = *(db->game->GetCurrentPos());
+    const pieceT * board = pos.GetBoard();
     if (board[sq] == EMPTY) { return TCL_OK; }
 
     for (squareT toSq = A1; toSq <= H8; toSq++) {
         const char * result = "";
-        if (pos->RelocatePiece (sq, toSq) != OK) {
+        if (pos.RelocatePiece (sq, toSq) != OK) {
             result = "X";
         } else {
             int score = 0;
-            if (scid_TB_Probe (pos, &score) != OK) {
+            if (scid_TB_Probe (&pos, &score) != OK) {
                 result = "?";
             } else {
                 if (score > 0) {
@@ -7276,7 +7278,7 @@ sc_pos_probe_board (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
                     result = "=";
                 }
             }
-            pos->RelocatePiece (toSq, sq);
+            pos.RelocatePiece (toSq, sq);
         }
         Tcl_AppendResult (ti, result, NULL);
     }
@@ -9953,12 +9955,12 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
             node->ecoCode = 0;
             if (ecoBook != NULL) {
-                scratchPos->CopyFrom (db->game->GetCurrentPos());
+                Position tmpPos = *(db->game->GetCurrentPos());
                 if (node->sm.from != NULL_SQUARE) {
-                    scratchPos->DoSimpleMove (&(node->sm));
+                    tmpPos.DoSimpleMove (&(node->sm));
                 }
                 dstr.Clear();
-                if (ecoBook->FindOpcode (scratchPos, "eco", &dstr) == OK) {
+                if (ecoBook->FindOpcode (&tmpPos, "eco", &dstr) == OK) {
                     node->ecoCode = eco_FromString (dstr.Data());
                 }
             }

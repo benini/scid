@@ -74,33 +74,12 @@ class PBook
     void AddNodeToList (bookNodeT * node);
 
   public:
-#ifdef WINCE
-  void* operator new(size_t sz) {
-    void* m = my_Tcl_Alloc(sz);
-    return m;
-  }
-  void operator delete(void* m) {
-    my_Tcl_Free((char*)m);
-  }
-  void* operator new [] (size_t sz) {
-    void* m = my_Tcl_AttemptAlloc(sz);
-    return m;
-  }
-
-  void operator delete [] (void* m) {
-    my_Tcl_Free((char*)m);
-  }
-
-#endif 
     void    Init();
     void    Clear();
 
     PBook()   { Init(); }
-#ifdef WINCE
-    ~PBook()  { Clear(); my_Tcl_Free((char*) NodeList); }
-#else
-    ~PBook()  { Clear(); delete NodeList; }
-#endif
+    ~PBook()  { Clear(); delete [] NodeList; }
+
     const char *  GetFileName () { return (FileName == NULL ? "" : FileName); }
     void    SetFileName (const char * filename);
     bool    IsAltered() { return Altered; }
@@ -130,11 +109,7 @@ class PBook
     errorT  FindSummary (Position * pos, DString * target);
     uint    StripOpcode (const char * opcode);
     void    EcoSummary (const char * ecoPrefix, DString * dstr);
-#ifdef WINCE
-    void    DumpStats (/*FILE **/Tcl_Channel fp);
-#else
     void    DumpStats (FILE * fp);
-#endif
     uint    NumPositionBytes () { return Stats_PositionBytes; }
     uint    NumCommentBytes ()  { return Stats_CommentBytes; }
 

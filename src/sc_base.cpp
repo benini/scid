@@ -45,11 +45,10 @@ scidBaseT* DBasePool_findEmpty();
 scidBaseT* getBase(int baseId);
 void switchCurrentBase(scidBaseT* dbase);
 int InvalidCommand (Tcl_Interp * ti, const char * majorCmd, const char ** minorCmds);
+SpellChecker* SpellChecker_get(nameT n);
 
 //TODO: avoid using global vars
-extern scidBaseT* clipbase;
 extern int currentBase;
-extern SpellChecker* spellChecker[NUM_NAME_TYPES];
 
 
 /**
@@ -57,7 +56,7 @@ extern SpellChecker* spellChecker[NUM_NAME_TYPES];
  */
 UI_typeRes sc_base_close(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
 {
-	if (dbase == clipbase) return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
+	if (strEqual(dbase->getFileName(), "<clipbase>")) return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
 	return UI_Result(ti, dbase->Close());
 }
 
@@ -77,7 +76,7 @@ UI_typeRes sc_base_compact(scidBaseT* dbase, UI_type2 ti, int argc, const char**
 	const char* usage = "Usage: sc_base compact baseId [stats]";
 
 	if (argc == 3) {
-		errorT res = dbase->compact(spellChecker[NAME_PLAYER], UI_CreateProgress(ti));
+		errorT res = dbase->compact(SpellChecker_get(NAME_PLAYER), UI_CreateProgress(ti));
 		return UI_Result(ti, res);
 	} else if (argc == 4 && std::strcmp("stats", argv[3]) == 0) {
 		uint n_deleted, n_unused, n_sparse, n_badNameId;
@@ -319,11 +318,11 @@ UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false,
 
 	Progress progress = UI_CreateProgress(ti);
 	errorT err = dbase->Open(fMode, filename, create,
-	                         spellChecker[NAME_PLAYER], progress);
+	                         SpellChecker_get(NAME_PLAYER), progress);
 
 	if (err != OK && err != ERROR_NameDataLoss && !create) {
 		err = dbase->Open(FMODE_ReadOnly, filename, false,
-		                  spellChecker[NAME_PLAYER], progress);
+		                  SpellChecker_get(NAME_PLAYER), progress);
 	}
 	progress.report(1,1);
 
