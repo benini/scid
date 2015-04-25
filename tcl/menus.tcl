@@ -1613,5 +1613,40 @@ proc configInformant {} {
   bind $w <Configure> "recordWinSize $w"
 }
 
+# ################################################################################
+# Set the delay between moves in options menu
+################################################################################
+proc setAutoplayDelay {} {
+    global autoplayDelay tempdelay
+    set tempdelay [expr {int($autoplayDelay / 1000.0)}]
+    set w .apdialog
+    if { [winfo exists $w] } { focus $w ; return }
+    toplevel $w
+    ::setTitle $w "Scid"
+    wm resizable $w 0 0
+    ttk::label $w.label -text $::tr(AnnotateTime:)
+    pack $w.label -side top -pady 5 -padx 5
+    ttk::spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
+        -validate key -validatecommand { return [string is digit %S] }
+    pack $w.spDelay -side top -pady 5
+    
+    set b [ttk::frame $w.buttons]
+    pack $b -side top -fill x
+    ttk::button $b.cancel -text $::tr(Cancel) -command {
+        destroy .apdialog
+        focus .
+    }
+    ttk::button $b.ok -text "OK" -command {
+        if {$tempdelay < 0.1} { set tempdelay 0.1 }
+        set autoplayDelay [expr {int($tempdelay * 1000)}]
+        destroy .apdialog
+        focus .
+    }
+    pack $b.cancel $b.ok -side right -padx 5 -pady 5
+    bind $w <Escape> { .apdialog.buttons.cancel invoke }
+    bind $w <Return> { .apdialog.buttons.ok invoke }
+    focus $w.spDelay
+}
+
 ### End of file: menus.tcl
 

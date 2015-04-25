@@ -590,6 +590,7 @@ set pgnStyle(Vars) 1
 # Autoplay and animation delays in milliseconds:
 set autoplayDelay 5000
 set animateDelay 200
+set autoplayMode 0
 
 # Blunder Threshold
 set blunderThreshold 1.0

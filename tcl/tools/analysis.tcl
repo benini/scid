@@ -678,6 +678,152 @@ proc ::enginelist::edit {index} {
 # ################################################################################
 #
 ################################################################################
+proc autoplay {} {
+    global autoplayDelay autoplayMode annotateMode analysis
+    
+    # Was autoplay stopped by the user since the last time the timer ran out?
+    # If so, silently exit this handler
+    #
+    if { $autoplayMode == 0 } {
+        return
+    }
+    
+    # Add annotation if needed
+    #
+    if { $annotateMode } {
+        addAnnotation
+    }
+    
+    if { $::initialAnalysis } {
+        # Stop analysis if it is running
+        # We do not want initial super-accuracy
+        #
+        stopEngineAnalysis 1
+        set annotateMode 1
+        # First do the book analysis (if this is configured)
+        # The latter condition is handled by the operation itself
+        set ::wentOutOfBook 0
+        bookAnnotation 1
+        # Start the engine
+        startEngineAnalysis 1 1
+    
+    # Autoplay comes in two flavours:
+    # + It can run through a game, with or without annotation
+    # + It can be annotating just opening sections of games
+    # See if such streak ends here and now
+    #
+    } elseif { [sc_pos isAt end] || ($annotateMode && $::isBatchOpening && ([sc_pos moveNumber] > $::isBatchOpeningMoves)) } {
+        
+        # Stop the engine
+        #
+        stopEngineAnalysis 1
+        
+        # Are we running a batch analysis?
+        #
+        if { $annotateMode && $::isBatch } {
+            # First replace the game we just finished
+            #
+            set gameNo [sc_game number]
+            if { $gameNo != 0 } {
+                sc_game save $gameNo
+            }
+            
+            # See if we must advance to the next game
+            #
+            if { $gameNo < $::batchEnd } {
+                incr gameNo
+                sc_game load $gameNo
+                updateTitle
+                updateBoard -pgn
+                # First do book analysis
+                #
+                set ::wentOutOfBook 0
+                bookAnnotation 1
+                # Start with initial assessment of the position
+                #
+                set ::initialAnalysis 1
+                # Start the engine
+                #
+                startEngineAnalysis 1 1
+            } else {
+                # End of batch, stop
+                #
+                cancelAutoplay
+                return
+            }
+        } else {
+            # Not in a batch, just stop
+            #
+            cancelAutoplay
+            return
+        }
+    } elseif { $annotateMode && $::isAnnotateVar } {
+        # A construction to prune empty variations here and now
+        # It makes no sense to discover only after some engine
+        # time that we entered a dead end.
+        #
+        set emptyVar 1
+        while { $emptyVar } {
+            set emptyVar 0
+            # Are we at the end of a variation?
+            # If so, pop back into the parent
+            #
+            if { [sc_pos isAt vend] } {
+                sc_var exit
+                set lastVar [::popAnalysisData]
+            } else {
+                set lastVar [sc_var count]
+            }
+            # Is there a subvariation here?
+            # If so, enter it after pushing where we are
+            #
+            if { $lastVar > 0 } {
+                incr lastVar -1
+                sc_var enter $lastVar
+                ::pushAnalysisData $lastVar
+                # Check if this line is empty
+                # If so, we will pop back immediately in the next run
+                #
+                if { [sc_pos isAt vstart] && [sc_pos isAt vend] } {
+                    set emptyVar 1
+                } else {
+                    # We are in a new line!
+                    # Tell the annotator (he might be interested)
+                    #
+                    updateBoard -pgn
+                    set ::atStartOfLine 1
+                }
+            } else {
+                # Just move ahead following the current line
+                #
+                ::move::Forward
+            }
+        }
+    } else {
+        # Just move ahead following the main line
+        #
+        ::move::Forward
+    }
+    
+    # Respawn
+    #
+    after $autoplayDelay autoplay
+}
+
+proc startAutoplay { } {
+    set ::autoplayMode 1
+    after 100 autoplay
+}
+
+proc cancelAutoplay {} {
+    set ::autoplayMode 0
+    set ::annotateMode 0
+    set ::annotateModeButtonValue 0
+    after cancel autoplay
+	::notify::PosChanged
+}
+
+
 proc configAnnotation {} {
     global autoplayDelay tempdelay blunderThreshold annotateModeButtonValue
     
@@ -694,13 +840,13 @@ proc configAnnotation {} {
     # running, stop the annotation
     #
     if { ! $annotateModeButtonValue } {
-        toggleAutoplay
+        cancelAutoplay
         return
     }
     
     trace variable blunderThreshold w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
     
-    set tempdelay [expr {$autoplayDelay / 1000.0}]
+    set tempdelay [expr {int($autoplayDelay / 1000.0)}]
     toplevel $w
     ::setTitle $w "Scid"
     wm resizable $w 0 0
@@ -708,7 +854,9 @@ proc configAnnotation {} {
     pack $f -expand 1
     ttk::label $f.label -text $::tr(AnnotateTime:)
     pack $f.label -side top
-    spinbox $f.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1
+    ttk::spinbox $f.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 999 -increment 1 \
+        -validate key -validatecommand { return [string is digit %S] }
+
     pack $f.spDelay -side top -pady 5
     bind $w <Escape> { .configAnnotation.f.buttons.cancel invoke }
     bind $w <Return> { .configAnnotation.f.buttons.ok invoke }
@@ -836,7 +984,7 @@ proc configAnnotation {} {
         # position. So: no comments yet, please!
         set ::initialAnalysis 1
         # And start the time slicer
-        toggleAutoplay
+        startAutoplay
     }
     pack $f.buttons.cancel $f.buttons.ok -side right -padx 5 -pady 5
     focus $f.spDelay
@@ -1545,7 +1693,7 @@ proc destroyAnalysisWin {{n 1}} {
     if {$::finishGameMode} { toggleFinishGame }
     
     if { $n == 1 && $annotateMode } {
-        toggleAutoplay
+        cancelAutoplay
     }
 
     # Cancel scheduled commands

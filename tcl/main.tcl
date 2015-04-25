@@ -125,6 +125,11 @@ proc updateStatusBar {} {
     # Check if translations have not been set up yet:
     if {! [info exists ::tr(Database)]} { return }
 
+    if {$::autoplayMode == 1} {
+        ::board::setInfoAlert .main.board "Autoplay:" [tr Stop] "red" "cancelAutoplay"
+        return
+    }
+
     if {[info exists ::guessedAddMove]} {
         set ::gameLastMove [lindex $::guessedAddMove 1]
         ::board::setInfoAlert .main.board [lindex $::guessedAddMove 0] "\[click to change\]" "blue" ".main.menuaddchoice"
@@ -187,9 +192,11 @@ proc updateMainToolbar {} {
   if {[sc_pos isAt end] || [sc_pos isAt vend]} {
     ::board::setButtonCmd .main.board forward ""
     catch { unset ::gameInfoBar(tb_BD_End) }
+    catch { unset ::gameInfoBar(tb_BD_Autoplay) }
   } else {
     ::board::setButtonCmd .main.board forward "::move::Forward"
     set ::gameInfoBar(tb_BD_End) "::move::End"
+    set ::gameInfoBar(tb_BD_Autoplay) "startAutoplay"
   }
 
   if {[sc_var level] == 0} {
@@ -1046,213 +1053,9 @@ proc backSquare {} {
     ::utils::sound::AnnounceBack
 }
 
-
-##
-## Auto-playing of moves:
-##
-set autoplayMode 0
-
-set tempdelay 0
-trace variable tempdelay w {::utils::validate::Regexp {^[0-9]*\.?[0-9]*$}}
-# ################################################################################
-# Set the delay between moves in options menu
-################################################################################
-proc setAutoplayDelay {} {
-    global autoplayDelay tempdelay
-    set tempdelay [expr {$autoplayDelay / 1000.0}]
-    set w .apdialog
-    if { [winfo exists $w] } { focus $w ; return }
-    toplevel $w
-    ::setTitle $w "Scid"
-    wm resizable $w 0 0
-    ttk::label $w.label -text $::tr(AnnotateTime:)
-    pack $w.label -side top -pady 5 -padx 5
-    spinbox $w.spDelay -background white -width 4 -textvariable tempdelay -from 1 -to 300 -increment 1
-    pack $w.spDelay -side top -pady 5
-    
-    set b [ttk::frame $w.buttons]
-    pack $b -side top -fill x
-    ttk::button $b.cancel -text $::tr(Cancel) -command {
-        destroy .apdialog
-        focus .
-    }
-    ttk::button $b.ok -text "OK" -command {
-        if {$tempdelay < 0.1} { set tempdelay 0.1 }
-        set autoplayDelay [expr {int($tempdelay * 1000)}]
-        destroy .apdialog
-        focus .
-    }
-    pack $b.cancel $b.ok -side right -padx 5 -pady 5
-    bind $w <Escape> { .apdialog.buttons.cancel invoke }
-    bind $w <Return> { .apdialog.buttons.ok invoke }
-    focus $w.spDelay
-}
 ################################################################################
 #
 ################################################################################
-proc toggleAutoplay { } {
-    global autoplayMode autoplayDelay
-    if {$autoplayMode == 0} {
-        set autoplayMode 1
-        # Change the autoplay icon in the main window
-        #
-        # Start with some delay
-        # Only to spawn the autoplay on a new thread
-        #
-        after 500 autoplay
-    } else {
-        cancelAutoplay
-    }
-}
-
-################################################################################
-#
-################################################################################
-proc autoplay {} {
-    global autoplayDelay autoplayMode annotateMode analysis
-    
-    # Was autoplay stopped by the user since the last time the timer ran out?
-    # If so, silently exit this handler
-    #
-    if { $autoplayMode == 0 } {
-        return
-    }
-    
-    # Add annotation if needed
-    #
-    if { $annotateMode } {
-        addAnnotation
-    }
-    
-    if { $::initialAnalysis } {
-        # Stop analysis if it is running
-        # We do not want initial super-accuracy
-        #
-        stopEngineAnalysis 1
-        set annotateMode 1
-        # First do the book analysis (if this is configured)
-        # The latter condition is handled by the operation itself
-        set ::wentOutOfBook 0
-        bookAnnotation 1
-        # Start the engine
-        startEngineAnalysis 1 1
-    
-    # Autoplay comes in two flavours:
-    # + It can run through a game, with or without annotation
-    # + It can be annotating just opening sections of games
-    # See if such streak ends here and now
-    #
-    } elseif { [sc_pos isAt end] || ($annotateMode && $::isBatchOpening && ([sc_pos moveNumber] > $::isBatchOpeningMoves)) } {
-        
-        # Stop the engine
-        #
-        stopEngineAnalysis 1
-        
-        # Are we running a batch analysis?
-        #
-        if { $annotateMode && $::isBatch } {
-            # First replace the game we just finished
-            #
-            set gameNo [sc_game number]
-            if { $gameNo != 0 } {
-                sc_game save $gameNo
-            }
-            
-            # See if we must advance to the next game
-            #
-            if { $gameNo < $::batchEnd } {
-                incr gameNo
-                sc_game load $gameNo
-                updateTitle
-                updateBoard -pgn
-                # First do book analysis
-                #
-                set ::wentOutOfBook 0
-                bookAnnotation 1
-                # Start with initial assessment of the position
-                #
-                set ::initialAnalysis 1
-                # Start the engine
-                #
-                startEngineAnalysis 1 1
-            } else {
-                # End of batch, stop
-                #
-                cancelAutoplay
-                return
-            }
-        } else {
-            # Not in a batch, just stop
-            #
-            cancelAutoplay
-            return
-        }
-    } elseif { $annotateMode && $::isAnnotateVar } {
-        # A construction to prune empty variations here and now
-        # It makes no sense to discover only after some engine
-        # time that we entered a dead end.
-        #
-        set emptyVar 1
-        while { $emptyVar } {
-            set emptyVar 0
-            # Are we at the end of a variation?
-            # If so, pop back into the parent
-            #
-            if { [sc_pos isAt vend] } {
-                sc_var exit
-                set lastVar [::popAnalysisData]
-            } else {
-                set lastVar [sc_var count]
-            }
-            # Is there a subvariation here?
-            # If so, enter it after pushing where we are
-            #
-            if { $lastVar > 0 } {
-                incr lastVar -1
-                sc_var enter $lastVar
-                ::pushAnalysisData $lastVar
-                # Check if this line is empty
-                # If so, we will pop back immediately in the next run
-                #
-                if { [sc_pos isAt vstart] && [sc_pos isAt vend] } {
-                    set emptyVar 1
-                } else {
-                    # We are in a new line!
-                    # Tell the annotator (he might be interested)
-                    #
-                    updateBoard -pgn
-                    set ::atStartOfLine 1
-                }
-            } else {
-                # Just move ahead following the current line
-                #
-                ::move::Forward
-            }
-        }
-    } else {
-        # Just move ahead following the main line
-        #
-        ::move::Forward
-    }
-    
-    # Respawn
-    #
-    after $autoplayDelay autoplay
-}
-################################################################################
-#
-################################################################################
-proc cancelAutoplay {} {
-    global autoplayMode annotateMode annotateModeButtonValue
-    set autoplayMode 0
-    set annotateMode 0
-    set annotateModeButtonValue 0
-    after cancel autoplay
-}
-################################################################################
-#
-################################################################################
-
 proc undoFeature {action} {
     if {$action == "save"} {
         sc_game undoPoint
@@ -1368,7 +1171,6 @@ proc CreateMainBoard { {w} } {
   bind $w <space> moveEntry_Complete
   bind $w <ButtonRelease> "focus $w"
   bind $w <Configure> {+::resizeMainBoard }
-  bind $w <Escape> { cancelAutoplay }
   bind $w <Return> { #TODO: improve this
     if {[winfo exists .analysisWin1] && $analysis(analyzeMode1)} {
         .analysisWin1.b1.move invoke
