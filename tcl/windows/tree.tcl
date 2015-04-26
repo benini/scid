@@ -57,6 +57,8 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     return
   }
 
+  if {[catch {sc_base filename $baseNumber} fname]} { return }
+
   if {$baseNumber == [sc_base current]} { set ::treeWin 1 }
   set w .treeWin$baseNumber
   
@@ -65,7 +67,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   setWinSize $w
   
   # Set the tree window title now:
-  ::setTitle $w "Scid: [tr WindowsTree] $baseNumber [file tail [sc_base filename $baseNumber] ]"
+  ::setTitle $w "Scid: [tr WindowsTree] $baseNumber [file tail $fname]"
   set ::treeWin$baseNumber 1
   set tree(training$baseNumber) 0
   set tree(autorefresh$baseNumber) 1
@@ -365,7 +367,7 @@ proc ::tree::refresh { { baseNumber "" }} {
   set tree(refresh) 1
   if {$baseNumber == "" } {
     sc_tree search -cancel all
-    for {set i [sc_base count total] } {$i > 0} {incr i -1} {
+    foreach i [sc_base list] {
       if { [::tree::dorefresh $i] == "canceled" } { break }
     }
   } else {
@@ -1012,7 +1014,7 @@ proc ::tree::primeWithGame { { fillMask 0 } } {
   set ::tree::cancelPrime 0
   progressWindow "Scid: [tr TreeFileFill]" "$::tree::totalMoves moves" $::tr(Cancel) {
     set ::tree::cancelPrime 1
-    for {set i 1 } {$i <= [sc_base count total]} {incr i} {
+    foreach i [sc_base list] {
       catch { .treeWin$i.buttons.stop invoke }
     }
   }
@@ -1191,7 +1193,7 @@ proc ::tree::mask::open { {filename ""} } {
       }
       
       # update recent masks menu entry
-      for {set i 1} {$i <= [sc_base count total]} {incr i} {
+      foreach i [sc_base list] {
         set w .treeWin$i
         if { [winfo exists $w] } {
           $w.menu.mask.recent delete 0 end

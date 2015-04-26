@@ -75,10 +75,9 @@ class PBook
 
   public:
     void    Init();
-    void    Clear();
 
     PBook()   { Init(); }
-    ~PBook()  { Clear(); delete [] NodeList; }
+    ~PBook();
 
     const char *  GetFileName () { return (FileName == NULL ? "" : FileName); }
     void    SetFileName (const char * filename);

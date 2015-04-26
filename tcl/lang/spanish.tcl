@@ -1332,8 +1332,7 @@ translate S CompactNames {Compactar archivo de nombres}
 translate S CompactGames {Compactar archivo de partidas}
 translate S NoUnusedNames "No hay nombres sin usar, por tanto el nombre del fichero está ya totalmente compactado."
 translate S NoUnusedGames "El fichero ya está totalmente compactado."
-translate S NameFileCompacted {El fichero de nombre para la base de datos "[file tail [sc_base filename]]" fue compactado.}
-translate S GameFileCompacted {El fichero de partidas para la base de datos "[file tail [sc_base filename]]" fue compactado.}
+translate S GameFileCompacted {El fichero de partidas para la base de datos fue compactado.}
 
 # Sorting:
 translate S SortCriteria {Criterio}

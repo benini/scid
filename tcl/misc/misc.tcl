@@ -378,7 +378,7 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
 
   if {! [winfo exists $::progressCanvas(name)] || $::progressCanvas(cancel)} {
     #Interrupted
-    break
+    return -code break
   }
 
   if {$estimated > 1} { eval $::progressCanvas(show) }
@@ -455,14 +455,12 @@ proc CreateSelectDBWidget {{w} {varname} {ref_base ""} {readOnly 1}} {
   set listbases {}
   if {$ref_base == ""} { set ref_base [sc_base current] }
   set selected 0
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
-    if {[sc_base inUse $i]} {
+  foreach i [sc_base list] {
       if {$readOnly || ![sc_base isReadOnly $i]} {
         set fname [file tail [sc_base filename $i]]
         if {$i == $ref_base} { set selected [llength $listbases] }
         lappend listbases "$i: $fname"
       }
-    }
   }
   ttk::combobox $w.lb -textvariable $varname -values $listbases
   $w.lb current $selected

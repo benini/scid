@@ -1288,8 +1288,7 @@ translate F CompactNames {Compacter le fichier de noms}
 translate F CompactGames {Compacter le fichier de parties}
 translate F NoUnusedNames "Il n'y a pas de noms inutilisés, le fichier de noms est donc déjà compacté."
 translate F NoUnusedGames "Le fichier des parties est déjà compacté."
-translate F NameFileCompacted {Le fichier de noms de la base "[file tail [sc_base filename]]" a été compacté.}
-translate F GameFileCompacted {Le fichier de parties de la base "[file tail [sc_base filename]]" a été compacté.}
+translate F GameFileCompacted {Le fichier de parties de la base a été compacté.}
 
 # Sorting:
 translate F SortCriteria {Critère}

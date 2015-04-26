@@ -1311,8 +1311,7 @@ translate G CompactNames {Συμπιεσμένο αρχείο ονομάτων}
 translate G CompactGames {Συμπιεσμένο αρχείο παρτίδων}
 translate G NoUnusedNames "Δεν υπάρχουν ονόματα που δεν χρησιμοποιούνται, γι' αυτό το αρχείο ονομάτων είναι πλήρως συμπιεσμένο."
 translate G NoUnusedGames "Το αρχείο παρτίδων είναι ήδη πλήρως συμπιεσμένο."
-translate G NameFileCompacted {Το αρχείο ονομάτων για την βάση δεδομένων "[file tail [sc_base filename]]" συμπιέστηκε.}
-translate G GameFileCompacted {Το αρχείο παρτίδων για την βάση δεδομένων "[file tail [sc_base filename]]" συμπιέστηκε.}
+translate G GameFileCompacted {Το αρχείο παρτίδων για την βάση δεδομένων συμπιέστηκε.}
 
 # Sorting:
 translate G SortCriteria {Κριτήρια}

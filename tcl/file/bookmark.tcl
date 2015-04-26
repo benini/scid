@@ -111,12 +111,11 @@ proc ::bookmarks::RefreshMenu {menu} {
 #   It must be in an open database, not a PGN file, and not game number 0.
 #
 proc ::bookmarks::CanAdd {} {
-  if {! [sc_base inUse]} { return 0 }
   if {[sc_game number] == 0} { return 0 }
-  if {[sc_base current] == $::clipbase_db} { return 0 }
-  if {[file pathtype [sc_base filename]] != "absolute"} { return 0 }
+  if {$::curr_db == $::clipbase_db} { return 0 }
+  set fname [sc_base filename $::curr_db]
   foreach suffix {.pgn .PGN .pgn.gz} {
-    if {[string match "*$suffix" [sc_base filename]]} { return 0 }
+    if {[string match "*$suffix" "$fname"]} { return 0 }
   }
   return 1
 }
@@ -148,7 +147,7 @@ proc ::bookmarks::AddCurrent {{folder 0}} {
 #
 proc ::bookmarks::New {type} {
   if {$type == "folder"} { return [list "f" ""] }
-  set text "[file tail [sc_base filename]]: [sc_game info result], "
+  set text "[file tail [sc_base filename $::curr_db]]: [sc_game info result], "
   append text "[::utils::string::Surname [sc_game info white]] - "
   append text "[::utils::string::Surname [sc_game info black]], "
   append text "[::utils::string::CityName [sc_game info site]] "
@@ -157,7 +156,7 @@ proc ::bookmarks::New {type} {
   append text "[sc_game info year]"
   set list [list "g" $text]
   sc_game pgn
-  lappend list [sc_base filename] [sc_game number] [sc_pos pgnOffset]
+  lappend list [sc_base filename ::curr_db] [sc_game number] [sc_pos pgnOffset]
   lappend list [sc_game info white] [sc_game info black]
   lappend list [sc_game info year] [sc_game info site]
   lappend list [sc_game info round] [sc_game info result]

@@ -14,8 +14,7 @@ proc ::file::Exit {}  {
   set unsavedCount 0
   set savedBase [sc_base current]
   set msg ""
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
-    if {![sc_base inUse $i]} { continue }
+  foreach i [sc_base list] {
     sc_base switch $i
     if {[sc_game altered] && ![sc_base isReadOnly $i]} {
       if {$unsavedCount == 0} {
@@ -23,7 +22,7 @@ proc ::file::Exit {}  {
         append msg "\n\n"
       }
       incr unsavedCount
-      set fname [file tail [sc_base filename]]
+      set fname [file tail [sc_base filename $i]]
       set g [sc_game number]
       append msg "   Base $i: $fname "
       append msg "($::tr(game) $g)"
@@ -92,10 +91,11 @@ proc ::file::New {} {
   if {[file extension $fName] == ".si4"} {
     set fName [file rootname $fName]
   }
-  if {[catch {sc_base create $fName} result]} {
+  if {[catch {sc_base create $fName} baseId]} {
     ERROR::MessageBox "$fName\n"
     return
   }
+  set ::curr_db $baseId
   set ::initialDir(base) [file dirname $fName]
   ::recentFiles::add "$fName.si4"
   ::notify::GameChanged
@@ -153,7 +153,7 @@ proc ::file::Open_ {{fName ""} } {
 
   set tmpName $fName
   if {[file extension $tmpName] == ".si4"} { set tmpName [file rootname $tmpName] }
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
+  foreach i [sc_base list] {
     if {$tmpName == [sc_base filename $i]} {
       tk_messageBox -title "Scid: opening file" -message "The database you selected is already opened."
       return 1
@@ -261,20 +261,23 @@ proc ::file::Close {{base -1}} {
   # Close Tree window whenever a base is closed/switched:
   if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
 
-  sc_base close $base
-  ::game::HistoryRemoveDB $base
+  if {[catch {sc_base close $base}]} {
+    ERROR::MessageBox
+  } else {
+    ::game::HistoryRemoveDB $base
     
-  # If base to close was the current one, reset to clipbase
-  if { $current == $base } { set current 9 }
+    # If base to close was the current one, reset to clipbase
+    if { $current == $base } { set current 9 }
+  }
 
   # Now switch back to the original base
   ::file::SwitchToBase $current
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
-  if {![sc_base inUse $b]} { return }
-  if {[sc_base current] == $b} { return }
-  sc_base switch $b
+  if {$::curr_db == $b} { return }
+  if {[catch {sc_base switch $b} res]} { return }
+  set ::curr_db $res
   if {$saveHistory == 1} { ::game::HistoryDatabaseSwitch }
   # Close email window when a base is switched:
   if {[winfo exists .emailWin]} { destroy .emailWin }

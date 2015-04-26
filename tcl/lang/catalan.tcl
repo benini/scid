@@ -1313,8 +1313,7 @@ translate K CompactNames {Compactar arxiu de noms}
 translate K CompactGames {Compactar arxiu de partides}
 translate K NoUnusedNames "No hi han noms sense utilitzar, per tant l'arxiu de noms ja està compactat."
 translate K NoUnusedGames "L'arxiu ja està totalment compactat."
-translate K NameFileCompacted {L'arxiu de noms per la base de dades "[file tail [sc_base filename]]" ha estat compactat.}
-translate K GameFileCompacted {L'arxiu de partides de la base de dades "[file tail [sc_base filename]]" ha estat compactada.}
+translate K GameFileCompacted {L'arxiu de partides de la base de dades ha estat compactada.}
 
 # Sorting:
 translate K SortCriteria {Criteri}

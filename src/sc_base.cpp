@@ -16,9 +16,26 @@
 * along with Scid. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "ui_tcltk.h"
+#include "common.h"
+#include "misc.h"
+#include "scidbase.h"
+#include <string>
+#include <cstring>
+
+scidBaseT*       DBasePool_find(const char* filename);
+scidBaseT*       DBasePool_findEmpty();
+scidBaseT*       DBasePool_getBase(int baseId);
+std::vector<int> DBasePool_getBasesId();
+int switchCurrentBase(scidBaseT* dbase);
+int InvalidCommand (Tcl_Interp * ti, const char * majorCmd, const char ** minorCmds);
+SpellChecker* SpellChecker_get(nameT n);
+
+//TODO: delete this
+extern int currentBase;
 
 /*
-* This "sc_base" function are used by the UI to access the databases
+* This "sc_base" functions are used by the UI to access the databases
 * To hide database internal complexity this functions should only parse arguments and call other functions/objects
 *
 * Command names are case sensitive
@@ -33,30 +50,13 @@
 *     -> returns the list of the first 10 games of the database
 */
 
-#include "ui_tcltk.h"
-#include "common.h"
-#include "misc.h"
-#include "scidbase.h"
-#include <string>
-#include <cstring>
-
-int base_opened (const char * filename);
-scidBaseT* DBasePool_findEmpty();
-scidBaseT* getBase(int baseId);
-void switchCurrentBase(scidBaseT* dbase);
-int InvalidCommand (Tcl_Interp * ti, const char * majorCmd, const char ** minorCmds);
-SpellChecker* SpellChecker_get(nameT n);
-
-//TODO: avoid using global vars
-extern int currentBase;
-
 
 /**
  * sc_base_close() - close a database
  */
 UI_typeRes sc_base_close(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
 {
-	if (strEqual(dbase->getFileName(), "<clipbase>")) return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
+	if (dbase->getFileName() == "<clipbase>") return UI_Result(ti, ERROR_BadArg, "Cannot close clipbase.");
 	return UI_Result(ti, dbase->Close());
 }
 
@@ -101,7 +101,7 @@ UI_typeRes sc_base_copygames(scidBaseT* dbase, UI_type2 ti, int argc, const char
 	const char* usage = "Usage: sc_base copygames baseId <gameNum|filterName> targetBaseId";
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
 
-	scidBaseT* targetBase = getBase(strGetUnsigned(argv[4]));
+	scidBaseT* targetBase = DBasePool_getBase(strGetUnsigned(argv[4]));
 	if (targetBase == 0) return UI_Result(ti, ERROR_BadArg, "sc_base copygames error: wrong targetBaseId");
 	if (targetBase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
 	errorT err = OK;
@@ -133,6 +133,23 @@ UI_typeRes sc_base_extra(scidBaseT* dbase, UI_type2 ti, int argc, const char** a
 	}
 
 	return UI_Result(ti, ERROR_BadArg, usage);
+}
+
+
+/**
+ * sc_base_filename() - get the filename of a database
+ *
+ * Return:
+ *   the full path filename for non native databases (like pgn)
+ *   the full path filename without the .si4 extension for native SCID databases
+ *   <clipbase> for the clipbase
+ */
+UI_typeRes sc_base_filename(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+{
+	const char* usage = "Usage: sc_base filename baseId";
+	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
+
+	return UI_Result(ti, OK, dbase->getFileName());
 }
 
 
@@ -297,6 +314,22 @@ UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char
 	return UI_Result(ti, OK, res);
 }
 
+
+/**
+ * sc_base_list() - return the list of opened databases
+ */
+UI_typeRes sc_base_list(UI_type2 ti, int argc, const char** argv)
+{
+	const char* usage = "Usage: sc_base list";
+	if (argc != 2) return UI_Result(ti, ERROR_BadArg, usage);
+
+	std::vector<int> l = DBasePool_getBasesId();
+	UI_List res(l.size());
+	for (size_t i=0, n=l.size(); i < n; i++) res.push_back(l[i]);
+	return UI_Result(ti, OK, res);
+}
+
+
 /**
  * sc_base_open() - open/create a SCID database
  * @filename:    the filename of the database to open/create
@@ -311,7 +344,7 @@ UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char
  */
 UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false, fileModeT fMode = FMODE_Both)
 {
-	if (base_opened(filename) >= 0) return UI_Result(ti, ERROR_FileInUse);
+	if (DBasePool_find(filename) != 0) return UI_Result(ti, ERROR_FileInUse);
 
 	scidBaseT* dbase = DBasePool_findEmpty();
 	if (dbase == 0) return UI_Result(ti, ERROR_Full);
@@ -328,8 +361,8 @@ UI_typeRes sc_base_open (UI_type2 ti, const char* filename, bool create = false,
 
 	if (err != OK && err != ERROR_NameDataLoss) return UI_Result(ti, err);
 
-	switchCurrentBase(dbase);
-	return UI_Result(ti, err, currentBase + 1);
+	int res = switchCurrentBase(dbase);
+	return UI_Result(ti, err, res);
 }
 
 
@@ -359,16 +392,17 @@ UI_typeRes sc_base_sortcache(scidBaseT* dbase, UI_type2 ti, int argc, const char
  * Unfortunately SCID used to have only one database, one game, one filter, etc...
  * This function changes the current database and consequently the current game 
  * (sc_game functions works on the current game)
+ *
+ * Return: the current database ID after the switch
  */
 UI_typeRes sc_base_switch (scidBaseT* dbase, UI_type2 ti)
 {
-	switchCurrentBase(dbase);
-	return UI_Result(ti, OK);
+	int res = switchCurrentBase(dbase);
+	return UI_Result(ti, OK, res);
 }
 
 
 //TODO: move this function here from tkscid.cpp
-int sc_base_filename    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_inUse       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 uint sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_count       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
@@ -390,7 +424,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         "create",          "creatememory",    "current",         "duplicates",
         "ecoStats",        "export",          "extra",           "filename",
         "gameflag",        "gamelocation",    "gameslist",       "import",
-        "inUse",           "isReadOnly",      "numGames",        "open",
+        "inUse",           "isReadOnly",      "list",            "numGames",        "open",
         "piecetrack",      "slot",            "sortcache",       "stats",
         "switch",          "tag",             "tournaments",     "type",
         NULL
@@ -400,7 +434,7 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
         BASE_CREATE,       BASE_CREATEMEMORY, BASE_CURRENT,      BASE_DUPLICATES,
         BASE_ECOSTATS,     BASE_EXPORT,       BASE_EXTRA,        BASE_FILENAME,
         BASE_GAMEFLAG,     BASE_GAMELOCATION, BASE_GAMESLIST,    BASE_IMPORT,
-        BASE_INUSE,        BASE_ISREADONLY,   BASE_NUMGAMES,     BASE_OPEN,
+        BASE_INUSE,        BASE_ISREADONLY,   BASE_LIST,         BASE_NUMGAMES,     BASE_OPEN,
         BASE_PTRACK,       BASE_SLOT,         BASE_SORTCACHE,    BASE_STATS,
         BASE_SWITCH,       BASE_TAG,          BASE_TOURNAMENTS,  BASE_TYPE
     };
@@ -430,11 +464,11 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 	case BASE_EXPORT:
 		return sc_base_export (cd, ti, argc, argv);
 
-	case BASE_FILENAME:
-		return sc_base_filename (cd, ti, argc, argv);
-
 	case BASE_INUSE:
 		return sc_base_inUse (cd, ti, argc, argv);
+
+	case BASE_LIST:
+		return sc_base_list(ti, argc, argv);
 
 	case BASE_NUMGAMES:
 		return sc_base_numGames (cd, ti, argc, argv);
@@ -462,8 +496,8 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 
 	//New multi-base functions
 	if (argc < 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base <cmd> baseId [args]");
-	scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
-	if (dbase == 0) return UI_Result(ti, ERROR_BadArg, "Invalid database number.");
+	scidBaseT* dbase = DBasePool_getBase(strGetUnsigned(argv[2]));
+	if (dbase == 0) return UI_Result(ti, ERROR_FileNotOpen);
 
 	switch (index) {
 	case BASE_CLOSE:
@@ -481,6 +515,9 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 
 	case BASE_EXTRA:
 		return sc_base_extra(dbase, ti, argc, argv);
+
+	case BASE_FILENAME:
+		return sc_base_filename(dbase, ti, argc, argv);
 
 	case BASE_GAMEFLAG:
 		return sc_base_gameflag(dbase, ti, argc, argv);

@@ -249,7 +249,7 @@ proc ::maint::ChangeBaseDescription {} {
   set w .bdesc
   if {[winfo exists $w]} { return }
   toplevel $w
-  wm title $w "Scid: $::tr(Description): [file tail [sc_base filename]]"
+  wm title $w "Scid: $::tr(Description): [file tail [sc_base filename $::curr_db]]"
   set font font_Small
   ttk::entry $w.entry -width 50 ;# -relief sunken -background white
   set ::curr_db [sc_base current]
@@ -277,7 +277,7 @@ proc ::maint::ChangeCustomDescription {} {
   set w .bcustom
   if {[winfo exists $w]} { return }
   toplevel $w
-  wm title $w "Scid: $::tr(CustomFlags): [file tail [sc_base filename]]"
+  wm title $w "Scid: $::tr(CustomFlags): [file tail [sc_base filename $::curr_db]]"
   ttk::frame $w.a
   ttk::label $w.a.lb -text [::tr CustomFlags]
   grid $w.a.lb -column 0 -row 0 -columnspan 12
@@ -340,7 +340,7 @@ proc ::maint::Refresh {} {
   set ratings [sc_base stats ratings]
   $w.title.vgames configure -text [::utils::thousands $ng]
   $w.title.vicon configure -image dbt[sc_base extra $::curr_db type]
-  $w.title.vname configure -text [file tail [sc_base filename]]
+  $w.title.vname configure -text [file tail [sc_base filename $::curr_db]]
   $w.title.vdelete configure -text [::utils::percentFormat $deleted $ng]
   $w.title.vmark configure -text [::utils::percentFormat $marked $ng]
   $w.title.vfilter configure -text [::utils::percentFormat [sc_filter count] $ng]
@@ -998,9 +998,11 @@ proc compactDB {{base -1}} {
   if {$err} {
     ERROR::MessageBox "$::tr(CompactDatabase)\n"
   } else {
+    set msg "[sc_base filename $base]\n\n"
+	append msg [tr GameFileCompacted]
     tk_messageBox -type ok -icon info -parent . \
         -title [concat "Scid: " $::tr(CompactDatabase)] \
-        -message [subst $::tr(GameFileCompacted)]
+        -message "$msg"
   }
   ::notify::DatabaseModified $base
 }
@@ -1281,7 +1283,7 @@ proc doCleaner {} {
   set t $w.f.t.text
   $t delete 1.0 end
   $t insert end "$::tr(Cleaner)."
-  $t insert end "  $::tr(Database): [file tail [sc_base filename]]\n"
+  $t insert end "  $::tr(Database): [file tail [sc_base filename $dbase]]\n"
   
   $w.f.b.close configure -state disabled
   

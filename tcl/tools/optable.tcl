@@ -901,7 +901,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
   set title $::tr(OprepTitle)
   set r [string map [list "\[OprepTitle\]" $title] $r]
   append r [::optable::_title]
-  append r "$tr(Database): [file tail [sc_base filename]] "
+  append r "$tr(Database): [file tail [sc_base filename $::curr_db]] "
   append r "([::utils::thousands [sc_base numGames]] $games)$n"
   append r "$tr(OprepReport): [::trans [sc_report opening line]] ("
   if {$fmt == "ctext"} {

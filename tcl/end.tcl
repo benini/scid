@@ -35,10 +35,9 @@ proc findNovelty {} {
   
   label $w.title -text $::tr(Database:) -font font_Bold
   pack $w.title -side top
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
-    radiobutton $w.b$i -text "" -variable noveltyBase -value $i -underline 5
-    pack $w.b$i -side top -anchor w -padx 10
-  }
+
+  pack [frame $w.bases] -side top -fill x
+  pack [frame $w.bases.del]
   addHorizontalRule $w
   
   label $w.which -text $::tr(TwinsWhich:) -font font_Bold
@@ -89,12 +88,15 @@ proc updateNoveltyWin {} {
   set w .noveltyWin
   if {! [winfo exists $w]} { return }
   $w.older configure -text "$::tr(SelectOlderGames) (< [sc_game info date])"
-  for {set i [sc_base count total] } {$i > 0} {incr i -1} {
+  catch { destroy $w.bases.del }
+  pack [frame $w.bases.del]
+  foreach i [sc_base list] {
     set name [file tail [sc_base filename $i]]
     set ng [::utils::thousands [sc_base numGames $i]]
-    set text "Base $i: $name ($ng $::tr(games))"
-    $w.b$i configure -state normal -text $text
-    if {$ng == 0} { $w.b$i configure -state disabled }
+    set txt "Base $i: $name ($ng $::tr(games))"
+    radiobutton $w.bases.del.b$i -text "$txt" -variable noveltyBase -value $i -underline 5
+    if {$ng == 0} { $w.bases.del.b$i configure -state disabled }
+    pack $w.bases.del.b$i -side top -anchor w -padx 10
   }
 }
 

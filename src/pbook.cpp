@@ -100,30 +100,19 @@ PBook::Init ()
     HashFlags = NULL;
 }
 
-void
-PBook::Clear ()
+PBook::~PBook()
 {
-    bookNodeT * node;
-
-    Altered = false;
     for (uint i=0; i <= PBOOK_MAX_MATERIAL; i++) {
         Tree[i]->IterateStart();
+        bookNodeT* node;
         while ((node = Tree[i]->Iterate()) != NULL) {
             delete[] node->data.comment;
         }
         delete Tree[i];
-        Tree[i] = new StrTree<bookDataT>;
     }
-    NodeListCount = 0;
-    if (FileName) { delete[] FileName; }
-    FileName = NULL;
-    NextIndex = 0;
-    LeastMaterial = PBOOK_MAX_MATERIAL;
-    Stats_PositionBytes = 0;
-    Stats_CommentBytes = 0;
-    delete[] HashFlags;
-
-    HashFlags = NULL;
+    if (FileName != NULL) { delete[] FileName; }
+    if (HashFlags != NULL) delete[] HashFlags;
+    delete [] NodeList;
 }
 
 void

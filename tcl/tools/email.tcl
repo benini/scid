@@ -602,7 +602,7 @@ proc ::tools::email::validGameNumbers {numberList} {
 }
 
 proc ::tools::email::opponentFilename {} {
-  set filename [sc_base filename]
+  set filename [sc_base filename $::curr_db]
   append filename ".sem"
   return $filename
 }

@@ -221,19 +221,6 @@ $m add cascade -label FileSwitch -menu $m.switch
 set helpMessage($m,[incr menuindex]) FileSwitch
 menu $m.switch
 
-set totalBaseSlots [sc_base count total]
-set currentSlot [sc_base current]
-
-for {set i 1} { $i <= $totalBaseSlots} {incr i} {
-  $m.switch add radiobutton -variable currentSlot -value $i \
-      -label "Base $i: <none>" \
-      -underline 5 -accelerator "Ctrl+$i" -command [list ::file::SwitchToBase $i]
-  set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to base slot $i"
-  if {$i == $::clipbase_db} {
-    set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to the clipbase database"
-  }
-}
-
 $m add separator
 incr menuindex
 
@@ -1259,16 +1246,26 @@ set helpMessage($m,[incr menuindex]) HelpAbout
 #   TODO: update only the posted menu
 #
 proc updateMenuStates {{menuname}} {
-  global totalBaseSlots windowsOS
+  global windowsOS
   set ::currentSlot [sc_base current]
   set lang $::language
   set m .menu
   switch -- $menuname {
   {file} {
-      for {set i 1} { $i <= $totalBaseSlots } { incr i } {
+      ::bookmarks::Refresh
+
+      $m.file.switch delete 0 end
+      foreach i [sc_base list] {
         set fname [file tail [sc_base filename $i]]
-        $m.file.switch entryconfig [expr {$i - 1} ] -label "Base $i: $fname"
+        $m.file.switch add radiobutton -variable currentSlot -value $i \
+            -label "Base $i: $fname" \
+            -underline 5 -accelerator "Ctrl+$i" -command [list ::file::SwitchToBase $i]
+        set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to base slot $i"
+        if {$i == $::clipbase_db} {
+          set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to the clipbase database"
+        }
       }
+
       foreach i {Compact Delete Class Twin} {
         $m.file.utils entryconfig [tr FileMaint$i] -state disabled
       }

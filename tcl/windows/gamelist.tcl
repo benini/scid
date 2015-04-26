@@ -18,10 +18,10 @@ proc ::windows::gamelist::Open { {base ""} {filter ""} } {
 			}
 		}
 	}
-	if { [sc_base filename $base] != {[clipbase]} } {
+	if { $base != $::clipbase_db } {
 		foreach glwin $::windows::gamelist::wins {
 			set b [::windows::gamelist::GetBase $glwin]
-			if { [sc_base filename $b] == {[clipbase]} && [sc_base numGames $b] == 0 } {
+			if {$b == $::clipbase_db && [sc_base numGames $b] == 0 } {
 				if {[info exists ::recentSort]} {
 					set idx [lsearch -exact $::recentSort "[sc_base filename $base]"]
 					if {$idx != -1} {
@@ -1201,14 +1201,12 @@ proc glist.popupmenu_ {{w} {x} {y} {abs_x} {abs_y} {layout}} {
          -command "mergeGame $::glistBase($w) $idx"
       menu $w.game_menu.merge
       menu $w.game_menu.copy
-      for {set i [sc_base count total] } {$i > 0} {incr i -1} {
-        if {[sc_base inUse $i]} {
+      foreach i [sc_base list] {
           if { $i == $::glistBase($w) || [sc_base isReadOnly $i] } { continue }
           set fname [file tail [sc_base filename $i]]
           $w.game_menu.merge add command -label "$i $fname" -command "::game::mergeInBase $::glistBase($w) $i $idx"
           $w.game_menu.copy add command -label "$i $fname" \
               -command "sc_base copygames $::glistBase($w) $idx $i; ::notify::DatabaseModified $i"
-        }
       }
       $w.game_menu add cascade -label $::tr(GlistMergeGameInBase) -menu $w.game_menu.merge
       #TODO: translate label

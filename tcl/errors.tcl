@@ -17,9 +17,9 @@
 namespace eval ERROR {
   proc getErrorMsg {} {
     if {! [info exists ::ERROR::msg($::errorCode)] } {
-      set ::ERROR::msg($::errorCode) "Unknown error: $::errorCode"
+      set ::ERROR::msg($::errorCode) "Unknown error: $::errorCode\n$::errorInfo"
     }
-    return "$::ERROR::msg($::errorCode)\n$::errorInfo"
+    return "$::ERROR::msg($::errorCode)"
   }
 
   proc MessageBox { {extra ""} {title "ERROR"} } {

@@ -1241,8 +1241,7 @@ translate W CompactNames {Namn, komprimera namnfil}
 translate W CompactGames {Partier, komprimera partifil}
 translate W NoUnusedNames "Det finns inga oanvända namn, så namnfilen är redan fullt komprimerad."
 translate W NoUnusedGames "Partifilen är redan fullt komprimerad."
-translate W NameFileCompacted {Namnfilen för databasen "[file tail [sc_base filename]]" blev komprimerad.}
-translate W GameFileCompacted {Partifilen för databasen "[file tail [sc_base filename]]" blev komprimerad.}
+translate W GameFileCompacted {Partifilen för databasen blev komprimerad.}
 
 # Sorting:
 translate W SortCriteria {Kriterium}

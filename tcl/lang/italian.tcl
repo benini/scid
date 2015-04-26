@@ -1353,8 +1353,7 @@ translate I CompactNames {Compatta il file di nomi}
 translate I CompactGames {Compatta il file di partite}
 translate I NoUnusedNames "Non ci sono nomi inutilizzati, il file dei nomi è già compresso."
 translate I NoUnusedGames "Il file delle partite è già compresso."
-translate I NameFileCompacted {Il file dei nomi del database "[file tail [sc_base filename]]" è stato compresso.}
-translate I GameFileCompacted {Il file delle partite del database "[file tail [sc_base filename]]" è stato compresso.}
+translate I GameFileCompacted {Il file delle partite del database è stato compresso.}
 
 # Sorting:
 translate I SortCriteria {Criteri}

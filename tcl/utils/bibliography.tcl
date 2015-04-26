@@ -304,8 +304,8 @@ namespace eval Bibliography {
 		# set a global bib file
 		set bibfile [file nativename [file join $scidDataDir "Bookshelf.bib"]]
 		# ... but overwrite it if a bibliography for the base itself exits
-		if {[file readable "[sc_base filename].bib"]} {
-			set bibfile "[sc_base filename].bib"
+		if {[file readable "[sc_base filename $::curr_db].bib"]} {
+			set bibfile "[sc_base filename $::curr_db].bib"
 		}
 		set ::Bibliography::literature [::Bibliography::ExtractRef $bibfile]
 

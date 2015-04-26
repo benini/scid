@@ -1251,8 +1251,7 @@ translate R CompactNames {Сжатый файл имён}
 translate R CompactGames {Сжатый файл партий}
 translate R NoUnusedNames "Нет неиспользуемых имён, поэтому имя файла уже сжато полностью."
 translate R NoUnusedGames "Файл партии уже полностью сжат."
-translate R NameFileCompacted {Имя файла для базы данных "[file tail [sc_base filename]]" было сжато.}
-translate R GameFileCompacted {Имя партии для базы данных "[file tail [sc_base filename]]" было сжато.}
+translate R GameFileCompacted {Имя партии для базы данных было сжато.}
 
 # Sorting:
 translate R SortCriteria {Критерий}

@@ -371,35 +371,38 @@ strGetFilterOp (const char * str)
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// base_opened:
-//    Returns a slot number if the named database is already
-//    opened in Scid, or -1 if it is not open.
-int
-base_opened (const char * filename)
-{
-    for (int i=0; i < CLIPBASE_NUM; i++) {
-        if (dbList[i].inUse  &&  strEqual (dbList[i].getFileName(), filename)) {
-            return i;
-        }
-    }
-    return -1;
-}
 
-scidBaseT* getBase(int baseId) {
-    if (baseId < 1 || baseId > MAX_BASES) return 0;
-    scidBaseT* res = &(dbList[baseId - 1]);
-    return res->inUse ? res : 0;
+
+scidBaseT* DBasePool_find(const char* filename) {
+    for (int i=0, n=MAX_BASES; i<n; i++) {
+        if (dbList[i].inUse && dbList[i].getFileName() == filename)
+            return &(dbList[i]);
+    }
+    return 0;
 }
 
 scidBaseT* DBasePool_findEmpty() {
-    for (int i=0; i < MAX_BASES; i++) {
+    for (int i=0, n=MAX_BASES; i<n; i++) {
         if (! dbList[i].inUse) { return &(dbList[i]); }
     }
     return 0;
 }
 
-void switchCurrentBase(scidBaseT* dbase) {
+scidBaseT* DBasePool_getBase(int baseId) {
+    if (baseId < 1 || baseId > MAX_BASES) return 0;
+    scidBaseT* res = &(dbList[baseId - 1]);
+    return res->inUse ? res : 0;
+}
+
+std::vector<int> DBasePool_getBasesId() {
+    std::vector<int> res;
+    for (int i=0, n=MAX_BASES; i<n; i++) {
+        if (dbList[i].inUse) res.push_back(i +1);
+    }
+    return res;
+}
+
+int switchCurrentBase(scidBaseT* dbase) {
     for (int i=0; i < MAX_BASES; i++) {
         if ((dbList + i) == dbase) {
             currentBase = i;
@@ -407,6 +410,7 @@ void switchCurrentBase(scidBaseT* dbase) {
             break;
         }
     }
+    return currentBase +1;
 }
 
 SpellChecker* SpellChecker_get(nameT n) {
@@ -432,32 +436,6 @@ sc_base_numGames (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_filename: get the name of the current database file.
-//    Returns "[empty]" for an empty base, "[clipbase]" for the clipbase.
-int
-sc_base_filename (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    scidBaseT * basePtr = db;
-    if (argc > 2) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum < 1 || baseNum > MAX_BASES) {
-            return errorResult (ti, "Invalid database number.");
-        }
-        basePtr = &(dbList[baseNum - 1]);
-    }
-
-    if (! basePtr->inUse) {
-        Tcl_AppendResult (ti, "[", translate (ti, "empty"), "]", NULL);
-    } else if (basePtr == clipbase) {
-        Tcl_AppendResult (ti, "[", translate (ti, "clipbase"), "]", NULL);
-    } else {
-        Tcl_AppendResult (ti, basePtr->getFileName(), NULL);
-    }
-
-    return TCL_OK;
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_inUse
 //  Returns 1 if the database slot is in use; 0 otherwise.
 int
@@ -480,6 +458,15 @@ sc_base_inUse (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 // sc_base_slot: takes a database (.si3 or .pgn file) name and returns
 //    the slot number it is using if it is already opened, or 0 if
 //    it is not loaded yet.
+int base_opened (const char * filename)
+{
+    for (int i=0; i < CLIPBASE_NUM; i++) {
+        if (dbList[i].inUse  &&  dbList[i].getFileName() == filename) {
+            return i;
+        }
+    }
+    return -1;
+}
 int
 sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
@@ -2485,7 +2472,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     case FILTER_NEW:
         if (argc == 3 || argc == 4) {
-            scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
+            scidBaseT* dbase = DBasePool_getBase(strGetUnsigned(argv[2]));
             if (dbase == NULL) return UI_Result(ti, ERROR_BadArg, "sc_filter: invalid baseId");
             if (argc == 4) {
                 //TODO: Use argv[4] (FEN) instead of current Position
@@ -2520,7 +2507,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
 
     if (argc < 4) return errorResult (ti, "Usage: sc_filter <cmd> baseId filterName");
-    scidBaseT* dbase = getBase(strGetUnsigned(argv[2]));
+    scidBaseT* dbase = DBasePool_getBase(strGetUnsigned(argv[2]));
     if (dbase == NULL) return errorResult (ti, "sc_filter: invalid baseId");
     HFilter filter = dbase->getFilter(argv[3]);
     if (!filter) return errorResult (ti, "sc_filter: invalid filterName");
@@ -4763,7 +4750,7 @@ sc_game_novelty (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         baseArg++;
     }
     if (argc < baseArg  ||  argc > baseArg+1) return errorResult(ti, usage);
-    scidBaseT* base = getBase(strGetInteger (argv[baseArg]));
+    scidBaseT* base = DBasePool_getBase(strGetInteger (argv[baseArg]));
     if (base == 0) return UI_Result(ti, ERROR_BadArg);
 
     // First, move to the deepest ECO position in the game.
@@ -5018,7 +5005,7 @@ sc_game_save (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     scidBaseT * dbase = db;
     Game* currGame = db->game;
     if (argc == 4) {
-        dbase = getBase(strGetUnsigned(argv[3]));
+        dbase = DBasePool_getBase(strGetUnsigned(argv[3]));
         if (dbase == 0) return errorResult (ti, "Invalid database number.");
     } else if (argc != 3) {
         return errorResult (ti, "Usage: sc_game save <gameNumber> [targetbaseId]");
@@ -10185,7 +10172,7 @@ sc_tree_cachesize (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 4) {
     return errorResult (ti, "Usage: sc_tree cachesize <base> <size>");
   }
-  scidBaseT* base = getBase(strGetInteger(argv[2]));
+  scidBaseT* base = DBasePool_getBase(strGetInteger(argv[2]));
   if (base) base->treeCache->CacheResize(strGetUnsigned(argv[3]));
   return TCL_OK;
 }
@@ -10198,7 +10185,7 @@ sc_tree_cacheinfo (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
   if (argc != 3) {
     return errorResult (ti, "Usage: sc_tree cacheinfo <base>");
   }
-  scidBaseT* base = getBase(strGetInteger(argv[2]));
+  scidBaseT* base = DBasePool_getBase(strGetInteger(argv[2]));
   if (base) {
     appendUintElement (ti, base->treeCache->UsedSize());
     appendUintElement (ti, base->treeCache->Size());

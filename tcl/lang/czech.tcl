@@ -1272,8 +1272,7 @@ translate C CompactNames {Zhustit jmenný soubor}
 translate C CompactGames {Zhustit partiový soubor}
 translate C NoUnusedNames "Nejsou ¾ádná nevyu¾itá jména, tak¾e jmenný soubor je ji¾ plnì zhu¹tìn."
 translate C NoUnusedGames "Partiový soubor je ji¾ plnì zhu¹tìn."
-translate C NameFileCompacted {Jmenný soubor pro databázi "[file tail [sc_base filename]]" byl zhu¹tìn.}
-translate C GameFileCompacted {Partiový soubor pro databázi "[file tail [sc_base filename]]" byl zhu¹tìn.}
+translate C GameFileCompacted {Partiový soubor pro databázi byl zhu¹tìn.}
 
 # Sorting:
 translate C SortCriteria {Kritéria}

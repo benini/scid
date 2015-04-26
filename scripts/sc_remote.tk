@@ -230,17 +230,11 @@ proc validScidInterp { scid } {
 proc querySlotStatus { scid } {
     set ret [list]
     set cb [send $scid sc_info clipbase]
-    set max [send $scid sc_base count total]
-    for { set i 1 } { $i <= $max } { incr i } {
-	if { $i == $cb } { continue } 
-	lappend ret $scid,$i
-	set f [send $scid sc_base filename $i]
-	# [<anything>] is assumed to be [empty] or a translation since
-	# we shouldn't see [clipbase] (or translation thereof) here
-	if { [string match {\[*\]} $f] } {
-	    set f "-"
-	}
-	lappend ret $f
+    foreach i [send $scid sc_base list] {
+        if { $i == $cb } { continue }
+        lappend ret $scid,$i
+        set f [send $scid sc_base filename $i]
+        lappend ret $f
     }
     return $ret
 }

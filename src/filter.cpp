@@ -62,7 +62,7 @@ Filter::Append (byte value)
         return;
     if( value != 1 && Data == NULL)
         Allocate();
-    else if (FilterSize > Capacity) {
+    else if (FilterSize >= Capacity) {
         // Data array is full, extend it in chunks of 1000:
         SetCapacity(Capacity + 1000);
     }

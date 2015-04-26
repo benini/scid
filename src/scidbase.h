@@ -97,7 +97,7 @@ struct scidBaseT {
 	void deleteFilter(const char* filterName);
 	HFilter getFilter(const char* filterName);
 
-	const char* getFileName() const { return fileName_.c_str(); }
+	const std::string& getFileName() const { return fileName_; }
 	bool isReadOnly() const { return (fileMode==FMODE_ReadOnly); }
 	gamenumT numGames() const { return idx->GetNumGames(); }
 	errorT getExtraInfo(const std::string& tagname, std::string* res) const;

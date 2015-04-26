@@ -114,7 +114,7 @@ proc keyboardShortcuts {w} {
 	# Change current database
 	set totalBaseSlots [sc_base count total]
 	for {set i 1} { $i <= $totalBaseSlots} {incr i} {
-		bind $w <Control-Key-$i> {::file::SwitchToBase $i}
+		bind $w <Control-Key-$i> "::file::SwitchToBase $i"
 	}
 
 	#TODO: to be checked
@@ -172,10 +172,6 @@ proc keyboardShortcuts {w} {
 	bind $w <Control-Up> {::game::LoadNextPrev previous}
 	bind $w <Control-Down> {::game::LoadNextPrev next}
 	bind $w <Control-question> ::game::LoadRandom
-
-	for {set i 1} { $i <= $::totalBaseSlots} {incr i} {
-		bind $w "<Control-Key-$i>" "::file::SwitchToBase $i"
-	}
 
 	#TODO: this bind should not be global
 	# Add null move (also "king take king" move)

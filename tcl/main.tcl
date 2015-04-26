@@ -100,7 +100,7 @@ proc moveEntry_Char {ch} {
 #
 proc updateTitle {} {
     set title "Scid - "
-    set fname [sc_base filename]
+    set fname [sc_base filename $::curr_db]
     set fname [file tail $fname]
     append title "$fname ($::tr(game) "
     append title "[::utils::thousands [sc_game number]] / "

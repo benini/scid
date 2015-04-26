@@ -1309,8 +1309,7 @@ translate N CompactNames {Gecomprimeerde namen bestand}
 translate N CompactGames {Gecomprimeerd partijen bestand}
 translate N NoUnusedNames "Er zijn geen ongebruikte namen dus het naambestand is reeds volledig gecomprimeerd."
 translate N NoUnusedGames "Het partijen bestand is reeds volledig gecomprimeerd."
-translate N NameFileCompacted {Het namen bestand voor de databank "[file tail [sc_base filename]]" werd gecomprimeerd.}
-translate N GameFileCompacted {Het namen bestand voor de databank "[file tail [sc_base filename]]" werd comprimeerd.}
+translate N GameFileCompacted {Het namen bestand voor de databank werd comprimeerd.}
 
 # Sorting:
 translate N SortCriteria {Criteria}

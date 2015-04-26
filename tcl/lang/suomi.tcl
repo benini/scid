@@ -1279,8 +1279,7 @@ translate U CompactNames {Tiivistä nimitiedosto}
 translate U CompactGames {Tiivistä pelitiedosto}
 translate U NoUnusedNames "Ei käyttämättömiä nimiä, nimitiedosto on valmiiksi täysin tiivistetty."
 translate U NoUnusedGames "Pelitiedosto on valmiiksi täysin tiivistetty."
-translate U NameFileCompacted {Nimitiedosto tietokannalle "[file tail [sc_base filename]]" on tiivistetty.}
-translate U GameFileCompacted {Pelitiedosto tietokannalle "[file tail [sc_base filename]]" on tiivistetty.}
+translate U GameFileCompacted {Pelitiedosto tietokannalle on tiivistetty.}
 
 # Sorting:
 translate U SortCriteria {Kriteerit}

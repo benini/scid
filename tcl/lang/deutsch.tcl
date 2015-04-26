@@ -1293,8 +1293,7 @@ translate D CompactNames {Komprimiere Namen}
 translate D CompactGames {Komprimiere Partien}
 translate D NoUnusedNames "Es gibt keine unbenutzen Namen, die Namensdatei ist vollständig komprimiert."
 translate D NoUnusedGames "Die Partiedatei ist vollständig komprimiert."
-translate D NameFileCompacted {Die Namesdatei der Datenbank "[file tail [sc_base filename]]" wurde komprimiert.}
-translate D GameFileCompacted {Die Partiedatei der Datenbank "[file tail [sc_base filename]]" wurde komprimiert.}
+translate D GameFileCompacted {Die Partiedatei der Datenbank wurde komprimiert.}
 
 # Sorting:
 translate D SortCriteria {Kriterium}

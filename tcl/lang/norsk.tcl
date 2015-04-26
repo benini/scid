@@ -1462,9 +1462,7 @@ translate O NoUnusedNames "There are no unused names, so the name file is alread
 # ====== TODO To be translated ======
 translate O NoUnusedGames "The game file is already fully compacted."
 # ====== TODO To be translated ======
-translate O NameFileCompacted {The name file for the database "[file tail [sc_base filename]]" was compacted.}
-# ====== TODO To be translated ======
-translate O GameFileCompacted {The game file for the database "[file tail [sc_base filename]]" was compacted.}
+translate O GameFileCompacted {The game file for the database was compacted.}
 
 # Sorting:
 translate O SortCriteria {Kriterier}

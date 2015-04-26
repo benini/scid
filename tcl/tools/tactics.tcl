@@ -126,8 +126,8 @@ namespace eval tactics {
             pack $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
             
             # load the last game seen by the user
-            set fname [sc_base filename]
-            if { $fname != "\[empty\]" && $fname != "\[clipbase\]"} {
+            set fname [sc_base filename $::curr_db]
+            if { $fname != "<clipbase>"} {
                 if { [ info exists ::tactics::findBestMove_History($fname) ] } {
                     ::game::Load $::tactics::findBestMove_History($fname)
                 }
@@ -158,8 +158,8 @@ namespace eval tactics {
             set ::showVarArrows $::tactics::showVarArrows_old
             set ::showVarPopup $::tactics::showVarPopup_old
             
-            set fname [sc_base filename]
-            if { $fname != "\[empty\]" && $fname != "\[clipbase\]"} {
+            set fname [sc_base filename $::curr_db]
+            if { $fname != "<clipbase>"} {
                 set ::tactics::findBestMove_History($fname) [sc_game number]
             }
             pack forget $f.fbm_space1 $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop

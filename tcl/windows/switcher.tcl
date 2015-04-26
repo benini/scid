@@ -627,7 +627,6 @@ proc ::windows::switcher::popupmenu { {switcherWin} {w} {abs_x} {abs_y} {baseIdx
   }
   if { $baseIdx != $::clipbase_db } {
     $w.menu add command -label [tr FileClose] -command [list ::file::Close $baseIdx]
-    #TODO: write a better dialog and remove [sc_base filename] from GameFileCompacted
     $w.menu add command -label $::tr(CompactDatabase) -command "compactDB $baseIdx"
     if { [::file::autoLoadBases.find $baseIdx] == "-1" } {
       set ::sw_DummyCheckbutton 0
@@ -771,8 +770,7 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
   set column 0
   set x 0
   set y 0
-  for {set i 1} {$i <= $::sw_nBases_} {incr i} {
-    if {[sc_base inUse $i]} {
+  foreach i [sc_base list] {
       $w.c coords tag$i [expr $x + 2] [expr $y + 2]
       incr column
       if { $x == 0} { incr numRows }
@@ -783,7 +781,6 @@ proc ::windows::switcher::Draw {{w} {numColumns} {iconWidth} {iconHeight} } {
       } else {
         incr x $iconWidth
       }
-    }
   }
 
   if {$numRows < 1} { set numRows 1 }

@@ -1290,8 +1290,7 @@ translate H CompactNames {Névfájl tömörítése}
 translate H CompactGames {Játszmafájl tömörítése}
 translate H NoUnusedNames "Nincsenek nem használt nevek, úgyhogy a névfájl már teljesen tömör."
 translate H NoUnusedGames "A névfájl már teljesen tömör."
-translate H NameFileCompacted {Az adatbázis "[file tail [sc_base filename]]" névfájlja tömörítve van.}
-translate H GameFileCompacted {Az adatbázis "[file tail [sc_base filename]]" játszmafájlja tömörítve van.}
+translate H GameFileCompacted {Az adatbázis játszmafájlja tömörítve van.}
 
 # Sorting:
 translate H SortCriteria {Kritériumok}
