@@ -56,17 +56,13 @@ Filter::Fill (byte value)
 void
 Filter::Append (byte value)
 {
-    FilterSize++;
-    if (value != 0) { FilterCount++; }
-    if( value == 1 && Data == NULL)
-        return;
-    if( value != 1 && Data == NULL)
-        Allocate();
-    else if (FilterSize >= Capacity) {
-        // Data array is full, extend it in chunks of 1000:
-        SetCapacity(Capacity + 1000);
+    if (value != 0) FilterCount++;
+    if (value != 1 && Data == NULL) Allocate();
+    if (Data != NULL) {
+        if (FilterSize >= Capacity) SetCapacity(FilterSize + 1000);
+        Data[FilterSize] = value;
     }
-    Data[FilterSize] = value;
+    FilterSize++;
 }
 
 void
