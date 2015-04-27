@@ -65,7 +65,6 @@ public:
 	}
 	std::string getSAN(colorT* toMove = 0) const {
 		std::string res;
-		res.reserve(8);
 		if (toMove) *toMove = getColor();
 		squareT to = getTo();
 		squareT from = getFrom();
