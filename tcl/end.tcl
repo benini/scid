@@ -462,20 +462,10 @@ proc exportOptions {exportType} {
 #
 proc exportGames {selection exportType} {
   global ::pgn::moveNumberSpaces exportStartFile exportEndFile exportFlags
-  set exportFilter 0
-  if {$selection == "filter"} { set exportFilter 1 }
-  if {$exportFilter} {
-    # Check that we have some games to export:
-    if {![sc_base inUse]} {
-      tk_messageBox -title "Scid: Empty database" -type ok -icon info \
-          -message "This is an empty database, there are no games to export."
-      return
-    }
-    if {[sc_filter count] == 0} {
+  if {$selection == "filter" && [sc_filter count] == 0} {
       tk_messageBox -title "Scid: Filter empty" -type ok -icon info \
           -message "The filter contains no games."
       return
-    }
   }
   
   if {[exportOptions $exportType] == 0} { return }
@@ -521,9 +511,8 @@ proc exportGames {selection exportType} {
   }
   set fName [$getfile -initialdir $idir -filetypes $ftype -defaultextension $default -title $title]
   if {$fName == ""} { return }
-  if {$exportFilter} {
-    progressWindow "Scid" "Exporting games..." $::tr(Cancel)
-  }
+
+  progressWindow "Scid" "Exporting games..." $::tr(Cancel)
   sc_base export $selection $exportType $fName -append $exportFlags(append) \
       -starttext $exportStartFile($exportType) \
       -endtext $exportEndFile($exportType) \
@@ -532,9 +521,7 @@ proc exportGames {selection exportType} {
       -indentC $exportFlags(indentc) -indentV $exportFlags(indentv) \
       -column $exportFlags(column) -noMarkCodes $exportFlags(stripMarks) \
       -convertNullMoves $exportFlags(convertNullMoves)
-  if {$exportFilter} {
-    closeProgressWindow
-  }
+  closeProgressWindow
 }
 
 ###########################################################################
@@ -835,12 +822,6 @@ proc gameSave { gnum } {
   global date year month day white black resultVal event site round
   global whiteElo blackElo whiteRType blackRType eco extraTags gsaveNum
   global edate eyear emonth eday
-  
-  if {![sc_base inUse]} {
-    # We can't load a game, no database is open
-    tk_messageBox -title "Scid: No database open" -type ok -icon info -message "No database is open; open or create one first."
-    return
-  }
   
   # Make a new toplevel that contains the game save dialog:
   set w .save

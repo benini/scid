@@ -615,11 +615,6 @@ namespace eval html {
   ################################################################################
   proc exportCurrentFilter {} {
     # Check that we have some games to export:
-    if {![sc_base inUse]} {
-      tk_messageBox -title "Scid: Empty database" -type ok -icon info \
-          -message "This is an empty database, there are no games to export."
-      return
-    }
     if {[sc_filter count] == 0} {
       tk_messageBox -title "Scid: Filter empty" -type ok -icon info \
           -message "The filter contains no games."

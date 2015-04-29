@@ -131,7 +131,6 @@ proc ::preport::ConfigMenus {{lang ""}} {
 }
 
 proc ::preport::makeReportWin {args} {
-  if {! [sc_base inUse]} { return }
   set showProgress 1
   set args [linsert $args 0 "args"]
   if {[lsearch -exact $args "-noprogress"] >= 0} { set showProgress 0 }

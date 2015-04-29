@@ -91,7 +91,6 @@ proc ::optable::ConfigMenus {{lang ""}} {
 }
 
 proc ::optable::makeReportWin {args} {
-  if {! [sc_base inUse]} { return }
   set ::optable::opReportBase [sc_base current]
   set showProgress 1
   set args [linsert $args 0 "args"]

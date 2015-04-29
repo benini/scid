@@ -101,10 +101,6 @@ proc ::game::Truncate {} {
 #
 proc ::game::LoadNextPrev {action} {
   global pgnWin statusBar
-  if {![sc_base inUse]} {
-    set statusBar "  There is no $action game: this is an empty database."
-    return
-  }
   set number [sc_filter $action]
   if {$number == 0} {
     set statusBar "  There is no $action game in the current filter."

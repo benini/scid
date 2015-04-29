@@ -365,7 +365,7 @@ proc ::maint::Refresh {} {
   # Disable buttons if current base is closed or read-only:
   set state disabled
   set curr_base [sc_base current]
-  if {[sc_base inUse]  &&  ![sc_base isReadOnly $curr_base]} {
+  if {![sc_base isReadOnly $curr_base]} {
     set state normal
   }
   foreach spell {player event site round} {
@@ -970,7 +970,6 @@ proc baseIsCompactable {} {
   # Only a database that is in use, not read-only, and not the
   # clipbase, can be compacted:
   set curr_base [sc_base current]
-  if {! [sc_base inUse]} { return 0 }
   if {[sc_base isReadOnly $curr_base]} { return 0 }
   if {$curr_base == $::clipbase_db} { return 0 }
   return 1
