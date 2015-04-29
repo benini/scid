@@ -234,9 +234,6 @@ proc ::game::LoadHistory {dir} {
 }
 
 proc ::game::Load_ { selection {ply ""} } {
-  # If an invalid game number, just return:
-  if {$selection < 1} { return 0}
-  if {$selection > [sc_base numGames]} { return 0}
   set confirm [::game::ConfirmDiscard2]
   if {$confirm == 2} { return 0}
   if {$confirm == 0} {

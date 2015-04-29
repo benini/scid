@@ -1124,13 +1124,6 @@ proc gameReplace {} { gameSave [sc_game number] }
 #    Displays information about Scid.
 #
 proc helpAbout {} {
-    # for {set g 1} { $g <= [sc_base numGames ] } {incr g} {
-        # sc_game load $g
-        # ::game::Strip comments
-        # ::game::Strip variations
-        # sc_game save $g
-    # }
-    # return
   ::utils::sound::PlaySound sound_move
   set str {}
   append str "Scid: Shane's chess information database\n\n"
