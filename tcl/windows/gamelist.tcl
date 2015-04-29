@@ -227,7 +227,8 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 # Search game number 2000: gnum 2000
 # Search games where Carlsen played as white against Kramnik: white carlsen kramnik
 # Search a specific game: carlsen kramnik 2013.06.13
-# Start a new search with an empty string
+#
+# An empty search will reset the filter
 #
 proc ::windows::gamelist::Awesome {{w} {txt}} {
 	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
@@ -237,12 +238,7 @@ proc ::windows::gamelist::Awesome {{w} {txt}} {
 		sc_filter set "$::gamelistBase($w)" "$::gamelistFilter($w)" 1
 	} else {
 		set filter [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
-		set cmd "sc_filter search $::gamelistBase($w) $filter header "
-		if { [sc_filter count "$::gamelistBase($w)" "$::gamelistFilter($w)"] == 0 } {
-			append cmd " -filter RESET"
-		} else {
-			append cmd " -filter AND"
-		}
+		set cmd "sc_filter search $::gamelistBase($w) $filter header -filter RESET"
 
 		progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel)
 		set res [eval "$cmd [AweParse $txt]"]
@@ -314,6 +310,11 @@ proc ::windows::gamelist::AweInit {} {
 proc ::windows::gamelist::AweGuess {{txt}} {
 	global awe_guess
 	if {![info exists awe_guess]} { AweInit }
+
+	# Remove extra spaces around ><!
+	regsub -all {(^|\s)>\s} $txt { >} txt
+	regsub -all {(^|\s)<\s} $txt { <} txt
+	regsub -all {(^|\s)!\s} $txt { !} txt
 	
 	# Search for explicit params
 	set param(0) ""
