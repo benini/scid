@@ -155,7 +155,7 @@ public:
         return Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
     }
     gamenumT GetAutoLoad () const {
-        return ((Header.autoLoad == 0) ? 1 : (Header.autoLoad - 1));
+        return (Header.autoLoad > 0) ? Header.autoLoad : 1;
     }
 
     // Functions that modify the Header
@@ -186,7 +186,7 @@ public:
         Dirty = true;
     }
     void SetAutoLoad (gamenumT gnum) {
-        Header.autoLoad = gnum + 1;
+        Header.autoLoad = gnum;
         Dirty = true;
     }
     errorT AddGame (const IndexEntry* ie) {

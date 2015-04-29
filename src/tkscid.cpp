@@ -4442,16 +4442,6 @@ sc_game_load (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     db->bbuf->Empty();
     uint gnum = strGetUnsigned (argv[2]);
 
-    if (argv[2][0] == 'a') {
-        // Load the autoload game for this base:
-        gnum = db->idx->GetAutoLoad();
-        if (gnum < 1) {
-            db->game->Clear();
-            return TCL_OK;
-        }
-        if (gnum > db->numGames()) { gnum = db->numGames(); }
-    }
-
     // Check the game number is valid::
     if (gnum < 1  ||  gnum > db->numGames()) {
         return errorResult (ti, "Invalid game number.");
