@@ -902,7 +902,7 @@ proc ::optable::report {fmt withTable {flipPos 0}} {
   set r [string map [list "\[OprepTitle\]" $title] $r]
   append r [::optable::_title]
   append r "$tr(Database): [file tail [sc_base filename $::curr_db]] "
-  append r "([::utils::thousands [sc_base numGames]] $games)$n"
+  append r "([::utils::thousands [sc_base numGames $::curr_db]] $games)$n"
   append r "$tr(OprepReport): [::trans [sc_report opening line]] ("
   if {$fmt == "ctext"} {
     append r "<darkblue><run sc_report opening select all 0; ::windows::stats::Refresh>"

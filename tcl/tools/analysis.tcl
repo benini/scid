@@ -929,7 +929,7 @@ proc configAnnotation {} {
     # batch annotation of consecutive games, and optional opening errors finder
     ttk::frame $f.batch
     pack $f.batch -side top -fill x
-    set to [sc_base numGames]
+    set to [sc_base numGames $::curr_db]
     if {$to <1} { set to 1}
     ttk::checkbutton $f.batch.cbBatch -text $::tr(AnnotateSeveralGames) -variable ::isBatch
     spinbox $f.batch.spBatchEnd -background white -width 8 -textvariable ::batchEnd \

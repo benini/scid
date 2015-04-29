@@ -15,12 +15,13 @@ if {$argc != 1} {
 }
 
 set baseName [file rootname [ lindex $argv 0 ]]
-if {[catch { sc_base open $baseName } err]} {
-    puts "Error: could not open database: $err"
+if {[catch { sc_base open $baseName } baseId]} {
+    puts "Error: could not open database"
     exit 1
 }
 
-for {set i 1} {$i <= [sc_base numGames]} {incr i} {
+set nGames [sc_base numGames $baseId]
+for {set i 1} {$i <= $nGames} {incr i} {
     if {[catch { sc_game load $i }]} {
         puts "Error: could not load game number $i"
         exit 1

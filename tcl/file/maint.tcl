@@ -332,7 +332,7 @@ proc ::maint::Refresh {} {
   set w .maintWin
   if {![winfo exists $w]} { return }
   set ::curr_db [sc_base current]
-  set ng [sc_base numGames]
+  set ng [sc_base numGames $::curr_db]
   set deleted [sc_base stats flag:D]
   set marked [sc_base stats "flag:$maintFlag"]
   set flags [sc_base stats flags]
@@ -449,8 +449,7 @@ proc ::maint::SetAutoloadGame {} {
 #
 proc markTwins {{parent .}} {
   global twinSettings
-  if {! [sc_base inUse]} { return }
-  if {[sc_base numGames] == 0} {
+  if {[sc_base numGames $::curr_db] == 0} {
     tk_messageBox -type ok -icon info -title [concat "Scid: " $::tr(noGames)] \
         -message $::tr(TwinCheckNoDelete)
     return

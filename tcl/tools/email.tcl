@@ -559,8 +559,9 @@ proc modifyEmailDetails {i} {
   button $w.buttons.save -text "Save" -command {
     set gNumberErr [::tools::email::validGameNumbers $emailData_glist]
     if {$gNumberErr != -1} {
+      set nGames [sc_base numGames [sc_base current]]
       tk_messageBox -icon error -type ok -title "Invalid data" \
-        -message "The games list contains an invalid game number: $gNumberErr; there are only [sc_base numGames] games in this database."
+        -message "The games list contains an invalid game number: $gNumberErr; there are only $nGames games in this database."
     } else {
       set emailData [lreplace $emailData $emailData_index \
                        $emailData_index \
@@ -595,8 +596,9 @@ proc modifyEmailDetails {i} {
 }
 
 proc ::tools::email::validGameNumbers {numberList} {
+  set nGames [sc_base numGames [sc_base current]]
   foreach i $numberList {
-    if {$i < 1  ||  $i > [sc_base numGames]} { return $i }
+    if {$i < 1  ||  $i > $nGames} { return $i }
   }
   return -1
 }

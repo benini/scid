@@ -83,7 +83,7 @@ proc tbstats {str} {
   set str [string toupper $str]
   set count [search $str]
   if {$perMillion} {
-    set count [expr double($count) * 1000000.0 / double([sc_base numGames])]
+    set count [expr double($count) * 1000000.0 / double([sc_base numGames [sc_base current]])]
     set count [expr round($count)]
   }
   puts -nonewline [format " %8s %5d" $str $count]
@@ -401,6 +401,7 @@ incr arg
 set argv [lrange $argv $arg end]
 
 set date [clock format [clock seconds] -format "%d %b %Y"]
+set nGames [sc_base numGames [sc_base current]]
 
 if {$mode == "html"} {
   puts "<html><title>Tablebase endgame frequency statistics</title>"
@@ -409,7 +410,7 @@ if {$mode == "html"} {
   puts {}
   puts "<p>Tablebase endgame frequency statistics by Scid [sc_info version]"
   puts {(<a href="http://scid.sourceforge.net/">scid.sourceforge.net</a>)<br>}
-  puts "Generated from the database \"$db\" ([sc_base numGames] games) on $date"
+  puts "Generated from the database \"$db\" ($nGames games) on $date"
   if {$perMillion} {
     puts "<br>"
     puts "Values are occurrences per million games."
@@ -417,7 +418,7 @@ if {$mode == "html"} {
   puts "</p>"
 } else {
   puts "# Tablebase endgame frequency statistics by Scid [sc_info version] (scid.sourceforge.net)"
-  puts "# Generated from the database \"$db\" ([sc_base numGames] games) on $date"
+  puts "# Generated from the database \"$db\" ($nGames games) on $date"
   if {$perMillion} {
     puts "# Values are occurrences per million games."
   }

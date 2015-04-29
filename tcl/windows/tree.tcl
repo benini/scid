@@ -996,7 +996,7 @@ set ::tree::cancelPrime 0
 
 proc ::tree::primeWithBase {{ fillMask 0 }} {
   set ::tree::cancelPrime 0
-  for {set g 1} { $g <= [sc_base numGames]} { incr g} {
+  for {set g 1} { $g <= [sc_base numGames [sc_base current]]} { incr g} {
     sc_game load $g
     ::tree::primeWithGame $fillMask
     if {$::tree::cancelPrime } { return }
@@ -1119,7 +1119,7 @@ proc ::tree::countBaseMoves { {args ""} } {
   if {$args == "singleGame"} {
     countParseGame
   } else {
-    for {set g 1} { $g <= [sc_base numGames]} { incr g} {
+    for {set g 1} { $g <= [sc_base numGames [sc_base current]]} { incr g} {
       sc_game load $g
       countParseGame
     }

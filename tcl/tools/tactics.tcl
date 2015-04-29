@@ -34,18 +34,19 @@ namespace eval tactics {
     proc findBestMove { {previous 0} } {
         
         set old_game [sc_game number]
+        set nGames [sc_base numGames $::curr_db]
         
         if { $old_game == 1 && $previous != 0} {
             return
         }
         
-        if { $old_game == [sc_base numGames] && $previous == 0} {
+        if { $old_game == $nGames && $previous == 0} {
             return
         }
         
         set found 0
         
-        if {![sc_base inUse] || [sc_base numGames] == 0} {
+        if {$nGames == 0} {
             tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"
             return
         }
@@ -68,7 +69,7 @@ namespace eval tactics {
         if { ! $found } {
             set sens 1
             set start [expr [sc_game number] +1]
-            set end [sc_base numGames]
+            set end $nGames
             if {$previous != 0} {
                 set sens -1
                 set start  [expr [sc_game number] -1]
@@ -231,16 +232,18 @@ namespace eval tactics {
                 set wasOpened 1
             }
             
+            set ::curr_db [sc_base current]
             set solvedCount 0
-            for {set g 1 } { $g <= [sc_base numGames]} { incr g} {
+            set nGames [sc_base numGames $::curr_db]
+            for {set g 1 } { $g <= $nGames} { incr g} {
                 sc_game load $g
                 if {[sc_game tags get "Site"] == $::tactics::solved} { incr solvedCount }
             }
-            set ::curr_db [sc_base current]
-            lappend baseList "$file" "[sc_base extra $::curr_db description] ($solvedCount/[sc_base numGames])"
+            lappend baseList "$file" "[sc_base extra $::curr_db description] ($solvedCount/$nGames)"
             if {! $wasOpened } {
                 sc_base switch $prevBase
                 sc_base close [sc_base slot $file]
+                set ::curr_db [sc_base current]
             }
         }
         
@@ -394,7 +397,7 @@ namespace eval tactics {
         
         #reset site tag for each game
         progressWindow "Scid" $::tr(ResettingScore) $::tr(Cancel) "::tactics::sc_progressBar"
-        set numGames [sc_base numGames]
+        set numGames [sc_base numGames [sc_base current]]
         set cancelScoreReset 0
         for {set g 1} { $g <= $numGames } { incr g} {
             if { $cancelScoreReset } { break }
@@ -438,7 +441,7 @@ namespace eval tactics {
         setInfoEngine $::tr(LoadingGame)
         set newGameFound 0
         # find a game with site tag != problem solved
-        for {set g [ expr $::tactics::lastGameLoaded +1 ] } { $g <= [sc_base numGames]} { incr g} {
+        for {set g [ expr $::tactics::lastGameLoaded +1 ] } { $g <= [sc_base numGames $::curr_db]} { incr g} {
             sc_game load $g
             set tag [sc_game tags get "Site"]
             if {$tag != $::tactics::solved} { set newGameFound 1 ; break }

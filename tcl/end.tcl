@@ -106,14 +106,9 @@ set merge(ply) 40
 #   Produces a dialog for the user to merge a selected game into
 #   the current game.
 #
-proc mergeGame {{base 0} {gnum 0}} {
-  global merge glNumber
-  if {$base == 0} {
-    if {$glNumber < 1} { return }
-    if {$glNumber > [sc_base numGames]} { return }
-    set base [sc_base current]
-    set gnum $glNumber
-  }
+proc mergeGame {base gnum} {
+  global merge
+
   sc_game push copy
   set err [catch {sc_game merge $base $gnum} result]
   sc_game pop
@@ -1097,7 +1092,7 @@ proc gsave { gnum } {
     if { [catch {sc_game save $gnum $::gameSave_toBase}] } { return 0 }
     ::notify::DatabaseModified $::gameSave_toBase
     ::file::SwitchToBase $::gameSave_toBase 0
-    ::game::Load [sc_base numGames] $ply
+    ::game::Load [sc_base numGames $::gameSave_toBase] $ply
   }
   return 1
 }

@@ -331,6 +331,18 @@ UI_typeRes sc_base_list(UI_type2 ti, int argc, const char** argv)
 
 
 /**
+ * sc_base_numGames() - return the number of games in the database
+ */
+UI_typeRes sc_base_numGames(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
+{
+	const char* usage = "Usage: sc_base numGames baseId";
+	if (argc != 3) return UI_Result(ti, ERROR_BadArg, usage);
+
+	return UI_Result(ti, OK, dbase->numGames());
+}
+
+
+/**
  * sc_base_open() - open/create a SCID database
  * @filename:    the filename of the database to open/create
  * @create:      if true create a new database
@@ -408,7 +420,6 @@ uint sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int a
 int sc_base_count       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_export      (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_import      (Tcl_Interp* ti, scidBaseT* cdb, const char * filename);
-int sc_base_numGames    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_slot        (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_stats       (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
 int sc_base_ecoStats    (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv);
@@ -470,9 +481,6 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 	case BASE_LIST:
 		return sc_base_list(ti, argc, argv);
 
-	case BASE_NUMGAMES:
-		return sc_base_numGames (cd, ti, argc, argv);
-
 	case BASE_OPEN:
 		if (argc != 3) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base open filename");
 		return sc_base_open (ti, argv[2]);
@@ -532,6 +540,9 @@ UI_typeRes sc_base (UI_typeExtra cd, UI_type2 ti, int argc, const char ** argv)
 		if (argc != 4) return UI_Result(ti, ERROR_BadArg, "Usage: sc_base import baseId filename");
 		if (dbase->isReadOnly()) return UI_Result(ti, ERROR_FileReadOnly);
 		return sc_base_import (ti, dbase, argv[3]);
+
+	case BASE_NUMGAMES:
+		return sc_base_numGames (dbase, ti, argc, argv);
 
 	case BASE_ISREADONLY:
 		return UI_Result(ti, OK, dbase->isReadOnly());

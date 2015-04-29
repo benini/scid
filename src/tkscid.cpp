@@ -419,23 +419,6 @@ SpellChecker* SpellChecker_get(nameT n) {
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// sc_base_numGames:
-//   Takes optional database number and returns number of games.
-int
-sc_base_numGames (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
-{
-    scidBaseT * basePtr = db;
-    if (argc > 2) {
-        int baseNum = strGetInteger (argv[2]);
-        if (baseNum < 1 || baseNum > MAX_BASES) {
-            return errorResult (ti, "Invalid database number.");
-        }
-        basePtr = &(dbList[baseNum - 1]);
-    }
-    return setUintResult (ti, basePtr->inUse ? basePtr->numGames() : 0);
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // sc_base_inUse
 //  Returns 1 if the database slot is in use; 0 otherwise.
 int

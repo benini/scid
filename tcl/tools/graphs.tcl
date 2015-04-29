@@ -334,7 +334,7 @@ proc ::tools::graphs::filter::Refresh {} {
   set hlines [list [list gray80 1 each $ytick]]
   # Add mean horizontal line:
   set filter [sc_filter count]
-  set all [sc_base numGames]
+  set all [sc_base numGames $::curr_db]
   if {$all > 0} {
     set mean [expr {double($filter) * 1000.0 / double($all)}]
     if {$mean >= 1000.0} { set mean 999.9 }
@@ -814,7 +814,7 @@ proc ::tools::graphs::absfilter::Refresh {} {
   set hlines [list [list gray80 1 each $ytick]]
   # Add mean horizontal line:
   set absfilter [sc_filter count]
-  set all [sc_base numGames]
+  set all [sc_base numGames $::curr_db]
   if { $count != 0 } {set mean [expr { $mean / $count }] }
   if {$all > 0} {
     if {$mean > $max} { set max $mean }

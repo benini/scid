@@ -1358,8 +1358,8 @@ proc updateMenuStates {{menuname}} {
     $m.tools entryconfig [tr ToolsOpReport] -state disabled
     $m.tools entryconfig [tr ToolsPlayerReport] -state disabled
   }
-  
-  if {[sc_base numGames] == 0} {
+
+  if {[sc_base numGames $::curr_db] == 0} {
     $m.tools entryconfig [tr ToolsExpFilter] -state disabled
   } else {
     $m.tools entryconfig [tr ToolsExpFilter] -state normal

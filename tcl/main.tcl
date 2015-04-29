@@ -104,7 +104,7 @@ proc updateTitle {} {
     set fname [file tail $fname]
     append title "$fname ($::tr(game) "
     append title "[::utils::thousands [sc_game number]] / "
-    append title "[::utils::thousands [sc_base numGames]])"
+    append title "[::utils::thousands [sc_base numGames $::curr_db]])"
     ::setTitle . $title
     set white [sc_game info white]
     set black [sc_game info black]

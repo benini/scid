@@ -16,7 +16,7 @@ set ::preport::_clipbase 0
 #   player and color for which to generate a player report.
 #
 proc ::preport::preportDlg {args} {
-  if {[sc_base numGames] == 0} {
+  if {[sc_base numGames $::curr_db] == 0} {
     tk_messageBox -title "Scid" -type ok -icon warning -message "No games in current base"
     return
   }
@@ -529,7 +529,7 @@ proc ::preport::report {fmt {withTable 1}} {
   if {$fmt == "ctext"} { append r "</run></darkblue>"; }
   append r " $games)$n"
   append r "$tr(Database): [file tail [sc_base filename $::curr_db]] "
-  append r "([::utils::thousands [sc_base numGames]] $games)$n"
+  append r "([::utils::thousands [sc_base numGames $::curr_db]] $games)$n"
   if {$eco != ""} {
     append r "$tr(ECO): $eco$n"
   }

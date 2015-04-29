@@ -150,7 +150,7 @@ namespace eval opening {
     
     set ::curr_db [sc_base current]
     progressWindow "Scid" "$::tr(Loadingrepertoire)..." $::tr(Cancel) "::opening::sc_progressBar"
-    for {set g 1} { $g <= [sc_base numGames]} { incr g} {
+    for {set g 1} { $g <= [sc_base numGames $::curr_db]} { incr g} {
       if {$cancelLoadRepertoire} { break  }
       if {$onlyFlaggedLines && ![sc_base gameflag $::curr_db $g get W] && ![sc_base gameflag $::curr_db $g get B]} {
         continue
@@ -159,7 +159,7 @@ namespace eval opening {
       set hashList  {}
       sc_game load $g
       changeProgressWindow "$::tr(Loadingrepertoire)...\n$name\n$desc\n$::tr(Movesloaded) $movesLoaded"
-      updateProgressWindow $g [sc_base numGames]
+      updateProgressWindow $g [sc_base numGames $::curr_db]
       parseGame
       lappend allLinesFenList $fenMovesEvalList
       set hashList [lsort -unique $hashList]
