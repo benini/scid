@@ -742,6 +742,10 @@ set helpMessage($m,[incr menuindex]) OptionsBooksDir
 $m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
 set helpMessage($m,[incr menuindex]) OptionsTacticsBasesDir
 
+#TODO: translate
+$m add command -label "Photos directory..." -command setPhotoDir
+set helpMessage($m,[incr menuindex]) "Sets the players photo directory"
+
 proc setBooksDir {} {
   global scidBooksDir
   set dir [tk_chooseDirectory -initialdir $scidBooksDir -mustexist 1]
@@ -759,6 +763,18 @@ proc setTacticsBasesDir {} {
     return
   } else {
     set scidBasesDir $dir
+  }
+}
+
+proc setPhotoDir {} {
+  set dir [tk_chooseDirectory -initialdir $::scidExeDir -mustexist 1]
+  if {$dir == ""} {
+    return
+  } else {
+    set ::scidPhotoDir $dir
+    options.save ::scidPhotoDir
+	loadPlayersPhoto
+	updatePlayerPhotos -force
   }
 }
 

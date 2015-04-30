@@ -579,42 +579,48 @@ array set spffile {}
 # Alias is dropped if the player hasn't photo.
 set droppedaliases 0
 
-# Directories where Scid searches for the photo files
-set photodirs [list $scidDataDir $scidUserDir $scidConfigDir [file join $scidShareDir "photos"]]
+proc loadPlayersPhoto {} {
+  # Directories where Scid searches for the photo files
+  set photodirs [list $::scidDataDir $::scidUserDir $::scidConfigDir [file join $::scidShareDir "photos"]]
+  if {[info exists ::scidPhotoDir]} { lappend photodirs $::scidPhotoDir }
 
-# Read all Scid photo (*.spf) files in the Scid data/user/config directories:
-foreach dir $photodirs {
-    foreach photofile [glob -nocomplain -directory $dir "*.spf"] {
-        readPhotoFile $photofile
-    }
+  # Read all Scid photo (*.spf) files in the Scid data/user/config directories:
+  foreach dir $photodirs {
+      foreach photofile [glob -nocomplain -directory $dir "*.spf"] {
+          readPhotoFile $photofile
+      }
+  }
+
+  # Read all Scid photo aliases (*.spa)
+  foreach dir $photodirs {
+      foreach spa [glob -nocomplain -directory $dir "*.spa"] {
+          if {! [file readable $spa]} { return }
+          set count [array size spffile]
+          set droppedcount $droppedaliases
+          source $spa
+          set newcount [array size spffile]
+          set newdroppedcount $droppedaliases
+          if {[expr $newcount - $count] > 0} {
+              ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $spa]"
+          }
+          if {[expr $newdroppedcount - $droppedcount] > 0} {
+              ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $spa]"
+          }
+      }
+  }
+
 }
-
-# Read all Scid photo aliases (*.spa)
-foreach dir $photodirs {
-    foreach spa [glob -nocomplain -directory $dir "*.spa"] {
-        if {! [file readable $spa]} { return }
-        set count [array size spffile]
-        set droppedcount $droppedaliases
-        source $spa
-        set newcount [array size spffile]
-        set newdroppedcount $droppedaliases
-        if {[expr $newcount - $count] > 0} {
-            ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $spa]"
-        }
-        if {[expr $newdroppedcount - $droppedcount] > 0} {
-            ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $spa]"
-        }
-    }
-}
-
+loadPlayersPhoto
 
 set photo(oldWhite) {}
 set photo(oldBlack) {}
 
 # Try to change the engine name: ignore version number, try to ignore blanks
+# TODO: rename this function (spellcheck playernames, converts to lower case and remove spaces)
 proc trimEngineName { engine } {
     global spffile
-    set engine [sc_name retrievename $engine]
+    set spell_name [sc_name retrievename $engine]
+    if {$spell_name != ""} { set engine $spell_name }
     
     set engine [string tolower $engine]
     
