@@ -208,21 +208,29 @@ public:
 
 } //End of UI_impl namespace
 
-
 inline int UI_Main (int argc, char* argv[], void (*exit) (void*)) {
 	Tcl_FindExecutable(argv[0]);
 	Tcl_CreateExitHandler(exit, 0);
-	if (argc == 1) {
-		char sourceFileName [1024];
-		char* newArgv[] = { argv[0], sourceFileName };
-		ASSERT(strlen(Tcl_GetNameOfExecutable()) < 1000);
-		strcpy(sourceFileName, Tcl_GetNameOfExecutable());
-		char* end = strrchr (sourceFileName, '/');
-		strcpy (end + 1, "tcl/start.tcl");
-		if (0 != Tcl_Access(sourceFileName, 4)) {
-			strcpy (end + 1, "../tcl/start.tcl");
+	bool search_tcl = (argc == 1) ? true : false;
+	if (argc > 1 && argc < 10) {
+		char* ext = strrchr (argv[1], '.');
+		if (ext != 0 && strlen(ext) == 4 && std::string(".tcl") != ext) {
+			search_tcl = true;
 		}
-		Tcl_Main(sizeof newArgv/sizeof newArgv[0], newArgv, UI_impl::initTclTk);
+	}
+	if (search_tcl) {
+		char sourceFileName [1024] = {0};
+		strncpy(sourceFileName, Tcl_GetNameOfExecutable(), 1000);
+		char* dirname = strrchr(sourceFileName, '/');
+		if (dirname == 0) dirname = sourceFileName;
+		else dirname += 1;
+		strcpy (dirname, "tcl/start.tcl");
+		if (0 != Tcl_Access(sourceFileName, 4)) {
+			strcpy (dirname, "../tcl/start.tcl");
+		}
+		char* newArgv[10] = { argv[0], sourceFileName };
+		std::copy(argv + 1, argv + argc, newArgv + 2);
+		Tcl_Main(argc + 1, newArgv, UI_impl::initTclTk);
 	} else {
 		Tcl_Main (argc, argv, UI_impl::initTclTk);
 	}

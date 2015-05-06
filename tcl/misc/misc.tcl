@@ -2,6 +2,7 @@
 ### misc.tcl: part of Scid.
 ### Copyright (C) 2001  Shane Hudson.
 ### Copyright (C) 2007  Pascal Georges
+### Copyright (C) 2015  Fulvio Benini
 ###
 ### Miscellaneous routines called by other Tcl functions
 
@@ -396,27 +397,10 @@ proc progressCallBack {done {total 1} {elapsed 0} {estimated 0}} {
   update
 }
 
-proc leftJustifyProgressWindow {} {
-  set w .progressWin
-  if {! [winfo exists $w]} { return }
-  pack configure $w.f.t -fill x
-  $w.f.t configure -width 1 -anchor w
-}
-
 proc changeProgressWindow {newtext} {
   set w .progressWin
   if {[winfo exists $w]} {
     $w.f.t configure -text $newtext
-    update idletasks
-  }
-}
-
-proc resetProgressWindow {} {
-  set w .progressWin
-  set ::progressWin_time [clock seconds]
-  if {[winfo exists $w]} {
-    $w.f.c coords bar 0 0 0 0
-    $w.f.c itemconfigure time -text "0:00 / 0:00"
     update idletasks
   }
 }

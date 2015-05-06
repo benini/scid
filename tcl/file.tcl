@@ -110,7 +110,8 @@ proc ::file::Open {{fName ""}} {
   set err [::file::Open_ "$fName"]
   if {$err == 0} {
     set ::curr_db $::file::lastOpened
-    ::game::Load [sc_base extra $::curr_db autoload] 0
+    set g [sc_base extra $::curr_db autoload]
+    if {$g != 0} { ::game::Load $g 0 }
     ::windows::gamelist::Open $::curr_db
     ::notify::GameChanged
     ::notify::DatabaseChanged

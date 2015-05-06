@@ -236,7 +236,10 @@ proc ::game::Load_ { selection {ply ""} } {
     sc_game save [sc_game number]
     # ::gameReplace
   }
-  sc_game load $selection
+  if {[catch {sc_game load $selection}]} {
+    ERROR::MessageBox
+    return 0
+  }
   if {$ply != ""} { eval "sc_move ply $ply" }
   return 1
 }
@@ -328,7 +331,7 @@ proc ::game::mergeInBase { srcBase destBase gnum } {
 # Grouping intercommunication between windows
 # When complete this should be moved to a new notify.tcl file
 namespace eval ::notify {
-  # To be called when the current game change or is modified
+  # To be called when the current game change or the Header infos (player names, site, result, etc) are modified
   proc GameChanged {} {
     global gamePlayers
     set gamePlayers(nameW) [sc_game info white]
@@ -340,13 +343,38 @@ namespace eval ::notify {
     if {$eloB == 0} { set gamePlayers(eloB) "" } else { set gamePlayers(eloB) "($eloB)" }
     set ::gamePlayers(clockB) ""
 
-    updateBoard -pgn
-    updateTitle
+    ::notify::PosChanged -pgn
     ::windows::gamelist::Refresh 0
   }
 
+  # To be called when the current position changes
+  # - draw the new position
+  # @-animate: if true will try to animate the moving piece
+  #            ignored if more than one piece is in a different position
+  #
+  # - inform the other modules that the current position is changed
+  # @-pgn: must be true if the pgn notation is different (new moves, new tags, etc)
+  #
+  proc PosChanged {args} {
+    set pgnNeedsUpdate 0
+    set animate 0
+    foreach arg $args {
+        if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
+        if {! [string compare $arg "-animate"]} { set animate 1 }
+    }
+
+    ::pgn::Refresh $pgnNeedsUpdate
+
+    ::board::setmarks .main.board [sc_pos getComment]
+    ::board::update .main.board [sc_pos board] $animate
+
+    after cancel ::notify::privPosChanged
+    update idletasks
+    after idle ::notify::privPosChanged
+}
+
   # To be called when the position of the current game change
-  proc PosChanged {} {
+  proc privPosChanged {} {
     moveEntry_Clear
     updateStatusBar
     updateMainToolbar
@@ -358,7 +386,6 @@ namespace eval ::notify {
     ::commenteditor::Refresh
     ::tb::results
     if {[winfo exists .twinchecker]} { updateTwinChecker }
-    ::pgn::Refresh
     if {[winfo exists .bookWin]} { ::book::refresh }
     if {[winfo exists .bookTuningWin]} { ::book::refreshTuning }
     updateNoveltyWin
@@ -367,10 +394,10 @@ namespace eval ::notify {
 
   # To be called when the current database change or a new base is opened
   proc DatabaseChanged {} {
+    set ::curr_db [sc_base current]
     ::windows::switcher::Refresh
     ::windows::stats::Refresh
-    set curr_base [sc_base current]
-    set ::treeWin [winfo exists .treeWin$curr_base]
+    set ::treeWin [winfo exists .treeWin$::curr_db]
   }
 
   # To be called after modifying data in a database

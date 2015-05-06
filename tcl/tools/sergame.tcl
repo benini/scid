@@ -343,18 +343,19 @@ namespace eval sergame {
     ::gameclock::reset 1
     ::gameclock::start 1
     
-    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::sergame::abortGame
+    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command "destroy .serGameWin"
     pack $w.fbuttons.close -expand yes
     
     pack $w.fclocks -side top -expand yes -fill both
     pack $w.fbuttons -side top -expand yes -fill both
     
     bind $w <F1> { helpWindow TacticalGame }
-    bind $w <Destroy> ::sergame::abortGame
-    bind $w <Escape> ::sergame::abortGame
+    bind $w <Destroy> "if {\[string equal $w %W\]} {::sergame::abortGame}"
+    bind $w <Escape> "destroy .serGameWin"
     bind $w <Configure> "recordWinSize $w"
     wm minsize $w 45 0
-    
+    createToplevelFinalize $w
+
     # setup clocks
     if { [::sergame::getEngineColor] == "white" } {
       ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(wtime$n)/1000]
@@ -364,13 +365,20 @@ namespace eval sergame {
       ::gameclock::setSec 2 [expr 0 - $::uci::uciInfo(btime$n)/1000]
     }
     
+    set ::playMode "::sergame::callback"
     set ::sergame::wentOutOfBook 0
     ::sergame::engineGo $n
   }
-  ################################################################################
-  #
-  ################################################################################
+
+  proc callback {cmd} {
+    switch $cmd {
+        stop { destroy .serGameWin }
+    }
+    return 0
+  }
+
   proc abortGame { { n 3 } } {
+    unset ::playMode
     set ::sergame::lFen {}
     if { $::uci::uciInfo(pipe$n) == ""} { return }
     after cancel ::sergame::engineGo $n
@@ -378,9 +386,7 @@ namespace eval sergame {
     ::gameclock::stop 1
     ::gameclock::stop 2
     set ::uci::uciInfo(bestmove$n) "abort"
-    destroy .serGameWin
-    focus .
-    ::docking::cleanup .serGameWin
+    ::notify::GameChanged
   }
   
   ################################################################################

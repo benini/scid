@@ -1107,8 +1107,9 @@ proc helpAbout {} {
   append str "Using Tcl/Tk version: [info patchlevel]\n\n"
   append str "Copyright (C) 1999-2004 Shane Hudson\n"
   append str "Copyright (C) 2006-2009 Pascal Georges\n"
-  append str "Copyright (C) 2010- The Scid Project\n"
-  append str "Scid is licenced under the\n"
+  append str "Copyright (C) 2008-2011 Alexander Wagner\n"
+  append str "Copyright (C) 2009-2015 Fulvio Benini\n"
+  append str "\nScid is licenced under the\n"
   append str "GNU General Public License.\n"
 
   tk_messageBox -title "About Scid" -message $str -type ok
@@ -1255,18 +1256,6 @@ proc getCommandLineOptions {} {
         "xspell" {
           set loadAtStart(spell) 0
         }
-        "s1"  { set ::boardSize 21 }
-        "s2"  { set ::boardSize 25 }
-        "s3"  { set ::boardSize 29 }
-        "s4"  { set ::boardSize 33 }
-        "s5"  { set ::boardSize 37 }
-        "s6"  { set ::boardSize 40 }
-        "s7"  { set ::boardSize 45 }
-        "s8"  { set ::boardSize 49 }
-        "s9"  { set ::boardSize 54 }
-        "s10" { set ::boardSize 58 }
-        "s11" { set ::boardSize 64 }
-        "s12" { set ::boardSize 72 }
         default {
           ::splash::add "Warning: unknown option: \"$arg\""
         }
@@ -1447,13 +1436,9 @@ after 1 {
   }
 
   # Opening files by drag & drop on Scid icon on Mac
-  if { $macOS } {
-    # We opened for a drag & drop request, process it now:
-    set isopenBaseready 1
-    if {$dndargs != 0} {
-      set isopenBaseready 2
-      catch {::tk::mac::OpenDocument $dndargs} errmsg
-    }
+  namespace eval ::tk::mac {}
+  proc ::tk::mac::OpenDocument {args} {
+    foreach f $args {::file::Open $f}
   }
 }
 

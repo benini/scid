@@ -110,7 +110,7 @@ namespace eval tacgame {
       ::tacgame::closeEngine 2
     }
     
-    # find Phalanx and Toga engines
+    # find Phalanx and a UCI engine
     set i 0
     set index1 -1
     set index2 -1
@@ -122,14 +122,14 @@ namespace eval tacgame {
         set index1 $i
       }
       
-      if { [ string match -nocase "*toga*" $name ] } {
+      if {[lindex $e 7] != 0} {
         set engineCoach2 $name
         set index2 $i
       }
       incr i
     }
     
-    # could not find Toga or Phalanx
+    # could not find engines
     if { $index1 == -1 || $index2 == -1 } {
       tk_messageBox -title "Scid" -icon warning -type ok -message $::tr(PhalanxOrTogaMissing)
       return
@@ -257,6 +257,13 @@ namespace eval tacgame {
     
     set analysisCoach(paused) 0
     
+    set w .coachWin
+    if {[winfo exists $w]} {
+      focus .
+      destroy $w
+      return
+    }
+
     if {$::tacgame::randomLevel} {
       if {$::tacgame::levelMax < $::tacgame::levelMin} {
         set tmp $::tacgame::levelMax
@@ -307,16 +314,7 @@ namespace eval tacgame {
       if {[sc_base inUse [sc_base current]]} { catch {sc_game save 0}  }
     }
     
-    updateBoard -pgn
-    ::windows::gamelist::Refresh
-    updateTitle
-    
-    set w .coachWin
-    if {[winfo exists $w]} {
-      focus .
-      destroy $w
-      return
-    }
+    ::notify::GameChanged
     
     createToplevel $w
     setTitle $w "$::tr(coachgame) (Elo $level)"
@@ -358,7 +356,7 @@ namespace eval tacgame {
     }
     pack $w.fbuttons.resume -expand yes -fill both -padx 20 -pady 2
     
-    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command ::tacgame::abortGame
+    ttk::button $w.fbuttons.close -textvar ::tr(Abort) -command "destroy .coachWin"
     pack $w.fbuttons.close -expand yes -fill both -padx 20 -pady 2
     
     ::tacgame::launchengine $index1 1
@@ -370,25 +368,32 @@ namespace eval tacgame {
     updateAnalysisText
     
     bind $w <F1> { helpWindow TacticalGame }
-    bind $w <Destroy> "after cancel ::tacgame::phalanxGo ; focus . ; \
-        ::tacgame::closeEngine 1; ::tacgame::closeEngine 2"
-    bind $w <Escape> ::tacgame::abortGame
+    bind $w <Destroy> "if {\[string equal $w %W\]} {::tacgame::abortGame}"
+    bind $w <Escape> "destroy .coachWin"
     bind $w <Configure> "recordWinSize $w"
     wm minsize $w 45 0
-    
+    createToplevelFinalize $w
+
+    set ::playMode "::tacgame::callback"
     ::tacgame::phalanxGo
+  }
+
+  proc callback {cmd} {
+    switch $cmd {
+        stop { destroy .coachWin }
+    }
+    return 0
   }
   ################################################################################
   #
   ################################################################################
   proc abortGame { { destroyWin 1 } } {
+    unset ::playMode
     after cancel ::tacgame::phalanxGo
     stopAnalyze
-    if { $destroyWin } { destroy ".coachWin" }
-    focus .
     ::tacgame::closeEngine 1
     ::tacgame::closeEngine 2
-    ::docking::cleanup .coachWin
+    ::notify::GameChanged
   }
   # ======================================================================
   #   ::tacgame::launchengine
@@ -534,22 +539,6 @@ namespace eval tacgame {
     
     # Get one line from the engine:
     set line [gets $analysisCoach(pipe1)]
-    
-    # check that the engine is really Phalanx
-	 # Allowd versions include Phalanx-scid Phalanx-pg and XXIII
-	 # upwards
-	 if { ! $analysisCoach(seen1) && $line != {Phalanx XXII-pg} && $line != {Phalanx XXIII} && $line != {Phalanx XXII-scid} } {
-
-      after cancel ::tacgame::phalanxGo
-      ::tacgame::closeEngine 1
-      # ::tacgame::closeEngine 2
-      ::uci::closeUCIengine 2
-      tk_messageBox -type ok -icon warning -parent .main -title "Scid" -message "Please choose the correct Phalanx engine"
-      focus .
-      destroy .coachWin
-      ::tacgame::config
-      return
-    }
     
     # Check that the engine did not terminate unexpectedly:
     if {[eof $analysisCoach(pipe1)]} {

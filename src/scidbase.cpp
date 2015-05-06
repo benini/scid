@@ -563,6 +563,11 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	for (sort_t::iterator it = sort.begin(); it != sort.end(); it++) {
 		err_AddGame = tmp.addGame_(this, (*it).second);
 		if (err_AddGame != OK) break;
+		//TODO:
+		//- update bookmarks game number
+		//- update autoload game number
+		//  (*it).second   == old game number
+		//  tmp.numGames() == new game number
 		if (iProgress++ % 10000 == 0) {
 			if (!progress.report(iProgress, sort.size())) {
 				err_UserCancel = true;

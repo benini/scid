@@ -73,10 +73,7 @@ private:
         versionT    version;     // version number. 2 bytes.
         uint        baseType;    // Type, e.g. tournament, theory, etc.
         gamenumT    numGames;    // number of games in file.
-        gamenumT    autoLoad;    // game number to autoload: 0=1st, 1=none, 2=1st,
-                                 //   3=2nd, 4=3rd, etc. Note that 0=1st for
-                                 //   backwards compatibility: bases with this
-                                 //   unset will load game 1.
+        gamenumT    autoLoad;    // game number to autoload: 0=none, 1=1st, >numGames=last
         // description is a fixed-length string describing the database.
         char        description [SCID_DESC_LENGTH + 1];
         // short description (8 chars) for the CUSTOM_FLAG_MAX bits for CUSTOM flags
@@ -155,7 +152,7 @@ public:
         return Header.customFlagDesc[c - IDX_FLAG_CUSTOM1];
     }
     gamenumT GetAutoLoad () const {
-        return (Header.autoLoad > 0) ? Header.autoLoad : 1;
+        return (Header.autoLoad <= Header.numGames) ? Header.autoLoad : Header.numGames;
     }
 
     // Functions that modify the Header

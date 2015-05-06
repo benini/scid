@@ -97,9 +97,10 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
     menu $w.menu.$i -tearoff 0
   }
   
-  $w.menu.file add command -label TreeFileFillWithBase -command "::tree::primeWithBase"
+  #TODO: remove this
+  $w.menu.file add command -label TreeFileFillWithBase
   set helpMessage($w.menu.file,0) TreeFileFillWithBase
-  $w.menu.file add command -label TreeFileFillWithGame -command "::tree::primeWithGame"
+  $w.menu.file add command -label TreeFileFillWithGame
   set helpMessage($w.menu.file,1) TreeFileFillWithGame
   
   menu $w.menu.file.size
@@ -139,10 +140,12 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   set helpMessage($w.menu.mask,3) TreeMaskSave
   $w.menu.mask add command -label TreeMaskClose -command "::tree::mask::close"
   set helpMessage($w.menu.mask,4) TreeMaskClose
-  $w.menu.mask add command -label TreeMaskFillWithGame -command "::tree::mask::fillWithGame"
+  #TODO: remove this
+  $w.menu.mask add command -label TreeMaskFillWithGame
   set helpMessage($w.menu.mask,5) TreeMaskFillWithGame
-  $w.menu.mask add command -label TreeMaskFillWithBase -command "::tree::mask::fillWithBase"
+  $w.menu.mask add command -label TreeMaskFillWithBase
   set helpMessage($w.menu.mask,6) TreeMaskFillWithBase
+
   $w.menu.mask add command -label TreeMaskSearch -command "::tree::mask::searchMask $baseNumber"
   set helpMessage($w.menu.mask,7) TreeMaskSearch
   $w.menu.mask add command -label TreeMaskInfo -command "::tree::mask::infoMask"
@@ -216,6 +219,7 @@ proc ::tree::make { { baseNumber -1 } {locked 0} } {
   $w.buttons.stop configure -state disabled
   
   wm minsize $w 40 5
+  ::createToplevelFinalize $w
   
   wm protocol $w WM_DELETE_WINDOW " .treeWin$baseNumber.buttons.close invoke "
   ::tree::refresh $baseNumber
@@ -989,143 +993,7 @@ proc ::tree::getCacheInfo { base } {
       -message "Cache used : [lindex $ci 0] / [lindex $ci 1]"
   
 }
-################################################################################
-# will go through all moves of all games of current base
-################################################################################
-set ::tree::cancelPrime 0
 
-proc ::tree::primeWithBase {{ fillMask 0 }} {
-  set ::tree::cancelPrime 0
-  for {set g 1} { $g <= [sc_base numGames [sc_base current]]} { incr g} {
-    sc_game load $g
-    ::tree::primeWithGame $fillMask
-    if {$::tree::cancelPrime } { return }
-  }
-}
-################################################################################
-#
-################################################################################
-proc ::tree::primeWithGame { { fillMask 0 } } {
-  set ::tree::totalMoves [countBaseMoves "singleGame" ]
-  sc_move start
-  if {$fillMask} { ::tree::mask::feedMask [ sc_pos fen ] }
-  
-  set ::tree::parsedMoves 0
-  set ::tree::cancelPrime 0
-  progressWindow "Scid: [tr TreeFileFill]" "$::tree::totalMoves moves" $::tr(Cancel) {
-    set ::tree::cancelPrime 1
-    foreach i [sc_base list] {
-      catch { .treeWin$i.buttons.stop invoke }
-    }
-  }
-  resetProgressWindow
-  leftJustifyProgressWindow
-  ::tree::parseGame $fillMask
-  closeProgressWindow
-  updateBoard -pgn
-}
-
-################################################################################
-# parse one game and fill the list
-################################################################################
-proc ::tree::parseGame {{ fillMask 0 }} {
-  if {$::tree::cancelPrime } { return  }
-  ::tree::refresh
-  if {$::tree::cancelPrime } { return }
-  while {![sc_pos isAt vend]} {
-    updateProgressWindow $::tree::parsedMoves $::tree::totalMoves
-    
-    # Go through all variants
-    for {set v 0} {$v<[sc_var count]} {incr v} {
-      # enter each var (beware the first move is played)
-      set fen [ sc_pos fen ]
-      sc_var enter $v
-      if {$fillMask} { ::tree::mask::feedMask $fen }
-      if {$::tree::cancelPrime } { return }
-      if {$::tree::cancelPrime } { return }
-      ::tree::parseVar $fillMask
-      if {$::tree::cancelPrime } { return }
-    }
-    # now treat the main line
-    set fen [ sc_pos fen ]
-    sc_move forward
-    if {$fillMask} { ::tree::mask::feedMask $fen }
-    incr ::tree::parsedMoves
-    if {$::tree::cancelPrime } { return }
-    if {$::tree::cancelPrime } { return }
-  }
-}
-################################################################################
-# parse recursively variants.
-################################################################################
-proc ::tree::parseVar {{ fillMask 0 }} {
-  while {![sc_pos isAt vend]} {
-    # Go through all variants
-    for {set v 0} {$v<[sc_var count]} {incr v} {
-      set fen [ sc_pos fen ]
-      sc_var enter $v
-      if {$fillMask} { ::tree::mask::feedMask $fen }
-      if {$::tree::cancelPrime } { return }
-      if {$::tree::cancelPrime } { return }
-      # we are at the start of a var, before the first move : start recursive calls
-      parseVar $fillMask
-      if {$::tree::cancelPrime } { return }
-    }
-    
-    set fen [ sc_pos fen ]
-    sc_move forward
-    if {$fillMask} { ::tree::mask::feedMask $fen }
-    incr ::tree::parsedMoves
-    updateProgressWindow $::tree::parsedMoves $::tree::totalMoves
-    if {$::tree::cancelPrime } { return }
-    if {$::tree::cancelPrime } { return }
-  }
-  
-  sc_var exit
-}
-################################################################################
-# count moves that will fill the cache
-################################################################################
-proc ::tree::countBaseMoves { {args ""} } {
-  set ::tree::total 0
-  
-  ################################################################################
-  proc countParseGame {} {
-    sc_move start
-    
-    while {![sc_pos isAt vend]} {
-      for {set v 0} {$v<[sc_var count]} {incr v} {
-        sc_var enter $v
-        countParseVar
-      }
-      sc_move forward
-      incr ::tree::total
-    }
-  }
-  ################################################################################
-  proc countParseVar {} {
-    while {![sc_pos isAt vend]} {
-      for {set v 0} {$v<[sc_var count]} {incr v} {
-        sc_var enter $v
-        countParseVar
-        incr ::tree::total
-      }
-      sc_move forward
-      incr ::tree::total
-    }
-    sc_var exit
-  }
-  
-  if {$args == "singleGame"} {
-    countParseGame
-  } else {
-    for {set g 1} { $g <= [sc_base numGames [sc_base current]]} { incr g} {
-      sc_game load $g
-      countParseGame
-    }
-  }
-  return $::tree::total
-}
 
 ################################################################################
 #
@@ -1683,28 +1551,6 @@ proc ::tree::mask::updateComment { { move "" } } {
   }
 }
 
-################################################################################
-#
-################################################################################
-proc ::tree::mask::fillWithGame {} {
-  if {$::tree::mask::maskFile == ""} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr OpenAMaskFileFirst]
-    return
-  }
-  ::tree::primeWithGame 1
-  set ::tree::mask::dirty 1
-}
-################################################################################
-#
-################################################################################
-proc ::tree::mask::fillWithBase {} {
-  if {$::tree::mask::maskFile == ""} {
-    tk_messageBox -title "Scid" -type ok -icon warning -message [ tr OpenAMaskFileFirst]
-    return
-  }
-  ::tree::primeWithBase 1
-  set ::tree::mask::dirty 1
-}
 ################################################################################
 # Take current position information and fill the mask (move, nag, comments, etc)
 ################################################################################

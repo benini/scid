@@ -136,6 +136,7 @@ proc ::reviewgame::start {} {
   bind $w <Destroy> { ::reviewgame::endTraining }
   bind $w <Configure> "recordWinSize $w"
   bind $w <F1> { helpWindow ReviewGame }
+  ::createToplevelFinalize $w
   
   set ::reviewgame::prevFen [sc_pos fen]
   set ::reviewgame::movesLikePlayer 0

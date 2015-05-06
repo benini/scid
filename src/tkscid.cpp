@@ -458,15 +458,6 @@ sc_base_slot (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     }
     fileNameT fname;
     strCopy (fname, argv[2]);
-    const char * suffix = strFileSuffix (fname);
-
-    if (suffix == NULL  ||
-        (!strEqual (suffix, INDEX_SUFFIX)
-         &&  !strEqual (suffix, GZIP_SUFFIX)
-         &&  !strEqual (suffix, PGN_SUFFIX))) {
-        // Need to add Index file suffix:
-        strAppend (fname, INDEX_SUFFIX);
-    }
 
     return setIntResult (ti, base_opened (fname) + 1);
 }
@@ -11145,8 +11136,8 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     errorT res = search_index(base, filter, argc -2, argv +2, progress);
     if (res != OK) return UI_Result(ti, res);
 
-    //TODO: FILTEROP_OR will not work until all the follow options will be replaced
-    //      for the moment this is fine, because there is no tcl code that use FILTEROP_OR
+    //TODO: the old options that follows do not work with FILTEROP_OR
+    //      at the moment there is no tcl code that use them with FILTEROP_OR
 
 	char * sAnnotator = NULL;
 

@@ -390,6 +390,8 @@ namespace eval fics {
     bind $w.f.top.fconsole.f1.console <Configure> { .fics.f.top.fconsole.f1.console yview moveto 1 }
     bind $w.f.top.fconsole.f1.console <ButtonPress-1> { ::fics::consoleClick %x %y %W }
     keyboardShortcuts $w
+    ::createToplevelFinalize $w
+
 
     # all widgets must be visible
     update

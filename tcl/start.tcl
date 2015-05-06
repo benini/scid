@@ -5,7 +5,7 @@
 # Copyright (C) 1999-2004 Shane Hudson
 # Copyright (C) 2006-2009 Pascal Georges
 # Copyright (C) 2008-2011 Alexander Wagner
-# Copyright (C) 2013-2014 Fulvio Benini
+# Copyright (C) 2013-2015 Fulvio Benini
 #
 # Scid is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -189,6 +189,7 @@ foreach ns {
   ::config ::docking
   ::pinfo
   ::commenteditor
+  ::unsafe
 } {
   namespace eval $ns {}
 }
@@ -196,6 +197,7 @@ foreach ns {
 proc ::splash::add {text} {
 #TODO: decide what to do with all the splash messages (delete?)
 }
+
 
 
 ####################################################
@@ -285,7 +287,7 @@ proc InitWinsDefaultGeometry {} {
   set ::docking::layout_list(1) {}
   set ::docking::layout_list(2) {{.pw vertical} {TPanedwindow {{.pw.pw0 horizontal} {TNotebook .nb .fdockmain} {TNotebook .tb1 .fdockpgnWin}}}}
   set ::docking::layout_list(3) {{MainWindowGeometry 1024x542+0+0 zoomed} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical 360} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 368} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 196} {TNotebook .tb7 .fdockpgnWin} {TNotebook .tb9 .fdockanalysisWin1}}}}} {TPanedwindow {{.pw.pw0.pw2.pw4 horizontal {}} {TNotebook .tb3 .fdockglistWin1}}}}}}}}}
-  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical {}} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 270} {TNotebook .tb7 {.fdockpgnWin .fdockanalysisWin1}} {TNotebook .tb9 .fdockglistWin1}}}}}}}}}}}
+  set ::docking::layout_list(auto) {{MainWindowGeometry 1024x532+0+0} {{.pw vertical {}} {TPanedwindow {{.pw.pw0 horizontal {}} {TPanedwindow {{.pw.pw0.pw2 vertical {}} {TPanedwindow {{.pw.pw0.pw2.pw6 horizontal 413} {TNotebook .nb .fdockmain} {TPanedwindow {{.pw.pw0.pw2.pw6.pw8 vertical 270} {TNotebook .tb7 {.fdockanalysisWin1 .fdockpgnWin}} {TNotebook .tb9 .fdockglistWin1}}}}}}}}}}}
 
 }
 
@@ -498,6 +500,7 @@ set ::pgn::shortHeader 1
 set ::pgn::boldMainLine 1
 set ::pgn::columnFormat 0
 set ::pgn::stripMarks 0
+set ::pgn::showPhoto 1
 set pgnColor(Header) "\#00008b"
 set pgnColor(Main) "\#000000"
 set pgnColor(Var) "\#0000ee"
@@ -821,105 +824,44 @@ if { $macOS } {
 }
 
 
-# Opening files by drag & drop on Scid icon on Mac
-if { $macOS } {
-  # Drag & Drop
-  set dndisbusy 0
-  set isopenBaseready 0
-  set dndargs 0
-  
-  proc dragndrop {args} {
-    global dndisbusy
-    global isopenBaseready
-    global dndargs
-    
-    # Un-nest arguments:
-    set args [join $args]
-    
-    # Wait for openBase to be ready, if needed.
-    if {$isopenBaseready == 0} {
-      if {$dndargs != 0} {
-        tk_messageBox -type ok -icon info -title "Scid" -message \
-            "Please, wait until Scid finish starting up."
-        return
-      } else {
-        # Save file names for later use:
-        set dndargs $args
-      }
-      return
-    }
-    
-    # Are we busy opening files? if so, display message and do nothing
-    if {$dndisbusy != 0} {
-      tk_messageBox -type ok -icon info -title "Scid" -message \
-          "Please, wait until the previou(s) database(s) are opened and try again."
-      return
-    }
-    
-    # Un-nest arguments again if Scid opened on drag & drop
-    if {$isopenBaseready == 2} {
-      # Un-nest arguments:
-      set args [join $args]
-      set isopenBaseready 1
-    }
-    
-    set dndisbusy 1
-    set errmsg ""
-    foreach file $args {
-      # Email File:
-      if {[file extension $file] == ".sem"} {
-        #::tools::email
-        continue
-      }
-      # SearchOptions file:
-      if {[file extension $file] == ".sso"} {
-        set ::fName $file
-        if {[catch {uplevel "#0" {source $::fName}} errmsg]} {
-          tk_messageBox -title "Scid: Error reading file" -type ok -icon warning \
-              -message "Unable to open or read SearchOptions file: $file"
-        } else {
-          switch -- $::searchType {
-            "Material" { ::search::material }
-            "Header"   { ::search::header }
-            default    { continue }
-          }
-        }
-        continue
-      }
-      
-      # Scid doesn't handle well .sg4 and .sn4 files.
-      if {([file extension $file] == ".sg4") || \
-            ([file extension $file] == ".sn4")} {
-        set eName ".si4"
-        set fName [file rootname $file]
-        set file "$fName$eName"
-      }
-      # Scid doesn't handle well .sg3 and .sn3 files.
-      if {([file extension $file] == ".sg3") || \
-            ([file extension $file] == ".sn3")} {
-        set eName ".si3"
-        set fName [file rootname $file]
-        set file "$fName$eName"
-      }
-      
-      # Check if base is already opened
-      if {[sc_base slot $file] != 0} {
-        tk_messageBox -type ok -icon info -title "Scid" -message \
-            "$file is already opened."
-      } else  {
-        # All seems good, let's open those files:
-        catch {::file::Open $file} errmsg
-      }
-    }
-    set dndisbusy 0
-    set dndargs 0
-  }
-  proc tkOpenDocument {args} {
-    after idle [list dragndrop $args]
-  }
-  rename tkOpenDocument ::tk::mac::OpenDocument
-}
+####################################################
+# safeSource() - source a file using a safe interpreter
+# @filename:  the absolute path to the file to source (load and execute)
+# @args:      pairs of varname value that are visible to the sourced code
+#
+# This function execute the code inside a safe tcl interpreter and override
+# "set" to import the variables of the executed code in the ::unsafe namespace.
+# Attention must be paid to not evaluate ::unsafe vars, for example:
+# set ::unsafe::badcode {tk_messageBox -message executeme}
+# eval $::unsafe::badcode
+# after idle $::unsafe::badcode
 
+proc safeSource {filename args} {
+  if {![info exists ::safeInterp]} {
+    set ::safeInterp [::safe::interpCreate]
+    interp hide $::safeInterp set
+    interp alias $::safeInterp set {} ::safeSet $::safeInterp
+  }
+  set f [file nativename "$filename"]
+  set d [file dirname $f]
+  set n [file tail $f]
+  foreach {varname value} $args {
+    $::safeInterp eval [list set $varname $value]
+  }
+  $::safeInterp eval [list set vdir [::safe::interpAddToAccessPath $::safeInterp $d]]
+  $::safeInterp eval "source \$vdir/$n"
+  foreach {varname value} $args {
+    $::safeInterp eval [list unset $varname]
+  }
+}
+proc safeSet {i args} {
+  #TODO: do not import local variables
+  #if {[$::safeInterp eval info level] == 0}
+  foreach {varname value} $args {
+    set ::unsafe::$varname $value
+  }
+  interp invokehidden $i set {*}$args
+}
 
 
 # scidConfigFile:

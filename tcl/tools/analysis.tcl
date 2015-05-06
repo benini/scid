@@ -820,7 +820,7 @@ proc cancelAutoplay {} {
     set ::annotateMode 0
     set ::annotateModeButtonValue 0
     after cancel autoplay
-	::notify::PosChanged
+    ::notify::PosChanged
 }
 
 
@@ -2081,8 +2081,8 @@ proc changePVSize { n } {
         set analysis(multiPV$n) {}
         set analysis(multiPVraw$n) {}
     }
-    if {$analysis(multiPVCount$n) == 1} {
-        set h .analysisWin$n.hist.text
+    set h .analysisWin$n.hist.text
+    if {[winfo exists $h] && $analysis(multiPVCount$n) == 1} {
         $h configure -state normal
         $h delete 0.0 end
         $h configure -state disabled

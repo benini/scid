@@ -29,7 +29,7 @@ void Index::Init ()
     Header.numGames  = 0;
     Header.version   = SCID_VERSION;
     Header.baseType = 0;
-    Header.autoLoad = 2;
+    Header.autoLoad = 1;
     Header.description[0] = 0;
     memset(Header.customFlagDesc, 0, sizeof(Header.customFlagDesc));
     Dirty = false;

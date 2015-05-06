@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2014 Fulvio Benini
+# Copyright (C) 2009-2015 Fulvio Benini
 #
 # This file is part of Scid (Shane's Chess Information Database).
 #
@@ -21,7 +21,6 @@ namespace eval ::move {}
 
 proc ::move::drawVarArrows {} {
 	if {! $::showVarArrows || $::autoplayMode} { return 0 }
-	if {[winfo exists .coachWin]} { return 0 }
 	if {[winfo exists .serGameWin]} { return 0 }
 
 	set bDrawArrow 0
@@ -65,9 +64,8 @@ proc ::move::showVarArrows {} {
 }
 
 proc ::move::Start {} {
-	if {[winfo exists .coachWin]} {
-		set ::tacgame::analysisCoach(paused) 1
-		.coachWin.fbuttons.resume configure -state normal
+	if {[info exists ::playMode] && [eval "$::playMode moveStart"] == 0} {
+		return
 	}
 	sc_move start
 	updateBoard
@@ -75,6 +73,9 @@ proc ::move::Start {} {
 }
 
 proc ::move::End {} {
+	if {[info exists ::playMode] && [eval "$::playMode moveEnd"] == 0} {
+		return
+	}
 	sc_move end
 	updateBoard
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
@@ -82,6 +83,9 @@ proc ::move::End {} {
 
 proc ::move::ExitVar {} {
 	if {[sc_var level] == 0 } { return 0; }
+	if {[info exists ::playMode] && [eval "$::playMode moveExitVar"] == 0} {
+		return
+	}
 	sc_var exit;
 	updateBoard
 	if {[::move::drawVarArrows]} { ::move::showVarArrows }
@@ -90,9 +94,8 @@ proc ::move::ExitVar {} {
 proc ::move::Back {{count 1}} {
 	if {[sc_pos isAt start]} { return }
 	if {[sc_pos isAt vstart]} { ::move::ExitVar; return }
-	if {[winfo exists .coachWin]} {
-	set ::tacgame::analysisCoach(paused) 1
-	.coachWin.fbuttons.resume configure -state normal
+	if {[info exists ::playMode] && [eval "$::playMode moveBack"] == 0} {
+		return
 	}
 
 	sc_move back $count
@@ -101,7 +104,7 @@ proc ::move::Back {{count 1}} {
 		updateBoard -animate
 		::utils::sound::AnnounceBack
 	} else {
-	    updateBoard
+		updateBoard
 	}
 
 	if {[sc_pos isAt vstart]} { sc_var exit }
@@ -111,6 +114,9 @@ proc ::move::Back {{count 1}} {
 
 proc ::move::Forward {{count 1}} {
 	if {[sc_pos isAt end] || [sc_pos isAt vend]} { return }
+	if {[info exists ::playMode] && [eval "$::playMode moveForward"] == 0} {
+		return
+	}
 
 	set bArrows [::move::drawVarArrows]
 

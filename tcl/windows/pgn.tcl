@@ -28,6 +28,9 @@ namespace eval pgn {
     } {
       configMenuText $m.opt $idx PgnOpt$tag $lang
     }
+    foreach idx {9} tag {GInfoPhotos} {
+      configMenuText $m.opt $idx $tag $lang
+    }
     foreach idx {0 1 2 3 4 5} tag {Header Anno Comments Vars Background Current} {
       configMenuText $m.color $idx PgnColor$tag $lang
     }
@@ -132,6 +135,8 @@ namespace eval pgn {
         -variable ::pgn::stripMarks -command {updateBoard -pgn}
     $w.menu.opt add checkbutton -label PgnOptBoldMainLine \
         -variable ::pgn::boldMainLine -command {updateBoard -pgn}
+    $w.menu.opt add checkbutton -label GInfoPhotos \
+        -variable ::pgn::showPhoto -command {::pgn::Refresh 1}
     
     $w.menu.color add command -label PgnColorHeader \
         -command {::pgn::ChooseColor Header "header text"}
@@ -382,6 +387,17 @@ namespace eval pgn {
       } else {
         .pgnWin.text insert 1.0 $pgnStr
       }
+
+      if {$::pgn::showPhoto} {
+        updatePlayerPhotos
+        if {[image width photoW] != 0} {
+          .pgnWin.text image create 1.0 -image photoW -padx 10 -pady 10
+        }
+        if {[image width photoB] != 0} {
+          .pgnWin.text image create 1.end -image photoB -padx 10 -pady 10
+        }
+      }
+
       .pgnWin.text configure -state disabled
       unbusyCursor .
     }

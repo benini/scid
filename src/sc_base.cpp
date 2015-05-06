@@ -234,6 +234,7 @@ UI_typeRes sc_base_gamelocation(scidBaseT* dbase, UI_type2 ti, int argc, const c
 
 /**
  * sc_base_gameslist() - returns the sorted list of games of a database
+ * @start:    0 for the first game
  */
 UI_typeRes sc_base_gameslist(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
 {

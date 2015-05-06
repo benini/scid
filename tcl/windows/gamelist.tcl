@@ -220,7 +220,9 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 # Search games with a white player with elo above 2500: welo >2500
 # Search games with a white player with elo under 2500: welo <2500
 # Search games with a black player with elo between 2100-2500: belo 2100-2500
+# Search games with a black player with elo between 2100-2500 or 0: belo 2100-2500 + belo 0
 # Search games with a specific ECO: A00-A99
+# Search games with ECO A00-B99 or D00-D99: A00-B99 + D00-D99
 # Search games with ECO A00-B99 or D00-D99: A00-D99 !C00-C99
 # Search games played after a specific year: >2013
 # Search games played in a specific period: 2012.09.01-2013.05.31
@@ -233,16 +235,19 @@ proc ::windows::gamelist::SetBase {{w} {base} {filter "dbfilter"}} {
 proc ::windows::gamelist::Awesome {{w} {txt}} {
 	if {[lsearch -exact $::windows::gamelist::wins $w] == -1} { return }
 
+	set filter [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
 	if {$txt == ""} {
 		# Quick way to reset the filter: search an empty string
-		sc_filter set "$::gamelistBase($w)" "$::gamelistFilter($w)" 1
+		sc_filter set "$::gamelistBase($w)" $filter 1
 	} else {
-		set filter [sc_filter link $::gamelistBase($w) $::gamelistFilter($w)]
-		set cmd "sc_filter search $::gamelistBase($w) $filter header -filter RESET"
-
-		progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel)
-		set res [eval "$cmd [AweParse $txt]"]
-		closeProgressWindow
+		sc_filter set "$::gamelistBase($w)" $filter 0
+		#Split the string using " + "
+		foreach {dummy sub} [regexp -all -inline {(.+?)(?:\s\+\s|$)} $txt] {
+			set cmd "sc_filter search $::gamelistBase($w) $filter header -filter OR"
+			progressWindow "Scid" "$::tr(HeaderSearch)..." $::tr(Cancel)
+			set res [eval "$cmd [AweParse $sub]"]
+			closeProgressWindow
+		}
 	}
 	::notify::DatabaseModified $::gamelistBase($w) $::gamelistFilter($w)
 }

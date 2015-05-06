@@ -773,8 +773,9 @@ proc setPhotoDir {} {
   } else {
     set ::scidPhotoDir $dir
     options.save ::scidPhotoDir
-	loadPlayersPhoto
-	updatePlayerPhotos -force
+    set n [loadPlayersPhoto]
+    tk_messageBox -message "Found [lindex $n 0] images in [lindex $n 1] file(s)"
+    ::notify::GameChanged
   }
 }
 
@@ -807,7 +808,7 @@ $m add command -label OptionsSave -command {
     puts $optionF "# format or it will not set your Scid options properly."
     puts $optionF ""
     foreach i {boardSize boardStyle language ::pgn::showColor \
-          ::pgn::indentVars ::pgn::indentComments \
+          ::pgn::indentVars ::pgn::indentComments ::pgn::showPhoto \
           ::pgn::shortHeader ::pgn::boldMainLine ::pgn::stripMarks \
           ::pgn::symbolicNags ::pgn::moveNumberSpaces ::pgn::columnFormat \
           tree(order) optionsAutoSave ::tree::mask::recentMask \
@@ -965,7 +966,7 @@ $m.ginfo add checkbutton -label GInfoFullComment \
     -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
 $m.ginfo add checkbutton -label GInfoPhotos \
     -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-    -command {updatePlayerPhotos -force}
+    -command {togglePhotosSize 0}
 $m.ginfo add separator
 $m.ginfo add radiobutton -label GInfoTBNothing \
     -variable gameInfo(showTB) -value 0 -command updateBoard
@@ -1201,14 +1202,21 @@ set count 0
 proc updateBoardSizesMenu {} {
   set m .menu.options.board
   $m.bdsize delete 0 end
+  set st normal
+  if {$::docking::USE_DOCKING } {
+    $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
+        -command "::resizeMainBoard; updateBoardSizesMenu"
+    if {$::autoResizeBoard} { set st disabled }
+  }
   foreach i $::boardSizes {
     incr count
-    set underline -1
-    if {$count < 10} {set underline 0}
-    if {$count == 10} {set underline 1}
-    # PG : dirty workaround !
-    $m.bdsize add radio -label $count -variable boardSize -value $i -underline $underline -command "::board::resize2 .main.board $i "
-    unset underline
+    if {$count <= 9} {
+      set lbl "  $count"
+    } else {
+      set lbl " $count"
+    }
+    $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
+      -command "::board::resize2 .main.board $i "
   }
 }
 
@@ -1302,6 +1310,14 @@ proc updateMenuStates {{menuname}} {
       set state disabled
       if {[baseIsCompactable]} { set state normal }
       $m.file.utils entryconfig [tr FileMaintCompact] -state $state
+    }
+  {play} {
+      set n [$m.play index end]
+      set st normal
+      if {[info exists ::playMode]} { set st disabled }
+      for {set i 0} {$i <= $n} {incr i} {
+        catch { $m.play entryconfig $i -state $st }
+      }
     }
   }
   

@@ -686,7 +686,7 @@ namespace eval uci {
             if {$oldpwd != ""} { catch {cd $oldpwd} }
             tk_messageBox -title "Scid: error starting engine" -icon warning -type ok \
                     -message "Unable to start the program:\n$analysisCommand"
-            return
+            return 1
         }
         
         set ::analysis(index$n) $index
@@ -705,6 +705,7 @@ namespace eval uci {
             update
             after 100
         }
+        return 0
     }
     ################################################################################
     #

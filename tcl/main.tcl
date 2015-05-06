@@ -130,6 +130,16 @@ proc updateStatusBar {} {
         return
     }
 
+    if {[info exists ::playMode]} {
+        set pInfo [eval "$::playMode info"]
+        if {[llength $pInfo] != 4} {
+            ::board::setInfoAlert .main.board "Playing..." [tr Stop] "red" {eval "$::playMode stop"}
+        } else {
+            ::board::setInfoAlert .main.board {*}pInfo
+        }
+        return
+    }
+
     if {[info exists ::guessedAddMove]} {
         set ::gameLastMove [lindex $::guessedAddMove 1]
         ::board::setInfoAlert .main.board [lindex $::guessedAddMove 0] "\[click to change\]" "blue" ".main.menuaddchoice"
@@ -412,22 +422,7 @@ proc showVars {} {
 #    If a parameter "-animate" is specified, board changes are animated.
 #
 proc updateBoard {args} {
-    set pgnNeedsUpdate 0
-    set animate 0
-    foreach arg $args {
-        if {! [string compare $arg "-pgn"]} { set pgnNeedsUpdate 1 }
-        if {! [string compare $arg "-animate"]} { set animate 1 }
-    }
-
-    if {$pgnNeedsUpdate} { ::pgn::Refresh $pgnNeedsUpdate }
-
-    ::board::resize .main.board $::boardSize
-    ::board::setmarks .main.board [sc_pos getComment]
-    ::board::update .main.board [sc_pos board] $animate
-
-    after cancel ::notify::PosChanged
-    update idletasks
-    after idle ::notify::PosChanged
+    ::notify::PosChanged {*}$args
 }
 
 
@@ -451,15 +446,34 @@ proc updateGameInfo {} {
         .main.gameInfo configure -wrap none
     }
     .main.gameInfo configure -state disabled
-    updatePlayerPhotos
+    togglePhotosSize 0
 }
+
+set photosMinimized 0
+proc togglePhotosSize {{toggle 1}} {
+    place forget .main.photoW
+    place forget .main.photoB
+    if {! $::gameInfo(photos)} { return }
+
+    updatePlayerPhotos
+    if {$toggle} { set ::photosMinimized [expr !$::photosMinimized] }
+
+    set distance [expr {[image width photoB] + 2}]
+    if { $distance < 10 } { set distance 82 }
+
+    if {$::photosMinimized} {
+        place .main.photoW -in .main.gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
+        place .main.photoB -in .main.gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
+    } else  {
+        place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
+        place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
+    }
+}
+
 
 # readPhotoFile executed once at startup for each SPF file. Loads SPI file if it exists.
 # Otherwise it generates index information and tries to write SPI file to disk (if it can be done)
 proc readPhotoFile {fname} {
-    global photobegin
-    global photosize
-    global spffile
     set count 0
     set writespi 0
     
@@ -470,13 +484,15 @@ proc readPhotoFile {fname} {
     
     # If SPI file was found then just source it and exit
     if { [file readable $spi]} {
-        set count [array size spffile]
-        source $spi
-        set newcount [array size spffile]
+        set count [array size ::unsafe::spffile]
+        safeSource $spi fname $fname
+        set newcount [array size ::unsafe::spffile]
         if {[expr $newcount - $count] > 0} {
             ::splash::add "Found [expr $newcount - $count] player photos in [file tail $fname]"
             ::splash::add "Loading information from index file [file tail $spi]"
-            return
+            return [expr $newcount - $count]
+        } else {
+            set count 0
         }
     }
     
@@ -502,9 +518,9 @@ proc readPhotoFile {fname} {
             }
             set trimname [trimString $name]
             set size [expr $end - $begin ]
-            set photobegin($trimname) $begin
-            set photosize($trimname) $size
-            set spffile($trimname) $fname
+            set ::unsafe::photobegin($trimname) $begin
+            set ::unsafe::photosize($trimname) $size
+            set ::unsafe::spffile($trimname) $fname
             if { $writespi } {
                 # writing SPI file to disk
                 puts $fd_spi "set \"photobegin($trimname)\" $begin"
@@ -525,6 +541,7 @@ proc readPhotoFile {fname} {
     
     if { $writespi } { close $fd_spi }
     close $fd
+    return $count
 }
 
 
@@ -541,84 +558,47 @@ proc trimString {data} {
 
 # retrieve photo from the SPF file using index information
 proc getphoto {name} {
-    global photobegin
-    global photosize
-    global spffile
     set data ""
-    if {[info exists spffile($name)]} {
-        set fd [open $spffile($name)]
-        seek $fd $photobegin($name) start
-        set data [read $fd $photosize($name) ]
+    if {[info exists ::unsafe::spffile($name)]} {
+        set fd [open $::unsafe::spffile($name)]
+        seek $fd $::unsafe::photobegin($name) start
+        set data [read $fd $::unsafe::photosize($name) ]
         close $fd
     }
     return $data
 }
 
-proc addPhotoAlias {aliasname name} {
-    global photobegin
-    global photosize
-    global spffile
-    global droppedaliases
-    if {[info exists spffile([trimString $name])]} {
-        set photobegin([trimString $aliasname]) $photobegin([trimString $name])
-        set photosize([trimString $aliasname]) $photosize([trimString $name])
-        set spffile([trimString $aliasname]) $spffile([trimString $name])
-    } else {
-        set droppedaliases [expr $droppedaliases + 1 ]
-    }
-}
-
-# photobegin($name) - file offset of the photo for the player $name
-# photobegin($name) - size (in bytes) of the photo for the player $name
-# spffile($name) - location of the SPF file where photo for the player $name is stored
-array set photobegin {}
-array set photosize {}
-array set spffile {}
-
-# variable droppedaliases counts the number of the dropped aliases.
-# Alias is dropped if the player hasn't photo.
-set droppedaliases 0
 
 proc loadPlayersPhoto {} {
+  set ::gamePlayers(photoW) {}
+  set ::gamePlayers(photoB) {}
+  image create photo photoW
+  image create photo photoB
+
   # Directories where Scid searches for the photo files
   set photodirs [list $::scidDataDir $::scidUserDir $::scidConfigDir [file join $::scidShareDir "photos"]]
   if {[info exists ::scidPhotoDir]} { lappend photodirs $::scidPhotoDir }
 
   # Read all Scid photo (*.spf) files in the Scid data/user/config directories:
+  set nImg 0
+  set nFiles 0
   foreach dir $photodirs {
       foreach photofile [glob -nocomplain -directory $dir "*.spf"] {
-          readPhotoFile $photofile
-      }
-  }
-
-  # Read all Scid photo aliases (*.spa)
-  foreach dir $photodirs {
-      foreach spa [glob -nocomplain -directory $dir "*.spa"] {
-          if {! [file readable $spa]} { return }
-          set count [array size spffile]
-          set droppedcount $droppedaliases
-          source $spa
-          set newcount [array size spffile]
-          set newdroppedcount $droppedaliases
-          if {[expr $newcount - $count] > 0} {
-              ::splash::add "Found [expr $newcount - $count] player aliases in [file tail $spa]"
-          }
-          if {[expr $newdroppedcount - $droppedcount] > 0} {
-              ::splash::add "Dropped [expr $newdroppedcount - $droppedcount] player aliases in [file tail $spa]"
+          set n [readPhotoFile $photofile]
+          if {$n > 0} {
+              incr nFiles
+              incr nImg $n
           }
       }
   }
 
+  return [list $nImg $nFiles]
 }
 loadPlayersPhoto
-
-set photo(oldWhite) {}
-set photo(oldBlack) {}
 
 # Try to change the engine name: ignore version number, try to ignore blanks
 # TODO: rename this function (spellcheck playernames, converts to lower case and remove spaces)
 proc trimEngineName { engine } {
-    global spffile
     set spell_name [sc_name retrievename $engine]
     if {$spell_name != ""} { set engine $spell_name }
     
@@ -640,89 +620,28 @@ proc trimEngineName { engine } {
         #seems to be a engine name:
         # search until longest name matches an engine name
         set slen [string len $engine]
-        for { set strindex $slen} {![info exists spffile([string range $engine 0 $strindex])]\
+        for { set strindex $slen} {![info exists ::unsafe::spffile([string range $engine 0 $strindex])]\
                     && $strindex > 2 } {set strindex [expr {$strindex - 1}] } { }
         set engine [string range $engine 0 $strindex]
     }
     return $engine
 }
 
+
 # updatePlayerPhotos
-#   Updates the player photos in the game information area
-#   for the two players of the current game.
+#   Updates the images photoW and photoB for the two players of the current game.
 #
 proc updatePlayerPhotos {{force ""}} {
-    global photo
-    global spffile
-    if {$force == "-force"} {
-        # Force update even if it seems unnecessary. This is done
-        # when the user selects to show or hide the photos.
-        set photo(oldWhite) {}
-        set photo(oldBlack) {}
-        place forget .main.photoW
-        place forget .main.photoB
-    }
-    if {! $::gameInfo(photos)} { return }
-    #get photo from player
-    set white [sc_game info white]
-    set black [sc_game info black]
-    
-    catch { set white [trimEngineName $white] }
-    catch { set black [trimEngineName $black] }
-    
-    if {$black != $photo(oldBlack)} {
-        set photo(oldBlack) $black
-        place forget .main.photoB
-        if {[info exists spffile($black)]} {
-            image create photo photoB -data [getphoto $black ]
-            .main.photoB configure -image photoB -anchor ne
-            place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -anchor ne
-            # force to update white, black size could be changed
-            set photo(oldWhite) {}
+    foreach {name img} {nameW photoW nameB photoB} {
+        set spellname $::gamePlayers($name)
+        if {$::gamePlayers($img) != $spellname} {
+            set ::gamePlayers($img) $spellname
+            catch { set spellname [trimEngineName $spellname] }
+            image create photo $img -data [getphoto $spellname]
         }
     }
-    set distance [expr {[image width photoB] + 2}]
-    if { $distance < 10 } { set distance 82 }
-    if {$white != $photo(oldWhite)} {
-        set photo(oldWhite) $white
-        place forget .main.photoW
-        if {[info exists spffile($white)]} {
-            image create photo photoW -data [getphoto $white ]
-            .main.photoW configure -image photoW -anchor ne
-            place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -anchor ne
-        }
-    }
-    bind .main.photoW <ButtonPress-1> "togglePhotosSize"
-    bind .main.photoB <ButtonPress-1> "togglePhotosSize"
-    set ::photosMinimized 0
 }
-################################################################################
-# Toggles photo sizes
-################################################################################
-set photosMinimized 0
-proc togglePhotosSize {} {
-    set distance [expr {[image width photoB] + 2}]
-    if { $distance < 10 } { set distance 82 }
-    
-    if {$::photosMinimized} {
-        set ::photosMinimized 0
-        if { [winfo ismapped .main.photoW] } {
-            place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
-        }
-        if { [winfo ismapped .main.photoB] } {
-            place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
-        }
-    } else  {
-        set ::photosMinimized 1
-        if { [winfo ismapped .main.photoW] } {
-            place .main.photoW -in .main.gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
-        }
-        if { [winfo ismapped .main.photoB] } {
-            place .main.photoB -in .main.gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
-        }
-    }
-    
-}
+
 #########################################################
 ### Chess move input
 
@@ -922,6 +841,15 @@ proc addMoveUCI {{moveUCI} {action ""}} {
     updateBoard -pgn -animate
 }
 
+proc suggestMove {} {
+    if {! $::suggestMoves} { return 0}
+    if {[info exists ::playMode]} {
+        return [eval "$::playMode suggestMove"]
+    }
+    if {$::fics::playing != 0} { return 0 }
+    return 1
+}
+
 # enterSquare:
 #   Called when the mouse pointer enters a board square.
 #   Finds the best matching square for a move (if there is a
@@ -929,10 +857,10 @@ proc addMoveUCI {{moveUCI} {action ""}} {
 #   to indicate the suggested move.
 #
 proc enterSquare { square } {	
-    global bestSq bestcolor selectedSq suggestMoves
+    global bestSq bestcolor selectedSq
     if {$selectedSq == -1} {
         set bestSq -1
-        if {$suggestMoves && [expr {abs($::fics::playing) != 1}]} {
+        if {[::suggestMove]} {
             set bestSq [sc_pos bestSquare $square]
             if {$bestSq != -1} {
                 ::board::colorSquare .main.board $square $bestcolor
@@ -1009,7 +937,7 @@ proc releaseSquare { w x y } {
     }
 
     if {$square == $selectedSq} {
-        if {$::suggestMoves} {
+        if {[::suggestMove]} {
             # User pressed and released on same square, so make the
             # suggested move if there is one:
             set selectedSq -1
@@ -1211,10 +1139,10 @@ proc CreateGameInfo {} {
   ::htext::init .main.gameInfo
   
   # Set up player photos:
-  image create photo photoW
-  image create photo photoB
   label .main.photoW -background white -image photoW -anchor ne
   label .main.photoB -background white -image photoB -anchor ne
+  bind .main.photoW <ButtonPress-1> "togglePhotosSize"
+  bind .main.photoB <ButtonPress-1> "togglePhotosSize"
   
   # Right-mouse button menu for gameInfo frame:
   menu .main.gameInfo.menu -tearoff 0
@@ -1239,7 +1167,7 @@ proc CreateGameInfo {} {
   
   .main.gameInfo.menu add checkbutton -label GInfoPhotos \
           -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-          -command {updatePlayerPhotos -force}
+          -command {togglePhotosSize 0}
   
   .main.gameInfo.menu add separator
   
