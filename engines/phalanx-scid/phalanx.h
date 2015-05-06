@@ -4,25 +4,41 @@
 #define VERSION "XXII-pg"
 
 #ifdef GNUFUN
-# include <getopt.h>
+  #include <getopt.h>
 #endif
 
 #ifdef _WIN32
-# include <io.h>
-# include <errno.h>
-# include <process.h>
+  #include <windows.h>
+
+  #ifndef GNUFUN
+    extern int opterr;
+    extern int optind;
+    extern char *optarg;
+    int getopt (int argc, char **argv, char *opts);
+  #endif
+
+  #define	R_OK	4		/* Test for read permission.  */
+  #define	W_OK	2		/* Test for write permission.  */
+  #define access(a,b) 0
+
+  #define setTimeout(FN, SEC)
+  #define clearTimeout(DUMMY)
+
+#else
+  #include <unistd.h>
+  #include <sys/time.h>
+  #define setTimeout(FN, SEC) signal(SIGALRM,FN); alarm(SEC);
+  #define clearTimeout(DUMMY) alarm(0);
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>
 #include <ctype.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/time.h>
 
 /*
  * COMPATIBILITY

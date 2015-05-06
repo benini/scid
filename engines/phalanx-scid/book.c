@@ -470,8 +470,8 @@ if( att != 0 && Eco!=NULL )
 		  fseek(Eco,text,SEEK_SET);
 		  fgets(t,126,Eco);
 		  t[127]='\0';
-		  c=index(t,'['); if(c!=NULL) *c = ' ';
-		  c=rindex(t,']'); if(c!=NULL) *c = '\0';
+		  c=strchr(t,'['); if(c!=NULL) *c = ' ';
+		  c=strrchr(t,']'); if(c!=NULL) *c = '\0';
 		  puts(t);
 		}
 	}

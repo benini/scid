@@ -1,32 +1,3 @@
-
-#include "phalanx.h"
-
-char *
-index (
-	char *s,
-	int c
-)
-{
-  int i;
-
-  while ((i = *s) && c != i)
-    s++;
-  return (*s ? s : 0);
-}
-
-char *
-rindex (char *s, char c)
-{
-  char *p;
-
-  for (p = s; *s; s++)
-    ;
-  while (c != *s && s >= p)
-    s--;
-  return (s < p ? 0 : s);
-}
-
-
 /* getopt.c  (slightly modified by O.Garcia, 12/4/92) */
 /* now it accepts either '-' or '/' as switch character */
 
@@ -41,6 +12,8 @@ rindex (char *s, char c)
    directly from AT&T.  The people there assure me that it is indeed
    in the public domain.
  */
+
+#if defined(_MSC_VER)
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -108,19 +81,4 @@ getopt (int argc, char **argv, char *opts)
   return (c);
 }
 
-#include "learn.c"
-#include "killers.c"
-#include "data.c"
-#include "levels.c"
-#include "bcreate.c"
-#include "moving.c"
-#include "search.c"
-#include "endgame.c"
-#include "book.c"
-#include "hash.c"
-#include "genmoves.c"
-#include "evaluate.c"
-#include "io.c"
-#include "static.c"
-#include "phalanx.c"
-
+#endif

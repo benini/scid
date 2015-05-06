@@ -278,6 +278,21 @@ if( ( Nodes % timeslice ) == 0 && !Flag.analyze )
 
 if(Flag.polling)
 {
+#ifdef _WIN32
+  //BEWARE:
+  //*nix systems use a "line buffer", that is input will always be a full line
+  //and Windows instead do not have a "line buffer" mode
+  //
+  //On Windows stop thinking as soon as some input is received but wait a full line
+  //before parsing the input:
+  //  Locks: the GUI send a move (full line) and by mistake send some other chars,
+  //  now the GUI may be stuck waiting for the reply and the engine will not reply
+  //  because is waiting for the rest of the input
+  DWORD nBytes;
+  HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
+  PeekNamedPipe(h, NULL, 0, NULL, &nBytes, NULL);
+  if (nBytes != 0) interrupt(0);
+#else
   static fd_set readfds;
   static struct timeval tv;
   int data;
@@ -289,6 +304,7 @@ if(Flag.polling)
   select(16, &readfds, 0, 0, &tv);
   data=FD_ISSET(fileno(stdin), &readfds);
   if(data) interrupt(0);
+#endif
 }
 
 /*
