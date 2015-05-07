@@ -226,6 +226,9 @@ proc menuConfig {{m} {label} {cmd} args} {
     }
 }
 storeMenuLabels .menu.file
+set fileExitHack [.menu.file index end]
+set ::MenuLabels(.menu.file,end) $::MenuLabels(.menu.file,$fileExitHack)
+array unset ::MenuLabels ".menu.file,$fileExitHack"
 storeMenuLabels .menu.edit
 
 
@@ -1223,10 +1226,6 @@ proc updateMenuStates {{menuname}} {
   {file} {
       ::bookmarks::Refresh
 
-      foreach i {Delete Class Twin} {
-        $m.file.utils entryconfig [tr FileMaint$i] -state disabled
-      }
-      $m.file.utils entryconfig [tr FileMaintName] -state disabled
 
       # update recent Tree list (open base as Tree)
       set ntreerecent [::recentFiles::treeshow .menu.file.recenttrees]
@@ -1252,17 +1251,7 @@ proc updateMenuStates {{menuname}} {
   
   # Configure File menu entry states::
   if {[sc_base inUse]} {
-    set isClipbase [expr "$::currentSlot == $::clipbase_db"]
     set isReadOnly [sc_base isReadOnly $::currentSlot]
-    if {$isClipbase} {set state disabled} else {set state normal}
-    $m.file entryconfig [tr FileClose] -state $state
-    if {! $isReadOnly} {
-      $m.file.utils entryconfig [tr FileMaintDelete] -state normal
-      $m.file.utils entryconfig [tr FileMaintName] -state normal
-      $m.file.utils entryconfig [tr FileMaintClass] -state normal
-      $m.file.utils entryconfig [tr FileMaintTwin] -state normal
-    }
-    
     # Load first/last/random/game number buttons:
     set filtercount [sc_filter count]
     if {$filtercount == 0} {set state disabled} else {set state normal}
@@ -1302,22 +1291,6 @@ proc updateMenuStates {{menuname}} {
     $m.tools entryconfig [tr ToolsOpReport] -state normal
     $m.tools entryconfig [tr ToolsPlayerReport] -state normal
     
-  } else {
-    # Base is not in use:
-    $m.file entryconfig [tr FileClose] -state disabled
-    
-    foreach i {First Prev Reload Next Last Random Number Replace Add} {
-      $m.game entryconfig [tr Game$i] -state disabled
-    }
-    .main.tb.gprev configure -state disabled
-    .main.tb.gnext configure -state disabled
-    
-    #$m.windows entryconfig [tr WindowsTree] -state disabled
-    
-    # tools:
-    $m.tools entryconfig [tr ToolsEmail] -state disabled
-    $m.tools entryconfig [tr ToolsOpReport] -state disabled
-    $m.tools entryconfig [tr ToolsPlayerReport] -state disabled
   }
 
   if {[sc_base numGames $::curr_db] == 0} {
@@ -1333,9 +1306,18 @@ proc menuUpdateBases {} {
 
   foreach i [sc_base list] {
     set fname [file tail [sc_base filename $i]]
-    set isCompact [expr {[baseIsCompactable] ? "normal" : "disabled"}]
+    set notClipbase [expr {$::curr_db != $::clipbase_db ? "normal" : "disabled"}]
+    set canChange   [expr {![sc_base isReadOnly $::curr_db] ? "normal" : "disabled"}]
+    set canCompact  [expr {[baseIsCompactable] ? "normal" : "disabled"}]
+    set notEmpty    [expr {[sc_base numGames $::curr_db] != 0 ? "normal" : "disabled"}]
 
-    menuConfig .menu.file.utils FileMaintCompact entryconfig -state $isCompact
+    menuConfig .menu.file FileClose entryconfig -state $notClipbase
+    menuConfig .menu.file.utils FileMaintDelete  entryconfig -state $canChange
+    menuConfig .menu.file.utils FileMaintName    entryconfig -state $canChange
+    menuConfig .menu.file.utils FileMaintClass   entryconfig -state $canChange
+    menuConfig .menu.file.utils FileMaintTwin    entryconfig -state $canChange
+    menuConfig .menu.file.utils FileMaintCompact entryconfig -state $canCompact
+    menuConfig .menu.tools ToolsExpFilter entryconfig -state $notEmpty
 
     .menu.file.switch add radiobutton -variable currentSlot -value $i \
         -label "Base $i: $fname" \
