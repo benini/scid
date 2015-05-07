@@ -215,6 +215,16 @@ proc storeMenuLabels {m} {
         }
     }
 }
+# Issue a command to a menu entry
+proc menuConfig {{m} {label} {cmd} args} {
+    foreach {key lbl} [array get ::MenuLabels "$m*"] {
+        if {$lbl == $label} {
+            set idx [lindex [split $key ","] 1]
+			$m $cmd $idx {*}$args
+            break
+        }
+    }
+}
 storeMenuLabels .menu.file
 storeMenuLabels .menu.edit
 
@@ -1213,19 +1223,7 @@ proc updateMenuStates {{menuname}} {
   {file} {
       ::bookmarks::Refresh
 
-      $m.file.switch delete 0 end
-      foreach i [sc_base list] {
-        set fname [file tail [sc_base filename $i]]
-        $m.file.switch add radiobutton -variable currentSlot -value $i \
-            -label "Base $i: $fname" \
-            -underline 5 -accelerator "Ctrl+$i" -command [list ::file::SwitchToBase $i]
-        set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to base slot $i"
-        if {$i == $::clipbase_db} {
-          set helpMessage($m.switch,[expr {$i - 1} ]) "Switch to the clipbase database"
-        }
-      }
-
-      foreach i {Compact Delete Class Twin} {
+      foreach i {Delete Class Twin} {
         $m.file.utils entryconfig [tr FileMaint$i] -state disabled
       }
       $m.file.utils entryconfig [tr FileMaintName] -state disabled
@@ -1241,10 +1239,6 @@ proc updateMenuStates {{menuname}} {
       if {$nrecent > 0} {
         $m.file insert [$m.file index [tr FileExit]] separator
       }
-
-      set state disabled
-      if {[baseIsCompactable]} { set state normal }
-      $m.file.utils entryconfig [tr FileMaintCompact] -state $state
     }
   {play} {
       set n [$m.play index end]
@@ -1333,6 +1327,23 @@ proc updateMenuStates {{menuname}} {
   }
 }
 
+# Update the dynamic menus relative to current/open databases
+proc menuUpdateBases {} {
+  .menu.file.switch delete 0 end
+
+  foreach i [sc_base list] {
+    set fname [file tail [sc_base filename $i]]
+    set isCompact [expr {[baseIsCompactable] ? "normal" : "disabled"}]
+
+    menuConfig .menu.file.utils FileMaintCompact entryconfig -state $isCompact
+
+    .menu.file.switch add radiobutton -variable currentSlot -value $i \
+        -label "Base $i: $fname" \
+        -underline 5 -accelerator "Ctrl+$i"\
+        -command [list ::file::SwitchToBase $i]
+  }
+}
+menuUpdateBases
 
 ##############################
 #

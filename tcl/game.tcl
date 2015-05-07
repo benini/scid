@@ -398,6 +398,7 @@ namespace eval ::notify {
     ::windows::switcher::Refresh
     ::windows::stats::Refresh
     set ::treeWin [winfo exists .treeWin$::curr_db]
+    menuUpdateBases
   }
 
   # To be called after modifying data in a database
