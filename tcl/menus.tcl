@@ -1,5 +1,6 @@
 ### Menus.tcl: part of Scid.
 ### Copyright (C) 2001-2003 Shane Hudson.
+### Copyright (C) 2015 Fulvio Benini
 
 ############################################################
 ###  Status bar help for menu items, buttons, etc:
@@ -141,147 +142,82 @@ foreach menuname { file edit game search windows play tools options helpmenu } {
 
 
 ### File menu:
-
-set menuindex -1
 set m .menu.file
 $m add command -label FileNew -acc "Ctrl+N" -command ::file::New
-set helpMessage($m,[incr menuindex]) FileNew
-
 $m add command -label FileOpen -acc "Ctrl+O" -command ::file::Open
-set helpMessage($m,[incr menuindex]) FileOpen
-
 $m add command -label FileClose -acc "Ctrl+W" -command ::file::Close
-set helpMessage($m,[incr menuindex]) FileClose
-
 $m add command -label FileFinder -acc "Ctrl+/" -command ::file::finder::Open
-set helpMessage($m,[incr menuindex]) FileFinder
-
-$m add cascade -label FileBookmarks -accelerator "Ctrl+B" -menu $m.bookmarks
-set helpMessage($m,[incr menuindex]) FileBookmarks
 menu $m.bookmarks
-
+$m add cascade -label FileBookmarks -menu $m.bookmarks
 $m add separator
-incr menuindex
-
 # naming is weird because the menus are moved from Tools to File menus
-
 $m add command -label ToolsOpenBaseAsTree -command ::file::openBaseAsTree
-set helpMessage($m,[incr menuindex]) ToolsOpenBaseAsTree
-
 menu $m.recenttrees
 $m add cascade -label ToolsOpenRecentBaseAsTree -menu $m.recenttrees
-set helpMessage($m,[incr menuindex]) ToolsOpenRecentBaseAsTree
-
 $m add separator
-incr menuindex
-
 menu $m.utils
-$m add cascade -label FileMaint -menu .menu.file.utils
-set helpMessage($m,[incr menuindex]) FileMaint
-
-$m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
-set helpMessage($m.utils,0) FileMaintWin
-
-$m.utils add command -label FileMaintCompact -command compactDB
-set helpMessage($m.utils,1) FileMaintCompact
-
-$m.utils add command -label FileMaintClass -command classifyAllGames
-set helpMessage($m.utils,2) FileMaintClass
-
-$m.utils add separator
-
-$m.utils add command -label FileMaintDelete -state disabled -command markTwins
-set helpMessage($m.utils,5) FileMaintDelete
-
-$m.utils add command -label FileMaintTwin -command updateTwinChecker
-set helpMessage($m.utils,6) FileMaintTwin
-
-$m.utils add separator
-
-menu $m.utils.name
-$m.utils add cascade -label FileMaintName -menu .menu.file.utils.name
-set helpMessage($m.utils,8) FileMaintName
-
-$m.utils.name add checkbutton -label FileMaintNameEditor -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
-set helpMessage($m.utils.name,0) FileMaintNameEditor
-
-$m.utils.name add command -label FileMaintNamePlayer -command {openSpellCheckWin Player}
-set helpMessage($m.utils.name,1) FileMaintNamePlayer
-
-$m.utils.name add command -label FileMaintNameEvent -command {openSpellCheckWin Event}
-set helpMessage($m.utils.name,2) FileMaintNameEvent
-
-$m.utils.name add command -label FileMaintNameSite -command {openSpellCheckWin Site}
-set helpMessage($m.utils.name,3) FileMaintNameSite
-
-$m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
-set helpMessage($m.utils.name,4) FileMaintNameRound
-
-$m add cascade -label FileSwitch -menu $m.switch
-set helpMessage($m,[incr menuindex]) FileSwitch
+  $m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
+  $m.utils add command -label FileMaintCompact -command compactDB
+  $m.utils add command -label FileMaintClass -command classifyAllGames
+  $m.utils add separator
+  $m.utils add command -label FileMaintDelete -state disabled -command markTwins
+  $m.utils add command -label FileMaintTwin -command updateTwinChecker
+  $m.utils add separator
+  menu $m.utils.name
+    $m.utils.name add checkbutton -label FileMaintNameEditor -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
+    $m.utils.name add command -label FileMaintNamePlayer -command {openSpellCheckWin Player}
+    $m.utils.name add command -label FileMaintNameEvent -command {openSpellCheckWin Event}
+    $m.utils.name add command -label FileMaintNameSite -command {openSpellCheckWin Site}
+    $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
+  $m.utils add cascade -label FileMaintName -menu .menu.file.utils.name
+$m add cascade -label FileMaint -menu $m.utils
 menu $m.switch
-
+$m add cascade -label FileSwitch -menu $m.switch
 $m add separator
-incr menuindex
-
 $m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
-set helpMessage($m,[incr menuindex]) FileExit
-
 
 ### Edit menu:
-set menuindex -1
 set m .menu.edit
-$m add cascade -label EditStrip -menu $m.strip
-set helpMessage($m,[incr menuindex]) EditStrip
-
-$m add command -label EditUndo -accelerator "Ctrl+z" -command { undoFeature undo }
-set helpMessage($m,[incr menuindex]) EditUndo
-
-$m add command -label EditRedo -accelerator "Ctrl+y" -command { undoFeature redo }
-set helpMessage($m,[incr menuindex]) EditRedo
-
 menu $m.strip
-$m.strip add command -label EditStripComments -command {::game::Strip comments}
-set helpMessage($m.strip,0) EditStripComments
-$m.strip add command -label EditStripVars -command {::game::Strip variations}
-set helpMessage($m.strip,1) EditStripVars
-$m.strip add command -label EditStripBegin -command {::game::TruncateBegin}
-set helpMessage($m.strip,2) EditStripBegin
-$m.strip add command -label EditStripEnd -command {::game::Truncate}
-set helpMessage($m.strip,3) EditStripEnd
-
+  $m.strip add command -label EditStripComments -command {::game::Strip comments}
+  $m.strip add command -label EditStripVars -command {::game::Strip variations}
+  $m.strip add command -label EditStripBegin -command {::game::TruncateBegin}
+  $m.strip add command -label EditStripEnd -command {::game::Truncate}
+$m add cascade -label EditStrip -menu $m.strip
+$m add command -label EditUndo -accelerator "Ctrl+z" -command { undoFeature undo }
+$m add command -label EditRedo -accelerator "Ctrl+y" -command { undoFeature redo }
 $m add separator
-incr menuindex
-
 $m add command -label EditReset -command ::windows::gamelist::ClearClipbase
-set helpMessage($m,[incr menuindex]) EditReset
-
 $m add command -label EditCopy -command ::gameAddToClipbase
-set helpMessage($m,[incr menuindex]) EditCopy
-
 $m add command -label EditPaste -command {
   sc_clipbase paste
   ::notify::GameChanged
 }
-set helpMessage($m,[incr menuindex]) EditPaste
-
 $m add command -label PgnFileCopy -command ::pgn::PgnClipboardCopy
-set helpMessage($m,[incr menuindex]) PgnFileCopy
-
 $m add command -label EditPastePGN -command importClipboardGame
-set helpMessage($m,[incr menuindex]) EditPastePGN
-
 $m add separator
-incr menuindex
-
 $m add command -label EditSetup -accelerator "S" -command setupBoard
-set helpMessage($m,[incr menuindex]) EditSetup
-
 $m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" -command copyFEN
-set helpMessage($m,[incr menuindex]) EditCopyBoard
-
 $m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteFEN
-set helpMessage($m,[incr menuindex]) EditPasteBoard
+
+
+
+# Store menu labels for translations and help messages
+proc storeMenuLabels {m} {
+    set n [$m index end]
+    for {set i 0} {$n != "none" && $i <= $n} {incr i} {
+        set type [$m type $i]
+        if {$type != "separator"} {
+            set ::MenuLabels($m,$i) [$m entrycget $i -label]
+        }
+        if {$type == "cascade"} {
+            storeMenuLabels [$m entrycget $i -menu]
+        }
+    }
+}
+storeMenuLabels .menu.file
+storeMenuLabels .menu.edit
+
 
 
 ### Game menu:
@@ -1264,7 +1200,6 @@ $m  add command -label HelpAbout -command helpAbout
 set helpMessage($m,[incr menuindex]) HelpAbout
 
 ##################################################
-
 # updateMenuStates:
 #   Update all the menus, rechecking which state each item should be in.
 #   TODO: update only the posted menu
@@ -1416,6 +1351,12 @@ proc configMenuText {menu entry tag lang} {
 }
 
 proc setLanguageMenus {} {
+  foreach {key lbl} [array get ::MenuLabels] {
+    foreach {m idx} [split $key ","] {
+      configMenuText $m $idx $lbl $::language
+    }
+  }
+
   global menuLabel menuUnder oldLang
   if {![info exists oldLang]} { set oldLang X }
   set lang $::language
@@ -1433,37 +1374,11 @@ proc setLanguageMenus {} {
         CCNewMailGame CCMailMove CCGamePage } {
     configMenuText .menu.play.correspondence [tr $tag $oldLang] $tag $lang
   }
-  
+
   foreach tag {File Edit Game Search Play Windows Tools Options Help} {
     configMenuText .menu [tr $tag $oldLang] $tag $lang
   }
-  
-  foreach tag {New Open Close Finder Bookmarks Maint Switch Exit} {
-    configMenuText .menu.file [tr File$tag $oldLang] File$tag $lang
-  }
-  
-  # open base as tree was moved from tools to file menus
-  foreach tag { ToolsOpenBaseAsTree ToolsOpenRecentBaseAsTree } {
-    configMenuText .menu.file [tr $tag $oldLang] $tag $lang
-  }
-  
-  foreach tag {Win Compact Delete Twin Class Name} {
-    configMenuText .menu.file.utils [tr FileMaint$tag $oldLang] \
-        FileMaint$tag $lang
-  }
-  foreach tag {Editor Player Event Site Round} {
-    configMenuText .menu.file.utils.name [tr FileMaintName$tag $oldLang] \
-        FileMaintName$tag $lang
-  }
-  foreach tag {Strip Reset Copy Paste PastePGN Setup Undo
-    Redo CopyBoard PasteBoard} {
-    configMenuText .menu.edit [tr Edit$tag $oldLang] Edit$tag $lang
-  }
-  configMenuText .menu.edit [tr PgnFileCopy $oldLang] PgnFileCopy $lang
-  foreach tag {Comments Vars Begin End} {
-    configMenuText .menu.edit.strip [tr EditStrip$tag $oldLang] \
-        EditStrip$tag $lang
-  }
+
   foreach tag {New First Prev Reload Next Last Random
     Replace Add Deepest GotoMove Novelty} {
     configMenuText .menu.game [tr Game$tag $oldLang] Game$tag $lang
