@@ -68,7 +68,7 @@ namespace eval ExtHardware {
            .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
                -anchor n -takefocus 0
            bind .main.fbutton.button.exthardware <Any-Enter> "+.main.fbutton.button.exthardware configure -relief groove"
-           bind .main.fbutton.button.exthardware <Any-Leave> "+.main.fbutton.button.exthardware configure -relief flat; statusBarRestore %W; break"
+           bind .main.fbutton.button.exthardware <Any-Leave> "+.main.fbutton.button.exthardware configure -relief flat; break"
            pack .main.fbutton.button.space4 .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
            pack .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 
@@ -190,7 +190,7 @@ namespace eval ExtHardware {
         .main.fbutton.button.exthardware configure -relief flat -border 1 -highlightthickness 0 \
             -anchor n -takefocus 0
         bind .main.fbutton.button.exthardware <Any-Enter> "+.main.fbutton.button.exthardware configure -relief groove"
-        bind .main.fbutton.button.exthardware <Any-Leave> "+.main.fbutton.button.exthardware configure -relief flat; statusBarRestore %W; break"
+        bind .main.fbutton.button.exthardware <Any-Leave> "+.main.fbutton.button.exthardware configure -relief flat; break"
         pack .main.fbutton.button.space4 .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
         pack .main.fbutton.button.exthardware -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
 

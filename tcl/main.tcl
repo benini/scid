@@ -125,6 +125,11 @@ proc updateStatusBar {} {
     # Check if translations have not been set up yet:
     if {! [info exists ::tr(Database)]} { return }
 
+    if {$::menuHelpMessage != ""} {
+        ::board::setInfoAlert .main.board "Help:" "$::menuHelpMessage" "red" ""
+        return
+    }
+
     if {$::autoplayMode == 1} {
         ::board::setInfoAlert .main.board "Autoplay:" [tr Stop] "red" "cancelAutoplay"
         return
@@ -1260,7 +1265,7 @@ proc InitToolbar {{tb}} {
 		  switcher glist pgn tmt maint eco tree crosst engine help} {
 	  .main.tb.$i configure -takefocus 0 -relief flat -border 1 -anchor n -highlightthickness 0
 	  bind .main.tb.$i <Any-Enter> "+.main.tb.$i configure -relief groove"
-	  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; statusBarRestore %W; break"
+	  bind .main.tb.$i <Any-Leave> "+.main.tb.$i configure -relief flat; break"
 	}
 
 	# Set toolbar help status messages:

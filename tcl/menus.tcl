@@ -2,92 +2,6 @@
 ### Copyright (C) 2001-2003 Shane Hudson.
 ### Copyright (C) 2015 Fulvio Benini
 
-############################################################
-###  Status bar help for menu items, buttons, etc:
-
-array set helpMessage {}
-set showHelp 1
-set oldStatus ""
-
-# statusBarHelp:
-#   Called when a button or menu entry is entered to display
-#   a status bar help message if applicable.
-#
-proc statusBarHelp {window {item {}}} {
-  global showHelp helpMessage statusBar language
-  
-  set status ""
-  if {! $showHelp} { return }
-  
-  # Tcl/Tk seems to generate strange window names for menus that
-  # are configured to be a toplevel window main menu, e.g.
-  # .menu.file get reported as ".#menu.#menu#file" and
-  # .menu.file.utils is ".#menu.#menu#file.#menu#file#utils"
-  # I have no idea why it does this, but to avoid it we
-  # convert a window paths with hashes to its true value:
-  
-  if {[string first {.#} $window] != -1} {
-    set idx [string last . $window]
-    set window [string range $window [expr {$idx+1} ] end]
-    regsub -all "\#" $window . window
-  }
-  
-  # Look for a status bar help message for the current button
-  # or menu entry, in the current language or English:
-  
-  if {$item == ""} { set index $window } else { set index "$window,$item" }
-  if {[info exists helpMessage($language,$index)]} {
-    set status "  $helpMessage($language,$index)"
-  } elseif {[info exists helpMessage(E,$index)]} {
-    set status "  $helpMessage(E,$index)"
-  } elseif {[info exists helpMessage($index)]} {
-    set tag $helpMessage($index)
-    if {[info exists helpMessage($language,$tag)]} {
-      set status "  $helpMessage($language,$tag)"
-    } elseif {[info exists helpMessage(E,$tag)]} {
-      set status "  $helpMessage(E,$tag)"
-    } else { set status $tag }
-  }
-  
-  if {$status == ""} { statusBarRestore $window; return }
-  
-  if {[string range $window 0 7] == ".treeWin"} {
-    set bn ""
-    catch { scan $window .treeWin%d.%s bn dummy}
-    ::tree::status $status $bn
-  } else {
-    set statusBar $status
-  }
-}
-
-# statusBarRestore:
-#   Updates a status bar that was displaying a help message.
-#
-proc statusBarRestore {window} {
-  global showHelp statusBar
-  
-  if {! $showHelp} { return }
-  if {[string range $window 0 7] == ".treeWin"} {
-    set bn ""
-    catch { scan $window .treeWin%d.%s bn dummy}
-    ::tree::status "" $bn
-  } else {
-    updateStatusBar
-  }
-}
-
-#TODO: this code sucks
-# bind Menu <Any-Enter> "+statusBarHelp %W \[%W index @%y \]"
-# bind Menu <Any-Motion> "+statusBarHelp %W \[%W index @%y \]"
-# bind Menu <Any-Leave> "+statusBarRestore %W"
-
-#bind Menu <<MenuSelect>> {+
-#  if {[catch {%W index active} tempMenuIndex]} {
-    #statusBarRestore %W
-#  } else {
-#    statusBarHelp %W $tempMenuIndex
-#  }
-#}
 
 ############################################################
 ### Main window menus:
@@ -350,9 +264,28 @@ $m add command -label ToolsImportFile -command { importPgnFile [sc_base current]
 
 
 
-
 # Store menu labels for translations and help messages
+set ::menuHelpMessage {}
 proc storeMenuLabels {m} {
+    bind $m <<MenuSelect>> {
+        set ::menuHelpMessage {}
+        set idx [%W index active]
+        if {$idx != "none"} {
+            # Tcl/Tk seems to generate strange window names for menus that
+            # are configured to be a toplevel window main menu, e.g.
+            # .menu.file get reported as ".#menu.#menu#file" and
+            # .menu.file.utils is ".#menu.#menu#file.#menu#file#utils"
+            # I have no idea why it does this, but to avoid it we
+            # convert a window paths with hashes to its true value:
+            regsub -all "\#" [winfo name %W] . win
+            catch {
+                set lbl $::MenuLabels($win,$idx)
+                set ::menuHelpMessage $::helpMessage($::language,$lbl)
+            }
+        }
+        updateStatusBar
+    }
+
     set n [$m index end]
     for {set i 0} {$n != "none" && $i <= $n} {incr i} {
         set type [$m type $i]
