@@ -126,7 +126,7 @@ proc ::tools::email::config {} {
   addHorizontalRule $w
   pack [frame $w.b] -side top -fill x
   button $w.b.ok -text [tr OptionsSave] -command {
-    .menu.options invoke [tr OptionsSave]
+    options.write
     catch {grab release .emailConfig}
     destroy .emailConfig
   }

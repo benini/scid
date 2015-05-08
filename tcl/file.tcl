@@ -53,24 +53,13 @@ proc ::file::Exit {}  {
     }
     # restore options if findBestMove in progress
     ::tactics::findBestMoveExit
-    .menu.options invoke [tr OptionsSave]
+    options.write
   }
   ::recentFiles::save
   ::utils::history::Save
   destroy .
 }
 
-proc ::file::ExitFast {} {
-  if {$::optionsAutoSave} {
-    # restore askToReplaceMoves if necessary
-    if {[winfo exists .tacticsWin]} {
-      ::tactics::restoreAskToReplaceMoves
-    }
-    .menu.options invoke [tr OptionsSave]
-  }
-  ::recentFiles::save
-  destroy .
-}
 
 # ::file::New
 #
