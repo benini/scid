@@ -102,14 +102,11 @@ if { $macOS } {
   .menu add cascade -label Scid -menu .menu.apple
   menu .menu.apple
   
-  set menuindex -1
   set m .menu.apple
   
   $m add command -label HelpAbout -command helpAbout
-  set helpMessage($m,[incr menuindex]) HelpAbout
   
   $m add separator
-  incr menuindex
   
   # To Quit
   bind all <Command-q> "exit"
@@ -287,6 +284,7 @@ $m add checkbutton -label WindowsBook -variable ::book::isOpen -command ::book::
 $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOpen \
     -command ::CorrespondenceChess::CCWindow -accelerator "F12"
 
+
 ### Tools menu:
 set m .menu.tools
 $m  add command -label ToolsAnalysis \
@@ -388,20 +386,15 @@ array unset ::MenuLabels ".menu.file,$fileExitHack"
 set m .menu.options
 set optMenus {board export fonts ginfo language entry numbers startup windows theme}
 set optLabels {Board Export Fonts GInfo Language Moves Numbers Startup Windows Theme}
-set menuindex -1
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
-  set helpMessage($m,[incr menuindex]) Options$label
 }
 
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
-set helpMessage($m,[incr menuindex]) OptionsSounds
 
 $m add command -label OptionsToolbar -command configToolbar
-set helpMessage($m,[incr menuindex]) OptionsToolbar
 
 $m add separator
-incr menuindex
 
 $m add command -label OptionsECO -command {
   set ftype { { "Scid ECO files" {".eco"} } }
@@ -420,144 +413,26 @@ $m add command -label OptionsECO -command {
     }
   }
 }
-set helpMessage($m,[incr menuindex]) OptionsECO
 
 $m add command -label OptionsSpell -command readSpellCheckFile
-set helpMessage($m,[incr menuindex]) OptionsSpell
 
 $m add command -label OptionsTable -command setTableBaseDir
-set helpMessage($m,[incr menuindex]) OptionsTable
 if {![sc_info tb]} { $m entryconfigure 15 -state disabled }
 
-# setTableBaseDir:
-#    Prompt user to select a tablebase file; all the files in its
-#    directory will be used.
-#
-proc setTableBaseDir {} {
-  global initialDir tempDir
-  set ftype { { "Tablebase files" {".emd" ".nbw" ".nbb"} } }
-  
-  set w .tbDialog
-  toplevel $w
-  ::setTitle $w Scid
-  label $w.title -text "Select up to 4 table base directories:"
-  pack $w.title -side top
-  foreach i {1 2 3 4} {
-    set tempDir(tablebase$i) $initialDir(tablebase$i)
-    pack [frame $w.f$i] -side top -pady 3 -fill x -expand yes
-    entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
-    bindFocusColors $w.f$i.e
-    button $w.f$i.b -text "..." -pady 2 -command [list chooseTableBaseDir $i]
-    pack $w.f$i.b -side right -padx 2
-    pack $w.f$i.e -side left -padx 2 -fill x -expand yes
-  }
-  addHorizontalRule $w
-  pack [frame $w.b] -side top -fill x
-  button $w.b.ok -text "OK" \
-      -command "catch {grab release $w; destroy $w}; openTableBaseDirs"
-  button $w.b.cancel -text $::tr(Cancel) \
-      -command "catch {grab release $w; destroy $w}"
-  pack $w.b.cancel $w.b.ok -side right -padx 2
-  bind $w <Escape> "$w.b.cancel invoke"
-  wm resizable $w 1 0
-  grab $w
-}
-
-proc openTableBaseDirs {} {
-  global initialDir tempDir
-  set tableBaseDirs ""
-  foreach i {1 2 3 4} {
-    set tbDir [string trim $tempDir(tablebase$i)]
-    if {$tbDir != ""} {
-      if {$tableBaseDirs != ""} { append tableBaseDirs ";" }
-      append tableBaseDirs [file nativename $tbDir]
-    }
-  }
-  
-  set npieces [sc_info tb $tableBaseDirs]
-  foreach i {1 2 3 4} {
-    set initialDir(tablebase$i) $tempDir(tablebase$i)
-  }
-  if {$npieces == 0} {
-    set msg "No tablebases were found."
-  } else {
-    set msg "Tablebases with up to $npieces pieces were found.\n\n"
-    append msg "If you want these tablebases be used whenever\n"
-    append msg "you start Scid, select \"Save Options\" from the\n"
-    append msg "Options menu before you exit Scid."
-  }
-  tk_messageBox -type ok -icon info -title "Scid: Tablebase results" \
-      -message $msg
-  
-}
-proc chooseTableBaseDir {i} {
-  global tempDir
-
-  set idir $tempDir(tablebase$i)
-  if {$idir == ""} { set idir [pwd] }
-  
-  set fullname [tk_chooseDirectory -initialdir $idir -mustexist 1 \
-      -title "Scid: Select a Tablebase directory"]
-  if {$fullname == ""} { return }
-  
-  set tempDir(tablebase$i) $fullname
-}
-
 $m add command -label OptionsRecent -command ::recentFiles::configure
-set helpMessage($m,[incr menuindex]) OptionsRecent
 
 $m add command -label OptionsBooksDir -command setBooksDir
-set helpMessage($m,[incr menuindex]) OptionsBooksDir
 
 $m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
-set helpMessage($m,[incr menuindex]) OptionsTacticsBasesDir
 
 #TODO: translate
 $m add command -label "Photos directory..." -command setPhotoDir
-set helpMessage($m,[incr menuindex]) "Sets the players photo directory"
-
-proc setBooksDir {} {
-  global scidBooksDir
-  set dir [tk_chooseDirectory -initialdir $scidBooksDir -mustexist 1]
-  if {$dir == ""} {
-    return
-  } else {
-    set scidBooksDir $dir
-  }
-}
-
-proc setTacticsBasesDir {} {
-  global scidBasesDir
-  set dir [tk_chooseDirectory -initialdir $scidBasesDir -mustexist 1]
-  if {$dir == ""} {
-    return
-  } else {
-    set scidBasesDir $dir
-  }
-}
-
-proc setPhotoDir {} {
-  set dir [tk_chooseDirectory -initialdir $::scidExeDir -mustexist 1]
-  if {$dir == ""} {
-    return
-  } else {
-    set ::scidPhotoDir $dir
-    options.save ::scidPhotoDir
-    set n [loadPlayersPhoto]
-    tk_messageBox -message "Found [lindex $n 0] images in [lindex $n 1] file(s)"
-    ::notify::GameChanged
-  }
-}
-
 
 $m add separator
-incr menuindex
 
 $m add command -label OptionsSave -command options.write
-set helpMessage($m,[incr menuindex]) OptionsSave
 
 $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave
-set helpMessage($m,[incr menuindex]) OptionsAutoSave
 
 menu $m.ginfo
 $m.ginfo add checkbutton -label GInfoHideNext \
@@ -588,50 +463,39 @@ $m.ginfo add command -label GInfoInformant -command configInformant
 menu $m.entry
 $m.entry add checkbutton -label OptionsMovesAsk \
     -variable askToReplaceMoves -offvalue 0 -onvalue 1
-set helpMessage($m.entry,0) OptionsMovesAsk \
-    
+
 $m.entry add cascade -label OptionsMovesAnimate -menu $m.entry.animate
 menu $m.entry.animate
 foreach i {0 100 150 200 250 300 400 500 600 800 1000} {
   $m.entry.animate add radiobutton -label "$i ms" \
       -variable animateDelay -value $i
 }
-set helpMessage($m.entry,1) OptionsMovesAnimate
 
 $m.entry add command -label OptionsMovesDelay -command setAutoplayDelay
-set helpMessage($m.entry,2) OptionsMovesDelay
 
 $m.entry add checkbutton -label OptionsMovesCoord \
     -variable moveEntry(Coord) -offvalue 0 -onvalue 1
-set helpMessage($m.entry,3) OptionsMovesCoord
 
 $m.entry add checkbutton -label OptionsMovesKey \
     -variable moveEntry(AutoExpand) -offvalue 0 -onvalue 1
-set helpMessage($m.entry,4) OptionsMovesKey
 
 $m.entry add checkbutton -label OptionsMovesSuggest \
     -variable suggestMoves -offvalue 0 -onvalue 1
-set helpMessage($m.entry,5) OptionsMovesSuggest
 
 $m.entry add checkbutton -label OptionsShowVarPopup \
     -variable showVarPopup -offvalue 0 -onvalue 1
-set helpMessage($m.entry,6) OptionsShowVarPopup
 
 $m.entry add checkbutton -label OptionsMovesSpace \
     -variable ::pgn::moveNumberSpaces -offvalue 0 -onvalue 1
-set helpMessage($m.entry,7) OptionsMovesSpace
 
 $m.entry add checkbutton -label OptionsMovesTranslatePieces \
     -variable ::translatePieces -offvalue 0 -onvalue 1 -command setLanguage
-set helpMessage($m.entry,8) OptionsMovesTranslatePieces
 
 menu $m.entry.highlightlastmove
 $m.entry add cascade -label OptionsMovesHighlightLastMove -menu  $m.entry.highlightlastmove
 $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveDisplay -variable ::highlightLastMove -command updateBoard
-set helpMessage($m.entry.highlightlastmove,0) OptionsMovesHighlightLastMoveDisplay
 menu $m.entry.highlightlastmove.width
 $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth -menu $m.entry.highlightlastmove.width
-set helpMessage($m.entry.highlightlastmove,1) OptionsMovesHighlightLastMoveWidth
 foreach i {1 2 3 4 5} {
   $m.entry.highlightlastmove.width add radiobutton -label $i -value $i -variable ::highlightLastMoveWidth -command updateBoard
 }
@@ -647,18 +511,13 @@ $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor
     updateBoard
   }
 }
-set helpMessage($m.entry.highlightlastmove,2) OptionsMovesHighlightLastMoveColor
 $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveArrow -variable ::arrowLastMove -command updateBoard
-set helpMessage($m.entry.highlightlastmove,3) OptionsMovesHighlightLastMoveArrow
-set helpMessage($m.entry,9) OptionsMovesHighlightLastMove
 
 $m.entry add checkbutton -label OptionsMovesShowVarArrows \
     -variable showVarArrows -offvalue 0 -onvalue 1
-set helpMessage($m.entry,10) OptionsMovesShowVarArrows
 
 $m.entry add checkbutton -label OptionsMovesGlossOfDanger \
     -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
-set helpMessage($m.entry,11) OptionsMovesGlossOfDanger
 
 proc updateLocale {} {
   global locale
@@ -688,13 +547,9 @@ foreach format {PGN HTML LaTeX} {
 set m .menu.options.windows
 menu $m
 $m add checkbutton -label OptionsWindowsIconify -variable autoIconify
-set helpMessage($m,0) OptionsWindowsIconify
 $m add checkbutton -label OptionsWindowsRaise -variable autoRaise
-set helpMessage($m,1) OptionsWindowsRaise
 $m add checkbutton -label OptionsWindowsDock -variable windowsDock
-set helpMessage($m,2) OptionsWindowsDock
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
-set helpMessage($m,3) OptionsShowGameInfo
 
 if {$::docking::USE_DOCKING} {
   menu $m.savelayout
@@ -704,9 +559,7 @@ if {$::docking::USE_DOCKING} {
     $m.restorelayout add command -label $i -command "::docking::layout_restore $slot"
   }
   $m add cascade -label OptionsWindowsSaveLayout -menu $m.savelayout
-  set helpMessage($m,5) OptionsWindowsSaveLayout
   $m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
-  set helpMessage($m,6) OptionsWindowsRestoreLayout
 }
 
 set m .menu.options.theme
@@ -739,13 +592,11 @@ $m add command -label OptionsFontsRegular -underline 0 -command {
   font configure font_H4 -family $font -size [expr {$fontsize + 2} ]
   font configure font_H5 -family $font -size [expr {$fontsize + 0} ]
 }
-set helpMessage($m,0) OptionsFontsRegular
 
 $m add command -label OptionsFontsMenu -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Menu $fontOptions(Menu)]
   if {$fontOptions(temp) != ""} { set fontOptions(Menu) $fontOptions(temp) }
 }
-set helpMessage($m,1) OptionsFontsMenu
 
 $m add command -label OptionsFontsSmall -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Small $fontOptions(Small)]
@@ -755,19 +606,16 @@ $m add command -label OptionsFontsSmall -underline 0 -command {
   font configure font_SmallBold -family $font -size $fontsize
   font configure font_SmallItalic -family $font -size $fontsize
 }
-set helpMessage($m,2) OptionsFontsSmall
 
 $m add command -label OptionsFontsTiny -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Tiny $fontOptions(Tiny) 1]
   if {$fontOptions(temp) != ""} { set fontOptions(Tiny) $fontOptions(temp) }
 }
-set helpMessage($m,3) OptionsFontsTiny
 
 $m add command -label OptionsFontsFixed -underline 0 -command {
   set fontOptions(temp) [FontDialog font_Fixed $fontOptions(Fixed) 1]
   if {$fontOptions(temp) != ""} { set fontOptions(Fixed) $fontOptions(temp) }
 }
-set helpMessage($m,4) OptionsFontsFixed
 
 # The windows that are not dockable are always configurable for auto start
 set m .menu.options.startup
@@ -792,51 +640,13 @@ menu $m
 
 # Menu for changing board size:
 $m add cascade -label OptionsBoardSize -menu $m.bdsize
-set helpMessage($m,0) OptionsBoardSize
 
 $m add cascade -label OptionsBoardPieces -menu $m.pieces
-set helpMessage($m,1) OptionsBoardPieces
 
 $m add command -label OptionsBoardColors -command chooseBoardColors
-set helpMessage($m,2) OptionsBoardColors
 
-#Klimmek: Menu for selecting chessboard textures
-# $m add command -label OptionsBoardGraphics -command chooseBoardTextures
-# set helpMessage($m,3) OptionsBoardGraphics
 
 menu $m.bdsize
-set count 0
-
-proc updateBoardSizesMenu {} {
-  set m .menu.options.board
-  $m.bdsize delete 0 end
-  set st normal
-  if {$::docking::USE_DOCKING } {
-    $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
-        -command "::resizeMainBoard; updateBoardSizesMenu"
-    if {$::autoResizeBoard} { set st disabled }
-  }
-  foreach i $::boardSizes {
-    incr count
-    if {$count <= 9} {
-      set lbl "  $count"
-    } else {
-      set lbl " $count"
-    }
-    $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
-      -command "::board::resize2 .main.board $i "
-  }
-}
-
-proc updatePiecesMenu {} {
-  set m .menu
-  $m.options.board.pieces delete 0 end
-  foreach i $::boardStyles {
-    $m.options.board.pieces add radio -label $i \
-      -variable boardStyle -value $i \
-      -underline 0 -command "setPieceFont \"$i\"; updateBoard"
-  }
-}
 
 # Menu for changing Piece set:
 menu $m.pieces -tearoff 1
@@ -1172,6 +982,145 @@ proc setAutoplayDelay {} {
     bind $w <Return> { .apdialog.buttons.ok invoke }
     focus $w.spDelay
 }
+
+# setTableBaseDir:
+#    Prompt user to select a tablebase file; all the files in its
+#    directory will be used.
+#
+proc setTableBaseDir {} {
+  global initialDir tempDir
+  set ftype { { "Tablebase files" {".emd" ".nbw" ".nbb"} } }
+
+  set w .tbDialog
+  toplevel $w
+  ::setTitle $w Scid
+  label $w.title -text "Select up to 4 table base directories:"
+  pack $w.title -side top
+  foreach i {1 2 3 4} {
+    set tempDir(tablebase$i) $initialDir(tablebase$i)
+    pack [frame $w.f$i] -side top -pady 3 -fill x -expand yes
+    entry $w.f$i.e -width 30 -textvariable tempDir(tablebase$i)
+    bindFocusColors $w.f$i.e
+    button $w.f$i.b -text "..." -pady 2 -command [list chooseTableBaseDir $i]
+    pack $w.f$i.b -side right -padx 2
+    pack $w.f$i.e -side left -padx 2 -fill x -expand yes
+  }
+  addHorizontalRule $w
+  pack [frame $w.b] -side top -fill x
+  button $w.b.ok -text "OK" \
+      -command "catch {grab release $w; destroy $w}; openTableBaseDirs"
+  button $w.b.cancel -text $::tr(Cancel) \
+      -command "catch {grab release $w; destroy $w}"
+  pack $w.b.cancel $w.b.ok -side right -padx 2
+  bind $w <Escape> "$w.b.cancel invoke"
+  wm resizable $w 1 0
+  grab $w
+}
+proc openTableBaseDirs {} {
+  global initialDir tempDir
+  set tableBaseDirs ""
+  foreach i {1 2 3 4} {
+    set tbDir [string trim $tempDir(tablebase$i)]
+    if {$tbDir != ""} {
+      if {$tableBaseDirs != ""} { append tableBaseDirs ";" }
+      append tableBaseDirs [file nativename $tbDir]
+    }
+  }
+
+  set npieces [sc_info tb $tableBaseDirs]
+  foreach i {1 2 3 4} {
+    set initialDir(tablebase$i) $tempDir(tablebase$i)
+  }
+  if {$npieces == 0} {
+    set msg "No tablebases were found."
+  } else {
+    set msg "Tablebases with up to $npieces pieces were found.\n\n"
+    append msg "If you want these tablebases be used whenever\n"
+    append msg "you start Scid, select \"Save Options\" from the\n"
+    append msg "Options menu before you exit Scid."
+  }
+  tk_messageBox -type ok -icon info -title "Scid: Tablebase results" \
+      -message $msg
+}
+proc chooseTableBaseDir {i} {
+  global tempDir
+
+  set idir $tempDir(tablebase$i)
+  if {$idir == ""} { set idir [pwd] }
+
+  set fullname [tk_chooseDirectory -initialdir $idir -mustexist 1 \
+      -title "Scid: Select a Tablebase directory"]
+  if {$fullname == ""} { return }
+
+  set tempDir(tablebase$i) $fullname
+}
+################################################################################
+
+proc setBooksDir {} {
+  global scidBooksDir
+  set dir [tk_chooseDirectory -initialdir $scidBooksDir -mustexist 1]
+  if {$dir == ""} {
+    return
+  } else {
+    set scidBooksDir $dir
+  }
+}
+
+proc setTacticsBasesDir {} {
+  global scidBasesDir
+  set dir [tk_chooseDirectory -initialdir $scidBasesDir -mustexist 1]
+  if {$dir == ""} {
+    return
+  } else {
+    set scidBasesDir $dir
+  }
+}
+
+proc setPhotoDir {} {
+  set dir [tk_chooseDirectory -initialdir $::scidExeDir -mustexist 1]
+  if {$dir == ""} {
+    return
+  } else {
+    set ::scidPhotoDir $dir
+    options.save ::scidPhotoDir
+    set n [loadPlayersPhoto]
+    tk_messageBox -message "Found [lindex $n 0] images in [lindex $n 1] file(s)"
+    ::notify::GameChanged
+  }
+}
+
+proc updateBoardSizesMenu {} {
+  set count 0
+  set m .menu.options.board
+  $m.bdsize delete 0 end
+  set st normal
+  if {$::docking::USE_DOCKING } {
+    $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
+        -command "::resizeMainBoard; updateBoardSizesMenu"
+    if {$::autoResizeBoard} { set st disabled }
+  }
+  foreach i $::boardSizes {
+    incr count
+    if {$count <= 9} {
+      set lbl "  $count"
+    } else {
+      set lbl " $count"
+    }
+    $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
+      -command "::board::resize2 .main.board $i "
+  }
+}
+
+proc updatePiecesMenu {} {
+  set m .menu
+  $m.options.board.pieces delete 0 end
+  foreach i $::boardStyles {
+    $m.options.board.pieces add radio -label $i \
+      -variable boardStyle -value $i \
+      -underline 0 -command "setPieceFont \"$i\"; updateBoard"
+  }
+}
+
 
 ### End of file: menus.tcl
 
