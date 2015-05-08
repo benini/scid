@@ -176,6 +176,7 @@ $m add cascade -label FileSwitch -menu $m.switch
 $m add separator
 $m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
 
+
 ### Edit menu:
 set m .menu.edit
 menu $m.strip
@@ -201,38 +202,6 @@ $m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" -command copyFEN
 $m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteFEN
 
 
-
-# Store menu labels for translations and help messages
-proc storeMenuLabels {m} {
-    set n [$m index end]
-    for {set i 0} {$n != "none" && $i <= $n} {incr i} {
-        set type [$m type $i]
-        if {$type != "separator"} {
-            set ::MenuLabels($m,$i) [$m entrycget $i -label]
-        }
-        if {$type == "cascade"} {
-            storeMenuLabels [$m entrycget $i -menu]
-        }
-    }
-}
-# Issue a command to a menu entry
-proc menuConfig {{m} {label} {cmd} args} {
-    foreach {key lbl} [array get ::MenuLabels "$m*"] {
-        if {$lbl == $label} {
-            set idx [lindex [split $key ","] 1]
-			$m $cmd $idx {*}$args
-            break
-        }
-    }
-}
-storeMenuLabels .menu.file
-set fileExitHack [.menu.file index end]
-set ::MenuLabels(.menu.file,end) $::MenuLabels(.menu.file,$fileExitHack)
-array unset ::MenuLabels ".menu.file,$fileExitHack"
-storeMenuLabels .menu.edit
-
-
-
 ### Game menu:
 set m .menu.game
 $m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
@@ -244,7 +213,7 @@ $m add command -label GameLast -accelerator "Ctrl+Shift+Down" -command {::game::
 $m add command -label GameRandom -command ::game::LoadRandom -accelerator "Ctrl+?"
 $m add separator
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
-$m  add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
+$m add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
 $m add separator
 $m add command -label GameDeepest -accelerator "Ctrl+Shift+D" -command {
   sc_move ply [sc_eco game ply]
@@ -262,50 +231,48 @@ $m  add command -label SearchMaterial -command ::search::material -accelerator "
 $m  add separator
 $m add command -label SearchUsing -accel "Ctrl+Shift+U" -command ::search::usefile
 
+
 ### Play menu:
 set m .menu.play
 $m add command -label ToolsSeriousGame -command ::sergame::config
 $m add command -label ToolsTacticalGame -command ::tacgame::config
 $m add command -label ToolsTrainFics -command ::fics::config
 $m add separator
-# sub-menu for training
 menu $m.training
+  $m.training add command -label ToolsTrainOpenings -command ::opening::config
+  $m.training add command -label ToolsTrainTactics -command ::tactics::config
+  $m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
+  $m.training add command -label ToolsTrainCalvar -command ::calvar::config
+  $m.training add checkbutton -label ToolsTrainFindBestMove -variable ::tactics::findBestMoveRunning -command ::tactics::findBestMoveStart
 $m add cascade -label ToolsTraining -menu $m.training
-$m.training add command -label ToolsTrainOpenings -command ::opening::config
-$m.training add command -label ToolsTrainTactics -command ::tactics::config
-$m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
-$m.training add command -label ToolsTrainCalvar -command ::calvar::config
-$m.training add checkbutton -label ToolsTrainFindBestMove -variable ::tactics::findBestMoveRunning -command ::tactics::findBestMoveStart
 $m add separator
-
-# Add support for Correspondence Chess by means of Xfcc and cmail
 menu $m.correspondence
+  $m.correspondence add command -label CCConfigure   -command {::CorrespondenceChess::config}
+  $m.correspondence add command -label CCConfigRelay -command {::CorrespondenceChess::ConfigureRelay}
+  $m.correspondence add separator
+  $m.correspondence add command -label CCOpenDB      -command {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox} \
+      -accelerator "Ctrl+F12"
+  $m.correspondence add separator
+  $m.correspondence add command -label CCRetrieve    -command { ::CorrespondenceChess::FetchGames }
+  $m.correspondence add command -label CCInbox       -command { ::CorrespondenceChess::ReadInbox }
+  $m.correspondence add separator
+  $m.correspondence add command -label CCSend        -command {::CorrespondenceChess::SendMove 0 0 0 0}
+  $m.correspondence add command -label CCResign      -command {::CorrespondenceChess::SendMove 1 0 0 0}
+  $m.correspondence add command -label CCClaimDraw   -command {::CorrespondenceChess::SendMove 0 1 0 0}
+  $m.correspondence add command -label CCOfferDraw   -command {::CorrespondenceChess::SendMove 0 0 1 0}
+  $m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
+  $m.correspondence add command -label CCGamePage    -command {::CorrespondenceChess::CallWWWGame}
+  $m.correspondence add separator
+  $m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
+  $m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
 $m add cascade -label CorrespondenceChess -menu $m.correspondence
-$m.correspondence add command -label CCConfigure   -command {::CorrespondenceChess::config}
-$m.correspondence add command -label CCConfigRelay   -command {::CorrespondenceChess::ConfigureRelay}
-$m.correspondence add separator
-$m.correspondence add command -label CCOpenDB      -command {::CorrespondenceChess::OpenCorrespondenceDB; ::CorrespondenceChess::ReadInbox} \
-    -accelerator "Ctrl+F12"
-$m.correspondence add separator
-$m.correspondence add command -label CCRetrieve    -command { ::CorrespondenceChess::FetchGames }
-$m.correspondence add command -label CCInbox       -command { ::CorrespondenceChess::ReadInbox }
-$m.correspondence add separator
-$m.correspondence add command -label CCSend        -command {::CorrespondenceChess::SendMove 0 0 0 0}
-$m.correspondence add command -label CCResign      -command {::CorrespondenceChess::SendMove 1 0 0 0}
-$m.correspondence add command -label CCClaimDraw   -command {::CorrespondenceChess::SendMove 0 1 0 0}
-$m.correspondence add command -label CCOfferDraw   -command {::CorrespondenceChess::SendMove 0 0 1 0}
-$m.correspondence add command -label CCAcceptDraw  -command {::CorrespondenceChess::SendMove 0 0 0 1}
-$m.correspondence add command -label CCGamePage    -command {::CorrespondenceChess::CallWWWGame}
-$m.correspondence add separator
-$m.correspondence add command -label CCNewMailGame -command {::CorrespondenceChess::newEMailGame}
-$m.correspondence add command -label CCMailMove    -command {::CorrespondenceChess::eMailMove}
 
 
 ### Windows menu:
 set m .menu.windows
-$m  add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
-$m  add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
-$m  add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
+$m add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
+$m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
+$m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
 $m add checkbutton -label WindowsPList -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
 $m add checkbutton -label WindowsTmt -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
 $m add separator
@@ -326,8 +293,6 @@ $m  add command -label ToolsAnalysis \
     -command makeAnalysisWin -accelerator "Ctrl+Shift+A"
 $m  add command -label ToolsAnalysis2 \
     -command "makeAnalysisWin 2" -accelerator "Ctrl+Shift+2"
-
-#Add Menu for Start Engine 1 and Engine 2
 $m  add checkbutton -label ToolsStartEngine1 -variable analysisWin1 \
     -command "makeAnalysisWin 1 0" -accelerator "F2"
 $m  add checkbutton -label ToolsStartEngine2 -variable analysisWin2 \
@@ -346,58 +311,80 @@ $m add command -label ToolsOpReport \
 $m add command -label ToolsTracker \
     -accelerator "Ctrl+Shift+K" -command ::ptrack::make
 $m add command -label ToolsBookTuning -command ::book::tuning
-
-# Connect Hardware
 menu $m.hardware
+  $m.hardware add command -label ToolsConnectHardwareConfigure -command ::ExtHardware::config
+  $m.hardware add command -label ToolsConnectHardwareInputEngineConnect -command ::inputengine::connectdisconnect
+  $m.hardware add command -label ToolsConnectHardwareNovagCitrineConnect -command ::novag::connect
 $m add cascade -label ToolsConnectHardware -menu $m.hardware
-$m.hardware add command -label ToolsConnectHardwareConfigure -command ::ExtHardware::config
-$m.hardware add command -label ToolsConnectHardwareInputEngineConnect -command ::inputengine::connectdisconnect
-$m.hardware add command -label ToolsConnectHardwareNovagCitrineConnect -command ::novag::connect
-
 $m add separator
-
 menu $m.pinfo
+  $m.pinfo add command -label GraphOptionsWhite -command { ::pinfo::playerInfo [sc_game info white] }
+  $m.pinfo add command -label GraphOptionsBlack -command { ::pinfo::playerInfo [sc_game info black] }
 $m add cascade -label ToolsPInfo -menu $m.pinfo
-$m.pinfo add command -label White -underline 0 -command {
-  ::pinfo::playerInfo [sc_game info white]
-}
-$m.pinfo add command -label Black -underline 0 -command {
-  ::pinfo::playerInfo [sc_game info black]
-}
-$m add command -label ToolsPlayerReport -command ::preport::preportDlg -state disabled
+$m add command -label ToolsPlayerReport -command ::preport::preportDlg
 $m add command -label ToolsRating -command {::tools::graphs::rating::Refresh both}
 $m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -accelerator "Ctrl+Shift+Z"
-
 $m add separator
 menu $m.exportcurrent
+  $m.exportcurrent add command -label ToolsExpCurrentPGN \
+      -command {exportGames current PGN}
+  $m.exportcurrent add command -label ToolsExpCurrentHTML \
+      -command {exportGames current HTML}
+  $m.exportcurrent add command -label ToolsExpCurrentHTMLJS \
+      -command {::html::exportCurrentGame}
+  $m.exportcurrent add command -label ToolsExpCurrentLaTeX \
+      -command {exportGames current LaTeX}
 $m add cascade -label ToolsExpCurrent -menu $m.exportcurrent
-$m.exportcurrent add command -label ToolsExpCurrentPGN \
-    -command {exportGames current PGN}
-$m.exportcurrent add command -label ToolsExpCurrentHTML \
-    -command {exportGames current HTML}
-$m.exportcurrent add command -label ToolsExpCurrentHTMLJS \
-    -command {::html::exportCurrentGame}
-$m.exportcurrent add command -label ToolsExpCurrentLaTeX \
-    -command {exportGames current LaTeX}
-
 menu $m.exportfilter
+  $m.exportfilter add command -label ToolsExpFilterPGN \
+      -command {exportGames filter PGN}
+  $m.exportfilter add command -label ToolsExpFilterHTML \
+      -command {exportGames filter HTML}
+  $m.exportfilter add command -label ToolsExpFilterHTMLJS \
+      -command {::html::exportCurrentFilter}
+  $m.exportfilter add command -label ToolsExpFilterLaTeX \
+      -command {exportGames filter LaTeX}
 $m add cascade -label ToolsExpFilter -menu $m.exportfilter
-$m.exportfilter add command -label ToolsExpFilterPGN \
-    -command {exportGames filter PGN}
-$m.exportfilter add command -label ToolsExpFilterHTML \
-    -command {exportGames filter HTML}
-$m.exportfilter add command -label ToolsExpFilterHTMLJS \
-    -command {::html::exportCurrentFilter}
-$m.exportfilter add command -label ToolsExpFilterLaTeX \
-    -command {exportGames filter LaTeX}
-
 $m add separator
 $m add command -label ToolsImportOne \
     -accelerator "Ctrl+Shift+I" -command importPgnGame
 $m add command -label ToolsImportFile -command { importPgnFile [sc_base current] }
 
-### Options menu:
 
+
+
+# Store menu labels for translations and help messages
+proc storeMenuLabels {m} {
+    set n [$m index end]
+    for {set i 0} {$n != "none" && $i <= $n} {incr i} {
+        set type [$m type $i]
+        if {$type != "separator"} {
+            set ::MenuLabels($m,$i) [$m entrycget $i -label]
+        }
+        if {$type == "cascade"} {
+            storeMenuLabels [$m entrycget $i -menu]
+        }
+    }
+}
+# Issue a command to a menu entry
+proc menuConfig {{m} {label} {cmd} args} {
+    foreach {key lbl} [array get ::MenuLabels "$m*"] {
+        if {$lbl == $label} {
+            set idx [lindex [split $key ","] 1]
+            $m $cmd $idx {*}$args
+            break
+        }
+    }
+}
+storeMenuLabels .menu
+set fileExitHack [.menu.file index end]
+set ::MenuLabels(.menu.file,end) $::MenuLabels(.menu.file,$fileExitHack)
+array unset ::MenuLabels ".menu.file,$fileExitHack"
+
+
+
+
+### Options menu:
 set m .menu.options
 set optMenus {board export fonts ginfo language entry numbers startup windows theme}
 set optLabels {Board Export Fonts GInfo Language Moves Numbers Startup Windows Theme}
@@ -1037,7 +1024,6 @@ $m  add command -label HelpAbout -command helpAbout
 ##################################################
 # updateMenuStates:
 #   Update all the menus, rechecking which state each item should be in.
-#   TODO: update only the posted menu
 #
 proc updateMenuStates {{menuname}} {
   global windowsOS
@@ -1068,10 +1054,7 @@ proc updateMenuStates {{menuname}} {
         catch { $m.play entryconfig $i -state $st }
       }
     }
-  }
-  
-  # Configure File menu entry states::
-  if {[sc_base inUse]} {
+  {game} {
     set isReadOnly [sc_base isReadOnly $::currentSlot]
     # Load first/last/random/game number buttons:
     set filtercount [sc_filter count]
@@ -1104,20 +1087,7 @@ proc updateMenuStates {{menuname}} {
       set state disabled
     }
     $m.game entryconfig [tr GameReplace] -state $state
-    
-    #$m.windows entryconfig [tr WindowsTree] -state normal
-    
-    # Tools:
-    $m.tools entryconfig [tr ToolsEmail] -state normal
-    $m.tools entryconfig [tr ToolsOpReport] -state normal
-    $m.tools entryconfig [tr ToolsPlayerReport] -state normal
-    
   }
-
-  if {[sc_base numGames $::curr_db] == 0} {
-    $m.tools entryconfig [tr ToolsExpFilter] -state disabled
-  } else {
-    $m.tools entryconfig [tr ToolsExpFilter] -state normal
   }
 }
 
@@ -1127,24 +1097,26 @@ proc menuUpdateBases {} {
 
   foreach i [sc_base list] {
     set fname [file tail [sc_base filename $i]]
-    set notClipbase [expr {$::curr_db != $::clipbase_db ? "normal" : "disabled"}]
-    set canChange   [expr {![sc_base isReadOnly $::curr_db] ? "normal" : "disabled"}]
-    set canCompact  [expr {[baseIsCompactable] ? "normal" : "disabled"}]
-    set notEmpty    [expr {[sc_base numGames $::curr_db] != 0 ? "normal" : "disabled"}]
-
-    menuConfig .menu.file FileClose entryconfig -state $notClipbase
-    menuConfig .menu.file.utils FileMaintDelete  entryconfig -state $canChange
-    menuConfig .menu.file.utils FileMaintName    entryconfig -state $canChange
-    menuConfig .menu.file.utils FileMaintClass   entryconfig -state $canChange
-    menuConfig .menu.file.utils FileMaintTwin    entryconfig -state $canChange
-    menuConfig .menu.file.utils FileMaintCompact entryconfig -state $canCompact
-    menuConfig .menu.tools ToolsExpFilter entryconfig -state $notEmpty
 
     .menu.file.switch add radiobutton -variable currentSlot -value $i \
         -label "Base $i: $fname" \
         -underline 5 -accelerator "Ctrl+$i"\
         -command [list ::file::SwitchToBase $i]
   }
+
+  #Current database
+  set notClipbase [expr {$::curr_db != $::clipbase_db ? "normal" : "disabled"}]
+  set canChange   [expr {![sc_base isReadOnly $::curr_db] ? "normal" : "disabled"}]
+  set canCompact  [expr {[baseIsCompactable] ? "normal" : "disabled"}]
+  set notEmpty    [expr {[sc_base numGames $::curr_db] != 0 ? "normal" : "disabled"}]
+
+  menuConfig .menu.file FileClose entryconfig -state $notClipbase
+  menuConfig .menu.file.utils FileMaintDelete  entryconfig -state $canChange
+  menuConfig .menu.file.utils FileMaintName    entryconfig -state $canChange
+  menuConfig .menu.file.utils FileMaintClass   entryconfig -state $canChange
+  menuConfig .menu.file.utils FileMaintTwin    entryconfig -state $canChange
+  menuConfig .menu.file.utils FileMaintCompact entryconfig -state $canCompact
+  menuConfig .menu.tools ToolsExpFilter entryconfig -state $notEmpty
 }
 menuUpdateBases
 
@@ -1165,9 +1137,11 @@ proc configMenuText {menu entry tag lang} {
 }
 
 proc setLanguageMenus {} {
+  set lang $::language
   foreach {key lbl} [array get ::MenuLabels] {
     foreach {m idx} [split $key ","] {
-      configMenuText $m $idx $lbl $::language
+      $m entryconfig $idx -label $::menuLabel($lang,$lbl) \
+                          -underline $::menuUnder($lang,$lbl)
     }
   }
 
@@ -1175,55 +1149,10 @@ proc setLanguageMenus {} {
   if {![info exists oldLang]} { set oldLang X }
   set lang $::language
   
-  foreach tag { ToolsSeriousGame CorrespondenceChess ToolsTraining ToolsTacticalGame ToolsTrainFics} {
-    configMenuText .menu.play [tr $tag $oldLang] $tag $lang
-  }
-  
-  foreach tag {TrainOpenings TrainTactics TrainCalvar TrainFindBestMove TrainReviewGame } {
-    configMenuText .menu.play.training [tr Tools$tag $oldLang] Tools$tag $lang
-  }
-  
-  foreach tag { CCConfigure CCConfigRelay CCOpenDB CCRetrieve CCInbox \
-        CCSend CCResign CCClaimDraw CCOfferDraw CCAcceptDraw   \
-        CCNewMailGame CCMailMove CCGamePage } {
-    configMenuText .menu.play.correspondence [tr $tag $oldLang] $tag $lang
-  }
 
-  foreach tag {File Edit Game Search Play Windows Tools Options Help} {
-    configMenuText .menu [tr $tag $oldLang] $tag $lang
-  }
-
-  foreach tag {New First Prev Reload Next Last Random
-    Replace Add Deepest GotoMove Novelty} {
-    configMenuText .menu.game [tr Game$tag $oldLang] Game$tag $lang
-  }
-  foreach tag {Material Current Header Using} {
-    configMenuText .menu.search [tr Search$tag $oldLang] Search$tag $lang
-  }
-  foreach tag {Comment GList PGN PList Tmt Switcher Maint ECO Stats Tree TB Book CorrChess } {
-    configMenuText .menu.windows [tr Windows$tag $oldLang] Windows$tag $lang
-  }
-  foreach tag {Analysis Analysis2 Cross Email FilterGraph AbsFilterGraph OpReport Tracker
-    Rating Score ExpCurrent ExpFilter ImportOne ImportFile StartEngine1 StartEngine2 BookTuning
-    PInfo PlayerReport ConnectHardware } {
-    configMenuText .menu.tools [tr Tools$tag $oldLang] Tools$tag $lang
-  }
-  
-  .menu.tools.pinfo entryconfigure 0 -label $::tr(White)
-  .menu.tools.pinfo entryconfigure 1 -label $::tr(Black)
-  foreach tag {ToolsExpCurrentPGN ToolsExpCurrentHTML ToolsExpCurrentHTMLJS ToolsExpCurrentLaTeX} {
-    configMenuText .menu.tools.exportcurrent [tr $tag $oldLang] $tag $lang
-  }
-  foreach tag {ToolsExpFilterPGN ToolsExpFilterHTML ToolsExpFilterHTMLJS ToolsExpFilterLaTeX} {
-    configMenuText .menu.tools.exportfilter [tr $tag $oldLang] $tag $lang
-  }
   foreach tag {Board Export Fonts GInfo Language Moves Numbers
     Startup Sounds Toolbar Windows Theme ECO Spell Table BooksDir TacticsBasesDir Recent Save AutoSave} {
     configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
-  }
-  
-  foreach tag { Configure NovagCitrineConnect InputEngineConnect  } {
-    configMenuText .menu.tools.hardware [tr ToolsConnectHardware$tag $oldLang] ToolsConnectHardware$tag $lang
   }
   
   foreach tag {Regular Menu Small Tiny Fixed} {
