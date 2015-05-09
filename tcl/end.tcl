@@ -856,7 +856,17 @@ proc gameSave { gnum } {
   set blackElo [sc_game tag get BlackElo]
   set whiteRType [sc_game tag get WhiteRType]
   set blackRType [sc_game tag get BlackRType]
-  set eco [sc_game tag get ECO];  set extraTags [sc_game tag get Extra]
+  set eco [sc_game tag get ECO]
+  set extraTags [sc_game tag get Extra]
+  if {[::board::isFlipped .main.board]} {
+    regsub -all {FlipB "[01]"\n} $extraTags {} extraTags
+    append extraTags "FlipB \"1\"\n"
+  } else {
+    regexp {FlipB "([01])"\n} $extraTags -> flipB
+    if {[info exists flipB] && $flipB} {
+      regsub -all {FlipB "[01]"\n} $extraTags {} extraTags
+    }
+  }
   clearMatchList $f.list
   
   # Use question marks instead of zero values in date:

@@ -65,10 +65,10 @@ proc ::gbrowser::new {base gnum {ply -1}} {
   bind $w <Right> "::gbrowser::update $n +1"
   bind $w <Up> "::gbrowser::update $n -10"
   bind $w <Down> "::gbrowser::update $n +10"
-  bind $w <minus> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
-  bind $w <Control-Shift-Left> {set ::gbrowser::size [::board::resize2 %W.bd -1]}
-  bind $w <plus> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
-  bind $w <Control-Shift-Right> {set ::gbrowser::size [::board::resize2 %W.bd +1]}
+  bind $w <minus> {set ::gbrowser::size [::board::resize %W.bd -1]}
+  bind $w <Control-Shift-Left> {set ::gbrowser::size [::board::resize %W.bd -1]}
+  bind $w <plus> {set ::gbrowser::size [::board::resize %W.bd +1]}
+  bind $w <Control-Shift-Right> {set ::gbrowser::size [::board::resize %W.bd +1]}
   bindMouseWheel $w "::gbrowser::mousewheelHandler $n"
   
   button $w.b.start -image tb_start -command "::gbrowser::update $n start"

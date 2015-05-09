@@ -622,23 +622,6 @@ proc ::board::size {w} {
   return $::board::_size($w)
 }
 
-################################################################################
-# Pascal Georges :
-# an alias resize function to handle the bug (flip + resize) : when the board was flipped, and the board resized
-# its state was incoherent. As this did not occur when the board is not flipped, unflip the board before the
-# resizing : should be fixed !
-################################################################################
-proc ::board::resize2 {w psize} {
-  if {$psize == $::board::_size($w)} { return $psize }
-  if { ! [ ::board::isFlipped $w ] } {
-    ::board::resize $w $psize
-  }  else {
-    ::board::flip $w
-    ::board::resize $w $psize
-    ::board::flip $w
-  }
-}
-
 # ::board::resize
 #   Resizes the board. Takes a numeric piece size (which should
 #   be in the global boardSizes list variable), or "-1" or "+1".
@@ -680,7 +663,9 @@ proc ::board::resize {w psize} {
     set y1 [expr {(7 - $yi) * ($psize + $border) + $border }]
     set x2 [expr {$x1 + $psize }]
     set y2 [expr {$y1 + $psize }]
-    $w.bd coords sq$i $x1 $y1 $x2 $y2
+    set pos $i
+    if {$::board::_flip($w)} { set pos [expr {63 - $i}] }
+    $w.bd coords sq$pos $x1 $y1 $x2 $y2
   }
 
   # resize the material canvas
@@ -704,7 +689,7 @@ proc ::board::border {w {border ""}} {
     return $::board::_border($w)
   } else {
     set ::board::_border($w) $border
-    ::board::resize2 $w redraw
+    ::board::resize $w redraw
   }
 }
 
@@ -1479,11 +1464,32 @@ proc ::board::isFlipped {w} {
   return $::board::_flip($w)
 }
 
+# ::board::flipAuto
+#   Sometimes SCID wants to automatically rotate the board,
+#   i.e. when playing a game or loading a game with the "FlipB" flag set.
+#   This function flip the board, but allow to restore the last state
+#   (rotated, not rotated) selected by the user
+#   @newstate:  0 ->white bottom
+#               1 ->black bottom
+#              -1 ->restore previous state
+#
+proc ::board::flipAuto {w {newstate -1}} {
+  if {$newstate == -1} {
+    if {[info exists ::board::flipAuto_($w)]} {::board::flip $w $::board::flipAuto_($w)}
+    return
+  }
+  set tmp $::board::_flip($w)
+  if {[info exists ::board::flipAuto_($w)]} { set tmp $::board::flipAuto_($w) }
+  ::board::flip $w $newstate
+  set ::board::flipAuto_($w) $tmp
+}
+
 # ::board::flip
 #   Rotate the board 180 degrees.
 #
 proc ::board::flip {w {newstate -1}} {
   if {! [info exists ::board::_flip($w)]} { return }
+  catch {unset ::board::flipAuto_($w)}
   if {$newstate == $::board::_flip($w)} { return }
   set flip [expr {1 - $::board::_flip($w)} ]
   set ::board::_flip($w) $flip

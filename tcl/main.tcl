@@ -126,7 +126,7 @@ proc updateStatusBar {} {
     if {! [info exists ::tr(Database)]} { return }
 
     if {$::menuHelpMessage != ""} {
-        ::board::setInfoAlert .main.board "Help:" "$::menuHelpMessage" "red" ""
+        ::board::setInfoAlert .main.board "[tr Help]:" "$::menuHelpMessage" "black" ""
         return
     }
 
@@ -1035,7 +1035,7 @@ proc resizeMainBoard {} {
     if {$newSize != $oldSize} {
       set restore_bind "bind .main <Configure> [bind .main <Configure>]"
       bind .main <Configure> {}
-      ::board::resize2 .main.board $newSize
+      ::board::resize .main.board $newSize
       set ::boardSize [::board::size .main.board]
       update idletasks
       after idle "$restore_bind"

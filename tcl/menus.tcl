@@ -1040,7 +1040,7 @@ proc updateBoardSizesMenu {} {
       set lbl " $count"
     }
     $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
-      -command "::board::resize2 .main.board $i "
+      -command "::board::resize .main.board $i "
   }
 }
 

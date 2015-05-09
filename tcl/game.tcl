@@ -210,6 +210,10 @@ proc ::game::HistoryAdd_ {} {
 proc ::game::Load { selection {ply ""} } {
   ::game::HistorySavePos_
   if {[::game::Load_ $selection $ply]} {
+    set extraTags [sc_game tag get Extra]
+    regexp {FlipB "([01])"\n} $extraTags -> flipB
+    if {![info exists flipB]} { set flipB -1 }
+    ::board::flipAuto .main.board $flipB
     ::game::HistoryAdd_
     ::notify::GameChanged
   }
