@@ -314,9 +314,8 @@ proc ::board::san {sqno} {
 
 # ::board::new
 #   Creates a new board in the specified frame.
-#   The showmat parameter adds a frame to display material balance
 #
-proc ::board::new {w {psize 40} {showmat "nomat"} } {
+proc ::board::new {w {psize 40} } {
   if {[winfo exists $w]} { return }
 
   foreach size $::boardSizes {
@@ -334,13 +333,12 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
   set ::board::_drag($w) -1
   set ::board::_showmat($w) 0
   
-  if { $showmat != "nomat"} { set ::board::_showmat($w) 1 }
-  
   set border $::board::_border($w)
   set bsize [expr {$psize * 8 + $border * 9} ]
+  set bgcolor [ttk::style lookup Button.label -background]
   
   ttk::frame $w -class Board
-  canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background black -borderwidth 0 -highlightthickness 0
+  canvas $w.bd -width $bsize -height $bsize -cursor crosshair -background $bgcolor -borderwidth 0 -highlightthickness 0
   catch { grid anchor $w center }
   
   set startrow 5
@@ -373,11 +371,9 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
     grid $w.bfile$file -row [expr $startrow + 9] -column [expr $i + 2] -sticky n
   }
   
-  if {$::board::_showmat($w)} {
-    canvas $w.mat -width 20 -height $bsize -highlightthickness 0
-    grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5
-    ::board::material $w
-  }
+  canvas $w.mat -width 20 -height $bsize -highlightthickness 0 -background $bgcolor
+  grid $w.mat -row 6 -column 12 -rowspan 8 -pady 5 -padx 5
+  grid remove $w.mat
 
   ::board::coords $w
   ::board::update $w
@@ -572,9 +568,11 @@ proc ::board::newToolBar_ {{w} {varname}} {
   set m "$w.buttons.menu_[lindex $menus 2]"
   $m add command -label "  Rotate" -image tb_BD_Flip -compound left
   $m add command -label "  Show/hide coord" -image tb_BD_Coords -compound left
+  $m add command -label "  Show/hide material" -image tb_BD_Material -compound left
   $m add command -label "  Full Screen" -image tb_BD_Fullscreen -compound left
   set ${varname}(tb_BD_Flip) "::board::flip $w"
   set ${varname}(tb_BD_Coords) "::board::coords $w"
+  set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
 
   set m "$w.buttons.menu_[lindex $menus 3]"
@@ -669,9 +667,7 @@ proc ::board::resize {w psize} {
   }
 
   # resize the material canvas
-  if {$::board::_showmat($w)} {
-    $w.mat configure -height $bsize
-  }
+  $w.mat configure -height $bsize
   
   ::board::update $w
   
@@ -1533,7 +1529,6 @@ proc ::board::material {w} {
   
   $f delete material
   
-  if {! $::gameInfo(showMaterial)} { return }
   set fen [lindex [sc_pos fen] 0]
   set p 0
   set n 0
@@ -1557,19 +1552,22 @@ proc ::board::material {w} {
   }
   set sum [expr abs($p) + abs($n) +abs($b) +abs($r) +abs($q) ]
   set rank 0
-  addMaterial $q "q" $f $rank $sum
-  incr rank [expr abs($q) ]
-  addMaterial $r "r" $f $rank $sum
-  incr rank [expr abs($r) ]
-  addMaterial $b "b" $f $rank $sum
-  incr rank [expr abs($b) ]
-  addMaterial $n "n" $f $rank $sum
-  incr rank [expr abs($n) ]
-  addMaterial $p "p" $f $rank $sum
+
+  foreach pType {q r b n p} {
+    set count [expr "\$$pType"]
+    if {$count < 0} {
+      addMaterial $count $pType $f $rank $sum
+      incr rank [expr abs($count) ]
+    }
+  }
+  foreach pType {q r b n p} {
+    set count [expr "\$$pType"]
+    if {$count > 0} {
+      addMaterial $count $pType $f $rank $sum
+      incr rank [expr abs($count) ]
+    }
+  }
 }
-################################################################################
-#
-################################################################################
 proc ::board::addMaterial {count piece parent rank sum} {
   if {$count == 0} {return}
   if {$count <0} {
@@ -1588,6 +1586,16 @@ proc ::board::addMaterial {count piece parent rank sum} {
     $parent create image $x $y -image $col${piece}20 -tag material
   }
 }
+proc ::board::toggleMaterial {w} {
+  set ::board::_showmat($w) [expr {1 - $::board::_showmat($w)}]
+  if {$::board::_showmat($w)} {
+    grid $w.mat
+  } else {
+    grid remove $w.mat
+  }
+  ::board::update $w
+  return $::board::_showmat($w)
+}
 
 ################################################################################
 #
@@ -1601,8 +1609,6 @@ proc ::board::coords {w} {
   if { $coords > 2 } { set coords 0 }
   set ::board::_coords($w) $coords
   
-  if {$w == ".main.board"} { set ::boardCoords $coords }
-
   if {$coords == 0 } {
     for {set i 1} {$i <= 8} {incr i} {
       grid remove $w.lrank$i
@@ -1631,6 +1637,8 @@ proc ::board::coords {w} {
       grid configure $w.bfile$i
     }
   }
+
+  return $coords
 }
 
 # ::board::animate

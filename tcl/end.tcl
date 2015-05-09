@@ -1397,10 +1397,12 @@ proc CreateMainWin { mainWin } {
 if { $::docking::USE_DOCKING } {
   CreateMainWin .
   ::docking::layout_restore 1
+  keyboardShortcuts .
   keyboardShortcuts TPanedwindow
   keyboardShortcuts TNotebook
 } else {
   CreateMainWin .main
+  keyboardShortcuts .main
   if {$startup(switcher)} { ::windows::switcher::Open }
   if {$startup(pgn)} { ::pgn::OpenClose }
   if {$startup(gamelist)} { ::windows::gamelist::Open }

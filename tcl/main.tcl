@@ -271,12 +271,7 @@ proc toggleRotateBoard {} {
 ### The board:
 
 proc toggleShowMaterial {} {
-    if { $::gameInfo(showMaterial) } {
-        grid configure .main.board.mat
-    } else  {
-        grid remove .main.board.mat
-    }
-    updateBoard
+    board::toggleMaterial .main.board
 }
 
 # MouseWheel in main window:
@@ -1059,13 +1054,16 @@ proc CreateMainBoard { {w} } {
   setTitle $w [ ::tr "Board" ]
   keyboardShortcuts $w
 
-  ::set tmp $::boardCoords
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board 1
-  for {set i 0} {$i < $tmp} {incr i} { ::board::coords $w.board }
+  for {set i 0} {$i < $::boardCoords} {incr i} { ::board::coords $w.board }
+  if {$::gameInfo(showMaterial)} { ::board::toggleMaterial $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
+
+  set ::gameInfoBar(tb_BD_Coords) "set ::boardCoords \[::board::coords $w.board\]"
+  set ::gameInfoBar(tb_BD_Material) "set ::gameInfo(showMaterial) \[::board::toggleMaterial $w.board\]"
 
   menu .main.menuaddchoice -bg white -font font_Regular
   .main.menuaddchoice add command -label " Undo" -image tb_BD_Undo -compound left \
