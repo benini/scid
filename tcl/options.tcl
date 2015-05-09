@@ -607,7 +607,7 @@ set ::utils::sound::announceBack 0
 
 # Spell-checking file: default is "spelling.ssp".
 if {$windowsOS} {
-  set spellCheckFile [file join $scidDataDir "spelling.ssp"]
+  set spellCheckFile [file join $scidExeDir "spelling.ssp"]
 } else {
   set spellCheckFile "/usr/local/share/scid/spelling.ssp"
 }

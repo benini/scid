@@ -45,6 +45,7 @@ Root: "HKCU"; Subkey: "Software\Classes\scid\shell\open\command"; ValueType: str
 [Files]
 Source: "Release\*"; DestDir: "{app}\bin"
 Source: "scid.eco"; DestDir: "{app}\bin"
+Source: "spelling.ssp"; DestDir: "{app}\bin"
 Source: "img\*"; DestDir: "{app}\bin\img"; Flags: recursesubdirs
 Source: "tcl\*"; DestDir: "{app}\bin\tcl"; Flags: recursesubdirs
 Source: "bases\*"; DestDir: "{app}\bin\bases"; Flags: recursesubdirs

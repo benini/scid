@@ -125,7 +125,7 @@ errorT scidBaseT::Open (fileModeT mode,
 		} else {
 			err = idx->Open(filename, fileMode);
 			if (err == OK) err = nb->ReadEntireFile(filename);
-			if (err == OK && spell != 0) {
+			if (err == OK && spell != 0 && spell->HasEloData()) {
 				for (idNumberT id=0, n = nb->GetNumNames(NAME_PLAYER); id < n; id++) {
 					if ((id % 1000) == 0) progress.report(id +1, n);
 					if (nb->GetElo(id) != 0) continue;
