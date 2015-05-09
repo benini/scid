@@ -326,7 +326,7 @@ proc ::board::new {w {psize 40} {showmat "nomat"} } {
 
   set ::board::_size($w) $psize
   set ::board::_border($w) $::borderwidth
-  set ::board::_coords($w) 0
+  set ::board::_coords($w) 2
   set ::board::_flip($w) 0
   set ::board::_data($w) [sc_pos board]
   set ::board::_showMarks($w) 0
@@ -1601,16 +1601,9 @@ proc ::board::coords {w} {
   if { $coords > 2 } { set coords 0 }
   set ::board::_coords($w) $coords
   
+  if {$w == ".main.board"} { set ::boardCoords $coords }
+
   if {$coords == 0 } {
-    for {set i 1} {$i <= 8} {incr i} {
-      grid configure $w.lrank$i
-      grid configure $w.rrank$i
-    }
-    foreach i {a b c d e f g h} {
-      grid configure $w.tfile$i
-      grid configure $w.bfile$i
-    }
-  } elseif {$coords == 1 } {
     for {set i 1} {$i <= 8} {incr i} {
       grid remove $w.lrank$i
       grid remove $w.rrank$i
@@ -1619,13 +1612,22 @@ proc ::board::coords {w} {
       grid remove $w.tfile$i
       grid remove $w.bfile$i
     }
-  } else { #Klimmek: coords == 2 then show left and bottom
+  } elseif {$coords == 1 } {
     for {set i 1} {$i <= 8} {incr i} {
       grid configure $w.lrank$i
       grid remove $w.rrank$i
     }
     foreach i {a b c d e f g h} {
       grid remove $w.tfile$i
+      grid configure $w.bfile$i
+    }
+  } else { #Klimmek: coords == 2 then show left and bottom
+    for {set i 1} {$i <= 8} {incr i} {
+      grid configure $w.lrank$i
+      grid configure $w.rrank$i
+    }
+    foreach i {a b c d e f g h} {
+      grid configure $w.tfile$i
       grid configure $w.bfile$i
     }
   }

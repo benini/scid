@@ -1059,9 +1059,10 @@ proc CreateMainBoard { {w} } {
   setTitle $w [ ::tr "Board" ]
   keyboardShortcuts $w
 
+  ::set tmp $::boardCoords
   ::board::new $w.board $::boardSize
   ::board::showMarks $w.board 1
-  if {$::boardCoords} { ::board::coords $w.board }
+  for {set i 0} {$i < $tmp} {incr i} { ::board::coords $w.board }
 
   ::board::addNamesBar $w.board gamePlayers
   ::board::addInfoBar $w.board gameInfoBar
