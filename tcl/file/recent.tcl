@@ -3,8 +3,8 @@
 # Recent files list:
 
 set recentFiles(limit) 10   ;# Maximum number of recent files to remember.
-set recentFiles(menu)   5   ;# Maximum number of files to show in File menu.
-set recentFiles(extra)  5   ;# Maximum number of files to show in extra menu.
+set recentFiles(menu)   9   ;# Maximum number of files to show in File menu.
+set recentFiles(extra)  9   ;# Maximum number of files to show in extra menu.
 set recentFiles(data)  {}   ;# List of recently used files.
 
 catch {source [scidConfigFile recentfiles]}

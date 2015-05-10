@@ -37,26 +37,14 @@ if { $macOS } {
 
 }
 
-foreach menuname { file edit game search windows play tools options helpmenu } {
-  menu .menu.$menuname -postcommand "updateMenuStates $menuname"
-}
-
-.menu add cascade -label File -menu .menu.file
-.menu add cascade -label Edit -menu .menu.edit
-.menu add cascade -label Game -menu .menu.game
-.menu add cascade -label Search -menu .menu.search
-.menu add cascade -label Windows -menu .menu.windows
-.menu add cascade -label Play -menu .menu.play
-.menu add cascade -label Tools -menu .menu.tools
-.menu add cascade -label Options -menu .menu.options
-.menu add cascade -label Help -menu .menu.helpmenu
 
 
 ### File menu:
 set m .menu.file
+menu $m -postcommand "updateMenuStates $m"
+.menu add cascade -label File -menu $m
 $m add command -label FileNew -acc "Ctrl+N" -command ::file::New
 $m add command -label FileOpen -acc "Ctrl+O" -command ::file::Open
-$m add command -label FileClose -acc "Ctrl+W" -command ::file::Close
 $m add command -label FileFinder -acc "Ctrl+/" -command ::file::finder::Open
 menu $m.bookmarks
 $m add cascade -label FileBookmarks -menu $m.bookmarks
@@ -65,6 +53,30 @@ $m add separator
 $m add command -label ToolsOpenBaseAsTree -command ::file::openBaseAsTree
 menu $m.recenttrees
 $m add cascade -label ToolsOpenRecentBaseAsTree -menu $m.recenttrees
+$m add separator
+set ::menuFileRecentIdx [expr [$m index end] +1]
+$m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
+
+
+### Database menu:
+set m .menu.db
+menu $m
+.menu add cascade -label Database -menu $m
+$m add command -label FileClose -acc "Ctrl+W" -command ::file::Close
+$m add separator
+menu $m.exportfilter
+  $m.exportfilter add command -label ToolsExpFilterPGN \
+      -command {exportGames filter PGN}
+  $m.exportfilter add command -label ToolsExpFilterHTML \
+      -command {exportGames filter HTML}
+  $m.exportfilter add command -label ToolsExpFilterHTMLJS \
+      -command {::html::exportCurrentFilter}
+  $m.exportfilter add command -label ToolsExpFilterLaTeX \
+      -command {exportGames filter LaTeX}
+  $m.exportfilter add separator
+  set ::menuDbExportFilterIdx [expr [$m.exportfilter index end] +1]
+$m add cascade -label ToolsExpFilter -menu $m.exportfilter
+$m add command -label ToolsImportFile -command { importPgnFile $::curr_db }
 $m add separator
 menu $m.utils
   $m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
@@ -80,16 +92,16 @@ menu $m.utils
     $m.utils.name add command -label FileMaintNameEvent -command {openSpellCheckWin Event}
     $m.utils.name add command -label FileMaintNameSite -command {openSpellCheckWin Site}
     $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
-  $m.utils add cascade -label FileMaintName -menu .menu.file.utils.name
+  $m.utils add cascade -label FileMaintName -menu $m.utils.name
 $m add cascade -label FileMaint -menu $m.utils
-menu $m.switch
-$m add cascade -label FileSwitch -menu $m.switch
 $m add separator
-$m add command -label FileExit -accelerator "Ctrl+Q" -command ::file::Exit
+set ::menuDbSwitchIdx [expr [$m index end] +1]
 
 
 ### Edit menu:
 set m .menu.edit
+menu $m
+.menu add cascade -label Edit -menu $m
 menu $m.strip
   $m.strip add command -label EditStripComments -command {::game::Strip comments}
   $m.strip add command -label EditStripVars -command {::game::Strip variations}
@@ -115,6 +127,8 @@ $m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteF
 
 ### Game menu:
 set m .menu.game
+menu $m -postcommand "updateMenuStates $m"
+.menu add cascade -label Game -menu $m
 $m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
 $m add command -label GameFirst -accelerator "Ctrl+Shift+Up" -command {::game::LoadNextPrev first}
 $m add command -label GamePrev -accelerator "Ctrl+Up" -command {::game::LoadNextPrev previous}
@@ -136,6 +150,8 @@ $m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" -command findNovel
 
 ### Search menu:
 set m .menu.search
+menu $m
+.menu add cascade -label Search -menu $m
 $m  add command -label SearchCurrent -command ::search::board -accelerator "Ctrl+Shift+B"
 $m  add command -label SearchHeader -command ::search::header -accelerator "Ctrl+Shift+H"
 $m  add command -label SearchMaterial -command ::search::material -accelerator "Ctrl+Shift+M"
@@ -145,6 +161,8 @@ $m add command -label SearchUsing -accel "Ctrl+Shift+U" -command ::search::usefi
 
 ### Play menu:
 set m .menu.play
+menu $m -postcommand "updateMenuStates $m"
+.menu add cascade -label Play -menu $m
 $m add command -label ToolsSeriousGame -command ::sergame::config
 $m add command -label ToolsTacticalGame -command ::tacgame::config
 $m add command -label ToolsTrainFics -command ::fics::config
@@ -181,6 +199,8 @@ $m add cascade -label CorrespondenceChess -menu $m.correspondence
 
 ### Windows menu:
 set m .menu.windows
+menu $m
+.menu add cascade -label Windows -menu $m
 $m add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
 $m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
 $m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
@@ -201,6 +221,8 @@ $m add checkbutton -label WindowsCorrChess -variable ::CorrespondenceChess::isOp
 
 ### Tools menu:
 set m .menu.tools
+menu $m
+.menu add cascade -label Tools -menu $m
 $m  add command -label ToolsAnalysis \
     -command makeAnalysisWin -accelerator "Ctrl+Shift+A"
 $m  add command -label ToolsAnalysis2 \
@@ -247,20 +269,8 @@ menu $m.exportcurrent
   $m.exportcurrent add command -label ToolsExpCurrentLaTeX \
       -command {exportGames current LaTeX}
 $m add cascade -label ToolsExpCurrent -menu $m.exportcurrent
-menu $m.exportfilter
-  $m.exportfilter add command -label ToolsExpFilterPGN \
-      -command {exportGames filter PGN}
-  $m.exportfilter add command -label ToolsExpFilterHTML \
-      -command {exportGames filter HTML}
-  $m.exportfilter add command -label ToolsExpFilterHTMLJS \
-      -command {::html::exportCurrentFilter}
-  $m.exportfilter add command -label ToolsExpFilterLaTeX \
-      -command {exportGames filter LaTeX}
-$m add cascade -label ToolsExpFilter -menu $m.exportfilter
-$m add separator
 $m add command -label ToolsImportOne \
     -accelerator "Ctrl+Shift+I" -command importPgnGame
-$m add command -label ToolsImportFile -command { importPgnFile [sc_base current] }
 
 
 
@@ -317,6 +327,8 @@ array unset ::MenuLabels ".menu.file,$fileExitHack"
 
 ### Options menu:
 set m .menu.options
+menu $m
+.menu add cascade -label Options -menu $m
 menu $m.board
   menu $m.board.bdsize
   $m.board add cascade -label OptionsBoardSize -menu $m.board.bdsize
@@ -550,6 +562,8 @@ $m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \
 
 ### Help menu:
 set m .menu.helpmenu
+menu $m
+.menu add cascade -label Help -menu $m
 set acc [expr {$macOS ? "Command-?" : "F1"}]
 $m add command -label HelpContents -command {helpWindow Contents} -accelerator "$acc"
 $m add command -label HelpIndex -command {helpWindow Index}
@@ -567,27 +581,23 @@ $m  add command -label HelpAbout -command helpAbout
 #   Update all the menus, rechecking which state each item should be in.
 #
 proc updateMenuStates {{menuname}} {
-  global windowsOS
-  set ::currentSlot [sc_base current]
-  set lang $::language
   set m .menu
   switch -- $menuname {
-  {file} {
+  {.menu.file} {
       ::bookmarks::Refresh
 
       # update recent Tree list (open base as Tree)
       set ntreerecent [::recentFiles::treeshow .menu.file.recenttrees]
 
       # Remove and reinsert the Recent files list and Exit command:
-      set idx1 [expr {[$m.file index [tr FileSwitch]] +2}]
-      set idx2 [expr {[$m.file index [tr FileExit]] -1}]
-      $m.file delete $idx1 $idx2
-      set nrecent [::recentFiles::show $m.file $idx1]
+      set idx2 [expr {[$m.file index end] -1}]
+      $m.file delete $::menuFileRecentIdx $idx2
+      set nrecent [::recentFiles::show $m.file $::menuFileRecentIdx]
       if {$nrecent > 0} {
-        $m.file insert [$m.file index [tr FileExit]] separator
+        $m.file insert [expr $::menuFileRecentIdx + $nrecent] separator
       }
     }
-  {play} {
+  {.menu.play} {
       set n [$m.play index end]
       set st normal
       if {[info exists ::playMode]} { set st disabled }
@@ -595,8 +605,8 @@ proc updateMenuStates {{menuname}} {
         catch { $m.play entryconfig $i -state $st }
       }
     }
-  {game} {
-    set isReadOnly [sc_base isReadOnly $::currentSlot]
+  {.menu.game} {
+    set isReadOnly [sc_base isReadOnly $::curr_db]
     # Load first/last/random/game number buttons:
     set filtercount [sc_filter count]
     if {$filtercount == 0} {set state disabled} else {set state normal}
@@ -634,15 +644,22 @@ proc updateMenuStates {{menuname}} {
 
 # Update the dynamic menus relative to current/open databases
 proc menuUpdateBases {} {
-  .menu.file.switch delete 0 end
+  set ::currentSlot $::curr_db
+  .menu.db delete $::menuDbSwitchIdx end
+  .menu.db.exportfilter delete $::menuDbExportFilterIdx end
 
   foreach i [sc_base list] {
     set fname [file tail [sc_base filename $i]]
 
-    .menu.file.switch add radiobutton -variable currentSlot -value $i \
+    .menu.db add radiobutton -variable currentSlot -value $i \
         -label "Base $i: $fname" \
         -underline 5 -accelerator "Ctrl+$i"\
         -command [list ::file::SwitchToBase $i]
+
+    if {$i != $::curr_db && ![sc_base isReadOnly $i]} {
+        .menu.db.exportfilter add command -label "Base $i: $fname" \
+            -command "::windows::gamelist::CopyGames {} $::curr_db $i"
+    }
   }
 
   #Current database
@@ -651,13 +668,13 @@ proc menuUpdateBases {} {
   set canCompact  [expr {[baseIsCompactable] ? "normal" : "disabled"}]
   set notEmpty    [expr {[sc_base numGames $::curr_db] != 0 ? "normal" : "disabled"}]
 
-  menuConfig .menu.file FileClose entryconfig -state $notClipbase
-  menuConfig .menu.file.utils FileMaintDelete  entryconfig -state $canChange
-  menuConfig .menu.file.utils FileMaintName    entryconfig -state $canChange
-  menuConfig .menu.file.utils FileMaintClass   entryconfig -state $canChange
-  menuConfig .menu.file.utils FileMaintTwin    entryconfig -state $canChange
-  menuConfig .menu.file.utils FileMaintCompact entryconfig -state $canCompact
-  menuConfig .menu.tools ToolsExpFilter entryconfig -state $notEmpty
+  menuConfig .menu.db FileClose entryconfig -state $notClipbase
+  menuConfig .menu.db ToolsExpFilter entryconfig -state $notEmpty
+  menuConfig .menu.db.utils FileMaintDelete  entryconfig -state $canChange
+  menuConfig .menu.db.utils FileMaintName    entryconfig -state $canChange
+  menuConfig .menu.db.utils FileMaintClass   entryconfig -state $canChange
+  menuConfig .menu.db.utils FileMaintTwin    entryconfig -state $canChange
+  menuConfig .menu.db.utils FileMaintCompact entryconfig -state $canCompact
 }
 menuUpdateBases
 
@@ -681,8 +698,9 @@ proc setLanguageMenus {} {
   set lang $::language
   foreach {key lbl} [array get ::MenuLabels] {
     foreach {m idx} [split $key ","] {
-      $m entryconfig $idx -label $::menuLabel($lang,$lbl) \
-                          -underline $::menuUnder($lang,$lbl)
+      set under 0
+      catch { set under $::menuUnder($lang,$lbl) }
+      $m entryconfig $idx -label [tr $lbl] -underline $under
     }
   }
 
