@@ -843,6 +843,14 @@ proc options.write {} {
  }
 }
 
+proc options.autoSaveHack {} {
+  catch {
+    set optionF [open [scidConfigFile options] "a"]
+	puts $optionF "set ::optionsAutoSave $::optionsAutoSave"
+    close $optionF
+  }
+}
+
 # For better modularity default value can be set in a module with:
 # if {![info exists varname]} { set varname defaultvalue }
 # options.save varname

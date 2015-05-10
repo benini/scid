@@ -17,7 +17,6 @@ namespace eval tactics {
     set nextEngineMove ""
     set matePending 0
     set cancelScoreReset 0
-    set askToReplaceMoves_old 0
     set showSolution 0
     set labelSolution ". . . . . . "
     set prevFen ""
@@ -428,7 +427,7 @@ namespace eval tactics {
     #
     ################################################################################
     proc createWin { base engineIdx} {
-        global ::tactics::analysisEngine ::askToReplaceMoves ::tactics::askToReplaceMoves_old
+        global ::tactics::analysisEngine
 
         ::uci::resetUciInfo $::tactics::engineSlot
         set analysisEngine(analyzeMode) 0
@@ -440,9 +439,6 @@ namespace eval tactics {
         set err [::tactics::loadBase $base]
         if {$err != 0} { return }
 
-        
-        set askToReplaceMoves_old $askToReplaceMoves
-        set askToReplaceMoves 0
         
         set w .tacticsWin
         if {[winfo exists $w]} { focus $w ; return }
@@ -498,7 +494,6 @@ namespace eval tactics {
         set w .tacticsWin
         ::tactics::stopAnalyze
         after cancel ::tactics::mainLoop
-        set ::askToReplaceMoves $::tactics::askToReplaceMoves_old
 
         #TODO:
         #sc_filter release $::tactics::baseId $::tactics::filter
@@ -828,12 +823,6 @@ namespace eval tactics {
         set ::tactics::showSolution 0
         set ::tactics::labelSolution ""
         set ::tactics::prevFen ""
-    }
-    ################################################################################
-    #
-    ################################################################################
-    proc  restoreAskToReplaceMoves {} {
-        set ::askToReplaceMoves $::tactics::askToReplaceMoves_old
     }
     ################################################################################
     #

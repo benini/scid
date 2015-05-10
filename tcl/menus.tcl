@@ -317,55 +317,26 @@ array unset ::MenuLabels ".menu.file,$fileExitHack"
 
 ### Options menu:
 set m .menu.options
-set optMenus {board export fonts ginfo language entry numbers startup windows theme}
-set optLabels {Board Export Fonts GInfo Language Moves Numbers Startup Windows Theme}
+menu $m.board
+  menu $m.board.bdsize
+  $m.board add cascade -label OptionsBoardSize -menu $m.board.bdsize
+  menu $m.board.pieces -tearoff 1
+  $m.board add cascade -label OptionsBoardPieces -menu $m.board.pieces
+  $m.board add command -label OptionsBoardColors -command chooseBoardColors
+$m add cascade -label OptionsBoard -menu $m.board
+menu $m.export
+  $m.export add command -label "PGN file text" -underline 0 -command "setExportText PGN"
+  $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
+  $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
+$m add cascade -label OptionsExport -menu $m.export
+
+
+
+set optMenus {fonts ginfo language entry numbers startup windows theme}
+set optLabels {Fonts GInfo Language Moves Numbers Startup Windows Theme}
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
 }
-
-$m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
-
-$m add command -label OptionsToolbar -command configToolbar
-
-$m add separator
-
-$m add command -label OptionsECO -command {
-  set ftype { { "Scid ECO files" {".eco"} } }
-  if {[sc_info gzip]} {
-    set ftype { { "Scid ECO files" {".eco" ".eco.gz"} } }
-  }
-  set fullname [tk_getOpenFile -initialdir [pwd] -filetypes $ftype -title "Load ECO file"]
-  if {[string compare $fullname ""]} {
-    if {[catch {sc_eco read $fullname} result]} {
-      tk_messageBox -title "Scid" -type ok \
-          -icon warning -message $result
-    } else {
-      set ecoFile $fullname
-      tk_messageBox -title "Scid: ECO file loaded." -type ok -icon info \
-          -message "ECO file $fullname loaded: $result positions.\n\nTo have this file automatically loaded when you start Scid, select \"Save Options\" from the Options menu before exiting."
-    }
-  }
-}
-
-$m add command -label OptionsSpell -command readSpellCheckFile
-
-$m add command -label OptionsTable -command setTableBaseDir
-if {![sc_info tb]} { $m entryconfigure 15 -state disabled }
-
-$m add command -label OptionsRecent -command ::recentFiles::configure
-
-$m add command -label OptionsBooksDir -command setBooksDir
-
-$m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
-
-#TODO: translate
-$m add command -label "Photos directory..." -command setPhotoDir
-
-$m add separator
-
-$m add command -label OptionsSave -command options.write
-
-$m add checkbutton -label OptionsAutoSave -variable optionsAutoSave
 
 menu $m.ginfo
 $m.ginfo add checkbutton -label GInfoHideNext \
@@ -452,12 +423,6 @@ $m.entry add checkbutton -label OptionsMovesShowVarArrows \
 $m.entry add checkbutton -label OptionsMovesGlossOfDanger \
     -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
 
-proc updateLocale {} {
-  global locale
-  sc_info decimal $locale(numeric)
-  ::windows::gamelist::Refresh
-  updateTitle
-}
 
 set m .menu.options.numbers
 menu $m
@@ -470,12 +435,6 @@ foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
       -variable locale(numeric) -value $numeric -command updateLocale
     }
 
-set m .menu.options.export
-menu $m
-foreach format {PGN HTML LaTeX} {
-  $m add command -label "$format file text" -underline 0 \
-      -command "setExportText $format"
-}
 
 set m .menu.options.windows
 menu $m
@@ -568,30 +527,31 @@ $m add checkbutton -label WindowsStats -variable startup(stats)
 $m add checkbutton -label WindowsTree -variable startup(tree) -state $state
 $m add checkbutton -label WindowsBook -variable startup(book) -state $state
 
-set m .menu.options.board
-menu $m
-
-# Menu for changing board size:
-$m add cascade -label OptionsBoardSize -menu $m.bdsize
-
-$m add cascade -label OptionsBoardPieces -menu $m.pieces
-
-$m add command -label OptionsBoardColors -command chooseBoardColors
 
 
-menu $m.bdsize
+set m .menu.options
+$m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
+$m add command -label OptionsToolbar -command configToolbar
+$m add separator
+$m add command -label OptionsECO -command ::readECOFile
+$m add command -label OptionsSpell -command readSpellCheckFile
+$m add command -label OptionsTable -command setTableBaseDir \
+    -state [expr {[sc_info tb] ? "normal" : "disabled"}]
+$m add command -label OptionsRecent -command ::recentFiles::configure
+$m add command -label OptionsBooksDir -command setBooksDir
+$m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
+#TODO: translate
+$m add command -label "Photos directory..." -command setPhotoDir
+$m add separator
+$m add command -label OptionsSave -command options.write
+$m add checkbutton -label OptionsAutoSave -variable optionsAutoSave \
+    -command { if {!$::optionsAutoSave} { options.autoSaveHack } }
 
-# Menu for changing Piece set:
-menu $m.pieces -tearoff 1
 
 ### Help menu:
 set m .menu.helpmenu
-# On Mac use accelerator "Command-?" for Help:
-if { $macOS } {
-  $m add command -label HelpContents -command {helpWindow Contents} -accelerator "Command-?"
-} else {
-  $m add command -label HelpContents -command {helpWindow Contents} -accelerator "F1"
-}
+set acc [expr {$macOS ? "Command-?" : "F1"}]
+$m add command -label HelpContents -command {helpWindow Contents} -accelerator "$acc"
 $m add command -label HelpIndex -command {helpWindow Index}
 $m add command -label HelpGuide -command {helpWindow Guide}
 $m add command -label HelpHints -command {helpWindow Hints}
@@ -1022,6 +982,25 @@ proc setPhotoDir {} {
   }
 }
 
+proc readECOFile {} {
+  set ftype { { "Scid ECO files" {".eco"} } }
+  if {[sc_info gzip]} {
+    set ftype { { "Scid ECO files" {".eco" ".eco.gz"} } }
+  }
+  set fullname [tk_getOpenFile -initialdir [pwd] -filetypes $ftype -title "Load ECO file"]
+  if {[string compare $fullname ""]} {
+    if {[catch {sc_eco read $fullname} result]} {
+      tk_messageBox -title "Scid" -type ok \
+          -icon warning -message $result
+    } else {
+      set ecoFile $fullname
+      tk_messageBox -title "Scid: ECO file loaded." -type ok -icon info \
+          -message "ECO file $fullname loaded: $result positions.\n\nTo have this file automatically loaded when you start Scid, select \"Save Options\" from the Options menu before exiting."
+    }
+  }
+}
+
+
 proc updateBoardSizesMenu {} {
   set count 0
   set m .menu.options.board
@@ -1053,6 +1032,14 @@ proc updatePiecesMenu {} {
       -underline 0 -command "setPieceFont \"$i\"; updateBoard"
   }
 }
+
+proc updateLocale {} {
+  global locale
+  sc_info decimal $locale(numeric)
+  ::windows::gamelist::Refresh
+  updateTitle
+}
+
 
 
 ### End of file: menus.tcl

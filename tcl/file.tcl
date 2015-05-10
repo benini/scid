@@ -47,10 +47,6 @@ proc ::file::Exit {}  {
     if {$answer != "yes"} { return }
   }
   if {$::optionsAutoSave} {
-    # restore askToReplaceMoves if necessary
-    if {[winfo exists .tacticsWin]} {
-      ::tactics::restoreAskToReplaceMoves
-    }
     # restore options if findBestMove in progress
     ::tactics::findBestMoveExit
     options.write
