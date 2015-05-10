@@ -633,30 +633,29 @@ SortCache::CheckForChanges (uint id)
 Given a game number find its position in the sorted list
 gnumber: game number (first game has value 1)
 filter: restrict search to filtered games
-return: 0 if gnumber is not found
-        the position into the sorted list (first position has value 1)
+return: IDX_NOT_FOUND if gnumber is not found
+        the position into the sorted list (first position has value 0)
 */
 uint SortCache::IndexToFilteredCount( uint gnumber, const HFilter& filter)
 {
-	if (gnumber == 0) return 0;
-	if (gnumber > numGames) return 0;
+	if (gnumber == 0 || gnumber > numGames) return IDX_NOT_FOUND;
 	gnumber--;
-	if (*filter && filter.get(gnumber) == 0) return 0;
-	uint filterCount = 1;
+	if (*filter && filter.get(gnumber) == 0) return IDX_NOT_FOUND;
+	uint res = 0;
 	if (!sorted_) {
-		for (uint gnum=0; gnum < numGames; gnum++) {
-			if (*filter && filter.get(gnum) == 0) continue;
-			if (Compare(gnum, gnumber) <0) ++filterCount;
+		for (uint i=0; i < numGames; i++) {
+			if (*filter && filter.get(i) == 0) continue;
+			if (Compare(i, gnumber) <0) ++res;
 		}
+		return res;
 	} else {
-		for( uint i=0; i<numGames; i++)
-			if (*filter && filter.get( fullMap[i]))
-			{
-				if( fullMap[i] == gnumber) break;
-				filterCount++;
-			}
+		for(uint i=0; i < numGames; i++) {
+			if (*filter && filter.get(fullMap[i]) == 0) continue;
+			if (fullMap[i] == gnumber) return res;
+			res++;
+		}
 	}
-	return filterCount;
+	return IDX_NOT_FOUND;
 }
 
 // Function that change fullMap or hashValues need MT sync

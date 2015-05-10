@@ -1066,11 +1066,10 @@ proc glist.showfindbar_ {{w} {layout}} {
 
 proc glist.findcurrentgame_ {{w} {gnum}} {
   set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $gnum]
-  if {$r != ""} {
-    set ::glistFirst($w) [expr $r -1]
+  if {$r != "none"} {
+    set ::glistFirst($w) $r
     glist.ybar_ $w scroll
   }
-  return $r
 }
 
 proc glist.findgame_ {{w_parent} {dir}} {
@@ -1093,26 +1092,21 @@ proc glist.findgame_ {{w_parent} {dir}} {
     set gstart [expr int($::glistFirst($w))]
     foreach {n ply} [split [$w selection] "_"] {
       if {$n != ""} {
-        set n [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $n]
-        set gstart [expr $n -1]
+        set gstart [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) $n]
       }
     }
     if {$dir == "1"} { incr gstart }
     set r [sc_base gamelocation $::glistBase($w) $::glistFilter($w) $::glistSortStr($w) 0\
             $txt $gstart $dir]
   }
-  if {$r == ""} {
-    if {$dir == ""} {
-      $w_entryN configure -bg red
-    } else {
-      $w_entryT configure -bg red
-    }
+  if {$r == "none"} {
+    $w_entryT configure -bg red
   } else {
-    if {[expr $::glistFirst($w) + $::glistVisibleLn($w)] <= $r || $r < $::glistFirst($w)} {
-      set ::glistFirst($w) [expr $r -1]
+    if {$r >= [expr $::glistFirst($w) + $::glistVisibleLn($w)] || $r < $::glistFirst($w)} {
+      set ::glistFirst($w) $r
       glist.ybar_ $w scroll
     }
-    after idle glist.select_ $w $r
+    after idle glist.select_ $w [expr $r +1]
   }
   unbusyCursor $w_parent
 }

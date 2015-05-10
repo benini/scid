@@ -207,7 +207,7 @@ UI_typeRes sc_base_gameflag(scidBaseT* dbase, UI_type2 ti, int argc, const char*
  * @start_pos:     used only with @text, start searching from a certain position
  * @forward_dir:   <true|false>, used only with @start_pos, search after|before that position
  *
- * Return: the position of the first match or "" if not found
+ * Return: the position (0 == first) of the first match or "none" if not found
  */
 UI_typeRes sc_base_gamelocation(scidBaseT* dbase, UI_type2 ti, int argc, const char** argv)
 {
@@ -227,7 +227,7 @@ UI_typeRes sc_base_gamelocation(scidBaseT* dbase, UI_type2 ti, int argc, const c
 	} else {
 		location = dbase->GetRangeLocation (sort, filter, gnumber);
 	}
-	if (location == 0) return UI_Result(ti, OK); //Not found
+	if (location == IDX_NOT_FOUND) return UI_Result(ti, OK, "none"); //Not found
 	return UI_Result(ti, OK, location);
 }
 
@@ -390,7 +390,7 @@ UI_typeRes sc_base_sortcache(scidBaseT* dbase, UI_type2 ti, int argc, const char
 	if (argc != 5) return UI_Result(ti, ERROR_BadArg, usage);
 
 	if (std::strcmp("create", argv[3]) == 0) {
-		if (argv[4][0] != 'N') dbase->CreateSortCache(argv[4]);
+		dbase->CreateSortCache(argv[4]);
 	} else {
 		dbase->FreeSortCache(argv[4]);
 	}

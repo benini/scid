@@ -2551,13 +2551,14 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 uint val = strGetUnsigned(argv[4]);
                 if (argc == 8) {
                     int start = dbase->GetRangeLocation (argv[7], filter, gNum);
+                    if (start == IDX_NOT_FOUND) return UI_Result(ti, ERROR_BadArg);
                     int count = strGetInteger (argv[6]);
                     if (count < 0) {
                         count = -count;
-                        if (start > count) {
-                            start = start - count -1;
+                        if (start >= count) {
+                            start = start - (count -1);
                         } else {
-                            count = start;
+                            count = start +1;
                             start = 0;
                         }
                     }

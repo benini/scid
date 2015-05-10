@@ -326,21 +326,23 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const
     }
     SortCache* sc = 0;
     if (i != SORTING_CACHE_MAX) sc = sortingCaches[i];
-    else sc = SortCache::Create (this, nbase, criteria);
+    else sc = SortCache::Create (this, nbase, criteria, false);
 
     uint res = start;
-    uint result [100] = {0};
+    uint result [100];
     for (;;) {
-        if (!forward) { //TODO: Speed up this search, maybe using std::vector.rbegin()
-            if (res == 0) break;
-            else res--;
-            sc->GetRange(res, 1, filter, result);
+        if (!forward) {
+            if (res == 0) {
+                res = IDX_NOT_FOUND;
+                break;
+            }
+            sc->GetRange(--res, 1, filter, result);
+            ASSERT (result[0] != IDX_NOT_FOUND);
             const IndexEntry* ie = GetEntry (result[0]);
             if ((strAlphaContains (ie->GetWhiteName (nbase), text))  ||
                 (strAlphaContains (ie->GetBlackName (nbase), text))  ||
                 (strAlphaContains (ie->GetEventName (nbase), text))  ||
                 (strAlphaContains (ie->GetSiteName (nbase), text))) {
-                ++res;
                 break;
             }
         } else {
@@ -348,7 +350,7 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const
             bool stop = false;
             for (int j =0; j < 100; ++j, ++res) {
                 if (result[j] == IDX_NOT_FOUND) {
-                    res = 0;
+                    res = IDX_NOT_FOUND;
                     stop = true;
                     break;
                 }
@@ -358,7 +360,6 @@ uint Index::GetRangeLocation (const NameBase *nbase, const char *criteria, const
                     (strAlphaContains (ie->GetEventName (nbase), text))  ||
                     (strAlphaContains (ie->GetSiteName (nbase), text))) {
                     stop = true;
-                    ++res;
                     break;
                 }
             }
