@@ -542,7 +542,7 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 
 	//2) Create a new temporary database
 	std::string filename = fileName_;
-	std::string tmpfile = filename + "__TEMP__";
+	std::string tmpfile = filename + "__COMPACT__";
 	scidBaseT tmp;
 	errorT err_Create = tmp.Open(FMODE_Both, tmpfile.c_str());
 	if (err_Create != OK) return err_Create;

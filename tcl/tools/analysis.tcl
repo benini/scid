@@ -2011,7 +2011,7 @@ proc makeAnalysisWin { {n 1} {index -1} {autostart 1}} {
             by moving backward or forward or making a new move.)" small
     }
     $w.text configure -state disabled
-    bind $w <Destroy> "destroyAnalysisWin $n"
+    bind $w <Destroy> "if {\[string equal $w %W\]} { destroyAnalysisWin $n }"
     bind $w <Configure> "recordWinSize $w"
     bind $w <Escape> "focus .; destroy $w"
     bind $w <Key-a> "$w.b1.bStartStop invoke"
