@@ -995,14 +995,16 @@ proc compactDB {{base -1}} {
   closeProgressWindow
   if {$err} {
     ERROR::MessageBox "$::tr(CompactDatabase)\n"
+    ::file::SwitchToBase $::clipbase_db 0
+    ::notify::DatabaseChanged
   } else {
     set msg "[sc_base filename $base]\n\n"
 	append msg [tr GameFileCompacted]
     tk_messageBox -type ok -icon info -parent . \
         -title [concat "Scid: " $::tr(CompactDatabase)] \
         -message "$msg"
+    ::notify::DatabaseModified $base
   }
-  ::notify::DatabaseModified $base
 }
 
 # allocateRatings:

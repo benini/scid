@@ -593,12 +593,10 @@ errorT scidBaseT::compact(SpellChecker* spellChk, const Progress& progress) {
 	//7) Reset the filters and remove the old database
 	std::vector<std::string> filters(filters_.size());
 	for (size_t i = 0; i < filters_.size(); i++) filters[i] = filters_[i].first;
-	Close();
-	int err_remove = 0;
-	err_remove |= std::remove((filename + INDEX_SUFFIX).c_str());
-	err_remove |= std::remove((filename + NAMEBASE_SUFFIX).c_str());
-	err_remove |= std::remove((filename + GFILE_SUFFIX).c_str());
-	if (err_remove != 0) return ERROR_FileWrite;
+	if (Close() != OK) return ERROR_FileInUse;
+	if (std::remove((filename + INDEX_SUFFIX).c_str())    != 0) return ERROR_FileWrite;
+	if (std::remove((filename + NAMEBASE_SUFFIX).c_str()) != 0) return ERROR_FileWrite;
+	if (std::remove((filename + GFILE_SUFFIX).c_str())    != 0) return ERROR_FileWrite;
 
 	//8) Success: rename the files and open the new database
 	renameFile (tmpfile.c_str(), filename.c_str(), INDEX_SUFFIX);
