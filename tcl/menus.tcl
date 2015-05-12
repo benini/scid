@@ -347,39 +347,15 @@ menu $m.fonts
   $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
 $m add cascade -label OptionsFonts -menu $m.fonts
 
+$m add command -label GInfoInformant -command configInformant
 
 
-set optMenus {ginfo language entry numbers startup windows theme}
-set optLabels {GInfo Language Moves Numbers Startup Windows Theme}
+set optMenus {language entry numbers startup windows theme}
+set optLabels {Language Moves Numbers Startup Windows Theme}
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
 }
 
-menu $m.ginfo
-$m.ginfo add checkbutton -label GInfoHideNext \
-    -variable gameInfo(hideNextMove) -offvalue 0 -onvalue 1 -command updateBoard
-$m.ginfo add checkbutton -label GInfoMaterial \
-    -variable gameInfo(showMaterial) -offvalue 0 -onvalue 1 -command toggleShowMaterial
-$m.ginfo add checkbutton -label GInfoFEN \
-    -variable gameInfo(showFEN) -offvalue 0 -onvalue 1 -command updateBoard
-$m.ginfo add checkbutton -label GInfoMarks \
-    -variable gameInfo(showMarks) -offvalue 0 -onvalue 1 -command updateBoard
-$m.ginfo add checkbutton -label GInfoWrap \
-    -variable gameInfo(wrap) -offvalue 0 -onvalue 1 -command updateBoard
-$m.ginfo add checkbutton -label GInfoFullComment \
-    -variable gameInfo(fullComment) -offvalue 0 -onvalue 1 -command updateBoard
-$m.ginfo add checkbutton -label GInfoPhotos \
-    -variable gameInfo(photos) -offvalue 0 -onvalue 1 \
-    -command {togglePhotosSize 0}
-$m.ginfo add separator
-$m.ginfo add radiobutton -label GInfoTBNothing \
-    -variable gameInfo(showTB) -value 0 -command updateBoard
-$m.ginfo add radiobutton -label GInfoTBResult \
-    -variable gameInfo(showTB) -value 1 -command updateBoard
-$m.ginfo add radiobutton -label GInfoTBAll \
-    -variable gameInfo(showTB) -value 2 -command updateBoard
-$m.ginfo add separator
-$m.ginfo add command -label GInfoInformant -command configInformant
 
 menu $m.entry
 $m.entry add checkbutton -label OptionsMovesAsk \
@@ -458,7 +434,6 @@ menu $m
 $m add checkbutton -label OptionsWindowsIconify -variable autoIconify
 $m add checkbutton -label OptionsWindowsRaise -variable autoRaise
 $m add checkbutton -label OptionsWindowsDock -variable windowsDock
-$m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 
 if {$::docking::USE_DOCKING} {
   menu $m.savelayout
@@ -508,6 +483,7 @@ $m add checkbutton -label WindowsBook -variable startup(book) -state $state
 set m .menu.options
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
 $m add command -label OptionsToolbar -command configToolbar
+$m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 $m add separator
 $m add command -label OptionsECO -command ::readECOFile
 $m add command -label OptionsSpell -command readSpellCheckFile
@@ -673,10 +649,12 @@ proc setLanguageMenus {} {
   set lang $::language
   
 
-  foreach tag {Board Export Fonts GInfo Language Moves Numbers
+  foreach tag {Board Export Fonts Language Moves Numbers
     Startup Sounds Toolbar Windows Theme ECO Spell Table BooksDir TacticsBasesDir Recent Save AutoSave} {
     configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
   }
+  configMenuText .menu.options [tr GInfoInformant $oldLang] GInfoInformant $lang
+  configMenuText .menu.options [tr OptionsWindowsShowGameInfo $oldLang] OptionsWindowsShowGameInfo $lang
   
   foreach tag {Regular Menu Small Tiny Fixed} {
     configMenuText .menu.options.fonts [tr OptionsFonts$tag $oldLang] \
@@ -685,11 +663,6 @@ proc setLanguageMenus {} {
   foreach tag {Size Pieces Colors} {
     configMenuText .menu.options.board [tr OptionsBoard$tag $oldLang] \
         OptionsBoard$tag $lang
-  }
-  foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
-        TBNothing TBResult TBAll Informant} {
-    configMenuText .menu.options.ginfo [tr GInfo$tag $oldLang] \
-        GInfo$tag $lang
   }
   configMenuText .menu.options.entry [tr OptionsShowVarPopup $oldLang] OptionsShowVarPopup $lang
   foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove ShowVarArrows GlossOfDanger } {
@@ -706,7 +679,7 @@ proc setLanguageMenus {} {
     configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
   }
   
-  foreach tag {Iconify Raise Dock ShowGameInfo} {
+  foreach tag {Iconify Raise Dock} {
     configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
         OptionsWindows$tag $lang
   }
@@ -807,7 +780,6 @@ proc configInformant {} {
 	 if {$i == "\"++-\""} {
 		 spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
 	 } else {
-		 puts stderr 9
 		 spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
 	 }
     grid $w.spinF.labelExpl$idx -row $row -column 0 -sticky w
