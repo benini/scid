@@ -8,7 +8,7 @@
 
 option add *Menu*TearOff 0
 
-menu .menu -font font_Menu
+menu .menu
 
 ## Mac Application menu has to be before any call to configure.
 if { $macOS } {
@@ -34,9 +34,7 @@ if { $macOS } {
   proc exit {}  {
     ::file::Exit
   }
-
 }
-
 
 
 ### File menu:
@@ -341,11 +339,18 @@ menu $m.export
   $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
   $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
 $m add cascade -label OptionsExport -menu $m.export
+menu $m.fonts
+  $m.fonts add command -label OptionsFontsRegular -command {chooseFont Regular}
+  $m.fonts add command -label OptionsFontsMenu    -command {chooseFont Menu}
+  $m.fonts add command -label OptionsFontsSmall   -command {chooseFont Small}
+  $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
+  $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
+$m add cascade -label OptionsFonts -menu $m.fonts
 
 
 
-set optMenus {fonts ginfo language entry numbers startup windows theme}
-set optLabels {Fonts GInfo Language Moves Numbers Startup Windows Theme}
+set optMenus {ginfo language entry numbers startup windows theme}
+set optLabels {GInfo Language Moves Numbers Startup Windows Theme}
 foreach menu $optMenus label $optLabels {
   $m add cascade -label Options$label -menu $m.$menu
 }
@@ -479,47 +484,6 @@ foreach l $::languages {
       -command setLanguage
 }
 
-set m .menu.options.fonts
-menu $m
-
-$m add command -label OptionsFontsRegular -underline 0 -command {
-  set fontOptions(temp) [FontDialog font_Regular $fontOptions(Regular)]
-  if {$fontOptions(temp) != ""} { set fontOptions(Regular) $fontOptions(temp) }
-  set font [font configure font_Regular -family]
-  set fontsize [font configure font_Regular -size]
-  font configure font_Bold -family $font -size $fontsize
-  font configure font_Italic -family $font -size $fontsize
-  font configure font_BoldItalic -family $font -size $fontsize
-  font configure font_H1 -family $font -size [expr {$fontsize + 8} ]
-  font configure font_H2 -family $font -size [expr {$fontsize + 6} ]
-  font configure font_H3 -family $font -size [expr {$fontsize + 4} ]
-  font configure font_H4 -family $font -size [expr {$fontsize + 2} ]
-  font configure font_H5 -family $font -size [expr {$fontsize + 0} ]
-}
-
-$m add command -label OptionsFontsMenu -underline 0 -command {
-  set fontOptions(temp) [FontDialog font_Menu $fontOptions(Menu)]
-  if {$fontOptions(temp) != ""} { set fontOptions(Menu) $fontOptions(temp) }
-}
-
-$m add command -label OptionsFontsSmall -underline 0 -command {
-  set fontOptions(temp) [FontDialog font_Small $fontOptions(Small)]
-  if {$fontOptions(temp) != ""} { set fontOptions(Small) $fontOptions(temp) }
-  set font [font configure font_Small -family]
-  set fontsize [font configure font_Small -size]
-  font configure font_SmallBold -family $font -size $fontsize
-  font configure font_SmallItalic -family $font -size $fontsize
-}
-
-$m add command -label OptionsFontsTiny -underline 0 -command {
-  set fontOptions(temp) [FontDialog font_Tiny $fontOptions(Tiny) 1]
-  if {$fontOptions(temp) != ""} { set fontOptions(Tiny) $fontOptions(temp) }
-}
-
-$m add command -label OptionsFontsFixed -underline 0 -command {
-  set fontOptions(temp) [FontDialog font_Fixed $fontOptions(Fixed) 1]
-  if {$fontOptions(temp) != ""} { set fontOptions(Fixed) $fontOptions(temp) }
-}
 
 # The windows that are not dockable are always configurable for auto start
 set m .menu.options.startup
@@ -1058,7 +1022,31 @@ proc updateLocale {} {
   updateTitle
 }
 
-
+proc chooseFont {fType} {
+  global fontOptions
+  set fontOptions(temp) [FontDialog font_$fType $fontOptions($fType)]
+  if {$fontOptions(temp) != ""} { set fontOptions($fType) $fontOptions(temp) }
+  switch $fType {
+    {Regular} {
+      set font [font configure font_Regular -family]
+      set fontsize [font configure font_Regular -size]
+      font configure font_Bold -family $font -size $fontsize
+      font configure font_Italic -family $font -size $fontsize
+      font configure font_BoldItalic -family $font -size $fontsize
+      font configure font_H1 -family $font -size [expr {$fontsize + 8} ]
+      font configure font_H2 -family $font -size [expr {$fontsize + 6} ]
+      font configure font_H3 -family $font -size [expr {$fontsize + 4} ]
+      font configure font_H4 -family $font -size [expr {$fontsize + 2} ]
+      font configure font_H5 -family $font -size [expr {$fontsize + 0} ]
+    }
+    {Small} {
+      set font [font configure font_Small -family]
+      set fontsize [font configure font_Small -size]
+      font configure font_SmallBold -family $font -size $fontsize
+      font configure font_SmallItalic -family $font -size $fontsize
+    }
+  }
+}
 
 ### End of file: menus.tcl
 
