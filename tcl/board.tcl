@@ -81,7 +81,7 @@ proc setPieceFont {font} {
 		if {$size >= $::boardSize} { break }
 	}
 	set ::boardSize $size
-	updateBoardSizesMenu
+	menuUpdateBoardSizes
 	SetBoardTextures
 }
 
@@ -1836,7 +1836,7 @@ proc InitBoard {} {
   }
 
   setPieceFont "$::boardStyle"
-  updatePiecesMenu
+  menuUpdatePieces
 }
 InitBoard
 

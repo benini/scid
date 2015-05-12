@@ -1414,6 +1414,7 @@ if {$startup(stats)} { ::windows::stats::Open }
 if {$startup(tip)} { ::tip::show }
 if {$startup(finder)} { ::file::finder::Open }
 
+menuUpdateBases
 setLanguageMenus
 
 update

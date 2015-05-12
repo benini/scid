@@ -1212,6 +1212,8 @@ proc CreateGameInfo {} {
     }
     tk_popup .main.gameInfo.menu %X %Y
   }
+
+  storeMenuLabels .main.gameInfo.menu
 }
 
 proc InitToolbar {{tb}} {

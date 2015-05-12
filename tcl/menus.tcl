@@ -271,58 +271,6 @@ $m add command -label ToolsImportOne \
     -accelerator "Ctrl+Shift+I" -command importPgnGame
 
 
-
-# Store menu labels for translations and help messages
-set ::menuHelpMessage {}
-proc storeMenuLabels {m} {
-    bind $m <<MenuSelect>> {
-        set ::menuHelpMessage {}
-        set idx [%W index active]
-        if {$idx != "none"} {
-            # Tcl/Tk seems to generate strange window names for menus that
-            # are configured to be a toplevel window main menu, e.g.
-            # .menu.file get reported as ".#menu.#menu#file" and
-            # .menu.file.utils is ".#menu.#menu#file.#menu#file#utils"
-            # I have no idea why it does this, but to avoid it we
-            # convert a window paths with hashes to its true value:
-            regsub -all "\#" [winfo name %W] . win
-            catch {
-                set lbl $::MenuLabels($win,$idx)
-                set ::menuHelpMessage $::helpMessage($::language,$lbl)
-            }
-        }
-        updateStatusBar
-    }
-
-    set n [$m index end]
-    for {set i 0} {$n != "none" && $i <= $n} {incr i} {
-        set type [$m type $i]
-        if {$type != "separator"} {
-            set ::MenuLabels($m,$i) [$m entrycget $i -label]
-        }
-        if {$type == "cascade"} {
-            storeMenuLabels [$m entrycget $i -menu]
-        }
-    }
-}
-# Issue a command to a menu entry
-proc menuConfig {{m} {label} {cmd} args} {
-    foreach {key lbl} [array get ::MenuLabels "$m*"] {
-        if {$lbl == $label} {
-            set idx [lindex [split $key ","] 1]
-            $m $cmd $idx {*}$args
-            break
-        }
-    }
-}
-storeMenuLabels .menu
-set fileExitHack [.menu.file index end]
-set ::MenuLabels(.menu.file,end) $::MenuLabels(.menu.file,$fileExitHack)
-array unset ::MenuLabels ".menu.file,$fileExitHack"
-
-
-
-
 ### Options menu:
 set m .menu.options
 menu $m
@@ -346,141 +294,98 @@ menu $m.fonts
   $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
   $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
 $m add cascade -label OptionsFonts -menu $m.fonts
-
 $m add command -label GInfoInformant -command configInformant
-
-
-set optMenus {language entry numbers startup windows theme}
-set optLabels {Language Moves Numbers Startup Windows Theme}
-foreach menu $optMenus label $optLabels {
-  $m add cascade -label Options$label -menu $m.$menu
-}
-
-
-menu $m.entry
-$m.entry add checkbutton -label OptionsMovesAsk \
-    -variable askToReplaceMoves -offvalue 0 -onvalue 1
-
-$m.entry add cascade -label OptionsMovesAnimate -menu $m.entry.animate
-menu $m.entry.animate
-foreach i {0 100 150 200 250 300 400 500 600 800 1000} {
-  $m.entry.animate add radiobutton -label "$i ms" \
-      -variable animateDelay -value $i
-}
-
-$m.entry add command -label OptionsMovesDelay -command setAutoplayDelay
-
-$m.entry add checkbutton -label OptionsMovesCoord \
-    -variable moveEntry(Coord) -offvalue 0 -onvalue 1
-
-$m.entry add checkbutton -label OptionsMovesKey \
-    -variable moveEntry(AutoExpand) -offvalue 0 -onvalue 1
-
-$m.entry add checkbutton -label OptionsMovesSuggest \
-    -variable suggestMoves -offvalue 0 -onvalue 1
-
-$m.entry add checkbutton -label OptionsShowVarPopup \
-    -variable showVarPopup -offvalue 0 -onvalue 1
-
-$m.entry add checkbutton -label OptionsMovesSpace \
-    -variable ::pgn::moveNumberSpaces -offvalue 0 -onvalue 1
-
-$m.entry add checkbutton -label OptionsMovesTranslatePieces \
-    -variable ::translatePieces -offvalue 0 -onvalue 1 -command setLanguage
-
-menu $m.entry.highlightlastmove
-$m.entry add cascade -label OptionsMovesHighlightLastMove -menu  $m.entry.highlightlastmove
-$m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveDisplay -variable ::highlightLastMove -command updateBoard
-menu $m.entry.highlightlastmove.width
-$m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth -menu $m.entry.highlightlastmove.width
-foreach i {1 2 3 4 5} {
-  $m.entry.highlightlastmove.width add radiobutton -label $i -value $i -variable ::highlightLastMoveWidth -command updateBoard
-}
-# menu $m.entry.highlightlastmove.pattern
-# $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMovePattern -menu $m.entry.highlightlastmove.pattern
-# foreach i {"plain" "." "-" "-." "-.." ". " "," ".  "} j { "" "." "-" "-." "-.." ". " "," ".  "} {
-# $m.entry.highlightlastmove.pattern add radiobutton -label $i -value $j -variable ::highlightLastMovePattern -command updateBoard
-# }
-$m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor -command {
-  set col [ tk_chooseColor -initialcolor $::highlightLastMoveColor -title "Scid"]
-  if { $col != "" } {
-    set ::highlightLastMoveColor $col
-    updateBoard
+menu $m.language
+  foreach l $::languages {
+      $m.language add radiobutton -label $::langName($l) \
+          -underline $::langUnderline($l) -variable language -value $l \
+          -command setLanguage
   }
-}
-$m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveArrow -variable ::arrowLastMove -command updateBoard
-
-$m.entry add checkbutton -label OptionsMovesShowVarArrows \
-    -variable showVarArrows -offvalue 0 -onvalue 1
-
-$m.entry add checkbutton -label OptionsMovesGlossOfDanger \
-    -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
-
-
-set m .menu.options.numbers
-menu $m
-foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
-    underline {  0     1      2     4      5      6} {
+$m add cascade -label OptionsLanguage -menu $m.language
+menu $m.entry
+  $m.entry add checkbutton -label OptionsMovesAsk \
+      -variable askToReplaceMoves -offvalue 0 -onvalue 1
+  menu $m.entry.animate
+    foreach i {0 100 150 200 250 300 400 500 600 800 1000} {
+        $m.entry.animate add radiobutton -label "$i ms" \
+            -variable animateDelay -value $i
+    }
+  $m.entry add cascade -label OptionsMovesAnimate -menu $m.entry.animate
+  $m.entry add command -label OptionsMovesDelay -command setAutoplayDelay
+  $m.entry add checkbutton -label OptionsMovesCoord \
+      -variable moveEntry(Coord) -offvalue 0 -onvalue 1
+  $m.entry add checkbutton -label OptionsMovesKey \
+      -variable moveEntry(AutoExpand) -offvalue 0 -onvalue 1
+  $m.entry add checkbutton -label OptionsMovesSuggest \
+      -variable suggestMoves -offvalue 0 -onvalue 1
+  $m.entry add checkbutton -label OptionsShowVarPopup \
+      -variable showVarPopup -offvalue 0 -onvalue 1
+  $m.entry add checkbutton -label OptionsMovesSpace \
+      -variable ::pgn::moveNumberSpaces -offvalue 0 -onvalue 1
+  $m.entry add checkbutton -label OptionsMovesTranslatePieces \
+      -variable ::translatePieces -offvalue 0 -onvalue 1 -command setLanguage
+  menu $m.entry.highlightlastmove
+    $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveDisplay \
+        -variable ::highlightLastMove -command updateBoard
+    menu $m.entry.highlightlastmove.width
+      foreach i {1 2 3 4 5} {
+          $m.entry.highlightlastmove.width add radiobutton -label $i -value $i \
+              -variable ::highlightLastMoveWidth -command updateBoard
+      }
+    $m.entry.highlightlastmove add cascade -label OptionsMovesHighlightLastMoveWidth -menu $m.entry.highlightlastmove.width
+    $m.entry.highlightlastmove add command -label OptionsMovesHighlightLastMoveColor -command chooseHighlightColor
+    $m.entry.highlightlastmove add checkbutton -label OptionsMovesHighlightLastMoveArrow \
+        -variable ::arrowLastMove -command updateBoard
+  $m.entry add cascade -label OptionsMovesHighlightLastMove -menu  $m.entry.highlightlastmove
+  $m.entry add checkbutton -label OptionsMovesShowVarArrows \
+      -variable showVarArrows -offvalue 0 -onvalue 1
+  $m.entry add checkbutton -label OptionsMovesGlossOfDanger \
+      -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
+$m add cascade -label OptionsMoves -menu $m.entry
+menu $m.startup
+  # The windows that are not dockable are always configurable for auto start
+  set state [expr {$::docking::USE_DOCKING ? "disabled" : "normal"}]
+  $m.startup add checkbutton -label HelpTip -variable startup(tip)
+  $m.startup add checkbutton -label ToolsCross -variable startup(crosstable)
+  $m.startup add checkbutton -label WindowsSwitcher -variable startup(switcher) -state $state
+  $m.startup add checkbutton -label FileFinder -variable startup(finder)
+  $m.startup add checkbutton -label WindowsGList -variable startup(gamelist) -state $state
+  $m.startup add checkbutton -label WindowsPGN -variable startup(pgn) -state $state
+  $m.startup add checkbutton -label WindowsStats -variable startup(stats)
+  $m.startup add checkbutton -label WindowsTree -variable startup(tree) -state $state
+  $m.startup add checkbutton -label WindowsBook -variable startup(book) -state $state
+$m add cascade -label OptionsStartup -menu $m.startup
+menu $m.windows
+  $m.windows add checkbutton -label OptionsWindowsIconify -variable autoIconify
+  $m.windows add checkbutton -label OptionsWindowsRaise -variable autoRaise
+  $m.windows add checkbutton -label OptionsWindowsDock -variable windowsDock
+  if {$::docking::USE_DOCKING} {
+    menu $m.windows.savelayout
+    menu $m.windows.restorelayout
+    foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
+      $m.windows.savelayout add command -label $i -command "::docking::layout_save $slot"
+      $m.windows.restorelayout add command -label $i -command "::docking::layout_restore $slot"
+    }
+    $m.windows add cascade -label OptionsWindowsSaveLayout -menu $m.windows.savelayout
+    $m.windows add cascade -label OptionsWindowsRestoreLayout -menu $m.windows.restorelayout
+  }
+$m add cascade -label OptionsWindows -menu $m.windows
+menu $m.theme
+  foreach i [ttk::style theme names] {
+      $m.theme add radiobutton -label "$i" -value $i -variable ::lookTheme \
+          -command {ttk::style theme use $::lookTheme}
+  }
+$m add cascade -label OptionsTheme -menu $m.theme
+menu $m.numbers
+  foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
+          underline {  0     1      2     4      5      6} {
       set decimal [string index $numeric 0]
       set thousands [string index $numeric 1]
-      $m add radiobutton -label "12${thousands}345${decimal}67" \
-      -underline $underline \
-      -variable locale(numeric) -value $numeric -command updateLocale
-    }
-
-
-set m .menu.options.windows
-menu $m
-$m add checkbutton -label OptionsWindowsIconify -variable autoIconify
-$m add checkbutton -label OptionsWindowsRaise -variable autoRaise
-$m add checkbutton -label OptionsWindowsDock -variable windowsDock
-
-if {$::docking::USE_DOCKING} {
-  menu $m.savelayout
-  menu $m.restorelayout
-  foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
-    $m.savelayout add command -label $i -command "::docking::layout_save $slot"
-    $m.restorelayout add command -label $i -command "::docking::layout_restore $slot"
+      $m.numbers add radiobutton -label "12${thousands}345${decimal}67" \
+          -underline $underline \
+          -variable locale(numeric) -value $numeric -command updateLocale
   }
-  $m add cascade -label OptionsWindowsSaveLayout -menu $m.savelayout
-  $m add cascade -label OptionsWindowsRestoreLayout -menu $m.restorelayout
-}
-
-set m .menu.options.theme
-menu $m
-foreach i [ttk::style theme names] {
-  $m add radiobutton -label "$i" -value $i -variable ::lookTheme -command {ttk::style theme use $::lookTheme}
-}
-
-menu .menu.options.language
-foreach l $::languages {
-  .menu.options.language add radiobutton -label $::langName($l) \
-      -underline $::langUnderline($l) -variable language -value $l \
-      -command setLanguage
-}
-
-
-# The windows that are not dockable are always configurable for auto start
-set m .menu.options.startup
-menu $m
-if { $::docking::USE_DOCKING } {
-  set state "disabled"
-} else  {
-  set state "normal"
-}
-$m add checkbutton -label HelpTip -variable startup(tip)
-$m add checkbutton -label ToolsCross -variable startup(crosstable)
-$m add checkbutton -label WindowsSwitcher -variable startup(switcher) -state $state
-$m add checkbutton -label FileFinder -variable startup(finder)
-$m add checkbutton -label WindowsGList -variable startup(gamelist) -state $state
-$m add checkbutton -label WindowsPGN -variable startup(pgn) -state $state
-$m add checkbutton -label WindowsStats -variable startup(stats)
-$m add checkbutton -label WindowsTree -variable startup(tree) -state $state
-$m add checkbutton -label WindowsBook -variable startup(book) -state $state
-
-
-
-set m .menu.options
+$m add cascade -label OptionsNumbers -menu $m.numbers
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
 $m add command -label OptionsToolbar -command configToolbar
 $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
@@ -514,6 +419,56 @@ $m add separator
 $m add command -label HelpTip -command ::tip::show
 $m add separator
 $m  add command -label HelpAbout -command helpAbout
+
+
+##################################################
+# Store menu labels for translations and help messages
+set ::menuHelpMessage {}
+proc storeMenuLabels {m} {
+    bind $m <<MenuSelect>> {
+        set ::menuHelpMessage {}
+        set idx [%W index active]
+        if {$idx != "none"} {
+            # Tcl/Tk seems to generate strange window names for menus that
+            # are configured to be a toplevel window main menu, e.g.
+            # .menu.file get reported as ".#menu.#menu#file" and
+            # .menu.file.utils is ".#menu.#menu#file.#menu#file#utils"
+            # I have no idea why it does this, but to avoid it we
+            # convert a window paths with hashes to its true value:
+            regsub -all "\#" [winfo name %W] . win
+            catch {
+                set lbl $::MenuLabels($win,$idx)
+                set ::menuHelpMessage $::helpMessage($::language,$lbl)
+            }
+        }
+        updateStatusBar
+    }
+
+    set n [$m index end]
+    for {set i 0} {$n != "none" && $i <= $n} {incr i} {
+        set type [$m type $i]
+        if {$type != "separator" && $type != "tearoff"} {
+            set ::MenuLabels($m,$i) [$m entrycget $i -label]
+        }
+        if {$type == "cascade"} {
+            storeMenuLabels [$m entrycget $i -menu]
+        }
+    }
+}
+# Issue a command to a menu entry
+proc menuConfig {{m} {label} {cmd} args} {
+    foreach {key lbl} [array get ::MenuLabels "$m*"] {
+        if {$lbl == $label} {
+            set idx [lindex [split $key ","] 1]
+            $m $cmd $idx {*}$args
+            break
+        }
+    }
+}
+storeMenuLabels .menu
+set fileExitHack [.menu.file index end]
+set ::MenuLabels(.menu.file,end) $::MenuLabels(.menu.file,$fileExitHack)
+array unset ::MenuLabels ".menu.file,$fileExitHack"
 
 
 ##################################################
@@ -616,10 +571,41 @@ proc menuUpdateBases {} {
   menuConfig .menu.db.utils FileMaintTwin    entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintCompact entryconfig -state $canCompact
 }
-menuUpdateBases
+
+proc menuUpdateBoardSizes {} {
+  set count 0
+  set m .menu.options.board
+  $m.bdsize delete 0 end
+  set st normal
+  if {$::docking::USE_DOCKING } {
+    $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
+        -command "::resizeMainBoard; menuUpdateBoardSizes"
+    if {$::autoResizeBoard} { set st disabled }
+  }
+  foreach i $::boardSizes {
+    incr count
+    if {$count <= 9} {
+      set lbl "  $count"
+    } else {
+      set lbl " $count"
+    }
+    $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
+      -command "::board::resize .main.board $i "
+  }
+}
+
+proc menuUpdatePieces {} {
+  set m .menu
+  $m.options.board.pieces delete 0 end
+  foreach i $::boardStyles {
+    $m.options.board.pieces add radio -label $i \
+      -variable boardStyle -value $i \
+      -underline 0 -command "setPieceFont \"$i\"; updateBoard"
+  }
+}
+
 
 ##############################
-#
 # Multiple-language menu support functions.
 
 # configMenuText:
@@ -644,68 +630,6 @@ proc setLanguageMenus {} {
     }
   }
 
-  global menuLabel menuUnder oldLang
-  if {![info exists oldLang]} { set oldLang X }
-  set lang $::language
-  
-
-  foreach tag {Board Export Fonts Language Moves Numbers
-    Startup Sounds Toolbar Windows Theme ECO Spell Table BooksDir TacticsBasesDir Recent Save AutoSave} {
-    configMenuText .menu.options [tr Options$tag $oldLang] Options$tag $lang
-  }
-  configMenuText .menu.options [tr GInfoInformant $oldLang] GInfoInformant $lang
-  configMenuText .menu.options [tr OptionsWindowsShowGameInfo $oldLang] OptionsWindowsShowGameInfo $lang
-  
-  foreach tag {Regular Menu Small Tiny Fixed} {
-    configMenuText .menu.options.fonts [tr OptionsFonts$tag $oldLang] \
-        OptionsFonts$tag $lang
-  }
-  foreach tag {Size Pieces Colors} {
-    configMenuText .menu.options.board [tr OptionsBoard$tag $oldLang] \
-        OptionsBoard$tag $lang
-  }
-  configMenuText .menu.options.entry [tr OptionsShowVarPopup $oldLang] OptionsShowVarPopup $lang
-  foreach tag {Ask Animate Delay Suggest Key Coord Space TranslatePieces HighlightLastMove ShowVarArrows GlossOfDanger } {
-    configMenuText .menu.options.entry [tr OptionsMoves$tag $oldLang] \
-        OptionsMoves$tag $lang
-  }
-  
-  foreach tag { Color Width Display Arrow } {
-    configMenuText .menu.options.entry.highlightlastmove [tr OptionsMovesHighlightLastMove$tag $oldLang] OptionsMovesHighlightLastMove$tag $lang
-  }
-  
-  foreach tag {HelpTip WindowsSwitcher WindowsPGN WindowsTree FileFinder \
-        ToolsCross WindowsGList WindowsStats WindowsBook} {
-    configMenuText .menu.options.startup [tr $tag $oldLang] $tag $lang
-  }
-  
-  foreach tag {Iconify Raise Dock} {
-    configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
-        OptionsWindows$tag $lang
-  }
-  if {$::docking::USE_DOCKING} {
-    foreach tag {SaveLayout RestoreLayout} {
-      configMenuText .menu.options.windows [tr OptionsWindows$tag $oldLang] \
-          OptionsWindows$tag $lang
-    }
-  }
-  foreach tag {Contents Index Guide Hints Contact Tip About} {
-    configMenuText .menu.helpmenu [tr Help$tag $oldLang] Help$tag $lang
-  }
-  
-  if { $::macOS } {
-    foreach tag {About} {
-      configMenuText .menu.apple [tr Help$tag $oldLang] Help$tag $lang
-    }
-  }
-  
-  catch {
-    foreach tag {HideNext Material FEN Marks Wrap FullComment Photos \
-          TBNothing TBResult TBAll Delete Mark} {
-      configMenuText .main.gameInfo.menu [tr GInfo$tag $oldLang] GInfo$tag $lang
-    }
-  }
-
   ::pgn::ConfigMenus
   ::windows::stats::ConfigMenus
   ::tree::ConfigMenus
@@ -724,8 +648,6 @@ proc setLanguageMenus {} {
       }
     }
   }
-
-  set oldLang $::language
 }
 
 ################################################################################
@@ -776,12 +698,12 @@ proc configInformant {} {
   foreach i [lsort [array names informant]] {
     label $w.spinF.labelExpl$idx -text [ ::tr "Informant[ string trim $i "\""]" ]
     label $w.spinF.label$idx -text $i
-	 # Allow the configuration of "won game" up to "Mate found"
-	 if {$i == "\"++-\""} {
-		 spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
-	 } else {
-		 spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
-	 }
+     # Allow the configuration of "won game" up to "Mate found"
+     if {$i == "\"++-\""} {
+         spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 328.0 -increment 1.0 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+     } else {
+         spinbox $w.spinF.sp$idx -textvariable informant($i) -width 5 -from 0.0 -to 9.9 -increment 0.1 -validate all -vcmd { regexp {^[0-9]\.[0-9]$} %P }
+     }
     grid $w.spinF.labelExpl$idx -row $row -column 0 -sticky w
     incr row
     grid $w.spinF.label$idx -row $row -column 0 -sticky w
@@ -954,39 +876,6 @@ proc readECOFile {} {
   }
 }
 
-
-proc updateBoardSizesMenu {} {
-  set count 0
-  set m .menu.options.board
-  $m.bdsize delete 0 end
-  set st normal
-  if {$::docking::USE_DOCKING } {
-    $m.bdsize add checkbutton -label "Auto" -variable ::autoResizeBoard \
-        -command "::resizeMainBoard; updateBoardSizesMenu"
-    if {$::autoResizeBoard} { set st disabled }
-  }
-  foreach i $::boardSizes {
-    incr count
-    if {$count <= 9} {
-      set lbl "  $count"
-    } else {
-      set lbl " $count"
-    }
-    $m.bdsize add radio -label "$lbl" -variable boardSize -value $i -state $st\
-      -command "::board::resize .main.board $i "
-  }
-}
-
-proc updatePiecesMenu {} {
-  set m .menu
-  $m.options.board.pieces delete 0 end
-  foreach i $::boardStyles {
-    $m.options.board.pieces add radio -label $i \
-      -variable boardStyle -value $i \
-      -underline 0 -command "setPieceFont \"$i\"; updateBoard"
-  }
-}
-
 proc updateLocale {} {
   global locale
   sc_info decimal $locale(numeric)
@@ -1019,6 +908,15 @@ proc chooseFont {fType} {
     }
   }
 }
+
+proc chooseHighlightColor {} {
+  set col [ tk_chooseColor -initialcolor $::highlightLastMoveColor -title "Scid"]
+  if { $col != "" } {
+    set ::highlightLastMoveColor $col
+    updateBoard
+  }
+}
+
 
 ### End of file: menus.tcl
 
