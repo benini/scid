@@ -360,9 +360,9 @@ proc ::board::new {w {psize 40} } {
   # Set up coordinate labels:
   for {set i 1} {$i <= 8} {incr i} {
     ttk::label $w.lrank$i -text [expr {9 - $i}]
-    grid $w.lrank$i -row [expr $startrow + $i] -column 2 -sticky e
+    grid $w.lrank$i -row [expr $startrow + $i] -column 2 -sticky e -padx 5
     ttk::label $w.rrank$i -text [expr {9 - $i}]
-    grid $w.rrank$i -row [expr $startrow + $i] -column 11 -sticky w
+    grid $w.rrank$i -row [expr $startrow + $i] -column 11 -sticky w -padx 5
   }
   foreach i {1 2 3 4 5 6 7 8} file {a b c d e f g h} {
     ttk::label $w.tfile$file -text $file
@@ -618,6 +618,21 @@ proc ::board::defaultColor {sq} {
 #
 proc ::board::size {w} {
   return $::board::_size($w)
+}
+
+proc ::board::resizeAuto {w bbox} {
+  set availw  [lindex $bbox 2]
+  set availh  [lindex $bbox 3]
+  #TODO: subtract space for coords, material, namesbar, etc.
+  set maxSize [expr {$availh < $availw ? $availh : $availw}]
+  set maxSize [expr $maxSize / 8]
+
+  set newSize 0
+  foreach size $::boardSizes {
+    if {$size < $maxSize && $size > $newSize} { set newSize $size }
+  }
+
+  ::board::resize $w $newSize
 }
 
 # ::board::resize
@@ -1290,7 +1305,13 @@ proc ::board::setDragSquare {w sq} {
     $w.bd raise arrows
   }
   set ::board::_drag($w) $sq
+  return $oldSq
 }
+
+proc ::board::getDragSquare {w} {
+  return $::board::_drag($w)
+}
+
 
 # ::board::dragPiece
 #   Drags the piece of the drag-square (as set above) to

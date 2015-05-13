@@ -1,248 +1,5 @@
-proc fenErrorDialog {{msg {}}} {
-  
-  if {[winfo exists .setup]} {
-    tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg -parent .setup
-  } else {
-    tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg
-  }
-  
-}
-
-# copyFEN
-#
-#   Copies the FEN of the current position to the text clipboard.
-#
-proc copyFEN {} {
-  set fen [sc_pos fen]
-  # Create a text widget to hold the fen so it can be the owner
-  # of the current text selection:
-  set w .tempFEN
-  if {! [winfo exists $w]} { text $w }
-  $w delete 1.0 end
-  $w insert end $fen sel
-  clipboard clear
-  clipboard append $fen
-  selection own $w
-  selection get
-}
-
-# pasteFEN
-#
-#   Bypasses the board setup window and tries to paste the current
-#   text selection as the setup position, producing a message box
-#   if the selection does not appear to be a valid FEN string.
-#
-proc pasteFEN {} {
-  set fenStr ""
-  if {[catch {set fenStr [selection get -selection CLIPBOARD]} ]} {
-    catch {set fenStr [selection get -selection PRIMARY]}
-  }
-  set fenStr [string trim $fenStr]
-  
-  set fenExplanation {FEN is the standard text representation of a chess position. As an example, the FEN representation of the standard starting position is:
-    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}
-  
-  if {$fenStr == ""} {
-    set msg "The current text selection is empty. To paste the start board, select some text that contains a position in FEN notation.\n\n$fenExplanation"
-    fenErrorDialog $msg
-    return
-  }
-  if {[catch {sc_game startBoard $fenStr}]} {
-    if {[string length $fenStr] > 80} {
-      set fenStr [string range $fenStr 0 80]
-      append fenStr "..."
-    }
-    set msg "\"$fenStr\" is not a valid chess position in FEN notation.\n\n $fenExplanation"
-    
-    fenErrorDialog $msg
-    return
-  }
-  updateBoard -pgn
-}
-
-proc setSetupBoardToFen {w setupFen} {
-  # Called from ".setup.status" FEN combo S.A
-  global setupboardSize setupBd toMove castling epFile moveNum
-  
-  sc_game push
-  if {[catch {sc_game startBoard $setupFen} err]} {
-    fenErrorDialog $err
-  } else {
-    set setupBd [sc_pos board]
-    setBoard .setup.l.bd $setupBd $setupboardSize
-    set toMove [lindex {White Black} [string equal [lindex $setupFen 1] b]]
-    set castling [lindex $setupFen 2]
-    set epFile [string index [lindex $setupFen 3] 0]
-    set moveNum [lindex $setupFen 5]
-  }
-  sc_game pop
-}
-
 ############################################################
 ### Board setup window:
-
-set setupBd {}
-set setupFen {}
-
-# makeSetupFen:
-#    Reconstructs the FEN string from the current settings in the
-#    setupBoard dialog. Check to see if the position is
-#    acceptable (a position can be unacceptable by not having exactly
-#    one King per side, or by having more than 16 pieces per side).
-#
-
-proc makeSetupFen {} {
-  global setupFen setupBd moveNum toMove castling epFile
-  set fenStr ""
-  set errorStr [validateSetup]
-  if {$errorStr != ""} {
-    set fenStr "Invalid board: "
-    append fenStr $errorStr
-    return $fenStr
-  }
-  for {set bRow 56} {$bRow >= 0} {incr bRow -8} {
-    if {$bRow < 56} { append fenStr "/" }
-    set emptyRun 0
-    for {set bCol 0} {$bCol < 8} {incr bCol} {
-      set sq [expr {$bRow + $bCol} ]
-      set piece [string index $setupBd $sq]
-      if {$piece == "."} {
-        incr emptyRun
-      } else {
-        if {$emptyRun > 0} {
-          append fenStr $emptyRun
-          set emptyRun 0
-        }
-        append fenStr $piece
-      }
-    }
-    if {$emptyRun > 0} { append fenStr $emptyRun }
-  }
-  append fenStr " " [string tolower [string index $toMove 0]] " "
-  if {$castling == ""} {
-    append fenStr "- "
-  } else {
-    append fenStr $castling " "
-  }
-  if {$epFile == ""  ||  $epFile == "-"} {
-    append fenStr "-"
-  } else {
-    append fenStr $epFile
-    if {$toMove == "White"} {
-      append fenStr "6"
-    } else {
-      append fenStr "3"
-    }
-  }
-  # We assume a halfmove clock of zero:
-  append fenStr " 0 " $moveNum
-  set setupFen $fenStr
-  return $fenStr
-}
-
-# validateSetup:
-#   Called by makeSetupFen to check that the board is sensible: that is,
-#   that there is one king per side and there are at most 16 pieces per
-#   side.
-#
-proc validateSetup {} {
-  global setupBd
-  set wkCount 0; set bkCount 0; set wCount 0; set bCount 0
-  set wpCount 0; set bpCount 0
-  for {set i 0} {$i < 64} {incr i} {
-    set p [string index $setupBd $i]
-    if {$p == "."} {
-    } elseif {$p == "P"} { incr wCount; incr wpCount
-    } elseif {$p == "p"} { incr bCount; incr bpCount
-    } elseif {$p == "N" || $p == "B" || $p == "R" || $p == "Q"} {
-      incr wCount
-    } elseif {$p == "n" || $p == "b" || $p == "r" || $p == "q"} {
-      incr bCount
-    } elseif {$p == "K"} { incr wCount; incr wkCount
-    } elseif {$p == "k"} { incr bCount; incr bkCount
-    } else { return "Invalid piece: $p" }
-  }
-  if {$wkCount != 1} { return "There must be one white king"
-  } elseif {$bkCount != 1} { return "There must be one black king"
-  } elseif {$wCount > 16} { return "Too many white pieces"
-  } elseif {$bCount > 16} { return "Too many black pieces"
-  } elseif {$wpCount > 8} { return "Too many white pawns"
-  } elseif {$bpCount > 8} { return "Too many black pawns" }
-  return ""
-}
-
-# setupBoardPiece:
-#    Called by setupBoard to set or clear a square when it is clicked on.
-#    Sets that square to containing the active piece (stored in pastePiece)
-#    unless it already contains that piece, in which case the square is
-#    cleared to be empty.
-#
-proc setupBoardPiece { square } {
-  global setupBd pastePiece setupboardSize setupFen
-  set oldState $setupBd
-  set setupBd {}
-  set piece $pastePiece
-  if {[string index $oldState $square] == $pastePiece} {
-    set piece "."
-  }
-  if {$piece == "P"  ||  $piece == "p"} {
-    if {$square < 8  ||  $square >= 56} {
-      set setupBd $oldState
-      unset oldState
-      return
-    }
-  }
-  append setupBd \
-      [string range $oldState 0 [expr {$square - 1} ]] \
-      $piece \
-      [string range $oldState [expr {$square + 1} ] 63]
-  unset oldState
-  setBoard .setup.l.bd $setupBd $setupboardSize
-  set setupFen [makeSetupFen]
-}
-
-# switchPastePiece:
-#   Changes the active piece selection in the board setup dialog to the
-#   next or previous piece in order.
-#
-proc switchPastePiece { switchType } {
-  global pastePiece
-  array set nextPiece { K Q Q R R B B N N P P k k q q r r b b n n p p K}
-  array set prevPiece { K p Q K R Q B R N B P N k P q k r q b r n b p n}
-  if {$switchType == "next"} {
-    set pastePiece $nextPiece($pastePiece)
-  } else {
-    set pastePiece $prevPiece($pastePiece)
-  }
-}
-
-proc exitSetupBoard {} {
-  
-  # called when "OK" button hit
-  
-  global setupFen
-  
-  # unbind cancel binding
-  bind .setup <Destroy> {}
-  
-  undoFeature save
-  if {[catch {sc_game startBoard $setupFen} err]} {
-    fenErrorDialog $err
-    bind .setup <Destroy> cancelSetupBoard
-    
-    # Ideally, "$err" should be more specific than "Invalid FEN", but
-    # procedural flow is a little complicated S.A.
-  } else {
-    ::utils::history::AddEntry setupFen $setupFen
-    destroy .setup
-    updateBoard -pgn
-  }
-}
-
-proc cancelSetupBoard {} {
-  bind .setup <Destroy> {}
-  destroy .setup
-}
 
 # Global variables for entry of the start position:
 set epFile {}          ;# legal values are empty, or "a"-"h".
@@ -253,96 +10,81 @@ set toMove White       ;# side to move, "White" or "Black".
 set pastePiece K       ;# Piece being pasted, "K", "k", "Q", "q", etc.
 
 # Traces to keep entry values sensible:
-
-trace variable moveNum w {::utils::validate::Integer 999 0}
-trace variable epFile w {::utils::validate::Regexp {^(-|[a-h])?$}}
+trace variable moveNum  w {::utils::validate::Integer 999 0}
+trace variable epFile   w {::utils::validate::Regexp {^(-|[a-h])?$}}
 trace variable castling w {::utils::validate::Regexp {^(-|[KQkq]*)$}}
 
+set setupBd {}
+set setupFen {}
 
 # setupBoard:
 #   The main procedure for creating the dialog for setting the start board.
 #   Calls switchPastePiece and makeSetupFen.
 #   On "Setup" button press, calls sc_pos startBoard to try to set the
 #   starting board.
-
-#   todo: perhaps ensure all engines have stopped before doing this S.A.
-
+#
 proc setupBoard {} {
-  global boardSizes boardSize setupboardSize lite dark setupBd pastePiece toMove epFile moveNum
+  global boardSizes boardSize lite dark setupBd pastePiece toMove epFile moveNum
   global origFen
   global setupStatus castling setupFen highcolor
   if {[winfo exists .setup]} { return }
   set setupBd [sc_pos board]
   set origFen [sc_pos fen]
-  toplevel .setup
-  wm title .setup "Scid: Setup Board"
+
+  set w ".setup"
+  toplevel $w
+  wm title $w "Scid: Setup Board"
+  wm minsize $w 650 420
+
+  grid [ttk::frame $w.topspace -height 10] -row 0 -column 0 -columnspan 5 -sticky news
+
+  #Board
+  ttk::frame $w.l
+  bind $w.l <Configure> "::board::resizeAuto $w.l.bd \[grid bbox $w 0 1\]"
+
+  ::board::new $w.l.bd
+  ::board::coords $w.l.bd
+  for {set i 0} { $i < 64 } { incr i } {
+    ::board::bind $w.l.bd $i <B1-Motion>       "dragBoardPiece  $w.l.bd %X %Y $i"
+    ::board::bind $w.l.bd $i <ButtonRelease-1> "setupBoardPiece $w.l.bd %X %Y"
+    ::board::bind $w.l.bd $i <2>               "removeBoardPiece $w.l.bd $i"
+    ::board::bind $w.l.bd $i <3>               "removeBoardPiece $w.l.bd $i"
+  }
+  grid $w.l.bd -sticky news
+  grid rowconfigure $w.l.bd 0 -weight 1
+  grid columnconfigure $w.l.bd 0 -weight 1
+  grid $w.l -row 1 -column 0 -sticky news
+  grid rowconfigure $w 1 -weight 1
+  grid columnconfigure $w 0 -weight 1
   
-  ### Status entrybox contains the current FEN string.
-  
-  ttk::frame .setup.statusbar
-  pack .setup.statusbar -side bottom -expand yes -fill x
-  
-  ### The actual board is created here. Bindings: left mouse sets/clears
-  ### a square, middle mouse selects previous piece, right mouse selects
-  ### next piece.  I should also set shortcut keys, e.g. "Q" for Queen.
-  
-  # todo: drag and drop of pieces would be nice :>
-  
-  ttk::frame .setup.l
-  ttk::frame .setup.r
-  ttk::frame .setup.l.bd
-  
+  ### Piece Buttons
+  foreach psize $::boardSizes {
+      if {$psize >= 40} { break }
+  }
+  grid [ttk::frame $w.piecespace -width 10] -row 1 -column 1 -sticky news
+  grid [ttk::frame $w.piecesw] -row 1 -column 2 -sticky news
+  grid [ttk::frame $w.piecesb] -row 1 -column 3 -sticky news
+  grid [ttk::frame $w.piecesw.topspace -height 2] -column 0
+  grid [ttk::frame $w.piecesb.topspace -height 2] -column 0
+  foreach i {p n b r q k} {
+    foreach color {w b} value "[string toupper $i] $i" {
+      radiobutton $w.pieces$color.$i -image $color$i$psize -indicatoron 0 -variable pastePiece -value $value -activebackground $highcolor    
+      grid $w.pieces$color.$i -column 0 -pady 2 -padx 2
+    }
+  }
+
   set sl .setup.l
   set sr .setup.r
   set sbd .setup.l.bd
+
   
-  pack $sl -side left -expand yes -fill y
-  pack $sr -side right -expand yes -fill y
-  
-  # make the setup board a couple of sizes smaller
-  set index [lsearch -exact $boardSizes $boardSize]
-  # incr index 0
-  # incr index -2
-  incr index -3
-  if {$index < 0} {
-    set index 0
-  }
-  set setupboardSize [lindex $boardSizes $index]
-  
-  for {set i 0} {$i < 64} {incr i} {
-    ttk::label $sbd.$i -image e$setupboardSize
-    set rank [expr {7 - int ($i / 8)} ]
-    set fyle [expr {$i % 8} ]
-    grid $sbd.$i -row $rank -column $fyle -sticky nesw
-    if {[expr {($fyle % 2) == ($rank % 2)} ]} {
-      $sbd.$i configure -background $lite
-    } else {
-      $sbd.$i configure -background $dark
-    }
-    bind $sbd.$i <ButtonPress-1> "setupBoardPiece $i"
-    bind $sbd.$i <ButtonPress-$::MB2> "switchPastePiece prev"
-    bind $sbd.$i <ButtonPress-$::MB3> "switchPastePiece next"
-  }
-  
-  pack $sbd -padx 10 -pady 10 -expand 1
-  pack [ttk::frame $sl.b] -side top -padx 8 -pady 8 ;# -expand yes -fill x
-  # rearrange above two lines for different setup
-  pack [ttk::frame $sl.w] -side bottom -padx 8 -pady 8 ;# -expand yes -fill x
-  
-  setBoard $sbd $setupBd $setupboardSize
-  
-  ### Piece Buttons
-  
-  # set pastePiece P
-  
-  foreach i {p n b r q k} {
-    foreach color {w b} value "[string toupper $i] $i" {
-      radiobutton $sl.$color.$i -image $color$i$setupboardSize -indicatoron 0 -variable pastePiece -value $value -activebackground $highcolor    
-      # ttk::radiobutton $sl.$color.$i -image $color$i$setupboardSize -variable pastePiece -value $value
-      pack $sl.$color.$i -side left ;# -expand yes -fill x -padx 5
-    }
-  }
-  
+
+  ttk::frame .setup.r
+  ttk::frame .setup.statusbar
+  grid .setup.r -row 1 -column 4 -sticky news
+  grid .setup.statusbar -row 2 -column 0 -columnspan 5 -sticky news
+
+
   ### Side to move frame.
   
   set toMove [lindex {White Black} [string equal [lindex $origFen 1] b]]
@@ -403,14 +145,14 @@ proc setupBoard {} {
   ttk::button $sr.b.clear -textvar ::tr(EmptyBoard) -command {
     set setupBd \
         "................................................................"
-    setBoard .setup.l.bd $setupBd $setupboardSize
+    ::board::update .setup.l.bd $setupBd
     set castling {}
     set setupFen [makeSetupFen]
   }
   ttk::button $sr.b.initial -textvar ::tr(InitialBoard) -command {
     set setupBd \
         "RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr"
-    setBoard .setup.l.bd $setupBd $setupboardSize
+    ::board::update .setup.l.bd $setupBd
     set castling KQkq
     set setupFen [makeSetupFen]
   }
@@ -422,7 +164,7 @@ proc setupBoard {} {
   
   ttk::frame $sr.b2
   ttk::button $sr.b2.ok -text "OK" -width 7 -command exitSetupBoard
-  ttk::button $sr.b2.cancel -textvar ::tr(Cancel) -width 7 -command cancelSetupBoard
+  ttk::button $sr.b2.cancel -textvar ::tr(Cancel) -width 7 -command {destroy .setup}
   
   pack $sr.b2 -side bottom -pady 20 -anchor s
   pack $sr.b2.ok -side left -padx 5
@@ -430,9 +172,10 @@ proc setupBoard {} {
   
   ttk::button .setup.paste -textvar ::tr(PasteFen) -command {
     if {[catch {set setupFen [selection get -selection CLIPBOARD]} ]} {
-      catch {set setupFen [selection get -selection PRIMARY]}
       # PRIMARY is the X selection, unsure about CLIPBOARD
+      if {[catch {set setupFen [selection get -selection PRIMARY]}]} { return }
     }
+    setSetupBoardToFen %W $setupFen
   }
   ttk::button .setup.clear -textvar ::tr(ClearFen) -command {set setupFen ""}
   
@@ -445,11 +188,249 @@ proc setupBoard {} {
   
   pack .setup.paste .setup.clear -in .setup.statusbar -side left
   pack .setup.status -in .setup.statusbar -side right -expand yes -fill x -anchor w
-  #bind .setup.status <FocusIn>  { %W configure -background lightYellow }
-  #bind .setup.status <FocusOut> { %W configure -background white }
-  bind .setup <Escape> cancelSetupBoard
-  bind .setup <Destroy> cancelSetupBoard
-  
+
+
+  if {[info exists ::winGeometry($w)]} { wm geometry $w $::winGeometry($w) }
+  bind $w <Destroy> "if {\[string equal $w %W\]} { set ::winGeometry($w) \[wm geometry $w\]; options.save ::winGeometry($w) }"
+  bind $w <Escape> {destroy .setup}
+
   set setupFen [makeSetupFen]
+}
+
+proc setSetupBoardToFen {w setupFen} {
+  global setupBd toMove castling epFile moveNum
+
+  sc_game push
+  if {[catch {sc_game startBoard $setupFen} err]} {
+    fenErrorDialog $err
+  } else {
+    set setupBd [sc_pos board]
+    set toMove [lindex {White Black} [string equal [lindex $setupFen 1] b]]
+    set castling [lindex $setupFen 2]
+    set epFile [string index [lindex $setupFen 3] 0]
+    set moveNum [lindex $setupFen 5]
+    ::board::update .setup.l.bd $setupBd
+  }
+  sc_game pop
+}
+
+
+# makeSetupFen:
+#    Reconstructs the FEN string from the current settings in the
+#    setupBoard dialog. Check to see if the position is
+#    acceptable (a position can be unacceptable by not having exactly
+#    one King per side, or by having more than 16 pieces per side).
+#
+proc makeSetupFen {} {
+  global setupFen setupBd moveNum toMove castling epFile
+  set fenStr ""
+  set errorStr [validateSetup]
+  if {$errorStr != ""} {
+    set fenStr "Invalid board: "
+    append fenStr $errorStr
+    return $fenStr
+  }
+  for {set bRow 56} {$bRow >= 0} {incr bRow -8} {
+    if {$bRow < 56} { append fenStr "/" }
+    set emptyRun 0
+    for {set bCol 0} {$bCol < 8} {incr bCol} {
+      set sq [expr {$bRow + $bCol} ]
+      set piece [string index $setupBd $sq]
+      if {$piece == "."} {
+        incr emptyRun
+      } else {
+        if {$emptyRun > 0} {
+          append fenStr $emptyRun
+          set emptyRun 0
+        }
+        append fenStr $piece
+      }
+    }
+    if {$emptyRun > 0} { append fenStr $emptyRun }
+  }
+  append fenStr " " [string tolower [string index $toMove 0]] " "
+  if {$castling == ""} {
+    append fenStr "- "
+  } else {
+    append fenStr $castling " "
+  }
+  if {$epFile == ""  ||  $epFile == "-"} {
+    append fenStr "-"
+  } else {
+    append fenStr $epFile
+    if {$toMove == "White"} {
+      append fenStr "6"
+    } else {
+      append fenStr "3"
+    }
+  }
+  # We assume a halfmove clock of zero:
+  append fenStr " 0 " $moveNum
+  set setupFen $fenStr
+  return $fenStr
+}
+
+# validateSetup:
+#   Called by makeSetupFen to check that the board is sensible: that is,
+#   that there is one king per side and there are at most 16 pieces per
+#   side and there are no pawn in the 1st or 8th row
+#
+proc validateSetup {} {
+  global setupBd
+  set wkCount 0; set bkCount 0; set wCount 0; set bCount 0
+  set wpCount 0; set bpCount 0
+  for {set i 0} {$i < 64} {incr i} {
+    set p [string index $setupBd $i]
+    if {$p == "."} {
+    } elseif {$p == "P"} { incr wCount; incr wpCount
+    } elseif {$p == "p"} { incr bCount; incr bpCount
+    } elseif {$p == "N" || $p == "B" || $p == "R" || $p == "Q"} {
+      incr wCount
+    } elseif {$p == "n" || $p == "b" || $p == "r" || $p == "q"} {
+      incr bCount
+    } elseif {$p == "K"} { incr wCount; incr wkCount
+    } elseif {$p == "k"} { incr bCount; incr bkCount
+    } else { return "Invalid piece: $p" }
+    if {$p == "P"  ||  $p == "p"} {
+      if {$i < 8}   { return "There must be no pawn in the 1st row" }
+      if {$i >= 56} { return "There must be no pawn in the 8th row" }
+    }
+  }
+  if {$wkCount != 1} { return "There must be one white king"
+  } elseif {$bkCount != 1} { return "There must be one black king"
+  } elseif {$wCount > 16} { return "Too many white pieces"
+  } elseif {$bCount > 16} { return "Too many black pieces"
+  } elseif {$wpCount > 8} { return "Too many white pawns"
+  } elseif {$bpCount > 8} { return "Too many black pawns" }
+  return ""
+}
+
+proc dragBoardPiece {w x y startSq} {
+  set square [::board::getSquare $w $x $y]
+  if {$square != $startSq && [::board::getDragSquare $w] == -1} {
+    set tmp [string index $::setupBd $startSq]
+    if {$tmp == "."} { return }
+    set ::pastePiece $tmp
+    ::board::setDragSquare .setup.l.bd $startSq
+  }
+
+  ::board::dragPiece .setup.l.bd $x $y
+}
+
+proc setupBoardPiece {w x y} {
+  global setupBd pastePiece setupFen
+
+  set square [::board::getSquare $w $x $y]
+  set newPiece $pastePiece
+  set oldPiece [string index $setupBd $square]
+  set delSq [::board::setDragSquare .setup.l.bd -1]
+  if {$delSq != -1} {
+    #Dragged
+    if {$delSq == $square} { return }
+    set setupBd [string replace $setupBd $delSq $delSq "."]
+    catch { unset ::erasePiece }
+  } else {
+    #Left click
+    if {$oldPiece == $newPiece} {
+      set newPiece [string tolower $newPiece]
+      if {$newPiece == $pastePiece} { set newPiece [string toupper $newPiece] }
+      set ::erasePiece "$oldPiece$square"
+    } else {
+      if {[info exists ::erasePiece] && $::erasePiece == "$newPiece$square"} {
+        set newPiece "."
+      }
+      catch { unset ::erasePiece }
+    }
+  }
+
+  set setupBd [string replace $setupBd $square $square $newPiece]
+  ::board::update .setup.l.bd $setupBd
+  set setupFen [makeSetupFen]
+}
+
+proc removeBoardPiece {w square} {
+  global setupBd setupFen
+
+  set setupBd [string replace $setupBd $square $square "."]
+  ::board::update $w $setupBd
+  set setupFen [makeSetupFen]
+}
+
+proc exitSetupBoard {} {
+  global setupFen
+
+  undoFeature save
+  if {[catch {sc_game startBoard $setupFen} err]} {
+    undoFeature undo
+    fenErrorDialog $err
+  } else {
+    ::utils::history::AddEntry setupFen $setupFen
+    destroy .setup
+    ::notify::PosChanged -pgn
+  }
+}
+
+### End of Board setup window
+############################################################
+
+
+proc fenErrorDialog {{msg {}}} {
+  if {[winfo exists .setup]} {
+    tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg -parent .setup
+  } else {
+    tk_messageBox -icon info -type ok -title "Scid: Invalid FEN" -message $msg
+  }
+}
+
+# copyFEN
+#
+#   Copies the FEN of the current position to the text clipboard.
+#
+proc copyFEN {} {
+  set fen [sc_pos fen]
+  # Create a text widget to hold the fen so it can be the owner
+  # of the current text selection:
+  set w .tempFEN
+  if {! [winfo exists $w]} { text $w }
+  $w delete 1.0 end
+  $w insert end $fen sel
+  clipboard clear
+  clipboard append $fen
+  selection own $w
+  selection get
+}
+
+# pasteFEN
+#
+#   Bypasses the board setup window and tries to paste the current
+#   text selection as the setup position, producing a message box
+#   if the selection does not appear to be a valid FEN string.
+#
+proc pasteFEN {} {
+  set fenStr ""
+  if {[catch {set fenStr [selection get -selection CLIPBOARD]} ]} {
+    catch {set fenStr [selection get -selection PRIMARY]}
+  }
+  set fenStr [string trim $fenStr]
+
+  set fenExplanation {FEN is the standard text representation of a chess position. As an example, the FEN representation of the standard starting position is:
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}
+
+  if {$fenStr == ""} {
+    set msg "The current text selection is empty. To paste the start board, select some text that contains a position in FEN notation.\n\n$fenExplanation"
+    fenErrorDialog $msg
+    return
+  }
+  if {[catch {sc_game startBoard $fenStr}]} {
+    if {[string length $fenStr] > 80} {
+      set fenStr [string range $fenStr 0 80]
+      append fenStr "..."
+    }
+    set msg "\"$fenStr\" is not a valid chess position in FEN notation.\n\n $fenExplanation"
+
+    fenErrorDialog $msg
+    return
+  }
+  updateBoard -pgn
 }
 

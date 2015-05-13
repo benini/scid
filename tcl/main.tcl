@@ -283,21 +283,6 @@ proc main_mousewheelHandler {direction} {
     }
 }
 
-# setBoard:
-#   Resets the squares of the board according to the board string
-#   "boardStr" and the piece bitmap size "psize".
-#
-proc setBoard {board boardStr psize {rotated 0}} {
-    for {set i 0} { $i < 64 } { incr i } {
-        if {$rotated > 0} {
-            set piece [string index $boardStr [expr {63 - $i}]]
-        } else {
-            set piece [ string index $boardStr $i ]
-        }
-        $board.$i configure -image $::board::letterToPiece($piece)$psize
-    }
-}
-
 ################################################################################
 # added by Pascal Georges
 # returns a list of num moves from main line following current position
