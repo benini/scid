@@ -995,31 +995,12 @@ proc resizeMainBoard {} {
 
   if { $::autoResizeBoard } {
     update idletasks
-    set availw [ expr [winfo width .main.board] - [winfo reqwidth .main.board] ]
-    set availh [ lindex [grid bbox .main 0 4] 3]
-    if {$availh == 0} { set availh [expr 1 + [winfo height .fdockmain] - [lindex [grid bbox .main] 3] ] }
-
-    set oldSize [::board::size .main.board]
-    if {$availh < $availw} {
-      set maxSize [ expr $oldSize + $availh / 8]
-    } else  {
-      set maxSize [ expr $oldSize + $availw / 8]
+    set availw [winfo width .fdockmain]
+    set availh [winfo height .fdockmain]
+    if {$::showGameInfo} {
+      set availh [expr $availh - [winfo height .main.gameInfoFrame] ]
     }
-
-    set newSize [lindex $::boardSizes 0]
-    foreach size $::boardSizes {
-      if {$size > $maxSize} { break; }
-      set newSize $size
-    }
-
-    if {$newSize != $oldSize} {
-      set restore_bind "bind .main <Configure> [bind .main <Configure>]"
-      bind .main <Configure> {}
-      ::board::resize .main.board $newSize
-      set ::boardSize [::board::size .main.board]
-      update idletasks
-      after idle "$restore_bind"
-    }
+    set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
   }
 }
 ################################################################################

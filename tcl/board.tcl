@@ -635,7 +635,7 @@ proc ::board::resizeAuto {w bbox} {
     if {$size <= $maxSize && $size > $newSize} { set newSize $size }
   }
 
-  ::board::resize $w $newSize
+  return [::board::resize $w $newSize]
 }
 
 # ::board::resize
