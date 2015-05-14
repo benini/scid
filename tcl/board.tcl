@@ -623,13 +623,16 @@ proc ::board::size {w} {
 proc ::board::resizeAuto {w bbox} {
   set availw  [lindex $bbox 2]
   set availh  [lindex $bbox 3]
-  #TODO: subtract space for coords, material, namesbar, etc.
+  set extraw  [expr [winfo reqwidth $w]  - $::board::_size($w) * 8]
+  set extrah  [expr [winfo reqheight $w] - $::board::_size($w) * 8]
+  set availw  [expr $availw - $extraw]
+  set availh  [expr $availh - $extrah]
   set maxSize [expr {$availh < $availw ? $availh : $availw}]
   set maxSize [expr $maxSize / 8]
 
   set newSize 0
   foreach size $::boardSizes {
-    if {$size < $maxSize && $size > $newSize} { set newSize $size }
+    if {$size <= $maxSize && $size > $newSize} { set newSize $size }
   }
 
   ::board::resize $w $newSize
