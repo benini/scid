@@ -28,20 +28,29 @@ proc setupBoard {} {
   global origFen
   global setupStatus castling setupFen highcolor
   if {[winfo exists .setup]} { return }
-  set setupBd [sc_pos board]
+  set setupBd [lindex [sc_pos board] 0]
   set origFen [sc_pos fen]
 
   set w ".setup"
   toplevel $w
   wm title $w "Scid: Setup Board"
-  wm minsize $w 650 420
+  wm minsize $w 630 450
 
-  grid [ttk::frame $w.topspace -height 10] -row 0 -column 0 -columnspan 5 -sticky news
+  #Frames
+  ttk::frame $w.spaceTop -height 10
+  ttk::frame $w.l
+  ttk::frame $w.r
+  ttk::frame $w.statusbar
+  ttk::frame $w.buttons
+  grid $w.spaceTop -row 0 -column 0 -columnspan 5 -sticky news
+  grid $w.l -row 1 -column 0 -sticky news
+  grid rowconfigure $w 1 -weight 1
+  grid columnconfigure $w 0 -weight 1
+  grid $w.r -row 1 -column 4 -sticky news
+  grid $w.statusbar -row 2 -column 0 -columnspan 5 -sticky news
+  grid $w.buttons -row 3 -column 0 -columnspan 5 -sticky news
 
   #Board
-  ttk::frame $w.l
-  bind $w.l <Configure> "::board::resizeAuto $w.l.bd \[grid bbox $w 0 1\]"
-
   ::board::new $w.l.bd
   ::board::coords $w.l.bd
   for {set i 0} { $i < 64 } { incr i } {
@@ -53,122 +62,123 @@ proc setupBoard {} {
   grid $w.l.bd -sticky news
   grid rowconfigure $w.l.bd 0 -weight 1
   grid columnconfigure $w.l.bd 0 -weight 1
-  grid $w.l -row 1 -column 0 -sticky news
-  grid rowconfigure $w 1 -weight 1
-  grid columnconfigure $w 0 -weight 1
   
   ### Piece Buttons
   foreach psize $::boardSizes {
       if {$psize >= 40} { break }
   }
-  grid [ttk::frame $w.piecespace -width 10] -row 1 -column 1 -sticky news
-  grid [ttk::frame $w.piecesw] -row 1 -column 2 -sticky news
-  grid [ttk::frame $w.piecesb] -row 1 -column 3 -sticky news
-  grid [ttk::frame $w.piecesw.topspace -height 2] -column 0
-  grid [ttk::frame $w.piecesb.topspace -height 2] -column 0
+  grid [ttk::frame $w.spacePiecesLeft -width 10] -row 1 -column 1 -sticky news
+  grid [ttk::frame $w.pieces] -row 1 -column 2 -sticky news
+  grid [ttk::frame $w.pieces.spaceTop -height 2] -row 0 -columnspan 2
+  grid [ttk::frame $w.pieces.w] -row 1 -column 0 -sticky news
+  grid [ttk::frame $w.pieces.b] -row 1 -column 1 -sticky news
   foreach i {p n b r q k} {
     foreach color {w b} value "[string toupper $i] $i" {
-      radiobutton $w.pieces$color.$i -image $color$i$psize -indicatoron 0 -variable pastePiece -value $value -activebackground $highcolor    
-      grid $w.pieces$color.$i -column 0 -pady 2 -padx 2
+      radiobutton $w.pieces.$color.$i -image $color$i$psize -indicatoron 0 -variable pastePiece -value $value -activebackground $highcolor    
+      grid $w.pieces.$color.$i -column 0 -pady 2 -padx 2
     }
   }
-
-  set sl .setup.l
-  set sr .setup.r
-  set sbd .setup.l.bd
-
-  
-
-  ttk::frame .setup.r
-  ttk::frame .setup.statusbar
-  grid .setup.r -row 1 -column 4 -sticky news
-  grid .setup.statusbar -row 2 -column 0 -columnspan 5 -sticky news
+  checkbutton $w.pieces.rotate -text "  Rotate" -image tb_BD_Flip -compound left \
+      -indicatoron 0 -variable ::setupBoardFlipped -command {
+	set ::setupBd  [string reverse $::setupBd]
+    set ::setupFen [makeSetupFen]
+    ::board::update .setup.l.bd $::setupBd
+    ::board::flip .setup.l.bd
+	set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
+  }
+  grid $w.pieces.rotate -row 2 -columnspan 2 -sticky news -padx 2 -pady 2
 
 
   ### Side to move frame.
-  
   set toMove [lindex {White Black} [string equal [lindex $origFen 1] b]]
-  ttk::frame $sr.tomove
-  ttk::label $sr.tomove.label -textvar ::tr(SideToMove:)
-  ttk::frame $sr.tomove.buttons
-  ttk::radiobutton $sr.tomove.buttons.w -text $::tr(White) -variable toMove -value White \
+  ttk::frame $w.r.tomove
+  ttk::label $w.r.tomove.label -textvar ::tr(SideToMove:)
+  ttk::frame $w.r.tomove.buttons
+  ttk::radiobutton $w.r.tomove.buttons.w -text $::tr(White) -variable toMove -value White \
       -command {set setupFen [makeSetupFen]}
-  ttk::radiobutton $sr.tomove.buttons.b -text $::tr(Black) -variable toMove -value Black \
+  ttk::radiobutton $w.r.tomove.buttons.b -text $::tr(Black) -variable toMove -value Black \
       -command {set setupFen [makeSetupFen]}
   
-  pack $sr.tomove -pady 7
-  pack $sr.tomove.label -side top -pady 2
-  pack $sr.tomove.buttons -side top
-  pack $sr.tomove.buttons.w $sr.tomove.buttons.b -side left
+  pack $w.r.tomove -pady 7
+  pack $w.r.tomove.label -side top -pady 2
+  pack $w.r.tomove.buttons -side top
+  pack $w.r.tomove.buttons.w $w.r.tomove.buttons.b -side left
   
   ### Entry boxes: Move number, Castling and En Passant file.
-  
-  pack [ttk::frame $sr.mid] -padx 5 -pady 5
+  pack [ttk::frame $w.r.mid] -padx 5 -pady 5
   
   set moveNum [lindex $origFen 5]
-  ttk::frame $sr.mid.movenum
-  ttk::label $sr.mid.movenum.label -textvar ::tr(MoveNumber:)
-  ttk::entry $sr.mid.movenum.e -width 3 -background white -textvariable moveNum
+  ttk::frame $w.r.mid.movenum
+  ttk::label $w.r.mid.movenum.label -textvar ::tr(MoveNumber:)
+  ttk::entry $w.r.mid.movenum.e -width 3 -background white -textvariable moveNum
   
-  pack $sr.mid.movenum -pady 10 -expand yes -fill x
-  pack $sr.mid.movenum.label $sr.mid.movenum.e -side left -anchor w -expand yes -fill x
+  pack $w.r.mid.movenum -pady 10 -expand yes -fill x
+  pack $w.r.mid.movenum.label $w.r.mid.movenum.e -side left -anchor w -expand yes -fill x
   
   set castling [lindex $origFen 2]
-  ttk::frame $sr.mid.castle
-  ttk::label $sr.mid.castle.label -textvar ::tr(Castling:)
-  ttk::combobox $sr.mid.castle.e -width 5 -textvariable castling -values {KQkq K Q k q - KQ kq Kk Kq Kkq Qk Qq Qkq KQk KQq}
+  ttk::frame $w.r.mid.castle
+  ttk::label $w.r.mid.castle.label -textvar ::tr(Castling:)
+  ttk::combobox $w.r.mid.castle.e -width 5 -textvariable castling -values {KQkq K Q k q - KQ kq Kk Kq Kkq Qk Qq Qkq KQk KQq}
 
-  pack $sr.mid.castle -pady 10 -expand yes -fill x
-  pack $sr.mid.castle.label $sr.mid.castle.e -side left -anchor w -expand yes -fill x
+  pack $w.r.mid.castle -pady 10 -expand yes -fill x
+  pack $w.r.mid.castle.label $w.r.mid.castle.e -side left -anchor w -expand yes -fill x
   
   set epFile [string index [lindex $origFen 3] 0]
-  ttk::frame $sr.mid.ep
-  ttk::label $sr.mid.ep.label -textvar ::tr(EnPassantFile:)
-  ttk::combobox $sr.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h}
+  ttk::frame $w.r.mid.ep
+  ttk::label $w.r.mid.ep.label -textvar ::tr(EnPassantFile:)
+  ttk::combobox $w.r.mid.ep.e -width 2 -textvariable epFile -values {- a b c d e f g h}
   
-  pack $sr.mid.ep -pady 10 -expand yes -fill x
-  pack $sr.mid.ep.label $sr.mid.ep.e -side left -anchor w -expand yes -fill x
+  pack $w.r.mid.ep -pady 10 -expand yes -fill x
+  pack $w.r.mid.ep.label $w.r.mid.ep.e -side left -anchor w -expand yes -fill x
   
   # Set bindings so the Fen string is updated at any change. The "after idle"
   # is needed to ensure any keypress which causes a text edit is processed
   # before we regenerate the FEN text.
   
-  foreach i "$sr.mid.ep.e $sr.mid.castle.e $sr.mid.movenum.e" {
+  foreach i "$w.r.mid.ep.e $w.r.mid.castle.e $w.r.mid.movenum.e" {
     bind $i <Any-KeyPress> {after idle {set setupFen [makeSetupFen]}}
     bind $i <FocusOut> {
       after idle {set setupFen [makeSetupFen]}}
   }
   
   ### Buttons: Clear Board and Initial Board.
-  
-  ttk::frame $sr.b
-  ttk::button $sr.b.clear -textvar ::tr(EmptyBoard) -command {
-    set setupBd \
-        "................................................................"
+  ttk::frame $w.r.b
+  ttk::button $w.r.b.clear -textvar ::tr(EmptyBoard) -command {
+    set setupBd "................................................................"
     ::board::update .setup.l.bd $setupBd
     set castling {}
     set setupFen [makeSetupFen]
   }
-  ttk::button $sr.b.initial -textvar ::tr(InitialBoard) -command {
-    set setupBd \
-        "RNBQKBNRPPPPPPPP................................pppppppprnbqkbnr"
-    ::board::update .setup.l.bd $setupBd
-    set castling KQkq
-    set setupFen [makeSetupFen]
+  ttk::button $w.r.b.initial -textvar ::tr(InitialBoard) -command {
+    setSetupBoardToFen %W "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
   }
-  pack $sr.b -side top -pady 15
-  pack $sr.b.clear -side top -padx 5 -pady 10 -fill x
-  pack $sr.b.initial -side bottom -padx 5 -pady 10 -fill x
+  ttk::button $w.r.b.switchcolor -text "Switch colors" -command {
+    regsub -all {(?:([A-Z])|([a-z]))} $::setupBd {[string tolower "\1"][string toupper "\2"]} invertCase
+    set ::setupBd [subst $invertCase]
+    set ::toMove [expr {$::toMove == "White" ? "Black" : "White"}]
+    regsub -all {(?:([A-Z])|([a-z]))} $::castling {[string tolower "\1"][string toupper "\2"]} invertCase
+    set ::castling [subst $invertCase]
+	set epFile {-}
+    ::board::update .setup.l.bd $setupBd
+    set ::setupFen [makeSetupFen]
+  }
+  ttk::button $w.r.b.uffa -text "Flip Board" -command {
+    ::board::flip .setup.l.bd
+	set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
+  }
+
+  pack $w.r.b -side top -pady 15
+  pack $w.r.b.clear -side top -padx 5 -pady 5 -fill x
+  pack $w.r.b.initial -side top -padx 5 -pady 5 -fill x
+  pack $w.r.b.switchcolor -side top -padx 5 -pady 5 -fill x
+  pack $w.r.b.uffa -side top -padx 5 -pady 5 -fill x
   
   ### Buttons: Setup and Cancel.
-  
-  ttk::frame $sr.b2
-  ttk::button $sr.b2.ok -text "OK" -width 7 -command exitSetupBoard
-  ttk::button $sr.b2.cancel -textvar ::tr(Cancel) -width 7 -command {destroy .setup}
-  
-  pack $sr.b2 -side bottom -pady 20 -anchor s
-  pack $sr.b2.ok -side left -padx 5
-  pack $sr.b2.cancel -side right -padx 5
+  ttk::button $w.buttons.ok -text "OK" -width 7 -command exitSetupBoard
+  ttk::button $w.buttons.cancel -textvar ::tr(Cancel) -width 7 -command {destroy .setup}
+  pack [ttk::frame $w.buttons.spaceTop -height 4] -side top
+  pack $w.buttons.cancel -side right -padx 5
+  pack $w.buttons.ok -side right -padx 5
   
   ttk::button .setup.paste -textvar ::tr(PasteFen) -command {
     if {[catch {set setupFen [selection get -selection CLIPBOARD]} ]} {
@@ -184,15 +194,13 @@ proc setupBoard {} {
   ::utils::history::SetCombobox setupFen .setup.status
   ::utils::history::SetLimit setupFen 20
   
-  update ; # necessary in case of quick-draw user interactions
-  
   pack .setup.paste .setup.clear -in .setup.statusbar -side left
   pack .setup.status -in .setup.statusbar -side right -expand yes -fill x -anchor w
 
-
-  if {[info exists ::winGeometry($w)]} { wm geometry $w $::winGeometry($w) }
+  bind $w.l <Configure> "::board::resizeAuto $w.l.bd \[grid bbox $w 0 1\]"
   bind $w <Destroy> "if {\[string equal $w %W\]} { set ::winGeometry($w) \[wm geometry $w\]; options.save ::winGeometry($w) }"
   bind $w <Escape> {destroy .setup}
+  if {[info exists ::winGeometry($w)]} { wm geometry $w $::winGeometry($w) }
 
   set setupFen [makeSetupFen]
 }
@@ -204,7 +212,8 @@ proc setSetupBoardToFen {w setupFen} {
   if {[catch {sc_game startBoard $setupFen} err]} {
     fenErrorDialog $err
   } else {
-    set setupBd [sc_pos board]
+    set ::setupFen [sc_pos fen]
+    set setupBd [lindex [sc_pos board] 0]
     set toMove [lindex {White Black} [string equal [lindex $setupFen 1] b]]
     set castling [lindex $setupFen 2]
     set epFile [string index [lindex $setupFen 3] 0]
