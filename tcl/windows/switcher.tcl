@@ -653,21 +653,20 @@ set sw_nBases_ [sc_base count total]
 set ::windows::switcher::wins {}
 
 proc ::windows::switcher::Open {{w .baseWin}} {
-  global baseWin
   if {[::createToplevel $w] == "already_exists"} {
     focus .
     destroy $w
-    set baseWin 0
+    set ::baseWin 0
     return
   }
   
   setWinLocation $w
   ::setTitle $w "Scid: [tr WindowsSwitcher]"
+  ::windows::switcher::Create $w
   bind $w <Escape> "focus .; destroy $w"
-  bind $w <Destroy> "+set baseWin 0"
+  bind $w <Destroy> "+ if {\[string equal $w %W\]} {set ::baseWin 0}"
   bind $w <F1> { helpWindow Switcher }
   keyboardShortcuts $w
-  ::windows::switcher::Create $w
   label $w.status -width 1 -anchor w -relief sunken -borderwidth 1
   grid $w.status -columnspan 2 -sticky we
   bind $w <Configure> "+recordWinSize $w"

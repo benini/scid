@@ -417,20 +417,20 @@ proc updateBoard {args} {
 proc updateGameInfo {} {
     global gameInfo
 
-    .main.gameInfo configure -state normal
-    .main.gameInfo delete 0.0 end
-    ::htext::display .main.gameInfo [sc_game info -hide $gameInfo(hideNextMove) \
+    .main.gameInfo.text configure -state normal
+    .main.gameInfo.text delete 0.0 end
+    ::htext::display .main.gameInfo.text [sc_game info -hide $gameInfo(hideNextMove) \
             -material $gameInfo(showMaterial) \
             -cfull $gameInfo(fullComment) \
             -fen $gameInfo(showFEN) -tb $gameInfo(showTB)]
     if {$gameInfo(wrap)} {
-        .main.gameInfo configure -wrap word
-        .main.gameInfo tag configure wrap -lmargin2 10
-        .main.gameInfo tag add wrap 1.0 end
+        .main.gameInfo.text configure -wrap word
+        .main.gameInfo.text tag configure wrap -lmargin2 10
+        .main.gameInfo.text tag add wrap 1.0 end
     } else {
-        .main.gameInfo configure -wrap none
+        .main.gameInfo.text configure -wrap none
     }
-    .main.gameInfo configure -state disabled
+    .main.gameInfo.text configure -state disabled
     togglePhotosSize 0
 }
 
@@ -447,11 +447,11 @@ proc togglePhotosSize {{toggle 1}} {
     if { $distance < 10 } { set distance 82 }
 
     if {$::photosMinimized} {
-        place .main.photoW -in .main.gameInfo -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
-        place .main.photoB -in .main.gameInfo -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
+        place .main.photoW -in .main.gameInfo.text -x -17 -relx 1.0 -relheight 0.15 -width 15 -anchor ne
+        place .main.photoB -in .main.gameInfo.text -x -1 -relx 1.0  -relheight 0.15 -width 15 -anchor ne
     } else  {
-        place .main.photoW -in .main.gameInfo -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
-        place .main.photoB -in .main.gameInfo -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
+        place .main.photoW -in .main.gameInfo.text -x -$distance -relx 1.0 -relheight 1 -width [image width photoW] -anchor ne
+        place .main.photoB -in .main.gameInfo.text -x -1 -relx 1.0 -relheight 1 -width [image width photoB] -anchor ne
     }
 }
 
@@ -998,7 +998,7 @@ proc resizeMainBoard {} {
     set availw [winfo width .fdockmain]
     set availh [winfo height .fdockmain]
     if {$::showGameInfo} {
-      set availh [expr $availh - [winfo height .main.gameInfoFrame] ]
+      set availh [expr $availh - [winfo height .main.gameInfo] ]
     }
     set ::boardSize [::board::resizeAuto .main.board "0 0 $availw $availh"]
   }
@@ -1007,9 +1007,9 @@ proc resizeMainBoard {} {
 # sets visibility of gameInfo panel at the bottom of main board
 proc toggleGameInfo {} {
   if {$::showGameInfo} {
-    grid .main.gameInfoFrame -row 3 -column 0 -sticky nsew
+    grid .main.gameInfo -row 3 -column 0 -sticky news
   } else  {
-    grid forget .main.gameInfoFrame
+    grid forget .main.gameInfo
   }
   updateGameInfo
   update idletasks
@@ -1104,9 +1104,9 @@ proc CreateMainBoard { {w} } {
 proc CreateGameInfo {} {
   # .gameInfo is the game information widget:
   #
-  autoscrollframe .main.gameInfoFrame text .main.gameInfo
-  .main.gameInfo configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
-  ::htext::init .main.gameInfo
+  autoscrollframe .main.gameInfo text .main.gameInfo.text
+  .main.gameInfo.text configure -width 20 -height 6 -fg black -bg white -wrap none -state disabled -cursor top_left_arrow -setgrid 1
+  ::htext::init .main.gameInfo.text
   
   # Set up player photos:
   label .main.photoW -background white -image photoW -anchor ne
@@ -1160,7 +1160,7 @@ proc CreateGameInfo {} {
   menu .main.gameInfo.menu.mark
   .main.gameInfo.menu add cascade -label GInfoMark -menu .main.gameInfo.menu.mark
 
-  bind .main.gameInfo <ButtonPress-$::MB3> {
+  bind .main.gameInfo.text <ButtonPress-$::MB3> {
     .main.gameInfo.menu.mark delete 0 end
     set ::curr_db [sc_base current]
     set ::curr_game [sc_game number]

@@ -162,7 +162,7 @@ proc setupBoard {} {
     ::board::update .setup.l.bd $setupBd
     set ::setupFen [makeSetupFen]
   }
-  ttk::button $w.r.b.uffa -text "Flip Board" -command {
+  ttk::button $w.r.b.flip -text "Flip Board" -command {
     ::board::flip .setup.l.bd
     set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
   }
@@ -171,7 +171,7 @@ proc setupBoard {} {
   pack $w.r.b.clear -side top -padx 5 -pady 5 -fill x
   pack $w.r.b.initial -side top -padx 5 -pady 5 -fill x
   pack $w.r.b.switchcolor -side top -padx 5 -pady 5 -fill x
-  pack $w.r.b.uffa -side top -padx 5 -pady 5 -fill x
+  pack $w.r.b.flip -side top -padx 5 -pady 5 -fill x
   
   ### Buttons: Setup and Cancel.
   ttk::button $w.buttons.ok -text "OK" -width 7 -command exitSetupBoard

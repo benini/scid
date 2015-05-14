@@ -150,10 +150,13 @@ $m add command -label GameNovelty -accelerator "Ctrl+Shift+Y" -command findNovel
 set m .menu.search
 menu $m
 .menu add cascade -label Search -menu $m
-$m  add command -label SearchCurrent -command ::search::board -accelerator "Ctrl+Shift+B"
-$m  add command -label SearchHeader -command ::search::header -accelerator "Ctrl+Shift+H"
-$m  add command -label SearchMaterial -command ::search::material -accelerator "Ctrl+Shift+M"
-$m  add separator
+$m add command -label SearchCurrent -command ::search::board -accelerator "Ctrl+Shift+B"
+$m add command -label SearchHeader -command ::search::header -accelerator "Ctrl+Shift+H"
+$m add command -label SearchMaterial -command ::search::material -accelerator "Ctrl+Shift+M"
+$m add separator
+$m add checkbutton -label WindowsPList -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
+$m add checkbutton -label WindowsTmt -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
+$m add separator
 $m add command -label SearchUsing -accel "Ctrl+Shift+U" -command ::search::usefile
 
 
@@ -200,14 +203,11 @@ set m .menu.windows
 menu $m
 .menu add cascade -label Windows -menu $m
 $m add checkbutton -label WindowsComment -var commentWin -command makeCommentWin -accelerator "Ctrl+E"
-$m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
 $m add checkbutton -label WindowsPGN -variable pgnWin -command ::pgn::OpenClose  -accelerator "Ctrl+P"
-$m add checkbutton -label WindowsPList -variable plistWin -command ::plist::toggle -accelerator "Ctrl+Shift+P"
-$m add checkbutton -label WindowsTmt -variable tourneyWin -command ::tourney::toggle -accelerator "Ctrl+Shift+T"
+$m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 $m add separator
+$m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
 $m add checkbutton -label WindowsSwitcher -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
-$m add checkbutton -label WindowsMaint -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
-$m add separator
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
 $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accelerator "Ctrl+I" -command ::windows::stats::Open
 $m add checkbutton -label WindowsTree -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
@@ -388,7 +388,6 @@ menu $m.numbers
 $m add cascade -label OptionsNumbers -menu $m.numbers
 $m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
 $m add command -label OptionsToolbar -command configToolbar
-$m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -command ::toggleGameInfo
 $m add separator
 $m add command -label OptionsECO -command ::readECOFile
 $m add command -label OptionsSpell -command readSpellCheckFile
