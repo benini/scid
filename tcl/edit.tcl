@@ -34,7 +34,7 @@ proc setupBoard {} {
   set w ".setup"
   toplevel $w
   wm title $w "Scid: Setup Board"
-  wm minsize $w 630 450
+  wm minsize $w 640 450
 
   #Frames
   ttk::frame $w.spaceTop -height 10
@@ -80,11 +80,11 @@ proc setupBoard {} {
   }
   checkbutton $w.pieces.rotate -text "  Rotate" -image tb_BD_Flip -compound left \
       -indicatoron 0 -variable ::setupBoardFlipped -command {
-	set ::setupBd  [string reverse $::setupBd]
+    set ::setupBd  [string reverse $::setupBd]
     set ::setupFen [makeSetupFen]
     ::board::update .setup.l.bd $::setupBd
     ::board::flip .setup.l.bd
-	set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
+    set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
   }
   grid $w.pieces.rotate -row 2 -columnspan 2 -sticky news -padx 2 -pady 2
 
@@ -158,13 +158,13 @@ proc setupBoard {} {
     set ::toMove [expr {$::toMove == "White" ? "Black" : "White"}]
     regsub -all {(?:([A-Z])|([a-z]))} $::castling {[string tolower "\1"][string toupper "\2"]} invertCase
     set ::castling [subst $invertCase]
-	set epFile {-}
+    set epFile {-}
     ::board::update .setup.l.bd $setupBd
     set ::setupFen [makeSetupFen]
   }
   ttk::button $w.r.b.uffa -text "Flip Board" -command {
     ::board::flip .setup.l.bd
-	set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
+    set ::setupBoardFlipped [::board::isFlipped .setup.l.bd]
   }
 
   pack $w.r.b -side top -pady 15
