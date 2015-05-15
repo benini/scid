@@ -8754,6 +8754,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (db->idx->WriteEntries (&newIE, gnum) != OK) {
                     return errorResult (ti, "Error writing index file.");
                 }
+                db->clearCaches();
             }
         }
     }

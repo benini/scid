@@ -62,11 +62,14 @@ scidBaseT::~scidBaseT() {
 }
 
 errorT scidBaseT::Close () {
+	errorT errIdx = idx->Close();
+	errorT errGFile = gfile->Close();
+	//TODO:
+	//if (errIdx != OK || errGFile != OK) do not close the database:
+	//maybe the user can try something to avoid the data loss
+	nb->Clear();
 	clear();
 	game->Clear();
-	errorT errIdx = idx->Close();
-	nb->Clear();
-	errorT errGFile = gfile->Close();
 	inUse = false;
 	fileName_ = "<empty>";
 	gameNumber = -1;

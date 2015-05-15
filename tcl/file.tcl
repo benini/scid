@@ -247,26 +247,26 @@ proc ::file::Close {{base -1}} {
   # Close Tree window whenever a base is closed/switched:
   if {[winfo exists .treeWin$base]} { destroy .treeWin$base }
 
+  # If base to close was the current one, reset to clipbase
+  if { $current == $base } { set current 9 }
+
+  ::game::HistoryRemoveDB $base
+
   if {[catch {sc_base close $base}]} {
     ERROR::MessageBox
-  } else {
-    ::game::HistoryRemoveDB $base
-    
-    # If base to close was the current one, reset to clipbase
-    if { $current == $base } { set current 9 }
   }
 
   # Now switch back to the original base
-  ::file::SwitchToBase $current
+  ::file::SwitchToBase $current 0
 }
 
 proc ::file::SwitchToBase {{b} {saveHistory 1}} {
-  if {$::curr_db == $b} { return }
-  if {[catch {sc_base switch $b} res]} { return }
-  set ::curr_db $res
-  if {$saveHistory == 1} { ::game::HistoryDatabaseSwitch }
-  # Close email window when a base is switched:
-  if {[winfo exists .emailWin]} { destroy .emailWin }
+  if {![catch {sc_base switch $b} res]} {
+    set ::curr_db $res
+    if {$saveHistory == 1} { ::game::HistoryDatabaseSwitch }
+    # Close email window when a base is switched:
+    if {[winfo exists .emailWin]} { destroy .emailWin }
+  }
   ::notify::GameChanged
   ::notify::DatabaseChanged
 }
