@@ -127,7 +127,7 @@ struct scidBaseT {
 		ASSERT(gNum < idx->GetNumGames());
 		IndexEntry* ie = idx->FetchEntry (gNum);
 		ie->SetFlag (flag, value);
-		errorT res = idx->WriteEntries (ie, gNum, false);
+		errorT res = idx->WriteEntry (ie, gNum, false);
 		validStats_ = false;
 		// TODO: necessary only for sortcaches with SORTING_deleted (and SORTING_flags when implemented)
 		// idx->IndexUpdated(gNum);
@@ -185,6 +185,14 @@ struct scidBaseT {
 		return idx->GetRangeLocation(nb, criteria, filter, text, start, forward);
 	}
 
+	void setDuplicates(uint* duplicates) {
+		if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
+		duplicates_ = duplicates;
+	}
+	uint getDuplicates(gamenumT gNum) {
+		return (duplicates_ == NULL) ? 0 : duplicates_[gNum];
+	}
+
 	//TODO: private:
 	/* clearCaches:
 	    After changing one or more games this function MUST be called
@@ -192,7 +200,6 @@ struct scidBaseT {
 	    - gNum: id of the game changed (IDX_NOT_FOUND update all the games)
 	*/
 	errorT clearCaches(gamenumT gNum = IDX_NOT_FOUND, bool writeFiles = true);
-	void clearStats() { validStats_ = false; };
 
 	Index* idx;       // the Index file in memory for this base.
 	NameBase* nb;      // the NameBase file in memory.
@@ -203,7 +210,7 @@ struct scidBaseT {
 	TextBuffer* tbuf;
 	Filter* dbFilter;
 	Filter* treeFilter;
-	uint* duplicates; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
+
 
 	//TODO: this vars do not belong to scidBaseT class
 	Game* game;       // the active game for this base.
@@ -219,6 +226,7 @@ private:
 	mutable bool validStats_;
 	mutable Stats* stats_;
 	std::vector <int> nameFreq_ [NUM_NAME_TYPES];
+	uint* duplicates_; // For each game: idx of duplicate game + 1 (0 if there is no duplicate).
 
 	scidBaseT(const scidBaseT&);
 	scidBaseT& operator=(const scidBaseT&);

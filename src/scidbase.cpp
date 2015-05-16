@@ -39,13 +39,13 @@ void scidBaseT::Init() {
 	tbuf->SetBufferSize (TBUF_SIZE);
 	dbFilter = new Filter(0);
 	treeFilter = new Filter(0);
-	duplicates = NULL;
+	duplicates_ = NULL;
 	stats_ = NULL;
 	validStats_ = false;
 }
 
 scidBaseT::~scidBaseT() {
-	if (duplicates != NULL) delete[] duplicates;
+	if (duplicates_ != NULL) delete[] duplicates_;
 	if (idx != NULL) delete idx;
 	if (nb != NULL) delete nb;
 	if (game != NULL) delete game;
@@ -83,7 +83,7 @@ errorT scidBaseT::Close () {
 
 void scidBaseT::clear() {
 	validStats_ = false;
-	if (duplicates != NULL) { delete[] duplicates; duplicates = NULL; }
+	if (duplicates_ != NULL) { delete[] duplicates_; duplicates_ = NULL; }
 	if (treeCache != NULL) treeCache->Clear();
 	for (nameT nt = NAME_FIRST; nt <= NAME_LAST; nt++) nameFreq_[nt].resize(0);
 }
@@ -260,7 +260,7 @@ errorT scidBaseT::saveGame_(IndexEntry* iE, ByteBuffer* bytebuf, gamenumT oldIdx
 		for (uint flag = IDX_FLAG_DELETE; flag < IDX_NUM_FLAGS; flag++) {
 			iE->SetFlag(1 << flag, ieOld->GetFlag(1 << flag));
 		}
-		errorT err = idx->WriteEntries (iE, oldIdx);
+		errorT err = idx->WriteEntry (iE, oldIdx);
 		if (err != OK) return err;
 	} else {
 		errorT err = idx->AddGame(iE);
@@ -407,8 +407,6 @@ const scidBaseT::Stats* scidBaseT::getStats() const {
 			if (date > stats_->maxDate) { stats_->maxDate = date; }
 			stats_->nYears++;
 			stats_->sumYears += date_GetYear (date);
-			nb->AddDate (ie->GetWhite(), date);
-			nb->AddDate (ie->GetBlack(), date);
 		}
 
 		for (uint flag = 0; flag < IDX_NUM_FLAGS; flag++) {

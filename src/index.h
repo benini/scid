@@ -38,10 +38,10 @@ class SortCache;
 const char         INDEX_SUFFIX[]     = ".si4";
 const char         OLD_INDEX_SUFFIX[] = ".si3";
 const char         INDEX_MAGIC[8]     = "Scid.si";
-const gamenumT     MAX_GAMES          = 16777214;
 // max. number of games is 2^(3*8)-1-1,
 // The "2^(3*8)-1" as si4 only uses three bytes to store this integer,
 // The second "-1" because GetAutoLoad uses 0 to mean "no autoload"
+const gamenumT     MAX_GAMES          = 16777214;
 
 // Descriptions can be up to 107 bytes long.
 const uint  SCID_DESC_LENGTH = 107;
@@ -93,33 +93,6 @@ private:
     // To avoid the slow reallocation when adding games we split the data in chunks.
     // CHUNKSHIFT is the base-2 logarithm of the number of index entries allocated as one chunk.
     // i.e 16 = 2^16 = 65536 (total size of one chunk: 65536*48 = 3MB)
-    template <class T, uint CHUNKSHIFT>
-    struct VectorBig {
-        VectorBig() : size_(0) {}
-        ~VectorBig() { resize(0); }
-        T& operator[] (uint idx) const {
-            const uint low_mask = ((1 << CHUNKSHIFT) - 1);
-            return index_[idx >> CHUNKSHIFT][idx & low_mask];
-        }
-        void resize(size_t newsize) {
-            size_ = newsize;
-            size_t sz = index_.size();
-            size_t sz_new = 0;
-            if (newsize > 0) sz_new = 1 + (newsize >> CHUNKSHIFT);
-            for (size_t i=sz_new; i < sz; i++) delete [] index_[i];
-            index_.resize(sz_new);
-            for (size_t i=sz; i < sz_new; i++) {
-                index_[i] = new T[1 << CHUNKSHIFT];
-            }
-        }
-        void push_back() {
-            size_t subidx = (size_++) >> CHUNKSHIFT;
-            if (subidx >= index_.size()) resize(size_);
-        }
-    private:
-        std::vector<T*> index_;
-        size_t size_;
-    };
     VectorBig<IndexEntry, 16> entries_; // A two-level array of the entire index.
 
     Index(const Index&);
@@ -129,8 +102,8 @@ private:
     errorT write (const IndexEntry* ie, gamenumT idx);
 
 public:
-    Index()     { Init(); }
-    ~Index()    { Clear(); }
+    Index()  { entries_.reserve(MAX_GAMES); Init(); }
+    ~Index() { Clear(); }
 
     errorT Open(const char* filename, fileModeT fmode = FMODE_Both);
     errorT Create(const char* filename);
@@ -186,20 +159,17 @@ public:
         Header.autoLoad = gnum;
         Dirty = true;
     }
-    errorT AddGame (const IndexEntry* ie) {
-        if (Header.numGames >= MAX_GAMES) {  return ERROR_IndexFull; }
-        entries_.push_back();
-        Dirty = true;
-        return write (ie, Header.numGames++);
-    }
 
     errorT WriteHeader ();
-    errorT WriteEntries (const IndexEntry* ie, gamenumT idx, bool flush = true) {
+    errorT WriteEntry (const IndexEntry* ie, gamenumT idx, bool flush = true) {
         errorT res = write(ie, idx);
         if (flush && res == OK && FilePtr != NULL) {
             res = (FilePtr->pubsync() != -1) ? OK : ERROR_FileWrite;;
         }
         return res;
+    }
+    errorT AddGame (const IndexEntry* ie) {
+        return WriteEntry(ie, GetNumGames(), false);
     }
 
     /* CreateSortingCache

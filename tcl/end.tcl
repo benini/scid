@@ -1118,6 +1118,7 @@ proc helpAbout {} {
   append str "Copyright (C) 1999-2004 Shane Hudson\n"
   append str "Copyright (C) 2006-2009 Pascal Georges\n"
   append str "Copyright (C) 2008-2011 Alexander Wagner\n"
+  append str "Copyright (C) 2011 Gerd Lorscheid\n"
   append str "Copyright (C) 2009-2015 Fulvio Benini\n"
   append str "\nScid is licenced under the\n"
   append str "GNU General Public License.\n"

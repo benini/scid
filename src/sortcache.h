@@ -1,5 +1,6 @@
 /*
-* Copyright (C) 2011  Gerd Lorscheid, Fulvio Benini
+* Copyright (C) 2011  Gerd Lorscheid
+* Copyright (C) 2011-2015  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -35,33 +36,31 @@ class IndexEntry;
 
 class SortCache
 {
-  public:
+	std::string criteria;
+	uint numGames;
+	atomic_bool sorted_;
+	bool partialHashing;
+	uint* hashValues;
+	uint* fullMap;
+	const Index* index;
+	const NameBase* nbase;
+	uint mapSize;
+	byte SortCriteria [INDEX_MaxSortingCriteria];
+	bool SortReverse [INDEX_MaxSortingCriteria];
+	int refCount;
+
+public:
 	static SortCache* Create(const Index* idx, const NameBase* nb, const char* criterium, bool multithread =true);
 	~SortCache();
 	errorT GetRange( uint start, uint count, const HFilter& filter, uint *result);
 	uint IndexToFilteredCount( uint gnumber, const HFilter& filter);
+	void PrepareForChanges(uint id);
 	errorT CheckForChanges ( uint id);
 	bool MatchCriteria( const std::string& crit) { return crit == criteria; }
-	void DoFullSort(int reportFrequency,
-	                void (*progressFn)(void * data, uint progress, uint total),
-	                void * progressData);
 	int ReleaseCount() { return --refCount; }
 	int AddCount() { return ++refCount; }
 
-  private:
-	const Index *index;
-	bool partialHashing;
-	atomic_bool sorted_;
-	uint numGames;
-	uint *fullMap;
-	uint mapSize;
-	uint *hashValues;
-	const NameBase *nbase;
-	byte SortCriteria [INDEX_MaxSortingCriteria];
-	bool SortReverse [INDEX_MaxSortingCriteria];
-	int refCount;
-	std::string criteria;
-
+private:
 	SortCache();
 	SortCache(const SortCache&);
 	SortCache& operator=(const SortCache&);
@@ -70,7 +69,6 @@ class SortCache
 	int FullCompare (uint left, uint right);
 	void GetSpace( uint size);
 	uint CalcHash (const IndexEntry *ie);
-	void Downheap( int v, int n);
 	inline uint GetStartHash (const char *strVal);
 	errorT AddEntry();
 	uint Insert( uint gnum, uint done);
@@ -97,5 +95,13 @@ class SortCache
 	};
 	Sort_thread t_;
 };
+
+inline void SortCache::PrepareForChanges(uint id) {
+	if (!sorted_) {
+		if (id < numGames) t_.join();
+		else t_.interrupt();
+	}
+}
+
 
 #endif

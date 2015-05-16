@@ -8,6 +8,7 @@
 //  Version:    3.5
 //
 //  Notice:     Copyright (c) 2001-2003  Shane Hudson.  All rights reserved.
+//              Copyright (C) 2015  Fulvio Benini
 //
 //  Author:     Shane Hudson (sgh@users.sourceforge.net)
 //
@@ -22,6 +23,64 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>   // For isspace(), etc
+#include <vector>
+
+/**
+ * class VectorBig - store data into chunks to avoid (or minimize) reallocations
+ * @CHUNKSHIFT:	is the base-2 logarithm of the number of T entries per chunk.
+ *              Total size of a chunk: (2^CHUNKSHIFT)*sizeof(T)
+ * resize()   : Used to avoid reallocations.
+ *              Very efficient because it allocates space only for chunk pointers
+ *              i.e with @count==16777214 and @CHUNKSHIFT==16 will use 256 pointers
+ */
+template <class T, size_t CHUNKSHIFT>
+struct VectorBig {
+	VectorBig() : size_(0) {}
+	~VectorBig() { resize(0); }
+
+	const T& operator[] (size_t idx) const {
+		const size_t low_mask = ((1 << CHUNKSHIFT) - 1);
+		return index_[idx >> CHUNKSHIFT][idx & low_mask];
+	}
+	T& operator[] (size_t idx) {
+		const size_t low_mask = ((1 << CHUNKSHIFT) - 1);
+		return index_[idx >> CHUNKSHIFT][idx & low_mask];
+	}
+
+	size_t size() const {
+		return size_;
+	}
+
+	void reserve(size_t count) {
+		index_.reserve(1 + (count >> CHUNKSHIFT));
+	}
+
+	void resize(size_t count) {
+		size_ = count;
+		size_t index_NewSize = (count > 0) ? 1 + (count >> CHUNKSHIFT) : 0;
+
+		while (index_.size() > index_NewSize) {
+			delete [] index_.back();
+			index_.pop_back();
+		}
+		while (index_.size() < index_NewSize) {
+			index_.push_back(new T[1 << CHUNKSHIFT]);
+		}
+	}
+	void resize(size_t count, const T& defaulVal) {
+		size_t i = size_;
+		resize(count);
+		while (i < count) (*this)[i++] = defaulVal;
+	}
+
+	void push_back(const T& e) {
+		resize(size_ + 1, e);
+	}
+
+private:
+	std::vector<T*> index_;
+	size_t size_;
+};
 
 
 class ProgressImp {

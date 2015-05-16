@@ -1285,12 +1285,8 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
     const gamenumT numGames = dbase->numGames();
 
     // Setup duplicates array:
-    if (dbase->duplicates == NULL) {
-        dbase->duplicates = new uint [numGames];
-    }
-    for (gamenumT d=0; d < numGames; d++) {
-        dbase->duplicates[d] = 0;
-    }
+    uint* duplicates = new uint [numGames];
+    std::fill(duplicates, duplicates + numGames, 0);
 
     // We use a hashtable to limit duplicate game comparisons; each game
     // is only compared to others that hash to the same value.
@@ -1330,8 +1326,8 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
             IndexEntry * ieComp = dbase->idx->FetchEntry (compare->gNumber);
 
             if (checkDuplicate (dbase, ieHead, ieComp, &criteria)) {
-                    dbase->duplicates[head->gNumber] = compare->gNumber + 1;
-                    dbase->duplicates[compare->gNumber] = head->gNumber + 1;
+                    duplicates[head->gNumber] = compare->gNumber + 1;
+                    duplicates[compare->gNumber] = head->gNumber + 1;
 
                     // Found a duplicate! Decide which one to delete:
 
@@ -1400,9 +1396,9 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
                                 copiedRatings = true;
                             }
                         }
-                        dbase->idx->WriteEntries (ieDelete, gnumDelete);
+                        dbase->idx->WriteEntry (ieDelete, gnumDelete);
                         if (copiedRatings) {
-                            dbase->idx->WriteEntries (ieKeep, gnumKeep);
+                            dbase->idx->WriteEntry (ieKeep, gnumKeep);
                         }
                         if (setFilterToDups) {
                             dbase->dbFilter->Set (gnumDelete, 1);
@@ -1412,8 +1408,8 @@ sc_base_duplicates (scidBaseT* dbase, ClientData cd, Tcl_Interp * ti, int argc, 
         }
     }
 
-    dbase->idx->WriteHeader();
-    dbase->clearStats();
+    dbase->clearCaches();
+    dbase->setDuplicates(duplicates);
     progress.report(1,1);
 
     return deletedCount;
@@ -2191,7 +2187,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         if (ie->GetEcoCode() != ecoCode) {
             ie->SetEcoCode (ecoCode);
-            err = db->idx->WriteEntries (ie, i);
+            err = db->idx->WriteEntry (ie, i);
             if (err != OK) return errorResult(ti, err);
             countClassified++;
         }
@@ -4042,10 +4038,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             Tcl_AppendResult (ti, temp, NULL);
             return TCL_OK;
         } else if (strIsPrefix (argv[arg], "duplicate")) {
-            uint dupGameNum = 0;
-            if (db->duplicates != NULL  &&  db->gameNumber >= 0) {
-                dupGameNum = db->duplicates [db->gameNumber];
-            }
+            uint dupGameNum = db->getDuplicates(db->gameNumber);
             return setUintResult (ti, dupGameNum);
         }
         arg++;
@@ -4176,7 +4169,7 @@ sc_game_info (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
 
         // Check if this game has a twin (duplicate):
-        if (db->duplicates != NULL  &&  db->duplicates[db->gameNumber] != 0) {
+        if (db->getDuplicates(db->gameNumber) != 0) {
             Tcl_AppendResult (ti, "   <blue><run updateTwinChecker>(",
                               translate (ti, "twin"), ")</run></blue>", NULL);
         }
@@ -5840,13 +5833,13 @@ sc_game_tags_share (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     // Write changes to the index file:
     if (updateMode) {
         if (updated1) {
-            db->idx->WriteEntries (&ie1, gn1 - 1);
+            db->idx->WriteEntry (&ie1, gn1 - 1);
         }
         if (updated2) {
-            db->idx->WriteEntries (&ie2, gn2 - 1);
+            db->idx->WriteEntry (&ie2, gn2 - 1);
         }
         if (updated1  ||  updated2) {
-            db->idx->WriteHeader();
+             db->clearCaches();
         }
     }
     return TCL_OK;
@@ -7483,7 +7476,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // Write the new index entry if it has changed:
         if (corrected) {
-            if (db->idx->WriteEntries (&newIE, i) != OK) {
+            if (db->idx->WriteEntry (&newIE, i) != OK) {
               delete[] newIDs;
               delete[] startDate;
               delete[] endDate;
@@ -7708,7 +7701,7 @@ sc_name_edit (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
         // Write this entry if any edits were made:
         if (edits != 0) {
-            if (db->idx->WriteEntries (&newIE, i) != OK) {
+            if (db->idx->WriteEntry (&newIE, i) != OK) {
                 return errorResult (ti, "Error writing index file.");
             }
             numChanges += edits;
@@ -8471,15 +8464,13 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     const char * usage = "Usage: sc_name plist [-<option> <value> ...]";
 
+    scidBaseT* dbase = db;
     const char * namePrefix = "";
     uint minGames = 0;
-    uint maxGames = db->numGames();
+    uint maxGames = dbase->numGames();
     uint minElo = 0;
     uint maxElo = MAX_ELO;
-    uint maxListSize = db->getNameBase()->GetNumNames(NAME_PLAYER);
-    uint listSize = 0;
-
-    if (db->numGames() == 0) { return TCL_OK; }
+    uint count = 10;
 
     static const char * options [] = {
         "-name", "-minElo", "-maxElo", "-minGames", "-maxGames",
@@ -8513,7 +8504,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
             case OPT_MAXELO:   maxElo = strGetUnsigned (value);      break;
             case OPT_MINGAMES: minGames = strGetUnsigned (value);    break;
             case OPT_MAXGAMES: maxGames = strGetUnsigned (value);    break;
-            case OPT_SIZE:     maxListSize = strGetUnsigned (value); break;
+            case OPT_SIZE:     count = strGetUnsigned (value); break;
             case OPT_SORT:
                sortMode = strUniqueMatch (value, sortModes);
                break;
@@ -8525,17 +8516,52 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     if (arg != argc) { return errorResult (ti, usage); }
     if (sortMode == -1) return InvalidCommand (ti, "sc_name plist -sort", sortModes);
 
-    idNumberT * plist = new idNumberT [maxListSize + 1];
-    const NameBase * nb = db->getNameBase();
-    uint nPlayers = nb->GetNumNames(NAME_PLAYER);
+
+    const NameBase* nb = dbase->getNameBase();
+    idNumberT nPlayers = nb->GetNumNames(NAME_PLAYER);
+
+    std::vector<idNumberT> plist;
+    for (idNumberT id = 0; id < nPlayers; id++) {
+        const char * name = nb->GetName (NAME_PLAYER, id);
+        uint nGames = db->getNameFreq (NAME_PLAYER, id);
+        eloT elo = nb->GetElo (id);
+        if (nGames < minGames  ||  nGames > maxGames) { continue; }
+        if (elo < minElo  ||  elo > maxElo) { continue; }
+        if (! strIsCasePrefix (namePrefix, name)) { continue; }
+        plist.push_back(id);
+    }
+
+    struct DateRange {
+        dateT firstDate;
+        dateT lastDate;
+
+        DateRange() : firstDate(ZERO_DATE), lastDate(ZERO_DATE) {}
+        void addDate(dateT date) {
+            if (firstDate == ZERO_DATE || date < firstDate) firstDate = date;
+            if (date > lastDate) lastDate = date;
+        }
+    };
+
+    std::vector<DateRange> activity(nPlayers);
+    for (gamenumT gnum=0, n = dbase->numGames(); gnum < n; gnum++) {
+        const IndexEntry* ie = dbase->getIndexEntry(gnum);
+        dateT date = ie->GetDate();
+        if (date_GetYear(date) > 0) {
+            activity[ie->GetWhite()].addDate(date);
+            activity[ie->GetBlack()].addDate(date);
+        }
+    }
+
 
     class Compare{
         scidBaseT* dbase_;
+        const std::vector<DateRange>& activity_;
         int sort_;
         enum { SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME };
     public:
-        Compare(scidBaseT* dbase, int sortOrder) : dbase_(dbase), sort_(sortOrder) {}
-        int operator() (idNumberT p1, idNumberT p2)
+        Compare(scidBaseT* dbase, const std::vector<DateRange>& activity, int sortOrder)
+            : dbase_(dbase), sort_(sortOrder), activity_(activity) {}
+        bool operator() (idNumberT p1, idNumberT p2)
         {
             const NameBase* nb = dbase_->getNameBase();
             int compare = 0;
@@ -8548,13 +8574,11 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 break;
             case SORT_OLDEST:
                  // Sort by oldest game year in ascending order:
-                compare = date_GetYear(nb->GetFirstDate(p1))
-                    - date_GetYear(nb->GetFirstDate(p2));
+                compare = date_GetYear(activity_[p1].firstDate) - date_GetYear(activity_[p2].firstDate);
                 break;
             case SORT_NEWEST:
                  // Sort by newest game date in descending order:
-                compare = date_GetYear(nb->GetLastDate(p2))
-                    - date_GetYear(nb->GetLastDate(p1));
+                compare = date_GetYear(activity_[p2].lastDate) - date_GetYear(activity_[p1].lastDate);
                 break;
             }
 
@@ -8566,57 +8590,28 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 compare = strCaseCompare (name1, name2);
                 if (compare == 0) { compare = strCompare (name1, name2); }
             }
-            return compare;
+            return compare < 0;
         }
 
-    } compare(db, sortMode);
+    };
 
-    for (uint id = 0; id < nPlayers; id++) {
-        const char * name = nb->GetName (NAME_PLAYER, id);
-        uint nGames = db->getNameFreq (NAME_PLAYER, id);
-        eloT elo = nb->GetElo (id);
-        if (nGames < minGames  ||  nGames > maxGames) { continue; }
-        if (elo < minElo  ||  elo > maxElo) { continue; }
-        if (! strIsCasePrefix (namePrefix, name)) { continue; }
+    count = std::min(count, plist.size());
+    std::partial_sort(plist.begin(), plist.begin() + count, plist.end(), Compare(dbase, activity, sortMode));
 
-        // Insert this player into the ordered array if necessary:
-
-        uint insert = listSize;
-        for (; insert > 0; insert--) {
-            if (compare(plist[insert-1], id) < 0) { break; }
-        }
-        if (insert >= maxListSize) { continue; }
-        // Move all later IDs in list along one place:
-        for (uint j = listSize; j > insert; j--) {
-            plist[j] = plist[j-1];
-        }
-        plist[insert] = id;
-        if (listSize < maxListSize) { listSize++; }
+    UI_List res(count);
+    UI_List info(5);
+    for (size_t i=0; i < count; i++) {
+        idNumberT id = plist[i];
+        info.clear();
+        info.push_back(dbase->getNameFreq(NAME_PLAYER, id));
+        info.push_back(date_GetYear(activity[id].firstDate));
+        info.push_back(date_GetYear(activity[id].lastDate));
+        info.push_back(nb->GetElo(id));
+        info.push_back(nb->GetName(NAME_PLAYER, id));
+        res.push_back(info);
     }
 
-    // Generate the list of player data:
-    Tcl_DString * ds = new Tcl_DString;
-    Tcl_DStringInit (ds);
-
-    for (uint p=0; p < listSize; p++) {
-        Tcl_DStringStartSublist (ds);
-        char tmp[16];
-        sprintf (tmp, "%u", db->getNameFreq(NAME_PLAYER,plist[p]));
-        Tcl_DStringAppendElement(ds, tmp);
-        sprintf (tmp, "%u", date_GetYear(nb->GetFirstDate (plist[p])));
-        Tcl_DStringAppendElement(ds, tmp);
-        sprintf (tmp, "%u", date_GetYear(nb->GetLastDate (plist[p])));
-        Tcl_DStringAppendElement(ds, tmp);
-        sprintf (tmp, "%u", nb->GetElo (plist[p]));
-        Tcl_DStringAppendElement(ds, tmp);
-        Tcl_DStringAppendElement(ds, nb->GetName (NAME_PLAYER,plist[p]));
-        Tcl_DStringEndSublist (ds);
-    }
-    Tcl_DStringResult (ti, ds);
-    Tcl_DStringFree (ds);
-    delete ds;
-    delete[] plist;
-    return TCL_OK;
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8751,7 +8746,7 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     newIE.SetBlackElo (newBlack);
                     newIE.SetBlackRatingType (RATING_Elo);
                 }
-                if (db->idx->WriteEntries (&newIE, gnum) != OK) {
+                if (db->idx->WriteEntry (&newIE, gnum) != OK) {
                     return errorResult (ti, "Error writing index file.");
                 }
                 db->clearCaches();

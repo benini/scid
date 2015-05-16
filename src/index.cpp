@@ -213,8 +213,21 @@ Index::WriteHeader ()
 
 errorT Index::write (const IndexEntry* ie, gamenumT idx)
 {
-    IndexEntry* copyToMemory = FetchEntry(idx);
-    *copyToMemory = *ie;
+    if (idx > Header.numGames) return ERROR_BadArg;
+    if (idx >= MAX_GAMES) return ERROR_IndexFull;
+
+    for (uint i=0; i<SORTING_CACHE_MAX; i++) {
+        if (sortingCaches[i] != NULL) sortingCaches[i]->PrepareForChanges(idx);
+    }
+
+    if (idx == Header.numGames) {
+        entries_.push_back(*ie);
+        Header.numGames++;
+        Dirty = true;
+    } else {
+        IndexEntry* copyToMemory = FetchEntry(idx);
+        *copyToMemory = *ie;
+    }
     if (FilePtr == NULL) return OK;
 
     if (fileMode_ == FMODE_ReadOnly) { return ERROR_FileMode; }

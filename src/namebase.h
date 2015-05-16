@@ -23,7 +23,6 @@
 #include "common.h"
 #include "date.h"
 #include "misc.h"
-#include <vector>
 #include <map>
 
 
@@ -43,15 +42,14 @@ const char NAME_TYPE_STRING [NUM_NAME_TYPES][8] = {
 
 const char NAMEBASE_SUFFIX[] = ".sn4";
 
+
 //////////////////////////////////////////////////////////////////////
 //  NameBase:  Class definition
 class NameBase
 {
-    fileNameT Fname_;
-    std::vector<const char*> names_[NUM_NAME_TYPES];
-    std::vector<eloT> eloV_;
-    std::vector<dateT> firstDateV_;
-    std::vector<dateT> lastDateV_;
+    std::string filename_;
+    VectorBig<const char*,14> names_[NUM_NAME_TYPES];
+    VectorBig<eloT       ,14> eloV_;
     struct idxCmp {
         bool operator() (const char* str1, const char* str2) const {
             // Compatibility: strCompare_INLINE is not consistent with strcmp
@@ -64,13 +62,13 @@ class NameBase
     NameBase(const NameBase&);
     NameBase& operator=(const NameBase&);
     void Init();
-    void SetFileName (const char *s) { strcpy(Fname_,s); strcat(Fname_, NAMEBASE_SUFFIX); }
+    void SetFileName (const char *s) { filename_ = s; filename_ += NAMEBASE_SUFFIX; }
 
 public:
     static bool IsValidNameType (nameT nt) { return (nt < NUM_NAME_TYPES); }
     static nameT NameTypeFromString (const char * str);
 
-    NameBase()  { Init(); }
+    NameBase();
     ~NameBase();
     void Clear() { Init(); }
 
@@ -80,16 +78,9 @@ public:
 
     const char* GetName (nameT nt, idNumberT id) const { return names_[nt][id]; }
     eloT GetElo (idNumberT id) const { return eloV_[id]; }
-    dateT GetFirstDate (idNumberT id) const { return firstDateV_[id]; }
-    dateT GetLastDate (idNumberT id) const { return lastDateV_[id]; }
 
     errorT AddName (nameT nt, const char * str, idNumberT * idPtr);
     void AddElo (idNumberT id, eloT elo) { if (elo > eloV_[id]) eloV_[id] = elo; }
-    void AddDate (idNumberT id, dateT date) {
-        dateT fDate = firstDateV_[id];
-        if (fDate == ZERO_DATE || date < fDate) firstDateV_[id] = date;
-        if (date > lastDateV_[id]) lastDateV_[id] = date;
-    }
 
     errorT    FindExactName   (nameT nt, const char * str, idNumberT * idPtr) const;
     uint      GetFirstMatches (nameT nt, const char * str, uint maxMatches,

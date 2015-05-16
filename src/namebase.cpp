@@ -24,6 +24,17 @@
 
 const char NAMEBASE_MAGIC[8] = "Scid.sn";
 
+const idNumberT MAX_NAMES = (1<<22) -1;
+
+NameBase::NameBase() {
+    names_[NAME_PLAYER].reserve(MAX_NAMES);
+    names_[NAME_EVENT ].reserve(MAX_NAMES);
+    names_[NAME_SITE  ].reserve(MAX_NAMES);
+    names_[NAME_ROUND ].reserve(MAX_NAMES);
+    eloV_.reserve(MAX_NAMES);
+    Init();
+}
+
 NameBase::~NameBase() {
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
         for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
@@ -32,15 +43,13 @@ NameBase::~NameBase() {
 
 void NameBase::Init ()
 {
-    Fname_[0] = 0;
+    filename_.clear();
     for (nameT n = NAME_PLAYER; n < NUM_NAME_TYPES; n++) {
         for (size_t i=0; i < names_[n].size(); i++) delete [] names_[n][i];
         names_[n].resize(0);
         idx_[n].clear();
     }
     eloV_.resize(0);
-    firstDateV_.resize(0);
-    lastDateV_.resize(0);
 }
 
 errorT NameBase::Create(const char* filename)
@@ -59,7 +68,7 @@ NameBase::ReadEntireFile (const char* filename)
 {
     SetFileName(filename);
     Filebuf file;
-    if (file.Open(Fname_, FMODE_ReadOnly) != OK) return ERROR_FileOpen;
+    if (file.Open(filename_.c_str(), FMODE_ReadOnly) != OK) return ERROR_FileOpen;
 
     char Header_magic[8]; // magic identifier must be "Scid.sn"
     file.ReadNBytes(Header_magic, 8);
@@ -81,8 +90,6 @@ NameBase::ReadEntireFile (const char* filename)
     Header_maxFrequency[NAME_ROUND] = file.ReadThreeBytes();
 
     eloV_.resize(Header_numNames[NAME_PLAYER], 0);
-    firstDateV_.resize(Header_numNames[NAME_PLAYER], ZERO_DATE);
-    lastDateV_.resize(Header_numNames[NAME_PLAYER], ZERO_DATE);
     for (nameT nt = NAME_PLAYER; nt < NUM_NAME_TYPES; nt++) {
         names_[nt].resize(Header_numNames[nt]);
         idNumberT id;
@@ -136,7 +143,7 @@ errorT
 NameBase::WriteNameFile (const std::vector<int>* freq)
 {
     Filebuf file;
-    if (file.Open(Fname_, FMODE_WriteOnly) != OK) return ERROR_FileOpen;
+    if (file.Open(filename_.c_str(), FMODE_WriteOnly) != OK) return ERROR_FileOpen;
 
     file.WriteNBytes(NAMEBASE_MAGIC, 8);
 
@@ -215,7 +222,7 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
         *idPtr = (*it).second;
     } else {
         const size_t strLen = strlen(str);
-        if (Fname_[0] != 0) { // .sn4 file limits
+        if (! filename_.empty()) { // .sn4 file limits
             static const uint NAME_MAX_ID [NUM_NAME_TYPES] = { 
                 1048575, /* Player names: Maximum of 2^20 -1 = 1,048,575 */
                  524287, /* Event names:  Maximum of 2^19 -1 =   524,287 */
@@ -224,6 +231,8 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
             };
             if (names_[nt].size() >= NAME_MAX_ID[nt]) return ERROR_Full; // Too many names already.
             if (strLen > 255) return ERROR_NameTooLong; // Max 255 chars
+        } else {
+            if (names_[nt].size() >= MAX_NAMES) return ERROR_Full; // Too many names already.
         }
 
         char* name = new char[strLen +1];
@@ -231,11 +240,7 @@ NameBase::AddName (nameT nt, const char* str, idNumberT* idPtr)
         *idPtr = names_[nt].size();
         names_[nt].push_back(name);
         idx_[nt][name] = *idPtr;
-        if (nt == NAME_PLAYER) {
-            eloV_.push_back(0);
-            firstDateV_.push_back(ZERO_DATE);
-            lastDateV_.push_back(ZERO_DATE);
-        }
+        if (nt == NAME_PLAYER) eloV_.push_back(0);
     }
     return OK;
 }

@@ -1,5 +1,6 @@
 /*
-* Copyright (C) 2011  Gerd Lorscheid, Fulvio Benini
+* Copyright (C) 2011  Gerd Lorscheid
+* Copyright (C) 2011-2015  Fulvio Benini
 
 * This file is part of Scid (Shane's Chess Information Database).
 *
@@ -51,16 +52,34 @@ void SortCache::Sort_thread::join() {
 }
 
 void SortCache::Sort_thread::sort(uint numGames){
+	auto downheap = [this](int v, int n) {
+		int tmp;
+		int w=2*v+1;
+		while (w<n)
+		{
+			if (w+1<n)
+				if (sc_->Compare(sc_->fullMap[w+1],sc_->fullMap[w]) > 0)
+					w++;
+			if (sc_->Compare(sc_->fullMap[v],sc_->fullMap[w]) >= 0)
+				return;
+
+			std::swap(sc_->fullMap[v], sc_->fullMap[w]);
+			v=w;
+			w=2*v+1;
+		}
+	};
+
+
 	for (int v=numGames/2-1; v>=0; v--)	{
 		if (interrupt_) return;
-		sc_->Downheap(v, numGames);
+		downheap(v, numGames);
 	}
 	for (uint n = numGames; n > 1; )
 	{
 		if (interrupt_) return;
 		n--;
-		int tmp=sc_->fullMap[0]; sc_->fullMap[0]=sc_->fullMap[n]; sc_->fullMap[n]=tmp;
-		sc_->Downheap(0, n);
+		std::swap(sc_->fullMap[0], sc_->fullMap[n]);
+		downheap(0, n);
     }
 	sc_->sorted_ = true;
 }
@@ -236,7 +255,7 @@ errorT SortCache::GetRange( uint start, uint count, const HFilter& filter, uint 
 			std::nth_element(v.begin(), v.begin() + start, v.end(), Compare_std(this));
 		}
 		std::partial_sort(v.begin() + skip, v.begin() + last, v.end(), Compare_std(this));
-		for (uint j=0, i=start; i < last; ++i) result[j++] = v[i];
+		std::copy(v.begin() + start, v.begin() + last, result);
 
 	} else { //Fully sorted cache
 
@@ -265,6 +284,71 @@ errorT SortCache::GetRange( uint start, uint count, const HFilter& filter, uint 
 	}
 	return OK;
 }
+
+/*IndexToFilteredCount
+Given a game number find its position in the sorted list
+gnumber: game number (first game has value 1)
+filter: restrict search to filtered games
+return: IDX_NOT_FOUND if gnumber is not found
+        the position into the sorted list (first position has value 0)
+*/
+uint SortCache::IndexToFilteredCount( uint gnumber, const HFilter& filter)
+{
+	if (gnumber == 0 || gnumber > numGames) return IDX_NOT_FOUND;
+	gnumber--;
+	if (*filter && filter.get(gnumber) == 0) return IDX_NOT_FOUND;
+	uint res = 0;
+	if (!sorted_) {
+		for (uint i=0; i < numGames; i++) {
+			if (*filter && filter.get(i) == 0) continue;
+			if (Compare(i, gnumber) <0) ++res;
+		}
+		return res;
+	} else {
+		for(uint i=0; i < numGames; i++) {
+			if (*filter && filter.get(fullMap[i]) == 0) continue;
+			if (fullMap[i] == gnumber) return res;
+			res++;
+		}
+	}
+	return IDX_NOT_FOUND;
+}
+
+errorT SortCache::CheckForChanges (uint id)
+{
+	if (id <= numGames)
+	{
+		t_.join();
+		if (id == numGames) return AddEntry();
+
+		if( hashValues)
+			hashValues[id] = CalcHash( index->GetEntry( id));
+
+		if (sorted_) {
+			for(uint i=0; i<numGames; i++)
+				if( fullMap[i] == id)
+				{
+					for(; i<numGames - 1; i++) fullMap[i] = fullMap[i + 1];
+					Insert( id, numGames - 1);
+					break;
+				}
+		}
+	}
+	else
+	{
+		t_.interrupt();
+		numGames = index->GetNumGames();
+		if (hashValues != NULL) delete[] hashValues;
+		hashValues = new uint[numGames];
+		for(uint i=0; i<numGames; i++)
+			hashValues[i] = CalcHash( index->GetEntry( i));
+		sorted_ = false;
+		t_.start();
+	}
+
+	return OK;
+}
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // SortCache::Compare():
@@ -593,71 +677,6 @@ uint SortCache::CalcHash (const IndexEntry* ie)
 	return retValue;
 }
 
-errorT
-SortCache::CheckForChanges (uint id)
-{
-	if (id <= numGames)
-	{
-		t_.join();
-		if (id == numGames) return AddEntry();
-
-		if( hashValues)
-			hashValues[id] = CalcHash( index->GetEntry( id));
-
-		if (sorted_) {
-			for(uint i=0; i<numGames; i++)
-				if( fullMap[i] == id)
-				{
-					for(; i<numGames - 1; i++) fullMap[i] = fullMap[i + 1];
-					Insert( id, numGames - 1);
-					break;
-				}
-		}
-	}
-	else
-	{
-		t_.interrupt();
-		numGames = index->GetNumGames();
-		if (hashValues != NULL) delete[] hashValues;
-		hashValues = new uint[numGames];
-		for(uint i=0; i<numGames; i++)
-			hashValues[i] = CalcHash( index->GetEntry( i));
-		sorted_ = false;
-		t_.start();
-	}
-
-	return OK;
-}
-
-/*IndexToFilteredCount
-Given a game number find its position in the sorted list
-gnumber: game number (first game has value 1)
-filter: restrict search to filtered games
-return: IDX_NOT_FOUND if gnumber is not found
-        the position into the sorted list (first position has value 0)
-*/
-uint SortCache::IndexToFilteredCount( uint gnumber, const HFilter& filter)
-{
-	if (gnumber == 0 || gnumber > numGames) return IDX_NOT_FOUND;
-	gnumber--;
-	if (*filter && filter.get(gnumber) == 0) return IDX_NOT_FOUND;
-	uint res = 0;
-	if (!sorted_) {
-		for (uint i=0; i < numGames; i++) {
-			if (*filter && filter.get(i) == 0) continue;
-			if (Compare(i, gnumber) <0) ++res;
-		}
-		return res;
-	} else {
-		for(uint i=0; i < numGames; i++) {
-			if (*filter && filter.get(fullMap[i]) == 0) continue;
-			if (fullMap[i] == gnumber) return res;
-			res++;
-		}
-	}
-	return IDX_NOT_FOUND;
-}
-
 // Function that change fullMap or hashValues need MT sync
 // t_.join() or t_.interrupt() must be called before using one of the following functions
 void SortCache::GetSpace( uint size)
@@ -684,23 +703,6 @@ uint SortCache::Insert( uint gnum, uint done)
 		fullMap[tmp] = fullMap[tmp-1];
 	fullMap[insert] = gnum;
 	return insert;
-}
-
-void SortCache::Downheap( int v, int n)
-{
-	int tmp;
-	int w=2*v+1;
-	while (w<n)
-	{
-		if (w+1<n)
-			if (Compare(fullMap[w+1],fullMap[w]) > 0)
-				w++;
-		if (Compare(fullMap[v],fullMap[w]) >= 0)
-			return;
-		tmp=fullMap[v]; fullMap[v]=fullMap[w]; fullMap[w]=tmp;
-		v=w;
-		w=2*v+1;
-	}
 }
 
 errorT SortCache::AddEntry()
