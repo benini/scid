@@ -78,6 +78,7 @@ proc setupBoard {} {
       grid $w.pieces.$color.$i -column 0 -pady 2 -padx 2
     }
   }
+  set ::setupBoardFlipped 0
   checkbutton $w.pieces.rotate -text "  Rotate" -image tb_BD_Flip -compound left \
       -indicatoron 0 -variable ::setupBoardFlipped -command {
     set ::setupBd  [string reverse $::setupBd]

@@ -2541,18 +2541,18 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         if (argc == 5) {
             filter.fill(strGetUnsigned(argv[4]));
             return TCL_OK;
-        } else {
+        } else if (argc > 5) {
             uint gNum = strGetUnsigned (argv[5]);
             if (gNum > 0 && gNum <= dbase->numGames()) {
                 uint val = strGetUnsigned(argv[4]);
                 if (argc == 8) {
-                    int start = dbase->GetRangeLocation (argv[7], filter, gNum);
+                    uint start = dbase->GetRangeLocation (argv[7], filter, gNum);
                     if (start == IDX_NOT_FOUND) return UI_Result(ti, ERROR_BadArg);
-                    int count = strGetInteger (argv[6]);
-                    if (count < 0) {
-                        count = -count;
+                    int tmp = strGetInteger (argv[6]);
+                    uint count = std::abs(tmp);
+                    if (tmp < 0) {
                         if (start >= count) {
-                            start = start - (count -1);
+                            start = start - count +1;
                         } else {
                             count = start +1;
                             start = 0;
@@ -2560,7 +2560,7 @@ sc_filter (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     }
                     uint* idxList = new uint[count];
                     dbase->GetRange(argv[7], start, count, filter, idxList);
-                    for (int i = 0; i < count; ++i) {
+                    for (uint i = 0; i < count; ++i) {
                         if (idxList[i] == IDX_NOT_FOUND) break;
                         filter.set(idxList[i], val);
                     }
@@ -8470,7 +8470,7 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     uint maxGames = dbase->numGames();
     uint minElo = 0;
     uint maxElo = MAX_ELO;
-    uint count = 10;
+    size_t count = 10;
 
     static const char * options [] = {
         "-name", "-minElo", "-maxElo", "-minGames", "-maxGames",
@@ -8555,9 +8555,10 @@ sc_name_plist (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 
     class Compare{
         scidBaseT* dbase_;
-        const std::vector<DateRange>& activity_;
         int sort_;
+        const std::vector<DateRange>& activity_;
         enum { SORT_ELO, SORT_GAMES, SORT_OLDEST, SORT_NEWEST, SORT_NAME };
+
     public:
         Compare(scidBaseT* dbase, const std::vector<DateRange>& activity, int sortOrder)
             : dbase_(dbase), sort_(sortOrder), activity_(activity) {}

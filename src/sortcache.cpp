@@ -53,7 +53,6 @@ void SortCache::Sort_thread::join() {
 
 void SortCache::Sort_thread::sort(uint numGames){
 	auto downheap = [this](int v, int n) {
-		int tmp;
 		int w=2*v+1;
 		while (w<n)
 		{
