@@ -9780,6 +9780,7 @@ sc_tree_search (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                 if (!m.isNull()) {
                     sm.from = m.getFrom();
                     sm.to = m.getTo();
+                    if (m.isCastle()) sm.to = sm.from + ((sm.to > sm.from) ? 2 : -2);
                     sm.promote = EMPTY;
                     ply += 1;
                     foundMatch = true;
