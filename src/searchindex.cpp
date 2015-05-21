@@ -74,6 +74,22 @@ public:
 	}
 };
 
+class SearchIndexFlag {
+	const scidBaseT* base_;
+	uint flagMask_;
+
+public:
+	SearchIndexFlag(const scidBaseT* base, char flag)
+	: base_(base) {
+		uint flagType = IndexEntry::CharToFlag(flag);
+		ASSERT(flagType != 0 || flag == 'S');
+		flagMask_ = (1 << flagType);
+	}
+
+	bool operator() (gamenumT gnum) {
+		return base_->getIndexEntry(gnum)->GetFlag(flagMask_);
+	}
+};
 
 template <typename T>
 class SearchIndexRange {
@@ -231,7 +247,7 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 	const char * options[] = {
 		"white", "black", "player", "event", "site", "round", "annotator", "annotated",
 		"date", "results", "elo", "welo", "belo", "delo",
-		"wtitles", "btitles", "toMove",
+		"wtitles", "btitles", "toMove", "flag",
 		"eco", "length", "gnum", "filter",
 		"fStdStart", "fPromotions", "fComments", "fVariations",
 		"fAnnotations", "fDelete", "fWhiteOpening", "fBlackOpening",
@@ -243,7 +259,7 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 	enum {
 		OPT_WHITE, OPT_BLACK, OPT_PLAYER, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_ANNOTATOR, OPT_ANNOTATED,
 		OPT_DATE, OPT_RESULTS, OPT_ELO, OPT_WELO, OPT_BELO, OPT_DELO,
-		OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
+		OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE, OPT_FLAG,
 		OPT_ECO, OPT_LENGTH, OPT_GAMENUMBER, OPT_FILTER,
 		OPT_FSTDSTART, OPT_FPROMOTIONS, OPT_FCOMMENTS, OPT_FVARIATIONS,
 		OPT_FANNOTATIONS, OPT_FDELETE, OPT_FWHITEOP, OPT_FBLACKOP,
@@ -390,6 +406,9 @@ errorT search_index(scidBaseT* base, HFilter& filter, int argc, const char ** ar
 		case OPT_LENGTH:
 			it_res = std::partition(it_begin, it_end,
 				SearchIndexRange<ushort>(base, value, &IndexEntry::GetNumHalfMoves));
+			break;
+		case OPT_FLAG:
+			it_res = std::partition(it_begin, it_end, SearchIndexFlag(base, value[0]));
 			break;
 
 		default:

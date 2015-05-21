@@ -11186,7 +11186,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     const char * options[] = {
         "white", "black", "player", "event", "site", "round", "annotator", "annotated",
         "date", "results", "elo", "welo", "belo", "delo",
-        "wtitles", "btitles", "toMove",
+        "wtitles", "btitles", "toMove", "flag",
         "eco", "length", "gnum", "filter",
         "fStdStart", "fPromotions", "fComments", "fVariations",
         "fAnnotations", "fDelete", "fWhiteOpening", "fBlackOpening",
@@ -11198,7 +11198,7 @@ sc_search_header (ClientData cd, Tcl_Interp * ti, scidBaseT* base, HFilter& filt
     enum {
         OPT_WHITE, OPT_BLACK, OPT_PLAYER, OPT_EVENT, OPT_SITE, OPT_ROUND, OPT_ANNOTATOR, OPT_ANNOTATED,
         OPT_DATE, OPT_RESULTS, OPT_ELO, OPT_WELO, OPT_BELO, OPT_DELO,
-        OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE,
+        OPT_WTITLES, OPT_BTITLES, OPT_TOMOVE, OPT_FLAG,
         OPT_ECO, OPT_LENGTH, OPT_GAMENUMBER, OPT_FILTER,
         OPT_FSTDSTART, OPT_FPROMOTIONS, OPT_FCOMMENTS, OPT_FVARIATIONS,
         OPT_FANNOTATIONS, OPT_FDELETE, OPT_FWHITEOP, OPT_FBLACKOP,
