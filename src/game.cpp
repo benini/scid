@@ -3988,6 +3988,7 @@ bool Game::calcAbsPlyNumber_(moveT *m, moveT *s) {
                 }
             }
         }
+        if (m->marker == END_MARKER) break;
         m = m->next;
     }
     return false;
