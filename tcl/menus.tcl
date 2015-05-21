@@ -173,7 +173,6 @@ menu $m.training
   $m.training add command -label ToolsTrainTactics -command ::tactics::config
   $m.training add command -label ToolsTrainReviewGame -command ::reviewgame::start
   $m.training add command -label ToolsTrainCalvar -command ::calvar::config
-  $m.training add checkbutton -label ToolsTrainFindBestMove -variable ::tactics::findBestMoveRunning -command ::tactics::findBestMoveStart
 $m add cascade -label ToolsTraining -menu $m.training
 $m add separator
 menu $m.correspondence

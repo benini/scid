@@ -47,8 +47,6 @@ proc ::file::Exit {}  {
     if {$answer != "yes"} { return }
   }
   if {$::optionsAutoSave} {
-    # restore options if findBestMove in progress
-    ::tactics::findBestMoveExit
     options.write
   }
   ::recentFiles::save

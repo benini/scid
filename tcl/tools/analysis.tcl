@@ -37,7 +37,7 @@ set isBatchOpening 0
 set isBatchOpeningMoves 12
 set stack ""
 
-set markTacticalExercises 1
+set markTacticalExercises 0
 
 set isAnnotateVar 0
 set isShortAnnotation 0
@@ -1112,7 +1112,6 @@ proc markExercise { prevscore score nag} {
     
     set difficulty [expr $t +2]
     
-    puts "flag T pour [sc_game number] difficulty $difficulty"
     # If the base opened is read only, like a PGN file, avoids an exception
     catch { sc_base gameflag [sc_base current] [sc_game number] set T }
     sc_pos setComment "****D${difficulty} [format %.1f $prevscore]->[format %.1f $score] [sc_pos getComment]"

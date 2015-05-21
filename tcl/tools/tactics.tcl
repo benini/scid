@@ -25,176 +25,6 @@ namespace eval tactics {
     set winWonGame 0
     
     ################################################################################
-    # Current base must contain games with Tactics flag and **** markers
-    # for certain moves. The first var should contain the best move (the next best move
-    # is at least 1.0 point away.
-    ################################################################################
-    proc findBestMove { {previous 0} } {
-        
-        set old_game [sc_game number]
-        set nGames [sc_base numGames $::curr_db]
-        
-        if { $old_game == 1 && $previous != 0} {
-            return
-        }
-        
-        if { $old_game == $nGames && $previous == 0} {
-            return
-        }
-        
-        set found 0
-        
-        if {$nGames == 0} {
-            tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"
-            return
-        }
-        
-        if {$previous != 0} {
-            ::game::LoadNextPrev previous
-        }
-        
-        # Try to find in current game, from current pos (exit vars first)
-        set ::curr_db [sc_base current]
-        set ::curr_game [sc_game number]
-        catch {
-            if {[sc_base gameflag $::curr_db $::curr_game get T]} {
-                while {[sc_var level] != 0} { sc_var exit }
-                if {[llength [gotoNextTacticMarker] ] != 0} {
-                    set found 1
-                }
-            }
-        }
-        if { ! $found } {
-            set sens 1
-            set start [expr [sc_game number] +1]
-            set end $nGames
-            if {$previous != 0} {
-                set sens -1
-                set start  [expr [sc_game number] -1]
-                set end 1
-            }
-            for {set g $start } { [expr $sens * $g ] <= [ expr $sens * $end ] } { incr g $sens} {
-                if {![sc_base gameflag $::curr_db $g get T]} { continue }
-                sc_game load $g
-                # go through all moves and look for tactical markers ****
-                if {[llength [gotoNextTacticMarker] ] != 0} {
-                    set found 1
-                    break
-                }
-            }
-        }
-        
-        if { ! $found } {
-            sc_game load $old_game
-            gotoNextTacticMarker
-            tk_messageBox -type ok -icon info -title "Scid" -message "No game with Tactics flag\nor no tactics comment found"
-        } else  {
-            sideToMoveAtBottom
-        }
-        updateBoard -pgn
-        ::windows::gamelist::Refresh
-        updateTitle
-    }
-    ################################################################################
-    # The initial proc to start Find Best Move training
-    proc findBestMoveStart {} {
-        
-        set f .main.fbutton.button
-        
-        if { $::tactics::findBestMoveRunning } {
-            set ::tactics::hideNextMove_old $::gameInfo(hideNextMove)
-            set ::tactics::showVarArrows_old $::showVarArrows
-            set ::tactics::showVarPopup_old $::showVarPopup
-            set ::gameInfo(hideNextMove) 1
-            set ::showVarArrows 0 ;# so the user will not see the solution through var arrows
-            set ::showVarPopup 0
-            
-            # create UI to handle commands and feed back for find best move
-            if { ![winfo exists $f.fbm_space1]} {
-                ttk::frame $f.fbm_space1 -width 15
-                button $f.fbm_solution -image tb_lightbulb -command ::tactics::findBestMoveShowSolution
-                ::utils::tooltip::Set $f.fbm_solution [::tr ShowSolution]
-                button $f.fbm_prev -image tb_backward -command { ::tactics::findBestMove previous }
-                ::utils::tooltip::Set $f.fbm_prev [::tr PrevExercise ]
-                button $f.fbm_next -image tb_forward -command ::tactics::findBestMove
-                ::utils::tooltip::Set $f.fbm_next [::tr NextExercise ]
-                button $f.fbm_stop -image tb_stop -command { set ::tactics::findBestMoveRunning 0 ;  ::tactics::findBestMoveStart }
-                ::utils::tooltip::Set $f.fbm_stop [::tr StopTraining ]
-            }
-            pack $f.fbm_space1 -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
-            pack $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop -side left -pady 1 -padx 0 -ipadx 0 -pady 0 -ipady 0
-            
-            # load the last game seen by the user
-            set fname [sc_base filename $::curr_db]
-            if { $fname != "<clipbase>"} {
-                if { [ info exists ::tactics::findBestMove_History($fname) ] } {
-                    ::game::Load $::tactics::findBestMove_History($fname)
-                }
-            }
-            
-            findBestMove
-            
-        } else  {
-            findBestMoveStop
-        }
-        
-    }
-    ################################################################################
-    # Refresh the PGN window so the solution is visible
-    proc  findBestMoveShowSolution {} {
-        set ::tactics::findBestMoveRunning 0
-        ::pgn::Refresh 1
-        set ::tactics::findBestMoveRunning 1
-    }
-    ################################################################################
-    proc findBestMoveStop {} {
-        if { ! $::tactics::findBestMoveRunning } {
-            set f .main.fbutton.button
-            set ::tactics::findBestMoveRunning 0
-            # stop the training, restore normal PGN display
-            ::pgn::Refresh 1
-            set ::gameInfo(hideNextMove) $::tactics::hideNextMove_old
-            set ::showVarArrows $::tactics::showVarArrows_old
-            set ::showVarPopup $::tactics::showVarPopup_old
-            
-            set fname [sc_base filename $::curr_db]
-            if { $fname != "<clipbase>"} {
-                set ::tactics::findBestMove_History($fname) [sc_game number]
-            }
-            pack forget $f.fbm_space1 $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop
-            # destroy $f.fbm_space1 $f.fbm_solution $f.fbm_prev $f.fbm_next $f.fbm_stop
-        }
-    }
-    ################################################################################
-    # Scid exists when the training is in progress : restore options
-    proc findBestMoveExit {} {
-        if { $::tactics::findBestMoveRunning } {
-            set ::gameInfo(hideNextMove) $::tactics::hideNextMove_old
-        }
-    }
-    ################################################################################
-    # returns a list with depth score prevscore
-    # or an empty list if marker not found
-    proc gotoNextTacticMarker {} {
-        while {![sc_pos isAt end]} {
-            sc_move forward
-            set cmt [sc_pos getComment]
-            # TODO old format to be removed
-            set res [scan $cmt "\*\*\*\*d%dfrom%fto%f" dif prevscore score ]
-            if {$res != 3} { ; # try new format if the old format failed
-                set res [scan $cmt "\*\*\*\*D%d %f->%f" dif prevscore score ]
-            }
-            if {$res == 3} {
-                return [list $dif $score $prevscore]
-            }
-        }
-        return {}
-    }
-
-
-
-
-    ################################################################################
     # Tacticts training
     ################################################################################
     proc configBases {win} {
@@ -230,7 +60,7 @@ namespace eval tactics {
             set filter [sc_filter new $baseId]
             progressBarSet $win.dummy 100 10
             set err [catch {
-                sc_filter search $baseId $filter header -filter RESET -fStdStart 1
+                sc_filter search $baseId $filter header -filter RESET -flag S -flag| T
                 set nTactics [sc_filter count $baseId $filter]
                 sc_filter search $baseId $filter header -filter AND -site "\"$::tactics::solved\""
                 set solvedCount [sc_filter count $baseId $filter]
@@ -490,16 +320,17 @@ namespace eval tactics {
     }
 
     proc endTraining {} {
-        unset ::playMode
-        set w .tacticsWin
-        ::tactics::stopAnalyze
         after cancel ::tactics::mainLoop
+        after cancel ::tactics::loadNextGame
+        ::tactics::stopAnalyze
 
         #TODO:
         #sc_filter release $::tactics::baseId $::tactics::filter
         sc_filter set $::tactics::baseId "dbfilter" 1
         catch { ::uci::closeUCIengine $::tactics::engineSlot }
 
+        unset ::playMode
+        ::board::flipAuto .main.board
         updateStatusBar
         updateTitle
     }
@@ -575,14 +406,29 @@ namespace eval tactics {
         ::tactics::resetValues
         setInfoEngine $::tr(LoadingGame)
 
-        set g [sc_filter next]
-        if {$g == 0} {
-            tk_messageBox -title "Scid" -icon info -type ok -message $::tr(AllExercisesDone)
-            return
+        set nextTactic 0
+        while {![sc_pos isAt end]} {
+            sc_move forward
+            set cmt [sc_pos getComment]
+            if {[regexp {^\*\*\*\*D?[0-9]} $cmt]} {
+                set nextTactic 1
+                break
+            }
         }
-        sc_game load $g
+        if {$nextTactic == 0} {
+            set g [sc_filter next]
+            if {$g == 0} {
+                tk_messageBox -title "Scid" -icon info -type ok -message $::tr(AllExercisesDone)
+                return
+            }
+            sc_game load $g
+            if {[sc_pos fen] == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"} {
+                after idle ::tactics::loadNextGame
+                return
+            }
+        }
         ::notify::GameChanged
-        sideToMoveAtBottom
+        ::board::flipAuto .main.board [sc_pos side]
         focus .main
         
         ::gameclock::reset 1
@@ -591,14 +437,6 @@ namespace eval tactics {
         set ::tactics::prevFen [sc_pos fen]
         ::tactics::startAnalyze
         ::tactics::mainLoop
-    }
-    ################################################################################
-    # flips the board if necessary so the side to move is at the bottom
-    ################################################################################
-    proc sideToMoveAtBottom {} {
-        if { [sc_pos side] == "white" && [::board::isFlipped .main.board] || [sc_pos side] == "black" &&  ![::board::isFlipped .main.board] } {
-            ::board::flip .main.board
-        }
     }
     ################################################################################
     #
@@ -663,6 +501,8 @@ namespace eval tactics {
         
         # if the engine is still analyzing, wait the end of it
         if {$analysisEngine(analyzeMode)} { vwait ::tactics::analysisEngine(analyzeMode) }
+
+        if {![winfo exists .tacticsWin]} { return }
         
         if {[sc_pos fen] != $::tactics::prevFen  && [sc_pos isAt start]} {
             ::tactics::abnormalContinuation
@@ -805,7 +645,7 @@ namespace eval tactics {
         #TODO:
         #set filter [sc_filter new $baseId]
         set filter dbfilter
-        sc_filter search $baseId $filter header -filter RESET -fStdStart 1 -site! "\"$::tactics::solved\""
+        sc_filter search $baseId $filter header -filter RESET -flag S -flag| T -site! "\"$::tactics::solved\""
 
         ::notify::GameChanged
         ::notify::DatabaseChanged
@@ -873,7 +713,9 @@ namespace eval tactics {
         
         set analysisEngine(analyzeMode) 0
         ::tactics::sendToEngine  "stop"
-        setInfoEngine $::tr(AnalyzeDone) PaleGreen3
+        if {[winfo exists .tacticsWin]} {
+            setInfoEngine $::tr(AnalyzeDone) PaleGreen3
+        }
     }
     
 }

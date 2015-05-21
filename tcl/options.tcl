@@ -251,8 +251,6 @@ set windowsDock 1
 
 
 set ::tactics::analysisTime 3
-set ::tactics::findBestMoveRunning 0
-array set ::tactics::findBestMove_History {}
 
 set ::tacgame::threshold 0.9
 set ::tacgame::blunderwarning false
@@ -822,11 +820,6 @@ proc options.write {} {
       puts $optionF "set ::docking::layout_list($slot) [list $::docking::layout_list($slot)]"
     }
     
-    # Save tactics (find best move history)
-    foreach i [lsort [array names ::tactics::findBestMove_History]] {
-        puts $optionF "set ::tactics::findBestMove_History($i) [list $::tactics::findBestMove_History($i)]"
-    }
-
     # Save var that was added with options.save()
     if {[info exists ::autosave_opt]} {
       puts $optionF ""

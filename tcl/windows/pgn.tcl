@@ -373,15 +373,6 @@ namespace eval pgn {
       .pgnWin.text configure -state normal
       .pgnWin.text delete 1.0 end
       
-      # Hide all information after the first **** encountered in order to hide tactics to user
-      # This has the drawback to also hide the first moves when there is several markers ****
-      if { $::tactics::findBestMoveRunning } {
-        set idx [ string first "****"  $pgnStr ]
-        if { $idx != -1 } {
-          set pgnStr "[ string range $pgnStr 0 [expr $idx + 3] ]</c>\n"
-        }
-      }
-
       if {$::pgn::showColor} {
         ::htext::display .pgnWin.text $pgnStr
       } else {
