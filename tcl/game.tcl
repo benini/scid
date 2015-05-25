@@ -375,7 +375,7 @@ namespace eval ::notify {
     after cancel ::notify::privPosChanged
     update idletasks
     after idle ::notify::privPosChanged
-}
+  }
 
   # To be called when the position of the current game change
   proc privPosChanged {} {

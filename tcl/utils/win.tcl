@@ -287,18 +287,25 @@ proc ::docking::show_menu { path x y} {
     return
   }
   
+  set localX [expr $x - [winfo rootx $path]]
+  set tab [$path identify tab $localX 1]
+  if {$tab == ""} { return }
+  set iconW 25
+  if {$tab == 0} {
+    set isIcon [expr {$localX < $iconW ? 1 : 0}]
+  } else {
+    set isIcon [expr [$path identify tab [expr $localX - $iconW] 1] != $tab]
+  }
+
   # display window's menu (workaround for windows where the menu
   # of embedded toplevels is not displayed. The menu must be of the form $w.menu
-  
-  # if the tab has changed, don't display the menu at once (wait a second click)
-  if { $::docking::changedTab($c_path) == 1 } {
-    set ::docking::changedTab($c_path) 0
-  } else  {
-    # the tab was already active, show the menu
-    set f [$c_path select]
+  if {$isIcon} {
+    set f [lindex [$path tabs] $tab]
     set m [getMenu $f]
     if { [winfo exists $m] } {
       tk_popup $m [winfo pointerx .] [winfo pointery .]
+    } else {
+      if {$f != ".fdockmain"} { ::docking::close $c_path }
     }
   }
   
@@ -365,7 +372,7 @@ bind TNotebook <Escape> {
   }
 }
 
-bind TNotebook <ButtonPress-$::MB3> {::docking::ctx_menu %W}
+bind TNotebook <ButtonPress-$::MB3> {::docking::ctx_menu %W %x %y}
 bind TNotebook <<NotebookTabChanged>> {::docking::tabChanged %W}
 
 ################################################################################
@@ -391,13 +398,14 @@ proc ::docking::ctx_cmd {path anchor} {
   setTabStatus
 }
 ################################################################################
-proc ::docking::ctx_menu {w} {
+proc ::docking::ctx_menu {w x y} {
   
   # HACK ! Because notebooks may also be used inside internal windows
   if {! [info exists ::docking::changedTab($w)] } {
     return
   }
-  
+
+  if {[catch { $w select @$x,$y }]} { return }
   update idletasks
   set mctxt .ctxtMenu
   if { [winfo exists $mctxt] } {
@@ -526,6 +534,8 @@ proc ::docking::setMenuMark { nb tab} {
   if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || \
         $tab == ".fdockoprepWin" } {
     $nb tab $tab -image tb_menu -compound left
+  } else {
+    $nb tab $tab -image tb_close -compound left
   }
 }
 ################################################################################

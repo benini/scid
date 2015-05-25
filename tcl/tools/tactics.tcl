@@ -273,7 +273,7 @@ namespace eval tactics {
         set w .tacticsWin
         if {[winfo exists $w]} { focus $w ; return }
         
-        createToplevel $w
+        createToplevel $w .pgnWin
         setTitle $w $::tr(Tactics)
         setWinLocation $w
         # because sometimes the 2 buttons at the bottom are hidden
