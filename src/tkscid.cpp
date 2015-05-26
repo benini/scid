@@ -4929,19 +4929,17 @@ sc_game_pop (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 //    Saves the current game and pushes a new empty game onto
 //    the game state stack.
 //    If the optional argument "copy" is present, the new game will be
-//    a copy of the current game. If the argument is "copyfast" tags, comments are not decoded
+//    a copy of the current game.
 int
 sc_game_push (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
 {
     bool copy = false;
-    bool copyfast = false;
     
     if ( argc > 2 && !strcmp( argv[2], "copy" ) ) {
         copy = true;
     }
     else if ( argc > 2 && !strcmp( argv[2], "copyfast" ) ) {
         copy = true;
-        copyfast = true;
     }
 
     Game* g = (copy) ? db->game->clone() : new Game;

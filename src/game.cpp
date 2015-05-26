@@ -68,7 +68,7 @@ char transPiecesChar(char c) {
     }
   return ret;
 }
-// ============ PG : destructor that frees all memory ===============
+
 Game::~Game() {
     while (MoveChunk->next != NULL) {
         moveChunkT * tempChunk = MoveChunk->next;
@@ -77,12 +77,10 @@ Game::~Game() {
     }
     delete MoveChunk;
 
-    // Delete the Current position:
     delete CurrentPos;
-    // Delete the saved position:
     if (SavedPos) { delete SavedPos; }
-    // Delete the start position:
     if (StartPos) { delete StartPos; }
+    ClearExtraTags();
 }
 
 // =================================================
