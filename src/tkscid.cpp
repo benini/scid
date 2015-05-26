@@ -8746,12 +8746,13 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
                     newIE.SetBlackRatingType (RATING_Elo);
                 }
                 if (db->idx->WriteEntry (&newIE, gnum) != OK) {
+                    db->clearCaches();
                     return errorResult (ti, "Error writing index file.");
                 }
-                db->clearCaches();
             }
         }
     }
+    if (numChangedGames > 0) db->clearCaches();
     appendUintElement (ti, numChangedRatings);
     appendUintElement (ti, numChangedGames);
     return TCL_OK;
