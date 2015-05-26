@@ -538,7 +538,7 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  Next game" -image tb_BD_HNext -compound left -accelerator "<alt-right>"
   ::bind $w.bar.forward <ButtonRelease-$::MB3> "::board::updateToolBar_ $m $varname %W"
 
-  set menus { tb_BD_Changes tb_BD_Variations tb_BD_Layout tb_BD_Comment }
+  set menus { tb_BD_Changes tb_BD_Comment tb_BD_Variations tb_BD_Layout }
   set i 0
   foreach b $menus {
     menu $w.buttons.menu_$b -bg white -font font_Regular -postcommand "::board::updateToolBar_ $w.buttons.menu_$b $varname"
@@ -556,6 +556,10 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  Undo" -image tb_BD_Undo -compound left
 
   set m "$w.buttons.menu_[lindex $menus 1]"
+  $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
+  $m add command -label "  Strip all comments" -image tb_BD_VarDelete -compound left
+
+  set m "$w.buttons.menu_[lindex $menus 2]"
   $m add command -label "  Delete variant" -image tb_BD_VarDelete -compound left
   $m add command -label "  Promote variant" -image tb_BD_VarPromote -compound left
   $m add command -label "  Leave variant" -image tb_BD_VarLeave -compound left
@@ -565,7 +569,7 @@ proc ::board::newToolBar_ {{w} {varname}} {
   $m add command -label "  Go to end" -image tb_BD_End -compound left
   $m add command -label "  Autoplay" -image tb_BD_Autoplay -compound left
 
-  set m "$w.buttons.menu_[lindex $menus 2]"
+  set m "$w.buttons.menu_[lindex $menus 3]"
   $m add command -label "  Rotate" -image tb_BD_Flip -compound left
   $m add command -label "  Show/hide coord" -image tb_BD_Coords -compound left
   $m add command -label "  Show/hide material" -image tb_BD_Material -compound left
@@ -574,9 +578,6 @@ proc ::board::newToolBar_ {{w} {varname}} {
   set ${varname}(tb_BD_Coords) "::board::coords $w"
   set ${varname}(tb_BD_Material) "::board::toggleMaterial $w"
   set ${varname}(tb_BD_Fullscreen) { wm attributes . -fullscreen [expr ![wm attributes . -fullscreen] ] }
-
-  set m "$w.buttons.menu_[lindex $menus 3]"
-  $m add command -label "  Strip all comments" -image tb_BD_VarDelete -compound left
 
   return $w.buttons
 }

@@ -256,6 +256,7 @@ proc updateMainToolbar {} {
   } else {
     catch { unset ::gameInfoBar(tb_BD_HNext) }
   }
+  set ::gameInfoBar(tb_BD_SetupBoard) "setupBoard"
 }
 
 
