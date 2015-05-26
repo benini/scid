@@ -207,6 +207,7 @@ $m add checkbutton -label OptionsWindowsShowGameInfo -variable showGameInfo -com
 $m add separator
 $m add command -label WindowsGList -command ::windows::gamelist::Open  -accelerator "Ctrl+L"
 $m add checkbutton -label WindowsSwitcher -variable baseWin -accelerator "Ctrl+D" -command ::windows::switcher::Open
+$m add command -label ToolsCross -accelerator "Ctrl+Shift+X" -command crosstabWin
 $m add checkbutton -label WindowsECO -accelerator "Ctrl+Y" -variable ::windows::eco::isOpen -command {::windows::eco::OpenClose}
 $m add checkbutton -label WindowsStats -variable ::windows::stats::isOpen -accelerator "Ctrl+I" -command ::windows::stats::Open
 $m add checkbutton -label WindowsTree -variable treeWin -command ::tree::make -accelerator "Ctrl+T"
@@ -229,8 +230,6 @@ $m  add checkbutton -label ToolsStartEngine1 -variable analysisWin1 \
 $m  add checkbutton -label ToolsStartEngine2 -variable analysisWin2 \
     -command "makeAnalysisWin 2 0" -accelerator "F3"
 $m add separator
-$m add command -label ToolsCross \
-    -accelerator "Ctrl+Shift+X" -command crosstabWin
 $m add checkbutton -label ToolsEmail \
     -accelerator "Ctrl+Shift+E" -variable emailWin -command ::tools::email
 $m add checkbutton -label ToolsFilterGraph \

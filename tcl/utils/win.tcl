@@ -532,7 +532,7 @@ proc ::docking::add_tab {path anchor args} {
 # display a blue triangle showing the tab has a menu associated
 proc ::docking::setMenuMark { nb tab} {
   if { $tab == ".fdockpgnWin" || [string match "\.fdocktreeWin*" $tab] || $tab == ".fdockccWindow" || \
-        $tab == ".fdockoprepWin" } {
+        $tab == ".fdockoprepWin" || $tab == ".fdockcrosstabWin" } {
     $nb tab $tab -image tb_menu -compound left
   } else {
     $nb tab $tab -image tb_close -compound left
