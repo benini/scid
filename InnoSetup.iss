@@ -28,7 +28,7 @@ PrivilegesRequired=lowest
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"
 Name: "associate_pgn"; Description: "&Associate PGN files"; GroupDescription: "Other tasks:"
 Name: "associate_si4"; Description: "&Associate SI4 files"; GroupDescription: "Other tasks:"
-Name: "copy_photos"; Description: "&Install players photo"; GroupDescription: "Other tasks:"
+Name: "copy_photos"; Description: "&Install players photo and spell checker"; GroupDescription: "Other tasks:"
 Name: "install_stockfish"; Description: "&Stockfish ( http://stockfishchess.org )"; GroupDescription: "Chess engines:"
 
 [Registry]
@@ -45,11 +45,11 @@ Root: "HKCU"; Subkey: "Software\Classes\scid\shell\open\command"; ValueType: str
 [Files]
 Source: "Release\*"; DestDir: "{app}\bin"
 Source: "scid.eco"; DestDir: "{app}\bin"
-Source: "spelling.ssp"; DestDir: "{app}\bin"
 Source: "img\*"; DestDir: "{app}\bin\img"; Flags: recursesubdirs
 Source: "tcl\*"; DestDir: "{app}\bin\tcl"; Flags: recursesubdirs
 Source: "bases\*"; DestDir: "{app}\bin\bases"; Flags: recursesubdirs
 Source: "books\*"; DestDir: "{app}\bin\books"; Flags: recursesubdirs
+Source: "spelling.ssp"; DestDir: "{app}\bin";  Tasks: copy_photos
 Source: "photos\*"; DestDir: "{app}\bin\photos"; Flags: recursesubdirs; Tasks: copy_photos
 Source: "phalanx-scid.exe"; DestDir: "{app}\bin\engines";
 Source: "stockfish.exe"; DestDir: "{app}\bin\engines"; Tasks: install_stockfish
