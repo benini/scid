@@ -274,26 +274,6 @@ $m add command -label ToolsImportOne \
 set m .menu.options
 menu $m
 .menu add cascade -label Options -menu $m
-menu $m.board
-  menu $m.board.bdsize
-  $m.board add cascade -label OptionsBoardSize -menu $m.board.bdsize
-  menu $m.board.pieces -tearoff 1
-  $m.board add cascade -label OptionsBoardPieces -menu $m.board.pieces
-  $m.board add command -label OptionsBoardColors -command chooseBoardColors
-$m add cascade -label OptionsBoard -menu $m.board
-menu $m.export
-  $m.export add command -label "PGN file text" -underline 0 -command "setExportText PGN"
-  $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
-  $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
-$m add cascade -label OptionsExport -menu $m.export
-menu $m.fonts
-  $m.fonts add command -label OptionsFontsRegular -command {chooseFont Regular}
-  $m.fonts add command -label OptionsFontsMenu    -command {chooseFont Menu}
-  $m.fonts add command -label OptionsFontsSmall   -command {chooseFont Small}
-  $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
-  $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
-$m add cascade -label OptionsFonts -menu $m.fonts
-$m add command -label GInfoInformant -command configInformant
 menu $m.language
   foreach l $::languages {
       $m.language add radiobutton -label $::langName($l) \
@@ -301,6 +281,74 @@ menu $m.language
           -command setLanguage
   }
 $m add cascade -label OptionsLanguage -menu $m.language
+menu $m.board
+  menu $m.board.bdsize
+  $m.board add cascade -label OptionsBoardSize -menu $m.board.bdsize
+  menu $m.board.pieces -tearoff 1
+  $m.board add cascade -label OptionsBoardPieces -menu $m.board.pieces
+  $m.board add command -label OptionsBoardColors -command chooseBoardColors
+$m add cascade -label OptionsBoard -menu $m.board
+menu $m.fonts
+  $m.fonts add command -label OptionsFontsRegular -command {chooseFont Regular}
+  $m.fonts add command -label OptionsFontsMenu    -command {chooseFont Menu}
+  $m.fonts add command -label OptionsFontsSmall   -command {chooseFont Small}
+  $m.fonts add command -label OptionsFontsTiny    -command {chooseFont Tiny}
+  $m.fonts add command -label OptionsFontsFixed   -command {chooseFont Fixed}
+$m add cascade -label OptionsFonts -menu $m.fonts
+menu $m.numbers
+  foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
+          underline {  0     1      2     4      5      6} {
+      set decimal [string index $numeric 0]
+      set thousands [string index $numeric 1]
+      $m.numbers add radiobutton -label "12${thousands}345${decimal}67" \
+          -underline $underline \
+          -variable locale(numeric) -value $numeric -command updateLocale
+  }
+$m add cascade -label OptionsNumbers -menu $m.numbers
+menu $m.theme
+  foreach i [ttk::style theme names] {
+      $m.theme add radiobutton -label "$i" -value $i -variable ::lookTheme \
+          -command {ttk::style theme use $::lookTheme}
+  }
+$m add cascade -label OptionsTheme -menu $m.theme
+menu $m.windows
+  $m.windows add checkbutton -label OptionsWindowsIconify -variable autoIconify
+  $m.windows add checkbutton -label OptionsWindowsRaise -variable autoRaise
+  $m.windows add checkbutton -label OptionsWindowsDock -variable windowsDock
+  if {$::docking::USE_DOCKING} {
+    menu $m.windows.savelayout
+    menu $m.windows.restorelayout
+    foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
+      $m.windows.savelayout add command -label $i -command "::docking::layout_save $slot"
+      $m.windows.restorelayout add command -label $i -command "::docking::layout_restore $slot"
+    }
+    $m.windows add cascade -label OptionsWindowsSaveLayout -menu $m.windows.savelayout
+    $m.windows add cascade -label OptionsWindowsRestoreLayout -menu $m.windows.restorelayout
+  }
+  menu $m.windows.startup
+    $m.windows.startup add checkbutton -label HelpTip -variable startup(tip)
+    $m.windows.startup add checkbutton -label FileFinder -variable startup(finder)
+    $m.windows.startup add checkbutton -label WindowsStats -variable startup(stats)
+    if {! $::docking::USE_DOCKING} {
+      $m.windows.startup add checkbutton -label ToolsCross -variable startup(crosstable)
+      $m.windows.startup add checkbutton -label WindowsSwitcher -variable startup(switcher)
+      $m.windows.startup add checkbutton -label WindowsGList -variable startup(gamelist)
+      $m.windows.startup add checkbutton -label WindowsPGN -variable startup(pgn)
+      $m.windows.startup add checkbutton -label WindowsTree -variable startup(tree)
+      $m.windows.startup add checkbutton -label WindowsBook -variable startup(book)
+    }
+  $m.windows add cascade -label OptionsStartup -menu $m.windows.startup
+$m add cascade -label OptionsWindows -menu $m.windows
+$m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
+$m add command -label OptionsToolbar -command configToolbar
+$m add separator
+$m add command -label OptionsRecent -command ::recentFiles::configure
+$m add command -label GInfoInformant -command configInformant
+menu $m.export
+  $m.export add command -label "PGN file text" -underline 0 -command "setExportText PGN"
+  $m.export add command -label "HTML file text" -underline 0 -command "setExportText HTML"
+  $m.export add command -label "LaTeX file text" -underline 0 -command "setExportText LaTeX"
+$m add cascade -label OptionsExport -menu $m.export
 menu $m.entry
   $m.entry add checkbutton -label OptionsMovesAsk \
       -variable askToReplaceMoves -offvalue 0 -onvalue 1
@@ -341,58 +389,11 @@ menu $m.entry
   $m.entry add checkbutton -label OptionsMovesGlossOfDanger \
       -variable glossOfDanger -offvalue 0 -onvalue 1 -command updateBoard
 $m add cascade -label OptionsMoves -menu $m.entry
-menu $m.startup
-  # The windows that are not dockable are always configurable for auto start
-  set state [expr {$::docking::USE_DOCKING ? "disabled" : "normal"}]
-  $m.startup add checkbutton -label HelpTip -variable startup(tip)
-  $m.startup add checkbutton -label ToolsCross -variable startup(crosstable)
-  $m.startup add checkbutton -label WindowsSwitcher -variable startup(switcher) -state $state
-  $m.startup add checkbutton -label FileFinder -variable startup(finder)
-  $m.startup add checkbutton -label WindowsGList -variable startup(gamelist) -state $state
-  $m.startup add checkbutton -label WindowsPGN -variable startup(pgn) -state $state
-  $m.startup add checkbutton -label WindowsStats -variable startup(stats)
-  $m.startup add checkbutton -label WindowsTree -variable startup(tree) -state $state
-  $m.startup add checkbutton -label WindowsBook -variable startup(book) -state $state
-$m add cascade -label OptionsStartup -menu $m.startup
-menu $m.windows
-  $m.windows add checkbutton -label OptionsWindowsIconify -variable autoIconify
-  $m.windows add checkbutton -label OptionsWindowsRaise -variable autoRaise
-  $m.windows add checkbutton -label OptionsWindowsDock -variable windowsDock
-  if {$::docking::USE_DOCKING} {
-    menu $m.windows.savelayout
-    menu $m.windows.restorelayout
-    foreach i {"1 (default)" "2" "3"} slot {1 2 3} {
-      $m.windows.savelayout add command -label $i -command "::docking::layout_save $slot"
-      $m.windows.restorelayout add command -label $i -command "::docking::layout_restore $slot"
-    }
-    $m.windows add cascade -label OptionsWindowsSaveLayout -menu $m.windows.savelayout
-    $m.windows add cascade -label OptionsWindowsRestoreLayout -menu $m.windows.restorelayout
-  }
-$m add cascade -label OptionsWindows -menu $m.windows
-menu $m.theme
-  foreach i [ttk::style theme names] {
-      $m.theme add radiobutton -label "$i" -value $i -variable ::lookTheme \
-          -command {ttk::style theme use $::lookTheme}
-  }
-$m add cascade -label OptionsTheme -menu $m.theme
-menu $m.numbers
-  foreach numeric {".,"   ". "   "."   ",."   ", "   ","} \
-          underline {  0     1      2     4      5      6} {
-      set decimal [string index $numeric 0]
-      set thousands [string index $numeric 1]
-      $m.numbers add radiobutton -label "12${thousands}345${decimal}67" \
-          -underline $underline \
-          -variable locale(numeric) -value $numeric -command updateLocale
-  }
-$m add cascade -label OptionsNumbers -menu $m.numbers
-$m add command -label OptionsSounds -command ::utils::sound::OptionsDialog
-$m add command -label OptionsToolbar -command configToolbar
 $m add separator
 $m add command -label OptionsECO -command ::readECOFile
 $m add command -label OptionsSpell -command readSpellCheckFile
 $m add command -label OptionsTable -command setTableBaseDir \
     -state [expr {[sc_info tb] ? "normal" : "disabled"}]
-$m add command -label OptionsRecent -command ::recentFiles::configure
 $m add command -label OptionsBooksDir -command setBooksDir
 $m add command -label OptionsTacticsBasesDir -command setTacticsBasesDir
 #TODO: translate
