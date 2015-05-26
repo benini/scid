@@ -439,14 +439,14 @@ proc ::reviewgame::launchengine {} {
   set engineFound 0
   set index 0
   foreach e $::engines(list) {
-    if { [string equal -nocase -length 4 [lindex $e 0] "toga" ] } {
+    if {[lindex $e 7] != 0} {
       set engineFound 1
       break
     }
     incr index
   }
   if { ! $engineFound } {
-    tk_messageBox -type ok -icon warning -parent . -title "Scid" -message "Unable to find engine.\nPlease configure engine with Toga as name"
+    tk_messageBox -type ok -icon warning -parent . -title "Scid" -message "This feature require at least one UCI engine"
     return 0
   }
   
