@@ -557,7 +557,6 @@ proc ::board::newToolBar_ {{w} {varname}} {
 
   set m "$w.buttons.menu_[lindex $menus 1]"
   $m add command -label "  [tr EditSetup]" -image tb_BD_SetupBoard -compound left
-  $m add command -label "  Strip all comments" -image tb_BD_VarDelete -compound left
 
   set m "$w.buttons.menu_[lindex $menus 2]"
   $m add command -label "  Delete variant" -image tb_BD_VarDelete -compound left
