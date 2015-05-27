@@ -428,7 +428,7 @@ namespace eval tactics {
             }
         }
         ::notify::GameChanged
-        ::board::flipAuto .main.board [sc_pos side]
+        ::board::flipAuto .main.board [expr {[sc_pos side] == "black"}]
         focus .main
         
         ::gameclock::reset 1
