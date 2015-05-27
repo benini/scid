@@ -100,14 +100,21 @@ set ::menuDbSwitchIdx [expr [$m index end] +1]
 set m .menu.edit
 menu $m
 .menu add cascade -label Edit -menu $m
+$m add command -label EditUndo -accelerator "Ctrl+z" -command { undoFeature undo }
+$m add command -label EditRedo -accelerator "Ctrl+y" -command { undoFeature redo }
+$m add separator
+$m add command -label EditSetup -accelerator "S" -command setupBoard
+$m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" -command copyFEN
+$m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteFEN
+$m add command -label PgnFileCopy -command ::pgn::PgnClipboardCopy
+$m add command -label EditPastePGN -command importClipboardGame
+$m add separator
 menu $m.strip
   $m.strip add command -label EditStripComments -command {::game::Strip comments}
   $m.strip add command -label EditStripVars -command {::game::Strip variations}
   $m.strip add command -label EditStripBegin -command {::game::TruncateBegin}
   $m.strip add command -label EditStripEnd -command {::game::Truncate}
 $m add cascade -label EditStrip -menu $m.strip
-$m add command -label EditUndo -accelerator "Ctrl+z" -command { undoFeature undo }
-$m add command -label EditRedo -accelerator "Ctrl+y" -command { undoFeature redo }
 $m add separator
 $m add command -label EditReset -command ::windows::gamelist::ClearClipbase
 $m add command -label EditCopy -command ::gameAddToClipbase
@@ -115,12 +122,6 @@ $m add command -label EditPaste -command {
   sc_clipbase paste
   ::notify::GameChanged
 }
-$m add command -label PgnFileCopy -command ::pgn::PgnClipboardCopy
-$m add command -label EditPastePGN -command importClipboardGame
-$m add separator
-$m add command -label EditSetup -accelerator "S" -command setupBoard
-$m add command -label EditCopyBoard -accelerator "Ctrl+Shift+C" -command copyFEN
-$m add command -label EditPasteBoard -accelerator "Ctrl+Shift+V" -command pasteFEN
 
 
 ### Game menu:
