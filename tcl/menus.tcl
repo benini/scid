@@ -129,15 +129,26 @@ set m .menu.game
 menu $m -postcommand "updateMenuStates $m"
 .menu add cascade -label Game -menu $m
 $m add command -label GameNew -accelerator "Ctrl+X" -command ::game::Clear
-$m add command -label GameFirst -accelerator "Ctrl+Shift+Up" -command {::game::LoadNextPrev first}
-$m add command -label GamePrev -accelerator "Ctrl+Up" -command {::game::LoadNextPrev previous}
 $m add command -label GameReload -command ::game::Reload -accelerator "Ctrl+Shift+L"
-$m add command -label GameNext -accelerator "Ctrl+Down" -command {::game::LoadNextPrev next}
-$m add command -label GameLast -accelerator "Ctrl+Shift+Down" -command {::game::LoadNextPrev last}
-$m add command -label GameRandom -command ::game::LoadRandom -accelerator "Ctrl+?"
 $m add separator
 $m add command -label GameReplace -command gameReplace -accelerator "Ctrl+S"
 $m add command -label GameAdd -command gameAdd  -accelerator "Ctrl+Shift+S"
+menu $m.exportcurrent
+  $m.exportcurrent add command -label ToolsExpCurrentPGN \
+      -command {exportGames current PGN}
+  $m.exportcurrent add command -label ToolsExpCurrentHTML \
+      -command {exportGames current HTML}
+  $m.exportcurrent add command -label ToolsExpCurrentHTMLJS \
+      -command {::html::exportCurrentGame}
+  $m.exportcurrent add command -label ToolsExpCurrentLaTeX \
+      -command {exportGames current LaTeX}
+$m add cascade -label ToolsExpCurrent -menu $m.exportcurrent
+$m add separator
+$m add command -label GameFirst -accelerator "Ctrl+Shift+Up" -command {::game::LoadNextPrev first}
+$m add command -label GamePrev -accelerator "Ctrl+Up" -command {::game::LoadNextPrev previous}
+$m add command -label GameNext -accelerator "Ctrl+Down" -command {::game::LoadNextPrev next}
+$m add command -label GameLast -accelerator "Ctrl+Shift+Down" -command {::game::LoadNextPrev last}
+$m add command -label GameRandom -command ::game::LoadRandom -accelerator "Ctrl+?"
 $m add separator
 $m add command -label GameDeepest -accelerator "Ctrl+Shift+D" -command {
   sc_move ply [sc_eco game ply]
@@ -255,19 +266,6 @@ $m add cascade -label ToolsPInfo -menu $m.pinfo
 $m add command -label ToolsPlayerReport -command ::preport::preportDlg
 $m add command -label ToolsRating -command {::tools::graphs::rating::Refresh both}
 $m add command -label ToolsScore -command ::tools::graphs::score::Refresh ;# -accelerator "Ctrl+Shift+Z"
-$m add separator
-menu $m.exportcurrent
-  $m.exportcurrent add command -label ToolsExpCurrentPGN \
-      -command {exportGames current PGN}
-  $m.exportcurrent add command -label ToolsExpCurrentHTML \
-      -command {exportGames current HTML}
-  $m.exportcurrent add command -label ToolsExpCurrentHTMLJS \
-      -command {::html::exportCurrentGame}
-  $m.exportcurrent add command -label ToolsExpCurrentLaTeX \
-      -command {exportGames current LaTeX}
-$m add cascade -label ToolsExpCurrent -menu $m.exportcurrent
-$m add command -label ToolsImportOne \
-    -accelerator "Ctrl+Shift+I" -command importPgnGame
 
 
 ### Options menu:
