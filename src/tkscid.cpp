@@ -666,36 +666,38 @@ sc_base_export (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         fputs (startText, exportFile);
     }
 
-    Progress progress = UI_CreateProgress(ti);
-    Game * g = scratchGame;
-    uint numSeen = 0;
-    uint numToExport = exportFilter ? db->dbFilter->Count() : 1;
-    db->tbuf->SetWrapColumn (75);
-    uint i = (exportFilter) ? 0 : db->gameNumber;
-    uint i_last = (exportFilter) ? db->numGames() : i +1;
-    for (; i < i_last; i++) {
-        if (!exportFilter || db->dbFilter->Get(i)) { // Export this game:
-            if (numSeen++ % 100) {  // Update the percentage done bar:
-                if (!progress.report(numSeen, numToExport)) break;
-            }
+    if (!exportFilter) {
+        exportGame (db->game, exportFile, outputFormat, pgnStyle);
+    } else { //TODO: remove this (duplicate of sc_filter export)
+        Progress progress = UI_CreateProgress(ti);
+        uint numSeen = 0;
+        uint numToExport = db->dbFilter->Count();
+        Game * g = scratchGame;
+        db->tbuf->SetWrapColumn (75);
+        for (gamenumT i=0, n=db->numGames(); i < n; i++) {
+            if (db->dbFilter->Get(i)) { // Export this game:
+                if (numSeen++ % 100) {  // Update the percentage done bar:
+                    if (!progress.report(numSeen, numToExport)) break;
+                }
 
-            // Print the game, skipping any corrupt games:
-            const IndexEntry* ie = db->getIndexEntry(i);
-            if (ie->GetLength() == 0) { continue; }
-            db->bbuf->Empty();
-            if (db->getGame(ie, db->bbuf) != OK) {
-                continue;
+                // Print the game, skipping any corrupt games:
+                const IndexEntry* ie = db->getIndexEntry(i);
+                if (ie->GetLength() == 0) { continue; }
+                db->bbuf->Empty();
+                if (db->getGame(ie, db->bbuf) != OK) {
+                    continue;
+                }
+                if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
+                    continue;
+                }
+                g->LoadStandardTags (ie, db->getNameBase());
+                exportGame (g, exportFile, outputFormat, pgnStyle);
             }
-            if (g->Decode (db->bbuf, GAME_DECODE_ALL) != OK) {
-                continue;
-            }
-            g->LoadStandardTags (ie, db->getNameBase());
-            exportGame (g, exportFile, outputFormat, pgnStyle);
         }
+        progress.report(1, 1);
     }
     fputs (endText, exportFile);
     fclose (exportFile);
-    progress.report(1, 1);
     return TCL_OK;
 }
 
