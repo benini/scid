@@ -703,7 +703,7 @@ proc addNullMove {} {
     addMove null null
 }
 
-proc addMove { sq1 sq2 } {
+proc addMove { sq1 sq2 {animate "-animate"}} {
     global EMPTY
     set nullmove 0
     if {$sq1 == "null"  &&  $sq2 == "null"} { set nullmove 1 }
@@ -721,7 +721,7 @@ proc addMove { sq1 sq2 } {
     } else {
         set moveUCI [::board::san $sq2][::board::san $sq1]
     }
-    addMoveUCI $moveUCI
+    addMoveUCI $moveUCI "" $animate
 }
 
 proc addSanMove { {san} } {
@@ -734,9 +734,8 @@ proc addSanMove { {san} } {
 #   Adds the move indicated if it is legal.
 #   If the move is a promotion, getPromoPiece will be called
 #   to get the promotion piece from the user.
-#   The move will be animated.
 #
-proc addMoveUCI {{moveUCI} {action ""}} {
+proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
     set sq1 [::board::sq [string range $moveUCI 0 1] ]
     set sq2 [::board::sq [string range $moveUCI 2 3] ]
     if { [::fics::setPremove $sq1 $sq2] || ! [::fics::playerCanMove] || ! [::reviewgame::playerCanMove]} { return } ;# not player's turn
@@ -824,7 +823,7 @@ proc addMoveUCI {{moveUCI} {action ""}} {
     set san [sc_game info previous]
     after idle [list ::utils::sound::AnnounceNewMove $san]
 
-    updateBoard -pgn -animate
+    updateBoard -pgn $animate
 }
 
 proc suggestMove {} {
@@ -937,7 +936,7 @@ proc releaseSquare { w x y } {
         }
     } else {
         # User has dragged to another square, so try to add this as a move:
-        addMove $square $selectedSq
+        addMove $square $selectedSq ""
         ::board::colorSquare $w $selectedSq
         set selectedSq -1
         ::board::colorSquare $w $square
