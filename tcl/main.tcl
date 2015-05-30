@@ -752,7 +752,7 @@ proc addMoveUCI {{moveUCI} {action ""} {animate "-animate"}} {
     }
 
     if {! $::annotateMode} {
-        if {[::move::Follow $moveUCI]} { return [updateBoard -animate] }
+        if {[::move::Follow $moveUCI]} { return [updateBoard $animate] }
     }
 
 
