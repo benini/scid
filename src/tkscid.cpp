@@ -2205,8 +2205,7 @@ sc_eco_base (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
     sprintf (tempStr, "Classified %d game%s in %d%c%02d seconds",
              countClassified, strPlural (countClassified),
              centisecs / 100, decimalPointChar, centisecs % 100);
-    Tcl_AppendResult (ti, tempStr, NULL);
-    return TCL_OK;
+    return UI_Result(ti, OK, tempStr);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7505,9 +7504,7 @@ sc_name_correct (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
              NAME_TYPE_STRING[nt],
              strPlural (correctionCount),
              instanceCount, strPlural (instanceCount));
-    Tcl_AppendResult (ti, temp, NULL);
-
-    return TCL_OK;
+    return UI_Result(ti, OK, temp);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8755,9 +8752,10 @@ sc_name_ratings (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv)
         }
     }
     if (numChangedGames > 0) db->clearCaches();
-    appendUintElement (ti, numChangedRatings);
-    appendUintElement (ti, numChangedGames);
-    return TCL_OK;
+    UI_List res(2);
+    res.push_back(numChangedRatings);
+    res.push_back(numChangedGames);
+    return UI_Result(ti, OK, res);
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9088,7 +9086,7 @@ sc_name_spellcheck (ClientData cd, Tcl_Interp * ti, int argc, const char ** argv
     sprintf (tempStr, "Scid found %u %s name correction%s.\n",
              correctionCount, NAME_TYPE_STRING[nt],
              strPlural (correctionCount));
-    Tcl_AppendResult (ti, tempStr, NULL);
+    Tcl_SetResult (ti, tempStr, NULL);
 
     Tcl_AppendResult (ti,
         "Edit the list to remove any corrections you do not want.\n",
