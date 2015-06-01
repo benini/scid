@@ -621,9 +621,9 @@ namespace eval uci {
             if { $elt(type) == "spin" || $elt(type) == "combo" || $elt(type) == "string" } {
                 set value [$w.fopt.opt$optnbr get]
             }
-            if { $elt(type) == "button" } { set value "" }
-            
-            lappend newOptions [ list $elt(name)  $value ]
+            if { $elt(type) != "button" } {
+                lappend newOptions [ list $elt(name)  $value ]
+            }
             incr optnbr
         }
         if { $::uci::autoSaveOptions } {
