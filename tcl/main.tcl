@@ -226,7 +226,8 @@ proc updateMainToolbar {} {
     set ::gameInfoBar(tb_BD_BackToMainline) { while {[sc_var level] != 0} {::move::ExitVar} }
   }
 
-  if {[sc_game altered] && ![sc_base isReadOnly [sc_base current] ]} {
+  set canChange [expr {![sc_base isReadOnly $::curr_db]}]
+  if {$canChange && [sc_game number] != 0} {
     set ::gameInfoBar(tb_BD_Save) "gameReplace"
   } else {
     catch { unset ::gameInfoBar(tb_BD_Save) }

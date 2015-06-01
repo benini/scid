@@ -1085,6 +1085,7 @@ proc doAllocateRatings {} {
     tk_messageBox -type ok -icon info -parent . \
         -title "Scid" -message [subst $::tr(AddedRatings)]
   }
+  ::notify::DatabaseModified $::curr_db
 }
 
 
@@ -1392,9 +1393,8 @@ proc doCleaner {} {
   }
   
   mtoolAdd $t "Done."
-  updateBoard
-  ::windows::gamelist::Refresh
-  ::maint::Refresh
+  ::notify::GameChanged
+  ::notify::DatabaseModified $::curr_db
   $w.f.b.close configure -state normal
   catch {grab release $w}
   unbusyCursor .

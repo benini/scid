@@ -80,18 +80,18 @@ menu $m.utils
   $m.utils add checkbutton -label FileMaintWin -accelerator "Ctrl+M" -variable maintWin -command ::maint::OpenClose
   $m.utils add command -label FileMaintCompact -command compactDB
   $m.utils add command -label FileMaintClass -command classifyAllGames
+  $m.utils add checkbutton -label FileMaintNameEditor -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
   $m.utils add separator
   $m.utils add command -label FileMaintDelete -state disabled -command markTwins
   $m.utils add command -label FileMaintTwin -command updateTwinChecker
-  $m.utils add separator
-  menu $m.utils.name
-    $m.utils.name add checkbutton -label FileMaintNameEditor -command nameEditor -variable nameEditorWin -accelerator "Ctrl+Shift+N"
-    $m.utils.name add command -label FileMaintNamePlayer -command {openSpellCheckWin Player}
-    $m.utils.name add command -label FileMaintNameEvent -command {openSpellCheckWin Event}
-    $m.utils.name add command -label FileMaintNameSite -command {openSpellCheckWin Site}
-    $m.utils.name add command -label FileMaintNameRound -command {openSpellCheckWin Round}
-  $m.utils add cascade -label FileMaintName -menu $m.utils.name
 $m add cascade -label FileMaint -menu $m.utils
+menu $m.spell
+  $m.spell add command -label FileMaintNamePlayer -command {openSpellCheckWin Player}
+  $m.spell add command -label FileMaintNameEvent -command {openSpellCheckWin Event}
+  $m.spell add command -label FileMaintNameSite -command {openSpellCheckWin Site}
+  $m.spell add command -label FileMaintNameRound -command {openSpellCheckWin Round}
+  $m.spell add command -label AddEloRatings -command {allocateRatings}
+$m add cascade -label FileMaintName -menu $m.spell
 $m add separator
 set ::menuDbSwitchIdx [expr [$m index end] +1]
 
@@ -562,11 +562,12 @@ proc menuUpdateBases {} {
 
   menuConfig .menu.db FileClose entryconfig -state $notClipbase
   menuConfig .menu.db ToolsExpFilter entryconfig -state $notEmpty
+  menuConfig .menu.db FileMaintName entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintDelete  entryconfig -state $canChange
-  menuConfig .menu.db.utils FileMaintName    entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintClass   entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintTwin    entryconfig -state $canChange
   menuConfig .menu.db.utils FileMaintCompact entryconfig -state $canCompact
+  menuConfig .menu.db.utils FileMaintNameEditor entryconfig -state $canChange
 }
 
 proc menuUpdateBoardSizes {} {
