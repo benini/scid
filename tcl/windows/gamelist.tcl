@@ -833,8 +833,12 @@ proc glist.create {{w} {layout}} {
   menu $w.glist.header_menu.addcol
   menu $w.glist.game_menu
   bind $w.glist <Configure> {
-    after cancel glist.chkVisibleLn_ %W
-    after 100 glist.chkVisibleLn_ %W
+    set hWin [winfo height %W]
+    set hHeading 18
+    set space [expr double($hWin - $hHeading)]
+    set hRow [ttk::style lookup Treeview -rowheight]
+    set ::glistVisibleLn(%W) [expr int(ceil($space / $hRow)) ]
+    after 100 "glist.loadvalues_ %W"
   }
   if {$::windowsOS} {
     bind $w.glist <App> "glist.popupmenu_ %W %x %y %X %Y $layout"
@@ -930,9 +934,9 @@ proc glist.create {{w} {layout}} {
   options.save ::glist_Sort($layout)
   options.save ::glist_FindBar($layout)
 
-  set ::glistLoaded($w.glist) 0.0
-  set ::glistTotal($w.glist) 0.0
-  set ::glistVisibleLn($w.glist) 20
+  set ::glistLoaded($w.glist) 0
+  set ::glistTotal($w.glist) 0
+  set ::glistVisibleLn($w.glist) 0
   glist.sortInit_ $w.glist $layout
 }
 
@@ -948,7 +952,7 @@ proc glist.update {{w} {base} {filter} {moveUp 1}} {
 
   set ::glistFilter($w) $filter
   set ::glistTotal($w) [sc_filter count $base $filter]
-  if {$moveUp == 1} { set ::glistFirst($w) 0.0 }
+  if {$moveUp == 1} { set ::glistFirst($w) 0 }
 
   glist.update_ $w $base
 }
@@ -970,17 +974,16 @@ set glist_SortShortcuts { "N" "r" "m" "w" "W"
                     "y" "R" "i" "???" }
 
 proc glist.destroy_ {{w}} {
-  after cancel glist.chkVisibleLn_ $w
   if {[info exists ::glistSortCache($w)]} {
     catch { sc_base sortcache $::glistBase($w) release $::glistSortCache($w) }
     unset ::glistSortCache($w)
   }
   unset ::glistSortStr($w)
-  if {[info exists ::glistBase($w)]} { unset ::glistBase($w) }
-  if {[info exists ::glistFilter($w)]} { unset ::glistFilter($w) }
-  if {[info exists ::glistFirst($w)]} { unset ::glistFirst($w) }
-  if {[info exists ::glistClickOp($w)]} { unset ::glistClickOp($w) }
-  unset ::glistVisibleLn($w)
+  catch { unset ::glistBase($w) }
+  catch { unset ::glistFilter($w) }
+  catch { unset ::glistFirst($w) }
+  catch { unset ::glistClickOp($w) }
+  catch { unset ::glistVisibleLn($w) }
   unset ::glistLoaded($w)
   unset ::glistTotal($w)
   unset ::glistYScroll($w)
@@ -991,18 +994,16 @@ proc glist.update_ {{w} {base}} {
   if {! [info exists ::glistBase($w)] } {
     #Create a sortcache to speed up sorting
     sc_base sortcache $base create $::glistSortStr($w)
-    set ::glistFirst($w) 0.0
+    set ::glistFirst($w) 0
   } elseif {$::glistBase($w) != $base || $::glistSortCache($w) != $::glistSortStr($w)} {
     #Create a new sortcache
     catch { sc_base sortcache $::glistBase($w) release $::glistSortCache($w) }
     sc_base sortcache $base create $::glistSortStr($w)
-    set ::glistFirst($w) 0.0
+    set ::glistFirst($w) 0
   }
   set ::glistSortCache($w) $::glistSortStr($w)
   set ::glistBase($w) $base
   glist.loadvalues_ $w
-  after cancel glist.chkVisibleLn_ $w
-  after idle glist.chkVisibleLn_ $w
 }
 
 proc glist.loadvalues_ {{w}} {
@@ -1015,7 +1016,7 @@ proc glist.loadvalues_ {{w}} {
     set current_game -1
   }
   set i 0
-  foreach {idx line deleted} [sc_base gameslist $base $::glistFirst($w) [expr 1 + $::glistVisibleLn($w)]\
+  foreach {idx line deleted} [sc_base gameslist $base $::glistFirst($w) $::glistVisibleLn($w)\
                                         $::glistFilter($w) $::glistSortStr($w)] {
     if {[lindex $line 1] == "=-="} { set line [lreplace $line 1 1 "\u00BD-\u00BD"] }
     $w insert {} end -id $idx -values $line -tag fsmall
@@ -1027,30 +1028,8 @@ proc glist.loadvalues_ {{w}} {
   }
   set ::glistLoaded($w) $i
   catch {$w selection set $sel}
-}
 
-proc glist.chkVisibleLn_ {w} {
-  set i 0
-  set nvisible 0
-  foreach {idx} [$w children {}] {
-    if {[$w bbox $idx] != ""} { incr nvisible }
-	incr i
-  }
-  if {$nvisible != $i} {
-    set ::glistVisibleLn($w) $nvisible
-  } elseif {$::glistLoaded($w) != $::glistTotal($w)} {
-    if {[expr $::glistFirst($w) + $::glistLoaded($w)] == $::glistTotal($w)} {
-      #TODO: update ::glistVisibleLn windows when at the bottom of the list
-      #set ::glistFirst($w) [expr $::glistFirst($w) -1.0]
-      return
-    }
-    set ::glistVisibleLn($w) [expr 2* $i]
-    glist.loadvalues_ $w
-    after cancel glist.chkVisibleLn_ $w
-    after idle glist.chkVisibleLn_ $w
-  }
-  after cancel glist.ybarupdate_ $w
-  after idle glist.ybarupdate_ $w
+  glist.ybarupdate_ $w
 }
 
 proc glist.showfindbar_ {{w} {layout}} {
@@ -1365,13 +1344,13 @@ proc glist.sort_ {{w} {col_idx} {layout} {clear 0}} {
 proc glist.ybar_ {w cmd {n 0} {units ""}} {
   if { $cmd == "-1" || $cmd == "+1" } {
     #MouseWheel
-    set n [expr $cmd * $::glistVisibleLn($w) * 0.25]
+    set n $cmd
     set units "units"
     set cmd scroll
   }
   if { $cmd == "scroll" || $cmd == "moveto"} {
     if {$cmd == "moveto"} {
-      set ::glistFirst($w) [expr ceil($n * $::glistTotal($w))]
+      set ::glistFirst($w) [expr int(ceil($n * $::glistTotal($w)))]
     } else {
       if {$units == "pages"} {
         set ::glistFirst($w) [expr $::glistFirst($w) + $n * ($::glistVisibleLn($w) -1)]
@@ -1382,11 +1361,10 @@ proc glist.ybar_ {w cmd {n 0} {units ""}} {
 
     set d [expr $::glistTotal($w) - $::glistVisibleLn($w) +1]
     if {$::glistFirst($w) > $d } { set ::glistFirst($w) $d }
-    if { $::glistFirst($w) < 0.0 } { set ::glistFirst($w) 0.0 }
+    if { $::glistFirst($w) < 0 } { set ::glistFirst($w) 0 }
 
     after cancel glist.loadvalues_ $w
     after idle glist.loadvalues_ $w
-    glist.ybarupdate_ $w
   }
 }
 
